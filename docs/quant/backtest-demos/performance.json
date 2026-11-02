@@ -1,0 +1,167 @@
+{
+ "schemaVersion": "backtest-demo-performance-1.0.0",
+ "note": "Measured on one machine; cache states as listed (population cache warm unless MISS). Not part of any result hash.",
+ "node": "v22.23.4",
+ "cases": [
+  {
+   "id": "replay-nvda-winner-splits",
+   "kind": "SAME_STOCK_REPLAY",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MISS_WRITTEN",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 31228,
+   "rssMb": 709,
+   "rssDeltaMb": 656
+  },
+  {
+   "id": "replay-intc-loser",
+   "kind": "SAME_STOCK_REPLAY",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MEMORY",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 629,
+   "rssMb": 722,
+   "rssDeltaMb": 13
+  },
+  {
+   "id": "ledger-smci-winner-split",
+   "kind": "SAME_STOCK_REPLAY",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MISS_WRITTEN",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 30319,
+   "rssMb": 1182,
+   "rssDeltaMb": 460
+  },
+  {
+   "id": "pattern-2015-sideways",
+   "kind": "PATTERN_EVIDENCE",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MEMORY",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 3729,
+   "rssMb": 1284,
+   "rssDeltaMb": 102
+  },
+  {
+   "id": "signal-2008-crash",
+   "kind": "SIGNAL_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MEMORY",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 7131,
+   "rssMb": 1290,
+   "rssDeltaMb": 5
+  },
+  {
+   "id": "signal-2009-recovery",
+   "kind": "SIGNAL_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MEMORY",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 45356,
+   "rssMb": 1630,
+   "rssDeltaMb": 340
+  },
+  {
+   "id": "signal-2020-covid",
+   "kind": "SIGNAL_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MEMORY",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 2163,
+   "rssMb": 1652,
+   "rssDeltaMb": 22
+  },
+  {
+   "id": "signal-2022-bear",
+   "kind": "SIGNAL_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MEMORY",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 2508,
+   "rssMb": 1706,
+   "rssDeltaMb": 55
+  },
+  {
+   "id": "setup-reconstruction-2016-2024",
+   "kind": "SETUP_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MEMORY",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 3337,
+   "rssMb": 1983,
+   "rssDeltaMb": 277
+  },
+  {
+   "id": "strategy-2019-bull",
+   "kind": "STRATEGY_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MEMORY",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 746,
+   "rssMb": 2019,
+   "rssDeltaMb": 36
+  },
+  {
+   "id": "strategy-2013-2014-bull",
+   "kind": "STRATEGY_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MEMORY",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 663,
+   "rssMb": 2055,
+   "rssDeltaMb": 36
+  },
+  {
+   "id": "strategy-dividends-tr",
+   "kind": "STRATEGY_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MEMORY",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 447,
+   "rssMb": 2100,
+   "rssDeltaMb": 45
+  },
+  {
+   "id": "strategy-profile-prepared",
+   "kind": "STRATEGY_BACKTEST",
+   "state": "PREPARED_DATA_LIMITED",
+   "populationCache": "MEMORY",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 307,
+   "rssMb": 2128,
+   "rssDeltaMb": 28
+  },
+  {
+   "id": "factor-momentum-v10-panel",
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MEMORY",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 20882,
+   "rssMb": 2183,
+   "rssDeltaMb": 55
+  },
+  {
+   "id": "delisted-xco-bankruptcy",
+   "kind": "SAME_STOCK_REPLAY",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MISS_WRITTEN",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 35662,
+   "rssMb": 2484,
+   "rssDeltaMb": 282
+  },
+  {
+   "id": "acquisition-agn",
+   "kind": "SIGNAL_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "populationCache": "MEMORY",
+   "resultCache": "MISS_WRITTEN",
+   "runtimeMs": 686,
+   "rssMb": 2493,
+   "rssDeltaMb": 9
+  }
+ ]
+}

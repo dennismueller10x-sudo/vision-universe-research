@@ -166,9 +166,9 @@
       "cik": "0001607678",
       "name": "Viking Therapeutics, Inc.",
       "sic": "2834",
-      "rawFacts": 10721,
-      "mappedFacts": 3052,
-      "unmappedFacts": 7838,
+      "rawFacts": 10979,
+      "mappedFacts": 3135,
+      "unmappedFacts": 8109,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -178,9 +178,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 13,
-      "quarterlyPeriods": 51,
+      "quarterlyPeriods": 52,
       "firstPeriodEnd": "2013-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 12.0,
       "metrics": {
         "capital_expenditures": {
@@ -192,7 +192,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -219,21 +219,21 @@
         },
         "net_income": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "operating_cash_flow": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "revenue": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -247,14 +247,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "total_assets": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 47,
+          "quarterlyPeriods": 48,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -277,44 +277,45 @@
         }
       },
       "quality": {
-        "HIGH": 335
+        "HIGH": 341
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 335,
-        "resolvedValues": 335
+        "datableValues": 341,
+        "resolvedValues": 341
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 7865,
+        "rules_version": "1.1.0",
+        "total": 8135,
         "by_severity": {
-          "INFO": 7838,
-          "WARNING": 27
+          "INFO": 8109,
+          "WARNING": 26
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 20,
-          "RESTATEMENT_CONFLICT": 7,
-          "UNKNOWN_CONCEPT": 7838
+          "RESTATEMENT_CONFLICT": 6,
+          "UNKNOWN_CONCEPT": 8109
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-324219",
-        "filing_date": "2026-07-29",
+        "accession": "0001193125-26-436432",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 46
+        "periodic_filings": 47,
+        "acceptance_datetime": "2026-10-28T21:35:33.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "a01b9342d77a159c4f420727f52c2125de5542494101a1099da98c706f407b42",
+      "sourceDigest": "a5d2b898c3a320e299635030706667c40f785f1b144c73d63aeedd507c7784e9",
       "issuerId": "iss_cik_0001607678"
     },
     {

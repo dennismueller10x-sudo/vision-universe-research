@@ -39,8 +39,9 @@ test("Screener-Zustand: Adresse <-> Zustand <-> gueltige Abfrage", () => {
   /* Woche: Tagesfelder entfallen sichtbar statt still. */
   const w = M.queryFromState(M.stateFromParams({ tf: "1W", muster: "dreieck", trend: "sma200,rs", vol: "1" }));
   assert.ok(Q.validate(w.query).ok);
-  assert.deepEqual(w.query.groups.map((g) => g.filters[0].field), ["aboveSma200", "volAboveAvg"], "Wochenvolumen gibt es seit technical-query 1.5.0");
-  assert.equal(w.dropped.length, 2);
+  assert.deepEqual(w.query.groups.map((g) => g.filters[0].field), ["formationActive", "aboveSma200", "volAboveAvg"],
+    "Wochenvolumen gibt es seit technical-query 1.5.0, Wochenformationen seit 1.13.0");
+  assert.equal(w.dropped.length, 1, "nur die relative Staerke entfaellt in der Woche");
   assert.equal(M.stateFromParams({ rsi: "150" }).rsiMax, null, "RSI-Grenze ausserhalb 0..100 wird ignoriert");
 });
 
@@ -136,7 +137,7 @@ test("Datensatz: Spalten gleich lang, Zaehler stimmen, jede Vorlage auswertbar",
 test("Tests liegen nicht in ausgelieferten Pfaden; Daten nur unter technical/data", () => {
   const files = readdirSync(join(root, "technical"), { recursive: true }).map(String);
   assert.ok(files.every((f) => !/\.test\.m?js$/.test(f) || f.startsWith("tests")));
-  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["formation-evidence.json", "index-v1.json", "meta.json", "screener-v1.json", "signal-evidence.json"]);
+  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["formation-evidence.json", "index-v1.json", "meta.json", "screener-v1.json", "signal-evidence.json", "spark-v1.json"]);
 });
 
 test("Release-Stempel: jede verlinkte Datei der Technical-Seite traegt den Hash ihrer Bytes (offene Tabs holen neuen Code)", async () => {
@@ -186,8 +187,12 @@ test("Datenqualitaet: Kurssprung-Verdacht ist ein Datum oder null, Zaehler in me
   const col = art.cols.suspectJumpAt;
   assert.equal(col.length, art.count);
   col.forEach((v, i) => assert.ok(v === null || (/^\d{4}-\d{2}-\d{2}$/.test(v) && v <= art.cols.asOf[i]), art.cols.s[i]));
-  assert.equal(col.filter(Boolean).length, meta.counts.suspectJump60);
-  assert.match(readFileSync(join(root, "technical/app.js"), "utf8"), /Kurssprung prüfen/);
+  assert.equal(col.filter(Boolean).length, meta.counts.suspectJump);
+  // seit screen-row 1.13.0: Faktor und Stufe zu jedem Datum, sonst null
+  const f = art.cols.suspectJumpFactor, st = art.cols.suspectJumpStatus;
+  col.forEach((v, i) => assert.equal(v === null, f[i] === null && st[i] === null, art.cols.s[i]));
+  assert.equal(st.filter((x) => x === "CONFIRMED").length, meta.counts.suspectJumpConfirmed);
+  assert.match(readFileSync(join(root, "technical/app.js"), "utf8"), /jumpFlag\(row\)/);
 });
 
 test("Formations-Evidenz: Vertrag, keine Aussage ohne Stichprobe, Signifikanz nur mit Korrektur, Texte ehrlich", () => {

@@ -18,6 +18,7 @@ PARTS=(
   "v13b-f1w|$SP/v13b-f1w|private"
   "v12-listref|$SP/v12-private/listref|work full raw http-cache probe out-draft"
   "v13c-study|$SP/v13c-private|."
+  "v10-factor-panel|$SP/v10-private/factor|panel.jsonl.gz"
 )
 entries=()
 for spec in "${PARTS[@]}"; do
@@ -31,7 +32,8 @@ for spec in "${PARTS[@]}"; do
     rm -f ./_inventory.tsv )
   files=$(wc -l < "$OUT/$name.inventory.tsv")
   plain_sha=$(sha256sum "$tmp" | cut -c1-64); plain_size=$(stat -c %s "$tmp")
-  openssl rand -out "$OUT/$name.key" 32
+  # Passphrase als Hex-Zeile: -pass file: liest nur bis zum ersten \n bzw. NUL; Binaerbytes kuerzten sie (Befund 01.11.2026).
+  openssl rand -hex 32 > "$OUT/$name.key"
   openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass file:"$OUT/$name.key" -in "$tmp" -out "$OUT/$name.tar.enc"
   wrapped=$(openssl pkeyutl -encrypt -pubin -inkey "$PUB" -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -in "$OUT/$name.key" | base64 -w0)
   shred -u "$OUT/$name.key"; rm -f "$tmp"
@@ -41,6 +43,6 @@ for spec in "${PARTS[@]}"; do
   echo "$name: $files Dateien, $plain_size B klar, $enc_size B verschlüsselt"
 done
 pubfp=$(openssl pkey -pubin -in "$PUB" -outform DER | sha256sum | cut -c1-64)
-{ printf '{"schemaVersion":"v13-research-archive-manifest-1.1.0","createdAt":"%s","cipher":"openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt (key file 32 B)","keyWrap":"RSA-4096 OAEP SHA-256","archivePublicKeySha256Der":"%s","parts":[' "$(date -u +%FT%TZ)" "$pubfp"
+{ printf '{"schemaVersion":"v13-research-archive-manifest-1.2.0","createdAt":"%s","cipher":"openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt (key file 32 B)","keyWrap":"RSA-4096 OAEP SHA-256","archivePublicKeySha256Der":"%s","parts":[' "$(date -u +%FT%TZ)" "$pubfp"
   (IFS=,; printf '%s' "${entries[*]}")
   printf ']}\n'; } > "$MANIFEST"

@@ -10,12 +10,16 @@
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("../../quant/engines/technical/technical-query.js") : global.VUTechnical.Query;
+  /* Strategie-Vorlagen (AP8): Kriterien-Checklisten ueber bestehende Filter, technical/engine/templates.js */
+  var TPL = isNode ? require("./templates.js") : global.VUTechnical.Templates;
 
   var SCREENER_PATH = "/technical/data/screener-v1.json";
   var META_PATH = "/technical/data/meta.json";
+  var SPARK_PATH = "/technical/data/spark-v1.json";
   /* Schlanker Index fuer Startseite und Chart Studio (Kuerzel, Namen, Trefferzahlen der Vorlagen) - spart den vollen Datensatz. */
   var INDEX_PATH = "/technical/data/index-v1.json";
-  var INDEX_SCHEMA = "vu-technical-index-1.0.0";
+  /* 1.1.0: zusaetzlich templates = {id: [erfuellt, fast erfuellt, unvollstaendig]} (Startseite, Vorlagen-Auswahl). */
+  var INDEX_SCHEMA = "vu-technical-index-1.1.0";
   /* Historische Evidenz der Formationen (scripts/technical/world/formation-evidence.mjs). */
   var EVIDENCE_PATH = "/technical/data/formation-evidence.json";
   /* AP6 (H4): historische Beobachtung zu Indikator-Ereignissen und Kerzenmustern, docs/technical/SIGNAL_EVIDENCE.md */
@@ -39,13 +43,14 @@
     if (!head) return { view: "home", params: params };
     if (head === "screener") return { view: "screener", tab: path[1] === "gespeichert" ? "saved" : "build", params: params };
     if (head === "methodik") return { view: "method", params: params };
+    if (head === "vorlagen") return { view: "templates", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
     if (head === "chart") {
       var t = String(path[1] || "").toUpperCase();
       return TICKER.test(t) ? { view: "chart", ticker: t, tab: path[2] === "signale" ? "signals" : "chart", params: params } : { view: "chart", ticker: null, params: params };
     }
     return { view: "notfound", params: params };
   }
-  function chartHref(ticker, tab) { return "#/chart/" + encodeURIComponent(ticker) + (tab === "signals" ? "/signale" : ""); }
+  function chartHref(ticker, tab, query) { return "#/chart/" + encodeURIComponent(ticker) + (tab === "signals" ? "/signale" : "") + (query ? "?" + query : ""); }
   /** Zweistelliger Schluessel der technical-signals-Scherben (wie quant/api/product-services.js#technicalShard). */
   function technicalShard(ticker) { return (String(ticker) + "_").slice(0, 2); }
   function technicalPaths(ticker) { return [TECH_DIR + "by-ticker/" + ticker + ".json.gz", TECH_DIR + technicalShard(ticker) + ".json.gz"]; }
@@ -339,15 +344,17 @@
    */
   var FIELD_CHART = {
     aboveSma200: ["layer", "sma"], aboveSma50: ["layer", "sma"], sma50AboveSma200: ["layer", "sma"], distSma200: ["layer", "sma"],
+    aboveSma150: ["layer", "sma"], sma150AboveSma200: ["layer", "sma"], sma50AboveSma150: ["layer", "sma"], distSma150: ["layer", "sma"],
+    sma200Rising: ["layer", "sma"], sma200Slope21: ["layer", "sma"],
     aboveEma20: ["layer", "ema"], aboveEma50: ["layer", "ema"], aboveEma200: ["layer", "ema"], distEma200: ["layer", "ema"],
     adx: ["pane", "adx"], supertrendUp: ["layer", "supertrend"], structure: ["signals"], psarUp: ["layer", "psar"], aboveCloud: ["layer", "ichimoku"],
-    aroonOsc: ["pane", "aroon"], newHigh52w: ["price"], newLow52w: ["price"], distHigh52w: ["price"], newHigh200w: ["weekly"], distHigh200w: ["weekly"],
+    aroonOsc: ["pane", "aroon"], newHigh52w: ["price"], newLow52w: ["price"], distHigh52w: ["price"], distLow52w: ["price"], newHigh200w: ["weekly"], distHigh200w: ["weekly"],
     rsi14: ["pane", "rsi"], macdPositive: ["pane", "macd"], stochK: ["pane", "stoch"], cci20: ["pane", "cci"],
     roc21: ["pane", "roc"], roc63: ["pane", "roc"], roc126: ["pane", "roc"], roc252: ["pane", "roc"], williamsR: ["pane", "williams"],
     connorsRsi: ["pane", "crsi"], zScore20: ["pane", "zscore"], elderImpulse: ["pane", "elder"], vortexBull: ["pane", "vortex"],
     hmaRising: ["layer", "hma"], distChandelierLong: ["layer", "chandelier"], newHigh20d: ["layer", "donchian"], newLow20d: ["layer", "donchian"],
     choppiness14: ["pane", "chop"], histVol20: ["pane", "hv"], ulcer14: ["pane", "ulcer"],
-    rs3m: ["pane", "rs"], rs6m: ["pane", "rs"], rsPositive: ["pane", "rs"],
+    rs3m: ["pane", "rs"], rs6m: ["pane", "rs"], rsPositive: ["pane", "rs"], rsRank: ["pane", "rs"],
     relVol: ["layer", "volumen"], volAboveAvg: ["layer", "volumen"], volSpike: ["layer", "volumen"], mfi14: ["pane", "mfi"], obvRising: ["pane", "obv"],
     cmf20: ["pane", "cmf"], atrPct: ["pane", "atr"], bbPctB: ["layer", "bb"], bbSqueeze: ["layer", "bb"], insideBar: ["price"], nr7: ["price"]
   };
@@ -470,7 +477,7 @@
   /** Formationstypen, nach denen eine Abfrage sucht. */
   function wantedFormations(query) {
     var out = [];
-    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed" || x.field === "formationOpen") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
+    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed" || x.field === "formationOpen" || x.field === "formationConfirmedUp" || x.field === "formationConfirmedDown") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
     return out;
   }
 
@@ -513,11 +520,11 @@
       if (FOCUS.indexOf(p.id) >= 0) r.indices.forEach(function (i) { union[i] = 1; });
     });
     return { schemaVersion: INDEX_SCHEMA, asOf: artifact.asOf, count: artifact.count, s: artifact.cols.s.slice(), n: artifact.cols.n.slice(),
-      presets: presets, focusUnion: Object.keys(union).length };
+      presets: presets, focusUnion: Object.keys(union).length, templates: TPL ? TPL.counts(ds) : {} };
   }
 
   var api = {
-    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, EVIDENCE_PATH: EVIDENCE_PATH, evidenceText: evidenceText,
+    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, SPARK_PATH: SPARK_PATH, EVIDENCE_PATH: EVIDENCE_PATH, evidenceText: evidenceText,
     SIGNAL_EVIDENCE_PATH: SIGNAL_EVIDENCE_PATH, READING_TEXT: READING_TEXT, READING_SHORT: READING_SHORT, signalEvidenceText: signalEvidenceText, signalEvidenceSummary: signalEvidenceSummary, INDEX_PATH: INDEX_PATH, INDEX_SCHEMA: INDEX_SCHEMA, FOCUS: FOCUS, RANKS: RANKS, homeIndex: homeIndex, LONG_DIR: LONG_DIR, STORE_KEY: STORE_KEY, LAST_KEY: LAST_KEY,
     PATTERN_PILLS: PATTERN_PILLS, STATE_BADGE: STATE_BADGE, TREND_PILLS: TREND_PILLS, trendLabel: trendLabel,
     parseRoute: parseRoute, chartHref: chartHref, technicalShard: technicalShard, technicalPaths: technicalPaths,

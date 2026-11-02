@@ -38,6 +38,12 @@ test('keine nicht freigegebenen Inhalte: kein Quant-Gesamtscore, keine Supertrad
   assert.match(code, /v\.price/, 'zeigt nur den veroeffentlichten Schluss');
 });
 
+test('gesperrte Identitaet (Ticker-Wiederverwendung): kein Verweis, auch kein Discover-Ersatz; Text aus der Ansicht', () => {
+  assert.match(code, /function stockHref\(v\) \{\s*if \(v\.identity && v\.identity\.reason === 'IDENTITY_QUARANTINED'\) return null;/,
+    'vor Produktverweis und Discover-Rueckfall');
+  assert.match(code, /v\.identity && v\.identity\.reasonText \? v\.identity\.reasonText/, 'Grund als Text der Ansicht, nie als Code');
+});
+
 test('Leerstaat, Detailansicht und Erweiterbarkeit', () => {
   assert.match(html, /id="md-watch-empty"[^]*Noch keine Aktien gespeichert/);
   assert.match(html, /href="\/konto\/watchlist\/"/, 'Detailansicht bleibt /konto/watchlist/');

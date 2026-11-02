@@ -483,6 +483,22 @@
       (v.contract || "") + (Object.keys(v.counts || {}).length ? " Verstoesse: " + JSON.stringify(v.counts) : ""));
   }
 
+  /** DQ-TW-8: kein vollstaendiger Treffer einer Strategie-Vorlage, die den Abstand zum 52-Wochen-Tief prueft
+      (`distLow52w`, AP8 L3), beruht auf einem Lunten-Tief. Lunten-Tief: das tiefste Tagestief der letzten 252 Bars
+      liegt unter der Haelfte von min(Eroeffnung, Schluss) dieses Tages (SCREENER_FIELDS_AP8_L3.md §2, z. B. MYND
+      0,0001 bei Schluss 0,2199). Die Regel kennzeichnet nur; sie aendert weder Kurse noch Vorlagen.
+      `fullHits` = [{ template, ticker }], `wickByTicker` = Kuerzel -> { date, low, open, close } nur fuer Lunten-Tiefs. */
+  function technicalTemplateWickLows(fullHits, wickByTicker) {
+    var hits = fullHits || [], wick = wickByTicker || {}, fail = [];
+    hits.forEach(function (h) {
+      var w = wick[h.ticker];
+      if (w) fail.push(h.ticker + " (" + h.template + "): 52-Wochen-Tief " + w.low + " am " + w.date + " bei Eroeffnung " + w.open + " / Schluss " + w.close);
+    });
+    var names = Object.keys(wick).sort();
+    return result("DQ-TW-8", "Technical: kein vollstaendiger Vorlagen-Treffer beruht auf einem Lunten-Tief", "WARN", hits.length, fail,
+      names.length + " aktuelle Titel mit Lunten-Tief" + (names.length ? " (" + names.slice(0, 12).join(", ") + (names.length > 12 ? " …" : "") + ")" : "") + ".");
+  }
+
   /* -------------------------------------------- Supertrader 8.0 (Vorschau) */
 
   /* Research-Kandidaten der 13 quellentreuen Methoden
@@ -922,7 +938,7 @@
     staleTails: staleTails, masterSeriesConsistency: masterSeriesConsistency,
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
-    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields, technicalStaleEvents: technicalStaleEvents, technicalContract: technicalContract,
+    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields, technicalStaleEvents: technicalStaleEvents, technicalContract: technicalContract, technicalTemplateWickLows: technicalTemplateWickLows,
     secFiscalYearLabels: secFiscalYearLabels, secFuturePeriods: secFuturePeriods, secRefusals: secRefusals,
     SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_FEATURES_HIDDEN: SF8_FEATURES_HIDDEN, SF8_TREND_HIDDEN: SF8_TREND_HIDDEN, SF8_SUBFIELDS_HIDDEN: SF8_SUBFIELDS_HIDDEN, SF8_PIVOT_LEVEL: SF8_PIVOT_LEVEL, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
     sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,

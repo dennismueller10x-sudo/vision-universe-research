@@ -207,6 +207,66 @@ class IntegrationTests(unittest.TestCase):
             with self.assertRaisesRegex(higgsfield.HiggsfieldError, "does not accept references"):
                 higgsfield.produce_single_text_video(args)
 
+    def test_wan_i2v_shot_uploads_registered_start_and_end_and_submits_once(self):
+        calls = {"submit": [], "upload": []}
+        frame = "brand-media/higgsfield/references/the-arrival-video1-frame-18.png"
+        class FakeClient:
+            def __init__(self, api_key): pass
+            def upload_image(self, path):
+                calls["upload"].append(path)
+                return f"https://files.example/{len(calls['upload'])}.png"
+            def submit(self, endpoint, params, idempotency_key=None):
+                calls["submit"].append((endpoint, params, idempotency_key))
+                return "shot-request-1"
+            def status(self, request_id):
+                return {"status": "completed", "video": {"url": "https://storage.example/video.mp4"}}
+            def download(self, url, destination): Path(destination).write_bytes(b"mp4")
+
+        args = SimpleNamespace(action="produce-i2v-shot", model="alibaba/wan-3.0", operation="image_to_video",
+            prompt="drone flight", duration=15, resolution="1080p", aspect_ratio="9:16", native_audio="true",
+            reference=frame, end_reference=frame, approval=higgsfield.WAN_I2V_SHOT_APPROVAL_PHRASE, output_dir="")
+        with tempfile.TemporaryDirectory() as temp, patch.dict(os.environ, {
+            "HIGGSFIELD_API_KEY": "test-secret", "GITHUB_RUN_ID": "790", "GITHUB_RUN_ATTEMPT": "1"
+        }), patch.object(higgsfield, "Client", FakeClient), patch.object(higgsfield.time, "sleep"):
+            args.output_dir = temp
+            higgsfield.run(args)
+            manifest = json.loads((Path(temp) / "i2v-shot-manifest.json").read_text(encoding="utf-8"))
+            output_exists = (Path(temp) / "shot-request-1.mp4").is_file()
+        self.assertEqual(calls["upload"], [frame, frame])
+        self.assertEqual(len(calls["submit"]), 1)
+        endpoint, params, key = calls["submit"][0]
+        self.assertEqual(endpoint, "alibaba/wan-3.0/image-to-video")
+        self.assertEqual(key, "vu-higgsfield-790-i2v-shot")
+        self.assertEqual((params["duration"], params["aspect_ratio"], params["resolution"]), (15, "9:16", "1080p"))
+        self.assertEqual(params["image_url"], "https://files.example/1.png")
+        self.assertEqual(params["end_image_url"], "https://files.example/2.png")
+        self.assertEqual(manifest["reference_image"]["asset_id"], "vu-the-arrival-video1-frame-18-20261020")
+        self.assertNotIn("image_url", manifest["parameters"])
+        self.assertIsNone(manifest["estimate"])
+        self.assertTrue(output_exists)
+
+    def test_wan_i2v_shot_requires_approval_registered_frames_and_short_duration(self):
+        frame = "brand-media/higgsfield/references/the-arrival-video1-frame-18.png"
+        args = SimpleNamespace(action="produce-i2v-shot", model="alibaba/wan-3.0", operation="image_to_video",
+            prompt="shot", duration=15, resolution="1080p", aspect_ratio="9:16", native_audio="true",
+            reference=frame, end_reference="", approval="", output_dir="")
+        with patch.dict(os.environ, {"GITHUB_RUN_ID": "790", "GITHUB_RUN_ATTEMPT": "1"}):
+            with self.assertRaisesRegex(higgsfield.HiggsfieldError, "Explicit approval"):
+                higgsfield.produce_i2v_shot(args)
+            args.approval = higgsfield.WAN_I2V_SHOT_APPROVAL_PHRASE
+            args.duration = 20
+            with self.assertRaisesRegex(higgsfield.HiggsfieldError, "3 to 15 seconds"):
+                higgsfield.produce_i2v_shot(args)
+            args.duration = 10
+            args.reference = "brand-media/higgsfield/README.md"
+            with self.assertRaisesRegex(higgsfield.HiggsfieldError, "registered production reference"):
+                higgsfield.produce_i2v_shot(args)
+            args.reference = frame
+            args.end_reference = "brand-media/higgsfield/README.md"
+            with patch.object(higgsfield, "Client"):
+                with self.assertRaisesRegex(higgsfield.HiggsfieldError, "registered production reference"):
+                    higgsfield.produce_i2v_shot(args)
+
     def test_status_download_is_read_only(self):
         calls = []
 

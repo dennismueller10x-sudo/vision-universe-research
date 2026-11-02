@@ -7,6 +7,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { createRequire } from "node:module";
+import { createHash } from "node:crypto";
 import { splitAdjustedCloses } from "../../scripts/market/publish-discover-series.mjs";
 import { correctedDoc, dividePublished } from "../../scripts/market/split-supplement-effect.mjs";
 import * as S from "../../scripts/market/lib/split-evidence-supplements.mjs";
@@ -166,22 +167,33 @@ test("Herausgeber-Komposition: Tagesbalken -> Wochenschluss -> Cent; vor dem Ex-
 test("Herausgeber-Quelltext: beide Reihen korrigieren die Spalte vor splitAdjustedCloses; Engines unberuehrt", () => {
   const lang = readFileSync(new URL("scripts/market/publish-long-series.mjs", ROOT), "utf8");
   assert.match(lang, /const belegt = applySupplements\(SC\.currentListingSegment\(reihe\.bars\)\.bars, s\.securityId\);/);
-  assert.match(lang, /const aktuell = belegt\.bars;/);
+  /* Danach die belegten Kapitalmassnahmen mit Status PIPELINE (corporate-action-confirmations.mjs), ebenfalls nur die Spalte. */
+  assert.match(lang, /const bestaetigt = applyConfirmations\(belegt\.bars, s\.securityId\);/);
+  assert.match(lang, /const aktuell = bestaetigt\.bars;/);
   assert.match(lang, /corporateActions: CorporateActions\.evidence\(closes, points, aktuell\)/);
   assert.match(lang, /doc\.corporateActions\.supplemented = supplemented/);
   const kurz = readFileSync(new URL("scripts/market/publish-discover-series.mjs", ROOT), "utf8");
   assert.match(kurz, /const belegt = applySupplements\(bars, security && security\.securityId\)\.bars;/);
-  assert.match(kurz, /splitAdjustedCloses\(belegt\)/);
+  assert.match(kurz, /const bestaetigt = applyConfirmations\(belegt, security && security\.securityId\)\.bars;/);
+  assert.match(kurz, /splitAdjustedCloses\(bestaetigt\)/);
   /* Keine eigene Kumulation in der Ergaenzung (ADR-002): sie setzt nur die Spalte. */
   const lib = readFileSync(new URL("scripts/market/lib/split-evidence-supplements.mjs", ROOT), "utf8");
   assert.doesNotMatch(lib, /\*=/);
+  assert.doesNotMatch(readFileSync(new URL("scripts/market/lib/corporate-action-confirmations.mjs", ROOT), "utf8"), /\*=/);
   for (const engine of ["quant/engines/return-series.js", "quant/engines/corporate-action-evidence.js"]) {
     assert.doesNotMatch(readFileSync(new URL(engine, ROOT), "utf8"), /split-evidence-supplements|supplement/i, engine);
   }
 });
 
-test("committete PZZA-Wochenreihe: korrigierte Kopie besteht den Wochen-Adapter, die heutige nicht", () => {
-  const text = readFileSync(new URL("quant/data/market/discover-series-long/" + ID + ".json", ROOT), "utf8");
+/* Die Wochenreihe VOR der Ergaenzung, eingefroren: byte-gleich die committete ref_PZZA.json bis zum Volllauf
+   long-series.yml vom 2026-10-31 (Commit 40d042ad38~1, Git-Blob 84cc88beaa, Stand 2026-10-23). Seit diesem Lauf
+   fuehrt die committete Reihe die Ergaenzung selbst; der Vorher-Zustand bleibt nur hier erhalten. */
+const VORHER = "quant/tests/fixtures/pzza-weekly-before-supplement-2026-10-23.json";
+const VORHER_SHA256 = "c25f802bf30372355cc4e86603fe23cc3bf0c7bbec1f786794fafc730b3c2252";
+
+test("PZZA-Wochenreihe vor der Ergaenzung (eingefroren): korrigierte Kopie besteht den Wochen-Adapter, die alte nicht", () => {
+  const text = readFileSync(new URL(VORHER, ROOT), "utf8");
+  assert.equal(createHash("sha256").update(text).digest("hex"), VORHER_SHA256, "Fixture unveraendert");
   const doc = JSON.parse(text);
   const loader = Adapter.createLoader(new URL(".", ROOT).pathname);
   assert.throws(() => loader(ID, text), /CORPORATE_ACTION_UNRESOLVED.*SINGLE_DAY_SPLIT_SIZED_JUMP/);
@@ -193,4 +205,28 @@ test("committete PZZA-Wochenreihe: korrigierte Kopie besteht den Wochen-Adapter,
   assert.equal(doc.points[i - 1][1], 89.95);
   assert.deepEqual(neu.points.slice(i), doc.points.slice(i), "ab der Ex-Woche unveraendert");
   doc.points.slice(0, i).forEach(([d, v], k) => assert.ok(Math.abs(neu.points[k][1] - v / 2) <= 0.0050001, d));
+});
+
+test("committete PZZA-Wochenreihe: fuehrt die Ergaenzung, besteht den Wochen-Adapter und ist die vorhergesagte Korrektur", () => {
+  const text = readFileSync(new URL("quant/data/market/discover-series-long/" + ID + ".json", ROOT), "utf8");
+  const doc = JSON.parse(text);
+  const loader = Adapter.createLoader(new URL(".", ROOT).pathname);
+  assert.equal(loader(ID, text).corporateActionQuality.status, "CLEAN");
+  const { doc: erwartet, ambiguous } = correctedDoc(JSON.parse(readFileSync(new URL(VORHER, ROOT), "utf8")), PZZA);
+  /* Kapitalmassnahmen-Beleg genau wie vorhergesagt: Split 2013-12-30 2:1 in splits, Herkunft SEC, kein ungeklaerter Sprung. */
+  const bis = (ca) => ({ ...ca, splits: ca.splits.filter((x) => x[0] <= erwartet.to), moves: ca.moves.filter((m) => m.week <= erwartet.to), supplemented: (ca.supplemented || []).filter((x) => x.date <= erwartet.to) });
+  assert.deepEqual(bis(doc.corporateActions), erwartet.corporateActions);
+  /* Spaetere Kapitalmassnahmen sind neue Daten; einen ungeklaerten Sprung faengt der Adapter oben (CLEAN). */
+  /* Jede Woche des eingefrorenen Stands: exakt der vorhergesagte Wert, bei Rundungskante im Band [unten, oben].
+     Spaetere Wochen sind neue Daten. */
+  const band = new Map(ambiguous.map((a) => [a.date, a])), heute = new Map(doc.points);
+  for (const [d, v] of erwartet.points) {
+    assert.ok(heute.has(d), "Woche fehlt: " + d);
+    const a = band.get(d), n = heute.get(d);
+    assert.ok(a ? n >= a.lo && n <= a.hi : n === v, d + ": " + n + " statt " + v);
+  }
+  assert.equal(doc.points.length - erwartet.points.length, doc.points.filter((p) => p[0] > erwartet.to).length, "keine Woche dazwischen");
+  const i = doc.points.findIndex((p) => p[0] === "2014-01-03");
+  assert.equal(doc.points[i - 1][1], 44.98);
+  assert.equal(doc.points[i][1], 46.08);
 });

@@ -1,0 +1,1668 @@
+{
+ "schemaVersion": "backtest-runner-result-1.0.0",
+ "runner": "backtest-runner-1.0.0",
+ "kind": "SIGNAL_BACKTEST",
+ "state": "RESEARCH_EXECUTED",
+ "specHash": "a22e706aba587b49815fa5e8c3d347c28e84729f2e87eaa43ae758ffa38a89db",
+ "spec": {
+  "schemaVersion": "backtest-runner-spec-1.0.0",
+  "version": "1.0.0",
+  "registeredAt": "2026-10-29T00:00:00Z",
+  "asOf": "2025-12-31",
+  "costs": {
+   "feeBps": 5,
+   "slippageBps": 5
+  },
+  "benchmark": "SPY",
+  "id": "signal-2020-covid",
+  "description": "Five weekly signal rules, 30 large caps, signals in 2020, 13-week outcomes",
+  "kind": "SIGNAL_BACKTEST",
+  "window": {
+   "from": "2020-01-01",
+   "to": "2020-12-31"
+  },
+  "population": {
+   "profile": "V10_PRIMARY",
+   "tickers": [
+    "MSFT",
+    "JPM",
+    "KO",
+    "PG",
+    "XOM",
+    "NVDA",
+    "INTC",
+    "CSCO",
+    "ORCL",
+    "WMT",
+    "HD",
+    "MRK",
+    "PFE",
+    "JNJ",
+    "CVX",
+    "IBM",
+    "MCD",
+    "DIS",
+    "BA",
+    "CAT",
+    "AMZN",
+    "GE",
+    "T",
+    "VZ",
+    "BAC",
+    "C",
+    "WFC",
+    "MMM",
+    "HON",
+    "PEP"
+   ]
+  },
+  "engine": {
+   "horizonBars": 13,
+   "funded": {
+    "rule": "NEW_52W_HIGH",
+    "maxPositions": 5,
+    "holdingWeeks": 13
+   }
+  },
+  "methods": {
+   "MARKET_REGIME": {},
+   "PORTFOLIO_REBALANCING": {}
+  }
+ },
+ "inputHashes": {
+  "code": {
+   "scripts/quant/research/backtest-runner.cjs": "cbcb6f85f3b29c0e22d7297336d4a39f07185cbde4767d99ca3771b55fe3e9ee",
+   "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
+   "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
+   "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
+   "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+   "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
+   "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
+   "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
+   "quant/engines/backtest-result-contract.cjs": "aa755d981485b784552f3e722c25f679be8c2c9e9c235cce2fcfec5c078162c6",
+   "quant/engines/backtest-kinds.cjs": "40a2bad506225282b2da47bf9c1a03fe1f0fbe2612a85b6496a8cf819a1d1b72",
+   "quant/engines/research-weekly-loader.cjs": "83a4c2761a86ef33ebb94cfb743f77de3629dcb7e2b92e19e2a80a29c0c5f5f9",
+   "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+   "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
+   "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
+   "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
+   "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
+   "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
+   "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
+   "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
+   "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
+   "scripts/quant/v10/studies/common.cjs": "c260881d35dbce171b0182d6517cb8b99737b6f48d9a0054d0671d53ce72a989",
+   "scripts/quant/v10/studies/signal-study.cjs": "9bc600c4e80187c91232207a6ce7ae90ef42c0c15bcdbd596d4db0eea673f433",
+   "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
+   "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
+  },
+  "certification": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+  "benchmark": "b9c838026ed37204427f1a90b9c257628e25a48fef14f898f7735dad293e93b6",
+  "population": {
+   "profile": "V10_PRIMARY",
+   "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
+   "populationHash": "e7c269e9640b6320114548d00ca42b766e74e76c708e5826b7a8e11373896c43",
+   "calendarHash": "03207aa6b650388fafb21e0de0aba711339133e0d6ddfb77a50060c1377f7471",
+   "calendarLength": 1922,
+   "sourceManifestHash": "fb90ca8c93620ec2dc4c753f0701bbd15803e4d2da0854fe37f0c07c0d9a90b4",
+   "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+   "registers": {
+    "identityEvidence": {
+     "registryHash": "1aa23666114ccbc77b1cb36ed89c75ffb0597b5b5ea63e31a2dccf50f4b572c6",
+     "v12RegistryHash": null,
+     "v13RegistryHash": null,
+     "v13StrictRegistryHash": null
+    },
+    "corporateActionEvidence": {
+     "registryHash": "fa1475ba9f12de11eff6dbee48fe7022297a447004da928659655df7fb1baa58",
+     "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+    },
+    "listingLifecycleEvidence": null,
+    "delistedRegister": null,
+    "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
+    "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
+   },
+   "pointsHashRoot": "fc8de10f2facf6a7f651ce8d369fcc7d3d25080186abbc36e71ae5005c42e611"
+  },
+  "listings": {
+   "ref_MSFT": {
+    "listingId": "tiingo:NASDAQ:MSFT:1986-03-13",
+    "sourceBytesHash": "ae5dfc43215e52789e79c038154271b40f9bb645243aeb6b6f17673551152b52",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_JPM": {
+    "listingId": "tiingo:NYSE:JPM:1983-12-30",
+    "sourceBytesHash": "e30c17239dcf36789bc5e5ca7670825553c3bd642c02695802c4d233dc7451f3",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_KO": {
+    "listingId": "tiingo:NYSE:KO:1962-01-02",
+    "sourceBytesHash": "7723cba7d6ddc7a3aea1427bd105e6e2359d92b3463c092b546c037ae68687df",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_PG": {
+    "listingId": "tiingo:NYSE:PG:1970-01-02",
+    "sourceBytesHash": "59c51abd623838fe72882fbc8165225f9c77f9fa6bfcf0207fe75d90630278fe",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_XOM": {
+    "listingId": "tiingo:NYSE:XOM:1970-01-02",
+    "sourceBytesHash": "0a775c38269403737130466e37b525fc8fdbdf54d65ab4287a0dd8c423d2b2d3",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_NVDA": {
+    "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+    "sourceBytesHash": "cc69e6d3fc5aaf6b666e1eb21dfa5fc7f268b80a5107a534a94e3df8f792b5a4",
+    "registerPointsSha256": null,
+    "first": "1999-01-22",
+    "last": "2025-12-26",
+    "bars": 1406
+   },
+   "ref_INTC": {
+    "listingId": "tiingo:NASDAQ:INTC:1980-03-17",
+    "sourceBytesHash": "c2e84c15ff33ba1dd2da3a04f8d59a6abb7d5766c30836bc4fd6be1ab9043e35",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_CSCO": {
+    "listingId": "tiingo:NASDAQ:CSCO:1990-03-26",
+    "sourceBytesHash": "c983da3d3628638159e7e3b89b8eed67553373e78b95c64e6f374c922787d5ac",
+    "registerPointsSha256": null,
+    "first": "1990-03-30",
+    "last": "2025-12-26",
+    "bars": 1866
+   },
+   "ref_ORCL": {
+    "listingId": "tiingo:NYSE:ORCL:1986-03-12",
+    "sourceBytesHash": "607874ab640bae45d2751846f2bdcad3bd57d9a7be27c005c10a405ee384ce76",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_WMT": {
+    "listingId": "tiingo:NASDAQ:WMT:1972-08-25",
+    "sourceBytesHash": "3c2a1f793e3f4e79c01806ee0270811348f2eae93daeaab1a1ef307e9f3558df",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_HD": {
+    "listingId": "tiingo:NYSE:HD:1981-09-22",
+    "sourceBytesHash": "e51fe40af92fda84204ac6369d48f88b3fdee4a65d089af85aad0f5ee99d3435",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_MRK": {
+    "listingId": "tiingo:NYSE:MRK:1970-01-02",
+    "sourceBytesHash": "c706114ba4ac7bc829cbc4ab9f53b44c6c3d8ddcc796f0ab1cd5cc0d0dbabce6",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_PFE": {
+    "listingId": "tiingo:NYSE:PFE:1972-06-01",
+    "sourceBytesHash": "14e158bf835d355b83d4e0c0651a845379866456d2deac2cf3f4d1d2e587cc8d",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_JNJ": {
+    "listingId": "tiingo:NYSE:JNJ:1970-01-02",
+    "sourceBytesHash": "93b4ebfa81d3f2276ea60a549624bf792832c5acac422d6739d99fb0ffe5b6ad",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_CVX": {
+    "listingId": "tiingo:NYSE:CVX:1970-01-02",
+    "sourceBytesHash": "9523b411a42ac109196243a06687a30fd9de45fc1d5a227b64b74b8445dccbdf",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_IBM": {
+    "listingId": "tiingo:NYSE:IBM:1962-01-02",
+    "sourceBytesHash": "02cd8b33f806fcde5bc5846d19552053ae6a915327eef88c90e95e5ace2ad8a1",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_MCD": {
+    "listingId": "tiingo:NYSE:MCD:1970-01-02",
+    "sourceBytesHash": "312daf9b4791468d5e7bdee1723eb5507ab482d1716a3d129549974d59c1a8b4",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_DIS": {
+    "listingId": "tiingo:NYSE:DIS:1962-01-02",
+    "sourceBytesHash": "e26810f980850505a9d31d6fa193462fd14aa3e52e9f1c9f9e8a929a5fccb22c",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_BA": {
+    "listingId": "tiingo:NYSE:BA:1962-01-02",
+    "sourceBytesHash": "b44ff1ea123dcd83de96c88c57dacdd13bd14c9fec4099bc598afc4dce247f94",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_CAT": {
+    "listingId": "tiingo:NYSE:CAT:1962-01-02",
+    "sourceBytesHash": "db190963f863daa93015af7cbb5d9b9cb7c42a6395d3a0f54f037fd2996618a9",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_AMZN": {
+    "listingId": "tiingo:NASDAQ:AMZN:1997-05-15",
+    "sourceBytesHash": "e881cb57211ecc1b4c87e4d8614225939076e1d275616941f02b7340b5d4b2d6",
+    "registerPointsSha256": null,
+    "first": "1997-05-16",
+    "last": "2025-12-26",
+    "bars": 1494
+   },
+   "ref_GE": {
+    "listingId": "tiingo:NYSE:GE:1962-01-02",
+    "sourceBytesHash": "6e040136216a7bb20ece6d3e146c3784d8a455e06e0eac3080a02d1de59fe86e",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_T": {
+    "listingId": "tiingo:NYSE:T:1984-07-19",
+    "sourceBytesHash": "4f3e4ce9e9c3f232e68c467395a1f8999e8968af2768e3ed1e101e310ad155af",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_VZ": {
+    "listingId": "tiingo:NYSE:VZ:1983-11-21",
+    "sourceBytesHash": "95f594e58ad1233335a5df07ae422aebb9400560c9603e9790cae0b5f60ea17c",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_BAC": {
+    "listingId": "tiingo:NYSE:BAC:1986-05-29",
+    "sourceBytesHash": "4443f775f78e4809066ee28b51b88b5738e46cfb8511ebd69d642633d5f74860",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_C": {
+    "listingId": "tiingo:NYSE:C:1977-01-03",
+    "sourceBytesHash": "c325bf86f6b51a004a07383ab6547f8d9028cd500a30e7ca3b1c1bac6c308b23",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_WFC": {
+    "listingId": "tiingo:NYSE:WFC:1972-06-01",
+    "sourceBytesHash": "5178ad464f45ace0b92709d232fc341ca93132c578e612908f0714582806363d",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_MMM": {
+    "listingId": "tiingo:NYSE:MMM:1970-01-02",
+    "sourceBytesHash": "bfcfc3103c14c1a0b341d370ab45aeb9ee50b98e4caeec00f68c07723125955e",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_HON": {
+    "listingId": "tiingo:NASDAQ:HON:1970-01-02",
+    "sourceBytesHash": "d08ea591f178f3f1432e550f6cf0140eedf3b37a3506fd550f491302a7f1885d",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   },
+   "ref_PEP": {
+    "listingId": "tiingo:NASDAQ:PEP:1972-06-01",
+    "sourceBytesHash": "eeebc35e764429ca963d40cd8b2ee603f47743371160dccdf56a34eb4380a09f",
+    "registerPointsSha256": null,
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "bars": 1878
+   }
+  },
+  "private": {}
+ },
+ "inputHash": "1b65ae9407314bc473e76f2b746ecf3efb3235fb07cc0e01835589f0e296cfbb",
+ "kindPath": {
+  "kind": "SIGNAL_BACKTEST",
+  "engine": "research-studies.runSignalStudy",
+  "adapter": "fromResearchStudy",
+  "population": "V10_PRIMARY"
+ },
+ "envelope": {
+  "schemaVersion": "backtest-result-2.0.0",
+  "identity": {
+   "kind": "SIGNAL_BACKTEST",
+   "scope": "POPULATION",
+   "listingId": null,
+   "listingHash": null,
+   "populationId": "runner:V10_PRIMARY:a22e706aba587b49",
+   "populationHash": "b94e87a02783e0c1e6053fa695ca10da7d09da361c594973fd48cd064db31e37",
+   "source": {
+    "adapter": "backtest-result-adapters-1.0.0#fromResearchStudy",
+    "schemaVersion": "research-studies-1.1.0",
+    "engineVersion": null,
+    "artifact": null,
+    "resultHash": "f1c448c9bcfb8a0f22898088fcb14e4e0285843bd71be41c04b1526094c53529"
+   }
+  },
+  "period": {
+   "from": "2020-01-10",
+   "to": "2021-04-09",
+   "asOf": "2025-12-31",
+   "grain": "WEEKLY"
+  },
+  "spec": {
+   "id": "signal-2020-covid",
+   "version": "1.0.0",
+   "description": "Five weekly signal rules, 30 large caps, signals in 2020, 13-week outcomes",
+   "parameters": {
+    "runner": "backtest-runner-1.0.0",
+    "runnerSpecSchema": "backtest-runner-spec-1.0.0",
+    "runnerSpec": {
+     "schemaVersion": "backtest-runner-spec-1.0.0",
+     "version": "1.0.0",
+     "registeredAt": "2026-10-29T00:00:00Z",
+     "asOf": "2025-12-31",
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "benchmark": "SPY",
+     "id": "signal-2020-covid",
+     "description": "Five weekly signal rules, 30 large caps, signals in 2020, 13-week outcomes",
+     "kind": "SIGNAL_BACKTEST",
+     "window": {
+      "from": "2020-01-01",
+      "to": "2020-12-31"
+     },
+     "population": {
+      "profile": "V10_PRIMARY",
+      "tickers": [
+       "MSFT",
+       "JPM",
+       "KO",
+       "PG",
+       "XOM",
+       "NVDA",
+       "INTC",
+       "CSCO",
+       "ORCL",
+       "WMT",
+       "HD",
+       "MRK",
+       "PFE",
+       "JNJ",
+       "CVX",
+       "IBM",
+       "MCD",
+       "DIS",
+       "BA",
+       "CAT",
+       "AMZN",
+       "GE",
+       "T",
+       "VZ",
+       "BAC",
+       "C",
+       "WFC",
+       "MMM",
+       "HON",
+       "PEP"
+      ]
+     },
+     "engine": {
+      "horizonBars": 13,
+      "funded": {
+       "rule": "NEW_52W_HIGH",
+       "maxPositions": 5,
+       "holdingWeeks": 13
+      }
+     },
+     "methods": {
+      "MARKET_REGIME": {},
+      "PORTFOLIO_REBALANCING": {}
+     }
+    },
+    "runnerSpecHash": "a22e706aba587b49815fa5e8c3d347c28e84729f2e87eaa43ae758ffa38a89db",
+    "inputHashes": {
+     "code": {
+      "scripts/quant/research/backtest-runner.cjs": "cbcb6f85f3b29c0e22d7297336d4a39f07185cbde4767d99ca3771b55fe3e9ee",
+      "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
+      "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
+      "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
+      "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+      "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
+      "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
+      "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
+      "quant/engines/backtest-result-contract.cjs": "aa755d981485b784552f3e722c25f679be8c2c9e9c235cce2fcfec5c078162c6",
+      "quant/engines/backtest-kinds.cjs": "40a2bad506225282b2da47bf9c1a03fe1f0fbe2612a85b6496a8cf819a1d1b72",
+      "quant/engines/research-weekly-loader.cjs": "83a4c2761a86ef33ebb94cfb743f77de3629dcb7e2b92e19e2a80a29c0c5f5f9",
+      "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+      "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
+      "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
+      "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
+      "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
+      "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
+      "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
+      "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
+      "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
+      "scripts/quant/v10/studies/common.cjs": "c260881d35dbce171b0182d6517cb8b99737b6f48d9a0054d0671d53ce72a989",
+      "scripts/quant/v10/studies/signal-study.cjs": "9bc600c4e80187c91232207a6ce7ae90ef42c0c15bcdbd596d4db0eea673f433",
+      "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
+      "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
+     },
+     "certification": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "benchmark": "b9c838026ed37204427f1a90b9c257628e25a48fef14f898f7735dad293e93b6",
+     "population": {
+      "profile": "V10_PRIMARY",
+      "profileSpecHash": "f622075f2ae6d2589d5cca45378c2e56e4c6832eaef0a0df31c354f1601dc476",
+      "populationHash": "e7c269e9640b6320114548d00ca42b766e74e76c708e5826b7a8e11373896c43",
+      "calendarHash": "03207aa6b650388fafb21e0de0aba711339133e0d6ddfb77a50060c1377f7471",
+      "calendarLength": 1922,
+      "sourceManifestHash": "fb90ca8c93620ec2dc4c753f0701bbd15803e4d2da0854fe37f0c07c0d9a90b4",
+      "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+      "registers": {
+       "identityEvidence": {
+        "registryHash": "1aa23666114ccbc77b1cb36ed89c75ffb0597b5b5ea63e31a2dccf50f4b572c6",
+        "v12RegistryHash": null,
+        "v13RegistryHash": null,
+        "v13StrictRegistryHash": null
+       },
+       "corporateActionEvidence": {
+        "registryHash": "fa1475ba9f12de11eff6dbee48fe7022297a447004da928659655df7fb1baa58",
+        "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+       },
+       "listingLifecycleEvidence": null,
+       "delistedRegister": null,
+       "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
+       "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
+      },
+      "pointsHashRoot": "fc8de10f2facf6a7f651ce8d369fcc7d3d25080186abbc36e71ae5005c42e611"
+     },
+     "listings": {
+      "ref_MSFT": {
+       "listingId": "tiingo:NASDAQ:MSFT:1986-03-13",
+       "sourceBytesHash": "ae5dfc43215e52789e79c038154271b40f9bb645243aeb6b6f17673551152b52",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_JPM": {
+       "listingId": "tiingo:NYSE:JPM:1983-12-30",
+       "sourceBytesHash": "e30c17239dcf36789bc5e5ca7670825553c3bd642c02695802c4d233dc7451f3",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_KO": {
+       "listingId": "tiingo:NYSE:KO:1962-01-02",
+       "sourceBytesHash": "7723cba7d6ddc7a3aea1427bd105e6e2359d92b3463c092b546c037ae68687df",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_PG": {
+       "listingId": "tiingo:NYSE:PG:1970-01-02",
+       "sourceBytesHash": "59c51abd623838fe72882fbc8165225f9c77f9fa6bfcf0207fe75d90630278fe",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_XOM": {
+       "listingId": "tiingo:NYSE:XOM:1970-01-02",
+       "sourceBytesHash": "0a775c38269403737130466e37b525fc8fdbdf54d65ab4287a0dd8c423d2b2d3",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_NVDA": {
+       "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+       "sourceBytesHash": "cc69e6d3fc5aaf6b666e1eb21dfa5fc7f268b80a5107a534a94e3df8f792b5a4",
+       "registerPointsSha256": null,
+       "first": "1999-01-22",
+       "last": "2025-12-26",
+       "bars": 1406
+      },
+      "ref_INTC": {
+       "listingId": "tiingo:NASDAQ:INTC:1980-03-17",
+       "sourceBytesHash": "c2e84c15ff33ba1dd2da3a04f8d59a6abb7d5766c30836bc4fd6be1ab9043e35",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_CSCO": {
+       "listingId": "tiingo:NASDAQ:CSCO:1990-03-26",
+       "sourceBytesHash": "c983da3d3628638159e7e3b89b8eed67553373e78b95c64e6f374c922787d5ac",
+       "registerPointsSha256": null,
+       "first": "1990-03-30",
+       "last": "2025-12-26",
+       "bars": 1866
+      },
+      "ref_ORCL": {
+       "listingId": "tiingo:NYSE:ORCL:1986-03-12",
+       "sourceBytesHash": "607874ab640bae45d2751846f2bdcad3bd57d9a7be27c005c10a405ee384ce76",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_WMT": {
+       "listingId": "tiingo:NASDAQ:WMT:1972-08-25",
+       "sourceBytesHash": "3c2a1f793e3f4e79c01806ee0270811348f2eae93daeaab1a1ef307e9f3558df",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_HD": {
+       "listingId": "tiingo:NYSE:HD:1981-09-22",
+       "sourceBytesHash": "e51fe40af92fda84204ac6369d48f88b3fdee4a65d089af85aad0f5ee99d3435",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_MRK": {
+       "listingId": "tiingo:NYSE:MRK:1970-01-02",
+       "sourceBytesHash": "c706114ba4ac7bc829cbc4ab9f53b44c6c3d8ddcc796f0ab1cd5cc0d0dbabce6",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_PFE": {
+       "listingId": "tiingo:NYSE:PFE:1972-06-01",
+       "sourceBytesHash": "14e158bf835d355b83d4e0c0651a845379866456d2deac2cf3f4d1d2e587cc8d",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_JNJ": {
+       "listingId": "tiingo:NYSE:JNJ:1970-01-02",
+       "sourceBytesHash": "93b4ebfa81d3f2276ea60a549624bf792832c5acac422d6739d99fb0ffe5b6ad",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_CVX": {
+       "listingId": "tiingo:NYSE:CVX:1970-01-02",
+       "sourceBytesHash": "9523b411a42ac109196243a06687a30fd9de45fc1d5a227b64b74b8445dccbdf",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_IBM": {
+       "listingId": "tiingo:NYSE:IBM:1962-01-02",
+       "sourceBytesHash": "02cd8b33f806fcde5bc5846d19552053ae6a915327eef88c90e95e5ace2ad8a1",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_MCD": {
+       "listingId": "tiingo:NYSE:MCD:1970-01-02",
+       "sourceBytesHash": "312daf9b4791468d5e7bdee1723eb5507ab482d1716a3d129549974d59c1a8b4",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_DIS": {
+       "listingId": "tiingo:NYSE:DIS:1962-01-02",
+       "sourceBytesHash": "e26810f980850505a9d31d6fa193462fd14aa3e52e9f1c9f9e8a929a5fccb22c",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_BA": {
+       "listingId": "tiingo:NYSE:BA:1962-01-02",
+       "sourceBytesHash": "b44ff1ea123dcd83de96c88c57dacdd13bd14c9fec4099bc598afc4dce247f94",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_CAT": {
+       "listingId": "tiingo:NYSE:CAT:1962-01-02",
+       "sourceBytesHash": "db190963f863daa93015af7cbb5d9b9cb7c42a6395d3a0f54f037fd2996618a9",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_AMZN": {
+       "listingId": "tiingo:NASDAQ:AMZN:1997-05-15",
+       "sourceBytesHash": "e881cb57211ecc1b4c87e4d8614225939076e1d275616941f02b7340b5d4b2d6",
+       "registerPointsSha256": null,
+       "first": "1997-05-16",
+       "last": "2025-12-26",
+       "bars": 1494
+      },
+      "ref_GE": {
+       "listingId": "tiingo:NYSE:GE:1962-01-02",
+       "sourceBytesHash": "6e040136216a7bb20ece6d3e146c3784d8a455e06e0eac3080a02d1de59fe86e",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_T": {
+       "listingId": "tiingo:NYSE:T:1984-07-19",
+       "sourceBytesHash": "4f3e4ce9e9c3f232e68c467395a1f8999e8968af2768e3ed1e101e310ad155af",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_VZ": {
+       "listingId": "tiingo:NYSE:VZ:1983-11-21",
+       "sourceBytesHash": "95f594e58ad1233335a5df07ae422aebb9400560c9603e9790cae0b5f60ea17c",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_BAC": {
+       "listingId": "tiingo:NYSE:BAC:1986-05-29",
+       "sourceBytesHash": "4443f775f78e4809066ee28b51b88b5738e46cfb8511ebd69d642633d5f74860",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_C": {
+       "listingId": "tiingo:NYSE:C:1977-01-03",
+       "sourceBytesHash": "c325bf86f6b51a004a07383ab6547f8d9028cd500a30e7ca3b1c1bac6c308b23",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_WFC": {
+       "listingId": "tiingo:NYSE:WFC:1972-06-01",
+       "sourceBytesHash": "5178ad464f45ace0b92709d232fc341ca93132c578e612908f0714582806363d",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_MMM": {
+       "listingId": "tiingo:NYSE:MMM:1970-01-02",
+       "sourceBytesHash": "bfcfc3103c14c1a0b341d370ab45aeb9ee50b98e4caeec00f68c07723125955e",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_HON": {
+       "listingId": "tiingo:NASDAQ:HON:1970-01-02",
+       "sourceBytesHash": "d08ea591f178f3f1432e550f6cf0140eedf3b37a3506fd550f491302a7f1885d",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      },
+      "ref_PEP": {
+       "listingId": "tiingo:NASDAQ:PEP:1972-06-01",
+       "sourceBytesHash": "eeebc35e764429ca963d40cd8b2ee603f47743371160dccdf56a34eb4380a09f",
+       "registerPointsSha256": null,
+       "first": "1990-01-05",
+       "last": "2025-12-26",
+       "bars": 1878
+      }
+     },
+     "private": {}
+    },
+    "inputHash": "1b65ae9407314bc473e76f2b746ecf3efb3235fb07cc0e01835589f0e296cfbb",
+    "kindPath": {
+     "kind": "SIGNAL_BACKTEST",
+     "engine": "research-studies.runSignalStudy",
+     "adapter": "fromResearchStudy",
+     "population": "V10_PRIMARY"
+    },
+    "adapterSpec": {
+     "id": "registration:b900b2623b23a152",
+     "version": null,
+     "description": "researchStudyKind:SIGNAL_BACKTEST",
+     "parameters": {
+      "registrationHash": "b900b2623b23a15269f43a3f18014b3d925966863acfac0f1b7e2bc59bec37d9",
+      "analysisMode": "EXPLORATORY",
+      "sourceMode": "HISTORICAL_SIMULATION",
+      "pattern": null,
+      "ruleHash": null,
+      "factorId": null,
+      "rules": [
+       "MOMENTUM_IMPROVED",
+       "MOMENTUM_DETERIORATED",
+       "TREND_UP",
+       "TREND_DOWN",
+       "NEW_52W_HIGH"
+      ],
+      "entryStates": null,
+      "costs": {
+       "basis": "PER_SIDE_NOTIONAL",
+       "feeBps": 5,
+       "slippageBps": 5
+      }
+     },
+     "specHash": "9a00a48940662f5597fde554e949a1d6741aa456c78d3551cb8619680b1bb902"
+    }
+   },
+   "specHash": "1357816710acd592d4da3d7f21d4bf265d237976c7cf522a087b83b47b9f94ce"
+  },
+  "events": {
+   "form": "EVENTS",
+   "occurrences": 196,
+   "completed": 196,
+   "immature": 0,
+   "censored": 0,
+   "ineligible": 0,
+   "titles": 30,
+   "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+   "exit": "FIXED_HORIZON"
+  },
+  "portfolio": null,
+  "metrics": {
+   "basis": "PER_EVENT",
+   "totalReturn": null,
+   "cagr": null,
+   "annualReturns": null,
+   "volatility": null,
+   "maxDrawdown": -0.10075808557834737,
+   "hitRate": 0.6428571428571429,
+   "trades": 196,
+   "turnover": null,
+   "costs": {
+    "model": "PER_SIDE_NOTIONAL",
+    "feeBpsPerSide": 5,
+    "slippageBpsPerSide": 5,
+    "paid": null
+   },
+   "cashShare": null,
+   "benchmark": {
+    "id": "SUPPLIED_RESEARCH_BENCHMARK",
+    "returnBasis": "PRICE_RETURN",
+    "costsBps": 0
+   },
+   "excess": {
+    "meanExcess": -0.004910408986897223,
+    "n": 196
+   },
+   "perEvent": {
+    "horizon": "REGISTERED_HORIZON",
+    "label": null,
+    "n": 196,
+    "median": 0.034904284215972026,
+    "mean": 0.06646489807892754,
+    "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+   }
+  },
+  "uncertainty": {
+   "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+   "interval": [
+    0.011399618196259141,
+    0.12153017796159593
+   ],
+   "level": 0.95,
+   "p": null,
+   "family": null
+  },
+  "dataQuality": {
+   "coverage": {
+    "numerator": 196,
+    "denominator": 196,
+    "share": 1,
+    "contract": null
+   },
+   "censored": 0,
+   "terminal": {
+    "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+   },
+   "corporateActions": {
+    "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+    "listings": [
+     {
+      "securityId": "ref_MSFT",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_JPM",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_KO",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_PG",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_XOM",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_NVDA",
+      "quality": "RESOLVED",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_INTC",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_CSCO",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_ORCL",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_WMT",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_HD",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_MRK",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_PFE",
+      "quality": "CLEAN",
+      "splitsInWindow": [
+       [
+        "2020-11-17",
+        1.054
+       ]
+      ]
+     },
+     {
+      "securityId": "ref_JNJ",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_CVX",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_IBM",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_MCD",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_DIS",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_BA",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_CAT",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_AMZN",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_GE",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_T",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_VZ",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_BAC",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_C",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_WFC",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_MMM",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_HON",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     },
+     {
+      "securityId": "ref_PEP",
+      "quality": "CLEAN",
+      "splitsInWindow": []
+     }
+    ]
+   },
+   "totalReturnBasis": "PRICE_RETURN",
+   "survivorship": {
+    "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+   },
+   "warnings": [
+    "ESTIMATED_NOT_CERTIFIED",
+    "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+    "DELISTED_SERIES_NOT_INCLUDED",
+    "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+    "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+    "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+    "EX_POST_ADJUSTED_HISTORY_NOT_AS_PUBLISHED_PIT",
+    "DIVIDENDS_EXCLUDED",
+    "SPLIT_ADJUSTMENT_PROVIDER_EVIDENCE_ONLY_NO_RAW_RECONSTRUCTION",
+    "FRACTIONAL_SPLIT_ADJUSTED_UNITS",
+    "SINGLE_LISTING_SELECTION_NO_MARKET_WIDE_EDGE",
+    "WEEKLY_CALENDAR_FROM_OBSERVED_BARS_NOT_INTRADAY_SESSION_PROOF"
+   ]
+  },
+  "methods": [
+   {
+    "method": "MONTE_CARLO",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "WALK_FORWARD",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "OUT_OF_SAMPLE",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "MARKET_REGIME",
+    "state": "EXECUTED",
+    "result": {
+     "engine": "research-studies.classifyRegimes+analyzeRegimes",
+     "mode": "PIT_AVAILABLE",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "regimeResultHash": "1aff88df95a44845951e00dff09da40007e710171501d5abbe9e3e5ec5869ab0",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 58,
+       "mean": 0.09238443771227405,
+       "median": 0.049184311940272174,
+       "interval95": [
+        -0.0062670967158332674,
+        0.19103597214038137
+       ]
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 7,
+       "mean": 0.05131709539961945,
+       "median": 0.01576606136701053,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 59,
+       "mean": 0.06194620857333299,
+       "median": 0.03503269946979026,
+       "interval95": [
+        -0.011447225996007095,
+        0.13533964314267308
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 72,
+       "mean": 0.05076078697963779,
+       "median": 0.02718189310905106,
+       "interval95": [
+        -0.07126018853517854,
+        0.17278176249445412
+       ]
+      }
+     ],
+     "unmatched": 0,
+     "resultHash": "2f3d61679d62c23faffc7664af85708a98b8bd2087152a8292df7142b4cfff4b"
+    }
+   },
+   {
+    "method": "PARAMETER_SENSITIVITY",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "EVENT_DRIVEN",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "PORTFOLIO_REBALANCING",
+    "state": "EXECUTED",
+    "result": {
+     "engine": "research-portfolio-1.2.0 via signal-study.fundedSchedule/fundedInput",
+     "rule": "NEW_52W_HIGH",
+     "maxPositions": 5,
+     "holdingWeeks": 13,
+     "episodes": 18,
+     "skippedNoFreeSlot": 2,
+     "from": "2020-01-03",
+     "to": "2021-04-09",
+     "totalReturn": 0.136446919868765,
+     "cagr": 0.10641052118385641,
+     "maxDrawdown": -0.2350019731426617,
+     "volatility": 0.2195128079278119,
+     "sharpeRiskFreeZero": 0.5687106227913604,
+     "benchmark": {
+      "id": "SPY_PRICE_RETURN",
+      "totalReturn": 0.2762941596104338,
+      "beta": 0.6788882144700383,
+      "trackingError": 0.13280304880427965
+     },
+     "averageCashShare": 0.3040671683906482,
+     "resultHash": "8ec878f75667bd6afabf95814b87da2fa41af92998b26ad68cfcb53d34682200"
+    }
+   }
+  ],
+  "limitations": [
+   "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+   "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+   "EX_POST_PRICE_REVISIONS",
+   "NO_INDEPENDENT_CONFIRMATION",
+   "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+   "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+   "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+   "CERTIFICATION_BLOCKER:survivorship:PARTIAL_SENSITIVITY_ONLY",
+   "CERTIFICATION_BLOCKER:ruleCertified:NO_RULE_CERTIFIED",
+   "CERTIFICATION_READINESS:NOT_READY",
+   "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+   "RUNNER_COMPOSED_EXISTING_ENGINES",
+   "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW"
+  ],
+  "status": {
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "LIMITED",
+   "certificationScope": "KIND",
+   "certificationRuleId": null,
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#SIGNAL_BACKTEST@2026-10-31",
+   "productionApproved": false,
+   "evidenceKind": "TESTED"
+  },
+  "envelopeHash": "a60cbaf6e09d78c0b22a9dcd8bd19655e2e1d87feadd98bc48455aa177d72044"
+ },
+ "envelopeHash": "a60cbaf6e09d78c0b22a9dcd8bd19655e2e1d87feadd98bc48455aa177d72044",
+ "population": {
+  "profile": "V10_PRIMARY",
+  "populationHash": "e7c269e9640b6320114548d00ca42b766e74e76c708e5826b7a8e11373896c43",
+  "frameSize": 4288,
+  "calendar": {
+   "first": "1990-01-05",
+   "last": "2025-12-26",
+   "length": 1878
+  },
+  "listings": [
+   {
+    "securityId": "ref_MSFT",
+    "ticker": "MSFT",
+    "listingId": "tiingo:NASDAQ:MSFT:1986-03-13",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_JPM",
+    "ticker": "JPM",
+    "listingId": "tiingo:NYSE:JPM:1983-12-30",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_KO",
+    "ticker": "KO",
+    "listingId": "tiingo:NYSE:KO:1962-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_PG",
+    "ticker": "PG",
+    "listingId": "tiingo:NYSE:PG:1970-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_XOM",
+    "ticker": "XOM",
+    "listingId": "tiingo:NYSE:XOM:1970-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_NVDA",
+    "ticker": "NVDA",
+    "listingId": "tiingo:NASDAQ:NVDA:1999-01-22",
+    "first": "1999-01-22",
+    "last": "2025-12-26",
+    "corporateActionQuality": "RESOLVED",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_INTC",
+    "ticker": "INTC",
+    "listingId": "tiingo:NASDAQ:INTC:1980-03-17",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_CSCO",
+    "ticker": "CSCO",
+    "listingId": "tiingo:NASDAQ:CSCO:1990-03-26",
+    "first": "1990-03-30",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_ORCL",
+    "ticker": "ORCL",
+    "listingId": "tiingo:NYSE:ORCL:1986-03-12",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_WMT",
+    "ticker": "WMT",
+    "listingId": "tiingo:NASDAQ:WMT:1972-08-25",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_HD",
+    "ticker": "HD",
+    "listingId": "tiingo:NYSE:HD:1981-09-22",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_MRK",
+    "ticker": "MRK",
+    "listingId": "tiingo:NYSE:MRK:1970-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_PFE",
+    "ticker": "PFE",
+    "listingId": "tiingo:NYSE:PFE:1972-06-01",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [
+     [
+      "2020-11-17",
+      1.054
+     ]
+    ],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_JNJ",
+    "ticker": "JNJ",
+    "listingId": "tiingo:NYSE:JNJ:1970-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_CVX",
+    "ticker": "CVX",
+    "listingId": "tiingo:NYSE:CVX:1970-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_IBM",
+    "ticker": "IBM",
+    "listingId": "tiingo:NYSE:IBM:1962-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_MCD",
+    "ticker": "MCD",
+    "listingId": "tiingo:NYSE:MCD:1970-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_DIS",
+    "ticker": "DIS",
+    "listingId": "tiingo:NYSE:DIS:1962-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_BA",
+    "ticker": "BA",
+    "listingId": "tiingo:NYSE:BA:1962-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_CAT",
+    "ticker": "CAT",
+    "listingId": "tiingo:NYSE:CAT:1962-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_AMZN",
+    "ticker": "AMZN",
+    "listingId": "tiingo:NASDAQ:AMZN:1997-05-15",
+    "first": "1997-05-16",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_GE",
+    "ticker": "GE",
+    "listingId": "tiingo:NYSE:GE:1962-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_T",
+    "ticker": "T",
+    "listingId": "tiingo:NYSE:T:1984-07-19",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_VZ",
+    "ticker": "VZ",
+    "listingId": "tiingo:NYSE:VZ:1983-11-21",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_BAC",
+    "ticker": "BAC",
+    "listingId": "tiingo:NYSE:BAC:1986-05-29",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_C",
+    "ticker": "C",
+    "listingId": "tiingo:NYSE:C:1977-01-03",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_WFC",
+    "ticker": "WFC",
+    "listingId": "tiingo:NYSE:WFC:1972-06-01",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_MMM",
+    "ticker": "MMM",
+    "listingId": "tiingo:NYSE:MMM:1970-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_HON",
+    "ticker": "HON",
+    "listingId": "tiingo:NASDAQ:HON:1970-01-02",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   },
+   {
+    "securityId": "ref_PEP",
+    "ticker": "PEP",
+    "listingId": "tiingo:NASDAQ:PEP:1972-06-01",
+    "first": "1990-01-05",
+    "last": "2025-12-26",
+    "corporateActionQuality": "CLEAN",
+    "splitsInWindow": [],
+    "lifecycle": null
+   }
+  ],
+  "excluded": [],
+  "warnings": [
+   "SURVIVOR_COHORT_ONLY_NO_LIFECYCLE_EVIDENCE",
+   "DELISTED_SERIES_NOT_INCLUDED",
+   "PRICE_RETURN_ONLY_NO_TOTAL_RETURN_SERIES",
+   "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+   "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS"
+  ]
+ },
+ "extras": {
+  "engineResultHash": "157b0ea64d319ee1ff463c4d6049f0e5d211c7a6d0e05e1a76fb4f17ddade908",
+  "engineEvents": 1243,
+  "windowEvents": 196,
+  "funded": {
+   "metricsDetail": {
+    "schemaVersion": "backtest-metrics-1.0.0",
+    "certification": "NOT_CERTIFIED",
+    "productionApproved": false,
+    "assumptions": {
+     "periodsPerYear": 52,
+     "periodicityLabel": "WEEKLY",
+     "riskFree": {
+      "annualRate": 0,
+      "label": "ASSUMPTION_ZERO_DEFAULT"
+     },
+     "riskFreePerPeriod": 0,
+     "startPoint": "INITIAL_CAPITAL_AT_FIRST_ROW_DATE"
+    },
+    "period": {
+     "from": "2020-01-03",
+     "to": "2021-04-09",
+     "rows": 67,
+     "years": 1.264887063655031
+    },
+    "returns": {
+     "initialCapital": 1,
+     "endValue": 1.136446919868765,
+     "totalReturn": 0.136446919868765,
+     "cagr": 0.10641052118385641,
+     "calendarYears": [
+      {
+       "year": 2020,
+       "from": "2020-01-03",
+       "to": "2020-12-31",
+       "startValue": 1,
+       "endValue": 1.1392913047902735,
+       "return": 0.13929130479027352,
+       "partial": false
+      },
+      {
+       "year": 2021,
+       "from": "2020-12-31",
+       "to": "2021-04-09",
+       "startValue": 1.1392913047902735,
+       "endValue": 1.136446919868765,
+       "return": -0.002496626551566794,
+       "partial": true
+      }
+     ]
+    },
+    "risk": {
+     "periods": 66,
+     "meanPeriodReturn": 0.002400755109755888,
+     "annualizedVolatility": 0.2195128079278119,
+     "sharpe": 0.5687106227913604,
+     "sharpeRiskFreeLabel": "ASSUMPTION_ZERO_DEFAULT",
+     "maxDrawdown": -0.2350019731426617,
+     "peakDate": "2020-02-14",
+     "troughDate": "2020-03-20",
+     "recoveryDate": "2020-07-10",
+     "peakToTroughPeriods": 5,
+     "peakToTroughDays": 35,
+     "durationPeriods": 21,
+     "durationDays": 147,
+     "recovered": true
+    },
+    "exposure": {
+     "averageCashShare": 0.3040671683906482,
+     "averageReceivablesShare": 0,
+     "rowsWithCash": 67
+    },
+    "costs": {
+     "fees": 0.004084759884849973,
+     "slippage": 0.004084759884849973,
+     "total": 0.008169519769699946,
+     "shareOfInitialCapital": 0.008169519769699946
+    },
+    "turnover": {
+     "oneWayTurnoverSum": 3.8441208326357694,
+     "annualizedOneWayTurnover": 3.0391020219052267,
+     "tradeDates": 28
+    },
+    "trades": {
+     "fills": 116,
+     "fillsByReason": {},
+     "reconstruction": "RECONSTRUCTED_FROM_POSITIONS",
+     "roundTrips": 18,
+     "closedEpisodes": 18,
+     "nonAttributableClosed": 0,
+     "openAtEnd": 0,
+     "hitRate": 0.6666666666666666,
+     "winners": 12,
+     "averageRoundTripReturn": 0.03936851045410965,
+     "averageHoldingPeriods": 13,
+     "averageHoldingDays": 91,
+     "totalRoundTripPnl": 0.1364469198687637
+    },
+    "benchmark": {
+     "state": "SAME_DATES",
+     "label": null,
+     "totalReturn": 0.2762941596104338,
+     "cagr": 0.21272697270138852,
+     "annualizedVolatility": 0.2922094268361247,
+     "sharpe": 0.806106763169433,
+     "maxDrawdown": -0.3222748815165877,
+     "calendarYears": [
+      {
+       "year": 2020,
+       "return": 0.159641450327223
+      },
+      {
+       "year": 2021,
+       "return": 0.10059377340323095
+      }
+     ],
+     "excessTotalReturn": -0.1398472397416688,
+     "excessCagr": -0.1063164515175321,
+     "meanPeriodExcess": -0.002129090952445338,
+     "trackingError": 0.13280304880427965,
+     "informationRatio": -0.8336610531458656,
+     "beta": 0.6788882144700383,
+     "correlation": 0.9037173635049474,
+     "periods": 66
+    },
+    "warnings": [],
+    "limitations": [
+     "PERIOD_STATISTICS_ROW_TO_ROW_INITIAL_STUB_EXCLUDED",
+     "SAMPLE_STANDARD_DEVIATION_N_MINUS_1",
+     "TRADE_PNL_EXCLUDES_CASH_DISTRIBUTIONS_AND_TERMINAL_CONSIDERATION",
+     "RISK_FREE_RATE_IS_AN_ASSUMPTION",
+     "DESCRIPTIVE_NO_INFERENCE_NO_CERTIFICATION"
+    ],
+    "inputHash": "026804d2a6f98738618fcb60a92f44398c598252071e968096b595a3fb1cc1e9",
+    "resultHash": "6d88fcc04c9daeb178ff14f4bd249de622fd0f433f6ed1c59c6077fbec5aa1a2"
+   },
+   "episodes": 18
+  }
+ },
+ "pit": {
+  "asOf": "2025-12-31",
+  "latestInputBar": "2025-12-26",
+  "inputsAfterAsOf": 0,
+  "entryNotAfterSignal": 0,
+  "exitAfterAsOf": 0,
+  "signalsAfterWindow": 0
+ },
+ "qa": null,
+ "resultHash": "09d521b6543a1b5457d5f0efd83627e1a8bdb937f8440bc04358fb0ac80cc537"
+}

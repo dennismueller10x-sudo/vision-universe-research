@@ -72,7 +72,7 @@ VU_CANCELLATION_AUTO_PROCESS = "false"
 VU_OPS_ALERT_EMAIL = ""
 # Produktionsfreigabe fuer Stripe-Live-Schluessel. Nur per Freigabe-PR auf "true".
 STRIPE_LIVE_MODE_APPROVED = "false"
-# Steuer im Checkout (docs/accounts/STEUER.md): none | automatic (Stripe Tax) | txr_… (fester Satz).
+# Steuer im Checkout (docs/accounts/STEUER.md): none | automatic (Stripe Tax).
 # Der Preis ist inkl. USt (tax_behavior inclusive); "none" weist keine Steuer gesondert aus.
 STRIPE_TAX_MODE = "none"
 # Rechtstexte: Fassung, die der Owner freigegeben hat (src/legal/texts.mjs LEGAL_VERSION, Status
@@ -86,6 +86,9 @@ VU_BREVO_LIST_USERS = ""
 VU_BREVO_LIST_FREE = ""
 VU_BREVO_LIST_PRO = ""
 VU_BREVO_LIST_NEWSLETTER = ""
+# Interne Backtest-Vorschau (/v1/admin/backtests*, Rolle backtest_reviewer): AUS. Nur per eigenem PR mit
+# Owner-Freigabe auf "true" (docs/accounts/FREIGABEN.md, docs/quant/BACKTEST_PREVIEW.md Abschnitt 9).
+VU_BACKTEST_REVIEW_ENABLED = "false"
 
 # =============================================================================
 # PRODUKTION (eine einzige Infrastruktur, docs/accounts/PRODUCTION.md)
@@ -149,7 +152,8 @@ VU_OPS_ALERT_EMAIL = ""
 STRIPE_LIVE_MODE_APPROVED = "true"
 VU_CHECKOUT_ACCESS = "testers"
 # Siehe [vars]. Oeffentlicher Checkout zusaetzlich nur mit freigegebenen Rechtstexten (VU_LEGAL_APPROVED).
-STRIPE_TAX_MODE = "none"
+# Stripe Tax aktiv seit 30.10.2026 (Registrierung DE; Probe: DE 1,00 EUR brutto = 0,16 EUR USt). docs/accounts/STEUER.md
+STRIPE_TAX_MODE = "automatic"
 VU_LEGAL_APPROVED = ""
 # Brevo aus bis zur Abnahme. Listen angelegt 29.10.2026 (Lauf "Produktivstart einspielen" #1): 11 Nutzer, 12 Free,
 # 13 Pro; 4 = bestehende Newsletter-Liste der Landingpage (DOI).
@@ -159,3 +163,5 @@ VU_BREVO_LIST_USERS = "11"
 VU_BREVO_LIST_FREE = "12"
 VU_BREVO_LIST_PRO = "13"
 VU_BREVO_LIST_NEWSLETTER = "4"
+# Interne Backtest-Vorschau: AUS (siehe [vars]). Einschalten nur per eigenem PR mit Owner-Freigabe.
+VU_BACKTEST_REVIEW_ENABLED = "false"

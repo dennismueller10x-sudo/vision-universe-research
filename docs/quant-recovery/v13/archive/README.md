@@ -2,7 +2,9 @@
 
 Privates Archiv der V13-/V13b-Rohdaten und Studieninputs. Die Daten stehen nicht im Repository; hier liegen nur Manifest, öffentlicher Schlüssel, Skripte und diese Anleitung.
 
-## Inhalt ([manifest-1.1.0.json](manifest-1.1.0.json))
+## Inhalt ([manifest-1.2.0.json](manifest-1.2.0.json))
+
+**Gültige Version: 1.2.0** (30.10.2026): wie 1.1.0, zusätzlich der Teil `v10-factor-panel` (privates V10-PIT-Faktorpanel `panel.jsonl.gz`, 124.354.592 B, Voraussetzung der Faktor-Demofälle des Backtest-Runners). Alle Teile sind neu verschlüsselt. 1.0.0 und 1.1.0 wurden nie hochgeladen; sie bleiben nur als Protokoll im Repo.
 
 Version 1.1.0 ergänzt den Teil `v13c-study` (V13c-Läufe, 39 Dateien, 192.716.832 B). Alle Teile sind mit neuen Datenschlüsseln neu verschlüsselt. [manifest-1.0.0.json](manifest-1.0.0.json) bleibt nur als Protokoll der ersten lokalen Prüfung erhalten; es wurde nie hochgeladen und beschreibt keine vorhandenen Objekte.
 
@@ -14,6 +16,7 @@ Version 1.1.0 ergänzt den Teil `v13c-study` (V13c-Läufe, 39 Dateien, 192.716.8
 | `v13b-hist` | SEC-Dokumente und Ergebnisse HIST (28 Sturzfälle, SPX-Endwerte), Reihen Register 1.1.0, Abrufprotokoll | 1.271 | 277.575.712 |
 | `v13b-f1w` | Ereignisdateien F1d (Studie 2.0.0) | 19 | 67.153.952 |
 | `v13c-study` | private Läufe der V13c-Studie 3.0.0 (F1'/F1w'/F1d', S3') | 39 | 192.716.832 |
+| `v10-factor-panel` | privates V10-PIT-Faktorpanel (SEC-companyfacts-PIT) | 1 | 124.354.592 |
 | `v12-listref` | V12-Listingreferenz (Referenzketten, Delisting-Register und -Gründe, HMAC-Schlüssel der chainIds, Tiingo-Tickerliste, EDGAR-Cache), Voraussetzung für `qualify.py` | 7.634 | 129.648.672 |
 
 Nicht enthalten ist der private Transportschlüssel des Tiingo-Abrufs. Er wird nur für die abgelaufenen Abruf-Artefakte gebraucht.
@@ -32,15 +35,15 @@ Nicht enthalten ist der private Transportschlüssel des Tiingo-Abrufs. Er wird n
 
 ## Speicherort
 
-- Bestehender privater R2-Eimer, Präfix `research-snapshots/quant-v13/archive-1.1.0/`, wie die Supertrader-Snapshots. Zugang nur über die Actions-Secrets `VU_HISTORY_S3_*`.
-- Kosten: Das Archiv umfasst 1,38 GB. Die R2-Freigrenze liegt bei 10 GB, die Nullkostenschranke des Projekts bei 8 GB; `presign.mjs --mode put` prüft die Belegung vor dem Upload und bricht über der Schranke ab.
+- Bestehender privater R2-Eimer, Präfix `research-snapshots/quant-v13/archive-1.2.0/`, wie die Supertrader-Snapshots. Zugang nur über die Actions-Secrets `VU_HISTORY_S3_*`.
+- Kosten: Das Archiv umfasst 1,50 GB. Die R2-Freigrenze liegt bei 10 GB, die Nullkostenschranke des Projekts bei 8 GB; `presign.mjs --mode put` prüft die Belegung vor dem Upload und bricht über der Schranke ab.
 - Unveränderlich: Ist der Präfix belegt, wird nicht überschrieben. Eine neue Version bekommt einen neuen Präfix.
 
 ## Ablauf
 
 1. **Bauen:** `scripts/quant/v13/archive/build-archive.sh <scratchpad> <out> archive-pub.pem manifest.json`, lokal und ohne Netz.
 2. **Lokale Probe:** `restore-archive.sh manifest.json <out> archive-priv.pem <ziel>`. Sie prüft Chiffre-, Klartext- und Datei-Hashes.
-   - Am 29.10.2026 ausgeführt: alle 7 Teile und 11.615 Dateien identisch (Version 1.1.0).
+   - Am 30.10.2026 mit Version 1.2.0 ausgeführt: alle 8 Teile und 11.616 Dateien identisch; das Faktorpanel ist bytegleich mit dem Original. (1.1.0 am 29.10.2026: 7 Teile, 11.615 Dateien.)
    - Zusätzlich lädt `research-delisted-series.cjs` alle 1.675 QUALIFIED- und 1.826 ladbaren Reihen hashgebunden aus der wiederhergestellten Kopie.
 3. **Upload:**
    1. Commit mit Marke `[v13-archive:put]` auf einen `claude/**`-Branch. Der Workflow `quant-v13-archive.yml` legt verschlüsselte, 3 h gültige PUT-URLs als Artefakt ab.
@@ -54,8 +57,8 @@ Nicht enthalten ist der private Transportschlüssel des Tiingo-Abrufs. Er wird n
 
 | Schritt | Ergebnis |
 |---|---|
-| Bau und lokale Wiederherstellung | ausgeführt (1.1.0): 7/7 Teile und 11.615 Dateien hash-identisch; Reihen laden hashgebunden |
-| R2-Lesezugriff und Kapazität (Run 40943780307, `[v13-archive:usage]`) | Eimer 95.170 Objekte, 4.775.085.305 B; mit Archiv 1.1.0 (1,38 GB) 6,15 GB, unter der Schranke von 8 GB; Präfix leer |
+| Bau und lokale Wiederherstellung | ausgeführt (1.2.0): 8/8 Teile und 11.616 Dateien hash-identisch; Reihen laden hashgebunden |
+| R2-Lesezugriff und Kapazität (Run 40943780307, `[v13-archive:usage]`) | Eimer 95.170 Objekte, 4.775.085.305 B; mit Archiv 1.2.0 (1,50 GB) 6,28 GB, unter der Schranke von 8 GB; Präfix leer |
 | Upload | **nicht ausgeführt**: Die Sitzungsumgebung erreicht `*.r2.cloudflarestorage.com` nicht (Netzwerkrichtlinie). Nötig ist die Freigabe dieses Hosts in den Netzwerkeinstellungen der Umgebung; danach `[v13-archive:put]` → `transfer.sh put` → `[v13-archive:verify]` → `[v13-archive:get]` → `restore-archive.sh` |
 | Ablage des privaten Archivschlüssels | Owner-Schritt (Secret `V13_ARCHIVE_PRIVATE_KEY` und offline) |
 

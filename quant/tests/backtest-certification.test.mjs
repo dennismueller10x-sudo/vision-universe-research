@@ -212,3 +212,33 @@ test("Setup-Ergebnisse: nur veroeffentlichte, unveraenderte Staende; Vertragsaus
   assert.deepEqual(contractExit({ dates: p.dates, close: [100, 100, 100, 100] }, 0, lv, () => false, 2), { kind: "TIME_EXIT", at: 2 });
   assert.deepEqual(contractExit({ dates: p.dates, close: [100, 100, 100, 100] }, 0, lv, () => false, 126), { kind: "PENDING", at: null });
 });
+
+/* ---------- Setup-OOS (setup-oos-1.0.0): Builder mit --out, Gate folgt dem Auswerter ---------- */
+test("Setup-OOS: Builder schreibt mit --out nur dorthin; das OOS-Gate folgt dem Auswerter und bleibt ohne Segmentdefinition FAIL", async () => {
+  const { execFileSync } = await import("node:child_process");
+  const { mkdtempSync, rmSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const O = require("../engines/setup-oos.cjs");
+  const committedPath = new URL("quant/data/product/backtest-certification-v1.json", root);
+  const before = readFileSync(committedPath, "utf8");
+  const dir = mkdtempSync(join(tmpdir(), "vu-cert-oos-"));
+  try {
+    const out = join(dir, "cert.json");
+    execFileSync(process.execPath, [(await import("node:url")).fileURLToPath(new URL("scripts/quant/build-backtest-certification.mjs", root)), "--out", out], { stdio: "pipe" });
+    assert.equal(readFileSync(committedPath, "utf8"), before, "--out darf das Produktartefakt nicht beruehren");
+    const doc = JSON.parse(readFileSync(out, "utf8"));
+    assert.deepEqual(C.certificationViolations(doc), []);
+    const setup = doc.kinds.find((k) => k.id === "SETUP_BACKTEST");
+    const oos = setup.gates.find((x) => x.id === "oos");
+    const M = json("quant/methodology/backtest-certification-v1.json");
+    assert.equal(O.segmentationFromMethodology(M), null, "keine freigegebene Segmentdefinition im Vertrag");
+    assert.equal(oos.state, "FAIL");
+    assert.ok(["OOS_NOT_MEASURABLE_YET", "OOS_SEGMENT_DEFINITION_MISSING"].includes(oos.reason), oos.reason);
+    assert.equal(oos.required, null);
+    assert.notEqual(setup.status, "CERTIFIED");
+    /* Paritaet: abgestimmte Staende / geprueft, nicht geprueft / geprueft. */
+    const replay = json("quant/data/product/setup-backtest-v1.json");
+    assert.equal(setup.replay.parity, (replay.parity.checked - replay.parity.mismatches) + "/" + replay.parity.checked);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

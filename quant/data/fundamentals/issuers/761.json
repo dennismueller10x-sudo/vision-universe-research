@@ -953,9 +953,9 @@
       "cik": "0001513761",
       "name": "Norwegian Cruise Line Holdings Ltd.",
       "sic": "4400",
-      "rawFacts": 16856,
-      "mappedFacts": 5894,
-      "unmappedFacts": 11187,
+      "rawFacts": 17139,
+      "mappedFacts": 6000,
+      "unmappedFacts": 11467,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -965,28 +965,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 60,
+      "quarterlyPeriods": 61,
       "firstPeriodEnd": "2010-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "eps_diluted": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "free_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0,
@@ -1006,21 +1006,21 @@
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "operating_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "revenue": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -1034,14 +1034,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -1064,46 +1064,47 @@
         }
       },
       "quality": {
-        "HIGH": 514,
+        "HIGH": 521,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 516,
-        "resolvedValues": 516
+        "datableValues": 523,
+        "resolvedValues": 523
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 11585,
+        "rules_version": "1.1.0",
+        "total": 11795,
         "by_severity": {
-          "INFO": 11187,
-          "WARNING": 398
+          "INFO": 11467,
+          "WARNING": 328
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 371,
+          "CONCEPT_DISAGREEMENT": 301,
           "RESTATEMENT_CONFLICT": 20,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 11187
+          "UNKNOWN_CONCEPT": 11467
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-089657",
-        "filing_date": "2026-08-03",
+        "accession": "0001104659-26-120217",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 55
+        "periodic_filings": 56,
+        "acceptance_datetime": "2026-10-29T20:27:20.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "bdffa0ce4e6f087fd21cda828b7dfa93829d90a29079788a2c30dd652a5400fb",
+      "sourceDigest": "ce505e28c1fa5fec86f3913ec38ad8d4a9f329121bd6a7fa6843a0d885ec6e68",
       "issuerId": "iss_cik_0001513761"
     },
     {

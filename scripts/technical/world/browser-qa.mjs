@@ -109,6 +109,33 @@ async function main() {
       await clean("Screener");
     });
 
+    await check(key + " Vorlagen", async () => {
+      await page.goto(base + "#/vorlagen");
+      await page.waitForSelector(".tc-tpl-group .tc-row", { timeout: 30000 });
+      assert(await page.locator(".tc-tpl-group .tc-row").count() >= 12, "Vorlagen fehlen");
+      const counts = await page.locator(".tc-tpl-group .tc-row-count").allTextContents();
+      assert(counts.every((t) => /\d/.test(t)), "Vorlage ohne Trefferzahl: " + counts.join(","));
+      await clean("Vorlagen-Auswahl");
+      await page.goto(base + "#/vorlagen/uptrendBasic");
+      await page.waitForSelector(".tc-hit .tc-ticks", { timeout: 30000 });
+      assert(await page.locator(".tc-hit").first().locator(".tc-ticks li").count() === 5, "Checkliste ohne 5 Kriterien");
+      assert(await page.locator(".tc-tpl-seg a", { hasText: "Fast erfüllt" }).count() === 1, "Fast erfüllt fehlt");
+      await page.locator(".tc-tpl-crit summary").click();
+      assert(await page.locator(".tc-tpl-crit .tc-crit").count() === 5, "Kriterienliste unvollstaendig");
+      await page.locator("summary", { hasText: "Trendfilter dazunehmen" }).click();
+      await page.getByRole("button", { name: "Langfristiger Trend (Woche)", exact: true }).click();
+      await page.waitForFunction(() => /plus=lang/.test(location.hash));
+      await page.waitForFunction(() => document.querySelector(".tc-hit .tc-ticks") && document.querySelectorAll(".tc-hit .tc-ticks")[0].children.length === 6);
+      await page.locator(".tc-tpl-seg a", { hasText: "Fast erfüllt" }).click();
+      await page.waitForSelector(".tc-hit .tc-miss");
+      await page.locator(".tc-hit").first().click();
+      await page.waitForFunction(() => /[?&]v=uptrendBasic/.test(location.hash));
+      await page.waitForSelector(".tc-tpl-panel .tc-crit-why", { timeout: 30000 });
+      assert(/fast erfüllt/.test(await page.locator(".tc-tpl-panel summary").innerText()), "Pruefleiste nennt den Status nicht");
+      await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
+      await clean("Vorlage und Chart");
+    });
+
     await check(key + " Suche in Worten", async () => {
       await page.goto(base + "#/screener");
       await page.waitForSelector("#tc-ts-input", { timeout: 30000 });

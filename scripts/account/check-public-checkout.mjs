@@ -8,7 +8,7 @@
 //   1. Rechtstexte freigegeben: LEGAL_STATUS = 'freigegeben', Fassung ohne "entwurf", keine [[OFFEN]]/[[PRÜFEN]]-Stellen
 //   2. VU_LEGAL_APPROVED = genau diese Fassung
 //   3. STRIPE_LIVE_MODE_APPROVED = "true"
-//   4. Umsatzsteuer ausgewiesen: STRIPE_TAX_MODE = txr_… oder automatic (RAM Consulting UG ist regelbesteuert,
+//   4. Umsatzsteuer ausgewiesen: STRIPE_TAX_MODE = automatic (Stripe Tax; RAM Consulting UG ist regelbesteuert,
 //      docs/accounts/STEUER.md); "none" weist auf Belegen keine USt aus
 // Der Deploy-Workflow bricht ab, wenn eine Bedingung fehlt. Ausgabe ohne Geheimnisse.
 import {readFileSync} from 'node:fs';
@@ -37,7 +37,7 @@ export function publicCheckoutProblems(vars, legal = {status: LEGAL_STATUS, vers
   if (/\[\[(OFFEN|PRÜFEN)/.test(JSON.stringify(legal.docs))) problems.push('Rechtstexte enthalten noch [[OFFEN]]/[[PRÜFEN]]-Stellen');
   if (vars.VU_LEGAL_APPROVED !== legal.version) problems.push(`VU_LEGAL_APPROVED ("${vars.VU_LEGAL_APPROVED ?? ''}") ist nicht die Fassung ${legal.version}`);
   if (vars.STRIPE_LIVE_MODE_APPROVED !== 'true') problems.push('STRIPE_LIVE_MODE_APPROVED ist nicht "true"');
-  if (!/^(automatic|txr_[A-Za-z0-9]+)$/.test(vars.STRIPE_TAX_MODE || '')) problems.push('STRIPE_TAX_MODE weist keine Umsatzsteuer aus (txr_… oder automatic noetig)');
+  if (vars.STRIPE_TAX_MODE !== 'automatic') problems.push('STRIPE_TAX_MODE weist keine Umsatzsteuer aus ("automatic" noetig, Stripe Tax)');
   return problems;
 }
 

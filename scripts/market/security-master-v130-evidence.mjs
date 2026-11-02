@@ -14,6 +14,7 @@
  *  - v130-switch-lists.md       dieselben Listen als Tabellen (je securityId eine Zeile)
  *  - v130-approved-changes.json  Sonderfreigabe für das Übernahme-Gate: genau diese Typ- und Eignungswechsel, gebunden an
  *                                Quellversion, Zielversion und den SHA-256 des Ausgangsstamms (security-master-refresh-gate.mjs)
+ *  - v130-count-reconciliation.json  Zählabgleich je securityId und je Zeile (138 / 149 / zwei verschiedene 127 / frühere 133)
  * Die Vergleichslogik ist die des Gates (compareMasters), die Zählweise also dieselbe.
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
@@ -114,6 +115,66 @@ export function listsMarkdown(ev) {
   ].join("\n");
 }
 
+/**
+ * Zählabgleich (Workstream D2, 29.10.2026): was genau zählen 138, 127 und die frühere Angabe 133?
+ * Rein: dieselben Eingaben wie buildEvidence (committeter Stamm, rekonstruierte Anbieterliste, Engine), kein Abruf.
+ * Zählt dieselben Wechsel einmal je stabiler securityId (Zählweise des Gates, compareMasters) und einmal je Zeile
+ * (Paarung über canonical_id, securityId, Ticker, Börse, Anbietersymbol, Aktivstatus).
+ */
+export const RECONCILIATION_VERSION = "security-master-v130-count-reconciliation-1.0.0";
+export function countReconciliation({ prevBytes, prev, next }) {
+  const cmp = compareMasters(prev, next), a = baselineIndex(prev), b = baselineIndex(next);
+  const key = (r) => [r.canonical_id, r.baseline_security_id, r.ticker, r.exchange, r.provider_symbol_id, r.active_status].join("|");
+  const nextRows = new Map(next.rows.map((r) => [key(r), r]));
+  const tally = (xs, f) => xs.reduce((m, x) => { const k = f(x); m[k] = (m[k] || 0) + 1; return m; }, {});
+  const prevRows = prev.rows.filter((r) => r.baseline_member && r.baseline_security_id);
+  const paired = prevRows.map((r) => [r, nextRows.get(key(r))]), unpaired = paired.filter(([, n]) => !n).length;
+  const typeRows = paired.filter(([r, n]) => n && r.instrument_type !== n.instrument_type);
+  const eligT2F = paired.filter(([r, n]) => n && r.eligible_us_equity === true && n.eligible_us_equity !== true).length;
+  const eligF2T = paired.filter(([r, n]) => n && r.eligible_us_equity !== true && n.eligible_us_equity === true).length;
+  const eligibleRows = (m) => m.rows.filter((r) => r.baseline_member && r.eligible_us_equity === true).length;
+  const typeIds = new Set(cmp.instrumentTypeChanges.map((x) => x.securityId)), eligIds = new Set(cmp.eligibilityFlips.map((x) => x.securityId));
+  const rowsOf = (id) => a.get(id).length;
+  const multiRow = [...typeIds].filter((id) => rowsOf(id) > 1).sort();
+  const toPreferred = cmp.instrumentTypeChanges.filter((x) => x.to === "PREFERRED").map((x) => x.securityId).sort();
+  const pa = backtestable(prev), pb = backtestable(next), lost = [...pa].filter((id) => !pb.has(id)).sort();
+  const lostByType = tally(lost, (id) => b.get(id)[0].instrument_type);
+  const overlap = toPreferred.filter((id) => lost.includes(id)).length;
+  return {
+    version: RECONCILIATION_VERSION,
+    inputs: { masterSha256: sha256(prevBytes), masterVersion: prev.version, engineVersion: next.version, baselineRows: prevRows.length },
+    perSecurityId: {
+      meaning: "Zählweise des Gates (compareMasters): je stabiler securityId ein Wechsel, egal wie viele Zeilen sie hat",
+      instrumentTypeChanges: cmp.instrumentTypeChanges.length, instrumentTypeByTransition: tally(cmp.instrumentTypeChanges, (x) => `${x.from}->${x.to}`),
+      eligibilityFlips: cmp.eligibilityFlips.length, eligibilityByTransition: tally(cmp.eligibilityFlips, (x) => `${x.from}->${x.to}`),
+      sameIdsForTypeAndEligibility: typeIds.size === eligIds.size && [...eligIds].every((id) => typeIds.has(id)),
+      byRowCount: tally([...typeIds], (id) => `${rowsOf(id)}_ZEILEN`),
+    },
+    perRow: {
+      meaning: "je Zeile des Bestands, gepaart über canonical_id, securityId, Ticker, Börse, Anbietersymbol und Aktivstatus",
+      unpairedRows: unpaired, instrumentTypeRowChanges: typeRows.length,
+      instrumentTypeRowsByTransition: tally(typeRows, ([r, n]) => `${r.instrument_type}->${n.instrument_type} ${r.active_status} eligible ${r.eligible_us_equity}->${n.eligible_us_equity}`),
+      eligibilityRowsTrueToFalse: eligT2F, eligibilityRowsFalseToTrue: eligF2T,
+      eligibleRows: { prev: eligibleRows(prev), next: eligibleRows(next), delta: eligibleRows(next) - eligibleRows(prev) },
+    },
+    twoDifferent127: {
+      meaning: "Zwei verschiedene Mengen mit derselben Größe 127; sie sind nicht dieselben IDs",
+      equityCommonToPreferredIds: toPreferred.length,
+      equityCommonToPreferredIdsByRowCount: tally(toPreferred, (id) => `${rowsOf(id)}_ZEILEN`),
+      backtestableLost: lost.length, backtestableLostByNewType: lostByType,
+      overlap, onlyPreferredNotLost: toPreferred.length - overlap, onlyLostNotPreferred: lost.length - overlap,
+      multiRowIds: multiRow,
+    },
+    claim133: {
+      claim: "„133 Eignungswechsel“ (frühere grobe Zählung; Herleitung im Dokument: 127 eindeutige + 14 mehrdeutige true → false − 4 mehrdeutige false → true)",
+      derivationArithmetic: 127 + 14 - 4,
+      multiRowEligibilityRowsTrueToFalse: paired.filter(([r, n]) => n && rowsOf(r.baseline_security_id) > 1 && r.eligible_us_equity === true && n.eligible_us_equity !== true).length,
+      multiRowEligibilityRowsFalseToTrue: paired.filter(([r, n]) => n && rowsOf(r.baseline_security_id) > 1 && r.eligible_us_equity !== true && n.eligible_us_equity === true).length,
+      reproducibleFromCommittedInputs: [cmp.eligibilityFlips.length, eligT2F, eligT2F - eligF2T, Math.abs(eligibleRows(next) - eligibleRows(prev))].includes(133),
+    },
+  };
+}
+
 export function approvedChanges(evidence) {
   return {
     schema: "security-master-approved-changes-1.0.0", purpose: "EINMALIGER_KLASSIFIZIERERWECHSEL (Owner P1/P3, 28.10.2026)",
@@ -135,5 +196,6 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   writeFileSync(join(out, "v130-switch-evidence.json"), JSON.stringify(ev, null, 1) + "\n");
   writeFileSync(join(out, "v130-switch-lists.md"), listsMarkdown(ev));
   writeFileSync(join(out, "v130-approved-changes.json"), JSON.stringify(approvedChanges(ev), null, 1) + "\n");
+  writeFileSync(join(out, "v130-count-reconciliation.json"), JSON.stringify(countReconciliation({ prevBytes, prev, next }), null, 1) + "\n");
   console.log(`[v130-evidence] ${ev.inputs.masterVersion} -> ${ev.inputs.engineVersion}: Typ ${ev.counts.instrumentTypeChanges}, Eignung ${ev.counts.eligibilityFlips}, canonical ${ev.counts.canonicalIdChanges}, backtestfähig ${ev.counts.backtestable.prev} -> ${ev.counts.backtestable.next} (−${ev.counts.backtestable.lost}/+${ev.counts.backtestable.gained}, ${ev.counts.lostWithLongSeries} mit Langreihe)`);
 }

@@ -16,6 +16,9 @@ import {WEBHOOK_EVENTS, lookupKey} from './stripe-test-setup.mjs';
 
 const CAPABILITIES = {card: 'card_payments', paypal: 'paypal_payments', sepa_debit: 'sepa_debit_payments', klarna: 'klarna_payments'};
 
+// Steuerproben: Inland, zwei EU-Staaten (Schwellen-/OSS-Frage), zwei Drittlaender. Je Land eine Postleitzahl.
+export const TAX_PROBES = Object.freeze([['DE', '74189'], ['AT', '1010'], ['FR', '75001'], ['CH', '8001'], ['US', '10001']]);
+
 async function attempt(fn) {
   try { return {ok: true, value: await fn()}; } catch (e) { return {ok: false, error: e.message}; }
 }
@@ -104,6 +107,33 @@ export async function checkStripeLive({key, approved, apiOrigin, fetchImpl = fet
   const registrations = await attempt(() => stripe('GET', '/v1/tax/registrations', {limit: 100, status: 'active'}));
   report.tax.registrations = registrations.ok ? (registrations.value?.data || []).map(r => `${r.country}:${r.country_options?.[String(r.country).toLowerCase()]?.type || r.type || '-'}`) : null;
   log(`Steuerregistrierungen (Stripe Tax): ${registrations.ok ? (report.tax.registrations.join(', ') || 'keine') : `nicht lesbar (${registrations.error})`}`);
+  const ts = taxSettings.ok ? taxSettings.value || {} : {};
+  const product = await attempt(() => stripe('GET', '/v1/products/vu_pro'));
+  report.tax.defaultTaxCode = ts.defaults?.tax_code || null;
+  report.tax.productTaxCode = product.ok ? product.value?.tax_code?.id || product.value?.tax_code || null : null;
+  report.tax.headOffice = ts.head_office?.address?.country || null;
+  log(`Steuerkategorie: Produkt ${report.tax.productTaxCode || '- (Standard)'}, Standard ${report.tax.defaultTaxCode || '-'}; Sitz ${report.tax.headOffice || '-'}`);
+  // Probe-Berechnungen (nur mit --probe-checkout; Stripe Tax Calculations: nur Berechnung, keine Buchung, keine Zahlung): 1,00 EUR brutto
+  // je Kundenland. Erwartung DE-Privatkunde: Endpreis 1,00 EUR, darin 0,16 EUR USt (19 %). Andere Laender: was Stripe
+  // aus den Registrierungen ableitet - keine eigene Annahme.
+  report.tax.calculations = [];
+  if (probeCheckout && ts.status === 'active' && price) {
+    for (const [country, postal] of TAX_PROBES) {
+      const c = await attempt(() => stripe('POST', '/v1/tax/calculations', {currency: 'eur',
+        line_items: [{amount: price.unit_amount, reference: 'vu_pro_probe', tax_behavior: 'inclusive',
+          ...(report.tax.productTaxCode ? {tax_code: report.tax.productTaxCode} : {})}],
+        customer_details: {address: {country, postal_code: postal}, address_source: 'billing'}}));
+      const v = c.ok ? c.value : null;
+      const b = v?.tax_breakdown?.[0];
+      const row = {country, ok: c.ok, total: v?.amount_total ?? null, tax: v?.tax_amount_inclusive ?? null,
+        rate: b?.tax_rate_details?.percentage_decimal ?? null, reason: b?.taxability_reason ?? null, error: c.ok ? null : c.error};
+      report.tax.calculations.push(row);
+      log(`Steuerprobe ${country}: ${c.ok ? `Endpreis ${(row.total / 100).toFixed(2)} EUR, darin USt ${(row.tax / 100).toFixed(2)} EUR (${row.rate ?? '-'} %, ${row.reason || '-'})` : `nicht berechnet (${c.error})`}`);
+    }
+    const de = report.tax.calculations.find(r => r.country === 'DE');
+    report.tax.germanConsumerOk = Boolean(de?.ok && de.total === price.unit_amount && de.tax === Math.round(price.unit_amount - price.unit_amount / 1.19));
+    log(`Erwartung DE-Privatkunde (${(price.unit_amount / 100).toFixed(2)} EUR brutto, 19 % enthalten): ${report.tax.germanConsumerOk ? 'erfuellt' : 'NICHT erfuellt'}`);
+  } else log(`Steuerproben: uebersprungen (${probeCheckout ? 'Stripe Tax nicht aktiv' : 'nur mit --probe-checkout'})`);
   const rates = await attempt(() => stripe('GET', '/v1/tax_rates', {active: 'true', limit: 100}));
   report.tax.rates = rates.ok ? (rates.value?.data || []).map(r => ({id: r.id, percentage: r.percentage, inclusive: r.inclusive, country: r.country || null,
     jurisdiction: r.jurisdiction || null, display: r.display_name})) : null;

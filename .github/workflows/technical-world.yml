@@ -9,16 +9,25 @@ name: Technical - Screener-Datensatz
 # keine Schluessel. Commit-Protokoll ADR-005: Spitze auschecken, push-with-retry.sh, Erzeugerhoheit.
 
 on:
+  # Hauptausloeser (seit 01.11.2026): der Marktlauf stoesst diesen Workflow nach refresh + materialize +
+  # freshness-contract per workflow_dispatch an (Job `technical` in market-data-refresh.yml). Grund: das
+  # `workflow_run` unten hat auf den Marktlauf auf main nie gefeuert (vgl. die Materialisierung, Owner-Entscheid
+  # 29.09.2026); 30.10.-01.11. war jeder workflow_run-Lauf hier `skipped` und der Screener blieb zwei Sitzungen alt.
+  # workflow_run bleibt als Guertel stehen; ein Lauf auf unveraendertem Stand committet nichts.
   workflow_run:
     workflows:
+      - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
       - "Quant 2.0 Product Intelligence Materialization"
       - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"
     types:
       - completed
-  # Der Marktlauf ruft die Materialisierung per workflow_call auf; dabei entsteht kein eigener Lauf, auf den
-  # workflow_run reagieren koennte (Audit 26.10.2026: alle 73 Ausloesungen uebersprungen, technical/data nie
-  # automatisch gebaut). Deshalb ein eigener Zeitplan nach dem Nachtlauf (Markt Mo-Fr 22:30 UTC, Materialisierung
-  # bis ca. 03:00 UTC). Unveraenderte Daten erzeugen keinen Commit; workflow_run bleibt als zusaetzlicher Ausloeser.
+    # Nur Laeufe auf main: workflow_run-Laeufe tragen immer ref main und teilen sich die Gruppe technical-world-main.
+    # Ohne Filter verdraengte ein uebersprungener Lauf eines claude/**-Zweigs einen wartenden Nachtlauf (cancelled,
+    # ohne Alarm).
+    branches:
+      - main
+  # Rueckfall, falls der Marktlauf scheitert oder der Anstoss ausbleibt. Startet bei GitHub 5-6 h spaet
+  # (docs/technical/TECHNICAL_SCHEDULE.md). Unveraenderte Daten erzeugen keinen Commit.
   schedule:
     - cron: '10 5 * * 2-6'
   workflow_dispatch:
@@ -32,9 +41,12 @@ concurrency:
 
 jobs:
   build:
+    # workflow_run nur nach einem erfolgreichen Lauf auf main, der kein Push war (Push-Laeufe auf claude/** sind
+    # uebersprungen oder Probelaeufe und duerfen den Datensatz nicht ausloesen).
     if: >-
       github.event_name != 'workflow_run' ||
-      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.event != 'push')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -67,3 +79,30 @@ jobs:
           if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
           git commit -m "Technical-Screener: $(node -e 'const m=require("./technical/data/meta.json");console.log(m.asOf+" · "+m.counts.rows+" Titel")') (automatischer Lauf)"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # Ein gescheiterter Lauf bleibt nicht still (31.10.2026: der Erzeuger verweigerte wegen des Datenvertrags,
+  # bemerkt erst ueber DQ-TW-1 zwei Tage spaeter). Gleicher Bote wie im Marktlauf: Issue mit Label
+  # pipeline-alarm, ein gruener Lauf schliesst es. Uebersprungene workflow_run-Laeufe melden nichts.
+  alarm:
+    needs: [build]
+    if: always() && github.ref == 'refs/heads/main' && needs.build.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Alarm oeffnen, ergaenzen oder schliessen
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALARM_SOURCE: technical-world
+          RESULT_BUILD: ${{ needs.build.result }}
+        run: node scripts/ci/pipeline-alarm.mjs

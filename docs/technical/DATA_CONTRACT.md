@@ -1,4 +1,4 @@
-# Technical – Datenvertrag v1 (`technical-screener-contract-1.1.0`)
+# Technical – Datenvertrag v1 (`technical-screener-contract-1.3.0`)
 
 Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ und Tests. Gehört zu [TECHNICAL_COMPLETION_PLAN.md](TECHNICAL_COMPLETION_PLAN.md), AP2 (Kriterien B3, I4).
 
@@ -12,7 +12,7 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 |---|---|---|---|
 | `technical/data/screener-v1.json` | `vu-technical-screener-1.*` | `scripts/technical/world/build-screener.mjs` | `{ schemaVersion, asOf, generatedFrom, versions, benchmark, count, cols }`. Spaltenform: je Spalte ein Array der Länge `count`, Zeile i = Titel `cols.s[i]`. |
 | `technical/data/meta.json` | `vu-technical-meta-1.*` | derselbe | Stichtag, Versionen (gleich wie im Screener), Zähler (`rows`, `fresh`, `stale` …), Formationszählung, Quellen |
-| `technical/data/index-v1.json` | `vu-technical-index-1.*` | derselbe | Startseite und Chart-Suche: `s`, `n`, Vorlagen, Fokus. Jedes Kürzel steht im Screener. |
+| `technical/data/index-v1.json` | `vu-technical-index-1.*` | derselbe | Startseite und Chart-Suche: `s`, `n`, Vorlagen (`presets`: Treffer der Abfrage), Fokus. Seit 1.1.0 zusätzlich `templates`: je Strategie-Vorlage `[erfüllt, fast erfüllt, unvollständig]` über Titel mit aktuellem Kurs (`technical/engine/templates.js#counts`, AP8). Jedes Kürzel steht im Screener. |
 | `technical/data/formation-evidence.json` | eigener Vertrag | `formation-evidence.mjs` | historische Formations-Evidenz (Test „Formations-Evidenz: Vertrag …“) |
 | `technical/data/signal-evidence.json` | `vu-technical-signal-evidence-1.*` | `signal-evidence.mjs` (aus `build-screener.mjs`) | historische Beobachtung zu Indikator-Ereignissen und Kerzenmustern, 20-Tage-Horizont, mit Einordnung `reading` (docs/technical/SIGNAL_EVIDENCE.md; Test „Signal-Evidenz: Vertrag …“) |
 | `quant/data/product/technical-signals-v1/<Scherbe>.json.gz` | Materialisierung | `product-intelligence-materialization.yml` | 270 Tagesbars je Titel und Bündel (Features, Chartreihen, Woche/Monat). Grundlage für Chart Studio und Screener. |
@@ -60,13 +60,50 @@ Stabile Schnittstelle der Technical-Produktwelt für Frontend, `/screener/`, DQ 
 - **Extreme, aber korrekte Werte:**
   - `atrPct@1M` reicht bis 982.924.676 % (WHLR). Grund ist eine Reverse-Split-Kette: Der Wochenschluss fiel split-bereinigt in 70 Wochen von 402.408 auf 0,357. Eine ATR über 14 Monate im Verhältnis zum heutigen Kurs ist dann legitim riesig.
   - `relVol` ist bei einem Volumen-Median nahe 0 ebenfalls offen.
-  - Der Vertrag lässt diese Werte deshalb nach oben offen. Begrenzt sind nur mathematisch begrenzte Größen: RSI, Stochastik, MFI, ADX, Choppiness, Connors RSI (0…100), Williams %R (−100…0), Aroon-Oszillator (−100…100), CMF (−1…1), Elder Impulse (−1, 0, 1), Abstand zum Hoch (−1…0) und Kursänderungen (≥ −1).
+  - Der Vertrag lässt diese Werte deshalb nach oben offen. Begrenzt sind nur mathematisch begrenzte Größen: RSI, Stochastik, MFI, ADX, Connors RSI (0…100), Choppiness (≥ 0, seit Vertrag 1.3.0 nach oben offen, siehe unten), Williams %R (−100…0), Aroon-Oszillator (−100…100), CMF (−1…1), Elder Impulse (−1, 0, 1), Abstand zum Hoch (−1…0) und Kursänderungen (≥ −1).
 - **Chart ↔ Screener:** RSI 14 und ADX im Chart (aus 270 Bars) stimmen mit dem Screener (aus der Vollhistorie) bis auf Rundung überein: Median 0,003, 95. Perzentil 0,005 über 5.657 Titel. Alle Ausreißer sind eingefrorene Reihen (SCREENER_FRESHNESS.md, #1077).
+
+## Ticker-Wiederverwendung (`IDENTITY_QUARANTINED`, 31.10.2026)
+
+**Befund:** Unter 13 Tickern (ACTS BREW ENTL FTPA GNMX INVN NMBL NYNY PCLN TRIL USX WR WX) handelt heute ein ETF. Name, Stamm und securityId beschreiben noch das alte Unternehmen. Belegt im Register `quant/config/ticker-reuse-quarantine.json` (#1206, Discover: #1207). Technical zeigte INVN und USX („U.S. Xpress Enterprises Class A“) im Screener und in der Chart-Suche.
+
+**Regel:**
+- `build-screener.mjs` lässt markierte securityIds aus. Gezählt werden sie in `meta.skipped.IDENTITY_QUARANTINED`, die Quelle steht in `meta.sources.identityQuarantine`. DQ-TW-4 bleibt erfüllt, weil der Grund gezählt ist.
+- `build-technical-intelligence.mjs` analysiert markierte Titel nicht (Tages- und Wochenreihen). Gezählt in `meta.counts.identityQuarantined`.
+- Das Register wird nur über `scripts/market/universe-source.mjs#loadTickerReuseQuarantine` gelesen (`scripts/technical/lib/identity-quarantine.mjs`), die securityId kommt aus `core/identity.js`. Fehlt die Datei, wird nichts ausgelassen. Ist sie fehlerhaft, bricht der Bau ab.
+- Formations- und Signal-Evidenz sowie die Materialisierung `technical-signals-v1` bleiben unverändert. Sie zeigen keine Identität und gehören nicht zu diesem Schritt.
+
+**Vorher/Nachher** (Stand `main` 31.10.2026, Bau in ein Temp-Verzeichnis):
+- Screener: 5.665 → 5.663 Zeilen. Es entfallen genau INVN und USX. Alle anderen Spalten und alle Mini-Kursverläufe sind gleich. Einzige Ausnahme ist der RS-Rang (Querschnitt): 393 Titel ändern sich, höchstens um 0,1 Punkte.
+- Meta und Index ändern nur die abgeleiteten Zähler (`rows`, `fresh`, `withVolume`, `withWeekly`, `suspectJump`, Formationen, Vorlagen und Presets um je höchstens 2).
+- Technical Intelligence (`--only` mit den 13 Titeln und 7 Kontrolltiteln): Alle Dateien sind gleich bis auf `meta.counts` (`skipped` 6 → 0, `identityQuarantined` 6). Die 6 Titel mit Wochenreihe waren schon vorher wegen zu kurzer Historie (< 160 Wochen) ausgelassen. Die Regel verhindert, dass sie mit wachsender Reihe unter falschem Namen erscheinen.
+- Die committeten Daten (`technical/data`, `quant/data/technical-intelligence`) ändern sich erst mit dem regulären Lauf nach dem Merge.
+
+## Choppiness über 100 (Vertrag 1.3.0, 01.11.2026)
+
+**Anlass:** Am 30.10.2026 meldete der Vertrag `choppiness14` = 131,4 für BMBL als Verstoß. Der reguläre Lauf von `build-screener.mjs` schrieb deshalb nichts (Exit 2), `technical/data` blieb auf dem Stand 29.10.2026.
+
+**Befund: kein Datenfehler.**
+- Die Tagesbars von BMBL (`technical-signals-v1`, gleich mit `discover-series`) zeigen Schlüsse 2,54 (09.10.), 3,80 (12.10., Bericht über Übernahmegespräche) und 5,95 (13.10., Eröffnung 5,98). Am 13.10.2026 wurde die Übernahme durch Ithaca Holdings zu 6,05 USD je Aktie in bar vereinbart.
+- Seitdem liegt der Kurs zwischen 5,92 und 6,00. Die Faktoren 1,50 und 1,57 haben keine Split-Signatur, `suspectJumpAt` ist leer.
+- Am 30.10. beginnt das 14-Tage-Fenster am 13.10. Die True Range dieses Tages enthält die Lücke vom Vorschluss 3,80: Σ TR ≈ 2,6 bei einer Spanne HH − LL = 0,08. Das ergibt 100 · log10(32,6) / log10(14) = 131,4.
+
+**Mathematik:**
+- Unten begrenzt: Jedes TR-Intervall enthält den Vorschluss, der im Intervall des Vortags liegt. Die Intervalle hängen also zusammen und überdecken [LL, HH]. Damit gilt Σ TR ≥ HH − LL und CHOP ≥ 0.
+- Oben nicht begrenzt: Innerhalb des Fensters ist TR ≤ HH − LL. Nur der erste Bar nutzt einen Vorschluss von außerhalb. Mit dessen Abstand g zu [LL, HH] gilt CHOP ≤ 100 · log10(n + g / (HH − LL)) / log10(n). Über 100 liegt der Wert nur bei einer Lücke am Fensteranfang (g > 0) und Σ TR > n · (HH − LL).
+- Die Standarddefinition (Dreiss, TradingView) ist ebenso unbegrenzt. Die Formel in `indicators.js` bleibt unverändert, es wird nichts gekappt.
+
+**Änderung:** `choppiness14` hat den Bereich 0 … ∞ (vorher 0 … 100). Test: `technical/tests/technical-choppiness-range.test.mjs` (BMBL-Bars, Handrechnung, Schranken an 200 Zufallsreihen mit Lücken).
+
+**Vorher/Nachher** (Bau in ein Temp-Verzeichnis, Stand 30.10.2026, 5.663 Titel):
+- Vorher: Vertrag verletzt (1 × RANGE, BMBL), nichts geschrieben.
+- Nachher: Vertrag erfüllt. Genau 1 Zeile über 100 (BMBL 131,4). Verteilung: p10 34,3 · Median 49,5 · p90 63,2 · p99 71,9; 235 `null` (ruhende Titel). Stand 29.10.: p10 34,4 · Median 48,9 · p90 63,0 · p99 72,5 · Maximum 84,8.
+- Über alle 1.417.466 berechenbaren Bars der Materialisierung liegen 66 Werte (0,005 %) bei 61 Titeln über 100, das Maximum ist 257,3 (GLU-P-B, 09.04.2026). Der alte Bereich hätte den Lauf also wiederholt gestoppt.
 
 ## Spalten
 
 <!-- contract:columns:start -->
-technical-screener-contract-1.1.0, 150 Spalten.
+technical-screener-contract-1.3.0, 164 Spalten.
 
 | Spalte | Typ | null | Werte | Bedeutung |
 |---|---|---|---|---|
@@ -74,6 +111,7 @@ technical-screener-contract-1.1.0, 150 Spalten.
 | `aboveEma20` | bool | ja |  | Kurs über EMA 20 |
 | `aboveEma200` | bool | ja |  | Kurs über EMA 200 |
 | `aboveEma50` | bool | ja |  | Kurs über EMA 50 |
+| `aboveSma150` | bool | ja |  | Kurs über SMA 150 |
 | `aboveSma200` | bool | ja |  | Kurs über SMA 200 |
 | `aboveSma200@1M` | bool | ja |  | Kurs über 10-Monats-Linie |
 | `aboveSma200@1W` | bool | ja |  | Kurs über 40-Wochen-Linie |
@@ -105,7 +143,7 @@ technical-screener-contract-1.1.0, 150 Spalten.
 | `candleWindow` | int | ja | 1 … ∞ | Prüfraum in Handelstagen |
 | `cci20` | num | ja | endlich | CCI 20 |
 | `chg1d` | pct | ja | −1 … ∞ | Tagesänderung |
-| `choppiness14` | num | ja | 0 … 100 | Choppiness Index 14 (unter 38,2 Trend, über 61,8 seitwärts) |
+| `choppiness14` | num | ja | 0 … ∞ | Choppiness Index 14 (unter 38,2 Trend, über 61,8 seitwärts) |
 | `close` | num | ja | 0 … ∞ | Schlusskurs (USD) |
 | `cmf20` | num | ja | −1 … 1 | Chaikin Money Flow 20 (−1 bis 1) |
 | `connorsRsi` | num | ja | 0 … 100 | Connors RSI (3/2/100) |
@@ -122,13 +160,19 @@ technical-screener-contract-1.1.0, 150 Spalten.
 | `distHigh52w` | pct | ja | −1 … 0 | Abstand zum 52-Wochen-Hoch |
 | `distHigh52w@1M` | pct | ja | −1 … 0 | Abstand zum 12-Monats-Schlusshoch |
 | `distHigh52w@1W` | pct | ja | −1 … 0 | Abstand zum 52-Wochen-Schlusshoch |
+| `distLow52w` | pct | ja | 0 … ∞ | Abstand über dem 52-Wochen-Tief (Tagestief) |
+| `distSma150` | pct | ja | −1 … ∞ | Abstand zur SMA 150 |
 | `distSma200` | pct | ja | −1 … ∞ | Abstand zur SMA 200 |
 | `distSma200@1M` | pct | ja | −1 … ∞ | Abstand zur 10-Monats-Linie |
 | `distSma200@1W` | pct | ja | −1 … ∞ | Abstand zur 40-Wochen-Linie |
 | `distSma50` | pct | ja | −1 … ∞ | Abstand zur SMA 50 (nur Anzeige) |
 | `elderImpulse` | num (ganzzahlig) | ja | −1 … 1 | Elder Impulse (+1 grün, 0 blau, −1 rot) |
 | `formationActive` | enumList | ja | SYMMETRICAL_TRIANGLE, ASCENDING_TRIANGLE, DESCENDING_TRIANGLE, BULL_FLAG, BEAR_FLAG, BULL_PENNANT, BEAR_PENNANT, RISING_WEDGE, FALLING_WEDGE, DOUBLE_TOP, DOUBLE_BOTTOM, HEAD_AND_SHOULDERS, INVERSE_HEAD_AND_SHOULDERS, RECTANGLE, CUP_WITH_HANDLE, SUPPORT_TRENDLINE, RESISTANCE_TRENDLINE, ASCENDING_CHANNEL, DESCENDING_CHANNEL, RANGE_BREAKOUT, RESISTANCE_BREAKOUT, VOLATILITY_CONTRACTION, GAP_UP, GAP_DOWN | Formation erkannt oder bestätigt |
+| `formationActive@1W` | enumList | ja | SYMMETRICAL_TRIANGLE, ASCENDING_TRIANGLE, DESCENDING_TRIANGLE, BULL_FLAG, BEAR_FLAG, BULL_PENNANT, BEAR_PENNANT, RISING_WEDGE, FALLING_WEDGE, DOUBLE_TOP, DOUBLE_BOTTOM, HEAD_AND_SHOULDERS, INVERSE_HEAD_AND_SHOULDERS, RECTANGLE, CUP_WITH_HANDLE, SUPPORT_TRENDLINE, RESISTANCE_TRENDLINE, ASCENDING_CHANNEL, DESCENDING_CHANNEL, RANGE_BREAKOUT, RESISTANCE_BREAKOUT, VOLATILITY_CONTRACTION, GAP_UP, GAP_DOWN | Formation im Wochenchart erkannt oder bestätigt |
 | `formationConfirmed` | enumList | ja | SYMMETRICAL_TRIANGLE, ASCENDING_TRIANGLE, DESCENDING_TRIANGLE, BULL_FLAG, BEAR_FLAG, BULL_PENNANT, BEAR_PENNANT, RISING_WEDGE, FALLING_WEDGE, DOUBLE_TOP, DOUBLE_BOTTOM, HEAD_AND_SHOULDERS, INVERSE_HEAD_AND_SHOULDERS, RECTANGLE, CUP_WITH_HANDLE, SUPPORT_TRENDLINE, RESISTANCE_TRENDLINE, ASCENDING_CHANNEL, DESCENDING_CHANNEL, RANGE_BREAKOUT, RESISTANCE_BREAKOUT, VOLATILITY_CONTRACTION, GAP_UP, GAP_DOWN | Formation bestätigt |
+| `formationConfirmed@1W` | enumList | ja | SYMMETRICAL_TRIANGLE, ASCENDING_TRIANGLE, DESCENDING_TRIANGLE, BULL_FLAG, BEAR_FLAG, BULL_PENNANT, BEAR_PENNANT, RISING_WEDGE, FALLING_WEDGE, DOUBLE_TOP, DOUBLE_BOTTOM, HEAD_AND_SHOULDERS, INVERSE_HEAD_AND_SHOULDERS, RECTANGLE, CUP_WITH_HANDLE, SUPPORT_TRENDLINE, RESISTANCE_TRENDLINE, ASCENDING_CHANNEL, DESCENDING_CHANNEL, RANGE_BREAKOUT, RESISTANCE_BREAKOUT, VOLATILITY_CONTRACTION, GAP_UP, GAP_DOWN | Formation im Wochenchart bestätigt |
+| `formationConfirmedDown` | enumList | ja | SYMMETRICAL_TRIANGLE, ASCENDING_TRIANGLE, DESCENDING_TRIANGLE, BULL_FLAG, BEAR_FLAG, BULL_PENNANT, BEAR_PENNANT, RISING_WEDGE, FALLING_WEDGE, DOUBLE_TOP, DOUBLE_BOTTOM, HEAD_AND_SHOULDERS, INVERSE_HEAD_AND_SHOULDERS, RECTANGLE, CUP_WITH_HANDLE, SUPPORT_TRENDLINE, RESISTANCE_TRENDLINE, ASCENDING_CHANNEL, DESCENDING_CHANNEL, RANGE_BREAKOUT, RESISTANCE_BREAKOUT, VOLATILITY_CONTRACTION, GAP_UP, GAP_DOWN | Formation bestätigt, Ausbruch nach unten |
+| `formationConfirmedUp` | enumList | ja | SYMMETRICAL_TRIANGLE, ASCENDING_TRIANGLE, DESCENDING_TRIANGLE, BULL_FLAG, BEAR_FLAG, BULL_PENNANT, BEAR_PENNANT, RISING_WEDGE, FALLING_WEDGE, DOUBLE_TOP, DOUBLE_BOTTOM, HEAD_AND_SHOULDERS, INVERSE_HEAD_AND_SHOULDERS, RECTANGLE, CUP_WITH_HANDLE, SUPPORT_TRENDLINE, RESISTANCE_TRENDLINE, ASCENDING_CHANNEL, DESCENDING_CHANNEL, RANGE_BREAKOUT, RESISTANCE_BREAKOUT, VOLATILITY_CONTRACTION, GAP_UP, GAP_DOWN | Formation bestätigt, Ausbruch nach oben |
 | `formationNewDays` | int, Prüfraum `formationWindow` | ja | 0 … ∞ | Tage seit der jüngsten Formations-Erkennung |
 | `formationOpen` | enumList | ja | SYMMETRICAL_TRIANGLE, ASCENDING_TRIANGLE, DESCENDING_TRIANGLE, BULL_FLAG, BEAR_FLAG, BULL_PENNANT, BEAR_PENNANT, RISING_WEDGE, FALLING_WEDGE, DOUBLE_TOP, DOUBLE_BOTTOM, HEAD_AND_SHOULDERS, INVERSE_HEAD_AND_SHOULDERS, RECTANGLE, CUP_WITH_HANDLE, SUPPORT_TRENDLINE, RESISTANCE_TRENDLINE, ASCENDING_CHANNEL, DESCENDING_CHANNEL, RANGE_BREAKOUT, RESISTANCE_BREAKOUT, VOLATILITY_CONTRACTION, GAP_UP, GAP_DOWN | Formation offen (noch ohne Ausbruch) |
 | `formationWindow` | int | ja | 1 … ∞ | Prüfraum in Handelstagen |
@@ -181,6 +225,7 @@ technical-screener-contract-1.1.0, 150 Spalten.
 | `rs3m` | pct | ja | endlich | Relative Stärke 3 Monate ggü. S&P 500 (SPY) |
 | `rs6m` | pct | ja | endlich | Relative Stärke 6 Monate ggü. S&P 500 (SPY) |
 | `rsPositive` | bool | ja |  | Positive relative Stärke (6 Monate) |
+| `rsRank` | num | ja | 0 … 100 | RS-Rang 6 Monate (0 = schwächster, 100 = stärkster Titel) |
 | `rsi14` | num | ja | 0 … 100 | RSI 14 |
 | `rsi14@1M` | num | ja | 0 … 100 | RSI 14 (Monat) |
 | `rsi14@1W` | num | ja | 0 … 100 | RSI 14 (Woche) |
@@ -195,20 +240,25 @@ technical-screener-contract-1.1.0, 150 Spalten.
 | `rsiExitOversoldDays@1W` | int, Prüfraum `rsiEventWindow@1W` | ja | 0 … ∞ | Wochen seit Wochen-RSI 14 von unten über 30 |
 | `s` | string | nein |  | Kürzel (eindeutig) |
 | `sid` | string | nein |  | securityId (core/identity.js) |
+| `sma150AboveSma200` | bool | ja |  | SMA 150 über SMA 200 |
 | `sma200CrossWindow` | int | ja | 1 … ∞ | Prüfraum in Handelstagen |
 | `sma200CrossWindow@1M` | int | ja | 1 … ∞ | Prüfraum in Monaten |
 | `sma200CrossWindow@1W` | int | ja | 1 … ∞ | Prüfraum in Wochen |
+| `sma200Rising` | bool | ja |  | SMA 200 steigt (gegenüber vor einem Monat) |
+| `sma200Slope21` | pct | ja | −1 … ∞ | Veränderung der SMA 200 über einen Monat |
+| `sma50AboveSma150` | bool | ja |  | SMA 50 über SMA 150 |
 | `sma50AboveSma200` | bool | ja |  | SMA 50 über SMA 200 |
 | `sma50AboveSma200@1M` | bool | ja |  | 5- über 10-Monats-Linie |
 | `sma50AboveSma200@1W` | bool | ja |  | 10- über 40-Wochen-Linie |
 | `smaCrossWindow` | int | ja | 1 … ∞ | Prüfraum in Handelstagen |
-| `spark` | spark | nein |  | letzte ≤ 60 Schlüsse, 0..99 normiert |
 | `stochK` | num | ja | 0 … 100 | Stochastik %K (14, 3) |
 | `stochK@1M` | num | ja | 0 … 100 | Stochastik %K (14, 3, Monat) |
 | `stochK@1W` | num | ja | 0 … 100 | Stochastik %K (14, 3, Woche) |
 | `structure` | enum | ja | BULLISH, BEARISH, RANGE, MIXED, UNDETERMINED, NEUTRAL | Marktstruktur (Swings) |
 | `supertrendUp` | bool | ja |  | Supertrend (10, 3) aufwärts |
-| `suspectJumpAt` | date | ja |  | jüngster Kurssprung mit Datenverdacht (60 Bars) |
+| `suspectJumpAt` | date | ja |  | jüngster auffälliger Kurssprung (252 Bars, ab screen-row 1.13.0; davor 60) |
+| `suspectJumpFactor` | num | ja | 0 … ∞ | Schlussfaktor des Kurssprungs (Schluss / Vortagesschluss) (optional) |
+| `suspectJumpStatus` | enum | ja | SUSPECT, CONFIRMED | Stufe: Verdacht oder bestätigter Datenfehler (belegte, nicht bereinigte Kapitalmaßnahme) (optional) |
 | `ulcer14` | pct | ja | 0 … ∞ | Ulcer Index 14 (Rückschlagsrisiko) |
 | `volAboveAvg` | bool | ja |  | Volumen über Durchschnitt |
 | `volAboveAvg@1M` | bool | ja |  | Monatsvolumen über Durchschnitt |
@@ -217,6 +267,7 @@ technical-screener-contract-1.1.0, 150 Spalten.
 | `volSpike@1M` | bool | ja |  | Volumenspitze im Monat (≥ 2× Median) |
 | `volSpike@1W` | bool | ja |  | Volumenspitze in der Woche (≥ 2× Median) |
 | `vortexBull` | bool | ja |  | Vortex: VI+ über VI− (14) |
+| `weeklyFormationBars` | int | ja | 0 … ∞ | abgeschlossene Wochenbars aus den Tagesbars (Wochenformationen, ab screen-row 1.14.0; unter 26 keine Aussage) (optional) |
 | `weeks` | int | nein | 0 … ∞ | Wochenschlüsse (lange Reihe) |
 | `williamsR` | num | ja | −100 … 0 | Williams %R 14 (−100 bis 0) |
 | `zScore20` | num | ja | endlich | Z-Score 20 (Abstand zum 20-Tage-Mittel in Standardabweichungen) |

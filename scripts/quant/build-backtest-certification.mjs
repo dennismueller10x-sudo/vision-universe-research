@@ -12,7 +12,8 @@
    gewartet hat und alle Gates bestehen, wechselt der Status ohne manuellen
    Schritt - ausser der Methodikvertrag verlangt eine Owner-Freigabe.
 
-   Schreibt quant/data/product/backtest-certification-v1.json.
+   Schreibt quant/data/product/backtest-certification-v1.json
+   (--out <datei> schreibt stattdessen dorthin, z. B. fuer Vorher/Nachher).
    ========================================================================= */
 import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
@@ -28,6 +29,7 @@ const C = require(P("quant/engines/backtest-certification.js"));
 const PB = require(P("quant/engines/profile-backtest.js"));
 const SB = require(P("quant/engines/signal-backtest.js"));
 const BacktestSource = require(P("quant/engines/backtest-artifact-consistency.js"));
+const SetupOos = require(P("quant/engines/setup-oos.cjs"));
 const M = json("quant/methodology/backtest-certification-v1.json");
 const G = C.gate;
 const today = new Date().toISOString().slice(0, 10);
@@ -134,6 +136,11 @@ const completedTitles = Math.max(...["SETUP_CONFIRMED", "SETUP_NEW"].map((k) => 
 const eventWeeks = new Set(outcomes.events.map((e) => e[2].slice(0, 7))).size;
 const variantGate = st.SETUP_CONFIRMED.variantGate;
 const firstEvent = outcomes.events.map((e) => e[2]).sort()[0] || null;
+/* OOS (setup-oos-1.0.0): ohne freigegebene Segmentdefinition immer FAIL
+   (OOS_NOT_MEASURABLE_YET bzw. OOS_SEGMENT_DEFINITION_MISSING). Das
+   Ergebnisartefakt exportiert keine Ereigniszeilen; ausgewertet wird nur
+   die Zahl abgeschlossener M6-Ergebnisse. */
+const setupOos = SetupOos.evaluateSetupOos({ rows: null, completedCount: completedM6, minPerSegment: req.oosMinPerSegment, segmentation: SetupOos.segmentationFromMethodology(M) });
 const setupGates = [
   G("publishedOnly", "nur veröffentlichte Zustände", "HARD", outcomes.source.reconstructed === false, "setup-observation-history"),
   G("pit", "Stände unverändert (contentHash)", "HARD", hist.contentHashVerified === hist.dates, hist.contentHashVerified + " von " + hist.dates + " geprüft"),
@@ -146,14 +153,14 @@ const setupGates = [
   G("returnBasis", "Gesamtrendite", "STRUCTURAL", outcomes.returnType === "TOTAL_RETURN", outcomes.returnType === "TOTAL_RETURN" ? "Gesamtrendite" : "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite", null, "TOTAL_RETURN_NOT_IN_THIS_RUN"),
   G("survivorship", "Überlebende (vorwärts gesammelt, kein Fall weggelassen)", "STRUCTURAL", true, "Universum des jeweiligen Tages; INCOMPLETE wird gezählt"),
   G("entryVariant", "Einstiegsvarianten stimmen überein", "QUALITY", variantGate === "PASS", { PASS: "übereinstimmend", NOT_MEASURABLE_YET: "noch nicht messbar" }[variantGate] || "Abweichung über 1 Pp – Owner-Entscheidung", "Δ Median ≤ 1 Pp", variantGate === "NOT_MEASURABLE_YET" ? "VARIANTS_NOT_MEASURABLE_YET" : variantGate),
-  G("oos", "Lernen/Testen (zeitlich)", "QUALITY", false, "erst mit abgeschlossenen Ergebnissen messbar", null, "OOS_NOT_MEASURABLE_YET")
+  G("oos", "Lernen/Testen (zeitlich)", "QUALITY", setupOos.status === "PASS", SetupOos.gateValue(setupOos), null, setupOos.reasonCode)
 ];
 const cadence = hist.medianGapDays || 1;
 kind("SETUP_BACKTEST", "Setup-Backtest", setupGates, { trust: "NOT_READY", published: false,
   ownerApproval: { required: setupMethod.requirements.backtestCertification !== "CERTIFIED", given: setupMethod.requirements.backtestCertification === "CERTIFIED", source: M.kinds.SETUP_BACKTEST.ownerApprovalSource },
   more: { eta: { historyDates: C.eta(hist.dates, req.historyDates, 7 / 5, hist.to), firstCompletedM6: firstEvent ? new Date(Date.parse(firstEvent) + 183 * 86400000).toISOString().slice(0, 10) : null },
     progress: { historyDates: hist.dates, spanDays: hist.spanDays, transitions: outcomes.transitions, completedM6, contractTradesCompleted: (st.SETUP_NEW.contractTrades || {}).completed || 0 },
-    replay: replayStudy ? { role: "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)", parity: replayStudy.parity.checked + "/" + replayStudy.parity.checked, mismatches: replayStudy.parity.mismatches } : null } });
+    replay: replayStudy ? { role: "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)", parity: (replayStudy.parity.checked - replayStudy.parity.mismatches) + "/" + replayStudy.parity.checked, mismatches: replayStudy.parity.mismatches } : null } });
 
 /* ---------- E: Strategie, F: Faktor ---------- */
 const sreq = M.kinds.STRATEGY_BACKTEST.requirements;
@@ -186,7 +193,8 @@ const doc = { schemaVersion: C.VERSION, generatedAt: new Date().toISOString(), a
     OWNER_APPROVAL_REQUIRED: kinds.filter((k) => k.readiness === "OWNER_APPROVAL_REQUIRED" || (k.ownerApproval && k.ownerApproval.required)).map((k) => k.id) } };
 const errors = C.certificationViolations(doc);
 if (errors.length) { console.error(errors); process.exit(1); }
-writeFileSync(P("quant/data/product/backtest-certification-v1.json"), JSON.stringify(doc, null, 1) + "\n");
+const outArg = process.argv.indexOf("--out");
+writeFileSync(outArg >= 0 ? process.argv[outArg + 1] : P("quant/data/product/backtest-certification-v1.json"), JSON.stringify(doc, null, 1) + "\n");
 for (const k of kinds) console.log(k.id.padEnd(24), k.tier.padEnd(9), k.status.padEnd(19), k.readiness.padEnd(16), k.reason || "");
 for (const r of signalRules) console.log("  ", r.id.padEnd(22), r.status, r.reason, r.baseRate ? "Δ " + r.baseRate.delta : "");
 console.log("survivorship", JSON.stringify({ gate: survivorship.gate, control: survivorship.control, DELISTED_IDENTIFIED: survivorship.DELISTED_IDENTIFIED, DELISTED_WITH_HISTORY: survivorship.DELISTED_WITH_HISTORY }));

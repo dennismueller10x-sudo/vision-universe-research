@@ -106,7 +106,7 @@ test('Formatierung deutsch', () => {
 
 test('jede Kontoseite: gemeinsame Shell, Theme, noindex, keine fremden Skripte, keine Inline-Handler', () => {
   const list = pages();
-  assert.equal(list.length, 10);
+  assert.equal(list.length, 12);
   for (const p of list) {
     const html = readFileSync(p, 'utf8');
     const name = p.slice(ROOT.length) || '/';
@@ -147,6 +147,11 @@ test('Watchlist-Seite: Kennzahlen nur aus der gemeinsamen Uebersicht, kein Gesam
   assert.match(js, /W\.PATHS\.names/, 'Namensverzeichnis nur bei Bedarf');
   assert.ok(!/compositeScore|quantScore|universeRank/.test(js), 'kein Gesamtscore oder Rang im Browser');
   assert.match(html, /Gesamtscore ist nicht freigegeben/);
+  // Gesperrte Identitaet (IDENTITY_QUARANTINED, Zustand WARN): Warnchip mit dem Text der Ansicht, Verweise nur aus view.links.
+  assert.match(js, /var inactive = v\.identity\.state !== 'AVAILABLE';/);
+  assert.match(js, /if \(inactive\) chips\.appendChild\(chip\(v\.identity\.reasonText \|\| 'Nicht verfügbar', 'warn', 'alert'\)\);/);
+  assert.match(js, /if \(v\.links\.length\) \{/);
+  assert.ok(!/StockContext/.test(js), 'kein eigener Produktverweis neben view.links');
   // Owner-Auftrag 29.10.2026: Die Watchlist ist Teil von "Mein Dashboard"; die Kontonavigation fuehrt dorthin,
   // die Detailseite /konto/watchlist/ bleibt unter ihrer Adresse erreichbar und fuehrt zurueck.
   for (const p of ['index.html', 'abo/index.html', 'tarife/index.html', 'einstellungen/index.html']) {
@@ -220,4 +225,19 @@ test('Rechtstexte und Newsletter: eigene Texte statt Shopify, Newsletter freiwil
   const settings = readFileSync(join(ROOT, 'einstellungen/index.html'), 'utf8');
   assert.ok(!/id="marketing"/.test(settings), 'kein direkt setzbarer Werbe-Haken');
   assert.match(settings, /id="ka-newsletter-toggle"/);
+});
+
+test('Tarifverwaltung: Seite ohne Schluessel, Vorschau vor Bestaetigung, Passwort und Haken', () => {
+  const html = readFileSync(join(ROOT, 'admin', 'tarife', 'index.html'), 'utf8');
+  const js = readFileSync(join(ROOT, 'konto.js'), 'utf8');
+  assert.ok(!/sk_(live|test)|rk_(live|test)|whsec_/.test(html + js), 'keine Stripe-Schluessel');
+  for (const id of ['pa-preview-form', 'pa-apply-form', 'pa-summary', 'pa-password', 'pa-confirm', 'pa-log']) assert.ok(html.includes(`id="${id}"`), id);
+  assert.match(html, /id="pa-apply-form" novalidate hidden/, 'Bestaetigung erst nach der Vorschau');
+  const view = js.slice(js.indexOf("views['pricing-admin']"));
+  assert.ok(view.indexOf('/v1/admin/pricing/preview') < view.indexOf('/v1/admin/pricing/apply'));
+  assert.match(view, /confirm: true/);
+  assert.match(view, /pa-confirm'\)\.checked/);
+  for (const code of ['NOT_PRICING_ADMIN', 'AMOUNT_INVALID', 'PRICE_CHANGED', 'CHANGE_IN_PROGRESS', 'PRICE_CHANGE_RETRY', 'STRIPE_UNAVAILABLE']) {
+    assert.notEqual(A.message(code), A.message('UNBEKANNT'), code);
+  }
 });

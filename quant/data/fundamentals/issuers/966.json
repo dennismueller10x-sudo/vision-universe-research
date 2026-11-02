@@ -682,9 +682,9 @@
       "cik": "0001549966",
       "name": "Silvercrest Asset Management Group Inc.",
       "sic": "6282",
-      "rawFacts": 16166,
-      "mappedFacts": 5025,
-      "unmappedFacts": 11105,
+      "rawFacts": 16507,
+      "mappedFacts": 5124,
+      "unmappedFacts": 11345,
       "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
@@ -694,28 +694,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 60,
+      "quarterlyPeriods": 61,
       "firstPeriodEnd": "2010-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "eps_diluted": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "free_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0,
@@ -735,21 +735,21 @@
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "operating_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "revenue": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -763,14 +763,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -793,45 +793,46 @@
         }
       },
       "quality": {
-        "HIGH": 453,
-        "MEDIUM": 67
+        "HIGH": 462,
+        "MEDIUM": 65
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 520,
-        "resolvedValues": 520
+        "datableValues": 527,
+        "resolvedValues": 527
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 11745,
+        "rules_version": "1.1.0",
+        "total": 11997,
         "by_severity": {
-          "INFO": 11105,
-          "WARNING": 640
+          "INFO": 11345,
+          "WARNING": 652
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 553,
-          "RESTATEMENT_CONFLICT": 87,
-          "UNKNOWN_CONCEPT": 11105
+          "CONCEPT_DISAGREEMENT": 562,
+          "RESTATEMENT_CONFLICT": 90,
+          "UNKNOWN_CONCEPT": 11345
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-326191",
-        "filing_date": "2026-07-30",
+        "accession": "0001193125-26-437873",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 54
+        "periodic_filings": 55,
+        "acceptance_datetime": "2026-10-29T20:31:16.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "18d7bb5e32bd009cf95f9c4c48a993f8e76c2aa682d8b9aa7f62136a8add516d",
+      "sourceDigest": "4f4f74ec9813c78e82423d426203a27df7f99e889a64b3ef5e4ac145f767d120",
       "issuerId": "iss_cik_0001549966"
     },
     {

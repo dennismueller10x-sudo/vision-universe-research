@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "backtest-result-2.0.0",
+  "status": "PROPOSED_NOT_WIRED",
+  "effectiveFrom": "2026-10-29",
+  "purpose": "Art-unabhaengiger, versionierter Ergebnisumschlag fuer Backtest-Ergebnisse aus bestehenden Engines und Artefakten. Er ersetzt keinen bestehenden Vertrag, wird von keinem Produktpfad gelesen und verleiht keine Zertifizierung.",
+  "engine": "quant/engines/backtest-result-contract.cjs",
+  "kindRegistry": "quant/engines/backtest-kinds.cjs",
+  "adapters": "quant/engines/backtest-result-adapters.cjs",
+  "kinds": ["SAME_STOCK_REPLAY", "PATTERN_EVIDENCE", "SIGNAL_BACKTEST", "SETUP_BACKTEST", "STRATEGY_BACKTEST", "FACTOR_RANKING_BACKTEST"],
+  "methods": ["MONTE_CARLO", "WALK_FORWARD", "OUT_OF_SAMPLE", "MARKET_REGIME", "PARAMETER_SENSITIVITY", "EVENT_DRIVEN", "PORTFOLIO_REBALANCING"],
+  "sections": ["schemaVersion", "identity", "period", "spec", "events", "portfolio", "metrics", "uncertainty", "dataQuality", "methods", "limitations", "status", "envelopeHash"],
+  "enums": {
+    "scope": ["SINGLE_LISTING", "POPULATION"],
+    "grain": ["DAILY", "WEEKLY", "MONTHLY", "UNSPECIFIED"],
+    "eventsForm": ["EVENTS", "TRADES", "FINDING", "NONE"],
+    "metricsBasis": ["PORTFOLIO", "PER_EVENT", "NONE"],
+    "methodState": ["EXECUTED", "NOT_RUN", "NOT_APPLICABLE"],
+    "state": ["RESEARCH_EXECUTED", "PREPARED_DATA_LIMITED", "PRODUCT_CERTIFIED"],
+    "certificationStatus": ["CERTIFIED", "LIMITED", "COLLECTING_HISTORY", "WITHHELD", "NOT_CERTIFIED", "NOT_ASSESSED"],
+    "certificationScope": ["KIND", "RULE"],
+    "evidenceKind": ["OBSERVED", "TESTED", "SIMULATED_LEDGER", "SYNTHETIC_TEST"],
+    "familyCorrection": ["HOLM", "BENJAMINI_HOCHBERG", "NONE"]
+  },
+  "metricKeys": ["basis", "totalReturn", "cagr", "annualReturns", "volatility", "maxDrawdown", "hitRate", "trades", "turnover", "costs", "cashShare", "benchmark", "excess", "perEvent"],
+  "states": {
+    "RESEARCH_EXECUTED": "A: historische Research-Studie im dokumentierten Scope ausgefuehrt (nicht-synthetische Daten, mindestens ein beobachteter Ausgang).",
+    "PREPARED_DATA_LIMITED": "B: Engine bereit, Nachweise fehlen (synthetische Daten, keine beobachteten Ausgaenge oder nur ein Zertifizierungsstand ohne Ergebnisartefakt).",
+    "PRODUCT_CERTIFIED": "C: nur wenn ein mitgeliefertes backtest-certification-v1-Artefakt fuer genau diese Art (bzw. Regel) CERTIFIED meldet und certificationViolations() leer ist. Kein Adapter setzt C; A wird nie automatisch zu C."
+  },
+  "rules": [
+    "Unbekannte Felder auf oberster Ebene und in festen Abschnitten sind Fehler (fail-closed).",
+    "status.productionApproved ist immer false.",
+    "Unbekannte Zahl = null, nie 0. Jeder Zahlenwert ist endlich.",
+    "metrics.basis PER_EVENT: totalReturn, cagr, annualReturns, turnover und cashShare sind null - Ereignisstatistik ist kein finanziertes Portfolio.",
+    "metrics.basis PORTFOLIO verlangt portfolio (Datum, Equity, Cash-Anteil gleich lang, aufsteigend); sonst ist portfolio null.",
+    "maxDrawdown <= 0; hitRate und cashShare in [0,1]; trades ganzzahlig >= 0.",
+    "spec.specHash = sha256(kanonisches JSON von spec ohne specHash); envelopeHash = sha256(kanonisches JSON des Umschlags ohne envelopeHash).",
+    "evidenceKind SYNTHETIC_TEST erzwingt state PREPARED_DATA_LIMITED.",
+    "certificationStatus CERTIFIED oder state PRODUCT_CERTIFIED nur mit mitgeliefertem Zertifizierungsartefakt, dessen Eintrag fuer die Art (bzw. Regel) CERTIFIED ist.",
+    "Wird ein Zertifizierungsartefakt mitgeliefert, muss certificationStatus (ausser NOT_ASSESSED) dem Artefakt entsprechen.",
+    "Alpha-Regel: kein Textwert darf Alpha oder einen bewiesenen Vorteil behaupten (Muster in alphaClaimPatterns), ausser uncertainty.family.correction = HOLM und uncertainty.family.adjustedP < uncertainty.family.alpha <= 0.1."
+  ],
+  "alphaClaimPatterns": [
+    "\\balpha\\b",
+    "\\bedge\\s+(proven|confirmed|established|bewiesen|belegt|nachgewiesen)\\b",
+    "\\b(proven|guaranteed|confirmed)\\s+(edge|alpha|outperformance)\\b",
+    "\\boutperformance\\s+(proven|confirmed|guaranteed)\\b",
+    "\\bbeats?\\s+the\\s+market\\b",
+    "(ueberrendite|überrendite|vorteil)\\s+(bewiesen|belegt|nachgewiesen|gesichert)"
+  ],
+  "notWired": [
+    "quant/api/product-services.js liest diesen Vertrag nicht.",
+    "quant/app/** und alle Views lesen ihn nicht.",
+    "quant/api/backtest-research-adapter.js ist ein isolierter Vorschlag (Standard: disabled) und wird von keinem Produktpfad importiert."
+  ]
+}

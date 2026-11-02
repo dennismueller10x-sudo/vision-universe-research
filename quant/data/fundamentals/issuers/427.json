@@ -6,10 +6,10 @@
       "cik": "0000876427",
       "name": "MONRO, INC.",
       "sic": "7500",
-      "rawFacts": 19039,
-      "mappedFacts": 5857,
-      "unmappedFacts": 13610,
-      "calendarYears": 20,
+      "rawFacts": 19503,
+      "mappedFacts": 5905,
+      "unmappedFacts": 14024,
+      "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0327",
@@ -20,26 +20,26 @@
       "annualPeriods": 18,
       "quarterlyPeriods": 65,
       "firstPeriodEnd": "2009-03-28",
-      "lastPeriodEnd": "2026-03-28",
+      "lastPeriodEnd": "2026-09-26",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2010-03-27",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2010-03-27",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 16.0
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2010-03-27",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 16.0,
@@ -52,28 +52,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2011-03-26",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 15.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2010-03-27",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2010-03-27",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2010-03-27",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 16.0
@@ -87,21 +87,21 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2009-03-28",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2011-03-26",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 15.0
         },
         "total_debt": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2011-03-26",
           "lastAvailablePeriod": "2019-03-30",
           "historyYears": 8.0,
@@ -117,49 +117,50 @@
         }
       },
       "quality": {
-        "HIGH": 556,
-        "MEDIUM": 64
+        "HIGH": 582,
+        "MEDIUM": 67
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 620,
-        "resolvedValues": 620
+        "datableValues": 649,
+        "resolvedValues": 649
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 14154,
+        "rules_version": "1.1.0",
+        "total": 14454,
         "by_severity": {
-          "INFO": 13610,
+          "INFO": 14024,
           "ERROR": 27,
-          "WARNING": 517
+          "WARNING": 403
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 400,
-          "FISCAL_PERIOD_CONFLICT": 1,
+          "CONCEPT_DISAGREEMENT": 302,
           "FUTURE_DATA_LEAK": 27,
-          "RESTATEMENT_CONFLICT": 96,
-          "UNEXPECTED_DURATION": 20,
-          "UNKNOWN_CONCEPT": 13610
+          "FUTURE_PERIOD_END": 27,
+          "RESTATEMENT_CONFLICT": 56,
+          "UNEXPECTED_DURATION": 18,
+          "UNKNOWN_CONCEPT": 14024
         }
       },
       "latestFiling": {
-        "accession": "0000876427-26-000010",
-        "filing_date": "2026-07-29",
+        "accession": "0000876427-26-000012",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 121
+        "periodic_filings": 122,
+        "acceptance_datetime": "2026-10-29T11:58:44.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "056b0b4bcba899f2bc5b116f3c4fffcfbbcfc0f0df546456cbb3b1500ec0fc82",
+      "sourceDigest": "421671ae9d63617f5f988a698d4a7ac9d54b0ea9d81a186ff40e7c5edf3c8436",
       "issuerId": "iss_cik_0000876427"
     },
     {

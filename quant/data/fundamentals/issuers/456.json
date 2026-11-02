@@ -6,9 +6,9 @@
       "cik": "0000010456",
       "name": "BAXTER INTERNATIONAL INC",
       "sic": "3841",
-      "rawFacts": 29635,
-      "mappedFacts": 8673,
-      "unmappedFacts": 20784,
+      "rawFacts": 30055,
+      "mappedFacts": 8651,
+      "unmappedFacts": 21217,
       "calendarYears": 19,
       "industry": null,
       "industryMetrics": {},
@@ -18,9 +18,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 74,
+      "quarterlyPeriods": 75,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
@@ -32,7 +32,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 73,
+          "quarterlyPeriods": 74,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
@@ -59,42 +59,42 @@
         },
         "net_income": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 73,
+          "quarterlyPeriods": 74,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "operating_cash_flow": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 72,
+          "quarterlyPeriods": 73,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "revenue": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 73,
+          "quarterlyPeriods": 74,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "short_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 71,
+          "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 70,
+          "quarterlyPeriods": 71,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -117,46 +117,47 @@
         }
       },
       "quality": {
-        "HIGH": 579,
-        "MEDIUM": 132
+        "HIGH": 585,
+        "MEDIUM": 133
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 711,
-        "resolvedValues": 711
+        "datableValues": 718,
+        "resolvedValues": 718
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 21847,
+        "rules_version": "1.1.0",
+        "total": 22168,
         "by_severity": {
-          "INFO": 20784,
-          "WARNING": 1063
+          "INFO": 21217,
+          "WARNING": 951
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 762,
-          "RESTATEMENT_CONFLICT": 242,
+          "CONCEPT_DISAGREEMENT": 689,
+          "RESTATEMENT_CONFLICT": 203,
           "UNEXPECTED_DURATION": 59,
-          "UNKNOWN_CONCEPT": 20784
+          "UNKNOWN_CONCEPT": 21217
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-051118",
-        "filing_date": "2026-07-30",
+        "accession": "0001628280-26-068278",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 138
+        "periodic_filings": 139,
+        "acceptance_datetime": "2026-10-29T20:31:35.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "5be02b298cf9fd2b6b97d7036746bcdea3964198c010d65439c62e9dd8307d59",
+      "sourceDigest": "28a5c92024605a3df21b020cf294492f97e4bc163091e1fdebfb3ed180ff7627",
       "issuerId": "iss_cik_0000010456"
     },
     {

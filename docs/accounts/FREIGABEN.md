@@ -1,6 +1,6 @@
 # Freigaben – was automatisch läuft, was der Owner freigibt
 
-Stand 29.10.2026, verbindlich. Ziel: Normale Entwicklung braucht **keine** GitHub-Freigabe. Eine ausdrückliche
+Stand 30.10.2026, verbindlich. Ziel: Normale Entwicklung braucht **keine** GitHub-Freigabe. Eine ausdrückliche
 Owner-Freigabe bleibt nur für Geld, Preise, Secrets und Datenverlust. Eine einzige zusätzliche Umgebung (`account-auto`)
 ist nötig – Begründung unten.
 
@@ -14,8 +14,12 @@ ist nötig – Begründung unten.
 | Nicht destruktive Migration | `account-production-auto.yml` → `migrationen` | Merge nach `main` | **keine** (automatische Prüfungen, s. u.) |
 | Stripe, Brevo, Worker lesend prüfen | `account-production-checks.yml` | täglich 05:41 UTC, von Hand | **keine** |
 | Datenbank-Sicherung (verschlüsselt) | `account-backup.yml` | täglich | **keine** |
-| **Zahlungsrelevanter Schalter** (Checkout-Zugang, Rechtsfreigabe, Umsatzsteuer, Live-Abrechnung, Kündigungsautomatik) | `account-production-auto.yml` → `zahlungsfreigabe` | nur wenn sich ein Schalter gegenüber dem laufenden Worker ändert | **Owner** (`account-production`) |
-| **Stripe-Produkte, Preise, Portal, Webhook, Steuersatz** | `account-production-stripe.yml` | von Hand | **Owner** (`account-production`, `account-dev`) |
+| **Zahlungen öffnen oder Schutz entfernen**: Checkout erweitern (`off`→`testers`→`public`), Live-Abrechnung **ein**, Kündigungsautomatik **ein**, Stripe Tax **aus** | `account-production-auto.yml` → `zahlungsfreigabe` | nur bei genau so einer Änderung gegenüber dem laufenden Worker | **Owner** (`account-production`) |
+| Einschränken oder geprüften Schutz hinzufügen: Checkout zurück (`public`→`testers`→`off`), Live-Abrechnung aus, Kündigungsautomatik aus, **Stripe Tax ein**, Rechtsfassung bestätigen (allein ohne Zahlungswirkung) | `account-production-auto.yml` → `worker` | Merge nach `main` | **keine** |
+| **Preis ändern** (neue Abschlüsse; bestehende Abos behalten ihren Preis) | keiner – Tarifverwaltung `/konto/admin/tarife/` ([TARIFVERWALTUNG.md](TARIFVERWALTUNG.md)) | Betreiber mit Rolle `pricing_admin` | **ausdrückliche Bestätigung in der Oberfläche** (Vorschau, Passwort, Haken), keine GitHub-Freigabe |
+| **Interne Backtest-Vorschau einschalten** (`VU_BACKTEST_REVIEW_ENABLED` → `"true"`) | `account-production-auto.yml` → `worker` (nach Merge) | nur per eigenem PR | **Owner** (ausdrückliche Zustimmung im PR; standardmäßig `"false"`) |
+| **Rolle `backtest_reviewer` vergeben** | keiner – SQL über den Datenbankzugang des Betriebs | von Hand | **Owner** (ausdrückliche Zustimmung, wie `pricing_admin`) |
+| **Stripe-Produkte, Portal, Webhook, Zahlungsmethoden** (Ersteinrichtung) | `account-production-stripe.yml` | von Hand | **Owner** (`account-production`, `account-dev`) |
 | **Secrets** setzen/erneuern (Supabase, Stripe, Brevo) | `account-production-deploy.yml` | von Hand | **Owner** (`account-dev`, `account-production`) |
 | **Destruktive Migration** (DROP, TRUNCATE, Kundendaten ändern, RLS aus, Rollen, Preise) | `account-db-approved.yml` (Eingabe `DESTRUKTIV`) | von Hand | **Owner** (`account-dev`) |
 | **Kündigungen ausführen**, Supabase Auth | `account-cancellations.yml`, `account-production-auth.yml` | von Hand | **Owner** (`account-dev`) |
@@ -29,8 +33,10 @@ ist, was Geld bewegt oder freischaltet – und das steht in der Konfiguration, n
 1. nur von `main`; Tests, Produktionskonfiguration, `check-public-checkout.mjs` (öffentlicher Checkout nur mit freigegebenen
    Rechtstexten, bestätigter Fassung, Live-Freigabe, USt-Ausweis), Worker-Bundle;
 2. `release-guard.mjs` vergleicht die zahlungsrelevanten Schalter der Konfiguration mit dem, was der **laufende** Worker unter
-   `/v1/health` meldet – zustandslos, ohne Lauf-Historie. Weicht etwas ab: Owner-Freigabe in `account-production`, der
-   Worker-Job prüft sie zusätzlich selbst (fail closed);
+   `/v1/health` meldet – zustandslos, ohne Lauf-Historie – und bewertet die **Richtung**: Nur was Zahlungen öffnet oder
+   einen Schutz entfernt, wartet auf die Owner-Freigabe in `account-production` (der Worker-Job prüft sie zusätzlich
+   selbst, fail closed). Unbekannte Werte und ein nicht erreichbarer Worker gelten als freigabepflichtig. Stripe Tax
+   einschalten ist automatisch, weil der Worker vor jedem Checkout prüft, dass Preis `inclusive` und Stripe Tax aktiv ist;
 3. `wrangler deploy` ohne Secrets; danach muss `/v1/health` wieder zur Konfiguration passen.
 
 **Migrationen** (`scripts/account/migrate-production.mjs`, aus PR #1063 übernommen und um den Produktionsfall ergänzt):
@@ -57,6 +63,12 @@ fünf Secrets, nie aus Pull Requests; jeder Job in `account-dev`/`account-produc
   Nur Code, der in `main` angekommen ist (Tests, CI, Wächter), kommt heran.
 - Reviewer aus `account-dev` zu entfernen, wäre keine Alternative: Dort liegen auch Supabase-Secret-Key und Management-Token
   (Auth-Einstellungen), die weiterhin Freigabe brauchen.
+
+## Warum der Stripe-Tax-Wechsel am 30.10.2026 eine Freigabe brauchte
+
+Bis dahin galt jede Abweichung eines Zahlungsschalters als freigabepflichtig, auch eine schützende. Seitdem zählt die
+Richtung (oben). Derselbe Wechsel `none` → `automatic` rollt heute ohne Freigabe aus; Code-, Text-, Brevo- und
+Migrationsänderungen bei unveränderten Zahlungsschaltern brauchten schon vorher keine.
 
 ## Einmalige Einstellungen (Owner, ca. 10 Minuten, danach nie wieder)
 
@@ -91,3 +103,25 @@ Nicht übernommen: die Erkennung „zahlungsrelevant“ über Dateinamen und Suc
 Worker-Änderung freigabepflichtig gemacht (das Problem bliebe); ersetzt durch den Vergleich der Schalter mit dem laufenden
 Worker. Ebenso nicht: das zusätzliche Stripe-Produktmerkmal `vu_public_checkout` – die Freigabe des öffentlichen Checkouts ist
 bereits dreifach gesichert (Rechtstexte, `VU_LEGAL_APPROVED`, Zahlungsfreigabe-Job). PR #1063 wird geschlossen.
+
+## Interne Backtest-Vorschau (Stand 31.10.2026)
+
+Technisch vorbereitet, **ausgeschaltet** und **niemandem freigegeben** ([BACKTEST_PREVIEW.md](../quant/BACKTEST_PREVIEW.md),
+Abschnitt 9). Sichtbar wird sie erst, wenn beides zutrifft – zwei getrennte Owner-Entscheidungen:
+
+1. **Schalter:** `VU_BACKTEST_REVIEW_ENABLED = "true"` in `workers/vu-account/wrangler.toml` (eigener PR mit Owner-Zustimmung).
+   Ohne Schalter antworten alle Routen `/v1/admin/backtests*` mit 404 `PREVIEW_NOT_ACTIVATED`. Zurückschalten auf `"false"`
+   ist jederzeit ohne Freigabe möglich.
+2. **Rolle:** nur mit ausdrücklicher Zustimmung des Owners, nie von der Oberfläche aus (Supabase SQL-Editor):
+
+   ```sql
+   insert into public.user_roles (user_id, role)
+   select id, 'backtest_reviewer' from auth.users where lower(email) = lower('<E-Mail der Prüferin/des Prüfers>')
+   on conflict do nothing;
+   ```
+
+   Entziehen: `delete from public.user_roles where role = 'backtest_reviewer' and user_id = '<id>';`
+
+Die Migration `20261031000100_backtest_reviewer.sql` fügt nur den Rollenwert hinzu und vergibt nichts; sie läuft als nicht
+destruktive Migration automatisch. Eine öffentliche Anzeige, Navigation oder Zertifizierung ist damit **nicht** freigegeben.
+

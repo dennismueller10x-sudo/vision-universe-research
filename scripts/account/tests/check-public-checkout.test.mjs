@@ -5,7 +5,7 @@ import {readFileSync} from 'node:fs';
 import {productionVars, publicCheckoutProblems} from '../check-public-checkout.mjs';
 
 const approved = {status: 'freigegeben', version: 'vu-recht-2026-11-10-1', docs: {agb: {blocks: ['Text']}}};
-const ready = {VU_CHECKOUT_ACCESS: 'public', VU_LEGAL_APPROVED: 'vu-recht-2026-11-10-1', STRIPE_LIVE_MODE_APPROVED: 'true', STRIPE_TAX_MODE: 'txr_123'};
+const ready = {VU_CHECKOUT_ACCESS: 'public', VU_LEGAL_APPROVED: 'vu-recht-2026-11-10-1', STRIPE_LIVE_MODE_APPROVED: 'true', STRIPE_TAX_MODE: 'automatic'};
 
 test('testers und off sind immer zulaessig, unbekannte Werte nicht', () => {
   assert.deepEqual(publicCheckoutProblems({VU_CHECKOUT_ACCESS: 'testers'}), []);
@@ -15,7 +15,7 @@ test('testers und off sind immer zulaessig, unbekannte Werte nicht', () => {
 
 test('public: alle vier Bedingungen', () => {
   assert.deepEqual(publicCheckoutProblems(ready, approved), []);
-  assert.deepEqual(publicCheckoutProblems({...ready, STRIPE_TAX_MODE: 'automatic'}, approved), []);
+  assert.equal(publicCheckoutProblems({...ready, STRIPE_TAX_MODE: 'txr_123'}, approved).length, 1, 'fester Steuersatz nicht mehr zulaessig');
   assert.equal(publicCheckoutProblems(ready, {...approved, status: 'entwurf'}).length, 1);
   assert.equal(publicCheckoutProblems(ready, {...approved, docs: {agb: {blocks: ['[[OFFEN: x]]']}}}).length, 1);
   assert.equal(publicCheckoutProblems({...ready, VU_LEGAL_APPROVED: 'vu-recht-alt'}, approved).length, 1);

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#ffffff">
+<title>Tarifverwaltung · Vision Universe</title>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/konto/konto.css">
+</head>
+<body class="ka-body" data-view="pricing-admin"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<main class="ka" id="main">
+<p class="ka-eyebrow">Betrieb</p>
+<h1 class="ka-title">Tarifverwaltung</h1>
+<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/einstellungen/">Einstellungen</a><a href="/konto/admin/tarife/">Tarifverwaltung</a><a class="ka-nav-out" href="/preise/">Preisseite</a></nav>
+<div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
+<div class="ka-skeleton" id="ka-loading" aria-hidden="true"></div>
+<div id="ka-pricing-wrap" hidden>
+<section class="ka-card" aria-labelledby="pa-state-title">
+<h2 id="pa-state-title">Zustand</h2>
+<p class="ka-muted" id="pa-state"></p>
+</section>
+<section class="ka-card" aria-labelledby="pa-prices-title">
+<h2 id="pa-prices-title">Preise</h2>
+<p class="ka-muted">Endpreise inkl. Umsatzsteuer. Ein früherer Preis bleibt für die Abos erhalten, die mit ihm abgeschlossen wurden.</p>
+<div class="ka-table-wrap"><table class="ka-table"><thead><tr><th scope="col">Tarif</th><th scope="col" class="num">Endpreis</th><th scope="col">Status</th><th scope="col" class="num">Laufende Abos</th><th scope="col">Stripe</th></tr></thead><tbody id="pa-prices"></tbody></table></div>
+</section>
+<form class="ka-card ka-form" id="pa-preview-form" novalidate>
+<h2>Neuen Preis festlegen</h2>
+<p class="ka-muted">Gilt nur für neue Abschlüsse. Bestehende Abos behalten ihren Preis. Die Vorschau ändert noch nichts.</p>
+<div class="ka-grid ka-grid--2">
+<div class="ka-field"><label for="pa-price">Tarif</label><select class="ka-select" id="pa-price" name="pa-price"></select></div>
+<div class="ka-field"><label for="pa-amount">Neuer Endpreis pro Abrechnungszeitraum (EUR, inkl. USt)</label><input class="ka-input" id="pa-amount" name="pa-amount" type="text" inputmode="decimal" autocomplete="off" maxlength="9" placeholder="z. B. 9,90"></div>
+</div>
+<div class="ka-actions"><button class="ka-btn" type="submit">Vorschau</button></div>
+</form>
+<form class="ka-card ka-form" id="pa-apply-form" novalidate hidden>
+<h2>Änderung bestätigen</h2>
+<ul class="ka-features" id="pa-summary"></ul>
+<div class="ka-notice" id="pa-warnings" data-kind="error" hidden></div>
+<div class="ka-field"><label for="pa-password">Dein Passwort zur Bestätigung</label><div class="ka-pw"><input class="ka-input" id="pa-password" name="pa-password" type="password" autocomplete="current-password" required maxlength="200"><button type="button" data-toggle-password="pa-password" aria-controls="pa-password" aria-pressed="false">Anzeigen</button></div></div>
+<label class="ka-check ka-check--order"><input type="checkbox" id="pa-confirm"><span>Ich habe die Zusammenfassung geprüft und will den Preis jetzt ändern.</span></label>
+<div class="ka-actions"><button class="ka-btn" type="submit">Preis jetzt ändern</button><button class="ka-btn ka-btn--secondary" type="button" id="pa-cancel">Abbrechen</button></div>
+</form>
+<section class="ka-card" aria-labelledby="pa-log-title">
+<h2 id="pa-log-title">Letzte Änderungen</h2>
+<div class="ka-table-wrap"><table class="ka-table"><thead><tr><th scope="col">Zeitpunkt</th><th scope="col">Tarif</th><th scope="col" class="num">Alt</th><th scope="col" class="num">Neu</th><th scope="col">Ergebnis</th></tr></thead><tbody id="pa-log"></tbody></table></div>
+</section>
+</div>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/agb">Bedingungen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></nav>
+</main>
+<script src="/konto/config.js"></script>
+<script src="/konto/account-api.js"></script>
+<script src="/konto/konto.js"></script>
+</body>
+</html>

@@ -55,8 +55,8 @@ export function loadConfig(env = {}) {
       // "public" wirkt im Live-Modus nur zusammen mit freigegebenen Rechtstexten (legalApproved), sonst "testers".
       checkoutAccess: effectiveCheckoutAccess(checkoutAccess(env.VU_CHECKOUT_ACCESS, stripeMode), legalApproved(env), stripeMode),
       requestedCheckoutAccess: checkoutAccess(env.VU_CHECKOUT_ACCESS, stripeMode),
-      // Umsatzsteuer: "none" (Bruttopreis ohne Steuerausweis bei Stripe), "automatic" (Stripe Tax, im Dashboard
-      // eingerichtet) oder eine Steuersatz-ID txr_… (inklusive, 19 % DE). Entscheidung: docs/accounts/STEUER.md.
+      // Umsatzsteuer: "none" (Bruttopreis ohne Steuerausweis) oder "automatic" (Stripe Tax: Steuer aus dem
+      // Bruttopreis herausgerechnet, je nach Kundenland und Registrierung). docs/accounts/STEUER.md.
       tax: taxMode(env.STRIPE_TAX_MODE),
     },
     registration: {
@@ -87,6 +87,9 @@ export function loadConfig(env = {}) {
       // Empfaenger von Betriebsalarmen (Kuendigung ueberfaellig, Bestaetigung nicht zustellbar).
       opsAlertEmail: String(env.VU_OPS_ALERT_EMAIL || ''),
     },
+    // Interne Backtest-Vorschau (/v1/admin/backtests*): standardmaessig AUS. Einschalten nur per eigenem PR mit
+    // Owner-Freigabe (docs/accounts/FREIGABEN.md); zusaetzlich braucht jedes Konto die Rolle backtest_reviewer.
+    backtestReview: {enabled: flag(env.VU_BACKTEST_REVIEW_ENABLED)},
     cookies: {
       secure: cookieSecure,
       prefix: cookieSecure ? '__Host-' : '',
@@ -110,11 +113,10 @@ export function legalApproved(env) {
 export function effectiveCheckoutAccess(access, approved, mode = 'live') {
   return mode === 'live' && access === 'public' && !approved ? 'testers' : access;
 }
+// Umsatzsteuer: "none" (kein Steuerausweis) oder "automatic" (Stripe Tax). Ein fester Steuersatz (txr_) wird nicht
+// mehr unterstuetzt: Nie zwei Steuerberechnungen auf derselben Buchung (docs/accounts/STEUER.md).
 export function taxMode(value) {
-  const v = String(value || '').trim();
-  if (v === 'automatic') return {mode: 'automatic'};
-  if (/^txr_[A-Za-z0-9]+$/.test(v)) return {mode: 'rate', rate: v};
-  return {mode: 'none'};
+  return String(value || '').trim() === 'automatic' ? {mode: 'automatic'} : {mode: 'none'};
 }
 
 // Warum Abrechnung gerade nicht moeglich ist - oder null.

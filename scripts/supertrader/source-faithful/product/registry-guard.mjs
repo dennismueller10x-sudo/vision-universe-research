@@ -4,8 +4,8 @@
  * core/registry/domains.json darf den Produktpfad (source-faithful/product, Kandidatenvertrag, sf-candidates) an
  * GENAU EINER Stelle nennen: im Eintrag `supertrader-sf8-candidates`. Dessen Felder sind festgeschrieben; der
  * Aktivierungszustand ist `PREPARED_DISABLED` oder, nach Owner-Freigabe in einem eigenen Core-PR, `ACTIVATING`
- * (erste Veröffentlichung, docs/SUPERTRADER_8_FIRST_RELEASE.md). Ein dritter Zustand oder ein fehlendes Feld (Dauerbetrieb)
- * braucht eine eigene Freigabe und eine Änderung hier.
+ * (erste Veröffentlichung, docs/SUPERTRADER_8_FIRST_RELEASE.md). Ohne Feld `activation` ist der Eintrag im Dauerbetrieb
+ * (V6 e, docs/SUPERTRADER_9_DAILY_OPERATIONS.md; das Feld entfernt ein eigener Core-PR). Ein dritter Zustand ist verboten.
  * Jeder zweite Eintrag, jedes geänderte Feld und jeder andere Verweis ist eine Verletzung.
  *
  * Rein: liest nur den übergebenen Text, schreibt nichts. Genutzt von SF-PRODUCT-NO-RUN-INTEGRATION und
@@ -44,7 +44,8 @@ export function sf8RegistryViolations(text) {
   if (own.length > 1) out.push('SF8_DOMAIN_DUPLICATE');
   for (const d of own) {
     for (const [k, v] of Object.entries(SF8_DOMAIN_PINNED)) if (d[k] !== v) out.push(`SF8_DOMAIN_FIELD:${k}`);
-    if (!SF8_ACTIVATION_STATES.includes(d.activation?.state)) out.push('SF8_DOMAIN_ACTIVATION_NOT_ALLOWED');
+    // Dauerbetrieb (V6 e, Supertrader 9): ohne Feld `activation` zulässig; ein vorhandenes Feld nur mit erlaubtem Zustand
+    if (d.activation !== undefined && !SF8_ACTIVATION_STATES.includes(d.activation?.state)) out.push('SF8_DOMAIN_ACTIVATION_NOT_ALLOWED');
     for (const k of Object.keys(d)) if (!SF8_DOMAIN_KEYS.includes(k)) out.push(`SF8_DOMAIN_UNKNOWN_FIELD:${k}`);
     // nur die festgeschriebenen Felder artifact/producer dürfen den Produktpfad nennen; Texte, Verbraucher, Entscheidung nicht
     for (const [k, v] of Object.entries(d)) if (!PINNED_REF_FIELDS.has(k) && strings(v).some((x) => SF8_PRODUCT_REF.test(x))) out.push(`SF8_DOMAIN_REF_IN:${k}`);

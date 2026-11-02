@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Vision Universe — Konfiguration fuer den oeffentlichen Produktivstart in EINEM Schritt setzen (lokal, ohne Netz).
 //
-//   node scripts/account/go-live-config.mjs --legal-version=vu-recht-2026-11-10-1 --tax=txr_… \
+//   node scripts/account/go-live-config.mjs --legal-version=vu-recht-2026-11-10-1 --tax=automatic \
 //     --checkout=public [--brevo-sync=true] [--newsletter=true] [--dry-run] [--root=<Repo-Wurzel>]
 //
 // Aendert nur:

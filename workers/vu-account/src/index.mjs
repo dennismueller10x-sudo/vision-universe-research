@@ -18,6 +18,8 @@ import {createMailer} from './mail.mjs';
 import * as auth from './auth.mjs';
 import * as account from './account.mjs';
 import * as billing from './billing.mjs';
+import * as pricing from './pricing.mjs';
+import * as backtests from './backtests.mjs';
 import * as watchlist from './watchlist.mjs';
 import {runScheduled, needsAttention} from './cancellation.mjs';
 import {createBrevo, runBrevo} from './brevo.mjs';
@@ -50,10 +52,12 @@ async function health(ctx) {
   return json(ctx.request, ctx.cfg, 200, {state: 'OK', service: 'vu-account', accounts: supabaseReady(ctx.cfg),
     mail: ctx.mailer.configured, cancellations, autoProcess: ctx.cfg.cancellation.autoProcess,
     checkout: ctx.cfg.stripe.checkoutAccess, legal: ctx.cfg.legal.status, legalApproved: ctx.cfg.legal.approved,
-    liveApproved: ctx.cfg.stripe.liveApproved, tax: ctx.cfg.stripe.tax.rate || ctx.cfg.stripe.tax.mode, newsletter: ctx.cfg.brevo.newsletter, newsletterTemplate, contactSync: ctx.cfg.brevo.sync});
+    liveApproved: ctx.cfg.stripe.liveApproved, tax: ctx.cfg.stripe.tax.mode,
+    // Stripe Tax im Konto aktiv? Auch vor dem Einschalten sichtbar (ersetzt einen Pruef-Workflow).
+    stripeTax: ctx.stripe && ctx.cfg.stripe.mode !== 'missing' ? await billing.stripeTaxState(ctx) : undefined, newsletter: ctx.cfg.brevo.newsletter, newsletterTemplate, contactSync: ctx.cfg.brevo.sync});
 }
 let templateState = {at: 0, value: 'unknown'};
-export const resetHealthCache = () => { cancellationState = {at: 0, value: 'unknown'}; templateState = {at: 0, value: 'unknown'}; };
+export const resetHealthCache = () => { cancellationState = {at: 0, value: 'unknown'}; templateState = {at: 0, value: 'unknown'}; billing.resetTaxCache(); };
 
 // [Methode, Pfad, Handler, {csrf: Cookie-Schutz pruefen, needsDb}]
 const ROUTES = [
@@ -84,6 +88,13 @@ const ROUTES = [
   ['POST', '/v1/billing/cancel', billing.cancel, {csrf: true}],
   ['POST', '/v1/billing/cancellation-request', billing.cancellationRequest, {csrf: true}],
   ['POST', '/v1/billing/webhook/stripe', billing.stripeWebhook, {webhook: true}],
+  ['GET', '/v1/admin/pricing', pricing.overview],
+  ['POST', '/v1/admin/pricing/preview', pricing.preview, {csrf: true}],
+  ['POST', '/v1/admin/pricing/apply', pricing.apply, {csrf: true}],
+  // Interne Backtest-Vorschau: standardmaessig aus (404 PREVIEW_NOT_ACTIVATED), nur Rolle backtest_reviewer.
+  ['GET', '/v1/admin/backtests', backtests.overview],
+  ['GET', '/v1/admin/backtests/lookup', backtests.lookupGet],
+  ['POST', '/v1/admin/backtests/lookup', backtests.lookupPost, {csrf: true}],
   ['POST', '/v1/billing/webhook/apple', billing.storeWebhookNotConfigured, {webhook: true, db: false}],
   ['POST', '/v1/billing/webhook/google', billing.storeWebhookNotConfigured, {webhook: true, db: false}],
 ];
@@ -104,7 +115,7 @@ function defaultLog(level, message, fields) {
   console[level === 'error' ? 'error' : 'log'](JSON.stringify({level, message, ...fields}));
 }
 
-export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), now = () => Date.now(), log = defaultLog}) {
+export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), now = () => Date.now(), log = defaultLog, backtestBundle = null}) {
   const cfg = loadConfig(env);
   const jwks = cfg.supabase.url
     ? createJwksCache({url: cfg.supabase.url + '/auth/v1/.well-known/jwks.json', fetchImpl, now}) : null;
@@ -143,7 +154,7 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
     }
     const [, , handler, opts = {}] = route;
     const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, ip: clientIp(request),
-      cookies: parseCookies(request), outCookies: []};
+      cookies: parseCookies(request), outCookies: [], backtestBundle};
     try {
       if (opts.db !== false && !supabaseReady(cfg)) throw new HttpError(503, 'ACCOUNTS_NOT_CONFIGURED');
       if (opts.csrf) assertCsrf(request, cfg, {bearer: (request.headers.get('Authorization') || '').startsWith('Bearer ')});

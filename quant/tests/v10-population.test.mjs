@@ -6,6 +6,8 @@ import {resolve,join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
+// Mutationstests am Stamm des tmp-Root: ausdrücklich der Produktstamm (LIVE); ohne Angabe lesen Evidenz-Optionen die eingefrorene Generation 1.1.0.
+const LIVE={masterGeneration:'LIVE'};
 const require=createRequire(import.meta.url);
 const A=require('../engines/weekly-real-adapter.cjs'),R=require('../engines/research-weekly-loader.cjs');
 const Identity=require('../engines/research-identity-evidence.cjs'),Lifecycle=require('../engines/research-listing-lifecycle.cjs');
@@ -20,6 +22,11 @@ const BASE_REGISTRY_SHA256='b471d52e7a903eb53048a4842db933ccc19f3f8802e705aabd96
 const V10=Identity.v10.records,LC=Lifecycle.records;
 const FRAME={identityEvidence:true,identityEvidenceProtocolV10:true,corporateActionEvidence:true,listingLifecycleEvidence:true};
 const frozenRun=pts=>{let n=1;for(let i=pts.length-2;i>=0&&pts[i][1]===pts.at(-1)[1];i--)n++;return n;};
+// Evidence files (lifecycle cases, population frame) were derived from the long weekly series as of a fixed date. The
+// committed series keep growing (weekly long-series run), so they are replayed as of that date: points and corporate-action
+// evidence after it are dropped and to/asOf set to the last kept week (barCount/sourceLast are not read by any loader) - the same cut the backtest-refresh test applies to NVDA.
+const seriesAsOf=(id,asOf)=>{const d=JSON.parse(seriesBytes(id));d.points=d.points.filter(p=>p[0]<=asOf);d.to=d.asOf=d.points.at(-1)[0];const ca=d.corporateActions;
+ if(ca){ca.splits=ca.splits.filter(s=>s[0]<=d.asOf);ca.moves=ca.moves.filter(m=>m.week<=d.asOf);if(ca.supplemented)ca.supplemented=ca.supplemented.filter(s=>s.date<=d.asOf);}return JSON.stringify(d);};
 
 test('reference cases: the five V9 dossier records are byte-identical and keep their 1.0.0 semantics',()=>{
  const {v10,...base}=Identity;
@@ -101,9 +108,9 @@ test('V10 identity bindings select the recorded master row on the sourced interv
   mkdirSync(join(tmp,'quant/data/market/security-master'),{recursive:true});
   const extra={...master.rows.find(r=>r.canonical_id===rec.selectedCanonicalId),canonical_id:'tiingo:TEST:'+rec.ticker+':2001-01-01'};
   writeFileSync(join(tmp,mp),JSON.stringify({...master,rows:master.rows.concat([extra])}));
-  assert.throws(()=>R.createResearchLoader(tmp,{identityEvidence:true,identityEvidenceProtocolV10:true})(rec.securityId,seriesBytes(rec.securityId)),/^Error: IDENTITY_EVIDENCE_MASTER_ROWS_CHANGED$/);
+  assert.throws(()=>R.createResearchLoader(tmp,{identityEvidence:true,identityEvidenceProtocolV10:true},LIVE)(rec.securityId,seriesBytes(rec.securityId)),/^Error: IDENTITY_EVIDENCE_MASTER_ROWS_CHANGED$/);
   writeFileSync(join(tmp,mp),JSON.stringify({...master,rows:master.rows.filter(r=>r.canonical_id!==rec.selectedCanonicalId)}));
-  assert.throws(()=>R.createResearchLoader(tmp,{identityEvidence:true,identityEvidenceProtocolV10:true})(rec.securityId,seriesBytes(rec.securityId)),/^Error: IDENTITY_EVIDENCE_MASTER_ROW_MISSING$/);
+  assert.throws(()=>R.createResearchLoader(tmp,{identityEvidence:true,identityEvidenceProtocolV10:true},LIVE)(rec.securityId,seriesBytes(rec.securityId)),/^Error: IDENTITY_EVIDENCE_MASTER_ROW_MISSING$/);
  }finally{rmSync(tmp,{recursive:true,force:true});}
 });
 
@@ -136,11 +143,15 @@ test('listingLifecycleEvidence: cut at the sourced last trading day, frozen with
  assert.equal(cut.listingLifecycle.status,'FROZEN_TAIL_UNSOURCED_CENSORED');assert.equal(cut.listingLifecycle.lastTradeDate,null);
  assert.equal(cut.listingLifecycle.lastObservedDate,nv.points.at(-4)[0]);assert.equal(cut.listingLifecycle.terminal.kind,'UNKNOWN');assert.equal(cut.listingLifecycle.frozenTailBarsRemoved,3);
  assert.equal(outcome(()=>D('ref_NVDA',JSON.stringify(nv))).ok,true);
- // real frozen ids without a record
+ // real frozen ids without a record, replayed as of the week the evidence observed the frozen tail (a later
+ // provider close may legitimately end the freeze, e.g. ref_ALF 10.92 -> 10.87 in the week to 2026-10-30)
  const lcIds=new Set(LC.map(r=>r.securityId));
  const cases=EV('lifecycle-cases.json').cases.filter(c=>c.weeklyFrozen&&!lcIds.has(c.securityId)&&c.defaultReason==='QUALIFIED').slice(0,5);
- for(const c of cases){const o=outcome(()=>L(c.securityId));if(!o.ok)continue;const r=L(c.securityId);
+ let frozenSeen=0;
+ for(const c of cases){const text=seriesAsOf(c.securityId,c.weeklyTail.to),o=outcome(()=>L(c.securityId,text));if(!o.ok){assert.match(o.value,/^INSUFFICIENT_HISTORY$/,c.securityId);continue;}const r=L(c.securityId,text);frozenSeen++;
+  assert.ok(frozenRun(JSON.parse(text).points)>=R.FROZEN_TAIL_MIN_RUN,c.securityId+': replay must show the recorded frozen tail');
   assert.equal(r.listingLifecycle.status,'FROZEN_TAIL_UNSOURCED_CENSORED',c.securityId);assert.ok(R.frozenTailRun(r.points)<R.FROZEN_TAIL_MIN_RUN||r.points.length<2,c.securityId);}
+ assert.equal(frozenSeen,4,'recorded frozen cases that replay (frozen evidence: AACB, AFBI, ALF, ANSC; ADEX too short)');
  // records: cut + listingLifecycle contract
  let ok=0;
  for(const rec of LC){
@@ -170,6 +181,9 @@ test('population frame: ids, hash and counts reproduce under the frame loader op
  assert.equal(sha(JSON.stringify(ids)),f.idsSha256);assert.equal(f.counts.qualified,ids.length);
  assert.equal(f.counts.candidates,f.counts.qualified+Object.values(f.counts.excludedByReason).reduce((a,b)=>a+b,0));
  const L=R.createResearchLoader(root,FRAME);
- for(const x of f.listings.filter((_,i)=>i%97===0)){const r=L(x.securityId);assert.equal(r.points[0][0],x.from);assert.equal(r.points.at(-1)[0],x.to);}
+ // Replayed as of the frame's data date: weeks after it are new data, not a different frame. The sample is fixed (the
+ // frame is frozen evidence), so boundaries and bar count must reproduce exactly; only a provider revision of weeks up
+ // to the frame date may break this, and then it should.
+ for(const x of f.listings.filter((_,i)=>i%97===0)){const r=L(x.securityId,seriesAsOf(x.securityId,f.dataAsOf.weekly));assert.equal(r.points[0][0],x.from,x.securityId);assert.equal(r.points.at(-1)[0],x.to,x.securityId);assert.equal(r.points.length,x.bars,x.securityId);}
  for(const [y,p] of Object.entries(f.perIsoYear))assert.equal(p.qualified,p.laterDelisted+p.survivors,y);
 });

@@ -1,15 +1,15 @@
 {
   "note": "Jeder SEC_RECOVERABLE-Fall traegt EINE Feinursache und den Beleg, an dem sie erkannt wurde. NOT_APPLICABLE heisst: die Kennzahl existiert fuer diese Struktur nicht - ein SPAC hat keinen Umsatz, ein geschlossener Fonds keinen operativen Abschluss. Das ist keine Luecke, die jemand schliesst, weder wir noch ein Anbieter.",
   "denominator": {
-    "SEC_RECOVERABLE": 140
+    "SEC_RECOVERABLE": 139
   },
-  "accountedFor": 140,
+  "accountedFor": 139,
   "unaccounted": 0,
   "byCause": [
     {
       "cause": "SPAC_BLANK_CHECK",
       "count": 4,
-      "percent": 2.8571,
+      "percent": 2.8777,
       "consequence": "NOT_APPLICABLE",
       "examples": [
         {
@@ -37,7 +37,7 @@
     {
       "cause": "SPECIAL_PURPOSE_ENTITY",
       "count": 49,
-      "percent": 35.0,
+      "percent": 35.2518,
       "consequence": "NOT_APPLICABLE",
       "examples": [
         {
@@ -65,7 +65,7 @@
     {
       "cause": "BANK",
       "count": 1,
-      "percent": 0.7143,
+      "percent": 0.7194,
       "consequence": "INDUSTRY_LAYER",
       "examples": [
         {
@@ -76,9 +76,22 @@
       ]
     },
     {
+      "cause": "IFRS_REMAINING",
+      "count": 1,
+      "percent": 0.7194,
+      "consequence": "SEC_RECOVERABLE",
+      "examples": [
+        {
+          "symbol": "THH",
+          "cik": "0002044241",
+          "evidence": "Formular 20-F, UNKNOWN_CONCEPT=2"
+        }
+      ]
+    },
+    {
       "cause": "NO_XBRL_FACTS",
-      "count": 39,
-      "percent": 27.8571,
+      "count": 40,
+      "percent": 28.777,
       "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -106,7 +119,7 @@
     {
       "cause": "NO_XBRL_FINANCIALS",
       "count": 3,
-      "percent": 2.1429,
+      "percent": 2.1583,
       "consequence": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -128,8 +141,8 @@
     },
     {
       "cause": "VERY_YOUNG_LISTING",
-      "count": 44,
-      "percent": 31.4286,
+      "count": 41,
+      "percent": 29.4964,
       "consequence": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -156,12 +169,13 @@
     }
   ],
   "byConsequence": {
-    "RESOLVES_WITH_TIME": 44,
+    "RESOLVES_WITH_TIME": 41,
     "NOT_APPLICABLE": 53,
-    "EXTERNAL_PROVIDER_CANDIDATE": 42,
-    "INDUSTRY_LAYER": 1
+    "EXTERNAL_PROVIDER_CANDIDATE": 43,
+    "INDUSTRY_LAYER": 1,
+    "SEC_RECOVERABLE": 1
   },
-  "stillRecoverableBySec": 0,
+  "stillRecoverableBySec": 1,
   "ciksByCause": {
     "SPAC_BLANK_CHECK": [
       "0002079109",
@@ -223,6 +237,9 @@
     "BANK": [
       "0001841644"
     ],
+    "IFRS_REMAINING": [
+      "0002044241"
+    ],
     "NO_XBRL_FACTS": [
       "0000062362",
       "0000066901",
@@ -262,6 +279,7 @@
       "0001843974",
       "0001857047",
       "0001930147",
+      "0001930147",
       "0002136387"
     ],
     "NO_XBRL_FINANCIALS": [
@@ -281,7 +299,6 @@
       "0001912884",
       "0001919776",
       "0001930147",
-      "0001930147",
       "0002000756",
       "0002000756",
       "0002002660",
@@ -290,8 +307,6 @@
       "0002025416",
       "0002027329",
       "0002039972",
-      "0002041208",
-      "0002044241",
       "0002052053",
       "0002054507",
       "0002070534",
@@ -316,7 +331,9 @@
       "0002132582"
     ]
   },
-  "ciksStillRecoverable": [],
+  "ciksStillRecoverable": [
+    "0002044241"
+  ],
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.14.0",
@@ -328,5 +345,5 @@
       "mapping_version": "1.7.0"
     }
   },
-  "generatedAtUtc": "2026-10-29T13:17:18+00:00"
+  "generatedAtUtc": "2026-11-01T13:25:54+00:00"
 }

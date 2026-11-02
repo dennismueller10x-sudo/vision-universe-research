@@ -3,7 +3,7 @@
    ist der einzige Pass ohne Pruefung; Daten ohne Freigabe, Freigabe ohne Daten und Unlesbares sind Fehler. */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync, existsSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync, existsSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -323,7 +323,28 @@ test("DQ-SF8 · Repository-Stand: ohne Daten alle Regeln PASS (0 geprueft); vero
     assert.ok(!domain.activation || domain.activation.state === "ACTIVATING", "veroeffentlicht nur nach Freigabe");
     const content = rep.rules.filter((r) => r.id !== "DQ-SF8-1");
     assert.equal(content.length, 7);
-    assert.deepEqual(content.filter((r) => r.status !== "PASS" || r.checked === 0).map((r) => r.id + " " + r.samples.slice(0, 2).join("; ")), []);
+    /* DQ-SF8-8 vergleicht mit der Discover-Tagesreihe derselben Sitzung. Die Reihe hat einen eigenen Erzeuger und laeuft
+       dem SF8-Stand voraus, sobald der SF8-Tageslauf eine Sitzung auslaesst (nicht freigeschaltet, manuell angestossen).
+       Dann fehlt der zeitgleiche Beleg: die Regel meldet das zu Recht, es ist aber eine Eigenschaft des Repository-Stands,
+       kein Inhaltsfehler. Der Test leitet die erwarteten Luecken aus denselben Dateien ab und verlangt, dass die Regel
+       genau diese und keine weitere Ansicht beanstandet - ein abweichender Schluss derselben Sitzung bleibt rot. */
+    const views = readdirSync(join(ROOT, "supertrader", "data", "sf-candidates", "strategy")).filter((n) => /^C\d{2}\.json$/.test(n)).sort()
+      .flatMap((n) => JSON.parse(readFileSync(join(ROOT, "supertrader", "data", "sf-candidates", "strategy", n), "utf8")).views || []);
+    const series = {};
+    const ahead = views.filter((v) => {
+      const f = join(ROOT, "quant", "data", "market", "discover-series", v.securityId + ".json");
+      if (!(v.securityId in series)) series[v.securityId] = existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : null;
+      const ref = series[v.securityId];
+      return !!ref && ref.securityId === v.securityId && ref.ticker === v.ticker && typeof ref.asOf === "string" && ref.asOf > v.asOf;
+    });
+    const parity = content.find((r) => r.id === "DQ-SF8-8");
+    assert.ok(parity.checked > 0 && parity.checked === views.length, "DQ-SF8-8 prueft jede Ansicht");
+    assert.equal(parity.failed, ahead.length, "DQ-SF8-8 beanstandet genau die Ansichten, deren Reihe weiter ist: " + parity.samples.slice(0, 2).join("; "));
+    for (const s of parity.samples) {
+      const m = s.match(/^C\d{2} \S+ (\d{4}-\d{2}-\d{2}): kein zeitgleicher veroeffentlichter Schluss \(Reihe (\d{4}-\d{2}-\d{2})\)$/);
+      assert.ok(m && m[2] > m[1], "nur fehlender zeitgleicher Beleg, keine Abweichung: " + s);
+    }
+    assert.deepEqual(content.filter((r) => r.id !== "DQ-SF8-8" && (r.status !== "PASS" || r.checked === 0)).map((r) => r.id + " " + r.samples.slice(0, 2).join("; ")), []);
   }
   const empty = mkdtempSync(join(tmpdir(), "sf8-dq-"));
   try {

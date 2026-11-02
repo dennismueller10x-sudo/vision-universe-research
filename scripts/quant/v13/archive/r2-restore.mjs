@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+// V13 – unabhängige Wiederherstellungsprobe direkt auf dem Actions-Runner (nur in GitHub Actions).
+//   --mode keycheck : prüft nur, ob V13_ARCHIVE_PRIVATE_KEY vorhanden ist und zum öffentlichen Schlüssel im Manifest passt
+//   --mode restore  : lädt jeden Teil aus R2, prüft Chiffre-/Klartext-/Datei-Hashes über restore-archive.sh
+//   --mode extract --parts a,b --dest <dir> : wie restore, aber nur die genannten Teile, und der geprüfte Klartext
+//                     bleibt in <dir> (muss unter RUNNER_TEMP liegen) für einen nachfolgenden Schritt desselben Jobs
+// Der private Schlüssel steht nur in env, wird in eine Datei mit Modus 600 im Runner-Temp geschrieben und sofort
+// danach gelöscht. Ausgabe: nur Teilnamen, Zählungen und OK/Fehlercode – nie Schlüssel, URLs oder Pfade im Eimer.
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { fileURLToPath } from "node:url";
+import { createS3DriverFromEnv } from "../../../market/storage/s3-driver.mjs";
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const args = process.argv.slice(2);
+const opt = (k, d = null) => { const i = args.indexOf(k); return i < 0 ? d : args[i + 1]; };
+const mode = opt("--mode");
+const manifestFile = opt("--manifest");
+const prefix = opt("--prefix");
+const extractParts = mode === "extract" ? String(opt("--parts", "")).split(",").filter(Boolean) : null;
+const extractDest = mode === "extract" ? opt("--dest") : null;
+if (mode === "extract") {
+  const tmp = process.env.RUNNER_TEMP ? path.resolve(process.env.RUNNER_TEMP) : null;
+  if (!tmp || !extractDest || !path.resolve(extractDest).startsWith(tmp + path.sep)) { console.error("--dest muss unter RUNNER_TEMP liegen"); process.exit(2); }
+  if (!extractParts.length) { console.error("--parts fehlt"); process.exit(2); }
+}
+const manifest = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
+if (!/^research-snapshots\/quant-v13\/archive-\d+\.\d+\.\d+\/$/.test(prefix)) { console.error("ungueltiger Praefix"); process.exit(2); }
+
+const keyPem = process.env.V13_ARCHIVE_PRIVATE_KEY || "";
+if (!keyPem.trim()) { console.log(JSON.stringify({ keycheck: "SECRET_MISSING" })); process.exit(3); }
+const work = fs.mkdtempSync(path.join(process.env.RUNNER_TEMP || os.tmpdir(), "v13r-"));
+const keyFile = path.join(work, "k.pem");
+fs.writeFileSync(keyFile, keyPem.endsWith("\n") ? keyPem : keyPem + "\n", { mode: 0o600 });
+const cleanup = () => { try { execFileSync("shred", ["-u", keyFile]); } catch { fs.rmSync(keyFile, { force: true }); } fs.rmSync(work, { recursive: true, force: true }); };
+async function run() {
+  let der;
+  try { der = execFileSync("openssl", ["pkey", "-in", keyFile, "-pubout", "-outform", "DER"], { stdio: ["ignore", "pipe", "ignore"] }); }
+  catch { console.log(JSON.stringify({ keycheck: "SECRET_NOT_A_PRIVATE_KEY" })); return 3; }
+  const fp = createHash("sha256").update(der).digest("hex");
+  const match = fp === manifest.archivePublicKeySha256Der;
+  console.log(JSON.stringify({ keycheck: match ? "OK" : "KEY_MISMATCH" }));
+  if (!match) return 3;
+  if (mode === "keycheck") return 0;
+  if (mode !== "restore" && mode !== "extract") { console.error("--mode keycheck|restore|extract"); return 2; }
+  const driver = createS3DriverFromEnv(process.env);
+  const src = path.join(work, "enc"), dst = path.join(work, "out");
+  fs.mkdirSync(src); fs.mkdirSync(dst);
+  const result = [];
+  const parts = extractParts ? manifest.parts.filter((p) => extractParts.includes(p.part)) : manifest.parts;
+  if (extractParts && parts.length !== extractParts.length) { console.log(JSON.stringify({ extract: "UNKNOWN_PART" })); return 2; }
+  const keepDst = extractDest ? path.resolve(extractDest) : null;
+  if (keepDst) fs.mkdirSync(keepDst, { recursive: true });
+  for (const p of parts) {
+    const buf = await driver.get(prefix + p.object);
+    if (!buf) { result.push({ part: p.part, status: "MISSING" }); break; }
+    fs.writeFileSync(path.join(src, p.object), buf);
+    try {
+      const out = execFileSync("bash", [path.join(HERE, "restore-archive.sh"), manifestFile, src, keyFile, keepDst || dst, p.part], { encoding: "utf8" });
+      result.push({ part: p.part, status: /: OK \(/.test(out) ? "OK" : "UNEXPECTED_OUTPUT", files: p.files });
+    } catch (e) { result.push({ part: p.part, status: String(e.stdout || "").trim().split(": ").pop() || "RESTORE_FAILED" }); }
+    fs.rmSync(path.join(src, p.object), { force: true }); if (!keepDst) fs.rmSync(path.join(dst, p.part), { recursive: true, force: true });
+  }
+  console.log(JSON.stringify({ [mode]: result }, null, 1));
+  if (result.length !== parts.length || result.some(r => r.status !== "OK")) return 1;
+  return 0;
+}
+let code = 1;
+try { code = await run(); } finally { cleanup(); }
+process.exitCode = code;
+

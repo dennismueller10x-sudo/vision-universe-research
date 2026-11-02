@@ -419,22 +419,22 @@
       "cik": "0001614806",
       "name": "Rithm Property Trust Inc.",
       "sic": "6798",
-      "rawFacts": 14222,
-      "mappedFacts": 3888,
-      "unmappedFacts": 10128,
+      "rawFacts": 14512,
+      "mappedFacts": 3976,
+      "unmappedFacts": 10407,
       "calendarYears": 12,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "impairment_of_real_estate": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -475,9 +475,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 12,
-      "quarterlyPeriods": 49,
+      "quarterlyPeriods": 50,
       "firstPeriodEnd": "2014-01-29",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 11.0,
       "metrics": {
         "capital_expenditures": {
@@ -489,7 +489,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -516,14 +516,14 @@
         },
         "net_income": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "operating_cash_flow": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 46,
+          "quarterlyPeriods": 47,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -544,14 +544,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 49,
+          "quarterlyPeriods": 50,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "total_assets": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 47,
+          "quarterlyPeriods": 48,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -574,47 +574,48 @@
         }
       },
       "quality": {
-        "HIGH": 280,
-        "MEDIUM": 37
+        "HIGH": 284,
+        "MEDIUM": 38
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 317,
-        "resolvedValues": 317
+        "datableValues": 322,
+        "resolvedValues": 322
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 10567,
+        "rules_version": "1.1.0",
+        "total": 10847,
         "by_severity": {
-          "INFO": 10128,
-          "WARNING": 439
+          "INFO": 10407,
+          "WARNING": 440
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 362,
+          "CONCEPT_DISAGREEMENT": 352,
           "FISCAL_PERIOD_CONFLICT": 5,
-          "RESTATEMENT_CONFLICT": 58,
+          "RESTATEMENT_CONFLICT": 69,
           "UNEXPECTED_DURATION": 14,
-          "UNKNOWN_CONCEPT": 10128
+          "UNKNOWN_CONCEPT": 10407
         }
       },
       "latestFiling": {
-        "accession": "0001614806-26-000020",
-        "filing_date": "2026-07-31",
+        "accession": "0001614806-26-000026",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 47
+        "periodic_filings": 48,
+        "acceptance_datetime": "2026-10-29T20:51:47.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "85401a4c52cbf9c954df7cd094b4eab48c1bbc2e8eaf9c76944ba37e725cbc7c",
+      "sourceDigest": "8f4a665ff927935bbe892a13084fb868d7a9e621de857eb319f38677c14bba7b",
       "issuerId": "iss_cik_0001614806"
     },
     {

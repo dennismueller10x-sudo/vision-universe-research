@@ -34,6 +34,10 @@ The official Wan 3.0 text-to-video schema documents `POST /alibaba/wan-3.0/text-
 
 The manual `produce-single-t2v` action supports one continuous text-to-video order: exactly 20 seconds, 1080p, 9:16, native audio, and no reference image or asset ID. It requires `APPROVE-WAN-3.0-SINGLE-CONTINUOUS-T2V-NO-ESTIMATE`, skips estimate calls, rejects workflow reruns, and submits one request with a run-specific idempotency key. Its manifest records the request ID immediately after submission, including when the provider job is still processing. The action never retries, changes models, or requests a top-up. The approval phrase is not consumed across separate manual dispatches; each new dispatch is a distinct paid authorization. The provider decides whether the account can accept the request, and this workflow does not impose a billing ceiling or guarantee the actual cost is returned. The generated original and JSON manifest are uploaded as the workflow artifact; a compressed preview can be made from the original after download.
 
+## Image-to-video shots
+
+The manual `produce-i2v-shot` action submits exactly one Wan 3.0 image-to-video shot: 3–15 seconds, 1080p, 9:16, native audio. The start frame (`reference_path`) and the optional last frame (`end_reference_path`, sent as `end_image_url`) must be entries of `approved_production_references` and match their SHA-256. It requires `APPROVE-WAN-3.0-I2V-SHOT-NO-ESTIMATE`, skips estimate calls, rejects workflow reruns and uses a run-specific idempotency key. The manifest `i2v-shot-manifest.json` records the request ID right after submission; a shot still processing is retrieved later with the read-only `status` action. The workflow installs ffmpeg when the runner lacks `ffprobe`.
+
 ## Image jobs
 
 `images.py` and `.github/workflows/brand-media-higgsfield-images.yml` generate still images, for example character drafts and pose sheets for HyperFrames compositions. They share the client, secret handling and concurrency group with the video path but do not change it.

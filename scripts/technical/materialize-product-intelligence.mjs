@@ -5,6 +5,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { gzipSync } from "node:zlib";
+import { applyConfirmations } from "../market/lib/corporate-action-confirmations.mjs";
 
 const require = createRequire(import.meta.url);
 const rootDefault = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -103,21 +104,29 @@ function validatedInput(payload, member) {
   if (!observedAt || !Number.isFinite(Date.parse(observedAt)) || observedAt.slice(0, 10) < payload.bars.at(-1)?.date || Date.parse(observedAt) > Date.parse(now)) {
     throw new Error("INVALID_HISTORY_OBSERVED_AT");
   }
+  /* Belegte Kapitalmassnahmen, die der Anbieter nicht fuehrt (Marktdaten-Domaene,
+     quant/config/corporate-action-confirmations.json, Status PIPELINE): Kopie der
+     Balken mit splitFactor am Sprungtag, mit Schutz gegen doppelte Bereinigung.
+     Kurse und Volumen bleiben die des Anbieters. */
+  const confirmed = applyConfirmations(payload.bars, member.m);
+  const bars = confirmed.bars;
+  for (const item of confirmed.items) if (item.status === "APPLIED") splits++;
   const actions = [];
-  for (const bar of payload.bars) {
+  for (const bar of bars) {
     if (bar.splitFactor !== 1) actions.push({ type: "split", exDate: bar.date, ratio: bar.splitFactor });
     if (Number.isFinite(bar.dividend) && bar.dividend > 0) actions.push({ type: "dividend", exDate: bar.date, amount: bar.dividend });
   }
-  const worlds = Canonical.fromPriceBars(payload.bars, actions, { instrumentId: member.s, source: "tiingo",
+  const worlds = Canonical.fromPriceBars(bars, actions, { instrumentId: member.s, source: "tiingo",
     sourceRevision: observedAt, currency: payload.currency || "USD", exchange: payload.exchange || "US" });
   const series = worlds.SPLIT_ADJUSTED, validation = Canonical.validateSeries(series);
   if (!validation.valid) throw new Error("INVALID_CANONICAL_SERIES:" + validation.errors[0]);
   const reconciled = { status: "PASS", method: "CANONICAL_SPLIT_FACTORS_V1", priceSeriesType: "SPLIT_ADJUSTED", events: splits };
-  const signalBars = splitAdjustedSignalBars(payload.bars, series);
+  const signalBars = splitAdjustedSignalBars(bars, series);
   return { series, signalSource: { ticker: member.s, securityId: member.m, provider: "tiingo", dataMode: "real",
     isMock: false, publishBasis: "CANONICAL_PRODUCT_MATERIALIZATION", currency: payload.currency || "USD",
     adjustmentStatus: "adjusted", updatedAt: observedAt, bars: signalBars, corporateActionReconciliation: reconciled },
     provenance: { observedAt, adjustmentStatus: payload.adjustmentStatus, splitEvents: splits, dividendEvents: dividends,
+      corporateActionConfirmations: confirmed.items.length ? confirmed.items : undefined,
       corporateActionReconciliation: reconciled } };
 }
 

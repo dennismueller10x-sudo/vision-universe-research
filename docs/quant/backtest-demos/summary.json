@@ -1,0 +1,1644 @@
+{
+ "schemaVersion": "backtest-demo-summary-1.0.0",
+ "runner": "backtest-runner-1.0.0",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "cases": [
+  {
+   "id": "replay-nvda-winner-splits",
+   "kind": "SAME_STOCK_REPLAY",
+   "scenarios": [
+    "STRONG_WINNER",
+    "CORPORATE_ACTION_SPLIT"
+   ],
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "LIMITED",
+   "evidenceKind": "OBSERVED",
+   "specHash": "47c1d6611a041b90ea5a5ea54f24de859d18b9626dc32b4d07e2ee572a0e2f79",
+   "inputHash": "dd86206a97c136447e21c7f53d14999d720e2dd0ef7ad5252343b12d88335e13",
+   "envelopeHash": "9f96ffcb7eef9d7520fc6310260f7fcd0c34bcf2372adbecddf60306ede16f4a",
+   "resultHash": "874661ea8b7f146129537b7993d386a13173a8d112ca6213085a1ea31a24d599",
+   "period": {
+    "from": "2011-01-07",
+    "to": "2025-05-30",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "ref_NVDA"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": 37,
+    "completed": 37,
+    "immature": 0,
+    "censored": 0,
+    "ineligible": 0
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "totalReturn": null,
+    "cagr": null,
+    "volatility": null,
+    "maxDrawdown": -0.16433566433566427,
+    "hitRate": 0.8648648648648649,
+    "trades": 37,
+    "turnover": null,
+    "cashShare": null,
+    "perEventMedian": 0.18897768897768907,
+    "perEventMean": 0.2892278844355524,
+    "meanBenchmarkExcess": 0.23297626649307698,
+    "benchmarkTotalReturn": null,
+    "sharpeRiskFreeZero": null,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": null,
+   "methods": {
+    "MONTE_CARLO": "EXECUTED",
+    "WALK_FORWARD": "EXECUTED",
+    "OUT_OF_SAMPLE": "EXECUTED",
+    "MARKET_REGIME": "EXECUTED",
+    "PARAMETER_SENSITIVITY": "EXECUTED",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "NOT_APPLICABLE"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 12,
+    "terminal": {
+     "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+    },
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 14,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2025-12-26",
+    "inputsAfterAsOf": 0,
+    "entryNotAfterSignal": 0,
+    "exitAfterAsOf": 0,
+    "signalsAfterWindow": 0
+   },
+   "engine": {
+    "engineEvents": 57,
+    "windowEvents": 37
+   }
+  },
+  {
+   "id": "replay-intc-loser",
+   "kind": "SAME_STOCK_REPLAY",
+   "scenarios": [
+    "STRONG_LOSER"
+   ],
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "LIMITED",
+   "evidenceKind": "OBSERVED",
+   "specHash": "4e21a61db9bd36a86c6cade29a9a4f3cb41df8f7c2c0254322cdbddd29d1bedc",
+   "inputHash": "55a6a7122eb61eb28c147a640a4978ea6eace14f2dd3eaad8e302f1c868ed3f8",
+   "envelopeHash": "4dc2723d3e473de05b8a5c02d87e4e53450c2a7f0d345be69c642885903b625e",
+   "resultHash": "8b98412a5db36e77a0def57421221346a61c79251ef299d2474c5c19fb396fe0",
+   "period": {
+    "from": "2019-03-15",
+    "to": "2024-05-10",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "ref_INTC"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": 6,
+    "completed": 6,
+    "immature": 0,
+    "censored": 0,
+    "ineligible": 0
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "totalReturn": null,
+    "cagr": null,
+    "volatility": null,
+    "maxDrawdown": -0.2828832007585582,
+    "hitRate": 0.3333333333333333,
+    "trades": 6,
+    "turnover": null,
+    "cashShare": null,
+    "perEventMedian": -0.11290897737925576,
+    "perEventMean": -0.08154613362583096,
+    "meanBenchmarkExcess": -0.1535433038752578,
+    "benchmarkTotalReturn": null,
+    "sharpeRiskFreeZero": null,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": null,
+   "methods": {
+    "MONTE_CARLO": "EXECUTED",
+    "WALK_FORWARD": "NOT_RUN",
+    "OUT_OF_SAMPLE": "NOT_RUN",
+    "MARKET_REGIME": "EXECUTED",
+    "PARAMETER_SENSITIVITY": "NOT_RUN",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "NOT_APPLICABLE"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 12,
+    "terminal": {
+     "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+    },
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 14,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2025-12-26",
+    "inputsAfterAsOf": 0,
+    "entryNotAfterSignal": 0,
+    "exitAfterAsOf": 0,
+    "signalsAfterWindow": 0
+   },
+   "engine": {
+    "engineEvents": 64,
+    "windowEvents": 6
+   }
+  },
+  {
+   "id": "ledger-smci-winner-split",
+   "kind": "SAME_STOCK_REPLAY",
+   "scenarios": [
+    "STRONG_WINNER",
+    "CORPORATE_ACTION_SPLIT"
+   ],
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "LIMITED",
+   "evidenceKind": "SIMULATED_LEDGER",
+   "specHash": "1067e89171e12353a20097fbeced453c503749bf16034353ec85c0e6648c92dc",
+   "inputHash": "7a2e06997d3b4a7cd81c80ff1626ac28fd6e6e033c550937b15437558e1f691b",
+   "envelopeHash": "6789193cdf50f4268bd883df265725ed83e050890d8bf892afe9d641eddde84a",
+   "resultHash": "20abf45f1ef47623c338b1d030b4ac4fbdab3d4ae1bc811044a7b174cd26c6ed",
+   "period": {
+    "from": "2015-12-31",
+    "to": "2025-12-26",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "ref_SMCI"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": 8,
+    "completed": 6,
+    "immature": 0,
+    "censored": null,
+    "ineligible": 2
+   },
+   "metrics": {
+    "basis": "PORTFOLIO",
+    "totalReturn": 5.807572892993535,
+    "cagr": 0.21171440663298036,
+    "volatility": 0.3472718584235815,
+    "maxDrawdown": -0.4152249134948097,
+    "hitRate": 1,
+    "trades": 6,
+    "turnover": null,
+    "cashShare": 0.7011494252873564,
+    "perEventMedian": null,
+    "perEventMean": null,
+    "meanBenchmarkExcess": null,
+    "benchmarkTotalReturn": 11.50612244897959,
+    "sharpeRiskFreeZero": 0.7197133231408671,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": null,
+   "methods": {
+    "MONTE_CARLO": "EXECUTED",
+    "WALK_FORWARD": "NOT_RUN",
+    "OUT_OF_SAMPLE": "NOT_RUN",
+    "MARKET_REGIME": "NOT_RUN",
+    "PARAMETER_SENSITIVITY": "NOT_RUN",
+    "EVENT_DRIVEN": "NOT_APPLICABLE",
+    "PORTFOLIO_REBALANCING": "NOT_APPLICABLE"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 12,
+    "terminal": {
+     "state": "NO_OPEN_POSITION"
+    },
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile PRODUCT_DEFAULT (f613e80c5d7ac04a)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 10,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2025-12-26",
+    "inputsAfterAsOf": 0
+   }
+  },
+  {
+   "id": "pattern-2015-sideways",
+   "kind": "PATTERN_EVIDENCE",
+   "scenarios": [
+    "SIDEWAYS"
+   ],
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "LIMITED",
+   "evidenceKind": "OBSERVED",
+   "specHash": "2393987659c32d63126a59e4f9f810b40dc3b0e3d6d8c5d260ed99b4c933dfe5",
+   "inputHash": "1b65ae9407314bc473e76f2b746ecf3efb3235fb07cc0e01835589f0e296cfbb",
+   "envelopeHash": "30fd217bbe5c449111bf69732ccf71b852d31b0de20d3fc052ba714dad8bfbd1",
+   "resultHash": "0cd53f7fbea97eabeb10044ce93d5f69ee5fa40ca406b7a1397c066706e93801",
+   "period": {
+    "from": "2015-01-02",
+    "to": "2016-03-24",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "ref_MSFT",
+    "ref_JPM",
+    "ref_KO",
+    "ref_PG",
+    "ref_XOM",
+    "ref_NVDA",
+    "ref_INTC",
+    "ref_CSCO",
+    "ref_ORCL",
+    "ref_WMT",
+    "ref_HD",
+    "ref_MRK",
+    "ref_PFE",
+    "ref_JNJ",
+    "ref_CVX",
+    "ref_IBM",
+    "ref_MCD",
+    "ref_DIS",
+    "ref_BA",
+    "ref_CAT",
+    "ref_AMZN",
+    "ref_GE",
+    "ref_T",
+    "ref_VZ",
+    "ref_BAC",
+    "ref_C",
+    "ref_WFC",
+    "ref_MMM",
+    "ref_HON",
+    "ref_PEP"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": 62,
+    "completed": 62,
+    "immature": 0,
+    "censored": 0,
+    "ineligible": 0
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "totalReturn": null,
+    "cagr": null,
+    "volatility": null,
+    "maxDrawdown": -0.0849599380758847,
+    "hitRate": 0.5,
+    "trades": 62,
+    "turnover": null,
+    "cashShare": null,
+    "perEventMedian": -0.0008593781459031447,
+    "perEventMean": 0.0027393662239088516,
+    "meanBenchmarkExcess": 0.013683262128160812,
+    "benchmarkTotalReturn": null,
+    "sharpeRiskFreeZero": null,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": [
+    -0.027079072706201107,
+    0.032557805154018814
+   ],
+   "methods": {
+    "MONTE_CARLO": "NOT_RUN",
+    "WALK_FORWARD": "EXECUTED",
+    "OUT_OF_SAMPLE": "EXECUTED",
+    "MARKET_REGIME": "EXECUTED",
+    "PARAMETER_SENSITIVITY": "NOT_RUN",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "NOT_APPLICABLE"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 12,
+    "terminal": {
+     "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+    },
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 14,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2025-12-26",
+    "inputsAfterAsOf": 0,
+    "entryNotAfterSignal": 0,
+    "exitAfterAsOf": 0,
+    "signalsAfterWindow": 0
+   },
+   "engine": {
+    "engineEvents": 2176,
+    "windowEvents": 62
+   }
+  },
+  {
+   "id": "signal-2008-crash",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "BEAR_CRASH"
+   ],
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "LIMITED",
+   "evidenceKind": "TESTED",
+   "specHash": "f0437a8048e6cb0cd28a3c0ce04e3fc4faa10b0e7e1b5bbcccfd32f641035fc6",
+   "inputHash": "1b65ae9407314bc473e76f2b746ecf3efb3235fb07cc0e01835589f0e296cfbb",
+   "envelopeHash": "5803253c6613d45ac959566976fae3c0fca5fddee8b5d34d6dfbd64695f5a670",
+   "resultHash": "d77160f0cdf498254093906cde0c05f3803911b64b9238bd28f2cc0430c139a5",
+   "period": {
+    "from": "2007-10-05",
+    "to": "2009-10-02",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "ref_MSFT",
+    "ref_JPM",
+    "ref_KO",
+    "ref_PG",
+    "ref_XOM",
+    "ref_NVDA",
+    "ref_INTC",
+    "ref_CSCO",
+    "ref_ORCL",
+    "ref_WMT",
+    "ref_HD",
+    "ref_MRK",
+    "ref_PFE",
+    "ref_JNJ",
+    "ref_CVX",
+    "ref_IBM",
+    "ref_MCD",
+    "ref_DIS",
+    "ref_BA",
+    "ref_CAT",
+    "ref_AMZN",
+    "ref_GE",
+    "ref_T",
+    "ref_VZ",
+    "ref_BAC",
+    "ref_C",
+    "ref_WFC",
+    "ref_MMM",
+    "ref_HON",
+    "ref_PEP"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": 201,
+    "completed": 201,
+    "immature": 0,
+    "censored": 0,
+    "ineligible": 0
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "totalReturn": null,
+    "cagr": null,
+    "volatility": null,
+    "maxDrawdown": -0.21942697414395518,
+    "hitRate": 0.26865671641791045,
+    "trades": 201,
+    "turnover": null,
+    "cashShare": null,
+    "perEventMedian": -0.11236306226854409,
+    "perEventMean": -0.12224442665459033,
+    "meanBenchmarkExcess": 0.020298078319831426,
+    "benchmarkTotalReturn": null,
+    "sharpeRiskFreeZero": null,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": [
+    -0.1776647617915196,
+    -0.06682409151766106
+   ],
+   "methods": {
+    "MONTE_CARLO": "EXECUTED",
+    "WALK_FORWARD": "EXECUTED",
+    "OUT_OF_SAMPLE": "EXECUTED",
+    "MARKET_REGIME": "EXECUTED",
+    "PARAMETER_SENSITIVITY": "NOT_RUN",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "EXECUTED"
+   },
+   "funded": {
+    "rule": "TREND_UP",
+    "totalReturn": -0.33827965669059035,
+    "cagr": -0.18711457755508598,
+    "maxDrawdown": -0.4036233473762205,
+    "spyTotalReturn": -0.34238049406480586,
+    "episodes": 15
+   },
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 12,
+    "terminal": {
+     "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+    },
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 13,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2025-12-26",
+    "inputsAfterAsOf": 0,
+    "entryNotAfterSignal": 0,
+    "exitAfterAsOf": 0,
+    "signalsAfterWindow": 0
+   },
+   "engine": {
+    "engineEvents": 3196,
+    "windowEvents": 201
+   }
+  },
+  {
+   "id": "signal-2009-recovery",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "RECOVERY"
+   ],
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "LIMITED",
+   "evidenceKind": "TESTED",
+   "specHash": "eff769d59966a0734fac841ef9b7b8baba8a0abd371bd743df6e7f1903d3de80",
+   "inputHash": "1b65ae9407314bc473e76f2b746ecf3efb3235fb07cc0e01835589f0e296cfbb",
+   "envelopeHash": "73b58426c6dbd1eb1afbfb951af0936b1571efd1514c948a8a14cc4f8adeb9a1",
+   "resultHash": "699d16e1887f7cdfd79c6c7df0bab1243ca914958299b4b37abafbac3f466330",
+   "period": {
+    "from": "2009-03-27",
+    "to": "2011-07-01",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "ref_MSFT",
+    "ref_JPM",
+    "ref_KO",
+    "ref_PG",
+    "ref_XOM",
+    "ref_NVDA",
+    "ref_INTC",
+    "ref_CSCO",
+    "ref_ORCL",
+    "ref_WMT",
+    "ref_HD",
+    "ref_MRK",
+    "ref_PFE",
+    "ref_JNJ",
+    "ref_CVX",
+    "ref_IBM",
+    "ref_MCD",
+    "ref_DIS",
+    "ref_BA",
+    "ref_CAT",
+    "ref_AMZN",
+    "ref_GE",
+    "ref_T",
+    "ref_VZ",
+    "ref_BAC",
+    "ref_C",
+    "ref_WFC",
+    "ref_MMM",
+    "ref_HON",
+    "ref_PEP"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": 315,
+    "completed": 315,
+    "immature": 0,
+    "censored": 0,
+    "ineligible": 0
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "totalReturn": null,
+    "cagr": null,
+    "volatility": null,
+    "maxDrawdown": -0.0990322580645161,
+    "hitRate": 0.8031746031746032,
+    "trades": 315,
+    "turnover": null,
+    "cashShare": null,
+    "perEventMedian": 0.09375453443894521,
+    "perEventMean": 0.11272693732507551,
+    "meanBenchmarkExcess": -0.006408924550443954,
+    "benchmarkTotalReturn": null,
+    "sharpeRiskFreeZero": null,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": [
+    0.07593528660847176,
+    0.14951858804167925
+   ],
+   "methods": {
+    "MONTE_CARLO": "NOT_RUN",
+    "WALK_FORWARD": "NOT_RUN",
+    "OUT_OF_SAMPLE": "NOT_RUN",
+    "MARKET_REGIME": "EXECUTED",
+    "PARAMETER_SENSITIVITY": "EXECUTED",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "NOT_APPLICABLE"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 12,
+    "terminal": {
+     "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+    },
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 13,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2025-12-26",
+    "inputsAfterAsOf": 0,
+    "entryNotAfterSignal": 0,
+    "exitAfterAsOf": 0,
+    "signalsAfterWindow": 0
+   },
+   "engine": {
+    "engineEvents": 2981,
+    "windowEvents": 315
+   }
+  },
+  {
+   "id": "signal-2020-covid",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "BEAR_CRASH",
+    "RECOVERY"
+   ],
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "LIMITED",
+   "evidenceKind": "TESTED",
+   "specHash": "a22e706aba587b49815fa5e8c3d347c28e84729f2e87eaa43ae758ffa38a89db",
+   "inputHash": "1b65ae9407314bc473e76f2b746ecf3efb3235fb07cc0e01835589f0e296cfbb",
+   "envelopeHash": "a60cbaf6e09d78c0b22a9dcd8bd19655e2e1d87feadd98bc48455aa177d72044",
+   "resultHash": "09d521b6543a1b5457d5f0efd83627e1a8bdb937f8440bc04358fb0ac80cc537",
+   "period": {
+    "from": "2020-01-10",
+    "to": "2021-04-09",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "ref_MSFT",
+    "ref_JPM",
+    "ref_KO",
+    "ref_PG",
+    "ref_XOM",
+    "ref_NVDA",
+    "ref_INTC",
+    "ref_CSCO",
+    "ref_ORCL",
+    "ref_WMT",
+    "ref_HD",
+    "ref_MRK",
+    "ref_PFE",
+    "ref_JNJ",
+    "ref_CVX",
+    "ref_IBM",
+    "ref_MCD",
+    "ref_DIS",
+    "ref_BA",
+    "ref_CAT",
+    "ref_AMZN",
+    "ref_GE",
+    "ref_T",
+    "ref_VZ",
+    "ref_BAC",
+    "ref_C",
+    "ref_WFC",
+    "ref_MMM",
+    "ref_HON",
+    "ref_PEP"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": 196,
+    "completed": 196,
+    "immature": 0,
+    "censored": 0,
+    "ineligible": 0
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "totalReturn": null,
+    "cagr": null,
+    "volatility": null,
+    "maxDrawdown": -0.10075808557834737,
+    "hitRate": 0.6428571428571429,
+    "trades": 196,
+    "turnover": null,
+    "cashShare": null,
+    "perEventMedian": 0.034904284215972026,
+    "perEventMean": 0.06646489807892754,
+    "meanBenchmarkExcess": -0.004910408986897223,
+    "benchmarkTotalReturn": null,
+    "sharpeRiskFreeZero": null,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": [
+    0.011399618196259141,
+    0.12153017796159593
+   ],
+   "methods": {
+    "MONTE_CARLO": "NOT_RUN",
+    "WALK_FORWARD": "NOT_RUN",
+    "OUT_OF_SAMPLE": "NOT_RUN",
+    "MARKET_REGIME": "EXECUTED",
+    "PARAMETER_SENSITIVITY": "NOT_RUN",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "EXECUTED"
+   },
+   "funded": {
+    "rule": "NEW_52W_HIGH",
+    "totalReturn": 0.136446919868765,
+    "cagr": 0.10641052118385641,
+    "maxDrawdown": -0.2350019731426617,
+    "spyTotalReturn": 0.2762941596104338,
+    "episodes": 18
+   },
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 12,
+    "terminal": {
+     "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+    },
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 13,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2025-12-26",
+    "inputsAfterAsOf": 0,
+    "entryNotAfterSignal": 0,
+    "exitAfterAsOf": 0,
+    "signalsAfterWindow": 0
+   },
+   "engine": {
+    "engineEvents": 1243,
+    "windowEvents": 196
+   }
+  },
+  {
+   "id": "signal-2022-bear",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "BEAR_CRASH"
+   ],
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "LIMITED",
+   "evidenceKind": "TESTED",
+   "specHash": "88af4b37cda64b84862b9522d1b44938135f2534afc7b68889d2acb9d532749f",
+   "inputHash": "1b65ae9407314bc473e76f2b746ecf3efb3235fb07cc0e01835589f0e296cfbb",
+   "envelopeHash": "e12287025d740d894d2ab80f1dd86b3706ac3f4aada75ea77621efc729696c43",
+   "resultHash": "6228ccc02e00860ec2e352884d23fd038ab77bb5f13306caa134342175481fc9",
+   "period": {
+    "from": "2022-01-07",
+    "to": "2023-07-07",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "ref_MSFT",
+    "ref_JPM",
+    "ref_KO",
+    "ref_PG",
+    "ref_XOM",
+    "ref_NVDA",
+    "ref_INTC",
+    "ref_CSCO",
+    "ref_ORCL",
+    "ref_WMT",
+    "ref_HD",
+    "ref_MRK",
+    "ref_PFE",
+    "ref_JNJ",
+    "ref_CVX",
+    "ref_IBM",
+    "ref_MCD",
+    "ref_DIS",
+    "ref_BA",
+    "ref_CAT",
+    "ref_AMZN",
+    "ref_GE",
+    "ref_T",
+    "ref_VZ",
+    "ref_BAC",
+    "ref_C",
+    "ref_WFC",
+    "ref_MMM",
+    "ref_HON",
+    "ref_PEP"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": 156,
+    "completed": 156,
+    "immature": 0,
+    "censored": 0,
+    "ineligible": 0
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "totalReturn": null,
+    "cagr": null,
+    "volatility": null,
+    "maxDrawdown": -0.17650429799426937,
+    "hitRate": 0.2948717948717949,
+    "trades": 156,
+    "turnover": null,
+    "cashShare": null,
+    "perEventMedian": -0.06250783500996698,
+    "perEventMean": -0.03752996459171879,
+    "meanBenchmarkExcess": -0.010670264771520796,
+    "benchmarkTotalReturn": null,
+    "sharpeRiskFreeZero": null,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": [
+    -0.08583360654040886,
+    0.010773677356971281
+   ],
+   "methods": {
+    "MONTE_CARLO": "NOT_RUN",
+    "WALK_FORWARD": "NOT_RUN",
+    "OUT_OF_SAMPLE": "NOT_RUN",
+    "MARKET_REGIME": "EXECUTED",
+    "PARAMETER_SENSITIVITY": "NOT_RUN",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "NOT_APPLICABLE"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 12,
+    "terminal": {
+     "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+    },
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 13,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2025-12-26",
+    "inputsAfterAsOf": 0,
+    "entryNotAfterSignal": 0,
+    "exitAfterAsOf": 0,
+    "signalsAfterWindow": 0
+   },
+   "engine": {
+    "engineEvents": 870,
+    "windowEvents": 156
+   }
+  },
+  {
+   "id": "setup-reconstruction-2016-2024",
+   "kind": "SETUP_BACKTEST",
+   "scenarios": [
+    "RECONSTRUCTION"
+   ],
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "evidenceKind": "TESTED",
+   "specHash": "56186f5660e80893a990807baf35ef54cc099e8d9d91e9295792a513eb4532e7",
+   "inputHash": "3e326d0041eb44d204ccc93a81ed978d124ceb4b11343b01af44fe35ebc9ebf3",
+   "envelopeHash": "fe824394168d65351f2c10a9bd16d38b883472f186bdac2008cc9628fc4b531e",
+   "resultHash": "af6c3c9fb71dfe217ea32287e3639824af725b73b4a50e3cb6a93305870cd42c",
+   "period": {
+    "from": "2016-01-08",
+    "to": "2025-07-03",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": {
+    "count": 111,
+    "idsHash": "9c55a73c254155580c71bda8c80ee47044998e791809201127497c0b74684a62",
+    "corporateActionQuality": {
+     "CLEAN": 98,
+     "RESOLVED": 13
+    },
+    "withSplitsInWindow": 22,
+    "withLifecycle": 0
+   },
+   "excluded": {
+    "count": 49
+   },
+   "events": {
+    "occurrences": 2750,
+    "completed": 2750,
+    "immature": 0,
+    "censored": 0,
+    "ineligible": 0
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "totalReturn": null,
+    "cagr": null,
+    "volatility": null,
+    "maxDrawdown": -0.1795696047702775,
+    "hitRate": 0.536,
+    "trades": 2750,
+    "turnover": null,
+    "cashShare": null,
+    "perEventMedian": 0.015429713286445379,
+    "perEventMean": 0.048714623801155175,
+    "meanBenchmarkExcess": -0.009735665121259543,
+    "benchmarkTotalReturn": null,
+    "sharpeRiskFreeZero": null,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": [
+    0.021596370376233485,
+    0.07583287722607687
+   ],
+   "methods": {
+    "MONTE_CARLO": "NOT_RUN",
+    "WALK_FORWARD": "EXECUTED",
+    "OUT_OF_SAMPLE": "NOT_RUN",
+    "MARKET_REGIME": "NOT_RUN",
+    "PARAMETER_SENSITIVITY": "NOT_RUN",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "NOT_APPLICABLE"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 12,
+    "terminal": {
+     "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+    },
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 21,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2025-12-26",
+    "inputsAfterAsOf": 0,
+    "entryNotAfterSignal": 0,
+    "exitAfterAsOf": 0,
+    "signalsAfterWindow": 0
+   },
+   "engine": {
+    "engineEvents": 5349,
+    "windowEvents": 2750
+   }
+  },
+  {
+   "id": "strategy-2019-bull",
+   "kind": "STRATEGY_BACKTEST",
+   "scenarios": [
+    "BULL"
+   ],
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "evidenceKind": "SIMULATED_LEDGER",
+   "specHash": "e3a75290382a0298eb76afef75d606d57bf0edaa4a126bb791ad2824253f9bd9",
+   "inputHash": "4a97aaddaab4a28def46eaca6f1eec51f7267686a6c2a0741bfefbde0170ba05",
+   "envelopeHash": "54a692ab5400b67b5add3bac8ac8270447f04a87808a998c7b64a3e2c3677904",
+   "resultHash": "26264153bc21ff188e6a0e18cbb0384c55d025456324182af8b2d219a2443bae",
+   "period": {
+    "from": "2019-01-04",
+    "to": "2019-12-27",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "ref_MSFT",
+    "ref_JPM",
+    "ref_KO",
+    "ref_PG",
+    "ref_XOM",
+    "ref_NVDA",
+    "ref_INTC",
+    "ref_CSCO",
+    "ref_ORCL",
+    "ref_WMT"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": 130,
+    "completed": 130,
+    "immature": null,
+    "censored": null,
+    "ineligible": null
+   },
+   "metrics": {
+    "basis": "PORTFOLIO",
+    "totalReturn": 0.2777096914656281,
+    "cagr": 0.28496635469065645,
+    "volatility": 0.12687020280248812,
+    "maxDrawdown": -0.08863713315752031,
+    "hitRate": null,
+    "trades": 130,
+    "turnover": 0.7153239035034699,
+    "cashShare": 0.019230769230769232,
+    "perEventMedian": null,
+    "perEventMean": null,
+    "meanBenchmarkExcess": null,
+    "benchmarkTotalReturn": 0.27921074527516954,
+    "sharpeRiskFreeZero": 2.039427986973398,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": null,
+   "methods": {
+    "MONTE_CARLO": "EXECUTED",
+    "WALK_FORWARD": "NOT_RUN",
+    "OUT_OF_SAMPLE": "NOT_RUN",
+    "MARKET_REGIME": "EXECUTED",
+    "PARAMETER_SENSITIVITY": "EXECUTED",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "EXECUTED"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 11,
+    "terminal": {
+     "state": "NO_TERMINAL_EVENTS_IN_LEDGER"
+    },
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 15,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2025-12-26",
+    "inputsAfterAsOf": 0
+   }
+  },
+  {
+   "id": "strategy-2013-2014-bull",
+   "kind": "STRATEGY_BACKTEST",
+   "scenarios": [
+    "BULL"
+   ],
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "evidenceKind": "SIMULATED_LEDGER",
+   "specHash": "abc02bac8ce60bb03d32cad78b135146f598bbdeb711ad58cd1b45eab0abe2ec",
+   "inputHash": "1b65ae9407314bc473e76f2b746ecf3efb3235fb07cc0e01835589f0e296cfbb",
+   "envelopeHash": "ce040a083514ee01cccb92f8d4d0a4b47ceeb280c7e5c1e6a5152a6d651c878d",
+   "resultHash": "8f485b900147e8f4d1b0af53394493a6bbb5c6d015e4b412651e653e938bf540",
+   "period": {
+    "from": "2013-01-04",
+    "to": "2014-12-26",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "ref_MSFT",
+    "ref_JPM",
+    "ref_KO",
+    "ref_PG",
+    "ref_XOM",
+    "ref_NVDA",
+    "ref_INTC",
+    "ref_CSCO",
+    "ref_ORCL",
+    "ref_WMT",
+    "ref_HD",
+    "ref_MRK",
+    "ref_PFE",
+    "ref_JNJ",
+    "ref_CVX",
+    "ref_IBM",
+    "ref_MCD",
+    "ref_DIS",
+    "ref_BA",
+    "ref_CAT",
+    "ref_AMZN",
+    "ref_GE",
+    "ref_T",
+    "ref_VZ",
+    "ref_BAC",
+    "ref_C",
+    "ref_WFC",
+    "ref_MMM",
+    "ref_HON",
+    "ref_PEP"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": 690,
+    "completed": 690,
+    "immature": null,
+    "censored": null,
+    "ineligible": null
+   },
+   "metrics": {
+    "basis": "PORTFOLIO",
+    "totalReturn": 0.30930971658981377,
+    "cagr": 0.14628412837062466,
+    "volatility": 0.10213810111794969,
+    "maxDrawdown": -0.06092001927846258,
+    "hitRate": null,
+    "trades": 690,
+    "turnover": 0.8163442758928923,
+    "cashShare": 0.038461538461538464,
+    "perEventMedian": null,
+    "perEventMean": null,
+    "meanBenchmarkExcess": null,
+    "benchmarkTotalReturn": 0.424062307849969,
+    "sharpeRiskFreeZero": 1.3866844914058511,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": null,
+   "methods": {
+    "MONTE_CARLO": "NOT_RUN",
+    "WALK_FORWARD": "NOT_RUN",
+    "OUT_OF_SAMPLE": "NOT_RUN",
+    "MARKET_REGIME": "EXECUTED",
+    "PARAMETER_SENSITIVITY": "NOT_RUN",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "EXECUTED"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 11,
+    "terminal": {
+     "state": "NO_TERMINAL_EVENTS_IN_LEDGER"
+    },
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 15,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2025-12-26",
+    "inputsAfterAsOf": 0
+   }
+  },
+  {
+   "id": "strategy-dividends-tr",
+   "kind": "STRATEGY_BACKTEST",
+   "scenarios": [
+    "DIVIDENDS",
+    "BEAR_CRASH",
+    "RECOVERY"
+   ],
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "evidenceKind": "SIMULATED_LEDGER",
+   "specHash": "2beba93e3127b4265d58dd34a10bd6de97f77437183896245799b4aa8fe60159",
+   "inputHash": "d0fbaa0c6d784f11ffefafeff098b6be0f6681599aa860d79bf331ea94586313",
+   "envelopeHash": "98396ab944eb14f433e6dd22f1b336ddcfe18762d45146ec7a2bff4d43083538",
+   "resultHash": "09a6740b320db7d29ea8749b2d8005c9c546a45e410a65c36965c5f4fdd3f03e",
+   "period": {
+    "from": "2016-01-08",
+    "to": "2020-12-31",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "ref_MSFT",
+    "ref_WMT",
+    "ref_IBM"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": 3,
+    "completed": 3,
+    "immature": null,
+    "censored": null,
+    "ineligible": null
+   },
+   "metrics": {
+    "basis": "PORTFOLIO",
+    "totalReturn": 1.7442684441611416,
+    "cagr": 0.22471434938735446,
+    "volatility": 0.15896671339851987,
+    "maxDrawdown": -0.19714479540341157,
+    "hitRate": null,
+    "trades": 3,
+    "turnover": 0.49999999999999994,
+    "cashShare": 0.05146961510610255,
+    "perEventMedian": null,
+    "perEventMean": null,
+    "meanBenchmarkExcess": null,
+    "benchmarkTotalReturn": 0,
+    "sharpeRiskFreeZero": 1.354359873429528,
+    "versusPriceOnly": {
+     "totalReturnWithDividends": 1.7442684441611416,
+     "priceOnlyTotalReturn": 1.552699786197663,
+     "dividendContribution": 0.19156865796347855,
+     "cagrWithDividends": 0.22471434938735446,
+     "priceOnlyCagr": 0.20704756618204123,
+     "priceOnlyResultHash": "d6c0496cd9ec5820ad3b7c48f3591ea916f82f0aa69cdc0cd44290babbe2f7ca",
+     "dividendEventsApplied": 60,
+     "openReceivables": 1
+    },
+    "factor": null
+   },
+   "interval95": null,
+   "methods": {
+    "MONTE_CARLO": "NOT_RUN",
+    "WALK_FORWARD": "NOT_RUN",
+    "OUT_OF_SAMPLE": "NOT_RUN",
+    "MARKET_REGIME": "NOT_RUN",
+    "PARAMETER_SENSITIVITY": "NOT_RUN",
+    "EVENT_DRIVEN": "EXECUTED",
+    "PORTFOLIO_REBALANCING": "EXECUTED"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "TOTAL_RETURN",
+    "warnings": 11,
+    "terminal": {
+     "state": "NO_TERMINAL_EVENTS_IN_LEDGER"
+    },
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 15,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2025-12-26",
+    "inputsAfterAsOf": 0
+   }
+  },
+  {
+   "id": "strategy-profile-prepared",
+   "kind": "STRATEGY_BACKTEST",
+   "scenarios": [
+    "STATE_B"
+   ],
+   "privateData": null,
+   "state": "PREPARED_DATA_LIMITED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "evidenceKind": "TESTED",
+   "specHash": "12f801bf7f7495997997ece4eaec04514e186498583e9c4bf1e1d5d935c8f6a3",
+   "inputHash": "4a97aaddaab4a28def46eaca6f1eec51f7267686a6c2a0741bfefbde0170ba05",
+   "envelopeHash": "05be90586d90620f055613dc699b664afcda023f3240cfbaacff5033230d8ae3",
+   "resultHash": "13bd82688be5576aa6d949270a291d0fae2557a7e8d877aeeebeacc85495cd73",
+   "period": {
+    "from": null,
+    "to": null,
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "ref_MSFT",
+    "ref_JPM",
+    "ref_KO",
+    "ref_PG",
+    "ref_XOM",
+    "ref_NVDA",
+    "ref_INTC",
+    "ref_CSCO",
+    "ref_ORCL",
+    "ref_WMT"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": null,
+    "completed": null,
+    "immature": null,
+    "censored": null,
+    "ineligible": null
+   },
+   "metrics": {
+    "basis": "NONE",
+    "totalReturn": null,
+    "cagr": null,
+    "volatility": null,
+    "maxDrawdown": null,
+    "hitRate": null,
+    "trades": null,
+    "turnover": null,
+    "cashShare": null,
+    "perEventMedian": null,
+    "perEventMean": null,
+    "meanBenchmarkExcess": null,
+    "benchmarkTotalReturn": null,
+    "sharpeRiskFreeZero": null,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": null,
+   "methods": {
+    "MONTE_CARLO": "NOT_RUN",
+    "WALK_FORWARD": "NOT_RUN",
+    "OUT_OF_SAMPLE": "NOT_RUN",
+    "MARKET_REGIME": "NOT_RUN",
+    "PARAMETER_SENSITIVITY": "NOT_RUN",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "NOT_RUN"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "NOT_APPLICABLE_NO_RESULT",
+    "warnings": 12,
+    "terminal": null,
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+    }
+   },
+   "missingInputs": [
+    "MISSING_INPUT:PROFILE_TARGETS_REQUIRE_PIT_FACTOR_SNAPSHOTS_WITH_ROW_AVAILABILITY (research-portfolio.buildProfileTargets)",
+    "MISSING_INPUT:HISTORICAL_OBSERVED_PROVENANCE_EVIDENCE_HASHES (identity, population, corporate actions, lifecycle, license)"
+   ],
+   "limitations": 8,
+   "pit": null
+  },
+  {
+   "id": "factor-momentum-v10-panel",
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "scenarios": [
+    "RECONSTRUCTION",
+    "BEAR_CRASH",
+    "RECOVERY"
+   ],
+   "privateData": "factorPanel",
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "evidenceKind": "TESTED",
+   "specHash": "abd4933102c4d167059424b1fc45343483b29283748c3d69231d4972d10b920f",
+   "inputHash": "031f53b478fcf7373a9356e2ace649db66a95126c1c50902f1955361f1341435",
+   "envelopeHash": "d9f99fcceb7c48199b150ed233a70623b6deab8bf9cda365fe8952f5ebd8ebbb",
+   "resultHash": "c4bf4b739f6a51258bc3f7cd56290ce83a65c328b07b3d93de22f1cc5c8ea610",
+   "period": {
+    "from": "2019-01-25",
+    "to": "2021-04-09",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": {
+    "count": 3088,
+    "idsHash": "f74e8ab5ff8ac4fd385e40a8a97763d33b86361baadf8e286207b7f044ad1cfd",
+    "corporateActionQuality": {
+     "CLEAN": 2850,
+     "RESOLVED": 238
+    },
+    "withSplitsInWindow": 172,
+    "withLifecycle": 0
+   },
+   "excluded": {
+    "count": 1200,
+    "byReason": {
+     "LISTING_STARTS_AFTER_WINDOW": 1200
+    }
+   },
+   "events": {
+    "occurrences": 65152,
+    "completed": 65152,
+    "immature": 0,
+    "censored": 0,
+    "ineligible": 0
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "totalReturn": null,
+    "cagr": null,
+    "volatility": null,
+    "maxDrawdown": -0.14032786885245907,
+    "hitRate": 0.567273452848723,
+    "trades": 65152,
+    "turnover": null,
+    "cashShare": null,
+    "perEventMedian": 0.029019697217714024,
+    "perEventMean": 0.0688874273376795,
+    "meanBenchmarkExcess": 0.023925907595861558,
+    "benchmarkTotalReturn": null,
+    "sharpeRiskFreeZero": null,
+    "versusPriceOnly": null,
+    "factor": {
+     "factorId": "momentum",
+     "rankDates": 24,
+     "meanSpearmanObservedOnly": 0.035622055798573304,
+     "spearmanDates": 24,
+     "meanTopMinusBottomCompleteCohort": -0.01581092992147959,
+     "topMinusBottomDates": 24,
+     "buckets": 5
+    }
+   },
+   "interval95": [
+    -0.0014830783856347451,
+    0.13925793306099374
+   ],
+   "methods": {
+    "MONTE_CARLO": "NOT_RUN",
+    "WALK_FORWARD": "NOT_RUN",
+    "OUT_OF_SAMPLE": "NOT_RUN",
+    "MARKET_REGIME": "EXECUTED",
+    "PARAMETER_SENSITIVITY": "NOT_RUN",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "NOT_APPLICABLE"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 15,
+    "terminal": {
+     "state": "IDENTITY_VALID_TO_CENSORS_EVENTS"
+    },
+    "survivorship": {
+     "state": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "control": "population profile V10_PRIMARY (e7c269e9640b6320)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 16,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2025-12-26",
+    "inputsAfterAsOf": 0,
+    "entryNotAfterSignal": 0,
+    "exitAfterAsOf": 0,
+    "signalsAfterWindow": 0
+   },
+   "engine": {
+    "engineEvents": 65152,
+    "windowEvents": 65152
+   }
+  },
+  {
+   "id": "delisted-xco-bankruptcy",
+   "kind": "SAME_STOCK_REPLAY",
+   "scenarios": [
+    "DELISTED"
+   ],
+   "privateData": "delistedSeries",
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "LIMITED",
+   "evidenceKind": "OBSERVED",
+   "specHash": "604ae68e67df1b3e32e9c78b581c7cfa7d81237f66d946aaf2c0ee418f21e81a",
+   "inputHash": "b7691d019ab6b6829051a0e1853ec58ef21d0858600dece8df3fc85d8999fa30",
+   "envelopeHash": "33062feef7998feb764bde95b11af0203e0d758a52208609bd9f4d36ac580a4a",
+   "resultHash": "5005c60b7046d983f167b7ed8748910688800586e87b0c5918cc5a242efa0e99",
+   "period": {
+    "from": "2012-01-27",
+    "to": "2017-10-27",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "dl_2ad5c4a973ce5a19"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": 24,
+    "completed": 22,
+    "immature": 0,
+    "censored": 2,
+    "ineligible": 0
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "totalReturn": null,
+    "cagr": null,
+    "volatility": null,
+    "maxDrawdown": -0.46533799880881477,
+    "hitRate": 0.3181818181818182,
+    "trades": 22,
+    "turnover": null,
+    "cashShare": null,
+    "perEventMedian": -0.25432519581379454,
+    "perEventMean": -0.19191164426691154,
+    "meanBenchmarkExcess": -0.2510480968219078,
+    "benchmarkTotalReturn": null,
+    "sharpeRiskFreeZero": null,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": null,
+   "methods": {
+    "MONTE_CARLO": "NOT_RUN",
+    "WALK_FORWARD": "NOT_RUN",
+    "OUT_OF_SAMPLE": "NOT_RUN",
+    "MARKET_REGIME": "EXECUTED",
+    "PARAMETER_SENSITIVITY": "NOT_RUN",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "NOT_APPLICABLE"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 8,
+    "terminal": {
+     "state": "SOURCED_TERMINAL_CLASS_CENSORS_EVENTS_AFTER_LAST_TRADE",
+     "listings": [
+      {
+       "securityId": "dl_2ad5c4a973ce5a19",
+       "lastTradeDate": "2017-12-22",
+       "terminalKind": "DISTRESS",
+       "terminalScenarios": [
+        0,
+        -0.3,
+        -1
+       ]
+      }
+     ]
+    },
+    "survivorship": {
+     "state": "INCLUDES_PRIVATE_DELISTED_SERIES",
+     "control": "population profile V13_DELISTED_F1 (ee34e2dd9979937c)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 14,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2017-12-22",
+    "inputsAfterAsOf": 0,
+    "entryNotAfterSignal": 0,
+    "exitAfterAsOf": 0,
+    "signalsAfterWindow": 0
+   },
+   "engine": {
+    "engineEvents": 38,
+    "windowEvents": 24
+   }
+  },
+  {
+   "id": "acquisition-agn",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "ACQUISITION"
+   ],
+   "privateData": "delistedSeries",
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "LIMITED",
+   "evidenceKind": "TESTED",
+   "specHash": "2e4449a6a0eb3b28280de7e9e95318da85d175f60fdd65a804a368889d26f52e",
+   "inputHash": "b5bbba73b77cf6df3e64ee57171958c82ef5de6aa89aaa4327d21384e1add6de",
+   "envelopeHash": "d7c1ee0a7a971db04da1379eca40c812037178e7db7840cecd5df629ce170cc4",
+   "resultHash": "51bdd61d0e98d60298a008ebf58a08fe978f368af5e8379205c36f2fcb9663a9",
+   "period": {
+    "from": "2015-07-31",
+    "to": "2020-05-08",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "listings": [
+    "dl_392eb87953a4f307"
+   ],
+   "excluded": [],
+   "events": {
+    "occurrences": 30,
+    "completed": 28,
+    "immature": 0,
+    "censored": 2,
+    "ineligible": 0
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "totalReturn": null,
+    "cagr": null,
+    "volatility": null,
+    "maxDrawdown": -0.23399673889673311,
+    "hitRate": 0.17857142857142858,
+    "trades": 28,
+    "turnover": null,
+    "cashShare": null,
+    "perEventMedian": -0.14732859560841094,
+    "perEventMean": -0.1235737754685126,
+    "meanBenchmarkExcess": -0.16703586046581023,
+    "benchmarkTotalReturn": null,
+    "sharpeRiskFreeZero": null,
+    "versusPriceOnly": null,
+    "factor": null
+   },
+   "interval95": null,
+   "methods": {
+    "MONTE_CARLO": "NOT_RUN",
+    "WALK_FORWARD": "NOT_RUN",
+    "OUT_OF_SAMPLE": "NOT_RUN",
+    "MARKET_REGIME": "EXECUTED",
+    "PARAMETER_SENSITIVITY": "NOT_RUN",
+    "EVENT_DRIVEN": "NOT_RUN",
+    "PORTFOLIO_REBALANCING": "NOT_APPLICABLE"
+   },
+   "funded": null,
+   "dataQuality": {
+    "totalReturnBasis": "PRICE_RETURN",
+    "warnings": 8,
+    "terminal": {
+     "state": "SOURCED_TERMINAL_CLASS_CENSORS_EVENTS_AFTER_LAST_TRADE",
+     "listings": [
+      {
+       "securityId": "dl_392eb87953a4f307",
+       "lastTradeDate": "2020-05-08",
+       "terminalKind": "MERGER",
+       "terminalScenarios": [
+        0,
+        -0.1,
+        0.1
+       ]
+      }
+     ]
+    },
+    "survivorship": {
+     "state": "INCLUDES_PRIVATE_DELISTED_SERIES",
+     "control": "population profile V13_DELISTED_F1 (ee34e2dd9979937c)"
+    }
+   },
+   "missingInputs": [],
+   "limitations": 13,
+   "pit": {
+    "asOf": "2025-12-31",
+    "latestInputBar": "2020-05-08",
+    "inputsAfterAsOf": 0,
+    "entryNotAfterSignal": 0,
+    "exitAfterAsOf": 0,
+    "signalsAfterWindow": 0
+   },
+   "engine": {
+    "engineEvents": 32,
+    "windowEvents": 30
+   }
+  }
+ ]
+}

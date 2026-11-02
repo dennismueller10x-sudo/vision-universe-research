@@ -168,3 +168,14 @@ test("DQ-TW-7 · Datenvertrag: Verstoesse werden einzeln gemeldet, fehlendes Art
   assert.deepEqual(bad.samples, ["RANGE rsi14 A = 101"]);
   assert.equal(DQ.technicalContract(null).failed, 1);
 });
+
+test("DQ-TW-8 · vollstaendiger Vorlagen-Treffer auf einem Lunten-Tief wird gemeldet, sonst nur gezaehlt", () => {
+  const wick = { MYND: { date: "2026-10-19", low: 0.0001, open: 0.0001, close: 0.2199 } };
+  const ok = DQ.technicalTemplateWickLows([{ template: "establishedUptrend", ticker: "NVDA" }], wick);
+  assert.equal(ok.status, "PASS");
+  assert.equal(ok.checked, 1);
+  assert.match(ok.note, /1 aktuelle Titel mit Lunten-Tief \(MYND\)/);
+  const bad = DQ.technicalTemplateWickLows([{ template: "establishedUptrend", ticker: "MYND" }], wick);
+  assert.deepEqual(bad.samples, ["MYND (establishedUptrend): 52-Wochen-Tief 0.0001 am 2026-10-19 bei Eroeffnung 0.0001 / Schluss 0.2199"]);
+  assert.equal(DQ.technicalTemplateWickLows(null, null).status, "PASS");
+});

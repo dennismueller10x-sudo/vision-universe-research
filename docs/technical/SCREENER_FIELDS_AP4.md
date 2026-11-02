@@ -105,3 +105,25 @@ Angepasst:
 1. Mergen. `technical/data` in diesem PR ist mit dem Erzeuger gebaut, nie von Hand.
 2. Die nächste reguläre Materialisierung schreibt Bündel mit `technical-mtf-1.2.0`, danach füllt `technical-world.yml` die Spalten.
 3. Prüfung wie in SCREENER_FIELDS_L7.md §2d: Füllgrad, Vergleich mit §3, DQ-TW-5 mit allen Wochen- und Monatsspalten.
+
+### 5a. Ergebnis der Prüfung am 30.10.2026 (E3 ✔)
+
+Prüfung 06:47–06:50 UTC, ohne Anbieterabruf und ohne Commit. Der Erzeuger lief lokal mit `--out`, damit der automatische Lauf unverfälscht bleibt.
+
+- **Eingang:**
+  - Materialisierung `9685f63` (06:44 UTC), Bündel `technical-mtf-1.2.0`, letzter Bar 29.10.
+  - 5.661 Titel: 5.349 aktuell, 80 hinter dem Stichtag, 232 eingefroren; 42 s.
+- **Prüfräume:** belegt für 100 % der aktuellen Titel (RSI Monat 98,6 %).
+- **Ereignisse:** belegt, wo ein Ereignis im Prüfraum liegt (aktuelle Titel):
+
+| | Linie auf | Linie ab | RSI über 30 | RSI unter 70 | 52-W-/12-M-Tief |
+|---|---|---|---|---|---|
+| Woche | 96,6 % (≤ 4 Bars: 757) | 96,7 % (1.040) | 92,5 % (319) | 91,7 % (218) | ja bei 940 |
+| Monat | 95,2 % (≤ 4: 1.818) | 95,3 % (2.264) | 55,5 % | 65,8 % | ja bei 1.544 |
+| Tag | 85,3 % | 88,1 % | 88,6 % | 89,3 % | ja bei 264 (Tagestief) |
+
+- **Näherung aus §3** (≤ 4 Wochenbars): 803 / 1.080 / 346 / 215; gemessen 757 / 1.040 / 319 / 218. Die Abweichung liegt im erwarteten Rahmen.
+- **Nicht aktuelle Titel:** in allen 21 Spalten leer (AP1).
+- **Datenqualität:** DQ-TW-1..7 PASS (DQ-TW-5 0/60, DQ-TW-6 0/312, DQ-TW-7 0/5.661).
+- **Am selben Tag automatisch committet:** Der Zeitplan-Lauf von technical-world (`b65def8`) hat dieselben Spalten in den Datensatz geschrieben.
+
