@@ -94,7 +94,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/account-evidence
-          node scripts/account/dev-server.mjs --port=8790 > /tmp/account-evidence/server.log 2>&1 &
+          node scripts/account/dev-server.mjs --port=8790 --backtest-review > /tmp/account-evidence/server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in $(seq 1 30); do curl --fail --silent http://localhost:8790/v1/health > /dev/null && break; sleep 1; done
