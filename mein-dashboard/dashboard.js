@@ -115,6 +115,8 @@
     return {instrumentId: item.instrumentId, ticker: item.ticker, name: null, price: {state: 'UNAVAILABLE'}, links: []};
   }
   function stockHref(v) {
+    // Gesperrte Identitaet (Ticker-Wiederverwendung): die Produktseiten meinen noch das fruehere Wertpapier - kein Verweis.
+    if (v.identity && v.identity.reason === 'IDENTITY_QUARANTINED') return null;
     for (var k = 0; k < LINK_ORDER.length; k++) {
       var hit = (v.links || []).filter(function (l) { return l.product === LINK_ORDER[k]; })[0];
       if (hit) return hit.href;
