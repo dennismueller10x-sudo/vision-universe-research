@@ -6,7 +6,7 @@ Dieses Dokument ist der Wiederaufnahmepunkt über alle drei Produktwelten. Die E
 
 ## 0. Merge-Liste
 
-Alle PRs sind Drafts, keiner ist gemergt. **Kein Merge ohne ausdrückliche Owner-Freigabe.** Probe-Merge 02.11. 15 Uhr UTC: alle 12 PRs gegen `main` und paarweise untereinander **konfliktfrei** (`git merge-tree`). Die neuen Commits auf `main` (Logos, Konten, Reels, Intraday) berühren weder Security Master noch Eingangsprüfung.
+Alle PRs sind Drafts, keiner ist gemergt. **Kein Merge ohne ausdrückliche Owner-Freigabe.** Probe-Merge 02.11. 15 Uhr UTC: alle damals 12 PRs (#1257, #1259, #1260 kamen danach hinzu und berühren getrennte Pfade) gegen `main` und paarweise untereinander **konfliktfrei** (`git merge-tree`). Die neuen Commits auf `main` (Logos, Konten, Reels, Intraday) berühren weder Security Master noch Eingangsprüfung.
 
 | # | PR | Inhalt | CI | Voraussetzung / Entscheidung | Nach dem Merge |
 |---|---|---|---|---|---|
@@ -21,6 +21,9 @@ Alle PRs sind Drafts, keiner ist gemergt. **Kein Merge ohne ausdrückliche Owner
 | 5 | #1247 | Supertrader: Evidenzmatrix 1.2.0 mit 10 Freigabepaketen | grün | **E7** | **Pflicht nach #1233/#1234/#1235:** `node scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs --out docs/SUPERTRADER_13_METHODS_EVIDENCE.md` und `node --test scripts/supertrader/tests/sf-mc3-evidence-matrix.test.mjs`. Erwartet: BELEGT 23, TEILWEISE 58, OFFEN 0, BLOCKIERT 49 (Probe-Merge geprüft) |
 | 6 | #1248 | dieses Dokument | – | E8 | nachziehen |
 | – | #1252 | Strategie-Akademie A0 (nur Doku) | – | E9 (A-1..A-4) | unabhängig |
+| 2b | #1259 | Quant: Musterstudie optional auf Gesamtrendite (`--return-basis total`), Standard bytegleich; Freigabevorlage FV-5 Schritt 2 | grün | **E15** | Aktivierung: Prüflauf → Fachmodell-PR → Gate-Umverdrahtung (FV-5) |
+| 3a | #1257 | Supertrader: X-LEDGER und C12-LEDGER geschlossen (8 Quellen im Ledger), Ableitungstexte F-TUR/F-KK/F-DAR im Vertrag; Code-Fingerabdrücke und Ergebnisse unverändert, Vertragspins neu | grün bis auf `ask-ci` (behoben in #1260) | **E16** | danach Evidenzdokument neu erzeugen |
+| – | #1260 | Ask: Chartbild-Test unabhängig vom Datum (war ab November rot) | – | E17 | – |
 
 \* `experience` ist auf jedem PR ohne #1236 rot (NVDA-Setup-Karte, richtungsabhängige Prüfung). Das ist kein Befund dieses PRs. #1236 (NVDA-Browser-QA, versionierte UI-Sperre) wartet seit 01.11. auf die Owner-Freigabe (**E10**).
 
@@ -166,6 +169,9 @@ CC-5 (lizenzierte Quelle für Kapitalmaßnahmen, Klasse 2) und CC-8 (Paper-Test 
 | E11 | `eligibility.json` (§6) | – | §6 | nach E1, eigener Neubau-PR mit Vorher/Nachher |
 | E12 | Läufe mit Secrets: V13-Studie (#1234), Quant R1–R3 (private Katalogfälle, Survivorship-Delisted, Gesamtrendite auf der kanonischen Historie) | nach E1 und E7 | BACKTEST_P2_DEFIZITE.md, SUPERTRADER_9_HANDOVER.md §0 | nach E1 |
 | E13 | Supertrader FP-ST-01..10 (vor allem **FP-ST-02 bis 01.01.2027**) | siehe §3 | SUPERTRADER_13_METHODS_EVIDENCE.md §10 | siehe §3 |
+| E15 | #1259 mergen (Erzeuger-Option, keine Wirkung ohne Schalter); danach FV-5 Schritt 1 (Prüflauf ohne Commit im Materialisierungs-Workflow) | – | PR #1259 | freigeben |
+| E16 | #1257 mergen. Offen bleiben die Owner-Fragen FP-KK-ADR-DENOMINATOR-STATUS (SOURCE_EXACT oder SOURCE_DERIVED) und FP-DAR-Q7-READING (Lesart „nicht in der neuen Box“) | – | PR #1257 | freigeben; beide Fragen in FP-ST-05/-07 bündeln |
+| E17 | #1260 mergen (nur Test) | – | PR #1260 | freigeben |
 | E14 | Quant FV-2, FV-3, FV-5 (Umverdrahtung `survivorship`/`returnBasis`), FV-6 (Setup-OOS A1–A6, vor etwa 2027-03-26), FV-7, FV-8 (ein Workflow-Schritt) | FV-6 | BACKTEST_COVERAGE_MATRIX.md §H | – |
 
 ## 5. Wiederaufnahmepunkt
