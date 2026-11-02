@@ -10,7 +10,7 @@ const root=fileURLToPath(new URL('../../../',import.meta.url)), out=resolve(proc
 if(!process.argv.includes('--out'))throw Error('Pass --out DIR');
 const siteIndex=process.argv.indexOf('--site');
 const site=siteIndex>=0 ? String(process.argv[siteIndex+1]||'').replace(/\/$/,'') : null;
-if(site && site!=='https://research.visionuniverse.de')throw Error('LIVE_SITE_NOT_ALLOWED');
+if(siteIndex>=0 && site!=='https://research.visionuniverse.de')throw Error('LIVE_SITE_NOT_ALLOWED');
 let gate=null;
 if(site){
  const response=await fetch(site+'/__research/config.json');

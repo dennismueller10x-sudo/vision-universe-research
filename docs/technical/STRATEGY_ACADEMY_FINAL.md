@@ -1,6 +1,6 @@
 # Strategie-Akademie · finale Integrationsabnahme
 
-Stand 02.11.2026. Umsetzung und fachliches Audit sind abgeschlossen. Dies ist der konkrete Abnahmebeleg, kein weiterer Entwicklungsplan.
+Stand 02.11.2026. **Owner-Freigabe für T-1, #1245, #1253 und die reguläre Veröffentlichung ist erteilt. #1245 wurde als `3fd744602303f1082c8155fe03e1a408ddaf0601` in main gemergt. #1253 ist auf main umgestellt und mit `24ac646362e92ca5b3fd4c69dcf5f227c4690840` konfliktfrei abgeglichen.** Umsetzung und fachliches Audit sind abgeschlossen. Dies ist der konkrete Abnahmebeleg, kein weiterer Entwicklungsplan.
 
 ## Fertiger Stand
 
@@ -37,16 +37,18 @@ Browser: Chromium/Playwright, 360/390/1280 px, hell/dunkel. 192 Lektionsansichte
 
 Lokales Mobilprofil: CPU ×4, 150 ms Latenz, 1,6 Mbit/s, leerer Cache. Exakte Ladezeiten im Prüfbeleg; der Kursinhalt wird pro Dokument nur einmal geladen. Dies sind lokale Messungen, keine Produktions-LCP-Zusage. Der 15-Sekunden-Abbruchwert ist eine Fehlerschranke, kein Qualitätsziel.
 
-## Was tatsächlich live ist
+## Live-Ausgangsstand vor der Owner-Freigabe
 
 Im echten Browser wurde die Produktion unter `https://research.visionuniverse.de` geprüft. Ohne Anmeldung erscheint das Zugangstor; ein angemeldeter produktiver Nutzerweg wird nicht behauptet. Die öffentlich ausgelieferte Academy-Registry führt „Follow the Money“ als verfügbar und die beiden bisherigen weiteren Piloten als geplant. **Die Strategie-Akademie und der Analyse-Assistent sind noch nicht ausgeliefert:** `/technical/academy/content.json` und `/technical/engine/assistant.js` liefern HTTP 404. Die vollständigen Nutzerwege wurden daher auf der tatsächlichen integrierten Testversion ausgeführt, nicht auf einem Mockup.
 
 Nachweise: [Browser-Liveprobe](academy-final-qa/academy-live-probe.json), [ausgelieferte Dateien](academy-final-qa/academy-live-assets.json), [Zugangstor-Screenshot](academy-final-qa/production-access-gate.png). Es wurde weder das Zugangstor umgangen noch ein Produktiv-Deployment ausgeführt. Das Vercel-Build-Ratenlimit wird separat von Codefehlern bewertet; keine Tarifänderung oder Umgehung.
 
-## Einzige noch erforderliche Freigabe
+## Freigegebene Veröffentlichung und Live-Abnahme
 
-[Gebündelte Owner-Freigabe](STRATEGY_ACADEMY_ABNAHME.md): T-1-Texte und Integration von #1245, danach #1253 einschließlich zentraler Registry-Einbindung und normaler Website-Veröffentlichung. #1245 führt ausdrücklich „T-1 (Texte), danach Merge“; der Auftrag schließt eigenständige freigabepflichtige Merges aus. Keine neue fachliche, Lizenz-, Budget- oder Kontenentscheidung.
+Die gebündelte Owner-Freigabe liegt vor; eine erneute Freigabe ist nicht erforderlich. #1245 ist gemergt. Vor #1253 werden die relevanten Tests und Schutzprüfungen auf dem aktualisierten main erneut ausgeführt; danach erfolgen nur der freigegebene Merge und die reguläre Pages-Veröffentlichung. Der aktuelle Veröffentlichungs- und Live-Prüfstatus wird am PR #1253 mit den konkreten Workflow-Links dokumentiert.
 
-Reihenfolge nach Freigabe: #1245 per Merge-Commit in main integrieren (97b1581 bleibt Vorfahr) → #1253 auf main umstellen → aktuelle Checks abwarten → #1253 integrieren → reguläre Pages-Veröffentlichung prüfen. Falls die Repository-Regeln Squash erzwingen, vor #1253 ausschließlich dessen eigene Änderungen auf die neue Basis setzen und die gleichen Checks erneut laufen lassen. Kein zweiter Assistent oder Academy-Neubau.
+Die vorhandene `Technical Live-QA` führt zusätzlich die bestehenden Academy-Nutzerwege mit `--site https://research.visionuniverse.de` aus. Der bereits eingerichtete `RESEARCH_ACCESS_PASSWORD` wird ausschließlich innerhalb der autorisierten GitHub-Testausführung über den bestehenden Access-Gate-Helper verwendet; Werte werden weder protokolliert noch als Artefakt exportiert. Es gibt keine Änderung am Zugangstor, an Secrets oder an Zertifizierungsgates.
 
-Physisches iPhone/Safari wurde **nicht** getestet. Die kurze ergänzende Owner-Prüfliste steht in der Freigabevorlage; Browseremulation wird nicht als Hardwaretest ausgegeben.
+Die Live-Ausführung prüft zuerst, dass der veröffentlichte Lektionsinhalt semantisch dem geprüften Quellstand entspricht. Sie führt 67 produktive Browserprüfgruppen aus, darunter alle 18 vollständigen Nutzerreisen sowie alle 32 Lektionen in sechs Bildschirm-/Designkombinationen. Drei absichtlich fehlerinjizierende beziehungsweise künstlich gedrosselte Prüfgruppen bleiben dem vollständigen lokalen 70er-Lauf vorbehalten und sind im Live-Bericht ausdrücklich als lokal aufgeführt. Sämtliche Browseränderungen betreffen ausschließlich isolierte Test-Browserspeicher, nicht Konten oder Produktionsdaten. Live-Berichte und Screenshots werden im vorhandenen Workflow-Artefakt `technical-live-qa/academy` aufbewahrt.
+
+Physisches iPhone/Safari wurde nicht getestet. Die ergänzende Hardware-Prüfliste bleibt in der Abnahmevorlage.

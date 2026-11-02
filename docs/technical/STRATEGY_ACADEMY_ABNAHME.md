@@ -1,8 +1,8 @@
-# Einmalige Owner-Freigabe · fertige Strategie-Akademie
+# Owner-Freigabe erteilt · fertige Strategie-Akademie
 
 Abnahmegegenstand: [#1245](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1245) und anschließend [#1253](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1253). #1252 ist ohne Merge als abgelöst geschlossen. [Finaler Integrations- und Live-Nachweis](STRATEGY_ACADEMY_FINAL.md).
 
-**Freigabe:** „Ich gebe die T-1-Texte und Integration von #1245 sowie anschließend #1253 mit allen 32 Lektionen und der zentralen Academy-Einbindung zur Integration in main und zur regulären Website-Veröffentlichung frei.“
+**Im Owner-Auftrag ausdrücklich erteilte Freigabe:** „Ich gebe die T-1-Texte und Integration von #1245 sowie anschließend #1253 mit allen 32 Lektionen und der zentralen Academy-Einbindung zur Integration in main und zur regulären Website-Veröffentlichung frei.“
 
 Die technisch vollständige Integrationsprobe ist konfliktfrei; Tests und echte Browser-Nutzerwege stehen im [Prüfbeleg](academy-final-qa/integration-proof.json). Es gibt eine Experience, eine Inhaltsquelle, ein Glossar und einen lokalen Fortschrittsspeicher. Keine Fachmodell-/Datenänderung, keine kostenpflichtige API, keine Tarifänderung.
 
@@ -26,4 +26,4 @@ Nicht als bestanden behauptet: physisches iPhone/Safari. Nach Veröffentlichung 
 - Quiz beantworten → Praxis öffnen → Screener/Chart verwenden → Rücklink nutzen; Antwort und Leseposition bleiben sinnvoll erhalten.
 - Abschluss markieren, Seite neu laden, Fortschritt kontrollieren; Hell/Dunkel sowie Hoch-/Querformat prüfen.
 
-Datum ______ · Owner ______ · freigegebener PR-Kopf ______
+Integration autorisiert: #1245 zuerst, danach #1253 auf aktualisiertem main mit erneut grünen Prüfungen. #1245 ist als `3fd744602303f1082c8155fe03e1a408ddaf0601` gemergt. Aktuelle Deployment- und Live-Nachweise stehen am PR #1253; keine erneute Owner-Freigabe erforderlich.
