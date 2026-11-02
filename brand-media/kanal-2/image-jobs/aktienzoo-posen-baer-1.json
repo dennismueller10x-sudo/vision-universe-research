@@ -1,0 +1,150 @@
+{
+  "job_id": "aktienzoo-posen-baer-1",
+  "purpose": "Posen-Bibliothek Bär (12 Haltungen, Hemd-Outfit), damit die Figur in Reels bei jedem Satz die Haltung wechselt. Nur interne Produktion.",
+  "images": [
+    {
+      "id": "baer-pose-arme-verschraenkt",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "3:4",
+      "resolution": "1k",
+      "seed": 3100,
+      "negative_prompt": "different character, different clothing, different art style, realistic, 3d render, photo, extra limbs, extra fingers, text, letters, logo, background scenery, cropped head, cropped feet",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/outfits/outfit-hemd/baer-basis.png"
+      ],
+      "prompt": "Keep the exact same character design, head, face shape, fur color, horns, clothing, outlines, line thickness, colors, proportions and art style as the reference, full body, centered, plain pure white background, no text, no shadow on the floor, no extra objects unless named. New pose and expression: arms crossed firmly, skeptical unimpressed face, one eyebrow raised. Mouth closed."
+    },
+    {
+      "id": "baer-pose-finger-hoch",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "3:4",
+      "resolution": "1k",
+      "seed": 3101,
+      "negative_prompt": "different character, different clothing, different art style, realistic, 3d render, photo, extra limbs, extra fingers, text, letters, logo, background scenery, cropped head, cropped feet",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/outfits/outfit-hemd/baer-basis.png"
+      ],
+      "prompt": "Keep the exact same character design, head, face shape, fur color, horns, clothing, outlines, line thickness, colors, proportions and art style as the reference, full body, centered, plain pure white background, no text, no shadow on the floor, no extra objects unless named. New pose and expression: raising one index finger as if saying 'wait a moment', calm lecturing face. Mouth closed."
+    },
+    {
+      "id": "baer-pose-zeitung",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "3:4",
+      "resolution": "1k",
+      "seed": 3102,
+      "negative_prompt": "different character, different clothing, different art style, realistic, 3d render, photo, extra limbs, extra fingers, text, letters, logo, background scenery, cropped head, cropped feet",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/outfits/outfit-hemd/baer-basis.png"
+      ],
+      "prompt": "Keep the exact same character design, head, face shape, fur color, horns, clothing, outlines, line thickness, colors, proportions and art style as the reference, full body, centered, plain pure white background, no text, no shadow on the floor, no extra objects unless named. New pose and expression: holding an open newspaper with both hands and reading it skeptically, glasses on nose. Mouth closed."
+    },
+    {
+      "id": "baer-pose-rechnet",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "3:4",
+      "resolution": "1k",
+      "seed": 3103,
+      "negative_prompt": "different character, different clothing, different art style, realistic, 3d render, photo, extra limbs, extra fingers, text, letters, logo, background scenery, cropped head, cropped feet",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/outfits/outfit-hemd/baer-basis.png"
+      ],
+      "prompt": "Keep the exact same character design, head, face shape, fur color, horns, clothing, outlines, line thickness, colors, proportions and art style as the reference, full body, centered, plain pure white background, no text, no shadow on the floor, no extra objects unless named. New pose and expression: typing on a pocket calculator, focused serious face, glasses on nose. Mouth closed."
+    },
+    {
+      "id": "baer-pose-ueber-brille-nah",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "3:4",
+      "resolution": "1k",
+      "seed": 3104,
+      "negative_prompt": "different character, different clothing, different art style, realistic, 3d render, photo, extra limbs, extra fingers, text, letters, logo, background scenery, cropped head, cropped feet",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/outfits/outfit-hemd/baer-basis.png"
+      ],
+      "prompt": "Keep the exact same character design, head, face shape, fur color, horns, clothing, outlines, line thickness, colors, proportions and art style as the reference, full body, centered, plain pure white background, no text, no shadow on the floor, no extra objects unless named. New pose and expression: leaning forward and looking over the top of his glasses at the viewer, deadpan face. Mouth closed."
+    },
+    {
+      "id": "baer-pose-abwinken",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "3:4",
+      "resolution": "1k",
+      "seed": 3105,
+      "negative_prompt": "different character, different clothing, different art style, realistic, 3d render, photo, extra limbs, extra fingers, text, letters, logo, background scenery, cropped head, cropped feet",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/outfits/outfit-hemd/baer-basis.png"
+      ],
+      "prompt": "Keep the exact same character design, head, face shape, fur color, horns, clothing, outlines, line thickness, colors, proportions and art style as the reference, full body, centered, plain pure white background, no text, no shadow on the floor, no extra objects unless named. New pose and expression: waving one paw dismissively, eyes half closed, unimpressed. Mouth closed."
+    },
+    {
+      "id": "baer-pose-kaffee",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "3:4",
+      "resolution": "1k",
+      "seed": 3106,
+      "negative_prompt": "different character, different clothing, different art style, realistic, 3d render, photo, extra limbs, extra fingers, text, letters, logo, background scenery, cropped head, cropped feet",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/outfits/outfit-hemd/baer-basis.png"
+      ],
+      "prompt": "Keep the exact same character design, head, face shape, fur color, horns, clothing, outlines, line thickness, colors, proportions and art style as the reference, full body, centered, plain pure white background, no text, no shadow on the floor, no extra objects unless named. New pose and expression: sipping coffee from his green mug, relaxed, eyes closed calmly. Mouth closed."
+    },
+    {
+      "id": "baer-pose-zeigt-hoch",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "3:4",
+      "resolution": "1k",
+      "seed": 3107,
+      "negative_prompt": "different character, different clothing, different art style, realistic, 3d render, photo, extra limbs, extra fingers, text, letters, logo, background scenery, cropped head, cropped feet",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/outfits/outfit-hemd/baer-basis.png"
+      ],
+      "prompt": "Keep the exact same character design, head, face shape, fur color, horns, clothing, outlines, line thickness, colors, proportions and art style as the reference, full body, centered, plain pure white background, no text, no shadow on the floor, no extra objects unless named. New pose and expression: pointing upward with one paw at something above, calm explaining face. Mouth closed."
+    },
+    {
+      "id": "baer-pose-schulterzucken",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "3:4",
+      "resolution": "1k",
+      "seed": 3108,
+      "negative_prompt": "different character, different clothing, different art style, realistic, 3d render, photo, extra limbs, extra fingers, text, letters, logo, background scenery, cropped head, cropped feet",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/outfits/outfit-hemd/baer-basis.png"
+      ],
+      "prompt": "Keep the exact same character design, head, face shape, fur color, horns, clothing, outlines, line thickness, colors, proportions and art style as the reference, full body, centered, plain pure white background, no text, no shadow on the floor, no extra objects unless named. New pose and expression: shrugging with palms up, dry sarcastic smile. Mouth closed."
+    },
+    {
+      "id": "baer-pose-lacht-trocken",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "3:4",
+      "resolution": "1k",
+      "seed": 3109,
+      "negative_prompt": "different character, different clothing, different art style, realistic, 3d render, photo, extra limbs, extra fingers, text, letters, logo, background scenery, cropped head, cropped feet",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/outfits/outfit-hemd/baer-basis.png"
+      ],
+      "prompt": "Keep the exact same character design, head, face shape, fur color, horns, clothing, outlines, line thickness, colors, proportions and art style as the reference, full body, centered, plain pure white background, no text, no shadow on the floor, no extra objects unless named. New pose and expression: chuckling dryly with a small smirk, one paw on his belly. Mouth closed."
+    },
+    {
+      "id": "baer-pose-augenrollen",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "3:4",
+      "resolution": "1k",
+      "seed": 3110,
+      "negative_prompt": "different character, different clothing, different art style, realistic, 3d render, photo, extra limbs, extra fingers, text, letters, logo, background scenery, cropped head, cropped feet",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/outfits/outfit-hemd/baer-basis.png"
+      ],
+      "prompt": "Keep the exact same character design, head, face shape, fur color, horns, clothing, outlines, line thickness, colors, proportions and art style as the reference, full body, centered, plain pure white background, no text, no shadow on the floor, no extra objects unless named. New pose and expression: rolling his eyes upward, annoyed sigh, paws on hips. Mouth closed."
+    },
+    {
+      "id": "baer-pose-staunt",
+      "model": "qwen-image-3-edit",
+      "aspect_ratio": "3:4",
+      "resolution": "1k",
+      "seed": 3111,
+      "negative_prompt": "different character, different clothing, different art style, realistic, 3d render, photo, extra limbs, extra fingers, text, letters, logo, background scenery, cropped head, cropped feet",
+      "references": [
+        "brand-media/kanal-2/figuren/entwurf-1/outfits/outfit-hemd/baer-basis.png"
+      ],
+      "prompt": "Keep the exact same character design, head, face shape, fur color, horns, clothing, outlines, line thickness, colors, proportions and art style as the reference, full body, centered, plain pure white background, no text, no shadow on the floor, no extra objects unless named. New pose and expression: eyes wide in genuine surprise, eyebrows high, both paws open in front of chest. Mouth closed."
+    }
+  ]
+}
