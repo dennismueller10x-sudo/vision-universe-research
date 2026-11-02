@@ -14,7 +14,23 @@
    null for every observation, the volume hypotheses fail minimum support,
    and the study says so in population.volumeCoverage.
 
-   Writes quant/data/product/pattern-research-v1/. No provider is called,
+   RETURN BASIS (--return-basis, Entscheidung FV-5 Schritt 2)
+
+   Without the switch (or with --return-basis price) the study is exactly
+   what it was: outcomes from the split-adjusted weekly closes. With
+   --return-basis total the OUTCOMES (forward return, drawdown, best point
+   within the horizon) come from the canonical total return
+   (canonical-total-return-1.0.0, quant/engines/canonical-total-return.js,
+   via scripts/quant/lib/daily-prices.mjs) sampled on the last trading day
+   of each week (weekly-total-return-1.0.0) - the same reconstruction and
+   the same weekly semantics as the signal study (build-signal-backtest.mjs).
+   Detection and every feature stay on the split-adjusted weekly closes and
+   the daily volume bars, as before. A title without a confirmed total
+   return is excluded from the whole study and counted with its reason; the
+   study never mixes the two bases. --return-basis total without --work-dir
+   aborts: there is no silent fallback to price return.
+
+   Writes quant/data/product/pattern-research-v1/ (or --out DIR). No provider is called,
    no history is fetched, no pipeline is created, Discovery is untouched -
    these series are the Discovery workstream's canonical output and are
    read here, never written.
@@ -33,20 +49,26 @@
    ========================================================================= */
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync, rmSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { runStudy, maskColumns, round, pricePatternSet } from "./lib/pattern-study.mjs";
+import { weekKey, weeklyFromDaily, WEEKLY_TOTAL_RETURN_VERSION } from "./lib/weekly-total-return.mjs";
+import { workingStoreFromBars, TR_BASIS } from "./lib/daily-prices.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Patterns = require(join(ROOT, "quant/engines/pattern-research.js"));
-
-const SERIES_DIR = join(ROOT, "quant/data/market/discover-series-long");
-const OUT_DIR = join(ROOT, "quant/data/product/pattern-research-v1");
-const methodology = JSON.parse(readFileSync(join(ROOT, "quant/methodology/pattern-research-v1.json"), "utf8"));
+const CTR = require(join(ROOT, "quant/engines/canonical-total-return.js"));
 
 const args = process.argv.slice(2);
+const argOf = (flag) => { const i = args.indexOf(flag); return i >= 0 ? args[i + 1] : null; };
+/* --series-dir and --out exist for tests (fixtures, scratch output). Without
+   them the product paths apply; nothing else changes. */
+const SERIES_DIR = argOf("--series-dir") || join(ROOT, "quant/data/market/discover-series-long");
+const OUT_DIR = argOf("--out") || join(ROOT, "quant/data/product/pattern-research-v1");
+const methodology = JSON.parse(readFileSync(join(ROOT, "quant/methodology/pattern-research-v1.json"), "utf8"));
+
 const limitArg = args.indexOf("--limit");
 const LIMIT = limitArg >= 0 ? Number(args[limitArg + 1]) : null;
 const workDirArg = args.indexOf("--work-dir");
@@ -57,6 +79,21 @@ if (DAILY_DIR && !existsSync(DAILY_DIR)) {
      study without volume. Fail instead of publishing nulls as a result. */
   throw new Error("--work-dir given but " + DAILY_DIR + " does not exist");
 }
+/* PRICE (default, byte-identical to the study before this switch existed)
+   or TOTAL. Anything else is a typo and aborts. */
+const RETURN_BASIS = args.includes("--return-basis") ? argOf("--return-basis") : "price";
+if (RETURN_BASIS !== "price" && RETURN_BASIS !== "total") {
+  throw new Error("--return-basis must be 'price' or 'total', got " + RETURN_BASIS);
+}
+const TOTAL = RETURN_BASIS === "total";
+if (TOTAL && !DAILY_DIR) {
+  /* Fail closed: a total-return study without the canonical daily history
+     would silently be a price-return study. */
+  throw new Error("--return-basis total requires --work-dir (canonical daily history); refusing to fall back to price return");
+}
+/* Same staleness rule and coverage bar as the signal study. */
+export const TR_STALE_DAYS = 10;
+export const TR_MINIMUM_SHARE = 0.95;
 
 const WEEK_MS = 7 * 86400000;
 const finite = (value) => typeof value === "number" && Number.isFinite(value);
@@ -106,12 +143,15 @@ function monthEndIndices(dates, minimumHistory) {
        them; split consistency is the engine's job (pattern-research.js).
        Read per title, used, dropped - never held for the whole universe.
    --------------------------------------------------------------------------- */
-function loadDaily(securityId) {
-  if (!DAILY_DIR || !securityId) return null;
+function readDailyPayload(securityId) {
+  if (!DAILY_DIR || !securityId) return { state: "NO_SOURCE", payload: null };
   const file = join(DAILY_DIR, securityId + ".json");
-  if (!existsSync(file)) return null;
-  let payload;
-  try { payload = JSON.parse(readFileSync(file, "utf8")); } catch { return null; }
+  if (!existsSync(file)) return { state: "MISSING", payload: null };
+  try { return { state: "OK", payload: JSON.parse(readFileSync(file, "utf8")) }; } catch { return { state: "READ_FAILED", payload: null }; }
+}
+
+function dailyFromPayload(payload) {
+  if (!payload) return null;
   const bars = (payload.bars || []).filter((bar) => bar && typeof bar.date === "string")
     .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
   const dates = [], close = [], high = [], low = [], volume = [], splitFactor = [];
@@ -128,6 +168,37 @@ function loadDaily(securityId) {
 }
 
 /* ---------------------------------------------------------------------------
+   1c. Total return for the outcomes (--return-basis total only).
+
+       totalReturnWeekly: the canonical reconstruction of one title's daily
+       bars (current listing only, identity of the working store, stale after
+       10 days - exactly as build-signal-backtest.mjs), sampled per calendar
+       week on the last trading day (weekly-total-return-1.0.0) and aligned
+       to the title's weekly dates. Weeks without a daily value are NaN, never
+       filled with a price.
+
+       forwardOutcome: the engine's own outcomeAfter on that series. It reads
+       only levels[index..index+weeks]; the level at index is the entry, and
+       because the index is a running product of daily gross returns, the
+       ratio depends only on the bars after the observation date.
+   --------------------------------------------------------------------------- */
+export function totalReturnWeekly(payload, weeklyDates) {
+  const last = weeklyDates[weeklyDates.length - 1];
+  const d = workingStoreFromBars(payload, { asOf: weekKey(last), maxStaleDays: TR_STALE_DAYS });
+  if (!d.totalReturn) {
+    return { confirmed: false, reason: d.trVerdict.reason || "TOTAL_RETURN_UNAVAILABLE", bucket: d.trVerdict.bucket || "REJECTED_OTHER",
+      lastGap: d.trVerdict.lastGap || null, ctr: d.ctr, listingCut: d.listingCut };
+  }
+  const index = new Map(weeklyDates.map((date, i) => [weekKey(date), i]));
+  const levels = Array.from(weeklyFromDaily(d.dates, d.tr, index, weeklyDates.length));
+  return { confirmed: true, reason: null, bucket: null, lastGap: null, levels, ctr: d.ctr, listingCut: d.listingCut };
+}
+
+export function forwardOutcome(levels, index, weeks) {
+  return Patterns.outcomeAfter(levels, index, weeks);
+}
+
+/* ---------------------------------------------------------------------------
    2. One pass over every title, producing observations that carry the
       features at t and the forward outcome for every horizon. Features are
       computed once; a cohort is then only a comparison, so adding a horizon
@@ -139,6 +210,10 @@ function buildObservations(series) {
   const minimumHistory = methodology.observationGrid.minimumHistoryWeeks;
   const observations = [];
   let skippedNoFeatures = 0;
+  const tr = TOTAL ? {
+    seriesEligible: series.length, withTotalReturn: 0, excluded: [], reasons: {}, buckets: {}, listingSegmentCuts: 0,
+    outcomeUnavailableNoTotalReturnLevel: Object.fromEntries(horizons.map((h) => [h.id, 0])), ctrResults: []
+  } : null;
   const coverage = {
     source: DAILY_DIR ? "CANONICAL_DAILY_HISTORY" : "NO_DAILY_SOURCE",
     seriesWithDailyBars: 0, seriesWithoutDailyBars: 0,
@@ -147,8 +222,33 @@ function buildObservations(series) {
   };
 
   for (const entry of series) {
+    const read = readDailyPayload(entry.securityId);
+    let levels = null;
+    if (TOTAL) {
+      /* Exclusion happens before anything is counted: an excluded title
+         contributes no observation, no feature and no volume coverage. */
+      let result;
+      if (read.state !== "OK") {
+        const reason = read.state === "READ_FAILED" ? "READ_FAILED" : "NO_CANONICAL_SERIES";
+        result = { confirmed: false, reason, bucket: "REJECTED_OTHER", lastGap: null, ctr: { reconstructed: false, reason, bucket: "REJECTED_OTHER" } };
+      } else {
+        try { result = totalReturnWeekly(read.payload, entry.dates); } catch (error) {
+          result = { confirmed: false, reason: "READ_FAILED", bucket: "REJECTED_OTHER", lastGap: null, ctr: { reconstructed: false, reason: "READ_FAILED", bucket: "REJECTED_OTHER" } };
+        }
+      }
+      tr.ctrResults.push(result.ctr);
+      if (result.listingCut) tr.listingSegmentCuts += 1;
+      if (!result.confirmed) {
+        tr.excluded.push({ securityId: entry.securityId, ticker: entry.ticker, reason: result.reason, bucket: result.bucket, lastGap: result.lastGap });
+        tr.reasons[result.reason] = (tr.reasons[result.reason] || 0) + 1;
+        tr.buckets[result.bucket] = (tr.buckets[result.bucket] || 0) + 1;
+        continue;
+      }
+      tr.withTotalReturn += 1;
+      levels = result.levels;
+    }
     const indices = monthEndIndices(entry.dates, minimumHistory);
-    const daily = loadDaily(entry.securityId);
+    const daily = dailyFromPayload(read.payload);
     if (daily) coverage.seriesWithDailyBars += 1; else coverage.seriesWithoutDailyBars += 1;
     const context = { runningMax: Patterns.runningMaxOf(entry.closes), daily, dates: entry.dates };
     for (const index of indices) {
@@ -162,7 +262,10 @@ function buildObservations(series) {
       if (any) coverage.observationsWithAnyVolumeFeature += 1;
       const forward = {};
       for (const horizon of horizons) {
-        const outcome = Patterns.outcomeAfter(entry.closes, index, horizon.weeks);
+        const outcome = TOTAL ? forwardOutcome(levels, index, horizon.weeks) : Patterns.outcomeAfter(entry.closes, index, horizon.weeks);
+        if (TOTAL && outcome.state !== "AVAILABLE" && Patterns.outcomeAfter(entry.closes, index, horizon.weeks).state === "AVAILABLE") {
+          tr.outcomeUnavailableNoTotalReturnLevel[horizon.id] += 1;
+        }
         forward[horizon.id] = outcome.state === "AVAILABLE"
           ? { r: outcome.forwardReturn, dd: outcome.maxDrawdownWithinHorizon, max: outcome.maxForwardReturn }
           : null;
@@ -176,7 +279,48 @@ function buildObservations(series) {
       });
     }
   }
-  return { observations, skippedNoFeatures, coverage };
+  return { observations, skippedNoFeatures, coverage, tr };
+}
+
+/* The total-return block of the study (--return-basis total only). Counts
+   and reasons, no series and no level ever leaves the run. */
+function totalReturnBlock(tr) {
+  const summary = CTR.summarize(tr.ctrResults);
+  const share = tr.seriesEligible ? tr.withTotalReturn / tr.seriesEligible : 0;
+  return {
+    returnType: "TOTAL_RETURN",
+    returnBasis: {
+      detection: "SPLIT_ADJUSTED_PRICE",
+      detectionSource: "quant/data/market/discover-series-long (Wochenschluss, splitbereinigt) und Tagesvolumen wie bisher",
+      outcome: "TOTAL_RETURN",
+      outcomeSource: "kanonische Tageshistorie (--work-dir, nur zur Laufzeit) -> " + CTR.VERSION + " -> " + WEEKLY_TOTAL_RETURN_VERSION,
+      basis: TR_BASIS,
+      contract: CTR.VERSION,
+      corporateActionContract: CTR.CORPORATE_ACTION_CONTRACT,
+      weeklyContract: WEEKLY_TOTAL_RETURN_VERSION,
+      staleAfterDays: TR_STALE_DAYS,
+      mixed: false
+    },
+    totalReturnCoverage: {
+      seriesEligible: tr.seriesEligible,
+      withTotalReturn: tr.withTotalReturn,
+      excludedNoConfirmedTotalReturn: tr.excluded.length,
+      share: round(share, 4),
+      minimumShare: TR_MINIMUM_SHARE,
+      state: share >= TR_MINIMUM_SHARE ? "PASS" : "BELOW_MINIMUM_SHARE",
+      TOTAL_RETURN_RECONSTRUCTED: summary.TOTAL_RETURN_RECONSTRUCTED,
+      REJECTED_DIVIDEND_GAP: summary.REJECTED_DIVIDEND_GAP,
+      REJECTED_SPLIT_GAP: summary.REJECTED_SPLIT_GAP,
+      REJECTED_IDENTITY: summary.REJECTED_IDENTITY,
+      REJECTED_OTHER: summary.REJECTED_OTHER,
+      reasons: Object.fromEntries(Object.entries(tr.reasons).sort((a, b) => a[0].localeCompare(b[0]))),
+      listingSegmentCuts: tr.listingSegmentCuts,
+      outcomeUnavailableNoTotalReturnLevel: tr.outcomeUnavailableNoTotalReturnLevel,
+      outcomeUnavailableNote: "Beobachtungen, deren Ausgang in Kursrendite messbar waere, deren Horizont aber keine Gesamtrendite-Wochenwerte traegt (Tageshistorie beginnt spaeter oder hat Luecken). Sie zaehlen wie jeder fehlende Ausgang weder als Gewinner noch als Nicht-Gewinner.",
+      excluded: tr.excluded.slice().sort((a, b) => a.securityId.localeCompare(b.securityId))
+    },
+    totalReturnNote: "Ausgaenge in Gesamtrendite (Dividenden und Sonderausschuettungen wiederangelegt, selbst rekonstruiert aus Rohkurs, Splitfaktor und Bardividende). Erkennung und Merkmale bleiben auf den splitbereinigten Wochenschluessen. Titel ohne bestaetigte Gesamtrendite sind ausgeschlossen und mit Grund gezaehlt; es wird nie gemischt."
+  };
 }
 
 /* The study machinery lives in scripts/quant/lib/pattern-study.mjs, shared
@@ -220,7 +364,9 @@ function main() {
   const { series, rejected, considered } = loadSeries();
   if (!series.length) throw new Error("no usable long series found; nothing to study");
 
-  const { observations, skippedNoFeatures, coverage } = buildObservations(series);
+  const { observations, skippedNoFeatures, coverage, tr } = buildObservations(series);
+  if (TOTAL && !observations.length) throw new Error("no title with a confirmed total return; nothing to study");
+  const trBlock = TOTAL ? totalReturnBlock(tr) : null;
   const patterns = patternSet();
   const horizons = Object.fromEntries(methodology.horizons.map((h) => [h.id, h]));
   const thresholds = Object.fromEntries(methodology.winnerThresholds.map((w) => [w.id, w]));
@@ -272,14 +418,16 @@ function main() {
     backtest: "NOT_CERTIFIED",
     publication: methodology.publication,
     question: methodology.question,
+    ...(trBlock ? { returnType: trBlock.returnType, returnBasis: trBlock.returnBasis } : {}),
     population: {
       source: methodology.population.source,
       seriesConsidered: considered,
-      seriesUsed: series.length,
+      seriesUsed: trBlock ? tr.withTotalReturn : series.length,
       seriesRejected: rejected,
       priceSeriesType: "SPLIT_ADJUSTED",
-      totalReturn: false,
-      totalReturnNote: methodology.population.totalReturnNote,
+      totalReturn: !!trBlock,
+      totalReturnNote: trBlock ? trBlock.totalReturnNote : methodology.population.totalReturnNote,
+      ...(trBlock ? { totalReturnCoverage: trBlock.totalReturnCoverage } : {}),
       observations: observations.length,
       skippedNoFeatures,
       volumeCoverage: coverage,
@@ -332,6 +480,9 @@ function main() {
     "  Volumen (" + coverage.source + "): " + coverage.seriesWithDailyBars + " Reihen mit Tagesbalken, " +
     coverage.seriesWithoutDailyBars + " ohne; " + coverage.observationsWithAnyVolumeFeature + " von " +
     coverage.observations + " Beobachtungen mit Volumenmerkmal " + JSON.stringify(coverage.perFeature) + "\n" +
+    (trBlock ? "  Gesamtrendite (" + CTR.VERSION + ", " + WEEKLY_TOTAL_RETURN_VERSION + "): " + tr.withTotalReturn + " von " + tr.seriesEligible +
+      " Reihen bestaetigt (" + trBlock.totalReturnCoverage.state + "), " + tr.excluded.length + " ausgeschlossen " + JSON.stringify(trBlock.totalReturnCoverage.reasons) +
+      "; ohne Gesamtrendite-Wochenwert im Horizont " + JSON.stringify(tr.outcomeUnavailableNoTotalReturnLevel) + "\n" : "") +
     "  1.0.0-Korrektur allein: " + primary.correctionV100Only.significant + " von " + primary.correctionV100Only.hypotheses +
     " signifikant, " + primary.correctionV100Only.significanceChangedBy110.length + " mit anderem Urteil als in 1.1.0\n"
   );
@@ -347,4 +498,4 @@ function main() {
   }
 }
 
-main();
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
