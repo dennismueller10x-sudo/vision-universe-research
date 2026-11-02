@@ -21,7 +21,8 @@ name: Quant V13 Research-Archiv (R2, verschluesselt)
 #                         (Bytes vor dem ersten \n bzw. NUL) und weak (< 32); nie Schluesselbytes. Artefakt + Summary.
 #   [v13-archive:regen]   Generation 2.0.0: 1.2.0 aus R2 lesen und voll pruefen, bytegleichen Klartext mit Hex-Schluesseln
 #                         neu verschluesseln (seal-part.sh), unter archive-2.0.0/ hochladen. HEAD vor jedem PUT, kein
-#                         Ueberschreiben, alter Praefix nur gelesen. Artefakt: manifest-2.0.0.json und Bericht.
+#                         Ueberschreiben, alter Praefix nur gelesen. Artefakt: manifest-2.0.0.json und Bericht
+#                         (committet unter docs/quant-recovery/v13-archive-gen2/, da v13/ eingefroren ist, SMF-1).
 #   [v13-archive:verify2] unabhaengige Probe in eigenem Lauf: nur archive-2.0.0/ lesen, entschluesseln, alle Hashes gegen
 #                         manifest-2.0.0 und manifest-1.2.0, Schluesselformat (wirksam 64) pruefen.
 # Keine URL, kein Endpunkt und kein Secret erscheint im Log; Ausgaben nur Zaehlungen und Hashes.
@@ -153,7 +154,8 @@ jobs:
           set -euo pipefail
           D=docs/quant-recovery/v13/archive
           ms="$D/manifest-1.0.0.json,$D/manifest-1.1.0.json,$D/manifest-1.2.0.json"
-          [ -f "$D/manifest-2.0.0.json" ] && ms="$ms,$D/manifest-2.0.0.json"
+          G2=docs/quant-recovery/v13-archive-gen2/manifest-2.0.0.json
+          if [ -f "$G2" ]; then ms="$ms,$G2"; fi
           node scripts/quant/v13/archive/gen2.mjs --mode keyaudit --manifests "$ms" --out "$RUNNER_TEMP/g2/keyaudit.json"
       - name: Neue Generation 2.0.0 aus geprueftem 1.2.0-Klartext (neuer Praefix, kein Ueberschreiben)
         if: steps.m.outputs.mode == 'regen'
@@ -179,7 +181,7 @@ jobs:
           V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
         run: |
           set -euo pipefail
-          node scripts/quant/v13/archive/gen2.mjs --mode verify2 --manifest docs/quant-recovery/v13/archive/manifest-2.0.0.json \
+          node scripts/quant/v13/archive/gen2.mjs --mode verify2 --manifest docs/quant-recovery/v13-archive-gen2/manifest-2.0.0.json \
             --old-manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json --prefix research-snapshots/quant-v13/archive-2.0.0/ --out "$RUNNER_TEMP/g2/verify2.json"
       - uses: actions/upload-artifact@v4
         if: always() && (steps.m.outputs.mode == 'keyaudit' || steps.m.outputs.mode == 'regen' || steps.m.outputs.mode == 'verify2')

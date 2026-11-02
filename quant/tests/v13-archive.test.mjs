@@ -69,8 +69,10 @@ test('archive encryption uses a hex passphrase line only (no binary key file for
 
 test('existing archive manifests stay frozen: a 2.x manifest only under a new storage prefix, same plaintext', () => {
   const dir = path.join(ROOT, 'docs/quant-recovery/v13/archive');
-  const f = path.join(dir, 'manifest-2.0.0.json');
-  if (!fs.existsSync(f)) return;
+  // neue Generation in neuem Verzeichnis: v13/ ist eingefroren (SMF-1 erlaubt nur neue Verzeichnisse)
+  assert.ok(!fs.existsSync(path.join(dir, 'manifest-2.0.0.json')));
+  const f = path.join(ROOT, 'docs/quant-recovery/v13-archive-gen2/manifest-2.0.0.json');
+  assert.ok(fs.existsSync(f));
   const m = JSON.parse(fs.readFileSync(f, 'utf8'));
   const old = JSON.parse(fs.readFileSync(path.join(dir, 'manifest-1.2.0.json'), 'utf8'));
   assert.equal(m.storagePrefix, 'research-snapshots/quant-v13/archive-2.0.0/');

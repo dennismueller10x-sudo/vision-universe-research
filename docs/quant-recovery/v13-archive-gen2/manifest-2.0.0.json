@@ -1,0 +1,105 @@
+{
+ "schemaVersion": "v13-research-archive-manifest-2.0.0",
+ "createdAt": "2026-11-02T06:20:05Z",
+ "cipher": "openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass file:<key>",
+ "keyFormat": "hex64-lf",
+ "keyWrap": "RSA-4096 OAEP SHA-256",
+ "archivePublicKeySha256Der": "1b38092afd4b5c7f3a2345808fc754c53e08d0c4f3b379b1c98b2ec7f0266b5d",
+ "storagePrefix": "research-snapshots/quant-v13/archive-2.0.0/",
+ "predecessor": {
+  "schemaVersion": "v13-research-archive-manifest-1.2.0",
+  "manifestSha256": "23efb9d27ad968a0f67b491e07247c33c65717dccc7bbf3ed05f58c3f9756ec3",
+  "storagePrefix": "research-snapshots/quant-v13/archive-1.2.0/",
+  "relation": "gleicher Klartext je Teil (plainSha256, inventorySha256 identisch), neu verschluesselt mit Hex-Datenschluesseln"
+ },
+ "parts": [
+  {
+   "part": "v13-raw",
+   "object": "v13-raw.tar.enc",
+   "files": 15,
+   "plainSha256": "7d4c9dbaa766dc0759c6c323aadb65553e74003add84ba599c62fe0312fea668",
+   "plainBytes": 323911680,
+   "cipherSha256": "3977fa3c485c34af9d02c31b9b0462a55e8de70a4674bd9d64a9c9ca8dcf8c3f",
+   "cipherBytes": 323911712,
+   "inventorySha256": "0ae1879d0743d7b4d1721a52c6ab56a8eea93e765887cacad83e5a39f6462b51",
+   "wrappedKeyB64": "EiJ13tSpJjoTWjphpKp4r+QD0+8KpFa51oP6/nexN1oLaoDi6gdfdYOZ0s20rgGGocaCNOdJ4J5/v5HD7nl5OGWFmVhXQCfiFGMJtI+R5W8QmyeAmEKhlZjlGMwp8O4l+r6UjGtSZT7ZxRglg8AiOulnohS1ho60C1kcT1xNyUV2SZmQZL+1EkTUgpyM5MY/5dqKzIREHFGUdPwJI+nyu8kEB0Q+xjh0T/6QRdoqbbdskKu+DKo2vOVXaVAk9h+lUdupibYVE14J8K4W2RU6FNlkFzBAm1uT/rdtrS/n4RLNafH5NIOBFicmh4UPLJJQVZ8/ufB7iOS/h0fxoMgHIIHh0fNdeY2dKFhPPSiUXklGln5WBxJiVM20Sn1oTaKrm9g1xwqVd1OeBtjD8fZZv5I16/7qcNtfYrdCEuNSvMUeFQoHTAy7S7/SFhYQ+xba2EQVx2l71Ni6wESkO9NubhU/yvYLwi8XZqVtkeXj73mLP3G9DySiYRHLRHylyxYfM4ZGtn5jp/euOy1yWBMIJjsQB4zkKsCJ31hU0Ci+QdC32VDXp1CZBakw5N+XriS0Q22LSorBVsmVEkG5BOjgXPgXhOWABgdZbr4ln1o4uVXt+ZGHxsBlrGDHO1E9ySH0BXbzWRYforlsig4LKQo9n69DBA7CBjEbKv9GHKf+qk4="
+  },
+  {
+   "part": "v13-derived",
+   "object": "v13-derived.tar.enc",
+   "files": 2587,
+   "plainSha256": "72829952f86e408f0fbb2946ab958cd77d31f34faa7bfa954fb65def51675a39",
+   "plainBytes": 146370560,
+   "cipherSha256": "bd524311d4f0fc337ecea383c8cd73932def28741c2cd7f4578040abd17315fd",
+   "cipherBytes": 146370592,
+   "inventorySha256": "045ecca1a47892e74c8d1eea4940784681b37ba2488db02ae4eb5b160504520c",
+   "wrappedKeyB64": "c2ramGUdgbMF/0dtbFTqOUNvCIdnbloQeRcw4+1z2kmteu/brX9gyN0TKUOLVm4vB600m2PrhkB6mxGSN/cykE4csAz3v+2vAKIH1ZnrpHlkGrtgFRHKQWjGR0had3KyD7WruVyTezuNNJjqVaz0q1DGuTNaG+QyAjiEW7lnsE2mN2Ps/Iw+3cUklQrHCA6sX02iI8IWAgeBOUxUrnwagCsJzEHMOyUnIULkxu/bvd1ijp2CDDFMP03xGvddOhkgPrvclQ4Gx+52HqsJRpOEoDTt5ugTLIqbAJnyAxX3tyfqSoGbT+3vFBdqxobEPpiWpdy2WKIa766uDLpkq9gd6OY38kO3456AGSXJli3Nmc67W1psYnIcJD5b8gEN/8fApcUsZbMxac1xuIBLiRQwTnu8vEsHbc8Ny47poo3R7WccE7nE/6SJH4BSW5OvrGz90FdlGrA9CYEb5pHFJV+WgWroOFk2j8QKFo6jsrfcDtfLPCWjLC4OeEVfjff88DbYsQLkknLtY6jT28LY4JzmZBJor8U2mKVICuNF0qz7lfuh0/dcvHuygzPJScbS2NqQ3GmTq2UsVm15gMnPw+J314FBDV59idHGOPEUxTjbXJpXm02dIE0/t9KA6brU4tiD5/RPN6/x3DMXQWKI6UE3KhsYXAsljcqc5vwetuW9dgI="
+  },
+  {
+   "part": "v13-studies",
+   "object": "v13-studies.tar.enc",
+   "files": 50,
+   "plainSha256": "b36cc1ea416883236537fa2c4fb5f02093c77fd4780e9e635ebfc3200f544a36",
+   "plainBytes": 238766080,
+   "cipherSha256": "19bc8913e42cf3e8f7634e95c03b6618a4ea9d8f33f90c67ef69718aac603165",
+   "cipherBytes": 238766112,
+   "inventorySha256": "049e71e341d72bf7167ee2fed473c9ee27a0e82c77c669f08bfb5209f7c39828",
+   "wrappedKeyB64": "ihZXGJagFpFjdDbfWS3eJiEQ8qdlh2hdhdDEAECACUSyLs2q5NawDy0z0xJ11oQ8ZdjWzhuZKCrOqi0JIfggNyQCuxTWImFQBg7dkbm8hkg8vnKGFw5yQhGHmiozGn5WYywrvsV+reE8ic5pIKNogfh3QH/z8vXPMqlGVWxx+OLZj95FoHVI1pYiWzJPiA92uaWzbWTs5P4daVRzhdcSYc4fWoXY17JxRcpwUix7x7h0xLW5u57QEsohOHyL5Vn/CAry/3UiGCkteBodld7b2qxqDtV+P+su721VNOOARzkUOf6mvM5Z190oFVqu/1cQ99uCIHtSliSh2M2OtjOQgq22zvKtk8zTOaCx8qrODdYvf0qjSZzvkTLaV+owM27IvucWOd1h86pY3iT/wr0e0W2L5jBRO05kdSkY1/oESPbDjTf3vwF7BbPhIxcCaV03q7j7mkrl5vX+QnlPVYlo2QRRwlGhfi8TL+zugkG78gaxrYJJpl6o4plZoMUQgjzHWSu2Gywjc27kaNqFH4njBZk9cbpBucSSu10rKsoN8s3iAjXIZVT9KHyZq8bE+fSM4NGMEYPIZb94dysorU24rJubV9w8QHoH7ocWKmMG0EIdUAUg0xPmrsxLkhlgyhkLTXGZdHnG9ifbC9jwXoniyNR/3c8+KvDgJAXXYdWO448="
+  },
+  {
+   "part": "v13b-hist",
+   "object": "v13b-hist.tar.enc",
+   "files": 1271,
+   "plainSha256": "6156bd2eecdb64fd38d4e00be5b75d0d91aa99cf4668102e55ee1ee710e8cd0e",
+   "plainBytes": 277575680,
+   "cipherSha256": "4a9c317e040da5bf717905fc3be96510bca8b2abab0e3832953d4fb84fe1df84",
+   "cipherBytes": 277575712,
+   "inventorySha256": "40afc7d187e16bcfaf584429e435d4eee266b412c8f7e64ef01e6cd8dda65107",
+   "wrappedKeyB64": "IHzXLrH4Ve7QW/RwSednXoANqNtaxqreKcCx2R8K6Bqkwkn49FcaxkRUvGwil4UAACAV/+w8qSBAg5Unu4PcsJMlPTRY+aMDw13/b5SbWOCKUOVhHV86D3ewJuEcN3I/kYhy1nevUHOFvi29VWJ2jAxiFcTFSTP3vyh/fdP6U3BX4gLiaj5L0O3gv2MRaXFoMlfimNUuTtLo751hIHSKFIbvDjDbONTjoMH0yjG0mJoI4IkPmMjIQwYPCqlQgbe8vz+keonKQT8pbzWBcFCTL/jW3W2fKtWb9QrymGAIAGzTADnHZ8CkgxZyKz/OwY43pgOdWpGnihJY7O2vWr72rIjyaIRD0A3mW67LWSPDNAM9bQq+3k2cvCy63nUfjIl3A8t0BbaJGeEwIVnZ6HbmTvwF3eacwrvY4wIRZRymT+sye4SgysgZVvSqmiGG0NjPTpmrYXkCgrl+pgRUDqnDdUaysT5LsO6JDSn388bnWNBmBxsqdFcRZ+3C7/ecVLyEG0I9ImsgHKyDkHOJabqIV6z81Z/c5los8zW0N2MmQwBL7j5MUnsnIwOz77sEdA31Zbi32EJrfoZxp/JdzGN38HAez0jFZfEQk+W5mqDIxQdbIJxXIuwYZF8H+NFIMvXdWLAopF+4hG79QjeXNP8NgSc9FyxJOvNaWvItrVAbSK8="
+  },
+  {
+   "part": "v13b-f1w",
+   "object": "v13b-f1w.tar.enc",
+   "files": 19,
+   "plainSha256": "72d530e9a6bad953b0bd3c116714bf6ed6d46195aca1e1a2e82cb7ca4178330e",
+   "plainBytes": 67153920,
+   "cipherSha256": "70aa97a98f70095edcb2abe81e2401529d3df608b22629bd6ff53185efaed54d",
+   "cipherBytes": 67153952,
+   "inventorySha256": "c5864937910e84d1568e11c0934b7e7d42c84b25433a5252fc2b1570d9873f2b",
+   "wrappedKeyB64": "lum/CW0LeqH/+SVgC/VG1icsINKB8kjaJKCipqGEt53Tr+vXRk/o5Lc7yQ9U5cjDy+aPxlsuOlUulpYnOfMIl/rTow9mRB6WB8xjcobDo3Uala6cc/xSt06Cbo4UlFpubMdumlzaFgfpY2MoSXHH5CAJKZW8l4yp9vqJ+58+1khdKZGZwgtc/0+Vb/B8WPW+YuD/gwBKP7uYUtsXPpYbikbiFZ81heADzDPFViCWYFSQCPUUdUVyfl1rU5y2OJxBlE7I2GITTgVPc8Oe4wWTfu6yPngEX/qqtlHD1B0Zh6Qe9l7d2osrOa70fMADUdkds0FUjGP6l41AC3/lYsYczqQNO0xS+q9Aymg0jFqRdSVLY2VbRHnJj449xbmkkwnsLp0oKS2GYkq7BDviEVh9ShoVkrdCSgd2Yi/dtfZLYwAI1465LGA/J/4JH8fX7vq3RPcUEXI9KybNbvsMDUAuMLWIRk0G5HbUvy7sa9m7AZqGPWAYLiGe0vtyFwIj6PKbbrs8xUgZrGeZL+7iAdaCtRXU3oGnkXt43GRb8O5vN2zZTi/9d/00PZWr72Zh0llQyd8QJsKhzQkCQvq1edzFDKzxxQnQQ7Rvtyzfch98ongmUcDle/0rIC86vAGoNrS/n2AptMVDIZoSqpH7rv4GaoQli3UaiSXbJ4FsFchqrAM="
+  },
+  {
+   "part": "v12-listref",
+   "object": "v12-listref.tar.enc",
+   "files": 7634,
+   "plainSha256": "4531ba3b619e9fa5c286047dfac268b29398a7318d6dc153f4bb748599c84c18",
+   "plainBytes": 129648640,
+   "cipherSha256": "014e1aa3b20e8176cdeb03508d195a137df78893ade65faacd62c9990754cf38",
+   "cipherBytes": 129648672,
+   "inventorySha256": "048d2921a9678bdb3d04eac53a856dd225263ddd58ab1534f65010b17b6d2663",
+   "wrappedKeyB64": "rPJSCMjdDjTCAfeVN4yJLOApP66MDt1NOQr3FRlfEljEIsf3UqUS4O7q1OK7vznt4jjmlMDqvl8txfg0ySREhkUjlDR/HkotvY35Q0gGQHODlcvGMwqRfBzyMFUxVi6pTDSdsaycpU9cxTPikM6jSwiR59lOBhj+BeVHL8+FBDhhuymAUFTOcYyWLKFKb9o1f5hQI5fhH6D8N4q2kLeW7v5IWEgIxT1ASC8cXQOPrlq/f+RqvVRIIJZnGtbabcNGU7b1mH4pbAUA6gDybjwTAN5E9SLGIPDCId3qv8QGKthWZuRvLdBZD0PKb/m9ceqkxct+Y3CIbtCd8X2TBAdhOhViKEqstk6l/hSIuv2Lg5uAOj08Xnt75RhLDqLqwJ/7ltf18sZiDY5dtfE8PAKpCakdZF3OdJW7IYcP2bD/QK8MRU/Nskt4ZsUXGt1ormz6QVzzAIrKQjL0ARzl0A07kFDH+43LuPNqiD6PZR/d31TdD4jKARc9Ngwg5Z69vKSEzGT83z5n7Sb/fjEZ+Du3ms4Kwj9putP/FnJiHWBw+t+XUGD/N3UpFXVYtwUHbhEOjkuM5WAohxgQ10qEkanp/R6dtw8fGUFPeIOJimiDJhCMNlbl4ZkjBAwgiXiL9LlHTUfQWCevsg2f+XzyjxmkfePW1PFI4KYoNJQSKsNUKMU="
+  },
+  {
+   "part": "v13c-study",
+   "object": "v13c-study.tar.enc",
+   "files": 39,
+   "plainSha256": "13e0816ff197dd9536b5c65c65195fe8a0297d2a3d5a25c0f822615ff4f8c118",
+   "plainBytes": 192716800,
+   "cipherSha256": "64be75e640a965c04c8daaa64a06ec6946898c6876e664089185907ae7c966e2",
+   "cipherBytes": 192716832,
+   "inventorySha256": "ed2f4c9d6b671087a6d764a8cbc26732a1e9d703ddcef291e5e237a410ba3329",
+   "wrappedKeyB64": "t+wonu2Btbw7JnLBOG+iIW0+UFSiK23usPFIqJa/wga66m1T/h87TU3XiWPyI1Moc+sKCpdK3wPfFaIkwde3YNHje9opHuX7l4F+xo7vjW2/H5L/wxKWDvOV+EbYHVm0h7xC/VADIHnHl57x6b1k3h2d5Nfeu0J4FnZXUKcncxsfoaTEgheqbG6M5b46o6pXb/G9+xF47JDz5KfR+3JwgqKwhjgjF9lY3JllCsBPZJoZavnRY5gndlqUGqZmy2Lupf2JTzTpaHeMu8dwwzK3gLROq8qhQBXSRXPEDYW/I2wzI6Dno3n+Igsgf1HY4oXl6gEjI38qeRNaOiYRRYEm4wn2GtzqVh8ctumzuI+g1Ic3BHW1n28rQmIQUACBMSnA7/ST9CaKWVjiu/ylJny0+1sHjT1Y9JeClMJNBnHqcQFnPCv4PlYhO0O2tDRRtwFtQcD1eIiu4mu/0fcvR7ECGjR52w1/pjqMzsi2A8Dryyn537b+KwPI+R38MU/bmeTfSAH44hmU7Aa3OlcBcawzqzoivbwUKC2jHNzcacWf4mQB+lw3WmY1SWTZG6n+apg7Lcg3pL3S1kRnw23W3pTzTETH9GDvOq/afaxDsd3L3TAzJio+X+Hhy9hHeQVzslCGQh1eR2VslBQa5zPpxoncztEIjsUYgzpg5DmzIhd21Yk="
+  },
+  {
+   "part": "v10-factor-panel",
+   "object": "v10-factor-panel.tar.enc",
+   "files": 1,
+   "plainSha256": "79840c0fa7f28a23cfc7b37fd8e38a29f36ea2202007602cf7887c0d30433d7a",
+   "plainBytes": 124354560,
+   "cipherSha256": "21b5d8d010a7863efb96240e7f0cce6c4ca4abac117f67dd198e6b06551cd8eb",
+   "cipherBytes": 124354592,
+   "inventorySha256": "f0dfa6d2940290f64f14dc57f507c75eefcb105281e7ddd40e08437090d12cd4",
+   "wrappedKeyB64": "horjjkYjpd5feILm/pD/eCk5U7nO0U5H0EZYtSO3U49uFER8UCo55vX/I5QQtgTquOctwVyq2Ne89Zb00oZWFyh9EFRXZZnV/Z385dAmtdI9MvhDYfk2MfJwWxja1cPJNvpDat/weuxXl6i1IVUsZzTdxLKs6mwr5kXAfjC8KmJxleBsVj+yz1WWAfDmWivSVQyUyUJ4BHlTumjK8rtTrIDud7445m11MFvW/F7axca6YnomxFQt/SfWNNQMKDZD67tJ8BsaOl39VH17pOiKgvmA06gpMlAgZN8AQR3Gm6xc9BfdnHVNh3SIwOHUFKp276kznc/+rJK0WrztsTgvDXvo92o9LjRFzabLSFFjUutVBdrW7Tye+H7bqn+pzpQgtBfNzMWrxfw7U9yS3Shsf9gQman6W6LPow7IyY3tEc8sPloHUCYLQo4gBLxUI8/N/Y9DuJI8buHe4htxYYnpUW0A7NOm2V/fgrA3GHvZCbWzXgflyGIJuqJZhYrl9++/Rj43BUqLY6K5/tyFznyXWugCulaU4mz3eeyOh3KXaciXn4wUir5uliBI9F0NGBya7zlfgbtY2XdiBK+3Kjt0z6C9Pi7CcsMtryW4tlXtz1sywfkB6UqO4etyCp7/g3z90kJRMOtjgsHaBMU4oK/Ju2xUqJ9UOIMV2oXz0f2W5LY="
+  }
+ ]
+}
