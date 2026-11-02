@@ -1,5 +1,7 @@
 # Supertrader 9 → neue Quant-Sitzung: Übergabe Security Master und V13-Archiv (Stand 30.10.2026, ~16:15 UTC)
 
+> **Abschlussstand:** Verbindlich ist seit 02.11.2026 [SUPERTRADER_9_HANDOVER.md](SUPERTRADER_9_HANDOVER.md) (`main` @ `659df6c`). Dieses Dokument ist der historische Stand vom 30.10. #1143 wurde ohne Merge geschlossen. Den aktuellen Quant-Stand (Security Master 1.3.0, Freigabevorlage #1240, Archivgeneration 2.0.0 #1241) führt [docs/quant/QUANT_FINAL_HANDOVER.md](quant/QUANT_FINAL_HANDOVER.md).
+
 Die bisherige Quant-Sitzung (`session_01DVwZC5wTC6omQeEdJvtauz`) wird archiviert. Ihr Container und alles, was nur dort lag, gehen damit verloren. Diese Datei beschreibt, was die neue Quant-Sitzung übernimmt. Die Supertrader-9-Sitzung hat nichts davon selbst begonnen (Owner-Auftrag: keine konkurrierende Entwicklung am Security Master).
 
 ## 1. Bereits erledigt (auf `main`)

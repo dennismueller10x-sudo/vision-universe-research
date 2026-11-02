@@ -1,5 +1,7 @@
 # Supertrader 9 – V1-Stabilität S1–S7, Stand 30.10.2026 ~06:00 UTC
 
+> **Abschlussstand:** Verbindlich ist seit 02.11.2026 [SUPERTRADER_9_HANDOVER.md](SUPERTRADER_9_HANDOVER.md) (`main` @ `659df6c`). Dieses Dokument ist der historische Stand vom 30.10. Aktueller V1-Stand: Übergabe §4.
+
 Grundlage: Kriterien **unverändert** aus `docs/SUPERTRADER_8_ACTIVATION_READINESS.md` (Freigabeschwelle V1, Basis 1527253) und Vorstand `docs/SUPERTRADER_8_V1_STATUS_20261029.md` (Draft #1099, per `git show FETCH_HEAD`).
 Belege: nur echte GitHub-Actions-Läufe (gelesen, nichts ausgelöst) und lokale Messung auf `main`-Stand 533f788 (Refresh-Commit vom 30.10., 03:37 UTC). Lokale Berichte (`system-health.mjs`, `data-quality.mjs`, `diagnose.mjs`) wurden nur außerhalb des Repositorys geschrieben.
 

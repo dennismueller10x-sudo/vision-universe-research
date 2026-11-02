@@ -1,5 +1,7 @@
 # Supertrader 9 – Betriebsstand, offene Owner-Entscheidungen und Merge-Reihenfolge
 
+> **Abschlussstand:** Verbindlich ist seit 02.11.2026 [SUPERTRADER_9_HANDOVER.md](SUPERTRADER_9_HANDOVER.md) (`main` @ `659df6c`). Die Abschnitte 1–17 dokumentieren den Verlauf. Ihre Zwischenstände (zum Beispiel S1 1/5, #1143 als Freigabeweg, L1–L3 rot) sind durch §18, §19 und die Übergabe abgelöst.
+
 Stand 30.10.2026, ~07:00 UTC, `main` `adbc2f04`. Dieses Dokument bündelt die Ergebnisse von Supertrader 9 (Datenbetrieb, historische Validierung, Zertifizierungsvorbereitung) und die Freigaben, die nur der Owner geben kann. Es wurde nichts gemergt, kein Lauf ausgelöst und keine Variable gesetzt. Alle 13 Methoden bleiben `LIVE_NOT_APPROVED`.
 
 Einzelberichte:
@@ -321,6 +323,8 @@ Erst dann `SF8_AUTO_PUBLISH=true`. Danach brauchen normale tägliche Veröffentl
 **Nachweis 2 – S7 (nach dem ersten automatischen Lauf, getrennt dokumentiert).** S7 wird mit dem ersten erfolgreichen automatischen Kandidatenlauf und der darauf folgenden echten Datenqualität auf `main` geprüft: `system-health` OK für die SF8-Eingaben, `data-quality` ohne ERROR, DQ-PX-2/PX-3 auf dem Niveau vom 27.10. oder darunter. Bis dahin bleibt S7 „nicht erfüllt“; es wird kein grüner Stabilitätsnachweis vorweggenommen. Ein ERROR einer anderen Welt (z. B. DQ-TW-3, Technical) bleibt ein ERROR und verhindert S7, bis er behoben ist.
 
 ## 16. Übergabe an die Technical-Sitzung (01.11.2026): drei rote Quant-Tests L1–L3
+
+**Erledigt:** Technical hat das mit #1188 behoben (Vertrag 1.3.0, Screener-Neubau). L1–L3 sind auf `main` grün (§18).
 
 Zuständig ist die Technical-Welt; in der Supertrader-Sitzung wird daran nichts implementiert.
 
