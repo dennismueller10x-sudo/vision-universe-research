@@ -53,6 +53,8 @@ Stand 02.11.2026 · PR #1245 · Datenstand 30.10.2026. Ausführliche Beschreibun
 | Bei „Volatilität und Konsolidierung“ stehen naturgemäß sehr ruhige Titel oben; das können Übernahmekandidaten oder Mantelgesellschaften sein. | Hinweis im Methodiktext ergänzt. Kein Ausschluss, denn eine Ausschlussregel wäre ein Fachmodell. |
 | Der erste Trendfolge-Treffer (VSEE) trägt „Datenverdacht: Kurssprung ×90“. | Die Kennzeichnung wirkt wie vorgesehen (#1180). Ob gekennzeichnete Titel in Vorlagen und Zielen nach unten sortiert oder ausgeblendet werden, ist Option C aus Completion 2.0 und **nicht freigegeben**. Owner-Entscheidung, siehe §4. |
 | Die Seite ist auf dem iPhone lang (rund 7.000 px mit 30 Treffern). | Schritt 1 mit Sprungmarken (Kriterien, Abfrage, Treffer, Grenzen); Browser-QA prüft den Sprung zu den Treffern. |
+| Zwei Ziele beschrieben ihre Zusatzkriterien mit „oder“ (Trendwende, Unterstützung und Widerstand), alle Kriterien gelten aber gemeinsam (UND). | Zwecktexte korrigiert: „lassen sich als weitere Bedingungen dazunehmen“. Dazu sprachliche Endprüfung: kein „Swings“, MACD „zuletzt positiv“ statt „hat gedreht“, Ruhephasen „nach verbreiteter Lesart“ statt „oft“. |
+| Datenverdächtige Titel stehen gehäuft oben, weil ein Kurssprung die relative Stärke aufbläht (Trendfolge: 3 der ersten 30, Kombination: 4). | Hinweis über der Trefferliste mit der Zahl gekennzeichneter Treffer. Die Nachrangsortierung liegt als eigener Entscheidungs-PR vor (T-2). |
 
 ## 4. Entscheidungen für den Owner
 

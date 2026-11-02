@@ -92,7 +92,7 @@
         o("sma50AboveSma200", "SMA 50 über SMA 200", "Die Durchschnittslinien stehen in Aufwärtsordnung.", { field: "sma50AboveSma200", op: "is", value: true }, true, "sma"),
         o("adx25", "ADX 14 über 25", "Der Trend ist ausgeprägt (Stärke, nicht Richtung).", { field: "adx", op: "gt", value: 25 }, true, "adx"),
         o("sma200Rising", "SMA 200 steigt seit einem Monat", "Auch die langfristige Linie selbst zeigt nach oben.", { field: "sma200Rising", op: "is", value: true }, false, "sma"),
-        o("structureBull", "Aufwärtsstruktur (höhere Hochs und Tiefs)", "Die Abfolge der Swings bestätigt den Trend.", { field: "structure", op: "in", value: ["BULLISH"] }, false, "structure"),
+        o("structureBull", "Aufwärtsstruktur (höhere Hochs und Tiefs)", "Die Abfolge der letzten Hochs und Tiefs passt zum Aufwärtstrend.", { field: "structure", op: "in", value: ["BULLISH"] }, false, "structure"),
         o("rsRank70", "RS-Rang mindestens 70", "Die Aktie gehört über 6 Monate zum stärkeren Drittel.", { field: "rsRank", op: "gte", value: 70 }, false, "rsRank")
       ],
       sort: { field: "rsRank", dir: "desc" }, templates: ["trend", "uptrendBasic", "establishedUptrend"],
@@ -128,11 +128,11 @@
         text: "Die Wochen-Näherung mit RS-Rang (Etablierter Aufwärtstrend) und die 52-Wochen-Hochs sind historisch geprüft (S4): Ab 2016 kein Überschuss gegenüber dem S&P 500. Das Kreuzen der MACD-Signallinie zeigt über rund ein Marktjahr keinen gesicherten Unterschied zum Querschnitt." } },
 
     { id: "trendwende", icon: "reversal", title: "Trendwende", question: "Wo gibt es erste technische Hinweise auf eine Wende nach einem Rückgang?",
-      purpose: "Sucht Aktien, die zuletzt über die 200-Tage-Linie gestiegen sind oder eine Umkehrformation bestätigt haben.",
+      purpose: "Sucht Aktien, die zuletzt über die 200-Tage-Linie gestiegen sind und deren kurzfristiger Schwung positiv ist. Umkehrformationen, RSI und Kerzenmuster lassen sich als weitere Bedingungen dazunehmen.",
       method: "Trendwenden-Analyse sucht frühe Anzeichen, dass ein Abwärtsverlauf endet. Solche Hinweise sind häufig und scheitern oft; erst weitere Bestätigungen machen eine Wende wahrscheinlicher, nie sicher.",
       options: [
         o("crossUp200", "Vor höchstens 10 Handelstagen über die SMA 200 gestiegen", "Der Kurs hat die langfristige Linie gerade von unten gekreuzt.", { field: "crossAboveSma200Days", op: "lte", value: 10 }, true, "cross"),
-        o("macdPos", "MACD-Histogramm positiv", "Der kurzfristige Schwung hat gedreht.", { field: "macdPositive", op: "is", value: true }, true, "macd"),
+        o("macdPos", "MACD-Histogramm positiv", "Der kurzfristige Schwung ist zuletzt positiv.", { field: "macdPositive", op: "is", value: true }, true, "macd"),
         o("reversalUp", "Bestätigte Umkehrformation nach oben", "Doppelboden, umgekehrte Schulter-Kopf-Schulter oder fallender Keil mit Ausbruch nach oben.", { field: "formationConfirmedUp", op: "in", value: ["DOUBLE_BOTTOM", "INVERSE_HEAD_AND_SHOULDERS", "FALLING_WEDGE"] }, false, "reversal"),
         o("rsiExitOversold", "RSI vor höchstens 10 Tagen aus dem überverkauften Bereich", "Der RSI ist von unter 30 wieder darüber gestiegen.", { field: "rsiExitOversoldDays", op: "lte", value: 10 }, false, "rsi"),
         o("candleBull", "Bullisches Kerzenmuster am Stichtag", "Eine Kerze, die üblicherweise als Gegenbewegung gelesen wird.", { field: "candleBullish", op: "in", value: Q.field("candleBullish") ? Object.keys(Q.field("candleBullish").values) : [] }, false, "candle")
@@ -142,7 +142,7 @@
         text: "Das Kreuzen der SMA 200 von unten, der RSI-Austritt aus dem überverkauften Bereich und das Golden Cross zeigen über rund ein Marktjahr keinen gesicherten Unterschied zum Querschnitt. Umkehrformationen sind beschreibend ausgewertet: Ein großer Teil wird innerhalb von 20 Tagen ungültig." } },
 
     { id: "ruhephase", icon: "bars", title: "Volatilität und Konsolidierung", question: "Welche Aktien bewegen sich gerade ungewöhnlich ruhig?",
-      purpose: "Sucht ruhige Phasen mit enger Kursspanne. Solche Phasen gehen oft einer größeren Bewegung voraus – in welche Richtung, sagen die Kriterien nicht.",
+      purpose: "Sucht ruhige Phasen mit enger Kursspanne. Nach verbreiteter Lesart folgt auf solche Phasen eine größere Bewegung – ob und in welche Richtung, sagen die Kriterien nicht.",
       method: "Volatilitäts- und Konsolidierungsanalyse betrachtet Phasen, in denen sich der Kurs kaum bewegt. Die Richtung der folgenden Bewegung ist offen; deshalb wird Ruhe oft mit einem Trendfilter kombiniert. Sehr ruhige Kurse können auch andere Gründe haben, etwa ein laufendes Übernahmeangebot oder eine Mantelgesellschaft (SPAC); ein Blick in den Chart und in die Unternehmensmeldungen gehört dazu.",
       options: [
         o("bbSqueeze", "Bollinger-Enge", "Die Bänder liegen so eng wie selten zuvor.", { field: "bbSqueeze", op: "is", value: true }, true, "squeeze"),
@@ -157,7 +157,7 @@
         text: "Volatilitätskontraktionen und Dreiecke sind über rund ein Marktjahr beschreibend ausgewertet (Methodik): wie oft sie sich bestätigten oder scheiterten. Eine lange historische Prüfung fehlt mangels langer Tagesdaten (S4)." } },
 
     { id: "niveaus", icon: "trophy", title: "Unterstützung und Widerstand", question: "Welche Aktien stehen nahe an wichtigen Kursmarken?",
-      purpose: "Sucht Aktien nahe am 52-Wochen-Hoch, in einer Seitwärtsrange oder an einer steigenden Unterstützungslinie. Die genauen Niveaus zeigt das Chart Studio.",
+      purpose: "Sucht Aktien nahe am 52-Wochen-Hoch. Seitwärtsrange und steigende Unterstützungslinie lassen sich als weitere Bedingungen dazunehmen. Die genauen Niveaus zeigt das Chart Studio.",
       method: "Die Analyse von Unterstützung und Widerstand betrachtet Kursbereiche, an denen der Kurs früher gedreht hat. Solche Marken können halten oder durchbrochen werden; sie sind Orientierung, kein Versprechen.",
       options: [
         o("nearHigh5", "Höchstens 5 % unter dem 52-Wochen-Hoch", "Der Kurs steht nahe am wichtigsten Widerstand des letzten Jahres.", { field: "distHigh52w", op: "gte", value: -0.05 }, true, "high52"),
@@ -171,7 +171,7 @@
 
     { id: "zeitrahmen", icon: "clock", title: "Bestätigung über Zeitrahmen", question: "Zeigen Tages-, Wochen- und Monatschart in dieselbe Richtung?",
       purpose: "Prüft dieselbe Trendregel auf Tages-, Wochen- und Monatskerzen. Stimmen alle überein, ist das Bild über mehrere Zeiträume einheitlich.",
-      method: "Bei der Multi-Timeframe-Analyse wird ein Befund auf mehreren Zeitrahmen geprüft. Ein übereinstimmendes Bild gilt als robuster beschrieben; über die Zukunft sagt auch das nichts.",
+      method: "Bei der Multi-Timeframe-Analyse wird ein Befund auf mehreren Zeitrahmen geprüft. Ein übereinstimmendes Bild gilt als stimmiger; über die Zukunft sagt auch das nichts.",
       options: [
         o("day", "Tag: Kurs über SMA 200", "Langfristiger Trend im Tageschart.", { field: "aboveSma200", op: "is", value: true }, true, "timeframe"),
         o("week", "Woche: Wochenschluss über der 40-Wochen-Linie", "Derselbe Befund auf abgeschlossenen Wochen.", { field: "aboveSma200", op: "is", value: true, tf: "1W" }, true, "timeframe"),

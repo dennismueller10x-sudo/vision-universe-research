@@ -162,6 +162,9 @@ async function main() {
       const full2 = await page.locator(".tc-tpl-seg a", { hasText: "Erfüllt" }).first().innerText();
       assert(full2 !== full, "Treffer aendern sich nicht mit dem Kriterium");
       const n = Number(full2.replace(/\D/g, ""));
+      // Datenqualitaet: Hinweis nennt genau die gekennzeichneten Treffer der Liste (Datensatz-abhaengig, daher nur Konsistenz)
+      const dq = await page.evaluate(() => { const nt = document.querySelector(".tc-dq-note"); return { note: nt ? Number(nt.textContent.replace(/\D.*$/, "")) : 0 }; });
+      assert(dq.note <= n, "Datenqualitaets-Hinweis zaehlt mehr Treffer (" + dq.note + ") als die Liste hat (" + n + ")");
       await clean("Analyseziel");
       await page.locator("a", { hasText: "Im Screener bearbeiten" }).click();
       await page.waitForFunction(() => /#\/screener\?z=trendfolge/.test(location.hash));
