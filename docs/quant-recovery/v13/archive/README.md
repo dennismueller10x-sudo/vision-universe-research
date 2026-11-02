@@ -12,7 +12,7 @@ Privates Archiv der V13-/V13b-Rohdaten und Studieninputs. Die Daten stehen nicht
 
 Behoben: Verschlüsselt wird nur noch über [seal-part.sh](../../../../scripts/quant/v13/archive/seal-part.sh). Der Datenschlüssel ist dort `openssl rand -hex 32` (64 Hex-Zeichen + LF), die wirksame Passphrase hat also immer 64 Zeichen. Format und Rundlauf werden vor der Ausgabe geprüft. `build-archive.sh` und `[v13-archive:regen]` nutzen diesen Weg.
 
-### Schlüsselprüfung je Generation (`[v13-archive:keyaudit]`, Run 41398544194)
+### Schlüsselprüfung je Generation (`[v13-archive:keyaudit]`, Runs 41398544194 für 1.x und 41399813949 für 1.x + 2.0.0)
 
 Im Job wird jeder `wrappedKeyB64` mit `V13_ARCHIVE_PRIVATE_KEY` entpackt. Gemeldet werden nur die Länge und die wirksame Länge (Bytes vor `\n`/NUL); Schlüsselbytes und ihre Hashes werden nicht ausgegeben.
 
