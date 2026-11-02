@@ -38,14 +38,20 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const SF_DIR = path.resolve(HERE, '..');
 export const ROOT = path.resolve(SF_DIR, '..', '..', '..');
 export const PLAN_FILE = path.join(HERE, 'CERT-PREP-TOP5-PLAN.json');
-export const CERT_PREP_CHECK_VERSION = 'sf9-cert-prep-check-1.1.1';
+export const CERT_PREP_CHECK_VERSION = 'sf9-cert-prep-check-1.2.2'; // 1.2.2: Merge mit main (#1196: Planfeld token → sourcePhrase, in TOP5 und ALL13); 1.2.1: Forschungsproxy auch nicht als SOURCE_NUMBER_TRANSLATION_ONLY; 1.2.0: Optionen für ALL13, SOURCE_NUMBER_TRANSLATION_ONLY, exakte Liste ungeprüfter #709-Belege, struktureller Wertvergleich
 export const BLOCKER_CLASSES = Object.freeze(['a', 'b', 'c', 'd']);
 /** Pin des Planinhalts (sha256 über JSON.stringify des geladenen Plans). Neu setzen nur in einem begründeten Commit. */
 export const PINNED_PLAN_CONTENT_SHA256 = '016f87ede52daac4d7a087635858ade31d642e3c337e94725be5e28617ee8690';
 export const CERT_PREP_TEST_FILE = 'scripts/supertrader/tests/sf-cert-prep-top5.test.mjs';
 /** Familienpräfix der CP-Tests -> Methoden, deren conformanceTests sie zusammen vollständig enthalten müssen. */
 export const CP_FAMILIES = Object.freeze({ TUR: ['C02', 'C01'], KK: ['C08'], BGU: ['C12'], DAR: ['C03'] });
-const PARAM_KINDS = Object.freeze(['SOURCE_NUMBER', 'CONVENTION', 'MODEL_BOUND_FROM_SOURCE_RANGE', 'OWNER_CONVENTION']);
+/** SOURCE_NUMBER_TRANSLATION_ONLY (ALL13, C06/C07): gedruckte Zahl, deren #709-Wortlaut nur übersetzt vorliegt (original_wording_checked false). */
+const PARAM_KINDS = Object.freeze(['SOURCE_NUMBER', 'CONVENTION', 'MODEL_BOUND_FROM_SOURCE_RANGE', 'OWNER_CONVENTION', 'SOURCE_NUMBER_TRANSLATION_ONLY']);
+/** Regeltreue-Testdateien mit ihren Familien (TOP5); der ALL13-Prüfer übergibt zusätzlich seine eigene Datei. */
+export const DEFAULT_CP_TEST_FILES = Object.freeze([Object.freeze({ file: CERT_PREP_TEST_FILE, families: CP_FAMILIES })]);
+/** Ausnahme für ungeprüften #709-Wortlaut: benannter Blocker der Methode mit CC-1 und Klasse d, und CC-1 ist offen. */
+const wordingBlockerOk = (m) => m.ccOpen.includes('CC-1') && m.blockers.some((b) => b.id === m.wordingUncheckedBlocker && b.criterion === 'CC-1' && b.class === 'd');
+const sameValue = (a, b) => (a !== null && typeof a === 'object' ? JSON.stringify(a) === JSON.stringify(b) : a === b);
 const A_STATUS = /^(DONE|PREPARED_[A-Z_]+|OPEN_SEPARATE_PR)$/;
 
 export const loadPlan = (file = PLAN_FILE) => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -65,11 +71,11 @@ const allTestRefs = (plan) => [...new Set([
 ])].sort();
 
 /** test('…')-Titel einer Datei; ein Titel trägt seine IDs vor dem ersten ':' (getrennt durch ' / '). */
-function testTitlesOf(file) {
+export function testTitlesOf(file) {
   const src = fs.readFileSync(path.resolve(ROOT, file), 'utf8');
   return [...src.matchAll(/^\s*test\((['`])(.*?)\1/gm)].map((m) => m[2]);
 }
-const idsOfTitle = (t) => t.split(':')[0].split(' / ').map((s) => s.trim());
+export const idsOfTitle = (t) => t.split(':')[0].split(' / ').map((s) => s.trim());
 function testIdsOf(file) { return new Set(testTitlesOf(file).flatMap(idsOfTitle)); }
 
 /**
@@ -88,9 +94,13 @@ export function isPerformanceTarget(text) {
   return false;
 }
 
-/** Validiert den Plan. Liefert { issues: [string], checks: {...}, dependency } (deterministisch, ohne Uhrzeit). */
-export async function validatePlan(plan = loadPlan()) {
-  const issues = [], checks = { rules: 0, rulesOutOfScope: 0, params: 0, paramsOutOfScope: 0, psr709: 0, tests: 0, blockers: 0, studies: 0 };
+/**
+ * Validiert den Plan. Liefert { issues: [string], checks: {...}, dependency } (deterministisch, ohne Uhrzeit).
+ * opts (nur für den ALL13-Prüfer, cert-prep-all13.mjs): pinnedContentSha256 null = der Aufrufer prüft die Pins selbst
+ * (zusammengeführter Plan); cpTestFiles = Regeltreue-Testdateien mit ihren Familien. Ohne opts gilt TOP5 unverändert.
+ */
+export async function validatePlan(plan = loadPlan(), { pinnedContentSha256 = PINNED_PLAN_CONTENT_SHA256, cpTestFiles = DEFAULT_CP_TEST_FILES } = {}) {
+  const issues = [], checks = { rules: 0, rulesOutOfScope: 0, params: 0, paramsOutOfScope: 0, psr709: 0, psr709WordingUnchecked: 0, tests: 0, blockers: 0, studies: 0 };
   const extract = JSON.parse(fs.readFileSync(path.join(SF_DIR, 'evidence/PSR709-EVIDENCE-EXTRACT.json'), 'utf8'));
   const psr = new Map(extract.rules.map((r) => [r.rule_id, r]));
   const mods = new Map();
@@ -100,7 +110,7 @@ export async function validatePlan(plan = loadPlan()) {
   const reasonCode = (r) => String(r ?? '').split(':')[0];
 
   const contentSha = planContentSha256(plan);
-  if (contentSha !== PINNED_PLAN_CONTENT_SHA256) issues.push(`PLAN_NOT_PINNED:${contentSha}`);
+  if (pinnedContentSha256 !== null && contentSha !== pinnedContentSha256) issues.push(`PLAN_NOT_PINNED:${contentSha}`);
 
   if (plan.guards.validatedTradeSignal !== 'LOCKED_FOR_ALL_13') issues.push('GUARD_VALIDATED_TRADE_SIGNAL');
   for (const k of ['ruleChanges', 'parameterChanges', 'workflowsTriggered', 'generatedDataChanged']) if (plan.guards[k] !== 'NONE') issues.push(`GUARD_${k}`);
@@ -151,8 +161,8 @@ export async function validatePlan(plan = loadPlan()) {
     if (reasonCode(p.reason) === 'OTHER_METHOD' && plan.methods.some((m) => m.candidateId === p.reason.split(':')[1])) issues.push(`PARAM_OOS_METHOD_IN_PLAN:${key}`);
   }
 
-  const cpTitles = testTitlesOf(CERT_PREP_TEST_FILE).filter((t) => t.startsWith('CP-') && !t.startsWith('CP-PLAN-'));
-  const cpRef = (t) => `${CERT_PREP_TEST_FILE}: ${idsOfTitle(t)[0]}`;
+  const cpFiles = cpTestFiles.map(({ file, families }) => ({ file, families, titles: testTitlesOf(file).filter((t) => t.startsWith('CP-') && !t.startsWith('CP-PLAN-')) }));
+  const cpRef = (file, t) => `${file}: ${idsOfTitle(t)[0]}`;
 
   for (const m of plan.methods) {
     const c = (await mod(m.contract.module))[m.contract.export];
@@ -167,7 +177,15 @@ export async function validatePlan(plan = loadPlan()) {
       const cr = byId.get(r.id);
       if (!cr) issues.push(`RULE_MISSING:${m.candidateId}:${r.id}`);
       else if (cr.status !== r.status) issues.push(`RULE_STATUS:${m.candidateId}:${r.id}:${cr.status}`);
-      for (const p of cr?.psr709 ?? []) { checks.psr709++; const e = psr.get(p); if (!e) issues.push(`PSR709_MISSING:${p}`); else if (e.original_wording_checked !== true) issues.push(`PSR709_WORDING_UNCHECKED:${p}`); }
+      for (const p of cr?.psr709 ?? []) {
+        checks.psr709++; const e = psr.get(p);
+        if (!e) issues.push(`PSR709_MISSING:${p}`);
+        else if (e.original_wording_checked !== true) {
+          // nur mit ausdrücklicher Liste und einem CC-1-Blocker der Klasse d zulässig (Übersetzungsbelege, C06/C07)
+          if ((m.psr709WordingUnchecked ?? []).includes(p) && wordingBlockerOk(m)) checks.psr709WordingUnchecked++;
+          else issues.push(`PSR709_WORDING_UNCHECKED:${p}`);
+        }
+      }
     }
     // Regel-Soll aus dem Vertrag: jede Vertragsregel ist im Plan oder mit geprüftem Grund ausgeschlossen
     const inPlan = new Set(m.rules.map((r) => r.id)), oos = new Map((m.rulesOutOfScope ?? []).map((r) => [r.id, r]));
@@ -184,6 +202,9 @@ export async function validatePlan(plan = loadPlan()) {
       else if (!['COVERED_IN', 'MANUAL_REVIEW_LAYER', 'DATA_BLOCKED', 'CONTRACT_GOLDEN_CASES'].includes(code)) issues.push(`RULE_OOS_REASON:${m.candidateId}:${r.id}:${r.reason}`);
     }
     for (const r of c.rules) if (!inPlan.has(r.id) && !oos.has(r.id)) issues.push(`RULE_NOT_COVERED:${m.candidateId}:${r.id}`);
+    // die Liste der ungeprüften #709-Belege ist exakt: jeder Eintrag ist ungeprüft und von einer Planregel zitiert
+    const cited = new Set(m.rules.flatMap((r) => byId.get(r.id)?.psr709 ?? []));
+    for (const p of m.psr709WordingUnchecked ?? []) if (!cited.has(p) || psr.get(p)?.original_wording_checked !== false) issues.push(`PSR709_UNCHECKED_LIST_STALE:${m.candidateId}:${p}`);
 
     for (const p of m.params) {
       checks.params++;
@@ -191,11 +212,14 @@ export async function validatePlan(plan = loadPlan()) {
       if (!e) { issues.push(`PARAM_PSR709_MISSING:${p.psr709}`); continue; }
       if (!e.rule_text_paraphrase.includes(p.sourcePhrase)) issues.push(`PARAM_TOKEN:${m.candidateId}:${p.psr709}:${p.sourcePhrase}`);
       const v = getPath((await mod(p.code.module))[p.code.export], p.code.path);
-      if (v !== p.value) issues.push(`PARAM_VALUE:${m.candidateId}:${p.code.export}.${p.code.path}:${v}`);
+      if (!sameValue(v, p.value)) issues.push(`PARAM_VALUE:${m.candidateId}:${p.code.export}.${p.code.path}:${v}`);
       if (!PARAM_KINDS.includes(p.kind)) issues.push(`PARAM_KIND:${p.psr709}`);
+      // Quellenzahl nur mit geprüftem Wortlaut; eine nur übersetzte Zahl trägt SOURCE_NUMBER_TRANSLATION_ONLY
+      if (p.kind === 'SOURCE_NUMBER' && e.original_wording_checked !== true) issues.push(`PARAM_SOURCE_WORDING_UNCHECKED:${m.candidateId}:${p.psr709}`);
+      if (p.kind === 'SOURCE_NUMBER_TRANSLATION_ONLY' && (e.original_wording_checked !== false || !wordingBlockerOk(m))) issues.push(`PARAM_TRANSLATION_KIND:${m.candidateId}:${p.psr709}`);
       if (p.kind !== 'SOURCE_NUMBER' && !p.note && p.kind !== 'MODEL_BOUND_FROM_SOURCE_RANGE') issues.push(`PARAM_NOTE:${p.psr709}`);
-      // Forschungsproxys (research/*) sind nie eine Quellenzahl; eine Quellenzahl liegt im Methodenmodul
-      if (p.code.module.startsWith('research/') && p.kind === 'SOURCE_NUMBER') issues.push(`PARAM_KIND_MODEL_AS_SOURCE:${m.candidateId}:${p.code.export}.${p.code.path}`);
+      // Forschungsproxys (research/*) sind nie eine Quellenzahl (auch nicht nur übersetzt); eine Quellenzahl liegt im Methodenmodul
+      if (p.code.module.startsWith('research/') && (p.kind === 'SOURCE_NUMBER' || p.kind === 'SOURCE_NUMBER_TRANSLATION_ONLY')) issues.push(`PARAM_KIND_MODEL_AS_SOURCE:${m.candidateId}:${p.code.export}.${p.code.path}`);
       if (p.kind === 'MODEL_BOUND_FROM_SOURCE_RANGE' && !p.code.module.startsWith('research/')) issues.push(`PARAM_KIND_MODEL_OUTSIDE_RESEARCH:${m.candidateId}:${p.code.export}.${p.code.path}`);
       if (p.code.module.startsWith('methods/')) paramSeen.add(`${p.code.module}#${p.code.export}#${p.code.path}`);
     }
@@ -221,23 +245,27 @@ export async function validatePlan(plan = loadPlan()) {
 
     // Mindestumfang der conformanceTests: jeder CP-Test der Familie, dessen Belegstellen (Klammern im Titel) eine
     // Regel, einen #709-Beleg oder einen Parameter dieser Methode nennen
-    const fam = Object.entries(CP_FAMILIES).find(([, ms]) => ms.includes(m.candidateId))?.[0];
     const own = new Set([...m.rules.map((r) => r.id), ...m.rules.flatMap((r) => byId.get(r.id)?.psr709 ?? []), ...m.params.map((p) => p.psr709)]);
-    for (const t of cpTitles.filter((x) => fam && x.startsWith(`CP-${fam}-`))) {
-      const refs = [...t.matchAll(/\(([^)]*)\)/g)].map((x) => x[1]).join(' ').split(/[\s,;/]+/);
-      if (refs.some((r) => own.has(r)) && !m.conformanceTests.includes(cpRef(t))) issues.push(`CONFORMANCE_MINIMUM:${m.candidateId}:${idsOfTitle(t)[0]}`);
+    for (const { file, families, titles } of cpFiles) {
+      const fam = Object.entries(families).find(([, ms]) => ms.includes(m.candidateId))?.[0];
+      for (const t of titles.filter((x) => fam && x.startsWith(`CP-${fam}-`))) {
+        const refs = [...t.matchAll(/\(([^)]*)\)/g)].map((x) => x[1]).join(' ').split(/[\s,;/]+/);
+        if (refs.some((r) => own.has(r)) && !m.conformanceTests.includes(cpRef(file, t))) issues.push(`CONFORMANCE_MINIMUM:${m.candidateId}:${idsOfTitle(t)[0]}`);
+      }
     }
   }
   for (const [key, code] of paramExports) {
     for (const leaf of leaves((await mod(code.module))[code.export] ?? {})) if (!paramSeen.has(`${key}#${leaf}`)) issues.push(`PARAM_NOT_COVERED:${key}.${leaf}`);
   }
   // Vollständigkeit je Familie (Vereinigung) und der gemeinsamen CP-EXEC-Tests
-  for (const [fam, ms] of Object.entries(CP_FAMILIES)) {
-    const union = new Set(plan.methods.filter((m) => ms.includes(m.candidateId)).flatMap((m) => m.conformanceTests));
-    for (const t of cpTitles.filter((x) => x.startsWith(`CP-${fam}-`))) if (!union.has(cpRef(t))) issues.push(`CONFORMANCE_FAMILY:${fam}:${idsOfTitle(t)[0]}`);
+  for (const { file, families, titles } of cpFiles) {
+    for (const [fam, ms] of Object.entries(families)) {
+      const union = new Set(plan.methods.filter((m) => ms.includes(m.candidateId)).flatMap((m) => m.conformanceTests));
+      for (const t of titles.filter((x) => x.startsWith(`CP-${fam}-`))) if (!union.has(cpRef(file, t))) issues.push(`CONFORMANCE_FAMILY:${fam}:${idsOfTitle(t)[0]}`);
+    }
+    for (const t of titles.filter((x) => x.startsWith('CP-EXEC-'))) if (!plan.sharedExecution.tests.includes(cpRef(file, t))) issues.push(`CONFORMANCE_SHARED:${idsOfTitle(t)[0]}`);
+    for (const t of titles) if (!['EXEC', ...Object.keys(families)].includes(t.split('-')[1])) issues.push(`CONFORMANCE_UNMAPPED:${idsOfTitle(t)[0]}`);
   }
-  for (const t of cpTitles.filter((x) => x.startsWith('CP-EXEC-'))) if (!plan.sharedExecution.tests.includes(cpRef(t))) issues.push(`CONFORMANCE_SHARED:${idsOfTitle(t)[0]}`);
-  for (const t of cpTitles) if (!['EXEC', ...Object.keys(CP_FAMILIES)].includes(t.split('-')[1])) issues.push(`CONFORMANCE_UNMAPPED:${idsOfTitle(t)[0]}`);
   for (const f of plan.findings) if (f.modelChange !== false) issues.push(`FINDING_IS_MODEL_CHANGE:${f.id}`);
 
   const cache = new Map();
