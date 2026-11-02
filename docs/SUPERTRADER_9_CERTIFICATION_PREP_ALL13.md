@@ -1,6 +1,6 @@
 # Supertrader 9 – Zertifizierungsvorbereitung aller 13 Methoden (ALL13)
 
-Stand: 01.11.2026 (Plan ALL13 1.0.0). Folgearbeit zu `docs/SUPERTRADER_9_CERTIFICATION_PREP_TOP5.md` (PR #1196). Grundlage bleibt die Matrix `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md` (PR #1148, Stand 30.10.2026).
+Stand: 01.11.2026 (Plan ALL13 1.0.0), Revision 02.11.2026 (Plan ALL13 1.0.1: Planfeld `token` → `sourcePhrase` wie TOP5 1.1.1 aus #1196, Basis-Pin TOP5 neu, Werte unverändert). Folgearbeit zu `docs/SUPERTRADER_9_CERTIFICATION_PREP_TOP5.md` (PR #1196). Grundlage bleibt die Matrix `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md` (PR #1148, Stand 30.10.2026).
 
 Neu vorbereitet sind die übrigen acht Methoden, in der Reihenfolge der Matrix: **C07 Power Play, C06 Minervini SEPA, C13 Holy Grail, C11 Pocket Pivot, C05 Weinstein Trader, C04 Weinstein Investor, C09 Kullamägi Episodic Pivot, C10 Kullamägi Parabolic Short**. Die fünf Methoden aus TOP5 (C02, C01, C08, C12, C03) sind unverändert übernommen.
 
@@ -72,7 +72,7 @@ node scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs --mut
   - Die Fundstelle liegt in `methods/` oder `research/` und kommt genau einmal vor (`MUTATION_PROBE_FIND`).
 
 **Lokaler Lauf am 01.11.2026 auf dem PR-Head**
-- Plan gültig, 0 Abweichungen, Abhängigkeit `PENDING_PR_1148`.
+- Plan gültig, 0 Abweichungen, Abhängigkeit `PENDING_PR_1148` (Stand PR-Head 01.11.; nach dem Merge von #1148 und #1196 auf `main` meldet der Prüfer `PRESENT_MATCHING_PR_1148`).
 - Geprüft:
   - 138 Vertragsregeln mit Status und 54 begründet ausgeschlossene;
   - 73 Parameter gegen Code und #709-Wortlaut, 7 begründet ausgeschlossen;

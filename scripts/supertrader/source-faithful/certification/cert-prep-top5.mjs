@@ -38,10 +38,10 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const SF_DIR = path.resolve(HERE, '..');
 export const ROOT = path.resolve(SF_DIR, '..', '..', '..');
 export const PLAN_FILE = path.join(HERE, 'CERT-PREP-TOP5-PLAN.json');
-export const CERT_PREP_CHECK_VERSION = 'sf9-cert-prep-check-1.2.1'; // 1.2.1: Forschungsproxy auch nicht als SOURCE_NUMBER_TRANSLATION_ONLY; 1.2.0: Optionen für ALL13, SOURCE_NUMBER_TRANSLATION_ONLY, exakte Liste ungeprüfter #709-Belege, struktureller Wertvergleich
+export const CERT_PREP_CHECK_VERSION = 'sf9-cert-prep-check-1.2.2'; // 1.2.2: Merge mit main (#1196: Planfeld token → sourcePhrase, in TOP5 und ALL13); 1.2.1: Forschungsproxy auch nicht als SOURCE_NUMBER_TRANSLATION_ONLY; 1.2.0: Optionen für ALL13, SOURCE_NUMBER_TRANSLATION_ONLY, exakte Liste ungeprüfter #709-Belege, struktureller Wertvergleich
 export const BLOCKER_CLASSES = Object.freeze(['a', 'b', 'c', 'd']);
 /** Pin des Planinhalts (sha256 über JSON.stringify des geladenen Plans). Neu setzen nur in einem begründeten Commit. */
-export const PINNED_PLAN_CONTENT_SHA256 = '7f6f864b4a8e198db8316f9b8f135fa18ab240e3605dd5d93b3a9bd22fb48ad9';
+export const PINNED_PLAN_CONTENT_SHA256 = '016f87ede52daac4d7a087635858ade31d642e3c337e94725be5e28617ee8690';
 export const CERT_PREP_TEST_FILE = 'scripts/supertrader/tests/sf-cert-prep-top5.test.mjs';
 /** Familienpräfix der CP-Tests -> Methoden, deren conformanceTests sie zusammen vollständig enthalten müssen. */
 export const CP_FAMILIES = Object.freeze({ TUR: ['C02', 'C01'], KK: ['C08'], BGU: ['C12'], DAR: ['C03'] });
@@ -210,7 +210,7 @@ export async function validatePlan(plan = loadPlan(), { pinnedContentSha256 = PI
       checks.params++;
       const e = psr.get(p.psr709);
       if (!e) { issues.push(`PARAM_PSR709_MISSING:${p.psr709}`); continue; }
-      if (!e.rule_text_paraphrase.includes(p.token)) issues.push(`PARAM_TOKEN:${m.candidateId}:${p.psr709}:${p.token}`);
+      if (!e.rule_text_paraphrase.includes(p.sourcePhrase)) issues.push(`PARAM_TOKEN:${m.candidateId}:${p.psr709}:${p.sourcePhrase}`);
       const v = getPath((await mod(p.code.module))[p.code.export], p.code.path);
       if (!sameValue(v, p.value)) issues.push(`PARAM_VALUE:${m.candidateId}:${p.code.export}.${p.code.path}:${v}`);
       if (!PARAM_KINDS.includes(p.kind)) issues.push(`PARAM_KIND:${p.psr709}`);

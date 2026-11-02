@@ -30,9 +30,12 @@ const checkoutAccess = (process.argv.find(a => a.startsWith('--checkout-access='
 // --newsletter: Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich gegen das simulierte Brevo einschalten.
 const newsletter = process.argv.includes('--newsletter')
   ? {VU_NEWSLETTER: 'true', VU_BREVO_SYNC: 'true', VU_BREVO_LIST_USERS: '11', VU_BREVO_LIST_FREE: '12', VU_BREVO_LIST_PRO: '13', VU_BREVO_LIST_NEWSLETTER: '4'} : {};
+// --backtest-review: interne Backtest-Vorschau NUR in dieser Simulation einschalten (VU_BACKTEST_REVIEW_ENABLED = "true").
+// In Produktion bleibt der Schalter in wrangler.toml "false"; Rolle backtest_reviewer nur ueber /__dev/backtest-reviewer.
+const backtestReview = process.argv.includes('--backtest-review') ? {VU_BACKTEST_REVIEW_ENABLED: 'true'} : {};
 const env = await createEnvironment({site: origin, api: origin, checkoutBase: `${origin}/__dev/checkout`, portalBase: `${origin}/__dev/portal`,
   envOverrides: {VU_COOKIE_SECURE: 'false', VU_ALLOWED_ORIGINS: origin, STRIPE_CHECKOUT_HOSTS: 'localhost',
-    ...(['public', 'testers', 'off'].includes(checkoutAccess) ? {VU_CHECKOUT_ACCESS: checkoutAccess} : {}), ...newsletter}});
+    ...(['public', 'testers', 'off'].includes(checkoutAccess) ? {VU_CHECKOUT_ACCESS: checkoutAccess} : {}), ...newsletter, ...backtestReview}});
 const {sim} = env.stripe;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 
@@ -100,6 +103,14 @@ async function devRoute(req, res, url) {
     // Rolle billing_tester wie der Betrieb (Service-Zugang, nie aus dem Browser des Kontos). Nur Simulation.
     const email = String(url.searchParams.get('email') || '').toLowerCase();
     const n = await env.pg.json(`with x as (insert into public.user_roles (user_id, role) select id, 'billing_tester' from auth.users
+      where lower(email) = :'email' on conflict do nothing returning 1) select to_json(count(*)) from x`, {email});
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    return res.end(JSON.stringify({granted: n}));
+  }
+  if (parts[1] === 'backtest-reviewer' && req.method === 'POST') {
+    // Rolle backtest_reviewer (interne Backtest-Vorschau) wie der Betrieb: nur ueber den Service, nie aus dem Browser. Nur Simulation.
+    const email = String(url.searchParams.get('email') || '').toLowerCase();
+    const n = await env.pg.json(`with x as (insert into public.user_roles (user_id, role) select id, 'backtest_reviewer' from auth.users
       where lower(email) = :'email' on conflict do nothing returning 1) select to_json(count(*)) from x`, {email});
     res.writeHead(200, {'Content-Type': 'application/json'});
     return res.end(JSON.stringify({granted: n}));

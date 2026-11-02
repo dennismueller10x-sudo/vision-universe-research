@@ -1,15 +1,16 @@
 {
   "schema": "vu-supertrader-cert-prep-plan-1",
   "id": "SF9-CERT-PREP-ALL13",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "fixedOn": "2026-11-01",
+  "revision": "1.0.1 (02.11.2026, vor jedem Ergebnis einer Studie): Feld token in sourcePhrase umbenannt wie im TOP5-Plan 1.1.1 (#1196), weil die Schlüsselsuche der Supertrader Quality Gates den Feldnamen als möglichen Schlüssel meldet; Basis auf TOP5 1.1.1 mit deren neuem Inhalts-Pin. Werte, Regeln, Parameter, Blocker, Gegenproben und Abnahmekriterien unverändert.",
   "status": "PREREGISTERED_NOT_ACTIVE",
   "purpose": "Methodische Zertifizierungsvorbereitung aller 13 Methoden: der unveränderte TOP5-Plan plus die übrigen acht (C07, C06, C13, C11, C05, C04, C09, C10). Keine Zertifizierung, keine Regel- oder Parameteränderung, keine Aktivierung.",
   "extends": {
     "plan": "scripts/supertrader/source-faithful/certification/CERT-PREP-TOP5-PLAN.json",
     "id": "SF9-CERT-PREP-TOP5",
-    "version": "1.1.0",
-    "contentSha256": "7f6f864b4a8e198db8316f9b8f135fa18ab240e3605dd5d93b3a9bd22fb48ad9",
+    "version": "1.1.1",
+    "contentSha256": "016f87ede52daac4d7a087635858ade31d642e3c337e94725be5e28617ee8690",
     "rule": "Basis unverändert; Erweiterung hängt Methoden, Querschnittsblocker, Befunde, Ausschlussgründe und Tests an (cert-prep-all13.mjs#mergePlans)"
   },
   "dependsOn": {
@@ -26,7 +27,7 @@
     "paperProtocol": "SF6-PAPER-2027 1.1.0 (scripts/supertrader/source-faithful/completion/sf6-paper-protocol-2027.mjs)",
     "validationProtocol": "SF6-VALIDATION-PROTOCOL 1.1.0 (scripts/supertrader/source-faithful/research/run-sf6-validation.mjs)",
     "sourceExtract": "scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json",
-    "top5Plan": "CERT-PREP-TOP5-PLAN.json 1.1.0 (PR #1196)"
+    "top5Plan": "CERT-PREP-TOP5-PLAN.json 1.1.1 (PR #1196)"
   },
   "guards": {
     "validatedTradeSignal": "LOCKED_FOR_ALL_13",
@@ -209,7 +210,7 @@
       "params": [
         {
           "psr709": "MIN-PP-02",
-          "token": "100%",
+          "sourcePhrase": "100%",
           "code": {
             "module": "methods/minervini.mjs",
             "export": "MIN_PARAMS",
@@ -221,7 +222,7 @@
         },
         {
           "psr709": "MIN-PP-02",
-          "token": "acht Wochen",
+          "sourcePhrase": "acht Wochen",
           "code": {
             "module": "methods/minervini.mjs",
             "export": "MIN_PARAMS",
@@ -233,7 +234,7 @@
         },
         {
           "psr709": "MIN-PP-04",
-          "token": "20–25%",
+          "sourcePhrase": "20–25%",
           "code": {
             "module": "methods/minervini.mjs",
             "export": "MIN_PARAMS",
@@ -245,7 +246,7 @@
         },
         {
           "psr709": "MIN-PP-04",
-          "token": "20–25%",
+          "sourcePhrase": "20–25%",
           "code": {
             "module": "methods/minervini.mjs",
             "export": "MIN_PARAMS",
@@ -257,7 +258,7 @@
         },
         {
           "psr709": "MIN-PP-05",
-          "token": "10%",
+          "sourcePhrase": "10%",
           "code": {
             "module": "methods/minervini.mjs",
             "export": "MIN_PARAMS",
@@ -269,7 +270,7 @@
         },
         {
           "psr709": "MIN-PP-03",
-          "token": "3–6 Wochen",
+          "sourcePhrase": "3–6 Wochen",
           "code": {
             "module": "methods/minervini.mjs",
             "export": "MIN_PARAMS",
@@ -281,7 +282,7 @@
         },
         {
           "psr709": "MIN-MM-STOP-02",
-          "token": "10%",
+          "sourcePhrase": "10%",
           "code": {
             "module": "methods/minervini.mjs",
             "export": "MIN_PARAMS",
@@ -293,7 +294,7 @@
         },
         {
           "psr709": "MIN-MM-SIZE-03",
-          "token": "1,25–2,5%",
+          "sourcePhrase": "1,25–2,5%",
           "code": {
             "module": "research/minervini-lifecycle.mjs",
             "export": "REFERENCE_CONFIG",
@@ -755,7 +756,7 @@
       "params": [
         {
           "psr709": "MIN-TT-04",
-          "token": "MA50",
+          "sourcePhrase": "MA50",
           "code": {
             "module": "methods/minervini.mjs",
             "export": "MIN_PARAMS",
@@ -771,7 +772,7 @@
         },
         {
           "psr709": "MIN-TT-03",
-          "token": "einen Monat",
+          "sourcePhrase": "einen Monat",
           "code": {
             "module": "methods/minervini.mjs",
             "export": "MIN_PARAMS",
@@ -783,7 +784,7 @@
         },
         {
           "psr709": "MIN-TT-06",
-          "token": "52-Wochen",
+          "sourcePhrase": "52-Wochen",
           "code": {
             "module": "methods/minervini.mjs",
             "export": "MIN_PARAMS",
@@ -795,7 +796,7 @@
         },
         {
           "psr709": "MIN-TT-06",
-          "token": "30%",
+          "sourcePhrase": "30%",
           "code": {
             "module": "methods/minervini.mjs",
             "export": "MIN_PARAMS",
@@ -807,7 +808,7 @@
         },
         {
           "psr709": "MIN-TT-07",
-          "token": "25%",
+          "sourcePhrase": "25%",
           "code": {
             "module": "methods/minervini.mjs",
             "export": "MIN_PARAMS",
@@ -819,7 +820,7 @@
         },
         {
           "psr709": "MIN-MM-STOP-02",
-          "token": "10%",
+          "sourcePhrase": "10%",
           "code": {
             "module": "methods/minervini.mjs",
             "export": "MIN_PARAMS",
@@ -831,7 +832,7 @@
         },
         {
           "psr709": "MIN-MM-SIZE-03",
-          "token": "1,25–2,5%",
+          "sourcePhrase": "1,25–2,5%",
           "code": {
             "module": "research/minervini-lifecycle.mjs",
             "export": "REFERENCE_CONFIG",
@@ -1166,7 +1167,7 @@
       "params": [
         {
           "psr709": "RAS04-002",
-          "token": "ADX14",
+          "sourcePhrase": "ADX14",
           "code": {
             "module": "methods/holy-grail.mjs",
             "export": "HG_PARAMS",
@@ -1177,7 +1178,7 @@
         },
         {
           "psr709": "RAS04-002",
-          "token": ">30",
+          "sourcePhrase": ">30",
           "code": {
             "module": "methods/holy-grail.mjs",
             "export": "HG_PARAMS",
@@ -1188,7 +1189,7 @@
         },
         {
           "psr709": "RAS04-001",
-          "token": "20EMA",
+          "sourcePhrase": "20EMA",
           "code": {
             "module": "methods/holy-grail.mjs",
             "export": "HG_PARAMS",
@@ -1199,7 +1200,7 @@
         },
         {
           "psr709": "RAS04-004",
-          "token": "3/10SMA",
+          "sourcePhrase": "3/10SMA",
           "code": {
             "module": "methods/holy-grail.mjs",
             "export": "HG_PARAMS",
@@ -1213,7 +1214,7 @@
         },
         {
           "psr709": "RAS04-004",
-          "token": "SMA16",
+          "sourcePhrase": "SMA16",
           "code": {
             "module": "methods/holy-grail.mjs",
             "export": "HG_PARAMS",
@@ -1573,7 +1574,7 @@
       "params": [
         {
           "psr709": "MOKAPP-003",
-          "token": "10Tage",
+          "sourcePhrase": "10Tage",
           "code": {
             "module": "methods/morales-kacher.mjs",
             "export": "MOKA_PARAMS",
@@ -1584,7 +1585,7 @@
         },
         {
           "psr709": "MOKA12-008",
-          "token": "7Wochen",
+          "sourcePhrase": "7Wochen",
           "code": {
             "module": "methods/morales-kacher.mjs",
             "export": "MOKA_PARAMS",
@@ -1956,7 +1957,7 @@
       "params": [
         {
           "psr709": "WEIN-TR-TRAIL",
-          "token": "7%",
+          "sourcePhrase": "7%",
           "code": {
             "module": "research/weinstein-lifecycle.mjs",
             "export": "WEIN_TRADER_REFERENCE_CONFIG",
@@ -2327,7 +2328,7 @@
       "params": [
         {
           "psr709": "WEIN-MA",
-          "token": "MA30",
+          "sourcePhrase": "MA30",
           "code": {
             "module": "methods/weinstein.mjs",
             "export": "WEIN_PARAMS",
@@ -2338,7 +2339,7 @@
         },
         {
           "psr709": "WEIN-VOL1",
-          "token": "doppeltes",
+          "sourcePhrase": "doppeltes",
           "code": {
             "module": "methods/weinstein.mjs",
             "export": "WEIN_PARAMS",
@@ -2349,7 +2350,7 @@
         },
         {
           "psr709": "WEIN-VOL1",
-          "token": "vorherigen Monats",
+          "sourcePhrase": "vorherigen Monats",
           "code": {
             "module": "methods/weinstein.mjs",
             "export": "WEIN_PARAMS",
@@ -2361,7 +2362,7 @@
         },
         {
           "psr709": "WEIN-VOL2",
-          "token": "3–4 Wochen",
+          "sourcePhrase": "3–4 Wochen",
           "code": {
             "module": "methods/weinstein.mjs",
             "export": "WEIN_PARAMS",
@@ -2375,7 +2376,7 @@
         },
         {
           "psr709": "WEIN-VOL3",
-          "token": "Vorwoche",
+          "sourcePhrase": "Vorwoche",
           "code": {
             "module": "methods/weinstein.mjs",
             "export": "WEIN_PARAMS",
@@ -2387,7 +2388,7 @@
         },
         {
           "psr709": "WEIN-STOP4",
-          "token": "15%",
+          "sourcePhrase": "15%",
           "code": {
             "module": "methods/weinstein.mjs",
             "export": "WEIN_PARAMS",
@@ -2399,7 +2400,7 @@
         },
         {
           "psr709": "WEIN-TRAIL1",
-          "token": "8–10%",
+          "sourcePhrase": "8–10%",
           "code": {
             "module": "research/weinstein-lifecycle.mjs",
             "export": "WEIN_INVESTOR_REFERENCE_CONFIG",
@@ -2753,7 +2754,7 @@
       "params": [
         {
           "psr709": "KK-034",
-          "token": "1,5ADR",
+          "sourcePhrase": "1,5ADR",
           "code": {
             "module": "methods/kullamagi.mjs",
             "export": "KK_PARAMS",
@@ -2764,7 +2765,7 @@
         },
         {
           "psr709": "KK-015",
-          "token": "10%",
+          "sourcePhrase": "10%",
           "code": {
             "module": "methods/kullamagi.mjs",
             "export": "KK_PARAMS",
@@ -2776,7 +2777,7 @@
         },
         {
           "psr709": "KK-015",
-          "token": "10%",
+          "sourcePhrase": "10%",
           "code": {
             "module": "research/kk-ep-lifecycle.mjs",
             "export": "EP_REFERENCE_CONFIG",
@@ -2788,7 +2789,7 @@
         },
         {
           "psr709": "KK-032",
-          "token": "1Min-ORH",
+          "sourcePhrase": "1Min-ORH",
           "code": {
             "module": "research/kk-ep-lifecycle.mjs",
             "export": "EP_REFERENCE_CONFIG",
@@ -2800,7 +2801,7 @@
         },
         {
           "psr709": "KK-017",
-          "token": "20/50DMA",
+          "sourcePhrase": "20/50DMA",
           "code": {
             "module": "research/kk-ep-lifecycle.mjs",
             "export": "EP_REFERENCE_CONFIG",
@@ -3170,7 +3171,7 @@
       "params": [
         {
           "psr709": "KK-023",
-          "token": "10/20DMA",
+          "sourcePhrase": "10/20DMA",
           "code": {
             "module": "research/kk-ps-study.mjs",
             "export": "PS_REFERENCE_CONFIG",

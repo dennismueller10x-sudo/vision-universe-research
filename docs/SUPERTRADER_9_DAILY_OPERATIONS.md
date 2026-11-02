@@ -1,6 +1,8 @@
 # Supertrader 9 – automatischer Tageslauf der Research-Kandidaten
 
-Stand 30.10.2026, Draft-PR. Er schaltet nichts ein: Ohne die zwei Repository-Variablen läuft kein Job, und ohne Merge gibt es keinen Zeitplan. Grundlage ist die Owner-Entscheidung vom 29.10.2026 (`docs/SUPERTRADER_8_FIRST_RELEASE.md`): Ein täglicher Zeitplan ist grundsätzlich freigegeben, sobald V1 (S1–S7) erfüllt ist, ohne manuelle Freigabe je Datenstand.
+> **Abschlussstand:** Verbindlich ist seit 02.11.2026 [SUPERTRADER_9_HANDOVER.md](SUPERTRADER_9_HANDOVER.md) (`main` @ `659df6c`). Kandidatenstand, V1 und Aktivierungsweg: Übergabe §3–§5.
+
+Stand 31.10.2026: gemergt mit #1137 (Workflow, Vertrag) und #1146 (Core, Registry im Dauerbetrieb ohne `activation`). Eingeschaltet ist damit nichts: Solange `SF8_AUTO_PUBLISH` nicht `true` ist, läuft der Rückfall-Zeitplan leer (Job übersprungen), der Anstoß aus `supertrader-signals.yml` entfällt (Job `sf8` übersprungen, z. B. Lauf 41166562555 am 31.10.), und es bleibt nur der manuelle Weg. Der veröffentlichte Stand veraltet deshalb weiter mit jeder Sitzung (Systemzustand `BEHIND_1_SESSIONS`, DQ-SF8-8 rot, siehe unten). Grundlage ist die Owner-Entscheidung vom 29.10.2026 (`docs/SUPERTRADER_8_FIRST_RELEASE.md`): Ein täglicher Zeitplan ist grundsätzlich freigegeben, sobald V1 (S1–S7) erfüllt ist, ohne manuelle Freigabe je Datenstand.
 
 Es gibt keine zweite Pipeline. Erweitert wird nur der bestehende Workflow `.github/workflows/supertrader-sf8-candidates.yml`. Alle 13 Methoden bleiben `LIVE_NOT_APPROVED`, `VALIDATED_TRADE_SIGNAL` bleibt gesperrt, und es gibt keine Orders.
 
@@ -26,7 +28,7 @@ Ein Lauf im automatischen Weg:
 
 | # | Schritt | rot heißt |
 |---|---|---|
-| 1 | Weg bestimmen: `schedule` oder `mode=auto` ist automatisch, nur auf `main` und nur mit `SF8_AUTO_PUBLISH=true` | kein Lauf |
+| 1 | Weg bestimmen: `schedule` oder `mode=auto` ist automatisch, nur auf `main` und nur mit `SF8_AUTO_PUBLISH=true` | kein Lauf; auf `main` Alarm (Schritt 10) |
 | 2 | Produkt- und Vertragstests `sf-*` | kein neuer Stand |
 | 3 | Eingangsprüfung `--require-current`: Marktstand = letzte XNYS-Sitzung, Nebenquellen im Höchstalter (Security Master 60, Namen 45, Wochenreihen/SIC/Kontinuität 10 Tage) | Exit 3, kein neuer Stand |
 | 4 | Öffentliche Teile ohne `records/`, Budget 16 MB bzw. 2 MB je Datei | kein neuer Stand |
@@ -35,7 +37,7 @@ Ein Lauf im automatischen Weg:
 | 7 | **zweiter, unabhängiger Lauf** in ein zweites Verzeichnis, Fingerabdruck | – |
 | 8 | **Veröffentlichungsvertrag** `sf8-auto-publication-1.0.0` | BLOCKED: Exit 5, kein Commit |
 | 9 | Commit genau des geprüften Verzeichnisses in **einem** Commit, Nachweis als Trailer; Push über `push-with-retry.sh` | – |
-| 10 | Alarm: Ein roter automatischer Lauf öffnet bzw. ergänzt ein Issue `pipeline-alarm` (`supertrader-sf8-candidates`); ein grüner schließt es | – |
+| 10 | Alarm: Ein roter automatischer Lauf öffnet bzw. ergänzt ein Issue `pipeline-alarm` (`supertrader-sf8-candidates`); ein grüner schließt es. Automatisch heißt `schedule` oder Eingabe `mode=auto` auf `main`. Das gilt auch, wenn der Job vor oder in Schritt 1 scheitert (dann ist `outputs.auto` leer). Ein manueller Lauf alarmiert nie, ebenso wenig ein Probelauf `mode=auto` auf einem anderen Zweig | – |
 
 Das vollständige Ergebnis bleibt 14 Tage als CI-Artefakt erhalten, auch bei Rot: Vertragsdatensätze, DQ-Bericht, Vertragsnachweis.
 
@@ -61,7 +63,7 @@ SF8-Fingerprint: <sha256 der öffentlichen Dateien>
 SF8-Inputs-SHA256: <summary.inputs.inputsSha256, derselbe Wert wie in summary.json>
 SF8-Source-Files-SHA256: <sha256 der Liste summary.inputs.sourceFiles>
 SF8-Previous-AsOf: <ersetzter Stand>
-SF8-Code-Commit: <main-SHA des Laufs>
+SF8-Code-Commit: <ausgecheckter main-SHA (git rev-parse HEAD), aus dem Code und Eingaben stammen>
 SF8-Run: <Lauf-ID>
 ```
 
@@ -81,17 +83,17 @@ Der manuelle Weg (`mode=manual`, `commit=true`, `expected_sha256`) bleibt **unve
 
 - **Kein Bezug außerhalb von Gate A.** `market-data-refresh.yml` und `scripts/ci/supertrader-chain.mjs` bleiben unverändert. Angestoßen wird aus `supertrader-signals.yml`, das die Kette ohnehin startet.
 - **Kein `workflow_run`.** Dieser Auslöser hat auf `main` nachweislich nie gefeuert (Kommentar in `market-data-refresh.yml`, 29.09.2026).
-- **Keine Änderung an `core/registry/domains.json`.** Dieser PR ist der Supertrader-Teil von V6 (e) und (f): `registry-guard.mjs` lässt den Eintrag jetzt auch ohne `activation` zu (Dauerbetrieb). Das Feld selbst entfernt ein eigener Core-PR, der auch die Texte korrigiert („(Beta)“, „Owner-Freigabe AUSSTEHEND“, `schedule`). Erst danach besteht der automatische Weg C7; bis dahin endet jeder automatische Lauf mit BLOCKED.
+- **Keine Änderung an `core/registry/domains.json`.** Dieser PR ist der Supertrader-Teil von V6 (e) und (f): `registry-guard.mjs` lässt den Eintrag jetzt auch ohne `activation` zu (Dauerbetrieb). Das Feld selbst entfernt ein eigener Core-PR, der auch die Texte korrigiert („(Beta)“, „Owner-Freigabe AUSSTEHEND“, `schedule`). Erst danach besteht der automatische Weg C7. Das ist mit #1146 geschehen (`7bc47f7`): Der Eintrag trägt kein `activation` mehr, C7 ist erfüllt.
 - Keine neue DQ-Regel, keine geänderte Grenze, kein neuer Anbieter, keine Secrets (der Alarm nutzt `github.token`).
 
 ## Inbetriebnahme (Owner)
 
 | # | Schritt | Voraussetzung |
 |---|---|---|
-| 1 | Merge dieses PR | V1 nach Owner-Entscheidung (siehe unten) |
-| 2 | Variable `SF8_CANDIDATES_ENABLED=true` (laut Ablauf der ersten Veröffentlichung nach Lauf B zurück auf `false`; Stand bitte prüfen) | – |
-| 3 | Optional, als Probe vor 3a: ein Lauf `mode=auto` mit `SF8_AUTO_PUBLISH=true` endet mit C7 BLOCKED ohne Commit. Das belegt fail closed | Security Master nicht STALE (vor dem 11.11. oder nach dem Wechsel, PR #1136) |
-| 3a | Core-PR V6 (e): `activation` aus dem Eintrag `supertrader-sf8-candidates` entfernen, Texte korrigieren (ab dann ist ein fehlendes Artefakt FAILED) | dieser PR gemergt |
+| 1 | Merge dieses PR | erledigt (#1137) |
+| 2 | Variable `SF8_CANDIDATES_ENABLED=true`. Stand: am 01.11.2026 13:20 UTC `true`; Lauf B 41310744985 hat committet, und der Job läuft nur mit dieser Variable. `SF8_AUTO_PUBLISH` ist nicht gesetzt. | – |
+| 3 | Optional, als Probe vor 3a (seit #1146 nicht mehr möglich): ein Lauf `mode=auto` mit `SF8_AUTO_PUBLISH=true` endet mit C7 BLOCKED ohne Commit. Das belegt fail closed | Security Master nicht STALE (vor dem 11.11. oder nach dem Wechsel, PR #1136) |
+| 3a | Core-PR V6 (e): `activation` aus dem Eintrag `supertrader-sf8-candidates` entfernen, Texte korrigieren (ab dann ist ein fehlendes Artefakt FAILED) | erledigt (#1146) |
 | 4 | Variable `SF8_AUTO_PUBLISH=true`: ab dann Anstoß nach der Nachtkette und Rückfall-Zeitplan | 3a gemergt |
 | 5 | Zurücknehmen: `SF8_AUTO_PUBLISH=false` (nur noch manuell) oder `SF8_CANDIDATES_ENABLED=false` (gar nicht) | – |
 
@@ -124,7 +126,58 @@ Lokal auf `main` (5e9d2b9) zusammen mit diesem PR. Es wurde nichts committet und
 - **DQ-SF8-8: ja.** Mit dem Stand vom 29.10. ist DQ-SF8-8 auf `main` grün. Der Zustandstest in `core/tests` ist wieder 300/300. Ab dem ersten automatischen Lauf bleibt das jeden Tag so, außer im Fenster zwischen dem Refresh der Nachtkette und dem Kandidaten-Commit (siehe oben). Weder ein Test noch die Registry wird dafür abgeschwächt: Der Vertrag verlangt alle acht Regeln, und #1146 entfernt nur das Feld der ersten Veröffentlichung.
 - **S7 insgesamt: noch nicht.** `data-quality` meldet am 30.10. weiter ERROR für DQ-PX-4 (ATYR, AXG, OMEX) und DQ-TW-3 (ATYR, OMEX). Ursache sind Reverse-Splits in Wochenreihe und Technical. Zuständig sind `long-series.yml` und `technical-world.yml`, nicht der Tageslauf. S7 gilt erst, wenn nach dem Kandidaten-Commit eines Tages beides grün ist.
 
+## Rückfall-Zeitplan im Betrieb (Beobachtung 30./31.10.2026)
+
+Befund aus dem Betriebsaudit: Am 30.10. gab es keinen Lauf des Rückfall-Zeitplans (`43 11 * * 2-6`), auch keinen übersprungenen. Das ist **kein Fehler des Workflows**:
+
+- **Der Zeitplan lag am 30.10. um 11:43 UTC noch nicht auf `main`.** f78d7e6 (06:12 UTC) und 232303b (06:34 UTC) sind Commits auf dem PR-Zweig von #1137. Auf `main` kam der Zeitplan erst mit dem Merge-Commit 93884b3 um **19:30:07 UTC**. `git merge-base --is-ancestor f78d7e6 93884b3^1` ist falsch, f78d7e6 war also vorher nicht auf `main`. GitHub hat die Workflow-Definition passend dazu um 19:30:10 UTC übernommen (`updated_at` des Workflows 399134940). Die beiden manuellen Läufe des Vormittags (41020105120 und 41020409882, 07:26 und 07:29 UTC) tragen noch den alten Namen „(deaktiviert)“. Ein Zeitplan feuert nur aus der Fassung auf dem Default-Branch. Für den 30.10. war deshalb kein Lauf fällig.
+- **31.10. (Sa, Sitzung Fr): Der Zeitplan hat gefeuert.** Lauf-ID 41219160911 (Laufnummer 8, `event: schedule`) wurde um 16:19:56 UTC angelegt, 4 h 37 min nach 11:43. Beide Jobs sind `skipped`. Das ist so vorgesehen: `candidates` läuft bei `schedule` nur mit `SF8_CANDIDATES_ENABLED` **und** `SF8_AUTO_PUBLISH`, und `SF8_AUTO_PUBLISH` ist nicht gesetzt. `alarm` überspringt sich dann über seine eigene Bedingung (`needs.candidates.result != 'skipped'`). Eine falsche Job-Bedingung (`if:`) legt trotzdem einen Lauf an, nur mit übersprungenen Jobs. Ein Lauf, der in der Liste fehlt, heißt also: Der Zeitplan hat nicht gefeuert. Er heißt nicht: Er wurde übersprungen.
+- **Die Verspätung ist GitHub-Verhalten.** Auch die anderen Zeitpläne kommen Stunden zu spät. Der Zeitplan von `supertrader-signals.yml` (06:17 UTC, dort ebenfalls nur Rückfall) startete am 27.10. um 12:06 (Lauf 40501225836), am 28.10. um 12:49 (40691034906), am 29.10. um 12:56 (40877490425), am 30.10. um 12:50 (41058377663, +6 h 33 min) und am 31.10. um 12:22 UTC (41200788717). Mit den bisher gemessenen Verspätungen (4,6 h am 31.10., beim Signale-Zeitplan 5,8 bis 6,7 h) trifft der Rückfall um 11:43 UTC etwa zwischen 16 und 18:30 UTC ein. Das liegt noch vor dem Tagesende, aber nach US-Handelsbeginn. Ein Code-Fix ist dafür nicht möglich. Der eigentliche Weg bleibt der Anstoß nach der Nachtkette. Die Nachtkette stößt die Signale per `workflow_dispatch` an, und diese Läufe kamen pünktlich: am 30.10. um 06:48 (41016231033), am 31.10. um 03:57 UTC (41166562555). Erst danach stößt der Job `sf8` den Tageslauf an.
+- Geprüft und ausgeschlossen: Der Workflow ist `active`, nicht deaktiviert. Name und Syntax sind gültig: Lauf 8 trägt schon den neuen Namen „(Tageslauf)“, und GitHub hat danach geplant. Es gibt genau einen `cron`-Eintrag, und der Wochentag 6 (Sa) ist enthalten.
+
+**Beobachtung ab Di 03.11.2026** (Montags gibt es keinen Rückfall-Lauf: `2-6` = Di–Sa): Je Zeitplantag ein Lauf `event: schedule`. Solange `SF8_AUTO_PUBLISH` nicht gesetzt ist, sind `candidates` und `alarm` `skipped`. Zu notieren ist die Verspätung gegenüber 11:43 UTC. Mit eingeschaltetem `SF8_AUTO_PUBLISH` sind zusätzliche `workflow_dispatch`-Läufe am selben Tag normal: Der Job `sf8` prüft das Ereignis nicht, also stößt auch der verspätete Zeitplanlauf der Signale den Tageslauf an. Bei derselben Sitzung endet der Vertrag mit `SKIP_SAME_SESSION`, und es entsteht kein Commit. Erst wenn ein Lauf an einem Di–Sa ganz fehlt und der Workflow weiter `active` ist, liegt ein Ausfall bei GitHub vor (Zeitpläne können bei hoher Last ausfallen). Auch dann gibt es keinen Code-Fix: Der Anstoß nach der Nachtkette bleibt der Hauptweg. Bei eingeschaltetem Dauerbetrieb meldet das Fehlen des Tagesstands die Frische-Prüfung (DQ-SF8-8).
+
 ## Prüfungen
 
 - `node --test scripts/supertrader/tests/sf-sf9-publication.test.mjs`: 7/7, jede Vertragsregel mit Gegenprobe.
 - `SF8-DAILY-WORKFLOW` (ersetzt `SF8-DAILY-DISABLED`): genau ein Zeitplan; kein `push`, `pull_request` oder `workflow_run`; beide Variablen; automatisch nur auf `main`; Reihenfolge DQ → Fingerabdruck → zweiter Lauf → Vertrag → Commit; Eingaben nur über `env:`; keine Secrets; Alarm; Anstoß nur aus `supertrader-signals.yml`. Gegenproben lokal: Ein zusätzliches `workflow_run`, ein zweiter Zeitplan, ein Job ohne `SF8_AUTO_PUBLISH`, ein fehlender `main`-Schutz, Commit bei `!= BLOCKED` und ein Vertrag mit nur einem Fingerabdruck machen den Test jeweils rot.
+
+## E2E-Prüfung
+
+`scripts/supertrader/tests/sf-sf9-e2e.test.mjs` (SF9-E2E-0…10) spielt den automatischen Weg in temporären Verzeichnissen nach, in der Reihenfolge des Workflows. Es wird nichts veröffentlicht und kein Lauf ausgelöst. Die Shell-Blöcke der Schritte (Bereitstellung, Budget, DQ-Urteil, Fingerabdruck, Vertrag, beide Commit-Schritte) liest der Test **wörtlich** aus `supertrader-sf8-candidates.yml` und führt sie mit `bash` aus. Die `if:`-Bedingungen wertet er aus dem YAML aus. Der Commit geht in ein Wegwerf-Git-Repository, gepusht über `push-with-retry.sh` an ein Wegwerf-Remote.
+
+Bewusste Abweichungen vom echten Lauf:
+- Teiluniversum von 60 Titeln (`--tickers`) statt 5.103 Titeln, sonst dieselben Argumente.
+- Lauftag ist der Tag nach dem Marktstand, und DQ läuft mit `--now` dieses Tages. Damit hängt das Ergebnis nicht vom Zeitpunkt des Tests ab.
+- Der veröffentlichte Stand ist eine Kopie des eigenen Ergebnisses, eine Sitzung früher datiert. Die Registry ist synthetisch.
+- `supertrader/data/sf-candidates` wird nur gelesen. Ein Byte-Vergleich vorher und nachher ist Teil des Tests.
+
+| Fall | Prüfung | Ergebnis |
+|---|---|---|
+| 1 | Läufe A und B: gleicher Fingerabdruck → `PUBLISH`, genau ein Commit, nur `supertrader/data/sf-candidates/` ohne `records/`, Trailer `SF8-*`. Gegenprobe mit einem Byte Unterschied in B | PUBLISH; Gegenprobe BLOCKED (C1), Exit 5 |
+| 2 | `versions.candidateContractSha256`, `detectors` bzw. `pipeline` geändert oder Engine-Version geändert | BLOCKED (C4), kein Commit |
+| 3 | veröffentlichter Stand eine Sitzung später / gleich / früher / fehlt | BLOCKED (C5) / `SKIP_SAME_SESSION` (grün, kein Commit) / PUBLISH / BLOCKED |
+| 4 | Lauftag drei Sitzungen nach dem Marktstand; Pflichtquelle fehlt (Fixture); Pipeline ohne Preisreferenz | Exit 3, kein Ergebnisverzeichnis, Kette endet bei der Bereitstellung; `MISSING`; Ausnahme |
+| 5 | DQ-SF8-8 FAIL, DQ-SF8-4 `checked=0`, DQ-SF8-6 fehlt | DQ-Schritt rot; derselbe Bericht im Vertrag BLOCKED (C2) |
+| 6 | Ergebnis ohne `summary.json`, `index.json` oder `strategy/`; öffentlicher Teil ohne `index.json`; Vertrag ohne neuen Stand; Wiederaufnahme C in ein Verzeichnis mit Resten eines Abbruchs | rot und kein Commit in jedem Fall; C hat **denselben** Fingerabdruck wie A und B, Reste entfernt |
+| 7 | genau zwei Schritte committen, keiner mit `always()`; Entscheidungstabelle der echten `if:`; manueller Commit ohne `expected_sha256` | Commit nur bei PUBLISH; bei BLOCKED/SKIP unverändert (Bytes); manuell Exit 1 |
+| 8 | Registry mit `activation` `ACTIVATING` oder `PREPARED_DISABLED`, ohne Eintrag, mit anderem Artefakt | BLOCKED (C7), HEAD unverändert |
+| 9 | Security Master synthetisch 60 / 61 Tage alt / ohne Datum (Fixture). Der echte Stamm wird nur gelesen | CURRENT / STALE (`master`) / STALE |
+
+Gegenproben (lokal, danach zurückgesetzt): Commit-Bedingung `!= 'BLOCKED'`, DQ-Urteil ohne `checked === 0` und C1 ohne Vergleich der Fingerabdrücke machen die Fälle 1, 3, 5 und 7 rot.
+
+**Messwerte (31.10.2026, main d961971, 4 Kerne):**
+
+| | Wert |
+|---|---|
+| Test | 11/11 grün, 35 s (davon vier Erzeugungen parallel 24 s; jede liest alle 650 Shards, ~19 s) |
+| Teilstand | Stand 30.10., Lauftag 31.10., Eingangsprüfung CURRENT, 60 Titel, 102 Kandidaten (59 / 41 / 2), 450 kB, Fingerabdruck A = B = C `6ce0831d…` |
+| DQ-SF8 Teilstand | alle PASS: 1: 0/1, 2: 0/102, 3: 0/353, 4: 0/200, 5: 0/353, 6: 0/55, 7: 0/57, 8: 0/102 |
+| Vollbau (lokal, nicht im Test) | zwei Läufe mit `--require-current 2026-10-31 --previous supertrader/data/sf-candidates`: 42 s bzw. 47 s, 5.103 Titel, 3.368 Kandidaten (2.103 / 1.188 / 77), 12,5 MB, keine Datei über 2 MB, Fingerabdrücke **gleich** `92cea434…` |
+| DQ-SF8 Vollbau | alle PASS: 2: 0/3.368, 3: 0/10.169, 4: 0/6.582, 6: 0/510, 7: 0/512, 8: 0/3.368 |
+| Vertrag Vollbau gegen den veröffentlichten Stand (29.10.), Registry ohne `activation` | **PUBLISH**, ohne Verstoß |
+| Security Master | `generatedAt` 11.09.2026: Die Eingangsprüfung ist bis zum Lauftag 10.11.2026 CURRENT, danach STALE (Exit 3), solange der Stamm nicht neu erzeugt ist (siehe Inbetriebnahme, Schritt 3) |
+
+Sind die Repodaten am abgeleiteten Lauftag nicht CURRENT, etwa weil der Security Master veraltet ist, erzeugt der Test ohne `--require-current` und meldet das als Diagnose. Fall 4 und Fall 9 prüfen den Abbruch trotzdem.
+
+Der Test läuft nur mit `SF9_E2E=1`. Das setzt allein der eigene Schritt „E2E SF8-Tagesweg“ in den Supertrader Quality Gates (`supertrader-ci.yml`). In den Produktionsläufen, der Signalkette (`scripts/supertrader/tests/*.test.mjs` vor dem Commit) und dem SF8-Tageslauf (`sf-*.test.mjs`), überspringt er sich sofort; den Workflow liest er dann gar nicht, sodass auch ein umbenannter Schritt dort nichts blockiert. So verlängert er keinen Produktionslauf, und ein Testfehler blockiert keine Veröffentlichung. Der Name `sf-…` bleibt, weil SF2-LEGACY-ISOLATION Importe der Produktmodule nur aus `tests/sf-*.test.mjs` zulässt. Den Code-Commit prüft der Test gegen den ausgecheckten Stand des Arbeitsbaums (#1191, `git rev-parse HEAD`), nicht gegen `GITHUB_SHA`.

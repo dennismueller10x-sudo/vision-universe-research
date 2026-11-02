@@ -253,6 +253,29 @@ const shown = await page.waitForFunction(p => document.querySelector('#pa-prices
 check(shown, 'Tarifverwaltung: neuer Preis aktiv, Protokoll');
 await shot(page, 'tarifverwaltung-geaendert');
 
+// Interne Backtest-Vorschau (Entwurf, nicht verlinkt): der Server entscheidet. Ohne Rolle gesperrt, ohne Daten;
+// mit Rolle (nur Simulation, dev-server --backtest-review) Uebersicht, Grenzen und eine vorgerechnete Auswahl.
+await page.goto(`${base}/konto/admin/backtests/`);
+await page.waitForFunction(() => document.querySelector('#ka-status').textContent.length > 0);
+const brLocked = await page.textContent('#ka-status');
+check((brLocked.includes('keine Berechtigung') || brLocked.includes('nicht eingeschaltet')) && await page.isHidden('#br-wrap'), 'Backtest-Vorschau ohne Rolle gesperrt, keine Daten');
+await page.request.post(`${base}/__dev/backtest-reviewer?email=${encodeURIComponent(email)}`);
+await page.reload();
+const brOpen = await page.waitForSelector('#br-wrap:not([hidden])', {timeout: 10000}).then(() => true, () => false);
+if (brLocked.includes('nicht eingeschaltet')) check(!brOpen, 'Backtest-Vorschau: Schalter aus -> auch mit Rolle gesperrt');
+else {
+  check(brOpen, 'Backtest-Vorschau mit Rolle sichtbar');
+  const frame = await page.textContent('#br-wrap');
+  check(/NOT_CERTIFIED|nicht zertifiziert/i.test(frame), 'Backtest-Vorschau: Zertifizierungsgrenze sichtbar');
+  check(!frame.includes('CERTIFIED_STRATEGY') && !/(^|[^n][^i][^c][^h][^t] )zertifizierte? (Strategie|Ergebnis)/i.test(frame), 'Backtest-Vorschau: nichts als zertifiziert bezeichnet');
+  await page.selectOption('#br-precomputed', {index: 1}).catch(() => {});
+  await page.click('#br-form button[type=submit]').catch(() => {});
+  const shownResult = await page.waitForSelector('#br-result:not([hidden])', {timeout: 10000}).then(() => true, () => false);
+  check(shownResult, 'Backtest-Vorschau: vorgerechnete Auswahl wird angezeigt');
+  await audit(page, 'Backtest-Vorschau');
+  await shot(page, 'backtest-vorschau');
+}
+
 // Abmelden
 await page.goto(`${base}/konto/`);
 await page.waitForSelector('#ka-account:not([hidden])');
@@ -266,7 +289,7 @@ for (const theme of ['light', 'dark']) {
   const mobile = await browser.newContext({viewport: {width: 390, height: 844}, deviceScaleFactor: 2, isMobile: engine !== 'firefox', hasTouch: true});
   await mobile.addInitScript(t => { try { localStorage.setItem('vu-discover-theme-v1', t); } catch (e) {} }, theme);
   const m = await mobile.newPage();
-  for (const path of ['anmelden', 'registrieren', 'passwort', 'kuendigen', 'tarife', 'admin/tarife']) {
+  for (const path of ['anmelden', 'registrieren', 'passwort', 'kuendigen', 'tarife', 'admin/tarife', 'admin/backtests']) {
     await m.goto(`${base}/konto/${path}/`);
     await m.waitForLoadState('networkidle');
     await audit(m, `mobil ${theme} ${path}`);

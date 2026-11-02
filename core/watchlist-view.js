@@ -8,6 +8,8 @@
      AVAILABLE   belegt und aktuell
      STALE       belegt, aber aelter als die Frist der Datenart (domains.json)
      UNAVAILABLE keine Abdeckung, gesperrt oder zurueckgehalten - mit Grund
+     WARN        nur Identitaet: Listing aktiv, aber die Zuordnung ist gesperrt
+                 (IDENTITY_QUARANTINED, quant/config/ticker-reuse-quarantine.json)
 
    Keine eigene Rechnung: Werte, Stufen und Freigaben kommen aus den Artefakten.
    Die Regeln hier entscheiden nur, was AUSGEWIESEN werden darf:
@@ -18,6 +20,9 @@
        Annaeherung und Hoch auf Wochen-/Monatsschluss sind eigene Zustaende
      * veraltete Abschnitte zaehlen in keiner Kennzahl der Liste mit
      * ein Listing ohne aktive Notierung (delistet) traegt keine Marktdaten
+     * eine gesperrte Identitaet (Ticker-Wiederverwendung) traegt keine Marktdaten
+       und keine Verweise in die Produktwelten - unter dem Kuerzel handelt heute
+       ein anderes Wertpapier, die Produktseiten meinen noch das alte
 
    UMD: Browser (globalThis.VUCore.WatchlistView), Node (require).
    ========================================================================= */
@@ -43,7 +48,8 @@
     SOURCE_MISSING: "Quelle nicht ausgeliefert", NOT_IN_UNIVERSE: "Nicht im Vision-Universe-Bestand",
     LISTING_INACTIVE: "Listing nicht aktiv (delistet oder ersetzt)", NOT_COVERED: "Keine Abdeckung",
     LISTING_AMBIGUOUS: "Listing nicht eindeutig", CURRENCY_MISMATCH: "Währung passt nicht zum Listing",
-    COMPOSITE_WITHHELD: "Gesamtscore nicht freigegeben", STALE: "Datenstand veraltet"
+    COMPOSITE_WITHHELD: "Gesamtscore nicht freigegeben", STALE: "Datenstand veraltet",
+    IDENTITY_QUARANTINED: "Unter diesem Kürzel handelt heute ein anderes Wertpapier; die frühere Zuordnung ist gesperrt, bis die Identität geklärt ist."
   };
 
   /* --------------------------------------------------------------- Laden
@@ -165,6 +171,16 @@
       reasonText: active ? null : REASON.LISTING_INACTIVE };
     if (!active) {
       ["price", "quant", "high52", "volume", "trend", "supertrader"].forEach(function (s) { base[s] = unavailable("LISTING_INACTIVE"); });
+      base.links = []; base.relevance = 0;
+      return base;
+    }
+    /* Ticker-Wiederverwendung (why.identity aus scripts/watchlist/build-summary.mjs): Listing-Status bleibt, die
+       Identitaet ist eine Warnung. Kein Abschnitt, keine Produktwelt - deren Seiten zeigen noch die alte Zuordnung. */
+    if (r.why && r.why.identity === "IDENTITY_QUARANTINED") {
+      base.identity.state = "WARN";
+      base.identity.reason = "IDENTITY_QUARANTINED";
+      base.identity.reasonText = REASON.IDENTITY_QUARANTINED;
+      ["price", "quant", "high52", "volume", "trend", "supertrader"].forEach(function (s) { base[s] = unavailable("IDENTITY_QUARANTINED"); });
       base.links = []; base.relevance = 0;
       return base;
     }
