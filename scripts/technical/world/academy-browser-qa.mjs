@@ -80,6 +80,14 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
  });
  await context.close();
 }
+await check('real chart analysis and screener handoff retain academy return',async()=>{
+ const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage();
+ await page.goto(base+'#/akademie/momentum-2');await page.locator('a[data-practice]').click();await page.getByRole('heading',{name:'Chart Studio',exact:true}).waitFor();
+ await page.evaluate(()=>location.hash='#/chart/NVDA');const rsi=page.getByRole('button',{name:'RSI',exact:true});await rsi.waitFor();if(await rsi.getAttribute('aria-pressed')!=='true')await rsi.click();assert(await rsi.getAttribute('aria-pressed')==='true','RSI enabled');
+ await page.getByRole('link',{name:'← Zur Lektion: RSI',exact:true}).click();await page.getByRole('heading',{name:'RSI',exact:true}).waitFor();
+ await page.goto(base+'#/akademie/routine-2');await page.locator('a[data-practice]').click();await page.getByRole('heading',{name:'Kriterien kombinieren',exact:true}).waitFor();
+ await page.locator('a',{hasText:'Im Screener bearbeiten'}).click();await page.locator('.tc-builder').waitFor();await page.getByRole('link',{name:'← Zur Lektion: Filter kombinieren',exact:true}).click();await page.getByRole('heading',{name:'Filter kombinieren',exact:true}).waitFor();await context.close();
+});
 await check('blocked storage / safe text / load retry',async()=>{
  const context=await browser.newContext();await context.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw Error('blocked');}});});const page=await context.newPage();
  await page.route('**/technical/academy/content.json',r=>r.abort());await page.goto(base+'#/akademie/struktur-1');await page.getByRole('button',{name:'Erneut versuchen'}).waitFor();
