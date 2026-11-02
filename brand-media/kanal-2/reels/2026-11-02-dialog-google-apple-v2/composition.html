@@ -56,7 +56,7 @@ const show=(who,f)=>{if(!IMG[who][f]||!IMG[who][f].naturalWidth)f=f.startsWith('
 const blinkAt=(who,t)=>((t+(who==='bulle'?0.7:2.2))%(who==='bulle'?3.3:4.1))<0.12;
 // one panel per line: label, big value (counts up when it starts with a number), sub line, background, optional stamp on a word
 const PANELS=[
- {lab:'GOOGLE ZAHLT APPLE',big:'20 MRD $',sub:'jedes Jahr (Schätzung)',bg:'#e2453a',col:'#f2c230',stamp:{at:/^Jahr/,txt:'JEDES JAHR!'}},
+ {lab:'GOOGLE ZAHLT APPLE',big:'20 MRD $',sub:'jedes Jahr (Schätzung)',bg:'#e2453a',col:'#f2c230',stamp:{at:/^Google/,txt:'JEDES JAHR!'}},
  {lab:'DAFÜR IST GOOGLE',big:'STANDARD',sub:'Suchmaschine auf jedem iPhone',bg:'#86c1f2',col:'#86c1f2'},
  {lab:'20 MRD $ FÜR',big:'1 HÄKCHEN',sub:'in den iPhone-Einstellungen',bg:'#7fd0a8',col:'#1f9d55'},
  {lab:'SEIT 2026 ZAHLT AUCH',big:'APPLE',sub:'an Google',bg:'#f2c230',col:'#86c1f2',stamp:{at:/^Apple/,txt:'UMGEKEHRT?!'}},
