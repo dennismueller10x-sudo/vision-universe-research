@@ -1,0 +1,7879 @@
+{
+ "schemaVersion": "pattern-return-basis-paired-1.0.0+summary",
+ "runs": {
+  "A": {
+   "label": "Kursrendite, volle Population",
+   "contentHash": "4f2d76fa107df79b",
+   "seriesUsed": 5059,
+   "observations": 950510
+  },
+  "B": {
+   "label": "Kursrendite, Gesamtrendite-Population",
+   "contentHash": "2db2b806bdbfe301",
+   "seriesUsed": 4929,
+   "observations": 917541,
+   "outcomeUnavailableNoTotalReturnLevel": {
+    "H12": 0,
+    "H24": 0,
+    "H36": 0,
+    "H60": 0
+   }
+  },
+  "C": {
+   "label": "Gesamtrendite, Gesamtrendite-Population",
+   "contentHash": "5110fa213c63b0a8",
+   "seriesUsed": 4929,
+   "observations": 917541
+  }
+ },
+ "paired": true,
+ "pairing": "B und C: gleiche ausgeschlossene Kennungen, gleiche Beobachtungen, gleiche auswertbare Beobachtungen je Horizont (geprueft).",
+ "effects": "Populationseffekt = B - A, Renditeeffekt = C - B.",
+ "winnerThreshold": "W100",
+ "payerMinYield": 0.0025,
+ "decompositionLegend": {
+  "RRR": "KEPT",
+  "R--": "LOST_BY_POPULATION",
+  "RR-": "LOST_BY_RETURN",
+  "R-R": "LOST_BY_POPULATION_RECOVERED_BY_RETURN",
+  "-RR": "GAINED_BY_POPULATION",
+  "--R": "GAINED_BY_RETURN",
+  "-R-": "GAINED_BY_POPULATION_LOST_BY_RETURN",
+  "---": "NEVER"
+ },
+ "families": {
+  "strong-12m-momentum": "MOMENTUM_12M",
+  "very-strong-12m-momentum": "MOMENTUM_12M",
+  "weak-12m-momentum": "MOMENTUM_12M",
+  "six-month-thrust": "SCHUB",
+  "three-month-thrust": "SCHUB",
+  "near-52w-high": "NAEHE_HOCH",
+  "at-all-time-high": "NAEHE_HOCH",
+  "far-below-52w-high": "ABSTAND_HOCH",
+  "deep-drawdown": "ABSTAND_HOCH",
+  "above-40w-line": "TREND",
+  "trend-stacked": "TREND",
+  "quiet-range": "SPANNE",
+  "wide-range": "SPANNE",
+  "high-volatility": "VOLATILITAET",
+  "low-volatility": "VOLATILITAET",
+  "up-volume-dominance": "VOLUMEN",
+  "volume-accumulation": "VOLUMEN",
+  "volume-dry-up-near-high": "VOLUMEN"
+ },
+ "summary": {
+  "H24": {
+   "baseRate": {
+    "A": 0.108333,
+    "B": 0.108156,
+    "C": 0.117523,
+    "populationEffect": -0.000177,
+    "returnEffect": 0.009367
+   },
+   "robust": {
+    "A": 96,
+    "B": 98,
+    "C": 97
+   },
+   "decomposition": {
+    "KEPT": 96,
+    "LOST_BY_POPULATION": 0,
+    "LOST_BY_RETURN": 0,
+    "LOST_BY_POPULATION_RECOVERED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION": 1,
+    "GAINED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION_LOST_BY_RETURN": 1,
+    "NEVER": 65
+   },
+   "lostByFamily": {},
+   "lostByDriver": {},
+   "mechanism": "NICHT_ANWENDBAR"
+  },
+  "H12": {
+   "baseRate": {
+    "A": 0.056299,
+    "B": 0.055843,
+    "C": 0.057886,
+    "populationEffect": -0.000456,
+    "returnEffect": 0.002043
+   },
+   "robust": {
+    "A": 98,
+    "B": 99,
+    "C": 99
+   },
+   "decomposition": {
+    "KEPT": 98,
+    "LOST_BY_POPULATION": 0,
+    "LOST_BY_RETURN": 0,
+    "LOST_BY_POPULATION_RECOVERED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION": 1,
+    "GAINED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION_LOST_BY_RETURN": 0,
+    "NEVER": 64
+   },
+   "lostByFamily": {},
+   "lostByDriver": {},
+   "mechanism": "NICHT_ANWENDBAR"
+  },
+  "H36": {
+   "baseRate": {
+    "A": 0.156137,
+    "B": 0.156312,
+    "C": 0.178053,
+    "populationEffect": 0.000175,
+    "returnEffect": 0.021741
+   },
+   "robust": {
+    "A": 97,
+    "B": 98,
+    "C": 91
+   },
+   "decomposition": {
+    "KEPT": 91,
+    "LOST_BY_POPULATION": 0,
+    "LOST_BY_RETURN": 6,
+    "LOST_BY_POPULATION_RECOVERED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION": 0,
+    "GAINED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION_LOST_BY_RETURN": 1,
+    "NEVER": 65
+   },
+   "lostByFamily": {
+    "MOMENTUM_12M": 3,
+    "NAEHE_HOCH": 3,
+    "SCHUB": 3,
+    "SPANNE": 1,
+    "VOLUMEN": 1
+   },
+   "lostByDriver": {
+    "BASISQUOTE_STEIGT_STAERKER": 6
+   },
+   "mechanism": "BESTAETIGT"
+  },
+  "H60": {
+   "baseRate": {
+    "A": 0.252863,
+    "B": 0.254454,
+    "C": 0.306229,
+    "populationEffect": 0.001591,
+    "returnEffect": 0.051775
+   },
+   "robust": {
+    "A": 68,
+    "B": 69,
+    "C": 43
+   },
+   "decomposition": {
+    "KEPT": 43,
+    "LOST_BY_POPULATION": 0,
+    "LOST_BY_RETURN": 25,
+    "LOST_BY_POPULATION_RECOVERED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION": 0,
+    "GAINED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION_LOST_BY_RETURN": 1,
+    "NEVER": 94
+   },
+   "lostByFamily": {
+    "ABSTAND_HOCH": 3,
+    "MOMENTUM_12M": 2,
+    "NAEHE_HOCH": 2,
+    "SCHUB": 15,
+    "SPANNE": 5,
+    "TREND": 5,
+    "VOLATILITAET": 5,
+    "VOLUMEN": 10
+   },
+   "lostByDriver": {
+    "BASISQUOTE_STEIGT_STAERKER": 25
+   },
+   "mechanism": "BESTAETIGT"
+  }
+ },
+ "horizons": [
+  {
+   "horizon": "H24",
+   "horizonMonths": 24,
+   "primary": true,
+   "usableObservations": {
+    "A": 830076,
+    "B": 800227,
+    "C": 800227
+   },
+   "winners": {
+    "A": 89925,
+    "B": 86549,
+    "C": 94045
+   },
+   "baseRate": {
+    "A": 0.108333,
+    "B": 0.108156,
+    "C": 0.117523,
+    "populationEffect": -0.000177,
+    "returnEffect": 0.009367
+   },
+   "robust": {
+    "A": 96,
+    "B": 98,
+    "C": 97
+   },
+   "decomposition": {
+    "KEPT": 96,
+    "LOST_BY_POPULATION": 0,
+    "LOST_BY_RETURN": 0,
+    "LOST_BY_POPULATION_RECOVERED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION": 1,
+    "GAINED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION_LOST_BY_RETURN": 1,
+    "NEVER": 65
+   },
+   "medianLiftKept": {
+    "A": 1.5093,
+    "B": 1.5272,
+    "C": 1.4611
+   },
+   "lost": {
+    "count": 0,
+    "byFamily": {},
+    "byDriver": {},
+    "medianLnLiftPopulation": null,
+    "medianLnLiftReturn": null,
+    "findings": []
+   },
+   "hypothesesColumns": [
+    "patternId",
+    "decomposition",
+    "verdictA",
+    "verdictB",
+    "verdictC",
+    "liftA",
+    "liftB",
+    "liftC",
+    "oosLiftA",
+    "oosLiftB",
+    "oosLiftC"
+   ],
+   "hypotheses": [
+    [
+     "above-40w-line+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.54,
+     1.5523,
+     1.4757,
+     1.5198,
+     1.5303,
+     1.4689
+    ],
+    [
+     "above-40w-line+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4171,
+     1.4339,
+     1.3713,
+     1.4136,
+     1.426,
+     1.3733
+    ],
+    [
+     "above-40w-line+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4417,
+     1.4561,
+     1.3959,
+     1.4633,
+     1.4742,
+     1.4232
+    ],
+    [
+     "above-40w-line+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5025,
+     1.516,
+     1.4432,
+     1.4917,
+     1.5032,
+     1.4443
+    ],
+    [
+     "at-all-time-high+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1229,
+     1.1367,
+     1.0867,
+     1.1343,
+     1.138,
+     1.0864
+    ],
+    [
+     "at-all-time-high+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.0959,
+     1.1104,
+     1.0595,
+     1.1216,
+     1.1285,
+     1.0799
+    ],
+    [
+     "at-all-time-high+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1432,
+     1.1597,
+     1.1099,
+     1.1171,
+     1.1307,
+     1.0867
+    ],
+    [
+     "deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8186,
+     1.8463,
+     1.7696,
+     1.8205,
+     1.845,
+     1.7803
+    ],
+    [
+     "deep-drawdown+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5989,
+     1.6215,
+     1.5591,
+     1.5706,
+     1.5883,
+     1.5392
+    ],
+    [
+     "deep-drawdown+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.1139,
+     2.1512,
+     2.0248,
+     2.1123,
+     2.1452,
+     2.0304
+    ],
+    [
+     "deep-drawdown+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8453,
+     1.8825,
+     1.7843,
+     1.8126,
+     1.8418,
+     1.7574
+    ],
+    [
+     "deep-drawdown+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9859,
+     2.0186,
+     1.9135,
+     1.9772,
+     2.002,
+     1.9118
+    ],
+    [
+     "deep-drawdown+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5878,
+     1.6113,
+     1.5538,
+     1.5585,
+     1.5765,
+     1.5314
+    ],
+    [
+     "deep-drawdown+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.7353,
+     1.7651,
+     1.672,
+     1.6855,
+     1.706,
+     1.6255
+    ],
+    [
+     "deep-drawdown+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0651,
+     2.0959,
+     1.9821,
+     1.9577,
+     1.966,
+     1.8676
+    ],
+    [
+     "deep-drawdown+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4028,
+     1.4224,
+     1.3933,
+     1.3673,
+     1.3779,
+     1.3655
+    ],
+    [
+     "deep-drawdown+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.1418,
+     2.1768,
+     2.0547,
+     2.1728,
+     2.2061,
+     2.0938
+    ],
+    [
+     "far-below-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9401,
+     1.9605,
+     1.8914,
+     2.0151,
+     2.0365,
+     1.9763
+    ],
+    [
+     "far-below-52w-high+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8748,
+     1.9101,
+     1.8117,
+     1.9603,
+     1.9997,
+     1.9136
+    ],
+    [
+     "far-below-52w-high+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.1397,
+     2.1753,
+     2.0647,
+     2.1785,
+     2.2122,
+     2.1111
+    ],
+    [
+     "far-below-52w-high+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.1205,
+     2.1576,
+     2.0447,
+     2.1988,
+     2.2359,
+     2.1327
+    ],
+    [
+     "far-below-52w-high+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9538,
+     2.03,
+     1.9006,
+     2.0915,
+     2.1652,
+     2.0377
+    ],
+    [
+     "far-below-52w-high+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.3647,
+     2.3908,
+     2.2585,
+     2.5181,
+     2.5462,
+     2.4185
+    ],
+    [
+     "far-below-52w-high+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8043,
+     1.8436,
+     1.7493,
+     1.8466,
+     1.8856,
+     1.8013
+    ],
+    [
+     "far-below-52w-high+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.7965,
+     1.8214,
+     1.7188,
+     1.7939,
+     1.8143,
+     1.7208
+    ],
+    [
+     "far-below-52w-high+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.3128,
+     2.3142,
+     2.1838,
+     2.3871,
+     2.3756,
+     2.2473
+    ],
+    [
+     "far-below-52w-high+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.1645,
+     2.2,
+     2.0948,
+     2.2574,
+     2.2947,
+     2.1989
+    ],
+    [
+     "high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.845,
+     1.8661,
+     1.7711,
+     1.8771,
+     1.8971,
+     1.8142
+    ],
+    [
+     "high-volatility+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5251,
+     1.5471,
+     1.4639,
+     1.5178,
+     1.5338,
+     1.4637
+    ],
+    [
+     "high-volatility+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.7391,
+     1.7587,
+     1.6598,
+     1.7648,
+     1.7786,
+     1.6929
+    ],
+    [
+     "high-volatility+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6936,
+     1.7165,
+     1.613,
+     1.6514,
+     1.6653,
+     1.5751
+    ],
+    [
+     "high-volatility+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0569,
+     2.0588,
+     1.929,
+     2.0093,
+     1.9839,
+     1.8672
+    ],
+    [
+     "high-volatility+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.522,
+     1.5342,
+     1.4607,
+     1.4436,
+     1.4508,
+     1.39
+    ],
+    [
+     "near-52w-high+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4116,
+     1.4157,
+     1.3876,
+     1.3895,
+     1.3812,
+     1.3655
+    ],
+    [
+     "near-52w-high+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.412,
+     1.432,
+     1.3606,
+     1.3559,
+     1.3716,
+     1.3198
+    ],
+    [
+     "near-52w-high+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3175,
+     1.3345,
+     1.2878,
+     1.3038,
+     1.3147,
+     1.2748
+    ],
+    [
+     "near-52w-high+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3027,
+     1.318,
+     1.2712,
+     1.3104,
+     1.3204,
+     1.2823
+    ],
+    [
+     "near-52w-high+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3711,
+     1.3889,
+     1.3297,
+     1.3308,
+     1.3418,
+     1.2961
+    ],
+    [
+     "quiet-range+high-volatility",
+     "GAINED_BY_POPULATION",
+     "PARAMETER_SENSITIVE",
+     "ROBUST",
+     "ROBUST",
+     2.2078,
+     2.2208,
+     2.0438,
+     1.7026,
+     1.597,
+     1.4726
+    ],
+    [
+     "six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4301,
+     1.4469,
+     1.3832,
+     1.4322,
+     1.4438,
+     1.3897
+    ],
+    [
+     "six-month-thrust+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4812,
+     1.5026,
+     1.4283,
+     1.4906,
+     1.5071,
+     1.4427
+    ],
+    [
+     "six-month-thrust+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4597,
+     1.4784,
+     1.4047,
+     1.4377,
+     1.4489,
+     1.3845
+    ],
+    [
+     "six-month-thrust+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5938,
+     1.6065,
+     1.5267,
+     1.568,
+     1.5698,
+     1.4961
+    ],
+    [
+     "six-month-thrust+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3792,
+     1.3921,
+     1.3417,
+     1.3572,
+     1.3625,
+     1.3173
+    ],
+    [
+     "strong-12m-momentum",
+     "GAINED_BY_POPULATION_LOST_BY_RETURN",
+     "IN_SAMPLE_ONLY",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0295,
+     1.0324,
+     1.0113,
+     0.9995,
+     1.0013,
+     0.9815
+    ],
+    [
+     "strong-12m-momentum+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4996,
+     1.5294,
+     1.4623,
+     1.4679,
+     1.4925,
+     1.4417
+    ],
+    [
+     "strong-12m-momentum+far-below-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3685,
+     1.4069,
+     1.3063,
+     1.4038,
+     1.4354,
+     1.3415
+    ],
+    [
+     "strong-12m-momentum+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.385,
+     1.4022,
+     1.3203,
+     1.3614,
+     1.3776,
+     1.3065
+    ],
+    [
+     "strong-12m-momentum+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3018,
+     1.3219,
+     1.263,
+     1.2855,
+     1.3004,
+     1.2517
+    ],
+    [
+     "strong-12m-momentum+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3144,
+     1.3304,
+     1.2703,
+     1.3242,
+     1.3343,
+     1.2826
+    ],
+    [
+     "strong-12m-momentum+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1146,
+     1.1209,
+     1.0877,
+     1.0678,
+     1.0719,
+     1.0395
+    ],
+    [
+     "strong-12m-momentum+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1957,
+     1.1951,
+     1.1682,
+     1.1433,
+     1.1418,
+     1.1027
+    ],
+    [
+     "strong-12m-momentum+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3423,
+     1.3589,
+     1.2873,
+     1.3185,
+     1.3316,
+     1.2723
+    ],
+    [
+     "three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5133,
+     1.5264,
+     1.4615,
+     1.5511,
+     1.5602,
+     1.5036
+    ],
+    [
+     "three-month-thrust+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4982,
+     1.5152,
+     1.439,
+     1.5112,
+     1.5229,
+     1.4549
+    ],
+    [
+     "three-month-thrust+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5687,
+     1.5721,
+     1.4964,
+     1.5948,
+     1.5937,
+     1.5231
+    ],
+    [
+     "three-month-thrust+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3753,
+     1.3974,
+     1.3388,
+     1.3641,
+     1.3831,
+     1.3317
+    ],
+    [
+     "trend-stacked+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5372,
+     1.5502,
+     1.4749,
+     1.5134,
+     1.5241,
+     1.4628
+    ],
+    [
+     "trend-stacked+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.406,
+     1.4238,
+     1.3627,
+     1.4008,
+     1.4141,
+     1.3631
+    ],
+    [
+     "trend-stacked+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4036,
+     1.4191,
+     1.3618,
+     1.417,
+     1.4291,
+     1.3816
+    ],
+    [
+     "trend-stacked+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.49,
+     1.5049,
+     1.4321,
+     1.4758,
+     1.4884,
+     1.4288
+    ],
+    [
+     "up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.0869,
+     1.088,
+     1.0675,
+     1.0591,
+     1.0579,
+     1.0338
+    ],
+    [
+     "up-volume-dominance+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1613,
+     1.1595,
+     1.1403,
+     1.1202,
+     1.1122,
+     1.0804
+    ],
+    [
+     "very-strong-12m-momentum",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2751,
+     1.2894,
+     1.2268,
+     1.2617,
+     1.2713,
+     1.2162
+    ],
+    [
+     "very-strong-12m-momentum+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2694,
+     1.2844,
+     1.2265,
+     1.2471,
+     1.2584,
+     1.2085
+    ],
+    [
+     "very-strong-12m-momentum+at-all-time-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1498,
+     1.1661,
+     1.1128,
+     1.1768,
+     1.193,
+     1.1292
+    ],
+    [
+     "very-strong-12m-momentum+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5416,
+     1.5737,
+     1.4948,
+     1.4892,
+     1.5134,
+     1.4537
+    ],
+    [
+     "very-strong-12m-momentum+far-below-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1719,
+     1.208,
+     1.1137,
+     1.2717,
+     1.2955,
+     1.2055
+    ],
+    [
+     "very-strong-12m-momentum+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2733,
+     1.2933,
+     1.2151,
+     1.2742,
+     1.2899,
+     1.2219
+    ],
+    [
+     "very-strong-12m-momentum+near-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2934,
+     1.3094,
+     1.2596,
+     1.2875,
+     1.2959,
+     1.2461
+    ],
+    [
+     "very-strong-12m-momentum+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3089,
+     1.3368,
+     1.2668,
+     1.3035,
+     1.3245,
+     1.2634
+    ],
+    [
+     "very-strong-12m-momentum+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3313,
+     1.3572,
+     1.2867,
+     1.3624,
+     1.3794,
+     1.3146
+    ],
+    [
+     "very-strong-12m-momentum+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2806,
+     1.296,
+     1.2355,
+     1.2612,
+     1.2728,
+     1.22
+    ],
+    [
+     "very-strong-12m-momentum+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3264,
+     1.3504,
+     1.2733,
+     1.2879,
+     1.3051,
+     1.2375
+    ],
+    [
+     "very-strong-12m-momentum+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5492,
+     1.5618,
+     1.4676,
+     1.5598,
+     1.5622,
+     1.4655
+    ],
+    [
+     "very-strong-12m-momentum+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3972,
+     1.399,
+     1.3427,
+     1.3394,
+     1.3382,
+     1.2911
+    ],
+    [
+     "very-strong-12m-momentum+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2819,
+     1.3,
+     1.2331,
+     1.2715,
+     1.2848,
+     1.2283
+    ],
+    [
+     "volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1087,
+     1.1017,
+     1.0909,
+     1.0723,
+     1.0608,
+     1.0343
+    ],
+    [
+     "weak-12m-momentum",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.656,
+     1.6659,
+     1.6341,
+     1.7133,
+     1.7246,
+     1.7004
+    ],
+    [
+     "weak-12m-momentum+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5118,
+     1.5176,
+     1.4811,
+     1.5309,
+     1.5375,
+     1.5123
+    ],
+    [
+     "weak-12m-momentum+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.1095,
+     2.1393,
+     2.0406,
+     2.1446,
+     2.1736,
+     2.0851
+    ],
+    [
+     "weak-12m-momentum+far-below-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0311,
+     2.0505,
+     1.9827,
+     2.113,
+     2.1338,
+     2.0742
+    ],
+    [
+     "weak-12m-momentum+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.1777,
+     2.2061,
+     2.0998,
+     2.251,
+     2.2794,
+     2.1849
+    ],
+    [
+     "weak-12m-momentum+near-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4137,
+     1.4185,
+     1.3669,
+     1.3982,
+     1.393,
+     1.3568
+    ],
+    [
+     "weak-12m-momentum+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0518,
+     2.0711,
+     1.9643,
+     2.0824,
+     2.1002,
+     2.0059
+    ],
+    [
+     "weak-12m-momentum+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0701,
+     2.0783,
+     1.9867,
+     2.1631,
+     2.1709,
+     2.0877
+    ],
+    [
+     "weak-12m-momentum+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5747,
+     1.5857,
+     1.5469,
+     1.5752,
+     1.5862,
+     1.5641
+    ],
+    [
+     "weak-12m-momentum+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6591,
+     1.6711,
+     1.6032,
+     1.6757,
+     1.6858,
+     1.622
+    ],
+    [
+     "weak-12m-momentum+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9013,
+     1.8973,
+     1.8278,
+     1.9533,
+     1.9383,
+     1.8559
+    ],
+    [
+     "weak-12m-momentum+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2413,
+     1.2281,
+     1.2107,
+     1.2552,
+     1.2302,
+     1.2117
+    ],
+    [
+     "weak-12m-momentum+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.2508,
+     2.2802,
+     2.178,
+     2.3397,
+     2.372,
+     2.2797
+    ],
+    [
+     "wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8738,
+     1.8952,
+     1.8049,
+     1.9331,
+     1.9546,
+     1.8749
+    ],
+    [
+     "wide-range+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9244,
+     1.9516,
+     1.8489,
+     1.986,
+     2.0135,
+     1.9213
+    ],
+    [
+     "wide-range+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5067,
+     1.528,
+     1.4477,
+     1.5006,
+     1.5172,
+     1.4492
+    ],
+    [
+     "wide-range+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.7144,
+     1.7353,
+     1.6426,
+     1.7518,
+     1.7665,
+     1.6838
+    ],
+    [
+     "wide-range+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.653,
+     1.673,
+     1.5744,
+     1.6251,
+     1.6384,
+     1.5521
+    ],
+    [
+     "wide-range+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9983,
+     2.0015,
+     1.8788,
+     1.9741,
+     1.9611,
+     1.8507
+    ],
+    [
+     "wide-range+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4578,
+     1.4637,
+     1.3886,
+     1.3926,
+     1.396,
+     1.3367
+    ]
+   ]
+  },
+  {
+   "horizon": "H12",
+   "horizonMonths": 12,
+   "primary": false,
+   "usableObservations": {
+    "A": 889677,
+    "B": 858271,
+    "C": 858271
+   },
+   "winners": {
+    "A": 50088,
+    "B": 47928,
+    "C": 49682
+   },
+   "baseRate": {
+    "A": 0.056299,
+    "B": 0.055843,
+    "C": 0.057886,
+    "populationEffect": -0.000456,
+    "returnEffect": 0.002043
+   },
+   "robust": {
+    "A": 98,
+    "B": 99,
+    "C": 99
+   },
+   "decomposition": {
+    "KEPT": 98,
+    "LOST_BY_POPULATION": 0,
+    "LOST_BY_RETURN": 0,
+    "LOST_BY_POPULATION_RECOVERED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION": 1,
+    "GAINED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION_LOST_BY_RETURN": 0,
+    "NEVER": 64
+   },
+   "medianLiftKept": {
+    "A": 2.0046,
+    "B": 2.0442,
+    "C": 2.0065
+   },
+   "lost": {
+    "count": 0,
+    "byFamily": {},
+    "byDriver": {},
+    "medianLnLiftPopulation": null,
+    "medianLnLiftReturn": null,
+    "findings": []
+   },
+   "hypothesesColumns": [
+    "patternId",
+    "decomposition",
+    "verdictA",
+    "verdictB",
+    "verdictC",
+    "liftA",
+    "liftB",
+    "liftC",
+    "oosLiftA",
+    "oosLiftB",
+    "oosLiftC"
+   ],
+   "hypotheses": [
+    [
+     "above-40w-line+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.1975,
+     2.2236,
+     2.1759,
+     2.1274,
+     2.1492,
+     2.1068
+    ],
+    [
+     "above-40w-line+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8335,
+     1.8563,
+     1.8275,
+     1.7981,
+     1.8155,
+     1.7871
+    ],
+    [
+     "above-40w-line+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8423,
+     1.8609,
+     1.8336,
+     1.8135,
+     1.8272,
+     1.8011
+    ],
+    [
+     "above-40w-line+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.1306,
+     2.1537,
+     2.1114,
+     2.0756,
+     2.0969,
+     2.0556
+    ],
+    [
+     "at-all-time-high+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.7419,
+     1.7918,
+     1.7236,
+     1.624,
+     1.6693,
+     1.6136
+    ],
+    [
+     "at-all-time-high+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1744,
+     1.1791,
+     1.1681,
+     1.1069,
+     1.0946,
+     1.0827
+    ],
+    [
+     "at-all-time-high+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1865,
+     1.1888,
+     1.169,
+     1.1347,
+     1.1237,
+     1.1016
+    ],
+    [
+     "at-all-time-high+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5797,
+     1.603,
+     1.5633,
+     1.5076,
+     1.5138,
+     1.4736
+    ],
+    [
+     "deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.3382,
+     2.3768,
+     2.3422,
+     2.2542,
+     2.2879,
+     2.2559
+    ],
+    [
+     "deep-drawdown+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0214,
+     2.0551,
+     2.0282,
+     1.9247,
+     1.9493,
+     1.9261
+    ],
+    [
+     "deep-drawdown+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     3.0668,
+     3.1265,
+     3.0511,
+     2.9931,
+     3.0458,
+     2.9703
+    ],
+    [
+     "deep-drawdown+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.6607,
+     2.7143,
+     2.6592,
+     2.5816,
+     2.622,
+     2.5656
+    ],
+    [
+     "deep-drawdown+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.8637,
+     2.9116,
+     2.857,
+     2.7774,
+     2.815,
+     2.7567
+    ],
+    [
+     "deep-drawdown+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0036,
+     2.034,
+     2.0086,
+     1.9165,
+     1.9387,
+     1.9167
+    ],
+    [
+     "deep-drawdown+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.3737,
+     2.4217,
+     2.3717,
+     2.2519,
+     2.2883,
+     2.2422
+    ],
+    [
+     "deep-drawdown+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.645,
+     2.6752,
+     2.6195,
+     2.4332,
+     2.422,
+     2.3712
+    ],
+    [
+     "deep-drawdown+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6188,
+     1.6584,
+     1.6561,
+     1.5266,
+     1.5546,
+     1.5571
+    ],
+    [
+     "deep-drawdown+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     3.1312,
+     3.1953,
+     3.1232,
+     3.073,
+     3.1351,
+     3.0625
+    ],
+    [
+     "far-below-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.5155,
+     2.5488,
+     2.5233,
+     2.5123,
+     2.5475,
+     2.5235
+    ],
+    [
+     "far-below-52w-high+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.4818,
+     2.5028,
+     2.4584,
+     2.3827,
+     2.4124,
+     2.3688
+    ],
+    [
+     "far-below-52w-high+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.9425,
+     3.0003,
+     2.9425,
+     2.8743,
+     2.9307,
+     2.8738
+    ],
+    [
+     "far-below-52w-high+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     3.0595,
+     3.1173,
+     3.0572,
+     3.0481,
+     3.106,
+     3.0469
+    ],
+    [
+     "far-below-52w-high+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.9346,
+     2.9827,
+     2.9135,
+     2.9024,
+     2.9425,
+     2.8828
+    ],
+    [
+     "far-below-52w-high+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     3.4021,
+     3.409,
+     3.3408,
+     3.3993,
+     3.4192,
+     3.3375
+    ],
+    [
+     "far-below-52w-high+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.5356,
+     2.5695,
+     2.508,
+     2.4799,
+     2.5195,
+     2.4598
+    ],
+    [
+     "far-below-52w-high+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.6023,
+     2.6345,
+     2.5774,
+     2.5134,
+     2.5471,
+     2.4897
+    ],
+    [
+     "far-below-52w-high+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     3.1644,
+     3.1616,
+     3.0889,
+     3.1724,
+     3.1412,
+     3.0515
+    ],
+    [
+     "far-below-52w-high+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     3.0777,
+     3.1361,
+     3.0851,
+     3.0593,
+     3.1199,
+     3.0708
+    ],
+    [
+     "high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.6395,
+     2.6766,
+     2.6239,
+     2.6177,
+     2.652,
+     2.6023
+    ],
+    [
+     "high-volatility+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.334,
+     2.3644,
+     2.3117,
+     2.2787,
+     2.3052,
+     2.2561
+    ],
+    [
+     "high-volatility+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.6452,
+     2.6756,
+     2.6168,
+     2.6099,
+     2.6369,
+     2.5783
+    ],
+    [
+     "high-volatility+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.5041,
+     2.5467,
+     2.4801,
+     2.4238,
+     2.459,
+     2.3967
+    ],
+    [
+     "high-volatility+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.8109,
+     2.8213,
+     2.7508,
+     2.7466,
+     2.7155,
+     2.6443
+    ],
+    [
+     "high-volatility+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.1365,
+     2.1818,
+     2.135,
+     2.0718,
+     2.1134,
+     2.0748
+    ],
+    [
+     "near-52w-high+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6606,
+     1.6588,
+     1.6514,
+     1.5878,
+     1.574,
+     1.5708
+    ],
+    [
+     "near-52w-high+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0744,
+     2.1089,
+     2.0724,
+     2.0208,
+     2.0488,
+     2.0203
+    ],
+    [
+     "near-52w-high+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5528,
+     1.5763,
+     1.5577,
+     1.5154,
+     1.5298,
+     1.5108
+    ],
+    [
+     "near-52w-high+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5455,
+     1.5645,
+     1.5471,
+     1.5226,
+     1.5304,
+     1.5139
+    ],
+    [
+     "near-52w-high+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9012,
+     1.9333,
+     1.8985,
+     1.8662,
+     1.8908,
+     1.8571
+    ],
+    [
+     "quiet-range+high-volatility",
+     "GAINED_BY_POPULATION",
+     "PARAMETER_SENSITIVE",
+     "ROBUST",
+     "ROBUST",
+     2.6454,
+     2.5699,
+     2.4791,
+     2.2258,
+     1.973,
+     1.8986
+    ],
+    [
+     "six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8612,
+     1.8825,
+     1.8524,
+     1.8322,
+     1.8472,
+     1.8177
+    ],
+    [
+     "six-month-thrust+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0648,
+     2.0966,
+     2.062,
+     2.031,
+     2.0587,
+     2.0231
+    ],
+    [
+     "six-month-thrust+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9171,
+     1.9457,
+     1.9078,
+     1.8728,
+     1.8939,
+     1.8589
+    ],
+    [
+     "six-month-thrust+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0029,
+     2.0267,
+     1.9951,
+     1.988,
+     1.986,
+     1.9526
+    ],
+    [
+     "six-month-thrust+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6725,
+     1.7063,
+     1.6812,
+     1.6221,
+     1.6452,
+     1.6223
+    ],
+    [
+     "strong-12m-momentum",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.0304,
+     1.037,
+     1.0313,
+     1.0356,
+     1.0395,
+     1.0328
+    ],
+    [
+     "strong-12m-momentum+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9707,
+     2.0144,
+     1.9893,
+     1.9479,
+     1.982,
+     1.9603
+    ],
+    [
+     "strong-12m-momentum+far-below-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0456,
+     2.1087,
+     2.0343,
+     2.0818,
+     2.1448,
+     2.0639
+    ],
+    [
+     "strong-12m-momentum+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0521,
+     2.0953,
+     2.0401,
+     2.0536,
+     2.0918,
+     2.0388
+    ],
+    [
+     "strong-12m-momentum+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6678,
+     1.6968,
+     1.6701,
+     1.6701,
+     1.6924,
+     1.6648
+    ],
+    [
+     "strong-12m-momentum+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.7208,
+     1.7424,
+     1.7127,
+     1.7375,
+     1.7516,
+     1.7203
+    ],
+    [
+     "strong-12m-momentum+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.171,
+     1.1815,
+     1.1682,
+     1.1789,
+     1.179,
+     1.163
+    ],
+    [
+     "strong-12m-momentum+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2577,
+     1.2649,
+     1.2512,
+     1.3048,
+     1.3038,
+     1.2853
+    ],
+    [
+     "strong-12m-momentum+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9075,
+     1.9453,
+     1.8988,
+     1.9078,
+     1.9393,
+     1.8914
+    ],
+    [
+     "three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9799,
+     1.9955,
+     1.9641,
+     1.972,
+     1.9827,
+     1.9504
+    ],
+    [
+     "three-month-thrust+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9909,
+     2.0151,
+     1.9827,
+     1.9718,
+     1.9871,
+     1.956
+    ],
+    [
+     "three-month-thrust+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9386,
+     1.9606,
+     1.9315,
+     1.8864,
+     1.8929,
+     1.8633
+    ],
+    [
+     "three-month-thrust+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6864,
+     1.7273,
+     1.6927,
+     1.6383,
+     1.6698,
+     1.6396
+    ],
+    [
+     "trend-stacked+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.1961,
+     2.2195,
+     2.1702,
+     2.1351,
+     2.1533,
+     2.1086
+    ],
+    [
+     "trend-stacked+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8188,
+     1.8418,
+     1.8132,
+     1.7835,
+     1.8006,
+     1.7728
+    ],
+    [
+     "trend-stacked+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.7956,
+     1.8149,
+     1.789,
+     1.7672,
+     1.7804,
+     1.755
+    ],
+    [
+     "trend-stacked+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.1207,
+     2.144,
+     2.0994,
+     2.0748,
+     2.0946,
+     2.0501
+    ],
+    [
+     "up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1851,
+     1.1872,
+     1.1751,
+     1.1822,
+     1.1815,
+     1.1673
+    ],
+    [
+     "up-volume-dominance+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2274,
+     1.2229,
+     1.2077,
+     1.2428,
+     1.2233,
+     1.2003
+    ],
+    [
+     "very-strong-12m-momentum",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6812,
+     1.7096,
+     1.6728,
+     1.708,
+     1.7265,
+     1.6865
+    ],
+    [
+     "very-strong-12m-momentum+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6617,
+     1.6854,
+     1.6512,
+     1.6816,
+     1.6953,
+     1.6586
+    ],
+    [
+     "very-strong-12m-momentum+at-all-time-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2456,
+     1.2642,
+     1.2332,
+     1.1669,
+     1.1656,
+     1.134
+    ],
+    [
+     "very-strong-12m-momentum+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.2272,
+     2.2897,
+     2.2418,
+     2.2523,
+     2.2999,
+     2.2524
+    ],
+    [
+     "very-strong-12m-momentum+far-below-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8758,
+     1.9441,
+     1.8791,
+     1.9745,
+     2.0375,
+     1.9653
+    ],
+    [
+     "very-strong-12m-momentum+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0055,
+     2.0544,
+     1.9983,
+     2.0352,
+     2.0757,
+     2.0188
+    ],
+    [
+     "very-strong-12m-momentum+near-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5421,
+     1.5687,
+     1.5419,
+     1.5244,
+     1.5356,
+     1.5079
+    ],
+    [
+     "very-strong-12m-momentum+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8159,
+     1.8487,
+     1.811,
+     1.8471,
+     1.8731,
+     1.8345
+    ],
+    [
+     "very-strong-12m-momentum+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9611,
+     1.9889,
+     1.9468,
+     2.0274,
+     2.0512,
+     2.0045
+    ],
+    [
+     "very-strong-12m-momentum+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6735,
+     1.6974,
+     1.6618,
+     1.6974,
+     1.7116,
+     1.6727
+    ],
+    [
+     "very-strong-12m-momentum+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.7679,
+     1.8084,
+     1.761,
+     1.7751,
+     1.7958,
+     1.748
+    ],
+    [
+     "very-strong-12m-momentum+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9997,
+     2.0294,
+     1.9811,
+     2.1303,
+     2.1331,
+     2.0802
+    ],
+    [
+     "very-strong-12m-momentum+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6566,
+     1.6875,
+     1.6664,
+     1.6618,
+     1.6752,
+     1.654
+    ],
+    [
+     "very-strong-12m-momentum+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8039,
+     1.8423,
+     1.8034,
+     1.829,
+     1.8577,
+     1.816
+    ],
+    [
+     "volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1337,
+     1.1232,
+     1.1119,
+     1.1518,
+     1.1291,
+     1.1142
+    ],
+    [
+     "weak-12m-momentum",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.0015,
+     2.014,
+     2.0043,
+     1.9908,
+     2.0061,
+     1.999
+    ],
+    [
+     "weak-12m-momentum+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.738,
+     1.747,
+     1.7296,
+     1.6415,
+     1.654,
+     1.6424
+    ],
+    [
+     "weak-12m-momentum+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.8232,
+     2.8681,
+     2.8211,
+     2.7328,
+     2.7759,
+     2.7296
+    ],
+    [
+     "weak-12m-momentum+far-below-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.6244,
+     2.6539,
+     2.6338,
+     2.6082,
+     2.6406,
+     2.6224
+    ],
+    [
+     "weak-12m-momentum+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     3.0975,
+     3.1399,
+     3.0874,
+     3.0585,
+     3.1018,
+     3.0513
+    ],
+    [
+     "weak-12m-momentum+near-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.2873,
+     2.3268,
+     2.2819,
+     2.2224,
+     2.2623,
+     2.2227
+    ],
+    [
+     "weak-12m-momentum+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.8797,
+     2.8974,
+     2.8643,
+     2.6761,
+     2.6999,
+     2.6669
+    ],
+    [
+     "weak-12m-momentum+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.8189,
+     2.8279,
+     2.78,
+     2.7461,
+     2.7627,
+     2.711
+    ],
+    [
+     "weak-12m-momentum+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8628,
+     1.8636,
+     1.8464,
+     1.741,
+     1.7483,
+     1.7372
+    ],
+    [
+     "weak-12m-momentum+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.2421,
+     2.26,
+     2.2241,
+     2.1924,
+     2.2149,
+     2.1801
+    ],
+    [
+     "weak-12m-momentum+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.4085,
+     2.3998,
+     2.3521,
+     2.4237,
+     2.3962,
+     2.3399
+    ],
+    [
+     "weak-12m-momentum+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4364,
+     1.4608,
+     1.4228,
+     1.3878,
+     1.4162,
+     1.3795
+    ],
+    [
+     "weak-12m-momentum+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     3.159,
+     3.2059,
+     3.1632,
+     3.1097,
+     3.1611,
+     3.1205
+    ],
+    [
+     "wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.6748,
+     2.7146,
+     2.6677,
+     2.6662,
+     2.7064,
+     2.6607
+    ],
+    [
+     "wide-range+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.878,
+     2.9269,
+     2.8672,
+     2.8623,
+     2.9112,
+     2.8527
+    ],
+    [
+     "wide-range+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.22,
+     2.251,
+     2.2043,
+     2.1873,
+     2.2146,
+     2.169
+    ],
+    [
+     "wide-range+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.563,
+     2.5912,
+     2.5384,
+     2.5532,
+     2.5799,
+     2.5238
+    ],
+    [
+     "wide-range+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.4702,
+     2.5075,
+     2.4476,
+     2.4027,
+     2.4363,
+     2.3785
+    ],
+    [
+     "wide-range+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.7865,
+     2.802,
+     2.7377,
+     2.7338,
+     2.7197,
+     2.6503
+    ],
+    [
+     "wide-range+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.9817,
+     2.0302,
+     1.9922,
+     1.9437,
+     1.9891,
+     1.9539
+    ]
+   ]
+  },
+  {
+   "horizon": "H36",
+   "horizonMonths": 36,
+   "primary": false,
+   "usableObservations": {
+    "A": 772682,
+    "B": 744363,
+    "C": 744363
+   },
+   "winners": {
+    "A": 120644,
+    "B": 116353,
+    "C": 132536
+   },
+   "baseRate": {
+    "A": 0.156137,
+    "B": 0.156312,
+    "C": 0.178053,
+    "populationEffect": 0.000175,
+    "returnEffect": 0.021741
+   },
+   "robust": {
+    "A": 97,
+    "B": 98,
+    "C": 91
+   },
+   "decomposition": {
+    "KEPT": 91,
+    "LOST_BY_POPULATION": 0,
+    "LOST_BY_RETURN": 6,
+    "LOST_BY_POPULATION_RECOVERED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION": 0,
+    "GAINED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION_LOST_BY_RETURN": 1,
+    "NEVER": 65
+   },
+   "medianLiftKept": {
+    "A": 1.2918,
+    "B": 1.3052,
+    "C": 1.2204
+   },
+   "lost": {
+    "count": 6,
+    "byFamily": {
+     "MOMENTUM_12M": 3,
+     "NAEHE_HOCH": 3,
+     "SCHUB": 3,
+     "SPANNE": 1,
+     "VOLUMEN": 1
+    },
+    "byDriver": {
+     "BASISQUOTE_STEIGT_STAERKER": 6
+    },
+    "medianLnLiftPopulation": 0.0081,
+    "medianLnLiftReturn": -0.0715,
+    "findings": [
+     {
+      "patternId": "at-all-time-high+six-month-thrust",
+      "families": [
+       "NAEHE_HOCH",
+       "SCHUB"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.0537,
+       "B": 1.0554,
+       "C": 0.9798
+      },
+      "outOfSampleLift": {
+       "A": 1.0768,
+       "B": 1.0808,
+       "C": 1.0099
+      },
+      "support": {
+       "A": 11488,
+       "B": 11160,
+       "C": 11160
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0016,
+       "lnLiftReturn": -0.0743,
+       "lnConditionalRateReturn": 0.056,
+       "lnBaseRateReturn": 0.1302,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.164964,
+        "C": 0.174462
+       },
+       "baseRate": {
+        "B": 0.156312,
+        "C": 0.178053
+       },
+       "outsideRate": {
+        "B": 0.15618,
+        "C": 0.178108
+       },
+       "relativeRise": {
+        "inside": 0.0576,
+        "outside": 0.1404
+       },
+       "payerShare": {
+        "inside": 0.3815,
+        "outside": 0.5604
+       },
+       "medianTrailingYield": {
+        "inside": 0.00008,
+        "outside": 0.00836
+       },
+       "medianRealizedYield": {
+        "inside": 0.00033,
+        "outside": 0.03318
+       }
+      }
+     },
+     {
+      "patternId": "at-all-time-high+three-month-thrust",
+      "families": [
+       "NAEHE_HOCH",
+       "SCHUB"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.0579,
+       "B": 1.0632,
+       "C": 0.9925
+      },
+      "outOfSampleLift": {
+       "A": 1.0915,
+       "B": 1.0998,
+       "C": 1.0302
+      },
+      "support": {
+       "A": 12120,
+       "B": 11770,
+       "C": 11770
+      },
+      "cause": {
+       "lnLiftPopulation": 0.005,
+       "lnLiftReturn": -0.0688,
+       "lnConditionalRateReturn": 0.0615,
+       "lnBaseRateReturn": 0.1302,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.166185,
+        "C": 0.17672
+       },
+       "baseRate": {
+        "B": 0.156312,
+        "C": 0.178053
+       },
+       "outsideRate": {
+        "B": 0.156154,
+        "C": 0.178074
+       },
+       "relativeRise": {
+        "inside": 0.0634,
+        "outside": 0.1404
+       },
+       "payerShare": {
+        "inside": 0.4066,
+        "outside": 0.5602
+       },
+       "medianTrailingYield": {
+        "inside": 0.00024,
+        "outside": 0.00835
+       },
+       "medianRealizedYield": {
+        "inside": 0.00082,
+        "outside": 0.03316
+       }
+      }
+     },
+     {
+      "patternId": "up-volume-dominance",
+      "families": [
+       "VOLUMEN"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0597,
+       "B": 1.0642,
+       "C": 1.0382
+      },
+      "outOfSampleLift": {
+       "A": 1.0186,
+       "B": 1.0229,
+       "C": 0.9923
+      },
+      "support": {
+       "A": 164635,
+       "B": 157059,
+       "C": 157059
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0042,
+       "lnLiftReturn": -0.0247,
+       "lnConditionalRateReturn": 0.1058,
+       "lnBaseRateReturn": 0.1306,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.166071,
+        "C": 0.184612
+       },
+       "baseRate": {
+        "B": 0.156056,
+        "C": 0.177822
+       },
+       "outsideRate": {
+        "B": 0.153369,
+        "C": 0.176
+       },
+       "relativeRise": {
+        "inside": 0.1116,
+        "outside": 0.1476
+       },
+       "payerShare": {
+        "inside": 0.4816,
+        "outside": 0.5794
+       },
+       "medianTrailingYield": {
+        "inside": 0.00108,
+        "outside": 0.00965
+       },
+       "medianRealizedYield": {
+        "inside": 0.01517,
+        "outside": 0.03648
+       }
+      }
+     },
+     {
+      "patternId": "very-strong-12m-momentum+six-month-thrust",
+      "families": [
+       "MOMENTUM_12M",
+       "SCHUB"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.092,
+       "B": 1.1082,
+       "C": 1.0214
+      },
+      "outOfSampleLift": {
+       "A": 1.136,
+       "B": 1.151,
+       "C": 1.0682
+      },
+      "support": {
+       "A": 20305,
+       "B": 19367,
+       "C": 19367
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0147,
+       "lnLiftReturn": -0.0816,
+       "lnConditionalRateReturn": 0.0486,
+       "lnBaseRateReturn": 0.1302,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.173233,
+        "C": 0.181856
+       },
+       "baseRate": {
+        "B": 0.156312,
+        "C": 0.178053
+       },
+       "outsideRate": {
+        "B": 0.15586,
+        "C": 0.177951
+       },
+       "relativeRise": {
+        "inside": 0.0498,
+        "outside": 0.1417
+       },
+       "payerShare": {
+        "inside": 0.179,
+        "outside": 0.5679
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.0089
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.03429
+       }
+      }
+     },
+     {
+      "patternId": "very-strong-12m-momentum+wide-range",
+      "families": [
+       "MOMENTUM_12M",
+       "SPANNE"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.0876,
+       "B": 1.1003,
+       "C": 1.0124
+      },
+      "outOfSampleLift": {
+       "A": 1.1282,
+       "B": 1.1388,
+       "C": 1.0516
+      },
+      "support": {
+       "A": 32395,
+       "B": 30762,
+       "C": 30762
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0116,
+       "lnLiftReturn": -0.0833,
+       "lnConditionalRateReturn": 0.0469,
+       "lnBaseRateReturn": 0.1302,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.171998,
+        "C": 0.180255
+       },
+       "baseRate": {
+        "B": 0.156312,
+        "C": 0.178053
+       },
+       "outsideRate": {
+        "B": 0.155636,
+        "C": 0.177958
+       },
+       "relativeRise": {
+        "inside": 0.048,
+        "outside": 0.1434
+       },
+       "payerShare": {
+        "inside": 0.1664,
+        "outside": 0.5746
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.0094
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.0355
+       }
+      }
+     },
+     {
+      "patternId": "weak-12m-momentum+near-52w-high",
+      "families": [
+       "MOMENTUM_12M",
+       "NAEHE_HOCH"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.1659,
+       "B": 1.1792,
+       "C": 1.1203
+      },
+      "outOfSampleLift": {
+       "A": 1.0953,
+       "B": 1.1038,
+       "C": 1.0711
+      },
+      "support": {
+       "A": 1203,
+       "B": 1123,
+       "C": 1123
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0113,
+       "lnLiftReturn": -0.0512,
+       "lnConditionalRateReturn": 0.0789,
+       "lnBaseRateReturn": 0.1302,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.184328,
+        "C": 0.199466
+       },
+       "baseRate": {
+        "B": 0.156312,
+        "C": 0.178053
+       },
+       "outsideRate": {
+        "B": 0.15627,
+        "C": 0.178021
+       },
+       "relativeRise": {
+        "inside": 0.0821,
+        "outside": 0.1392
+       },
+       "payerShare": {
+        "inside": 0.2208,
+        "outside": 0.5583
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00812
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.03247
+       }
+      }
+     }
+    ]
+   },
+   "hypothesesColumns": [
+    "patternId",
+    "decomposition",
+    "verdictA",
+    "verdictB",
+    "verdictC",
+    "liftA",
+    "liftB",
+    "liftC",
+    "oosLiftA",
+    "oosLiftB",
+    "oosLiftC"
+   ],
+   "hypotheses": [
+    [
+     "above-40w-line+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2758,
+     1.2912,
+     1.1965,
+     1.2722,
+     1.287,
+     1.206
+    ],
+    [
+     "above-40w-line+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2112,
+     1.224,
+     1.1388,
+     1.2297,
+     1.2415,
+     1.1624
+    ],
+    [
+     "above-40w-line+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2467,
+     1.2587,
+     1.18,
+     1.2713,
+     1.2826,
+     1.2097
+    ],
+    [
+     "above-40w-line+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.242,
+     1.2584,
+     1.1672,
+     1.2636,
+     1.281,
+     1.1979
+    ],
+    [
+     "at-all-time-high+six-month-thrust",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.0537,
+     1.0554,
+     0.9798,
+     1.0768,
+     1.0808,
+     1.0099
+    ],
+    [
+     "at-all-time-high+three-month-thrust",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.0579,
+     1.0632,
+     0.9925,
+     1.0915,
+     1.0998,
+     1.0302
+    ],
+    [
+     "deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5125,
+     1.5366,
+     1.4303,
+     1.5327,
+     1.5527,
+     1.456
+    ],
+    [
+     "deep-drawdown+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3969,
+     1.4203,
+     1.3313,
+     1.3994,
+     1.4182,
+     1.3412
+    ],
+    [
+     "deep-drawdown+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.636,
+     1.6716,
+     1.5178,
+     1.6301,
+     1.6615,
+     1.5161
+    ],
+    [
+     "deep-drawdown+quiet-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.0535,
+     1.0394,
+     1.0726,
+     1.1134,
+     1.0895,
+     1.1357
+    ],
+    [
+     "deep-drawdown+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4785,
+     1.5201,
+     1.388,
+     1.4692,
+     1.5067,
+     1.382
+    ],
+    [
+     "deep-drawdown+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5789,
+     1.6193,
+     1.4872,
+     1.5757,
+     1.6143,
+     1.4923
+    ],
+    [
+     "deep-drawdown+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3965,
+     1.4198,
+     1.3294,
+     1.4064,
+     1.4247,
+     1.3446
+    ],
+    [
+     "deep-drawdown+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4443,
+     1.4791,
+     1.3564,
+     1.4004,
+     1.4265,
+     1.3151
+    ],
+    [
+     "deep-drawdown+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.7628,
+     1.793,
+     1.6363,
+     1.6456,
+     1.6501,
+     1.5117
+    ],
+    [
+     "deep-drawdown+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.342,
+     1.3734,
+     1.3038,
+     1.3692,
+     1.3913,
+     1.3304
+    ],
+    [
+     "deep-drawdown+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.638,
+     1.6729,
+     1.5229,
+     1.6618,
+     1.6952,
+     1.55
+    ],
+    [
+     "far-below-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.5348,
+     1.5526,
+     1.4512,
+     1.5908,
+     1.608,
+     1.5112
+    ],
+    [
+     "far-below-52w-high+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4217,
+     1.4579,
+     1.3432,
+     1.4682,
+     1.5112,
+     1.4017
+    ],
+    [
+     "far-below-52w-high+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6607,
+     1.6913,
+     1.5473,
+     1.6936,
+     1.7215,
+     1.5821
+    ],
+    [
+     "far-below-52w-high+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6058,
+     1.6373,
+     1.4992,
+     1.6615,
+     1.6908,
+     1.5576
+    ],
+    [
+     "far-below-52w-high+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4142,
+     1.4695,
+     1.3298,
+     1.5181,
+     1.5701,
+     1.4258
+    ],
+    [
+     "far-below-52w-high+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.7434,
+     1.7786,
+     1.6326,
+     1.8466,
+     1.889,
+     1.7452
+    ],
+    [
+     "far-below-52w-high+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3995,
+     1.4318,
+     1.3074,
+     1.4434,
+     1.477,
+     1.3563
+    ],
+    [
+     "far-below-52w-high+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.417,
+     1.4449,
+     1.3178,
+     1.3947,
+     1.4161,
+     1.2927
+    ],
+    [
+     "far-below-52w-high+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8468,
+     1.8523,
+     1.6946,
+     1.8373,
+     1.8133,
+     1.659
+    ],
+    [
+     "far-below-52w-high+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6358,
+     1.6658,
+     1.5332,
+     1.705,
+     1.7335,
+     1.6047
+    ],
+    [
+     "high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.453,
+     1.473,
+     1.357,
+     1.4789,
+     1.4966,
+     1.3904
+    ],
+    [
+     "high-volatility+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.223,
+     1.2403,
+     1.1376,
+     1.237,
+     1.2523,
+     1.1568
+    ],
+    [
+     "high-volatility+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3663,
+     1.3855,
+     1.2772,
+     1.3888,
+     1.4063,
+     1.3091
+    ],
+    [
+     "high-volatility+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3478,
+     1.3726,
+     1.248,
+     1.3059,
+     1.3257,
+     1.213
+    ],
+    [
+     "high-volatility+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6643,
+     1.6696,
+     1.5164,
+     1.6009,
+     1.5799,
+     1.4451
+    ],
+    [
+     "high-volatility+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2867,
+     1.3052,
+     1.2053,
+     1.2767,
+     1.2878,
+     1.1997
+    ],
+    [
+     "near-52w-high+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2689,
+     1.2763,
+     1.2209,
+     1.2898,
+     1.2824,
+     1.2384
+    ],
+    [
+     "near-52w-high+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1798,
+     1.195,
+     1.112,
+     1.1539,
+     1.1663,
+     1.0996
+    ],
+    [
+     "near-52w-high+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1862,
+     1.1979,
+     1.1252,
+     1.2012,
+     1.2113,
+     1.1449
+    ],
+    [
+     "near-52w-high+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1747,
+     1.186,
+     1.117,
+     1.1988,
+     1.2085,
+     1.1415
+    ],
+    [
+     "near-52w-high+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1914,
+     1.2067,
+     1.1269,
+     1.2022,
+     1.214,
+     1.1446
+    ],
+    [
+     "quiet-range+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     2.1554,
+     2.1934,
+     1.9839,
+     2.0477,
+     2.1033,
+     1.9344
+    ],
+    [
+     "six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.217,
+     1.23,
+     1.1441,
+     1.2383,
+     1.2498,
+     1.1699
+    ],
+    [
+     "six-month-thrust+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2298,
+     1.2463,
+     1.1533,
+     1.2581,
+     1.275,
+     1.1879
+    ],
+    [
+     "six-month-thrust+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2429,
+     1.2612,
+     1.1656,
+     1.239,
+     1.2553,
+     1.1657
+    ],
+    [
+     "six-month-thrust+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3526,
+     1.3636,
+     1.257,
+     1.3286,
+     1.3374,
+     1.2455
+    ],
+    [
+     "six-month-thrust+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2362,
+     1.2499,
+     1.1562,
+     1.2705,
+     1.2805,
+     1.1838
+    ],
+    [
+     "strong-12m-momentum",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.0578,
+     1.0613,
+     1.024,
+     1.0858,
+     1.0906,
+     1.0545
+    ],
+    [
+     "strong-12m-momentum+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.0401,
+     1.0432,
+     1.0109,
+     1.0629,
+     1.0681,
+     1.0372
+    ],
+    [
+     "strong-12m-momentum+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.309,
+     1.3444,
+     1.2414,
+     1.3332,
+     1.3658,
+     1.2676
+    ],
+    [
+     "strong-12m-momentum+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1257,
+     1.1395,
+     1.041,
+     1.1401,
+     1.1529,
+     1.0586
+    ],
+    [
+     "strong-12m-momentum+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1216,
+     1.1351,
+     1.0542,
+     1.1412,
+     1.156,
+     1.0802
+    ],
+    [
+     "strong-12m-momentum+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1409,
+     1.1509,
+     1.0691,
+     1.1748,
+     1.1865,
+     1.1077
+    ],
+    [
+     "strong-12m-momentum+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.0493,
+     1.0525,
+     1.0188,
+     1.0753,
+     1.0807,
+     1.0484
+    ],
+    [
+     "strong-12m-momentum+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.0823,
+     1.0907,
+     1.0399,
+     1.0892,
+     1.1003,
+     1.0481
+    ],
+    [
+     "strong-12m-momentum+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1815,
+     1.1838,
+     1.1311,
+     1.1869,
+     1.1955,
+     1.1348
+    ],
+    [
+     "strong-12m-momentum+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.0688,
+     1.069,
+     1.0382,
+     1.1072,
+     1.1076,
+     1.069
+    ],
+    [
+     "strong-12m-momentum+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1264,
+     1.1414,
+     1.0492,
+     1.1571,
+     1.1719,
+     1.0827
+    ],
+    [
+     "three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2918,
+     1.3038,
+     1.2204,
+     1.3287,
+     1.34,
+     1.2617
+    ],
+    [
+     "three-month-thrust+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2742,
+     1.2895,
+     1.1989,
+     1.2861,
+     1.3011,
+     1.2146
+    ],
+    [
+     "three-month-thrust+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3602,
+     1.3679,
+     1.2681,
+     1.3528,
+     1.3625,
+     1.2701
+    ],
+    [
+     "three-month-thrust+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2449,
+     1.2597,
+     1.1732,
+     1.2861,
+     1.3016,
+     1.2124
+    ],
+    [
+     "trend-stacked+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2702,
+     1.2849,
+     1.1891,
+     1.2684,
+     1.2829,
+     1.1999
+    ],
+    [
+     "trend-stacked+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2028,
+     1.2162,
+     1.1325,
+     1.2207,
+     1.2333,
+     1.1559
+    ],
+    [
+     "trend-stacked+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.226,
+     1.2382,
+     1.1623,
+     1.2487,
+     1.2609,
+     1.1907
+    ],
+    [
+     "trend-stacked+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2244,
+     1.2399,
+     1.1488,
+     1.2475,
+     1.2639,
+     1.1806
+    ],
+    [
+     "up-volume-dominance",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0597,
+     1.0642,
+     1.0382,
+     1.0186,
+     1.0229,
+     0.9923
+    ],
+    [
+     "up-volume-dominance+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.157,
+     1.1565,
+     1.1307,
+     1.0847,
+     1.0832,
+     1.0416
+    ],
+    [
+     "very-strong-12m-momentum",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1026,
+     1.1165,
+     1.0342,
+     1.1436,
+     1.1559,
+     1.0763
+    ],
+    [
+     "very-strong-12m-momentum+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1103,
+     1.1223,
+     1.044,
+     1.1473,
+     1.1588,
+     1.0846
+    ],
+    [
+     "very-strong-12m-momentum+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2434,
+     1.2826,
+     1.172,
+     1.2729,
+     1.3068,
+     1.1967
+    ],
+    [
+     "very-strong-12m-momentum+high-volatility",
+     "GAINED_BY_POPULATION_LOST_BY_RETURN",
+     "NOT_SIGNIFICANT",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0254,
+     1.0402,
+     0.9487,
+     1.062,
+     1.0721,
+     0.9809
+    ],
+    [
+     "very-strong-12m-momentum+near-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1693,
+     1.1826,
+     1.1071,
+     1.2111,
+     1.222,
+     1.1543
+    ],
+    [
+     "very-strong-12m-momentum+six-month-thrust",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.092,
+     1.1082,
+     1.0214,
+     1.136,
+     1.151,
+     1.0682
+    ],
+    [
+     "very-strong-12m-momentum+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1202,
+     1.1393,
+     1.0471,
+     1.1854,
+     1.2039,
+     1.1147
+    ],
+    [
+     "very-strong-12m-momentum+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1153,
+     1.1278,
+     1.0474,
+     1.1557,
+     1.1677,
+     1.0912
+    ],
+    [
+     "very-strong-12m-momentum+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1122,
+     1.1368,
+     1.0463,
+     1.1213,
+     1.147,
+     1.0591
+    ],
+    [
+     "very-strong-12m-momentum+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3422,
+     1.3573,
+     1.2532,
+     1.3875,
+     1.3942,
+     1.296
+    ],
+    [
+     "very-strong-12m-momentum+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2265,
+     1.2256,
+     1.1284,
+     1.2669,
+     1.2627,
+     1.1583
+    ],
+    [
+     "very-strong-12m-momentum+wide-range",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.0876,
+     1.1003,
+     1.0124,
+     1.1282,
+     1.1388,
+     1.0516
+    ],
+    [
+     "volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.11,
+     1.107,
+     1.0895,
+     1.0388,
+     1.0337,
+     1.0053
+    ],
+    [
+     "weak-12m-momentum",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3875,
+     1.3969,
+     1.3437,
+     1.4163,
+     1.426,
+     1.3765
+    ],
+    [
+     "weak-12m-momentum+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3215,
+     1.3322,
+     1.2827,
+     1.2952,
+     1.3091,
+     1.2722
+    ],
+    [
+     "weak-12m-momentum+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6663,
+     1.693,
+     1.5623,
+     1.6918,
+     1.7164,
+     1.5942
+    ],
+    [
+     "weak-12m-momentum+far-below-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6055,
+     1.622,
+     1.5205,
+     1.6635,
+     1.6794,
+     1.5823
+    ],
+    [
+     "weak-12m-momentum+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6672,
+     1.6944,
+     1.5628,
+     1.7106,
+     1.7358,
+     1.6138
+    ],
+    [
+     "weak-12m-momentum+near-52w-high",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.1659,
+     1.1792,
+     1.1203,
+     1.0953,
+     1.1038,
+     1.0711
+    ],
+    [
+     "weak-12m-momentum+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.591,
+     1.6192,
+     1.4993,
+     1.609,
+     1.6333,
+     1.5227
+    ],
+    [
+     "weak-12m-momentum+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6106,
+     1.6296,
+     1.5237,
+     1.6505,
+     1.6711,
+     1.5777
+    ],
+    [
+     "weak-12m-momentum+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3597,
+     1.3758,
+     1.3132,
+     1.3418,
+     1.3607,
+     1.3128
+    ],
+    [
+     "weak-12m-momentum+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3733,
+     1.3896,
+     1.3003,
+     1.3364,
+     1.352,
+     1.2646
+    ],
+    [
+     "weak-12m-momentum+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.651,
+     1.657,
+     1.5572,
+     1.5926,
+     1.5752,
+     1.475
+    ],
+    [
+     "weak-12m-momentum+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1855,
+     1.1871,
+     1.1523,
+     1.1542,
+     1.1442,
+     1.0817
+    ],
+    [
+     "weak-12m-momentum+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.7128,
+     1.7397,
+     1.6085,
+     1.7766,
+     1.803,
+     1.6782
+    ],
+    [
+     "wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4631,
+     1.4836,
+     1.3703,
+     1.5163,
+     1.536,
+     1.4281
+    ],
+    [
+     "wide-range+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4762,
+     1.5008,
+     1.3782,
+     1.5279,
+     1.5507,
+     1.4336
+    ],
+    [
+     "wide-range+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2219,
+     1.238,
+     1.1388,
+     1.2491,
+     1.2648,
+     1.1706
+    ],
+    [
+     "wide-range+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3616,
+     1.3824,
+     1.2739,
+     1.4061,
+     1.4272,
+     1.3256
+    ],
+    [
+     "wide-range+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.31,
+     1.3315,
+     1.2136,
+     1.2954,
+     1.3143,
+     1.2044
+    ],
+    [
+     "wide-range+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.6138,
+     1.6187,
+     1.4735,
+     1.5982,
+     1.5843,
+     1.4556
+    ],
+    [
+     "wide-range+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2453,
+     1.2545,
+     1.152,
+     1.2697,
+     1.2751,
+     1.173
+    ]
+   ]
+  },
+  {
+   "horizon": "H60",
+   "horizonMonths": 60,
+   "primary": false,
+   "usableObservations": {
+    "A": 673917,
+    "B": 648530,
+    "C": 648530
+   },
+   "winners": {
+    "A": 170409,
+    "B": 165021,
+    "C": 198599
+   },
+   "baseRate": {
+    "A": 0.252863,
+    "B": 0.254454,
+    "C": 0.306229,
+    "populationEffect": 0.001591,
+    "returnEffect": 0.051775
+   },
+   "robust": {
+    "A": 68,
+    "B": 69,
+    "C": 43
+   },
+   "decomposition": {
+    "KEPT": 43,
+    "LOST_BY_POPULATION": 0,
+    "LOST_BY_RETURN": 25,
+    "LOST_BY_POPULATION_RECOVERED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION": 0,
+    "GAINED_BY_RETURN": 0,
+    "GAINED_BY_POPULATION_LOST_BY_RETURN": 1,
+    "NEVER": 94
+   },
+   "medianLiftKept": {
+    "A": 1.2855,
+    "B": 1.3,
+    "C": 1.161
+   },
+   "lost": {
+    "count": 25,
+    "byFamily": {
+     "ABSTAND_HOCH": 3,
+     "MOMENTUM_12M": 2,
+     "NAEHE_HOCH": 2,
+     "SCHUB": 15,
+     "SPANNE": 5,
+     "TREND": 5,
+     "VOLATILITAET": 5,
+     "VOLUMEN": 10
+    },
+    "byDriver": {
+     "BASISQUOTE_STEIGT_STAERKER": 25
+    },
+    "medianLnLiftPopulation": 0.008,
+    "medianLnLiftReturn": -0.1094,
+    "findings": [
+     {
+      "patternId": "above-40w-line+six-month-thrust",
+      "families": [
+       "SCHUB",
+       "TREND"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0538,
+       "B": 1.0605,
+       "C": 0.9549
+      },
+      "outOfSampleLift": {
+       "A": 1.0787,
+       "B": 1.0833,
+       "C": 0.9817
+      },
+      "support": {
+       "A": 53261,
+       "B": 50850,
+       "C": 50850
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0063,
+       "lnLiftReturn": -0.1049,
+       "lnConditionalRateReturn": 0.0803,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.269853,
+        "C": 0.292429
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.253144,
+        "C": 0.307404
+       },
+       "relativeRise": {
+        "inside": 0.0837,
+        "outside": 0.2143
+       },
+       "payerShare": {
+        "inside": 0.269,
+        "outside": 0.5925
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.01046
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.07005
+       }
+      }
+     },
+     {
+      "patternId": "far-below-52w-high+six-month-thrust",
+      "families": [
+       "ABSTAND_HOCH",
+       "SCHUB"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.115,
+       "B": 1.1531,
+       "C": 0.9997
+      },
+      "outOfSampleLift": {
+       "A": 1.237,
+       "B": 1.2746,
+       "C": 1.1055
+      },
+      "support": {
+       "A": 3703,
+       "B": 3381,
+       "C": 3381
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0336,
+       "lnLiftReturn": -0.1428,
+       "lnConditionalRateReturn": 0.0424,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.293404,
+        "C": 0.306122
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.25425,
+        "C": 0.30623
+       },
+       "relativeRise": {
+        "inside": 0.0433,
+        "outside": 0.2044
+       },
+       "payerShare": {
+        "inside": 0.1426,
+        "outside": 0.5693
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00878
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06302
+       }
+      }
+     },
+     {
+      "patternId": "far-below-52w-high+trend-stacked",
+      "families": [
+       "ABSTAND_HOCH",
+       "TREND"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.1364,
+       "B": 1.1616,
+       "C": 1.0207
+      },
+      "outOfSampleLift": {
+       "A": 1.2024,
+       "B": 1.2255,
+       "C": 1.0791
+      },
+      "support": {
+       "A": 10447,
+       "B": 9646,
+       "C": 9646
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0219,
+       "lnLiftReturn": -0.1293,
+       "lnConditionalRateReturn": 0.0559,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.295563,
+        "C": 0.312565
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.253833,
+        "C": 0.306134
+       },
+       "relativeRise": {
+        "inside": 0.0575,
+        "outside": 0.206
+       },
+       "payerShare": {
+        "inside": 0.178,
+        "outside": 0.573
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00902
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06423
+       }
+      }
+     },
+     {
+      "patternId": "high-volatility+six-month-thrust",
+      "families": [
+       "SCHUB",
+       "VOLATILITAET"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0458,
+       "B": 1.0574,
+       "C": 0.9396
+      },
+      "outOfSampleLift": {
+       "A": 1.0904,
+       "B": 1.097,
+       "C": 0.9812
+      },
+      "support": {
+       "A": 29807,
+       "B": 28116,
+       "C": 28116
+      },
+      "cause": {
+       "lnLiftPopulation": 0.011,
+       "lnLiftReturn": -0.1181,
+       "lnConditionalRateReturn": 0.0671,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.269064,
+        "C": 0.287737
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.253792,
+        "C": 0.307068
+       },
+       "relativeRise": {
+        "inside": 0.0694,
+        "outside": 0.2099
+       },
+       "payerShare": {
+        "inside": 0.1605,
+        "outside": 0.5855
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00989
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06764
+       }
+      }
+     },
+     {
+      "patternId": "high-volatility+up-volume-dominance",
+      "families": [
+       "VOLATILITAET",
+       "VOLUMEN"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.1282,
+       "B": 1.1459,
+       "C": 1.0052
+      },
+      "outOfSampleLift": {
+       "A": 1.1212,
+       "B": 1.1339,
+       "C": 1.0007
+      },
+      "support": {
+       "A": 39493,
+       "B": 36726,
+       "C": 36726
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0156,
+       "lnLiftReturn": -0.131,
+       "lnConditionalRateReturn": 0.0547,
+       "lnBaseRateReturn": 0.1857,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.29132,
+        "C": 0.307711
+       },
+       "baseRate": {
+        "B": 0.254237,
+        "C": 0.30612
+       },
+       "outsideRate": {
+        "B": 0.252005,
+        "C": 0.306024
+       },
+       "relativeRise": {
+        "inside": 0.0563,
+        "outside": 0.2144
+       },
+       "payerShare": {
+        "inside": 0.1491,
+        "outside": 0.5934
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.01036
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06997
+       }
+      }
+     },
+     {
+      "patternId": "high-volatility+volume-dry-up-near-high",
+      "families": [
+       "VOLATILITAET",
+       "VOLUMEN"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.1321,
+       "B": 1.1378,
+       "C": 1.0151
+      },
+      "outOfSampleLift": {
+       "A": 1.1389,
+       "B": 1.1427,
+       "C": 1.0303
+      },
+      "support": {
+       "A": 9105,
+       "B": 8595,
+       "C": 8595
+      },
+      "cause": {
+       "lnLiftPopulation": 0.005,
+       "lnLiftReturn": -0.1141,
+       "lnConditionalRateReturn": 0.0714,
+       "lnBaseRateReturn": 0.1856,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.289354,
+        "C": 0.310762
+       },
+       "baseRate": {
+        "B": 0.254303,
+        "C": 0.306152
+       },
+       "outsideRate": {
+        "B": 0.253831,
+        "C": 0.30609
+       },
+       "relativeRise": {
+        "inside": 0.074,
+        "outside": 0.2059
+       },
+       "payerShare": {
+        "inside": 0.1887,
+        "outside": 0.5729
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00902
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06403
+       }
+      }
+     },
+     {
+      "patternId": "near-52w-high+high-volatility",
+      "families": [
+       "NAEHE_HOCH",
+       "VOLATILITAET"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0464,
+       "B": 1.0578,
+       "C": 0.9526
+      },
+      "outOfSampleLift": {
+       "A": 1.0659,
+       "B": 1.0746,
+       "C": 0.9774
+      },
+      "support": {
+       "A": 13318,
+       "B": 12643,
+       "C": 12643
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0108,
+       "lnLiftReturn": -0.1048,
+       "lnConditionalRateReturn": 0.0804,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.269161,
+        "C": 0.291703
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.254162,
+        "C": 0.306518
+       },
+       "relativeRise": {
+        "inside": 0.0837,
+        "outside": 0.206
+       },
+       "payerShare": {
+        "inside": 0.2019,
+        "outside": 0.5744
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00914
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06436
+       }
+      }
+     },
+     {
+      "patternId": "near-52w-high+six-month-thrust",
+      "families": [
+       "NAEHE_HOCH",
+       "SCHUB"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0324,
+       "B": 1.0373,
+       "C": 0.9457
+      },
+      "outOfSampleLift": {
+       "A": 1.0383,
+       "B": 1.0421,
+       "C": 0.9589
+      },
+      "support": {
+       "A": 26447,
+       "B": 25444,
+       "C": 25444
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0047,
+       "lnLiftReturn": -0.0925,
+       "lnConditionalRateReturn": 0.0928,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.263952,
+        "C": 0.289616
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.254066,
+        "C": 0.306908
+       },
+       "relativeRise": {
+        "inside": 0.0972,
+        "outside": 0.208
+       },
+       "payerShare": {
+        "inside": 0.3253,
+        "outside": 0.577
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00941
+       },
+       "medianRealizedYield": {
+        "inside": 0.0003,
+        "outside": 0.06546
+       }
+      }
+     },
+     {
+      "patternId": "six-month-thrust",
+      "families": [
+       "SCHUB"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0541,
+       "B": 1.0611,
+       "C": 0.9549
+      },
+      "outOfSampleLift": {
+       "A": 1.08,
+       "B": 1.0847,
+       "C": 0.9824
+      },
+      "support": {
+       "A": 54000,
+       "B": 51512,
+       "C": 51512
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0066,
+       "lnLiftReturn": -0.1055,
+       "lnConditionalRateReturn": 0.0798,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.269995,
+        "C": 0.292417
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.253113,
+        "C": 0.307421
+       },
+       "relativeRise": {
+        "inside": 0.083,
+        "outside": 0.2146
+       },
+       "payerShare": {
+        "inside": 0.2671,
+        "outside": 0.593
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.01048
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.07018
+       }
+      }
+     },
+     {
+      "patternId": "six-month-thrust+three-month-thrust",
+      "families": [
+       "SCHUB"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0251,
+       "B": 1.0339,
+       "C": 0.9268
+      },
+      "outOfSampleLift": {
+       "A": 1.057,
+       "B": 1.0649,
+       "C": 0.9589
+      },
+      "support": {
+       "A": 29224,
+       "B": 27850,
+       "C": 27850
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0085,
+       "lnLiftReturn": -0.1094,
+       "lnConditionalRateReturn": 0.0758,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.263088,
+        "C": 0.283806
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.254067,
+        "C": 0.307236
+       },
+       "relativeRise": {
+        "inside": 0.0787,
+        "outside": 0.2093
+       },
+       "payerShare": {
+        "inside": 0.2358,
+        "outside": 0.582
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00971
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06691
+       }
+      }
+     },
+     {
+      "patternId": "six-month-thrust+up-volume-dominance",
+      "families": [
+       "SCHUB",
+       "VOLUMEN"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0408,
+       "B": 1.0496,
+       "C": 0.9382
+      },
+      "outOfSampleLift": {
+       "A": 1.0371,
+       "B": 1.0431,
+       "C": 0.9377
+      },
+      "support": {
+       "A": 26665,
+       "B": 25333,
+       "C": 25333
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0084,
+       "lnLiftReturn": -0.1122,
+       "lnConditionalRateReturn": 0.0736,
+       "lnBaseRateReturn": 0.1857,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.266846,
+        "C": 0.287214
+       },
+       "baseRate": {
+        "B": 0.254237,
+        "C": 0.30612
+       },
+       "outsideRate": {
+        "B": 0.253723,
+        "C": 0.306891
+       },
+       "relativeRise": {
+        "inside": 0.0763,
+        "outside": 0.2096
+       },
+       "payerShare": {
+        "inside": 0.2492,
+        "outside": 0.5812
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00965
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06667
+       }
+      }
+     },
+     {
+      "patternId": "six-month-thrust+volume-accumulation",
+      "families": [
+       "SCHUB",
+       "VOLUMEN"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.135,
+       "B": 1.1391,
+       "C": 1.0206
+      },
+      "outOfSampleLift": {
+       "A": 1.0912,
+       "B": 1.0932,
+       "C": 0.9911
+      },
+      "support": {
+       "A": 10989,
+       "B": 10411,
+       "C": 10411
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0036,
+       "lnLiftReturn": -0.1098,
+       "lnConditionalRateReturn": 0.0756,
+       "lnBaseRateReturn": 0.1855,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.289694,
+        "C": 0.312458
+       },
+       "baseRate": {
+        "B": 0.254314,
+        "C": 0.306158
+       },
+       "outsideRate": {
+        "B": 0.253736,
+        "C": 0.306055
+       },
+       "relativeRise": {
+        "inside": 0.0786,
+        "outside": 0.2062
+       },
+       "payerShare": {
+        "inside": 0.2516,
+        "outside": 0.5729
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00903
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06411
+       }
+      }
+     },
+     {
+      "patternId": "six-month-thrust+volume-dry-up-near-high",
+      "families": [
+       "SCHUB",
+       "VOLUMEN"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0729,
+       "B": 1.0746,
+       "C": 0.9644
+      },
+      "outOfSampleLift": {
+       "A": 1.085,
+       "B": 1.0845,
+       "C": 0.978
+      },
+      "support": {
+       "A": 11806,
+       "B": 11285,
+       "C": 11285
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0016,
+       "lnLiftReturn": -0.1082,
+       "lnConditionalRateReturn": 0.0773,
+       "lnBaseRateReturn": 0.1856,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.273283,
+        "C": 0.295259
+       },
+       "baseRate": {
+        "B": 0.254303,
+        "C": 0.306152
+       },
+       "outsideRate": {
+        "B": 0.253966,
+        "C": 0.306345
+       },
+       "relativeRise": {
+        "inside": 0.0804,
+        "outside": 0.2062
+       },
+       "payerShare": {
+        "inside": 0.2796,
+        "outside": 0.5729
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00905
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06416
+       }
+      }
+     },
+     {
+      "patternId": "strong-12m-momentum+deep-drawdown",
+      "families": [
+       "ABSTAND_HOCH",
+       "MOMENTUM_12M"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.0947,
+       "B": 1.1164,
+       "C": 1.0021
+      },
+      "outOfSampleLift": {
+       "A": 1.1276,
+       "B": 1.1473,
+       "C": 1.033
+      },
+      "support": {
+       "A": 29812,
+       "B": 27753,
+       "C": 27753
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0196,
+       "lnLiftReturn": -0.108,
+       "lnConditionalRateReturn": 0.0772,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.284077,
+        "C": 0.306886
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.25313,
+        "C": 0.3062
+       },
+       "relativeRise": {
+        "inside": 0.0803,
+        "outside": 0.2097
+       },
+       "payerShare": {
+        "inside": 0.1444,
+        "outside": 0.586
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00992
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06732
+       }
+      }
+     },
+     {
+      "patternId": "three-month-thrust",
+      "families": [
+       "SCHUB"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.1063,
+       "B": 1.1123,
+       "C": 1.0081
+      },
+      "outOfSampleLift": {
+       "A": 1.1472,
+       "B": 1.1524,
+       "C": 1.0487
+      },
+      "support": {
+       "A": 58913,
+       "B": 56212,
+       "C": 56212
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0054,
+       "lnLiftReturn": -0.0984,
+       "lnConditionalRateReturn": 0.0869,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.283018,
+        "C": 0.308724
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.251743,
+        "C": 0.305993
+       },
+       "relativeRise": {
+        "inside": 0.0908,
+        "outside": 0.2155
+       },
+       "payerShare": {
+        "inside": 0.2905,
+        "outside": 0.5933
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.01049
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.07057
+       }
+      }
+     },
+     {
+      "patternId": "three-month-thrust+up-volume-dominance",
+      "families": [
+       "SCHUB",
+       "VOLUMEN"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0733,
+       "B": 1.0812,
+       "C": 0.974
+      },
+      "outOfSampleLift": {
+       "A": 1.0926,
+       "B": 1.0994,
+       "C": 0.9921
+      },
+      "support": {
+       "A": 36453,
+       "B": 34725,
+       "C": 34725
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0073,
+       "lnLiftReturn": -0.1044,
+       "lnConditionalRateReturn": 0.0814,
+       "lnBaseRateReturn": 0.1857,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.274874,
+        "C": 0.298171
+       },
+       "baseRate": {
+        "B": 0.254237,
+        "C": 0.30612
+       },
+       "outsideRate": {
+        "B": 0.253066,
+        "C": 0.306571
+       },
+       "relativeRise": {
+        "inside": 0.0848,
+        "outside": 0.2114
+       },
+       "payerShare": {
+        "inside": 0.2726,
+        "outside": 0.585
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00991
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06797
+       }
+      }
+     },
+     {
+      "patternId": "three-month-thrust+volume-dry-up-near-high",
+      "families": [
+       "SCHUB",
+       "VOLUMEN"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0587,
+       "B": 1.0624,
+       "C": 0.9573
+      },
+      "outOfSampleLift": {
+       "A": 1.0732,
+       "B": 1.0815,
+       "C": 0.9783
+      },
+      "support": {
+       "A": 11363,
+       "B": 10826,
+       "C": 10826
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0035,
+       "lnLiftReturn": -0.1042,
+       "lnConditionalRateReturn": 0.0814,
+       "lnBaseRateReturn": 0.1856,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.270183,
+        "C": 0.293091
+       },
+       "baseRate": {
+        "B": 0.254303,
+        "C": 0.306152
+       },
+       "outsideRate": {
+        "B": 0.254033,
+        "C": 0.306374
+       },
+       "relativeRise": {
+        "inside": 0.0848,
+        "outside": 0.206
+       },
+       "payerShare": {
+        "inside": 0.2929,
+        "outside": 0.5725
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00902
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06411
+       }
+      }
+     },
+     {
+      "patternId": "trend-stacked+high-volatility",
+      "families": [
+       "TREND",
+       "VOLATILITAET"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.1102,
+       "B": 1.1197,
+       "C": 1.0047
+      },
+      "outOfSampleLift": {
+       "A": 1.1385,
+       "B": 1.1458,
+       "C": 1.0387
+      },
+      "support": {
+       "A": 62769,
+       "B": 59285,
+       "C": 59285
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0085,
+       "lnLiftReturn": -0.1084,
+       "lnConditionalRateReturn": 0.0769,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.284912,
+        "C": 0.307683
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.251389,
+        "C": 0.306083
+       },
+       "relativeRise": {
+        "inside": 0.0799,
+        "outside": 0.2176
+       },
+       "payerShare": {
+        "inside": 0.1958,
+        "outside": 0.6045
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.01105
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.07295
+       }
+      }
+     },
+     {
+      "patternId": "trend-stacked+six-month-thrust",
+      "families": [
+       "SCHUB",
+       "TREND"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0485,
+       "B": 1.055,
+       "C": 0.9501
+      },
+      "outOfSampleLift": {
+       "A": 1.0721,
+       "B": 1.0766,
+       "C": 0.9758
+      },
+      "support": {
+       "A": 52961,
+       "B": 50563,
+       "C": 50563
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0062,
+       "lnLiftReturn": -0.1047,
+       "lnConditionalRateReturn": 0.0805,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.268437,
+        "C": 0.290944
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.253272,
+        "C": 0.307522
+       },
+       "relativeRise": {
+        "inside": 0.0838,
+        "outside": 0.2142
+       },
+       "payerShare": {
+        "inside": 0.2686,
+        "outside": 0.5923
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.01045
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.07
+       }
+      }
+     },
+     {
+      "patternId": "trend-stacked+wide-range",
+      "families": [
+       "SPANNE",
+       "TREND"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0462,
+       "B": 1.0546,
+       "C": 0.9431
+      },
+      "outOfSampleLift": {
+       "A": 1.0881,
+       "B": 1.0942,
+       "C": 0.9863
+      },
+      "support": {
+       "A": 54485,
+       "B": 51656,
+       "C": 51656
+      },
+      "cause": {
+       "lnLiftPopulation": 0.008,
+       "lnLiftReturn": -0.1117,
+       "lnConditionalRateReturn": 0.0735,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.268352,
+        "C": 0.288814
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.253251,
+        "C": 0.307737
+       },
+       "relativeRise": {
+        "inside": 0.0763,
+        "outside": 0.2151
+       },
+       "payerShare": {
+        "inside": 0.204,
+        "outside": 0.5985
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.01077
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.07135
+       }
+      }
+     },
+     {
+      "patternId": "weak-12m-momentum+volume-dry-up-near-high",
+      "families": [
+       "MOMENTUM_12M",
+       "VOLUMEN"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.1365,
+       "B": 1.1286,
+       "C": 1.0888
+      },
+      "outOfSampleLift": {
+       "A": 1.136,
+       "B": 1.1337,
+       "C": 1.1026
+      },
+      "support": {
+       "A": 923,
+       "B": 885,
+       "C": 885
+      },
+      "cause": {
+       "lnLiftPopulation": -0.007,
+       "lnLiftReturn": -0.0359,
+       "lnConditionalRateReturn": 0.1496,
+       "lnBaseRateReturn": 0.1856,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.287006,
+        "C": 0.333333
+       },
+       "baseRate": {
+        "B": 0.254303,
+        "C": 0.306152
+       },
+       "outsideRate": {
+        "B": 0.254258,
+        "C": 0.306115
+       },
+       "relativeRise": {
+        "inside": 0.1614,
+        "outside": 0.204
+       },
+       "payerShare": {
+        "inside": 0.4429,
+        "outside": 0.568
+       },
+       "medianTrailingYield": {
+        "inside": 0.00011,
+        "outside": 0.00869
+       },
+       "medianRealizedYield": {
+        "inside": 0.02503,
+        "outside": 0.06258
+       }
+      }
+     },
+     {
+      "patternId": "wide-range+six-month-thrust",
+      "families": [
+       "SCHUB",
+       "SPANNE"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0205,
+       "B": 1.03,
+       "C": 0.9125
+      },
+      "outOfSampleLift": {
+       "A": 1.0641,
+       "B": 1.0696,
+       "C": 0.9537
+      },
+      "support": {
+       "A": 32423,
+       "B": 30725,
+       "C": 30725
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0093,
+       "lnLiftReturn": -0.1211,
+       "lnConditionalRateReturn": 0.0641,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.262099,
+        "C": 0.279447
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.254074,
+        "C": 0.307561
+       },
+       "relativeRise": {
+        "inside": 0.0662,
+        "outside": 0.2105
+       },
+       "payerShare": {
+        "inside": 0.1836,
+        "outside": 0.5862
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.00997
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06796
+       }
+      }
+     },
+     {
+      "patternId": "wide-range+three-month-thrust",
+      "families": [
+       "SCHUB",
+       "SPANNE"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "NOT_SIGNIFICANT"
+      },
+      "lift": {
+       "A": 1.1078,
+       "B": 1.1197,
+       "C": 0.9943
+      },
+      "outOfSampleLift": {
+       "A": 1.169,
+       "B": 1.178,
+       "C": 1.0525
+      },
+      "support": {
+       "A": 29444,
+       "B": 27872,
+       "C": 27872
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0107,
+       "lnLiftReturn": -0.1188,
+       "lnConditionalRateReturn": 0.0665,
+       "lnBaseRateReturn": 0.1852,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.28491,
+        "C": 0.304499
+       },
+       "baseRate": {
+        "B": 0.254454,
+        "C": 0.306229
+       },
+       "outsideRate": {
+        "B": 0.253086,
+        "C": 0.306307
+       },
+       "relativeRise": {
+        "inside": 0.0688,
+        "outside": 0.2103
+       },
+       "payerShare": {
+        "inside": 0.1916,
+        "outside": 0.584
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.0098
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06744
+       }
+      }
+     },
+     {
+      "patternId": "wide-range+up-volume-dominance",
+      "families": [
+       "SPANNE",
+       "VOLUMEN"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0841,
+       "B": 1.1006,
+       "C": 0.9651
+      },
+      "outOfSampleLift": {
+       "A": 1.0936,
+       "B": 1.1048,
+       "C": 0.9736
+      },
+      "support": {
+       "A": 32991,
+       "B": 30803,
+       "C": 30803
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0151,
+       "lnLiftReturn": -0.1314,
+       "lnConditionalRateReturn": 0.0543,
+       "lnBaseRateReturn": 0.1857,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.27981,
+        "C": 0.295426
+       },
+       "baseRate": {
+        "B": 0.254237,
+        "C": 0.30612
+       },
+       "outsideRate": {
+        "B": 0.252958,
+        "C": 0.306655
+       },
+       "relativeRise": {
+        "inside": 0.0558,
+        "outside": 0.2123
+       },
+       "payerShare": {
+        "inside": 0.159,
+        "outside": 0.5886
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.01008
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06867
+       }
+      }
+     },
+     {
+      "patternId": "wide-range+volume-dry-up-near-high",
+      "families": [
+       "SPANNE",
+       "VOLUMEN"
+      ],
+      "decomposition": "LOST_BY_RETURN",
+      "verdict": {
+       "A": "ROBUST",
+       "B": "ROBUST",
+       "C": "IN_SAMPLE_ONLY"
+      },
+      "lift": {
+       "A": 1.0546,
+       "B": 1.0566,
+       "C": 0.94
+      },
+      "outOfSampleLift": {
+       "A": 1.0827,
+       "B": 1.0825,
+       "C": 0.9722
+      },
+      "support": {
+       "A": 8419,
+       "B": 8013,
+       "C": 8013
+      },
+      "cause": {
+       "lnLiftPopulation": 0.0019,
+       "lnLiftReturn": -0.1169,
+       "lnConditionalRateReturn": 0.0687,
+       "lnBaseRateReturn": 0.1856,
+       "driver": "BASISQUOTE_STEIGT_STAERKER",
+       "conditionalRate": {
+        "B": 0.268688,
+        "C": 0.287782
+       },
+       "baseRate": {
+        "B": 0.254303,
+        "C": 0.306152
+       },
+       "outsideRate": {
+        "B": 0.254122,
+        "C": 0.306382
+       },
+       "relativeRise": {
+        "inside": 0.0711,
+        "outside": 0.2056
+       },
+       "payerShare": {
+        "inside": 0.2079,
+        "outside": 0.5723
+       },
+       "medianTrailingYield": {
+        "inside": 0,
+        "outside": 0.009
+       },
+       "medianRealizedYield": {
+        "inside": 0,
+        "outside": 0.06387
+       }
+      }
+     }
+    ]
+   },
+   "hypothesesColumns": [
+    "patternId",
+    "decomposition",
+    "verdictA",
+    "verdictB",
+    "verdictC",
+    "liftA",
+    "liftB",
+    "liftC",
+    "oosLiftA",
+    "oosLiftB",
+    "oosLiftC"
+   ],
+   "hypotheses": [
+    [
+     "above-40w-line+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1215,
+     1.1302,
+     1.0172,
+     1.1557,
+     1.1624,
+     1.0573
+    ],
+    [
+     "above-40w-line+six-month-thrust",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0538,
+     1.0605,
+     0.9549,
+     1.0787,
+     1.0833,
+     0.9817
+    ],
+    [
+     "above-40w-line+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.0783,
+     1.0836,
+     0.9833,
+     1.1116,
+     1.1163,
+     1.0171
+    ],
+    [
+     "above-40w-line+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.0698,
+     1.0782,
+     0.9647,
+     1.1153,
+     1.1215,
+     1.0113
+    ],
+    [
+     "deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2707,
+     1.2903,
+     1.161,
+     1.2887,
+     1.3039,
+     1.1807
+    ],
+    [
+     "deep-drawdown+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2112,
+     1.229,
+     1.1195,
+     1.2499,
+     1.2637,
+     1.156
+    ],
+    [
+     "deep-drawdown+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.339,
+     1.3703,
+     1.1912,
+     1.3434,
+     1.3708,
+     1.196
+    ],
+    [
+     "deep-drawdown+quiet-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.0334,
+     1.0273,
+     1.0311,
+     1.0891,
+     1.0759,
+     1.0838
+    ],
+    [
+     "deep-drawdown+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1878,
+     1.2146,
+     1.0681,
+     1.23,
+     1.2543,
+     1.1034
+    ],
+    [
+     "deep-drawdown+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2748,
+     1.3001,
+     1.1434,
+     1.3132,
+     1.3369,
+     1.178
+    ],
+    [
+     "deep-drawdown+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2016,
+     1.2192,
+     1.1105,
+     1.2367,
+     1.2506,
+     1.144
+    ],
+    [
+     "deep-drawdown+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1917,
+     1.2149,
+     1.0749,
+     1.1874,
+     1.2029,
+     1.0691
+    ],
+    [
+     "deep-drawdown+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4282,
+     1.4455,
+     1.2694,
+     1.3937,
+     1.3929,
+     1.2255
+    ],
+    [
+     "deep-drawdown+volume-dry-up-near-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1769,
+     1.1926,
+     1.1059,
+     1.2214,
+     1.2301,
+     1.1454
+    ],
+    [
+     "deep-drawdown+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.34,
+     1.371,
+     1.196,
+     1.3632,
+     1.3912,
+     1.2179
+    ],
+    [
+     "far-below-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3324,
+     1.3502,
+     1.2207,
+     1.3702,
+     1.3853,
+     1.2575
+    ],
+    [
+     "far-below-52w-high+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2302,
+     1.2539,
+     1.1124,
+     1.3317,
+     1.3573,
+     1.2058
+    ],
+    [
+     "far-below-52w-high+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3683,
+     1.3967,
+     1.222,
+     1.3854,
+     1.4103,
+     1.2391
+    ],
+    [
+     "far-below-52w-high+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3448,
+     1.3752,
+     1.2114,
+     1.3976,
+     1.4255,
+     1.2634
+    ],
+    [
+     "far-below-52w-high+six-month-thrust",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.115,
+     1.1531,
+     0.9997,
+     1.237,
+     1.2746,
+     1.1055
+    ],
+    [
+     "far-below-52w-high+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4408,
+     1.4678,
+     1.2992,
+     1.5735,
+     1.6019,
+     1.4208
+    ],
+    [
+     "far-below-52w-high+trend-stacked",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.1364,
+     1.1616,
+     1.0207,
+     1.2024,
+     1.2255,
+     1.0791
+    ],
+    [
+     "far-below-52w-high+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2047,
+     1.2301,
+     1.0779,
+     1.2051,
+     1.2246,
+     1.0762
+    ],
+    [
+     "far-below-52w-high+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4834,
+     1.5002,
+     1.3079,
+     1.4883,
+     1.4839,
+     1.2913
+    ],
+    [
+     "far-below-52w-high+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.372,
+     1.4014,
+     1.2376,
+     1.4374,
+     1.4633,
+     1.2985
+    ],
+    [
+     "high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2368,
+     1.2538,
+     1.1176,
+     1.269,
+     1.2835,
+     1.1552
+    ],
+    [
+     "high-volatility+six-month-thrust",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0458,
+     1.0574,
+     0.9396,
+     1.0904,
+     1.097,
+     0.9812
+    ],
+    [
+     "high-volatility+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1448,
+     1.1574,
+     1.0303,
+     1.1989,
+     1.2087,
+     1.0838
+    ],
+    [
+     "high-volatility+up-volume-dominance",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.1282,
+     1.1459,
+     1.0052,
+     1.1212,
+     1.1339,
+     1.0007
+    ],
+    [
+     "high-volatility+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3584,
+     1.3654,
+     1.1914,
+     1.3287,
+     1.317,
+     1.1581
+    ],
+    [
+     "high-volatility+volume-dry-up-near-high",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.1321,
+     1.1378,
+     1.0151,
+     1.1389,
+     1.1427,
+     1.0303
+    ],
+    [
+     "near-52w-high+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1847,
+     1.1903,
+     1.1053,
+     1.2534,
+     1.2509,
+     1.1637
+    ],
+    [
+     "near-52w-high+high-volatility",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0464,
+     1.0578,
+     0.9526,
+     1.0659,
+     1.0746,
+     0.9774
+    ],
+    [
+     "near-52w-high+six-month-thrust",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0324,
+     1.0373,
+     0.9457,
+     1.0383,
+     1.0421,
+     0.9589
+    ],
+    [
+     "near-52w-high+three-month-thrust",
+     "GAINED_BY_POPULATION_LOST_BY_RETURN",
+     "NOT_SIGNIFICANT",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0186,
+     1.0237,
+     0.9347,
+     1.0313,
+     1.0355,
+     0.9485
+    ],
+    [
+     "quiet-range+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.8759,
+     1.9376,
+     1.5918,
+     1.8881,
+     2.015,
+     1.6656
+    ],
+    [
+     "six-month-thrust",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0541,
+     1.0611,
+     0.9549,
+     1.08,
+     1.0847,
+     0.9824
+    ],
+    [
+     "six-month-thrust+three-month-thrust",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0251,
+     1.0339,
+     0.9268,
+     1.057,
+     1.0649,
+     0.9589
+    ],
+    [
+     "six-month-thrust+up-volume-dominance",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0408,
+     1.0496,
+     0.9382,
+     1.0371,
+     1.0431,
+     0.9377
+    ],
+    [
+     "six-month-thrust+volume-accumulation",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.135,
+     1.1391,
+     1.0206,
+     1.0912,
+     1.0932,
+     0.9911
+    ],
+    [
+     "six-month-thrust+volume-dry-up-near-high",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0729,
+     1.0746,
+     0.9644,
+     1.085,
+     1.0845,
+     0.978
+    ],
+    [
+     "strong-12m-momentum+deep-drawdown",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.0947,
+     1.1164,
+     1.0021,
+     1.1276,
+     1.1473,
+     1.033
+    ],
+    [
+     "three-month-thrust",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.1063,
+     1.1123,
+     1.0081,
+     1.1472,
+     1.1524,
+     1.0487
+    ],
+    [
+     "three-month-thrust+up-volume-dominance",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0733,
+     1.0812,
+     0.974,
+     1.0926,
+     1.0994,
+     0.9921
+    ],
+    [
+     "three-month-thrust+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.1507,
+     1.1514,
+     1.0418,
+     1.1367,
+     1.1369,
+     1.0319
+    ],
+    [
+     "three-month-thrust+volume-dry-up-near-high",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0587,
+     1.0624,
+     0.9573,
+     1.0732,
+     1.0815,
+     0.9783
+    ],
+    [
+     "trend-stacked+high-volatility",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.1102,
+     1.1197,
+     1.0047,
+     1.1385,
+     1.1458,
+     1.0387
+    ],
+    [
+     "trend-stacked+six-month-thrust",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0485,
+     1.055,
+     0.9501,
+     1.0721,
+     1.0766,
+     0.9758
+    ],
+    [
+     "trend-stacked+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.0625,
+     1.0675,
+     0.97,
+     1.093,
+     1.0973,
+     1.0009
+    ],
+    [
+     "trend-stacked+wide-range",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0462,
+     1.0546,
+     0.9431,
+     1.0881,
+     1.0942,
+     0.9863
+    ],
+    [
+     "weak-12m-momentum",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3046,
+     1.3132,
+     1.242,
+     1.3298,
+     1.3369,
+     1.266
+    ],
+    [
+     "weak-12m-momentum+above-40w-line",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2982,
+     1.3,
+     1.2289,
+     1.3488,
+     1.3487,
+     1.2839
+    ],
+    [
+     "weak-12m-momentum+deep-drawdown",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4105,
+     1.4357,
+     1.2711,
+     1.4307,
+     1.4521,
+     1.2924
+    ],
+    [
+     "weak-12m-momentum+far-below-52w-high",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4296,
+     1.4472,
+     1.3121,
+     1.4757,
+     1.4908,
+     1.3564
+    ],
+    [
+     "weak-12m-momentum+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.456,
+     1.4823,
+     1.3279,
+     1.514,
+     1.5373,
+     1.3904
+    ],
+    [
+     "weak-12m-momentum+six-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4627,
+     1.4898,
+     1.3459,
+     1.5679,
+     1.593,
+     1.4466
+    ],
+    [
+     "weak-12m-momentum+three-month-thrust",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4322,
+     1.4445,
+     1.3145,
+     1.5203,
+     1.5318,
+     1.4018
+    ],
+    [
+     "weak-12m-momentum+trend-stacked",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.3312,
+     1.3389,
+     1.2566,
+     1.3792,
+     1.385,
+     1.309
+    ],
+    [
+     "weak-12m-momentum+up-volume-dominance",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2525,
+     1.2662,
+     1.1602,
+     1.2464,
+     1.2571,
+     1.1549
+    ],
+    [
+     "weak-12m-momentum+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4654,
+     1.4771,
+     1.3408,
+     1.4398,
+     1.44,
+     1.3061
+    ],
+    [
+     "weak-12m-momentum+volume-dry-up-near-high",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.1365,
+     1.1286,
+     1.0888,
+     1.136,
+     1.1337,
+     1.1026
+    ],
+    [
+     "weak-12m-momentum+wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.4909,
+     1.5188,
+     1.3549,
+     1.5631,
+     1.588,
+     1.4256
+    ],
+    [
+     "wide-range",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2246,
+     1.2413,
+     1.1041,
+     1.2745,
+     1.2879,
+     1.1535
+    ],
+    [
+     "wide-range+high-volatility",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2343,
+     1.2557,
+     1.1109,
+     1.2868,
+     1.3051,
+     1.1625
+    ],
+    [
+     "wide-range+six-month-thrust",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0205,
+     1.03,
+     0.9125,
+     1.0641,
+     1.0696,
+     0.9537
+    ],
+    [
+     "wide-range+three-month-thrust",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "NOT_SIGNIFICANT",
+     1.1078,
+     1.1197,
+     0.9943,
+     1.169,
+     1.178,
+     1.0525
+    ],
+    [
+     "wide-range+up-volume-dominance",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0841,
+     1.1006,
+     0.9651,
+     1.0936,
+     1.1048,
+     0.9736
+    ],
+    [
+     "wide-range+volume-accumulation",
+     "KEPT",
+     "ROBUST",
+     "ROBUST",
+     "ROBUST",
+     1.2855,
+     1.2909,
+     1.1288,
+     1.2668,
+     1.2542,
+     1.1077
+    ],
+    [
+     "wide-range+volume-dry-up-near-high",
+     "LOST_BY_RETURN",
+     "ROBUST",
+     "ROBUST",
+     "IN_SAMPLE_ONLY",
+     1.0546,
+     1.0566,
+     0.94,
+     1.0827,
+     1.0825,
+     0.9722
+    ]
+   ]
+  }
+ ],
+ "mechanism": [
+  {
+   "horizon": "H24",
+   "state": "NICHT_ANWENDBAR",
+   "usableObservations": 800227,
+   "newWinners": 7594,
+   "lostWinners": 98,
+   "baseRate": {
+    "B": 0.108156,
+    "C": 0.117523
+   },
+   "checks": {
+    "newWinnersFromPayers": {
+     "passed": true,
+     "newWinnerRateNone": 0.00253,
+     "newWinnerRateTopQuartile": 0.024729
+    },
+    "lostPatternsPayLess": {
+     "passed": null,
+     "lostFindings": 0,
+     "payerShareInsideBelowOutside": 0
+    },
+    "comparisonGroupRisesMore": {
+     "passed": null,
+     "lostFindings": 0,
+     "outsideRelativeRiseAboveInside": 0
+    }
+   },
+   "trailingYield": {
+    "measured": 800227,
+    "withoutYield": 0,
+    "buckets": [
+     {
+      "bucket": "NONE",
+      "observations": 358152,
+      "share": 0.4476,
+      "minYield": -0.0081,
+      "maxYield": 0.0025,
+      "medianYield": 0,
+      "winnerRatePrice": 0.163972,
+      "winnerRateTotal": 0.166242,
+      "newWinners": 906,
+      "lostWinners": 93,
+      "shareOfNewWinners": 0.1193,
+      "newWinnerRate": 0.00253
+     },
+     {
+      "bucket": "Q1",
+      "observations": 110518,
+      "share": 0.1381,
+      "minYield": 0.0025,
+      "maxYield": 0.0146,
+      "medianYield": 0.0092,
+      "winnerRatePrice": 0.08985,
+      "winnerRateTotal": 0.097794,
+      "newWinners": 882,
+      "lostWinners": 4,
+      "shareOfNewWinners": 0.1161,
+      "newWinnerRate": 0.007981
+     },
+     {
+      "bucket": "Q2",
+      "observations": 110519,
+      "share": 0.1381,
+      "minYield": 0.0146,
+      "maxYield": 0.0267,
+      "medianYield": 0.0203,
+      "winnerRatePrice": 0.063148,
+      "winnerRateTotal": 0.076204,
+      "newWinners": 1443,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.19,
+      "newWinnerRate": 0.013057
+     },
+     {
+      "bucket": "Q3",
+      "observations": 110519,
+      "share": 0.1381,
+      "minYield": 0.0267,
+      "maxYield": 0.0458,
+      "medianYield": 0.0342,
+      "winnerRatePrice": 0.049557,
+      "winnerRateTotal": 0.064297,
+      "newWinners": 1630,
+      "lostWinners": 1,
+      "shareOfNewWinners": 0.2146,
+      "newWinnerRate": 0.014749
+     },
+     {
+      "bucket": "Q4",
+      "observations": 110519,
+      "share": 0.1381,
+      "minYield": 0.0458,
+      "maxYield": 12.4007,
+      "medianYield": 0.069,
+      "winnerRatePrice": 0.049186,
+      "winnerRateTotal": 0.073915,
+      "newWinners": 2733,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.3599,
+      "newWinnerRate": 0.024729
+     }
+    ]
+   },
+   "realizedYield": {
+    "measured": 800227,
+    "withoutYield": 0,
+    "buckets": [
+     {
+      "bucket": "NONE",
+      "observations": 330579,
+      "share": 0.4131,
+      "minYield": -0.0081,
+      "maxYield": 0.0025,
+      "medianYield": 0,
+      "winnerRatePrice": 0.166163,
+      "winnerRateTotal": 0.1659,
+      "newWinners": 11,
+      "lostWinners": 98,
+      "shareOfNewWinners": 0.0014,
+      "newWinnerRate": 0.000033
+     },
+     {
+      "bucket": "Q1",
+      "observations": 117412,
+      "share": 0.1467,
+      "minYield": 0.0025,
+      "maxYield": 0.0283,
+      "medianYield": 0.0169,
+      "winnerRatePrice": 0.126972,
+      "winnerRateTotal": 0.134543,
+      "newWinners": 889,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.1171,
+      "newWinnerRate": 0.007572
+     },
+     {
+      "bucket": "Q2",
+      "observations": 117412,
+      "share": 0.1467,
+      "minYield": 0.0283,
+      "maxYield": 0.0533,
+      "medianYield": 0.04,
+      "winnerRatePrice": 0.065147,
+      "winnerRateTotal": 0.077709,
+      "newWinners": 1475,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.1942,
+      "newWinnerRate": 0.012563
+     },
+     {
+      "bucket": "Q3",
+      "observations": 117412,
+      "share": 0.1467,
+      "minYield": 0.0533,
+      "maxYield": 0.0923,
+      "medianYield": 0.0687,
+      "winnerRatePrice": 0.040439,
+      "winnerRateTotal": 0.054739,
+      "newWinners": 1679,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.2211,
+      "newWinnerRate": 0.0143
+     },
+     {
+      "bucket": "Q4",
+      "observations": 117412,
+      "share": 0.1467,
+      "minYield": 0.0923,
+      "maxYield": 17.5159,
+      "medianYield": 0.1408,
+      "winnerRatePrice": 0.036742,
+      "winnerRateTotal": 0.066893,
+      "newWinners": 3540,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.4662,
+      "newWinnerRate": 0.03015
+     }
+    ]
+   }
+  },
+  {
+   "horizon": "H12",
+   "state": "NICHT_ANWENDBAR",
+   "usableObservations": 858271,
+   "newWinners": 1867,
+   "lostWinners": 113,
+   "baseRate": {
+    "B": 0.055843,
+    "C": 0.057886
+   },
+   "checks": {
+    "newWinnersFromPayers": {
+     "passed": true,
+     "newWinnerRateNone": 0.000752,
+     "newWinnerRateTopQuartile": 0.006608
+    },
+    "lostPatternsPayLess": {
+     "passed": null,
+     "lostFindings": 0,
+     "payerShareInsideBelowOutside": 0
+    },
+    "comparisonGroupRisesMore": {
+     "passed": null,
+     "lostFindings": 0,
+     "outsideRelativeRiseAboveInside": 0
+    }
+   },
+   "trailingYield": {
+    "measured": 858271,
+    "withoutYield": 0,
+    "buckets": [
+     {
+      "bucket": "NONE",
+      "observations": 388503,
+      "share": 0.4527,
+      "minYield": -0.0081,
+      "maxYield": 0.0025,
+      "medianYield": 0,
+      "winnerRatePrice": 0.09595,
+      "winnerRateTotal": 0.096437,
+      "newWinners": 292,
+      "lostWinners": 103,
+      "shareOfNewWinners": 0.1564,
+      "newWinnerRate": 0.000752
+     },
+     {
+      "bucket": "Q1",
+      "observations": 117442,
+      "share": 0.1368,
+      "minYield": 0.0025,
+      "maxYield": 0.0148,
+      "medianYield": 0.0092,
+      "winnerRatePrice": 0.031088,
+      "winnerRateTotal": 0.03285,
+      "newWinners": 215,
+      "lostWinners": 8,
+      "shareOfNewWinners": 0.1152,
+      "newWinnerRate": 0.001831
+     },
+     {
+      "bucket": "Q2",
+      "observations": 117442,
+      "share": 0.1368,
+      "minYield": 0.0148,
+      "maxYield": 0.0271,
+      "medianYield": 0.0205,
+      "winnerRatePrice": 0.020121,
+      "winnerRateTotal": 0.022122,
+      "newWinners": 236,
+      "lostWinners": 1,
+      "shareOfNewWinners": 0.1264,
+      "newWinnerRate": 0.00201
+     },
+     {
+      "bucket": "Q3",
+      "observations": 117442,
+      "share": 0.1368,
+      "minYield": 0.0271,
+      "maxYield": 0.0471,
+      "medianYield": 0.0349,
+      "winnerRatePrice": 0.018205,
+      "winnerRateTotal": 0.021159,
+      "newWinners": 348,
+      "lostWinners": 1,
+      "shareOfNewWinners": 0.1864,
+      "newWinnerRate": 0.002963
+     },
+     {
+      "bucket": "Q4",
+      "observations": 117442,
+      "share": 0.1368,
+      "minYield": 0.0471,
+      "maxYield": 12.6667,
+      "medianYield": 0.0708,
+      "winnerRatePrice": 0.021279,
+      "winnerRateTotal": 0.027886,
+      "newWinners": 776,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.4156,
+      "newWinnerRate": 0.006608
+     }
+    ]
+   },
+   "realizedYield": {
+    "measured": 858271,
+    "withoutYield": 0,
+    "buckets": [
+     {
+      "bucket": "NONE",
+      "observations": 383727,
+      "share": 0.4471,
+      "minYield": -0.008,
+      "maxYield": 0.0025,
+      "medianYield": 0,
+      "winnerRatePrice": 0.098375,
+      "winnerRateTotal": 0.098111,
+      "newWinners": 12,
+      "lostWinners": 113,
+      "shareOfNewWinners": 0.0064,
+      "newWinnerRate": 0.000031
+     },
+     {
+      "bucket": "Q1",
+      "observations": 118636,
+      "share": 0.1382,
+      "minYield": 0.0025,
+      "maxYield": 0.0148,
+      "medianYield": 0.0093,
+      "winnerRatePrice": 0.03842,
+      "winnerRateTotal": 0.040148,
+      "newWinners": 205,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.1098,
+      "newWinnerRate": 0.001728
+     },
+     {
+      "bucket": "Q2",
+      "observations": 118636,
+      "share": 0.1382,
+      "minYield": 0.0148,
+      "maxYield": 0.0272,
+      "medianYield": 0.0205,
+      "winnerRatePrice": 0.018991,
+      "winnerRateTotal": 0.02109,
+      "newWinners": 249,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.1334,
+      "newWinnerRate": 0.002099
+     },
+     {
+      "bucket": "Q3",
+      "observations": 118636,
+      "share": 0.1382,
+      "minYield": 0.0272,
+      "maxYield": 0.047,
+      "medianYield": 0.0349,
+      "winnerRatePrice": 0.012618,
+      "winnerRateTotal": 0.015122,
+      "newWinners": 297,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.1591,
+      "newWinnerRate": 0.002503
+     },
+     {
+      "bucket": "Q4",
+      "observations": 118636,
+      "share": 0.1382,
+      "minYield": 0.047,
+      "maxYield": 12.6667,
+      "medianYield": 0.0706,
+      "winnerRatePrice": 0.015771,
+      "winnerRateTotal": 0.025077,
+      "newWinners": 1104,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.5913,
+      "newWinnerRate": 0.009306
+     }
+    ]
+   }
+  },
+  {
+   "horizon": "H36",
+   "state": "BESTAETIGT",
+   "usableObservations": 744363,
+   "newWinners": 16266,
+   "lostWinners": 83,
+   "baseRate": {
+    "B": 0.156312,
+    "C": 0.178053
+   },
+   "checks": {
+    "newWinnersFromPayers": {
+     "passed": true,
+     "newWinnerRateNone": 0.004787,
+     "newWinnerRateTopQuartile": 0.05668
+    },
+    "lostPatternsPayLess": {
+     "passed": true,
+     "lostFindings": 6,
+     "payerShareInsideBelowOutside": 6
+    },
+    "comparisonGroupRisesMore": {
+     "passed": true,
+     "lostFindings": 6,
+     "outsideRelativeRiseAboveInside": 6
+    }
+   },
+   "trailingYield": {
+    "measured": 744363,
+    "withoutYield": 0,
+    "buckets": [
+     {
+      "bucket": "NONE",
+      "observations": 329193,
+      "share": 0.4422,
+      "minYield": -0.0081,
+      "maxYield": 0.0025,
+      "medianYield": 0,
+      "winnerRatePrice": 0.215117,
+      "winnerRateTotal": 0.21968,
+      "newWinners": 1576,
+      "lostWinners": 74,
+      "shareOfNewWinners": 0.0969,
+      "newWinnerRate": 0.004787
+     },
+     {
+      "bucket": "Q1",
+      "observations": 103792,
+      "share": 0.1394,
+      "minYield": 0.0025,
+      "maxYield": 0.0144,
+      "medianYield": 0.0091,
+      "winnerRatePrice": 0.155735,
+      "winnerRateTotal": 0.17351,
+      "newWinners": 1853,
+      "lostWinners": 8,
+      "shareOfNewWinners": 0.1139,
+      "newWinnerRate": 0.017853
+     },
+     {
+      "bucket": "Q2",
+      "observations": 103793,
+      "share": 0.1394,
+      "minYield": 0.0144,
+      "maxYield": 0.0261,
+      "medianYield": 0.0199,
+      "winnerRatePrice": 0.115817,
+      "winnerRateTotal": 0.145694,
+      "newWinners": 3102,
+      "lostWinners": 1,
+      "shareOfNewWinners": 0.1907,
+      "newWinnerRate": 0.029886
+     },
+     {
+      "bucket": "Q3",
+      "observations": 103792,
+      "share": 0.1394,
+      "minYield": 0.0261,
+      "maxYield": 0.0444,
+      "medianYield": 0.0334,
+      "winnerRatePrice": 0.088022,
+      "winnerRateTotal": 0.125135,
+      "newWinners": 3852,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.2368,
+      "newWinnerRate": 0.037113
+     },
+     {
+      "bucket": "Q4",
+      "observations": 103793,
+      "share": 0.1394,
+      "minYield": 0.0444,
+      "maxYield": 12.4007,
+      "medianYield": 0.0667,
+      "winnerRatePrice": 0.079167,
+      "winnerRateTotal": 0.135847,
+      "newWinners": 5883,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.3617,
+      "newWinnerRate": 0.05668
+     }
+    ]
+   },
+   "realizedYield": {
+    "measured": 744363,
+    "withoutYield": 0,
+    "buckets": [
+     {
+      "bucket": "NONE",
+      "observations": 288432,
+      "share": 0.3875,
+      "minYield": -0.0084,
+      "maxYield": 0.0025,
+      "medianYield": 0,
+      "winnerRatePrice": 0.212764,
+      "winnerRateTotal": 0.212487,
+      "newWinners": 3,
+      "lostWinners": 83,
+      "shareOfNewWinners": 0.0002,
+      "newWinnerRate": 0.00001
+     },
+     {
+      "bucket": "Q1",
+      "observations": 113982,
+      "share": 0.1531,
+      "minYield": 0.0025,
+      "maxYield": 0.0414,
+      "medianYield": 0.0238,
+      "winnerRatePrice": 0.219684,
+      "winnerRateTotal": 0.233414,
+      "newWinners": 1565,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.0962,
+      "newWinnerRate": 0.01373
+     },
+     {
+      "bucket": "Q2",
+      "observations": 113983,
+      "share": 0.1531,
+      "minYield": 0.0414,
+      "maxYield": 0.079,
+      "medianYield": 0.0588,
+      "winnerRatePrice": 0.130502,
+      "winnerRateTotal": 0.161208,
+      "newWinners": 3500,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.2152,
+      "newWinnerRate": 0.030706
+     },
+     {
+      "bucket": "Q3",
+      "observations": 113983,
+      "share": 0.1531,
+      "minYield": 0.079,
+      "maxYield": 0.1363,
+      "medianYield": 0.102,
+      "winnerRatePrice": 0.073643,
+      "winnerRateTotal": 0.108718,
+      "newWinners": 3998,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.2458,
+      "newWinnerRate": 0.035075
+     },
+     {
+      "bucket": "Q4",
+      "observations": 113983,
+      "share": 0.1531,
+      "minYield": 0.1363,
+      "maxYield": 42.9346,
+      "medianYield": 0.2103,
+      "winnerRatePrice": 0.05857,
+      "winnerRateTotal": 0.121737,
+      "newWinners": 7200,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.4426,
+      "newWinnerRate": 0.063167
+     }
+    ]
+   }
+  },
+  {
+   "horizon": "H60",
+   "state": "BESTAETIGT",
+   "usableObservations": 648530,
+   "newWinners": 33647,
+   "lostWinners": 69,
+   "baseRate": {
+    "B": 0.254454,
+    "C": 0.306229
+   },
+   "checks": {
+    "newWinnersFromPayers": {
+     "passed": true,
+     "newWinnerRateNone": 0.009863,
+     "newWinnerRateTopQuartile": 0.137396
+    },
+    "lostPatternsPayLess": {
+     "passed": true,
+     "lostFindings": 25,
+     "payerShareInsideBelowOutside": 25
+    },
+    "comparisonGroupRisesMore": {
+     "passed": true,
+     "lostFindings": 25,
+     "outsideRelativeRiseAboveInside": 25
+    }
+   },
+   "trailingYield": {
+    "measured": 648530,
+    "withoutYield": 0,
+    "buckets": [
+     {
+      "bucket": "NONE",
+      "observations": 280748,
+      "share": 0.4329,
+      "minYield": -0.0081,
+      "maxYield": 0.0025,
+      "medianYield": 0,
+      "winnerRatePrice": 0.305295,
+      "winnerRateTotal": 0.314934,
+      "newWinners": 2769,
+      "lostWinners": 63,
+      "shareOfNewWinners": 0.0823,
+      "newWinnerRate": 0.009863
+     },
+     {
+      "bucket": "Q1",
+      "observations": 91945,
+      "share": 0.1418,
+      "minYield": 0.0025,
+      "maxYield": 0.0142,
+      "medianYield": 0.0089,
+      "winnerRatePrice": 0.278123,
+      "winnerRateTotal": 0.316439,
+      "newWinners": 3527,
+      "lostWinners": 4,
+      "shareOfNewWinners": 0.1048,
+      "newWinnerRate": 0.03836
+     },
+     {
+      "bucket": "Q2",
+      "observations": 91946,
+      "share": 0.1418,
+      "minYield": 0.0142,
+      "maxYield": 0.0255,
+      "medianYield": 0.0196,
+      "winnerRatePrice": 0.237302,
+      "winnerRateTotal": 0.303754,
+      "newWinners": 6112,
+      "lostWinners": 2,
+      "shareOfNewWinners": 0.1817,
+      "newWinnerRate": 0.066474
+     },
+     {
+      "bucket": "Q3",
+      "observations": 91945,
+      "share": 0.1418,
+      "minYield": 0.0255,
+      "maxYield": 0.0429,
+      "medianYield": 0.0325,
+      "winnerRatePrice": 0.194453,
+      "winnerRateTotal": 0.288053,
+      "newWinners": 8606,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.2558,
+      "newWinnerRate": 0.093599
+     },
+     {
+      "bucket": "Q4",
+      "observations": 91946,
+      "share": 0.1418,
+      "minYield": 0.0429,
+      "maxYield": 12.4007,
+      "medianYield": 0.0645,
+      "winnerRatePrice": 0.152698,
+      "winnerRateTotal": 0.290094,
+      "newWinners": 12633,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.3755,
+      "newWinnerRate": 0.137396
+     }
+    ]
+   },
+   "realizedYield": {
+    "measured": 648530,
+    "withoutYield": 0,
+    "buckets": [
+     {
+      "bucket": "NONE",
+      "observations": 224568,
+      "share": 0.3463,
+      "minYield": -0.0074,
+      "maxYield": 0.0025,
+      "medianYield": 0,
+      "winnerRatePrice": 0.293314,
+      "winnerRateTotal": 0.293025,
+      "newWinners": 4,
+      "lostWinners": 69,
+      "shareOfNewWinners": 0.0001,
+      "newWinnerRate": 0.000018
+     },
+     {
+      "bucket": "Q1",
+      "observations": 105990,
+      "share": 0.1634,
+      "minYield": 0.0025,
+      "maxYield": 0.0658,
+      "medianYield": 0.0367,
+      "winnerRatePrice": 0.378036,
+      "winnerRateTotal": 0.398915,
+      "newWinners": 2213,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.0658,
+      "newWinnerRate": 0.020879
+     },
+     {
+      "bucket": "Q2",
+      "observations": 105991,
+      "share": 0.1634,
+      "minYield": 0.0658,
+      "maxYield": 0.1285,
+      "medianYield": 0.0959,
+      "winnerRatePrice": 0.282222,
+      "winnerRateTotal": 0.34067,
+      "newWinners": 6195,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.1841,
+      "newWinnerRate": 0.058448
+     },
+     {
+      "bucket": "Q3",
+      "observations": 105990,
+      "share": 0.1634,
+      "minYield": 0.1285,
+      "maxYield": 0.2238,
+      "medianYield": 0.1678,
+      "winnerRatePrice": 0.168016,
+      "winnerRateTotal": 0.261062,
+      "newWinners": 9862,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.2931,
+      "newWinnerRate": 0.093047
+     },
+     {
+      "bucket": "Q4",
+      "observations": 105991,
+      "share": 0.1634,
+      "minYield": 0.2238,
+      "maxYield": 128.8855,
+      "medianYield": 0.3451,
+      "winnerRatePrice": 0.107207,
+      "winnerRateTotal": 0.252248,
+      "newWinners": 15373,
+      "lostWinners": 0,
+      "shareOfNewWinners": 0.4569,
+      "newWinnerRate": 0.145041
+     }
+    ]
+   }
+  }
+ ]
+}
