@@ -784,7 +784,11 @@
       g.templates && g.templates.length ? el("p", { class: "tc-note" }, ["Passende Vorlagen: "].concat(g.templates.filter(function (id) { return !!TPL.get(id); }).map(function (id, k) {
         return [k ? ", " : "", el("a", { class: "tc-link", href: TPL.href(id), text: TPL.get(id).title })];
       }))) : null]);
-    put(main, [head, tabs(MAIN_TABS, "assistant"), purpose, crit, query, results, limits]);
+    /* Schritt 1 (gewaehlt) und Sprungmarken: auf dem iPhone ist die Seite lang, die Treffer liegen weit unten. */
+    function jump(id, text) { return el("a", { class: "tc-pill", href: "#", onclick: function (ev) { ev.preventDefault(); var n = doc.getElementById(id); if (n) n.scrollIntoView({ behavior: "smooth", block: "start" }); }, text: text }); }
+    var chosen = el("div", { class: "tc-goal-chosen" }, [stepHead(1, "Ziel gewählt"), el("p", { class: "tc-note" }, [g.title + " · ", el("a", { class: "tc-link", href: "#/assistent", text: "anderes Ziel wählen" })]),
+      el("nav", { class: "tc-pills tc-goal-jumps", "aria-label": "Abschnitte" }, [jump("tc-g-crit", "Kriterien"), jump("tc-g-query", "Abfrage"), jump("tc-treffer", "Treffer"), jump("tc-g-limits", "Grenzen")])]);
+    put(main, [head, tabs(MAIN_TABS, "assistant"), chosen, purpose, crit, query, results, limits]);
     if (!t) {
       put(query, [el("div", { id: "tc-g-query" }, stepHead(4, "Abfrage")), stateBox("Kein Kriterium gewählt", "Bitte mindestens ein Kriterium auswählen.", el("a", { class: "tc-link", href: AS.href(g.id), text: "Vorschlag wiederherstellen" }))]);
       return;
@@ -850,10 +854,10 @@
   /** Vorlage der Pruefleiste: ?v=<Vorlage>[&plus=] oder ?z=<Analyseziel>[&k=] (Assistent). null ohne gueltige Angabe. */
   function panelSource(params) {
     var a = AS && params.z ? AS.fromParams(params) : null;
-    if (a && a.template) return { t: a.template, back: AS.href(a.goal.id, a.selected), backText: "Zum Analyseziel", kind: "Analyseziel" };
+    if (a && a.template) return { t: a.template, back: AS.href(a.goal.id, a.selected), backText: "Zum Analyseziel", kind: "Analyseziel", limits: AS.LIMITS[0] + " " + AS.LIMITS[2] };
     var base = params.v ? TPL.get(params.v) : null; if (!base) return null;
     var blocks = TPL.blocksFromParam(params.plus);
-    return { t: TPL.compose(base.id, blocks), back: TPL.href(base.id, blocks), backText: "Zur Vorlage", kind: "Vorlage" };
+    return { t: TPL.compose(base.id, blocks), back: TPL.href(base.id, blocks), backText: "Zur Vorlage", kind: "Vorlage", limits: TPL.LIMITS };
   }
   function templatePanel(T, params) {
     var src = panelSource(params); if (!src) return null;
@@ -875,7 +879,7 @@
             return el("li", { class: "tc-crit " + m[2] }, [el("span", { class: "tc-crit-mark", "aria-hidden": "true", text: m[0] }), el("b", { text: x.label }), el("span", { class: "tc-crit-why", text: m[1] + val })]);
           })),
           jumpNote(row),
-          el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: src.back, text: src.backText }), " · " + TPL.LIMITS])])
+          el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: src.back, text: src.backText }), " · " + src.limits])])
       ]);
     }).catch(function () { put(box, [el("summary", {}, [el("b", { text: src.kind + " konnte nicht geprüft werden (Datensatz nicht geladen)." })])]); });
     return box;

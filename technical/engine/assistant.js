@@ -95,7 +95,7 @@
         o("structureBull", "Aufwärtsstruktur (höhere Hochs und Tiefs)", "Die Abfolge der Swings bestätigt den Trend.", { field: "structure", op: "in", value: ["BULLISH"] }, false, "structure"),
         o("rsRank70", "RS-Rang mindestens 70", "Die Aktie gehört über 6 Monate zum stärkeren Drittel.", { field: "rsRank", op: "gte", value: 70 }, false, "rsRank")
       ],
-      sort: { field: "adx", dir: "desc" }, templates: ["trend", "uptrendBasic", "establishedUptrend"],
+      sort: { field: "rsRank", dir: "desc" }, templates: ["trend", "uptrendBasic", "establishedUptrend"],
       evidence: { s4: ["establishedUptrend", "uptrendBasic", "aboveSma200"], signals: ["goldenCross", "crossAboveSma200"], formations: [],
         text: "Wochen-Näherungen von „Etablierter Aufwärtstrend“, „Aufwärtstrend, vereinfacht“ und „Über SMA 200“ sind historisch geprüft (1990–2026, S4): Ab 2016 zeigt keine davon einen Überschuss gegenüber dem S&P 500; Einstufung „Forschung, eingeschränkt“. Die Vorlage „Trendfolge“ mit ADX ist mangels langer Tagesdaten nicht historisch getestet." } },
 
@@ -143,7 +143,7 @@
 
     { id: "ruhephase", icon: "bars", title: "Volatilität und Konsolidierung", question: "Welche Aktien bewegen sich gerade ungewöhnlich ruhig?",
       purpose: "Sucht ruhige Phasen mit enger Kursspanne. Solche Phasen gehen oft einer größeren Bewegung voraus – in welche Richtung, sagen die Kriterien nicht.",
-      method: "Volatilitäts- und Konsolidierungsanalyse betrachtet Phasen, in denen sich der Kurs kaum bewegt. Die Richtung der folgenden Bewegung ist offen; deshalb wird Ruhe oft mit einem Trendfilter kombiniert.",
+      method: "Volatilitäts- und Konsolidierungsanalyse betrachtet Phasen, in denen sich der Kurs kaum bewegt. Die Richtung der folgenden Bewegung ist offen; deshalb wird Ruhe oft mit einem Trendfilter kombiniert. Sehr ruhige Kurse können auch andere Gründe haben, etwa ein laufendes Übernahmeangebot oder eine Mantelgesellschaft (SPAC); ein Blick in den Chart und in die Unternehmensmeldungen gehört dazu.",
       options: [
         o("bbSqueeze", "Bollinger-Enge", "Die Bänder liegen so eng wie selten zuvor.", { field: "bbSqueeze", op: "is", value: true }, true, "squeeze"),
         o("contraction", "Volatilitätskontraktion erkannt", "Die Rücksetzer werden nacheinander kleiner.", { field: "formationActive", op: "in", value: ["VOLATILITY_CONTRACTION"] }, false, "contraction"),

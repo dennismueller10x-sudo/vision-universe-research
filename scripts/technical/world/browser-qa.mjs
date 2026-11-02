@@ -148,7 +148,9 @@ async function main() {
       await page.waitForFunction(() => /#\/assistent\/trendfolge$/.test(location.hash));
       await page.waitForSelector(".tc-hit .tc-ticks", { timeout: 30000 });
       assert(await page.locator(".tc-hit").first().locator(".tc-ticks li").count() === 4, "Checkliste ohne 4 Kriterien");
-      assert((await page.locator(".tc-step-n").allTextContents()).join(",") === "2,3,4,5,6", "Schritte 2–6 nicht vollstaendig");
+      assert((await page.locator(".tc-step-n").allTextContents()).join(",") === "1,2,3,4,5,6", "Schritte 1–6 nicht vollstaendig");
+      await page.locator(".tc-goal-jumps a", { hasText: "Treffer" }).click();
+      await page.waitForFunction(() => document.getElementById("tc-treffer").getBoundingClientRect().top < 200, null, { timeout: 5000 });
       assert(await page.locator(".tc-level").count() === 4, "vier Ebenen fehlen");
       assert(/Nicht nachgewiesen/.test(await page.locator(".tc-level.is-fail").innerText()), "Vorteil nicht als nicht nachgewiesen ausgewiesen");
       const full = await page.locator(".tc-tpl-seg a", { hasText: "Erfüllt" }).first().innerText();
