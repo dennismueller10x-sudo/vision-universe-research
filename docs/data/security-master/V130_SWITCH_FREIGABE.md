@@ -2,6 +2,13 @@
 
 **Noch nicht freigegeben.** Dieses Dokument ist die konkrete Vorlage für die Owner-Freigabe. #1119 bleibt zurückgestellt.
 
+> **Überholt am 02.11.2026 durch [`SECURITY_MASTER_1_3_0_FREIGABE.md`](SECURITY_MASTER_1_3_0_FREIGABE.md).** Dort stehen:
+> - Frist: SF8-Eingangsprüfung STALE ab 11.11.;
+> - Probelauf 41400342624 mit neu erzeugter Liste;
+> - Auswirkungsmatrix, Rücknahme und gebündelte Freigabe mit Ausführungsreihenfolge.
+>
+> Die Stoppregel „bytegleich `4d9a0e03…`“ in §3 unten gilt nicht mehr. Maßgeblich ist die Bytegleichheit des produktiven Laufs mit dem **unmittelbar vorangehenden** Probelauf desselben Tages.
+
 ## 1. Nachweise (alle auf `main` @ `3af80445a4`)
 
 | Prüfung | Ergebnis |
