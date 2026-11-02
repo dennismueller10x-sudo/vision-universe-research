@@ -110,6 +110,12 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
  });
  await context.close();
 }
+await check('central Academy registry failure and retry',async()=>{
+ const context=await browser.newContext(),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/academy/data/experiences.json',r=>r.abort());await page.goto(base.replace('/technical/','/academy/'));await page.locator('.vu-a-error').waitFor();
+ await page.unroute('**/academy/data/experiences.json');await page.route('**/academy/data/experiences.json',r=>r.fulfill({json:{}}));await page.getByRole('button',{name:'Neu laden',exact:true}).click();await page.locator('.vu-a-error').waitFor();
+ await page.unroute('**/academy/data/experiences.json');await page.getByRole('button',{name:'Neu laden',exact:true}).click();await page.locator('a.vu-a-world-card[href="/technical/#/akademie"]').waitFor();assert(!errors.length,errors.join(';'));await context.close();
+});
 await check('cold Academy loading with mobile network and CPU profile',async()=>{
  for(const route of ['/academy/','/technical/#/akademie','/technical/#/akademie/trend-1']){
   const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage(),cdp=await context.newCDPSession(page);
