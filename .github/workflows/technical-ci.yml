@@ -57,6 +57,10 @@ jobs:
         env:
           NODE_PATH: /tmp/tc-qa/node_modules
         run: node scripts/technical/world/browser-qa.mjs --out "$RUNNER_TEMP/technical-qa"
+      - name: Strategie-Akademie (360/390/1280 px, Hell/Dunkel, alle 32 Lektionen)
+        env:
+          NODE_PATH: /tmp/tc-qa/node_modules
+        run: node scripts/technical/world/academy-browser-qa.mjs --out "$RUNNER_TEMP/technical-qa/academy"
       - name: Pruefbericht sichern
         if: always()
         uses: actions/upload-artifact@v4
