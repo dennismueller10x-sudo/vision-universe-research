@@ -11,7 +11,8 @@
 //  - MC3-DETERMINISTIC-<Methode>: zwei Vorbereitungen derselben Eingabe sind gleich, und die Eingabe bleibt unverändert.
 //  - MC3-CAUSAL-PROBE: Gegenprobe; ein Adapter mit absichtlichem Blick auf Balken i + 1 wird erkannt.
 // C09/C10 (EP/PS) entscheiden an der Eröffnung der Folgesitzung auf IEX-Minuten; ihr Zeitpunkt ist nicht „Schluss von i“.
-// Sie sind hier bewusst nicht enthalten (Evidenzdokument, Dimension Ein-/Ausstieg). C01/C02 deckt SF-TUR-TEMPORAL ab.
+// Sie sind hier bewusst nicht enthalten; ihr Nachweis steht in sf-mc3-causality-minutes.test.mjs (synthetische Tages- und
+// Minuten-Fixtures). C01/C02 deckt SF-TUR-TEMPORAL ab.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
