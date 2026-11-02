@@ -1,12 +1,34 @@
 # Master Product Completion 3.0–3.2 – gemeinsame Completion-Matrix (Technical, Quant, Supertrader)
 
-Stand 02.11.2026, 15 Uhr UTC (Auftrag 3.2, kontrollierte Integration). Basis `main` @ `558b574`.
+Stand 02.11.2026, 15 Uhr UTC (Auftrag 3.2, kontrollierte Integration). Basis `main` @ `558b574`. Merge-Stand in §0 nachgezogen am 02.11.2026 abends (Bündel A nach Owner-Freigabe vom 02.11.2026).
 
 Dieses Dokument ist der Wiederaufnahmepunkt über alle drei Produktwelten. Die Einzelheiten stehen in den verlinkten Übergaben. Jede Welt hat eigene PRs, weil die Isolations-Gates (CLAUDE.md) eine Querschnittsänderung verbieten.
 
 ## 0. Merge-Liste
 
-Alle PRs sind Drafts, keiner ist gemergt. **Kein Merge ohne ausdrückliche Owner-Freigabe.** Probe-Merge 02.11. 15 Uhr UTC: alle damals 12 PRs (#1257, #1259, #1260 kamen danach hinzu und berühren getrennte Pfade) gegen `main` und paarweise untereinander **konfliktfrei** (`git merge-tree`). Die neuen Commits auf `main` (Logos, Konten, Reels, Intraday) berühren weder Security Master noch Eingangsprüfung.
+**Merge-Stand (nachgezogen 02.11.2026 abends).** Owner-Freigabe vom 02.11.2026: Bündel A in Abhängigkeitsreihenfolge, #1236 und #1251; ausdrücklich nicht freigegeben: #1252, #1259, #1262. Jeder PR wurde vor dem Merge mit `main` zusammengeführt (Merge-Commit, kein Rebase) und erst nach grüner CI auf diesem Stand gemergt. Vercel-Vorschau meldet durchgehend „Deployment rate limited“ (extern, kein Befund).
+
+| PR | Merge-Commit auf `main` | Anmerkung |
+|---|---|---|
+| #1260 | `95a6bb8` | – |
+| #1236 | `0a416dc` | Quant Browser QA `experience` danach grün |
+| #1240 | `e81368c` | Lauftag 1.3.0 weiter offen (E1, §2) |
+| #1246 | `0516fcb` | – |
+| #1254 | `33c7278` | Erzeuger-Ausgabe `backtest-certification` ohne `generatedAt`/`asOf` vorher/nachher identisch |
+| #1245 | `3fd7446` | – |
+| #1251 | `741c691` | Basis auf `main` umgestellt; 21 Listen: Treffer, Zählungen und `index-v1.json` unverändert |
+| #1233 | `e79e359` | – |
+| #1234 | `7caac1f` | – |
+| #1235 | `ce8ffbe` | – |
+| #1257 | `42c44a9` | ALL13-Plan 1.0.2 auf den neuen TOP5-Pin (1.1.2) nachgezogen, Pins neu gesetzt |
+| #1247 | `96b35c5` | Evidenzdokument mit dem Erzeuger neu erzeugt: BELEGT 23, TEILWEISE 58, OFFEN 0, BLOCKIERT 49 |
+| #1248 | dieses Dokument | – |
+| #1252 | – | am 02.11. geschlossen, nicht gemergt |
+| #1259, #1262 | – | offen, nicht freigegeben |
+
+Die Tabelle unten ist der Planungsstand vor dem Merge (Stand 15 Uhr UTC).
+
+Probe-Merge 02.11. 15 Uhr UTC: alle damals 12 PRs (#1257, #1259, #1260 kamen danach hinzu und berühren getrennte Pfade) gegen `main` und paarweise untereinander **konfliktfrei** (`git merge-tree`). Die neuen Commits auf `main` (Logos, Konten, Reels, Intraday) berühren weder Security Master noch Eingangsprüfung.
 
 | # | PR | Inhalt | CI | Voraussetzung / Entscheidung | Nach dem Merge |
 |---|---|---|---|---|---|
@@ -71,7 +93,7 @@ Freigabepaket: [data/security-master/SECURITY_MASTER_1_3_0_FREIGABE.md](data/sec
 |---|---|---|---|---|---|---|---|---|---|
 | Analyse-Assistent, 8 Ziele | ✔ | ✔ | ✔ | – | ◐ | ✘ | ✘ | #1245; Screener-Treffer = „Erfüllt“ (Test); Browser-QA 66/66; Abnahmevorlage A1–A8 ✔ | Texte zur Owner-Lektüre (T-1) |
 | Vier Ebenen, Vorteil „nicht nachgewiesen“ | ✔ | ✔ | ✔ | – | ◐ | ✘ | ✘ | Evidenz-Verweise gegen die Artefakte (Test) | keine neuen historischen Zahlen |
-| Datenqualität in Treffern und Chart | ✔ | ✔ | ✔ | – | ✔ | ✘ | ◐ | gemeinsame Trefferkarte, Prüfleiste | Sortierung gekennzeichneter Titel: Option C, nicht freigegeben (T-2) |
+| Datenqualität in Treffern und Chart | ✔ | ✔ | ✔ | – | ✔ | ✘ | ◐ | gemeinsame Trefferkarte, Prüfleiste | T-2 gemergt (#1251): gekennzeichnete Titel innerhalb jeder Einordnung hinten; Ausschluss (Option C) nicht umgesetzt |
 | 13 Vorlagen mit Checkliste | ✔ | ✔ | ✔ | – | ✔ | ✘ | ✘ | `main` | – |
 | S4 historische Tests | ✔ | ✔ | ◐ | ✘ | ✘ | ✔ | ◐ | `RESEARCH_LIMITED` | Tages-OHLC-Historie fehlt |
 | Nachtlauf, GIBO-Bereinigung | ✔ | ✔ | ✔ | – | ✔ | ✘ | ✘ | `c307119`, DQ-TW-1..8 PASS | – |
@@ -99,7 +121,7 @@ Für alle 13 Methoden gilt: IMPL ✔, GET ✔, ZERT ✘, REIF ✘. Quelle: `SUPE
 
 **Prüfpunkte (130 = 13 Methoden × 10 Dimensionen):**
 
-| | Zyklus 1 | Zyklus 2 | 3.2 | erwartet nach #1233–#1235 |
+| | Zyklus 1 | Zyklus 2 | 3.2 | nach #1233–#1235, #1257 (neu erzeugt in #1247) |
 |---|---|---|---|---|
 | BELEGT | 20 | 21 | 21 | 23 |
 | TEILWEISE | 51 | 60 | 60 | 58 |
@@ -176,6 +198,8 @@ CC-5 (lizenzierte Quelle für Kapitalmaßnahmen, Klasse 2) und CC-8 (Paper-Test 
 | E18 | #1262 (C09-Rechenbefund): Behebung freigeben; dazu die Cache-Reruns `run-kk-intraday.mjs`/`run-sf5-lifecycle.mjs` mit Secrets und neue Pins bzw. ST9-Registrierungsversion | vor jeder Kennzahl zu C09 | PR #1262 | freigeben |
 | E14 | Quant FV-2, FV-3, FV-5 (Umverdrahtung `survivorship`/`returnBasis`), FV-6 (Setup-OOS A1–A6, vor etwa 2027-03-26), FV-7, FV-8 (ein Workflow-Schritt) | FV-6 | BACKTEST_COVERAGE_MATRIX.md §H | – |
 
+Stand nach dem Merge-Lauf vom 02.11. abends (§0): Die Merges zu E3, E4, E5, E6, E7, E10, E16 und E17 sind erledigt, E8 mit diesem PR. Von E1 ist nur der Merge von #1240 erledigt, der Lauftag ist offen. E9 ist offen (#1252 geschlossen), E15 und E18 sind nicht freigegeben.
+
 ## 5. Wiederaufnahmepunkt
 
 Stand 02.11.2026 abends. Alle autonom ausführbaren Quant- und Supertrader-Pakete sind als PR umgesetzt. Was übrig ist, braucht E1–E18, Secrets oder einen Lauftag.
@@ -183,7 +207,7 @@ Stand 02.11.2026 abends. Alle autonom ausführbaren Quant- und Supertrader-Paket
 **Nächste ausführbare Aufgaben, in dieser Reihenfolge:**
 1. **Lauftag 1.3.0 (E1):** `node scripts/market/security-master-switch-preflight.mjs --deadline`, dann die Schritte 1–8 der Freigabe.
 2. **Nach jedem Merge aus §0:** dieses Dokument nachziehen.
-   - Nach #1233–#1235 und #1257: Evidenzdokument mit `build-evidence-matrix.mjs --out` neu erzeugen.
+   - Nach #1233–#1235 und #1257: Evidenzdokument mit `build-evidence-matrix.mjs --out` neu erzeugen (erledigt in #1247 am 02.11.).
    - Nach #1262 und #1247: die Finding-Tests MC3-FINDING-C09-* in #1247 auf „behoben“ umstellen.
 3. **Supertrader S1/S5:** die Nachtläufe 03.11./04.11. und den SEC-Montagslauf mit Lauf-IDs im Handover §4 belegen.
 4. **Nach E1:** Neubau von `eligibility.json` als PR mit Vorher/Nachher (E11), Katalog-Generation 2 gegen 1.3.0 (H7) mit den 16 bisher nie vorgerechneten Kombinationen.
