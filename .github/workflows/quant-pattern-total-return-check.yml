@@ -10,6 +10,12 @@ name: Quant - Musterstudie Kurs gegen Gesamtrendite (Pruefmodus, ohne Wirkung)
 #   --return-basis total --out $RUNNER_TEMP/pattern-tr
 # und vergleicht beide (scripts/quant/research/compare-pattern-return-basis.mjs).
 #
+# Gepaarter Vergleich (Owner 02.11.2026, #1259): dazu ein dritter Lauf
+#   --return-basis price --population total-return --out $RUNNER_TEMP/pattern-price-trpop
+# (Kursrendite auf genau der Gesamtrendite-Population). A = Kurs/volle
+# Population, B = Kurs/TR-Population, C = Gesamtrendite/TR-Population;
+# Populationseffekt B-A, Renditeeffekt C-B. Ebenfalls nur RUNNER_TEMP.
+#
 # KEINE WIRKUNG: permissions contents: read, kein git add, kein Push, kein
 # Schreiben nach quant/data (beide Studien gehen per --out ins RUNNER_TEMP),
 # kein Schreiben in die Ablage (sync-history-store --pull). Ergebnis nur als
@@ -102,12 +108,23 @@ jobs:
           --work-dir "$RUNNER_TEMP/canonical-history"
           --return-basis total --out "$RUNNER_TEMP/pattern-tr"
 
-      - name: Vergleich vorher/nachher (nur Aggregate)
+      # Gepaart: Kursrendite auf genau der Gesamtrendite-Population (reine
+      # Populationsauswahl, Forschungslauf, verlangt --out).
+      - name: Pattern Research - Kursrendite auf der Gesamtrendite-Population (gepaart)
+        run: >-
+          node --max-old-space-size=8192 scripts/quant/build-pattern-research.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --return-basis price --population total-return --out "$RUNNER_TEMP/pattern-price-trpop"
+
+      - name: Vergleich vorher/nachher und gepaart A/B/C (nur Aggregate)
         run: >-
           node scripts/quant/research/compare-pattern-return-basis.mjs
           --price "$RUNNER_TEMP/pattern-price" --total "$RUNNER_TEMP/pattern-tr"
+          --price-population "$RUNNER_TEMP/pattern-price-trpop"
           --out "$RUNNER_TEMP/pattern-check/pattern-total-return-comparison.json"
           --summary-out "$RUNNER_TEMP/pattern-check/pattern-total-return-full-check.json"
+          --paired-out "$RUNNER_TEMP/pattern-check/pattern-total-return-paired-full.json"
+          --paired-summary-out "$RUNNER_TEMP/pattern-check/pattern-total-return-paired.json"
 
       # Was die Zertifizierung mit dieser Studie saehe (vorbereitete
       # Anbindung, nicht aktiv): --pattern-study liest die Gesamtrendite-
@@ -139,6 +156,8 @@ jobs:
             ${{ runner.temp }}/pattern-check/*.json
             ${{ runner.temp }}/pattern-price/study.json
             ${{ runner.temp }}/pattern-tr/study.json
+            ${{ runner.temp }}/pattern-price-trpop/study.json
+            ${{ runner.temp }}/pattern-price-trpop/paired-diagnostics.json
           if-no-files-found: warn
           retention-days: 30
 

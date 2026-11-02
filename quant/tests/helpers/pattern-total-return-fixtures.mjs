@@ -14,6 +14,7 @@
      PXN             keine Tagesreihe                 -> NO_CANONICAL_SERIES
      PXF             eine Kerze ohne dividend-Feld    -> DIVIDEND_FIELD_MISSING
      PXS             Tagesreihe endet 2023-06-30      -> STALE
+   Optional je Titel noDividend: true (keine Ausschuettung), nur in eigenen Listen.
 
    Alles deterministisch (fester Zufallsgenerator je Titel). Keine echte
    Kursreihe, kein Anbieterabruf. */
@@ -73,7 +74,8 @@ export function dailyBars(title, dates = weekdays()) {
   const close = adj.map((v, i) => r4(splitAt >= 0 && i < splitAt ? v * ratio : v));
   const split = dates.map((_, i) => (i === splitAt ? ratio : 1));
   const div = new Array(n).fill(0);
-  for (let i = 63; i < n; i += 63) {
+  /* noDividend: Titel ohne Ausschuettung (gepaarter Vergleich, Bucket NONE). */
+  for (let i = 63; !title.noDividend && i < n; i += 63) {
     const k = i === splitAt ? i + 1 : i;
     if (k < n) div[k] = r4(close[k - 1] * 0.008);
   }

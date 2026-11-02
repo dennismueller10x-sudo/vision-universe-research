@@ -30,6 +30,22 @@
    study never mixes the two bases. --return-basis total without --work-dir
    aborts: there is no silent fallback to price return.
 
+   PAIRED POPULATION (--population total-return, research only)
+
+   The price-return twin of a total-return run: exactly the titles a
+   --return-basis total run keeps (same reconstruction, same exclusion
+   reasons), and only the observations whose outcome is measurable in BOTH
+   bases - but the outcomes stay price return. With it, price/full
+   population (A), price/total-return population (B) and total/total-return
+   population (C) separate the population effect (B-A) from the return
+   effect (C-B). It is a pure population selection: detection, features,
+   thresholds and the study runner are untouched, and without the switch
+   nothing changes. It needs --work-dir and --out (it never writes the
+   product path) and refuses --return-basis total. Beside study.json it
+   writes paired-diagnostics.json: aggregates only (distribution-yield
+   buckets, winner rates in both bases per bucket and per hypothesis), no
+   title, no level.
+
    Writes quant/data/product/pattern-research-v1/ (or --out DIR). No provider is called,
    no history is fetched, no pipeline is created, Discovery is untouched -
    these series are the Discovery workstream's canonical output and are
@@ -91,6 +107,22 @@ if (TOTAL && !DAILY_DIR) {
      would silently be a price-return study. */
   throw new Error("--return-basis total requires --work-dir (canonical daily history); refusing to fall back to price return");
 }
+/* ALL (default, unchanged) or TOTAL_RETURN: price outcomes on exactly the
+   population of a total-return run. Research only. */
+const POPULATION = args.includes("--population") ? argOf("--population") : "all";
+if (POPULATION !== "all" && POPULATION !== "total-return") {
+  throw new Error("--population must be 'all' or 'total-return', got " + POPULATION);
+}
+const POP_TR = POPULATION === "total-return";
+if (POP_TR && TOTAL) throw new Error("--population total-return is the price-return twin of --return-basis total; use it with --return-basis price");
+if (POP_TR && !DAILY_DIR) throw new Error("--population total-return requires --work-dir (canonical daily history)");
+if (POP_TR && !argOf("--out")) throw new Error("--population total-return is a research run and requires --out; it never writes the product path");
+/* Either switch needs the total-return reconstruction per title. */
+const NEED_TR = TOTAL || POP_TR;
+/* Below this trailing / realized distribution yield a title counts as
+   "no distribution" in the paired diagnostics (rounding noise of the two
+   weekly samplings stays below it). */
+export const PAYER_MIN_YIELD = 0.0025;
 /* Same staleness rule and coverage bar as the signal study. */
 export const TR_STALE_DAYS = 10;
 export const TR_MINIMUM_SHARE = 0.95;
@@ -198,6 +230,24 @@ export function forwardOutcome(levels, index, weeks) {
   return Patterns.outcomeAfter(levels, index, weeks);
 }
 
+/* Distribution yield of the last `weeks` weeks up to and including the
+   observation (ex ante): total-return growth over price growth, minus one.
+   Only data up to the observation date. null when either side is missing. */
+export function trailingDistributionYield(levels, closes, index, weeks) {
+  const from = index - weeks;
+  if (from < 0) return null;
+  const tr = levels[index] / levels[from], px = closes[index] / closes[from];
+  const y = tr / px - 1;
+  return finite(y) && px > 0 ? y : null;
+}
+
+/* Distribution yield realized within the horizon (ex post): (1 + total) /
+   (1 + price) - 1. */
+export function realizedDistributionYield(priceReturn, totalReturn) {
+  const y = (1 + totalReturn) / (1 + priceReturn) - 1;
+  return finite(y) ? y : null;
+}
+
 /* ---------------------------------------------------------------------------
    2. One pass over every title, producing observations that carry the
       features at t and the forward outcome for every horizon. Features are
@@ -210,7 +260,7 @@ function buildObservations(series) {
   const minimumHistory = methodology.observationGrid.minimumHistoryWeeks;
   const observations = [];
   let skippedNoFeatures = 0;
-  const tr = TOTAL ? {
+  const tr = NEED_TR ? {
     seriesEligible: series.length, withTotalReturn: 0, excluded: [], reasons: {}, buckets: {}, listingSegmentCuts: 0,
     outcomeUnavailableNoTotalReturnLevel: Object.fromEntries(horizons.map((h) => [h.id, 0])), ctrResults: []
   } : null;
@@ -224,7 +274,7 @@ function buildObservations(series) {
   for (const entry of series) {
     const read = readDailyPayload(entry.securityId);
     let levels = null;
-    if (TOTAL) {
+    if (NEED_TR) {
       /* Exclusion happens before anything is counted: an excluded title
          contributes no observation, no feature and no volume coverage. */
       let result;
@@ -261,22 +311,38 @@ function buildObservations(series) {
       }
       if (any) coverage.observationsWithAnyVolumeFeature += 1;
       const forward = {};
+      const paired = POP_TR ? {} : null;
       for (const horizon of horizons) {
-        const outcome = TOTAL ? forwardOutcome(levels, index, horizon.weeks) : Patterns.outcomeAfter(entry.closes, index, horizon.weeks);
+        let outcome = TOTAL ? forwardOutcome(levels, index, horizon.weeks) : Patterns.outcomeAfter(entry.closes, index, horizon.weeks);
         if (TOTAL && outcome.state !== "AVAILABLE" && Patterns.outcomeAfter(entry.closes, index, horizon.weeks).state === "AVAILABLE") {
           tr.outcomeUnavailableNoTotalReturnLevel[horizon.id] += 1;
+        }
+        if (POP_TR) {
+          /* Paired: the price outcome counts only where the total-return
+             outcome exists too - the same observation set as the twin run. */
+          const twin = forwardOutcome(levels, index, horizon.weeks);
+          if (outcome.state === "AVAILABLE" && twin.state !== "AVAILABLE") {
+            tr.outcomeUnavailableNoTotalReturnLevel[horizon.id] += 1;
+            outcome = twin;
+          }
+          paired[horizon.id] = outcome.state === "AVAILABLE" ? twin.forwardReturn : null;
         }
         forward[horizon.id] = outcome.state === "AVAILABLE"
           ? { r: outcome.forwardReturn, dd: outcome.maxDrawdownWithinHorizon, max: outcome.maxForwardReturn }
           : null;
       }
-      observations.push({
+      const observation = {
         ticker: entry.ticker,
         date: entry.dates[index],
         t: Math.floor(Date.parse(entry.dates[index]) / WEEK_MS),
         features,
         forward
-      });
+      };
+      if (POP_TR) {
+        observation.totalForward = paired;
+        observation.trailingYield = trailingDistributionYield(levels, entry.closes, index, 52);
+      }
+      observations.push(observation);
     }
   }
   return { observations, skippedNoFeatures, coverage, tr };
@@ -323,6 +389,155 @@ function totalReturnBlock(tr) {
   };
 }
 
+/* The population block of a --population total-return run: the same
+   exclusion the total-return twin makes, so the two can be checked to be
+   paired title for title. */
+function populationSelectionBlock(tr) {
+  const share = tr.seriesEligible ? tr.withTotalReturn / tr.seriesEligible : 0;
+  return {
+    basis: "TOTAL_RETURN_CONFIRMED",
+    outcome: "PRICE_RETURN",
+    note: "Kursrendite auf genau der Population eines Gesamtrendite-Laufs (Titel mit bestaetigter Gesamtrendite, nur Beobachtungen mit Ausgang in beiden Basen). Forschungslauf fuer den gepaarten Vorher/Nachher-Vergleich, kein Produktartefakt.",
+    contract: CTR.VERSION,
+    weeklyContract: WEEKLY_TOTAL_RETURN_VERSION,
+    seriesEligible: tr.seriesEligible,
+    withTotalReturn: tr.withTotalReturn,
+    excludedNoConfirmedTotalReturn: tr.excluded.length,
+    share: round(share, 4),
+    reasons: Object.fromEntries(Object.entries(tr.reasons).sort((a, b) => a[0].localeCompare(b[0]))),
+    outcomeUnavailableNoTotalReturnLevel: tr.outcomeUnavailableNoTotalReturnLevel,
+    excluded: tr.excluded.slice().sort((a, b) => a.securityId.localeCompare(b.securityId))
+  };
+}
+
+/* ---------------------------------------------------------------------------
+   Paired diagnostics (--population total-return only). On the paired
+   observation set every usable observation carries both outcomes, so the
+   change of the winner cohort from price to total return can be measured
+   directly: which observations become winners only through distributions,
+   how that depends on the distribution yield, and how it differs inside
+   and outside each hypothesis. Aggregates only.
+   --------------------------------------------------------------------------- */
+const sortedMedian = (values) => {
+  if (!values.length) return null;
+  const a = Float64Array.from(values).sort();
+  const m = a.length >> 1;
+  return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
+};
+
+/* NONE (yield below PAYER_MIN_YIELD) plus quartiles of the payers. */
+function yieldBuckets(indices, yieldOf, winP, winT, total) {
+  const none = [], payers = [];
+  for (const i of indices) {
+    const y = yieldOf(i);
+    if (y === null) continue;
+    if (y < PAYER_MIN_YIELD) none.push(i); else payers.push(i);
+  }
+  payers.sort((a, b) => yieldOf(a) - yieldOf(b));
+  const groups = [["NONE", none]];
+  for (let q = 0; q < 4; q++) {
+    groups.push(["Q" + (q + 1), payers.slice(Math.floor(q * payers.length / 4), Math.floor((q + 1) * payers.length / 4))]);
+  }
+  let measured = 0, newWinnersAll = 0;
+  for (const [, g] of groups) { measured += g.length; for (const i of g) if (!winP[i] && winT[i]) newWinnersAll += 1; }
+  return {
+    measured,
+    withoutYield: total - measured,
+    buckets: groups.map(([id, g]) => {
+      let wp = 0, wt = 0, up = 0, down = 0;
+      const ys = [];
+      let lo = Infinity, hi = -Infinity;
+      for (const i of g) {
+        wp += winP[i]; wt += winT[i];
+        if (!winP[i] && winT[i]) up += 1;
+        if (winP[i] && !winT[i]) down += 1;
+        const y = yieldOf(i); ys.push(y);
+        if (y < lo) lo = y;
+        if (y > hi) hi = y;
+      }
+      return {
+        bucket: id, observations: g.length, share: round(measured ? g.length / measured : null, 4),
+        minYield: round(g.length ? lo : null, 4),
+        maxYield: round(g.length ? hi : null, 4),
+        medianYield: round(sortedMedian(ys), 4),
+        winnerRatePrice: round(g.length ? wp / g.length : null), winnerRateTotal: round(g.length ? wt / g.length : null),
+        newWinners: up, lostWinners: down, shareOfNewWinners: round(newWinnersAll ? up / newWinnersAll : null, 4)
+      };
+    })
+  };
+}
+
+export function pairedDiagnostics(observations, candidateMasks, patterns, horizons, threshold) {
+  const n = observations.length, minReturn = threshold.minReturn;
+  const trailing = new Float64Array(n);
+  for (let i = 0; i < n; i++) { const y = observations[i].trailingYield; trailing[i] = y === null || y === undefined ? NaN : y; }
+  const out = {
+    schemaVersion: "pattern-paired-diagnostics-1.0.0",
+    winnerThreshold: threshold.id, winnerMinReturn: minReturn, payerMinYield: PAYER_MIN_YIELD,
+    note: "Gepaarte Beobachtungen (Ausgang in beiden Basen). trailingYield: Ausschuettungsrendite der 52 Wochen bis zur Beobachtung (ex ante, Gesamtrendite- gegen Kurswachstum). realizedYield: im Horizont realisierte Ausschuettungsrendite ((1+Gesamtrendite)/(1+Kursrendite)-1). NONE: unter payerMinYield; Q1-Q4: Quartile der Ausschuetter. Nur Aggregate.",
+    observations: n,
+    horizons: []
+  };
+  for (const horizon of horizons) {
+    const usable = [], winP = new Uint8Array(n), winT = new Uint8Array(n), realized = new Float64Array(n).fill(NaN);
+    let wp = 0, wt = 0, up = 0, down = 0;
+    for (let i = 0; i < n; i++) {
+      const o = observations[i], p = o.forward[horizon.id], t = o.totalForward ? o.totalForward[horizon.id] : null;
+      if (!p || t === null || t === undefined) continue;
+      usable.push(i);
+      winP[i] = p.r >= minReturn ? 1 : 0; winT[i] = t >= minReturn ? 1 : 0;
+      wp += winP[i]; wt += winT[i];
+      if (!winP[i] && winT[i]) up += 1;
+      if (winP[i] && !winT[i]) down += 1;
+      const y = realizedDistributionYield(p.r, t);
+      if (y !== null) realized[i] = y;
+    }
+    const yieldOfTrailing = (i) => (Number.isFinite(trailing[i]) ? trailing[i] : null);
+    const yieldOfRealized = (i) => (Number.isFinite(realized[i]) ? realized[i] : null);
+    const perPattern = patterns.map((pattern) => {
+      const mask = pattern.mask;
+      let pop = 0, popWP = 0, popWT = 0, sup = 0, supWP = 0, supWT = 0, supPay = 0, supTy = 0, outPay = 0, outTy = 0;
+      const tyIn = [], tyOut = [], dIn = [], dOut = [];
+      for (const i of usable) {
+        if ((candidateMasks.measurable[i] & mask) !== mask) continue;
+        pop += 1; popWP += winP[i]; popWT += winT[i];
+        const inside = (candidateMasks.hit[i] & mask) === mask;
+        const ty = trailing[i], d = realized[i];
+        if (inside) {
+          sup += 1; supWP += winP[i]; supWT += winT[i];
+          if (Number.isFinite(ty)) { supTy += 1; tyIn.push(ty); if (ty >= PAYER_MIN_YIELD) supPay += 1; }
+          if (Number.isFinite(d)) dIn.push(d);
+        } else {
+          if (Number.isFinite(ty)) { outTy += 1; tyOut.push(ty); if (ty >= PAYER_MIN_YIELD) outPay += 1; }
+          if (Number.isFinite(d)) dOut.push(d);
+        }
+      }
+      const outN = pop - sup;
+      return {
+        patternId: pattern.id,
+        population: pop, support: sup,
+        winnersPrice: supWP, winnersTotal: supWT,
+        outsideWinnersPrice: popWP - supWP, outsideWinnersTotal: popWT - supWT,
+        conditionalRatePrice: round(sup ? supWP / sup : null), conditionalRateTotal: round(sup ? supWT / sup : null),
+        outsideRatePrice: round(outN ? (popWP - supWP) / outN : null), outsideRateTotal: round(outN ? (popWT - supWT) / outN : null),
+        payerShareInside: round(supTy ? supPay / supTy : null, 4), payerShareOutside: round(outTy ? outPay / outTy : null, 4),
+        medianTrailingYieldInside: round(sortedMedian(tyIn), 5), medianTrailingYieldOutside: round(sortedMedian(tyOut), 5),
+        medianRealizedYieldInside: round(sortedMedian(dIn), 5), medianRealizedYieldOutside: round(sortedMedian(dOut), 5)
+      };
+    });
+    out.horizons.push({
+      horizon: horizon.id, horizonMonths: horizon.months,
+      usableObservations: usable.length, winnersPrice: wp, winnersTotal: wt,
+      baseRatePrice: round(usable.length ? wp / usable.length : null), baseRateTotal: round(usable.length ? wt / usable.length : null),
+      newWinners: up, lostWinners: down,
+      trailingYield: yieldBuckets(usable, yieldOfTrailing, winP, winT, usable.length),
+      realizedYield: yieldBuckets(usable, yieldOfRealized, winP, winT, usable.length),
+      patterns: perPattern
+    });
+  }
+  return out;
+}
+
 /* The study machinery lives in scripts/quant/lib/pattern-study.mjs, shared
    with the PIT fundamental family. One implementation, because two studies
    measured slightly differently are not comparable and the difference would
@@ -365,7 +580,7 @@ function main() {
   if (!series.length) throw new Error("no usable long series found; nothing to study");
 
   const { observations, skippedNoFeatures, coverage, tr } = buildObservations(series);
-  if (TOTAL && !observations.length) throw new Error("no title with a confirmed total return; nothing to study");
+  if (NEED_TR && !observations.length) throw new Error("no title with a confirmed total return; nothing to study");
   const trBlock = TOTAL ? totalReturnBlock(tr) : null;
   const patterns = patternSet();
   const horizons = Object.fromEntries(methodology.horizons.map((h) => [h.id, h]));
@@ -422,12 +637,13 @@ function main() {
     population: {
       source: methodology.population.source,
       seriesConsidered: considered,
-      seriesUsed: trBlock ? tr.withTotalReturn : series.length,
+      seriesUsed: NEED_TR ? tr.withTotalReturn : series.length,
       seriesRejected: rejected,
       priceSeriesType: "SPLIT_ADJUSTED",
       totalReturn: !!trBlock,
       totalReturnNote: trBlock ? trBlock.totalReturnNote : methodology.population.totalReturnNote,
       ...(trBlock ? { totalReturnCoverage: trBlock.totalReturnCoverage } : {}),
+      ...(POP_TR ? { populationSelection: populationSelectionBlock(tr) } : {}),
       observations: observations.length,
       skippedNoFeatures,
       volumeCoverage: coverage,
@@ -466,6 +682,11 @@ function main() {
   if (existsSync(OUT_DIR)) rmSync(OUT_DIR, { recursive: true });
   mkdirSync(OUT_DIR, { recursive: true });
   writeFileSync(join(OUT_DIR, "study.json"), JSON.stringify(study, null, 1) + "\n");
+  if (POP_TR) {
+    const diagnostics = pairedDiagnostics(observations, candidateMasks, patterns, methodology.horizons, thresholds[methodology.primary.winner]);
+    diagnostics.studyContentHash = study.contentHash;
+    writeFileSync(join(OUT_DIR, "paired-diagnostics.json"), JSON.stringify(diagnostics, null, 1) + "\n");
+  }
 
   const verdicts = {};
   for (const finding of primary.findings) verdicts[finding.verdict] = (verdicts[finding.verdict] || 0) + 1;
