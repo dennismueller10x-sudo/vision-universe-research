@@ -822,6 +822,9 @@
         count, more,
         res.excluded ? el("p", { class: "tc-note", text: res.excluded.toLocaleString("de-DE") + " Aktien ohne aktuellen Kurs (hinter dem Stichtag oder eingefroren) sind nicht eingeordnet." }) : null,
         disclaimer(D.meta)]);
+      /* Datenqualitaet: Titel mit Kurssprung-Kennzeichnung (price-jumps.js) zaehlen und vor der Liste nennen. */
+      var flagged = entries.filter(function (e) { return !!ds.row(e.i).suspectJumpAt; }).length;
+      if (flagged) results.insertBefore(el("p", { class: "tc-note is-warn tc-dq-note", role: "note", text: flagged.toLocaleString("de-DE") + (flagged === 1 ? " Treffer trägt" : " Treffer tragen") + " eine Datenqualitäts-Kennzeichnung (Kurssprung). Ein solcher Sprung kann Kennzahlen wie die relative Stärke verfälschen; die Kennzeichnung steht in der Trefferkarte und im Chart." }), entries.length ? list : results.querySelector(".tc-state"));
       page();
     }).catch(function (e) {
       results.removeAttribute("aria-busy");
