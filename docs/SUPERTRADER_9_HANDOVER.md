@@ -247,9 +247,9 @@ Details: [SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md](SUPERTRADER_9_HIS
 
 | PR | Branch | Inhalt | Abhängigkeiten vor einem Merge |
 |---|---|---|---|
-| #1233 | `…-hist-turtle-stops` | unabhängige Prüfung der Turtle-Einheitsstopps (`st9-hist-execution` 1.1.0) | #1190 ist auf `main`. Vor dem Merge main einmergen, Gate A und volle Suite prüfen, Owner-Freigabe |
-| #1234 | `…-hist-v13-workflow` | Workflow `supertrader-st9-v13-study.yml`: nur manuell, Ergebnisse verschlüsselt, Hex-Datenschlüssel | #1189 und #1190 auf `main`. Liest Archiv 1.2.0, nach #1241 auf 2.0.0 umstellen. Owner muss Secrets bestätigen und auslösen. ADR-005 prüfen |
-| #1235 | `…-cert-prep-rest` | Zertifizierungsvorbereitung ALL13 (Head `d798215`) | Konflikt in `cert-prep-top5.mjs` lösen, `token` → `sourcePhrase` im ALL13-Plan, neuer Pin, Review, Owner-Freigabe |
+| #1233 | `…-hist-turtle-stops` | unabhängige Prüfung der Turtle-Einheitsstopps (`st9-hist-execution` 1.1.0) | main `122f5d9` eingemergt (Head `f12855d`, 02.11.), Gate A und volle Suite lokal grün; offen: Review, Owner-Freigabe. Nach dem Merge Evidenzdokument neu erzeugen (§12.1) |
+| #1234 | `…-hist-v13-workflow` | Workflow `supertrader-st9-v13-study.yml`: nur manuell, Ergebnisse verschlüsselt, Hex-Datenschlüssel | main `122f5d9` eingemergt (Head `5c31527`, 02.11.), lokal grün. Liest Archiv 1.2.0, nach #1241 auf 2.0.0 umstellen. Owner muss Secrets bestätigen und auslösen. ADR-005 prüfen |
+| #1235 | `…-cert-prep-rest` | Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`) | Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe |
 
 ### 8.2 Überholte Supertrader-Drafts (nicht mergen, Schließen nur durch Owner)
 
@@ -332,3 +332,70 @@ Dazu Python-Quant OK und Testisolation sauber. In der CI waren Quant CI, Core, T
 | Erste Veröffentlichung, Rückweg | [SUPERTRADER_8_FIRST_RELEASE.md](SUPERTRADER_8_FIRST_RELEASE.md) |
 | Paper-Protokoll 2027 | [SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md](SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md) |
 | Quant: Security Master, V13-Archiv | [quant/QUANT_FINAL_HANDOVER.md](quant/QUANT_FINAL_HANDOVER.md) |
+
+---
+
+## 12. Master Completion 3.0 (Stand 02.11.2026, `main` @ `122f5d9`)
+
+Ergänzung, nichts oben ist umgeschrieben. Keine Handelsregel, kein Parameter, keine Engine, keine Registrierung, kein gepinnter Plan, kein CC-Kriterium und kein Veröffentlichungsgate ist geändert. Keine Secrets, kein R2, kein kostenpflichtiger Lauf, keine Variable, kein Merge.
+
+**Evidenznachweis der 13 Methoden:** [SUPERTRADER_13_METHODS_EVIDENCE.md](SUPERTRADER_13_METHODS_EVIDENCE.md). Erzeugt von `scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs` aus den committeten Quellen (Readiness-Artefakt und -Matrix, TOP5-Plan, Golden Cases, Paper-Protokoll, historische Infrastruktur, Kandidatenstand, §4 und §8.1 dieses Dokuments). Je Methode zehn Prüfdimensionen mit Status, Nachweis, Blocker und Zuständigkeit sowie die getrennten Statusdimensionen IMPLEMENTIERT … ZURÜCKGESTELLT. Test `sf-mc3-evidence-matrix.test.mjs`: Dokument = Erzeuger, 13 Methoden, ZERTIFIZIERT nur mit Beleg der Readiness, jeder Nachweispfad existiert. Ergebnis heute: keine Methode zertifiziert, fachlich validiert oder produktreif.
+
+**Geschlossene Prüfdefizite (nur Tests):**
+- `sf-mc3-causality.test.mjs`: Kausalität (`prepare`/`signalAt`/`eligibility` am Balken i nur aus 0..i) und Determinismus je Methode für C03–C08 und C11–C13 auf den eingefrorenen echten Reihen der SF8-Fixture, mit Gegenprobe. C01/C02 deckt `SF-TUR-TEMPORAL`. C09/C10 bleiben offen: Ihre Entscheidung fällt an der Eröffnung der Folgesitzung auf IEX-Minuten.
+- `sf-mc3-product-wording.test.mjs`: keine Erfolgs-, Gewinn- oder Sicherheitsversprechen und keine Kaufaufforderung in allen Seiten, Skripten, Kandidatendateien und der Registry unter `supertrader/**`, mit Gegenproben. Ausgenommen sind das Literaturverzeichnis `sources.json`, ein zitierter Buchtitel und Wertpapiernamen Dritter.
+- Lokal `cert-prep-top5.mjs --run-tests` auf `122f5d9`: Plan gültig, 0 Abweichungen, `PRESENT_MATCHING_PR_1148`, C02 17/17, C01 14/14, C08 15/15, C12 14/14, C03 16/16. Der Turtle-Code-Fingerabdruck auf `main` ist gleich dem in SF6-PAPER-2027 gepinnten Referenzwert (`89fbcf86…`). Für sf5 gibt es keinen Pin. Der formale Nachweis auf dem Referenz-Commit (`evidenceState` im gepinnten Plan) bleibt offen.
+
+**S1 PR-Konsolidierung** (GitHub, 02.11.2026 ~10:25 UTC; nur gelesen, nichts geändert oder kommentiert; Mergebarkeit per `git merge-tree` gegen `main` `122f5d9`):
+
+| PR | Zustand | Head | Stand des Zweigs | gegen `main` | CI auf dem Head | Abhängigkeit, nächster Schritt |
+|---|---|---|---|---|---|---|
+| #1148 | **gemergt** 02.11. 09:56 UTC | `50b415b` | – | – | – | Matrix byte-gleich auf `main` (`89a60269…cfde`), TOP5-Prüfer meldet `PRESENT_MATCHING_PR_1148` |
+| #1233 | Draft | `08492df` | gestapelt auf hist-exec `53e13fb`, enthält weder `659df6c` noch #1219 | konfliktfrei | Core 41343673038 rot (Schritt Core-Tests), Quality Gates 41343673046 rot (Schritt Quant-2.0-Regression; Head liegt vor #1219, Ursache nicht weiter geprüft) | vor #1234; main einmergen, CI neu, Gate A, Owner-Freigabe |
+| #1234 | Draft | `39ecbc8` | wie #1233 auf hist-exec | konfliktfrei; auch mit #1233 zusammen konfliktfrei (beide ändern `SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md`) | Core 41343953479 rot, Quality Gates 41343953541 rot | nach #1233; liest Archiv 1.2.0 (nach #1241 auf 2.0.0 umstellen); Owner bestätigt Secrets und löst aus |
+| #1235 | Draft | `d798215` | gestapelt auf cert-prep, enthält `2d30160` (#1196) nicht | **Konflikt** in `cert-prep-top5.mjs` | Quality Gates 41344891387 rot | Konflikt lösen; Feld `token` kommt im ALL13-Plan 36-mal vor → `sourcePhrase`, neuer Pin mit Begründung; Review, Owner-Freigabe |
+| #1142 | Draft, überholt | `39f24c5` | Basis `adbc2f0` | **Konflikt** (add/add in 4 Dateien der V13-Studie) | – | übernommen in #1189; Schließen nur durch Owner |
+| #1141 | Draft, überholt | `78b33ed` | Basis `adbc2f0` | **Konflikt** in `quant/tests/security-master-content-hash.test.mjs` | – | Quant-Bereich, außerhalb Gate A |
+| #1156 | Draft, überholt | `32c4c85` | Basis `99af26c` | konfliktfrei | – | Workflow `sec-consumer-fundamentals.yml`, außerhalb Gate A |
+| #1099 | Draft, überholt | `fdb2567` | Basis `a2bfa48` | konfliktfrei | – | abgelöst durch §4 |
+
+**S4 Produktreife (lesend):**
+- Kandidatenstand `asOf` 30.10.2026: am 02.11. aktuell (letzte abgeschlossene Sitzung vor dem Laufdatum ist der 30.10.). Ab Laufdatum 03.11. liegt er eine Sitzung zurück, ab 05.11. ist DQ-SF8-1 rot (`maxLag` 2), solange `SF8_AUTO_PUBLISH` nicht gesetzt ist.
+- Vertrag C1–C7: Code und Tests SF9-PUB-1…7 auf `main`; C7 erfüllt (Registry-Eintrag ohne `activation`). C1–C6 prüft jeder Lauf selbst.
+- V1: unverändert wie §4. Seit 41156681821 gab es keinen weiteren geplanten Nachtlauf von `market-data-refresh.yml` auf `main` (geprüft 02.11. ~10:25 UTC). Damit bleibt S1 bei 3/5; die nächsten Messpunkte sind 02.11. und 03.11. 22:30 UTC. S5 wartet auf den Montagslauf vom 02.11. Nichts ist vorweggenommen.
+- **Risiko Security Master:** Stamm `us-security-master-1.1.0` vom 11.09.2026 14:43 UTC. Letztes zulässiges Laufdatum ist der **10.11.2026**, ab dem 11.11. meldet die Eingangsprüfung STALE und jeder Kandidatenlauf endet mit Exit 3. Firmennamen: STALE ab 26.11.2026. Zuständig ist Quant (H1, #1240) mit Owner-Datum.
+
+**Owner-Freigaben, die dieser Stand braucht** (Einzelheiten im Evidenzdokument, Abschnitt 5):
+1. Security Master 1.3.0 produktiv vor dem Laufdatum 10.11.2026 (Quant H1, #1240).
+2. `SF8_AUTO_PUBLISH` erst nach Nachweis 1 (§3.3).
+3. #1233, #1234 und #1235 nach Nachzug und Review; der Lauf der V13-Studie mit Secrets und Archivgeneration.
+4. Lesarten und Proxys vor dem Öffnen der Kennzahlen: PS-C01-READINGS, PS-C03-BOTTOM-START, PS-C08-SETUP-PROXY, PS-C12-READINGS. Dazu die Gruppenquelle PS-C02-CC4-GROUPS (E7-5).
+5. Eine lizenzierte CA-Quelle (CC-5, E1) und die Aktivierung von SF6-PAPER-2027 vor dem 01.01.2027 (CC-8, mit Aufbewahrung).
+6. Vertrags- bzw. Produkt-PRs: F-TUR-ADD-UNIT-N, F-KK-ADR-DENOMINATOR, F-DAR-SAME-BAR-ORDER, F-DAR-Q7-READING, C01/C02-PRODUCT-PLAN, X-LEDGER.
+
+### 12.1 Nachtrag Master Completion 3.1 (P1, 02.11.2026)
+
+- **#1233, #1234:** Die roten Läufe vom 01.11. (Core 41343673038, Quality Gates 41343673046 bzw. 41343953479/41343953541) liefen auf dem Merge mit der damaligen Basis hist-exec `53e13fb` (`bd22510 Merge 08492df into 53e13fb`). Rot waren `quant/tests/technical-ap8-l1.test.mjs` L1–L3 (Schritt Quant-2.0-Regression) und Core DQ-SF8 (Test 220): Artefakte bzw. Tests der alten Basis, nicht der PRs. Behebung: Merge von `main` `122f5d9` (konfliktfrei), keine Fachlogik geändert. #1233 und #1234 sind nicht gestapelt (gleiche Basis, disjunkte Abschnitte); ein Probemerge beider ist konfliktfrei.
+- **#1235:** Konflikt in `cert-prep-top5.mjs` (nur die Prüferversion) per Merge gelöst, `sf9-cert-prep-check-1.2.2`. ALL13-Plan 1.0.1: Feld `token` → `sourcePhrase` (36 Parameter), Basis TOP5 1.1.1, Pins neu (`PINNED_ALL13_CONTENT_SHA256` `d45ee3d1…`, Datei `bd4dcc6e…`). `validateAll13` 0 Abweichungen, `--run-tests` 13/13 MET, `--mutation-probes` 41/41 ROT, Engines unverändert.
+- **Evidenzdokument 1.1.0:** Klassen 1–4 der Blocker, Auswertung vorhandener Nachweise (E-REFCODE für C01/C02, E-SAMPLE für die statistische Aussagekraft), Branch-Nachweise gekennzeichnet. Zählung und Einordnung stehen im Dokument (Abschnitt 9), nicht hier. Nach dem Merge von #1233, #1234 oder #1235 erkennt der Erzeuger den neuen Stand selbst; das Dokument ist dann neu zu erzeugen (`--out`), sonst meldet `MC3-EV-DOC-EQUALS-GENERATOR` eine Abweichung.
+
+### 12.2 Nachtrag Master Completion 3.2 (P3, 02.11.2026)
+
+Keine Handelsregel, kein Parameter, keine Engine, keine Registrierung, kein CC-Kriterium, kein Gate, keine gepinnte Datei und nichts unter `supertrader/data` ist geändert. Kein Merge, keine Secrets, kein Lauf.
+
+- **Evidenzdokument 1.2.0** (Erzeuger `st-mc3-evidence-matrix-1.2.0`, Basis `main` `fecb667`):
+  - **Die drei OFFEN-Punkte** (Quellen-/Regeltreue von C06, C07, C09) sind eingeordnet, nicht gelöst. Ihr einziger technischer Anteil ist die ALL13-Vorbereitung #1235. Sie belegt Regeltreue-Tests, schließt aber CC-1 und CC-3 nicht; der ALL13-Plan führt `Cxx-CC1`/`Cxx-CC3` selbst als offen (Klasse d, Owner). Damit hebt #1235 die Dimension höchstens auf TEILWEISE (Teilbeitrag). Die Punkte sind BLOCKIERT, Klasse 1. Für C09 nennen Matrix und Plan auf `main` keinen CC-1/CC-3-Blocker; E-CC13 trägt ihn aus dem Readiness-Artefakt nach (ebenso CC-3 bei C10 und CC-1 bei C11, ohne Statuswechsel).
+  - **Freigabepakete** (Dokument Abschnitt 10): Alle BLOCKIERT-Punkte stehen in zehn Paketen FP-ST-01 … FP-ST-10, je mit Entscheidungsfrage, Optionen, Empfehlung, Kosten- und Lizenzbezug (nur benannt), Voraussetzungen, Frist und Wirkung je Punkt. Einzige harte Frist: FP-ST-02, die Aktivierung von SF6-PAPER-2027 vor dem 01.01.2027 (erste Sitzung 04.01.2027). Test `MC3-EV-PACKAGES`: jeder BLOCKIERT-Punkt in genau einem Paket.
+  - Zählung und Pakete stehen im Dokument (Kopf, Abschnitte 9 und 10), nicht hier.
+- **Nach dem Merge von #1233, #1234 oder #1235** das Dokument im Merge-PR bzw. direkt danach neu erzeugen, sonst ist `MC3-EV-DOC-EQUALS-GENERATOR` rot:
+
+  ```bash
+  node scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs --out docs/SUPERTRADER_13_METHODS_EVIDENCE.md
+  node --test scripts/supertrader/tests/sf-mc3-evidence-matrix.test.mjs
+  node scripts/supertrader/guard-protected-paths.mjs --base origin/main
+  ```
+
+  Die Zeile des PR in §8.1 darf nach dem Merge entfallen; der Erzeuger nutzt dann die feste Nummer (vor dem Merge bricht er weiter ab).
+- **Probe-Merge** (lokal, Wegwerf-Branch, nicht gepusht und gelöscht): dieser Branch + #1233 `f12855d` + #1234 `5c31527` + #1235 `eacfc9e`, konfliktfrei. Vor der Neuerzeugung waren `MC3-EV-DOC-EQUALS-GENERATOR`, `-CLASSES` und `-MERGE-FORECAST` erwartungsgemäß rot. Nach der Neuerzeugung meldete `--check` MATCH. Ergebnis: Supertrader-Suite 1.109 Tests, 0 Fehler (12 übersprungen), Core 308/308.
+  - Erwartete Zählung nach allen drei Merges, gleich der Vorschau in Abschnitt 10.4 des Dokuments: BELEGT 23, TEILWEISE 58, OFFEN 0, BLOCKIERT 49 (Klasse 1 14, Klasse 2 22, Klasse 4 13), Pakete unverändert. Der Ausgangsstand nach den Regeln 1.0.0 wird dann als BELEGT 22, TEILWEISE 49, OFFEN 16, BLOCKIERT 43 ausgewiesen.
+  - Statuswechsel kommen nur aus #1233: Stopps/Slippage/Kosten von C01 und C02 TEILWEISE → BELEGT. #1234 und #1235 ordnen nur Blocker um (V13-Lauf wird Owner-Freigabe, ALL13 „auf main, noch nicht ausgewertet“).
