@@ -26,7 +26,7 @@ Ein Lauf im automatischen Weg:
 
 | # | Schritt | rot heißt |
 |---|---|---|
-| 1 | Weg bestimmen: `schedule` oder `mode=auto` ist automatisch, nur auf `main` und nur mit `SF8_AUTO_PUBLISH=true` | kein Lauf |
+| 1 | Weg bestimmen: `schedule` oder `mode=auto` ist automatisch, nur auf `main` und nur mit `SF8_AUTO_PUBLISH=true` | kein Lauf; auf `main` Alarm (Schritt 10) |
 | 2 | Produkt- und Vertragstests `sf-*` | kein neuer Stand |
 | 3 | Eingangsprüfung `--require-current`: Marktstand = letzte XNYS-Sitzung, Nebenquellen im Höchstalter (Security Master 60, Namen 45, Wochenreihen/SIC/Kontinuität 10 Tage) | Exit 3, kein neuer Stand |
 | 4 | Öffentliche Teile ohne `records/`, Budget 16 MB bzw. 2 MB je Datei | kein neuer Stand |
@@ -35,7 +35,7 @@ Ein Lauf im automatischen Weg:
 | 7 | **zweiter, unabhängiger Lauf** in ein zweites Verzeichnis, Fingerabdruck | – |
 | 8 | **Veröffentlichungsvertrag** `sf8-auto-publication-1.0.0` | BLOCKED: Exit 5, kein Commit |
 | 9 | Commit genau des geprüften Verzeichnisses in **einem** Commit, Nachweis als Trailer; Push über `push-with-retry.sh` | – |
-| 10 | Alarm: Ein roter automatischer Lauf öffnet bzw. ergänzt ein Issue `pipeline-alarm` (`supertrader-sf8-candidates`); ein grüner schließt es | – |
+| 10 | Alarm: Ein roter automatischer Lauf öffnet bzw. ergänzt ein Issue `pipeline-alarm` (`supertrader-sf8-candidates`); ein grüner schließt es. Automatisch heißt `schedule` oder Eingabe `mode=auto` auf `main`. Das gilt auch, wenn der Job vor oder in Schritt 1 scheitert (dann ist `outputs.auto` leer). Ein manueller Lauf alarmiert nie, ebenso wenig ein Probelauf `mode=auto` auf einem anderen Zweig | – |
 
 Das vollständige Ergebnis bleibt 14 Tage als CI-Artefakt erhalten, auch bei Rot: Vertragsdatensätze, DQ-Bericht, Vertragsnachweis.
 
