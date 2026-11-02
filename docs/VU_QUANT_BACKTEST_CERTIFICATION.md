@@ -79,6 +79,8 @@ Der Vertrag (`quant/methodology/setup-backtest-contract-v1.json`):
 
 Gemessen heute: 4 Stände über 18 Tage, 1.009 Wechsel und noch kein abgeschlossenes Ergebnis.
 
+Das Gate `independence` zählt verschiedene Kalendermonate mit mindestens einem Ereignis (`JJJJ-MM` des Ereignisdatums). Die Schwelle heißt seit der Entscheidung FV-1 `eventCalendarMonths` (20) in `quant/methodology/backtest-certification-v1.json`, vorher `independentWeeks`. Wert und Zählung sind gleich geblieben; ein Vertrag mit dem alten Namen wird über `legacyRequirementAliases` weiter gelesen (`backtest-certification.js#requirement`). Der Name sagt nicht mehr Wochen oder Unabhängigkeit: Die M6-Fenster überlappen, eine echte Unabhängigkeitsschwelle wäre eine eigene Entscheidung.
+
 ## Strategie- und Faktor-Backtest
 
 - **Vertrag:** `quant/methodology/strategy-backtest-contract-v1.json`. Er regelt monatliches Rebalancing, Auswahl ohne Ersatzwerte, höchstens 30 Positionen, Gleichgewicht, Gleichstände nach Kürzel, Cash, Gesamtrendite, Delisting, fehlende Kurse, LOW/BASE/HIGH und den SPY als Benchmark.
