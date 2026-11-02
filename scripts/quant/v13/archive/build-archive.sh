@@ -32,7 +32,8 @@ for spec in "${PARTS[@]}"; do
     rm -f ./_inventory.tsv )
   files=$(wc -l < "$OUT/$name.inventory.tsv")
   plain_sha=$(sha256sum "$tmp" | cut -c1-64); plain_size=$(stat -c %s "$tmp")
-  openssl rand -out "$OUT/$name.key" 32
+  # Passphrase als Hex-Zeile: -pass file: liest nur bis zum ersten \n bzw. NUL; Binaerbytes kuerzten sie (Befund 01.11.2026).
+  openssl rand -hex 32 > "$OUT/$name.key"
   openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass file:"$OUT/$name.key" -in "$tmp" -out "$OUT/$name.tar.enc"
   wrapped=$(openssl pkeyutl -encrypt -pubin -inkey "$PUB" -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -in "$OUT/$name.key" | base64 -w0)
   shred -u "$OUT/$name.key"; rm -f "$tmp"

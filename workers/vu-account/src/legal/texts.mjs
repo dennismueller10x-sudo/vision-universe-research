@@ -7,6 +7,7 @@
 // NICHT rechtlich freigegeben. Offene Punkte stehen als [[OFFEN: …]] / [[PRÜFEN: …]] im
 // Text und gesammelt in docs/accounts/RECHTLICHE_ABNAHME.md. Unternehmensangaben stammen
 // ausschliesslich aus dem bestaetigten Impressum (landing/impressum/, Stand 16.10.2026).
+// Fassung 2 (02.11.2026): Preis ohne festen Betrag (Tarifverwaltung), Umsatzsteuer ueber Stripe Tax.
 //
 // Freigabe: LEGAL_STATUS auf 'freigegeben' und LEGAL_VERSION hochzaehlen (eigener PR mit
 // Owner-/Anwaltsfreigabe). Der oeffentliche Checkout setzt zusaetzlich VU_LEGAL_APPROVED =
@@ -14,7 +15,7 @@
 //
 // Mini-Auszeichnung: Bloecke {h}, {p}, {ul}, {note}; im Text **fett** und [Text](/pfad|https://…).
 
-export const LEGAL_VERSION = 'vu-recht-2026-10-29-entwurf-1';
+export const LEGAL_VERSION = 'vu-recht-2026-11-02-entwurf-2';
 export const LEGAL_STATUS = 'entwurf'; // 'entwurf' | 'freigegeben'
 export const LEGAL_BASE = 'https://konto.visionuniverse.de';
 
@@ -43,8 +44,9 @@ export const LINKS = Object.freeze({
   newsletter: '/rechtliches/newsletter', kuendigen: '/kuendigen', widerrufen: '/widerrufen',
 });
 
-// Pro: Preis und Laufzeit (muessen zu plan_prices/Stripe passen; der Checkout gleicht sie vor jeder Sitzung ab).
-export const PRO_TERMS = Object.freeze({amount: 100, currency: 'EUR', interval: 'month', label: '1,00 € pro Monat inkl. gesetzlicher Umsatzsteuer'});
+// Pro: Der Preis steht bewusst nicht in den Bedingungen. Er kommt zur Laufzeit aus plan_prices (Preisseite, Bestelluebersicht,
+// Stripe-Bestelltext billing.mjs#checkoutSubmitText, Vertragsbestaetigung mail.mjs#contractConfirmation) und kann in der
+// Tarifverwaltung geaendert werden (docs/accounts/TARIFVERWALTUNG.md); ein fester Betrag hier wuerde dann widersprechen.
 
 export const DOCS = {
   impressum: {
@@ -85,10 +87,10 @@ export const DOCS = {
       {p: `Mit dem Klick auf die zahlungspflichtige Bestellschaltfläche auf der Stripe-Zahlungsseite gibst du ein verbindliches Angebot ab. Der Vertrag kommt zustande, wenn die Zahlungsseite den Abschluss bestätigt. Wir senden dir danach eine Vertragsbestätigung mit diesen Bedingungen und der Widerrufsbelehrung per E-Mail. ${CHECK('Beschriftung der letzten Schaltfläche bei Stripe („Abonnieren“) und ergänzender Hinweistext nach § 312j Abs. 3 BGB')}`},
       {p: 'Vertragssprache ist Deutsch. Den Vertragstext speichern wir nicht gesondert für dich abrufbar; du erhältst ihn mit der Vertragsbestätigung per E-Mail. Die jeweils aktuelle Fassung findest du unter [konto.visionuniverse.de/rechtliches/agb](/rechtliches/agb).'},
       {h: '5. Preis, Zahlung, Rechnung'},
-      {p: `Pro kostet ${PRO_TERMS.label} (Bruttopreis; der Betrag enthält die Umsatzsteuer und wird nicht zusätzlich erhöht). Weitere Kosten fallen nicht an.`},
+      {p: `Der Preis für Pro ist der Preis, der dir vor der Bestellung auf der Preisseite, in der Bestellübersicht und auf der Zahlungsseite angezeigt wird. Er wird in der Vertragsbestätigung genannt und gilt für die gesamte Laufzeit deines Abonnements. Es ist ein Bruttopreis: Er enthält die gesetzliche Umsatzsteuer und wird nicht zusätzlich erhöht. Weitere Kosten fallen nicht an. ${CHECK('Preisangabe über Bestellübersicht und Vertragsbestätigung statt eines festen Betrags in den Bedingungen')}`},
       {p: 'Der Betrag ist jeweils zu Beginn eines Abrechnungsmonats im Voraus fällig. Die Zahlung wickelt die Stripe Payments Europe, Ltd. (Irland) ab. Welche Zahlungsarten angeboten werden (z. B. Karte, Apple Pay, Google Pay, PayPal, SEPA-Lastschrift, Klarna, Link), richtet sich nach deinem Gerät, deinem Land und der Eignung der Zahlungsart für wiederkehrende Zahlungen; angezeigt werden nur die jeweils zugelassenen.'},
       {p: 'Bei SEPA-Lastschrift wird die erste Zahlung erst nach einigen Bankarbeitstagen bestätigt; bis dahin gilt Free. Schlägt eine Zahlung fehl, versucht Stripe den Einzug erneut; du erhältst einen Hinweis und kannst die Zahlungsart im Kundenportal ändern. Bleibt die Zahlung aus, endet der Pro-Zugang; dein Konto gilt dann als Free.'},
-      {p: `Rechnungen stellt die ${C.name} elektronisch aus; sie stehen im Konto unter „Abonnement“ und im Kundenportal bereit.`},
+      {p: `Rechnungen stellt die ${C.name} elektronisch aus; sie stehen im Konto unter „Abonnement“ und im Kundenportal bereit. Die Rechnung weist die im Preis enthaltene Umsatzsteuer aus; berechnet wird sie mit Stripe Tax anhand deiner Rechnungsadresse.`},
       {h: '6. Laufzeit, Verlängerung, Kündigung'},
       {p: 'Das Pro-Abonnement beginnt mit dem Vertragsschluss und läuft jeweils einen Monat. Es verlängert sich automatisch um einen weiteren Monat, wenn es nicht bis zum Ende des laufenden Monats gekündigt wird. Du kannst jederzeit zum Ende des bezahlten Monats kündigen; bis dahin bleibt Pro erhalten, danach gilt automatisch Free. Bereits bezahlte Monate werden bei einer ordentlichen Kündigung nicht anteilig erstattet.'},
       {p: 'Kündigen kannst du ohne Anmeldung über [Verträge hier kündigen](/kuendigen), angemeldet im Konto unter „Abonnement“ (Kundenportal) oder per E-Mail. Du erhältst eine Eingangsbestätigung mit Inhalt, Datum und Uhrzeit und den Zeitpunkt der Beendigung. Das Recht zur außerordentlichen Kündigung aus wichtigem Grund bleibt unberührt.'},
@@ -156,6 +158,7 @@ export const DOCS = {
       {p: 'Für ein Konto verarbeiten wir E-Mail-Adresse, Passwort (nur als Hash), optional einen Anzeigenamen, Einstellungen, Zeitpunkt der Zustimmung zu den Bedingungen, deine Watchlist und deine Tarifwahl. Rechtsgrundlage ist die Vertragserfüllung (Art. 6 Abs. 1 lit. b DSGVO). Anmeldung und Datenbank betreibt Supabase, Inc. als Auftragsverarbeiter mit Datenspeicherung in Frankfurt am Main (EU). Die Anmeldung hält eine Sitzung in technisch notwendigen Cookies auf konto.visionuniverse.de (§ 25 Abs. 2 Nr. 2 TDDDG). Zum Schutz vor Missbrauch verarbeiten wir die IP-Adresse kurzzeitig für Ratenbegrenzungen (Art. 6 Abs. 1 lit. f DSGVO).'},
       {h: '5. Abonnement und Zahlung'},
       {p: 'Für Pro verarbeiten wir Abonnementstatus, Laufzeit, Rechnungen und die Kundennummer beim Zahlungsdienstleister. Zahlungsdaten (Karte, Konto, PayPal) erhalten wir nicht; sie verarbeitet die Stripe Payments Europe, Ltd. (Irland), bei PayPal zusätzlich die PayPal (Europe) S.à r.l. et Cie, S.C.A. (Luxemburg), bei Klarna die Klarna Bank AB (Schweden), jeweils auch in eigener Verantwortung. Rechtsgrundlagen: Vertragserfüllung (Art. 6 Abs. 1 lit. b DSGVO) und gesetzliche Aufbewahrungspflichten (Art. 6 Abs. 1 lit. c DSGVO, § 147 AO, § 257 HGB).'},
+      {p: 'Zur Berechnung und zum Ausweis der Umsatzsteuer verwendet Stripe den Dienst Stripe Tax. Dafür verarbeitet Stripe deine Rechnungsadresse (mindestens Land und Postleitzahl) und, wenn du sie angibst, deine Umsatzsteuer-Identifikationsnummer. Rechtsgrundlage ist die Erfüllung gesetzlicher Pflichten (Art. 6 Abs. 1 lit. c DSGVO, Umsatzsteuergesetz).'},
       {h: '6. E-Mails zum Vertrag'},
       {p: `Bestätigungen (Registrierung, Passwort, Vertrag, Kündigung, Widerruf) versenden wir über Brevo (Sendinblue SAS, Frankreich) als Auftragsverarbeiter (Art. 6 Abs. 1 lit. b, c DSGVO). Zur Kommunikation über dein Konto und deinen Vertrag (z. B. Hinweise zu Änderungen der Bedingungen, Sicherheit, Störungen) führen wir bei Brevo eine Kontaktliste „Vision Universe App – Nutzer“ mit E-Mail-Adresse und Tarif (Free/Pro). Diese Liste dient nicht der Werbung. ${CHECK('Rechtsgrundlage Art. 6 Abs. 1 lit. b bzw. f DSGVO für die Kontaktliste')}`},
       {h: '7. Newsletter (nur mit Einwilligung)'},
