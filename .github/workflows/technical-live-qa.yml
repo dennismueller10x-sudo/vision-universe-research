@@ -60,7 +60,28 @@ jobs:
           PLAYWRIGHT_PATH: /tmp/pw/node_modules/playwright
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: node scripts/technical/world/live-qa.mjs "$IN_SITE" technical-live-qa
+      # A queued pre-Academy Pages release must not test a feature it did not publish.
+      # Inspect the triggering production ref as data; execute only the trusted checkout.
+      - name: Academy im veroeffentlichten Produktionsstand vorhanden
+        id: academy_release
+        if: >-
+          github.event_name == 'workflow_dispatch' ||
+          (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.event != 'pull_request')
+        env:
+          IN_RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$IN_RELEASE_SHA" =~ ^[a-f0-9]{40}$ ]] || exit 1
+          git fetch --filter=blob:none --no-tags --depth=1 origin "$IN_RELEASE_SHA"
+          path=$(git ls-tree -r --name-only "$IN_RELEASE_SHA" -- technical/academy/content.json)
+          enabled=false
+          if [ -n "$path" ]; then
+            test -f technical/academy/content.json
+            enabled=true
+          fi
+          echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
       - name: Strategie-Akademie live (32 Lektionen, 18 vollstaendige Nutzerwege)
+        if: steps.academy_release.outputs.enabled == 'true'
         env:
           NODE_PATH: /tmp/pw/node_modules
           PLAYWRIGHT_PATH: /tmp/pw/node_modules/playwright
