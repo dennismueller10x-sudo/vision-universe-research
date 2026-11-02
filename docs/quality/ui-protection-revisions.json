@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "ui-protection-revisions-1.0.0",
+  "purpose": "Versionierte, einzeln freigegebene Fortschreibung der UI-Byte-Sperre. Die Basis bleibt unveraendert eingefroren (V5.1-Nachweis, Freeze-Manifest docs/data/security-master/v130-quant-freeze.json, Test SMF-1). Wirksame Sperre = Basis mit allen Revisionen in Reihenfolge. Keine pauschale Ausnahme: jede Revision nennt genau eine Datei, ihren alten und neuen Hash, den PR und die Owner-Freigabe.",
+  "base": {
+    "file": "docs/quant-recovery/v51/ui-protection.json",
+    "sha256": "019d0608e6c7e3c697160aaa84319321245d88c44a67f8dcaf7df7721b4b9c5c"
+  },
+  "revisions": [
+    {
+      "id": "UIP-R1",
+      "date": "2026-11-02",
+      "pr": 1236,
+      "ownerApproval": "Owner 01.11.2026 und 02.11.2026: richtungsabhaengige NVDA-Pruefung in scripts/vu2/browser-qa.mjs fachlich freigegeben; Freeze-Provenienz nicht beschaedigen",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "2655c462c8d6e52ba989f24e57232c86ec267937a0d1604f8ace7c418b0bfef2",
+      "to": "362a13b29c91b50a8148805109e9a73479baf0635c030469bee4bbd69a33132a",
+      "scope": "nur die Setup-Karten-Pruefung (Richtung des veroeffentlichten Basisszenarios, gleiche Regel wie scripts/quality/vu3-regression-qa.mjs); 44 px, Barrierefreiheit, Budgets und alle anderen Pruefungen unveraendert"
+    }
+  ]
+}

@@ -43,6 +43,7 @@
     if (!head) return { view: "home", params: params };
     if (head === "screener") return { view: "screener", tab: path[1] === "gespeichert" ? "saved" : "build", params: params };
     if (head === "methodik") return { view: "method", params: params };
+    if (head === "assistent") return { view: "assistant", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
     if (head === "vorlagen") return { view: "templates", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
     if (head === "chart") {
       var t = String(path[1] || "").toUpperCase();
