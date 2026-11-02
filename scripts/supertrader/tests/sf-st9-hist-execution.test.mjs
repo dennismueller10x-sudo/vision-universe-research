@@ -186,12 +186,14 @@ test('Minervini missed stop: the event stop path is checked on every held bar; a
   assert.deepEqual(X.checkMinerviniStops(d, wrong).violations, { STOP_LEVEL_NOT_EVENT_PATH: 1 });
 });
 
-test('Turtle: no missed-stop check (unit stop level needs the engine N); declared, not silent', () => {
-  const { A, params } = study();
+test('Turtle: missed unit stops are checked with an own Wilder N (no engine N); declared in the audit', () => {
+  const { A, B, addedIds, params } = study();
   const ref = { key: 'TURTLE_S1' };
-  const res = []; S.runStudy({ dsA: A, dsB: A, addedIds: new Set(), params, onRun: ({ key, frame, ds: d, r, opts }) => { if (key === ref.key && frame === 'A') res.push(X.auditRun(d, r, { key, costs: opts.costs, from: opts.from })); } });
-  assert.equal(res[0].missedStopCheck, 'NOT_CHECKED_LEVEL_UNKNOWN');
-  assert.equal(res[0].stopChecks, null);
+  const res = []; S.runStudy({ dsA: A, dsB: B, addedIds, params, onRun: ({ key, frame, ds: d, r, opts }) => { if (key === ref.key && frame === 'B') res.push(X.auditRun(d, r, { key, costs: opts.costs, from: opts.from })); } });
+  assert.equal(res[0].missedStopCheck, 'TURTLE_INDEPENDENT_N_UNIT_STOPS');
+  assert.equal(res[0].pass, true, JSON.stringify(res[0].violations));
+  assert.ok(res[0].stopChecks.positions >= 1 && res[0].stopChecks.heldUnitBars > 0, JSON.stringify(res[0].stopChecks));
+  assert.equal(res[0].version, 'st9-hist-execution-1.1.0');
 });
 
 test('sec-pit r12: fail closed when absent or unreadable; its SHA-256 enters the input fingerprint', () => {

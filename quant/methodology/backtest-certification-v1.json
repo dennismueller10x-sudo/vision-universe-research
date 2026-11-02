@@ -33,7 +33,9 @@
     "SETUP_BACKTEST": {
       "tier": "TESTED", "ownerApproval": true,
       "ownerApprovalSource": "quant/methodology/setup-state-v1.json requirements.backtestCertification (setup-state-contract.js erzwingt NOT_CERTIFIED bis zur Freigabe)",
-      "requirements": { "historyDates": 120, "historySpanDays": 180, "completedOutcomesM6": 100, "titles": 20, "independentWeeks": 20, "oosMinPerSegment": 30 }
+      "requirements": { "historyDates": 120, "historySpanDays": 180, "completedOutcomesM6": 100, "titles": 20, "eventCalendarMonths": 20, "oosMinPerSegment": 30 },
+      "requirementNotes": { "eventCalendarMonths": "Verschiedene Kalendermonate (JJJJ-MM des Ereignisdatums) mit mindestens einem Setup-Ereignis. Bis zur Entscheidung FV-1 hiess der Schluessel irrefuehrend independentWeeks; Wert 20 und Zaehlung unveraendert. Gezaehlt werden Monate, keine Wochen und keine statistisch unabhaengigen Faelle." },
+      "legacyRequirementAliases": { "independentWeeks": "eventCalendarMonths" }
     },
     "STRATEGY_BACKTEST": {
       "tier": "TESTED", "ownerApproval": false,

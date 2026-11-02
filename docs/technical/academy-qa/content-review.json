@@ -1,0 +1,493 @@
+{
+  "contentSha256": "39fa3917a4d7d8df083cbe859fa88ce4be4a430d1b392ce6c78c4fa064ba75ab",
+  "reviewType": "editorial self-review against internal definitions; no independent expert certification",
+  "reviewedAssistantSnapshot": "46fca1f420087067cdfd25e0e62189a61cccc41d",
+  "integratedAssistantHead": "97b15816089c91e28c577c5c24c5f3a2e4c6f66b",
+  "lessonCount": 32,
+  "pathCount": 8,
+  "glossaryCount": 19,
+  "sources": [
+    {
+      "path": "docs/technical/CANDLESTICK_EVIDENCE.md",
+      "sourceSnapshotSha256": "d803ef913a1310d1d4caa38f6341f1e0e4617529fffa3007c506763c599db4e6"
+    },
+    {
+      "path": "docs/technical/DATA_CONTRACT.md",
+      "sourceSnapshotSha256": "ce078de88fc6acee35e9e5d9832d7100c792d38e3ebcfd042adc8bfda5701e70"
+    },
+    {
+      "path": "docs/technical/FORMATION_VALIDATION.md",
+      "sourceSnapshotSha256": "4620d4536cf19b9a01fa8b17c68f9784427f862db63acfae7d6e347c2633de93"
+    },
+    {
+      "path": "docs/technical/MULTI_TIMEFRAME.md",
+      "sourceSnapshotSha256": "0f873838dbcc21dd11b98f85648ff15f5d052ffc57030f20c9b65fa9d53c2212"
+    },
+    {
+      "path": "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
+      "sourceSnapshotSha256": "165969e1b5731bb9a94b469800046f86415fdaafa8887a82050e7e95e66e50e0"
+    },
+    {
+      "path": "docs/technical/TECHNICAL_ASSISTANT.md",
+      "sourceSnapshotSha256": "d5d78347eb61d79b30e4cfab0ba35885db054689c3a2065e9ddc8311ce68a000"
+    },
+    {
+      "path": "docs/technical/TECHNICAL_LIBRARY.md",
+      "sourceSnapshotSha256": "2a5582f9fb234d82237e924cdbe597320c666186d9963f55bc65b4af6fae4081"
+    },
+    {
+      "path": "docs/technical/WEEKLY_FORMATIONS.md",
+      "sourceSnapshotSha256": "b5ee518fb4d2bc889aa445d6ac8ff62bf5527d02b2ae9eef4292e1cf8a5c1ff6"
+    },
+    {
+      "path": "quant/engines/technical/indicators.js",
+      "sourceSnapshotSha256": "1caf02d87793254c4d338e68bc9e0ff80587bb8f31b12bb0b7c63aecc58bfc66"
+    },
+    {
+      "path": "technical/app.js",
+      "sourceSnapshotSha256": "ccf795f14f8bd52be6d565d52422dbb9c1c5662bf30c45a870247a85860defa2"
+    },
+    {
+      "path": "technical/engine/assistant.js",
+      "sourceSnapshotSha256": "ae9a98b3991609ab9590725bdb01865ce026da2809a27538648c95d0f78284c2"
+    },
+    {
+      "path": "technical/engine/templates.js",
+      "sourceSnapshotSha256": "ec4f62396d4a06c44d1c9a2de09048f16dbfbdf727c9c2b41b9a009800067a67"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "struktur-1",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "technical/app.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "kerze"
+      ],
+      "practice": "#/chart"
+    },
+    {
+      "id": "struktur-2",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "technical/app.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "struktur"
+      ],
+      "practice": "#/chart"
+    },
+    {
+      "id": "struktur-3",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "technical/app.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "niveau"
+      ],
+      "practice": "#/chart"
+    },
+    {
+      "id": "struktur-4",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "technical/app.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "daten"
+      ],
+      "practice": "#/chart"
+    },
+    {
+      "id": "trend-1",
+      "exampleKind": "constructed",
+      "sources": [
+        "technical/engine/templates.js",
+        "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "sma",
+        "struktur"
+      ],
+      "practice": "#/assistent/trendfolge"
+    },
+    {
+      "id": "trend-2",
+      "exampleKind": "constructed",
+      "sources": [
+        "technical/engine/templates.js",
+        "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "sma"
+      ],
+      "practice": "#/assistent/trendfolge"
+    },
+    {
+      "id": "trend-3",
+      "exampleKind": "constructed",
+      "sources": [
+        "technical/engine/templates.js",
+        "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "rs"
+      ],
+      "practice": "#/assistent/trendfolge"
+    },
+    {
+      "id": "trend-4",
+      "exampleKind": "constructed",
+      "sources": [
+        "technical/engine/templates.js",
+        "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "sma",
+        "rs"
+      ],
+      "practice": "#/vorlagen/establishedUptrend"
+    },
+    {
+      "id": "breakout-1",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/FORMATION_VALIDATION.md",
+        "technical/engine/templates.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "formation"
+      ],
+      "practice": "#/vorlagen"
+    },
+    {
+      "id": "breakout-2",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/FORMATION_VALIDATION.md",
+        "technical/engine/templates.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "formation",
+        "ausbruch"
+      ],
+      "practice": "#/assistent/ausbruch"
+    },
+    {
+      "id": "breakout-3",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/FORMATION_VALIDATION.md",
+        "technical/engine/templates.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "volumen"
+      ],
+      "practice": "#/assistent/ausbruch"
+    },
+    {
+      "id": "breakout-4",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/FORMATION_VALIDATION.md",
+        "technical/engine/templates.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "ausbruch",
+        "formation"
+      ],
+      "practice": "#/chart"
+    },
+    {
+      "id": "momentum-1",
+      "exampleKind": "constructed",
+      "sources": [
+        "quant/engines/technical/indicators.js",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "momentum"
+      ],
+      "practice": "#/assistent/momentum"
+    },
+    {
+      "id": "momentum-2",
+      "exampleKind": "constructed",
+      "sources": [
+        "quant/engines/technical/indicators.js",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "rsi"
+      ],
+      "practice": "#/chart"
+    },
+    {
+      "id": "momentum-3",
+      "exampleKind": "constructed",
+      "sources": [
+        "quant/engines/technical/indicators.js",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "macd"
+      ],
+      "practice": "#/chart"
+    },
+    {
+      "id": "momentum-4",
+      "exampleKind": "constructed",
+      "sources": [
+        "quant/engines/technical/indicators.js",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "momentum",
+        "sma",
+        "macd"
+      ],
+      "practice": "#/assistent/momentum"
+    },
+    {
+      "id": "risiko-1",
+      "exampleKind": "constructed",
+      "sources": [
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "volatilitaet"
+      ],
+      "practice": "#/assistent/ruhephase"
+    },
+    {
+      "id": "risiko-2",
+      "exampleKind": "constructed",
+      "sources": [
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "atr"
+      ],
+      "practice": "#/chart"
+    },
+    {
+      "id": "risiko-3",
+      "exampleKind": "constructed",
+      "sources": [
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "bollinger",
+        "volatilitaet"
+      ],
+      "practice": "#/assistent/ruhephase"
+    },
+    {
+      "id": "risiko-4",
+      "exampleKind": "constructed",
+      "sources": [
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "risiko",
+        "atr"
+      ],
+      "practice": "#/chart"
+    },
+    {
+      "id": "wechsel-1",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/CANDLESTICK_EVIDENCE.md",
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "struktur"
+      ],
+      "practice": "#/assistent/trendwende"
+    },
+    {
+      "id": "wechsel-2",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/CANDLESTICK_EVIDENCE.md",
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "divergenz",
+        "rsi"
+      ],
+      "practice": "#/chart"
+    },
+    {
+      "id": "wechsel-3",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/CANDLESTICK_EVIDENCE.md",
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "kerze",
+        "formation"
+      ],
+      "practice": "#/chart"
+    },
+    {
+      "id": "wechsel-4",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/CANDLESTICK_EVIDENCE.md",
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "sma",
+        "macd"
+      ],
+      "practice": "#/assistent/trendwende"
+    },
+    {
+      "id": "zeitrahmen-1",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/MULTI_TIMEFRAME.md",
+        "docs/technical/WEEKLY_FORMATIONS.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "zeitrahmen",
+        "sma"
+      ],
+      "practice": "#/assistent/zeitrahmen"
+    },
+    {
+      "id": "zeitrahmen-2",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/MULTI_TIMEFRAME.md",
+        "docs/technical/WEEKLY_FORMATIONS.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "zeitrahmen",
+        "daten"
+      ],
+      "practice": "#/chart"
+    },
+    {
+      "id": "zeitrahmen-3",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/MULTI_TIMEFRAME.md",
+        "docs/technical/WEEKLY_FORMATIONS.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "zeitrahmen",
+        "struktur"
+      ],
+      "practice": "#/assistent/zeitrahmen"
+    },
+    {
+      "id": "zeitrahmen-4",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/MULTI_TIMEFRAME.md",
+        "docs/technical/WEEKLY_FORMATIONS.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "zeitrahmen",
+        "daten"
+      ],
+      "practice": "#/assistent/zeitrahmen"
+    },
+    {
+      "id": "routine-1",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/DATA_CONTRACT.md",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "kriterium"
+      ],
+      "practice": "#/assistent/kombination"
+    },
+    {
+      "id": "routine-2",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/DATA_CONTRACT.md",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "kriterium"
+      ],
+      "practice": "#/assistent/kombination"
+    },
+    {
+      "id": "routine-3",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/DATA_CONTRACT.md",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "daten"
+      ],
+      "practice": "#/assistent/kombination"
+    },
+    {
+      "id": "routine-4",
+      "exampleKind": "constructed",
+      "sources": [
+        "docs/technical/DATA_CONTRACT.md",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "glossary": [
+        "kriterium",
+        "daten"
+      ],
+      "practice": "#/screener"
+    }
+  ]
+}

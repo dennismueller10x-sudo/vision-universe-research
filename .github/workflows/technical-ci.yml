@@ -7,6 +7,7 @@ on:
   pull_request:
     paths:
       - 'technical/**'
+      - 'academy/**'
       - 'quant/engines/technical/**'
       - 'quant/tests/technical-*'
       - 'quant/tests/fixtures/technical-reference-*'
@@ -20,6 +21,7 @@ on:
     branches: [main]
     paths:
       - 'technical/**'
+      - 'academy/**'
       - 'quant/engines/technical/**'
       - 'scripts/technical/world/**'
       - '.github/workflows/technical-*.yml'
@@ -47,16 +49,22 @@ jobs:
         run: node --test quant/tests/technical-*.test.mjs quant/tests/ti-*.test.mjs
       - name: Produktwelt und Datensatzvertrag
         run: node --test technical/tests/*.test.mjs
+      - name: Bestehende Academy-Engine
+        run: node --test academy/engines/*.test.mjs
       - name: Hero-Block synchron
         run: node scripts/design/sync-product-hero.mjs --check
       - name: Browser-Abhaengigkeit (isoliert, wie vu2-browser-qa.yml)
         run: |
-          npm install --prefix /tmp/tc-qa playwright@1.58.2
+          npm install --prefix /tmp/tc-qa playwright@1.58.2 axe-core@4.10.3
           /tmp/tc-qa/node_modules/.bin/playwright install --with-deps chromium
       - name: Browser-Pruefung (390/1280 px, Hell/Dunkel, alle Ansichten)
         env:
           NODE_PATH: /tmp/tc-qa/node_modules
         run: node scripts/technical/world/browser-qa.mjs --out "$RUNNER_TEMP/technical-qa"
+      - name: Strategie-Akademie (360/390/1280 px, Hell/Dunkel, alle 32 Lektionen)
+        env:
+          NODE_PATH: /tmp/tc-qa/node_modules
+        run: node scripts/technical/world/academy-browser-qa.mjs --out "$RUNNER_TEMP/technical-qa/academy"
       - name: Pruefbericht sichern
         if: always()
         uses: actions/upload-artifact@v4
