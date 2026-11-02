@@ -413,3 +413,48 @@ Weiter Draft, nicht freigegeben: #1233, #1234, #1235.
 - 41 von 41 Gegenproben werden rot (vorher 38).
 - Der ALL13-Plan-Pin wurde bewusst neu gesetzt; neu sind nur die drei Gegenproben.
 - Die Engines sind byte-gleich, TOP5-Plan und -Pin unverändert.
+
+## 19. 02.11.2026, ~08:30 UTC: Integrationsrunde abgeschlossen
+
+Der Owner hat #1239 am 02.11. freigegeben.
+- **Review:** Die Prüfung bleibt scharf. NL5 wird rot, wenn `technical` fehlt, ein Job dazukommt oder `supertrader-prune` fehlt. Der Alarm-Job wertet `RESULT_TECHNICAL` aus.
+- **Roter Check `frontend` auf #1239:** Er war identisch mit main seit 31.10. (Europa-Route `rheinmetall` zeigt „Europa noch nicht verfügbar“, dazu ein WebKit-Zeitraumtext). #1239 hat das weder verursacht noch verdeckt. Der Befund ist an die Quant/Discover-Sitzung übergeben.
+
+**Merge-Commits auf `main`:**
+
+| PR | Merge-Commit | PR | Merge-Commit |
+|---|---|---|---|
+| #1219 | f0fd146 | #1218 | 5a60e35 |
+| #1199 | 1dfffb0 | #1220 | 9493236 |
+| #1217 | 6d065c3 | #1198 | 3726911 |
+| #1239 | 08edec9 | #1189 | 3fe4fe4 |
+| #1200 | ca236fd | #1196 | 2d30160 |
+| #1191 | f16c447 | #1190 | 659df6c |
+
+**Neuer echter Fehler, gezielt behoben (#1196, 9fdd513):**
+- Die Schlüsselsuche der Quality Gates hat das Planfeld `token` gemeldet. Es enthält den zitierten #709-Baustein, zum Beispiel „55-Tage“.
+- Die Suche ist unverändert. Das Feld heißt jetzt `sourcePhrase`, Plan 1.1.1, Pins bewusst neu gesetzt. Werte, Regeln und Abnahmekriterien sind unverändert, alles vor jedem Studienergebnis.
+
+**`main` 659df6c, lokal geprüft:**
+
+| Prüfung | Ergebnis |
+|---|---|
+| Quant | 3.857/0 |
+| Core | 308/0 |
+| Discover | 581/0 |
+| Technical | 61/0 |
+| Supertrader | 1.014/0 |
+| Screener | 46/0 |
+| SF9-E2E | 11/0 |
+| Python-Quant | OK |
+| Testisolation | OK |
+
+- DQ-TW-1..8 und DQ-SF8-1..7 sind PASS. Für DQ-SF8-8 wurde dieser Lauf nicht ausgewertet; das letzte Ergebnis war PASS mit 0/3.368 (§17).
+- TOP5-Prüfer mit 0 Abweichungen, Abhängigkeit `PENDING_PR_1148`.
+- Discover Frontend QA ist auf `main` weiter rot (Europa, siehe oben, nicht Supertrader).
+
+**Weiter Draft, nicht freigegeben, Basis jetzt `main`:** #1233, #1234, #1235.
+
+#1235 braucht vor einer Freigabe einen Nachzug:
+- Konflikt in `cert-prep-top5.mjs`.
+- Das Feld `token` auch im ALL13-Plan in `sourcePhrase` umbenennen und den Pin neu setzen.
