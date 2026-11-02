@@ -12,16 +12,16 @@
   function list(items) { return node('ul', null, {}, items.map(function (s) { return node('li', s); })); }
   function section(title, children) { return node('section', null, {}, [node('h2', title)].concat(children)); }
   function sessionStore() { try { return g.sessionStorage; } catch (_) { return null; } }
-  function capture() {
+  function capture(clear) {
     if (!current) return;
     var selected = current.form.querySelector('input:checked');
     memorySession = { id: current.lesson.id, contentVersion: current.content.contentVersion, lessonVersion: current.lesson.version,
       choice: selected ? selected.value : null, checked: current.checked, y: g.scrollY };
-    M.saveSession(sessionStore(), memorySession); current = null;
+    M.saveSession(sessionStore(), memorySession); if(clear)current = null;
   }
   // Registered before app.js, so the old lesson still exists when navigation starts.
-  g.addEventListener('hashchange', capture);
-  g.addEventListener('pagehide', capture);
+  g.addEventListener('hashchange', function(){capture(true);});
+  g.addEventListener('pagehide', function(){capture(false);});
   function store() { try { return g.localStorage; } catch (_) { return null; } }
   function header(title) { return node('header', null, { class: 'tc-head' }, [link('← Technical', '#/'), node('h1', title, { class: 'tc-title', tabindex: '-1' })]); }
   function figure(visual) {
@@ -51,7 +51,7 @@
       var reset = node('button','Lokalen Fortschritt zurücksetzen',{type:'button'});
       reset.addEventListener('click',function(){
         if (!g.confirm('Alle lokalen Lektionsabschlüsse zurücksetzen?')) return;
-        if (M.save(store(),content,[])) paint(host,content,null,false); else wrap.append(node('p','Speichern ist gesperrt. Der lokale Fortschritt wurde nicht verändert.',{role:'status'}));
+        if (M.save(store(),content,[])) { paint(host,content,null,false); host.querySelector('button').focus({preventScroll:true}); } else wrap.append(node('p','Speichern ist gesperrt. Der lokale Fortschritt wurde nicht verändert.',{role:'status'}));
       });
       wrap.append(reset);
       if (resume && content.lessons.some(function(l){return l.id===resume.id;})) wrap.append(link('Begonnene Lektion fortsetzen', '#/akademie/'+resume.id));

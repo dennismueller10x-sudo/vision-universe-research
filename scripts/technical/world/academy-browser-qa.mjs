@@ -76,7 +76,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
   await page.locator('input[type=radio]').first().focus();await page.keyboard.press('Space');assert(await page.locator('input:checked').count()===1,'keyboard radio');
   const term=page.locator('summary').first();await term.focus();await page.keyboard.press('Enter');assert(await term.evaluate(n=>n.parentElement.open),'keyboard glossary');
   await page.getByRole('link',{name:'Nächste Lektion →',exact:true}).click();await page.getByRole('heading',{name:'Bollinger-Bänder',exact:true}).waitFor();await page.getByRole('link',{name:'← Vorherige Lektion',exact:true}).click();await page.getByRole('heading',{name:'ATR',exact:true}).waitFor();
-  await page.goto(base+'#/akademie');await page.getByRole('heading',{name:'Strategie-Akademie',exact:true}).waitFor();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Lokalen Fortschritt zurücksetzen'}).click();await page.getByRole('status').filter({hasText:'0 von 32'}).waitFor();
+  await page.goto(base+'#/akademie');await page.getByRole('heading',{name:'Strategie-Akademie',exact:true}).waitFor();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Lokalen Fortschritt zurücksetzen'}).click();await page.getByRole('status').filter({hasText:'0 von 32'}).waitFor();assert(await page.getByRole('button',{name:'Lokalen Fortschritt zurücksetzen'}).evaluate(n=>n===document.activeElement),'reset retains focus');
  });
  await context.close();
 }
@@ -85,6 +85,7 @@ await check('real chart analysis and screener handoff retain academy return',asy
  await page.goto(base+'#/akademie/momentum-2');await page.locator('a[data-practice]').click();await page.getByRole('heading',{name:'Chart Studio',exact:true}).waitFor();
  await page.evaluate(()=>location.hash='#/chart/NVDA');const rsi=page.getByRole('button',{name:'RSI',exact:true});await rsi.waitFor();if(await rsi.getAttribute('aria-pressed')!=='true')await rsi.click();assert(await rsi.getAttribute('aria-pressed')==='true','RSI enabled');
  await page.getByRole('link',{name:'← Zur Lektion: RSI',exact:true}).click();await page.getByRole('heading',{name:'RSI',exact:true}).waitFor();
+ await page.evaluate(()=>{dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}));dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));});await page.locator('input[value=a]').check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
  await page.goto(base+'#/akademie/routine-2');await page.locator('a[data-practice]').click();await page.getByRole('heading',{name:'Kriterien kombinieren',exact:true}).waitFor();
  await page.locator('a',{hasText:'Im Screener bearbeiten'}).click();await page.locator('.tc-builder').waitFor();await page.getByRole('link',{name:'← Zur Lektion: Filter kombinieren',exact:true}).click();await page.getByRole('heading',{name:'Filter kombinieren',exact:true}).waitFor();await context.close();
 });
