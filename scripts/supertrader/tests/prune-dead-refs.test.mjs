@@ -248,3 +248,21 @@ test('Workflow: Bereinigung nur per Modus-Eingabe, ohne Anbieterabruf und ohne v
   const ci = readFileSync(join(ROOT, '.github', 'workflows', 'supertrader-ci.yml'), 'utf8');
   assert.match(ci, /cp -r supertrader "\$RUNNER_TEMP\/supertrader-inkrementell"\n\s+node scripts\/supertrader\/build\.mjs --out="\$RUNNER_TEMP\/supertrader-inkrementell"/, 'Speicher-Fruehwarnung in der CI');
 });
+
+/* Betriebsaudit 01.11.2026 (ADR-005): Der Commit-Schritt rebased und pusht auf den Zweig des Laufs
+   (scripts/ci/commit-and-push.sh: origin/$GITHUB_REF_NAME). Ausgecheckt werden muss deshalb genau dieser Zweig,
+   an der Spitze - nie fest `main` und nie github.sha. Geprueft wird nur der eigene Workflow, nicht der Text des
+   gemeinsamen Skripts: dieser Test laeuft im Integritaetsschritt vor dem Commit, eine Umformulierung ausserhalb von
+   Supertrader darf den Tageslauf nicht rot machen. */
+test('Workflow ADR-005: Checkout an der Spitze des eigenen Zweigs, Commit nur supertrader/', () => {
+  const wf = readFileSync(join(ROOT, '.github', 'workflows', 'supertrader-signals.yml'), 'utf8');
+  const code = wf.split('\n').filter((l) => !/^\s*#/.test(l)).join('\n');
+  const von = code.indexOf('\n  signals:\n'), bis = code.indexOf('\n  sf8:\n');
+  assert.ok(von > 0 && bis > von, 'Jobs signals und sf8 gefunden');
+  const signals = code.slice(von, bis);
+  const refs = [...signals.matchAll(/\n\s+ref: ([^\n]+)/g)].map((m) => m[1].trim());
+  assert.deepEqual(refs, ['${{ github.ref }}'], 'genau ein Checkout, an der Spitze des eigenen Zweigs');
+  assert.doesNotMatch(signals, /github\.sha/);
+  assert.match(signals, /\n\s+bash scripts\/ci\/commit-and-push\.sh "\$nachricht" supertrader\/(\n|$)/, 'nur eigene Pfade');
+  assert.equal((signals.match(/commit-and-push\.sh|push-with-retry\.sh|git push/g) || []).length, 1, 'genau eine Push-Stelle');
+});
