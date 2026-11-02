@@ -1,12 +1,12 @@
 # Supertrader – Evidenznachweis der 13 Methoden (C01–C13)
 
-> **Erzeugt, nicht von Hand ändern.** Erzeuger `scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs` (`st-mc3-evidence-matrix-1.1.0`). Neu erzeugen: `node scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs --out docs/SUPERTRADER_13_METHODS_EVIDENCE.md`. Prüfen: `--check docs/SUPERTRADER_13_METHODS_EVIDENCE.md` (Test `sf-mc3-evidence-matrix.test.mjs`).
+> **Erzeugt, nicht von Hand ändern.** Erzeuger `scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs` (`st-mc3-evidence-matrix-1.2.0`). Neu erzeugen: `node scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs --out docs/SUPERTRADER_13_METHODS_EVIDENCE.md`. Prüfen: `--check docs/SUPERTRADER_13_METHODS_EVIDENCE.md` (Test `sf-mc3-evidence-matrix.test.mjs`).
 
 Teil von Master Completion 3.0 (Supertrader S2/S4). Grundlage sind nur committete Quellen des Repositorys (Abschnitt 8). Es werden keine Handelsregeln, Parameter, Engines, Registrierungen, gepinnten Pläne, Zertifizierungskriterien (CC-1–CC-8) oder Veröffentlichungsgates geändert. Eine Methode ist nicht deshalb zertifiziert, weil sie implementiert und getestet ist.
 
 **Heute ist keine Methode zertifiziert** (`certification: DIAGNOSTIC_NOT_CERTIFIED`, `certificationCandidates: []`, `liveReadiness: LIVE_NOT_APPROVED`). `VALIDATED_TRADE_SIGNAL` ist für alle 13 gesperrt.
 
-Prüfdimensionen gesamt (13 × 10 = 130): BELEGT 21, TEILWEISE 60, OFFEN 3, BLOCKIERT 46. Ausgangsstand nach den Regeln 1.0.0: BELEGT 20, TEILWEISE 51, OFFEN 16, BLOCKIERT 43. BLOCKIERT nach Klassen (Abschnitt 9): Klasse 1 11, Klasse 2 22, Klasse 3 0, Klasse 4 13; davon die 43 Punkte des Ausgangsstands: Klasse 1 11, Klasse 2 19, Klasse 3 0, Klasse 4 13.
+Prüfdimensionen gesamt (13 × 10 = 130): BELEGT 21, TEILWEISE 60, OFFEN 0, BLOCKIERT 49. Ausgangsstand nach den Regeln 1.0.0: BELEGT 20, TEILWEISE 51, OFFEN 16, BLOCKIERT 43. BLOCKIERT nach Klassen (Abschnitt 9): Klasse 1 14, Klasse 2 22, Klasse 3 0, Klasse 4 13; davon die 43 Punkte des Ausgangsstands: Klasse 1 11, Klasse 2 19, Klasse 3 0, Klasse 4 13. Die 49 BLOCKIERT-Punkte verteilen sich auf 10 Freigabepakete (Abschnitt 10): FP-ST-01 13, FP-ST-02 11, FP-ST-03 2, FP-ST-04 3, FP-ST-05 2, FP-ST-06 2, FP-ST-07 3, FP-ST-08 5, FP-ST-09 6, FP-ST-10 2.
 
 ---
 
@@ -39,10 +39,10 @@ Getrennt geführt: Eine implementierte und getestete Methode ist weder fachlich 
 | C03 | Darvas-Box | RESEARCH_COMPLETE_WITH_EXCEPTIONS | 2,4,6,7 | TEILWEISE | BELEGT | BELEGT | TEILWEISE | TEILWEISE | BLOCKIERT | TEILWEISE | TEILWEISE | BLOCKIERT | TEILWEISE |
 | C04 | Weinstein Investor | RESEARCH_COMPLETE_WITH_EXCEPTIONS | 1,2,6,7 | TEILWEISE | TEILWEISE | BELEGT | TEILWEISE | TEILWEISE | BLOCKIERT | TEILWEISE | BLOCKIERT | BLOCKIERT | TEILWEISE |
 | C05 | Weinstein Trader | RESEARCH_COMPLETE_WITH_EXCEPTIONS | 1,2,6,7 | TEILWEISE | TEILWEISE | BELEGT | TEILWEISE | TEILWEISE | BLOCKIERT | TEILWEISE | BLOCKIERT | BLOCKIERT | TEILWEISE |
-| C06 | Minervini SEPA / VCP | RESEARCH_COMPLETE_WITH_EXCEPTIONS | 2,6,7 | OFFEN | TEILWEISE | BELEGT | TEILWEISE | TEILWEISE | BLOCKIERT | TEILWEISE | BLOCKIERT | BLOCKIERT | TEILWEISE |
-| C07 | Minervini Power Play | RESEARCH_COMPLETE_WITH_EXCEPTIONS | 2,4,6,7 | OFFEN | TEILWEISE | BELEGT | TEILWEISE | TEILWEISE | BLOCKIERT | TEILWEISE | BELEGT | BLOCKIERT | TEILWEISE |
+| C06 | Minervini SEPA / VCP | RESEARCH_COMPLETE_WITH_EXCEPTIONS | 2,6,7 | BLOCKIERT | TEILWEISE | BELEGT | TEILWEISE | TEILWEISE | BLOCKIERT | TEILWEISE | BLOCKIERT | BLOCKIERT | TEILWEISE |
+| C07 | Minervini Power Play | RESEARCH_COMPLETE_WITH_EXCEPTIONS | 2,4,6,7 | BLOCKIERT | TEILWEISE | BELEGT | TEILWEISE | TEILWEISE | BLOCKIERT | TEILWEISE | BELEGT | BLOCKIERT | TEILWEISE |
 | C08 | Kullamägi Breakout | RESEARCH_COMPLETE_WITH_EXCEPTIONS | 1,2,4,6,7 | TEILWEISE | BELEGT | BELEGT | TEILWEISE | TEILWEISE | BLOCKIERT | TEILWEISE | BELEGT | BLOCKIERT | TEILWEISE |
-| C09 | Kullamägi Episodic Pivot (Chart-Modell) | VALIDATION_BLOCKED | – | OFFEN | TEILWEISE | TEILWEISE | BLOCKIERT | BLOCKIERT | BLOCKIERT | BLOCKIERT | BLOCKIERT | BLOCKIERT | BLOCKIERT |
+| C09 | Kullamägi Episodic Pivot (Chart-Modell) | VALIDATION_BLOCKED | – | BLOCKIERT | TEILWEISE | TEILWEISE | BLOCKIERT | BLOCKIERT | BLOCKIERT | BLOCKIERT | BLOCKIERT | BLOCKIERT | BLOCKIERT |
 | C10 | Kullamägi Parabolic (Chart-Modell, Short) | VALIDATION_BLOCKED | 1 | TEILWEISE | TEILWEISE | TEILWEISE | BLOCKIERT | BLOCKIERT | BLOCKIERT | BLOCKIERT | BLOCKIERT | BLOCKIERT | BLOCKIERT |
 | C11 | Pocket Pivot | SOURCE_BLOCKED | 4,6,7 | BLOCKIERT | TEILWEISE | BELEGT | BLOCKIERT | TEILWEISE | BLOCKIERT | TEILWEISE | BELEGT | BLOCKIERT | TEILWEISE |
 | C12 | Buyable Gap-Up | RESEARCH_COMPLETE_WITH_EXCEPTIONS | 2,4,6,7 | TEILWEISE | BELEGT | BELEGT | TEILWEISE | TEILWEISE | BLOCKIERT | TEILWEISE | TEILWEISE | BLOCKIERT | TEILWEISE |
@@ -123,7 +123,7 @@ Zustand `RESEARCH_COMPLETE_WITH_EXCEPTIONS`, Messklasse `SCREEN_STATISTICS`, CC 
 
 | Dimension | Status | Grundlage | Nachweis | Verbleibender Blocker | Zuständigkeit |
 |---|---|---|---|---|---|
-| Quellen-/Regeltreue | **TEILWEISE** | SOURCE_FIDELITY PASS_WITH_DECLARED_LIMITS; CC-1 erfüllt; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.2.0: 1 exact, 5 derived (0 from a secondary source), 9 manual, 2 data-blocked, 0 ambiguous | CC-3 → Die 14 Ermessensfragen; die Quelle verlangt sie (Stage-Urteil). Strukturell kaum mechanisierbar ohne Owner-Neudefinition, und eine Neudefinition wäre keine Quellentreue. [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C04, Blocker)] {Klasse 1}<br>Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | Owner + technisch lösbar |
+| Quellen-/Regeltreue | **TEILWEISE** | SOURCE_FIDELITY PASS_WITH_DECLARED_LIMITS; CC-1 erfüllt; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.2.0: 1 exact, 5 derived (0 from a secondary source), 9 manual, 2 data-blocked, 0 ambiguous | CC-3 → Die 14 Ermessensfragen; die Quelle verlangt sie (Stage-Urteil). Strukturell kaum mechanisierbar ohne Owner-Neudefinition, und eine Neudefinition wäre keine Quellentreue. [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C04, Blocker)] {Klasse 1}<br>Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235); Teilbeitrag, schließt nicht} | Owner + technisch lösbar |
 | Parameter/Grenzfälle | **TEILWEISE** | Golden Cases 14/14 PASS | `scripts/supertrader/source-faithful/artifacts/STRATEGY-GOLDEN-CASE-RESULTS.json`<br>`scripts/supertrader/tests/sf-weinstein.test.mjs` | Grenzfalltests mit Gegenproben nur im Draft #1235 → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | technisch lösbar + Owner |
 | reproduzierbare Berechnung | **BELEGT** | BACKTEST_REPRODUCIBILITY PASS; CC-6 erfüllt | frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL<br>Lauf 40001276389 (Integrität)<br>Lauf 40001421221 (Validierung DEV)<br>Lauf 40007428374 (Holdout)<br>`sf-mc3-causality.test.mjs`: MC3-CAUSAL-C04, MC3-DETERMINISTIC-C04<br>`sf-sf8-candidates.test.mjs`: SF8-DETERMINISTIC, SF8-PIT-ASOF | – | – |
 | Ein-/Ausstieg | **TEILWEISE** | ENTRY MODEL_ASSUMPTION, EXIT PARTIAL, Phasen 9/9; CC-2 erfüllt | ENTRY_EXECUTION: 2 rows, 1 mechanical, 1 under model assumption, 0 manual, 0 blocked<br>`scripts/supertrader/source-faithful/product/detectors.mjs` | Einstieg/Ausstieg nur als MODEL_ASSUMPTION / PARTIAL (Modellannahme statt Quellenregel) → Quellenbeleg oder Owner-Entscheidung; eine Neudefinition wäre keine Quellentreue [scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json (dimensions)] {Klasse 1} | Owner |
@@ -140,7 +140,7 @@ Zustand `RESEARCH_COMPLETE_WITH_EXCEPTIONS`, Messklasse `SCREEN_STATISTICS`, CC 
 
 | Dimension | Status | Grundlage | Nachweis | Verbleibender Blocker | Zuständigkeit |
 |---|---|---|---|---|---|
-| Quellen-/Regeltreue | **TEILWEISE** | SOURCE_FIDELITY PASS_WITH_DECLARED_LIMITS; CC-1 erfüllt; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.2.0: 1 exact, 5 derived (0 from a secondary source), 8 manual, 2 data-blocked, 0 ambiguous | CC-3 → Die 14 Ermessensfragen; die Quelle verlangt sie (Stage-Urteil). Strukturell kaum mechanisierbar ohne Owner-Neudefinition, und eine Neudefinition wäre keine Quellentreue. [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C05, Blocker, wie C04)] {Klasse 1}<br>Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | Owner + technisch lösbar |
+| Quellen-/Regeltreue | **TEILWEISE** | SOURCE_FIDELITY PASS_WITH_DECLARED_LIMITS; CC-1 erfüllt; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.2.0: 1 exact, 5 derived (0 from a secondary source), 8 manual, 2 data-blocked, 0 ambiguous | CC-3 → Die 14 Ermessensfragen; die Quelle verlangt sie (Stage-Urteil). Strukturell kaum mechanisierbar ohne Owner-Neudefinition, und eine Neudefinition wäre keine Quellentreue. [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C05, Blocker, wie C04)] {Klasse 1}<br>Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235); Teilbeitrag, schließt nicht} | Owner + technisch lösbar |
 | Parameter/Grenzfälle | **TEILWEISE** | Golden Cases 14/14 PASS | `scripts/supertrader/source-faithful/artifacts/STRATEGY-GOLDEN-CASE-RESULTS.json`<br>`scripts/supertrader/tests/sf-weinstein.test.mjs` | Grenzfalltests mit Gegenproben nur im Draft #1235 → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | technisch lösbar + Owner |
 | reproduzierbare Berechnung | **BELEGT** | BACKTEST_REPRODUCIBILITY PASS; CC-6 erfüllt | frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL<br>Lauf 40001276389 (Integrität)<br>Lauf 40001421221 (Validierung DEV)<br>Lauf 40007428374 (Holdout)<br>`sf-mc3-causality.test.mjs`: MC3-CAUSAL-C05, MC3-DETERMINISTIC-C05<br>`sf-sf8-candidates.test.mjs`: SF8-DETERMINISTIC, SF8-PIT-ASOF | – | – |
 | Ein-/Ausstieg | **TEILWEISE** | ENTRY MODEL_ASSUMPTION, EXIT PARTIAL, Phasen 9/9; CC-2 erfüllt | ENTRY_EXECUTION: 2 rows, 1 mechanical, 1 under model assumption, 0 manual, 0 blocked<br>`scripts/supertrader/source-faithful/product/detectors.mjs` | Einstieg/Ausstieg nur als MODEL_ASSUMPTION / PARTIAL (Modellannahme statt Quellenregel) → Quellenbeleg oder Owner-Entscheidung; eine Neudefinition wäre keine Quellentreue [scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json (dimensions)] {Klasse 1} | Owner |
@@ -157,7 +157,7 @@ Zustand `RESEARCH_COMPLETE_WITH_EXCEPTIONS`, Messklasse `SCREEN_STATISTICS`, CC 
 
 | Dimension | Status | Grundlage | Nachweis | Verbleibender Blocker | Zuständigkeit |
 |---|---|---|---|---|---|
-| Quellen-/Regeltreue | **OFFEN** | SOURCE_FIDELITY PARTIAL; CC-1 offen; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.4.0: 0 exact, 11 derived (0 from a secondary source), 7 manual, 1 data-blocked, 0 ambiguous; wording only via translation | CC-1 → Die englische Buchausgabe im Projekt oder eine Owner-Entscheidung über Übersetzungsbelege. E7-2 sagt ausdrücklich, dass Übersetzungen nicht als SOURCE_EXACT gelten. [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C06, Blocker)] {Klasse 1}<br>CC-3 → Die 11 Ermessensfragen; SEPA ist laut Quelle manuell (MIN-PROCESS-04). [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C06, Blocker)] {Klasse 1}<br>Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | Owner + technisch lösbar |
+| Quellen-/Regeltreue | **BLOCKIERT** (1.0.0: OFFEN), Klasse 1 | SOURCE_FIDELITY PARTIAL; CC-1 offen; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.4.0: 0 exact, 11 derived (0 from a secondary source), 7 manual, 1 data-blocked, 0 ambiguous; wording only via translation | CC-1 → Die englische Buchausgabe im Projekt oder eine Owner-Entscheidung über Übersetzungsbelege. E7-2 sagt ausdrücklich, dass Übersetzungen nicht als SOURCE_EXACT gelten. [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C06, Blocker)] {Klasse 1}<br>CC-3 → Die 11 Ermessensfragen; SEPA ist laut Quelle manuell (MIN-PROCESS-04). [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C06, Blocker)] {Klasse 1}<br>Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235); Teilbeitrag, schließt nicht} | Owner + technisch lösbar |
 | Parameter/Grenzfälle | **TEILWEISE** | Golden Cases 14/14 PASS | `scripts/supertrader/source-faithful/artifacts/STRATEGY-GOLDEN-CASE-RESULTS.json`<br>`scripts/supertrader/tests/sf-minervini.test.mjs`<br>`scripts/supertrader/tests/sf-sf7-minervini.test.mjs` | Grenzfalltests mit Gegenproben nur im Draft #1235 → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | technisch lösbar + Owner |
 | reproduzierbare Berechnung | **BELEGT** | BACKTEST_REPRODUCIBILITY PASS; CC-6 erfüllt | frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39746264325: ledger hash EQUAL, trade hash EQUAL<br>Lauf 40001276389 (Integrität)<br>Lauf 40001421221 (Validierung DEV)<br>Lauf 40007428374 (Holdout)<br>`sf-mc3-causality.test.mjs`: MC3-CAUSAL-C06<br>`sf-sf8-candidates.test.mjs`: SF8-DETERMINISTIC, SF8-PIT-ASOF | – | – |
 | Ein-/Ausstieg | **TEILWEISE** | ENTRY MODEL_ASSUMPTION, EXIT PARTIAL, Phasen 9/9; CC-2 erfüllt | ENTRY_EXECUTION: 5 rows, 0 mechanical, 5 under model assumption, 0 manual, 0 blocked<br>`scripts/supertrader/source-faithful/product/detectors.mjs` | Einstieg/Ausstieg nur als MODEL_ASSUMPTION / PARTIAL (Modellannahme statt Quellenregel) → Quellenbeleg oder Owner-Entscheidung; eine Neudefinition wäre keine Quellentreue [scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json (dimensions)] {Klasse 1} | Owner |
@@ -174,7 +174,7 @@ Zustand `RESEARCH_COMPLETE_WITH_EXCEPTIONS`, Messklasse `SCREEN_STATISTICS`, CC 
 
 | Dimension | Status | Grundlage | Nachweis | Verbleibender Blocker | Zuständigkeit |
 |---|---|---|---|---|---|
-| Quellen-/Regeltreue | **OFFEN** | SOURCE_FIDELITY PARTIAL; CC-1 offen; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.4.0: 0 exact, 6 derived (0 from a secondary source), 4 manual, 0 data-blocked, 0 ambiguous; wording only via translation | CC-1 → Die englische Buchausgabe im Projekt oder eine Owner-Entscheidung über Übersetzungsbelege. E7-2 sagt ausdrücklich, dass Übersetzungen nicht als SOURCE_EXACT gelten. (alle Schwellen sind nur übersetzt (REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION)) [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C07, Blocker, wie C06)] {Klasse 1}<br>CC-3 → 6 Ermessensfragen [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C07, Blocker)] {Klasse 1}<br>Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | Owner + technisch lösbar |
+| Quellen-/Regeltreue | **BLOCKIERT** (1.0.0: OFFEN), Klasse 1 | SOURCE_FIDELITY PARTIAL; CC-1 offen; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.4.0: 0 exact, 6 derived (0 from a secondary source), 4 manual, 0 data-blocked, 0 ambiguous; wording only via translation | CC-1 → Die englische Buchausgabe im Projekt oder eine Owner-Entscheidung über Übersetzungsbelege. E7-2 sagt ausdrücklich, dass Übersetzungen nicht als SOURCE_EXACT gelten. (alle Schwellen sind nur übersetzt (REQUIRES_ORIGINAL_OR_EXPLICIT_WEB_CORROBORATION)) [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C07, Blocker, wie C06)] {Klasse 1}<br>CC-3 → 6 Ermessensfragen [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C07, Blocker)] {Klasse 1}<br>Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235); Teilbeitrag, schließt nicht} | Owner + technisch lösbar |
 | Parameter/Grenzfälle | **TEILWEISE** | Golden Cases 9/9 PASS | `scripts/supertrader/source-faithful/artifacts/STRATEGY-GOLDEN-CASE-RESULTS.json`<br>`scripts/supertrader/tests/sf-minervini.test.mjs`<br>`scripts/supertrader/tests/sf-sf7-minervini.test.mjs` | Grenzfalltests mit Gegenproben nur im Draft #1235 → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | technisch lösbar + Owner |
 | reproduzierbare Berechnung | **BELEGT** | BACKTEST_REPRODUCIBILITY PASS; CC-6 erfüllt | frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39746264325: ledger hash EQUAL, trade hash EQUAL<br>Lauf 40001276389 (Integrität)<br>Lauf 40001421221 (Validierung DEV)<br>Lauf 40007428374 (Holdout)<br>`sf-mc3-causality.test.mjs`: MC3-CAUSAL-C07<br>`sf-sf8-candidates.test.mjs`: SF8-DETERMINISTIC, SF8-PIT-ASOF | – | – |
 | Ein-/Ausstieg | **TEILWEISE** | ENTRY MODEL_ASSUMPTION, EXIT PARTIAL, Phasen 9/9; CC-2 erfüllt | ENTRY_EXECUTION: 5 rows, 0 mechanical, 5 under model assumption, 0 manual, 0 blocked<br>`scripts/supertrader/source-faithful/product/detectors.mjs` | Einstieg/Ausstieg nur als MODEL_ASSUMPTION / PARTIAL (Modellannahme statt Quellenregel) → Quellenbeleg oder Owner-Entscheidung; eine Neudefinition wäre keine Quellentreue [scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json (dimensions)] {Klasse 1} | Owner |
@@ -208,7 +208,7 @@ Zustand `VALIDATION_BLOCKED`, Messklasse `NOT_MEASURABLE`, CC erfüllt –, offe
 
 | Dimension | Status | Grundlage | Nachweis | Verbleibender Blocker | Zuständigkeit |
 |---|---|---|---|---|---|
-| Quellen-/Regeltreue | **OFFEN** | SOURCE_FIDELITY PASS_WITH_DECLARED_LIMITS; CC-1 offen; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.1.0: 4 exact, 1 derived (0 from a secondary source), 3 manual, 3 data-blocked, 1 ambiguous | Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | technisch lösbar + Owner |
+| Quellen-/Regeltreue | **BLOCKIERT** (1.0.0: OFFEN), Klasse 1 | SOURCE_FIDELITY PASS_WITH_DECLARED_LIMITS; CC-1 offen; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.1.0: 4 exact, 1 derived (0 from a secondary source), 3 manual, 3 data-blocked, 1 ambiguous | Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235); Teilbeitrag, schließt nicht}<br>CC-1 laut Readiness offen (contract 1.1.0: 4 exact, 1 derived (0 from a secondary source), 3 manual, 3 data-blocked, 1 ambiguous) → Quellenbeleg jeder essenziellen Regel (SOURCE_EXACT) oder Owner-Entscheidung über die Belegform [scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json (certificationCriteria)] {Klasse 1}<br>CC-3 laut Readiness offen (contract 1.1.0: 4 exact, 1 derived (0 from a secondary source), 3 manual, 3 data-blocked, 1 ambiguous) → Entscheidung der manuellen bzw. mehrdeutigen Regeln als vorregistrierte Lesarten (Owner) [scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json (certificationCriteria)] {Klasse 1} | technisch lösbar + Owner |
 | Parameter/Grenzfälle | **TEILWEISE** | Golden Cases 6/6 PASS | `scripts/supertrader/source-faithful/artifacts/STRATEGY-GOLDEN-CASE-RESULTS.json`<br>`scripts/supertrader/tests/sf-kullamagi.test.mjs` | Grenzfalltests mit Gegenproben nur im Draft #1235 → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | technisch lösbar + Owner |
 | reproduzierbare Berechnung | **TEILWEISE** | BACKTEST_REPRODUCIBILITY PASS_WITH_DECLARED_LIMITS; CC-6 offen | snapshot + private IEX cache (not frozen in the snapshot)<br>`sf-sf8-candidates.test.mjs`: SF8-DETERMINISTIC, SF8-PIT-ASOF | Reproduzierbarkeit → Minuten im Snapshot einfrieren [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C09, Blocker)] {Klasse 2}<br>Kausalität der Entscheidung an der Eröffnung der Folgesitzung (IEX-Minuten) nicht auf Tagesbalken prüfbar → eingefrorene Minuten im Snapshot (siehe Matrix, Reproduzierbarkeit) [scripts/supertrader/tests/sf-mc3-causality.test.mjs (Kopf)] {Klasse 2} | Owner + Daten-Zeit |
 | Ein-/Ausstieg | **BLOCKIERT**, Klasse 1 | ENTRY MODEL_ASSUMPTION, EXIT MODEL_ASSUMPTION, Phasen nicht messbar/9; CC-2 offen | CHART_EP_MODEL_STUDY_IEX_INTRADAY_NOT_AN_ORIGINAL_EPISODIC_PIVOT; CHART_EP_INTRADAY_MODEL_STUDY_IEX_VENUE_HASH_ORDER_SAMPLE<br>`scripts/supertrader/source-faithful/product/detectors.mjs` | Einstieg/Ausstieg nur als MODEL_ASSUMPTION / MODEL_ASSUMPTION (Modellannahme statt Quellenregel) → Quellenbeleg oder Owner-Entscheidung; eine Neudefinition wäre keine Quellentreue [scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json (dimensions)] {Klasse 1} | Owner |
@@ -225,7 +225,7 @@ Zustand `VALIDATION_BLOCKED`, Messklasse `NOT_MEASURABLE`, CC erfüllt 1, offen 
 
 | Dimension | Status | Grundlage | Nachweis | Verbleibender Blocker | Zuständigkeit |
 |---|---|---|---|---|---|
-| Quellen-/Regeltreue | **TEILWEISE** | SOURCE_FIDELITY PASS_WITH_DECLARED_LIMITS; CC-1 erfüllt; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.1.0: 3 exact, 0 derived (0 from a secondary source), 4 manual, 3 data-blocked, 0 ambiguous | Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | technisch lösbar + Owner |
+| Quellen-/Regeltreue | **TEILWEISE** | SOURCE_FIDELITY PASS_WITH_DECLARED_LIMITS; CC-1 erfüllt; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.1.0: 3 exact, 0 derived (0 from a secondary source), 4 manual, 3 data-blocked, 0 ambiguous | Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235); Teilbeitrag, schließt nicht}<br>CC-3 laut Readiness offen (contract 1.1.0: 3 exact, 0 derived (0 from a secondary source), 4 manual, 3 data-blocked, 0 ambiguous) → Entscheidung der manuellen bzw. mehrdeutigen Regeln als vorregistrierte Lesarten (Owner) [scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json (certificationCriteria)] {Klasse 1} | technisch lösbar + Owner |
 | Parameter/Grenzfälle | **TEILWEISE** | Golden Cases 4/4 PASS | `scripts/supertrader/source-faithful/artifacts/STRATEGY-GOLDEN-CASE-RESULTS.json`<br>`scripts/supertrader/tests/sf-kullamagi.test.mjs` | Grenzfalltests mit Gegenproben nur im Draft #1235 → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | technisch lösbar + Owner |
 | reproduzierbare Berechnung | **TEILWEISE** | BACKTEST_REPRODUCIBILITY PASS_WITH_DECLARED_LIMITS; CC-6 offen | snapshot + private IEX cache (not frozen in the snapshot)<br>`sf-sf8-candidates.test.mjs`: SF8-DETERMINISTIC, SF8-PIT-ASOF | Reproduzierbarkeit → Minuten im Snapshot einfrieren [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C10, Blocker, wie C09)] {Klasse 2}<br>Kausalität der Entscheidung an der Eröffnung der Folgesitzung (IEX-Minuten) nicht auf Tagesbalken prüfbar → eingefrorene Minuten im Snapshot (siehe Matrix, Reproduzierbarkeit) [scripts/supertrader/tests/sf-mc3-causality.test.mjs (Kopf)] {Klasse 2} | Owner + Daten-Zeit |
 | Ein-/Ausstieg | **BLOCKIERT**, Klasse 1 | ENTRY MODEL_ASSUMPTION, EXIT MODEL_ASSUMPTION, Phasen nicht messbar/9; CC-2 offen | CHART_PS_SHORT_MODEL_STUDY_TRADE_LEVEL_NO_BORROW_DATA_NOT_EXECUTABLE; CHART_PS_TRADE_LEVEL_SHORT_MODEL_STUDY_IEX_VENUE_HASH_ORDER_SAMPLE<br>`scripts/supertrader/source-faithful/product/detectors.mjs` | Einstieg/Ausstieg nur als MODEL_ASSUMPTION / MODEL_ASSUMPTION (Modellannahme statt Quellenregel) → Quellenbeleg oder Owner-Entscheidung; eine Neudefinition wäre keine Quellentreue [scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json (dimensions)] {Klasse 1} | Owner |
@@ -242,7 +242,7 @@ Zustand `SOURCE_BLOCKED`, Messklasse `SCREEN_STATISTICS`, CC erfüllt 4, 6, 7, o
 
 | Dimension | Status | Grundlage | Nachweis | Verbleibender Blocker | Zuständigkeit |
 |---|---|---|---|---|---|
-| Quellen-/Regeltreue | **BLOCKIERT**, Klasse 1 | SOURCE_FIDELITY PASS_WITH_DECLARED_LIMITS; CC-1 offen; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.3.0: 1 exact, 3 derived (0 from a secondary source), 5 manual, 0 data-blocked, 1 ambiguous | CC-3 → 7 Ermessensfragen [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C11, Blocker)] {Klasse 1}<br>Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | Owner + technisch lösbar |
+| Quellen-/Regeltreue | **BLOCKIERT**, Klasse 1 | SOURCE_FIDELITY PASS_WITH_DECLARED_LIMITS; CC-1 offen; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.3.0: 1 exact, 3 derived (0 from a secondary source), 5 manual, 0 data-blocked, 1 ambiguous | CC-3 → 7 Ermessensfragen [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C11, Blocker)] {Klasse 1}<br>Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235); Teilbeitrag, schließt nicht}<br>CC-1 laut Readiness offen (contract 1.3.0: 1 exact, 3 derived (0 from a secondary source), 5 manual, 0 data-blocked, 1 ambiguous) → Quellenbeleg jeder essenziellen Regel (SOURCE_EXACT) oder Owner-Entscheidung über die Belegform [scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json (certificationCriteria)] {Klasse 1} | Owner + technisch lösbar |
 | Parameter/Grenzfälle | **TEILWEISE** | Golden Cases 9/9 PASS | `scripts/supertrader/source-faithful/artifacts/STRATEGY-GOLDEN-CASE-RESULTS.json`<br>`scripts/supertrader/tests/sf-moka-completion.test.mjs`<br>`scripts/supertrader/tests/sf-morales-kacher.test.mjs` | Grenzfalltests mit Gegenproben nur im Draft #1235 → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | technisch lösbar + Owner |
 | reproduzierbare Berechnung | **BELEGT** | BACKTEST_REPRODUCIBILITY PASS; CC-6 erfüllt | frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL<br>Lauf 40001276389 (Integrität)<br>Lauf 40001421221 (Validierung DEV)<br>Lauf 40007428374 (Holdout)<br>`sf-mc3-causality.test.mjs`: MC3-CAUSAL-C11, MC3-DETERMINISTIC-C11<br>`sf-sf8-candidates.test.mjs`: SF8-DETERMINISTIC, SF8-PIT-ASOF | – | – |
 | Ein-/Ausstieg | **BLOCKIERT**, Klasse 1 | ENTRY PARTIAL, EXIT PARTIAL, Phasen 8/9; CC-2 offen | ENTRY_EXECUTION: 2 rows, 0 mechanical, 1 under model assumption, 0 manual, 1 blocked<br>`scripts/supertrader/source-faithful/product/detectors.mjs` | Stop → eine Primärquelle mit der Stopregel der Autoren. Mit der Modellvariante ist CC-2 nach E3 nicht erfüllbar. [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C11, Blocker)] {Klasse 1}<br>Einstieg/Ausstieg nur als PARTIAL / PARTIAL (Modellannahme statt Quellenregel) → Quellenbeleg oder Owner-Entscheidung; eine Neudefinition wäre keine Quellentreue [scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json (dimensions)] {Klasse 1} | Owner |
@@ -276,7 +276,7 @@ Zustand `SOURCE_BLOCKED`, Messklasse `NOT_MEASURABLE`, CC erfüllt 4, 6, 7, offe
 
 | Dimension | Status | Grundlage | Nachweis | Verbleibender Blocker | Zuständigkeit |
 |---|---|---|---|---|---|
-| Quellen-/Regeltreue | **BLOCKIERT**, Klasse 1 | SOURCE_FIDELITY PASS_WITH_DECLARED_LIMITS; CC-1 offen; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.2.1: 2 exact, 4 derived (2 from a secondary source), 2 manual, 0 data-blocked, 1 ambiguous | CC-1 und CC-2 → eine Primärquelle für Einstieg, Stop, Trailing und Größe. Ohne sie ist keine historische Methodenrendite berechenbar (Registry). [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C13, Blocker)] {Klasse 1}<br>CC-3 → 3 Ermessensfragen [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C13, Blocker)] {Klasse 1}<br>Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | Owner + technisch lösbar |
+| Quellen-/Regeltreue | **BLOCKIERT**, Klasse 1 | SOURCE_FIDELITY PASS_WITH_DECLARED_LIMITS; CC-1 offen; CC-3 offen | `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`<br>`scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json`<br>contract 1.2.1: 2 exact, 4 derived (2 from a secondary source), 2 manual, 0 data-blocked, 1 ambiguous | CC-1 und CC-2 → eine Primärquelle für Einstieg, Stop, Trailing und Größe. Ohne sie ist keine historische Methodenrendite berechenbar (Registry). [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C13, Blocker)] {Klasse 1}<br>CC-3 → 3 Ermessensfragen [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C13, Blocker)] {Klasse 1}<br>Regeltreue-Vorbereitung nur im Draft #1235 (Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`)) → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235); Teilbeitrag, schließt nicht} | Owner + technisch lösbar |
 | Parameter/Grenzfälle | **TEILWEISE** | Golden Cases 7/7 PASS | `scripts/supertrader/source-faithful/artifacts/STRATEGY-GOLDEN-CASE-RESULTS.json`<br>`scripts/supertrader/tests/sf-holy-grail.test.mjs`<br>`scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs`<br>`scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs` | Grenzfalltests mit Gegenproben nur im Draft #1235 → Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe [docs/SUPERTRADER_9_HANDOVER.md §8.1] {technisch lösbar: Nachweis auf Branch, noch nicht gemergt (#1235)} | technisch lösbar + Owner |
 | reproduzierbare Berechnung | **BELEGT** | BACKTEST_REPRODUCIBILITY PASS; CC-6 erfüllt | frozen snapshot sts1-134d4d62eb88b6ff8d98fe6e56b12a6d, research-v1, reconciled; BASE vs authoritative run 39939890956: ledger hash EQUAL, trade hash EQUAL<br>Lauf 40001276389 (Integrität)<br>Lauf 40001421221 (Validierung DEV)<br>Lauf 40007428374 (Holdout)<br>`sf-mc3-causality.test.mjs`: MC3-CAUSAL-C13, MC3-DETERMINISTIC-C13<br>`sf-sf8-candidates.test.mjs`: SF8-DETERMINISTIC, SF8-PIT-ASOF | – | – |
 | Ein-/Ausstieg | **BLOCKIERT**, Klasse 1 | ENTRY PARTIAL, EXIT MODEL_ASSUMPTION, Phasen 8/9; CC-2 offen | ENTRY_EXECUTION: 2 rows, 0 mechanical, 1 under model assumption, 0 manual, 1 blocked<br>`scripts/supertrader/source-faithful/product/detectors.mjs` | CC-1 und CC-2 → eine Primärquelle für Einstieg, Stop, Trailing und Größe. Ohne sie ist keine historische Methodenrendite berechenbar (Registry). [docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (C13, Blocker)] {Klasse 1}<br>Einstieg/Ausstieg nur als PARTIAL / MODEL_ASSUMPTION (Modellannahme statt Quellenregel) → Quellenbeleg oder Owner-Entscheidung; eine Neudefinition wäre keine Quellentreue [scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json (dimensions)] {Klasse 1} | Owner |
@@ -297,11 +297,14 @@ Zustand `SOURCE_BLOCKED`, Messklasse `NOT_MEASURABLE`, CC erfüllt 4, 6, 7, offe
 | Sprachprüfung nur für `supertrader.js`, Registry und SF8-Katalog; Seiten, `sf-research.js`, `st-chart.js` und veröffentlichte Kandidatendateien ungeprüft | `scripts/supertrader/tests/sf-mc3-product-wording.test.mjs`: MC3-WORDING-SCOPE, MC3-WORDING-NO-PROMISE, MC3-WORDING-STATUS, MC3-WORDING-PROBES | alle 13 (Produkttexte) |
 | kein nachvollziehbarer, erzeugter Evidenznachweis über alle 13 Methoden | dieses Dokument mit Erzeuger und Test `sf-mc3-evidence-matrix.test.mjs` | alle 13 |
 | Regeltreue der TOP5 nur auf dem PR-Head belegt (`PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN`) | E-REFCODE: Engine-Fingerabdruck auf dem Stand = gepinnter Referenzwert in SF6-PAPER-2027; Regeltreue-Tests auf diesem Stand MET (`sf-mc3-evidence-matrix.test.mjs`: MC3-EV-REFCODE). Für die SF5-Lebenszyklen ist kein Referenzwert gepinnt: nicht geschlossen | C01, C02 |
+| CC-1/CC-3 im Readiness-Artefakt offen, aber ohne Blocker in Plan oder Matrix | E-CC13 (1.2.0): als Blocker der Klasse 1 nachgetragen (`scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`, certificationCriteria) | C09, C10, C11 |
 | statistische Aussagekraft ohne ausgewertete Belege | E-SAMPLE: Stichprobe, Trade-Stabilität (Quarantäne, COST-50) und numerische Reproduzierbarkeit aus dem Readiness-Artefakt ausgewertet; Kennzahlen bleiben versiegelt (E6) | C01, C02, C03, C04, C05, C06, C07, C08, C11, C12 |
 
-Nicht geschlossen (bräuchte Daten, eine Engine-Ausgabe oder einen Draft-PR): siehe Blocker in Abschnitt 3 und Freigabevorlagen in Abschnitt 5.
+Nicht geschlossen (bräuchte Daten, eine Engine-Ausgabe oder einen Draft-PR): siehe Blocker in Abschnitt 3, Freigabevorlagen in Abschnitt 5 und Freigabepakete in Abschnitt 10.
 
 ## 5. Freigabevorlagen (Fachmodell-, Vertrags- oder Owner-Entscheidung nötig; hier nicht umgesetzt)
+
+Einzelvorlagen aus Plan, Studien und Übergabe. Gebündelt zur Entscheidung über alle BLOCKIERT-Punkte: Abschnitt 10 (Freigabepakete).
 
 | ID | Methoden | Art | Inhalt | Vorschlag / schließender Beleg | Quelle |
 |---|---|---|---|---|---|
@@ -396,6 +399,8 @@ Dieser Abschnitt folgt dem täglich erzeugten Kandidatenstand (`supertrader/data
 - **statistische Aussagekraft:** BLOCKIERT bei Messklasse `NOT_MEASURABLE`; sonst OFFEN, solange die Kennzahlen versiegelt und die Robustheit nicht belegt ist (E6).
 - **Statusdimensionen:** IMPLEMENTIERT = `technicallyComplete` und Engine im Produktkatalog; GETESTET = alle Golden Cases PASS; FACHLICH VALIDIERT = CC-1–CC-7 erfüllt und Robustheit belegt; ZERTIFIZIERT = Readiness weist die Methode als zertifiziert aus (`certification` ≠ `DIAGNOSTIC_NOT_CERTIFIED`, in `certificationCandidates`, CC-1–CC-8); PRODUKTREIF = `liveReadiness` ≠ `LIVE_NOT_APPROVED`; DEAKTIVIERT = nicht im Kandidatenprodukt; BLOCKIERT = Zustand `SOURCE_BLOCKED`/`VALIDATION_BLOCKED`; ZURÜCKGESTELLT = nicht im Paper-Protokoll 2027.
 - **Einordnung (1.1.0):** Jeder offene Blocker ist entweder technisch lösbar (Nachweis auf Branch, auf main noch nicht ausgewertet, eigener Fach- oder Produkt-PR, Studienlauf) oder trägt eine Klasse: 1 Owner-Fachentscheidung, 2 fehlende lizenzierte Daten, 4 historische Voraussetzung heute nicht erfüllbar. Klasse 3 (vorhandener, noch nicht ausgewerteter Nachweis) wird nicht als Rest geführt, sondern ausgewertet (E-REFCODE, E-SAMPLE); ein belegter Blocker ist geschlossen. Ein OFFEN-Punkt ohne technisch lösbaren Blocker ist BLOCKIERT. Die Klasse eines BLOCKIERT-Punkts ist die des Blockers, der seine Ableitungsregel auslöst (CC-5, CC-8, CC-4, Messbarkeit, Quelle, Ausführung, Survivorship). Der Status nach den Regeln 1.0.0 steht in Abschnitt 3 in Klammern.
+- **Einordnung (1.2.0):** E-CC13 trägt ein im Readiness-Artefakt offenes CC-1 oder CC-3 als Blocker der Klasse 1 nach, wenn weder Plan noch Matrix es nennen. Die ALL13-Vorbereitung (#1235) ist in Quellen-/Regeltreue ein Teilbeitrag, wenn CC-1 oder CC-3 der Klasse 1 offen ist: Sie hebt nach Merge und Auswertung höchstens auf TEILWEISE. Ein OFFEN-Punkt, dessen technische Anteile nur Teilbeiträge sind, ist BLOCKIERT mit der Klasse seiner Ursache.
+- **Freigabepakete (1.2.0):** Jeder BLOCKIERT-Punkt gehört zu genau dem Paket, das seine Ursache schließt; jeder weitere Blocker mit Klasse dieses Punkts gehört zu genau einem Paket. Die Wirkung je Punkt ist der Status, den die Ableitungsregel nach Freigabe und Folge-PRs zulässt; weitere nötige Pakete und technische Anteile stehen daneben.
 - **Branch-Nachweise:** Nachweise aus Draft-PRs zählen erst auf `main`. Ob sie dort sind, liest der Erzeuger am Repository (ALL13-Plan vorhanden, Turtle-Einheitsstopps in `auditRun`, V13-Workflow vorhanden), nie an einer Liste.
 - **Zuständigkeit:** TOP5-Plan Klasse a = technisch lösbar, b = Owner (Quant, Security Master), c = Owner + Daten-Zeit, d = Owner; CC-8 = Daten-Zeit + Owner. Matrix-Blocker: CC-1/CC-3/Stop/CC-4/Lizenzdaten = Owner, CC-5 = Owner + Daten-Zeit, CC-8/OOS = Daten-Zeit + Owner.
 
@@ -415,20 +420,20 @@ Dieser Abschnitt folgt dem täglich erzeugten Kandidatenstand (`supertrader/data
 
 ## 9. Einordnung der Prüfpunkte und Bearbeitung (Klassen 1–4)
 
-Erzeugt nach den Regeln in Abschnitt 7 (Einordnung 1.1.0). Ausgangsstand ist der Status nach den Regeln 1.0.0 (Fassung von #1247 vor dieser Einordnung).
+Erzeugt nach den Regeln in Abschnitt 7 (Einordnung 1.1.0 und 1.2.0). Ausgangsstand ist der Status nach den Regeln 1.0.0 (Fassung von #1247 vor dieser Einordnung).
 
 | Status | Ausgangsstand (1.0.0) | jetzt |
 |---|---|---|
 | BELEGT | 20 | 21 |
 | TEILWEISE | 51 | 60 |
-| OFFEN | 16 | 3 |
-| BLOCKIERT | 43 | 46 |
+| OFFEN | 16 | 0 |
+| BLOCKIERT | 43 | 49 |
 
 ### 9.1 BLOCKIERT nach Klassen
 
 | Klasse | Bedeutung | Ausgangsstand | jetzt | Punkte (jetzt) |
 |---|---|---|---|---|
-| 1 | Owner-Fachentscheidung | 11 | 11 | C01 historische Datenabdeckung, C02 historische Datenabdeckung, C09 Ein-/Ausstieg, C09 historische Datenabdeckung, C10 Ein-/Ausstieg, C10 historische Datenabdeckung, C11 Quellen-/Regeltreue, C11 Ein-/Ausstieg, C13 Quellen-/Regeltreue, C13 Ein-/Ausstieg, C13 statistische Aussagekraft |
+| 1 | Owner-Fachentscheidung | 11 | 14 | C01 historische Datenabdeckung, C02 historische Datenabdeckung, C06 Quellen-/Regeltreue, C07 Quellen-/Regeltreue, C09 Quellen-/Regeltreue, C09 Ein-/Ausstieg, C09 historische Datenabdeckung, C10 Ein-/Ausstieg, C10 historische Datenabdeckung, C11 Quellen-/Regeltreue, C11 Ein-/Ausstieg, C13 Quellen-/Regeltreue, C13 Ein-/Ausstieg, C13 statistische Aussagekraft |
 | 2 | fehlende lizenzierte Daten | 19 | 22 | C01 Corporate Actions, C02 Corporate Actions, C03 Corporate Actions, C04 Corporate Actions, C04 historische Datenabdeckung, C05 Corporate Actions, C05 historische Datenabdeckung, C06 Corporate Actions, C06 historische Datenabdeckung, C07 Corporate Actions, C08 Corporate Actions, C09 Stopps/Slippage/Kosten, C09 Corporate Actions, C09 Delistings/Survivorship, C09 statistische Aussagekraft, C10 Stopps/Slippage/Kosten, C10 Corporate Actions, C10 Delistings/Survivorship, C10 statistische Aussagekraft, C11 Corporate Actions, C12 Corporate Actions, C13 Corporate Actions |
 | 3 | vorhandener, noch nicht ausgewerteter Nachweis | 0 | 0 | keiner offen: vorhandene Nachweise sind in 9.3 ausgewertet |
 | 4 | historische Voraussetzung heute nicht erfüllbar | 13 | 13 | C01 OOS/Walk-Forward, C02 OOS/Walk-Forward, C03 OOS/Walk-Forward, C04 OOS/Walk-Forward, C05 OOS/Walk-Forward, C06 OOS/Walk-Forward, C07 OOS/Walk-Forward, C08 OOS/Walk-Forward, C09 OOS/Walk-Forward, C10 OOS/Walk-Forward, C11 OOS/Walk-Forward, C12 OOS/Walk-Forward, C13 OOS/Walk-Forward |
@@ -451,13 +456,16 @@ Klasse 3 unter den 43 BLOCKIERT-Punkten des Ausgangsstands: geprüft wurden die 
 | C05 Corporate Actions | 2 | C05-CC-5 | lizenzierte, faktortragende CA-Quelle (E7-1); die Quarantäne erfüllt CC-5 nie (E1); laut Matrix zusätzlich eine Owner-Entscheidung | Belege für die 4 K3-Sitzungen. Owner-Entscheidung, ob Exposition 0 bei K5 für CC5-a genügt; CC5-e und CC5-f bleiben offen. | BLOCKIERT seit 1.0.0 |
 | C05 historische Datenabdeckung | 2 | C05-CC-4 | Daten fehlen: PIT-Gruppen-Stage (Gruppenchart) und lizenzierte NYSE-A/D-Historie. | PIT-Gruppen-Stage (Gruppenchart) und lizenzierte NYSE-A/D-Historie. | BLOCKIERT seit 1.0.0 |
 | C05 OOS/Walk-Forward | 4 | C05-CC-8 | kein unberührtes historisches Fenster; SF6-PAPER-2027 beginnt am 01.01.2027 (250 Sitzungen), Owner-Aktivierung davor | SF6-PAPER-2027 aktiviert, 250 Sitzungen, Prüfungen FORWARD_LOG_EQUALS_BATCH_REPLAY, NO_MISSING_SESSIONS, RESEARCH_V1_RECONCILED und V4D1_FORWARD_CENSUS bestand… | BLOCKIERT seit 1.0.0 |
+| C06 Quellen-/Regeltreue | 1 | C06-CC-1 | Quellenstelle, Ermessensfragen oder Übersetzungsbelege: Owner-Entscheidung (eine Neudefinition wäre keine Quellentreue) | Die englische Buchausgabe im Projekt oder eine Owner-Entscheidung über Übersetzungsbelege. E7-2 sagt ausdrücklich, dass Übersetzungen nicht als SOURCE_EXACT ge… | aus OFFEN neu eingeordnet |
 | C06 Corporate Actions | 2 | C06-CC-5 | lizenzierte, faktortragende CA-Quelle (E7-1); die Quarantäne erfüllt CC-5 nie (E1) | nur CC5-e und CC5-f fehlen | BLOCKIERT seit 1.0.0 |
 | C06 historische Datenabdeckung | 2 | C06-CC-4 | Daten fehlen: IBD-RS-Historie. Lizenz nötig, kein Ersatz zulässig. | IBD-RS-Historie. Lizenz nötig, kein Ersatz zulässig. | BLOCKIERT seit 1.0.0 |
 | C06 OOS/Walk-Forward | 4 | C06-CC-8 | kein unberührtes historisches Fenster; SF6-PAPER-2027 beginnt am 01.01.2027 (250 Sitzungen), Owner-Aktivierung davor | SF6-PAPER-2027 aktiviert, 250 Sitzungen, Prüfungen FORWARD_LOG_EQUALS_BATCH_REPLAY, NO_MISSING_SESSIONS, RESEARCH_V1_RECONCILED und V4D1_FORWARD_CENSUS bestand… | BLOCKIERT seit 1.0.0 |
+| C07 Quellen-/Regeltreue | 1 | C07-CC-1 | Quellenstelle, Ermessensfragen oder Übersetzungsbelege: Owner-Entscheidung (eine Neudefinition wäre keine Quellentreue) | Die englische Buchausgabe im Projekt oder eine Owner-Entscheidung über Übersetzungsbelege. E7-2 sagt ausdrücklich, dass Übersetzungen nicht als SOURCE_EXACT ge… | aus OFFEN neu eingeordnet |
 | C07 Corporate Actions | 2 | C07-CC-5 | lizenzierte, faktortragende CA-Quelle (E7-1); die Quarantäne erfüllt CC-5 nie (E1) | 12 K5- und 39 K3-Sitzungen | BLOCKIERT seit 1.0.0 |
 | C07 OOS/Walk-Forward | 4 | C07-CC-8 | kein unberührtes historisches Fenster; SF6-PAPER-2027 beginnt am 01.01.2027 (250 Sitzungen), Owner-Aktivierung davor | SF6-PAPER-2027 aktiviert, 250 Sitzungen, Prüfungen FORWARD_LOG_EQUALS_BATCH_REPLAY, NO_MISSING_SESSIONS, RESEARCH_V1_RECONCILED und V4D1_FORWARD_CENSUS bestand… | BLOCKIERT seit 1.0.0 |
 | C08 Corporate Actions | 2 | C08-CC5 | lizenzierte, faktortragende CA-Quelle (E7-1); die Quarantäne erfüllt CC-5 nie (E1) | X-CC5: lizenzierte, faktortragende CA-Quelle mit Abnahme (E7-1), Daten-PR, Snapshot-Generation 3 (E7-4 B), Neuläufe gegen dieselben Referenz-Hashes | BLOCKIERT seit 1.0.0 |
 | C08 OOS/Walk-Forward | 4 | C08-CC8 | kein unberührtes historisches Fenster; SF6-PAPER-2027 beginnt am 01.01.2027 (250 Sitzungen), Owner-Aktivierung davor | X-CC8: Owner-Aktivierung in eigenem PR vor dem 01.01.2027, 250 Sitzungen, alle vier Integritätsprüfungen bestanden | BLOCKIERT seit 1.0.0 |
+| C09 Quellen-/Regeltreue | 1 | C09-CC-1-READINESS | Quellenstelle, Ermessensfragen oder Übersetzungsbelege: Owner-Entscheidung (eine Neudefinition wäre keine Quellentreue) | Quellenbeleg jeder essenziellen Regel (SOURCE_EXACT) oder Owner-Entscheidung über die Belegform | aus OFFEN neu eingeordnet |
 | C09 Ein-/Ausstieg | 1 | C09-ENTRY-EXIT-MODEL | Modellannahme statt Quellenregel bzw. Wahl der Referenz: Quellenbeleg oder Owner-Entscheidung | Quellenbeleg oder Owner-Entscheidung; eine Neudefinition wäre keine Quellentreue | BLOCKIERT seit 1.0.0 |
 | C09 Stopps/Slippage/Kosten | 2 | C09-Volumen-und-Ausführung | konsolidierte Minuten bzw. Borrow- und Gebührenhistorie nur mit Lizenz | konsolidierte (SIP-)Minuten, Lizenz | aus OFFEN neu eingeordnet |
 | C09 Corporate Actions | 2 | C09-X-CC5 | lizenzierte, faktortragende CA-Quelle (E7-1); die Quarantäne erfüllt CC-5 nie (E1) | lizenzierte, faktortragende CA-Quelle mit Abnahme (E7-1), Daten-PR, Snapshot-Generation 3 (E7-4 B), Neuläufe gegen dieselben Referenz-Hashes | BLOCKIERT seit 1.0.0 |
@@ -493,15 +501,15 @@ Klasse 3 unter den 43 BLOCKIERT-Punkten des Ausgangsstands: geprüft wurden die 
 | C03 statistische Aussagekraft | TEILWEISE | E-SAMPLE: Stichprobe 19556 Trades, Trade-Stabilität (Quarantäne 18058 of 19556 trades unchanged (92 %); COST-50 19556 -> 7343 trades), LEDGER_AND_TRADE_HASH_IDENTICAL; Kennzahlen bleiben versiegelt (E6) |
 | C04 statistische Aussagekraft | TEILWEISE | E-SAMPLE: Stichprobe 1348 Trades, Trade-Stabilität (Quarantäne 311 of 1348 trades unchanged (23 %); COST-50 1348 -> 1339 trades), LEDGER_AND_TRADE_HASH_IDENTICAL; Kennzahlen bleiben versiegelt (E6) |
 | C05 statistische Aussagekraft | TEILWEISE | E-SAMPLE: Stichprobe 1808 Trades, Trade-Stabilität (Quarantäne 373 of 1808 trades unchanged (21 %); COST-50 1808 -> 1859 trades), LEDGER_AND_TRADE_HASH_IDENTICAL; Kennzahlen bleiben versiegelt (E6) |
-| C06 Quellen-/Regeltreue | OFFEN | technisch lösbar, offen: C06-CERT-PREP – Nachweis auf Branch, noch nicht gemergt #1235 |
+| C06 Quellen-/Regeltreue | BLOCKIERT (Klasse 1) | OFFEN → BLOCKIERT (technischer Anteil nur Teilbeitrag): C06-CC-1 (Klasse 1), C06-CC-3 (Klasse 1), C06-CERT-PREP (technisch, Nachweis auf Branch, noch nicht gemergt #1235; Teilbeitrag: hebt nach Merge und Auswertung höchstens auf TEILWEISE, schließt die Dimension nicht (CC-1/CC-3 Klasse 1)) |
 | C06 statistische Aussagekraft | TEILWEISE | E-SAMPLE: Stichprobe 954 Trades, Trade-Stabilität (Quarantäne 901 of 954 trades unchanged (94 %); COST-50 954 -> 983 trades), LEDGER_AND_TRADE_HASH_IDENTICAL; Kennzahlen bleiben versiegelt (E6) |
-| C07 Quellen-/Regeltreue | OFFEN | technisch lösbar, offen: C07-CERT-PREP – Nachweis auf Branch, noch nicht gemergt #1235 |
+| C07 Quellen-/Regeltreue | BLOCKIERT (Klasse 1) | OFFEN → BLOCKIERT (technischer Anteil nur Teilbeitrag): C07-CC-1 (Klasse 1), C07-CC-3 (Klasse 1), C07-CERT-PREP (technisch, Nachweis auf Branch, noch nicht gemergt #1235; Teilbeitrag: hebt nach Merge und Auswertung höchstens auf TEILWEISE, schließt die Dimension nicht (CC-1/CC-3 Klasse 1)) |
 | C07 statistische Aussagekraft | TEILWEISE | E-SAMPLE: Stichprobe 1007 Trades, Trade-Stabilität (Quarantäne 108 of 1007 trades unchanged (11 %); COST-50 1007 -> 971 trades), LEDGER_AND_TRADE_HASH_IDENTICAL; Kennzahlen bleiben versiegelt (E6) |
 | C08 statistische Aussagekraft | TEILWEISE | E-SAMPLE: Stichprobe 9114 Trades, Trade-Stabilität (Quarantäne 2809 of 9114 trades unchanged (31 %); COST-50 9114 -> 5064 trades), LEDGER_AND_TRADE_HASH_IDENTICAL; Kennzahlen bleiben versiegelt (E6) |
-| C09 Quellen-/Regeltreue | OFFEN | technisch lösbar, offen: C09-CERT-PREP – Nachweis auf Branch, noch nicht gemergt #1235 |
-| C09 Stopps/Slippage/Kosten | BLOCKIERT (Klasse 2) | kein technisch lösbarer Blocker: C09-Volumen-und-Ausführung (Klasse 2), C09-STOP-MODEL (Klasse 1) |
-| C09 Delistings/Survivorship | BLOCKIERT (Klasse 2) | kein technisch lösbarer Blocker: C09-SURV (Klasse 2) |
-| C10 Delistings/Survivorship | BLOCKIERT (Klasse 2) | kein technisch lösbarer Blocker: C10-SURV (Klasse 2) |
+| C09 Quellen-/Regeltreue | BLOCKIERT (Klasse 1) | E-CC13: CC-1 und CC-3 im Readiness-Artefakt offen, ohne Blocker in Plan oder Matrix: als Blocker der Klasse 1 nachgetragen (scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json, certificationCriteria) · OFFEN → BLOCKIERT (technischer Anteil nur Teilbeitrag): C09-CERT-PREP (technisch, Nachweis auf Branch, noch nicht gemergt #1235; Teilbeitrag: hebt nach Merge und Auswertung höchstens auf TEILWEISE, schließt die Dimension nicht (CC-1/CC-3 Klasse 1)), C09-CC-1-READINESS (Klasse 1), C09-CC-3-READINESS (Klasse 1) |
+| C09 Stopps/Slippage/Kosten | BLOCKIERT (Klasse 2) | OFFEN → BLOCKIERT: C09-Volumen-und-Ausführung (Klasse 2), C09-STOP-MODEL (Klasse 1) |
+| C09 Delistings/Survivorship | BLOCKIERT (Klasse 2) | OFFEN → BLOCKIERT: C09-SURV (Klasse 2) |
+| C10 Delistings/Survivorship | BLOCKIERT (Klasse 2) | OFFEN → BLOCKIERT: C10-SURV (Klasse 2) |
 | C11 statistische Aussagekraft | TEILWEISE | E-SAMPLE: Stichprobe 1872 Trades, Trade-Stabilität (Quarantäne 187 of 1872 trades unchanged (10 %); COST-50 1872 -> 1845 trades), LEDGER_AND_TRADE_HASH_IDENTICAL; Kennzahlen bleiben versiegelt (E6) |
 | C12 statistische Aussagekraft | TEILWEISE | E-SAMPLE: Stichprobe 3415 Trades, Trade-Stabilität (Quarantäne 1281 of 3415 trades unchanged (38 %); COST-50 3415 -> 3467 trades), LEDGER_AND_TRADE_HASH_IDENTICAL; Kennzahlen bleiben versiegelt (E6) |
 
@@ -519,6 +527,9 @@ Klasse 3 unter den 43 BLOCKIERT-Punkten des Ausgangsstands: geprüft wurden die 
 | C06 statistische Aussagekraft | Stichprobe 954 Trades, Trade-Stabilität (Quarantäne 901 of 954 trades unchanged (94 %); COST-50 954 -> 983 trades), LEDGER_AND_TRADE_HASH_IDENTICAL; Kennzahlen bleiben versiegelt (E6) | OFFEN → TEILWEISE |
 | C07 statistische Aussagekraft | Stichprobe 1007 Trades, Trade-Stabilität (Quarantäne 108 of 1007 trades unchanged (11 %); COST-50 1007 -> 971 trades), LEDGER_AND_TRADE_HASH_IDENTICAL; Kennzahlen bleiben versiegelt (E6) | OFFEN → TEILWEISE |
 | C08 statistische Aussagekraft | Stichprobe 9114 Trades, Trade-Stabilität (Quarantäne 2809 of 9114 trades unchanged (31 %); COST-50 9114 -> 5064 trades), LEDGER_AND_TRADE_HASH_IDENTICAL; Kennzahlen bleiben versiegelt (E6) | OFFEN → TEILWEISE |
+| C09 Quellen-/Regeltreue | CC-1 und CC-3 im Readiness-Artefakt offen, ohne Blocker in Plan oder Matrix: als Blocker der Klasse 1 nachgetragen (scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json, certificationCriteria) | OFFEN → BLOCKIERT |
+| C10 Quellen-/Regeltreue | CC-3 im Readiness-Artefakt offen, ohne Blocker in Plan oder Matrix: als Blocker der Klasse 1 nachgetragen (scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json, certificationCriteria) | TEILWEISE → TEILWEISE |
+| C11 Quellen-/Regeltreue | CC-1 im Readiness-Artefakt offen, ohne Blocker in Plan oder Matrix: als Blocker der Klasse 1 nachgetragen (scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json, certificationCriteria) | BLOCKIERT → BLOCKIERT |
 | C11 statistische Aussagekraft | Stichprobe 1872 Trades, Trade-Stabilität (Quarantäne 187 of 1872 trades unchanged (10 %); COST-50 1872 -> 1845 trades), LEDGER_AND_TRADE_HASH_IDENTICAL; Kennzahlen bleiben versiegelt (E6) | OFFEN → TEILWEISE |
 | C12 statistische Aussagekraft | Stichprobe 3415 Trades, Trade-Stabilität (Quarantäne 1281 of 3415 trades unchanged (38 %); COST-50 3415 -> 3467 trades), LEDGER_AND_TRADE_HASH_IDENTICAL; Kennzahlen bleiben versiegelt (E6) | OFFEN → TEILWEISE |
 
@@ -535,23 +546,20 @@ Klasse 3 unter den 43 BLOCKIERT-Punkten des Ausgangsstands: geprüft wurden die 
 | C03 Stopps/Slippage/Kosten (TEILWEISE) | C03-COSTS | vorregistriert, wird mit dem Studienlauf berichtet | Kostenstufen bzw. Varianten sind vorregistriert und werden mit dem Studienlauf vollständig berichtet |
 | C03 Stopps/Slippage/Kosten (TEILWEISE) | C03-ENTRY-BAR | vorregistriert, wird mit dem Studienlauf berichtet | Kostenstufen bzw. Varianten sind vorregistriert und werden mit dem Studienlauf vollständig berichtet |
 | C03 Delistings/Survivorship (TEILWEISE) | C03-V13-RUN | Nachweis auf Branch, noch nicht gemergt | #1234 auf Branch, noch nicht gemergt |
-| C04 Quellen-/Regeltreue (TEILWEISE) | C04-CERT-PREP | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
+| C04 Quellen-/Regeltreue (TEILWEISE) | C04-CERT-PREP | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt; Teilbeitrag: hebt nach Merge und Auswertung höchstens auf TEILWEISE, schließt die Dimension nicht (CC-1/CC-3 Klasse 1) |
 | C04 Parameter/Grenzfälle (TEILWEISE) | C04-BOUNDARY | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
 | C04 Delistings/Survivorship (TEILWEISE) | C04-V13-RUN | Nachweis auf Branch, noch nicht gemergt | #1234 auf Branch, noch nicht gemergt |
-| C05 Quellen-/Regeltreue (TEILWEISE) | C05-CERT-PREP | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
+| C05 Quellen-/Regeltreue (TEILWEISE) | C05-CERT-PREP | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt; Teilbeitrag: hebt nach Merge und Auswertung höchstens auf TEILWEISE, schließt die Dimension nicht (CC-1/CC-3 Klasse 1) |
 | C05 Parameter/Grenzfälle (TEILWEISE) | C05-BOUNDARY | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
 | C05 Delistings/Survivorship (TEILWEISE) | C05-V13-RUN | Nachweis auf Branch, noch nicht gemergt | #1234 auf Branch, noch nicht gemergt |
-| C06 Quellen-/Regeltreue (OFFEN) | C06-CERT-PREP | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
 | C06 Parameter/Grenzfälle (TEILWEISE) | C06-BOUNDARY | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
 | C06 Delistings/Survivorship (TEILWEISE) | C06-V13-RUN | Nachweis auf Branch, noch nicht gemergt | #1234 auf Branch, noch nicht gemergt |
-| C07 Quellen-/Regeltreue (OFFEN) | C07-CERT-PREP | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
 | C07 Parameter/Grenzfälle (TEILWEISE) | C07-BOUNDARY | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
 | C07 Delistings/Survivorship (TEILWEISE) | C07-V13-RUN | Nachweis auf Branch, noch nicht gemergt | #1234 auf Branch, noch nicht gemergt |
 | C08 Stopps/Slippage/Kosten (TEILWEISE) | C08-COSTS | vorregistriert, wird mit dem Studienlauf berichtet | Kostenstufen bzw. Varianten sind vorregistriert und werden mit dem Studienlauf vollständig berichtet |
 | C08 Delistings/Survivorship (TEILWEISE) | C08-V13-RUN | Nachweis auf Branch, noch nicht gemergt | #1234 auf Branch, noch nicht gemergt |
-| C09 Quellen-/Regeltreue (OFFEN) | C09-CERT-PREP | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
 | C09 Parameter/Grenzfälle (TEILWEISE) | C09-BOUNDARY | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
-| C10 Quellen-/Regeltreue (TEILWEISE) | C10-CERT-PREP | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
+| C10 Quellen-/Regeltreue (TEILWEISE) | C10-CERT-PREP | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt; Teilbeitrag: hebt nach Merge und Auswertung höchstens auf TEILWEISE, schließt die Dimension nicht (CC-1/CC-3 Klasse 1) |
 | C10 Parameter/Grenzfälle (TEILWEISE) | C10-BOUNDARY | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
 | C11 Parameter/Grenzfälle (TEILWEISE) | C11-BOUNDARY | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
 | C11 Delistings/Survivorship (TEILWEISE) | C11-V13-RUN | Nachweis auf Branch, noch nicht gemergt | #1234 auf Branch, noch nicht gemergt |
@@ -560,7 +568,7 @@ Klasse 3 unter den 43 BLOCKIERT-Punkten des Ausgangsstands: geprüft wurden die 
 | C13 Parameter/Grenzfälle (TEILWEISE) | C13-BOUNDARY | Nachweis auf Branch, noch nicht gemergt | #1235 auf Branch, noch nicht gemergt |
 | C13 Delistings/Survivorship (TEILWEISE) | C13-V13-RUN | Nachweis auf Branch, noch nicht gemergt | #1234 auf Branch, noch nicht gemergt |
 
-Die übrigen Blocker der TEILWEISE-Punkte tragen eine Klasse (1, 2 oder 4) und sind in Abschnitt 3 je Blocker markiert. TEILWEISE nach Klassen der Blocker: Klasse 1 in 22 Punkten, Klasse 2 in 16 Punkten, Klasse 4 in 10 Punkten; ohne technisch lösbaren Anteil 31 Punkte.
+Die übrigen Blocker der TEILWEISE-Punkte tragen eine Klasse (1, 2 oder 4) und sind in Abschnitt 3 je Blocker markiert. TEILWEISE nach Klassen der Blocker: Klasse 1 in 23 Punkten, Klasse 2 in 16 Punkten, Klasse 4 in 10 Punkten; ohne technisch lösbaren Anteil 31 Punkte.
 
 ### 9.5 Nachweise auf Branches (noch nicht gemergt)
 
@@ -569,3 +577,266 @@ Die übrigen Blocker der TEILWEISE-Punkte tragen eine Klasse (1, 2 oder 4) und s
 | #1233 | unabhängige Prüfung der Turtle-Einheitsstopps (`st9-hist-execution` 1.1.0) | nein, auf Branch, noch nicht gemergt | C01 Stopps/Slippage/Kosten, C02 Stopps/Slippage/Kosten |
 | #1234 | Workflow `supertrader-st9-v13-study.yml`: nur manuell, Ergebnisse verschlüsselt, Hex-Datenschlüssel | nein, auf Branch, noch nicht gemergt | C01 Delistings/Survivorship, C02 Delistings/Survivorship, C03 Delistings/Survivorship, C04 Delistings/Survivorship, C05 Delistings/Survivorship, C06 Delistings/Survivorship, C07 Delistings/Survivorship, C08 Delistings/Survivorship, C11 Delistings/Survivorship, C12 Delistings/Survivorship, C13 Delistings/Survivorship |
 | #1235 | Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`) | nein, auf Branch, noch nicht gemergt | C04 Quellen-/Regeltreue, C04 Parameter/Grenzfälle, C05 Quellen-/Regeltreue, C05 Parameter/Grenzfälle, C06 Quellen-/Regeltreue, C06 Parameter/Grenzfälle, C07 Quellen-/Regeltreue, C07 Parameter/Grenzfälle, C09 Quellen-/Regeltreue, C09 Parameter/Grenzfälle, C10 Quellen-/Regeltreue, C10 Parameter/Grenzfälle, C11 Quellen-/Regeltreue, C11 Parameter/Grenzfälle, C13 Quellen-/Regeltreue, C13 Parameter/Grenzfälle |
+
+## 10. Freigabepakete
+
+Die 49 BLOCKIERT-Punkte sind in 10 entscheidbare Pakete gebündelt. Jeder Punkt gehört zu genau dem Paket, das seine Ursache schließt (Abschnitt 9.1); weitere Blocker desselben Punkts sind mit ihrem Paket bzw. als technischer Anteil genannt. Kosten und Lizenzen sind nur benannt: Kein Paket beauftragt einen Anbieter, löst einen Kauf, einen kostenpflichtigen Abruf oder einen Lauf aus. Klassen wie in Abschnitt 9: 1 Owner-Fachentscheidung, 2 fehlende lizenzierte Daten, 4 historische Voraussetzung heute nicht erfüllbar.
+
+### 10.1 Übersicht
+
+| Paket | Titel | Punkte | Klasse | Frist | Empfehlung |
+|---|---|---|---|---|---|
+| FP-ST-01 | Lizenzierte Corporate-Action-Quelle und Snapshot-Generation 3 (CC-5, alle 13) | 13 | 2 | keine Kalenderfrist; vor der Auswertung von SF6-PAPER-2027 (frühestens nach der 250. Sitzung), weil jede Zertifizierung CC-5 und CC-8 zusammen braucht | Option A |
+| FP-ST-02 | Aktivierung von SF6-PAPER-2027 (CC-8, 11 Referenzen) | 11 | 4 | Aktivierungs-PR gemergt vor dem Fensterbeginn 01.01.2027 (erste Sitzung des Fensters 04.01.2027, letzte Sitzung davor 31.12.2026) | Option A |
+| FP-ST-03 | Turtle: PIT-Gruppenquelle für das Korrelationslimit (CC-4, E7-5) | 2 | 1 | keine Kalenderfrist; der Neulauf mit Limit ist eine Studie neben der gepinnten Paper-Referenz | Option A |
+| FP-ST-04 | Weinstein und Minervini SEPA: Gruppen-, Marktbreite- und RS-Historie (CC-4) | 3 | 2 | keine Kalenderfrist | Option B |
+| FP-ST-05 | Minervini SEPA und Power Play: Originalquelle und Ermessensfragen (CC-1, CC-3) | 2 | 1 | vor jedem Öffnen versiegelter Kennzahlen; eine Lesart, die eine Paper-Referenz ändern würde, vor dem 01.01.2027, sonst gilt die gepinnte Referenz | Option A |
+| FP-ST-06 | Pocket Pivot: Stopregel und Ermessensfragen (CC-1, CC-2, CC-3) | 2 | 1 | vor jedem Öffnen versiegelter Kennzahlen; die Paper-Referenz läuft gepinnt ohne Stop-Variante | Option A |
+| FP-ST-07 | Holy Grail: Primärquelle für Einstieg, Stop, Trailing und Größe (CC-1, CC-2, CC-3) | 3 | 1 | vor jedem Öffnen versiegelter Kennzahlen; die Paper-Referenz W-RAS97 bleibt gepinnt | Option A |
+| FP-ST-08 | Kullamägi Episodic Pivot und Parabolic Short: Zertifizierungsweg oder Zurückstellung (Lesarten, Katalysator) | 5 | 1 | keine Kalenderfrist; bei A vor einem Forward-Start (FP-ST-10) | Option B |
+| FP-ST-09 | Kullamägi Episodic Pivot und Parabolic Short: konsolidierte Minuten, Borrow- und Delisting-Daten | 6 | 2 | keine Kalenderfrist | Option B |
+| FP-ST-10 | Kullamägi Episodic Pivot und Parabolic Short: eigenes Forward-Protokoll (CC-8) | 2 | 4 | keine feste Frist; ein Start parallel zu SF6-PAPER-2027 braucht die Aktivierung vor dem 01.01.2027 | Option B |
+
+Summe 49 Punkte; nach Klasse: Klasse 1 14 Punkte in 5 Paketen, Klasse 2 22 Punkte in 3 Paketen, Klasse 4 13 Punkte in 2 Paketen.
+
+### 10.2 Pakete
+
+#### FP-ST-01 – Lizenzierte Corporate-Action-Quelle und Snapshot-Generation 3 (CC-5, alle 13)
+
+- **Betroffene Punkte (13):** C01 Corporate Actions, C02 Corporate Actions, C03 Corporate Actions, C04 Corporate Actions, C05 Corporate Actions, C06 Corporate Actions, C07 Corporate Actions, C08 Corporate Actions, C09 Corporate Actions, C10 Corporate Actions, C11 Corporate Actions, C12 Corporate Actions, C13 Corporate Actions
+- **Klasse:** 2 (fehlende lizenzierte Daten)
+- **Entscheidungsfrage:** Wird eine lizenzierte, faktortragende CA-Quelle nach E7-1 angefragt und nach bestandener Musterabnahme beschafft, und wird danach Snapshot-Generation 3 (E7-4 B) erstellt? Teilfrage C04/C05: Genügt Exposition 0 bei K5 für CC5-a?
+- **Optionen:** **A:** Anfrage ohne Kauf bei den in E7-1 genannten Kandidaten (Preis, Veröffentlichungsrecht abgeleiteter Kennzahlen, Semantik, Musterauszug der 83 Sitzungen); Kauf erst nach Abnahme gegen die EDGAR-Labels (≥ 90 % Event-Treffer, ≥ 95 % exakte Ratio, 0 falsch-positiv, ≥ 85 % Abdeckung 2008–2017) und gesonderter Kostenfreigabe · **B:** weiter nur kostenfrei mit einem neuen EDGAR-Regelsatz (Regelsatz 1.4.2 mit Exhibits bestätigte 0 von 83); CC5-e bleibt ohne vollständige Splitliste offen · **C:** keine Quelle: CC-5 bleibt für alle 13 offen, eine Zertifizierung ist ausgeschlossen (E7-4 C)
+- **Empfehlung:** Option A: nur A kann CC5-a bis CC5-f schließen; die Anfrage kostet nichts und bindet nicht. Teilfrage C04/C05: ja, die leere Exposition als erfüllt dokumentieren; CC-5 bleibt trotzdem offen, solange CC5-e und CC5-f fehlen
+- **Kosten und Lizenz (nur benannt):** kommerzielle Datenlizenz mit Recht zur Veröffentlichung abgeleiteter Kennzahlen; der kommerzielle Preis ist laut E7-1 nicht ermittelt (belegt sind nur Privatpreise). Snapshot-Generation 3: ein Capture-Lauf im bestehenden Budget
+- **Voraussetzungen:** EDGAR-Labels der 83 Sitzungen (vorhanden, `docs/SUPERTRADER_7_EDGAR_CA_CHECK.md`); Aufbewahrungsentscheidung für Snapshot-Generationen (Kappung 3 volle Generationen, 2 belegt durch DEV und HOLDOUT; die freie teilt sich FP-ST-01 mit FP-ST-02)
+- **Frist:** keine Kalenderfrist; vor der Auswertung von SF6-PAPER-2027 (frühestens nach der 250. Sitzung), weil jede Zertifizierung CC-5 und CC-8 zusammen braucht
+- **Folge-PRs:** Daten-PR mit Quelle und Abnahmeprotokoll; Capture Snapshot-Generation 3 (Owner-Lauf); Neulauf der Readiness mit Vorher/Nachher, danach Evidenzdokument neu erzeugen
+- **Wirkung nach Freigabe:**
+
+| Punkt | jetzt | nach Freigabe und Folge-PRs | außerdem nötig |
+|---|---|---|---|
+| C01 Corporate Actions | BLOCKIERT, Klasse 2 (C01-CC5) | BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes) | – |
+| C02 Corporate Actions | BLOCKIERT, Klasse 2 (C02-CC5) | BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes) | – |
+| C03 Corporate Actions | BLOCKIERT, Klasse 2 (C03-CC5) | BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes) | – |
+| C04 Corporate Actions | BLOCKIERT, Klasse 2 (C04-CC-5) | BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes) | – |
+| C05 Corporate Actions | BLOCKIERT, Klasse 2 (C05-CC-5) | BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes) | – |
+| C06 Corporate Actions | BLOCKIERT, Klasse 2 (C06-CC-5) | BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes) | – |
+| C07 Corporate Actions | BLOCKIERT, Klasse 2 (C07-CC-5) | BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes) | – |
+| C08 Corporate Actions | BLOCKIERT, Klasse 2 (C08-CC5) | BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes) | – |
+| C09 Corporate Actions | BLOCKIERT, Klasse 2 (C09-X-CC5) | BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes) | – |
+| C10 Corporate Actions | BLOCKIERT, Klasse 2 (C10-X-CC5) | BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes) | – |
+| C11 Corporate Actions | BLOCKIERT, Klasse 2 (C11-CC-5) | BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes) | – |
+| C12 Corporate Actions | BLOCKIERT, Klasse 2 (C12-CC5) | BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes) | – |
+| C13 Corporate Actions | BLOCKIERT, Klasse 2 (C13-CC-5) | BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes) | – |
+
+#### FP-ST-02 – Aktivierung von SF6-PAPER-2027 (CC-8, 11 Referenzen)
+
+- **Betroffene Punkte (11):** C01 OOS/Walk-Forward, C02 OOS/Walk-Forward, C03 OOS/Walk-Forward, C04 OOS/Walk-Forward, C05 OOS/Walk-Forward, C06 OOS/Walk-Forward, C07 OOS/Walk-Forward, C08 OOS/Walk-Forward, C11 OOS/Walk-Forward, C12 OOS/Walk-Forward, C13 OOS/Walk-Forward
+- **Klasse:** 4 (historische Voraussetzung heute nicht erfüllbar)
+- **Entscheidungsfrage:** Wird SF6-PAPER-2027 in einem eigenen PR vor dem Fensterbeginn aktiviert (Aufzeichnungs-Workflow, Speicher, Aufbewahrung der eingefrorenen Sitzungen)?
+- **Optionen:** **A:** Aktivierungs-PR vor dem Fensterbeginn: Aufzeichnung nach jedem Schluss in ein versiegeltes, hash-verkettetes Protokoll, Aufbewahrung festgelegt; keine Orders, kein Broker, keine Produktfläche · **B:** später aktivieren: Das gepinnte Fenster beginnt am 01.01.2027; ein späterer Start braucht eine neue Protokollfassung, CC-8 verschiebt sich um mindestens ein Jahr · **C:** nicht aktivieren: CC-8 bleibt für alle 13 offen; ein unberührtes historisches Fenster gibt es nicht (E7-4)
+- **Empfehlung:** Option A: der einzige Weg zu CC-8 ohne Zeitverlust; die Daten kommen aus der bestehenden Tagespipeline (kein neuer Anbieter)
+- **Kosten und Lizenz (nur benannt):** keine neuen bezahlten Daten (Protokoll: bestehende Tagespipeline); Speicher für eingefrorene Sitzungen im bestehenden Snapshot-Speicher, Aufbewahrung nach Owner-Entscheidung
+- **Voraussetzungen:** Aufbewahrungsentscheidung (Kappung der Snapshot-Generationen, gemeinsam mit FP-ST-01); Aktivierungs-PR nach ADR-005 (Checkout-Ref, push-with-retry, Concurrency je Ref); gepinnte Referenzen unverändert (Turtle-Fingerabdruck auf `main` = Pin, E-REFCODE)
+- **Frist:** Aktivierungs-PR gemergt vor dem Fensterbeginn 01.01.2027 (erste Sitzung des Fensters 04.01.2027, letzte Sitzung davor 31.12.2026)
+- **Folge-PRs:** Aktivierungs-PR (Workflow, Speicher, Aufbewahrung); täglicher Aufzeichnungslauf ab der ersten Sitzung; Auswertung nach Protokoll (E6, Verteilungen); sie schließt auch die Robustheit (Klasse 4) in den TEILWEISE-Punkten der statistischen Aussagekraft
+- **Wirkung nach Freigabe:**
+
+| Punkt | jetzt | nach Freigabe und Folge-PRs | außerdem nötig |
+|---|---|---|---|
+| C01 OOS/Walk-Forward | BLOCKIERT, Klasse 4 (C01-CC8) | BELEGT nach der 250. Sitzung, wenn alle vier Integritätsprüfungen bestehen; bis dahin BLOCKIERT, Zwischenstand nur Zählungen | – |
+| C02 OOS/Walk-Forward | BLOCKIERT, Klasse 4 (C02-CC8) | BELEGT nach der 250. Sitzung, wenn alle vier Integritätsprüfungen bestehen; bis dahin BLOCKIERT, Zwischenstand nur Zählungen | – |
+| C03 OOS/Walk-Forward | BLOCKIERT, Klasse 4 (C03-CC8) | BELEGT nach der 250. Sitzung, wenn alle vier Integritätsprüfungen bestehen; bis dahin BLOCKIERT, Zwischenstand nur Zählungen | – |
+| C04 OOS/Walk-Forward | BLOCKIERT, Klasse 4 (C04-CC-8) | BELEGT nach der 250. Sitzung, wenn alle vier Integritätsprüfungen bestehen; bis dahin BLOCKIERT, Zwischenstand nur Zählungen | – |
+| C05 OOS/Walk-Forward | BLOCKIERT, Klasse 4 (C05-CC-8) | BELEGT nach der 250. Sitzung, wenn alle vier Integritätsprüfungen bestehen; bis dahin BLOCKIERT, Zwischenstand nur Zählungen | – |
+| C06 OOS/Walk-Forward | BLOCKIERT, Klasse 4 (C06-CC-8) | BELEGT nach der 250. Sitzung, wenn alle vier Integritätsprüfungen bestehen; bis dahin BLOCKIERT, Zwischenstand nur Zählungen | – |
+| C07 OOS/Walk-Forward | BLOCKIERT, Klasse 4 (C07-CC-8) | BELEGT nach der 250. Sitzung, wenn alle vier Integritätsprüfungen bestehen; bis dahin BLOCKIERT, Zwischenstand nur Zählungen | – |
+| C08 OOS/Walk-Forward | BLOCKIERT, Klasse 4 (C08-CC8) | BELEGT nach der 250. Sitzung, wenn alle vier Integritätsprüfungen bestehen; bis dahin BLOCKIERT, Zwischenstand nur Zählungen | – |
+| C11 OOS/Walk-Forward | BLOCKIERT, Klasse 4 (C11-CC-8) | BELEGT nach der 250. Sitzung, wenn alle vier Integritätsprüfungen bestehen; bis dahin BLOCKIERT, Zwischenstand nur Zählungen | – |
+| C12 OOS/Walk-Forward | BLOCKIERT, Klasse 4 (C12-CC8) | BELEGT nach der 250. Sitzung, wenn alle vier Integritätsprüfungen bestehen; bis dahin BLOCKIERT, Zwischenstand nur Zählungen | – |
+| C13 OOS/Walk-Forward | BLOCKIERT, Klasse 4 (C13-CC-8) | BELEGT nach der 250. Sitzung, wenn alle vier Integritätsprüfungen bestehen; bis dahin BLOCKIERT, Zwischenstand nur Zählungen | – |
+
+#### FP-ST-03 – Turtle: PIT-Gruppenquelle für das Korrelationslimit (CC-4, E7-5)
+
+- **Betroffene Punkte (2):** C01 historische Datenabdeckung, C02 historische Datenabdeckung
+- **Klasse:** 1 (Owner-Fachentscheidung)
+- **Entscheidungsfrage:** Darf eine PIT-SIC-Historie aus den Kopfdaten der EDGAR-Einreichungen (Fama-French-49, Zuordnung über `core/identity.js`) für CC-4 zählen (Revision von E4), oder wird eine GICS-Historie beschafft?
+- **Optionen:** **A:** PIT-SIC-Historie aus EDGAR, kostenfrei im bestehenden Abrufbudget; erfordert die Revision von E4 (E4 schließt den statischen SIC-Proxy aus) · **B:** GICS-Historie (lizenziert); Kosten nicht veröffentlicht, gesonderte Kostenfreigabe · **C:** ohne Gruppen: Turtle-Referenzen ohne Korrelationslimit, CC-4 bleibt offen
+- **Empfehlung:** Option A: zuerst als begrenzte Research-Belegstudie (PS-C02-CC4-GROUPS); die Referenz ohne Gruppen bleibt hashgleich
+- **Kosten und Lizenz (nur benannt):** A: keine Kosten, EDGAR-Abrufe im bestehenden Budget; B: Lizenz einer GICS-Historie, Preis nicht veröffentlicht
+- **Voraussetzungen:** Owner-Entscheidung zur Revision von E4; PS-C02-CC4-GROUPS im TOP5-Plan (vorregistriert, BLOCKED_OWNER)
+- **Frist:** keine Kalenderfrist; der Neulauf mit Limit ist eine Studie neben der gepinnten Paper-Referenz
+- **Folge-PRs:** Research-PR für PIT-SIC-Gruppen (Identität über `core/identity.js`; Gate A: Quant-Anteile in eigenem PR); Neulauf BASE_S0 mit groupsOf, Vorher/Nachher (PS-C02-CC4-GROUPS)
+- **Wirkung nach Freigabe:**
+
+| Punkt | jetzt | nach Freigabe und Folge-PRs | außerdem nötig |
+|---|---|---|---|
+| C01 historische Datenabdeckung | BLOCKIERT, Klasse 1 (C01-CC4) | BELEGT bei CC-4 und PIT-Datenintegrität PASS, sonst TEILWEISE (Ableitungsregel historische Datenabdeckung); nach Neulauf mit Vorher/Nachher | – |
+| C02 historische Datenabdeckung | BLOCKIERT, Klasse 1 (C02-CC4) | BELEGT bei CC-4 und PIT-Datenintegrität PASS, sonst TEILWEISE (Ableitungsregel historische Datenabdeckung); nach Neulauf mit Vorher/Nachher | – |
+
+#### FP-ST-04 – Weinstein und Minervini SEPA: Gruppen-, Marktbreite- und RS-Historie (CC-4)
+
+- **Betroffene Punkte (3):** C04 historische Datenabdeckung, C05 historische Datenabdeckung, C06 historische Datenabdeckung
+- **Klasse:** 2 (fehlende lizenzierte Daten)
+- **Entscheidungsfrage:** Werden die fehlenden Historien lizenziert (PIT-Gruppen-Stage und NYSE-Advance/Decline für C04 und C05, IBD-RS-Historie für C06, kein Ersatz zulässig), oder bleibt CC-4 für diese drei offen?
+- **Optionen:** **A:** Lizenzanfrage ohne Kauf für NYSE-A/D- und IBD-RS-Historie; die Gruppen-Stage für C04/C05 nach FP-ST-03 A aus der PIT-SIC-Historie · **B:** nur die Gruppen-Stage über FP-ST-03 A; A/D und IBD-RS bleiben offen, damit auch CC-4 für C04, C05 und C06 · **C:** keine Beschaffung: CC-4 bleibt offen, die drei bleiben diagnostisch
+- **Empfehlung:** Option B: kostenfrei und nach FP-ST-03 umsetzbar; eine Lizenz für A/D und IBD-RS erst prüfen, wenn FP-ST-01 und FP-ST-02 den Zertifizierungsweg offen halten
+- **Kosten und Lizenz (nur benannt):** lizenzierte NYSE-A/D-Historie und IBD-RS-Historie (Preise nicht ermittelt); Gruppen-Stage über FP-ST-03 A kostenfrei
+- **Voraussetzungen:** FP-ST-03 (Gruppenquelle); ALL13-Plan auf `main` (#1235, PS-C04-GROUP-PROXY und PS-C05-GROUP-PROXY vorregistriert)
+- **Frist:** keine Kalenderfrist
+- **Folge-PRs:** Daten-PR je lizenzierter Historie; Neulauf mit Gruppen-Stage bzw. RS, Vorher/Nachher
+- **Wirkung nach Freigabe:**
+
+| Punkt | jetzt | nach Freigabe und Folge-PRs | außerdem nötig |
+|---|---|---|---|
+| C04 historische Datenabdeckung | BLOCKIERT, Klasse 2 (C04-CC-4) | BELEGT bei CC-4 und PIT-Datenintegrität PASS, sonst TEILWEISE (Ableitungsregel historische Datenabdeckung); nach Neulauf mit Vorher/Nachher | – |
+| C05 historische Datenabdeckung | BLOCKIERT, Klasse 2 (C05-CC-4) | BELEGT bei CC-4 und PIT-Datenintegrität PASS, sonst TEILWEISE (Ableitungsregel historische Datenabdeckung); nach Neulauf mit Vorher/Nachher | – |
+| C06 historische Datenabdeckung | BLOCKIERT, Klasse 2 (C06-CC-4) | BELEGT bei CC-4 und PIT-Datenintegrität PASS, sonst TEILWEISE (Ableitungsregel historische Datenabdeckung); nach Neulauf mit Vorher/Nachher | – |
+
+#### FP-ST-05 – Minervini SEPA und Power Play: Originalquelle und Ermessensfragen (CC-1, CC-3)
+
+- **Betroffene Punkte (2):** C06 Quellen-/Regeltreue, C07 Quellen-/Regeltreue
+- **Klasse:** 1 (Owner-Fachentscheidung)
+- **Entscheidungsfrage:** Wird die englische Originalausgabe ins Projekt aufgenommen (E7-2: Übersetzungen gelten nicht als SOURCE_EXACT), und wie werden die 11 (C06) bzw. 6 (C07) Ermessensfragen als Lesarten entschieden?
+- **Optionen:** **A:** Originalausgabe beschaffen und die Fundstellen gegen das Original prüfen; Ermessensfragen als datierte Owner-Lesarten vor jedem Öffnen von Kennzahlen · **B:** bei den Übersetzungsbelegen bleiben: CC-1 bleibt offen (E7-2) · **C:** C06 als manuelle Methode ohne Zertifizierungsziel führen (SEPA ist laut Quelle manuell, MIN-PROCESS-04)
+- **Empfehlung:** Option A: für CC-1 der einzige Weg; bei C06 bleibt CC-3 nach der Quelle strukturell offen (OPEN_STRUCTURAL im ALL13-Plan), dort ist C zusätzlich festzuhalten
+- **Kosten und Lizenz (nur benannt):** Buchbeschaffung (geringe Kosten); keine Datenlizenz
+- **Voraussetzungen:** ALL13-Plan auf `main` (#1235: PS-C06-SOURCE, PS-C07-SOURCE)
+- **Frist:** vor jedem Öffnen versiegelter Kennzahlen; eine Lesart, die eine Paper-Referenz ändern würde, vor dem 01.01.2027, sonst gilt die gepinnte Referenz
+- **Folge-PRs:** #1235 mergen (Regeltreue-Tests, Teilbeitrag); Quellen-PR: Fundstellen gegen das Original, PSR-Extrakt neu; Entscheidungsprotokoll der Lesarten (Owner-Datum)
+- **Wirkung nach Freigabe:**
+
+| Punkt | jetzt | nach Freigabe und Folge-PRs | außerdem nötig |
+|---|---|---|---|
+| C06 Quellen-/Regeltreue | BLOCKIERT, Klasse 1 (C06-CC-1) | TEILWEISE mit CC-1 oder CC-3 (bzw. nach Auswertung der ALL13-Regeltreue aus #1235); BELEGT erst mit CC-1 und CC-3 (Ableitungsregel Quellen-/Regeltreue) | C06-CERT-PREP (technisch: Nachweis auf Branch, noch nicht gemergt, #1235, Teilbeitrag) |
+| C07 Quellen-/Regeltreue | BLOCKIERT, Klasse 1 (C07-CC-1) | TEILWEISE mit CC-1 oder CC-3 (bzw. nach Auswertung der ALL13-Regeltreue aus #1235); BELEGT erst mit CC-1 und CC-3 (Ableitungsregel Quellen-/Regeltreue) | C07-CERT-PREP (technisch: Nachweis auf Branch, noch nicht gemergt, #1235, Teilbeitrag) |
+
+#### FP-ST-06 – Pocket Pivot: Stopregel und Ermessensfragen (CC-1, CC-2, CC-3)
+
+- **Betroffene Punkte (2):** C11 Quellen-/Regeltreue, C11 Ein-/Ausstieg
+- **Klasse:** 1 (Owner-Fachentscheidung)
+- **Entscheidungsfrage:** Gibt es eine Primärquelle mit der Initialstop-Regel der Autoren (MOKA-SF-PP-STOP ist SOURCE_BLOCKED), und wie werden die 7 essenziellen Ermessensfragen entschieden?
+- **Optionen:** **A:** Primärquelle der Autoren mit Stopregel benennen bzw. beschaffen, Ledger-Einträge für die Web-Primärquellen; Ermessensfragen als datierte Owner-Lesarten · **B:** der Modellstop `MA6-PP-STOP-SIGNAL-DAY-LOW` bleibt Forschungsvariante: CC-2 ist nach E3 nicht erfüllbar, C11 bleibt diagnostisch
+- **Empfehlung:** Option A: nur mit einer Quellenstelle wird CC-2 erfüllbar; findet sich keine, ist B festzuhalten (keine Neudefinition)
+- **Kosten und Lizenz (nur benannt):** Quellenrecherche bzw. Buchbeschaffung (geringe Kosten); keine Datenlizenz
+- **Voraussetzungen:** ALL13-Plan auf `main` (#1235: PS-C11-STOP-SOURCE, PS-C11-READINGS)
+- **Frist:** vor jedem Öffnen versiegelter Kennzahlen; die Paper-Referenz läuft gepinnt ohne Stop-Variante
+- **Folge-PRs:** #1235 mergen; Ledger-PR (C11-LEDGER, eigener PR); Entscheidungsprotokoll der Lesarten
+- **Wirkung nach Freigabe:**
+
+| Punkt | jetzt | nach Freigabe und Folge-PRs | außerdem nötig |
+|---|---|---|---|
+| C11 Quellen-/Regeltreue | BLOCKIERT, Klasse 1 (C11-CC-3) | TEILWEISE mit CC-1 oder CC-3 (bzw. nach Auswertung der ALL13-Regeltreue aus #1235); BELEGT erst mit CC-1 und CC-3 (Ableitungsregel Quellen-/Regeltreue) | C11-CERT-PREP (technisch: Nachweis auf Branch, noch nicht gemergt, #1235, Teilbeitrag) |
+| C11 Ein-/Ausstieg | BLOCKIERT, Klasse 1 (C11-Stop) | BELEGT bei CC-2; solange CC-2 offen und der Zustand SOURCE_BLOCKED bzw. VALIDATION_BLOCKED ist, bleibt der Punkt BLOCKIERT | – |
+
+#### FP-ST-07 – Holy Grail: Primärquelle für Einstieg, Stop, Trailing und Größe (CC-1, CC-2, CC-3)
+
+- **Betroffene Punkte (3):** C13 Quellen-/Regeltreue, C13 Ein-/Ausstieg, C13 statistische Aussagekraft
+- **Klasse:** 1 (Owner-Fachentscheidung)
+- **Entscheidungsfrage:** Wird eine Primärquelle gesucht, die Einstieg, Initialstop, Trailing und Größe vollständig nennt (W-RAS97 ist eine Sekundärquelle), oder bleibt C13 eine Modellstudie ohne Zertifizierungsziel?
+- **Optionen:** **A:** Primärquelle der Autorin beschaffen und vorab prüfen, ob sie alle vier Regeln nennt; danach die 3 Ermessensfragen als Owner-Lesarten · **B:** C13 bleibt Modellstudie (das Trailing `MA6-HG-TRAIL-SWING-LOWS` ist keine Originalregel): keine historische Methodenrendite, keine Zertifizierung
+- **Empfehlung:** Option A: erst prüfen, dann entscheiden; ohne vollständige Quelle ist B festzuhalten
+- **Kosten und Lizenz (nur benannt):** Quellenbeschaffung (geringe Kosten); keine Datenlizenz
+- **Voraussetzungen:** ALL13-Plan auf `main` (#1235: PS-C13-SOURCE, PS-C13-READINGS)
+- **Frist:** vor jedem Öffnen versiegelter Kennzahlen; die Paper-Referenz W-RAS97 bleibt gepinnt
+- **Folge-PRs:** #1235 mergen; Quellen-PR (Ledger, PSR-Extrakt); Readiness-Neulauf (Messklasse)
+- **Wirkung nach Freigabe:**
+
+| Punkt | jetzt | nach Freigabe und Folge-PRs | außerdem nötig |
+|---|---|---|---|
+| C13 Quellen-/Regeltreue | BLOCKIERT, Klasse 1 (C13-CC-1-und-CC-2) | TEILWEISE mit CC-1 oder CC-3 (bzw. nach Auswertung der ALL13-Regeltreue aus #1235); BELEGT erst mit CC-1 und CC-3 (Ableitungsregel Quellen-/Regeltreue) | C13-CERT-PREP (technisch: Nachweis auf Branch, noch nicht gemergt, #1235, Teilbeitrag) |
+| C13 Ein-/Ausstieg | BLOCKIERT, Klasse 1 (C13-CC-1-und-CC-2) | BELEGT bei CC-2; solange CC-2 offen und der Zustand SOURCE_BLOCKED bzw. VALIDATION_BLOCKED ist, bleibt der Punkt BLOCKIERT | – |
+| C13 statistische Aussagekraft | BLOCKIERT, Klasse 1 (C13-ROBUSTNESS) | OFFEN (messbar; Kennzahlen versiegelt bis zur Auswertung von SF6-PAPER-2027, E6) | – |
+
+#### FP-ST-08 – Kullamägi Episodic Pivot und Parabolic Short: Zertifizierungsweg oder Zurückstellung (Lesarten, Katalysator)
+
+- **Betroffene Punkte (5):** C09 Quellen-/Regeltreue, C09 Ein-/Ausstieg, C09 historische Datenabdeckung, C10 Ein-/Ausstieg, C10 historische Datenabdeckung
+- **Klasse:** 1 (Owner-Fachentscheidung)
+- **Entscheidungsfrage:** Bleiben C09 und C10 zurückgestellte Modellstudien (E5), oder sollen sie auf den Zertifizierungsweg (PIT-Katalysatorkalender, Lesarten für Einstieg, Ausstieg und Stop; die Bewertung „unerwartet und signifikant“ bleibt manuell)?
+- **Optionen:** **A:** Zertifizierungsweg: PIT-Katalysatorkalender aus SEC 8-K Item 2.02 (`acceptedAt` ≤ Eröffnung, kostenfrei im EDGAR-Budget), Lesarten als Owner-Entscheidung; danach FP-ST-09 und FP-ST-10 entscheiden · **B:** Zurückstellung: C09 und C10 bleiben VALIDATION_BLOCKED und außerhalb von SF6-PAPER-2027 (E5); FP-ST-09 und FP-ST-10 entfallen
+- **Empfehlung:** Option B: der Zertifizierungsweg braucht zusätzlich lizenzierte konsolidierte Minuten, Borrow-Historie und ein eigenes Forward-Protokoll; CC-3 bleibt wegen der manuellen Katalysatorbewertung strukturell offen
+- **Kosten und Lizenz (nur benannt):** A: Katalysatorkalender kostenfrei, Folgekosten in FP-ST-09 und FP-ST-10; B: keine
+- **Voraussetzungen:** ALL13-Plan auf `main` (#1235: PS-C09-SF7-V2, PS-C09-FORWARD, PS-C10-BORROW, PS-C10-FORWARD)
+- **Frist:** keine Kalenderfrist; bei A vor einem Forward-Start (FP-ST-10)
+- **Folge-PRs:** bei A: Research-PR Katalysatorkalender (Gate A); bei A: Entscheidungsprotokoll der Lesarten; bei B: kein Folge-PR
+- **Wirkung nach Freigabe:**
+
+| Punkt | jetzt | nach Freigabe und Folge-PRs | außerdem nötig |
+|---|---|---|---|
+| C09 Quellen-/Regeltreue | BLOCKIERT, Klasse 1 (C09-CC-1-READINESS) | TEILWEISE mit CC-1 oder CC-3 (bzw. nach Auswertung der ALL13-Regeltreue aus #1235); BELEGT erst mit CC-1 und CC-3 (Ableitungsregel Quellen-/Regeltreue) | C09-CERT-PREP (technisch: Nachweis auf Branch, noch nicht gemergt, #1235, Teilbeitrag) |
+| C09 Ein-/Ausstieg | BLOCKIERT, Klasse 1 (C09-ENTRY-EXIT-MODEL) | BELEGT bei CC-2; solange CC-2 offen und der Zustand SOURCE_BLOCKED bzw. VALIDATION_BLOCKED ist, bleibt der Punkt BLOCKIERT | – |
+| C09 historische Datenabdeckung | BLOCKIERT, Klasse 1 (C09-Katalysator) | BELEGT bei CC-4 und PIT-Datenintegrität PASS, sonst TEILWEISE (Ableitungsregel historische Datenabdeckung); nach Neulauf mit Vorher/Nachher; CC-3 bleibt wegen der manuellen Bewertung offen | – |
+| C10 Ein-/Ausstieg | BLOCKIERT, Klasse 1 (C10-ENTRY-EXIT-MODEL) | BELEGT bei CC-2; solange CC-2 offen und der Zustand SOURCE_BLOCKED bzw. VALIDATION_BLOCKED ist, bleibt der Punkt BLOCKIERT | – |
+| C10 historische Datenabdeckung | BLOCKIERT, Klasse 1 (C10-Katalysator) | BELEGT bei CC-4 und PIT-Datenintegrität PASS, sonst TEILWEISE (Ableitungsregel historische Datenabdeckung); nach Neulauf mit Vorher/Nachher; CC-3 bleibt wegen der manuellen Bewertung offen | – |
+
+#### FP-ST-09 – Kullamägi Episodic Pivot und Parabolic Short: konsolidierte Minuten, Borrow- und Delisting-Daten
+
+- **Betroffene Punkte (6):** C09 Stopps/Slippage/Kosten, C09 Delistings/Survivorship, C09 statistische Aussagekraft, C10 Stopps/Slippage/Kosten, C10 Delistings/Survivorship, C10 statistische Aussagekraft
+- **Klasse:** 2 (fehlende lizenzierte Daten)
+- **Entscheidungsfrage:** Nur bei FP-ST-08 A: Werden konsolidierte (SIP-)Minuten ab 2017, historische Borrow-, Locate- und Gebührendaten (C10) und Delisting-Renditen für C09 und C10 lizenziert?
+- **Optionen:** **A:** Lizenzanfrage ohne Kauf für die drei Datenarten; Kauf nur nach Musterabnahme und gesonderter Kostenfreigabe · **B:** keine Beschaffung: Ausführung, Survivorship und Messbarkeit bleiben BLOCKIERT (nur IEX-Minuten, 1–5 % des Volumens)
+- **Empfehlung:** Option B: solange FP-ST-08 auf Zurückstellung entschieden ist; Wiedervorlage nur nach FP-ST-08 A
+- **Kosten und Lizenz (nur benannt):** Lizenzen für konsolidierte Minuten, Borrow- und Gebührenhistorie sowie Delisting-Renditen (Preise nicht ermittelt); V13-Reihen sind nur privat nutzbar
+- **Voraussetzungen:** FP-ST-08 A; für Survivorship eine neue Fassung der V13-Studienregistrierung (die eingefrorene 1.0.0 enthält C09 und C10 nicht)
+- **Frist:** keine Kalenderfrist
+- **Folge-PRs:** Daten-PR je Lizenz; Snapshot mit eingefrorenen Minuten (schließt auch Kausalität und Reproduzierbarkeit); neue V13-Registrierungsfassung (eigener PR)
+- **Wirkung nach Freigabe:**
+
+| Punkt | jetzt | nach Freigabe und Folge-PRs | außerdem nötig |
+|---|---|---|---|
+| C09 Stopps/Slippage/Kosten | BLOCKIERT, Klasse 2 (C09-Volumen-und-Ausführung) | OFFEN bzw. BELEGT bei CC-7 (Ausführungsrealismus nicht mehr BLOCKED); die Stopregel kommt aus FP-ST-08 | C09-STOP-MODEL (FP-ST-08) |
+| C09 Delistings/Survivorship | BLOCKIERT, Klasse 2 (C09-SURV) | TEILWEISE nach Aufnahme in eine V13-Registrierung mit Delisting-Ausgängen (wie die registrierten Methoden) | – |
+| C09 statistische Aussagekraft | BLOCKIERT, Klasse 2 (C09-ROBUSTNESS) | OFFEN (messbar; Robustheit erst über ein Forward-Fenster, FP-ST-10) | – |
+| C10 Stopps/Slippage/Kosten | BLOCKIERT, Klasse 2 (C10-Borrow) | OFFEN bzw. BELEGT bei CC-7 (Ausführungsrealismus nicht mehr BLOCKED); die Stopregel kommt aus FP-ST-08 | C10-STOP-MODEL (FP-ST-08) |
+| C10 Delistings/Survivorship | BLOCKIERT, Klasse 2 (C10-SURV) | TEILWEISE nach Aufnahme in eine V13-Registrierung mit Delisting-Ausgängen (wie die registrierten Methoden) | – |
+| C10 statistische Aussagekraft | BLOCKIERT, Klasse 2 (C10-ROBUSTNESS) | OFFEN (messbar; Robustheit erst über ein Forward-Fenster, FP-ST-10) | – |
+
+#### FP-ST-10 – Kullamägi Episodic Pivot und Parabolic Short: eigenes Forward-Protokoll (CC-8)
+
+- **Betroffene Punkte (2):** C09 OOS/Walk-Forward, C10 OOS/Walk-Forward
+- **Klasse:** 4 (historische Voraussetzung heute nicht erfüllbar)
+- **Entscheidungsfrage:** Nur bei FP-ST-08 A: Wird für C09 und C10 ein eigenes Forward-Protokoll neben dem gepinnten SF6-PAPER-2027 vorregistriert (mit neuer Intraday-Erhebung, E5)?
+- **Optionen:** **A:** eigenes Protokoll mit Startdatum, 250 Sitzungen und eigener Intraday-Aufzeichnung; Aktivierung in eigenem PR · **B:** kein Forward-Protokoll: CC-8 bleibt für C09 und C10 offen (kein zweites historisches Fenster, IEX-Minuten erst ab 2017)
+- **Empfehlung:** Option B: solange FP-ST-08 auf Zurückstellung entschieden ist
+- **Kosten und Lizenz (nur benannt):** laufende Intraday-Abrufe (Umfang vor der Freigabe zu beziffern); Speicher für eingefrorene Minuten
+- **Voraussetzungen:** FP-ST-08 A; FP-ST-09 A (konsolidierte Minuten), sonst misst das Protokoll nur IEX
+- **Frist:** keine feste Frist; ein Start parallel zu SF6-PAPER-2027 braucht die Aktivierung vor dem 01.01.2027
+- **Folge-PRs:** Protokoll-PR (vorregistriert, gepinnt); Aktivierungs-PR (ADR-005)
+- **Wirkung nach Freigabe:**
+
+| Punkt | jetzt | nach Freigabe und Folge-PRs | außerdem nötig |
+|---|---|---|---|
+| C09 OOS/Walk-Forward | BLOCKIERT, Klasse 4 (C09-OOS) | BELEGT erst mit CC-8 aus dem eigenen Protokoll (250 Sitzungen ab Start) | – |
+| C10 OOS/Walk-Forward | BLOCKIERT, Klasse 4 (C10-OOS) | BELEGT erst mit CC-8 aus dem eigenen Protokoll (250 Sitzungen ab Start) | – |
+
+### 10.3 Reihenfolge und Abhängigkeiten
+
+- **Einzige harte Frist:** FP-ST-02. Aktivierungs-PR gemergt vor dem Fensterbeginn 01.01.2027 (erste Sitzung des Fensters 04.01.2027, letzte Sitzung davor 31.12.2026). Ohne Aktivierung verschiebt sich CC-8 für alle 11 Referenzen um mindestens ein Jahr.
+- **Gemeinsame Voraussetzung FP-ST-01 und FP-ST-02:** die Aufbewahrung der Snapshot-Generationen (eine freie Generation für Generation 3 bzw. die eingefrorenen Forward-Sitzungen). Beide Fragen gehören in dieselbe Owner-Entscheidung.
+- **FP-ST-04 nach FP-ST-03:** Die Gruppen-Stage für Weinstein nutzt dieselbe Gruppenquelle.
+- **FP-ST-05 bis FP-ST-08 brauchen #1235 auf `main`:** Dort sind die Quellen- und Lesartenstudien vorregistriert (BLOCKED_OWNER). Der Merge allein schließt keinen dieser Punkte (Teilbeitrag).
+- **FP-ST-09 und FP-ST-10 nur nach FP-ST-08 A;** bei der empfohlenen Zurückstellung (FP-ST-08 B) entfallen beide.
+- **Lesarten vor dem Öffnen von Kennzahlen:** FP-ST-05 bis FP-ST-07 werden datiert entschieden, bevor eine versiegelte Kennzahl geöffnet wird (E6).
+
+### 10.4 Nach dem Merge von #1233, #1234 und #1235
+
+Der Erzeuger erkennt jeden Merge selbst am Repository (Abschnitt 7, Branch-Nachweise); die Zeile des PR in Übergabe §8.1 darf danach entfallen. Danach weicht das committete Dokument vom Erzeuger ab und `MC3-EV-DOC-EQUALS-GENERATOR` wird rot, bis es neu erzeugt ist. Nach jedem dieser Merges, auf dem Stand von `main` (bzw. im Merge-PR), ausführen:
+
+```bash
+node scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs --out docs/SUPERTRADER_13_METHODS_EVIDENCE.md
+node --test scripts/supertrader/tests/sf-mc3-evidence-matrix.test.mjs
+node scripts/supertrader/guard-protected-paths.mjs --base origin/main
+```
+
+Erwartete Zählung, vom Erzeuger auf dem heutigen Stand vorausberechnet (die Zeilen „#1233 + #1234 + #1235“ prüft ein Probe-Merge, Übergabe §12):
+
+| Merge | BELEGT | TEILWEISE | OFFEN | BLOCKIERT | Klassen | Pakete (Punkte) | gegenüber heute |
+|---|---|---|---|---|---|---|---|
+| heute | 21 | 60 | 0 | 49 | Klasse 1 14, Klasse 2 22, Klasse 3 0, Klasse 4 13 | 13/11/2/3/2/2/3/5/6/2 | – |
+| #1233 | 23 | 58 | 0 | 49 | Klasse 1 14, Klasse 2 22, Klasse 3 0, Klasse 4 13 | 13/11/2/3/2/2/3/5/6/2 | C01 Stopps/Slippage/Kosten TEILWEISE → BELEGT, C02 Stopps/Slippage/Kosten TEILWEISE → BELEGT |
+| #1234 | 21 | 60 | 0 | 49 | Klasse 1 14, Klasse 2 22, Klasse 3 0, Klasse 4 13 | 13/11/2/3/2/2/3/5/6/2 | kein Statuswechsel; 11 Blocker anders eingeordnet |
+| #1235 | 21 | 60 | 0 | 49 | Klasse 1 14, Klasse 2 22, Klasse 3 0, Klasse 4 13 | 13/11/2/3/2/2/3/5/6/2 | kein Statuswechsel; 16 Blocker anders eingeordnet |
+| #1233 + #1234 + #1235 | 23 | 58 | 0 | 49 | Klasse 1 14, Klasse 2 22, Klasse 3 0, Klasse 4 13 | 13/11/2/3/2/2/3/5/6/2 | C01 Stopps/Slippage/Kosten TEILWEISE → BELEGT, C02 Stopps/Slippage/Kosten TEILWEISE → BELEGT; 27 Blocker anders eingeordnet |
+
+Noch nicht auf `main`: #1233, #1234, #1235. Die Pakete behalten ihre Punkte; der Merge von #1235 macht die Teilbeiträge zu „auf main, im Erzeuger noch nicht ausgewertet“, ohne einen Status zu heben.

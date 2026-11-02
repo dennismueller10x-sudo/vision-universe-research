@@ -34,7 +34,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const GENERATOR_VERSION = 'st-mc3-evidence-matrix-1.1.0'; // 1.1.0: Klassen 1–4 der Blocker, Auswertung vorhandener Nachweise, Branch-Nachweise, OFFEN ohne technischen Anteil = BLOCKIERT
+export const GENERATOR_VERSION = 'st-mc3-evidence-matrix-1.2.0'; // 1.1.0: Klassen 1–4 der Blocker, Auswertung vorhandener Nachweise, Branch-Nachweise, OFFEN ohne technischen Anteil = BLOCKIERT; 1.2.0: E-CC13, Teilbeiträge, Freigabepakete FP-ST-01…10, Merge-Vorschau
 export const DOC_PATH = 'docs/SUPERTRADER_13_METHODS_EVIDENCE.md';
 export const BLOCK_BEGIN = '<!-- st-mc3:datenstand:begin';
 export const BLOCK_END = '<!-- st-mc3:datenstand:end -->';
@@ -84,6 +84,13 @@ export const PATHS = Object.freeze({
 export const BRANCH_PATHS = Object.freeze({
   all13Plan: 'scripts/supertrader/source-faithful/certification/CERT-PREP-ALL13-PLAN.json',
   v13Workflow: '.github/workflows/supertrader-st9-v13-study.yml',
+});
+
+/** Nummern der Branch-PRs, falls ihre Zeile in §8.1 nach dem Merge entfernt ist (nur dann; vorher fail closed). */
+export const MERGED_PR_FALLBACK = Object.freeze({
+  turtleStops: { pr: '#1233', branch: '–', content: 'unabhängige Prüfung der Turtle-Einheitsstopps (`st9-hist-execution` 1.1.0)', deps: 'gemergt' },
+  v13Workflow: { pr: '#1234', branch: '–', content: 'Workflow `supertrader-st9-v13-study.yml`', deps: 'gemergt; Lauf nur mit Owner-Freigabe' },
+  all13: { pr: '#1235', branch: '–', content: 'Zertifizierungsvorbereitung ALL13', deps: 'gemergt' },
 });
 
 export const STATUS = Object.freeze({ BELEGT: 'BELEGT', TEILWEISE: 'TEILWEISE', OFFEN: 'OFFEN', BLOCKIERT: 'BLOCKIERT' });
@@ -376,6 +383,20 @@ export function classifyBlocker(cid, dimId, b, ctx) {
   throw new Error(`BLOCKER_CLASS_UNKNOWN:${cid}:${dimId}:${id}`);
 }
 
+/** Nennt eine Blocker-ID das Kriterium CC-n (auch „CC-1-und-CC-2“)? */
+const ccMention = (id, n) => new RegExp(`-CC-?${n}(?!\\d)|-CC-\\d-und-CC-${n}(?!\\d)`).test(id);
+/**
+ * Teilbeitrag (1.2.0): Die ALL13-Vorbereitung (#1235) belegt Regeltreue-Tests, schließt aber CC-1 und CC-3 nicht (der
+ * ALL13-Plan führt Cxx-CC1/CC3 selbst als offen, Klasse d = Owner). Quellen-/Regeltreue ist nur mit CC-1 und CC-3 BELEGT;
+ * mit offenem CC-1 oder CC-3 der Klasse 1 hebt der Merge höchstens auf TEILWEISE. Ein OFFEN-Punkt, dessen technische
+ * Anteile nur solche Teilbeiträge sind, ist ohne Owner-Entscheidung nicht schließbar: BLOCKIERT mit der Klasse der Ursache.
+ */
+export const PARTIAL_WHY = 'Teilbeitrag: hebt nach Merge und Auswertung höchstens auf TEILWEISE, schließt die Dimension nicht (CC-1/CC-3 Klasse 1)';
+export function partialOnly(d, b) {
+  return d.id === 'D1' && /-CERT-PREP$/.test(b.id) && ['AUF_BRANCH', 'AUF_MAIN_NICHT_AUSGEWERTET'].includes(b.tech)
+    && d.blockers.some((x) => x.klass === 1 && (ccMention(x.id, 1) || ccMention(x.id, 3)));
+}
+
 /** Ursache eines BLOCKIERT-Punkts: der Blocker, der die Ableitungsregel der Dimension auslöst. */
 const CAUSE = Object.freeze({
   D1: /-CC-?1|-CC-?3/, D4: /-ENTRY-EXIT-MODEL$|-Stop$|-CC-1-und-CC-2$/, D5: /-(Borrow|Ausführung|Volumen-und-Ausführung)$/, D6: /-(X-)?CC-?5$/,
@@ -396,6 +417,12 @@ export function blockedCause(d) {
  */
 function evaluate(cid, D, c, ctx, evaluations) {
   for (const d of Object.values(D)) { d.statusBase = d.status; d.resolved = []; }
+  // E-CC13 (1.2.0): CC-1/CC-3 laut Readiness offen, aber weder Plan noch Matrix nennen dafür einen Blocker der Dimension
+  const missingCc = [1, 3].filter((n) => !ccOk(c, n) && !D.D1.blockers.some((b) => ccMention(b.id, n)));
+  for (const n of missingCc) {
+    D.D1.blockers.push({ derived: true, id: `${cid}-CC-${n}-READINESS`, text: `CC-${n} laut Readiness offen (${c.dimensions.SOURCE_FIDELITY?.evidence ?? '–'})`, closes: n === 1 ? 'Quellenbeleg jeder essenziellen Regel (SOURCE_EXACT) oder Owner-Entscheidung über die Belegform' : 'Entscheidung der manuellen bzw. mehrdeutigen Regeln als vorregistrierte Lesarten (Owner)', status: 'OPEN', who: [OWNER], source: `${PATHS.readiness} (certificationCriteria)` });
+  }
+  if (missingCc.length) evaluations.push({ cid, dim: 'D1', id: 'E-CC13', text: `CC-${missingCc.join(' und CC-')} im Readiness-Artefakt offen, ohne Blocker in Plan oder Matrix: als Blocker der Klasse 1 nachgetragen (${PATHS.readiness}, certificationCriteria)` });
   const ref = ctx.refCode[cid];
   const rc = D.D1.blockers.findIndex((b) => b.id === `PS-${cid}-CONFORMANCE`);
   if (rc >= 0 && ref?.state === 'HEAD_EQUALS_PINNED_REFERENCE_FINGERPRINT') {
@@ -416,6 +443,12 @@ function evaluate(cid, D, c, ctx, evaluations) {
     for (const b of d.blockers) Object.assign(b, classifyBlocker(cid, d.id, b, ctx));
     if (d.status === STATUS.TEILWEISE && !d.blockers.length && d.ruleStatus === STATUS.BELEGT) d.status = STATUS.BELEGT;
     if (d.status === STATUS.OFFEN && d.blockers.length && d.blockers.every((b) => b.klass)) { d.status = STATUS.BLOCKIERT; d.reclassified = 'OFFEN → BLOCKIERT'; }
+    // 1.2.0: technische Anteile, die die Ableitungsregel der Dimension nicht erfüllen können, sind Teilbeiträge
+    const tech = d.blockers.filter((b) => !b.klass);
+    for (const b of tech) if (partialOnly(d, b)) b.partial = PARTIAL_WHY;
+    if (d.status === STATUS.OFFEN && tech.length && tech.every((b) => b.partial)) {
+      d.status = STATUS.BLOCKIERT; d.reclassified = 'OFFEN → BLOCKIERT (technischer Anteil nur Teilbeitrag)';
+    }
     if (d.status === STATUS.BLOCKIERT) { const cause = blockedCause(d); if (!cause) throw new Error(`BLOCKED_WITHOUT_CLASS:${cid}:${d.id}`); d.blockClass = cause.klass; d.cause = cause; }
   }
 }
@@ -424,8 +457,13 @@ export function buildModel(src) {
   const { readiness, golden, plan, summary, registration } = src;
   const matrix = parseMatrixBlockers(src.matrixText);
   const openPrs = parseOpenPrs(src.handoverText);
-  const prFor = (re, label) => { const p = openPrs.find((x) => re.test(x.content)); if (!p) throw new Error(`OPEN_PR_NOT_FOUND:${label}`); return p; };
-  const prAll13 = prFor(/ALL13/, 'ALL13'), prTurtleStops = prFor(/Turtle-Einheitsstopps/, 'Turtle-Einheitsstopps'), prV13 = prFor(/supertrader-st9-v13-study\.yml/, 'V13-Workflow');
+  // nach dem Merge darf die Zeile aus §8.1 verschwinden; dann gilt die feste Nummer (vor dem Merge fail closed)
+  const prFor = (re, label, key) => {
+    const p = openPrs.find((x) => re.test(x.content)); if (p) return p;
+    if (src.merged[key]) return { ...MERGED_PR_FALLBACK[key] };
+    throw new Error(`OPEN_PR_NOT_FOUND:${label}`);
+  };
+  const prAll13 = prFor(/ALL13/, 'ALL13', 'all13'), prTurtleStops = prFor(/Turtle-Einheitsstopps/, 'Turtle-Einheitsstopps', 'turtleStops'), prV13 = prFor(/supertrader-st9-v13-study\.yml/, 'V13-Workflow', 'v13Workflow');
   const regMethods = registeredStudyMethods(registration);
   const cover = causalCoverage();
   const gcBy = {};
@@ -571,6 +609,221 @@ export function buildModel(src) {
   return { methods, openPrs, evaluations, merged: src.merged, prs: { all13: prAll13, turtleStops: prTurtleStops, v13: prV13 } };
 }
 
+// ------------------------------------------------------------------------------------------------ Freigabepakete (1.2.0)
+
+const isCc = (n) => (b) => ccMention(b.id, n);
+const inCids = (...cids) => (cid) => cids.includes(cid);
+const D1_RULE = 'TEILWEISE mit CC-1 oder CC-3 (bzw. nach Auswertung der ALL13-Regeltreue aus #1235); BELEGT erst mit CC-1 und CC-3 (Ableitungsregel Quellen-/Regeltreue)';
+const D4_RULE = 'BELEGT bei CC-2; solange CC-2 offen und der Zustand SOURCE_BLOCKED bzw. VALIDATION_BLOCKED ist, bleibt der Punkt BLOCKIERT';
+const D8_RULE = 'BELEGT bei CC-4 und PIT-Datenintegrität PASS, sonst TEILWEISE (Ableitungsregel historische Datenabdeckung); nach Neulauf mit Vorher/Nachher';
+
+/**
+ * Freigabepakete der BLOCKIERT-Punkte (1.2.0). Ein Paket bündelt Owner-Fragen derselben Art und Methodenfamilie.
+ * `blockers` entscheidet, welche Blocker mit Klasse ein Paket schließt; ein BLOCKIERT-Punkt gehört zum Paket seiner
+ * Ursache. Kein Paket beauftragt einen Anbieter: Kosten und Lizenzen sind nur benannt. Unbekannte Punkte brechen ab.
+ */
+export const FREIGABEPAKETE = Object.freeze([
+  {
+    id: 'FP-ST-01', title: 'Lizenzierte Corporate-Action-Quelle und Snapshot-Generation 3 (CC-5, alle 13)', klass: 2,
+    blockers: (cid, dim, b) => /-(X-)?CC-?5$/.test(b.id),
+    question: 'Wird eine lizenzierte, faktortragende CA-Quelle nach E7-1 angefragt und nach bestandener Musterabnahme beschafft, und wird danach Snapshot-Generation 3 (E7-4 B) erstellt? Teilfrage C04/C05: Genügt Exposition 0 bei K5 für CC5-a?',
+    options: [
+      ['A', 'Anfrage ohne Kauf bei den in E7-1 genannten Kandidaten (Preis, Veröffentlichungsrecht abgeleiteter Kennzahlen, Semantik, Musterauszug der 83 Sitzungen); Kauf erst nach Abnahme gegen die EDGAR-Labels (≥ 90 % Event-Treffer, ≥ 95 % exakte Ratio, 0 falsch-positiv, ≥ 85 % Abdeckung 2008–2017) und gesonderter Kostenfreigabe'],
+      ['B', 'weiter nur kostenfrei mit einem neuen EDGAR-Regelsatz (Regelsatz 1.4.2 mit Exhibits bestätigte 0 von 83); CC5-e bleibt ohne vollständige Splitliste offen'],
+      ['C', 'keine Quelle: CC-5 bleibt für alle 13 offen, eine Zertifizierung ist ausgeschlossen (E7-4 C)'],
+    ],
+    recommendation: ['A', 'nur A kann CC5-a bis CC5-f schließen; die Anfrage kostet nichts und bindet nicht. Teilfrage C04/C05: ja, die leere Exposition als erfüllt dokumentieren; CC-5 bleibt trotzdem offen, solange CC5-e und CC5-f fehlen'],
+    cost: 'kommerzielle Datenlizenz mit Recht zur Veröffentlichung abgeleiteter Kennzahlen; der kommerzielle Preis ist laut E7-1 nicht ermittelt (belegt sind nur Privatpreise). Snapshot-Generation 3: ein Capture-Lauf im bestehenden Budget',
+    prerequisites: ['EDGAR-Labels der 83 Sitzungen (vorhanden, `docs/SUPERTRADER_7_EDGAR_CA_CHECK.md`)', 'Aufbewahrungsentscheidung für Snapshot-Generationen (Kappung 3 volle Generationen, 2 belegt durch DEV und HOLDOUT; die freie teilt sich FP-ST-01 mit FP-ST-02)'],
+    deadline: { text: 'keine Kalenderfrist; vor der Auswertung von SF6-PAPER-2027 (frühestens nach der 250. Sitzung), weil jede Zertifizierung CC-5 und CC-8 zusammen braucht' },
+    target: { default: 'BELEGT, sobald das Readiness-Artefakt CC-5 ausweist (CC5-a bis CC5-f nach Neulauf von DEV und HOLDOUT gegen dieselben Referenz-Hashes)' },
+    followUps: ['Daten-PR mit Quelle und Abnahmeprotokoll', 'Capture Snapshot-Generation 3 (Owner-Lauf)', 'Neulauf der Readiness mit Vorher/Nachher, danach Evidenzdokument neu erzeugen'],
+  },
+  {
+    id: 'FP-ST-02', title: 'Aktivierung von SF6-PAPER-2027 (CC-8, 11 Referenzen)', klass: 4,
+    blockers: (cid, dim, b, ctx) => /-(X-)?CC-?8$/.test(b.id) && ctx.inPaper(cid),
+    question: 'Wird SF6-PAPER-2027 in einem eigenen PR vor dem Fensterbeginn aktiviert (Aufzeichnungs-Workflow, Speicher, Aufbewahrung der eingefrorenen Sitzungen)?',
+    options: [
+      ['A', 'Aktivierungs-PR vor dem Fensterbeginn: Aufzeichnung nach jedem Schluss in ein versiegeltes, hash-verkettetes Protokoll, Aufbewahrung festgelegt; keine Orders, kein Broker, keine Produktfläche'],
+      ['B', 'später aktivieren: Das gepinnte Fenster beginnt am 01.01.2027; ein späterer Start braucht eine neue Protokollfassung, CC-8 verschiebt sich um mindestens ein Jahr'],
+      ['C', 'nicht aktivieren: CC-8 bleibt für alle 13 offen; ein unberührtes historisches Fenster gibt es nicht (E7-4)'],
+    ],
+    recommendation: ['A', 'der einzige Weg zu CC-8 ohne Zeitverlust; die Daten kommen aus der bestehenden Tagespipeline (kein neuer Anbieter)'],
+    cost: 'keine neuen bezahlten Daten (Protokoll: bestehende Tagespipeline); Speicher für eingefrorene Sitzungen im bestehenden Snapshot-Speicher, Aufbewahrung nach Owner-Entscheidung',
+    prerequisites: ['Aufbewahrungsentscheidung (Kappung der Snapshot-Generationen, gemeinsam mit FP-ST-01)', 'Aktivierungs-PR nach ADR-005 (Checkout-Ref, push-with-retry, Concurrency je Ref)', 'gepinnte Referenzen unverändert (Turtle-Fingerabdruck auf `main` = Pin, E-REFCODE)'],
+    deadline: { text: 'Aktivierungs-PR gemergt vor dem Fensterbeginn 01.01.2027', date: 'PAPER_START' },
+    target: { default: 'BELEGT nach der 250. Sitzung, wenn alle vier Integritätsprüfungen bestehen; bis dahin BLOCKIERT, Zwischenstand nur Zählungen' },
+    followUps: ['Aktivierungs-PR (Workflow, Speicher, Aufbewahrung)', 'täglicher Aufzeichnungslauf ab der ersten Sitzung', 'Auswertung nach Protokoll (E6, Verteilungen); sie schließt auch die Robustheit (Klasse 4) in den TEILWEISE-Punkten der statistischen Aussagekraft'],
+  },
+  {
+    id: 'FP-ST-03', title: 'Turtle: PIT-Gruppenquelle für das Korrelationslimit (CC-4, E7-5)', klass: 1,
+    blockers: (cid, dim, b) => /^C0[12]-CC4$/.test(b.id),
+    question: 'Darf eine PIT-SIC-Historie aus den Kopfdaten der EDGAR-Einreichungen (Fama-French-49, Zuordnung über `core/identity.js`) für CC-4 zählen (Revision von E4), oder wird eine GICS-Historie beschafft?',
+    options: [
+      ['A', 'PIT-SIC-Historie aus EDGAR, kostenfrei im bestehenden Abrufbudget; erfordert die Revision von E4 (E4 schließt den statischen SIC-Proxy aus)'],
+      ['B', 'GICS-Historie (lizenziert); Kosten nicht veröffentlicht, gesonderte Kostenfreigabe'],
+      ['C', 'ohne Gruppen: Turtle-Referenzen ohne Korrelationslimit, CC-4 bleibt offen'],
+    ],
+    recommendation: ['A', 'zuerst als begrenzte Research-Belegstudie (PS-C02-CC4-GROUPS); die Referenz ohne Gruppen bleibt hashgleich'],
+    cost: 'A: keine Kosten, EDGAR-Abrufe im bestehenden Budget; B: Lizenz einer GICS-Historie, Preis nicht veröffentlicht',
+    prerequisites: ['Owner-Entscheidung zur Revision von E4', 'PS-C02-CC4-GROUPS im TOP5-Plan (vorregistriert, BLOCKED_OWNER)'],
+    deadline: { text: 'keine Kalenderfrist; der Neulauf mit Limit ist eine Studie neben der gepinnten Paper-Referenz' },
+    target: { default: D8_RULE },
+    followUps: ['Research-PR für PIT-SIC-Gruppen (Identität über `core/identity.js`; Gate A: Quant-Anteile in eigenem PR)', 'Neulauf BASE_S0 mit groupsOf, Vorher/Nachher (PS-C02-CC4-GROUPS)'],
+  },
+  {
+    id: 'FP-ST-04', title: 'Weinstein und Minervini SEPA: Gruppen-, Marktbreite- und RS-Historie (CC-4)', klass: 2,
+    blockers: (cid, dim, b) => /^C0[456]-CC-?4$/.test(b.id),
+    question: 'Werden die fehlenden Historien lizenziert (PIT-Gruppen-Stage und NYSE-Advance/Decline für C04 und C05, IBD-RS-Historie für C06, kein Ersatz zulässig), oder bleibt CC-4 für diese drei offen?',
+    options: [
+      ['A', 'Lizenzanfrage ohne Kauf für NYSE-A/D- und IBD-RS-Historie; die Gruppen-Stage für C04/C05 nach FP-ST-03 A aus der PIT-SIC-Historie'],
+      ['B', 'nur die Gruppen-Stage über FP-ST-03 A; A/D und IBD-RS bleiben offen, damit auch CC-4 für C04, C05 und C06'],
+      ['C', 'keine Beschaffung: CC-4 bleibt offen, die drei bleiben diagnostisch'],
+    ],
+    recommendation: ['B', 'kostenfrei und nach FP-ST-03 umsetzbar; eine Lizenz für A/D und IBD-RS erst prüfen, wenn FP-ST-01 und FP-ST-02 den Zertifizierungsweg offen halten'],
+    cost: 'lizenzierte NYSE-A/D-Historie und IBD-RS-Historie (Preise nicht ermittelt); Gruppen-Stage über FP-ST-03 A kostenfrei',
+    prerequisites: ['FP-ST-03 (Gruppenquelle)', 'ALL13-Plan auf `main` (#1235, PS-C04-GROUP-PROXY und PS-C05-GROUP-PROXY vorregistriert)'],
+    deadline: { text: 'keine Kalenderfrist' },
+    target: { default: D8_RULE },
+    followUps: ['Daten-PR je lizenzierter Historie', 'Neulauf mit Gruppen-Stage bzw. RS, Vorher/Nachher'],
+  },
+  {
+    id: 'FP-ST-05', title: 'Minervini SEPA und Power Play: Originalquelle und Ermessensfragen (CC-1, CC-3)', klass: 1,
+    blockers: (cid, dim, b) => inCids('C06', 'C07')(cid) && dim === 'D1' && (isCc(1)(b) || isCc(3)(b)),
+    question: 'Wird die englische Originalausgabe ins Projekt aufgenommen (E7-2: Übersetzungen gelten nicht als SOURCE_EXACT), und wie werden die 11 (C06) bzw. 6 (C07) Ermessensfragen als Lesarten entschieden?',
+    options: [
+      ['A', 'Originalausgabe beschaffen und die Fundstellen gegen das Original prüfen; Ermessensfragen als datierte Owner-Lesarten vor jedem Öffnen von Kennzahlen'],
+      ['B', 'bei den Übersetzungsbelegen bleiben: CC-1 bleibt offen (E7-2)'],
+      ['C', 'C06 als manuelle Methode ohne Zertifizierungsziel führen (SEPA ist laut Quelle manuell, MIN-PROCESS-04)'],
+    ],
+    recommendation: ['A', 'für CC-1 der einzige Weg; bei C06 bleibt CC-3 nach der Quelle strukturell offen (OPEN_STRUCTURAL im ALL13-Plan), dort ist C zusätzlich festzuhalten'],
+    cost: 'Buchbeschaffung (geringe Kosten); keine Datenlizenz',
+    prerequisites: ['ALL13-Plan auf `main` (#1235: PS-C06-SOURCE, PS-C07-SOURCE)'],
+    deadline: { text: 'vor jedem Öffnen versiegelter Kennzahlen; eine Lesart, die eine Paper-Referenz ändern würde, vor dem 01.01.2027, sonst gilt die gepinnte Referenz' },
+    target: { D1: D1_RULE },
+    followUps: ['#1235 mergen (Regeltreue-Tests, Teilbeitrag)', 'Quellen-PR: Fundstellen gegen das Original, PSR-Extrakt neu', 'Entscheidungsprotokoll der Lesarten (Owner-Datum)'],
+  },
+  {
+    id: 'FP-ST-06', title: 'Pocket Pivot: Stopregel und Ermessensfragen (CC-1, CC-2, CC-3)', klass: 1,
+    blockers: (cid, dim, b) => cid === 'C11' && ((dim === 'D1' && (isCc(1)(b) || isCc(3)(b))) || (dim === 'D4' && /-(Stop|ENTRY-EXIT-MODEL)$/.test(b.id))),
+    question: 'Gibt es eine Primärquelle mit der Initialstop-Regel der Autoren (MOKA-SF-PP-STOP ist SOURCE_BLOCKED), und wie werden die 7 essenziellen Ermessensfragen entschieden?',
+    options: [
+      ['A', 'Primärquelle der Autoren mit Stopregel benennen bzw. beschaffen, Ledger-Einträge für die Web-Primärquellen; Ermessensfragen als datierte Owner-Lesarten'],
+      ['B', 'der Modellstop `MA6-PP-STOP-SIGNAL-DAY-LOW` bleibt Forschungsvariante: CC-2 ist nach E3 nicht erfüllbar, C11 bleibt diagnostisch'],
+    ],
+    recommendation: ['A', 'nur mit einer Quellenstelle wird CC-2 erfüllbar; findet sich keine, ist B festzuhalten (keine Neudefinition)'],
+    cost: 'Quellenrecherche bzw. Buchbeschaffung (geringe Kosten); keine Datenlizenz',
+    prerequisites: ['ALL13-Plan auf `main` (#1235: PS-C11-STOP-SOURCE, PS-C11-READINGS)'],
+    deadline: { text: 'vor jedem Öffnen versiegelter Kennzahlen; die Paper-Referenz läuft gepinnt ohne Stop-Variante' },
+    target: { D1: D1_RULE, D4: D4_RULE },
+    followUps: ['#1235 mergen', 'Ledger-PR (C11-LEDGER, eigener PR)', 'Entscheidungsprotokoll der Lesarten'],
+  },
+  {
+    id: 'FP-ST-07', title: 'Holy Grail: Primärquelle für Einstieg, Stop, Trailing und Größe (CC-1, CC-2, CC-3)', klass: 1,
+    blockers: (cid, dim, b) => cid === 'C13' && ((['D1', 'D4'].includes(dim) && (isCc(1)(b) || isCc(2)(b) || isCc(3)(b) || /-ENTRY-EXIT-MODEL$/.test(b.id))) || (dim === 'D10' && /-ROBUSTNESS$/.test(b.id))),
+    question: 'Wird eine Primärquelle gesucht, die Einstieg, Initialstop, Trailing und Größe vollständig nennt (W-RAS97 ist eine Sekundärquelle), oder bleibt C13 eine Modellstudie ohne Zertifizierungsziel?',
+    options: [
+      ['A', 'Primärquelle der Autorin beschaffen und vorab prüfen, ob sie alle vier Regeln nennt; danach die 3 Ermessensfragen als Owner-Lesarten'],
+      ['B', 'C13 bleibt Modellstudie (das Trailing `MA6-HG-TRAIL-SWING-LOWS` ist keine Originalregel): keine historische Methodenrendite, keine Zertifizierung'],
+    ],
+    recommendation: ['A', 'erst prüfen, dann entscheiden; ohne vollständige Quelle ist B festzuhalten'],
+    cost: 'Quellenbeschaffung (geringe Kosten); keine Datenlizenz',
+    prerequisites: ['ALL13-Plan auf `main` (#1235: PS-C13-SOURCE, PS-C13-READINGS)'],
+    deadline: { text: 'vor jedem Öffnen versiegelter Kennzahlen; die Paper-Referenz W-RAS97 bleibt gepinnt' },
+    target: { D1: D1_RULE, D4: D4_RULE, D10: 'OFFEN (messbar; Kennzahlen versiegelt bis zur Auswertung von SF6-PAPER-2027, E6)' },
+    followUps: ['#1235 mergen', 'Quellen-PR (Ledger, PSR-Extrakt)', 'Readiness-Neulauf (Messklasse)'],
+  },
+  {
+    id: 'FP-ST-08', title: 'Kullamägi Episodic Pivot und Parabolic Short: Zertifizierungsweg oder Zurückstellung (Lesarten, Katalysator)', klass: 1,
+    blockers: (cid, dim, b) => inCids('C09', 'C10')(cid) && ((dim === 'D1' && (isCc(1)(b) || isCc(3)(b))) || /-(ENTRY-EXIT-MODEL|STOP-MODEL|Katalysator)$/.test(b.id)),
+    question: 'Bleiben C09 und C10 zurückgestellte Modellstudien (E5), oder sollen sie auf den Zertifizierungsweg (PIT-Katalysatorkalender, Lesarten für Einstieg, Ausstieg und Stop; die Bewertung „unerwartet und signifikant“ bleibt manuell)?',
+    options: [
+      ['A', 'Zertifizierungsweg: PIT-Katalysatorkalender aus SEC 8-K Item 2.02 (`acceptedAt` ≤ Eröffnung, kostenfrei im EDGAR-Budget), Lesarten als Owner-Entscheidung; danach FP-ST-09 und FP-ST-10 entscheiden'],
+      ['B', 'Zurückstellung: C09 und C10 bleiben VALIDATION_BLOCKED und außerhalb von SF6-PAPER-2027 (E5); FP-ST-09 und FP-ST-10 entfallen'],
+    ],
+    recommendation: ['B', 'der Zertifizierungsweg braucht zusätzlich lizenzierte konsolidierte Minuten, Borrow-Historie und ein eigenes Forward-Protokoll; CC-3 bleibt wegen der manuellen Katalysatorbewertung strukturell offen'],
+    cost: 'A: Katalysatorkalender kostenfrei, Folgekosten in FP-ST-09 und FP-ST-10; B: keine',
+    prerequisites: ['ALL13-Plan auf `main` (#1235: PS-C09-SF7-V2, PS-C09-FORWARD, PS-C10-BORROW, PS-C10-FORWARD)'],
+    deadline: { text: 'keine Kalenderfrist; bei A vor einem Forward-Start (FP-ST-10)' },
+    target: { D1: D1_RULE, D4: D4_RULE, D8: `${D8_RULE}; CC-3 bleibt wegen der manuellen Bewertung offen` },
+    followUps: ['bei A: Research-PR Katalysatorkalender (Gate A)', 'bei A: Entscheidungsprotokoll der Lesarten', 'bei B: kein Folge-PR'],
+  },
+  {
+    id: 'FP-ST-09', title: 'Kullamägi Episodic Pivot und Parabolic Short: konsolidierte Minuten, Borrow- und Delisting-Daten', klass: 2,
+    blockers: (cid, dim, b) => inCids('C09', 'C10')(cid) && /-(Volumen-und-Ausführung|Ausführung|Borrow|SURV|ROBUSTNESS)$/.test(b.id),
+    question: 'Nur bei FP-ST-08 A: Werden konsolidierte (SIP-)Minuten ab 2017, historische Borrow-, Locate- und Gebührendaten (C10) und Delisting-Renditen für C09 und C10 lizenziert?',
+    options: [
+      ['A', 'Lizenzanfrage ohne Kauf für die drei Datenarten; Kauf nur nach Musterabnahme und gesonderter Kostenfreigabe'],
+      ['B', 'keine Beschaffung: Ausführung, Survivorship und Messbarkeit bleiben BLOCKIERT (nur IEX-Minuten, 1–5 % des Volumens)'],
+    ],
+    recommendation: ['B', 'solange FP-ST-08 auf Zurückstellung entschieden ist; Wiedervorlage nur nach FP-ST-08 A'],
+    cost: 'Lizenzen für konsolidierte Minuten, Borrow- und Gebührenhistorie sowie Delisting-Renditen (Preise nicht ermittelt); V13-Reihen sind nur privat nutzbar',
+    prerequisites: ['FP-ST-08 A', 'für Survivorship eine neue Fassung der V13-Studienregistrierung (die eingefrorene 1.0.0 enthält C09 und C10 nicht)'],
+    deadline: { text: 'keine Kalenderfrist' },
+    target: { D5: 'OFFEN bzw. BELEGT bei CC-7 (Ausführungsrealismus nicht mehr BLOCKED); die Stopregel kommt aus FP-ST-08', D7: 'TEILWEISE nach Aufnahme in eine V13-Registrierung mit Delisting-Ausgängen (wie die registrierten Methoden)', D10: 'OFFEN (messbar; Robustheit erst über ein Forward-Fenster, FP-ST-10)' },
+    followUps: ['Daten-PR je Lizenz', 'Snapshot mit eingefrorenen Minuten (schließt auch Kausalität und Reproduzierbarkeit)', 'neue V13-Registrierungsfassung (eigener PR)'],
+  },
+  {
+    id: 'FP-ST-10', title: 'Kullamägi Episodic Pivot und Parabolic Short: eigenes Forward-Protokoll (CC-8)', klass: 4,
+    blockers: (cid, dim, b, ctx) => inCids('C09', 'C10')(cid) && (/-OOS(-SCOPE)?$/.test(b.id) || (/-(X-)?CC-?8$/.test(b.id) && !ctx.inPaper(cid))),
+    question: 'Nur bei FP-ST-08 A: Wird für C09 und C10 ein eigenes Forward-Protokoll neben dem gepinnten SF6-PAPER-2027 vorregistriert (mit neuer Intraday-Erhebung, E5)?',
+    options: [
+      ['A', 'eigenes Protokoll mit Startdatum, 250 Sitzungen und eigener Intraday-Aufzeichnung; Aktivierung in eigenem PR'],
+      ['B', 'kein Forward-Protokoll: CC-8 bleibt für C09 und C10 offen (kein zweites historisches Fenster, IEX-Minuten erst ab 2017)'],
+    ],
+    recommendation: ['B', 'solange FP-ST-08 auf Zurückstellung entschieden ist'],
+    cost: 'laufende Intraday-Abrufe (Umfang vor der Freigabe zu beziffern); Speicher für eingefrorene Minuten',
+    prerequisites: ['FP-ST-08 A', 'FP-ST-09 A (konsolidierte Minuten), sonst misst das Protokoll nur IEX'],
+    deadline: { text: 'keine feste Frist; ein Start parallel zu SF6-PAPER-2027 braucht die Aktivierung vor dem 01.01.2027' },
+    target: { default: 'BELEGT erst mit CC-8 aus dem eigenen Protokoll (250 Sitzungen ab Start)' },
+    followUps: ['Protokoll-PR (vorregistriert, gepinnt)', 'Aktivierungs-PR (ADR-005)'],
+  },
+]);
+
+/** Ordnet jeden BLOCKIERT-Punkt genau einem Paket zu (dem Paket seiner Ursache) und jeden Blocker mit Klasse genau einem Paket. */
+export function assignPackages(model, src) {
+  const inPaperSet = new Set(model.methods.filter((m) => /^NEIN/.test(m.status['ZURÜCKGESTELLT'])).map((m) => m.cid));
+  const ctx = { inPaper: (cid) => inPaperSet.has(cid) };
+  const pkgOf = (cid, dim, b) => {
+    const hits = FREIGABEPAKETE.filter((p) => p.blockers(cid, dim, b, ctx));
+    if (hits.length !== 1) throw new Error(`PACKAGE_${hits.length ? 'AMBIGUOUS' : 'UNKNOWN'}:${cid}:${dim}:${b.id}`);
+    return hits[0].id;
+  };
+  const out = FREIGABEPAKETE.map((p) => ({ ...p, points: [] }));
+  const byId = new Map(out.map((p) => [p.id, p]));
+  for (const m of model.methods) for (const d of m.dims) {
+    if (d.status !== STATUS.BLOCKIERT) continue;
+    const pkg = byId.get(pkgOf(m.cid, d.id, d.cause));
+    const also = d.blockers.filter((b) => b !== d.cause).flatMap((b) => {
+      if (!b.klass) return [`${b.id} (technisch: ${TECH_KINDS[b.tech]}${b.pr ? `, ${b.pr}` : ''}${b.partial ? ', Teilbeitrag' : ''})`];
+      const q = pkgOf(m.cid, d.id, b);
+      return q === pkg.id ? [] : [`${b.id} (${q})`];
+    });
+    const target = pkg.target[d.id] ?? pkg.target.default;
+    if (!target) throw new Error(`PACKAGE_TARGET_MISSING:${pkg.id}:${d.id}`);
+    pkg.points.push({ cid: m.cid, d, target, also });
+  }
+  const start = src.paper.protocol.window.start, cal = src.calendar;
+  const first = cal.isSession(start) ? start : cal.nextSession(start);
+  const lastBefore = cal.sessionsBetween(addDaysIso(start, -10), addDaysIso(start, -1)).at(-1);
+  for (const p of out) p.deadlineText = p.deadline.date === 'PAPER_START' ? `${p.deadline.text} (erste Sitzung des Fensters ${fmtDate(first)}, letzte Sitzung davor ${fmtDate(lastBefore)})` : p.deadline.text;
+  return out;
+}
+
+/** Zeile des Ausführungsaudits in der Fassung 1.1.0 (#1233); nur für die Merge-Vorschau. */
+const HIST_V1_1_LINE = "missedStopCheck: lc ? 'SF5_CHECK_LIFECYCLE_RUN' : key.startsWith('MINERVINI_') ? 'MINERVINI_EVENT_PATH' : key.startsWith('TURTLE_') ? 'TURTLE_INDEPENDENT_N_UNIT_STOPS' : 'NOT_CHECKED_LEVEL_UNKNOWN'";
+export const MERGE_CASES = Object.freeze([['turtleStops'], ['v13Workflow'], ['all13'], ['turtleStops', 'v13Workflow', 'all13']]);
+
+/** Erwartete Zählung nach dem Merge der Branch-PRs (Vorschau auf dem heutigen Stand; ein Probe-Merge bestätigt sie). */
+export function mergeForecast(src) {
+  const v11 = HIST_COVERAGE.V1_1.test(src.histExecSrc) ? src.histExecSrc : src.histExecSrc.replace(HIST_COVERAGE.V1_0, HIST_V1_1_LINE);
+  return MERGE_CASES.map((keys) => {
+    const merged = { ...src.merged }; for (const k of keys) merged[k] = true;
+    const model = buildModel({ ...src, merged, histExecSrc: merged.turtleStops ? v11 : src.histExecSrc });
+    return { keys, cnt: countModel(model), packages: assignPackages(model, src) };
+  });
+}
+
 // ------------------------------------------------------------------------------------------------ Datenstand (veränderlich)
 
 const isoDay = (s) => String(s).slice(0, 10);
@@ -651,7 +904,7 @@ export function countModel(model) {
   const blocked = pts.filter((x) => x.d.status === STATUS.BLOCKIERT), blockedBase = blocked.filter((x) => x.d.statusBase === STATUS.BLOCKIERT);
   return { now: by((d) => d.status), base: by((d) => d.statusBase), classesNow: classes(blocked), classesBase: classes(blockedBase), blocked, blockedBase, pts };
 }
-const blockerTag = (b) => (b.klass ? `Klasse ${b.klass}` : `technisch lösbar: ${TECH_KINDS[b.tech]}${b.pr ? ` (${b.pr})` : ''}`);
+const blockerTag = (b) => (b.klass ? `Klasse ${b.klass}` : `technisch lösbar: ${TECH_KINDS[b.tech]}${b.pr ? ` (${b.pr})` : ''}${b.partial ? '; Teilbeitrag, schließt nicht' : ''}`);
 
 export function render(model, state, src) {
   const L = [];
@@ -660,6 +913,7 @@ export function render(model, state, src) {
   const cnt = countModel(model);
   const fmtCounts = (c) => Object.values(STATUS).map((s) => `${s} ${c[s]}`).join(', ');
   const fmtClasses = (c) => Object.entries(c).map(([k, v]) => `Klasse ${k} ${v}`).join(', ');
+  const packages = assignPackages(model, src), forecast = mergeForecast(src);
   push(
     '# Supertrader – Evidenznachweis der 13 Methoden (C01–C13)',
     '',
@@ -669,7 +923,7 @@ export function render(model, state, src) {
     '',
     `**Heute ist keine Methode zertifiziert** (\`certification: ${src.readiness.certification}\`, \`certificationCandidates: [${(src.readiness.summary.certificationCandidates ?? []).join(', ')}]\`, \`liveReadiness: ${src.readiness.liveReadiness}\`). \`VALIDATED_TRADE_SIGNAL\` ist für alle 13 gesperrt.`,
     '',
-    `Prüfdimensionen gesamt (13 × 10 = 130): BELEGT ${sumStatus(STATUS.BELEGT)}, TEILWEISE ${sumStatus(STATUS.TEILWEISE)}, OFFEN ${sumStatus(STATUS.OFFEN)}, BLOCKIERT ${sumStatus(STATUS.BLOCKIERT)}. Ausgangsstand nach den Regeln 1.0.0: ${fmtCounts(cnt.base)}. BLOCKIERT nach Klassen (Abschnitt 9): ${fmtClasses(cnt.classesNow)}; davon die ${cnt.blockedBase.length} Punkte des Ausgangsstands: ${fmtClasses(cnt.classesBase)}.`,
+    `Prüfdimensionen gesamt (13 × 10 = 130): BELEGT ${sumStatus(STATUS.BELEGT)}, TEILWEISE ${sumStatus(STATUS.TEILWEISE)}, OFFEN ${sumStatus(STATUS.OFFEN)}, BLOCKIERT ${sumStatus(STATUS.BLOCKIERT)}. Ausgangsstand nach den Regeln 1.0.0: ${fmtCounts(cnt.base)}. BLOCKIERT nach Klassen (Abschnitt 9): ${fmtClasses(cnt.classesNow)}; davon die ${cnt.blockedBase.length} Punkte des Ausgangsstands: ${fmtClasses(cnt.classesBase)}. Die ${cnt.now.BLOCKIERT} BLOCKIERT-Punkte verteilen sich auf ${packages.length} Freigabepakete (Abschnitt 10): ${packages.map((p) => `${p.id} ${p.points.length}`).join(', ')}.`,
     '',
     '---',
     '',
@@ -722,14 +976,15 @@ export function render(model, state, src) {
     `| Sprachprüfung nur für \`supertrader.js\`, Registry und SF8-Katalog; Seiten, \`sf-research.js\`, \`st-chart.js\` und veröffentlichte Kandidatendateien ungeprüft | \`${PATHS.wordingTests}\`: ${wt.map((t) => t.split(':')[0]).join(', ')} | alle 13 (Produkttexte) |`,
     `| kein nachvollziehbarer, erzeugter Evidenznachweis über alle 13 Methoden | dieses Dokument mit Erzeuger und Test \`${path.basename(PATHS.evidenceTests)}\` | alle 13 |`,
     `| Regeltreue der TOP5 nur auf dem PR-Head belegt (\`PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN\`) | E-REFCODE: Engine-Fingerabdruck auf dem Stand = gepinnter Referenzwert in SF6-PAPER-2027; Regeltreue-Tests auf diesem Stand MET (\`${path.basename(PATHS.evidenceTests)}\`: MC3-EV-REFCODE). Für die SF5-Lebenszyklen ist kein Referenzwert gepinnt: nicht geschlossen | ${[...new Set(model.evaluations.filter((e) => e.id === 'E-REFCODE').map((e) => e.cid))].join(', ') || '–'} |`,
+    `| CC-1/CC-3 im Readiness-Artefakt offen, aber ohne Blocker in Plan oder Matrix | E-CC13 (1.2.0): als Blocker der Klasse 1 nachgetragen (\`${PATHS.readiness}\`, certificationCriteria) | ${[...new Set(model.evaluations.filter((e) => e.id === 'E-CC13').map((e) => e.cid))].join(', ') || '–'} |`,
     `| statistische Aussagekraft ohne ausgewertete Belege | E-SAMPLE: Stichprobe, Trade-Stabilität (Quarantäne, COST-50) und numerische Reproduzierbarkeit aus dem Readiness-Artefakt ausgewertet; Kennzahlen bleiben versiegelt (E6) | ${model.evaluations.filter((e) => e.id === 'E-SAMPLE').map((e) => e.cid).join(', ') || '–'} |`,
     '',
-    'Nicht geschlossen (bräuchte Daten, eine Engine-Ausgabe oder einen Draft-PR): siehe Blocker in Abschnitt 3 und Freigabevorlagen in Abschnitt 5.',
+    'Nicht geschlossen (bräuchte Daten, eine Engine-Ausgabe oder einen Draft-PR): siehe Blocker in Abschnitt 3, Freigabevorlagen in Abschnitt 5 und Freigabepakete in Abschnitt 10.',
     '',
   );
 
   // 5. Freigabevorlagen
-  push('## 5. Freigabevorlagen (Fachmodell-, Vertrags- oder Owner-Entscheidung nötig; hier nicht umgesetzt)', '', '| ID | Methoden | Art | Inhalt | Vorschlag / schließender Beleg | Quelle |', '|---|---|---|---|---|---|');
+  push('## 5. Freigabevorlagen (Fachmodell-, Vertrags- oder Owner-Entscheidung nötig; hier nicht umgesetzt)', '', 'Einzelvorlagen aus Plan, Studien und Übergabe. Gebündelt zur Entscheidung über alle BLOCKIERT-Punkte: Abschnitt 10 (Freigabepakete).', '', '| ID | Methoden | Art | Inhalt | Vorschlag / schließender Beleg | Quelle |', '|---|---|---|---|---|---|');
   for (const f of src.plan.findings) push(`| ${f.id} | ${f.methods.join(', ')} | Befund ${f.kind}, modelChange ${f.modelChange} | ${esc(f.text)} | ${esc(f.proposal ?? f.suggestion ?? '–')} | \`${PATHS.plan}\` |`);
   for (const m of src.plan.methods) for (const b of m.blockers.filter((x) => x.status === 'OPEN_SEPARATE_PR')) push(`| ${b.id} | ${m.candidateId} | eigener PR (Klasse ${b.class}) | ${esc(b.text)} | ${esc(b.closes)} | \`${PATHS.plan}\` |`);
   for (const m of src.plan.methods) for (const s of m.studies.filter((x) => x.status === 'BLOCKED_OWNER')) push(`| ${s.id} | ${m.candidateId} | Owner-Entscheidung | ${esc(s.question)} | ${esc(s.acceptance.map((a) => `${a.metricKind}: ${a.criterion}`).join('; '))} | \`${PATHS.plan}\` |`);
@@ -798,6 +1053,8 @@ export function render(model, state, src) {
     '- **statistische Aussagekraft:** BLOCKIERT bei Messklasse `NOT_MEASURABLE`; sonst OFFEN, solange die Kennzahlen versiegelt und die Robustheit nicht belegt ist (E6).',
     '- **Statusdimensionen:** IMPLEMENTIERT = `technicallyComplete` und Engine im Produktkatalog; GETESTET = alle Golden Cases PASS; FACHLICH VALIDIERT = CC-1–CC-7 erfüllt und Robustheit belegt; ZERTIFIZIERT = Readiness weist die Methode als zertifiziert aus (`certification` ≠ `DIAGNOSTIC_NOT_CERTIFIED`, in `certificationCandidates`, CC-1–CC-8); PRODUKTREIF = `liveReadiness` ≠ `LIVE_NOT_APPROVED`; DEAKTIVIERT = nicht im Kandidatenprodukt; BLOCKIERT = Zustand `SOURCE_BLOCKED`/`VALIDATION_BLOCKED`; ZURÜCKGESTELLT = nicht im Paper-Protokoll 2027.',
     '- **Einordnung (1.1.0):** Jeder offene Blocker ist entweder technisch lösbar (Nachweis auf Branch, auf main noch nicht ausgewertet, eigener Fach- oder Produkt-PR, Studienlauf) oder trägt eine Klasse: 1 Owner-Fachentscheidung, 2 fehlende lizenzierte Daten, 4 historische Voraussetzung heute nicht erfüllbar. Klasse 3 (vorhandener, noch nicht ausgewerteter Nachweis) wird nicht als Rest geführt, sondern ausgewertet (E-REFCODE, E-SAMPLE); ein belegter Blocker ist geschlossen. Ein OFFEN-Punkt ohne technisch lösbaren Blocker ist BLOCKIERT. Die Klasse eines BLOCKIERT-Punkts ist die des Blockers, der seine Ableitungsregel auslöst (CC-5, CC-8, CC-4, Messbarkeit, Quelle, Ausführung, Survivorship). Der Status nach den Regeln 1.0.0 steht in Abschnitt 3 in Klammern.',
+    '- **Einordnung (1.2.0):** E-CC13 trägt ein im Readiness-Artefakt offenes CC-1 oder CC-3 als Blocker der Klasse 1 nach, wenn weder Plan noch Matrix es nennen. Die ALL13-Vorbereitung (#1235) ist in Quellen-/Regeltreue ein Teilbeitrag, wenn CC-1 oder CC-3 der Klasse 1 offen ist: Sie hebt nach Merge und Auswertung höchstens auf TEILWEISE. Ein OFFEN-Punkt, dessen technische Anteile nur Teilbeiträge sind, ist BLOCKIERT mit der Klasse seiner Ursache.',
+    '- **Freigabepakete (1.2.0):** Jeder BLOCKIERT-Punkt gehört zu genau dem Paket, das seine Ursache schließt; jeder weitere Blocker mit Klasse dieses Punkts gehört zu genau einem Paket. Die Wirkung je Punkt ist der Status, den die Ableitungsregel nach Freigabe und Folge-PRs zulässt; weitere nötige Pakete und technische Anteile stehen daneben.',
     '- **Branch-Nachweise:** Nachweise aus Draft-PRs zählen erst auf `main`. Ob sie dort sind, liest der Erzeuger am Repository (ALL13-Plan vorhanden, Turtle-Einheitsstopps in `auditRun`, V13-Workflow vorhanden), nie an einer Liste.',
     '- **Zuständigkeit:** TOP5-Plan Klasse a = technisch lösbar, b = Owner (Quant, Security Master), c = Owner + Daten-Zeit, d = Owner; CC-8 = Daten-Zeit + Owner. Matrix-Blocker: CC-1/CC-3/Stop/CC-4/Lizenzdaten = Owner, CC-5 = Owner + Daten-Zeit, CC-8/OOS = Daten-Zeit + Owner.',
     '',
@@ -827,7 +1084,7 @@ export function render(model, state, src) {
   push(
     '## 9. Einordnung der Prüfpunkte und Bearbeitung (Klassen 1–4)',
     '',
-    `Erzeugt nach den Regeln in Abschnitt 7 (Einordnung 1.1.0). Ausgangsstand ist der Status nach den Regeln 1.0.0 (Fassung von #1247 vor dieser Einordnung).`,
+    `Erzeugt nach den Regeln in Abschnitt 7 (Einordnung 1.1.0 und 1.2.0). Ausgangsstand ist der Status nach den Regeln 1.0.0 (Fassung von #1247 vor dieser Einordnung).`,
     '',
     '| Status | Ausgangsstand (1.0.0) | jetzt |',
     '|---|---|---|',
@@ -850,8 +1107,10 @@ export function render(model, state, src) {
     '| Punkt | Ergebnis | Grund |',
     '|---|---|---|',
     ...ptsWith((d) => d.statusBase === STATUS.OFFEN).map((x) => {
-      const ev = model.evaluations.find((e) => e.cid === x.cid && e.dim === x.d.id);
-      const why = ev ? `${ev.id}: ${ev.text}` : x.d.reclassified ? `kein technisch lösbarer Blocker: ${x.d.blockers.map((b) => `${b.id} (Klasse ${b.klass})`).join(', ')}` : `technisch lösbar, offen: ${x.d.blockers.filter((b) => !b.klass).map((b) => `${b.id} – ${TECH_KINDS[b.tech]}${b.pr ? ` ${b.pr}` : ''}`).join('; ')}`;
+      const evs = model.evaluations.filter((e) => e.cid === x.cid && e.dim === x.d.id && e.id !== 'E-REFCODE');
+      const tag = (b) => (b.klass ? `Klasse ${b.klass}` : `technisch, ${TECH_KINDS[b.tech]}${b.pr ? ` ${b.pr}` : ''}${b.partial ? `; ${b.partial}` : ''}`);
+      const reason = x.d.reclassified ? `${x.d.reclassified}: ${x.d.blockers.map((b) => `${b.id} (${tag(b)})`).join(', ')}` : x.d.status === STATUS.OFFEN ? `technisch lösbar, offen: ${x.d.blockers.filter((b) => !b.klass).map((b) => `${b.id} – ${TECH_KINDS[b.tech]}${b.pr ? ` ${b.pr}` : ''}`).join('; ')}` : '';
+      const why = [...evs.map((e) => `${e.id}: ${e.text}`), reason].filter(Boolean).join(' · ');
       return `| ${label(x)} | ${x.d.status}${x.d.blockClass ? ` (Klasse ${x.d.blockClass})` : ''} | ${esc(why)} |`;
     }),
     '',
@@ -865,7 +1124,7 @@ export function render(model, state, src) {
     '',
     '| Punkt | Blocker | Art | Stand |',
     '|---|---|---|---|',
-    ...ptsWith((d) => d.status === STATUS.TEILWEISE || d.status === STATUS.OFFEN).flatMap((x) => x.d.blockers.filter((b) => !b.klass).map((b) => `| ${label(x)} (${x.d.status}) | ${esc(b.id)} | ${TECH_KINDS[b.tech]} | ${esc(b.why)} |`)),
+    ...ptsWith((d) => d.status === STATUS.TEILWEISE || d.status === STATUS.OFFEN).flatMap((x) => x.d.blockers.filter((b) => !b.klass).map((b) => `| ${label(x)} (${x.d.status}) | ${esc(b.id)} | ${TECH_KINDS[b.tech]} | ${esc(b.why)}${b.partial ? `; ${esc(b.partial)}` : ''} |`)),
     '',
     `Die übrigen Blocker der TEILWEISE-Punkte tragen eine Klasse (1, 2 oder 4) und sind in Abschnitt 3 je Blocker markiert. TEILWEISE nach Klassen der Blocker: ${Object.keys(BLOCK_CLASSES).filter((k) => k !== '3').map((k) => `Klasse ${k} in ${ptsWith((d) => d.status === STATUS.TEILWEISE && d.blockers.some((b) => String(b.klass) === k)).length} Punkten`).join(', ')}; ohne technisch lösbaren Anteil ${ptsWith((d) => d.status === STATUS.TEILWEISE && d.blockers.every((b) => b.klass)).length} Punkte.`,
     '',
@@ -877,6 +1136,89 @@ export function render(model, state, src) {
       const pr = model.prs[k], hits = ptsWith((d) => d.blockers.some((b) => b.pr === pr.pr));
       return `| ${pr.pr} | ${esc(pr.content)} | ${model.merged[mk] ? 'ja' : 'nein, auf Branch, noch nicht gemergt'} | ${hits.map(label).join(', ') || '–'} |`;
     }),
+    '',
+  );
+
+  // 10. Freigabepakete (1.2.0)
+  const ptLabel = (x) => `${x.cid} ${dimName(x.d.id)}`;
+  const optLine = (p) => p.options.map(([k, t]) => `**${k}:** ${t}`).join(' · ');
+  push(
+    '## 10. Freigabepakete',
+    '',
+    `Die ${cnt.now.BLOCKIERT} BLOCKIERT-Punkte sind in ${packages.length} entscheidbare Pakete gebündelt. Jeder Punkt gehört zu genau dem Paket, das seine Ursache schließt (Abschnitt 9.1); weitere Blocker desselben Punkts sind mit ihrem Paket bzw. als technischer Anteil genannt. Kosten und Lizenzen sind nur benannt: Kein Paket beauftragt einen Anbieter, löst einen Kauf, einen kostenpflichtigen Abruf oder einen Lauf aus. Klassen wie in Abschnitt 9: ${Object.entries(BLOCK_CLASSES).filter(([k]) => k !== '3').map(([k, v]) => `${k} ${v}`).join(', ')}.`,
+    '',
+    '### 10.1 Übersicht',
+    '',
+    '| Paket | Titel | Punkte | Klasse | Frist | Empfehlung |',
+    '|---|---|---|---|---|---|',
+    ...packages.map((p) => `| ${p.id} | ${esc(p.title)} | ${p.points.length} | ${p.klass} | ${esc(p.deadlineText)} | Option ${p.recommendation[0]} |`),
+    '',
+    `Summe ${packages.reduce((a, p) => a + p.points.length, 0)} Punkte; nach Klasse: ${Object.keys(BLOCK_CLASSES).filter((k) => k !== '3').map((k) => `Klasse ${k} ${packages.filter((p) => String(p.klass) === k).reduce((a, p) => a + p.points.length, 0)} Punkte in ${packages.filter((p) => String(p.klass) === k).length} Paketen`).join(', ')}.`,
+    '',
+    '### 10.2 Pakete',
+    '',
+  );
+  for (const p of packages) {
+    push(
+      `#### ${p.id} – ${esc(p.title)}`,
+      '',
+      `- **Betroffene Punkte (${p.points.length}):** ${p.points.map(ptLabel).join(', ')}`,
+      `- **Klasse:** ${p.klass} (${BLOCK_CLASSES[p.klass]})`,
+      `- **Entscheidungsfrage:** ${p.question}`,
+      `- **Optionen:** ${optLine(p)}`,
+      `- **Empfehlung:** Option ${p.recommendation[0]}: ${p.recommendation[1]}`,
+      `- **Kosten und Lizenz (nur benannt):** ${p.cost}`,
+      `- **Voraussetzungen:** ${p.prerequisites.join('; ')}`,
+      `- **Frist:** ${p.deadlineText}`,
+      `- **Folge-PRs:** ${p.followUps.join('; ')}`,
+      '- **Wirkung nach Freigabe:**',
+      '',
+      '| Punkt | jetzt | nach Freigabe und Folge-PRs | außerdem nötig |',
+      '|---|---|---|---|',
+      ...p.points.map((x) => `| ${ptLabel(x)} | BLOCKIERT, Klasse ${x.d.blockClass} (${esc(x.d.cause.id)}) | ${esc(x.target)} | ${esc(x.also.join('; ')) || '–'} |`),
+      '',
+    );
+  }
+  push(
+    '### 10.3 Reihenfolge und Abhängigkeiten',
+    '',
+    `- **Einzige harte Frist:** FP-ST-02. ${packages.find((p) => p.id === 'FP-ST-02').deadlineText}. Ohne Aktivierung verschiebt sich CC-8 für alle 11 Referenzen um mindestens ein Jahr.`,
+    '- **Gemeinsame Voraussetzung FP-ST-01 und FP-ST-02:** die Aufbewahrung der Snapshot-Generationen (eine freie Generation für Generation 3 bzw. die eingefrorenen Forward-Sitzungen). Beide Fragen gehören in dieselbe Owner-Entscheidung.',
+    '- **FP-ST-04 nach FP-ST-03:** Die Gruppen-Stage für Weinstein nutzt dieselbe Gruppenquelle.',
+    '- **FP-ST-05 bis FP-ST-08 brauchen #1235 auf `main`:** Dort sind die Quellen- und Lesartenstudien vorregistriert (BLOCKED_OWNER). Der Merge allein schließt keinen dieser Punkte (Teilbeitrag).',
+    '- **FP-ST-09 und FP-ST-10 nur nach FP-ST-08 A;** bei der empfohlenen Zurückstellung (FP-ST-08 B) entfallen beide.',
+    '- **Lesarten vor dem Öffnen von Kennzahlen:** FP-ST-05 bis FP-ST-07 werden datiert entschieden, bevor eine versiegelte Kennzahl geöffnet wird (E6).',
+    '',
+  );
+
+  // 10.4 Merge-Vorschau #1233/#1234/#1235
+  const prName = { turtleStops: model.prs.turtleStops.pr, v13Workflow: model.prs.v13.pr, all13: model.prs.all13.pr };
+  const cmp = (f) => {
+    const now = new Map(cnt.pts.map((x) => [`${x.cid}:${x.d.id}`, x.d]));
+    const changed = f.cnt.pts.filter((x) => now.get(`${x.cid}:${x.d.id}`).status !== x.d.status).map((x) => `${ptLabel(x)} ${now.get(`${x.cid}:${x.d.id}`).status} → ${x.d.status}`);
+    const retag = f.cnt.pts.reduce((a, x) => a + x.d.blockers.filter((b) => { const o = now.get(`${x.cid}:${x.d.id}`).blockers.find((y) => y.id === b.id); return o && blockerTag(o) !== blockerTag(b); }).length, 0);
+    return `${changed.join(', ') || 'kein Statuswechsel'}${retag ? `; ${retag} Blocker anders eingeordnet` : ''}`;
+  };
+  const pending = MERGE_CASES.at(-1).filter((k) => !model.merged[k]);
+  push(
+    '### 10.4 Nach dem Merge von #1233, #1234 und #1235',
+    '',
+    'Der Erzeuger erkennt jeden Merge selbst am Repository (Abschnitt 7, Branch-Nachweise); die Zeile des PR in Übergabe §8.1 darf danach entfallen. Danach weicht das committete Dokument vom Erzeuger ab und `MC3-EV-DOC-EQUALS-GENERATOR` wird rot, bis es neu erzeugt ist. Nach jedem dieser Merges, auf dem Stand von `main` (bzw. im Merge-PR), ausführen:',
+    '',
+    '```bash',
+    `node scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs --out ${DOC_PATH}`,
+    'node --test scripts/supertrader/tests/sf-mc3-evidence-matrix.test.mjs',
+    'node scripts/supertrader/guard-protected-paths.mjs --base origin/main',
+    '```',
+    '',
+    `Erwartete Zählung, vom Erzeuger auf dem heutigen Stand vorausberechnet (die Zeilen „${MERGE_CASES.at(-1).map((k) => prName[k]).join(' + ')}“ prüft ein Probe-Merge, Übergabe §12):`,
+    '',
+    '| Merge | BELEGT | TEILWEISE | OFFEN | BLOCKIERT | Klassen | Pakete (Punkte) | gegenüber heute |',
+    '|---|---|---|---|---|---|---|---|',
+    `| heute | ${Object.values(STATUS).map((st) => cnt.now[st]).join(' | ')} | ${fmtClasses(cnt.classesNow)} | ${packages.map((p) => p.points.length).join('/')} | – |`,
+    ...forecast.map((f) => `| ${f.keys.map((k) => `${prName[k]}${model.merged[k] ? ' (schon auf main)' : ''}`).join(' + ')} | ${Object.values(STATUS).map((st) => f.cnt.now[st]).join(' | ')} | ${fmtClasses(f.cnt.classesNow)} | ${f.packages.map((p) => p.points.length).join('/')} | ${esc(cmp(f))} |`),
+    '',
+    pending.length ? `Noch nicht auf \`main\`: ${pending.map((k) => prName[k]).join(', ')}. Die Pakete behalten ihre Punkte; der Merge von #1235 macht die Teilbeiträge zu „auf main, im Erzeuger noch nicht ausgewertet“, ohne einen Status zu heben.` : 'Alle drei sind auf `main`; die Vorschau entspricht dem heutigen Stand.',
     '',
   );
   return L.join('\n');

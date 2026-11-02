@@ -10,7 +10,7 @@ import { spawnSync } from 'node:child_process';
 import {
   ROOT, DOC_PATH, PATHS, STATUS, DIMENSIONS, STATUS_DIMENSIONS, BLOCK_BEGIN, BLOCK_END, BLOCK_CLASSES, TECH_KINDS, HIST_COVERAGE,
   buildDocument, buildModel, checkDocument, splitDocument, testIdsOf, fileSha256, parseMatrixBlockers, matrixRowDimensions,
-  classifyBlocker, countModel,
+  classifyBlocker, countModel, FREIGABEPAKETE, assignPackages, mergeForecast, MERGE_CASES, partialOnly, PARTIAL_WHY, MERGED_PR_FALLBACK,
 } from '../source-faithful/evidence/build-evidence-matrix.mjs';
 import { loadPlan, runPlanTests } from '../source-faithful/certification/cert-prep-top5.mjs';
 
@@ -201,10 +201,107 @@ test('MC3-EV-BRANCH-EVIDENCE: Nachweise aus #1233/#1234/#1235 zählen erst auf m
     const m = buildModel({ ...BUILT.src, histExecSrc: v11, merged: { ...BUILT.src.merged, turtleStops: true } });
     for (const cid of ['C01', 'C02']) { const d = dimOf(m, cid, 'D5'); assert.ok(!d.blockers.some((b) => /HIST-UNIT-STOPS/.test(b.id)), cid); assert.equal(d.status, STATUS.BELEGT, cid); }
   }
-  // ALL13 auf main: Blocker bleibt, aber als „auf main, noch nicht ausgewertet“ (kein stilles Anheben)
+  // ALL13 auf main: Blocker bleibt, aber als „auf main, noch nicht ausgewertet“ (kein stilles Anheben); in C06
+  // Quellen-/Regeltreue bleibt er ein Teilbeitrag, der Punkt bleibt BLOCKIERT (1.2.0)
   const m13 = buildModel({ ...BUILT.src, merged: { ...BUILT.src.merged, all13: true } });
   assert.equal(dimOf(m13, 'C06', 'D1').blockers.find((x) => x.id === 'C06-CERT-PREP').tech, 'AUF_MAIN_NICHT_AUSGEWERTET');
-  assert.equal(dimOf(m13, 'C06', 'D1').status, STATUS.OFFEN);
+  assert.equal(dimOf(m13, 'C06', 'D1').blockers.find((x) => x.id === 'C06-CERT-PREP').partial, PARTIAL_WHY);
+  assert.equal(dimOf(m13, 'C06', 'D1').status, STATUS.BLOCKIERT);
+  assert.equal(dimOf(m13, 'C04', 'D2').status, STATUS.TEILWEISE, 'BOUNDARY ist kein Teilbeitrag');
   // geänderte Prüfabdeckung ohne bekannte Fassung bricht ab
   assert.throws(() => buildModel({ ...BUILT.src, histExecSrc: BUILT.src.histExecSrc.replace(HIST_COVERAGE.V1_0, 'missedStopCheck: x') }), /HIST_EXECUTION_COVERAGE_CHANGED/);
+});
+
+// ---------------------------------------------------------------- 1.2.0: OFFEN-Punkte, Freigabepakete, Merge-Vorschau
+
+test('MC3-EV-OPEN-RESOLVED: kein OFFEN-Punkt; C06/C07/C09 Quellen-/Regeltreue BLOCKIERT Klasse 1 mit Teilbeitrag #1235; E-CC13; Gegenproben', () => {
+  const cnt = countModel(BUILT.model);
+  assert.equal(cnt.now.OFFEN, 0);
+  for (const cid of ['C06', 'C07', 'C09']) {
+    const d = dimOf(BUILT.model, cid, 'D1');
+    assert.equal(d.statusBase, STATUS.OFFEN, cid); assert.equal(d.status, STATUS.BLOCKIERT, cid); assert.equal(d.blockClass, 1, cid);
+    assert.match(d.reclassified, /Teilbeitrag/, cid);
+    const cp = d.blockers.find((b) => b.id === `${cid}-CERT-PREP`);
+    assert.ok(cp && !cp.klass && cp.partial === PARTIAL_WHY && partialOnly(d, cp), cid);
+    assert.ok(d.blockers.some((b) => b.klass === 1 && /-CC-?1/.test(b.id)) && d.blockers.some((b) => b.klass === 1 && /-CC-?3/.test(b.id)), `${cid}: CC-1 und CC-3 als Klasse 1`);
+  }
+  // E-CC13: CC-1/CC-3 laut Readiness offen ohne Blocker in Plan/Matrix -> nachgetragen, Quelle Readiness
+  const r = BUILT.src.readiness;
+  for (const m of BUILT.model.methods) {
+    const c = r.candidates.find((x) => x.candidateId === m.cid), d = m.dims[0];
+    for (const n of [1, 3]) {
+      const open = Object.entries(c.certificationCriteria).some(([k, v]) => k.startsWith(`CC-${n}-`) && v === false);
+      assert.equal(d.blockers.some((b) => new RegExp(`-CC-?${n}(?!\\d)|-CC-\\d-und-CC-${n}`).test(b.id)), open, `${m.cid} CC-${n}`);
+    }
+  }
+  assert.deepEqual(BUILT.model.evaluations.filter((e) => e.id === 'E-CC13').map((e) => e.cid), ['C09', 'C10', 'C11']);
+  // Gegenprobe 1: ohne Klasse-1-Blocker zu CC-1/CC-3 wäre CERT-PREP voll technisch, der Punkt bliebe OFFEN
+  const d = { id: 'D1', blockers: [{ id: 'C06-CERT-PREP', tech: 'AUF_BRANCH' }] };
+  assert.equal(partialOnly(d, d.blockers[0]), false);
+  assert.equal(partialOnly({ ...d, id: 'D2' }, { id: 'C06-BOUNDARY', tech: 'AUF_BRANCH' }), false);
+  // Gegenprobe 2: CC-1 und CC-3 in der Readiness erfüllt -> kein E-CC13, kein Klasse-1-Blocker, C09 D1 bleibt OFFEN
+  const readiness = structuredClone(r);
+  const c9 = readiness.candidates.find((x) => x.candidateId === 'C09');
+  for (const k of Object.keys(c9.certificationCriteria)) if (/^CC-[13]-/.test(k)) c9.certificationCriteria[k] = true;
+  const m9 = buildModel({ ...BUILT.src, readiness });
+  assert.equal(dimOf(m9, 'C09', 'D1').status, STATUS.TEILWEISE, 'CC-1 und CC-3 erfüllt, ALL13 offen: TEILWEISE');
+  assert.ok(!m9.evaluations.some((e) => e.id === 'E-CC13' && e.cid === 'C09'));
+});
+
+test('MC3-EV-PACKAGES: jeder BLOCKIERT-Punkt in genau einem Freigabepaket; jedes Paket entscheidbar und mit Wirkung; Gegenproben', () => {
+  const pk = assignPackages(BUILT.model, BUILT.src), cnt = countModel(BUILT.model);
+  assert.deepEqual(pk.map((p) => p.id), FREIGABEPAKETE.map((p) => p.id));
+  assert.deepEqual(pk.map((p) => p.id), Array.from({ length: pk.length }, (_, k) => `FP-ST-${String(k + 1).padStart(2, '0')}`));
+  assert.ok(pk.length <= 12, 'wenige Pakete statt Einzelfragen');
+  // genau einmal je Punkt, vollständig
+  const seen = new Map();
+  for (const p of pk) for (const x of p.points) { const k = `${x.cid}:${x.d.id}`; assert.ok(!seen.has(k), `${k} in ${seen.get(k)} und ${p.id}`); seen.set(k, p.id); }
+  assert.deepEqual([...seen.keys()].sort(), cnt.blocked.map((x) => `${x.cid}:${x.d.id}`).sort());
+  assert.equal(seen.size, cnt.now.BLOCKIERT);
+  for (const p of pk) {
+    assert.ok(p.points.length > 0, `${p.id}: leer`);
+    assert.ok([1, 2, 4].includes(p.klass), p.id);
+    for (const x of p.points) assert.equal(x.d.blockClass, p.klass, `${p.id} ${x.cid} ${x.d.id}: Klasse des Punkts = Klasse des Pakets`);
+    assert.match(p.question, /\?/, `${p.id}: Entscheidungsfrage`);
+    assert.ok(p.options.length >= 2 && p.options.every(([k, t]) => /^[A-C]$/.test(k) && t.length > 20), `${p.id}: Optionen`);
+    assert.ok(p.options.some(([k]) => k === p.recommendation[0]) && p.recommendation[1].length > 10, `${p.id}: Empfehlung`);
+    assert.ok(p.cost && p.prerequisites.length && p.deadlineText && p.followUps.length, `${p.id}: Kosten, Voraussetzungen, Frist, Folge-PRs`);
+    for (const x of p.points) assert.ok(x.target && x.target.length > 10, `${p.id} ${x.cid} ${x.d.id}: Wirkung`);
+    assert.ok(DOC.includes(`#### ${p.id} – `), `${p.id} im Dokument`);
+    assert.ok(DOC.includes(`| ${p.id} | `) && DOC.includes(`- **Entscheidungsfrage:** ${p.question}`), `${p.id}: Übersicht und Frage im Dokument`);
+  }
+  // keine Beauftragung: kein Paket kauft, bestellt oder löst einen Lauf aus
+  for (const p of pk) assert.doesNotMatch(`${p.cost} ${p.options.map((o) => o[1]).join(' ')}`, /\b(bestellt|beauftragt|gekauft)\b/i, p.id);
+  // FP-ST-02 trägt die einzige Kalenderfrist (Fensterbeginn SF6-PAPER-2027)
+  assert.match(pk.find((p) => p.id === 'FP-ST-02').deadlineText, /01\.01\.2027.*erste Sitzung des Fensters 04\.01\.2027/);
+  assert.equal(BUILT.src.paper.protocol.window.start, '2027-01-01');
+  // Gegenprobe: ein unbekannter BLOCKIERT-Punkt bricht ab
+  const model = structuredClone({ methods: BUILT.model.methods.map((m) => ({ cid: m.cid, status: m.status, dims: m.dims.map((d) => ({ id: d.id, status: d.status, blockClass: d.blockClass, blockers: d.blockers.map((b) => ({ id: b.id, klass: b.klass, tech: b.tech, pr: b.pr, partial: b.partial })) })) })) });
+  for (const m of model.methods) for (const d of m.dims) if (d.status === STATUS.BLOCKIERT) d.cause = d.blockers.find((b) => b.klass) ?? null;
+  assert.doesNotThrow(() => assignPackages(model, BUILT.src));
+  const d10 = model.methods.find((m) => m.cid === 'C02').dims.find((d) => d.id === 'D10');
+  d10.status = STATUS.BLOCKIERT; d10.cause = { id: 'C02-NEU', klass: 1 }; d10.blockers = [d10.cause]; d10.blockClass = 1;
+  assert.throws(() => assignPackages(model, BUILT.src), /PACKAGE_UNKNOWN:C02:D10:C02-NEU/);
+});
+
+test('MC3-EV-MERGE-FORECAST: Vorschau nach #1233/#1234/#1235 im Dokument; kein OFFEN, Pakete stabil; Befehl dokumentiert', () => {
+  const f = mergeForecast(BUILT.src);
+  assert.deepEqual(f.map((x) => x.keys), MERGE_CASES.map((k) => [...k]));
+  const now = countModel(BUILT.model), all = f.at(-1);
+  for (const x of f) {
+    assert.equal(Object.values(x.cnt.now).reduce((a, b) => a + b, 0), 130);
+    assert.equal(x.cnt.now.OFFEN, 0, x.keys.join('+'));
+    assert.deepEqual(x.packages.map((p) => p.points.length), assignPackages(BUILT.model, BUILT.src).map((p) => p.points.length), `${x.keys.join('+')}: Pakete stabil`);
+    assert.ok(x.cnt.now.BELEGT >= now.now.BELEGT, 'ein Merge senkt nie');
+  }
+  if (!BUILT.src.merged.turtleStops) assert.equal(all.cnt.now.BELEGT, now.now.BELEGT + 2, 'C01/C02 Stopps/Slippage/Kosten');
+  // Zeile im Dokument
+  const row = `| ${Object.values(STATUS).map((s) => all.cnt.now[s]).join(' | ')} |`;
+  assert.ok(DOC.split('\n').some((l) => l.startsWith('| #1233') && l.includes(' + #1235') && l.includes(row)), 'Vorschauzeile im Dokument');
+  assert.ok(DOC.includes('node scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs --out docs/SUPERTRADER_13_METHODS_EVIDENCE.md\nnode --test scripts/supertrader/tests/sf-mc3-evidence-matrix.test.mjs'));
+  // nach dem Merge darf die §8.1-Zeile fehlen; vorher bricht der Erzeuger ab
+  const text = BUILT.src.handoverText.split('\n').filter((l) => !/^\| #1233 /.test(l)).join('\n');
+  assert.throws(() => buildModel({ ...BUILT.src, handoverText: text }), /OPEN_PR_NOT_FOUND/);
+  const m = buildModel({ ...BUILT.src, handoverText: text, merged: { ...BUILT.src.merged, turtleStops: true } });
+  assert.equal(m.prs.turtleStops.pr, MERGED_PR_FALLBACK.turtleStops.pr);
 });
