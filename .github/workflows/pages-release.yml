@@ -49,6 +49,11 @@ on:
       # (Mo-Fr 13-21 UTC) auf die Seite - Samstagslaeufe (Supertrader-
       # Signale, Index-Mitgliedschaft, lange Reihen) also erst am Montag.
       - "Supertrader Signale"
+      # Der Kandidaten-Tageslauf wird erst am Ende von "Supertrader Signale"
+      # angestossen; dessen Auslieferung startet also VOR dem Kandidaten-Commit.
+      # Ohne eigenen Eintrag kaeme der Stand erst mit dem naechsten fremden
+      # Lauf oder der Bruecke (Mo-Fr ab 13 UTC) auf die Seite.
+      - "Supertrader 8 Research-Kandidaten (Tageslauf)"
       - "SEC Fundamentals — Daily Incremental"
       - "Index-Mitgliedschaft (S&P 500, NASDAQ-100, Dow Jones aus Fondsbestaenden)"
       - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"

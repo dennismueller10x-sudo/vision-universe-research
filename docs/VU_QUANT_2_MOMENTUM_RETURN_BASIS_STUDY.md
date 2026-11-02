@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-10-31T03:30:09.000Z |
+| Stand der Messung | 2026-10-31T16:53:31.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -235,20 +235,20 @@ Die Momentumnote wird auf beiden Basen aus denselben sechs Komponenten und dense
 | | |
 |---|---:|
 | Grundlage | `EVIDENCE_AT_OR_BEFORE_CUTOFF` |
-| veröffentlichtes Evidence vom | 2026-10-29 (-1 Tage nach dem Stichtag) |
+| veröffentlichtes Evidence vom | 2026-10-30 (0 Tage nach dem Stichtag) |
 | ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | 0 |
-| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9330 |
-| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9435 |
-| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.612 / 5.774 / 5.774 |
+| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9395 |
+| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9499 |
+| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.613 / 5.774 / 5.774 |
 
 **Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9932 · Median 54 Ränge · P95 342,3 · Maximum 3.085 · 478 Titel bewegen sich um mindestens 5 Perzentilpunkte, 117 um mindestens 10.
 
 | Strategie | Treffer auf Kursrendite | auf Gesamtrendite | fallen heraus | kommen hinzu | Wechselanteil |
 |---|---:|---:|---:|---:|---:|
-| Momentum Leader (`momentum-leader`) | 355 | 345 | 22 | 12 | 9,6 % |
-| Quality Momentum (`quality-momentum`) | 40 | 38 | 3 | 1 | 10,0 % |
-| Future Leader (`future-leader`) | 19 | 18 | 2 | 1 | 15,8 % |
-| Value Momentum (`value-momentum`) | 209 | 201 | 12 | 4 | 7,7 % |
+| Momentum Leader (`momentum-leader`) | 357 | 346 | 23 | 12 | 9,8 % |
+| Quality Momentum (`quality-momentum`) | 39 | 37 | 3 | 1 | 10,3 % |
+| Future Leader (`future-leader`) | 18 | 17 | 2 | 1 | 16,7 % |
+| Value Momentum (`value-momentum`) | 206 | 200 | 10 | 4 | 6,8 % |
 
 Keine Produktionsstrategie wurde dabei überschrieben. Die Simulation läuft neben der Produktion.
 

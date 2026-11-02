@@ -7,6 +7,8 @@ import {tmpdir} from 'node:os';
 import {execFileSync} from 'node:child_process';
 const require=createRequire(import.meta.url),A=require('../engines/weekly-real-adapter.cjs'),R=require('../engines/research-weekly-loader.cjs');
 import {createHash} from 'node:crypto';
+// Mutationstests am Stamm des tmp-Root: ausdrücklich der Produktstamm (LIVE); ohne Angabe lesen Evidenz-Optionen die eingefrorene Generation 1.1.0.
+const LIVE={masterGeneration:'LIVE'};
 // sha256 of quant/engines/weekly-real-adapter.cjs on main 07dfe5dd55: the research option must not touch the adapter.
 const MAIN_ADAPTER_SHA256='15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a';
 const Registry=require('../engines/research-identity-evidence.cjs');
@@ -86,7 +88,8 @@ test('opt-in qualifies the four price-backed bindings on their sourced interval;
  const L=R.createResearchLoader(root,{identityEvidence:true}),LC=R.createResearchLoader(root,{identityEvidence:true,identityEvidenceAllowCoverPageOnly:true});
  assert.deepEqual(L.identityEvidence.boundSecurityIds,PRICE_BACKED);assert.deepEqual(LC.identityEvidence.boundSecurityIds,FIVE);
  for(const id of FIVE){
-  const rec=record(id),def=outcome(()=>A.createLoader(root)(id));
+  // unbound default on the same Security-Master generation as the opt-in loader (frozen 1.1.0; equal to the product adapter before a switch)
+  const rec=record(id),def=outcome(()=>R.createResearchLoader(root,undefined,{masterGeneration:L.masterGeneration})(id));
   if(id==='ref_TRAK')assert.deepEqual(outcome(()=>L(id)),def);
   for(const loader of id==='ref_TRAK'?[LC]:[L,LC]){
    const r=loader(id);
@@ -102,7 +105,7 @@ test('opt-in qualifies the four price-backed bindings on their sourced interval;
  }
  // Non-bound ids are untouched by the opt-in, including ambiguous ids the V9 proposal would have bound.
  for(const id of UNBOUND_AMBIGUOUS){assert.throws(()=>L(id),/^Error: AMBIGUOUS_LISTING_IDENTITY$/);assert.throws(()=>LC(id),/^Error: AMBIGUOUS_LISTING_IDENTITY$/);}
- for(const id of ['ref_NVDA','ref_FRMEP'])assert.deepEqual(outcome(()=>LC(id)),outcome(()=>A.createLoader(root)(id)));
+ for(const id of ['ref_NVDA','ref_FRMEP'])assert.deepEqual(outcome(()=>LC(id)),outcome(()=>R.createResearchLoader(root,undefined,{masterGeneration:LC.masterGeneration})(id)));
 });
 
 test('opt-in fails closed: tampered history guard, expired cover, foreign ticker',()=>{
@@ -130,10 +133,10 @@ test('opt-in fails closed when the replaced master row is missing or the master 
   const write=rows=>{mkdirSync(join(tmp,'quant/data/market/security-master'),{recursive:true});writeFileSync(join(tmp,masterPath),JSON.stringify({...master,rows}));};
   const rec=record('ref_COHR'),bytes=seriesBytes('ref_COHR');
   write(master.rows.filter(r=>!rec.replacesCanonicalIds.includes(r.canonical_id)));
-  assert.throws(()=>R.createResearchLoader(tmp,{identityEvidence:true})('ref_COHR',bytes),/^Error: IDENTITY_EVIDENCE_MASTER_ROW_MISSING$/);
+  assert.throws(()=>R.createResearchLoader(tmp,{identityEvidence:true},LIVE)('ref_COHR',bytes),/^Error: IDENTITY_EVIDENCE_MASTER_ROW_MISSING$/);
   const extra={...master.rows.find(r=>r.canonical_id===rec.replacesCanonicalIds[0]),canonical_id:'tiingo:NYSE:COHR:2022-09-08',active_status:'ACTIVE'};
   write(master.rows.concat([extra]));
-  assert.throws(()=>R.createResearchLoader(tmp,{identityEvidence:true})('ref_COHR',bytes),/^Error: IDENTITY_EVIDENCE_MASTER_ROWS_CHANGED$/);
+  assert.throws(()=>R.createResearchLoader(tmp,{identityEvidence:true},LIVE)('ref_COHR',bytes),/^Error: IDENTITY_EVIDENCE_MASTER_ROWS_CHANGED$/);
   // Default path on the same modified master keeps its own (unchanged) rule.
   assert.throws(()=>A.createLoader(tmp)('ref_COHR',bytes),/^Error: AMBIGUOUS_LISTING_IDENTITY$/);
  }finally{rmSync(tmp,{recursive:true,force:true});}
