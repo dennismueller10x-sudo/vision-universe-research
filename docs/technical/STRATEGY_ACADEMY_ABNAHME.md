@@ -1,28 +1,29 @@
-# Owner-Abnahme · Strategie-Akademie nach Audit CODEX 002
+# Einmalige Owner-Freigabe · fertige Strategie-Akademie
 
-PR [#1253](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1253), Abhängigkeit [#1245](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1245). Vollständiger Audit aller 32 Lektionen: [Bericht](STRATEGY_ACADEMY_AUDIT_002.md), [Einzelbewertung nach acht Kriterien](academy-audit-qa/lesson-audit.json).
+Abnahmegegenstand: [#1245](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1245) und anschließend [#1253](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1253). #1252 ist ohne Merge als abgelöst geschlossen. [Finaler Integrations- und Live-Nachweis](STRATEGY_ACADEMY_FINAL.md).
 
-- [ ] Fachliche Stichprobe: Relative Stärke (absolut −5 %, relativ +5 Prozentpunkte), MACD (−2/−3 → Histogramm +1), ATR (H106/L104/Vorschluss100 → True Range6), reale Zeitrahmen200D/40W/10M lesen. Beobachtung und Prognose bleiben getrennt.
-- [ ] Einstieg als Einsteiger: Kerzenaufbau lesen, Vorabbegriff öffnen, Beispiel und Gegenbeispiel verstehen. Kürzungen und die Quellenkennzeichnung akzeptieren.
-- [ ] SMA-Lektion → etablierte Acht-Kriterien-Vorlage; Datenqualitätslektion → Chart; Analyseziel-Lektion → freie Assistentenauswahl prüfen.
-- [ ] Quiz prüfen, Antwort wechseln: alte Rückmeldung verschwindet. Praxis öffnen, dort Rücklink zur Lektion nutzen: Auswahl, Rückmeldung und Leseposition erhalten. Dasselbe nach Reload der Praxisseite prüfen.
-- [ ] Abschluss markieren/aufheben und neu laden. Revidierte Lektionen verlangen erneuten Abschluss, unveränderte behalten ihn; älterer Lernstand ist kein Grund, neue Inhalte ungeprüft als erledigt zu zeigen.
-- [ ] Auf 360/390 px in hell/dunkel Begriffe, Diagramme und Touchflächen prüfen; per Tastatur Quiz und Navigation bedienen.
+**Freigabe:** „Ich gebe die T-1-Texte und Integration von #1245 sowie anschließend #1253 mit allen 32 Lektionen und der zentralen Academy-Einbindung zur Integration in main und zur regulären Website-Veröffentlichung frei.“
 
-## Screenshots und Prüfbelege
+Die technisch vollständige Integrationsprobe ist konfliktfrei; Tests und echte Browser-Nutzerwege stehen im [Prüfbeleg](academy-final-qa/integration-proof.json). Es gibt eine Experience, eine Inhaltsquelle, ein Glossar und einen lokalen Fortschrittsspeicher. Keine Fachmodell-/Datenänderung, keine kostenpflichtige API, keine Tarifänderung.
+
+## Finale Screenshots
 
 | Ansicht | Hell | Dunkel |
 |---|---|---|
-| 360 px Katalog | [Bild](academy-audit-qa/360-light-katalog.png) | [Bild](academy-audit-qa/360-dark-katalog.png) |
-| 390 px Lektion | [Bild](academy-audit-qa/390-light-lektion.png) | [Bild](academy-audit-qa/390-dark-lektion.png) |
-| 390 px MACD | [Bild](academy-audit-qa/390-light-momentum-3.png) | [Bild](academy-audit-qa/390-dark-momentum-3.png) |
-| 390 px ATR | [Bild](academy-audit-qa/390-light-risiko-2.png) | [Bild](academy-audit-qa/390-dark-risiko-2.png) |
-| 1280 px Katalog | [Bild](academy-audit-qa/1280-light-katalog.png) | [Bild](academy-audit-qa/1280-dark-katalog.png) |
+| Zentrale Academy, 390 px | [Bild](academy-final-qa/390-light-central-academy.png) | [Bild](academy-final-qa/390-dark-central-academy.png) |
+| Lernpfade, 360 px | [Bild](academy-final-qa/360-light-katalog.png) | [Bild](academy-final-qa/360-dark-katalog.png) |
+| Lernpfade, 1280 px | [Bild](academy-final-qa/1280-light-katalog.png) | [Bild](academy-final-qa/1280-dark-katalog.png) |
+| Trendfolge: Praxis, 390 px | [Bild](academy-final-qa/390-light-trend-1-practice.png) | [Bild](academy-final-qa/390-dark-trend-1-practice.png) |
+| Trendfolge: Lektion abgeschlossen | [Bild](academy-final-qa/390-light-trend-1-completed.png) | [Bild](academy-final-qa/390-dark-trend-1-completed.png) |
+| Momentum: Lektion abgeschlossen | [Bild](academy-final-qa/390-light-momentum-1-completed.png) | [Bild](academy-final-qa/390-dark-momentum-1-completed.png) |
+| Multi-Timeframe: abgeschlossen | [Bild](academy-final-qa/390-light-zeitrahmen-1-completed.png) | [Bild](academy-final-qa/390-dark-zeitrahmen-1-completed.png) |
 
-Aktuelle Zahlen und Einschränkungen: [test-results.json](academy-audit-qa/test-results.json). Die Prüfung ist Browseremulation; keine physische iPhone-/Safari-Abnahme oder vollständige menschliche WCAG-Zertifizierung behauptet.
+## Ergänzende Hardware-Prüfliste
 
-## Wirklich offen
+Nicht als bestanden behauptet: physisches iPhone/Safari. Nach Veröffentlichung optional am eigenen Gerät prüfen:
 
-Keine neue fachliche Entscheidung erforderlich. Offen bleiben die reguläre Owner-Abnahme der redaktionellen Änderungen und die Freigabe zur Integration. Reihenfolge: #1245 abnehmen und mergen lassen → #1253 auf main umstellen → CI gegen main erneut prüfen → Owner nimmt #1253 ab → autorisierter Merge. Kein Merge in diesem Auftrag.
+- Zentrale Academy öffnen → Strategie-Welt → Lektion wählen; Text und Diagramme ohne Querscrollen lesen.
+- Quiz beantworten → Praxis öffnen → Screener/Chart verwenden → Rücklink nutzen; Antwort und Leseposition bleiben sinnvoll erhalten.
+- Abschluss markieren, Seite neu laden, Fortschritt kontrollieren; Hell/Dunkel sowie Hoch-/Querformat prüfen.
 
-Datum ______ · geprüfter Commit ______ · Owner ______ · konkrete Korrekturen ______
+Datum ______ · Owner ______ · freigegebener PR-Kopf ______
