@@ -76,6 +76,26 @@ async function state(page) {
   });
 }
 async function settle(page) { await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {}); await page.waitForTimeout(500); }
+/* Das Menue gilt erst als offen, wenn es sichtbar ist, seine Einfahrt (transform .2s) und alle Animationen im Menue beendet
+   sind und die Schriften stehen. Vorher gemessene Zielgroessen sind ein Zwischenbild, kein Befund. Oeffnet es nicht bis
+   dahin, ist das selbst ein Befund. Danach wird einmal gemessen; was dann kleiner als 44 px ist, bleibt ein Befund. */
+async function menuOpen(page, where) {
+  const ok = await page.waitForFunction(async () => {
+    const nav = document.querySelector('vu-navigation'), root = nav && nav.shadowRoot, panel = root && root.querySelector('.panel');
+    if (!panel || !nav.hasAttribute('open')) return false;
+    const cs = getComputedStyle(panel);
+    if (cs.visibility !== 'visible' || !(cs.transform === 'none' || cs.transform === 'matrix(1, 0, 0, 1, 0, 0)')) return false;
+    if ((root.getAnimations ? root.getAnimations() : []).some((a) => a.playState === 'running' || a.playState === 'pending')) return false;
+    await document.fonts.ready;
+    return true;
+  }, null, { timeout: 5000, polling: 'raf' }).then(() => true, () => false);
+  if (!ok) fail(where, 'Menü ist nach 5 s nicht vollständig geöffnet');
+}
+/* Zu kleine sichtbare Ziele im Menue, mit Benennung, damit ein Befund sagt, welches Ziel wie gross war. */
+const SMALL_TARGETS = (root) => [...root.querySelectorAll('a,button')].filter((n) => n.getClientRects().length).map((n) => { const r = n.getBoundingClientRect(); return { n, w: Math.round(r.width), h: Math.round(r.height) }; })
+  .filter((x) => x.w < 44 || x.h < 44).map((x) => (x.n.getAttribute('class') || x.n.tagName.toLowerCase()) + ' „' + (x.n.textContent || x.n.getAttribute('aria-label') || '').trim().slice(0, 24) + '“ ' + x.w + '×' + x.h);
+const smallTargets = (page) => page.evaluate(`(${SMALL_TARGETS.toString()})(document.querySelector('vu-navigation').shadowRoot.querySelector('.panel'))`);
+const smallText = (list) => list.length + (list.length ? ' (' + list.slice(0, 4).join('; ') + (list.length > 4 ? '; …' : '') + ')' : '');
 
 for (const [vpName, width, height] of VIEWPORTS) {
   const phone = engine === 'webkit' && width <= 430;
@@ -106,20 +126,21 @@ for (const [vpName, width, height] of VIEWPORTS) {
       }
       // Direkt geladene Unterseiten öffnen genau ihren Produktbereich; Home bleibt kompakt.
       await page.locator('#vu-dock button.menu').click();
+      await menuOpen(page, where);
+      const routeSmall = await smallTargets(page);
       const routeMenu = await page.evaluate(() => {
         const root=document.querySelector('vu-navigation').shadowRoot;
         const groups=[...root.querySelectorAll('.group')];
         const expanded=groups.filter(g=>g.querySelector('.disclosure').getAttribute('aria-expanded')==='true');
         const product=groups.find(g=>g.classList.contains('is-current'));
         return {expanded:expanded.map(g=>g.dataset.group),current:product?.querySelector('.group-link')?.textContent.trim(),
-          marked:groups.flatMap(g=>[...g.querySelectorAll('.links a[aria-current=page]')]).map(a=>({href:a.getAttribute('href'),visible:!!a.getClientRects().length})),
-          small:[...root.querySelectorAll('.panel a,.panel button')].filter(n=>n.getClientRects().length).filter(n=>{const r=n.getBoundingClientRect();return r.width<44||r.height<44}).length};
+          marked:groups.flatMap(g=>[...g.querySelectorAll('.links a[aria-current=page]')]).map(a=>({href:a.getAttribute('href'),visible:!!a.getClientRects().length}))};
       });
       const home=['/discover/#/','/elliott/','/fundamental/#/','/quant/#/','/vorsorge/#/','/screener/','/supertrader/','/hedgefonds/#/'].includes(path);
       if(routeMenu.current!==product) fail(where,'Menu-Produktkontext falsch: '+JSON.stringify(routeMenu));
       if(home ? routeMenu.expanded.length!==0 : routeMenu.expanded.length!==1||routeMenu.expanded[0]!==product.toLowerCase()) fail(where,'Accordion-Direkteinstieg falsch: '+JSON.stringify(routeMenu));
       if(routeMenu.marked.length>1||(!home&&routeMenu.marked.some(a=>!a.visible))) fail(where,'aktive Unterroute nicht eindeutig sichtbar: '+JSON.stringify(routeMenu));
-      if(routeMenu.small) fail(where,routeMenu.small+' sichtbare Menüziele kleiner als 44 px');
+      if(routeSmall.length) fail(where,smallText(routeSmall)+' sichtbare Menüziele kleiner als 44 px');
       await page.keyboard.press('Escape');
       // Die Desktop-Filter haben einen eigenen Scrollbereich. Sein letztes
       // Bedienelement muss auch bei feststehender Leiste erreichbar bleiben.
@@ -204,7 +225,6 @@ for (const [vpName, width, height] of VIEWPORTS) {
           panelBottom: panel.getBoundingClientRect().bottom, vh: innerHeight,
           expanded: root.querySelectorAll('.disclosure[aria-expanded=true]').length,
           icons: [...root.querySelectorAll('.menu-product-icon use')].map(n=>n.getAttribute('href')),
-          small: [...panel.querySelectorAll('a,button')].filter(n=>n.getClientRects().length).filter(n=>{const b=n.getBoundingClientRect();return b.width<44||b.height<44}).length,
           hiddenVisible: [...root.querySelectorAll('.links[hidden] a')].some(n=>n.getClientRects().length) };
       });
       if (!firstMenu) firstMenu = m.groups.join('|') + '#' + m.links;
@@ -212,7 +232,9 @@ for (const [vpName, width, height] of VIEWPORTS) {
       if(m.groups.join('|')!=='Discover|Quant|Elliott|Fundamental|Technical|Screener|Vorsorge|Supertrader|Hedgefonds|Weitere Produkte') fail(where,'Produktstruktur falsch: '+m.groups.join('|'));
       if(m.expanded!==0||m.hiddenVisible) fail(where,'Home-Menü ist nicht eingeklappt');
       if(m.icons.length!==10||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
-      if(m.small) fail(where,m.small+' Menüziele kleiner als 44 px');
+      await menuOpen(page, where);
+      const menuSmall = await smallTargets(page);
+      if(menuSmall.length) fail(where,smallText(menuSmall)+' Menüziele kleiner als 44 px');
       if (!m.locked) fail(where, 'keine Scroll-Sperre');
       if (!m.dockInert || !m.dockCovered) fail(where, 'Leiste liegt ueber dem Menue oder bleibt fokussierbar');
       if (!m.scrollable || m.panelBottom > m.vh + 1) fail(where, 'Menue nicht scrollbar oder abgeschnitten');
@@ -226,11 +248,11 @@ for (const [vpName, width, height] of VIEWPORTS) {
         const root=document.querySelector('vu-navigation').shadowRoot;
         return {expanded:[...root.querySelectorAll('.disclosure[aria-expanded=true]')].map(n=>n.closest('.group').dataset.group),
           quantHidden:root.querySelector('.group[data-group=quant] .links').hidden,
-          discoverVisible:!!root.querySelector('.group[data-group=discover] .links a').getClientRects().length,
-          small:[...root.querySelectorAll('.panel a,.panel button')].filter(n=>n.getClientRects().length).filter(n=>{const r=n.getBoundingClientRect();return r.width<44||r.height<44}).length};
+          discoverVisible:!!root.querySelector('.group[data-group=discover] .links a').getClientRects().length};
       });
+      const accordionSmall = await smallTargets(page);
       if(accordion.expanded.join('|')!=='discover'||!accordion.quantHidden||!accordion.discoverVisible) fail(where,'Accordion schließt vorherigen Bereich nicht: '+JSON.stringify(accordion));
-      if(accordion.small) fail(where,accordion.small+' aufgeklappte Menüziele kleiner als 44 px');
+      if(accordionSmall.length) fail(where,smallText(accordionSmall)+' aufgeklappte Menüziele kleiner als 44 px');
       // Fokusfalle darf eingeklappte Unterlinks nicht berücksichtigen.
       await page.evaluate(()=>{
         const root=document.querySelector('vu-navigation').shadowRoot;
