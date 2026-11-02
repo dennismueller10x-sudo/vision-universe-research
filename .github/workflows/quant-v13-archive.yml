@@ -17,6 +17,13 @@ name: Quant V13 Research-Archiv (R2, verschluesselt)
 #   [v13-archive:catalog] vorgerechneter Backtest-Katalog: gleiche Wiederherstellung, dann build-backtest-catalog.cjs
 #                         ueber docs/quant/backtest-catalog/grid.json (Budgets im Raster), Python-Gegenrechnung und
 #                         Integritaetspruefung; Artefakt: nur abgeleitete Ergebnisse je specHash und der hashgebundene Index.
+#   [v13-archive:keyaudit] je Teil aller Manifeste nur Laenge und wirksame Passphrasenlaenge des Datenschluessels
+#                         (Bytes vor dem ersten \n bzw. NUL) und weak (< 32); nie Schluesselbytes. Artefakt + Summary.
+#   [v13-archive:regen]   Generation 2.0.0: 1.2.0 aus R2 lesen und voll pruefen, bytegleichen Klartext mit Hex-Schluesseln
+#                         neu verschluesseln (seal-part.sh), unter archive-2.0.0/ hochladen. HEAD vor jedem PUT, kein
+#                         Ueberschreiben, alter Praefix nur gelesen. Artefakt: manifest-2.0.0.json und Bericht.
+#   [v13-archive:verify2] unabhaengige Probe in eigenem Lauf: nur archive-2.0.0/ lesen, entschluesseln, alle Hashes gegen
+#                         manifest-2.0.0 und manifest-1.2.0, Schluesselformat (wirksam 64) pruefen.
 # Keine URL, kein Endpunkt und kein Secret erscheint im Log; Ausgaben nur Zaehlungen und Hashes.
 on:
   push:
@@ -45,11 +52,11 @@ jobs:
           MSG: ${{ github.event.head_commit.message }}
         run: |
           set -euo pipefail
-          m=$(printf '%s' "$MSG" | grep -oE '\[v13-archive:(usage|put|get|verify|keycheck|restore|demos|catalog)\]' | head -1 | sed -E 's/\[v13-archive:([a-z]+)\]/\1/')
+          m=$(printf '%s' "$MSG" | grep -oE '\[v13-archive:(usage|put|get|verify|keycheck|restore|demos|catalog|keyaudit|regen|verify2)\]' | head -1 | sed -E 's/\[v13-archive:([a-z0-9]+)\]/\1/')
           test -n "$m"
           echo "mode=$m" >> "$GITHUB_OUTPUT"
       - name: R2 (nur Zaehlungen im Log)
-        if: steps.m.outputs.mode != 'keycheck' && steps.m.outputs.mode != 'restore' && steps.m.outputs.mode != 'demos' && steps.m.outputs.mode != 'catalog'
+        if: steps.m.outputs.mode == 'usage' || steps.m.outputs.mode == 'put' || steps.m.outputs.mode == 'get' || steps.m.outputs.mode == 'verify'
         env:
           MODE: ${{ steps.m.outputs.mode }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -138,6 +145,49 @@ jobs:
           path: ${{ runner.temp }}/demo-out
           retention-days: 7
           if-no-files-found: error
+      - name: Schluesselpruefung aller Manifeste (nur Laengen, privater Schluessel nur in diesem Schritt)
+        if: steps.m.outputs.mode == 'keyaudit'
+        env:
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          D=docs/quant-recovery/v13/archive
+          ms="$D/manifest-1.0.0.json,$D/manifest-1.1.0.json,$D/manifest-1.2.0.json"
+          [ -f "$D/manifest-2.0.0.json" ] && ms="$ms,$D/manifest-2.0.0.json"
+          node scripts/quant/v13/archive/gen2.mjs --mode keyaudit --manifests "$ms" --out "$RUNNER_TEMP/g2/keyaudit.json"
+      - name: Neue Generation 2.0.0 aus geprueftem 1.2.0-Klartext (neuer Praefix, kein Ueberschreiben)
+        if: steps.m.outputs.mode == 'regen'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/quant/v13/archive/gen2.mjs --mode regen --old-manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json \
+            --old-prefix research-snapshots/quant-v13/archive-1.2.0/ --prefix research-snapshots/quant-v13/archive-2.0.0/ --version 2.0.0 --out-dir "$RUNNER_TEMP/g2"
+      - name: Unabhaengige Wiederherstellung der Generation 2.0.0 (eigener Lauf, nur neue Objekte)
+        if: steps.m.outputs.mode == 'verify2'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/quant/v13/archive/gen2.mjs --mode verify2 --manifest docs/quant-recovery/v13/archive/manifest-2.0.0.json \
+            --old-manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json --prefix research-snapshots/quant-v13/archive-2.0.0/ --out "$RUNNER_TEMP/g2/verify2.json"
+      - uses: actions/upload-artifact@v4
+        if: always() && (steps.m.outputs.mode == 'keyaudit' || steps.m.outputs.mode == 'regen' || steps.m.outputs.mode == 'verify2')
+        with:
+          name: v13-archive-${{ steps.m.outputs.mode }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/g2
+          retention-days: 30
+          if-no-files-found: warn
       - name: URLs verschluesseln (AES-256 + RSA-OAEP), Klartext loeschen
         if: steps.m.outputs.mode == 'put' || steps.m.outputs.mode == 'get'
         run: |
