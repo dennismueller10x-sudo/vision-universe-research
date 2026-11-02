@@ -8,9 +8,11 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import {
-  ROOT, DOC_PATH, PATHS, STATUS, DIMENSIONS, STATUS_DIMENSIONS, BLOCK_BEGIN, BLOCK_END,
+  ROOT, DOC_PATH, PATHS, STATUS, DIMENSIONS, STATUS_DIMENSIONS, BLOCK_BEGIN, BLOCK_END, BLOCK_CLASSES, TECH_KINDS, HIST_COVERAGE,
   buildDocument, buildModel, checkDocument, splitDocument, testIdsOf, fileSha256, parseMatrixBlockers, matrixRowDimensions,
+  classifyBlocker, countModel,
 } from '../source-faithful/evidence/build-evidence-matrix.mjs';
+import { loadPlan, runPlanTests } from '../source-faithful/certification/cert-prep-top5.mjs';
 
 const GEN = path.join(ROOT, 'scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs');
 const BUILT = await buildDocument();
@@ -25,7 +27,7 @@ test('MC3-EV-DOC-EQUALS-GENERATOR: das Dokument ist die Ausgabe des Erzeugers (n
 test('MC3-EV-CHECK-PROBES: Gegenproben der Prüfung – fester Teil geändert = MISMATCH, nur Datenstand neuer = DATA_STATE_NEWER', () => {
   assert.equal(checkDocument(BUILT.text, BUILT).status, 'MATCH');
   // eine Statuszelle von Hand geändert
-  const edited = BUILT.text.replace('| **BLOCKIERT** |', '| **BELEGT** |');
+  const edited = BUILT.text.replace('| **BLOCKIERT**, Klasse', '| **BELEGT**, Klasse');
   assert.notEqual(edited, BUILT.text);
   assert.equal(checkDocument(edited, BUILT).status, 'MISMATCH');
   // Datenstand älter dokumentiert (wie nach einer neuen Veröffentlichung): zulässig
@@ -128,4 +130,81 @@ test('MC3-EV-DETERMINISTIC: zwei Läufe ergeben dasselbe Dokument; keine Zeitste
   // kein Laufzeitstempel: die einzigen ISO-Zeitstempel sind die Erzeugungszeitpunkte der Stammdaten
   const stamps = [...new Set(BUILT.text.match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z/g) ?? [])].sort();
   assert.deepEqual(stamps, [...new Set([BUILT.src.master.generatedAt, BUILT.src.names.generatedAt])].sort());
+});
+
+// ---------------------------------------------------------------- Einordnung 1.1.0: Klassen 1–4, Auswertung, Branch-Nachweise
+const dimOf = (model, cid, id) => model.methods.find((m) => m.cid === cid).dims.find((d) => d.id === id);
+
+test('MC3-EV-CLASSES: jeder BLOCKIERT-Punkt trägt Klasse 1, 2 oder 4 mit Ursache; OFFEN nur mit technisch lösbarem Blocker; Zählung im Dokument', () => {
+  const cnt = countModel(BUILT.model);
+  assert.equal(Object.values(cnt.now).reduce((a, b) => a + b, 0), 130);
+  assert.equal(Object.values(cnt.base).reduce((a, b) => a + b, 0), 130);
+  for (const { cid, d } of cnt.pts) {
+    for (const b of d.blockers) {
+      assert.ok(b.klass ? [1, 2, 4].includes(b.klass) : Object.keys(TECH_KINDS).includes(b.tech), `${cid} ${d.id} ${b.id}: weder Klasse noch technische Art`);
+      assert.ok(b.why, `${cid} ${d.id} ${b.id}: Begründung fehlt`);
+    }
+    if (d.status === STATUS.BLOCKIERT) { assert.ok([1, 2, 4].includes(d.blockClass), `${cid} ${d.id}`); assert.ok(d.blockers.includes(d.cause), `${cid} ${d.id}: Ursache ist kein offener Blocker`); }
+    else assert.equal(d.blockClass, undefined, `${cid} ${d.id}`);
+    if (d.status === STATUS.OFFEN) assert.ok(d.blockers.some((b) => !b.klass), `${cid} ${d.id}: OFFEN ohne technisch lösbaren Blocker`);
+    // nie schlechter belegt als nach 1.0.0; ein Statuswechsel nur durch Auswertung oder Einordnung OFFEN → BLOCKIERT
+    if (d.statusBase === STATUS.BELEGT) assert.equal(d.status, STATUS.BELEGT, `${cid} ${d.id}`);
+    if (d.status !== d.statusBase) assert.ok(d.reclassified || BUILT.model.evaluations.some((e) => e.cid === cid && e.dim === d.id), `${cid} ${d.id}: Statuswechsel ohne Auswertung`);
+  }
+  assert.equal(cnt.classesNow['3'], 0, 'Klasse 3 wird ausgewertet, nicht als Rest geführt');
+  assert.equal(Object.values(cnt.classesNow).reduce((a, b) => a + b, 0), cnt.now.BLOCKIERT);
+  assert.equal(Object.values(cnt.classesBase).reduce((a, b) => a + b, 0), cnt.base.BLOCKIERT);
+  assert.ok(DOC.includes(`Ausgangsstand nach den Regeln 1.0.0: ${Object.values(STATUS).map((s) => `${s} ${cnt.base[s]}`).join(', ')}`));
+  for (const [k, v] of Object.entries(BLOCK_CLASSES)) assert.ok(DOC.includes(`| ${k} | ${v} | ${cnt.classesBase[k]} | ${cnt.classesNow[k]} |`), `Klasse ${k} im Dokument`);
+  // Gegenproben: unbekannter Blocker bricht ab; CC-5 ist immer Klasse 2, CC-8 immer Klasse 4
+  assert.throws(() => classifyBlocker('C01', 'D1', { id: 'C01-NEU', closes: 'x' }, { merged: {}, refCode: {}, prs: {} }), /BLOCKER_CLASS_UNKNOWN/);
+  for (const { d } of cnt.pts) for (const b of d.blockers) { if (/-(X-)?CC-?5$/.test(b.id)) assert.equal(b.klass, 2, b.id); if (/-(X-)?CC-?8$/.test(b.id)) assert.equal(b.klass, 4, b.id); }
+});
+
+test('MC3-EV-REFCODE: Turtle-Engine auf diesem Stand = gepinnter Referenz-Fingerabdruck und die Regeltreue-Tests von C01/C02 sind MET; Gegenprobe', () => {
+  for (const cid of ['C01', 'C02']) assert.equal(BUILT.src.refCode[cid].state, 'HEAD_EQUALS_PINNED_REFERENCE_FINGERPRINT', cid);
+  const plan = loadPlan();
+  const r = runPlanTests({ ...plan, methods: plan.methods.filter((m) => ['C01', 'C02'].includes(m.candidateId)) });
+  for (const cid of ['C01', 'C02']) { assert.equal(r[cid].acceptance, 'MET', `${cid}: ${JSON.stringify(r[cid].other)}`); assert.equal(r[cid].other.length, 0); }
+  assert.ok(!dimOf(BUILT.model, 'C02', 'D1').blockers.some((b) => b.id === 'PS-C02-CONFORMANCE'));
+  // Gegenprobe: weicht der Fingerabdruck ab, bleibt der Blocker (Klasse 1) und C02 Regeltreue TEILWEISE
+  const differ = Object.fromEntries(Object.entries(BUILT.src.refCode).map(([k, v]) => [k, { ...v, state: 'HEAD_DIFFERS_FROM_PINNED_REFERENCE_FINGERPRINT' }]));
+  const d = dimOf(buildModel({ ...BUILT.src, refCode: differ }), 'C02', 'D1');
+  assert.equal(d.status, STATUS.TEILWEISE);
+  assert.equal(d.blockers.find((b) => b.id === 'PS-C02-CONFORMANCE')?.klass, 1);
+  // SF5-Lebenszyklen: kein Referenzwert gepinnt, Blocker bleibt
+  for (const cid of ['C03', 'C08', 'C12']) assert.ok(dimOf(BUILT.model, cid, 'D1').blockers.some((b) => b.id === `PS-${cid}-CONFORMANCE` && b.klass === 1), cid);
+});
+
+test('MC3-EV-SAMPLE: statistische Aussagekraft TEILWEISE nur mit ausgewiesener Stichprobe und Hash-Gleichheit; Gegenprobe', () => {
+  for (const e of BUILT.model.evaluations.filter((x) => x.id === 'E-SAMPLE')) {
+    const d = dimOf(BUILT.model, e.cid, 'D10');
+    assert.equal(d.statusBase, STATUS.OFFEN); assert.equal(d.status, STATUS.TEILWEISE);
+    assert.ok(d.blockers.some((b) => b.id === `${e.cid}-ROBUSTNESS`), `${e.cid}: Robustheit bleibt offen`);
+  }
+  const readiness = structuredClone(BUILT.src.readiness);
+  readiness.candidates.find((c) => c.candidateId === 'C03').dimensions.BACKTEST_REPRODUCIBILITY.e6.tradeStability = 'NOT_EVIDENCED';
+  const d = dimOf(buildModel({ ...BUILT.src, readiness }), 'C03', 'D10');
+  assert.equal(d.status, STATUS.BLOCKIERT, 'ohne Beleg und ohne technischen Anteil: BLOCKIERT');
+});
+
+test('MC3-EV-BRANCH-EVIDENCE: Nachweise aus #1233/#1234/#1235 zählen erst auf main; mit dem Stand von #1233 entfällt der Blocker', () => {
+  const wf = ['.github', 'workflows', 'supertrader-st9-v13-study.yml'].join('/');
+  assert.deepEqual(BUILT.src.merged, { all13: fs.existsSync(path.join(ROOT, 'scripts/supertrader/source-faithful/certification/CERT-PREP-ALL13-PLAN.json')), turtleStops: HIST_COVERAGE.V1_1.test(BUILT.src.histExecSrc), v13Workflow: fs.existsSync(path.join(ROOT, wf)) });
+  const tagged = BUILT.model.methods.flatMap((m) => m.dims.flatMap((d) => d.blockers.filter((b) => b.tech === 'AUF_BRANCH')));
+  for (const b of tagged) assert.match(b.why, /auf Branch, noch nicht gemergt/);
+  if (!BUILT.src.merged.turtleStops) {
+    assert.ok(dimOf(BUILT.model, 'C01', 'D5').blockers.some((b) => b.id === 'C01-HIST-UNIT-STOPS' && b.tech === 'AUF_BRANCH' && b.pr === '#1233'));
+    // Stand von #1233 (auditRun 1.1.0): kein Blocker mehr, Stopps/Slippage/Kosten für C01/C02 BELEGT (CC-7 erfüllt)
+    const v11 = BUILT.src.histExecSrc.replace(HIST_COVERAGE.V1_0, "missedStopCheck: lc ? 'SF5_CHECK_LIFECYCLE_RUN' : key.startsWith('MINERVINI_') ? 'MINERVINI_EVENT_PATH' : key.startsWith('TURTLE_') ? 'TURTLE_INDEPENDENT_N_UNIT_STOPS' : 'NOT_CHECKED_LEVEL_UNKNOWN'");
+    assert.ok(HIST_COVERAGE.V1_1.test(v11));
+    const m = buildModel({ ...BUILT.src, histExecSrc: v11, merged: { ...BUILT.src.merged, turtleStops: true } });
+    for (const cid of ['C01', 'C02']) { const d = dimOf(m, cid, 'D5'); assert.ok(!d.blockers.some((b) => /HIST-UNIT-STOPS/.test(b.id)), cid); assert.equal(d.status, STATUS.BELEGT, cid); }
+  }
+  // ALL13 auf main: Blocker bleibt, aber als „auf main, noch nicht ausgewertet“ (kein stilles Anheben)
+  const m13 = buildModel({ ...BUILT.src, merged: { ...BUILT.src.merged, all13: true } });
+  assert.equal(dimOf(m13, 'C06', 'D1').blockers.find((x) => x.id === 'C06-CERT-PREP').tech, 'AUF_MAIN_NICHT_AUSGEWERTET');
+  assert.equal(dimOf(m13, 'C06', 'D1').status, STATUS.OFFEN);
+  // geänderte Prüfabdeckung ohne bekannte Fassung bricht ab
+  assert.throws(() => buildModel({ ...BUILT.src, histExecSrc: BUILT.src.histExecSrc.replace(HIST_COVERAGE.V1_0, 'missedStopCheck: x') }), /HIST_EXECUTION_COVERAGE_CHANGED/);
 });

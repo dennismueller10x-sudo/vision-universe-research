@@ -246,9 +246,9 @@ Details: [SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md](SUPERTRADER_9_HIS
 
 | PR | Branch | Inhalt | Abhängigkeiten vor einem Merge |
 |---|---|---|---|
-| #1233 | `…-hist-turtle-stops` | unabhängige Prüfung der Turtle-Einheitsstopps (`st9-hist-execution` 1.1.0) | #1190 ist auf `main`. Vor dem Merge main einmergen, Gate A und volle Suite prüfen, Owner-Freigabe |
-| #1234 | `…-hist-v13-workflow` | Workflow `supertrader-st9-v13-study.yml`: nur manuell, Ergebnisse verschlüsselt, Hex-Datenschlüssel | #1189 und #1190 auf `main`. Liest Archiv 1.2.0, nach #1241 auf 2.0.0 umstellen. Owner muss Secrets bestätigen und auslösen. ADR-005 prüfen |
-| #1235 | `…-cert-prep-rest` | Zertifizierungsvorbereitung ALL13 (Head `d798215`) | Konflikt in `cert-prep-top5.mjs` lösen, `token` → `sourcePhrase` im ALL13-Plan, neuer Pin, Review, Owner-Freigabe |
+| #1233 | `…-hist-turtle-stops` | unabhängige Prüfung der Turtle-Einheitsstopps (`st9-hist-execution` 1.1.0) | main `122f5d9` eingemergt (Head `f12855d`, 02.11.), Gate A und volle Suite lokal grün; offen: Review, Owner-Freigabe. Nach dem Merge Evidenzdokument neu erzeugen (§12.1) |
+| #1234 | `…-hist-v13-workflow` | Workflow `supertrader-st9-v13-study.yml`: nur manuell, Ergebnisse verschlüsselt, Hex-Datenschlüssel | main `122f5d9` eingemergt (Head `5c31527`, 02.11.), lokal grün. Liest Archiv 1.2.0, nach #1241 auf 2.0.0 umstellen. Owner muss Secrets bestätigen und auslösen. ADR-005 prüfen |
+| #1235 | `…-cert-prep-rest` | Zertifizierungsvorbereitung ALL13 (Head `eacfc9e`) | Konflikt gelöst (Merge, Prüfer 1.2.2), `token` → `sourcePhrase` im ALL13-Plan 1.0.1, Pins neu; offen: Review, Owner-Freigabe |
 
 ### 8.2 Überholte Supertrader-Drafts (nicht mergen, Schließen nur durch Owner)
 
@@ -371,3 +371,9 @@ Ergänzung, nichts oben ist umgeschrieben. Keine Handelsregel, kein Parameter, k
 4. Lesarten und Proxys vor dem Öffnen der Kennzahlen: PS-C01-READINGS, PS-C03-BOTTOM-START, PS-C08-SETUP-PROXY, PS-C12-READINGS. Dazu die Gruppenquelle PS-C02-CC4-GROUPS (E7-5).
 5. Eine lizenzierte CA-Quelle (CC-5, E1) und die Aktivierung von SF6-PAPER-2027 vor dem 01.01.2027 (CC-8, mit Aufbewahrung).
 6. Vertrags- bzw. Produkt-PRs: F-TUR-ADD-UNIT-N, F-KK-ADR-DENOMINATOR, F-DAR-SAME-BAR-ORDER, F-DAR-Q7-READING, C01/C02-PRODUCT-PLAN, X-LEDGER.
+
+### 12.1 Nachtrag Master Completion 3.1 (P1, 02.11.2026)
+
+- **#1233, #1234:** Die roten Läufe vom 01.11. (Core 41343673038, Quality Gates 41343673046 bzw. 41343953479/41343953541) liefen auf dem Merge mit der damaligen Basis hist-exec `53e13fb` (`bd22510 Merge 08492df into 53e13fb`). Rot waren `quant/tests/technical-ap8-l1.test.mjs` L1–L3 (Schritt Quant-2.0-Regression) und Core DQ-SF8 (Test 220): Artefakte bzw. Tests der alten Basis, nicht der PRs. Behebung: Merge von `main` `122f5d9` (konfliktfrei), keine Fachlogik geändert. #1233 und #1234 sind nicht gestapelt (gleiche Basis, disjunkte Abschnitte); ein Probemerge beider ist konfliktfrei.
+- **#1235:** Konflikt in `cert-prep-top5.mjs` (nur die Prüferversion) per Merge gelöst, `sf9-cert-prep-check-1.2.2`. ALL13-Plan 1.0.1: Feld `token` → `sourcePhrase` (36 Parameter), Basis TOP5 1.1.1, Pins neu (`PINNED_ALL13_CONTENT_SHA256` `d45ee3d1…`, Datei `bd4dcc6e…`). `validateAll13` 0 Abweichungen, `--run-tests` 13/13 MET, `--mutation-probes` 41/41 ROT, Engines unverändert.
+- **Evidenzdokument 1.1.0:** Klassen 1–4 der Blocker, Auswertung vorhandener Nachweise (E-REFCODE für C01/C02, E-SAMPLE für die statistische Aussagekraft), Branch-Nachweise gekennzeichnet. Zählung und Einordnung stehen im Dokument (Abschnitt 9), nicht hier. Nach dem Merge von #1233, #1234 oder #1235 erkennt der Erzeuger den neuen Stand selbst; das Dokument ist dann neu zu erzeugen (`--out`), sonst meldet `MC3-EV-DOC-EQUALS-GENERATOR` eine Abweichung.
