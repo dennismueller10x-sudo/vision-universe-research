@@ -87,89 +87,89 @@ Kategorien laut Methodik: HARD (Verstoß macht jede Zahl wertlos), STRUCTURAL (D
 
 Status **LIMITED**, Stufe OBSERVED, Vertrauen LIMITED, Bereitschaft NOT_READY, Owner-Freigabe laut Methodik nicht nötig. Hauptgrund: `SURVIVOR_BY_CONSTRUCTION`.
 
-| Gate | Kategorie | Zustand | Grund | Schwelle | Lösungsweg | Begründung |
-|---|---|---|---|---|---|---|
-| pit | HARD | PASS | – | – | – | – |
-| survivorship | STRUCTURAL | FAIL | SURVIVOR_BY_CONSTRUCTION | – | nur mit Owner-Entscheidung | strukturell: eine Aktie mit langer Historie hat überlebt; Warten ändert nichts. Plan P3.4: die Art bleibt beschreibend. Eine Zertifizierung ginge nur über eine andere Norm (Gate-Änderung), die nicht vorgesehen ist. |
-| ruleTest | QUALITY | FAIL | DESCRIPTIVE_NOT_A_TEST | – | nur mit Owner-Entscheidung | die Art beschreibt, sie prüft keine Regel (Stufe OBSERVED). Nur eine Produktentscheidung zur Kennzeichnung als Beschreibung, keine Zertifizierung. |
+| Gate | Kategorie | Zustand | Grund | Schwelle | Lösungsweg | Begründung | Research-Nachweis |
+|---|---|---|---|---|---|---|---|
+| pit | HARD | PASS | – | – | – | – | – |
+| survivorship | STRUCTURAL | FAIL | SURVIVOR_BY_CONSTRUCTION | – | nur mit Owner-Entscheidung | strukturell: eine Aktie mit langer Historie hat überlebt; Warten ändert nichts. Plan P3.4: die Art bleibt beschreibend. Eine Zertifizierung ginge nur über eine andere Norm (Gate-Änderung), die nicht vorgesehen ist. | – |
+| ruleTest | QUALITY | FAIL | DESCRIPTIVE_NOT_A_TEST | – | nur mit Owner-Entscheidung | die Art beschreibt, sie prüft keine Regel (Stufe OBSERVED). Nur eine Produktentscheidung zur Kennzeichnung als Beschreibung, keine Zertifizierung. | – |
 
 ### PATTERN_EVIDENCE · Marktweite Muster
 
 Status **LIMITED**, Stufe OBSERVED, Vertrauen LIMITED, Bereitschaft NOT_READY, Owner-Freigabe laut Methodik nicht nötig. Hauptgrund: `PRESENT_AND_UNQUANTIFIED_IN_PART`.
 
-| Gate | Kategorie | Zustand | Grund | Schwelle | Lösungsweg | Begründung |
-|---|---|---|---|---|---|---|
-| pit | HARD | PASS | – | – | – | – |
-| oos | QUALITY | PASS | – | – | – | – |
-| survivorship | STRUCTURAL | FAIL | PRESENT_AND_UNQUANTIFIED_IN_PART | – | nur mit Owner-Entscheidung | technisch vorbereitbar (P3.1: Delisted-Register 1.0.0/1.1.0 als zusätzliche Population, Sensitivität neben dem Überlebenden-Ergebnis); das Gate liest die Sensitivität erst nach P3.3, das ändert die Gate-Eingabe und braucht die Freigabe sowie Security Master 1.3.0 (H1). Private Reihen nur über den Archivweg (Secret). |
-| returnBasis | STRUCTURAL | FAIL | STUDY_RETURN_BASIS_NOT_TOTAL_RETURN | – | heute technisch | P4.1: Pattern-Ergebnisse mit dem vorhandenen TR-Register (canonical-total-return-1.0.0, 158/161 bestätigt) rechnen, Titel ohne Beleg ausschließen und ausweisen. Fachmodell-PR mit Vorher/Nachher; die Wirkung auf das Gate (P4.2) erst mit Freigabe. |
-| certifiedAsBacktest | QUALITY | FAIL | STUDY_DECLARES_BACKTEST_NOT_CERTIFIED | – | nur mit Owner-Entscheidung | die Musterstudie erklärt sich selbst als Häufigkeitsauswertung. Sie als zertifizierbaren Backtest zu führen, ist eine Normentscheidung. |
+| Gate | Kategorie | Zustand | Grund | Schwelle | Lösungsweg | Begründung | Research-Nachweis |
+|---|---|---|---|---|---|---|---|
+| pit | HARD | PASS | – | – | – | – | – |
+| oos | QUALITY | PASS | – | – | – | – | – |
+| survivorship | STRUCTURAL | FAIL | PRESENT_AND_UNQUANTIFIED_IN_PART | – | nur mit Owner-Entscheidung | P3.1 technisch erledigt: survivorship-sensitivity.cjs rechnet dieselbe Auswahl mit V10_LIFECYCLE (F0) und V13_DELISTED_F1 (Register 1.0.0) über den unveränderten Runner (Abschnitt I). Offen: der Lauf mit den privaten Reihen (Archivweg, Secret) und die Gate-Eingabe (P3.2 Tiingo-Rechte, P3.3), beides Freigabe FV-5; Security Master 1.3.0 (H1). | P31 (Abschnitt I) |
+| returnBasis | STRUCTURAL | FAIL | STUDY_RETURN_BASIS_NOT_TOTAL_RETURN | – | nur mit Owner-Entscheidung | P4.1 als Research erledigt (Abschnitt I): Gesamtrendite canonical-total-return-1.0.0 neben Kursrendite, Titel ohne Beleg ausgeschlossen und ausgewiesen, Parität mit dem Runner. Das Gate ist im Builder eine Konstante und liest die Produkt-Musterstudie (Kursrendite); P4.2 braucht deren Erzeuger in Gesamtrendite (Pipeline, --work-dir) und die Umverdrahtung, Freigabe FV-5. | P41 (Abschnitt I) |
+| certifiedAsBacktest | QUALITY | FAIL | STUDY_DECLARES_BACKTEST_NOT_CERTIFIED | – | nur mit Owner-Entscheidung | die Musterstudie erklärt sich selbst als Häufigkeitsauswertung. Sie als zertifizierbaren Backtest zu führen, ist eine Normentscheidung. | – |
 
 ### SIGNAL_BACKTEST · Signal-Backtest
 
 Status **LIMITED**, Stufe TESTED, Vertrauen LIMITED, Bereitschaft NOT_READY, Owner-Freigabe laut Methodik nicht nötig. Hauptgrund: `PARTIAL_SENSITIVITY_ONLY`.
 
-| Gate | Kategorie | Zustand | Grund | Schwelle | Lösungsweg | Begründung |
-|---|---|---|---|---|---|---|
-| pit | HARD | PASS | – | – | – | – |
-| lookahead | HARD | PASS | – | – | – | – |
-| survivorship | STRUCTURAL | FAIL | PARTIAL_SENSITIVITY_ONLY | – | nur durch Zeit/Daten | delistete Titel erst ab 2016 und nur in der Sensitivität; vor 2016 fehlen Reihen, der Delisting-Ausgang ist unbekannt (DELISTED_ONLY_FROM_2016, DELIST_OUTCOME_UNKNOWN). Kein neuer Anbieter erlaubt. D4 (finanzierter Zeitplan mit beendeten Listings) ist ein eigener Fachmodell-PR, schließt die Lücke vor 2016 aber nicht. |
-| returnBasis | STRUCTURAL | PASS | – | – | – | – |
-| ruleCertified | QUALITY | FAIL | NO_RULE_CERTIFIED | – | Befund (keine der drei) | V10–V13c: keine Regel mit robustem Überschuss gegen SPY nach Holm. Ein negatives Ergebnis ist ein gültiges Produktergebnis; keine neue Alpha-Suche. |
+| Gate | Kategorie | Zustand | Grund | Schwelle | Lösungsweg | Begründung | Research-Nachweis |
+|---|---|---|---|---|---|---|---|
+| pit | HARD | PASS | – | – | – | – | – |
+| lookahead | HARD | PASS | – | – | – | – | – |
+| survivorship | STRUCTURAL | FAIL | PARTIAL_SENSITIVITY_ONLY | – | nur durch Zeit/Daten | delistete Titel erst ab 2016 und nur in der Sensitivität; vor 2016 fehlen Reihen, der Delisting-Ausgang ist unbekannt (DELISTED_ONLY_FROM_2016, DELIST_OUTCOME_UNKNOWN). Kein neuer Anbieter erlaubt. P3.1 je Ereignis vorbereitet (survivorship-sensitivity.cjs, Lauf mit privaten Reihen = FV-5); D4 (finanzierter Zeitplan mit beendeten Listings) ist ein eigener Fachmodell-PR. Beides schließt die Lücke vor 2016 nicht. | P31 (Abschnitt I) |
+| returnBasis | STRUCTURAL | PASS | – | – | – | – | – |
+| ruleCertified | QUALITY | FAIL | NO_RULE_CERTIFIED | – | Befund (keine der drei) | V10–V13c: keine Regel mit robustem Überschuss gegen SPY nach Holm. Ein negatives Ergebnis ist ein gültiges Produktergebnis; keine neue Alpha-Suche. | – |
 
 ### SETUP_BACKTEST · Setup-Backtest
 
 Status **COLLECTING_HISTORY**, Stufe TESTED, Vertrauen NOT_READY, Bereitschaft NOT_READY, Owner-Freigabe laut Methodik nötig. Hauptgrund: `SETUP_HISTORY_TOO_SHORT`.
 
-| Gate | Kategorie | Zustand | Grund | Schwelle | Lösungsweg | Begründung |
-|---|---|---|---|---|---|---|
-| publishedOnly | HARD | PASS | – | – | – | – |
-| pit | HARD | PASS | – | – | – | – |
-| lookahead | HARD | PASS | – | – | – | – |
-| historyDates | HISTORY | FAIL | SETUP_HISTORY_TOO_SHORT | 120 | nur durch Zeit/Daten | wächst mit jedem veröffentlichten Stichtag (Abschnitt F). |
-| historySpan | HISTORY | FAIL | SETUP_HISTORY_SPAN_TOO_SHORT | 180 Tage | nur durch Zeit/Daten | wächst mit der Zeit (Abschnitt F). |
-| completedOutcomes | HISTORY | FAIL | COMPLETED_OUTCOMES_TOO_FEW | 100 | nur durch Zeit/Daten | erste 6-Monats-Ergebnisse ab etwa 2027-03-26 (Abschnitt F). |
-| titles | HISTORY | FAIL | TOO_FEW_TITLES | 20 | nur durch Zeit/Daten | folgt aus den ersten abgeschlossenen 6-Monats-Ergebnissen. |
-| independence | HISTORY | FAIL | EVENTS_CLUSTERED_IN_TIME | 20 | nur durch Zeit/Daten | der Builder zählt verschiedene Monate mit Ereignissen (Schwellenname independentWeeks); früheste Erfüllung siehe Abschnitt F und Freigabevorlage FV-1. |
-| returnBasis | STRUCTURAL | FAIL | TOTAL_RETURN_NOT_IN_THIS_RUN | – | heute technisch | das Setup-Ergebnisartefakt wurde mit Kursrendite gebaut (öffentliche Jahresreihe ohne Gesamtrendite); mit der kanonischen Historie (--work-dir, Pipeline) rechnet build-setup-outcomes.mjs Gesamtrendite. Lösung im Erzeuger-Lauf, kein Handeingriff in quant/data. |
-| survivorship | STRUCTURAL | PASS | – | – | – | – |
-| entryVariant | QUALITY | FAIL | VARIANTS_NOT_MEASURABLE_YET | Δ Median ≤ 1 Pp | nur durch Zeit/Daten | messbar erst mit abgeschlossenen Ergebnissen; ob die Varianten übereinstimmen, ist offen (bei Abweichung über 1 Pp: Owner-Entscheidung). |
-| oos | QUALITY | FAIL | OOS_NOT_MEASURABLE_YET | – | nur mit Owner-Entscheidung | braucht die Segmentdefinition A1–A6 (SETUP_OOS_DECISION_A1_A6.md, spätestens vor etwa 2027-03-26) und danach 30 effektive Fälle je Segment (Zeit). |
-| ownerApproval | OWNER | OFFEN | REQUIRED | – | nur mit Owner-Entscheidung | der Methodikvertrag (setup-state-v1.json requirements.backtestCertification) verlangt eine ausdrückliche Freigabe, auch wenn alle Gates bestehen. |
+| Gate | Kategorie | Zustand | Grund | Schwelle | Lösungsweg | Begründung | Research-Nachweis |
+|---|---|---|---|---|---|---|---|
+| publishedOnly | HARD | PASS | – | – | – | – | – |
+| pit | HARD | PASS | – | – | – | – | – |
+| lookahead | HARD | PASS | – | – | – | – | – |
+| historyDates | HISTORY | FAIL | SETUP_HISTORY_TOO_SHORT | 120 | nur durch Zeit/Daten | wächst mit jedem veröffentlichten Stichtag (Abschnitt F). | – |
+| historySpan | HISTORY | FAIL | SETUP_HISTORY_SPAN_TOO_SHORT | 180 Tage | nur durch Zeit/Daten | wächst mit der Zeit (Abschnitt F). | – |
+| completedOutcomes | HISTORY | FAIL | COMPLETED_OUTCOMES_TOO_FEW | 100 | nur durch Zeit/Daten | erste 6-Monats-Ergebnisse ab etwa 2027-03-26 (Abschnitt F). | – |
+| titles | HISTORY | FAIL | TOO_FEW_TITLES | 20 | nur durch Zeit/Daten | folgt aus den ersten abgeschlossenen 6-Monats-Ergebnissen. | – |
+| independence | HISTORY | FAIL | EVENTS_CLUSTERED_IN_TIME | 20 | nur durch Zeit/Daten | der Builder zählt verschiedene Monate mit Ereignissen (Schwellenname independentWeeks); beide Lesarten mit Datum in Abschnitt I und FV-1. Unter der aktiven Lesart bindet dieses Gate das früheste Datum. | FV1 (Abschnitt I) |
+| returnBasis | STRUCTURAL | FAIL | TOTAL_RETURN_NOT_IN_THIS_RUN | – | heute technisch | das Setup-Ergebnisartefakt wurde mit Kursrendite gebaut (öffentliche Jahresreihe ohne Gesamtrendite); mit der kanonischen Historie (--work-dir, Pipeline) rechnet build-setup-outcomes.mjs Gesamtrendite. Lösung im Erzeuger-Lauf, kein Handeingriff in quant/data. | – |
+| survivorship | STRUCTURAL | PASS | – | – | – | – | – |
+| entryVariant | QUALITY | FAIL | VARIANTS_NOT_MEASURABLE_YET | Δ Median ≤ 1 Pp | nur durch Zeit/Daten | messbar erst mit abgeschlossenen Ergebnissen; ob die Varianten übereinstimmen, ist offen (bei Abweichung über 1 Pp: Owner-Entscheidung). | – |
+| oos | QUALITY | FAIL | OOS_NOT_MEASURABLE_YET | – | nur mit Owner-Entscheidung | braucht die Segmentdefinition A1–A6 (SETUP_OOS_DECISION_A1_A6.md, spätestens vor etwa 2027-03-26) und danach 30 effektive Fälle je Segment (Zeit). | – |
+| ownerApproval | OWNER | OFFEN | REQUIRED | – | nur mit Owner-Entscheidung | der Methodikvertrag (setup-state-v1.json requirements.backtestCertification) verlangt eine ausdrückliche Freigabe, auch wenn alle Gates bestehen. | – |
 
 ### STRATEGY_BACKTEST · Strategie-Backtest
 
 Status **COLLECTING_HISTORY**, Stufe TESTED, Vertrauen NOT_READY, Bereitschaft NOT_READY, Owner-Freigabe laut Methodik nicht nötig. Hauptgrund: `HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING`.
 
-| Gate | Kategorie | Zustand | Grund | Schwelle | Lösungsweg | Begründung |
-|---|---|---|---|---|---|---|
-| contract | HARD | PASS | – | – | – | – |
-| pitGuards | HARD | PASS | – | – | – | – |
-| membershipHistory | HISTORY | FAIL | HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING | 24 | nur durch Zeit/Daten | wächst mit den wöchentlichen Mitgliedschaftsständen; verlorene Monate holt man nicht nach (Abschnitt F). |
-| factorHistory | HISTORY | FAIL | FACTOR_HISTORY_TOO_SHORT | 24 | nur durch Zeit/Daten | wächst mit den täglichen Faktor-Snapshots (Abschnitt F). |
-| continuity | HISTORY | PASS | – | 45 Tage | – | – |
-| returnBasis | STRUCTURAL | PASS | – | – | – | – |
-| survivorship | STRUCTURAL | PASS | – | – | – | – |
+| Gate | Kategorie | Zustand | Grund | Schwelle | Lösungsweg | Begründung | Research-Nachweis |
+|---|---|---|---|---|---|---|---|
+| contract | HARD | PASS | – | – | – | – | – |
+| pitGuards | HARD | PASS | – | – | – | – | – |
+| membershipHistory | HISTORY | FAIL | HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING | 24 | nur durch Zeit/Daten | wächst mit den wöchentlichen Mitgliedschaftsständen; verlorene Monate holt man nicht nach (Abschnitt F). | – |
+| factorHistory | HISTORY | FAIL | FACTOR_HISTORY_TOO_SHORT | 24 | nur durch Zeit/Daten | wächst mit den täglichen Faktor-Snapshots (Abschnitt F). | – |
+| continuity | HISTORY | PASS | – | 45 Tage | – | – | – |
+| returnBasis | STRUCTURAL | PASS | – | – | – | – | – |
+| survivorship | STRUCTURAL | PASS | – | – | – | – | – |
 
 ### FACTOR_RANKING_BACKTEST · Faktor-/Ranking-Backtest
 
 Status **COLLECTING_HISTORY**, Stufe TESTED, Vertrauen NOT_READY, Bereitschaft NOT_READY, Owner-Freigabe laut Methodik nicht nötig. Hauptgrund: `FACTOR_HISTORY_TOO_SHORT`.
 
-| Gate | Kategorie | Zustand | Grund | Schwelle | Lösungsweg | Begründung |
-|---|---|---|---|---|---|---|
-| contract | HARD | PASS | – | – | – | – |
-| pitGuards | HARD | PASS | – | – | – | – |
-| factorHistory | HISTORY | FAIL | FACTOR_HISTORY_TOO_SHORT | 24 | nur durch Zeit/Daten | wie Strategy (Abschnitt F). |
-| completedForward | HISTORY | FAIL | FORWARD_OUTCOMES_TOO_FEW | 12 | nur durch Zeit/Daten | Monate mit abgeschlossenem 3-Monats-Ergebnis = Faktormonate minus 3 (Abschnitt F). |
-| membershipHistory | HISTORY | FAIL | HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING | 24 | nur durch Zeit/Daten | wie Strategy (Abschnitt F). |
-| noRetroactive | HARD | PASS | – | – | – | – |
+| Gate | Kategorie | Zustand | Grund | Schwelle | Lösungsweg | Begründung | Research-Nachweis |
+|---|---|---|---|---|---|---|---|
+| contract | HARD | PASS | – | – | – | – | – |
+| pitGuards | HARD | PASS | – | – | – | – | – |
+| factorHistory | HISTORY | FAIL | FACTOR_HISTORY_TOO_SHORT | 24 | nur durch Zeit/Daten | wie Strategy (Abschnitt F). | – |
+| completedForward | HISTORY | FAIL | FORWARD_OUTCOMES_TOO_FEW | 12 | nur durch Zeit/Daten | Monate mit abgeschlossenem 3-Monats-Ergebnis = Faktormonate minus 3 (Abschnitt F). | – |
+| membershipHistory | HISTORY | FAIL | HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING | 24 | nur durch Zeit/Daten | wie Strategy (Abschnitt F). | – |
+| noRetroactive | HARD | PASS | – | – | – | – | – |
 
 ### Übersicht Blocker je Art
 
 | Art | Status | Blocker | heute technisch | nur mit Owner-Entscheidung | nur durch Zeit/Daten | Befund (keine der drei) |
 |---|---|--:|--:|--:|--:|--:|
 | SAME_STOCK_REPLAY | LIMITED | 2 | 0 | 2 | 0 | 0 |
-| PATTERN_EVIDENCE | LIMITED | 3 | 1 | 2 | 0 | 0 |
+| PATTERN_EVIDENCE | LIMITED | 3 | 0 | 3 | 0 | 0 |
 | SIGNAL_BACKTEST | LIMITED | 2 | 0 | 0 | 1 | 1 |
 | SETUP_BACKTEST | COLLECTING_HISTORY | 9 | 1 | 2 | 6 | 0 |
 | STRATEGY_BACKTEST | COLLECTING_HISTORY | 2 | 0 | 0 | 2 | 0 |
@@ -182,7 +182,7 @@ Survivorship-Kontrolle des Artefakts: Gate PASS, Kontrolle PARTIAL (DELISTED_ONL
 | Art | Survivorship (Gate) | Delisting | Kapitalmaßnahmen und Renditebasis | Out-of-Sample | Walk-Forward | Kosten im Katalog | Benchmark im Katalog |
 |---|---|---|---|---|---|---|---|
 | SAME_STOCK_REPLAY | FAIL (SURVIVOR_BY_CONSTRUCTION) | Regel-Replay auf dl_-Reihen möglich (Profil V13_DELISTED_F1, privat); Wochen-Ledger nur Produktstamm ohne delistete Titel; Katalog mit delisteten Reihen: 1 | Split-bereinigte Wochenschlüsse (ADR-002, Loader-Evidenz); keine Dividenden in der Ereignisrendite; kein returnBasis-Gate | zugelassen, 0× ausgeführt | zugelassen, 0× ausgeführt | 20+20 bp (HIGH), 5+5 bp (STANDARD) | SPY |
-| PATTERN_EVIDENCE | FAIL (PRESENT_AND_UNQUANTIFIED_IN_PART) | Überlebenden-Kohorte; delistete Population nur als geplante Sensitivität (P3.1); Katalog mit delisteten Reihen: 0 | Split-bereinigt; Kursrendite; Gate returnBasis FAIL (STUDY_RETURN_BASIS_NOT_TOTAL_RETURN) | zugelassen, 1× ausgeführt; Gate oos PASS | zugelassen, 1× ausgeführt | 5+5 bp (STANDARD) | NONE, SPY |
+| PATTERN_EVIDENCE | FAIL (PRESENT_AND_UNQUANTIFIED_IN_PART) | Überlebenden-Kohorte; Sensitivität mit delisteten Reihen vorbereitet (P3.1, survivorship-sensitivity.cjs, Reihen privat); Katalog mit delisteten Reihen: 0 | Split-bereinigt; Kursrendite; Gesamtrendite nur als Research (P4.1, pattern-total-return.mjs); Gate returnBasis FAIL (STUDY_RETURN_BASIS_NOT_TOTAL_RETURN) | zugelassen, 1× ausgeführt; Gate oos PASS | zugelassen, 1× ausgeführt | 5+5 bp (STANDARD) | NONE, SPY |
 | SIGNAL_BACKTEST | FAIL (PARTIAL_SENSITIVITY_ONLY) | Ereignisse auf dl_-Reihen möglich (privat); finanziert: im Fenster delistete Titel fallen heraus (D4 offen); Ereignisse nach dem letzten Handelstag zensiert; Katalog mit delisteten Reihen: 1 | Gesamtrendite canonical-total-return-1.0.0; Gate returnBasis PASS | zugelassen, 2× ausgeführt | zugelassen, 2× ausgeführt | 20+20 bp (HIGH), 5+5 bp (STANDARD) | SPY |
 | SETUP_BACKTEST | PASS | Rekonstruktion ohne delistete Titel (D6 offen); veröffentlichte Stände enthalten das Universum des Tages; Katalog mit delisteten Reihen: 0 | Rekonstruktion split-bereinigt; Ergebnisartefakt heute Kursrendite; Gate returnBasis FAIL (TOTAL_RETURN_NOT_IN_THIS_RUN) | zugelassen, 0× ausgeführt; Runner: RECONSTRUCTION_IS_NOT_OOS_EVIDENCE; Gate oos FAIL (OOS_NOT_MEASURABLE_YET) | zugelassen, 1× ausgeführt | 5+5 bp (STANDARD) | SPY |
 | STRATEGY_BACKTEST | PASS | feste Gewichte auf der heutigen Kohorte; Verkauf zum letzten Schluss erst mit D5; Katalog mit delisteten Reihen: 0 | Dividenden aus dem TR-Register (Variante dividends), sonst Kurs; Split-bereinigt; Gate returnBasis PASS | nicht anwendbar | nicht anwendbar | 0+0 bp (NONE), 20+20 bp (HIGH), 5+5 bp (STANDARD) | SPY |
@@ -253,9 +253,9 @@ Replay, Pattern und Signal haben keine zeitabhängigen Gates: Ihre Blocker sind 
 ## H. Freigabevorlagen (Owner)
 
 **FV-1 · Setup-Gate independence: Lesart der Schwelle**
-- Lage: Die Methodik nennt die Schwelle independentWeeks: 20, der Builder zählt verschiedene Monate mit Ereignissen (Label „verschiedene Monate mit Ereignissen“). Zum heutigen Takt ist das Gate damit frühestens 2028-04 erfüllbar, alle anderen Setup-Zeitgates ab etwa 2027-03.
-- Zur Entscheidung: A) Lesart „Monate“ bestätigen (keine Änderung; Setup frühestens 2028-04). B) Zählung auf Kalenderwochen umstellen (Gate-Änderung in build-backtest-certification.mjs, eigener PR mit Vorher/Nachher; frühestens etwa 2027-03).
-- Hinweis: keine Empfehlung zur Schwelle; bis zur Entscheidung gilt A.
+- Lage: Die Methodik nennt die Schwelle independentWeeks: 20 (seit Commit 7cd1c3656a vom 2026-10-01), der Builder zählt im selben Commit verschiedene Kalendermonate mit Ereignissen (Label „verschiedene Monate mit Ereignissen“). Stand 2026-10-31: A Monate 2/20, frühestens 2028-04, das Gate bindet (Setup frühestens 2028-04); B ISO-Wochen 6/20, frühestens 2027-02-01, das Gate bindet nicht mehr (Setup-Zeitgates frühestens 2027-03-26, Untergrenze; oos bleibt offen). Keine der beiden Zählungen misst Unabhängigkeit (alle M6-Fenster überlappen, V10: effektive Fallzahl etwa 12,6 je Ereignisdatum). Vier frühere Vorlagen (V6, V8, V9, V10) sind nicht freigegeben.
+- Zur Entscheidung: A) Monate bestätigen und das Feld ehrlich benennen (eventCalendarMonths, Zählung unverändert, nur Methodik-PR); B) Zählung auf ISO-Wochen (Gate-Änderung in build-backtest-certification.mjs mit Vorher/Nachher; Setup rund 13 Monate früher); C) V10-Vorschlag: Umbenennung wie A und ein neues Gate auf der effektiven Fallzahl (N_eff ≥ 50, ≥ 4 disjunkte M6-Fenster, frühestens 2029).
+- Hinweis: Empfehlung aus der Analyse (keine Änderung in diesem PR): A jetzt, C als eigene Entscheidung; B nicht, weil es das bindende Gate ohne statistischen Beleg um rund 13 Monate lockert. Bis zur Entscheidung gilt A unverändert.
 
 **FV-2 · Kennzahlen-Hash im Runner-Ergebnis (P0.7 vollständig)**
 - Lage: Heute steht der laufzeitfreie Kennzahlen-Hash nur in der Hilfsfunktion backtest-metrics-hash.cjs und in der Zusammenfassungszeile von run-backtest.cjs. Ein Feld im Ergebnis ändert backtest-runner.cjs (CODE_FILES): alle 16 Demos veralten, Neubau über den Archivweg [v13-archive:demos] (Secret), danach Bundle-Export; der Katalog bleibt Generation 1 und bekäme das Feld erst mit Generation 2 (H7).
@@ -264,18 +264,18 @@ Replay, Pattern und Signal haben keine zeitabhängigen Gates: Ihre Blocker sind 
 
 **FV-3 · Determinismus-Prüfung in CI über zwei Node-Versionen (P0.6/P0.7)**
 - Lage: Lokal belegt: gleicher Kennzahlen-Hash mit zwei verschiedenen Node-Binären (Test) und 16/16 öffentliche Katalogfälle mit gleichem Kennzahlen-Hash gegen den CI-Bau vom 31.10. Ein Workflow mit zwei Node-Versionen (workflow_dispatch, permissions: contents: read, ohne Secrets) fehlt.
-- Zur Entscheidung: Freigabe für einen neuen Prüf-Workflow ohne Secrets; Laufzeit etwa 10 Minuten je Version.
-- Hinweis: Minutenverbrauch prüfen.
+- Zur Entscheidung: Freigabe für einen neuen Prüf-Workflow ohne Secrets (workflow_dispatch, Matrix zwei Node-Versionen, permissions: contents: read): node --test quant/tests/backtest-run-cli-metrics-hash.test.mjs und die 16 öffentlichen Katalogfälle neu rechnen, Kennzahlen-Hash gegen catalog.json. Laufzeit etwa 10 Minuten je Version.
+- Hinweis: Minutenverbrauch prüfen; ohne Workflow bleibt der lokale Nachweis.
 
 **FV-4 · Gegenrechnung der 5 privaten Katalogfälle neu ausführen**
 - Lage: Faktorpanel (3) und delistete Reihen (2) liegen nur im privaten R2-Archiv. Die committete Gegenrechnung (verify-report.json, 21 Fälle) bleibt gültig, solange der Code unverändert ist; lokal neu gerechnet wurden nur die 16 öffentlichen Fälle.
-- Zur Entscheidung: Nur nötig nach einer Code-Änderung im Runner: [v13-archive:catalog] auf einem claude/**-Branch (Secret V13_ARCHIVE_PRIVATE_KEY).
-- Hinweis: heute nicht nötig.
+- Zur Entscheidung: Nur nötig nach einer Code-Änderung im Runner: [v13-archive:catalog] auf einem claude/**-Branch (Secret V13_ARCHIVE_PRIVATE_KEY). Vorbereitet: Erwartung je Fall (catalog-private-expectations-fv4.json) und Auswertung des Laufartefakts mit catalog-private-recheck.cjs --compare, Abbruchkriterien und Ablauf in BACKTEST_P2_DEFIZITE.md (R1).
+- Hinweis: heute nicht nötig; Archivgeneration 2.0.0 (#1241) ändert den Leseweg, nicht die Erwartung.
 
 **FV-5 · Survivorship- und Renditebasis-Gates aus Sensitivitäten speisen (P3.3, P4.2)**
 - Lage: Pattern und Signal bleiben LIMITED, bis die Gates die Sensitivität mit delisteten Titeln bzw. das Gesamtrendite-Ergebnis lesen. Das ändert die Eingabe der Zertifizierung.
-- Zur Entscheidung: Freigabe je Gate, nach P3.1/P4.1 als Research-PR mit Vorher/Nachher und nach Security Master 1.3.0 (H1).
-- Hinweis: Reihenfolge: H1, P4.1, P3.1, dann Freigabe.
+- Zur Entscheidung: Drei Schritte, je eigene Freigabe: (1) P3.1-Lauf mit den privaten Reihen über den Archivweg (Secret, Ablauf R2 in BACKTEST_P2_DEFIZITE.md); (2) P4.1 auf der kanonischen Historie der Pipeline (--work-dir, 30 Katalogtitel statt 4 öffentlicher, R3) und Erzeuger der Produkt-Musterstudie in Gesamtrendite (Fachmodell-PR mit Vorher/Nachher); (3) Umverdrahtung der Gates (P3.3 nach P3.2, P4.2) im Builder.
+- Hinweis: Stand: P3.1-Code und P4.1-Research erledigt (Abschnitt I); Reihenfolge H1, (1)–(2), dann (3).
 
 **FV-6 · Setup-OOS A1–A6**
 - Lage: Ohne Segmentdefinition bleibt das Setup-Gate oos FAIL.
@@ -288,6 +288,19 @@ Replay, Pattern und Signal haben keine zeitabhängigen Gates: Ihre Blocker sind 
 - Hinweis: Teil von H4.
 
 **FV-8 · Alarm bei fehlendem Snapshot-Monat (P2.3)**
-- Lage: pit-snapshot-integrity.cjs meldet Lücken mit Exit-Code und Bericht; eine Anbindung an den bestehenden Pipeline-Alarm ändert einen Workflow.
-- Zur Entscheidung: Freigabe für die Workflow-Anbindung (ohne neue Secrets).
+- Lage: pit-snapshot-integrity.cjs liefert den Befund für den bestehenden Alarm: --fail-on-missing-month (Exit 1 bei Integritätsfehler oder fehlendem Monat einer gezählten Reihe, NDX/DJIA nur Information) und --alarm-detail <datei> (Text für ALARM_DETAIL_FILE von pipeline-alarm.mjs). Es fehlt nur der Schritt im Workflow.
+- Zur Entscheidung: Freigabe für einen Job im bestehenden freshness-monitor.yml: Schritt mit beiden Optionen, Ergebnis als RESULT_PIT an den vorhandenen alarm-Job (ohne neue Secrets, permissions wie dort).
 - Hinweis: die monatlichen Gates sind ab der ersten Lücke um einen Monat später.
+
+## I. Research-Nachweise P2 (Master Completion 3.1, nicht zertifizierend)
+
+Erzeugt mit den Skripten unten, jeweils `--out` unter `docs/quant/research/`. Kein Bericht speist ein Gate, keine Zahl erscheint im Produkt (`gateInput: false`, `productionApproved: false`). Zustände in Abschnitt C kommen weiterhin aus dem Zertifizierungsartefakt. Ablauf der Freigabeläufe und Bewertung: [BACKTEST_P2_DEFIZITE.md](BACKTEST_P2_DEFIZITE.md).
+
+| Nachweis | Bericht | Erzeuger | Schema | Aussage (Research) | Hash |
+|---|---|---|---|---|---|
+| P31 · P3.1 Survivorship-Sensitivität Pattern/Signal | `docs/quant/research/survivorship-sensitivity-p3.1.json` | `scripts/quant/research/survivorship-sensitivity.cjs` | survivorship-sensitivity-1.0.0 | PREPARED_PRIVATE_INPUT_MISSING: 2 Fälle (pattern-2015-sideways, signal-2020-covid), Stichprobe 100; Überlebende A/A, mit Delisteten B/B (private Reihen fehlen, Freigabe FV-5) | bbd8aea89ec957c9 |
+| P41 · P4.1 Gesamtrendite Pattern | `docs/quant/research/pattern-total-return-p4.1.json` | `scripts/quant/research/pattern-total-return.mjs` | pattern-total-return-1.0.0 | Research: 4 von 5 Titeln mit bestätigter Gesamtrendite (ausgeschlossen: AAPL NOT_IN_POPULATION_FRAME), 62 Ereignispaare, Ausschüttungen im Mittel +0,75 Pp je Ereignis (13 Wochen), Wochenreihe gegen Tagesreihe +0,001 Pp; Parität mit dem Runner 62 Ereignisse, 0 Abweichungen | bf7d9e05bbba302b |
+| FV1 · FV-1 Lesarten independence | `docs/quant/research/setup-independence-readings-fv1.json` | `scripts/quant/research/setup-independence-readings.cjs --as-of 2026-10-31` | setup-independence-readings-1.0.0 | A Monate 2/20 → 2028-04 (Setup-Zeitgates frühestens 2028-04-01); B ISO-Wochen 6/20 → 2027-02-01 (Setup-Zeitgates frühestens 2027-03-26, Untergrenze) | – |
+| FV4 · FV-4 Erwartung private Katalogfälle | `docs/quant/research/catalog-private-expectations-fv4.json` | `scripts/quant/research/catalog-private-recheck.cjs --expect` | catalog-private-recheck-1.0.0 | 5 private Fälle mit Erwartung (specHash, Kennzahlen-Hash, private Eingabe-Hashes, Prüfzahl der Gegenrechnung), 16 öffentliche; Lauf [v13-archive:catalog] nicht ausgeführt | Katalog 7ea6383e7260a5fb |
+
+**Was das Gate `returnBasis` (Pattern) mit P4.1 sagen würde:** Die bestehende Definition (Renditebasis der Studie = Gesamtrendite) waere fuer diese Research-Kohorte erfuellt (4 von 5 Titeln mit bestaetigter Gesamtrendite, Ausschluesse ausgewiesen). Das Gate liest aber die Produkt-Musterstudie quant/data/product/pattern-research-v1/study.json (Kursrendite, Erzeuger build-pattern-research.mjs); es kippt erst, wenn deren Erzeuger in der Pipeline mit --work-dir in Gesamtrendite rechnet und der Builder die Basis aus der Studie liest (Freigabe FV-5).

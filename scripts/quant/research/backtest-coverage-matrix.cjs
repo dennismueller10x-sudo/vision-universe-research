@@ -51,16 +51,16 @@ const NOT_FIT = Object.freeze({
 const SOLVABILITY = Object.freeze({
   'SAME_STOCK_REPLAY:survivorship:SURVIVOR_BY_CONSTRUCTION': ['OWNER', 'strukturell: eine Aktie mit langer Historie hat überlebt; Warten ändert nichts. Plan P3.4: die Art bleibt beschreibend. Eine Zertifizierung ginge nur über eine andere Norm (Gate-Änderung), die nicht vorgesehen ist.'],
   'SAME_STOCK_REPLAY:ruleTest:DESCRIPTIVE_NOT_A_TEST': ['OWNER', 'die Art beschreibt, sie prüft keine Regel (Stufe OBSERVED). Nur eine Produktentscheidung zur Kennzeichnung als Beschreibung, keine Zertifizierung.'],
-  'PATTERN_EVIDENCE:survivorship:PRESENT_AND_UNQUANTIFIED_IN_PART': ['OWNER', 'technisch vorbereitbar (P3.1: Delisted-Register 1.0.0/1.1.0 als zusätzliche Population, Sensitivität neben dem Überlebenden-Ergebnis); das Gate liest die Sensitivität erst nach P3.3, das ändert die Gate-Eingabe und braucht die Freigabe sowie Security Master 1.3.0 (H1). Private Reihen nur über den Archivweg (Secret).'],
-  'PATTERN_EVIDENCE:returnBasis:STUDY_RETURN_BASIS_NOT_TOTAL_RETURN': ['TECHNISCH', 'P4.1: Pattern-Ergebnisse mit dem vorhandenen TR-Register (canonical-total-return-1.0.0, 158/161 bestätigt) rechnen, Titel ohne Beleg ausschließen und ausweisen. Fachmodell-PR mit Vorher/Nachher; die Wirkung auf das Gate (P4.2) erst mit Freigabe.'],
+  'PATTERN_EVIDENCE:survivorship:PRESENT_AND_UNQUANTIFIED_IN_PART': ['OWNER', 'P3.1 technisch erledigt: survivorship-sensitivity.cjs rechnet dieselbe Auswahl mit V10_LIFECYCLE (F0) und V13_DELISTED_F1 (Register 1.0.0) über den unveränderten Runner (Abschnitt I). Offen: der Lauf mit den privaten Reihen (Archivweg, Secret) und die Gate-Eingabe (P3.2 Tiingo-Rechte, P3.3), beides Freigabe FV-5; Security Master 1.3.0 (H1).'],
+  'PATTERN_EVIDENCE:returnBasis:STUDY_RETURN_BASIS_NOT_TOTAL_RETURN': ['OWNER', 'P4.1 als Research erledigt (Abschnitt I): Gesamtrendite canonical-total-return-1.0.0 neben Kursrendite, Titel ohne Beleg ausgeschlossen und ausgewiesen, Parität mit dem Runner. Das Gate ist im Builder eine Konstante und liest die Produkt-Musterstudie (Kursrendite); P4.2 braucht deren Erzeuger in Gesamtrendite (Pipeline, --work-dir) und die Umverdrahtung, Freigabe FV-5.'],
   'PATTERN_EVIDENCE:certifiedAsBacktest:STUDY_DECLARES_BACKTEST_NOT_CERTIFIED': ['OWNER', 'die Musterstudie erklärt sich selbst als Häufigkeitsauswertung. Sie als zertifizierbaren Backtest zu führen, ist eine Normentscheidung.'],
-  'SIGNAL_BACKTEST:survivorship:PARTIAL_SENSITIVITY_ONLY': ['ZEIT_DATEN', 'delistete Titel erst ab 2016 und nur in der Sensitivität; vor 2016 fehlen Reihen, der Delisting-Ausgang ist unbekannt (DELISTED_ONLY_FROM_2016, DELIST_OUTCOME_UNKNOWN). Kein neuer Anbieter erlaubt. D4 (finanzierter Zeitplan mit beendeten Listings) ist ein eigener Fachmodell-PR, schließt die Lücke vor 2016 aber nicht.'],
+  'SIGNAL_BACKTEST:survivorship:PARTIAL_SENSITIVITY_ONLY': ['ZEIT_DATEN', 'delistete Titel erst ab 2016 und nur in der Sensitivität; vor 2016 fehlen Reihen, der Delisting-Ausgang ist unbekannt (DELISTED_ONLY_FROM_2016, DELIST_OUTCOME_UNKNOWN). Kein neuer Anbieter erlaubt. P3.1 je Ereignis vorbereitet (survivorship-sensitivity.cjs, Lauf mit privaten Reihen = FV-5); D4 (finanzierter Zeitplan mit beendeten Listings) ist ein eigener Fachmodell-PR. Beides schließt die Lücke vor 2016 nicht.'],
   'SIGNAL_BACKTEST:ruleCertified:NO_RULE_CERTIFIED': ['BEFUND', 'V10–V13c: keine Regel mit robustem Überschuss gegen SPY nach Holm. Ein negatives Ergebnis ist ein gültiges Produktergebnis; keine neue Alpha-Suche.'],
   'SETUP_BACKTEST:historyDates:SETUP_HISTORY_TOO_SHORT': ['ZEIT_DATEN', 'wächst mit jedem veröffentlichten Stichtag (Abschnitt F).'],
   'SETUP_BACKTEST:historySpan:SETUP_HISTORY_SPAN_TOO_SHORT': ['ZEIT_DATEN', 'wächst mit der Zeit (Abschnitt F).'],
   'SETUP_BACKTEST:completedOutcomes:COMPLETED_OUTCOMES_TOO_FEW': ['ZEIT_DATEN', 'erste 6-Monats-Ergebnisse ab etwa 2027-03-26 (Abschnitt F).'],
   'SETUP_BACKTEST:titles:TOO_FEW_TITLES': ['ZEIT_DATEN', 'folgt aus den ersten abgeschlossenen 6-Monats-Ergebnissen.'],
-  'SETUP_BACKTEST:independence:EVENTS_CLUSTERED_IN_TIME': ['ZEIT_DATEN', 'der Builder zählt verschiedene Monate mit Ereignissen (Schwellenname independentWeeks); früheste Erfüllung siehe Abschnitt F und Freigabevorlage FV-1.'],
+  'SETUP_BACKTEST:independence:EVENTS_CLUSTERED_IN_TIME': ['ZEIT_DATEN', 'der Builder zählt verschiedene Monate mit Ereignissen (Schwellenname independentWeeks); beide Lesarten mit Datum in Abschnitt I und FV-1. Unter der aktiven Lesart bindet dieses Gate das früheste Datum.'],
   'SETUP_BACKTEST:returnBasis:TOTAL_RETURN_NOT_IN_THIS_RUN': ['TECHNISCH', 'das Setup-Ergebnisartefakt wurde mit Kursrendite gebaut (öffentliche Jahresreihe ohne Gesamtrendite); mit der kanonischen Historie (--work-dir, Pipeline) rechnet build-setup-outcomes.mjs Gesamtrendite. Lösung im Erzeuger-Lauf, kein Handeingriff in quant/data.'],
   'SETUP_BACKTEST:entryVariant:VARIANTS_NOT_MEASURABLE_YET': ['ZEIT_DATEN', 'messbar erst mit abgeschlossenen Ergebnissen; ob die Varianten übereinstimmen, ist offen (bei Abweichung über 1 Pp: Owner-Entscheidung).'],
   'SETUP_BACKTEST:oos:OOS_NOT_MEASURABLE_YET': ['OWNER', 'braucht die Segmentdefinition A1–A6 (SETUP_OOS_DECISION_A1_A6.md, spätestens vor etwa 2027-03-26) und danach 30 effektive Fälle je Segment (Zeit).'],
@@ -71,13 +71,23 @@ const SOLVABILITY = Object.freeze({
   'FACTOR_RANKING_BACKTEST:membershipHistory:HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING': ['ZEIT_DATEN', 'wie Strategy (Abschnitt F).'],
   'SETUP_BACKTEST:ownerApproval:REQUIRED': ['OWNER', 'der Methodikvertrag (setup-state-v1.json requirements.backtestCertification) verlangt eine ausdrückliche Freigabe, auch wenn alle Gates bestehen.']
 });
+// Research-Nachweise zu einzelnen Gates (Abschnitt I). Sie speisen keine Zertifizierung; der Zustand bleibt der des Artefakts.
+const RESEARCH_FILES = Object.freeze({
+  P31: 'docs/quant/research/survivorship-sensitivity-p3.1.json',
+  P41: 'docs/quant/research/pattern-total-return-p4.1.json',
+  FV1: 'docs/quant/research/setup-independence-readings-fv1.json',
+  FV4: 'docs/quant/research/catalog-private-expectations-fv4.json'
+});
+const RESEARCH_BY_GATE = Object.freeze({
+  'PATTERN_EVIDENCE:survivorship': 'P31', 'SIGNAL_BACKTEST:survivorship': 'P31', 'PATTERN_EVIDENCE:returnBasis': 'P41', 'SETUP_BACKTEST:independence': 'FV1'
+});
 const SOLV_LABEL = { TECHNISCH: 'heute technisch', OWNER: 'nur mit Owner-Entscheidung', ZEIT_DATEN: 'nur durch Zeit/Daten', BEFUND: 'Befund (keine der drei)' };
 
 // Abdeckung je Art, die nicht aus einer Datei ablesbar ist (Kapitalmassnahmen, Delisting-Behandlung).
 // Quellen: QUANT_FINAL_HANDOVER.md A3/A4/B3, BACKTEST_DELISTED_INTEGRATION.md, Runner (dataQuality.corporateActions).
 const COVERAGE_NOTES = Object.freeze({
   SAME_STOCK_REPLAY: { delisting: 'Regel-Replay auf dl_-Reihen möglich (Profil V13_DELISTED_F1, privat); Wochen-Ledger nur Produktstamm ohne delistete Titel', ca: 'Split-bereinigte Wochenschlüsse (ADR-002, Loader-Evidenz); keine Dividenden in der Ereignisrendite' },
-  PATTERN_EVIDENCE: { delisting: 'Überlebenden-Kohorte; delistete Population nur als geplante Sensitivität (P3.1)', ca: 'Split-bereinigt; Kursrendite' },
+  PATTERN_EVIDENCE: { delisting: 'Überlebenden-Kohorte; Sensitivität mit delisteten Reihen vorbereitet (P3.1, survivorship-sensitivity.cjs, Reihen privat)', ca: 'Split-bereinigt; Kursrendite; Gesamtrendite nur als Research (P4.1, pattern-total-return.mjs)' },
   SIGNAL_BACKTEST: { delisting: 'Ereignisse auf dl_-Reihen möglich (privat); finanziert: im Fenster delistete Titel fallen heraus (D4 offen); Ereignisse nach dem letzten Handelstag zensiert', ca: 'Gesamtrendite canonical-total-return-1.0.0' },
   SETUP_BACKTEST: { delisting: 'Rekonstruktion ohne delistete Titel (D6 offen); veröffentlichte Stände enthalten das Universum des Tages', ca: 'Rekonstruktion split-bereinigt; Ergebnisartefakt heute Kursrendite' },
   STRATEGY_BACKTEST: { delisting: 'feste Gewichte auf der heutigen Kohorte; Verkauf zum letzten Schluss erst mit D5', ca: 'Dividenden aus dem TR-Register (Variante dividends), sonst Kurs; Split-bereinigt' },
@@ -102,19 +112,18 @@ const USE_CASES = Object.freeze([
 
 // Freigabevorlagen (Owner): was diese Arbeit nicht entscheiden darf.
 const APPROVALS = Object.freeze([
-  ['FV-1', 'Setup-Gate independence: Lesart der Schwelle', 'Die Methodik nennt die Schwelle independentWeeks: 20, der Builder zählt verschiedene Monate mit Ereignissen (Label „verschiedene Monate mit Ereignissen“). Zum heutigen Takt ist das Gate damit frühestens 2028-04 erfüllbar, alle anderen Setup-Zeitgates ab etwa 2027-03.',
-    'A) Lesart „Monate“ bestätigen (keine Änderung; Setup frühestens 2028-04). B) Zählung auf Kalenderwochen umstellen (Gate-Änderung in build-backtest-certification.mjs, eigener PR mit Vorher/Nachher; frühestens etwa 2027-03).', 'keine Empfehlung zur Schwelle; bis zur Entscheidung gilt A'],
+  ['FV-1', 'Setup-Gate independence: Lesart der Schwelle', null, null, null], // aus setup-independence-readings.cjs zum STICHTAG (fv1Approval)
   ['FV-2', 'Kennzahlen-Hash im Runner-Ergebnis (P0.7 vollständig)', 'Heute steht der laufzeitfreie Kennzahlen-Hash nur in der Hilfsfunktion backtest-metrics-hash.cjs und in der Zusammenfassungszeile von run-backtest.cjs. Ein Feld im Ergebnis ändert backtest-runner.cjs (CODE_FILES): alle 16 Demos veralten, Neubau über den Archivweg [v13-archive:demos] (Secret), danach Bundle-Export; der Katalog bleibt Generation 1 und bekäme das Feld erst mit Generation 2 (H7).',
     'Freigabe für: Runner-Feld metricsHash, Demo-Neubau über das Archiv, Bundle-Export im selben PR.', 'empfohlen zusammen mit dem nächsten ohnehin nötigen Demo-Neubau'],
   ['FV-3', 'Determinismus-Prüfung in CI über zwei Node-Versionen (P0.6/P0.7)', 'Lokal belegt: gleicher Kennzahlen-Hash mit zwei verschiedenen Node-Binären (Test) und 16/16 öffentliche Katalogfälle mit gleichem Kennzahlen-Hash gegen den CI-Bau vom 31.10. Ein Workflow mit zwei Node-Versionen (workflow_dispatch, permissions: contents: read, ohne Secrets) fehlt.',
-    'Freigabe für einen neuen Prüf-Workflow ohne Secrets; Laufzeit etwa 10 Minuten je Version.', 'Minutenverbrauch prüfen'],
+    'Freigabe für einen neuen Prüf-Workflow ohne Secrets (workflow_dispatch, Matrix zwei Node-Versionen, permissions: contents: read): node --test quant/tests/backtest-run-cli-metrics-hash.test.mjs und die 16 öffentlichen Katalogfälle neu rechnen, Kennzahlen-Hash gegen catalog.json. Laufzeit etwa 10 Minuten je Version.', 'Minutenverbrauch prüfen; ohne Workflow bleibt der lokale Nachweis'],
   ['FV-4', 'Gegenrechnung der 5 privaten Katalogfälle neu ausführen', 'Faktorpanel (3) und delistete Reihen (2) liegen nur im privaten R2-Archiv. Die committete Gegenrechnung (verify-report.json, 21 Fälle) bleibt gültig, solange der Code unverändert ist; lokal neu gerechnet wurden nur die 16 öffentlichen Fälle.',
-    'Nur nötig nach einer Code-Änderung im Runner: [v13-archive:catalog] auf einem claude/**-Branch (Secret V13_ARCHIVE_PRIVATE_KEY).', 'heute nicht nötig'],
+    'Nur nötig nach einer Code-Änderung im Runner: [v13-archive:catalog] auf einem claude/**-Branch (Secret V13_ARCHIVE_PRIVATE_KEY). Vorbereitet: Erwartung je Fall (catalog-private-expectations-fv4.json) und Auswertung des Laufartefakts mit catalog-private-recheck.cjs --compare, Abbruchkriterien und Ablauf in BACKTEST_P2_DEFIZITE.md (R1).', 'heute nicht nötig; Archivgeneration 2.0.0 (#1241) ändert den Leseweg, nicht die Erwartung'],
   ['FV-5', 'Survivorship- und Renditebasis-Gates aus Sensitivitäten speisen (P3.3, P4.2)', 'Pattern und Signal bleiben LIMITED, bis die Gates die Sensitivität mit delisteten Titeln bzw. das Gesamtrendite-Ergebnis lesen. Das ändert die Eingabe der Zertifizierung.',
-    'Freigabe je Gate, nach P3.1/P4.1 als Research-PR mit Vorher/Nachher und nach Security Master 1.3.0 (H1).', 'Reihenfolge: H1, P4.1, P3.1, dann Freigabe'],
+    'Drei Schritte, je eigene Freigabe: (1) P3.1-Lauf mit den privaten Reihen über den Archivweg (Secret, Ablauf R2 in BACKTEST_P2_DEFIZITE.md); (2) P4.1 auf der kanonischen Historie der Pipeline (--work-dir, 30 Katalogtitel statt 4 öffentlicher, R3) und Erzeuger der Produkt-Musterstudie in Gesamtrendite (Fachmodell-PR mit Vorher/Nachher); (3) Umverdrahtung der Gates (P3.3 nach P3.2, P4.2) im Builder.', 'Stand: P3.1-Code und P4.1-Research erledigt (Abschnitt I); Reihenfolge H1, (1)–(2), dann (3)'],
   ['FV-6', 'Setup-OOS A1–A6', 'Ohne Segmentdefinition bleibt das Setup-Gate oos FAIL.', 'Entscheidung laut SETUP_OOS_DECISION_A1_A6.md.', 'spätestens vor etwa 2027-03-26'],
   ['FV-7', 'Kennzeichnung der strukturell beschreibenden Arten (Replay, Pattern)', 'SAME_STOCK_REPLAY und PATTERN_EVIDENCE erreichen unter der geltenden Norm nie CERTIFIED (P3.4).', 'Produktentscheidung: Anzeige als „Beschreibung, kein Test“ statt Warten auf Zertifizierung.', 'Teil von H4'],
-  ['FV-8', 'Alarm bei fehlendem Snapshot-Monat (P2.3)', 'pit-snapshot-integrity.cjs meldet Lücken mit Exit-Code und Bericht; eine Anbindung an den bestehenden Pipeline-Alarm ändert einen Workflow.', 'Freigabe für die Workflow-Anbindung (ohne neue Secrets).', 'die monatlichen Gates sind ab der ersten Lücke um einen Monat später']
+  ['FV-8', 'Alarm bei fehlendem Snapshot-Monat (P2.3)', 'pit-snapshot-integrity.cjs liefert den Befund für den bestehenden Alarm: --fail-on-missing-month (Exit 1 bei Integritätsfehler oder fehlendem Monat einer gezählten Reihe, NDX/DJIA nur Information) und --alarm-detail <datei> (Text für ALARM_DETAIL_FILE von pipeline-alarm.mjs). Es fehlt nur der Schritt im Workflow.', 'Freigabe für einen Job im bestehenden freshness-monitor.yml: Schritt mit beiden Optionen, Ergebnis als RESULT_PIT an den vorhandenen alarm-Job (ohne neue Secrets, permissions wie dort).', 'die monatlichen Gates sind ab der ersten Lücke um einen Monat später']
 ]);
 
 /* ------------------------------------------------------------------ Hilfen */
@@ -139,7 +148,9 @@ function sources() {
   const verify = json(CATALOG_DIR + '/verify-report.json');
   const results = catalog.entries.map(e => json(CATALOG_DIR + '/results/' + e.specHash + '.json'));
   const integrity = I.report({ asOf: STICHTAG });
-  return { Kinds, R, Pop, B, MH, cert, methodology, catalog, grid, verify, results, integrity };
+  const research = Object.fromEntries(Object.entries(RESEARCH_FILES).map(([k, f]) => [k, fs.existsSync(path.join(ROOT, f)) ? json(f) : null]));
+  const independence = req('scripts/quant/research/setup-independence-readings.cjs').readings({ asOf: STICHTAG });
+  return { Kinds, R, Pop, B, MH, cert, methodology, catalog, grid, verify, results, integrity, research, independence };
 }
 
 function costLabel(costs, presets) {
@@ -157,9 +168,33 @@ function populationLabel(spec) {
 }
 const methodsOf = r => r.envelope.methods.filter(m => m.state === 'EXECUTED').map(m => m.method);
 
+const pct = (x, d = 2) => (x == null ? '–' : (x >= 0 ? '+' : '−') + Math.abs(x * 100).toFixed(d).replace('.', ',') + ' Pp');
+/** Kurzaussage je Research-Nachweis (Abschnitt I). Fehlt der Bericht, bricht der Bau ab. */
+function researchLine(id, r) {
+  if (!r) throw Error('RESEARCH_REPORT_MISSING:' + RESEARCH_FILES[id]);
+  if (id === 'P31') {
+    const a = r.cases.map(c => c.survivors.state === 'RESEARCH_EXECUTED' ? 'A' : 'B'), b = r.cases.map(c => c.withDelisted.state === 'RESEARCH_EXECUTED' ? 'A' : 'B');
+    return r.state + ': ' + r.cases.length + ' Fälle (' + r.cases.map(c => c.template).join(', ') + '), Stichprobe ' + r.design.sample + '; Überlebende ' + a.join('/') + ', mit Delisteten ' + b.join('/') + (r.state === 'RESEARCH_EXECUTED' ? '' : ' (private Reihen fehlen, Freigabe FV-5)');
+  }
+  if (id === 'P41') {
+    const d = r.paired.decomposition;
+    return 'Research: ' + r.cohort.included + ' von ' + r.cohort.requested + ' Titeln mit bestätigter Gesamtrendite (ausgeschlossen: ' + (r.cohort.excluded.map(x => x.ticker + ' ' + x.reason).join(', ') || 'keiner') + '), ' + r.paired.pairs + ' Ereignispaare, Ausschüttungen im Mittel ' + pct(d.distributions.mean) + ' je Ereignis (' + r.horizonBars + ' Wochen), Wochenreihe gegen Tagesreihe ' + pct(d.weeklySeriesSource.mean, 3) + '; Parität mit dem Runner ' + r.parity.eventsCompared + ' Ereignisse, ' + r.parity.mismatches + ' Abweichungen';
+  }
+  if (id === 'FV1') return 'A Monate ' + r.readingA.have + '/' + r.readingA.required + ' → ' + r.readingA.earliest + ' (Setup-Zeitgates frühestens ' + r.readingA.setupTimeGatesEarliest + '); B ISO-Wochen ' + r.readingB.have + '/' + r.readingB.required + ' → ' + r.readingB.earliest + ' (Setup-Zeitgates frühestens ' + r.readingB.setupTimeGatesEarliest + ', Untergrenze)';
+  if (id === 'FV4') return r.privateCases + ' private Fälle mit Erwartung (specHash, Kennzahlen-Hash, private Eingabe-Hashes, Prüfzahl der Gegenrechnung), ' + r.publicCases + ' öffentliche; Lauf ' + r.run.mark + ' nicht ausgeführt';
+  throw Error('RESEARCH_ID_UNKNOWN:' + id);
+}
+function fv1Approval(x) {
+  return ['FV-1', 'Setup-Gate independence: Lesart der Schwelle',
+    'Die Methodik nennt die Schwelle independentWeeks: 20 (seit Commit ' + x.origin.commit.slice(0, 10) + ' vom ' + x.origin.date + '), der Builder zählt im selben Commit verschiedene Kalendermonate mit Ereignissen (Label „verschiedene Monate mit Ereignissen“). Stand ' + x.asOf + ': A Monate ' + x.readingA.have + '/' + x.readingA.required + ', frühestens ' + x.readingA.earliest + ', das Gate bindet (Setup frühestens ' + x.readingA.setupTimeGatesEarliest.slice(0, 7) + '); B ISO-Wochen ' + x.readingB.have + '/' + x.readingB.required + ', frühestens ' + x.readingB.earliest + ', das Gate bindet nicht mehr (Setup-Zeitgates frühestens ' + x.readingB.setupTimeGatesEarliest + ', Untergrenze; oos bleibt offen). Keine der beiden Zählungen misst Unabhängigkeit (alle M6-Fenster überlappen, V10: effektive Fallzahl etwa 12,6 je Ereignisdatum). Vier frühere Vorlagen (V6, V8, V9, V10) sind nicht freigegeben.',
+    'A) Monate bestätigen und das Feld ehrlich benennen (eventCalendarMonths, Zählung unverändert, nur Methodik-PR); B) Zählung auf ISO-Wochen (Gate-Änderung in build-backtest-certification.mjs mit Vorher/Nachher; Setup rund 13 Monate früher); C) V10-Vorschlag: Umbenennung wie A und ein neues Gate auf der effektiven Fallzahl (N_eff ≥ 50, ≥ 4 disjunkte M6-Fenster, frühestens 2029).',
+    'Empfehlung aus der Analyse (keine Änderung in diesem PR): A jetzt, C als eigene Entscheidung; B nicht, weil es das bindende Gate ohne statistischen Beleg um rund 13 Monate lockert. Bis zur Entscheidung gilt A unverändert'];
+}
+
 /* ------------------------------------------------------------------ Aufbau */
 function build(src = sources()) {
-  const { Kinds, R, Pop, B, MH, cert, methodology, catalog, grid, verify, results, integrity } = src;
+  const { Kinds, R, Pop, B, MH, cert, methodology, catalog, grid, verify, results, integrity, research, independence } = src;
+  const researchText = Object.fromEntries(Object.keys(RESEARCH_FILES).map(id => [id, researchLine(id, research[id])]));
   const KINDS = Kinds.KINDS, METHODS = Kinds.METHODS;
   if (KINDS.length !== 6 || METHODS.length !== 7) throw Error('KINDS_OR_METHODS_CHANGED:' + KINDS.length + '/' + METHODS.length);
   for (const m of METHODS) for (const k of KINDS) if (!R.METHOD_FIT[m].includes(k) && !NOT_FIT[m + ':' + k]) throw Error('NOT_FIT_REASON_MISSING:' + m + ':' + k);
@@ -243,9 +278,10 @@ function build(src = sources()) {
     P('');
     P('Status **' + c.status + '**, Stufe ' + c.tier + ', Vertrauen ' + c.trust + ', Bereitschaft ' + c.readiness + ', Owner-Freigabe laut Methodik ' + (c.ownerApproval && c.ownerApproval.required ? 'nötig' : 'nicht nötig') + '. Hauptgrund: `' + c.reason + '`.');
     P('');
-    P(table(['Gate', 'Kategorie', 'Zustand', 'Grund', 'Schwelle', 'Lösungsweg', 'Begründung'], [
-      ...c.gates.map(g => { const s = g.state === 'PASS' ? null : SOLVABILITY[k + ':' + g.id + ':' + g.reason]; if (g.state !== 'PASS' && !s) throw Error('SOLVABILITY_MAPPING_MISSING:' + k + ':' + g.id + ':' + g.reason); return [g.id, g.category, g.state, g.reason || '–', g.required == null ? '–' : g.required, s ? SOLV_LABEL[s[0]] : '–', s ? s[1] : '–']; }),
-      ...(blockers.some(b => b.id === 'ownerApproval') ? [['ownerApproval', 'OWNER', 'OFFEN', 'REQUIRED', '–', SOLV_LABEL.OWNER, SOLVABILITY[k + ':ownerApproval:REQUIRED'][1]]] : [])
+    const ev = id => { const r = RESEARCH_BY_GATE[k + ':' + id]; return r ? r + ' (Abschnitt I)' : '–'; };
+    P(table(['Gate', 'Kategorie', 'Zustand', 'Grund', 'Schwelle', 'Lösungsweg', 'Begründung', 'Research-Nachweis'], [
+      ...c.gates.map(g => { const s = g.state === 'PASS' ? null : SOLVABILITY[k + ':' + g.id + ':' + g.reason]; if (g.state !== 'PASS' && !s) throw Error('SOLVABILITY_MAPPING_MISSING:' + k + ':' + g.id + ':' + g.reason); return [g.id, g.category, g.state, g.reason || '–', g.required == null ? '–' : g.required, s ? SOLV_LABEL[s[0]] : '–', s ? s[1] : '–', g.state === 'PASS' ? '–' : ev(g.id)]; }),
+      ...(blockers.some(b => b.id === 'ownerApproval') ? [['ownerApproval', 'OWNER', 'OFFEN', 'REQUIRED', '–', SOLV_LABEL.OWNER, SOLVABILITY[k + ':ownerApproval:REQUIRED'][1], '–']] : [])
     ]));
     P('');
     const cnt = t => blockers.filter(b => SOLVABILITY[b.key][0] === t).length;
@@ -319,13 +355,28 @@ function build(src = sources()) {
   /* H */
   P('## H. Freigabevorlagen (Owner)');
   P('');
-  for (const [id, title, situation, options, note] of APPROVALS) {
+  for (const [id, title, situation, options, note] of APPROVALS.map(a => a[0] === 'FV-1' ? fv1Approval(independence) : a)) {
     P('**' + id + ' · ' + title + '**');
     P('- Lage: ' + situation);
     P('- Zur Entscheidung: ' + options);
     P('- Hinweis: ' + note + '.');
     P('');
   }
+
+  /* I */
+  P('## I. Research-Nachweise P2 (Master Completion 3.1, nicht zertifizierend)');
+  P('');
+  P('Erzeugt mit den Skripten unten, jeweils `--out` unter `docs/quant/research/`. Kein Bericht speist ein Gate, keine Zahl erscheint im Produkt (`gateInput: false`, `productionApproved: false`). Zustände in Abschnitt C kommen weiterhin aus dem Zertifizierungsartefakt. Ablauf der Freigabeläufe und Bewertung: [BACKTEST_P2_DEFIZITE.md](BACKTEST_P2_DEFIZITE.md).');
+  P('');
+  const META = { P31: ['P3.1 Survivorship-Sensitivität Pattern/Signal', 'scripts/quant/research/survivorship-sensitivity.cjs'], P41: ['P4.1 Gesamtrendite Pattern', 'scripts/quant/research/pattern-total-return.mjs'],
+    FV1: ['FV-1 Lesarten independence', 'scripts/quant/research/setup-independence-readings.cjs --as-of ' + STICHTAG], FV4: ['FV-4 Erwartung private Katalogfälle', 'scripts/quant/research/catalog-private-recheck.cjs --expect'] };
+  P(table(['Nachweis', 'Bericht', 'Erzeuger', 'Schema', 'Aussage (Research)', 'Hash'], Object.keys(RESEARCH_FILES).map(id => {
+    const r = research[id];
+    return [id + ' · ' + META[id][0], '`' + RESEARCH_FILES[id] + '`', '`' + META[id][1] + '`', r.schemaVersion, researchText[id], r.reportHash ? r.reportHash.slice(0, 16) : r.catalogHash ? 'Katalog ' + r.catalogHash.slice(0, 16) : '–'];
+  })));
+  P('');
+  if (research.P41 && research.P41.gate) P('**Was das Gate `returnBasis` (Pattern) mit P4.1 sagen würde:** ' + research.P41.gate.underP42);
+  P('');
   return L.join('\n').replace(/\n+$/, '') + '\n';
 }
 
@@ -349,4 +400,4 @@ function main(argv) {
   return 0;
 }
 if (require.main === module) { try { process.exitCode = main(process.argv.slice(2)); } catch (e) { console.error('ABBRUCH: ' + e.message); process.exitCode = 2; } }
-module.exports = { SCHEMA, DOC, STICHTAG, NOT_FIT, SOLVABILITY, USE_CASES, APPROVALS, sources, build, main };
+module.exports = { SCHEMA, DOC, STICHTAG, NOT_FIT, SOLVABILITY, USE_CASES, APPROVALS, RESEARCH_FILES, RESEARCH_BY_GATE, researchLine, fv1Approval, sources, build, main };

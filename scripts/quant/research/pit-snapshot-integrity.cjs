@@ -17,8 +17,10 @@
 // quant/methodology/backtest-certification-v1.json (nur gelesen). Monatsgates: ein Stand je Folgemonat; Stichtagsgates:
 // ein Stand je Handelstag (lueckenlos) und zum beobachteten Takt; Setup-Ergebnisgates: Ereignisdatum + 183 Tage
 // (Formel des Builders fuer firstCompletedM6), Untergrenze, weil ein Ergebnis auch Kurse braucht.
-//   node scripts/quant/research/pit-snapshot-integrity.cjs [--as-of JJJJ-MM-TT] [--out <datei>]
-// Ohne --out nach stdout. Exit 1, wenn eine Integritaetspruefung fehlschlaegt (Index, contentHash, asOf, Lesefehler).
+//   node scripts/quant/research/pit-snapshot-integrity.cjs [--as-of JJJJ-MM-TT] [--out <datei>] [--alarm-detail <datei>] [--fail-on-missing-month]
+// Ohne --out nach stdout. Exit 1, wenn eine Integritaetspruefung fehlschlaegt (Index, contentHash, asOf, Lesefehler);
+// mit --fail-on-missing-month auch, wenn einer gezaehlten Reihe ein Kalendermonat fehlt (P2.3). --alarm-detail schreibt
+// den Befund als Text fuer ALARM_DETAIL_FILE von scripts/ci/pipeline-alarm.mjs.
 const fs = require('node:fs');
 const path = require('node:path');
 const zlib = require('node:zlib');
@@ -195,16 +197,36 @@ function report({ asOf = iso(Date.now()), root = ROOT } = {}) {
     note: 'Nur gelesen. Schwellen aus quant/methodology/backtest-certification-v1.json; Zählung wie scripts/quant/build-backtest-certification.mjs. Prognosen sind früheste Daten bei unveraendertem Takt, keine Zusage.' };
 }
 
+/* P2.3 (FV-8): Befund fuer den bestehenden Pipeline-Alarm (scripts/ci/pipeline-alarm.mjs, ALARM_DETAIL_FILE). Rot ist
+   ein Integritaetsfehler oder ein fehlender Kalendermonat in einer Reihe, die ein Gate zaehlt (nicht NDX/DJIA). Der
+   laufende Monat zaehlt nie als fehlend. Die Anbindung im Workflow ist die offene Freigabe; hier nur Text und Exit-Code. */
+function alarmFindings(rep) {
+  const out = [];
+  for (const s of rep.series) {
+    if (s.integrity !== 'PASS') out.push(s.id + ': Integritaet ' + s.integrity + ' (' + s.problems.slice(0, 5).map(p => p.date + ' ' + p.code).join(', ') + ')');
+    if (!s.informationOnly && s.missingMonths.length) out.push(s.id + ': fehlende Monate ' + s.missingMonths.join(', ') + ' – die Monatsgates verschieben sich je Monat um einen Monat');
+  }
+  return out;
+}
+function alarmText(rep) {
+  const f = alarmFindings(rep);
+  return ['PIT-Historien (pit-snapshot-integrity, Stichtag ' + rep.asOf + '): ' + (f.length ? 'ROT' : 'GRUEN'), ...f.map(x => '- ' + x),
+    ...rep.kinds.map(k => '- ' + k.kind + ': offene Zeitgates ' + (k.openHistoryGates.join(', ') || 'keine') + (k.earliestAllHistoryGates ? ', fruehestens ' + k.earliestAllHistoryGates.slice(0, 7) : ''))].join('\n') + '\n';
+}
+
 function main(argv) {
   const o = {};
   for (let i = 0; i < argv.length; i++) {
-    if ((argv[i] === '--as-of' || argv[i] === '--out') && argv[i + 1] && o[argv[i].slice(2)] === undefined) o[argv[i].slice(2)] = argv[++i];
+    if (argv[i] === '--fail-on-missing-month') { o.failOnMissingMonth = true; continue; }
+    if ((argv[i] === '--as-of' || argv[i] === '--out' || argv[i] === '--alarm-detail') && argv[i + 1] && o[argv[i].slice(2)] === undefined) o[argv[i].slice(2)] = argv[++i];
     else throw Error('INVALID_ARGUMENTS:' + argv[i]);
   }
   const rep = report({ asOf: o['as-of'] || undefined });
   const text = JSON.stringify(rep, null, 1) + '\n';
   if (o.out) fs.writeFileSync(o.out, text); else process.stdout.write(text);
-  return rep.integrity === 'PASS' ? 0 : 1;
+  if (o['alarm-detail']) fs.writeFileSync(o['alarm-detail'], alarmText(rep));
+  if (rep.integrity !== 'PASS') return 1;
+  return o.failOnMissingMonth && alarmFindings(rep).length ? 1 : 0;
 }
 if (require.main === module) { try { process.exitCode = main(process.argv.slice(2)); } catch (e) { console.error('ABBRUCH: ' + e.message); process.exitCode = 2; } }
-module.exports = { SCHEMA, report, calendar, tradingDays, nthTradingDayAfter, addMonths, monthForecast, contentHashOf, inspectSeries };
+module.exports = { SCHEMA, report, alarmFindings, alarmText, calendar, tradingDays, nthTradingDayAfter, addMonths, monthForecast, contentHashOf, inspectSeries };

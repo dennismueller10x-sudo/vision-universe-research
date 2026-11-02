@@ -93,3 +93,17 @@ test('CLI: ohne --out nach stdout, --out schreibt nur die Datei, --check meldet 
     assert.equal(execFileSync('git', ['status', '--porcelain'], { cwd: ROOT, encoding: 'utf8' }), before);
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('P2: Abschnitt I nennt jeden Research-Nachweis, Abschnitt C verweist darauf, ein fehlender Bericht bricht ab', () => {
+  const i = section('I');
+  assert.equal(tableRows(i).length, Object.keys(M.RESEARCH_FILES).length);
+  for (const f of Object.values(M.RESEARCH_FILES)) { assert.ok(i.includes('`' + f + '`'), f); assert.ok(fs.existsSync(path.join(ROOT, f)), f); }
+  for (const key of Object.keys(M.RESEARCH_BY_GATE)) {
+    const [k] = key.split(':');
+    const sub = section('C').split('### ' + k + ' · ')[1].split('\n### ')[0];
+    assert.ok(sub.includes(M.RESEARCH_BY_GATE[key] + ' (Abschnitt I)'), key);
+  }
+  assert.ok(section('H').includes('Empfehlung aus der Analyse'), 'FV-1 mit Empfehlung');
+  const src = M.sources();
+  assert.throws(() => M.build({ ...src, research: { ...src.research, P41: null } }), /RESEARCH_REPORT_MISSING:docs\/quant\/research\/pattern-total-return-p4.1.json/);
+});

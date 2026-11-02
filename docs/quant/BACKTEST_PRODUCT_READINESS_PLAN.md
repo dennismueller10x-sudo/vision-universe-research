@@ -71,7 +71,7 @@ Eine Art erreicht C nur über das Zertifizierungsartefakt (`scripts/quant/build-
 |---|---|---|
 | P2.1 | Monatlicher Integritätsbericht der PIT-Snapshots (Faktor, Mitgliedschaft, Setup-Stichtage): Lücke, Hash-Kette, Zählerstand gegen das Gate (z. B. 2/24) | Strategy und Factor brauchen 24 lückenlose Monate; eine unbemerkte Lücke verschiebt C um Monate. **Erledigt als Skript** `scripts/quant/research/pit-snapshot-integrity.cjs --out` (Matrix Abschnitt F); der monatliche Lauf hängt an P2.3 |
 | P2.2 | Prognose je Art: frühestes Datum, an dem jedes HISTORY-Gate erfüllt sein kann, aus dem heutigen Takt | ehrliche Planung statt Schätzung. **Erledigt** im selben Skript: Strategy und Factor frühestens 2028-08, Setup frühestens 2028-04 (Gate `independence` zählt Monate, FV-1) |
-| P2.3 | Alarm (bestehender `pipeline-alarm`), wenn ein Snapshot-Monat fehlt | fail closed im Betrieb |
+| P2.3 | Alarm (bestehender `pipeline-alarm`), wenn ein Snapshot-Monat fehlt | fail closed im Betrieb. **Befund vorbereitet:** `pit-snapshot-integrity.cjs --fail-on-missing-month --alarm-detail <datei>`; offen nur der Workflow-Schritt (FV-8) |
 
 ### Phase P3 – Survivorship (strukturelle Blockade von Replay, Pattern, Signal)
 
@@ -79,7 +79,7 @@ Voraussetzungen: Security Master 1.3.0 ist produktiv, die Backtest-Identitätssp
 
 | Nr. | Paket | Hinweis |
 |---|---|---|
-| P3.1 | Delisted-Register 1.0.0/1.1.0 (1.675/1.688 QUALIFIED, hashgebundener Loader `research-delisted-series.cjs`) als **zusätzliche** Population im Runner für Pattern und Signal; Ergebnis als Sensitivität neben dem Überlebenden-Ergebnis | Wiederverwendung, keine neue Forschung; Befund bleibt, was er ist |
+| P3.1 | Delisted-Register 1.0.0/1.1.0 (1.675/1.688 QUALIFIED, hashgebundener Loader `research-delisted-series.cjs`) als **zusätzliche** Population im Runner für Pattern und Signal; Ergebnis als Sensitivität neben dem Überlebenden-Ergebnis | Wiederverwendung, keine neue Forschung; Befund bleibt, was er ist. **Code erledigt (3.1):** `survivorship-sensitivity.cjs`, Lauf mit privaten Reihen = Runbook R2 in [BACKTEST_P2_DEFIZITE.md](BACKTEST_P2_DEFIZITE.md) |
 | P3.2 | Owner-Klärung der Tiingo-Rechte für delistete Historie (Bestandsaufnahme `TIINGO_LICENSE_REVIEW.md`, #1179): interne Berechnung wahrscheinlich zulässig, öffentliche Ergebnisanzeige nicht belegt, Rohkurse nein | Voraussetzung für P3.3 |
 | P3.3 | Gate `survivorship` liest die Sensitivität (bestehende Gate-Definition, keine neue Schwelle) | nur nach P3.2 |
 | P3.4 | SAME_STOCK_REPLAY bleibt beschreibend (`ruleTest` strukturell). Produktziel ist eine klar beschriftete Beschreibung, keine Zertifizierung | keine Normänderung |
@@ -88,7 +88,7 @@ Voraussetzungen: Security Master 1.3.0 ist produktiv, die Backtest-Identitätssp
 
 | Nr. | Paket |
 |---|---|
-| P4.1 | Pattern-Ergebnisse mit dem bestehenden TR-Register (canonical-total-return-1.0.0, 158/161 bestätigt) rechnen; Titel ohne Beleg werden ausgeschlossen und ausgewiesen |
+| P4.1 | Pattern-Ergebnisse mit der kanonischen Gesamtrendite (canonical-total-return-1.0.0) rechnen; Titel ohne Beleg werden ausgeschlossen und ausgewiesen. **Research erledigt (3.1):** `pattern-total-return.mjs`, Golden-Preview 4/5 Titel, Parität mit dem Runner; 30 Katalogtitel nur mit `--work-dir` (Runbook R3) |
 | P4.2 | `returnBasis`-Gate liest das Ergebnis aus P4.1 (bestehende Definition) |
 
 ### Phase P5 – Owner-Entscheidungen (Vorlage `DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md`)
@@ -121,6 +121,7 @@ Keine Art wird vor dem Erfüllen ihrer bestehenden Gates zertifiziert. Ein negat
 
 - Einstieg: dieses Dokument, dann [BACKTEST_COVERAGE_MATRIX.md](BACKTEST_COVERAGE_MATRIX.md) (erzeugt, Stand der Abdeckung und Freigabevorlagen FV-1 bis FV-8), dann `docs/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`.
 - **Stand 02.11.2026 (Master Completion 3.0):** P0.5 erledigt, P0.7 als Hilfsfunktion erledigt, P2.1/P2.2 als Skript erledigt, Coverage-Matrix als Erzeuger (`scripts/quant/research/backtest-coverage-matrix.cjs`, Test erzwingt `--check`). Gegenrechnung lokal: 16 öffentliche Katalogfälle neu gerechnet, Python 16.451 Prüfungen/0 Abweichungen, Kennzahlen-Hash 16/16 gleich zum CI-Bau vom 31.10.
+- **Stand 02.11.2026 (Master Completion 3.1, P2):** P3.1 als Code mit Tests (Lauf braucht das Archiv), P4.1 als Research, FV-4 Erwartung und Auswertung, FV-1-Analyse mit Empfehlung, FV-8-Befund; Bericht [BACKTEST_P2_DEFIZITE.md](BACKTEST_P2_DEFIZITE.md), Matrix Abschnitt I.
 - Nächste autonome Pakete: P0.6 (Opt-in-CI-Job, braucht FV-3), P1.3 (FACTOR_RANKING in die Evidenz-Taxonomie), P1.4 (V10_LIFECYCLE-Listingdrift erklären).
 - Wartet auf den Owner: FV-1 (Lesart `independence`), FV-2 (Runner-Feld Kennzahlen-Hash mit Demo-Neubau), FV-5 (Gates aus Sensitivitäten), FV-6 (A1–A6), FV-8 (Alarm P2.3), dazu H1 (Security Master 1.3.0).
 - Nach jedem Gate-Wechsel im Zertifizierungsartefakt: `node scripts/quant/research/backtest-coverage-matrix.cjs --out docs/quant/BACKTEST_COVERAGE_MATRIX.md` im selben PR.
