@@ -30,6 +30,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
   const entry=page.locator('a.vu-a-world-card[href="/technical/#/akademie"]');assert(await entry.count()===1,'single strategy world link');
   await page.addScriptTag({path:require.resolve('axe-core/axe.min.js')});
   const ax=await page.evaluate(()=>axe.run(document.querySelector('a.vu-a-world-card[href="/technical/#/akademie"]'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}}));assert(!ax.violations.length,ax.violations.map(x=>x.id).join(','));
+  const pilotContrast=await page.evaluate(()=>axe.run(document.querySelector('.vu-a-pilot'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}}));assert(!pilotContrast.violations.length,pilotContrast.violations.map(x=>x.id).join(','));
   await entry.focus();await page.keyboard.press('Enter');await page.getByRole('heading',{name:'Strategie-Akademie',exact:true}).waitFor();
   await page.getByRole('link',{name:'← Vision Universe Academy',exact:true}).click();await entry.waitFor();
   await page.screenshot({path:out+'/'+prefix+'-central-academy.png',fullPage:true});
@@ -102,7 +103,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
   if(width===390)await page.screenshot({path:out+'/'+prefix+'-'+id+'-practice.png',fullPage:true});
   await page.getByRole('link',{name:'← Zur Lektion: '+l.title,exact:true}).click();await page.locator('fieldset').waitFor();assert(await page.getByLabel(expected,{exact:true}).isChecked(),'quiz restored after analysis');await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
   await page.getByRole('button',{name:'Lektion als abgeschlossen markieren',exact:true}).click();await page.reload();await page.getByRole('button',{name:'Abschluss aufheben',exact:true}).waitFor();
-  if(width===390)await page.screenshot({path:out+'/'+prefix+'-'+id+'-completed.png',fullPage:true});
+  if(width===390){await page.evaluate(()=>scrollTo(0,0));await page.waitForFunction(()=>scrollY===0);await page.screenshot({path:out+'/'+prefix+'-'+id+'-completed.png',fullPage:true});}
   await page.getByRole('link',{name:'← Alle Lernpfade',exact:true}).click();await page.getByRole('status').filter({hasText:'von 32 Lektionen abgeschlossen'}).waitFor();const progress=await page.getByRole('status').filter({hasText:'von 32 Lektionen abgeschlossen'}).innerText();
   assert(await page.getByRole('link',{name:l.title+' · abgeschlossen',exact:true}).count()===1,'catalog shows completed lesson');
   journeys.push({width,theme,lesson:id,path:path.title,goal,matches,chart,progress,pass:true});
