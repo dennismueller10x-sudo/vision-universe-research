@@ -11,6 +11,7 @@ import {
   ROOT, DOC_PATH, PATHS, STATUS, DIMENSIONS, STATUS_DIMENSIONS, BLOCK_BEGIN, BLOCK_END, BLOCK_CLASSES, TECH_KINDS, HIST_COVERAGE,
   buildDocument, buildModel, checkDocument, splitDocument, testIdsOf, fileSha256, parseMatrixBlockers, matrixRowDimensions,
   classifyBlocker, countModel, FREIGABEPAKETE, assignPackages, mergeForecast, MERGE_CASES, partialOnly, PARTIAL_WHY, MERGED_PR_FALLBACK,
+  minuteCoverage, MC3M_FINDING_TEXT,
 } from '../source-faithful/evidence/build-evidence-matrix.mjs';
 import { loadPlan, runPlanTests } from '../source-faithful/certification/cert-prep-top5.mjs';
 
@@ -304,4 +305,26 @@ test('MC3-EV-MERGE-FORECAST: Vorschau nach #1233/#1234/#1235 im Dokument; kein O
   assert.throws(() => buildModel({ ...BUILT.src, handoverText: text, merged: { ...BUILT.src.merged, turtleStops: false } }), /OPEN_PR_NOT_FOUND/);
   const m = buildModel({ ...BUILT.src, handoverText: text, merged: { ...BUILT.src.merged, turtleStops: true } });
   assert.equal(m.prs.turtleStops.pr, MERGED_PR_FALLBACK.turtleStops.pr);
+});
+
+test('MC3-EV-MINUTE-CAUSALITY: C09/C10 tragen die Minuten-Kausalitätstests in „reproduzierbare Berechnung“; Befunde offen als Klasse 1; Gegenproben', () => {
+  const mc = minuteCoverage(), ids = testIdsOf(PATHS.causalityMinuteTests);
+  assert.deepEqual(Object.keys(mc.covered), ['C09', 'C10']);
+  for (const m of BUILT.model.methods) {
+    const d3 = m.dims.find((d) => d.id === 'D3'), refs = d3.evidence.filter((r) => r.kind === 'test' && r.file === PATHS.causalityMinuteTests).map((r) => r.id);
+    assert.deepEqual(refs, mc.covered[m.cid] ?? [], `${m.cid}: Nachweise der Minutenprüfung`);
+    for (const id of refs) assert.ok(ids.has(id), `${m.cid}: ${id} nicht in der Testdatei`);
+    assert.ok(!d3.blockers.some((b) => b.id === `${m.cid}-CAUSALITY`), `${m.cid}: Kausalitäts-Blocker trotz Nachweis`);
+    const f = d3.blockers.filter((b) => /-F-MC3M-\d\d$/.test(b.id));
+    assert.deepEqual(f.map((b) => b.id), mc.findings.filter((x) => x.cid === m.cid).map((x) => `${m.cid}-${x.id}`), `${m.cid}: Befunde`);
+    for (const b of f) { assert.equal(b.klass, 1, b.id); assert.equal(b.status, 'OPEN_RELEASE_PROPOSAL'); }
+    // ein Befund hält „reproduzierbare Berechnung“ unter BELEGT (BELEGT nie mit offenem Blocker)
+    if (f.length) assert.notEqual(d3.status, STATUS.BELEGT, `${m.cid}: BELEGT mit offenem Befund`);
+  }
+  for (const id of Object.keys(MC3M_FINDING_TEXT)) { assert.ok(DOC.includes(`| ${id} | `), `${id} fehlt in Abschnitt 5`); assert.ok(ids.has(mc.findings.find((x) => x.id === id).test), id); }
+  assert.ok(!DOC.includes('**nicht geschlossen**: auf Tagesbalken nicht prüfbar'), 'alte Zeile „nicht geschlossen“ im Dokument');
+  // Gegenprobe: ein unbekannter Befund-Blocker ist klassifiziert, ein Tippfehler im Suffix bricht ab (fail closed)
+  const ctx = { merged: {}, prs: {}, refCode: {}, notMeasurable: false, sourceBlocked: false, inPaper: false };
+  assert.equal(classifyBlocker('C09', 'D3', { id: 'C09-F-MC3M-09', closes: '' }, ctx).klass, 1);
+  assert.throws(() => classifyBlocker('C09', 'D3', { id: 'C09-F-MC3M-X', closes: '' }, ctx), /BLOCKER_CLASS_UNKNOWN/);
 });

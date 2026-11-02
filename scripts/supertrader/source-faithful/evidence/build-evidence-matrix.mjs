@@ -34,7 +34,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const GENERATOR_VERSION = 'st-mc3-evidence-matrix-1.2.0'; // 1.1.0: Klassen 1–4 der Blocker, Auswertung vorhandener Nachweise, Branch-Nachweise, OFFEN ohne technischen Anteil = BLOCKIERT; 1.2.0: E-CC13, Teilbeiträge, Freigabepakete FP-ST-01…10, Merge-Vorschau
+export const GENERATOR_VERSION = 'st-mc3-evidence-matrix-1.3.0'; // 1.3.0: Kausalität/Determinismus C09/C10 auf Minuten-Fixtures (MC3M), Befunde F-MC3M als Freigabevorlage; 1.1.0: Klassen 1–4 der Blocker, Auswertung vorhandener Nachweise, Branch-Nachweise, OFFEN ohne technischen Anteil = BLOCKIERT; 1.2.0: E-CC13, Teilbeiträge, Freigabepakete FP-ST-01…10, Merge-Vorschau
 export const DOC_PATH = 'docs/SUPERTRADER_13_METHODS_EVIDENCE.md';
 export const BLOCK_BEGIN = '<!-- st-mc3:datenstand:begin';
 export const BLOCK_END = '<!-- st-mc3:datenstand:end -->';
@@ -69,6 +69,7 @@ export const PATHS = Object.freeze({
   domains: 'core/registry/domains.json',
   dataQuality: 'core/data-quality.js',
   causalityTests: 'scripts/supertrader/tests/sf-mc3-causality.test.mjs',
+  causalityMinuteTests: 'scripts/supertrader/tests/sf-mc3-causality-minutes.test.mjs',
   wordingTests: 'scripts/supertrader/tests/sf-mc3-product-wording.test.mjs',
   evidenceTests: 'scripts/supertrader/tests/sf-mc3-evidence-matrix.test.mjs',
   turtleTests: 'scripts/supertrader/tests/sf-turtle.test.mjs',
@@ -256,6 +257,27 @@ export function causalCoverage() {
   return { causal: list(m[1]), deterministic: list(m[2]) };
 }
 
+/**
+ * Befunde der Minuten-Kausalitätsprüfung (C09/C10): Wortlaut und Freigabevorschlag. Die Testdatei erklärt dieselben IDs in
+ * MC3M_FINDINGS (Methode, Test-ID); eine Abweichung bricht ab (fail closed). Nicht repariert: Fachmodell/Engine.
+ */
+export const MC3M_FINDING_TEXT = Object.freeze({
+  'F-MC3M-01': Object.freeze({ kind: 'Kausalität (Kapazitätszuteilung innerhalb des Tages)', text: 'research/lifecycle-engine.mjs, Schritt 2: die am Vortag scharfen Orders werden am Tag T in der neutralen Reihenfolge fillRank(Datum, id) ausgeführt. Bei INTRADAY_RESOLVED ist die Füllminute bekannt; bei knapper Kapazität (maxOpenPositions bzw. Kasse) bekommt die Order mit dem kleineren Rang den Platz, auch wenn sie erst nach der anderen füllt (synthetischer Beleg: Füllminute 300 verdrängt Füllminute 6). Die Zuteilung zur früheren Minute hängt damit von einer späteren Füllung ab. Mit der Referenz (20 Positionen, Risiko 0,5 %) und ohne knappe Kapazität ohne Wirkung', proposal: 'Owner-Freigabe für einen eigenen Engine-PR (Fachmodell, Vorher/Nachher-Vergleich): Orders vom Typ INTRADAY_RESOLVED nach Füllminute zuteilen (fillRank nur bei gleicher Minute); bis dahin als deklarierte Konvention mit Häufigkeit der Kapazitätsabweisungen im Lauf ausweisen' }),
+  'F-MC3M-02': Object.freeze({ kind: 'Kausalität (Datenverfügbarkeit am Entscheidungstag)', text: 'research/lifecycle-engine.mjs#fillOrder verlangt auch für INTRADAY_RESOLVED endliche Hoch- und Tiefwerte des Gap-Tags, bevor die Minuten aufgelöst werden. Hoch und Tief sind erst am Schluss bekannt. Ihr Wert wirkt nicht (Extremwerte: gleicher Einstieg), nur ihr Fehlen (NaN) macht aus der Füllung NOT_EXECUTED_NO_SOURCE_BAR, obwohl Eröffnung und Minuten vorliegen', proposal: 'Owner-Freigabe für einen eigenen Engine-PR: für INTRADAY_RESOLVED nur die offizielle Eröffnung prüfen (Hoch/Tief bleiben Evidenz); Vorher/Nachher über den Studienlauf (Zahl der NOT_EXECUTED_NO_SOURCE_BAR)' }),
+});
+
+/** Erklärte Abdeckung und Befunde der Minuten-Kausalitätstests (Zeilen MC3M_COVERED / MC3M_FINDINGS; MC3-COVERAGE-MINUTES prüft sie dort). */
+export function minuteCoverage() {
+  const t = readText(PATHS.causalityMinuteTests);
+  const c = t.match(/^const MC3M_COVERED = Object\.freeze\((\{.*\})\);$/m), f = t.match(/^const MC3M_FINDINGS = Object\.freeze\((\{.*\})\);$/m);
+  if (!c || !f) throw new Error('MC3M_COVERED_NOT_FOUND');
+  const json = (x) => JSON.parse(x.replace(/'/g, '"').replace(/([{,]\s*)(C\d\d):/g, '$1"$2":'));
+  const covered = json(c[1]), findings = Object.entries(json(f[1])).map(([id, [cid, test]]) => ({ id, cid, test, ...(MC3M_FINDING_TEXT[id] ?? {}) }));
+  const known = Object.keys(MC3M_FINDING_TEXT).sort(), declared = findings.map((x) => x.id).sort();
+  if (JSON.stringify(known) !== JSON.stringify(declared)) throw new Error(`MC3M_FINDINGS_MISMATCH:${declared.join(',')}`);
+  return { covered, findings };
+}
+
 /** Prüf-IDs einer Testdatei: wörtliche Titel-Präfixe und die erklärte MC3-Abdeckung. */
 export function testIdsOf(file) {
   // IDs vor dem ersten Doppelpunkt, auch mehrere je Titel („GC-A / GC-B: …“)
@@ -366,6 +388,7 @@ export function classifyBlocker(cid, dimId, b, ctx) {
   if (/-(X-)?CC-?8$/.test(id)) return cls(4, 'kein unberührtes historisches Fenster; SF6-PAPER-2027 beginnt am 01.01.2027 (250 Sitzungen), Owner-Aktivierung davor');
   if (/-OOS(-SCOPE)?$/.test(id)) return cls(4, 'kein zweites historisches Fenster (IEX-Minuten erst ab 2017), nicht in SF6-PAPER-2027; ein Forward-Protokoll nur mit Owner-Freigabe');
   if (/-(XS-)?SURV$/.test(id)) return cls(2, 'Delistings vor 2009 und Delisting-Renditen fehlen; V13-Reihen nur privat (nicht veröffentlichbar)');
+  if (/-F-MC3M-\d\d$/.test(id)) return cls(1, 'Befund der Kausalitätsprüfung in der Engine (Fachmodell): Korrektur nur als eigener PR mit Vorher/Nachher nach Owner-Freigabe');
   if (/-(CAUSALITY|Reproduzierbarkeit)$/.test(id)) return cls(2, 'eingefrorene Minuten fehlen (privater IEX-Cache; konsolidierte Minuten nur mit Lizenz)');
   if (/-(Borrow|Ausführung|Volumen-und-Ausführung|ORH)$/.test(id)) return cls(2, 'konsolidierte Minuten bzw. Borrow- und Gebührenhistorie nur mit Lizenz');
   if (/-ROBUSTNESS$/.test(id)) {
@@ -465,7 +488,7 @@ export function buildModel(src) {
   };
   const prAll13 = prFor(/ALL13/, 'ALL13', 'all13'), prTurtleStops = prFor(/Turtle-Einheitsstopps/, 'Turtle-Einheitsstopps', 'turtleStops'), prV13 = prFor(/supertrader-st9-v13-study\.yml/, 'V13-Workflow', 'v13Workflow');
   const regMethods = registeredStudyMethods(registration);
-  const cover = causalCoverage();
+  const cover = causalCoverage(), minuteCover = minuteCoverage();
   const gcBy = {};
   for (const c of golden.cases) for (const s of c.strategyIds) { const g = (gcBy[s] ??= { n: 0, pass: 0, files: new Set() }); g.n++; if (c.result === 'PASS') g.pass++; g.files.add(c.test.split(':')[0]); }
   const catalog = new Map(summary.strategies.map((s) => [s.candidateId, s]));
@@ -523,10 +546,13 @@ export function buildModel(src) {
     D.D3.basis.push(`BACKTEST_REPRODUCIBILITY ${grade(c, 'BACKTEST_REPRODUCIBILITY')}; CC-6 ${ccOk(c, 6) ? 'erfüllt' : 'offen'}`);
     D.D3.evidence.push(textRef(ev(c, 'BACKTEST_REPRODUCIBILITY')));
     if (ccOk(c, 6)) D.D3.evidence.push(runRef(readiness.runs.integrity, 'Integrität'), runRef(readiness.runs.validation, 'Validierung DEV'), runRef(readiness.runs.holdout, 'Holdout'));
-    const causal = [...(cover.causal.includes(cid) ? [`MC3-CAUSAL-${cid}`] : []), ...(cover.deterministic.includes(cid) ? [`MC3-DETERMINISTIC-${cid}`] : [])].map((id) => testRef(PATHS.causalityTests, id));
+    const causal = [...(cover.causal.includes(cid) ? [`MC3-CAUSAL-${cid}`] : []), ...(cover.deterministic.includes(cid) ? [`MC3-DETERMINISTIC-${cid}`] : [])].map((id) => testRef(PATHS.causalityTests, id))
+      .concat((minuteCover.covered[cid] ?? []).map((id) => testRef(PATHS.causalityMinuteTests, id)));
     if (causal.length) D.D3.evidence.push(...causal);
     else if (/^C0[12]$/.test(cid)) D.D3.evidence.push(testRef(PATHS.turtleTests, 'SF-TUR-TEMPORAL'));
     else D.D3.blockers.push({ derived: true, id: `${cid}-CAUSALITY`, text: 'Kausalität der Entscheidung an der Eröffnung der Folgesitzung (IEX-Minuten) nicht auf Tagesbalken prüfbar', closes: 'eingefrorene Minuten im Snapshot (siehe Matrix, Reproduzierbarkeit)', status: 'OPEN', who: [DATA, OWNER], source: `${PATHS.causalityTests} (Kopf)` });
+    // 1.3.0: Befunde der Minuten-Kausalitätsprüfung bleiben offen, bis der Owner den Engine-PR freigibt (nicht repariert)
+    for (const f of minuteCover.findings.filter((x) => x.cid === cid)) D.D3.blockers.push({ derived: true, id: `${cid}-${f.id}`, text: `${f.id}: ${f.text}`, closes: f.proposal, status: 'OPEN_RELEASE_PROPOSAL', who: [OWNER], source: `${PATHS.causalityMinuteTests} (${f.test})` });
     D.D3.evidence.push(testRef(PATHS.sf8Tests, 'SF8-DETERMINISTIC'), testRef(PATHS.sf8Tests, 'SF8-PIT-ASOF'));
     finalize(D.D3, ccOk(c, 6) ? STATUS.BELEGT : PASSG.has(grade(c, 'BACKTEST_REPRODUCIBILITY')) ? STATUS.TEILWEISE : STATUS.OFFEN);
 
@@ -964,7 +990,7 @@ export function render(model, state, src) {
   }
 
   // 4. geschlossene Prüfdefizite
-  const cov = causalCoverage(), wt = testTitles(PATHS.wordingTests);
+  const cov = causalCoverage(), mcov = minuteCoverage(), wt = testTitles(PATHS.wordingTests);
   push(
     '## 4. In Master Completion 3.0 geschlossene Prüfdefizite (nur Tests, keine Fachmodelländerung)',
     '',
@@ -972,7 +998,7 @@ export function render(model, state, src) {
     '|---|---|---|',
     `| Kausalität der Research-Adapter (\`prepare\` muss „causal bar by bar“ sein, \`research/lifecycle-engine.mjs\`) war nur für Turtle (SF-TUR-TEMPORAL), Teile der Minervini-Ausstiege und die SF8-Pipeline (SF8-PIT-ASOF) belegt | \`${PATHS.causalityTests}\`: ${cov.causal.length} Tests MC3-CAUSAL-* auf den eingefrorenen echten Reihen der SF8-Fixture (je Schnitt ganze Reihe gegen Balken 0..i), Gegenprobe MC3-CAUSAL-PROBE, Abdeckung MC3-COVERAGE | ${[...cov.causal].sort().join(', ')} |`,
     `| Determinismus und Eingabetreue der Vorbereitung je Methode nicht einzeln geprüft | \`${PATHS.causalityTests}\`: ${cov.deterministic.length} Tests MC3-DETERMINISTIC-*; C06/C07 im jeweiligen MC3-CAUSAL-Test | ${[...cov.deterministic, 'C06', 'C07'].sort().join(', ')} |`,
-    '| Kausalität von C09/C10 (Entscheidung an der Eröffnung der Folgesitzung auf IEX-Minuten) | **nicht geschlossen**: auf Tagesbalken nicht prüfbar, braucht eingefrorene Minuten | C09, C10 |',
+    `| Kausalität und Determinismus von C09/C10 (Entscheidung an der Eröffnung der Folgesitzung auf IEX-Minuten) waren auf Tagesbalken nicht prüfbar | \`${PATHS.causalityMinuteTests}\`: ${Object.values(mcov.covered).flat().join(', ')} auf synthetischen Tages- und Minuten-Fixtures (Zukunft vergiftet: spätere Minuten, Hoch/Tief/Schluss des Entscheidungstags, Folgetage; Gegenprobe vor t und MC3-CAUSAL-MINUTES-PROBE; tief eingefrorene Eingaben). Befunde ${mcov.findings.map((f) => f.id).join(', ')} als Freigabevorlage (Abschnitt 5); die Reproduzierbarkeit auf echten Minuten braucht weiter eingefrorene Minuten im Snapshot | ${Object.keys(mcov.covered).join(', ')} |`,
     `| Sprachprüfung nur für \`supertrader.js\`, Registry und SF8-Katalog; Seiten, \`sf-research.js\`, \`st-chart.js\` und veröffentlichte Kandidatendateien ungeprüft | \`${PATHS.wordingTests}\`: ${wt.map((t) => t.split(':')[0]).join(', ')} | alle 13 (Produkttexte) |`,
     `| kein nachvollziehbarer, erzeugter Evidenznachweis über alle 13 Methoden | dieses Dokument mit Erzeuger und Test \`${path.basename(PATHS.evidenceTests)}\` | alle 13 |`,
     `| Regeltreue der TOP5 nur auf dem PR-Head belegt (\`PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN\`) | E-REFCODE: Engine-Fingerabdruck auf dem Stand = gepinnter Referenzwert in SF6-PAPER-2027; Regeltreue-Tests auf diesem Stand MET (\`${path.basename(PATHS.evidenceTests)}\`: MC3-EV-REFCODE). Für die SF5-Lebenszyklen ist kein Referenzwert gepinnt: nicht geschlossen | ${[...new Set(model.evaluations.filter((e) => e.id === 'E-REFCODE').map((e) => e.cid))].join(', ') || '–'} |`,
@@ -986,6 +1012,7 @@ export function render(model, state, src) {
   // 5. Freigabevorlagen
   push('## 5. Freigabevorlagen (Fachmodell-, Vertrags- oder Owner-Entscheidung nötig; hier nicht umgesetzt)', '', 'Einzelvorlagen aus Plan, Studien und Übergabe. Gebündelt zur Entscheidung über alle BLOCKIERT-Punkte: Abschnitt 10 (Freigabepakete).', '', '| ID | Methoden | Art | Inhalt | Vorschlag / schließender Beleg | Quelle |', '|---|---|---|---|---|---|');
   for (const f of src.plan.findings) push(`| ${f.id} | ${f.methods.join(', ')} | Befund ${f.kind}, modelChange ${f.modelChange} | ${esc(f.text)} | ${esc(f.proposal ?? f.suggestion ?? '–')} | \`${PATHS.plan}\` |`);
+  for (const f of minuteCoverage().findings) push(`| ${f.id} | ${f.cid} | Befund ${f.kind}, nicht repariert (Engine-Fachmodell) | ${esc(f.text)} | ${esc(f.proposal)} | \`${PATHS.causalityMinuteTests}\` (${f.test}) |`);
   for (const m of src.plan.methods) for (const b of m.blockers.filter((x) => x.status === 'OPEN_SEPARATE_PR')) push(`| ${b.id} | ${m.candidateId} | eigener PR (Klasse ${b.class}) | ${esc(b.text)} | ${esc(b.closes)} | \`${PATHS.plan}\` |`);
   for (const m of src.plan.methods) for (const s of m.studies.filter((x) => x.status === 'BLOCKED_OWNER')) push(`| ${s.id} | ${m.candidateId} | Owner-Entscheidung | ${esc(s.question)} | ${esc(s.acceptance.map((a) => `${a.metricKind}: ${a.criterion}`).join('; '))} | \`${PATHS.plan}\` |`);
   push(`| ${model.openPrs.map((p) => p.pr).join(', ')} | siehe Inhalt | Draft-PRs, Owner-Freigabe | ${esc(model.openPrs.map((p) => `${p.pr}: ${p.content}`).join(' · '))} | ${esc(model.openPrs.map((p) => `${p.pr}: ${p.deps}`).join(' · '))} | \`${PATHS.handover}\` §8.1 |`, '');
