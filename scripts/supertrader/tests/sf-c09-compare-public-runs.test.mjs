@@ -25,7 +25,9 @@ test('C09-CMP-KK: gleiche Eingaben, nur der Laufcode wandert; EP-Abweichung je V
   assert.equal(r.ep.CLEAN.ALT.blockEqual, true);
   assert.equal(r.ps.ps.equal, true);
   assert.equal(r.summary.psEqual, true);
-  assert.deepEqual(r.summary, { epVariantBlocks: 4, epBlocksEqual: 3, epTradesShaEqual: 3, psEqual: true });
+  assert.deepEqual(r.summary, { epVariantBlocks: 4, epBlocksEqual: 3, epBlocksEqualWithoutAllocationCounter: 3, epTradesShaEqual: 3, psEqual: true });
+  assert.deepEqual(r.intradayAllocationByMinute, { published: 'NOT_PUBLISHED', daysByVariant: {} });
+  assert.deepEqual(r.ep.CLEAN.REF.intradayAllocationByMinute, [null, null]);
   assert.equal(r.sf7Validation.equal, false);
 });
 
@@ -38,6 +40,23 @@ test('C09-CMP-KK-INPUT: eine geaenderte Eingabe (Cache-Hash, Stichprobe) macht d
   assert.equal(r.inputs.sampling, false);
   assert.equal(r.ps.ps.equal, false);
   assert.equal(r.summary.psEqual, false);
+});
+
+test('C09-CMP-KK-COUNTER: Engpasstage je EP-Variante aus dem oeffentlichen Block; Vergleich gegen einen Lauf ohne Zaehler', () => {
+  const before = kk(611, 'r'), after = kk(611, 'r', 'c2', '2');
+  // nachher: jeder EP-Block traegt den Zaehler (0 = kein Engpasstag), sonst unveraendert
+  after.ep.sets.CLEAN.variants.REF.intradayAllocationByMinute = 3; after.ep.sets.CLEAN.variants.ALT.intradayAllocationByMinute = 0;
+  after.ep.sf7Execution.variants.SF7.intradayAllocationByMinute = 2; after.extE7_6.ep.variants.REF.intradayAllocationByMinute = 1;
+  const r = comparePublic(before, after);
+  assert.equal(r.inputsEqual, true);
+  assert.deepEqual(r.intradayAllocationByMinute, { published: 'ALL_EP_BLOCKS', daysByVariant: { 'CLEAN/REF': 3, 'sf7:SF7': 2, 'extE7_6/REF': 1 } });
+  assert.deepEqual(r.ep.CLEAN.REF.intradayAllocationByMinute, [null, 3]);
+  // der neue Schluessel allein ist eine Abweichung des Blocks, ohne ihn sind die Bloecke gleich
+  assert.equal(r.ep.CLEAN.ALT.blockEqual, false); assert.equal(r.ep.CLEAN.ALT.blockEqualWithoutAllocationCounter, true);
+  assert.deepEqual(r.summary, { epVariantBlocks: 4, epBlocksEqual: 0, epBlocksEqualWithoutAllocationCounter: 4, epTradesShaEqual: 4, psEqual: true });
+  // nur ein Teil der Bloecke mit Zaehler: als PARTIAL gemeldet
+  delete after.extE7_6.ep.variants.REF.intradayAllocationByMinute;
+  assert.equal(comparePublic(before, after).intradayAllocationByMinute.published, 'PARTIAL');
 });
 
 test('C09-CMP-SF5: bytegleiche Variantenbloecke trotz neuem Code; Engpasszaehler wuerde je Variante gemeldet', () => {

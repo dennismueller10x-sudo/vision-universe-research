@@ -70,9 +70,15 @@ export function epVariantRow(before, after) {
     tradesSha256Equal: b.tradesSha256 !== undefined && b.tradesSha256 === a.tradesSha256,
     ledgerSha256Equal: b.ledgerSha256 !== undefined && b.ledgerSha256 === a.ledgerSha256,
     rejectionsDelta: countDelta(b.rejections, a.rejections), exitReasonsDelta: countDelta(b.exitReasons, a.exitReasons),
+    // C09: Tage mit Zuteilung nach Fuellminute (null = der Lauf veroeffentlicht den Zaehler noch nicht, Runner vor PR #1262-Folge)
+    intradayAllocationByMinute: [b.intradayAllocationByMinute ?? null, a.intradayAllocationByMinute ?? null],
     blockEqual: canonical(b) === canonical(a),
+    blockEqualWithoutAllocationCounter: canonical(withoutAllocation(b)) === canonical(withoutAllocation(a)),
   };
 }
+
+/** Ein Block ohne den C09-Zaehler: Vergleich eines Laufs mit Zaehler gegen einen Lauf, der ihn noch nicht veroeffentlicht. */
+function withoutAllocation(v) { const { intradayAllocationByMinute: _n, ...rest } = v; return rest; }
 
 export function compareKk(before, after) {
   const inputs = {
@@ -99,11 +105,20 @@ export function compareKk(before, after) {
   };
   const rows = [...Object.values(ep).flatMap((s) => Object.values(s)), ...Object.values(sf7Execution), ...Object.values(extEp)];
   const sf7Validation = { equal: canonical(before.ep?.sf7Validation) === canonical(after.ep?.sf7Validation), diff: diffPaths(before.ep?.sf7Validation, after.ep?.sf7Validation) };
+  // C09: Engpasstage je EP-Variante (nur Aggregat; Varianten ohne Engpasstag stehen mit 0 im Block, hier nicht)
+  const allocation = {};
+  const note = (k, v) => { const n = v?.intradayAllocationByMinute; if (n) allocation[k] = n; };
+  for (const set of Object.keys(after.ep?.sets ?? {})) for (const [id, v] of Object.entries(after.ep.sets[set].variants)) note(`${set}/${id}`, v);
+  for (const [id, v] of Object.entries(after.ep?.sf7Execution?.variants ?? {})) note(`sf7:${id}`, v);
+  for (const [id, v] of Object.entries(after.extE7_6?.ep?.variants ?? {})) note(`extE7_6/${id}`, v);
+  for (const [id, v] of Object.entries(after.extE7_6?.ep?.sf7Execution ?? {})) note(`extE7_6/sf7:${id}`, v);
+  const published = rows.filter((r) => r.intradayAllocationByMinute[1] !== null).length;
   return {
     schema: KK, inputs, inputsEqual,
     code: { before: before.receipt?.researchCodeSha256 ?? null, after: after.receipt?.researchCodeSha256 ?? null },
     ep, sf7Execution, extE7_6Ep: extEp, ps, sf7Validation,
-    summary: { epVariantBlocks: rows.length, epBlocksEqual: rows.filter((r) => r.blockEqual).length, epTradesShaEqual: rows.filter((r) => r.tradesSha256Equal).length, psEqual: ps.ps.equal && ps.extE7_6Rest.equal },
+    intradayAllocationByMinute: { published: published === rows.length ? 'ALL_EP_BLOCKS' : published ? 'PARTIAL' : 'NOT_PUBLISHED', daysByVariant: allocation },
+    summary: { epVariantBlocks: rows.length, epBlocksEqual: rows.filter((r) => r.blockEqual).length, epBlocksEqualWithoutAllocationCounter: rows.filter((r) => r.blockEqualWithoutAllocationCounter).length, epTradesShaEqual: rows.filter((r) => r.tradesSha256Equal).length, psEqual: ps.ps.equal && ps.extE7_6Rest.equal },
   };
 }
 

@@ -15,7 +15,8 @@
  * Owner decision E7-6 (research/kk-sample-ext-e7-6.mjs): --ext-e7-6 [--count-only] plans (and once fetches) the
  * pre-registered extension CLEAN_EXT_E7_6, at most 550 requests, fail closed, into SEPARATE private cache objects; every
  * evaluation run computes the reference day sets from the reference cache only and adds CLEAN_EXT_E7_6 beside them.
- * Public (repository log): candidate counts per year, fetch coverage, statuses, trade and exit-reason counts, hashes.
+ * Public (repository log): candidate counts per year, fetch coverage, statuses, trade and exit-reason counts, hashes;
+ * per EP variant the number of days allocated by fill minute (intradayAllocationByMinute, C09).
  * Sealed (owner key): metrics and trade lists. Minute values never leave the sealed file and the private cache
  * (internal, non-displaying use).
  *
@@ -68,6 +69,17 @@ export function kkResearchCodeSha256() {
 }
 const sha = (x) => crypto.createHash('sha256').update(typeof x === 'string' ? x : JSON.stringify(x)).digest('hex');
 const bump = (o, k, n = 1) => { o[k] = (o[k] || 0) + n; };
+/**
+ * C09 F-MC3M-01/02 (PR #1262): public allocation counter of one EP run = number of trading days on which the engine
+ * allocated places and cash by fill minute (counts.intradayAllocationByMinute, one per bottleneck day; the engine sets
+ * it lazily, so 0 means: no such day). Aggregate only: one integer per variant block, no ticker, date, price or trade.
+ * The runner version stays 1.5.0 (the receipt is an input of the run comparison); the code hash identifies the change.
+ */
+export function epAllocationDays(r) {
+  const n = r?.counts?.intradayAllocationByMinute ?? 0;
+  if (!Number.isSafeInteger(n) || n < 0) throw new Error(`EP_ALLOCATION_COUNTER_INVALID:${n}`);
+  return n;
+}
 
 // screens use the widest pre-registered variant, so every variant's candidate days are covered by one fetch list
 const EP_SCREEN = Object.freeze({ ...EP_REFERENCE_CONFIG, quietPhase: 'NONE' });
@@ -402,9 +414,9 @@ async function main() {
       const r = runResearchLifecycle(dataset, { adapter: KK_EP_ADAPTER, config: v.config, prepared: prepCache.get(key), from: L.WINDOW.from, to: L.WINDOW.to });
       if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:EP:${setId}:${v.id}`);
       const tally = (f) => r.trades.reduce((o, t) => { bump(o, f(t)); return o; }, {});
-      pub.ep.sets[setId].variants[v.id] = { changes: v.changes, trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), entryYears: tally((t) => t.entryDate.slice(0, 4)), notExecuted: r.counts.notExecutedResolved ?? {}, technicalOrdersArmed: r.counts.ordersArmed, notTriggered: r.counts.ordersNotTriggered, rejections: r.rejections.reduce((o, x) => { bump(o, x.reason); return o; }, {}), reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])) };
+      pub.ep.sets[setId].variants[v.id] = { changes: v.changes, trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), entryYears: tally((t) => t.entryDate.slice(0, 4)), notExecuted: r.counts.notExecutedResolved ?? {}, technicalOrdersArmed: r.counts.ordersArmed, notTriggered: r.counts.ordersNotTriggered, rejections: r.rejections.reduce((o, x) => { bump(o, x.reason); return o; }, {}), intradayAllocationByMinute: epAllocationDays(r), reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])) };
       sealed.ep[setId][v.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }), tradeLevel: epTradeSummary(r.trades), ...(sets.strataOf[setId] ? { perStratum: byStratum(r.trades, (t) => `${tickerOf(t.id)}|${t.entryDate}`, sets.strataOf[setId].ep, epTradeSummary) } : {}), trades: r.trades.map(epSealedTrade) };
-      log(`EP ${setId} ${v.id}: trades ${r.trades.length}`);
+      log(`EP ${setId} ${v.id}: trades ${r.trades.length}, allocation by minute ${epAllocationDays(r)} days`);
       // Supertrader 7.0 validation (counts only): independent checks of the reference day set; the diagnostic
       // entryDayLowBelowStopKept counts entry days whose consolidated daily low lies below the stop while no IEX
       // minute after the fill reached it (the EP same-day stop is decided on IEX only; SF7 open finding, MEDIUM)
@@ -425,9 +437,9 @@ async function main() {
     if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:EP:SF7:${x.id}`);
     const tally = (f) => r.trades.reduce((o, t) => { bump(o, f(t)); return o; }, {}), baseV = pub.ep.sets[x.daySet].variants[x.compareTo];
     const fillMinute = tally((t) => t.intradayEvidence?.fillMinuteStop ?? null);
-    pub.ep.sf7Execution.variants[x.id] = { compareTo: x.compareTo, daySet: x.daySet, revision: x.revision, trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), fillMinuteStop: fillMinute, notExecuted: r.counts.notExecutedResolved ?? {}, reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])), comparison: { tradesDelta: r.trades.length - baseV.trades, ledgerEqual: sha(r.ledger) === baseV.ledgerSha256 } };
+    pub.ep.sf7Execution.variants[x.id] = { compareTo: x.compareTo, daySet: x.daySet, revision: x.revision, trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), fillMinuteStop: fillMinute, notExecuted: r.counts.notExecutedResolved ?? {}, intradayAllocationByMinute: epAllocationDays(r), reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])), comparison: { tradesDelta: r.trades.length - baseV.trades, ledgerEqual: sha(r.ledger) === baseV.ledgerSha256 } };
     sealed.ep.sf7Execution[x.id] = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }), tradeLevel: epTradeSummary(r.trades), trades: r.trades.map(epSealedTrade) };
-    log(`EP SF7 ${x.id} (vs ${x.compareTo}): trades ${r.trades.length}`);
+    log(`EP SF7 ${x.id} (vs ${x.compareTo}): trades ${r.trades.length}, allocation by minute ${epAllocationDays(r)} days`);
     if (x.daySet === 'CLEAN' && pub.ep.sf7Validation) { const c = checkLifecycleRun(dataset, r, { config: x.config, adapter: x.adapter, policy: PLATFORM_RESEARCH_PORTFOLIO_POLICY, from: L.WINDOW.from }); pub.ep.sf7Validation.invariants[x.id] = { violationCount: c.violationCount, violations: c.violations, checks: c.checks, diagnostics: c.diagnostics }; if (c.examples.length) ((sealed.ep.sf7ValidationExamples ??= {})[x.id] = c.examples); }
   }
   cur = null;
@@ -467,9 +479,9 @@ async function main() {
     const r = runResearchLifecycle(dataset, { adapter, config, prepared: prepCache.get(key), from: L.WINDOW.from, to: L.WINDOW.to });
     if (!r.reconciliation.pass) throw new Error(`RECONCILIATION_FAILED:EP:${EXT_E7_6_ID}:${id}`);
     const tally = (f) => r.trades.reduce((o, t) => { bump(o, f(t)); return o; }, {});
-    const p = { trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), entryYears: tally((t) => t.entryDate.slice(0, 4)), notExecuted: r.counts.notExecutedResolved ?? {}, reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])) };
+    const p = { trades: r.trades.length, closed: r.trades.filter((t) => t.status === 'CLOSED').length, openAtDataEnd: r.openAtEnd.length, exitReasons: tally((t) => t.exitReason), entryYears: tally((t) => t.entryDate.slice(0, 4)), notExecuted: r.counts.notExecutedResolved ?? {}, intradayAllocationByMinute: epAllocationDays(r), reconciliation: r.reconciliation.pass, ledgerSha256: sha(r.ledger), tradesSha256: sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.exitReason, t.shares])) };
     const z = { metrics: runMetricsSF5(r, { spyTR: dataset.spyTR }), tradeLevel: epTradeSummary(r.trades), perStratum: byStratum(r.trades, (t) => `${tickerOf(t.id)}|${t.entryDate}`, epStrata, epTradeSummary), trades: r.trades.map(epSealedTrade) };
-    log(`EP ${EXT_E7_6_ID} ${id}: trades ${r.trades.length}`);
+    log(`EP ${EXT_E7_6_ID} ${id}: trades ${r.trades.length}, allocation by minute ${epAllocationDays(r)} days`);
     return { p, z };
   };
   for (const v of EP_RUN_VARIANTS) { const { p, z } = runEpExt(v.id, KK_EP_ADAPTER, v.config); pub.extE7_6.ep.variants[v.id] = { changes: v.changes, ...p }; sealed.extE7_6.ep.variants[v.id] = z; }
