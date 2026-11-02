@@ -1,5 +1,7 @@
 # Supertrader 9 – automatischer Tageslauf der Research-Kandidaten
 
+> **Abschlussstand:** Verbindlich ist seit 02.11.2026 [SUPERTRADER_9_HANDOVER.md](SUPERTRADER_9_HANDOVER.md) (`main` @ `659df6c`). Kandidatenstand, V1 und Aktivierungsweg: Übergabe §3–§5.
+
 Stand 31.10.2026: gemergt mit #1137 (Workflow, Vertrag) und #1146 (Core, Registry im Dauerbetrieb ohne `activation`). Eingeschaltet ist damit nichts: Solange `SF8_AUTO_PUBLISH` nicht `true` ist, läuft der Rückfall-Zeitplan leer (Job übersprungen), der Anstoß aus `supertrader-signals.yml` entfällt (Job `sf8` übersprungen, z. B. Lauf 41166562555 am 31.10.), und es bleibt nur der manuelle Weg. Der veröffentlichte Stand veraltet deshalb weiter mit jeder Sitzung (Systemzustand `BEHIND_1_SESSIONS`, DQ-SF8-8 rot, siehe unten). Grundlage ist die Owner-Entscheidung vom 29.10.2026 (`docs/SUPERTRADER_8_FIRST_RELEASE.md`): Ein täglicher Zeitplan ist grundsätzlich freigegeben, sobald V1 (S1–S7) erfüllt ist, ohne manuelle Freigabe je Datenstand.
 
 Es gibt keine zweite Pipeline. Erweitert wird nur der bestehende Workflow `.github/workflows/supertrader-sf8-candidates.yml`. Alle 13 Methoden bleiben `LIVE_NOT_APPROVED`, `VALIDATED_TRADE_SIGNAL` bleibt gesperrt, und es gibt keine Orders.
@@ -89,7 +91,7 @@ Der manuelle Weg (`mode=manual`, `commit=true`, `expected_sha256`) bleibt **unve
 | # | Schritt | Voraussetzung |
 |---|---|---|
 | 1 | Merge dieses PR | erledigt (#1137) |
-| 2 | Variable `SF8_CANDIDATES_ENABLED=true` (laut Ablauf der ersten Veröffentlichung nach Lauf B zurück auf `false`; Stand bitte prüfen) | – |
+| 2 | Variable `SF8_CANDIDATES_ENABLED=true`. Stand: am 01.11.2026 13:20 UTC `true`; Lauf B 41310744985 hat committet, und der Job läuft nur mit dieser Variable. `SF8_AUTO_PUBLISH` ist nicht gesetzt. | – |
 | 3 | Optional, als Probe vor 3a (seit #1146 nicht mehr möglich): ein Lauf `mode=auto` mit `SF8_AUTO_PUBLISH=true` endet mit C7 BLOCKED ohne Commit. Das belegt fail closed | Security Master nicht STALE (vor dem 11.11. oder nach dem Wechsel, PR #1136) |
 | 3a | Core-PR V6 (e): `activation` aus dem Eintrag `supertrader-sf8-candidates` entfernen, Texte korrigieren (ab dann ist ein fehlendes Artefakt FAILED) | erledigt (#1146) |
 | 4 | Variable `SF8_AUTO_PUBLISH=true`: ab dann Anstoß nach der Nachtkette und Rückfall-Zeitplan | 3a gemergt |
