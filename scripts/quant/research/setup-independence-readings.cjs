@@ -48,7 +48,9 @@ const PRIOR = Object.freeze([
 
 function readings({ asOf, root = ROOT } = {}) {
   const rep = I.report({ asOf, root });
-  const need = JSON.parse(fs.readFileSync(path.join(root, 'quant/methodology/backtest-certification-v1.json'), 'utf8')).kinds.SETUP_BACKTEST.requirements.independentWeeks;
+  // Entscheidung FV-1 (PR #1254): die Schwelle heisst kuenftig eventCalendarMonths; beide Namen werden gelesen, der Bericht nennt den gefundenen.
+  const req = JSON.parse(fs.readFileSync(path.join(root, 'quant/methodology/backtest-certification-v1.json'), 'utf8')).kinds.SETUP_BACKTEST.requirements;
+  const thresholdName = req.eventCalendarMonths !== undefined ? 'eventCalendarMonths' : 'independentWeeks', need = req[thresholdName];
   const outcomes = JSON.parse(fs.readFileSync(path.join(root, 'quant/data/product/setup-outcomes-v1.json'), 'utf8'));
   const dates = (outcomes.events || []).map(e => e[2]).filter(d => d <= rep.asOf).sort();
   const months = [...new Set(dates.map(d => d.slice(0, 7)))].sort();
@@ -67,7 +69,7 @@ function readings({ asOf, root = ROOT } = {}) {
   const a = binding(dateOf(monthGate)), b = binding(weekEarliest);
   const v10 = (() => { try { const d = JSON.parse(fs.readFileSync(path.join(root, PRIOR[3][0]), 'utf8')); return { status: d.status, option: d.recommendation && d.recommendation.option, summary: d.recommendation && d.recommendation.summary }; } catch (e) { return null; } })();
   return {
-    schemaVersion: VERSION, asOf: rep.asOf, threshold: { name: 'independentWeeks', value: need, source: 'quant/methodology/backtest-certification-v1.json' },
+    schemaVersion: VERSION, asOf: rep.asOf, threshold: { name: thresholdName, value: need, source: 'quant/methodology/backtest-certification-v1.json' },
     evaluator: { file: 'scripts/quant/build-backtest-certification.mjs', code: 'new Set(outcomes.events.map((e) => e[2].slice(0, 7))).size', label: 'verschiedene Monate mit Ereignissen', unit: 'CALENDAR_MONTH' },
     origin: ORIGIN, prior: PRIOR.map(([file, note]) => { let status = null; try { status = JSON.parse(fs.readFileSync(path.join(root, file), 'utf8')).status || null; } catch (e) { /* fehlt */ } return { file, status, note }; }),
     events: { count: dates.length, first: dates[0] || null, last: dates.at(-1) || null, distinctDates: new Set(dates).size },

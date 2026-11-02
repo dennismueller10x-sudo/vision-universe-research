@@ -1,4 +1,4 @@
-# Backtesting P2: Zertifizierungsdefizite (Stand 02.11.2026, Master Completion 3.1)
+# Backtesting P2: Zertifizierungsdefizite (Stand 02.11.2026, Master Completion 3.1 und 3.2)
 
 Auftrag P2 des Owners: Zertifizierungsdefizite mit den vorhandenen Implementierungen verringern, ohne neue Engine. Unverändert bleiben:
 - Zertifizierungsgates und Schwellen: alle sechs Arten bestehen dieselben Gates;
@@ -119,6 +119,8 @@ Unter beiden Lesarten ist `oos` ohne A1–A6 nicht prognostizierbar, und die Own
 - **Nicht B:** B lockert das bindende Gate ohne statistischen Beleg, und CLAUDE.md verbietet das Abschwächen von Gates.
 - **Bis zur Entscheidung** gilt A unverändert.
 
+**Stand Master Completion 3.2:** A liegt als eigener Entscheidungs-PR #1254 (Draft) vor. Die Schwelle heißt dort `eventCalendarMonths`, der alte Name wird als Alias gelesen. Der Erzeuger liefert mit `--out` vorher und nachher für alle sechs Arten dasselbe Artefakt (bis auf `generatedAt`), und das Bundle bleibt unverändert. Die Research-Leser in diesem Branch (`setup-independence-readings.cjs`, `pit-snapshot-integrity.cjs`) lesen beide Namen.
+
 ### 1.5 FV-2 bis FV-8: technisch erledigt, Rest präzisiert
 
 | Vorlage | in diesem PR erledigt (ohne Freigabe) | offen (Freigabe) |
@@ -130,6 +132,48 @@ Unter beiden Lesarten ist `oos` ohne A1–A6 nicht prognostizierbar, und die Own
 | FV-6 Setup-OOS A1–A6 | – | Entscheidung laut `SETUP_OOS_DECISION_A1_A6.md`, vor etwa 2027-03-26 |
 | FV-7 Kennzeichnung Replay/Pattern | – (Produktentscheidung) | Anzeige als „Beschreibung, kein Test“ (Teil von H4) |
 | FV-8 Alarm Snapshot-Monat | `pit-snapshot-integrity.cjs --fail-on-missing-month --alarm-detail <datei>` (Exit 1 und Text für `ALARM_DETAIL_FILE`) | ein Schritt in `freshness-monitor.yml`, Ergebnis als `RESULT_PIT` an den vorhandenen `alarm`-Job |
+
+### 1.6 Master Completion 3.2: P4.1 über die öffentliche Population, Survivorship im öffentlichen Rahmen
+
+Beide Berichte sind Research. Sie laufen mit `--out` unter `docs/quant/research/`, speisen kein Gate und ändern weder Runner noch `CODE_FILES` oder Schwellen.
+
+**P4.1 erweitert:** Skript `scripts/quant/research/pattern-total-return-population.mjs`, Bericht [`research/pattern-total-return-population-p4.1.json`](research/pattern-total-return-population-p4.1.json). Laufzeit etwa 70 s, davon der größte Teil für den Rahmenaufbau.
+- **Kandidaten:** der ganze Rahmen `V10_PRIMARY` (4.288 Listings) plus die fünf Golden-Preview-Titel, zusammen 4.289. Reihenfolge nach `sha256(seed:securityId)`, Seed `p41-population-1`. `--limit N` begrenzt auf den Anfang dieser Reihenfolge. Geprüft wird jeder Kandidat, denn die Prüfung liest nur Dateien.
+- **Ergebnis der Vollerhebung:** Nur 4 von 4.289 Kandidaten haben öffentlich eine bestätigte Gesamtrendite: JPM, MSFT, NVDA und XOM, alle aus der Golden-Preview. Ausgeschlossen sind 4.284 Titel mit `NO_DAILY_HISTORY_WITH_DISTRIBUTIONS`, weil die öffentlichen Reihen `discover-series(-long)` nur Splits führen und keine Ausschüttungen. Dazu kommt AAPL mit `NOT_IN_POPULATION_FRAME`. **Die öffentliche Obergrenze ist damit erreicht.** Mehr Titel gibt es nur über die kanonische Historie (`--work-dir`, Ablauf R3, Freigabe FV-5).
+- **Parität mit dem Runner:** 62 Ereignisse, 0 Abweichungen.
+- **Gepaarte Differenz** (Gesamtrendite minus Kursrendite, 62 Paare, 13 Wochen netto):
+
+| Größe | Wert (Research) |
+|---|--:|
+| Mittel | +0,75 Pp |
+| Median | +0,84 Pp |
+| Anteil positiv | 95,2 % |
+| 95 % t-Intervall (unabhängige Paare angenommen, trifft nicht zu) | [+0,61; +0,90] Pp |
+| 95 % Cluster-Bootstrap Titel × Kalenderjahr (27 Cluster, 10.000 Ziehungen) | [+0,51; +1,01] Pp |
+| 95 % Cluster-Bootstrap Titel (4 Cluster, `FEW_CLUSTERS`) | [+0,25; +1,17] Pp |
+| je Titel (Mittel) | XOM +1,27, JPM +0,86, MSFT +0,42, NVDA +0,17 Pp |
+| Anteil Ausschüttungen an der Differenz | +0,75 Pp (Wochenreihe gegen Tagesreihe +0,001 Pp) |
+
+- **Lesart:** Die Differenz entspricht der Ausschüttungsrendite der vier Großwerte über 13 Wochen. Sie ist positiv und liegt in der Größenordnung von 1 Pp, ist aber nicht auf den Rahmen übertragbar. Das breiteste Intervall, Cluster Titel mit nur 4 Clustern, unterschätzt die Unsicherheit noch. Die Zufallszahlen kommen aus `sha256(seed:zähler)`, der Bericht ist bytegleich reproduzierbar (Test).
+
+**Survivorship im öffentlichen Rahmen:** Skript `scripts/quant/research/survivorship-public-frame.mjs`, Bericht [`research/survivorship-public-frame-p3.1.json`](research/survivorship-public-frame-p3.1.json). Laufzeit etwa 90 s. Rahmen `V10_LIFECYCLE` (öffentlich, mit Lebenszyklus-Evidenz), Muster wie P4.1, Kursrendite, Fenster 2015-01-01..2025-06-30.
+- **Rahmen:** 4.327 Listings, davon 124 mit Lebenszyklus-Nachweis. Nur **19 Listings sind beendet (0,44 %)**: 17 durch Übernahme, 2 per Form 25. Davon enden 3 im Fenster.
+- **Bestand ohne Reihen:** Gezählt aus öffentlichen Metadaten, die Reihen selbst sind privat.
+  - Register V13 (`docs/quant-recovery/v13/delisted/register-1.0.0.json`): 4.322 beendete Ketten, davon 1.675 `QUALIFIED`. Bei 1.522 überlappt der Endjahr-Bucket das Fenster.
+  - Rahmen F1 laut Referenz: 4.719 statt 4.329 Listings, also 390 delistete Reihen bestehen die Rahmenregel (8,3 % von F1).
+  - Privater Abruf (`survivorship-control-v1.json`): 3.082 delistete Listings sind für Studien nutzbar.
+  - Der öffentliche Rahmen enthält damit **1,1 % der qualifizierten** bzw. **0,6 % der nutzbaren** delisteten Listings.
+- **Ereignisse:** alle 19 beendeten Listings voll, dazu 1.000 der übrigen nach `sha256(seed:securityId)`, Seed `p31-public-frame-1`. Die Engine läuft in Blöcken zu 100 Listings wegen ihres Werkbudgets, deshalb fehlen Kontrollen vom selben Datum.
+  - Beendete Listings: 17 mit Ereignissen, 442 Ereignisse, davon 4 im Horizont beendet und alle 4 zensiert (`OUTCOME_NOT_OBSERVED`). Zensurquote 0,90 %.
+  - Stichprobe: 866 Titel mit Ereignissen, 20.719 Ereignisse, 6 zensiert (0,029 %), keines mit Listing-Ende.
+  - Hochgerechnet auf den Rahmen: 89.699 Ereignisse, davon 0,49 % aus beendeten Listings, 0,004 % mit Listing-Ende im Horizont, Zensurquote 0,033 %.
+  - Gegenprobe mit der Vollerhebung (`--limit all`, etwa 4 Minuten, nicht committet): 92.602 Ereignisse, 0,48 %, 0,004 %, Zensurquote 0,024 %. Die Hochrechnung trifft also die Größenordnung.
+- **Lesart:** Der öffentliche Rahmen ist fast ein reiner Überlebenden-Rahmen. Die Zensurquote ist deshalb klein, sie misst aber nur, was im Rahmen endet, und nicht den Überlebenden-Effekt. Der Effekt selbst braucht P3.1 mit den privaten Reihen (`V13_DELISTED_F1`: `PRIVATE_DATA_UNAVAILABLE`, Ablauf R2, Freigabe FV-5). Die mittlere Nettorendite der beendeten Listings (+0,10 % je 13 Wochen, n = 438, 17 Titel) liegt unter der der Stichprobe (+3,03 %). Bei 17 Titeln, fast alle Übernahmen, ist das kein Befund.
+
+**Tests:** `quant/tests/backtest-p2-deficits.test.mjs` mit synthetischer Welt:
+- Ausschlüsse je Grund, Parität, Begrenzung auf den Anfang der Hash-Reihenfolge, Intervalle reproduzierbar, `FEW_CLUSTERS`;
+- t-Quantil gegen Tabellenwerte;
+- Survivorship: Schichten, Zensur bei Ende im Horizont, Hochrechnung, keine Titelnamen und keine Kurse im Bericht.
 
 ## 2. Zertifizierungsstand nach P2
 
@@ -219,4 +263,5 @@ node scripts/quant/research/pattern-total-return.mjs --work-dir <arbeitsablage> 
 ```
 
 - **Titel:** ohne `--tickers` alle 30 Titel der Vorlage.
+- **Population:** `node scripts/quant/research/pattern-total-return-population.mjs --work-dir <arbeitsablage> --out <bericht.json>` prüft denselben Rahmen wie oben und rechnet die gepaarte Differenz mit Intervallen. Ab 10 Titeln entfällt der Hinweis `FEW_CLUSTERS`.
 - **Abbruch:** Paritätsabweichung zum Runner (`PARITY_WITH_RUNNER_FAILED`) oder eine Abdeckung unter 95 % (Maß der Signalstudie). Im zweiten Fall sind die Ausschlüsse zu prüfen, bevor P4.2 vorgeschlagen wird.

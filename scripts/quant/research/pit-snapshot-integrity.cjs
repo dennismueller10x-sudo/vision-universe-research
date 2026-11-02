@@ -166,7 +166,7 @@ function forecast(series, req, asOf, cal, root = ROOT) {
       titlesToDate: Object.fromEntries(types.map(t => [t, new Set(byType[t].map(e => e.ticker)).size])), earliestDate: titlesDate, lowerBound: true,
       rule: 'erstes abgeschlossenes 6-Monats-Ergebnis einer Art mit mindestens ' + ureq.titles + ' Titeln (Builder zählt dann alle Titel der Art)' });
     const evMonths = [...new Set(ev.map(e => monthOf(e.date)))].sort();
-    out.push(gate('SETUP_BACKTEST', 'independence', evMonths.length, ureq.independentWeeks, 'EVENT_MONTHS', monthForecast(evMonths.length, ureq.independentWeeks, evMonths.length ? evMonths.at(-1) + '-01' : null, asOf, 'Ereignisse in jedem Folgemonat (der Builder zählt Monate mit Ereignissen)')));
+    out.push(gate('SETUP_BACKTEST', 'independence', evMonths.length, ureq.eventCalendarMonths ?? ureq.independentWeeks, 'EVENT_MONTHS', monthForecast(evMonths.length, ureq.eventCalendarMonths ?? ureq.independentWeeks, evMonths.length ? evMonths.at(-1) + '-01' : null, asOf, 'Ereignisse in jedem Folgemonat (der Builder zählt Monate mit Ereignissen)')));
     const firstM6 = minDate(types.map(t => nth(t, 1)));
     out.push({ kind: 'SETUP_BACKTEST', gate: 'entryVariant', unit: null, have: null, required: null, met: false, earliestDate: firstM6, lowerBound: true, rule: 'erst mit abgeschlossenen Ergebnissen messbar; ob es besteht, ist offen' });
     out.push({ kind: 'SETUP_BACKTEST', gate: 'oos', unit: null, have: null, required: ureq.oosMinPerSegment, met: false, earliestDate: null, rule: 'nicht prognostizierbar: braucht die Owner-Entscheidung A1–A6 (Segmentdefinition) und ' + ureq.oosMinPerSegment + ' effektive Fälle je Segment' });

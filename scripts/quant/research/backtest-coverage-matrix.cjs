@@ -75,6 +75,8 @@ const SOLVABILITY = Object.freeze({
 const RESEARCH_FILES = Object.freeze({
   P31: 'docs/quant/research/survivorship-sensitivity-p3.1.json',
   P41: 'docs/quant/research/pattern-total-return-p4.1.json',
+  P41P: 'docs/quant/research/pattern-total-return-population-p4.1.json',
+  P31P: 'docs/quant/research/survivorship-public-frame-p3.1.json',
   FV1: 'docs/quant/research/setup-independence-readings-fv1.json',
   FV4: 'docs/quant/research/catalog-private-expectations-fv4.json'
 });
@@ -180,6 +182,14 @@ function researchLine(id, r) {
     const d = r.paired.decomposition;
     return 'Research: ' + r.cohort.included + ' von ' + r.cohort.requested + ' Titeln mit bestätigter Gesamtrendite (ausgeschlossen: ' + (r.cohort.excluded.map(x => x.ticker + ' ' + x.reason).join(', ') || 'keiner') + '), ' + r.paired.pairs + ' Ereignispaare, Ausschüttungen im Mittel ' + pct(d.distributions.mean) + ' je Ereignis (' + r.horizonBars + ' Wochen), Wochenreihe gegen Tagesreihe ' + pct(d.weeklySeriesSource.mean, 3) + '; Parität mit dem Runner ' + r.parity.eventsCompared + ' Ereignisse, ' + r.parity.mismatches + ' Abweichungen';
   }
+  if (id === 'P41P') {
+    const p = r.paired, pp = r.population, ci = x => (x && x.interval95 ? '[' + pct(x.interval95[0]) + '; ' + pct(x.interval95[1]) + ']' : '–');
+    return 'Research: Vollerhebung ' + pp.profile + ' (' + thousands(pp.frame) + ' Listings) plus Golden-Preview, ' + pp.confirmedTotalReturn + ' von ' + thousands(pp.candidates) + ' Kandidaten mit bestätigter Gesamtrendite (öffentliche Obergrenze: nur Golden-Preview; Ausschlüsse ' + Object.entries(pp.excludedByReasonAndSource).map(([k, v]) => k.split('|')[0] + ' ' + thousands(v)).join(', ') + '); gepaarte Differenz ' + p.pairs + ' Paare, Mittel ' + pct(p.mean) + ', 95 % t ' + ci({ interval95: p.tInterval95 && p.tInterval95.interval }) + ', Cluster Titel×Jahr (' + p.clusterTitleYear.clusters + ') ' + ci(p.clusterTitleYear) + ', Cluster Titel (' + p.clusterTitle.clusters + ', zu wenige) ' + ci(p.clusterTitle) + '; Parität ' + r.parity.eventsCompared + '/' + r.parity.mismatches;
+  }
+  if (id === 'P31P') {
+    const f = r.frame, g = r.gap, e = r.events, est = e.frameEstimate, pc = (x, d = 2) => (x == null ? '–' : (x * 100).toFixed(d).replace('.', ',') + ' %');
+    return 'Research: öffentlicher Rahmen ' + f.profile + ' ' + thousands(f.listings) + ' Listings, davon ' + f.endedListings + ' beendet (' + pc(f.endedShare) + '); Register V13 ' + thousands(g.publicFrameEndedVsQualifiedRegister.registerQualified) + ' qualifizierte delistete Reihen (privat), F1 ' + (g.frameGrowthWithDelistedF1 ? '+' + g.frameGrowthWithDelistedF1.addedListings + ' Listings' : '–') + '; Ereignisse (Stichprobe ' + e.design.limit + ' + alle beendeten): Anteil aus beendeten Listings ' + pc(est.shareFromEndedListings) + ', Ende im Horizont ' + pc(est.shareWithListingEndWithinHorizon, 3) + ', Zensurquote ' + pc(est.censoringRate, 3) + '; ' + g.privateProfile.profile + ' ' + g.privateProfile.status;
+  }
   if (id === 'FV1') return 'A Monate ' + r.readingA.have + '/' + r.readingA.required + ' → ' + r.readingA.earliest + ' (Setup-Zeitgates frühestens ' + r.readingA.setupTimeGatesEarliest + '); B ISO-Wochen ' + r.readingB.have + '/' + r.readingB.required + ' → ' + r.readingB.earliest + ' (Setup-Zeitgates frühestens ' + r.readingB.setupTimeGatesEarliest + ', Untergrenze)';
   if (id === 'FV4') return r.privateCases + ' private Fälle mit Erwartung (specHash, Kennzahlen-Hash, private Eingabe-Hashes, Prüfzahl der Gegenrechnung), ' + r.publicCases + ' öffentliche; Lauf ' + r.run.mark + ' nicht ausgeführt';
   throw Error('RESEARCH_ID_UNKNOWN:' + id);
@@ -188,7 +198,7 @@ function fv1Approval(x) {
   return ['FV-1', 'Setup-Gate independence: Lesart der Schwelle',
     'Die Methodik nennt die Schwelle independentWeeks: 20 (seit Commit ' + x.origin.commit.slice(0, 10) + ' vom ' + x.origin.date + '), der Builder zählt im selben Commit verschiedene Kalendermonate mit Ereignissen (Label „verschiedene Monate mit Ereignissen“). Stand ' + x.asOf + ': A Monate ' + x.readingA.have + '/' + x.readingA.required + ', frühestens ' + x.readingA.earliest + ', das Gate bindet (Setup frühestens ' + x.readingA.setupTimeGatesEarliest.slice(0, 7) + '); B ISO-Wochen ' + x.readingB.have + '/' + x.readingB.required + ', frühestens ' + x.readingB.earliest + ', das Gate bindet nicht mehr (Setup-Zeitgates frühestens ' + x.readingB.setupTimeGatesEarliest + ', Untergrenze; oos bleibt offen). Keine der beiden Zählungen misst Unabhängigkeit (alle M6-Fenster überlappen, V10: effektive Fallzahl etwa 12,6 je Ereignisdatum). Vier frühere Vorlagen (V6, V8, V9, V10) sind nicht freigegeben.',
     'A) Monate bestätigen und das Feld ehrlich benennen (eventCalendarMonths, Zählung unverändert, nur Methodik-PR); B) Zählung auf ISO-Wochen (Gate-Änderung in build-backtest-certification.mjs mit Vorher/Nachher; Setup rund 13 Monate früher); C) V10-Vorschlag: Umbenennung wie A und ein neues Gate auf der effektiven Fallzahl (N_eff ≥ 50, ≥ 4 disjunkte M6-Fenster, frühestens 2029).',
-    'Empfehlung aus der Analyse (keine Änderung in diesem PR): A jetzt, C als eigene Entscheidung; B nicht, weil es das bindende Gate ohne statistischen Beleg um rund 13 Monate lockert. Bis zur Entscheidung gilt A unverändert'];
+    'Empfehlung aus der Analyse (keine Änderung in diesem PR): A jetzt, C als eigene Entscheidung; B nicht, weil es das bindende Gate ohne statistischen Beleg um rund 13 Monate lockert. Bis zur Entscheidung gilt A unverändert. A ist als eigener Entscheidungs-PR #1254 vorbereitet (Draft: Umbenennung mit Alias, Gate-Ergebnis vorher/nachher identisch); die Research-Leser hier lesen beide Namen'];
 }
 
 /* ------------------------------------------------------------------ Aufbau */
@@ -369,6 +379,7 @@ function build(src = sources()) {
   P('Erzeugt mit den Skripten unten, jeweils `--out` unter `docs/quant/research/`. Kein Bericht speist ein Gate, keine Zahl erscheint im Produkt (`gateInput: false`, `productionApproved: false`). Zustände in Abschnitt C kommen weiterhin aus dem Zertifizierungsartefakt. Ablauf der Freigabeläufe und Bewertung: [BACKTEST_P2_DEFIZITE.md](BACKTEST_P2_DEFIZITE.md).');
   P('');
   const META = { P31: ['P3.1 Survivorship-Sensitivität Pattern/Signal', 'scripts/quant/research/survivorship-sensitivity.cjs'], P41: ['P4.1 Gesamtrendite Pattern', 'scripts/quant/research/pattern-total-return.mjs'],
+    P41P: ['P4.1 Gesamtrendite, öffentliche Population und Intervall', 'scripts/quant/research/pattern-total-return-population.mjs'], P31P: ['P3.1 Survivorship im öffentlichen Rahmen', 'scripts/quant/research/survivorship-public-frame.mjs'],
     FV1: ['FV-1 Lesarten independence', 'scripts/quant/research/setup-independence-readings.cjs --as-of ' + STICHTAG], FV4: ['FV-4 Erwartung private Katalogfälle', 'scripts/quant/research/catalog-private-recheck.cjs --expect'] };
   P(table(['Nachweis', 'Bericht', 'Erzeuger', 'Schema', 'Aussage (Research)', 'Hash'], Object.keys(RESEARCH_FILES).map(id => {
     const r = research[id];

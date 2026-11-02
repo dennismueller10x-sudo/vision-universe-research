@@ -57,7 +57,7 @@ function micOfDoc(doc) {
   if (doc.identityEvidenceBinding) return ["XNAS", "XNYS", "XASE"].includes(doc.identityEvidenceBinding.mic) ? doc.identityEvidenceBinding.mic : null;
   return ({ NASDAQ: "XNAS", NYSE: "XNYS", AMEX: "XASE", "NYSE MKT": "XASE" })[String(doc.listingId).split(":")[1]] || null;
 }
-function engineListing(securityId, d, levels) {
+export function engineListing(securityId, d, levels) {
   const lc = d.listingLifecycle || null, validTo = lc && lc.lastTradeDate ? lc.lastTradeDate : null;
   const identity = { mic: micOfDoc(d), instrumentClass: "COMMON_STOCK", primary: true, validFrom: d.listingStart, availableAt: d.masterGeneratedAt || d.asOf + "T00:00:00Z", sourceHash: d.identityHash };
   if (validTo) identity.validTo = validTo;
@@ -68,7 +68,7 @@ function engineListing(securityId, d, levels) {
   });
   return { listingId: d.listingId, issuerId: securityId, securityId, identity, bars };
 }
-function studyInput(spec, calendar, listings, returnBasis) {
+export function studyInput(spec, calendar, listings, returnBasis) {
   return { asOf: spec.asOf, sourceMode: "HISTORICAL_SIMULATION", cohortMode: "CONDITIONAL_CURRENT_CLASSIFICATION", executionClock: "OBSERVED_WEEKLY_DATES", returnBasis, currency: "USD",
     registration: { id: spec.id, version: spec.version || "1.0.0", frozenAt: spec.registeredAt, analysisMode: "EXPLORATORY" }, entryDelayBars: 1,
     costs: { basis: "PER_SIDE_NOTIONAL", feeBps: spec.costs.feeBps, slippageBps: spec.costs.slippageBps }, expectedCalendar: calendar,
@@ -100,7 +100,7 @@ const key = (e) => e.issuerId + "|" + e.signalDate;
  * Kern: spec (PATTERN_EVIDENCE, benchmark NONE), population { calendar, docOf(id) }, daily(securityId) -> dailyOf-Ergebnis
  * oder null, runner(spec) -> Runner-Ergebnis mit QA-Block (Paritaet). Liefert den Bericht ohne Ereigniszeilen.
  */
-export function compute({ spec, population, daily, runner }) {
+export function compute({ spec, population, daily, runner }, options = {}) {
   if (spec.kind !== "PATTERN_EVIDENCE") fail("KIND_NOT_SUPPORTED", spec.kind);
   if (spec.benchmark !== "NONE") fail("BENCHMARK_MUST_BE_NONE_NO_TOTAL_RETURN_BENCHMARK_IN_REPOSITORY");
   R.validateSpec(spec);
@@ -156,7 +156,10 @@ export function compute({ spec, population, daily, runner }) {
     priceReturn: summarize(pr), totalReturn: summarize(tr),
     paired: { pairs: pairs.length, meanDifference: mean(pairs), medianDifference: median(pairs), min: pairs.length ? Math.min(...pairs) : null, max: pairs.length ? Math.max(...pairs) : null, direction: "Gesamtrendite minus Kursrendite je Ereignis",
       decomposition: { distributions: { ...stat(dividends), rule: "Gesamtrendite minus Kursrendite derselben Tagesreihe" }, weeklySeriesSource: { ...stat(sourceNoise), rule: "Kursrendite der Tagesreihe minus Kursrendite der Wochenreihe (discover-series-long, gerundete Schluesse)" } } } };
-  return { ...body, reportHash: sha(body) };
+  const rep = { ...body, reportHash: sha(body) };
+  // Nur auf Anfrage und nie im Bericht: Paare je Ereignis fuer Intervalle (pattern-total-return-population.mjs).
+  if (options.pairRows) Object.defineProperty(rep, "pairRows", { enumerable: false, value: both.map((e, i) => ({ issuerId: e.issuerId, signalDate: e.signalDate, difference: pairs[i], distributions: dividends[i] })) });
+  return rep;
 }
 
 /** Was das Gate returnBasis (PATTERN_EVIDENCE) mit diesem Bericht sagen wuerde. Liest nur; aendert nichts. */
