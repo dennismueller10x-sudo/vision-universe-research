@@ -377,3 +377,24 @@ Ergänzung, nichts oben ist umgeschrieben. Keine Handelsregel, kein Parameter, k
 - **#1233, #1234:** Die roten Läufe vom 01.11. (Core 41343673038, Quality Gates 41343673046 bzw. 41343953479/41343953541) liefen auf dem Merge mit der damaligen Basis hist-exec `53e13fb` (`bd22510 Merge 08492df into 53e13fb`). Rot waren `quant/tests/technical-ap8-l1.test.mjs` L1–L3 (Schritt Quant-2.0-Regression) und Core DQ-SF8 (Test 220): Artefakte bzw. Tests der alten Basis, nicht der PRs. Behebung: Merge von `main` `122f5d9` (konfliktfrei), keine Fachlogik geändert. #1233 und #1234 sind nicht gestapelt (gleiche Basis, disjunkte Abschnitte); ein Probemerge beider ist konfliktfrei.
 - **#1235:** Konflikt in `cert-prep-top5.mjs` (nur die Prüferversion) per Merge gelöst, `sf9-cert-prep-check-1.2.2`. ALL13-Plan 1.0.1: Feld `token` → `sourcePhrase` (36 Parameter), Basis TOP5 1.1.1, Pins neu (`PINNED_ALL13_CONTENT_SHA256` `d45ee3d1…`, Datei `bd4dcc6e…`). `validateAll13` 0 Abweichungen, `--run-tests` 13/13 MET, `--mutation-probes` 41/41 ROT, Engines unverändert.
 - **Evidenzdokument 1.1.0:** Klassen 1–4 der Blocker, Auswertung vorhandener Nachweise (E-REFCODE für C01/C02, E-SAMPLE für die statistische Aussagekraft), Branch-Nachweise gekennzeichnet. Zählung und Einordnung stehen im Dokument (Abschnitt 9), nicht hier. Nach dem Merge von #1233, #1234 oder #1235 erkennt der Erzeuger den neuen Stand selbst; das Dokument ist dann neu zu erzeugen (`--out`), sonst meldet `MC3-EV-DOC-EQUALS-GENERATOR` eine Abweichung.
+
+### 12.2 Nachtrag Master Completion 3.2 (P3, 02.11.2026)
+
+Keine Handelsregel, kein Parameter, keine Engine, keine Registrierung, kein CC-Kriterium, kein Gate, keine gepinnte Datei und nichts unter `supertrader/data` ist geändert. Kein Merge, keine Secrets, kein Lauf.
+
+- **Evidenzdokument 1.2.0** (Erzeuger `st-mc3-evidence-matrix-1.2.0`, Basis `main` `fecb667`):
+  - **Die drei OFFEN-Punkte** (Quellen-/Regeltreue von C06, C07, C09) sind eingeordnet, nicht gelöst. Ihr einziger technischer Anteil ist die ALL13-Vorbereitung #1235. Sie belegt Regeltreue-Tests, schließt aber CC-1 und CC-3 nicht; der ALL13-Plan führt `Cxx-CC1`/`Cxx-CC3` selbst als offen (Klasse d, Owner). Damit hebt #1235 die Dimension höchstens auf TEILWEISE (Teilbeitrag). Die Punkte sind BLOCKIERT, Klasse 1. Für C09 nennen Matrix und Plan auf `main` keinen CC-1/CC-3-Blocker; E-CC13 trägt ihn aus dem Readiness-Artefakt nach (ebenso CC-3 bei C10 und CC-1 bei C11, ohne Statuswechsel).
+  - **Freigabepakete** (Dokument Abschnitt 10): Alle BLOCKIERT-Punkte stehen in zehn Paketen FP-ST-01 … FP-ST-10, je mit Entscheidungsfrage, Optionen, Empfehlung, Kosten- und Lizenzbezug (nur benannt), Voraussetzungen, Frist und Wirkung je Punkt. Einzige harte Frist: FP-ST-02, die Aktivierung von SF6-PAPER-2027 vor dem 01.01.2027 (erste Sitzung 04.01.2027). Test `MC3-EV-PACKAGES`: jeder BLOCKIERT-Punkt in genau einem Paket.
+  - Zählung und Pakete stehen im Dokument (Kopf, Abschnitte 9 und 10), nicht hier.
+- **Nach dem Merge von #1233, #1234 oder #1235** das Dokument im Merge-PR bzw. direkt danach neu erzeugen, sonst ist `MC3-EV-DOC-EQUALS-GENERATOR` rot:
+
+  ```bash
+  node scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs --out docs/SUPERTRADER_13_METHODS_EVIDENCE.md
+  node --test scripts/supertrader/tests/sf-mc3-evidence-matrix.test.mjs
+  node scripts/supertrader/guard-protected-paths.mjs --base origin/main
+  ```
+
+  Die Zeile des PR in §8.1 darf nach dem Merge entfallen; der Erzeuger nutzt dann die feste Nummer (vor dem Merge bricht er weiter ab).
+- **Probe-Merge** (lokal, Wegwerf-Branch, nicht gepusht und gelöscht): dieser Branch + #1233 `f12855d` + #1234 `5c31527` + #1235 `eacfc9e`, konfliktfrei. Vor der Neuerzeugung waren `MC3-EV-DOC-EQUALS-GENERATOR`, `-CLASSES` und `-MERGE-FORECAST` erwartungsgemäß rot. Nach der Neuerzeugung meldete `--check` MATCH. Ergebnis: Supertrader-Suite 1.109 Tests, 0 Fehler (12 übersprungen), Core 308/308.
+  - Erwartete Zählung nach allen drei Merges, gleich der Vorschau in Abschnitt 10.4 des Dokuments: BELEGT 23, TEILWEISE 58, OFFEN 0, BLOCKIERT 49 (Klasse 1 14, Klasse 2 22, Klasse 4 13), Pakete unverändert. Der Ausgangsstand nach den Regeln 1.0.0 wird dann als BELEGT 22, TEILWEISE 49, OFFEN 16, BLOCKIERT 43 ausgewiesen.
+  - Statuswechsel kommen nur aus #1233: Stopps/Slippage/Kosten von C01 und C02 TEILWEISE → BELEGT. #1234 und #1235 ordnen nur Blocker um (V13-Lauf wird Owner-Freigabe, ALL13 „auf main, noch nicht ausgewertet“).
