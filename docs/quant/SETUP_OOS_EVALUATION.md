@@ -125,7 +125,7 @@ Arbeitsgrundlage des Owners vom 31.10. (keine Norm): Schnitt 2027-05-31, Embargo
 | Embargo | mindestens längster Horizont | 183 Kalendertage (M6) | konsistent |
 | Kriterium | `OOS_DIRECTIONAL_REPLICATION`, kein wirtschaftlicher Vorteil | SIGN_REPLICATES auf MEDIAN_EXCESS | konsistent |
 | Ereignisarten | nicht festgelegt | getrennt | braucht eine Anpassung des Zertifizierungs-Builders: je Art auswerten, Gate besteht nur bei allen freigegebenen Arten. Das ist eine normative Entscheidung, deshalb nicht umgesetzt |
-| andere Gates | `completedOutcomesM6` 100, `historyDates` 120, `historySpanDays` 180, `titles` 20, `independentWeeks` 20, Owner-Freigabe | unverändert | keine Wirkung |
+| andere Gates | `completedOutcomesM6` 100, `historyDates` 120, `historySpanDays` 180, `titles` 20, `eventCalendarMonths` 20 (bis FV-1 `independentWeeks`), Owner-Freigabe | unverändert | keine Wirkung |
 
 **Umgesetzt, ohne normative Wirkung**
 - **A5:** Die Segmentierung kennt das optionale Feld `countBy` (`ROWS` als Standard wie bisher, oder `EVENT_DAY`). Bei `EVENT_DAY` zählt `n` verschiedene Ereignistage, `nRows` steht daneben; die Kennzahl bleibt der Median über alle Zeilen. Die Python-Gegenrechnung (`verify-setup-oos.py`) rechnet beides mit.

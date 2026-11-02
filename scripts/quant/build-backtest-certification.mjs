@@ -130,10 +130,15 @@ const sigKind = kind("SIGNAL_BACKTEST", "Signal-Backtest", [
 
 /* ---------- D: Setup (nur veroeffentlichte Staende) ---------- */
 const req = M.kinds.SETUP_BACKTEST.requirements;
+/* Entscheidung FV-1: Die Schwelle heisst eventCalendarMonths - gezaehlt werden
+   verschiedene Kalendermonate (JJJJ-MM) mit mindestens einem Ereignis, keine
+   Wochen und keine unabhaengigen Faelle. Wert und Zaehlung sind unveraendert;
+   ein Vertrag mit dem alten Schluessel independentWeeks wird als Alias gelesen. */
+const eventCalendarMonthsRequired = C.requirement(req, "eventCalendarMonths", M.kinds.SETUP_BACKTEST.legacyRequirementAliases);
 const st = outcomes.study, hist = outcomes.history;
 const completedM6 = Math.max(...["SETUP_CONFIRMED", "SETUP_NEW"].map((k) => st[k].variants.NEXT_CLOSE.m6.status.COMPLETED));
 const completedTitles = Math.max(...["SETUP_CONFIRMED", "SETUP_NEW"].map((k) => (st[k].variants.NEXT_CLOSE.m6.status.COMPLETED ? st[k].titles : 0)));
-const eventWeeks = new Set(outcomes.events.map((e) => e[2].slice(0, 7))).size;
+const eventCalendarMonths = new Set(outcomes.events.map((e) => e[2].slice(0, 7))).size;
 const variantGate = st.SETUP_CONFIRMED.variantGate;
 const firstEvent = outcomes.events.map((e) => e[2]).sort()[0] || null;
 /* OOS (setup-oos-1.0.0): ohne freigegebene Segmentdefinition immer FAIL
@@ -149,7 +154,7 @@ const setupGates = [
   G("historySpan", "Spanne der Historie", "HISTORY", hist.spanDays >= req.historySpanDays, hist.spanDays + " Tage", req.historySpanDays + " Tage", "SETUP_HISTORY_SPAN_TOO_SHORT"),
   G("completedOutcomes", "abgeschlossene 6-Monats-Ergebnisse", "HISTORY", completedM6 >= req.completedOutcomesM6, completedM6, req.completedOutcomesM6, "COMPLETED_OUTCOMES_TOO_FEW"),
   G("titles", "Titel mit abgeschlossenem Ergebnis", "HISTORY", completedTitles >= req.titles, completedTitles, req.titles, "TOO_FEW_TITLES"),
-  G("independence", "verschiedene Monate mit Ereignissen", "HISTORY", eventWeeks >= req.independentWeeks, eventWeeks, req.independentWeeks, "EVENTS_CLUSTERED_IN_TIME"),
+  G("independence", "verschiedene Monate mit Ereignissen", "HISTORY", eventCalendarMonths >= eventCalendarMonthsRequired, eventCalendarMonths, eventCalendarMonthsRequired, "EVENTS_CLUSTERED_IN_TIME"),
   G("returnBasis", "Gesamtrendite", "STRUCTURAL", outcomes.returnType === "TOTAL_RETURN", outcomes.returnType === "TOTAL_RETURN" ? "Gesamtrendite" : "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite", null, "TOTAL_RETURN_NOT_IN_THIS_RUN"),
   G("survivorship", "Überlebende (vorwärts gesammelt, kein Fall weggelassen)", "STRUCTURAL", true, "Universum des jeweiligen Tages; INCOMPLETE wird gezählt"),
   G("entryVariant", "Einstiegsvarianten stimmen überein", "QUALITY", variantGate === "PASS", { PASS: "übereinstimmend", NOT_MEASURABLE_YET: "noch nicht messbar" }[variantGate] || "Abweichung über 1 Pp – Owner-Entscheidung", "Δ Median ≤ 1 Pp", variantGate === "NOT_MEASURABLE_YET" ? "VARIANTS_NOT_MEASURABLE_YET" : variantGate),
