@@ -7,7 +7,7 @@ Die Gates und ihre Schwellen bleiben unverändert (`quant/methodology/backtest-c
 - `historySpanDays` 180
 - `completedOutcomesM6` 100
 - `titles` 20
-- `independentWeeks` 20
+- `eventCalendarMonths` 20 (verschiedene Kalendermonate mit Ereignissen; bis Entscheidung FV-1 `independentWeeks`)
 - `oosMinPerSegment` 30
 
 Hinzu kommt die Owner-Freigabe in `setup-state-v1.json`.
@@ -89,7 +89,7 @@ Datenwirkung: SETUP_CONFIRMED erreicht 30 rohe Fälle je Segment schnell, 30 eff
 | Option | Wirkung | Umsetzung |
 |---|---|---|
 | roh (heute) | Rund 90 SETUP_NEW-Ereignisse an einem Tag würden das Minimum allein erfüllen. Sie sind stark querschnittlich korreliert (gleicher Markttag); die 30 täuschen Unabhängigkeit vor | keine Änderung |
-| **effektiv** | Ein Cluster ist ein Ereignistag (konservativ, passend zur V10-Unabhängigkeitsanalyse und zum Gate `independentWeeks`) | **Engine-Änderung** im Auswerter (`setup-oos.cjs`): Zählung je Cluster. Eigener PR mit Vorher/Nachher und Python-Gegenrechnung (`verify-setup-oos.py`); die Schwelle 30 bleibt |
+| **effektiv** | Ein Cluster ist ein Ereignistag (konservativ, passend zur V10-Unabhängigkeitsanalyse und zum Gate `eventCalendarMonths`, bis FV-1 `independentWeeks`) | **Engine-Änderung** im Auswerter (`setup-oos.cjs`): Zählung je Cluster. Eigener PR mit Vorher/Nachher und Python-Gegenrechnung (`verify-setup-oos.py`); die Schwelle 30 bleibt |
 
 **Empfehlung: effektiv, Cluster = Ereignistag.** Tabelle 1 setzt das voraus.
 
@@ -107,7 +107,7 @@ Datenwirkung: SETUP_CONFIRMED erreicht 30 rohe Fälle je Segment schnell, 30 eff
 | `oos` | FAIL `OOS_NOT_MEASURABLE_YET` | bis etwa 2027-11: `OOS_NOT_MEASURABLE_YET` bzw. `OOS_SEGMENT_TOO_SMALL`; ab etwa 2028-01-08 messbar (PASS oder `OOS_DIRECTION_NOT_REPLICATED`) |
 | `completedOutcomesM6` ≥ 100 | 0 | etwa Anfang April 2027 (rund 90 SETUP_NEW je Tag ab 2027-03-26) |
 | `historyDates` ≥ 120, `historySpanDays` ≥ 180 | 23 / 49 | etwa 2027-03 (bei täglicher Veröffentlichung) |
-| `independentWeeks` ≥ 20 | 2 | wächst wöchentlich |
+| `eventCalendarMonths` ≥ 20 (bis FV-1 `independentWeeks`) | 2 | wächst je Kalendermonat mit mindestens einem Ereignis |
 | Owner-Freigabe `setup-state-v1.json` | NOT_CERTIFIED | unverändert. Eine Zertifizierung bleibt eine eigene Owner-Entscheidung, auch wenn alle Gates PASS zeigen |
 
 Frühestens um den 2028-01-08 kann SETUP_BACKTEST technisch alle Gates erfüllen. Ein PASS heißt dann nur „Richtung repliziert“.

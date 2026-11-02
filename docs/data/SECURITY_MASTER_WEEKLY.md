@@ -33,6 +33,7 @@ Bisher gab es für den Master keinen Workflow; der letzte Lauf war 34611793308 a
 | `scripts/market/build-company-names.mjs` | unverändert; aufgerufen nur mit `--sec` (SEC und Repository-Quellen, keine Tiingo-Metadaten) |
 | `scripts/market/security-master-refresh-gate.mjs` | neu: Übernahme-Gate G1–G10, fail closed (Exit 4), Bericht als CI-Artefakt; `--approved-changes` für den einmaligen Wechsel (P3) |
 | `scripts/market/security-master-v130-evidence.mjs` | neu: Nachweis des Klassifiziererwechsels, schreibt nur nach `--out` |
+| `scripts/market/security-master-switch-preflight.mjs` | Prüfungen am Lauftag 1.1.0 → 1.3.0, nur lesend: Frist der SF8-Eingangsprüfung (`--deadline`), Bytegleichheit Probe/produktiv (`--compare`), Gate-Bedingungen (`--gate-report`). Ablauf: `docs/data/security-master/SECURITY_MASTER_1_3_0_FREIGABE.md` |
 | `.github/workflows/security-master-weekly.yml` | neu: nur `workflow_dispatch`, `commit` standardmäßig `false`, Zeitplan nur als Kommentar, ADR-005, keine Secrets |
 | `core/registry/domains.json` | neue Datenart `usSecurityMaster`; `companyNames.workflow` ergänzt; `securityMaster` (Produkteignung) bleibt ohne Workflow |
 | `quant/tests/security-master-weekly.test.mjs` | Abschaltung, ADR-005, genaue Commit-Pfade, Gate-Fälle, Erzeuger fail closed und idempotent |
