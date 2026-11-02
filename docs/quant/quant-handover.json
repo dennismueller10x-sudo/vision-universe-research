@@ -1,0 +1,363 @@
+{
+ "schemaVersion": "quant-handover-1.0.0",
+ "version": "1.0.0",
+ "asOf": "2026-11-02",
+ "human": "docs/quant/QUANT_FINAL_HANDOVER.md",
+ "entry": "docs/VISION_UNIVERSE_ARCHITECTURE.md",
+ "rules": "CLAUDE.md",
+ "statusVocabulary": {
+  "DONE": "auf main und wirksam",
+  "DISABLED": "implementiert, ausgeschaltet",
+  "BLOCKED": "wartet auf Daten oder Owner",
+  "LONG_TERM": "spaetere Weiterentwicklung"
+ },
+ "ownerRules": [
+  "nur ausdruecklich freigegebene PRs mergen",
+  "keine Quant-Grundlagenforschung/Alpha-Suche",
+  "keine Aenderung an Zertifizierungsgates",
+  "keine neuen kostenpflichtigen Anbieter",
+  "keine oeffentliche Aktivierung ohne Freigabe",
+  "Fachmodelle nur in eigenem PR mit Vorher/Nachher",
+  "generierte Daten nur ueber Erzeuger",
+  "Identitaet nur ueber core/identity.js",
+  "eine Preiswahrheit (ADR-002)",
+  "Gates nicht abschwaechen, produkteigene PRs"
+ ],
+ "product": {
+  "live": [
+   {
+    "route": "quant/#/radar",
+    "status": "DONE"
+   },
+   {
+    "route": "quant/#/screener",
+    "status": "DONE"
+   },
+   {
+    "route": "quant/#/strategien",
+    "status": "DONE"
+   },
+   {
+    "route": "quant/#/aktie/<T>",
+    "status": "DONE"
+   },
+   {
+    "route": "quant/#/aktie/<T>/zahlen",
+    "status": "DONE"
+   },
+   {
+    "route": "quant/#/backtest",
+    "status": "DONE",
+    "note": "Stand je Art ohne Ergebniszahl"
+   },
+   {
+    "route": "quant/#/methodik",
+    "status": "DONE"
+   }
+  ],
+  "disabled": [
+   {
+    "name": "Interne Backtest-Vorschau",
+    "page": "konto/admin/backtests/",
+    "worker": "workers/vu-account/src/backtests.mjs",
+    "switch": "VU_BACKTEST_REVIEW_ENABLED (wrangler.toml)",
+    "role": "backtest_reviewer",
+    "activationPR": 1227,
+    "status": "DISABLED"
+   },
+   {
+    "name": "Research-Adapter",
+    "file": "quant/api/backtest-research-adapter.js",
+    "status": "DISABLED"
+   },
+   {
+    "name": "Vorschau-Dienst",
+    "file": "quant/api/backtest-preview-service.cjs",
+    "status": "DISABLED"
+   }
+  ],
+  "backtestKinds": {
+   "SAME_STOCK_REPLAY": "LIMITED",
+   "PATTERN_EVIDENCE": "LIMITED",
+   "SIGNAL_BACKTEST": "LIMITED",
+   "SETUP_BACKTEST": "COLLECTING_HISTORY",
+   "STRATEGY_BACKTEST": "COLLECTING_HISTORY",
+   "FACTOR_RANKING_BACKTEST": "COLLECTING_HISTORY"
+  },
+  "certifiedKinds": [],
+  "productionApproved": false,
+  "methods": [
+   "MONTE_CARLO",
+   "WALK_FORWARD",
+   "OUT_OF_SAMPLE",
+   "MARKET_REGIME",
+   "PARAMETER_SENSITIVITY",
+   "EVENT_DRIVEN",
+   "PORTFOLIO_REBALANCING"
+  ],
+  "catalog": {
+   "dir": "docs/quant/backtest-catalog",
+   "generation": 1,
+   "entries": 21,
+   "stateA": 20,
+   "stateB": 1,
+   "catalogHash": "7ea6383e7260a5fb40b95e07066b625c73d0beca74e332c3c79c1733d7cb6e44",
+   "securityMasterGeneration": "us-security-master-1.1.0",
+   "bundleHash": "aefb5942c8d9c8cb4ec6811caa597e1153b914cf48a3a473793ac05b93ecca4a"
+  }
+ },
+ "data": {
+  "providers": {
+   "tiingo": "Commercial (Owner 13.09./31.10.2026); keine Rohdaten-Downloads",
+   "sec-edgar": "public",
+   "twelve-data": "Free"
+  },
+  "securityMaster": {
+   "productive": "us-security-master-1.1.0",
+   "sha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+   "registry": "quant/config/security-master-generations.json",
+   "frozenCopy": "quant/frozen/security-master/us-security-master-1.1.0.json",
+   "next": "us-security-master-1.3.0 (BLOCKED, Owner)",
+   "approvalList": "docs/data/security-master/v130-approved-changes-1.1.0.json",
+   "approvalTemplatePR": 1240
+  },
+  "identity": {
+   "module": "core/identity.js",
+   "tickerReuseQuarantine": "quant/config/ticker-reuse-quarantine.json",
+   "duplicateResolution": "quant/config/security-master-duplicate-resolution.json"
+  },
+  "research": {
+   "frozen": "docs/quant-recovery/**",
+   "freezeManifest": "docs/data/security-master/v130-quant-freeze.json",
+   "verdict": "kein robuster Ueberschuss gegen SPY nach Holm (V10-V13c)"
+  },
+  "privateArchive": {
+   "readme": "docs/quant-recovery/v13/archive/README.md",
+   "workflow": ".github/workflows/quant-v13-archive.yml",
+   "secrets": [
+    "V13_ARCHIVE_PRIVATE_KEY",
+    "VU_HISTORY_S3_ACCESS_KEY_ID",
+    "VU_HISTORY_S3_SECRET_ACCESS_KEY",
+    "VU_HISTORY_S3_BUCKET",
+    "VU_HISTORY_S3_ENDPOINT",
+    "VU_HISTORY_S3_REGION"
+   ],
+   "status": "Generation 2.0.0 in R2, unabhaengig wiederhergestellt (Run 41399476800); 1.2.0 unveraendert erhalten",
+   "generations": {
+    "1.2.0": {
+     "inR2": true,
+     "weakParts": 1,
+     "note": "aktuell von restore/demos/catalog gelesen"
+    },
+    "2.0.0": {
+     "inR2": true,
+     "weakParts": 0,
+     "manifest": "docs/quant-recovery/v13-archive-gen2/manifest-2.0.0.json",
+     "pr": 1241
+    }
+   },
+   "bucketUsageGB": "ca. 7.78 von 8"
+  }
+ },
+ "interfaces": {
+  "discover": {
+   "reads": [
+    "scripts/market/universe-source.mjs#resolveProductUniverse",
+    "quant/data/market/factors/factors-FULL_UNIVERSE.json",
+    "quant/data/market/discover-series[-long]",
+    "quant/data/sec/*",
+    "quant/data/technical/"
+   ],
+   "producer": "scripts/discover/build-discover-data.mjs",
+   "gate": "Discover-Isolation, Frontend-Budget"
+  },
+  "technical": {
+   "reads": [
+    "quant/data/product/technical-signals-v1/",
+    "quant/data/product/universe-list-v1.json.gz",
+    "quant/config/ticker-reuse-quarantine.json"
+   ],
+   "producer": "scripts/technical/world/build-screener.mjs",
+   "writes": "technical/data/screener-v1.json"
+  },
+  "fundamental": {
+   "reads": [
+    "quant/data/sec/consumer",
+    "quant/data/sec/consumer-history"
+   ]
+  },
+  "supertrader": {
+   "reads": [
+    "discover/data/stock-index/US_REAL.json",
+    "discover/data/stocks/US_REAL/",
+    "discover-series-long"
+   ],
+   "gate": "Supertrader Gate A (scripts/supertrader/guard-protected-paths.mjs)",
+   "owner": "bisheriger Supertrader-Chat, PRs *-jnejw3 nicht ueberschreiben"
+  },
+  "watchlist": {
+   "reads": [
+    "quant/data/product/factor-evidence-v1/",
+    "quant/data/product/universe-list-v1.json.gz",
+    "quant/data/universe/instruments/",
+    "technical/data/screener-v1.json",
+    "quant/config/ticker-reuse-quarantine.json"
+   ],
+   "producer": "scripts/watchlist/build-summary.mjs"
+  },
+  "accounts": {
+   "worker": "workers/vu-account",
+   "preview": "/v1/admin/backtests*",
+   "role": "backtest_reviewer",
+   "autoDeploy": ".github/workflows/account-production-auto.yml"
+  }
+ },
+ "protection": {
+  "uiLockBase": "docs/quant-recovery/v51/ui-protection.json (eingefroren)",
+  "uiLockRevisions": "docs/quality/ui-protection-revisions.json (nach #1236)",
+  "freezeTests": [
+   "SMF-1..7",
+   "MG-1..6",
+   "MCH",
+   "UIP-1/2"
+  ],
+  "neverLose": [
+   "docs/quant-recovery/**",
+   "quant/frozen/",
+   "quant/config/security-master-generations.json",
+   "docs/quant/backtest-catalog/",
+   "docs/quant-recovery/v13/archive/manifest-*.json",
+   "R2 research-snapshots/quant-v13/"
+  ]
+ },
+ "openPullRequests": [
+  {
+   "pr": 1241,
+   "title": "V13-Archiv Generation 2.0.0 (Schluesselpruefung, neue Generation, unabhaengiger Restore)",
+   "needs": "Owner-Freigabe; danach Leser umstellen, dann Loeschentscheidung 1.2.0",
+   "status": "BLOCKED",
+   "workPackage": "H3"
+  },
+  {
+   "pr": 1227,
+   "title": "Aktivierung interne Vorschau",
+   "needs": "Owner-Freigabe, #1242 empfohlen",
+   "status": "BLOCKED",
+   "workPackage": "H2"
+  },
+  {
+   "pr": 1242,
+   "title": "iPhone-Layout der Vorschau",
+   "needs": "Owner-Freigabe",
+   "status": "BLOCKED",
+   "workPackage": "H2"
+  },
+  {
+   "pr": 1236,
+   "title": "NVDA-Browser-QA, versionierte UI-Sperre",
+   "needs": "Owner-Freigabe",
+   "status": "BLOCKED",
+   "workPackage": "Qualitaet"
+  },
+  {
+   "pr": 1240,
+   "title": "Freigabevorlage Security Master 1.3.0",
+   "needs": "Owner-Datum; Liste am Lauftag neu",
+   "status": "BLOCKED",
+   "workPackage": "H1"
+  },
+  {
+   "pr": 1119,
+   "title": "132 SEC-Statuskorrekturen",
+   "needs": "nach 1.3.0",
+   "status": "BLOCKED",
+   "workPackage": "H6"
+  },
+  {
+   "pr": 1203,
+   "title": "Sitzungsuebergaben 3.0.0-5.0.0",
+   "needs": "optional mergen (nur Doku)",
+   "status": "BLOCKED",
+   "workPackage": null
+  }
+ ],
+ "workPackages": [
+  {
+   "id": "H1",
+   "name": "Security Master 1.3.0 am selben Tag (Probelauf, Liste, Gate, Suiten, Discover-Neubau, commit, Marktdaten-Lauf, Generation 1.3.0)",
+   "needs": "Owner-Datum",
+   "ref": "PR #1240"
+  },
+  {
+   "id": "H2",
+   "name": "Interne Aktivierung und Praxistest",
+   "needs": "Owner-Freigabe",
+   "ref": "#1227, #1242"
+  },
+  {
+   "id": "H3",
+   "name": "V13-Archivgeneration 2 abschliessen / Loeschentscheidung alt",
+   "ref": "Abschnitt F"
+  },
+  {
+   "id": "H4",
+   "name": "Oeffentliche Backtest-Integration #/backtest",
+   "needs": "Praxistest, Owner, UI-Revision"
+  },
+  {
+   "id": "H5",
+   "name": "Setup-OOS A1-A6",
+   "needs": "Owner bis ca. 2027-03-26"
+  },
+  {
+   "id": "H6",
+   "name": "#1119",
+   "needs": "H1"
+  },
+  {
+   "id": "H7",
+   "name": "Katalog-Generation 2 gegen 1.3.0",
+   "needs": "H1",
+   "optional": true
+  }
+ ],
+ "organisation": {
+  "from": "2026-11-02",
+  "strategy": "zentraler ChatGPT-Chat fuer Strategie und Produktentscheidungen; ein zentraler Claude-Code-Chat fuer die Umsetzung aller Produktwelten",
+  "quantChat": "abgeschlossen mit dieser Uebergabe",
+  "workPackagesOwner": "zentraler Claude-Code-Chat, jede Ausfuehrung mit ausdruecklicher Owner-Freigabe"
+ },
+ "lastMerges": [
+  {
+   "pr": 1239,
+   "commit": "08edec9e59"
+  },
+  {
+   "pr": 1237,
+   "commit": "cc95376185"
+  },
+  {
+   "pr": 1238,
+   "commit": "aa0f10ae98"
+  },
+  {
+   "pr": 1243,
+   "commit": "siehe Merge von #1243"
+  }
+ ],
+ "closed": [
+  {
+   "pr": 1224,
+   "reason": "ersetzt durch #1219"
+  }
+ ],
+ "mainVerification": {
+  "commit": "aa0f10ae98",
+  "quant": "3857/0",
+  "core": "308/0",
+  "discoverScreenerSupertrader": "1578/0",
+  "technical": "61/0",
+  "python": "OK",
+  "isolation": "sauber"
+ }
+}
