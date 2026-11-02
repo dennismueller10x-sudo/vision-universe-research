@@ -209,7 +209,7 @@ test('MC3-EV-BRANCH-EVIDENCE: Nachweise aus #1233/#1234/#1235 zählen erst auf m
   assert.equal(dimOf(m13, 'C06', 'D1').status, STATUS.BLOCKIERT);
   assert.equal(dimOf(m13, 'C04', 'D2').status, STATUS.TEILWEISE, 'BOUNDARY ist kein Teilbeitrag');
   // geänderte Prüfabdeckung ohne bekannte Fassung bricht ab
-  assert.throws(() => buildModel({ ...BUILT.src, histExecSrc: BUILT.src.histExecSrc.replace(HIST_COVERAGE.V1_0, 'missedStopCheck: x') }), /HIST_EXECUTION_COVERAGE_CHANGED/);
+  assert.throws(() => buildModel({ ...BUILT.src, histExecSrc: BUILT.src.histExecSrc.replace(HIST_COVERAGE.V1_0, 'missedStopCheck: x').replace(HIST_COVERAGE.V1_1, 'missedStopCheck: x') }), /HIST_EXECUTION_COVERAGE_CHANGED/);
 });
 
 // ---------------------------------------------------------------- 1.2.0: OFFEN-Punkte, Freigabepakete, Merge-Vorschau
@@ -301,7 +301,7 @@ test('MC3-EV-MERGE-FORECAST: Vorschau nach #1233/#1234/#1235 im Dokument; kein O
   assert.ok(DOC.includes('node scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs --out docs/SUPERTRADER_13_METHODS_EVIDENCE.md\nnode --test scripts/supertrader/tests/sf-mc3-evidence-matrix.test.mjs'));
   // nach dem Merge darf die §8.1-Zeile fehlen; vorher bricht der Erzeuger ab
   const text = BUILT.src.handoverText.split('\n').filter((l) => !/^\| #1233 /.test(l)).join('\n');
-  assert.throws(() => buildModel({ ...BUILT.src, handoverText: text }), /OPEN_PR_NOT_FOUND/);
+  assert.throws(() => buildModel({ ...BUILT.src, handoverText: text, merged: { ...BUILT.src.merged, turtleStops: false } }), /OPEN_PR_NOT_FOUND/);
   const m = buildModel({ ...BUILT.src, handoverText: text, merged: { ...BUILT.src.merged, turtleStops: true } });
   assert.equal(m.prs.turtleStops.pr, MERGED_PR_FALLBACK.turtleStops.pr);
 });
