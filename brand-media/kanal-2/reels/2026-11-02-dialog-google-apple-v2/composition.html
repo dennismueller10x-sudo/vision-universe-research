@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Archivo;src:url(../../fonts/archivo-black.woff2) format("woff2");font-weight:900}
+@font-face{font-family:Bangers;src:url(../../fonts/bangers.woff2) format("woff2")}
+@font-face{font-family:Nunito;src:url(../../fonts/nunito.woff2) format("woff2");font-weight:200 1000}
+:root{--ink:#1d2433;--bull:#1f9d55;--bear:#8a5a2b;--red:#e2453a;--gold:#f2c230}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#e2453a;font-family:Nunito,sans-serif;color:var(--ink)}
+#world{position:absolute;inset:0;transform-origin:540px 960px}
+.bg{position:absolute;inset:-200px;background:var(--c)}
+.dots{position:absolute;inset:-200px;background-image:radial-gradient(rgba(0,0,0,.10) 22%,transparent 24%);background-size:34px 34px}
+.rays{position:absolute;left:50%;top:50%;width:3200px;height:3200px;margin:-1600px 0 0 -1600px;background:repeating-conic-gradient(rgba(255,255,255,.22) 0 9deg,transparent 9deg 18deg)}
+/* both figures are always on screen and talk to each other */
+.fig{position:absolute;bottom:-40px;height:1060px;transform-origin:50% 100%}
+.fig img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;visibility:hidden}
+#bulle{left:-30px;width:540px}#baer{right:-40px;width:590px}
+/* the graphic panel above the figures, one per line */
+#panel{position:absolute;left:60px;right:60px;top:210px;height:540px;background:#fff;border:9px solid var(--ink);border-radius:40px;box-shadow:0 16px 0 var(--ink);text-align:center;padding:36px 24px 0;z-index:5}
+#panel .lab{font-family:Archivo;font-size:48px;line-height:1.1}
+#panel .big{font-family:Bangers;letter-spacing:3px;font-size:230px;line-height:1.05;white-space:nowrap;-webkit-text-stroke:13px var(--ink);paint-order:stroke fill;text-shadow:8px 10px 0 var(--ink)}
+#panel .sub{font-family:Archivo;font-size:36px;opacity:.7;margin-top:6px}
+.stamp{position:absolute;font-family:Bangers;letter-spacing:3px;color:var(--red);border:14px solid var(--red);border-radius:26px;padding:0 34px;background:rgba(255,255,255,.95);white-space:nowrap;opacity:0;z-index:9;font-size:96px;left:760px;top:700px}
+/* speech bubble tail points at the speaker */
+#tail{position:absolute;top:740px;width:0;height:0;border-left:40px solid transparent;border-right:40px solid transparent;border-top:70px solid var(--ink);z-index:4}
+#badge{position:absolute;left:40px;top:96px;z-index:30;font-family:Bangers;font-size:58px;letter-spacing:2px;color:#fff;background:var(--red);border:7px solid var(--ink);border-radius:20px;padding:2px 22px;box-shadow:0 8px 0 var(--ink);transform:rotate(-3deg)}
+#badge i{font-style:normal;color:var(--gold)}
+#cap{position:absolute;left:30px;right:30px;top:830px;text-align:center;font-family:Archivo;font-size:76px;line-height:1.08;z-index:20;text-transform:uppercase;-webkit-text-stroke:18px var(--ink);paint-order:stroke fill;color:#fff}
+#cap .w{display:inline-block;margin:0 9px}
+#cap .w.on{color:var(--hl)}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:40;pointer-events:none}
+</style><link rel="stylesheet" href="/assets/site-navigation.css"></head><body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<div id="world">
+ <div class="bg"></div><div class="rays"></div><div class="dots"></div>
+ <div class="fig" id="bulle"></div><div class="fig" id="baer"></div>
+ <div id="tail"></div>
+ <div id="panel"><div class="lab"></div><div class="big"></div><div class="sub"></div></div>
+ <div class="stamp" id="stamp"></div>
+</div>
+<div id="badge"><i>ZOO</i>-TICKER · 02.11.</div>
+<div id="cap"></div><div id="flash"></div>
+<script>
+const T=window.TIMING,W=T.words,S=T.segments,END=T.duration,AMP=T.amp;
+const FIG={bulle:'../../figuren/entwurf-1/outfits/outfit-sakko/',baer:'../../figuren/entwurf-1/outfits/outfit-hemd/'};
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),easeOut=x=>1-Math.pow(1-clamp(x),3);
+const back=x=>{x=clamp(x);const c=1.9;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+// mouth follows a smoothed loudness so it does not flicker frame by frame
+const amp=t=>{const i=Math.round(t*30);let m=0;for(let k=i-2;k<=i+2;k++)m+=AMP[k]||0;return m/5};
+const loads=[];const img=(src,parent)=>{const im=new Image();im.src=src;parent.appendChild(im);loads.push(im.decode().catch(()=>{}));return im};
+const FACES={bulle:['basis','mund-zu','mund-halb','mund-offen','blinzeln','lacht','schock','verwirrt'],baer:['basis','mund-halb','mund-offen','blinzeln','laecheln','ueber-brille']};
+const IMG={};for(const [who,l] of Object.entries(FACES)){IMG[who]={};for(const f of l)IMG[who][f]=img(FIG[who]+who+'-'+f+'.png',document.getElementById(who))}
+// pose library (figuren/entwurf-1/posen/): the speaker opens each line with a gesture, the listener reacts
+const POSE='../../figuren/entwurf-1/posen/';
+for(const s of S)for(const [who,p] of [[s.who,s.pose],[s.who==='bulle'?'baer':'bulle',s.react]])if(p&&!IMG[who]['pose-'+p])IMG[who]['pose-'+p]=img(POSE+who+'-pose-'+p+'.png',document.getElementById(who));
+const show=(who,f)=>{if(!IMG[who][f]||!IMG[who][f].naturalWidth)f=f.startsWith('pose-')?'basis':f;for(const [k,im] of Object.entries(IMG[who]))im.style.visibility=k===f?'visible':'hidden'};
+const blinkAt=(who,t)=>((t+(who==='bulle'?0.7:2.2))%(who==='bulle'?3.3:4.1))<0.12;
+// one panel per line: label, big value (counts up when it starts with a number), sub line, background, optional stamp on a word
+const PANELS=[
+ {lab:'GOOGLE ZAHLT APPLE',big:'20 MRD $',sub:'jedes Jahr (Schätzung)',bg:'#e2453a',col:'#f2c230',stamp:{at:/^Jahr/,txt:'JEDES JAHR!'}},
+ {lab:'DAFÜR IST GOOGLE',big:'STANDARD',sub:'Suchmaschine auf jedem iPhone',bg:'#86c1f2',col:'#86c1f2'},
+ {lab:'20 MRD $ FÜR',big:'1 HÄKCHEN',sub:'in den iPhone-Einstellungen',bg:'#7fd0a8',col:'#1f9d55'},
+ {lab:'SEIT 2026 ZAHLT AUCH',big:'APPLE',sub:'an Google',bg:'#f2c230',col:'#86c1f2',stamp:{at:/^Apple/,txt:'UMGEKEHRT?!'}},
+ {lab:'SEIT 2026 ZAHLT AUCH',big:'APPLE',sub:'an Google',bg:'#e2453a',col:'#86c1f2'},
+ {lab:'FÜR GOOGLES KI IN SIRI',big:'1 MRD $',sub:'pro Jahr (Bericht von Bloomberg)',bg:'#c9a7f0',col:'#e2453a'},
+ {lab:'BLEIBEN FÜR APPLE',big:'+19 MRD $',sub:'Plus pro Jahr',bg:'#7fd0a8',col:'#1f9d55',stamp:{at:/^Plus/,txt:'GEWINNER?'}},
+ {lab:'UND DU?',big:'APPLE ODER GOOGLE?',sub:'↓ schreib es in die Kommentare ↓',bg:'#f2c230',col:'#f2c230'}];
+// spoken numbers as digits in the captions
+const NUM=[['zwanzig Milliarden','20 Mrd.'],['Zwanzig Milliarden','20 Mrd.'],['eine Milliarde','1 Mrd.'],['neunzehn Milliarden','19 Mrd.']];
+const bare=x=>x.replace(/[.,!?:]+$/,'');
+for(let i=0;i<W.length;i++)for(const [ph,disp] of NUM){const p=ph.split(' ');if(p.every((q,k)=>W[i+k]&&bare(W[i+k].w).toLowerCase()===bare(q).toLowerCase()&&W[i+k].line===W[i].line)){
+ const last=W[i+p.length-1];const tail=(last.w.match(/[.,!?:]+$/)||[''])[0];W.splice(i,p.length,{...W[i],w:bare(disp)+tail,e:last.e});break}}
+const GROUPS=[];{let g=[];for(const w of W){if(g.length&&(g.length>=3||g[0].line!==w.line)){GROUPS.push(g);g=[]}g.push(w);if(/[.,!?:]$/.test(w.w)&&!/Mrd\.$/.test(w.w)){GROUPS.push(g);g=[]}}if(g.length)GROUPS.push(g)}
+const wt=(line,re)=>{const w=W.find(w=>w.line===line&&re.test(w.w));return w?w.s:null};
+const world=document.getElementById('world'),panel=document.getElementById('panel'),cap=document.getElementById('cap'),flash=document.getElementById('flash'),tail=document.getElementById('tail'),stamp=document.getElementById('stamp');
+const [pLab,pBig,pSub]=panel.children;
+function fit(el,max,w){let f=max;el.style.fontSize=f+'px';while(el.scrollWidth>w&&f>60){f-=6;el.style.fontSize=f+'px'}}
+const segAt=t=>{let s=S[0];for(const x of S)if(t>=x.s-0.1)s=x;return s};
+function render(t){
+ const seg=segAt(t),k=t-seg.s,P=PANELS[seg.line],prev=S[seg.line-1];
+ document.querySelector('.bg').style.setProperty('--c',P.bg);document.body.style.background=P.bg;
+ document.querySelector('.rays').style.transform=`rotate(${t*6}deg)`;
+ // cut on every speaker change: punch-in, plus a whip when the speaker switches sides
+ const shock=seg.face==='schock';let sc=1+0.08*(1-easeOut(k/0.22)),tx=0,rot=0;
+ if(prev&&prev.who!==seg.who&&k<0.2)tx=(1-easeOut(k/0.2))*(seg.who==='bulle'?-260:260);
+ if(shock&&k<0.5){tx+=Math.sin(k*90)*18*(1-k/0.5);rot=Math.sin(k*70)*1.4*(1-k/0.5)}
+ flash.style.opacity=shock&&seg.line>0?clamp(1-k/0.18)*0.85:0;
+ const z=seg.close?1.38:1,fx=seg.who==='bulle'?300:780;const zq=seg.close?easeOut(k/0.25):0;
+ world.style.transformOrigin=`${fx}px 1500px`;world.style.transform=`translateX(${tx}px) scale(${sc*(1+(z-1)*zq)}) rotate(${rot}deg)`;
+ panel.style.opacity=seg.close&&k>0.3?0.0:1;tail.style.opacity=panel.style.opacity;
+ // panel pops in on each line; numbers count up
+ const pq=seg.line===0?1:back(k/0.28);panel.style.transform=`scale(${0.75+0.25*pq}) rotate(${seg.line%2?1.2:-1.2}deg)`;
+ pLab.textContent=P.lab;pSub.textContent=P.sub;pBig.style.color=P.col;
+ const m=P.big.match(/^(\d+)(.*)$/);const cnt=seg.line===0?1:easeOut(k/0.7);pBig.textContent=m&&!(prev&&PANELS[seg.line-1].big===P.big)?Math.round(+m[1]*cnt)+m[2]:P.big;fit(pBig,230,900);
+ tail.style.left=(seg.who==='bulle'?250:750)+'px';
+ // stamp on its word
+ const st=P.stamp?wt(seg.line,P.stamp.at):null;
+ if(st!==null&&t>=st){stamp.textContent=P.stamp.txt;stamp.style.opacity=1;stamp.style.transform=`translate(-50%,-50%) rotate(-7deg) scale(${1+1.3*(1-back((t-st)/0.25))})`}else stamp.style.opacity=0;
+ // captions
+ const gi=GROUPS.findIndex((g,i)=>t>=g[0].s-0.05&&t<(GROUPS[i+1]?.[0].s??END)-0.05&&t<g[g.length-1].e+0.6);const g=GROUPS[gi];
+ if(g&&t<END){cap.style.setProperty('--hl',g[0].who==='bulle'?'#7dffb0':'#ffd36b');
+  cap.innerHTML=g.map(w=>`<span class="w${t>=w.s-0.03?' on':''}">${w.w.replace(/[,:]$/,'').replace(/([^d])\.$/,'$1')}</span>`).join('');
+  cap.style.transform=`scale(${0.88+0.12*back((t-g[0].s)/0.18)}) rotate(${gi%2?1.5:-1.5}deg)`}else cap.innerHTML='';fit(cap,76,1020);
+ // figures: the speaker leans in, the listener reacts
+ for(const who of ['bulle','baer']){const el=document.getElementById(who);const speaking=seg.who===who&&t<=seg.e;let f='basis';
+  if(speaking){const a=amp(t);const face=seg.face;
+   if(seg.pose&&k<1.1)f='pose-'+seg.pose;else if(face&&k<0.6)f=face;else if(seg.line===0&&who==='bulle')f=a>0.35?'mund-offen':'schock';
+   else f=who==='bulle'?(a>0.92?'mund-offen':a>0.4?'mund-halb':a>0.14?'basis':'mund-zu'):(a>0.5?'mund-offen':a>0.16?'mund-halb':'basis')}
+  else if(seg.react&&k>0.25)f='pose-'+seg.react;
+  else if(blinkAt(who,t))f='blinzeln';
+  show(who,f);
+  const on=seg.who===who;el.style.transform=`scale(${on?1.05:0.97}) translateY(${on?Math.sin(t*5)*4:0}px)`;el.style.filter=on?'none':'brightness(.82) saturate(.85)';el.style.zIndex=on?3:2}
+}
+window.EVENTS=[{t:0,type:'hit'},...S.filter((s,i)=>i).map(s=>({t:s.s,type:S[s.line-1].who!==s.who?'whoosh':'punch'})),...S.filter(s=>s.face==='schock'&&s.line>0).map(s=>({t:s.s,type:'hit'})),
+ ...PANELS.map((P,i)=>P.stamp?wt(i,P.stamp.at):null).filter(x=>x!==null).map(x=>({t:x,type:'stamp'})),...S.filter((s,i)=>i&&PANELS[i].big!==PANELS[i-1].big).map(s=>({t:s.s+0.05,type:'pop'}))].sort((a,b)=>a.t-b.t);
+window.render=render;
+Promise.all([...loads,document.fonts.ready]).then(()=>Promise.all([document.fonts.load('900 80px Archivo'),document.fonts.load('80px Bangers')])).then(()=>{render(0);window.__ready=true});
+</script></body></html>
