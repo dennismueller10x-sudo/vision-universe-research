@@ -377,3 +377,24 @@ Eine zweite Engine oder Anwendung gibt es nicht. Die Seite liest nur den hashgeb
 - Die Archiv-Manifeste unter `docs/quant-recovery/v13/archive/`.
 - Die offenen PRs aus C5 und aus `quant-handover.json`.
 - Das R2-Archiv (privat, nur mit `V13_ARCHIVE_PRIVATE_KEY` lesbar).
+
+---
+
+## Master Completion 3.0 (Stand 02.11.2026)
+
+Teil Quant Q1/Q2, umgesetzt vom zentralen Claude-Code-Chat ohne Änderung an Gates, Schwellen, Strategien, Security Master, eingefrorenen Daten, gesperrter UI oder `quant/data/**`.
+- **Q1 Coverage-Matrix:** [BACKTEST_COVERAGE_MATRIX.md](BACKTEST_COVERAGE_MATRIX.md), erzeugt von `scripts/quant/research/backtest-coverage-matrix.cjs` (6 Arten × 7 Methoden, 21 Katalog-Auswahlen, Gates mit Lösungsweg je Art, Abdeckung, nicht unterstützte Fälle, PIT-Historien, Freigabevorlagen FV-1 bis FV-8). Test `quant/tests/backtest-coverage-matrix.test.mjs` erzwingt `--check`. Befund: 0/6 zertifiziert.
+- **P0.5:** `run-backtest.cjs --help`; Ausgabe wird vor dem Schreiben gegen den Ergebnisvertrag geprüft, fail closed.
+- **P0.7:** laufzeitfreier Kennzahlen-Hash `scripts/quant/research/backtest-metrics-hash.cjs`; Runner, Demos, Katalog und Bundle bytegleich (`check-backtest-demo-freshness.cjs --strict` CURRENT, Bundle `aefb5942…` unverändert). Runner-Feld: FV-2.
+- **P2.1/P2.2:** `scripts/quant/research/pit-snapshot-integrity.cjs --out`: Integrität PASS; frühestens Strategy/Factor 2028-08, Setup 2028-04 (FV-1).
+- **Gegenrechnung:** 16 öffentliche Katalogfälle lokal neu gerechnet, Python 16.451 Prüfungen/0 Abweichungen, Kennzahlen 16/16 gleich. Die 5 privaten Fälle brauchen das R2-Archiv (FV-4).
+
+## Master Completion 3.1 (Stand 02.11.2026): P2 Zertifizierungsdefizite
+
+Bericht, Freigabe-Runbooks und FV-1-Analyse: [BACKTEST_P2_DEFIZITE.md](BACKTEST_P2_DEFIZITE.md). Keine Änderung an Gates, Schwellen, Runner (`CODE_FILES`), Security Master, `quant/data/**`, eingefrorenen Ständen oder gesperrter UI. Zahlen nur als Research unter `docs/quant/research/`, nicht im Produkt.
+- **P3.1:** `scripts/quant/research/survivorship-sensitivity.cjs` (F0 gegen F1 über den unveränderten Runner, gleiche Stichprobe). Der committete Bericht ist `PREPARED_PRIVATE_INPUT_MISSING`, weil die Reihen nur im R2-Archiv liegen. Lauf mit Secret: Runbook R2.
+- **P4.1:** `scripts/quant/research/pattern-total-return.mjs` (Gesamtrendite `canonical-total-return-1.0.0` neben Kursrendite, Parität mit dem Runner). Research auf der Golden-Preview: 4/5 Titel, 62 Ereignispaare, Ausschüttungen im Mittel +0,75 Pp je 13-Wochen-Ereignis. Das Gate `returnBasis` liest den Bericht nicht (P4.2, FV-5).
+- **FV-4:** `catalog-private-recheck.cjs` (Erwartung der 5 privaten Fälle, Auswertung des Laufartefakts, Abbruchkriterien); `[v13-archive:catalog]` nicht ausgeführt.
+- **FV-1:** `setup-independence-readings.cjs`. Unter Lesart A (Monate) ist Setup frühestens 2028-04 möglich, unter B (ISO-Wochen) 2027-03-26. Empfehlung: A beibehalten und das Feld umbenennen, Unabhängigkeit über N_eff als eigene Entscheidung, B nicht.
+- **FV-8:** `pit-snapshot-integrity.cjs --fail-on-missing-month --alarm-detail`. Offen ist nur der Workflow-Schritt.
+- **Coverage-Matrix** neu gebaut, mit Abschnitt I (Research-Nachweise) und einer Spalte „Research-Nachweis“. Befund unverändert 0/6. Pattern hat jetzt 0 „heute technisch“ und 3 Owner-Blocker.
