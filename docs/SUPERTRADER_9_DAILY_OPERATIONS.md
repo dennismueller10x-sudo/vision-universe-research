@@ -1,6 +1,6 @@
 # Supertrader 9 – automatischer Tageslauf der Research-Kandidaten
 
-Stand 30.10.2026, Draft-PR. Er schaltet nichts ein: Ohne die zwei Repository-Variablen läuft kein Job, und ohne Merge gibt es keinen Zeitplan. Grundlage ist die Owner-Entscheidung vom 29.10.2026 (`docs/SUPERTRADER_8_FIRST_RELEASE.md`): Ein täglicher Zeitplan ist grundsätzlich freigegeben, sobald V1 (S1–S7) erfüllt ist, ohne manuelle Freigabe je Datenstand.
+Stand 31.10.2026: gemergt mit #1137 (Workflow, Vertrag) und #1146 (Core, Registry im Dauerbetrieb ohne `activation`). Eingeschaltet ist damit nichts: Solange `SF8_AUTO_PUBLISH` nicht `true` ist, läuft der Rückfall-Zeitplan leer (Job übersprungen), der Anstoß aus `supertrader-signals.yml` entfällt (Job `sf8` übersprungen, z. B. Lauf 41166562555 am 31.10.), und es bleibt nur der manuelle Weg. Der veröffentlichte Stand veraltet deshalb weiter mit jeder Sitzung (Systemzustand `BEHIND_1_SESSIONS`, DQ-SF8-8 rot, siehe unten). Grundlage ist die Owner-Entscheidung vom 29.10.2026 (`docs/SUPERTRADER_8_FIRST_RELEASE.md`): Ein täglicher Zeitplan ist grundsätzlich freigegeben, sobald V1 (S1–S7) erfüllt ist, ohne manuelle Freigabe je Datenstand.
 
 Es gibt keine zweite Pipeline. Erweitert wird nur der bestehende Workflow `.github/workflows/supertrader-sf8-candidates.yml`. Alle 13 Methoden bleiben `LIVE_NOT_APPROVED`, `VALIDATED_TRADE_SIGNAL` bleibt gesperrt, und es gibt keine Orders.
 
@@ -26,7 +26,7 @@ Ein Lauf im automatischen Weg:
 
 | # | Schritt | rot heißt |
 |---|---|---|
-| 1 | Weg bestimmen: `schedule` oder `mode=auto` ist automatisch, nur auf `main` und nur mit `SF8_AUTO_PUBLISH=true` | kein Lauf |
+| 1 | Weg bestimmen: `schedule` oder `mode=auto` ist automatisch, nur auf `main` und nur mit `SF8_AUTO_PUBLISH=true` | kein Lauf; auf `main` Alarm (Schritt 10) |
 | 2 | Produkt- und Vertragstests `sf-*` | kein neuer Stand |
 | 3 | Eingangsprüfung `--require-current`: Marktstand = letzte XNYS-Sitzung, Nebenquellen im Höchstalter (Security Master 60, Namen 45, Wochenreihen/SIC/Kontinuität 10 Tage) | Exit 3, kein neuer Stand |
 | 4 | Öffentliche Teile ohne `records/`, Budget 16 MB bzw. 2 MB je Datei | kein neuer Stand |
@@ -35,7 +35,7 @@ Ein Lauf im automatischen Weg:
 | 7 | **zweiter, unabhängiger Lauf** in ein zweites Verzeichnis, Fingerabdruck | – |
 | 8 | **Veröffentlichungsvertrag** `sf8-auto-publication-1.0.0` | BLOCKED: Exit 5, kein Commit |
 | 9 | Commit genau des geprüften Verzeichnisses in **einem** Commit, Nachweis als Trailer; Push über `push-with-retry.sh` | – |
-| 10 | Alarm: Ein roter automatischer Lauf öffnet bzw. ergänzt ein Issue `pipeline-alarm` (`supertrader-sf8-candidates`); ein grüner schließt es | – |
+| 10 | Alarm: Ein roter automatischer Lauf öffnet bzw. ergänzt ein Issue `pipeline-alarm` (`supertrader-sf8-candidates`); ein grüner schließt es. Automatisch heißt `schedule` oder Eingabe `mode=auto` auf `main`. Das gilt auch, wenn der Job vor oder in Schritt 1 scheitert (dann ist `outputs.auto` leer). Ein manueller Lauf alarmiert nie, ebenso wenig ein Probelauf `mode=auto` auf einem anderen Zweig | – |
 
 Das vollständige Ergebnis bleibt 14 Tage als CI-Artefakt erhalten, auch bei Rot: Vertragsdatensätze, DQ-Bericht, Vertragsnachweis.
 
@@ -61,7 +61,7 @@ SF8-Fingerprint: <sha256 der öffentlichen Dateien>
 SF8-Inputs-SHA256: <summary.inputs.inputsSha256, derselbe Wert wie in summary.json>
 SF8-Source-Files-SHA256: <sha256 der Liste summary.inputs.sourceFiles>
 SF8-Previous-AsOf: <ersetzter Stand>
-SF8-Code-Commit: <main-SHA des Laufs>
+SF8-Code-Commit: <ausgecheckter main-SHA (git rev-parse HEAD), aus dem Code und Eingaben stammen>
 SF8-Run: <Lauf-ID>
 ```
 
@@ -81,17 +81,17 @@ Der manuelle Weg (`mode=manual`, `commit=true`, `expected_sha256`) bleibt **unve
 
 - **Kein Bezug außerhalb von Gate A.** `market-data-refresh.yml` und `scripts/ci/supertrader-chain.mjs` bleiben unverändert. Angestoßen wird aus `supertrader-signals.yml`, das die Kette ohnehin startet.
 - **Kein `workflow_run`.** Dieser Auslöser hat auf `main` nachweislich nie gefeuert (Kommentar in `market-data-refresh.yml`, 29.09.2026).
-- **Keine Änderung an `core/registry/domains.json`.** Dieser PR ist der Supertrader-Teil von V6 (e) und (f): `registry-guard.mjs` lässt den Eintrag jetzt auch ohne `activation` zu (Dauerbetrieb). Das Feld selbst entfernt ein eigener Core-PR, der auch die Texte korrigiert („(Beta)“, „Owner-Freigabe AUSSTEHEND“, `schedule`). Erst danach besteht der automatische Weg C7; bis dahin endet jeder automatische Lauf mit BLOCKED.
+- **Keine Änderung an `core/registry/domains.json`.** Dieser PR ist der Supertrader-Teil von V6 (e) und (f): `registry-guard.mjs` lässt den Eintrag jetzt auch ohne `activation` zu (Dauerbetrieb). Das Feld selbst entfernt ein eigener Core-PR, der auch die Texte korrigiert („(Beta)“, „Owner-Freigabe AUSSTEHEND“, `schedule`). Erst danach besteht der automatische Weg C7. Das ist mit #1146 geschehen (`7bc47f7`): Der Eintrag trägt kein `activation` mehr, C7 ist erfüllt.
 - Keine neue DQ-Regel, keine geänderte Grenze, kein neuer Anbieter, keine Secrets (der Alarm nutzt `github.token`).
 
 ## Inbetriebnahme (Owner)
 
 | # | Schritt | Voraussetzung |
 |---|---|---|
-| 1 | Merge dieses PR | V1 nach Owner-Entscheidung (siehe unten) |
+| 1 | Merge dieses PR | erledigt (#1137) |
 | 2 | Variable `SF8_CANDIDATES_ENABLED=true` (laut Ablauf der ersten Veröffentlichung nach Lauf B zurück auf `false`; Stand bitte prüfen) | – |
-| 3 | Optional, als Probe vor 3a: ein Lauf `mode=auto` mit `SF8_AUTO_PUBLISH=true` endet mit C7 BLOCKED ohne Commit. Das belegt fail closed | Security Master nicht STALE (vor dem 11.11. oder nach dem Wechsel, PR #1136) |
-| 3a | Core-PR V6 (e): `activation` aus dem Eintrag `supertrader-sf8-candidates` entfernen, Texte korrigieren (ab dann ist ein fehlendes Artefakt FAILED) | dieser PR gemergt |
+| 3 | Optional, als Probe vor 3a (seit #1146 nicht mehr möglich): ein Lauf `mode=auto` mit `SF8_AUTO_PUBLISH=true` endet mit C7 BLOCKED ohne Commit. Das belegt fail closed | Security Master nicht STALE (vor dem 11.11. oder nach dem Wechsel, PR #1136) |
+| 3a | Core-PR V6 (e): `activation` aus dem Eintrag `supertrader-sf8-candidates` entfernen, Texte korrigieren (ab dann ist ein fehlendes Artefakt FAILED) | erledigt (#1146) |
 | 4 | Variable `SF8_AUTO_PUBLISH=true`: ab dann Anstoß nach der Nachtkette und Rückfall-Zeitplan | 3a gemergt |
 | 5 | Zurücknehmen: `SF8_AUTO_PUBLISH=false` (nur noch manuell) oder `SF8_CANDIDATES_ENABLED=false` (gar nicht) | – |
 
