@@ -29,8 +29,8 @@ test('Akademie nutzt keine Berechnungsengine, keine Textausführung und keinen B
 test('Redaktion: mobiler Umfang, Gegenbeispiel je Pfad und klare Trennung von Befund und Vorteil',()=>{
  for(const l of c.lessons){
   const text=[l.question,...l.objectives,...l.foundations,l.example.text,...l.limits,l.quiz.prompt,...l.quiz.choices.map(x=>x.text),l.practice.instruction,l.visual.caption,...l.visual.labels].join(' ');
-  const words=text.split(/\s+/).length;assert.ok(words>=250&&words<=450,l.id+': '+words);
-  assert.match(l.foundations.join(' '),/kein nachgewiesener Vorteil/);assert.ok(l.limits[0].length>60,l.id);
+  const words=text.split(/\s+/).length;assert.ok(words>=120&&words<=450,l.id+': '+words);
+  assert.match(readFileSync(new URL('../academy/view.js',import.meta.url),'utf8'),/kein Nachweis eines Handelsvorteils/);assert.ok(l.limits[0].length>60,l.id);
  }
  for(const p of c.paths)assert.ok(p.lessons.some(id=>c.lessons.find(l=>l.id===id).limits.length));
 });

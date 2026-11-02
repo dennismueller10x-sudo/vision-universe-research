@@ -1387,6 +1387,7 @@
     else if (route.view === "assistant") { var gg = route.id && AS && AS.get(route.id); doc.title = (gg ? gg.title + " · " : "") + "Analyse-Assistent · Technical · Vision Universe®"; viewAssistant(main, route); }
     else if (route.view === "templates") { var tt = route.id && TPL.get(route.id); doc.title = (tt ? tt.title + " · " : "") + "Vorlagen · Technical · Vision Universe®"; viewTemplates(main, route); }
     else put(main, stateBox("Seite nicht gefunden", "Diese Adresse kennt Technical nicht.", el("a", { class: "tc-link", href: "#/", text: "Zur Technical-Startseite" })));
+    if (route.view !== "academy" && global.VUAcademy) global.VUAcademy.renderReturn(main);
     main.setAttribute("aria-busy", "false");
     var last = lastTicker();
     if (global.VUNavigation) global.VUNavigation.dock(last ? { hrefs: { chart: "/technical/" + M.chartHref(last) } } : {});
