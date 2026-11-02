@@ -223,7 +223,7 @@
       glyph("chevron", "tc-chev")
     ]);
   }
-  var MAIN_TABS = [["home", "#/", "Überblick"], ["assistant", "#/assistent", "Assistent"], ["templates", "#/vorlagen", "Vorlagen"], ["build", "#/screener", "Screener"], ["saved", "#/screener/gespeichert", "Gespeichert"], ["method", "#/methodik", "Methodik"]];
+  var MAIN_TABS = [["home", "#/", "Überblick"], ["academy", "#/akademie", "Akademie"], ["assistant", "#/assistent", "Assistent"], ["templates", "#/vorlagen", "Vorlagen"], ["build", "#/screener", "Screener"], ["saved", "#/screener/gespeichert", "Gespeichert"], ["method", "#/methodik", "Methodik"]];
   function sectionHead(title, href, linkText) {
     return el("div", { class: "tc-sec-head" }, [el("h2", { text: title }), href ? el("a", { href: href, class: "tc-more" }, [linkText || "Alle", glyph("chevron", "tc-chev-s")]) : null]);
   }
@@ -264,7 +264,7 @@
     var kpis = el("ul", { class: "tc-kpis", "aria-label": "Datenumfang" }), focus = el("div", { class: "tc-list" }), ranks = el("div", { class: "tc-list" }), tpls = el("div", { class: "tc-list" });
     var assist = AS ? el("div", { class: "tc-list" }, [el("a", { class: "tc-row tc-goal", href: "#/assistent" }, [el("span", { class: "tc-row-icon" }, glyph("search")),
       el("span", { class: "tc-row-text" }, [el("b", { text: "Analyse-Assistent" }), el("span", { text: "Von der Frage zu passenden Kriterien: Trend, Ausbruch, Momentum, Trendwende und mehr – mit Erklärung und Grenzen." })]), glyph("chevron", "tc-chev")])]) : null;
-    put(main, [hero, searchSlot, chips, kpis, assist ? sectionHead("Analyse starten", "#/assistent", "Alle Ziele") : null, assist, sectionHead("Strategie-Vorlagen", "#/vorlagen", "Alle Vorlagen"), tpls, sectionHead("Setups im Fokus", "#/vorlagen"), focus, sectionHead("Technische Ranglisten", "#/vorlagen"), ranks, el("div", { class: "tc-foot-slot" })]);
+    put(main, [hero, searchSlot, chips, kpis, el("a", { class: "tc-row", href: "#/akademie", text: "Strategie-Akademie · Werkzeuge verstehen und anwenden" }), assist ? sectionHead("Analyse starten", "#/assistent", "Alle Ziele") : null, assist, sectionHead("Strategie-Vorlagen", "#/vorlagen", "Alle Vorlagen"), tpls, sectionHead("Setups im Fokus", "#/vorlagen"), focus, sectionHead("Technische Ranglisten", "#/vorlagen"), ranks, el("div", { class: "tc-foot-slot" })]);
     hero.append(searchSlot, chips);
     loadIndex().then(function (X) {
       var ix = X.index;
@@ -1380,12 +1380,14 @@
     var main = doc.getElementById("tc-main"), route = M.parseRoute(location.hash);
     main.classList.toggle("is-home", route.view === "home");
     if (route.view === "home") { doc.title = "Technical · Vision Universe®"; viewHome(main); }
+    else if (route.view === "academy") { global.VUAcademy.render(main, route.id); }
     else if (route.view === "screener") { doc.title = "Screener · Technical · Vision Universe®"; viewScreener(main, route); }
     else if (route.view === "chart") { doc.title = (route.ticker ? route.ticker + " · " : "") + "Chart Studio · Technical · Vision Universe®"; viewChart(main, route); }
     else if (route.view === "method") { doc.title = "Methodik · Technical · Vision Universe®"; viewMethod(main); }
     else if (route.view === "assistant") { var gg = route.id && AS && AS.get(route.id); doc.title = (gg ? gg.title + " · " : "") + "Analyse-Assistent · Technical · Vision Universe®"; viewAssistant(main, route); }
     else if (route.view === "templates") { var tt = route.id && TPL.get(route.id); doc.title = (tt ? tt.title + " · " : "") + "Vorlagen · Technical · Vision Universe®"; viewTemplates(main, route); }
     else put(main, stateBox("Seite nicht gefunden", "Diese Adresse kennt Technical nicht.", el("a", { class: "tc-link", href: "#/", text: "Zur Technical-Startseite" })));
+    if (route.view !== "academy" && global.VUAcademy) global.VUAcademy.renderReturn(main);
     main.setAttribute("aria-busy", "false");
     var last = lastTicker();
     if (global.VUNavigation) global.VUNavigation.dock(last ? { hrefs: { chart: "/technical/" + M.chartHref(last) } } : {});
