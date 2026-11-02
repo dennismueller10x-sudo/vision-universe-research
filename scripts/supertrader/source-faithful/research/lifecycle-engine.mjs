@@ -20,7 +20,8 @@
  * Day loop (deterministic, one pass over the calendar; information of bar k is used only from bar k on):
  *  1. held positions on bar k: dividend; a pending next-open exit fills at the open; the protective levels (stop and an
  *     optional management trigger) fill at min(open, highest level reached); then onClose (effective from k + 1);
- *  2. orders armed at the close of k - 1 fill on bar k in the neutral order, sized from the equity of the prior close;
+ *  2. orders armed at the close of k - 1 fill on bar k in the neutral order, sized from the equity of the prior close
+ *     (INTRADAY_RESOLVED: places and cash by fill minute when they do not cover every fill of the day, F-MC3M-01);
  *     a stop reached on the entry bar is CERTAIN after an open fill and AMBIGUOUS after an intraday touch
  *     (cfg.intrabarOrder decides); then onClose of the entry bar;
  *  3. economic delisting (LISTING_INACTIVE) by the research-v1 terminal scenario; 4. marks and the stale limit;
@@ -75,7 +76,9 @@ export function plannedShares({ sizing, fill, stop, equity, policy, sourceMaxPos
  * stop is CERTAIN_BY_CLOSE instead of AMBIGUOUS. Without the flag the classification is the Supertrader 5.0 one.
  */
 export function fillOrder(bar, order, opts = {}) {
-  if (!AC.isExecutableBar(bar, 'open') || !fin(bar.high) || !fin(bar.low)) return { status: 'NOT_EXECUTED_NO_SOURCE_BAR' };
+  // F-MC3M-02: an INTRADAY_RESOLVED order is decided from the official open and the minutes up to its fill minute; the
+  // high / low of the day are known only at the close (evidence of the resolution, never a precondition of the fill)
+  if (order.type === 'INTRADAY_RESOLVED' ? !AC.isExecutableBar(bar, 'open') : !AC.isExecutableBar(bar, 'open') || !fin(bar.high) || !fin(bar.low)) return { status: 'NOT_EXECUTED_NO_SOURCE_BAR' };
   let fill, basis;
   if (order.type === 'INTRADAY_RESOLVED') {
     const r = order.resolve(bar);
@@ -177,6 +180,64 @@ export function runResearchLifecycle(dataset, { adapter, config, policy = PLATFO
     positions.set(id, pos);
     return pos;
   }
+  /** One armed order on its fill bar (step 2); deferStop(pos, exitFill) holds a certain same-bar stop for intradayEntries. */
+  function takeEntry(id, o, x, i, f, date, equityPrev, deferStop = null) {
+    if (f.status === 'NOT_TRIGGERED') { counts.ordersNotTriggered++; return; }
+    if (f.status !== 'FILLED') {
+      const known = { NOT_EXECUTED_NO_SOURCE_BAR: 'notExecutedNoSourceBar', NOT_EXECUTED_PRICE_AT_OR_BELOW_STOP: 'notExecutedAtOrBelowStop', NOT_EXECUTED_PLANNED_LOSS_ABOVE_MAX: 'notExecutedPlannedLossAboveMax' }[f.status];
+      if (known) counts[known]++; else { counts.notExecutedResolved ??= {}; counts.notExecutedResolved[f.status] = (counts.notExecutedResolved[f.status] || 0) + 1; }
+      rejections.push({ id, date, reason: f.status }); return;
+    }
+    // a resolved intraday fill carries the stop known at its fill minute (the armed order has none)
+    const pos = enter(id, x, i, date, f, fin(f.stop) ? { ...o, order: { ...o.order, stop: f.stop } } : o, equityPrev); if (!pos) return;
+    if (f.sameBarStop === 'CERTAIN') { counts.sameBarStopCertain++; const px = fin(f.sameBarExitFill) ? f.sameBarExitFill : pos.stop; if (deferStop) deferStop(pos, px); else sell(pos, pos.shares, px, date, 'STOP_SAME_BAR_CERTAIN'); counts.protectiveExits++; return; }
+    // EX7 (opt-in only): counted lazily, so the counts of a run without the flag keep their Supertrader 5.0 keys
+    if (f.sameBarStop === 'CERTAIN_BY_CLOSE') { counts.sameBarStopCertainByClose = (counts.sameBarStopCertainByClose || 0) + 1; sell(pos, pos.shares, pos.stop, date, 'STOP_SAME_BAR_CERTAIN_CLOSE_AT_OR_BELOW_STOP'); counts.protectiveExits++; return; }
+    if (f.sameBarStop === 'AMBIGUOUS') {
+      if (config.intrabarOrder === 'PESSIMISTIC') { counts.sameBarStopAmbiguousExecuted++; sell(pos, pos.shares, pos.stop, date, 'STOP_SAME_BAR_ASSUMED'); counts.protectiveExits++; return; }
+      counts.sameBarStopAmbiguousIgnored++; pos.events.push({ date, type: 'SAME_BAR_STOP_IGNORED', rule: 'intrabarOrder OPTIMISTIC' });
+    }
+    adapter.onClose(pos, x.ctx, i, apiFor(pos, date), config);
+  }
+  /**
+   * Step 2 for a day whose armed orders are all INTRADAY_RESOLVED (Kullamaegi C09; F-MC3M-01). The fill minute of each
+   * order is known from its resolution, so the open-position cap and the cash are allocated in time order: by fill
+   * minute, ties in the neutral fillRank order. A certain same-day stop frees its place and its cash only for fills in a
+   * LATER minute than the stop. When the places and the cash cover every fill of the day (planned shares, before
+   * same-day stops), the allocation does not depend on the order and the entries are booked in the fillRank order as
+   * before (identical ledger, trade ids and rounding); counts.intradayAllocationByMinute (lazy) counts the other days.
+   */
+  function intradayEntries(ranked, date, equityPrev) {
+    const rows = [];
+    for (const id of ranked) {
+      const o = orders.get(id), x = sec.get(id), i = x.idx.get(date), b = i === undefined ? null : x.s.bars[i];
+      if (positions.has(id)) continue;
+      rows.push({ id, o, x, i, f: b ? fillOrder(b, o.order, fillOpts) : { status: 'NOT_EXECUTED_NO_SOURCE_BAR' } });
+    }
+    const filled = rows.filter((r) => r.f.status === 'FILLED');
+    let need = 0;
+    for (const r of filled) {
+      const sz = plannedShares({ sizing: config.sizing, fill: r.f.fill, stop: fin(r.f.stop) ? r.f.stop : r.o.order.stop, equity: equityPrev, policy, sourceMaxPositionWeight: adapter.sourceMaxPositionWeight ?? null });
+      if (sz.shares > 0) need += sz.shares * r.f.fill * (1 + slip) * (1 + fee);
+    }
+    if (!(filled.length && (filled.length > policy.maxOpenPositions - positions.size || need >= cash * (1 - 1e-9)))) { for (const r of rows) takeEntry(r.id, r.o, r.x, r.i, r.f, date, equityPrev); return; }
+    counts.intradayAllocationByMinute = (counts.intradayAllocationByMinute || 0) + 1;
+    const minuteOf = (r) => { const k = r.f.resolution?.evidence?.entryMinute; return fin(k) ? k : Infinity; };
+    // not filled orders take no place: their rejections first, in the fillRank order; then the fills in time order
+    const timed = filled.map((r, q) => ({ r, q, k: minuteOf(r) })).sort((a, c) => a.k - c.k || a.q - c.q);
+    for (const r of rows) if (r.f.status !== 'FILLED') takeEntry(r.id, r.o, r.x, r.i, r.f, date, equityPrev);
+    const held = [];
+    const release = (k) => {
+      held.sort((a, c) => a.k - c.k || a.q - c.q);
+      while (held.length && held[0].k < k) { const h = held.shift(); sell(h.pos, h.pos.shares, h.px, date, 'STOP_SAME_BAR_CERTAIN'); }
+    };
+    for (const { r, q, k } of timed) {
+      release(k);
+      const ev = r.f.resolution?.evidence ?? {}, stopK = fin(ev.stopMinute) ? ev.stopMinute : k;
+      takeEntry(r.id, r.o, r.x, r.i, r.f, date, equityPrev, (pos, px) => held.push({ pos, px, k: stopK, q }));
+    }
+    release(Infinity);
+  }
 
   for (const date of calendar) {
     const equityPrev = cash + mv();
@@ -201,26 +262,13 @@ export function runResearchLifecycle(dataset, { adapter, config, policy = PLATFO
       adapter.onClose(pos, x.ctx, i, apiFor(pos, date), config);
     }
     // 2) pending entries armed at the prior close, in the date-seeded neutral order (minervini-execution#fillRank)
-    for (const id of [...orders.keys()].sort((a, c) => fillRank(date, a) - fillRank(date, c) || (a < c ? -1 : a > c ? 1 : 0))) {
+    const ranked = [...orders.keys()].sort((a, c) => fillRank(date, a) - fillRank(date, c) || (a < c ? -1 : a > c ? 1 : 0));
+    if (ranked.length && ranked.every((id) => orders.get(id).order.type === 'INTRADAY_RESOLVED')) intradayEntries(ranked, date, equityPrev);
+    else for (const id of ranked) {
       const o = orders.get(id), x = sec.get(id), i = x.idx.get(date), b = i === undefined ? null : x.s.bars[i];
       if (positions.has(id)) continue;
       const f = b ? fillOrder(b, o.order, fillOpts) : { status: 'NOT_EXECUTED_NO_SOURCE_BAR' };
-      if (f.status === 'NOT_TRIGGERED') { counts.ordersNotTriggered++; continue; }
-      if (f.status !== 'FILLED') {
-        const known = { NOT_EXECUTED_NO_SOURCE_BAR: 'notExecutedNoSourceBar', NOT_EXECUTED_PRICE_AT_OR_BELOW_STOP: 'notExecutedAtOrBelowStop', NOT_EXECUTED_PLANNED_LOSS_ABOVE_MAX: 'notExecutedPlannedLossAboveMax' }[f.status];
-        if (known) counts[known]++; else { counts.notExecutedResolved ??= {}; counts.notExecutedResolved[f.status] = (counts.notExecutedResolved[f.status] || 0) + 1; }
-        rejections.push({ id, date, reason: f.status }); continue;
-      }
-      // a resolved intraday fill carries the stop known at its fill minute (the armed order has none)
-      const pos = enter(id, x, i, date, f, fin(f.stop) ? { ...o, order: { ...o.order, stop: f.stop } } : o, equityPrev); if (!pos) continue;
-      if (f.sameBarStop === 'CERTAIN') { counts.sameBarStopCertain++; sell(pos, pos.shares, fin(f.sameBarExitFill) ? f.sameBarExitFill : pos.stop, date, 'STOP_SAME_BAR_CERTAIN'); counts.protectiveExits++; continue; }
-      // EX7 (opt-in only): counted lazily, so the counts of a run without the flag keep their Supertrader 5.0 keys
-      if (f.sameBarStop === 'CERTAIN_BY_CLOSE') { counts.sameBarStopCertainByClose = (counts.sameBarStopCertainByClose || 0) + 1; sell(pos, pos.shares, pos.stop, date, 'STOP_SAME_BAR_CERTAIN_CLOSE_AT_OR_BELOW_STOP'); counts.protectiveExits++; continue; }
-      if (f.sameBarStop === 'AMBIGUOUS') {
-        if (config.intrabarOrder === 'PESSIMISTIC') { counts.sameBarStopAmbiguousExecuted++; sell(pos, pos.shares, pos.stop, date, 'STOP_SAME_BAR_ASSUMED'); counts.protectiveExits++; continue; }
-        counts.sameBarStopAmbiguousIgnored++; pos.events.push({ date, type: 'SAME_BAR_STOP_IGNORED', rule: 'intrabarOrder OPTIMISTIC' });
-      }
-      adapter.onClose(pos, x.ctx, i, apiFor(pos, date), config);
+      takeEntry(id, o, x, i, f, date, equityPrev);
     }
     orders = new Map();
     // 3) economic delisting
