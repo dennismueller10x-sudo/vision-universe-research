@@ -1,10 +1,32 @@
 # Rechtliche Abnahme – Free/Pro, Newsletter, Kündigen, Widerrufen
 
 Stand 02.11.2026. **Keine Rechtsberatung, keine Freigabe.** Alle Texte sind Entwürfe der Fassung
-`vu-recht-2026-10-29-entwurf-1` (`workers/vu-account/src/legal/texts.mjs`, `LEGAL_STATUS = 'entwurf'`). Jede Seite trägt ein
+`vu-recht-2026-11-02-entwurf-2` (`workers/vu-account/src/legal/texts.mjs`, `LEGAL_STATUS = 'entwurf'`). Jede Seite trägt ein
 sichtbares Entwurfsbanner. Offene Stellen stehen im Text als **[[OFFEN: …]]** (Angabe fehlt) bzw. **[[PRÜFEN: …]]** (Wertung
 der Rechtsberatung nötig). Der Code nimmt keinen dieser Punkte als gelöst an. Ersetzt die Liste in
 [RECHTLICHE_PRUEFUNG_CHECKOUT.md](RECHTLICHE_PRUEFUNG_CHECKOUT.md).
+
+## Einordnung der offenen Punkte (Stand 02.11.2026)
+
+**Redaktionell erledigt (keine Wertung, nur Fakten):**
+- Unternehmensangaben ausschließlich aus dem bestätigten Impressum (Tabelle unten); nichts ergänzt.
+- AGB Abschnitt 5: Preis ohne festen Betrag – maßgeblich ist der vor der Bestellung angezeigte, in der
+  Vertragsbestätigung genannte Bruttopreis (Preise sind über die Tarifverwaltung änderbar, gelten nur für neue Abschlüsse).
+- AGB und Datenschutz: Umsatzsteuer über Stripe Tax (Ausweis auf der Rechnung, Verarbeitung der Rechnungsadresse).
+- Keine Shopify-Bezüge in den Konto-Texten (durch Tests gesichert). Der Fuß der Startseite verlinkt nicht mehr auf die
+  stillgelegten Shopify-Rechtsseiten, sondern auf `konto.visionuniverse.de/rechtliches/…`; das tote Shopify-Newsletter-
+  Formular ist durch einen Link zur Brevo-Anmeldung der Landingpage ersetzt.
+- Technisch überholt und entfernt: fester Steuersatz (`txr_…`), Google Fonts (A9), Preis-Konstante `PRO_TERMS`.
+
+**Angaben des Owners (dürfen nicht erfunden werden):** USt-IdNr., schneller Kontaktweg, Datenschutzbeauftragter,
+Haltung zur Verbraucherschlichtung, Kundenkreis/Mindestalter, Protokollfristen – Fragebogen unten (A1, A8).
+
+**Juristische Prüfung (Rechtsberatung):** A2 (AGB inkl. Preisangabe, Änderungs- und Sanktionsklausel), A3
+(Widerrufsbelehrung, Einordnung digitale Dienstleistung), A4–A7 (Widerrufs- und Kündigungsfunktion,
+Vertragsbestätigung, Button-Lösung), A8 (Datenschutz: AVV, Drittland, Fristen), A10 (Brevo-Kontaktliste), A11
+(Newsletter).
+
+**Steuerliche Prüfung (Steuerberatung):** A12 – Prüfliste in [STEUER.md](STEUER.md). Nicht als erfolgt gekennzeichnet.
 
 ## Wo die Texte liegen
 

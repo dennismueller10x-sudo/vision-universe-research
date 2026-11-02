@@ -17,10 +17,14 @@ lokal, in der CI, lesend oder im jeweiligen Dashboard erledigt.
 | Umsatzsteuer | Stripe Tax aktiv (DE-Registrierung), Checkout mit `automatic_tax`; Probe DE/AT/FR 1,00 € brutto mit 0,16 € USt |
 | Zahlungsarten | Karte, Apple/Google Pay, PayPal, SEPA, Klarna, Link – Stripe wählt je Kunde |
 | Webhook / Portal | `we_1UVYNiBNKuXfjJefAQbiwzw0` (alle benötigten Ereignisse), Portal `bpc_1UVYNiBNKuXfjJefiiNAQOrN` (Kündigung zum Periodenende) |
-| Rechtstexte | 7 Seiten unter `konto.visionuniverse.de/rechtliches/`, Fassung `vu-recht-2026-10-29-entwurf-1`, Entwurfsbanner |
+| Rechtstexte | 7 Seiten unter `konto.visionuniverse.de/rechtliches/`, Fassung `vu-recht-2026-11-02-entwurf-2` (nach dem Merge), Entwurfsbanner |
 | Kündigen / Widerrufen | `/kuendigen`, `/widerrufen` öffentlich; Ausführung manuell (`VU_CANCELLATION_AUTO_PROCESS = "false"`) |
 | Brevo | Listen 11/12/13, DOI-Vorlage geprüft (`newsletterTemplate: ok`); Abgleich und Newsletter **aus** |
 | Tarifverwaltung | `/konto/admin/tarife/` live, geschützt; ohne Rolle 401/403 ([TARIFVERWALTUNG.md](TARIFVERWALTUNG.md)) |
+| Zahlungsereignisse | **0** – der Live-Zahlungsweg (Webhook → Abo → Rechnung → Vertragsbestätigung) wurde in Produktion noch nie durchlaufen; deshalb Z1 vor der Freigabe |
+| Registrierung | offen (`registration_gate.open = true`), keine Zulassungsliste |
+| Startseite | Fuß verlinkt die eigenen Rechtsseiten; Newsletter-Link zur Brevo-Anmeldung der Landingpage (statt Shopify) |
+| Go-live-Probe | `go-live-config.mjs --checkout=public --dry-run` scheitert nur an `[[OFFEN]]`/`[[PRÜFEN]]` – kein technischer Blocker |
 
 **Entscheidungen des Owners (02.11.2026):**
 - Das vorhandene Konto ist ein **privates Testkonto**. Es bekommt **keine** Administratorrechte; `billing_tester` bleibt für
@@ -28,6 +32,9 @@ lokal, in der CI, lesend oder im jeweiligen Dashboard erledigt.
 - `pricing_admin` wird derzeit **nicht** vergeben. Wird die Tarifverwaltung gebraucht, legt der Owner dafür ein **eigenes
   geschäftliches Konto** an; erst dann wird die Rolle diesem Konto zugewiesen (mit ausdrücklicher Zustimmung).
 - Es wird kein Administratorkonto automatisch angelegt.
+- 02.11. (zweiter Auftrag „Rolle meinem bestehenden, bestätigten Konto zuweisen“): Es gibt weiterhin nur dieses eine Konto,
+  das der Owner zuvor ausdrücklich als privates Testkonto ohne Administratorrechte bestimmt hat. Die Rolle wurde deshalb
+  **nicht** zugewiesen; sie wird dem geschäftlichen Konto zugewiesen, sobald es registriert und bestätigt ist.
 
 ## 2. Was bis zum öffentlichen Start fehlt
 
@@ -36,7 +43,7 @@ lokal, in der CI, lesend oder im jeweiligen Dashboard erledigt.
 | R1 | Rechtliche Abnahme A1–A14 ([RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md)) | Rechtsberatung | Entwürfe online lesen, Änderungen mitteilen | offen |
 | R2 | Fehlende Angaben: USt-IdNr. (falls erteilt), Telefon oder anderer schneller Kontaktweg, Datenschutzbeauftragter ja/nein, Teilnahme an Verbraucherschlichtung ja/nein | Owner | mitteilen (Fragebogen in [RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md)) | offen |
 | S1 | Umsatzsteuer: Stripe Tax läuft; Länderfrage, Steuerkategorie und Rechnungsangaben bestätigt der Steuerberater | Steuerberatung | [STEUER.md](STEUER.md) | technisch erledigt, Bestätigung offen |
-| S2 | Stripe-Branding (Symbol, Logo, Farben) und öffentliche Angaben (Support-E-Mail/-URL, Steuernummer auf Rechnungen, Beleg-E-Mails) | Owner | Stripe-Dashboard, Schritt für Schritt in [STRIPE_BRANDING.md](STRIPE_BRANDING.md) | offen |
+| S2 | Stripe-Branding (Symbol, Logo, Farben) und öffentliche Angaben (Support-E-Mail/-URL, Steuernummer auf Rechnungen, Beleg-E-Mails) | Owner | Stripe-Dashboard, Schritt für Schritt in [STRIPE_BRANDING.md](STRIPE_BRANDING.md); über die API für das eigene Konto nicht setzbar. Prüfbar erst mit `VU_ACCOUNT_STRIPE_READ_KEY` (täglicher Lesecheck meldet Logo, Symbol, Farbe, Akzent) | offen (letzter Befund 30.10.: kein Logo, kein Symbol, keine Support-Angaben) |
 | S3 | Klarna für ein 1-€-Abo behalten? | Owner | Stripe-Dashboard → Zahlungsmethoden (optional) | offen |
 | Z1 | Abschließende Zahlungsprüfung: echter Testkauf mit dem Testkonto, Beleg, Kündigung, Erstattung | Owner, Claude prüft lesend | [ZAHLUNGSPRUEFUNG.md](ZAHLUNGSPRUEFUNG.md) – jetzt schon möglich (Checkout `testers`) | offen |
 | B1 | Rechtsgrundlage Brevo-Kontaktliste (A10) | Rechtsberatung | mit R1 | offen |
