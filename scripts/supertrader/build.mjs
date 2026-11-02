@@ -757,6 +757,8 @@ function buildSources() {
     schema: 'supertrader-sources-1.0.0',
     policy: 'Dauerhafte Quellen mit echter URL, Titel, Autor und Abrufdatum. Temporäre Chat-Zitate werden nicht übernommen. Kein Buch wurde als vollständig gelesen behandelt; es werden keine geschützten Texte oder Grafiken übernommen.',
     retrievalNote: 'Die URLs wurden am 2026-09-29 über Suchergebnisse mit exakt diesem Titel bestätigt (SEARCH_RESULT_MATCH). Ein direkter Seitenabruf war aus der Build-Umgebung nicht möglich; die inhaltliche Prüfung der Aussagen stammt aus dem Deep-Research-Report und bleibt bis zum Source-Fidelity-Pass offen.',
+    // X-LEDGER (Supertrader 9): Einträge mit provenance_evidence stammen aus dem #709-Extrakt bzw. aus D-RAS97.
+    provenanceNote: 'Einträge mit provenance_evidence (Morales/Kacher, Raschke, B07, W-MIN18) sind ausschließlich aus dem hash-geprüften Extrakt von PSR #709 bzw. der Owner-Entscheidung D-RAS97 übernommen. Nicht belegte Felder sind null und in provenance_evidence.not_evidenced genannt; content_retrieved_by_vu bleibt false, weil der Abrufweg der Runde 8 für sie nicht belegt ist.',
     sources: [...ledger, ...INTERNAL_SOURCES],
   };
 }

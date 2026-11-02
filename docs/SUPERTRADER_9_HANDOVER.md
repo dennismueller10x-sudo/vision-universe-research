@@ -206,6 +206,7 @@ Details: [SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md](SUPERTRADER_9_HIS
   - Prüfplan `CERT-PREP-TOP5-PLAN.json` 1.1.1, Prüfer `cert-prep-top5.mjs` (`sf9-cert-prep-check-1.1.1`), Tests `sf-cert-prep-top5.test.mjs` 33/33.
   - Regeltreue auf dem PR-Head: C02 17/17, C01 14/14, C08 15/15, C12 14/14, C03 16/16. **Der Nachweis auf dem Referenz-Commit steht noch aus.**
   - Auslegungsbefunde: F-TUR-ADD-UNIT-N, F-KK-ADR-DENOMINATOR, F-DAR-SAME-BAR-ORDER, F-DAR-Q7-READING.
+  - **Nachtrag Plan 1.1.2 (02.11.2026):** Die vier Befunde stehen als Text im Vertrag. Owner-Fragen offen: FP-KK-ADR-DENOMINATOR-STATUS (`KK-SF-BO-STOP` bleibt bis dahin `SOURCE_EXACT`) und FP-DAR-Q7-READING. X-LEDGER und C12-LEDGER sind erledigt: `source-ledger.json` führt die acht Quellen, nicht belegte Felder sind gekennzeichnet. Code-Fingerabdrücke und Golden-Case-Ergebnisse unverändert; Details in [SUPERTRADER_9_CERTIFICATION_PREP_TOP5.md](SUPERTRADER_9_CERTIFICATION_PREP_TOP5.md) §3.1.
   - Die Abhängigkeit vom Dokument aus #1148 ist an dessen SHA-256 gebunden. Liegt die Datei unverändert auf `main`, meldet der Prüfer `PRESENT_MATCHING_PR_1148`.
 - **ALL13 (#1235, Draft):** die übrigen acht Methoden.
   - 26 CP-Tests; 41 von 41 Gegenproben werden rot.
