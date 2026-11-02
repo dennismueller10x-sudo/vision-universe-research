@@ -1,0 +1,207 @@
+{
+ "schemaVersion": "pattern-total-return-population-1.0.0",
+ "evidenceKind": "RESEARCH_RETURN_BASIS_POPULATION",
+ "certification": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "gateInput": false,
+ "claim": "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+ "template": "pattern-2015-sideways-p41-total-return",
+ "window": {
+  "from": "2015-01-01",
+  "to": "2025-06-30"
+ },
+ "asOf": "2025-12-31",
+ "pattern": {
+  "id": "DRAWDOWN_FROM_PEAK_20PCT",
+  "version": "1.0.0"
+ },
+ "horizonBars": 13,
+ "cooldownBars": 13,
+ "costs": {
+  "feeBps": 5,
+  "slippageBps": 5
+ },
+ "benchmark": "NONE",
+ "contracts": {
+  "totalReturn": "canonical-total-return-1.0.0",
+  "weekly": "weekly-total-return-1.0.0",
+  "engine": "research-studies-1.1.0",
+  "runner": "backtest-runner-1.0.0",
+  "population": "pattern-total-return-population-1.0.0",
+  "base": "pattern-total-return-1.0.0"
+ },
+ "population": {
+  "profile": "V10_PRIMARY",
+  "frame": 4288,
+  "golden": 5,
+  "goldenInFrame": 4,
+  "candidates": 4289,
+  "selection": {
+   "rule": "sha256(seed + ':' + securityId) aufsteigend",
+   "seed": "p41-population-1",
+   "limit": "ALL"
+  },
+  "confirmedTotalReturn": 4,
+  "confirmedShareOfCandidates": 0.0009326183259501049,
+  "included": [
+   {
+    "ticker": "XOM",
+    "source": "GOLDEN_PREVIEW"
+   },
+   {
+    "ticker": "JPM",
+    "source": "GOLDEN_PREVIEW"
+   },
+   {
+    "ticker": "MSFT",
+    "source": "GOLDEN_PREVIEW"
+   },
+   {
+    "ticker": "NVDA",
+    "source": "GOLDEN_PREVIEW"
+   }
+  ],
+  "excludedByReasonAndSource": {
+   "NOT_IN_POPULATION_FRAME|NONE": 1,
+   "NO_DAILY_HISTORY_WITH_DISTRIBUTIONS|NONE": 4284
+  },
+  "goldenExcluded": [
+   {
+    "securityId": "ref_AAPL",
+    "reason": "NOT_IN_POPULATION_FRAME"
+   }
+  ],
+  "ceiling": "PUBLIC_CEILING_GOLDEN_PREVIEW: oeffentlich hat nur die Golden-Preview Tagesreihen mit Ausschuettungen; mehr Titel nur ueber die kanonische Historie (--work-dir, Ablauf R3, Freigabe FV-5)"
+ },
+ "parity": {
+  "reference": "backtest-runner.cjs (PRICE_RETURN, gleiche Spec)",
+  "runnerSpecHash": "11f254518ebdceb10c49807efa71e55e49a333e3f2a700452f701c6294d39349",
+  "eventsCompared": 62,
+  "mismatches": 0
+ },
+ "priceReturn": {
+  "returnBasis": "PRICE_RETURN",
+  "events": {
+   "occurrences": 62,
+   "observed": 62,
+   "censored": 0,
+   "immature": 0,
+   "ineligible": 0
+  },
+  "censoredReasons": {},
+  "titles": 4,
+  "perEvent": {
+   "n": 62,
+   "mean": 0.0687205971639169,
+   "median": 0.04411633839610307,
+   "hitRate": 0.6290322580645161,
+   "interval95": [
+    0.002828564325110347,
+    0.13461263000272344
+   ]
+  },
+  "matchedExcess": {
+   "n": 60,
+   "mean": -0.003883800521789162,
+   "median": 0.007471755651809575
+  },
+  "resultHash": "fc9272de346902db78627234d2dcd35f87e23cbaf1ae757c0b408001878736cc"
+ },
+ "totalReturn": {
+  "returnBasis": "TOTAL_RETURN",
+  "events": {
+   "occurrences": 62,
+   "observed": 62,
+   "censored": 0,
+   "immature": 0,
+   "ineligible": 0
+  },
+  "censoredReasons": {},
+  "titles": 4,
+  "perEvent": {
+   "n": 62,
+   "mean": 0.0762666954956499,
+   "median": 0.0524517337984024,
+   "hitRate": 0.6612903225806451,
+   "interval95": [
+    0.015996023916073354,
+    0.13653736707522646
+   ]
+  },
+  "matchedExcess": {
+   "n": 60,
+   "mean": -0.0021434984642872672,
+   "median": 0.010460368497755695
+  },
+  "resultHash": "02daa4ef904be30caa2b3114da5884d4cd01468336b9340e22141b6c37fd2c7e"
+ },
+ "paired": {
+  "direction": "Gesamtrendite minus Kursrendite je Ereignis (beide beobachtet)",
+  "pairs": 62,
+  "mean": 0.007546098331732977,
+  "median": 0.008403005002555808,
+  "sd": 0.005541690438918361,
+  "positiveShare": 0.9516129032258065,
+  "tInterval95": {
+   "interval": [
+    0.006138772552047023,
+    0.008953424111418931
+   ],
+   "assumption": "unabhaengige Paare (trifft nicht zu: gleiche Titel, ueberlappende 13-Wochen-Fenster)"
+  },
+  "clusterTitle": {
+   "clusters": 4,
+   "draws": 10000,
+   "interval95": [
+    0.002541882144693711,
+    0.011743976327887894
+   ],
+   "note": "FEW_CLUSTERS: Intervall unterschaetzt die Unsicherheit"
+  },
+  "clusterTitleYear": {
+   "clusters": 27,
+   "draws": 10000,
+   "interval95": [
+    0.00512431167315961,
+    0.010051654316491595
+   ],
+   "note": null
+  },
+  "perTitle": {
+   "ref_JPM": {
+    "pairs": 11,
+    "mean": 0.008615551484564126,
+    "min": 0.005732681797458561,
+    "max": 0.010728201678330995
+   },
+   "ref_MSFT": {
+    "pairs": 9,
+    "mean": 0.0042103828408213756,
+    "min": 0.0017845191402299232,
+    "max": 0.0084440817703757
+   },
+   "ref_NVDA": {
+    "pairs": 18,
+    "mean": 0.0017076317966298789,
+    "min": -0.0004384725310084825,
+    "max": 0.005597452170780004
+   },
+   "ref_XOM": {
+    "pairs": 24,
+    "mean": 0.012685675513771208,
+    "min": 0.008361928234735916,
+    "max": 0.024012620043429633
+   }
+  },
+  "distributionsComponent": {
+   "mean": 0.007537743732631988,
+   "min": 0.00008153142798095203
+  },
+  "weeklySeriesSource": {
+   "mean": 0.000008354599100989987
+  }
+ },
+ "baseReportHash": "6996c5383f15739df9a04533de5a0b8837a60faea8a29ceabb719b27efb8bf96",
+ "reportHash": "a4cf407c27a14c233e1c867eb6d4c09b81a29236ee54071e52d8c37f80dab06d",
+ "dailySource": "quant/data/market/golden-preview/daily (oeffentlich) und discover-series (oeffentlich, ohne Ausschuettungen)"
+}
