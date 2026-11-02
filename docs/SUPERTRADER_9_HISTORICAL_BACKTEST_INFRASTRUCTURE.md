@@ -98,7 +98,20 @@ Es wird nichts fortgeschrieben. Der letzte Balken ist der letzte Handelstag; dah
 | optional `QUARANTINE_DATES_MISSING` | versiegelte CA-Q-K5-Sitzungsliste (nur Modus `CA-Q-K5-DATES`) | Owner-Schlüssel |
 | optional | Identitätssperrliste aus dem committeten Stamm 1.3.0 mit SHA-256 | erst nach dem Stammwechsel (#1143/#1163) |
 
-Außerdem fehlt ein Workflow, der Snapshot und entschlüsseltes Archiv gleichzeitig sieht (O4 in der Studie). Er wäre ein eigener Gate-A-PR mit `contents: read`, ausgelöst nur durch den Owner.
+Den Workflow, der Snapshot und entschlüsseltes Archiv gleichzeitig sieht (O4 in der Studie), liefert `.github/workflows/supertrader-st9-v13-study.yml` (§3.1). Ausgelöst wird er nur durch den Owner.
+
+### 3.1 Workflow `supertrader-st9-v13-study.yml`
+
+- **Auslöser:** nur `workflow_dispatch`, Eingaben `snapshot_id` (Standard `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`), `methods` (leer = alle registrierten) und `repeat_check` (Standard an). Die Eingaben gelangen nur über `env:` in die Shell und werden per Regex geprüft. `permissions: contents: read`, kein Commit, kein Push.
+- **Ein Job, fail closed:**
+  1. Ob die Secrets vorhanden sind, wird nur als ja/nein geprüft (`VU_HISTORY_S3_ENDPOINT`, `_BUCKET`, `_ACCESS_KEY_ID`, `_SECRET_ACCESS_KEY`, `V13_ARCHIVE_PRIVATE_KEY`). Fehlt eines, endet der Lauf mit Exit 3.
+  2. `scripts/supertrader/snapshot/fetch-v13-archive-parts.mjs` lädt die Chiffretexte der Teile `v13-raw` und `v13-derived` aus `research-snapshots/quant-v13/archive-1.2.0/`. Jeder Teil wird gegen `manifest-1.2.0.json` geprüft (Bytes, SHA-256); fehlt einer oder weicht er ab, bricht der Lauf ab. Die S3-Secrets stehen nur in diesem Schritt und im Studienschritt.
+  3. Entschlüsseln mit dem unveränderten `scripts/quant/v13/archive/restore-archive.sh` (Chiffre-, Klartext- und Datei-Hashes). Der private Schlüssel steht nur in diesem Schritt. Er wird vorher gegen den Fingerabdruck im Manifest geprüft und danach geschreddert.
+  4. Runner: erst `--preflight`, dann der Lauf, ohne `--write-plain`, mit `--out` unter `$RUNNER_TEMP`. Stdout und Stderr gehen in `run.log` im Ausgabeordner, nicht ins Actions-Log. Beim Preflight getrennt: Stdout als `preflight.json` (reines JSON), Stderr als `preflight.log`, beide im Ausgabeordner.
+  5. Danach wird der **ganze Ausgabeordner** verschlüsselt: `sealed.json`, `public.json`, `preflight.json`, `preflight.log` und `run.log` als tar, AES-256-CBC mit zufälligem Datenschlüssel (`openssl rand -hex 32`: 64 Hex-Zeichen in einer Zeile; `-pass file:` liest nur bis zum ersten Zeilenumbruch, ein binärer Schlüssel könnte dort abgeschnitten werden), der Datenschlüssel mit RSA-OAEP-SHA256 an `docs/quant-recovery/v13/archive/archive-pub.pem` gebunden. Ausgabeordner, Datenschlüssel und entschlüsseltes V13-Archiv werden gelöscht. Erst wenn eine Prüfung „nur `st9-output.tar.enc` und `k.bin.enc` vorhanden“ besteht, wird das Artefakt hochgeladen (7 Tage).
+- **Summary** (`scripts/supertrader/snapshot/st9-study-summary.mjs`, Feldliste fest, Formate geprüft): `status`, Exit-Code des Runners, `auditPass`, Anzahl der Audit-Verstöße, `resultSha256`, `inputFingerprint`, `datasetSha256`, `registrationSha256` aus der Quittung, dazu der SHA-256 des Chiffretexts. Keine Methode, keine Trade-Zahl, keine Kennzahl.
+- **Test:** `scripts/supertrader/tests/sf-st9-v13-study-workflow.test.mjs`. Statische Regeln mit je einer Gegenprobe, der Verschlüsselungsschritt lokal auf einem Dummy-Ordner, die Hilfsskripte. Außerdem: Datenschlüssel = 64 Hex-Zeichen in einer Zeile (Gegenprobe: binäres `rand -out` rot; `-pass file:` endet nachweislich am ersten Zeilenumbruch), lokaler Roundtrip mit Wegwerf-RSA-Schlüssel über genau die beiden oben dokumentierten Entschlüsselungsbefehle, Preflight-Stderr getrennt von `preflight.json`, und der Workflow referenziert nur den Studien-Runner (mit Registrierung), die beiden Snapshot-Hilfsskripte und `restore-archive.sh`, kein `completion/`- oder `research-signal`-Modul (die SF2-LEGACY-ISOLATION-Ausnahme in `sf-completion.test.mjs` gilt per Dateiname; ihr Umfang ist hier gepinnt).
+- **Auslesen:** Artefakt herunterladen. `k.bin.enc` mit dem privaten Archivschlüssel entpacken (`openssl pkeyutl -decrypt -inkey archive-priv.pem -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -in k.bin.enc -out k.bin`), dann `openssl enc -d -aes-256-cbc -pbkdf2 -iter 100000 -pass file:k.bin -in st9-output.tar.enc -out st9-output.tar`. Die darin liegende `st9-v13-delisted.sealed.json` öffnet zusätzlich nur der Owner-Schlüssel zu `validation/results-public-key.pem`.
 
 ## 4. Abhängigkeit vom Security Master 1.1.0 → 1.3.0
 
@@ -135,20 +148,31 @@ Jede SELL-Zeile wird gegen ihren Balken nachgerechnet.
 
 **Was unabhängig ist und was nicht:**
 - **Fill-Regel: unabhängig.** Ob ein Stop-Fill zwischen Tief und Eröffnung liegt und bei einem Gap zur Eröffnung gebucht ist, wird nur aus Ledger und Balken geprüft.
-- **Stop-Niveau: aus der Engine.** Das Niveau wird nicht aus der Quellregel neu abgeleitet. Es stammt aus den Trade-Daten der Engine: `finalStop`, bei Minervini zusätzlich der Stop-Pfad aus den Trade-Ereignissen (`ENTRY`-Stop, `STOP_RAISED_BREAKEVEN` ab der nächsten Sitzung) mit Abgleich gegen `finalStop` (`STOP_LEVEL_NOT_EVENT_PATH`).
+- **Stop-Niveau: aus der Engine (sf5, Minervini) oder aus der Quellregel (Turtle).** Für sf5 und Minervini stammt das Niveau aus den Trade-Daten der Engine: `finalStop`, bei Minervini zusätzlich der Stop-Pfad aus den Trade-Ereignissen (`ENTRY`-Stop, `STOP_RAISED_BREAKEVEN` ab der nächsten Sitzung) mit Abgleich gegen `finalStop` (`STOP_LEVEL_NOT_EVENT_PATH`). Für Turtle wird es aus der Quellregel neu abgeleitet (`checkTurtleStops`, unten).
 - **Verpasste Stops** (Balken mit Tief ≤ aktivem Stop ohne Stop-Verkauf, `STOP_REACHED_NOT_EXECUTED`):
   - sf5-Lebenszyklen: `checkLifecycleRun` (wiederverwendet);
   - Minervini C06/C07: `checkMinerviniStops` (neu). Jeder gehaltene Balken nach dem Einstiegstag bis zum Ausstieg wird gegen den Stop-Pfad und das Ledger geprüft. Ausnahme: Die Position wurde an dieser Eröffnung durch einen geplanten Ausstieg (`MA50_CLOSE_EXIT`, `FREEROLL_PARTIAL_HALF`) geschlossen. Der Einstiegstag selbst folgt der Gleichtagsregel der Engine und ist über `SAME_BAR_*` gekennzeichnet;
-  - **Turtle C01/C02: nicht geprüft.** Die Einheitsstopps (2N unter jedem Fill, je Zukauf angehoben) brauchen das N der Engine. Weder Ledger noch Trade-Zeilen enthalten es. Für Turtle wird deshalb nur „Fill zwischen Tief und Eröffnung“ geprüft, weder das Niveau noch ein verpasster Stop. Die Prüfung meldet das als `missedStopCheck: NOT_CHECKED_LEVEL_UNKNOWN`, nicht stillschweigend. Ein vollständiger Nachweis bräuchte eine Engine-Ausgabe der Stopps je Einheit, also eine Engine-Änderung mit neuer Registrierung.
+  - **Turtle C01/C02: `checkTurtleStops` (neu, `st9-hist-execution-1.1.0`).** Das Ledger enthält kein N. Die Prüfung rechnet es deshalb selbst nach, ohne Engine-Import:
+    - **Regelkonstanten aus dem Vertrag** (`TURTLE_STOP_RULE`: N-Periode 20, Stop 2N, Zukauf/Anhebung ½N; TUR-SF-N, TUR-SF-STOP, TUR-SF-STOPADD). Ein Test vergleicht sie mit `PARAMS` der Engine.
+    - **Eigenes Wilder-N** (`wilderN`): TR = max(H − L, H − Vortagsschluss, Vortagsschluss − L), ohne Vortagsschluss H − L; ohne H oder L kein TR, N behält seinen Wert; Start = Mittel der ersten 20 TR. Abgeglichen gegen GC-TUR-N (N[19] = 10, N[20] = (19·10 + 14)/20) und gegen `turtleN` (GC-TUR-N-WILDER).
+    - **Einheiten aus dem Ledger:** BUY/SELL tragen `unit`; Roh-Fill = Preis / (1 + Slippage). Positions-N = eigenes N des Balkens vor dem ersten Fill, fest für alle Stopps der Position. Einheit-Stop = Roh-Fill − 2N, jeder Zukauf hebt die offenen Einheiten um ½N.
+    - **Niveau jedes STOP_*-Verkaufs:** Roh-Preis = min(Eröffnung, Stop) auf gehaltenem Balken (`STOP_2N_UNIT`), = Stop bei den Gleichtags-Stopps (`STOP_2N_SAME_BAR*`); das Tief muss den Stop erreichen. Sonst `STOP_LEVEL_MISMATCH`.
+    - **Verpasste Stops:** Auf jedem gehaltenen Balken des Laufkalenders (ab der ersten Ledger-Zeile des Wertpapiers bis zum Ende der Kurve) mit ausführbarer Eröffnung muss jede seit einem früheren Tag offene Einheit, deren Stop das Tief erreicht, an diesem Tag verkauft sein: durch einen STOP_*-Verkauf oder durch den Kanalausstieg `EXIT_xD` zu einem Roh-Preis ≥ min(Eröffnung, Stop). Ein Stop unter dem Kanal wird durch den Kanalausstieg abgelöst (`exitSupersededStops`). Sonst `STOP_REACHED_NOT_EXECUTED`, je Einheit einmal. Gehaltene Stopps gelten vor Zukäufen (MA-TUR-HELD-BAR-ORDER), deshalb auch an Zukauftagen. Einheiten, die am Balken selbst gekauft wurden, folgen der Intrabar-Konvention (MA-TUR-INTRABAR-ORDER): nur Niveauprüfung, gezählt als `conventionBars`. Ein Tief innerhalb 1e-9 um den Stop ist Grenzfall (`boundaryUnitBars`), nicht bewertet.
+    - **Fail closed:** `TURTLE_N_UNAVAILABLE` (kein N vor dem ersten Fill; die Stopps dieser Position werden nicht bewertet und gezählt), `TURTLE_UNIT_UNKNOWN` (Verkauf einer nicht offenen Einheit), `TURTLE_UNIT_FIELD_MISSING` (BUY/SELL ohne `unit`), `TURTLE_UNIT_WITHOUT_BAR` (BUY oder STOP_/EXIT_-Verkauf ohne Balken).
+    - `missedStopCheck: TURTLE_INDEPENDENT_N_UNIT_STOPS`. Bis 1.0.0 stand hier `NOT_CHECKED_LEVEL_UNKNOWN`.
+    - **Positionsgenerationen:** Ein Verkauf wird der Einheit zugeordnet, die er schließt (Positionsgeneration + Einheitennummer), nicht nur der Nummer. Die Engine nummeriert eine neue Position wieder ab 1 und erlaubt den Wiedereinstieg am Ausstiegstag (`counts.reentrySameBarAsExit`). Der Verkauf der neuen Einheit 1 entschuldigt deshalb keinen verpassten Stop der alten Einheit 1 und überschreibt ihren Verkauf nicht. `TURTLE_UNIT_REOPENED`: BUY einer Einheitennummer, die noch offen ist.
+    - **Grenze:** Geprüft wird die Quellregel gegen das Ledger, nicht der Code der Engine. Einstiegs- und Zukauftage bleiben Konvention: ob das Tief vor oder nach dem Fill kam, zeigen Tagesbalken nicht.
+    - **Grenze:** Einstiege und Zukäufe selbst werden nicht unabhängig geprüft, weder der Zukauf-Trigger (letzter Fill + ½N) noch die Kaufpreise. Die Stopps werden aus den Fills des Ledgers abgeleitet; ein falscher Fill verschiebt den erwarteten Stop mit.
 
 
 | Klasse | Bedingung | Regel |
 |---|---|---|
 | `GAP_THROUGH_STOP_AT_OPEN` | Eröffnung unter dem Stop (Stop-Niveau = `finalStop` des Engine-Trades, nicht neu abgeleitet) | Fill = Eröffnung |
 | `INTRADAY_AT_STOP` | Eröffnung über dem Stop, Tief erreicht ihn | Fill = Stop |
-| `GAP_AT_OPEN_LEVEL_UNKNOWN` / `INTRADAY_LEVEL_UNKNOWN` | Turtle-Einheitsstopps (kein einzelnes Niveau) | nur ≤ Eröffnung, ≥ Tief |
+| `TURTLE_UNIT_STOP_GAP_AT_OPEN` / `TURTLE_UNIT_STOP_INTRADAY` | Turtle-Einheitsstopps `STOP_2N_UNIT` auf gehaltenem Balken (kein `finalStop`; Niveau prüft `checkTurtleStops`) | hier ≤ Eröffnung, ≥ Tief; Niveau in `checkTurtleStops` |
+| `GAP_AT_OPEN_LEVEL_UNKNOWN` / `INTRADAY_LEVEL_UNKNOWN` | Stop ohne `finalStop` und ohne eigene Niveauprüfung (bis 1.0.0 auch die Turtle-Einheitsstopps) | nur ≤ Eröffnung, ≥ Tief |
 | `SAME_BAR_CERTAIN` | Stop am Einstiegstag sicher (Fill zur Eröffnung, Schluss ≤ Stop) | – |
-| `INTRADAY_ORDER_ASSUMED` | Gleichtags-Stop nach Intrabar-Annahme ohne Minutendaten | Unsicherheitskennzeichen |
+| `INTRADAY_ORDER_ASSUMED` | Gleichtags-Stop nach Intrabar-Annahme ohne Minutendaten (auch Turtle `STOP_2N_SAME_BAR`) | Unsicherheitskennzeichen |
 | `TERMINAL_AT_LAST_TRADED_CLOSE` | Delisting | nur am letzten Balken = Ende, Preis = Schluss × (1 − Slippage) |
 | `DATA_EVENT_CENSORED` | `SECURITY_UNAVAILABLE` (Stale-Regel A4) | zensiert |
 
@@ -156,22 +180,25 @@ Als Verstöße zählen:
 - `STOP_FILL_ABOVE_OPEN`, `STOP_FILL_BELOW_LOW`, `STOP_NOT_REACHED`, `STOP_NOT_AT_LEVEL`;
 - **`STOP_GAP_NOT_FILLED_AT_OPEN`**: der Stop wurde zum Niveau gebucht, obwohl die Eröffnung darunter lag. Das ist die optimistische Annahme;
 - `TERMINAL_NOT_ON_LAST_TRADED_BAR`, `TERMINAL_NOT_AT_LAST_TRADED_CLOSE`, `EXIT_AFTER_LAST_BAR` (Fortschreiben), `ENTRY_ON_OR_AFTER_TERMINAL`;
-- nur Minervini: `STOP_REACHED_NOT_EXECUTED`, `STOP_LEVEL_NOT_EVENT_PATH`, `STOP_PATH_MISSING` (Präfix `STOPS:` in `auditRun`).
+- Minervini: `STOP_REACHED_NOT_EXECUTED`, `STOP_LEVEL_NOT_EVENT_PATH`, `STOP_PATH_MISSING`; Turtle: `STOP_REACHED_NOT_EXECUTED`, `STOP_LEVEL_MISMATCH`, `TURTLE_*` (auch `TURTLE_UNIT_REOPENED`) (Präfix `STOPS:` in `auditRun`).
+
+**Korrektur in 1.1.0 (`classifyExits`):** Turtle-Gleichtags-Stopps `STOP_2N_SAME_BAR` wurden bis 1.0.0 wie Stopps auf gehaltenem Balken gelesen. Ihr Fill zum angehobenen Stop kann über der Eröffnung liegen (Einstieg intraday über der Eröffnung, Tief danach), das ergab ein falsches `STOP_FILL_ABOVE_OPEN`. Jetzt gilt `STOP_2N_SAME_BAR` als `INTRADAY_ORDER_ASSUMED` und `STOP_2N_SAME_BAR_CERTAIN` als `SAME_BAR_CERTAIN`. Das Niveau prüft `checkTurtleStops`. Kein Fill und keine Buchung ändert sich.
 
 **Vorher/Nachher an der Fixture:** Eröffnung 15 bei Stop 18.
 - **Engine:** bucht 15 × (1 − Slippage), Klasse `GAP_THROUGH_STOP_AT_OPEN`, 0 Verstöße.
 - **Naive Tagesbalken-Buchung zum Stop:** 18 × (1 − Slippage) ergibt `STOP_FILL_ABOVE_OPEN` und `STOP_GAP_NOT_FILLED_AT_OPEN`.
 
-Das Ausführungsmodell der Engines war bereits richtig (`min(open, stop)`). Geändert wurde nichts. Neu ist, dass die Studie die Fill-Regel für jede Methode und beide Universen nachweist, auch für Minervini und Turtle, die `checkLifecycleRun` nicht abdeckt. Verpasste Stops weist sie für sf5 und Minervini nach, für Turtle nicht (siehe oben).
+Das Ausführungsmodell der Engines war bereits richtig (`min(open, stop)`). Geändert wurde nichts. Neu ist, dass die Studie die Fill-Regel für jede Methode und beide Universen nachweist, auch für Minervini und Turtle, die `checkLifecycleRun` nicht abdeckt. Verpasste Stops weist sie für sf5, Minervini und Turtle nach (Turtle seit 1.1.0, siehe oben).
 
 ### 6.2 Prüfung je Lauf (`auditRun`)
 
 - `classifyExits`;
 - `sf7-execution-checks.mjs#checkLedgerAgainstBars` (Bücher, Fills im Balken, Bargeld), für alle Methoden;
 - `#checkLifecycleRun` für die sf5-Lebenszyklen;
-- `checkMinerviniStops` für C06/C07.
+- `checkMinerviniStops` für C06/C07;
+- `checkTurtleStops` für C01/C02.
 
-Das Feld `missedStopCheck` je Audit nennt die Abdeckung: `SF5_CHECK_LIFECYCLE_RUN`, `MINERVINI_EVENT_PATH` oder `NOT_CHECKED_LEVEL_UNKNOWN` (Turtle).
+Das Feld `missedStopCheck` je Audit nennt die Abdeckung: `SF5_CHECK_LIFECYCLE_RUN`, `MINERVINI_EVENT_PATH` oder `TURTLE_INDEPENDENT_N_UNIT_STOPS`; `NOT_CHECKED_LEVEL_UNKNOWN` bleibt nur für Methoden ohne eigene Prüfung. Die Version `st9-hist-execution-1.1.0` geht in Quittung und `inputFingerprint` ein; das Studienergebnis (`resultSha256`) ändert sich nicht. Die Registrierung pinnt `st9-hist-execution.mjs` nicht; die Änderung ändert nur `studyCodeSha256`.
 
 Beide sind wiederverwendet. Der Runner hängt die Prüfung über einen Beobachter (`runStudy({ onRun })`) an, ohne zweiten Lauf. Bei einem Verstoß gilt: öffentlicher Teil `status: EXECUTION_AUDIT_FAILED`, Beispiele nur versiegelt, Exit 4.
 
@@ -217,5 +244,13 @@ Je Einstiegsjahr: Trades nach Herkunft, geschlossene Trades, Trades mit Kennzeic
 - A/B-Diff und Unsicherheit je Jahr;
 - Referenz-Hashes und Fingerabdruck;
 - Minervini verpasster Stop: echter Lauf ohne Verstoß; Gegenproben: Ledger ohne Stop-Ausstieg → `STOP_REACHED_NOT_EXECUTED`, angehobener Stop gilt erst ab der nächsten Sitzung, falscher `finalStop` → `STOP_LEVEL_NOT_EVENT_PATH`;
-- Turtle: verpasste Stops ausdrücklich als nicht geprüft gemeldet;
+- Turtle: `missedStopCheck: TURTLE_INDEPENDENT_N_UNIT_STOPS`, Studienlauf B ohne Verstoß;
 - sec-pit r12: fehlend, kein gzip, leer oder kein Objekt → abgelehnt; ein anderer Inhalt ergibt einen anderen Fingerabdruck.
+
+`node --test scripts/supertrader/tests/sf-st9-hist-turtle-stops.test.mjs`, 8 Tests:
+- Regelkonstanten 20/2/½ gleich `PARAMS`;
+- eigenes Wilder-N gegen GC-TUR-N und `turtleN` (zwei Zufallsreihen, Balken ohne H);
+- echter `runTurtle`-Lauf (S2) mit vier Einheiten, drei Intraday-Einheitsstopps, einem Gap-Stop zur Eröffnung, einem durch den Kanal abgelösten Stop und vier Gleichtags-Stopps: 0 Verstöße, `auditRun` besteht;
+- Gegenproben: Stop-SELL entfernt → `STOP_REACHED_NOT_EXECUTED` (einmal je Einheit); Tief genau am Stop → Grenzfall; Stop-Preis verschoben, Gap-Stop zum Niveau statt zur Eröffnung, Tief erreicht den Stop nicht, Gleichtags-Stop nicht am Stop → `STOP_LEVEL_MISMATCH`; Kanalausstieg unter min(Eröffnung, Stop) → `STOP_REACHED_NOT_EXECUTED`;
+- Wiedereinstieg am Ausstiegstag (echter `runTurtle`-Lauf, `reentrySameBarAsExit` = 1): alte Einheiten `STOP_2N_UNIT`, neue Einheit 1 `EXIT_20D_SAME_BAR` unter dem alten Stop → 0 Verstöße (vorher Fehlalarm `STOP_REACHED_NOT_EXECUTED`); Gegenproben: alter Stop-Verkauf der Einheit 1 bzw. 2 entfernt → genau ein `STOP_REACHED_NOT_EXECUTED`, auch wenn die neue Einheit 1 per Stop verkauft wird (vorher verdeckt);
+- Ledger-Form: fehlendes `unit`, unbekannte Einheit, Zeile ohne Balken, kein N vor dem ersten Fill.

@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-10-31T16:27:07.907Z",
+  "generatedAt": "2026-11-02T21:10:33.120Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
@@ -11,8 +11,8 @@
   "sources": {
     "ingestStatus": "2026-10-31T16:23:23.159Z",
     "factors": "2026-10-31T16:24:49.964Z",
-    "intradaySession": "2026-10-30",
-    "discover": "2026-10-31T16:27:02.864Z"
+    "intradaySession": "2026-11-02",
+    "discover": "2026-11-02T17:35:10.299Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -23,7 +23,7 @@
     "marketDataFetched": 6686,
     "historicalAvailable": 5767,
     "historicalQualityAccepted": 6684,
-    "intradayAvailable": 5104,
+    "intradayAvailable": 1390,
     "liveCapable": 1390,
     "factorEligible": 6568,
     "fundamentals": 5216,
@@ -36,8 +36,7 @@
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NOT_IN_LIVE_SCOPE": 3714,
-    "NO_IEX_BARS": 1581,
+    "NO_INTRADAY_SNAPSHOT": 5252,
     "NO_FUNDAMENTALS:NO_CIK": 1346,
     "INSUFFICIENT_HISTORY": 911,
     "NO_STOCK_PAGE": 583,
@@ -46,6 +45,7 @@
     "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 124,
     "NO_DISCOVER_CARD": 114,
     "NO_FACTOR_ROW:FAIL": 113,
+    "NO_IEX_BARS": 44,
     "INACTIVE": 28,
     "NAME_MISSING": 20,
     "NOT_TRADING:DATA_QUALITY_REVIEW": 10,
@@ -54,8 +54,7 @@
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 3,
     "NOT_CONSUMER_INSTRUMENT:UNIT": 2,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 2,
-    "QUALITY_REJECTED:too_few_bars": 2,
-    "NO_INTRADAY_SNAPSHOT": 1
+    "QUALITY_REJECTED:too_few_bars": 2
   },
   "spotCheck": [
     {
@@ -265,7 +264,7 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": true,
+        "HAS_INTRADAY": false,
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
@@ -277,7 +276,7 @@
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
-        "NOT_IN_LIVE_SCOPE"
+        "NO_INTRADAY_SNAPSHOT"
       ]
     },
     {
