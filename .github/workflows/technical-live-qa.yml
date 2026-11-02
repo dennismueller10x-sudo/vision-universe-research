@@ -44,19 +44,28 @@ jobs:
         with:
           sparse-checkout: |
             scripts/technical/world/live-qa.mjs
+            scripts/technical/world/academy-browser-qa.mjs
+            scripts/technical/world/academy-audit-contract.cjs
+            technical/academy/content.json
             scripts/access-gate
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Playwright (Chromium)
         run: |
-          npm install --prefix /tmp/pw --no-save --no-audit --no-fund playwright@1.63.0
+          npm install --prefix /tmp/pw --no-save --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
           /tmp/pw/node_modules/.bin/playwright install --with-deps chromium
       - name: Live-QA (390 px, CPU x4, 150 ms, 1,6 Mbit/s)
         env:
           PLAYWRIGHT_PATH: /tmp/pw/node_modules/playwright
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: node scripts/technical/world/live-qa.mjs "$IN_SITE" technical-live-qa
+      - name: Strategie-Akademie live (32 Lektionen, 18 vollstaendige Nutzerwege)
+        env:
+          NODE_PATH: /tmp/pw/node_modules
+          PLAYWRIGHT_PATH: /tmp/pw/node_modules/playwright
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/technical/world/academy-browser-qa.mjs --site "$IN_SITE" --out technical-live-qa/academy
       - name: Bericht in die Zusammenfassung
         if: always()
         run: test -f technical-live-qa/report.md && cat technical-live-qa/report.md >> "$GITHUB_STEP_SUMMARY" || true

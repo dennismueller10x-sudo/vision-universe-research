@@ -4,20 +4,38 @@ import {readFile, mkdir, writeFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
 import {resolve,extname} from 'node:path';
-const require=createRequire(import.meta.url),{chromium}=require('playwright');
+const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_PATH || 'playwright');
 const auditContract=require('./academy-audit-contract.cjs');
 const root=fileURLToPath(new URL('../../../',import.meta.url)), out=resolve(process.argv[process.argv.indexOf('--out')+1]||'/tmp/academy-qa');
 if(!process.argv.includes('--out'))throw Error('Pass --out DIR');
+const siteIndex=process.argv.indexOf('--site');
+const site=siteIndex>=0 ? String(process.argv[siteIndex+1]||'').replace(/\/$/,'') : null;
+if(site && site!=='https://research.visionuniverse.de')throw Error('LIVE_SITE_NOT_ALLOWED');
+let gate=null;
+if(site){
+ const response=await fetch(site+'/__research/config.json');
+ if(response.ok){
+  if(!process.env.RESEARCH_ACCESS_PASSWORD)throw Error('NO_AUTHORIZED_TEST_ACCESS');
+  const {accessStateFor,STORAGE_KEY}=await import('../../access-gate/build.mjs');
+  gate={key:STORAGE_KEY,value:JSON.stringify(accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD))};
+ }else if(response.status!==404)throw Error('ACCESS_CONFIGURATION_UNAVAILABLE');
+}
 const content=JSON.parse(await readFile(root+'technical/academy/content.json','utf8'));
 const types={'.js':'text/javascript','.css':'text/css','.html':'text/html','.json':'application/json','.svg':'image/svg+xml','.gz':'application/gzip','.woff2':'font/woff2'};
 const server=createServer(async(req,res)=>{try{let p=decodeURIComponent(new URL(req.url,'http://x').pathname);if(p.endsWith('/'))p+='index.html';const f=resolve(root,'.'+p);if(!f.startsWith(root))throw Error('path');res.setHeader('content-type',types[extname(f)]||'application/octet-stream');res.end(await readFile(f));}catch{res.writeHead(404).end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));await mkdir(out,{recursive:true});
-const base='http://127.0.0.1:'+server.address().port+'/technical/',browser=await chromium.launch(),results=[],journeys=[],performanceChecks=[];
+const base=site ? site+'/technical/' : 'http://127.0.0.1:'+server.address().port+'/technical/',browser=await chromium.launch(),results=[],journeys=[],performanceChecks=[];
+async function createContext(options){
+ const context=await browser.newContext(options);
+ if(gate)await context.addInitScript(([key,value,origin])=>{if(location.origin===origin){try{localStorage.setItem(key,value);}catch(_){}}},[gate.key,gate.value,new URL(site).origin]);
+ return context;
+}
 const assert=(x,msg)=>{if(!x)throw Error(msg);};
 async function check(name,fn){try{await fn();results.push({name,pass:true});}catch(e){results.push({name,pass:false,error:e.message});}}
 try{
+if(site){const response=await fetch(site+'/technical/academy/content.json');assert(response.ok,'PUBLISHED_ACADEMY_NOT_READY');assert(JSON.stringify(await response.json())===JSON.stringify(content),'PUBLISHED_CONTENT_DIFFERS_FROM_REVIEWED_SOURCE');}
 for(const width of [360,390,1280])for(const theme of ['light','dark']){
- const context=await browser.newContext({viewport:{width,height:844},deviceScaleFactor:1,isMobile:width<500,hasTouch:width<500});
+ const context=await createContext({viewport:{width,height:844},deviceScaleFactor:1,isMobile:width<500,hasTouch:width<500});
  await context.addInitScript(t=>localStorage.setItem('vu-discover-theme-v1',t),theme);
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
@@ -111,15 +129,15 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
  });
  await context.close();
 }
-await check('central Academy registry failure and retry',async()=>{
- const context=await browser.newContext(),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+if(!site)await check('central Academy registry failure and retry',async()=>{
+ const context=await createContext(),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/academy/data/experiences.json',r=>r.abort());await page.goto(base.replace('/technical/','/academy/'));await page.locator('.vu-a-error').waitFor();
  await page.unroute('**/academy/data/experiences.json');await page.route('**/academy/data/experiences.json',r=>r.fulfill({json:{}}));await page.getByRole('button',{name:'Neu laden',exact:true}).click();await page.locator('.vu-a-error').waitFor();
  await page.unroute('**/academy/data/experiences.json');await page.getByRole('button',{name:'Neu laden',exact:true}).click();await page.locator('a.vu-a-world-card[href="/technical/#/akademie"]').waitFor();assert(!errors.length,errors.join(';'));await context.close();
 });
-await check('cold Academy loading with mobile network and CPU profile',async()=>{
+if(!site)await check('cold Academy loading with mobile network and CPU profile',async()=>{
  for(const route of ['/academy/','/technical/#/akademie','/technical/#/akademie/trend-1']){
-  const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage(),cdp=await context.newCDPSession(page);
+  const context=await createContext({viewport:{width:390,height:844}}),page=await context.newPage(),cdp=await context.newCDPSession(page);
   await cdp.send('Network.enable');await cdp.send('Network.setCacheDisabled',{cacheDisabled:true});await cdp.send('Network.emulateNetworkConditions',{offline:false,latency:150,downloadThroughput:200000,uploadThroughput:90000});await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
   let contentRequests=0;page.on('request',r=>{if(r.url().endsWith('/technical/academy/content.json'))contentRequests++;});const start=Date.now();await page.goto(base.replace('/technical/','')+route,{waitUntil:'domcontentloaded'});
   if(route==='/academy/')await page.locator('a.vu-a-world-card[href="/technical/#/akademie"]').waitFor();else if(route.endsWith('trend-1'))await page.locator('fieldset').waitFor();else await page.locator('.ta-paths section').first().waitFor();
@@ -127,7 +145,7 @@ await check('cold Academy loading with mobile network and CPU profile',async()=>
  }
 });
 await check('real chart analysis and screener handoff retain academy return',async()=>{
- const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage();
+ const context=await createContext({viewport:{width:390,height:844}}),page=await context.newPage();
  await page.goto(base+'#/akademie/momentum-2');await page.locator('a[data-practice]').click();await page.getByRole('heading',{name:'Chart Studio',exact:true}).waitFor();
  await page.evaluate(()=>location.hash='#/chart/NVDA');const rsi=page.getByRole('button',{name:'RSI',exact:true});await rsi.waitFor();if(await rsi.getAttribute('aria-pressed')!=='true')await rsi.click();assert(await rsi.getAttribute('aria-pressed')==='true','RSI enabled');
  await page.getByRole('link',{name:'← Zur Lektion: RSI',exact:true}).click();await page.getByRole('heading',{name:'RSI',exact:true}).waitFor();
@@ -135,10 +153,10 @@ await check('real chart analysis and screener handoff retain academy return',asy
  await page.goto(base+'#/akademie/routine-2');await page.locator('a[data-practice]').click();await page.getByRole('heading',{name:'Kriterien kombinieren',exact:true}).waitFor();
  await page.locator('a',{hasText:'Im Screener bearbeiten'}).click();await page.locator('.tc-builder').waitFor();await page.getByRole('link',{name:'← Zur Lektion: Filter kombinieren',exact:true}).click();await page.getByRole('heading',{name:'Filter kombinieren',exact:true}).waitFor();await context.close();
 });
-await check('blocked storage / safe text / load retry',async()=>{
- const context=await browser.newContext();await context.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw Error('blocked');}});});const page=await context.newPage();
+if(!site)await check('blocked storage / safe text / load retry',async()=>{
+ const context=await createContext();await context.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw Error('blocked');}});});const page=await context.newPage();
  await page.route('**/technical/academy/content.json',r=>r.abort());await page.goto(base+'#/akademie/struktur-1');await page.getByRole('button',{name:'Erneut versuchen'}).waitFor();
  await page.unroute('**/technical/academy/content.json');await page.route('**/technical/academy/content.json',r=>r.fulfill({json:{paths:[],lessons:[],glossary:[]}}));await page.getByRole('button',{name:'Erneut versuchen'}).click();await page.getByRole('button',{name:'Erneut versuchen'}).waitFor();await page.unroute('**/technical/academy/content.json');await page.route('**/technical/academy/content.json',r=>{const c=structuredClone(content);c.lessons[0].foundations[0]='<img src=x onerror="window.academyInjection=true">';return r.fulfill({json:c});});await page.getByRole('button',{name:'Erneut versuchen'}).click();await page.getByRole('button',{name:'Lektion als abgeschlossen markieren'}).click();await page.getByRole('status').filter({hasText:'Speichern ist gesperrt'}).waitFor();assert(await page.locator('.ta img').count()===0,'injected image');assert(await page.evaluate(()=>!window.academyInjection),'injected execution');await context.close();
 });
 }finally{await browser.close();server.close();}
-await writeFile(out+'/report.json',JSON.stringify({results,journeys,performanceChecks},null,2));console.log(JSON.stringify({passed:results.filter(r=>r.pass).length,total:results.length,failures:results.filter(r=>!r.pass)},null,2));if(results.some(r=>!r.pass))process.exitCode=1;
+await writeFile(out+'/report.json',JSON.stringify({mode:site?'live':'local',site,authenticated:!!gate,localOnlyChecks:site?['registry failure injection','cold network profile','blocked storage and hostile payload injection']:[],results,journeys,performanceChecks},null,2));console.log(JSON.stringify({passed:results.filter(r=>r.pass).length,total:results.length,failures:results.filter(r=>!r.pass)},null,2));if(results.some(r=>!r.pass))process.exitCode=1;
