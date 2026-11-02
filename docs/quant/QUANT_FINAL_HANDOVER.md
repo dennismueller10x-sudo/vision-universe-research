@@ -5,6 +5,34 @@ Diese Übergabe beschließt den produktspezifischen Quant-Chat. Ab jetzt steuert
 - Die maschinenlesbare Fassung steht in [`quant-handover.json`](quant-handover.json).
 - Der Einstieg für alle Welten bleibt [`docs/VISION_UNIVERSE_ARCHITECTURE.md`](../VISION_UNIVERSE_ARCHITECTURE.md), die Arbeitsregeln stehen in [`CLAUDE.md`](../../CLAUDE.md).
 
+**Organisation ab 02.11.2026 (Owner-Entscheidung):**
+- Die produktbezogenen Claude-Code-Chats werden aufgelöst.
+- Strategie, Planung und alle Produktentscheidungen laufen in **einem zentralen ChatGPT-Chat**.
+- Die Umsetzung für alle Produktwelten übernimmt **ein zentraler Claude-Code-Chat**. Er übernimmt die offenen Quant-Arbeitspakete H1–H7 (Abschnitt H) zusammen mit den Aufgaben der anderen Welten.
+- Der bisherige Quant-Chat ist mit dieser Übergabe abgeschlossen. Die Freigaberegeln des Owners gelten unverändert.
+
+**Letzte Merges des Quant-Chats (02.11.2026):**
+
+| PR | Inhalt | Merge-Commit |
+|---|---|---|
+| #1239 | Discover NL5 | `08edec9e59` |
+| #1237 | Shell-QA wartet auf eingefahrenes Menü, 44 px unverändert | `cc95376185` |
+| #1238 | Hex-Passphrase für neue Archive | `aa0f10ae98` |
+| #1243 | diese Abschlussübergabe | siehe Merge-Commit von #1243 |
+
+#1224 ist geschlossen, ersetzt durch #1219.
+
+**Verifikation von `main` @ `aa0f10ae98`** (volle Suiten lokal):
+
+| Suite | Ergebnis |
+|---|---|
+| Quant | 3857/0 |
+| Core | 308/0 |
+| Discover/Screener/Supertrader | 1578/0 |
+| Technical | 61/0 |
+| Python | OK |
+| Testisolation | sauber |
+
 **Zustandskennzeichen in diesem Dokument:**
 - **ERLEDIGT:** auf `main` und wirksam.
 - **DEAKTIVIERT:** implementiert, aber ausgeschaltet.
@@ -327,6 +355,20 @@ Eine zweite Engine oder Anwendung gibt es nicht. Die Seite liest nur den hashgeb
 | H5 | Setup-OOS A1–A6 umsetzen | Owner-Entscheidung | |
 | H6 | #1119 nach 1.3.0 | H1 | |
 | H7 | Katalog-Generation 2 gegen 1.3.0 (neues Verzeichnis) | H1 | optional |
+
+**Zuständig für H1–H7:** der zentrale Claude-Code-Chat. Jede Ausführung braucht weiterhin die ausdrückliche Owner-Freigabe; eine Freigabe für ein Paket erweitert nicht den Scope eines anderen.
+
+**Offene Quant-PRs als Folgearbeiten:**
+
+| PR | Inhalt | gehört zu | Zustand |
+|---|---|---|---|
+| #1227 | Aktivierung der internen Vorschau (Schalter Produktion, Testkonto, Prüfliste) | H2 | Draft, nur nach Owner-Freigabe |
+| #1242 | iPhone-Layout der Vorschau, Browser-QA mobil mit Ergebnis | H2, vor #1227 | bereit, Owner-Freigabe |
+| #1236 | NVDA-Browser-QA, versionierte UI-Sperre (Basis eingefroren) | Qualität | bereit, Owner-Freigabe |
+| #1240 | Freigabevorlage Security Master 1.3.0 (Liste am Lauftag neu) | H1 | Draft, Owner-Datum |
+| #1241 | V13-Archiv Generation 2.0.0 (Prüfung, neue Generation, unabhängige Wiederherstellung) | H3 | Draft, Owner-Freigabe |
+| #1119 | 132 SEC-Statuskorrekturen | H6 | zurückgestellt bis nach H1 |
+| #1203 | Sitzungsübergaben 3.0.0–5.0.0 (historisch) | – | optional, nur Doku |
 
 **Arbeitsstände, die nie verloren gehen dürfen:**
 - `docs/quant-recovery/**`: eingefrorene Forschung.

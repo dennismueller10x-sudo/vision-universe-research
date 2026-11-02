@@ -235,43 +235,50 @@
    "pr": 1241,
    "title": "V13-Archiv Generation 2.0.0 (Schluesselpruefung, neue Generation, unabhaengiger Restore)",
    "needs": "Owner-Freigabe; danach Leser umstellen, dann Loeschentscheidung 1.2.0",
-   "status": "BLOCKED"
+   "status": "BLOCKED",
+   "workPackage": "H3"
   },
   {
    "pr": 1227,
    "title": "Aktivierung interne Vorschau",
    "needs": "Owner-Freigabe, #1242 empfohlen",
-   "status": "BLOCKED"
+   "status": "BLOCKED",
+   "workPackage": "H2"
   },
   {
    "pr": 1242,
    "title": "iPhone-Layout der Vorschau",
    "needs": "Owner-Freigabe",
-   "status": "BLOCKED"
+   "status": "BLOCKED",
+   "workPackage": "H2"
   },
   {
    "pr": 1236,
    "title": "NVDA-Browser-QA, versionierte UI-Sperre",
    "needs": "Owner-Freigabe",
-   "status": "BLOCKED"
+   "status": "BLOCKED",
+   "workPackage": "Qualitaet"
   },
   {
    "pr": 1240,
    "title": "Freigabevorlage Security Master 1.3.0",
    "needs": "Owner-Datum; Liste am Lauftag neu",
-   "status": "BLOCKED"
+   "status": "BLOCKED",
+   "workPackage": "H1"
   },
   {
    "pr": 1119,
    "title": "132 SEC-Statuskorrekturen",
    "needs": "nach 1.3.0",
-   "status": "BLOCKED"
+   "status": "BLOCKED",
+   "workPackage": "H6"
   },
   {
    "pr": 1203,
    "title": "Sitzungsuebergaben 3.0.0-5.0.0",
    "needs": "optional mergen (nur Doku)",
-   "status": "BLOCKED"
+   "status": "BLOCKED",
+   "workPackage": null
   }
  ],
  "workPackages": [
@@ -313,5 +320,44 @@
    "needs": "H1",
    "optional": true
   }
- ]
+ ],
+ "organisation": {
+  "from": "2026-11-02",
+  "strategy": "zentraler ChatGPT-Chat fuer Strategie und Produktentscheidungen; ein zentraler Claude-Code-Chat fuer die Umsetzung aller Produktwelten",
+  "quantChat": "abgeschlossen mit dieser Uebergabe",
+  "workPackagesOwner": "zentraler Claude-Code-Chat, jede Ausfuehrung mit ausdruecklicher Owner-Freigabe"
+ },
+ "lastMerges": [
+  {
+   "pr": 1239,
+   "commit": "08edec9e59"
+  },
+  {
+   "pr": 1237,
+   "commit": "cc95376185"
+  },
+  {
+   "pr": 1238,
+   "commit": "aa0f10ae98"
+  },
+  {
+   "pr": 1243,
+   "commit": "siehe Merge von #1243"
+  }
+ ],
+ "closed": [
+  {
+   "pr": 1224,
+   "reason": "ersetzt durch #1219"
+  }
+ ],
+ "mainVerification": {
+  "commit": "aa0f10ae98",
+  "quant": "3857/0",
+  "core": "308/0",
+  "discoverScreenerSupertrader": "1578/0",
+  "technical": "61/0",
+  "python": "OK",
+  "isolation": "sauber"
+ }
 }
