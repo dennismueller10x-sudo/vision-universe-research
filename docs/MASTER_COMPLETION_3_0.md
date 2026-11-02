@@ -23,6 +23,7 @@ Alle PRs sind Drafts, keiner ist gemergt. **Kein Merge ohne ausdrückliche Owner
 | – | #1252 | Strategie-Akademie A0 (nur Doku) | – | E9 (A-1..A-4) | unabhängig |
 | 2b | #1259 | Quant: Musterstudie optional auf Gesamtrendite (`--return-basis total`), Standard bytegleich; Freigabevorlage FV-5 Schritt 2 | grün | **E15** | Aktivierung: Prüflauf → Fachmodell-PR → Gate-Umverdrahtung (FV-5) |
 | 3a | #1257 | Supertrader: X-LEDGER und C12-LEDGER geschlossen (8 Quellen im Ledger), Ableitungstexte F-TUR/F-KK/F-DAR im Vertrag; Code-Fingerabdrücke und Ergebnisse unverändert, Vertragspins neu | grün bis auf `ask-ci` (behoben in #1260) | **E16** | danach Evidenzdokument neu erzeugen |
+| 5a | #1262 | Supertrader C09 (Fachmodell): Zuteilung nach Füllminute (F-MC3M-01, Blick in die Zukunft bei knapper Kapazität) und Eröffnung als einzige Pflichtquelle (F-MC3M-02). Golden Cases 120/120, 282/282 andere Ausgaben bytegleich | rot an 5 Pin-Tests (gepinnte Studienläufe, ST9-Registrierung), gewollt nicht nachgezogen | **E18** | Cache-Reruns mit Secrets, dann Pins, ST9 neue Registrierungsversion |
 | – | #1260 | Ask: Chartbild-Test unabhängig vom Datum (war ab November rot) | – | E17 | – |
 
 \* `experience` ist auf jedem PR ohne #1236 rot (NVDA-Setup-Karte, richtungsabhängige Prüfung). Das ist kein Befund dieses PRs. #1236 (NVDA-Browser-QA, versionierte UI-Sperre) wartet seit 01.11. auf die Owner-Freigabe (**E10**).
@@ -172,16 +173,22 @@ CC-5 (lizenzierte Quelle für Kapitalmaßnahmen, Klasse 2) und CC-8 (Paper-Test 
 | E15 | #1259 mergen (Erzeuger-Option, keine Wirkung ohne Schalter); danach FV-5 Schritt 1 (Prüflauf ohne Commit im Materialisierungs-Workflow) | – | PR #1259 | freigeben |
 | E16 | #1257 mergen. Offen bleiben die Owner-Fragen FP-KK-ADR-DENOMINATOR-STATUS (SOURCE_EXACT oder SOURCE_DERIVED) und FP-DAR-Q7-READING (Lesart „nicht in der neuen Box“) | – | PR #1257 | freigeben; beide Fragen in FP-ST-05/-07 bündeln |
 | E17 | #1260 mergen (nur Test) | – | PR #1260 | freigeben |
+| E18 | #1262 (C09-Rechenbefund): Behebung freigeben; dazu die Cache-Reruns `run-kk-intraday.mjs`/`run-sf5-lifecycle.mjs` mit Secrets und neue Pins bzw. ST9-Registrierungsversion | vor jeder Kennzahl zu C09 | PR #1262 | freigeben |
 | E14 | Quant FV-2, FV-3, FV-5 (Umverdrahtung `survivorship`/`returnBasis`), FV-6 (Setup-OOS A1–A6, vor etwa 2027-03-26), FV-7, FV-8 (ein Workflow-Schritt) | FV-6 | BACKTEST_COVERAGE_MATRIX.md §H | – |
 
 ## 5. Wiederaufnahmepunkt
 
-1. **Lauftag 1.3.0:** `node scripts/market/security-master-switch-preflight.mjs --deadline`, dann §4 der Freigabe Schritt für Schritt.
-2. Nach jedem Merge aus §0 dieses Dokument nachziehen. Nach #1233–#1235 das Evidenzdokument neu erzeugen.
-3. Autonome Pakete ohne Freigabe:
-   - Supertrader S1/S5 mit den nächsten echten Lauf-IDs belegen;
-   - Technical: Live-Messung der mobilen Performance nach dem nächsten Deploy;
-   - Academy A1 erst nach #1245.
+Stand 02.11.2026 abends. Alle autonom ausführbaren Quant- und Supertrader-Pakete sind als PR umgesetzt. Was übrig ist, braucht E1–E18, Secrets oder einen Lauftag.
+
+**Nächste ausführbare Aufgaben, in dieser Reihenfolge:**
+1. **Lauftag 1.3.0 (E1):** `node scripts/market/security-master-switch-preflight.mjs --deadline`, dann die Schritte 1–8 der Freigabe.
+2. **Nach jedem Merge aus §0:** dieses Dokument nachziehen.
+   - Nach #1233–#1235 und #1257: Evidenzdokument mit `build-evidence-matrix.mjs --out` neu erzeugen.
+   - Nach #1262 und #1247: die Finding-Tests MC3-FINDING-C09-* in #1247 auf „behoben“ umstellen.
+3. **Supertrader S1/S5:** die Nachtläufe 03.11./04.11. und den SEC-Montagslauf mit Lauf-IDs im Handover §4 belegen.
+4. **Nach E1:** Neubau von `eligibility.json` als PR mit Vorher/Nachher (E11), Katalog-Generation 2 gegen 1.3.0 (H7) mit den 16 bisher nie vorgerechneten Kombinationen.
+5. **Nach E15:** FV-5 Schritt 1, der Prüflauf der Musterstudie auf Gesamtrendite im Materialisierungs-Workflow.
+6. **Nach E9 und dem Merge von #1245:** Academy A1/A2 mit dem Pilot „Trendfolge verstehen“.
 
 ## 6. Datenqualität: `eligibility.json`
 
