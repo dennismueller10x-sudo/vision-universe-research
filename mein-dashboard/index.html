@@ -14,45 +14,58 @@
 </head>
 <body class="ka-body md-body"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <main class="ka md" id="main">
-<header class="md-head">
-<p class="ka-eyebrow">Mein Dashboard</p>
+<header class="md-hero" aria-labelledby="md-hello">
+<p class="md-eyebrow">Mein Dashboard</p>
 <h1 class="md-title" id="md-hello">Dein Bereich</h1>
-<p class="md-sub" id="md-sub" hidden><span class="ka-badge" id="md-plan"></span><a class="ka-link" href="/konto/">Konto und Abo</a></p>
+<p class="md-lead">Dein persönlicher Startpunkt: Watchlist, Produktwelten und Konto an einem Ort.</p>
+<div class="md-sub" id="md-sub" hidden><span class="md-plan" id="md-plan"></span><span class="md-plan-note" id="md-plan-note"></span></div>
+<dl class="md-stats" id="md-stats" hidden>
+<div><dt>Watchlist</dt><dd id="md-stat-watch">–</dd></div>
+<div><dt>Tarif</dt><dd id="md-stat-plan">–</dd></div>
+<div id="md-stat-renew-box" hidden><dt id="md-stat-renew-label">Nächste Verlängerung</dt><dd id="md-stat-renew">–</dd></div>
+</dl>
+<div class="md-hero-actions" id="md-hero-actions" hidden><button class="md-btn md-btn--accent" type="button" id="md-hero-add">Aktie hinzufügen</button><a class="md-btn md-btn--ghost" href="/konto/">Konto und Abo</a></div>
 </header>
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
 <div class="ka-skeleton" id="md-loading" aria-hidden="true"></div>
 <div class="md-grid" id="md-app" hidden>
 
 <section class="md-card md-watch" id="md-watchlist" aria-labelledby="md-watch-title">
-<div class="md-sec-head"><h2 id="md-watch-title">Watchlist</h2><span class="md-count" id="md-watch-count"></span><a class="ka-link md-more" id="md-watch-all" href="/konto/watchlist/">Alle Kennzahlen</a></div>
+<div class="md-sec-head"><h2 id="md-watch-title">Watchlist</h2><span class="md-count" id="md-watch-count"></span><a class="md-more" id="md-watch-all" href="/konto/watchlist/">Alle Kennzahlen</a></div>
 <div class="wl-add md-add">
-<label class="ka-legend md-visually-hidden" for="md-add">Aktie hinzufügen</label>
-<input class="ka-input" id="md-add" type="search" autocomplete="off" spellcheck="false" placeholder="Aktie hinzufügen, z. B. NVDA" role="combobox" aria-expanded="false" aria-controls="md-results" aria-autocomplete="list">
+<label class="md-visually-hidden" for="md-add">Aktie hinzufügen</label>
+<input class="md-search" id="md-add" type="search" autocomplete="off" spellcheck="false" placeholder="Aktie suchen und hinzufügen, z. B. NVDA" role="combobox" aria-expanded="false" aria-controls="md-results" aria-autocomplete="list">
 <div class="wl-results" id="md-results" role="listbox" aria-label="Treffer" hidden></div>
 </div>
 <ul class="md-rows" id="md-rows"></ul>
 <div class="md-empty" id="md-watch-empty" hidden>
 <p class="md-empty-title">Noch keine Aktien gespeichert</p>
-<p class="ka-muted">Suche oben nach einem Unternehmen oder tippe auf einer Aktienseite auf das Lesezeichen. Deine Auswahl gehört zu deinem Konto und ist auf jedem Gerät da.</p>
-<div class="ka-actions"><a class="ka-btn ka-btn--secondary" href="/discover/#/einzeln/US_REAL">Aktien entdecken</a></div>
+<p class="md-empty-text">Suche oben nach einem Unternehmen oder tippe auf einer Aktienseite auf das Lesezeichen. Deine Auswahl gehört zu deinem Konto und ist auf jedem Gerät da.</p>
+<a class="md-btn md-btn--dark" href="/discover/#/einzeln/US_REAL">Aktien entdecken</a>
 </div>
 <p class="md-fine" id="md-watch-fine">Schlusskurse aus den veröffentlichten Daten der Produktwelten, in der Währung des Listings. Keine Anlageberatung.</p>
 </section>
 
+<section class="md-card md-plan-card" id="md-account" hidden aria-labelledby="md-account-title">
+<div class="md-sec-head"><h2 id="md-account-title">Konto und Abo</h2></div>
+<dl class="md-facts" id="md-facts"></dl>
+<div class="md-card-actions" id="md-account-actions"></div>
+</section>
+
 <section class="md-card md-local" id="md-local" hidden aria-labelledby="md-local-title">
 <div class="md-sec-head"><h2 id="md-local-title">Auf diesem Gerät gemerkt</h2></div>
-<p class="ka-muted" id="md-local-text"></p>
+<p class="md-empty-text" id="md-local-text"></p>
 <ul class="md-sources" id="md-local-sources"></ul>
-<div class="ka-actions" id="md-local-actions" hidden><button class="ka-btn" type="button" id="md-local-import">In meine Watchlist übernehmen</button></div>
+<div class="md-card-actions" id="md-local-actions" hidden><button class="md-btn md-btn--dark" type="button" id="md-local-import">In meine Watchlist übernehmen</button></div>
 </section>
 
 <section class="md-card md-shortcuts" aria-labelledby="md-short-title">
-<div class="md-sec-head"><h2 id="md-short-title">Schnellzugriff</h2></div>
+<div class="md-sec-head"><h2 id="md-short-title">Deine Produktwelten</h2></div>
 <ul class="md-tiles" id="md-tiles"></ul>
 </section>
 
 </div>
-<nav class="md-foot" aria-label="Weitere Bereiche"><a class="ka-link" href="/willkommen/">Startseite</a><a class="ka-link" href="/konto/">Mein Konto</a><a class="ka-link" href="/konto/einstellungen/">Einstellungen</a><button class="md-logout" type="button" id="md-logout" hidden>Abmelden</button></nav>
+<nav class="md-foot" aria-label="Weitere Bereiche"><a href="/willkommen/">Startseite</a><a href="/konto/">Mein Konto</a><a href="/konto/einstellungen/">Einstellungen</a><button class="md-logout" type="button" id="md-logout" hidden>Abmelden</button></nav>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>

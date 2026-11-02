@@ -5,8 +5,12 @@
   color:var(--vu-text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:70dvh}
 .ka *,.ka *::before,.ka *::after{box-sizing:border-box}
 body.ka-body{margin:0;background:var(--vu-bg);color:var(--vu-text)}
+/* Farbsprache (02.11.2026): Schwarz, Weiss, Lime. Im hellen Modus ersetzt Schwarz das dunkle Olivgruen (#4f6b00) der
+   Plattform-Tokens fuer Text, Links und Fokus; Lime bleibt Flaeche (Knoepfe, Badges, Unterstriche). Dunkel: Lime als Text. */
+html:not([data-theme=dark]) .ka-body{--vu-accent-text:#0b0c0e;--vu-focus:#0b0c0e;--vu-accent-soft:#f3fbdc}
 .ka--narrow{max-width:calc(var(--ka-narrow) + 2 * var(--vu-gutter))}
-.ka-eyebrow{margin:0 0 10px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--vu-accent-text)}
+.ka-eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--vu-accent-text)}
+.ka-eyebrow::before{content:"";flex:none;width:22px;height:2px;border-radius:2px;background:var(--vu-accent)}
 .ka-title{margin:0 0 12px;font-size:clamp(30px,7vw,44px);line-height:1.06;letter-spacing:-.035em;font-weight:700}
 .ka-lead{margin:0 0 var(--vu-space-4);color:var(--vu-text-secondary);font-size:16px;line-height:1.6;max-width:60ch}
 .ka-card{background:var(--vu-surface);border:1px solid var(--vu-line);border-radius:var(--vu-radius);padding:var(--vu-space-3)}
@@ -46,7 +50,8 @@ body.ka-body{margin:0;background:var(--vu-bg);color:var(--vu-text)}
 .ka-btn--block{width:100%}
 .ka-btn[disabled]{opacity:.55;cursor:not-allowed}
 .ka-btn[aria-busy=true]{opacity:.6;cursor:wait}
-.ka-link{color:var(--vu-accent-text);font-weight:600;text-underline-offset:3px}
+.ka-link{color:var(--vu-accent-text);font-weight:600;text-underline-offset:4px;text-decoration-color:var(--vu-accent);text-decoration-thickness:2px}
+.ka-link:hover{text-decoration-color:currentColor}
 .ka-links{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:var(--vu-space-3);font-size:14px}
 
 /* Meldungen */
@@ -61,7 +66,7 @@ body.ka-body{margin:0;background:var(--vu-bg);color:var(--vu-text)}
 .ka-kv dt{color:var(--vu-muted)}
 .ka-kv dd{margin:0;font-weight:600;overflow-wrap:anywhere}
 .ka-badge{display:inline-flex;align-items:center;min-height:26px;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;
-  background:var(--vu-accent-soft);color:var(--vu-accent-text)}
+  background:var(--vu-accent);color:var(--vu-on-accent)}
 .ka-badge[data-tone=warn]{background:transparent;border:1px solid var(--vu-warn);color:var(--vu-warn)}
 .ka-badge[data-tone=muted]{background:transparent;border:1px solid var(--vu-line-strong);color:var(--vu-muted)}
 .ka-nav{display:flex;gap:8px;overflow-x:auto;margin:0 0 var(--vu-space-3);padding-bottom:4px;scrollbar-width:none}

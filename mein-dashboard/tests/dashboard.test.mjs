@@ -26,8 +26,8 @@ test('Seite: gemeinsame Shell, Theme, noindex, nur eigene Skripte, keine Inline-
 test('nur nach Anmeldung, nur bestehende Schnittstellen, keine eigene Datenhaltung', () => {
   assert.match(code, /A\.get\('\/v1\/session'\)[^]*authenticated[^]*go\('\/konto\/anmelden\/\?next='/, 'ohne Sitzung zur Anmeldung');
   const calls = [...code.matchAll(/A\.(get|post|patch)\('([^']+)'/g)].map(m => m[2]).sort();
-  assert.deepEqual([...new Set(calls)], ['/v1/auth/logout', '/v1/me', '/v1/session', '/v1/watchlist', '/v1/watchlist/import',
-    '/v1/watchlist/items', '/v1/watchlist/items/remove'], 'nur die vorhandenen Konto- und Watchlist-Aufrufe');
+  assert.deepEqual([...new Set(calls)], ['/v1/auth/logout', '/v1/me', '/v1/me/billing', '/v1/session', '/v1/watchlist', '/v1/watchlist/import',
+    '/v1/watchlist/items', '/v1/watchlist/items/remove'], 'nur die vorhandenen Konto- und Watchlist-Aufrufe (Abo nur lesend)');
   assert.ok(!/localStorage\.setItem/.test(code), 'schreibt nichts in den Browser-Speicher (liest nur die lokalen Listen)');
   assert.match(code, /W\.legacyTickers/, 'lokale Listen ueber dieselbe Leseregel wie /konto/watchlist/');
   assert.ok(!/innerHTML|insertAdjacentHTML|document\.write|outerHTML/.test(code), 'keine Serverdaten per innerHTML');
@@ -48,6 +48,6 @@ test('Leerstaat, Detailansicht und Erweiterbarkeit', () => {
   assert.match(html, /id="md-watch-empty"[^]*Noch keine Aktien gespeichert/);
   assert.match(html, /href="\/konto\/watchlist\/"/, 'Detailansicht bleibt /konto/watchlist/');
   assert.match(code, /var MODULES = \[\]/, 'Bereiche als Module');
-  for (const id of ['greeting', 'watchlist', 'add', 'local', 'shortcuts']) assert.match(code, new RegExp(`id: '${id}'`), id);
+  for (const id of ['greeting', 'account', 'watchlist', 'add', 'local', 'shortcuts']) assert.match(code, new RegExp(`id: '${id}'`), id);
   for (const p of ['discover', 'quant', 'fundamental', 'technical']) assert.match(code, new RegExp(`id: '${p}'`), `Schnellzugriff ${p}`);
 });

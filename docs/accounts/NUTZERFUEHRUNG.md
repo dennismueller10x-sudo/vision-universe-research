@@ -9,11 +9,11 @@ Datenbank, keine neue Datenhaltung, Passwortmaske und Registrierung unverändert
 | Bereich | Adresse | Rolle | Inhalt |
 |---|---|---|---|
 | Willkommensseite | `/willkommen/` | Einstieg nach jeder Anmeldung, nach der E-Mail-Bestätigung und nach bestätigter Zahlung | unverändert: Video, Story-Videos, Produktwelten, Neuigkeiten. **Neu:** Zeile „Mein Dashboard“ (Watchlist und gespeicherte Aktien) direkt unter dem Video, daneben abgesetzt „Konto“; kurze Rückmeldung bei `?konto=verified` bzw. `?konto=pro` |
-| Mein Dashboard | `/mein-dashboard/` | persönlicher Investment-Bereich | Begrüßung, Watchlist (hinzufügen, entfernen, rückgängig, Link zur Aktie), „Auf diesem Gerät gemerkt“ (lokale Listen der Produktwelten, Übernahme auf Klick), Schnellzugriff auf Discover, Quant, Fundamental, Technical, Screener, Supertrader |
+| Mein Dashboard | `/mein-dashboard/` | persönlicher Investment-Bereich | Seit 02.11.2026 neu gestaltet (Schwarz, Weiß, Lime): Einstieg mit Begrüßung, Tarif und Kennzahlen aus echten Daten (Anzahl Aktien, Tarif, nächste Verlängerung bzw. Ende), Schnellaktionen „Aktie hinzufügen“ und „Konto und Abo“; Watchlist (hinzufügen, entfernen, rückgängig, Link zur Aktie); „Konto und Abo“ (Tarif, Status, Verlängerung aus `/v1/me/billing`, nur lesend); „Auf diesem Gerät gemerkt“ (lokale Listen, Übernahme auf Klick); „Deine Produktwelten“ (Discover, Quant, Fundamental, Technical, Screener, Supertrader). Kein Verlauf „zuletzt angesehen“, weil es dafür keine Datenquelle gibt |
 | Mein Konto | `/konto/` | Einstellungen und Vertrag | persönliche Daten, E-Mail, Passwort und Sicherheit, Tarif, Abonnement, Rechnungen, Zahlungsmethoden (Kundenportal), Kündigung, Datenschutz und Datenexport |
 
 `/dashboard/` ist das bestehende Research-Dashboard (V6.3) und bleibt unverändert; deshalb liegt der persönliche Bereich unter
-`/mein-dashboard/`. Die globale Hauptnavigation ist unverändert.
+`/mein-dashboard/`. Hauptmenü (seit 02.11.2026): Angemeldet steht ganz oben die Kachel **„Mein Dashboard“** (→ `/mein-dashboard/`); sichtbar nur mit dem Merker „angemeldet“ aus `konto/account-api.js`, ausgeloggt unverändert. Sonst ist die Hauptnavigation unverändert. Farbsprache der Konto-, Dashboard- und Willkommensseiten im hellen Modus: Schwarz statt Olivgrün für Text, Links und Fokus, Lime als Fläche.
 
 **Watchlist:** primär über „Mein Dashboard“. `/konto/watchlist/` bleibt unter derselben Adresse als **Detailansicht** (alle Kennzahlen,
 Filter, Notizen, Benachrichtigungswünsche) und führt zurück zum Dashboard. Die Kontonavigation enthält keinen Watchlist-Eintrag mehr,

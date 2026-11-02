@@ -7,6 +7,7 @@
      - Kurse: die gemeinsame Watchlist-Uebersicht (core/watchlist-view.js), nie je Nutzer
      - "Auf diesem Geraet gemerkt": die lokalen Beobachten-Listen der Produktwelten,
        nur gelesen; Uebernahme ins Konto nur auf Klick (/v1/watchlist/import)
+     - Tarif und Abo: /v1/me/billing (nur lesen; dieselben Daten wie /konto/abo/)
    Kein Quant-Gesamtscore, keine Supertrader-Signale. Serverdaten nur per textContent.
 
    Erweiterung: Jeder Bereich ist ein Modul in MODULES ({id, render(ctx)}). Spaetere
@@ -28,6 +29,8 @@
     {id: 'screener', name: 'Screener', text: 'Aktien finden', href: '/screener/'},
     {id: 'supertrader', name: 'Supertrader', text: 'Methoden', href: '/supertrader/'}
   ];
+  var PLAN_NAMES = {free: 'Free', plus: 'Plus', pro: 'Pro'};
+  var LIVE = ['active', 'trialing', 'past_due', 'in_grace_period', 'incomplete'];
   // Lokale Listen: Produkt -> eigene Listenansicht der Welt.
   var LOCAL_VIEWS = {'Discover': '/discover/#/watchlist', 'Quant': '/quant/#/aktien', 'Quant-Watchlist': '/quant/#/aktien'};
   var EUROPE_KEY = 'vu.core.europe.watchlist.v1';
@@ -85,11 +88,21 @@
     var d = new Date(String(iso).slice(0, 10) + 'T12:00:00Z');
     return isNaN(d) ? '' : d.toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit'});
   }
+  function chevron() {
+    var ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'), p = document.createElementNS(ns, 'path');
+    svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('class', 'md-chev');
+    p.setAttribute('d', 'm9 6 6 6-6 6'); svg.appendChild(p);
+    return svg;
+  }
+  function fmtDay(iso) {
+    var d = iso ? new Date(iso) : null;
+    return d && !isNaN(d) ? d.toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric'}) : '';
+  }
   function greeting(hour) { return hour < 5 ? 'Gute Nacht' : hour < 11 ? 'Guten Morgen' : hour < 18 ? 'Guten Tag' : 'Guten Abend'; }
   function forgetButtonCache() { try { sessionStorage.removeItem('vu-watchlist-ids-v1'); } catch (e) { /* leer */ } }
 
   // ------------------------------------------------------------ Zustand
-  var ctx = {me: null, items: [], limits: null, ix: null, meta: null, names: null, summary: 'loading'};
+  var ctx = {me: null, billing: null, items: [], limits: null, ix: null, meta: null, names: null, summary: 'loading'};
 
   function ensureNames() {
     if (!ctx.names) ctx.names = fetchJson(W.PATHS.names).then(function (d) { return W.index(d); }, function () { ctx.names = null; return null; });
@@ -127,13 +140,50 @@
   // ------------------------------------------------------------ Module
   var MODULES = [];
 
+  function planId() { var me = ctx.me || {}; return (me.entitlements && me.entitlements.plan_id) || 'free'; }
+  function currentSubscription() {
+    var subs = (ctx.billing && ctx.billing.subscriptions) || [];
+    return subs.filter(function (s) { return LIVE.indexOf(s.status) !== -1; })[0] || null;
+  }
+
+  // Einstieg: Gruss, Tarif und drei Zahlen aus echten Daten (Watchlist, Tarif, Verlaengerung bzw. Ende).
   MODULES.push({id: 'greeting', render: function () {
-    var me = ctx.me || {}, name = me.profile && me.profile.displayName;
+    var me = ctx.me || {}, name = me.profile && me.profile.displayName, plan = planId(), sub = currentSubscription();
     $('md-hello').textContent = greeting(new Date().getHours()) + (name ? ', ' + name : '');
-    var plan = (me.entitlements && me.entitlements.plan_id) || 'free';
-    $('md-plan').textContent = {free: 'Free', plus: 'Plus', pro: 'Pro'}[plan] || plan;
-    $('md-plan').setAttribute('data-tone', plan === 'free' ? 'muted' : '');
+    $('md-plan').textContent = PLAN_NAMES[plan] || plan;
+    $('md-plan').setAttribute('data-plan', plan);
+    $('md-plan-note').textContent = plan === 'free' ? 'Kostenlos, ohne Zahlungsdaten' : sub && sub.cancelAtPeriodEnd ? 'Gekündigt, läuft bis ' + fmtDay(sub.currentPeriodEnd) : 'Danke, dass du Vision Universe unterstützt';
     $('md-sub').hidden = false;
+    $('md-stat-watch').textContent = ctx.items.length + (ctx.items.length === 1 ? ' Aktie' : ' Aktien');
+    $('md-stat-plan').textContent = PLAN_NAMES[plan] || plan;
+    var box = $('md-stat-renew-box');
+    box.hidden = !(sub && sub.currentPeriodEnd);
+    if (sub && sub.currentPeriodEnd) {
+      $('md-stat-renew-label').textContent = sub.cancelAtPeriodEnd ? 'Pro endet am' : 'Nächste Verlängerung';
+      $('md-stat-renew').textContent = fmtDay(sub.currentPeriodEnd);
+    }
+    $('md-stats').hidden = false;
+    $('md-hero-actions').hidden = false;
+  }});
+
+  // Konto und Abo: Zustand aus /v1/me/billing, Wege in die bestehenden Seiten. Ohne Daten bleibt der Bereich weg.
+  MODULES.push({id: 'account', render: function () {
+    var card = $('md-account');
+    if (!ctx.billing) { card.hidden = true; return; }
+    var plan = planId(), sub = currentSubscription(), dl = $('md-facts'), actions = $('md-account-actions');
+    dl.textContent = ''; actions.textContent = '';
+    function fact(k, v) { dl.appendChild(el('div', {}, [el('dt', {text: k}), el('dd', {text: v})])); }
+    fact('Tarif', PLAN_NAMES[plan] || plan);
+    if (sub) {
+      fact('Status', A.subscriptionStatus(sub.status) + (sub.cancelAtPeriodEnd ? ' · gekündigt' : ''));
+      if (sub.currentPeriodEnd) fact(sub.cancelAtPeriodEnd ? 'Endet am' : 'Nächste Verlängerung', fmtDay(sub.currentPeriodEnd));
+      actions.appendChild(el('a', {className: 'md-btn md-btn--dark', href: '/konto/abo/', text: 'Abo verwalten'}));
+    } else {
+      fact('Status', 'Kostenlos, keine Zahlungsdaten hinterlegt');
+      actions.appendChild(el('a', {className: 'md-btn md-btn--dark', href: '/konto/tarife/', text: 'Tarife ansehen'}));
+    }
+    actions.appendChild(el('a', {className: 'md-btn md-btn--ghost-light', href: '/konto/einstellungen/', text: 'Einstellungen'}));
+    card.hidden = false;
   }});
 
   MODULES.push({id: 'watchlist', render: function () {
@@ -141,6 +191,7 @@
     list.textContent = '';
     var limit = ctx.limits && ctx.limits.items;
     $('md-watch-count').textContent = all.length ? String(all.length) + (limit ? ' / ' + limit : '') : '';
+    if ($('md-stat-watch')) $('md-stat-watch').textContent = all.length + (all.length === 1 ? ' Aktie' : ' Aktien');
     $('md-watch-empty').hidden = all.length > 0;
     $('md-watch-all').hidden = !all.length;
     $('md-watch-fine').hidden = !all.length;
@@ -265,7 +316,7 @@
     ul.textContent = '';
     SHORTCUTS.forEach(function (p) {
       ul.appendChild(el('li', {}, [el('a', {className: 'md-tile', href: p.href, 'data-product': p.id},
-        [el('span', {className: 'md-tile-icon'}, [icon(p.id)]), el('b', {text: p.name}), el('small', {text: p.text})])]));
+        [el('span', {className: 'md-tile-icon'}, [icon(p.id)]), el('span', {className: 'md-tile-copy'}, [el('b', {text: p.name}), el('small', {text: p.text})]), chevron()])]));
     });
   }});
 
@@ -287,8 +338,9 @@
     if (!W || !Id) { $('md-loading').hidden = true; return notice('Das Dashboard konnte nicht geladen werden.', 'error'); }
     A.get('/v1/session').then(function (s) {
       if (!(s.ok && s.data && s.data.authenticated)) return go('/konto/anmelden/?next=' + encodeURIComponent('/mein-dashboard/'));
-      return Promise.all([A.get('/v1/me'), loadItems()]).then(function (rs) {
+      return Promise.all([A.get('/v1/me'), loadItems(), A.get('/v1/me/billing')]).then(function (rs) {
         if (rs[0].ok) ctx.me = rs[0].data;
+        if (rs[2].ok) ctx.billing = rs[2].data;
         return loadSummary();
       }).then(function () {
         $('md-loading').hidden = true;
@@ -299,6 +351,11 @@
         if (ctx.me && A.proPending(ctx.me, null)) notice('Deine Pro-Bestellung ist noch offen.', 'info', {label: 'Fortsetzen', run: function () { go(A.PRO_CONFIRM); }});
         render();
       });
+    });
+    $('md-hero-add').addEventListener('click', function () {
+      var input = $('md-add');
+      input.scrollIntoView({behavior: 'smooth', block: 'center'});
+      input.focus({preventScroll: true});
     });
     $('md-logout').addEventListener('click', function () {
       this.disabled = true;
