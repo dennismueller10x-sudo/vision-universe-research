@@ -186,6 +186,9 @@ Die neue Liste wird **nicht** in diesem PR committet. Sie ist am Lauftag schon w
   - die eingefrorene Kopie `quant/frozen/security-master/us-security-master-1.1.0.json`;
   - die Research-Loader (lesen immer 1.1.0);
   - Katalog-Generation 1 und das Vorschau-Bundle.
+- **Echter Revert, lokal auf einem Wegwerfzweig (nie gepusht):**
+  - Die sechs Dateien aus 41400342624 als Commit, dann `git revert --no-edit HEAD`.
+  - Ergebnis: Baum `b098fa02…`, **identisch** mit dem Baum vor der Übernahme. Der Stamm hat wieder `26c82617…`.
 - **Lokal geprüft (Simulation):** Nach `git restore` der sechs Dateien und der Discover-, Capability- und vu2-Dateien:
   - der Arbeitsbaum ist sauber, der Stamm wieder `26c82617…`;
   - die Basis-Suiten sind grün (§5: Quant 3.857/0, Core 308/0, Discover/Supertrader/Screener 1.641/0, Technical 61/0, Python OK);
