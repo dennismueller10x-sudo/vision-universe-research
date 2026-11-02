@@ -1,16 +1,16 @@
 {
   "schema": "vu-supertrader-cert-prep-plan-1",
   "id": "SF9-CERT-PREP-ALL13",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "fixedOn": "2026-11-01",
-  "revision": "1.0.1 (02.11.2026, vor jedem Ergebnis einer Studie): Feld token in sourcePhrase umbenannt wie im TOP5-Plan 1.1.1 (#1196), weil die Schlüsselsuche der Supertrader Quality Gates den Feldnamen als möglichen Schlüssel meldet; Basis auf TOP5 1.1.1 mit deren neuem Inhalts-Pin. Werte, Regeln, Parameter, Blocker, Gegenproben und Abnahmekriterien unverändert.",
+  "revision": "1.0.1 (02.11.2026, vor jedem Ergebnis einer Studie): Feld token in sourcePhrase umbenannt wie im TOP5-Plan 1.1.1 (#1196), weil die Schlüsselsuche der Supertrader Quality Gates den Feldnamen als möglichen Schlüssel meldet; Basis auf TOP5 1.1.1 mit deren neuem Inhalts-Pin. Werte, Regeln, Parameter, Blocker, Gegenproben und Abnahmekriterien unverändert. | 1.0.2 (02.11.2026, vor jedem Ergebnis einer Studie): Basis auf TOP5 1.1.2 (#1257, X-LEDGER und Vertragstexte der TOP5-Befunde) mit deren neuem Inhalts-Pin. Sonst unverändert: Werte, Regeln, Parameter, Blocker, Gegenproben und Abnahmekriterien.",
   "status": "PREREGISTERED_NOT_ACTIVE",
   "purpose": "Methodische Zertifizierungsvorbereitung aller 13 Methoden: der unveränderte TOP5-Plan plus die übrigen acht (C07, C06, C13, C11, C05, C04, C09, C10). Keine Zertifizierung, keine Regel- oder Parameteränderung, keine Aktivierung.",
   "extends": {
     "plan": "scripts/supertrader/source-faithful/certification/CERT-PREP-TOP5-PLAN.json",
     "id": "SF9-CERT-PREP-TOP5",
-    "version": "1.1.1",
-    "contentSha256": "016f87ede52daac4d7a087635858ade31d642e3c337e94725be5e28617ee8690",
+    "version": "1.1.2",
+    "contentSha256": "ed209fc36ec19151df94cbc793e0ebcfec358b923b22de90eee4067f4ab16b46",
     "rule": "Basis unverändert; Erweiterung hängt Methoden, Querschnittsblocker, Befunde, Ausschlussgründe und Tests an (cert-prep-all13.mjs#mergePlans)"
   },
   "dependsOn": {
@@ -27,7 +27,7 @@
     "paperProtocol": "SF6-PAPER-2027 1.1.0 (scripts/supertrader/source-faithful/completion/sf6-paper-protocol-2027.mjs)",
     "validationProtocol": "SF6-VALIDATION-PROTOCOL 1.1.0 (scripts/supertrader/source-faithful/research/run-sf6-validation.mjs)",
     "sourceExtract": "scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json",
-    "top5Plan": "CERT-PREP-TOP5-PLAN.json 1.1.1 (PR #1196)"
+    "top5Plan": "CERT-PREP-TOP5-PLAN.json 1.1.2 (PR #1196, Revision 1.1.2 in PR #1257)"
   },
   "guards": {
     "validatedTradeSignal": "LOCKED_FOR_ALL_13",

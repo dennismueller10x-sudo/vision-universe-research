@@ -32,7 +32,8 @@ export const ALL13_PLAN_FILE = path.join(HERE, 'CERT-PREP-ALL13-PLAN.json');
 export const CERT_PREP_ALL13_CHECK_VERSION = 'sf9-cert-prep-all13-check-1.0.0';
 /** Pin des ALL13-Planinhalts (sha256 über JSON.stringify des geladenen ALL13-Plans). Neu setzen nur in einem begründeten Commit. */
 // 1.0.1 (02.11.2026): Feld token → sourcePhrase wie TOP5 1.1.1 (#1196), Basis-Pin TOP5 neu; Werte unverändert.
-export const PINNED_ALL13_CONTENT_SHA256 = 'd45ee3d19c767bca24db5edb4e7d90bf279fe99928d2802618ca89e6f9e20552';
+// 1.0.2 (02.11.2026): Basis-Pin auf TOP5 1.1.2 (#1257); Werte unverändert.
+export const PINNED_ALL13_CONTENT_SHA256 = '91e7689394450de2f7c404f013bef33051c9d300fdfb994420034a4ca3d669e2';
 export const ALL13_TEST_FILE = 'scripts/supertrader/tests/sf-cert-prep-all13.test.mjs';
 /** Familienpräfix der CP-Tests der ALL13-Testdatei -> Methoden. */
 export const ALL13_CP_FAMILIES = Object.freeze({ WEIN: ['C04', 'C05'], MIN: ['C06', 'C07'], EP: ['C09'], PS: ['C10'], PP: ['C11'], HG: ['C13'] });
