@@ -229,7 +229,7 @@ Liste mit Abhängigkeiten in `quant-handover.json` (`openPullRequests`). Wichtig
 | Entscheidung | Stand | Vorbereitung |
 |---|---|---|
 | Security Master 1.3.0 produktiv | BLOCKIERT, Freigabe nötig | #1240; Arbeitspaket H1 |
-| V13-Archivgeneration 2 / Löschung der alten | siehe F | Archiv-PR |
+| V13-Archivgeneration 2.0.0 übernehmen (#1241), Leser umstellen, danach Löschung von 1.2.0 | BLOCKIERT, Freigabe nötig | F |
 | Interne Aktivierung der Vorschau | BLOCKIERT, Freigabe nötig | #1227, Abschnitt G |
 | Öffentliche Backtesting-Integration | LANGFRISTIG, nach Praxistest | D |
 | Setup-OOS A1–A6 | BLOCKIERT, spätestens vor etwa 2027-03-26 | `docs/quant/SETUP_OOS_DECISION_A1_A6.md`, `SETUP_OOS_EVALUATION.md` |
@@ -248,7 +248,40 @@ Liste mit Abhängigkeiten in `quant-handover.json` (`openPullRequests`). Wichtig
 
 ## F. Privates V13-Archiv: Generation und Wiederherstellung
 
-(Wird mit dem Ergebnis der Archivprüfung vom 02.11.2026 ergänzt; siehe Archiv-PR und `docs/quant-recovery/v13/archive/README.md`.)
+**Befund (02.11.2026):** Die frühere Schlüsselerzeugung (`openssl rand -out … 32` und `-pass file:`) kürzte die Passphrase am ersten `\n` bzw. NUL. Die Erzeugung für neue Archive ist seit #1238 auf `main` behoben (Hex-Passphrase).
+
+**Schlüsselprüfung aller Teile** (Läufe 41398544194 und 41399813949). Ausgegeben wurden nur Längen, nie Schlüsselbytes.
+
+| Generation | in R2 | Teile | schwach (< 32 B) | betroffen |
+|---|---|---:|---:|---|
+| 1.0.0 | nie hochgeladen | 6 | 1 | v13b-hist (3 B) |
+| 1.1.0 | nie hochgeladen | 7 | 2 | v13b-hist (31 B), v13b-f1w (16 B) |
+| **1.2.0** | **ja**, aktuell gelesen | 8 | 1 | v13-raw (18 B, also 144 Bit) |
+| **2.0.0** | **ja**, neu | 8 | **0** | alle 64 Zeichen |
+
+Kein hochgeladener Teil hatte je eine leere Passphrase.
+
+**Neue Generation 2.0.0** (PR **#1241**, nicht gemergt):
+- **Erzeugung, Lauf 41398712451:**
+  - 1.2.0 aus R2 wiederhergestellt und jede Datei gegen Manifest 1.2.0 geprüft;
+  - mit Hex-Schlüsseln neu verschlüsselt (`seal-part.sh` mit Rundlaufprüfung);
+  - nur unter dem neuen Präfix `research-snapshots/quant-v13/archive-2.0.0/` hochgeladen;
+  - vor jedem Upload per HEAD geprüft, ob das Objekt existiert, dann Abbruch. Kein Objekt wurde überschrieben, der alte Präfix nur gelesen.
+- **Unabhängige Wiederherstellung, Lauf 41399476800**, auf einem anderen Runner:
+  - 8/8 Teile, 11.616 Dateien;
+  - bytegleich zum Inhalt von 1.2.0;
+  - alle Schlüssel 64 Zeichen.
+- **Manifest:** `docs/quant-recovery/v13-archive-gen2/manifest-2.0.0.json`, in einem neuen Verzeichnis, weil SMF-1 neue Dateien in eingefrorenen Verzeichnissen verbietet.
+- **Secrets:** nur die vorhandenen Namen (`V13_ARCHIVE_PRIVATE_KEY`, `VU_HISTORY_S3_*`). Es sind keine neuen Schlüssel oder Rechte nötig.
+
+**Alte Generation 1.2.0 bleibt unverändert erhalten.** Für eine spätere Löschung sind nötig:
+1. #1241 mergen;
+2. die Lesemodi (`restore`, `demos`, `catalog`) in einem eigenen PR auf 2.0.0 umstellen und prüfen;
+3. die Owner-Entscheidung zur Löschung, als eigener Schritt; der Speichertreiber blockiert Löschungen.
+
+**Speicher:** Der Bucket liegt bei etwa 7,78 GB von 8 GB kostenfrei. Eine weitere vollständige Generation passt erst nach der Löschung von 1.2.0.
+
+**Wiederherstellungsweg:** Commit-Marke `[v13-archive:get|restore]` bzw. `[v13-archive:verify2]` für 2.0.0, siehe `docs/quant-recovery/v13/archive/README.md`. Der private Schlüssel liegt nur im Actions-Secret `V13_ARCHIVE_PRIVATE_KEY`.
 
 ---
 
@@ -289,7 +322,7 @@ Eine zweite Engine oder Anwendung gibt es nicht. Die Seite liest nur den hashgeb
 |---|---|---|---|
 | H1 | **Security Master 1.3.0** am selben Tag: Probelauf (`commit=false`), Freigabeliste neu erzeugen, Gate lokal, volle Suiten auf dem Folgestand mit Discover-Neubau, Owner-Freigabe, `commit=true`, sofort Marktdaten-Lauf, Generation 1.3.0 eintragen (Pin-Skript), Nachprüfung | Owner-Datum | ja, Schritte in #1240 |
 | H2 | Interne Aktivierung und Praxistest | Owner-Freigabe | ja, G |
-| H3 | Archivgeneration 2: Abschluss bzw. Löschentscheidung | siehe F | |
+| H3 | Archivgeneration 2.0.0: #1241 mergen, Leser umstellen, dann Löschentscheidung 1.2.0 | Owner-Freigabe | ja, F |
 | H4 | Öffentliche Backtest-Integration in `#/backtest` | Praxistest, Owner-Freigabe, UI-Revision | Planung |
 | H5 | Setup-OOS A1–A6 umsetzen | Owner-Entscheidung | |
 | H6 | #1119 nach 1.3.0 | H1 | |

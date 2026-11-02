@@ -142,7 +142,21 @@
     "VU_HISTORY_S3_ENDPOINT",
     "VU_HISTORY_S3_REGION"
    ],
-   "status": "siehe QUANT_FINAL_HANDOVER.md Abschnitt F"
+   "status": "Generation 2.0.0 in R2, unabhaengig wiederhergestellt (Run 41399476800); 1.2.0 unveraendert erhalten",
+   "generations": {
+    "1.2.0": {
+     "inR2": true,
+     "weakParts": 1,
+     "note": "aktuell von restore/demos/catalog gelesen"
+    },
+    "2.0.0": {
+     "inR2": true,
+     "weakParts": 0,
+     "manifest": "docs/quant-recovery/v13-archive-gen2/manifest-2.0.0.json",
+     "pr": 1241
+    }
+   },
+   "bucketUsageGB": "ca. 7.78 von 8"
   }
  },
  "interfaces": {
@@ -217,6 +231,12 @@
   ]
  },
  "openPullRequests": [
+  {
+   "pr": 1241,
+   "title": "V13-Archiv Generation 2.0.0 (Schluesselpruefung, neue Generation, unabhaengiger Restore)",
+   "needs": "Owner-Freigabe; danach Leser umstellen, dann Loeschentscheidung 1.2.0",
+   "status": "BLOCKED"
+  },
   {
    "pr": 1227,
    "title": "Aktivierung interne Vorschau",
