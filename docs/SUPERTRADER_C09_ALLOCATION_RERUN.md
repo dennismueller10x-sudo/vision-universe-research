@@ -2,7 +2,9 @@
 
 Stand 02.11.2026, PR #1262 (Kopf `d789e6dc4c`). Owner-Entscheidung vom 02.11.: Die Korrektur nach tatsächlicher Füllminute ist fachlich grundsätzlich der richtige Ansatz. Studienläufe mit Secrets, Vorher/Nachher-Vergleich und neue Pins sind vorzubereiten. Historische Nachweise werden nicht still geändert. Die finale fachliche Freigabe folgt nach Vorlage der Ergebnisse.
 
-**Ergebnis dieses Schritts:** Die Läufe sind **nicht gestartet**. Beide Läufe, die die vorhandenen Secrets nutzen, schreiben am Ende einen Commit (Abschnitt 1). Der Auftrag erlaubt nur Läufe ohne Commit. Dieses Dokument ist deshalb die Freigabevorlage: genaue Eingaben, Nebenwirkungen, der Vorher-Stand aus den gepinnten Zählungen und der Pin-Plan. Pins, Registrierungen und `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md` sind unverändert.
+**Nachtrag 02.11.2026 (abends):** Der Owner hat L1 und L2 freigegeben. Beide Läufe sind gelaufen, die Ergebnisse stehen in Abschnitt 6. Abschnitte 1 bis 5 sind die unveränderte Freigabevorlage.
+
+**Ergebnis dieses Schritts (Freigabevorlage, vor den Läufen):** Die Läufe sind **nicht gestartet**. Beide Läufe, die die vorhandenen Secrets nutzen, schreiben am Ende einen Commit (Abschnitt 1). Der Auftrag erlaubt nur Läufe ohne Commit. Dieses Dokument ist deshalb die Freigabevorlage: genaue Eingaben, Nebenwirkungen, der Vorher-Stand aus den gepinnten Zählungen und der Pin-Plan. Pins, Registrierungen und `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md` sind unverändert.
 
 ## 1. Welche Workflows die Läufe ausführen
 
@@ -45,7 +47,7 @@ Alle Läufe verwenden dieselbe Snapshot-Generation wie die gepinnten Läufe:
 
 ## 3. Vorher-Stand (gepinnt, Lauf 40228395395) und Vergleichsprotokoll
 
-Die Nachher-Spalten füllt L1. Gezeigt werden nur Zählungen und Hash-Präfixe. Kennzahlen je Variante (CAGR, Drawdown, Trefferquote) stehen nur in der verschlüsselten Ausgabe und werden für den Bericht als Aggregat übernommen.
+Die Nachher-Werte stehen in Abschnitt 6 (L1, Lauf 41504851988). Gezeigt werden nur Zählungen und Hash-Präfixe. Kennzahlen je Variante (CAGR, Drawdown, Trefferquote) stehen nur in der verschlüsselten Ausgabe und werden für den Bericht als Aggregat übernommen.
 
 EP-Day-Set CLEAN (Lifecycle-Engine, Auftragstyp `INTRADAY_RESOLVED`, also von der Änderung betroffen):
 
@@ -94,3 +96,103 @@ Unverändert bleiben `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md`, `SF6-PAPER
 3. **Fachliche Freigabe C09** (Merge #1262) mit den Vorher/Nachher-Zahlen. Danach folgt der Versionssprung von `ENGINE_VERSION`, wenn gewünscht.
 
 Bis dahin bleiben in der CI von #1262 genau die 5 Pin-Tests rot (Job `gates`). Kein Gate wurde abgeschwächt.
+
+## 6. Ergebnisse der Läufe (02.11.2026)
+
+Owner-Freigabe vom 02.11.2026: L1 und L2 mit den vorgesehenen Secrets, verschlüsselte Ablage auf `claude/supertrader-validation-results`. L0 ist nicht gelaufen. Abschnitt 2 zeigt, dass der Vorher-Stand mit gleichem Code und gleicher Eingabe schon als gepinnter Lauf vorliegt.
+
+### 6.1 Läufe und Ablage
+
+| Nr. | Lauf | Modus | ref / Commit | Dauer | Ergebnis | Ablagedatei (`claude/supertrader-validation-results`) |
+|---|---|---|---|---|---|---|
+| L1 | [41504851988](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/41504851988) | `kk-intraday-cache` | `claude/supertrader-c09-intraday-allocation` @ `2a61ec52aa` | 30 min | success, 0 Tiingo-Anfragen | `20261102T192348Z-kk-intraday-cache.sealed.json` (Commit `f49978767f`) |
+| L2 | [41504856962](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/41504856962) | `sf5-lifecycle` | dto. | 113 min | success | `20261102T204700Z-sf5-lifecycle.sealed.json` (Commit `aa62bcd945`) |
+
+Eingaben beider Läufe über `workflow_dispatch`: `snapshot=sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, `accounting=research-v1`.
+
+Prüfung der Ablage:
+- Jeder Lauf hat genau einen Commit mit genau einer **neuen** Datei angelegt (`git diff --name-status`: nur `A`). Bestehende Dateien wurden nicht geändert oder überschrieben. Gepusht wurde ohne Force.
+- Beide Dateien beginnen mit `"schema":"supertrader-sealed-1.0.0"` (RSA-OAEP-256 + A256GCM, Schlüssel nur beim Owner). Der Zweig enthält danach 155 Dateien, alle `*.sealed.json`.
+- `*.public.json` wird nicht abgelegt, sie steht nur im Log. Sie enthält Zählungen, Reason Codes und Hashes, keine Kurse, Minutenwerte, Ticker oder Kennzahlen.
+- `main` und der PR-Branch haben durch die Läufe keinen Commit bekommen.
+- **Zweigschutz:** `claude/supertrader-validation-results` hat keine Schutzregel (`protected: false`). Das Ruleset „Schutz vor Verlust“ (Löschen und Force-Push verboten) gilt nur für den Default-Branch, `brevo-newsletter-state`, `backup/**`, `rollback/**`, `data/**` und `evidence/**`. Schreiben können nur Personen mit Schreibrecht auf das Repository und der Workflow-Token. Lesen kann jeder, weil das Repository öffentlich ist, die Dateien sind aber verschlüsselt. Owner-Hinweis: Den Zweig in das Ruleset aufnehmen, dann sind Löschen und Force-Push verboten. Daran wurde hier nichts geändert.
+
+Die Kennzahlen je Variante (CAGR, Drawdown, Trefferquote) stehen nur in den verschlüsselten Dateien. Hier stehen nur öffentliche Zählungen.
+
+### 6.2 Unabhängiger Vergleich
+
+Werkzeug: `scripts/supertrader/validation/compare-public-runs.mjs` (Test `sf-c09-compare-public-runs.test.mjs`). Es liest den öffentlichen Block aus dem Actions-Log beider Läufe, vergleicht kanonisches JSON und gibt nur Aggregate aus. Es benutzt weder die Engine noch die Pins.
+
+```bash
+node scripts/supertrader/validation/compare-public-runs.mjs --before <Log 40228395395> --after <Log 41504851988>
+node scripts/supertrader/validation/compare-public-runs.mjs --before <Log 40228392651> --after <Log 41504856962>
+```
+
+**Gültigkeit (Eingaben identisch):** In der Quittung unterscheiden sich nur `runId`, `commit` und `researchCodeSha256`. Es gilt: KK `a1aa5b0b…` → `c5ee7f45…`, SF5 `0726cac0…` → `a8d757fb…`, beide gleich dem Fingerabdruck des PR-Kopfes. Gleich sind Datensatz `3ea6443d…` (EXACT), `engineCodeSha256` `89fbcf86…`, Minuten- und Basis-Cache (`c399a88c…`, `911b53b5…`), E7-6-Erweiterungscache, Day-Set-Hashes und Register (`e8d25282…`, `436358d6…`, `ca54c1fe…`, SF5 `0a1260e9…`). Ebenfalls gleich sind `candidates`, `intradayCoverage` und `sampling`. Der Vergleich ist damit gültig.
+
+**SF5 (L2):** Alle 47 Variantenblöcke (41 sf5 + 6 SF7-Ausführung) sind identisch, ebenso alle Lebenszyklus-Blöcke (Determinismus, `sf7Validation`). Der ganze öffentliche Block ohne Quittung hat vorher und nachher dieselbe SHA-256 `c1f6b941…`. `counts.intradayAllocationByMinute` kommt nicht vor. Die Erwartung ist erfüllt.
+
+**C10 / PS-Seite (L1):** `ps` (alle Tagesmengen, beide Überlappungsregeln) und `extE7_6` außer `extE7_6.ep` sind identisch, `ps` mit SHA-256 `5b1c967a…` vorher und nachher. Die Erwartung ist erfüllt.
+
+**C09 / EP-Seite (L1):** Alle 47 EP-Blöcke haben sich geändert: 9 Varianten × 4 Tagesmengen, die SF7-Variante sowie die 10 Blöcke von `extE7_6.ep`. Auch `tradesSha256` und `ledgerSha256` sind überall verschieden. Das gilt auch dort, wo die Zahl der Trades gleich bleibt (ALT-ORH-5). Die unabhängigen Prüfungen `ep.sf7Validation` melden in allen 10 Varianten 0 Verstöße.
+
+EP-Day-Set CLEAN (Referenz):
+
+| Variante | Trades vorher → nachher | geschlossen | offen | `tradesSha256` nachher | Hash gleich? | `REJECT_INSUFFICIENT_CAPITAL` | `STOP_SAME_BAR_CERTAIN` |
+|---|---|---|---|---|---|---|---|
+| REF | 611 → 600 (-11) | 609 → 598 | 2 → 2 | `f4d9ffc7…` (Ledger `5d3abc61…`) | nein | 1 → 12 | 389 → 381 |
+| ALT-ORH-5 | 403 → 403 (+0) | 401 → 401 | 2 → 2 | `5eab499a…` (Ledger `61360efc…`) | nein | 0 → 0 | 169 → 169 |
+| ALT-NO-VOLUME-RULE | 1042 → 1023 (-19) | 1039 → 1020 | 3 → 3 | `cf5cf06b…` (Ledger `b52c1326…`) | nein | 73 → 92 | 659 → 637 |
+| ALT-QUIET-PRIOR-RUN-50 | 406 → 399 (-7) | 405 → 398 | 1 → 1 | `566f9645…` (Ledger `0a372eea…`) | nein | 1 → 8 | 246 → 241 |
+| ALT-EXIT-MA10 | 613 → 606 (-7) | 612 → 605 | 1 → 1 | `9bad9e98…` (Ledger `21ea27ad…`) | nein | 0 → 7 | 389 → 384 |
+| ALT-EXIT-MA50 | 598 → 586 (-12) | 593 → 581 | 5 → 5 | `b2086656…` (Ledger `58e444d3…`) | nein | 15 → 27 | 378 → 370 |
+| ALT-FILL-MINUTE-OPTIMISTIC | 607 → 597 (-10) | 605 → 595 | 2 → 2 | `2933c3ad…` (Ledger `d667fe8c…`) | nein | 5 → 15 | 384 → 377 |
+| ALT-RISK-00025 | 612 → 611 (-1) | 610 → 609 | 2 → 2 | `084603c3…` (Ledger `b8c49841…`) | nein | 0 → 1 | 389 → 388 |
+| ALT-RISK-001 | 581 → 573 (-8) | 579 → 571 | 2 → 2 | `3aded2fd…` (Ledger `11456735…`) | nein | 33 → 41 | 368 → 360 |
+| SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE | 606 → 598 (-8) | 604 → 596 | 2 → 2 | `29498a69…` (Ledger `b7a311a1…`) | nein | 0 → 0 | 383 → 378 |
+
+Andere Reason Codes (CLEAN, Delta nachher − vorher):
+
+- REF: NOT_EXECUTED_INTRADAY_NOT_FETCHED +1
+- ALT-NO-VOLUME-RULE: NOT_EXECUTED_INTRADAY_NOT_FETCHED -1
+- ALT-EXIT-MA50: NOT_EXECUTED_IDENTITY_MISMATCH +1, NOT_EXECUTED_INTRADAY_NOT_FETCHED +3
+
+Weitere Tagesmengen (Trades vorher → nachher, alle Hashes verschieden):
+
+| Variante | BEFORE_FIX | STRAT_YEAR_X_LIQUIDITY | STRAT_YEAR_X_LIQUIDITY_X_REGIME | `extE7_6.ep` |
+|---|---|---|---|---|
+| REF | 611 → 600 (-11) | 463 → 455 (-8) | 429 → 423 (-6) | 615 → 604 (-11) |
+| ALT-ORH-5 | 403 → 403 (+0) | 297 → 297 (+0) | 275 → 275 (+0) | 404 → 404 (+0) |
+| ALT-NO-VOLUME-RULE | 1106 → 1075 (-31) | 818 → 801 (-17) | 774 → 763 (-11) | 1061 → 1035 (-26) |
+| ALT-QUIET-PRIOR-RUN-50 | 406 → 399 (-7) | 310 → 307 (-3) | 286 → 282 (-4) | 408 → 403 (-5) |
+| ALT-EXIT-MA10 | 613 → 606 (-7) | 463 → 459 (-4) | 429 → 425 (-4) | 617 → 608 (-9) |
+| ALT-EXIT-MA50 | 598 → 586 (-12) | 457 → 448 (-9) | 427 → 422 (-5) | 601 → 594 (-7) |
+| ALT-FILL-MINUTE-OPTIMISTIC | 607 → 597 (-10) | 462 → 456 (-6) | 428 → 421 (-7) | 610 → 603 (-7) |
+| ALT-RISK-00025 | 612 → 611 (-1) | 463 → 463 (+0) | 429 → 429 (+0) | 616 → 614 (-2) |
+| ALT-RISK-001 | 581 → 573 (-8) | 459 → 450 (-9) | 422 → 419 (-3) | 578 → 568 (-10) |
+| SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE | – | – | – | 611 → 600 (-11) |
+
+Unabhaengige Pruefungen `ep.sf7Validation` (CLEAN, vorher → nachher):
+
+| Variante | Verstoesse | `maxOpenPositions` | `cappedByCash` | `cappedByWeight` | `sameBarExits` |
+|---|---|---|---|---|---|
+| REF | 0 → 0 | 7 → 7 | 24 → 26 | 159 → 157 | 389 → 381 |
+| ALT-ORH-5 | 0 → 0 | 6 → 8 | 0 → 1 | 62 → 61 | 169 → 169 |
+| ALT-NO-VOLUME-RULE | 0 → 0 | 9 → 10 | 94 → 115 | 326 → 304 | 659 → 637 |
+| ALT-QUIET-PRIOR-RUN-50 | 0 → 0 | 6 → 7 | 8 → 13 | 127 → 126 | 246 → 241 |
+| ALT-EXIT-MA10 | 0 → 0 | 6 → 7 | 6 → 11 | 162 → 162 | 389 → 384 |
+| ALT-EXIT-MA50 | 0 → 0 | 8 → 7 | 58 → 49 | 143 → 140 | 378 → 370 |
+| ALT-FILL-MINUTE-OPTIMISTIC | 0 → 0 | 7 → 8 | 24 → 26 | 159 → 158 | 384 → 377 |
+| ALT-RISK-00025 | 0 → 0 | 7 → 12 | 0 → 3 | 69 → 69 | 389 → 388 |
+| ALT-RISK-001 | 0 → 0 | 6 → 7 | 47 → 54 | 336 → 326 | 368 → 360 |
+| SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE | 0 → 0 | 7 → 8 | 22 → 27 | 160 → 158 | 383 → 378 |
+
+Lesart:
+- Die Änderung wirkt fast nur über die Kasse. `REJECT_INSUFFICIENT_CAPITAL` steigt, `STOP_SAME_BAR_CERTAIN` sinkt um ungefähr dieselbe Zahl. Vorher hat ein sicherer Stopp am selben Tag Kasse für die nächste Order in fillRank-Reihenfolge frei gemacht, auch wenn deren Füllminute vor der Stoppminute lag. Nach F-MC3M-01 ist die Kasse erst für spätere Minuten frei. Diese Einstiege fallen weg.
+- `REJECT_MAX_OPEN_POSITIONS` kommt vorher und nachher nicht vor. Die Platzgrenze war im Referenzlauf also nie der Engpass.
+- ALT-ORH-5 hat gleich viele Trades und gleiche Reason Codes, aber andere Hashes. Hier ändert sich nur die Größe einzelner Positionen (`cappedByCash` 0 → 1, `cappedByWeight` 62 → 61).
+- Die kleinen Verschiebungen bei `NOT_EXECUTED_*` (REF +1, ALT-NO-VOLUME-RULE −1, ALT-EXIT-MA50 +4) folgen wahrscheinlich aus anderen Haltedauern: Eine Order für einen Wert, der gerade gehalten wird, wird übersprungen und nicht bewertet. Aus den öffentlichen Zählungen lässt sich das nicht einzeln belegen.
+
+**Engpasstage (`counts.intradayAllocationByMinute`):** Der KK-Runner veröffentlicht für EP nur ausgewählte Zähler (`notExecuted`, `technicalOrdersArmed`, `notTriggered`, Reason Codes) und nicht das ganze `counts`-Objekt. Die Zahl der Engpasstage steht deshalb weder im öffentlichen Block noch in der verschlüsselten Datei, dort stehen nur Kennzahlen und Trades. Abschnitt 3 Punkt 2 hatte das anders erwartet. Sicher ist nur die Untergrenze: Jede der 47 EP-Ausgaben hat sich geändert, also gab es in jeder Variante mindestens einen Engpasstag. Wer die genaue Zahl will, braucht einen Runner, der den Zähler veröffentlicht. Das ändert `researchCodeSha256` erneut und braucht einen eigenen PR und einen neuen Lauf.
+
+Nicht geprüft wurden die Kennzahlen je Variante, weil sie verschlüsselt sind. Der Owner kann sie in den beiden Ablagedateien mit den Vorgängern vergleichen: `20261025T203358Z-kk-intraday-cache.sealed.json` (40228395395) und `20261025T213058Z-sf5-lifecycle.sealed.json` (40228392651).
