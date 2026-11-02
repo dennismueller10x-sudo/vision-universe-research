@@ -26,7 +26,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("../../quant/engines/technical/technical-query.js") : global.VUTechnical.Query;
 
-  var TEMPLATES_VERSION = "technical-templates-1.1.0";
+  var TEMPLATES_VERSION = "technical-templates-1.2.0";
   var TRIANGLES = ["SYMMETRICAL_TRIANGLE", "ASCENDING_TRIANGLE", "DESCENDING_TRIANGLE"];
 
   /** Gilt fuer jede Vorlage; die Ansicht zeigt den Text unter den Kriterien. */
@@ -221,7 +221,14 @@
       else if (!fail && unknown) out.incomplete.push({ i: i, states: states });
     }
     var sc = t.sort ? ds.column(Q.columnKey(t.sort.field, t.timeframe || "1D")) : null, dir = t.sort && t.sort.dir === "asc" ? 1 : -1, sym = ds.column("s");
+    /* 1.2.0 (Entscheidung T-2, Entwurf): Titel mit Kurssprung-Kennzeichnung (price-jumps.js) stehen innerhalb jeder
+       Einordnung hinten - erst unauffaellig, dann Verdacht, dann bestaetigter Datenfehler. Die Trefferlisten (Mitgliedschaft)
+       und alle Zaehlungen bleiben unveraendert; nur die Reihenfolge der Anzeige aendert sich. */
+    var jumpAt = ds.column("suspectJumpAt"), jumpSt = ds.column("suspectJumpStatus");
+    function dqRank(i) { return !jumpAt || !jumpAt[i] ? 0 : jumpSt && jumpSt[i] === "CONFIRMED" ? 2 : 1; }
     function cmp(a, b) {
+      var qa = dqRank(a.i), qb = dqRank(b.i);
+      if (qa !== qb) return qa - qb;
       if (sc) {
         var x = sc[a.i], y = sc[b.i], xn = typeof x === "number" && isFinite(x), yn = typeof y === "number" && isFinite(y);
         if (xn !== yn) return xn ? -1 : 1;
