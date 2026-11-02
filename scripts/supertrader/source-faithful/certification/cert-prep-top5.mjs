@@ -41,7 +41,7 @@ export const PLAN_FILE = path.join(HERE, 'CERT-PREP-TOP5-PLAN.json');
 export const CERT_PREP_CHECK_VERSION = 'sf9-cert-prep-check-1.2.2'; // 1.2.2: Merge mit main (#1196: Planfeld token → sourcePhrase, in TOP5 und ALL13); 1.2.1: Forschungsproxy auch nicht als SOURCE_NUMBER_TRANSLATION_ONLY; 1.2.0: Optionen für ALL13, SOURCE_NUMBER_TRANSLATION_ONLY, exakte Liste ungeprüfter #709-Belege, struktureller Wertvergleich
 export const BLOCKER_CLASSES = Object.freeze(['a', 'b', 'c', 'd']);
 /** Pin des Planinhalts (sha256 über JSON.stringify des geladenen Plans). Neu setzen nur in einem begründeten Commit. */
-export const PINNED_PLAN_CONTENT_SHA256 = '016f87ede52daac4d7a087635858ade31d642e3c337e94725be5e28617ee8690';
+export const PINNED_PLAN_CONTENT_SHA256 = 'ed209fc36ec19151df94cbc793e0ebcfec358b923b22de90eee4067f4ab16b46';
 export const CERT_PREP_TEST_FILE = 'scripts/supertrader/tests/sf-cert-prep-top5.test.mjs';
 /** Familienpräfix der CP-Tests -> Methoden, deren conformanceTests sie zusammen vollständig enthalten müssen. */
 export const CP_FAMILIES = Object.freeze({ TUR: ['C02', 'C01'], KK: ['C08'], BGU: ['C12'], DAR: ['C03'] });

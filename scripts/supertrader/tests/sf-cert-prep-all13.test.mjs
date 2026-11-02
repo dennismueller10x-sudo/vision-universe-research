@@ -421,7 +421,7 @@ test('CP-HG-EXIT-NEW-HIGH-STRICT: Ausstieg zur nächsten Eröffnung nach dem ers
 // ---------------------------------------------------------------- Prüfplan ALL13 (vorregistriert) und Prüfprotokoll
 // Vorregistrierung: eine Änderung am ALL13-Plan ändert diesen Wert und braucht einen eigenen, begründeten Commit.
 // 1.0.1 (02.11.2026): Feld token → sourcePhrase (Schlüsselsuche der Quality Gates), Basis TOP5 1.1.1; Werte unverändert; neuer Pin.
-const PINNED_ALL13_SHA256 = 'bd4dcc6eb39f076a623cfcc7b6a96b2b41ace8b35ba903c0172fccda0206bd1e';
+const PINNED_ALL13_SHA256 = '57dbef258c3a6ebeee6907efa4807093c662e3ff3833aeb6c4f7ca1754fffc4c';
 const CHECKER = path.join(path.dirname(ALL13_PLAN_FILE), 'cert-prep-all13.mjs');
 const fileSha = (f) => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
 
