@@ -32,6 +32,7 @@ const has = (res, prefix) => res.errors.some((e) => e.startsWith(prefix));
 const PINNED_CONTRACT_SHA256 = 'ea3e59ae8919dcb75bfa28ce6f618b2d2273a53182d44ae82e7a172ba0f6a9b3';
 
 const SF8_DAILY_WORKFLOW = 'supertrader-sf8-candidates.yml';
+const ALARM_IF = "    if: always() && needs.candidates.result != 'skipped' && (needs.candidates.outputs.auto == 'true' || github.event_name == 'schedule' || (inputs.mode == 'auto' && github.ref == 'refs/heads/main'))";
 
 test('SF-PRODUCT-CONTRACT-PINNED: Vertragsdefinition 1.0.0 festgeschrieben, VALIDATED nicht ausgebbar', () => {
   assert.equal(CANDIDATE_CONTRACT_VERSION, '1.0.0');
@@ -319,7 +320,7 @@ test('SF8-DAILY-WORKFLOW: Tageslauf nur mit Variablen, automatischer Weg nur nac
   assert.match(code, /expected_sha256:\n\s+description: [^\n]+\n\s+type: string\n\s+default: ''/);
   assert.match(code, /EXPECTED_SHA256: \$\{\{ inputs\.expected_sha256 \}\}/);
   assert.match(code, /if \[ -z "\$EXPECTED_SHA256" \] \|\| \[ "\$EXPECTED_SHA256" != "\$ACTUAL_SHA256" \]; then\n[^\n]*\n\s*exit 1/, 'ohne oder mit abweichendem Fingerabdruck kein Commit');
-  assert.deepEqual(code.split('\n').filter((l) => /inputs\./.test(l) && !/^\s+[A-Z_0-9]+: \$\{\{ inputs\.[a-z_0-9]+ \}\}$/.test(l) && !/^\s+if: inputs\.commit == true && steps\.mode\.outputs\.auto != 'true'$/.test(l)), [], 'Eingaben nur über env (ADR-005)');
+  assert.deepEqual(code.split('\n').filter((l) => /inputs\./.test(l) && !/^\s+[A-Z_0-9]+: \$\{\{ inputs\.[a-z_0-9]+ \}\}$/.test(l) && !/^\s+if: inputs\.commit == true && steps\.mode\.outputs\.auto != 'true'$/.test(l) && l !== ALARM_IF), [], 'Eingaben nur über env (ADR-005)');
   // automatischer Weg: zweiter Lauf, Vertrag, Commit nur bei PUBLISH; alles nach DQ und Fingerabdruck
   const at = (s) => code.indexOf(s);
   const dq = at('--only=sf8 --sf8-dir="$PUB" --sf8-activated'), fpAt = at('id: fp'), re = at('id: rebuild'), ct = at('id: contract');
@@ -332,6 +333,9 @@ test('SF8-DAILY-WORKFLOW: Tageslauf nur mit Variablen, automatischer Weg nur nac
   const autoBlock = code.slice(auto, code.indexOf('\n  alarm:'));
   assert.match(autoBlock, /if \[ "\$GITHUB_REF" != "refs\/heads\/main" \]; then echo "::error::automatischer Commit nur auf main"; exit 1; fi/);
   assert.match(autoBlock, /SF8-Contract: /, 'Nachweis als Trailer');
+  // SF8-Code-Commit nennt den ausgecheckten Stand (Code und Eingaben), nicht GITHUB_SHA des Ausloesers
+  assert.match(code, /code_commit="\$\(git rev-parse HEAD\)"\n[\s\S]*?--code-commit "\$code_commit"/, 'SF8-Code-Commit = ausgecheckter HEAD');
+  assert.doesNotMatch(code, /--code-commit "\$GITHUB_SHA"/, 'GITHUB_SHA kann aelter sein als der Checkout');
   // V3: das Laufergebnis besteht DQ-SF8-1..8 vor Upload und Commit; fehlende Regeln sind rot, nicht still grün
   assert.match(code, /sf8\.length !== 8\)[^\n]*process\.exit\(1\)/, 'fehlende Regeln sind rot');
   assert.match(code, /x\.status !== "PASS" \|\| x\.checked === 0/, 'jede Regel muss geprüft und bestanden sein');
@@ -339,11 +343,49 @@ test('SF8-DAILY-WORKFLOW: Tageslauf nur mit Variablen, automatischer Weg nur nac
   assert.doesNotMatch(code, /secrets\./, 'keine Secrets, keine Anbieter');
   assert.doesNotMatch(code, /cp[^\n]*records/, 'Vertragsdatensätze nur als CI-Artefakt');
   // Alarm für rote automatische Läufe
-  assert.match(code, /\n  alarm:\n\s+needs: candidates\n\s+if: always\(\) && needs\.candidates\.result != 'skipped' && \(needs\.candidates\.outputs\.auto == 'true' \|\| github\.event_name == 'schedule'\)/);
+  assert.ok(code.includes('\n  alarm:\n    needs: candidates\n' + ALARM_IF + '\n'), 'Alarm-Bedingung (Ausdruck, kein Shell-Text)');
   assert.match(code, /ALARM_SOURCE: supertrader-sf8-candidates[\s\S]*node scripts\/ci\/pipeline-alarm\.mjs/);
   // Anstoß nach der Nachtkette: nur aus supertrader-signals.yml, nur mit beiden Schaltern, nur main, eigener Job
   const sig = fs.readFileSync(path.join(ROOT, '.github/workflows/supertrader-signals.yml'), 'utf8');
   assert.match(sig, /\n  sf8:\n\s+needs: signals\n\s+if: >-\n\s+always\(\) && github\.ref == 'refs\/heads\/main' && \(inputs\.mode \|\| 'build'\) == 'build' &&\n\s+vars\.SF8_CANDIDATES_ENABLED == 'true' && vars\.SF8_AUTO_PUBLISH == 'true'\n/);
   assert.match(sig, /gh workflow run supertrader-sf8-candidates\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f mode=auto/);
   for (const f of fs.readdirSync(path.join(ROOT, '.github/workflows'))) if (!['supertrader-signals.yml', SF8_DAILY_WORKFLOW].includes(f)) assert.doesNotMatch(fs.readFileSync(path.join(ROOT, '.github/workflows', f), 'utf8'), /supertrader-sf8-candidates\.yml/, `kein weiterer Anstoß: ${f}`);
+});
+
+// Betriebsaudit 01.11.2026: Scheitert der Job vor dem Schritt `mode` (Checkout, Node, Wegbestimmung, Abbruch), ist
+// outputs.auto leer. Der Anstoß aus supertrader-signals.yml ist ein workflow_dispatch mit mode=auto; ohne die
+// Eingabe in der Bedingung bliebe genau dieser rote Lauf ohne Alarm. Bewertet wird der echte Ausdruck der Datei.
+test('SF8-DAILY-ALARM: roter automatischer Lauf alarmiert auch vor dem Schritt mode, ein manueller nie', () => {
+  const p = path.join(ROOT, '.github/workflows', SF8_DAILY_WORKFLOW);
+  assert.ok(fs.existsSync(p), 'Tageslauf-Workflow vorhanden');
+  const y = fs.readFileSync(p, 'utf8');
+  const m = y.match(/\n  alarm:\n    needs: candidates\n    if: ([^\n]+)\n/);
+  assert.ok(m, 'Alarm-Job mit Bedingung');
+  const ausdruck = m[1];
+  const bekannt = /always\(\)|needs\.candidates\.result|needs\.candidates\.outputs\.auto|github\.event_name|github\.ref|inputs\.mode|'[a-z_/]*'|==|!=|&&|\|\||[()\s]/g;
+  assert.equal(ausdruck.replace(bekannt, ''), '', 'nur bekannte Bausteine: ' + ausdruck);
+  const js = ausdruck.replace(/always\(\)/g, 'true').replace(/needs\.candidates\.result/g, 'c.result').replace(/needs\.candidates\.outputs\.auto/g, 'c.auto')
+    .replace(/github\.event_name/g, 'c.event').replace(/github\.ref/g, 'c.ref').replace(/inputs\.mode/g, 'c.mode').replace(/!=/g, '!==').replace(/([^!=])==/g, '$1===');
+  const alarm = new Function('c', 'return (' + js + ');');
+  const MAIN = 'refs/heads/main', ZWEIG = 'refs/heads/claude/probe';
+  for (const [event, mode, result, auto, erwartet, fall, ref = MAIN] of [
+    ['workflow_dispatch', 'auto', 'failure', '', true, 'Anstoß mode=auto scheitert vor dem Schritt mode'],
+    ['workflow_dispatch', 'auto', 'cancelled', '', true, 'Anstoß mode=auto abgebrochen vor dem Schritt mode'],
+    ['workflow_dispatch', 'auto', 'failure', 'true', true, 'Anstoß mode=auto scheitert nach dem Schritt mode'],
+    ['workflow_dispatch', 'auto', 'success', 'true', true, 'grüner automatischer Lauf schließt das Issue'],
+    ['schedule', '', 'failure', '', true, 'Zeitplan scheitert vor dem Schritt mode'],
+    ['schedule', '', 'success', 'true', true, 'grüner Zeitplanlauf'],
+    ['workflow_dispatch', 'manual', 'failure', '', false, 'manueller Lauf scheitert vor dem Schritt mode'],
+    ['workflow_dispatch', 'manual', 'failure', 'false', false, 'manueller Lauf scheitert'],
+    ['workflow_dispatch', 'manual', 'success', 'false', false, 'manueller Lauf grün'],
+    ['workflow_dispatch', 'auto', 'skipped', '', false, 'Job übersprungen (Schalter aus)'],
+    ['schedule', '', 'skipped', '', false, 'Zeitplan ohne SF8_AUTO_PUBLISH'],
+    ['workflow_dispatch', 'auto', 'failure', '', false, 'Probelauf mode=auto auf einem anderen Zweig (scheitert in mode)', ZWEIG],
+    ['workflow_dispatch', 'manual', 'failure', '', false, 'manueller Lauf auf einem anderen Zweig', ZWEIG],
+  ]) assert.equal(alarm({ event, mode, result, auto, ref }), erwartet, fall);
+  // Eingaben bleiben außerhalb des Shell-Texts: der Alarm-Schritt reicht nur das Jobergebnis über env weiter
+  const job = y.slice(y.indexOf('\n  alarm:'));
+  const ausdruecke = job.split('\n').filter((l) => /\$\{\{/.test(l));
+  assert.deepEqual(ausdruecke.filter((l) => !/^\s+[A-Z_]+: \$\{\{ (github\.token|needs\.candidates\.result) \}\}$/.test(l) && !/^\s+ref: \$\{\{ github\.ref \}\}$/.test(l)), [], 'Ausdrücke im Alarm-Job nur in env: und ref:, nie im Shell-Text');
+  assert.match(job, /RESULT_CANDIDATES: \$\{\{ needs\.candidates\.result \}\}/);
 });
