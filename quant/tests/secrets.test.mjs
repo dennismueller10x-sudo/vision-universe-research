@@ -17,7 +17,7 @@
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, lstatSync, existsSync } from "node:fs";
 import { join, dirname, extname, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -25,14 +25,25 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 const SKIP_DIRS = [".git", "node_modules", "__pycache__", ".venv", "venv"];
 
-function walk(dir, extensions) {
-  if (!existsSync(dir)) return [];
-  const out = [];
+/* Gelesen wird DIESES Repository. Ein Unterordner mit eigenem `.git`
+   (Datei oder Ordner) ist ein anderer Checkout - etwa ein lokaler
+   Git-Worktree unter .claude/worktrees/ - und gehoert nicht dazu; er wird
+   in seinem eigenen Lauf geprueft. Symbolische Links werden nicht verfolgt
+   (lstat), damit kein Zyklus und kein Ziel ausserhalb mitgelesen wird.
+   Gesammelt wird in EINE Liste statt per push(...teilergebnis): bei mehreren
+   hunderttausend Dateien sprengt das Ausbreiten die Argumentgrenze
+   ("Maximum call stack size exceeded"). */
+function walk(dir, extensions, out = []) {
+  if (!existsSync(dir)) return out;
   for (const entry of readdirSync(dir)) {
     if (SKIP_DIRS.includes(entry)) continue;
     const full = join(dir, entry);
-    if (statSync(full).isDirectory()) out.push(...walk(full, extensions));
-    else if (!extensions || extensions.includes(extname(full))) out.push(full);
+    const st = lstatSync(full);
+    if (st.isSymbolicLink()) continue;
+    if (st.isDirectory()) {
+      if (full !== ROOT && existsSync(join(full, ".git"))) continue;
+      walk(full, extensions, out);
+    } else if (!extensions || extensions.includes(extname(full))) out.push(full);
   }
   return out;
 }
