@@ -14,8 +14,8 @@
    "label": "Ausreichende Beobachtungsdauer",
    "state": "NOT_EVALUABLE",
    "measured": {
-    "observations": 24,
-    "spanDays": 50,
+    "observations": 25,
+    "spanDays": 53,
     "minimumObservations": 12,
     "minimumSpanDays": 90
    }
@@ -25,7 +25,7 @@
    "label": "Keine rueckwirkende Zustandsaenderung",
    "state": "PASS",
    "measured": {
-    "snapshots": 24,
+    "snapshots": 25,
     "corrupt": 0
    }
   },
@@ -34,21 +34,21 @@
    "label": "Uebergangsmatrix",
    "state": "PASS",
    "measured": {
-    "transitions": 6770,
+    "transitions": 7077,
     "distinct": 12,
     "matrix": {
-     "WATCH>SETUP_FORMING": 1544,
-     "NO_SETUP>WATCH": 758,
-     "SETUP_FORMING>WATCH": 1798,
-     "WATCH>NO_SETUP": 1232,
-     "WATCH>CONFIRMED": 63,
-     "NO_SETUP>SETUP_FORMING": 540,
-     "SETUP_FORMING>NO_SETUP": 566,
-     "CONFIRMED>WATCH": 62,
+     "WATCH>SETUP_FORMING": 1596,
+     "NO_SETUP>WATCH": 799,
+     "SETUP_FORMING>WATCH": 1893,
+     "WATCH>NO_SETUP": 1276,
+     "WATCH>CONFIRMED": 67,
+     "NO_SETUP>SETUP_FORMING": 572,
+     "SETUP_FORMING>NO_SETUP": 590,
+     "CONFIRMED>WATCH": 65,
      "CONFIRMED>NO_SETUP": 5,
-     "CONFIRMED>SETUP_FORMING": 95,
+     "CONFIRMED>SETUP_FORMING": 98,
      "NO_SETUP>CONFIRMED": 1,
-     "SETUP_FORMING>CONFIRMED": 106
+     "SETUP_FORMING>CONFIRMED": 115
     },
     "impossible": []
    }
@@ -69,9 +69,9 @@
    "label": "Rueckschlagverhalten",
    "state": "FAIL",
    "measured": {
-    "reversals": 3536,
-    "candidates": 4781,
-    "share": 0.739594227149132
+    "reversals": 3725,
+    "candidates": 5059,
+    "share": 0.736311524016604
    }
   },
   {

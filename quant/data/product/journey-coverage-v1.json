@@ -1,10 +1,10 @@
 {
  "schemaVersion": "journey-coverage-1.1.0",
- "generatedAt": "2026-10-31T17:27:09.000Z",
+ "generatedAt": "2026-11-03T06:01:10.000Z",
  "universe": 6686,
  "sample": 500,
  "sampling": "jeder 13. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
- "evidenceAsOf": "2026-10-30",
+ "evidenceAsOf": "2026-11-02",
  "evidenceMethodologyVersion": "vu-factor-evidence-2.0.0",
  "stations": [
   {
@@ -30,25 +30,25 @@
   {
    "id": "factorStrength",
    "label": "Wie stark ist die Aktie",
-   "answered": 481,
+   "answered": 480,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 19,
-   "share": 0.962,
+   "withheld": 20,
+   "share": 0.96,
    "reasons": {
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 19
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 20
    }
   },
   {
    "id": "change",
    "label": "Was hat sich veraendert",
-   "answered": 479,
+   "answered": 478,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 21,
-   "share": 0.958,
+   "withheld": 22,
+   "share": 0.956,
    "reasons": {
-    "NO_COMPARABLE_OBSERVATION": 21
+    "NO_COMPARABLE_OBSERVATION": 22
    }
   },
   {
@@ -98,26 +98,26 @@
   {
    "id": "strategy",
    "label": "Welcher Anlagestil passt",
-   "answered": 423,
-   "findings": 184,
+   "answered": 422,
+   "findings": 185,
    "findingReasons": {
-    "NO_PROFILE_FITS_WELL": 184
+    "NO_PROFILE_FITS_WELL": 185
    },
-   "withheld": 77,
-   "share": 0.846,
+   "withheld": 78,
+   "share": 0.844,
    "reasons": {
     "NO_EVIDENCE": 58,
     "NOT_AN_EQUITY_LISTING": 15,
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 4
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 5
    }
   },
   {
    "id": "assignmentChange",
    "label": "Hat sich die Zuordnung geaendert",
    "answered": 500,
-   "findings": 492,
+   "findings": 496,
    "findingReasons": {
-    "NO_ASSIGNMENT_CHANGE": 492
+    "NO_ASSIGNMENT_CHANGE": 496
    },
    "withheld": 0,
    "share": 1,
@@ -149,10 +149,10 @@
  ],
  "answeredStationsPerTitle": {
   "4": 17,
-  "5": 2,
+  "5": 3,
   "6": 56,
   "7": 7,
-  "8": 3,
+  "8": 2,
   "9": 1,
   "10": 26,
   "11": 388
@@ -161,26 +161,25 @@
   "full": 415,
   "reduced": 85,
   "minimal": 0,
-  "noticeBoxesBefore": 568,
-  "noticeBoxesAfter": 248,
+  "noticeBoxesBefore": 571,
+  "noticeBoxesAfter": 249,
   "worstPageNoticeBoxes": 5,
   "dataPoorPages": 85,
-  "dataPoorNoticeBoxesBefore": 540,
-  "dataPoorNoticeBoxesAfter": 220,
+  "dataPoorNoticeBoxesBefore": 543,
+  "dataPoorNoticeBoxesAfter": 221,
   "substantiveStationsPerTitle": {
    "3": 8,
    "4": 35,
-   "5": 31,
+   "5": 32,
    "6": 2,
    "7": 8,
-   "8": 1,
    "9": 1,
    "10": 26,
    "11": 388
   },
   "causes": {
    "SHORT_HISTORY": 108,
-   "NO_FIGURES": 78,
+   "NO_FIGURES": 79,
    "NO_WEEKLY_SERIES": 40,
    "NOT_AN_EQUITY_LISTING": 15,
    "RARELY_TRADED": 4,
