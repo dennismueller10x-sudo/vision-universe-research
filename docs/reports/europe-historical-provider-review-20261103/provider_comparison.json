@@ -1,0 +1,387 @@
+{
+  "schema": "vu.europe-historical-provider-review.v1",
+  "accessedAt": "2026-11-03",
+  "approval": "owner 2026-11-03: free review only; no paid contract, no paid request, no committing sign-up, no provider switch",
+  "labels": {
+    "VERIFIED": "own request to a public endpoint or read in a primary document",
+    "CLAIM": "provider statement, not independently checked",
+    "UNCLEAR": "not public, contradictory or unreachable"
+  },
+  "universe": {
+    "securities": 449,
+    "mics": {
+      "XETR": 319,
+      "XPAR": 39,
+      "XAMS": 20,
+      "XCSE": 17,
+      "XSWX": 14,
+      "XWBO": 12,
+      "XMAD": 10,
+      "XMIL": 10,
+      "XBRU": 6,
+      "XSTO": 2
+    }
+  },
+  "marketstackBaseline": {
+    "marketWideAbsentSessions": 11463,
+    "marketWideDates": 85,
+    "marketWideMicDates": 420,
+    "identityHolds": 18098,
+    "unexplainedStrongBreaks": 47,
+    "europeanActionsCovered": false,
+    "recoveredBySingleDateRoutes": 0,
+    "billing": "per symbol; errors billed",
+    "sources": [
+      "PR #1285",
+      "PR #644",
+      "PR #658"
+    ]
+  },
+  "recommendation": {
+    "primary": "twelve-data-venture",
+    "fallback": "eodhd-custom",
+    "officialEvidence": "exchange-direct for calendar, closure and corporate-action questions",
+    "preconditions": [
+      "written answers to the contract questions in README section 6",
+      "separate owner approval for any paid evaluation"
+    ]
+  },
+  "nextStep": {
+    "step0": {
+      "costUsd": 0,
+      "action": "send written questions to Twelve Data and EODHD"
+    },
+    "step1": {
+      "action": "one-month internal evaluation, nothing displayed or committed",
+      "options": [
+        {
+          "provider": "twelve-data",
+          "plan": "Pro (individual, internal)",
+          "costUsd": 229,
+          "label": "CLAIM"
+        },
+        {
+          "provider": "eodhd",
+          "plan": "Internal use (commercial)",
+          "costUsd": 399,
+          "label": "CLAIM"
+        }
+      ],
+      "bothUsd": 628
+    },
+    "step2Production": [
+      {
+        "provider": "twelve-data",
+        "plan": "Venture",
+        "usdPerMonth": 499,
+        "annualDiscountPercent": 17,
+        "extra": "EOD external distribution add-on: custom",
+        "label": "CLAIM"
+      },
+      {
+        "provider": "eodhd",
+        "plan": "Custom",
+        "usdPerMonthFrom": 399,
+        "enterpriseUsdPerYear": 24990,
+        "label": "CLAIM"
+      }
+    ],
+    "possibleExchangeFeesEurPerMonth": {
+      "wienerBoerseViennaL1EndOfDay": 603.14,
+      "euronextContinentalCashDelayedLastPrice": 642.4,
+      "xetraCoreDelayedDistribution": 1820,
+      "label": "VERIFIED (price lists); applicability to VU UNCLEAR"
+    }
+  },
+  "candidates": [
+    {
+      "id": "twelve-data",
+      "rank": 1,
+      "role": "primary",
+      "mics": {
+        "value": "all 10 (XETR/XPAR/XAMS/XBRU/XMAD from Grow; XCSE/XSWX/XWBO/XMIL/XSTO from Pro; all in Venture)",
+        "label": "CLAIM",
+        "source": "https://twelvedata.com/exchanges"
+      },
+      "symbolCoverage": {
+        "value": "448/449 current tickers in /stocks reference; missing BION.SW; FIGI returned, ISIN only via add-on",
+        "label": "VERIFIED",
+        "source": "https://api.twelvedata.com/stocks?mic_code=<MIC>&apikey=demo"
+      },
+      "historyDepth": {
+        "value": null,
+        "label": "UNCLEAR"
+      },
+      "gapCoverage": {
+        "value": "not testable (time_series demo 401)",
+        "label": "VERIFIED"
+      },
+      "delistedIsinHistory": {
+        "value": null,
+        "label": "UNCLEAR"
+      },
+      "corporateActionsEurope": {
+        "value": "endpoints exist; European completeness undocumented",
+        "label": "UNCLEAR"
+      },
+      "techFit": {
+        "value": "REST/JSON; providers/twelve-data/adapter.js already built, not live",
+        "label": "VERIFIED"
+      },
+      "licence": {
+        "display": "Venture: External display data access (CLAIM); §2.2(e) external display only with add-on or written agreement (VERIFIED)",
+        "derivedData": "allowed if not reverse-engineerable, §2.2(c), §6.2 (VERIFIED)",
+        "storage": "no caching beyond documented periods §2.3(g); delete all data within 30 days after termination §16.2 (VERIFIED)",
+        "attribution": "required for public display unless contract says otherwise (CLAIM)",
+        "sources": [
+          "https://twelvedata.com/terms",
+          "https://support.twelvedata.com/en/articles/12647398-attribution-guidelines-for-using-twelve-data"
+        ]
+      },
+      "prices": {
+        "individualUsdPerMonth": {
+          "Grow": 79,
+          "Pro": 229,
+          "Ultra": 999
+        },
+        "businessUsdPerMonth": {
+          "Venture": 499,
+          "Enterprise": 1099,
+          "EnterprisePlus": "custom"
+        },
+        "note": "structured data on page shows Venture 149; visible price 499",
+        "label": "CLAIM",
+        "sources": [
+          "https://twelvedata.com/pricing",
+          "https://twelvedata.com/pricing-business"
+        ]
+      }
+    },
+    {
+      "id": "eodhd",
+      "rank": 2,
+      "role": "fallback and gap/corporate-action second source",
+      "mics": {
+        "value": "SYMBOL.EXCHANGE incl. XETRA, PA, AS, BR, CO, SW, VI, MI, MC, ST via Exchanges API",
+        "label": "CLAIM",
+        "source": "https://eodhd.com/financial-apis/api-for-historical-data-and-volumes"
+      },
+      "historyDepth": {
+        "value": "30+ years on paid plans; no start year stated for European venues",
+        "label": "CLAIM/UNCLEAR"
+      },
+      "gapCoverage": {
+        "value": "not testable: demo key limited to 6 tickers, SAP.XETRA 403",
+        "label": "VERIFIED"
+      },
+      "delisted": {
+        "value": "delisted tickers keep history; ticker reuse possible",
+        "label": "CLAIM",
+        "source": "https://eodhd.com/financial-apis/review-delisted-stock-companies-data"
+      },
+      "corporateActionsEurope": {
+        "value": "splits/dividends for Europe; dividends with unadjustedValue and currency; 1 call/request; bulk per exchange-date 100 calls",
+        "label": "CLAIM",
+        "sources": [
+          "https://eodhd.com/financial-apis/api-splits-dividends",
+          "https://eodhd.com/financial-apis/bulk-api-eod-splits-dividends"
+        ]
+      },
+      "dataOrigin": {
+        "value": "prices not provided by exchanges but by market makers; no exchange data feeds for pricing",
+        "label": "CLAIM",
+        "source": "https://eodhd.com/financial-apis/terms-conditions"
+      },
+      "techFit": {
+        "value": "REST CSV/JSON, 1,000 req/min, 404 billed; providers/eodhd/README.md only",
+        "label": "CLAIM"
+      },
+      "licence": {
+        "display": "Internal use forbids display outside company; Enterprise/Custom: data services agreement, terms not published",
+        "derivedData": null,
+        "storage": null,
+        "attribution": null,
+        "postTermination": null,
+        "exchangeFees": null,
+        "label": "CLAIM/UNCLEAR",
+        "sources": [
+          "https://eodhd.com/commercial-pricing",
+          "https://eodhd.com/financial-apis/terms-conditions"
+        ]
+      },
+      "prices": {
+        "personalUsdPerMonth": {
+          "Historian": 19.99,
+          "AllInOne": 99.99
+        },
+        "commercial": {
+          "InternalUse": {
+            "usdPerMonth": 399,
+            "usdPerYear": 3990
+          },
+          "Enterprise": {
+            "usdPerMonth": 2499,
+            "usdPerYear": 24990
+          },
+          "Custom": {
+            "usdPerMonthFrom": 399
+          }
+        },
+        "label": "CLAIM",
+        "sources": [
+          "https://eodhd.com/pricing",
+          "https://eodhd.com/commercial-pricing"
+        ]
+      }
+    },
+    {
+      "id": "exchange-direct",
+      "rank": 3,
+      "role": "official evidence, not a feed",
+      "items": [
+        {
+          "exchange": "Deutsche Boerse WSS",
+          "value": "Xetra daily statistics EUR 12,012/yr or select EUR 4.32/share price/yr + provision EUR 4,230/yr/file; share price file on request; Eurex Underlying Corporate Actions EUR 3,900/yr",
+          "label": "VERIFIED",
+          "source": "https://www.mds.deutsche-boerse.com/resource/blob/1335206/f1a5300231ed96d7888c0dcb79c1f981/data/WSS%20agreement%20(schedule%20of%20fees%20%E2%80%93%20WSS%20batch).pdf"
+        },
+        {
+          "exchange": "Deutsche Boerse MDDA 16_1",
+          "value": "Xetra Core distribution EUR 3,642 RT / 1,820 delayed per month; webhosting <=25 instruments EUR 64/month/domain",
+          "label": "VERIFIED",
+          "source": "https://mds.deutsche-boerse.com/resource/blob/5353328/480628e5e12c9126a6a67030377d2a6e/data/MDDA_Price_List_16_1.pdf"
+        },
+        {
+          "exchange": "Deutsche Boerse AWS PDS",
+          "value": "deprecated, Non-commercial",
+          "label": "VERIFIED",
+          "source": "https://registry.opendata.aws/deutsche-boerse-pds/"
+        },
+        {
+          "exchange": "Euronext",
+          "value": "Continental Cash delayed redistribution Last Price EUR 642.40, L1 896.15, L2 1,212.50 per month incl. public display and after-midnight; waiver only without direct economic benefit",
+          "label": "VERIFIED",
+          "source": "https://connect2.euronext.com/sites/default/files/documentation/data/Product%20Fee%20Schedule%20%28effective%201%20June%202025%29.pdf"
+        },
+        {
+          "exchange": "SIX",
+          "value": "EOD closing prices free of charge, no MDLA, letter of confirmation",
+          "label": "CLAIM",
+          "source": "https://www.six-group.com/dam/download/market-data/exfeed/agreements-mdla/six-exfeed-mdla-order-form.pdf"
+        },
+        {
+          "exchange": "Wiener Boerse",
+          "value": "Vienna Level 1 end of day EUR 603.14/month; corporate actions EOD EUR 364.54/month",
+          "label": "VERIFIED",
+          "source": "https://www.wienerborse.at/uploads/u/cms/files/market-data/en-annex1-market-data-agreement-2026.pdf"
+        },
+        {
+          "exchange": "Boerse Stuttgart",
+          "value": null,
+          "label": "UNCLEAR"
+        },
+        {
+          "exchange": "Nasdaq Nordic, BME",
+          "value": null,
+          "label": "UNCLEAR (not reviewed)"
+        }
+      ]
+    },
+    {
+      "id": "eulerpool",
+      "rank": 4,
+      "role": "watch list",
+      "value": "display from Builder USD 99/month; European exchanges undocumented; redistribution statements inconsistent",
+      "label": "CLAIM/UNCLEAR",
+      "source": "https://eulerpool.com/financial-data-api/licensing"
+    },
+    {
+      "id": "lseg",
+      "rank": 5,
+      "role": "enterprise reference",
+      "value": "Xetra pricing from 1986; price on request",
+      "label": "CLAIM",
+      "source": "https://www.lseg.com/en/data-catalogue/equities/pricing/equities-deutsche-borse-xetra"
+    },
+    {
+      "id": "factset",
+      "rank": 5,
+      "role": "enterprise reference",
+      "value": "global prices and corporate actions APIs; price on request",
+      "label": "CLAIM",
+      "source": "https://developer.factset.com/api-catalog/factset-prices-api"
+    },
+    {
+      "id": "fmp",
+      "rank": null,
+      "role": "not recommended now",
+      "value": "pricing/terms 403 to automated reads; repo status LICENSE_UNKNOWN",
+      "label": "UNCLEAR"
+    },
+    {
+      "id": "alpha-vantage",
+      "rank": null,
+      "role": "not recommended now",
+      "value": "personal, non-commercial use unless agreed in writing",
+      "label": "VERIFIED",
+      "source": "https://www.alphavantage.co/terms_of_service/"
+    },
+    {
+      "id": "intrinio",
+      "rank": null,
+      "role": "not recommended now",
+      "value": "display from Startup plan; redistribution Enterprise + exchange approvals; European EOD undocumented",
+      "label": "CLAIM",
+      "source": "https://help.intrinio.com/licensing-data-usage-requirements"
+    },
+    {
+      "id": "barchart",
+      "rank": null,
+      "role": "not recommended now",
+      "value": "European stock downloads marked N/L on website",
+      "label": "CLAIM/UNCLEAR"
+    },
+    {
+      "id": "tiingo",
+      "rank": null,
+      "role": "excluded: no coverage",
+      "value": "supported_tickers.zip has 0 listings on the 10 MICs (LSE 11)",
+      "label": "VERIFIED",
+      "source": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip"
+    },
+    {
+      "id": "massive-polygon",
+      "rank": null,
+      "role": "excluded: no coverage",
+      "value": "US stock market data only",
+      "label": "CLAIM",
+      "source": "https://massive.com/docs/rest/stocks/overview"
+    },
+    {
+      "id": "yahoo",
+      "rank": null,
+      "role": "excluded: licence",
+      "value": "no commercial reuse, no automated collection, no database",
+      "label": "VERIFIED",
+      "source": "https://legal.yahoo.com/us/en/yahoo/terms/otos/index.html"
+    },
+    {
+      "id": "stooq",
+      "rank": null,
+      "role": "excluded: licence unreadable",
+      "value": "connection reset; terms not read",
+      "label": "UNCLEAR"
+    }
+  ],
+  "freeRequests": {
+    "twelveDataStocksDemo": 10,
+    "twelveDataTimeSeriesDemo": 1,
+    "eodhdDemo": 3,
+    "alphaVantageDemo": 1,
+    "fmpDemo": 1,
+    "tiingoTickerList": 1,
+    "paid": 0,
+    "signUps": 0
+  },
+  "responsesCommitted": false
+}
