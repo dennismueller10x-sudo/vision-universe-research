@@ -30,6 +30,7 @@ const PB = require(P("quant/engines/profile-backtest.js"));
 const SB = require(P("quant/engines/signal-backtest.js"));
 const BacktestSource = require(P("quant/engines/backtest-artifact-consistency.js"));
 const SetupOos = require(P("quant/engines/setup-oos.cjs"));
+const SetupOosSegments = require(P("quant/engines/setup-oos-segments.js"));
 const M = json("quant/methodology/backtest-certification-v1.json");
 const G = C.gate;
 const today = new Date().toISOString().slice(0, 10);
@@ -144,8 +145,19 @@ const firstEvent = outcomes.events.map((e) => e[2]).sort()[0] || null;
 /* OOS (setup-oos-1.0.0): ohne freigegebene Segmentdefinition immer FAIL
    (OOS_NOT_MEASURABLE_YET bzw. OOS_SEGMENT_DEFINITION_MISSING). Das
    Ergebnisartefakt exportiert keine Ereigniszeilen; ausgewertet wird nur
-   die Zahl abgeschlossener M6-Ergebnisse. */
-const setupOos = SetupOos.evaluateSetupOos({ rows: null, completedCount: completedM6, minPerSegment: req.oosMinPerSegment, segmentation: SetupOos.segmentationFromMethodology(M) });
+   die Zahl abgeschlossener M6-Ergebnisse.
+   Je Ereignisart (A4, setup-oos-segments-1.0.0) wird nur ausgewertet, wenn
+   die FREIGEGEBENE Segmentierung ein Feld population traegt; die Zeilen
+   kommen dann aus --oos-rows <datei> (build-setup-outcomes.mjs
+   --oos-rows-out). Ohne beides bleibt der Aufruf wie bisher. */
+const oosSegmentation = SetupOos.segmentationFromMethodology(M);
+const oosRowsArg = process.argv.indexOf("--oos-rows");
+const setupOosByKind = oosSegmentation && oosSegmentation.population !== undefined
+  ? SetupOosSegments.evaluateByEventKind({ segmentation: oosSegmentation, minPerSegment: req.oosMinPerSegment,
+    rowsDoc: oosRowsArg >= 0 ? JSON.parse(readFileSync(process.argv[oosRowsArg + 1], "utf8")) : null,
+    completedByKind: Object.fromEntries(SetupOosSegments.EVENT_KINDS.map((k) => [k, st[k].variants.NEXT_CLOSE.m6.status.COMPLETED])) })
+  : null;
+const setupOos = setupOosByKind || SetupOos.evaluateSetupOos({ rows: null, completedCount: completedM6, minPerSegment: req.oosMinPerSegment, segmentation: oosSegmentation });
 const setupGates = [
   G("publishedOnly", "nur veröffentlichte Zustände", "HARD", outcomes.source.reconstructed === false, "setup-observation-history"),
   G("pit", "Stände unverändert (contentHash)", "HARD", hist.contentHashVerified === hist.dates, hist.contentHashVerified + " von " + hist.dates + " geprüft"),
@@ -164,6 +176,7 @@ const cadence = hist.medianGapDays || 1;
 kind("SETUP_BACKTEST", "Setup-Backtest", setupGates, { trust: "NOT_READY", published: false,
   ownerApproval: { required: setupMethod.requirements.backtestCertification !== "CERTIFIED", given: setupMethod.requirements.backtestCertification === "CERTIFIED", source: M.kinds.SETUP_BACKTEST.ownerApprovalSource },
   more: { eta: { historyDates: C.eta(hist.dates, req.historyDates, 7 / 5, hist.to), firstCompletedM6: firstEvent ? new Date(Date.parse(firstEvent) + 183 * 86400000).toISOString().slice(0, 10) : null },
+    ...(setupOosByKind ? { oosByKind: { population: setupOosByKind.population, byKind: Object.fromEntries(Object.entries(setupOosByKind.byKind).map(([k, r]) => [k, { status: r.status, reasonCode: r.reasonCode, completed: r.completed, purged: r.purged, segments: r.segments }])) } } : {}),
     progress: { historyDates: hist.dates, spanDays: hist.spanDays, transitions: outcomes.transitions, completedM6, contractTradesCompleted: (st.SETUP_NEW.contractTrades || {}).completed || 0 },
     replay: replayStudy ? { role: "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)", parity: (replayStudy.parity.checked - replayStudy.parity.mismatches) + "/" + replayStudy.parity.checked, mismatches: replayStudy.parity.mismatches } : null } });
 

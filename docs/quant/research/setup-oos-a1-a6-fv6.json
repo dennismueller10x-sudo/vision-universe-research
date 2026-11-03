@@ -1,0 +1,242 @@
+{
+ "schemaVersion": "setup-oos-report-1.0.0",
+ "engine": "setup-oos-segments-1.0.0",
+ "evaluator": "setup-oos-1.0.0",
+ "asOf": "2026-10-30",
+ "gateInput": false,
+ "productionApproved": false,
+ "note": "Research-Bericht FV-6. Aendert kein Gate, keine Schwelle und keinen Zertifizierungsstatus. Ein PASS hiesse nur „Richtung repliziert“ (OOS_DIRECTIONAL_REPLICATION), keinen wirtschaftlichen Vorteil.",
+ "sources": {
+  "outcomes": {
+   "schemaVersion": "setup-outcomes-1.0.0",
+   "asOf": "2026-10-30",
+   "returnType": "SPLIT_ADJUSTED_PRICE",
+   "history": {
+    "dates": 24,
+    "from": "2026-09-10",
+    "to": "2026-10-30",
+    "spanDays": 50,
+    "medianGapDays": 1,
+    "maxGapDays": 14,
+    "titlesLatest": 5576,
+    "contentHashVerified": 24
+   },
+   "transitions": {
+    "SETUP_CONFIRMED": 170,
+    "SETUP_NEW": 2084,
+    "SETUP_WEAKENED": 2526
+   }
+  },
+  "rows": null,
+  "methodology": "backtest-certification-1.0.0",
+  "oosMinPerSegment": 30
+ },
+ "gate": {
+  "builderCall": "evaluateSetupOos({ rows: null, completedCount: completedM6, minPerSegment, segmentation: segmentationFromMethodology(M) })",
+  "status": "FAIL",
+  "reasonCode": "OOS_NOT_MEASURABLE_YET",
+  "value": "erst mit abgeschlossenen Ergebnissen messbar",
+  "completedM6": 0,
+  "certificationArtifact": {
+   "state": "FAIL",
+   "reason": "OOS_NOT_MEASURABLE_YET",
+   "value": "erst mit abgeschlossenen Ergebnissen messbar",
+   "matches": true
+  }
+ },
+ "decisions": {
+  "A1": {
+   "topic": "Segmentierung",
+   "implemented": "setup-oos.cjs (FIXED_CALENDAR_CUT, CHRONOLOGICAL_MEDIAN_EVENT_DATE)",
+   "value": {
+    "method": "FIXED_CALENDAR_CUT",
+    "cutDate": "2027-05-31"
+   }
+  },
+  "A2": {
+   "topic": "Embargo",
+   "implemented": "setup-oos.cjs (embargoDays)",
+   "value": 183
+  },
+  "A3": {
+   "topic": "Erfolgskriterium",
+   "implemented": "setup-oos.cjs (criterion)",
+   "value": {
+    "metric": "MEDIAN_EXCESS",
+    "rule": "SIGN_REPLICATES"
+   }
+  },
+  "A4": {
+   "topic": "Grundgesamtheit je Ereignisart",
+   "implemented": "setup-oos-segments.js (evaluateByEventKind)",
+   "value": {
+    "eventKinds": [
+     "SETUP_NEW",
+     "SETUP_CONFIRMED"
+    ],
+    "entryVariant": "NEXT_CLOSE",
+    "horizon": "m6"
+   }
+  },
+  "A5": {
+   "topic": "Mindestgroesse roh/effektiv",
+   "implemented": "setup-oos.cjs (countBy)",
+   "value": "EVENT_DAY"
+  },
+  "A6": {
+   "topic": "Export der Ereigniszeilen",
+   "implemented": "build-setup-outcomes.mjs --oos-rows-out",
+   "value": "nicht uebergeben"
+  }
+ },
+ "segmentation": {
+  "status": "PROPOSAL_NOT_APPROVED",
+  "source": "docs/quant/SETUP_OOS_DECISION_A1_A6.md §5",
+  "definition": {
+   "id": "setup-oos-2027-05-31",
+   "method": "FIXED_CALENDAR_CUT",
+   "cutDate": "2027-05-31",
+   "embargoDays": 183,
+   "countBy": "EVENT_DAY",
+   "criterion": {
+    "metric": "MEDIAN_EXCESS",
+    "rule": "SIGN_REPLICATES"
+   },
+   "population": {
+    "eventKinds": [
+     "SETUP_NEW",
+     "SETUP_CONFIRMED"
+    ],
+    "entryVariant": "NEXT_CLOSE",
+    "horizon": "m6"
+   }
+  }
+ },
+ "evaluation": {
+  "schemaVersion": "setup-oos-segments-1.0.0",
+  "evaluator": "setup-oos-1.0.0",
+  "minPerSegment": 30,
+  "segmentation": "setup-oos-2027-05-31",
+  "population": {
+   "eventKinds": [
+    "SETUP_NEW",
+    "SETUP_CONFIRMED"
+   ],
+   "entryVariant": "NEXT_CLOSE",
+   "horizon": "m6"
+  },
+  "byKind": {
+   "SETUP_NEW": {
+    "schemaVersion": "setup-oos-1.0.0",
+    "status": "FAIL",
+    "reasonCode": "OOS_NOT_MEASURABLE_YET",
+    "minPerSegment": 30,
+    "completed": 0,
+    "segmentation": null,
+    "purged": 0,
+    "segments": null
+   },
+   "SETUP_CONFIRMED": {
+    "schemaVersion": "setup-oos-1.0.0",
+    "status": "FAIL",
+    "reasonCode": "OOS_NOT_MEASURABLE_YET",
+    "minPerSegment": 30,
+    "completed": 0,
+    "segmentation": null,
+    "purged": 0,
+    "segments": null
+   }
+  },
+  "status": "FAIL",
+  "reasonCode": "OOS_NOT_MEASURABLE_YET"
+ },
+ "readiness": {
+  "SETUP_NEW": {
+   "schemaVersion": "setup-oos-segments-1.0.0",
+   "basis": "ESTIMATE_ONE_EVENT_DAY_PER_WEEKDAY_NO_HOLIDAYS",
+   "maturityDays": 183,
+   "asOf": "2026-10-30",
+   "countBy": "EVENT_DAY",
+   "minPerSegment": 30,
+   "cutDate": "2027-05-31",
+   "embargoDays": 183,
+   "trainEventsBefore": "2026-11-29",
+   "rowsPerEventDay": 83,
+   "train": {
+    "from": "2026-09-24",
+    "to": "2026-11-29",
+    "observed": {
+     "eventDays": 23,
+     "count": 23,
+     "first": "2026-09-24",
+     "last": "2026-10-30"
+    },
+    "projected": true,
+    "minReachedOn": "2026-11-10",
+    "measurableFrom": "2027-05-12",
+    "state": "PROJECTED"
+   },
+   "test": {
+    "from": "2027-05-31",
+    "to": null,
+    "observed": {
+     "eventDays": 0,
+     "count": 0,
+     "first": null,
+     "last": null
+    },
+    "projected": true,
+    "minReachedOn": "2027-07-09",
+    "measurableFrom": "2028-01-08",
+    "state": "PROJECTED"
+   },
+   "earliestMeasurable": "2028-01-08",
+   "state": "INSUFFICIENT_HISTORY"
+  },
+  "SETUP_CONFIRMED": {
+   "schemaVersion": "setup-oos-segments-1.0.0",
+   "basis": "ESTIMATE_ONE_EVENT_DAY_PER_WEEKDAY_NO_HOLIDAYS",
+   "maturityDays": 183,
+   "asOf": "2026-10-30",
+   "countBy": "EVENT_DAY",
+   "minPerSegment": 30,
+   "cutDate": "2027-05-31",
+   "embargoDays": 183,
+   "trainEventsBefore": "2026-11-29",
+   "rowsPerEventDay": 7,
+   "train": {
+    "from": "2026-09-24",
+    "to": "2026-11-29",
+    "observed": {
+     "eventDays": 23,
+     "count": 23,
+     "first": "2026-09-24",
+     "last": "2026-10-30"
+    },
+    "projected": true,
+    "minReachedOn": "2026-11-10",
+    "measurableFrom": "2027-05-12",
+    "state": "PROJECTED"
+   },
+   "test": {
+    "from": "2027-05-31",
+    "to": null,
+    "observed": {
+     "eventDays": 0,
+     "count": 0,
+     "first": null,
+     "last": null
+    },
+    "projected": true,
+    "minReachedOn": "2027-07-09",
+    "measurableFrom": "2028-01-08",
+    "state": "PROJECTED"
+   },
+   "earliestMeasurable": "2028-01-08",
+   "state": "INSUFFICIENT_HISTORY"
+  }
+ },
+ "earliestMeasurable": "2028-01-08",
+ "firstCompletedM6Estimate": "2027-03-26",
+ "state": "INSUFFICIENT_HISTORY"
+}
