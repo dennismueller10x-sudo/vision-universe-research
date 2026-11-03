@@ -22,6 +22,7 @@ export async function createFakeSupabase({baseUrl, pg, now = () => Date.now()}) 
   const issuer = baseUrl + '/auth/v1';
   const passwords = new Map();      // userId -> sha256(password)
   const refreshTokens = new Map();  // token -> {userId, sessionId, amr}
+  const usedRefresh = new Map();    // rotiertes Token -> sessionId (Wiederverwendungserkennung wie GoTrue)
   const oneTimeTokens = new Map();  // token -> {userId, type, challenge}
   const authCodes = new Map();      // code -> {userId, challenge, method}
   const outbox = [];
@@ -121,8 +122,15 @@ export async function createFakeSupabase({baseUrl, pg, now = () => Date.now()}) 
       }
       if (grant === 'refresh_token') {
         const entry = refreshTokens.get(body.refresh_token);
+        // Wie GoTrue ausserhalb des Wiederverwendungsfensters: ein schon rotiertes Token widerruft die ganze Sitzung.
+        const reused = usedRefresh.get(body.refresh_token);
+        if (reused) {
+          for (const [t, e] of refreshTokens) if (e.sessionId === reused) refreshTokens.delete(t);
+          return authError(400, 'refresh_token_already_used', 'Invalid Refresh Token: Already Used');
+        }
         if (!entry) return authError(400, 'refresh_token_not_found', 'Invalid Refresh Token');
         refreshTokens.delete(body.refresh_token); // Rotation
+        usedRefresh.set(body.refresh_token, entry.sessionId);
         const user = await userById(entry.userId);
         if (!user) return authError(400, 'user_not_found', 'User not found');
         return reply(200, await issueSession(user, entry.amr, entry.sessionId));

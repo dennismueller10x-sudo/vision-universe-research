@@ -313,3 +313,130 @@ test('Brevo: DOI-Vorlage wird ueber den Einzelabruf geprueft (doiTemplate fehlt 
   assert.equal(await createBrevo({apiKey: 'k', fetchImpl}).doiTemplateId(), 8);
   assert.ok(calls.includes('/v3/smtp/templates/8'));
 });
+
+// ---- App-Anmeldeschiene /v1/auth/app/* (ohne Datenbank, Speicher-Supabase) ----
+test('App-Anmeldung: Tokens im Antworttext, nur ohne Origin und Cookie, gleiche Limits, Rotation, Abmelden widerruft', async () => {
+  const {createMemoryWorker} = await import('../../../scripts/account/sim/memory-auth.mjs');
+  const PASSWORD = 'Sicheres-Passwort-26';
+  const {app, auth, logs, api} = await createMemoryWorker({users: {'app@example.test': {password: PASSWORD},
+    'neu@example.test': {password: PASSWORD, confirmed: false}}});
+  const call = async (path, body, headers = {}) => {
+    const h = {'CF-Connecting-IP': '203.0.113.7', ...headers};
+    if (body !== undefined) h['Content-Type'] = 'application/json';
+    const res = await app.handle(new Request(api + path, {method: 'POST', headers: h, body: body === undefined ? undefined : JSON.stringify(body)}));
+    const text = await res.text();
+    return {status: res.status, headers: res.headers, data: text ? JSON.parse(text) : null};
+  };
+
+  // Anmeldung
+  const ok = await call('/v1/auth/app/login', {email: 'app@example.test', password: PASSWORD});
+  assert.equal(ok.status, 200, JSON.stringify(ok.data));
+  assert.match(ok.data.accessToken, /^eyJ/);
+  assert.ok(ok.data.refreshToken && ok.data.expiresIn === 3600);
+  assert.deepEqual(Object.keys(ok.data.user).sort(), ['email', 'id']);
+  assert.equal(ok.headers.get('Set-Cookie'), null, 'keine Cookies');
+  assert.equal(ok.headers.get('Cache-Control'), 'no-store');
+  assert.equal(ok.headers.get('Access-Control-Allow-Origin'), null, 'kein CORS');
+
+  // Der Bearer funktioniert an der Konto-API (Sitzung)
+  const ses = await app.handle(new Request(api + '/v1/session', {headers: {Authorization: 'Bearer ' + ok.data.accessToken}}));
+  assert.equal((await ses.json()).user.email, 'app@example.test');
+
+  // Falsches Passwort und unbekannte Adresse antworten gleich, unbestaetigt eigener Zustand
+  assert.equal((await call('/v1/auth/app/login', {email: 'app@example.test', password: 'Falsch-Passwort-1'})).data.state, 'INVALID_CREDENTIALS');
+  assert.equal((await call('/v1/auth/app/login', {email: 'niemand@example.test', password: PASSWORD})).data.state, 'INVALID_CREDENTIALS');
+  assert.equal((await call('/v1/auth/app/login', {email: 'neu@example.test', password: PASSWORD})).status, 403);
+
+  // Browser-Merkmale werden abgelehnt (vor jeder Supabase-Anfrage)
+  const before = auth.calls.length;
+  for (const headers of [{Origin: 'https://research.visionuniverse.de'}, {Origin: 'null'}, {Origin: 'capacitor://localhost'},
+    {Cookie: '__Host-vu_rt=abc'}, {Cookie: 'irgendwas=1'}, {'Sec-Fetch-Site': 'same-site'}, {'Sec-Fetch-Mode': 'cors'}]) {
+    for (const path of ['/v1/auth/app/login', '/v1/auth/app/refresh', '/v1/auth/app/logout']) {
+      const r = await call(path, {email: 'app@example.test', password: PASSWORD, refreshToken: ok.data.refreshToken}, headers);
+      assert.equal(r.status, 403, `${path} ${JSON.stringify(headers)}`);
+      assert.equal(r.data.state, 'APP_CLIENT_ONLY');
+      assert.ok(!JSON.stringify(r.data).includes('eyJ'));
+    }
+  }
+  assert.equal(auth.calls.length, before, 'abgelehnte Anfragen erreichen Supabase nicht');
+  const pre = await app.handle(new Request(api + '/v1/auth/app/login', {method: 'OPTIONS', headers: {Origin: 'https://research.visionuniverse.de'}}));
+  assert.equal(pre.status, 403, 'kein CORS-Preflight fuer die App-Schiene');
+
+  // Rotation: neues Paar, altes Token wertlos; Wiederverwendung widerruft die Sitzung (auch das neue Token)
+  const r1 = await call('/v1/auth/app/refresh', {refreshToken: ok.data.refreshToken});
+  assert.equal(r1.status, 200);
+  assert.notEqual(r1.data.refreshToken, ok.data.refreshToken);
+  assert.equal(r1.data.user.email, 'app@example.test');
+  const reuse = await call('/v1/auth/app/refresh', {refreshToken: ok.data.refreshToken});
+  assert.equal(reuse.status, 401);
+  assert.equal(reuse.data.state, 'TOKEN_INVALID');
+  assert.ok(logs.some(l => l.message === 'APP_REFRESH_REUSED'), 'Wiederverwendung wird protokolliert');
+  assert.equal((await call('/v1/auth/app/refresh', {refreshToken: r1.data.refreshToken})).status, 401, 'Sitzung nach Wiederverwendung widerrufen');
+
+  // Ungueltige Tokens
+  for (const refreshToken of ['erfunden-aber-lang-genug', 'kurz', '', 'mit leerzeichen 123', 42, null, 'x'.repeat(2000)]) {
+    const r = await call('/v1/auth/app/refresh', {refreshToken});
+    assert.equal(r.status, 401, String(refreshToken).slice(0, 20));
+    assert.equal(r.data.state, 'TOKEN_INVALID');
+  }
+  assert.equal((await call('/v1/auth/app/refresh', {})).status, 401);
+  const forged = await app.handle(new Request(api + '/v1/session', {headers: {Authorization: 'Bearer eyJhbGciOiJub25lIn0.e30.'}}));
+  assert.equal(forged.status, 401);
+
+  // Abmelden mit Bearer widerruft die Refresh-Tokens der Sitzung
+  const s2 = await call('/v1/auth/app/login', {email: 'app@example.test', password: PASSWORD});
+  const out = await call('/v1/auth/app/logout', undefined, {Authorization: 'Bearer ' + s2.data.accessToken});
+  assert.deepEqual(out.data, {authenticated: false});
+  assert.equal((await call('/v1/auth/app/refresh', {refreshToken: s2.data.refreshToken})).status, 401, 'nach Abmelden widerrufen');
+  // Abmelden mit abgelaufenem/ungueltigem Bearer und Refresh-Token widerruft trotzdem
+  const s3 = await call('/v1/auth/app/login', {email: 'app@example.test', password: PASSWORD});
+  const out3 = await call('/v1/auth/app/logout', {refreshToken: s3.data.refreshToken}, {Authorization: 'Bearer ungueltig'});
+  assert.equal(out3.status, 200);
+  assert.equal((await call('/v1/auth/app/refresh', {refreshToken: s3.data.refreshToken})).status, 401);
+  assert.equal(auth.activeRefreshTokens().length, 0, 'keine Sitzung uebrig');
+  // Ohne alles: gleiche Antwort
+  assert.equal((await call('/v1/auth/app/logout')).status, 200);
+  assert.equal((await call('/v1/auth/app/logout', {refreshToken: 'erfunden-aber-lang-genug'})).status, 200);
+
+  // Kein Token in Protokollen
+  const logText = JSON.stringify(logs);
+  for (const t of [ok.data.accessToken, ok.data.refreshToken, r1.data.refreshToken, s2.data.refreshToken, PASSWORD]) assert.ok(!logText.includes(t));
+});
+
+test('App-Anmeldung: dieselben Limits wie das Web (je IP und je Adresse, geteilter Zaehler) und Refresh-Limit', async () => {
+  const {createMemoryWorker} = await import('../../../scripts/account/sim/memory-auth.mjs');
+  const {LIMITS} = await import('../src/limits.mjs');
+  const PASSWORD = 'Sicheres-Passwort-26';
+  const {app, api} = await createMemoryWorker({users: {'rate@example.test': {password: PASSWORD}}, envOverrides: {VU_ALLOWED_ORIGINS: ''}});
+  const post = (path, body, headers = {}) => app.handle(new Request(api + path, {method: 'POST',
+    headers: {'Content-Type': 'application/json', ...headers}, body: JSON.stringify(body)}));
+  const web = (ip, body) => post('/v1/auth/login', body, {'CF-Connecting-IP': ip, Origin: 'https://research.memory', 'X-VU-Client': 'web'});
+  const appLogin = (ip, body) => post('/v1/auth/app/login', body, {'CF-Connecting-IP': ip});
+
+  // Je IP: Web und App zaehlen gemeinsam (ein Zaehler "login", keine zweite Grenze)
+  for (let i = 0; i < LIMITS.login.limit / 2; i++) assert.equal((await web('198.51.100.1', {email: 'rate@example.test', password: 'Falsch-Passwort-1'})).status, 401);
+  for (let i = 0; i < LIMITS.login.limit / 2; i++) assert.equal((await appLogin('198.51.100.1', {email: 'rate@example.test', password: 'Falsch-Passwort-1'})).status, 401);
+  const blocked = await appLogin('198.51.100.1', {email: 'rate@example.test', password: PASSWORD});
+  assert.equal(blocked.status, 429, 'auch das richtige Passwort ist gesperrt');
+  assert.equal((await blocked.json()).state, 'RATE_LIMITED');
+  assert.equal((await web('198.51.100.1', {email: 'rate@example.test', password: PASSWORD})).status, 429, 'gilt auch im Web');
+
+  // Je Adresse ueber viele IPs
+  let status = 0;
+  for (let i = 0; i < LIMITS.loginAccount.limit; i++) status = (await appLogin('192.0.2.' + i, {email: 'rate@example.test', password: 'Falsch-Passwort-1'})).status;
+  assert.equal(status, 429, 'Adresslimit greift ueber verschiedene IPs');
+
+  // Refresh je IP
+  let last = 0;
+  for (let i = 0; i <= LIMITS.appRefresh.limit; i++) last = (await post('/v1/auth/app/refresh', {refreshToken: 'erfunden-aber-lang-genug'}, {'CF-Connecting-IP': '203.0.113.99'})).status;
+  assert.equal(last, 429);
+
+  // Cloudflare-Binding (ueber alle Isolates) wird ebenso genutzt
+  const seen = [];
+  const bound = await createMemoryWorker({users: {'rate@example.test': {password: PASSWORD}},
+    limiterBinding: {limit: async ({key}) => { seen.push(key); return {success: !key.startsWith('loginAccount:')}; }}});
+  const r = await bound.app.handle(new Request(bound.api + '/v1/auth/app/login', {method: 'POST',
+    headers: {'Content-Type': 'application/json', 'CF-Connecting-IP': '198.51.100.2'}, body: JSON.stringify({email: 'rate@example.test', password: PASSWORD})}));
+  assert.equal(r.status, 429);
+  assert.deepEqual(seen, ['login:198.51.100.2', 'loginAccount:rate@example.test']);
+});

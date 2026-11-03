@@ -1,8 +1,9 @@
 // Sitzung und Anmeldung (Backend-for-Frontend).
 //
 // Der Browser sieht nie ein Token: Zugriffs- und Erneuerungstoken liegen in
-// HttpOnly-Cookies des API-Hosts (__Host-, Secure, SameSite=Lax). Apps
-// (spaeter) melden sich direkt bei Supabase an und schicken
+// HttpOnly-Cookies des API-Hosts (__Host-, Secure, SameSite=Lax). Die App
+// meldet sich ueber /v1/auth/app/* an (gleiche Limits, Tokens im Antworttext,
+// nur ohne Cookie und ohne Browser-Origin) und schickt danach
 // "Authorization: Bearer <JWT>" - beides prueft resolveSession gleich.
 
 import {HttpError, json, redirect, cookie, clearCookie, cookieValue, readJson} from './http.mjs';
@@ -71,7 +72,9 @@ export async function session(ctx) {
     {cookies: ctx.outCookies});
 }
 
-export async function login(ctx) {
+// Passwort-Anmeldung, gemeinsam fuer Web (Cookies) und App (Antworttext):
+// dieselben Limits je IP und je Adresse, dieselben Fehlerzustaende.
+async function passwordGrant(ctx) {
   const body = await readJson(ctx.request);
   const email = v.email(body.email);
   await ctx.limit('login', ctx.ip || email);
@@ -86,7 +89,11 @@ export async function login(ctx) {
     if (e instanceof SupabaseError && e.status < 500) throw new HttpError(401, 'INVALID_CREDENTIALS');
     throw e;
   }
-  const claims = await verify(ctx, result.access_token);
+  return {result, claims: await verify(ctx, result.access_token)};
+}
+
+export async function login(ctx) {
+  const {result, claims} = await passwordGrant(ctx);
   return json(ctx.request, ctx.cfg, 200, {authenticated: true, user: publicUser(userFromClaims(claims))},
     {cookies: sessionCookies(ctx, result)});
 }
@@ -202,6 +209,87 @@ export async function reauthenticate(ctx, user, currentPassword) {
     if (e instanceof SupabaseError && e.status < 500) throw new HttpError(403, 'CURRENT_PASSWORD_INVALID');
     throw e;
   }
+}
+
+// ---- App-Anmeldeschiene (/v1/auth/app/*) --------------------------------
+// Tokens im Antworttext statt in Cookies. Gilt NUR fuer Anfragen ohne Cookie
+// und ohne Browser-Herkunft: Ein Browser sendet bei POST immer Origin (und
+// Sec-Fetch-*), die native App (CapacitorHttp) nicht. So wird der Weg kein
+// zweiter Browser-Login (kein Token im Browser-Speicher, kein CSRF ueber
+// mitgeschickte Cookies). Refresh-Rotation und Wiederverwendungserkennung
+// macht Supabase Auth wie im Web (rotiert, ein wiederverwendetes altes Token
+// widerruft die Sitzung); Abmelden widerruft die Refresh-Tokens der Sitzung.
+// Tokens werden nie protokolliert.
+
+const REFRESH_TOKEN = /^[\x21-\x7e]{8,1024}$/; // druckbares ASCII ohne Leerzeichen; Inhalt prueft Supabase
+
+export function assertAppClient(request) {
+  const h = request.headers;
+  if (h.has('Origin') || h.has('Sec-Fetch-Site') || h.has('Sec-Fetch-Mode')) throw new HttpError(403, 'APP_CLIENT_ONLY');
+  if (String(h.get('Cookie') || '').trim()) throw new HttpError(403, 'APP_CLIENT_ONLY');
+}
+
+function appSession(session, claims) {
+  return {accessToken: session.access_token, refreshToken: session.refresh_token,
+    expiresIn: Math.min(Number(session.expires_in) || 3600, 3600), user: publicUser(userFromClaims(claims))};
+}
+
+// Content-Type ist optional, wenn kein Koerper kommt (Abmelden nur mit Bearer).
+async function optionalJson(request) {
+  if (!request.headers.get('Content-Type') && !Number(request.headers.get('Content-Length') || 0)) return {};
+  return readJson(request);
+}
+
+async function refreshGrant(ctx, refreshToken) {
+  if (typeof refreshToken !== 'string' || !REFRESH_TOKEN.test(refreshToken)) throw new HttpError(401, 'TOKEN_INVALID');
+  await ctx.limit('appRefresh', ctx.ip);
+  let session;
+  try { session = await ctx.sb.auth.refresh({refreshToken, ip: ctx.ip}); }
+  catch (e) {
+    if (e instanceof SupabaseError && e.status === 429) throw new HttpError(429, 'RATE_LIMITED');
+    if (e instanceof SupabaseError && e.status < 500) {
+      // Nur der Fehlercode, nie das Token.
+      if (e.code === 'refresh_token_already_used') ctx.log('warn', 'APP_REFRESH_REUSED', {code: e.code});
+      throw new HttpError(401, 'TOKEN_INVALID');
+    }
+    throw e;
+  }
+  try { return {session, claims: await verify(ctx, session.access_token)}; }
+  catch (e) { if (e instanceof JwtError) throw new HttpError(401, 'TOKEN_INVALID'); throw e; }
+}
+
+export async function appLogin(ctx) {
+  assertAppClient(ctx.request);
+  const {result, claims} = await passwordGrant(ctx);
+  return json(ctx.request, ctx.cfg, 200, appSession(result, claims));
+}
+
+export async function appRefresh(ctx) {
+  assertAppClient(ctx.request);
+  const body = await readJson(ctx.request);
+  const {session, claims} = await refreshGrant(ctx, body.refreshToken);
+  return json(ctx.request, ctx.cfg, 200, appSession(session, claims));
+}
+
+// Widerruft die Sitzung bei Supabase (scope=local: alle Refresh-Tokens dieser
+// Sitzung). Mit gueltigem Bearer direkt; ist das Zugriffstoken abgelaufen und
+// kommt ein Refresh-Token mit, wird es dafuer einmal eingetauscht. Antwortet
+// immer gleich (best effort), die App loescht lokal ohnehin zuerst.
+export async function appLogout(ctx) {
+  assertAppClient(ctx.request);
+  const body = await optionalJson(ctx.request);
+  const header = ctx.request.headers.get('Authorization') || '';
+  let accessToken = null;
+  if (header.startsWith('Bearer ')) {
+    try { await verify(ctx, header.slice(7)); accessToken = header.slice(7); }
+    catch (e) { if (!(e instanceof JwtError)) throw e; }
+  }
+  if (!accessToken && body.refreshToken !== undefined) {
+    try { accessToken = (await refreshGrant(ctx, body.refreshToken)).session.access_token; }
+    catch (e) { if (!(e instanceof HttpError)) throw e; }
+  }
+  if (accessToken) await ctx.sb.auth.logout({accessToken, ip: ctx.ip}).catch(() => {});
+  return json(ctx.request, ctx.cfg, 200, {authenticated: false});
 }
 
 export {clearSession};

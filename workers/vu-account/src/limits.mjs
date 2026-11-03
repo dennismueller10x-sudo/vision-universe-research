@@ -10,6 +10,7 @@ import {HttpError} from './http.mjs';
 export const LIMITS = Object.freeze({
   login: {limit: 10, windowSec: 300},
   loginAccount: {limit: 30, windowSec: 3600}, // je Adresse, gegen verteiltes Raten (hoch genug gegen Aussperren)
+  appRefresh: {limit: 60, windowSec: 3600}, // App-Token-Erneuerung je IP (eine je Stunde und Geraet; Luft fuer geteilte Mobilfunk-IPs)
   signup: {limit: 5, windowSec: 3600},
   recover: {limit: 5, windowSec: 3600},
   cancellation: {limit: 5, windowSec: 3600},

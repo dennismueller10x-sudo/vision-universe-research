@@ -1166,3 +1166,81 @@ test('Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich', {skip}, async t => 
     } finally { await off.close(); }
   });
 });
+
+// App-Anmeldeschiene /v1/auth/app/* gegen echtes PostgreSQL (RLS mit dem App-Bearer) und das simulierte Supabase.
+test('App-Anmeldung: Tokens im Antworttext, Bearer an der Konto-API, Rotation, Wiederverwendung, Abmelden, Browser gesperrt', {skip}, async t => {
+  const env = await createEnvironment();
+  t.after(() => env.close());
+  // So schickt die native App (CapacitorHttp): kein Origin, kein Cookie, kein X-VU-Client.
+  const app = async (path, body, headers = {}) => {
+    const h = {'CF-Connecting-IP': '203.0.113.50', ...headers};
+    if (body !== undefined) h['Content-Type'] = 'application/json';
+    const res = await env.app.handle(new Request(env.api + path, {method: 'POST', headers: h, body: body === undefined ? undefined : JSON.stringify(body)}));
+    const text = await res.text();
+    return {status: res.status, headers: res.headers, data: text ? JSON.parse(text) : null};
+  };
+  const bearerGet = async (path, token) => {
+    const res = await env.app.handle(new Request(env.api + path, {headers: {Authorization: 'Bearer ' + token}}));
+    return {status: res.status, data: await res.json()};
+  };
+  await signedIn(env, 'app.nutzer@example.test');
+
+  await t.test('Anmeldung, Fehlerzustaende wie im Web, Bearer liest das eigene Konto', async () => {
+    const ok = await app('/v1/auth/app/login', {email: 'app.nutzer@example.test', password: PASSWORD});
+    assert.equal(ok.status, 200, JSON.stringify(ok.data));
+    assert.ok(ok.data.accessToken && ok.data.refreshToken && ok.data.expiresIn <= 3600);
+    assert.equal(ok.data.user.email, 'app.nutzer@example.test');
+    assert.equal(ok.headers.getSetCookie().length, 0, 'keine Cookies');
+    assert.equal(ok.headers.get('Cache-Control'), 'no-store');
+    const me = await bearerGet('/v1/me', ok.data.accessToken);
+    assert.equal(me.status, 200);
+    assert.equal(me.data.entitlements.plan_id, 'free');
+    assert.equal((await bearerGet('/v1/watchlist', ok.data.accessToken)).status, 200);
+    assert.equal((await app('/v1/auth/app/login', {email: 'app.nutzer@example.test', password: 'Falsches-Passwort-1'})).data.state, 'INVALID_CREDENTIALS');
+    assert.equal((await app('/v1/auth/app/login', {email: 'unbekannt.app@example.test', password: PASSWORD})).data.state, 'INVALID_CREDENTIALS');
+    const browser = env.browser();
+    await browser.post('/v1/auth/signup', {email: 'app.offen@example.test', password: PASSWORD, acceptTerms: true});
+    assert.deepEqual([(await app('/v1/auth/app/login', {email: 'app.offen@example.test', password: PASSWORD})).status], [403]);
+  });
+
+  await t.test('Origin oder Cookie: abgelehnt (kein zweiter Browser-Login)', async () => {
+    const browser = await signedIn(env, 'app.browser@example.test');
+    // Der echte Browser (mit Origin, X-VU-Client und Sitzungs-Cookies) bekommt keine Tokens.
+    for (const path of ['/v1/auth/app/login', '/v1/auth/app/refresh', '/v1/auth/app/logout']) {
+      const r = await browser.post(path, {email: 'app.browser@example.test', password: PASSWORD, refreshToken: browser.jar.get('__Host-vu_rt')});
+      assert.deepEqual([r.status, r.data.state], [403, 'APP_CLIENT_ONLY'], path);
+    }
+    assert.equal((await app('/v1/auth/app/login', {email: 'app.browser@example.test', password: PASSWORD}, {Origin: env.site})).status, 403);
+    assert.equal((await app('/v1/auth/app/login', {email: 'app.browser@example.test', password: PASSWORD},
+      {Cookie: '__Host-vu_rt=' + browser.jar.get('__Host-vu_rt')})).status, 403);
+    // Die Web-Sitzung ist davon unberuehrt.
+    assert.equal((await browser.get('/v1/me')).status, 200);
+  });
+
+  await t.test('Rotation, Wiederverwendung widerruft die Sitzung, ungueltiges Token', async () => {
+    const s = await app('/v1/auth/app/login', {email: 'app.nutzer@example.test', password: PASSWORD});
+    const r1 = await app('/v1/auth/app/refresh', {refreshToken: s.data.refreshToken});
+    assert.equal(r1.status, 200);
+    assert.notEqual(r1.data.refreshToken, s.data.refreshToken);
+    assert.equal((await bearerGet('/v1/me', r1.data.accessToken)).status, 200);
+    const reused = await app('/v1/auth/app/refresh', {refreshToken: s.data.refreshToken});
+    assert.deepEqual([reused.status, reused.data.state], [401, 'TOKEN_INVALID']);
+    assert.equal((await app('/v1/auth/app/refresh', {refreshToken: r1.data.refreshToken})).status, 401, 'ganze Sitzung widerrufen');
+    assert.equal((await app('/v1/auth/app/refresh', {refreshToken: 'erfunden-aber-lang-genug'})).status, 401);
+    assert.equal((await bearerGet('/v1/me', 'eyJhbGciOiJub25lIn0.e30.')).status, 401);
+  });
+
+  await t.test('Abmelden widerruft das Refresh-Token; Limit wie im Web', async () => {
+    const s = await app('/v1/auth/app/login', {email: 'app.nutzer@example.test', password: PASSWORD});
+    assert.deepEqual((await app('/v1/auth/app/logout', undefined, {Authorization: 'Bearer ' + s.data.accessToken})).data, {authenticated: false});
+    assert.equal((await app('/v1/auth/app/refresh', {refreshToken: s.data.refreshToken})).status, 401);
+    let last = 0;
+    for (let i = 0; i < 12; i++) last = (await app('/v1/auth/app/login', {email: 'app.nutzer@example.test', password: 'Falsches-Passwort-1'},
+      {'CF-Connecting-IP': '198.51.100.77'})).status;
+    assert.equal(last, 429);
+    assert.equal((await app('/v1/auth/app/login', {email: 'app.nutzer@example.test', password: PASSWORD}, {'CF-Connecting-IP': '198.51.100.77'})).data.state,
+      'RATE_LIMITED');
+    const logs = JSON.stringify(env.logs);
+    for (const tok of [s.data.accessToken, s.data.refreshToken, PASSWORD]) assert.ok(!logs.includes(tok), 'kein Geheimnis im Protokoll');
+  });
+});

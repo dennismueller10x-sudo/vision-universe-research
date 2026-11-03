@@ -59,12 +59,18 @@ async function health(ctx) {
 let templateState = {at: 0, value: 'unknown'};
 export const resetHealthCache = () => { cancellationState = {at: 0, value: 'unknown'}; templateState = {at: 0, value: 'unknown'}; billing.resetTaxCache(); };
 
+const APP_AUTH_PREFIX = '/v1/auth/app/';
+
 // [Methode, Pfad, Handler, {csrf: Cookie-Schutz pruefen, needsDb}]
 const ROUTES = [
   ['GET', '/v1/health', health, {db: false}],
   ['GET', '/v1/session', auth.session],
   ['POST', '/v1/auth/login', auth.login, {csrf: true}],
   ['POST', '/v1/auth/logout', auth.logout, {csrf: true}],
+  // App (nativ): Tokens im Antworttext, nur ohne Cookie und ohne Browser-Origin (auth.assertAppClient), kein CORS.
+  ['POST', '/v1/auth/app/login', auth.appLogin],
+  ['POST', '/v1/auth/app/refresh', auth.appRefresh],
+  ['POST', '/v1/auth/app/logout', auth.appLogout],
   ['POST', '/v1/auth/signup', auth.signup, {csrf: true}],
   ['POST', '/v1/auth/recover', auth.recover, {csrf: true}],
   ['GET', '/v1/auth/callback', auth.callback],
@@ -130,7 +136,9 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
 
   async function handle(request) {
     const url = new URL(request.url);
-    if (request.method === 'OPTIONS') return preflight(request, cfg);
+    // Die App-Anmeldeschiene ist fuer Browser gesperrt: kein Preflight, also auch kein CORS.
+    if (request.method === 'OPTIONS') return url.pathname.startsWith(APP_AUTH_PREFIX)
+      ? json(request, cfg, 403, {state: 'APP_CLIENT_ONLY'}) : preflight(request, cfg);
     // HEAD wie GET (Link-Pruefer, Suchmaschinen), ohne Inhalt.
     const head = request.method === 'HEAD';
     const htmlRoute = PAGES.find(([m, p]) => p === url.pathname && m === (head ? 'GET' : request.method));
