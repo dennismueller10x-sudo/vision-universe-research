@@ -1,0 +1,31 @@
+{
+  "name": "vision-universe-app",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Begrenzter Capacitor-Prototyp (ADR-007). Eigenstaendig: nicht Teil der Web-Pipeline, keine Abhaengigkeit der Webseiten.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"tests/*.test.mjs\"",
+    "poc": "node scripts/poc-browser.mjs",
+    "measure": "node scripts/measure-payload.mjs",
+    "sync": "npm run build:www && cap sync ios",
+    "build:www": "node scripts/build-www.mjs"
+  },
+  "dependencies": {
+    "@aparajita/capacitor-secure-storage": "^7.0.0",
+    "@capacitor/app": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/ios": "^7.0.0",
+    "@capacitor/network": "^7.0.0",
+    "@capacitor/splash-screen": "^7.0.0",
+    "@capacitor/status-bar": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.0.0",
+    "esbuild": "0.25.10"
+  }
+}
