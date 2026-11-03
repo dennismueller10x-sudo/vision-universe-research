@@ -52,10 +52,12 @@ test('Shell: CSP ohne unsafe-inline/eval, Safe-Area vorbereitet', () => {
   assert.match(read(path.join(app, 'www/app.css')), /safe-area-inset-bottom/);
 });
 
-test('Gate-Hygiene: App-Branch beruehrt nur app/ und die ADR-Dokumente', () => {
+test('Gate-Hygiene: App-Branch beruehrt nur app/, die Mobile-Dokumente und den freigegebenen Auslieferungsausschluss', () => {
   let base;
   try { base = execFileSync('git', ['merge-base', 'HEAD', 'origin/main'], {cwd: repo, encoding: 'utf8'}).trim(); } catch { return; } // flacher Checkout ohne Basis: nicht pruefbar
   const files = execFileSync('git', ['diff', '--name-only', base], {cwd: repo, encoding: 'utf8'}).split('\n').filter(Boolean);
-  const bad = files.filter(f => !/^(app\/|docs\/architecture\/ADR-00[4-9]|docs\/mobile\/)/.test(f));
+  // Ausschluss von app/ aus Pages: Owner-Freigabe Phase 2 (eine Zeile in permitted() und seine Pruefung)
+  const approved = new Set(['scripts/vu2/build-release.mjs', 'quant/tests/release-delivery.test.mjs']);
+  const bad = files.filter(f => !approved.has(f) && !/^(app\/|docs\/architecture\/ADR-00[4-9]|docs\/mobile\/)/.test(f));
   assert.deepEqual(bad, []);
 });

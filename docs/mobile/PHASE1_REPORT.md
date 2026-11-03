@@ -1,5 +1,7 @@
 # Mobile App Phase 1: Capacitor-Prototyp, Messungen und Empfehlung
 
+> **Korrektur (Phase 2, 03.11.2026):** Die Datenmessung in Abschnitt 2 wurde gegen den **Quelltext** des Repositorys erhoben. Produktion liefert den gebauten **Release** aus, der Faktor-Shards erzeugt. Die Quant-Aktie lädt dort **1,07 MB Wire / 3,6 MB entpackt / 7,2 s gedrosselt**, nicht 3,55 MB / 25,7 MB / 21,8 s. Der Befund „`factors-FULL_UNIVERSE.json` ist der größte Schwachpunkt“ gilt nur ohne Release-Build. Maßgeblich ist [PERFORMANCE.md](PERFORMANCE.md). Die übrigen Aussagen dieses Berichts bleiben unberührt.
+
 **Stand:** 03.11.2026 · Entscheidung: [ADR-007](../architecture/ADR-007-capacitor-prototype.md) · Code: [`app/`](../../app/README.md)
 **Grenze dieses Berichts:** Alles wurde auf Linux in **Chromium** gemessen, nicht in WKWebView und nicht auf einem iPhone. Der iOS-Build wurde **nicht** ausgeführt. Aussagen zu Gesten, Speicher und Ladezeit auf dem Gerät sind **noch nicht verifiziert**.
 
@@ -148,7 +150,7 @@ Definition (fertig, wenn alles zutrifft):
 Begründung:
 
 - **Dafür:** Die Shell-Logik ist belegt (26 Tests, 22 Browserprüfungen). Die echten Seiten laden im Rahmen. Bis zum Gerät fehlt wenig, der Aufwand bis zum internen TestFlight ist klein, und es entsteht keine zweite Oberfläche. Der Prototyp ist ein Wegwerfpfad: Die Konto-Logik (`auth.js`, `api.js`, Token-Speicher) ist plattformneutral und ginge nach Expo über.
-- **Dagegen (ADR-004 bestätigt sich teilweise):** Quant Aktie ist mit 25,7 MB dekodiert und 32–41 MB Heap der klare Schwachpunkt, im gedrosselten Netz 21,8 s. Das ist ein Problem der Seite, nicht von Capacitor, und lässt sich **mit oder ohne App** nur über die Datenaufteilung lösen (Abschnitt 2). Expo würde diese Last nicht beseitigen, sondern eine neue Oberfläche und einen neuen Datenweg (`/v1/`) verlangen.
+- **Dagegen (ADR-004 bestätigt sich teilweise):** Die Seiten sind schwer (Supertrader entpackt 4,2 MB beim Start, Discover Start mit 127 Anfragen). Die ursprünglich genannte Quant-Aktie (25,7 MB) war eine Fehlmessung gegen den Quelltext, im Release sind es 3,6 MB (Korrektur oben). Das bleibt ein Problem der Seiten, nicht von Capacitor, und lässt sich nur über Datenaufteilung lösen. Expo würde diese Last nicht beseitigen.
 - **Offen entscheidend:** Gesten in Charts, Rahmen-Speicher unter iOS und die Store-Richtlinie 4.2. Das lässt sich nur auf dem Gerät klären.
 - **Nicht aussagekräftig:** Mein Vergleich gründet auf Chromium-Messungen und simulierten Diensten, nicht auf einem iPhone. Eine Expo-Variante habe ich nicht gebaut und nicht gemessen. Die Empfehlung zwischen den beiden ist deshalb eine begründete Einschätzung, kein Messergebnis.
 

@@ -1,6 +1,6 @@
 # ADR-007: Capacitor als begrenzter iOS-Prototyp
 
-**Status:** vorgeschlagen (03.11.2026), Prototyp. **ADR-004 bleibt gültig.** Diese Entscheidung ersetzt sie nicht und ändert die Reihenfolge PWA → `/v1/` → Expo nicht.
+**Status:** vom Owner bestätigt (03.11.2026, Phase 2), begrenzter Prototyp. **ADR-004 bleibt gültig.** Diese Entscheidung ersetzt sie nicht und ändert die Reihenfolge PWA → `/v1/` → Expo nicht.
 Messwerte und Ergebnis: [docs/mobile/PHASE1_REPORT.md](../mobile/PHASE1_REPORT.md).
 
 ## Anlass
@@ -41,7 +41,7 @@ Native HTTP-Aufrufe (`CapacitorHttp`) laufen ohne CORS. Dadurch ist keine Änder
 ## Folgen
 
 - Neue Abhängigkeiten gibt es nur in `app/` (Capacitor, ein Keychain-Plugin, esbuild als Build-Werkzeug). CLAUDE.md „Node 22 ohne Abhängigkeiten“ gilt für die Web-Pipeline weiter.
-- `app/` wird von `scripts/vu2/build-release.mjs` als getrackter Pfad **mitausgeliefert**, solange `permitted()` es nicht ausschließt. Es enthält nur öffentlichen Shell-Code und keine Schlüssel. Ein Ausschluss wäre eine Zeile in der Pipeline und braucht eine eigene Freigabe (siehe Bericht).
+- `app/` wird **nicht** mit der Webseite ausgeliefert: `permitted()` in `scripts/vu2/build-release.mjs` schließt `app/` aus (Owner-Freigabe Phase 2). Nachweis: vollständiger lokaler Release-Ablauf mit Vergleich gegen einen Build ohne Ausschluss, siehe Bericht und `app/scripts/verify-release.sh`.
 - Die großen JSON-Dateien aus ADR-004 bleiben das eigentliche Problem. Die Messung steht im Bericht, die Maßnahmen sind **dokumentiert, nicht umgesetzt**, weil sie Fachprodukte berühren (eigene PRs je Produkt).
 
 ## Ausstiegskriterien (Wechsel zu Expo, ADR-004 Stufe 3)
@@ -54,3 +54,13 @@ Der Prototyp wird beendet und Expo vorgezogen, wenn auf einem echten iPhone eine
 4. Eine Store-Prüfung nach Richtlinie 4.2 ist für eine Webhülle nicht realistisch (Einschätzung vor dem öffentlichen Start, nicht jetzt).
 
 Gemessene Werte stehen im Bericht; die Schwellen sind Vorschläge und vom Owner zu bestätigen.
+
+## Bestätigung und Stand Phase 2 (03.11.2026)
+
+Owner-Entscheidungen: Capacitor bis zum privaten TestFlight-Gerätetest fortführen; ADR-007 als begrenzter Prototyp bestätigt, ADR-004 bleibt; **keine Store-Käufe** in der ersten Testversion; Research-Passwortmaske unverändert; keine produktiven Deployments und keine eigenständigen Merges; Icon und Startbild bleiben vorläufig.
+
+Ergänzungen:
+- **Anmeldeschiene umschaltbar** (`authTransport`: `supabase` oder `worker`). Direkt-Supabase umgeht das Tempolimit des Workers und ist nur für den privaten Test vertretbar. Der Worker-Weg ist als Vorschlag spezifiziert ([SECURITY_LOGIN.md](../mobile/SECURITY_LOGIN.md)) und braucht einen eigenen PR.
+- **Rahmen sind Prototyp.** Das Zielbild ohne Verschachtelung steht in [UI_INTEGRATION.md](../mobile/UI_INTEGRATION.md) (Etappe B: App-Modus im Hauptfenster).
+- **Messung korrigiert:** Phase 1 hat die Quant-Aktie überschätzt (Quelltext statt Release). Siehe [PERFORMANCE.md](../mobile/PERFORMANCE.md).
+- **Buildweg:** Empfehlung Xcode Cloud für den ersten privaten Upload, GitHub-Actions-Vorlage inaktiv bereitgestellt ([TESTFLIGHT_PLAN.md](../mobile/TESTFLIGHT_PLAN.md)).

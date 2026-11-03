@@ -8,7 +8,9 @@ import zlib from 'node:zlib';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+// --root <Ordner>: statt des Quelltexts einen gebauten Release messen (node scripts/vu2/build-release.mjs --output=...).
+// Wichtig: Produktion liefert den Release aus, nicht den Quelltext (Faktor-Shards entstehen erst im Release-Build).
+const root = path.resolve(process.argv.includes('--root') ? process.argv[process.argv.indexOf('--root') + 1] : path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..'));
 const arg = n => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : null; };
 const out = arg('--out');
 const slow = process.argv.includes('--slow');
@@ -83,6 +85,7 @@ for (const [name, route] of ROUTES) {
 }
 await browser.close(); server.close();
 const result = {profile: slow ? 'iPhone-Breite, Chromium, 1,6 Mbit/s, 150 ms' : 'iPhone-Breite, Chromium, lokal ohne Drosselung',
+  root: process.argv.includes('--root') ? 'gebauter Release' : 'Quelltext',
   note: 'Chromium, nicht WKWebView. Uebertragung gzip Stufe 6 wie GitHub Pages; echte Werte auf dem Geraet stehen aus.', rows};
 if (out) fs.writeFileSync(out, JSON.stringify(result, null, 2)); 
 console.log(JSON.stringify(result, null, 2));
