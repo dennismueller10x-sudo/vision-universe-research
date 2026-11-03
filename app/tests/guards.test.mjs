@@ -61,3 +61,28 @@ test('Gate-Hygiene: App-Branch beruehrt nur app/, die Mobile-Dokumente und den f
   const bad = files.filter(f => !approved.has(f) && !/^(app\/|docs\/architecture\/ADR-00[4-9]|docs\/mobile\/)/.test(f));
   assert.deepEqual(bad, []);
 });
+
+test('Signier- und Zugangsdaten: ignoriert und nirgends im App-Verzeichnis eingecheckt', () => {
+  const ignore = read(path.join(app, '.gitignore'));
+  for (const p of ['*.p12', '*.p8', '*.key', '*.pem', '*.csr', '*.cer', '*.mobileprovision', 'vu-signing/', 'AuthKey_*.p8']) assert.ok(ignore.includes(p), p);
+  const tracked = execFileSync('git', ['ls-files', '-z', 'app'], {cwd: repo, encoding: 'utf8'}).split('\0').filter(Boolean);
+  const bad = tracked.filter(f => /\.(p12|p8|pfx|key|pem|csr|cer|mobileprovision|provisionprofile)$/i.test(f) || /(^|\/)AuthKey_/.test(f) || /(^|\/)\.env/.test(f));
+  assert.deepEqual(bad, []);
+  for (const f of tracked.filter(f => /\.(m?js|json|sh|md|template|plist|yml|yaml|html|css|swift|rb)$/i.test(f) || /Fastfile$/.test(f))) {
+    const t = fs.readFileSync(path.join(repo, f), 'utf8');
+    assert.doesNotMatch(t, /-----BEGIN (RSA |EC |ENCRYPTED )?PRIVATE KEY-----[\s\S]{20,}-----END/, f);
+    assert.doesNotMatch(t, /\bsk_(live|test)_[A-Za-z0-9]{10,}|\bsb_secret_[A-Za-z0-9_]{10,}|\bwhsec_[A-Za-z0-9]{10,}/, f);
+  }
+});
+
+test('Pipeline-Vorlagen: keine Artefakt-Uploads, Geheimnisse nur aus secrets, Eingaben nur ueber env, Umgebung mit Pruefern', () => {
+  const wf = read(path.join(app, 'ci/ios-testflight.workflow.yml.template'));
+  assert.doesNotMatch(wf, /upload-artifact|actions\/cache/, 'keine Artefakte oder Caches mit Signierdaten');
+  const runBlocks = wf.split('\n').filter(l => /^\s+run:/.test(l) || /^\s{12,}/.test(l)).join('\n');
+  assert.doesNotMatch(runBlocks, /\$\{\{\s*(inputs|secrets|vars)\./, 'in run-Bloecken keine Ausdruecke, nur env');
+  assert.match(wf, /environment:\s*app-testflight/);
+  assert.match(wf, /permissions:\s*\n\s+contents:\s*read/);
+  assert.match(wf, /github\.ref == 'refs\/heads\/main'/);
+  assert.match(wf, /preflight_only/);
+  assert.doesNotMatch(wf, /pull_request/, 'nur von Hand');
+});

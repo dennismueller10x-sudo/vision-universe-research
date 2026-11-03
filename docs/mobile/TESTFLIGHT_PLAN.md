@@ -29,7 +29,7 @@ Quellen: [Apple Xcode Cloud, Preise und Einrichtung](https://developer.apple.com
 | Risiko | Mac-Zugang einmalig organisieren | Signier-Einrichtung (Zertifikat/Profil) ist fehleranfällig; erste Läufe brauchen oft Korrekturen |
 
 **Empfehlung (geändert gegenüber der früheren Fassung): GitHub Actions mit macOS-Runner und manueller Signierung.** Sie ist der einzige Weg, der **ohne eigenen Mac** sicher machbar ist, kostet für unser öffentliches Repository nichts extra, liegt im Repository und ist von mir debuggbar. Xcode Cloud bleibt die Alternative, wenn ein Mac verfügbar ist und Sie keine Zertifikate und Geheimnisse selbst verwalten wollen.
-Vorbereitet ist: `app/ci/ios-testflight.workflow.yml.template`, `app/ci/fastlane/Fastfile`, `app/ci/make-signing-request.sh` (alle inaktiv). Schritt-für-Schritt: [TESTFLIGHT_STEP_BY_STEP.md](TESTFLIGHT_STEP_BY_STEP.md).
+Vorbereitet ist: `app/ci/ios-testflight.workflow.yml.template`, `app/ci/fastlane/Fastfile`, `app/ci/make-signing-request.sh` (alle inaktiv). Schritt-für-Schritt (iPhone und Windows-PC, mit Regeln für Geheimnisse, gemeinsamer Vorprüfung und Vorprüflauf): [TESTFLIGHT_STEP_BY_STEP.md](TESTFLIGHT_STEP_BY_STEP.md).
 
 ## 3. Apple-Konfiguration, exakt
 
