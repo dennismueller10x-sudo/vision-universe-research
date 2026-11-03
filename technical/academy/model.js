@@ -35,9 +35,11 @@
       var value = JSON.parse(storage.getItem(SESSION_KEY));
       var lesson = value && content.lessons.find(function (l) { return l.id === value.id; });
       if (!lesson || value.contentVersion !== content.contentVersion || value.lessonVersion !== lesson.version) return null;
-      return { id: lesson.id, contentVersion: content.contentVersion, lessonVersion: lesson.version,
+      var state={ id: lesson.id, contentVersion: content.contentVersion, lessonVersion: lesson.version,
         choice: lesson.quiz.choices.some(function(c){return c.id === value.choice;}) ? value.choice : null,
         checked: value.checked === true, y: Number.isFinite(value.y) && value.y >= 0 ? value.y : 0 };
+      if(lesson.presentation && Array.isArray(lesson.presentation.scenes) && lesson.presentation.scenes.some(function(s){return s && s.id===value.scene;}))state.scene=value.scene;
+      return state;
     } catch (_) { return null; }
   }
   function saveSession(storage, value) {

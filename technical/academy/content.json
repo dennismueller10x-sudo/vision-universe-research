@@ -389,7 +389,40 @@
         "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
         "docs/technical/TECHNICAL_ASSISTANT.md"
       ],
-      "reading": []
+      "reading": [],
+      "presentation": {
+        "version": 1,
+        "kind": "trend",
+        "intro": "Marktstruktur fragt nach der Folge von Hochs und Tiefs. Ein Durchschnittsfilter prüft dagegen die Lage des Kurses zu einer Linie. Beides beschreibt unterschiedliche Eigenschaften.",
+        "why": "So erkennst du, ob eine Checkliste und der sichtbare Verlauf dieselbe Geschichte erzählen. Ein erfüllter Linienfilter allein beantwortet die Strukturfrage nicht.",
+        "mistake": "„Über SMA 200“ wird mit einem bereits stabilen Aufwärtstrend gleichgesetzt.",
+        "scenes": [
+          {
+            "id": "structure",
+            "label": "Struktur",
+            "title": "Höhere Hochs, höhere Tiefs",
+            "observed": "Hoch 2 liegt über Hoch 1, Tief 2 über Tief 1. Die Verbindung markiert die beiden Tiefs.",
+            "meaning": "Diese Folge beschreibt eine Aufwärtsstruktur im gezeigten Ausschnitt. Über den nächsten Kurs sagt sie nichts Sicheres aus.",
+            "description": "Schematischer Kurs mit drei nacheinander höheren Hochs und zwei höheren Tiefs. Hochs und Tiefs sind beschriftet, die Tiefs zusätzlich verbunden."
+          },
+          {
+            "id": "filter",
+            "label": "Linienfilter",
+            "title": "Über der Linie, aber sinkende Hochs",
+            "observed": "Der letzte Kurs liegt über der skizzierten SMA-200-Linie. Gleichzeitig liegen die markierten Hochs jeweils tiefer.",
+            "meaning": "Der einzelne Lagefilter ist erfüllt. Die Struktur liefert einen Vorbehalt. Die Trendfolge-Vorlage prüft mehrere definierte Kriterien.",
+            "description": "Der Kurs liegt über einer gestrichelten, als SMA 200 bezeichneten Skizze. Drei beschriftete Hochs fallen nacheinander. Linienfilter und Struktur sind unterschiedliche Befunde."
+          },
+          {
+            "id": "gap",
+            "label": "Gegenbeispiel",
+            "title": "Ein Sprung ist noch keine Trendfolge",
+            "observed": "Nach einer wechselhaften Phase springt der Kurs über die Linie. Eine Folge höherer Tiefs ist noch nicht erkennbar.",
+            "meaning": "Ein neuer Lagebefund kann sofort entstehen; eine längere Struktur lässt sich daraus nicht ableiten.",
+            "description": "Ein unruhiger Kurs unter der skizzierten SMA-200-Linie springt an einem Punkt deutlich darüber. Es fehlen aufeinanderfolgende höhere Tiefs."
+          }
+        ]
+      }
     },
     {
       "id": "trend-2",
@@ -695,7 +728,40 @@
         "technical/engine/templates.js",
         "docs/technical/TECHNICAL_ASSISTANT.md"
       ],
-      "reading": []
+      "reading": [],
+      "presentation": {
+        "version": 1,
+        "kind": "breakout",
+        "intro": "Ein Breakout ist das Überschreiten einer zuvor festgelegten Begrenzung. Berührung, Bestätigung nach der bestehenden Regel und spätere Entwicklung sind getrennte Beobachtungen.",
+        "why": "Du vermeidest, ein Tageshoch bereits als Bestätigung zu lesen. In Technical zählt die vorhandene, vom Formationstyp abhängige Schlusskursregel.",
+        "mistake": "Ein kurzer Stich über eine Linie wird als bestätigter und dauerhaft erfolgreicher Ausbruch gelesen.",
+        "scenes": [
+          {
+            "id": "touch",
+            "label": "Berührung",
+            "title": "Das Hoch reicht über die Grenze",
+            "observed": "Der obere Kerzendocht liegt über der markierten Begrenzung, der Schlusskurs darunter.",
+            "meaning": "Die Intraday-Bewegung ist sichtbar. Eine Schlusskursbestätigung ist damit nicht automatisch vorhanden.",
+            "description": "Nach einer Seitwärtsspanne überschreitet nur der Docht einer Kerze die waagerechte Begrenzung. Hoch und Schluss sind markiert; der Schluss liegt darunter."
+          },
+          {
+            "id": "close",
+            "label": "Schlusskurs",
+            "title": "Den Schluss mit der Regel vergleichen",
+            "observed": "Die nächste Skizze zeigt einen Schluss oberhalb der Begrenzung.",
+            "meaning": "Ob das als Bestätigung gilt, entscheidet die bestehende typabhängige Regel in der Methodik. Die Grafik legt keine neue Schwelle oder Wartezeit fest.",
+            "description": "Eine Kerze schließt oberhalb der skizzierten Begrenzung. Der Schluss ist beschriftet. Ein Schluss darüber allein ersetzt keine Prüfung der formationsspezifischen Regel."
+          },
+          {
+            "id": "return",
+            "label": "Gegenbeispiel",
+            "title": "Die spätere Entwicklung bleibt offen",
+            "observed": "Auf den Schluss oberhalb der Grenze folgt ein Schluss innerhalb der alten Spanne.",
+            "meaning": "Auch nach gültiger Bestätigung kann ein Kurs zurückkehren. Bestätigung beschreibt einen Zustand; sie beweist keinen künftigen Erfolg.",
+            "description": "Zwei Kerzen folgen aufeinander: die erste schließt über der Begrenzung, die zweite wieder darunter in der alten Spanne. Die Rückkehr ist markiert."
+          }
+        ]
+      }
     },
     {
       "id": "breakout-3",
@@ -937,7 +1003,40 @@
       ],
       "reading": [
         "fidelity-rsi"
-      ]
+      ],
+      "presentation": {
+        "version": 1,
+        "kind": "rsi",
+        "intro": "Der RSI setzt geglättete Aufwärts- und Abwärtsveränderungen ins Verhältnis. Er liegt zwischen 0 und 100. Technical verwendet unter anderem RSI 14 mit Wilders Glättung.",
+        "why": "Der RSI ergänzt den Blick auf den Kurs um dessen jüngeren Schwung. Seine Zonen helfen beim Beschreiben; sie sagen keine sichere Umkehr voraus.",
+        "mistake": "„Überkauft“ wird als sofort fallender Kurs verstanden – oder RSI 75 als 75 Prozent Gewinnchance.",
+        "scenes": [
+          {
+            "id": "scale",
+            "label": "Skala",
+            "title": "Eine Skala, keine Wahrscheinlichkeit",
+            "observed": "Oben siehst du den Kurs, unten eine separate RSI-Skizze. Der markierte Wert 75 liegt über 70.",
+            "meaning": "Oberhalb 70 heißt üblicherweise „überkauft“, unterhalb 30 „überverkauft“. Das sind beschreibende Konventionen, keine Kauf- oder Verkaufsanweisungen.",
+            "description": "Zwei getrennte Bereiche zeigen einen schematischen Kurs und darunter RSI von 0 bis 100. Die Bereiche oberhalb 70 und unterhalb 30 sind schattiert. RSI 75 ist markiert."
+          },
+          {
+            "id": "high",
+            "label": "Länger hoch",
+            "title": "Hoher RSI kann einen Trend begleiten",
+            "observed": "Der Kurs steigt im Ausschnitt weiter. Die RSI-Linie bleibt über mehrere Punkte oberhalb 70.",
+            "meaning": "Die hohe Zone erzwingt keinen fallenden nächsten Schluss. Lies RSI zusammen mit Kursverlauf und Zeitraum.",
+            "description": "Im oberen Bereich steigt der schematische Kurs weiter. Im unteren Bereich bleibt die frei gezeichnete RSI-Linie über mehrere Punkte oberhalb von 70."
+          },
+          {
+            "id": "low",
+            "label": "Gegenbeispiel",
+            "title": "Niedriger RSI stoppt einen Rückgang nicht",
+            "observed": "Der Kurs sinkt weiter, während die RSI-Skizze länger unter 30 liegt.",
+            "meaning": "„Überverkauft“ ist kein Beweis für eine bevorstehende Erholung. RSI ist außerdem keine relative Stärke gegenüber SPY.",
+            "description": "Im oberen Bereich sinkt der schematische Kurs weiter. Im unteren Bereich verbleibt die frei gezeichnete RSI-Linie länger unterhalb von 30."
+          }
+        ]
+      }
     },
     {
       "id": "momentum-3",
