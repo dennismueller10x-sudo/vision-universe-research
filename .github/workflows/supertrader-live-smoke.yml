@@ -14,7 +14,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: supertrader-live-smoke
+  group: supertrader-live-smoke-${{ github.ref_name }}
   cancel-in-progress: true
 jobs:
   smoke:
