@@ -89,7 +89,8 @@ export async function run(){
       const inject=async()=>page.addScriptTag({content:'window.__continuityCapture='+captureSvgEvidence.toString()+';window.__continuityValidate='+validateRenderedEvidence.toString()+';'});
       await inject();
       const identities=await page.evaluate(async()=>{const r=await VUDiscover.europeProduct.browse();if(r.state!=='AVAILABLE')throw Error('EUROPE_CANONICAL_UNIVERSE_REQUIRED');window.__continuityCards=r.data.cards;return r.data.cards.map(c=>({securityId:c.securityId,mic:c.exchange||c.mic||c.europeRef?.mic||'UNKNOWN'}));});
-      assert.equal(identities.length,449);const representatives=new Map();
+      const published=await page.evaluate(()=>VUDiscover.publicEuropeManifest),admittedCount=published.publication?published.publication.admitted:449;report.admitted=admittedCount;report.blocked=(published.publication?.blocked||[]).map(b=>b.securityId);
+      assert.equal(identities.length,admittedCount);const representatives=new Map();
       for(let i=0;i<identities.length;i++){
         const row=await page.evaluate(async id=>{
           const card=window.__continuityCards.find(c=>c.securityId===id),r=await VUDiscover.europeProduct.series({region:'EUROPE',securityId:id},{range:'MAX'});
@@ -101,9 +102,9 @@ export async function run(){
           return {securityId:id,mic:data.mic||card.exchange||card.mic||'UNKNOWN',from:data.from,to:data.to,totalPoints:data.points.length,ranges};
         },identities[i].securityId);
         report.rows.push(row);if(!representatives.has(row.mic))representatives.set(row.mic,row.securityId);
-        if((i+1)%25===0)console.log(JSON.stringify({scenario:key,rendered:i+1,total:449}));
+        if((i+1)%25===0)console.log(JSON.stringify({scenario:key,rendered:i+1,total:admittedCount}));
       }
-      validateUniverse(report.rows);representatives.set('2G_GOLDEN','ref_2GB_DE_XETR');
+      validateUniverse(report.rows,admittedCount);representatives.set('2G_GOLDEN','ref_2GB_DE_XETR');
       async function shot(name){
         async function record(path,kind){const b=await readFile(path);report.screenshots.push({path,kind,bytes:b.length,sha256:createHash('sha256').update(b).digest('hex')});}
         const path=out+'/'+key+'-'+name+'.png';await page.screenshot({path});await record(path,'viewport');

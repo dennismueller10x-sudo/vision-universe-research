@@ -1,7 +1,7 @@
 # TestFlight auf Ihrem iPhone: Einrichtung mit Windows-PC und iPhone, ohne Mac
 
 **Stand:** 03.11.2026 · Ziel: Vision Universe **nur für Sie** über TestFlight auf Ihrem iPhone. **Keine** Store-Veröffentlichung, keine Apple-Prüfung, keine Store-Käufe, keine Änderung an Web, Worker, Datenbank, Stripe oder Passwortmaske.
-Weg: GitHub Actions mit macOS-Runner, manuelle Signierung ([Vergleich](TESTFLIGHT_PLAN.md) §2). Nichts davon wurde bisher ausgeführt, die Pipeline ist **nicht aktiv**.
+Weg: GitHub Actions mit macOS-Runner, manuelle Signierung ([Vergleich](TESTFLIGHT_PLAN.md) §2). Der Capacitor-Prototyp (`app/`) ist auf `main`. Nichts davon wurde bisher ausgeführt, die Pipeline ist **nicht aktiv** (Vorlage unter `app/ci/`).
 Kennzeichnung: **[Sie]** nur Sie · **[Claude]** ich · **[gemeinsam]** Prüfpunkt, den wir zusammen abhaken · **[prüfen]** Angabe aus Apple- oder GitHub-Dokumentation oder meinem Wissen, vor Ort kurz gegenprüfen.
 
 ## Regeln für alle Geheimnisse (gelten in jeder Phase)
@@ -24,23 +24,24 @@ Kennzeichnung: **[Sie]** nur Sie · **[Claude]** ich · **[gemeinsam]** Prüfpun
 | GitHub-Umgebung und Geheimnisse | **Windows-PC im Browser** (die GitHub-App für iPhone kann Umgebungen und Geheimnisse nicht verwalten [prüfen]) |
 | Build auslösen und freigeben | PC oder iPhone (GitHub-App: Workflow starten und Freigabe bestätigen [prüfen]) |
 
-**Vorbereitung am PC:** [Git for Windows](https://git-scm.com/download/win) installieren (Standardoptionen), dann „Git Bash“ öffnen. Ein Arbeitsstand dieses Repositorys wird nur für das Skript gebraucht (`git clone` oder ZIP von GitHub, Branch `claude/mobile-capacitor-prototype`). Den Schlüsselordner **nicht** in diesen Ordner legen (das Skript verhindert es).
+**Vorbereitung am PC:** [Git for Windows](https://git-scm.com/download/win) installieren (Standardoptionen), dann „Git Bash“ öffnen. Ein Arbeitsstand dieses Repositorys wird nur für das Skript gebraucht (`git clone` oder ZIP von GitHub, Branch `main`). Den Schlüsselordner **nicht** in diesen Ordner legen (das Skript verhindert es).
 
 ## Phase 0: Entscheidungen [Sie]
-1. **Einzelperson oder Organisation?** Einzelperson: schnell, Verkäufername später Ihr persönlicher Name. Organisation: D-U-N-S-Nummer, öffentliche Website, Firmen-E-Mail der Domain, Vertretungsbefugnis; Wartezeit ([Apple](https://developer.apple.com/support/enrollment/)). Wechsel später aufwendig [prüfen]. Meine Empfehlung: Organisation, wenn der Store-Start unter dem Firmennamen kommen soll.
-2. **Name und Bundle-ID** `de.visionuniverse.app` (Verfügbarkeit ungeprüft).
+1. **Entschieden (03.11.2026): Organisation, juristische Person RAM Consulting UG.** Im Store soll „Vision Universe“ als Entwickler erscheinen. Voraussetzungen, Optionen und die Anfrage an Apple: [APPLE_DEVELOPER_NAME.md](APPLE_DEVELOPER_NAME.md). **Der erste App-Eintrag (Phase 2, Schritt 2) wird erst angelegt, wenn die Entwicklernamen-Frage geklärt ist**, denn der Name wird dort einmalig und endgültig gesetzt.
+2. **Name und Bundle-ID** `de.visionuniverse.app` (Verfügbarkeit ungeprüft). Die Bundle-ID legt den Entwicklernamen nicht fest.
 
-## Phase 1: Apple Developer Program [Sie, iPhone oder PC]
-1. [Einschreiben](https://developer.apple.com/programs/enroll/) mit Apple-Kennung (Zwei-Faktor an), 99 USD pro Jahr.
+## Phase 1: Apple Developer Program [Sie, PC]
+Organisation: Einschreibung nur im Web. Vorab D-U-N-S, Firmen-E-Mail der eigenen Domain, Website, Vertretungsbefugnis bereitlegen (Liste in [APPLE_DEVELOPER_NAME.md](APPLE_DEVELOPER_NAME.md) §5).
+1. [Einschreiben](https://developer.apple.com/programs/enroll/) als Organisation (RAM Consulting UG), Apple-Kennung mit Zwei-Faktor, 99 USD pro Jahr.
 2. In App Store Connect die **Verträge** akzeptieren [prüfen].
 3. **Team-ID** notieren (Mitgliedschaft im Developer-Portal, 10 Zeichen). Das ist kein Geheimnis im engeren Sinn, kommt aber nur in GitHub Secrets.
 
 ## Phase 2: Bundle-ID und App-Eintrag [Sie, PC]
 1. Developer-Portal, **Identifiers**, **+**, **App IDs**, **App**, Explicit `de.visionuniverse.app`, keine Capabilities.
-2. App Store Connect, **Apps**, **+**, Neue App: iOS, Name, Deutsch, Bundle-ID, SKU frei (z. B. `vu-app-001`).
-3. **TestFlight**, **Interne Tests**, Gruppe „Intern“, sich selbst hinzufügen.
+2. **NICHT JETZT.** Erst nach Klärung des Entwicklernamens: App Store Connect, **Apps**, **+**, Neue App: iOS, Name, Deutsch, Bundle-ID, SKU frei (z. B. `vu-app-001`), im Feld **Company Name** genau den geklärten Entwicklernamen. Der Name ist danach nicht mehr änderbar. Kein „Probe-Eintrag“.
+3. Nach dem App-Eintrag: **TestFlight**, **Interne Tests**, Gruppe „Intern“, sich selbst hinzufügen. Die Phasen 3 bis 5 brauchen den App-Eintrag nicht und können vorher laufen.
 
-## Phase 3: Zertifikat und Profil [Sie, PC, Git Bash]
+## Phase 3: Zertifikat und Profil [Sie, PC, Git Bash] (ohne App-Eintrag möglich)
 ```bash
 cd <Ordner mit dem Repository>
 bash app/ci/make-signing-request.sh csr <Ihre-Apple-ID-E-Mail>
@@ -78,7 +79,7 @@ Bevor ich die Pipeline aktiviere, gehen wir diese Punkte durch. Sie nennen mir n
 |---|---|---|
 | A1 | Mitgliedschaft aktiv, Verträge akzeptiert | Developer-Portal zeigt Mitgliedschaft, App Store Connect ohne Vertragsbanner |
 | A2 | App-ID `de.visionuniverse.app` explizit | Identifiers-Liste |
-| A3 | App-Eintrag vorhanden | Apps-Liste |
+| A3 | App-Eintrag vorhanden, **erst nach geklärtem Entwicklernamen angelegt** | Apps-Liste |
 | A4 | Gruppe „Intern“ enthält Sie | TestFlight, Interne Tests |
 | A5 | Distribution-Zertifikat gültig, Ablaufdatum notiert | Certificates |
 | A6 | Profil „VU App Store“ Typ App Store, gehört zu A2 und A5 | Profiles |
@@ -90,7 +91,7 @@ Bevor ich die Pipeline aktiviere, gehen wir diese Punkte durch. Sie nennen mir n
 | G5 | Kein Geheimnis im Repository (`app/tests/guards.test.mjs` grün, GitHub „Secret scanning“ an, falls verfügbar) | CI, Security |
 
 ## Phase 7: Aktivierung und Vorprüflauf [Claude, Sie geben frei]
-1. **[Sie]** PR #1280 freigeben (Merge).
+1. *(erledigt: der Capacitor-Prototyp ist auf `main`)*
 2. **[Claude]** Kleiner Folge-PR: Vorlage nach `.github/workflows/app-ios-testflight.yml`, Wächtertests (`workflow-environments`, Konten-CI), **kein** Lauf.
 3. **[Sie]** Folge-PR freigeben.
 4. **[Sie]** Actions, „App - iOS TestFlight (intern, von Hand)“, **Run workflow**, `main`, Haken **preflight_only** (Standard) an. Umgebungsfreigabe bestätigen.
