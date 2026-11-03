@@ -125,5 +125,15 @@ test("DEBT7 · Faktorevidenz: Grundgesamtheit ist das Produktuniversum, Anleihen
   if (tmus && tmus.fundamentalsAsOf) assert.ok(Number.isFinite(tmus.marketCap), "TMUS ohne Boersenwert");
   const summary = json("quant/data/product/factor-evidence-v1/summary.json");
   const cov = summary.coverage || summary.counts || {};
-  assert.equal(cov.productUniverse, json("quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json").actualSize);
+  /* Seit dem 31.10.2026 (b0efb459e5) zaehlt der Erzeuger wiederverwendete
+     Kuerzel (quant/config/ticker-reuse-quarantine.json) nicht mehr zur
+     Faktor-Grundgesamtheit: sie bleiben Mitglied des Universums, bekommen aber
+     keine Faktorzeile und stehen getrennt unter identityQuarantined. Die
+     Grundgesamtheit ist also das Universum ohne genau diese Titel - nicht
+     mehr und nicht weniger. */
+  const universum = json("quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json");
+  const register = new Set(json("quant/config/ticker-reuse-quarantine.json").records.map((r) => r.securityId));
+  const imRegister = (universum.securities || []).filter((s) => register.has(s.securityId || s.m)).length;
+  assert.equal(cov.identityQuarantined ?? 0, imRegister, "markierte Titel: Erzeuger und Register uneins");
+  assert.equal(cov.productUniverse + (cov.identityQuarantined ?? 0), universum.actualSize);
 });
