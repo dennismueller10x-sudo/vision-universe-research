@@ -8,7 +8,7 @@ import {join} from 'node:path';
 import {createRequire} from 'node:module';
 import {createHash} from 'node:crypto';
 const require=createRequire(import.meta.url);
-const Calendar=require('../europe-exchange-calendar.js'),Sessions=require('../europe-session-proof.js'),Admission=require('../europe-discover-eligibility.js'),Market=require('../europe-market-data.js');
+const Calendar=require('../europe-exchange-calendar.js'),Sessions=require('../europe-session-proof.js'),Admission=require('../europe-discover-eligibility.js'),Market=require('../europe-market-data.js'),Isolation=require('../europe-publication-isolation.js');
 const root=new URL('../../',import.meta.url).pathname;
 const R=await import(join(root,'scripts/marketstack/europe-discover-refresh.mjs'));
 const NOW='2026-11-03T18:00:00.000Z'; // dry-run only
@@ -73,13 +73,36 @@ test('dry run estimates one request and one reserved credit per listing, within 
 // newest session, 18:00 UTC, so the test stays valid after every refresh.
 function runDate(b){const last=b.catalog.securities.map(x=>x.listings[0].discoverChart.lastDate).sort().at(-1);return new Date(Date.parse(last)+10*86400000).toISOString().slice(0,10)+'T18:00:00.000Z';}
 
-test('a listing that cannot be refreshed fails the whole publication (all-449 contract) and is reported',async()=>{
+test('a listing that cannot be refreshed is published as BLOCKED with its reason; the other 448 must each pass every gate',async()=>{
  const b=await base(),now=runDate(b),out=await mkdtemp(join(tmpdir(),'eu-refresh-')),priv=await mkdtemp(join(tmpdir(),'eu-refresh-private-')),report=join(out,'..',out.split('/').pop()+'-report.json');
  const conflict=b.catalog.securities.find(s=>s.listings[0].mic==='XAMS').securityId;
  try{
-  await assert.rejects(R.refreshPublication({root,out,privateDir:join(priv,'run'),now,apiKey:'test-key',reportPath:report,fetchImpl:transport(b.catalog,{now,conflict:new Set([conflict])}),sleep:async()=>{}}),/CURRENT_SESSION_GATE_FAILED:1:/);
-  const r=JSON.parse(await readFile(report,'utf8'));
+  const r=await R.refreshPublication({root,out,privateDir:join(priv,'run'),now,apiKey:'test-key',reportPath:report,fetchImpl:transport(b.catalog,{now,conflict:new Set([conflict])}),sleep:async()=>{}});
+  assert.equal(r.failure,null);assert.equal(r.admitted,448);
   assert.deepEqual(r.held.map(h=>[h.securityId,h.reason]),[[conflict,'OVERLAP_CLOSE_CONFLICT']]);
+  assert.deepEqual(r.blocked.map(x=>[x.securityId,x.reasonClass,x.reasonCode]),[[conflict,'PRICE_DISCONTINUITY_UNRESOLVED','OVERLAP_CLOSE_CONFLICT']]);
+  const manifest=JSON.parse(await readFile(join(out,'manifest.json'),'utf8')),catalog=JSON.parse(await readFile(join(out,'catalog.json'),'utf8')),calendar=JSON.parse(await readFile(join(out,'calendar.json'),'utf8'));
+  const sha=x=>createHash('sha256').update(x).digest('hex');
+  assert.equal(sha(await readFile(join(out,'catalog.json'))),manifest.catalog.sha256);
+  const p=Isolation.verify(manifest,catalog,sha);assert.equal(p.admitted.length,448);assert.deepEqual(p.blocked.map(x=>x.securityId),[conflict]);
+  assert.equal(catalog.securities.length,449,'the universe stays complete');assert.equal(Object.keys(manifest.series).length,449);
+  const projected=Sessions.refreshCatalog(catalog,calendar,{now});
+  for(const s of projected.securities){const e=Admission.evaluate(s,s.listings[0],now);assert.equal(e.DISCOVER_ELIGIBLE,s.securityId!==conflict,s.securityId);}
+  const s=projected.securities.find(x=>x.securityId===conflict),e=Admission.evaluate(s,s.listings[0],now);assert.ok(e.discoverReasonCodes.includes('PUBLICATION_BLOCKED'));
+  // A blocked security never gets a chart or a price, even though its old hash-bound series stays the refresh baseline.
+  const client=Market.create({catalog:projected,rights:manifest.rights,audience:'public',now,usClient:{},loadSeries:async q=>{const binding=q.range==='1Y'?manifest.series[q.securityId]:manifest.history[q.securityId][q.range];return JSON.parse(await readFile(join(out,binding.url.replace('/discover/data/europe/','')),'utf8'));}});
+  const ref={region:'EUROPE',securityId:conflict};for(const range of ['1Y','MAX'])assert.notEqual((await client.getPriceSeries(ref,{range})).state,'AVAILABLE');assert.notEqual((await client.getLatestPrice(ref)).state,'AVAILABLE');
+  // Even a valid chart proof is refused once the publication blocks the listing.
+  const lifted=structuredClone(projected.securities.find(x=>x.securityId!==conflict));assert.ok(Admission.evaluate(lifted,lifted.listings[0],now).DISCOVER_ELIGIBLE);lifted.listings[0].discoverPublication={status:'BLOCKED',reasonClass:'ADMISSION_CHECK_FAILED',reasonCode:'TEST'};assert.equal(Admission.evaluate(lifted,lifted.listings[0],now).DISCOVER_ELIGIBLE,false);
+ }finally{await rm(out,{recursive:true,force:true});await rm(priv,{recursive:true,force:true});await rm(report,{force:true});}
+});
+
+test('more than 22 blocked securities (5 % of 449) abort the whole publication; nothing is written',async()=>{
+ const b=await base(),now=runDate(b),out=await mkdtemp(join(tmpdir(),'eu-refresh-')),priv=await mkdtemp(join(tmpdir(),'eu-refresh-private-')),report=join(out,'..',out.split('/').pop()+'-report.json');
+ const many=new Set(b.catalog.securities.slice(0,23).map(s=>s.securityId));
+ try{
+  await assert.rejects(R.refreshPublication({root,out,privateDir:join(priv,'run'),now,apiKey:'test-key',reportPath:report,fetchImpl:transport(b.catalog,{now,conflict:many}),sleep:async()=>{}}),/BLOCKED_SHARE_LIMIT_EXCEEDED:23>22/);
+  const r=JSON.parse(await readFile(report,'utf8'));assert.equal(r.blocked.length,23);
   await assert.rejects(readFile(join(out,'manifest.json')),'nothing is published');
  }finally{await rm(out,{recursive:true,force:true});await rm(priv,{recursive:true,force:true});await rm(report,{force:true});}
 });
@@ -98,6 +121,7 @@ test('append-only refresh keeps every old price, binds the new calendar and pass
   const raw=await readFile(join(out,'catalog.json'),'utf8');assert.ok(!raw.includes('test-key')&&!raw.includes('access_key'));
   const projected=Sessions.refreshCatalog(catalog,calendar,{now});
   assert.deepEqual(projected.securities.filter(s=>!Admission.evaluate(s,s.listings[0],now).DISCOVER_ELIGIBLE).map(s=>s.securityId),[]);
+  assert.equal(manifest.publication.admitted,449);assert.deepEqual(manifest.publication.blocked,[]);
   const s=projected.securities.find(x=>x.securityId===rhm),p=s.listings[0].discoverChart,expected=Calendar.sessions('XETR',p.lastDate,now.slice(0,10)).filter(x=>Date.parse(x.close)<=Date.parse(now)).at(-1).date;
   assert.equal(p.lastDate,expected);assert.equal(p.sessionLag,0);assert.ok(p.calendarProof.coverageTo>now.slice(0,10));
   const one=JSON.parse(await readFile(join(out,'series',rhm+'.json'),'utf8')),long=JSON.parse(await readFile(join(out,'series-long',rhm+'.json'),'utf8'));
