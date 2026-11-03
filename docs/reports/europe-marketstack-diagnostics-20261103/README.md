@@ -67,4 +67,9 @@ This run closes the Marketstack gap analysis from #1285. The negative findings a
 - **The 11,463-credit follow-up run is NOT approved.** The 459-request plan in `../europe-marketstack-gap-analysis-20261103/` stays unexecuted.
 - **Paris:** a provider symbol change from `.PA` to `.XPAR` is suspected but not yet proven (ISIN, MIC and overlap closes are unchecked). It is being checked separately, and nothing enters the producer path before that proof exists.
 
+## Related
+
+- **PR #1297 (support report):** offline impact report on the European gaps and a support request to Marketstack, built on this run (billing figures from run 41661792038). Folder `docs/reports/europe-marketstack-support-report-20261103/` on that branch. It is a separate PR and is not part of this one.
+- Plan and gap clusters: [`../europe-marketstack-gap-analysis-20261103/`](../europe-marketstack-gap-analysis-20261103/README.md).
+
 No gate, test, calendar, identity, quarantine or generated artifact was changed by this report.
