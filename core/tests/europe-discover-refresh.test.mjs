@@ -11,19 +11,19 @@ const require=createRequire(import.meta.url);
 const Calendar=require('../europe-exchange-calendar.js'),Sessions=require('../europe-session-proof.js'),Admission=require('../europe-discover-eligibility.js'),Market=require('../europe-market-data.js');
 const root=new URL('../../',import.meta.url).pathname;
 const R=await import(join(root,'scripts/marketstack/europe-discover-refresh.mjs'));
-const NOW='2026-11-03T18:00:00.000Z';
+const NOW='2026-11-03T18:00:00.000Z'; // dry-run only
 let baseline;
 async function base(){return baseline??=await R.loadBaseline(root);}
 
 /** Synthetic Marketstack /eod transport: overlap row with the published close
  * plus one row per completed session; values are test fixtures only. */
-function transport(catalog,{conflict=new Set(),skipDates=new Map(),jump=new Set()}={}){
+function transport(catalog,{now=NOW,conflict=new Set(),skipDates=new Map(),jump=new Set()}={}){
  const last=new Map(catalog.securities.map(s=>[s.listings[0].providerSymbol+'@'+s.listings[0].mic,s]));
  return async url=>{
   const u=new URL(url),symbol=u.searchParams.get('symbols'),mic=u.searchParams.get('exchange'),from=u.searchParams.get('date_from'),to=u.searchParams.get('date_to'),s=last.get(symbol+'@'+mic);
   const series=JSON.parse(await readFile(join(root,'discover/data/europe/series/'+s.securityId+'.json'),'utf8')),close=series.points.at(-1)[1];
-  const days=Calendar.sessions(mic,from,to).filter(x=>Date.parse(x.close)<=Date.parse(NOW)).map(x=>x.date).filter(d=>!(skipDates.get(s.securityId)||[]).includes(d));
-  const data=days.map((d,i)=>{const c=d===from?(conflict.has(s.securityId)?close+1:close):+(close*(jump.has(s.securityId)&&i===1?3:1+i/1000)).toFixed(4);
+  const days=Calendar.sessions(mic,from,to).filter(x=>Date.parse(x.close)<=Date.parse(now)).map(x=>x.date).filter(d=>!(skipDates.get(s.securityId)||[]).includes(d));
+  const data=days.map((d,i)=>{const c=d===from?(conflict.has(s.securityId)?close+1:close):+(close*(jump.has(s.securityId)&&i===days.length-1?3:1+i/1000)).toFixed(4);
    return {open:c,high:c,low:c,close:c,volume:1000,adj_close:c,split_factor:1,dividend:0,name:s.name,exchange_code:mic,asset_type:'Stock',price_currency:s.listings[0].currency.toLowerCase(),symbol,exchange:mic,date:d+'T00:00:00+0000'};});
   return {status:200,headers:{get:()=>null},text:async()=>JSON.stringify({pagination:{limit:1000,offset:0,count:data.length,total:data.length},data})};
  };
@@ -64,39 +64,55 @@ test('the published calendar keeps every listing evaluable today (coverage must 
 
 test('dry run estimates one request and one reserved credit per listing, within the cap',async()=>{
  const out=await mkdtemp(join(tmpdir(),'eu-refresh-'));
- try{const r=await R.refreshPublication({root,out,now:NOW,dryRun:true});
+ try{const r=await R.refreshPublication({root,out,now:runDate(await base()),dryRun:true});
   assert.equal(r.listings,449);assert.equal(r.plan.requests,449);assert.equal(r.plan.credits,449);assert.ok(r.plan.worstCaseCredits<=R.REFRESH_LIMITS.hardCap);
  }finally{await rm(out,{recursive:true,force:true});}
 });
 
-test('append-only refresh keeps every old price, binds the new calendar and passes the unchanged gates',async()=>{
- const b=await base(),out=await mkdtemp(join(tmpdir(),'eu-refresh-')),priv=await mkdtemp(join(tmpdir(),'eu-refresh-private-'));
- const rhm='ref_RHM_DE_XETR',skip=b.catalog.securities.find(s=>s.listings[0].mic==='XPAR').securityId,conflict=b.catalog.securities.find(s=>s.listings[0].mic==='XAMS').securityId,jump=b.catalog.securities.find(s=>s.listings[0].mic==='XMIL').securityId;
+// Run date derived from the committed baseline: ten calendar days after its
+// newest session, 18:00 UTC, so the test stays valid after every refresh.
+function runDate(b){const last=b.catalog.securities.map(x=>x.listings[0].discoverChart.lastDate).sort().at(-1);return new Date(Date.parse(last)+10*86400000).toISOString().slice(0,10)+'T18:00:00.000Z';}
+
+test('a listing that cannot be refreshed fails the whole publication (all-449 contract) and is reported',async()=>{
+ const b=await base(),now=runDate(b),out=await mkdtemp(join(tmpdir(),'eu-refresh-')),priv=await mkdtemp(join(tmpdir(),'eu-refresh-private-')),report=join(out,'..',out.split('/').pop()+'-report.json');
+ const conflict=b.catalog.securities.find(s=>s.listings[0].mic==='XAMS').securityId;
  try{
-  const r=await R.refreshPublication({root,out,privateDir:join(priv,'run'),now:NOW,apiKey:'test-key',fetchImpl:transport(b.catalog,{conflict:new Set([conflict]),jump:new Set([jump]),skipDates:new Map([[skip,['2026-10-20']]])}),sleep:async()=>{}});
-  assert.equal(r.run.requests,449);assert.equal(r.run.reservedCredits,449);
-  assert.deepEqual(r.held.map(h=>[h.securityId,h.reason]).sort(),[[conflict,'OVERLAP_CLOSE_CONFLICT'],[jump,'TAIL_CRITICAL_CLOSE_ISSUE']].sort());
+  await assert.rejects(R.refreshPublication({root,out,privateDir:join(priv,'run'),now,apiKey:'test-key',reportPath:report,fetchImpl:transport(b.catalog,{now,conflict:new Set([conflict])}),sleep:async()=>{}}),/CURRENT_SESSION_GATE_FAILED:1:/);
+  const r=JSON.parse(await readFile(report,'utf8'));
+  assert.deepEqual(r.held.map(h=>[h.securityId,h.reason]),[[conflict,'OVERLAP_CLOSE_CONFLICT']]);
+  await assert.rejects(readFile(join(out,'manifest.json')),'nothing is published');
+ }finally{await rm(out,{recursive:true,force:true});await rm(priv,{recursive:true,force:true});await rm(report,{force:true});}
+});
+
+test('append-only refresh keeps every old price, binds the new calendar and passes the unchanged gates',async()=>{
+ const b=await base(),now=runDate(b),out=await mkdtemp(join(tmpdir(),'eu-refresh-')),priv=await mkdtemp(join(tmpdir(),'eu-refresh-private-'));
+ const rhm='ref_RHM_DE_XETR',skip=b.catalog.securities.find(s=>s.listings[0].mic==='XPAR').securityId,jump=b.catalog.securities.find(s=>s.listings[0].mic==='XMIL').securityId;
+ const skipMic=b.catalog.securities.find(s=>s.securityId===skip).listings[0].mic,skipFrom=b.catalog.securities.find(s=>s.securityId===skip).listings[0].discoverChart.lastDate;
+ const skipDay=Calendar.sessions(skipMic,skipFrom,now.slice(0,10))[2].date;
+ let calls=0;const flaky=transport(b.catalog,{now,jump:new Set([jump]),skipDates:new Map([[skip,[skipDay]]])}),fetchImpl=async url=>{calls++;if(calls===3)return {status:500,headers:{get:()=>null},text:async()=>JSON.stringify({error:{code:500,type:'internal_error'}})};return flaky(url);};
+ try{
+  const r=await R.refreshPublication({root,out,privateDir:join(priv,'run'),now,apiKey:'test-key',fetchImpl,sleep:async()=>{}});
+  assert.equal(r.run.requests,450,'449 listings plus one bounded retry');assert.deepEqual(r.held,[]);
   const manifest=JSON.parse(await readFile(join(out,'manifest.json'),'utf8')),catalog=JSON.parse(await readFile(join(out,'catalog.json'),'utf8')),calendar=JSON.parse(await readFile(join(out,'calendar.json'),'utf8'));
-  assert.equal(catalog.securities.length,449);
   assert.deepEqual(catalog.securities.map(s=>s.securityId),b.catalog.securities.map(s=>s.securityId),'same European coverage');
   const raw=await readFile(join(out,'catalog.json'),'utf8');assert.ok(!raw.includes('test-key')&&!raw.includes('access_key'));
-  const now=NOW,projected=Sessions.refreshCatalog(catalog,calendar,{now});
-  const rows=projected.securities.map(s=>[s.securityId,Admission.evaluate(s,s.listings[0],now)]);
-  assert.deepEqual(rows.filter(([,e])=>!e.DISCOVER_ELIGIBLE).map(([id])=>id).sort(),[conflict,jump].sort(),'only held listings turn stale');
-  const s=projected.securities.find(x=>x.securityId===rhm),p=s.listings[0].discoverChart;
-  assert.equal(p.lastDate,'2026-11-03');assert.equal(p.sessionLag,0);assert.equal(p.calendarProof.coverageTo>'2026-11-03',true);
+  const projected=Sessions.refreshCatalog(catalog,calendar,{now});
+  assert.deepEqual(projected.securities.filter(s=>!Admission.evaluate(s,s.listings[0],now).DISCOVER_ELIGIBLE).map(s=>s.securityId),[]);
+  const s=projected.securities.find(x=>x.securityId===rhm),p=s.listings[0].discoverChart,expected=Calendar.sessions('XETR',p.lastDate,now.slice(0,10)).filter(x=>Date.parse(x.close)<=Date.parse(now)).at(-1).date;
+  assert.equal(p.lastDate,expected);assert.equal(p.sessionLag,0);assert.ok(p.calendarProof.coverageTo>now.slice(0,10));
   const one=JSON.parse(await readFile(join(out,'series',rhm+'.json'),'utf8')),long=JSON.parse(await readFile(join(out,'series-long',rhm+'.json'),'utf8'));
   const oldLong=b.long.get(rhm);assert.deepEqual(long.points.slice(0,oldLong.points.length),oldLong.points,'old prices unchanged');
-  assert.equal(one.points[0][0]>'2025-11-03',true);assert.equal(one.points.at(-1)[0],'2026-11-03');
+  assert.equal(one.points.at(-1)[0],expected);assert.ok(one.points[0][0]>(+expected.slice(0,4)-1)+expected.slice(4));
   for(const range of ['1Y','MAX'])assert.ok(Admission.evaluate(s,s.listings[0],now,range).DISCOVER_ELIGIBLE,range);
   // A skipped provider day becomes a visible segment break, never an invented price.
   const sk=JSON.parse(await readFile(join(out,'series-long',skip+'.json'),'utf8'));
-  assert.ok(!sk.points.some(x=>x[0]==='2026-10-20'));assert.ok(sk.segments.some(g=>g[0][0]==='2026-10-21'));
-  // Held listings keep byte-identical prices.
-  assert.equal(manifest.series[conflict].sha256,b.manifest.series[conflict].sha256);
+  assert.ok(!sk.points.some(x=>x[0]===skipDay));assert.ok(sk.segments.some(g=>g[0][0]>skipDay&&g[0][0]===sk.points.find(x=>x[0]>skipDay)[0]));
+  // An unexplained jump on the newest day is not published; earlier verified days are.
+  const j=projected.securities.find(x=>x.securityId===jump).listings[0].discoverChart,jl=JSON.parse(await readFile(join(out,'series-long',jump+'.json'),'utf8'));
+  assert.equal(j.sessionLag,1);assert.equal(j.ranges.MAX.refresh.reason,'UNEXPLAINED_CLOSE_DISCONTINUITY');assert.ok(jl.points.at(-1)[0]<j.ranges.MAX.refresh.unpublishedFrom);
   // The public client accepts the refreshed hash-bound series for 1Y and MAX.
   const client=Market.create({catalog:projected,rights:manifest.rights,audience:'public',now,usClient:{},loadSeries:async q=>{const binding=q.range==='1Y'?manifest.series[q.securityId]:manifest.history[q.securityId][q.range];return JSON.parse(await readFile(join(out,binding.url.replace('/discover/data/europe/','')),'utf8'));}});
   const ref={region:'EUROPE',securityId:rhm,listingId:s.listings[0].listingId};
-  for(const range of ['1Y','MAX']){const res=await client.getPriceSeries(ref,{range});assert.equal(res.state,'AVAILABLE',range+' '+res.reason);assert.equal(res.data.points.at(-1)[0],'2026-11-03');}
+  for(const range of ['1Y','MAX']){const res=await client.getPriceSeries(ref,{range});assert.equal(res.state,'AVAILABLE',range+' '+res.reason);assert.equal(res.data.points.at(-1)[0],expected);}
  }finally{await rm(out,{recursive:true,force:true});await rm(priv,{recursive:true,force:true});}
 });

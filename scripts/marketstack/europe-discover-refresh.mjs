@@ -31,7 +31,7 @@ const sha=b=>createHash('sha256').update(b).digest('hex'),hash=v=>sha(JSON.strin
 const DAY=86400000,shift=(d,n)=>new Date(Date.parse(d)+n*DAY).toISOString().slice(0,10);
 // Conservative reservation: one credit per listing request; 449 listings plus
 // at most one extra page each still stays below the hard cap.
-export const REFRESH_LIMITS=Object.freeze({defaultMaxCredits:600,hardCap:1000,maxPagesPerListing:2,maxHeld:22});
+export const REFRESH_LIMITS=Object.freeze({defaultMaxCredits:600,hardCap:1000,maxPagesPerListing:2,retryPasses:1});
 export const CALENDAR_SOURCE_SHA256=hash({version:Calendar.VERSION,rules:Calendar.RULES,window:Calendar.WINDOW});
 const visualStatus=q=>q.breaks.some(b=>['UNKNOWN_BREAK','UNSAFE_BREAK'].includes(b.classification))?'CHART_BLOCKED':q.largeGapCount===0&&q.breaks.length===0&&q.missingRatio<=CONTINUITY.readyMissingRatio?'CHART_READY':'CHART_LIMITED';
 const yearBefore=d=>(+d.slice(0,4)-1)+d.slice(4);
@@ -74,14 +74,22 @@ export async function collect({operations,apiKey,fetchImpl,privateDir,maxCredits
   writeFileSync(join(out,'raw',id+'.json.gz'),gzipSync(bytes),{flag:'wx',mode:0o600});
   const meta={id,sha256:sha(bytes),status:response.status,endpoint:response.endpoint,params:response.params,host:response.host,apiVersion:response.apiVersion,retrievedAt:response.retrievedAt};
   writeFileSync(join(out,'raw',id+'.meta.json'),JSON.stringify(meta)+'\n',{flag:'wx',mode:0o600});current.push({meta,body:response.body});}});
- const results=new Map();let terminal=null;
- for(const op of operations){
+ const results=new Map();let terminal=null;const FATAL=['authError','quotaExceeded','budgetExceeded','EUROPE_RUN_BUDGET_EXCEEDED','budgetReservationFailed','accountingPersistenceFailed','responsePersistenceFailed','notConfigured','entitlementRestricted'];
+ // One bounded retry pass for transient provider failures (each retry is
+ // reserved against the same credit cap; fatal account errors stop the run).
+ let pending=operations;
+ for(let pass=0;pass<=REFRESH_LIMITS.retryPasses&&pending.length&&!terminal;pass++){
+ if(pass&&sleep)await sleep(5000);else if(pass)await new Promise(r=>setTimeout(r,5000));
+ const failed=[];
+ for(const op of pending){
   current=[];
   if(terminal){results.set(op.securityId,{ok:false,reason:terminal});continue;}
   const res=await api.getHistoricalEOD(op.listing,{from:op.from,to:op.to,limit:1000,maxPages:REFRESH_LIMITS.maxPagesPerListing});
-  if(!res.ok){if(['authError','quotaExceeded','budgetExceeded','EUROPE_RUN_BUDGET_EXCEEDED','budgetReservationFailed','accountingPersistenceFailed','responsePersistenceFailed','notConfigured'].includes(res.reason))terminal=res.reason;results.set(op.securityId,{ok:false,reason:res.reason||'REQUEST_FAILED'});continue;}
+  if(!res.ok){const reason=(res.reason||'REQUEST_FAILED')+(res.providerErrorType?':'+res.providerErrorType:'')+(res.status?':HTTP'+res.status:'');if(FATAL.includes(res.reason))terminal=res.reason;else failed.push(op);results.set(op.securityId,{ok:false,reason,attempts:pass+1});continue;}
   const responses=current.map(c=>c.meta),observations=res.data.map(o=>{const page=current.find(c=>Array.isArray(c.body?.data)&&c.body.data.some(r=>hash(r)===hash(o.raw)));if(!page)throw Error('RAW_NORMALIZED_OBSERVATION_BINDING');return {...o,provenance:{rawResponseId:page.meta.id,rawSha256:page.meta.sha256,normalizedSha256:hash(res.data),responses}};});
-  results.set(op.securityId,{ok:true,complete:res.complete===true,observations,responses});
+  results.set(op.securityId,{ok:true,complete:res.complete===true,observations,responses,attempts:pass+1});
+ }
+ pending=failed;
  }
  const status=budget.status();budget.close();
  const summary={requests:status.requests,reservedCredits:status.estimatedCredits,actualBilledCredits:'UNKNOWN',terminalReason:terminal,responses:sequence};
@@ -134,7 +142,7 @@ export function mergeRefresh({baseline,results,now,runSummary}){
  for(const s of catalog.securities){
   const l=s.listings[0],base=l.discoverChart,maxOld=base.ranges.MAX,long=baseline.long.get(s.securityId),one=baseline.series.get(s.securityId),r=results.get(s.securityId),cal=full[l.mic];
   const before={securityId:s.securityId,name:s.name,ticker:l.ticker,mic:l.mic,currency:l.currency,lastDate:base.lastDate,lastClose:one.points.at(-1)[1],observations1Y:one.points.length};
-  let hold=null,tail=[],evaluated=null;
+  let hold=null,tail=[],evaluated=null,criticalIssues=[],truncatedBefore=null;
   if(!r?.ok)hold='PROVIDER_REQUEST_FAILED:'+(r?.reason||'MISSING');
   else if(!r.complete)hold='PROVIDER_PAGINATION_INCOMPLETE';
   if(!hold){
@@ -142,8 +150,19 @@ export function mergeRefresh({baseline,results,now,runSummary}){
    const overlap=r.observations.filter(o=>o.normalized.tradingDate===base.lastDate);
    if(overlap.some(o=>Number(o.raw.close)!==one.points.at(-1)[1]))hold='OVERLAP_CLOSE_CONFLICT';
    else{
-    evaluated=evaluateCloseChart({listing,observations:r.observations.filter(o=>o.normalized.tradingDate>base.lastDate),calendar:cal,now,excludedQuarantineDates:[]});
-    if(evaluated.criticalIssues.length)hold='TAIL_CRITICAL_CLOSE_ISSUE';
+    const newer=r.observations.filter(o=>o.normalized.tradingDate>base.lastDate);
+    evaluated=evaluateCloseChart({listing,observations:newer,calendar:cal,now,excludedQuarantineDates:[]});
+    if(evaluated.criticalIssues.length){
+     // An unexplained break is never repaired or joined: only the verified
+     // observations before the first critical date may be appended; the
+     // break and everything after it stay unpublished.
+     criticalIssues=evaluated.criticalIssues.map(i=>({code:i.code,date:i.date,previousDate:i.previousDate,ratio:i.ratio}));
+     const cut=criticalIssues.map(i=>i.date).filter(Boolean).sort()[0];
+     const before=cut?newer.filter(o=>o.normalized.tradingDate<cut):[];
+     evaluated=before.length?evaluateCloseChart({listing,observations:before,calendar:cal,now,excludedQuarantineDates:[]}):null;
+     if(!evaluated||evaluated.criticalIssues.length||!evaluated.points.length)hold='TAIL_CRITICAL_CLOSE_ISSUE';
+     else{tail=evaluated.points;truncatedBefore=cut;}
+    }
     else tail=evaluated.points;
     const first=tail[0];if(!hold&&first){const ratio=first[1]/long.points.at(-1)[1];if(ratio>=2||ratio<=0.5)hold='UNEXPLAINED_CLOSE_DISCONTINUITY_AT_JOIN';}
    }
@@ -162,7 +181,7 @@ export function mergeRefresh({baseline,results,now,runSummary}){
    // the unchanged freshness gate can evaluate (and block) the stale listing.
    const bind=p=>{p.calendarMigration={previousSha256:p.calendarSourceSha256,sourceSha256:CALENDAR_SOURCE_SHA256,kind:'RULE_CALENDAR_REPRODUCES_PREVIOUS_SCHEDULE'};p.calendarSource=cal.source;p.calendarSourceSha256=CALENDAR_SOURCE_SHA256;};
    bind(base);Object.values(base.ranges).forEach(bind);Object.values(l.discoverDisplay.ranges).forEach(w=>{w.calendarSha256=CALENDAR_SOURCE_SHA256;});
-   rows.push({before,after:{...before,status:'HELD',reason:hold}});continue;
+   rows.push({before,after:{...before,status:'HELD',reason:hold,providerAttempts:r?.attempts??0,criticalIssues}});continue;
   }
   // MAX: append real observations; a missing session starts a new segment
   // exactly as the Close evaluator does.
@@ -172,7 +191,7 @@ export function mergeRefresh({baseline,results,now,runSummary}){
   const maxProof={...maxOld,pointsSha256:hash(points),segmentsSha256:hash(segments),lastDate:points.at(-1)[0],observationCount:points.length,spanDays:(Date.parse(points.at(-1)[0])-Date.parse(points[0][0]))/DAY,chartStatus:limited&&maxOld.chartStatus==='CHART_READY'?'CHART_LIMITED':maxOld.chartStatus,
    calendarSource:cal.source,calendarSourceSha256:CALENDAR_SOURCE_SHA256,evaluatedAt:now,sourceEvaluatedAt:now,sourceInputSha256:hash({previous:maxOld.sourceInputSha256,refresh:evaluated.sourceInputSha256}),
    calendarMigration:{previousSha256:maxOld.calendarSourceSha256,sourceSha256:CALENDAR_SOURCE_SHA256,kind:'RULE_CALENDAR_REPRODUCES_PREVIOUS_SCHEDULE'},
-   refresh:{kind:'APPEND_ONLY_AUTHENTICATED_CLOSE',previousLastDate:tailInfo.previousLast,appended:tail.length,missingSessions:tailInfo.missingSessions,rejected:rejected.length}};
+   refresh:{kind:'APPEND_ONLY_AUTHENTICATED_CLOSE',previousLastDate:tailInfo.previousLast,appended:tail.length,missingSessions:tailInfo.missingSessions,rejected:rejected.length,...(truncatedBefore?{unpublishedFrom:truncatedBefore,reason:'UNEXPLAINED_CLOSE_DISCONTINUITY'}:{})}};
   maxProof.status=maxProof.chartStatus;
   maxProof.evidenceRef={verified:true,sha256:hash({previous:maxOld.evidenceRef.sha256,rawResponseSha256:rawHashes,sourceInputSha256:maxProof.sourceInputSha256,pointsSha256:maxProof.pointsSha256,segmentsSha256:maxProof.segmentsSha256,calendarSha256:CALENDAR_SOURCE_SHA256,immutableExclusionsSha256:maxProof.immutableExclusionsSha256})};
   delete maxProof.calendarProof;delete maxProof.sessionEvaluation;
@@ -197,16 +216,16 @@ export function mergeRefresh({baseline,results,now,runSummary}){
   if(s.homeCardQuality)s.homeCardQuality=Home.homeCardQuality(card);
   files.series.set(s.securityId,{...one,points:shortPoints,segments:shortSegments,provenance:{...one.provenance,evidenceRef:shortProof.evidenceRef.sha256,sourceInputSha256:shortProof.sourceInputSha256}});
   files.long.set(s.securityId,{...long,points,segments,provenance:{...long.provenance,evidenceRef:maxProof.evidenceRef.sha256,sourceInputSha256:maxProof.sourceInputSha256}});
-  rows.push({before,after:{securityId:s.securityId,lastDate:maxProof.lastDate,lastClose:points.at(-1)[1],observations1Y:shortPoints.length,appended:tail.length,missingSessions:tailInfo.missingSessions,rejected:rejected.length,rawResponseSha256:rawHashes,evidenceRef:maxProof.evidenceRef.sha256,status:'REFRESHED'}});
+  rows.push({before,after:{securityId:s.securityId,lastDate:maxProof.lastDate,lastClose:points.at(-1)[1],observations1Y:shortPoints.length,appended:tail.length,missingSessions:tailInfo.missingSessions,rejected:rejected.length,rawResponseSha256:rawHashes,evidenceRef:maxProof.evidenceRef.sha256,unpublishedFrom:truncatedBefore,criticalIssues,providerAttempts:r.attempts,status:'REFRESHED'}});
  }
  const calendar={schema:'europe-exact-mic-display-calendar-1',generatedAt:now,sourceFileSha256:CALENDAR_SOURCE_SHA256,generator:{version:Calendar.VERSION,module:'/core/europe-exchange-calendar.js',window:'DERIVED_FROM_DATA_AND_RUN_DATE'},calendars:{}};
  for(const [mic,c]of Object.entries(calendars))calendar.calendars[mic]={mic,source:c.source,sourceSha256:CALENDAR_SOURCE_SHA256,coverageFrom:window.coverageFrom,coverageTo:window.coverageTo,sessions:c.sessions};
  const projected=Sessions.refreshCatalog(catalog,calendar,{now});
  const held=rows.filter(x=>x.after.status==='HELD'),ineligible=projected.securities.filter(s=>!Admission.evaluate(s,s.listings[0],now).DISCOVER_ELIGIBLE).map(s=>s.securityId);
- const unexpected=ineligible.filter(id=>!held.some(h=>h.before.securityId===id));
- if(unexpected.length)throw Error('CURRENT_SESSION_GATE_FAILED:'+unexpected.slice(0,5).join(','));
- if(held.length>REFRESH_LIMITS.maxHeld)throw Error('TOO_MANY_HELD_SECURITIES:'+held.length);
- return {catalog:projected,calendar,files,rows,held,window,runSummary};
+ // Existing publication contract: every published listing is admitted at
+ // publication time (core/tests/global-published-contract.test.mjs).
+ const failure=ineligible.length?'CURRENT_SESSION_GATE_FAILED:'+ineligible.length+':'+ineligible.slice(0,5).join(','):null;
+ return {catalog:projected,calendar,files,rows,held,ineligible,failure,window,runSummary};
 }
 
 /** Emits the merged projection into the producer-owned directory. */
@@ -231,8 +250,9 @@ export async function refreshPublication({root=process.cwd(),out,privateDir,now=
  const {results,summary}=await collect({operations:plan.operations,apiKey,fetchImpl,privateDir,maxCredits,sleep});
  if(summary.terminalReason)throw Error('PROVIDER_RUN_STOPPED:'+summary.terminalReason);
  const merged=mergeRefresh({baseline,results,now,runSummary:summary});
- const manifest=await writeRefresh({root,out,baseline,merged,now});
- const report={plan:plan.estimate,run:summary,window:merged.window,refreshed:manifest.refresh.refreshed,held:manifest.refresh.held,rows:merged.rows};
+ const report={plan:plan.estimate,run:summary,window:merged.window,refreshed:merged.rows.filter(r=>r.after.status==='REFRESHED').length,held:merged.held.map(h=>({securityId:h.before.securityId,reason:h.after.reason,criticalIssues:h.after.criticalIssues})),ineligible:merged.ineligible,failure:merged.failure,rows:merged.rows};
  if(reportPath)await writeFile(reportPath,JSON.stringify(report,null,1)+'\n');
+ if(merged.failure)throw Error(merged.failure);
+ await writeRefresh({root,out,baseline,merged,now});
  return {...report,rows:undefined};
 }
