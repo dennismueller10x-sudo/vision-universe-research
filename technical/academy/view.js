@@ -17,6 +17,8 @@
     var selected = current.form.querySelector('input:checked');
     memorySession = { id: current.lesson.id, contentVersion: current.content.contentVersion, lessonVersion: current.lesson.version,
       choice: selected ? selected.value : null, checked: current.checked, y: g.scrollY };
+    var scene=current.visual && current.visual.querySelector('button[aria-pressed=true]');
+    if(scene)memorySession.scene=scene.getAttribute('data-scene');
     M.saveSession(sessionStore(), memorySession); if(clear)current = null;
   }
   // Registered before app.js, so the old lesson still exists when navigation starts.
@@ -72,12 +74,24 @@
       var terms=node('div');lesson.glossary.forEach(function(key){var t=content.glossary.find(function(x){return x.id===key;});terms.append(node('details',null,{},[node('summary',t.title),node('p',t.definition)]));});
       var path=content.paths.find(function(p){return p.id===lesson.pathId;}), index=path.lessons.indexOf(id);
       D.title=lesson.title+' · Strategie-Akademie · Technical';
-      wrap.append(header(lesson.title),link('← Alle Lernpfade','#/akademie'),node('p',path.title+' · Lektion '+(index+1)+' von 4'),node('p',lesson.question,{class:'ta-question'}),section('Lernziele',[list(lesson.objectives)]),section('Begriffe vorab',[terms]),section('Grundlagen',lesson.foundations.map(function(s){return node('p',s);})),figure(lesson.visual),
-        section('Konkretes Beispiel · konstruiert',[node('p',lesson.example.text)]),section('Grenzen und Gegenbeispiel',[list(lesson.limits)]));
+      var p=lesson.presentation, lab=g.VUAcademyVisuals && g.VUAcademyVisuals.render(p,lesson.id,resume && resume.id===id?resume.scene:null), pilot=!!lab;
+      if(pilot){
+        wrap.classList.add('ta-pilot');
+        wrap.append(node('nav',null,{'aria-label':'Lernpfad',class:'ta-breadcrumb'},[link('← Alle Lernpfade','#/akademie'),node('span',path.title+' · '+(index+1)+' / 4')]),node('header',null,{class:'ta-lesson-head'},[node('p','VISUELL LERNEN',{class:'ta-eyebrow'}),node('h1',lesson.title,{class:'tc-title',tabindex:'-1'}),node('p',lesson.question,{class:'ta-question'})]));
+        var goals=section('Dein Lernziel',[list(lesson.objectives)]);goals.className='ta-goals';
+        var chart=section('So sieht es im Chart aus',[lab]);chart.className='ta-visual-block';
+        var basics=section('Was ist das?',[node('p',p.intro),node('details',null,{},[node('summary','Grundlagen und Begriffe vertiefen')].concat(lesson.foundations.map(function(s){return node('p',s);})).concat([terms]))]);basics.className='ta-basics';
+        var why=section('Warum ist das wichtig?',[node('p',p.why)]);why.className='ta-why';
+        var mistake=section('Typischer Fehler',[node('p',p.mistake,{class:'ta-mistake'}),node('h3','Gegenbeispiel'),node('p',lesson.example.text),list(lesson.limits)]);mistake.className='ta-counterexample';
+        wrap.append(chart,goals,basics,why,mistake);
+      }else{
+        wrap.append(header(lesson.title),link('← Alle Lernpfade','#/akademie'),node('p',path.title+' · Lektion '+(index+1)+' von 4'),node('p',lesson.question,{class:'ta-question'}),section('Lernziele',[list(lesson.objectives)]),section('Begriffe vorab',[terms]),section('Grundlagen',lesson.foundations.map(function(s){return node('p',s);})),figure(lesson.visual),
+          section('Konkretes Beispiel · konstruiert',[node('p',lesson.example.text)]),section('Grenzen und Gegenbeispiel',[list(lesson.limits)]));
+      }
       var feedback=node('p','Wähle eine Antwort und prüfe sie.',{role:'status','aria-live':'polite'}), form=node('form'), field=node('fieldset',null,{},[node('legend',lesson.quiz.prompt)]);
       lesson.quiz.choices.forEach(function(c){var input=node('input',null,{type:'radio',name:'answer',value:c.id,required:''});field.append(node('label',null,{},[input,node('span',c.text)]));});
       var check=node('button','Antwort prüfen',{type:'submit'});form.append(field,check,feedback);
-      current = { lesson: lesson, content: content, form: form, checked: false };
+      current = { lesson: lesson, content: content, form: form, checked: false, visual:lab };
       function showAnswer() {
         var selected=form.querySelector('input:checked');if(!selected)return;
         feedback.textContent=(M.answer(lesson.quiz,selected.value)?'Richtig. ':'Noch nicht richtig. ')+lesson.quiz.explanation;
@@ -91,8 +105,19 @@
       }
       wrap.append(section('Lernkontrolle',[form]));
       var target=content.targets[lesson.practice.target];
-      wrap.append(section('In Technical anwenden',[node('p',lesson.practice.instruction),M.safeLink(target.href)?node('a',target.label,{href:target.href,'data-practice':''}):node('p','Praxisziel derzeit nicht verfügbar.')]));
-      wrap.append(node('p','Ein beschreibender Chartbefund ist kein Nachweis eines Handelsvorteils nach Kosten.',{class:'tc-note'}),section('Fachquellen',[sources(lesson.sources),node('ul',null,{},(lesson.reading||[]).map(function(id){var r=content.readings.find(function(x){return x.id===id;});return node('li',null,{},[link(r.title+' · '+(r.kind==='primary'?'Primärquelle':'ergänzende Fachliteratur'),r.url)]);})),node('p','Quellen öffnen den geprüften Quelltext beziehungsweise das interne Dokument. Kriterien werden nur in den bestehenden Engines ausgewertet.') ]));
+      var practice=section(pilot?'Jetzt selbst ansehen':'In Technical anwenden',[node('p',lesson.practice.instruction),M.safeLink(target.href)?node('a',target.label,{href:target.href,'data-practice':'',class:pilot?'ta-primary':''}):node('p','Praxisziel derzeit nicht verfügbar.')]);
+      if(pilot){
+        practice.className='ta-practice';
+        practice.append(node('p',lesson.practice.target==='chart'?'Titel wählen → RSI-Unterfenster einschalten → Kurs und RSI vergleichen.':'Kriterien ansehen → im Screener einen Treffer wählen → im Chart prüfen.',{class:'ta-practice-route'}));
+        var more=node('div',null,{class:'ta-practice-links'});
+        if(lesson.practice.target==='chart')more.append(link('Momentum im Assistenten','#/assistent/momentum'));
+        more.append(link('Screener öffnen','#/screener'));
+        if(lesson.practice.target!=='chart')more.append(link('Chart Studio öffnen','#/chart'));
+        practice.append(more,node('p','Zurück kommst du über „Zur Lektion“ in Technical. Deine Quiz-Auswahl und dein lokaler Abschluss bleiben erhalten.',{class:'tc-note'}));
+      }
+      wrap.append(practice);
+      var sourceContent=[sources(lesson.sources),node('ul',null,{},(lesson.reading||[]).map(function(id){var r=content.readings.find(function(x){return x.id===id;});return node('li',null,{},[link(r.title+' · '+(r.kind==='primary'?'Primärquelle':'ergänzende Fachliteratur'),r.url)]);})),node('p','Quellen öffnen den geprüften Quelltext beziehungsweise das interne Dokument. Kriterien werden nur in den bestehenden Engines ausgewertet.')];
+      wrap.append(node('p','Ein beschreibender Chartbefund ist kein Nachweis eines Handelsvorteils nach Kosten.',{class:'tc-note'}),section('Fachquellen',pilot?[node('details',null,{},[node('summary','Quellen und Methodik öffnen')].concat(sourceContent))]:sourceContent));
       var mark=node('button',completed.indexOf(id)>=0?'Abschluss aufheben':'Lektion als abgeschlossen markieren',{type:'button','aria-pressed':String(completed.indexOf(id)>=0)}), status=node('p','Abschluss ist unabhängig vom Quiz und freiwillig.',{role:'status'});
       mark.addEventListener('click',function(){
         var ids=M.read(store(),content), done=ids.indexOf(id)>=0;ids=done?ids.filter(function(k){return k!==id;}):ids.concat(id);

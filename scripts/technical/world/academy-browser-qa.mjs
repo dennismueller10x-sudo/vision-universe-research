@@ -59,6 +59,46 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
  await check(prefix+' all 32 lessons',async()=>{
   for(const l of content.lessons){await page.goto(base+'#/akademie/'+l.id);await page.getByRole('heading',{name:l.title,exact:true}).waitFor();assert(await page.locator('.ta h2').count()===8,'complete sections '+l.id);assert(await page.locator('figure').count()===1,'visual');assert(await page.locator('input[type=radio]').count()===2,'answers');await overflow();}
  });
+ await check(prefix+' visual pilots: scenes, keyboard, accessible charts and unchanged quiz',async()=>{
+  for(const id of ['trend-1','breakout-2','momentum-2']){
+   const l=content.lessons.find(x=>x.id===id);
+   await page.goto(base+'#/akademie/'+id);await page.locator('.ta-pilot').waitFor();
+   const buttons=page.getByRole('group',{name:'Chart-Beispiele'}).getByRole('button');assert(await buttons.count()===3,'three scenes '+id);
+   await page.addScriptTag({path:require.resolve('axe-core/axe.min.js')});
+   for(let i=0;i<3;i++){
+    await buttons.nth(i).focus();await page.keyboard.press('Enter');
+    assert(await buttons.nth(i).getAttribute('aria-pressed')==='true','selected scene');
+    assert(await buttons.evaluateAll(bs=>bs.filter(b=>b.getAttribute('aria-pressed')==='true').length)===1,'single selected scene');
+    assert(await page.locator('.ta-chart svg desc').textContent()===l.presentation.scenes[i].description,'chart text equivalent');
+    assert(await page.locator('.ta-observations h3').textContent()===l.presentation.scenes[i].title,'scene meaning');
+    assert(await page.locator('.ta-chart figcaption').textContent().then(t=>t.includes('keine historischen oder berechneten Werte')),'constructed chart label');
+    assert(await buttons.nth(i).evaluate(b=>b===document.activeElement),'keyboard focus retained');
+    await overflow();
+    const ax=await page.evaluate(()=>axe.run(document.querySelector('.ta-pilot'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}}));
+    assert(!ax.violations.length,id+'/'+i+': '+ax.violations.map(v=>v.id+' '+v.nodes.map(n=>n.target).join(',')).join(';'));
+    if(i===0||width<500&&i===2){await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/'+prefix+'-'+id+'-pilot-'+(i+1)+'.png',fullPage:true});}
+   }
+   const wrong=l.quiz.choices.find(x=>x.id!==l.quiz.answer).id;
+   await page.locator('input[value='+wrong+']').check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Noch nicht richtig.'}).waitFor();
+   await page.locator('input[value='+l.quiz.answer+']').check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
+   await page.locator('a[data-practice]').click();await page.getByRole('navigation',{name:'Zur Akademie zurück',exact:true}).waitFor();
+   await page.getByRole('link',{name:'← Zur Lektion: '+l.title,exact:true}).click();await page.locator('.ta-pilot').waitFor();
+   assert(await page.locator('input[value='+l.quiz.answer+']').isChecked(),'quiz resume '+id);
+   assert(await page.locator('.ta-scenes button[aria-pressed=true]').getAttribute('data-scene')===l.presentation.scenes[2].id,'scene resume '+id);
+  }
+ });
+ await check(prefix+' pilot touch targets and doubled text',async()=>{
+  for(const id of ['trend-1','breakout-2','momentum-2']){
+   await page.goto(base+'#/akademie/'+id);await page.locator('.ta-pilot').waitFor();
+   const targets=await page.locator('.ta-scenes button, .ta-primary').evaluateAll(ns=>ns.map(n=>({w:n.getBoundingClientRect().width,h:n.getBoundingClientRect().height})));
+   assert(targets.every(t=>t.w>=44&&t.h>=44),'44px touch targets '+id);
+   await page.addStyleTag({content:'.ta-pilot h1,.ta-pilot h2,.ta-pilot h3,.ta-pilot p,.ta-pilot li,.ta-pilot summary,.ta-pilot button,.ta-pilot label,.ta-pilot a {font-size:200% !important}'});
+   await page.getByRole('group',{name:'Chart-Beispiele'}).getByRole('button').last().click();
+   await overflow();
+   assert(await page.locator('.ta-scenes button').last().evaluate(n=>n.scrollWidth<=n.clientWidth+1),'zoomed scene label fits');
+   if(width===360)await page.screenshot({path:out+'/'+prefix+'-'+id+'-double-text.png',fullPage:true});
+  }
+ });
  await check(prefix+' quiz/progress/keyboard/practice',async()=>{
   await page.goto(base+'#/akademie/struktur-1');await page.locator('fieldset').waitFor();await page.locator('input[value=b]').check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Noch nicht richtig'}).waitFor();
   await page.locator('input[value=a]').check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
@@ -79,7 +119,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
    const group=['struktur','trend','breakout','momentum','risiko','wechsel','zeitrahmen','routine'].indexOf(l.pathId);
    const expected=auditContract.targetGroups[group][Number(l.id.split('-')[1])-1];
    assert(await page.locator('a[data-practice]').getAttribute('href')===auditContract.targets[expected],'semantic href '+l.id);
-   assert(await page.locator('.ta p').first().evaluate(n=>parseFloat(getComputedStyle(n).fontSize))>=16,'font size');
+   assert(await page.locator('.ta-pilot .ta-basics > p, .ta:not(.ta-pilot) p').first().evaluate(n=>parseFloat(getComputedStyle(n).fontSize))>=16,'lesson text font size');
    const box=await page.locator('label').first().boundingBox();assert(box.height>=44,'touch label');
    const button=await page.getByRole('button',{name:'Antwort prüfen'}).boundingBox();assert(button.height>=44,'touch button');
    await page.locator('a[data-practice]').click();await page.getByRole('navigation',{name:'Zur Akademie zurück',exact:true}).waitFor();
@@ -158,5 +198,18 @@ if(!site)await check('blocked storage / safe text / load retry',async()=>{
  await page.route('**/technical/academy/content.json',r=>r.abort());await page.goto(base+'#/akademie/struktur-1');await page.getByRole('button',{name:'Erneut versuchen'}).waitFor();
  await page.unroute('**/technical/academy/content.json');await page.route('**/technical/academy/content.json',r=>r.fulfill({json:{paths:[],lessons:[],glossary:[]}}));await page.getByRole('button',{name:'Erneut versuchen'}).click();await page.getByRole('button',{name:'Erneut versuchen'}).waitFor();await page.unroute('**/technical/academy/content.json');await page.route('**/technical/academy/content.json',r=>{const c=structuredClone(content);c.lessons[0].foundations[0]='<img src=x onerror="window.academyInjection=true">';return r.fulfill({json:c});});await page.getByRole('button',{name:'Erneut versuchen'}).click();await page.getByRole('button',{name:'Lektion als abgeschlossen markieren'}).click();await page.getByRole('status').filter({hasText:'Speichern ist gesperrt'}).waitFor();assert(await page.locator('.ta img').count()===0,'injected image');assert(await page.evaluate(()=>!window.academyInjection),'injected execution');await context.close();
 });
+if(!site)await check('pilot presentation failure safely falls back and text never executes',async()=>{
+ const context=await createContext({viewport:{width:360,height:844}}),page=await context.newPage();
+ for(const broken of [true,false]){
+  await page.route('**/technical/academy/content.json',r=>{const c=structuredClone(content),p=c.lessons.find(l=>l.id==='trend-1').presentation;if(broken)p.scenes[0]=null;else p.intro='<img src=x onerror="window.pilotInjection=true">';return r.fulfill({json:c});});
+  await page.goto(base+'#/akademie/trend-1');await page.locator('fieldset').waitFor();
+  assert(await page.locator('.ta-pilot').count()===(broken?0:1),'invalid optional presentation fallback '+broken);
+  assert(await page.locator('.ta img').count()===0,'no markup inserted');assert(await page.evaluate(()=>!window.pilotInjection),'no content execution');
+  if(!broken)assert(await page.locator('.ta-basics').textContent().then(t=>t.includes('<img')),'untrusted text remains literal');
+  await page.unroute('**/technical/academy/content.json');
+  await page.goto('about:blank');
+ }
+ await context.close();
+});
 }finally{await browser.close();server.close();}
-await writeFile(out+'/report.json',JSON.stringify({mode:site?'live':'local',site,authenticated:!!gate,localOnlyChecks:site?['registry failure injection','cold network profile','blocked storage and hostile payload injection']:[],results,journeys,performanceChecks},null,2));console.log(JSON.stringify({passed:results.filter(r=>r.pass).length,total:results.length,failures:results.filter(r=>!r.pass)},null,2));if(results.some(r=>!r.pass))process.exitCode=1;
+await writeFile(out+'/report.json',JSON.stringify({mode:site?'live':'local',site,authenticated:!!gate,localOnlyChecks:site?['registry failure injection','cold network profile','blocked storage and hostile payload injection','pilot presentation failure injection']:[],results,journeys,performanceChecks},null,2));console.log(JSON.stringify({passed:results.filter(r=>r.pass).length,total:results.length,failures:results.filter(r=>!r.pass)},null,2));if(results.some(r=>!r.pass))process.exitCode=1;
