@@ -1,10 +1,40 @@
-# Controlled manual Europe Discover Close refresh (owner-approved, no schedule).
+# Europe Discover Close refresh: owner-approved manual run, prepared daily schedule.
 # One bounded Marketstack /eod request per published primary listing, from the
 # last published session to the run date (449 requests / 449 reserved credits
-# at the conservative estimate; hard cap 1,000). Provider RAW stays in the
-# runner's private temp directory and is deleted; only hashes are published.
+# at the conservative estimate, up to 462 with the one bounded retry pass;
+# hard cap 1,000). Provider RAW stays in the runner's private temp directory
+# and is deleted; only hashes are published.
 # Producer: scripts/marketstack/europe-discover-publication.mjs refresh.
-name: Europe Discover Close refresh (manual)
+#
+# ============================================================================
+# DAILY SCHEDULE - PREPARED, NOT ACTIVE (owner approval of 03.11.2026 covers
+# the principle only; activation needs a separate approval).
+# Two switches, both required:
+#   1. uncomment the `schedule:` block below, and
+#   2. set the repository variable EUROPE_REFRESH_SCHEDULE_ENABLED=true.
+# Either one alone does nothing. Switching off: unset the variable.
+#
+# Cron '47 17 * * 1-5' (UTC): 18:47 CET in winter, 19:47 CEST in summer.
+# Every Europe venue closes at 17:30 local (Copenhagen 17:00); closing
+# auctions end about 17:35, so the run starts 70-130 minutes after the last
+# close, inside the 18:30-19:30 CET window in winter. Weekends and venue
+# holidays are skipped by the preflight without a provider request.
+# Scheduled-run guards (all without a request unless stated):
+#   - preflight (core/europe-exchange-calendar.js): no session at any of the
+#     ten MICs, before the last close, refresh already done after today's
+#     close, or last observed quota of the month below reserve -> no run;
+#   - first attempt only (a re-run of a scheduled run is refused; a repeat
+#     needs a deliberate manual dispatch);
+#   - max_credits 600 per run, hard cap 1,000 in code;
+#   - quota reserve 5,000: the live x-quota-remaining header of every billed
+#     response must cover all still planned requests plus the reserve, else
+#     the run stops and publishes nothing;
+#   - per request one bounded retry pass; no retry of the whole run;
+#   - concurrency without cancel, ref-suffixed (ADR-005);
+#   - unchanged gates: Close evaluator, admission, per-stock isolation
+#     (more than 22 blocked of 449 abort the publication).
+# ============================================================================
+name: Europe Discover Close refresh
 on:
   workflow_dispatch:
     inputs:
@@ -16,16 +46,33 @@ on:
         description: 'Only estimate the requests (no provider call, no commit)'
         type: boolean
         default: false
+  # ACTIVATION SWITCH 1 of 2 - keep commented until the owner approves the
+  # production schedule (see header).
+  # schedule:
+  #   - cron: '47 17 * * 1-5'
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: europe-discover-refresh-${{ github.ref_name }}
   cancel-in-progress: false
 jobs:
   refresh:
-    if: github.repository == 'dennismueller10x-sudo/vision-universe-research'
+    # ACTIVATION SWITCH 2 of 2: a scheduled event runs only with the
+    # repository variable EUROPE_REFRESH_SCHEDULE_ENABLED=true, only on main
+    # and only as the first attempt.
+    if: >-
+      github.repository == 'dennismueller10x-sudo/vision-universe-research' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event_name == 'schedule' && vars.EUROPE_REFRESH_SCHEDULE_ENABLED == 'true' &&
+        github.ref == 'refs/heads/main' && github.run_attempt == 1))
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      SCHEDULED: ${{ github.event_name == 'schedule' }}
+      MAX_CREDITS: ${{ inputs.max_credits || '600' }}
+      DRY_RUN: ${{ inputs.dry_run == true }}
+      MIN_QUOTA_REMAINING: '5000'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,26 +80,44 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Calendar, session-proof, eligibility and refresh regressions
-        run: node --test core/tests/europe-discover-refresh.test.mjs core/tests/europe-session-proof.test.mjs core/tests/europe-discover-contract.test.mjs
+      - name: Preflight from committed data and the rule calendar (no provider call)
+        id: preflight
+        run: |
+          set -euo pipefail
+          node scripts/marketstack/europe-discover-publication.mjs preflight --minQuotaRemaining "$MIN_QUOTA_REMAINING"
+          if [ "$SCHEDULED" != "true" ]; then
+            # A manual dispatch is the owner's decision; the preflight is informational.
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          else
+            grep -q '^run=true$' "$GITHUB_OUTPUT" && echo "go=true" >> "$GITHUB_OUTPUT" || echo "go=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Calendar, session-proof, eligibility, schedule and refresh regressions
+        if: steps.preflight.outputs.go == 'true'
+        run: node --test core/tests/europe-discover-refresh.test.mjs core/tests/europe-discover-schedule.test.mjs core/tests/europe-session-proof.test.mjs core/tests/europe-discover-contract.test.mjs
       - name: Request estimate (no provider call)
-        env:
-          MAX_CREDITS: ${{ inputs.max_credits }}
+        if: steps.preflight.outputs.go == 'true'
         run: node scripts/marketstack/europe-discover-publication.mjs refresh --out discover/data/europe --maxCredits "$MAX_CREDITS" --dryRun true
       - name: Authenticated append-only refresh
-        if: ${{ !inputs.dry_run }}
+        id: refresh
+        if: steps.preflight.outputs.go == 'true' && env.DRY_RUN != 'true'
         env:
           MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
-          MAX_CREDITS: ${{ inputs.max_credits }}
         run: |
           set -euo pipefail
           if [ -z "${MARKETSTACK_API_KEY:-}" ]; then echo "::error::MARKETSTACK_API_KEY secret is not configured"; exit 1; fi
-          node scripts/marketstack/europe-discover-publication.mjs refresh --out discover/data/europe --privateDir "${RUNNER_TEMP}/vu-europe-refresh-private" --maxCredits "$MAX_CREDITS" --reportPath "${RUNNER_TEMP}/europe-refresh-report.json"
+          node scripts/marketstack/europe-discover-publication.mjs refresh --out discover/data/europe --privateDir "${RUNNER_TEMP}/vu-europe-refresh-private" --maxCredits "$MAX_CREDITS" --minQuotaRemaining "$MIN_QUOTA_REMAINING" --scheduled "$SCHEDULED" --reportPath "${RUNNER_TEMP}/europe-refresh-report.json"
       - name: Remove private provider responses
         if: always()
         run: rm -rf -- "${RUNNER_TEMP}/vu-europe-refresh-private"
+      - name: Marketstack billing of this run (from the provider headers)
+        if: always() && steps.refresh.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          f="${RUNNER_TEMP}/europe-refresh-report.json"
+          if [ ! -f "$f" ]; then echo "no run report"; exit 0; fi
+          node -e 'const r=require(process.argv[1]).run||{};const q=r.quota||{};const line="Marketstack: "+r.requests+" Requests, abgerechnet "+r.actualBilledCredits+" Credits, Kontingent "+q.remaining+" / "+q.limit+" (Stand "+q.observedAt+")";console.log(line);require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY,"### Europe-Refresh\n\n"+line+"\n");' "$f"
       - name: Verify the refreshed publication against the wall clock
-        if: ${{ !inputs.dry_run }}
+        if: steps.refresh.outcome == 'success'
         env:
           EUROPE_LIVE_CALENDAR_CHECK: '1'
         run: |
@@ -60,19 +125,29 @@ jobs:
           node --test core/tests/europe-discover-refresh.test.mjs core/tests/europe-session-proof.test.mjs core/tests/global-published-contract.test.mjs
           node scripts/marketstack/europe-discover-check.mjs
       - name: Upload normalized before/after report
-        if: ${{ !inputs.dry_run && always() }}
+        if: always() && steps.refresh.outcome != 'skipped'
         uses: actions/upload-artifact@v4
         with:
           name: europe-discover-refresh-${{ github.run_id }}
           path: ${{ runner.temp }}/europe-refresh-report.json
           if-no-files-found: warn
       - name: Commit producer-owned display artifacts
-        if: ${{ !inputs.dry_run && github.ref == 'refs/heads/main' }}
+        id: commit
+        if: steps.refresh.outcome == 'success' && github.ref == 'refs/heads/main'
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add discover/data/europe
-          if git diff --cached --quiet; then echo "No change"; exit 0; fi
-          git commit -m "Europe Discover: Schlusskurse aktualisiert (manueller Lauf ${GITHUB_RUN_ID})"
+          if git diff --cached --quiet; then echo "No change"; echo "pushed=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if [ "$SCHEDULED" = "true" ]; then kind="Zeitplan-Lauf"; else kind="manueller Lauf"; fi
+          git commit -m "Europe Discover: Schlusskurse aktualisiert (${kind} ${GITHUB_RUN_ID})"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+      # Commits pushed with GITHUB_TOKEN never trigger push workflows, so the
+      # live release QA is dispatched explicitly (workflow_dispatch is allowed).
+      - name: Start the live release QA for the new publication
+        if: steps.commit.outputs.pushed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run europe-discover-release-qa.yml --ref main
