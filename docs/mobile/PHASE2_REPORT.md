@@ -47,9 +47,9 @@ Ausführlich: [PERFORMANCE.md](PERFORMANCE.md).
 
 Ausführlich: [TESTFLIGHT_PLAN.md](TESTFLIGHT_PLAN.md).
 
-- **Empfehlung Buildweg: Xcode Cloud** für den ersten privaten Upload (Apple verwaltet die Signierung, keine neuen GitHub-Geheimnisse, direkte TestFlight-Verteilung, Auslöser nur Tag `app-v*`). **GitHub Actions (macOS)** bleibt als Alternative; Vorlage vorhanden, inaktiv, außerhalb von `.github/workflows`.
+- **Buildweg (geändert in Phase 3):** GitHub Actions mit macOS-Runner und manueller Signierung, weil das ohne eigenen Mac geht. Xcode Cloud braucht für die Ersteinrichtung einen Mac. Siehe [TESTFLIGHT_STEP_BY_STEP.md](TESTFLIGHT_STEP_BY_STEP.md).
 - Das Repository ist öffentlich (anonym erreichbar); für Xcode Cloud entsteht daraus kein Zugriffsproblem, Geheimnisse dürfen aber nie ins Repository.
-- Vorbereitet (inaktiv): `app/ios/App/ci_scripts/ci_post_clone.sh`, `app/ci/ios-testflight.workflow.yml.template`.
+- Vorbereitet (inaktiv): `app/ci/ios-testflight.workflow.yml.template`, `app/ci/fastlane/Fastfile`, `app/ci/make-signing-request.sh`, `app/ios/App/ci_scripts/ci_post_clone.sh` (Xcode Cloud).
 - Alle Apple-Angaben (Kontingente, Rollen, Xcode-Versionen) sind mein Wissensstand und mit [prüfen] markiert; ich habe nichts bei Apple abgerufen.
 
 ## 6. Was bis zum ersten iPhone-Test noch fehlt, und wer es tut
@@ -60,7 +60,7 @@ Ausführlich: [TESTFLIGHT_PLAN.md](TESTFLIGHT_PLAN.md).
 | 2 | **App-ID** `de.visionuniverse.app` registrieren und **App-Eintrag** in App Store Connect anlegen (Namen prüfen) | **Owner** | Minuten |
 | 3 | **Interne Tester** als App-Store-Connect-Nutzer anlegen, TestFlight auf dem iPhone installieren | **Owner und Tester** | Minuten |
 | 4 | **Supabase-URL und Publishable Key** (öffentlich) liefern | **Owner** | Minuten |
-| 5 | **Xcode Cloud** aktivieren, GitHub-Zugriff für dieses Repository freigeben, Workflow anlegen (Auslöser nur Tag `app-v*`, Aktion Archive plus TestFlight intern, Umgebungsvariablen aus 4) | **Owner** (Claude liefert die Einstellungen) | etwa 30 Minuten |
+| 5 | **Zertifikat, Profil, API-Schlüssel und GitHub-Umgebung `app-testflight`** einrichten (Anleitung: `TESTFLIGHT_STEP_BY_STEP.md`, Phasen 3 bis 5). Ohne Mac möglich. | **Owner** (Claude liefert Skript, Fastfile, Workflow) | etwa 1 Stunde |
 | 6 | **Exportnachweis** (nur HTTPS, Standardverschlüsselung) beantworten | **Owner** | Minuten |
 | 7 | **PR #1280 prüfen und freigeben**, damit der Stand für Tag und Build feststeht (oder den Branch taggen) | **Owner** | |
 | 8 | **Tag `app-v0.1.0` setzen**, erst nach ausdrücklichem Beschluss | **Owner** | Sekunden |

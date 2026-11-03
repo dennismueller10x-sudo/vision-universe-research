@@ -10,25 +10,26 @@ Angaben zu Apple-Produkten (Kontingente, Rollen, Xcode-Versionen) sind mein Wiss
 - Der Web-Teil enthält nur **öffentliche** Werte (Supabase-URL und Publishable Key). Es gibt kein App-Geheimnis im Build.
 - Projektregeln für Workflows (CLAUDE.md, ADR-005) gelten: Eingaben nur über `env:`, `permissions: contents: read`, Concurrency mit Ref-Name, Umgebung mit Prüfern für alles mit Geheimnissen, kein Rücksetzen auf `main`.
 
-## 2. Vergleich der Buildwege
+## 2. Vergleich der Buildwege (aktualisiert 03.11.2026, mit belegten Angaben)
 
-| Kriterium | **Xcode Cloud** | **GitHub Actions (macOS-Runner)** |
+Quellen: [Apple Xcode Cloud, Preise und Einrichtung](https://developer.apple.com/xcode-cloud/), [Apple Xcode Cloud, Start](https://developer.apple.com/xcode-cloud/get-started/), [GitHub-Dokumentation zu gehosteten Runnern](https://docs.github.com/en/actions/reference/runners/github-hosted-runners), [Image-Beschreibung macos-26](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md), [Apple: SDK-Mindestanforderungen](https://developer.apple.com/news/upcoming-requirements/), [Apple: Einschreibung](https://developer.apple.com/support/enrollment/).
+
+| Kriterium | **Xcode Cloud** | **GitHub Actions mit macOS-Runner** |
 |---|---|---|
-| Einrichtung | in Xcode oder App Store Connect (Web) [prüfen]; Verknüpfung mit dem GitHub-Repository | Workflow-Datei im Repository (Vorlage: `app/ci/ios-testflight.workflow.yml.template`) |
-| Signierung | **von Apple verwaltet** (Cloud-Signierung): wir halten keine Zertifikate | Zertifikat und Profil selbst verwalten **oder** Cloud-Signierung per App-Store-Connect-API-Schlüssel (`-allowProvisioningUpdates`) |
-| Geheimnisse bei uns | keine für den Build | API-Schlüssel (`.p8`, Key-ID, Issuer-ID) und Team-ID in einer Umgebung mit Prüfern |
-| Anbindung an TestFlight | direkt (Aktion „TestFlight intern“) | Upload-Schritt im Workflow |
-| Kosten | Kontingent im Developer Program (häufig 25 Compute-Stunden pro Monat) [prüfen] | für öffentliche Repositories kostenlose Standard-Runner [prüfen]; macOS-Minuten sonst mit Multiplikator |
-| Node/CocoaPods | nicht vorinstalliert: `ci_post_clone.sh` installiert per Homebrew | `setup-node`; CocoaPods auf dem Image vorhanden [prüfen] |
-| Xcode-/SDK-Stand | folgt Apples Vorgaben, Version im Workflow wählbar | Runner-Image muss die geforderte Xcode-Version haben [prüfen] |
-| Auslöser | Branch/Tag/Pull-Request-Regeln im Workflow | `workflow_dispatch` (von Hand) wie die übrigen Freigabe-Workflows |
-| Passt zu unseren Regeln | gut: nichts committet, nichts deployt, keine Secrets | gut, aber mehr Secret-Handling |
-| Nachvollziehbarkeit im Repository | Konfiguration liegt bei Apple, nicht im Repository | Workflow im Repository, Review per PR |
-| Fehlersuche | Logs in App Store Connect | Logs in GitHub Actions |
+| **Eigener Mac nötig?** | Der erste Workflow wird laut Apple **in Xcode** eingerichtet („configure a workflow in Xcode“); danach lassen sich Workflows im Web bearbeiten und Builds starten. Ob die Ersteinrichtung rein im Web geht, steht in Apples Seiten nicht, eine Drittquelle verneint es. **Praktisch: einmal ein Mac nötig (geliehen/Mietmac genügt).** | **Nein.** Alles läuft im Browser, mit OpenSSL und auf dem Runner. |
+| Laufende Kosten | Im Developer Program enthalten: 25 Compute-Stunden pro Monat, mehr ab 49,99 USD/Monat (100 h). Ein Capacitor-Build braucht grob Minuten, nicht Stunden (Schätzung). | Standard-Runner sind für **öffentliche** Repositories kostenlos und unbegrenzt (GitHub-Doku). Unser Repository ist öffentlich. Bei einem privaten Repository würden macOS-Minuten mit Multiplikator abgerechnet [prüfen]. |
+| Fixkosten gleich | Apple Developer Program 99 USD pro Jahr (beide Wege) | dito |
+| Signierung | **Apple verwaltet sie (Cloud-Signierung).** Wir halten kein Zertifikat. | Zwei Möglichkeiten: (1) **manuell** mit Distribution-Zertifikat (.p12) und App-Store-Profil, beides ohne Mac erzeugbar (OpenSSL, Developer-Portal im Browser); (2) Cloud-Signierung per API-Schlüssel. **Variante 2 ist unzuverlässig:** Apple-Forenberichte nennen Fehler bei Schlüsseln ohne Admin-Rolle und auf frischen Maschinen. **Empfehlung: Variante 1.** |
+| Geheimnisse bei uns | keine | sechs: Team-ID, API-Schlüssel (.p8, Key-ID, Issuer-ID), .p12 plus Passwort, Profil. Alle nur in einer GitHub-Umgebung mit Prüfern. |
+| Node/CocoaPods/Xcode | nicht vorinstalliert: `ci_post_clone.sh` installiert per Homebrew; Xcode-Version wählbar | **vorinstalliert** auf `macos-26`: Xcode 26.6 (Standard), CocoaPods 1.17.0, Node 22.23.4 (im Cache), fastlane 2.241.2. Apple verlangt für Uploads seit 28.04.2026 Xcode 26 oder neuer. |
+| Anbindung an TestFlight | direkt, Verteilung integriert | Upload per fastlane und API-Schlüssel |
+| Nachvollziehbarkeit | Konfiguration liegt bei Apple | Workflow und Fastfile liegen im Repository, Review per PR, Freigabe über Umgebung wie bei den Konten-Workflows |
+| Passt zu unseren Regeln | gut | gut (Umgebung mit Prüfern, nur `workflow_dispatch` von `main`, `contents: read`) |
+| Fehlersuche | Logs in App Store Connect | Logs in GitHub Actions, von mir lesbar |
+| Risiko | Mac-Zugang einmalig organisieren | Signier-Einrichtung (Zertifikat/Profil) ist fehleranfällig; erste Läufe brauchen oft Korrekturen |
 
-**Empfehlung für den ersten privaten TestFlight: Xcode Cloud.** Gründe: Es entsteht kein Zertifikats- oder Schlüsselwesen auf unserer Seite, die Signierung und die TestFlight-Verteilung sind aus einer Hand, und wir brauchen vor dem Gerätetest keine neuen GitHub-Geheimnisse. Ausgelöst wird **nur** durch einen Tag `app-v*` (nie bei jedem Push), damit nichts ungewollt zu Apple läuft.
-**GitHub Actions später**, wenn alle Builds im Repository nachvollziehbar sein sollen oder Xcode Cloud nicht passt. Die Vorlage ist fertig, aber nicht aktiv (liegt außerhalb von `.github/workflows`).
-**Eigener Mac:** Nicht zwingend. Der erste Lauf kann in Xcode Cloud entstehen. Ein Mac ist nur nötig, wenn die Workflow-Einrichtung in Xcode (nicht im Web) erfolgen muss [prüfen] oder wenn wir Fehler lokal nachstellen wollen.
+**Empfehlung (geändert gegenüber der früheren Fassung): GitHub Actions mit macOS-Runner und manueller Signierung.** Sie ist der einzige Weg, der **ohne eigenen Mac** sicher machbar ist, kostet für unser öffentliches Repository nichts extra, liegt im Repository und ist von mir debuggbar. Xcode Cloud bleibt die Alternative, wenn ein Mac verfügbar ist und Sie keine Zertifikate und Geheimnisse selbst verwalten wollen.
+Vorbereitet ist: `app/ci/ios-testflight.workflow.yml.template`, `app/ci/fastlane/Fastfile`, `app/ci/make-signing-request.sh` (alle inaktiv). Schritt-für-Schritt: [TESTFLIGHT_STEP_BY_STEP.md](TESTFLIGHT_STEP_BY_STEP.md).
 
 ## 3. Apple-Konfiguration, exakt
 
@@ -41,15 +42,15 @@ Angaben zu Apple-Produkten (Kontingente, Rollen, Xcode-Versionen) sind mein Wiss
 | 5 | **Interne Tester:** Personen als App-Store-Connect-Nutzer anlegen (bis zu 100); sie installieren über die TestFlight-App. **Keine** Beta-App-Prüfung bei internen Testern [prüfen] | Owner | Testgruppe „Intern“ |
 | 6 | **Exportnachweis:** App nutzt nur HTTPS (Standardverschlüsselung). Der Owner beantwortet die Frage in App Store Connect; danach kann `ITSAppUsesNonExemptEncryption` in `Info.plist` gesetzt werden | Owner entscheidet, Claude setzt | keine Rückfrage bei jedem Build |
 | 7 | **Datenschutz (App Privacy)** in App Store Connect grob ausfüllen (Konto: E-Mail, Nutzer-ID; Diagnose: keine). Für intern genügt ein Minimum, für den Store Pflicht | Owner | Eintrag |
-| 8 | **Xcode Cloud** (Weg A): Produkt „Xcode Cloud“ für die App aktivieren, GitHub-App „Xcode Cloud“ mit Zugriff auf **nur dieses Repository** freigeben, Workflow anlegen (siehe 5.) | Owner (Zugriffsfreigabe), Claude liefert Skript und Einstellungen | Workflow |
-| 8b | **API-Schlüssel** (nur Weg B): App Store Connect, Benutzer und Zugriff, Integrationen, Schlüssel mit Rolle App Manager (für Cloud-Signierung gegebenenfalls Admin) [prüfen]; `.p8` einmal laden, als GitHub-Geheimnis in der Umgebung `app-testflight` | Owner | `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`, `APPLE_TEAM_ID` |
+| 8 | **Xcode Cloud** (nur Alternative, braucht einmal einen Mac): Produkt „Xcode Cloud“ für die App aktivieren, GitHub-App „Xcode Cloud“ mit Zugriff auf **nur dieses Repository** freigeben, Workflow anlegen (siehe 5.) | Owner (Zugriffsfreigabe), Claude liefert Skript und Einstellungen | Workflow |
+| 8b | **API-Schlüssel** (GitHub Actions): App Store Connect, Benutzer und Zugriff, Integrationen, Schlüssel mit Rolle App Manager (für Cloud-Signierung gegebenenfalls Admin) [prüfen]; `.p8` einmal laden, als GitHub-Geheimnis in der Umgebung `app-testflight` | Owner | `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`, `APPLE_TEAM_ID` |
 | 9 | **Öffentliche Build-Werte** liefern: Supabase-URL und Publishable Key (Supabase, Project Settings, API) | Owner | `VU_SUPABASE_URL`, `VU_SUPABASE_PUBLISHABLE_KEY` |
 | 10 | **iPhone** des Testers: iOS-Version ≥ Mindestversion der App (`IPHONEOS_DEPLOYMENT_TARGET = 14.0`), TestFlight-App installiert, Einladung angenommen | Tester | Installation |
 
 ### Signierung (Voraussetzungen)
 - Distribution erfolgt **nur** über App Store Connect (TestFlight), kein Ad-hoc, keine Geräteregistrierung nötig.
-- Weg A: Cloud-Signierung durch Apple, nichts bei uns.
-- Weg B: entweder (1) API-Schlüssel mit `-allowProvisioningUpdates`, oder (2) Distribution-Zertifikat und App-Store-Profil, in einem temporären Schlüsselbund des Runners. Variante (1) ist in der Vorlage umgesetzt.
+- Xcode Cloud: Cloud-Signierung durch Apple, nichts bei uns.
+- GitHub Actions: Distribution-Zertifikat (.p12) und App-Store-Profil, in einem temporären Schlüsselbund des Runners (fastlane `setup_ci`). Das ist in der Vorlage umgesetzt. Cloud-Signierung per API-Schlüssel ist laut Apple-Foren fehleranfällig und nicht die Vorlage.
 - Niemals ins Repository, in Chat oder PR: `.p8`, `.p12`, Profile, Passwörter.
 - `CURRENT_PROJECT_VERSION` muss je Upload steigen (Skript setzt `CI_BUILD_NUMBER` bzw. `GITHUB_RUN_NUMBER`), `MARKETING_VERSION` setzt der Tag bzw. die Eingabe.
 
@@ -58,10 +59,14 @@ Angaben zu Apple-Produkten (Kontingente, Rollen, Xcode-Versionen) sind mein Wiss
 | Datei | Zweck |
 |---|---|
 | `app/ios/App/ci_scripts/ci_post_clone.sh` | Xcode Cloud: Node und CocoaPods installieren, Web-Teil bauen, `cap sync`, Build-Nummer setzen. Ohne Xcode Cloud ohne Wirkung. |
-| `app/ci/ios-testflight.workflow.yml.template` | GitHub-Actions-Vorlage (Weg B), liegt außerhalb von `.github/workflows`, Umgebung `app-testflight` mit Prüfern, nur `workflow_dispatch` von `main` |
+| `app/ci/ios-testflight.workflow.yml.template` | GitHub-Actions-Vorlage (Hauptweg), liegt außerhalb von `.github/workflows`, Umgebung `app-testflight` mit Prüfern, nur `workflow_dispatch` von `main` |
+| `app/ci/fastlane/Fastfile` | Lane `beta`: Signierung, Archiv, TestFlight-Upload |
+| `app/ci/make-signing-request.sh` | Schlüssel, CSR und .p12 per OpenSSL ohne Mac (CSR-Schritt hier getestet) |
 | `app/README.md` | lokaler Ablauf auf einem Mac |
 
-## 5. Ablauf des ersten privaten TestFlight-Uploads (Weg A: Xcode Cloud)
+## 5. Ablauf des ersten privaten TestFlight-Uploads
+
+Maßgeblich ist jetzt [TESTFLIGHT_STEP_BY_STEP.md](TESTFLIGHT_STEP_BY_STEP.md) (GitHub Actions, ohne Mac). Die folgende Tabelle beschreibt den Xcode-Cloud-Weg und gilt nur als Alternative.
 
 | Schritt | Wer | Ergebnis / Prüfung |
 |---|---|---|
