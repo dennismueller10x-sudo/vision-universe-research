@@ -6,7 +6,7 @@
   root.VUCore = root.VUCore || {}; root.VUCore.EuropeDiscoverEligibility = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
-  var VERSION = 'europe-discover-eligibility-2.0.0';
+  var VERSION = 'europe-discover-eligibility-2.1.0';
   var POLICY = Object.freeze({minimumObservations:20, minimumSpanDays:30, maximumSessionLag:3, maximumProofAgeMs:86400000});
   var SHA = /^[a-f0-9]{64}$/;
   var COUNTRIES = ['DE','FR','NL','CH','GB','UK','SE','DK','NO','FI','ES','IT','AT','BE','IE','LU','PT','PL','CZ','HU','GR','IS','EE','LV','LT'];
@@ -46,6 +46,9 @@
     if (!q || q.mic!==l.mic || q.providerSymbol!==l.providerSymbol || q.currency!==l.currency || q.quoteUnit!==p.quoteUnit || (s.isin&&q.isin!==s.isin) || !['OFFICIAL_LISTING_QUOTE_REFERENCE','PROVIDER_DOCUMENTED_QUOTE_CONTRACT','PROVIDER_EXPLICIT_QUOTE_CURRENCY'].includes(q.kind) || p.quoteUnit!==p.currency || (q.kind==='PROVIDER_EXPLICIT_QUOTE_CURRENCY'&&(!hash(q.providerCurrencyObservationSha256)||!hash(q.contractSchemaSha256))) || (p.currency==='GBP'&&(q.kind!=='PROVIDER_DOCUMENTED_QUOTE_CONTRACT'||!hash(q.unitContractSha256)))) reasons.push('QUOTE_BASIS_NOT_BOUND');
     if (!p || !Array.isArray(p.criticalIssues) || p.criticalIssues.length || !Array.isArray(p.reasonCodes) || p.reasonCodes.length) reasons.push('CRITICAL_CLOSE_QUALITY_ISSUES');
     if (!p || !['CHART_READY','CHART_LIMITED'].includes(p.chartStatus)) reasons.push('CHART_BLOCKED');
+    // Per-stock isolation (core/europe-publication-isolation.js): a listing the
+    // publication marked as not ADMITTED never gets a chart or price.
+    if (l.discoverPublication !== undefined && (!l.discoverPublication || l.discoverPublication.status !== 'ADMITTED')) reasons.push('PUBLICATION_BLOCKED');
     var display=l.discoverDisplay, window=display&&display.ranges&&display.ranges[range||'1Y'], chartStatus=p&&p.chartStatus;
     // Close display quality is independent of adjusted OHLCV certification.
     // The source Close, identity, currency and freshness gates above still apply.

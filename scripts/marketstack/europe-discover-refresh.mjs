@@ -10,6 +10,11 @@
  * (europe-discover-chart-quality.mjs) and match the published overlap close.
  * Any conflict holds that security at its previous data (it then turns
  * stale through the unchanged freshness gate); nothing is interpolated.
+ * Publication: per-stock isolation (core/europe-publication-isolation.js).
+ * The 449-security universe stays published; each security is admitted only
+ * if it passes the unchanged admission gate on its own, otherwise it is listed
+ * as BLOCKED with a reason (no chart, no price). More than 22 blocked (5 %)
+ * abort the whole publication.
  * Calendar: rule-based exact-MIC sessions (core/europe-exchange-calendar.js)
  * over a window derived from the data dates and the run date; the producer
  * refuses to run unless that calendar reproduces every published 1Y display
@@ -25,7 +30,7 @@ import {assessContinuity,safeDisplayWindow,safeSegments,POLICY as CONTINUITY} fr
 import {createEuropeBudget,estimateEuropeBatch} from './europe-credits.mjs';
 import {privateRoot} from './europe-ingestion.mjs';
 const require=createRequire(import.meta.url);
-const Calendar=require('../../core/europe-exchange-calendar.js'),Sessions=require('../../core/europe-session-proof.js'),Admission=require('../../core/europe-discover-eligibility.js'),Home=require('../../core/discover-universe.js');
+const Calendar=require('../../core/europe-exchange-calendar.js'),Sessions=require('../../core/europe-session-proof.js'),Admission=require('../../core/europe-discover-eligibility.js'),Home=require('../../core/discover-universe.js'),Isolation=require('../../core/europe-publication-isolation.js');
 const {createAuditAdapter}=require('../../providers/marketstack/audit-adapter.js');
 const sha=b=>createHash('sha256').update(b).digest('hex'),hash=v=>sha(JSON.stringify(v));
 const DAY=86400000,shift=(d,n)=>new Date(Date.parse(d)+n*DAY).toISOString().slice(0,10);
@@ -45,6 +50,8 @@ export async function loadBaseline(root,dir=join(root,'discover/data/europe')){
  const fileRoot=dir.endsWith('discover/data/europe')?resolve(dir,'../../..'):root;
  const catalog=await readBound(fileRoot,manifest.catalog),calendar=await readBound(fileRoot,manifest.calendar);
  if(catalog.securities?.length!==449||Object.keys(manifest.series).length!==449)throw Error('REVIEWED_449_SET_REQUIRED');
+ // The full universe stays published; the blocked list must match the catalog flags.
+ Isolation.verify(manifest,catalog,sha);
  const series=new Map(),long=new Map();
  for(const s of catalog.securities){const l=s.listings[0],p=l.discoverChart,one=await readBound(fileRoot,manifest.series[s.securityId]),h=manifest.history?.[s.securityId]?.MAX;
   if(hash(one.points)!==p.pointsSha256||hash(one.segments)!==p.segmentsSha256||!h)throw Error('PUBLISHED_SERIES_PROOF_MISMATCH:'+s.securityId);
@@ -125,6 +132,9 @@ function extendWindow(old,points,tail,calendar,proof,identitySha){
 /** Pure merge step: baseline + authenticated tail -> next projection (no I/O). */
 export function mergeRefresh({baseline,results,now,runSummary}){
  const today=new Date(now).toISOString().slice(0,10),catalog=structuredClone(baseline.catalog);
+ // Every run re-evaluates every security from scratch: a previous block is
+ // neither inherited nor lifted without passing the unchanged gates again.
+ for(const s of catalog.securities)for(const l of s.listings)delete l.discoverPublication;
  const window=Calendar.publicationWindow(catalog.securities.map(s=>s.listings[0].discoverChart.lastDate),today);
  const historyFrom=shift(yearBefore(catalog.securities.map(s=>s.listings[0].discoverChart.lastDate).sort()[0]),-10);
  const calendars={},full={};
@@ -221,11 +231,28 @@ export function mergeRefresh({baseline,results,now,runSummary}){
  const calendar={schema:'europe-exact-mic-display-calendar-1',generatedAt:now,sourceFileSha256:CALENDAR_SOURCE_SHA256,generator:{version:Calendar.VERSION,module:'/core/europe-exchange-calendar.js',window:'DERIVED_FROM_DATA_AND_RUN_DATE'},calendars:{}};
  for(const [mic,c]of Object.entries(calendars))calendar.calendars[mic]={mic,source:c.source,sourceSha256:CALENDAR_SOURCE_SHA256,coverageFrom:window.coverageFrom,coverageTo:window.coverageTo,sessions:c.sessions};
  const projected=Sessions.refreshCatalog(catalog,calendar,{now});
- const held=rows.filter(x=>x.after.status==='HELD'),ineligible=projected.securities.filter(s=>!Admission.evaluate(s,s.listings[0],now).DISCOVER_ELIGIBLE).map(s=>s.securityId);
- // Existing publication contract: every published listing is admitted at
- // publication time (core/tests/global-published-contract.test.mjs).
- const failure=ineligible.length?'CURRENT_SESSION_GATE_FAILED:'+ineligible.length+':'+ineligible.slice(0,5).join(','):null;
- return {catalog:projected,calendar,files,rows,held,ineligible,failure,window,runSummary};
+ const held=rows.filter(x=>x.after.status==='HELD'),byId=new Map(rows.map(x=>[x.before.securityId,x]));
+ // Per-stock isolation (owner approval 2026-11-03): every security is judged
+ // on its own by the unchanged admission gate. A failing security is published
+ // as BLOCKED with its reason (identity kept, no chart, no price); every other
+ // one must be admitted. More than POLICY.maxBlocked blocked securities abort.
+ const blocked=[];
+ for(const s of projected.securities){const l=s.listings[0],e=Admission.evaluate(s,l,now);if(e.DISCOVER_ELIGIBLE)continue;
+  const row=byId.get(s.securityId),c=Isolation.classify(row?.after.status==='HELD'?row.after.reason:null,row?.after.criticalIssues,e.discoverReasonCodes);
+  blocked.push({securityId:s.securityId,ticker:l.ticker,mic:l.mic,...c,admissionReasons:e.discoverReasonCodes});}
+ const ineligible=blocked.map(b=>b.securityId);
+ let failure=null,publication=null;
+ if(blocked.length>Isolation.POLICY.maxBlocked)failure='BLOCKED_SHARE_LIMIT_EXCEEDED:'+blocked.length+'>'+Isolation.POLICY.maxBlocked+':'+ineligible.slice(0,5).join(',');
+ else{
+  publication=Isolation.build(blocked,now,sha);
+  const flagged=new Map(publication.blocked.map(b=>[b.securityId,b]));
+  for(const s of projected.securities){const b=flagged.get(s.securityId);s.listings[0].discoverPublication=b?{status:'BLOCKED',reasonClass:b.reasonClass,reasonCode:b.reasonCode}:{status:'ADMITTED'};}
+  // Re-check with the flags: admitted ones still pass every gate, blocked ones
+  // are refused by the gate itself (no chart, no price).
+  const wrong=projected.securities.filter(s=>Admission.evaluate(s,s.listings[0],now).DISCOVER_ELIGIBLE===flagged.has(s.securityId)).map(s=>s.securityId);
+  if(wrong.length)failure='PUBLICATION_ISOLATION_INCONSISTENT:'+wrong.slice(0,5).join(',');
+ }
+ return {catalog:projected,calendar,files,rows,held,ineligible,blocked,publication,failure,window,runSummary};
 }
 
 /** Emits the merged projection into the producer-owned directory. */
@@ -237,7 +264,9 @@ export async function writeRefresh({root,out,baseline,merged,now}){
  for(const [id,data]of merged.files.long){const b=await emit('series-long/'+id+'.json',data);for(const k of Object.keys(manifest.history[id]))manifest.history[id][k]=b;}
  manifest.catalog=await emit('catalog.json',merged.catalog);manifest.calendar=await emit('calendar.json',merged.calendar);
  manifest.generatedAt=now;
+ manifest.publication=merged.publication;
  manifest.refresh={kind:'APPEND_ONLY_AUTHENTICATED_CLOSE',evaluatedAt:now,provider:'MARKETSTACK',requests:merged.runSummary.requests,reservedCredits:merged.runSummary.reservedCredits,actualBilledCredits:'UNKNOWN',refreshed:merged.rows.filter(r=>r.after.status==='REFRESHED').length,held:merged.held.map(h=>({securityId:h.before.securityId,reason:h.after.reason})),calendarSha256:CALENDAR_SOURCE_SHA256,calendarWindow:merged.window,schedule:false};
+ Isolation.verify(manifest,merged.catalog,sha);
  await emit('manifest.json',manifest);return manifest;
 }
 
@@ -250,7 +279,7 @@ export async function refreshPublication({root=process.cwd(),out,privateDir,now=
  const {results,summary}=await collect({operations:plan.operations,apiKey,fetchImpl,privateDir,maxCredits,sleep});
  if(summary.terminalReason)throw Error('PROVIDER_RUN_STOPPED:'+summary.terminalReason);
  const merged=mergeRefresh({baseline,results,now,runSummary:summary});
- const report={plan:plan.estimate,run:summary,window:merged.window,refreshed:merged.rows.filter(r=>r.after.status==='REFRESHED').length,held:merged.held.map(h=>({securityId:h.before.securityId,reason:h.after.reason,criticalIssues:h.after.criticalIssues})),ineligible:merged.ineligible,failure:merged.failure,rows:merged.rows};
+ const report={plan:plan.estimate,run:summary,window:merged.window,refreshed:merged.rows.filter(r=>r.after.status==='REFRESHED').length,held:merged.held.map(h=>({securityId:h.before.securityId,reason:h.after.reason,criticalIssues:h.after.criticalIssues})),ineligible:merged.ineligible,admitted:449-merged.blocked.length,blocked:merged.blocked,maxBlocked:Isolation.POLICY.maxBlocked,failure:merged.failure,rows:merged.rows};
  if(reportPath)await writeFile(reportPath,JSON.stringify(report,null,1)+'\n');
  if(merged.failure)throw Error(merged.failure);
  await writeRefresh({root,out,baseline,merged,now});
