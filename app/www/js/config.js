@@ -9,7 +9,9 @@ export const DEFAULT_CONFIG = Object.freeze({
   contentOrigin: 'https://research.visionuniverse.de',
   // 'supabase': direkt bei Supabase Auth (Stand heute, braucht den Publishable Key in der App).
   // 'worker':   ueber die Konto-API (/v1/auth/app/*): gleiches Tempolimit wie im Web, kein Supabase-Schluessel in der App.
-  //             Der Worker-Teil ist ein VORSCHLAG (docs/mobile/SECURITY_LOGIN.md), noch nicht vorhanden.
+  //             Worker-Routen: workers/vu-account/src/auth.mjs (appLogin|appRefresh|appLogout). Nur ueber natives HTTP
+  //             (CapacitorHttp: ohne Origin, ohne Cookie); ein Browser wird abgewiesen (APP_CLIENT_ONLY).
+  // Standard bleibt 'supabase' bis zum Geraetetest (docs/mobile/SECURITY_LOGIN.md §2).
   authTransport: 'supabase',
   refreshMarginSeconds: 60,
 });

@@ -47,7 +47,8 @@ $('login').addEventListener('submit', async ev => {
   try { await auth.signIn($('email').value, $('password').value); $('password').value = ''; renderAccount(); }
   catch (e) {
     err.textContent = {INVALID_CREDENTIALS: 'E-Mail oder Passwort stimmt nicht.', invalid_credentials: 'E-Mail oder Passwort stimmt nicht.',
-      email_not_confirmed: 'Bitte zuerst die E-Mail-Adresse bestätigen.', [OFFLINE]: 'Keine Verbindung. Bitte später erneut versuchen.',
+      email_not_confirmed: 'Bitte zuerst die E-Mail-Adresse bestätigen.', EMAIL_NOT_CONFIRMED: 'Bitte zuerst die E-Mail-Adresse bestätigen.',
+      RATE_LIMITED: 'Zu viele Versuche. Bitte später erneut versuchen.', over_request_rate_limit: 'Zu viele Versuche. Bitte später erneut versuchen.', [OFFLINE]: 'Keine Verbindung. Bitte später erneut versuchen.',
       NOT_CONFIGURED: 'Die App ist nicht konfiguriert.'}[e.code] || 'Anmeldung nicht möglich.';
     err.hidden = false;
   }

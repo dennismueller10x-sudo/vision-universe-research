@@ -13,7 +13,8 @@ export function createAuth({config, store, fetchImpl = (...a) => globalThis.fetc
   const emit = () => listeners.forEach(fn => { try { fn(publicState()); } catch { /* Zuhoerer darf nichts brechen */ } });
   const publicState = () => ({signedIn: Boolean(session), user: session?.user || null});
 
-  // Zwei Anmeldeschienen mit gleichem Ergebnis. 'worker' liefert {accessToken, refreshToken, expiresIn, user} (Vorschlag, siehe docs/mobile/SECURITY_LOGIN.md).
+  // Zwei Anmeldeschienen mit gleichem Ergebnis. 'worker' (workers/vu-account/src/auth.mjs, appLogin|appRefresh|appLogout)
+  // liefert {accessToken, refreshToken, expiresIn, user}; der Worker nimmt sie nur ohne Origin und ohne Cookie an (native HTTP).
   const routes = {
     supabase: {login: 'token?grant_type=password', refresh: 'token?grant_type=refresh_token', logout: 'logout'},
     worker: {login: 'app/login', refresh: 'app/refresh', logout: 'app/logout'},
@@ -88,9 +89,11 @@ export function createAuth({config, store, fetchImpl = (...a) => globalThis.fetc
     },
     async forceRefresh() { if (!session) return null; await refresh(); return session?.accessToken || null; },
     async signOut() {
-      const token = session?.accessToken;
+      const token = session?.accessToken, refreshT = session?.refreshToken;
       await drop();                                           // lokal sofort, auch ohne Netz
-      if (token) await post('logout', null, token).catch(() => {}); // Server best effort
+      // Server best effort. Worker: das Refresh-Token reist mit, damit die Sitzung auch bei abgelaufenem Zugriffstoken widerrufen wird.
+      const body = config.authTransport === 'worker' && refreshT ? {refreshToken: refreshT} : null;
+      if (token) await post('logout', body, token).catch(() => {});
       return publicState();
     },
   };
