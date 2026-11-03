@@ -19,7 +19,11 @@ concurrency:
 jobs:
   gates:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 45 statt 30 Minuten: der Checkout des vollen Arbeitsbaums (~2-3 GB) schwankt
+    # GitHub-seitig stark (2:46 in Lauf 41686237365, 14:43 im parallel
+    # gestarteten core-ci-Lauf 41686237440, >15 min im package-Job von Lauf
+    # 41688632337). Der Rest des Jobs braucht rund 13 Minuten.
+    timeout-minutes: 45
     steps:
       # Keine volle Historie: fetch-depth 0 holte alle Branches und Tags (.git
       # rund 16 GB); seit 03.11.2026 ~16:08 UTC hing der Checkout bis zum
@@ -49,12 +53,17 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$BASE_REF"
-          git fetch --no-tags --prune --depth=50 origin "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
-          for deepen in 200 1000 5000; do
+          # Nur Commits und Baeume (--filter=blob:none): merge-base und
+          # git diff --name-only brauchen keine Dateiinhalte. Die Datenlaeufe
+          # schreiben je Commit ueber tausend Dateien; mit Inhalten kostete
+          # schon Tiefe 50 rund 1,5 Minuten. Tiefe 1 reicht im Normalfall,
+          # weil die PR-Basis (HEAD^1) der Kopf des Basis-Branches ist.
+          git fetch --no-tags --prune --filter=blob:none --depth=1 origin "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+          for deepen in 50 200 1000 5000; do
             if mb="$(git merge-base "origin/$BASE_REF" HEAD)"; then break; fi
             mb=""
             echo "Merge-Basis zu origin/$BASE_REF noch nicht erreichbar - vertiefe um $deepen"
-            git fetch --no-tags --deepen="$deepen" origin "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+            git fetch --no-tags --filter=blob:none --deepen="$deepen" origin "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
           done
           if [ -z "${mb:-}" ]; then mb="$(git merge-base "origin/$BASE_REF" HEAD || true)"; fi
           if [ -z "$mb" ]; then
