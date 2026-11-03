@@ -235,7 +235,7 @@
   },
   "registrySha256": "1422f2efb6eaa0f1f643995679a39f07ae1f196d3b6fe4a02dd258220ce853f8",
   "status": "FETCHED_ONCE_EVALUATED_CACHE_ONLY",
-  "run": "41504851988",
+  "run": "41597368393",
   "requests": {
    "cap": 550,
    "planned": 481,
@@ -500,10 +500,1887 @@
    ],
    "runs": [
     {
+     "runId": "41597368393",
+     "commit": "3ae51d66a6caa96d77e7b91451a97ade1ec4844d",
+     "role": "AUTHORITATIVE",
+     "validity": "C09 allocation counter (PR #1263: runner publishes counts.intradayAllocationByMinute per EP variant block), cache-only rerun on the current code (0 requests): every input equal to run 41504851988 (receipt incl. dataset, cache, day-set and register hashes; candidates, intradayCoverage, sampling); every EP block (47 of 47 incl. sf7Execution and extE7_6.ep) equal to 41504851988 apart from the new field intradayAllocationByMinute (all tradesSha256 / ledgerSha256 equal), the PS blocks and ep.sf7Validation identical; counts in docs/SUPERTRADER_C09_ALLOCATION_RERUN.md section 7",
+     "strategies": [
+      "EP",
+      "PS"
+     ],
+     "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+     "datasetVerified": "EXACT",
+     "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+     "researchCodeSha256": "20bd1b3bdae83805bc19e96a267a8173ecfb96cf2f830f472d64e84b59b2b2af",
+     "engineCodeSha256": "89fbcf864a57041379bc62d4af64cfda7c5601aaaf1c08b38fd6b91b6472ef24",
+     "epVariantRegistrySha256": "e8d25282f42a98234dd8782a35960dca3776ff0a4657a84e7eff5aab41a3b22f",
+     "psVariantRegistrySha256": "436358d6444f6168c16c09631d112914918daff17c3624ae59fa4b35377a04e9",
+     "sampleRegistrySha256": "ca54c1feed3545cd28632cebaf2b12473f9e2461821e2a54a1605338ed73caae",
+     "minuteCacheSha256": "c399a88c7514bec942e84fb2de1f6f3f823cca333d04e6a23e213250aa840d9b",
+     "baselineCacheSha256": "911b53b5a7dac161d3667c54dbdd4dd4c011d681a43def17f403191eec8d422b",
+     "coverage": {
+      "requestsThisRun": 0,
+      "mode": "CACHE_ONLY_ZERO_REQUESTS",
+      "sample": "DETERMINISTIC_HASH_ORDER_PREFIX (sha256 of TICKER|date; nothing outcome-related); evaluated on the clean per-method prefixes (Supertrader 6.0), NOT ***matically representative",
+      "ep": {
+       "candidateDaysInIexHistory": 13769,
+       "withMinutes": 2000,
+       "withBaseline": 1828,
+       "baselineTooFewIexDays": 172,
+       "withMinutesWithoutBaseline": 0
+      },
+      "ps": {
+       "candidateDaysInIexHistory": 65216,
+       "withMinutes": 2065
+      },
+      "complete": false
+     },
+     "sampling": {
+      "ep": {
+       "prefix": {
+        "population": 13769,
+        "prefixLength": 2000,
+        "cachedInPrefix": 2000,
+        "holesInPrefix": 0,
+        "cachedBeyondPrefixDropped": 0
+       },
+       "commonDaySet": {
+        "size": 1828,
+        "excluded": {
+         "BASELINE_TOO_FEW_IEX_DAYS": 172
+        }
+       }
+      },
+      "ps": {
+       "prefix": {
+        "population": 65216,
+        "prefixLength": 2014,
+        "cachedInPrefix": 2014,
+        "holesInPrefix": 0,
+        "cachedBeyondPrefixDropped": 51
+       },
+       "psCandidatesThatAreEpCandidates": {
+        "population": 474,
+        "inPsPrefix": 14,
+        "cachedOutsidePsPrefixDropped": 51
+       }
+      },
+      "strataFractions": {
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "ep": {
+         "num": 33,
+         "den": 293,
+         "value": 0.11262798634812286
+        },
+        "ps": {
+         "num": 48,
+         "den": 2235,
+         "value": 0.021476510067114093
+        }
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "ep": {
+         "num": 33,
+         "den": 293,
+         "value": 0.11262798634812286
+        },
+        "ps": {
+         "num": 6,
+         "den": 334,
+         "value": 0.017964071856287425
+        }
+       }
+      }
+     },
+     "ep": {
+      "REF": {
+       "trades": 600,
+       "closed": 598,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 381,
+        "EP_CLOSE_BELOW_MA20": 101,
+        "STOP_INITIAL": 97,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 16,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11749,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "f4d9ffc7e938023a9646118ae586054570f94bf1bb7611ccad5f28a5888e91fb"
+      },
+      "ALT-ORH-5": {
+       "trades": 403,
+       "closed": 401,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 169,
+        "EP_CLOSE_BELOW_MA20": 107,
+        "STOP_INITIAL": 103,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 19,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11738,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 106,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "5eab499acf39d4ed029fa00bef78d77e78011a78ddcfde6ab743e7222bb2d1ae"
+      },
+      "ALT-NO-VOLUME-RULE": {
+       "trades": 1023,
+       "closed": 1020,
+       "openAtDataEnd": 3,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 637,
+        "EP_CLOSE_BELOW_MA20": 176,
+        "STOP_INITIAL": 179,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 25,
+        "null": 3
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11730,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 70,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "cf5cf06b526933f9951643e1ed91dbcfda204c0e2a4978e4e52fc438f609d999"
+      },
+      "ALT-QUIET-PRIOR-RUN-50": {
+       "trades": 399,
+       "closed": 398,
+       "openAtDataEnd": 1,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 241,
+        "EP_CLOSE_BELOW_MA20": 73,
+        "STOP_INITIAL": 70,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 11,
+        "null": 1
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 601,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 7908,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 103,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 106,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 35,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 56,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 53,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+       },
+       "reconciliation": true,
+       "tradesSha256": "566f964505a1cae0f2764e36c8f4f6c55764fede451a564f39284295a36b4632"
+      },
+      "ALT-EXIT-MA10": {
+       "trades": 606,
+       "closed": 605,
+       "openAtDataEnd": 1,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 384,
+        "EP_CLOSE_BELOW_MA10": 132,
+        "STOP_INITIAL": 76,
+        "STOP_INITIAL_GAP_OPEN": 13,
+        "null": 1
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11751,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "9bad9e982ee462776de0faab36b4ec70646a3c281f447b5fd23a3e422538eb88"
+      },
+      "ALT-EXIT-MA50": {
+       "trades": 586,
+       "closed": 581,
+       "openAtDataEnd": 5,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 370,
+        "EP_CLOSE_BELOW_MA50": 76,
+        "STOP_INITIAL": 109,
+        "TERMINAL_DELISTED": 7,
+        "STOP_INITIAL_GAP_OPEN": 17,
+        "SECURITY_UNAVAILABLE": 2,
+        "null": 5
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11747,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 61,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "b20866565ea42ed7ce2f29977f808d2cd5e6429facdd8d1e68748348583badaf"
+      },
+      "ALT-FILL-MINUTE-OPTIMISTIC": {
+       "trades": 597,
+       "closed": 595,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 377,
+        "EP_CLOSE_BELOW_MA20": 101,
+        "STOP_INITIAL": 98,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 16,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "2933c3ada07fc0bf370a245b272631509918d20825954e2ad4fbdfc613bf2e40"
+      },
+      "ALT-RISK-00025": {
+       "trades": 611,
+       "closed": 609,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 388,
+        "EP_CLOSE_BELOW_MA20": 101,
+        "STOP_INITIAL": 100,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 17,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "084603c38b22f19695eceda63185f261c0be5345e7094637494337d1949fe524"
+      },
+      "ALT-RISK-001": {
+       "trades": 573,
+       "closed": 571,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 360,
+        "EP_CLOSE_BELOW_MA20": 99,
+        "STOP_INITIAL": 94,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 15,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11749,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "3aded2fd7110310a8d3b97bf3dfe87835a5845e0856200015d5469d8f2e4634f"
+      }
+     },
+     "ps": {
+      "REF": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 15,
+        "PS_STOP_HOD": 162,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "233208d72daf293cf94fdeb7d66b909c9c308007cea1adb7d4f07fa2f0e983b4"
+      },
+      "ALT-STREAK4": {
+       "closedTrades": 47,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 2721,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 3,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 225,
+        "CLOSED": 47,
+        "NOT_TRIGGERED": 29,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 14,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 35,
+        "PS_TARGET_MA10": 9,
+        "PS_STOP_HOD_GAP_OPEN": 3
+       },
+       "tradesSha256": "ba0ef949c2a4c7caed040c0aed3eeb1ac71ce69adacdec3a49a8667ebb597680"
+      },
+      "ALT-NO-ACCEL": {
+       "closedTrades": 1261,
+       "openAtDataEnd": 1,
+       "openAtDataEndByTerminal": {
+        "LISTING_INACTIVE": 1
+       },
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 63151,
+        "CLOSED": 1261,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 51,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 6862,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 282,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 7,
+        "NOT_TRIGGERED": 410,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 37,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 16,
+        "OPEN_AT_DATA_END": 1
+       },
+       "exitReasons": {
+        "PS_TARGET_MA10": 288,
+        "PS_STOP_HOD_GAP_OPEN": 82,
+        "PS_STOP_HOD": 889,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "5e8e1935d0c86ca883443b9a8e5bd9ac424e76d8a34c8f846c9702ade1bd93f1"
+      },
+      "ALT-ENTRY-FIRST-RED-5MIN": {
+       "closedTrades": 264,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 264,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 41,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4,
+        "NOT_EXECUTED_NO_RED_5MIN_CANDLE": 1
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 19,
+        "PS_STOP_HOD": 194,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "701ee3c4c63b64988f95f08f32ae145fd6bdfac3828615e21ea1d1f7ffe3d1fe"
+      },
+      "ALT-ENTRY-FAILED-VWAP-RETEST": {
+       "closedTrades": 235,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "NOT_TRIGGERED": 72,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "CLOSED": 235,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 3
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 180,
+        "PS_TARGET_MA10": 41,
+        "PS_STOP_HOD_GAP_OPEN": 14
+       },
+       "tradesSha256": "39386997002d8cae992cddf449643deaf594caf0b7df55d8c3ff221fc63534ba"
+      },
+      "ALT-STOP-VWAP-RECLAIM": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 3,
+        "PS_VWAP_RECLAIM": 181,
+        "PS_TARGET_MA10": 16,
+        "PS_STOP_HOD": 27,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "38eb32a40d85c599068e74d6262fde4877aa2ad5b0773e76d805ba2ac0951743"
+      },
+      "ALT-TARGET-MA20": {
+       "closedTrades": 221,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 221,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 11,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 13,
+        "PS_STOP_HOD": 166,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "04971a145e620b77067ef4e380ee43c9f03788c072ef7b8e1399512c4dd11178"
+      },
+      "ALT-TARGET-HALF-MA10-MA20": {
+       "closedTrades": 220,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 220,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 12,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 27,
+        "PS_STOP_HOD": 323,
+        "PS_TARGET_MA10": 47,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "1643da1d9ecbf61ebf65650c10e9f3ad3d420a5620567050cb091e7ee065a35d"
+      }
+     },
+     "psOnePositionPerTicker": {
+      "REF": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 15,
+        "PS_STOP_HOD": 162,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "233208d72daf293cf94fdeb7d66b909c9c308007cea1adb7d4f07fa2f0e983b4"
+      },
+      "ALT-STREAK4": {
+       "closedTrades": 47,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 2721,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 3,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 225,
+        "CLOSED": 47,
+        "NOT_TRIGGERED": 29,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 14,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 35,
+        "PS_TARGET_MA10": 9,
+        "PS_STOP_HOD_GAP_OPEN": 3
+       },
+       "tradesSha256": "ba0ef949c2a4c7caed040c0aed3eeb1ac71ce69adacdec3a49a8667ebb597680"
+      },
+      "ALT-NO-ACCEL": {
+       "closedTrades": 1260,
+       "openAtDataEnd": 1,
+       "openAtDataEndByTerminal": {
+        "LISTING_INACTIVE": 1
+       },
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 63073,
+        "CLOSED": 1260,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 51,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 6862,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 282,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 7,
+        "SKIPPED_EARLIER_TRADE_OPEN": 79,
+        "NOT_TRIGGERED": 410,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 37,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 16,
+        "OPEN_AT_DATA_END": 1
+       },
+       "exitReasons": {
+        "PS_TARGET_MA10": 288,
+        "PS_STOP_HOD_GAP_OPEN": 82,
+        "PS_STOP_HOD": 888,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "5bbb2089a26cd83cabdf9bb4caa8d98705d8ac22b8c67b2d3dd9044f888edbbd"
+      },
+      "ALT-ENTRY-FIRST-RED-5MIN": {
+       "closedTrades": 264,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11807,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 264,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 41,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "SKIPPED_EARLIER_TRADE_OPEN": 2,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4,
+        "NOT_EXECUTED_NO_RED_5MIN_CANDLE": 1
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 19,
+        "PS_STOP_HOD": 194,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "701ee3c4c63b64988f95f08f32ae145fd6bdfac3828615e21ea1d1f7ffe3d1fe"
+      },
+      "ALT-ENTRY-FAILED-VWAP-RETEST": {
+       "closedTrades": 235,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11808,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "NOT_TRIGGERED": 72,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "CLOSED": 235,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "SKIPPED_EARLIER_TRADE_OPEN": 1,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 3
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 180,
+        "PS_TARGET_MA10": 41,
+        "PS_STOP_HOD_GAP_OPEN": 14
+       },
+       "tradesSha256": "39386997002d8cae992cddf449643deaf594caf0b7df55d8c3ff221fc63534ba"
+      },
+      "ALT-STOP-VWAP-RECLAIM": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 3,
+        "PS_VWAP_RECLAIM": 181,
+        "PS_TARGET_MA10": 16,
+        "PS_STOP_HOD": 27,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "38eb32a40d85c599068e74d6262fde4877aa2ad5b0773e76d805ba2ac0951743"
+      },
+      "ALT-TARGET-MA20": {
+       "closedTrades": 221,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 221,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 11,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 13,
+        "PS_STOP_HOD": 166,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "04971a145e620b77067ef4e380ee43c9f03788c072ef7b8e1399512c4dd11178"
+      },
+      "ALT-TARGET-HALF-MA10-MA20": {
+       "closedTrades": 220,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 220,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 12,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 27,
+        "PS_STOP_HOD": 323,
+        "PS_TARGET_MA10": 47,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "1643da1d9ecbf61ebf65650c10e9f3ad3d420a5620567050cb091e7ee065a35d"
+      }
+     },
+     "tradesBySet": {
+      "ep": {
+       "BEFORE_FIX": {
+        "REF": 600,
+        "ALT-ORH-5": 403,
+        "ALT-NO-VOLUME-RULE": 1075,
+        "ALT-QUIET-PRIOR-RUN-50": 399,
+        "ALT-EXIT-MA10": 606,
+        "ALT-EXIT-MA50": 586,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 597,
+        "ALT-RISK-00025": 611,
+        "ALT-RISK-001": 573
+       },
+       "CLEAN": {
+        "REF": 600,
+        "ALT-ORH-5": 403,
+        "ALT-NO-VOLUME-RULE": 1023,
+        "ALT-QUIET-PRIOR-RUN-50": 399,
+        "ALT-EXIT-MA10": 606,
+        "ALT-EXIT-MA50": 586,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 597,
+        "ALT-RISK-00025": 611,
+        "ALT-RISK-001": 573
+       },
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "REF": 455,
+        "ALT-ORH-5": 297,
+        "ALT-NO-VOLUME-RULE": 801,
+        "ALT-QUIET-PRIOR-RUN-50": 307,
+        "ALT-EXIT-MA10": 459,
+        "ALT-EXIT-MA50": 448,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 456,
+        "ALT-RISK-00025": 463,
+        "ALT-RISK-001": 450
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "REF": 423,
+        "ALT-ORH-5": 275,
+        "ALT-NO-VOLUME-RULE": 763,
+        "ALT-QUIET-PRIOR-RUN-50": 282,
+        "ALT-EXIT-MA10": 425,
+        "ALT-EXIT-MA50": 422,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 421,
+        "ALT-RISK-00025": 429,
+        "ALT-RISK-001": 419
+       }
+      },
+      "ps": {
+       "BEFORE_FIX": {
+        "REF": 239,
+        "ALT-STREAK4": 49,
+        "ALT-NO-ACCEL": 1301,
+        "ALT-ENTRY-FIRST-RED-5MIN": 276,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 246,
+        "ALT-STOP-VWAP-RECLAIM": 239,
+        "ALT-TARGET-MA20": 232,
+        "ALT-TARGET-HALF-MA10-MA20": 231
+       },
+       "CLEAN": {
+        "REF": 228,
+        "ALT-STREAK4": 47,
+        "ALT-NO-ACCEL": 1261,
+        "ALT-ENTRY-FIRST-RED-5MIN": 264,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 235,
+        "ALT-STOP-VWAP-RECLAIM": 228,
+        "ALT-TARGET-MA20": 221,
+        "ALT-TARGET-HALF-MA10-MA20": 220
+       },
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "REF": 150,
+        "ALT-STREAK4": 30,
+        "ALT-NO-ACCEL": 859,
+        "ALT-ENTRY-FIRST-RED-5MIN": 176,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 161,
+        "ALT-STOP-VWAP-RECLAIM": 150,
+        "ALT-TARGET-MA20": 146,
+        "ALT-TARGET-HALF-MA10-MA20": 145
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "REF": 126,
+        "ALT-STREAK4": 27,
+        "ALT-NO-ACCEL": 715,
+        "ALT-ENTRY-FIRST-RED-5MIN": 147,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 137,
+        "ALT-STOP-VWAP-RECLAIM": 126,
+        "ALT-TARGET-MA20": 122,
+        "ALT-TARGET-HALF-MA10-MA20": 121
+       }
+      }
+     },
+     "metrics": "SEALED (claude/supertrader-validation-results, run 41597368393, 20261103T080604Z)",
+     "sf7EpExecution": {
+      "variantsSha256": "1b48d3cd2a629da14ce8ee57c606ea9b06b51054b6333f075b5c846398489223",
+      "revision": "EX7-EP-FILL-MINUTE-CERTAIN",
+      "variants": {
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": {
+        "compareTo": "ALT-FILL-MINUTE-OPTIMISTIC",
+        "daySet": "CLEAN",
+        "trades": 598,
+        "baseTrades": 597,
+        "fillMinuteStop": {
+         "CERTAIN_FILL_AT_MINUTE_OPEN": 12,
+         "CERTAIN_MINUTE_CLOSE_AT_OR_BELOW_STOP": 9
+        },
+        "reconciliation": true,
+        "ledgerSha256": "b7a311a1e00d250a1e0a06b3c17a5725aa2d6075c3fb4c12db535fbb823d0aab",
+        "tradesSha256": "29498a69787c2b14e8bc4ab5997e12f76dd738f65512f17acbaac1ba3451bd8f"
+       }
+      }
+     },
+     "extE7_6": {
+      "id": "CLEAN_EXT_E7_6",
+      "version": "kk-sample-ext-e7-6-1.0.0",
+      "registrySha256": "1422f2efb6eaa0f1f643995679a39f07ae1f196d3b6fe4a02dd258220ce853f8",
+      "targets": {
+       "ps": {
+        "num": 35,
+        "den": 1000
+       },
+       "ep": {
+        "num": 15,
+        "den": 100
+       }
+      },
+      "requestCap": 550,
+      "runs": {
+       "count": {
+        "runId": "40184926658",
+        "commit": "694b91c57b8cd01d3a263cdbf5731a387e53d7ea",
+        "mode": "PLAN_ZERO_REQUESTS",
+        "requestsThisRun": 0,
+        "plan": {
+         "requests": 481,
+         "requestsNeededTotal": 481,
+         "truncated": false,
+         "counts": {
+          "ps": {
+           "missingKeys": 263,
+           "requestsNeeded": 263,
+           "plannedKeys": 263,
+           "plannedRequests": 263,
+           "truncatedKeys": 0
+          },
+          "ep": {
+           "missingKeys": 109,
+           "requestsNeeded": 218,
+           "plannedKeys": 109,
+           "plannedRequests": 218,
+           "truncatedKeys": 0
+          }
+         },
+         "planSha256": "4ce6159bd6529f2182d70eb882127cfd448b14cac20b05f86e8958780c7532f6"
+        }
+       },
+       "fetch": {
+        "runId": "40185337539",
+        "commit": "694b91c57b8cd01d3a263cdbf5731a387e53d7ea",
+        "mode": "FETCH_CAPPED",
+        "outcome": "COMPLETE",
+        "requestsUsed": 481,
+        "requestsPlanned": 481,
+        "cap": 550,
+        "keysPlanned": 372,
+        "keysDone": 372,
+        "httpStatus": {
+         "minutes:200": 372,
+         "baseline:4hour:200": 109
+        },
+        "extensionCacheAfter": {
+         "minutes": 372,
+         "baseline": 109
+        }
+       },
+       "evaluation": {
+        "runId": "40185748527",
+        "commit": "694b91c57b8cd01d3a263cdbf5731a387e53d7ea",
+        "mode": "EVALUATION_CACHE_ONLY",
+        "requestsThisRun": 0,
+        "ledger": {
+         "status": "COMPLETE",
+         "runId": "40185337539",
+         "planned": 481,
+         "requestsUsed": 481,
+         "planSha256": "4ce6159bd6529f2182d70eb882127cfd448b14cac20b05f86e8958780c7532f6"
+        },
+        "planAfterFetch": 0
+       }
+      },
+      "extensionCacheSha256": {
+       "minutes": "c4c0f7f6d74708cb2556125186975729c8734e75488c76cab4945052503bcfd4",
+       "baseline": "ce00da237f232edf584227c692f223f20c517bb9c3ccad6b66141de7c0a8bd17"
+      },
+      "daySetSha256": {
+       "ep": "2bcfd0b50e9e34c4caf4ddf7fb82110ee2d8318bece580fa798fd3d80fec0393",
+       "ps": "ab3399b8685e660ae2662ea816489d3fa0ebe00ee0b48250d0aeafac8b5fdbbc"
+      },
+      "sampling": {
+       "strataColumns": [
+        "population",
+        "cleanPrefixBefore",
+        "target",
+        "inDaySet"
+       ],
+       "ps": {
+        "targetKeys": 2266,
+        "inDaySet": 2266,
+        "holes": 0,
+        "minShareBefore": {
+         "num": 48,
+         "den": 2235,
+         "value": 0.021476510067114093
+        },
+        "minShareAfter": {
+         "num": 40,
+         "den": 1165,
+         "value": 0.034334763948497854
+        },
+        "excludedSmallStrata": 0,
+        "strata": {
+         "2017|LIQ_100M_PLUS": [
+          1165,
+          35,
+          40,
+          40
+         ],
+         "2017|LIQ_10M_100M": [
+          2686,
+          89,
+          94,
+          94
+         ],
+         "2017|LIQ_1M_10M": [
+          2023,
+          57,
+          70,
+          70
+         ],
+         "2018|LIQ_100M_PLUS": [
+          983,
+          33,
+          34,
+          34
+         ],
+         "2018|LIQ_10M_100M": [
+          2235,
+          48,
+          78,
+          78
+         ],
+         "2018|LIQ_1M_10M": [
+          1837,
+          57,
+          64,
+          64
+         ],
+         "2019|LIQ_100M_PLUS": [
+          1099,
+          37,
+          38,
+          38
+         ],
+         "2019|LIQ_10M_100M": [
+          2591,
+          72,
+          90,
+          90
+         ],
+         "2019|LIQ_1M_10M": [
+          2157,
+          70,
+          75,
+          75
+         ],
+         "2020|LIQ_100M_PLUS": [
+          1671,
+          44,
+          58,
+          58
+         ],
+         "2020|LIQ_10M_100M": [
+          3483,
+          117,
+          121,
+          121
+         ],
+         "2020|LIQ_1M_10M": [
+          2270,
+          73,
+          79,
+          79
+         ],
+         "2021|LIQ_100M_PLUS": [
+          1624,
+          63,
+          56,
+          56
+         ],
+         "2021|LIQ_10M_100M": [
+          3111,
+          92,
+          108,
+          108
+         ],
+         "2021|LIQ_1M_10M": [
+          2462,
+          73,
+          86,
+          86
+         ],
+         "2022|LIQ_100M_PLUS": [
+          1106,
+          32,
+          38,
+          38
+         ],
+         "2022|LIQ_10M_100M": [
+          2228,
+          73,
+          77,
+          77
+         ],
+         "2022|LIQ_1M_10M": [
+          1638,
+          56,
+          57,
+          57
+         ],
+         "2023|LIQ_100M_PLUS": [
+          1595,
+          51,
+          55,
+          55
+         ],
+         "2023|LIQ_10M_100M": [
+          3250,
+          90,
+          113,
+          113
+         ],
+         "2023|LIQ_1M_10M": [
+          2138,
+          81,
+          74,
+          74
+         ],
+         "2024|LIQ_100M_PLUS": [
+          2112,
+          61,
+          73,
+          73
+         ],
+         "2024|LIQ_10M_100M": [
+          4291,
+          132,
+          150,
+          150
+         ],
+         "2024|LIQ_1M_10M": [
+          2974,
+          78,
+          104,
+          104
+         ],
+         "2025|LIQ_100M_PLUS": [
+          2029,
+          67,
+          71,
+          71
+         ],
+         "2025|LIQ_10M_100M": [
+          2934,
+          94,
+          102,
+          102
+         ],
+         "2025|LIQ_1M_10M": [
+          1827,
+          50,
+          63,
+          63
+         ],
+         "2026|LIQ_100M_PLUS": [
+          2038,
+          68,
+          71,
+          71
+         ],
+         "2026|LIQ_10M_100M": [
+          2394,
+          80,
+          83,
+          83
+         ],
+         "2026|LIQ_1M_10M": [
+          1265,
+          41,
+          44,
+          44
+         ]
+        }
+       },
+       "ep": {
+        "targetKeys": 2017,
+        "withMinutes": 2017,
+        "inDaySet": 1851,
+        "holes": 0,
+        "excludedBaseline": 166,
+        "minShareBefore": {
+         "num": 18,
+         "den": 293,
+         "value": 0.06143344709897611
+        },
+        "minShareAfter": {
+         "num": 22,
+         "den": 293,
+         "value": 0.07508532423208192
+        },
+        "excludedSmallStrata": 3,
+        "strata": {
+         "2017|LIQ_100M_PLUS": [
+          67,
+          6,
+          0,
+          0
+         ],
+         "2017|LIQ_10M_100M": [
+          293,
+          18,
+          43,
+          22
+         ],
+         "2017|LIQ_1M_10M": [
+          294,
+          25,
+          44,
+          24
+         ],
+         "2018|LIQ_100M_PLUS": [
+          85,
+          6,
+          0,
+          0
+         ],
+         "2018|LIQ_10M_100M": [
+          390,
+          35,
+          58,
+          36
+         ],
+         "2018|LIQ_1M_10M": [
+          326,
+          24,
+          48,
+          25
+         ],
+         "2019|LIQ_100M_PLUS": [
+          81,
+          7,
+          0,
+          0
+         ],
+         "2019|LIQ_10M_100M": [
+          355,
+          38,
+          53,
+          51
+         ],
+         "2019|LIQ_1M_10M": [
+          304,
+          36,
+          45,
+          44
+         ],
+         "2020|LIQ_100M_PLUS": [
+          609,
+          96,
+          91,
+          90
+         ],
+         "2020|LIQ_10M_100M": [
+          1076,
+          153,
+          161,
+          158
+         ],
+         "2020|LIQ_1M_10M": [
+          764,
+          107,
+          114,
+          106
+         ],
+         "2021|LIQ_100M_PLUS": [
+          405,
+          60,
+          60,
+          60
+         ],
+         "2021|LIQ_10M_100M": [
+          679,
+          99,
+          101,
+          97
+         ],
+         "2021|LIQ_1M_10M": [
+          574,
+          75,
+          86,
+          79
+         ],
+         "2022|LIQ_100M_PLUS": [
+          245,
+          31,
+          36,
+          35
+         ],
+         "2022|LIQ_10M_100M": [
+          478,
+          65,
+          71,
+          70
+         ],
+         "2022|LIQ_1M_10M": [
+          370,
+          67,
+          55,
+          51
+         ],
+         "2023|LIQ_100M_PLUS": [
+          183,
+          37,
+          27,
+          26
+         ],
+         "2023|LIQ_10M_100M": [
+          442,
+          56,
+          66,
+          63
+         ],
+         "2023|LIQ_1M_10M": [
+          409,
+          52,
+          61,
+          55
+         ],
+         "2024|LIQ_100M_PLUS": [
+          342,
+          51,
+          51,
+          50
+         ],
+         "2024|LIQ_10M_100M": [
+          702,
+          95,
+          105,
+          104
+         ],
+         "2024|LIQ_1M_10M": [
+          564,
+          90,
+          84,
+          80
+         ],
+         "2025|LIQ_100M_PLUS": [
+          466,
+          58,
+          69,
+          66
+         ],
+         "2025|LIQ_10M_100M": [
+          937,
+          142,
+          140,
+          132
+         ],
+         "2025|LIQ_1M_10M": [
+          628,
+          88,
+          94,
+          93
+         ],
+         "2026|LIQ_100M_PLUS": [
+          466,
+          61,
+          69,
+          69
+         ],
+         "2026|LIQ_10M_100M": [
+          767,
+          100,
+          115,
+          108
+         ],
+         "2026|LIQ_1M_10M": [
+          468,
+          50,
+          70,
+          57
+         ]
+        }
+       }
+      },
+      "ep": {
+       "REF": {
+        "trades": 604,
+        "closed": 602,
+        "openAtDataEnd": 2,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 101,
+         "STOP_SAME_BAR_CERTAIN": 382,
+         "STOP_INITIAL": 99,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 17,
+         "null": 2
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11639,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 68,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "199c02fb815ea04680f769be8559d84dc0695dbe1c79c5127d6a173071e2dced"
+       },
+       "ALT-ORH-5": {
+        "trades": 404,
+        "closed": 402,
+        "openAtDataEnd": 2,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 105,
+         "STOP_SAME_BAR_CERTAIN": 173,
+         "STOP_INITIAL": 102,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 19,
+         "null": 2
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11629,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 257,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 111,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "878bf1b18b81c31c112344b17b43a91a71a2e3220a7bb9cf519a67a4e9ccb3ae"
+       },
+       "ALT-NO-VOLUME-RULE": {
+        "trades": 1035,
+        "closed": 1032,
+        "openAtDataEnd": 3,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 176,
+         "STOP_SAME_BAR_CERTAIN": 653,
+         "STOP_INITIAL": 175,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 25,
+         "null": 3
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11621,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 73,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "e66f902dae40d2fffb4b0f9201ca0f8b05b9470f2cd60c962352554484e53251"
+       },
+       "ALT-QUIET-PRIOR-RUN-50": {
+        "trades": 403,
+        "closed": 402,
+        "openAtDataEnd": 1,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 72,
+         "STOP_SAME_BAR_CERTAIN": 243,
+         "STOP_INITIAL": 72,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 12,
+         "null": 1
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 601,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 7836,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 170,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 111,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 33,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 56,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 57,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+        },
+        "reconciliation": true,
+        "tradesSha256": "c59d205459f8c95642522f6d33d11b35512876f07127c14dfc71aabd4256557c"
+       },
+       "ALT-EXIT-MA10": {
+        "trades": 608,
+        "closed": 607,
+        "openAtDataEnd": 1,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA10": 133,
+         "STOP_SAME_BAR_CERTAIN": 386,
+         "STOP_INITIAL": 76,
+         "STOP_INITIAL_GAP_OPEN": 12,
+         "null": 1
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11642,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 68,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "921fb1516051ff87d6e7b4dae3b8b9bcf9015ad8a60f51947274d145f6d46a25"
+       },
+       "ALT-EXIT-MA50": {
+        "trades": 594,
+        "closed": 589,
+        "openAtDataEnd": 5,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA50": 76,
+         "STOP_SAME_BAR_CERTAIN": 374,
+         "STOP_INITIAL": 112,
+         "TERMINAL_DELISTED": 7,
+         "STOP_INITIAL_GAP_OPEN": 18,
+         "SECURITY_UNAVAILABLE": 2,
+         "null": 5
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11635,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 68,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "46348d41b30c43a3eedfebbabfc78ee02566d21c5478861bf01826050047a339"
+       },
+       "ALT-FILL-MINUTE-OPTIMISTIC": {
+        "trades": 603,
+        "closed": 601,
+        "openAtDataEnd": 2,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 102,
+         "STOP_SAME_BAR_CERTAIN": 381,
+         "STOP_INITIAL": 99,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 16,
+         "null": 2
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11639,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 68,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "5c9b6c3474dfaf4669fd15db5d309bd8fa9fd8147cef59d8e91d2e22ad799eef"
+       },
+       "ALT-RISK-00025": {
+        "trades": 614,
+        "closed": 612,
+        "openAtDataEnd": 2,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 101,
+         "STOP_SAME_BAR_CERTAIN": 390,
+         "STOP_INITIAL": 101,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 17,
+         "null": 2
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11639,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 68,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "ffb9f29958b899ad716302e7b9f14a8e8c06ca706ba4d5f66135c5646276a8a1"
+       },
+       "ALT-RISK-001": {
+        "trades": 568,
+        "closed": 566,
+        "openAtDataEnd": 2,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 98,
+         "STOP_SAME_BAR_CERTAIN": 357,
+         "STOP_INITIAL": 94,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 14,
+         "null": 2
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11640,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 68,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "d53d291faff0fc70113d9c7f67b7aa48dbe8e01f5aa858ed90f0e55a322f0bf3"
+       }
+      },
+      "epSf7Execution": {
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": {
+        "compareTo": "ALT-FILL-MINUTE-OPTIMISTIC",
+        "trades": 600,
+        "reconciliation": true,
+        "ledgerSha256": "e48c941ee2af9b166af63e34ef1ea7f747db6bbe804bf89ee3cdb9705d278a7e",
+        "tradesSha256": "39cd6ab3284f4ef8f187fbe2db849ecb9316298d49f057fad3f04766d4801d9f"
+       }
+      },
+      "ps": {
+       "REF": {
+        "closedTrades": 262,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 20,
+         "CLOSED": 262,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+         "NOT_TRIGGERED": 89,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 51,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 5,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 5
+        },
+        "exitReasons": {
+         "PS_STOP_HOD_GAP_OPEN": 18,
+         "PS_STOP_HOD": 189,
+         "PS_TARGET_MA10": 54,
+         "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+        },
+        "tradesSha256": "448db1e22147f0a69d00526305d2bd492446e10593eb70f82d56762c3d7b7c6a"
+       },
+       "ALT-STREAK4": {
+        "closedTrades": 51,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 2711,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 4,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 225,
+         "CLOSED": 51,
+         "NOT_TRIGGERED": 33,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 15,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+        },
+        "exitReasons": {
+         "PS_STOP_HOD": 37,
+         "PS_TARGET_MA10": 10,
+         "PS_STOP_HOD_GAP_OPEN": 4
+        },
+        "tradesSha256": "af6afe9099bc817a2b5f41ffdd18a247c0080ad202b7f5ed586a58566ae0ef7c"
+       },
+       "ALT-NO-ACCEL": {
+        "closedTrades": 1416,
+        "openAtDataEnd": 1,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 62881,
+         "CLOSED": 1416,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 69,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 6862,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 319,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 7,
+         "NOT_TRIGGERED": 466,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 41,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 16,
+         "OPEN_AT_DATA_END": 1
+        },
+        "exitReasons": {
+         "PS_TARGET_MA10": 321,
+         "PS_STOP_HOD_GAP_OPEN": 95,
+         "PS_STOP_HOD": 997,
+         "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 3
+        },
+        "tradesSha256": "4f2575c7c523cdc8ad9441448c100e34846daea270c9e524e6406aaa36a3efd6"
+       },
+       "ALT-ENTRY-FIRST-RED-5MIN": {
+        "closedTrades": 305,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 20,
+         "CLOSED": 305,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+         "NOT_TRIGGERED": 45,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 51,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 5,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 5,
+         "NOT_EXECUTED_NO_RED_5MIN_CANDLE": 1
+        },
+        "exitReasons": {
+         "PS_STOP_HOD_GAP_OPEN": 23,
+         "PS_STOP_HOD": 225,
+         "PS_TARGET_MA10": 56,
+         "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+        },
+        "tradesSha256": "0f94b89828932c588b6f2cf4d3dd9ca42f60c1e9f7f3d91fae379a9be4eb622c"
+       },
+       "ALT-ENTRY-FAILED-VWAP-RETEST": {
+        "closedTrades": 267,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 20,
+         "NOT_TRIGGERED": 85,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+         "CLOSED": 267,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 51,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 5,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+        },
+        "exitReasons": {
+         "PS_STOP_HOD": 203,
+         "PS_TARGET_MA10": 46,
+         "PS_STOP_HOD_GAP_OPEN": 18
+        },
+        "tradesSha256": "cfd7ebe9a55eff10e240d76a18b7da33d3d1e7ea2c303f3036c32a6e2aebb5d4"
+       },
+       "ALT-STOP-VWAP-RECLAIM": {
+        "closedTrades": 262,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 20,
+         "CLOSED": 262,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+         "NOT_TRIGGERED": 89,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 51,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 5,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 5
+        },
+        "exitReasons": {
+         "PS_STOP_HOD_GAP_OPEN": 3,
+         "PS_VWAP_RECLAIM": 211,
+         "PS_STOP_HOD": 30,
+         "PS_TARGET_MA10": 17,
+         "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+        },
+        "tradesSha256": "d9dedd129a8abe195496210bee1c9e874630fb81d5a5fc5aad36ed2c5f981f3c"
+       },
+       "ALT-TARGET-MA20": {
+        "closedTrades": 255,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 20,
+         "CLOSED": 255,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 12,
+         "NOT_TRIGGERED": 89,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 51,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 5
+        },
+        "exitReasons": {
+         "PS_STOP_HOD_GAP_OPEN": 16,
+         "PS_STOP_HOD": 192,
+         "PS_TARGET_MA20": 46,
+         "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+        },
+        "tradesSha256": "3f84cca4dbfd4f65ffc13dd99a88ac994550eda8a3ab65561b41edf4f8d2a9d4"
+       },
+       "ALT-TARGET-HALF-MA10-MA20": {
+        "closedTrades": 254,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 20,
+         "CLOSED": 254,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 13,
+         "NOT_TRIGGERED": 89,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 51,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 5
+        },
+        "exitReasons": {
+         "PS_STOP_HOD_GAP_OPEN": 33,
+         "PS_STOP_HOD": 375,
+         "PS_TARGET_MA10": 52,
+         "PS_TARGET_MA20": 46,
+         "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+        },
+        "tradesSha256": "d0f4d0c75a7860139474ad7b392f4379ff5ac6f95fdc3cbc6899ab2cd6828606"
+       }
+      },
+      "psOnePositionPerTicker": {
+       "REF": {
+        "closedTrades": 262,
+        "tradesSha256": "448db1e22147f0a69d00526305d2bd492446e10593eb70f82d56762c3d7b7c6a"
+       },
+       "ALT-STREAK4": {
+        "closedTrades": 51,
+        "tradesSha256": "af6afe9099bc817a2b5f41ffdd18a247c0080ad202b7f5ed586a58566ae0ef7c"
+       },
+       "ALT-NO-ACCEL": {
+        "closedTrades": 1414,
+        "tradesSha256": "532687fbef43e33d0171ad09878f28a5a77544aed7906f8b5827c9d75a48fe08"
+       },
+       "ALT-ENTRY-FIRST-RED-5MIN": {
+        "closedTrades": 305,
+        "tradesSha256": "0f94b89828932c588b6f2cf4d3dd9ca42f60c1e9f7f3d91fae379a9be4eb622c"
+       },
+       "ALT-ENTRY-FAILED-VWAP-RETEST": {
+        "closedTrades": 267,
+        "tradesSha256": "cfd7ebe9a55eff10e240d76a18b7da33d3d1e7ea2c303f3036c32a6e2aebb5d4"
+       },
+       "ALT-STOP-VWAP-RECLAIM": {
+        "closedTrades": 262,
+        "tradesSha256": "d9dedd129a8abe195496210bee1c9e874630fb81d5a5fc5aad36ed2c5f981f3c"
+       },
+       "ALT-TARGET-MA20": {
+        "closedTrades": 255,
+        "tradesSha256": "3f84cca4dbfd4f65ffc13dd99a88ac994550eda8a3ab65561b41edf4f8d2a9d4"
+       },
+       "ALT-TARGET-HALF-MA10-MA20": {
+        "closedTrades": 254,
+        "tradesSha256": "d0f4d0c75a7860139474ad7b392f4379ff5ac6f95fdc3cbc6899ab2cd6828606"
+       }
+      },
+      "metrics": "SEALED (claude/supertrader-validation-results, run 41504851988, 20261102T192348Z)"
+     },
+     "sf7Validation": {
+      "version": "sf7-execution-checks-1.0.0",
+      "daySet": "CLEAN",
+      "violations": {
+       "REF": 0,
+       "ALT-ORH-5": 0,
+       "ALT-NO-VOLUME-RULE": 0,
+       "ALT-QUIET-PRIOR-RUN-50": 0,
+       "ALT-EXIT-MA10": 0,
+       "ALT-EXIT-MA50": 0,
+       "ALT-FILL-MINUTE-OPTIMISTIC": 0,
+       "ALT-RISK-00025": 0,
+       "ALT-RISK-001": 0,
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 0
+      },
+      "entryDayLowBelowStopKept": {
+       "REF": 178,
+       "ALT-ORH-5": 189,
+       "ALT-NO-VOLUME-RULE": 316,
+       "ALT-QUIET-PRIOR-RUN-50": 131,
+       "ALT-EXIT-MA10": 181,
+       "ALT-EXIT-MA50": 175,
+       "ALT-FILL-MINUTE-OPTIMISTIC": 180,
+       "ALT-RISK-00025": 181,
+       "ALT-RISK-001": 173,
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 180
+      },
+      "sameBarExits": {
+       "REF": 381,
+       "ALT-ORH-5": 169,
+       "ALT-NO-VOLUME-RULE": 637,
+       "ALT-QUIET-PRIOR-RUN-50": 241,
+       "ALT-EXIT-MA10": 384,
+       "ALT-EXIT-MA50": 370,
+       "ALT-FILL-MINUTE-OPTIMISTIC": 377,
+       "ALT-RISK-00025": 388,
+       "ALT-RISK-001": 360,
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 378
+      },
+      "trades": {
+       "REF": 600,
+       "ALT-ORH-5": 403,
+       "ALT-NO-VOLUME-RULE": 1023,
+       "ALT-QUIET-PRIOR-RUN-50": 399,
+       "ALT-EXIT-MA10": 606,
+       "ALT-EXIT-MA50": 586,
+       "ALT-FILL-MINUTE-OPTIMISTIC": 597,
+       "ALT-RISK-00025": 611,
+       "ALT-RISK-001": 573,
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 598
+      },
+      "intradayOutsideDailyRange": {
+       "REF": 2,
+       "ALT-ORH-5": 0,
+       "ALT-NO-VOLUME-RULE": 5,
+       "ALT-QUIET-PRIOR-RUN-50": 2,
+       "ALT-EXIT-MA10": 2,
+       "ALT-EXIT-MA50": 2,
+       "ALT-FILL-MINUTE-OPTIMISTIC": 2,
+       "ALT-RISK-00025": 2,
+       "ALT-RISK-001": 2,
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 2
+      }
+     },
+     "intradayAllocationByMinute": {
+      "sets": {
+       "BEFORE_FIX": {
+        "REF": 22,
+        "ALT-ORH-5": 4,
+        "ALT-NO-VOLUME-RULE": 121,
+        "ALT-QUIET-PRIOR-RUN-50": 12,
+        "ALT-EXIT-MA10": 7,
+        "ALT-EXIT-MA50": 59,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 24,
+        "ALT-RISK-00025": 2,
+        "ALT-RISK-001": 66
+       },
+       "CLEAN": {
+        "REF": 22,
+        "ALT-ORH-5": 4,
+        "ALT-NO-VOLUME-RULE": 120,
+        "ALT-QUIET-PRIOR-RUN-50": 12,
+        "ALT-EXIT-MA10": 7,
+        "ALT-EXIT-MA50": 59,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 24,
+        "ALT-RISK-00025": 2,
+        "ALT-RISK-001": 66
+       },
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "REF": 11,
+        "ALT-ORH-5": 1,
+        "ALT-NO-VOLUME-RULE": 62,
+        "ALT-QUIET-PRIOR-RUN-50": 8,
+        "ALT-EXIT-MA10": 4,
+        "ALT-EXIT-MA50": 32,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 13,
+        "ALT-RISK-00025": 1,
+        "ALT-RISK-001": 30
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "REF": 7,
+        "ALT-ORH-5": 1,
+        "ALT-NO-VOLUME-RULE": 62,
+        "ALT-QUIET-PRIOR-RUN-50": 4,
+        "ALT-EXIT-MA10": 3,
+        "ALT-EXIT-MA50": 23,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 9,
+        "ALT-RISK-00025": 1,
+        "ALT-RISK-001": 25
+       }
+      },
+      "sf7Execution": {
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 24
+      },
+      "extE7_6": {
+       "REF": 22,
+       "ALT-ORH-5": 3,
+       "ALT-NO-VOLUME-RULE": 127,
+       "ALT-QUIET-PRIOR-RUN-50": 13,
+       "ALT-EXIT-MA10": 9,
+       "ALT-EXIT-MA50": 59,
+       "ALT-FILL-MINUTE-OPTIMISTIC": 23,
+       "ALT-RISK-00025": 3,
+       "ALT-RISK-001": 62,
+       "sf7:SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 22
+      }
+     }
+    },
+    {
      "runId": "41504851988",
      "commit": "2a61ec52aaf20f5ca0062c94c0f06899deb3a6a2",
-     "role": "AUTHORITATIVE",
-     "validity": "C09 F-MC3M-01/02 (PR #1262: places and cash allocated by fill minute), cache-only rerun on the current code (0 requests): every input equal to run 40228395395 (receipt incl. dataset, cache, day-set and register hashes; candidates, intradayCoverage, sampling); the PS blocks (ps, extE7_6.ps) byte-identical; every EP block changed (47 of 47 incl. sf7Execution and extE7_6.ep; CLEAN REF 611 -> 600 trades), ep.sf7Validation without violation; counts in docs/SUPERTRADER_C09_ALLOCATION_RERUN.md",
+     "role": "SUPERSEDED_BY_41597368393_C09_ALLOCATION_COUNTER_ONLY",
+     "validity": "C09 F-MC3M-01/02 (PR #1262: places and cash allocated by fill minute), cache-only rerun on the current code (0 requests): every input equal to run 40228395395 (receipt incl. dataset, cache, day-set and register hashes; candidates, intradayCoverage, sampling); the PS blocks (ps, extE7_6.ps) byte-identical; every EP block changed (47 of 47 incl. sf7Execution and extE7_6.ep; CLEAN REF 611 -> 600 trades), ep.sf7Validation without violation; counts in docs/SUPERTRADER_C09_ALLOCATION_RERUN.md; superseded by 41597368393 (C09 allocation counter, PR #1263: counter only, every EP result identical)",
      "strategies": [
       "EP",
       "PS"
@@ -8910,10 +10787,1887 @@
    ],
    "runs": [
     {
+     "runId": "41597368393",
+     "commit": "3ae51d66a6caa96d77e7b91451a97ade1ec4844d",
+     "role": "AUTHORITATIVE",
+     "validity": "C09 allocation counter (PR #1263: runner publishes counts.intradayAllocationByMinute per EP variant block), cache-only rerun on the current code (0 requests): every input equal to run 41504851988 (receipt incl. dataset, cache, day-set and register hashes; candidates, intradayCoverage, sampling); every EP block (47 of 47 incl. sf7Execution and extE7_6.ep) equal to 41504851988 apart from the new field intradayAllocationByMinute (all tradesSha256 / ledgerSha256 equal), the PS blocks and ep.sf7Validation identical; counts in docs/SUPERTRADER_C09_ALLOCATION_RERUN.md section 7",
+     "strategies": [
+      "EP",
+      "PS"
+     ],
+     "snapshotId": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d",
+     "datasetVerified": "EXACT",
+     "datasetSha256": "3ea6443de70c790c2927ceb65653077fbd2095e83d03389d9a450bc47df8d454",
+     "researchCodeSha256": "20bd1b3bdae83805bc19e96a267a8173ecfb96cf2f830f472d64e84b59b2b2af",
+     "engineCodeSha256": "89fbcf864a57041379bc62d4af64cfda7c5601aaaf1c08b38fd6b91b6472ef24",
+     "epVariantRegistrySha256": "e8d25282f42a98234dd8782a35960dca3776ff0a4657a84e7eff5aab41a3b22f",
+     "psVariantRegistrySha256": "436358d6444f6168c16c09631d112914918daff17c3624ae59fa4b35377a04e9",
+     "sampleRegistrySha256": "ca54c1feed3545cd28632cebaf2b12473f9e2461821e2a54a1605338ed73caae",
+     "minuteCacheSha256": "c399a88c7514bec942e84fb2de1f6f3f823cca333d04e6a23e213250aa840d9b",
+     "baselineCacheSha256": "911b53b5a7dac161d3667c54dbdd4dd4c011d681a43def17f403191eec8d422b",
+     "coverage": {
+      "requestsThisRun": 0,
+      "mode": "CACHE_ONLY_ZERO_REQUESTS",
+      "sample": "DETERMINISTIC_HASH_ORDER_PREFIX (sha256 of TICKER|date; nothing outcome-related); evaluated on the clean per-method prefixes (Supertrader 6.0), NOT ***matically representative",
+      "ep": {
+       "candidateDaysInIexHistory": 13769,
+       "withMinutes": 2000,
+       "withBaseline": 1828,
+       "baselineTooFewIexDays": 172,
+       "withMinutesWithoutBaseline": 0
+      },
+      "ps": {
+       "candidateDaysInIexHistory": 65216,
+       "withMinutes": 2065
+      },
+      "complete": false
+     },
+     "sampling": {
+      "ep": {
+       "prefix": {
+        "population": 13769,
+        "prefixLength": 2000,
+        "cachedInPrefix": 2000,
+        "holesInPrefix": 0,
+        "cachedBeyondPrefixDropped": 0
+       },
+       "commonDaySet": {
+        "size": 1828,
+        "excluded": {
+         "BASELINE_TOO_FEW_IEX_DAYS": 172
+        }
+       }
+      },
+      "ps": {
+       "prefix": {
+        "population": 65216,
+        "prefixLength": 2014,
+        "cachedInPrefix": 2014,
+        "holesInPrefix": 0,
+        "cachedBeyondPrefixDropped": 51
+       },
+       "psCandidatesThatAreEpCandidates": {
+        "population": 474,
+        "inPsPrefix": 14,
+        "cachedOutsidePsPrefixDropped": 51
+       }
+      },
+      "strataFractions": {
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "ep": {
+         "num": 33,
+         "den": 293,
+         "value": 0.11262798634812286
+        },
+        "ps": {
+         "num": 48,
+         "den": 2235,
+         "value": 0.021476510067114093
+        }
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "ep": {
+         "num": 33,
+         "den": 293,
+         "value": 0.11262798634812286
+        },
+        "ps": {
+         "num": 6,
+         "den": 334,
+         "value": 0.017964071856287425
+        }
+       }
+      }
+     },
+     "ep": {
+      "REF": {
+       "trades": 600,
+       "closed": 598,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 381,
+        "EP_CLOSE_BELOW_MA20": 101,
+        "STOP_INITIAL": 97,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 16,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11749,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "f4d9ffc7e938023a9646118ae586054570f94bf1bb7611ccad5f28a5888e91fb"
+      },
+      "ALT-ORH-5": {
+       "trades": 403,
+       "closed": 401,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 169,
+        "EP_CLOSE_BELOW_MA20": 107,
+        "STOP_INITIAL": 103,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 19,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11738,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 106,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "5eab499acf39d4ed029fa00bef78d77e78011a78ddcfde6ab743e7222bb2d1ae"
+      },
+      "ALT-NO-VOLUME-RULE": {
+       "trades": 1023,
+       "closed": 1020,
+       "openAtDataEnd": 3,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 637,
+        "EP_CLOSE_BELOW_MA20": 176,
+        "STOP_INITIAL": 179,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 25,
+        "null": 3
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11730,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 70,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "cf5cf06b526933f9951643e1ed91dbcfda204c0e2a4978e4e52fc438f609d999"
+      },
+      "ALT-QUIET-PRIOR-RUN-50": {
+       "trades": 399,
+       "closed": 398,
+       "openAtDataEnd": 1,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 241,
+        "EP_CLOSE_BELOW_MA20": 73,
+        "STOP_INITIAL": 70,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 11,
+        "null": 1
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 601,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 7908,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 103,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 106,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 35,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 56,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 53,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+       },
+       "reconciliation": true,
+       "tradesSha256": "566f964505a1cae0f2764e36c8f4f6c55764fede451a564f39284295a36b4632"
+      },
+      "ALT-EXIT-MA10": {
+       "trades": 606,
+       "closed": 605,
+       "openAtDataEnd": 1,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 384,
+        "EP_CLOSE_BELOW_MA10": 132,
+        "STOP_INITIAL": 76,
+        "STOP_INITIAL_GAP_OPEN": 13,
+        "null": 1
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11751,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "9bad9e982ee462776de0faab36b4ec70646a3c281f447b5fd23a3e422538eb88"
+      },
+      "ALT-EXIT-MA50": {
+       "trades": 586,
+       "closed": 581,
+       "openAtDataEnd": 5,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 370,
+        "EP_CLOSE_BELOW_MA50": 76,
+        "STOP_INITIAL": 109,
+        "TERMINAL_DELISTED": 7,
+        "STOP_INITIAL_GAP_OPEN": 17,
+        "SECURITY_UNAVAILABLE": 2,
+        "null": 5
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11747,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 61,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "b20866565ea42ed7ce2f29977f808d2cd5e6429facdd8d1e68748348583badaf"
+      },
+      "ALT-FILL-MINUTE-OPTIMISTIC": {
+       "trades": 597,
+       "closed": 595,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 377,
+        "EP_CLOSE_BELOW_MA20": 101,
+        "STOP_INITIAL": 98,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 16,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "2933c3ada07fc0bf370a245b272631509918d20825954e2ad4fbdfc613bf2e40"
+      },
+      "ALT-RISK-00025": {
+       "trades": 611,
+       "closed": 609,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 388,
+        "EP_CLOSE_BELOW_MA20": 101,
+        "STOP_INITIAL": 100,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 17,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "084603c38b22f19695eceda63185f261c0be5345e7094637494337d1949fe524"
+      },
+      "ALT-RISK-001": {
+       "trades": 573,
+       "closed": 571,
+       "openAtDataEnd": 2,
+       "exitReasons": {
+        "STOP_SAME_BAR_CERTAIN": 360,
+        "EP_CLOSE_BELOW_MA20": 99,
+        "STOP_INITIAL": 94,
+        "TERMINAL_DELISTED": 3,
+        "STOP_INITIAL_GAP_OPEN": 15,
+        "null": 2
+       },
+       "notExecuted": {
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11749,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 172,
+        "NOT_EXECUTED_NO_OPENING_RANGE": 141,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 60,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 80,
+        "NOT_EXECUTED_KK034_WIDE_STOP": 64,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "reconciliation": true,
+       "tradesSha256": "3aded2fd7110310a8d3b97bf3dfe87835a5845e0856200015d5469d8f2e4634f"
+      }
+     },
+     "ps": {
+      "REF": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 15,
+        "PS_STOP_HOD": 162,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "233208d72daf293cf94fdeb7d66b909c9c308007cea1adb7d4f07fa2f0e983b4"
+      },
+      "ALT-STREAK4": {
+       "closedTrades": 47,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 2721,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 3,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 225,
+        "CLOSED": 47,
+        "NOT_TRIGGERED": 29,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 14,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 35,
+        "PS_TARGET_MA10": 9,
+        "PS_STOP_HOD_GAP_OPEN": 3
+       },
+       "tradesSha256": "ba0ef949c2a4c7caed040c0aed3eeb1ac71ce69adacdec3a49a8667ebb597680"
+      },
+      "ALT-NO-ACCEL": {
+       "closedTrades": 1261,
+       "openAtDataEnd": 1,
+       "openAtDataEndByTerminal": {
+        "LISTING_INACTIVE": 1
+       },
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 63151,
+        "CLOSED": 1261,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 51,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 6862,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 282,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 7,
+        "NOT_TRIGGERED": 410,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 37,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 16,
+        "OPEN_AT_DATA_END": 1
+       },
+       "exitReasons": {
+        "PS_TARGET_MA10": 288,
+        "PS_STOP_HOD_GAP_OPEN": 82,
+        "PS_STOP_HOD": 889,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "5e8e1935d0c86ca883443b9a8e5bd9ac424e76d8a34c8f846c9702ade1bd93f1"
+      },
+      "ALT-ENTRY-FIRST-RED-5MIN": {
+       "closedTrades": 264,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 264,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 41,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4,
+        "NOT_EXECUTED_NO_RED_5MIN_CANDLE": 1
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 19,
+        "PS_STOP_HOD": 194,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "701ee3c4c63b64988f95f08f32ae145fd6bdfac3828615e21ea1d1f7ffe3d1fe"
+      },
+      "ALT-ENTRY-FAILED-VWAP-RETEST": {
+       "closedTrades": 235,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "NOT_TRIGGERED": 72,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "CLOSED": 235,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 3
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 180,
+        "PS_TARGET_MA10": 41,
+        "PS_STOP_HOD_GAP_OPEN": 14
+       },
+       "tradesSha256": "39386997002d8cae992cddf449643deaf594caf0b7df55d8c3ff221fc63534ba"
+      },
+      "ALT-STOP-VWAP-RECLAIM": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 3,
+        "PS_VWAP_RECLAIM": 181,
+        "PS_TARGET_MA10": 16,
+        "PS_STOP_HOD": 27,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "38eb32a40d85c599068e74d6262fde4877aa2ad5b0773e76d805ba2ac0951743"
+      },
+      "ALT-TARGET-MA20": {
+       "closedTrades": 221,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 221,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 11,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 13,
+        "PS_STOP_HOD": 166,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "04971a145e620b77067ef4e380ee43c9f03788c072ef7b8e1399512c4dd11178"
+      },
+      "ALT-TARGET-HALF-MA10-MA20": {
+       "closedTrades": 220,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 220,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 12,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 27,
+        "PS_STOP_HOD": 323,
+        "PS_TARGET_MA10": 47,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "1643da1d9ecbf61ebf65650c10e9f3ad3d420a5620567050cb091e7ee065a35d"
+      }
+     },
+     "psOnePositionPerTicker": {
+      "REF": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 15,
+        "PS_STOP_HOD": 162,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "233208d72daf293cf94fdeb7d66b909c9c308007cea1adb7d4f07fa2f0e983b4"
+      },
+      "ALT-STREAK4": {
+       "closedTrades": 47,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 2721,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 3,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 225,
+        "CLOSED": 47,
+        "NOT_TRIGGERED": 29,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 14,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 35,
+        "PS_TARGET_MA10": 9,
+        "PS_STOP_HOD_GAP_OPEN": 3
+       },
+       "tradesSha256": "ba0ef949c2a4c7caed040c0aed3eeb1ac71ce69adacdec3a49a8667ebb597680"
+      },
+      "ALT-NO-ACCEL": {
+       "closedTrades": 1260,
+       "openAtDataEnd": 1,
+       "openAtDataEndByTerminal": {
+        "LISTING_INACTIVE": 1
+       },
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 63073,
+        "CLOSED": 1260,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 51,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 6862,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 282,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 7,
+        "SKIPPED_EARLIER_TRADE_OPEN": 79,
+        "NOT_TRIGGERED": 410,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 37,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 16,
+        "OPEN_AT_DATA_END": 1
+       },
+       "exitReasons": {
+        "PS_TARGET_MA10": 288,
+        "PS_STOP_HOD_GAP_OPEN": 82,
+        "PS_STOP_HOD": 888,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "5bbb2089a26cd83cabdf9bb4caa8d98705d8ac22b8c67b2d3dd9044f888edbbd"
+      },
+      "ALT-ENTRY-FIRST-RED-5MIN": {
+       "closedTrades": 264,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11807,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 264,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 41,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "SKIPPED_EARLIER_TRADE_OPEN": 2,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4,
+        "NOT_EXECUTED_NO_RED_5MIN_CANDLE": 1
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 19,
+        "PS_STOP_HOD": 194,
+        "PS_TARGET_MA10": 50,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "701ee3c4c63b64988f95f08f32ae145fd6bdfac3828615e21ea1d1f7ffe3d1fe"
+      },
+      "ALT-ENTRY-FAILED-VWAP-RETEST": {
+       "closedTrades": 235,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11808,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "NOT_TRIGGERED": 72,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "CLOSED": 235,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "SKIPPED_EARLIER_TRADE_OPEN": 1,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 3
+       },
+       "exitReasons": {
+        "PS_STOP_HOD": 180,
+        "PS_TARGET_MA10": 41,
+        "PS_STOP_HOD_GAP_OPEN": 14
+       },
+       "tradesSha256": "39386997002d8cae992cddf449643deaf594caf0b7df55d8c3ff221fc63534ba"
+      },
+      "ALT-STOP-VWAP-RECLAIM": {
+       "closedTrades": 228,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 228,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 3,
+        "PS_VWAP_RECLAIM": 181,
+        "PS_TARGET_MA10": 16,
+        "PS_STOP_HOD": 27,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "38eb32a40d85c599068e74d6262fde4877aa2ad5b0773e76d805ba2ac0951743"
+      },
+      "ALT-TARGET-MA20": {
+       "closedTrades": 221,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 221,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 11,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 13,
+        "PS_STOP_HOD": 166,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+       },
+       "tradesSha256": "04971a145e620b77067ef4e380ee43c9f03788c072ef7b8e1399512c4dd11178"
+      },
+      "ALT-TARGET-HALF-MA10-MA20": {
+       "closedTrades": 220,
+       "openAtDataEnd": 0,
+       "openAtDataEndByTerminal": {},
+       "statuses": {
+        "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11809,
+        "NOT_EVALUATED_OUTSIDE_DAY_SET": 13,
+        "CLOSED": 220,
+        "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+        "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 12,
+        "NOT_TRIGGERED": 78,
+        "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 44,
+        "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+        "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+       },
+       "exitReasons": {
+        "PS_STOP_HOD_GAP_OPEN": 27,
+        "PS_STOP_HOD": 323,
+        "PS_TARGET_MA10": 47,
+        "PS_TARGET_MA20": 41,
+        "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+       },
+       "tradesSha256": "1643da1d9ecbf61ebf65650c10e9f3ad3d420a5620567050cb091e7ee065a35d"
+      }
+     },
+     "tradesBySet": {
+      "ep": {
+       "BEFORE_FIX": {
+        "REF": 600,
+        "ALT-ORH-5": 403,
+        "ALT-NO-VOLUME-RULE": 1075,
+        "ALT-QUIET-PRIOR-RUN-50": 399,
+        "ALT-EXIT-MA10": 606,
+        "ALT-EXIT-MA50": 586,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 597,
+        "ALT-RISK-00025": 611,
+        "ALT-RISK-001": 573
+       },
+       "CLEAN": {
+        "REF": 600,
+        "ALT-ORH-5": 403,
+        "ALT-NO-VOLUME-RULE": 1023,
+        "ALT-QUIET-PRIOR-RUN-50": 399,
+        "ALT-EXIT-MA10": 606,
+        "ALT-EXIT-MA50": 586,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 597,
+        "ALT-RISK-00025": 611,
+        "ALT-RISK-001": 573
+       },
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "REF": 455,
+        "ALT-ORH-5": 297,
+        "ALT-NO-VOLUME-RULE": 801,
+        "ALT-QUIET-PRIOR-RUN-50": 307,
+        "ALT-EXIT-MA10": 459,
+        "ALT-EXIT-MA50": 448,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 456,
+        "ALT-RISK-00025": 463,
+        "ALT-RISK-001": 450
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "REF": 423,
+        "ALT-ORH-5": 275,
+        "ALT-NO-VOLUME-RULE": 763,
+        "ALT-QUIET-PRIOR-RUN-50": 282,
+        "ALT-EXIT-MA10": 425,
+        "ALT-EXIT-MA50": 422,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 421,
+        "ALT-RISK-00025": 429,
+        "ALT-RISK-001": 419
+       }
+      },
+      "ps": {
+       "BEFORE_FIX": {
+        "REF": 239,
+        "ALT-STREAK4": 49,
+        "ALT-NO-ACCEL": 1301,
+        "ALT-ENTRY-FIRST-RED-5MIN": 276,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 246,
+        "ALT-STOP-VWAP-RECLAIM": 239,
+        "ALT-TARGET-MA20": 232,
+        "ALT-TARGET-HALF-MA10-MA20": 231
+       },
+       "CLEAN": {
+        "REF": 228,
+        "ALT-STREAK4": 47,
+        "ALT-NO-ACCEL": 1261,
+        "ALT-ENTRY-FIRST-RED-5MIN": 264,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 235,
+        "ALT-STOP-VWAP-RECLAIM": 228,
+        "ALT-TARGET-MA20": 221,
+        "ALT-TARGET-HALF-MA10-MA20": 220
+       },
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "REF": 150,
+        "ALT-STREAK4": 30,
+        "ALT-NO-ACCEL": 859,
+        "ALT-ENTRY-FIRST-RED-5MIN": 176,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 161,
+        "ALT-STOP-VWAP-RECLAIM": 150,
+        "ALT-TARGET-MA20": 146,
+        "ALT-TARGET-HALF-MA10-MA20": 145
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "REF": 126,
+        "ALT-STREAK4": 27,
+        "ALT-NO-ACCEL": 715,
+        "ALT-ENTRY-FIRST-RED-5MIN": 147,
+        "ALT-ENTRY-FAILED-VWAP-RETEST": 137,
+        "ALT-STOP-VWAP-RECLAIM": 126,
+        "ALT-TARGET-MA20": 122,
+        "ALT-TARGET-HALF-MA10-MA20": 121
+       }
+      }
+     },
+     "metrics": "SEALED (claude/supertrader-validation-results, run 41597368393, 20261103T080604Z)",
+     "sf7EpExecution": {
+      "variantsSha256": "1b48d3cd2a629da14ce8ee57c606ea9b06b51054b6333f075b5c846398489223",
+      "revision": "EX7-EP-FILL-MINUTE-CERTAIN",
+      "variants": {
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": {
+        "compareTo": "ALT-FILL-MINUTE-OPTIMISTIC",
+        "daySet": "CLEAN",
+        "trades": 598,
+        "baseTrades": 597,
+        "fillMinuteStop": {
+         "CERTAIN_FILL_AT_MINUTE_OPEN": 12,
+         "CERTAIN_MINUTE_CLOSE_AT_OR_BELOW_STOP": 9
+        },
+        "reconciliation": true,
+        "ledgerSha256": "b7a311a1e00d250a1e0a06b3c17a5725aa2d6075c3fb4c12db535fbb823d0aab",
+        "tradesSha256": "29498a69787c2b14e8bc4ab5997e12f76dd738f65512f17acbaac1ba3451bd8f"
+       }
+      }
+     },
+     "extE7_6": {
+      "id": "CLEAN_EXT_E7_6",
+      "version": "kk-sample-ext-e7-6-1.0.0",
+      "registrySha256": "1422f2efb6eaa0f1f643995679a39f07ae1f196d3b6fe4a02dd258220ce853f8",
+      "targets": {
+       "ps": {
+        "num": 35,
+        "den": 1000
+       },
+       "ep": {
+        "num": 15,
+        "den": 100
+       }
+      },
+      "requestCap": 550,
+      "runs": {
+       "count": {
+        "runId": "40184926658",
+        "commit": "694b91c57b8cd01d3a263cdbf5731a387e53d7ea",
+        "mode": "PLAN_ZERO_REQUESTS",
+        "requestsThisRun": 0,
+        "plan": {
+         "requests": 481,
+         "requestsNeededTotal": 481,
+         "truncated": false,
+         "counts": {
+          "ps": {
+           "missingKeys": 263,
+           "requestsNeeded": 263,
+           "plannedKeys": 263,
+           "plannedRequests": 263,
+           "truncatedKeys": 0
+          },
+          "ep": {
+           "missingKeys": 109,
+           "requestsNeeded": 218,
+           "plannedKeys": 109,
+           "plannedRequests": 218,
+           "truncatedKeys": 0
+          }
+         },
+         "planSha256": "4ce6159bd6529f2182d70eb882127cfd448b14cac20b05f86e8958780c7532f6"
+        }
+       },
+       "fetch": {
+        "runId": "40185337539",
+        "commit": "694b91c57b8cd01d3a263cdbf5731a387e53d7ea",
+        "mode": "FETCH_CAPPED",
+        "outcome": "COMPLETE",
+        "requestsUsed": 481,
+        "requestsPlanned": 481,
+        "cap": 550,
+        "keysPlanned": 372,
+        "keysDone": 372,
+        "httpStatus": {
+         "minutes:200": 372,
+         "baseline:4hour:200": 109
+        },
+        "extensionCacheAfter": {
+         "minutes": 372,
+         "baseline": 109
+        }
+       },
+       "evaluation": {
+        "runId": "40185748527",
+        "commit": "694b91c57b8cd01d3a263cdbf5731a387e53d7ea",
+        "mode": "EVALUATION_CACHE_ONLY",
+        "requestsThisRun": 0,
+        "ledger": {
+         "status": "COMPLETE",
+         "runId": "40185337539",
+         "planned": 481,
+         "requestsUsed": 481,
+         "planSha256": "4ce6159bd6529f2182d70eb882127cfd448b14cac20b05f86e8958780c7532f6"
+        },
+        "planAfterFetch": 0
+       }
+      },
+      "extensionCacheSha256": {
+       "minutes": "c4c0f7f6d74708cb2556125186975729c8734e75488c76cab4945052503bcfd4",
+       "baseline": "ce00da237f232edf584227c692f223f20c517bb9c3ccad6b66141de7c0a8bd17"
+      },
+      "daySetSha256": {
+       "ep": "2bcfd0b50e9e34c4caf4ddf7fb82110ee2d8318bece580fa798fd3d80fec0393",
+       "ps": "ab3399b8685e660ae2662ea816489d3fa0ebe00ee0b48250d0aeafac8b5fdbbc"
+      },
+      "sampling": {
+       "strataColumns": [
+        "population",
+        "cleanPrefixBefore",
+        "target",
+        "inDaySet"
+       ],
+       "ps": {
+        "targetKeys": 2266,
+        "inDaySet": 2266,
+        "holes": 0,
+        "minShareBefore": {
+         "num": 48,
+         "den": 2235,
+         "value": 0.021476510067114093
+        },
+        "minShareAfter": {
+         "num": 40,
+         "den": 1165,
+         "value": 0.034334763948497854
+        },
+        "excludedSmallStrata": 0,
+        "strata": {
+         "2017|LIQ_100M_PLUS": [
+          1165,
+          35,
+          40,
+          40
+         ],
+         "2017|LIQ_10M_100M": [
+          2686,
+          89,
+          94,
+          94
+         ],
+         "2017|LIQ_1M_10M": [
+          2023,
+          57,
+          70,
+          70
+         ],
+         "2018|LIQ_100M_PLUS": [
+          983,
+          33,
+          34,
+          34
+         ],
+         "2018|LIQ_10M_100M": [
+          2235,
+          48,
+          78,
+          78
+         ],
+         "2018|LIQ_1M_10M": [
+          1837,
+          57,
+          64,
+          64
+         ],
+         "2019|LIQ_100M_PLUS": [
+          1099,
+          37,
+          38,
+          38
+         ],
+         "2019|LIQ_10M_100M": [
+          2591,
+          72,
+          90,
+          90
+         ],
+         "2019|LIQ_1M_10M": [
+          2157,
+          70,
+          75,
+          75
+         ],
+         "2020|LIQ_100M_PLUS": [
+          1671,
+          44,
+          58,
+          58
+         ],
+         "2020|LIQ_10M_100M": [
+          3483,
+          117,
+          121,
+          121
+         ],
+         "2020|LIQ_1M_10M": [
+          2270,
+          73,
+          79,
+          79
+         ],
+         "2021|LIQ_100M_PLUS": [
+          1624,
+          63,
+          56,
+          56
+         ],
+         "2021|LIQ_10M_100M": [
+          3111,
+          92,
+          108,
+          108
+         ],
+         "2021|LIQ_1M_10M": [
+          2462,
+          73,
+          86,
+          86
+         ],
+         "2022|LIQ_100M_PLUS": [
+          1106,
+          32,
+          38,
+          38
+         ],
+         "2022|LIQ_10M_100M": [
+          2228,
+          73,
+          77,
+          77
+         ],
+         "2022|LIQ_1M_10M": [
+          1638,
+          56,
+          57,
+          57
+         ],
+         "2023|LIQ_100M_PLUS": [
+          1595,
+          51,
+          55,
+          55
+         ],
+         "2023|LIQ_10M_100M": [
+          3250,
+          90,
+          113,
+          113
+         ],
+         "2023|LIQ_1M_10M": [
+          2138,
+          81,
+          74,
+          74
+         ],
+         "2024|LIQ_100M_PLUS": [
+          2112,
+          61,
+          73,
+          73
+         ],
+         "2024|LIQ_10M_100M": [
+          4291,
+          132,
+          150,
+          150
+         ],
+         "2024|LIQ_1M_10M": [
+          2974,
+          78,
+          104,
+          104
+         ],
+         "2025|LIQ_100M_PLUS": [
+          2029,
+          67,
+          71,
+          71
+         ],
+         "2025|LIQ_10M_100M": [
+          2934,
+          94,
+          102,
+          102
+         ],
+         "2025|LIQ_1M_10M": [
+          1827,
+          50,
+          63,
+          63
+         ],
+         "2026|LIQ_100M_PLUS": [
+          2038,
+          68,
+          71,
+          71
+         ],
+         "2026|LIQ_10M_100M": [
+          2394,
+          80,
+          83,
+          83
+         ],
+         "2026|LIQ_1M_10M": [
+          1265,
+          41,
+          44,
+          44
+         ]
+        }
+       },
+       "ep": {
+        "targetKeys": 2017,
+        "withMinutes": 2017,
+        "inDaySet": 1851,
+        "holes": 0,
+        "excludedBaseline": 166,
+        "minShareBefore": {
+         "num": 18,
+         "den": 293,
+         "value": 0.06143344709897611
+        },
+        "minShareAfter": {
+         "num": 22,
+         "den": 293,
+         "value": 0.07508532423208192
+        },
+        "excludedSmallStrata": 3,
+        "strata": {
+         "2017|LIQ_100M_PLUS": [
+          67,
+          6,
+          0,
+          0
+         ],
+         "2017|LIQ_10M_100M": [
+          293,
+          18,
+          43,
+          22
+         ],
+         "2017|LIQ_1M_10M": [
+          294,
+          25,
+          44,
+          24
+         ],
+         "2018|LIQ_100M_PLUS": [
+          85,
+          6,
+          0,
+          0
+         ],
+         "2018|LIQ_10M_100M": [
+          390,
+          35,
+          58,
+          36
+         ],
+         "2018|LIQ_1M_10M": [
+          326,
+          24,
+          48,
+          25
+         ],
+         "2019|LIQ_100M_PLUS": [
+          81,
+          7,
+          0,
+          0
+         ],
+         "2019|LIQ_10M_100M": [
+          355,
+          38,
+          53,
+          51
+         ],
+         "2019|LIQ_1M_10M": [
+          304,
+          36,
+          45,
+          44
+         ],
+         "2020|LIQ_100M_PLUS": [
+          609,
+          96,
+          91,
+          90
+         ],
+         "2020|LIQ_10M_100M": [
+          1076,
+          153,
+          161,
+          158
+         ],
+         "2020|LIQ_1M_10M": [
+          764,
+          107,
+          114,
+          106
+         ],
+         "2021|LIQ_100M_PLUS": [
+          405,
+          60,
+          60,
+          60
+         ],
+         "2021|LIQ_10M_100M": [
+          679,
+          99,
+          101,
+          97
+         ],
+         "2021|LIQ_1M_10M": [
+          574,
+          75,
+          86,
+          79
+         ],
+         "2022|LIQ_100M_PLUS": [
+          245,
+          31,
+          36,
+          35
+         ],
+         "2022|LIQ_10M_100M": [
+          478,
+          65,
+          71,
+          70
+         ],
+         "2022|LIQ_1M_10M": [
+          370,
+          67,
+          55,
+          51
+         ],
+         "2023|LIQ_100M_PLUS": [
+          183,
+          37,
+          27,
+          26
+         ],
+         "2023|LIQ_10M_100M": [
+          442,
+          56,
+          66,
+          63
+         ],
+         "2023|LIQ_1M_10M": [
+          409,
+          52,
+          61,
+          55
+         ],
+         "2024|LIQ_100M_PLUS": [
+          342,
+          51,
+          51,
+          50
+         ],
+         "2024|LIQ_10M_100M": [
+          702,
+          95,
+          105,
+          104
+         ],
+         "2024|LIQ_1M_10M": [
+          564,
+          90,
+          84,
+          80
+         ],
+         "2025|LIQ_100M_PLUS": [
+          466,
+          58,
+          69,
+          66
+         ],
+         "2025|LIQ_10M_100M": [
+          937,
+          142,
+          140,
+          132
+         ],
+         "2025|LIQ_1M_10M": [
+          628,
+          88,
+          94,
+          93
+         ],
+         "2026|LIQ_100M_PLUS": [
+          466,
+          61,
+          69,
+          69
+         ],
+         "2026|LIQ_10M_100M": [
+          767,
+          100,
+          115,
+          108
+         ],
+         "2026|LIQ_1M_10M": [
+          468,
+          50,
+          70,
+          57
+         ]
+        }
+       }
+      },
+      "ep": {
+       "REF": {
+        "trades": 604,
+        "closed": 602,
+        "openAtDataEnd": 2,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 101,
+         "STOP_SAME_BAR_CERTAIN": 382,
+         "STOP_INITIAL": 99,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 17,
+         "null": 2
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11639,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 68,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "199c02fb815ea04680f769be8559d84dc0695dbe1c79c5127d6a173071e2dced"
+       },
+       "ALT-ORH-5": {
+        "trades": 404,
+        "closed": 402,
+        "openAtDataEnd": 2,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 105,
+         "STOP_SAME_BAR_CERTAIN": 173,
+         "STOP_INITIAL": 102,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 19,
+         "null": 2
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11629,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 257,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 111,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "878bf1b18b81c31c112344b17b43a91a71a2e3220a7bb9cf519a67a4e9ccb3ae"
+       },
+       "ALT-NO-VOLUME-RULE": {
+        "trades": 1035,
+        "closed": 1032,
+        "openAtDataEnd": 3,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 176,
+         "STOP_SAME_BAR_CERTAIN": 653,
+         "STOP_INITIAL": 175,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 25,
+         "null": 3
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11621,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 73,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "e66f902dae40d2fffb4b0f9201ca0f8b05b9470f2cd60c962352554484e53251"
+       },
+       "ALT-QUIET-PRIOR-RUN-50": {
+        "trades": 403,
+        "closed": 402,
+        "openAtDataEnd": 1,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 72,
+         "STOP_SAME_BAR_CERTAIN": 243,
+         "STOP_INITIAL": 72,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 12,
+         "null": 1
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 601,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 7836,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 170,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 111,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 33,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 56,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 57,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+        },
+        "reconciliation": true,
+        "tradesSha256": "c59d205459f8c95642522f6d33d11b35512876f07127c14dfc71aabd4256557c"
+       },
+       "ALT-EXIT-MA10": {
+        "trades": 608,
+        "closed": 607,
+        "openAtDataEnd": 1,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA10": 133,
+         "STOP_SAME_BAR_CERTAIN": 386,
+         "STOP_INITIAL": 76,
+         "STOP_INITIAL_GAP_OPEN": 12,
+         "null": 1
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11642,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 68,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "921fb1516051ff87d6e7b4dae3b8b9bcf9015ad8a60f51947274d145f6d46a25"
+       },
+       "ALT-EXIT-MA50": {
+        "trades": 594,
+        "closed": 589,
+        "openAtDataEnd": 5,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA50": 76,
+         "STOP_SAME_BAR_CERTAIN": 374,
+         "STOP_INITIAL": 112,
+         "TERMINAL_DELISTED": 7,
+         "STOP_INITIAL_GAP_OPEN": 18,
+         "SECURITY_UNAVAILABLE": 2,
+         "null": 5
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11635,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 68,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "46348d41b30c43a3eedfebbabfc78ee02566d21c5478861bf01826050047a339"
+       },
+       "ALT-FILL-MINUTE-OPTIMISTIC": {
+        "trades": 603,
+        "closed": 601,
+        "openAtDataEnd": 2,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 102,
+         "STOP_SAME_BAR_CERTAIN": 381,
+         "STOP_INITIAL": 99,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 16,
+         "null": 2
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11639,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 68,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "5c9b6c3474dfaf4669fd15db5d309bd8fa9fd8147cef59d8e91d2e22ad799eef"
+       },
+       "ALT-RISK-00025": {
+        "trades": 614,
+        "closed": 612,
+        "openAtDataEnd": 2,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 101,
+         "STOP_SAME_BAR_CERTAIN": 390,
+         "STOP_INITIAL": 101,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 17,
+         "null": 2
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11639,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 68,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "ffb9f29958b899ad716302e7b9f14a8e8c06ca706ba4d5f66135c5646276a8a1"
+       },
+       "ALT-RISK-001": {
+        "trades": 568,
+        "closed": 566,
+        "openAtDataEnd": 2,
+        "exitReasons": {
+         "EP_CLOSE_BELOW_MA20": 98,
+         "STOP_SAME_BAR_CERTAIN": 357,
+         "STOP_INITIAL": 94,
+         "TERMINAL_DELISTED": 3,
+         "STOP_INITIAL_GAP_OPEN": 14,
+         "null": 2
+        },
+        "notExecuted": {
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 702,
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11640,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 258,
+         "NOT_EXECUTED_NO_OPENING_RANGE": 145,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 58,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 81,
+         "NOT_EXECUTED_KK034_WIDE_STOP": 68,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 4
+        },
+        "reconciliation": true,
+        "tradesSha256": "d53d291faff0fc70113d9c7f67b7aa48dbe8e01f5aa858ed90f0e55a322f0bf3"
+       }
+      },
+      "epSf7Execution": {
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": {
+        "compareTo": "ALT-FILL-MINUTE-OPTIMISTIC",
+        "trades": 600,
+        "reconciliation": true,
+        "ledgerSha256": "e48c941ee2af9b166af63e34ef1ea7f747db6bbe804bf89ee3cdb9705d278a7e",
+        "tradesSha256": "39cd6ab3284f4ef8f187fbe2db849ecb9316298d49f057fad3f04766d4801d9f"
+       }
+      },
+      "ps": {
+       "REF": {
+        "closedTrades": 262,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 20,
+         "CLOSED": 262,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+         "NOT_TRIGGERED": 89,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 51,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 5,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 5
+        },
+        "exitReasons": {
+         "PS_STOP_HOD_GAP_OPEN": 18,
+         "PS_STOP_HOD": 189,
+         "PS_TARGET_MA10": 54,
+         "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+        },
+        "tradesSha256": "448db1e22147f0a69d00526305d2bd492446e10593eb70f82d56762c3d7b7c6a"
+       },
+       "ALT-STREAK4": {
+        "closedTrades": 51,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 2711,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 4,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 225,
+         "CLOSED": 51,
+         "NOT_TRIGGERED": 33,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 15,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 2
+        },
+        "exitReasons": {
+         "PS_STOP_HOD": 37,
+         "PS_TARGET_MA10": 10,
+         "PS_STOP_HOD_GAP_OPEN": 4
+        },
+        "tradesSha256": "af6afe9099bc817a2b5f41ffdd18a247c0080ad202b7f5ed586a58566ae0ef7c"
+       },
+       "ALT-NO-ACCEL": {
+        "closedTrades": 1416,
+        "openAtDataEnd": 1,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 62881,
+         "CLOSED": 1416,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 69,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 6862,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 319,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 7,
+         "NOT_TRIGGERED": 466,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 41,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 16,
+         "OPEN_AT_DATA_END": 1
+        },
+        "exitReasons": {
+         "PS_TARGET_MA10": 321,
+         "PS_STOP_HOD_GAP_OPEN": 95,
+         "PS_STOP_HOD": 997,
+         "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 3
+        },
+        "tradesSha256": "4f2575c7c523cdc8ad9441448c100e34846daea270c9e524e6406aaa36a3efd6"
+       },
+       "ALT-ENTRY-FIRST-RED-5MIN": {
+        "closedTrades": 305,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 20,
+         "CLOSED": 305,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+         "NOT_TRIGGERED": 45,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 51,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 5,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 5,
+         "NOT_EXECUTED_NO_RED_5MIN_CANDLE": 1
+        },
+        "exitReasons": {
+         "PS_STOP_HOD_GAP_OPEN": 23,
+         "PS_STOP_HOD": 225,
+         "PS_TARGET_MA10": 56,
+         "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+        },
+        "tradesSha256": "0f94b89828932c588b6f2cf4d3dd9ca42f60c1e9f7f3d91fae379a9be4eb622c"
+       },
+       "ALT-ENTRY-FAILED-VWAP-RETEST": {
+        "closedTrades": 267,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 20,
+         "NOT_TRIGGERED": 85,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+         "CLOSED": 267,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 51,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 5,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 4
+        },
+        "exitReasons": {
+         "PS_STOP_HOD": 203,
+         "PS_TARGET_MA10": 46,
+         "PS_STOP_HOD_GAP_OPEN": 18
+        },
+        "tradesSha256": "cfd7ebe9a55eff10e240d76a18b7da33d3d1e7ea2c303f3036c32a6e2aebb5d4"
+       },
+       "ALT-STOP-VWAP-RECLAIM": {
+        "closedTrades": 262,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 20,
+         "CLOSED": 262,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+         "NOT_TRIGGERED": 89,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 51,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 5,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 5
+        },
+        "exitReasons": {
+         "PS_STOP_HOD_GAP_OPEN": 3,
+         "PS_VWAP_RECLAIM": 211,
+         "PS_STOP_HOD": 30,
+         "PS_TARGET_MA10": 17,
+         "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+        },
+        "tradesSha256": "d9dedd129a8abe195496210bee1c9e874630fb81d5a5fc5aad36ed2c5f981f3c"
+       },
+       "ALT-TARGET-MA20": {
+        "closedTrades": 255,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 20,
+         "CLOSED": 255,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 12,
+         "NOT_TRIGGERED": 89,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 51,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 5
+        },
+        "exitReasons": {
+         "PS_STOP_HOD_GAP_OPEN": 16,
+         "PS_STOP_HOD": 192,
+         "PS_TARGET_MA20": 46,
+         "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 1
+        },
+        "tradesSha256": "3f84cca4dbfd4f65ffc13dd99a88ac994550eda8a3ab65561b41edf4f8d2a9d4"
+       },
+       "ALT-TARGET-HALF-MA10-MA20": {
+        "closedTrades": 254,
+        "openAtDataEnd": 0,
+        "statuses": {
+         "NOT_EXECUTED_INTRADAY_NOT_FETCHED": 11748,
+         "NOT_EVALUATED_OUTSIDE_DAY_SET": 20,
+         "CLOSED": 254,
+         "NOT_EXECUTED_BEFORE_IEX_HISTORY": 1076,
+         "NOT_EXECUTED_TARGET_NOT_BELOW_ENTRY": 13,
+         "NOT_TRIGGERED": 89,
+         "NOT_EXECUTED_IDENTITY_NO_OPENING_PRINT": 51,
+         "NOT_EXECUTED_IDENTITY_MISMATCH": 3,
+         "NOT_EXECUTED_NO_INTRADAY_DATA": 5
+        },
+        "exitReasons": {
+         "PS_STOP_HOD_GAP_OPEN": 33,
+         "PS_STOP_HOD": 375,
+         "PS_TARGET_MA10": 52,
+         "PS_TARGET_MA20": 46,
+         "PS_STOP_HOD_FILL_MINUTE_ASSUMED": 2
+        },
+        "tradesSha256": "d0f4d0c75a7860139474ad7b392f4379ff5ac6f95fdc3cbc6899ab2cd6828606"
+       }
+      },
+      "psOnePositionPerTicker": {
+       "REF": {
+        "closedTrades": 262,
+        "tradesSha256": "448db1e22147f0a69d00526305d2bd492446e10593eb70f82d56762c3d7b7c6a"
+       },
+       "ALT-STREAK4": {
+        "closedTrades": 51,
+        "tradesSha256": "af6afe9099bc817a2b5f41ffdd18a247c0080ad202b7f5ed586a58566ae0ef7c"
+       },
+       "ALT-NO-ACCEL": {
+        "closedTrades": 1414,
+        "tradesSha256": "532687fbef43e33d0171ad09878f28a5a77544aed7906f8b5827c9d75a48fe08"
+       },
+       "ALT-ENTRY-FIRST-RED-5MIN": {
+        "closedTrades": 305,
+        "tradesSha256": "0f94b89828932c588b6f2cf4d3dd9ca42f60c1e9f7f3d91fae379a9be4eb622c"
+       },
+       "ALT-ENTRY-FAILED-VWAP-RETEST": {
+        "closedTrades": 267,
+        "tradesSha256": "cfd7ebe9a55eff10e240d76a18b7da33d3d1e7ea2c303f3036c32a6e2aebb5d4"
+       },
+       "ALT-STOP-VWAP-RECLAIM": {
+        "closedTrades": 262,
+        "tradesSha256": "d9dedd129a8abe195496210bee1c9e874630fb81d5a5fc5aad36ed2c5f981f3c"
+       },
+       "ALT-TARGET-MA20": {
+        "closedTrades": 255,
+        "tradesSha256": "3f84cca4dbfd4f65ffc13dd99a88ac994550eda8a3ab65561b41edf4f8d2a9d4"
+       },
+       "ALT-TARGET-HALF-MA10-MA20": {
+        "closedTrades": 254,
+        "tradesSha256": "d0f4d0c75a7860139474ad7b392f4379ff5ac6f95fdc3cbc6899ab2cd6828606"
+       }
+      },
+      "metrics": "SEALED (claude/supertrader-validation-results, run 41504851988, 20261102T192348Z)"
+     },
+     "sf7Validation": {
+      "version": "sf7-execution-checks-1.0.0",
+      "daySet": "CLEAN",
+      "violations": {
+       "REF": 0,
+       "ALT-ORH-5": 0,
+       "ALT-NO-VOLUME-RULE": 0,
+       "ALT-QUIET-PRIOR-RUN-50": 0,
+       "ALT-EXIT-MA10": 0,
+       "ALT-EXIT-MA50": 0,
+       "ALT-FILL-MINUTE-OPTIMISTIC": 0,
+       "ALT-RISK-00025": 0,
+       "ALT-RISK-001": 0,
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 0
+      },
+      "entryDayLowBelowStopKept": {
+       "REF": 178,
+       "ALT-ORH-5": 189,
+       "ALT-NO-VOLUME-RULE": 316,
+       "ALT-QUIET-PRIOR-RUN-50": 131,
+       "ALT-EXIT-MA10": 181,
+       "ALT-EXIT-MA50": 175,
+       "ALT-FILL-MINUTE-OPTIMISTIC": 180,
+       "ALT-RISK-00025": 181,
+       "ALT-RISK-001": 173,
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 180
+      },
+      "sameBarExits": {
+       "REF": 381,
+       "ALT-ORH-5": 169,
+       "ALT-NO-VOLUME-RULE": 637,
+       "ALT-QUIET-PRIOR-RUN-50": 241,
+       "ALT-EXIT-MA10": 384,
+       "ALT-EXIT-MA50": 370,
+       "ALT-FILL-MINUTE-OPTIMISTIC": 377,
+       "ALT-RISK-00025": 388,
+       "ALT-RISK-001": 360,
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 378
+      },
+      "trades": {
+       "REF": 600,
+       "ALT-ORH-5": 403,
+       "ALT-NO-VOLUME-RULE": 1023,
+       "ALT-QUIET-PRIOR-RUN-50": 399,
+       "ALT-EXIT-MA10": 606,
+       "ALT-EXIT-MA50": 586,
+       "ALT-FILL-MINUTE-OPTIMISTIC": 597,
+       "ALT-RISK-00025": 611,
+       "ALT-RISK-001": 573,
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 598
+      },
+      "intradayOutsideDailyRange": {
+       "REF": 2,
+       "ALT-ORH-5": 0,
+       "ALT-NO-VOLUME-RULE": 5,
+       "ALT-QUIET-PRIOR-RUN-50": 2,
+       "ALT-EXIT-MA10": 2,
+       "ALT-EXIT-MA50": 2,
+       "ALT-FILL-MINUTE-OPTIMISTIC": 2,
+       "ALT-RISK-00025": 2,
+       "ALT-RISK-001": 2,
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 2
+      }
+     },
+     "intradayAllocationByMinute": {
+      "sets": {
+       "BEFORE_FIX": {
+        "REF": 22,
+        "ALT-ORH-5": 4,
+        "ALT-NO-VOLUME-RULE": 121,
+        "ALT-QUIET-PRIOR-RUN-50": 12,
+        "ALT-EXIT-MA10": 7,
+        "ALT-EXIT-MA50": 59,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 24,
+        "ALT-RISK-00025": 2,
+        "ALT-RISK-001": 66
+       },
+       "CLEAN": {
+        "REF": 22,
+        "ALT-ORH-5": 4,
+        "ALT-NO-VOLUME-RULE": 120,
+        "ALT-QUIET-PRIOR-RUN-50": 12,
+        "ALT-EXIT-MA10": 7,
+        "ALT-EXIT-MA50": 59,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 24,
+        "ALT-RISK-00025": 2,
+        "ALT-RISK-001": 66
+       },
+       "STRAT_YEAR_X_LIQUIDITY": {
+        "REF": 11,
+        "ALT-ORH-5": 1,
+        "ALT-NO-VOLUME-RULE": 62,
+        "ALT-QUIET-PRIOR-RUN-50": 8,
+        "ALT-EXIT-MA10": 4,
+        "ALT-EXIT-MA50": 32,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 13,
+        "ALT-RISK-00025": 1,
+        "ALT-RISK-001": 30
+       },
+       "STRAT_YEAR_X_LIQUIDITY_X_REGIME": {
+        "REF": 7,
+        "ALT-ORH-5": 1,
+        "ALT-NO-VOLUME-RULE": 62,
+        "ALT-QUIET-PRIOR-RUN-50": 4,
+        "ALT-EXIT-MA10": 3,
+        "ALT-EXIT-MA50": 23,
+        "ALT-FILL-MINUTE-OPTIMISTIC": 9,
+        "ALT-RISK-00025": 1,
+        "ALT-RISK-001": 25
+       }
+      },
+      "sf7Execution": {
+       "SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 24
+      },
+      "extE7_6": {
+       "REF": 22,
+       "ALT-ORH-5": 3,
+       "ALT-NO-VOLUME-RULE": 127,
+       "ALT-QUIET-PRIOR-RUN-50": 13,
+       "ALT-EXIT-MA10": 9,
+       "ALT-EXIT-MA50": 59,
+       "ALT-FILL-MINUTE-OPTIMISTIC": 23,
+       "ALT-RISK-00025": 3,
+       "ALT-RISK-001": 62,
+       "sf7:SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE": 22
+      }
+     }
+    },
+    {
      "runId": "41504851988",
      "commit": "2a61ec52aaf20f5ca0062c94c0f06899deb3a6a2",
-     "role": "AUTHORITATIVE",
-     "validity": "C09 F-MC3M-01/02 (PR #1262: places and cash allocated by fill minute), cache-only rerun on the current code (0 requests): every input equal to run 40228395395 (receipt incl. dataset, cache, day-set and register hashes; candidates, intradayCoverage, sampling); the PS blocks (ps, extE7_6.ps) byte-identical; every EP block changed (47 of 47 incl. sf7Execution and extE7_6.ep; CLEAN REF 611 -> 600 trades), ep.sf7Validation without violation; counts in docs/SUPERTRADER_C09_ALLOCATION_RERUN.md",
+     "role": "SUPERSEDED_BY_41597368393_C09_ALLOCATION_COUNTER_ONLY",
+     "validity": "C09 F-MC3M-01/02 (PR #1262: places and cash allocated by fill minute), cache-only rerun on the current code (0 requests): every input equal to run 40228395395 (receipt incl. dataset, cache, day-set and register hashes; candidates, intradayCoverage, sampling); the PS blocks (ps, extE7_6.ps) byte-identical; every EP block changed (47 of 47 incl. sf7Execution and extE7_6.ep; CLEAN REF 611 -> 600 trades), ep.sf7Validation without violation; counts in docs/SUPERTRADER_C09_ALLOCATION_RERUN.md; superseded by 41597368393 (C09 allocation counter, PR #1263: counter only, every EP result identical)",
      "strategies": [
       "EP",
       "PS"

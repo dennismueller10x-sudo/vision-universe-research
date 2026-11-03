@@ -214,3 +214,97 @@ Neu gegenüber Abschnitt 4: Die Ergebnisse von C09 haben sich geändert. Deshalb
 Unverändert: `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md` (bytegleich), `SF6-PAPER-2027` (`e623b336…`), `engineCodeSha256` `89fbcf86…`, `integrityCodeSha256`, EP/PS/Stichproben-Register, `ENGINE_VERSION` und `supertrader/data`.
 
 Offen bleibt die fachliche Freigabe C09 (Merge #1262). Der PR wird nicht gemergt.
+
+## 7. Neulauf mit Engpasszähler (PR #1263, 03.11.2026)
+
+Owner-Freigabe vom 03.11.2026: ein `kk-intraday-cache`-Lauf auf `claude/supertrader-c09-allocation-counter` mit genau den Eingaben von L1. Der Runner veröffentlicht jetzt je EP-Variantenblock `intradayAllocationByMinute`. Das ist die Zahl der Tage, an denen Plätze oder Kasse nicht für alle Füllungen reichten und die Engine nach Füllminute zugeteilt hat. Sonst ändert sich am Runner nichts.
+
+### 7.1 Lauf und Ablage
+
+| Nr. | Lauf | Modus | ref / Commit | Dauer | Ergebnis | Ablagedatei |
+|---|---|---|---|---|---|---|
+| L3 | [41597368393](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/41597368393) | `kk-intraday-cache` | `claude/supertrader-c09-allocation-counter` @ `3ae51d66a6` | 30 min | success, 0 Anfragen (`requestsThisRun: 0`, ohne API-Schlüssel) | `20261103T080604Z-kk-intraday-cache.sealed.json` (Commit `0bb73402bd`) |
+
+Eingaben (`workflow_dispatch`): `mode=kk-intraday-cache`, `snapshot=sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`, `accounting=research-v1`. Das sind dieselben drei Eingaben wie bei L1 (aus dessen Log gelesen). Der Workflow ist auf beiden Ständen gleich und hat keine weitere Eingabe.
+
+Prüfung der Ablage:
+- Der Ergebniszweig ging von `aa62bcd945` auf `0bb73402bd`. Das ist ein Fast-Forward mit genau einem Commit und genau einer neuen Datei (`git diff --name-status`: nur `A`). Keine bestehende Datei wurde geändert. Der Zweig enthält jetzt 156 Dateien.
+- Die Datei beginnt mit `"schema":"supertrader-sealed-1.0.0"`.
+- Der Zweig steht inzwischen unter Schutz (Löschen und Non-Fast-Forward verboten). Dieser Lauf zeigt, dass der automatische Ergebnis-Commit des Workflows unter der Schutzregel weiter funktioniert.
+
+### 7.2 Vergleich mit L1 (41504851988)
+
+```bash
+node scripts/supertrader/validation/compare-public-runs.mjs --before <Log 41504851988> --after <Log 41597368393>
+```
+
+- **Eingaben gleich** (`inputsEqual: true`). In der Quittung unterscheiden sich nur `runId`, `commit` und `researchCodeSha256` (`c5ee7f45…` → `20bd1b3b…`, gleich dem Fingerabdruck des PR-Kopfes). `engineCodeSha256` `89fbcf86…`, Datensatz `3ea6443d…` (EXACT), Caches, Day-Set-Hashes und Register sind gleich, ebenso `candidates`, `intradayCoverage` und `sampling`.
+- **EP:** 47 von 47 Blöcken sind ohne das neue Feld gleich (`epBlocksEqualWithoutAllocationCounter: 47`). Alle 47 `tradesSha256` und alle 47 `ledgerSha256` sind gleich, kein Reason Code verschiebt sich. `ep.sf7Validation` ist identisch.
+- **PS:** `ps` ist identisch (SHA-256 `5b1c967a…` vorher und nachher), ebenso `extE7_6` ohne `extE7_6.ep`.
+
+Der Zähler ändert also kein Ergebnis.
+
+### 7.3 Engpasstage je EP-Variante
+
+| Variante | CLEAN | BEFORE_FIX | STRAT_YEAR_X_LIQUIDITY | STRAT_YEAR_X_LIQUIDITY_X_REGIME | `extE7_6.ep` |
+|---|---|---|---|---|---|
+| REF | 22 | 22 | 11 | 7 | 22 |
+| ALT-ORH-5 | 4 | 4 | 1 | 1 | 3 |
+| ALT-NO-VOLUME-RULE | 120 | 121 | 62 | 62 | 127 |
+| ALT-QUIET-PRIOR-RUN-50 | 12 | 12 | 8 | 4 | 13 |
+| ALT-EXIT-MA10 | 7 | 7 | 4 | 3 | 9 |
+| ALT-EXIT-MA50 | 59 | 59 | 32 | 23 | 59 |
+| ALT-FILL-MINUTE-OPTIMISTIC | 24 | 24 | 13 | 9 | 23 |
+| ALT-RISK-00025 | 2 | 2 | 1 | 1 | 3 |
+| ALT-RISK-001 | 66 | 66 | 30 | 25 | 62 |
+| SF7-ALT-FILL-MINUTE-OPTIMISTIC-CERTAIN-RULE | 24 (CLEAN, `sf7Execution`) | – | – | – | 22 |
+
+Jede Variante hat mindestens einen Engpasstag. Das bestätigt die Untergrenze aus Abschnitt 6.2. Die Platzgrenze war nie der Engpass (`REJECT_MAX_OPEN_POSITIONS` = 0). Gezählt werden also Tage, an denen die Kasse nicht für alle geplanten Füllungen reichte.
+
+### 7.4 Ursache von REF 611 → 600 (40228395395 → 41504851988)
+
+Die Zählung in der Engine (`lifecycle-engine.mjs`, `intradayEntries`) grenzt die Wirkung ein:
+- An einem Tag ohne Engpass werden die Einstiege wie vor #1262 in fillRank-Reihenfolge gebucht, und die Kasse reicht für alle Füllungen. `REJECT_INSUFFICIENT_CAPITAL` kann dort nicht entstehen. Jede neue Kapital-Ablehnung liegt also auf einem der 22 Engpasstage.
+- In beiden Läufen gilt die Bilanz `technicalOrdersArmed = Trades + notTriggered + Summe aller Rejections` (vorher 14 451 = 611 + 852 + 12 988, nachher 14 452 = 600 + 852 + 13 000).
+
+REF, CLEAN, nachher − vorher:
+
+| Größe | Delta | Lesart |
+|---|---|---|
+| Trades | −11 | |
+| `REJECT_INSUFFICIENT_CAPITAL` | +11 (1 → 12) | **Logikeffekt:** Ein sicherer Stopp am selben Tag gibt die Kasse erst für spätere Füllminuten frei. Elf Einstiege, die vorher mit dieser Kasse bezahlt wurden, fallen weg. Alle liegen auf Engpasstagen. |
+| Ausstiegsgründe der wegfallenden Trades (netto) | `STOP_SAME_BAR_CERTAIN` −8, `STOP_INITIAL` −2, `STOP_INITIAL_GAP_OPEN` −1 | Das ist der Ausstiegsmix der elf Trades, die netto wegfallen. Dass meist ein Stopp am selben Tag dabei ist, passt zum EP-Profil (62 % aller REF-Trades). |
+| `technicalOrdersArmed` / `NOT_EXECUTED_INTRADAY_NOT_FETCHED` | +1 / +1 | **Nebeneffekt:** Eine Order für einen Wert wird nur scharf, solange er nicht gehalten wird. Durch eine andere Haltedauer wird eine Order zusätzlich scharf. Sie fällt auf einen Tag ohne Minuten und wird kein Trade. |
+| `cappedByCash` / `cappedByWeight` | 24 → 26 / 159 → 157 | **Nebeneffekt:** Mit einem anderen Kassenpfad ändert sich die Stückzahl einzelner Positionen. |
+| `entryYears` | 2020 −6, 2021 −4, 2025 −1; kein Jahr mit Plus | Die Wirkung sammelt sich in Jahren mit vielen Kandidaten, also mit viel Konkurrenz um Kasse. |
+
+Aus der Bilanz folgt: Das Netto von −11 Trades ist genau das Netto von +11 Kapital-Ablehnungen. Kein anderer Reason Code nimmt netto einen Trade weg. Von den 22 Engpasstagen haben höchstens 11 netto eine Ablehnung gebracht. An den übrigen hat die Zuteilung nach Minute nur Reihenfolge oder Stückzahl geändert, oder sie hat ein Ergebnis wie vorher geliefert.
+
+Die anderen Varianten zeigen dasselbe Muster. Netto weniger Trades ist dort ebenfalls gleich netto mehr Kapital-Ablehnungen (Abschnitt 6.2). Bei ALT-NO-VOLUME-RULE (120 Engpasstage) belegt `entryYears` 2026 +3 zusätzlich mindestens drei neu hinzugekommene Trades, bei ALT-EXIT-MA50 und ALT-RISK-001 je einen (2023 +1). Das sind Nebeneffekte: Kasse, die ein weggefallener Trade nicht bindet, finanziert später einen anderen Einstieg.
+
+**Was öffentlich nicht zu zeigen ist:** Die Trade-Listen stehen nur in den verschlüsselten Dateien. Öffentlich sind nur Netto-Zählungen. Für REF ist deshalb sicher:
+- mindestens 11 Trades sind weggefallen;
+- hinzugekommene Trades lassen sich nicht ausschließen, wenn sie im selben Jahr liegen wie weggefallene;
+- verschobene Trades (gleicher Einstieg, andere Stückzahl oder anderer Ausstieg) lassen sich nicht zählen. Es gibt sie, denn bei ALT-ORH-5 ändern sich die Hashes ohne eine einzige Zählungsänderung.
+
+**Versiegelter Vergleich durch den Owner:** Möglich mit `decryptSealed` aus `scripts/supertrader/validation/lib.mjs` und dem privaten Schlüssel. Verglichen werden `ep.CLEAN.REF.trades` aus `20261025T203358Z-kk-intraday-cache.sealed.json` (40228395395) und aus `20261103T080604Z-kk-intraday-cache.sealed.json` (41597368393; gleich 41504851988). Schlüssel ist `(id, entryDate)`. So ergeben sich die genauen Zahlen für weggefallen, hinzugekommen und verschoben (`shares`, `exitDate`, `exitReason`). Das Ergebnis enthält Ticker und Daten und darf nur versiegelt oder als reine Zählung zurück ins Repository.
+
+### 7.5 Pins (ergänzt, alte Einträge bleiben)
+
+| Pin | neu | alter Eintrag: was sich ändert |
+|---|---|---|
+| `KK_SNAPSHOT_RUNS` | 41597368393 `AUTHORITATIVE`, `researchCodeSha256` `20bd1b3b…`, `metrics` → Ablage `20261103T080604Z`, neues Feld `intradayAllocationByMinute` (47 Zähler je Block). Alle anderen Felder sind gleich 41504851988. | 41504851988: `role` `AUTHORITATIVE` → `SUPERSEDED_BY_41597368393_C09_ALLOCATION_COUNTER_ONLY`. An `validity` angehängt: „superseded by 41597368393 (C09 allocation counter, PR #1263: counter only, every EP result identical)“. |
+| Artefakt | `STRATEGY-KK-EP-PS-CHART.json` mit seinem Erzeuger neu gebaut (`rebuild-all.mjs`, 120/120 Golden Cases) | – |
+
+SF-KK-READINESS kennt diese eine Ersetzung ausdrücklich und prüft sie streng:
+- Bis auf Lauf-ID, Commit, Rolle, `validity`, `researchCodeSha256`, `metrics` und das neue Feld ist jedes Feld gleich: EP und PS samt aller Hashes, `tradesBySet`, `sf7EpExecution`, `sf7Validation`, `extE7_6`, Abdeckung und Stichprobe.
+- Der Code-Hash hat sich geändert.
+- Der Zähler hat genau einen ganzzahligen Wert ≥ 0 je EP-Block (47).
+- Jede CLEAN-Variante hat mindestens einen Engpasstag.
+- Es gibt genau eine solche Ersetzung und genau einen maßgeblichen Lauf.
+
+Die Regeln für `SAME_PUBLIC_RESULTS` und für `C09_ALLOCATION_BY_MINUTE` (nur 40228395395) bleiben unverändert.
+
+Unverändert: `engineCodeSha256` `89fbcf86…`, `SF5_SNAPSHOT_RUNS`, `PINNED_SF6_ENGINE_FILES`, die ST9-V13-Registrierungen, `SF6-PAPER-2027`, `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md` und `supertrader/data`.
+
+Hinweis zu #1270: Der Lauf trägt den Engine-Fingerabdruck `89fbcf86…` und ersetzt R6 nicht (Abschnitt 9 von `SUPERTRADER_PAPER_2027_FORWARD_PATH.md`). Gegen L3 gilt für ein späteres R6: alles identisch, auch das neue Feld.

@@ -247,9 +247,31 @@ test('SF-KK-READINESS: Artefakt = frischer Build; Original-EP und ausfuehrbarer 
     const sup = /superseded by (\d+) \(Supertrader 7\.0 code, same public counts and hashes\)/.exec(r.validity);
     // C09 F-MC3M-01/02 (PR #1262): the one supersession with changed EP results; inputs and PS stay identical, every EP block moves
     const c09 = /superseded by (\d+) \(C09 allocation by fill minute, PR #1262: every EP block changed, inputs and PS identical\)/.exec(r.validity);
-    if (!sup && !c09) { assert.match(r.validity, /before the Supertrader 6\.0 fixes/); continue; }
+    // C09 allocation counter (PR #1263): the runner only publishes counts.intradayAllocationByMinute; every result stays identical
+    const cnt = /superseded by (\d+) \(C09 allocation counter, PR #1263: counter only, every EP result identical\)/.exec(r.validity);
+    if (!sup && !c09 && !cnt) { assert.match(r.validity, /before the Supertrader 6\.0 fixes/); continue; }
     // a superseded run names an existing run with the matching role; the chain of supersessions ends at the AUTHORITATIVE run
-    assert.equal(r.role, sup ? `SUPERSEDED_BY_${sup[1]}_SAME_PUBLIC_RESULTS` : `SUPERSEDED_BY_${c09[1]}_C09_ALLOCATION_BY_MINUTE`);
+    assert.equal(r.role, sup ? `SUPERSEDED_BY_${sup[1]}_SAME_PUBLIC_RESULTS` : cnt ? `SUPERSEDED_BY_${cnt[1]}_C09_ALLOCATION_COUNTER_ONLY` : `SUPERSEDED_BY_${c09[1]}_C09_ALLOCATION_BY_MINUTE`);
+    if (cnt) {
+      // everything except the run identity, the code hash, the sealed pointer and the new counter is equal (no result moves)
+      const by = KK_SNAPSHOT_RUNS.find((x) => x.runId === cnt[1]);
+      const RUN_ONLY = new Set(['runId', 'commit', 'role', 'validity', 'researchCodeSha256', 'metrics', 'intradayAllocationByMinute']);
+      assert.deepEqual(Object.keys(by).filter((k) => !RUN_ONLY.has(k)), Object.keys(r).filter((k) => !RUN_ONLY.has(k)), 'C09 counter rerun: same fields');
+      for (const k of Object.keys(r).filter((x) => !RUN_ONLY.has(x))) assert.deepEqual(by[k], r[k], `C09 counter rerun ${k}`);
+      assert.notEqual(by.researchCodeSha256, r.researchCodeSha256);
+      assert.equal(r.intradayAllocationByMinute, undefined);
+      // the counter: one non-negative integer per EP variant block (4 day sets x EP variants, SF7, E7-6), nothing else
+      const c = by.intradayAllocationByMinute;
+      assert.deepEqual(Object.keys(c), ['sets', 'sf7Execution', 'extE7_6']);
+      assert.deepEqual(Object.keys(c.sets), Object.keys(by.tradesBySet.ep));
+      for (const set of Object.keys(c.sets)) assert.deepEqual(Object.keys(c.sets[set]), Object.keys(by.tradesBySet.ep[set]), `counter ${set}`);
+      assert.deepEqual(Object.keys(c.sf7Execution), Object.keys(by.sf7EpExecution.variants));
+      const all = [...Object.values(c.sets).flatMap(Object.values), ...Object.values(c.sf7Execution), ...Object.values(c.extE7_6)];
+      assert.equal(all.length, 47);
+      for (const n of all) assert.ok(Number.isSafeInteger(n) && n >= 0, `counter ${n}`);
+      // C09 changed every EP block of 40228395395, so every CLEAN variant had at least one bottleneck day
+      for (const v of Object.keys(by.ep)) assert.ok(c.sets.CLEAN[v] >= 1, `CLEAN ${v} >= 1 bottleneck day`);
+    }
     if (c09) {
       const by = KK_SNAPSHOT_RUNS.find((x) => x.runId === c09[1]);
       for (const k of ['snapshotId', 'datasetSha256', 'minuteCacheSha256', 'baselineCacheSha256', 'epVariantRegistrySha256', 'psVariantRegistrySha256', 'sampleRegistrySha256', 'engineCodeSha256']) assert.equal(by[k], r[k], `C09 rerun ${k}`);
@@ -257,12 +279,15 @@ test('SF-KK-READINESS: Artefakt = frischer Build; Original-EP und ausfuehrbarer 
       assert.deepEqual(by.tradesBySet.ps, r.tradesBySet.ps);
       for (const v of Object.keys(r.ep)) assert.notEqual(by.ep[v].tradesSha256, r.ep[v].tradesSha256, `C09 rerun EP ${v}`);
     }
-    let next = KK_SNAPSHOT_RUNS.find((x) => x.runId === (sup ?? c09)[1]), hops = 0;
-    while (next && next.role !== 'AUTHORITATIVE' && hops++ < KK_SNAPSHOT_RUNS.length) { const m = /^SUPERSEDED_BY_(\d+)_(SAME_PUBLIC_RESULTS|C09_ALLOCATION_BY_MINUTE)$/.exec(next.role); next = m && KK_SNAPSHOT_RUNS.find((x) => x.runId === m[1]); }
+    let next = KK_SNAPSHOT_RUNS.find((x) => x.runId === (sup ?? c09 ?? cnt)[1]), hops = 0;
+    while (next && next.role !== 'AUTHORITATIVE' && hops++ < KK_SNAPSHOT_RUNS.length) { const m = /^SUPERSEDED_BY_(\d+)_(SAME_PUBLIC_RESULTS|C09_ALLOCATION_BY_MINUTE|C09_ALLOCATION_COUNTER_ONLY)$/.exec(next.role); next = m && KK_SNAPSHOT_RUNS.find((x) => x.runId === m[1]); }
     assert.equal(next?.role, 'AUTHORITATIVE', `superseding chain of ${r.runId}`);
   }
   // only the one C09 supersession changes results
   assert.deepEqual(KK_SNAPSHOT_RUNS.filter((x) => /_C09_ALLOCATION_BY_MINUTE$/.test(x.role)).map((x) => x.runId), ['40228395395']);
+  // and only the one counter-only supersession (PR #1263) exists
+  assert.deepEqual(KK_SNAPSHOT_RUNS.filter((x) => /_C09_ALLOCATION_COUNTER_ONLY$/.test(x.role)).map((x) => x.runId), ['41504851988']);
+  assert.equal(KK_SNAPSHOT_RUNS.filter((x) => x.role === 'AUTHORITATIVE').length, 1);
   if (!KK_SNAPSHOT_RUNS.some((x) => x.role === 'AUTHORITATIVE')) assert.equal(a.supertrader6.status, 'CACHE_ONLY_RERUN_PENDING');
 });
 
