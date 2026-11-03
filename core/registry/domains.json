@@ -475,6 +475,34 @@
         "core/industry-classification.js",
         "Supertrader-Research-Adapter (nicht aktiviert)"
       ]
+    },
+    {
+      "id": "watchlistEvents",
+      "label": "Watchlist-Ereignisse (vorbereitet, keine Zustellung)",
+      "layer": "PRODUCT",
+      "group": "Products",
+      "critical": false,
+      "artifact": "/core/data/watchlist-events-v1.json",
+      "timestamp": [
+        "generatedAt"
+      ],
+      "asOf": [
+        "after.sources.price"
+      ],
+      "records": "counts.total",
+      "role": "Ereignisse je Instrument (nicht je Nutzer) aus dem Vergleich zweier veroeffentlichter Watchlist-Uebersichten ueber core/watchlist-view.js#events: Kurs (neues 52W-Hoch, Volumen), Technik (Trendstruktur, SMA200), Supertrader (gueltige Eignung, Zustandswechsel, Forschung gekennzeichnet), Quant (Faktorstufe um zwei Stufen, Datenqualitaet), Datenstand (Quelle aktualisiert, Frische, Abschnitt). Idempotente eventId, Format core/contracts/events.schema.json. Keine E-Mail, kein Push, keine Zustellung an Nutzer.",
+      "producer": "scripts/account/build-watchlist-events.mjs --before=<Uebersicht> --after=<Uebersicht> --out=<Datei>",
+      "schedule": "keiner (kein Workflow, kein Zeitplan); nur von Hand nach --out",
+      "freshness": {
+        "kind": "none"
+      },
+      "activation": {
+        "state": "PREPARED_DISABLED",
+        "decision": "Vorbereitet, nicht freigegeben (docs/accounts/WATCHLIST.md §7 und §9). Das Artefakt darf nicht existieren; der Erzeuger verweigert den kanonischen Ort (Exit 3). Aktivierung nur in eigenen PRs mit Owner-Freigabe nach docs/accounts/FREIGABEN.md: erst Erzeugung als Schritt des Release-Baus (ACTIVATING), getrennt davon jede Zustellung (E-Mail, Push, Abmeldelinks, Ereignisse x watchlist_items.alerts x Tarif)."
+      },
+      "consumers": [
+        "spaetere Benachrichtigungen (nicht aktiviert, docs/accounts/WATCHLIST.md §7)"
+      ]
     }
   ]
 }
