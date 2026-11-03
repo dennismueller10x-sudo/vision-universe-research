@@ -55,3 +55,16 @@ These counts cover XETR, XAMS, XSWX, XMIL, XCSE and XWBO. The XPAR cluster could
 1. **Owner, offline, 0 requests:** unseal the archive and read ISIN and `stock_exchange.mic` from the 13 `/tickers/{X}.XPAR` answers.
 2. **If all 13 match** (ISIN and XPAR): run one `/eod?symbols=<13 × .XPAR>&exchange=XPAR&date_from=2026-09-28&date_to=2026-11-02` request (13 credits). Count the mapping as proven only if the closes are identical on the 10 overlap days. Then hand it over to the Discover-refresh owner as an evidenced alias. Repeat the XPAR route check with AC.XPAR (≤ 3 credits).
 3. **Gap sessions:** stop the date-route follow-up. The cause is a missing provider exchange day. Next steps are an official exchange or closure check for the 85 dates and a second source for real sessions. Do not interpolate.
+
+## Conclusion (documentation and analysis close-out)
+
+This run closes the Marketstack gap analysis from #1285. The negative findings are the result and stay recorded here:
+
+- **0 recovered prices.** No missing session was filled, interpolated or released from quarantine.
+- **Single-date routes deliver nothing on gap days.** `/eod/{date}` and `/tickers/{symbol}/eod/{date}` return empty answers. `/exchanges/{mic}/eod/{date}` returns HTTP 422 `no_valid_exchange_provided` on the gap date, while every control day returns the stored close unchanged.
+- **`/splits` has no Europe coverage.** `/tickers/EUZ.DE/splits` returns 0 rows despite the official 3:1 split in August 2025. The 47 unexplained breaks need an official issuer or exchange document.
+- **Billing is per symbol** (`x-increment-usage`), and every error response (406, 422) also costs 1 credit.
+- **The 11,463-credit follow-up run is NOT approved.** The 459-request plan in `../europe-marketstack-gap-analysis-20261103/` stays unexecuted.
+- **Paris:** a provider symbol change from `.PA` to `.XPAR` is suspected but not yet proven (ISIN, MIC and overlap closes are unchecked). It is being checked separately, and nothing enters the producer path before that proof exists.
+
+No gate, test, calendar, identity, quarantine or generated artifact was changed by this report.

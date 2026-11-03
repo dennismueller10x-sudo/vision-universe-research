@@ -58,3 +58,7 @@ node scripts/marketstack/europe-gap-date-clusters.mjs \
 ```
 
 Output is deterministic and bound to the SHA-256 of its inputs. The full per-cluster file (about 0.8 MB) is not committed.
+
+## Outcome
+
+The test plan from section 4 was executed once on 03.11.2026 (77 requests, see [the diagnostics report](../europe-marketstack-diagnostics-20261103/README.md)). The single-date routes recovered 0 sessions, so the follow-up in section 4 (459 requests, about 11,463 credits because billing is per symbol) is **not approved**.

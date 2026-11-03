@@ -16,6 +16,9 @@ hashed). `/splits` and `/dividends` name only US and Shanghai venues, and `/intr
 names only IEX. An empty European action response is therefore classified
 `EMPTY_OUTSIDE_DOCUMENTED_COVERAGE`: it is uninformative, never absence proof.
 Where the documentation is silent, coverage stays UNDOCUMENTED.
+The live check on 03.11.2026 confirmed this: `/tickers/EUZ.DE/splits` returned 0 rows,
+single-date `/eod` routes recovered 0 gap sessions, and billing is per symbol. See
+[the diagnostics report](../../docs/reports/europe-marketstack-diagnostics-20261103/README.md).
 
 All price observations require `{providerTicker, mic}`. `mic` is the requested
 provider MIC, not an inferred mapping from a symbol suffix. `resolveTicker` tests
