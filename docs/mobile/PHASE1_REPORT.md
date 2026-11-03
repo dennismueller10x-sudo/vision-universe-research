@@ -67,7 +67,22 @@ Der Nachweis ist ehrlich begrenzt: Er prüft die Shell-Logik und dass die echten
 
 Der PR ändert nur `app/`, `docs/architecture/ADR-007-capacitor-prototype.md` und `docs/mobile/`. Kein Web- oder Worker-Pfad wurde berührt.
 
-REGRESSION_PLATZHALTER
+Lokal ausgeführt am 03.11.2026 auf Linux (Branch `claude/mobile-capacitor-prototype`, Basis `5dd34fcc59`):
+
+| Suite | Ergebnis |
+|---|---|
+| `core/tests` | 308 Tests, 308 bestanden |
+| `technical/tests` | 95 Tests, 95 bestanden |
+| Konten (`workers/vu-account/tests/unit`, `konto`, `mein-dashboard`, `scripts/account`) | 106 Tests, 103 bestanden, 3 übersprungen (Datenbank-Tests ohne `PG_TEST_URL`), 0 fehlgeschlagen. Die Datenbank- und Ablauf-Tests (`sql-tests`, `flows`) liefen **nicht** [offen]. |
+| Discover, Supertrader, Screener | 1763 Tests, 1742 bestanden, 21 übersprungen, 0 fehlgeschlagen |
+| `scripts/access-gate/build.test.mjs` (Passwortmaske unverändert) | 4 Tests, 4 bestanden |
+| `check-test-isolation.mjs` | „Der Lauf hat keine Produktionsdatei verändert.“ |
+| `quant/tests` | 3922 Tests, 3894 bestanden, 24 übersprungen, **4 fehlgeschlagen** (siehe unten) |
+| Release-Build (`scripts/vu2/build-release.mjs`) mit dem Branch | Status PASS |
+| Python-Quant-Tests (`scripts/quant/tests`) | nicht ausgeführt [offen] |
+
+**Die 4 fehlgeschlagenen Quant-Tests sind nicht durch diesen PR verursacht.** Ich habe `app/`, `docs/mobile/` und ADR-007 vorübergehend aus dem Arbeitsverzeichnis genommen (Zustand entspricht dann `main`) und dieselben vier Testdateien erneut laufen lassen: dieselben 4 Tests schlugen fehl.
+Es sind `naming-contract` („die Übersicht schreibt kein Kürzel zweimal“, „Liste und Aktienseite nennen denselben Namen“), `debt-instrument-classification` (DEBT7) und `launch-gates` („ein belegtes Nicht-Aktien-Papier behaelt seinen Kurs …“). Der offene PR #1279 („Quant: zurückgehaltener Name bei wiederverwendetem Kürzel …“) betrifft dasselbe Thema. Ob er sie behebt, habe ich nicht geprüft [offen].
 
 ## 5. Offene Punkte und Risiken
 
@@ -78,7 +93,7 @@ REGRESSION_PLATZHALTER
 | 3 | Die Produktseiten im Rahmen nutzen die Cookie-Anmeldung der Web-Konto-Seiten nicht (Drittanbieter-Cookies). Konto und Watchlist sind daher in der Shell gebaut. Aktienseiten, die selbst die Konto-API aufrufen, kennen das Bearer-Token nicht. | Watchlist-Stern auf Aktienseiten funktioniert in der App nicht ohne Brücke (z. B. `postMessage` der Shell) |
 | 4 | Hinzufügen zur Watchlist braucht eine `instrumentId` (`vu_…`) nach `core/identity.js` (ADR-001). Die Shell liest und entfernt nur. | Funktionslücke im Prototyp |
 | 5 | Direkter Supabase-Login umgeht das Tempolimit des Workers (`ctx.limit('login')`). Supabase hat eigene Limits. | Vorschlag: später `POST /v1/auth/app-login` im Worker, eigener PR mit Worker-Freigabe |
-| 6 | `app/` wird mit der Webseite ausgeliefert (`permitted()` in `scripts/vu2/build-release.mjs`), nur öffentlicher Shell-Code. | Optionaler Ausschluss als eigener, freigegebener Pipeline-PR |
+| 6 | `app/` wird mit der Webseite ausgeliefert (`permitted()` in `scripts/vu2/build-release.mjs`). Lokaler Release-Build mit dem Branch: Status PASS, `app/` ergibt 36 Dateien, 1,5 MB (inkl. `ios/`, ohne Tests). Nur öffentlicher Shell-Code, keine Schlüssel. | Optionaler Ausschluss als eigener, freigegebener Pipeline-PR |
 | 7 | Einbettung hängt davon ab, dass `research.visionuniverse.de` keine `X-Frame-Options` oder `frame-ancestors` setzt (am 03.11.2026: nicht gesetzt). | Eine spätere Sicherheitskopfzeile bricht den Rahmen |
 | 8 | Store-Richtlinie 4.2 (Mindestumfang): Eine Webhülle mit Rahmen kann abgelehnt werden. Für **internen** TestFlight nicht relevant, für den Store ein reales Risiko. | Native Mehrwerte planen (Push, Face ID/Sperre, Widgets) |
 | 9 | Supabase-URL und Publishable Key fehlen im Repository. Sie werden als öffentliche Build-Werte gesetzt. | vom Owner zu liefern; kein Secret nötig |
