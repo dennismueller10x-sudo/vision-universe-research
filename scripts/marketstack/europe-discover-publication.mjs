@@ -5,7 +5,7 @@ import {resolve,dirname} from 'node:path';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {pathToFileURL} from 'node:url';
-const require=createRequire(import.meta.url),Admission=require('../../core/europe-discover-eligibility.js'),Sessions=require('../../core/europe-session-proof.js');
+const require=createRequire(import.meta.url),Admission=require('../../core/europe-discover-eligibility.js'),Sessions=require('../../core/europe-session-proof.js'),ExchangeCalendar=require('../../core/europe-exchange-calendar.js');
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const pins={calendar:'9b039f4d3446648d77664ac56a31a69e5c186247c659f8d5b806d89420342b4c',catalog:'4a8a32e839c206465c6c04edb1d9cd6c97f4e185e308dadb5109412f6c974fb9',series:'9108eb59022c93e0ac8df7fdf134ffb7ea0e84e7deb0112444edf3146c26ba62',logos:'be7cd48f6b88401edec72cb0c5ec8641c6bb5936ac2e4598eed930050677be4d'};
 async function input(path,pin){const b=await readFile(path);if(pin&&sha(b)!==pin)throw Error('SOURCE_PIN_MISMATCH');return JSON.parse(b);}
@@ -27,7 +27,9 @@ export async function produce({catalogPath,seriesPath,logosPath,calendarPath,out
   result.listings=s.listings.filter(l=>l.listingId===s.primaryListingId).map(l=>({...pick(l,'listingId instrumentId ticker providerSymbol mic exchange country exchangeCountry currency aliases identityAdmission'.split(' ')),latest:{date:l.discoverChart.lastDate,status:l.discoverChart.freshness},history:{valid:true,observations:l.discoverChart.observationCount,chartStatus:'CHART_LIMITED'},discoverChart:proof(l.discoverChart),provenance:{provider:'MARKETSTACK',priceBasis:'RAW_UNADJUSTED',evidenceRef:l.discoverChart.evidenceRef.sha256},adjustment:{status:'ADJUSTMENT_UNKNOWN'}}));return result;
  })};
  const calendar={schema:'europe-exact-mic-display-calendar-1',generatedAt:now,sourceFileSha256:sha(await readFile(calendarPath)),calendars:{}};
- for(const s of catalog.securities){const l=s.listings[0],p=l.discoverChart,c=cal.calendars[l.mic];if(!c?.verified||c.mic!==l.mic||p.calendarSourceSha256!==pins.calendar)throw Error('AUTHENTIC_EXACT_MIC_CALENDAR_REQUIRED');calendar.calendars[l.mic]={mic:l.mic,source:c.source,sourceSha256:p.calendarSourceSha256,coverageFrom:'2026-10-01',coverageTo:'2026-10-30',sessions:c.sessions.filter(r=>r.date>='2026-10-01'&&r.date<='2026-10-30').map(r=>pick(r,['date','close']))};}
+ // The bounded window follows the data and the run date (never a fixed end date).
+ const win=ExchangeCalendar.publicationWindow(catalog.securities.map(s=>s.listings[0].discoverChart.lastDate),now.slice(0,10));
+ for(const s of catalog.securities){const l=s.listings[0],p=l.discoverChart,c=cal.calendars[l.mic];if(!c?.verified||c.mic!==l.mic||p.calendarSourceSha256!==pins.calendar)throw Error('AUTHENTIC_EXACT_MIC_CALENDAR_REQUIRED');calendar.calendars[l.mic]={mic:l.mic,source:c.source,sourceSha256:p.calendarSourceSha256,coverageFrom:win.coverageFrom,coverageTo:[win.coverageTo,c.sessions.at(-1).date].sort()[0],sessions:c.sessions.filter(r=>r.date>=win.coverageFrom&&r.date<=win.coverageTo).map(r=>pick(r,['date','close']))};}
  const projected=Sessions.refreshCatalog(catalog,calendar,{now});
  if(projected.securities.some(s=>!Admission.evaluate(s,s.listings[0],now).DISCOVER_ELIGIBLE))throw Error('CURRENT_SESSION_GATE_FAILED');
  const manifest={version:'europe-discover-public-1',generatedAt:now,publicationAllowed:true,securityCount:449,companyCount:companyIds.size,rights:pick(rights,['display','commercial','evidenceRef','dataPaths']),rightsEvidence:{url:'/core/rights/marketstack-display.json',sha256:sha(await readFile(resolve(root,'core/rights/marketstack-display.json')))},series:{},logos:{},schedule:'MANUAL_ONLY',requests:0};
@@ -39,4 +41,8 @@ export async function produce({catalogPath,seriesPath,logosPath,calendarPath,out
  for(const row of logos.rows){if(!selectedIds.has(row.securityId)||row.status!=='LOGO_VALID')continue;const a=row.asset,b=await readFile(resolve(root,a.path.slice(1)));if(sha(b)!==a.sha256||b.length!==a.bytes)throw Error('CENTRAL_LOGO_BINDING_FAILED');manifest.logos[row.centralKey]=pick(a,['path','sha256','bytes']);}
  await emit('manifest.json',manifest);return{securityCount:449,companyCount:companyIds.size,seriesCount:Object.keys(manifest.series).length,logoCount:Object.keys(manifest.logos).length,catalogBytes:manifest.catalog.bytes,requests:0};
 }
-if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){const args={};for(let i=2;i<process.argv.length;i+=2)args[process.argv[i].replace(/^--/,'')]=process.argv[i+1];console.log(JSON.stringify(await produce(args)));}
+// `refresh`: controlled append-only Close refresh of the published projection
+// (scripts/marketstack/europe-discover-refresh.mjs, manual workflow only).
+if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){const refresh=process.argv[2]==='refresh',argv=process.argv.slice(refresh?3:2),args={};for(let i=0;i<argv.length;i+=2)args[argv[i].replace(/^--/,'')]=argv[i+1];
+ if(!refresh)console.log(JSON.stringify(await produce(args)));
+ else{const {refreshPublication}=await import('./europe-discover-refresh.mjs');console.log(JSON.stringify(await refreshPublication({...args,dryRun:args.dryRun==='true'})));}}

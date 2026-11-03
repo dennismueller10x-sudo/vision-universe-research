@@ -409,7 +409,7 @@
       "records": "securityCount",
       "role": "Licensed normalized identity and unadjusted Close display projection; provider RAW remains private.",
       "producer": "scripts/marketstack/europe-discover-publication.mjs",
-      "workflow": null,
+      "workflow": "europe-discover-refresh.yml",
       "schedule": "manuell",
       "freshness": {
         "kind": "none"
@@ -421,8 +421,8 @@
         "Close charts"
       ],
       "knownGaps": [
-        "Exact-MIC runtime freshness: lag 0 current, lag 1 delayed, lag 2–3 limited, >3 blocked; bounded calendar expiry fails closed.",
-        "No Marketstack refresh schedule enabled. History/latest updates require a reviewed manual producer run.",
+        "Exact-MIC runtime freshness: lag 0 current, lag 1 delayed, lag 2–3 limited, >3 blocked; the rule-based calendar window is derived from data and run date (core/europe-exchange-calendar.js), expiry still fails closed.",
+        "No Marketstack refresh schedule enabled. Close updates require a manual run of europe-discover-refresh.yml (one /eod request per listing, about 449 reserved credits).",
         "Technical, Quant, SuperTrader and Backtesting remain separately gated."
       ]
     },
