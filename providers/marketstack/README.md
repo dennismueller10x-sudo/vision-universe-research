@@ -11,6 +11,12 @@ ISIN adapter, product builders, cache wrappers and workflows are not imported.
 metadata reads. These are real documented v2 routes. Method presence does not
 certify that this account or a given listing supports the data.
 
+`endpoint-coverage.json` binds the provider's own coverage sentences (v2 OpenAPI,
+hashed). `/splits` and `/dividends` name only US and Shanghai venues, and `/intraday`
+names only IEX. An empty European action response is therefore classified
+`EMPTY_OUTSIDE_DOCUMENTED_COVERAGE`: it is uninformative, never absence proof.
+Where the documentation is silent, coverage stays UNDOCUMENTED.
+
 All price observations require `{providerTicker, mic}`. `mic` is the requested
 provider MIC, not an inferred mapping from a symbol suffix. `resolveTicker` tests
 explicit candidate strings, preserving attempts and returning
