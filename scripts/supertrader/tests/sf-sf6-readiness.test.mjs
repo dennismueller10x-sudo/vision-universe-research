@@ -37,10 +37,13 @@ test('SF6-PAPER-PROTOCOL-2027: prospektiv, festgeschrieben vor dem Fenster, nich
   assert.equal(P.turtleEngineCodeSha256, codeSha256()); assert.equal(P.minerviniResearchCodeSha256, researchCodeSha256());
   assert.equal(P.minerviniVariantRegistrySha256, variantRegistrySha256()); assert.equal(P.sf5VariantRegistrySha256, sf5VariantRegistrySha256());
   for (const k of ['scheduler', 'orders', 'broker', 'productSurface']) assert.equal(SF6_PAPER_PROTOCOL.activation[k], 'NONE', k);
-  // no workflow references the protocol (no scheduler, no recording job in Supertrader 6.0)
+  // no workflow references the protocol (no scheduler, no recording job in Supertrader 6.0) - except the guarded
+  // recording workflow of the activation PR (FP-ST-02), which does nothing until the owner switch
+  // (paper/activation-2027.mjs) is on; its guard is tested in sf-paper-2027-activation (PAPER-2027-WORKFLOW)
   const fs = await import('node:fs');
   const wf = new URL('../../../.github/workflows/', import.meta.url);
-  for (const f of fs.readdirSync(wf)) assert.ok(!fs.readFileSync(new URL(f, wf), 'utf8').includes('SF6-PAPER'), f);
+  for (const f of fs.readdirSync(wf)) if (f !== 'supertrader-paper-2027.yml') assert.ok(!fs.readFileSync(new URL(f, wf), 'utf8').includes('SF6-PAPER'), f);
+  assert.match(fs.readFileSync(new URL('supertrader-paper-2027.yml', wf), 'utf8'), /if: needs\.guard\.outputs\.state == 'ACTIVE'/);
 });
 
 test('SF6-READINESS-MATRIX: 13 Kandidaten, 15 Dimensionen, nichts Unbelegtes besteht, Live nie freigegeben', async () => {

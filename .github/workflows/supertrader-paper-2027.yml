@@ -1,0 +1,114 @@
+name: Supertrader Paper 2027 (SF6-PAPER-2027, Aufzeichnung)
+
+# Prospektiver Paper-Test SF6-PAPER-2027 (Protokoll 1.1.0, scripts/supertrader/source-faithful/completion/
+# sf6-paper-protocol-2027.mjs; Freigabepaket FP-ST-02 / CC-8; docs/SUPERTRADER_PAPER_2027_ACTIVATION.md).
+#
+# BEWACHT: Der Job `guard` fragt den Owner-Schalter (scripts/supertrader/source-faithful/paper/activation-2027.mjs).
+#   INACTIVE  Schalter aus (Stand dieses PR) oder vor dem 01.01.2027: nichts passiert, kein Commit, gruener Lauf.
+#   BLOCKED   eingeschaltet, aber Freigabe, Entscheidung, Datenpfad oder ein gepinnter Fingerabdruck fehlt/weicht ab:
+#             roter Lauf, keine Aufzeichnung (nie stilles Ueberspringen).
+#   ACTIVE    Aufzeichnung der letzten Sitzung, nur auf main.
+# Es gibt KEINEN Repository-Schalter (vars): die Freigabe ist ein gemergter Commit am Schalter, im Review sichtbar.
+#
+# AUFZEICHNUNG: nach jedem Schluss, vor der naechsten Eroeffnung (13:30 UTC). Zwei Zeitpunkte Di-Sa fuer die
+# Sitzungen Mo-Fr; der zweite ist Rueckfall und tut nichts, wenn die Sitzung schon erfasst ist. Ein Eintrag je
+# Sitzung, hash-verkettet, nur angehaengt (scripts/supertrader/source-faithful/paper/forward-log.mjs). Oeffentlich:
+# Zaehlungen und Hashes. Versiegelt (fuer den Owner verschluesselt): Positions-IDs und Trade-Schluessel.
+# Keine Orders, kein Broker, keine Produktflaeche, LIVE_NOT_APPROVED.
+#
+# Commit-Protokoll ADR-005: Spitze des eigenen Zweigs, push-with-retry.sh, Concurrency je Zweig, Eingaben nur ueber env.
+on:
+  schedule:
+    - cron: '37 2 * * 2-6'
+    - cron: '41 9 * * 2-6'
+  workflow_dispatch:
+    inputs:
+      session:
+        description: 'Sitzung YYYY-MM-DD (leer = letzte XNYS-Sitzung vor heute). Nur wirksam, wenn der Schalter ACTIVE meldet.'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supertrader-paper-2027-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      state: ${{ steps.g.outputs.state }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Owner-Schalter und gepinnte Fingerabdruecke pruefen
+        id: g
+        run: |
+          set -euo pipefail
+          node scripts/supertrader/source-faithful/paper/run-paper-2027.mjs guard
+
+  record:
+    needs: guard
+    if: needs.guard.outputs.state == 'ACTIVE' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Sitzung aufzeichnen (nur anhaengen, Kette vorher geprueft)
+        env:
+          IN_SESSION: ${{ inputs.session }}
+          NODE_OPTIONS: --max-old-space-size=12000
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          session="${IN_SESSION:-auto}"
+          if [ "$session" != "auto" ] && ! printf '%s' "$session" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then echo "::error::Sitzung YYYY-MM-DD erwartet"; exit 2; fi
+          node scripts/supertrader/source-faithful/paper/run-paper-2027.mjs record --session "$session" \
+            --log scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl \
+            --sealed-out scripts/supertrader/source-faithful/paper/log/sealed
+      - name: Integritaet vor dem Commit (nur anhaengen gegen den committeten Stand, Kette, versiegelt)
+        run: |
+          set -euo pipefail
+          node --test scripts/supertrader/tests/sf-paper-2027-activation.test.mjs scripts/supertrader/tests/sf-sf6-readiness.test.mjs
+          base="${RUNNER_TEMP}/paper-2027-base.jsonl"
+          if git cat-file -e HEAD:scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl 2>/dev/null; then
+            git show HEAD:scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl > "$base"
+          else
+            : > "$base"
+          fi
+          node scripts/supertrader/source-faithful/paper/run-paper-2027.mjs verify \
+            --log scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl \
+            --sealed-dir scripts/supertrader/source-faithful/paper/log/sealed --base "$base"
+      - name: Commit (nur das Paper-Protokoll)
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/supertrader/source-faithful/paper/log
+          if git diff --cached --quiet; then echo "nichts Neues"; exit 0; fi
+          # nur anhaengen: ausser dem Protokoll selbst darf der Commit nur neue Dateien hinzufuegen
+          changed=$(git diff --cached --name-status -- scripts/supertrader/source-faithful/paper/log | awk '!($1 == "A" || ($1 == "M" && $2 == "scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl"))')
+          if [ -n "$changed" ]; then echo "::error::nicht nur angehaengt: $changed"; exit 1; fi
+          head=$(tail -n 1 scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const e=JSON.parse(s);console.log(e.session+" "+e.hash.slice(0,16))})')
+          git commit -q -m "SF6-PAPER-2027: Sitzung ${head} (automatischer Lauf, nur Zaehlungen und Hashes)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
