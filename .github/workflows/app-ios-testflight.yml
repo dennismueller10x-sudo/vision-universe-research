@@ -1,0 +1,117 @@
+# AKTIV, nur von Hand (workflow_dispatch), nie automatisch. Standard ist die Vorpruefung (preflight_only = an): kein Build, kein Upload.
+# Upload zu TestFlight nur, wenn der Owner preflight_only bewusst ausschaltet UND die Umgebung "app-testflight" freigibt.
+# VORAUSSETZUNG vor dem ersten Lauf (docs/mobile/TESTFLIGHT_STEP_BY_STEP.md Phase 5): Umgebung "app-testflight" mit erforderlichem
+# Pruefer (Owner) und Deployment-Branch nur main ist angelegt; ein Verweis auf eine fehlende Umgebung wuerde sie ungeschuetzt anlegen
+# (vgl. docs/accounts/FREIGABEN.md). Geheimnisse nur in dieser Umgebung. Quelle: app/ci/ios-testflight.workflow.yml.template (Wachtertest haelt beide gleich).
+# Regeln aus CLAUDE.md / ADR-005: kein Commit-Push, Eingaben nur ueber env:, permissions contents: read, Concurrency mit Ref-Name.
+name: App - iOS TestFlight (intern, von Hand)
+
+on:
+  workflow_dispatch:
+    inputs:
+      marketing_version:
+        description: "Versionsnummer, z. B. 0.1.0"
+        required: true
+        default: "0.1.0"
+      preflight_only:
+        description: "Nur Vorpruefung (Geheimnisse, Zertifikat, Profil, Umgebungsfreigabe). Kein Build, kein Upload."
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-ios-testflight-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  testflight:
+    runs-on: macos-26            # Xcode 26.x vorinstalliert (Apple verlangt seit 28.04.2026 Xcode 26 fuer Uploads); Image vor Aktivierung pruefen
+    timeout-minutes: 45
+    environment: app-testflight  # erforderliche Pruefer = Owner; enthaelt die Geheimnisse unten
+    if: github.ref == 'refs/heads/main'
+    env:
+      MARKETING_VERSION: ${{ inputs.marketing_version }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+      IOS_DIST_P12_BASE64: ${{ secrets.IOS_DIST_P12_BASE64 }}
+      IOS_DIST_P12_PASSWORD: ${{ secrets.IOS_DIST_P12_PASSWORD }}
+      IOS_PROFILE_BASE64: ${{ secrets.IOS_PROFILE_BASE64 }}
+      IOS_PROFILE_NAME: ${{ vars.IOS_PROFILE_NAME }}
+      VU_SUPABASE_URL: ${{ vars.VU_SUPABASE_URL }}                       # oeffentlich
+      VU_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VU_SUPABASE_PUBLISHABLE_KEY }} # oeffentlich
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - name: Vorpruefung (gibt keine Werte aus)
+        env:
+          BUNDLE_ID: de.visionuniverse.app
+        run: |
+          set -euo pipefail
+          fail=0; need() { [ -n "${!1:-}" ] || { echo "::error::Geheimnis/Variable $1 fehlt oder ist leer"; fail=1; }; }
+          for n in APPLE_TEAM_ID ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_P8 IOS_DIST_P12_BASE64 IOS_DIST_P12_PASSWORD IOS_PROFILE_BASE64 IOS_PROFILE_NAME VU_SUPABASE_URL VU_SUPABASE_PUBLISHABLE_KEY; do need "$n"; done
+          [ "$fail" = 0 ] || exit 1
+          [[ "$APPLE_TEAM_ID" =~ ^[A-Z0-9]{10}$ ]] || { echo "::error::APPLE_TEAM_ID hat nicht das Format (10 Zeichen)"; exit 1; }
+          [[ "$VU_SUPABASE_PUBLISHABLE_KEY" != sb_secret_* && "$VU_SUPABASE_PUBLISHABLE_KEY" != eyJ* ]] || { echo "::error::VU_SUPABASE_PUBLISHABLE_KEY sieht nach einem geheimen Schluessel aus. Abbruch."; exit 1; }
+          grep -q "BEGIN PRIVATE KEY" <<<"$ASC_KEY_P8" || { echo "::error::ASC_KEY_P8 ist keine .p8-Datei"; exit 1; }
+          mkdir -p "$RUNNER_TEMP/pre"; chmod 700 "$RUNNER_TEMP/pre"
+          printf '%s' "$IOS_DIST_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/pre/d.p12"
+          printf '%s' "$IOS_PROFILE_BASE64" | base64 --decode > "$RUNNER_TEMP/pre/p.mobileprovision"
+          printf '%s' "$IOS_DIST_P12_PASSWORD" > "$RUNNER_TEMP/pre/pw"
+          openssl pkcs12 -in "$RUNNER_TEMP/pre/d.p12" -passin file:"$RUNNER_TEMP/pre/pw" -nokeys -clcerts -out "$RUNNER_TEMP/pre/c.pem" >/dev/null 2>&1 || { echo "::error::.p12 laesst sich mit dem Passwort nicht oeffnen"; exit 1; }
+          notafter=$(openssl x509 -in "$RUNNER_TEMP/pre/c.pem" -noout -enddate | cut -d= -f2)
+          subject=$(openssl x509 -in "$RUNNER_TEMP/pre/c.pem" -noout -subject)
+          echo "$subject" | grep -q "Apple Distribution" || { echo "::error::Zertifikat ist kein Apple-Distribution-Zertifikat"; exit 1; }
+          openssl x509 -in "$RUNNER_TEMP/pre/c.pem" -noout -checkend $((30*86400)) >/dev/null || { echo "::error::Zertifikat laeuft in weniger als 30 Tagen ab oder ist abgelaufen ($notafter)"; exit 1; }
+          security cms -D -i "$RUNNER_TEMP/pre/p.mobileprovision" > "$RUNNER_TEMP/pre/p.plist" 2>/dev/null || { echo "::error::Profil nicht lesbar"; exit 1; }
+          pl() { /usr/libexec/PlistBuddy -c "Print :$1" "$RUNNER_TEMP/pre/p.plist"; }
+          [ "$(pl Name)" = "$IOS_PROFILE_NAME" ] || { echo "::error::IOS_PROFILE_NAME passt nicht zum Namen im Profil"; exit 1; }
+          [ "$(pl TeamIdentifier:0)" = "$APPLE_TEAM_ID" ] || { echo "::error::Team-ID im Profil weicht von APPLE_TEAM_ID ab"; exit 1; }
+          [ "$(pl Entitlements:application-identifier)" = "$APPLE_TEAM_ID.$BUNDLE_ID" ] || { echo "::error::Profil gehoert nicht zur Bundle-ID $BUNDLE_ID"; exit 1; }
+          pl ProvisionsAllDevices >/dev/null 2>&1 && { echo "::error::Profil ist ein Enterprise-Profil (nicht erwartet)"; exit 1; }
+          pexp=$(pl ExpirationDate); echo "Zertifikat gueltig bis: $notafter"; echo "Profil gueltig bis: $pexp"
+          # Passt das Zertifikat zum Profil? (SHA-1 des Zertifikats in der Liste des Profils)
+          fp=$(openssl x509 -in "$RUNNER_TEMP/pre/c.pem" -noout -fingerprint -sha1 | cut -d= -f2 | tr -d ':')
+          n=0; while /usr/libexec/PlistBuddy -c "Print :DeveloperCertificates:$n" "$RUNNER_TEMP/pre/p.plist" >/dev/null 2>&1; do
+            /usr/libexec/PlistBuddy -c "Print :DeveloperCertificates:$n" "$RUNNER_TEMP/pre/p.plist" > "$RUNNER_TEMP/pre/dc$n.der" 2>/dev/null || true
+            f=$(openssl x509 -inform DER -in "$RUNNER_TEMP/pre/dc$n.der" -noout -fingerprint -sha1 2>/dev/null | cut -d= -f2 | tr -d ':' || true)
+            [ "$f" = "$fp" ] && found=1; n=$((n+1)); done
+          [ "${found:-0}" = 1 ] || { echo "::error::Das Zertifikat der .p12 ist nicht im Profil enthalten. Profil neu mit diesem Zertifikat erstellen."; exit 1; }
+          rm -rf "$RUNNER_TEMP/pre"
+          echo "Vorpruefung bestanden. Es wurden keine Werte ausgegeben."
+      - uses: actions/setup-node@v4
+        if: ${{ !inputs.preflight_only }}
+        with:
+          node-version: "22"
+      - name: Pruefen und Web-Teil bauen
+        if: ${{ !inputs.preflight_only }}
+        working-directory: app
+        run: |
+          set -euo pipefail
+          [[ "$MARKETING_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Version ungueltig"; exit 1; }
+          npm ci --no-audit --no-fund
+          npm test
+          npm run build:www
+          npx cap sync ios
+      - name: Zertifikat und Profil fuer diesen Lauf ablegen
+        if: ${{ !inputs.preflight_only }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/sign"
+          printf '%s' "$IOS_DIST_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/sign/dist.p12"
+          printf '%s' "$IOS_PROFILE_BASE64" | base64 --decode > "$RUNNER_TEMP/sign/app.mobileprovision"
+          chmod 600 "$RUNNER_TEMP"/sign/*
+          echo "IOS_DIST_P12_PATH=$RUNNER_TEMP/sign/dist.p12" >> "$GITHUB_ENV"
+          echo "IOS_PROFILE_PATH=$RUNNER_TEMP/sign/app.mobileprovision" >> "$GITHUB_ENV"
+      - name: Archiv, Signierung und Upload zu TestFlight (fastlane, vorinstalliert)
+        if: ${{ !inputs.preflight_only }}
+        working-directory: app/ci
+        run: fastlane ios beta
+      - name: Geheimnisse entfernen
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/sign"
