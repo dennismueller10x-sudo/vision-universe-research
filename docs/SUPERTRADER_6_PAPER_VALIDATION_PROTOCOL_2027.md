@@ -7,6 +7,8 @@ Stand: 25. Oktober 2026, Eigentümerentscheidungen E2 und E7-3. Protokoll `SF6-P
 - Es gibt keine Orders und keinen Broker. Kein Signal erscheint auf einer Produktseite. Alle Strategien bleiben `LIVE_NOT_APPROVED`.
 - Die Aufzeichnung beginnt erst nach einer gesonderten, ausdrücklichen Freigabe des Eigentümers in einem eigenen PR. Dieser PR regelt den Aufzeichnungs-Workflow, die Ablage und die Aufbewahrung.
 
+**Aktivierungs-PR (FP-ST-02):** [SUPERTRADER_PAPER_2027_ACTIVATION.md](SUPERTRADER_PAPER_2027_ACTIVATION.md). Er bringt einen bewachten Aufzeichnungs-Workflow mit, dessen Owner-Schalter aus ist. Er ist der einzige Workflow, der das Protokoll nennen darf, und er tut nichts, solange der Schalter aus ist oder das Fenster nicht begonnen hat. Das Protokoll selbst bleibt unverändert.
+
 ## Warum ein prospektives Fenster
 
 Alle historischen Zeiträume sind verbraucht:
