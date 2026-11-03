@@ -76,6 +76,18 @@ jobs:
           node /tmp/st-qa/node_modules/playwright/cli.js install --with-deps chromium
           mkdir -p /tmp/site/supertrader/data
           cp /tmp/signals.json /tmp/registry.json /tmp/site/supertrader/data/
+          # Research-Kandidaten (Supertrader 8): die QA erwartet die befuellten Ansichten genau dann, wenn
+          # sf-candidates/summary.json vorliegt, sonst den gekennzeichneten Leerzustand. Gemessen wird der
+          # AUSGELIEFERTE Stand: 200 -> Uebersicht mitgeben, 404 -> Leerzustand pruefen, alles andere ist ein Fehler.
+          sf_code=$(curl -s -o /tmp/sf-summary.json -w '%{http_code}' "$SITE/supertrader/data/sf-candidates/summary.json")
+          case "$sf_code" in
+            200) mkdir -p /tmp/site/supertrader/data/sf-candidates
+                 node -e 'JSON.parse(require("fs").readFileSync("/tmp/sf-summary.json","utf8"))'
+                 cp /tmp/sf-summary.json /tmp/site/supertrader/data/sf-candidates/summary.json
+                 echo "Research-Kandidaten veroeffentlicht - befuellte Ansichten werden geprueft" ;;
+            404) echo "Research-Kandidaten nicht veroeffentlicht - Leerzustand wird geprueft" ;;
+            *) echo "sf-candidates/summary.json: HTTP $sf_code"; exit 1 ;;
+          esac
           gate=""
           if curl -sf "$SITE/__research/config.json" -o /dev/null; then gate="--access-login"; echo "Research-Zugangsmaske aktiv - Login ueber das Formular"; fi
           node scripts/supertrader/browser-qa.mjs --base="$SITE" --site=/tmp/site --out=/tmp/supertrader-prod-evidence --playwright=/tmp/st-qa/node_modules/playwright $gate
