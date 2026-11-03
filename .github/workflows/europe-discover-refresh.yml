@@ -1,0 +1,78 @@
+# Controlled manual Europe Discover Close refresh (owner-approved, no schedule).
+# One bounded Marketstack /eod request per published primary listing, from the
+# last published session to the run date (449 requests / 449 reserved credits
+# at the conservative estimate; hard cap 1,000). Provider RAW stays in the
+# runner's private temp directory and is deleted; only hashes are published.
+# Producer: scripts/marketstack/europe-discover-publication.mjs refresh.
+name: Europe Discover Close refresh (manual)
+on:
+  workflow_dispatch:
+    inputs:
+      max_credits:
+        description: 'Reserved credit cap for this run (1-1000)'
+        type: string
+        default: '600'
+      dry_run:
+        description: 'Only estimate the requests (no provider call, no commit)'
+        type: boolean
+        default: false
+permissions:
+  contents: write
+concurrency:
+  group: europe-discover-refresh-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  refresh:
+    if: github.repository == 'dennismueller10x-sudo/vision-universe-research'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Calendar, session-proof, eligibility and refresh regressions
+        run: node --test core/tests/europe-discover-refresh.test.mjs core/tests/europe-session-proof.test.mjs core/tests/europe-discover-contract.test.mjs
+      - name: Request estimate (no provider call)
+        env:
+          MAX_CREDITS: ${{ inputs.max_credits }}
+        run: node scripts/marketstack/europe-discover-publication.mjs refresh --out discover/data/europe --maxCredits "$MAX_CREDITS" --dryRun true
+      - name: Authenticated append-only refresh
+        if: ${{ !inputs.dry_run }}
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+          MAX_CREDITS: ${{ inputs.max_credits }}
+        run: |
+          set -euo pipefail
+          if [ -z "${MARKETSTACK_API_KEY:-}" ]; then echo "::error::MARKETSTACK_API_KEY secret is not configured"; exit 1; fi
+          node scripts/marketstack/europe-discover-publication.mjs refresh --out discover/data/europe --privateDir "${RUNNER_TEMP}/vu-europe-refresh-private" --maxCredits "$MAX_CREDITS" --reportPath "${RUNNER_TEMP}/europe-refresh-report.json"
+      - name: Remove private provider responses
+        if: always()
+        run: rm -rf -- "${RUNNER_TEMP}/vu-europe-refresh-private"
+      - name: Verify the refreshed publication against the wall clock
+        if: ${{ !inputs.dry_run }}
+        env:
+          EUROPE_LIVE_CALENDAR_CHECK: '1'
+        run: |
+          set -euo pipefail
+          node --test core/tests/europe-discover-refresh.test.mjs core/tests/europe-session-proof.test.mjs core/tests/global-published-contract.test.mjs
+          node scripts/marketstack/europe-discover-check.mjs
+      - name: Upload normalized before/after report
+        if: ${{ !inputs.dry_run && always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: europe-discover-refresh-${{ github.run_id }}
+          path: ${{ runner.temp }}/europe-refresh-report.json
+          if-no-files-found: warn
+      - name: Commit producer-owned display artifacts
+        if: ${{ !inputs.dry_run && github.ref == 'refs/heads/main' }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add discover/data/europe
+          if git diff --cached --quiet; then echo "No change"; exit 0; fi
+          git commit -m "Europe Discover: Schlusskurse aktualisiert (manueller Lauf ${GITHUB_RUN_ID})"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
