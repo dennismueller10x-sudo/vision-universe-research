@@ -49,5 +49,6 @@ Die Kriterien 1.2.0 werten CC-8 nur aus Belegen dieses Protokolls aus. Dabei mus
 |---|---|---|---|---|
 | 1.0.0 | 24.10.2026 (E2) | `c90c30bcf0186549…` | `SUPERSEDED_BY_1_1_0_NEVER_ACTIVATED` | erste Fassung; Turtle-Engine `ae2a51ed…`, Minervini-Code `b1d81fb8…` |
 | 1.1.0 | 25.10.2026 (E7-3) | `e623b336cd24a49e…` | `PREPARED_NOT_ACTIVE` | neue Code-Fingerabdrücke nach den Behebungen SF7-D3/SF7-D4 der OPTIMISTIC-Lesarten ([SUPERTRADER_7_OPTIMISTIC_FIXES.md](SUPERTRADER_7_OPTIMISTIC_FIXES.md)). Die Referenzen selbst sind unverändert und hashgleich belegt. |
+| 1.2.0 | Entwurf vom 03.11.2026 (FP-ST-02 V5), noch nicht festgeschrieben | `1c23911cb771bf25…` (Entwurf) | `DRAFT_PENDING_REFERENCE_IDENTITY` | Forward-Datenpfad: Fenster `PAPER_2027` in `validation/lib.mjs`, neuer Turtle-Fingerabdruck `5e6683d4…`, alle anderen Pins unverändert. Liegt in `sf6-paper-protocol-2027-v1_2_0.mjs` neben 1.1.0; 1.1.0 ist nicht bearbeitet. Festgeschrieben wird 1.2.0 erst nach den Owner-Läufen zur Referenzgleichheit ([SUPERTRADER_PAPER_2027_FORWARD_PATH.md](SUPERTRADER_PAPER_2027_FORWARD_PATH.md)). |
 
 Die neue Version ändert keine Referenz, keine Kennzahl und keinen Ablauf. Sie wurde vor dem 01.01.2027 festgelegt, das Fenster ist also nicht berührt. Auch 1.1.0 ist nicht aktiviert: kein Scheduler, kein Workflow, keine Aufzeichnung.

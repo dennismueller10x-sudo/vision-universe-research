@@ -1,7 +1,8 @@
 name: Supertrader Paper 2027 (SF6-PAPER-2027, Aufzeichnung)
 
-# Prospektiver Paper-Test SF6-PAPER-2027 (Protokoll 1.1.0, scripts/supertrader/source-faithful/completion/
-# sf6-paper-protocol-2027.mjs; Freigabepaket FP-ST-02 / CC-8; docs/SUPERTRADER_PAPER_2027_ACTIVATION.md).
+# Prospektiver Paper-Test SF6-PAPER-2027 (Protokoll 1.2.0 mit Forward-Datenpfad, scripts/supertrader/source-faithful/
+# completion/sf6-paper-protocol-2027-v1_2_0.mjs; 1.1.0 ersetzt; Freigabepaket FP-ST-02 / CC-8;
+# docs/SUPERTRADER_PAPER_2027_ACTIVATION.md, docs/SUPERTRADER_PAPER_2027_FORWARD_PATH.md).
 #
 # BEWACHT: Der Job `guard` fragt den Owner-Schalter (scripts/supertrader/source-faithful/paper/activation-2027.mjs).
 #   INACTIVE  Schalter aus (Stand dieses PR) oder vor dem 01.01.2027: nichts passiert, kein Commit, gruener Lauf.
@@ -60,7 +61,7 @@ jobs:
     needs: guard
     if: needs.guard.outputs.state == 'ACTIVE' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 300
     permissions:
       contents: write
     steps:
@@ -70,9 +71,54 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Sitzung aufzeichnen (nur anhaengen, Kette vorher geprueft)
+      - name: Sitzung bestimmen (faellig nur ab der ersten Sitzung und nach der letzten erfassten)
+        id: s
         env:
           IN_SESSION: ${{ inputs.session }}
+        run: |
+          set -euo pipefail
+          session="${IN_SESSION:-auto}"
+          if [ "$session" != "auto" ] && ! printf '%s' "$session" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then echo "::error::Sitzung YYYY-MM-DD erwartet"; exit 2; fi
+          node scripts/supertrader/source-faithful/paper/run-paper-2027.mjs session --session "$session" \
+            --log scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl
+      # Protokoll 1.2.0: Forward-Fenster PAPER_2027 bis zur Sitzung t (validation/lib.mjs, ST_WINDOW_TO = t), eigener
+      # privater Namensraum. Erst die Reihen und die SEC-Daten bis t fortschreiben, dann aufzeichnen (fail closed).
+      - name: Forward-Reihen bis zur Sitzung fortschreiben (privater Eimer, nur Zaehlungen im Log)
+        if: steps.s.outputs.due == 'true'
+        env:
+          ST_WINDOW: PAPER_2027
+          ST_WINDOW_TO: ${{ steps.s.outputs.session }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/supertrader/validation/fetch.mjs --mode forward --out "$RUNNER_TEMP/paper-fwd"
+      - name: Forward-SEC-Daten bis zur Sitzung (sec-pit r12, sec-delist r13; privater Eimer)
+        if: steps.s.outputs.due == 'true'
+        env:
+          ST_WINDOW: PAPER_2027
+          ST_WINDOW_TO: ${{ steps.s.outputs.session }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: |
+          set -euo pipefail
+          node scripts/supertrader/validation/sec-pit.mjs --out "$RUNNER_TEMP/paper-fwd"
+      - name: Sitzung aufzeichnen (nur anhaengen, Kette vorher geprueft)
+        if: steps.s.outputs.due == 'true'
+        env:
+          SESSION: ${{ steps.s.outputs.session }}
+          ST_WINDOW: PAPER_2027
+          ST_WINDOW_TO: ${{ steps.s.outputs.session }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           NODE_OPTIONS: --max-old-space-size=12000
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -81,15 +127,13 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           set -euo pipefail
-          session="${IN_SESSION:-auto}"
-          if [ "$session" != "auto" ] && ! printf '%s' "$session" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then echo "::error::Sitzung YYYY-MM-DD erwartet"; exit 2; fi
-          node scripts/supertrader/source-faithful/paper/run-paper-2027.mjs record --session "$session" \
+          node scripts/supertrader/source-faithful/paper/run-paper-2027.mjs record --session "$SESSION" \
             --log scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl \
             --sealed-out scripts/supertrader/source-faithful/paper/log/sealed
       - name: Integritaet vor dem Commit (nur anhaengen gegen den committeten Stand, Kette, versiegelt)
         run: |
           set -euo pipefail
-          node --test scripts/supertrader/tests/sf-paper-2027-activation.test.mjs scripts/supertrader/tests/sf-sf6-readiness.test.mjs
+          node --test scripts/supertrader/tests/sf-paper-2027-activation.test.mjs scripts/supertrader/tests/sf-paper-2027-forward.test.mjs scripts/supertrader/tests/sf-sf6-readiness.test.mjs
           base="${RUNNER_TEMP}/paper-2027-base.jsonl"
           if git cat-file -e HEAD:scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl 2>/dev/null; then
             git show HEAD:scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl > "$base"

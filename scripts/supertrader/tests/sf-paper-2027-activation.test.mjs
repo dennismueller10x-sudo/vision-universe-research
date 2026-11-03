@@ -4,6 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { SF6_PAPER_PROTOCOL, sf6PaperProtocolSha256 } from '../source-faithful/completion/sf6-paper-protocol-2027.mjs';
+import { currentPaperProtocol } from '../source-faithful/completion/sf6-paper-protocol-2027-v1_2_0.mjs';
 import { SF6_PAPER_ACTIVATION, ACTIVATED_PROTOCOL_SHA256, DECISION_OPTIONS, FORWARD_DATA_PATHS, activationState, pinCheck } from '../source-faithful/paper/activation-2027.mjs';
 import { nextEntry, verifyChain, verifyAppendOnly, sealedFileName, effectiveEntries, integrityChecks, sessionRecord, datasetSource, truncatePit, truncateDataset, INTEGRITY_CHECK_IDS, GENESIS, parseJsonl, toJsonlLine } from '../source-faithful/paper/forward-log.mjs';
 import { syntheticPit, dryRun, simulateLog } from '../source-faithful/paper/run-paper-2027.mjs';
@@ -11,19 +12,22 @@ import { SF6_REFERENCE_KEYS } from '../source-faithful/research/sf6-references.m
 import { datasetFromPit } from '../source-faithful/runner/snapshot-input.mjs';
 
 const PINNED_PAPER_PROTOCOL = 'e623b336cd24a49e04b4588ab5b06c06d6226a323b368d4c659f2d7ce4b64f66';
+// 1.2.0 (forward data path, sf-paper-2027-forward.test.mjs): the activation and the log name the current version
+const CURRENT_PROTOCOL_SHA256 = currentPaperProtocol().sha256();
 const WF = new URL('../../../.github/workflows/supertrader-paper-2027.yml', import.meta.url);
 const pinsOk = { pass: true, rows: [] };
 const on = (over = {}) => ({ ...SF6_PAPER_ACTIVATION, activated: true, approval: { by: 'owner', on: '2026-12-15', pr: 1 }, decisions: { sampleCount: 'COUNT_ONLY', retention: 'RAISE_CAP_TO_4_FORWARD_GENERATION', dataSource: 'RESEARCH_FORWARD_WINDOW' }, ...over });
 
-test('PAPER-2027-SWITCH: aus (dieser PR) oder nur mit vollstaendiger Owner-Freigabe an; Protokoll 1.1.0 unveraendert, Pins gleich main', async () => {
+test('PAPER-2027-SWITCH: aus (dieser PR) oder nur mit vollstaendiger Owner-Freigabe an; Protokoll 1.1.0 unveraendert, Aktivierung nennt 1.2.0, Pins gleich 1.2.0', async () => {
   assert.equal(sf6PaperProtocolSha256(), PINNED_PAPER_PROTOCOL, 'das Protokoll wird durch die Aktivierung nicht bearbeitet');
-  assert.equal(ACTIVATED_PROTOCOL_SHA256, PINNED_PAPER_PROTOCOL);
+  assert.equal(ACTIVATED_PROTOCOL_SHA256, CURRENT_PROTOCOL_SHA256, 'die Aktivierung nennt die aktuelle Protokollversion');
+  assert.notEqual(ACTIVATED_PROTOCOL_SHA256, PINNED_PAPER_PROTOCOL, '1.1.0 ist durch 1.2.0 ersetzt (nie aktiviert)');
   assert.equal(SF6_PAPER_PROTOCOL.status, 'PREPARED_NOT_ACTIVE');
   assert.equal(SF6_PAPER_ACTIVATION.recording.notBefore, SF6_PAPER_PROTOCOL.window.start);
   for (const k of ['orders', 'broker', 'productSurface']) assert.equal(SF6_PAPER_ACTIVATION[k], 'NONE', k);
   const p = await pinCheck();
   assert.equal(p.pass, true, JSON.stringify(p.rows));
-  assert.equal(p.rows.find((r) => r.pin === 'turtleEngineCodeSha256').pinned.slice(0, 8), '89fbcf86');
+  assert.equal(p.rows.find((r) => r.pin === 'turtleEngineCodeSha256').pinned.slice(0, 8), '5e6683d4', '1.2.0: neuer Turtle-Pin (Forward-Fenster in validation/lib.mjs)');
   if (SF6_PAPER_ACTIVATION.activated !== true) {
     // Stand dieses PR: der Schalter ist eine Owner-Freigabe (eigener Commit), nichts ist entschieden, kein Protokoll
     assert.equal(SF6_PAPER_ACTIVATION.activated, false);
@@ -44,12 +48,13 @@ test('PAPER-2027-GUARD: eingeschaltet nur mit Freigabe, allen Entscheidungen, Da
   const st = (a, today = '2027-01-05', pins = pinsOk) => activationState({ today, activation: a, pins });
   const missing = await st(on({ approval: null, decisions: { sampleCount: null, retention: null, dataSource: null } }));
   assert.equal(missing.state, 'BLOCKED');
-  assert.deepEqual(missing.reasons, ['OWNER_APPROVAL_MISSING', 'DECISION_MISSING:sampleCount', 'DECISION_MISSING:retention', 'DECISION_MISSING:dataSource']);
+  assert.deepEqual(missing.reasons, ['REFERENCE_IDENTITY_NOT_SHOWN', 'OWNER_APPROVAL_MISSING', 'DECISION_MISSING:sampleCount', 'DECISION_MISSING:retention', 'DECISION_MISSING:dataSource']);
   assert.ok((await st(on({ approval: { by: 'owner', on: '2027-01-02', pr: 1 } }))).reasons.includes('APPROVAL_AFTER_WINDOW_START'));
   assert.ok((await st(on({ decisions: { sampleCount: 'ANY', retention: 'RAISE_CAP_TO_4_FORWARD_GENERATION', dataSource: 'RESEARCH_FORWARD_WINDOW' } }))).reasons.includes('DECISION_INVALID:sampleCount'));
-  // the forward data path does not exist yet: switched on, the guard stays red (never a silent skip)
-  assert.equal(FORWARD_DATA_PATHS.RESEARCH_FORWARD_WINDOW.status, 'NOT_IMPLEMENTED');
-  assert.deepEqual((await st(on())).reasons, ['FORWARD_DATA_PATH_NOT_IMPLEMENTED']);
+  // 1.2.0: the forward data path exists; switched on, the guard stays red until the reference identity of 1.2.0 is shown
+  // by the owner runs (never a silent skip)
+  assert.equal(FORWARD_DATA_PATHS.RESEARCH_FORWARD_WINDOW.status, 'IMPLEMENTED');
+  assert.deepEqual((await st(on())).reasons, ['REFERENCE_IDENTITY_NOT_SHOWN']);
   assert.ok((await st(on(), '2027-01-05', { pass: false, rows: [{ pin: 'turtleEngineCodeSha256', equal: false }] })).reasons.includes('PIN_MISMATCH:turtleEngineCodeSha256'));
   assert.ok((await st(on({ protocol: { ...SF6_PAPER_ACTIVATION.protocol, sha256: '0'.repeat(64) } }))).reasons.includes('PROTOCOL_FINGERPRINT_MISMATCH'));
 });
@@ -58,7 +63,7 @@ test('PAPER-2027-CHAIN: nur anhaengen, keine Doppel- oder Rueckwaerts-Sitzung, K
   const rec = { public: { X: { openPositions: 0 } }, sealed: {} };
   const mk = (log, o) => [...log, nextEntry(log, { record: rec, inputs: {}, recordedAt: `${o.session}T21:00:00Z`, ...o })];
   let log = mk([], { session: '2027-01-04' });
-  assert.equal(log[0].prevHash, GENESIS); assert.equal(log[0].protocol.sha256, PINNED_PAPER_PROTOCOL);
+  assert.equal(log[0].prevHash, GENESIS); assert.equal(log[0].protocol.sha256, CURRENT_PROTOCOL_SHA256);
   log = mk(log, { session: '2027-01-05' });
   assert.throws(() => mk(log, { session: '2027-01-05' }), /PAPER_SESSION_NOT_AFTER_LAST/);
   assert.throws(() => mk(log, { session: '2027-01-04' }), /PAPER_SESSION_NOT_AFTER_LAST/);

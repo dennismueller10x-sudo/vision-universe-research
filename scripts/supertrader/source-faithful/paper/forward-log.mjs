@@ -22,9 +22,13 @@
  */
 import { canonicalJson, sha256 } from '../../snapshot/contract.mjs';
 import { SF6_REFERENCES, REFERENCE_COSTS } from '../research/sf6-references.mjs';
-import { SF6_PAPER_PROTOCOL, sf6PaperProtocolSha256 } from '../completion/sf6-paper-protocol-2027.mjs';
+import { currentPaperProtocol } from '../completion/sf6-paper-protocol-2027-v1_2_0.mjs';
 import { DQ_POLICIES, PRIMARY_POLICY, quarantineDataset } from '../integrity/discontinuity.mjs';
 import { datasetFromPit } from '../runner/snapshot-input.mjs';
+
+// The log refers to the current protocol version (1.2.0 when present, completion/sf6-paper-protocol-2027-v1_2_0.mjs);
+// window, recording and the four checks are the same in 1.1.0 and 1.2.0, only the pins and the forward path differ.
+const SF6_PAPER_PROTOCOL = currentPaperProtocol().protocol, sf6PaperProtocolSha256 = currentPaperProtocol().sha256;
 
 export const FORWARD_LOG_VERSION = 'sf6-paper-forward-log-1.0.0';
 export const GENESIS = '0'.repeat(64);

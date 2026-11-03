@@ -5,11 +5,18 @@
  *   guard   [--today YYYY-MM-DD]
  *           INACTIVE / ACTIVE / BLOCKED (activation-2027.mjs#activationState); writes state=<..> to $GITHUB_OUTPUT.
  *           Exit 0 for INACTIVE and ACTIVE, 1 for BLOCKED.
+ *   session [--today YYYY-MM-DD] [--session YYYY-MM-DD|auto] [--log <jsonl>]
+ *           the session a run records (auto = last XNYS session before today) and whether it is due (not before the
+ *           first session, after the last recorded one); writes session=<..> and due=true|false to $GITHUB_OUTPUT.
+ *           The recording process then runs with ST_WINDOW=PAPER_2027 ST_WINDOW_TO=<session> (1.2.0 forward window).
  *   record  --session YYYY-MM-DD|auto --log <jsonl> --sealed-out <dir> [--today YYYY-MM-DD]
  *           only when guard says ACTIVE: one entry per session, appended (never rewritten) after the chain of the
  *           existing log verified; the sealed part is encrypted for the owner (validation/results-public-key.pem) and
- *           its plaintext sha256 is in the public entry. Fails closed while the forward data path is not implemented
- *           (FORWARD_DATA_PATHS).
+ *           its plaintext sha256 is in the public entry. Data: the forward data path (FORWARD_DATA_PATHS, 1.2.0
+ *           paper/forward-source.mjs); fails closed outside the forward window or when a session is not in the data.
+ *   forward-probe --session YYYY-MM-DD --out <dir>
+ *           loads the forward source (ST_WINDOW=PAPER_2027 ST_WINDOW_TO=<session>) and writes counts and hashes only
+ *           (no record, no log, no commit): readiness check of the forward namespace before the window.
  *   verify  --log <jsonl> --sealed-dir <dir> --base <jsonl>
  *           append-only check before every commit: the committed log (base) is a byte-identical prefix, the chain is
  *           valid, no dry-run entry, one encrypted sealed file per entry. Exit 1 on any finding.
@@ -125,6 +132,32 @@ async function main() {
     if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `state=${s.state}\n`);
     process.exit(s.state === 'BLOCKED' ? 1 : 0);
   }
+  if (cmd === 'session') {
+    const today = arg('--today', new Date().toISOString().slice(0, 10)), logPath = arg('--log');
+    const { createCalendar } = await import('../product/eod-adapter.mjs');
+    const cal = createCalendar(), R = SF6_PAPER_ACTIVATION.recording;
+    let session = arg('--session', 'auto') || 'auto';
+    if (session === 'auto') { session = cal.addDays(today, -1); while (!cal.isSession(session)) session = cal.addDays(session, -1); }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(session) || !cal.isSession(session)) { console.error(`PAPER_SESSION_INVALID: ${session}`); process.exit(2); }
+    const log = logPath && fs.existsSync(logPath) ? parseJsonl(fs.readFileSync(logPath, 'utf8')) : [];
+    const last = log.filter((e) => e.type === 'SESSION').map((e) => e.session).at(-1) ?? null;
+    const due = session >= R.firstSession && !(last && last >= session);
+    console.log(JSON.stringify({ today, session, lastRecorded: last, due }));
+    if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `session=${session}\ndue=${due}\n`);
+    return;
+  }
+  if (cmd === 'forward-probe') {
+    const session = arg('--session'), OUT = arg('--out');
+    if (!session || !OUT) { console.error('usage: forward-probe --session YYYY-MM-DD --out <dir> (ST_WINDOW=PAPER_2027 ST_WINDOW_TO=<session>)'); process.exit(2); }
+    let source;
+    try { source = await FORWARD_DATA_PATHS.RESEARCH_FORWARD_WINDOW.load(session, { log: (m) => console.log(`[forward-probe] ${m}`) }); } catch (e) { console.error(String(e?.message || e).split('\n')[0]); process.exit(3); }
+    const t = source.sessions.at(-1) ?? null, ds = t ? source.at(t) : null;
+    const report = { schema: 'sf6-paper-forward-probe-1.0.0', session, window: source.window, kind: source.kind, version: source.version, sessions: source.sessions.length, firstSession: source.sessions[0] ?? null, lastSession: t, listingTableHash: source.listingTableHash, dataFingerprint: source.dataFingerprint, securitiesAtLast: ds ? ds.securities.length : 0, terminalsAtLast: ds ? ds.securities.filter((x) => x.terminal).length : 0, withFundamentalsAtLast: ds ? ds.securities.filter((x) => x.fund).length : 0, datasetSha256AtLast: ds ? datasetSha256(ds) : null, record: 'NONE' };
+    fs.mkdirSync(OUT, { recursive: true });
+    fs.writeFileSync(path.join(OUT, 'forward-probe.json'), JSON.stringify(report, null, 1) + '\n');
+    console.log(JSON.stringify(report, null, 1));
+    return;
+  }
   if (cmd === 'record') {
     const logPath = arg('--log'), sealedOut = arg('--sealed-out'), today = arg('--today', new Date().toISOString().slice(0, 10));
     if (!logPath || !sealedOut) { console.error('usage: record --session YYYY-MM-DD|auto --log <jsonl> --sealed-out <dir> [--today YYYY-MM-DD]'); process.exit(2); }
@@ -143,15 +176,18 @@ async function main() {
     if (last && last >= session) { console.log(`ALREADY_RECORDED: ${session} (last ${last}); nothing to do`); return; }
     const pathDef = FORWARD_DATA_PATHS[SF6_PAPER_ACTIVATION.decisions.dataSource];
     if (!pathDef || pathDef.status !== 'IMPLEMENTED') { console.error(`${pathDef?.reason ?? 'FORWARD_DATA_PATH_UNKNOWN'}: ${pathDef?.needs ?? ''}`); process.exit(3); }
-    // reached only once the forward data path exists (activation-2027.mjs FORWARD_DATA_PATHS[..].load(session) returns a
-    // datasetSource whose at(t) is the dataset as known at the close of t). A missed session is recorded late, in
+    // the forward data path (1.2.0, paper/forward-source.mjs): FORWARD_DATA_PATHS[..].load(session) returns a
+    // datasetSource whose at(t) is the dataset as known at the close of t. A missed session is recorded late, in
     // order (never skipped); NO_MISSING_SESSIONS counts it as written after the next open.
-    const source = await pathDef.load(session);
+    let source;
+    try { source = await pathDef.load(session); } catch (e) { console.error(String(e?.message || e).split('\n')[0]); process.exit(3); }
+    const due = cal.sessionsBetween(last ? cal.nextSession(last) : R.firstSession, session).filter((t) => !source.sessions.includes(t));
+    if (due.length) { console.error(`FORWARD_SESSION_NOT_IN_DATA: ${due.join(',')}`); process.exit(3); }
     const pem = fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
     let cur = log;
     for (const t of cal.sessionsBetween(last ? cal.nextSession(last) : R.firstSession, session)) {
       const ds = source.at(t), rec = sessionRecord(ds, t);
-      const e = nextEntry(cur, { session: t, record: rec, inputs: { source: source.kind, datasetSha256: datasetSha256(ds), pitCorporateActions: source.pitCorporateActions, commit: process.env.GITHUB_SHA || null, runId: process.env.GITHUB_RUN_ID || null }, recordedAt: new Date().toISOString(), activationSha256: activationSha256() });
+      const e = nextEntry(cur, { session: t, record: rec, inputs: { source: source.kind, sourceVersion: source.version ?? null, datasetSha256: datasetSha256(ds), listingTableHash: source.listingTableHash ?? null, pitCorporateActions: source.pitCorporateActions, commit: process.env.GITHUB_SHA || null, runId: process.env.GITHUB_RUN_ID || null }, recordedAt: new Date().toISOString(), activationSha256: activationSha256() });
       fs.mkdirSync(sealedOut, { recursive: true });
       fs.writeFileSync(path.join(sealedOut, sealedFileName(e)), L.encryptForOwner(pem, Buffer.from(canonicalJson({ session: t, entryHash: e.hash, sealed: rec.sealed }))));
       fs.mkdirSync(path.dirname(logPath), { recursive: true });
@@ -196,7 +232,7 @@ async function main() {
     console.log(JSON.stringify({ source: report.source, sessions: report.sessions, window: report.window, chainHead: report.chainHead.slice(0, 16), clean: Object.fromEntries(Object.entries(report.clean).map(([m, r]) => [m, summary(r)])), tamper: report.tamper.map((s) => `${s.id}: ${s.caught ? 'CAUGHT' : 'NOT CAUGHT'}`), allCleanPass: report.allCleanPass, allTamperCaught: report.allTamperCaught, seconds: report.seconds, sha256: sha256(JSON.stringify(report.clean)) }, null, 1));
     process.exit(report.allCleanPass && report.allTamperCaught ? 0 : 1);
   }
-  console.error('usage: run-paper-2027.mjs guard|record|dry-run (see header)'); process.exit(2);
+  console.error('usage: run-paper-2027.mjs guard|session|record|verify|forward-probe|dry-run (see header)'); process.exit(2);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch((e) => { console.error(String(e?.stack || e)); process.exit(1); });

@@ -14,7 +14,7 @@ Stand: 03.11.2026. Freigabepaket **FP-ST-02** ([SUPERTRADER_13_METHODS_EVIDENCE.
 | V2 | Workflow, der vor dem 01.01.2027 und ohne Schalter nichts tut | **vorhanden** (dieser PR) | – |
 | V3 | Probelauf mit den vier Integritätsprüfungen und Manipulationsproben | **bestanden** (Abschnitt 5) | – |
 | V4 | gepinnte Fingerabdrücke gleich `main` | **gleich** (Abschnitt 4) | – |
-| V5 | **Forward-Datenpfad** für die Sitzungen ab 2027 | **fehlt**, Folge-PR nötig (Abschnitt 3) | Technik, dann Owner-Läufe |
+| V5 | **Forward-Datenpfad** für die Sitzungen ab 2027 | **gebaut** im Folge-PR (Protokoll 1.2.0, Entwurf; [SUPERTRADER_PAPER_2027_FORWARD_PATH.md](SUPERTRADER_PAPER_2027_FORWARD_PATH.md)), Referenzgleichheit offen | Owner-Läufe R1–R6, dann Festschreibung 1.2.0 |
 | V6 | Owner-Entscheidungen E-P1 bis E-P3 | offen (Abschnitt 6) | Owner |
 | V7 | Owner-Commit am Schalter mit Freigabe (Datum vor dem 01.01.2027, PR-Nummer) | offen | Owner |
 
@@ -61,6 +61,8 @@ Es gibt **keinen** Schalter über Repository-Variablen. Die Freigabe ist ein gem
 - Die Aufbewahrung gilt mindestens bis zum Abschluss der CC-8-Auswertung und so lange, wie eine Zertifizierung darauf beruht. Die Aufbewahrung der **eingefrorenen Forward-Sitzungen** (Snapshot-Generation) ist die Owner-Entscheidung E-P2.
 
 ## 3. Befund: Der Forward-Datenpfad fehlt (V5)
+
+> **Nachtrag (Folge-PR, 03.11.2026):** Der Datenpfad ist gebaut, Protokoll 1.2.0 liegt als Entwurf neben 1.1.0. Der Wächter meldet bei eingeschaltetem Schalter jetzt `REFERENCE_IDENTITY_NOT_SHOWN` statt `FORWARD_DATA_PATH_NOT_IMPLEMENTED`, bis die Owner-Läufe die Referenzgleichheit zeigen. Einzelheiten, neuer Fingerabdruck `5e6683d4…` und die Läufe: [SUPERTRADER_PAPER_2027_FORWARD_PATH.md](SUPERTRADER_PAPER_2027_FORWARD_PATH.md).
 
 Der Research-Lader (`validation/analyze-methods.mjs#loadPitData`) und der Capture-Pfad lesen das Fenster aus `validation/lib.mjs#WINDOWS`. Dort gibt es nur DEV (bis 30.09.2026) und HOLDOUT. Ein Forward-Fenster ab 2027 gibt es nicht.
 

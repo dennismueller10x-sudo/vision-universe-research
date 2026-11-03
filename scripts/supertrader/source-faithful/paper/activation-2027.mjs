@@ -1,9 +1,9 @@
 /**
  * SF6-PAPER-2027 – the owner switch (package FP-ST-02 / CC-8; docs/SUPERTRADER_PAPER_2027_ACTIVATION.md).
  *
- * The protocol (completion/sf6-paper-protocol-2027.mjs, fingerprint e623b336… pinned in sf-sf6-readiness) is NOT
- * edited by the activation: it stays the fixed object the window is evaluated against, and CC-8 evidence counts only
- * under its fingerprint. The activation is this separate record. It names the protocol fingerprint it activates and
+ * The protocol (1.1.0: completion/sf6-paper-protocol-2027.mjs, fingerprint e623b336… pinned in sf-sf6-readiness;
+ * 1.2.0 with the forward data path: completion/sf6-paper-protocol-2027-v1_2_0.mjs) is NOT edited by the activation: it
+ * stays the fixed object the window is evaluated against, and CC-8 evidence counts only under its fingerprint. The activation is this separate record. It names the protocol fingerprint it activates and
  * the owner decisions the protocol leaves open (retention, PS-C02-SAMPLE-COUNT, forward data path).
  *
  * The recording workflow (.github/workflows/supertrader-paper-2027.yml) asks activationState() first and does nothing
@@ -11,11 +11,21 @@
  */
 import crypto from 'node:crypto';
 import { canonicalJson } from '../../snapshot/contract.mjs';
-import { SF6_PAPER_PROTOCOL, sf6PaperProtocolSha256 } from '../completion/sf6-paper-protocol-2027.mjs';
+import * as L from '../../validation/lib.mjs';
+import { SF6_PAPER_PROTOCOL_VERSIONS, currentPaperProtocol, referenceIdentityShown } from '../completion/sf6-paper-protocol-2027-v1_2_0.mjs';
+
+// 1.2.0 (FP-ST-02 V5, docs/SUPERTRADER_PAPER_2027_FORWARD_PATH.md): the guard knows every protocol version
+// (SF6_PAPER_PROTOCOL_VERSIONS) and accepts only the current one (1.2.0 when present). An activation naming 1.1.0 is
+// PROTOCOL_SUPERSEDED; while 1.2.0 has no shown reference identity the guard reports REFERENCE_IDENTITY_NOT_SHOWN.
+const CURRENT = currentPaperProtocol(), SF6_PAPER_PROTOCOL = CURRENT.protocol, sf6PaperProtocolSha256 = CURRENT.sha256;
 
 export const ACTIVATION_SCHEMA = 'sf6-paper-activation-1.0.0';
-/** The protocol fingerprint this activation is for (1.1.0). A different protocol needs a new activation record. */
-export const ACTIVATED_PROTOCOL_SHA256 = 'e623b336cd24a49e04b4588ab5b06c06d6226a323b368d4c659f2d7ce4b64f66';
+/**
+ * The protocol fingerprint this activation is for: 1.2.0 in its current (draft) form. Filling in the owner runs changes
+ * the 1.2.0 fingerprint; this constant is then updated in the same commit (test PAPER-2027-SWITCH fails otherwise).
+ * 1.1.0 (e623b336…) is superseded and never activated.
+ */
+export const ACTIVATED_PROTOCOL_SHA256 = '1c23911cb771bf254271f3f1f625141fe190d89f376cfe863a8c6e4ef1f3b875';
 
 /** Allowed answers of the owner decisions (docs/SUPERTRADER_PAPER_2027_ACTIVATION.md, section "Entscheidungen"). */
 export const DECISION_OPTIONS = Object.freeze({
@@ -33,14 +43,17 @@ export const DECISION_OPTIONS = Object.freeze({
 });
 
 /**
- * Forward data paths. The research loader (validation/analyze-methods.mjs#loadPitData) reads validation/lib.mjs#WINDOW,
- * which knows DEV (to 2026-09-30) and HOLDOUT only. lib.mjs is one of the files of the pinned Turtle engine fingerprint
- * (runner/run-research.mjs#codeSha256 = 89fbcf86…): a forward window there changes the pin and needs a protocol version
- * fixed before 2027-01-01 with the reference identity shown again (as 1.1.0 did, E7-3). Until then the recording has no
- * data path and fails closed.
+ * Forward data paths. 1.1.0 had none (FORWARD_DATA_PATH_NOT_IMPLEMENTED): the research loader knew DEV and HOLDOUT only.
+ * 1.2.0: validation/lib.mjs FORWARD_WINDOW PAPER_2027 (rolling end ST_WINDOW_TO = t) and paper/forward-source.mjs on the
+ * unchanged research loader. IMPLEMENTED only when the current protocol defines the path and lib.mjs has the window.
  */
+const forwardImplemented = Boolean(SF6_PAPER_PROTOCOL.data.forwardPath && L.FORWARD_WINDOW && L.FORWARD_WINDOW.from === SF6_PAPER_PROTOCOL.window.firstSession);
 export const FORWARD_DATA_PATHS = Object.freeze({
-  RESEARCH_FORWARD_WINDOW: Object.freeze({ status: 'NOT_IMPLEMENTED', needs: 'validation/lib.mjs WINDOWS.PAPER_2027 (warm-up before 2027-01-04, rolling end) -> new turtleEngineCodeSha256 -> protocol 1.2.0 before 2027-01-01 with reference identity re-shown', reason: 'FORWARD_DATA_PATH_NOT_IMPLEMENTED' }),
+  RESEARCH_FORWARD_WINDOW: Object.freeze({
+    status: forwardImplemented ? 'IMPLEMENTED' : 'NOT_IMPLEMENTED', reason: 'FORWARD_DATA_PATH_NOT_IMPLEMENTED',
+    needs: forwardImplemented ? `ST_WINDOW=${L.FORWARD_WINDOW.name} ST_WINDOW_TO=<session> in the recording process (paper/forward-source.mjs#assertForwardWindow)` : 'validation/lib.mjs FORWARD_WINDOW PAPER_2027 and protocol 1.2.0 data.forwardPath',
+    load: async (session, opts) => (await import('./forward-source.mjs')).loadForwardSource(session, opts),
+  }),
 });
 
 export const SF6_PAPER_ACTIVATION = Object.freeze({
@@ -71,7 +84,7 @@ export async function pinCheck() {
   const { researchCodeSha256 } = await import('../research/run-sf4-lifecycle.mjs');
   const { variantRegistrySha256 } = await import('../research/minervini-lifecycle.mjs');
   const { sf5VariantRegistrySha256 } = await import('../research/sf5-lifecycles.mjs');
-  const P = SF6_PAPER_PROTOCOL.references.pinned;
+  const P = SF6_PAPER_PROTOCOL.references.pinned; // pins of the current protocol version (1.2.0 when present)
   const now = { turtleEngineCodeSha256: codeSha256(), minerviniResearchCodeSha256: researchCodeSha256(), minerviniVariantRegistrySha256: variantRegistrySha256(), sf5VariantRegistrySha256: sf5VariantRegistrySha256() };
   const rows = Object.entries(now).map(([k, v]) => ({ pin: k, pinned: P[k], current: v, equal: P[k] === v }));
   return { pass: rows.every((r) => r.equal), rows };
@@ -87,7 +100,11 @@ export async function activationState({ today, activation = SF6_PAPER_ACTIVATION
   const reasons = [];
   if (!/^\d{4}-\d{2}-\d{2}$/.test(today || '')) throw new Error('PAPER_TODAY_REQUIRED');
   if (activation.activated !== true) return { state: 'INACTIVE', reasons: ['NOT_ACTIVATED'], activationSha256: activationSha256(activation) };
-  if (activation.protocol.sha256 !== sf6PaperProtocolSha256()) reasons.push('PROTOCOL_FINGERPRINT_MISMATCH');
+  if (activation.protocol.sha256 !== sf6PaperProtocolSha256()) {
+    const known = SF6_PAPER_PROTOCOL_VERSIONS.find((v) => v.sha256() === activation.protocol.sha256);
+    reasons.push(known ? `PROTOCOL_SUPERSEDED:${known.version}` : 'PROTOCOL_FINGERPRINT_MISMATCH');
+  }
+  if (!referenceIdentityShown(SF6_PAPER_PROTOCOL)) reasons.push('REFERENCE_IDENTITY_NOT_SHOWN');
   if (!activation.approval || !activation.approval.by || !/^\d{4}-\d{2}-\d{2}$/.test(activation.approval.on || '') || !Number.isInteger(activation.approval.pr)) reasons.push('OWNER_APPROVAL_MISSING');
   else if (activation.approval.on >= activation.recording.notBefore) reasons.push('APPROVAL_AFTER_WINDOW_START');
   for (const [k, opts] of Object.entries(DECISION_OPTIONS)) {
