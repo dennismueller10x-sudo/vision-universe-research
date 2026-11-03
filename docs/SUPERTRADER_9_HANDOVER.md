@@ -143,7 +143,7 @@ Definitionen: `docs/SUPERTRADER_8_ACTIVATION_READINESS.md`. Nur echte Läufe zä
 | S2 (kein Heil-Dispatch) | bisher erfüllt | letzter Heil-Dispatch 40459929703 (27.10.), also davor | mit S1 |
 | S3 | erfüllt | – | – |
 | S4 | **erfüllt** (31.10.) | 41192838845, 41207577526; DQ-PX-4 danach 0 | – |
-| S5 (2 SEC-Montagsläufe grün) | **1/2** | 40339879235 (26.10., grün) | Montagslauf 02.11. (Zeitplan, bisher ~14:30 UTC) |
+| S5 (2 SEC-Montagsläufe grün) | **0/2** | 40339879235 (26.10., grün); 41490082062 (02.11., rot: Push-Konflikt in `discover/data/meta.json`, Fix PR #1314) | Montagsläufe 09.11. und 16.11.; frühestens 16.11. erfüllt |
 | S6 (Security Master gültig) | **nicht erfüllt** | Stamm vom 11.09. | Quant H1 (#1240), Frist Laufdatum 10.11. |
 | S7 (Datenqualität ohne ERROR) | **nicht erfüllt**, kein Nachweis vorweggenommen | wird nach dem ersten automatischen Lauf gemessen | Nachweis 2, §3.3 |
 
