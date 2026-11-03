@@ -272,3 +272,148 @@ test("PR11 · Der Refresh nennt nur Pfade, die er committet und deren eingetrage
     assert.ok(ausgeschlossen.some((x) => pfad.startsWith(x)), "fremder Erzeuger nicht ausgeschlossen: " + d.artifact);
   }
 });
+
+/* PR12-PR16 · NEUBAU STATT EIGENEM STAND (Lauf 41490082062, 02.11.2026)
+   Der SEC-Consumer-Montagslauf verwarf seine Fundamentaldaten an einem
+   Konflikt in discover/data/meta.json: "Lange Kursreihen" hatte 13 Minuten
+   vorher dieselbe Datei aus SEINEN neuen Eingaben gebaut. Beide Seiten
+   haben Eingaben, die die andere nicht hat; richtig ist nur ein Neubau aus
+   dem zusammengefuehrten Baum. Simuliert mit einem kleinen Erzeuger, der
+   meta.json wie build-discover-data.mjs als eine Zeile mit Zeitstempel
+   schreibt. */
+const META = "discover/data/meta.json";
+const SERIE = "quant/data/market/discover-series-long/index.json";
+const FUND = "quant/data/sec/consumer_coverage.json";
+const ERZEUGER = [
+  'import { readFileSync, writeFileSync, mkdirSync } from "node:fs";',
+  'const lies = (f) => JSON.parse(readFileSync(f, "utf8"));',
+  'if (process.env.NEUBAU_SCHEITERT === "1") { console.error("verify: Abweichung"); process.exit(1); }',
+  'mkdirSync("discover/data", { recursive: true });',
+  `const m = { generatedAt: new Date().toISOString() + Math.random(), serien: lies(${JSON.stringify(SERIE)}).stand, fundamentals: lies(${JSON.stringify(FUND)}).stand };`,
+  `writeFileSync(${JSON.stringify(META)}, JSON.stringify(m));`,
+].join("\n");
+const NEUBAU = { PUSH_REGENERATE_PATHS: "discover/data/ !discover/data/europe/", PUSH_REGENERATE: "node gen.mjs" };
+const baue = (dir, extra = {}) => {
+  const r = spawnSync("node", ["gen.mjs"], { cwd: dir, env: Object.assign({}, ENV, extra), encoding: "utf8" });
+  if (r.status !== 0) throw new Error(r.stderr);
+};
+
+function montag({ env = NEUBAU, langeAendertMeta = true, extraKonflikt = null, neubauScheitert = false } = {}) {
+  const root = mkdtempSync(join(tmpdir(), "vu-push4-"));
+  const remote = join(root, "remote.git");
+  git(root, "init", "-q", "--bare", "-b", "main", remote);
+  const seed = join(root, "seed");
+  git(root, "clone", "-q", remote, seed);
+  writeFileSync(join(seed, "gen.mjs"), ERZEUGER + "\n");
+  schreibe(seed, SERIE, { stand: "serien-alt" });
+  schreibe(seed, FUND, { stand: "fund-alt" });
+  if (extraKonflikt) schreibe(seed, extraKonflikt, { stand: "basis" });
+  baue(seed);
+  git(seed, "add", "-A"); git(seed, "commit", "-q", "-m", "basis"); git(seed, "push", "-q", "origin", "HEAD:main");
+  const lange = join(root, "lange"), consumer = join(root, "consumer");
+  git(root, "clone", "-q", remote, lange); git(root, "clone", "-q", remote, consumer);
+  /* 17:32 UTC: Lange Kursreihen landet zuerst - neue Serien, Discover neu gebaut. */
+  schreibe(lange, SERIE, { stand: "serien-neu" });
+  if (langeAendertMeta) baue(lange);
+  if (extraKonflikt) schreibe(lange, extraKonflikt, { stand: "lange" });
+  git(lange, "add", "-A"); git(lange, "commit", "-q", "-m", "Lange Kursreihen"); git(lange, "push", "-q", "origin", "HEAD:main");
+  /* Der Consumer hat neue Fundamentaldaten und baut Discover auf dem alten Serienstand. */
+  schreibe(consumer, FUND, { stand: "fund-neu" });
+  baue(consumer);
+  if (extraKonflikt) schreibe(consumer, extraKonflikt, { stand: "consumer" });
+  git(consumer, "add", "-A"); git(consumer, "commit", "-q", "-m", "SEC Consumer-Fundamentals");
+  const r = spawnSync("bash", [SCRIPT, "main", "2"], { cwd: consumer,
+    env: Object.assign({}, ENV, env, neubauScheitert ? { NEUBAU_SCHEITERT: "1" } : {}), encoding: "utf8" });
+  const pruef = join(root, "pruef");
+  git(root, "clone", "-q", remote, pruef);
+  const lies = (f) => JSON.parse(readFileSync(join(pruef, f), "utf8"));
+  const rebaseOffen = existsSync(join(consumer, git(consumer, "rev-parse", "--git-path", "rebase-merge")));
+  return { root, r, lies, log: git(pruef, "log", "--format=%s"), rebaseOffen };
+}
+
+test("PR12 · meta.json im Konflikt (Lauf 41490082062): Neubau aus beiden Eingaben, beide Commits landen, nichts geht verloren", () => {
+  const w = montag();
+  try {
+    assert.equal(w.r.status, 0, w.r.stdout + w.r.stderr);
+    assert.match(w.r.stdout, /Konflikt in erzeugter Datei, wird nach dem Rebase neu gebaut: discover\/data\/meta\.json/);
+    assert.match(w.r.stdout, /Neubau in den eigenen Commit uebernommen/);
+    assert.deepEqual(w.log.split("\n"), ["SEC Consumer-Fundamentals", "Lange Kursreihen", "basis"]);
+    const m = w.lies(META);
+    assert.equal(m.serien, "serien-neu", "die Serien von Lange Kursreihen fehlen");
+    assert.equal(m.fundamentals, "fund-neu", "die Fundamentaldaten des Consumers fehlen");
+    assert.equal(w.lies(SERIE).stand, "serien-neu");
+    assert.equal(w.lies(FUND).stand, "fund-neu");
+    assert.equal(w.rebaseOffen, false);
+  } finally { aufraeumen(w.root); }
+});
+
+test("PR13 · Gegenprobe: ohne Neubau-Angabe bricht derselbe Konflikt ab wie am 02.11.", () => {
+  const w = montag({ env: {} });
+  try {
+    assert.equal(w.r.status, 1);
+    assert.match(w.r.stderr, /Konflikt ausserhalb erzeugter Artefakte: discover\/data\/meta\.json/);
+    assert.equal(w.log.split("\n")[0], "Lange Kursreihen");
+  } finally { aufraeumen(w.root); }
+});
+
+test("PR14 · Neubau scheitert: nichts wird geschoben, kein vorlaeufiger Stand verlaesst den Runner", () => {
+  const w = montag({ neubauScheitert: true });
+  try {
+    assert.equal(w.r.status, 1);
+    assert.match(w.r.stderr, /Neubau gescheitert/);
+    assert.equal(w.log.split("\n")[0], "Lange Kursreihen");
+    assert.equal(w.lies(META).serien, "serien-neu");
+    assert.equal(w.lies(META).fundamentals, "fund-alt");
+  } finally { aufraeumen(w.root); }
+});
+
+test("PR15 · Ohne Textkonflikt, aber mit geaenderten Eingaben: der Neubau macht Discover reproduzierbar", () => {
+  /* Lange Kursreihen aendert nur die Serien, nicht meta.json; der Rebase
+     gelaenge still - und meta.json des Consumers waere aus alten Serien. */
+  const w = montag({ langeAendertMeta: false });
+  try {
+    assert.equal(w.r.status, 0, w.r.stdout + w.r.stderr);
+    assert.deepEqual([w.lies(META).serien, w.lies(META).fundamentals], ["serien-neu", "fund-neu"]);
+  } finally { aufraeumen(w.root); }
+});
+
+test("PR16 · Ausnahmen bleiben Ausnahmen: Europa-Konflikt und Konflikt in Eingabedaten brechen weiterhin ab", () => {
+  for (const datei of ["discover/data/europe/manifest.json", "quant/data/sec/consumer/CIK0000320193.json"]) {
+    const w = montag({ extraKonflikt: datei });
+    try {
+      assert.equal(w.r.status, 1, datei);
+      assert.match(w.r.stderr, new RegExp("Konflikt ausserhalb erzeugter Artefakte: " + datei.replace(/[./]/g, "\\$&")));
+      assert.equal(w.log.split("\n")[0], "Lange Kursreihen");
+      assert.equal(w.rebaseOffen, false);
+    } finally { aufraeumen(w.root); }
+  }
+});
+
+test("PR17 · Wer neu baut, ist eingetragener Schreiber und ruft den eingetragenen Erzeuger auf", () => {
+  const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  const reg = JSON.parse(readFileSync(join(ROOT, "core/registry/domains.json"), "utf8"));
+  const domains = (Array.isArray(reg.domains) ? reg.domains : Object.values(reg.domains || {})).filter(Boolean);
+  const skript = readFileSync(SCRIPT, "utf8");
+  const erzeugt = [...skript.match(/ERZEUGT=\(([\s\S]*?)\)/)[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
+  const wf = readFileSync(join(ROOT, ".github/workflows/sec-consumer-fundamentals.yml"), "utf8");
+  const pfade = (wf.match(/PUSH_REGENERATE_PATHS:\s*"([^"]+)"/) || [])[1];
+  const befehl = (wf.match(/PUSH_REGENERATE:\s*"([^"]+)"/) || [])[1];
+  assert.ok(pfade && befehl, "Consumer nennt keinen Neubau");
+  assert.match(wf, /scripts\/ci\/push-with-retry\.sh/);
+  for (const p of pfade.split(/\s+/).filter((x) => !x.startsWith("!"))) {
+    const dom = domains.find((d) => d.artifact && d.artifact.startsWith("/" + p));
+    assert.ok(dom, "kein Registereintrag fuer " + p);
+    assert.match(String(dom.workflow), /sec-consumer/, "Consumer ist kein eingetragener Schreiber von " + p);
+    assert.ok(befehl.includes(String(dom.producer).split(/\s/)[0]), "Neubau ruft nicht den Erzeuger " + dom.producer);
+    assert.ok(!erzeugt.some((e) => e.startsWith(p) || p.startsWith(e)), "Pfad steht zugleich unter 'eigener Stand': " + p);
+  }
+  /* Fremde Erzeuger unter discover/data sind ausgeschlossen (wie PR11). */
+  const aus = pfade.split(/\s+/).filter((x) => x.startsWith("!")).map((x) => x.slice(1));
+  for (const d of domains) {
+    if (!d.artifact || !d.artifact.startsWith("/discover/data/")) continue;
+    if (/build-discover-data|global-search-index/.test(String(d.producer))) continue;
+    assert.ok(aus.some((x) => d.artifact.slice(1).startsWith(x)), "fremder Erzeuger nicht ausgeschlossen: " + d.artifact);
+  }
+  /* Die Pruefung gehoert zum Neubau, sonst ginge ein ungeprueftes Ergebnis hinaus. */
+  assert.match(befehl, /verify-discover-data\.mjs/);
+});
