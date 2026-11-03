@@ -178,3 +178,44 @@ Stand: 03.11.2026. Nur Dokumentation. Es wurde kein Lauf gestartet. Die Freigabe
 - Das Protokoll `scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl` wird als vorbereitete Datenart `supertrader-paper-2027-log` (`PREPARED_DISABLED`) in `core/registry/domains.json` eingetragen. Dafür gibt es zwei eigene PRs: #1272 (Supertrader) und #1273 (Core).
 - Reihenfolge: #1272 (gepinnte Gate-Ausnahme in `registry-guard.mjs`) → #1268 → #1273 (Eintrag).
 - Vor dem ersten Eintrag ins Protokoll braucht die Datenart den Wechsel auf `ACTIVATING`. Dazu gehören ein neuer Pin und ein eigener Core-PR, beides mit Owner-Freigabe.
+
+## 10. Ergebnisse R1–R5 (03.11.2026)
+
+Owner-Freigabe vom 03.11.2026 für R1 bis R5 in der Form von Abschnitt 9. **R6 ist zurückgestellt** und lief nicht. Alle Läufe liefen auf der Spitze dieses Zweigs (`82f92db1d0`, Code-Stand `2823ce3c`) und nacheinander. Keiner hat einen Anbieter abgefragt.
+
+| # | Lauf | Ergebnis | verglichen mit | Befund | Ablage |
+|---|---|---|---|---|---|
+| R1 | [41601470302](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/41601470302) `sf-research` | success, 19 min | 40170829944 | `datasetVerified: EXACT`, `codeVersionChanged: true`, Beleg-`codeSha256` `5e6683d4…`. S1, S2 und Darvas haben identische Szenario- und Ergebnisblöcke (BASE_S0 `884d88cb…` / `67169e86…`, Trades 820 / 559, Darvas `tradesSha256` `21b0ed8f…`, 22 577 Signale). Siehe Hinweis 1. | `20261103T083018Z-sf-*.sealed.json` (Commit `85f61d38a6`, 3 neue Dateien) |
+| R2 | [41604774311](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/41604774311) `sf4-lifecycle` | success, 17 min | 40170832007 | `EXACT`. Der öffentliche Block ist identisch, abgesehen von den Belegfeldern `runId`, `commit`, `engineCodeSha256` `89fbcf86…` → `5e6683d4…` und `codeVersionChanged`. REF SEPA `1ca52391…`, Power Play `877ceb33…`, Minervini-Code `c834b227…`. | `20261103T085540Z-sf4-lifecycle.sealed.json` (Commit `dd6bf95e91`) |
+| R3 | [41608045341](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/41608045341) `sf5-lifecycle` | success, 132 min | 40228392651 | `EXACT`. 47/47 Variantenblöcke identisch. Der öffentliche Block ohne Quittung hat vorher und nachher die SHA-256 `c1f6b941…`. In der Quittung ändert sich nur `engineCodeSha256` → `5e6683d4…`, sf5-Code `0726cac0…` bleibt. | `20261103T111626Z-sf5-lifecycle.sealed.json` (Commit `0062fad359`) |
+| R4 | [41627645169](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/41627645169) Restore DEV (leerer Commit `80ab1148cb`) | success, 5 min | Restores in `SNAPSHOT-POINTER.json` | restore-a und restore-b: `datasetVerified` und `replayVerified` `EXACT`. `datasetSha256` `3ea6443de70c…`, `replaySha256` `18e2a0d8d969…`, Snapshot-Code `675c404f…`, `codeVersionChanged: true`. Die Parallelprüfung ist identisch. | Commit `c858411681` auf diesem Zweig (Workflow) |
+| R5 | [41628817276](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/41628817276) Restore Holdout (leerer Commit `b9affcac32`) | success, 4 min | Restores in `SNAPSHOT-POINTER-HOLDOUT.json` | `sts1-85959e4b…`, beide Restores `EXACT`. `datasetSha256` `28d41836527d…`, `replaySha256` `ef0d0559d00e…`, Snapshot-Code `675c404f…`. Die Parallelprüfung ist identisch. | Commit `c6e25e10b5` auf diesem Zweig (Workflow) |
+
+Jeder Ablage-Commit auf `claude/supertrader-validation-results` ist ein Fast-Forward und enthält nur neue Dateien (`A`). Alle Dateien sind `supertrader-sealed-1.0.0`.
+
+**Hinweis 1 (R1, `contractFingerprint`):** Im Methodenkopf von SF_TURTLE_S1 und SF_TURTLE_S2 hat sich `contractFingerprint` geändert: C01 `27aa2272…` → `9459e241…`, C02 `d001acfc…` → `6d8f9f14…`. Das ist kein Ergebnisunterschied, und #1270 hat es nicht verursacht:
+- Der Fingerabdruck ist eine Eingabe der Quittung (`reproducibilityReceipt`), keine Ergebniszahl.
+- Er ist mit Commit `85d595c371` auf main gewandert: „Vertragstexte der TOP5-Befunde, Plan 1.1.2, nur Text“. Dokumentiert ist das in `docs/SUPERTRADER_9_CERTIFICATION_PREP_TOP5.md` §3.1.
+- Kein Regelstatus, keine Lesart und kein Parameter ist geändert.
+
+Die Gleichheitskriterien aus Abschnitt 9 sind erfüllt. Ob der Folge-Commit den neuen Vertragsfingerabdruck mit vermerkt, entscheidet, wer ihn schreibt.
+
+**Folge-Commit (Abschnitt 6) noch nicht geschrieben:**
+- Schritt 1 verlangt `referenceIdentity` mit allen sechs Lauf-IDs und `status: 'SHOWN'`. R6 (`kk`) fehlt, weil er zurückgestellt ist und erst nach #1262/#1263 auf main laufen kann (Abschnitt 9, Punkt 3).
+- Ein Teileintrag würde einen neuen Zwischenstatus und eine Teständerung brauchen. Der Test `sf-paper-2027-forward`, Zeile 188, verlangt bei `PENDING_OWNER_RUNS` alle Felder `null`. Das wäre eine Entscheidung über das Protokoll, deshalb ist es hier nicht gemacht.
+- Schritt 6 (Nachtrag 1.0.1 der ST9-V13-Registrierung) bleibt Owner-Entscheidung.
+
+Lauf-IDs für Schritt 1:
+
+| Feld | Lauf-ID |
+|---|---|
+| `turtle` | 41601470302 |
+| `minervini` | 41604774311 |
+| `sf5` | 41608045341 |
+| `restoreDev` | 41627645169 |
+| `restoreHoldout` | 41628817276 |
+| `kk` | offen (R6) |
+
+**Artefakt nach R4:** Der R4-Workflow schreibt einen neuen Restore in `SNAPSHOT-POINTER.json`. `STRATEGY-SNAPSHOT-PROVENANCE.json` bettet diese Liste ein. Deshalb ist das Artefakt mit seinem Erzeuger `build-artifacts.mjs` neu gebaut (nur der neue Restore-Eintrag) und SF-ARTIFACTS wieder grün.
+
+**Rote Tests nach R1–R5:** Es sind dieselben 14 wie in Abschnitt 7, keiner ist durch die Läufe allein grün geworden. Alle prüfen Pins im Code: alter Turtle-Fingerabdruck, `CURRENT_ENGINE`-Läufe, 1.1.0-Protokoll-Pins, ST9-V13-Referenz-Hashes. Diese Pins zieht erst der Folge-Commit aus Abschnitt 6 nach. Mit R1–R5 sind die Lauf-IDs dafür vorhanden. Es fehlen R6 und die Owner-Entscheidung zu ST9-V13.
