@@ -227,3 +227,70 @@ test("Freigegebene Datenart vor dem ersten Lauf (ACTIVATING) · fehlt = DISABLED
   const r = Health.evaluate({ domains: [odd] }, { "/x.json": { ok: false, error: "fehlt: /x.json" } }, ctx(SAT)).domains[0];
   assert.equal(r.status, "FAILED"); assert.equal(r.reason, "UNKNOWN_ACTIVATION_STATE");
 });
+
+/* ---------------------------------------------------------------------------------------------
+   Frischeart "follows" (Betriebscheck 03.11.2026, Issue #1292): ein abgeleitetes Produkt folgt seinem Vorgaenger.
+   Normales Fenster (Neubau 70-100 Minuten) = OK; ungewoehnliche Verzoegerung = DEGRADED/STALE; fehlende Zeit = UNKNOWN.
+   --------------------------------------------------------------------------------------------- */
+const REF = "/series/index.json";
+const follow = (over = {}) => dom({ id: "v3", artifact: "/v3/meta.json", records: "counts.weekly",
+  freshness: Object.assign({ kind: "follows", artifact: REF, timestamp: ["generatedAt"], warnAfterHours: 4, staleAfterHours: 26 }, over) });
+const NOW = "2026-11-03T20:00:00Z";
+const hoursAgo = (h) => new Date(Date.parse(NOW) - h * 3600000).toISOString();
+function runFollow(productAgoH, refAgoH, d = follow(), refLoaded) {
+  const arts = { [d.artifact]: { ok: true, data: { generatedAt: productAgoH === null ? undefined : hoursAgo(productAgoH), counts: { weekly: 5041 } } } };
+  arts[REF] = refLoaded || (refAgoH === null ? { ok: false, error: "fehlt: x" } : { ok: true, data: { generatedAt: hoursAgo(refAgoH) } });
+  const out = Health.evaluate({ domains: [d] }, arts, ctx(NOW)).domains[0];
+  return out;
+}
+
+test("follows · Produkt nach dem Vorgaenger gebaut = OK ohne Abstand", () => {
+  const o = runFollow(1, 3);
+  assert.equal(o.status, "OK"); assert.equal(o.followLagHours, 0); assert.equal(o.reason, null);
+});
+
+test("follows · normales Verarbeitungsfenster (Neubau 70-100 Minuten, bis 4 h) = OK mit Hinweis, nicht DEGRADED", () => {
+  for (const lag of [0.5, 1.6, 3.9]) {
+    const o = runFollow(10, lag);                    /* Produkt 10 h alt, Vorgaenger vor `lag` h neu geschrieben */
+    assert.equal(o.status, "OK", "Abstand " + lag + " h"); assert.equal(o.followLagHours, lag);
+    assert.match(o.warnings.join(" "), /Normales Verarbeitungsfenster/);
+  }
+});
+
+test("follows · GEGENPROBE: ueber 4 h = DEGRADED, ueber 26 h = STALE, mit Grund und Abstand", () => {
+  const d = runFollow(40, 4.1); assert.equal(d.status, "DEGRADED"); assert.match(d.reason, /^BEHIND_PREDECESSOR_4\.1H$/);
+  assert.match(d.warnings.join(" "), /Ueber dem normalen Verarbeitungsfenster/);
+  const s = runFollow(60, 26.5); assert.equal(s.status, "STALE"); assert.match(s.reason, /BEHIND_PREDECESSOR_26\.5H/);
+  assert.equal(runFollow(60, 26).status, "DEGRADED", "Grenze: genau 26 h ist noch DEGRADED");
+  assert.equal(runFollow(60, 4).status, "OK", "Grenze: genau 4 h ist noch OK");
+});
+
+test("follows · GEGENPROBE: fehlende Zeit ist UNKNOWN, nie stillschweigend OK; unlesbarer Vorgaenger ebenso", () => {
+  assert.equal(runFollow(null, 3).status, "UNKNOWN"); assert.equal(runFollow(null, 3).reason, "NO_TIMESTAMP");
+  const noRef = runFollow(10, null); assert.equal(noRef.status, "UNKNOWN"); assert.equal(noRef.reason, "NO_REFERENCE_TIMESTAMP");
+  const badRef = runFollow(10, 1, follow(), { ok: true, data: {} }); assert.equal(badRef.status, "UNKNOWN");
+});
+
+test("follows · unlesbares Produkt-Artefakt bleibt FAILED (wie jede Domaene)", () => {
+  const d = follow();
+  const o = Health.evaluate({ domains: [d] }, { [d.artifact]: { ok: false, error: "HTTP 500" }, [REF]: { ok: true, data: { generatedAt: hoursAgo(1) } } }, ctx(NOW)).domains[0];
+  assert.equal(o.status, "FAILED");
+});
+
+test("follows · nicht kritisch: hoechstens DEGRADED fuer die Plattform (wie die uebrigen Technical-Domaenen)", () => {
+  const d = follow(); d.critical = false;
+  const rep = Health.evaluate({ domains: [d] }, { [d.artifact]: { ok: true, data: { generatedAt: hoursAgo(80), counts: { weekly: 1 } } }, [REF]: { ok: true, data: { generatedAt: hoursAgo(30) } } }, ctx(NOW));
+  assert.equal(rep.domains[0].status, "STALE"); assert.equal(rep.overall, "DEGRADED");
+});
+
+test("Register · Chartbild/Elliott (v3) folgt den Langreihen, Schwellen tragen das normale Fenster (70-100 Min Neubau + Wiederholung)", () => {
+  const d = registry.domains.find((x) => x.id === "technicalIntelligenceV3");
+  assert.ok(d, "Domaene eingetragen");
+  assert.equal(d.freshness.kind, "follows");
+  assert.equal(d.freshness.artifact, registry.domains.find((x) => x.id === "longSeries").artifact, "Vorgaenger = Langreihen-Index");
+  assert.ok(d.freshness.warnAfterHours >= 2.5, "ueber dem gemessenen Neubau (bis ~100 Min) plus Warteschlange");
+  assert.ok(d.freshness.staleAfterHours > d.freshness.warnAfterHours && d.freshness.staleAfterHours <= 48);
+  assert.equal(d.critical, false, "kein Plattformausfall");
+  assert.match(d.workflow, /technical-intelligence-build\.yml/);
+  assert.ok(existsSync(join(ROOT, ".github/workflows/technical-intelligence-build.yml")));
+});

@@ -7,6 +7,7 @@
     "sessions": "Stand (asOf, ein Handelstag) gegen die letzte abgeschlossene US-Sitzung (quant/config/market-calendar.json). warnAfter/staleAfter in Handelstagen Rueckstand.",
     "hours": "Alter des Zeitstempels in Stunden. warnAfter/staleAfter in Stunden.",
     "intraday": "Intraday-Verzeichnis: bei offener Boerse Alter des letzten Takts in Minuten, nach Schluss vollstaendiger Tagesverlauf der letzten Sitzung.",
+    "follows": "Abgeleitetes Produkt folgt einem Vorgaenger-Artefakt: nach jedem neuen Stand des Vorgaengers wird es neu gebaut. OK, solange das Produkt nicht aelter ist als der Vorgaenger oder der Abstand <= warnAfterHours (normales Verarbeitungsfenster); DEGRADED > warnAfterHours; STALE > staleAfterHours. artifact und timestamp nennen den Vorgaenger.",
     "none": "Kein Frischevertrag (Referenzdaten oder abgeschaltet)."
   },
   "domains": [
@@ -93,6 +94,22 @@
       "schedule": "Volllauf samstags und 1.-7. des Monats + nach jeder Materialisierung; Reparaturlauf (DQ-PX-4) Di-Sa 04:20 UTC",
       "freshness": { "kind": "hours", "warnAfter": 192, "staleAfter": 840 },
       "consumers": ["Discover (5J/Max)", "Supertrader (Wochencharts)"]
+    },
+    {
+      "id": "technicalIntelligenceV3",
+      "label": "Chartbild / Elliott (Produktdaten v3)",
+      "layer": "INTELLIGENCE",
+      "group": "Intelligence",
+      "critical": false,
+      "artifact": "/quant/data/technical-intelligence/v3/meta.json",
+      "timestamp": ["generatedAt"],
+      "records": "counts.weekly",
+      "role": "Chartbild, Kursstruktur und Elliott (experimentell) fuer Wochen- und Tagestitel, gebaut aus den Langreihen und den Golden-Tagesreihen.",
+      "producer": "scripts/technical/build-technical-intelligence.mjs",
+      "workflow": "technical-intelligence-build.yml",
+      "schedule": "nach jedem Lauf der Langreihen (workflow_run, nur main) und taeglich 05:35 UTC (GitHub startet den Zeitplan oft 5-6 h spaet); ein Neubau dauert 70-100 Minuten",
+      "freshness": { "kind": "follows", "artifact": "/quant/data/market/discover-series-long/index.json", "timestamp": ["generatedAt"], "warnAfterHours": 4, "staleAfterHours": 26 },
+      "consumers": ["Chartbild (/elliott/)", "Quant (Technik)", "Elliott-Registry (Identitaetspruefung)"]
     },
     {
       "id": "fxReference",

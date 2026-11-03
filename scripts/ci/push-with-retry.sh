@@ -49,6 +49,55 @@ BRANCH="${1:?Branch fehlt}"
 VERSUCHE="${2:-5}"
 WARTE=3
 
+# SIEBTENS (Lauf 41666053466, 03.11.2026): ZEITLIMITS FUER NETZWERKBEFEHLE.
+# Der Chartbild-Neubau (v3) lief 76 Minuten, der Push wurde abgewiesen, und der
+# anschliessende `git fetch` hing 61 Minuten bis "early EOF" (GitHub-Uebertragung
+# abgerissen). Ohne Zeitlimit blockiert ein einziger haengender Befehl den ganzen
+# Lauf, und der fertige Neubau ging verloren. Jetzt hat jeder fetch und push ein
+# Zeitlimit, und ein abgebrochener oder fehlgeschlagener fetch wird begrenzt und
+# mit Wartezeit wiederholt. Ein abgewiesener Push (Wettlauf) bleibt das, was er
+# war: Rebase und neuer Versuch (Schleife unten). Standardwerte lassen normale
+# Laeufe unberuehrt (ein fetch dauert Sekunden, ein Push mit tausenden Dateien
+# unter einer Minute); sie sind per Umgebung einstellbar.
+#   PUSH_FETCH_TIMEOUT   Sekunden je fetch-Versuch          (Standard 300)
+#   PUSH_PUSH_TIMEOUT    Sekunden je push-Versuch           (Standard 600)
+#   PUSH_FETCH_TRIES     Versuche je fetch                  (Standard 3)
+FETCH_TIMEOUT="${PUSH_FETCH_TIMEOUT:-300}"
+PUSH_TIMEOUT="${PUSH_PUSH_TIMEOUT:-600}"
+FETCH_TRIES="${PUSH_FETCH_TRIES:-3}"
+for wert in "$FETCH_TIMEOUT" "$PUSH_TIMEOUT" "$FETCH_TRIES"; do
+  [[ "$wert" =~ ^[1-9][0-9]*$ ]] || { echo "Ungueltiger Zeitlimit- oder Versuchswert: '$wert'" >&2; exit 2; }
+done
+
+# Fuehrt einen Befehl mit Zeitlimit aus (Exit 124 = Zeitlimit; danach hartes Ende nach 10 s).
+# Ohne `timeout` (z. B. macOS ohne coreutils) laeuft der Befehl wie bisher, mit Warnung.
+mit_zeitlimit() {
+  local sek="$1"; shift
+  if command -v timeout >/dev/null 2>&1; then
+    timeout --kill-after=10 "$sek" "$@"
+  else
+    echo "Hinweis: 'timeout' fehlt, kein Zeitlimit fuer: $*" >&2
+    "$@"
+  fi
+}
+
+# Holt den Branch begrenzt und mit Wiederholung (Zeitlimit oder Uebertragungsfehler).
+holen() {
+  local n rc
+  for ((n = 1; n <= FETCH_TRIES; n++)); do
+    rc=0
+    mit_zeitlimit "$FETCH_TIMEOUT" git fetch origin "$BRANCH" || rc=$?
+    if [ "$rc" -eq 0 ]; then return 0; fi
+    if [ "$rc" -eq 124 ] || [ "$rc" -eq 137 ]; then
+      echo "fetch nach ${FETCH_TIMEOUT}s abgebrochen (Zeitlimit, Versuch ${n}/${FETCH_TRIES})." >&2
+    else
+      echo "fetch fehlgeschlagen (Exit ${rc}, Versuch ${n}/${FETCH_TRIES})." >&2
+    fi
+    if [ "$n" -lt "$FETCH_TRIES" ]; then sleep $((5 * n)); fi
+  done
+  return 1
+}
+
 # Erzeugte Artefakte mit geteilter Schreibhoheit. Pfad-Praefixe.
 #
 # DRITTENS (Lauf 36078691085, 25.09.2026): Die kompakte Produkt-Projektion
@@ -154,7 +203,7 @@ rebase_laeuft() {
 # Jetzt wird JEDER Halt geprueft, bis kein Rebase mehr offen ist, und vor
 # dem Push steht fest: kein offener Rebase, keine ungeloesten Pfade.
 neu_aufsetzen() {
-  git fetch origin "$BRANCH" || return 1
+  holen || return 1
   # --autostash: die Regressionssuite laesst Dateien mit neuem
   # Zeitstempel ungestaged zurueck; ohne Autostash verweigert git den
   # Rebase und der Lauf verliert seinen Commit (Lauf 34987245529).
@@ -194,7 +243,7 @@ neu_aufsetzen() {
 }
 
 for ((i = 1; i <= VERSUCHE; i++)); do
-  if git push origin "HEAD:${BRANCH}"; then
+  if mit_zeitlimit "$PUSH_TIMEOUT" git push origin "HEAD:${BRANCH}"; then
     echo "Push erfolgreich (Versuch ${i})."
     exit 0
   fi
@@ -202,7 +251,10 @@ for ((i = 1; i <= VERSUCHE; i++)); do
   echo "Push abgewiesen (Versuch ${i}/${VERSUCHE}) - neu aufsetzen und in ${WARTE}s erneut versuchen."
   sleep "$WARTE"
   WARTE=$((WARTE * 2))
-  neu_aufsetzen || exit 1
+  neu_aufsetzen || {
+    echo "Neu aufsetzen nicht moeglich (fetch oder Rebase). Die Daten dieses Laufs sind NICHT veroeffentlicht." >&2
+    exit 1
+  }
 done
 
 echo "Push nach ${VERSUCHE} Versuchen nicht moeglich. Die Daten dieses Laufs sind NICHT veroeffentlicht." >&2

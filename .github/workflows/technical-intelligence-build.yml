@@ -22,6 +22,11 @@ on:
       - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"
     types:
       - completed
+    # Nur Laeufe auf main: ein Lauf von long-series.yml auf einem claude/**-Zweig wird hier nur uebersprungen
+    # (Job-Bedingung unten), belegte aber trotzdem die Concurrency-Gruppe und verdraengte dabei einen wartenden
+    # Neubau (cancelled, ohne Alarm). Mit dem Filter entsteht fuer solche Laeufe gar kein Lauf.
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       force:
@@ -33,7 +38,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: technical-intelligence-build
+  group: technical-intelligence-build-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:

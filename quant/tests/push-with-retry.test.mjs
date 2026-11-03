@@ -272,3 +272,120 @@ test("PR11 · Der Refresh nennt nur Pfade, die er committet und deren eingetrage
     assert.ok(ausgeschlossen.some((x) => pfad.startsWith(x)), "fremder Erzeuger nicht ausgeschlossen: " + d.artifact);
   }
 });
+
+/* =========================================================================
+   ZEITLIMITS FUER NETZWERKBEFEHLE (Lauf 41666053466, 03.11.2026)
+
+   Ein fetch hing 61 Minuten und verwarf einen fertigen 76-Minuten-Neubau.
+   PR12  haengender fetch: nach dem Zeitlimit neu versucht, Push gelingt
+   PR13  Gegenprobe: fetch haengt immer -> begrenzt abgebrochen, nichts geschoben, klare Meldung
+   PR14  fetch bricht ab ("early EOF") -> wiederholt, Push gelingt
+   PR15  haengender push -> nach dem Zeitlimit Rebase und neuer Versuch, kein Doppelcommit
+   PR16  Gegenprobe: ungueltige Werte verweigern den Start; Standardwerte und lueckenlose Absicherung
+   Echt: lokales Remote, zwei Klone; ein `git`-Vorsatz haengt oder bricht gezielt ab.
+   ========================================================================= */
+import { chmodSync, readdirSync } from "node:fs";
+
+function mitShim(ablauf) {
+  const root = mkdtempSync(join(tmpdir(), "vu-zl-"));
+  const remote = join(root, "remote.git"), bin = join(root, "bin"), zaehler = join(root, "zaehler");
+  mkdirSync(bin); mkdirSync(zaehler);
+  const echtes = spawnSync("bash", ["-c", "command -v git"], { encoding: "utf8" }).stdout.trim();
+  const shim = join(bin, "git");
+  writeFileSync(shim, [
+    "#!/usr/bin/env bash",
+    'cmd="${1:-}"',
+    'zaehle() { local f="$SHIM_DIR/$1"; local n=0; [ -f "$f" ] && n=$(cat "$f"); n=$((n + 1)); echo "$n" > "$f"; echo "$n"; }',
+    'if [ "$cmd" = fetch ]; then',
+    '  n=$(zaehle fetch)',
+    '  if [ "$n" -le "${SHIM_HANG_FETCH:-0}" ]; then exec sleep 60; fi',
+    '  if [ "$n" -le "$(( ${SHIM_HANG_FETCH:-0} + ${SHIM_FAIL_FETCH:-0} ))" ]; then echo "error: 1856 bytes of body are still expected" >&2; echo "fatal: early EOF" >&2; exit 128; fi',
+    "fi",
+    'if [ "$cmd" = push ]; then',
+    '  n=$(zaehle push)',
+    '  if [ "$n" -le "${SHIM_HANG_PUSH:-0}" ]; then exec sleep 60; fi',
+    "fi",
+    'exec "$SHIM_REAL_GIT" "$@"', ""].join("\n"));
+  chmodSync(shim, 0o755);
+  git(root, "init", "-q", "--bare", "-b", "main", remote);
+  const seed = join(root, "seed"); git(root, "clone", "-q", remote, seed);
+  schreibe(seed, "a.json", { n: 1 }); git(seed, "add", "-A"); git(seed, "commit", "-q", "-m", "basis"); git(seed, "push", "-q", "origin", "HEAD:main");
+  const lauf = join(root, "lauf"), andere = join(root, "andere");
+  git(root, "clone", "-q", remote, lauf); git(root, "clone", "-q", remote, andere);
+  if (ablauf.race) { schreibe(andere, "b.json", { n: 2 }); git(andere, "add", "-A"); git(andere, "commit", "-q", "-m", "anderer"); git(andere, "push", "-q", "origin", "HEAD:main"); }
+  schreibe(lauf, "c.json", { n: 3 }); git(lauf, "add", "-A"); git(lauf, "commit", "-q", "-m", "eigener Lauf");
+  const env = { ...ENV, PATH: bin + ":" + (ENV.PATH || process.env.PATH), SHIM_DIR: zaehler, SHIM_REAL_GIT: echtes, ...ablauf.env };
+  const t0 = Date.now();
+  const r = spawnSync("bash", [SCRIPT, "main", "3"], { cwd: lauf, env, encoding: "utf8", timeout: 120000 });
+  const dauer = (Date.now() - t0) / 1000;
+  const pruef = join(root, "pruef"); git(root, "clone", "-q", remote, pruef);
+  const dateien = readdirSync(pruef).filter((f) => f.endsWith(".json")).sort();
+  const commits = git(pruef, "log", "--format=%s");
+  const wie = (name) => Number(existsSync(join(zaehler, name)) ? readFileSync(join(zaehler, name), "utf8") : 0);
+  return { root, r, dauer, dateien, commits, fetches: wie("fetch"), pushes: wie("push") };
+}
+
+test("PR12 · haengender fetch: nach dem Zeitlimit neu versucht, Push gelingt, nichts geht verloren", () => {
+  const s = mitShim({ race: true, env: { SHIM_HANG_FETCH: "1", PUSH_FETCH_TIMEOUT: "2" } });
+  try {
+    assert.equal(s.r.status, 0, s.r.stderr + s.r.stdout);
+    assert.match(s.r.stderr, /fetch nach 2s abgebrochen \(Zeitlimit, Versuch 1\/3\)/);
+    assert.deepEqual(s.dateien, ["a.json", "b.json", "c.json"], "fremder und eigener Commit liegen vor");
+    assert.match(s.commits, /eigener Lauf/); assert.ok(s.fetches >= 2, "fetch wurde wiederholt");
+    assert.ok(s.dauer < 40, "begrenzt statt 61 Minuten: " + s.dauer + " s");
+  } finally { aufraeumen(s.root); }
+});
+
+test("PR13 · GEGENPROBE: fetch haengt immer -> nach begrenzten Versuchen Abbruch, nichts geschoben, klare Meldung", () => {
+  const s = mitShim({ race: true, env: { SHIM_HANG_FETCH: "99", PUSH_FETCH_TIMEOUT: "2", PUSH_FETCH_TRIES: "2" } });
+  try {
+    assert.notEqual(s.r.status, 0, "kein stilles Gelingen");
+    assert.match(s.r.stderr, /fetch nach 2s abgebrochen \(Zeitlimit, Versuch 2\/2\)/);
+    assert.match(s.r.stderr, /NICHT veroeffentlicht/);
+    assert.deepEqual(s.dateien, ["a.json", "b.json"], "eigener Commit wurde nicht geschoben");
+    assert.equal(s.fetches, 2, "genau die begrenzte Zahl von Versuchen");
+    assert.ok(s.dauer < 45, "Gesamtdauer begrenzt: " + s.dauer + " s");
+  } finally { aufraeumen(s.root); }
+});
+
+test("PR14 · fetch bricht mit 'early EOF' ab: wiederholt, Push gelingt", () => {
+  const s = mitShim({ race: true, env: { SHIM_FAIL_FETCH: "1", PUSH_FETCH_TIMEOUT: "20" } });
+  try {
+    assert.equal(s.r.status, 0, s.r.stderr + s.r.stdout);
+    assert.match(s.r.stderr, /fetch fehlgeschlagen \(Exit 128, Versuch 1\/3\)/);
+    assert.deepEqual(s.dateien, ["a.json", "b.json", "c.json"]);
+  } finally { aufraeumen(s.root); }
+});
+
+test("PR15 · haengender push: nach dem Zeitlimit Rebase und neuer Versuch, genau ein eigener Commit auf dem Remote", () => {
+  const s = mitShim({ race: false, env: { SHIM_HANG_PUSH: "1", PUSH_PUSH_TIMEOUT: "2" } });
+  try {
+    assert.equal(s.r.status, 0, s.r.stderr + s.r.stdout);
+    assert.deepEqual(s.dateien, ["a.json", "c.json"]);
+    assert.equal(s.commits.split("\n").filter((l) => l === "eigener Lauf").length, 1, "kein Doppelcommit");
+    assert.equal(s.pushes, 2, "ein Zeitlimit, ein erfolgreicher Push");
+  } finally { aufraeumen(s.root); }
+});
+
+test("PR16 · GEGENPROBE: ungueltige Werte verweigern den Start; Standardwerte stehen fest; kein roher fetch/push ausser mit Zeitlimit", () => {
+  const s = mitShim({ race: false, env: { PUSH_FETCH_TIMEOUT: "abc" } });
+  try {
+    assert.equal(s.r.status, 2); assert.match(s.r.stderr, /Ungueltiger Zeitlimit- oder Versuchswert/);
+    assert.deepEqual(s.dateien, ["a.json"], "nichts geschoben");
+  } finally { aufraeumen(s.root); }
+  const text = readFileSync(SCRIPT, "utf8");
+  assert.match(text, /FETCH_TIMEOUT="\$\{PUSH_FETCH_TIMEOUT:-300\}"/);
+  assert.match(text, /PUSH_TIMEOUT="\$\{PUSH_PUSH_TIMEOUT:-600\}"/);
+  assert.match(text, /FETCH_TRIES="\$\{PUSH_FETCH_TRIES:-3\}"/);
+  const roh = text.split("\n").filter((l) => /^\s*(?!#)(.*\s)?git (fetch|push)\b/.test(l) && !/mit_zeitlimit/.test(l) && !/^\s*#/.test(l) && !/echo|Hinweis|"[^"]*git (fetch|push)/.test(l));
+  assert.deepEqual(roh, [], "jeder fetch/push laeuft ueber mit_zeitlimit");
+});
+
+test("PR17 · technical-intelligence-build: workflow_run nur auf main, Concurrency je Zweig, Nachlauf nur nach Erfolg", () => {
+  const y = readFileSync(join(dirname(SCRIPT), "..", "..", ".github", "workflows", "technical-intelligence-build.yml"), "utf8");
+  const wr = y.slice(y.indexOf("workflow_run:"), y.indexOf("workflow_dispatch:"));
+  assert.match(wr, /branches:\s*\n\s*- main/, "ohne Filter verdraengt ein uebersprungener Zweiglauf einen wartenden Neubau");
+  assert.match(y, /group: technical-intelligence-build-\$\{\{ github\.ref_name \}\}/, "ADR-005");
+  assert.match(y, /conclusion == 'success'/, "kein Neubau nach gescheitertem long-series-Lauf");
+  assert.match(y, /push-with-retry\.sh/, "Push nur ueber das Skript");
+});
