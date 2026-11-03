@@ -24,7 +24,7 @@ const content=JSON.parse(await readFile(root+'technical/academy/content.json','u
 const types={'.js':'text/javascript','.css':'text/css','.html':'text/html','.json':'application/json','.svg':'image/svg+xml','.gz':'application/gzip','.woff2':'font/woff2'};
 const server=createServer(async(req,res)=>{try{let p=decodeURIComponent(new URL(req.url,'http://x').pathname);if(p.endsWith('/'))p+='index.html';const f=resolve(root,'.'+p);if(!f.startsWith(root))throw Error('path');res.setHeader('content-type',types[extname(f)]||'application/octet-stream');res.end(await readFile(f));}catch{res.writeHead(404).end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));await mkdir(out,{recursive:true});
-const base=site ? site+'/technical/' : 'http://127.0.0.1:'+server.address().port+'/technical/',browser=await chromium.launch(),results=[],journeys=[],performanceChecks=[];
+const base=site ? site+'/technical/' : 'http://127.0.0.1:'+server.address().port+'/technical/',browser=await chromium.launch(),results=[],journeys=[],performanceChecks=[],visualCoverage=[];
 async function createContext(options){
  const context=await browser.newContext(options);
  if(gate)await context.addInitScript(([key,value,origin])=>{if(location.origin===origin){try{localStorage.setItem(key,value);}catch(_){}}},[gate.key,gate.value,new URL(site).origin]);
@@ -59,8 +59,8 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
  await check(prefix+' all 32 lessons',async()=>{
   for(const l of content.lessons){await page.goto(base+'#/akademie/'+l.id);await page.getByRole('heading',{name:l.title,exact:true}).waitFor();assert(await page.locator('.ta h2').count()===8,'complete sections '+l.id);assert(await page.locator('figure').count()===1,'visual');assert(await page.locator('input[type=radio]').count()===2,'answers');await overflow();}
  });
- await check(prefix+' visual pilots: scenes, keyboard, accessible charts and unchanged quiz',async()=>{
-  for(const id of ['trend-1','breakout-2','momentum-2']){
+ await check(prefix+' all 32 visual lessons: scenes, keyboard, accessibility, quiz and progress',async()=>{
+  for(const id of content.lessons.map(l=>l.id)){
    const l=content.lessons.find(x=>x.id===id);
    await page.goto(base+'#/akademie/'+id);await page.locator('.ta-pilot').waitFor();
    const buttons=page.getByRole('group',{name:'Chart-Beispiele'}).getByRole('button');assert(await buttons.count()===3,'three scenes '+id);
@@ -71,24 +71,40 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
     assert(await buttons.evaluateAll(bs=>bs.filter(b=>b.getAttribute('aria-pressed')==='true').length)===1,'single selected scene');
     assert(await page.locator('.ta-chart svg desc').textContent()===l.presentation.scenes[i].description,'chart text equivalent');
     assert(await page.locator('.ta-observations h3').textContent()===l.presentation.scenes[i].title,'scene meaning');
-    assert(await page.locator('.ta-chart figcaption').textContent().then(t=>t.includes('keine historischen oder berechneten Werte')),'constructed chart label');
+    assert(await page.locator('.ta-chart figcaption').textContent().then(t=>t.includes('keine historischen Marktdaten')),'constructed chart label');
     assert(await buttons.nth(i).evaluate(b=>b===document.activeElement),'keyboard focus retained');
     await overflow();
     const ax=await page.evaluate(()=>axe.run(document.querySelector('.ta-pilot'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}}));
     assert(!ax.violations.length,id+'/'+i+': '+ax.violations.map(v=>v.id+' '+v.nodes.map(n=>n.target).join(',')).join(';'));
-    if(i===0||width<500&&i===2){await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/'+prefix+'-'+id+'-pilot-'+(i+1)+'.png',fullPage:true});}
+    const bounds=await page.locator('.ta-chart svg').evaluate(svg=>Array.from(svg.querySelectorAll('text,path,rect,circle,line')).map(n=>{const b=n.getBBox();return {x:b.x,y:b.y,w:b.width,h:b.height};}));
+    assert(bounds.every(b=>b.x>=0&&b.y>=0&&b.x+b.w<=361&&b.y+b.h<=271),'diagram clipped '+id+'/'+i);
+    if(width===390&&i===0 || width===390&&theme==='light'&&i===2 || (width===360||width===1280)&&id.endsWith('-1')&&i===0){
+     await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/'+prefix+'-'+id+'-scene-'+(i+1)+'.png',fullPage:true});
+     if(i===0)await page.screenshot({path:out+'/'+prefix+'-'+id+'-hero.png'});
+    }
    }
    const wrong=l.quiz.choices.find(x=>x.id!==l.quiz.answer).id;
    await page.locator('input[value='+wrong+']').check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Noch nicht richtig.'}).waitFor();
    await page.locator('input[value='+l.quiz.answer+']').check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
-   await page.locator('a[data-practice]').click();await page.getByRole('navigation',{name:'Zur Akademie zurück',exact:true}).waitFor();
+   const mark=page.locator('.ta-pilot > button[aria-pressed]'),wasDone=await mark.getAttribute('aria-pressed')==='true';
+   if(!wasDone)await mark.click();await page.reload();await page.locator('.ta-pilot').waitFor();
+   assert(await page.locator('.ta-pilot > button[aria-pressed]').getAttribute('aria-pressed')==='true','progress persisted '+id);
+   await page.locator('a[data-practice]').click();await page.getByRole('navigation',{name:'Zur Akademie zurück',exact:true}).waitFor();await page.reload();
    await page.getByRole('link',{name:'← Zur Lektion: '+l.title,exact:true}).click();await page.locator('.ta-pilot').waitFor();
+   const secondary=await page.locator('.ta-practice-links a').evaluateAll(ns=>ns.map(n=>n.getAttribute('href')));
+   for(const href of secondary){
+    await page.locator('.ta-practice-links a[href="'+href+'"]').click();
+    await page.getByRole('navigation',{name:'Zur Akademie zurück',exact:true}).waitFor();assert(await page.evaluate(()=>location.hash)===href,'secondary route '+id);
+    await page.getByRole('link',{name:'← Zur Lektion: '+l.title,exact:true}).click();await page.locator('.ta-pilot').waitFor();
+   }
+   if(!wasDone)await page.locator('.ta-pilot > button[aria-pressed]').click();
    assert(await page.locator('input[value='+l.quiz.answer+']').isChecked(),'quiz resume '+id);
    assert(await page.locator('.ta-scenes button[aria-pressed=true]').getAttribute('data-scene')===l.presentation.scenes[2].id,'scene resume '+id);
+   visualCoverage.push({width,theme,lesson:id,scenes:3,axeRuns:3,quiz:true,progress:true,practiceReturn:true,secondaryLinks:secondary.length});
   }
  });
- await check(prefix+' pilot touch targets and doubled text',async()=>{
-  for(const id of ['trend-1','breakout-2','momentum-2']){
+ await check(prefix+' all 32 lessons: touch targets and doubled text',async()=>{
+  for(const id of content.lessons.map(l=>l.id)){
    await page.goto(base+'#/akademie/'+id);await page.locator('.ta-pilot').waitFor();
    const targets=await page.locator('.ta-scenes button, .ta-primary').evaluateAll(ns=>ns.map(n=>({w:n.getBoundingClientRect().width,h:n.getBoundingClientRect().height})));
    assert(targets.every(t=>t.w>=44&&t.h>=44),'44px touch targets '+id);
@@ -96,7 +112,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
    await page.getByRole('group',{name:'Chart-Beispiele'}).getByRole('button').last().click();
    await overflow();
    assert(await page.locator('.ta-scenes button').last().evaluate(n=>n.scrollWidth<=n.clientWidth+1),'zoomed scene label fits');
-   if(width===360)await page.screenshot({path:out+'/'+prefix+'-'+id+'-double-text.png',fullPage:true});
+   if(width===360&&id.endsWith('-1'))await page.screenshot({path:out+'/'+prefix+'-'+id+'-double-text.png',fullPage:true});
   }
  });
  await check(prefix+' quiz/progress/keyboard/practice',async()=>{
@@ -146,7 +162,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
  await check(prefix+' keyboard/empty answer/next previous/glossary/reset',async()=>{
   await page.goto(base+'#/akademie/risiko-2');await page.locator('fieldset').waitFor();await page.getByRole('button',{name:'Antwort prüfen'}).click();assert(await page.locator('input:invalid').count()>0,'empty answer prevented');
   await page.locator('input[type=radio]').first().focus();await page.keyboard.press('Space');assert(await page.locator('input:checked').count()===1,'keyboard radio');
-  const term=page.locator('summary').first();await term.focus();await page.keyboard.press('Enter');assert(await term.evaluate(n=>n.parentElement.open),'keyboard glossary');
+  await page.locator('.ta-basics > details > summary').click();const term=page.locator('.ta-terms summary').first();await term.focus();await page.keyboard.press('Enter');assert(await term.evaluate(n=>n.parentElement.open),'keyboard glossary');
   await page.getByRole('link',{name:'Nächste Lektion →',exact:true}).click();await page.getByRole('heading',{name:'Bollinger-Bänder',exact:true}).waitFor();await page.getByRole('link',{name:'← Vorherige Lektion',exact:true}).click();await page.getByRole('heading',{name:'ATR',exact:true}).waitFor();
   await page.goto(base+'#/akademie');await page.getByRole('heading',{name:'Strategie-Akademie',exact:true}).waitFor();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Lokalen Fortschritt zurücksetzen'}).click();await page.getByRole('status').filter({hasText:'0 von 32'}).waitFor();assert(await page.getByRole('button',{name:'Lokalen Fortschritt zurücksetzen'}).evaluate(n=>n===document.activeElement),'reset retains focus');
  });
@@ -198,18 +214,27 @@ if(!site)await check('blocked storage / safe text / load retry',async()=>{
  await page.route('**/technical/academy/content.json',r=>r.abort());await page.goto(base+'#/akademie/struktur-1');await page.getByRole('button',{name:'Erneut versuchen'}).waitFor();
  await page.unroute('**/technical/academy/content.json');await page.route('**/technical/academy/content.json',r=>r.fulfill({json:{paths:[],lessons:[],glossary:[]}}));await page.getByRole('button',{name:'Erneut versuchen'}).click();await page.getByRole('button',{name:'Erneut versuchen'}).waitFor();await page.unroute('**/technical/academy/content.json');await page.route('**/technical/academy/content.json',r=>{const c=structuredClone(content);c.lessons[0].foundations[0]='<img src=x onerror="window.academyInjection=true">';return r.fulfill({json:c});});await page.getByRole('button',{name:'Erneut versuchen'}).click();await page.getByRole('button',{name:'Lektion als abgeschlossen markieren'}).click();await page.getByRole('status').filter({hasText:'Speichern ist gesperrt'}).waitFor();assert(await page.locator('.ta img').count()===0,'injected image');assert(await page.evaluate(()=>!window.academyInjection),'injected execution');await context.close();
 });
-if(!site)await check('pilot presentation failure safely falls back and text never executes',async()=>{
+if(!site)await check('presentation failures fall back and graphic/text payloads never execute',async()=>{
  const context=await createContext({viewport:{width:360,height:844}}),page=await context.newPage();
- for(const broken of [true,false]){
-  await page.route('**/technical/academy/content.json',r=>{const c=structuredClone(content),p=c.lessons.find(l=>l.id==='trend-1').presentation;if(broken)p.scenes[0]=null;else p.intro='<img src=x onerror="window.pilotInjection=true">';return r.fulfill({json:c});});
-  await page.goto(base+'#/akademie/trend-1');await page.locator('fieldset').waitFor();
-  assert(await page.locator('.ta-pilot').count()===(broken?0:1),'invalid optional presentation fallback '+broken);
-  assert(await page.locator('.ta img').count()===0,'no markup inserted');assert(await page.evaluate(()=>!window.pilotInjection),'no content execution');
-  if(!broken)assert(await page.locator('.ta-basics').textContent().then(t=>t.includes('<img')),'untrusted text remains literal');
-  await page.unroute('**/technical/academy/content.json');
-  await page.goto('about:blank');
+ for(const mode of ['missing-scene','unsafe-graphic','wrong-topic','literal-text']){
+  await page.route('**/technical/academy/content.json',r=>{const c=structuredClone(content),p=c.lessons[0].presentation;
+   if(mode==='missing-scene')p.scenes[0]=null;
+   else if(mode==='unsafe-graphic')p.scenes[0].graphic=[{op:'image',href:'javascript:window.pilotInjection=true'}];
+   else if(mode==='wrong-topic')p.topic='zeitrahmen-1';
+   else{p.intro='<img src=x onerror="window.pilotInjection=true">';p.scenes[0].graphic[0].text=p.intro;}
+   return r.fulfill({json:c});});
+  await page.goto(base+'#/akademie/struktur-1');await page.locator('fieldset').waitFor();
+  assert(await page.locator('.ta-pilot').count()===(mode==='literal-text'?1:0),'invalid optional presentation fallback '+mode);
+  assert(await page.locator('.ta img, .ta image').count()===0,'no markup inserted');assert(await page.evaluate(()=>!window.pilotInjection),'no content execution');
+  if(mode==='literal-text')assert(await page.locator('.ta-basics').textContent().then(t=>t.includes('<img')),'untrusted text remains literal');
+  await page.unroute('**/technical/academy/content.json');await page.goto('about:blank');
  }
  await context.close();
 });
+await check('complete visual coverage: 32 lessons, 96 scenes in all six viewport/theme combinations',async()=>{
+ assert(visualCoverage.length===192,'missing full lesson coverage '+visualCoverage.length);
+ assert(new Set(visualCoverage.map(x=>x.width+'-'+x.theme+'-'+x.lesson)).size===192,'duplicate lesson coverage');
+ assert(visualCoverage.reduce((n,x)=>n+x.scenes,0)===576,'all scenes covered');
+});
 }finally{await browser.close();server.close();}
-await writeFile(out+'/report.json',JSON.stringify({mode:site?'live':'local',site,authenticated:!!gate,localOnlyChecks:site?['registry failure injection','cold network profile','blocked storage and hostile payload injection','pilot presentation failure injection']:[],results,journeys,performanceChecks},null,2));console.log(JSON.stringify({passed:results.filter(r=>r.pass).length,total:results.length,failures:results.filter(r=>!r.pass)},null,2));if(results.some(r=>!r.pass))process.exitCode=1;
+await writeFile(out+'/report.json',JSON.stringify({mode:site?'live':'local',site,authenticated:!!gate,localOnlyChecks:site?['registry failure injection','cold network profile','blocked storage and hostile payload injection','presentation failure injection']:[],results,journeys,performanceChecks,visualCoverage},null,2));console.log(JSON.stringify({passed:results.filter(r=>r.pass).length,total:results.length,failures:results.filter(r=>!r.pass)},null,2));if(results.some(r=>!r.pass))process.exitCode=1;

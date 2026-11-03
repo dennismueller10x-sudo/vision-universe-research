@@ -1,16 +1,29 @@
 /* Presentation only: hand-drawn teaching scenes, never market/indicator calculations. */
 (function (g) {
   'use strict';
-  var kinds = { trend: ['structure', 'filter', 'gap'], breakout: ['touch', 'close', 'return'], rsi: ['scale', 'high', 'low'] };
+  var kinds = { trend: ['structure', 'filter', 'gap'], breakout: ['touch', 'close', 'return'], rsi: ['scale', 'high', 'low'], diagram:['observe','compare','limit'] };
+  var styles=['ta-price-line','ta-muted-line','ta-reference-line','ta-structure-line','ta-point','ta-wick','ta-candle-up','ta-candle-down','ta-boundary-zone','ta-rsi-zone','ta-rsi-line','ta-axis-label','ta-reference-label','ta-plot-label','ta-grid','ta-card-zone'];
+  function validGraphic(items) {
+    return Array.isArray(items) && items.length>0 && items.length<=80 && items.every(function(a){
+      if(!a || !Object.prototype.hasOwnProperty.call({line:1,path:1,text:1,rect:1,point:1,candle:1},a.op) || (a.cls && styles.indexOf(a.cls)<0))return false;
+      var fields={line:['x1','y1','x2','y2'],path:['d'],text:['x','y','text'],rect:['x','y','w','h'],point:['x','y'],candle:['x','high','low','open','close']}[a.op];
+      if(Object.keys(a).some(function(k){return ['op','cls'].concat(fields).indexOf(k)<0;}))return false;
+      return fields.every(function(k){
+        if(k==='d')return typeof a.d==='string' && a.d.length<1800 && /^[MLCQHVZmlcqh vz\d.,+\s-]+$/.test(a.d);
+        if(k==='text')return typeof a.text==='string' && a.text.length>0 && a.text.length<=48;
+        return Number.isFinite(a[k]) && a[k]>=0 && a[k]<=360;
+      }) && (a.op!=='rect'||a.x+a.w<=360&&a.y+a.h<=270) && (a.op!=='candle'||a.high<=Math.min(a.open,a.close)&&a.low>=Math.max(a.open,a.close));
+    });
+  }
   function valid(p) {
-    return !!(p && p.version === 1 && Object.prototype.hasOwnProperty.call(kinds,p.kind) &&
+    return !!(p && p.version === 1 && Object.prototype.hasOwnProperty.call(kinds,p.kind) && (p.kind!=='diagram'||/^[a-z]+-[1-4]$/.test(p.topic)) &&
       ['intro', 'why', 'mistake'].every(function (k) { return typeof p[k] === 'string' && p[k].trim(); }) &&
       Array.isArray(p.scenes) && p.scenes.length === 3 && p.scenes.every(function (s, i) {
-        return !!s && s.id === kinds[p.kind][i] && ['label', 'title', 'observed', 'meaning', 'description'].every(function (k) { return typeof s[k] === 'string' && s[k].trim(); });
+        return !!s && s.id === kinds[p.kind][i] && ['label', 'title', 'observed', 'meaning', 'description'].every(function (k) { return typeof s[k] === 'string' && s[k].trim(); }) && (p.kind!=='diagram'||validGraphic(s.graphic));
       }));
   }
   function render(p, lessonId, initialScene) {
-    if (!valid(p)) return null;
+    if (!valid(p) || p.kind==='diagram' && p.topic!==lessonId) return null;
     var D = g.document, NS = 'http://www.w3.org/2000/svg';
     function el(tag, text, attrs) {
       var n = D.createElement(tag); if (text !== null) n.textContent = text;
@@ -43,8 +56,19 @@
         // These are screen coordinates authored for illustration, not OHLC inputs.
         svg.append(svgEl('rect', { x:x-6, y:Math.min(open, close), width:12, height:Math.max(3, Math.abs(open-close)), class:close < open ? 'ta-candle-up' : 'ta-candle-down' }));
       }
-      label(24, 24, p.kind === 'rsi' ? 'Kurs · schematisch' : 'Kursverlauf · schematisch', 'ta-axis-label');
-      [60,110,160,210].forEach(function(y){line(24,y,336,y);}); label(280,255,'Zeit →','ta-axis-label');
+      if(p.kind==='diagram'){
+        scene.graphic.forEach(function(a){
+          if(a.op==='path')path(a.d,a.cls);
+          else if(a.op==='line')line(a.x1,a.y1,a.x2,a.y2,a.cls);
+          else if(a.op==='text')label(a.x,a.y,a.text,a.cls);
+          else if(a.op==='point')svg.append(svgEl('circle',{cx:a.x,cy:a.y,r:4,class:a.cls||'ta-point'}));
+          else if(a.op==='rect')svg.append(svgEl('rect',{x:a.x,y:a.y,width:a.w,height:a.h,rx:4,class:a.cls||'ta-card-zone'}));
+          else if(a.op==='candle')candle(a.x,a.high,a.low,a.open,a.close);
+        });
+      }else{
+        label(24, 24, p.kind === 'rsi' ? 'Kurs · schematisch' : 'Kursverlauf · schematisch', 'ta-axis-label');
+        [60,110,160,210].forEach(function(y){line(24,y,336,y);}); label(280,255,'Zeit →','ta-axis-label');
+      }
       if (p.kind === 'trend') {
         if (index === 0) {
           path('M28 208 L75 148 L112 180 L164 108 L205 140 L260 62 L326 92');
@@ -76,7 +100,7 @@
           if(index===2){candle(318,72,184,82,156);dot(318,156,'Zurück',-65,30);}
           label(28,232,index===1?'Die bestehende Regel entscheidet.':'Späterer Verlauf: wieder in der Spanne.');
         }
-      } else {
+      } else if(p.kind==='rsi') {
         // Price and RSI are independently hand-sketched; no RSI is derived here.
         if(index===2)path('M28 42 L70 63 L112 55 L154 85 L196 77 L238 110 L280 100 L332 125');
         else path('M28 124 L70 109 L112 114 L154 79 L196 89 L238 54 L280 65 L332 37');
@@ -87,14 +111,14 @@
         if(index===1)path('M54 206 L91 195 L128 186 L165 181 L202 184 L239 176 L276 182 L329 174','ta-rsi-line');
         if(index===2)path('M54 207 L91 219 L128 223 L165 218 L202 228 L239 224 L276 230 L329 227','ta-rsi-line');
       }
-      figure.replaceChildren(svg, el('figcaption','Konstruiertes Lernbild. Kurse und Linien sind frei skizziert, keine historischen oder berechneten Werte. Keine Handelsregel.'));
+      figure.replaceChildren(svg, el('figcaption','Konstruiertes Lernbild. Skizzen und Beispielzahlen, keine historischen Marktdaten. Keine neue Handelsregel oder Erfolgszusage.'));
       title.textContent = scene.title; measured.textContent = scene.observed; meaning.textContent = scene.meaning;
       counter.textContent = 'Lernbild ' + (index + 1) + ' von 3 · ' + scene.label;
       buttons.forEach(function (b, i) { b.setAttribute('aria-pressed', String(i === index)); });
     }
     var start=p.scenes.findIndex(function(s){return s.id===initialScene;});show(start>=0?start:0); return wrap;
   }
-  var api = { valid:valid, render:render };
+  var api = { valid:valid, validGraphic:validGraphic, render:render };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   g.VUAcademyVisuals = api;
 })(globalThis);

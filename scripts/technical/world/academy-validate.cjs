@@ -15,9 +15,10 @@ module.exports = function validate(c, contracts) {
   check(new Set(refs).size===32 && refs.length===32,'duplicate/missing membership');
   for(const p of c.paths){check(p.lessons.length===4,'4 lessons '+p.id);for(const id of p.lessons)check(c.lessons.some(l=>l.id===id&&l.pathId===p.id),'path reference '+id);}
   for(const l of c.lessons){
+    check(!!l.presentation,'missing presentation '+l.id);
     if(l.presentation){
       check(V.valid(l.presentation),'presentation '+l.id);
-      check({'trend-1':'trend','breakout-2':'breakout','momentum-2':'rsi'}[l.id]===l.presentation.kind,'presentation topic '+l.id);
+      check(({'trend-1':'trend','breakout-2':'breakout','momentum-2':'rsi'}[l.id]||'diagram')===l.presentation.kind && (l.presentation.kind!=='diagram'||l.presentation.topic===l.id),'presentation topic '+l.id);
     }
     check(Number.isInteger(l.version) && l.version>=1 && c.paths.some(p=>p.id===l.pathId),'lesson version/path '+l.id);
     for(const key of ['title','question'])check(typeof l[key]==='string'&&l[key].trim(),key+' '+l.id);
