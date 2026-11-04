@@ -45,7 +45,7 @@
   /* Kanonische Kennungen und Fenster (Kalendertage). */
   var PRIMARY = ["1T", "1W", "1M", "1J", "5J", "MAX"];
   var EXTRA = ["3M", "6M", "YTD", "3J", "10J"];
-  var DEFAULT_RANGE = "1T";
+  var DEFAULT_RANGE = "1J"; /* Redesign 2027 (C06, D09): Standard 1J; 1T bleibt in der Leiste. */
   var DAYS = { "1W": 7, "1M": 31, "3M": 92, "6M": 183, "1J": 366, "3J": 1096, "5J": 1827, "10J": 3653 };
   /* Die Kennungen, die die Welten heute benutzen, auf die kanonischen. */
   var ALIAS = { "1D": "1T", "5D": "1W", "5T": "1W", "1Y": "1J", "3Y": "3J", "5Y": "5J", "10Y": "10J", "Max": "MAX", "ALL": "MAX" };
