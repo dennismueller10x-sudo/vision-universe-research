@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-04T11:15:21.524Z",
+ "generatedAt": "2026-11-04T20:41:06.400Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -84,7 +84,7 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "label": "Auffällige Bewegungen",
-     "text": "Die langfristigen US-Renditen sind deutlich gefallen. Der Ölpreis ist deutlich gestiegen."
+     "text": "Die langfristigen US-Renditen sind deutlich gefallen."
     }
    ]
   },
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-04T11:15:21.524Z",
+  "generatedAt": "2026-11-04T20:41:06.400Z",
   "dataAsOf": "2026-11-03",
   "previousDataAsOf": "2026-11-02",
   "schedule": {
@@ -432,13 +432,13 @@
    "previousDate": "2026-11-02"
   },
   "CROSS_ASSET": {
-   "value": 2,
+   "value": 1,
    "min": 0,
    "max": 6,
    "unit": "COUNT",
    "context": true,
    "marks": [],
-   "valueText": "2 von 6 Anlageklassen deutlich bewegt",
+   "valueText": "1 von 6 Anlageklassen deutlich bewegt",
    "zones": [
     {
      "from": 0,
@@ -662,7 +662,7 @@
    "id": "CROSS_ASSET",
    "state": "OBSERVED",
    "label": "Auffällige Bewegungen",
-   "summary": "Die langfristigen US-Renditen sind deutlich gefallen. Der Ölpreis ist deutlich gestiegen.",
+   "summary": "Die langfristigen US-Renditen sind deutlich gefallen.",
    "evidence": [
     {
      "key": "EQUITY",
@@ -697,11 +697,11 @@
     {
      "key": "OIL",
      "label": "Öl (WTI)",
-     "text": "+21,3 % · 1,3-fach typisch (deutlich)",
-     "change": 21.284,
-     "ratio": 1.27,
-     "notable": true,
-     "asOf": "2026-10-27",
+     "text": "+1,8 % · 0,1-fach typisch",
+     "change": 1.788,
+     "ratio": 0.11,
+     "notable": false,
+     "asOf": "2026-11-03",
      "kind": "PERCENT"
     },
     {
@@ -733,13 +733,6 @@
      "text": "Die langfristigen US-Renditen sind deutlich gefallen.",
      "symbols": [
       "US10Y"
-     ]
-    },
-    {
-     "id": "OIL_UP",
-     "text": "Der Ölpreis ist deutlich gestiegen.",
-     "symbols": [
-      "WTI"
      ]
     }
    ]
@@ -828,13 +821,13 @@
  "instruments": {
   "N225": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 63081.86,
-   "observations": 19231,
+   "asOf": "2026-11-04",
+   "last": 62188.63,
+   "observations": 19232,
    "changes": {
-    "1M": -7.65,
-    "3M": -1.06,
-    "1Y": 20.36
+    "1M": -11.09,
+    "3M": -6.2,
+    "1Y": 20.76
    },
    "high52w": {
     "date": "2026-06-25",
@@ -844,18 +837,18 @@
     "date": "2025-11-19",
     "value": 48537.7
    },
-   "rangePosition": 61,
-   "dist50": -3.87,
-   "dist200": 2.02,
+   "rangePosition": 57.3,
+   "dist50": -5.14,
+   "dist200": 0.49,
    "trend": "MIXED",
-   "drawdown52w": -12.83,
-   "vol20": 27.68,
+   "drawdown52w": -14.06,
+   "vol20": 25.86,
    "volContext": {
-    "median": 18.5,
+    "median": 18.6,
     "p25": 15.6,
     "p75": 24,
-    "samples": 1220,
-    "from": "2021-11-03",
+    "samples": 1219,
+    "from": "2021-11-05",
     "state": "HIGHER"
    },
    "roles": []
@@ -1005,13 +998,13 @@
   },
   "WTI": {
    "kind": "PRICE",
-   "asOf": "2026-10-27",
-   "last": 103.37,
-   "observations": 9531,
+   "asOf": "2026-11-03",
+   "last": 99.64,
+   "observations": 9536,
    "changes": {
-    "1M": 21.28,
-    "3M": 27.76,
-    "1Y": 66.38
+    "1M": 1.79,
+    "3M": 28.85,
+    "1Y": 61.26
    },
    "high52w": {
     "date": "2026-04-07",
@@ -1021,18 +1014,18 @@
     "date": "2025-12-16",
     "value": 55.44
    },
-   "rangePosition": 81,
-   "dist50": 7,
-   "dist200": 17.98,
+   "rangePosition": 74.7,
+   "dist50": 1.42,
+   "dist200": 12.32,
    "trend": "POSITIVE",
-   "drawdown52w": -9.78,
-   "vol20": 50.02,
+   "drawdown52w": -13.04,
+   "vol20": 56.41,
    "volContext": {
-    "median": 35.6,
-    "p25": 26.5,
-    "p75": 44.8,
+    "median": 35.7,
+    "p25": 26.6,
+    "p75": 45,
     "samples": 1246,
-    "from": "2021-10-28",
+    "from": "2021-11-04",
     "state": "HIGHER"
    },
    "roles": [
@@ -1040,19 +1033,19 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: +21,3 % – das 1,3-Fache einer typischen Monatsbewegung, also deutlich."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: +1,8 % – das 0,1-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
   },
   "BRENT": {
    "kind": "PRICE",
-   "asOf": "2026-10-27",
-   "last": 123.1,
-   "observations": 9117,
+   "asOf": "2026-11-03",
+   "last": 107.03,
+   "observations": 9122,
    "changes": {
-    "1M": 6.11,
-    "3M": 43.96,
-    "1Y": 87.88
+    "1M": -21.02,
+    "3M": 23.78,
+    "1Y": 62.68
    },
    "high52w": {
     "date": "2026-04-07",
@@ -1062,52 +1055,52 @@
     "date": "2025-12-16",
     "value": 59.93
    },
-   "rangePosition": 80.7,
-   "dist50": 7.78,
-   "dist200": 26.47,
-   "trend": "POSITIVE",
-   "drawdown52w": -10.93,
-   "vol20": 78.67,
+   "rangePosition": 60.2,
+   "dist50": -7.86,
+   "dist200": 8.66,
+   "trend": "MIXED",
+   "drawdown52w": -22.56,
+   "vol20": 61.46,
    "volContext": {
     "median": 33,
-    "p25": 25.9,
-    "p75": 45.4,
+    "p25": 26.1,
+    "p75": 45.6,
     "samples": 1262,
-    "from": "2021-10-28",
+    "from": "2021-11-04",
     "state": "HIGHER"
    },
    "roles": []
   },
   "NATGAS": {
    "kind": "PRICE",
-   "asOf": "2026-10-27",
-   "last": 2.76,
-   "observations": 7485,
+   "asOf": "2026-11-03",
+   "last": 2.63,
+   "observations": 5722,
    "changes": {
-    "1M": -14.02,
-    "3M": 4.15,
-    "1Y": -16.36
+    "1M": -9.31,
+    "3M": -4.01,
+    "1Y": -21.96
    },
    "high52w": {
     "date": "2026-01-23",
     "value": 30.72
    },
    "low52w": {
-    "date": "2026-10-26",
-    "value": 2.52
+    "date": "2026-10-30",
+    "value": 2.42
    },
-   "rangePosition": 0.9,
-   "dist50": -6.88,
-   "dist200": -20.29,
+   "rangePosition": 0.7,
+   "dist50": -10.53,
+   "dist200": -23.84,
    "trend": "NEGATIVE",
-   "drawdown52w": -91.02,
-   "vol20": 69.49,
+   "drawdown52w": -91.44,
+   "vol20": 82.28,
    "volContext": {
-    "median": 88.5,
+    "median": 88.4,
     "p25": 67.6,
     "p75": 124.5,
     "samples": 1246,
-    "from": "2021-10-28",
+    "from": "2021-11-04",
     "state": "USUAL"
    },
    "roles": []
@@ -1397,36 +1390,36 @@
   },
   "DE2Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-03",
-   "last": 3.04,
-   "observations": 7423,
+   "asOf": "2026-11-04",
+   "last": 3.05,
+   "observations": 7424,
    "changes": {
-    "1M": 2,
-    "3M": 28,
-    "1Y": 108
+    "1M": 3,
+    "3M": 35,
+    "1Y": 109
    },
    "high52w": {
     "date": "2026-09-28",
     "value": 3.32
    },
    "low52w": {
-    "date": "2025-11-04",
-    "value": 1.96
+    "date": "2025-11-21",
+    "value": 1.97
    },
-   "rangePosition": 79.4,
-   "vs200": 38.6,
-   "vs50": -4.7,
+   "rangePosition": 80,
+   "vs200": 39.2,
+   "vs50": -4.2,
    "roles": []
   },
   "DE10Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-03",
+   "asOf": "2026-11-04",
    "last": 3.38,
-   "observations": 7423,
+   "observations": 7424,
    "changes": {
-    "1M": -11,
-    "3M": 16,
-    "1Y": 67
+    "1M": -13,
+    "3M": 22,
+    "1Y": 66
    },
    "high52w": {
     "date": "2026-09-28",
@@ -1437,19 +1430,19 @@
     "value": 2.72
    },
    "rangePosition": 68,
-   "vs200": 21,
-   "vs50": -10.4,
+   "vs200": 20.8,
+   "vs50": -10.7,
    "roles": []
   },
   "DE30Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-03",
+   "asOf": "2026-11-04",
    "last": 3.77,
-   "observations": 6671,
+   "observations": 6672,
    "changes": {
-    "1M": -14,
-    "3M": 0,
-    "1Y": 52
+    "1M": -16,
+    "3M": 5,
+    "1Y": 50
    },
    "high52w": {
     "date": "2026-10-01",
@@ -1460,19 +1453,19 @@
     "value": 3.27
    },
    "rangePosition": 65.8,
-   "vs200": 6.5,
-   "vs50": -12.3,
+   "vs200": 6.4,
+   "vs50": -12.2,
    "roles": []
   },
   "US_EFFR": {
    "kind": "RATE",
-   "asOf": "2026-11-02",
+   "asOf": "2026-11-03",
    "last": 3.88,
-   "observations": 6618,
+   "observations": 6619,
    "changes": {
     "1M": 0,
     "3M": 25,
-    "1Y": 2
+    "1Y": 1
    },
    "high52w": {
     "date": "2025-12-10",
@@ -1483,8 +1476,8 @@
     "value": 3.62
    },
    "rangePosition": 96.3,
-   "vs200": 20.7,
-   "vs50": 9,
+   "vs200": 20.6,
+   "vs50": 8.5,
    "roles": []
   },
   "QQQ": {
@@ -1810,7 +1803,7 @@
    },
    "OIL": {
     "symbol": "WTI",
-    "asOf": "2026-10-27",
+    "asOf": "2026-11-03",
     "horizon": 22,
     "samples": 2497
    },
