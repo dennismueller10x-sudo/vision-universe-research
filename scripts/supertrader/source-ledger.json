@@ -1017,5 +1017,309 @@
     "claims_supported": "Trendmaß: annualisierte Steigung einer exponentiellen Regression über 90 Tage multipliziert mit dem Bestimmtheitsmaß R² (vielfach zitiert). In VU als offengelegter Ersatz für TraderFox' nicht öffentliche 'Trendstabilität' verwendet.",
     "evidence_status_ceiling": "SECONDARY_ONLY",
     "notes": "Runde 12: Formel nur sekundär belegt; Buchinhalt nicht von VU eingesehen."
+  },
+  {
+    "source_id": "W-MOKAPP",
+    "title": "Official Ten Pocket Pivot Rules",
+    "author": "Gil Morales; Chris Kacher",
+    "publisher_or_site": "virtueofselfishinvesting.com",
+    "url": "https://www.virtueofselfishinvesting.com/faqs/answer/ten-rules-for-pocket-pivots",
+    "source_type": "OWN_WEBSITE",
+    "level": 1,
+    "access": "READ_IN_RESEARCH_PR",
+    "retrieved_at": null,
+    "url_verification": "URL_FROM_PSR709_NOT_REVERIFIED",
+    "content_retrieved_by_vu": false,
+    "used_for": [
+      "SF_MOKA_POCKET_PIVOT",
+      "SF_MOKA_BUYABLE_GAP_UP"
+    ],
+    "claims_supported": "Regelquelle der Pocket Pivots (SF-Registry: \"Morales / Kacher, Pocket Pivot rules (web primary)\", Rolle \"authoritative\"); #709-Titel \"Official Ten Pocket Pivot Rules\".",
+    "evidence_status_ceiling": "PRIMARY_EXPLICIT",
+    "notes": "X-LEDGER (CERT-PREP-TOP5): Eintrag ausschließlich aus dem #709-Extrakt (Quelle W-MOKAPP, Wortlaut am Original geprüft: ja) und der SF-Registry; kein Inhalts-Hash im #709-Extrakt (nicht belegt). Abrufdatum je Quelle im Extrakt nicht belegt (Manifest #709 abgeschlossen 2026-10-13T13:09:25Z). Der Inhalt wurde nicht über den Abrufweg der Runde 8 (Runner, versiegelte Ablage) geholt, deshalb content_retrieved_by_vu = false. Quellentyp und Stufe sind eine eigene Zuordnung aus provenance. Autorenschaft nach der SF-Registry (\"Morales / Kacher\").",
+    "provenance_evidence": {
+      "basis": "PSR709_EXTRACT",
+      "extract": "PSR709-EVIDENCE-EXTRACT.json (#709-Extrakt der quellentreuen Methoden)",
+      "registry": "STRATEGY-REGISTRY.json (SF-Registry)",
+      "pullRequest": 709,
+      "commit": "8b766fa4947cb2b564ede7cd850c6a995f57aada",
+      "psr709_source_id": "W-MOKAPP",
+      "psr709_title": "Official Ten Pocket Pivot Rules",
+      "provenance": "WEB_PRIMARY",
+      "era": "2010;updated2019-12-05",
+      "original_wording_checked": true,
+      "sha256": null,
+      "not_evidenced": [
+        "retrieved_at",
+        "sha256",
+        "page_count",
+        "document_language"
+      ]
+    }
+  },
+  {
+    "source_id": "W-MOKA12",
+    "title": "Chris Kacher own Traders Expo London 2012 presentation",
+    "author": "Chris Kacher",
+    "publisher_or_site": "virtueofselfishinvesting.s3.amazonaws.com",
+    "url": "https://virtueofselfishinvesting.s3.amazonaws.com/download/presentation-handouts/Traders-Expo-London-March-2012-Pocket-Pivots-BGUs-MDM.pdf",
+    "source_type": "OWN_ARTICLE",
+    "level": 1,
+    "access": "READ_IN_RESEARCH_PR",
+    "retrieved_at": null,
+    "url_verification": "CONTENT_SHA256_IN_PSR709",
+    "content_retrieved_by_vu": false,
+    "used_for": [
+      "SF_MOKA_POCKET_PIVOT",
+      "SF_MOKA_BUYABLE_GAP_UP"
+    ],
+    "claims_supported": "Präsentation Traders Expo London 2012 (Pocket Pivots, Buyable Gap-Ups); SF-Registry: \"Morales / Kacher 2012 presentation (web primary PDF)\", Rolle \"authoritative (BGU, exits)\".",
+    "evidence_status_ceiling": "PRIMARY_EXPLICIT",
+    "notes": "X-LEDGER (CERT-PREP-TOP5): Eintrag ausschließlich aus dem #709-Extrakt (Quelle W-MOKA12, Wortlaut am Original geprüft: ja) und der SF-Registry; Inhalt per SHA-256 im #709-Extrakt festgehalten. Abrufdatum je Quelle im Extrakt nicht belegt (Manifest #709 abgeschlossen 2026-10-13T13:09:25Z). Der Inhalt wurde nicht über den Abrufweg der Runde 8 (Runner, versiegelte Ablage) geholt, deshalb content_retrieved_by_vu = false. Quellentyp und Stufe sind eine eigene Zuordnung aus provenance. Autor nach dem #709-Titel (\"Chris Kacher own ...\").",
+    "provenance_evidence": {
+      "basis": "PSR709_EXTRACT",
+      "extract": "PSR709-EVIDENCE-EXTRACT.json (#709-Extrakt der quellentreuen Methoden)",
+      "registry": "STRATEGY-REGISTRY.json (SF-Registry)",
+      "pullRequest": 709,
+      "commit": "8b766fa4947cb2b564ede7cd850c6a995f57aada",
+      "psr709_source_id": "W-MOKA12",
+      "psr709_title": "Chris Kacher own Traders Expo London 2012 presentation",
+      "provenance": "WEB_PRIMARY",
+      "era": "2012-03-23",
+      "original_wording_checked": true,
+      "sha256": "88b7786c50f2ad358a400e041cfe8914e420abd3d1a134e88754cf36e99360a2",
+      "page_count": 65,
+      "not_evidenced": [
+        "retrieved_at",
+        "document_language"
+      ]
+    }
+  },
+  {
+    "source_id": "W-MOKASTOP",
+    "title": "Morales / Kacher on selling / stops (FAQ)",
+    "author": "Gil Morales; Chris Kacher",
+    "publisher_or_site": "virtueofselfishinvesting.com",
+    "url": "https://www.virtueofselfishinvesting.com/faqs/answer/how-do-you-set-your-sell-stops",
+    "source_type": "OWN_WEBSITE",
+    "level": 1,
+    "access": "READ_IN_RESEARCH_PR",
+    "retrieved_at": null,
+    "url_verification": "URL_FROM_PSR709_NOT_REVERIFIED",
+    "content_retrieved_by_vu": false,
+    "used_for": [
+      "SF_MOKA_POCKET_PIVOT",
+      "SF_MOKA_BUYABLE_GAP_UP"
+    ],
+    "claims_supported": "FAQ zu Verkaufsstops; SF-Registry: \"Morales / Kacher on selling / stops (web primary)\", Rolle \"exits\". Eine Initialstop-Regel für Pocket Pivots fehlt in den MOKA-Quellen (MOKA-SF-PP-STOP bleibt SOURCE_BLOCKED).",
+    "evidence_status_ceiling": "PRIMARY_EXPLICIT",
+    "notes": "X-LEDGER (CERT-PREP-TOP5): Eintrag ausschließlich aus dem #709-Extrakt (Quelle W-MOKASTOP, Wortlaut am Original geprüft: ja) und der SF-Registry; kein Inhalts-Hash im #709-Extrakt (nicht belegt). Abrufdatum je Quelle im Extrakt nicht belegt (Manifest #709 abgeschlossen 2026-10-13T13:09:25Z). Der Inhalt wurde nicht über den Abrufweg der Runde 8 (Runner, versiegelte Ablage) geholt, deshalb content_retrieved_by_vu = false. Quellentyp und Stufe sind eine eigene Zuordnung aus provenance. Titel nach der SF-Registry; der #709-Titel ist in provenance_evidence.psr709_title wörtlich erhalten.",
+    "provenance_evidence": {
+      "basis": "PSR709_EXTRACT",
+      "extract": "PSR709-EVIDENCE-EXTRACT.json (#709-Extrakt der quellentreuen Methoden)",
+      "registry": "STRATEGY-REGISTRY.json (SF-Registry)",
+      "pullRequest": 709,
+      "commit": "8b766fa4947cb2b564ede7cd850c6a995f57aada",
+      "psr709_source_id": "W-MOKASTOP",
+      "psr709_title": "Official Mo Kastop FAQ",
+      "provenance": "WEB_PRIMARY",
+      "era": "2010-10-03",
+      "original_wording_checked": true,
+      "sha256": null,
+      "not_evidenced": [
+        "retrieved_at",
+        "sha256",
+        "page_count",
+        "document_language"
+      ]
+    }
+  },
+  {
+    "source_id": "W-MOKAV24",
+    "title": "Gil Morales 2024 BGU volume note incl. MCD (VooDoo Report)",
+    "author": "Gil Morales",
+    "publisher_or_site": "virtueofselfishinvesting.com",
+    "url": "https://www.virtueofselfishinvesting.com/reports/view/vosi-voodoo-tm-report-better-lucky-than-good-1-21-24",
+    "source_type": "OWN_ARTICLE",
+    "level": 1,
+    "access": "READ_IN_RESEARCH_PR",
+    "retrieved_at": null,
+    "url_verification": "URL_FROM_PSR709_NOT_REVERIFIED",
+    "content_retrieved_by_vu": false,
+    "used_for": [
+      "SF_MOKA_POCKET_PIVOT",
+      "SF_MOKA_BUYABLE_GAP_UP"
+    ],
+    "claims_supported": "Bericht vom 21.01.2024; SF-Registry: Rolle \"current volume definition and megacap exception\" (Volumen der Buyable Gap-Ups, Fall MOKA24-MCD). Eine Quellenstelle zum Mittelungsfenster des Volumens fehlt weiter (C12-Blocker CC-1, Lesart MA-MOKA-BGU-VOLWINDOW).",
+    "evidence_status_ceiling": "PRIMARY_EXPLICIT",
+    "notes": "X-LEDGER (CERT-PREP-TOP5): Eintrag ausschließlich aus dem #709-Extrakt (Quelle W-MOKAV24, Wortlaut am Original geprüft: ja) und der SF-Registry; kein Inhalts-Hash im #709-Extrakt (nicht belegt). Abrufdatum je Quelle im Extrakt nicht belegt (Manifest #709 abgeschlossen 2026-10-13T13:09:25Z). Der Inhalt wurde nicht über den Abrufweg der Runde 8 (Runner, versiegelte Ablage) geholt, deshalb content_retrieved_by_vu = false. Quellentyp und Stufe sind eine eigene Zuordnung aus provenance. Titel nach der SF-Registry; der #709-Titel ist in provenance_evidence.psr709_title wörtlich erhalten.",
+    "provenance_evidence": {
+      "basis": "PSR709_EXTRACT",
+      "extract": "PSR709-EVIDENCE-EXTRACT.json (#709-Extrakt der quellentreuen Methoden)",
+      "registry": "STRATEGY-REGISTRY.json (SF-Registry)",
+      "pullRequest": 709,
+      "commit": "8b766fa4947cb2b564ede7cd850c6a995f57aada",
+      "psr709_source_id": "W-MOKAV24",
+      "psr709_title": "Gil Morales own Voo Doo Report",
+      "provenance": "WEB_PRIMARY",
+      "era": "2024-01-21",
+      "original_wording_checked": true,
+      "sha256": null,
+      "not_evidenced": [
+        "retrieved_at",
+        "sha256",
+        "page_count",
+        "document_language"
+      ]
+    }
+  },
+  {
+    "source_id": "W-RAS04",
+    "title": "Linda Raschke 2004 interview (web primary PDF), own quotes",
+    "author": "Linda Raschke",
+    "publisher_or_site": "lindaraschke.net",
+    "url": "https://lindaraschke.net/wp-content/uploads/2026/03/raschke_pt2_0304.pdf",
+    "source_type": "ORIGINAL_INTERVIEW",
+    "level": 1,
+    "access": "READ_IN_RESEARCH_PR",
+    "retrieved_at": null,
+    "url_verification": "CONTENT_SHA256_IN_PSR709",
+    "content_retrieved_by_vu": false,
+    "used_for": [
+      "SF_RASCHKE_HOLY_GRAIL"
+    ],
+    "claims_supported": "Eigene Zitate zum Holy Grail; SF-Registry: Rolle \"authoritative for the disclosed component\". Einstiegsorder und Stop nennt die Quelle nicht (#709 C13); dafür steht W-RAS97 als Sekundärquelle.",
+    "evidence_status_ceiling": "PRIMARY_EXPLICIT",
+    "notes": "X-LEDGER (CERT-PREP-TOP5): Eintrag ausschließlich aus dem #709-Extrakt (Quelle W-RAS04, Wortlaut am Original geprüft: ja) und der SF-Registry; Inhalt per SHA-256 im #709-Extrakt festgehalten. Abrufdatum je Quelle im Extrakt nicht belegt (Manifest #709 abgeschlossen 2026-10-13T13:09:25Z). Der Inhalt wurde nicht über den Abrufweg der Runde 8 (Runner, versiegelte Ablage) geholt, deshalb content_retrieved_by_vu = false. Quellentyp und Stufe sind eine eigene Zuordnung aus provenance. Titel nach der SF-Registry; der #709-Titel ist in provenance_evidence.psr709_title wörtlich erhalten.",
+    "provenance_evidence": {
+      "basis": "PSR709_EXTRACT",
+      "extract": "PSR709-EVIDENCE-EXTRACT.json (#709-Extrakt der quellentreuen Methoden)",
+      "registry": "STRATEGY-REGISTRY.json (SF-Registry)",
+      "pullRequest": 709,
+      "commit": "8b766fa4947cb2b564ede7cd850c6a995f57aada",
+      "psr709_source_id": "W-RAS04",
+      "psr709_title": "Ra sch ke own quoted 2004 interview on own website",
+      "provenance": "WEB_PRIMARY",
+      "era": "2004-03 interview;2026upload",
+      "original_wording_checked": true,
+      "sha256": "6cf7fb16b866313ff5c965ea5a189261b7058deb9b11f302e30a212d2a622484",
+      "page_count": 4,
+      "not_evidenced": [
+        "retrieved_at",
+        "document_language"
+      ]
+    }
+  },
+  {
+    "source_id": "W-RAS97",
+    "title": "AIQ Opening Bell Vol. 6 Issue 8 (August 1997), \"Linda Bradford Raschke on Short Term Trading Strategies\", Seitenleiste \"Holy Grail Pattern\"",
+    "author": "nicht belegt (Seitenleiste vermutlich redaktionelle Zusammenfassung, nicht Raschkes Wortlaut)",
+    "publisher_or_site": "AIQ Opening Bell (Newsletter), abgelegt auf lindaraschke.net",
+    "url": "https://lindaraschke.net/wp-content/uploads/2026/01/august1997.pdf",
+    "source_type": "SECONDARY",
+    "level": 4,
+    "access": "READ_IN_RESEARCH_PR",
+    "retrieved_at": null,
+    "url_verification": "CONTENT_SHA256_IN_REPO",
+    "content_retrieved_by_vu": false,
+    "used_for": [
+      "SF_RASCHKE_HOLY_GRAIL"
+    ],
+    "claims_supported": "Nur Einstiegsorder (Buy-Stop über dem Hoch des Vorbalkens) und Initialstop (Schutzstop am neu gebildeten Swing-Tief) des Holy Grail; ausdrücklich als Sekundärquelle angenommen (Owner-Entscheidung D-RAS97, 23.10.2026). RAS-SF-ENTRY und RAS-SF-STOP sind deshalb SOURCE_DERIVED, nie SOURCE_EXACT.",
+    "evidence_status_ceiling": "SECONDARY_ONLY",
+    "notes": "X-LEDGER (CERT-PREP-TOP5): nicht im #709-Extrakt; Eintrag ausschließlich aus holy-grail-lifecycle.mjs#W_RAS97 (URL, SHA-256, Status) und dem Vertrag holy-grail.mjs (Owner-Entscheidung D-RAS97). Abrufdatum nicht belegt. Der Inhalt wurde nicht über den Abrufweg der Runde 8 (Runner, versiegelte Ablage) geholt, deshalb content_retrieved_by_vu = false. ",
+    "provenance_evidence": {
+      "basis": "OWNER_DECISION_D-RAS97",
+      "file": "holy-grail-lifecycle.mjs#W_RAS97",
+      "contract": "holy-grail.mjs (Vertrag C13)",
+      "ownerDecision": "D-RAS97 2026-10-23",
+      "in_psr709_extract": false,
+      "sha256": "693ce57175bf4cf27057c2c2bd5f775df2a85ca0309b00c73d568488f79e0ffb",
+      "not_evidenced": [
+        "retrieved_at",
+        "author",
+        "page_count"
+      ]
+    }
+  },
+  {
+    "source_id": "B07",
+    "title": "Momentum Masters",
+    "author": "Mark Minervini; David Ryan; Dan Zanger; Mark Ritchie II",
+    "publisher_or_site": "Access Publishing original; translator Paddy-Bekasi",
+    "source_type": "BOOK_TRANSLATION",
+    "level": 1,
+    "access": "READ_IN_RESEARCH_PR",
+    "retrieved_at": null,
+    "url_verification": "NO_URL_FOUND",
+    "content_retrieved_by_vu": false,
+    "used_for": [
+      "SF_MINERVINI_SEPA_VCP",
+      "SF_MINERVINI_POWER_PLAY"
+    ],
+    "claims_supported": "Minervini-Antworten zu Risiko, Stops, Positionsgröße und IPO (SF-Registry, Rolle). Inoffizielle indonesische Übersetzung (2021) des Originals von 2015; Wortlaut nicht am englischen Original geprüft (#709 GAP-B07).",
+    "evidence_status_ceiling": "PRIMARY_INFERRED",
+    "notes": "X-LEDGER (CERT-PREP-TOP5): Eintrag ausschließlich aus dem #709-Extrakt (Quelle B07, Wortlaut am Original geprüft: nein) und der SF-Registry; Inhalt per SHA-256 im #709-Extrakt festgehalten. Abrufdatum je Quelle im Extrakt nicht belegt (Manifest #709 abgeschlossen 2026-10-13T13:09:25Z). Der Inhalt wurde nicht über den Abrufweg der Runde 8 (Runner, versiegelte Ablage) geholt, deshalb content_retrieved_by_vu = false. Quellentyp und Stufe sind eine eigene Zuordnung aus provenance. Buchdatei aus der privaten Ablage des Owners; der Ablageort ist im Extrakt bewusst entfernt, daher keine URL. ISBN im Extrakt UNVERIFIED. Obergrenze PRIMARY_INFERRED, weil der Wortlaut nur in Übersetzung vorliegt.",
+    "provenance_evidence": {
+      "basis": "PSR709_EXTRACT",
+      "extract": "PSR709-EVIDENCE-EXTRACT.json (#709-Extrakt der quellentreuen Methoden)",
+      "registry": "STRATEGY-REGISTRY.json (SF-Registry)",
+      "pullRequest": 709,
+      "commit": "8b766fa4947cb2b564ede7cd850c6a995f57aada",
+      "psr709_source_id": "B07",
+      "psr709_title": "Momentum Masters",
+      "provenance": "BOOK_PRIMARY",
+      "era": "2015",
+      "original_wording_checked": false,
+      "sha256": "d3fd7f0f1724e6f3ee214a6b2bd5ae40b98cb9da85c273057642638aaab1118a",
+      "document_language": "id",
+      "page_count": 113,
+      "edition": "2015 original; 2021 Indonesian translation file",
+      "isbn": "UNVERIFIED",
+      "translation_note": "Unofficial translation; shorting gloss and gap negation contain suspect translation errors.",
+      "not_evidenced": [
+        "retrieved_at",
+        "url"
+      ]
+    }
+  },
+  {
+    "source_id": "W-MIN18",
+    "title": "Minervini interview, Stockopedia, 2018-04-17 (English; Minervini answers only)",
+    "author": "Mark Minervini (Antworten); Interviewer nicht belegt",
+    "publisher_or_site": "stockopedia.com",
+    "url": "https://www.stockopedia.com/content/mark-minervini-interview-how-to-trade-like-a-champion-353963/",
+    "source_type": "ORIGINAL_INTERVIEW",
+    "level": 1,
+    "access": "READ_IN_RESEARCH_PR",
+    "retrieved_at": null,
+    "url_verification": "URL_FROM_PSR709_NOT_REVERIFIED",
+    "content_retrieved_by_vu": false,
+    "used_for": [
+      "SF_MINERVINI_SEPA_VCP",
+      "SF_MINERVINI_POWER_PLAY"
+    ],
+    "claims_supported": "Englischer Originalwortlaut Minervinis: Stops, gestaffelte Stops, schrittweise Exposition, Fundamentaldaten brauchen Kursbestätigung (SF-Registry, Rolle). Einzige englische Minervini-Zeilen im #709-Extrakt (Methodenkontext SEPA2018).",
+    "evidence_status_ceiling": "PRIMARY_EXPLICIT",
+    "notes": "X-LEDGER (CERT-PREP-TOP5): Eintrag ausschließlich aus dem #709-Extrakt (Quelle W-MIN18, Wortlaut am Original geprüft: ja) und der SF-Registry; kein Inhalts-Hash im #709-Extrakt (nicht belegt). Abrufdatum je Quelle im Extrakt nicht belegt (Manifest #709 abgeschlossen 2026-10-13T13:09:25Z). Der Inhalt wurde nicht über den Abrufweg der Runde 8 (Runner, versiegelte Ablage) geholt, deshalb content_retrieved_by_vu = false. Quellentyp und Stufe sind eine eigene Zuordnung aus provenance. Titel nach der SF-Registry; der #709-Titel ist in provenance_evidence.psr709_title wörtlich erhalten.",
+    "provenance_evidence": {
+      "basis": "PSR709_EXTRACT",
+      "extract": "PSR709-EVIDENCE-EXTRACT.json (#709-Extrakt der quellentreuen Methoden)",
+      "registry": "STRATEGY-REGISTRY.json (SF-Registry)",
+      "pullRequest": 709,
+      "commit": "8b766fa4947cb2b564ede7cd850c6a995f57aada",
+      "psr709_source_id": "W-MIN18",
+      "psr709_title": "Min ervin i own interview 2018",
+      "provenance": "WEB_PRIMARY",
+      "era": "2018-04-17",
+      "original_wording_checked": true,
+      "sha256": null,
+      "not_evidenced": [
+        "retrieved_at",
+        "sha256",
+        "page_count",
+        "document_language"
+      ]
+    }
   }
 ]

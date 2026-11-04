@@ -134,8 +134,11 @@ test('listing lifecycle register: schema fail-closed and source-bound',()=>{
 
 test('listingLifecycleEvidence: cut at the sourced last trading day, frozen without record censored at the last observed close, everything else unchanged',()=>{
  const L=R.createResearchLoader(root,{listingLifecycleEvidence:true}),D=A.createLoader(root);
- // non-frozen series without record: exactly the default result
- for(const id of ['ref_NVDA','ref_MSFT','ref_JPM','ref_FRMEP','ref_COHR'])assert.deepEqual(outcome(()=>L(id)),outcome(()=>D(id)),id);
+ // non-frozen series without record: exactly the default result. Compared on the SAME master generation as the
+ // product adapter (LIVE): after the 1.3.0 switch the 1.1.0-bound loader differs from LIVE only in masterVersion,
+ // masterGeneratedAt and identityHash, which is the generation binding, not a lifecycle effect.
+ const Llive=R.createResearchLoader(root,{listingLifecycleEvidence:true},LIVE);
+ for(const id of ['ref_NVDA','ref_MSFT','ref_JPM','ref_FRMEP','ref_COHR'])assert.deepEqual(outcome(()=>Llive(id)),outcome(()=>D(id)),id);
  // a frozen tail without record is cut after its first bar (last observed close), terminal UNKNOWN (synthetic: freeze the last four weeks of NVDA)
  const nv=JSON.parse(seriesBytes('ref_NVDA'));for(let k=2;k<=4;k++)nv.points.at(-k)[1]=nv.points.at(-1)[1];
  const cut=L('ref_NVDA',JSON.stringify(nv));

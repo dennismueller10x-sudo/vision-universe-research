@@ -1,5 +1,7 @@
 # Supertrader 8.0 – Tageslauf der Research-Kandidaten (vorbereitet, deaktiviert)
 
+> **Abgelöst (31.10.2026).** Dieses Dokument beschreibt den Stand vom 27.10. Der Workflow heißt jetzt „Supertrader 8 Research-Kandidaten (Tageslauf)“. Seinen automatischen Weg beschreibt `docs/SUPERTRADER_9_DAILY_OPERATIONS.md` (#1137, #1146), eingeschaltet über `SF8_AUTO_PUBLISH`. Maßgeblich für den Betrieb ist jenes Dokument.
+
 Stand 2026-10-27 (Anpassung nach V1–V4: #1025, #1026, #1027). Owner-Entscheidung O-2: Der Tageslauf wird als eigener PR vorbereitet und ist standardmäßig deaktiviert. Er wird nicht aktiviert, bevor die SEC-/Quant-Consumer-Pipeline nachweislich stabil ist und der Owner ihn ausdrücklich freigibt.
 
 ## Was der PR enthält

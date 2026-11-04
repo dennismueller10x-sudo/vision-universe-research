@@ -1,0 +1,25 @@
+{
+  "appId": "de.visionuniverse.app",
+  "appName": "Vision Universe",
+  "webDir": "www",
+  "backgroundColor": "#ffffff",
+  "server": {
+    "iosScheme": "capacitor",
+    "cleartext": false,
+    "allowNavigation": ["research.visionuniverse.de"]
+  },
+  "ios": {
+    "contentInset": "never",
+    "limitsNavigationsToAppBoundDomains": false,
+    "scheme": "Vision Universe"
+  },
+  "plugins": {
+    "CapacitorHttp": { "enabled": true },
+    "SplashScreen": {
+      "launchAutoHide": false,
+      "backgroundColor": "#ffffff",
+      "showSpinner": false
+    },
+    "StatusBar": { "style": "DEFAULT" }
+  }
+}
