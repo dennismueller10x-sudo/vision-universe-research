@@ -28,8 +28,15 @@
     verstehen: { label: 'Dein Ziel: Eine Aktie verstehen', step: 'Starte mit NVIDIA im Überblick', href: '/discover/#/s/US_REAL/NVDA' },
     profi: { label: 'Dein Ziel: Wie ein Profi analysieren', step: 'Starte mit den Methoden', href: '/supertrader/strategies/' }
   };
-  var NO_GOAL = { label: 'Noch kein Ziel gewählt', step: 'Wähle deinen Einstieg', href: '/#where-title' };
+  var NO_GOAL = { label: 'Noch kein Ziel gewählt', step: 'Wähle deinen Einstieg in drei Schritten', href: '/willkommen/start/' };
   function goalFor(key) { return GOALS[key] || NO_GOAL; }
+  /* Ziel-Karte (E02): Wahl aus dem ersten Start (willkommen/start/prefs.js, Konto zuerst), sonst „Wo stehst du?“ der Startseite. */
+  function goalCard(me) {
+    var S = global.VUStart;
+    if (!S) { var g = null; try { g = global.localStorage.getItem('vu-start-path'); } catch (e) { g = null; } return goalFor(g); }
+    var eff = S.effective(me);
+    return eff.goal ? S.goalCard(eff.goal) : S.NO_GOAL;
+  }
   var DAYS = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
   var MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
   function dayLine(d) { return DAYS[d.getDay()] + ', ' + d.getDate() + '. ' + MONTHS[d.getMonth()]; }
@@ -88,7 +95,7 @@
     return Number(p[2]) + '. ' + ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'][Number(p[1]) - 1] + ' ' + p[0];
   }
 
-  var api = { PRODUCTS: PRODUCTS, GOALS: GOALS, goalFor: goalFor, dayLine: dayLine, validateStories: validateStories, validateNews: validateNews, sortNews: sortNews, storyDuration: storyDuration, greeting: greeting, formatDate: formatDate, MIN_S: MIN_S, MAX_S: MAX_S };
+  var api = { PRODUCTS: PRODUCTS, GOALS: GOALS, goalFor: goalFor, goalCard: goalCard, dayLine: dayLine, validateStories: validateStories, validateNews: validateNews, sortNews: sortNews, storyDuration: storyDuration, greeting: greeting, formatDate: formatDate, MIN_S: MIN_S, MAX_S: MAX_S };
   if (typeof module === 'object' && module.exports) module.exports = api;
   global.VUWelcome = api;
   if (typeof document === 'undefined') return;
@@ -145,8 +152,10 @@
       b.type = 'button'; b.dataset.story = story.id;
       if (story.thumb) th.style.backgroundImage = 'url("' + story.thumb + '")';
       play.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>';
-      th.append(play, h('span', 'wk-dur', mmss(storyVideo(story))), h('span', 'wk-vid-tag', story.product));
-      b.append(th, h('span', 'wk-vid-title', story.tagline || story.title));
+      var copy = h('span', 'wk-vid-copy');
+      copy.append(h('span', 'wk-vid-title', story.tagline || story.title), h('span', 'wk-vid-tag', story.product));
+      th.append(play, h('span', 'wk-dur', mmss(storyVideo(story))), copy);
+      b.append(th);
       b.addEventListener('click', function () { openStory(story.id, b); });
       li.appendChild(b); list.appendChild(li);
     });
@@ -388,14 +397,55 @@
   }
   // Rueckmeldung nach Konto-Schritten (/konto/ leitet nach E-Mail-Bestaetigung bzw. bestaetigter Zahlung hierher).
   // Nur feste Texte; der Parameter wird danach aus der Adresse entfernt.
-  var FLASH = { verified: 'Deine E-Mail-Adresse ist bestätigt. Willkommen bei Vision Universe.', pro: 'Dein Pro-Abonnement ist aktiv. Danke für deine Unterstützung.' };
+  var FLASH = {
+    verified: { title: 'E-Mail bestätigt. Schön, dass du da bist.', sub: 'Dein Konto ist eingerichtet, Tarif Free.' },
+    pro: { title: 'Willkommen bei Pro. Dein Abo ist aktiv.', sub: 'Bestätigt von Stripe. Alles Weitere unter Konto.' }
+  };
   function flash() {
-    var box = doc.getElementById('wk-flash'), key = null;
+    var box = doc.getElementById('wk-flash'), key = null, timer = 0;
     try { key = new URLSearchParams(global.location.search).get('konto'); } catch (e) { key = null; }
     if (!box || !FLASH[key]) return;
-    box.textContent = FLASH[key]; box.hidden = false;
+    doc.getElementById('wk-flash-title').textContent = FLASH[key].title;
+    doc.getElementById('wk-flash-sub').textContent = FLASH[key].sub;
+    box.hidden = false;
+    function hide() { clearTimeout(timer); box.hidden = true; }
+    doc.getElementById('wk-flash-x').onclick = hide;
+    // Schließt sich selbst; bei reduzierter Bewegung etwas länger sichtbar.
+    timer = setTimeout(hide, reduced() ? 12000 : 8000);
     try { global.history.replaceState(null, '', global.location.pathname + global.location.hash); } catch (e) { /* nur Komfort */ }
-    requestAnimationFrame(fitNews);
+  }
+  /* „Deine Watchlist heute“ (E02): Zähler im Plus, größte Bewegung, die ersten drei Aktien (C10). Nur mit Konto und Einträgen. */
+  function fetchJson(path) { return fetch(path, { cache: 'default', credentials: 'omit' }).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status); return r.json(); }); }
+  function cleanName(n) { return String(n || '').replace(/,? (Inc|Corp|Corporation|Ltd|Limited|plc|N\.V\.|S\.A\.|AG|SE|Holdings?|Co)\.?$/i, '').replace(/ Class [A-Z]$/, '').trim(); }
+  function renderWatch(A) {
+    var C = global.VUCore || {}, W = C.WatchlistView, Id = C.Identity, U = global.VUUI, T = global.VUToday, box = doc.getElementById('wk-watch');
+    if (!box || !W || !Id || !U || !T) return;
+    A.get('/v1/watchlist').then(function (r) {
+      var items = r.ok && r.data && r.data.items ? r.data.items.slice().sort(function (a, b) { return String(b.addedAt || '').localeCompare(String(a.addedAt || '')); }) : [];
+      if (!items.length) return;
+      var keys = items.map(function (i) { return i.ticker && Id.normalizeTicker(i.ticker) ? Id.shardKey(i.ticker) : null; }).filter(Boolean);
+      return W.load(fetchJson, keys, null).then(function (res) {
+        var ix = W.index(res.doc), views = items.map(function (i) { return W.view(ix, i, new Date()); });
+        return T.load(fetchJson, Id, views, 12).then(function (moves) {
+          views.forEach(function (v, k) { var m = moves[k] || {}; v.pct = typeof m.pct === 'number' ? m.pct : null; v.spark = m.values || []; });
+          var sum = T.summary(views.slice(0, 12)), last = views.map(function (v) { return v.price && v.price.date; }).filter(Boolean).sort().pop();
+          doc.getElementById('wk-watch-all').textContent = 'Alle ' + items.length;
+          doc.getElementById('wk-watch-n').textContent = sum.measured ? sum.up + '/' + sum.measured : String(items.length);
+          doc.getElementById('wk-watch-up').textContent = sum.measured ? 'im Plus' + (last ? ' am ' + DAYS[new Date(last + 'T12:00:00Z').getUTCDay()] : '') : (items.length === 1 ? 'Aktie' : 'Aktien') + ' auf deiner Watchlist';
+          doc.getElementById('wk-watch-big').textContent = sum.biggest ? 'Größte Bewegung: ' + sum.biggest.ticker + ' ' + U.pct(sum.biggest.pct) : 'Die Tagesbewegung ist gerade nicht verfügbar.';
+          var rows = doc.getElementById('wk-watch-rows'), html = '';
+          views.slice(0, 3).forEach(function (v) {
+            var priced = v.price && v.price.state !== 'UNAVAILABLE' && typeof v.price.close === 'number';
+            var href = (v.links || []).filter(function (l) { return l.product === 'discover'; }).map(function (l) { return l.href; })[0] || null;
+            html += U.stockRow({ ticker: v.ticker || '–', name: cleanName(v.name) || v.ticker, sub: [v.ticker, v.exchange].filter(Boolean).join(' · '), href: href,
+              chart: global.VUChart && v.spark.length > 1 ? global.VUChart.sparkline(v.spark) : '', price: priced ? v.price.close : null,
+              currency: priced ? v.price.currency : null, changePct: v.pct, noPrice: !priced });
+          });
+          rows.innerHTML = html; /* nur VUUI-Markup: VUUI maskiert jede Eingabe */
+          box.hidden = false;
+        });
+      });
+    }).catch(function () { /* ohne Kurse bleibt der Abschnitt verborgen; die Watchlist steht unter Platz 1 */ });
   }
   function init() {
     measureTop(); global.addEventListener('resize', measureTop);
@@ -403,14 +453,15 @@
     var now = new Date(), title = doc.getElementById('wk-title'), date = doc.getElementById('wk-date');
     if (date) date.textContent = dayLine(now);
     if (title) title.textContent = greeting(now.getHours());
-    var g = null; try { g = global.localStorage.getItem('vu-start-path'); } catch (e) { g = null; }
-    var goal = goalFor(g), card = doc.getElementById('wk-goal');
-    if (card) { card.href = goal.href; doc.getElementById('wk-goal-label').textContent = goal.label; doc.getElementById('wk-goal-step').textContent = goal.step; }
+    var card = doc.getElementById('wk-goal');
+    function paintGoal(me) { var goal = goalCard(me); if (card) { card.href = goal.href; doc.getElementById('wk-goal-label').textContent = goal.label; doc.getElementById('wk-goal-step').textContent = goal.step; } }
+    paintGoal(null);
     // Anzeigename aus dem Konto (GET /v1/me), nur wenn Konten verbunden sind und jemand angemeldet ist.
     var A = global.VUAccount;
     if (A && A.available && A.available() && title) A.get('/v1/session').then(function (r) {
       if (!(r.ok && r.data && r.data.authenticated)) return null;
-      return A.get('/v1/me').then(function (m) { var n = m.ok && m.data && m.data.profile && m.data.profile.displayName; if (n) title.textContent = greeting(now.getHours()) + ', ' + n; });
+      renderWatch(A);
+      return A.get('/v1/me').then(function (m) { var n = m.ok && m.data && m.data.profile && m.data.profile.displayName; if (n) title.textContent = greeting(now.getHours()) + ', ' + n; if (m.ok) paintGoal(m.data); });
     }).catch(function () {});
     // Produkt-Leiste „Mein Bereich“ (Platz 0).
     if (global.VUNavigation) global.VUNavigation.dock({});

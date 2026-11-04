@@ -7,7 +7,10 @@
      - Kurse: die gemeinsame Watchlist-Uebersicht (core/watchlist-view.js), nie je Nutzer
      - "Auf diesem Geraet gemerkt": die lokalen Beobachten-Listen der Produktwelten,
        nur gelesen; Uebernahme ins Konto nur auf Klick (/v1/watchlist/import)
-   Kein Quant-Gesamtscore, keine Supertrader-Signale. Serverdaten nur per textContent.
+     - Tagesbewegung und Mini-Chart: mein-dashboard/today.js (dieselbe Tagesreihe wie der
+       veroeffentlichte Schluss, ADR-002); Bausteine C07/C10/C18 aus assets/vu-ui.js (VUUI)
+   Kein Quant-Gesamtscore, keine Supertrader-Signale. Serverdaten nur per textContent oder
+   ueber VUUI (maskiert jede Eingabe); innerHTML nur in markup() mit VUUI-Ausgabe.
 
    Erweiterung: Jeder Bereich ist ein Modul in MODULES ({id, render(ctx)}). Spaetere
    Bereiche (persoenliche Marktveraenderungen, Watchlist-Benachrichtigungen) kommen als
@@ -16,20 +19,24 @@
 (function (root) {
   'use strict';
   var A = root.VUAccount, W = root.VUCore && root.VUCore.WatchlistView, Id = root.VUCore && root.VUCore.Identity;
+  var U = root.VUUI, T = root.VUToday, Chart = root.VUChart;
+  // Beliebte Kuerzel fuer den Leerzustand: feste Liste, keine Empfehlung (Mockup E08-b).
+  var POPULAR = ['NVDA', 'AAPL', 'MSFT', 'AMZN', 'GOOGL', 'META'];
   var ICONS = '/assets/product-icons.svg#';
   var SHOWN = 12;
 
   // Produktwelten (Reihenfolge wie die Willkommensseite; nur freigegebene Welten).
   var SHORTCUTS = [
-    {id: 'discover', name: 'Discover', text: 'Märkte', href: '/discover/#/'},
-    {id: 'quant', name: 'Quant', text: 'Faktoren', href: '/quant/'},
-    {id: 'fundamental', name: 'Fundamental', text: 'Kennzahlen', href: '/fundamental/#/'},
-    {id: 'technical', name: 'Technical', text: 'Charts', href: '/technical/#/'},
-    {id: 'screener', name: 'Screener', text: 'Aktien finden', href: '/screener/'},
-    {id: 'supertrader', name: 'Supertrader', text: 'Methoden', href: '/supertrader/'}
+    {id: 'discover', name: 'Discover', text: 'Aktien entdecken', href: '/discover/#/'},
+    {id: 'quant', name: 'Quant', text: 'Faktoren je Aktie', href: '/quant/'},
+    {id: 'fundamental', name: 'Fundamental', text: 'Zahlen aus SEC-Berichten', href: '/fundamental/#/'},
+    {id: 'technical', name: 'Technical', text: 'Charts und Muster', href: '/technical/#/'},
+    {id: 'screener', name: 'Screener', text: 'Eigene Filter', href: '/screener/'},
+    {id: 'supertrader', name: 'Supertrader', text: 'Methoden der Profis', href: '/supertrader/'}
   ];
   // Lokale Listen: Produkt -> eigene Listenansicht der Welt.
   var LOCAL_VIEWS = {'Discover': '/discover/#/watchlist', 'Quant': '/quant/#/aktien', 'Quant-Watchlist': '/quant/#/aktien'};
+  var LOCAL_ICONS = {'Discover': 'discover', 'Quant': 'quant', 'Quant-Watchlist': 'quant', 'Technical': 'technical', 'Screener': 'screener'};
   var EUROPE_KEY = 'vu.core.europe.watchlist.v1';
   // Bevorzugtes Ziel je Aktie (Adressregel aus core/stock-context.js, geliefert in view.links).
   var LINK_ORDER = ['discover', 'fundamental', 'quant', 'technical'];
@@ -53,12 +60,6 @@
     use.setAttribute('href', ICONS + id); svg.appendChild(use);
     return svg;
   }
-  function removeIcon() {
-    var ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'), p = document.createElementNS(ns, 'path');
-    svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true');
-    p.setAttribute('d', 'M6 3h12v18l-6-4-6 4z'); svg.appendChild(p);
-    return svg;
-  }
   function notice(text, kind, action) {
     var box = $('ka-status');
     box.textContent = text || '';
@@ -71,6 +72,12 @@
     }
   }
   function go(path) { root.location.assign(path); }
+  // Einzige innerHTML-Stelle: nur Markup aus assets/vu-ui.js (VUUI maskiert jede Eingabe) bzw. VUChart.sparkline (nur Zahlen).
+  function markup(node, html) { node.innerHTML = html; return node; }
+  function cleanName(n) { return String(n || '').replace(/,? (Inc|Corp|Corporation|Ltd|Limited|plc|N\.V\.|S\.A\.|AG|SE|Holdings?|Co)\.?$/i, '').replace(/ Class [A-Z]$/, '').trim(); }
+  var DAYS = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+  function weekday(iso) { var d = new Date(String(iso).slice(0, 10) + 'T12:00:00Z'); return isNaN(d) ? '' : DAYS[d.getUTCDay()]; }
+  function fmtLong(iso) { var d = new Date(String(iso).slice(0, 10) + 'T12:00:00Z'); return isNaN(d) ? '' : d.toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC'}); }
   function fetchJson(path) {
     return fetch(path, {cache: 'default', credentials: 'omit'}).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status); return r.json(); });
   }
@@ -89,7 +96,7 @@
   function forgetButtonCache() { try { sessionStorage.removeItem('vu-watchlist-ids-v1'); } catch (e) { /* leer */ } }
 
   // ------------------------------------------------------------ Zustand
-  var ctx = {me: null, items: [], limits: null, ix: null, meta: null, names: null, summary: 'loading'};
+  var ctx = {me: null, items: [], limits: null, ix: null, meta: null, names: null, summary: 'loading', moves: {}, sort: 'own'};
 
   function ensureNames() {
     if (!ctx.names) ctx.names = fetchJson(W.PATHS.names).then(function (d) { return W.index(d); }, function () { ctx.names = null; return null; });
@@ -108,7 +115,16 @@
     var keys = ctx.items.map(function (i) { return i.ticker && Id.normalizeTicker(i.ticker) ? Id.shardKey(i.ticker) : null; }).filter(Boolean);
     if (!keys.length) { ctx.summary = 'ok'; return Promise.resolve(); }
     return W.load(fetchJson, keys, ctx.meta).then(function (r) { ctx.meta = r.meta; ctx.ix = W.index(r.doc); ctx.summary = 'ok'; })
-      .catch(function () { ctx.ix = null; ctx.summary = 'missing'; });
+      .catch(function () { ctx.ix = null; ctx.summary = 'missing'; })
+      .then(loadMoves);
+  }
+  // Tagesbewegung und Mini-Chart je Aktie (today.js); fehlt eine Reihe, bleibt nur diese Bewegung leer.
+  function loadMoves() {
+    if (!T || !ctx.ix) return Promise.resolve();
+    var views = ctx.items.map(viewOf).slice(0, SHOWN);
+    return T.load(fetchJson, Id, views, SHOWN).then(function (moves) {
+      views.forEach(function (v, k) { ctx.moves[v.instrumentId] = moves[k]; });
+    });
   }
   function viewOf(item) {
     if (ctx.ix) return W.view(ctx.ix, item, new Date());
@@ -134,29 +150,37 @@
     var plan = (me.entitlements && me.entitlements.plan_id) || 'free', limit = ctx.limits && ctx.limits.items;
     $('md-plan').textContent = ({free: 'Free', plus: 'Plus', pro: 'Pro'}[plan] || plan) + ' · ' + ctx.items.length + (limit ? ' von ' + limit : '');
     $('md-plan').hidden = false;
-    $('md-sub').hidden = false;
   }});
 
   MODULES.push({id: 'watchlist', render: function () {
     var list = $('md-rows'), all = ctx.items.map(viewOf);
+    all.forEach(function (v) { var m = ctx.moves[v.instrumentId] || {}; v.pct = typeof m.pct === 'number' ? m.pct : null; v.spark = m.values || []; });
     list.textContent = '';
-    var limit = ctx.limits && ctx.limits.items;
-    $('md-watch-count').textContent = all.length ? String(all.length) + (limit ? ' / ' + limit : '') : '';
     $('md-watch-empty').hidden = all.length > 0;
     $('md-watch-all').hidden = !all.length;
     $('md-watch-fine').hidden = !all.length;
-    all.slice(0, SHOWN).forEach(function (v) { list.appendChild(row(v)); });
-    // Schwarze Tageskarte: Anzahl, Schlussdatum, Kürzel. Eine Tagesbewegung liefert die Watchlist-Übersicht
-    // (core/watchlist-view.js) heute nicht - deshalb steht hier keine „im Plus“-Zahl.
+    $('md-help').hidden = !all.length;
+    $('md-sort').hidden = all.length < 2;
+    T.sortRows(all, ctx.sort).slice(0, SHOWN).forEach(function (v) { list.appendChild(row(v)); });
+    // Schwarze Tageskarte (Mockup E08): Anzahl im Plus, groesste Bewegung, Kuerzel mit Bewegung.
     var priced = all.filter(function (v) { return v.price && v.price.date; }), day = $('md-day');
     day.hidden = !all.length;
     if (all.length) {
-      var last = priced.map(function (v) { return v.price.date; }).sort().pop();
-      $('md-day-date').textContent = last ? 'Schluss ' + fmtDate(last) : 'Noch kein Schlusskurs';
-      $('md-day-n').textContent = String(all.length);
-      $('md-day-unit').textContent = all.length === 1 ? 'Aktie' : 'Aktien';
+      var last = priced.map(function (v) { return v.price.date; }).sort().pop(), sum = T.summary(all.slice(0, SHOWN));
+      $('md-day-date').textContent = last ? weekday(last) + ', Schluss ' + fmtLong(last) : 'Noch kein Schlusskurs';
+      if (sum.measured) {
+        $('md-day-n').textContent = sum.up + ' von ' + sum.measured;
+        $('md-day-unit').textContent = 'im Plus';
+        $('md-day-sub').textContent = sum.biggest ? 'Größte Bewegung: ' + sum.biggest.ticker + ' ' + U.pct(sum.biggest.pct) : '';
+      } else {
+        $('md-day-n').textContent = String(all.length);
+        $('md-day-unit').textContent = all.length === 1 ? 'Aktie' : 'Aktien';
+        $('md-day-sub').textContent = 'Die Tagesbewegung ist gerade nicht verfügbar.';
+      }
       var chips = $('md-day-chips'); chips.textContent = '';
-      all.slice(0, 6).forEach(function (v) { chips.appendChild(el('li', {text: v.ticker || '–'})); });
+      all.slice(0, 6).forEach(function (v) {
+        chips.appendChild(el('li', {className: typeof v.pct === 'number' && v.pct > 0 ? 'is-up' : ''}, [el('b', {text: v.ticker || '–'}), el('span', {text: typeof v.pct === 'number' ? U.pct(v.pct) : '–'})]));
+      });
     }
     if (all.length > SHOWN) {
       list.appendChild(el('li', {className: 'md-row md-row--more'}, [el('a', {className: 'ka-link', href: '/konto/watchlist/',
@@ -164,28 +188,51 @@
     }
   }});
 
+  /* C10 Aktienzeile (VUUI.stockRow) mit Mini-Chart (C06 klein) und Bewegung (C07).
+     Nach links wischen legt „Entfernen“ frei; der Knopf ist auch per Tastatur erreichbar. */
   function row(v) {
-    var href = stockHref(v), price = v.price && v.price.state !== 'UNAVAILABLE' ? fmtPrice(v.price) : null;
-    var main = el(href ? 'a' : 'div', {className: 'md-row-main', href: href || null}, [
-      el('span', {className: 'md-ticker', text: v.ticker || '–', 'aria-hidden': 'true'}),
-      el('span', {className: 'md-name'}, [el('b', {text: v.name || v.ticker || 'Unbekannte Aktie'}),
-        el('small', {text: [v.ticker, v.exchange].filter(Boolean).join(' · ')})]),
-      el('span', {className: 'md-price'}, price ? [el('b', {text: price}), el('small', {text: (v.price.state === 'STALE' ? 'veraltet · ' : '') + fmtDate(v.price.date)})]
-        : [el('small', {text: v.identity && v.identity.reasonText ? v.identity.reasonText : 'kein Kurs'})])
-    ]);
-    var remove = el('button', {className: 'md-remove', type: 'button', 'aria-label': (v.ticker || 'Aktie') + ' aus der Watchlist entfernen', title: 'Entfernen'}, [removeIcon()]);
+    var href = stockHref(v), priced = v.price && v.price.state !== 'UNAVAILABLE' && typeof v.price.close === 'number';
+    var sub = v.identity && v.identity.reasonText ? v.identity.reasonText
+      : priced ? [v.ticker, v.exchange, v.price.state === 'STALE' ? 'veraltet · ' + fmtDate(v.price.date) : ''].filter(Boolean).join(' · ') : 'kein Kurs';
+    var html = U.stockRow({ticker: v.ticker || '–', name: cleanName(v.name) || v.ticker || 'Unbekannte Aktie', sub: sub, href: href || null,
+      chart: Chart && v.spark && v.spark.length > 1 ? Chart.sparkline(v.spark) : '', price: priced ? v.price.close : null,
+      currency: priced ? v.price.currency : null, changePct: v.pct, noPrice: !priced});
+    var li = el('li', {className: 'md-row'}), slide = markup(el('div', {className: 'md-slide'}), html);
+    var remove = el('button', {className: 'md-remove', type: 'button', 'aria-label': (v.ticker || 'Aktie') + ' aus der Watchlist entfernen', text: 'Entfernen'});
     remove.addEventListener('click', function () { removeItem(v, remove); });
-    return el('li', {className: 'md-row'}, [main, remove]);
+    li.appendChild(remove); li.appendChild(slide);
+    swipe(li, slide);
+    return li;
+  }
+  function swipe(li, slide) {
+    var x0 = null, y0 = 0, dx = 0, open = false;
+    slide.addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse') return; x0 = e.clientX; y0 = e.clientY; dx = 0; });
+    slide.addEventListener('pointermove', function (e) {
+      if (x0 === null) return;
+      dx = e.clientX - x0;
+      if (Math.abs(e.clientY - y0) > 24 && Math.abs(dx) < 24) { x0 = null; return; }
+      if (dx < -6 || open) slide.style.transform = 'translateX(' + Math.max(-104, Math.min(0, (open ? -96 : 0) + dx)) + 'px)';
+    });
+    function end() {
+      if (x0 === null) return;
+      x0 = null;
+      open = open ? dx < 40 : dx < -48;
+      li.classList.toggle('is-open', open);
+      slide.style.transform = '';
+    }
+    slide.addEventListener('pointerup', end);
+    slide.addEventListener('pointercancel', end);
+    slide.addEventListener('click', function (e) { if (open || Math.abs(dx) > 8) { e.preventDefault(); if (open && Math.abs(dx) < 8) { open = false; li.classList.remove('is-open'); } } }, true);
   }
 
   function removeItem(v, btn) {
     btn.disabled = true;
-    A.post('/v1/watchlist/items/remove', {instrumentId: v.instrumentId}).then(function (r) {
+    return A.post('/v1/watchlist/items/remove', {instrumentId: v.instrumentId}).then(function (r) {
       btn.disabled = false;
       if (!r.ok) return notice(A.message(r.state), 'error');
       ctx.items = ctx.items.filter(function (i) { return i.instrumentId !== v.instrumentId; });
       forgetButtonCache();
-      render(['watchlist', 'local']);
+      render(['greeting', 'watchlist', 'local']);
       notice((v.ticker || 'Aktie') + ' entfernt.', 'ok', {label: 'Rückgängig', run: function () { addItem({instrumentId: v.instrumentId, ticker: v.ticker}); }});
     });
   }
@@ -194,9 +241,38 @@
       if (!r.ok) return notice(A.message(r.state), 'error');
       if (input) { input.value = ''; $('md-results').textContent = ''; $('md-results').hidden = true; input.setAttribute('aria-expanded', 'false'); }
       notice(r.data.state === 'ALREADY_PRESENT' ? hit.ticker + ' ist bereits auf deiner Watchlist.' : hit.ticker + ' hinzugefügt.', 'ok');
-      return loadItems().then(loadSummary).then(function () { render(['watchlist', 'local']); });
+      return loadItems().then(loadSummary).then(function () { render(['greeting', 'watchlist', 'local']); });
     });
   }
+
+  // Leerzustand: beliebte Kuerzel als Chips, ein Tipp nimmt sie auf (gleicher Weg wie die Suche).
+  MODULES.push({id: 'popular', once: true, render: function () {
+    var host = $('md-popular');
+    host.textContent = '';
+    POPULAR.forEach(function (t) {
+      var b = el('button', {className: 'vu-chip', type: 'button', 'aria-label': t + ' zur Watchlist hinzufügen', text: '+ ' + t});
+      b.addEventListener('click', function () {
+        b.disabled = true;
+        ensureNames().then(function (names) {
+          var id = names && names.resolveTicker(t);
+          if (!id) { b.disabled = false; return notice('Die Suche ist gerade nicht verfügbar.', 'info'); }
+          return addItem({instrumentId: id, ticker: t});
+        });
+      });
+      host.appendChild(b);
+    });
+  }});
+
+  MODULES.push({id: 'sort', once: true, render: function () {
+    var bar = $('md-sort');
+    bar.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-sort]');
+      if (!b) return;
+      ctx.sort = b.getAttribute('data-sort');
+      [].forEach.call(bar.querySelectorAll('[data-sort]'), function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      render(['watchlist']);
+    });
+  }});
 
   MODULES.push({id: 'add', once: true, render: function () {
     var input = $('md-add'), out = $('md-results');
@@ -227,58 +303,56 @@
     });
   }});
 
-  /* Lokale Beobachten-Listen der Produktwelten: nur lesen, nichts loeschen. Was schon im Konto steht, zaehlt nicht als offen. */
+  /* Lokale Beobachten-Listen der Produktwelten: nur lesen, nichts loeschen. Was schon im Konto steht, zaehlt nicht als offen.
+     Platz 2 „Gespeichert“ (Mockup E08-c): je Liste eine Karte mit „Übernehmen“; Europa wird nur gezaehlt. */
   MODULES.push({id: 'local', render: function () {
-    var box = $('md-local');
+    var box = $('md-local'), ul = $('md-local-sources'), text = $('md-local-text');
     var legacy = W.legacyTickers(function (k) { return root.localStorage.getItem(k); });
     var europe = 0;
     try { var e = JSON.parse(root.localStorage.getItem(EUROPE_KEY) || '[]'); europe = Array.isArray(e) ? e.length : 0; } catch (err) { europe = 0; }
-    if (!legacy.length && !europe) { box.hidden = true; return; }
-    var counts = {};
-    legacy.forEach(function (l) { l.sources.forEach(function (s) { counts[s] = (counts[s] || 0) + 1; }); });
-    var ul = $('md-local-sources');
+    var bySource = {};
+    legacy.forEach(function (l) { l.sources.forEach(function (s) { (bySource[s] = bySource[s] || []).push(l); }); });
+    var names = Object.keys(bySource), lists = names.length + (europe ? 1 : 0);
+    $('md-local-card-title').textContent = lists ? lists + (lists === 1 ? ' Liste' : ' Listen') + ' auf diesem Gerät' : 'Auf diesem Gerät gemerkt';
     ul.textContent = '';
-    Object.keys(counts).forEach(function (s) {
-      ul.appendChild(el('li', {}, [el('a', {className: 'md-source', href: LOCAL_VIEWS[s] || '/discover/#/watchlist'},
-        [el('b', {text: s}), el('span', {text: counts[s] + ' Aktie' + (counts[s] === 1 ? '' : 'n')})])]));
-    });
-    if (europe) ul.appendChild(el('li', {}, [el('a', {className: 'md-source', href: '/discover/#/watchlist'},
-      [el('b', {text: 'Discover Europa'}), el('span', {text: europe + ' Titel · nur auf diesem Gerät'})])]));
     box.hidden = false;
-    var text = $('md-local-text'), actions = $('md-local-actions');
-    if (!legacy.length || ctx.summary !== 'ok') {
-      text.textContent = 'Diese Listen liegen nur in diesem Browser.';
-      actions.hidden = true;
-      return;
-    }
+    if (!lists) { text.textContent = 'Auf diesem Gerät ist nichts gemerkt. Was du in Discover oder Quant beobachtest, erscheint hier.'; return; }
+    text.textContent = 'Diese Listen liegen nur in diesem Browser. Übernommen sind sie auf jedem Gerät da; die Listen hier bleiben unverändert.';
+    names.forEach(function (s) {
+      var tickers = bySource[s].map(function (l) { return l.ticker; });
+      var go = el('button', {className: 'vu-btn vu-btn--sm md-take', type: 'button', text: 'Übernehmen', hidden: ctx.summary !== 'ok'});
+      var li = el('li', {className: 'md-source'}, [
+        markup(el('span', {className: 'md-source-icon'}), U.hud(LOCAL_ICONS[s] || 'discover', 44)),
+        el('a', {className: 'md-source-text', href: LOCAL_VIEWS[s] || '/discover/#/watchlist'}, [el('b', {text: s + '-Liste'}),
+          el('span', {text: tickers.slice(0, 4).join(', ') + (tickers.length > 4 ? ' und ' + (tickers.length - 4) + ' weitere' : '')})]), go]);
+      go.addEventListener('click', function () { take(bySource[s], go); });
+      ul.appendChild(li);
+    });
+    if (europe) ul.appendChild(el('li', {className: 'md-source md-source--line'}, [
+      markup(el('span', {}), U.verdict('none', 'Europa')),
+      el('span', {className: 'md-source-text'}, [el('b', {text: 'Europa-Liste: ' + europe + ' Titel'}), el('span', {text: 'wird nur gezählt, Übernahme folgt.'})])]));
+  }});
+  function take(legacy, btn) {
+    btn.disabled = true;
     ensureNames().then(function (names) {
-      if (!names) { text.textContent = 'Diese Listen liegen nur in diesem Browser.'; actions.hidden = true; return; }
+      if (!names) { btn.disabled = false; return notice('Die Übernahme ist gerade nicht möglich.', 'info'); }
       var plan = W.planMerge(names, legacy, ctx.items.map(function (i) { return i.instrumentId; }));
-      var add = plan.add;
-      text.textContent = add.length
-        ? add.length + ' Aktie' + (add.length === 1 ? '' : 'n') + ' aus diesen Listen ' + (add.length === 1 ? 'steht' : 'stehen') + ' noch nicht in deiner Watchlist. Übernommen sind sie auf jedem Gerät da; die Listen hier bleiben unverändert.'
-        : 'Alles aus diesen Listen steht bereits in deiner Watchlist.' + (europe ? ' Europäische Titel bleiben vorerst nur auf diesem Gerät.' : '');
-      actions.hidden = !add.length;
-      var btn = $('md-local-import'), fresh = btn.cloneNode(true);
-      btn.parentNode.replaceChild(fresh, btn);
-      fresh.addEventListener('click', function () {
-        fresh.disabled = true;
-        A.post('/v1/watchlist/import', {items: add.slice(0, 500)}).then(function (r) {
-          fresh.disabled = false;
-          if (!r.ok) return notice(A.message(r.state), 'error');
-          notice(r.data.added + ' übernommen' + (r.data.limitReached ? ' – die Grenze deines Tarifs ist erreicht.' : '.'), r.data.limitReached ? 'info' : 'ok');
-          return loadItems().then(loadSummary).then(function () { render(['watchlist', 'local']); });
-        });
+      if (!plan.add.length) { btn.disabled = false; return notice('Alles aus dieser Liste steht bereits in deiner Watchlist.', 'info'); }
+      return A.post('/v1/watchlist/import', {items: plan.add.slice(0, 500)}).then(function (r) {
+        btn.disabled = false;
+        if (!r.ok) return notice(A.message(r.state), 'error');
+        notice(r.data.added + ' übernommen' + (r.data.limitReached ? ' – die Grenze deines Tarifs ist erreicht.' : '.'), r.data.limitReached ? 'info' : 'ok');
+        return loadItems().then(loadSummary).then(function () { render(['greeting', 'watchlist', 'local']); });
       });
     });
-  }});
+  }
 
   MODULES.push({id: 'shortcuts', once: true, render: function () {
     var ul = $('md-tiles');
     ul.textContent = '';
     SHORTCUTS.forEach(function (p) {
-      ul.appendChild(el('li', {}, [el('a', {className: 'md-tile', href: p.href, 'data-product': p.id},
-        [el('span', {className: 'md-tile-icon'}, [icon(p.id)]), el('b', {text: p.name}), el('small', {text: p.text})])]));
+      ul.appendChild(el('li', {}, [el('a', {className: 'vu-box md-tile', href: p.href, 'data-product': p.id},
+        [markup(el('span', {className: 'md-tile-icon'}), U.hud(p.id, 38)), el('b', {text: p.name}), el('small', {text: p.text})])]));
     });
   }});
 
@@ -297,7 +371,7 @@
       $('md-loading').hidden = true;
       return notice((A ? A.message('ACCOUNTS_NOT_CONFIGURED') : 'Konten sind nicht verfügbar.') + ' Dein Dashboard steht bereit, sobald Konten freigeschaltet sind.', 'info');
     }
-    if (!W || !Id) { $('md-loading').hidden = true; return notice('Das Dashboard konnte nicht geladen werden.', 'error'); }
+    if (!W || !Id || !U || !T) { $('md-loading').hidden = true; return notice('Das Dashboard konnte nicht geladen werden.', 'error'); }
     A.get('/v1/session').then(function (s) {
       if (!(s.ok && s.data && s.data.authenticated)) return go('/konto/anmelden/?next=' + encodeURIComponent('/mein-dashboard/'));
       return Promise.all([A.get('/v1/me'), loadItems()]).then(function (rs) {
@@ -306,18 +380,11 @@
       }).then(function () {
         $('md-loading').hidden = true;
         $('md-app').hidden = false;
-        $('md-logout').hidden = false;
         if (ctx.summary !== 'ok') notice('Die Kurse sind gerade nicht verfügbar. Deine Watchlist ist gespeichert.', 'info');
         // Offene Pro-Bestellung: dezenter Hinweis, keine Umleitung (die Pro-Bestaetigung hat Vorrang nur direkt nach der Anmeldung).
         if (ctx.me && A.proPending(ctx.me, null)) notice('Deine Pro-Bestellung ist noch offen.', 'info', {label: 'Fortsetzen', run: function () { go(A.PRO_CONFIRM); }});
         render();
       });
-    });
-    $('md-logout').addEventListener('click', function () {
-      this.disabled = true;
-      forgetButtonCache();
-      try { localStorage.removeItem('vu-plan-choice-v1'); } catch (e) { /* leer */ }
-      A.post('/v1/auth/logout').then(function () { go('/konto/anmelden/'); });
     });
   }
 
@@ -326,6 +393,7 @@
     var saved = /^#\/gespeichert/.test(root.location.hash || '');
     document.documentElement.setAttribute('data-md-view', saved ? 'gespeichert' : 'watchlist');
     $('md-hello').textContent = saved ? 'Gespeichert' : 'Watchlist';
+    $('md-eyebrow').textContent = saved ? 'Mein Bereich' : 'Mein Dashboard';
   }
   if (typeof document !== 'undefined') {
     syncView(); root.addEventListener('hashchange', syncView);
