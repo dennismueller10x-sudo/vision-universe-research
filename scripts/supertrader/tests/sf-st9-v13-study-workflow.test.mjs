@@ -223,7 +223,11 @@ test('counter-check: a binary key (rand -out) is red, and -pass file: really sto
   const bin = enc.run.replace('openssl rand -hex 32 > "$W/k.bin"', 'openssl rand -out "$W/k.bin" 32');
   assert.notEqual(bin, enc.run);
   assert.ok(lint(WF.replace(enc.run.split('\n').find((l) => l.includes('rand -hex')).trim(), 'openssl rand -out "$W/k.bin" 32')).includes('DATA_KEY_NOT_HEX_LINE'));
-  const { tmp, W, priv } = encryptLocally(bin);
+  // a random binary key that starts with 0x0a gives an empty passphrase and openssl enc refuses (about 1 in 256 runs):
+  // that is the same defect, the binary key is red either way
+  let enc0;
+  try { enc0 = encryptLocally(bin); } catch (e) { assert.match(String(e.stderr ?? e.message), /Error (reading|getting) password/); return; }
+  const { tmp, W, priv } = enc0;
   const key = execFileSync('openssl', ['pkeyutl', '-decrypt', '-inkey', priv, '-pkeyopt', 'rsa_padding_mode:oaep', '-pkeyopt', 'rsa_oaep_md:sha256', '-in', path.join(W, 'upload', 'k.bin.enc')], { stdio: ['ignore', 'pipe', 'pipe'] });
   assert.equal(key.length, 32);
   assert.doesNotMatch(key.toString('latin1'), HEX_LINE, 'binary data key fails the hex-line check');
