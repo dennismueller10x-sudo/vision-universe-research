@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-signal-intelligence-1.0.0",
- "generatedAt": "2026-11-03T06:00:15.790Z",
- "radarAsOf": "2026-11-02",
- "signalAsOf": "2026-10-30",
- "setupAsOf": "2026-11-02",
+ "generatedAt": "2026-11-04T05:01:37.087Z",
+ "radarAsOf": "2026-11-03",
+ "signalAsOf": "2026-11-06",
+ "setupAsOf": "2026-11-03",
  "measures": {
   "SETUP_BACKTEST_READY": {
    "ready": true,
@@ -15,7 +15,7 @@
     "SETUP_OUTCOMES_NOT_CERTIFIED"
    ],
    "replayTitles": 159,
-   "parity": "3778/3778"
+   "parity": "3929/3929"
   },
   "SIGNAL_BACKTEST_READY": {
    "ready": true,
@@ -26,8 +26,8 @@
    ]
   },
   "SIGNAL_STUDY_SOURCE": {
-   "asOf": "2026-10-30",
-   "generatedAt": "2026-11-03T05:56:42.105Z",
+   "asOf": "2026-11-06",
+   "generatedAt": "2026-11-04T04:58:01.379Z",
    "returnType": "TOTAL_RETURN",
    "studySchemaVersion": "signal-backtest-study-2.0.0",
    "studyEngineVersion": "signal-backtest-2.0.0",
@@ -41,8 +41,8 @@
     "contract": "canonical-total-return-1.0.0",
     "coverage": {
      "unit": "SECURITY_PRICE_SERIES",
-     "titles": 6206,
-     "withTotalReturn": 6067,
+     "titles": 6225,
+     "withTotalReturn": 6086,
      "share": 0.978,
      "minimumShare": 0.95
     }
@@ -53,15 +53,15 @@
     "role": "BENCHMARK_REFERENCE",
     "contract": "benchmark-contract-1.0.0",
     "from": "1993-01-29",
-    "to": "2026-10-30",
-    "weeks": 1661,
+    "to": "2026-11-06",
+    "weeks": 1662,
     "gaps": 0
    },
    "studyBenchmark": {
     "id": "SPY Gesamtrendite (kanonische Historie, BENCHMARK_REFERENCE)",
     "state": "PASS",
     "basis": "TOTAL_RETURN",
-    "asOf": "2026-10-30"
+    "asOf": "2026-11-06"
    }
   },
   "STRATEGY_BACKTEST_READY": {
@@ -93,9 +93,9 @@
   },
   "SIGNALS_WITH_HISTORICAL_EVIDENCE": 5,
   "SIGNAL_TYPES_TOTAL": 15,
-  "RADAR_EVENTS_WITH_BACKTEST": 799,
-  "RADAR_EVENTS_TOTAL": 3055,
-  "WATCHLIST_EVENTS_TRACKABLE": 5570,
+  "RADAR_EVENTS_WITH_BACKTEST": 533,
+  "RADAR_EVENTS_TOTAL": 2399,
+  "WATCHLIST_EVENTS_TRACKABLE": 5574,
   "ALERT_CONTRACT_READY": "PASS",
   "PIT_PASS": "PASS",
   "LOOKAHEAD_PASS": "PASS",
@@ -160,45 +160,45 @@
    "ticker": "NVDA",
    "state": "NO_SETUP",
    "since": "2026-10-30",
-   "durationDays": 3,
+   "durationDays": 4,
    "invalidation": null,
    "next": "Beobachten (1/2)",
    "evidence": "THIN",
    "events": [
-    "TREND_DOWN:LIMITED n=86031"
+    "TREND_UP:LIMITED n=86520"
    ]
   },
   {
    "ticker": "AAPL",
-   "state": "SETUP_FORMING",
-   "since": "2026-10-30",
-   "durationDays": 3,
+   "state": "WATCH",
+   "since": "2026-11-03",
+   "durationDays": 0,
    "invalidation": 296,
-   "next": "Setup bestätigt (1/5)",
+   "next": "Setup entsteht (1/4)",
    "evidence": "BROAD",
    "events": [
-    "STRATEGY_MATCH_LOST:WITHHELD MEMBERSHIP_AND_FACTOR_HISTORY_TOO_SHORT"
+    "SETUP_WEAKENED:WITHHELD SETUP_HISTORY_TOO_SHORT"
    ]
   },
   {
    "ticker": "MSFT",
    "state": "WATCH",
    "since": "2026-09-10",
-   "durationDays": 53,
+   "durationDays": 54,
    "invalidation": 343,
    "next": "Setup entsteht (1/4)",
    "evidence": "BROAD",
    "events": [
-    "EVIDENCE_CHANGED:WITHHELD NOT_A_TRADABLE_EVENT"
+    "FACTOR_CHANGED:WITHHELD FACTOR_HISTORY_TOO_SHORT"
    ]
   },
   {
    "ticker": "JPM",
    "state": "WATCH",
    "since": "2026-09-30",
-   "durationDays": 33,
+   "durationDays": 34,
    "invalidation": 322,
-   "next": "Setup entsteht (1/4)",
+   "next": "Setup entsteht (2/4)",
    "evidence": "BROAD",
    "events": []
   },
@@ -206,19 +206,17 @@
    "ticker": "GOOG",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 53,
+   "durationDays": 54,
    "invalidation": null,
    "next": "Beobachten (1/1)",
    "evidence": "UNAVAILABLE",
-   "events": [
-    "EVIDENCE_CHANGED:WITHHELD NOT_A_TRADABLE_EVENT"
-   ]
+   "events": []
   },
   {
    "ticker": "AMD",
    "state": "NO_SETUP",
    "since": "2026-10-30",
-   "durationDays": 3,
+   "durationDays": 4,
    "invalidation": 425,
    "next": "Beobachten (1/2)",
    "evidence": "THIN",
@@ -228,45 +226,43 @@
    "ticker": "META",
    "state": "NO_SETUP",
    "since": "2026-10-22",
-   "durationDays": 11,
+   "durationDays": 12,
    "invalidation": 526,
    "next": "Beobachten (1/2)",
    "evidence": "WITHHELD",
    "events": [
-    "MOMENTUM_DETERIORATED:LIMITED n=89033",
-    "FACTOR_CHANGED:WITHHELD FACTOR_HISTORY_TOO_SHORT",
-    "EVIDENCE_CHANGED:WITHHELD NOT_A_TRADABLE_EVENT"
+    "MOMENTUM_IMPROVED:LIMITED n=89238"
    ]
   },
   {
    "ticker": "DXPE",
    "state": "NO_SETUP",
    "since": "2026-10-20",
-   "durationDays": 13,
+   "durationDays": 14,
    "invalidation": null,
-   "next": "Beobachten (1/1)",
+   "next": "Beobachten (1/2)",
    "evidence": "BROAD",
-   "events": [
-    "PATTERN_MATCH_NEW:WITHHELD PATTERN_MATCH_HISTORY_TOO_SHORT"
-   ]
+   "events": []
   },
   {
    "ticker": "ABCB",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 53,
+   "durationDays": 54,
    "invalidation": null,
    "next": "Beobachten (1/2)",
-   "evidence": "UNAVAILABLE",
+   "evidence": "BROAD",
    "events": [
-    "TREND_UP:LIMITED n=86431"
+    "TREND_DOWN:LIMITED n=86086",
+    "PATTERN_MATCH_NEW:WITHHELD PATTERN_MATCH_HISTORY_TOO_SHORT",
+    "EVIDENCE_CHANGED:WITHHELD NOT_A_TRADABLE_EVENT"
    ]
   },
   {
    "ticker": "O",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 53,
+   "durationDays": 54,
    "invalidation": null,
    "next": "Beobachten (1/1)",
    "evidence": "UNAVAILABLE",
@@ -276,7 +272,7 @@
    "ticker": "CRWV",
    "state": "NO_SETUP",
    "since": "2026-09-10",
-   "durationDays": 53,
+   "durationDays": 54,
    "invalidation": null,
    "next": "Beobachten (1/1)",
    "evidence": "NONE",

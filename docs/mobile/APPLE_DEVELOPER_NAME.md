@@ -3,7 +3,7 @@
 **Stand:** 03.11.2026 · Reine Dokumentation. Es wurde bei Apple nichts angelegt, nichts beantragt, kein Konto geprüft.
 Kennzeichnung: **[belegt]** steht auf einer Apple-Seite (Link) · **[offen]** weder in Apples Dokumentation gefunden noch von mir geprüft · **[Sie]** nur Sie können das tun.
 
-## 0. Entscheidungen des Owners (Stand nach Freigabe von #1280)
+## 0. Entscheidungen des Owners (Stand 03.11.2026)
 
 1. Das Apple-Entwicklerkonto wird **als Organisation unter der RAM Consulting UG (haftungsbeschränkt)** registriert (entspricht Option A, Einschreibung).
 2. Gewünschter öffentlicher Entwicklername: **„Vision Universe“**.

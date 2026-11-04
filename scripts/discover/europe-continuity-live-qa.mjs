@@ -88,7 +88,7 @@ export async function run(){
       await page.evaluate(()=>location.hash='#/c/EUROPE/all');await page.waitForSelector('.dx-grid .dx-poster');await page.waitForSelector('#v2-main[aria-busy="false"]');
       const inject=async()=>page.addScriptTag({content:'window.__continuityCapture='+captureSvgEvidence.toString()+';window.__continuityValidate='+validateRenderedEvidence.toString()+';'});
       await inject();
-      const identities=await page.evaluate(async()=>{const r=await VUDiscover.europeProduct.browse();if(r.state!=='AVAILABLE')throw Error('EUROPE_CANONICAL_UNIVERSE_REQUIRED');window.__continuityCards=r.data.cards;return r.data.cards.map(c=>({securityId:c.securityId,mic:c.exchange||c.mic||c.europeRef?.mic||'UNKNOWN'}));});
+      const identities=await page.evaluate(async()=>{if(!(window.VUCore&&VUCore.ChartHistory)&&VUDiscover.Lazy)await VUDiscover.Lazy.load('detail');const r=await VUDiscover.europeProduct.browse();if(r.state!=='AVAILABLE')throw Error('EUROPE_CANONICAL_UNIVERSE_REQUIRED');window.__continuityCards=r.data.cards;return r.data.cards.map(c=>({securityId:c.securityId,mic:c.exchange||c.mic||c.europeRef?.mic||'UNKNOWN'}));});
       const published=await page.evaluate(()=>VUDiscover.publicEuropeManifest),admittedCount=published.publication?published.publication.admitted:449;report.admitted=admittedCount;report.blocked=(published.publication?.blocked||[]).map(b=>b.securityId);
       assert.equal(identities.length,admittedCount);const representatives=new Map();
       for(let i=0;i<identities.length;i++){
