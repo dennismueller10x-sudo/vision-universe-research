@@ -410,7 +410,7 @@
       "role": "Licensed normalized identity and unadjusted Close display projection; provider RAW remains private.",
       "producer": "scripts/marketstack/europe-discover-publication.mjs",
       "workflow": "europe-discover-refresh.yml",
-      "schedule": "manuell",
+      "schedule": "werktags 17:47 UTC (18:47 MEZ / 19:47 MESZ), nur mit Repo-Variable EUROPE_REFRESH_SCHEDULE_ENABLED=true; sonst manuell",
       "freshness": {
         "kind": "none"
       },
@@ -422,7 +422,7 @@
       ],
       "knownGaps": [
         "Exact-MIC runtime freshness: lag 0 current, lag 1 delayed, lag 2–3 limited, >3 blocked; the rule-based calendar window is derived from data and run date (core/europe-exchange-calendar.js), expiry still fails closed.",
-        "No Marketstack refresh schedule enabled. Close updates require a manual run of europe-discover-refresh.yml (one /eod request per listing, about 449 reserved credits).",
+        "Daily Marketstack refresh (europe-discover-refresh.yml) runs only while the repository variable EUROPE_REFRESH_SCHEDULE_ENABLED is true; one /eod request per listing except the known-invalid symbols of the last refresh (HTTP 422, kept BLOCKED), cap 600 credits, quota reserve 5,000.",
         "Technical, Quant, SuperTrader and Backtesting remain separately gated."
       ]
     },
