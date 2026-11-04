@@ -77,12 +77,12 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | T04 | Technical · Gespeicherte Suchen | offen |  |  |
 | T05 | Technical · Methodik | offen |  |  |
 | T06 | Technical · NVIDIA im Chart | offen |  |  |
-| F01 | Fundamental · Übersicht | offen |  |  |
-| F02 | Fundamental · Entdecken | offen |  |  |
-| F03 | Fundamental · Rangliste Wachstum | offen |  |  |
-| F04 | Fundamental · Suchen | offen |  |  |
-| F05 | Fundamental · Methodik | offen |  |  |
-| F06 | Fundamental · NVIDIA in Zahlen | offen |  |  |
+| F01 | Fundamental · Übersicht | in Arbeit | #1355 | Fehlerzustand unter den Ranglisten-Karten, wenn das Universum nicht lädt |
+| F02 | Fundamental · Entdecken | in Arbeit | #1355 | Titel „Ranglisten“/„Auswahlen“ statt „Entdecken“ (neuer Leistenplatz); `#/entdecken` leitet weiter |
+| F03 | Fundamental · Rangliste Wachstum | in Arbeit | #1355 | echte Plätze nur im Code geprüft (Universum lokal nicht da), CI prüft |
+| F04 | Fundamental · Suchen | in Arbeit | #1355 | Kopfzeilen-Suche selbst bleibt site-navigation |
+| F05 | Fundamental · Methodik | in Arbeit | #1355 | alter Volltext hinter „Alle Formeln PRO“ |
+| F06 | Fundamental · NVIDIA in Zahlen | in Arbeit | #1355 | Kurschart im Überblick entfällt (Perspektive Chart); „Mehr“ als Chip-Zeile; SEC-Hinweis grau am Ende |
 | W01 | Elliott · Übersicht | offen |  |  |
 | W02 | Elliott · Welle 3 | offen |  |  |
 | W03 | Elliott · Aufwärts | offen |  |  |
@@ -128,6 +128,14 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 ## Laufende Teilaufträge (parallel, je Welt ein PR auf Basis `claude/redesign-quant`)
 
 Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds (H01–H07), Screener (S01–S05), Vorsorge (V01–V10), Supertrader (ST01–ST08, Gate A), Discover (D01–D08), Einstieg und Mein Bereich (E01–E12, übernimmt `neustart/d-startseite` und `neustart/d-mein-bereich`). Zweige `claude/redesign-<welt>`, Nachweisbilder auf `claude/redesign-evidence-<welt>`.
+
+## Gemeinsame Nacharbeit aus den Welt-PRs (ein PR nach allen Berichten)
+
+- `assets/site-navigation.js` Leisten: Fundamental „Ranglisten · Branchen · Methodik“ (`#/ranglisten`, `#/branchen`) samt `core/tests/shell-navigation.test.mjs` und `scripts/quality/shell-browser-qa.mjs`; Technical „Muster“, Elliott „Methodik“, Discover „Swipen“ → `#/swipen`.
+- `core/stock-context.js#parse`: einteilige Fundamental-Routen `#/ranglisten`, `#/branchen`, `#/suche`, `#/entdecken` nicht als Aktie lesen.
+- `scripts/quality/currency-debt-patterns.mjs`: `fundamental` in `SCAN_DIRS`.
+- `VUUI.navcard` mit eigenem Symbol (Fundamental hat lokal nachgebaut).
+- Fundamental-Produktdokument: Urteilsregel F06 in einem Satz (schwächere der beiden Discover-Stufen aus `fundamentals.health`).
 
 ## Nicht möglich / übersprungen
 
