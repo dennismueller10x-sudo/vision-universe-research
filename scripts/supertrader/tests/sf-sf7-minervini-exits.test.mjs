@@ -218,7 +218,7 @@ test('SF7-EXIT-REGISTRY: pre-registered and pinned; one fixed value per paramete
   for (const v of SF7_EXIT_VARIANTS) assert.equal(v.translationDoubt, v.findings.some((f) => cls.find((r) => r.id === f)?.translationDoubt === true), v.id);
 });
 
-test('SF7-EXIT-FINGERPRINTS: the 4.0 research code, its registry, the Turtle engine, SF6-PAPER-2027 1.1.0 and the 7.0 setup variants are unchanged; no pinned file list contains the exit files', async () => {
+test('SF7-EXIT-FINGERPRINTS: the 4.0 research code, its registry, the Turtle engine (1.2.0 pin), SF6-PAPER-2027 1.1.0 / 1.2.0 and the 7.0 setup variants are unchanged; no pinned file list contains the exit files', async () => {
   const { researchCodeSha256 } = await import('../source-faithful/research/run-sf4-lifecycle.mjs');
   const { codeSha256 } = await import('../source-faithful/runner/run-research.mjs');
   const { SF6_PAPER_PROTOCOL, sf6PaperProtocolSha256 } = await import('../source-faithful/completion/sf6-paper-protocol-2027.mjs');
@@ -227,7 +227,11 @@ test('SF7-EXIT-FINGERPRINTS: the 4.0 research code, its registry, the Turtle eng
   const { KK_RESEARCH_FILES } = await import('../source-faithful/research/run-kk-intraday.mjs');
   assert.equal(researchCodeSha256(), 'c834b227045b758f78dcf417f188cbf663f4153433395113e06ee81e54b7f30f');
   assert.equal(variantRegistrySha256(), 'f13ea35016c5e7e71f7ee3b266cb60812cf24b7efa13eae190983c4fe44cbe75');
-  assert.equal(codeSha256(), '89fbcf864a57041379bc62d4af64cfda7c5601aaaf1c08b38fd6b91b6472ef24');
+  // Turtle engine: 89fbcf86… (1.1.0) -> 5e6683d4… (SF6-PAPER-2027 1.2.0, forward window in validation/lib.mjs, references
+  // identical by R1-R6 on 2026-11-03/04); the exit files are still not part of it
+  assert.equal(codeSha256(), '5e6683d4ebf4f6c4257b0bfbc4a3fcb6608973ddb0876a0ef077bf9d4cccecec');
+  const { sf6PaperProtocol120Sha256 } = await import('../source-faithful/completion/sf6-paper-protocol-2027-v1_2_0.mjs');
+  assert.equal(sf6PaperProtocol120Sha256(), 'fde5283e927eb52be2f23b76c3791f6ab31b5e60a721e60093708f05e669e5cc');
   assert.equal(sf6PaperProtocolSha256(), 'e623b336cd24a49e04b4588ab5b06c06d6226a323b368d4c659f2d7ce4b64f66');
   assert.equal(SF6_PAPER_PROTOCOL.version, '1.1.0'); assert.equal(SF6_PAPER_PROTOCOL.references.pinned.sf5VariantRegistrySha256, sf5VariantRegistrySha256());
   assert.equal(sf7VariantRegistrySha256('sf7-minervini-1.3.0'), 'ce98c24feb40be85deba857d27a6a44a1aaec168570e63e114f217513385bd7e', 'the 7.0 setup variants ALT-SEPA-* are unchanged (content of the 1.3.0 registry; 1.4.0 changes only the version string)');

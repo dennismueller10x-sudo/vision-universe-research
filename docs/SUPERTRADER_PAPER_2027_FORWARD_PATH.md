@@ -109,6 +109,8 @@ R1 bis R3 entsprechen den beiden Läufen von 1.1.0 (E7-3) und decken zusätzlich
 
 ## 6. Folge-Commit nach den Läufen (vor dem 01.01.2027)
 
+**Erledigt am 04.11.2026:** R6 lief als 41864439485 (öffentlicher Block bis auf die Belegfelder `runId`, `commit`, `engineCodeSha256` und `codeVersionChanged` identisch mit 40228395395). Damit sind die Schritte 1 bis 6 umgesetzt: 1.2.0 ist festgeschrieben (`fde5283e927e…`, `PREPARED_NOT_ACTIVE`), die Aktivierung nennt diesen Fingerabdruck, und der Schalter bleibt aus. Entscheidung zu Schritt 6 (Neustart-Regel: Claude entscheidet nach Empfehlung): Die ST9-V13-Registrierung bekommt den Nachtrag 1.0.1. Er ändert nur die beiden Datei-Hashes, R1 bis R6 belegen die Referenzgleichheit, und 1.0.0 bleibt byte-gleich.
+
 1. In `sf6-paper-protocol-2027-v1_2_0.mjs` werden `referenceIdentity` mit den Lauf-IDs gefüllt (`turtle`, `minervini`, `sf5`, `restoreDev`, `restoreHoldout`, `kk`; `status: 'SHOWN'`) sowie `fixedOn` und `status: 'PREPARED_NOT_ACTIVE'` gesetzt.
 2. `ACTIVATED_PROTOCOL_SHA256` bekommt den neuen 1.2.0-Fingerabdruck. Der Test `PAPER-2027-SWITCH` erzwingt das.
 3. In `sf-sf6-readiness.test.mjs` wird `SF6-PAPER-PROTOCOL-2027` auf die aktuelle Version umgestellt: 1.2.0-Fingerabdruck pinnen, Pins gegen den Code prüfen. Der 1.1.0-Fingerabdruck bleibt als ersetzte Version gepinnt.

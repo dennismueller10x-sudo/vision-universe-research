@@ -11,9 +11,9 @@
  * PAPER-2027-FWD-DEV-HOLDOUT-IDENTITY) and must be shown identical again on the frozen snapshot by the owner runs below
  * (as 1.1.0 did, E7-3).
  *
- * Status DRAFT_PENDING_REFERENCE_IDENTITY: the new pin is PREPARED, not fixed. referenceIdentity is filled from the
- * owner runs in a follow-up commit (before 2027-01-01); only then the status becomes PREPARED_NOT_ACTIVE, the fingerprint
- * of this version is pinned and the activation may name it. Until then the guard reports REFERENCE_IDENTITY_NOT_SHOWN.
+ * Status PREPARED_NOT_ACTIVE (fixed 2026-11-04): referenceIdentity shown by the runs R1-R6 (identical public blocks on the
+ * frozen DEV snapshot, two exact restores each of DEV and HOLDOUT); the fingerprint of this version is pinned in
+ * sf-sf6-readiness and named by the activation record. The switch itself stays off until its own commit.
  */
 import crypto from 'node:crypto';
 import { SF6_PAPER_PROTOCOL as V110, sf6PaperProtocolSha256 as v110Sha256 } from './sf6-paper-protocol-2027.mjs';
@@ -26,7 +26,7 @@ const DISPATCH = '.github/workflows/supertrader-validation.yml (workflow_dispatc
 const SNAPSHOT_WF = '.github/workflows/supertrader-research-snapshot.yml (commit marker on the 1.2.0 branch)';
 
 export const SF6_PAPER_PROTOCOL_1_2_0 = Object.freeze({
-  id: 'SF6-PAPER-2027', version: '1.2.0', fixedOn: null, preparedOn: '2026-11-03', ownerDecision: 'E2; E7-3 (1.1.0); FP-ST-02 V5 (1.2.0, pending)',
+  id: 'SF6-PAPER-2027', version: '1.2.0', fixedOn: '2026-11-04', preparedOn: '2026-11-03', ownerDecision: 'E2; E7-3 (1.1.0); FP-ST-02 V5 (1.2.0) entschieden 04.11.2026, Owner-Regel Neustart (docs/PLAN_NEUSTART_2026-11.md)',
   supersedes: Object.freeze({ version: V110.version, fixedOn: V110.fixedOn, sha256: SUPERSEDED_1_1_0_SHA256, status: 'SUPERSEDED_BY_1_2_0_NEVER_ACTIVATED', pinned: Object.freeze({ turtleEngineCodeSha256: V110.references.pinned.turtleEngineCodeSha256 }), why: 'forward data path: validation/lib.mjs window PAPER_2027 (file of the Turtle engine fingerprint); references unchanged' }),
   window: Object.freeze({ ...V110.window, firstSession: '2027-01-04' }),
   activation: V110.activation,
@@ -35,7 +35,7 @@ export const SF6_PAPER_PROTOCOL_1_2_0 = Object.freeze({
     pinned: Object.freeze({ ...V110.references.pinned, turtleEngineCodeSha256: '5e6683d4ebf4f6c4257b0bfbc4a3fcb6608973ddb0876a0ef077bf9d4cccecec' }),
     unchangedPins: Object.freeze(['minerviniResearchCodeSha256', 'minerviniVariantRegistrySha256', 'sf5VariantRegistrySha256', 'accounting', 'portfolioPolicy']),
     referenceIdentity: Object.freeze({
-      status: 'PENDING_OWNER_RUNS',
+      status: 'SHOWN',
       snapshotId: SNAPSHOT_DEV,
       basis: '1.1.0 referenceIdentity (Turtle 40170829944, Minervini 40170832007) and the sf5 AUTHORITATIVE run 40228392651',
       requiredRuns: Object.freeze([
@@ -46,7 +46,7 @@ export const SF6_PAPER_PROTOCOL_1_2_0 = Object.freeze({
         Object.freeze({ id: 'R5_RESTORE_HOLDOUT', workflow: SNAPSHOT_WF, marker: '[supertrader-snapshot:restore-holdout]', comparedWith: 'SNAPSHOT-POINTER-HOLDOUT.json restores', expect: 'two independent restores of the holdout snapshot: datasetVerified EXACT and replayVerified EXACT with codeVersionChanged true' }),
         Object.freeze({ id: 'R6_KK_CACHE', workflow: DISPATCH, inputs: Object.freeze({ mode: 'kk-intraday-cache', snapshot: SNAPSHOT_DEV, accounting: 'research-v1', allow_code_version_change: true }), comparedWith: '40228395395', expect: '0 requests (cache only); every public block identical; receipt engineCodeSha256 = the 1.2.0 turtleEngineCodeSha256 (KK_SNAPSHOT_RUNS AUTHORITATIVE carries the engine hash; not a SF6 reference, needed for SF-KK-READINESS)' }),
       ]),
-      turtle: null, minervini: null, sf5: null, restoreDev: null, restoreHoldout: null, kk: null,
+      turtle: '41601470302', minervini: '41604774311', sf5: '41608045341', restoreDev: '41627645169', restoreHoldout: '41628817276', kk: '41864439485',
     }),
     notInScope: V110.references.notInScope,
   }),
@@ -62,7 +62,7 @@ export const SF6_PAPER_PROTOCOL_1_2_0 = Object.freeze({
   }),
   recording: V110.recording,
   evaluation: V110.evaluation,
-  status: 'DRAFT_PENDING_REFERENCE_IDENTITY',
+  status: 'PREPARED_NOT_ACTIVE',
 });
 
 export function sf6PaperProtocol120Sha256() { return crypto.createHash('sha256').update(JSON.stringify(SF6_PAPER_PROTOCOL_1_2_0)).digest('hex'); }

@@ -16,16 +16,16 @@ import { SF6_PAPER_PROTOCOL_VERSIONS, currentPaperProtocol, referenceIdentitySho
 
 // 1.2.0 (FP-ST-02 V5, docs/SUPERTRADER_PAPER_2027_FORWARD_PATH.md): the guard knows every protocol version
 // (SF6_PAPER_PROTOCOL_VERSIONS) and accepts only the current one (1.2.0 when present). An activation naming 1.1.0 is
-// PROTOCOL_SUPERSEDED; while 1.2.0 has no shown reference identity the guard reports REFERENCE_IDENTITY_NOT_SHOWN.
+// PROTOCOL_SUPERSEDED; a version without shown reference identity would be REFERENCE_IDENTITY_NOT_SHOWN (1.2.0: shown, R1-R6).
 const CURRENT = currentPaperProtocol(), SF6_PAPER_PROTOCOL = CURRENT.protocol, sf6PaperProtocolSha256 = CURRENT.sha256;
 
 export const ACTIVATION_SCHEMA = 'sf6-paper-activation-1.0.0';
 /**
- * The protocol fingerprint this activation is for: 1.2.0 in its current (draft) form. Filling in the owner runs changes
- * the 1.2.0 fingerprint; this constant is then updated in the same commit (test PAPER-2027-SWITCH fails otherwise).
+ * The protocol fingerprint this activation is for: 1.2.0 as fixed on 2026-11-04 (reference identity R1-R6 shown). A change
+ * of 1.2.0 changes this constant in the same commit (test PAPER-2027-SWITCH fails otherwise).
  * 1.1.0 (e623b336…) is superseded and never activated.
  */
-export const ACTIVATED_PROTOCOL_SHA256 = '1c23911cb771bf254271f3f1f625141fe190d89f376cfe863a8c6e4ef1f3b875';
+export const ACTIVATED_PROTOCOL_SHA256 = 'fde5283e927eb52be2f23b76c3791f6ab31b5e60a721e60093708f05e669e5cc';
 
 /** Allowed answers of the owner decisions (docs/SUPERTRADER_PAPER_2027_ACTIVATION.md, section "Entscheidungen"). */
 export const DECISION_OPTIONS = Object.freeze({

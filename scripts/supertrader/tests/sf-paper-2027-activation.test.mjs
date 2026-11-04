@@ -48,13 +48,14 @@ test('PAPER-2027-GUARD: eingeschaltet nur mit Freigabe, allen Entscheidungen, Da
   const st = (a, today = '2027-01-05', pins = pinsOk) => activationState({ today, activation: a, pins });
   const missing = await st(on({ approval: null, decisions: { sampleCount: null, retention: null, dataSource: null } }));
   assert.equal(missing.state, 'BLOCKED');
-  assert.deepEqual(missing.reasons, ['REFERENCE_IDENTITY_NOT_SHOWN', 'OWNER_APPROVAL_MISSING', 'DECISION_MISSING:sampleCount', 'DECISION_MISSING:retention', 'DECISION_MISSING:dataSource']);
+  assert.deepEqual(missing.reasons, ['OWNER_APPROVAL_MISSING', 'DECISION_MISSING:sampleCount', 'DECISION_MISSING:retention', 'DECISION_MISSING:dataSource']);
   assert.ok((await st(on({ approval: { by: 'owner', on: '2027-01-02', pr: 1 } }))).reasons.includes('APPROVAL_AFTER_WINDOW_START'));
   assert.ok((await st(on({ decisions: { sampleCount: 'ANY', retention: 'RAISE_CAP_TO_4_FORWARD_GENERATION', dataSource: 'RESEARCH_FORWARD_WINDOW' } }))).reasons.includes('DECISION_INVALID:sampleCount'));
-  // 1.2.0: the forward data path exists; switched on, the guard stays red until the reference identity of 1.2.0 is shown
-  // by the owner runs (never a silent skip)
+  // 1.2.0: the forward data path exists and the reference identity is shown (R1-R6); switched on with approval and all
+  // decisions the guard is ACTIVE
   assert.equal(FORWARD_DATA_PATHS.RESEARCH_FORWARD_WINDOW.status, 'IMPLEMENTED');
-  assert.deepEqual((await st(on())).reasons, ['REFERENCE_IDENTITY_NOT_SHOWN']);
+  assert.deepEqual((await st(on())).reasons, []);
+  assert.equal((await st(on())).state, 'ACTIVE');
   assert.ok((await st(on(), '2027-01-05', { pass: false, rows: [{ pin: 'turtleEngineCodeSha256', equal: false }] })).reasons.includes('PIN_MISMATCH:turtleEngineCodeSha256'));
   assert.ok((await st(on({ protocol: { ...SF6_PAPER_ACTIVATION.protocol, sha256: '0'.repeat(64) } }))).reasons.includes('PROTOCOL_FINGERPRINT_MISMATCH'));
 });

@@ -181,26 +181,27 @@ test('PAPER-2027-FWD-PROTOCOL: 1.2.0 neben 1.1.0 (1.1.0 bytegleich), nur der Tur
   for (const k of ['window', 'recording', 'evaluation', 'activation']) for (const [f, v] of Object.entries(SF6_PAPER_PROTOCOL[k])) assert.deepEqual(P[k][f], v, `${k}.${f} wie 1.1.0`);
   assert.equal(P.references.scope, SF6_PAPER_PROTOCOL.references.scope);
   assert.equal((await pinCheck()).pass, true, 'Waechter vergleicht mit den 1.2.0-Pins');
-  // not fixed: reference identity pending, owner runs listed, no run id invented
-  assert.equal(P.status, 'DRAFT_PENDING_REFERENCE_IDENTITY'); assert.equal(P.fixedOn, null);
-  assert.equal(P.references.referenceIdentity.status, 'PENDING_OWNER_RUNS');
+  // fixed 2026-11-04: reference identity shown by the six listed runs (R1-R6), each with its real run id
+  assert.equal(P.status, 'PREPARED_NOT_ACTIVE'); assert.equal(P.fixedOn, '2026-11-04');
+  assert.equal(P.references.referenceIdentity.status, 'SHOWN');
   assert.deepEqual(P.references.referenceIdentity.requiredRuns.map((r) => r.id), ['R1_TURTLE', 'R2_MINERVINI', 'R3_SF5', 'R4_RESTORE_DEV', 'R5_RESTORE_HOLDOUT', 'R6_KK_CACHE']);
-  for (const k of ['turtle', 'minervini', 'sf5', 'restoreDev', 'restoreHoldout', 'kk']) assert.equal(P.references.referenceIdentity[k], null, k);
-  assert.equal(referenceIdentityShown(P), false); assert.equal(referenceIdentityShown(SF6_PAPER_PROTOCOL), true);
+  assert.deepEqual(Object.fromEntries(['turtle', 'minervini', 'sf5', 'restoreDev', 'restoreHoldout', 'kk'].map((k) => [k, P.references.referenceIdentity[k]])), { turtle: '41601470302', minervini: '41604774311', sf5: '41608045341', restoreDev: '41627645169', restoreHoldout: '41628817276', kk: '41864439485' });
+  assert.equal(referenceIdentityShown(P), true); assert.equal(referenceIdentityShown(SF6_PAPER_PROTOCOL), true);
+  assert.equal(referenceIdentityShown({ ...P, status: 'DRAFT_PENDING_REFERENCE_IDENTITY', references: { ...P.references, referenceIdentity: { ...P.references.referenceIdentity, status: 'PENDING_OWNER_RUNS' } } }), false);
   assert.equal(referenceIdentityShown({ ...P, status: 'PREPARED_NOT_ACTIVE', references: { ...P.references, referenceIdentity: { ...P.references.referenceIdentity, status: 'SHOWN' } } }), true);
   assert.deepEqual(SF6_PAPER_PROTOCOL_VERSIONS.map((v) => v.version), ['1.1.0', '1.2.0']);
   assert.equal(currentPaperProtocol().version, '1.2.0');
   assert.equal(ACTIVATED_PROTOCOL_SHA256, sf6PaperProtocol120Sha256(), 'die Aktivierung nennt die aktuelle 1.2.0-Fassung');
 });
 
-test('PAPER-2027-FWD-GUARD: Datenpfad implementiert; eingeschaltet bleibt der Waechter rot bis zur gezeigten Referenzgleichheit; 1.1.0 ist ersetzt', async () => {
+test('PAPER-2027-FWD-GUARD: Datenpfad implementiert; Referenzgleichheit gezeigt, eingeschaltet aktiv; 1.1.0 ist ersetzt', async () => {
   const pinsOk = { pass: true, rows: [] };
   const on = (over = {}) => ({ ...SF6_PAPER_ACTIVATION, activated: true, approval: { by: 'owner', on: '2026-12-15', pr: 1 }, decisions: { sampleCount: 'COUNT_ONLY', retention: 'RAISE_CAP_TO_4_FORWARD_GENERATION', dataSource: 'RESEARCH_FORWARD_WINDOW' }, ...over });
   assert.equal(FORWARD_DATA_PATHS.RESEARCH_FORWARD_WINDOW.status, 'IMPLEMENTED');
   assert.equal(SF6_PAPER_ACTIVATION.activated, false, 'Schalter bleibt aus');
-  assert.deepEqual((await activationState({ today: '2027-01-05', activation: on(), pins: pinsOk })).reasons, ['REFERENCE_IDENTITY_NOT_SHOWN']);
+  assert.deepEqual((await activationState({ today: '2027-01-05', activation: on(), pins: pinsOk })).reasons, []);
   const old = await activationState({ today: '2027-01-05', activation: on({ protocol: { ...SF6_PAPER_ACTIVATION.protocol, version: '1.1.0', sha256: SUPERSEDED_1_1_0_SHA256 } }), pins: pinsOk });
-  assert.deepEqual(old.reasons, ['PROTOCOL_SUPERSEDED:1.1.0', 'REFERENCE_IDENTITY_NOT_SHOWN']);
+  assert.deepEqual(old.reasons, ['PROTOCOL_SUPERSEDED:1.1.0']);
   assert.ok(!(await activationState({ today: '2027-01-05', activation: on(), pins: pinsOk })).reasons.includes('FORWARD_DATA_PATH_NOT_IMPLEMENTED'));
   assert.deepEqual((await activationState({ today: '2026-11-03' })).reasons, ['NOT_ACTIVATED']);
 });

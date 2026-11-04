@@ -147,7 +147,7 @@ test('preflight lists exactly what a real run is missing and computes nothing', 
   assert.deepEqual([...new Set(codes)].sort(), ['SNAPSHOT_STORE_SECRET_MISSING', 'V13_DAILY_DIR_MISSING', 'V13_SERIES_DIR_MISSING']);
   // a complete synthetic input set (placeholder files for every QUALIFIED chain of the public register) is ready
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'st9-pf-root-')), priv = fs.mkdtempSync(path.join(os.tmpdir(), 'st9-pf-priv-'));
-  const REG = 'scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.0.json';
+  const REG = 'scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.1.json'; // current registration (1.0.1 amends 1.0.0)
   const pinned = Object.keys(JSON.parse(fs.readFileSync(path.join(ROOT, REG), 'utf8')).references.sha256);
   for (const f of [REG, 'scripts/supertrader/validation/results-public-key.pem', ...pinned]) { fs.mkdirSync(path.dirname(path.join(root, f)), { recursive: true }); fs.copyFileSync(path.join(ROOT, f), path.join(root, f)); }
   const reg = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs/quant-recovery/v13/delisted/register-1.0.0.json'), 'utf8')), ix = Object.fromEntries(reg.columns.map((c, i) => [c, i]));

@@ -2,14 +2,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { sf6ReadinessCriteriaSha256, DIMENSIONS, COMPLETION_STATES, CERTIFICATION_CRITERIA, CC5, SF6_OWNER_DECISIONS } from '../source-faithful/completion/sf6-readiness-criteria.mjs';
-import { SF6_PAPER_PROTOCOL, sf6PaperProtocolSha256 } from '../source-faithful/completion/sf6-paper-protocol-2027.mjs';
+import { SF6_PAPER_PROTOCOL as SF6_PAPER_PROTOCOL_1_1_0, sf6PaperProtocolSha256 as sf6PaperProtocol110Sha256 } from '../source-faithful/completion/sf6-paper-protocol-2027.mjs';
+import { SF6_PAPER_PROTOCOL_1_2_0 as SF6_PAPER_PROTOCOL, sf6PaperProtocol120Sha256 as sf6PaperProtocolSha256, currentPaperProtocol } from '../source-faithful/completion/sf6-paper-protocol-2027-v1_2_0.mjs';
 
 // 1.0.0 469ea7d1… -> 1.1.0 (source review, before results) -> 1.2.0 (owner decisions E1-E6, only stricter)
 const PINNED_CRITERIA = '4fb413783c04d0c45058e81683a9c606a5a72a23b57c7df2c9a834633fee8342';
 // SF6-PAPER-2027 1.0.0 c90c30bc… (2026-10-24, never activated) -> 1.1.0 (2026-10-25, E7-3: new code fingerprints after
 // the SF7-D3 / SF7-D4 fixes, references hash-identical)
 const PINNED_PAPER_PROTOCOL_1_0_0 = 'c90c30bcf0186549aeb672ffc124b3b24d7b321288f0e78798a3a0cfc3bd5e8f';
-const PINNED_PAPER_PROTOCOL = 'e623b336cd24a49e04b4588ab5b06c06d6226a323b368d4c659f2d7ce4b64f66';
+const PINNED_PAPER_PROTOCOL_1_1_0 = 'e623b336cd24a49e04b4588ab5b06c06d6226a323b368d4c659f2d7ce4b64f66';
+// -> 1.2.0 (fixed 2026-11-04, FP-ST-02 V5: forward window in validation/lib.mjs, new Turtle engine fingerprint; reference
+// identity shown by R1-R6, docs/SUPERTRADER_PAPER_2027_FORWARD_PATH.md); 1.1.0 superseded, never activated
+const PINNED_PAPER_PROTOCOL = 'fde5283e927eb52be2f23b76c3791f6ab31b5e60a721e60093708f05e669e5cc';
 
 test('SF6-READINESS-CRITERIA-PINNED: 15 Dimensionen, Zustaende und harte Kriterien vor den Ergebnissen festgeschrieben', () => {
   assert.equal(sf6ReadinessCriteriaSha256(), PINNED_CRITERIA);
@@ -22,12 +26,16 @@ test('SF6-READINESS-CRITERIA-PINNED: 15 Dimensionen, Zustaende und harte Kriteri
 
 test('SF6-PAPER-PROTOCOL-2027: prospektiv, festgeschrieben vor dem Fenster, nicht aktiviert (E2)', async () => {
   assert.equal(sf6PaperProtocolSha256(), PINNED_PAPER_PROTOCOL);
+  assert.equal(currentPaperProtocol().version, '1.2.0');
+  assert.equal(sf6PaperProtocol110Sha256(), PINNED_PAPER_PROTOCOL_1_1_0, '1.1.0 stays byte-identical (superseded)');
+  assert.equal(SF6_PAPER_PROTOCOL_1_1_0.supersedes.sha256, PINNED_PAPER_PROTOCOL_1_0_0);
   assert.equal(SF6_PAPER_PROTOCOL.window.start, '2027-01-01');
   assert.ok(SF6_PAPER_PROTOCOL.fixedOn < SF6_PAPER_PROTOCOL.window.start);
   assert.equal(SF6_PAPER_PROTOCOL.status, 'PREPARED_NOT_ACTIVE');
-  assert.equal(SF6_PAPER_PROTOCOL.version, '1.1.0'); assert.equal(SF6_PAPER_PROTOCOL.activation.status, 'NOT_ACTIVATED');
-  assert.equal(SF6_PAPER_PROTOCOL.supersedes.version, '1.0.0'); assert.equal(SF6_PAPER_PROTOCOL.supersedes.sha256, PINNED_PAPER_PROTOCOL_1_0_0);
-  assert.equal(SF6_PAPER_PROTOCOL.supersedes.status, 'SUPERSEDED_BY_1_1_0_NEVER_ACTIVATED');
+  assert.equal(SF6_PAPER_PROTOCOL.version, '1.2.0'); assert.equal(SF6_PAPER_PROTOCOL.activation.status, 'NOT_ACTIVATED');
+  assert.equal(SF6_PAPER_PROTOCOL.references.referenceIdentity.status, 'SHOWN');
+  assert.equal(SF6_PAPER_PROTOCOL.supersedes.version, '1.1.0'); assert.equal(SF6_PAPER_PROTOCOL.supersedes.sha256, PINNED_PAPER_PROTOCOL_1_1_0);
+  assert.equal(SF6_PAPER_PROTOCOL.supersedes.status, 'SUPERSEDED_BY_1_2_0_NEVER_ACTIVATED');
   // the pins are the current code (E7-3): Turtle engine, Minervini research code, both variant registries
   const { codeSha256 } = await import('../source-faithful/runner/run-research.mjs');
   const { researchCodeSha256 } = await import('../source-faithful/research/run-sf4-lifecycle.mjs');
