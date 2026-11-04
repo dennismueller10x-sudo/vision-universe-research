@@ -135,13 +135,16 @@ Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds 
 - Quant CI ist auf `main` vorbestehend rot (Strang A); die Kette wertet sie nur, wenn die Fehlschläge neu sind.
 - Ebenfalls vorbestehend auf `main` (Datenstand, nicht Code): Discover `names.test.mjs` NM3 und `producer-ownership` (Neubau), Vorsorge „Build reproduzierbar“. Nach CLAUDE.md (Neustart) blockiert veralteter Datenstand keinen Code-PR; die Kette mergt, wenn alle übrigen Prüfungen grün sind.
 
-## Backend-Zusätze (nach den Schritten 1–6)
+## Backend-Zusätze (Projekt Z1–Z7, `docs/PLAN_NEUSTART_2026-11.md` §7)
 
-| Zusatz | Stand | Notiz |
-|---|---|---|
-| Modus Einsteiger/Fortgeschritten/Profi + Ziel aus dem ersten Start (`settings.mode`) | offen | Konto-Einstellung, Produktion bleibt aus |
-| Gespeicherte Suchen im Konto | offen | |
-| Benachrichtigungen (Kursgrenze, Quartalszahlen, Setups) | offen | |
-| Gemeinsame Aktienadresse `/aktie/<T>` mit Weiterleitungen | offen | |
-| Screener-Kriterien aus 13F und Supertrader | offen | |
-| Datenquelle Insider-Käufe | offen | bis dahin „bald“ |
+Steuerung (Owner, 04.11.2026): Mockups sind verbindlich (Reihenfolge, Abstände, Schriftgrößen, Bausteine, Wortwahl; Abnahme nach Ü3). Strang D baut Z1, Z2, Z3 und Z7 jeweils mit ihren Seiten; Z4 (Owner-Freigabe Versandweg), Z5, Z6 (Stränge A/B) zeigen die Seiten als „bald“ oder blenden sie aus.
+
+| # | Zusatz | Baut | Stand | Notiz |
+|---|---|---|---|---|
+| Z1 | Erster Start: Ziel, Erfahrung, erste Aktien; Konto-Einstellung | D (E11) + `workers/vu-account` | offen | Produktion bleibt aus |
+| Z2 | Eine Aktienadresse `/aktie/<T>` mit Weiterleitungen | D | offen | Herkunftswelt bestimmt Perspektive und Leiste |
+| Z3 | Gespeicherte Suchen im Konto | D (Q02, Screener, T04) + Konto | offen | |
+| Z4 | Benachrichtigungen | Konto + Erzeuger | „bald“ | Versandweg braucht Owner-Freigabe |
+| Z5 | Screener-Kriterien aus 13F und Supertrader | A + B | „bald“ | |
+| Z6 | Insider-Käufe als Datenquelle | A | „bald“ | |
+| Z7 | AI Atlas visuell (E10-b) | D (E10) | offen | vorhandener Worker `workers/vu-ask` unverändert (Modell, Budget, Grenzen, Beta-Passwort); neu nur die Darstellung mit VU-Bausteinen |
