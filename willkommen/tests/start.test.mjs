@@ -46,7 +46,16 @@ test('Seite: drei Schritte, überspringbar, keine Produkt-Leiste, nur bestehende
   assert.match(html, /id="fs-skip"/);
   assert.doesNotMatch(html, /<vu-navigation/);
   const calls = [...js.matchAll(/A\.(get|post|patch)\('([^']+)'/g)].map(m => m[2]);
-  assert.deepEqual([...new Set(calls)].sort(), ['/v1/session', '/v1/watchlist/items']);
+  assert.deepEqual([...new Set(calls)].sort(), ['/v1/me', '/v1/session', '/v1/watchlist/items'], 'nur bestehende Konto-Aufrufe (PATCH /v1/me: Z1-Einstellungen)');
   assert.doesNotMatch(js, /localStorage\.setItem/, 'schreibt nur über prefs.js');
   assert.match(read('willkommen/app.js'), /get\('konto'\) === 'verified' && global\.VUStart && !global\.VUStart\.read\(\)\.done/);
+});
+
+test("Z1 · Konto: Ziel und Erfahrung gehen als settings.goal/experienceLevel/onboardedAt an PATCH /v1/me", () => {
+  assert.deepEqual(S.toAccount({ goal: "signale", mode: "pro" }, true), { goal: "strategien", experienceLevel: "pro", onboardedAt: true });
+  assert.deepEqual(S.toAccount({ goal: null, mode: "beginner" }, false), { experienceLevel: "beginner" });
+  const eff = S.effective({ settings: { goal: "strategien", experienceLevel: "advanced", onboardedAt: "2026-11-04T10:00:00Z" } }, { getItem: () => null, setItem() {} });
+  assert.equal(eff.goal, "signale");
+  assert.equal(eff.mode, "advanced");
+  assert.equal(eff.done, true);
 });

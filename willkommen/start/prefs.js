@@ -3,7 +3,7 @@
    Wahl aus dem ersten Start (Mockup E11) und „Wo stehst du?“ der Startseite (E01):
    Ziel, Erfahrung, erste Aktien. Gespeichert wird lokal auf dem Gerät.
 
-   Schnittstelle (für die spätere Konto-Speicherung settings.goal / settings.mode):
+   Schnittstelle (Gerät; Konto über toAccount → PATCH /v1/me settings.goal / experienceLevel / onboardedAt):
      localStorage "vu-start-v1" = {"v":1,"goal":GOAL|null,"mode":MODE|null,"tickers":[…],"at":ISO,"done":bool}
        GOAL: "vorsorge" | "aktie" | "ideen" | "signale"
        MODE: "beginner" (Einsteiger) | "advanced" (Fortgeschritten) | "pro" (Profi)
@@ -62,12 +62,25 @@
     try { if (s) s.setItem(KEY, JSON.stringify(next)); } catch (e) { /* privater Modus: Wahl gilt nur für diese Seite */ }
     return next;
   }
-  /** Konto zuerst (sobald settings.goal/mode existieren), sonst Gerät. */
+  /* Konto (Z1, workers/vu-account): settings.goal vorsorge|aktie|ideen|strategien, settings.experienceLevel beginner|advanced|pro,
+     settings.onboardedAt (PATCH true, der Server setzt die Zeit). Auf dem Gerät heißt das Ziel „signale“. */
+  var GOAL_TO_ACCOUNT = { vorsorge: 'vorsorge', aktie: 'aktie', ideen: 'ideen', signale: 'strategien' };
+  var GOAL_FROM_ACCOUNT = { vorsorge: 'vorsorge', aktie: 'aktie', ideen: 'ideen', strategien: 'signale' };
+  /** Einstellungs-Patch für PATCH /v1/me ({settings: …}); nur gewählte Felder. */
+  function toAccount(st, finished) {
+    var out = {};
+    if (st && GOAL_TO_ACCOUNT[st.goal]) out.goal = GOAL_TO_ACCOUNT[st.goal];
+    if (st && MODES[st.mode]) out.experienceLevel = st.mode;
+    if (finished) out.onboardedAt = true;
+    return out;
+  }
+  /** Konto zuerst (settings.goal / settings.experienceLevel), sonst Gerät. */
   function effective(me, ls) {
     var local = read(ls), st = (me && me.settings) || {};
-    return { goal: GOALS[st.goal] ? st.goal : local.goal, mode: MODES[st.mode] ? st.mode : local.mode, done: local.done, tickers: local.tickers, preset: !!local.preset };
+    var goal = GOAL_FROM_ACCOUNT[st.goal] || null, mode = MODES[st.experienceLevel] ? st.experienceLevel : null;
+    return { goal: goal || local.goal, mode: mode || local.mode, done: local.done || !!st.onboardedAt, tickers: local.tickers, preset: !!local.preset };
   }
   function goalCard(goal) { return GOALS[goal] || NO_GOAL; }
   return Object.freeze({ KEY: KEY, PATH_KEY: PATH_KEY, GOALS: GOALS, GOAL_ORDER: GOAL_ORDER, MODES: MODES, MODE_ORDER: MODE_ORDER, FROM_PATH: FROM_PATH,
-    POPULAR: POPULAR, NO_GOAL: NO_GOAL, read: read, write: write, effective: effective, goalCard: goalCard });
+    POPULAR: POPULAR, NO_GOAL: NO_GOAL, read: read, write: write, effective: effective, toAccount: toAccount, goalCard: goalCard });
 });

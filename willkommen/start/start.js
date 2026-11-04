@@ -108,8 +108,11 @@
     state.tickers = picked.slice(); state.done = true; S.write(state);
     var btn = $('fs-next'); btn.disabled = true;
     var go = function () { root.location.assign('/willkommen/'); };
-    if (!signedIn || !picked.length) return go();
-    ensureNames().then(function (ix) {
+    if (!signedIn) return go();
+    /* Z1: Ziel, Erfahrung und „erster Start erledigt“ ins Konto; scheitert das, bleibt die Wahl auf dem Gerät. */
+    var saved = A.patch('/v1/me', { settings: S.toAccount(state, true) }).catch(function () { return null; });
+    if (!picked.length) return saved.then(go, go);
+    saved.then(function () { return ensureNames(); }).then(function (ix) {
       var items = ix ? picked.map(function (t) { var id = ix.resolveTicker(t); return id ? { instrumentId: id, ticker: t } : null; }).filter(Boolean) : [];
       if (!items.length) return go();
       return Promise.all(items.map(function (it) { return A.post('/v1/watchlist/items', it); })).then(function (rs) {
@@ -124,7 +127,7 @@
     renderGoals(); renderModes(); renderChips(); bindSearch();
     $('fs-next').addEventListener('click', function () { if (step < 3) show(step + 1); else finish(); });
     $('fs-back').addEventListener('click', function () { if (step > 1) show(step - 1); else root.history.length > 1 ? root.history.back() : root.location.assign('/willkommen/'); });
-    $('fs-skip').addEventListener('click', function (e) { e.preventDefault(); state.done = true; S.write(state); if (step < 3) show(step + 1); else root.location.assign('/willkommen/'); });
+    $('fs-skip').addEventListener('click', function (e) { e.preventDefault(); state.done = true; S.write(state); if (step < 3) show(step + 1); else (signedIn ? A.patch('/v1/me', { settings: S.toAccount(state, true) }).catch(function () { return null; }) : Promise.resolve()).then(function () { root.location.assign('/willkommen/'); }); });
     if (A && A.available && A.available()) A.get('/v1/session').then(function (r) { signedIn = !!(r.ok && r.data && r.data.authenticated); });
     show(1);
   }
