@@ -173,10 +173,10 @@
   function stockRow(r) {
     var x = r || {}, spark = x.chart || "";
     var tag = x.href ? "a" : "div";
-    return "<" + tag + ' class="vu-lrow' + (spark ? "" : " vu-lrow--nochart") + '"' + (x.href ? ' href="' + esc(x.href) + '"' : "") + ">" + logo(x.ticker, { src: x.logo }) +
+    return "<" + tag + ' class="vu-lrow' + (spark ? "" : " vu-lrow--nochart") + (x.noPrice ? " vu-lrow--noprice" : "") + '"' + (x.href ? ' href="' + esc(x.href) + '"' : "") + ">" + logo(x.ticker, { src: x.logo }) +
       '<div class="vu-lrow__name"><b>' + esc(x.name || x.ticker) + "</b><span>" + esc(x.sub || x.ticker) + "</span></div>" +
       (spark ? '<div class="vu-lrow__mini">' + spark + "</div>" : "") +
-      '<div class="vu-lrow__price"><span>' + esc(money(x.price, x.currency)) + "</span>" + chg(x.changePct) + "</div></" + tag + ">";
+      (x.noPrice ? "" : '<div class="vu-lrow__price"><span>' + esc(money(x.price, x.currency)) + "</span>" + chg(x.changePct) + "</div>") + "</" + tag + ">";
   }
   /** C11 Kachel */
   function tile(label, value, sub) {

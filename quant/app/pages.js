@@ -1020,7 +1020,69 @@
 
   /* ============================================================== AKTIEN */
   var KNOWN = ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "JPM", "V", "KO", "PG", "JNJ", "XOM", "T", "SO", "O"];
+  /* Redesign 2027 (Folie Q04): Frage als Titel, Suche + bekannte Namen, ehrlicher Leerzustand, Listen statt Karussells. */
+  var KNOWN_CHIPS = [["NVDA", "NVIDIA"], ["AAPL", "Apple"], ["MSFT", "Microsoft"], ["AMD", "AMD"]];
+  async function stocksV3(main, ctx) {
+    var U = global.VUUI, page = el("div", { class: "vu-ui qv3" });
+    main.append(page);
+    var input = el("input", { type: "search", class: "qx-stock-search", placeholder: "Name oder Kürzel, z. B. Apple", "aria-label": "Aktie suchen", autocomplete: "off" });
+    var results = el("div", { "aria-live": "polite", class: "qv3-sresults" });
+    var field = el("label", { class: "vu-find qv3-search" }); field.innerHTML = U.glyph("search", 18); field.append(input); field.insertAdjacentHTML("beforeend", '<i aria-hidden="true">' + U.glyph("spark", 18) + "</i>");
+    page.append(el("header", { class: "qv3-intro" }, [el("p", { class: "vu-ltag", text: "Quant" }), el("h1", { class: "vu-lt", text: "Welche Aktie willst du verstehen?" })]), field,
+      el("div", { class: "vu-chips qv3-known" }, KNOWN_CHIPS.map(function (k) { return el("a", { class: "vu-chip", href: X.routes.stock(k[0]), text: k[1] }); })), results);
+    var req = 0;
+    input.addEventListener("input", async function () {
+      var mine = ++req, q = input.value.trim();
+      if (!q) { results.replaceChildren(); return; }
+      results.replaceChildren(el("p", { class: "qx-small", text: "Wird gesucht …" }));
+      var r = await ctx.api.searchInstruments(q, 12).catch(function () { return { state: "SOURCE_MISSING", entries: [] }; });
+      if (mine !== req) return;
+      if (r.state !== "AVAILABLE") { results.replaceChildren(X.notice("Suche derzeit nicht verfügbar", "Das Verzeichnis konnte nicht geladen werden.")); return; }
+      results.replaceChildren(r.entries.length ? el("div", { class: "qx-list" }, r.entries.map(function (e) { return X.stockRow({ ticker: e.ticker, name: X.companyName(e) === "Firmenname nicht veröffentlicht" ? "" : e.name }); }))
+        : el("p", { class: "qx-small", text: "Keine passenden Aktien gefunden." }));
+    });
+    var html = function (h) { var d = el("div"); d.innerHTML = h; return d; };
+    var row = function (t, sub) { return U.stockRow({ ticker: t, name: nameOf(ctx, t) || t, sub: sub, href: X.routes.stock(t), noPrice: true }); };
+    var recent = X.recent.list(), watched = X.watch.list();
+    /* Beobachten: ehrlicher Leerzustand oder Aktienzeilen; was gemeldet wird, steht im Sheet. */
+    var sheet = html(U.sheet("qv3-watch-sheet", "Was Quant für beobachtete Aktien verfolgt", '<ul class="qv3-watch">' + WATCH_VALUE.map(function (w) { return "<li>" + U.esc(w) + "</li>"; }).join("") + '</ul><p class="vu-xs vu-mu">Kein Depot: keine Stückzahl, kein Einstand.</p><button type="button" class="vu-btn vu-btn--ink vu-btn--block" data-close style="margin-top:14px">Verstanden</button>')).firstElementChild;
+    document.body.append(sheet);
+    sheet.querySelector("[data-close]").addEventListener("click", function () { U.closeSheet(sheet); });
+    global.addEventListener("hashchange", function off() { sheet.remove(); global.removeEventListener("hashchange", off); });
+    var watchHead = html(U.sect("Beobachten")).firstElementChild;
+    var what = el("button", { type: "button", class: "qv3-linkbtn", text: "Was wird gemeldet?", onclick: function () { U.openSheet(sheet); } });
+    watchHead.append(what);
+    page.append(watchHead, watched.length ? html('<div class="qv3-rows">' + watched.slice(0, 12).map(function (t) { return row(t, "Beobachtet"); }).join("") + "</div>")
+      : html('<div class="vu-box qv3-empty"><div class="qv3-empty-h">' + U.verdict("none", "Noch leer") + '<b class="vu-sm">Du beobachtest noch keine Aktie.</b></div><p class="vu-xs vu-mu">Tippe auf einer Aktienseite auf ♡. Quant meldet dir dann neue Setups, Strategie-Wechsel und steigendes Risiko.</p></div>'));
+    if (recent.length) page.append(html(U.sect("Zuletzt angesehen") + '<div class="qv3-rows">' + recent.slice(0, 6).map(function (t) { return row(t, "Zuletzt analysiert"); }).join("") + "</div>"));
+    var setupHost = el("div"), stratHost = el("div");
+    page.append(setupHost, stratHost, html(U.sect("Bekannte Aktien") + '<div class="qv3-rows">' + KNOWN.slice(0, 6).map(function (t) { return row(t, ""); }).join("") + "</div>" +
+      U.sect("Mehr finden") + U.navcard({ glyph: "line", title: "Technische Lagen", sub: "Charts mit klarer Lage, nach Regel", href: X.routes.chartlagen() })));
+    var r = await Promise.all([ctx.api.getQuantRadarHome().catch(function () { return null; }), ctx.api.getStrategyIndex().catch(function () { return null; }), ctx.api.getSetupScreenIndex().catch(function () { return null; }), screeningRows(ctx)]);
+    var radar = r[0], idx = r[1], setupIdx = r[2], rowBy = r[3];
+    if (radar && radar.state === "AVAILABLE") {
+      var confirmed = (radar.cards || []).filter(function (c) { return c.events && c.events.some(function (e) { return e.eventType === "SETUP_CONFIRMED"; }); }).slice(0, 3);
+      var conf = setupIdx && setupIdx.state === "AVAILABLE" ? (setupIdx.states || []).filter(function (st) { return st.state === "CONFIRMED" && typeof st.count === "number"; })[0] : null;
+      if (confirmed.length) setupHost.append(html(U.sect("Setup bestätigt", { href: X.routes.screener("frage=setups"), link: conf ? "Alle " + conf.count.toLocaleString("de-DE") : "Alle" }) + '<div class="vu-stack">' + confirmed.map(function (c) {
+        var tr = c.trade && c.trade.state === "AVAILABLE" ? c.trade : null, z = tr && tr.targets && tr.targets[0] && zoneText(tr.targets[0]);
+        return '<a class="vu-box qv3-mini" href="' + U.esc(X.routes.stock(c.ticker)) + '">' + U.logo(c.ticker) + '<span class="qv3-mini-t"><b>' + U.esc(nameOf(ctx, c.ticker) || c.ticker) + '</b><span class="vu-xs vu-mu"><b>' + U.esc(z ? "Ziel 1: " + z : c.ticker) + "</b></span></span>" + U.verdict("strong", "Bestätigt") + "</a>";
+      }).join("") + "</div>"));
+    }
+    if (idx && idx.historicalEvidence && idx.historicalEvidence.transitions) {
+      var he = idx.historicalEvidence, labels = {};
+      (idx.profiles || []).forEach(function (p) { labels[p.profileId] = (p.label || p.profileId).split(" · ")[0]; });
+      var items = [];
+      he.transitions.forEach(function (t) { var tk = ctx.commonFirst(t.entered || [])[0]; if (tk) items.push([tk, t.profileId]); });
+      if (items.length) stratHost.append(html(U.sect("Neu in einer Strategie", { href: X.routes.strategies(), link: "Alle" }) + '<div class="vu-box qv3-strats">' + items.slice(0, 5).map(function (it) {
+        var v = rowBy && rowBy[it[0]] ? VM.fromScreeningRow(rowBy[it[0]], rowBy._dist) : null;
+        var best = v ? v.factors.filter(function (f) { return f.state === "AVAILABLE"; }).sort(function (a, b) { return b.score - a.score; })[0] : null;
+        return '<a class="qv3-strat" href="' + U.esc(X.routes.stock(it[0])) + '">' + U.logo(it[0]) + '<span class="qv3-strat-t"><b class="vu-sm">' + U.esc(nameOf(ctx, it[0]) || it[0]) + '</b><span class="vu-xs vu-mu">neu in ' + U.esc(labels[it[1]] || it[1]) + "</span></span>" +
+          (best ? '<span class="vu-chip vu-chip--lime qv3-best">' + U.esc((FACTOR_SHORT[best.id] || best.name) + " " + Math.round(best.score)) + "</span>" : "") + "</a>";
+      }).join("") + '</div><p class="vu-xs vu-mu" style="margin:6px 0 0">Zwischen den Ständen ' + U.esc(X.dateDe(he.from)) + " und " + U.esc(X.dateDe(he.to)) + ".</p>"));
+    }
+  }
   async function stocks(main, ctx) {
+    if (global.VUUI) return stocksV3(main, ctx);
     var input = el("input", { type: "search", class: "qx-stock-search",
       placeholder: "Name oder Kürzel, z. B. Apple oder NVDA", "aria-label": "Aktie suchen", autocomplete: "off" });
     var results = el("div", { "aria-live": "polite", style: "margin-top:12px" });

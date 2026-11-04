@@ -171,3 +171,4 @@
 /* Fokus und Bewegung */
 .vu-chip:focus-visible,.vu-seg>:focus-visible,.vu-persp>a:focus-visible,.vu-btn:focus-visible,.vu-navcard:focus-visible,.vu-lrow:focus-visible,.vu-switch:focus-visible,.vu-find:focus-visible,.vu-round:focus-visible,.vu-q:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){.vu-switch:before{transition:none}}
+.vu-lrow--noprice{grid-template-columns:42px minmax(0,1fr)}
