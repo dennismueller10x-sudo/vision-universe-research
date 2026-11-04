@@ -1,86 +1,56 @@
-/* VISION UNIVERSE — Aktien-Navigator (assets/stock-navigator.js).
-   Nur Tokens aus assets/site-navigation.css (Hell/Dunkel), Produkt-Icons im bestehenden HUD-Material.
-   Schmal (iPhone): sieben beschriftete Kacheln in einer Reihe; breit: Pillen mit Namen.
-   Dazu der einheitliche Aktienkopf (.vu-shead): flach, ohne Rahmen, Kurs mit Art und Zeitbezug. */
-.vu-snav{margin:6px 0 12px;max-width:100%;font-family:inherit;position:relative;z-index:1}
-.vu-snav-row{display:flex;align-items:center;gap:8px;min-width:0}
-.vu-snav-eyebrow{margin:0;flex:none;font:800 11px/1 Inter,-apple-system,"Segoe UI",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--vu-muted)}
-.vu-snav-list{list-style:none;margin:0;padding:2px 0;display:flex;gap:8px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+/* VISION UNIVERSE — Aktienkopf (C04) und Perspektiven-Leiste (C05), assets/stock-navigator.js.
+   Redesign 11/2026 („Vision Universe Redesign“, Folien N4/N5): ein Kopf für alle Welten, darunter eine
+   wischbare Zeile Perspektiven (Überblick · Chart · Zahlen · Faktoren · Methoden · Wellen · Investoren).
+   Nur Weiß, Schwarz, Neongrün und die Graustufen aus assets/site-navigation.css. */
+.vu-snav{margin:10px 0 12px;max-width:100%;font-family:inherit;position:relative;z-index:1}
+.vu-snav-list{list-style:none;margin:0;padding:6px 0;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;border-top:1px solid var(--vu-hair,var(--vu-line));border-bottom:1px solid var(--vu-hair,var(--vu-line));white-space:nowrap;scroll-snap-type:x proximity}
 .vu-snav-list::-webkit-scrollbar{display:none}
-.vu-snav-list li{flex:none;min-width:0}
-.vu-snav-chip{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 4px;border:1px solid var(--vu-line-strong);border-radius:999px;color:var(--vu-text-secondary);font:700 13px/1.2 Inter,-apple-system,"Segoe UI",sans-serif;text-decoration:none;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.vu-snav-chip:hover{background:var(--vu-surface);color:var(--vu-text)}
-.vu-snav-chip[aria-current=page]{background:var(--vu-accent-soft);border-color:var(--vu-accent-text);color:var(--vu-accent-text);cursor:default}
-.vu-snav-chip[aria-disabled=true],.vu-snav-card[aria-disabled=true]{color:var(--vu-muted);cursor:help;background:repeating-linear-gradient(135deg,transparent 0 6px,var(--vu-line) 6px 7px)}
-.vu-snav-chip[aria-disabled=true] .vu-product-icon,.vu-snav-card[aria-disabled=true] .vu-product-icon{filter:grayscale(1);opacity:.55}
-.vu-snav-icon{--vu-icon-size:36px}
-.vu-snav-tick{position:absolute;left:28px;top:2px;width:16px;height:16px;border-radius:50%;display:none;place-items:center;font:900 9px/1 Inter,sans-serif;font-style:normal;background:var(--vu-bg);color:var(--vu-text-secondary);border:1.5px solid currentColor}
-.vu-snav-tick[data-s=available]{background:var(--vu-accent);color:var(--vu-on-accent);border-color:transparent}
-.vu-snav-tick[data-s=unavailable]{border-style:dotted;color:var(--vu-muted)}
-.vu-snav-tick[data-s=planned]{border-style:dashed;color:var(--vu-muted)}
-.vu-snav-tick[data-s=unknown]{display:none!important}
-.vu-snav-more{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border:1px solid var(--vu-line-strong);border-radius:999px;background:transparent;color:var(--vu-text);font:700 13px/1 Inter,-apple-system,sans-serif;cursor:pointer}
-.vu-snav-more[aria-expanded=true]{background:var(--vu-surface)}
-.vu-snav-more svg{width:14px;height:14px;transition:transform .15s}
-.vu-snav-more[aria-expanded=true] svg{transform:rotate(180deg)}
-.vu-snav-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:8px;margin-top:8px;padding:10px;border:1px solid var(--vu-line-strong);border-radius:20px;background:var(--vu-elevated)}
-.vu-snav-panel[hidden]{display:none}
-.vu-snav-card{display:flex;gap:10px;align-items:center;min-height:60px;padding:8px;border:1px solid var(--vu-line);border-radius:16px;text-decoration:none;color:var(--vu-text)}
-.vu-snav-card[aria-current=page]{background:var(--vu-accent-soft);border-color:var(--vu-accent-text)}
-.vu-snav-card .vu-snav-icon{--vu-icon-size:40px}
-.vu-snav-card b{display:block;font-size:14px}
-.vu-snav-card small{display:block;font-size:12px;line-height:1.35;color:var(--vu-muted)}
-.vu-snav-st{display:block;margin-top:2px;font-size:11px;font-weight:700;color:var(--vu-text-secondary)}
+.vu-snav-list li{flex:none;min-width:0;scroll-snap-align:start}
+.vu-snav-chip{position:relative;display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 12px;border-radius:999px;color:var(--vu-mute,var(--vu-muted));font:700 13.5px/1 var(--vu-font,Inter,sans-serif);text-decoration:none;cursor:pointer}
+.vu-snav-chip:hover{color:var(--vu-ink,var(--vu-text));background:var(--vu-card,var(--vu-surface))}
+.vu-snav-chip[aria-current=page]{background:var(--vu-ink,var(--vu-text));color:var(--vu-inv,var(--vu-bg));cursor:default}
+.vu-snav-chip[aria-disabled=true]{opacity:.45;cursor:help}
+.vu-snav-glyph{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .vu-snav-note{margin:6px 0 0;font-size:12.5px;line-height:1.4;color:var(--vu-text-secondary)}
 .vu-snav-note:empty{display:none}
 .vu-snav-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.vu-snav a:focus-visible,.vu-snav button:focus-visible{outline:2px solid var(--vu-focus);outline-offset:3px}
-@media(max-width:600px){
- .vu-snav{margin:4px 0 14px}
- .vu-snav-row{display:grid;grid-template-columns:1fr auto;grid-template-areas:"eb more" "list list";gap:2px 8px}
- .vu-snav-eyebrow{grid-area:eb}
- .vu-snav-more{grid-area:more;min-height:36px;padding:0 4px 0 10px;border:0;color:var(--vu-accent-text)}
- .vu-snav-more[aria-expanded=true]{background:none}
- .vu-snav-list{grid-area:list;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:2px;overflow:visible;padding:0}
- .vu-snav-chip{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;width:100%;min-height:72px;padding:6px 0 5px;border-radius:16px;border-color:transparent;white-space:normal}
- .vu-snav-chip>span:not(.vu-product-icon):not(.vu-snav-sr){display:block;max-width:100%;font-size:9.5px;line-height:1.1;letter-spacing:-.015em;text-align:center;hyphens:manual}
- .vu-snav-chip .vu-snav-icon{--vu-icon-size:34px}
- .vu-snav-chip[aria-current=page]{border-color:var(--vu-accent-text)}
- .vu-snav-tick{display:grid;left:calc(50% + 7px);width:14px;height:14px;font-size:8px}
-}
-@media(prefers-reduced-motion:reduce){.vu-snav-more svg{transition:none}}
+.vu-snav a:focus-visible{outline:2px solid var(--vu-focus);outline-offset:2px}
 
 /* ---------------------------------------------------------------- Aktienkopf */
-.vu-shead{display:block;margin:0 0 8px;color:var(--vu-text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.vu-shead-back{display:inline-flex;align-items:center;gap:6px;min-height:36px;margin:0 0 6px;color:var(--vu-text-secondary);font-size:13px;font-weight:700;text-decoration:none}
-.vu-shead-back:hover{color:var(--vu-text)}
-.vu-shead-id{display:flex;align-items:center;gap:14px;min-width:0}
-.vu-shead-logo{position:relative;flex:none;width:48px;height:48px;border-radius:14px;background:#fff;box-shadow:0 0 0 1px var(--vu-line);display:grid;place-items:center;overflow:hidden}
-.vu-shead-logo:before{content:attr(data-mono);font:800 20px/1 Inter,sans-serif;color:#101318}
-.vu-shead-logo img{position:absolute;inset:6px;width:calc(100% - 12px);height:calc(100% - 12px);object-fit:contain;background:#fff}
+.vu-shead{display:flex;flex-wrap:wrap;align-items:flex-start;column-gap:10px;margin:0 0 8px;color:var(--vu-ink,var(--vu-text));font-family:var(--vu-font,Inter,sans-serif)}
+.vu-shead>*{flex:1 1 100%;min-width:0}
+.vu-shead>.vu-shead-back{flex:none}
+.vu-shead>.vu-shead-back~.vu-shead-id{flex:1 1 0}
+.vu-shead-back{display:grid;place-items:center;width:44px;height:44px;margin:0 -4px;border-radius:50%;color:var(--vu-ink,var(--vu-text));text-decoration:none}
+.vu-shead-back svg{width:36px;height:36px;padding:9px;border-radius:50%;background:var(--vu-card,var(--vu-surface));fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.vu-shead-backtext{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.vu-shead-id{display:flex;align-items:center;gap:10px;min-width:0}
+.vu-shead-logo{position:relative;flex:none;width:42px;height:42px;border-radius:12px;background:var(--vu-ink,#000);display:grid;place-items:center;overflow:hidden}
+.vu-shead-logo:before{content:attr(data-mono);font:900 16px/1 var(--vu-font,Inter,sans-serif);color:var(--vu-inv,#fff)}
+.vu-shead-logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:6px;background:#fff}
 .vu-shead-names{min-width:0;flex:1}
-.vu-shead-name{margin:0;font-size:clamp(22px,5.6vw,30px);line-height:1.12;font-weight:850;letter-spacing:-.03em;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;text-wrap:balance}
-.vu-shead-meta{margin:3px 0 0;font-size:13px;line-height:1.3;font-weight:650;color:var(--vu-muted);letter-spacing:.02em}
+.vu-shead-name{margin:0;font-size:18px;line-height:1.15;font-weight:900;letter-spacing:-.02em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.vu-shead-meta{margin:2px 0 0;font-size:12px;line-height:1.3;font-weight:600;color:var(--vu-mute,var(--vu-muted));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vu-shead-actions{flex:none;display:flex;gap:8px;align-items:center}
 .vu-shead-actions:empty{display:none}
 .vu-shead-pricebox:empty{display:none}
-.vu-shead-price{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:12px;row-gap:2px;margin:16px 0 4px}
-.vu-shead-value{font-size:clamp(34px,9vw,46px);line-height:1;font-weight:850;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
-.vu-shead-change{font-size:16px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--vu-text-secondary)}
-.vu-shead-change small{font-size:13px;font-weight:650;color:var(--vu-muted)}
-.vu-shead-price[data-direction=up] .vu-shead-change{color:var(--vu-up,#1a7330)}
-.vu-shead-price[data-direction=down] .vu-shead-change{color:var(--vu-down,#b8281f)}
-.vu-shead-when{flex-basis:100%;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--vu-muted)}
-.vu-shead-live{width:7px;height:7px;border-radius:50%;background:var(--vu-up,#1a7330);box-shadow:0 0 0 3px color-mix(in srgb,var(--vu-up,#1a7330) 22%,transparent)}
-.vu-shead-nav{margin-top:14px}
-.vu-shead-nav .vu-snav{margin:0}
-@media(min-width:761px){.vu-shead-logo{width:56px;height:56px;border-radius:16px}.vu-shead-price{margin-top:20px}}
-/* Kompakt (Seiten, deren Hauptblock in den ersten Bildschirm muss): kleineres Logo und kleinerer Kurs. */
+.vu-shead-price{display:flex;flex-wrap:wrap;align-items:center;column-gap:10px;row-gap:4px;margin:10px 0 0}
+.vu-shead-value{font-size:34px;line-height:1;font-weight:900;letter-spacing:-.045em;white-space:nowrap;font-variant-numeric:tabular-nums}
+/* C07 Kursbewegung: neongrün ▲ für Plus, schwarz ▼ für Minus. */
+.vu-shead-change{display:inline-flex;align-items:center;gap:3px;padding:5px 11px;border-radius:999px;background:var(--vu-hair,var(--vu-line));color:var(--vu-ink,var(--vu-text));font-size:15px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.vu-shead-change small{font-size:12px;font-weight:650;opacity:.75}
+.vu-shead-price[data-direction=up] .vu-shead-change{background:var(--vu-lime,#c8f531);color:#000}
+.vu-shead-price[data-direction=down] .vu-shead-change{background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
+.vu-shead-when{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--vu-mute,var(--vu-muted));text-align:right}
+.vu-shead-live{width:7px;height:7px;border-radius:50%;background:var(--vu-lime,#c8f531);box-shadow:0 0 0 2px var(--vu-ink,#000)}
+.vu-shead-nav{margin-top:4px}
+.vu-shead-nav .vu-snav{margin:6px 0 0}
+@media(min-width:761px){.vu-shead-logo{width:54px;height:54px;border-radius:15px}.vu-shead-name{font-size:24px}.vu-shead-value{font-size:44px}.vu-shead-when{margin-left:0}}
+@media(max-width:380px){.vu-shead-when{margin-left:0;flex-basis:100%;text-align:left}}
+/* Kompakt (Seiten, deren Hauptblock in den ersten Bildschirm muss). */
 @media(max-width:760px){
- .vu-shead--compact .vu-shead-logo{width:40px;height:40px;border-radius:12px}
- .vu-shead--compact .vu-shead-name{font-size:20px}
- .vu-shead--compact .vu-shead-price{margin-top:10px}
- .vu-shead--compact .vu-shead-value{font-size:32px}
- .vu-shead--compact .vu-shead-nav{margin-top:10px}
+ .vu-shead--compact .vu-shead-logo{width:38px;height:38px;border-radius:11px}
+ .vu-shead--compact .vu-shead-name{font-size:17px}
+ .vu-shead--compact .vu-shead-value{font-size:30px}
 }
 .vu-shead-price .vu-shead-change small{color:inherit}

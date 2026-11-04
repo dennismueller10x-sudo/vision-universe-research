@@ -12,26 +12,30 @@ const SC = require(join(ROOT, "core", "stock-context.js"));
 const NAV = require(join(ROOT, "assets", "stock-navigator.js"));
 const chips = (h) => [...h.matchAll(/<a class="vu-snav-chip"([^>]*)>/g)].map((m) => m[1]);
 
-test("Kacheln · Reihenfolge, aktuelle Welt; Fundamental wie jede Welt nach Nachweis", () => {
+test("Perspektiven · Reihenfolge wie im Redesign (N5), aktuelle Welt; Fundamental wie jede Welt nach Nachweis", () => {
   const ctx = SC.fromUs("NVDA");
   const h = NAV.html(ctx, SC.availability(ctx), "quant");
   const c = chips(h);
+  const mod = (a) => /data-module="(\w+)"/.exec(a)[1];
+  const at = (list, id) => list.find((a) => mod(a) === id);
   assert.equal(c.length, 8);
-  assert.deepEqual(c.map((a) => /data-module="(\w+)"/.exec(a)[1]), SC.PRODUCTS);
-  assert.match(c[1], /aria-current="page"/);
+  assert.deepEqual(c.map(mod), ["discover", "technical", "fundamental", "quant", "supertrader", "elliott", "technik", "hedgefonds"]);
+  assert.deepEqual([...SC.PRODUCTS].sort(), c.map(mod).sort(), "jede Welt genau einmal");
+  assert.match(at(c, "quant"), /aria-current="page"/);
+  assert.deepEqual([...h.matchAll(/<span>([^<]+)<\/span><span class="vu-snav-sr">/g)].map((m) => m[1]), ["Überblick", "Chart", "Zahlen", "Faktoren", "Methoden", "Wellen", "Chartbild", "Investoren"]);
   /* Ohne Manifest: Fundamental neutral mit Link wie die anderen Welten, nicht mehr "In Planung". */
-  assert.match(c[6], /href="\/fundamental\/#\/NVDA" /);
-  assert.match(c[6], /data-state="unknown"/);
-  assert.match(c[2], /href="\/technical\/#\/chart\/NVDA" /);
-  assert.doesNotMatch(h, /In Planung/);
+  assert.match(at(c, "fundamental"), /href="\/fundamental\/#\/NVDA" /);
+  assert.match(at(c, "fundamental"), /data-state="unknown"/);
+  assert.match(at(c, "technical"), /href="\/technical\/#\/chart\/NVDA" /);
+  assert.doesNotMatch(h, /In Planung|Analysewelten|vu-snav-more/);
   /* Mit Nachweis verfuegbar, ohne SEC-Zahlen (NO_DATA) kein Link. */
   const yes = chips(NAV.html(ctx, SC.availability(ctx, { schema: SC.SCHEMA, modules: { fundamental: { US: ["NVDA"] } } }), "quant"));
-  assert.match(yes[6], /data-state="available"/);
+  assert.match(at(yes, "fundamental"), /data-state="available"/);
   const no = chips(NAV.html(ctx, SC.availability(ctx, { schema: SC.SCHEMA, modules: { fundamental: { US: [] } } }), "quant"));
-  assert.match(no[6], /aria-disabled="true"/); assert.doesNotMatch(no[6], /href=/);
-  /* Ohne Beleg: neutral, Link bleibt, kein Haken. */
-  assert.match(c[5], /href="\/supertrader\/stock\/NVDA\/" /);
-  assert.match(c[5], /data-state="unknown"/);
+  assert.match(at(no, "fundamental"), /aria-disabled="true"/); assert.doesNotMatch(at(no, "fundamental"), /href=/);
+  /* Ohne Beleg: neutral, Link bleibt. */
+  assert.match(at(c, "supertrader"), /href="\/supertrader\/stock\/NVDA\/" /);
+  assert.match(at(c, "supertrader"), /data-state="unknown"/);
 });
 
 test("Kacheln · Europa: nur Discover verlinkt, die anderen erklaeren die Region", () => {
@@ -47,7 +51,7 @@ test("Kacheln · Europa: nur Discover verlinkt, die anderen erklaeren die Region
 test("Kacheln · nachweislich fehlende Abdeckung ist kein Link", () => {
   const ctx = SC.fromUs("AAL");
   const h = NAV.html(ctx, SC.availability(ctx, { schema: SC.SCHEMA, modules: { supertrader: { US: [] } } }), "quant");
-  const st = chips(h)[5];
+  const st = chips(h).find((a) => /data-module="supertrader"/.test(a));
   assert.doesNotMatch(st, /href=/);
   assert.match(h, /Supertrader: Für AAL liegt hier keine Abdeckung vor\./);
 });
