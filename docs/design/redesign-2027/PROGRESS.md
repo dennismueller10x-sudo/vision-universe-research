@@ -83,11 +83,11 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | F04 | Fundamental · Suchen | in Arbeit | #1355 | Kopfzeilen-Suche selbst bleibt site-navigation |
 | F05 | Fundamental · Methodik | in Arbeit | #1355 | alter Volltext hinter „Alle Formeln PRO“ |
 | F06 | Fundamental · NVIDIA in Zahlen | in Arbeit | #1355 | Kurschart im Überblick entfällt (Perspektive Chart); „Mehr“ als Chip-Zeile; SEC-Hinweis grau am Ende |
-| W01 | Elliott · Übersicht | offen |  |  |
-| W02 | Elliott · Welle 3 | offen |  |  |
-| W03 | Elliott · Aufwärts | offen |  |  |
-| W04 | Elliott · Neu und verändert | offen |  |  |
-| W05 | Elliott · NVIDIA in Wellen | offen |  |  |
+| W01 | Elliott · Übersicht | in Arbeit | #1356 | Suche als echtes Feld (ohne Atlas-Knopf); „Weitere Reihen“ zeigt alle 8 Reihen |
+| W02 | Elliott · Welle 3 | in Arbeit | #1356 | Karten in Reihenfolge der Reihe, 10 je Seite |
+| W03 | Elliott · Aufwärts | in Arbeit | #1356 | zusätzlicher Filter `rolle=motiv` |
+| W04 | Elliott · Neu und verändert | in Arbeit | #1356 | Schalter „Melden“ sichtbar, aus: kommt mit Z4 (Owner-Freigabe) |
+| W05 | Elliott · NVIDIA in Wellen | in Arbeit | #1356 | Teil: Reihenfolge, Ausblick schwarz mit C08, Profi-Knopf PRO. Offen: Chart mit Unterstützung/Widerstand statt Szenario-Zonen, kompakte Projektionskarte, kurze Profi-Ansicht |
 | ST01 | Supertrader · Übersicht | offen |  |  |
 | ST02 | Supertrader · Methoden | offen |  |  |
 | ST03 | Supertrader · Methode Minervini VCP | offen |  |  |
@@ -134,6 +134,10 @@ Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds 
 - `assets/site-navigation.js` Leisten: Fundamental „Ranglisten · Branchen · Methodik“ (`#/ranglisten`, `#/branchen`) samt `core/tests/shell-navigation.test.mjs` und `scripts/quality/shell-browser-qa.mjs`; Technical „Muster“, Elliott „Methodik“, Discover „Swipen“ → `#/swipen`.
 - `core/stock-context.js#parse`: einteilige Fundamental-Routen `#/ranglisten`, `#/branchen`, `#/suche`, `#/entdecken` nicht als Aktie lesen.
 - `scripts/quality/currency-debt-patterns.mjs`: `fundamental` in `SCAN_DIRS`.
+- Elliott-Leiste: „Methodik“ statt „Suche“. Elliott-Größentest EH-15 bei 62,3 von 64 KB.
+- Datenfrage an Strang A: negative Invalidierungspreise im Elliott-Index (z. B. CHGA −4,38 $), Karte zeigt „–“.
+- UIP-Revisionsnummern der Welt-PRs (z. B. #1356 UIP-R30) beim Einbau neu vergeben (`uip.mjs`).
+- Gemeinsamer Sparkline-Lader und `VUUI`-Lesart-Karte in `assets/`.
 - `VUUI.navcard` mit eigenem Symbol (Fundamental hat lokal nachgebaut).
 - Fundamental-Produktdokument: Urteilsregel F06 in einem Satz (schwächere der beiden Discover-Stufen aus `fundamentals.health`).
 
