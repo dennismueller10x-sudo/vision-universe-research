@@ -9,18 +9,30 @@
   var SEEN_KEY = 'vu-welcome-seen-v1', ICONS = '/assets/product-icons.svg#';
   var MIN_S = 15, MAX_S = 45;
 
-  // Produkte in der Reihenfolge des globalen Menues (assets/site-navigation.js).
-  // Produktwelten auf der Willkommensseite (4 x 2); Elliott, Hedgefonds und alle weiteren ueber "Alle Produkte" (globales Menue).
+  // Neun Welten in der Reihenfolge des Menue-Rasters (assets/site-navigation.js), danach AI Atlas als eigene Zeile (Mockup E02).
   var PRODUCTS = [
-    { id: 'discover', name: 'Discover', href: '/discover/#/', text: 'Märkte' },
-    { id: 'quant', name: 'Quant', href: '/quant/', text: 'Faktoren' },
-    { id: 'fundamental', name: 'Fundamental', href: '/fundamental/#/', text: 'Kennzahlen' },
-    { id: 'technical', name: 'Technical', href: '/technical/#/', text: 'Charts' },
-    { id: 'supertrader', name: 'Supertrader', href: '/supertrader/', text: 'Methoden' },
-    { id: 'screener', name: 'Screener', href: '/screener/', text: 'Aktien finden' },
-    { id: 'vorsorge', name: 'Vorsorge', href: '/vorsorge/#/', text: 'ETFs & Rente' },
-    { id: 'atlas', name: 'AI Atlas', href: '/ask/', text: 'Frag frei' }
+    { id: 'discover', name: 'Discover', href: '/discover/#/', text: 'Aktien entdecken' },
+    { id: 'quant', name: 'Quant', href: '/quant/', text: 'Faktoren je Aktie' },
+    { id: 'technical', name: 'Technical', href: '/technical/#/', text: 'Charts und Muster' },
+    { id: 'fundamental', name: 'Fundamental', href: '/fundamental/#/', text: 'Zahlen aus SEC-Berichten' },
+    { id: 'supertrader', name: 'Supertrader', href: '/supertrader/', text: 'Methoden der Profis' },
+    { id: 'hedgefonds', name: 'Hedgefonds', href: '/hedgefonds/', text: 'Was Investoren halten' },
+    { id: 'elliott', name: 'Elliott', href: '/elliott/', text: 'Wellenstruktur' },
+    { id: 'screener', name: 'Screener', href: '/screener/', text: 'Eigene Filter' },
+    { id: 'vorsorge', name: 'Vorsorge', href: '/vorsorge/#/', text: 'Sparplan und Rente' },
+    { id: 'atlas', name: 'AI Atlas', href: '/ask/', text: 'Frag in deinen Worten' }
   ];
+  // Ziel aus der Startseite („Wo stehst du?“, Schluessel vu-start-path) mit dem naechsten Schritt.
+  var GOALS = {
+    anfaenger: { label: 'Dein Ziel: Mit einem Sparplan anfangen', step: 'Starte mit dem Vorsorge-Planer', href: '/vorsorge/#/plan' },
+    verstehen: { label: 'Dein Ziel: Eine Aktie verstehen', step: 'Starte mit NVIDIA im Überblick', href: '/discover/#/s/US_REAL/NVDA' },
+    profi: { label: 'Dein Ziel: Wie ein Profi analysieren', step: 'Starte mit den Methoden', href: '/supertrader/strategies/' }
+  };
+  var NO_GOAL = { label: 'Noch kein Ziel gewählt', step: 'Wähle deinen Einstieg', href: '/#where-title' };
+  function goalFor(key) { return GOALS[key] || NO_GOAL; }
+  var DAYS = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+  var MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+  function dayLine(d) { return DAYS[d.getDay()] + ', ' + d.getDate() + '. ' + MONTHS[d.getMonth()]; }
 
   function storyDuration(story) {
     return (story.slides || []).reduce(function (sum, slide) { return sum + (Number(slide.duration) || 0); }, 0);
@@ -76,7 +88,7 @@
     return Number(p[2]) + '. ' + ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'][Number(p[1]) - 1] + ' ' + p[0];
   }
 
-  var api = { PRODUCTS: PRODUCTS, validateStories: validateStories, validateNews: validateNews, sortNews: sortNews, storyDuration: storyDuration, greeting: greeting, formatDate: formatDate, MIN_S: MIN_S, MAX_S: MAX_S };
+  var api = { PRODUCTS: PRODUCTS, GOALS: GOALS, goalFor: goalFor, dayLine: dayLine, validateStories: validateStories, validateNews: validateNews, sortNews: sortNews, storyDuration: storyDuration, greeting: greeting, formatDate: formatDate, MIN_S: MIN_S, MAX_S: MAX_S };
   if (typeof module === 'object' && module.exports) module.exports = api;
   global.VUWelcome = api;
   if (typeof document === 'undefined') return;
@@ -154,7 +166,7 @@
   function renderProducts(host) {
     var list = h('ul', 'wk-products');
     PRODUCTS.forEach(function (p) {
-      var li = h('li'), a = h('a', 'wk-product'), ic = h('span', 'wk-product-icon'), go = h('span', 'wk-product-go');
+      var li = h('li', p.id === 'atlas' ? 'wk-product-row' : ''), a = h('a', 'wk-product'), ic = h('span', 'wk-product-icon'), go = h('span', 'wk-product-go');
       a.href = p.href; a.dataset.product = p.id;
       ic.appendChild(icon(p.id)); go.innerHTML = CHEVRON;
       a.append(ic, go, h('strong', 'wk-product-name', p.name), h('span', 'wk-product-text', p.text));
@@ -192,7 +204,8 @@
     if (!text) return;
     text.hidden = false; if (title) title.style.webkitLineClamp = '';
     var bottom = function () { var r = box.getBoundingClientRect(); return r.bottom - parseFloat(getComputedStyle(box).paddingBottom); };
-    for (var n = 6; n >= 1; n--) { text.style.webkitLineClamp = String(n); if (text.getBoundingClientRect().bottom <= bottom() + 1) return; }
+    // Seit dem Redesign hat die Karte ihre natuerliche Hoehe: hoechstens drei Zeilen Text.
+    for (var n = 3; n >= 1; n--) { text.style.webkitLineClamp = String(n); if (text.getBoundingClientRect().bottom <= bottom() + 1) return; }
     text.hidden = true;
     if (title && title.getBoundingClientRect().bottom > bottom() + 1) title.style.webkitLineClamp = '1';
   }
@@ -387,8 +400,20 @@
   function init() {
     measureTop(); global.addEventListener('resize', measureTop);
     if (global.customElements && customElements.whenDefined) customElements.whenDefined('vu-navigation').then(function () { requestAnimationFrame(measureTop); });
-    var hello = doc.getElementById('wk-hello');
-    if (hello) hello.textContent = greeting(new Date().getHours());
+    var now = new Date(), title = doc.getElementById('wk-title'), date = doc.getElementById('wk-date');
+    if (date) date.textContent = dayLine(now);
+    if (title) title.textContent = greeting(now.getHours());
+    var g = null; try { g = global.localStorage.getItem('vu-start-path'); } catch (e) { g = null; }
+    var goal = goalFor(g), card = doc.getElementById('wk-goal');
+    if (card) { card.href = goal.href; doc.getElementById('wk-goal-label').textContent = goal.label; doc.getElementById('wk-goal-step').textContent = goal.step; }
+    // Anzeigename aus dem Konto (GET /v1/me), nur wenn Konten verbunden sind und jemand angemeldet ist.
+    var A = global.VUAccount;
+    if (A && A.available && A.available() && title) A.get('/v1/session').then(function (r) {
+      if (!(r.ok && r.data && r.data.authenticated)) return null;
+      return A.get('/v1/me').then(function (m) { var n = m.ok && m.data && m.data.profile && m.data.profile.displayName; if (n) title.textContent = greeting(now.getHours()) + ', ' + n; });
+    }).catch(function () {});
+    // Produkt-Leiste „Mein Bereich“ (Platz 0).
+    if (global.VUNavigation) global.VUNavigation.dock({});
     renderProducts(doc.getElementById('wk-products'));
     flash();
     var hl = doc.getElementById('wk-highlights'), news = doc.getElementById('wk-news');

@@ -16,15 +16,16 @@
 <main class="ka md" id="main">
 <header class="md-head">
 <p class="ka-eyebrow">Mein Dashboard</p>
-<h1 class="md-title" id="md-hello">Dein Bereich</h1>
-<p class="md-sub" id="md-sub" hidden><span class="ka-badge" id="md-plan"></span><a class="ka-link" href="/konto/">Konto und Abo</a></p>
+<div class="md-titlerow"><h1 class="md-title" id="md-hello">Watchlist</h1><span class="md-plan" id="md-plan" hidden></span></div>
+<p class="md-sub" id="md-sub" hidden><a class="ka-link" href="/konto/">Konto und Abo</a></p>
 </header>
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
 <div class="ka-skeleton" id="md-loading" aria-hidden="true"></div>
 <div class="md-grid" id="md-app" hidden>
 
 <section class="md-card md-watch" id="md-watchlist" aria-labelledby="md-watch-title">
-<div class="md-sec-head"><h2 id="md-watch-title">Watchlist</h2><span class="md-count" id="md-watch-count"></span><a class="ka-link md-more" id="md-watch-all" href="/konto/watchlist/">Alle Kennzahlen</a></div>
+<div class="md-sec-head"><h2 id="md-watch-title" class="md-visually-hidden">Watchlist</h2><span class="md-count" id="md-watch-count"></span></div>
+<div class="md-day" id="md-day" hidden><p class="md-day-date" id="md-day-date"></p><p class="md-day-big"><b id="md-day-n"></b> <span id="md-day-unit"></span></p><p class="md-day-sub">Schlusskurse aus den veröffentlichten Daten</p><ul class="md-day-chips" id="md-day-chips"></ul></div>
 <div class="wl-add md-add">
 <label class="ka-legend md-visually-hidden" for="md-add">Aktie hinzufügen</label>
 <input class="ka-input" id="md-add" type="search" autocomplete="off" spellcheck="false" placeholder="Aktie hinzufügen, z. B. NVDA" role="combobox" aria-expanded="false" aria-controls="md-results" aria-autocomplete="list">
@@ -36,6 +37,8 @@
 <p class="ka-muted">Suche oben nach einem Unternehmen oder tippe auf einer Aktienseite auf das Lesezeichen. Deine Auswahl gehört zu deinem Konto und ist auf jedem Gerät da.</p>
 <div class="ka-actions"><a class="ka-btn ka-btn--secondary" href="/discover/#/einzeln/US_REAL">Aktien entdecken</a></div>
 </div>
+<a class="md-navcard" id="md-watch-all" href="/konto/watchlist/"><span class="md-navcard-text"><b>Alle Kennzahlen</b><span>Faktoren, Signale, Notizen je Aktie</span></span><span class="vu-pro">PRO-ANSICHT</span></a>
+<a class="md-navcard" href="#/gespeichert"><span class="md-navcard-text"><b>Auf diesem Gerät gemerkt</b><span>Listen aus Discover und Quant übernehmen</span></span></a>
 <p class="md-fine" id="md-watch-fine">Schlusskurse aus den veröffentlichten Daten der Produktwelten, in der Währung des Listings. Keine Anlageberatung.</p>
 </section>
 

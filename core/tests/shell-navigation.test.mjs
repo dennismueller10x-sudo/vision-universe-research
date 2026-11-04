@@ -29,7 +29,8 @@ test('every product dock starts with the product name, never Home or Start, and 
     ['vorsorge', ['Vorsorge','Planer','ETFs','Portfolio']],
     ['screener', ['Screener','Filter','Treffer','Gespeichert']],
     ['supertrader', ['Supertrader','Methoden','Signale','Backtests']],
-    ['hedgefonds', ['Hedgefonds','Investoren','Aktien','Smart Money']]
+    ['hedgefonds', ['Hedgefonds','Investoren','Aktien','Smart Money']],
+    ['mein', ['Mein Bereich','Watchlist','Gespeichert','Konto']]
   ]);
   for (const p of PRODUCTS) {
     assert.equal(p.items[0][1], p.label);
@@ -45,7 +46,8 @@ test('every product dock starts with the product name, never Home or Start, and 
 test('dock targets are existing routes of their products', () => {
   const files = { '/elliott/': 'elliott/index.html', '/discover/': 'discover/index.html', '/quant/': 'quant/index.html', '/vorsorge/': 'vorsorge/index.html', '/screener/': 'screener/index.html',
     '/supertrader/': 'supertrader/index.html', '/supertrader/strategies/': 'supertrader/strategies/index.html', '/supertrader/signals/': 'supertrader/signals/index.html',
-    '/supertrader/backtests/': 'supertrader/backtests/index.html', '/hedgefonds/': 'hedgefonds/index.html', '/fundamental/': 'fundamental/index.html', '/technical/': 'technical/index.html' };
+    '/supertrader/backtests/': 'supertrader/backtests/index.html', '/hedgefonds/': 'hedgefonds/index.html', '/fundamental/': 'fundamental/index.html', '/technical/': 'technical/index.html',
+    '/willkommen/': 'willkommen/index.html', '/mein-dashboard/': 'mein-dashboard/index.html', '/konto/': 'konto/index.html' };
   for (const p of PRODUCTS) for (const [, , href] of p.items) {
     const path = new URL(href, 'https://x').pathname;
     assert.ok(files[path], `${href}: unbekannte Seite`);
@@ -205,7 +207,7 @@ test('menu tiles keep original product symbols, load the sprite lazily and stay 
   assert.match(source,/<details class="more">/);
   assert.match(source,/'In '\+group\.label/);
   assert.match(source,/filter\(n=>n\.getClientRects\(\)\.length&&!n\.closest\('\[hidden\]'\)\)/);
-  assert.match(source,/dockProductIcon\(\(groups\.find\(g=>g\.id===product\.id\)\|\|\{icon:product\.id\}\)\.icon\)/);
+  assert.match(source,/dockProductIcon\(\(groups\.find\(g=>g\.id===product\.id\)\|\|\{icon:product\.icon\|\|product\.id\}\)\.icon\)/);
   const light=styles(THEMES.light);
   assert.match(light,/\.hb\{width:44px;height:44px/);
   assert.match(light,/\.links a,\.mine a,\.more summary\{[^}]*min-height:48px/);
@@ -312,6 +314,19 @@ test('Technical has its own dock, its own menu group and the exact sprite geomet
 });
 
 test('a dock product without its own menu group still gets its sprite icon', () => {
-  assert.match(source, /\(groups\.find\(g=>g\.id===product\.id\)\|\|\{icon:product\.id\}\)\.icon/);
-  for (const p of PRODUCTS) assert.ok(DOCK_PRODUCT_ICONS[(groups.find(g => g.id === p.id) || { icon: p.id }).icon], p.id + ': Dock-Symbol vorhanden');
+  assert.match(source, /\(groups\.find\(g=>g\.id===product\.id\)\|\|\{icon:product\.icon\|\|product\.id\}\)\.icon/);
+  for (const p of PRODUCTS) {
+    const icon = (groups.find(g => g.id === p.id) || { icon: p.icon || p.id }).icon;
+    // Mein Bereich ist keine Produktwelt mit Sprite-Symbol: es traegt das Linien-Symbol der Person.
+    if (p.id === 'mein') { assert.match(dockProductIcon(icon), /class="line"/); assert.match(dockProductIcon(icon), /<circle/); continue; }
+    assert.ok(DOCK_PRODUCT_ICONS[icon], p.id + ': Dock-Symbol vorhanden');
+  }
+  // Mein Bereich: Start, Watchlist, Gespeichert, Konto; Anmeldung und Bestellweg tragen keine Leiste.
+  const mein = PRODUCTS.find(p => p.id === 'mein');
+  assert.equal(mein.active(loc('/willkommen/')), 'mein');
+  assert.equal(mein.active(loc('/mein-dashboard/#/gespeichert')), 'gespeichert');
+  assert.equal(mein.active(loc('/konto/watchlist/')), 'watchlist');
+  for (const url of ['/konto/anmelden/', '/konto/tarife/', '/konto/registrieren/']) assert.equal(PRODUCTS.filter(p => p.match(loc(url).pathname, loc(url))).length, 0, url);
+  assert.match(readFileSync(join(root, 'willkommen/app.js'), 'utf8'), /VUNavigation\.dock\(\{\}\)/);
+  assert.match(readFileSync(join(root, 'mein-dashboard/dashboard.js'), 'utf8'), /VUNavigation\.dock\(\{\}\)/);
 });

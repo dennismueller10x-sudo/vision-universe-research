@@ -173,3 +173,42 @@ html.wk-story-open,html.wk-story-open body{overflow:hidden}
 .wk-flash{flex:none;margin:0;padding:8px 12px;border-radius:12px;background:var(--wk-soft);border:1px solid var(--wk-line);font-size:13px;line-height:1.4}
 @media (max-width:359px){.wk-mine-main{gap:10px;padding-right:10px}.wk-mine-account{padding:0 12px}}
 @media (prefers-reduced-motion:reduce){.wk-mine-main{transition:none}}
+
+/* ===== Redesign 11/2026 (Mockup E02): Start von „Mein Bereich“. Die Seite scrollt normal; die Produkt-Leiste
+   „Mein Bereich“ liegt unten (Abstand über --vu-dock-space aus site-navigation.css). Bausteine aus der
+   gemeinsamen Grundlage: Karten #f4f4f4, Neongrün als einzige Akzentfläche. */
+.wk-body{--wk-card:var(--vu-card,#f4f4f4);--wk-line:transparent;--wk-muted:var(--vu-mute,#6e6e6e)}
+.wk{height:auto;min-height:0;gap:0;padding:6px 18px 24px;overflow:visible}
+.wk .wk-sec{margin-top:24px}
+.wk-top{margin:4px 0 12px}
+.wk-date{margin:0;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--wk-muted)}
+.wk-title{margin:2px 0 0;font-size:34px;font-weight:900;letter-spacing:-.045em;line-height:1.02}
+.wk-hero-card{height:clamp(200px,30vh,340px);border:0;border-radius:20px}
+.wk-hero .wk-eyebrow{display:inline-block;width:max-content;padding:3px 8px;border-radius:7px;background:var(--vu-lime,#c8f531);color:#000;font-size:10.5px;letter-spacing:.06em}
+.wk-goal{display:flex;align-items:center;gap:12px;margin-top:10px;padding:12px 14px;border-radius:20px;background:var(--vu-lime,#c8f531);color:#000;text-decoration:none;min-height:64px}
+.wk-goal-icon{width:42px;height:42px;flex:none;display:grid;place-items:center;border-radius:12px;background:#000;color:var(--vu-lime,#c8f531)}
+.wk-goal-icon svg{width:22px;height:22px}
+.wk-goal-copy{flex:1;min-width:0}.wk-goal-copy small{display:block;font-size:12px;font-weight:700;opacity:.75}.wk-goal-copy strong{display:block;font-size:15px;font-weight:900}
+.wk-goal-go{width:20px;height:20px;flex:none}
+.wk-goal:focus-visible{outline:2px solid #000;outline-offset:3px}
+.wk-head h2{font-size:17px;font-weight:800;letter-spacing:-.02em}
+.wk-hl-list{--wk-w:148px}
+.wk-vid-thumb{aspect-ratio:148/200;border:0;border-radius:16px}
+.wk-products{grid-template-columns:repeat(3,minmax(0,1fr))}
+.wk-product{border:0;border-radius:18px;background:var(--wk-card);padding:12px 10px;min-height:104px}
+.wk-product-go{display:none}
+.wk-product-row{grid-column:1/-1}
+.wk-product-row .wk-product{flex-direction:row;align-items:center;gap:12px;min-height:64px}
+.wk-product-row .wk-product-name{flex:none}
+.wk-news{border:0;background:var(--wk-card);border-radius:20px}
+@media (min-width:768px){
+  .wk{height:auto;min-height:0;padding:28px 24px 40px}
+  .wk-title{font-size:48px}
+  .wk-goal{max-width:560px}
+  .wk-products{grid-template-columns:repeat(3,minmax(0,240px))}
+}
+.wk-newsbox{flex:none;min-height:0}
+.wk-news{flex:none;min-height:150px;padding:14px}
+.wk-news-copy h3,.wk-news-item h3{font-size:17px}
+.wk-news-text{font-size:13px;-webkit-line-clamp:3}
+.wk-product-text{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.3}
