@@ -203,6 +203,49 @@ jobs:
           exit 1
 
   # ===================================================================
+  # PIT-HISTORIEN (FV-8, P2.3): FEHLT EINER GEZAEHLTEN REIHE EIN MONAT?
+  #
+  # Die monatlichen Zeitgates (Faktor-, Index- und Setup-Historie) werden
+  # mit jeder Luecke um einen Monat spaeter erfuellbar. Der Job liest nur
+  # den Stand auf main (pit-snapshot-integrity.cjs, keine Schwelle, kein
+  # Artefakt, kein Netz) und meldet einen Integritaetsfehler oder einen
+  # fehlenden Kalendermonat als RESULT_PIT an den Alarm. Gleiche Termine
+  # wie `produktstand` (nach der Nachtkette).
+  # ===================================================================
+  pit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'schedule' && github.event.schedule != '15 23 * * 1-5' && github.event.schedule != '45 16-19 * * 1-5' && github.event.schedule != '55 22 * * 1-5') ||
+      contains(github.event.head_commit.message, '[freshness-check]')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: PIT-Historien lueckenlos und unveraendert?
+        run: |
+          set -euo pipefail
+          node scripts/quant/research/pit-snapshot-integrity.cjs --fail-on-missing-month \
+            --alarm-detail freshness-pit.txt --out "$RUNNER_TEMP/pit-snapshot-integrity.json"
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          { echo '### PIT-Historien'; echo ''; echo '```'; cat freshness-pit.txt 2>/dev/null || echo "kein Ergebnis"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Befund fuer den Alarm sichern
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: pit-befund
+          path: freshness-pit.txt
+          if-no-files-found: ignore
+          retention-days: 7
+
+  # ===================================================================
   # ALARM: VERALTETE DISCOVER-/MARKTDATEN BLEIBEN NICHT UNBEMERKT.
   #
   # Bis 10/2026 war das Ergebnis dieses Monitors ein roter Lauf in der
@@ -211,7 +254,7 @@ jobs:
   # offen bleibt, bis ein gruener Monitorlauf es schliesst.
   # ===================================================================
   alarm:
-    needs: [monitor, produktstand, supertrader]
+    needs: [monitor, produktstand, supertrader, pit]
     if: always() && github.ref == 'refs/heads/main' && github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -229,6 +272,16 @@ jobs:
         with:
           name: freshness-befund
           path: ${{ runner.temp }}/befund
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: pit-befund
+          path: ${{ runner.temp }}/befund
+      - name: Befunde zusammenfuehren
+        continue-on-error: true
+        run: |
+          cd "$RUNNER_TEMP/befund" 2>/dev/null || exit 0
+          cat freshness-live.txt freshness-pit.txt > freshness-alarm.txt 2>/dev/null || true
       - name: Alarm oeffnen, ergaenzen oder schliessen
         # Der Bote darf den Befund nicht veraendern: ein Zustellfehler macht
         # den Lauf nicht rot (pages-release verlangt conclusion == success).
@@ -240,7 +293,8 @@ jobs:
           RESULT_MONITOR: ${{ needs.monitor.result }}
           RESULT_PRODUKTSTAND: ${{ needs.produktstand.result }}
           RESULT_SUPERTRADER: ${{ needs.supertrader.result }}
-          ALARM_DETAIL_FILE: ${{ runner.temp }}/befund/freshness-live.txt
+          RESULT_PIT: ${{ needs.pit.result }}
+          ALARM_DETAIL_FILE: ${{ runner.temp }}/befund/freshness-alarm.txt
         run: node scripts/ci/pipeline-alarm.mjs
 
   # ===================================================================

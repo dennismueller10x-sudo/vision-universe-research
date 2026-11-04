@@ -154,13 +154,13 @@ Damit sind alle sechs Punkte der Vorlage A1–A6 technisch vorbereitet. Es gibt 
 | Messbarkeit | `setup-oos-segments.js#projectReadiness` | **neu**: frühester Messzeitpunkt je Art aus den echten Ereignistagen (`setup-outcomes-v1.json`, Feld `events`); Zukunft als Schätzung (ein Ereignistag je Wochentag, ohne Feiertage; Reife nach 183 Kalendertagen wie die Builder-ETA) |
 | Bericht | `scripts/quant/research/setup-oos-report.mjs --out <datei>` (`setup-oos-report-1.0.0`), committet als `docs/quant/research/setup-oos-a1-a6-fv6.json` | **neu**, `gateInput: false`, `productionApproved: false` |
 
-**Einbindung in den Zertifizierungs-Builder.** `build-backtest-certification.mjs` wertet je Ereignisart nur aus, wenn die **freigegebene** Segmentierung (`segmentationFromMethodology`) ein Feld `population` trägt; die Zeilen kommen dann aus `--oos-rows <datei>`. Ohne beides läuft der bisherige Aufruf. Vorher/Nachher am 03.11.2026: Zertifizierungsartefakt mit altem und neuem Code identisch (ohne `generatedAt`/`asOf`), auch mit `--oos-rows` (Test `quant/tests/setup-oos-segments.test.mjs`). Für den späteren Betrieb fehlt noch ein Pipeline-Schritt, der `--oos-rows-out` schreibt und an den Builder übergibt (eigene Freigabe, Workflow-Änderung).
+**Einbindung in den Zertifizierungs-Builder.** `build-backtest-certification.mjs` wertet je Ereignisart nur aus, wenn die **freigegebene** Segmentierung (`segmentationFromMethodology`) ein Feld `population` trägt; die Zeilen kommen dann aus `--oos-rows <datei>`. Ohne beides läuft der bisherige Aufruf. Vorher/Nachher am 03.11.2026: Zertifizierungsartefakt mit altem und neuem Code identisch (ohne `generatedAt`/`asOf`), auch mit `--oos-rows` (Test `quant/tests/setup-oos-segments.test.mjs`). Der Materialisierungslauf (`product-intelligence-materialization.yml`) schreibt die Zeilen mit `--oos-rows-out "$RUNNER_TEMP/setup-oos-rows.json"` (nie unter `quant/data`, nie committet) und gibt sie mit `--oos-rows` an den Builder (04.11.2026). Ohne freigegebene Segmentierung liest der Builder die Datei nicht; beide Artefakte bleiben bytegleich.
 
-**Stand laut Bericht (Datenstand 2026-10-30, Vorlage A1–A6 als `PROPOSAL_NOT_APPROVED`):**
+**Stand laut Bericht (Datenstand 2026-11-03, Vorlage A1–A6 als `PROPOSAL_NOT_APPROVED`):**
 - Gate wie im Zertifizierungsartefakt: `FAIL / OOS_NOT_MEASURABLE_YET`, 0 abgeschlossene M6-Ergebnisse.
 - Je Art (SETUP_NEW, SETUP_CONFIRMED, NEXT_CLOSE, M6): `OOS_NOT_MEASURABLE_YET`.
-- Lernsegment (Ereignisse vor 2026-11-29): 23 von 30 Ereignistagen beobachtet, 30 voraussichtlich am 2026-11-10, reif etwa 2027-05-12.
+- Lernsegment (Ereignisse vor 2026-11-29): 25 von 30 Ereignistagen beobachtet, 30 voraussichtlich am 2026-11-10, reif etwa 2027-05-12.
 - Testsegment (ab 2027-05-31): 30 Ereignistage frühestens 2027-07-09, reif etwa **2028-01-08**. Das ist der früheste Messzeitpunkt (`INSUFFICIENT_HISTORY`).
 - Die Freigabe muss weiter vor dem ersten M6-Ergebnis erfolgen (Schätzung 2027-03-26).
 
-Nach einer Freigabe ist für das Gate nur noch nötig: Feld `oosSegmentation` mit `population` und `approval` im Vertrag (Versionssprung, eigener PR mit Vorher/Nachher) und der Pipeline-Schritt für den Zeilenexport.
+Nach einer Freigabe ist für das Gate nur noch nötig: Feld `oosSegmentation` mit `population` und `approval` im Vertrag (Versionssprung, eigener PR mit Vorher/Nachher). Der Pipeline-Schritt für den Zeilenexport ist vorhanden.

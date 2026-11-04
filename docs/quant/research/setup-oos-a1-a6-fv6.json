@@ -2,29 +2,29 @@
  "schemaVersion": "setup-oos-report-1.0.0",
  "engine": "setup-oos-segments-1.0.0",
  "evaluator": "setup-oos-1.0.0",
- "asOf": "2026-10-30",
+ "asOf": "2026-11-03",
  "gateInput": false,
  "productionApproved": false,
  "note": "Research-Bericht FV-6. Aendert kein Gate, keine Schwelle und keinen Zertifizierungsstatus. Ein PASS hiesse nur „Richtung repliziert“ (OOS_DIRECTIONAL_REPLICATION), keinen wirtschaftlichen Vorteil.",
  "sources": {
   "outcomes": {
    "schemaVersion": "setup-outcomes-1.0.0",
-   "asOf": "2026-10-30",
+   "asOf": "2026-11-03",
    "returnType": "SPLIT_ADJUSTED_PRICE",
    "history": {
-    "dates": 24,
+    "dates": 26,
     "from": "2026-09-10",
-    "to": "2026-10-30",
-    "spanDays": 50,
+    "to": "2026-11-03",
+    "spanDays": 54,
     "medianGapDays": 1,
     "maxGapDays": 14,
-    "titlesLatest": 5576,
-    "contentHashVerified": 24
+    "titlesLatest": 5574,
+    "contentHashVerified": 26
    },
    "transitions": {
-    "SETUP_CONFIRMED": 170,
-    "SETUP_NEW": 2084,
-    "SETUP_WEAKENED": 2526
+    "SETUP_CONFIRMED": 192,
+    "SETUP_NEW": 2227,
+    "SETUP_WEAKENED": 2736
    }
   },
   "rows": null,
@@ -155,7 +155,7 @@
    "schemaVersion": "setup-oos-segments-1.0.0",
    "basis": "ESTIMATE_ONE_EVENT_DAY_PER_WEEKDAY_NO_HOLIDAYS",
    "maturityDays": 183,
-   "asOf": "2026-10-30",
+   "asOf": "2026-11-03",
    "countBy": "EVENT_DAY",
    "minPerSegment": 30,
    "cutDate": "2027-05-31",
@@ -166,10 +166,10 @@
     "from": "2026-09-24",
     "to": "2026-11-29",
     "observed": {
-     "eventDays": 23,
-     "count": 23,
+     "eventDays": 25,
+     "count": 25,
      "first": "2026-09-24",
-     "last": "2026-10-30"
+     "last": "2026-11-03"
     },
     "projected": true,
     "minReachedOn": "2026-11-10",
@@ -197,7 +197,7 @@
    "schemaVersion": "setup-oos-segments-1.0.0",
    "basis": "ESTIMATE_ONE_EVENT_DAY_PER_WEEKDAY_NO_HOLIDAYS",
    "maturityDays": 183,
-   "asOf": "2026-10-30",
+   "asOf": "2026-11-03",
    "countBy": "EVENT_DAY",
    "minPerSegment": 30,
    "cutDate": "2027-05-31",
@@ -208,10 +208,10 @@
     "from": "2026-09-24",
     "to": "2026-11-29",
     "observed": {
-     "eventDays": 23,
-     "count": 23,
+     "eventDays": 25,
+     "count": 25,
      "first": "2026-09-24",
-     "last": "2026-10-30"
+     "last": "2026-11-03"
     },
     "projected": true,
     "minReachedOn": "2026-11-10",

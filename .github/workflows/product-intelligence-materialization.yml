@@ -319,16 +319,21 @@ jobs:
 
       # SETUP-ERGEBNISSE NUR AUS VEROEFFENTLICHTEN STAENDEN. Jeder Stand wird
       # gegen seinen contentHash geprueft; Kurse nur zur Laufzeit.
+      # Setup-OOS A6: die abgeschlossenen Ereigniszeilen gehen nur nach
+      # RUNNER_TEMP (nie nach quant/data, nie committet) und an den
+      # Zertifizierungs-Builder. Er liest sie erst, wenn der Vertrag eine
+      # FREIGEGEBENE Segmentierung mit population traegt (FV-6); bis dahin
+      # bleiben beide Artefakte bytegleich (setup-oos-segments.test.mjs).
       - name: Setup outcomes from published states
         if: steps.noetig.outputs.noop != 'true'
-        run: node --max-old-space-size=6144 scripts/quant/build-setup-outcomes.mjs --work-dir "$RUNNER_TEMP/canonical-history"
+        run: node --max-old-space-size=6144 scripts/quant/build-setup-outcomes.mjs --work-dir "$RUNNER_TEMP/canonical-history" --oos-rows-out "$RUNNER_TEMP/setup-oos-rows.json"
 
       # Der maschinenlesbare Zertifizierungs-Check je Backtest-Art. Laeuft
       # taeglich; eine Art wechselt ohne manuellen Schritt, sobald ihre
       # Gates bestehen (ausser der Methodikvertrag verlangt eine Freigabe).
       - name: Backtest certification check
         if: steps.noetig.outputs.noop != 'true'
-        run: node scripts/quant/build-backtest-certification.mjs
+        run: node scripts/quant/build-backtest-certification.mjs --oos-rows "$RUNNER_TEMP/setup-oos-rows.json"
 
       - name: Measure backtest readiness per kind (A-F)
         if: steps.noetig.outputs.noop != 'true'

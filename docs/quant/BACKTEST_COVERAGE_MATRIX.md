@@ -134,7 +134,7 @@ Status **COLLECTING_HISTORY**, Stufe TESTED, Vertrauen NOT_READY, Bereitschaft N
 | returnBasis | STRUCTURAL | FAIL | TOTAL_RETURN_NOT_IN_THIS_RUN | – | heute technisch | das Setup-Ergebnisartefakt wurde mit Kursrendite gebaut (öffentliche Jahresreihe ohne Gesamtrendite); mit der kanonischen Historie (--work-dir, Pipeline) rechnet build-setup-outcomes.mjs Gesamtrendite. Lösung im Erzeuger-Lauf, kein Handeingriff in quant/data. | – |
 | survivorship | STRUCTURAL | PASS | – | – | – | – | – |
 | entryVariant | QUALITY | FAIL | VARIANTS_NOT_MEASURABLE_YET | Δ Median ≤ 1 Pp | nur durch Zeit/Daten | messbar erst mit abgeschlossenen Ergebnissen; ob die Varianten übereinstimmen, ist offen (bei Abweichung über 1 Pp: Owner-Entscheidung). | – |
-| oos | QUALITY | FAIL | OOS_NOT_MEASURABLE_YET | – | nur mit Owner-Entscheidung | braucht die Segmentdefinition A1–A6 (SETUP_OOS_DECISION_A1_A6.md, spätestens vor etwa 2027-03-26) und danach 30 effektive Fälle je Segment (Zeit). | – |
+| oos | QUALITY | FAIL | OOS_NOT_MEASURABLE_YET | – | nur mit Owner-Entscheidung | braucht die Segmentdefinition A1–A6 (SETUP_OOS_DECISION_A1_A6.md, spätestens vor etwa 2027-03-26) und danach 30 effektive Fälle je Segment (Zeit). | FV6 (Abschnitt I) |
 | ownerApproval | OWNER | OFFEN | REQUIRED | – | nur mit Owner-Entscheidung | der Methodikvertrag (setup-state-v1.json requirements.backtestCertification) verlangt eine ausdrückliche Freigabe, auch wenn alle Gates bestehen. | – |
 
 ### STRATEGY_BACKTEST · Strategie-Backtest
@@ -253,9 +253,9 @@ Replay, Pattern und Signal haben keine zeitabhängigen Gates: Ihre Blocker sind 
 ## H. Freigabevorlagen (Owner)
 
 **FV-1 · Setup-Gate independence: Lesart der Schwelle**
-- Lage: Die Methodik nennt die Schwelle independentWeeks: 20 (seit Commit 7cd1c3656a vom 2026-10-01), der Builder zählt im selben Commit verschiedene Kalendermonate mit Ereignissen (Label „verschiedene Monate mit Ereignissen“). Stand 2026-10-31: A Monate 2/20, frühestens 2028-04, das Gate bindet (Setup frühestens 2028-04); B ISO-Wochen 6/20, frühestens 2027-02-01, das Gate bindet nicht mehr (Setup-Zeitgates frühestens 2027-03-26, Untergrenze; oos bleibt offen). Keine der beiden Zählungen misst Unabhängigkeit (alle M6-Fenster überlappen, V10: effektive Fallzahl etwa 12,6 je Ereignisdatum). Vier frühere Vorlagen (V6, V8, V9, V10) sind nicht freigegeben.
+- Lage: Die Methodik nannte die Schwelle bis #1254 independentWeeks: 20 (seit Commit 7cd1c3656a vom 2026-10-01), der Builder zählt im selben Commit verschiedene Kalendermonate mit Ereignissen (Label „verschiedene Monate mit Ereignissen“). Stand 2026-10-31: A Monate 2/20, frühestens 2028-04, das Gate bindet (Setup frühestens 2028-04); B ISO-Wochen 6/20, frühestens 2027-02-01, das Gate bindet nicht mehr (Setup-Zeitgates frühestens 2027-03-26, Untergrenze; oos bleibt offen). Keine der beiden Zählungen misst Unabhängigkeit (alle M6-Fenster überlappen, V10: effektive Fallzahl etwa 12,6 je Ereignisdatum). Vier frühere Vorlagen (V6, V8, V9, V10) sind nicht freigegeben.
 - Zur Entscheidung: A) Monate bestätigen und das Feld ehrlich benennen (eventCalendarMonths, Zählung unverändert, nur Methodik-PR); B) Zählung auf ISO-Wochen (Gate-Änderung in build-backtest-certification.mjs mit Vorher/Nachher; Setup rund 13 Monate früher); C) V10-Vorschlag: Umbenennung wie A und ein neues Gate auf der effektiven Fallzahl (N_eff ≥ 50, ≥ 4 disjunkte M6-Fenster, frühestens 2029).
-- Hinweis: Empfehlung aus der Analyse (keine Änderung in diesem PR): A jetzt, C als eigene Entscheidung; B nicht, weil es das bindende Gate ohne statistischen Beleg um rund 13 Monate lockert. Bis zur Entscheidung gilt A unverändert. A ist als eigener Entscheidungs-PR #1254 vorbereitet (Draft: Umbenennung mit Alias, Gate-Ergebnis vorher/nachher identisch); die Research-Leser hier lesen beide Namen.
+- Hinweis: Empfehlung aus der Analyse: A jetzt, C als eigene Entscheidung; B nicht, weil es das bindende Gate ohne statistischen Beleg um rund 13 Monate lockert. **A ist entschieden** (PR #1254 gemergt): Die Schwelle heißt eventCalendarMonths (20), der alte Name wird als Alias gelesen, Zählung und Gate-Ergebnis sind unverändert. Offen bleibt nur C als eigene Entscheidung.
 
 **FV-2 · Kennzahlen-Hash im Runner-Ergebnis (P0.7 vollständig)**
 - Lage: Heute steht der laufzeitfreie Kennzahlen-Hash nur in der Hilfsfunktion backtest-metrics-hash.cjs und in der Zusammenfassungszeile von run-backtest.cjs. Ein Feld im Ergebnis ändert backtest-runner.cjs (CODE_FILES): alle 16 Demos veralten, Neubau über den Archivweg [v13-archive:demos] (Secret), danach Bundle-Export; der Katalog bleibt Generation 1 und bekäme das Feld erst mit Generation 2 (H7).
@@ -278,9 +278,9 @@ Replay, Pattern und Signal haben keine zeitabhängigen Gates: Ihre Blocker sind 
 - Hinweis: Stand: P3.1-Code und P4.1-Research erledigt (Abschnitt I); Reihenfolge H1, (1)–(2), dann (3).
 
 **FV-6 · Setup-OOS A1–A6**
-- Lage: Ohne Segmentdefinition bleibt das Setup-Gate oos FAIL.
-- Zur Entscheidung: Entscheidung laut SETUP_OOS_DECISION_A1_A6.md.
-- Hinweis: spätestens vor etwa 2027-03-26.
+- Lage: Ohne freigegebene Segmentdefinition bleibt das Setup-Gate oos FAIL. Technisch vorbereitet sind alle sechs Punkte: Schnitt, Embargo, Kriterium und countBy im Auswerter (setup-oos-1.0.0), Auswertung je Ereignisart (setup-oos-segments-1.0.0), Zeilenexport (build-setup-outcomes.mjs --oos-rows-out, im Materialisierungslauf an den Builder übergeben) und der Messbarkeitsbericht (Abschnitt I). Der Builder wertet je Art erst aus, wenn der Vertrag eine freigegebene Segmentierung mit population trägt; bis dahin ist das Zertifizierungsartefakt bytegleich.
+- Zur Entscheidung: Freigabe der Vorlage SETUP_OOS_DECISION_A1_A6.md §5 und Eintrag kinds.SETUP_BACKTEST.oosSegmentation (FIXED_CALENDAR_CUT 2027-05-31, embargoDays 183, countBy EVENT_DAY, MEDIAN_EXCESS + SIGN_REPLICATES, population SETUP_NEW und SETUP_CONFIRMED, NEXT_CLOSE, m6, approval) mit Versionssprung und Vorher/Nachher als eigener Methodik-PR.
+- Hinweis: Freigabe vor dem ersten M6-Ergebnis (Schätzung 2027-03-26); messbar frühestens etwa 2028-01-08 (Zeit, Abschnitt I).
 
 **FV-7 · Kennzeichnung der strukturell beschreibenden Arten (Replay, Pattern)**
 - Lage: SAME_STOCK_REPLAY und PATTERN_EVIDENCE erreichen unter der geltenden Norm nie CERTIFIED (P3.4).
@@ -288,8 +288,8 @@ Replay, Pattern und Signal haben keine zeitabhängigen Gates: Ihre Blocker sind 
 - Hinweis: Teil von H4.
 
 **FV-8 · Alarm bei fehlendem Snapshot-Monat (P2.3)**
-- Lage: pit-snapshot-integrity.cjs liefert den Befund für den bestehenden Alarm: --fail-on-missing-month (Exit 1 bei Integritätsfehler oder fehlendem Monat einer gezählten Reihe, NDX/DJIA nur Information) und --alarm-detail <datei> (Text für ALARM_DETAIL_FILE von pipeline-alarm.mjs). Es fehlt nur der Schritt im Workflow.
-- Zur Entscheidung: Freigabe für einen Job im bestehenden freshness-monitor.yml: Schritt mit beiden Optionen, Ergebnis als RESULT_PIT an den vorhandenen alarm-Job (ohne neue Secrets, permissions wie dort).
+- Lage: pit-snapshot-integrity.cjs liefert den Befund für den bestehenden Alarm: --fail-on-missing-month (Exit 1 bei Integritätsfehler oder fehlendem Monat einer gezählten Reihe, NDX/DJIA nur Information) und --alarm-detail <datei> (Text für ALARM_DETAIL_FILE von pipeline-alarm.mjs). Der Job pit in freshness-monitor.yml führt beides auf main aus (Termine wie produktstand) und gibt RESULT_PIT und den Befund an den vorhandenen alarm-Job (ohne Secrets, permissions: contents: read).
+- Zur Entscheidung: keine weitere Entscheidung; wirksam mit dem Merge.
 - Hinweis: die monatlichen Gates sind ab der ersten Lücke um einen Monat später.
 
 ## I. Research-Nachweise P2 (Master Completion 3.1, nicht zertifizierend)
@@ -304,5 +304,6 @@ Erzeugt mit den Skripten unten, jeweils `--out` unter `docs/quant/research/`. Ke
 | P31P · P3.1 Survivorship im öffentlichen Rahmen | `docs/quant/research/survivorship-public-frame-p3.1.json` | `scripts/quant/research/survivorship-public-frame.mjs` | survivorship-public-frame-1.0.0 | Research: öffentlicher Rahmen V10_LIFECYCLE 4.327 Listings, davon 19 beendet (0,44 %); Register V13 1.675 qualifizierte delistete Reihen (privat), F1 +390 Listings; Ereignisse (Stichprobe 1000 + alle beendeten): Anteil aus beendeten Listings 0,49 %, Ende im Horizont 0,004 %, Zensurquote 0,033 %; V13_DELISTED_F1 PRIVATE_DATA_UNAVAILABLE | a8132761776fca3a |
 | FV1 · FV-1 Lesarten independence | `docs/quant/research/setup-independence-readings-fv1.json` | `scripts/quant/research/setup-independence-readings.cjs --as-of 2026-10-31` | setup-independence-readings-1.0.0 | A Monate 2/20 → 2028-04 (Setup-Zeitgates frühestens 2028-04-01); B ISO-Wochen 6/20 → 2027-02-01 (Setup-Zeitgates frühestens 2027-03-26, Untergrenze) | – |
 | FV4 · FV-4 Erwartung private Katalogfälle | `docs/quant/research/catalog-private-expectations-fv4.json` | `scripts/quant/research/catalog-private-recheck.cjs --expect` | catalog-private-recheck-1.0.0 | 5 private Fälle mit Erwartung (specHash, Kennzahlen-Hash, private Eingabe-Hashes, Prüfzahl der Gegenrechnung), 16 öffentliche; Lauf [v13-archive:catalog] nicht ausgeführt | Katalog 7ea6383e7260a5fb |
+| FV6 · FV-6 Setup-OOS je Ereignisart und Messbarkeit | `docs/quant/research/setup-oos-a1-a6-fv6.json` | `scripts/quant/research/setup-oos-report.mjs` | setup-oos-report-1.0.0 | INSUFFICIENT_HISTORY (Stand 2026-11-03, Vorlage A1–A6 nicht freigegeben): Gate FAIL/OOS_NOT_MEASURABLE_YET wie im Zertifizierungsartefakt (gleich), 0 abgeschlossene M6-Ergebnisse; SETUP_NEW: Lernsegment 25/30 Ereignistage, Testsegment ab 2027-05-31 frühestens messbar 2028-01-08; SETUP_CONFIRMED: Lernsegment 25/30 Ereignistage, Testsegment ab 2027-05-31 frühestens messbar 2028-01-08; erstes M6-Ergebnis etwa 2027-03-26 | – |
 
 **Was das Gate `returnBasis` (Pattern) mit P4.1 sagen würde:** Die bestehende Definition (Renditebasis der Studie = Gesamtrendite) waere fuer diese Research-Kohorte erfuellt (4 von 5 Titeln mit bestaetigter Gesamtrendite, Ausschluesse ausgewiesen). Das Gate liest aber die Produkt-Musterstudie quant/data/product/pattern-research-v1/study.json (Kursrendite, Erzeuger build-pattern-research.mjs); es kippt erst, wenn deren Erzeuger in der Pipeline mit --work-dir in Gesamtrendite rechnet und der Builder die Basis aus der Studie liest (Freigabe FV-5).
