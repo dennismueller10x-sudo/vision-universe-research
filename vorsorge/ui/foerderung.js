@@ -21,48 +21,76 @@
   }
 
   /* ============================================================ FOERDERUNG */
-  VS.views.foerderung = function () {
-    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Förderung</p><h1>Was legt der Staat dazu?</h1><p class="vs-lead">Zulagen für das geförderte Altersvorsorgedepot ab 2027 – aus einem versionierten Regelwerk mit Quelle.</p>' +
-      '<div class="vs-tabs"><a class="vs-pill lime" href="#/rechner">Geführter Rechner</a><a class="vs-pill primary" href="#/foerderung">Förderrechner</a><a class="vs-pill" href="#/fruehstart">Frühstart / Kinder</a><a class="vs-pill" href="#/riester">Riester-Analyse</a><a class="vs-pill" href="#/anbieter">Anbieter-Vergleich</a></div></section>' +
-      '<section class="vs-section" id="vs-fd"><div class="vs-loading">Regelwerk wird geladen …</div></section>');
+  /* V07 (Redesign 2027): zwei Regler oben, die Zulage gross, die Rechnung in vier Zeilen, Zulage je Beitrag,
+     Modellrechnung mit Marke, „Gut zu wissen“, eine Quellenzeile; Beispielfälle als zweiter Screen (#/foerderung/faelle). */
+  VS.views.foerderung = function (r) {
+    var U = VS.U;
+    var root = VS.render(VS.intro("Was legt der Staat dazu?", "Ab 1. Januar 2027 gibt es das geförderte Altersvorsorgedepot.") + '<section id="vs-fd"><div class="vs-loading">Regelwerk wird geladen …</div></section>');
     VS.rules().then(function (rules) {
       var today = new Date().toISOString().slice(0, 10);
       var avd = Fd.selectRule(rules, "DE-ALTERSVORSORGEDEPOT", today < "2027-01-01" ? "2027-01-01" : today);
       var host = root.querySelector("#vs-fd");
-      if (!avd) { host.innerHTML = VS.pending("Kein gültiges Regelwerk", "Für den Stichtag liegt keine geprüfte Regeldatei vor."); return; }
-      host.innerHTML = '<div class="vs-grid side"><form class="vs-card app" id="vs-fd-form"><p class="vs-label">Deine Angaben</p><div class="vs-form" style="margin-top:12px">' +
-        VS.field("own", "Eigenbeitrag pro Jahr", 1200, { min: 0, unit: "€ / Jahr" }) + VS.field("age", "Alter bei Vertragsbeginn", VS.state.plan.age, { min: 16, max: 80, unit: "Jahre" }) +
-        VS.field("kids", "Kinder mit Kindergeld", 0, { min: 0, max: 10, unit: "Anzahl" }) + VS.field("years", "Einzahljahre", Math.max(1, VS.state.plan.targetAge - VS.state.plan.age), { min: 1, max: 60, unit: "Jahre" }) +
-        VS.field("ret", "Rendite vor Kosten", (VS.state.plan.returns.basis * 100).toFixed(1), { step: 0.5, unit: "% p.a." }) + VS.field("cost", "Produktkosten", "0.50", { step: 0.05, unit: "% p.a." }) +
-        '<label class="vs-check vs-field full"><input type="checkbox" id="first" checked> Erster geförderter Vertrag (Berufseinsteigerbonus prüfen)</label>' +
-        '<label class="vs-check vs-field full"><input type="checkbox" id="spouse"> Nur mittelbar zulageberechtigt (Ehegatte, § 79 Satz 2)</label></div></form><div id="vs-fd-out"></div></div>' +
-        '<div class="' + (avd.verification && avd.verification.primaryVerified ? "vs-note" : "vs-warnbox") + '" style="margin-top:18px">' + esc(avd.legalStatusNote) + '</div>' +
-        '<details class="vu-more"><summary>Regeln im Detail: Anlagen, Kostendeckel, Auszahlung</summary><div class="vu-more-body"><div class="vs-grid g3"><div class="vs-card"><p class="vs-label">Was darf ins Altersvorsorgedepot?</p><p style="margin-top:6px">' + esc(avd.contributionRules.eligibleAssets) + '</p><p class="vs-fine" style="margin-top:8px">Die ETFs in „ETF Intelligence“ sind derzeit US-Listings und damit dort nicht zulässig. Sie zeigen Marktverhalten, keine förderfähigen Produkte.</p></div>' +
-        '<div class="vs-card"><p class="vs-label">Kostendeckel Standarddepot</p><p class="vs-kpi small" style="margin-top:6px">höchstens ' + F.pct(avd.productRules.standardDepotCostCap, 1) + ' Effektivkosten</p><p class="vs-fine" style="margin-top:8px">' + esc(avd.productRules.standardDepot) + '</p></div>' +
-        '<div class="vs-card"><p class="vs-label">Auszahlung</p><p style="margin-top:6px">Beginn frühestens mit ' + avd.payoutRules.earliestAge + ', spätestens mit ' + avd.payoutRules.latestStartAge + '. Ein Auszahlungsplan läuft mindestens bis ' + avd.payoutRules.withdrawalPlanUntilAtLeastAge + '.</p><p class="vs-fine" style="margin-top:8px">Bestehende Riester-Verträge behalten ihr altes Recht; ein neuer geförderter Vertrag ab 2027 bringt alle Verträge ins neue Recht (§ 52 Abs. 50a EStG).</p></div></div>' +
-        '<div style="margin-top:14px">' + ruleBox(avd) + '</div></div></details>';
+      if (!avd) { host.innerHTML = U.blank("Für den Stichtag liegt keine geprüfte Regeldatei vor."); return; }
+      var cr = avd.contributionRules, tiers = avd.incomeRules.basicAllowance.tiers, kid = (avd.childRules || {}).perChild || {}, bonus = (avd.bonusRules || {}).careerStarter || {};
+      var calc = function (own, kids, young, spouse) { var ch = []; for (var i = 0; i < kids; i++) ch.push({ hasChildBenefit: true }); return Fd.altersvorsorgedepot(avd, { ownContribution: own, age: young ? bonus.maxAgeExclusive - 1 : 30, firstContract: young, children: ch, indirectSpouse: spouse }); };
+      if (r.args[0] === "faelle") { faelle(host, avd, calc, cr); return; }
+      var nf = function (v) { return Number(v).toLocaleString("de-DE"); };
+      host.innerHTML = '<form class="vu-box vs-sliders" id="vs-fd-form" style="margin-top:14px">' + VS.slider("own", "Du zahlst ein", 1200, { unit: "€ / Jahr", min: 0, max: 3600, step: 60, fmt: nf }) + VS.slider("kids", "Kinder mit Kindergeld", 0, { unit: "", min: 0, max: 6, step: 1, fmt: nf }) + '</form>' +
+        '<div class="vs-kv"><span class="vu-sm"><b>Jünger als ' + bonus.maxAgeExclusive + ', erster Vertrag</b></span>' + U.toggle(false, "", "young") + '</div>' +
+        '<details class="vu-more" style="margin-top:0"><summary>Mehr Angaben</summary><div class="vu-more-body"><div class="vs-kv"><span class="vu-sm">Nur mittelbar zulageberechtigt (Ehegatte, § 79 Satz 2 EStG)</span>' + U.toggle(false, "", "spouse") + '</div>' +
+        VS.field("years", "Einzahljahre", Math.max(1, VS.state.plan.targetAge - VS.state.plan.age), { min: 1, max: 60, unit: "Jahre" }) + VS.field("ret", "Rendite vor Kosten", (VS.state.plan.returns.basis * 100).toFixed(1), { step: 0.5, unit: "% pro Jahr" }) + VS.field("cost", "Produktkosten", "0.50", { step: 0.05, unit: "% pro Jahr" }) + '</div></details>' +
+        '<div id="vs-fd-out"></div>' +
+        VS.sect("Gut zu wissen") + '<div class="vu-box vs-kvbox">' + [["Auszahlung", "frühestens mit " + avd.payoutRules.earliestAge], ["Erlaubt", "UCITS-Fonds u. a., bis Risikoklasse " + avd.productRules.maxRiskClass], ["Kostendeckel Standarddepot", F.pct(avd.productRules.standardDepotCostCap, 0) + " pro Jahr"], ["Alte Riester-Verträge", "behalten altes Recht"]].map(function (x) {
+          return '<div class="vs-kv"><span class="vu-sm"><b>' + esc(x[0]) + '</b></span><span class="vu-sm" style="text-align:right">' + esc(x[1]) + '</span></div>'; }).join("") + '</div>' +
+        '<button type="button" class="vu-box vu-box--lime vs-srcline" id="vs-fd-src"><span class="vu-sm"><b>Quelle:</b> ' + esc(avd.primarySource ? avd.primarySource.title : avd.ruleId) + (avd.verification && avd.verification.primaryVerified ? ". Werte wörtlich geprüft am " + F.date(avd.verification.verifiedAt) + "." : ". Noch nicht primär geprüft.") + '</span>' + U.glyph("next", 16) + '</button>' +
+        VS.sect("Für wen lohnt es sich?") + VS.navcard({ href: "#/foerderung/faelle", glyph: "star", title: "Vier Beispielfälle", sub: "Zulage und Förderquote auf einen Blick" }) +
+        VS.sect("Mehr zur Förderung") + '<div class="vu-stack">' + VS.navcard({ href: "#/fruehstart", glyph: "spark", title: "Frühstart für Kinder", sub: "Staatlicher Beitrag je Kind" }) + VS.navcard({ href: "#/riester", glyph: "book", title: "Riester-Vertrag prüfen", sub: "Behalten oder neu ausrichten" }) +
+        VS.navcard({ href: "#/anbieter", glyph: "grid", title: "Anbieter vergleichen", sub: "Depotgebühr, Auswahl, Effektivkosten" }) + VS.navcard({ href: "#/rechner", glyph: "target", title: "Geführter Rechner", sub: "Rente und Zulagen in fünf Fragen" }) + '</div>';
+      root.querySelector("#vs-fd-src").onclick = function () {
+        VS.sheet("vs-fd-rule", "Regeln und Quelle", '<p class="vu-sm">' + esc(avd.legalStatusNote || "") + '</p><p class="vu-ltag" style="margin-top:12px">Was darf ins Depot?</p><p class="vu-sm" style="margin-top:4px">' + esc(cr.eligibleAssets) + '</p>' +
+          '<p class="vu-ltag" style="margin-top:12px">Standarddepot</p><p class="vu-sm" style="margin-top:4px">' + esc(avd.productRules.standardDepot) + '</p><div style="margin-top:12px">' + ruleBox(avd) + '</div>');
+      };
       var form = host.querySelector("#vs-fd-form");
+      form.querySelectorAll("input[type=range]").forEach(fillRange);
       function draw() {
-        var n = function (id, f, s) { return VS.readNum(form, id, f, s); };
-        var kids = Math.max(0, Math.round(n("kids", 0))), children = []; for (var i = 0; i < kids; i++) children.push({ hasChildBenefit: true });
-        var r = Fd.altersvorsorgedepot(avd, { ownContribution: n("own", 0), age: n("age", 30), children: children, firstContract: form.querySelector("#first").checked, indirectSpouse: form.querySelector("#spouse").checked });
-        var years = n("years", 30), ret = n("ret", 5, 0.01), cost = n("cost", 0.5, 0.01);
-        var yearly = r.basicAllowance + r.childAllowance;
-        var withF = M.futureValue({ start: r.careerStarterBonus, monthly: (r.ownContribution + yearly) / 12, years: years, annualReturn: ret, annualCost: cost }).nominal;
-        var without = M.futureValue({ monthly: r.ownContribution / 12, years: years, annualReturn: ret, annualCost: cost }).nominal;
-        host.querySelector("#vs-fd-out").innerHTML = '<div class="vs-result-block">' + (r.eligible ? "" : '<div class="vu-alert"><span>' + esc(r.reason) + '</span></div>') +
-          '<div class="vu-kpis vs-res-kpis"><div class="vu-kpi vu-kpi--xl"><span class="vu-kpi-label">Zulagen pro Jahr</span><span class="vu-kpi-value">' + F.eur(yearly) + '</span><span class="vu-kpi-sub">Grundzulage ' + F.eur(r.basicAllowance) + ' · Kinder ' + F.eur(r.childAllowance) + '</span></div>' +
-          '<div class="vu-kpi vu-kpi--xl"><span class="vu-kpi-label">Förderquote</span><span class="vu-kpi-value">' + F.pct(r.fundingRate || 0, 0) + '</span><span class="vu-kpi-sub">auf deinen Eigenbeitrag' + (r.careerStarterBonus ? ' · Bonus ' + F.eur(r.careerStarterBonus) + ' einmalig' : "") + '</span></div></div>' +
-          '<h3 style="margin-top:24px">Nach ' + years + ' Jahren (Modellrechnung)</h3><div class="vs-fee-bars vs-cmp-bars"><span><small>Mit Zulagen</small><span class="vu-bar" data-tone="good"><i style="--v:100"></i></span><b class="num">' + F.eurK(withF) + '</b></span>' +
-          '<span><small>Ohne</small><span class="vu-bar"><i style="--v:' + Math.max(1, without / Math.max(1, withF) * 100).toFixed(0) + '"></i></span><b class="num">' + F.eurK(without) + '</b></span></div>' +
-          '<div class="vs-row" style="margin-top:14px"><span>Berufseinsteigerbonus</span><span class="num">' + F.eur(r.careerStarterBonus) + ' einmalig</span></div>' +
-          '<div class="vs-row"><span>Gefördert bis Eigenbeitrag</span><span class="num">' + F.eur(avd.contributionRules.maximumSubsidizedOwnContribution) + ' / Jahr</span></div>' +
-          '<div class="vs-row"><span>Mindesteigenbeitrag</span><span class="num">' + F.eur(avd.contributionRules.minimumAnnualOwnContribution) + ' / Jahr</span></div>' +
-          '<details class="vu-more"><summary>Wie wird das berechnet?</summary><div class="vu-more-body">Zulagen als gleichmäßige Monatsbeiträge modelliert, Regeln über die Laufzeit konstant. Steuerliche Wirkung (Sonderausgabenabzug, nachgelagerte Besteuerung) ist nicht modelliert – keine Steuerberatung. „Ohne“ = gleicher Eigenbeitrag ohne Zulagen.</div></details></div>';
+        var own = Number(form.querySelector("#own").value), kids = Number(form.querySelector("#kids").value);
+        form.querySelector("#own-out").textContent = nf(own); form.querySelector("#kids-out").textContent = nf(kids); form.querySelectorAll("input[type=range]").forEach(fillRange);
+        var young = host.querySelector('input[name="young"]').checked, spouse = host.querySelector('input[name="spouse"]').checked;
+        var z = calc(own, kids, young, spouse), yearly = z.basicAllowance + z.childAllowance;
+        var n = function (id, f, s) { return VS.readNum(host, id, f, s); }, years = n("years", 32), ret = n("ret", 5, 0.01), cost = n("cost", 0.5, 0.01);
+        var withF = M.futureValue({ start: z.careerStarterBonus || 0, monthly: (own + yearly) / 12, years: years, annualReturn: ret, annualCost: cost }).nominal;
+        var without = M.futureValue({ monthly: own / 12, years: years, annualReturn: ret, annualCost: cost }).nominal;
+        var t1 = Math.min(own, tiers[0].to) * tiers[0].rate, t2 = Math.max(0, Math.min(own, tiers[1].to) - tiers[0].to) * tiers[1].rate;
+        var per = [cr.minimumAnnualOwnContribution, 360, 600, 1200, cr.maximumSubsidizedOwnContribution].map(function (b) { return [b, calc(b, 0, false, false).basicAllowance]; });
+        var mx = per[per.length - 1][1] || 1;
+        host.querySelector("#vs-fd-out").innerHTML =
+          '<div class="vu-box vu-box--ink vs-result"><span class="vu-ltag" style="color:#8a8a8a">Zulage pro Jahr</span><p class="vs-big num" style="font-size:44px">' + F.eur(yearly) + '</p>' +
+          '<p class="vu-sm">' + (z.eligible ? "Das sind " + F.pct(z.fundingRate, 0) + " auf deinen Beitrag." : esc(z.reason)) + (z.careerStarterBonus ? " Dazu einmalig " + F.eur(z.careerStarterBonus) + " Bonus." : "") + '</p></div>' +
+          VS.sect("So wird gerechnet") + '<div class="vu-box vs-kvbox">' +
+          [["Auf die ersten " + F.eur(tiers[0].to), F.pct(tiers[0].rate, 0), z.eligible ? F.eur(spouse ? Math.min(t1, yearly) : t1) : "0 €"], ["Auf weitere bis " + F.eur(tiers[1].to), F.pct(tiers[1].rate, 0), z.eligible && !spouse ? F.eur(t2) : "–"],
+            ["Je Kind (auf bis " + F.eur(kid.contributionBase) + ")", F.pct(kid.rate, 0), kids ? F.eur(z.childAllowance) : "bis " + F.eur(kid.maximum)], ["Unter " + bonus.maxAgeExclusive + ", einmalig", "", F.eur(bonus.amount)]].map(function (x) {
+            return '<div class="vs-kv"><span class="vu-sm"><b>' + esc(x[0]) + '</b>' + (x[1] ? ' <span class="vu-mu">· ' + esc(x[1]) + '</span>' : "") + '</span><b class="num">' + esc(x[2]) + '</b></div>'; }).join("") + '</div>' +
+          VS.sect("Zulage je Beitrag") + '<div class="vs-wbars">' + per.map(function (x) { return VS.wbar(F.eur(x[0]) + " im Jahr", F.eur(x[1]), x[1] / mx * 100, x[0] === cr.minimumAnnualOwnContribution); }).join("") + '</div>' +
+          VS.help("Schon " + F.eur(cr.minimumAnnualOwnContribution / 12) + " im Monat (" + F.eur(cr.minimumAnnualOwnContribution) + " im Jahr) reichen für die Zulage: Der Staat legt " + F.eur(per[0][1]) + " dazu. Darunter gibt es nichts.") +
+          VS.sect("Nach " + years + " Jahren") + '<div class="vs-chipline">' + VS.bsp("Modellrechnung") + '</div>' + VS.wbar("Mit Zulagen", F.eurK(withF), 100, true) + VS.wbar("Ohne Zulagen", F.eurK(without), without / Math.max(1, withF) * 100) +
+          '<p class="vu-xs vu-mu" style="margin-top:6px">' + F.eur(own) + ' im Jahr, ' + F.pct(ret, 1) + ' vor Kosten, ' + F.pct(cost, 2) + ' Produktkosten, Regeln über die Laufzeit konstant. Steuern nicht modelliert, keine Steuerberatung.</p>';
       }
-      form.addEventListener("input", draw); form.addEventListener("submit", function (e) { e.preventDefault(); }); draw();
-    }).catch(function (e) { root.querySelector("#vs-fd").innerHTML = VS.pending("Regelwerk nicht erreichbar", String(e.message || e)); });
+      host.addEventListener("input", draw); host.addEventListener("change", draw); draw();
+    }).catch(function (e) { root.querySelector("#vs-fd").innerHTML = VS.U.blank("Das Regelwerk ist nicht erreichbar: " + String(e.message || e)); });
   };
+  function fillRange(inp) { inp.style.setProperty("--p", ((inp.value - inp.min) / (inp.max - inp.min) * 100).toFixed(1) + "%"); }
+  /* V07, zweiter Screen: vier Beispielfälle aus dem Regelwerk. */
+  function faelle(host, avd, calc, cr) {
+    var max = cr.maximumSubsidizedOwnContribution, mo = max / 12;
+    var cases = [[cr.minimumAnnualOwnContribution / 12, 0], [50, 0], [mo, 0], [mo, 2]].map(function (c, i) {
+      var z = calc(c[0] * 12, c[1], false, false), y = z.basicAllowance + z.childAllowance;
+      return '<div class="vu-box' + (i === 0 ? " vu-box--ink" : "") + ' vs-row-sb" style="flex-wrap:nowrap"><span><b>' + F.eur(c[0]) + ' im Monat' + (c[1] ? " + " + c[1] + " Kinder" : "") + '</b><span class="vu-xs" style="display:block;opacity:.65">' + F.eur(c[0] * 12) + ' Beitrag</span></span>' +
+        '<span style="text-align:right"><b class="num" style="font-size:20px' + (i === 0 ? ";color:var(--accent)" : "") + '">+' + F.eur(y) + '</b><span class="vu-xs" style="display:block;opacity:.65">' + F.pct(z.fundingRate, 0) + ' Förderquote</span></span></div>';
+    });
+    host.innerHTML = '<p class="vu-ltag" style="margin-top:14px">Förderung</p><h2 class="vu-mt" style="margin-top:4px">Für wen lohnt es sich?</h2><div class="vu-stack" style="margin-top:14px">' + cases.join("") + '</div>' +
+      VS.help("Förderquote: Zulage geteilt durch deinen Beitrag. Kleine Beiträge werden prozentual am stärksten gefördert.") +
+      '<a class="vu-btn vu-btn--block" href="#/start" style="margin-top:14px">Mit 10 € starten</a><a class="vu-btn vu-btn--line vu-btn--block" href="#/foerderung" style="margin-top:8px">Zum Förderrechner</a>';
+  }
 
   /* ============================================================ FRUEHSTART */
   VS.views.fruehstart = function () {
@@ -143,37 +171,131 @@
   };
 
   /* ============================================================ VERGLEICHEN */
-  VS.views.vergleichen = function () {
-    VS.render('<section class="vs-hero"><p class="vs-eyebrow">Vergleichen</p><h1>Was unterscheidet sich&nbsp;– und was kostet es?</h1><p class="vs-lead">Vergleiche ETFs, Kosten, Anbieter und bestehende Verträge. Ohne Gewinner-Logik.</p></section>' +
-      '<section class="vs-section"><ul class="vs-linklist">' + [["#/vergleich", "ETF-Vergleich", "2–4 ETFs: Performance, Schwankung, Rückgang – die größten Unterschiede."],
-        ["#/kosten", "Kostenanalyse", "Was 0,2 % gegenüber 1,5 % laufender Kosten über Jahrzehnte ausmacht."],
-        ["#/anbieter", "Anbieter-Vergleich", "Depotgebühr, Auswahl, Effektivkosten, Auszahlung."],
-        ["#/riester", "Riester-Analyse", "Bestehenden Vertrag behalten oder neu ausrichten."]].map(function (c, i) {
-        return '<li><a href="' + c[0] + '"><span class="vs-linklist-n">' + (i + 1) + '</span><span><b>' + esc(c[1]) + '</b><small>' + esc(c[2]) + '</small></span></a></li>';
-      }).join("") + '</ul></section>');
+  /* V06 (Redesign 2027): Der Vergleich ist sofort da (Standard URTH und SPY), ohne Gewinner-Logik.
+     Ein Chart auf Start = 100, eine ehrliche Tabelle; fehlende Werte heißen „Keine Aussage“. Kosten als eigener Screen. */
+  VS.views.vergleichen = function (r) {
+    if (r.args[0] === "kosten") return kostenScreen();
+    var U = VS.U, syms = (r.query.s || "URTH,SPY").split(",").map(function (s) { return s.trim().toUpperCase(); }).filter(Boolean).slice(0, 4);
+    var root = VS.render(VS.intro("Vergleichen", "Zwei ETFs nebeneinander. Ohne Gewinner-Logik.") + '<div class="vu-grid vs-pick" id="vs-pick" style="margin-top:14px"></div>' +
+      '<section id="vs-cmp2"><div class="vs-loading">Vergleich wird geladen …</div></section>' +
+      VS.sect("Weitere Vergleiche") + '<div class="vu-stack">' + VS.navcard({ href: "#/vergleichen/kosten", glyph: "bars", title: "Kosten über die Laufzeit", sub: "0,2 % oder 1,5 %: was das ausmacht" }) +
+      VS.navcard({ href: "#/anbieter", glyph: "grid", title: "Anbieter vergleichen", sub: "Depotgebühr, Auswahl, Effektivkosten" }) + VS.navcard({ href: "#/riester", glyph: "book", title: "Riester-Vertrag prüfen", sub: "Behalten oder neu ausrichten" }) +
+      VS.navcard({ href: "#/vergleich?s=" + encodeURIComponent(syms.join(",")), glyph: "list", title: "Ausführlicher ETF-Vergleich", sub: "Bis zu vier ETFs, alle Kennzahlen" }) + '</div>');
+    VS.master().then(function (m) {
+      var es = syms.map(function (s) { return m.find(s); }).filter(Boolean);
+      var href = function (list) { return "#/vergleichen?s=" + encodeURIComponent(list.map(function (e) { return e.slug; }).join(",")); };
+      root.querySelector("#vs-pick").innerHTML = es.map(function (e, i) { return '<button type="button" class="vu-box' + (i === 0 ? " vu-box--ink" : "") + ' vs-pickcard" data-i="' + i + '">' + VS.logo(e.symbol) + '<span><b>' + esc(e.symbol) + '</b><small>' + esc(e.index || VS.CORE_TITLE[e.symbol] || e.category || "") + '</small></span></button>'; }).join("") +
+        (es.length < 4 ? '<button type="button" class="vu-box vu-box--line vs-pickcard" data-i="' + es.length + '">' + U.glyph("plus", 18) + '<span><b>ETF hinzufügen</b><small>bis zu vier</small></span></button>' : "");
+      root.querySelectorAll("[data-i]").forEach(function (b) {
+        b.onclick = function () {
+          var i = Number(b.dataset.i);
+          var el = VS.sheet("vs-pick-s", i < es.length ? es[i].symbol + " tauschen" : "ETF hinzufügen", '<div class="vs-termsearch">' + U.glyph("search", 18) + '<input id="vs-pick-q" placeholder="Ticker, Name oder Index" autocomplete="off" aria-label="ETF suchen"></div><div id="vs-pick-r" class="vs-erows" style="margin-top:8px"></div>' +
+            (i < es.length && es.length > 2 ? '<a class="vu-btn vu-btn--line vu-btn--block" style="margin-top:12px" href="' + href(es.filter(function (_, k) { return k !== i; })) + '">' + esc(es[i].symbol) + ' entfernen</a>' : ""));
+          var q = el.querySelector("#vs-pick-q"), out = el.querySelector("#vs-pick-r");
+          var show = function () {
+            var res = q.value.trim() ? V.Master.search(m.etfs.filter(function (e) { return e.layer === "PUBLIC_ANALYSIS"; }), q.value, 8) : ["URTH", "SPY", "EEM", "QQQ", "FEZ", "IWM", "VT", "ACWI"].map(function (s) { return m.find(s); }).filter(Boolean);
+            out.innerHTML = res.map(function (e) { var l = es.slice(); l[i] = e; return '<a class="vs-erow vs-erow--nospark" href="' + href(l) + '">' + VS.logo(e.symbol) + '<span class="vs-erow-n"><b>' + esc(e.symbol) + '</b><span>' + esc(VS.displayName(e.name)) + '</span></span>' + U.glyph("next", 15) + '</a>'; }).join("");
+          };
+          q.addEventListener("input", show); show(); q.focus();
+          out.addEventListener("click", function () { U.closeSheet(el); });
+        };
+      });
+      if (es.length < 2) { root.querySelector("#vs-cmp2").innerHTML = U.blank("Für einen Vergleich braucht es zwei ETFs. Tippe auf „ETF hinzufügen“."); return; }
+      VS.analytics.track("etf_compare", { symbols: es.map(function (e) { return e.symbol; }).join(",") });
+      return Promise.all(es.map(function (e) { return VS.etf(e.slug).catch(function () { return null; }); })).then(function (ds) {
+        return Promise.all(ds.map(function (d) { return d && d.holdings && d.holdings.series ? VS.holdings(d.holdings.series) : null; })).then(function (hs) { draw(es, ds, hs); });
+      });
+    }).catch(function () { root.querySelector("#vs-cmp2").innerHTML = U.blank("Das ETF-Verzeichnis ist nicht erreichbar."); });
+    function draw(es, ds, hs) {
+      var host = root.querySelector("#vs-cmp2");
+      var series = ds.map(function (d) { return d && d.series && d.series.daily ? d.series.daily : []; });
+      var end = series.reduce(function (a, s) { var l = s.length ? s[s.length - 1][0] : null; return l && (!a || l < a) ? l : a; }, null);
+      var from = end ? new Date(Date.parse(end) - 365 * 864e5).toISOString().slice(0, 10) : null;
+      var start = series.reduce(function (a, s) { var f = s.filter(function (p) { return p[0] >= from; })[0]; return f && f[0] > a ? f[0] : a; }, from || "");
+      var lines = series.map(function (s, i) {
+        var w = s.filter(function (p) { return p[0] >= start && p[0] <= end; }); if (!w.length) return null;
+        var b = w[0][1]; return { label: es[i].symbol, points: w.map(function (p) { return [p[0], p[1] / b * 100]; }) };
+      }).filter(Boolean);
+      var since = es.map(function (e) { return String(e.from || "").slice(0, 4); });
+      var noCost = es.filter(function (e) { return e.cost === null; });
+      var cell = function (i, f) { var v = f(i); return v === null || v === undefined || v === "" ? VS.verdict("none", "k. A.") : v; };
+      var rowsT = [["1 Jahr", function (i) { return es[i].m ? VS.chg(es[i].m.p["1Y"]) : null; }], ["Schwankung", function (i) { return es[i].m ? F.pct(es[i].m.vol, 0) : null; }],
+        ["Größter Rückgang", function (i) { return es[i].m ? F.spct(es[i].m.mdd, 1) : null; }], ["Kosten", function (i) { return es[i].cost !== null ? VS.costPct(es[i].cost) : null; }],
+        ["Firmen", function (i) { return hs[i] ? Number(hs[i].positions).toLocaleString("de-DE") : es[i].positions ? Number(es[i].positions).toLocaleString("de-DE") : null; }],
+        ["Länder", function (i) { return hs[i] && hs[i].exposures && hs[i].exposures.countries ? String(hs[i].exposures.countries.filter(function (c) { return c.key !== "UNKNOWN" && c.weight > 0.0005; }).length) : null; }],
+        ["Historie seit", function (i) { return since[i] || null; }]];
+      host.innerHTML = VS.sect("12 Monate · Start = 100") + '<div id="vs-cmp-ch"></div>' +
+        '<p class="vu-xs vu-mu" style="margin-top:4px">Linie: ' + esc(es[0].symbol) + ' · gestrichelt: ' + esc(es.slice(1).map(function (e) { return e.symbol; }).join(", ")) + ' · Kurs ohne Ausschüttungen</p>' +
+        '<div class="vu-box" style="margin-top:14px;padding:6px 14px"><div class="vs-tbl" style="--n:' + es.length + '"><span></span>' + es.map(function (e) { return '<span>' + esc(e.symbol) + '</span>'; }).join("") + '</div>' +
+        rowsT.map(function (rw) { return '<div class="vs-tbl" style="--n:' + es.length + '"><b>' + esc(rw[0]) + '</b>' + es.map(function (_, i) { return '<span class="num">' + cell(i, rw[1]) + '</span>'; }).join("") + '</div>'; }).join("") + '</div>' +
+        (since.some(function (s) { return s !== since[0]; }) ? VS.help("Der größte Rückgang zählt ab Beginn der Kurshistorie (" + es.map(function (e, i) { return e.symbol + " ab " + since[i]; }).join(", ") + "). Unterschiedlich lange Zeiträume sind nicht direkt vergleichbar.") : "") +
+        (noCost.length ? VS.help("k. A.: Für " + noCost.map(function (e) { return e.symbol; }).join(", ") + " liegt keine Kostenquote aus einer amtlichen Quelle vor. Wir zeigen dann keine Zahl.") : "");
+      if (lines.length > 1) VS.lineChart(host.querySelector("#vs-cmp-ch"), lines, { height: 170, area: false, label: "Kursverlauf auf Start = 100", fmtY: function (v) { return v.toLocaleString("de-DE", { maximumFractionDigits: 0 }); }, fmtTip: function (v) { return v.toLocaleString("de-DE", { maximumFractionDigits: 1 }); } });
+      else host.querySelector("#vs-cmp-ch").innerHTML = VS.U.blank("Für diesen Zeitraum liegen nicht für beide ETFs Kurse vor.");
+    }
   };
+  /* V06, zweiter Screen: was Kosten ausmachen (Beispielrechnung mit den Planer-Annahmen). */
+  function kostenScreen() {
+    var pl = VS.state.plan, years = Math.max(1, pl.targetAge - pl.age);
+    var fee = M.feeImpact({ start: pl.start, monthly: pl.monthly, years: years, annualReturn: pl.returns.basis, costA: 0.002, costB: 0.015 });
+    VS.analytics.track("cost_simulation", { years: years });
+    VS.render('<header class="vs-intro"><p class="vu-ltag">Vergleichen</p><h1 class="vu-mt" style="font-size:24px">Was Kosten ausmachen</h1></header><div class="vs-chipline" style="margin-top:8px">' + VS.bsp() + '</div>' +
+      '<p class="vu-sm vu-mu" style="margin-top:4px">' + F.eur(pl.monthly) + ' im Monat, ' + (pl.start ? F.eur(pl.start) + ' Start, ' : "") + years + ' Jahre, ' + F.pct(pl.returns.basis, 0) + ' pro Jahr vor Kosten.</p>' +
+      '<div class="vu-box" style="margin-top:10px;padding:6px 14px 12px">' + VS.wbar("0,2 % laufende Kosten", F.eurK(fee.a.endValue), 100, true) + VS.wbar("1,5 % laufende Kosten", F.eurK(fee.b.endValue), fee.b.endValue / Math.max(1, fee.a.endValue) * 100) + '</div>' +
+      '<div class="vu-grid" style="margin-top:10px">' + VS.tile("0,2 % Kosten", F.eurK(fee.a.endValue), "mit " + pl.targetAge) + VS.tile("1,5 % Kosten", F.eurK(fee.b.endValue), "mit " + pl.targetAge) + '</div>' +
+      '<div class="vu-box vu-box--lime" style="margin-top:12px"><p class="vs-big num" style="font-size:30px;margin-top:0">' + F.eurK(fee.difference) + '</p><p class="vu-sm"><b>weniger, nur wegen höherer Kosten.</b></p></div>' +
+      VS.help("Laufende Kosten werden jedes Jahr vom Vermögen abgezogen. Über Jahrzehnte summiert sich das.") +
+      '<a class="vu-btn vu-btn--line vu-btn--block" style="margin-top:14px" href="#/kosten">Mit eigenen Zahlen rechnen</a>', { dm: [["Annahmen", "Planer-Angaben (" + (VS.state.planDone ? "dein gespeicherter Plan" : "Standardannahmen") + "), Kosten als laufender Abzug, monatliche Verzinsung. Keine Prognose."]] });
+  }
 
   /* ================================================================ WISSEN */
+  /* V09 (Redesign 2027): Alltagswort zuerst, ein Satz sofort sichtbar; offen mit der Langfassung, bei Schwankung und
+     Rückgang mit echtem Beispiel (URTH). Fachwort unten. [Titel, ein Satz, Langfassung, Fachwort, Beispiel] */
   var GLOSSARY = [
-    ["ETF", "Ein börsengehandelter Fonds. Er bündelt viele Wertpapiere – oft nach einem Index wie dem MSCI World – und lässt sich wie eine Aktie kaufen."],
-    ["Index", "Eine Liste von Unternehmen nach festen Regeln, z. B. die 500 größten US-Firmen (S&P 500). Ein Index-ETF bildet sie nach."],
-    ["TER (laufende Kosten)", "Die jährlichen Kosten eines Fonds in Prozent des Vermögens. Sie werden still aus dem Fonds entnommen – du siehst sie nur in der Rendite."],
-    ["Effektivkosten", "Alle Kosten eines Vorsorgeprodukts zusammen (Fonds, Depot, Vertrieb, Versicherung), angegeben als Renditeminderung pro Jahr im Basisinformationsblatt."],
-    ["Thesaurierend / Ausschüttend", "Thesaurierende ETFs legen Erträge automatisch wieder an, ausschüttende zahlen sie aus."],
-    ["Kursentwicklung vs. Gesamtrendite", "Die Kursentwicklung zeigt nur den Preis. Die Gesamtrendite enthält zusätzlich die Ausschüttungen. Wir nennen eine Gesamtrendite nur, wenn Dividenden korrekt in den Daten enthalten sind."],
-    ["Schwankung (Volatilität)", "Wie stark sich der Kurs typischerweise innerhalb eines Jahres bewegt. 15 % heißt grob: In vielen Jahren liegt das Ergebnis ±15 % um den Durchschnitt."],
-    ["Größter Rückgang (Max. Drawdown)", "Der stärkste Verlust vom Höchststand bis zum Tiefpunkt in der Vergangenheit – und wie lange es dauerte, bis das alte Hoch wieder erreicht war."],
-    ["Zinseszins", "Erträge erwirtschaften selbst wieder Erträge. Deshalb wirken Zeit und Kosten über Jahrzehnte so stark."],
-    ["Inflation & Kaufkraft", "Bei 2 % Inflation ist 1 € in 30 Jahren nur noch rund 55 Cent wert. Deshalb zeigen wir Endwerte auch in heutiger Kaufkraft."],
-    ["Vorsorgelücke", "Die Differenz zwischen dem Einkommen, das du im Alter möchtest, und dem, was du aus Rente und anderen Quellen erwartest."],
-    ["Overlap", "Wie stark sich zwei ETFs überschneiden. Wer MSCI World und S&P 500 kombiniert, besitzt viele US-Unternehmen doppelt."],
-    ["Hebel- und Short-ETFs", "Sie bilden die doppelte oder umgekehrte tägliche Bewegung ab. Über längere Zeit weicht das Ergebnis stark ab – für die Vorsorge nicht gedacht."],
-    ["UCITS", "EU-Regelwerk für Fonds. Privatanleger in der EU kaufen in der Regel UCITS-ETFs; US-ETFs sind meist nicht handelbar, weil ein Basisinformationsblatt fehlt."],
-    ["Altersvorsorgedepot", "Ein ab 2027 geplantes, staatlich gefördertes Depot für die private Altersvorsorge – ein Produkt von Banken und Brokern, das Vision Universe analysiert, nicht anbietet."]
+    ["ETF", "Ein Korb mit vielen Aktien, den du mit einem Kauf bekommst.", "Ein börsengehandelter Fonds. Er bündelt viele Wertpapiere – oft nach einem Index wie dem MSCI World – und lässt sich wie eine Aktie kaufen.", "Exchange Traded Fund"],
+    ["Index", "Eine Liste, welche Firmen im Korb sind, z. B. MSCI World.", "Eine Liste von Unternehmen nach festen Regeln, z. B. die 500 größten US-Firmen (S&P 500). Ein Index-ETF bildet sie nach.", "Index"],
+    ["Laufende Kosten", "Was der ETF pro Jahr kostet, in Prozent vom Geld.", "Die jährlichen Kosten eines Fonds in Prozent des Vermögens. Sie werden still aus dem Fonds entnommen – du siehst sie nur in der Rendite.", "TER (Total Expense Ratio)"],
+    ["Alle Kosten zusammen", "Alle Kosten zusammen, auch die von Depot und Vertrag.", "Alle Kosten eines Vorsorgeprodukts zusammen (Fonds, Depot, Vertrieb, Versicherung), angegeben als Renditeminderung pro Jahr im Basisinformationsblatt.", "Effektivkosten"],
+    ["Behalten oder auszahlen", "Gewinne bleiben im ETF oder werden dir ausgezahlt.", "Thesaurierende ETFs legen Erträge automatisch wieder an, ausschüttende zahlen sie aus.", "Thesaurierend / Ausschüttend"],
+    ["Kurs oder Gesamtrendite", "Mit oder ohne die ausgezahlten Gewinne gerechnet.", "Die Kursentwicklung zeigt nur den Preis. Die Gesamtrendite enthält zusätzlich die Ausschüttungen. Wir nennen eine Gesamtrendite nur, wenn Dividenden korrekt in den Daten enthalten sind.", "Price Return / Total Return"],
+    ["Schwankung", "Wie stark der Kurs typisch hoch und runter geht.", "Wie stark sich der Kurs typischerweise innerhalb eines Jahres bewegt. 15 % heißt grob: In vielen Jahren liegt das Ergebnis ±15 % um den Durchschnitt. Mehr Schwankung heißt mehr Auf und Ab.", "Volatilität", "vol"],
+    ["Größter Rückgang", "Der tiefste Fall vom letzten Höchststand.", "Der stärkste Verlust vom Höchststand bis zum Tiefpunkt in der Vergangenheit – und wie lange es dauerte, bis das alte Hoch wieder erreicht war.", "Maximum Drawdown", "mdd"],
+    ["Zinseszins", "Erträge bringen selbst wieder Erträge.", "Erträge erwirtschaften selbst wieder Erträge. Deshalb wirken Zeit und Kosten über Jahrzehnte so stark.", "Zinseszinseffekt"],
+    ["Kaufkraft", "Was dein Geld später in heutigen Preisen wert ist.", "Bei 2 % Inflation ist 1 € in 30 Jahren nur noch rund 55 Cent wert. Deshalb zeigen wir Endwerte auch in heutiger Kaufkraft.", "Inflation, reale Werte"],
+    ["Vorsorgelücke", "Was zwischen Rente und Wunsch im Alter fehlt.", "Die Differenz zwischen dem Einkommen, das du im Alter möchtest, und dem, was du aus Rente und anderen Quellen erwartest.", "Rentenlücke"],
+    ["Überschneidung", "Wie viele Firmen in zwei ETFs doppelt stecken.", "Wie stark sich zwei ETFs überschneiden. Wer MSCI World und S&P 500 kombiniert, besitzt viele US-Unternehmen doppelt.", "Overlap"],
+    ["Hebel und Short", "Verstärken oder drehen Bewegungen. Nicht für die Vorsorge.", "Sie bilden die doppelte oder umgekehrte tägliche Bewegung ab. Über längere Zeit weicht das Ergebnis stark ab – für die Vorsorge nicht gedacht.", "Leveraged / Inverse ETF"],
+    ["EU-Fonds", "EU-Regeln für Fonds. So erkennst du ETFs für deine Bank.", "EU-Regelwerk für Fonds. Privatanleger in der EU kaufen in der Regel UCITS-ETFs; US-ETFs sind meist nicht handelbar, weil ein Basisinformationsblatt fehlt.", "UCITS (OGAW)"],
+    ["Altersvorsorgedepot", "Neues gefördertes Depot ab 2027, mit Zulagen.", "Ein ab 2027 staatlich gefördertes Depot für die private Altersvorsorge – ein Produkt von Banken und Brokern, das Vision Universe analysiert, nicht anbietet.", "Altersvorsorgedepot (AltZertG)"]
   ];
+  VS.GLOSSARY = GLOSSARY;
   VS.views.wissen = function () {
-    VS.render('<section class="vs-hero"><p class="vs-eyebrow">Wissen</p><h1>Vorsorge,<br>einfach erklärt.</h1><p class="vs-lead">' + GLOSSARY.length + ' Begriffe, je ein Satz. Tippen zum Aufklappen.</p><div class="vs-tabs"><a class="vs-pill" href="/academy/">Zur Vision Universe Academy</a><a class="vs-pill" href="#/daten">Datenquellen & Qualität</a></div></section>' +
-      '<section class="vs-section vs-glossary">' + GLOSSARY.map(function (g) { return '<details class="vu-more"><summary>' + esc(g[0]) + '</summary><div class="vu-more-body">' + esc(g[1]) + '</div></details>'; }).join("") + '</section>');
+    var U = VS.U;
+    var root = VS.render(VS.intro("Vorsorge, einfach erklärt.", GLOSSARY.length + " Begriffe, je ein Satz.") +
+      '<label class="vs-termsearch">' + U.glyph("search", 18) + '<input id="vs-tq" type="search" placeholder="Begriff suchen …" aria-label="Begriff suchen" autocomplete="off"></label>' +
+      '<a class="vu-box vu-box--lime vs-learn" href="#/start"><span class="vu-hud" style="--vu-hud:40px;border-radius:11px">' + VS.glyph("play", 20) + '</span><span><b>In 3 Minuten zum ersten Sparplan</b><span class="vu-sm" style="display:block">Der geführte Weg mit 10 €</span></span>' + U.glyph("next", 18) + '</a>' +
+      VS.sect("Die wichtigsten Begriffe") + '<div class="vs-terms" id="vs-terms">' + GLOSSARY.map(function (g, i) {
+        return '<button type="button" class="vs-term" data-t="' + i + '"><span><b>' + esc(g[0]) + '</b>' + U.glyph("plus", 16) + '</span><small>' + esc(g[1]) + '</small></button>'; }).join("") + '</div>' +
+      '<p class="vu-sm vu-mu" id="vs-tnone" hidden>Kein Begriff gefunden.</p>' +
+      VS.sect("Mehr lernen") + '<div class="vu-stack">' + VS.navcard({ href: "/academy/", glyph: "book", title: "Vision Universe Academy", sub: "Kurse und Videos" }) + VS.navcard({ href: "#/daten", glyph: "check", title: "Datenquellen und Qualität", sub: "Woher jede Zahl kommt" }) + '</div>');
+    root.querySelector("#vs-tq").addEventListener("input", function () {
+      var q = this.value.trim().toLowerCase(), n = 0;
+      root.querySelectorAll("[data-t]").forEach(function (b) { var g = GLOSSARY[b.dataset.t], hit = !q || (g[0] + " " + g[1] + " " + g[3]).toLowerCase().indexOf(q) >= 0; b.hidden = !hit; if (hit) n++; });
+      root.querySelector("#vs-tnone").hidden = n > 0;
+    });
+    root.querySelector("#vs-terms").addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-t]"); if (!b) return;
+      var g = GLOSSARY[b.dataset.t];
+      var el = VS.sheet("vs-term-s", g[0], '<p class="vu-ltag">Begriff</p><p style="margin-top:8px;font-size:16px;font-weight:600;line-height:1.4">' + esc(g[1]) + '</p><p class="vu-sm vu-mu" style="margin-top:8px">' + esc(g[2]) + '</p>' +
+        (g[4] ? '<div id="vs-term-ex"><div class="vs-loading">Beispiel wird geladen …</div></div>' : "") + '<p class="vu-xs vu-mu" style="margin-top:12px">Fachbegriff: ' + esc(g[3]) + '</p>');
+      if (!g[4] || !el) return;
+      Promise.all([VS.masterFor(["URTH"]), VS.weekly("URTH")]).then(function (res) {
+        var e = res[0].find("URTH"), w = res[1], ex = el.querySelector("#vs-term-ex");
+        ex.innerHTML = '<p class="vu-ltag" style="margin-top:14px">Am Beispiel MSCI World (URTH)</p><div id="vs-term-ch" style="margin-top:6px"></div><div class="vu-grid" style="margin-top:10px">' +
+          VS.tile("Schwankung", e && e.m ? F.pct(e.m.vol, 0) : "–", "pro Jahr") + VS.tile("Größter Rückgang", e && e.m ? F.spct(e.m.mdd, 1) : "–", "seit " + String(e && e.from || "").slice(0, 4)) + '</div>';
+        if (w && global.VUChart) global.VUChart.mount(ex.querySelector("#vs-term-ch"), { currency: "USD", label: "URTH seit Auflage", height: 110, bleed: false, ranges: [{ id: "Max", label: "Max", points: w }] });
+      }).catch(function () { el.querySelector("#vs-term-ex").innerHTML = ""; });
+    });
   };
 
   /* ================================================================= DATEN */
