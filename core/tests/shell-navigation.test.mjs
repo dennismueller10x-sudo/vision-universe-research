@@ -90,7 +90,8 @@ test('active dock state follows deep links after reload', () => {
   assert.equal(active('vorsorge', '/vorsorge/#/xray'), 'portfolio');
   assert.equal(active('vorsorge', '/vorsorge/#/foerderung'), null);
   assert.equal(active('screener', '/screener/?view=build&f=pe'), 'filter');
-  assert.equal(active('screener', '/screener/?f=pe'), 'screener');
+  assert.equal(active('screener', '/screener/?f=pe'), 'filter', 'Filter in der Adresse: der Filterbereich ist aktiv');
+  assert.equal(active('screener', '/screener/'), 'screener');
   assert.equal(active('screener', '/screener/?view=watchlist'), 'gespeichert', 'Watchlist ist ein Reiter unter Gespeichert');
   assert.equal(active('hedgefonds', '/hedgefonds/#/smart-money'), 'smart');
   assert.equal(active('hedgefonds', '/hedgefonds/#/datenbank'), 'investoren', 'Datenbank ist ein Reiter unter Investoren');

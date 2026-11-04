@@ -78,7 +78,8 @@
     {id: 'screener', label: 'Screener', match: p => p.startsWith('/screener/'),
       items: [['screener','Screener','/screener/','screener'],['filter','Filter','/screener/?view=build','plus'],['treffer','Treffer','/screener/?view=results','hits'],['gespeichert','Gespeichert','/screener/?view=saved','saved']],
       active: loc => {
-        const view = new URLSearchParams(loc.search).get('view') || 'start';
+        const q = new URLSearchParams(loc.search);
+        const view = q.get('view') || (q.getAll('f').some(f => f.trim()) || q.get('mode') === 'pro' ? 'build' : 'start');
         return {start: 'screener', build: 'filter', results: 'treffer', compare: 'treffer', saved: 'gespeichert', changes: 'gespeichert', watchlist: 'gespeichert'}[view] || null;
       }},
     {id: 'supertrader', label: 'Supertrader', match: p => p.startsWith('/supertrader/'),

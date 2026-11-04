@@ -231,15 +231,16 @@
 
   // ------------------------------------------------------------ Rahmen
   /* Navigation: die gemeinsame Produkt-Leiste der Vision-Universe-Shell
-     (Screener | Treffer | Gespeichert | Watchlist | ☰). Der Screener meldet
+     (Screener | Filter | Treffer | Gespeichert | ☰, Redesign 11/2026: die Watchlist ist ein
+     Reiter unter Gespeichert). Der Screener meldet
      ihr den aktiven Bereich, die Trefferzahl und Ziele, die den Screen in
      der URL behalten; Klicks auf die Leiste bleiben In-App-Navigation. */
-  var DOCK_VIEW = { screener: 'build', treffer: 'results', gespeichert: 'saved', watchlist: 'watchlist' };
-  function dockView(id) { var v = DOCK_VIEW[id]; return v === 'build' ? (Q.count(state.query) || state.query.mode === 'pro' ? 'build' : 'start') : v; }
+  var DOCK_VIEW = { screener: 'start', filter: 'build', treffer: 'results', gespeichert: 'saved' };
+  function dockView(id) { return DOCK_VIEW[id]; }
   function syncDock() {
     if (!window.VUNavigation) return;
     var r = ds() ? result() : null;
-    var cur = { start: 'screener', build: 'screener', results: 'treffer', compare: 'treffer', saved: 'gespeichert', changes: 'gespeichert', watchlist: 'watchlist' }[state.view] || null;
+    var cur = { start: 'screener', build: 'filter', results: 'treffer', compare: 'treffer', saved: 'gespeichert', changes: 'gespeichert', watchlist: 'gespeichert' }[state.view] || null;
     var hrefs = {};
     Object.keys(DOCK_VIEW).forEach(function (id) { hrefs[id] = buildURL({ view: dockView(id) }); });
     window.VUNavigation.dock({ active: cur, hrefs: hrefs, badges: { treffer: r && Q.count(state.query) ? r.total : null } });
