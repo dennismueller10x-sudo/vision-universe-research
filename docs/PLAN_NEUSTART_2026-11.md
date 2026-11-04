@@ -67,7 +67,7 @@ Voraussetzung: Die Arbeitsregeln in `CLAUDE.md` („Gates werden nicht abgeschw�
 4. Owner-Freigabe nur für Geld, Recht, öffentliche Renditeaussagen, Löschen. 5. Entscheidungen gebündelt einmal täglich.
 6. Tagesbericht statt Chatverlauf. 7. Fortschritt nur über gezählte Abnahmekriterien.
 
-## 5. Vier Arbeitsstränge parallel (ab 05.11.2026)
+## 5. Arbeitsstränge parallel (ab 05.11.2026)
 
 Jeder Strang ist eine eigene Claude-Sitzung, besitzt seine Pfade, mergt bei grüner CI selbst und schreibt seinen Stand nach `docs/neustart/<strang>.md`.
 
@@ -76,7 +76,7 @@ Jeder Strang ist eine eigene Claude-Sitzung, besitzt seine Pfade, mergt bei grü
 | A Infrastruktur | `.github/workflows`, `scripts/ci`, `core/registry`, Gates, `docs/` | Security Master 1.3.0 (#1240) vor 11.11., Quant-CI grün, Crons News/Security Master, FV-8-Alarm, alte PRs schließen | Datenzweig statt `main`, Workflows bündeln, Pfad-Gates → Vertragstests, Doku-Archiv, Modul-Steckbrief |
 | B Supertrader-Backtest | `supertrader/`, `scripts/supertrader/` | Lesarten entscheiden, Tageslauf wieder frisch | V13-Historienlauf Top 5, Ergebnisse intern, Papierhandel 2027 aktivieren |
 | C Quant-Backtest & Portfolio | `quant/`, `scripts/quant/`, `konto/admin/backtests` | Interne Backtest-Vorschau an (#1227), Strategie-Backtest mit delisteten Titeln | Portfolio-Baukasten nach VU-Standard, Musterportfolios mit Ergebnis |
-| D Frontend | Shell, Navigation, Produktseiten (Web-Dateien) | Redesign-Grundlage (Tokens, Header, Dock) | Seite für Seite nach den Redesign-Mockups |
+| D Frontend | – | **angehalten 04.11.2026 (Owner):** Das Frontend wird in einem separaten Chat des Owners umgesetzt. Die Stränge A, B, C ändern keine Darstellung (Shell, Navigation, Seiten-Design). | – |
 
 Außerhalb der Technik (Owner): Rechtsberatung beauftragen, Fragebogen R2, Steuerberater, Stripe-Branding, Testkauf Z1, Repo-Variable `SF8_AUTO_PUBLISH` setzen.
 
