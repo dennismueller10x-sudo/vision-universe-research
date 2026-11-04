@@ -192,10 +192,11 @@ test('SF2-LEGACY-ISOLATION: no product, page, workflow or legacy module imports 
   // workflow that runs the runner, the prepared, disabled SF8 daily run (owner decision O-2; its switch-off is pinned
   // by SF8-DAILY-DISABLED in sf-product-contract.test.mjs), and core/registry/domains.json only while its sole reference
   // is the one pinned SF8 entry (V2, registry-guard.mjs); the owner-dispatched, read-only Supertrader 9 V13 study run
-  // (dispatch only, contents: read, no commit, encrypted output; pinned by sf-st9-v13-study-workflow.test.mjs); the guarded
+  // (dispatch only, contents: read, no commit, encrypted output; pinned by sf-st9-v13-study-workflow.test.mjs); the
+  // V1 Top 5 historical research backtest with the same properties (pinned by sf-st-hist-top5.test.mjs, ST-HIST-4); the guarded
   // SF6-PAPER-2027 recording run (owner switch off, records only after the switch commit, writes only the paper log;
   // pinned by PAPER-2027-WORKFLOW / PAPER-2027-SWITCH in sf-paper-2027-activation.test.mjs)
-  const allowed = (rel) => /^scripts\/supertrader\/source-faithful\//.test(rel) || /^scripts\/supertrader\/tests\/sf-[a-z0-9-]+\.test\.mjs$/.test(rel) || rel === '.github/workflows/supertrader-validation.yml' || rel === '.github/workflows/supertrader-sf8-candidates.yml' || rel === '.github/workflows/supertrader-st9-v13-study.yml' || rel === '.github/workflows/supertrader-paper-2027.yml'
+  const allowed = (rel) => /^scripts\/supertrader\/source-faithful\//.test(rel) || /^scripts\/supertrader\/tests\/sf-[a-z0-9-]+\.test\.mjs$/.test(rel) || rel === '.github/workflows/supertrader-validation.yml' || rel === '.github/workflows/supertrader-sf8-candidates.yml' || rel === '.github/workflows/supertrader-st9-v13-study.yml' || rel === '.github/workflows/supertrader-st-hist-top5.yml' || rel === '.github/workflows/supertrader-paper-2027.yml'
     || (rel === 'core/registry/domains.json' && sf8RegistryViolations(fs.readFileSync(path.join(ROOT, rel), 'utf8')).length === 0);
   const scan = (dir) => { for (const f of fs.readdirSync(dir, { withFileTypes: true })) { const p = path.join(dir, f.name), rel = path.relative(ROOT, p); if (f.isDirectory()) { if (!['node_modules', '.git'].includes(f.name)) scan(p); } else if (/\.(m?js|html|ya?ml|json)$/.test(f.name) && !allowed(rel) && fs.statSync(p).size < 5e6 && /source-faithful\/|research-signal\.mjs|completion\/(gaps|status|facts|build-completion)/.test(fs.readFileSync(p, 'utf8'))) offenders.push(rel); } };
   for (const d of ['supertrader', 'scripts/supertrader', '.github', 'core']) if (fs.existsSync(path.join(ROOT, d))) scan(path.join(ROOT, d));

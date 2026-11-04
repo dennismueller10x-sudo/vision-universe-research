@@ -45,6 +45,19 @@ Grundregeln des Repositorys: [CLAUDE.md](../CLAUDE.md). Architektur und Datenflu
 2. **#1235 nachziehen:** den Konflikt in `cert-prep-top5.mjs` mit `main` auflösen und das Planfeld `token` im ALL13-Plan wie in #1196 in `sourcePhrase` umbenennen (neuer Pin, Begründung im Commit). Danach unabhängiges Review und Owner-Freigabe. Anschließend der Regeltreue-Nachweis auf dem Referenz-Commit (TOP5 und ALL13).
 3. **Echter historischer Lauf der V13-Delisting-Vergleichsstudie** über #1234. Voraussetzungen: Owner-Freigabe, die Secrets `VU_HISTORY_S3_*` und `V13_ARCHIVE_PRIVATE_KEY` vorhanden, Entscheidung zur Archivgeneration (1.2.0 oder nach #1241 2.0.0), sec-pit r12 im Snapshot-Speicher. Vorher #1233 (Turtle-Einheitsstopps) prüfen und integrieren, damit der Ausführungsaudit Turtle nicht mehr als `NOT_CHECKED_LEVEL_UNKNOWN` meldet.
 
+### 0.1 Neustart 04.11.2026: V1 = Top 5 und entschiedene Lesarten
+
+V1 sind C01, C02, C03, C08 und C12; die übrigen acht Methoden stehen im Produkt als „in Forschung“. Backtests sind Forschung und laufen jetzt historisch („Forschung, nicht zertifiziert“), Zertifizierung ist ein späteres Etikett. Entscheidungsdatei: `scripts/supertrader/source-faithful/certification/READING-DECISIONS-2026-11-04.json` (Test `sf-reading-decisions.test.mjs`). Code, Parameter, Registrierungen und gepinnte Pläne bleiben unverändert; die Alternativen werden weiter als Varianten berichtet.
+
+- **PS-C01-READINGS:** Referenz SKIP und 10-Tage-Failsafe-Ausstieg, wie der gepinnte Turtle-Code rechnet; TAKE und 20D bleiben Szenarien.
+- **PS-C03-BOTTOM-START:** Referenz AFTER_TOP_DAY, DAR-Q7 gilt als „nicht in der neuen Box“; AFTER_TOP_CONFIRMED bleibt Variante.
+- **PS-C08-SETUP-PROXY:** CONSOLIDATION_10 ist für die Forschung tragfähig (CC-3 bleibt offen), der historische Test misst die Referenz ohne Momentum-Auswahl.
+- **PS-C12-READINGS:** 50-Sitzungen-Volumenfenster und Verletzungslesart LATER_DAYS (FAQ); NEXT_DAY bleibt Variante.
+- **FP-ST-03:** Option A, PIT-SIC-Gruppen aus EDGAR als Forschungsstudie; die Referenz ohne Gruppen bleibt hashgleich.
+- **FP-ST-05:** Option A, C06 zusätzlich als manuelle Methode (C); die Buchbeschaffung braucht als Ausgabe die Owner-Freigabe.
+
+Der Tagesstand des Strangs steht in `docs/neustart/B-supertrader.md`.
+
 ---
 
 ## 1. Integrierte PRs der letzten Runde (01.–02.11.2026)
