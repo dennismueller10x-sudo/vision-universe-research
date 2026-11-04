@@ -64,3 +64,24 @@ Heute ist Schritt 1: Fundament und Bausteine (Folien A3 und C in HANDOVER.md).
 ```
 
 Für die folgenden Schritte denselben Prompt nehmen und nur die Zeile „Heute ist Schritt …“ mit Folien und Hinweisen aus der Tabelle oben ersetzen, z. B. „Heute ist Schritt 4: Welt Quant, Folien Q00–Q09 in HANDOVER.md, Mockups in worlds/03-quant.js“.
+
+## Master-Prompt: alles in einem Durchlauf (Owner-Wunsch 04.11.2026)
+
+Der Owner möchte, dass das ganze Redesign in einem Auftrag umgesetzt wird, ohne Zwischenstopps und Rückfragen. Diesen Text in einen neuen Claude-Code-Chat einfügen:
+
+```
+Setze das freigegebene Redesign von research.visionuniverse.de vollständig und 1:1 um, alle Schritte in einem Durchlauf.
+Vorlage: docs/design/redesign-2027/ (README.md, HANDOVER.md, Mockups in worlds/*.js, lib.js, index.html).
+Lies zuerst CLAUDE.md, README.md und HANDOVER.md.
+
+Arbeitsweise:
+- Arbeite autonom alle Schritte der Tabelle „Umsetzung in Schritten“ ab, danach die Backend-Zusätze. Stelle keine Rückfragen und warte nicht auf Freigaben zwischen den Schritten.
+- Für offene Entscheidungen gelten diese Vorgaben: Pro-Preis immer aus /v1/plans anzeigen, nichts fest eintragen; neue Adressen wie im Bauplan einführen, alte Adressen leiten weiter; Urteile und Wortwahl wie in den Mockups; Backtests als „0 von 9 Regelversionen“.
+- Gates und Budgets aus CLAUDE.md gelten unverändert. Wo ein Gate Pfade trennt, teile die Arbeit selbstständig in getrennte Branches und Pull Requests auf (z. B. Supertrader, Discover, Company Intelligence einzeln). Das ist kein Grund anzuhalten.
+- Baue die PRs aufeinander auf (jeder neue Branch startet auf dem vorherigen) und mache sofort mit dem nächsten Schritt weiter, ohne auf Merges zu warten. Öffne jeden PR mit Folien-IDs, Vorher/Nachher-Screenshots auf 390 × 844 und Testergebnissen.
+- Keine Fachmodelle, Scores, Rankings oder generierten Daten-Artefakte ändern. Konten, Stripe und Brevo bleiben so geschaltet, wie sie sind; neue Konto-Funktionen bauen und testen, aber keine Produktionsfreigabe umschalten (docs/accounts/FREIGABEN.md).
+- Führe eine Fortschrittsliste in docs/design/redesign-2027/PROGRESS.md (je Folien-ID: offen, in Arbeit, fertig, PR-Nummer, Abweichung). Wenn der Chat neu startet oder der Kontext zusammengefasst wird, mach dort weiter.
+- Prüfe jede Seite im Browser (Chromium und WebKit, 390 × 844) gegen das Mockup und die Abnahmekriterien (Folie Ü3). Behebe Abweichungen selbst.
+- Halte nur an, wenn etwas technisch unmöglich ist (z. B. fehlender Zugang). Dann notiere es in PROGRESS.md, überspringe es und mach mit dem Rest weiter.
+- Am Ende: Liste aller PRs, Stand je Folien-ID, offene Punkte.
+```
