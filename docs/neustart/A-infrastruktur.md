@@ -16,8 +16,8 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - Freshness-Monitor zusätzlich nach dem Marktdaten-Refresh, neuer Job `pit` (fehlender Snapshot-Monat → Alarm).
 
 ## Offen
-- Security Master Schritt 6/7: Marktdaten-Lauf nach C läuft (Discover-Namen, NM3/485). Danach volle Suiten und `system-health`. Generations-PR #1347 (Schritt 8, `researchEvidenceDefault` bleibt 1.1.0).
-- Datenzweig-Pilot News #1348 (Phase DUAL_WRITE), Abnahme nach 7 Tagen nur `IDENTICAL`.
+- Security Master Schritt 6/7: Der Marktdaten-Lauf 41886133466 nach C läuft (Discover-Namen, NM3/485). Danach volle Suiten und `system-health`. Schritt 8 erledigt: Generation 1.3.0 eingefroren (#1347), `researchEvidenceDefault` bleibt 1.1.0.
+- Datenzweig-Pilot News gemergt (#1348, Phase DUAL_WRITE). Abnahme nach 7 Tagen nur `IDENTICAL`, dann Phase BRANCH_ONLY.
 - `eligibility.json` (Statusseite „Security Master“) ist seit 20.10. STALE. Eigener Erzeuger `build-us-eligibility.mjs`, kein Zeitplan. Nächster Schritt: nach dem Vorbild des Stamms einen Lauf mit Gate einplanen.
 - Folgearbeiten an 1.3.0 (Strang C): #1119 (H6), optional H7.
 
@@ -27,9 +27,9 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
 
 ## Offene PRs: Vorschlag (noch nichts geschlossen, Bestätigung durch die Steuerungssitzung)
 
-Stand 04.11.2026, 18:45 UTC: 133 offene PRs (inkl. #1347, #1348). Vorschlag: **23 behalten, 3 zusammenführen zu 1, 107 schließen**. Geschlossene PRs bleiben wiederherstellbar (Plan §6 Nr. 9).
+Stand 04.11.2026, 18:45 UTC: 131 offene PRs (inkl. #1349). Vorschlag: **22 behalten, 3 zusammenführen zu 1, 107 schließen**. Geschlossene PRs bleiben wiederherstellbar (Plan §6 Nr. 9).
 
-### Behalten (23)
+### Behalten (22)
 
 | PR | Inhalt | Strang | Grund |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Stand 04.11.2026, 18:45 UTC: 133 offene PRs (inkl. #1347, #1348). Vorschlag: **2
 | #1308, #1309 | App-Anmeldeschiene | App | nach dem Web-Start |
 | #1331, #1340 | Redesign Shell/Vorlage | D | laufend |
 | #1337 | Strang-B-Stand | B | laufend |
-| #1347, #1348 | Strang A (diese Sitzung) | A | laufend |
+| #1349 | Strang A, dieses Dokument | A | laufend |
 
 ### Zusammenführen (3 → 1)
 
@@ -71,7 +71,7 @@ Stand 04.11.2026, 18:45 UTC: 133 offene PRs (inkl. #1347, #1348). Vorschlag: **2
 | Doku-Übergaben | #1192, #1284, #1303 | keine neuen Übergabe-/Fortschrittsdokumente (CLAUDE.md); Stand steht im Plan |
 | Doppelt | #1325 | ersetzt durch #1343 (Test statt Umbenennung) |
 
-Nach dem Aufräumen: 23 + 1 = 24 offen; Ziel unter 15 erreicht, sobald die laufenden Strang-PRs gemergt sind.
+Nach dem Aufräumen: 22 + 1 = 23 offen; Ziel unter 15 erreicht, sobald die laufenden Strang-PRs gemergt sind.
 
 ## Umbau Plan §3: Konzept und Pilot
 
