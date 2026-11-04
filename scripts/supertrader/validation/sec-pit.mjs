@@ -214,7 +214,7 @@ async function main() {
   const elig = JSON.parse(fs.readFileSync(path.join(root, 'quant/data/market/security-master/eligibility.json'), 'utf8'));
   const cls = new Map(elig.decisions.map((d) => [d.ticker, d.instrument_type]));
   const storeActive = new Map(uni.securities.filter((s) => s.active !== false).map((s) => [s.ticker, { startDate: s.startDate, instrumentType: cls.get(s.ticker) || null }]));
-  const listings = L.buildListingTable(rows, storeActive);
+  const listings = L.buildListingTable(rows, storeActive, L.LISTING_OPTS); // PAPER_2027: Stichtag = rollendes Fensterende
   const listedRoots = Master.collectListedRoots(rows);
   const { createS3DriverFromEnv } = await import(path.join(root, 'scripts/market/storage/s3-driver.mjs'));
   const driver = createS3DriverFromEnv(process.env);
@@ -332,7 +332,7 @@ async function main() {
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
   if (R13) { const sh = Object.values(out).filter((v) => v.shares?.length); stats.withShares = sh.length; stats.sharesSource = sh.reduce((a, v) => ((a[v.shares[0][3]] = (a[v.shares[0][3]] || 0) + 1), a), {}); log(`mit Aktienanzahl: ${sh.length}`); }
   if (R14) { const rows = Object.values(out).flatMap((v) => v.shares || []); stats.shareRowsBySource = rows.reduce((a, r) => ((a[r[3]] = (a[r[3]] || 0) + 1), a), {}); log(`Aktienzahl-Zeilen je Quelle: ${JSON.stringify(stats.shareRowsBySource)}`); }
-  fs.writeFileSync(path.join(OUT, R14 ? 'sec-pit-r14.sealed.json' : R13 ? 'sec-pit-r13.sealed.json' : `sec-pit-r12${L.WINDOW_NAME === 'HOLDOUT' ? '-holdout' : ''}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ schema: 'supertrader-sec-pit-1.2.0', r13: R13, delisting: dstats, delistSample: Object.entries(delist).filter(([, v]) => v.cls === 'ACQUISITION').slice(0, 40), causes, byListEndYear: byStartYear, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, stats, epsFilingsByYear: byYear }))));
+  fs.writeFileSync(path.join(OUT, R14 ? 'sec-pit-r14.sealed.json' : R13 ? 'sec-pit-r13.sealed.json' : `sec-pit-r12${L.WINDOW_NAME === 'HOLDOUT' ? '-holdout' : L.WINDOW_NAME === L.FORWARD_WINDOW.name ? '-paper-2027' : ''}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify({ schema: 'supertrader-sec-pit-1.2.0', r13: R13, delisting: dstats, delistSample: Object.entries(delist).filter(([, v]) => v.cls === 'ACQUISITION').slice(0, 40), causes, byListEndYear: byStartYear, at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, stats, epsFilingsByYear: byYear }))));
   if (R13 && !R14) { const sp = path.join(root, 'scripts/supertrader/house/session-public-key.pem'); if (fs.existsSync(sp)) fs.writeFileSync(path.join(OUT, 'sec-pit-r13.session.sealed.json'), fs.readFileSync(path.join(OUT, 'sec-pit-r13.sealed.json'), 'utf8') && L.encryptForOwner(fs.readFileSync(sp, 'utf8'), Buffer.from(JSON.stringify({ r13: true, causes, stats, at: new Date().toISOString() })))); }
 }
 

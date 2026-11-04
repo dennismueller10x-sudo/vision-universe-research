@@ -53,6 +53,13 @@ name: Supertrader interner Datentest (Validierung)
 #   [supertrader-validation:kk-intraday]         dazu IEX-Minuten der Kandidatentage (Budget [kk-max-requests:N] <= 6000, Cache, fortsetzbar)
 #   [supertrader-validation:kk-intraday-smoke]   technischer Probelauf (400 Reihen, Smoke-Snapshot)
 #   [supertrader-validation:kk-intraday-cache]   Supertrader 6.0: nur vorhandener Cache (0 Anfragen, kein API-Schluessel), saubere Stichproben + Schichtung
+#   Paper-Test 2027, Protokoll 1.2.0 (nur manuell, keine Commit-Marke; Forward-Fenster ST_WINDOW=PAPER_2027 bis zur letzten
+#   XNYS-Sitzung vor heute, eigener privater Namensraum; docs/SUPERTRADER_PAPER_2027_FORWARD_PATH.md):
+#     paper-2027-fetch   Forward-Reihen fortschreiben (fetch.mjs --mode forward, fortsetzbar, verschluesselter Beleg)
+#     paper-2027-sec     Forward-SEC-Daten (sec-pit.mjs: sec-pit r12, sec-delist r13)
+#     paper-2027-probe   Forward-Lader pruefen (nur Zaehlungen und Hashes, keine Aufzeichnung)
+#   allow_code_version_change (nur manuell): Snapshot-Laeufe trotz geaendertem Snapshot-Code-Fingerabdruck; der Lauf vergleicht
+#     den Datensatz dann gegen das Manifest (datasetVerified EXACT oder CODE_VERSION_CHANGED) und vermerkt es im Beleg
 #   E7-6 (nur manuell, keine Commit-Marke): kk-intraday-e76-count  Plan der Stichprobenerweiterung CLEAN_EXT_E7_6 (0 Anfragen, kein API-Schluessel)
 #                                           (Abrufmodus entfernt)  der eine Erweiterungsabruf ist verbraucht (Lauf 40185337539, 481 Anfragen);
 #                                                                  ein weiterer Abruf braucht eine neue Eigentuemerentscheidung und einen eigenen PR
@@ -64,7 +71,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [sf7-minervini, sf7-minervini-smoke, sf7-ca-resolution, sf7-ca-resolution-smoke, sf7-ca-edgar, sf7-ca-edgar-smoke, sf7-ca-edgar-plan, sf7-tiingo-splits-probe, sf7-tiingo-splits-plan, sec-pit-r14, sf6-integrity, sf6-integrity-smoke, sf6-validation, sf6-validation-holdout, kk-intraday-probe, kk-intraday, kk-intraday-count, kk-intraday-smoke, kk-intraday-cache, kk-intraday-e76-count, sf-research, sf-research-smoke, sf3-research, sf3-research-smoke, sf4-lifecycle, sf4-lifecycle-smoke, sf5-lifecycle, sf5-lifecycle-smoke, subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases]
+        options: [sf7-minervini, sf7-minervini-smoke, sf7-ca-resolution, sf7-ca-resolution-smoke, sf7-ca-edgar, sf7-ca-edgar-smoke, sf7-ca-edgar-plan, sf7-tiingo-splits-probe, sf7-tiingo-splits-plan, sec-pit-r14, sf6-integrity, sf6-integrity-smoke, sf6-validation, sf6-validation-holdout, kk-intraday-probe, kk-intraday, kk-intraday-count, kk-intraday-smoke, kk-intraday-cache, kk-intraday-e76-count, sf-research, sf-research-smoke, sf3-research, sf3-research-smoke, sf4-lifecycle, sf4-lifecycle-smoke, sf5-lifecycle, sf5-lifecycle-smoke, paper-2027-fetch, paper-2027-sec, paper-2027-probe, subset, full, analyze, methods, diagnose, r7, sources, r8, r8b, r8c, intraday-probe, intraday, intraday-smoke, r9b, venue-probe, sources-minervini, cases, cases-smoke, r10b, universe-audit, r10c, cases-holdout, r10m, sec-pit, r11, cases-w4, sources-r12, r12, trend52, trend52-smoke, audit13, audit13-smoke, r13b, trend52-s1c, holdout-fetch, holdout-sec, audit14, audit14-smoke, audit14-holdout, audit14-holdout-smoke, r15-delist-cases]
         default: subset
       snapshot:
         description: 'Research-Snapshot sts1-<32 hex> (leer = Live-Eingaben wie bisher)'
@@ -74,6 +81,10 @@ on:
         type: choice
         options: [legacy, research-v1]
         default: legacy
+      allow_code_version_change:
+        description: 'Snapshot-Laeufe bei geaendertem Snapshot-Code (z. B. Paper-Test 2027 Protokoll 1.2.0, Referenzgleichheit); wird im Beleg vermerkt'
+        type: boolean
+        default: false
   push:
     branches:
       - 'claude/**'
@@ -138,6 +149,7 @@ jobs:
           MSG: ${{ github.event.head_commit.message }}
           IN_SNAPSHOT: ${{ inputs.snapshot }}
           IN_ACCOUNTING: ${{ inputs.accounting }}
+          IN_ALLOW_CODE_CHANGE: ${{ inputs.allow_code_version_change }}
           MODE: ${{ steps.mode.outputs.mode }}
         run: |
           set -euo pipefail
@@ -158,6 +170,11 @@ jobs:
           args=""
           [ -n "$snap" ] && args="--snapshot $snap"
           [ "$acc" != legacy ] && args="$args --accounting $acc"
+          # nur manuell und nur mit Snapshot: der Runner vergleicht den Datensatz mit dem Manifest und vermerkt den Codewechsel
+          if [ "${IN_ALLOW_CODE_CHANGE:-false}" = true ]; then
+            if [ -z "$snap" ]; then echo "INPUT_INTEGRITY_FAILURE: ALLOW_CODE_VERSION_CHANGE_REQUIRES_SNAPSHOT" >&2; exit 1; fi
+            args="$args --allow-code-version-change"
+          fi
           echo "args=$args" >> "$GITHUB_OUTPUT"
           echo "Snapshot: ${snap:-keiner}; Abrechnung: $acc"
       - name: Oeffentliche Anbieterangaben zu Abrufgrenzen (Beleg, best effort)
@@ -578,6 +595,51 @@ jobs:
         run: |
           node scripts/supertrader/validation/fetch-sources.mjs --out "$RUNNER_TEMP/val" --crawl
           node scripts/supertrader/validation/fetch-sources.mjs --out "$RUNNER_TEMP/val" --list scripts/supertrader/validation/sources-r8b.json --name sources-r8b
+      - name: Paper-Test 2027 - Forward-Fensterende (letzte XNYS-Sitzung vor heute)
+        id: paperwin
+        if: startsWith(steps.mode.outputs.mode, 'paper-2027-')
+        run: |
+          set -euo pipefail
+          node scripts/supertrader/source-faithful/paper/run-paper-2027.mjs session --today "$(date -u +%F)"
+      - name: Paper-Test 2027 - Forward-Reihen fortschreiben (privater Eimer, verschluesselter Beleg)
+        if: steps.mode.outputs.mode == 'paper-2027-fetch'
+        env:
+          ST_WINDOW: PAPER_2027
+          ST_WINDOW_TO: ${{ steps.paperwin.outputs.session }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/supertrader/validation/fetch.mjs --mode forward --out "$RUNNER_TEMP/val"
+      - name: Paper-Test 2027 - Forward-SEC-Daten (privater Eimer, verschluesselter Beleg)
+        if: steps.mode.outputs.mode == 'paper-2027-sec'
+        env:
+          ST_WINDOW: PAPER_2027
+          ST_WINDOW_TO: ${{ steps.paperwin.outputs.session }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: node scripts/supertrader/validation/sec-pit.mjs --out "$RUNNER_TEMP/val"
+      - name: Paper-Test 2027 - Forward-Lader pruefen (nur Zaehlungen und Hashes, keine Aufzeichnung)
+        if: steps.mode.outputs.mode == 'paper-2027-probe'
+        env:
+          SESSION: ${{ steps.paperwin.outputs.session }}
+          ST_WINDOW: PAPER_2027
+          ST_WINDOW_TO: ${{ steps.paperwin.outputs.session }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: node scripts/supertrader/source-faithful/paper/run-paper-2027.mjs forward-probe --session "$SESSION" --out "$RUNNER_TEMP/val"
       - name: Verschluesseltes Ergebnis ablegen
         if: always()
         env:
