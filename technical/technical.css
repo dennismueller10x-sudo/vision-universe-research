@@ -189,6 +189,29 @@ div.tc-signal{grid-template-columns:auto 1fr auto}
 .tc-detail dd,.tc-dq dd{margin:0}
 @media(max-width:480px){.tc-detail dl,.tc-dq dl{grid-template-columns:1fr}.tc-detail dd,.tc-dq dd{margin-bottom:6px}}
 .tc-dq dl{padding-bottom:14px}
+/* Diese Aktie in Quant und Supertrader (engine/world-context.js) */
+.tc-worlds{margin-top:8px}
+.tc-world-grid{display:grid;gap:10px}
+.tc-world-card{display:flex;flex-direction:column;gap:6px;min-width:0;padding:14px;border:1px solid var(--vu-line);border-radius:18px;background:var(--tc-card)}
+.tc-world-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 10px}
+.tc-world-head h3{margin:0;font-size:17px}
+.tc-world-card h4{margin:8px 0 0;font-size:13px;font-weight:800;color:var(--vu-muted);text-transform:uppercase;letter-spacing:.04em}
+.tc-world-stand{font-size:12px;color:var(--vu-muted)}
+.tc-world-stand.is-old{color:var(--tc-down)}
+.tc-world-lead{margin:0;font-size:15px;line-height:1.45}
+.tc-world-chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 0;padding:0;list-style:none}
+.tc-world-chips li{display:flex;flex-direction:column;min-width:0;padding:6px 10px;border-radius:12px;background:var(--vu-surface);font-size:12px;color:var(--vu-muted)}
+.tc-world-chips li b{font-size:14px;color:var(--vu-text)}
+.tc-world-chips li.is-up b{color:var(--tc-up)}
+:root[data-theme=dark] .tc-world-chips li.is-up b{color:var(--vu-accent)}
+.tc-world-chips li.is-down b{color:var(--tc-down)}
+.tc-world-list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.tc-world-list li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-width:0}
+.tc-world-list li b{min-width:0;overflow-wrap:anywhere}
+.tc-world-list li small{flex-basis:100%;font-size:12px;color:var(--vu-muted)}
+.tc-world-list li small.is-warn{color:var(--tc-down)}
+.tc-world-list .tc-badge{padding:3px 10px;font-size:13px;white-space:normal}
+.tc-world-card .tc-note{margin:4px 0 0}
 .tc-level-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:420px){.tc-level-grid{grid-template-columns:1fr}}
 .tc-level-card{display:flex;gap:12px;align-items:center;padding:14px;border:1px solid var(--vu-line);border-radius:18px;background:var(--tc-card)}
@@ -263,6 +286,8 @@ div.tc-signal{grid-template-columns:auto 1fr auto}
   .tc-studio{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);gap:0 20px;align-items:start}
   .tc-studio>.tc-chart-card,.tc-studio>.tc-layers,.tc-studio>.tc-dq,.tc-studio>.tc-disclaimer{grid-column:1}
   .tc-studio>.tc-signals,.tc-studio>.tc-levels{grid-column:2}
+  .tc-studio>.tc-worlds{grid-column:1/-1}
+  .tc-world-grid{grid-template-columns:1fr 1fr;align-items:start}
   .tc-studio>.tc-signals{grid-row:1/span 3}
   .tc-studio>.tc-signals>h2{margin-top:0}
 }

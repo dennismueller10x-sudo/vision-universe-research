@@ -167,9 +167,9 @@
       "cik": "0001111928",
       "name": "IPG PHOTONICS CORP",
       "sic": "3674",
-      "rawFacts": 23813,
-      "mappedFacts": 7353,
-      "unmappedFacts": 16693,
+      "rawFacts": 24207,
+      "mappedFacts": 7466,
+      "unmappedFacts": 17106,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -179,28 +179,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2009-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -220,21 +220,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -248,14 +248,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -278,46 +278,47 @@
         }
       },
       "quality": {
-        "HIGH": 664,
+        "HIGH": 671,
         "MEDIUM": 36
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 700,
-        "resolvedValues": 700
+        "datableValues": 707,
+        "resolvedValues": 707
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 16974,
+        "rules_version": "1.1.0",
+        "total": 17278,
         "by_severity": {
-          "INFO": 16693,
-          "WARNING": 281
+          "INFO": 17106,
+          "WARNING": 172
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 272,
+          "CONCEPT_DISAGREEMENT": 163,
           "RESTATEMENT_CONFLICT": 7,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 16693
+          "UNKNOWN_CONCEPT": 17106
         }
       },
       "latestFiling": {
-        "accession": "0001111928-26-000153",
-        "filing_date": "2026-08-04",
+        "accession": "0001111928-26-000182",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 81
+        "periodic_filings": 82,
+        "acceptance_datetime": "2026-11-03T21:31:26.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "8ecc710d96feaff7e41dda5fde41c0b7517d1621d6be4247ae14ef897e0be183",
+      "sourceDigest": "44fde7289604b1ab866fee72a9e27318f4ddda34b45053690fb8e1202b77c8d7",
       "issuerId": "iss_cik_0001111928"
     },
     {

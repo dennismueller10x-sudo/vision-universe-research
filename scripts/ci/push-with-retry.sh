@@ -43,6 +43,7 @@
 # darf.
 #
 # Aufruf: scripts/ci/push-with-retry.sh <branch> [versuche]
+# Umgebung (optional): PUSH_OWNED_PATHS, PUSH_REGENERATE_PATHS + PUSH_REGENERATE
 set -euo pipefail
 
 BRANCH="${1:?Branch fehlt}"
@@ -96,6 +97,81 @@ ERZEUGT=(
 # gegen das Erzeugerregister.
 read -r -a EIGENE <<< "${PUSH_OWNED_PATHS:-}"
 
+# SIEBTENS (Lauf 41490082062, 02.11.2026): der SEC-Consumer-Montagslauf
+# verwarf nach 43 Minuten seine Fundamentaldaten an einem Konflikt in
+# discover/data/meta.json. Die Datei schreibt build-discover-data.mjs, und
+# den rufen fuenf Workflows auf (Erzeugerregister: market-data-refresh,
+# index-membership, long-series, company-names, sec-consumer). Zwei davon
+# waren 13 Minuten auseinander gelaufen: "Lange Kursreihen" (17:32 UTC)
+# und der Consumer (Start 17:19 UTC statt 07:30 - GitHub verschiebt
+# Zeitplaene um Stunden).
+#
+# Hier ist "eigener Stand" FALSCH: jede Seite hat Eingaben, die die andere
+# nicht hat (der eine Lauf neue Wochenreihen, der andere neue
+# Fundamentaldaten). Weder der eine noch der andere Stand ist richtig, nur
+# ein Neubau aus den zusammengefuehrten Eingaben. Ein Aufrufer, der den
+# Erzeuger selbst ausfuehrt, nennt deshalb
+#
+#   PUSH_REGENERATE_PATHS="discover/data/ !discover/data/europe/"
+#   PUSH_REGENERATE="node scripts/discover/build-discover-data.mjs && node scripts/discover/verify-discover-data.mjs"
+#
+# Ein Konflikt in diesen Pfaden wird nur VORLAEUFIG mit dem Stand von
+# origin aufgeloest, damit der Rebase zu Ende kommt. Danach - nach JEDEM
+# Neuaufsetzen, auch ohne Konflikt, denn auch dann koennen sich die
+# Eingaben geaendert haben - laeuft der Erzeuger auf dem rebasten Baum, und
+# sein Ergebnis wird in den eigenen Commit genommen. Scheitert der Neubau
+# oder seine Pruefung, wird NICHTS geschoben. Ein vorlaeufiger Stand
+# verlaesst den Runner also nie. Welcher Workflow welche Pfade nennen darf,
+# prueft quant/tests/push-with-retry.test.mjs gegen das Erzeugerregister.
+read -r -a NEU_ERZEUGBAR <<< "${PUSH_REGENERATE_PATHS:-}"
+NEUBAU="${PUSH_REGENERATE:-}"
+if [ "${#NEU_ERZEUGBAR[@]}" -gt 0 ] && [ -z "$NEUBAU" ]; then
+  echo "PUSH_REGENERATE_PATHS ohne PUSH_REGENERATE: kein Erzeuger fuer den Neubau genannt. Abbruch." >&2
+  exit 1
+fi
+
+neu_erzeugbar() {
+  local datei="$1"
+  local p
+  for p in "${NEU_ERZEUGBAR[@]}"; do
+    case "$p" in "!"*) case "$datei" in "${p#!}"*) return 1 ;; esac ;; esac
+  done
+  for p in "${NEU_ERZEUGBAR[@]}"; do
+    case "$p" in "!"*) continue ;; esac
+    case "$datei" in "$p"*) return 0 ;; esac
+  done
+  return 1
+}
+
+# Pfadangabe fuer git add: die Praefixe, "!"-Ausnahmen als :(exclude).
+neubau_pfadangabe() {
+  local p
+  for p in "${NEU_ERZEUGBAR[@]}"; do
+    case "$p" in "!"*) printf '%s\0' ":(exclude)${p#!}" ;; *) printf '%s\0' "$p" ;; esac
+  done
+}
+
+# Erzeuger auf dem rebasten Baum ausfuehren und sein Ergebnis in den
+# obersten eigenen Commit nehmen. Rueckgabe 1: nichts schieben.
+neu_erzeugen() {
+  [ -n "$NEUBAU" ] || return 0
+  echo "Neubau der erzeugten Pfade (${NEU_ERZEUGBAR[*]}) auf dem neuen Stand: $NEUBAU"
+  if ! bash -c "$NEUBAU"; then
+    echo "Neubau gescheitert - die Daten dieses Laufs werden NICHT geschoben." >&2
+    return 1
+  fi
+  local pfade=()
+  while IFS= read -r -d '' p; do pfade+=("$p"); done < <(neubau_pfadangabe)
+  git add -A -- "${pfade[@]}"
+  if git diff --cached --quiet; then
+    echo "Neubau ergibt denselben Stand."
+  else
+    git commit -q --amend --no-edit
+    echo "Neubau in den eigenen Commit uebernommen."
+  fi
+  return 0
+}
+
 eigener_stand() {
   local datei="$1"
   local p
@@ -132,6 +208,18 @@ konflikte_aufloesen() {
         rm -f -- "$datei"
       fi
       echo "  Konflikt nach Erzeugerhoheit aufgeloest (eigener Stand): $datei"
+    elif neu_erzeugbar "$datei"; then
+      # Vorlaeufig: Stand von origin (im Rebase --ours, Stufe 2). Fehlt
+      # Stufe 2, hat origin die Datei geloescht. Der Neubau nach dem
+      # Rebase ueberschreibt beides; ohne erfolgreichen Neubau kein Push.
+      if git ls-files -u -- "$datei" | awk '{print $3}' | grep -qx 2; then
+        git checkout --ours -- "$datei"
+        git add -- "$datei"
+      else
+        git rm -q --cached -- "$datei" >/dev/null 2>&1 || true
+        rm -f -- "$datei"
+      fi
+      echo "  Konflikt in erzeugter Datei, wird nach dem Rebase neu gebaut: $datei"
     else
       echo "  Konflikt ausserhalb erzeugter Artefakte: $datei" >&2
       offen=1
@@ -203,6 +291,7 @@ for ((i = 1; i <= VERSUCHE; i++)); do
   sleep "$WARTE"
   WARTE=$((WARTE * 2))
   neu_aufsetzen || exit 1
+  neu_erzeugen || exit 1
 done
 
 echo "Push nach ${VERSUCHE} Versuchen nicht moeglich. Die Daten dieses Laufs sind NICHT veroeffentlicht." >&2

@@ -421,9 +421,9 @@
       "cik": "0001559432",
       "name": "TXO Partners, L.P.",
       "sic": "1311",
-      "rawFacts": 3687,
-      "mappedFacts": 1046,
-      "unmappedFacts": 2588,
+      "rawFacts": 3939,
+      "mappedFacts": 1120,
+      "unmappedFacts": 2759,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -433,9 +433,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 18,
+      "quarterlyPeriods": 19,
       "firstPeriodEnd": "2021-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
@@ -447,7 +447,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -467,28 +467,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "net_income": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "operating_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "revenue": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -509,7 +509,7 @@
         },
         "total_assets": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -532,44 +532,45 @@
         }
       },
       "quality": {
-        "HIGH": 107,
-        "MEDIUM": 23
+        "HIGH": 112,
+        "MEDIUM": 24
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 130,
-        "resolvedValues": 130
+        "datableValues": 136,
+        "resolvedValues": 136
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2660,
+        "rules_version": "1.1.0",
+        "total": 2810,
         "by_severity": {
-          "INFO": 2588,
-          "WARNING": 72
+          "INFO": 2759,
+          "WARNING": 51
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 72,
-          "UNKNOWN_CONCEPT": 2588
+          "CONCEPT_DISAGREEMENT": 51,
+          "UNKNOWN_CONCEPT": 2759
         }
       },
       "latestFiling": {
-        "accession": "0001559432-26-000014",
-        "filing_date": "2026-08-04",
+        "accession": "0001559432-26-000021",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 16
+        "periodic_filings": 17,
+        "acceptance_datetime": "2026-11-03T21:21:45.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "f9433bce313c2d3722db718d0f77f112d138232469970f201b481a1729edf345",
+      "sourceDigest": "83ccea415058dc9e4b2c111339b2cd7d1a7891ef75e7458897621c8341b6c72b",
       "issuerId": "iss_cik_0001559432"
     }
   ]
