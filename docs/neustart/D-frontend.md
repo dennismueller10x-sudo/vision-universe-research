@@ -10,7 +10,7 @@ Ein PR pro Ergebnis, Browser-QA auf 390 px und Desktop, hell und dunkel. Bilder 
 | Ergebnis | PR | Mockups | Nachweis |
 |---|---|---|---|
 | Technical-QA kennt das neue Menü (Vorbereitung) | #1330 | N3 | Prüft beide Menü-Generationen |
-| Shell und Dock: Tokens, Kopfzeile, Produkt-Leiste, Menü, Bausteine C01–C20 | (dieser PR) | A3, C, N1–N3 | [Vorher/Nachher](https://github.com/dennismueller10x-sudo/vision-universe-research/tree/neustart/d-evidence/neustart-d/01-shell) |
+| Shell und Dock: Tokens, Kopfzeile, Produkt-Leiste, Menü, Bausteine C01–C20 | #1331 | A3, C, N1–N3 | [Vorher/Nachher](https://github.com/dennismueller10x-sudo/vision-universe-research/tree/neustart/d-evidence/neustart-d/01-shell) |
 
 Inhalt „Shell und Dock“:
 - Kopfzeile (C01): links die Welt (HUD-Icon + Name) oder das Logo, rechts Suche, Atlas, Mein Bereich. 56 px mobil, 64 px Desktop.
