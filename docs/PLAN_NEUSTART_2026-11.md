@@ -76,7 +76,7 @@ Jeder Strang ist eine eigene Claude-Sitzung, besitzt seine Pfade, mergt bei grü
 | A Infrastruktur | `.github/workflows`, `scripts/ci`, `core/registry`, Gates, `docs/` | Security Master 1.3.0 (#1240) vor 11.11., Quant-CI grün, Crons News/Security Master, FV-8-Alarm, alte PRs schließen | Datenzweig statt `main`, Workflows bündeln, Pfad-Gates → Vertragstests, Doku-Archiv, Modul-Steckbrief |
 | B Supertrader-Backtest | `supertrader/`, `scripts/supertrader/` | Lesarten entscheiden, Tageslauf wieder frisch | V13-Historienlauf Top 5, Ergebnisse intern, Papierhandel 2027 aktivieren |
 | C Quant-Backtest & Portfolio | `quant/`, `scripts/quant/`, `konto/admin/backtests` | Interne Backtest-Vorschau an (#1227), Strategie-Backtest mit delisteten Titeln | Portfolio-Baukasten nach VU-Standard, Musterportfolios mit Ergebnis |
-| D Frontend | – | **angehalten 04.11.2026 (Owner):** Das Frontend wird in einem separaten Chat des Owners umgesetzt. Die Stränge A, B, C ändern keine Darstellung (Shell, Navigation, Seiten-Design). | – |
+| D2 Frontend | Shell, Navigation, Seiten-Design | **ab 04.11.2026:** Redesign 2027 1:1 nach `docs/design/redesign-2027/` (HANDOVER.md, Master-Prompt im README), Fortschritt in `docs/design/redesign-2027/PROGRESS.md`. Baut auf den Entwürfen der früheren Sitzung D auf (#1331, Zweige `neustart/d-*`). | alle Schritte der Tabelle „Umsetzung in Schritten“ |
 
 Außerhalb der Technik (Owner): Rechtsberatung beauftragen, Fragebogen R2, Steuerberater, Stripe-Branding, Testkauf Z1, Repo-Variable `SF8_AUTO_PUBLISH` setzen.
 
