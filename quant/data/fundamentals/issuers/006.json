@@ -164,9 +164,9 @@
       "cik": "0001234006",
       "name": "GLADSTONE COMMERCIAL CORP",
       "sic": "6519",
-      "rawFacts": 18306,
-      "mappedFacts": 5013,
-      "unmappedFacts": 13119,
+      "rawFacts": 18627,
+      "mappedFacts": 5092,
+      "unmappedFacts": 13477,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -178,9 +178,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -192,7 +192,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -212,28 +212,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 52,
+          "quarterlyPeriods": 53,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -247,14 +247,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -277,46 +277,47 @@
         }
       },
       "quality": {
-        "HIGH": 431,
-        "MEDIUM": 86
+        "HIGH": 437,
+        "MEDIUM": 87
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 517,
-        "resolvedValues": 517
+        "datableValues": 524,
+        "resolvedValues": 524
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 13852,
+        "rules_version": "1.1.0",
+        "total": 14213,
         "by_severity": {
-          "INFO": 13119,
-          "WARNING": 733
+          "INFO": 13477,
+          "WARNING": 736
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 682,
+          "CONCEPT_DISAGREEMENT": 685,
           "FISCAL_PERIOD_CONFLICT": 8,
           "RESTATEMENT_CONFLICT": 43,
-          "UNKNOWN_CONCEPT": 13119
+          "UNKNOWN_CONCEPT": 13477
         }
       },
       "latestFiling": {
-        "accession": "0001234006-26-000018",
-        "filing_date": "2026-08-05",
+        "accession": "0001234006-26-000024",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 95
+        "periodic_filings": 96,
+        "acceptance_datetime": "2026-11-03T21:01:41.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "2c70390bb3c5d10a044e39d791e534677a3dec63d8648e1eec3312944e6d8ffe",
+      "sourceDigest": "3a86fae2de82a4cc0fccebe9f694b0deb6333c223e10ac5b9b929fa106854769",
       "issuerId": "iss_cik_0001234006"
     },
     {

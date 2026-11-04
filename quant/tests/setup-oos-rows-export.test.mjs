@@ -1,4 +1,4 @@
-// Vorarbeit Setup-OOS A6: build-setup-outcomes.mjs --oos-rows-out (getrennte Datei, Produktartefakt unberuehrt).
+// Setup-OOS A6 (entschieden 04.11.2026): build-setup-outcomes.mjs --oos-rows-out (getrennte Datei, Produktartefakt unberuehrt).
 // Schreibt nur nach tmp (--out), liest die veroeffentlichte Setup-Historie.
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -22,6 +22,11 @@ test("A6: Zeilenexport nur mit --oos-rows-out, Form passt zum Auswerter, Produkt
   const before = sha(PRODUCT);
   execFileSync(process.execPath, ["--max-old-space-size=6144", SCRIPT, "--out", path.join(dir, "outcomes.json"), "--oos-rows-out", path.join(dir, "rows.json")], { stdio: "pipe" });
   assert.equal(sha(PRODUCT), before, "setup-outcomes-v1.json unveraendert");
+  /* Byte-gleich: dieselbe Ergebnisdatei mit und ohne --oos-rows-out (bis auf den Zeitstempel generatedAt). */
+  execFileSync(process.execPath, ["--max-old-space-size=6144", SCRIPT, "--out", path.join(dir, "plain.json")], { stdio: "pipe" });
+  const noStamp = (f) => fs.readFileSync(f, "utf8").replace(/"generatedAt":"[^"]*"/, '"generatedAt":""');
+  assert.equal(noStamp(path.join(dir, "outcomes.json")), noStamp(path.join(dir, "plain.json")), "der Zeilenexport veraendert das Ergebnisartefakt nicht");
+  assert.equal(fs.readFileSync(path.join(dir, "outcomes.json"), "utf8").match(/"generatedAt"/g).length, 1);
   const out = JSON.parse(fs.readFileSync(path.join(dir, "outcomes.json"), "utf8"));
   const rows = JSON.parse(fs.readFileSync(path.join(dir, "rows.json"), "utf8"));
   assert.equal(rows.schemaVersion, "setup-oos-rows-1.0.0");

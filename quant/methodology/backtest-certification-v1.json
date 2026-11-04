@@ -1,6 +1,6 @@
 {
   "schemaVersion": "backtest-certification-1.0.0",
-  "methodologyVersion": "backtest-certification-1.0.0",
+  "methodologyVersion": "backtest-certification-1.1.0",
   "status": "DEFINED",
   "effectiveFrom": "2026-10-01",
   "purpose": "Maschinenlesbarer Zertifizierungs-Check je Backtest-Art. Jede Art steht in genau einem Status, der aus gemessenen Gates folgt - nie aus Prosa.",
@@ -35,7 +35,15 @@
       "ownerApprovalSource": "quant/methodology/setup-state-v1.json requirements.backtestCertification (setup-state-contract.js erzwingt NOT_CERTIFIED bis zur Freigabe)",
       "requirements": { "historyDates": 120, "historySpanDays": 180, "completedOutcomesM6": 100, "titles": 20, "eventCalendarMonths": 20, "oosMinPerSegment": 30 },
       "requirementNotes": { "eventCalendarMonths": "Verschiedene Kalendermonate (JJJJ-MM des Ereignisdatums) mit mindestens einem Setup-Ereignis. Bis zur Entscheidung FV-1 hiess der Schluessel irrefuehrend independentWeeks; Wert 20 und Zaehlung unveraendert. Gezaehlt werden Monate, keine Wochen und keine statistisch unabhaengigen Faelle." },
-      "legacyRequirementAliases": { "independentWeeks": "eventCalendarMonths" }
+      "legacyRequirementAliases": { "independentWeeks": "eventCalendarMonths" },
+      "oosSegmentation": {
+        "id": "setup-oos-2027-05-31", "method": "FIXED_CALENDAR_CUT", "cutDate": "2027-05-31", "embargoDays": 183, "countBy": "EVENT_DAY",
+        "criterion": { "metric": "MEDIAN_EXCESS", "rule": "SIGN_REPLICATES" },
+        "population": { "eventTypes": ["SETUP_NEW", "SETUP_CONFIRMED"], "entryVariant": "NEXT_CLOSE", "horizon": "m6", "aggregation": "ALL_EVENT_TYPES_PASS" },
+        "gateLabel": "OOS_DIRECTIONAL_REPLICATION",
+        "notes": "Entscheidung A1-A6 (docs/quant/SETUP_OOS_DECISION_A1_A6.md): fester Kalenderschnitt 2027-05-31, Embargo 183 Kalendertage (M6), Mindestgroesse oosMinPerSegment je Segment in verschiedenen Ereignistagen (Cluster = Ereignistag), Kennzahl Median-Ueberschuss gegen die Marktbasis desselben Einstiegstags, Vorzeichen muss sich wiederholen (auch negativ). SETUP_NEW und SETUP_CONFIRMED werden getrennt ausgewertet; das Gate besteht nur, wenn jede Art besteht. PASS heisst nur Richtung repliziert, kein wirtschaftlicher Vorteil und keine Zertifizierung.",
+        "approval": { "approvedBy": "Owner (Neustart-Freigabe)", "approvedAt": "2026-11-04", "source": "docs/PLAN_NEUSTART_2026-11.md" }
+      }
     },
     "STRATEGY_BACKTEST": {
       "tier": "TESTED", "ownerApproval": false,

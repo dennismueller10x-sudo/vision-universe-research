@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-11-04T13:11:55.072Z",
+ "generatedAt": "2026-11-04T17:16:09.717Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -44,20 +44,20 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 2969,
+ "runtimeSec": 3372,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
-   "ABSTAIN": 4386,
+   "ABSTAIN": 4388,
    "DATA_INVALID": 456,
-   "NO_PROJECTION": 103,
+   "NO_PROJECTION": 102,
    "WITHHELD": 73,
-   "AVAILABLE": 36
+   "AVAILABLE": 35
   },
-  "consumerVisible": 36,
+  "consumerVisible": 35,
   "types": {
-   "NEXT_MOVE": 29,
+   "NEXT_MOVE": 28,
    "WAVE_C": 1,
    "REVERSAL": 3,
    "THRUST": 3
@@ -66,106 +66,107 @@
   "weeklyForDaily": 5,
   "explore": {
    "highlights": {
-    "securities": 104,
-    "theses": 110,
+    "securities": 118,
+    "theses": 123,
     "perSecurity": {
-     "1": 98,
-     "2": 6
+     "1": 113,
+     "2": 5
     },
     "direction": {
-     "UP": 57,
-     "DOWN": 53
+     "UP": 61,
+     "DOWN": 62
     },
     "type": {
-     "WAVE_C": 79,
-     "WAVE_3": 31
+     "WAVE_C": 91,
+     "WAVE_3": 32
     },
     "pattern": {
-     "ZIGZAG": 58,
-     "IMPULSE": 31,
-     "FLAT": 21
+     "ZIGZAG": 67,
+     "FLAT": 24,
+     "IMPULSE": 32
     },
     "failedSet": {
-     "G2": 54,
-     "G5": 56
+     "G2": 55,
+     "G5": 68
     },
     "rankPct": {
-     "0-10": 85,
-     "10-25": 25,
+     "0-10": 95,
+     "10-25": 28,
      "25-50": 0,
      "50-100": 0
     },
     "contextAgreement": {
      "0": 49,
-     "1": 30,
-     "2": 31
+     "1": 41,
+     "2": 33
     },
     "extendedMove": {
-     "UP 250-500%": 16,
-     "UP 100-250%": 21,
-     "DOWN 50-100%": 6,
-     "DOWN <50%": 15,
+     "UP 250-500%": 15,
+     "DOWN <50%": 18,
      "UP >1000%": 2,
-     "UP <50%": 8,
+     "UP <50%": 11,
      "UP 500-1000%": 3,
-     "UP 50-100%": 7,
+     "UP 100-250%": 22,
+     "DOWN 50-100%": 5,
+     "UP 50-100%": 8,
      "DOWN 500-1000%": 1
     },
     "extremeMove": {
      "UP 500-1000%": 11,
-     "UP 250-500%": 13,
      "UP >1000%": 3,
-     "UP <50%": 2,
-     "UP 100-250%": 13,
-     "UP 50-100%": 3,
-     "DOWN 50-100%": 1
+     "UP <50%": 1,
+     "UP 50-100%": 7,
+     "UP 250-500%": 12,
+     "UP 100-250%": 14,
+     "DOWN 50-100%": 3,
+     "DOWN <50%": 1
     }
    },
    "candidates": {
-    "securities": 3695,
-    "entries": 13033,
+    "securities": 3699,
+    "entries": 13017,
     "perSecurity": {
-     "1": 457,
-     "2": 687,
-     "3": 734,
-     "4": 683,
-     "5": 536,
-     "6": 598
+     "1": 470,
+     "2": 675,
+     "3": 754,
+     "4": 672,
+     "5": 521,
+     "6": 607
     },
     "direction": {
-     "DOWN": 6748,
-     "UP": 6285
+     "DOWN": 6786,
+     "UP": 6231
     },
     "type": {
-     "WAVE_C": 9740,
-     "WAVE_3": 2861,
-     "WAVE_5": 432
+     "WAVE_C": 9744,
+     "WAVE_3": 2850,
+     "WAVE_5": 423
     },
     "failedSet": {
-     "G2+G3+G4": 3050,
-     "G3+G4+G5": 555,
-     "G2+G3+G4+G5": 1431,
-     "G2+G3+G5": 993,
-     "G3+G4": 1824,
-     "G3": 716,
-     "G2+G3": 1564,
-     "G3+G5": 440,
-     "G2+G4": 705,
-     "G4+G5": 243,
-     "G2+G4+G5": 469,
-     "G4": 514,
-     "G2+G5": 203,
-     "G5": 113,
-     "G2": 213
+     "G2+G3+G4": 3075,
+     "G2+G3+G4+G5": 1451,
+     "G3+G4": 1796,
+     "G3+G4+G5": 570,
+     "G3": 723,
+     "G2+G3": 1525,
+     "G3+G5": 434,
+     "G2+G4": 699,
+     "G4+G5": 252,
+     "G2+G3+G5": 991,
+     "G2+G4+G5": 482,
+     "G5": 115,
+     "G4": 509,
+     "G2+G5": 198,
+     "G2": 197
     }
    }
   },
   "splitResolved": 203,
-  "normalAlternative": 36,
-  "motiveAlternative": 28,
-  "motiveDOWN": 23,
-  "motiveUP": 5,
-  "motiveHighUpside": 3,
+  "normalAlternative": 35,
+  "motiveAlternative": 29,
+  "motiveDOWN": 27,
+  "motiveUP": 2,
+  "motiveHighUpside": 1,
   "freshness": {
    "version": "data-freshness-1.0.0",
    "policy": {
@@ -178,18 +179,18 @@
    "reference": "2026-11-03",
    "titles": 5049,
    "states": {
-    "FRESH": 4968,
+    "FRESH": 4972,
     "STALE": 70,
-    "DELAYED": 8,
+    "DELAYED": 4,
     "NON_TRADING": 3
    },
    "reasons": {
-    "REFRESH_STOPPED": 51,
+    "REFRESH_STOPPED": 47,
     "NO_NEWER_BARS": 27,
     "SECURITY_INACTIVE": 3
    },
    "reasonsKnown": 3,
-   "delayedWithNotice": 8,
+   "delayedWithNotice": 4,
    "affected": {
     "titles": 73,
     "primary": 62,
@@ -221,14 +222,14 @@
     "CRNX",
     "CSAN",
     "DBRG",
-    "DBRG-P-J",
     "DBRG-P-I",
+    "DBRG-P-J",
     "DBRG-P-H",
     "DOMO",
     "ELME",
     "FBRX",
-    "FGNX",
     "FGNXP",
+    "FGNX",
     "FSEA",
     "GBTG",
     "GETY",
@@ -239,8 +240,8 @@
     "JUPGF",
     "LBRDP",
     "LBRDK",
-    "LBRDA",
     "LESL",
+    "LBRDA",
     "LEG",
     "MAA-P-I",
     "MDV-P-A",
@@ -251,8 +252,8 @@
     "NLY-P-I",
     "NCSM",
     "NSTS",
-    "NVNI",
     "NTZ",
+    "NVNI",
     "PERF",
     "PHGE",
     "PRIF-P-L",
@@ -265,19 +266,19 @@
     "SNYR",
     "TALK",
     "TWO-P-C",
-    "TWO-P-A",
     "TWO",
     "TWO-P-B",
+    "TWO-P-A",
     "UUU",
-    "VRME",
-    "VTAK",
     "VSME",
-    "WBS",
-    "WEAV",
+    "VTAK",
+    "VRME",
     "WALD",
     "WBD",
     "WBS-P-G",
     "WBS-P-F",
+    "WBS",
+    "WEAV",
     "WPRT",
     "ZTEK"
    ],
@@ -287,7 +288,7 @@
     "systemic": false
    }
   },
-  "lifecycleEvents": 136,
-  "tracked": 458
+  "lifecycleEvents": 122,
+  "tracked": 470
  }
 }
