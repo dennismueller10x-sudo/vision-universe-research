@@ -140,8 +140,10 @@ if (only.has('theme')) await guard('theme', async () => {
   await ctx.addInitScript((k) => { if (!sessionStorage.getItem('vu3-qa-init')) { try { localStorage.setItem(k, 'light'); } catch {} sessionStorage.setItem('vu3-qa-init', '1'); } }, THEME_KEY);
   const { page } = await open(ctx, '/quant/#/');
   const theme = () => page.evaluate(() => document.documentElement.getAttribute('data-theme'));
-  const clicked = await page.evaluate(() => { const b = document.querySelector('vu-navigation')?.shadowRoot?.querySelector('button.mode'); if (!b) return false; b.click(); return true; });
-  if (!clicked) { fail('theme', 'kein Farbschema-Schalter im Kopf von Quant'); await ctx.close(); return; }
+  // Das Farbschema wechselt im gemeinsamen Menue (Hell/Dunkel, Mockup N3).
+  const pick = (label) => page.evaluate((l) => { const b = [...(document.querySelector('vu-navigation')?.shadowRoot?.querySelectorAll('.appearance button') || [])].find(n => n.textContent === l); if (!b) return false; b.click(); return true; }, label);
+  const clicked = await pick('Dunkel');
+  if (!clicked) { fail('theme', 'kein Farbschema-Schalter im Menue von Quant'); await ctx.close(); return; }
   await page.waitForTimeout(400);
   const after = await theme();
   after === 'dark' ? pass('theme', 'Quant: Schalter -> dunkel') : fail('theme', 'Quant nach Klick: ' + after);
@@ -150,7 +152,7 @@ if (only.has('theme')) await guard('theme', async () => {
     const t = await theme();
     t === 'dark' ? pass('theme', path + ' dunkel') : fail('theme', path + ' zeigt ' + t + ' statt dunkel');
   }
-  await page.evaluate(() => document.querySelector('vu-navigation')?.shadowRoot?.querySelector('button.mode')?.click());
+  await pick('Hell');
   await page.waitForTimeout(400);
   await page.goto(base + '/hedgefonds/#/', { waitUntil: 'load' }); await page.waitForTimeout(1500);
   (await theme()) === 'light' ? pass('theme', 'zurueck auf hell, bleibt in Hedgefonds hell') : fail('theme', 'zurueck auf hell nicht uebernommen: ' + await theme());

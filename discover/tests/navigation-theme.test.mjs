@@ -20,7 +20,7 @@ const normalized = JSON.parse(JSON.stringify(groups.map(({label, entries}) => [l
 // Discover shortcuts stay within Discover; the other groups link to platform products.
 test('the shared menu groups product routes and Discover destinations', () => {
   assert.deepEqual(normalized.map(([heading]) => heading),
-    ['Discover','Quant','Elliott','Fundamental','Technical','Screener','Vorsorge','Supertrader','Hedgefonds','Weitere Produkte']);
+    ['Discover','Quant','Technical','Fundamental','Supertrader','Hedgefonds','Elliott','Screener','Vorsorge','Weitere Produkte']);
   const routes = normalized.flatMap(([, entries]) => entries.map(([, href]) => href));
   assert.equal(new Set(routes).size, routes.length);
   for (const route of ['/screener/','/quant/','/elliott/','/supertrader/','/dashboard/','/macro/','/etf/','/analysten/',
@@ -53,7 +53,7 @@ test('Discover has separate worlds and strategies routes and uses the shared pro
   assert.doesNotMatch(app.match(/function shell\(\)[\s\S]*?function setupSearch/)[0], /v2-watch-link|v2-wordmark|Quant|Academy|Hedgefonds|Research/);
   const discover = PRODUCTS.find(p => p.id === 'discover');
   assert.deepEqual(JSON.parse(JSON.stringify(discover.items.map(([, label, href]) => [label, href]))), [
-    ['Discover','/discover/#/'],['Welten','/discover/#/welten'],['Strategien','/discover/#/strategien'],['Entdecken','/discover/#/einzeln/US_REAL']
+    ['Discover','/discover/#/'],['Welten','/discover/#/welten'],['Strategien','/discover/#/strategien'],['Swipen','/discover/#/einzeln/US_REAL']
   ]);
 });
 
@@ -61,18 +61,19 @@ test('the shared header remains themeable and offers light and dark contrast', (
   assert.ok(Navigation.observedAttributes.includes('theme'));
   const light = styles(THEMES.light), dark = styles(THEMES.dark);
   assert.match(light, /rgba\(255,255,255,\.96\)/);
-  assert.match(dark, /rgba\(8,8,10,\.92\)/);
+  assert.match(dark, /rgba\(0,0,0,\.94\)/);
   assert.match(light, /:host\(\[open\]\) \.panel/);
   assert.match(dark, /:host\(\[open\]\) \.panel/);
-  assert.match(light, /\.section\{display:none\}/);
-  assert.match(light, /\.links\{grid-template-columns:1fr\}/);
-  assert.match(light, /panelBg:\s*#101318|background:#101318/);
+  // Menue: Vollbild in Schwarz (Mockup N3), auf beiden Schemata gleich
+  assert.match(light, /\.panel\{[^}]*background:#000/);
+  assert.match(dark, /\.panel\{[^}]*background:#000/);
   assert.doesNotMatch(source, /Development Preview[^\n]*<[^>]*class="preview"/);
 });
 
-test('pages with dark styles get the theme switch between AI Atlas and the menu', () => {
+test('pages with dark styles switch the scheme in the menu (Hell/Dunkel), not in the header', () => {
   assert.match(source, /theme-switch/);
-  assert.match(source, /<\/a>\$\{this\.hasAttribute\('theme-switch'\)\?'<button class="mode"[^`]*<button class="toggle"/);
+  assert.doesNotMatch(source, /<button class="mode"/, 'der Kopf traegt Suche, Atlas, Mein Bereich (Mockup C01)');
+  assert.match(source, /for\(const \[mode,label\] of \[\['light','Hell'\],\['dark','Dunkel'\]\]\)/);
   assert.match(source, /const THEME_KEY = 'vu-discover-theme-v1'/);
   for (const page of ['discover/index.html', 'screener/index.html', 'hedgefonds/index.html', 'ask/index.html']) {
     assert.match(readFileSync(join(root, page), 'utf8'), /<vu-navigation[^>]*\btheme-switch\b/, `${page} ohne Schalter`);
@@ -81,5 +82,5 @@ test('pages with dark styles get the theme switch between AI Atlas and the menu'
 
 test('der fuenfte Direktlink (Vorsorge) weicht unter 900 px, damit der Menue-Button sichtbar bleibt', () => {
   assert.match(source, /<a class="q-extra" href="\/vorsorge\/">Vorsorge<\/a>/);
-  assert.match(source, /@media\(max-width:900px\)\{\.quick a\.q-extra\{display:none\}\}/);
+  assert.match(source, /@media\(max-width:1024px\)\{\.quick\{display:none\}\}/);
 });
