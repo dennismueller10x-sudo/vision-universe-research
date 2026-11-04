@@ -1506,7 +1506,7 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 .qv3-mchips{margin-top:14px}
 .qv3-liste{padding:4px 14px}
 .qd .qv3-li{display:flex;align-items:center;gap:10px;justify-content:space-between;min-height:52px;padding:8px 0;border-top:1px solid var(--vu-hair);color:var(--vu-ink);text-decoration:none}
-.qv3-li:first-child{border-top:0}.qv3-li>span>*{display:block}.qv3-li.is-off{opacity:.5}
+.qv3-li:first-child{border-top:0}.qv3-li>span>*{display:block}.qv3-li.is-off b{color:var(--vu-mute,#6e6e6e)}
 .qv3-li svg{width:16px;height:16px;flex:none}
 .qv3-bands{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
 .qv3-bands span{display:grid;place-items:center;min-height:30px;border-radius:8px;font-size:10px;font-weight:800;text-align:center;line-height:1.1;padding:2px}
@@ -1526,3 +1526,8 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 .qv3-zahlen-v>b{font-size:34px;font-weight:900;letter-spacing:-.045em}
 .qv3-period{margin-top:10px}
 .qd .qv3-zahlen .vu-stockhead,.qd .qv3-zahlen .vu-shead{margin-top:4px}
+/* Redesign 2027: Schrift auf Neongrün bleibt schwarz (Quant färbt b/span sonst in Seitenschrift); auf der umgekehrten
+   schwarzen Karte im Dunkelmodus nimmt die Kennzahl die Kartenschrift statt Neongrün. */
+.qd .vu-box--lime,.qd .vu-box--lime b,.qd .vu-box--lime span,.qd .vu-box--lime .vu-xs{color:#000}
+.qd .vu-box--lime .vu-mu{color:rgba(0,0,0,.68)}
+:root[data-theme=dark] .qd .qv3-regime-v .vu-num{color:var(--vu-inv,#000)}
