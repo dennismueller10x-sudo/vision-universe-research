@@ -208,7 +208,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
     await screenshot(page,key+'-strategy-stocks');
     /* Alte Sammlungsadresse leitet weiter (Thema bzw. Strategie). */
     await page.goto(base+'/discover/#/c/US_REAL/thema-ki',{waitUntil:'networkidle'});
-    assert.equal(new URL(page.url()).hash,'#/thema/kuenstliche-intelligenz');
+    await page.waitForURL(url=>new URL(url).hash==='#/thema/kuenstliche-intelligenz');
     await page.locator('.dv3-firms a[href*="/s/"]').first().waitFor({state:'visible'});
     await screenshot(page,key+'-theme');
     await page.goto(base+'/discover/',{waitUntil:'domcontentloaded'});
@@ -253,7 +253,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' swipe card shows one stock with sentence and chart',async()=>{
   const card=page.locator('.dv3-card[data-symbol]');await card.waitFor();await waitCounter(page,1);
   assert.equal(await page.locator('.dv3-card[data-symbol]').count(),1,'Exactly one card at a time');
-  assert(await card.locator('.dv3-chart svg').count()===1,'Card chart missing');
+  await card.locator('.dv3-chart svg').waitFor({timeout:15000}).catch(()=>{});assert(await card.locator('.dv3-chart svg').count()===1,'Card chart missing');
   assert((await card.innerText()).length>=80,'Card text too short');
  });
  if(width<500)await check(key+' swipe buttons remain reachable above the dock',async()=>{

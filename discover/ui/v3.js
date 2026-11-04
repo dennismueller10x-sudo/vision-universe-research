@@ -130,7 +130,7 @@
     else if (ps && ps.path && D.SeriesLoader) {
       var cached = D.SeriesLoader.peek(ps.path);
       if (cached) draw(cached.points);
-      else whenVisible(host, function () { D.SeriesLoader.get(ps.path).then(function (r) { draw(r.points); }).catch(function () {}); });
+      else (o.eager ? function (f) { f(); } : function (f) { whenVisible(host, f); })(function () { D.SeriesLoader.get(ps.path).then(function (r) { draw(r.points); }).catch(function () {}); });
     }
     return host;
   }
@@ -302,7 +302,7 @@
       '<h3 class="dv3-story">' + esc(story(c)) + '</h3><div class="dv3-chart"></div><div class="dv3-dates"><span></span><span></span></div>' +
       (reasons.length ? '<p class="vu-ltag dv3-why-t">Warum heute?</p><div class="dv3-reasons">' + reasons.map(function (r, k) { return '<span class="vu-chip' + (k ? '' : ' vu-chip--lime') + '">' + esc(r.label + ': ' + r.value) + '</span>'; }).join('') + '</div>' : '') +
       '<button type="button" class="vu-help dv3-helpbtn dv3-why"><i aria-hidden="true">?</i><span>Warum steht diese Aktie hier?</span></button>' +
-      '<div class="dv3-actions"><a class="vu-btn vu-btn--ink dv3-open" href="' + esc(stockHref(ctx, c.symbol)) + '" data-symbol="' + esc(c.symbol) + '">Aktie ansehen</a><a class="vu-btn" href="#/swipen">Swipen</a></div>';
+      '<div class="dv3-actions"><a class="vu-btn vu-btn--ink dv3-open" href="' + esc(stockHref(ctx, c.symbol)) + '">Aktie ansehen</a><a class="vu-btn" href="#/swipen">Swipen</a></div>';
     var dates = art.querySelectorAll('.dv3-dates span');
     art.querySelector('.dv3-chart').appendChild(spark(c, { big: true, width: 320, height: 110, onDates: function (a, b) { dates[0].textContent = dayYear(a); dates[1].textContent = dayYear(b); } }));
     heart(art.querySelector('.dv3-heart'), ctx, c.symbol, name(c));
@@ -699,7 +699,7 @@
   function swipeCard(c, o, i, n, ctx) {
     var art = h('article', 'vu-box dv3-card dx-feed-screen'); art.dataset.symbol = c.symbol; art.dataset.index = String(i);
     var badges = (c.badges || []).slice(0, 3);
-    art.innerHTML = '<div class="dv3-card__top"><span class="vu-ltag">' + esc(o.herkunft || c.herkunft || 'Discover') + '</span><span class="vu-ltag dx-feed-zaehler">' + (i + 1) + ' / ' + n + '</span></div>' +
+    art.innerHTML = '<div class="dv3-card__top"><span class="vu-ltag">' + esc(o.herkunft || c.herkunft || 'Discover') + '</span><span class="vu-ltag dx-feed-zaehler">' + (i + 1) + ' von ' + n + '</span></div>' +
       '<div class="dv3-blick__head">' + U().logo(c.symbol, { xl: true }) + '<div class="dv3-blick__id"><b>' + esc(name(c)) + '</b><span>' + esc([c.symbol, what(c)].filter(Boolean).join(' · ')) + '</span></div></div>' +
       '<div class="dv3-klar">' + zahlPill(c, true) + '<span>' + esc(c.plain && c.plain.zahl ? c.plain.zahl.label : '') + '</span></div>' +
       '<h2 class="dv3-story">' + esc(story(c)) + '</h2><div class="dv3-chart"></div><div class="dv3-dates"><span></span><span></span></div>' +
@@ -707,7 +707,7 @@
       (c.hook && c.hook.text ? '<p class="dv3-hook">' + U().hud('fundamental', 26) + '<span>' + esc(c.hook.text) + '</span></p>' : '') +
       '<a class="dv3-sr" href="' + esc(stockHref(ctx, c.symbol)) + '">' + esc(name(c)) + ' öffnen</a>';
     var dates = art.querySelectorAll('.dv3-dates span');
-    art.querySelector('.dv3-chart').appendChild(spark(c, { big: true, width: 320, height: 110, onDates: function (a, b) { dates[0].textContent = dayYear(a); dates[1].textContent = dayYear(b); } }));
+    art.querySelector('.dv3-chart').appendChild(spark(c, { big: true, eager: true, width: 320, height: 110, onDates: function (a, b) { dates[0].textContent = dayYear(a); dates[1].textContent = dayYear(b); } }));
     return art;
   }
 
