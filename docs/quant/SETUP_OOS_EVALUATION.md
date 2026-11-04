@@ -1,7 +1,9 @@
 # Setup-Backtest: zeitliche Lern-/Testprüfung (OOS)
 
 Stand 2026-10-29, Auswerter `setup-oos-1.0.0` (`quant/engines/setup-oos.cjs`).
-Dieses Dokument enthält keine Freigabe. Es beschreibt, was technisch vorbereitet ist und welche Entscheidungen beim Owner liegen.
+Dieses Dokument enthält keine Freigabe. Es beschreibt, was technisch vorbereitet ist und welche Entscheidungen beim Owner lagen.
+
+**Stand 04.11.2026:** A1–A6 sind entschieden und umgesetzt (Segmentierung `setup-oos-2027-05-31` in `backtest-certification-1.1.0`, Auswertung je Ereignisart, Zeilenexport im Runner); Einzelheiten in [SETUP_OOS_DECISION_A1_A6.md](SETUP_OOS_DECISION_A1_A6.md), Abschnitt 6. Aussagen unten wie „das Feld existiert heute nicht“ beschreiben den Stand vor dieser Entscheidung.
 
 ## 1. Was der Vertrag verlangt
 
