@@ -73,7 +73,79 @@
   }
 
   /* ================================================================ ZAHLEN */
+  /* Redesign 2027 (Folie Q08): Perspektive „Zahlen“ aus Quant – Aktienkopf mit Perspektiven-Leiste, Hinweis auf die
+     Herkunftswelt, Kennzahl als Chips, Säulen (letzte neongrün), Wechsel zum Vorjahr als Pille, Zeitraum als Segment,
+     „In Zahlen“ als Liste. Werte und Perioden unverändert aus getHistoricalFundamentals. */
+  async function fundamentalsV3(main, ctx, ticker, params) {
+    var C = global.VUFundamentalsContract, U = global.VUUI, N = global.VUStockNavigator, SC = global.VUCore && global.VUCore.StockContext;
+    var page = el("div", { class: "vu-ui qv3 qv3-zahlen" });
+    main.append(page);
+    var headHost = el("div");
+    page.append(headHost);
+    try { if (N && SC) N.head(headHost, { ctx: SC.fromUs(ticker), current: "fundamental", name: (ctx.names && ctx.names[ticker]) || ticker, back: { href: X.routes.stock(ticker), label: "Zur Aktienanalyse" } }); } catch (e) { /* ohne Kopf weiter */ }
+    var from = el("div", { class: "vu-box qv3-from" });
+    from.innerHTML = U.hud("quant", 32, 9) + '<span class="vu-xs"><b>Du kommst aus Quant. Faktoren bleiben einen Tipp entfernt.</b></span><a class="vu-chip qv3-from-back" href="' + U.esc(X.routes.stock(ticker)) + '">‹ Faktoren</a>';
+    page.append(from, el("h1", { class: "vu-mt qv3-zahlen-t", text: "Wie entwickelt sich das Geschäft?" }));
+    var metricId = C.metrics.some(function (m) { return m.id === params.get("kennzahl"); }) ? params.get("kennzahl") : "revenue";
+    var periodId = ["annual", "quarterly", "ttm"].indexOf(params.get("periode")) >= 0 ? params.get("periode") : "annual";
+    var chips = el("div", { class: "vu-chips qv3-mchips", role: "group", "aria-label": "Kennzahl" });
+    C.metrics.forEach(function (m) {
+      chips.append(el("button", { type: "button", class: "vu-chip", "aria-pressed": m.id === metricId ? "true" : "false", dataset: { id: m.id }, text: m.label, onclick: function () { metricId = m.id; sync(); update(); } }));
+    });
+    var target = el("section", { "aria-live": "polite" });
+    var seg = el("div", { class: "vu-seg qv3-period", role: "group", "aria-label": "Berichtsart" }, [["annual", "Jahre"], ["quarterly", "Quartale"], ["ttm", "12 Monate"]].map(function (p) {
+      return el("button", { type: "button", "aria-pressed": p[0] === periodId ? "true" : "false", dataset: { id: p[0] }, text: p[1], onclick: function () { periodId = p[0]; sync(); update(); } });
+    }));
+    function sync() {
+      chips.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.id === metricId)); });
+      seg.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.id === periodId)); });
+    }
+    page.append(chips, target);
+    var req = 0;
+    async function update() {
+      var mine = ++req;
+      history.replaceState(null, "", X.routes.fundamentals(ticker) + "?kennzahl=" + metricId + "&periode=" + periodId);
+      target.replaceChildren(X.loading());
+      var r = await ctx.api.getHistoricalFundamentals(ticker, { metric: metricId, period: periodId }).catch(function () { return null; });
+      if (mine !== req) return;
+      if (!r || r.state !== "AVAILABLE") {
+        var box = el("div"); box.innerHTML = U.blank(r && r.reason === "TTM_NOT_VALIDATED" ? "Für diese Ansicht liegt noch keine geprüfte Zwölfmonatsreihe vor. Jahre bleiben verfügbar." : r && r.reason === "PERIOD_SEMANTICS_NOT_VALIDATED" ? "Die Quartalsabgrenzung ist noch nicht bestätigt. Werte werden nicht geschätzt." : "Für diese Auswahl fehlen belastbare Daten. Werte werden nicht geschätzt.");
+        target.replaceChildren(box, seg); return;
+      }
+      var known = r.rows.filter(function (x) { return x.state === "AVAILABLE"; }), latest = known[known.length - 1], prev = known[known.length - 2];
+      if (!latest) { var b0 = el("div"); b0.innerHTML = U.blank("Für diese Kennzahl liegen keine gemeldeten Werte vor."); target.replaceChildren(b0, seg); return; }
+      var perShare = /\/shares$/.test(r.metric.unit), isShares = r.metric.unit === "shares", F = global.VUFx && global.VUFx.Format;
+      var money = function (v) { return perShare ? v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " " + r.metric.unit.replace("/shares", " je Aktie")
+        : isShares ? (v / 1e9).toLocaleString("de-DE", { maximumFractionDigits: 2 }) + " Mrd. Aktien"
+        : F && F.formatCompact ? F.formatCompact(v, r.metric.unit || "USD", { numberLocale: "de-DE" }) : (v / 1e9).toLocaleString("de-DE", { maximumFractionDigits: 1 }) + " Mrd. " + r.metric.unit; };
+      var label = function (x) { return periodId === "annual" ? String(x.fiscalYear) : x.fiscalPeriod + " " + String(x.fiscalYear).slice(-2); };
+      var change = prev && prev.value ? (latest.value / prev.value - 1) * 100 : null;
+      var last5 = known.slice(-5).reverse();
+      var h = '<p class="vu-xs vu-mu qv3-zahlen-k"><b>' + U.esc(r.metric.label + " · " + (periodId === "annual" ? "Geschäftsjahr " + latest.fiscalYear : latest.label)) + "</b></p>" +
+        '<div class="qv3-zahlen-v"><b class="vu-num">' + U.esc(money(latest.value)) + "</b>" + (change != null && prev.value > 0 ? U.chg(change, { big: true }) : "") + "</div>" +
+        '<p class="vu-xs vu-mu" style="margin:2px 0 0"><b>Stichtag ' + U.esc(X.dateDe(latest.end)) + (change != null ? (periodId === "annual" ? " · zum Vorjahr" : " · zur Vorperiode") : "") + "</b></p>" +
+        '<div style="margin-top:12px">' + U.bars(known.slice(-12).map(function (x) { return [label(x), x.value]; }), { height: 150, label: r.metric.label + " je Periode" }) + "</div>";
+      var top = el("div"); top.innerHTML = h;
+      var after = el("div");
+      after.innerHTML = '<div style="margin-top:10px">' + U.help(r.metric.label + ": gemeldeter Wert aus den SEC-Berichten von " + (r.name || ticker) + ", je Periode, ohne Schätzung.") + "</div>" +
+        U.sect("In Zahlen") + '<div class="vu-box qv3-liste">' + last5.map(function (x) { return '<div class="qv3-li"><span class="vu-sm"><b>' + U.esc(label(x)) + '</b></span><b class="vu-num vu-sm">' + U.esc(money(x.value)) + "</b></div>"; }).join("") + "</div>" +
+        '<div class="vu-grid" style="margin-top:10px">' + U.tile("Perioden", known.length + " von " + r.rows.length, "mit Wert") + U.tile("Stand", X.dateDe(String(r.generatedAt).slice(0, 10)), "Aufbereitung SEC EDGAR") + "</div>" +
+        '<p class="vu-xs vu-mu" style="margin:10px 0 0">Quelle: SEC EDGAR. Rückblickende Ansicht, kein damaliger Informationsstand.</p>';
+      var table = X.more("Alle Perioden als Tabelle", function () {
+        return el("div", { class: "qx-table-wrap", tabindex: "0" }, [el("table", { class: "qx-table" }, [el("thead", {}, [el("tr", {}, ["Periode", r.metric.label, "Zeitraum", "Bekannt seit"].map(function (t) { return el("th", { text: t }); }))]),
+          el("tbody", {}, r.rows.slice().reverse().map(function (x) {
+            return el("tr", {}, [el("td", { text: x.label + (x.derived ? " · abgeleitet" : "") }), el("td", { text: x.state === "AVAILABLE" ? money(x.value) : "–" }),
+              el("td", { text: x.state === "AVAILABLE" ? (x.start ? x.start + " → " : "") + x.end : "–" }), el("td", { text: x.state === "AVAILABLE" && x.availableFrom ? String(x.availableFrom).slice(0, 10) : "–" })]);
+          }))])]);
+      });
+      target.replaceChildren(top, seg, after, table);
+    }
+    await update();
+    var inspector = el("div", { style: "margin-top:14px" }); inspector.innerHTML = '<a class="vu-btn vu-btn--line vu-btn--block" href="/quant/data-inspector/">SEC-Daten im Dateninspektor ' + U.pro() + "</a>";
+    page.append(inspector);
+  }
   async function fundamentals(main, ctx, ticker, params) {
+    if (global.VUUI) return fundamentalsV3(main, ctx, ticker, params);
     var C = global.VUFundamentalsContract;
     main.append(el("a", { class: "v2-back qx-back", href: X.routes.stock(ticker), text: "← Zur Aktienanalyse " + ticker }),
       el("span", { class: "v2-eyebrow", text: "Unternehmenszahlen · " + ticker }),
