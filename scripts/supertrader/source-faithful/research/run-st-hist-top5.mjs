@@ -27,6 +27,7 @@ import { attachSecPit } from './run-sf3-research.mjs';
 import { SF6_REFERENCES } from './sf6-references.mjs';
 import { SF6_VALIDATION_PROTOCOL } from './run-sf6-validation.mjs';
 import * as S from './st9-v13-delisted-study.mjs';
+import * as X from './st9-hist-execution.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
@@ -56,7 +57,7 @@ export function summarizeRun(r, ds, { protocol = SF6_VALIDATION_PROTOCOL } = {})
 }
 
 /** Top 5 je Kostenstufe auf einem (bereits quarantänierten) Datensatz. */
-export function runTop5(ds, { methods = TOP5, costLevels = SF6_VALIDATION_PROTOCOL.costLevels, window = L.WINDOW, log = () => {} } = {}) {
+export function runTop5(ds, { methods = TOP5, costLevels = SF6_VALIDATION_PROTOCOL.costLevels, window = L.WINDOW, audit = true, log = () => {} } = {}) {
   const out = {};
   for (const key of methods) {
     const ref = SF6_REFERENCES.find((x) => x.key === key);
@@ -67,6 +68,11 @@ export function runTop5(ds, { methods = TOP5, costLevels = SF6_VALIDATION_PROTOC
       const r = ref.run(ds, { from: window.from, to: window.to, costs: { slippageBps: c.slippageBps, commissionBps: c.commissionBps }, ...prep });
       out[key].costs[c.id] = summarizeRun(r, ds);
       out[key].costs[c.id].tradesSha256 = sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.pnl]));
+      if (c.id === 'REF' && audit) {
+        // unabhängiger Ausführungsaudit (st9-hist-execution: Ausstiege, Gap-Stopps, Delisting, Bücher); nur Beobachter
+        const a = X.auditRun(ds, r, { key, costs: { slippageBps: c.slippageBps, commissionBps: c.commissionBps }, from: window.from });
+        out[key].audit = { ...X.publicAudit(a), examples: a._examples };
+      }
       log(`${key} ${c.id}: ${r.trades.length} trades`);
     }
   }
@@ -74,7 +80,7 @@ export function runTop5(ds, { methods = TOP5, costLevels = SF6_VALIDATION_PROTOC
 }
 
 export function publicPart(result) {
-  return { schema: 'st-hist-top5-public-1.0.0', ...LABEL, receipt: result.receipt, methods: Object.fromEntries(Object.entries(result.A).map(([k, m]) => [k, { candidateId: m.candidateId, tradesRef: m.costs.REF.trades, tradesSha256Ref: m.costs.REF.tradesSha256 }])), quarantine: result.quarantine.A, universeB: result.B ? 'COMPUTED' : 'NOT_REQUESTED' };
+  return { schema: 'st-hist-top5-public-1.0.0', ...LABEL, receipt: result.receipt, methods: Object.fromEntries(Object.entries(result.A).map(([k, m]) => [k, { candidateId: m.candidateId, tradesRef: m.costs.REF.trades, tradesSha256Ref: m.costs.REF.tradesSha256, auditPass: m.audit ? m.audit.pass : null, auditViolations: m.audit ? m.audit.violations : null, missedStopCheck: m.audit ? m.audit.missedStopCheck : null }])), quarantine: result.quarantine.A, universeB: result.B ? 'COMPUTED' : 'NOT_REQUESTED' };
 }
 
 async function main() {
