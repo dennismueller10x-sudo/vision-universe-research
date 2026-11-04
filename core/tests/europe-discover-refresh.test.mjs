@@ -64,8 +64,11 @@ test('the published calendar keeps every listing evaluable today (coverage must 
 
 test('dry run estimates one request and one reserved credit per listing, within the cap',async()=>{
  const out=await mkdtemp(join(tmpdir(),'eu-refresh-'));
- try{const r=await R.refreshPublication({root,out,now:runDate(await base()),dryRun:true});
+ try{const b=await base(),now=runDate(b),r=await R.refreshPublication({root,out,now,dryRun:true,reprobeKnownInvalid:true});
   assert.equal(r.listings,449);assert.equal(r.plan.requests,449);assert.equal(r.plan.credits,449);assert.ok(r.plan.worstCaseCredits<=R.REFRESH_LIMITS.hardCap);
+  // Default: known-invalid provider symbols from the last refresh are not requested.
+  const known=R.knownInvalidSymbols(b.manifest,b.catalog),d=await R.refreshPublication({root,out,now,dryRun:true});
+  assert.equal(d.plan.requests,449-known.length);assert.equal(d.plan.excluded,known.length);assert.deepEqual(d.preExcluded,known);
  }finally{await rm(out,{recursive:true,force:true});}
 });
 
@@ -77,7 +80,7 @@ test('a listing that cannot be refreshed is published as BLOCKED with its reason
  const b=await base(),now=runDate(b),out=await mkdtemp(join(tmpdir(),'eu-refresh-')),priv=await mkdtemp(join(tmpdir(),'eu-refresh-private-')),report=join(out,'..',out.split('/').pop()+'-report.json');
  const conflict=b.catalog.securities.find(s=>s.listings[0].mic==='XAMS').securityId;
  try{
-  const r=await R.refreshPublication({root,out,privateDir:join(priv,'run'),now,apiKey:'test-key',reportPath:report,fetchImpl:transport(b.catalog,{now,conflict:new Set([conflict])}),sleep:async()=>{}});
+  const r=await R.refreshPublication({root,out,privateDir:join(priv,'run'),now,apiKey:'test-key',reprobeKnownInvalid:true,reportPath:report,fetchImpl:transport(b.catalog,{now,conflict:new Set([conflict])}),sleep:async()=>{}});
   assert.equal(r.failure,null);assert.equal(r.admitted,448);
   assert.deepEqual(r.held.map(h=>[h.securityId,h.reason]),[[conflict,'OVERLAP_CLOSE_CONFLICT']]);
   assert.deepEqual(r.blocked.map(x=>[x.securityId,x.reasonClass,x.reasonCode]),[[conflict,'PRICE_DISCONTINUITY_UNRESOLVED','OVERLAP_CLOSE_CONFLICT']]);
@@ -101,7 +104,7 @@ test('more than 22 blocked securities (5 % of 449) abort the whole publication; 
  const b=await base(),now=runDate(b),out=await mkdtemp(join(tmpdir(),'eu-refresh-')),priv=await mkdtemp(join(tmpdir(),'eu-refresh-private-')),report=join(out,'..',out.split('/').pop()+'-report.json');
  const many=new Set(b.catalog.securities.slice(0,23).map(s=>s.securityId));
  try{
-  await assert.rejects(R.refreshPublication({root,out,privateDir:join(priv,'run'),now,apiKey:'test-key',reportPath:report,fetchImpl:transport(b.catalog,{now,conflict:many}),sleep:async()=>{}}),/BLOCKED_SHARE_LIMIT_EXCEEDED:23>22/);
+  await assert.rejects(R.refreshPublication({root,out,privateDir:join(priv,'run'),now,apiKey:'test-key',reprobeKnownInvalid:true,reportPath:report,fetchImpl:transport(b.catalog,{now,conflict:many}),sleep:async()=>{}}),/BLOCKED_SHARE_LIMIT_EXCEEDED:23>22/);
   const r=JSON.parse(await readFile(report,'utf8'));assert.equal(r.blocked.length,23);
   await assert.rejects(readFile(join(out,'manifest.json')),'nothing is published');
  }finally{await rm(out,{recursive:true,force:true});await rm(priv,{recursive:true,force:true});await rm(report,{force:true});}
@@ -114,7 +117,7 @@ test('append-only refresh keeps every old price, binds the new calendar and pass
  const skipDay=Calendar.sessions(skipMic,skipFrom,now.slice(0,10))[2].date;
  let calls=0;const flaky=transport(b.catalog,{now,jump:new Set([jump]),skipDates:new Map([[skip,[skipDay]]])}),fetchImpl=async url=>{calls++;if(calls===3)return {status:500,headers:{get:()=>null},text:async()=>JSON.stringify({error:{code:500,type:'internal_error'}})};return flaky(url);};
  try{
-  const r=await R.refreshPublication({root,out,privateDir:join(priv,'run'),now,apiKey:'test-key',fetchImpl,sleep:async()=>{}});
+  const r=await R.refreshPublication({root,out,privateDir:join(priv,'run'),now,apiKey:'test-key',reprobeKnownInvalid:true,fetchImpl,sleep:async()=>{}});
   assert.equal(r.run.requests,450,'449 listings plus one bounded retry');assert.deepEqual(r.held,[]);
   const manifest=JSON.parse(await readFile(join(out,'manifest.json'),'utf8')),catalog=JSON.parse(await readFile(join(out,'catalog.json'),'utf8')),calendar=JSON.parse(await readFile(join(out,'calendar.json'),'utf8'));
   assert.deepEqual(catalog.securities.map(s=>s.securityId),b.catalog.securities.map(s=>s.securityId),'same European coverage');
