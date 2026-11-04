@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-10-31T16:27:07.907Z",
+  "generatedAt": "2026-11-04T03:43:53.204Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
@@ -9,10 +9,10 @@
     "productUniverse": 6686
   },
   "sources": {
-    "ingestStatus": "2026-10-31T16:23:23.159Z",
-    "factors": "2026-10-31T16:24:49.964Z",
-    "intradaySession": "2026-10-30",
-    "discover": "2026-10-31T16:27:02.864Z"
+    "ingestStatus": "2026-11-04T03:40:18.237Z",
+    "factors": "2026-11-04T03:41:48.789Z",
+    "intradaySession": "2026-11-03",
+    "discover": "2026-11-04T03:43:48.128Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -21,41 +21,41 @@
     "tiingoResolved": 6686,
     "tiingoUnresolved": 0,
     "marketDataFetched": 6686,
-    "historicalAvailable": 5767,
+    "historicalAvailable": 5772,
     "historicalQualityAccepted": 6684,
-    "intradayAvailable": 5104,
-    "liveCapable": 1390,
-    "factorEligible": 6568,
-    "fundamentals": 5216,
+    "intradayAvailable": 1389,
+    "liveCapable": 1315,
+    "factorEligible": 6559,
+    "fundamentals": 5217,
     "fundamentals10y": 2251,
-    "fundamentals5y": 3478,
-    "fundamentalsTtm": 5202,
-    "discoverEligible": 5903,
-    "stockPages": 6103,
+    "fundamentals5y": 3479,
+    "fundamentalsTtm": 5203,
+    "discoverEligible": 5894,
+    "stockPages": 6094,
     "namesMissing": 20,
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NOT_IN_LIVE_SCOPE": 3714,
-    "NO_IEX_BARS": 1581,
+    "NO_INTRADAY_SNAPSHOT": 5247,
     "NO_FUNDAMENTALS:NO_CIK": 1346,
-    "INSUFFICIENT_HISTORY": 911,
-    "NO_STOCK_PAGE": 583,
+    "INSUFFICIENT_HISTORY": 906,
+    "NO_STOCK_PAGE": 592,
     "NOT_CONSUMER_INSTRUMENT:PREFERRED": 462,
-    "NOT_TRADING:STALE_SERIES": 190,
-    "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 124,
-    "NO_DISCOVER_CARD": 114,
-    "NO_FACTOR_ROW:FAIL": 113,
+    "NOT_TRADING:STALE_SERIES": 192,
+    "NO_DISCOVER_CARD": 123,
+    "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 123,
+    "NO_FACTOR_ROW:FAIL": 122,
+    "NOT_IN_LIVE_SCOPE": 74,
+    "NO_IEX_BARS": 50,
     "INACTIVE": 28,
     "NAME_MISSING": 20,
-    "NOT_TRADING:DATA_QUALITY_REVIEW": 10,
+    "NOT_TRADING:DATA_QUALITY_REVIEW": 8,
     "NO_COMPACT_SERIES": 6,
     "NO_FACTOR_ROW:SOURCE_MISSING": 5,
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 3,
     "NOT_CONSUMER_INSTRUMENT:UNIT": 2,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 2,
-    "QUALITY_REJECTED:too_few_bars": 2,
-    "NO_INTRADAY_SNAPSHOT": 1
+    "QUALITY_REJECTED:too_few_bars": 2
   },
   "spotCheck": [
     {
@@ -265,7 +265,7 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": true,
+        "HAS_INTRADAY": false,
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
@@ -277,7 +277,7 @@
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
-        "NOT_IN_LIVE_SCOPE"
+        "NO_INTRADAY_SNAPSHOT"
       ]
     },
     {

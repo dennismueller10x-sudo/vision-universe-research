@@ -282,7 +282,8 @@ test('nothing outside tests and docs imports the research adapter; product servi
   assert.deepEqual(outside(grep('VUBacktestResearchAdapter')), ['quant/api/backtest-research-adapter.js']);
   // The only additional caller is the research backtest runner (scripts/quant/research, offline, not wired; docs/quant/BACKTEST_RUNNER.md).
   assert.deepEqual(outside(grep('backtest-result-adapters')).sort(), ['quant/engines/backtest-result-adapters.cjs', 'scripts/quant/research/backtest-runner.cjs', 'scripts/quant/verify-backtest-result-v2.py'].sort());
-  assert.deepEqual(outside(grep('backtest-result-contract.cjs')).sort(), ['quant/api/backtest-research-adapter.js', 'quant/engines/backtest-result-adapters.cjs', 'scripts/quant/research/backtest-runner.cjs'].sort());
+  // run-backtest.cjs (offline CLI des Runners) prueft seit P0.5 die eigene Ausgabe gegen validate(), bevor es schreibt.
+  assert.deepEqual(outside(grep('backtest-result-contract.cjs')).sort(), ['quant/api/backtest-research-adapter.js', 'quant/engines/backtest-result-adapters.cjs', 'scripts/quant/research/backtest-runner.cjs', 'scripts/quant/research/run-backtest.cjs'].sort());
   for (const f of ['quant/api/product-services.js', 'quant/index.html', 'quant/app/page-backtest.js'])
     for (const needle of ['backtest-kinds', 'backtest-result-', 'backtest-research-adapter', 'backtest-preview']) assert.equal(readFileSync(join(root, f), 'utf8').includes(needle), false, f + ' mentions ' + needle);
 });

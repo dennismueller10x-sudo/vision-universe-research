@@ -1,0 +1,929 @@
+{
+ "note": "Ausschnitt aus einem Lauf von scripts/technical/world/build-screener.mjs --out (Stand 2026-11-02), nur fuer Tests von supertrader/assets/st-technical.js",
+ "meta": {
+  "schemaVersion": "vu-technical-meta-1.0.0",
+  "asOf": "2026-11-02",
+  "stock": {
+   "schema": "vu-technical-stock-1.0.0",
+   "count": 5663,
+   "shards": [
+    "AA",
+    "AD",
+    "NV",
+    "AB"
+   ]
+  }
+ },
+ "shards": {
+  "AA": {
+   "schema": "vu-technical-stock-1.0.0",
+   "version": "technical-stock-summary-1.0.0",
+   "shard": "AA",
+   "asOf": "2026-11-02",
+   "generatedFrom": "2026-11-03T05:21:55.861Z",
+   "versions": {
+    "row": "technical-screen-row-1.14.0",
+    "templates": "technical-templates-1.2.0",
+    "assistant": "technical-assistant-1.0.0"
+   },
+   "limits": "Die Vorlage beschreibt den heutigen technischen Zustand. Sie ist kein Kauf- oder Verkaufssignal und sagt nichts über künftige Kurse; Kosten, Ausführung und Unternehmenszahlen sind nicht berücksichtigt.",
+   "labels": {
+    "formations": {
+     "RESISTANCE_TRENDLINE": "Fallende Widerstandslinie",
+     "ASCENDING_CHANNEL": "Aufwärtskanal",
+     "DOUBLE_TOP": "Doppeltop"
+    },
+    "trend": [
+     {
+      "id": "aboveSma50",
+      "label": "Kurs über SMA 50"
+     },
+     {
+      "id": "aboveSma200",
+      "label": "Kurs über SMA 200"
+     },
+     {
+      "id": "sma50AboveSma200",
+      "label": "SMA 50 über SMA 200"
+     },
+     {
+      "id": "sma200Rising",
+      "label": "SMA 200 steigt (gegenüber vor einem Monat)"
+     }
+    ],
+    "structures": {
+     "BULLISH": "Aufwärtsstruktur",
+     "BEARISH": "Abwärtsstruktur",
+     "RANGE": "Seitwärts",
+     "MIXED": "Gemischt (Hochs und Tiefs widersprechen sich)",
+     "UNDETERMINED": "Unbestimmt (zu wenige Swing-Punkte)"
+    },
+    "templates": {
+     "establishedUptrend": {
+      "title": "Etablierter Aufwärtstrend",
+      "q": "v=establishedUptrend"
+     },
+     "uptrendBasic": {
+      "title": "Aufwärtstrend, vereinfacht",
+      "q": "v=uptrendBasic"
+     },
+     "trend": {
+      "title": "Trendfolge",
+      "q": "v=trend"
+     },
+     "aboveSma200": {
+      "title": "Über SMA 200",
+      "q": "v=aboveSma200"
+     },
+     "triangleOpen": {
+      "title": "Dreieck in Bildung",
+      "q": "v=triangleOpen"
+     },
+     "triangleOpenUptrend": {
+      "title": "Dreieck in Bildung, im Aufwärtstrend",
+      "q": "v=triangleOpenUptrend"
+     },
+     "triangleBreakoutUp": {
+      "title": "Dreieck mit Ausbruch nach oben",
+      "q": "v=triangleBreakoutUp"
+     },
+     "triangles": {
+      "title": "Dreiecksformationen",
+      "q": "v=triangles"
+     },
+     "bullflag": {
+      "title": "Bullische Flaggen und Wimpel",
+      "q": "v=bullflag"
+     },
+     "contraction": {
+      "title": "Volatilitätskontraktion",
+      "q": "v=contraction"
+     },
+     "breakout": {
+      "title": "Breakout-Kandidaten",
+      "q": "v=breakout"
+     },
+     "high52": {
+      "title": "52-Wochen-Hochs",
+      "q": "v=high52"
+     },
+     "high200w": {
+      "title": "200-Wochen-Hochs",
+      "q": "v=high200w"
+     }
+    },
+    "goals": {
+     "trendfolge": {
+      "title": "Trendfolge",
+      "q": "z=trendfolge"
+     },
+     "ausbruch": {
+      "title": "Ausbruch",
+      "q": "z=ausbruch"
+     },
+     "momentum": {
+      "title": "Momentum",
+      "q": "z=momentum"
+     },
+     "trendwende": {
+      "title": "Trendwende",
+      "q": "z=trendwende"
+     },
+     "ruhephase": {
+      "title": "Volatilität und Konsolidierung",
+      "q": "z=ruhephase"
+     },
+     "niveaus": {
+      "title": "Unterstützung und Widerstand",
+      "q": "z=niveaus"
+     },
+     "zeitrahmen": {
+      "title": "Bestätigung über Zeitrahmen",
+      "q": "z=zeitrahmen"
+     },
+     "kombination": {
+      "title": "Kriterien kombinieren",
+      "q": "z=kombination"
+     }
+    },
+    "checked": {
+     "templates": 13,
+     "goals": 8
+    }
+   },
+   "stocks": {
+    "AAMI": {
+     "s": "AAMI",
+     "n": "Acadian Asset Management Inc.",
+     "sid": "ref_AAMI",
+     "asOf": "2026-11-02",
+     "fresh": true,
+     "frozenSince": null,
+     "structure": "RANGE",
+     "trend": [
+      false,
+      true,
+      true,
+      true
+     ],
+     "rsRank": 88.3,
+     "formations": [
+      {
+       "tf": "1D",
+       "type": "ASCENDING_CHANNEL",
+       "state": "CONFIRMED",
+       "badge": "Bestätigt",
+       "text": "Ausbruch nach oben am 25.09.2026, erkannt am 02.09.2026."
+      },
+      {
+       "tf": "1D",
+       "type": "DOUBLE_TOP",
+       "state": "DETECTED",
+       "badge": "Beobachten",
+       "text": "In Bildung, erkannt am 29.10.2026."
+      },
+      {
+       "tf": "1D",
+       "type": "RESISTANCE_TRENDLINE",
+       "state": "DETECTED",
+       "badge": "Beobachten",
+       "text": "In Bildung, erkannt am 29.10.2026."
+      },
+      {
+       "tf": "1W",
+       "type": "ASCENDING_CHANNEL",
+       "state": "DETECTED",
+       "badge": "Beobachten",
+       "text": "Im Wochenchart in Bildung."
+      }
+     ],
+     "templates": [
+      {
+       "id": "aboveSma200",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 1,
+       "total": 1
+      },
+      {
+       "id": "establishedUptrend",
+       "status": "NEAR",
+       "label": "fast erfüllt – ein Kriterium fehlt",
+       "pass": 7,
+       "total": 8
+      },
+      {
+       "id": "uptrendBasic",
+       "status": "NEAR",
+       "label": "fast erfüllt – ein Kriterium fehlt",
+       "pass": 4,
+       "total": 5
+      }
+     ],
+     "goals": [
+      {
+       "id": "ruhephase",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 2,
+       "total": 2
+      },
+      {
+       "id": "zeitrahmen",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 3,
+       "total": 3
+      },
+      {
+       "id": "kombination",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 1,
+       "total": 1
+      }
+     ],
+     "dq": []
+    },
+    "AACB": {
+     "s": "AACB",
+     "n": "ALLIANCE ATLANTIS COMMUNICATIONS INC Foreign",
+     "sid": "ref_AACB",
+     "asOf": "2026-11-02",
+     "fresh": false,
+     "frozenSince": "2026-08-19",
+     "structure": null,
+     "trend": [
+      null,
+      null,
+      null,
+      null
+     ],
+     "rsRank": null,
+     "formations": [],
+     "templates": [],
+     "goals": [],
+     "dq": [
+      {
+       "code": "FROZEN",
+       "tone": "warn",
+       "short": "Kurs unverändert seit 19.08.2026",
+       "long": "Datenqualitätshinweis: seitdem unveränderter Schlusskurs. Kein bestätigtes Delisting, auch bei illiquiden Titeln möglich. Keine Kennzahlen."
+      }
+     ]
+    }
+   }
+  },
+  "AD": {
+   "schema": "vu-technical-stock-1.0.0",
+   "version": "technical-stock-summary-1.0.0",
+   "shard": "AD",
+   "asOf": "2026-11-02",
+   "generatedFrom": "2026-11-03T05:21:55.861Z",
+   "versions": {
+    "row": "technical-screen-row-1.14.0",
+    "templates": "technical-templates-1.2.0",
+    "assistant": "technical-assistant-1.0.0"
+   },
+   "limits": "Die Vorlage beschreibt den heutigen technischen Zustand. Sie ist kein Kauf- oder Verkaufssignal und sagt nichts über künftige Kurse; Kosten, Ausführung und Unternehmenszahlen sind nicht berücksichtigt.",
+   "labels": {
+    "formations": {
+     "SUPPORT_TRENDLINE": "Steigende Unterstützungslinie",
+     "RESISTANCE_BREAKOUT": "Ausbruch über Widerstand",
+     "BULL_FLAG": "Bullische Flagge",
+     "INVERSE_HEAD_AND_SHOULDERS": "Umgekehrte Schulter-Kopf-Schulter"
+    },
+    "trend": [
+     {
+      "id": "aboveSma50",
+      "label": "Kurs über SMA 50"
+     },
+     {
+      "id": "aboveSma200",
+      "label": "Kurs über SMA 200"
+     },
+     {
+      "id": "sma50AboveSma200",
+      "label": "SMA 50 über SMA 200"
+     },
+     {
+      "id": "sma200Rising",
+      "label": "SMA 200 steigt (gegenüber vor einem Monat)"
+     }
+    ],
+    "structures": {
+     "BULLISH": "Aufwärtsstruktur",
+     "BEARISH": "Abwärtsstruktur",
+     "RANGE": "Seitwärts",
+     "MIXED": "Gemischt (Hochs und Tiefs widersprechen sich)",
+     "UNDETERMINED": "Unbestimmt (zu wenige Swing-Punkte)"
+    },
+    "templates": {
+     "establishedUptrend": {
+      "title": "Etablierter Aufwärtstrend",
+      "q": "v=establishedUptrend"
+     },
+     "uptrendBasic": {
+      "title": "Aufwärtstrend, vereinfacht",
+      "q": "v=uptrendBasic"
+     },
+     "trend": {
+      "title": "Trendfolge",
+      "q": "v=trend"
+     },
+     "aboveSma200": {
+      "title": "Über SMA 200",
+      "q": "v=aboveSma200"
+     },
+     "triangleOpen": {
+      "title": "Dreieck in Bildung",
+      "q": "v=triangleOpen"
+     },
+     "triangleOpenUptrend": {
+      "title": "Dreieck in Bildung, im Aufwärtstrend",
+      "q": "v=triangleOpenUptrend"
+     },
+     "triangleBreakoutUp": {
+      "title": "Dreieck mit Ausbruch nach oben",
+      "q": "v=triangleBreakoutUp"
+     },
+     "triangles": {
+      "title": "Dreiecksformationen",
+      "q": "v=triangles"
+     },
+     "bullflag": {
+      "title": "Bullische Flaggen und Wimpel",
+      "q": "v=bullflag"
+     },
+     "contraction": {
+      "title": "Volatilitätskontraktion",
+      "q": "v=contraction"
+     },
+     "breakout": {
+      "title": "Breakout-Kandidaten",
+      "q": "v=breakout"
+     },
+     "high52": {
+      "title": "52-Wochen-Hochs",
+      "q": "v=high52"
+     },
+     "high200w": {
+      "title": "200-Wochen-Hochs",
+      "q": "v=high200w"
+     }
+    },
+    "goals": {
+     "trendfolge": {
+      "title": "Trendfolge",
+      "q": "z=trendfolge"
+     },
+     "ausbruch": {
+      "title": "Ausbruch",
+      "q": "z=ausbruch"
+     },
+     "momentum": {
+      "title": "Momentum",
+      "q": "z=momentum"
+     },
+     "trendwende": {
+      "title": "Trendwende",
+      "q": "z=trendwende"
+     },
+     "ruhephase": {
+      "title": "Volatilität und Konsolidierung",
+      "q": "z=ruhephase"
+     },
+     "niveaus": {
+      "title": "Unterstützung und Widerstand",
+      "q": "z=niveaus"
+     },
+     "zeitrahmen": {
+      "title": "Bestätigung über Zeitrahmen",
+      "q": "z=zeitrahmen"
+     },
+     "kombination": {
+      "title": "Kriterien kombinieren",
+      "q": "z=kombination"
+     }
+    },
+    "checked": {
+     "templates": 13,
+     "goals": 8
+    }
+   },
+   "stocks": {
+    "ADP": {
+     "s": "ADP",
+     "n": "Automatic Data Processing",
+     "sid": "ref_ADP",
+     "asOf": "2026-11-02",
+     "fresh": true,
+     "frozenSince": null,
+     "structure": "BULLISH",
+     "trend": [
+      true,
+      true,
+      true,
+      true
+     ],
+     "rsRank": 92.3,
+     "formations": [
+      {
+       "tf": "1D",
+       "type": "BULL_FLAG",
+       "state": "DETECTED",
+       "badge": "Beobachten",
+       "text": "In Bildung, erkannt am 28.10.2026."
+      },
+      {
+       "tf": "1D",
+       "type": "SUPPORT_TRENDLINE",
+       "state": "DETECTED",
+       "badge": "Beobachten",
+       "text": "In Bildung, erkannt am 09.10.2026."
+      },
+      {
+       "tf": "1W",
+       "type": "INVERSE_HEAD_AND_SHOULDERS",
+       "state": "CONFIRMED",
+       "badge": "Bestätigt",
+       "text": "Im Wochenchart bestätigt."
+      },
+      {
+       "tf": "1W",
+       "type": "BULL_FLAG",
+       "state": "CONFIRMED",
+       "badge": "Bestätigt",
+       "text": "Im Wochenchart bestätigt."
+      },
+      {
+       "tf": "1W",
+       "type": "RESISTANCE_BREAKOUT",
+       "state": "DETECTED",
+       "badge": "Beobachten",
+       "text": "Im Wochenchart in Bildung."
+      },
+      {
+       "tf": "1W",
+       "type": "SUPPORT_TRENDLINE",
+       "state": "DETECTED",
+       "badge": "Beobachten",
+       "text": "Im Wochenchart in Bildung."
+      }
+     ],
+     "templates": [
+      {
+       "id": "establishedUptrend",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 8,
+       "total": 8
+      },
+      {
+       "id": "uptrendBasic",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 5,
+       "total": 5
+      },
+      {
+       "id": "trend",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 4,
+       "total": 4
+      },
+      {
+       "id": "aboveSma200",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 1,
+       "total": 1
+      },
+      {
+       "id": "bullflag",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 1,
+       "total": 1
+      }
+     ],
+     "goals": [
+      {
+       "id": "trendfolge",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 4,
+       "total": 4
+      },
+      {
+       "id": "momentum",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 3,
+       "total": 3
+      },
+      {
+       "id": "niveaus",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 2,
+       "total": 2
+      },
+      {
+       "id": "zeitrahmen",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 3,
+       "total": 3
+      },
+      {
+       "id": "kombination",
+       "status": "FULL",
+       "label": "alle Kriterien erfüllt",
+       "pass": 1,
+       "total": 1
+      }
+     ],
+     "dq": []
+    }
+   }
+  },
+  "NV": {
+   "schema": "vu-technical-stock-1.0.0",
+   "version": "technical-stock-summary-1.0.0",
+   "shard": "NV",
+   "asOf": "2026-11-02",
+   "generatedFrom": "2026-11-03T05:21:55.861Z",
+   "versions": {
+    "row": "technical-screen-row-1.14.0",
+    "templates": "technical-templates-1.2.0",
+    "assistant": "technical-assistant-1.0.0"
+   },
+   "limits": "Die Vorlage beschreibt den heutigen technischen Zustand. Sie ist kein Kauf- oder Verkaufssignal und sagt nichts über künftige Kurse; Kosten, Ausführung und Unternehmenszahlen sind nicht berücksichtigt.",
+   "labels": {
+    "formations": {
+     "GAP_DOWN": "Kurslücke nach unten",
+     "DOUBLE_TOP": "Doppeltop"
+    },
+    "trend": [
+     {
+      "id": "aboveSma50",
+      "label": "Kurs über SMA 50"
+     },
+     {
+      "id": "aboveSma200",
+      "label": "Kurs über SMA 200"
+     },
+     {
+      "id": "sma50AboveSma200",
+      "label": "SMA 50 über SMA 200"
+     },
+     {
+      "id": "sma200Rising",
+      "label": "SMA 200 steigt (gegenüber vor einem Monat)"
+     }
+    ],
+    "structures": {
+     "BULLISH": "Aufwärtsstruktur",
+     "BEARISH": "Abwärtsstruktur",
+     "RANGE": "Seitwärts",
+     "MIXED": "Gemischt (Hochs und Tiefs widersprechen sich)",
+     "UNDETERMINED": "Unbestimmt (zu wenige Swing-Punkte)"
+    },
+    "templates": {
+     "establishedUptrend": {
+      "title": "Etablierter Aufwärtstrend",
+      "q": "v=establishedUptrend"
+     },
+     "uptrendBasic": {
+      "title": "Aufwärtstrend, vereinfacht",
+      "q": "v=uptrendBasic"
+     },
+     "trend": {
+      "title": "Trendfolge",
+      "q": "v=trend"
+     },
+     "aboveSma200": {
+      "title": "Über SMA 200",
+      "q": "v=aboveSma200"
+     },
+     "triangleOpen": {
+      "title": "Dreieck in Bildung",
+      "q": "v=triangleOpen"
+     },
+     "triangleOpenUptrend": {
+      "title": "Dreieck in Bildung, im Aufwärtstrend",
+      "q": "v=triangleOpenUptrend"
+     },
+     "triangleBreakoutUp": {
+      "title": "Dreieck mit Ausbruch nach oben",
+      "q": "v=triangleBreakoutUp"
+     },
+     "triangles": {
+      "title": "Dreiecksformationen",
+      "q": "v=triangles"
+     },
+     "bullflag": {
+      "title": "Bullische Flaggen und Wimpel",
+      "q": "v=bullflag"
+     },
+     "contraction": {
+      "title": "Volatilitätskontraktion",
+      "q": "v=contraction"
+     },
+     "breakout": {
+      "title": "Breakout-Kandidaten",
+      "q": "v=breakout"
+     },
+     "high52": {
+      "title": "52-Wochen-Hochs",
+      "q": "v=high52"
+     },
+     "high200w": {
+      "title": "200-Wochen-Hochs",
+      "q": "v=high200w"
+     }
+    },
+    "goals": {
+     "trendfolge": {
+      "title": "Trendfolge",
+      "q": "z=trendfolge"
+     },
+     "ausbruch": {
+      "title": "Ausbruch",
+      "q": "z=ausbruch"
+     },
+     "momentum": {
+      "title": "Momentum",
+      "q": "z=momentum"
+     },
+     "trendwende": {
+      "title": "Trendwende",
+      "q": "z=trendwende"
+     },
+     "ruhephase": {
+      "title": "Volatilität und Konsolidierung",
+      "q": "z=ruhephase"
+     },
+     "niveaus": {
+      "title": "Unterstützung und Widerstand",
+      "q": "z=niveaus"
+     },
+     "zeitrahmen": {
+      "title": "Bestätigung über Zeitrahmen",
+      "q": "z=zeitrahmen"
+     },
+     "kombination": {
+      "title": "Kriterien kombinieren",
+      "q": "z=kombination"
+     }
+    },
+    "checked": {
+     "templates": 13,
+     "goals": 8
+    }
+   },
+   "stocks": {
+    "NVDA": {
+     "s": "NVDA",
+     "n": "NVIDIA Corporation",
+     "sid": "ref_NVDA",
+     "asOf": "2026-11-02",
+     "fresh": true,
+     "frozenSince": null,
+     "structure": "BEARISH",
+     "trend": [
+      false,
+      false,
+      true,
+      true
+     ],
+     "rsRank": 63.2,
+     "formations": [
+      {
+       "tf": "1D",
+       "type": "GAP_DOWN",
+       "state": "DETECTED",
+       "badge": "Beobachten",
+       "text": "In Bildung, erkannt am 30.10.2026."
+      },
+      {
+       "tf": "1W",
+       "type": "DOUBLE_TOP",
+       "state": "DETECTED",
+       "badge": "Beobachten",
+       "text": "Im Wochenchart in Bildung."
+      }
+     ],
+     "templates": [],
+     "goals": [
+      {
+       "id": "zeitrahmen",
+       "status": "NEAR",
+       "label": "fast erfüllt – ein Kriterium fehlt",
+       "pass": 2,
+       "total": 3
+      }
+     ],
+     "dq": []
+    }
+   }
+  },
+  "AB": {
+   "schema": "vu-technical-stock-1.0.0",
+   "version": "technical-stock-summary-1.0.0",
+   "shard": "AB",
+   "asOf": "2026-11-02",
+   "generatedFrom": "2026-11-03T05:21:55.861Z",
+   "versions": {
+    "row": "technical-screen-row-1.14.0",
+    "templates": "technical-templates-1.2.0",
+    "assistant": "technical-assistant-1.0.0"
+   },
+   "limits": "Die Vorlage beschreibt den heutigen technischen Zustand. Sie ist kein Kauf- oder Verkaufssignal und sagt nichts über künftige Kurse; Kosten, Ausführung und Unternehmenszahlen sind nicht berücksichtigt.",
+   "labels": {
+    "formations": {
+     "RESISTANCE_TRENDLINE": "Fallende Widerstandslinie",
+     "BEAR_FLAG": "Bärische Flagge",
+     "HEAD_AND_SHOULDERS": "Schulter-Kopf-Schulter"
+    },
+    "trend": [
+     {
+      "id": "aboveSma50",
+      "label": "Kurs über SMA 50"
+     },
+     {
+      "id": "aboveSma200",
+      "label": "Kurs über SMA 200"
+     },
+     {
+      "id": "sma50AboveSma200",
+      "label": "SMA 50 über SMA 200"
+     },
+     {
+      "id": "sma200Rising",
+      "label": "SMA 200 steigt (gegenüber vor einem Monat)"
+     }
+    ],
+    "structures": {
+     "BULLISH": "Aufwärtsstruktur",
+     "BEARISH": "Abwärtsstruktur",
+     "RANGE": "Seitwärts",
+     "MIXED": "Gemischt (Hochs und Tiefs widersprechen sich)",
+     "UNDETERMINED": "Unbestimmt (zu wenige Swing-Punkte)"
+    },
+    "templates": {
+     "establishedUptrend": {
+      "title": "Etablierter Aufwärtstrend",
+      "q": "v=establishedUptrend"
+     },
+     "uptrendBasic": {
+      "title": "Aufwärtstrend, vereinfacht",
+      "q": "v=uptrendBasic"
+     },
+     "trend": {
+      "title": "Trendfolge",
+      "q": "v=trend"
+     },
+     "aboveSma200": {
+      "title": "Über SMA 200",
+      "q": "v=aboveSma200"
+     },
+     "triangleOpen": {
+      "title": "Dreieck in Bildung",
+      "q": "v=triangleOpen"
+     },
+     "triangleOpenUptrend": {
+      "title": "Dreieck in Bildung, im Aufwärtstrend",
+      "q": "v=triangleOpenUptrend"
+     },
+     "triangleBreakoutUp": {
+      "title": "Dreieck mit Ausbruch nach oben",
+      "q": "v=triangleBreakoutUp"
+     },
+     "triangles": {
+      "title": "Dreiecksformationen",
+      "q": "v=triangles"
+     },
+     "bullflag": {
+      "title": "Bullische Flaggen und Wimpel",
+      "q": "v=bullflag"
+     },
+     "contraction": {
+      "title": "Volatilitätskontraktion",
+      "q": "v=contraction"
+     },
+     "breakout": {
+      "title": "Breakout-Kandidaten",
+      "q": "v=breakout"
+     },
+     "high52": {
+      "title": "52-Wochen-Hochs",
+      "q": "v=high52"
+     },
+     "high200w": {
+      "title": "200-Wochen-Hochs",
+      "q": "v=high200w"
+     }
+    },
+    "goals": {
+     "trendfolge": {
+      "title": "Trendfolge",
+      "q": "z=trendfolge"
+     },
+     "ausbruch": {
+      "title": "Ausbruch",
+      "q": "z=ausbruch"
+     },
+     "momentum": {
+      "title": "Momentum",
+      "q": "z=momentum"
+     },
+     "trendwende": {
+      "title": "Trendwende",
+      "q": "z=trendwende"
+     },
+     "ruhephase": {
+      "title": "Volatilität und Konsolidierung",
+      "q": "z=ruhephase"
+     },
+     "niveaus": {
+      "title": "Unterstützung und Widerstand",
+      "q": "z=niveaus"
+     },
+     "zeitrahmen": {
+      "title": "Bestätigung über Zeitrahmen",
+      "q": "z=zeitrahmen"
+     },
+     "kombination": {
+      "title": "Kriterien kombinieren",
+      "q": "z=kombination"
+     }
+    },
+    "checked": {
+     "templates": 13,
+     "goals": 8
+    }
+   },
+   "stocks": {
+    "ABOS": {
+     "s": "ABOS",
+     "n": "Acumen Pharmaceuticals, Inc.",
+     "sid": "ref_ABOS",
+     "asOf": "2026-11-02",
+     "fresh": true,
+     "frozenSince": null,
+     "structure": "BEARISH",
+     "trend": [
+      false,
+      false,
+      false,
+      false
+     ],
+     "rsRank": 2.2,
+     "formations": [
+      {
+       "tf": "1D",
+       "type": "BEAR_FLAG",
+       "state": "CONFIRMED",
+       "badge": "Bestätigt",
+       "text": "Ausbruch nach unten am 30.10.2026, erkannt am 22.10.2026."
+      },
+      {
+       "tf": "1D",
+       "type": "RESISTANCE_TRENDLINE",
+       "state": "DETECTED",
+       "badge": "Beobachten",
+       "text": "In Bildung, erkannt am 30.10.2026."
+      },
+      {
+       "tf": "1W",
+       "type": "HEAD_AND_SHOULDERS",
+       "state": "CONFIRMED",
+       "badge": "Bestätigt",
+       "text": "Im Wochenchart bestätigt."
+      },
+      {
+       "tf": "1W",
+       "type": "RESISTANCE_TRENDLINE",
+       "state": "DETECTED",
+       "badge": "Beobachten",
+       "text": "Im Wochenchart in Bildung."
+      }
+     ],
+     "templates": [],
+     "goals": [],
+     "dq": [
+      {
+       "code": "PRICE_JUMP_SUSPECT",
+       "tone": "warn",
+       "short": "Datenverdacht (30.10.2026)",
+       "long": "Datenverdacht: Kurssprung ×0,0917 am 30.10.2026 mit Split-Signatur. Möglicherweise eine nicht bereinigte Kapitalmaßnahme (Split, Abspaltung) oder ein Datenfehler; Kriterien, die diesen Zeitraum nutzen, können verfälscht sein."
+      }
+     ]
+    }
+   }
+  }
+ }
+}

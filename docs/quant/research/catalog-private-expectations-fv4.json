@@ -1,0 +1,176 @@
+{
+ "schemaVersion": "catalog-private-recheck-1.0.0",
+ "catalog": "docs/quant/backtest-catalog",
+ "catalogHash": "7ea6383e7260a5fb40b95e07066b625c73d0beca74e332c3c79c1733d7cb6e44",
+ "runner": "backtest-runner-1.0.0",
+ "entries": 21,
+ "privateCases": 5,
+ "publicCases": 16,
+ "run": {
+  "mark": "[v13-archive:catalog]",
+  "workflow": ".github/workflows/quant-v13-archive.yml",
+  "secret": "V13_ARCHIVE_PRIVATE_KEY (+ VU_HISTORY_S3_*)",
+  "artifact": "v13-archive-catalog-<run_id> (catalog/, verify-report.json)"
+ },
+ "verifyBaseline": {
+  "results": 21,
+  "checks": 560140,
+  "failures": 0,
+  "python": "3.12.3",
+  "tolerance": 1e-9
+ },
+ "cases": [
+  {
+   "index": 17,
+   "label": "Faktor Momentum (privates Panel)",
+   "template": "factor-momentum-v10-panel",
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "privateInputs": [
+    "factorPanel"
+   ],
+   "specHash": "64dcfbc062fceed17ba2038b415a0dbc899d520b8288ec5d94e7b9b828e6de2c",
+   "resultHash": "d74ed4c1e77b4f0ce36fea19145dd2a42e93a5dcb4dc9f52ba07e845311c659c",
+   "envelopeHash": "e06cecc9cfe71f04251649ea0e8f20d622461fd235e6ccbb6ed176cddc01cff8",
+   "inputHash": "6307b819a4a77853f9fdcc5e72054699654b5a34ae37345f2950fff0042b4f69",
+   "metricsHash": "5e89a2b4b9e02db045d5ffd951c4a81d0cdae965636bf5059f51cf702387696e",
+   "metricsHashDateless": "a627a1678b29d483cc43a7dabf57d56a6a7354cbb1122423b68170e298a560dd",
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#FACTOR_RANKING_BACKTEST@2026-10-31",
+   "privateInputHashes": {
+    "factorPanel": "84bfe974a76335b6c064e0ba78a8e38b48f1e3fecc8fe445eebd19b5651b66a8"
+   },
+   "codeHashesRoot": "503540f5f3aff15a27e5c6a3f1ddfd642ed8a968fbbec7f956bb2bea57a40976",
+   "verify": {
+    "checkGroups": 15,
+    "passed": 260715,
+    "failed": 0
+   }
+  },
+  {
+   "index": 18,
+   "label": "Faktor Value (privates Panel)",
+   "template": "factor-momentum-v10-panel",
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "privateInputs": [
+    "factorPanel"
+   ],
+   "specHash": "9022867b2dab3e9db45b55d845a761c9e548c45a4a66dc51681a7666bcf2a29a",
+   "resultHash": "059df555c7359026cfc6a69077b2ff75ce4870d002ef7c710d6b4803ef8021a7",
+   "envelopeHash": "002f939f72e5fded25242b9fe1d9f386abc581e1e3d15bb15c9f6e8e17ce173b",
+   "inputHash": "6307b819a4a77853f9fdcc5e72054699654b5a34ae37345f2950fff0042b4f69",
+   "metricsHash": "dc1ed86437f93a76bb903429af65dd633cda9835a7393aca131475154c2052f1",
+   "metricsHashDateless": "b18a32295f5dce74d785d8be5e1f8f8c9e68a0dfc1a0af455ffebb07f375ae30",
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#FACTOR_RANKING_BACKTEST@2026-10-31",
+   "privateInputHashes": {
+    "factorPanel": "84bfe974a76335b6c064e0ba78a8e38b48f1e3fecc8fe445eebd19b5651b66a8"
+   },
+   "codeHashesRoot": "503540f5f3aff15a27e5c6a3f1ddfd642ed8a968fbbec7f956bb2bea57a40976",
+   "verify": {
+    "checkGroups": 15,
+    "passed": 127391,
+    "failed": 0
+   }
+  },
+  {
+   "index": 19,
+   "label": "Faktor Quality (privates Panel)",
+   "template": "factor-momentum-v10-panel",
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "privateInputs": [
+    "factorPanel"
+   ],
+   "specHash": "74ae787ba3683fe46c4f6a2c24b94b62cef680916b71c7a790cd676e58c27509",
+   "resultHash": "7ba43c9d4e2a6ebb5881d8ee0a6021c04ff66b7cd7055775fceba9522c082970",
+   "envelopeHash": "67671778947a0d93c01ac58a7b1dbf896b9ec1259eb42632f711fa899ab08ab8",
+   "inputHash": "6307b819a4a77853f9fdcc5e72054699654b5a34ae37345f2950fff0042b4f69",
+   "metricsHash": "adc547dbbb6745184b07197d76537fcc2035e2f37cef96ce290e14b1f03d2f08",
+   "metricsHashDateless": "28d86fc3a405789eca6773a44e7762931a808975e55efca0dd12d41aab01cb95",
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#FACTOR_RANKING_BACKTEST@2026-10-31",
+   "privateInputHashes": {
+    "factorPanel": "84bfe974a76335b6c064e0ba78a8e38b48f1e3fecc8fe445eebd19b5651b66a8"
+   },
+   "codeHashesRoot": "503540f5f3aff15a27e5c6a3f1ddfd642ed8a968fbbec7f956bb2bea57a40976",
+   "verify": {
+    "checkGroups": 15,
+    "passed": 155335,
+    "failed": 0
+   }
+  },
+  {
+   "index": 20,
+   "label": "Delistet: XCO Insolvenz",
+   "template": "delisted-xco-bankruptcy",
+   "kind": "SAME_STOCK_REPLAY",
+   "state": "RESEARCH_EXECUTED",
+   "privateInputs": [
+    "delistedSeries"
+   ],
+   "specHash": "b3b69bf49789e893c2c117411a5e4b16583a88501d213180b7b18e717d4fe7ef",
+   "resultHash": "9be80a57049700d133fadb17aa27295349bb8cecdf57e438aef69237f5a92f5c",
+   "envelopeHash": "8c07ac2f39d80ca445203c5d67e602553f85d2152161267ab1f0683e83a87d75",
+   "inputHash": "efd2eb5bcb7008695c5351f48c77e3d68299f230adcccde94723193f98d6bea7",
+   "metricsHash": "c5636cd0de905cd320d61fabcada7901e81914401bacc2e6fd207f49b4b9eb47",
+   "metricsHashDateless": "e5bda34bd09168decf25d7b8c8829d409c1ab49c9e577a81b95acdd9a240a1cf",
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#SAME_STOCK_REPLAY@2026-10-31",
+   "privateInputHashes": {
+    "delisted": {
+     "register": {
+      "registerHash": "ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f",
+      "include": "QUALIFIED"
+     },
+     "listings": [
+      [
+       "dl_2ad5c4a973ce5a19",
+       "7f0e4641627c94ee290fb5e3c29d66dacd0f2025f344a19692f742a8e4858fb6"
+      ]
+     ]
+    }
+   },
+   "codeHashesRoot": "503540f5f3aff15a27e5c6a3f1ddfd642ed8a968fbbec7f956bb2bea57a40976",
+   "verify": {
+    "checkGroups": 15,
+    "passed": 103,
+    "failed": 0
+   }
+  },
+  {
+   "index": 21,
+   "label": "Delistet: AGN Uebernahme",
+   "template": "acquisition-agn",
+   "kind": "SIGNAL_BACKTEST",
+   "state": "RESEARCH_EXECUTED",
+   "privateInputs": [
+    "delistedSeries"
+   ],
+   "specHash": "7fea969ccf49e1384ec41aad4752defd7014a8032a167d0b687da489809152d8",
+   "resultHash": "74df25e350e0be119278f15a7b9ccc7b163b93fbd4b6aa21d4388357738e4f02",
+   "envelopeHash": "6deca3eadca7421ccbc60ea8c749b1b3ff1813bfcdc9de80b89af8fff3b0e82d",
+   "inputHash": "2231e2772a6acfbed68cb28a3e3333d33461bb9d22f09ef399895e6e3fbb0737",
+   "metricsHash": "9c38a6f840b1842c30a6f32dff86d498ffeabe260894ea9edb80a88fb3025860",
+   "metricsHashDateless": "b27fe603fe4f0dc04bb993c6548d69cba0d08c2a6da019e93c2a6b1b90acb77e",
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#SIGNAL_BACKTEST@2026-10-31",
+   "privateInputHashes": {
+    "delisted": {
+     "register": {
+      "registerHash": "ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f",
+      "include": "QUALIFIED"
+     },
+     "listings": [
+      [
+       "dl_392eb87953a4f307",
+       "6405a7d1a5612d109b6ce62b2b17beeb10da03fd7992ea967b740dbf4d0a8be2"
+      ]
+     ]
+    }
+   },
+   "codeHashesRoot": "503540f5f3aff15a27e5c6a3f1ddfd642ed8a968fbbec7f956bb2bea57a40976",
+   "verify": {
+    "checkGroups": 21,
+    "passed": 145,
+    "failed": 0
+   }
+  }
+ ]
+}

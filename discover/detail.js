@@ -53,6 +53,7 @@
       var SH = global.VUDiscover.StockHead, head = SH && SH.head(page, detail);
       if (head) { unsubscribers.push(head.dispose); if (head.observer) observers.push(head.observer); }
       if (SH) SH.calm(page, detail);
+      if (SH && SH.worlds) SH.worlds(page, detail);
       /* app.js und ui/europe.js setzen den Watchlist-Knopf nach dem Zeichnen vor die Seite: in den Kopf holen. */
       Promise.resolve().then(function () {
         var watch = root.querySelector(":scope > .v2-watch-button"), slot = page.querySelector(".dv2-head-actions");
