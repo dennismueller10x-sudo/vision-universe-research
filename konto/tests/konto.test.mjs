@@ -164,7 +164,8 @@ test('Watchlist-Seite: Kennzahlen nur aus der gemeinsamen Uebersicht, kein Gesam
     assert.match(html, /<a class="ka-nav-out" href="\/mein-dashboard\/">Mein Dashboard<\/a>/, p);
     assert.ok(!/class="ka-nav"[^]*?href="\/konto\/watchlist\/"[^]*?<\/nav>/.test(html), `${p}: Watchlist nicht mehr in der Kontonavigation`);
   }
-  assert.match(html, /href="\/mein-dashboard\/">Mein Dashboard<\/a><span aria-hidden="true">›<\/span><span aria-current="page">Watchlist/);
+  // Redesign (E09): Zurück zur Watchlist (Platz 1 der Leiste „Mein Bereich“) statt Brotkrumen.
+  assert.match(html, /<a class="ka-back-link" href="\/mein-dashboard\/">[^]*?<b>Watchlist<\/b><\/a>/);
 });
 
 test('Nutzerfuehrung: offene Pro-Bestellung vor der Willkommensseite, Deep Links bleiben, Pro nie aus dem Browser', () => {
