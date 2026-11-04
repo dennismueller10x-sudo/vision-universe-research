@@ -611,7 +611,7 @@
 
   async function screener(main, ctx, params, pro) {
     if (global.VUUI && !pro) {
-      main.append(el("header", { class: "qv3-intro qv3-pad" }, [el("p", { class: "vu-ltag", text: "Quant" }), el("h1", { class: "vu-lt", text: "Welche Aktien suchst du?" }),
+      main.append(el("header", { class: "qv3-intro qv3-pad" }, [el("p", { class: "vu-ltag", text: "Quant Screener" }), el("h1", { class: "vu-lt", text: "Welche Aktien suchst du?" }),
         el("p", { class: "vu-lead", text: "Wähle eine Frage. Quant zeigt, welche Aktien sie heute erfüllen und warum." }),
         el("nav", { class: "vu-seg qv3-mode", "aria-label": "Screener-Modus" }, [el("a", { href: X.routes.screener(), "aria-current": "page", text: "Einfach" }), el("a", { href: X.routes.screenerPro(), text: "Profi" })])]));
     } else main.append(el("header", { class: "q-hero q-hero--screener" }, [
