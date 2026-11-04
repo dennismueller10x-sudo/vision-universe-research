@@ -21,7 +21,7 @@ test('Link erscheint nur mit Konto-Endpunkt', () => {
 test('Platzhalter steht einmal, in der Spalte Rechtliches', () => {
   const template = read('scripts/home/index.template.html');
   assert.equal(template.split('%%CANCEL_LINK%%').length, 2);
-  const legal = template.match(/<h4>Rechtliches<\/h4><ul>([\s\S]*?)<\/ul>/)[1];
+  const legal = template.match(/<h4[^>]*>Rechtliches<\/h4>\s*<ul[^>]*>([\s\S]*?)<\/ul>/)[1];
   assert.match(legal, /Kontakt<\/a><\/li>%%CANCEL_LINK%%\s*$/);
   // Navigation und Kopf unveraendert: kein Konto-/Kuendigungseintrag ausserhalb des Footers.
   const beforeFooter = template.slice(0, template.indexOf('<footer'));

@@ -349,7 +349,7 @@ test("EH-17 · routes: /elliott/#/<T> is the native route; Quant only redirects 
   assert.match(read("ask/app.js"), /href: '\/elliott\/#\/' \+ encodeURIComponent\(x\.symbol\)/);
   assert.doesNotMatch(read("ask/app.js"), /quant\/#\/elliott/);
   assert.doesNotMatch(read("scripts/home/index.template.html"), /aktie\/NVDA\/(chartbild|technik)/);
-  assert.match(read("scripts/home/index.template.html"), /data-mod="technik" href="\/elliott\/#\/NVDA"/, "Startseite fuehrt ueber die native Elliott-Route");
+  assert.match(read("scripts/home/build-home.mjs"), /`\/elliott\/#\/\$\{MAIN\}`/, "Startseite fuehrt ueber die native Elliott-Route");
 });
 
 test("EH-18 · Elliott detail context: breadcrumb back to Elliott, honest abstention instead of a redirect", () => {
