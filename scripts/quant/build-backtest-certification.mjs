@@ -14,6 +14,8 @@
 
    Schreibt quant/data/product/backtest-certification-v1.json
    (--out <datei> schreibt stattdessen dorthin, z. B. fuer Vorher/Nachher).
+   --oos-rows <datei> liest die Setup-OOS-Ereigniszeilen aus
+   build-setup-outcomes.mjs --oos-rows-out (nicht unter quant/data).
    ========================================================================= */
 import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
@@ -141,11 +143,35 @@ const completedTitles = Math.max(...["SETUP_CONFIRMED", "SETUP_NEW"].map((k) => 
 const eventCalendarMonths = new Set(outcomes.events.map((e) => e[2].slice(0, 7))).size;
 const variantGate = st.SETUP_CONFIRMED.variantGate;
 const firstEvent = outcomes.events.map((e) => e[2]).sort()[0] || null;
-/* OOS (setup-oos-1.0.0): ohne freigegebene Segmentdefinition immer FAIL
-   (OOS_NOT_MEASURABLE_YET bzw. OOS_SEGMENT_DEFINITION_MISSING). Das
-   Ergebnisartefakt exportiert keine Ereigniszeilen; ausgewertet wird nur
-   die Zahl abgeschlossener M6-Ergebnisse. */
-const setupOos = SetupOos.evaluateSetupOos({ rows: null, completedCount: completedM6, minPerSegment: req.oosMinPerSegment, segmentation: SetupOos.segmentationFromMethodology(M) });
+/* OOS (setup-oos-1.0.0), Entscheidung A1-A6 vom 04.11.2026: Die Segmentierung
+   kommt nur aus kinds.SETUP_BACKTEST.oosSegmentation mit approval (fester Schnitt,
+   Embargo, Zaehlung je Ereignistag, Kriterium). A4: jede Ereignisart der
+   Grundgesamtheit (population) wird fuer sich ausgewertet; das Gate besteht nur,
+   wenn jede besteht (C.combineSetupOos). Die Ereigniszeilen kommen aus
+   build-setup-outcomes.mjs --oos-rows-out (Schema setup-oos-rows-1.0.0), hier mit
+   --oos-rows <datei> gelesen; ohne Datei sieht der Auswerter nur die Zahl
+   abgeschlossener Ergebnisse (rows: null). Ohne freigegebene Segmentierung bleibt
+   das Gate FAIL. PASS heisst nur "Richtung repliziert" und zertifiziert nichts. */
+const oosSegmentation = SetupOos.segmentationFromMethodology(M);
+const oosPopulation = oosSegmentation && oosSegmentation.population
+  ? oosSegmentation.population : { eventTypes: ["SETUP_NEW", "SETUP_CONFIRMED"], entryVariant: "NEXT_CLOSE", horizon: "m6", aggregation: "ALL_EVENT_TYPES_PASS" };
+if (oosPopulation.aggregation !== "ALL_EVENT_TYPES_PASS" || !Array.isArray(oosPopulation.eventTypes) || !oosPopulation.eventTypes.length) throw Error("OOS_POPULATION_INVALID");
+const oosRowsArg = process.argv.indexOf("--oos-rows");
+const oosRowsDoc = oosRowsArg >= 0 ? JSON.parse(readFileSync(process.argv[oosRowsArg + 1], "utf8")) : null;
+if (oosRowsDoc && oosRowsDoc.schemaVersion !== "setup-oos-rows-1.0.0") throw Error("OOS_ROWS_SCHEMA_UNEXPECTED " + oosRowsDoc.schemaVersion);
+if (oosRowsDoc && oosRowsDoc.asOf !== outcomes.asOf) throw Error("OOS_ROWS_ASOF_MISMATCH " + oosRowsDoc.asOf + " vs " + outcomes.asOf);
+const oosByEventType = Object.fromEntries(oosPopulation.eventTypes.map((t) => {
+  const cell = st[t] && st[t].variants[oosPopulation.entryVariant] && st[t].variants[oosPopulation.entryVariant][oosPopulation.horizon];
+  if (!cell) throw Error("OOS_POPULATION_NOT_IN_OUTCOMES " + t);
+  const rows = oosRowsDoc ? (((oosRowsDoc.rows || {})[t] || {})[oosPopulation.entryVariant] || {})[oosPopulation.horizon] || null : null;
+  /* Zeilen und Ergebnisartefakt muessen aus demselben Lauf stammen. */
+  if (rows && rows.length !== cell.status.COMPLETED) throw Error("OOS_ROWS_COUNT_MISMATCH " + t + " " + rows.length + " vs " + cell.status.COMPLETED);
+  return [t, SetupOos.evaluateSetupOos({ rows, completedCount: cell.status.COMPLETED, minPerSegment: req.oosMinPerSegment, segmentation: oosSegmentation })];
+}));
+const setupOos = C.combineSetupOos(oosByEventType).result;
+const oosDetail = { evaluator: SetupOos.VERSION, segmentation: oosSegmentation ? oosSegmentation.id : null, gateLabel: oosSegmentation ? oosSegmentation.gateLabel || null : null,
+  population: oosPopulation, rowsExported: !!oosRowsDoc,
+  byEventType: Object.fromEntries(Object.entries(oosByEventType).map(([t, r]) => [t, { status: r.status, reasonCode: r.reasonCode, completed: r.completed, purged: r.purged, segments: r.segments }])) };
 const setupGates = [
   G("publishedOnly", "nur veröffentlichte Zustände", "HARD", outcomes.source.reconstructed === false, "setup-observation-history"),
   G("pit", "Stände unverändert (contentHash)", "HARD", hist.contentHashVerified === hist.dates, hist.contentHashVerified + " von " + hist.dates + " geprüft"),
@@ -164,6 +190,7 @@ const cadence = hist.medianGapDays || 1;
 kind("SETUP_BACKTEST", "Setup-Backtest", setupGates, { trust: "NOT_READY", published: false,
   ownerApproval: { required: setupMethod.requirements.backtestCertification !== "CERTIFIED", given: setupMethod.requirements.backtestCertification === "CERTIFIED", source: M.kinds.SETUP_BACKTEST.ownerApprovalSource },
   more: { eta: { historyDates: C.eta(hist.dates, req.historyDates, 7 / 5, hist.to), firstCompletedM6: firstEvent ? new Date(Date.parse(firstEvent) + 183 * 86400000).toISOString().slice(0, 10) : null },
+    oos: oosDetail,
     progress: { historyDates: hist.dates, spanDays: hist.spanDays, transitions: outcomes.transitions, completedM6, contractTradesCompleted: (st.SETUP_NEW.contractTrades || {}).completed || 0 },
     replay: replayStudy ? { role: "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)", parity: (replayStudy.parity.checked - replayStudy.parity.mismatches) + "/" + replayStudy.parity.checked, mismatches: replayStudy.parity.mismatches } : null } });
 
