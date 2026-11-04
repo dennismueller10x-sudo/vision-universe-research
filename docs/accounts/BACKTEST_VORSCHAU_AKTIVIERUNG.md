@@ -1,11 +1,13 @@
-# Interne Backtest-Vorschau: erstmalige Aktivierung (Stand 01.11.2026)
+# Interne Backtest-Vorschau: erstmalige Aktivierung (Stand 04.11.2026)
 
 Ziel ist die interne praktische Abnahme durch genau ein ausdrücklich berechtigtes Testkonto.
 - Keine öffentliche Freischaltung.
 - Keine Änderung an Quant-Produktgates.
 - Keine Zertifizierung.
 
-**Die Aktivierung braucht die abschließende Owner-Freigabe.** Dieser PR ist der Schalter und wird erst danach gemergt.
+**Owner-Freigabe erteilt am 04.11.2026** (Neustart-Plan §6, Punkt 8: „Interne Backtest-Vorschau + Geschäftskonto mit `backtest_reviewer`“). Der Schalter ist mit #1227 eingeschaltet.
+
+**Offene Owner-Aufgabe:** ein Geschäftskonto (eigene E-Mail des Owners, nicht das Konto mit `pricing_admin`) registrieren, bestätigen und die Rolle per SQL (Abschnitt 2) vergeben. Bis dahin antwortet der Worker mit 401/403 und zeigt niemandem Daten.
 
 ## 1. Voraussetzungen (alle erfüllt, bevor der Schalter umgelegt wird)
 
@@ -15,7 +17,7 @@ Ziel ist die interne praktische Abnahme durch genau ein ausdrücklich berechtigt
 | V2 | Bundle aktuell (#1223) | **erfüllt**: `export-backtest-review-bundle.cjs --check` → `ok`, `bundleHash` `aefb5942…` |
 | V3 | Seite #1216 auf `main` und ausgeliefert | **erfüllt**: `https://research.visionuniverse.de/konto/admin/backtests/` → 200, `noindex,nofollow`; Startseite, `/quant/` und `/konto/` enthalten keinen Link |
 | V4 | Paket nicht öffentlich | **erfüllt** (live): `…/workers/vu-account/data/backtest-review-bundle.json` → 404, während `…/workers/vu-account/src/backtests.mjs` aus demselben Release 200 liefert |
-| V5 | Rolle nur für das Testkonto | offen: der Owner nennt das Konto (Abschnitt 2) |
+| V5 | Rolle nur für das Geschäftskonto | **Owner-Aufgabe**: Konto registrieren, Rolle per SQL (Abschnitt 2) |
 | V6 | Abnahmeprotokoll | **erfüllt**: `node scripts/account/backtest-review-acceptance.mjs` → 61 Prüfungen, 0 Fehler (Abschnitt 7) |
 
 ## 2. Rolle für genau ein Testkonto
