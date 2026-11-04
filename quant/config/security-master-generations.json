@@ -23,6 +23,22 @@
         "docs/data/security-master/v130-approved-changes.json#prevMasterSha256"
       ],
       "boundStudies": "V7-V13c (docs/quant-recovery/**, masterHash/masterSha256 26c82617...), Backtest-Demos und Katalog bis zur naechsten Generation"
+    },
+    "us-security-master-1.3.0": {
+      "file": "quant/frozen/security-master/us-security-master-1.3.0.json",
+      "sha256": "eda08c609b3d2d2fccd9fd57b235687cd12f13b6e9a9d6c885dc3caf06b5f2ad",
+      "bytes": 9717488,
+      "gitBlob": "a5462696e826b1f53d6266233c6f246cdc3de1a8",
+      "version": "us-security-master-1.3.0",
+      "generatedAt": "2026-11-04T00:00:00Z",
+      "rows": 8056,
+      "frozenAt": "2026-11-04",
+      "producer": "scripts/quant/pin-security-master-generation.cjs (Kopie des committeten Stamms, Hash geprueft)",
+      "evidence": [
+        "Commit a8ccf1af0a (security-master-weekly Lauf 41885696451, commit=true), bytegleich mit Probelauf P2 41884873986",
+        "docs/data/security-master/v130-approved-changes-1.1.0.json#sourceRun.runId=41877792353"
+      ],
+      "boundStudies": "noch keine; researchEvidenceDefault bleibt us-security-master-1.1.0 (H7 optional)"
     }
   }
 }
