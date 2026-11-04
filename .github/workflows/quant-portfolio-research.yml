@@ -1,0 +1,126 @@
+name: Quant - Musterportfolios (VU-Portfolio-Standard, historisch, Forschung)
+
+# Rechnet die Musterportfolios nach dem VU-Portfolio-Standard auf rekonstruierter Point-in-Time-Basis
+# (scripts/quant/portfolio/model-portfolios.cjs). Forschung, nicht zertifiziert.
+# Eingaben, die nur im Runner existieren und nie committet werden:
+#   - kanonische Tagesbalken (Tiingo, R2-Historienablage): Gesamtrendite, Rohschluss, Tagesumsatz
+#   - delistete Titel aus dem privaten V13-Archiv (Teil v13-derived, alle Hashes geprueft)
+#   - SEC-Fundamentaldaten in der Lesart ORIGINAL (wie erstmals eingereicht) aus companyfacts.zip (oeffentlich)
+# Committet wird nur das abgeleitete Ergebnis docs/quant/research/portfolio-v1/ und das Vorschau-Paket
+# workers/vu-account/data/model-portfolios-bundle.json (Kennzahlen, Wertentwicklung, Gewichte; keine Kurse).
+#
+# Ausloeser: manuell oder die Marke [quant-portfolio-research] in der Commit-Nachricht auf claude/**.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: quant-portfolio-research-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[quant-portfolio-research]')) && github.run_id || 'run' }}
+  cancel-in-progress: false
+
+jobs:
+  run:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[quant-portfolio-research]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: R2-Zugang vorhanden
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY V13_ARCHIVE_PRIVATE_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::$v fehlt"; exit 1; fi
+          done
+
+      - name: Lesender Vorabcheck (Nullkostengrenze)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/portfolio-preflight.json"
+
+      - name: Tagesbalken aus der Historienablage (nur Runner)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/portfolio-preflight.json"
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --report "$RUNNER_TEMP/portfolio-sync.json"
+
+      - name: Delistete Titel aus dem V13-Archiv (privater Schluessel nur in diesem Schritt)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/quant/v13/archive/r2-restore.mjs --mode extract --parts v13-derived \
+            --dest "$RUNNER_TEMP/priv" --manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json --prefix research-snapshots/quant-v13/archive-1.2.0/
+          first=$(python3 -I -c 'import json,sys;r=json.load(open(sys.argv[1]));f=r["columns"];rows=r["rows"];i=f.index("chainId");s=f.index("status");print(next(x[i] for x in rows if x[s]=="QUALIFIED"))' docs/quant-recovery/v13/delisted/register-1.0.0.json)
+          hit=$(find "$RUNNER_TEMP/priv/v13-derived" -name "$first.json" -print -quit); test -n "$hit"
+          echo "DELISTED_DIR=$(dirname "$hit")" >> "$GITHUB_ENV"
+          echo "Reihen: $(find "$(dirname "$hit")" -maxdepth 1 -name '*.json' | wc -l)"
+
+      - name: SEC-Fundamentaldaten wie erstmals eingereicht (oeffentlich, companyfacts.zip)
+        run: |
+          set -euo pipefail
+          python3 scripts/quant/portfolio/build_pit_fundamentals.py --out "$RUNNER_TEMP/pit-fundamentals" --bulk --workers 4
+
+      - name: Musterportfolios rechnen
+        run: |
+          set -euo pipefail
+          mkdir -p docs/quant/research/portfolio-v1
+          node --max-old-space-size=12288 scripts/quant/portfolio/model-portfolios.cjs \
+            --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" \
+            --fundamentals "$RUNNER_TEMP/pit-fundamentals" --sensitivity \
+            --out docs/quant/research/portfolio-v1/model-portfolios.json
+          node scripts/quant/portfolio/render-model-portfolios.cjs --in docs/quant/research/portfolio-v1/model-portfolios.json \
+            --out docs/quant/research/portfolio-v1/MODEL_PORTFOLIOS.md
+          node scripts/quant/portfolio/export-model-portfolios-bundle.cjs
+          rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
+
+      - name: Tests und Datenhygiene
+        run: |
+          node --test quant/tests/portfolio-standard.test.mjs quant/tests/model-portfolios-result.test.mjs workers/vu-account/tests/backtests.test.mjs
+          node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Ergebnis auf den aktuellen Zweig committen
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/quant/research/portfolio-v1 workers/vu-account/data/model-portfolios-bundle.json
+          if git diff --cached --quiet; then echo "Ergebnis unveraendert."; exit 0; fi
+          git commit -m "Musterportfolios VU-Portfolio-Standard historisch neu gerechnet (Lauf ${GITHUB_RUN_ID})"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

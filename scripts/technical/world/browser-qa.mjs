@@ -315,15 +315,27 @@ async function main() {
       await page.waitForFunction(() => !!document.getElementById("vu-dock"), null, { timeout: 10000 });
       await page.locator("#vu-dock button.menu").click();
       await page.waitForFunction(() => { const p = document.querySelector("vu-navigation").shadowRoot.querySelector(".panel"); return getComputedStyle(p).visibility === "visible"; }, null, { timeout: 3000 });
+      /* Zwei Menue-Generationen: das Akkordeon (bis 11/2026) und das Raster des Redesigns (Mockup N3: Kacheln,
+         darunter "In <Welt>" mit den Unterseiten der aktuellen Welt). Gepruefte Absicht bleibt: Technical ist eine
+         eigene Welt, ihre fuenf Unterseiten sind erreichbar, Chart Studio ist auf der Chart-Route markiert. */
       const m = await page.evaluate(() => {
         const root = document.querySelector("vu-navigation").shadowRoot, g = root.querySelector(".group[data-group=technical]");
-        return { heads: [...root.querySelectorAll(".group h2")].map((h) => h.textContent),
-          links: g ? [...g.querySelectorAll(".links a")].map((a) => a.getAttribute("href")) : [],
-          open: g ? g.querySelector(".disclosure").getAttribute("aria-expanded") : null,
-          current: g ? (g.querySelector(".links a[aria-current=page]") || {}).textContent : null };
+        if (g) return { kind: "accordion", heads: [...root.querySelectorAll(".group h2")].map((h) => h.textContent),
+          links: [...g.querySelectorAll(".links a")].map((a) => a.getAttribute("href")),
+          open: g.querySelector(".disclosure").getAttribute("aria-expanded"),
+          current: (g.querySelector(".links a[aria-current=page]") || {}).textContent };
+        const here = root.querySelector(".here"), tile = root.querySelector(".tile.is-current");
+        return { kind: "grid", heads: [...root.querySelectorAll(".tile b")].map((h) => h.textContent), tile: tile && tile.dataset.group,
+          links: [...root.querySelectorAll(".here-links a")].map((a) => a.getAttribute("href")),
+          open: here && !here.hidden ? "true" : "false",
+          current: ((root.querySelector(".here-links a[aria-current=page]") || {}).textContent || "").trim() };
       });
-      const i = m.heads.indexOf("Technical");
-      assert(i > 0 && m.heads[i - 1] === "Fundamental", "Technical-Gruppe nicht nach Fundamental: " + m.heads.join("|"));
+      if (m.kind === "accordion") {
+        const i = m.heads.indexOf("Technical");
+        assert(i > 0 && m.heads[i - 1] === "Fundamental", "Technical-Gruppe nicht nach Fundamental: " + m.heads.join("|"));
+      } else {
+        assert(m.heads.includes("Technical") && m.heads.includes("Fundamental") && m.tile === "technical", "Technical-Kachel fehlt oder nicht aktiv: " + JSON.stringify(m));
+      }
       assert(m.links.length === 5 && m.links[2] === "/technical/#/chart", "Unterpunkte: " + m.links.join(","));
       assert(m.open === "true" && m.current === "Chart Studio", "Chart Studio nicht aktiv: " + JSON.stringify(m));
       await page.keyboard.press("Escape");
