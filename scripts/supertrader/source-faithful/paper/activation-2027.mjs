@@ -63,7 +63,7 @@ export const SF6_PAPER_ACTIVATION = Object.freeze({
   // Owner-Freigabe Neustart 04.11.2026 (Plan-Entscheidung 6 und FP-ST-02 Option A, docs/PLAN_NEUSTART_2026-11.md §6);
   // die Antworten folgen den dokumentierten Empfehlungen (docs/SUPERTRADER_PAPER_2027_ACTIVATION.md §6).
   activated: true,
-  approval: Object.freeze({ by: 'Owner (Neustart-Freigabe vom 04.11.2026, umgesetzt von Claude, Strang B)', on: '2026-11-04', pr: 1356 }),
+  approval: Object.freeze({ by: 'Owner (Neustart-Freigabe vom 04.11.2026, umgesetzt von Claude, Strang B)', on: '2026-11-04', pr: 1354 }),
   decisions: Object.freeze({ sampleCount: 'COUNT_ONLY', retention: 'RAISE_CAP_TO_4_FORWARD_GENERATION', dataSource: 'RESEARCH_FORWARD_WINDOW' }),
   // ---------------------------------------------------------------------------------------------------------------
   recording: Object.freeze({
