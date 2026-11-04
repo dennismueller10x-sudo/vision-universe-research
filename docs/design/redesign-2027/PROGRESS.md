@@ -133,6 +133,7 @@ Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds 
 
 - WebKit ist in dieser Sitzung nicht installiert (Vorgabe: Playwright nicht neu installieren). Lokal prüft Chromium; WebKit prüft `shell-ci` in jedem PR.
 - Quant CI ist auf `main` vorbestehend rot (Strang A); die Kette wertet sie nur, wenn die Fehlschläge neu sind.
+- Ebenfalls vorbestehend auf `main` (Datenstand, nicht Code): Discover `names.test.mjs` NM3 und `producer-ownership` (Neubau), Vorsorge „Build reproduzierbar“. Nach CLAUDE.md (Neustart) blockiert veralteter Datenstand keinen Code-PR; die Kette mergt, wenn alle übrigen Prüfungen grün sind.
 
 ## Backend-Zusätze (nach den Schritten 1–6)
 
