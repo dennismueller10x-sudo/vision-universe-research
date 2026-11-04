@@ -314,3 +314,23 @@ html[data-theme=light] .qd .qv-stock,html[data-theme=light] body.qd .qv-stock{--
 .qd .qv-stock .qx-change.tone-good>.qv2-ico{background:var(--vu-lime,#c8f531)!important;color:#000!important}
 .qd .qv-stock .qx-change.tone-bad>.qv2-ico{background:var(--vu-ink,#000)!important;color:var(--vu-inv,#fff)!important}
 .qd .qv-stock .qv2-chips button.tone-bad *{color:var(--vu-inv,#fff)!important}
+/* Redesign 2027 (Q07-b, Schritt 5/6): Setup-Karte mit Fortschritt, Stil-Karten mit Regel-Haken, Rückblick schwarz. */
+.qd .qv-stock .qv3-setup,.qd .qv-stock .qv3-strat-card{display:block;padding:14px;margin:0 0 10px;border-radius:16px;background:var(--vu-soft,#f2f2f2);border:0;color:inherit;text-decoration:none}
+.qd .qv-stock .qv3-setup-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 6px;font-size:13.5px}
+.qd .qv-stock .qv3-chip-o{background:transparent;border:1.5px dashed var(--vu-mute,#6e6e6e);font-size:11.5px;padding:3px 9px}
+.qd .qv-stock .qv3-prog{height:6px;border-radius:99px;background:var(--vu-line,#e3e3e3);overflow:hidden;margin-top:10px}
+.qd .qv-stock .qv3-prog>i{display:block;height:100%;background:var(--vu-text,#0a0a0a);border-radius:99px}
+.qd .qv-stock .qv3-rules{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:8px}
+.qd .qv-stock .qv3-rules li{display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.qd .qv-stock .qv3-rules li>i{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;font-style:normal}
+.qd .qv-stock .qv3-rules li.is-met>i{background:#c8f531;color:#0a0a0a}
+.qd .qv-stock .qv3-rules li.is-miss>i{background:var(--vu-text,#0a0a0a);color:var(--vu-bg,#fff)}
+.qd .qv-stock .qv3-rules li.is-open>i{border:1.5px dashed var(--vu-mute,#6e6e6e)}
+.qd .qv-stock .qv3-replay{padding:16px;border-radius:18px;margin:0 0 10px}
+.qd .qv-stock .qv3-replay-k{margin:0 0 6px;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.qd .qv-stock .qv3-replay-big{margin:0;font-size:14px}
+.qd .qv-stock .qv3-replay-big b{font-size:38px;font-weight:900;color:#c8f531;letter-spacing:-.03em}
+.qd .qv-stock .qv3-replay-s{margin:6px 0 0;font-size:12.5px;opacity:.8}
+.qd .qv-stock .qv3-evid{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px dashed var(--vu-line,#e3e3e3);border-radius:14px;margin:0 0 10px}
+.qd .qv-stock .qv3-evid .vu-xs{margin:0}
+.qd .qv-stock .qv3-more{margin-top:6px}

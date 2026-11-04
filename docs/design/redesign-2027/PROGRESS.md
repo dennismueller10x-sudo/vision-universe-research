@@ -68,7 +68,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | Q04 | Quant · Aktien | in Arbeit | #1351 | Aktienzeilen ohne Kurs/Mini-Chart (keine Kursabfrage je Zeile auf dieser Seite) |
 | Q05 | Quant · Methodik | in Arbeit | #1351 | Startseite der Methodik nach Mockup; Gewichte je Frage nicht als feste Zahl (stehen unter „Gewichtung“), Unterseiten noch alt |
 | Q06 | Quant · Technische Lagen | offen |  |  |
-| Q07 | Quant · NVIDIA (Aktienseite, Perspektive Faktoren) | in Arbeit | #1351 | Teil 1: lange Seite, Überblick, Fragen, Pillen. Offen: Kopf in $ + ≈ €, Herz statt „Beobachten“, Quant-Chart → C06, Schritt 4–6 nach Mockup, Beleg-Sheet |
+| Q07 | Quant · NVIDIA (Aktienseite, Perspektive Faktoren) | in Arbeit | #1351 | Lange Seite mit Schritten 1–6 nach Mockup (Überblick, Fragen, Stärken/Risiken, Veränderungen mit Kacheln, Setup-Karte + Stil-Karten mit Regel-Haken, Rückblick schwarz + Evidenz). Offen: Kopf in $ + ≈ € (Querschnitt Währung), Herz statt „Beobachten“, Quant-Chart → C06, Kursstärke-Verlauf mit Schwelle 70, Ereignis-Zeitleiste, Beleg-Sheet. Rückblick zeigt „ähnliche Situationen dieser Aktie“ (replay), nicht „Setup bestätigt in 552 Wochen“ (setup-replay-v1 lädt die Seite nicht). Alte Inhalte vollständig unter „Einstieg, Stop, Ziele …“ und „Alle Belege …“. |
 | Q08 | Quant · NVIDIA Zahlen (Perspektive Zahlen) | in Arbeit | #1351 | Kopf ohne Kurs (Seite lädt keinen Kurs); Kachel „Wachstum 3 Jahre“ durch „Stand“ ersetzt |
 | Q09 | Quant · NVIDIA Chartbild (Perspektive Chart) | offen |  |  |
 | T01 | Technical · Übersicht | offen |  |  |
