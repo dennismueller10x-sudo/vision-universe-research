@@ -28,7 +28,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (SC, root) {
   "use strict";
 
-  var VERSION = "stock-navigator-2.0.0";
+  var VERSION = "stock-navigator-3.0.0";
   var SPRITE = "/assets/product-icons.svg#";
   /* Reihenfolge = StockContext.PRODUCTS. icon: Symbol im Sprite. "technik" ist das Chartbild (/elliott/#/<T>), "technical" die Produktwelt Technical. */
   var MODULES = {
@@ -41,6 +41,11 @@
     fundamental: { label: "Funda­mental", plain: "Fundamental", icon: "fundamental", why: "Umsatz, Gewinn, Cashflow und Bilanz je Geschäftsjahr" },
     hedgefonds: { label: "Hedge­fonds", plain: "Hedgefonds", icon: "hedgefonds", why: "Welche Fonds die Aktie halten, kaufen und verkaufen" }
   };
+  /* Redesign 11/2026 (Mockup N4/N5, Baustein C05): Perspektiven statt Produktnamen, eine wischbare Zeile.
+     Reihenfolge wie im Mockup; jede Perspektive gehoert zu genau einer Welt. */
+  var PERSPECTIVE = { discover: "Überblick", technical: "Chart", fundamental: "Zahlen", quant: "Faktoren", supertrader: "Methoden", elliott: "Wellen", technik: "Chartbild", hedgefonds: "Investoren" };
+  var ORDER = ["discover", "technical", "fundamental", "quant", "supertrader", "elliott", "technik", "hedgefonds"];
+  function ordered(states) { return states.slice().sort(function (a, b) { return ORDER.indexOf(a.product) - ORDER.indexOf(b.product); }); }
   var STATE_TEXT = { available: "verfügbar", unavailable: "keine Abdeckung", planned: "In Planung", unknown: "" };
   var TICK = { available: "✓", unavailable: "–", planned: "…", unknown: "" };
 
@@ -74,18 +79,15 @@
       return '<a class="vu-snav-card"' + attrs + ">" + icon(m.icon) + "<span><b>" + m.label + "</b><small>" + esc(m.why) + "</small>" +
         (stText ? '<span class="vu-snav-st">' + esc(stText) + "</span>" : "") + sr + "</span></a>";
     }
-    return '<a class="vu-snav-chip"' + attrs + ' title="' + esc((m.plain || m.label) + (stText ? " · " + stText : "")) + '">' + icon(m.icon) +
-      '<i class="vu-snav-tick" data-s="' + esc(st.state) + '" aria-hidden="true">' + (TICK[st.state] || "") + "</i><span>" + m.label + "</span>" + sr + "</a>";
+    return '<a class="vu-snav-chip"' + attrs + ' title="' + esc((m.plain || m.label) + (stText ? " · " + stText : "")) + '">' +
+      '<svg class="vu-snav-glyph" viewBox="0 0 24 24" aria-hidden="true"><use href="' + SPRITE + esc(m.icon) + '"/></svg><span>' + esc(PERSPECTIVE[st.product] || m.plain || m.label) + "</span>" +
+      '<span class="vu-snav-sr"> (' + esc(m.plain || m.label) + ")</span>" + sr + "</a>";
   }
 
   /** HTML des Navigators. states: StockContext.availability(ctx, manifest). */
   function html(ctx, states, current, panelId) {
-    var id = esc(panelId || "vu-snav-panel");
-    return '<div class="vu-snav-row"><p class="vu-snav-eyebrow" aria-hidden="true">Analysewelten</p><ul class="vu-snav-list">' +
-      states.map(function (st) { return "<li>" + item(st, ctx, current) + "</li>"; }).join("") + "</ul>" +
-      '<button type="button" class="vu-snav-more" aria-expanded="false" aria-controls="' + id + '" aria-label="Alle Analysewelten mit Erklärung">Alle' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div>' +
-      '<div class="vu-snav-panel" id="' + id + '" hidden>' + states.map(function (st) { return item(st, ctx, current, true); }).join("") + "</div>" +
+    void panelId;
+    return '<ul class="vu-snav-list">' + ordered(states).map(function (st) { return "<li>" + item(st, ctx, current) + "</li>"; }).join("") + "</ul>" +
       '<p class="vu-snav-note" role="status" aria-live="polite"></p>';
   }
 
@@ -102,8 +104,10 @@
   }
 
   function bind(nav) {
-    var btn = nav.querySelector(".vu-snav-more"), panel = nav.querySelector(".vu-snav-panel"), note = nav.querySelector(".vu-snav-note");
-    btn.addEventListener("click", function () { var open = panel.hidden; panel.hidden = !open; btn.setAttribute("aria-expanded", String(open)); });
+    var note = nav.querySelector(".vu-snav-note"), cur = nav.querySelector("[aria-current=page]"), list = nav.querySelector(".vu-snav-list");
+    /* Die aktuelle Perspektive steht sichtbar am Anfang der Zeile (seitlich wischbar). */
+    var reveal = function () { if (cur && list && list.scrollWidth > list.clientWidth) list.scrollLeft = Math.max(0, cur.parentNode.offsetLeft - 40); };
+    if (root.requestAnimationFrame) root.requestAnimationFrame(reveal); else reveal();
     function explain(e) { var t = e.target.closest && e.target.closest("[data-reason]"); if (!t) return false; e.preventDefault(); note.textContent = t.getAttribute("data-reason"); return true; }
     nav.addEventListener("click", explain);
     nav.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") explain(e); });
@@ -120,7 +124,7 @@
     var o = opts || {}, alive = true, panelId = "vu-snav-panel-" + (++seq);
     var nav = host.ownerDocument.createElement("nav");
     nav.className = "vu-snav";
-    nav.setAttribute("aria-label", "Analysewelten für " + ctx.displaySymbol);
+    nav.setAttribute("aria-label", "Perspektiven für " + ctx.displaySymbol);
     nav.setAttribute("data-key", SC.key(ctx));
     function draw(manifest) {
       nav.innerHTML = html(ctx, SC.availability(ctx, manifest), current, panelId);
@@ -169,7 +173,7 @@
     var doc = host.ownerDocument, wrap = doc.createElement("header");
     wrap.className = "vu-shead" + (o.compact ? " vu-shead--compact" : "");
     var meta = [o.ctx.displaySymbol, o.exchange].filter(Boolean).map(esc).join(" · ");
-    wrap.innerHTML = (o.back ? '<a class="vu-shead-back" href="' + esc(o.back.href) + '"><span aria-hidden="true">←</span> ' + esc(o.back.label) + "</a>" : "") +
+    wrap.innerHTML = (o.back ? '<a class="vu-shead-back" href="' + esc(o.back.href) + '" aria-label="' + esc(o.back.label) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="vu-shead-backtext">' + esc(o.back.label) + "</span></a>" : "") +
       '<div class="vu-shead-id">' + logoHtml(o) + '<div class="vu-shead-names"><h1 class="vu-shead-name">' + esc(o.name || o.ctx.displaySymbol) + "</h1>" +
       '<p class="vu-shead-meta">' + meta + "</p></div>" + '<div class="vu-shead-actions"></div></div>' +
       '<div class="vu-shead-pricebox">' + priceHtml(o.price) + "</div>" + '<div class="vu-shead-nav"></div>';
@@ -198,5 +202,5 @@
     return hit ? mount(host, hit.ctx, hit.product, opts) : null;
   }
 
-  return Object.freeze({ VERSION: VERSION, MODULES: MODULES, html: html, mount: mount, loadShard: loadShard, head: head, auto: auto, priceHtml: priceHtml, money: money, shardName: shardName });
+  return Object.freeze({ VERSION: VERSION, MODULES: MODULES, PERSPECTIVE: PERSPECTIVE, ORDER: ORDER, html: html, mount: mount, loadShard: loadShard, head: head, auto: auto, priceHtml: priceHtml, money: money, shardName: shardName });
 });
