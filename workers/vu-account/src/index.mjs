@@ -94,6 +94,7 @@ const ROUTES = [
   // Interne Backtest-Vorschau: standardmaessig aus (404 PREVIEW_NOT_ACTIVATED), nur Rolle backtest_reviewer.
   ['GET', '/v1/admin/backtests', backtests.overview],
   ['GET', '/v1/admin/backtests/lookup', backtests.lookupGet],
+  ['GET', '/v1/admin/backtests/portfolios', backtests.portfolios],
   ['POST', '/v1/admin/backtests/lookup', backtests.lookupPost, {csrf: true}],
   ['POST', '/v1/billing/webhook/apple', billing.storeWebhookNotConfigured, {webhook: true, db: false}],
   ['POST', '/v1/billing/webhook/google', billing.storeWebhookNotConfigured, {webhook: true, db: false}],

@@ -23,7 +23,17 @@ Mehrere Produkte haben Isolations-Gates. Ein PR, der ihre Pfade berührt, darf n
 | Discover „verändert keine bestehende Engine“ | `discover/**`, `scripts/discover/**` | kein `quant`, `scripts/market`, `scripts/technical` … |
 | Discover Frontend Budget (`scripts/discover/browser-qa.mjs`) | Discover-Views | `discover/(app|home|detail|themes).(js|css)` ≤ 180.000 Byte decoded, ≤ 12 Requests |
 
-Gates werden nicht abgeschwächt. Eine Querschnittsänderung wird in produkteigene PRs aufgeteilt.
+**Neustart (Owner-Entscheidung 04.11.2026, [docs/PLAN_NEUSTART_2026-11.md](docs/PLAN_NEUSTART_2026-11.md)):** Diese Pfad-Gates werden durch Vertragstests ersetzt
+(prüfen Daten und Schnittstellen statt berührter Ordner). Bis ein Gate umgebaut ist, gilt es weiter; der Umbau selbst ist ausdrücklich erlaubt.
+Veraltete Daten lösen einen Alarm aus und blockieren keinen Code-PR.
+
+## Freigaben und Merge (Owner-Entscheidung 04.11.2026)
+
+- **Ein PR pro Ergebnis**, nicht pro Zwischenschritt. Keine neuen „Sitzungsübergabe x.0.0“-, „Nachtrag“- oder Versions-Dokumente; der Stand steht im Plan und im jeweiligen Produktdokument.
+- **Grüne CI genügt.** Code, Doku, interne Daten, Design und Umbauten werden ohne Owner-Freigabe gemergt.
+- **Owner-Freigabe nur für vier Dinge:** Geld (Zahlungen, Checkout öffentlich, Käufe), Recht (Rechtstexte), öffentliche Aussagen über Rendite oder Performance, endgültiges Löschen von Daten.
+- **Entscheidungen, die bisher „Owner-Lesart“ hießen** (Regel-Lesarten, Varianten, Schwellen), trifft Claude nach der dokumentierten Empfehlung, schreibt sie in einen Satz ins Produktdokument und macht weiter.
+- **Backtests sind Forschung:** historische Läufe dürfen jetzt laufen und intern gezeigt werden, beschriftet „Forschung, nicht zertifiziert“. Zertifizierung ist ein späteres Etikett, keine Voraussetzung.
 
 ## Tests
 

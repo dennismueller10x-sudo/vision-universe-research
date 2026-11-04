@@ -274,6 +274,32 @@ else {
   check(shownResult, 'Backtest-Vorschau: vorgerechnete Auswahl wird angezeigt');
   await audit(page, 'Backtest-Vorschau');
   await shot(page, 'backtest-vorschau');
+  // iPhone-Breite MIT geladenem Ergebnis (Befund 02.11.: lange Codes der Einschraenkungsliste verbreiterten die Seite
+  // auf 635 px). Tabellen duerfen in ihrem Rahmen scrollen, die Seite nicht.
+  const vp = page.viewportSize();
+  await page.setViewportSize({width: 390, height: 844});
+  for (const idx of [1, 12, 16, 20]) {
+    await page.selectOption('#br-precomputed', {index: idx});
+    await page.evaluate(() => { document.querySelector('#br-result').textContent = ''; });
+    await page.click('#br-form button[type=submit]');
+    await page.waitForFunction(() => document.querySelector('#br-result').textContent.length > 200);
+    // gezaehlt wird, was die Seite verbreitert: Inhalte in waagrecht scrollbaren Rahmen (Tabellen, Kontonavigation .ka-nav)
+    // bleiben in ihrem Rahmen; zusaetzlich darf das Dokument selbst nicht breiter werden.
+    const wide = await page.evaluate(() => {
+      const inScroller = (n) => { for (let p = n.parentElement; p && p !== document.body; p = p.parentElement) { const o = getComputedStyle(p).overflowX; if (o === 'auto' || o === 'scroll' || o === 'hidden') return true; } return false; };
+      return {elements: [...document.querySelectorAll('body *')].filter(n => n.getBoundingClientRect().right > window.innerWidth + 1 && !inScroller(n)).length,
+        doc: document.documentElement.scrollWidth, vw: window.innerWidth,
+        // Diagnose fuer Ueberlauf ohne eigenes Element (z. B. der Text der gewaehlten Option eines <select> in WebKit):
+        // die innersten Boxen, deren Inhalt breiter ist als sie selbst, ohne dass ein Kind-Element das erklaert.
+        sources: [...document.querySelectorAll('body *')].filter(n => n.scrollWidth > n.clientWidth + 1 && !inScroller(n)
+          && getComputedStyle(n).overflowX === 'visible' && ![...n.children].some(c => c.scrollWidth > c.clientWidth + 1 || c.getBoundingClientRect().right > n.getBoundingClientRect().right + 1))
+          .slice(0, 3).map(n => { const d = e => e.tagName.toLowerCase() + (e.id ? '#' + e.id : e.classList[0] ? '.' + e.classList[0] : '');
+            return `${d(n)}[${[...n.children].map(d).join(',')}] ${n.scrollWidth}/${n.clientWidth}`; })};
+    });
+    check(wide.elements === 0 && wide.doc <= wide.vw, `Backtest-Vorschau 390 px, Auswahl ${idx}: Seite nicht breiter als der Bildschirm (${wide.elements} Elemente, ${wide.doc}/${wide.vw} px)${wide.doc > wide.vw ? `; Ursache: ${wide.sources.join('; ') || 'unbekannt'}` : ''}`);
+  }
+  await shot(page, 'backtest-vorschau-iphone');
+  await page.setViewportSize(vp);
 }
 
 // Abmelden

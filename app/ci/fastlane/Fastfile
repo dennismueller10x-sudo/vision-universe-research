@@ -1,0 +1,42 @@
+# VORLAGE, NICHT AKTIV (siehe docs/mobile/TESTFLIGHT_STEP_BY_STEP.md). Laeuft nur auf einem macOS-Runner (fastlane ist dort vorinstalliert).
+# Manuelle Signierung mit Distribution-Zertifikat (.p12) und App-Store-Profil: kein Mac des Owners und kein Cloud-Signing-Recht noetig.
+# Alle Werte kommen aus der Umgebung (GitHub-Umgebung "app-testflight"); nichts davon gehoert ins Repository.
+default_platform(:ios)
+
+platform :ios do
+  desc "Archiv bauen und intern zu TestFlight hochladen (ohne Warten auf die Verarbeitung)"
+  lane :beta do
+    bundle_id = "de.visionuniverse.app"
+    profile   = ENV.fetch("IOS_PROFILE_NAME")        # Name des App-Store-Profils im Developer-Portal
+    team      = ENV.fetch("APPLE_TEAM_ID")
+    project   = File.expand_path("../../ios/App/App.xcodeproj", __dir__)
+    workspace = File.expand_path("../../ios/App/App.xcworkspace", __dir__)
+
+    setup_ci                                          # temporaerer Schluesselbund nur fuer diesen Lauf
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV.fetch("ASC_KEY_ID"), issuer_id: ENV.fetch("ASC_ISSUER_ID"), key_content: ENV.fetch("ASC_KEY_P8"), is_key_content_base64: false
+    )
+
+    import_certificate(
+      certificate_path: ENV.fetch("IOS_DIST_P12_PATH"), certificate_password: ENV.fetch("IOS_DIST_P12_PASSWORD"),
+      keychain_name: ENV["MATCH_KEYCHAIN_NAME"] || "fastlane_tmp_keychain", keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || ""
+    )
+    install_provisioning_profile(path: ENV.fetch("IOS_PROFILE_PATH"))
+
+    update_code_signing_settings(
+      use_automatic_signing: false, path: project, team_id: team, targets: ["App"], profile_name: profile,
+      code_sign_identity: "Apple Distribution", bundle_identifier: bundle_id
+    )
+    increment_build_number(build_number: ENV.fetch("GITHUB_RUN_NUMBER"), xcodeproj: project)
+    increment_version_number(version_number: ENV.fetch("MARKETING_VERSION"), xcodeproj: project)
+
+    build_app(
+      workspace: workspace, scheme: "App", configuration: "Release", export_method: "app-store",
+      export_options: {signingStyle: "manual", provisioningProfiles: {bundle_id => profile}, teamID: team},
+      output_directory: File.expand_path("../../build", __dir__), clean: true
+    )
+
+    upload_to_testflight(api_key: api_key, skip_waiting_for_build_processing: true, skip_submission: true)
+  end
+end

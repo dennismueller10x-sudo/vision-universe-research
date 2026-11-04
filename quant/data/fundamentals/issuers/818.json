@@ -6,9 +6,9 @@
       "cik": "0000008818",
       "name": "Avery Dennison Corp",
       "sic": "2670",
-      "rawFacts": 21659,
-      "mappedFacts": 7067,
-      "unmappedFacts": 14624,
+      "rawFacts": 21968,
+      "mappedFacts": 7179,
+      "unmappedFacts": 14958,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 68,
+      "quarterlyPeriods": 69,
       "firstPeriodEnd": "2007-12-29",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2008-12-27",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
-        },
-        "eps_diluted": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-27",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
+        "eps_diluted": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2008-12-27",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-27",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0,
@@ -59,42 +59,42 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2008-12-27",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-27",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2008-12-27",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "short_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2010-01-02",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.92
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2007-12-29",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2010-01-02",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.92
@@ -117,48 +117,49 @@
         }
       },
       "quality": {
-        "HIGH": 641,
+        "HIGH": 649,
         "MEDIUM": 26
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 667,
-        "resolvedValues": 667
+        "datableValues": 675,
+        "resolvedValues": 675
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 15422,
+        "rules_version": "1.1.0",
+        "total": 15568,
         "by_severity": {
-          "INFO": 14624,
+          "INFO": 14958,
           "ERROR": 1,
-          "WARNING": 797
+          "WARNING": 609
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 679,
+          "CONCEPT_DISAGREEMENT": 491,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 115,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 14624
+          "UNKNOWN_CONCEPT": 14958
         }
       },
       "latestFiling": {
-        "accession": "0000008818-26-000131",
-        "filing_date": "2026-08-04",
+        "accession": "0000008818-26-000166",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 132
+        "periodic_filings": 133,
+        "acceptance_datetime": "2026-11-03T21:11:02.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "6f1349028b63f08bbea08ad68b08e6096b14230738f8393ebf7fc007273adcba",
+      "sourceDigest": "986899488e9e9e588891fb86ec0c60021b551cd044fb182797d33530f9d6e23a",
       "issuerId": "iss_cik_0000008818"
     },
     {

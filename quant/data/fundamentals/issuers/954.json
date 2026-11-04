@@ -165,7 +165,7 @@
       "sic": "2800",
       "rawFacts": 29404,
       "mappedFacts": 8194,
-      "unmappedFacts": 20173,
+      "unmappedFacts": 20301,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -283,37 +283,38 @@
         "resolvedValues": 763
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 22380,
+        "rules_version": "1.1.0",
+        "total": 22345,
         "by_severity": {
-          "INFO": 20173,
+          "INFO": 20301,
           "ERROR": 1,
-          "WARNING": 2206
+          "WARNING": 2043
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1968,
+          "CONCEPT_DISAGREEMENT": 1805,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 6,
           "RESTATEMENT_CONFLICT": 177,
           "UNEXPECTED_DURATION": 55,
-          "UNKNOWN_CONCEPT": 20173
+          "UNKNOWN_CONCEPT": 20301
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-025186",
-        "filing_date": "2026-07-31",
+        "accession": "0001437749-26-034594",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 93
+        "periodic_filings": 94,
+        "acceptance_datetime": "2026-11-03T17:48:50.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
       "sourceDigest": "683b90eecaceed51c351cae2be22ce02cf499d127380f80c52c2e7674b7a08a7",
@@ -323,9 +324,9 @@
       "cik": "0001364954",
       "name": "CHEGG, INC",
       "sic": "8200",
-      "rawFacts": 17790,
-      "mappedFacts": 5704,
-      "unmappedFacts": 12216,
+      "rawFacts": 18089,
+      "mappedFacts": 5808,
+      "unmappedFacts": 12522,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -335,14 +336,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 15,
-      "quarterlyPeriods": 56,
+      "quarterlyPeriods": 57,
       "firstPeriodEnd": "2011-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -356,7 +357,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0,
@@ -376,21 +377,21 @@
         },
         "net_income": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "operating_cash_flow": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "revenue": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -404,14 +405,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 54,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -434,45 +435,46 @@
         }
       },
       "quality": {
-        "HIGH": 460,
+        "HIGH": 466,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 466,
-        "resolvedValues": 466
+        "datableValues": 472,
+        "resolvedValues": 472
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 12439,
+        "rules_version": "1.1.0",
+        "total": 12749,
         "by_severity": {
-          "INFO": 12216,
-          "WARNING": 223
+          "INFO": 12522,
+          "WARNING": 227
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 220,
+          "CONCEPT_DISAGREEMENT": 224,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 12216
+          "UNKNOWN_CONCEPT": 12522
         }
       },
       "latestFiling": {
-        "accession": "0001364954-26-000088",
-        "filing_date": "2026-08-06",
+        "accession": "0001437749-26-034534",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 55
+        "periodic_filings": 56,
+        "acceptance_datetime": "2026-11-03T13:43:06.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "b2c47a78c9a5b39bbdc8408af869955b6068f3b57246cba42d3c6aa7e4cbf37d",
+      "sourceDigest": "d5ffec407f74b1de86eef87163a0395329ad13cf9552a9ad47883f47c35e3fc4",
       "issuerId": "iss_cik_0001364954"
     },
     {

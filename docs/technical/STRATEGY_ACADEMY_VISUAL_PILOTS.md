@@ -1,5 +1,7 @@
 # Strategie-Akademie · visuelle Piloten
 
+> Historischer Pilotnachweis. Konzept und Integration sind vom Owner freigegeben; #1269 ist gemergt und veröffentlicht. Der aktuelle Gesamtstand mit 32 Lektionen steht in [STRATEGY_ACADEMY_VISUAL_ROLLOUT.md](STRATEGY_ACADEMY_VISUAL_ROLLOUT.md). Eine neue Pilotfreigabe ist nicht erforderlich.
+
 Stand: 03.11.2026. Implementierung auf eigenem Branch aus main. Zur visuellen Owner-Abnahme vorbereitet; dieser Auftrag veröffentlicht oder mergt keinen weiteren PR.
 
 ## Was sich ändert

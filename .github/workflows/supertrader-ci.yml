@@ -19,17 +19,65 @@ concurrency:
 jobs:
   gates:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 45 statt 30 Minuten: der Checkout des vollen Arbeitsbaums (~2-3 GB) schwankt
+    # GitHub-seitig stark (2:46 in Lauf 41686237365, 14:43 im parallel
+    # gestarteten core-ci-Lauf 41686237440, >15 min im package-Job von Lauf
+    # 41688632337). Der Rest des Jobs braucht rund 13 Minuten.
+    timeout-minutes: 45
     steps:
+      # Keine volle Historie: fetch-depth 0 holte alle Branches und Tags (.git
+      # rund 16 GB); seit 03.11.2026 ~16:08 UTC hing der Checkout bis zum
+      # 30-Minuten-Limit (Lauf 41671038235). Nur Gate A braucht Historie, und
+      # zwar nur eine erreichbare Merge-Basis zur PR-Basis. Im PR ist der
+      # Checkout der Merge-Commit; Tiefe 2 bringt seine Eltern (Basis und
+      # PR-Kopf) mit, die Basis wird im naechsten Schritt gezielt geholt.
+      # Alle anderen Schritte brauchen nur den Stand selbst (git ls-files,
+      # git rev-parse HEAD, eigene Fixture-Repos). Zwei Quant-Regressionen
+      # mit Historienbezug (v13b Basis-Loader, v11 Chronologie) ueberspringen
+      # sich im flachen Checkout selbst - genau wie in quant-ci.yml, das immer
+      # flach auscheckt.
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 1 }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Basis fuer Gate A: nur den Basis-Branch holen und vertiefen, bis die
+      # Merge-Basis mit dem PR erreichbar ist. Ist sie nach der letzten
+      # Vertiefung nicht erreichbar, wird der Schritt laut rot (ADR-005) -
+      # nie still "0 Dateien".
+      - name: Basis fuer Gate A holen (flach, vertieft bis zur Merge-Basis)
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          test -n "$BASE_REF"
+          # Nur Commits und Baeume (--filter=blob:none): merge-base und
+          # git diff --name-only brauchen keine Dateiinhalte. Die Datenlaeufe
+          # schreiben je Commit ueber tausend Dateien; mit Inhalten kostete
+          # schon Tiefe 50 rund 1,5 Minuten. Tiefe 1 reicht im Normalfall,
+          # weil die PR-Basis (HEAD^1) der Kopf des Basis-Branches ist.
+          git fetch --no-tags --prune --filter=blob:none --depth=1 origin "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+          for deepen in 50 200 1000 5000; do
+            if mb="$(git merge-base "origin/$BASE_REF" HEAD)"; then break; fi
+            mb=""
+            echo "Merge-Basis zu origin/$BASE_REF noch nicht erreichbar - vertiefe um $deepen"
+            git fetch --no-tags --filter=blob:none --deepen="$deepen" origin "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+          done
+          if [ -z "${mb:-}" ]; then mb="$(git merge-base "origin/$BASE_REF" HEAD || true)"; fi
+          if [ -z "$mb" ]; then
+            echo "::error::Merge-Basis zwischen HEAD und origin/$BASE_REF nicht erreichbar - Gate A kann nicht pruefen"
+            exit 1
+          fi
+          echo "Merge-Basis zu origin/$BASE_REF: $(git rev-parse --short "$mb") (HEAD^1 $(git rev-parse --short HEAD^1))"
       - name: Gate A — nur Supertrader-Pfade veraendert (Discovery und Quant 2.0 unberuehrt)
         if: github.event_name == 'pull_request'
-        run: node scripts/supertrader/guard-protected-paths.mjs --base="origin/${{ github.base_ref }}"
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          node scripts/supertrader/guard-protected-paths.mjs --base="origin/$BASE_REF"
       - name: Gate B/D/E — Engine, Registry, Source Ledger, Artefakte
         run: node --test "scripts/supertrader/tests/*.test.mjs"
       # Nur hier mit SF9_E2E=1: In den Produktionslaeufen (Signalkette, SF8-Tageslauf) ueberspringt sich der Test,

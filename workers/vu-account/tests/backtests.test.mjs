@@ -10,7 +10,7 @@ import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
 import {base64UrlEncode} from '../src/crypto.mjs';
 import {createApp} from '../src/index.mjs';
-import {bundleViolations, specFromSelection, lookupSelection} from '../src/backtests.mjs';
+import {bundleViolations, specFromSelection, lookupSelection, portfolioBundleViolations} from '../src/backtests.mjs';
 
 const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -86,8 +86,12 @@ test('standardmaessig aus: ohne Schalter 404 PREVIEW_NOT_ACTIVATED, ohne Daten u
     assert.equal(a.calls.includes('/rest/v1/user_roles'), false, 'keine Rollenabfrage, solange aus');
   }
   const toml = fs.readFileSync(path.join(ROOT, 'workers/vu-account/wrangler.toml'), 'utf8');
-  assert.equal((toml.match(/^VU_BACKTEST_REVIEW_ENABLED = "false"$/gm) || []).length, 2, 'Entwicklung und Produktion: aus');
-  assert.equal(/^VU_BACKTEST_REVIEW_ENABLED = "true"/m.test(toml), false);
+  // Aktivierung (Owner-Freigabe, docs/accounts/BACKTEST_VORSCHAU_AKTIVIERUNG.md): nur Produktion ein, Entwicklung aus.
+  const prod = toml.slice(toml.indexOf('[env.production.vars]'));
+  assert.equal((toml.match(/^VU_BACKTEST_REVIEW_ENABLED = "false"$/gm) || []).length, 1, 'Entwicklung: aus');
+  assert.equal((toml.match(/^VU_BACKTEST_REVIEW_ENABLED = "true"$/gm) || []).length, 1, 'genau ein Schalter ein');
+  assert.match(prod.slice(0, prod.indexOf('\n[', 1) > 0 ? prod.indexOf('\n[', 1) : prod.length), /^VU_BACKTEST_REVIEW_ENABLED = "true"$/m, 'ein nur in [env.production.vars]');
+  assert.ok(fs.existsSync(path.join(ROOT, 'docs/accounts/BACKTEST_VORSCHAU_AKTIVIERUNG.md')), 'Aktivierung dokumentiert');
 });
 
 test('eingeschaltet: 401 ohne Sitzung, 403 ohne Rolle (auch pricing_admin/billing_tester), Fehler ohne Daten', async () => {
@@ -266,4 +270,25 @@ test('Paket wird nicht von GitHub Pages ausgeliefert, nur vom Worker (geschuetzt
   assert.equal(permitted('workers/vu-account/data/backtest-review-bundle.json'), false);
   assert.equal(permitted('docs/quant/backtest-catalog/catalog.json'), false);
   assert.equal(permitted('konto/konto.js'), true, 'Kontoseiten bleiben ausgeliefert');
+});
+
+test('Musterportfolios: gleiche Zugangsregeln, Paket hashgebunden und reproduzierbar, nie zertifiziert', async () => {
+  const off = app(ENV);
+  assert.equal((await call(off, 'GET', '/v1/admin/backtests/portfolios', {sub: REVIEWER})).status, 404);
+  const a = app();
+  assert.equal((await call(a, 'GET', '/v1/admin/backtests/portfolios')).status, 401);
+  assert.equal((await call(a, 'GET', '/v1/admin/backtests/portfolios', {sub: PRICING})).status, 403);
+  const r = await call(a, 'GET', '/v1/admin/backtests/portfolios', {sub: REVIEWER});
+  assert.equal(r.status, 200);
+  assert.match(r.headers.get('cache-control'), /no-store/);
+  const b = r.body.bundle;
+  assert.equal(b.label, 'Forschung, nicht zertifiziert');
+  assert.equal(b.certification, 'NOT_CERTIFIED');
+  assert.equal(b.productionApproved, false);
+  assert.deepEqual(await portfolioBundleViolations(b), []);
+  assert.deepEqual(await portfolioBundleViolations({...b, publiclyActivated: true}), ['PORTFOLIO_BUNDLE_FLAGS_INVALID', 'PORTFOLIO_BUNDLE_HASH_MISMATCH']);
+  const Exp = require(path.join(ROOT, 'scripts/quant/portfolio/export-model-portfolios-bundle.cjs'));
+  const body = Exp.build(ROOT, 'docs/quant/research/portfolio-v1/model-portfolios.json');
+  const {bundleHash, ...rest} = b;
+  assert.deepEqual(rest, JSON.parse(JSON.stringify(body)), 'Paket = Export aus dem committeten Ergebnis');
 });

@@ -2,18 +2,28 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://research.visionuniverse.de/core/contracts/events.schema.json",
   "title": "Vision Universe Platform Event (v1)",
-  "description": "Vorbereitetes Ereignismodell fuer eine spaetere Notifications-Schicht (docs/architecture/APP_READINESS.md §6). Ereignisse entstehen deterministisch aus dem Vergleich zweier veroeffentlichter Datenstaende (vorher/nachher) - nie aus einer AI-Interpretation. Ein Ereignis traegt seine Evidenz und ist idempotent (eventId = Hash aus type, instrumentId, Stichtag, Regelversion).",
+  "description": "Vorbereitetes Ereignismodell fuer eine spaetere Notifications-Schicht (docs/architecture/APP_READINESS.md §6, docs/accounts/WATCHLIST.md §7). Ereignisse entstehen deterministisch aus dem Vergleich zweier veroeffentlichter Datenstaende (vorher/nachher) - nie aus einer AI-Interpretation. Ein Ereignis traegt seine Evidenz und ist idempotent: eventId = FNV-1a-64 ueber instrumentId, securityId (core/identity.js; bei Quellereignissen 'source:<id>'), type, subtype, Gegenstand (Faktor, Strategie, Abschnitt), vorher, nachher und asOf. Die Regelversion steht in source.ruleVersion und nicht in der ID. Erzeuger der Watchlist-Ereignisse: scripts/account/build-watchlist-events.mjs (Datenart watchlistEvents, PREPARED_DISABLED, keine Zustellung).",
   "type": "object",
   "required": ["schemaVersion", "eventId", "type", "occurredAt", "asOf", "source", "evidence"],
   "properties": {
     "schemaVersion": { "const": "vu-event-1.0.0" },
-    "eventId": { "type": "string" },
-    "type": { "enum": ["WATCHLIST_NEWS", "EARNINGS", "PRICE_EVENT", "SUPERTRADER_SIGNAL", "QUANT_CHANGE", "MARKET_REGIME_CHANGE"] },
-    "subtype": { "type": ["string", "null"], "description": "z. B. PRICE_EVENT: NEW_52W_HIGH | DAILY_MOVE_ABOVE_THRESHOLD; SUPERTRADER_SIGNAL: SETUP | TRIGGER | INVALIDATED" },
-    "instrumentId": { "type": ["string", "null"], "pattern": "^vu_[a-f0-9]+$" },
-    "securityId": { "type": ["string", "null"], "pattern": "^ref_[A-Z0-9_]+$" },
+    "eventId": { "type": "string", "pattern": "^ev_[0-9a-f]{16}$" },
+    "type": { "enum": ["WATCHLIST_NEWS", "EARNINGS", "PRICE_EVENT", "SUPERTRADER_SIGNAL", "QUANT_CHANGE", "TECHNICAL_CHANGE", "DATA_STATE_CHANGE", "MARKET_REGIME_CHANGE"] },
+    "subtype": {
+      "type": ["string", "null"],
+      "description": "Unterart je Art. Fuer die Arten der Watchlist-Ereignisse (core/watchlist-view.js#events, watchlist-events-1.1.0) abschliessend in enumByType; die uebrigen Arten sind noch nicht belegt.",
+      "enumByType": {
+        "PRICE_EVENT": ["NEW_52W_HIGH", "VOLUME_SPIKE"],
+        "SUPERTRADER_SIGNAL": ["VALID_SIGNAL", "VALID_SIGNAL_ENDED", "STATE_CHANGED"],
+        "QUANT_CHANGE": ["FACTOR_BAND_UP", "FACTOR_BAND_DOWN", "DATA_QUALITY_CHANGED"],
+        "TECHNICAL_CHANGE": ["TREND_STRUCTURE_CHANGED", "SMA200_CROSS_UP", "SMA200_CROSS_DOWN"],
+        "DATA_STATE_CHANGE": ["SOURCE_UPDATED", "SOURCE_STATE_CHANGED", "SECTION_STATE_CHANGED"]
+      }
+    },
+    "instrumentId": { "type": ["string", "null"], "pattern": "^vu_[a-f0-9]+$", "description": "null bei Quellereignissen (DATA_STATE_CHANGE/SOURCE_*), die fuer alle Instrumente einer Quelle gelten" },
+    "securityId": { "type": ["string", "null"], "pattern": "^ref_[A-Z0-9_]+$", "description": "nur ueber core/identity.js#securityIdForTicker (ADR-001)" },
     "ticker": { "type": ["string", "null"] },
-    "occurredAt": { "type": "string", "format": "date-time" },
+    "occurredAt": { "type": "string", "format": "date-time", "description": "Veroeffentlichungszeitpunkt (generatedAt) der neueren Uebersicht, nicht die Laufzeit - sonst waere ein zweiter Lauf nicht byte-gleich" },
     "asOf": { "type": "string", "format": "date", "description": "Datenstand (Handelstag), auf dem das Ereignis beruht" },
     "source": {
       "type": "object",
@@ -24,7 +34,7 @@
         "ruleVersion": { "type": "string" }
       }
     },
-    "evidence": { "type": "object", "description": "Zahlen, die das Ereignis begruenden (vorher/nachher), ohne Prognose." },
+    "evidence": { "type": "object", "description": "Zahlen und Zustaende, die das Ereignis begruenden (vorher/nachher), ohne Prognose. SUPERTRADER_SIGNAL/STATE_CHANGED traegt released und presentation (RELEASED | RESEARCH): ein Zustand einer nicht freigegebenen Strategie ist Forschung, keine Eignung." },
     "severity": { "enum": ["INFO", "NOTABLE"], "default": "INFO" },
     "expiresAt": { "type": ["string", "null"], "format": "date-time" }
   }

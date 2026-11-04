@@ -15,14 +15,18 @@ const SM = "quant/data/market/security-master";
 const SIX = ["us-security-master.json", "summary.json", "reconciliation.json", "backfill-estimate.json", "company-names.json", "company-names-summary.json"].map((f) => `${SM}/${f}`);
 const code = () => readFileSync(WF, "utf8").split("\n").filter((l) => !/^\s*#/.test(l)).join("\n");
 
-test("SMW-1 · Workflow: nur workflow_dispatch, Zeitplan nur als Kommentar, Commit standardmaessig aus", () => {
+test("SMW-1 · Workflow: Zeitplan Mittwoch 09:41 UTC und workflow_dispatch, Commit manuell standardmaessig aus, geplant nur ohne Sonderrechte", () => {
   const c = code();
-  assert.match(c, /^on:\n\s+workflow_dispatch:/m);
-  assert.doesNotMatch(c, /^\s*(schedule|cron|push|pull_request|workflow_run)\s*:/m, "kein automatischer Ausloeser");
+  // Neustart 04.11.2026 (Plan §6 Nr. 2): Zeitplan wieder an, damit der Stamm die 60-Tage-Grenze der SF8-Eingangspruefung nie erreicht.
+  assert.match(c, /^on:\n\s+schedule:\n\s+- cron: '41 9 \* \* 3'\n\s+workflow_dispatch:/m);
+  assert.doesNotMatch(c, /^\s*(push|pull_request|workflow_run)\s*:/m, "kein weiterer automatischer Ausloeser");
+  assert.equal((c.match(/^\s*- cron:/gm) || []).length, 1, "genau ein Zeitplan");
   assert.match(c, /commit:\n\s+description:[^\n]*\n\s+type: boolean\n\s+default: false/);
   assert.match(c, /allow_version_change:\n\s+description:[^\n]*\n\s+type: boolean\n\s+default: false/);
-  assert.match(readFileSync(WF, "utf8"), /^#\s+schedule: - cron: '41 9 \* \* 3'$/m, "Zielrhythmus dokumentiert, aber auskommentiert");
-  assert.match(c, /if: inputs\.commit == true && steps\.gate\.outputs\.decision == 'COMMIT'/);
+  // Ein geplanter Lauf hat keine Eingaben: weder Versionswechsel noch Sonderfreigabe, Commit nur bei Gate COMMIT.
+  assert.match(c, /if: \(github\.event_name == 'schedule' \|\| inputs\.commit == true\) && steps\.gate\.outputs\.decision == 'COMMIT'/);
+  assert.match(c, /IN_ALLOW_VERSION: \$\{\{ inputs\.allow_version_change \}\}/);
+  assert.match(c, /if \[ "\$IN_ALLOW_VERSION" = "true" \]/);
 });
 
 test("SMW-2 · Workflow: ADR-005, keine Secrets, keine Eingabe im Shell-Text, nur kostenfreie Quellen", () => {

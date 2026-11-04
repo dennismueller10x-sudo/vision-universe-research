@@ -128,3 +128,22 @@ test('compressed hash mismatch and path traversal fail before action evaluation'
 test('failed action HTTP is retained as private error evidence and cannot be completeness certified',()=>{
  const a=archiveFixture({ok:false,complete:false,status:504});try{const r=loadVerifiedLiveActionResults(a);assert.equal(r[0].sourceHashesVerified,true);assert.equal(r[0].result.scopeComplete,false);assert.ok(r[0].sourceReplay.reasonCodes.includes('HTTP_ACTION_RESPONSE_NOT_SUCCESS'));assert.equal(evaluate({cases:[{...base,discontinuityId:'first'}],results:r}).cases[0].status,'UNEXPLAINED');}finally{a.clean();}
 });
+test('empty European action endpoints are outside documented provider coverage, never absence or explanation', () => {
+ const empty = kind => { const p = probe(action, kind); p.result = {...p.result, data: []}; return p; };
+ const r = evaluate({results:[empty('splits'), empty('dividends')], embeddedFactors:[{securityId:'s',date:'2025-05-02',providerFactor:3,sourceNormalizedSha256:h}]});
+ assert.equal(r.cases[0].status, 'UNEXPLAINED');
+ assert.equal(r.cases[0].providerActionRoute, 'NONE_DOCUMENTED_FOR_VENUE');
+ assert.equal(r.cases[0].requiredEvidence, 'OFFICIAL_ISSUER_OR_EXCHANGE_ACTION_DOCUMENT');
+ assert.ok(r.cases[0].reasonCodes.includes('ACTION_ENDPOINT_OUTSIDE_DOCUMENTED_COVERAGE'));
+ assert.ok(r.cases[0].reasonCodes.includes('LIVE_ACTION_ENDPOINT_EMPTY_ERROR_OR_INCOMPLETE'));
+ assert.ok(r.cases[0].probeEvidence.every(p => p.state === 'EMPTY_OUTSIDE_DOCUMENTED_COVERAGE'));
+ assert.equal(r.rows[0].embeddedComparisons[0].status, 'ENDPOINT_OUTSIDE_DOCUMENTED_COVERAGE');
+ assert.equal(r.rows[0].absenceEstablished, false); assert.equal(r.unexplainedWithoutDocumentedProviderRoute, 1);
+ // Observed rows on a European venue are still evaluated, never suppressed by the coverage note.
+ assert.equal(evaluate().cases[0].status, 'EXPLAINED_SPLIT');
+ assert.equal(evaluate().cases[0].providerActionRoute, 'PROBED');
+});
+test('an unsourced empty action response stays SOURCE_UNVERIFIED regardless of coverage', () => {
+ const p = probe(); p.result = {...p.result, data: []}; p.sourceHashesVerified = false;
+ assert.equal(evaluate({results:[p]}).cases[0].probeEvidence[0].state, 'SOURCE_UNVERIFIED');
+});

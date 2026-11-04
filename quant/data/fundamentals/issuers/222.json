@@ -628,9 +628,9 @@
       "cik": "0001600222",
       "name": "Phoenix Education Partners, Inc.",
       "sic": "8200",
-      "rawFacts": 1125,
-      "mappedFacts": 292,
-      "unmappedFacts": 826,
+      "rawFacts": 1533,
+      "mappedFacts": 384,
+      "unmappedFacts": 1157,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -639,32 +639,32 @@
         "PXED"
       ],
       "status": "INGESTED",
-      "annualPeriods": 2,
-      "quarterlyPeriods": 8,
+      "annualPeriods": 3,
+      "quarterlyPeriods": 9,
       "firstPeriodEnd": "2024-08-31",
-      "lastPeriodEnd": "2026-05-31",
-      "historyYears": 1.0,
+      "lastPeriodEnd": "2026-08-31",
+      "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2025-08-31",
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 1.0
         },
         "eps_diluted": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2025-08-31",
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 1.0
         },
         "free_cash_flow": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0,
+          "annualPeriods": 2,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2025-08-31",
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 1.0,
           "derivedFrom": [
             [
               "operating_cash_flow",
@@ -680,25 +680,25 @@
           "historyYears": 0.0
         },
         "net_income": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2025-08-31",
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 1.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2025-08-31",
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 1.0
         },
         "revenue": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 6,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2025-08-31",
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 1.0
         },
         "short_term_debt": {
           "annualPeriods": 0,
@@ -708,18 +708,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "annualPeriods": 3,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-08-31",
-          "lastAvailablePeriod": "2025-08-31",
-          "historyYears": 1.0
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 2.0
         },
         "total_assets": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "annualPeriods": 2,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2025-08-31",
-          "lastAvailablePeriod": "2025-08-31",
-          "historyYears": 0.0
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 1.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -739,44 +739,45 @@
         }
       },
       "quality": {
-        "HIGH": 38,
-        "MEDIUM": 7
+        "HIGH": 56,
+        "MEDIUM": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 45,
-        "resolvedValues": 45
+        "datableValues": 69,
+        "resolvedValues": 69
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 864,
+        "rules_version": "1.1.0",
+        "total": 1213,
         "by_severity": {
-          "INFO": 826,
-          "WARNING": 38
+          "INFO": 1157,
+          "WARNING": 56
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 38,
-          "UNKNOWN_CONCEPT": 826
+          "CONCEPT_DISAGREEMENT": 56,
+          "UNKNOWN_CONCEPT": 1157
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-303175",
-        "filing_date": "2026-07-14",
-        "form": "10-Q",
-        "periodic_filings": 4
+        "accession": "0001193125-26-445323",
+        "filing_date": "2026-11-03",
+        "form": "10-K",
+        "periodic_filings": 5,
+        "acceptance_datetime": "2026-11-03T21:05:54.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "c957c064077859b3f85201706ea331dbcd50337b61f53eec75bc0e8c64f7485e",
+      "sourceDigest": "2e6eca478a506c4228f3fc1b9fbc97165045bc824de47148d86c9d5962705305",
       "issuerId": "iss_cik_0001600222"
     },
     {

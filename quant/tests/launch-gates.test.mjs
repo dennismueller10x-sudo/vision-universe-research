@@ -63,7 +63,16 @@ test("ein belegtes Nicht-Aktien-Papier behaelt seinen Kurs und verliert die Akti
      der Aktienseite "keine Aktie" sagte. */
   const marken = (index.entries || []).filter((e) => e.ne);
   assert.ok(marken.length > 100, "das Verzeichnis kennt die belegte Gattung nicht mehr (" + marken.length + ")");
-  assert.equal(index.coverage.provenNonEquity, marken.length);
+  /* `ne` tragen zwei belegte Gruppen, und das Verzeichnis zaehlt beide
+     getrennt: die belegte Gattung (provenNonEquity) und - seit dem
+     31.10.2026 - die wiederverwendeten Kuerzel des Registers, unter denen
+     heute ein ETF handelt (tickerReuseQuarantined, ic = TICKER_REUSE). */
+  const register = new Set(JSON.parse(readFileSync(join(ROOT, "quant/config/ticker-reuse-quarantine.json"), "utf8"))
+    .records.map((r) => r.ticker));
+  const wiederverwendet = marken.filter((e) => e.ic === "TICKER_REUSE");
+  for (const e of wiederverwendet) assert.ok(register.has(e.s), e.s + " traegt TICKER_REUSE ohne Eintrag im Register");
+  assert.equal(wiederverwendet.length, index.coverage.tickerReuseQuarantined ?? 0);
+  assert.equal(index.coverage.provenNonEquity, marken.length - wiederverwendet.length);
 
   const universe = await api.getUniverse();
   const nachTicker = new Map(universe.stocks.map((s) => [s.ticker, s]));
@@ -122,7 +131,13 @@ test("ein Kuerzel ist kein Firmenname - auf keiner Flaeche", async () => {
   assert.equal(universe.stocks.filter((s) => s.name === s.ticker).length, 0,
     "eine Zeile traegt ihr Kuerzel als Firmennamen");
   const ohne = universe.stocks.filter((s) => !s.name);
+  /* Zweiter belegter Grund: der Name der alten Gesellschaft eines
+     wiederverwendeten Kuerzels ist zurueckgehalten - nur fuer Kuerzel des
+     Registers (quant/config/ticker-reuse-quarantine.json). */
+  const register = new Set(JSON.parse(readFileSync(join(ROOT, "quant/config/ticker-reuse-quarantine.json"), "utf8"))
+    .records.map((r) => r.ticker));
   for (const s of ohne) {
+    if (s.nameReason === "TICKER_REUSE_NAME_WITHHELD" && register.has(s.ticker)) continue;
     assert.equal(s.nameReason, "PROVIDER_HAS_NO_NAME", s.ticker + " hat keinen Namen und keinen Grund");
   }
   /* Und die Oberflaeche sagt es in Alltagssprache, statt das Feld leer zu

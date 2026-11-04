@@ -218,14 +218,35 @@ test("Liste und Aktienseite nennen denselben Namen", async () => {
      Firmennamen auszugeben ("BNRG hiess BNRG"). Was hier geprueft wird: die
      Luecke ist begruendet, sie ist nicht groesser als die Namensschicht
      zugibt, und niemand sieht sein Kuerzel zweimal. */
+  /* Zwei belegte Gruende, jeder mit seiner eigenen Obergrenze:
+     - PROVIDER_HAS_NO_NAME: hoechstens so viele, wie die Namensschicht als
+       unaufgeloest fuehrt;
+     - TICKER_REUSE_NAME_WITHHELD: das Verzeichnis haelt den Namen der alten
+       Gesellschaft zurueck (quant/config/ticker-reuse-quarantine.json). Nur
+       fuer Kuerzel des Registers, und genau so viele, wie das Verzeichnis
+       selbst unter coverage.tickerReuseQuarantined zaehlt. */
+  const register = new Set(JSON.parse(readFileSync(join(ROOT, "quant/config/ticker-reuse-quarantine.json"), "utf8"))
+    .records.map((r) => r.ticker));
+  const zurueckgehalten = [];
+  const ohneAnbieternamen = [];
   for (const l of ohneNamen) {
+    if (l.listReason === "TICKER_REUSE_NAME_WITHHELD") {
+      assert.ok(register.has(l.ticker), l.ticker + " ist kein wiederverwendetes Kuerzel und verliert trotzdem den Namen");
+      assert.equal(verzeichnis.entries.find((e) => e.s === l.ticker)?.ic, "TICKER_REUSE", l.ticker + ": das Verzeichnis haelt den Namen nicht zurueck");
+      assert.equal(l.pageReason, "TICKER_REUSE_NAME_WITHHELD", l.ticker + " nennt auf der Seite einen anderen Grund");
+      zurueckgehalten.push(l.ticker);
+      continue;
+    }
     assert.equal(l.listReason, "PROVIDER_HAS_NO_NAME", l.ticker + " hat keinen Namen und keinen Grund");
     assert.equal(l.pageReason, "PROVIDER_HAS_NO_NAME", l.ticker + " hat auf der Seite keinen Grund");
+    ohneAnbieternamen.push(l.ticker);
   }
+  assert.ok(zurueckgehalten.length <= (verzeichnis.coverage?.tickerReuseQuarantined ?? 0),
+    zurueckgehalten.length + " zurueckgehaltene Namen, das Verzeichnis zaehlt " + verzeichnis.coverage?.tickerReuseQuarantined);
   const schicht = JSON.parse(readFileSync(join(ROOT, "quant/data/market/security-master/company-names.json"), "utf8"));
   const unaufgeloest = (schicht.rows || []).filter((r) => r.inProductUniverse && r.status === "UNRESOLVED").length;
-  assert.ok(ohneNamen.length <= unaufgeloest,
-    ohneNamen.length + " Titel ohne Namen, aber die Namensschicht kennt nur " + unaufgeloest + " unaufgeloeste");
+  assert.ok(ohneAnbieternamen.length <= unaufgeloest,
+    ohneAnbieternamen.length + " Titel ohne Anbieternamen, aber die Namensschicht kennt nur " + unaufgeloest + " unaufgeloeste");
   assert.equal(universe.stocks.filter((s) => s.name === s.ticker).length, 0,
     "ein Titel traegt sein Kuerzel als Firmennamen");
   assert.ok(universe.stocks.length > 6000, "das Universum ist zu klein fuer diese Pruefung");

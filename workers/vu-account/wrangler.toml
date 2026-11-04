@@ -163,5 +163,6 @@ VU_BREVO_LIST_USERS = "11"
 VU_BREVO_LIST_FREE = "12"
 VU_BREVO_LIST_PRO = "13"
 VU_BREVO_LIST_NEWSLETTER = "4"
-# Interne Backtest-Vorschau: AUS (siehe [vars]). Einschalten nur per eigenem PR mit Owner-Freigabe.
-VU_BACKTEST_REVIEW_ENABLED = "false"
+# Interne Backtest-Vorschau: EIN nur in Produktion, nach Owner-Freigabe (docs/accounts/BACKTEST_VORSCHAU_AKTIVIERUNG.md).
+# Zugang bleibt an Sitzung und Rolle backtest_reviewer gebunden. Abschalten: diese Zeile auf "false" (PR) oder Rolle entziehen (sofort).
+VU_BACKTEST_REVIEW_ENABLED = "true"

@@ -125,7 +125,7 @@ function startApp({ search = '', respond }) {
   };
   win.window = win; win.globalThis = win;
   vm.createContext(win);
-  for (const p of ['screener/engine/fields.js', 'screener/engine/query.js', 'screener/engine/engine.js', 'core/identity.js', 'screener/engine/adapters.js', 'screener/engine/store.js', 'screener/app.js']) {
+  for (const p of ['core/query-engine.js', 'screener/engine/fields.js', 'screener/engine/query.js', 'screener/engine/engine.js', 'core/identity.js', 'screener/engine/adapters.js', 'screener/engine/store.js', 'screener/app.js']) {
     vm.runInContext(readFileSync(join(ROOT, p), 'utf8'), win, { filename: p });
   }
   return { win, document, root, body, requests };

@@ -972,8 +972,9 @@
       var st = M.seriesState(b.timestamps, b.close, D && (D.meta && D.meta.asOf || D.index.asOf), global.VUCore && global.VUCore.ListingStaleness);
       if (st.frozenSince) { analysis = { formations: [] }; levels = { supports: [], resistances: [] }; hist = []; F = {}; }
       body.removeAttribute("aria-busy");
-      if (route.tab === "signals") return renderSignals(body, analysis, F, b.close[t], levels, hist, inst, D, st);
-      renderStudio(body, { T: T, S: S, cs: cs, ind: ind, analysis: analysis, levels: levels, F: F, inst: inst, hist: hist, D: D, st: st, focus: route.params && route.params.f || null });
+      var worlds = worldsSection(T, b.timestamps[t]);
+      if (route.tab === "signals") return renderSignals(body, analysis, F, b.close[t], levels, hist, inst, D, st, worlds);
+      renderStudio(body, { T: T, S: S, cs: cs, ind: ind, analysis: analysis, levels: levels, F: F, inst: inst, hist: hist, D: D, st: st, worlds: worlds, focus: route.params && route.params.f || null });
     }).catch(function (e) {
       body.removeAttribute("aria-busy");
       put(body, stateBox("Kein technisches Chartbild für " + T, e && e.message === "NOT_AVAILABLE"
@@ -1024,7 +1025,7 @@
       : ["Diese Formation ist im aktuellen Stand nicht mehr enthalten. ", el("a", { class: "tc-link", href: M.chartHref(X.T), text: "Alle Formationen zeigen" })]) : null;
     var weekly = !X.focus && (studio.range === "5J" || studio.range === "Max");
     var signals = el("section", { class: "tc-signals" }), levelsSec = el("section", { class: "tc-levels" });
-    put(body, [seriesNote(X.st), focusBar, card, layerBar, signals, levelsSec, dataQuality(X.inst, X.D, weekly), disclaimer(X.D && X.D.meta)]);
+    put(body, [seriesNote(X.st), focusBar, card, layerBar, signals, levelsSec, X.worlds || null, dataQuality(X.inst, X.D, weekly), disclaimer(X.D && X.D.meta)]);
     var chart = null;
 
     if (!X.focus && studio.range === "1J·W") {
@@ -1253,7 +1254,109 @@
         s ? el("small", { text: "Zone " + M.price(s.zoneLow) + " – " + M.price(s.zoneHigh) + " · " + s.touches + " Kontakte" }) : el("small", { text: "Keine Unterstützung unter dem Kurs im Betrachtungsfenster" })])])
     ])]);
   }
-  function renderSignals(body, analysis, F, close, levels, hist, inst, D, st) {
+  /* ------------------------------------------ Diese Aktie in Quant und Supertrader
+     Nur Lesen veroeffentlichter Artefakte (technical/engine/world-context.js): Quant-Stufen ueber die Quant-Engine,
+     Supertrader-Zustaende, Stufen und Status mit dem Wortlaut der Supertrader-Daten. Keine eigene Rechnung. */
+  var scriptP = {};
+  function loadScript(src) {
+    if (!scriptP[src]) scriptP[src] = new Promise(function (ok, fail) {
+      var s = doc.createElement("script"); s.src = src; s.async = false;
+      s.onload = ok; s.onerror = function () { delete scriptP[src]; fail(new Error("SCRIPT_LOAD:" + src)); };
+      doc.head.appendChild(s);
+    });
+    return scriptP[src];
+  }
+  var worldsP = {};
+  function loadWorlds(T) {
+    if (worldsP[T]) return worldsP[T];
+    var WC = global.VUTechnical.WorldContext, qKey = M.technicalShard(T), P = WC.paths(T, { quant: qKey, sf: global.VUCore.Identity.shardKey(T) });
+    var none = function (reason) { return function () { return { state: "UNAVAILABLE", reason: reason }; }; };
+    var quant = Promise.all([fetchGz(P.quant), global.VUFactorEvidence ? global.VUFactorEvidence : loadScript("/quant/engines/factor-evidence.js").then(function () { return global.VUFactorEvidence; })])
+      .then(function (r) { return WC.quant(r[0], qKey, T, r[1]); }, none("SOURCE_MISSING"));
+    /* build.json nennt die Aktien mit Supertrader-Seite: fuer alle anderen keine Anfrage (und kein 404). */
+    var st = fetchJSON("/supertrader/data/build.json").then(function (b) {
+      var listed = b && b.slices && Array.isArray(b.slices.stock) ? b.slices.stock : null;
+      if (!listed) return { state: "UNAVAILABLE", reason: "SOURCE_MISSING" };
+      if (listed.indexOf(T) < 0) return { state: "UNAVAILABLE", reason: "NOT_COVERED" };
+      return Promise.all([fetchJSON(P.supertrader), fetchJSON(P.registry)]).then(function (r) { return WC.supertrader(r[0], r[1], T); });
+    }).catch(none("SOURCE_MISSING"));
+    var sf = fetchJSON(P.sfSummary).then(function (sum) {
+      var listed = Array.isArray(sum && sum.tickerShards) && sum.tickerShards.indexOf(global.VUCore.Identity.shardKey(T)) >= 0;
+      return (listed ? fetchJSON(P.sfShard) : Promise.resolve(null)).then(function (sh) { return WC.research(sum, sh, T, new Date().toISOString().slice(0, 10)); });
+    }).catch(none("SOURCE_MISSING"));
+    worldsP[T] = Promise.all([quant, st, sf]).then(function (r) { return { quant: r[0], supertrader: r[1], research: r[2] }; });
+    return worldsP[T];
+  }
+  function worldHref(T, product) {
+    try { var SCX = global.VUCore && global.VUCore.StockContext; return SCX ? SCX.href(SCX.fromUs(T), product) : null; } catch (e) { return null; }
+  }
+  function standLine(asOf, chartAsOf) {
+    if (!asOf) return null;
+    return el("span", { class: "tc-world-stand" + (chartAsOf && asOf < chartAsOf ? " is-old" : "") }, "Stand " + M.dateDe(asOf) + (chartAsOf && asOf < chartAsOf ? " · älter als der Kurs im Chart (" + M.dateDe(chartAsOf) + ")" : ""));
+  }
+  function worldCard(id, title, stand, kids, href, linkText) {
+    return el("article", { class: "tc-world-card", "data-world": id }, [
+      el("div", { class: "tc-world-head" }, [el("h3", { text: title }), stand]),
+      kids,
+      href ? el("a", { class: "tc-link", href: href }, [linkText, glyph("chevron", "tc-chev-s")]) : null
+    ]);
+  }
+  var QUANT_REASON = {
+    NOT_COVERED: "Für diesen Titel hat Quant keine Faktoranalyse veröffentlicht.",
+    INVALID_ARTIFACT: "Die Quant-Daten entsprechen nicht dem erwarteten Vertrag und werden nicht gezeigt.",
+    PUBLICATION_GATE_VIOLATED: "Die Quant-Daten verletzen die Veröffentlichungsregel und werden nicht gezeigt.",
+    SOURCE_MISSING: "Die Quant-Daten konnten nicht geladen werden.", ENGINE_MISSING: "Die Quant-Daten konnten nicht geladen werden."
+  };
+  function quantCard(T, q, chartAsOf) {
+    var href = worldHref(T, "quant");
+    if (!q || q.state !== "AVAILABLE") return worldCard("quant", "Quant · Eigenschaften", null, [el("p", { class: "tc-note", text: QUANT_REASON[q && q.reason] || QUANT_REASON.SOURCE_MISSING })], q && q.reason === "NOT_COVERED" ? null : href, "Zur Quant-Analyse");
+    return worldCard("quant", "Quant · Eigenschaften", standLine(q.asOf, chartAsOf), [
+      el("p", { class: "tc-world-lead", text: q.sentence }),
+      q.factors.length ? el("ul", { class: "tc-world-chips", "aria-label": "Quant-Eigenschaften" }, q.factors.map(function (f) {
+        var tone = /STRONG/.test(f.band) ? "is-up" : /WEAK/.test(f.band) ? "is-down" : "";
+        return el("li", { class: tone, "data-band": f.band }, [el("span", { text: f.label }), el("b", { text: f.bandLabel })]);
+      })) : null,
+      q.dataQuality && q.dataQuality !== "PASS" ? el("p", { class: "tc-note is-warn", text: "Quant meldet für die Eingangsdaten dieses Titels einen Datenqualitätshinweis (" + q.dataQuality + "). Einzelheiten stehen in der Quant-Analyse." }) : null,
+      el("p", { class: "tc-note", text: "Einordnung gegenüber allen bewerteten US-Aktien. " + (q.publication.compositeAllowed ? "" : "Keine Gesamtnote und keine Rangliste: " + (q.publication.explanation || "Quant V2 ist nicht freigegeben.")) })
+    ], href, "Zur Quant-Analyse");
+  }
+  function supertraderCard(T, s, r, chartAsOf) {
+    var href = worldHref(T, "supertrader"), kids = [];
+    if (s && s.state === "AVAILABLE") {
+      kids.push(el("h4", { text: "Modellsignale" }));
+      kids.push(s.current.length ? el("ul", { class: "tc-world-list" }, s.current.map(function (c) {
+        return el("li", {}, [el("b", { text: c.name }), el("em", { class: "tc-badge tc-watch", text: c.stateLabel }),
+          el("small", { text: [c.since ? "seit " + M.dateDe(c.since) : null, c.presentationLabel !== c.stateLabel ? c.presentationLabel : null, c.evidenceLabel].filter(Boolean).join(" · ") })]);
+      })) : el("p", { class: "tc-note", text: "Kein laufendes Modellsignal." }));
+      if (s.history) kids.push(el("p", { class: "tc-note", text: s.history + (s.history === 1 ? " abgeschlossenes oder ungültiges Signal" : " abgeschlossene oder ungültige Signale") + " im Protokoll der Supertrader-Seite." }));
+    } else {
+      kids.push(el("p", { class: "tc-note", text: s && s.reason === "NOT_COVERED" ? "Keine Supertrader-Aktienseite für diesen Titel." : "Die Supertrader-Modellsignale konnten nicht geladen werden." }));
+    }
+    if (r && r.state === "AVAILABLE") {
+      kids.push(el("h4", { text: "Quellentreue Methoden (Research)" }));
+      kids.push(r.views.length ? el("ul", { class: "tc-world-list" }, r.views.map(function (v) {
+        return el("li", {}, [el("b", { text: v.name }), el("em", { class: "tc-badge tc-neutral", text: v.stageLabel }),
+          v.dataQuality && v.dataQuality !== "PASS" ? el("small", { class: "is-warn", text: "Datenqualität: " + v.dataQuality }) : null]);
+      })) : el("p", { class: "tc-note", text: "Am Stichtag " + M.dateDe(r.asOf) + " erkennt keine quellentreue Methode diese Aktie." }));
+      kids.push(el("p", { class: "tc-note" + (r.stale ? " is-warn" : ""), "data-stale": r.stale ? "true" : null, text: ["Research, keine Empfehlung", "Datenstand " + M.dateDe(r.asOf) + (r.stale ? " – nicht aktuell, kein Hinweis für heute" : "")]
+        .concat(r.status, r.locked ? ["Stufe „" + r.locked + "“ gesperrt"] : []).join(" · ") }));
+    }
+    /* Ohne eigene Aktienseite fuehrt Supertrader Research-Treffer unter /supertrader/stock/?s=<T>#sf (sf-research.js#stockUrl). */
+    if (s && s.reason === "NOT_COVERED") href = r && r.views && r.views.length ? "/supertrader/stock/?s=" + encodeURIComponent(T) + "#sf" : null;
+    return worldCard("supertrader", "Supertrader", standLine(s && s.state === "AVAILABLE" ? s.lastProcessed : null, chartAsOf), kids, href, "Zur Supertrader-Seite");
+  }
+  /** Abschnitt einmal je Aufruf von viewChart; renderStudio haengt denselben Knoten bei jedem Neuzeichnen wieder ein. */
+  function worldsSection(T, chartAsOf) {
+    var grid = el("div", { class: "tc-world-grid", "aria-busy": "true" }, [el("div", { class: "tc-skel", style: "height:120px" })]);
+    var sec = el("section", { class: "tc-worlds", "aria-labelledby": "tc-worlds-h" }, [el("h2", { id: "tc-worlds-h", text: "Diese Aktie in Quant und Supertrader" }),
+      el("p", { class: "tc-note", text: "Was die anderen Welten zu " + T + " veröffentlicht haben, unverändert übernommen und jeweils mit eigenem Stand." }), grid]);
+    loadWorlds(T).then(function (w) {
+      grid.removeAttribute("aria-busy");
+      put(grid, [quantCard(T, w.quant, chartAsOf), supertraderCard(T, w.supertrader, w.research, chartAsOf)]);
+    }).catch(function () { grid.removeAttribute("aria-busy"); put(grid, stateBox("Keine Angaben", "Die Daten der anderen Welten konnten nicht geladen werden.")); });
+    return sec;
+  }
+  function renderSignals(body, analysis, F, close, levels, hist, inst, D, st, worlds) {
     var cards = el("section", {}), lv = el("section", {});
     renderSignalCards(cards, analysis, F, close, false, st);
     if (!st.frozenSince) renderLevels(lv, levels);
@@ -1263,7 +1366,7 @@
         return el("li", {}, [el("b", { text: h.name }), el("span", { text: "erkannt " + M.dateDe(h.detectedAt) + (h.knownAt !== h.detectedAt ? " (ausgewertet " + M.dateDe(h.knownAt) + ")" : "") }),
           el("em", { class: "tc-badge tc-" + (h.stateNow === "CONFIRMED" ? "positive" : h.stateNow === "DETECTED" ? "watch" : h.stateNow === "INVALIDATED" ? "negative" : "neutral"), text: h.stateNow ? { CONFIRMED: "heute bestätigt", DETECTED: "heute beobachtet", INVALIDATED: "heute invalidiert" }[h.stateNow] : "nicht mehr aktiv" })]);
       })) : el("p", { class: "tc-note", text: "Keine Erkennungen im Zeitraum." })]);
-    put(body, [seriesNote(st), cards, lv, histList, dataQuality(inst, D, false), disclaimer(D && D.meta)]);
+    put(body, [seriesNote(st), cards, lv, histList, worlds || null, dataQuality(inst, D, false), disclaimer(D && D.meta)]);
   }
   function dataQuality(inst, D, weekly) {
     var b = inst.bars, bundle = inst.bundle || {};

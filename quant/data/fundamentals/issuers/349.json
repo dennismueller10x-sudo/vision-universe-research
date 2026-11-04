@@ -634,9 +634,9 @@
       "cik": "0002091349",
       "name": "First Tracks Biotherapeutics, Inc.",
       "sic": "2834",
-      "rawFacts": 329,
-      "mappedFacts": 128,
-      "unmappedFacts": 208,
+      "rawFacts": 548,
+      "mappedFacts": 212,
+      "unmappedFacts": 351,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -646,28 +646,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 6,
+      "quarterlyPeriods": 8,
       "firstPeriodEnd": "2024-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "free_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0,
@@ -687,14 +687,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -715,14 +715,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -745,43 +745,44 @@
         }
       },
       "quality": {
-        "HIGH": 26
+        "HIGH": 37
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 26,
-        "resolvedValues": 26
+        "datableValues": 37,
+        "resolvedValues": 37
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 209,
+        "rules_version": "1.1.0",
+        "total": 353,
         "by_severity": {
-          "INFO": 208,
-          "WARNING": 1
+          "INFO": 351,
+          "WARNING": 2
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1,
-          "UNKNOWN_CONCEPT": 208
+          "CONCEPT_DISAGREEMENT": 2,
+          "UNKNOWN_CONCEPT": 351
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-346931",
-        "filing_date": "2026-08-12",
+        "accession": "0001193125-26-445430",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 2
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-11-03T21:24:15.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "3ff4ad8da7c54f2fd875ee00136cb293f4e5382ce80cfb55b7718407ae8ee0aa",
+      "sourceDigest": "ef75dd6b8e48998dfb49026dde6cff630aebbf22cbb2dbdc6f55c582c3ca72b0",
       "issuerId": "iss_cik_0002091349"
     }
   ]

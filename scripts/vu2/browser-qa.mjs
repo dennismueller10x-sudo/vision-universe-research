@@ -13,6 +13,7 @@
 // 768 px: unter 1000 px traegt die untere Leiste die fuenf Bereiche, die
 // Kopfnavigation ist ausgeblendet.
 import {assessResourceBudget} from './resource-budget.mjs';
+import {judgeNowBlock} from './qa-now-block.mjs';
 import {createServer} from 'node:http';
 import {gunzipSync} from 'node:zlib';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
@@ -304,7 +305,27 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(!await page.locator('.qx-verdict-card').count())befund(view,width,'Quant-Ergebnis fehlt neben dem Chart');
    const jetzt=await page.locator('#veraenderung').innerText();
    if(!/Was ist jetzt wichtig\?/.test(jetzt))befund(view,width,'"Was ist jetzt wichtig?" fehlt bei den Veraenderungen');
-   await page.locator('#veraenderung .q-now').filter({hasText:/Setup|Veränderung|Stand/}).waitFor({state:'attached'});
+   /* "Was ist jetzt wichtig?" (Revision UIP-R3, Issue #1289): geprueft wird der GERENDERTE, fachlich gueltige Zustand gegen das, was die
+      Produkt-API fuer diese Aktie veroeffentlicht (getRadarCard, wie bei setupDir unten), nicht ein bestimmter Wortlaut. Gewartet wird
+      mit der bisherigen Grenze von 30 s (Playwright-Standard) darauf, dass der Platzhalter "wird geladen" verschwindet. Das Urteil
+      steht in scripts/vu2/qa-now-block.mjs und hat Gegenproben in quant/tests/browser-qa-now-block.test.mjs. */
+   await page.waitForFunction(()=>{const n=document.querySelector('#veraenderung .q-now');return !!n&&!/wird geladen/.test(n.textContent||'');},null,{timeout:30000});
+   {
+    const nowExpected=await page.evaluate(async()=>{const g=globalThis,ticker=location.hash.split('/')[2];
+     const api=g.VUProductServices.create({loadJSON:g.QuantShell.loadJSON,displayPolicy:g.VUDisplayPolicy,queryEngine:g.VUQuery});
+     const r=await api.getRadarCard(ticker).catch(()=>null);
+     const card=r&&r.state==='AVAILABLE'?r.card:null;
+     return {available:Boolean(card),events:card&&Array.isArray(card.events)?card.events.map(e=>({explanation:e.explanation})):[],
+      nextOpen:card&&card.next&&Array.isArray(card.next.open)?card.next.open.length:0};});
+    const nowDom=await page.evaluate(()=>{const n=document.querySelector('#veraenderung .q-now');if(!n)return null;
+     const t=e=>((e&&e.textContent)||'').trim();
+     return {loading:/wird geladen/.test(n.textContent||''),
+      eventItems:[...n.querySelectorAll('ul.q-events > li.q-ev')].map(li=>({label:t(li.querySelector('b')),explanation:t(li.querySelector('span')),date:t(li.querySelector('small'))})),
+      none:n.querySelectorAll('p.q-now-none').length,
+      nextLines:[...n.querySelectorAll('p.q-now-line')].map(t),
+      empty:[...n.querySelectorAll('p.qx-small')].map(t)};});
+    for(const m of judgeNowBlock(nowExpected,nowDom))befund(view,width,'"Was ist jetzt wichtig?": '+m);
+   }
    /* Setup & Trigger in Alltagssprache; Backtests mit gemessenem Grund. */
    const setupText=await page.locator('#setup').innerText();
    /* Richtung des veroeffentlichten Basisszenarios (Owner-Freigabe 01.11.2026, nur diese Pruefung): unabhaengig von der

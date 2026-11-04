@@ -13,9 +13,18 @@ export const WINDOWS = Object.freeze({
   DEV: Object.freeze({ warmupFrom: '2015-01-01', from: '2016-01-04', to: '2026-09-30' }),
   HOLDOUT: Object.freeze({ warmupFrom: '2007-01-02', from: '2008-01-02', to: '2015-12-31' }),
 });
-export const WINDOW_NAME = process.env.ST_WINDOW === 'HOLDOUT' ? 'HOLDOUT' : 'DEV';
-export const WINDOW = WINDOWS[WINDOW_NAME];
-export const SERIES_PROVIDER = WINDOW_NAME === 'HOLDOUT' ? 'tiingo-holdout' : 'tiingo-delisted';
+// SF6-PAPER-2027 1.2.0: PAPER_2027 = Forward-Fenster ab der ersten Sitzung 04.01.2027, Vorlauf ein Jahr wie DEV und
+// HOLDOUT, rollendes Ende ST_WINDOW_TO (die aufzuzeichnende Sitzung t), eigener privater Namensraum, nur per
+// ST_WINDOW=PAPER_2027. WINDOWS, DEV und HOLDOUT bleiben unveraendert; Listen-Stichtag im Forward-Fenster = t.
+export const FORWARD_WINDOW = Object.freeze({ name: 'PAPER_2027', warmupFrom: '2026-01-02', from: '2027-01-04', seriesProvider: 'tiingo-paper-2027' });
+export function forwardWindow(to) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(to || '') || to < FORWARD_WINDOW.warmupFrom) throw new Error('ST_WINDOW_TO_REQUIRED (YYYY-MM-DD, nicht vor ' + FORWARD_WINDOW.warmupFrom + ')');
+  return Object.freeze({ warmupFrom: FORWARD_WINDOW.warmupFrom, from: FORWARD_WINDOW.from, to });
+}
+export const WINDOW_NAME = process.env.ST_WINDOW === 'HOLDOUT' ? 'HOLDOUT' : process.env.ST_WINDOW === FORWARD_WINDOW.name ? FORWARD_WINDOW.name : 'DEV';
+export const WINDOW = WINDOW_NAME === FORWARD_WINDOW.name ? forwardWindow(process.env.ST_WINDOW_TO) : WINDOWS[WINDOW_NAME];
+export const SERIES_PROVIDER = WINDOW_NAME === 'HOLDOUT' ? 'tiingo-holdout' : WINDOW_NAME === FORWARD_WINDOW.name ? FORWARD_WINDOW.seriesProvider : 'tiingo-delisted';
+export const LISTING_OPTS = WINDOW_NAME === FORWARD_WINDOW.name ? Object.freeze({ today: WINDOW.to }) : undefined;
 export const INCLUDED_CLASSES = new Set(['EQUITY_COMMON', 'ADR', 'REIT']);
 export const LIST_URL = 'https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip';
 

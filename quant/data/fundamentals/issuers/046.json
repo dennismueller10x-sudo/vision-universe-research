@@ -700,9 +700,9 @@
       "cik": "0001764046",
       "name": "CLARIVATE PLC",
       "sic": "7374",
-      "rawFacts": 16191,
-      "mappedFacts": 3991,
-      "unmappedFacts": 12211,
+      "rawFacts": 16812,
+      "mappedFacts": 4213,
+      "unmappedFacts": 12681,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -712,28 +712,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 10,
-      "quarterlyPeriods": 35,
+      "quarterlyPeriods": 37,
       "firstPeriodEnd": "2016-12-31",
-      "lastPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "eps_diluted": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "free_cash_flow": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0,
@@ -753,21 +753,21 @@
         },
         "net_income": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "operating_cash_flow": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "revenue": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -781,14 +781,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 32,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -811,46 +811,47 @@
         }
       },
       "quality": {
-        "HIGH": 312,
-        "MEDIUM": 9
+        "HIGH": 324,
+        "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 321,
-        "resolvedValues": 321
+        "datableValues": 335,
+        "resolvedValues": 335
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 12720,
+        "rules_version": "1.1.0",
+        "total": 13222,
         "by_severity": {
-          "INFO": 12211,
-          "WARNING": 509
+          "INFO": 12681,
+          "WARNING": 541
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 405,
-          "RESTATEMENT_CONFLICT": 102,
+          "CONCEPT_DISAGREEMENT": 421,
+          "RESTATEMENT_CONFLICT": 118,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 12211
+          "UNKNOWN_CONCEPT": 12681
         }
       },
       "latestFiling": {
-        "accession": "0001764046-26-000091",
-        "filing_date": "2026-07-29",
+        "accession": "0001764046-26-000126",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 35
+        "periodic_filings": 36,
+        "acceptance_datetime": "2026-11-03T13:05:50.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "1b4e9ed67ce6a5e3c4eeca22d6194b473eef54303b6551c4d56bc4e0a8313c3e",
+      "sourceDigest": "40e77568fa6ccb864a86481f873c07ea4bc7f3fc12cab240db6cb81072569bba",
       "issuerId": "iss_cik_0001764046"
     },
     {

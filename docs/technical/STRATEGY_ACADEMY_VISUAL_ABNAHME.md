@@ -1,5 +1,7 @@
 # Owner-Abnahme · drei visuelle Academy-Piloten
 
+> Historischer Pilotnachweis. Konzept und Integration sind vom Owner freigegeben; #1269 ist gemergt und veröffentlicht. Der aktuelle Gesamtstand mit 32 Lektionen steht in [STRATEGY_ACADEMY_VISUAL_ROLLOUT.md](STRATEGY_ACADEMY_VISUAL_ROLLOUT.md). Eine neue Pilotfreigabe ist nicht erforderlich.
+
 Die drei Piloten sind zur visuellen Abnahme vorbereitet. Fachtexte, Quizlogik und Lernpfade bleiben erhalten. Die bestehende Live-Academy ist weiterhin unverändert; diese Überarbeitung wurde nicht gemergt oder veröffentlicht.
 
 ## Direkt vergleichen

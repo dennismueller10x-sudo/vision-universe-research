@@ -13,6 +13,7 @@
 import {HttpError, json, readJson} from './http.mjs';
 import {requireUser} from './auth.mjs';
 import DEFAULT_BUNDLE from '../data/backtest-review-bundle.json' with {type: 'json'};
+import DEFAULT_PORTFOLIOS from '../data/model-portfolios-bundle.json' with {type: 'json'};
 
 export const ROLE = 'backtest_reviewer';
 const BUNDLE_SCHEMA = 'backtest-review-bundle-1.0.0';
@@ -179,4 +180,32 @@ export async function lookupGet(ctx) {
   let selection;
   try { selection = JSON.parse(raw); } catch { throw new HttpError(400, 'SELECTION_REJECTED', 'SELECTION_SCHEMA_UNKNOWN'); }
   return answer(ctx, bundle, selection);
+}
+
+// ---------------------------------------------------------------- Musterportfolios (VU-Portfolio-Standard, Forschung)
+// Paket workers/vu-account/data/model-portfolios-bundle.json (scripts/quant/portfolio/export-model-portfolios-bundle.cjs).
+// Gleiche Zugangsregeln wie die Vorschau. Nur vorgerechnete Ergebnisse; nie zertifiziert, nie öffentlich.
+const PORTFOLIO_SCHEMA = 'model-portfolios-bundle-1.0.0';
+const verifiedPortfolios = new WeakMap();
+export async function portfolioBundleViolations(b) {
+  const errors = [];
+  if (!b || typeof b !== 'object') return ['PORTFOLIO_BUNDLE_MISSING'];
+  if (b.schemaVersion !== PORTFOLIO_SCHEMA) errors.push('PORTFOLIO_BUNDLE_SCHEMA_UNKNOWN');
+  if (b.productionApproved !== false || b.publiclyActivated !== false || b.certification !== 'NOT_CERTIFIED' || b.claim !== 'NO_ALPHA_OR_CERTIFICATION_CLAIM') errors.push('PORTFOLIO_BUNDLE_FLAGS_INVALID');
+  if (b.label !== 'Forschung, nicht zertifiziert') errors.push('PORTFOLIO_BUNDLE_LABEL_MISSING');
+  if (!['COMPUTED', 'NOT_YET_COMPUTED'].includes(b.state) || !Array.isArray(b.portfolios)) errors.push('PORTFOLIO_BUNDLE_INCOMPLETE');
+  try {
+    const {bundleHash, ...body} = b;
+    if (await hashOf(body) !== bundleHash) errors.push('PORTFOLIO_BUNDLE_HASH_MISMATCH');
+  } catch { errors.push('PORTFOLIO_BUNDLE_HASH_MISMATCH'); }
+  return errors;
+}
+
+// GET /v1/admin/backtests/portfolios
+export async function portfolios(ctx) {
+  await requireBacktestReviewer(ctx);
+  const b = ctx.portfolioBundle || DEFAULT_PORTFOLIOS;
+  if (!verifiedPortfolios.has(b)) verifiedPortfolios.set(b, portfolioBundleViolations(b));
+  if ((await verifiedPortfolios.get(b)).length) throw new HttpError(503, 'BACKTEST_BUNDLE_INVALID');
+  return reply(ctx, 200, {state: 'OK', bundle: clone(b)});
 }

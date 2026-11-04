@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://konto.visionuniverse.de; frame-src https://research.visionuniverse.de; base-uri 'none'; form-action 'none'">
+<title>Vision Universe</title>
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="/assets/site-navigation.css"></head>
+<body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<div id="offline" class="banner" role="status" hidden>Keine Internetverbindung. Kurse und Auswertungen werden erst nach der Wiederverbindung geladen.</div>
+
+<main id="views">
+  <section id="v-discover" class="view frame-view" data-path="/discover/" hidden><iframe title="Discover" loading="lazy"></iframe></section>
+  <section id="v-quant" class="view frame-view" data-path="/quant/" hidden><iframe title="Quant" loading="lazy"></iframe></section>
+  <section id="v-technical" class="view frame-view" data-path="/technical/" hidden><iframe title="Technical" loading="lazy"></iframe></section>
+  <section id="v-supertrader" class="view frame-view" data-path="/supertrader/" hidden><iframe title="Supertrader" loading="lazy"></iframe></section>
+
+  <section id="v-watchlist" class="view panel" hidden>
+    <h1>Watchlist</h1>
+    <p id="wl-state" class="muted"></p>
+    <ul id="wl-list" class="rows"></ul>
+    <p class="muted small">Hinzufügen geschieht vorerst auf den Aktienseiten im Web. Die App liest und entfernt.</p>
+  </section>
+
+  <section id="v-account" class="view panel" hidden>
+    <h1>Konto</h1>
+    <form id="login" autocomplete="on" novalidate>
+      <label>E-Mail<input id="email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" required></label>
+      <label>Passwort<input id="password" name="password" type="password" autocomplete="current-password" required></label>
+      <button type="submit">Anmelden</button>
+      <p id="login-error" class="error" role="alert" hidden></p>
+      <p class="muted small">Registrierung und Abonnement laufen weiterhin im Web. Diese Testversion verkauft nichts.</p>
+    </form>
+    <div id="account-info" hidden>
+      <dl class="kv"><dt>E-Mail</dt><dd id="acc-email"></dd><dt>Tarif</dt><dd id="acc-plan"></dd><dt>Sitzung</dt><dd id="acc-session"></dd></dl>
+      <button id="logout" type="button" class="secondary">Abmelden</button>
+    </div>
+  </section>
+</main>
+
+<nav id="tabs" aria-label="Bereiche">
+  <button data-view="discover" aria-label="Start">Start</button>
+  <button data-view="quant">Quant</button>
+  <button data-view="technical">Technical</button>
+  <button data-view="supertrader">Supertrader</button>
+  <button data-view="watchlist">Watchlist</button>
+  <button data-view="account">Konto</button>
+</nav>
+
+<div id="config-missing" class="banner" hidden>Die App ist nicht konfiguriert (Supabase-URL und Publishable Key fehlen). Anmeldung ist deaktiviert.</div>
+<script src="js/runtime-config.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

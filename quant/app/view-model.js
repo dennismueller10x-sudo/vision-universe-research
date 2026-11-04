@@ -788,12 +788,28 @@
     F: "Die beiden Quellen nennen Firmennamen ohne ein gemeinsames Wort, und die Verknüpfung stützt sich nur auf das Kürzel.",
     G: "Die beiden Quellen nennen verschiedene Firmennamen. Ob es eine Umbenennung ist oder ein wiederverwendetes Kürzel, lässt sich aus den vorliegenden Angaben nicht entscheiden."
   };
+  /* Ein wiederverwendetes Kuerzel (quant/config/ticker-reuse-quarantine.json)
+     ist kein Streit zweier Quellen: der alte Name gehoert einer frueheren
+     Gesellschaft, der Dienst haelt ihn fuer das heutige Papier zurueck
+     (TICKER_REUSE_NAME_WITHHELD). Die Notiz sagt genau das - ohne das
+     Kuerzel ein zweites Mal als "Namen" und ohne Aussage ueber
+     Geschaeftszahlen, die fuer diesen Titel nicht belegt ist. */
+  function tickerReuseNote(k) {
+    return {
+      title: "Dieses Kürzel wurde wiederverwendet.",
+      shown: (k.alternativeName ? "Früher war das Kürzel „" + k.alternativeName + "“ zugeordnet. " : "") +
+        "Heute handelt darunter ein anderes Wertpapier; den Namen der früheren Gesellschaft zeigen wir deshalb nicht als Namen dieses Titels.",
+      why: "Für das heute gehandelte Wertpapier liegt kein belegter Firmenname vor. Wir nennen deshalb keinen, statt einen zu raten.",
+      kind: k.kind, contract: k.contract || null
+    };
+  }
   function identityNote(stock) {
     var k = stock && stock.identityConflict;
     if (!k) return null;
+    if (k.kind === "TICKER_REUSE") return tickerReuseNote(k);
     return {
       title: "Zu diesem Kürzel liegen zwei verschiedene Firmennamen vor.",
-      shown: "Angezeigt wird „" + (stock.name || stock.ticker) + "“." + (k.alternativeName ? " Eine andere Quelle nennt „" + k.alternativeName + "“." : ""),
+      shown: (stock.name ? "Angezeigt wird „" + stock.name + "“." : "") + (k.alternativeName ? (stock.name ? " " : "") + "Eine andere Quelle nennt „" + k.alternativeName + "“." : ""),
       why: (IDENTITY_REASON[k.kind] || "Die Quellen sind über die Zuordnung uneins.") +
         " Die Geschäftszahlen stammen aus den Unterlagen der Gesellschaft, der dieses Kürzel im Wertpapierverzeichnis zugeordnet ist. Wir entscheiden diese Frage nicht, solange sie nicht belegt ist.",
       kind: k.kind || null, contract: k.contract || null

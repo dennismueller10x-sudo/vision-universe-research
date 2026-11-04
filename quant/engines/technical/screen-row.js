@@ -36,7 +36,7 @@
   /* Veroeffentlichte Schlusskurse nur ueber published-close.js (ADR-002): ab 1 $ Cent, darunter 4 signifikante Stellen, nie 0. */
   var Close = isNode ? require("../published-close.js") : global.VUPublishedClose;
 
-  var ROW_VERSION = "technical-screen-row-1.14.0";
+  var ROW_VERSION = "technical-screen-row-1.15.0";
   /* Mindestzahl abgeschlossener Wochen fuer Wochenformationen: ein halbes Jahr (Pivots brauchen Vor- und Nachlauf). */
   var WEEKLY_MIN_BARS = 26;
 
@@ -174,6 +174,12 @@
     return out;
   }
 
+  /* EMA-Linie der Materialisierung am Stichtag freigegeben (ema-settled)? Ohne passende chartSeries-Reihe: ja (aeltere Buendel). */
+  function emaReleased(cs, key, n) {
+    var line = cs && cs[key];
+    return !Array.isArray(line) || line.length !== n || isNum(line[n - 1]);
+  }
+
   /**
    * @param input {
    *   ticker, name, securityId,
@@ -181,7 +187,7 @@
    *   features: featuresAtCutoff | null, structure: bundle.structure.state | null,
    *   weekly: [[date, close], ...] | null                  (discover-series-long, nur abgeschlossene Wochen werden genutzt)
    *   multiTimeframe: bundle.multiTimeframe | null         (Wochen/Monat aus der vollen Tageshistorie; hat Vorrang)
-   *   chartSeries: bundle.chartSeries | null               (SMA 50/200, RSI 14 je Bar aus der Vollhistorie; fuer Ereignisse)
+   *   chartSeries: bundle.chartSeries | null               (SMA 50/200, RSI 14, EMA 20/50 je Bar aus der Vollhistorie; Ereignisse, EMA-Freigabe)
    *   benchmark: {dates:[], close:[]} | null               (SPY, Schlusskurse)
    *   universeAsOf
    * }
@@ -195,8 +201,12 @@
     row.aboveSma200 = isNum(f.sma200) ? c > f.sma200 : null;
     row.aboveSma50 = isNum(f.sma50) ? c > f.sma50 : null;
     row.sma50AboveSma200 = isNum(f.sma50) && isNum(f.sma200) ? f.sma50 > f.sma200 : null;
-    row.aboveEma20 = isNum(f.ema20) ? c > f.ema20 : null;
-    row.aboveEma50 = isNum(f.ema50) ? c > f.ema50 : null;
+    /* EMA 20/50 seit 1.15.0 nur, wenn die Materialisierung die Linie am Stichtag freigibt (chartSeries.emaP[t] gesetzt,
+       ema-settled, EMA200_MATERIALIZATION.md): Chart Studio zeichnet genau diese Linie. Bei stark gefallenen Titeln
+       ist die EMA noch vom Startwert abhaengig; dann leer statt eines Vergleichs mit einem unsicheren Wert. Ohne
+       chartSeries.emaP (aeltere Buendel) bleibt es beim Wert aus featuresAtCutoff. */
+    row.aboveEma20 = isNum(f.ema20) && emaReleased(input.chartSeries, "ema20", n) ? c > f.ema20 : null;
+    row.aboveEma50 = isNum(f.ema50) && emaReleased(input.chartSeries, "ema50", n) ? c > f.ema50 : null;
     /* EMA 200 nur, wenn die Materialisierung sie als eingeschwungen veroeffentlicht (ema-settled); sonst leer, nie geschaetzt. */
     row.aboveEma200 = isNum(f.ema200) ? c > f.ema200 : null;
     row.distEma200 = r(pct(c, f.ema200));

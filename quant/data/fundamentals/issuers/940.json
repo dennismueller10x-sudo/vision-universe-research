@@ -1176,9 +1176,9 @@
       "cik": "0001789940",
       "name": "First Watch Restaurant Group, Inc.",
       "sic": "5812",
-      "rawFacts": 7857,
-      "mappedFacts": 1991,
-      "unmappedFacts": 5985,
+      "rawFacts": 8209,
+      "mappedFacts": 2101,
+      "unmappedFacts": 6274,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -1188,28 +1188,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 26,
+      "quarterlyPeriods": 27,
       "firstPeriodEnd": "2019-12-29",
-      "lastPeriodEnd": "2026-06-28",
+      "lastPeriodEnd": "2026-09-27",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 23,
-          "firstAvailablePeriod": "2019-12-29",
-          "lastAvailablePeriod": "2025-12-28",
-          "historyYears": 6.0
-        },
-        "eps_diluted": {
           "annualPeriods": 7,
           "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2019-12-29",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 6.0
         },
+        "eps_diluted": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2019-12-29",
+          "lastAvailablePeriod": "2025-12-28",
+          "historyYears": 6.0
+        },
         "free_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2019-12-29",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 6.0,
@@ -1229,21 +1229,21 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2019-12-29",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2019-12-29",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 6.0
         },
         "revenue": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2019-12-29",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 6.0
@@ -1257,14 +1257,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-29",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2020-12-27",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 5.0
@@ -1287,44 +1287,45 @@
         }
       },
       "quality": {
-        "HIGH": 213
+        "HIGH": 220
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 213,
-        "resolvedValues": 213
+        "datableValues": 220,
+        "resolvedValues": 220
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 6056,
+        "rules_version": "1.1.0",
+        "total": 6341,
         "by_severity": {
-          "INFO": 5985,
-          "WARNING": 71
+          "INFO": 6274,
+          "WARNING": 67
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 69,
+          "CONCEPT_DISAGREEMENT": 65,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 5985
+          "UNKNOWN_CONCEPT": 6274
         }
       },
       "latestFiling": {
-        "accession": "0001789940-26-000090",
-        "filing_date": "2026-08-04",
+        "accession": "0001789940-26-000100",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 20
+        "periodic_filings": 21,
+        "acceptance_datetime": "2026-11-03T13:11:26.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "eb20a07ab9bc2259b261723b74d44974e27eb5870a7ee4736a2abfe755202c93",
+      "sourceDigest": "9f2e0742c79c906354b1069e3609af52147fef77da6ef8610cc6197489749a96",
       "issuerId": "iss_cik_0001789940"
     },
     {

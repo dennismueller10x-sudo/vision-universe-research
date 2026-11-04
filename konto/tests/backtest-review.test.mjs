@@ -79,6 +79,7 @@ test('Ablauf: Uebersicht vom Server, Auswahl geht an den Server, Ergebnis nur au
   const sigEntry = BUNDLE.entries.find(e => e.label.startsWith('Signal 2022 Baer, nur TREND_DOWN, 1.'));
   const api = fakeApi((m, p, b) => {
     if (m === 'GET' && p === '/v1/admin/backtests') return {ok: true, status: 200, state: 'OK', data: OVERVIEW};
+    if (m === 'GET' && p === '/v1/admin/backtests/portfolios') return {ok: true, status: 200, data: {state: 'OK', bundle: {state: 'NOT_YET_COMPUTED', label: 'Forschung, nicht zertifiziert', limits: ['x'], portfolios: []}}};
     if (m === 'POST' && p === '/v1/admin/backtests/lookup') {
       const e = BUNDLE.entries.find(x => JSON.stringify(x.selection) === JSON.stringify(b.selection));
       return {ok: true, status: 200, data: e ? found(e) : NOT};
@@ -87,7 +88,7 @@ test('Ablauf: Uebersicht vom Server, Auswahl geht an den Server, Ergebnis nur au
   });
   const doc = fakeDocument(), notes = [];
   await R.start({api, doc, requireSession: () => Promise.resolve({id: 'u'}), notice: (t, k) => notes.push([t, k]), disableForms: () => {}});
-  assert.deepEqual(api.calls.map(c => c.method + ' ' + c.path), ['GET /v1/admin/backtests']);
+  assert.deepEqual(api.calls.map(c => c.method + ' ' + c.path), ['GET /v1/admin/backtests', 'GET /v1/admin/backtests/portfolios']);
   assert.equal(doc.getElementById('br-wrap').hidden, false);
   const frame = doc.getElementById('br-frame').textContent;
   for (const l of BUNDLE.limits) assert.ok(frame.includes(l), 'Grenze sichtbar: ' + l);
@@ -169,7 +170,7 @@ test('nur Serverdaten: Anzeige folgt der Antwort, nichts wird im Browser gerechn
   const src = readFileSync(join(KONTO, 'admin/backtests/review.js'), 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
   assert.ok(!/innerHTML|insertAdjacentHTML|outerHTML|document\.write|eval\(|new Function/.test(src), 'nur textContent');
   assert.ok(!/\bfetch\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage/.test(src), 'keine eigenen Anfragen, kein Speicher');
-  assert.deepEqual([...new Set(src.match(/'\/v1\/[^']*'/g))].sort(), ["'/v1/admin/backtests'", "'/v1/admin/backtests/lookup'"]);
+  assert.deepEqual([...new Set(src.match(/'\/v1\/[^']*'/g))].sort(), ["'/v1/admin/backtests'", "'/v1/admin/backtests/lookup'", "'/v1/admin/backtests/portfolios'"]);
   assert.ok(!/Math\.(pow|exp|log|sqrt)|reduce\(/.test(src), 'keine Kennzahlrechnung im Browser');
 });
 
@@ -191,4 +192,16 @@ test('Seite: noindex, gemeinsame Shell, nicht verlinkt von oeffentlichen Seiten 
   assert.deepEqual(refs.filter((f) => !permitted(f)).filter((f) => !f.startsWith('scripts/')), [], 'unveroeffentlichte Fundstellen nur unter scripts/');
   for (const f of ['assets/site-navigation.js', 'konto/admin/tarife/index.html', 'konto/index.html', 'index.html'])
     assert.equal(readFileSync(join(ROOT, f), 'utf8').includes('admin/backtests'), false, f);
+});
+
+test('Musterportfolios: Tabelle nur aus dem Paket, Kennzeichnung immer sichtbar, ohne Ergebnis keine Zahlen', () => {
+  const none = R.portfolioModel({state: 'NOT_YET_COMPUTED', label: 'Forschung, nicht zertifiziert', limits: ['Grenze'], portfolios: []});
+  assert.equal(none.state, 'NOT_YET_COMPUTED'); assert.deepEqual(none.rows, []);
+  const doc = fakeDocument(), mount = doc.createElement('section');
+  R.renderPortfolios(doc, mount, none);
+  assert.ok(mount.textContent.includes('Forschung, nicht zertifiziert') && mount.textContent.includes('Noch nicht gerechnet'));
+  const m = R.portfolioModel({state: 'COMPUTED', label: 'Forschung, nicht zertifiziert', limits: ['L'], openLimits: ['O'], window: ['2012-01-06', '2026-10-02'], data: {},
+    portfolios: [{name: 'GARP', state: 'RUN', metrics: {cagr: 0.1, benchmarkCagr: 0.12, excessCagr: -0.02, annualizedVolatility: 0.15, maxDrawdown: -0.3, beta: 0.9}, construction: {averagePositions: 25}, chart: [], lastHoldings: []}]});
+  assert.deepEqual(m.rows[0], ['GARP', R.pct(0.1), R.pct(0.12), R.pct(-0.02), R.pct(0.15), R.pct(-0.3), '0,90', '25,0']);
+  assert.deepEqual(m.limits, ['L', 'O']);
 });

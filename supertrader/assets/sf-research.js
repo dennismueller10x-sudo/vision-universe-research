@@ -113,6 +113,10 @@
   }
   /* Grenzen der Methode (O-4): bei Chart-Modellen und übersetzten Quellen deutlich, sonst dezent */
   var STRONG_LIMITS = { C06: true, C09: true, C10: true };
+  /* V1 = Top 5 (Neustart 04.11.2026): diese fünf werden zuerst gezeigt und historisch getestet, die übrigen acht sind „in Forschung“ */
+  var V1_TOP5 = { C01: true, C02: true, C03: true, C08: true, C12: true };
+  function v1Tag(s) { return V1_TOP5[s.candidateId] ? h('span', { class: 'st-tag', 'data-t': 'info', text: 'V1' }) : h('span', { class: 'st-tag', text: 'In Forschung' }); }
+  function v1First(list) { return list.slice().sort(function (a, b) { return (V1_TOP5[b.candidateId] ? 1 : 0) - (V1_TOP5[a.candidateId] ? 1 : 0); }); }
   function limitsLine(s, force) {
     if (!s || !s.limits || !s.limits.length) return null;
     var strong = force || STRONG_LIMITS[s.candidateId];
@@ -205,7 +209,8 @@
       host.appendChild(sec('Quellentreue Methoden (13)', [
         previewBanner(sum),
         h('p', { class: 'st-hint', text: 'Regeln nach den Originalquellen, getrennt von den Modellbeobachtungen oben. Jede Methode erkennt heutige Kandidaten auf Tagesschlusskursen.' }),
-        h('div', { class: 'st-list sf-strats' }, sum.strategies.map(function (s) { return stratCard(s); })),
+        h('p', { class: 'st-hint', text: 'V1: Turtle S1 und S2, Darvas, Kullamägi Breakout und Buyable Gap-Up werden zuerst historisch getestet (Forschung, nicht zertifiziert). Die übrigen acht Methoden sind in Forschung.' }),
+        h('div', { class: 'st-list sf-strats' }, v1First(sum.strategies).map(function (s) { return stratCard(s); })),
         moreBox('Was bedeuten die Stufen?', [stagesLegend()]), provenance(sum), footnote(sum),
       ], { kicker: 'Research · alle nicht für den Live-Betrieb freigegeben' }));
     }).catch(function () { host.appendChild(sec('Quellentreue Methoden (13)', [unavailable()], { kicker: 'Research' })); });
@@ -214,7 +219,7 @@
     var b = s.counts.byStage;
     return h('a', { class: 'sf-strat', href: stratUrl(s.candidateId) }, [
       h('div', { class: 'top' }, [h('div', null, [h('h3', { text: s.name }), h('div', { class: 'who', text: s.author + ' · ' + s.family + ' · ' + s.timeframe })]), h('div', { class: 'cnt' }, [h('strong', { text: num(s.counts.published, 0) }), h('span', { text: 'am Stichtag' })])]),
-      h('div', { class: 'sf-strat-st' }, [h('span', { class: 'sf-cap', text: 'höchstens' }), stageBadge(s.ceiling), b.MODELED_TRADE_PLAN ? h('span', { class: 'sf-mini', text: num(b.MODELED_TRADE_PLAN, 0) + ' modelliert' }) : null, s.direction === 'SHORT_RESEARCH_ONLY' ? h('span', { class: 'st-tag', 'data-t': 'warn', text: 'Short · nur Forschung' }) : null]),
+      h('div', { class: 'sf-strat-st' }, [v1Tag(s), h('span', { class: 'sf-cap', text: 'höchstens' }), stageBadge(s.ceiling), b.MODELED_TRADE_PLAN ? h('span', { class: 'sf-mini', text: num(b.MODELED_TRADE_PLAN, 0) + ' modelliert' }) : null, s.direction === 'SHORT_RESEARCH_ONLY' ? h('span', { class: 'st-tag', 'data-t': 'warn', text: 'Short · nur Forschung' }) : null]),
       h('p', { class: 'sf-strat-why', text: s.short }),
       limitsLine(s),
     ]);
@@ -234,7 +239,7 @@
       document.title = s.name + ' – quellentreu · Supertrader';
       var L = sum.ruleLabels, views = data.views, state = { stage: null, q: '', sort: 'default', limit: 30 };
       var byS = s.counts.byStage;
-      host.appendChild(h('header', { class: 'st-hero sm sf-hero' }, [h('div', { class: 'st-kick', text: s.author + ' · quellentreu · Stand ' + dateDe(data.asOf) }), h('h1', { text: s.name }), h('p', { class: 'st-lead', text: s.short }), h('div', { class: 'sf-strat-st' }, [h('span', { class: 'sf-cap', text: 'höchstens' }), stageBadge(s.ceiling)]), limitsLine(s, true)]));
+      host.appendChild(h('header', { class: 'st-hero sm sf-hero' }, [h('div', { class: 'st-kick', text: s.author + ' · quellentreu · Stand ' + dateDe(data.asOf) }), h('h1', { text: s.name }), h('p', { class: 'st-lead', text: s.short }), h('div', { class: 'sf-strat-st' }, [v1Tag(s), h('span', { class: 'sf-cap', text: 'höchstens' }), stageBadge(s.ceiling)]), limitsLine(s, true)]));
       host.appendChild(previewBanner(sum));
       host.appendChild(kpis([[num(views.length, 0), 'Kandidaten', s.recognises], [num(byS.MODELED_TRADE_PLAN || 0, 0), 'Modelliert'], [num(byS.CONFIRMED_RESEARCH_SETUP || 0, 0), 'Bestätigt']]));
       var list = h('div', { class: 'sf-cards' });

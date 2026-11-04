@@ -9,6 +9,8 @@
      Screener     Vorlage liefert Treffer, ein Filter-Pill aendert Adresse
                   und Trefferzahl, Trichter vorhanden
      Chart Studio Kerzen gezeichnet, Zeitraum 3M zeichnet weniger Kerzen,
+                  Abschnitt "Diese Aktie in Quant und Supertrader" (Stufen ohne
+                  Zahl, Links, Research-Status),
                   RSI-Schicht legt den Indikatorbereich an, Befundkarten,
                   Aroon-Unterfenster, Ichimoku-Linien
      Assistent    Ziel waehlen, Zweck, Kriterium an/aus aendert Adresse und Treffer,
@@ -264,6 +266,19 @@ async function main() {
       await page.getByRole("button", { name: "Hull MA 20", exact: true }).click();
       await page.getByRole("button", { name: "Chandelier-Stop", exact: true }).click();
       await page.waitForFunction((n) => document.querySelectorAll(".tc-chart .tc-overlay").length >= n + 2, ov);
+      /* Diese Aktie in Quant und Supertrader: bleibt nach jedem Neuzeichnen stehen, Stufen und Links aus den Artefakten. */
+      await page.waitForSelector(".tc-worlds .tc-world-card[data-world=supertrader]", { timeout: 30000 });
+      const w = await page.evaluate(() => {
+        const q = document.querySelector(".tc-world-card[data-world=quant]"), s = document.querySelector(".tc-world-card[data-world=supertrader]");
+        return { n: document.querySelectorAll(".tc-worlds").length, chips: q.querySelectorAll(".tc-world-chips li").length, lead: (q.querySelector(".tc-world-lead") || {}).textContent || "",
+          qHref: (q.querySelector("a.tc-link") || {}).getAttribute ? q.querySelector("a.tc-link").getAttribute("href") : null,
+          sHref: s.querySelector("a.tc-link") ? s.querySelector("a.tc-link").getAttribute("href") : null, sText: s.textContent,
+          digits: [...q.querySelectorAll(".tc-world-chips b")].some((b) => /\d/.test(b.textContent)) };
+      });
+      assert(w.n === 1, "Abschnitt Quant/Supertrader " + w.n + "-mal");
+      assert(w.chips >= 1 && w.lead.length > 20 && !w.digits, "Quant-Stufen fehlen oder zeigen Zahlen: " + JSON.stringify(w));
+      assert(w.qHref === "/quant/#/aktie/NVDA" && w.sHref === "/supertrader/stock/NVDA/", "Links: " + w.qHref + " " + w.sHref);
+      assert(/Modellsignale/.test(w.sText) && /Research, keine Empfehlung/.test(w.sText) && /nicht zertifiziert/.test(w.sText), "Supertrader-Status fehlt: " + w.sText.slice(0, 200));
       await clean("Chart Studio");
     });
 
@@ -290,6 +305,8 @@ async function main() {
       await page.goto(base + "#/chart/AAPL/signale");
       await page.waitForSelector(".tc-history", { timeout: 45000 });
       assert(await page.locator(".tc-signal").count() >= 1, "keine Befunde");
+      await page.waitForSelector(".tc-worlds .tc-world-card[data-world=quant]", { timeout: 30000 });
+      assert(await page.locator(".tc-worlds a[href='/quant/#/aktie/AAPL']").count() === 1, "Signale: Link zur Quant-Analyse fehlt");
       await clean("Signale");
     });
 
@@ -298,15 +315,27 @@ async function main() {
       await page.waitForFunction(() => !!document.getElementById("vu-dock"), null, { timeout: 10000 });
       await page.locator("#vu-dock button.menu").click();
       await page.waitForFunction(() => { const p = document.querySelector("vu-navigation").shadowRoot.querySelector(".panel"); return getComputedStyle(p).visibility === "visible"; }, null, { timeout: 3000 });
+      /* Zwei Menue-Generationen: das Akkordeon (bis 11/2026) und das Raster des Redesigns (Mockup N3: Kacheln,
+         darunter "In <Welt>" mit den Unterseiten der aktuellen Welt). Gepruefte Absicht bleibt: Technical ist eine
+         eigene Welt, ihre fuenf Unterseiten sind erreichbar, Chart Studio ist auf der Chart-Route markiert. */
       const m = await page.evaluate(() => {
         const root = document.querySelector("vu-navigation").shadowRoot, g = root.querySelector(".group[data-group=technical]");
-        return { heads: [...root.querySelectorAll(".group h2")].map((h) => h.textContent),
-          links: g ? [...g.querySelectorAll(".links a")].map((a) => a.getAttribute("href")) : [],
-          open: g ? g.querySelector(".disclosure").getAttribute("aria-expanded") : null,
-          current: g ? (g.querySelector(".links a[aria-current=page]") || {}).textContent : null };
+        if (g) return { kind: "accordion", heads: [...root.querySelectorAll(".group h2")].map((h) => h.textContent),
+          links: [...g.querySelectorAll(".links a")].map((a) => a.getAttribute("href")),
+          open: g.querySelector(".disclosure").getAttribute("aria-expanded"),
+          current: (g.querySelector(".links a[aria-current=page]") || {}).textContent };
+        const here = root.querySelector(".here"), tile = root.querySelector(".tile.is-current");
+        return { kind: "grid", heads: [...root.querySelectorAll(".tile b")].map((h) => h.textContent), tile: tile && tile.dataset.group,
+          links: [...root.querySelectorAll(".here-links a")].map((a) => a.getAttribute("href")),
+          open: here && !here.hidden ? "true" : "false",
+          current: ((root.querySelector(".here-links a[aria-current=page]") || {}).textContent || "").trim() };
       });
-      const i = m.heads.indexOf("Technical");
-      assert(i > 0 && m.heads[i - 1] === "Fundamental", "Technical-Gruppe nicht nach Fundamental: " + m.heads.join("|"));
+      if (m.kind === "accordion") {
+        const i = m.heads.indexOf("Technical");
+        assert(i > 0 && m.heads[i - 1] === "Fundamental", "Technical-Gruppe nicht nach Fundamental: " + m.heads.join("|"));
+      } else {
+        assert(m.heads.includes("Technical") && m.heads.includes("Fundamental") && m.tile === "technical", "Technical-Kachel fehlt oder nicht aktiv: " + JSON.stringify(m));
+      }
       assert(m.links.length === 5 && m.links[2] === "/technical/#/chart", "Unterpunkte: " + m.links.join(","));
       assert(m.open === "true" && m.current === "Chart Studio", "Chart Studio nicht aktiv: " + JSON.stringify(m));
       await page.keyboard.press("Escape");

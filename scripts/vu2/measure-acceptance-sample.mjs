@@ -92,7 +92,7 @@ function pruefungen(ctx) {
   /* 1 Name */
   if (sollName && row.name !== sollName) nein("NAME", "\"" + row.name + "\" statt \"" + sollName + "\"");
   if (row.name === row.ticker) nein("NAME", "das Kuerzel steht als Firmenname");
-  if (!row.name && row.nameReason !== "PROVIDER_HAS_NO_NAME") nein("NAME", "kein Name und kein Grund");
+  if (!row.name && !["PROVIDER_HAS_NO_NAME", "TICKER_REUSE_NAME_WITHHELD"].includes(row.nameReason)) nein("NAME", "kein Name und kein Grund");
 
   /* 2 Gattung - richtig ODER ehrlich unklar */
   const eintrag = (index.entries || []).find((e) => e.s === row.ticker) || {};

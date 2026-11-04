@@ -71,7 +71,7 @@
     } else if (!lesson) {
       wrap.append(header('Lektion nicht gefunden'),link('Zu den Lernpfaden','#/akademie'));
     } else {
-      var terms=node('div');lesson.glossary.forEach(function(key){var t=content.glossary.find(function(x){return x.id===key;});terms.append(node('details',null,{},[node('summary',t.title),node('p',t.definition)]));});
+      var terms=node('div',null,{class:'ta-terms'});lesson.glossary.forEach(function(key){var t=content.glossary.find(function(x){return x.id===key;});terms.append(node('details',null,{},[node('summary',t.title),node('p',t.definition)]));});
       var path=content.paths.find(function(p){return p.id===lesson.pathId;}), index=path.lessons.indexOf(id);
       D.title=lesson.title+' · Strategie-Akademie · Technical';
       var p=lesson.presentation, lab=g.VUAcademyVisuals && g.VUAcademyVisuals.render(p,lesson.id,resume && resume.id===id?resume.scene:null), pilot=!!lab;
@@ -79,7 +79,7 @@
         wrap.classList.add('ta-pilot');
         wrap.append(node('nav',null,{'aria-label':'Lernpfad',class:'ta-breadcrumb'},[link('← Alle Lernpfade','#/akademie'),node('span',path.title+' · '+(index+1)+' / 4')]),node('header',null,{class:'ta-lesson-head'},[node('p','VISUELL LERNEN',{class:'ta-eyebrow'}),node('h1',lesson.title,{class:'tc-title',tabindex:'-1'}),node('p',lesson.question,{class:'ta-question'})]));
         var goals=section('Dein Lernziel',[list(lesson.objectives)]);goals.className='ta-goals';
-        var chart=section('So sieht es im Chart aus',[lab]);chart.className='ta-visual-block';
+        var chart=section(p.visualHeading||'So sieht es im Chart aus',[lab]);chart.className='ta-visual-block';
         var basics=section('Was ist das?',[node('p',p.intro),node('details',null,{},[node('summary','Grundlagen und Begriffe vertiefen')].concat(lesson.foundations.map(function(s){return node('p',s);})).concat([terms]))]);basics.className='ta-basics';
         var why=section('Warum ist das wichtig?',[node('p',p.why)]);why.className='ta-why';
         var mistake=section('Typischer Fehler',[node('p',p.mistake,{class:'ta-mistake'}),node('h3','Gegenbeispiel'),node('p',lesson.example.text),list(lesson.limits)]);mistake.className='ta-counterexample';
@@ -108,9 +108,9 @@
       var practice=section(pilot?'Jetzt selbst ansehen':'In Technical anwenden',[node('p',lesson.practice.instruction),M.safeLink(target.href)?node('a',target.label,{href:target.href,'data-practice':'',class:pilot?'ta-primary':''}):node('p','Praxisziel derzeit nicht verfügbar.')]);
       if(pilot){
         practice.className='ta-practice';
-        practice.append(node('p',lesson.practice.target==='chart'?'Titel wählen → RSI-Unterfenster einschalten → Kurs und RSI vergleichen.':'Kriterien ansehen → im Screener einen Treffer wählen → im Chart prüfen.',{class:'ta-practice-route'}));
+        practice.append(node('p',p.practiceHint||(lesson.id==='momentum-2'?'Titel wählen → RSI-Unterfenster einschalten → Kurs und RSI vergleichen.':'Kriterien ansehen → im Screener einen Treffer wählen → im Chart prüfen.'),{class:'ta-practice-route'}));
         var more=node('div',null,{class:'ta-practice-links'});
-        if(lesson.practice.target==='chart')more.append(link('Momentum im Assistenten','#/assistent/momentum'));
+        if(lesson.practice.target==='chart')more.append(link('Analyse-Assistent öffnen','#/assistent'));
         more.append(link('Screener öffnen','#/screener'));
         if(lesson.practice.target!=='chart')more.append(link('Chart Studio öffnen','#/chart'));
         practice.append(more,node('p','Zurück kommst du über „Zur Lektion“ in Technical. Deine Quiz-Auswahl und dein lokaler Abschluss bleiben erhalten.',{class:'tc-note'}));

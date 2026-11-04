@@ -1,0 +1,98 @@
+# One-off owner-approved Marketstack diagnostics (approval of 03.11.2026).
+# Paris symbol problem (<= 40 requests) and the #1285 single-date/split route
+# plan (45 requests); 5 reserve requests are declared but never spent.
+# Hard cap 90 in code (scripts/marketstack/europe-marketstack-diagnostics-once.mjs).
+# No retries, no follow-up runs, no commit. Licensed raw responses are sealed
+# (AES-256-GCM + RSA-OAEP, europe-live-private-archive.mjs) to the audit
+# recipient key before upload; only counts, statuses and hashes are public.
+name: Marketstack diagnostics (one-off, max 90 requests)
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type 90-REQUESTS-ONCE to confirm the single approved run'
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: marketstack-diagnostics-once-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  diagnose:
+    if: github.repository == 'dennismueller10x-sudo/vision-universe-research' && github.ref == 'refs/heads/main' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Confirmation and exactly-once guard
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+        run: |
+          set -euo pipefail
+          if [ "${CONFIRM}" != "90-REQUESTS-ONCE" ]; then echo "::error::confirmation text missing"; exit 1; fi
+          # Any earlier run of this workflow (any state) blocks this one.
+          RUNS=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/marketstack-diagnostics-once.yml/runs?per_page=100" --jq "[.workflow_runs[] | select(.id != ${GITHUB_RUN_ID})] | length")
+          if [ "${RUNS}" != "0" ]; then echo "::error::workflow already ran ${RUNS} time(s); a second run is not approved"; exit 1; fi
+          echo "first and only run: ${GITHUB_RUN_ID}"
+      - name: Collector regressions (fake transport, no provider call)
+        run: node --test scripts/marketstack/tests/europe-marketstack-diagnostics-once.test.mjs providers/marketstack/tests/europe-live-private-archive.test.mjs
+      - name: Recipient public key of the existing private audit store (pinned)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api -H "Accept: application/vnd.github.raw" "repos/${GITHUB_REPOSITORY}/contents/scripts/marketstack/europe-live-recipient-public.pem?ref=b1a57b506f1e9bca5c1702b1dfa56a0e9c2da972" > "${RUNNER_TEMP}/recipient-public.pem"
+          echo "60d1205783d81fef4c40d7a8a05f2a9159f73ae970aa53eb744e048bbac92c8e  ${RUNNER_TEMP}/recipient-public.pem" | sha256sum -c -
+      - name: Authenticated diagnostics (hard cap 90, no retry)
+        timeout-minutes: 15
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${MARKETSTACK_API_KEY:-}" ]; then echo "::error::MARKETSTACK_API_KEY secret is not configured"; exit 1; fi
+          node scripts/marketstack/europe-marketstack-diagnostics-once.mjs --out="${RUNNER_TEMP}/vu-ms-diag-private" --publicOut="${RUNNER_TEMP}/vu-ms-diag-public/summary.json"
+      - name: Public summary (counts, statuses, hashes; no prices)
+        if: always()
+        run: |
+          if [ -f "${RUNNER_TEMP}/vu-ms-diag-public/summary.json" ]; then
+            cat "${RUNNER_TEMP}/vu-ms-diag-public/summary.json"
+            sha256sum "${RUNNER_TEMP}/vu-ms-diag-public/summary.json"
+          fi
+      - name: Seal private responses
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ -d "${RUNNER_TEMP}/vu-ms-diag-private" ]; then
+            node scripts/marketstack/europe-live-private-archive.mjs seal --sourceRoot "${RUNNER_TEMP}/vu-ms-diag-private" --out "${RUNNER_TEMP}/vu-ms-diag-sealed" --publicKeyPath "${RUNNER_TEMP}/recipient-public.pem" --sourceCommit "${GITHUB_SHA}" --runId "${GITHUB_RUN_ID}" --planSha256 e2d4194425949f06e0915c16844ead84944b42cfe3f1237b06c17567b39e117e
+          fi
+      - name: Remove runner plaintext
+        if: always()
+        run: rm -rf -- "${RUNNER_TEMP}/vu-ms-diag-private" "${RUNNER_TEMP}/recipient-public.pem"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: marketstack-diagnostics-sealed-${{ github.run_id }}
+          path: ${{ runner.temp }}/vu-ms-diag-sealed/
+          if-no-files-found: ignore
+          retention-days: 30
+          compression-level: 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: marketstack-diagnostics-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/vu-ms-diag-public/summary.json
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Verify tracked files unchanged
+        if: always()
+        run: git diff --exit-code HEAD --

@@ -620,9 +620,9 @@
       "cik": "0001759425",
       "name": "Mirum Pharmaceuticals, Inc.",
       "sic": "2834",
-      "rawFacts": 7862,
-      "mappedFacts": 2374,
-      "unmappedFacts": 5511,
+      "rawFacts": 8233,
+      "mappedFacts": 2483,
+      "unmappedFacts": 5826,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -632,28 +632,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 34,
+      "quarterlyPeriods": 35,
       "firstPeriodEnd": "2018-05-02",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "free_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0,
@@ -673,21 +673,21 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "revenue": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -701,14 +701,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
@@ -731,45 +731,46 @@
         }
       },
       "quality": {
-        "HIGH": 249
+        "HIGH": 256
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 249,
-        "resolvedValues": 249
+        "datableValues": 256,
+        "resolvedValues": 256
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 5591,
+        "rules_version": "1.1.0",
+        "total": 5885,
         "by_severity": {
-          "INFO": 5511,
-          "WARNING": 80
+          "INFO": 5826,
+          "WARNING": 59
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 48,
+          "CONCEPT_DISAGREEMENT": 27,
           "RESTATEMENT_CONFLICT": 6,
           "UNEXPECTED_DURATION": 26,
-          "UNKNOWN_CONCEPT": 5511
+          "UNKNOWN_CONCEPT": 5826
         }
       },
       "latestFiling": {
-        "accession": "0001759425-26-000045",
-        "filing_date": "2026-08-05",
+        "accession": "0001759425-26-000062",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 29
+        "periodic_filings": 30,
+        "acceptance_datetime": "2026-11-03T21:06:12.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "ec46fad87357d91c0519e7e091b498efaca1c93b0c022e7b10ce7e041c307a83",
+      "sourceDigest": "3d9ef0524dd7291acd8c88396a0d530699f8a9956dc344d9322237922c61c5e5",
       "issuerId": "iss_cik_0001759425"
     },
     {

@@ -842,10 +842,10 @@
     {
       "cik": "0001779128",
       "name": "Strata Critical Medical, Inc.",
-      "sic": "8000",
-      "rawFacts": 6893,
-      "mappedFacts": 2216,
-      "unmappedFacts": 4776,
+      "sic": "4700",
+      "rawFacts": 7265,
+      "mappedFacts": 2277,
+      "unmappedFacts": 5081,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -855,28 +855,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 10,
-      "quarterlyPeriods": 29,
+      "quarterlyPeriods": 30,
       "firstPeriodEnd": "2018-09-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.25,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2019-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.25
         },
         "eps_diluted": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2019-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.25
         },
         "free_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2019-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.25,
@@ -896,21 +896,21 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.25
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2019-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.25
         },
         "revenue": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2019-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.25
@@ -924,14 +924,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2018-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.25
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -954,49 +954,50 @@
         }
       },
       "quality": {
-        "HIGH": 207,
+        "HIGH": 214,
         "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 218,
-        "resolvedValues": 218
+        "datableValues": 225,
+        "resolvedValues": 225
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 5144,
+        "rules_version": "1.1.0",
+        "total": 5452,
         "by_severity": {
-          "INFO": 4776,
+          "INFO": 5081,
           "ERROR": 1,
-          "WARNING": 367
+          "WARNING": 370
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 159,
+          "CONCEPT_DISAGREEMENT": 162,
           "FISCAL_PERIOD_CONFLICT": 17,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 137,
           "UNEXPECTED_DURATION": 54,
-          "UNKNOWN_CONCEPT": 4776
+          "UNKNOWN_CONCEPT": 5081
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-052256",
-        "filing_date": "2026-08-04",
+        "accession": "0001628280-26-069265",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 28
+        "periodic_filings": 29,
+        "acceptance_datetime": "2026-11-03T17:45:27.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "87bfe9c37992c8a5a9e085e4fc320d022343ec30694939a6825e8ca3678f9035",
+      "sourceDigest": "2deed091ea82b8ef5255bee2fa9c33f4c9291e9af24a9092968e63211f5cd97e",
       "issuerId": "iss_cik_0001779128"
     }
   ]

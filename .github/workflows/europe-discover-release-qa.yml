@@ -1,7 +1,11 @@
 # Tests only: a reviewed manual display-data publication triggers live checks.
 # No periodic trigger, provider request, data write or production gate change.
+# workflow_dispatch re-runs the same checks against the current main head
+# without a push (e.g. after a data refresh committed by GITHUB_TOKEN, which
+# never triggers push workflows).
 name: Europe Discover published release QA
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -14,17 +18,60 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: europe-discover-live-qa-${{ github.sha }}
+  group: europe-discover-live-qa-${{ github.ref_name }}-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   live:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      # No full clone: fetch-depth 0 pulled every branch, tag and blob (.git
+      # about 16 GB). On 03.11.2026 run 41674582295 spent 43.5 of its 45
+      # minutes in checkout (attempt 1) and hung there until the timeout
+      # (attempt 2); the browser checks never got to run.
+      # The QA only executes scripts/discover and scripts/access-gate; the
+      # publication binding (resolve-europe-live-release.mjs) needs commit
+      # and tree history, never file contents of other commits. So: a
+      # blobless, sparse, shallow checkout, then a targeted deepening.
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 0
+          fetch-depth: 50
+          filter: blob:none
+          sparse-checkout: |
+            scripts/discover
+            scripts/access-gate
+      # The resolver binds the reviewed commit to the latest first-parent
+      # commit that touched the protected Europe code or data scope. In a
+      # shallow history the boundary commit looks as if it touched every
+      # path, so the found baseline must not be a shallow boundary commit.
+      # Deepen (commits and trees only, no blobs) until it is not; if it
+      # never is, fail loudly instead of binding to a wrong baseline.
+      - name: First-parent history for the publication binding (blobless, deepened until the baseline is real)
+        env:
+          REVIEWED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          code='core discover scripts/discover scripts/marketstack quant/ui quant/engines'
+          data='discover/data/europe discover/data/search/GLOBAL.json discover/data/search/US_REAL.json discover/data/global/home.json'
+          boundary_hit() {
+            local c d
+            c="$(git log --first-parent -1 --format=%H "$REVIEWED_SHA" -- $code)"
+            d="$(git log --first-parent -1 --format=%H "$REVIEWED_SHA" -- $data)"
+            test -n "$c" && test -n "$d" || return 0
+            if [ -f "$(git rev-parse --git-dir)/shallow" ] && grep -qxF -e "$c" -e "$d" "$(git rev-parse --git-dir)/shallow"; then return 0; fi
+            echo "code baseline candidate: $c"; echo "data baseline candidate: $d"
+            return 1
+          }
+          ok=""
+          for deepen in 0 200 1000 5000; do
+            if [ "$deepen" != 0 ]; then
+              echo "baseline candidate is a shallow boundary - deepening by $deepen"
+              git fetch --no-tags --filter=blob:none --deepen="$deepen" origin "$REVIEWED_SHA"
+            fi
+            if ! boundary_hit; then ok=1; break; fi
+          done
+          if [ -z "$ok" ]; then echo "::error::no real production baseline within the fetched history"; exit 1; fi
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

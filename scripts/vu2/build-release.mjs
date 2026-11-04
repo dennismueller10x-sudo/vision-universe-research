@@ -122,6 +122,7 @@ export function permitted(path){
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
  if(/^brand-media\//.test(path))return false; // unveroeffentlichte Markenmedien: nie ausliefern
  if(/^workers\/[^/]+\/data\//.test(path))return false; // Daten eines Workers (z. B. interne Backtest-Vorschau): nur der Worker liefert sie, geschuetzt
+ if(/^app\//.test(path))return false; // native App-Huelle (ADR-007): eigenes Projekt, nicht Teil der Web-Auslieferung
  if(/^(scripts|docs|providers)\//.test(path)||/\/(tests|fixtures)\//.test(path)||/\.test\.(m?js|py)$/.test(path))return false;
  if(/^quant\/data\/(sec|fundamentals)\//.test(path))return false;
  // Synthetisches Modelluniversum: Generator und Provider dienen nur den Engine-Tests, keine Seite laedt sie.
