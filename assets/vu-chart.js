@@ -5,9 +5,9 @@
    Discover-Aktienseite (discover/ui/microchart.js#renderRange): eine
    durchgehende Linie ueber echte Kurse, Startlinie beim ersten Kurs
    (gestrichelt), Kursachse rechts (Hoch, Tief, letzter Kurs), Datum
-   unten, Punkt am letzten Kurs. Kein Rahmen, keine Flaeche, kein Gitter.
-   Farbe ueber currentColor: .vu-chart[data-direction=up|down] in
-   assets/site-navigation.css (--vu-chart-up/--vu-chart-down).
+   unten, Punkt am letzten Kurs. Seit dem Redesign (C06): schwarze Linie,
+   neongruene Flaeche, neongruener Punkt mit Rand; Richtung steht in
+   data-direction und in der Kursbewegung, nicht in der Linienfarbe.
 
    Dazu: Zeitraum-Leiste (.vu-ranges) und Fingerspur (Tippen/Ziehen zeigt
    Kurs und Datum). Daten kommen immer vom Aufrufer; der Chart rechnet
@@ -23,7 +23,8 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "vu-chart-1.2.0";
+  var VERSION = "vu-chart-2.0.0";
+  var fillSeq = 0;
   var NS = "http://www.w3.org/2000/svg";
   var CUR = { USD: "$", EUR: "€", GBP: "£", CHF: "CHF" };
 
@@ -83,6 +84,13 @@
     var label = (o.label ? o.label + ": " : "") + "Kursverlauf von " + dateLabel(g.pts[0].t, g.intraday) + " bis " + dateLabel(g.pts[g.pts.length - 1].t, g.intraday) +
       ", " + fmt(g.first) + " auf " + fmt(g.last) + (g.log ? ", logarithmische Kursachse" : "");
     var svg = el("svg", { viewBox: "0 0 " + g.w + " " + g.h, role: "img", "aria-label": label, "data-direction": g.direction, "data-scale": g.log ? "log" : "linear" });
+    /* C06 (Redesign 11/2026): schwarze Linie, darunter eine neongrüne Fläche, die nach unten ausläuft. */
+    var gid = "vu-chart-fill-" + (++fillSeq), defs = el("defs", {}), grad = el("linearGradient", { id: gid, x1: 0, y1: 0, x2: 0, y2: 1 });
+    grad.appendChild(el("stop", { offset: 0, "stop-color": "#c8f531", "stop-opacity": ".55" }));
+    grad.appendChild(el("stop", { offset: 1, "stop-color": "#c8f531", "stop-opacity": "0" }));
+    defs.appendChild(grad); svg.appendChild(defs);
+    var fp = g.pts[0], lpx = g.pts[g.pts.length - 1], floor = (g.h - g.padBottom).toFixed(1);
+    svg.appendChild(el("path", { class: "vu-chart-area", d: g.d + " L" + lpx.x.toFixed(1) + " " + floor + " L" + fp.x.toFixed(1) + " " + floor + "Z", fill: "url(#" + gid + ")" }));
     svg.appendChild(el("line", { class: "vu-chart-base", x1: 2, x2: g.w - g.padR, y1: g.baseY.toFixed(1), y2: g.baseY.toFixed(1) }));
     svg.appendChild(el("path", { class: "vu-chart-line", d: g.d, "vector-effect": "non-scaling-stroke" }));
     g.levels.forEach(function (l) {
@@ -92,7 +100,7 @@
       svg.appendChild(gl);
     });
     var lp = g.pts[g.pts.length - 1];
-    svg.appendChild(el("circle", { class: "vu-chart-dot", cx: lp.x.toFixed(1), cy: lp.y.toFixed(1), r: 3.6 }));
+    svg.appendChild(el("circle", { class: "vu-chart-dot", cx: lp.x.toFixed(1), cy: lp.y.toFixed(1), r: 5 }));
     if (o.axis !== false) {
       /* Der letzte Kurs zuerst; Hoch oder Tief, die naeher als 14 px daneben laegen, entfallen (keine uebereinander gedruckten Zahlen). */
       var used = [];

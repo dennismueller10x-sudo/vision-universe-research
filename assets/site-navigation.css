@@ -170,11 +170,13 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 .vu-alert:before{content:"!";flex:none;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--vu-warn);color:#fff;font:900 12px/1 Inter,sans-serif}
 /* Chart: volle Inhaltsbreite, kein Rahmen; mobil bis an den Seitenrand. */
 .vu-chart{position:relative;margin:8px 0 0;color:var(--vu-chart-base)}
-.vu-chart[data-direction=up]{color:var(--vu-chart-up)}.vu-chart[data-direction=down]{color:var(--vu-chart-down)}
+/* C06 Der eine Chart: Linie in Schrift-Farbe, neongrüne Fläche (vu-chart.js), Richtung nicht über Rot/Grün. */
+.vu-chart,.vu-chart[data-direction=up],.vu-chart[data-direction=down]{color:var(--vu-ink)}
 .vu-chart svg{display:block;width:100%;height:auto;overflow:visible}
-.vu-chart-line{fill:none;stroke:currentColor;stroke-width:2.65;stroke-linejoin:round;stroke-linecap:round}
+.vu-chart-line{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.vu-chart-area{stroke:none}
 .vu-chart-base{stroke:var(--vu-chart-base);stroke-width:1;stroke-dasharray:3 4;opacity:.8}
-.vu-chart-dot{fill:currentColor}
+.vu-chart-dot{fill:var(--vu-lime);stroke:currentColor;stroke-width:2.4}
 .vu-chart-axis{fill:var(--vu-chart-axis);font:600 11px/1 Inter,-apple-system,sans-serif;font-variant-numeric:tabular-nums}
 .vu-chart-cross{stroke:var(--vu-text);stroke-width:1;opacity:.35}
 .vu-chart-level line{stroke:var(--vu-text-secondary);stroke-width:1;stroke-dasharray:5 4;opacity:.7}
