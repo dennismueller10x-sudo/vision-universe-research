@@ -107,7 +107,7 @@ jobs:
         run: |
           set -euo pipefail
           W="$RUNNER_TEMP/sth"; OUT="$W/out"; mkdir -p "$OUT"
-          args=(--snapshot "$SNAPSHOT_ID" --out "$OUT")
+          args=(--snapshot "$SNAPSHOT_ID" --out "$OUT" --allow-code-version-change)
           [ -f "$W/reviewer.pem" ] && args+=(--reviewer-key "$W/reviewer.pem")
           [ "$WITH_V13" = "true" ] && args+=(--v13-series "$W/v13/v13-derived/series" --v13-raw "$W/v13/v13-raw/raw")
           set +e

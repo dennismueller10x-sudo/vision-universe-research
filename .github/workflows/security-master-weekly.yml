@@ -1,4 +1,4 @@
-name: Security Master + Firmennamen (wöchentlich vorbereitet, Zeitplan aus)
+name: Security Master + Firmennamen (wöchentlich)
 
 # Kontrollierte Aktualisierung von US-Wertpapierstamm und Firmennamen mit den BESTEHENDEN Erzeugern
 # (scripts/market/build-us-security-master.mjs, scripts/market/build-company-names.mjs) und kostenfreien Quellen:
@@ -6,10 +6,10 @@ name: Security Master + Firmennamen (wöchentlich vorbereitet, Zeitplan aus)
 #   * SEC company_tickers_exchange.json (ohne Schluessel, mit User-Agent)
 # Keine Tiingo-Metadatenabfragen, keine Secrets, keine neuen Anbieter. Docs: docs/data/SECURITY_MASTER_WEEKLY.md.
 #
-# ZEITPLAN AUS (Owner-Entscheidung 28.10.2026: wöchentlich vorbereitet, nicht aktiviert). Aktivierung nur per
-# eigenem, freigegebenem PR, der die folgende Zeile unter `on:` einsetzt (Mittwoch nach dem Dienstagslauf des
-# Universums und der Wochenreihen-Reparatur):
-#   schedule: - cron: '41 9 * * 3'
+# ZEITPLAN AN (Neustart 04.11.2026, Owner-Freigabe Plan §6 Nr. 2): Mittwoch 09:41 UTC, nach dem Dienstagslauf des
+# Universums und der Wochenreihen-Reparatur. Ein geplanter Lauf committet, wenn das Gate COMMIT entscheidet
+# (normale Grenzen, KEIN Versionswechsel, KEINE Sonderfreigabe); jeder andere Ausgang ist rot und oeffnet den Alarm.
+# Grund: Die SF8-Eingangspruefung sperrt einen Stamm aelter als 60 Tage (input-gate.mjs, master: 60).
 #
 # Nicht Teil dieses Laufs: die Produkteignung (eligibility.json, Universumsentscheidung), neue Listings (Tiingo-2.0-
 # Veroeffentlichungspfad) und ein Discover-Neubau (macht der Nachtlauf).
@@ -18,6 +18,8 @@ name: Security Master + Firmennamen (wöchentlich vorbereitet, Zeitplan aus)
 # Uebernahme-Gate (Plausibilitaetsgrenzen, Identitaet, Versionssprung; Exit 4) → Artefakt-Tests → CI-Artefakt →
 # Commit NUR mit commit=true UND Gate-Entscheidung COMMIT. Commit-Protokoll ADR-005.
 on:
+  schedule:
+    - cron: '41 9 * * 3'
   workflow_dispatch:
     inputs:
       commit:
@@ -138,7 +140,7 @@ jobs:
           retention-days: 30
 
       - name: Commit (nur mit commit=true und Gate-Entscheidung COMMIT)
-        if: inputs.commit == true && steps.gate.outputs.decision == 'COMMIT'
+        if: (github.event_name == 'schedule' || inputs.commit == true) && steps.gate.outputs.decision == 'COMMIT'
         env:
           PUSH_OWNED_PATHS: quant/data/market/security-master/us-security-master.json quant/data/market/security-master/summary.json quant/data/market/security-master/reconciliation.json quant/data/market/security-master/backfill-estimate.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json
         run: |

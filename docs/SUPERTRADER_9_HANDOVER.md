@@ -56,6 +56,8 @@ V1 sind C01, C02, C03, C08 und C12; die übrigen acht Methoden stehen im Produkt
 - **FP-ST-03:** Option A, PIT-SIC-Gruppen aus EDGAR als Forschungsstudie; die Referenz ohne Gruppen bleibt hashgleich.
 - **FP-ST-05:** Option A, C06 zusätzlich als manuelle Methode (C); die Buchbeschaffung braucht als Ausgabe die Owner-Freigabe.
 
+- **Audit am letzten Handelstag:** Ein Kauf am letzten Handelstag vor einem Delisting (Order am Vortag scharf, Füllung zur Eröffnung, Abrechnung zum letzten Kurs) ist ausführbar und wird im Audit `st9-hist-execution-1.2.0` gezählt, nicht als Verstoß gewertet; nur ein Kauf danach bleibt ein Verstoß. Die Engines bleiben unverändert (ihr Code ist in SF6-PAPER-2027 gepinnt). Anlass: V13-Studie 41861419543 und Top-5-Lauf 41869479235 mit je 1–5 solchen Käufen je Methode.
+
 Der Tagesstand des Strangs steht in `docs/neustart/B-supertrader.md`.
 
 ---
