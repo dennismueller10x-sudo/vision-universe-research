@@ -177,7 +177,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(box&&box.y+box.height>page.viewportSize().height)befund(view,width,'die Leiste ragt aus dem Bild');
   }
 
-  const v3=await page.locator('#qx-main .qv3').count()>0;   /* Redesign 2027: Seiten mit den Bausteinen (VUUI) */
+  /* Redesign 2027: Seiten mit den Bausteinen (VUUI) tragen qv3-Klassen; die Release-Seite laedt VUUI immer mit. */
+  const v3=await page.evaluate(()=>!!globalThis.VUUI);
   if(view==='home'&&v3){
    /* Redesign 2027 (Q01): dieselben Zusagen in der neuen Gestalt - ein Satz, was Quant prueft, die Suche, die Wege
       mit ihrem Ziel, "Heute bei Quant" mit Stichtag oder ehrlichem Rueckfall, Fusszeile mit Quellen. */
