@@ -214,7 +214,7 @@ test("Setup-Ergebnisse: nur veroeffentlichte, unveraenderte Staende; Vertragsaus
 });
 
 /* ---------- Setup-OOS (setup-oos-1.0.0): Builder mit --out, Gate folgt dem Auswerter ---------- */
-test("Setup-OOS: Builder schreibt mit --out nur dorthin; das OOS-Gate folgt dem Auswerter und bleibt ohne Segmentdefinition FAIL", async () => {
+test("Setup-OOS: Builder schreibt mit --out nur dorthin; das OOS-Gate folgt dem Auswerter je Ereignisart (A1-A6) und bleibt FAIL", async () => {
   const { execFileSync } = await import("node:child_process");
   const { mkdtempSync, rmSync } = await import("node:fs");
   const { tmpdir } = await import("node:os");
@@ -232,13 +232,65 @@ test("Setup-OOS: Builder schreibt mit --out nur dorthin; das OOS-Gate folgt dem 
     const setup = doc.kinds.find((k) => k.id === "SETUP_BACKTEST");
     const oos = setup.gates.find((x) => x.id === "oos");
     const M = json("quant/methodology/backtest-certification-v1.json");
-    assert.equal(O.segmentationFromMethodology(M), null, "keine freigegebene Segmentdefinition im Vertrag");
+    const seg = O.segmentationFromMethodology(M);
+    assert.equal(seg.id, "setup-oos-2027-05-31", "freigegebene Segmentdefinition A1-A6");
+    assert.equal(doc.methodology, M.methodologyVersion);
     assert.equal(oos.state, "FAIL");
-    assert.ok(["OOS_NOT_MEASURABLE_YET", "OOS_SEGMENT_DEFINITION_MISSING"].includes(oos.reason), oos.reason);
+    /* Ohne --oos-rows: der Auswerter sieht nur die Zahl abgeschlossener Ergebnisse je Art. */
+    assert.ok(["OOS_NOT_MEASURABLE_YET", "OOS_ROWS_NOT_EXPORTED"].includes(oos.reason), oos.reason);
     assert.equal(oos.required, null);
+    assert.equal(setup.oos.segmentation, seg.id);
+    assert.equal(setup.oos.rowsExported, false);
+    assert.deepEqual(Object.keys(setup.oos.byEventType), seg.population.eventTypes);
+    const want = C.combineSetupOos(Object.fromEntries(seg.population.eventTypes.map((t) => [t, O.evaluateSetupOos({ rows: null,
+      completedCount: json("quant/data/product/setup-outcomes-v1.json").study[t].variants.NEXT_CLOSE.m6.status.COMPLETED, minPerSegment: 30, segmentation: seg })])));
+    assert.deepEqual([oos.reason, oos.value], [want.reasonCode, O.gateValue(want.result)]);
+    for (const [t, r] of Object.entries(setup.oos.byEventType)) assert.equal(r.status === "PASS", false, t);
     assert.notEqual(setup.status, "CERTIFIED");
     /* Paritaet: abgestimmte Staende / geprueft, nicht geprueft / geprueft. */
     const replay = json("quant/data/product/setup-backtest-v1.json");
     assert.equal(setup.replay.parity, (replay.parity.checked - replay.parity.mismatches) + "/" + replay.parity.checked);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+/* A6 + A4: Zeilenexport des Ergebnisbuilders als Eingabe des Zertifizierungs-Builders (--oos-rows). */
+test("Setup-OOS: Builder liest --oos-rows je Ereignisart, prueft Schema, Stichtag und Zeilenzahl", async () => {
+  const { execFileSync } = await import("node:child_process");
+  const { mkdtempSync, rmSync, writeFileSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+  const O = require("../engines/setup-oos.cjs");
+  const committed = new URL("quant/data/product/backtest-certification-v1.json", root);
+  const before = readFileSync(committed, "utf8");
+  const dir = mkdtempSync(join(tmpdir(), "vu-cert-oos-rows-"));
+  const builder = fileURLToPath(new URL("scripts/quant/build-backtest-certification.mjs", root));
+  try {
+    const rowsFile = join(dir, "rows.json");
+    execFileSync(process.execPath, ["--max-old-space-size=6144", fileURLToPath(new URL("scripts/quant/build-setup-outcomes.mjs", root)), "--out", join(dir, "outcomes.json"), "--oos-rows-out", rowsFile], { stdio: "pipe" });
+    const rowsDoc = JSON.parse(readFileSync(rowsFile, "utf8"));
+    const outcomes = json("quant/data/product/setup-outcomes-v1.json");
+    if (rowsDoc.asOf === outcomes.asOf) {
+      execFileSync(process.execPath, [builder, "--out", join(dir, "cert.json"), "--oos-rows", rowsFile], { stdio: "pipe" });
+      const doc = JSON.parse(readFileSync(join(dir, "cert.json"), "utf8"));
+      assert.deepEqual(C.certificationViolations(doc), []);
+      const setup = doc.kinds.find((k) => k.id === "SETUP_BACKTEST");
+      assert.equal(setup.oos.rowsExported, true);
+      const seg = O.segmentationFromMethodology(json("quant/methodology/backtest-certification-v1.json"));
+      const want = C.combineSetupOos(Object.fromEntries(seg.population.eventTypes.map((t) => [t, O.evaluateSetupOos({ rows: rowsDoc.rows[t].NEXT_CLOSE.m6, minPerSegment: 30, segmentation: seg })])));
+      const gate = setup.gates.find((g) => g.id === "oos");
+      assert.deepEqual([gate.state === "PASS", gate.reason], [want.status === "PASS", want.reasonCode]);
+      for (const t of seg.population.eventTypes) assert.equal(setup.oos.byEventType[t].completed, rowsDoc.rows[t].NEXT_CLOSE.m6.length, t);
+      assert.notEqual(setup.status, "CERTIFIED");
+    }
+    /* Falsches Schema, fremder Stichtag oder abweichende Zeilenzahl brechen ab - nie still rows: null. */
+    const bad = (mut, re) => {
+      const f = join(dir, "bad.json"); const d = structuredClone(rowsDoc); d.asOf = outcomes.asOf; mut(d); writeFileSync(f, JSON.stringify(d));
+      assert.throws(() => execFileSync(process.execPath, [builder, "--out", join(dir, "x.json"), "--oos-rows", f], { stdio: "pipe" }), re);
+    };
+    bad((d) => { d.schemaVersion = "setup-oos-rows-0.9.0"; }, /OOS_ROWS_SCHEMA_UNEXPECTED/);
+    bad((d) => { d.asOf = "1999-01-01"; }, /OOS_ROWS_ASOF_MISMATCH/);
+    bad((d) => { d.rows.SETUP_NEW.NEXT_CLOSE.m6 = [{ date: "2026-10-01", net: 0.1, b: null }].concat(Array(outcomes.study.SETUP_NEW.variants.NEXT_CLOSE.m6.status.COMPLETED).fill({ date: "2026-10-01", net: 0.1, b: null })); }, /OOS_ROWS_COUNT_MISMATCH/);
+    assert.equal(readFileSync(committed, "utf8"), before, "das Produktartefakt bleibt unberuehrt");
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });

@@ -75,7 +75,7 @@ test('real runTurtle run with adds and unit stops: no violation; every stop sale
   const audit = X.auditRun(d, { run }, { key: 'TURTLE_S2', costs: COSTS, from: d.calendar[0] });
   assert.equal(audit.pass, true, JSON.stringify(audit.violations));
   assert.equal(audit.missedStopCheck, 'TURTLE_INDEPENDENT_N_UNIT_STOPS');
-  assert.equal(audit.version, 'st9-hist-execution-1.1.0');
+  assert.equal(audit.version, 'st9-hist-execution-1.2.0');
   assert.equal(audit.stopChecks.units, 9);
   // before: classifyExits read STOP_2N_SAME_BAR as a held-bar stop and flagged its fill (100.01 > open 100) as
   // STOP_FILL_ABOVE_OPEN; now it is the declared intrabar convention, its level checked by checkTurtleStops

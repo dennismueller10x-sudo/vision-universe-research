@@ -185,6 +185,54 @@
     mount.appendChild(limits);
   }
 
+
+  // ------------------------------------------------------------ Musterportfolios (VU-Portfolio-Standard, Forschung)
+  /* Zeilen der Ergebnistabelle aus dem Paket von /v1/admin/backtests/portfolios. Nur Anzeige. */
+  function portfolioModel(b) {
+    if (!b || b.state !== 'COMPUTED') return {state: b ? b.state : 'UNAVAILABLE', label: b ? b.label : '', limits: b ? b.limits : [], rows: [], charts: []};
+    var rows = b.portfolios.map(function (p) {
+      if (p.state !== 'RUN') return [p.name, 'nicht konstruierbar', '–', '–', '–', '–', '–', '–'];
+      var m = p.metrics;
+      return [p.name, pct(m.cagr), pct(m.benchmarkCagr), pct(m.excessCagr), pct(m.annualizedVolatility), pct(m.maxDrawdown), dec(m.beta, 2), dec(p.construction.averagePositions, 1)];
+    });
+    return {state: 'COMPUTED', label: b.label, window: b.window, data: b.data, limits: b.limits.concat(b.openLimits || []), rows: rows,
+      charts: b.portfolios.filter(function (p) { return p.state === 'RUN'; }).map(function (p) { return {name: p.name, chart: p.chart || [], holdings: p.lastHoldings}; })};
+  }
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  function svg(doc, tag, attrs) { var n = doc.createElementNS(SVGNS, tag); Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); }); return n; }
+  /* Wertentwicklung: Punkte kommen fertig skaliert vom Server (logarithmisch, [0,1]); Portfolio durchgezogen, Benchmark gestrichelt. */
+  function equityChart(doc, chart, name) {
+    var W = 320, H = 120, P = 4;
+    function pts(k) { return chart.map(function (c) { return (P + (W - 2 * P) * c[0]).toFixed(1) + ',' + (H - P - (H - 2 * P) * c[k]).toFixed(1); }).join(' '); }
+    var s = svg(doc, 'svg', {viewBox: '0 0 ' + W + ' ' + H, width: '100%', role: 'img', 'aria-label': name + ': Wertentwicklung gegen Benchmark (logarithmisch)'});
+    s.appendChild(svg(doc, 'polyline', {points: pts(2), fill: 'none', stroke: 'currentColor', 'stroke-opacity': '0.45', 'stroke-dasharray': '4 3', 'stroke-width': '1.5'}));
+    s.appendChild(svg(doc, 'polyline', {points: pts(1), fill: 'none', stroke: 'currentColor', 'stroke-width': '2'}));
+    return s;
+  }
+  function renderPortfolios(doc, mount, model) {
+    clear(mount);
+    mount.hidden = false;
+    mount.appendChild(el(doc, 'h2', {text: 'Musterportfolios (VU-Portfolio-Standard)'}));
+    mount.appendChild(el(doc, 'p', {className: 'ka-eyebrow', text: model.label || 'Forschung, nicht zertifiziert'}));
+    if (model.state !== 'COMPUTED') {
+      mount.appendChild(el(doc, 'p', {className: 'ka-muted', text: 'Noch nicht gerechnet. Es wird nichts angezeigt.'}));
+      mount.appendChild(list(doc, model.limits));
+      return;
+    }
+    mount.appendChild(el(doc, 'p', {className: 'ka-muted', text: 'Zeitraum ' + model.window.join(' bis ') + ' · ' + model.data.basis + ' gegen ' + model.data.benchmark + ' · ' + model.data.securities + ' Titel · delistete Titel: ' + model.data.delistedSource}));
+    mount.appendChild(el(doc, 'div', {className: 'ka-table-wrap'}, [el(doc, 'table', {className: 'ka-table'}, [
+      el(doc, 'thead', {}, [el(doc, 'tr', {}, ['Portfolio', 'CAGR', 'Benchmark', 'Differenz', 'Volatilität', 'Max. Drawdown', 'Beta', 'Ø Titel'].map(function (h, i) { return el(doc, 'th', {scope: 'col', className: i ? 'num' : null, text: h}); }))]),
+      el(doc, 'tbody', {}, model.rows.map(function (r) { return el(doc, 'tr', {}, r.map(function (c, i) { return el(doc, 'td', {className: i ? 'num' : null, text: c}); })); }))])]));
+    model.charts.forEach(function (c) {
+      var top = c.holdings.slice(0, 10).map(function (h) { return h.ticker + ' ' + pct(h.weight); }).join(', ');
+      mount.appendChild(el(doc, 'h3', {text: c.name}));
+      if (c.chart.length) mount.appendChild(equityChart(doc, c.chart, c.name));
+      mount.appendChild(el(doc, 'p', {className: 'ka-muted', text: 'Durchgezogen: Portfolio, gestrichelt: Benchmark. Größte Positionen zuletzt: ' + (top || '–')}));
+    });
+    mount.appendChild(el(doc, 'h3', {text: 'Grenzen'}));
+    mount.appendChild(list(doc, model.limits));
+  }
+
   function option(doc, value, text) { return el(doc, 'option', {value: value, text: text}); }
 
   // ------------------------------------------------------------ Steuerung
@@ -274,11 +322,15 @@
         if (!r.ok) { opts.disableForms(); return fail(r); }
         render(r.data);
         bind();
+        if ($('br-portfolios')) A.get('/v1/admin/backtests/portfolios').then(function (p) {
+          if (p.ok) renderPortfolios(doc, $('br-portfolios'), portfolioModel(p.data.bundle));
+        });
         return r.data;
       });
     });
   }
 
   return {KIND_LABEL: KIND_LABEL, MESSAGES: MESSAGES, selection: selection, frameModel: frameModel, overviewModel: overviewModel,
-    resultModel: resultModel, renderResult: renderResult, renderFrame: renderFrame, start: start, pct: pct};
+    resultModel: resultModel, renderResult: renderResult, renderFrame: renderFrame, start: start, pct: pct,
+    portfolioModel: portfolioModel, renderPortfolios: renderPortfolios};
 });
