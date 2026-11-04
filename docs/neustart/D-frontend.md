@@ -1,5 +1,7 @@
 # Strang D – Frontend (Stand 04.11.2026)
 
+**Fortschritt je Folie: [`docs/design/redesign-2027/PROGRESS.md`](../design/redesign-2027/PROGRESS.md)** (Owner-Chat, führt diese Datei fort).
+
 Vorlage: Präsentation „Vision Universe Redesign“ (Mockups 390 × 844, Kennungen A1–Ü4) und „Vision Universe iPhone-Konzept“.
 Regeln: nur Darstellung (Shell, Navigation, Dock, Tokens, Produktseiten). Keine Engines, Scores, Daten, Pipelines.
 Ein PR pro Ergebnis, Browser-QA auf 390 px und Desktop, hell und dunkel. Bilder liegen auf dem Zweig

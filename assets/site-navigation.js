@@ -219,6 +219,8 @@
   const dockBus = {state: {}, listeners: []};
   if (typeof window !== 'undefined') {
     window.VUNavigation = {
+      /* Nur lesend: Plätze der Produkt-Leiste je Welt (Musterseite /status/bausteine/, Tests). */
+      products: () => PRODUCTS.map(p => ({id: p.id, label: p.label, items: p.items.map(([id, label, href, icon]) => ({id, label, href, icon}))})),
       dock: state => {
         state = state || {};
         Object.assign(dockBus.state, state);

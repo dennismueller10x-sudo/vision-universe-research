@@ -23,7 +23,9 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "vu-chart-2.0.0";
+  var VERSION = "vu-chart-2.1.0";
+  /* C06: gleiche Zeitleiste in allen Welten (Folie A3, Regel 2). */
+  var RANGES = Object.freeze(["1T", "1W", "1M", "1J", "5J", "Max"]);
   var fillSeq = 0;
   var NS = "http://www.w3.org/2000/svg";
   var CUR = { USD: "$", EUR: "€", GBP: "£", CHF: "CHF" };
@@ -192,5 +194,28 @@
     return { show: show, setExtent: setExtent, el: box, dispose: function () { alive = false; if (ro) ro.disconnect(); box.remove(); } };
   }
 
-  return Object.freeze({ VERSION: VERSION, geometry: geometry, render: render, mount: mount, money: money });
+
+  /**
+   * C06 im Kleinformat (Aktienzeile C10): dieselbe Zeichnung ohne Achse, Gitter und Startlinie.
+   * Rein als Text (kein DOM), damit Listen sie ohne Zusatzarbeit einsetzen koennen. Werte kommen vom
+   * Aufrufer; weniger als zwei echte Werte ergeben "" (kein erfundener Verlauf).
+   */
+  function sparkline(values, opt) {
+    var o = opt || {}, v = (values || []).filter(isNum);
+    if (v.length < 2) return "";
+    var w = o.width || 74, h = o.height || 32, pad = 3;
+    var lo = Math.min.apply(null, v), hi = Math.max.apply(null, v);
+    if (lo === hi) { lo -= 1; hi += 1; }
+    var X = function (i) { return i * (w - 6) / (v.length - 1); };
+    var Y = function (x) { return pad + (h - 2 * pad) * (1 - (x - lo) / (hi - lo)); };
+    var d = v.map(function (x, i) { return (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(x).toFixed(1); }).join(" ");
+    var id = "vu-spark-" + (++fillSeq), lx = X(v.length - 1).toFixed(1), ly = Y(v[v.length - 1]).toFixed(1);
+    return '<svg class="vu-spark" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" aria-hidden="true" focusable="false" style="overflow:visible">' +
+      '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".55"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs>' +
+      '<path d="' + d + " L" + lx + " " + h + " L0 " + h + 'Z" fill="url(#' + id + ')"/>' +
+      '<path d="' + d + '" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<circle cx="' + lx + '" cy="' + ly + '" r="3.5" fill="#c8f531" stroke="currentColor" stroke-width="2"/></svg>';
+  }
+
+  return Object.freeze({ VERSION: VERSION, RANGES: RANGES, geometry: geometry, render: render, mount: mount, money: money, sparkline: sparkline });
 });
