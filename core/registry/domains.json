@@ -39,7 +39,7 @@
       "role": "Klassifikation, Aktivstatus und Listing-Identitaet (canonical_id) je Bestandstitel aus dem Tiingo-Tickerverzeichnis; Quelle fuer Instrumenttyp und Aktivstatus im Supertrader-8-Tageslauf und fuer die Quant-Backtest-Identitaet.",
       "producer": "scripts/market/build-us-security-master.mjs",
       "workflow": "security-master-weekly.yml",
-      "schedule": "Woechentlich vorbereitet, Zeitplan aus (Owner-Entscheidung 28.10.2026); manuell per workflow_dispatch, Uebernahme nur mit commit=true und bestandenem Gate (scripts/market/security-master-refresh-gate.mjs).",
+      "schedule": "Mittwoch 09:41 UTC (Neustart 04.11.2026); Uebernahme nur bei bestandenem Gate (scripts/market/security-master-refresh-gate.mjs), manuell zusaetzlich per workflow_dispatch mit commit=true.",
       "freshness": { "kind": "hours", "warnAfter": 240, "staleAfter": 1440 },
       "consumers": ["build-us-eligibility (Produkteignung, eigener Lauf)", "Quant-Backtests (canonical_id, masterHash)", "Supertrader-8-Tageslauf (Instrumenttyp, Aktivstatus, Hoechstalter 60 Tage)"],
       "knownGaps": ["Neue Listings werden gezaehlt, aber nicht ausgeliefert (Lizenz; Weg: Tiingo-2.0-Veroeffentlichung).", "Tickerwechsel werden je stabiler securityId ausgewiesen, nicht automatisch verknuepft (ADR-001)."]
@@ -358,10 +358,9 @@
       "role": "Primaerquellen-Meldungen, redaktionell neu formuliert.",
       "producer": "scripts/dashboard/update_news.mjs",
       "workflow": "update-news.yml",
-      "schedule": "manuell (kein Zeitplan)",
+      "schedule": "taeglich 05:17, 11:17, 17:17 UTC",
       "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 168 },
-      "consumers": ["/news/"],
-      "knownGaps": ["Workflow ohne Zeitplan: der Feed altert, bis jemand ihn startet."]
+      "consumers": ["/news/"]
     },
     {
       "id": "analystRatings",
