@@ -52,14 +52,14 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | E10 | Einstieg · AI Atlas | in Arbeit | #1366 | Worker vu-ask unverändert; statt Jahresreihe Balken je Kennzahl über die Aktien (Atlas-Engine liefert keine Zeitreihe) |
 | E11 | Einstieg · Erster Start | in Arbeit | #1366 | `/willkommen/start/`, `localStorage vu-start-v1`; Anbindung an `/v1/me` (Z1, #1359) offen: `signale`→`strategien`, `mode`→`experienceLevel`, `onboardedAt:true` |
 | E12 | Einstieg · Checkout-Ablauf Free → Pro | – | #1366 | keine eigene Oberfläche (E03 → E04 → E06) |
-| D01 | Discover · Übersicht | offen |  |  |
-| D02 | Discover · Welten | offen |  |  |
-| D03 | Discover · Thema KI | offen |  |  |
-| D04 | Discover · Strategien | offen |  |  |
-| D05 | Discover · Swipen | offen |  |  |
-| D06 | Discover · Suchen | offen |  |  |
-| D07 | Discover · Märkte | offen |  |  |
-| D08 | Discover · Watchlist | offen |  |  |
+| D01 | Discover · Übersicht | in Arbeit | #1367 | Swipen-Karte ohne „400“ (Feed nicht auf der Startseite geladen); Index/Kurse in Anzeigewährung |
+| D02 | Discover · Welten | in Arbeit | #1367 | große Karte „Zum Einstieg“ statt „Meistgeöffnet“ (keine Nutzungsdaten) |
+| D03 | Discover · Thema KI | in Arbeit | #1367 | Mini-Charts laden in Sichtweite |
+| D04 | Discover · Strategien | in Arbeit | #1367 | „Täglich neu: Heute im Blick“ statt „Beliebteste“; vier Gruppen fest in v3.js bis Registry-Feld `group`; `#/strategien/<id>` |
+| D05 | Discover · Swipen | in Arbeit | #1367 | `#/swipen` (`#/einzeln/<U>` leitet um); Zähler „1 von 400“; Leiste über #1364 |
+| D06 | Discover · Suchen | in Arbeit | #1367 | „Bekannte Namen“ mit 12-Monats-Pille statt „Oft gesucht“ (keine Suchstatistik) |
+| D07 | Discover · Märkte | in Arbeit | #1367 | nur die Übersicht; `#/maerkte/<Symbol>` und Einordnung noch alt |
+| D08 | Discover · Watchlist | in Arbeit | #1367 | Teil: bleibt `/discover/#/watchlist`; Benachrichtigungen fehlen (Z4); „Liste bearbeiten“ |
 | D09 | Discover · NVIDIA (Aktienseite) | in Arbeit | #1350 | Kurs im Kopf in Anzeigewährung (€) statt $ + ≈ € (Querschnitt Währung offen); Jahresspanne in % statt $; d09-c Merken-Sheet wartet auf Benachrichtigungen (Backend) |
 | Q00 | Quant · So ist die Welt gebaut | offen |  |  |
 | Q01 | Quant · Übersicht | in Arbeit | #1351 | Setup-Karten ohne „Schluss … $“ (Ressourcen-Budget der Startseite) |
@@ -148,6 +148,7 @@ Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds 
 - Technical-Menü: Screener, Vorlagen (`#/screener?reiter=vorlagen`), Gespeichert (`?reiter=gespeichert`), Chart, Muster (aktiv bei muster und methodik); Menü-Check in `technical/…/browser-qa.mjs` mitziehen.
 - `VUStockNavigator.head`: Option für den Satz zur Firmentätigkeit; `VUChart`: Zonen.
 - `VUUI.bars` kürzt Beschriftungen auf 2 Zeichen (Ticker passen nicht); Tagesbewegungs-/Mini-Chart-Helfer (lokal `mein-dashboard/today.js`); Kopfzeilen-Modus „Zurück · Titel · Aktion“.
+- Aufräumen später: `discover/home.css` alte Startseiten-Stile, `discover/ui/feed.js` ungenutzt.
 - `VUUI.navcard` mit eigenem Symbol (Fundamental hat lokal nachgebaut).
 - Fundamental-Produktdokument: Urteilsregel F06 in einem Satz (schwächere der beiden Discover-Stufen aus `fundamentals.health`).
 
