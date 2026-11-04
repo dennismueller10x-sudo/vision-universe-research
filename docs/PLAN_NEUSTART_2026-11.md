@@ -67,7 +67,7 @@ Voraussetzung: Die Arbeitsregeln in `CLAUDE.md` („Gates werden nicht abgeschw�
 4. Owner-Freigabe nur für Geld, Recht, öffentliche Renditeaussagen, Löschen. 5. Entscheidungen gebündelt einmal täglich.
 6. Tagesbericht statt Chatverlauf. 7. Fortschritt nur über gezählte Abnahmekriterien.
 
-## 5. Vier Arbeitsstränge parallel (ab 05.11.2026)
+## 5. Arbeitsstränge parallel (ab 05.11.2026)
 
 Jeder Strang ist eine eigene Claude-Sitzung, besitzt seine Pfade, mergt bei grüner CI selbst und schreibt seinen Stand nach `docs/neustart/<strang>.md`.
 
@@ -76,7 +76,7 @@ Jeder Strang ist eine eigene Claude-Sitzung, besitzt seine Pfade, mergt bei grü
 | A Infrastruktur | `.github/workflows`, `scripts/ci`, `core/registry`, Gates, `docs/` | Security Master 1.3.0 (#1240) vor 11.11., Quant-CI grün, Crons News/Security Master, FV-8-Alarm, alte PRs schließen | Datenzweig statt `main`, Workflows bündeln, Pfad-Gates → Vertragstests, Doku-Archiv, Modul-Steckbrief |
 | B Supertrader-Backtest | `supertrader/`, `scripts/supertrader/` | Lesarten entscheiden, Tageslauf wieder frisch | V13-Historienlauf Top 5, Ergebnisse intern, Papierhandel 2027 aktivieren |
 | C Quant-Backtest & Portfolio | `quant/`, `scripts/quant/`, `konto/admin/backtests` | Interne Backtest-Vorschau an (#1227), Strategie-Backtest mit delisteten Titeln | Portfolio-Baukasten nach VU-Standard, Musterportfolios mit Ergebnis |
-| D Frontend | Shell, Navigation, Produktseiten (Web-Dateien) | Redesign-Grundlage (Tokens, Header, Dock) | Seite für Seite nach den Redesign-Mockups |
+| D2 Frontend | Shell, Navigation, Seiten-Design | **ab 04.11.2026:** Redesign 2027 1:1 nach `docs/design/redesign-2027/` (HANDOVER.md, Master-Prompt im README), Fortschritt in `docs/design/redesign-2027/PROGRESS.md`. Baut auf den Entwürfen der früheren Sitzung D auf (#1331, Zweige `neustart/d-*`). | alle Schritte der Tabelle „Umsetzung in Schritten“ |
 
 Außerhalb der Technik (Owner): Rechtsberatung beauftragen, Fragebogen R2, Steuerberater, Stripe-Branding, Testkauf Z1, Repo-Variable `SF8_AUTO_PUBLISH` setzen.
 
@@ -87,3 +87,19 @@ Außerhalb der Technik (Owner): Rechtsberatung beauftragen, Fragebogen R2, Steue
 4. Daten raus aus `main`. 5. Freigaben nur für Geld/Recht/öffentliche Renditeaussagen/Löschen. 6. Supertrader Top 5.
 7. Portfolio-Baukasten in den Umfang. 8. Interne Backtest-Vorschau + Geschäftskonto mit `backtest_reviewer`.
 9. Offene PRs aufräumen (geschlossene PRs bleiben wiederherstellbar). 10. Lizenzangebote einholen (Kapitalmaßnahmen, Tiingo-Rechte).
+
+## 7. Backend-Zusätze aus dem Redesign 2027 (Projekt, nach dem Frontend)
+
+Die Mockups (`docs/design/redesign-2027/`, README „Backend-Zusätze“) zeigen Funktionen, die es heute nicht gibt. Bis sie gebaut sind, zeigen die Seiten sie als „bald“ oder blenden sie aus, nie mit erfundenen Werten.
+
+| # | Funktion | Folien | Baut | Hinweis |
+|---|---|---|---|---|
+| Z1 | Erster Start: Ziel, Erfahrung (Einsteiger · Fortgeschritten · Profi), erste Aktien; als Konto-Einstellung | E11, N6 | D2 (Seite) + Konto (`workers/vu-account`, Migration) | bauen und testen; keine Produktionsfreigabe umschalten |
+| Z2 | Eine Aktienadresse `/aktie/<T>` mit Weiterleitungen der alten Adressen | N4, N5, D09, Q07 ff. | D2 | Herkunftswelt bestimmt Perspektive und Leiste |
+| Z3 | Gespeicherte Suchen im Konto | Q02, Screener | D2 + Konto | |
+| Z4 | Benachrichtigungen: Kursgrenze ±5 %, Jahreshoch, Quartalszahlen, Setups, neue 13F-Meldungen | E08, E09, D08, D09, H | Konto + Erzeuger | Versandweg (E-Mail über Brevo, später App-Push) braucht Owner-Freigabe |
+| Z5 | Screener-Kriterien aus 13F (Hedgefonds) und Supertrader | Screener, H | A (Erzeuger) + B (Supertrader-Export) | keine Fachmodelle ändern, nur vorhandene Ergebnisse als Filter |
+| Z6 | Insider-Käufe als Datenquelle | H (Entdecken) | A (neuer Erzeuger) | SEC Form 4 ist frei verfügbar; Eintrag in `core/registry/domains.json` |
+| Z7 | AI Atlas mit Antworten, **visuell** in der App | E10 | D2 | Vorhandenen Worker `workers/vu-ask` übernehmen (Claude Haiku 4.5, Budget- und Tagesgrenzen, Cache): Das Modell übersetzt nur die Frage, gerechnet wird im Browser auf VU-Daten. Neu ist nur die Darstellung nach Mockup E10-b mit den VU-Bausteinen (Aktienzeilen, Urteile, Chart C06, Balken, Erklärung, Rechenweg) statt reinem Text. Modell, Budget und Grenzen bleiben unverändert. Öffentlich ohne Beta-Passwort = Owner-Freigabe (Kosten). |
+
+Reihenfolge: Z2, Z1 und Z7 zusammen mit den Seiten, danach Z3, Z5, Z6, zuletzt Z4.

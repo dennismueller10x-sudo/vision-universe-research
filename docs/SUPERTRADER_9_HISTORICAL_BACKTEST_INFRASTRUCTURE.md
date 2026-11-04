@@ -179,7 +179,7 @@ Jede SELL-Zeile wird gegen ihren Balken nachgerechnet.
 Als Verstöße zählen:
 - `STOP_FILL_ABOVE_OPEN`, `STOP_FILL_BELOW_LOW`, `STOP_NOT_REACHED`, `STOP_NOT_AT_LEVEL`;
 - **`STOP_GAP_NOT_FILLED_AT_OPEN`**: der Stop wurde zum Niveau gebucht, obwohl die Eröffnung darunter lag. Das ist die optimistische Annahme;
-- `TERMINAL_NOT_ON_LAST_TRADED_BAR`, `TERMINAL_NOT_AT_LAST_TRADED_CLOSE`, `EXIT_AFTER_LAST_BAR` (Fortschreiben), `ENTRY_ON_OR_AFTER_TERMINAL`;
+- `TERMINAL_NOT_ON_LAST_TRADED_BAR`, `TERMINAL_NOT_AT_LAST_TRADED_CLOSE`, `EXIT_AFTER_LAST_BAR` (Fortschreiben), `ENTRY_AFTER_TERMINAL`, `ENTRY_WITHOUT_BAR_ON_TERMINAL` (ab `st9-hist-execution-1.2.0`; ein Kauf am letzten Handelstag wird als Klasse `ENTRY_ON_LAST_TRADED_DAY` gezählt, kein Verstoß);
 - Minervini: `STOP_REACHED_NOT_EXECUTED`, `STOP_LEVEL_NOT_EVENT_PATH`, `STOP_PATH_MISSING`; Turtle: `STOP_REACHED_NOT_EXECUTED`, `STOP_LEVEL_MISMATCH`, `TURTLE_*` (auch `TURTLE_UNIT_REOPENED`) (Präfix `STOPS:` in `auditRun`).
 
 **Korrektur in 1.1.0 (`classifyExits`):** Turtle-Gleichtags-Stopps `STOP_2N_SAME_BAR` wurden bis 1.0.0 wie Stopps auf gehaltenem Balken gelesen. Ihr Fill zum angehobenen Stop kann über der Eröffnung liegen (Einstieg intraday über der Eröffnung, Tief danach), das ergab ein falsches `STOP_FILL_ABOVE_OPEN`. Jetzt gilt `STOP_2N_SAME_BAR` als `INTRADAY_ORDER_ASSUMED` und `STOP_2N_SAME_BAR_CERTAIN` als `SAME_BAR_CERTAIN`. Das Niveau prüft `checkTurtleStops`. Kein Fill und keine Buchung ändert sich.

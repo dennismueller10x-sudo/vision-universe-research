@@ -41,6 +41,13 @@ on:
     # Jahres nach. Die beiden anderen Jobs nehmen diese Termine nicht an.
     - cron: '45 16-19 * * 1-5'
     - cron: '55 22 * * 1-5'
+  # Nach dem Kurslauf (Neustart 04.11.2026): Produktstand, Supertrader und PIT-Snapshots werden geprueft,
+  # sobald der Marktdaten-Refresh auf main fertig ist - nicht nur zu festen Uhrzeiten, die vor dem Ende der
+  # (von GitHub bis zu 3,5 h verzoegerten) Kette liegen koennen. Die Zeitplaene bleiben als Rueckfall.
+  workflow_run:
+    workflows: ['Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)']
+    types: [completed]
+    branches: [main]
   push:
     branches:
       - 'claude/**'
@@ -152,7 +159,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: >-
-      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run' ||
       (github.event_name == 'schedule' && github.event.schedule != '15 23 * * 1-5' && github.event.schedule != '45 16-19 * * 1-5' && github.event.schedule != '55 22 * * 1-5') ||
       contains(github.event.head_commit.message, '[freshness-check]')
     steps:
@@ -211,8 +218,12 @@ jobs:
   # offen bleibt, bis ein gruener Monitorlauf es schliesst.
   # ===================================================================
   alarm:
-    needs: [monitor, produktstand, supertrader]
-    if: always() && github.ref == 'refs/heads/main' && github.event_name != 'push'
+    needs: [monitor, produktstand, supertrader, pit]
+    # Nach dem Kurslauf (workflow_run) laeuft die Seitenpruefung `monitor` nicht (Pages ist dann noch nicht
+    # ausgeliefert). Ein solcher Lauf darf deshalb einen Alarm oeffnen, aber keinen schliessen.
+    if: >-
+      always() && github.ref == 'refs/heads/main' && github.event_name != 'push' &&
+      (github.event_name != 'workflow_run' || contains(needs.*.result, 'failure'))
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -240,6 +251,7 @@ jobs:
           RESULT_MONITOR: ${{ needs.monitor.result }}
           RESULT_PRODUKTSTAND: ${{ needs.produktstand.result }}
           RESULT_SUPERTRADER: ${{ needs.supertrader.result }}
+          RESULT_PIT: ${{ needs.pit.result }}
           ALARM_DETAIL_FILE: ${{ runner.temp }}/befund/freshness-live.txt
         run: node scripts/ci/pipeline-alarm.mjs
 
@@ -290,7 +302,7 @@ jobs:
       actions: read
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'schedule' ||
+      github.event_name == 'schedule' || github.event_name == 'workflow_run' ||
       contains(github.event.head_commit.message, '[freshness-check]')
     steps:
       - uses: actions/checkout@v4
@@ -303,3 +315,41 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/ci/supertrader-chain.mjs check --strict
+
+  # ===================================================================
+  # FV-8: FEHLENDE DATENTAGE IN DEN PIT-SNAPSHOTS (P2.3)
+  #
+  # Ein fehlender Snapshot-Monat verschiebt jedes monatliche Backtest-Gate
+  # um einen Monat und faellt sonst erst Jahre spaeter auf. Befund aus
+  # scripts/quant/research/pit-snapshot-integrity.cjs: Exit 1 bei
+  # Integritaetsfehler oder fehlendem Monat einer gezaehlten Reihe (NDX/DJIA
+  # nur Information); der Text geht unveraendert in den Alarm.
+  # Nur lesend, keine Secrets, kein Commit. Laeuft nach dem Kurslauf und
+  # im 06:30-Rueckfall, nicht in den Intraday-Slots.
+  # ===================================================================
+  pit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: >-
+      github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run' ||
+      (github.event_name == 'schedule' && github.event.schedule == '30 6 * * 2-6') ||
+      contains(github.event.head_commit.message, '[freshness-check]')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: PIT-Snapshots vollstaendig (kein fehlender Monat)?
+        run: |
+          set -euo pipefail
+          node scripts/quant/research/pit-snapshot-integrity.cjs --fail-on-missing-month \
+            --alarm-detail "$RUNNER_TEMP/pit-alarm.txt" --out "$RUNNER_TEMP/pit-integrity.json"
+      - name: Bericht
+        if: always()
+        run: |
+          {
+            echo '### PIT-Snapshots (FV-8)'
+            echo '```'; cat "$RUNNER_TEMP/pit-alarm.txt" 2>/dev/null || echo "kein Befund"; echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
