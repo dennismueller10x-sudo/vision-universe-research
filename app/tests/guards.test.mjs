@@ -57,8 +57,9 @@ test('Gate-Hygiene: App-Branch beruehrt nur app/, die Mobile-Dokumente und den f
   try { base = execFileSync('git', ['merge-base', 'HEAD', 'origin/main'], {cwd: repo, encoding: 'utf8'}).trim(); } catch { return; } // flacher Checkout ohne Basis: nicht pruefbar
   const files = execFileSync('git', ['diff', '--name-only', base], {cwd: repo, encoding: 'utf8'}).split('\n').filter(Boolean);
   // Ausschluss von app/ aus Pages: Owner-Freigabe Phase 2 (eine Zeile in permitted() und seine Pruefung)
-  const approved = new Set(['scripts/vu2/build-release.mjs', 'quant/tests/release-delivery.test.mjs']);
-  const bad = files.filter(f => !approved.has(f) && !/^(app\/|docs\/architecture\/ADR-00[4-9]|docs\/mobile\/)/.test(f));
+  // Aktivierung der TestFlight-Pipeline (Owner-Auftrag 03.11.2026): genau eine Workflow-Datei, deren Rumpf der Vorlage gleicht (naechster Test)
+  const approved = new Set(['scripts/vu2/build-release.mjs', 'quant/tests/release-delivery.test.mjs', '.github/workflows/app-ios-testflight.yml']);
+  const bad = files.filter(f => !approved.has(f) && !/^(app\/|docs\/architecture\/ADR-00[4-9]|docs\/mobile\/|docs\/handover\/)/.test(f));
   assert.deepEqual(bad, []);
 });
 
@@ -85,4 +86,16 @@ test('Pipeline-Vorlagen: keine Artefakt-Uploads, Geheimnisse nur aus secrets, Ei
   assert.match(wf, /github\.ref == 'refs\/heads\/main'/);
   assert.match(wf, /preflight_only/);
   assert.doesNotMatch(wf, /pull_request/, 'nur von Hand');
+});
+
+test('aktiver Workflow: gleicher Rumpf wie die Vorlage, nur von Hand, Vorpruefung als Standard, kein Upload ohne Freigabe', () => {
+  const body = (s) => s.slice(s.indexOf('name: App - iOS TestFlight'));
+  const live = read(path.join(repo, '.github/workflows/app-ios-testflight.yml'));
+  assert.equal(body(live), body(read(path.join(app, 'ci/ios-testflight.workflow.yml.template'))), 'Workflow und Vorlage weichen ab');
+  assert.match(live, /on:\s*\n\s+workflow_dispatch:/);
+  assert.doesNotMatch(live, /\n\s+(push|pull_request|pull_request_target|schedule|workflow_run):/);
+  assert.match(live, /preflight_only:[\s\S]*?default:\s*true/);
+  const steps = live.split('\n      - ').filter(s => /fastlane ios beta/.test(s));
+  assert.equal(steps.length, 1);
+  assert.match(steps[0], /if:\s*\$\{\{\s*!inputs\.preflight_only\s*\}\}/, 'Upload nur ohne preflight_only');
 });

@@ -96,7 +96,7 @@ jobs:
           npm ci --no-audit --no-fund
           npm test
           npm run build:www
-          npx cap sync ios
+          ./node_modules/.bin/cap sync ios   # Version aus package-lock.json (npm ci)
       - name: Zertifikat und Profil fuer diesen Lauf ablegen
         if: ${{ !inputs.preflight_only }}
         run: |
