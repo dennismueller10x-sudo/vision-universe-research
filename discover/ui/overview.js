@@ -219,7 +219,7 @@
     if (!n || !(n.cards || []).length) return "";
     var rows = n.cards.slice(0, 3).map(function (c) {
       var path = (c.performancePath || []).map(function (p) { return p.value; }).filter(isNum);
-      return U().stockRow({ ticker: c.symbol, name: c.companyName, sub: c.was || c.sector, series: path.length > 2 ? path : null, price: c.price && c.price.value, currency: "USD", changePct: c.changePercent && c.changePercent.value, href: "#/s/" + universe + "/" + encodeURIComponent(c.symbol) });
+      return U().stockRow({ ticker: c.symbol, name: c.companyName, sub: c.was || c.sector, chart: path.length > 2 && global.VUChart ? global.VUChart.sparkline(path) : "", price: c.price && c.price.value, currency: "USD", changePct: c.changePercent && c.changePercent.value, href: "#/s/" + universe + "/" + encodeURIComponent(c.symbol) });
     }).join("");
     var t = key === "sameTheme" && n.title ? "Gleiches Thema: " + titleCase(n.title.replace(/^Gleiches Thema · /, "")) : title;
     return section(key, t, '<div class="dv3-rows">' + rows + "</div>" + (n.rule && !/thema-|themenliste/i.test(n.rule) ? '<div style="margin-top:6px">' + U().help(n.rule.charAt(0).toUpperCase() + n.rule.slice(1) + ".") + "</div>" : ""));
