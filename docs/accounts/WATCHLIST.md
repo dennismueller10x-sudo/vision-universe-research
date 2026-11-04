@@ -284,19 +284,38 @@ der erste Integrationstest (§10).
 ## 7. Spätere intelligente Watchlist (vorbereitet, nichts aktiviert)
 
 `core/watchlist-view.js#events(vorher, nachher)` vergleicht zwei veröffentlichte Übersichten, also die Ergebnisse der bestehenden
-Datenläufe. Es arbeitet deterministisch, je Instrument einmal und nicht je Nutzer, mit idempotenter `eventId` im Format
-`core/contracts/events.schema.json`.
+Datenläufe. Es arbeitet deterministisch, je Instrument einmal und nicht je Nutzer, im Format `core/contracts/events.schema.json`
+(Regelversion `watchlist-events-1.1.0`). Jede Seite wird zu ihrem eigenen `generatedAt` bewertet.
+
+**Erzeuger:** `node scripts/account/build-watchlist-events.mjs --before=<Übersicht> --after=<Übersicht> --out=<Datei>`. Eine Übersicht ist
+das ausgelieferte Verzeichnis `watchlist-summary-v1/` (meta + rows) oder ein ganzes Dokument (`.json`/`.json.gz`). `--out` ist Pflicht;
+den kanonischen Ort `/core/data/watchlist-events-v1.json` verweigert er (Exit 3), solange die Datenart `watchlistEvents` in
+`core/registry/domains.json` auf `PREPARED_DISABLED` steht. Kein Workflow, kein Zeitplan, keine Zustellung.
+
+**Idempotenz:** `eventId = "ev_" + FNV-1a-64` über instrumentId, securityId (`core/identity.js`), Art, Unterart, Gegenstand (Faktor,
+Strategie, Abschnitt), vorher, nachher und Datenstand. `occurredAt` ist das `generatedAt` der neueren Übersicht. Zwei Läufe mit denselben
+Eingaben ergeben byte-gleiche Dateien.
 
 | Ereignis | Regel |
 |---|---|
-| `PRICE_EVENT/NEW_52W_HIGH` | neues Hoch bei aktuellem Stand, vorher keins |
-| `PRICE_EVENT/VOLUME_SPIKE` | relatives Volumen ≥ 2, vorher nicht |
+| `PRICE_EVENT/NEW_52W_HIGH` | neues Hoch bei aktuellem Stand, vorher belegt und kein Hoch |
+| `PRICE_EVENT/VOLUME_SPIKE` | relatives Volumen ≥ 2, vorher belegt und nicht |
+| `TECHNICAL_CHANGE/TREND_STRUCTURE_CHANGED` | Trendstruktur wechselt (z. B. RANGE → BULLISH), beide Stände aktuell |
+| `TECHNICAL_CHANGE/SMA200_CROSS_UP·DOWN` | Schluss wechselt über/unter die 200-Tage-Linie |
 | `SUPERTRADER_SIGNAL/VALID_SIGNAL` | erstmals gültige Eignung (freigegebene Strategie, handelbarer Zustand) |
-| `QUANT_CHANGE/FACTOR_BAND_UP·DOWN` | ein Faktor springt um mindestens zwei Stufen |
+| `SUPERTRADER_SIGNAL/VALID_SIGNAL_ENDED` | gültige Eignung endet |
+| `SUPERTRADER_SIGNAL/STATE_CHANGED` | Zustand einer Strategie wechselt; `presentation` RELEASED oder RESEARCH (Forschung ist keine Eignung) |
+| `QUANT_CHANGE/FACTOR_BAND_UP·DOWN` | ein Faktor springt um mindestens zwei Stufen (kein Gesamtscore) |
 | `QUANT_CHANGE/DATA_QUALITY_CHANGED` | `dataQuality` wechselt (PASS ↔ WARNING) |
+| `DATA_STATE_CHANGE/SOURCE_UPDATED` | neuer Stichtag einer Quelle (Kurs, Quant, Technik, Supertrader); ohne Instrument |
+| `DATA_STATE_CHANGE/SOURCE_STATE_CHANGED` | Frische einer Quelle wechselt, auch „Welt fehlt“ (UNAVAILABLE); ohne Instrument |
+| `DATA_STATE_CHANGE/SECTION_STATE_CHANGED` | Abschnitt eines Titels wechselt AVAILABLE/STALE/UNAVAILABLE – nur, wenn nicht die ganze Quelle wechselte |
+
+Erstbeobachtung, Delisting und gesperrte Identität erzeugen kein Ereignis.
 
 Zustellung später: Ereignisse × `watchlist_items.alerts` × Tarif, über den Index `watchlist_items_instrument`. Es werden keine E-Mails
 oder Pushes versendet, und kein kostenpflichtiger Dienst ist aktiviert. In der Oberfläche steht: „Gespeichert, aber noch nicht aktiv“.
+Aktivierung nur in eigenen PRs mit Owner-Freigabe (FREIGABEN.md): erst Erzeugung im Release-Bau (`ACTIVATING`), getrennt davon jede Zustellung.
 
 ## 8. Tests
 

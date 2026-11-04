@@ -71,7 +71,7 @@ Maßgeblich ist jetzt [TESTFLIGHT_STEP_BY_STEP.md](TESTFLIGHT_STEP_BY_STEP.md) (
 | Schritt | Wer | Ergebnis / Prüfung |
 |---|---|---|
 | 0 | Owner | Entscheidungen: Weg A, Bundle-ID, Namen. Developer-Konto vorhanden (Tabelle 3, Schritte 1 bis 4) |
-| 1 | Claude | PR #1280 mergen lassen (Owner gibt frei) oder Branch als Quelle verwenden |
+| 1 | Claude | *(erledigt)* Capacitor-Prototyp ist auf `main`; Quelle des Builds ist `main` |
 | 2 | Owner | Öffentliche Werte als Workflow-Umgebungsvariablen in Xcode Cloud setzen (Schritt 9) |
 | 3 | Owner | Xcode-Cloud-Workflow anlegen: Repository, Projekt `app/ios/App/App.xcworkspace`, Scheme `App`, Plattform iOS, **Auslöser nur Tag `app-v*`**, Aktion Archive, Nach-Aktion „TestFlight (nur interne Tests)“ |
 | 4 | Owner | Tag setzen, z. B. `app-v0.1.0`, **nur nachdem er das ausdrücklich beschlossen hat** (kein automatischer Auslöser) |

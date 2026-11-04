@@ -96,7 +96,11 @@ function createMarketstackClient(options = {}) {
           ctx.providerCode = sanitize(code);
         }
         const usageHeaders={};
-        for(const name of ['x-ratelimit-limit','x-ratelimit-remaining','x-request-count']){
+        // Billing headers as Marketstack actually sends them (observed in the
+        // owner-approved diagnostics run 41661792038 on 03.11.2026): credits
+        // charged for this response, monthly quota and its remainder, and the
+        // per-second rate limit. The older names are kept for compatibility.
+        for(const name of ['x-increment-usage','x-quota-limit','x-quota-remaining','x-ratelimit-limit-second','x-ratelimit-remaining-second','x-ratelimit-limit','x-ratelimit-remaining','x-request-count']){
           const value=response.headers&&typeof response.headers.get==='function'?response.headers.get(name):null;
           if(value!==null&&value!==undefined)usageHeaders[name]=sanitize(String(value));
         }

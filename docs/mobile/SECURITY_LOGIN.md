@@ -19,7 +19,7 @@ Folgen, die sich aus dem Code ergeben:
 
 **Bewertung:** Für den **privaten, internen** TestFlight-Build vertretbar (wenige bekannte Tester). Für alles Öffentliche **nicht** vertretbar. Die Anmeldung gehört dann über den Worker.
 
-## 2. Vorschlag (separater PR, nicht Teil von #1280, braucht Worker-Freigabe)
+## 2. Vorschlag (separater PR, braucht Worker-Freigabe)
 
 **Stand 03.11.2026:** Umgesetzt als Entwurf in **#1308** (Worker, rollt nach Merge automatisch aus, braucht Owner-Freigabe) und im App-PR (Verdrahtung, `app/tests/worker-route.test.mjs` gegen den echten Worker). Abweichungen zum Vorschlag: Neben `Origin` und Cookie wird auch `Sec-Fetch-Site`/`Sec-Fetch-Mode` abgelehnt, und ein Preflight auf `/v1/auth/app/*` bekommt 403. Das Refresh-Limit heißt `appRefresh` und liegt bei 60/h je IP. `logout` nimmt zusätzlich `{refreshToken}` an, damit die Sitzung auch mit abgelaufenem Zugriffstoken widerrufen wird. Der Standard bleibt `authTransport: 'supabase'` bis zum Gerätetest. Auf dem Gerät ist zu prüfen, ob CapacitorHttp ohne `Origin` und ohne Cookies sendet. Hat die WebView Cookies von `konto.visionuniverse.de`, etwa aus einem Web-Login im eingebetteten Inhalt, lehnt der Worker die Anfrage ab (`APP_CLIENT_ONLY`).
 
