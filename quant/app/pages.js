@@ -681,16 +681,17 @@
       history.replaceState(null, "", X.routes.screener("faktoren=" + sel.factors.join(",") + "&min=" + sel.min + "&max=" + sel.max));
       sync(); run();
     }
-    var sentence = el("p", { class: "qx-sentence", "aria-live": "polite" });
-    var sentenceBox = el("div", { class: "vu-box vu-box--lime qv3-ask" }, [el("p", { class: "vu-ltag", text: "Deine Frage" }), sentence, el("p", { class: "qv3-ask-rule" })]);
+    var sentenceText = el("p", { class: "qx-sentence", "aria-live": "polite" });
+    var sentenceBox = el("div", { class: "vu-box vu-box--lime qv3-ask" }, [el("p", { class: "vu-ltag", text: "Deine Frage" }), sentenceText, el("p", { class: "qv3-ask-rule" })]);
+    var sentence = global.VUUI ? sentenceBox : sentenceText;
     var out = el("div", { "aria-live": "polite" });
     var results = el("section", { class: "q-results", "aria-label": "Ergebnisse" }, [out]);
     panel.open = !chosen;
-    main.append(global.VUUI ? el("h2", { class: "vu-sect qv3-pad", text: "Schnellwahl" }) : el("p", { class: "q-kicker", style: "margin-top:20px", text: "Schnellwahl" }), list, panel, global.VUUI ? sentenceBox : sentence, results);
+    main.append(global.VUUI ? el("h2", { class: "vu-sect qv3-pad", text: "Schnellwahl" }) : el("p", { class: "q-kicker", style: "margin-top:20px", text: "Schnellwahl" }), list, panel, sentence, results);
     var run_id = 0;
     async function run() {
       var mine = ++run_id, q = chosen;
-      sentence.textContent = global.VUUI ? (q ? ASK_SENT[q.id] || q.sentence : "Aktien mit " + sel.factors.map(function (id) { return FACTOR_SHORT[id] || shortName(id); }).join(" und ") + " zwischen " + sel.min + " und " + sel.max + " von 100.")
+      sentenceText.textContent = global.VUUI ? (q ? ASK_SENT[q.id] || q.sentence : "Aktien mit " + sel.factors.map(function (id) { return FACTOR_SHORT[id] || shortName(id); }).join(" und ") + " zwischen " + sel.min + " und " + sel.max + " von 100.")
         : q ? q.sentence : "Du suchst Aktien mit " + sel.factors.map(shortName).join(" und ") + " zwischen " + sel.min + " und " + sel.max + " von 100.";
       var ruleNode = sentenceBox.querySelector(".qv3-ask-rule");
       ruleNode.textContent = q && q.setups ? "Setup bestätigt oder im Aufbau" : q && q.high ? "Abstand zum 52-Wochen-Hoch ≤ 3 %" : ruleLine(sel.factors, sel.min, sel.max);
