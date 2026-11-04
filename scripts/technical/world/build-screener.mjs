@@ -14,6 +14,8 @@
      technical/data/screener-v1.json   eine Zeile je Titel, spaltenbasiert
      technical/data/spark-v1.json      Mini-Kursverlauf je Titel (gleiche Reihenfolge wie screener.cols.s)
      technical/data/meta.json          Stand, Zaehler, Versionen, Gruende
+     technical/data/stock/<XX>.json    Technical-Stand je Aktie in Kurzform (technical/engine/stock-summary.js),
+                                       Scherbe = core/identity.js#shardKey; fuer andere Welten (Supertrader-Aktienseite)
 
    Kein Anbieterabruf, kein R2, keine Schluessel. Die Rechnung steckt in
    quant/engines/technical/screen-row.js (dieselbe Funktion koennte der
@@ -22,7 +24,7 @@
 
    Aufruf:  node scripts/technical/world/build-screener.mjs [--out DIR] [--limit N] [--tickers A,B]
    ========================================================================= */
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, rmSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,6 +43,7 @@ const Contract = require(join(root, "quant/engines/technical/screener-contract.j
 const Indicators = require(join(root, "quant/engines/technical/indicators.js"));
 const Formations = require(join(root, "quant/engines/technical/formations.js"));
 const Model = require(join(root, "technical/engine/model.js"));
+const StockSummary = require(join(root, "technical/engine/stock-summary.js"));
 /* Belegte, nicht bereinigte Kapitalmassnahmen der Marktdaten-Domaene (Kennzeichnung "bestaetigt", screen-row 1.13.0). */
 const caConfirmations = loadCaConfirmations(root);
 
@@ -178,9 +181,35 @@ export function build(options = {}) {
       identityQuarantine: quarantine.file
     },
     producer: "scripts/technical/world/build-screener.mjs",
-    paths: { screener: "/technical/data/screener-v1.json", spark: "/technical/data/spark-v1.json", index: "/technical/data/index-v1.json", chart: "/quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz" }
+    paths: { screener: "/technical/data/screener-v1.json", spark: "/technical/data/spark-v1.json", index: "/technical/data/index-v1.json", chart: "/quant/data/product/technical-signals-v1/by-ticker/<T>.json.gz",
+      stock: StockSummary.DIR + "<shardKey>.json" }
   };
   return { artifact, meta, spark };
+}
+
+/**
+ * Technical-Stand je Aktie (technical/engine/stock-summary.js) nach DIR/stock/<XX>.json. Scherben, die es nicht mehr gibt,
+ * werden entfernt (nur Dateien im Format <XX>.json). Bei einem Vertragsverstoss wird nichts geschrieben.
+ * @returns {{ shards: number, stocks: number, maxBytes: number, errors: string[] }}
+ */
+export function writeStockSummary(out, artifact) {
+  const { shards, count } = StockSummary.build(artifact);
+  const errors = [];
+  let maxBytes = 0;
+  const bodies = {};
+  for (const key of Object.keys(shards).sort()) {
+    StockSummary.check(shards[key], key).forEach((e) => errors.push(key + ": " + e));
+    const body = JSON.stringify(shards[key]);
+    if (body.length > StockSummary.SHARD_BUDGET) errors.push(key + ": BUDGET " + body.length);
+    maxBytes = Math.max(maxBytes, body.length);
+    bodies[key] = body;
+  }
+  if (errors.length) return { shards: 0, keys: [], stocks: 0, maxBytes, errors };
+  const dir = join(out, "stock");
+  mkdirSync(dir, { recursive: true });
+  for (const f of readdirSync(dir)) if (/^[A-Z0-9_]{1,2}\.json$/.test(f) && !bodies[f.slice(0, -5)]) rmSync(join(dir, f));
+  for (const key of Object.keys(bodies)) writeFileSync(join(dir, key + ".json"), bodies[key]);
+  return { shards: Object.keys(bodies).length, keys: Object.keys(bodies), stocks: count, maxBytes, errors };
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
@@ -198,6 +227,15 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     process.exit(2);
   }
   mkdirSync(out, { recursive: true });
+  /* Je-Aktie-Scherben nur aus einem vollen Lauf: ein Teillauf (--limit/--tickers) wuerde fehlende Aktien loeschen.
+     Vor dem Screener geschrieben: ein Vertragsverstoss bricht ab, bevor irgendetwas ueberschrieben ist. */
+  if (!limit && !tickers) {
+    const st = writeStockSummary(out, artifact);
+    if (st.errors.length) { console.error("Je-Aktie-Stand verletzt den Vertrag: " + st.errors.slice(0, 10).join(" | ")); process.exit(2); }
+    console.log(`Technical je Aktie: ${st.stocks} Aktien in ${st.shards} Scherben, groesste ${st.maxBytes} Bytes -> ${join(out, "stock")}`);
+    /* Leser fragen nur Scherben an, die hier stehen (keine vergebliche Anfrage, kein 404 fuer ein Kuerzel ohne Scherbe). */
+    meta.stock = { schema: StockSummary.SCHEMA, count: st.stocks, shards: st.keys };
+  }
   writeFileSync(join(out, "screener-v1.json"), JSON.stringify(artifact));
   writeFileSync(join(out, "meta.json"), JSON.stringify(meta, null, 1) + "\n");
   writeFileSync(join(out, "index-v1.json"), JSON.stringify(index));
