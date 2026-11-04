@@ -17,7 +17,9 @@ export const STORE_PREFIX = 'research-snapshots/supertrader/sts1';
 export const SMOKE_PREFIX = 'research-snapshots/supertrader/sts1-smoke';
 // Kostenschranke vor Aktivierung: hoechstens so viele Generationen je Ablage und so viele Bytes je Snapshot.
 // Loeschen erlaubt der Treiber nicht (Zero-Cost-Haertung); das Aufraeumen ist eine Owner-Entscheidung.
-export const RETENTION = Object.freeze({ maxGenerations: 3, maxSmokeGenerations: 5, maxSnapshotBytes: 3e9, shardTargetBytes: 16 * 1024 * 1024 });
+// maxGenerations 4 (04.11.2026, SF6-PAPER-2027 E-P2 RAISE_CAP_TO_4_FORWARD_GENERATION): DEV, HOLDOUT, die eingefrorenen
+// Forward-Sitzungen des Papierhandels 2027 und eine Generation 3 mit lizenzierter CA-Quelle (FP-ST-01) ohne Löschung.
+export const RETENTION = Object.freeze({ maxGenerations: 4, maxSmokeGenerations: 5, maxSnapshotBytes: 3e9, shardTargetBytes: 16 * 1024 * 1024 });
 
 export const REASON = Object.freeze({
   INPUT_INTEGRITY_FAILURE: 'INPUT_INTEGRITY_FAILURE',
