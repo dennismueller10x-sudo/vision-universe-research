@@ -346,6 +346,13 @@
     if (t === 'SUCHE') return { view: 'home', focus: 'suche' };
     // Fundamental 2.0: Ranglisten und Branchen der Startseite (zweiteilig, damit core/stock-context.js sie nicht als Aktie liest)
     var parts = h.split('?')[0].split('/').map(function (x) { try { return decodeURIComponent(x); } catch (e) { return ''; } });
+    // Redesign 2027: Leistenplaetze Ranglisten (Reiter Auswahlen: #/ranglisten/auswahlen/<auswahl>) und Branchen
+    if (t === 'RANGLISTEN') {
+      var rl = { view: 'home', focus: 'ranglisten' };
+      if (parts[1] === 'auswahlen') { rl.tab = 'auswahlen'; if (/^[a-z0-9-]{3,40}$/.test(parts[2] || '')) rl.row = parts[2]; }
+      return rl;
+    }
+    if (t === 'BRANCHEN') return { view: 'home', focus: 'branchen' };
     if (t === 'RANGLISTE') return /^[a-z]{3,20}$/.test(parts[1] || '') ? { view: 'ranking', id: parts[1] } : { view: 'home', focus: 'entdecken' };
     if (t === 'BRANCHE') return /^\d{2}$/.test(parts[1] || '') ? { view: 'industry', id: parts[1] } : { view: 'home', focus: 'entdecken' };
     if (!validTicker(t)) return { view: 'home', invalid: true };
