@@ -300,7 +300,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const karten=await page.locator('#qx-main a.qv3-scard').count();
    if(karten!==profiles.length)befund(view,width,'der Strategie-Katalog zeigt '+karten+' von '+profiles.length+' Ansaetzen');
    const katalog=await page.locator('#qx-main').innerText();
-   if(!/Aktien erfüllen heute|erfüllen heute alle/.test(katalog))befund(view,width,'kein Ansatz nennt seine heutigen Treffer');
+   if(!/Aktien erfüllen heute|erfüllen heute alle|\d[\d.]* Aktien heute/.test(katalog))befund(view,width,'kein Ansatz nennt seine heutigen Treffer');
    if(!/keine (Erfolgs- oder )?Trefferquote/i.test(katalog))befund(view,width,'die Absage an eine Trefferquote fehlt');
   }
   if(view==='strategien'&&!v3){
@@ -421,7 +421,12 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
     for(const ziel of [...pillen.slice(1),...pillen.slice(0,-1).reverse()]){
      await page.locator(`.qv2-toc a[data-target="${ziel}"]`).click();await ruhig();await page.waitForTimeout(700);
      const ist=await aktiv();if(ist!==ziel)befund(view,width,`Pille "${ziel}" angeklickt, markiert ist "${ist}"`);}
-    if(width>=760){
+    if(v3){
+     /* Redesign 2027 (Q07): eine lange Seite auch auf dem Handy - die Pille folgt dem senkrechten Scrollen. */
+     for(const ziel of ['setup','dafuer','historie','veraenderung']){
+      await page.evaluate(id=>{const n=document.getElementById(id);scrollTo({top:scrollY+n.getBoundingClientRect().top-innerHeight*0.32,behavior:'instant'});},ziel);
+      await page.waitForTimeout(700);const ist=await aktiv();if(ist!==ziel)befund(view,width,`beim Scrollen zu "${ziel}" markiert ist "${ist}"`);}
+    }else if(width>=760){
      for(const ziel of ['einordnung','veraenderung'])/* links in ihrer Zeile, rechts daneben dafuer bzw. setup */{
       await page.evaluate(id=>{const n=document.getElementById(id);scrollTo({top:scrollY+n.getBoundingClientRect().top-innerHeight*0.32,behavior:'instant'});},ziel);
       await page.waitForTimeout(700);const ist=await aktiv();if(ist!==ziel)befund(view,width,`beim Scrollen zu "${ziel}" markiert ist "${ist}"`);}
