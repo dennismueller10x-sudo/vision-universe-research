@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-02",
+  "assistantBase": "97b15816089c91e28c577c5c24c5f3a2e4c6f66b",
+  "technical": {
+    "pass": 73,
+    "fail": 0
+  },
+  "core": {
+    "pass": 308,
+    "fail": 0
+  },
+  "technicalTiEngines": {
+    "pass": 574,
+    "fail": 0
+  },
+  "academyBrowserGroups": {
+    "pass": 25,
+    "fail": 0,
+    "lessonViews": 192,
+    "widths": [
+      360,
+      390,
+      1280
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ]
+  },
+  "existingTechnicalBrowser": {
+    "pass": 66,
+    "fail": 0
+  },
+  "isolation": "full Technical suite: no production file changed",
+  "protectedPaths": "git diff against assistantBase empty for quant/engines, supertrader, technical/data, templates.js, assistant.js",
+  "limitations": [
+    "Chromium mobile emulation; no physical iPhone/Safari test",
+    "Editorial self-review; owner acceptance pending"
+  ]
+}

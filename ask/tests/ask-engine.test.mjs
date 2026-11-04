@@ -67,11 +67,14 @@ test("Link in den Screener traegt genau die Filter", () => {
 });
 
 /* Chartbild-Werkzeug: Zeilen wie im echten index.json.gz (vu-ti-api-3), gekuerzt */
+/* Die Engine misst die Aktualitaet am heutigen Datum (engine.js, latestAsOf). Feste Daten veralten mit der Zeit und
+   machten den Test datumsabhaengig rot; AAA und BBB tragen deshalb einen Stand von vor drei Tagen, CCC bleibt alt. */
+const RECENT = new Date(Date.now() - 3 * 864e5).toISOString().slice(0, 10);
 const TI_INDEX = { schemaVersion: "vu-ti-api-3.0.0", methodologyKey: JSON.stringify({ elliott: "elliott-3.2.1" }), rows: [
-  { t: "AAA", tf: "1W", asOf: "2026-10-01", close: 166.68, outlook: "BULLISH", structure: "CORRECTION_IN_UPTREND", confidence: "LOW", template: "CONTINUATION", status: "EXTENDED", direction: "BULLISH",
+  { t: "AAA", tf: "1W", asOf: RECENT, close: 166.68, outlook: "BULLISH", structure: "CORRECTION_IN_UPTREND", confidence: "LOW", template: "CONTINUATION", status: "EXTENDED", direction: "BULLISH",
     entry: [148.5, 154.5], invalidation: 145, t1: [171, 175], rr: 3.27, elliott: "WXY:Y", elliottApplicable: "LOW", evidence: "NOT_ESTABLISHED", empirical: { n: 22127, hit: 0.3989, base: 0.404 },
     alerts: { levels: { entryLow: 148.5, entryHigh: 154.5, invalidation: 145, confirmation: 159, target1: [171, 175] } } },
-  { t: "BBB", tf: "1W", asOf: "2026-10-01", close: 2.44, outlook: "BEARISH", structure: "DOWNTREND_ADVANCING", confidence: "HIGH", direction: "BEARISH",
+  { t: "BBB", tf: "1W", asOf: RECENT, close: 2.44, outlook: "BEARISH", structure: "DOWNTREND_ADVANCING", confidence: "HIGH", direction: "BEARISH",
     entry: [1.9, 3], invalidation: 4.6, t1: [-2695.2, -2694.56], elliott: "WXY:done", elliottApplicable: "HIGH", evidence: "EXPERIMENTAL",
     alerts: { levels: { confirmation: 949.73 } } },
   { t: "CCC", tf: "1W", asOf: "2024-10-11", close: 10, outlook: "NEUTRAL", structure: "SIDEWAYS_RANGE", elliottApplicable: null }

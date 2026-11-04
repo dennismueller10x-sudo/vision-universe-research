@@ -1126,6 +1126,7 @@
     if (!sym || (!entries.length && !history.length && !t52)) {
       main.appendChild(emptyBox('Kein Supertrader-Modell erkennt ' + (sym || 'diesen Titel'), 'Heute sieht keine Methode ein Setup, einen Kandidaten oder einen Teiltreffer.'));
       if (sym) main.appendChild(discoverLink(sym, sig, 'In Discover öffnen'));
+      if (sym) mountTechnical(main, sym, kit, sig);
       main.appendChild(disclaimer(sig)); return;
     }
     // Kurse erst laden, wenn ein Modell die Aktie fuehrt (sonst keine vergebliche Anfrage).
@@ -1199,7 +1200,23 @@
     entries.forEach(function (e) { if (e.kind === 'partial') { var pc = sig.partialChecks[e.id]; dmAdd(S[e.id].world_name, 'Teilprüfung auf Basis von ' + pc.fundamentalsBasis + '. Kurse vom ' + dateDe(pc.asOf) + '.'); } });
     dmAdd('Anzeigewährung', fxHost);
     dmAdd('Kurs im Kopf', 'Während der Handelszeit der letzte Kurs der Börse IEX (über Tiingo, verzögert), sonst der Tagesschluss. Er dient nur der Anzeige; Signale, Trigger und Stops rechnen auf Tagesschlusskursen.');
+    mountTechnical(main, sym, kit, sig);
     main.appendChild(disclaimer(sig));
+  }
+  /* Technical-Stand derselben Aktie (assets/st-technical.js): nur lesen, als Technical gekennzeichnet, Link nach Chart
+     Studio ueber core/stock-context.js. Der Platzhalter steht sofort an seiner Stelle; ein Fehler laesst die Seite unberuehrt. */
+  function mountTechnical(host, sym, kit, sig) {
+    var slot = h('div', { class: 'st-tech-slot' });
+    host.appendChild(slot);
+    dmAdd('Technischer Zustand', 'Veröffentlichter Stand der Produktwelt Technical (Vorlagen, Analyseziele, Formationen, Trend, Datenqualität) mit eigenem Stichtag. Supertrader zeigt ihn nur an und rechnet daraus nichts; er ändert kein Modell und kein Signal.');
+    kit.catch(function () {}).then(function () {
+      return window.STTechnical ? null : loadScript(BASE + 'assets/st-technical.js');
+    }).then(function () {
+      if (!window.STTechnical) return;
+      var SC = window.VUCore && window.VUCore.StockContext;
+      var chartHref = function (t) { try { return SC.href(SC.fromUs(t), 'technical'); } catch (e) { return null; } };
+      return window.STTechnical.mount(slot, sym, { chartHref: chartHref, supertraderAsOf: sig && sig.asOf });
+    }).catch(function () { slot.remove(); });
   }
   function lensBlock(s, strat, D) {
     var p = s.plan;

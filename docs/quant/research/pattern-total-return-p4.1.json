@@ -1,0 +1,182 @@
+{
+ "schemaVersion": "pattern-total-return-1.0.0",
+ "evidenceKind": "RESEARCH_RETURN_BASIS_COMPARISON",
+ "certification": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "gateInput": false,
+ "claim": "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+ "template": "pattern-2015-sideways-p41-total-return",
+ "window": {
+  "from": "2015-01-01",
+  "to": "2025-06-30"
+ },
+ "asOf": "2025-12-31",
+ "pattern": {
+  "id": "DRAWDOWN_FROM_PEAK_20PCT",
+  "version": "1.0.0"
+ },
+ "horizonBars": 13,
+ "cooldownBars": 13,
+ "costs": {
+  "feeBps": 5,
+  "slippageBps": 5
+ },
+ "benchmark": "NONE",
+ "contracts": {
+  "totalReturn": "canonical-total-return-1.0.0",
+  "weekly": "weekly-total-return-1.0.0",
+  "engine": "research-studies-1.1.0",
+  "runner": "backtest-runner-1.0.0"
+ },
+ "cohort": {
+  "requested": 5,
+  "included": 4,
+  "excluded": [
+   {
+    "ticker": "AAPL",
+    "securityId": "ref_AAPL",
+    "reason": "NOT_IN_POPULATION_FRAME"
+   }
+  ],
+  "sources": {
+   "ref_JPM": {
+    "ticker": "JPM",
+    "source": "GOLDEN_PREVIEW",
+    "trState": "TOTAL_RETURN_RECONSTRUCTED",
+    "trBasis": "CANONICAL_TOTAL_RETURN",
+    "firstLevel": "2015-01-02",
+    "lastLevel": "2025-12-26",
+    "weeksWithLevel": 574
+   },
+   "ref_MSFT": {
+    "ticker": "MSFT",
+    "source": "GOLDEN_PREVIEW",
+    "trState": "TOTAL_RETURN_RECONSTRUCTED",
+    "trBasis": "CANONICAL_TOTAL_RETURN",
+    "firstLevel": "2015-01-02",
+    "lastLevel": "2025-12-26",
+    "weeksWithLevel": 574
+   },
+   "ref_NVDA": {
+    "ticker": "NVDA",
+    "source": "GOLDEN_PREVIEW",
+    "trState": "TOTAL_RETURN_RECONSTRUCTED",
+    "trBasis": "CANONICAL_TOTAL_RETURN",
+    "firstLevel": "2015-01-02",
+    "lastLevel": "2025-12-26",
+    "weeksWithLevel": 574
+   },
+   "ref_XOM": {
+    "ticker": "XOM",
+    "source": "GOLDEN_PREVIEW",
+    "trState": "TOTAL_RETURN_RECONSTRUCTED",
+    "trBasis": "CANONICAL_TOTAL_RETURN",
+    "firstLevel": "2015-01-02",
+    "lastLevel": "2025-12-26",
+    "weeksWithLevel": 574
+   }
+  }
+ },
+ "parity": {
+  "reference": "backtest-runner.cjs (PRICE_RETURN, gleiche Spec)",
+  "runnerSpecHash": "11f254518ebdceb10c49807efa71e55e49a333e3f2a700452f701c6294d39349",
+  "eventsCompared": 62,
+  "mismatches": 0
+ },
+ "priceReturn": {
+  "returnBasis": "PRICE_RETURN",
+  "events": {
+   "occurrences": 62,
+   "observed": 62,
+   "censored": 0,
+   "immature": 0,
+   "ineligible": 0
+  },
+  "censoredReasons": {},
+  "titles": 4,
+  "perEvent": {
+   "n": 62,
+   "mean": 0.0687205971639169,
+   "median": 0.04411633839610307,
+   "hitRate": 0.6290322580645161,
+   "interval95": [
+    0.002828564325110347,
+    0.13461263000272344
+   ]
+  },
+  "matchedExcess": {
+   "n": 60,
+   "mean": -0.003883800521789162,
+   "median": 0.007471755651809575
+  },
+  "resultHash": "fc9272de346902db78627234d2dcd35f87e23cbaf1ae757c0b408001878736cc"
+ },
+ "totalReturn": {
+  "returnBasis": "TOTAL_RETURN",
+  "events": {
+   "occurrences": 62,
+   "observed": 62,
+   "censored": 0,
+   "immature": 0,
+   "ineligible": 0
+  },
+  "censoredReasons": {},
+  "titles": 4,
+  "perEvent": {
+   "n": 62,
+   "mean": 0.0762666954956499,
+   "median": 0.0524517337984024,
+   "hitRate": 0.6612903225806451,
+   "interval95": [
+    0.015996023916073354,
+    0.13653736707522646
+   ]
+  },
+  "matchedExcess": {
+   "n": 60,
+   "mean": -0.0021434984642872672,
+   "median": 0.010460368497755695
+  },
+  "resultHash": "02daa4ef904be30caa2b3114da5884d4cd01468336b9340e22141b6c37fd2c7e"
+ },
+ "paired": {
+  "pairs": 62,
+  "meanDifference": 0.007546098331732977,
+  "medianDifference": 0.008403005002555808,
+  "min": -0.0004384725310084825,
+  "max": 0.024012620043429633,
+  "direction": "Gesamtrendite minus Kursrendite je Ereignis",
+  "decomposition": {
+   "distributions": {
+    "mean": 0.007537743732631988,
+    "median": 0.008403005002555808,
+    "min": 0.00008153142798095203,
+    "max": 0.024012620043429633,
+    "rule": "Gesamtrendite minus Kursrendite derselben Tagesreihe"
+   },
+   "weeklySeriesSource": {
+    "mean": 0.000008354599100989987,
+    "median": 0,
+    "min": -0.0009454244805069401,
+    "max": 0.001254117031515456,
+    "rule": "Kursrendite der Tagesreihe minus Kursrendite der Wochenreihe (discover-series-long, gerundete Schluesse)"
+   }
+  }
+ },
+ "reportHash": "bf7d9e05bbba302bdfee8a4434e96c5fbc148245d295a471c4ba5075b55a3758",
+ "gate": {
+  "gate": "PATTERN_EVIDENCE.returnBasis",
+  "today": "FAIL STUDY_RETURN_BASIS_NOT_TOTAL_RETURN (Konstante in scripts/quant/build-backtest-certification.mjs, liest keinen Bericht)",
+  "readsThisReport": false,
+  "cohortShareWithTotalReturn": 0.8,
+  "underP42": "Die bestehende Definition (Renditebasis der Studie = Gesamtrendite) waere fuer diese Research-Kohorte erfuellt (4 von 5 Titeln mit bestaetigter Gesamtrendite, Ausschluesse ausgewiesen). Das Gate liest aber die Produkt-Musterstudie quant/data/product/pattern-research-v1/study.json (Kursrendite, Erzeuger build-pattern-research.mjs); es kippt erst, wenn deren Erzeuger in der Pipeline mit --work-dir in Gesamtrendite rechnet und der Builder die Basis aus der Studie liest (Freigabe FV-5).",
+  "comparableCoverage": {
+   "source": "quant/data/product/total-return-quality-v1.json signalStudy",
+   "titles": 6206,
+   "withTotalReturn": 6068,
+   "share": 0.978,
+   "minimumShareInSignalGate": 0.95
+  }
+ },
+ "dailySource": "quant/data/market/golden-preview/daily (oeffentlich)"
+}
