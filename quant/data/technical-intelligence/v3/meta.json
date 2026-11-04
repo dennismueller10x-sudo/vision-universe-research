@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-11-02T18:52:14.518Z",
+ "generatedAt": "2026-11-04T13:11:55.072Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -12,8 +12,8 @@
  },
  "counts": {
   "daily": 5,
-  "weekly": 5041,
-  "skipped": 1154,
+  "weekly": 5044,
+  "skipped": 1170,
   "shards": 620,
   "identityQuarantined": 6
  },
@@ -44,22 +44,22 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 4451,
+ "runtimeSec": 2969,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
-   "ABSTAIN": 4389,
-   "NO_PROJECTION": 105,
+   "ABSTAIN": 4386,
    "DATA_INVALID": 456,
-   "AVAILABLE": 36,
-   "WITHHELD": 65
+   "NO_PROJECTION": 103,
+   "WITHHELD": 73,
+   "AVAILABLE": 36
   },
   "consumerVisible": 36,
   "types": {
-   "NEXT_MOVE": 30,
+   "NEXT_MOVE": 29,
    "WAVE_C": 1,
-   "REVERSAL": 2,
+   "REVERSAL": 3,
    "THRUST": 3
   },
   "highUpside": 0,
@@ -67,106 +67,105 @@
   "explore": {
    "highlights": {
     "securities": 104,
-    "theses": 112,
+    "theses": 110,
     "perSecurity": {
-     "1": 96,
-     "2": 8
+     "1": 98,
+     "2": 6
     },
     "direction": {
-     "DOWN": 55,
-     "UP": 57
+     "UP": 57,
+     "DOWN": 53
     },
     "type": {
-     "WAVE_C": 82,
-     "WAVE_3": 30
+     "WAVE_C": 79,
+     "WAVE_3": 31
     },
     "pattern": {
-     "ZIGZAG": 59,
-     "FLAT": 22,
-     "IMPULSE": 30,
-     "DOUBLE_ZIGZAG": 1
+     "ZIGZAG": 58,
+     "IMPULSE": 31,
+     "FLAT": 21
     },
     "failedSet": {
-     "G5": 55,
-     "G2": 57
+     "G2": 54,
+     "G5": 56
     },
     "rankPct": {
-     "0-10": 87,
+     "0-10": 85,
      "10-25": 25,
      "25-50": 0,
      "50-100": 0
     },
     "contextAgreement": {
-     "0": 51,
-     "1": 34,
-     "2": 27
+     "0": 49,
+     "1": 30,
+     "2": 31
     },
     "extendedMove": {
-     "UP 250-500%": 13,
+     "UP 250-500%": 16,
+     "UP 100-250%": 21,
+     "DOWN 50-100%": 6,
      "DOWN <50%": 15,
-     "UP 100-250%": 22,
      "UP >1000%": 2,
-     "UP <50%": 7,
+     "UP <50%": 8,
      "UP 500-1000%": 3,
-     "DOWN 50-100%": 5,
-     "UP 50-100%": 10,
+     "UP 50-100%": 7,
      "DOWN 500-1000%": 1
     },
     "extremeMove": {
      "UP 500-1000%": 11,
-     "UP 250-500%": 9,
+     "UP 250-500%": 13,
      "UP >1000%": 3,
-     "UP <50%": 1,
-     "UP 50-100%": 5,
-     "UP 100-250%": 18,
-     "DOWN 50-100%": 2
+     "UP <50%": 2,
+     "UP 100-250%": 13,
+     "UP 50-100%": 3,
+     "DOWN 50-100%": 1
     }
    },
    "candidates": {
-    "securities": 3713,
-    "entries": 13077,
+    "securities": 3695,
+    "entries": 13033,
     "perSecurity": {
-     "1": 474,
-     "2": 680,
-     "3": 748,
-     "4": 678,
-     "5": 511,
-     "6": 622
+     "1": 457,
+     "2": 687,
+     "3": 734,
+     "4": 683,
+     "5": 536,
+     "6": 598
     },
     "direction": {
-     "DOWN": 6816,
-     "UP": 6261
+     "DOWN": 6748,
+     "UP": 6285
     },
     "type": {
-     "WAVE_C": 9763,
-     "WAVE_3": 2879,
-     "WAVE_5": 435
+     "WAVE_C": 9740,
+     "WAVE_3": 2861,
+     "WAVE_5": 432
     },
     "failedSet": {
-     "G3+G4": 1887,
-     "G3+G4+G5": 567,
-     "G2+G3+G4": 3074,
-     "G2+G3+G4+G5": 1437,
-     "G3": 740,
-     "G2+G3": 1556,
-     "G3+G5": 462,
-     "G2+G4": 681,
-     "G4+G5": 251,
-     "G2+G3+G5": 1014,
-     "G2+G4+G5": 459,
-     "G2+G5": 186,
-     "G5": 103,
-     "G4": 478,
-     "G2": 182
+     "G2+G3+G4": 3050,
+     "G3+G4+G5": 555,
+     "G2+G3+G4+G5": 1431,
+     "G2+G3+G5": 993,
+     "G3+G4": 1824,
+     "G3": 716,
+     "G2+G3": 1564,
+     "G3+G5": 440,
+     "G2+G4": 705,
+     "G4+G5": 243,
+     "G2+G4+G5": 469,
+     "G4": 514,
+     "G2+G5": 203,
+     "G5": 113,
+     "G2": 213
     }
    }
   },
-  "splitResolved": 205,
+  "splitResolved": 203,
   "normalAlternative": 36,
-  "motiveAlternative": 25,
-  "motiveDOWN": 20,
+  "motiveAlternative": 28,
+  "motiveDOWN": 23,
   "motiveUP": 5,
-  "motiveHighUpside": 4,
+  "motiveHighUpside": 3,
   "freshness": {
    "version": "data-freshness-1.0.0",
    "policy": {
@@ -176,112 +175,119 @@
     "sessionCompleteUtcHour": 22,
     "calendar": "US_EQUITY"
    },
-   "reference": "2026-10-30",
-   "titles": 5046,
+   "reference": "2026-11-03",
+   "titles": 5049,
    "states": {
-    "FRESH": 4973,
+    "FRESH": 4968,
+    "STALE": 70,
     "DELAYED": 8,
-    "STALE": 62,
     "NON_TRADING": 3
    },
    "reasons": {
-    "REFRESH_STOPPED": 43,
+    "REFRESH_STOPPED": 51,
     "NO_NEWER_BARS": 27,
     "SECURITY_INACTIVE": 3
    },
    "reasonsKnown": 3,
    "delayedWithNotice": 8,
    "affected": {
-    "titles": 65,
-    "primary": 56,
-    "alternative": 53,
+    "titles": 73,
+    "primary": 62,
+    "alternative": 59,
     "motiveAlternative": 0,
     "exploreHighlights": 7,
-    "exploreCandidates": 131,
+    "exploreCandidates": 151,
     "consumerVisibleProjections": 0
    },
    "ageBuckets": {
-    "0-3": 4973,
-    "4-5": 8,
-    "21-40": 23,
-    ">40": 25,
-    "6-10": 4,
-    "11-20": 13
+    "0-3": 4976,
+    "6-10": 9,
+    "21-40": 28,
+    ">40": 27,
+    "11-20": 9
    },
    "withheldTitles": [
+    "ACA",
     "AIXC",
-    "ANY",
     "APGE",
+    "ANY",
     "AREN",
     "ATAI",
     "ATKR",
     "AVB",
-    "BZH",
     "BTOG",
+    "BZH",
     "CCO",
     "CRNX",
     "CSAN",
     "DBRG",
-    "DBRG-P-H",
-    "DBRG-P-I",
     "DBRG-P-J",
+    "DBRG-P-I",
+    "DBRG-P-H",
     "DOMO",
+    "ELME",
     "FBRX",
     "FGNX",
     "FGNXP",
     "FSEA",
-    "GETY",
     "GBTG",
+    "GETY",
     "GWH",
     "HLX",
-    "IWML",
     "IWFL",
+    "IWML",
     "JUPGF",
     "LBRDP",
+    "LBRDK",
     "LBRDA",
     "LESL",
     "LEG",
-    "LBRDK",
-    "MDV",
-    "MDV-P-A",
     "MAA-P-I",
+    "MDV-P-A",
+    "MDV",
+    "MSGS",
     "MTUL",
-    "NCSM",
+    "NATH",
     "NLY-P-I",
+    "NCSM",
     "NSTS",
-    "NTZ",
     "NVNI",
+    "NTZ",
+    "PERF",
     "PHGE",
     "PRIF-P-L",
     "QNCX",
     "QRVO",
     "QULL",
     "RMAX",
-    "SCDL",
     "SAT",
+    "SCDL",
     "SNYR",
     "TALK",
-    "TWO-P-A",
     "TWO-P-C",
+    "TWO-P-A",
     "TWO",
     "TWO-P-B",
     "UUU",
     "VRME",
     "VTAK",
-    "WALD",
+    "VSME",
     "WBS",
+    "WEAV",
+    "WALD",
     "WBD",
     "WBS-P-G",
     "WBS-P-F",
+    "WPRT",
     "ZTEK"
    ],
    "systemic": {
-    "share": 0.0129,
+    "share": 0.0145,
     "maxShare": 0.2,
     "systemic": false
    }
   },
-  "lifecycleEvents": 0,
-  "tracked": 454
+  "lifecycleEvents": 136,
+  "tracked": 458
  }
 }

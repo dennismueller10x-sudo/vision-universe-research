@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "marketstack-documented-endpoint-coverage-1",
+  "scope": "DOCUMENTED_PROVIDER_COVERAGE_ONLY",
+  "method": "Exact sentences from the official Marketstack v2 OpenAPI description. A documented exclusion explains why an empty response carries no information; it never proves that an action, price or session is absent, and it never certifies coverage where the documentation is silent.",
+  "source": {
+    "url": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json",
+    "apiVersion": "2.0.0",
+    "retrievedAt": "2026-11-03",
+    "sha256": "9136449ef61ea94849adc5267870038fd322f707c3df4721bb5f2a2aff6ab4c8",
+    "accountRequests": 0
+  },
+  "europeanMics": ["XETR", "XFRA", "XBER", "XDUS", "XHAM", "XMUN", "XSTU", "XSWX", "XBRU", "XAMS", "XPAR", "XLIS", "XDUB", "XMIL", "XMAD", "XWBO", "XCSE", "XSTO", "XHEL", "XOSL", "XLON"],
+  "endpoints": [
+    {
+      "endpoint": "/splits",
+      "kind": "splits",
+      "documentedVenues": ["NASDAQ", "NYSE", "NYSE ARCA", "PINK", "SHG", "OTCQB", "BATS"],
+      "europeanCoverage": "DOCUMENTED_NOT_COVERED",
+      "quote": "Data covers symbols listed on NASDAQ, NYSE, NYSE ARCA, PINK, SHG, OTCQB, and BATS."
+    },
+    {
+      "endpoint": "/dividends",
+      "kind": "dividends",
+      "documentedVenues": ["NASDAQ", "NYSE", "NYSE ARCA", "PINK", "SHG", "OTCQB", "BATS"],
+      "europeanCoverage": "DOCUMENTED_NOT_COVERED",
+      "quote": "Data covers symbols on NASDAQ, NYSE, NYSE ARCA, PINK, SHG, OTCQB, and BATS."
+    },
+    {
+      "endpoint": "/tickers/{symbol}/splits",
+      "kind": "splits",
+      "documentedVenues": [],
+      "europeanCoverage": "UNDOCUMENTED",
+      "quote": "You can also retrieve split information for individual ticker symbols using the Tickers Endpoint.",
+      "note": "Cross-referenced from /splits as an alternative route; no own venue statement. Not yet requested for a European symbol."
+    },
+    {
+      "endpoint": "/tickers/{symbol}/dividends",
+      "kind": "dividends",
+      "documentedVenues": [],
+      "europeanCoverage": "UNDOCUMENTED",
+      "quote": "Dividend information for individual ticker symbols can also be retrieved using the **Tickers Endpoint**.",
+      "note": "Cross-referenced from /dividends as an alternative route; no own venue statement. Not yet requested for a European symbol."
+    },
+    {
+      "endpoint": "/intraday",
+      "kind": "intraday",
+      "documentedVenues": ["IEX"],
+      "europeanCoverage": "DOCUMENTED_NOT_COVERED",
+      "quote": "Intraday prices are available for all US stock tickers included in the IEX (Investors Exchange) stock exchange."
+    },
+    {
+      "endpoint": "/stockprice",
+      "kind": "stockprice",
+      "documentedVenues": [],
+      "europeanCoverage": "UNDOCUMENTED",
+      "quote": "Availability: Professional plan and above."
+    },
+    {
+      "endpoint": "/eod/{date}",
+      "kind": "eod-date",
+      "documentedVenues": [],
+      "europeanCoverage": "UNDOCUMENTED",
+      "quote": "Returns end-of-day price records across all exchanges and tickers for a specific date",
+      "note": "Alternative date-scoped route; the Europe revalidation used only ranged /eod."
+    },
+    {
+      "endpoint": "/exchanges/{mic}/eod/{date}",
+      "kind": "exchange-eod-date",
+      "documentedVenues": [],
+      "europeanCoverage": "UNDOCUMENTED",
+      "quote": "If the specified date falls on a weekend or market holiday, no data is returned — use the nearest prior trading day instead.",
+      "note": "Alternative exchange-and-date-scoped route; symbols remain required."
+    },
+    {
+      "endpoint": "/tickers/{symbol}/eod/{date}",
+      "kind": "ticker-eod-date",
+      "documentedVenues": [],
+      "europeanCoverage": "UNDOCUMENTED",
+      "quote": "Data is available from 2000 onwards for most major tickers.",
+      "note": "Quote is from /tickers/{symbol}/eod; the single-date variant has no own coverage statement."
+    }
+  ],
+  "absentFromSchema": ["figi", "historical_symbols", "isin_history", "symbol_change_events", "listing_valid_from", "listing_valid_to"]
+}

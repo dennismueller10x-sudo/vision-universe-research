@@ -1,6 +1,8 @@
 /* Ende-zu-Ende (AP3, TECHNICAL_COMPLETION_PLAN.md J1/B3/I5): Was die Trefferzeile im Screener zeigt, zeigt auch Chart
    Studio fuer denselben Titel. Chart Studio rechnet im Browser aus den 270 Tagesbars des Buendels (technical/app.js,
-   Indicators.compute, Formations.analyzeAt); der Screener kommt aus dem Erzeuger. Stichprobe: jeder 20. Titel je Scherbe,
+   Indicators.compute, Formations.analyzeAt); EMA 20/50 zeigt es seit ema-settled (EMA200_MATERIALIZATION.md, Abschnitt 5)
+   aus bundle.chartSeries, also aus der Vollhistorie, und nur ohne diese Reihe aus dem Fenster. Der Screener kommt aus
+   dem Erzeuger. Stichprobe: jeder 20. Titel je Scherbe,
    nur Titel, deren Buendel denselben letzten Bar hat wie die Zeile (zwischen Materialisierung und Screener-Lauf koennen
    sie auseinanderliegen) und deren Kurs nicht eingefroren ist (SCREENER_FRESHNESS.md). */
 import test from "node:test";
@@ -27,6 +29,15 @@ const SH = join(root, "quant/data/product/technical-signals-v1");
    die Wilder-Glaettung (Screener aus der Vollhistorie, Chart aus 270 Bars; gemessen bei 5.424 Titeln: RSI max. 0,023,
    ADX max. 0,066, ATR % max. 0,00011 bei WOK). */
 const num = (x) => (Number.isFinite(x) ? x : null), dir = (x) => (Number.isFinite(x) ? x > 0 : null);
+/* EMA-Linie wie technical/app.js (renderStudio): X.cs.emaP || X.ind.emaP. Die 270-Bar-EMA haengt bei stark gefallenen
+   Titeln noch vom Startwert ab (KXIN 04.11.2026: 2,2578 statt 2,2491 bei Schluss 2,25). chartSeries ist auf 1e-4
+   gerundet (product-materialization.js#nz); liegt der Schluss innerhalb dieser Rundung auf der Linie, kann das Bild
+   die Seite nicht zeigen (undefined = nicht entscheidbar). */
+const aboveLine = (S, t, cs, p) => {
+  const v = ((cs && cs["ema" + p]) || I.compute(S, "ema", { period: p }).values)[t];
+  if (!Number.isFinite(v)) return null;
+  return cs && cs["ema" + p] && Math.abs(S.close[t] - v) <= 5e-5 ? undefined : S.close[t] > v;
+};
 const CHART = {
   rsi14: [(S, t) => num(I.compute(S, "rsi").values[t]), 0.1],
   adx: [(S, t) => num(I.compute(S, "adx").values.adx[t]), 0.1],
@@ -41,8 +52,8 @@ const CHART = {
   macdPositive: [(S, t) => dir(I.compute(S, "macd").values.histogram[t]), 0],
   supertrendUp: [(S, t) => dir(I.compute(S, "supertrend").values.direction[t]), 0],
   psarUp: [(S, t) => dir(I.compute(S, "psar").values.direction[t]), 0],
-  aboveEma20: [(S, t) => S.close[t] > I.compute(S, "ema", { period: 20 }).values[t], 0],
-  aboveEma50: [(S, t) => S.close[t] > I.compute(S, "ema", { period: 50 }).values[t], 0],
+  aboveEma20: [(S, t, cs) => aboveLine(S, t, cs, 20), 0],
+  aboveEma50: [(S, t, cs) => aboveLine(S, t, cs, 50), 0],
   /* Unterfenster und Schichten seit AP5b: was Chart Studio zeigt, in der Einheit der Spalte */
   roc21: [(S, t) => num(I.compute(S, "roc", { period: 21 }).values[t] / 100), 0.00006],
   roc63: [(S, t) => num(I.compute(S, "roc", { period: 63 }).values[t] / 100), 0.00006],
@@ -66,7 +77,7 @@ function sample() {
       if (k % 20 || i === undefined || !b || String(b.timestamps[b.timestamps.length - 1]).slice(0, 10) !== c.asOf[i]) return;
       const tail = Staleness.tailRun(b.timestamps.map((d, j) => [d, b.close[j]]));
       if (tail && tail.run >= Staleness.DEFAULTS.dailyMinRun) return;
-      out.push({ tk, i, b });
+      out.push({ tk, i, b, cs: inst[tk].bundle && inst[tk].bundle.chartSeries || null });
     });
   }
   return out;
@@ -76,10 +87,11 @@ const enough = titles.length >= 100;
 
 test("Indikatorwerte: Trefferzeile = Chart Studio (26 Spalten, Stichprobe)", { skip: enough ? false : "zu wenige vergleichbare Titel (" + titles.length + "), Materialisierung und Screener-Lauf liegen auseinander" }, () => {
   const off = [];
-  for (const { tk, i, b } of titles) {
+  for (const { tk, i, b, cs } of titles) {
     const S = { dates: b.timestamps, open: b.open, high: b.high, low: b.low, close: b.close, volume: b.volume }, t = b.close.length - 1;
     for (const [col, [f, tol]] of Object.entries(CHART)) {
-      const chart = f(S, t), scr = c[col][i];
+      const chart = f(S, t, cs), scr = c[col][i];
+      if (chart === undefined) continue;
       if (chart === null || scr === null) { if ((chart === null) !== (scr === null)) off.push(tk + " " + col + " chart=" + chart + " screener=" + scr); continue; }
       const ok = typeof scr === "boolean" ? chart === scr : Math.abs(chart - scr) <= tol;
       if (!ok) off.push(tk + " " + col + " chart=" + chart + " screener=" + scr);
@@ -186,4 +198,17 @@ test("Relative Staerke: Unterfenster in Chart Studio (model.js#relativeStrength)
   }
   assert.deepEqual(off, []);
   assert.ok(both > titles.length / 2, "Werte vorhanden (" + both + ")");
+});
+
+test("Orakel folgt Chart Studio: EMA 20/50 aus bundle.chartSeries, Fensterrechnung nur ohne diese Reihe (technical/app.js)", () => {
+  const app = readFileSync(join(root, "technical/app.js"), "utf8");
+  for (const p of [20, 50]) assert.ok(app.includes("values: X.cs.ema" + p + " || X.ind.ema" + p), "app.js zeichnet EMA " + p + " anders als das Orakel");
+  /* Startwert-Abhaengigkeit des Fensters: ein Titel, der seit dem Fensterstart auf ein Zwanzigstel gefallen ist */
+  const n = 270, close = Array.from({ length: n }, (_, k) => (k < 50 ? 400 + 8 * k : 2.25));
+  const S = { dates: close.map((_, k) => String(k)), open: close, high: close, low: close, close, volume: close.map(() => 1) };
+  const win = I.compute(S, "ema", { period: 50 }).values[n - 1];
+  assert.ok(win > 2.25, "Fenster-EMA traegt noch den Startwert (" + win + ")");
+  assert.equal(CHART.aboveEma50[0](S, n - 1, { ema50: close.map(() => 2.2491) }), true);
+  assert.equal(CHART.aboveEma50[0](S, n - 1, { ema50: close.map(() => 2.25) }), undefined);
+  assert.equal(CHART.aboveEma50[0](S, n - 1, null), false);
 });

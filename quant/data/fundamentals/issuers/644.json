@@ -481,9 +481,9 @@
       "cik": "0001367644",
       "name": "Emergent BioSolutions Inc.",
       "sic": "2834",
-      "rawFacts": 21941,
-      "mappedFacts": 7245,
-      "unmappedFacts": 14885,
+      "rawFacts": 22306,
+      "mappedFacts": 7365,
+      "unmappedFacts": 15255,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -493,28 +493,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 64,
-          "firstAvailablePeriod": "2009-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 16.0
-        },
-        "eps_diluted": {
           "annualPeriods": 17,
           "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
+        "eps_diluted": {
+          "annualPeriods": 17,
+          "quarterlyPeriods": 66,
+          "firstAvailablePeriod": "2009-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 16.0
+        },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -527,28 +527,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -562,14 +562,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -592,47 +592,48 @@
         }
       },
       "quality": {
-        "HIGH": 613,
-        "MEDIUM": 82
+        "HIGH": 620,
+        "MEDIUM": 83
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 695,
-        "resolvedValues": 695
+        "datableValues": 703,
+        "resolvedValues": 703
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 15578,
+        "rules_version": "1.1.0",
+        "total": 15790,
         "by_severity": {
-          "INFO": 14885,
+          "INFO": 15255,
           "ERROR": 2,
-          "WARNING": 691
+          "WARNING": 533
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 596,
+          "CONCEPT_DISAGREEMENT": 438,
           "FUTURE_DATA_LEAK": 2,
           "RESTATEMENT_CONFLICT": 95,
-          "UNKNOWN_CONCEPT": 14885
+          "UNKNOWN_CONCEPT": 15255
         }
       },
       "latestFiling": {
-        "accession": "0001367644-26-000082",
-        "filing_date": "2026-08-06",
+        "accession": "0001367644-26-000112",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 84
+        "periodic_filings": 85,
+        "acceptance_datetime": "2026-11-02T22:39:40.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "2c04c9b5998c2efe6d3c6a52e3d64269a3a9ccbf71814d117dc8c9c89cbd1231",
+      "sourceDigest": "3aefae313fa5c7605058e7e6c7754e8b1f6356c72b8bf0ac3d9aa21f8f8acd45",
       "issuerId": "iss_cik_0001367644"
     },
     {

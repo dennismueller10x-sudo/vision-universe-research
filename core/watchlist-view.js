@@ -30,16 +30,17 @@
   "use strict";
   var isNode = typeof module === "object" && module.exports;
   var SC = isNode ? require("./stock-context.js") : root.VUCore && root.VUCore.StockContext;
-  var api = factory(SC);
+  var Id = isNode ? require("./identity.js") : root.VUCore && root.VUCore.Identity;
+  var api = factory(SC, Id);
   if (isNode) module.exports = api;
   root.VUCore = root.VUCore || {};
   root.VUCore.WatchlistView = api;
-})(typeof globalThis !== "undefined" ? globalThis : this, function (SC) {
+})(typeof globalThis !== "undefined" ? globalThis : this, function (SC, Id) {
   "use strict";
 
   var VERSION = "watchlist-view-1.0.0";
   var SCHEMA = "vu-watchlist-summary-1.0.0";
-  var RULE_VERSION = "watchlist-events-1.0.0";
+  var RULE_VERSION = "watchlist-events-1.1.0";
   var NEAR_HIGH = -0.05;           /* Discover nearHigh/watch: hoechstens 5 % unter dem 52W-Hoch */
   var ACTIONABLE = ["SETUP", "ENTRY_READY", "TRIGGERED", "ACTIVE"];
   var FACTOR_LABEL = { quality: "Qualität", growth: "Wachstum", momentum: "Momentum", value: "Bewertung",
@@ -411,42 +412,150 @@
   }
 
   /* ------------------------------------------------------------ Ereignisse
-     Vorbereitung fuer eine spaetere Benachrichtigung (APP_READINESS.md §6):
+     Vorbereitung fuer eine spaetere Benachrichtigung (WATCHLIST.md §7, APP_READINESS.md §6):
      Vergleich zweier veroeffentlichter Uebersichten, deterministisch, je
-     Instrument EINMAL (nicht je Nutzer). Ereignisse zu veralteten Staenden
-     entstehen nicht. Format: core/contracts/events.schema.json. */
-  function hash(s) { var h = 0x811c9dc5; for (var k = 0; k < s.length; k++) { h ^= s.charCodeAt(k); h = Math.imul(h, 0x01000193) >>> 0; } return ("0000000" + h.toString(16)).slice(-8); }
+     Instrument EINMAL (nicht je Nutzer). Inhaltliche Ereignisse (Hoch, Volumen,
+     Eignung, Faktorstufe, Trend) entstehen nur zwischen zwei belegten, aktuellen
+     Staenden; Wechsel des Datenstands sind eigene Ereignisse (DATA_STATE_CHANGE).
+     Jede Seite wird zu ihrem eigenen Veroeffentlichungszeitpunkt bewertet
+     (generatedAt), damit ein aelterer Stand nicht nachtraeglich "veraltet" wirkt.
+     Keine Zustellung: wer welches Ereignis bekommt (watchlist_items.alerts x Tarif),
+     entscheidet eine spaetere, freigabepflichtige Stufe.
+
+     eventId = "ev_" + FNV-1a-64 ueber Wertpapier (instrumentId und securityId aus
+     core/identity.js), Art, Unterart, Gegenstand (Faktor, Strategie, Abschnitt),
+     vorher, nachher und Datenstand. Derselbe Wechsel ergibt bei jedem Lauf dieselbe
+     ID; die Regelversion steht in source.ruleVersion, nicht in der ID.
+     Format: core/contracts/events.schema.json. */
+  var FNV64_OFFSET = BigInt("0xcbf29ce484222325"), FNV64_PRIME = BigInt("0x100000001b3"), MASK64 = BigInt("0xffffffffffffffff");
+  function hash64(s) {
+    var bytes = new TextEncoder().encode(s), h = FNV64_OFFSET;
+    for (var k = 0; k < bytes.length; k++) { h ^= BigInt(bytes[k]); h = (h * FNV64_PRIME) & MASK64; }
+    return ("000000000000000" + h.toString(16)).slice(-16);
+  }
+  function canon(x) {
+    if (x === undefined) return "null";
+    if (x === null || typeof x !== "object") return JSON.stringify(x);
+    if (Array.isArray(x)) return "[" + x.map(canon).join(",") + "]";
+    return "{" + Object.keys(x).sort().map(function (k) { return JSON.stringify(k) + ":" + canon(x[k]); }).join(",") + "}";
+  }
+  function eventIdFor(p) {
+    return "ev_" + hash64(canon([p.instrumentId || null, p.securityId || null, p.type, p.subtype || null, p.subject || null, p.before === undefined ? null : p.before,
+      p.after === undefined ? null : p.after, p.asOf]));
+  }
+  var EVENT_SOURCES = ["price", "quant", "technical", "supertrader"];
+  var SECTION_OF = { price: "price", quant: "quant", technical: "trend", supertrader: "supertrader" };
+  function docTime(doc, fallback) { var t = Date.parse(doc && doc.generatedAt || ""); return isFinite(t) ? new Date(t) : fallback; }
+  function sourceState(doc, id, now) { var f = freshness(doc, id, null, now); return f.state === "UNAVAILABLE" ? "UNAVAILABLE" : f.state; }
+  function sectionState(s) { return s ? s.state + (s.state === "AVAILABLE" ? "" : ":" + (s.reason || "")) : "UNAVAILABLE:"; }
+  function isDate(s) { return typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s); }
+
   function events(prevDoc, nextDoc, opts) {
-    var prev = index(prevDoc), next = index(nextDoc), now = (opts && opts.now) || new Date(), ids = opts && opts.instrumentIds, out = [];
-    var list = ids || nextDoc.cols.i;
-    function ev(type, subtype, v, asOf, domain, artifact, evidence, severity) {
-      out.push({ schemaVersion: "vu-event-1.0.0", eventId: "ev_" + hash([type, subtype, v.instrumentId, asOf, RULE_VERSION].join("|")) + hash(v.instrumentId + asOf),
-        type: type, subtype: subtype, instrumentId: v.instrumentId, securityId: v.ticker ? "ref_" + v.ticker.replace(/[^A-Z0-9]/g, "_") : null,
-        ticker: v.ticker, occurredAt: now.toISOString(), asOf: asOf, source: { domain: domain, artifact: artifact, ruleVersion: RULE_VERSION },
-        evidence: evidence, severity: severity || "INFO", expiresAt: null });
+    opts = opts || {};
+    if (!Id || typeof Id.securityIdForTicker !== "function") throw new Error("IDENTITY_MISSING: core/identity.js fehlt");
+    var prev = index(prevDoc), next = index(nextDoc), out = [];
+    var now = opts.now || docTime(nextDoc, new Date()), nowBefore = opts.nowBefore || docTime(prevDoc, now);
+    var list = opts.instrumentIds || nextDoc.cols.i;
+    var fallbackDay = (nextDoc.generatedAt || now.toISOString()).slice(0, 10);
+    var srcB = nextDoc.sources || {}, srcA = prevDoc.sources || {};
+    function sid(ticker) { try { return ticker ? Id.securityIdForTicker(ticker) : null; } catch (e) { return null; } }
+    function ev(o) {
+      var asOf = isDate(o.asOf) ? o.asOf : fallbackDay, s = o.sourceId && (srcB[o.sourceId] || srcA[o.sourceId]) || {};
+      var securityId = o.v ? sid(o.v.ticker) : null;
+      out.push({ schemaVersion: "vu-event-1.0.0",
+        eventId: eventIdFor({ instrumentId: o.v ? o.v.instrumentId : null, securityId: securityId || (o.v ? null : "source:" + o.sourceId), type: o.type, subtype: o.subtype,
+          subject: o.subject, before: o.before, after: o.after, asOf: asOf }),
+        type: o.type, subtype: o.subtype, instrumentId: o.v ? o.v.instrumentId : null, securityId: securityId, ticker: o.v ? o.v.ticker : null,
+        occurredAt: now.toISOString(), asOf: asOf,
+        source: { domain: s.domain || o.sourceId, artifact: s.artifact || BASE, ruleVersion: RULE_VERSION },
+        evidence: o.evidence, severity: o.severity || "INFO", expiresAt: null });
     }
+
+    /* Datenstand je Quelle (einmal je Lauf, kein Instrument): neuer Stichtag, Wechsel der Frische, fehlende Welt. */
+    var changedSource = {};
+    EVENT_SOURCES.forEach(function (k) {
+      var a = srcA[k], b = srcB[k], sa = sourceState(prevDoc, k, nowBefore), sb = sourceState(nextDoc, k, now);
+      if (sa !== sb) {
+        changedSource[k] = true;
+        ev({ type: "DATA_STATE_CHANGE", subtype: "SOURCE_STATE_CHANGED", sourceId: k, subject: k, before: sa, after: sb, asOf: (b || a || {}).asOf,
+          evidence: { source: k, stateBefore: sa, state: sb, asOfBefore: a ? a.asOf || null : null, asOf: b ? b.asOf || null : null },
+          severity: sb === "UNAVAILABLE" || sb === "STALE" ? "NOTABLE" : "INFO" });
+      }
+      if (a && b && isDate(b.asOf) && (!isDate(a.asOf) || b.asOf > a.asOf))
+        ev({ type: "DATA_STATE_CHANGE", subtype: "SOURCE_UPDATED", sourceId: k, subject: k, before: a.asOf || null, after: b.asOf, asOf: b.asOf,
+          evidence: { source: k, asOfBefore: a.asOf || null, asOf: b.asOf, generatedAtBefore: a.generatedAt || null, generatedAt: b.generatedAt || null } });
+    });
+
     list.forEach(function (id) {
-      var a = view(prev, { instrumentId: id }, now), b = view(next, { instrumentId: id }, now);
-      if (b.identity.state !== "AVAILABLE") return;
-      if (b.high52.signal === "NEW_HIGH" && a.high52.signal !== "NEW_HIGH")
-        ev("PRICE_EVENT", "NEW_52W_HIGH", b, b.high52.asOf, "technicalWorld", "/technical/data/screener-v1.json", { distanceBefore: a.high52.distance == null ? null : a.high52.distance, distance: b.high52.distance }, "NOTABLE");
-      if (b.volume.signal === "SPIKE" && a.volume.signal !== "SPIKE")
-        ev("PRICE_EVENT", "VOLUME_SPIKE", b, b.trend.asOf, "technicalWorld", "/technical/data/screener-v1.json", { relVolBefore: a.volume.relVol == null ? null : a.volume.relVol, relVol: b.volume.relVol });
-      if (b.supertrader.status === "VALID_SIGNAL" && a.supertrader.status !== "VALID_SIGNAL")
-        ev("SUPERTRADER_SIGNAL", "VALID_SIGNAL", b, b.supertrader.asOf, "supertrader", "/supertrader/data/signals-core.json",
-          { entries: b.supertrader.entries.filter(function (e) { return e.released && e.actionable; }).map(function (e) { return [e.strategyId, e.state]; }) }, "NOTABLE");
+      var a = view(prev, { instrumentId: id }, nowBefore), b = view(next, { instrumentId: id }, now);
+      /* Erstbeobachtung, Delisting, gesperrte Identitaet: kein Vergleich, kein Ereignis. */
+      if (b.identity.state !== "AVAILABLE" || a.identity.state !== "AVAILABLE") return;
+
+      // Datenstand je Abschnitt - nur, wenn sich nicht die ganze Quelle geaendert hat (dann ein Quellereignis statt tausender)
+      EVENT_SOURCES.forEach(function (k) {
+        if (changedSource[k]) return;
+        var sa = sectionState(a[SECTION_OF[k]]), sb = sectionState(b[SECTION_OF[k]]);
+        if (sa === sb) return;
+        var bs = b[SECTION_OF[k]];
+        ev({ type: "DATA_STATE_CHANGE", subtype: "SECTION_STATE_CHANGED", v: b, sourceId: k, subject: k, before: sa, after: sb,
+          asOf: bs.date || bs.asOf || (srcB[k] || {}).asOf,
+          evidence: { section: k, stateBefore: a[SECTION_OF[k]].state, reasonBefore: a[SECTION_OF[k]].reason || null, state: bs.state, reason: bs.reason || null },
+          severity: bs.state === "AVAILABLE" ? "INFO" : "NOTABLE" });
+      });
+
+      // Kurs und Technik
+      if (b.high52.signal === "NEW_HIGH" && a.high52.state === "AVAILABLE" && a.high52.signal !== "NEW_HIGH")
+        ev({ type: "PRICE_EVENT", subtype: "NEW_52W_HIGH", v: b, sourceId: "technical", before: a.high52.signal, after: b.high52.signal, asOf: b.high52.asOf,
+          evidence: { distanceBefore: a.high52.distance == null ? null : a.high52.distance, distance: b.high52.distance }, severity: "NOTABLE" });
+      if (b.volume.signal === "SPIKE" && a.volume.state === "AVAILABLE" && a.volume.signal !== "SPIKE")
+        ev({ type: "PRICE_EVENT", subtype: "VOLUME_SPIKE", v: b, sourceId: "technical", before: a.volume.signal, after: b.volume.signal, asOf: b.trend.asOf,
+          evidence: { relVolBefore: a.volume.relVol == null ? null : a.volume.relVol, relVol: b.volume.relVol } });
+      if (a.trend.state === "AVAILABLE" && b.trend.state === "AVAILABLE") {
+        if (a.trend.structure && b.trend.structure && a.trend.structure !== b.trend.structure)
+          ev({ type: "TECHNICAL_CHANGE", subtype: "TREND_STRUCTURE_CHANGED", v: b, sourceId: "technical", before: a.trend.structure, after: b.trend.structure, asOf: b.trend.asOf,
+            evidence: { structureBefore: a.trend.structure, structure: b.trend.structure } });
+        if (typeof a.trend.aboveSma200 === "boolean" && typeof b.trend.aboveSma200 === "boolean" && a.trend.aboveSma200 !== b.trend.aboveSma200)
+          ev({ type: "TECHNICAL_CHANGE", subtype: b.trend.aboveSma200 ? "SMA200_CROSS_UP" : "SMA200_CROSS_DOWN", v: b, sourceId: "technical",
+            before: a.trend.aboveSma200, after: b.trend.aboveSma200, asOf: b.trend.asOf, evidence: { aboveSma200Before: a.trend.aboveSma200, aboveSma200: b.trend.aboveSma200 } });
+      }
+
+      // Supertrader: Eignung nur bei freigegebener Strategie; Zustandswechsel je Strategie mit Freigabe-Kennzeichen
+      if (a.supertrader.state === "AVAILABLE" && b.supertrader.state === "AVAILABLE") {
+        var validB = b.supertrader.entries.filter(function (e) { return e.released && e.actionable; }).map(function (e) { return [e.strategyId, e.state]; });
+        if (b.supertrader.status === "VALID_SIGNAL" && a.supertrader.status !== "VALID_SIGNAL")
+          ev({ type: "SUPERTRADER_SIGNAL", subtype: "VALID_SIGNAL", v: b, sourceId: "supertrader", before: a.supertrader.status, after: validB, asOf: b.supertrader.asOf,
+            evidence: { entries: validB }, severity: "NOTABLE" });
+        if (a.supertrader.status === "VALID_SIGNAL" && b.supertrader.status !== "VALID_SIGNAL")
+          ev({ type: "SUPERTRADER_SIGNAL", subtype: "VALID_SIGNAL_ENDED", v: b, sourceId: "supertrader", before: "VALID_SIGNAL", after: b.supertrader.status, asOf: b.supertrader.asOf,
+            evidence: { statusBefore: "VALID_SIGNAL", status: b.supertrader.status } });
+        var byA = {}, seen = {};
+        a.supertrader.entries.forEach(function (e) { byA[e.strategyId] = e; });
+        b.supertrader.entries.concat(a.supertrader.entries).forEach(function (e) {
+          if (seen[e.strategyId]) return; seen[e.strategyId] = true;
+          var x = byA[e.strategyId] || null, y = b.supertrader.entries.filter(function (z) { return z.strategyId === e.strategyId; })[0] || null;
+          var sx = x ? x.state : null, sy = y ? y.state : null;
+          if (sx === sy) return;
+          var released = !!(y ? y.released : x.released);
+          ev({ type: "SUPERTRADER_SIGNAL", subtype: "STATE_CHANGED", v: b, sourceId: "supertrader", subject: e.strategyId, before: sx, after: sy, asOf: b.supertrader.asOf,
+            evidence: { strategyId: e.strategyId, stateBefore: sx, state: sy, released: released, presentation: released ? "RELEASED" : "RESEARCH", version: (y || x).version },
+            severity: released && y && y.actionable ? "NOTABLE" : "INFO" });
+        });
+      }
+
+      // Quant: deutlicher Faktorwechsel, Datenqualitaet - kein Gesamtscore
       if (b.quant.state === "AVAILABLE" && a.quant.state === "AVAILABLE") {
         /* "Deutlich": Wechsel um mindestens zwei Stufen (factor-band-2.0.0), nicht jede Nachkommastelle. */
         var order = ["VERY_WEAK", "WEAK", "NEUTRAL", "STRONG", "VERY_STRONG"];
         b.quant.factors.forEach(function (f, k) {
           var g = a.quant.factors[k];
-          if (!f.band || !g || !g.band) return;
+          if (!f.band || !g || !g.band || g.id !== f.id) return;
           var d = order.indexOf(f.band) - order.indexOf(g.band);
-          if (Math.abs(d) >= 2) ev("QUANT_CHANGE", d > 0 ? "FACTOR_BAND_UP" : "FACTOR_BAND_DOWN", b, b.quant.asOf, "quant", "/quant/data/product/factor-evidence-v1/",
-            { factor: f.id, bandBefore: g.band, band: f.band, scoreBefore: g.score, score: f.score });
+          if (Math.abs(d) >= 2) ev({ type: "QUANT_CHANGE", subtype: d > 0 ? "FACTOR_BAND_UP" : "FACTOR_BAND_DOWN", v: b, sourceId: "quant", subject: f.id, before: g.band, after: f.band,
+            asOf: b.quant.asOf, evidence: { factor: f.id, bandBefore: g.band, band: f.band, scoreBefore: g.score, score: f.score } });
         });
         if (a.quant.dataQuality && b.quant.dataQuality && a.quant.dataQuality !== b.quant.dataQuality)
-          ev("QUANT_CHANGE", "DATA_QUALITY_CHANGED", b, b.quant.asOf, "quant", "/quant/data/product/factor-evidence-v1/", { before: a.quant.dataQuality, after: b.quant.dataQuality });
+          ev({ type: "QUANT_CHANGE", subtype: "DATA_QUALITY_CHANGED", v: b, sourceId: "quant", before: a.quant.dataQuality, after: b.quant.dataQuality, asOf: b.quant.asOf,
+            evidence: { before: a.quant.dataQuality, after: b.quant.dataQuality } });
       }
     });
     return out;
@@ -454,5 +563,6 @@
 
   return { VERSION: VERSION, SCHEMA: SCHEMA, RULE_VERSION: RULE_VERSION, NEAR_HIGH: NEAR_HIGH, FACTOR_LABEL: FACTOR_LABEL, REASON: REASON,
     PATHS: PATHS, LEGACY_KEYS: LEGACY.map(function (l) { return l.key; }), legacyTickers: legacyTickers, planMerge: planMerge, inEuro: inEuro, load: load, merge: merge, index: index, freshness: freshness, view: view, aggregate: aggregate, sort: sort, filter: filter, group: group, events: events,
+    EVENT_SOURCES: EVENT_SOURCES.slice(), eventId: eventIdFor,
     GROUPS: GROUPS.map(function (g) { return { id: g.id, label: g.label }; }) };
 });
