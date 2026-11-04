@@ -76,7 +76,7 @@ test('scheduled path: one faulty stock is isolated as BLOCKED, 448 are admitted,
  const b=await base(),now=sessionRunDate(b),out=await mkdtemp(join(tmpdir(),'eu-sched-')),priv=await mkdtemp(join(tmpdir(),'eu-sched-private-')),calls={n:0};
  const conflict=b.catalog.securities.find(s=>s.listings[0].mic==='XETR'&&s.securityId!=='ref_RHM_DE_XETR').securityId;
  try{
-  const r=await R.refreshPublication({root,out,privateDir:join(priv,'run'),now,apiKey:'test-key',scheduled:true,fetchImpl:transport(b.catalog,{now,conflict:new Set([conflict]),calls}),sleep:async()=>{}});
+  const r=await R.refreshPublication({root,out,privateDir:join(priv,'run'),now,apiKey:'test-key',scheduled:true,reprobeKnownInvalid:true,fetchImpl:transport(b.catalog,{now,conflict:new Set([conflict]),calls}),sleep:async()=>{}});
   assert.equal(r.failure,null);assert.equal(r.admitted,448);assert.deepEqual(r.blocked.map(x=>x.securityId),[conflict]);
   // Billing comes through the real client (providers/marketstack/client.js reads x-increment-usage / x-quota-*).
   assert.equal(r.run.requests,449);assert.equal(r.run.actualBilledCredits,449);assert.equal(r.run.quota.remaining,90000-449);assert.equal(r.run.scheduled,true);
