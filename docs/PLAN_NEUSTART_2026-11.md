@@ -87,3 +87,19 @@ Außerhalb der Technik (Owner): Rechtsberatung beauftragen, Fragebogen R2, Steue
 4. Daten raus aus `main`. 5. Freigaben nur für Geld/Recht/öffentliche Renditeaussagen/Löschen. 6. Supertrader Top 5.
 7. Portfolio-Baukasten in den Umfang. 8. Interne Backtest-Vorschau + Geschäftskonto mit `backtest_reviewer`.
 9. Offene PRs aufräumen (geschlossene PRs bleiben wiederherstellbar). 10. Lizenzangebote einholen (Kapitalmaßnahmen, Tiingo-Rechte).
+
+## 7. Backend-Zusätze aus dem Redesign 2027 (Projekt, nach dem Frontend)
+
+Die Mockups (`docs/design/redesign-2027/`, README „Backend-Zusätze“) zeigen Funktionen, die es heute nicht gibt. Bis sie gebaut sind, zeigen die Seiten sie als „bald“ oder blenden sie aus, nie mit erfundenen Werten.
+
+| # | Funktion | Folien | Baut | Hinweis |
+|---|---|---|---|---|
+| Z1 | Erster Start: Ziel, Erfahrung (Einsteiger · Fortgeschritten · Profi), erste Aktien; als Konto-Einstellung | E11, N6 | D2 (Seite) + Konto (`workers/vu-account`, Migration) | bauen und testen; keine Produktionsfreigabe umschalten |
+| Z2 | Eine Aktienadresse `/aktie/<T>` mit Weiterleitungen der alten Adressen | N4, N5, D09, Q07 ff. | D2 | Herkunftswelt bestimmt Perspektive und Leiste |
+| Z3 | Gespeicherte Suchen im Konto | Q02, Screener | D2 + Konto | |
+| Z4 | Benachrichtigungen: Kursgrenze ±5 %, Jahreshoch, Quartalszahlen, Setups, neue 13F-Meldungen | E08, E09, D08, D09, H | Konto + Erzeuger | Versandweg (E-Mail über Brevo, später App-Push) braucht Owner-Freigabe |
+| Z5 | Screener-Kriterien aus 13F (Hedgefonds) und Supertrader | Screener, H | A (Erzeuger) + B (Supertrader-Export) | keine Fachmodelle ändern, nur vorhandene Ergebnisse als Filter |
+| Z6 | Insider-Käufe als Datenquelle | H (Entdecken) | A (neuer Erzeuger) | SEC Form 4 ist frei verfügbar; Eintrag in `core/registry/domains.json` |
+| Z7 | AI Atlas mit Antworten | E10 | später | Anbieter und Budget sind Owner-Entscheidung (Geld) |
+
+Reihenfolge: Z2 und Z1 zusammen mit den Seiten, danach Z3, Z5, Z6, zuletzt Z4 und Z7.
