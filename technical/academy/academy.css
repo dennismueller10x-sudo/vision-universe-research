@@ -1,1 +1,59 @@
 .ta{max-width:760px;margin:0 auto;padding:12px 0 40px;overflow-wrap:anywhere}.ta h1{font-size:clamp(30px,7vw,46px);line-height:1.12}.ta h2{font-size:22px;line-height:1.25;margin:0 0 12px}.ta section{margin:28px 0}.ta p,.ta li{line-height:1.7}.ta a{color:var(--vu-text);text-decoration:underline;text-underline-offset:4px;display:inline-block;padding:10px 2px;min-height:24px}.ta button{font:inherit;min-height:44px;padding:10px 16px;border:1px solid var(--vu-line);border-radius:12px;color:var(--vu-text);background:var(--vu-elevated);cursor:pointer}.ta-paths{display:grid;gap:16px}.ta-paths section{padding:20px;border:1px solid var(--vu-line);border-radius:18px;margin:0;background:var(--vu-elevated)}.ta-paths ol{padding-left:22px}.ta-question{font-size:21px;font-weight:650}.ta-figure{margin:24px 0;padding:16px;background:var(--tc-soft);border-radius:16px}.ta-diagram{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:12px}.ta-diagram li{border:1px solid var(--vu-line);padding:12px;border-radius:12px;flex:1 1 130px}.ta figcaption{font-size:14px;color:var(--vu-text-secondary)}.ta svg{max-width:100%;width:380px;stroke:var(--vu-text);fill:none;stroke-width:2}.ta svg rect{fill:var(--tc-zone-pos)}.ta svg text{fill:var(--vu-text);stroke:none;font-size:14px}.ta fieldset{min-width:0;border:1px solid var(--vu-line);border-radius:12px;padding:16px}.ta legend{font-weight:700}.ta label{display:flex;gap:12px;align-items:center;min-height:44px;padding:8px 0;cursor:pointer}.ta input{width:20px;height:20px;flex:none}.ta details{border-bottom:1px solid var(--vu-line)}.ta summary{padding:14px 0;min-height:24px;cursor:pointer}.ta-next{display:flex;justify-content:space-between;gap:16px;margin-top:20px}.ta form button{margin-top:12px}@media(min-width:760px){.ta-paths{grid-template-columns:1fr 1fr}}
+
+/* Shared visual teaching frame for all 32 lessons; the legacy view remains a safe fallback. */
+.ta-pilot{max-width:1040px;--ta-blue:#205ca2;--ta-neutral:#666b72;padding-bottom:64px}
+:root[data-theme=dark] .ta-pilot{--ta-blue:#90c2ff;--ta-neutral:#b4bac2}
+.ta-pilot .ta-breadcrumb{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--vu-text-secondary)}
+.ta-pilot .ta-breadcrumb a{min-height:24px}.ta-pilot .ta-lesson-head{max-width:780px;margin:18px 0 24px}
+.ta-pilot .ta-eyebrow{font-size:12px;letter-spacing:.16em;font-weight:750;color:var(--vu-accent-text);margin:0 0 12px}
+.ta-pilot .ta-question{font-size:clamp(18px,3vw,23px);font-weight:450;color:var(--vu-text-secondary);margin:14px 0 0;line-height:1.45}
+.ta-pilot h1{font-size:clamp(32px,6vw,54px);letter-spacing:-.035em;line-height:1.05}
+.ta-pilot h1:focus{outline:none}
+.ta-pilot h3{font-size:20px;line-height:1.3;margin:0 0 20px;letter-spacing:-.02em}
+.ta-pilot section{margin:24px 0}.ta-pilot section>h2{font-size:22px;margin:0 0 18px}
+.ta-pilot .ta-visual-block{padding:20px;border:1px solid var(--vu-line);border-radius:24px;background:var(--vu-elevated)}
+.ta-scenes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.ta-pilot .ta-scenes button{font-size:13px;line-height:1.35;padding:11px 5px;min-height:48px;border-radius:12px;background:var(--vu-bg);overflow-wrap:anywhere}
+.ta-pilot .ta-scenes button[aria-pressed=true]{background:var(--vu-accent);border-color:var(--vu-accent);color:var(--vu-on-accent);font-weight:750}
+.ta-pilot .ta-scene-count{font-size:12px;color:var(--vu-text-secondary);margin:14px 0}
+.ta-scene{display:grid;gap:22px;align-items:center;min-width:0}
+.ta-pilot .ta-chart{margin:0;min-width:0;background:var(--vu-bg);border:1px solid var(--vu-line);border-radius:18px;overflow:hidden}
+.ta-pilot .ta-chart svg{display:block;width:100%;max-width:560px;margin:0 auto;height:auto;stroke:none;fill:none;stroke-width:2}
+.ta-pilot .ta-chart svg text{stroke:none;fill:var(--vu-text);font-size:15px;font-family:inherit}
+.ta-pilot .ta-chart .ta-axis-label{font-size:15px;fill:var(--ta-neutral)}
+.ta-pilot .ta-chart .ta-reference-label{fill:var(--ta-blue);font-size:15px}
+.ta-pilot .ta-chart .ta-grid{stroke:var(--tc-grid);stroke-width:1}
+.ta-pilot .ta-chart .ta-price-line{stroke:var(--vu-text);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.ta-pilot .ta-chart .ta-muted-line{stroke:var(--ta-neutral);stroke-width:2.5;stroke-linejoin:round}
+.ta-pilot .ta-chart .ta-reference-line{stroke:var(--ta-blue);stroke-width:2;stroke-dasharray:7 5}
+.ta-pilot .ta-chart .ta-structure-line{stroke:var(--tc-c3);stroke-width:2;stroke-dasharray:5 4}
+.ta-pilot .ta-chart .ta-point{fill:var(--vu-bg);stroke:var(--vu-text);stroke-width:2}
+.ta-pilot .ta-chart .ta-wick{stroke:var(--vu-text);stroke-width:2}
+.ta-pilot .ta-chart .ta-candle-up{fill:var(--vu-bg);stroke:var(--vu-text);stroke-width:2}
+.ta-pilot .ta-chart .ta-candle-down{fill:var(--vu-text);stroke:var(--vu-text);stroke-width:2}
+.ta-pilot .ta-chart .ta-boundary-zone{fill:var(--tc-zone-acc);stroke:none}
+.ta-pilot .ta-chart .ta-rsi-zone{fill:var(--tc-zone-pos);stroke:none}
+.ta-pilot .ta-chart .ta-rsi-grid{stroke:var(--ta-neutral);stroke-width:.8;stroke-dasharray:3 4}
+.ta-pilot .ta-chart .ta-rsi-line{stroke:var(--ta-blue);stroke-width:2.5;stroke-linejoin:round}
+.ta-pilot .ta-chart figcaption{font-size:12px;line-height:1.5;padding:12px 14px;border-top:1px solid var(--vu-line)}
+.ta-observations{min-width:0}.ta-pilot .ta-observations h3{margin-bottom:20px}
+.ta-pilot .ta-observations p{font-size:16px;line-height:1.65;margin:6px 0 18px}
+.ta-note-label{display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:750;color:var(--vu-text-secondary)}
+.ta-pilot .ta-goals{padding:18px 20px;background:var(--tc-soft);border-radius:16px}
+.ta-pilot .ta-goals h2{font-size:16px;margin:0 0 8px}.ta-pilot .ta-goals ul{padding-left:18px;margin:0;font-size:16px}
+.ta-pilot .ta-basics,.ta-pilot .ta-why{max-width:740px}.ta-pilot .ta-basics p,.ta-pilot .ta-why p{margin-top:0}
+.ta-pilot details>p,.ta-pilot details>div{padding:0 8px 0 0}.ta-pilot summary{font-weight:600;font-size:14px}
+.ta-pilot .ta-counterexample{border-left:3px solid var(--ta-blue);background:var(--vu-surface);padding:22px;border-radius:0 18px 18px 0;max-width:740px}
+.ta-pilot .ta-counterexample h2{font-size:18px}.ta-pilot .ta-counterexample h3{font-size:16px;margin:22px 0 8px}
+.ta-pilot .ta-mistake{font-weight:650}.ta-pilot .ta-counterexample ul{padding-left:20px;margin-bottom:0}
+.ta-pilot fieldset{background:var(--vu-elevated);padding:20px;border-radius:18px}
+.ta-pilot label{border-bottom:1px solid var(--vu-line);padding:12px 0}.ta-pilot label:last-child{border:0}
+.ta-pilot .ta-practice{padding:24px;background:var(--tc-soft);border:1px solid var(--vu-line);border-radius:20px}
+.ta-pilot a.ta-primary{padding:13px 20px;box-sizing:border-box;min-height:48px;border-radius:14px;color:var(--vu-on-accent);background:var(--vu-accent);text-decoration:none;font-weight:750;line-height:1.4}
+.ta-pilot .ta-practice-route{font-size:14px;margin:20px 0 4px}.ta-practice-links{display:flex;flex-wrap:wrap;gap:6px 24px;font-size:14px}
+.ta-pilot .tc-note{font-size:13px;line-height:1.6}.ta-pilot .ta-next{border-top:1px solid var(--vu-line);padding-top:14px}
+@media(min-width:800px){.ta-scene{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:32px}.ta-pilot .ta-visual-block{padding:30px}.ta-scenes{max-width:580px;gap:10px}.ta-pilot .ta-scenes button{font-size:14px;padding:12px}.ta-pilot .ta-goals ul{display:grid;grid-template-columns:1fr 1fr;gap:14px 32px}.ta-pilot .ta-counterexample{padding:28px}}
+@media(max-width:399px){.ta-pilot .ta-visual-block{padding:14px}.ta-pilot .ta-chart figcaption{padding:10px;font-size:12px}.ta-pilot .ta-breadcrumb span{font-size:12px}.ta-pilot .ta-practice{padding:18px}.ta-pilot .ta-scenes button{font-size:13px}}
+/* Full Academy: monochrome diagrams with lime reserved for focus and comparison. */
+.ta-pilot{--ta-blue:#30353a}:root[data-theme=dark] .ta-pilot{--ta-blue:#e1e4df}
+.ta-pilot .ta-chart .ta-card-zone{fill:var(--tc-soft);stroke:var(--vu-line);stroke-width:1}

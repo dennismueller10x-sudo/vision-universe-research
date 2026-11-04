@@ -7,9 +7,15 @@
   root.VUDiscover=root.VUDiscover||{};root.VUDiscover.EuropeProduct=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(Contract){
   'use strict';
-  const VERSION='discover-europe-product-2.0.0';
+  const VERSION='discover-europe-product-2.1.0';
   const QUANT_MISSING='Quant-Analyse für dieses Wertpapier noch nicht verfügbar.';
   const TECHNICAL_MISSING='Technische Analyse für dieses Wertpapier noch nicht verfügbar.';
+  /* Freigabe je Aktie (core/europe-publication-isolation.js): eine nicht freigegebene Aktie wird mit Grundklasse gekennzeichnet, nie mit Kurs. */
+  const WITHHELD='Für diese Aktie liegen derzeit keine geprüften aktuellen Kurse vor.';
+  const REASONS={PROVIDER_DATA_UNAVAILABLE:'Grund: Die Datenquelle liefert für diese Aktie derzeit keine Kurse.',
+    PRICE_DISCONTINUITY_UNRESOLVED:'Grund: Ungeklärter Kurssprung. Kurse erscheinen erst nach geprüfter Klärung.',
+    PRICES_NOT_CURRENT:'Grund: Der letzte geprüfte Schlusskurs ist nicht mehr aktuell.',
+    ADMISSION_CHECK_FAILED:'Grund: Die Kursdaten haben eine Qualitätsprüfung nicht bestanden.'};
   const copy=value=>JSON.parse(JSON.stringify(value));
   const unavailable=reason=>({state:'UNAVAILABLE',reason,source:'VU_CANONICAL_EUROPE',asOf:null,data:null,publicationAllowed:false});
   const href=id=>'#/s/EUROPE/'+encodeURIComponent(id);
@@ -24,7 +30,8 @@
     if(!client||['getSecurity','getReadiness','getPriceSeries','getLatestPrice','search'].some(name=>typeof client[name]!=='function'))throw Error('EUROPE_CORE_CONTRACT_REQUIRED');
     if(!watch||['add','save','reload','remove','values'].some(name=>typeof watch[name]!=='function'))throw Error('EUROPE_CANONICAL_WATCHLIST_REQUIRED');
     if(!Array.isArray(opts.securityRefs))throw Error('EUROPE_CANONICAL_REFERENCES_REQUIRED');
-    const refs=new Map(),cache=new Map();
+    const refs=new Map(),cache=new Map(),blocked=new Map();
+    (Array.isArray(opts.blocked)?opts.blocked:[]).forEach(b=>{if(b&&typeof b.securityId==='string'&&REASONS[b.reasonClass])blocked.set(b.securityId,b.reasonClass);});
     opts.securityRefs.forEach(value=>{
       const id=typeof value==='string'?value:value&&value.securityId;
       if(typeof id!=='string'||!id||refs.has(id)||(typeof value==='object'&&value.region&&value.region!=='EUROPE'))throw Error('INVALID_EUROPE_CANONICAL_REFERENCE');
@@ -40,6 +47,17 @@
         return {error:unavailable('DISCOVER_ADMISSION_REQUIRED')};
       return {ref,readiness:r};
     }
+    /** Kennzeichnung ohne Kurs: Identität, Grundklasse und Hinweistext. */
+    async function withheld(id){
+      if(!refs.has(id))return null;
+      let identity=null;try{const r=await client.getSecurity(refs.get(id));if(r.state==='AVAILABLE'&&r.data&&r.data.securityId===id)identity=r.data;}catch(_){}
+      if(!identity)return null;
+      let reasonClass=blocked.get(id);
+      if(!reasonClass){let codes=[];try{const r=await client.getReadiness(refs.get(id));codes=r.data&&r.data.discoverReasonCodes||[];}catch(_){}
+        reasonClass=codes.length&&codes.every(c=>c==='LAST_CLOSE_TOO_OLD_OR_UNVERIFIABLE')?'PRICES_NOT_CURRENT':'ADMISSION_CHECK_FAILED';}
+      return {securityId:id,name:identity.name||identity.ticker,ticker:identity.ticker,mic:identity.mic||null,href:href(id),reasonClass,message:WITHHELD,reason:REASONS[reasonClass]};
+    }
+    async function anyAdmitted(){for(const id of refs.keys()){if(!blocked.has(id)&&!(await permission(id)).error)return true;}return false;}
     function meaningful(result,i,r){
       const d=result.data,points=d&&d.points;
       if(result.state!=='AVAILABLE'||!d||d.securityId!==i.securityId||d.listingId!==i.listingId||d.currency!==i.currency||d.basis!==discoverBasis(r)||(d.quoteUnit&&d.quoteUnit!==i.currency)||
@@ -102,9 +120,7 @@
         disclaimer:privatePreview?'Private Recherche-Vorschau · nicht öffentlich freigegeben.':'Informationen zur eigenen Recherche. Keine Anlageempfehlung.'});
     }
     async function search(query){
-      let open=false;
-      for(const id of refs.keys()){if(!(await permission(id)).error){open=true;break;}}
-      if(!open)return unavailable('DISPLAY_RIGHTS_OR_PRODUCT_GATE_CLOSED');
+      if(!(await anyAdmitted()))return unavailable('DISPLAY_RIGHTS_OR_PRODUCT_GATE_CLOSED');
       const result=await client.search(query,{limit:100});if(result.state!=='AVAILABLE')return result;
       const entries=[],seen=new Set();
       for(const hit of result.data.results||[]){
@@ -117,7 +133,10 @@
       const q=String(query||'').trim().toUpperCase();entries.sort((a,b)=>Number(b.displaySymbol===q)-Number(a.displaySymbol===q));
       return available({universeId:'EUROPE',universeLabel:'Europäische Aktien',entries:entries.slice(0,14)});
     }
-    async function detail(id){const found=await admitted(id);return found.state==='AVAILABLE'?available(projection(found.data),found.data.price.date):found;}
+    async function detail(id){
+      const found=await admitted(id);if(found.state==='AVAILABLE')return available(projection(found.data),found.data.price.date);
+      const notice=await anyAdmitted()?await withheld(id):null;return notice?Object.assign(found,{reason:blocked.has(id)?'PUBLICATION_BLOCKED':found.reason,withheld:notice}):found;
+    }
     async function series(ref,seriesOptions){
       if(!ref||ref.region!=='EUROPE'||ref.listingId)return unavailable('PRIMARY_EUROPE_CANONICAL_REFERENCE_REQUIRED');
       const found=await admitted(ref.securityId);if(found.state!=='AVAILABLE')return found;
@@ -131,10 +150,14 @@
       const offset=page&&page.offset!==undefined?page.offset:0,limit=page&&page.limit!==undefined?page.limit:refs.size;
       if(!Number.isInteger(offset)||offset<0||!Number.isInteger(limit)||limit<1||limit>5000)throw Error('INVALID_EUROPE_PAGE');
       const ids=Array.from(refs.keys()).slice(offset,offset+limit),rows=new Array(ids.length);let next=0;
-      await Promise.all(Array.from({length:Math.min(6,ids.length)},async()=>{while(next<ids.length){const n=next++;const found=await admitted(ids[n]);if(found.state==='AVAILABLE')rows[n]=projection(found.data);}}));
+      const held=new Array(ids.length);
+      await Promise.all(Array.from({length:Math.min(6,ids.length)},async()=>{while(next<ids.length){const n=next++;const found=blocked.has(ids[n])?null:await admitted(ids[n]);if(found&&found.state==='AVAILABLE')rows[n]=projection(found.data);else held[n]=ids[n];}}));
       const cards=rows.filter(Boolean);
-      if(!cards.length)return unavailable('DISPLAY_RIGHTS_OR_DISCOVER_GATE_CLOSED');
-      return available({universeId:'EUROPE',universeLabel:'Europäische Aktien',cards,nextOffset:offset+limit<refs.size?offset+limit:null,title:'Europäische Aktien',
+      // Global "nicht verfügbar" nur, solange keine einzige Aktie freigegeben ist; sonst Kennzeichnung je Aktie.
+      if(!cards.length&&!(await anyAdmitted()))return unavailable('DISPLAY_RIGHTS_OR_DISCOVER_GATE_CLOSED');
+      const unavailableEntries=(await Promise.all(held.filter(Boolean).map(withheld))).filter(Boolean);
+      if(!cards.length&&!unavailableEntries.length)return unavailable('DISPLAY_RIGHTS_OR_DISCOVER_GATE_CLOSED');
+      return available({universeId:'EUROPE',universeLabel:'Europäische Aktien',cards,unavailable:unavailableEntries,nextOffset:offset+limit<refs.size?offset+limit:null,title:'Europäische Aktien',
         rule:privatePreview?'Private Recherche-Vorschau · nicht öffentlich freigegeben.':'Europäische Unternehmen und ihre Kursverläufe. Tagesschlusskurse · unbereinigt.'});
     }
     async function toggle(id){
@@ -149,12 +172,14 @@
       const members=[];
       for(const id of savedIds()){
         const found=await admitted(id),i=found.data&&found.data.identity;
+        const notice=found.state==='AVAILABLE'?null:await withheld(id);
         members.push(found.state==='AVAILABLE'?{securityId:id,name:i.name,ticker:i.ticker,href:href(id),state:'AVAILABLE'}:
+          notice?{securityId:id,name:notice.name,ticker:notice.ticker,href:notice.href,state:'UNAVAILABLE',reason:'DISCOVER_OR_DISPLAY_UNAVAILABLE',reasonClass:notice.reasonClass,message:notice.message,reasonText:notice.reason}:
           {securityId:id,name:null,ticker:null,href:null,state:'UNAVAILABLE',reason:'DISCOVER_OR_DISPLAY_UNAVAILABLE'});
       }
       return available({members});
     }
     return {VERSION,universeId:'EUROPE',audience,privatePreview,search,detail,series,browse,toggle,saved,savedIds,remove};
   }
-  return {VERSION,create,href,basisLabel,QUANT_MISSING,TECHNICAL_MISSING};
+  return {VERSION,create,href,basisLabel,QUANT_MISSING,TECHNICAL_MISSING,WITHHELD,REASONS};
 });

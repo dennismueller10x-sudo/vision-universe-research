@@ -11,42 +11,36 @@
    Fehlende Werte erfuellen KEINE Bedingung. Der Trichter weist aus, wie
    viele Titel ein Filter wegen fehlender Daten verliert - so bleibt
    sichtbar, ob ein Filter den Markt oder die Datenlage einschraenkt.
+
+   Ausgewertet wird mit der gemeinsamen Abfrage-Engine von /screener/ und
+   /technical/ (core/query-engine.js). Hier bleibt, was nur der Screener
+   kennt: Feldaufloesung ueber fields.js, Trichtertexte, Why-Match,
+   Ranking, Karten und Verteilungen.
    ========================================================================= */
 (function (global) {
   'use strict';
   var Fields = global.VUScreenerFields || (typeof require === 'function' ? require('./fields.js') : null);
   var Query = global.VUScreenerQuery || (typeof require === 'function' ? require('./query.js') : null);
+  var QE = (global.VUCore && global.VUCore.QueryEngine) || (typeof require === 'function' ? require('../../core/query-engine.js') : null);
 
   // ------------------------------------------------------------ Dataset
   function createDataset(artifact) {
     if (!artifact || !artifact.cols || !Array.isArray(artifact.cols.s)) throw Error('INVALID_DATASET');
-    var n = artifact.cols.s.length;
     var cols = artifact.cols;
     var derived = {};
     derived.region = cols.co.map(function (c) { return c ? (Fields.REGION_OF[c] || 'OTHER') : null; });
     derived.year = cols.ipo.map(function (d) { var y = d ? Number(String(d).slice(0, 4)) : NaN; return isFinite(y) ? y : null; });
-    var bySymbol = Object.create(null);
-    for (var i = 0; i < n; i++) bySymbol[cols.s[i]] = i;
-    var accessorCache = {};
-    function column(fieldId) {
-      if (accessorCache[fieldId]) return accessorCache[fieldId];
+    var ds = QE.createDataset(artifact, function (fieldId) {
       var f = Fields.field(fieldId);
       if (!f || !f.available) return null;
-      var arr = f.derive === 'region' ? derived.region : f.derive === 'year' ? derived.year : cols[f.col];
-      if (!arr) return null;
-      accessorCache[fieldId] = arr;
-      return arr;
-    }
-    var ds = {
-      size: n, meta: artifact, cols: cols, column: column,
-      symbol: function (i) { return cols.s[i]; },
-      name: function (i) { return cols.n[i]; },
-      indexOf: function (sym) { var i = bySymbol[sym]; return i === undefined ? -1 : i; },
-      value: function (fieldId, i) { var c = column(fieldId); return c ? c[i] : null; },
-      coverage: function (fieldId) {
-        var c = column(fieldId); if (!c) return 0;
-        var k = 0; for (var j = 0; j < n; j++) if (c[j] !== null && c[j] !== undefined) k++; return k;
-      }
+      return f.derive === 'region' ? derived.region : f.derive === 'year' ? derived.year : cols[f.col];
+    });
+    var n = ds.size, column = ds.column;
+    ds.name = function (i) { return cols.n[i]; };
+    ds.value = function (fieldId, i) { var c = column(fieldId); return c ? c[i] : null; };
+    ds.coverage = function (fieldId) {
+      var c = column(fieldId); if (!c) return 0;
+      var k = 0; for (var j = 0; j < n; j++) if (c[j] !== null && c[j] !== undefined) k++; return k;
     };
     ds._pct = {};
     return ds;
@@ -66,81 +60,24 @@
   function compile(ds, filter) {
     var f = Fields.field(filter.field), c = ds.column(filter.field);
     if (!f || !c) return function () { return null; };
-    if (f.kind === 'enum') {
-      var set = Object.create(null); filter.value.forEach(function (v) { set[v] = 1; });
-      if (f.multi) return function (i) { var v = c[i]; if (!v || !v.length) return false; for (var k = 0; k < v.length; k++) if (set[v[k]]) return true; return false; };
-      return function (i) { var v = c[i]; return v === null || v === undefined ? null : !!set[v]; };
-    }
-    if (f.kind === 'bool') { var want = filter.value ? 1 : 0; return function (i) { var v = c[i]; return v === null || v === undefined ? null : (v ? 1 : 0) === want; }; }
-    var a = filter.value, b = filter.value2;
-    var eqTol = Math.max(Math.abs(a) * 0.005, f.unit === 'pct' ? 0.0005 : 0.005);
-    var test = {
-      gt: function (v) { return v > a; }, gte: function (v) { return v >= a; },
-      lt: function (v) { return v < a; }, lte: function (v) { return v <= a; },
-      between: function (v) { return v >= a && v <= b; }, eq: function (v) { return Math.abs(v - a) <= eqTol; }
-    }[filter.op];
-    return function (i) { var v = c[i]; return v === null || v === undefined ? null : test(v); };
+    if (f.kind === 'enum') return QE.predicate(c, filter, { kind: 'enum', listOnly: !!f.multi });
+    if (f.kind === 'bool') return QE.predicate(c, filter, { kind: 'bool' });
+    return QE.predicate(c, filter, { kind: 'number', eqTol: Math.max(Math.abs(filter.value) * 0.005, f.unit === 'pct' ? 0.0005 : 0.005) });
   }
-
-  function activeGroups(q) { return q.groups.filter(function (g) { return g.filters.length; }); }
 
   /**
    * Wertet einen Screen aus.
    * @returns {{indices:number[], count, universe, funnel, perFilter, groups}}
    */
   function evaluate(ds, q) {
-    var n = ds.size, groups = activeGroups(q);
-    var compiled = {};
+    var n = ds.size, compiled = {}, perFilter = {};
     Query.filters(q).forEach(function (f) { compiled[f.id] = compile(ds, f); });
-    var perFilter = {};
-    Query.filters(q).forEach(function (f) {
-      var p = compiled[f.id], pass = 0, missing = 0;
-      for (var i = 0; i < n; i++) { var r = p(i); if (r === true) pass++; else if (r === null) missing++; }
-      perFilter[f.id] = { pass: pass, missing: missing };
+    Query.filters(q).forEach(function (f) { perFilter[f.id] = QE.tally(n, compiled[f.id]); });
+    var r = QE.run(n, q, compiled, {
+      filterStep: function (f, g) { return { kind: 'filter', filterId: f.id, groupId: g.id, label: Fields.describeFilter(f) }; },
+      groupStep: function (g, gi, standalone) { return { kind: 'group', groupId: g.id, label: (g.name || 'Gruppe ' + (gi + 1)) + (standalone ? ' – allein' : ' (ODER)') }; }
     });
-    function groupPass(g, i) {
-      if (g.op === 'OR') { for (var k = 0; k < g.filters.length; k++) if (compiled[g.filters[k].id](i) === true) return true; return false; }
-      for (var j = 0; j < g.filters.length; j++) if (compiled[g.filters[j].id](i) !== true) return false;
-      return true;
-    }
-    var funnel = [{ kind: 'start', label: 'Ausgangsuniversum', count: n, lost: 0, missing: 0 }];
-    var alive = new Uint8Array(n), current = n;
-    for (var i0 = 0; i0 < n; i0++) alive[i0] = 1;
-    var groupStats = {};
-    if (!groups.length) {
-      // keine Filter: alles
-    } else if (q.logic === 'AND') {
-      groups.forEach(function (g, gi) {
-        var steps = g.op === 'AND' ? g.filters.map(function (f) { return { filter: f, test: function (i) { return compiled[f.id](i); } }; })
-          : [{ group: g, test: function (i) { return groupPass(g, i) ? true : false; } }];
-        steps.forEach(function (st) {
-          var lost = 0, miss = 0;
-          for (var i = 0; i < n; i++) {
-            if (!alive[i]) continue;
-            var r = st.test(i);
-            if (r !== true) { alive[i] = 0; lost++; if (r === null) miss++; }
-          }
-          current -= lost;
-          funnel.push(st.filter
-            ? { kind: 'filter', filterId: st.filter.id, groupId: g.id, label: Fields.describeFilter(st.filter), count: current, lost: lost, missing: miss }
-            : { kind: 'group', groupId: g.id, label: (g.name || 'Gruppe ' + (gi + 1)) + ' (ODER)', count: current, lost: lost, missing: 0 });
-        });
-      });
-    } else {
-      var any = new Uint8Array(n);
-      groups.forEach(function (g, gi) {
-        var c = 0;
-        for (var i = 0; i < n; i++) if (groupPass(g, i)) { any[i] = 1; c++; }
-        groupStats[g.id] = c;
-        funnel.push({ kind: 'group', groupId: g.id, label: (g.name || 'Gruppe ' + (gi + 1)) + ' – allein', count: c, lost: n - c, missing: 0, standalone: true });
-      });
-      current = 0;
-      for (var j = 0; j < n; j++) { alive[j] = any[j]; if (any[j]) current++; }
-      funnel.push({ kind: 'union', label: 'Mindestens eine Gruppe erfüllt (ODER)', count: current, lost: n - current, missing: 0 });
-    }
-    var indices = [];
-    for (var k = 0; k < n; k++) if (alive[k]) indices.push(k);
-    return { indices: indices, count: indices.length, universe: n, funnel: funnel, perFilter: perFilter, groups: groupStats };
+    return { indices: r.indices, count: r.indices.length, universe: n, funnel: r.funnel, perFilter: perFilter, groups: r.groups };
   }
 
   /** Why Match: jede Bedingung mit gemessenem Wert. */
@@ -221,11 +158,9 @@
       var c = ds.column(s.field) || ds.column('marketCap');
       key = function (i) { return c[i]; };
     }
-    return arr.sort(function (a, b) {
-      var x = key(a), y = key(b), xn = x === null || x === undefined || isNaN(x), yn = y === null || y === undefined || isNaN(y);
-      if (xn && yn) return 0; if (xn) return 1; if (yn) return -1;
-      return (x - y) * dir || (ds.cols.mcap[b] || 0) - (ds.cols.mcap[a] || 0);
-    });
+    var mcap = ds.cols.mcap;
+    return arr.sort(QE.compareBy(key, dir, function (v) { return v === null || v === undefined || isNaN(v); },
+      function (a, b) { return (mcap[b] || 0) - (mcap[a] || 0); }));
   }
 
   // ------------------------------------------------------------ Adaptive Karten
