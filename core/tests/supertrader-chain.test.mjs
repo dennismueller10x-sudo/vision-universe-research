@@ -341,7 +341,7 @@ test("SC9 · Monitor: fehlender Stand/Index ist ein eigener Befund (kein Fehlala
 
 test("SC10 · Freshness-Monitor: Ergebnis des Supertrader-Jobs landet im Alarm (Issue), nicht nur in einem roten Lauf", () => {
   const fm = lies(".github/workflows/freshness-monitor.yml");
-  assert.match(fm, /alarm:\n\s+needs: \[monitor, produktstand, supertrader\]/);
+  assert.match(fm, /alarm:\n\s+needs: \[monitor, produktstand, supertrader(, [a-z]+)*\]/);
   assert.match(fm, /RESULT_SUPERTRADER: \$\{\{ needs\.supertrader\.result \}\}/);
 });
 
