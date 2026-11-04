@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-10-31T17:06:12.000Z",
- "asOf": "2026-10-30",
+ "generatedAt": "2026-11-04T04:38:44.000Z",
+ "asOf": "2026-11-03",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,25 +323,25 @@
    "predicateHash": null
   }
  ],
- "universe": 5665,
- "observed": 5665,
+ "universe": 5666,
+ "observed": 5666,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4495,
-  "WATCH": 638,
-  "SETUP_FORMING": 509,
-  "CONFIRMED": 23,
+  "NO_SETUP": 4525,
+  "WATCH": 661,
+  "SETUP_FORMING": 448,
+  "CONFIRMED": 32,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 509,
-  "setup.none.fallback": 4495,
-  "setup.watch.bullish-trend": 380,
-  "setup.watch.confirmed-structure-near-high": 258,
-  "setup.confirmed.structure-trend-volume": 23
+  "setup.forming.complete-setup-awaiting-trigger": 448,
+  "setup.none.fallback": 4525,
+  "setup.watch.bullish-trend": 418,
+  "setup.watch.confirmed-structure-near-high": 243,
+  "setup.confirmed.structure-trend-volume": 32
  },
  "pathTier": {
   "states": [
@@ -383,14 +383,16 @@
    "2026-10-26",
    "2026-10-28",
    "2026-10-29",
-   "2026-10-30"
+   "2026-10-30",
+   "2026-11-02",
+   "2026-11-03"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5665
+   "instruments": 5666
   }
  },
  "shards": [
@@ -1032,8 +1034,8 @@
  ],
  "observationDrift": null,
  "staleBundles": {
-  "count": 89,
-  "cutoff": "2026-10-30",
+  "count": 92,
+  "cutoff": "2026-11-03",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
    "2026-10-23": 6,
@@ -1060,12 +1062,14 @@
    "2026-10-21": 1,
    "2026-09-17": 1,
    "2026-09-10": 2,
+   "2026-11-02": 1,
    "2026-08-18": 5,
    "2026-08-26": 1,
    "2026-09-08": 1,
    "2026-08-21": 3,
    "2026-10-09": 1,
    "2026-10-20": 1,
+   "2026-10-30": 2,
    "2026-08-19": 1,
    "2026-08-12": 1,
    "2026-10-12": 1,
@@ -1213,6 +1217,10 @@
     "dataCutoff": "2026-09-10"
    },
    {
+    "ticker": "INDV",
+    "dataCutoff": "2026-11-02"
+   },
+   {
     "ticker": "IWFL",
     "dataCutoff": "2026-08-18"
    },
@@ -1253,6 +1261,10 @@
     "dataCutoff": "2026-10-20"
    },
    {
+    "ticker": "LXP-P-C",
+    "dataCutoff": "2026-10-30"
+   },
+   {
     "ticker": "MAA-P-I",
     "dataCutoff": "2026-10-01"
    },
@@ -1265,20 +1277,12 @@
     "dataCutoff": "2026-08-12"
    },
    {
+    "ticker": "MGPI",
+    "dataCutoff": "2026-10-30"
+   },
+   {
     "ticker": "MIMI",
     "dataCutoff": "2026-10-12"
-   },
-   {
-    "ticker": "MSGS",
-    "dataCutoff": "2026-10-26"
-   },
-   {
-    "ticker": "MTUL",
-    "dataCutoff": "2026-08-18"
-   },
-   {
-    "ticker": "NATH",
-    "dataCutoff": "2026-10-26"
    }
   ]
  }

@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="/technical/technical.css">
 <!-- Startseite und Screener brauchen den Screener-Datensatz; ein Chart-Deep-Link braucht ihn nur fuer den Namen. -->
 <link rel="preload" as="fetch" crossorigin="anonymous" href="/technical/data/index-v1.json">
+<link rel="stylesheet" href="/technical/academy/academy.css">
 </head>
 <body class="tc-body"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <a class="tc-skip" href="#tc-main">Zum Inhalt</a>
@@ -23,12 +24,17 @@
 <script src="/core/identity.js"></script>
 <script src="/core/stock-context.js"></script>
 <script src="/assets/stock-navigator.js"></script>
+<script src="/core/query-engine.js"></script>
 <script src="/quant/engines/technical/technical-query.js"></script>
 <script src="/quant/engines/technical/price-jumps.js"></script>
 <script src="/quant/engines/technical/query-text.js"></script>
 <script src="/technical/engine/templates.js"></script>
+<script src="/technical/engine/assistant.js"></script>
 <script src="/technical/engine/model.js"></script>
 <script src="/technical/ui/chart.js"></script>
+<script src="/technical/academy/model.js"></script>
+<script src="/technical/academy/visuals.js"></script>
+<script src="/technical/academy/view.js"></script>
 <script src="/technical/app.js"></script>
 </body>
 </html>

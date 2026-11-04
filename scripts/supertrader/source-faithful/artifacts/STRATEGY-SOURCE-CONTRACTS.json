@@ -584,7 +584,7 @@
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-READD-AFTER-UNIT-STOP"
      ],
-     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the next level is 1/2 N above the last actual fill even if that unit was stopped out since; after a unit stop-out the position takes no further adds (a re-add would be the optional Whipsaw re-entry, not implemented); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
+     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the next level is 1/2 N above the last actual fill even if that unit was stopped out since; after a unit stop-out the position takes no further adds (a re-add would be the optional Whipsaw re-entry, not implemented); the first add of a bar fills at max(open, level), later adds of the same bar at their level; unit size of an add: each added unit is sized like TUR-SF-UNIT with N of the session before the add bar (runTurtle -> addUnits -> buyUnit, nSize = N[i-1], entry N only if N[i-1] is missing), while add spacing and the unit stops keep the entry N; W-TUR sizes units from the N valid at the time and says nothing that contradicts this, but the split (sizing N vs. spacing/stop N) is a derivation, not printed wording (finding F-TUR-ADD-UNIT-N, text only, no rule or code change)",
      "reason": null
     },
     {
@@ -1278,7 +1278,7 @@
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-ADD-GAP-FILL",
       "scripts/supertrader/tests/sf-turtle.test.mjs: GC-TUR-NO-READD-AFTER-UNIT-STOP"
      ],
-     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the next level is 1/2 N above the last actual fill even if that unit was stopped out since; after a unit stop-out the position takes no further adds (a re-add would be the optional Whipsaw re-entry, not implemented); the first add of a bar fills at max(open, level), later adds of the same bar at their level",
+     "derivation": "N for add spacing and stops is N of the initial entry (the printed examples keep N constant); the next level is 1/2 N above the last actual fill even if that unit was stopped out since; after a unit stop-out the position takes no further adds (a re-add would be the optional Whipsaw re-entry, not implemented); the first add of a bar fills at max(open, level), later adds of the same bar at their level; unit size of an add: each added unit is sized like TUR-SF-UNIT with N of the session before the add bar (runTurtle -> addUnits -> buyUnit, nSize = N[i-1], entry N only if N[i-1] is missing), while add spacing and the unit stops keep the entry N; W-TUR sizes units from the N valid at the time and says nothing that contradicts this, but the split (sizing N vs. spacing/stop N) is a derivation, not printed wording (finding F-TUR-ADD-UNIT-N, text only, no rule or code change)",
      "reason": null
     },
     {
@@ -1862,7 +1862,7 @@
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ENTRY-BAR-STOP"
      ],
-     "derivation": "same one-cent fraction as DAR-SF-ENTRY; on the entry bar a low at or below the stop exits (pessimistic daily-bar order)",
+     "derivation": "same one-cent fraction as DAR-SF-ENTRY; on the entry bar a low at or below the stop exits (pessimistic daily-bar order). Same-bar order (model assumption MA-DAR-INTRABAR-ORDER, finding F-DAR-SAME-BAR-ORDER): a bar in the box phase that reaches the trigger and also falls below the box bottom counts as a breakout (methods/darvas.mjs#createDarvasBoxMachine, case BOX), and the position is stopped out pessimistically on that entry bar; the order of trigger and low is not decidable on daily bars (test CP-DAR-SAME-BAR-BREAKOUT-AND-FAIL). Reading of DAR-Q7 \"never inside the box\" as executed: not inside the NEW box; the initial stop lies a fraction below the old top and therefore inside the range of the old box, which follows DAR-Q5 (finding F-DAR-Q7-READING). This documents the current behaviour only; whether this reading is the right one is an owner question (FP-DAR-Q7-READING)",
      "reason": null
     },
     {
@@ -1884,7 +1884,7 @@
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-STOP-PATH",
       "scripts/supertrader/tests/sf-darvas.test.mjs: GC-DAR-ENTRY-BAR-STOP"
      ],
-     "derivation": "same one-cent fraction as DAR-SF-ENTRY; on the entry bar a low at or below the stop exits (pessimistic daily-bar order)",
+     "derivation": "same one-cent fraction as DAR-SF-ENTRY; on the entry bar a low at or below the stop exits (pessimistic daily-bar order). Same-bar order (model assumption MA-DAR-INTRABAR-ORDER, finding F-DAR-SAME-BAR-ORDER): a bar in the box phase that reaches the trigger and also falls below the box bottom counts as a breakout (methods/darvas.mjs#createDarvasBoxMachine, case BOX), and the position is stopped out pessimistically on that entry bar; the order of trigger and low is not decidable on daily bars (test CP-DAR-SAME-BAR-BREAKOUT-AND-FAIL). Reading of DAR-Q7 \"never inside the box\" as executed: not inside the NEW box; the initial stop lies a fraction below the old top and therefore inside the range of the old box, which follows DAR-Q5 (finding F-DAR-Q7-READING). This documents the current behaviour only; whether this reading is the right one is an owner question (FP-DAR-Q7-READING)",
      "reason": null
     },
     {
@@ -6052,7 +6052,7 @@
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-REJECT-WIDE",
       "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-STOP-NO-CLAMP"
      ],
-     "derivation": null,
+     "derivation": "KK-012 only says \"distance <= ADR (or ATR)\". Executed as (entry - low of day) / entry x 100 <= 1 x ADR20 % (methods/kullamagi.mjs#stopCheck, as the contract field stops states); the ATR alternative is not used. The denominator (entry) and the comparison with ADR20, which KK-031 measures relative to the low (high / low - 1), are a derivation, not source wording; the difference per trade is small but decides trades at the limit. Status question (SOURCE_EXACT or SOURCE_DERIVED) is with the owner (finding F-KK-ADR-DENOMINATOR, owner question FP-KK-ADR-DENOMINATOR-STATUS); the status stays unchanged until the owner decides",
      "reason": null
     },
     {

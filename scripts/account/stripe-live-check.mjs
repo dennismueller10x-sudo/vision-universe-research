@@ -146,14 +146,14 @@ export async function checkStripeLive({key, approved, apiOrigin, fetchImpl = fet
       descriptorPrefix: st.card_payments?.statement_descriptor_prefix || null, name: a.business_profile?.name || null,
       url: a.business_profile?.url || null, supportEmail: a.business_profile?.support_email || null, supportUrl: a.business_profile?.support_url || null,
       supportPhone: Boolean(a.business_profile?.support_phone), country: a.country || null, branding: {logo: Boolean(st.branding?.logo), icon: Boolean(st.branding?.icon),
-        color: st.branding?.primary_color || null}};
+        color: st.branding?.primary_color || null, accent: st.branding?.secondary_color || null}};
     const b = report.business;
     log(`Unternehmensangaben: Anzeigename "${b.displayName || '-'}", Name "${b.name || '-'}", Land ${b.country || '-'}, Website ${b.url || '-'}`);
     log(`Kontoauszug: "${b.descriptor || '-'}" (Karten-Praefix "${b.descriptorPrefix || '-'}")`);
     const inv = st.invoices || {};
     b.invoices = {taxIds: (inv.default_account_tax_ids || []).length, supportAddress: Boolean(a.business_profile?.support_address?.line1)};
     log(`Rechnungen: Steuer-IDs als Standard ${b.invoices.taxIds}, Support-Anschrift ${b.invoices.supportAddress ? 'hinterlegt' : '-'}`);
-    log(`Support: E-Mail ${b.supportEmail || '-'}, URL ${b.supportUrl || '-'}, Telefon ${b.supportPhone ? 'hinterlegt' : '-'}; Branding: Logo ${b.branding.logo ? 'ja' : 'nein'}, Icon ${b.branding.icon ? 'ja' : 'nein'}, Farbe ${b.branding.color || '-'}`);
+    log(`Support: E-Mail ${b.supportEmail || '-'}, URL ${b.supportUrl || '-'}, Telefon ${b.supportPhone ? 'hinterlegt' : '-'}; Branding: Logo ${b.branding.logo ? 'ja' : 'nein'}, Icon ${b.branding.icon ? 'ja' : 'nein'}, Farbe ${b.branding.color || '-'}, Akzent ${b.branding.accent || '-'}`);
   }
 
   const pp = report.methods.find(m => m.key === 'paypal');

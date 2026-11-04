@@ -1,0 +1,507 @@
+{
+ "schema": "vu-europe-gap-date-clusters-1-probe-plan",
+ "requestCap": 50,
+ "requests": 45,
+ "estimatedCredits": 45,
+ "creditSemantics": "CONSERVATIVELY_RESERVED_NOT_OBSERVED_BILLING",
+ "actionProbes": [
+  {
+   "purpose": "ACTION_ROUTE_US_POSITIVE_CONTROL",
+   "endpoint": "/splits",
+   "params": {
+    "symbols": "AAPL",
+    "date_from": "2020-08-24",
+    "date_to": "2020-09-04"
+   },
+   "estimatedCredits": 1
+  },
+  {
+   "purpose": "ACTION_ROUTE_TICKER_SCOPED_EUROPE",
+   "endpoint": "/tickers/EUZ.DE/splits",
+   "params": {
+    "date_from": "2025-08-01",
+    "date_to": "2025-08-31"
+   },
+   "estimatedCredits": 1
+  },
+  {
+   "purpose": "ACTION_ROUTE_TICKER_SCOPED_EUROPE",
+   "endpoint": "/tickers/AI.PA/splits",
+   "params": {
+    "date_from": "2019-10-01",
+    "date_to": "2019-10-15"
+   },
+   "estimatedCredits": 1
+  }
+ ],
+ "clusterProbes": [
+  {
+   "mic": "XETR",
+   "date": "2026-09-17",
+   "clusterSessions": 316,
+   "eligible": 319,
+   "calendarRecheck": false,
+   "securityId": "ref_1U1_DE_XETR",
+   "symbol": "1U1.DE",
+   "controlDate": "2026-09-16",
+   "requests": [
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2026-09-17",
+     "params": {
+      "symbols": "1U1.DE",
+      "exchange": "XETR"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2026-09-16",
+     "params": {
+      "symbols": "1U1.DE",
+      "exchange": "XETR"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XETR/eod/2026-09-17",
+     "params": {
+      "symbols": "1U1.DE"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XETR/eod/2026-09-16",
+     "params": {
+      "symbols": "1U1.DE"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/1U1.DE/eod/2026-09-17",
+     "params": {},
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/1U1.DE/eod/2026-09-16",
+     "params": {},
+     "estimatedCredits": 1
+    }
+   ]
+  },
+  {
+   "mic": "XPAR",
+   "date": "2015-12-31",
+   "clusterSessions": 38,
+   "eligible": 39,
+   "calendarRecheck": false,
+   "securityId": "ref_AC_PA_XPAR",
+   "symbol": "AC.PA",
+   "controlDate": "2015-12-30",
+   "requests": [
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2015-12-31",
+     "params": {
+      "symbols": "AC.PA",
+      "exchange": "XPAR"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2015-12-30",
+     "params": {
+      "symbols": "AC.PA",
+      "exchange": "XPAR"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XPAR/eod/2015-12-31",
+     "params": {
+      "symbols": "AC.PA"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XPAR/eod/2015-12-30",
+     "params": {
+      "symbols": "AC.PA"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/AC.PA/eod/2015-12-31",
+     "params": {},
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/AC.PA/eod/2015-12-30",
+     "params": {},
+     "estimatedCredits": 1
+    }
+   ]
+  },
+  {
+   "mic": "XAMS",
+   "date": "2023-06-13",
+   "clusterSessions": 19,
+   "eligible": 20,
+   "calendarRecheck": false,
+   "securityId": "ref_AD_AS_XAMS",
+   "symbol": "AD.AS",
+   "controlDate": "2023-06-12",
+   "requests": [
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2023-06-13",
+     "params": {
+      "symbols": "AD.AS",
+      "exchange": "XAMS"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2023-06-12",
+     "params": {
+      "symbols": "AD.AS",
+      "exchange": "XAMS"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XAMS/eod/2023-06-13",
+     "params": {
+      "symbols": "AD.AS"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XAMS/eod/2023-06-12",
+     "params": {
+      "symbols": "AD.AS"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/AD.AS/eod/2023-06-13",
+     "params": {},
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/AD.AS/eod/2023-06-12",
+     "params": {},
+     "estimatedCredits": 1
+    }
+   ]
+  },
+  {
+   "mic": "XSWX",
+   "date": "2023-06-29",
+   "clusterSessions": 13,
+   "eligible": 14,
+   "calendarRecheck": false,
+   "securityId": "ref_ABBN_SW_XSWX",
+   "symbol": "ABBN.SW",
+   "controlDate": "2023-06-28",
+   "requests": [
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2023-06-29",
+     "params": {
+      "symbols": "ABBN.SW",
+      "exchange": "XSWX"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2023-06-28",
+     "params": {
+      "symbols": "ABBN.SW",
+      "exchange": "XSWX"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XSWX/eod/2023-06-29",
+     "params": {
+      "symbols": "ABBN.SW"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XSWX/eod/2023-06-28",
+     "params": {
+      "symbols": "ABBN.SW"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/ABBN.SW/eod/2023-06-29",
+     "params": {},
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/ABBN.SW/eod/2023-06-28",
+     "params": {},
+     "estimatedCredits": 1
+    }
+   ]
+  },
+  {
+   "mic": "XMIL",
+   "date": "2023-06-27",
+   "clusterSessions": 9,
+   "eligible": 10,
+   "calendarRecheck": false,
+   "securityId": "ref_AMP_MI_XMIL",
+   "symbol": "AMP.MI",
+   "controlDate": "2023-06-26",
+   "requests": [
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2023-06-27",
+     "params": {
+      "symbols": "AMP.MI",
+      "exchange": "XMIL"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2023-06-26",
+     "params": {
+      "symbols": "AMP.MI",
+      "exchange": "XMIL"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XMIL/eod/2023-06-27",
+     "params": {
+      "symbols": "AMP.MI"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XMIL/eod/2023-06-26",
+     "params": {
+      "symbols": "AMP.MI"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/AMP.MI/eod/2023-06-27",
+     "params": {},
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/AMP.MI/eod/2023-06-26",
+     "params": {},
+     "estimatedCredits": 1
+    }
+   ]
+  },
+  {
+   "mic": "XCSE",
+   "date": "2023-06-13",
+   "clusterSessions": 17,
+   "eligible": 17,
+   "calendarRecheck": true,
+   "securityId": "ref_BAVA_CO_XCSE",
+   "symbol": "BAVA.CO",
+   "controlDate": "2023-06-12",
+   "requests": [
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2023-06-13",
+     "params": {
+      "symbols": "BAVA.CO",
+      "exchange": "XCSE"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2023-06-12",
+     "params": {
+      "symbols": "BAVA.CO",
+      "exchange": "XCSE"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XCSE/eod/2023-06-13",
+     "params": {
+      "symbols": "BAVA.CO"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XCSE/eod/2023-06-12",
+     "params": {
+      "symbols": "BAVA.CO"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/BAVA.CO/eod/2023-06-13",
+     "params": {},
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/BAVA.CO/eod/2023-06-12",
+     "params": {},
+     "estimatedCredits": 1
+    }
+   ]
+  },
+  {
+   "mic": "XWBO",
+   "date": "2023-06-13",
+   "clusterSessions": 12,
+   "eligible": 12,
+   "calendarRecheck": true,
+   "securityId": "ref_ANDR_VI_XWBO",
+   "symbol": "ANDR.VI",
+   "controlDate": "2023-06-12",
+   "requests": [
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2023-06-13",
+     "params": {
+      "symbols": "ANDR.VI",
+      "exchange": "XWBO"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EOD_DATE",
+     "endpoint": "/eod/2023-06-12",
+     "params": {
+      "symbols": "ANDR.VI",
+      "exchange": "XWBO"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XWBO/eod/2023-06-13",
+     "params": {
+      "symbols": "ANDR.VI"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "EXCHANGE_EOD_DATE",
+     "endpoint": "/exchanges/XWBO/eod/2023-06-12",
+     "params": {
+      "symbols": "ANDR.VI"
+     },
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_TARGET",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/ANDR.VI/eod/2023-06-13",
+     "params": {},
+     "estimatedCredits": 1
+    },
+    {
+     "purpose": "GAP_ROUTE_POSITIVE_CONTROL",
+     "route": "TICKER_EOD_DATE",
+     "endpoint": "/tickers/ANDR.VI/eod/2023-06-12",
+     "params": {},
+     "estimatedCredits": 1
+    }
+   ]
+  }
+ ],
+ "coverageContractSha256": "9136449ef61ea94849adc5267870038fd322f707c3df4721bb5f2a2aff6ab4c8",
+ "decisionRule": {
+  "recoveredOnlyIf": "TARGET_ROW_EXACT_SYMBOL_MIC_DATE_AND_CONTROL_ROW_EQUALS_APPROVED_RAW_BAR",
+  "emptyTargetMeans": "ROUTE_DOES_NOT_RECOVER_THIS_CLUSTER_NO_ABSENCE_PROOF",
+  "admission": "EXISTING_QUALITY_IDENTITY_AND_CALENDAR_GATES_UNCHANGED"
+ },
+ "followUpIfConfirmed": {
+  "scope": "MARKET_WIDE_PROVIDER_DATE_OMISSION",
+  "micDates": 420,
+  "sessions": 11463,
+  "requests": 459,
+  "conservativeCredits": 11463,
+  "batchSize": 100
+ },
+ "executed": false,
+ "providerRequests": 0,
+ "sources": {
+  "gapsSha256": "38a093f32a56e7b1331615047d6d09f40a7643ecbeb7a271f0ae6007ecf31564",
+  "inventorySha256": "06b533cd6e885649c2535310c54a23838cfde3e74acd36aea3445995ca5e9ba5"
+ }
+}

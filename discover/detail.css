@@ -353,3 +353,5 @@ body.dv2 .dv2-dm dd>p,body.dv2 .dv2-dm dd>div{margin:0;padding:0;font-size:12.5p
   body.dv2 .dv2-dm dl{grid-template-columns:1fr;gap:2px}
   body.dv2 .dv2-dm dt{margin-top:8px}
 }
+/* Dieselbe Aktie in ... (ui/stock-head.js#worlds): nur belegte Welten. */
+body.dv2 .dv2-worlds{margin:0 0 24px}body.dv2 .dv2-worlds ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}body.dv2 .dv2-worlds a{display:flex;flex-direction:column;gap:2px;min-height:44px;padding:12px 14px;border:1px solid var(--discover-line);border-radius:12px;color:var(--discover-text);text-decoration:none}body.dv2 .dv2-worlds a span{font-size:13px;color:var(--discover-muted)}

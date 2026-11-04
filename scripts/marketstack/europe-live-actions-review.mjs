@@ -7,6 +7,7 @@ import { isDeepStrictEqual } from 'node:util';
 import { privateReplayRoot } from './europe-private-files.mjs';
 const require = createRequire(import.meta.url);
 const { normalizeObservation } = require('../../providers/marketstack/audit-adapter.js');
+const { actionEndpointCoverage } = require('../../providers/marketstack/endpoint-coverage.js');
 /** Private corporate-action revalidation. No provider IO, price transformation,
  * missing-session fabrication, quarantine release or production gate mutation. */
 export const LIVE_ACTIONS_VERSION = 'vu-europe-live-actions-review-1';
@@ -31,8 +32,13 @@ function resultState(x) {
   if (!sourceVerified(x)) return 'SOURCE_UNVERIFIED';
   if (r.ok !== true) return r.status === 504 ? 'GATEWAY_ERROR' : 'REQUEST_ERROR';
   if (r.complete !== true || r.scopeComplete !== true) return 'INCOMPLETE';
-  return Array.isArray(r.data) && r.data.length ? 'ROWS_OBSERVED' : 'EMPTY_UNKNOWN';
+  if (Array.isArray(r.data) && r.data.length) return 'ROWS_OBSERVED';
+  // The provider documents /splits and /dividends for named US/Shanghai venues
+  // only. An empty European answer is then uninformative, never absence proof.
+  const op = x.operation ?? x;
+  return actionEndpointCoverage(op.kind, op.listing?.mic).state === 'DOCUMENTED_NOT_COVERED' ? 'EMPTY_OUTSIDE_DOCUMENTED_COVERAGE' : 'EMPTY_UNKNOWN';
 }
+const outsideCoverage = probes => probes.length > 0 && probes.every(p => resultState(p) === 'EMPTY_OUTSIDE_DOCUMENTED_COVERAGE');
 function listingFor(sec) { return sec.listings?.find(x => x.listingId === sec.primaryListingId) ?? sec; }
 function proofBound(p, sec, listing, when) {
   return p?.verified === true && p.independentlyVerified === true && p.sourceHashesVerified === true && hash(p.sourceSha256) && p.securityId === sec.securityId
@@ -119,6 +125,7 @@ function evaluateCase(c, sec, listing, probes, metadata, conventions, officialAc
   if (events.some(e => e.reasonCodes.length)) reasons.push('ACTION_EVIDENCE_INCOMPLETE_OR_CONFLICTING');
   if (!probes.length) reasons.push('LIVE_ACTION_PROBES_MISSING');
   if (probeRows.some(p => p.state !== 'ROWS_OBSERVED')) reasons.push('LIVE_ACTION_ENDPOINT_EMPTY_ERROR_OR_INCOMPLETE');
+  if (probeRows.some(p => p.state === 'EMPTY_OUTSIDE_DOCUMENTED_COVERAGE')) reasons.push('ACTION_ENDPOINT_OUTSIDE_DOCUMENTED_COVERAGE');
   if (!matching.length) reasons.push('NO_VERIFIED_EX_DATE_ACTION');
   if (explanations.length > 1) reasons.push('MULTIPLE_CAUSAL_ACTION_CANDIDATES');
   const explained = explanations.length === 1 && !reasons.includes('CONSECUTIVE_CALENDAR_SESSIONS_UNVERIFIED')
@@ -133,6 +140,8 @@ function evaluateCase(c, sec, listing, probes, metadata, conventions, officialAc
     reasonCodes: [...new Set(reasons)], explanation: explained ? explanations[0] : null,
     probeEvidence: probeRows, observedEvents: events, officialActionEvidence: officials,
     oldEvidenceSha256: c.sourceNormalizedSha256 ?? c.oldEvidenceSha256 ?? null,
+    providerActionRoute: outsideCoverage(probes) ? 'NONE_DOCUMENTED_FOR_VENUE' : probes.length ? 'PROBED' : 'NOT_PROBED',
+    requiredEvidence: outsideCoverage(probes) ? 'OFFICIAL_ISSUER_OR_EXCHANGE_ACTION_DOCUMENT' : null,
     explanationSupportsAdjustment: false, missingSessionsExplained: 0, pricesCreated: 0, quarantineReleased: 0 };
 }
 /** results are collector normalized envelopes, augmented ONLY by the verified
@@ -164,11 +173,11 @@ export function evaluateLiveActions({ catalog, cases = [], results = [], metadat
     const comparisons = [...embeddedFactors.filter(e => e.securityId === sec.securityId).map(e => {
       const matches = events.filter(x => x.date === e.date && x.type.includes('SPLIT'));
       return { kind: 'SPLIT_FACTOR', date: e.date, embeddedValue: e.providerFactor, endpointValues: matches.map(x => x.providerFactor),
-        status: !matches.length ? 'ENDPOINT_NOT_CORROBORATED' : matches.every(x => x.providerFactor === e.providerFactor) ? 'VALUE_MATCH_NOT_CONVENTION_CERTIFICATION' : 'CONFLICTING', oldEvidenceSha256: e.sourceNormalizedSha256 ?? null };
+        status: !matches.length ? (outsideCoverage(probes.filter(p => (p.operation ?? p).kind === 'splits')) ? 'ENDPOINT_OUTSIDE_DOCUMENTED_COVERAGE' : 'ENDPOINT_NOT_CORROBORATED') : matches.every(x => x.providerFactor === e.providerFactor) ? 'VALUE_MATCH_NOT_CONVENTION_CERTIFICATION' : 'CONFLICTING', oldEvidenceSha256: e.sourceNormalizedSha256 ?? null };
     }), ...embeddedDividends.filter(e => e.securityId === sec.securityId).map(e => {
       const matches = events.filter(x => x.date === e.date && x.type.includes('DIVIDEND'));
       return { kind: 'DIVIDEND', date: e.date, embeddedValue: e.dividend, endpointValues: matches.map(x => x.amount),
-        status: !matches.length ? 'ENDPOINT_NOT_CORROBORATED' : matches.every(x => x.amount === e.dividend) ? 'VALUE_MATCH_NOT_UNIT_CERTIFICATION' : 'CONFLICTING', oldEvidenceSha256: e.sourceNormalizedSha256 ?? null };
+        status: !matches.length ? (outsideCoverage(probes.filter(p => (p.operation ?? p).kind === 'dividends')) ? 'ENDPOINT_OUTSIDE_DOCUMENTED_COVERAGE' : 'ENDPOINT_NOT_CORROBORATED') : matches.every(x => x.amount === e.dividend) ? 'VALUE_MATCH_NOT_UNIT_CERTIFICATION' : 'CONFLICTING', oldEvidenceSha256: e.sourceNormalizedSha256 ?? null };
     })];
     return { securityId: sec.securityId, listingId: listing.listingId, mic: listing.mic, currency: listing.currency,
       status: related.some(c => c.status === 'UNEXPLAINED') ? 'UNRESOLVED_DISCONTINUITIES' : related.length ? 'OBSERVED_ACTIONS_RECONCILED' : 'NO_STRONG_BREAK_IN_CASE_LEDGER',
@@ -181,6 +190,7 @@ export function evaluateLiveActions({ catalog, cases = [], results = [], metadat
   });
   return { schema: LIVE_ACTIONS_VERSION, asOf, securities: rows.length, caseCount: assessed.length,
     explained: assessed.filter(c => c.status.startsWith('EXPLAINED_')).length, unexplained: assessed.filter(c => c.status === 'UNEXPLAINED').length,
+    unexplainedWithoutDocumentedProviderRoute: assessed.filter(c => c.status === 'UNEXPLAINED' && c.providerActionRoute === 'NONE_DOCUMENTED_FOR_VENUE').length,
     rows, cases: assessed, adjustmentsApplied: 0, syntheticBars: 0, missingSessionsExplained: 0,
     quarantineReleased: 0, productionReady: false, rawPreserved: true };
 }

@@ -1,0 +1,73 @@
+{
+ "schemaVersion": "supertrader-preregistration-st9-v13-delisted-1.0.0",
+ "registeredAt": "2026-10-30",
+ "registeredBefore": "Committed before any V13 delisted chain entered a Supertrader run. In this environment no private V13 series, no daily V13 fetch, no archive key and no snapshot access exist; no Supertrader result on universe B has been computed or seen by anyone. Known beforehand: the public V13 register 1.0.0 (counts, year buckets), the V13 Quant study results (S1-S3, F0/F1/F1w) and the Supertrader 6.0-8.0 reference results on universe A.",
+ "baseCommit": "adbc2f0444a82b52bc20067ba1e3149802de492d",
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "certificationStatus": "DIAGNOSTIC_NOT_CERTIFIED",
+ "productionApproved": false,
+ "principle": "Repeat the unchanged Supertrader research references on an extended population. No new rule, parameter, cost level, period, execution model, terminal scenario or method variant. No search, no significance test, no optimisation. Results never change a production rule, strategy, parameter or historical reference.",
+ "universes": {
+  "A": "Research dataset of the frozen snapshot (default sts1-134d4d62eb88b6ff8d98fe6e56b12a6d) built by validation/analyze-methods.mjs#loadPitData with CANONICAL_LOAD and runner/snapshot-input.mjs#datasetFromPit, sec-pit r12 attached (run-sf3-research.mjs#attachSecPit) - the input construction of run-sf6-integrity.mjs.",
+  "B": "A plus every QUALIFIED chain of docs/quant-recovery/v13/delisted/register-1.0.0.json (SHA-256 ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f) whose private weekly series is hash-bound by quant/engines/research-delisted-series.cjs and whose daily bars (decrypted V13 fetch, archive part v13-raw) reproduce that weekly series, minus every chain that overlaps A (same core/identity.js securityId with overlapping interval, tolerance 10 days; same series by last-bar key; same CIK with overlapping interval when the CIK of the A listing is known) and minus overlaps inside B (earlier chain kept). Register 1.1.0 (+13 chains) and PRICE_ONLY_CENSORED_END chains are NOT part of B (each would need a new registration)."
+ },
+ "pointInTime": "A chain is tradable only on bars inside [chain start, last traded day] and inside the research window DEV (warm-up 2015-01-01, from 2016-01-04, to 2026-09-30) on the snapshot session calendar; segments by validation/lib.mjs#splitSegments, segments under 30 bars dropped, end cause by analyze-methods.mjs#segmentEndCause (last traded day inside the window = LISTING_INACTIVE at that day). The HOLDOUT window 2008-2015 (PREREGISTRATION-R14) is not used; the runner refuses ST_WINDOW=HOLDOUT.",
+ "corporateActions": "Only QUALIFIED chains (protocol 1.0.0 R4: every split-sized jump explained by a provider split factor, adjClose cross-check; CA_UNRESOLVED and CA_MISMATCH excluded). Split adjustment of the daily bars by validation/lib.mjs#adjustSeries (ADR-002 snapshot convention, divisor identical to qualify.py C3).",
+ "quarantine": "V4-D1 quarantine applied identically to every security of A and B after B is built: primary DQ-K5-BOOK (integrity/discontinuity.mjs, superset of the 83 reference-exposed UNRESOLVED sessions); sensitivity CA-Q-K5-DATES when the sealed CA-Q-K5 session list of run-sf7-ca-resolution is supplied (A via integrity/ca-overlay.mjs#quarantineUnresolved, added chains at their DQ-K5 flags). The quarantined A part of B must be piece-identical to quarantined A (fail closed). CC-5 stays open; nothing here resolves a quarantined session.",
+ "methods": {
+  "primary": ["MINERVINI_SEPA (C06)", "MINERVINI_POWER_PLAY (C07)", "KK_BREAKOUT (C08)"],
+  "secondary": ["TURTLE_S1 (C01)", "TURTLE_S2 (C02)", "DARVAS (C03)", "WEINSTEIN_INVESTOR (C04)", "WEINSTEIN_TRADER (C05)", "POCKET_PIVOT (C11)", "BUYABLE_GAP_UP (C12)", "HOLY_GRAIL_W_RAS97 (C13)"],
+  "configuration": "REF variant of each reference exactly as research/sf6-references.mjs runs it (SF6_REFERENCES); sf5 variant registry SHA-256 0a1260e9d087b1cde8176b66134e19b32222f94653d46df31c495d02552940da.",
+  "excluded": "C09 Kullamaegi Episodic Pivot (needs real minute bars; V13 has daily bars only) and every method without a measurable reference."
+ },
+ "frozenParameters": {
+  "costs": "REFERENCE_COSTS of research/sf6-references.mjs: slippage 10 bps per side, commission 1 bp",
+  "portfolioPolicies": "PLATFORM_RESEARCH_PORTFOLIO_POLICY (lifecycle-engine.mjs) and EQUITY_RESEARCH_PORTFOLIO_POLICY (minervini-execution.mjs), initial capital 100,000, unchanged",
+  "engineTerminalScenario": "S0_LAST_PRICE (validation/portfolio.mjs SCENARIOS): last traded close minus slippage",
+  "accounting": "research-v1",
+  "window": "DEV 2016-01-04 .. 2026-09-30",
+  "researchUniverseFilter": "RESEARCH_UNIVERSE (common/series.mjs): raw close >= 5 USD, 20-session dollar volume >= 1e6 at the prior session"
+ },
+ "terminalScenarios": {
+  "source": "docs/quant-recovery/v13/delisted/protocol-1.0.0.json R6 and study-registration-1.0.0.json decomposition.delisting_terminal",
+  "values": { "MERGER": [0, -0.10, 0.10], "DISTRESS": [0, -0.30, -1.00], "UNKNOWN": [0, -0.30, -1.00] },
+  "application": "Scenario k shifts the booked terminal settlement of an ADDED chain by values[class][k] x net proceeds and carries the difference forward in the equity curve without reinvestment (first-order band). A's own delistings stay at scenario 0 (V13 study amendment 1.0.1 O1). Reported as a band; scenario 0 is the point estimate."
+ },
+ "metrics": ["CAGR (equity curve incl. open marks, initial capital point first; runner/metrics.mjs#cagr)", "maximum drawdown (runner/metrics.mjs#maxDrawdown)", "hit rate (closed trades with pnl > 0 / closed trades)", "number of trades (closed + open at data end), by origin A_OWN / B_ADDED", "stop executions (closed trades whose exit reason contains STOP)", "delisting-caused exits (TERMINAL_DELISTED): count, losing count and S0 pnl by origin, added ones by terminal class, scenario shock totals", "survivorship-bias sensitivity: B - A at T0 (CAGR, max drawdown, hit rate, trades, stop exits) and the CAGR band of B over T0..T2"],
+ "hypotheses": {
+  "H1": "For each primary method |CAGR(B, T0) - CAGR(A, T0)| <= 1.0 percentage point (expectation from V13 S2: population effects in tenths of PP).",
+  "H2": "For each primary method the CAGR band of B over T0..T2 is <= 0.5 percentage points wide.",
+  "H3": "For each primary method trades in added chains are < 5 % of all B trades (A already holds the provider's fetchable delisted listings of the window).",
+  "reading": "Descriptive. Each hypothesis is reported as HOLDS / DOES_NOT_HOLD / NOT_EVALUABLE (no trades). A violated hypothesis is a finding for the owner, never a reason to change a rule. No hypothesis is a claim of alpha or of the absence of value."
+ },
+ "outputs": "Only to --out outside the repository: public part (counts and hashes, no metric, no ticker, no chain id, no price), sealed part (owner key validation/results-public-key.pem), optional plain private part. Publication of metrics: owner decision (Tiingo OWNER_DECLARED_LICENSED 2026-09-13 covers internal research; Supertrader convention keeps backtest metrics sealed).",
+ "references": {
+  "baseCommit": "adbc2f0444a82b52bc20067ba1e3149802de492d",
+  "sha256": {
+   "scripts/supertrader/source-faithful/research/sf6-references.mjs": "705a964451110082f11981e0ae006855a274c4a4f35b680bc83b6f3a7e56eb3f",
+   "scripts/supertrader/source-faithful/research/lifecycle-engine.mjs": "3e2cbdc802141209dd00f6fc1c8de542d52b6ac24c359c4e6aa0ca0f766cc549",
+   "scripts/supertrader/source-faithful/research/minervini-execution.mjs": "f9d9bca30125bd6879b2edc62a09dfc7cc1e0d8f355d8e282f1af156235c6555",
+   "scripts/supertrader/source-faithful/research/minervini-lifecycle.mjs": "bdd34eb8ffa5f0a2a9d656d171e90db29b0de6ab387c1bc8df9bf07629daa361",
+   "scripts/supertrader/source-faithful/research/kk-breakout-lifecycle.mjs": "5c24bd70269075372dd30af607986723df61d195ca72ba237cb408b66c46db10",
+   "scripts/supertrader/source-faithful/research/sf5-lifecycles.mjs": "c5dbfa6052b6303d75d1c0ef37fb2b97c43bf20ac6ba682a269c4e2ec3c12d39",
+   "scripts/supertrader/source-faithful/methods/turtle.mjs": "fab1f22af34e76f989c136cdf407162decae38a4fe2f0b66fc40056b2b458cc0",
+   "scripts/supertrader/source-faithful/methods/minervini.mjs": "6aaadb795cdbdd7bff19ae61d4d603e5e6e6a8007773edb88b361a0ff67dfa8a",
+   "scripts/supertrader/source-faithful/methods/kullamagi.mjs": "8aa06d6e543eb620b7c40409f89767add03feb799d0b0dfec08b89cb528c3d9d",
+   "scripts/supertrader/source-faithful/runner/snapshot-input.mjs": "e2059619003e6340bd1e077c4b11ba065e4f9404cab615170b58999498f88026",
+   "scripts/supertrader/source-faithful/runner/metrics.mjs": "59ca8d6832dde592e44db98a7a67c000bb4d83aeacd3b13af222a590a159b405",
+   "scripts/supertrader/source-faithful/integrity/discontinuity.mjs": "0c4753d57e076c7667ebb3e787776f1d89d3aa5a3c2e4d9969763395449270e3",
+   "scripts/supertrader/source-faithful/integrity/ca-overlay.mjs": "51e5f23d508914f7c734f83ed2651fe94b5716dbff09612a61255f8f8d795dbc",
+   "scripts/supertrader/validation/lib.mjs": "49fd4a39c60076e32bcb724211a5cb219dd5614d0c316e0e16e8926c82865d5c",
+   "scripts/supertrader/validation/portfolio.mjs": "b77eb45854c8f958f50a119b91a7bf3cacf7fc8d0aa783aff66d1f9d5c77f0be",
+   "scripts/supertrader/validation/accounting-contract.mjs": "8d4631e77227140910e1a45d33e68c0a0d2c44088e37ada9161080c9f9a1c715",
+   "scripts/supertrader/validation/analyze-methods.mjs": "99de2c0f133f3d4a3eded6b9a416e637000b5463b0f0e8954494e2d8d5a35986",
+   "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
+   "scripts/quant/v13/delisted/qualify.py": "6addb5ff4d0189ddd9a4c7cc2eafdddd42c82838988f47860427e7ccee87f2ee",
+   "core/identity.js": "85ef1bf5694b8dfa8c22fb704e55ed675ed3cc6ab16fa560ceabb084dd409c69",
+   "docs/quant-recovery/v13/delisted/register-1.0.0.json": "ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f",
+   "docs/quant-recovery/v13/delisted/protocol-1.0.0.json": "4efcba25f331c60a88f1acd0e995cbe4df334c2c4080af14b5c03cb398f728a7",
+   "docs/quant-recovery/v13/delisted/study-registration-1.0.0.json": "d12c1ec0fa7f37628b067c0c06470b0bef3b1209013e207193fe3d0a3e68937f",
+   "docs/quant-recovery/v13/studies/study-amendment-1.0.1.json": "446d4a06cf369791efb6695fdb4c7f5c2d69abca464d66d99dbcecbe1f303d6e"
+  }
+ }
+}
