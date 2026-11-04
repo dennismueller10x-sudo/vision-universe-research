@@ -902,6 +902,7 @@
     var byId = {}; ((index && index.profiles) || []).forEach(function (p) { byId[p.profileId] = p; });
     var list = profiles.contract.profiles;
     if (id) return strategyDetail(main, ctx, list.filter(function (p) { return p.profileId === id; })[0], byId[id], index, profiles.contract);
+    if (global.VUUI) return strategiesV3(main, list, byId, index);
     /* Wie Discovers Strategien-Seite: Bild, Name, ein Satz, Pfeil. */
     main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Strategien" }),
       el("h1", { class: "qx-h1", text: "Welche Art von Unternehmen suchst du?" }),
@@ -921,6 +922,28 @@
       X.actions([X.btn("Wie Strategien geprüft werden", X.routes.method("strategien"), "secondary")]));
   }
 
+  /* Redesign 2027 (Folie Q03): jeder Stil als Satz, Regeln als Chips in Alltagssprache, Trefferzahl groß; ohne Fotos. */
+  var STRAT_SHORT = { "quality-compounder": "Solide finanziert, verdient verlässlich, wächst lange", "momentum-leader": "Der Kurs läuft seit Monaten besser als der Markt",
+    "quality-momentum": "Solide Firmen, deren Qualität der Kurs bestätigt", "garp": "Wachstum zu einem fairen Preis", "future-leader": "Wächst schnell, und der Markt zieht schon mit",
+    "defensive-quality": "Solide Firmen mit ruhigem Kurs", "value-momentum": "Günstig bewertet, und der Kurs dreht schon", "earnings-revision-leader": "Analysten heben ihre Gewinnschätzungen an" };
+  function strategiesV3(main, list, byId, index) {
+    var U = global.VUUI, h = '<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Welche Art von Firma suchst du?</h1><p class="vu-lead">Jede Strategie ist ein Anlagestil mit festen Regeln. Quant prüft täglich, welche Aktien alle Regeln erfüllen.</p></header>' +
+      '<div style="margin-top:10px">' + U.help("„Erfüllt“ heißt nur: Die Aktie passt heute zu den Regeln. Es ist kein Kaufsignal.") + '</div><div class="vu-stack qv3-strategies">';
+    var open = [], closed = [];
+    list.forEach(function (p) { var ix = byId[p.profileId]; (ix && typeof ix.count === "number" && (!ix.availability || ix.availability.state === "AVAILABLE") ? open : closed).push(p); });
+    h += open.map(function (p) {
+      var ix = byId[p.profileId], name = p.label.split(" · ")[0];
+      return '<a class="vu-box qv3-scard" href="' + U.esc(X.routes.strategy(p.profileId)) + '" data-profile="' + U.esc(p.profileId) + '"><span class="qv3-scard-h"><span><span class="vu-ltag">' + U.esc(name) + '</span><b class="qv3-scard-t">' + U.esc(STRAT_SHORT[p.profileId] || p.plain) + '</b></span><span class="qv3-scard-n"><b class="vu-num">' + ix.count.toLocaleString("de-DE") + '</b><span class="vu-xs vu-mu"><b>Aktien heute</b></span></span></span>' +
+        '<span class="qv3-rules">' + p.conditions.map(function (c) { return '<span class="vu-chip">' + U.esc((FACTOR_SHORT[c.id] || (VM.FACTORS[c.id] ? VM.FACTORS[c.id].name : c.id)) + " ≥ " + c.value) + "</span>"; }).join("") + "</span></a>";
+    }).join("");
+    h += closed.map(function (p) {
+      var ix = byId[p.profileId];
+      return '<a class="vu-box vu-box--line qv3-scard" href="' + U.esc(X.routes.strategy(p.profileId)) + '" data-profile="' + U.esc(p.profileId) + '"><span class="qv3-scard-h"><span><span class="vu-ltag">' + U.esc(p.label.split(" · ")[0]) + '</span><b class="qv3-scard-t">' + U.esc(STRAT_SHORT[p.profileId] || p.plain) + "</b></span>" + U.verdict("none", "Nicht prüfbar") + '</span><span class="vu-xs vu-mu" style="display:block;margin-top:8px">' + U.esc(VM.reasonText(ix && ix.availability && ix.availability.reason, "Eine benötigte Eigenschaft hat für keine Aktie Werte.")) + " Quant zeigt deshalb keine Treffer.</span></a>";
+    }).join("");
+    h += '</div><div class="vu-box qv3-bt" style="margin-top:12px"><b class="vu-sm">Wie gut war ein Stil früher?</b><p class="vu-xs vu-mu">Bewusst keine Trefferquote: Der Backtest bleibt geschlossen, bis Universum, Kapitalmaßnahmen und Ausführung zertifiziert sind.</p>' + U.verdict("none", "Backtest noch gesperrt") + "</div>" +
+      '<div class="vu-box vu-box--line qv3-note"><b class="vu-sm">Keine Anlageempfehlung</b><p class="vu-xs vu-mu">Quant ordnet ein und vergleicht. Keine Prognose, kein Kursziel. Daten: SEC EDGAR, Tiingo. Stand ' + U.esc(X.dateDe(index && index.asOf)) + '.</p></div><p class="qx-small"><a href="' + U.esc(X.routes.method("strategien")) + '">Wie Strategien geprüft werden</a></p>';
+    var box = el("div", { class: "vu-ui qv3" }); box.innerHTML = h; main.append(box);
+  }
   /* Visual First (VU3): je Bedingung ein Balken 0-100 mit der Schwelle als Strich und dem Wert als Zahl -
      dieselben veroeffentlichten Faktorwerte wie im Satz (screeningWhy), der als aria-label an der Zeile bleibt. */
   function condMeters(row, conditions, dist) {
