@@ -39,7 +39,7 @@
   /* „Wo stehst du?“ der Startseite → Vorauswahl im ersten Start. */
   var FROM_PATH = { anfaenger: { goal: 'vorsorge', mode: 'beginner' }, verstehen: { goal: 'aktie', mode: 'beginner' }, profi: { goal: 'signale', mode: 'pro' } };
   /* Beliebte Kürzel: feste Liste im Code, keine Empfehlung. */
-  var POPULAR = ['NVDA', 'AAPL', 'MSFT', 'AMZN', 'GOOGL', 'META', 'TSLA', 'AMD'];
+  var POPULAR = ['NVDA', 'AAPL', 'MSFT', 'AMZN', 'GOOGL', 'META', 'TSLA', 'AMD', 'MU', 'NFLX', 'COST', 'KO'];
   var NO_GOAL = { label: 'Noch kein Ziel gewählt', step: 'Wähle deinen Einstieg in drei Schritten', href: '/willkommen/start/' };
 
   function store(ls) { try { return ls || (typeof localStorage !== 'undefined' ? localStorage : null); } catch (e) { return null; } }

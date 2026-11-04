@@ -448,6 +448,12 @@
     }).catch(function () { /* ohne Kurse bleibt der Abschnitt verborgen; die Watchlist steht unter Platz 1 */ });
   }
   function init() {
+    // Erster Start (E11) erscheint einmal nach der E-Mail-Bestätigung, vor Mein Bereich; nicht im Pro-Bestellweg (?konto=pro).
+    try {
+      if (new URLSearchParams(global.location.search).get('konto') === 'verified' && global.VUStart && !global.VUStart.read().done) {
+        global.location.replace('/willkommen/start/?konto=verified'); return;
+      }
+    } catch (e) { /* ohne Speicher: kein erster Start */ }
     measureTop(); global.addEventListener('resize', measureTop);
     if (global.customElements && customElements.whenDefined) customElements.whenDefined('vu-navigation').then(function () { requestAnimationFrame(measureTop); });
     var now = new Date(), title = doc.getElementById('wk-title'), date = doc.getElementById('wk-date');
