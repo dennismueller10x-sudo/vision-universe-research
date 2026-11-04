@@ -417,6 +417,10 @@
     }
     var proPrice = null, me = null, signedIn = false, loaded = false, open = false;
     var confirmBox = $('ka-confirm'), terms = $('ka-confirm-terms'), pay = $('ka-checkout');
+    // Bestellweg (E06): mit ?plan=pro nur die Bestellbestätigung, ohne Reiter und ohne zweite Tarifwahl.
+    var order = param('plan') === 'pro' && !canceled;
+    if (order) { document.documentElement.setAttribute('data-ka-order', ''); $('ka-confirm-title').textContent = 'Deine Bestellung'; }
+    $('ka-ready-free').addEventListener('click', function () { $('ka-continue-free').click(); });
 
     $('ka-choose-free').addEventListener('click', forgetChoice);
     $('ka-choose-pro').addEventListener('click', function () {
@@ -482,6 +486,7 @@
         proAction.appendChild(el('span', {className: 'ka-badge', text: 'Dein Tarif'}));
         proAction.appendChild(el('a', {className: 'ka-btn ka-btn--block', href: '/konto/abo/', text: 'Abonnement verwalten'}));
         confirmBox.hidden = true;
+        if (order) { $('ka-subscribed').hidden = false; document.documentElement.setAttribute('data-ka-subscribed', ''); }
         return;
       }
       // Pro vor der Registrierung gewaehlt (Adresse, dieses Geraet oder im Konto): direkt zur Bestaetigung,
@@ -505,7 +510,7 @@
           + ' Dein kostenloses Konto mit Free ist aktiv. Es wurde nichts berechnet.';
       }
       if (state === 'signed-out' && open) { rememberChoice('pro'); go('/konto/registrieren/?plan=pro'); }
-      if (state === 'subscribed') confirmBox.hidden = true;
+      if (state === 'subscribed') { confirmBox.hidden = true; if (order) { $('ka-subscribed').hidden = false; document.documentElement.setAttribute('data-ka-subscribed', ''); } }
       return state;
     }
     function openConfirm() {
@@ -514,7 +519,7 @@
       var state = renderConfirm();
       if (state === 'signed-out' || state === 'subscribed') return;
       var title = $('ka-confirm-title');
-      if (title.scrollIntoView) title.scrollIntoView({block: 'start'});
+      if (title.scrollIntoView && !order) title.scrollIntoView({block: 'start'});
       title.focus({preventScroll: true});
     }
   };

@@ -324,3 +324,38 @@ ul.ka-hint li[data-ok=true]{color:var(--vu-ink)}
 .ka-done p{margin:0;color:var(--vu-mute);line-height:1.5}
 .ka-done-icon{width:56px;height:56px;border-radius:16px;background:var(--vu-lime);color:#000;display:grid;place-items:center}
 .ka-done-icon svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Bestellweg Pro (E06) */
+.ka-order-only{display:none}
+html[data-ka-order] .ka-order-only{display:block}
+html[data-ka-order] ol.ka-order-only{display:flex}
+html[data-ka-order] .ka-plans-only{display:none!important}
+html[data-ka-order] .ka-subscribed[hidden]{display:none!important}
+html[data-ka-order] #ka-confirm{margin-top:0;padding:0;background:none}
+html[data-ka-order] #ka-confirm-title{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.ka-order-price{padding:16px 18px;border-radius:22px}
+.ka-order-price p{margin:0;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ka-order-price .vu-pro{background:var(--vu-lime);color:#000}
+.ka-order-amount{justify-content:flex-start!important;align-items:baseline!important;margin-top:4px!important}
+.ka-order-amount>span{font-size:40px;font-weight:900;letter-spacing:-.05em;color:var(--vu-lime)}
+:root[data-theme=dark] .ka-order-amount>span{color:#000}
+.ka-order-amount small{font-size:13px;font-weight:700;opacity:.75}
+.ka-facts{display:block;margin-top:12px;padding:4px 14px;border-radius:20px;background:var(--vu-card);font-size:14px}
+.ka-facts dt{float:left;clear:left;padding:12px 0;font-weight:800;color:var(--vu-ink)}
+.ka-facts dd{margin:0;padding:12px 0 12px 110px;text-align:right;border-bottom:1px solid var(--vu-hair);font-weight:700}
+.ka-facts dd:last-child{border-bottom:0}
+.ka-loading{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:18px;background:var(--vu-card);color:var(--vu-ink);font-weight:800;font-size:15px}
+.ka-spin{width:22px;height:22px;border-radius:50%;border:3px solid var(--vu-hair);border-top-color:var(--vu-ink);animation:ka-spin 1s linear infinite}
+@keyframes ka-spin{to{transform:rotate(1turn)}}
+@media(prefers-reduced-motion:reduce){.ka-spin{animation:none}}
+.ka-check--order{padding:14px;border-radius:18px;border:1.5px solid var(--vu-hair);cursor:pointer}
+.ka-check--order:has(input:checked){border-color:var(--vu-ink)}
+.ka-blocked{display:grid;gap:8px;justify-items:start;padding:16px;border-radius:20px;border:1.5px solid var(--vu-hair)}
+.ka-blocked-title{margin:0;font-size:18px;font-weight:900;letter-spacing:-.02em}
+.ka-blocked .ka-actions{width:100%}
+.ka-center{text-align:center;justify-self:center}
+.ka-subscribed{display:grid;gap:12px}
+html[data-ka-order] .ka-subscribed:not([hidden]){display:grid}
+.ka-sub-card{display:flex;align-items:center;gap:14px;padding:16px;border-radius:20px}
+.ka-sub-card b{display:block}.ka-sub-card small{display:block;font-size:13px;opacity:.75}
+.ka-sub-ok{flex:none;width:40px;height:40px;border-radius:12px;background:var(--vu-lime) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/20px no-repeat}
+html[data-ka-subscribed] #ka-steps,html[data-ka-subscribed] div.ka-order-only{display:none!important}
