@@ -1,0 +1,154 @@
+name: Supertrader historischer Backtest V1 Top 5 (Forschung, verschluesselt)
+
+# Erster historischer Backtest der V1-Methoden C01, C02, C03, C08, C12 (Neustart 04.11.2026). Forschung, nicht
+# zertifiziert. Unveraenderte SF6-Referenzen auf dem eingefrorenen DEV-Snapshot (2016-01-04 bis 2026-09-30), DQ-K5-
+# Quarantaene (ungeklaerte Kapitalmassnahmen ausgeschlossen, E1), vier vorregistrierte Kostenstufen, SPY-Vergleich.
+# Optional Universum B mit den V13-Delisting-Ketten (Archiv 1.2.0). Ergebnis nur verschluesselt im Artefakt: an den
+# Owner-Schluessel und, falls angegeben, an einen Pruefschluessel (oeffentlicher Schluessel als Eingabe). Im Log und im
+# Summary nur Status, Zaehlungen und Hashes, keine Renditezahl. Kein Commit, kein Push.
+on:
+  workflow_dispatch:
+    inputs:
+      snapshot_id:
+        description: 'Research-Snapshot (sts1-<32 hex>)'
+        required: true
+        default: 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d'
+        type: string
+      reviewer_public_key_b64:
+        description: 'Optional: oeffentlicher RSA-Schluessel (PEM, base64 in einer Zeile) fuer die interne Durchsicht'
+        required: false
+        default: ''
+        type: string
+      with_v13:
+        description: 'Universum B mit V13-Delisting-Ketten zusaetzlich rechnen (Archiv 1.2.0)'
+        required: false
+        default: true
+        type: boolean
+permissions:
+  contents: read
+concurrency:
+  group: supertrader-st-hist-top5-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Eingaben pruefen
+        env:
+          SNAPSHOT_ID: ${{ inputs.snapshot_id }}
+          REVIEWER_B64: ${{ inputs.reviewer_public_key_b64 }}
+          WITH_V13: ${{ inputs.with_v13 }}
+        run: |
+          set -euo pipefail
+          [[ "$SNAPSHOT_ID" =~ ^sts1-[0-9a-f]{32}$ ]] || { echo "SNAPSHOT_ID_INVALID"; exit 2; }
+          [[ "$WITH_V13" == "true" || "$WITH_V13" == "false" ]] || { echo "WITH_V13_INVALID"; exit 2; }
+          mkdir -p "$RUNNER_TEMP/sth/enc" "$RUNNER_TEMP/sth/upload"
+          if [ -n "$REVIEWER_B64" ]; then
+            [[ "$REVIEWER_B64" =~ ^[A-Za-z0-9+/=]+$ ]] || { echo "REVIEWER_KEY_INVALID"; exit 2; }
+            printf '%s' "$REVIEWER_B64" | base64 -d > "$RUNNER_TEMP/sth/reviewer.pem"
+            openssl pkey -pubin -in "$RUNNER_TEMP/sth/reviewer.pem" -noout || { echo "REVIEWER_KEY_NOT_A_PUBLIC_KEY"; exit 2; }
+            echo "reviewerKeySha256: \`$(openssl pkey -pubin -in "$RUNNER_TEMP/sth/reviewer.pem" -outform DER | sha256sum | cut -c1-64)\`"
+          fi
+          echo "Eingaben gueltig"
+      - name: Secrets vorhanden (nur ja/nein, fail closed)
+        env:
+          HAS_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT != '' }}
+          HAS_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET != '' }}
+          HAS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID != '' }}
+          HAS_SECRET: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY != '' }}
+          HAS_V13: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY != '' }}
+          WITH_V13: ${{ inputs.with_v13 }}
+        run: |
+          set -euo pipefail
+          for v in HAS_ENDPOINT HAS_BUCKET HAS_KEY_ID HAS_SECRET; do [ "${!v}" = "true" ] || { echo "SECRET_MISSING: $v"; exit 3; }; done
+          if [ "$WITH_V13" = "true" ] && [ "$HAS_V13" != "true" ]; then echo "SECRET_MISSING: V13_ARCHIVE_PRIVATE_KEY"; exit 3; fi
+      - name: V13-Teile laden und entschluesseln (nur mit Universum B)
+        if: inputs.with_v13
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          M=docs/quant-recovery/v13/archive/manifest-1.2.0.json
+          node scripts/supertrader/snapshot/fetch-v13-archive-parts.mjs --manifest "$M" --prefix research-snapshots/quant-v13/archive-1.2.0/ --out "$RUNNER_TEMP/sth/enc" --parts v13-raw,v13-derived
+          K="$RUNNER_TEMP/sth/k.pem"
+          trap 'shred -u "$K" 2>/dev/null || rm -f "$K"' EXIT
+          printf '%s\n' "$V13_ARCHIVE_PRIVATE_KEY" > "$K"
+          fp=$(openssl pkey -in "$K" -pubout -outform DER 2>/dev/null | sha256sum | cut -c1-64) || { echo "SECRET_NOT_A_PRIVATE_KEY"; exit 3; }
+          want=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).archivePublicKeySha256Der)' "$M")
+          [ "$fp" = "$want" ] || { echo "KEY_MISMATCH"; exit 3; }
+          bash scripts/quant/v13/archive/restore-archive.sh "$M" "$RUNNER_TEMP/sth/enc" "$K" "$RUNNER_TEMP/sth/v13" v13-raw v13-derived
+          rm -rf "$RUNNER_TEMP/sth/enc"
+      - name: Backtest ausfuehren (Ausgabe nur in den Ausgabeordner)
+        id: run
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          SNAPSHOT_ID: ${{ inputs.snapshot_id }}
+          WITH_V13: ${{ inputs.with_v13 }}
+          NODE_OPTIONS: --max-old-space-size=12000
+          ST_WINDOW: DEV
+        run: |
+          set -euo pipefail
+          W="$RUNNER_TEMP/sth"; OUT="$W/out"; mkdir -p "$OUT"
+          args=(--snapshot "$SNAPSHOT_ID" --out "$OUT" --allow-code-version-change)
+          [ -f "$W/reviewer.pem" ] && args+=(--reviewer-key "$W/reviewer.pem")
+          [ "$WITH_V13" = "true" ] && args+=(--v13-series "$W/v13/v13-derived/series" --v13-raw "$W/v13/v13-raw/raw")
+          set +e
+          node scripts/supertrader/source-faithful/research/run-st-hist-top5.mjs "${args[@]}" > "$OUT/run.log" 2>&1
+          rc=$?
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          # nur Zeilen ohne Kennzahlen: Fortschritt (Trades je Lauf) und Fehlercodes
+          grep -E '^\[st-hist-top5 \+[0-9]+s\] [A-Z_0-9]+ [A-Z0-9-]+: [0-9]+ trades$|universe|done' "$OUT/run.log" || true
+          [ "$rc" = 0 ] || tail -n 20 "$OUT/run.log" | grep -vE '[0-9]\.[0-9]{3,}' || true
+      - name: Ausgabe verschluesseln, Klartext loeschen
+        if: always()
+        run: |
+          set -euo pipefail
+          umask 077
+          W="$RUNNER_TEMP/sth"
+          rm -rf "$W/v13" "$W/enc"
+          if [ -d "$W/out" ]; then
+            [ -f "$W/out/st-hist-top5.public.json" ] && cp "$W/out/st-hist-top5.public.json" "$W/upload/"
+            for f in "$W"/out/st-hist-top5.sealed.*.json; do [ -f "$f" ] && cp "$f" "$W/upload/"; done
+            find "$W/out" -type f -exec shred -u {} +
+            rm -rf "$W/out"
+          fi
+          ls "$W/upload"
+      - name: Kein Klartext im Upload
+        if: always()
+        run: |
+          set -euo pipefail
+          W="$RUNNER_TEMP/sth"
+          test ! -e "$W/out" && test ! -e "$W/v13" || { echo "PLAINTEXT_LEFT"; exit 1; }
+          for f in "$W"/upload/*; do case "$(basename "$f")" in st-hist-top5.public.json) node -e 'const p=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")); for (const k of ["totalReturn","cagr","maxDrawdown","hitRate","spyDistance"]) if (JSON.stringify(p).includes("\""+k+"\"")) { console.log("METRIC_IN_PUBLIC_PART"); process.exit(1); }' "$f";; st-hist-top5.sealed.*.json) grep -q '"schema":"supertrader-sealed-1.0.0"' "$f" || { echo "NOT_SEALED"; exit 1; };; *) echo "UNEXPECTED_UPLOAD_CONTENT"; exit 1;; esac; done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: st-hist-top5-${{ github.run_id }}
+          path: ${{ runner.temp }}/sth/upload
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Ergebnis (Exit-Code des Runners)
+        env:
+          RC: ${{ steps.run.outputs.rc }}
+        run: |
+          set -euo pipefail
+          [ "${RC:-}" = "0" ] || { echo "BACKTEST_FAILED rc=${RC:-none}"; exit 1; }

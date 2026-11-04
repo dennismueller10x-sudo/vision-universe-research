@@ -87,7 +87,7 @@ Quelle: `quant/engines/backtest-kinds.cjs`, `scripts/quant/research/backtest-run
 | SAME_STOCK_REPLAY | feste Regel auf einer Aktie oder echter Wochen-Ledger | ja (Katalog A) | LIMITED | genau ein Listing; Ledger ohne delistete Titel |
 | PATTERN_EVIDENCE | Musterereignisse gegen Kontrollen vom selben Datum | ja (A) | LIMITED | keine zertifizierte Renditebasis |
 | SIGNAL_BACKTEST | fünf Signalregeln je Ereignis, optional finanziert | ja (A) | LIMITED | finanziert: im Fenster delistete Titel fallen heraus |
-| SETUP_BACKTEST | auf rekonstruierten Setup-Ständen | ja (A, Nachweisart Rekonstruktion) | COLLECTING_HISTORY | Setup-OOS nicht messbar (A1–A6 offen); keine delisteten Titel |
+| SETUP_BACKTEST | auf rekonstruierten Setup-Ständen | ja (A, Nachweisart Rekonstruktion) | COLLECTING_HISTORY | Setup-OOS nicht messbar (A1–A6 entschieden 04.11.2026, messbar frühestens um 2028-01-08); keine delisteten Titel |
 | STRATEGY_BACKTEST | Portfolio mit festen Gewichten oder Dividenden-TR | ja (A); Profil-Variante B | COLLECTING_HISTORY | Profil braucht PIT-Faktor-Snapshots |
 | FACTOR_RANKING_BACKTEST | Faktorstudie auf dem privaten V10-PIT-Panel | ja (A, nur mit privatem Panel) | COLLECTING_HISTORY | nur `ref_`-Listings; frühestens 2028 zertifizierbar |
 
@@ -239,7 +239,7 @@ Liste mit Abhängigkeiten in `quant-handover.json` (`openPullRequests`). Wichtig
 2. **Die interne Vorschau** ist der Probelauf dieser Integration; dieselben Daten und dieselbe Darstellung der Nachweisart.
 
 **Noch Daten oder Entwicklung nötig:**
-- Zertifizierung je Art (Gates in `backtest-certification.js`): Setup-OOS-Segmentierung A1–A6 (Owner), Faktor-Historie bis frühestens 2028.
+- Zertifizierung je Art (Gates in `backtest-certification.js`): Setup-OOS-Segmentierung A1–A6 entschieden 04.11.2026 (Zeit bis etwa 2028-01), Faktor-Historie bis frühestens 2028.
 - Delistete Titel in finanzierten Signal- und Strategie-Läufen (D4, D5) sowie im Faktorpanel (D7).
 - Rechnen auf Abruf: heute nicht vorhanden. Alles nicht Vorgerechnete heißt „nicht vorgerechnet“.
 
@@ -260,7 +260,7 @@ Liste mit Abhängigkeiten in `quant-handover.json` (`openPullRequests`). Wichtig
 | V13-Archivgeneration 2.0.0 übernehmen (#1241), Leser umstellen, danach Löschung von 1.2.0 | BLOCKIERT, Freigabe nötig | F |
 | Interne Aktivierung der Vorschau | BLOCKIERT, Freigabe nötig | #1227, Abschnitt G |
 | Öffentliche Backtesting-Integration | LANGFRISTIG, nach Praxistest | D |
-| Setup-OOS A1–A6 | BLOCKIERT, spätestens vor etwa 2027-03-26 | `docs/quant/SETUP_OOS_DECISION_A1_A6.md`, `SETUP_OOS_EVALUATION.md` |
+| Setup-OOS A1–A6 | ENTSCHIEDEN 04.11.2026, umgesetzt (methodology 1.1.0) | `docs/quant/SETUP_OOS_DECISION_A1_A6.md`, `SETUP_OOS_EVALUATION.md` |
 | #1119 (132 SEC-Statuskorrekturen) | zurückgestellt bis nach 1.3.0 | – |
 | #1236 merge, #1242 merge | Freigabe nötig | geprüft |
 | SF8-Tageslauf einschalten | Supertrader-Welt | – |
@@ -352,7 +352,7 @@ Eine zweite Engine oder Anwendung gibt es nicht. Die Seite liest nur den hashgeb
 | H2 | Interne Aktivierung und Praxistest | Owner-Freigabe | ja, G |
 | H3 | Archivgeneration 2.0.0: #1241 mergen, Leser umstellen, dann Löschentscheidung 1.2.0 | Owner-Freigabe | ja, F |
 | H4 | Öffentliche Backtest-Integration in `#/backtest` | Praxistest, Owner-Freigabe, UI-Revision | Planung |
-| H5 | Setup-OOS A1–A6 umsetzen | Owner-Entscheidung | |
+| H5 | Setup-OOS A1–A6 umsetzen | erledigt 04.11.2026 | |
 | H6 | #1119 nach 1.3.0 | H1 | |
 | H7 | Katalog-Generation 2 gegen 1.3.0 (neues Verzeichnis) | H1 | optional |
 
