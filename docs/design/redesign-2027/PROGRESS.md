@@ -109,17 +109,17 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | S03 | Screener · Treffer | in Arbeit | #1360 | Teil: „Aktie öffnen“ bleibt Sheet (Kopf, Leiste, „Treffer k von N“) statt eigener Aktienseite |
 | S04 | Screener · Gespeichert | in Arbeit | #1360 | Neu/raus aus den zwei letzten Läufen; „Im Konto speichern“ = bald bis Z3 (#1359) gemergt ist |
 | S05 | Screener · Watchlist | in Arbeit | #1360 | `?view=saved&tab=watchlist`; „Als Screen filtern“ bald (Engine filtert keine Symbolliste) |
-| V01 | Vorsorge · Start | offen |  |  |
-| V02 | Vorsorge · Planer | offen |  |  |
-| V03 | Vorsorge · ETFs | offen |  |  |
-| V04 | Vorsorge · ETF-Detail | offen |  |  |
-| V05 | Vorsorge · Portfolio | offen |  |  |
-| V06 | Vorsorge · Vergleichen | offen |  |  |
-| V07 | Vorsorge · Förderung | offen |  |  |
-| V08 | Vorsorge · Veränderungen | offen |  |  |
-| V09 | Vorsorge · Wissen | offen |  |  |
-| V10 | Vorsorge · Der 10-Euro-Sparplan (Ablauf) | offen |  |  |
-| V10 | Vorsorge · Der 10-Euro-Sparplan | offen |  |  |
+| V01 | Vorsorge · Start | in Arbeit | #1362 | Sheet „Erster Besuch“ öffnet in automatisierten Browsern nicht von selbst (`#/?lage=1` erzwingt) |
+| V02 | Vorsorge · Planer | in Arbeit | #1362 | Monte-Carlo bleibt unter „Profi“ (als Spanne); Plan im Browser bis Konto |
+| V03 | Vorsorge · ETFs | in Arbeit | #1362 | „Alle“ sortiert nach Historienlänge (Municipal-Fonds oben); Fondsvermögen wäre besser – Nacharbeit |
+| V04 | Vorsorge · ETF-Detail | in Arbeit | #1362 | Teil: Bestände noch alte Tabelle, Planspiel noch alte dunkle Karte |
+| V05 | Vorsorge · Portfolio | in Arbeit | #1362 | Teil: X-Ray-Abschnitte altes Layout (neu gefärbt), Mischungen mit Kreisen statt Gewichtsbalken |
+| V06 | Vorsorge · Vergleichen | in Arbeit | #1362 | Standard URTH gegen SPY; Kosten unter `#/vergleichen/kosten` |
+| V07 | Vorsorge · Förderung | in Arbeit | #1362 | Beispielfälle unter `#/foerderung/faelle` |
+| V08 | Vorsorge · Veränderungen | in Arbeit | #1362 | „Benachrichtigen“ nur lokal (Z4) |
+| V09 | Vorsorge · Wissen | in Arbeit | #1362 | Datenbeispiel nur für Schwankung und größten Rückgang (URTH) |
+| V10 | Vorsorge · Der 10-Euro-Sparplan (Ablauf) | in Arbeit | #1362 | `#/start` in sechs Schritten ohne Kopf/Leiste; Plan im Browser |
+| V10 | Vorsorge · Der 10-Euro-Sparplan | in Arbeit | #1362 | `#/start` in sechs Schritten ohne Kopf/Leiste; Plan im Browser |
 | Ü1 | Reihenfolge der Umsetzung | – |  | Übersichtsfolie, nichts zu bauen |
 | Ü2 | Alle Seiten mit Adresse | – |  | Übersichtsfolie, nichts zu bauen |
 | Ü3 | Abnahmekriterien | – |  | Übersichtsfolie, nichts zu bauen |
@@ -142,6 +142,9 @@ Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds 
 - Bausteine zusätzlich als DOM-Knoten (Screener hat C07/C08/C09/navcard/HUD lokal nachgebaut).
 - Einbettbare Aktienseite für S03-b; Symbol-Filter in der Screener-Engine für S05.
 - `VUChart`: Marken (①②), Zonen-Töne, Vergleichslinie (Supertrader zeichnet sie selbst); `VUUI.sheet` mit Schließen-Knopf; `VUUI` Suchfeld zum Tippen.
+- `VUUI.glyph`: Stern, Kreis-Anteil, Abspielen, Säulen; `VUChart` mehrere Linien mit gestrichelten Szenarien; Bausteine Gewichtsbalken, Regler, ETF-Zeile, Ablauf-Kopf.
+- `site-navigation.css`: `.vu-bar>i` olivgrün und `.up` grün (Regel 1) – prüfen.
+- Dunkelmodus: `.vu-box--ink` kehrt sich wie in der Vorlage (`--a-ink:#fff`) um; Vorsorge hält ihre Karten dunkel (Abweichung, lime Zahlen sonst unlesbar).
 - `VUUI.navcard` mit eigenem Symbol (Fundamental hat lokal nachgebaut).
 - Fundamental-Produktdokument: Urteilsregel F06 in einem Satz (schwächere der beiden Discover-Stufen aus `fundamentals.health`).
 
