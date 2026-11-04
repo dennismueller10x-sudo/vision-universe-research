@@ -54,7 +54,10 @@ Außerdem müssen das Manifest-Objekt im Eimer und das committete Manifest byteg
 
 Die Objekte unter `research-snapshots/quant-v13/archive-1.2.0/` (8 Teile und `manifest.json`) und alle Manifeste 1.x im Repository bleiben unverändert. Nichts wurde gelöscht, überschrieben oder ersetzt. Ob 1.2.0 gelöscht wird, entscheidet der Owner gesondert. Diese Anleitung schlägt die Löschung nur vor, sie führt sie nicht aus. Bis dahin belegen beide Generationen zusammen etwa 3,0 GB. Ein weiterer voller Archivstand passt nicht mehr unter die 8-GB-Schranke.
 
-Leser des Archivs (`[v13-archive:restore|demos|catalog]`) lesen weiterhin 1.2.0, weil der Inhalt bytegleich ist. Sie werden in einem eigenen Schritt auf 2.0.0 umgestellt, spätestens vor einer Löschung von 1.2.0.
+**Lesegeneration (Umstellung vorbereitet).** Die Lesemodi `get`, `verify`, `keycheck`, `restore`, `demos` und `catalog` nehmen Manifest und Präfix aus [../../v13-archive-gen2/readers.json](../../v13-archive-gen2/readers.json) (Feld `readGeneration`, aufgelöst ohne Secret von `scripts/quant/v13/archive/reader-generation.mjs`). `usage` und `put` bleiben fest auf 1.2.0, `keyaudit`, `regen` und `verify2` nennen ihre Generationen selbst.
+- Stand: `readGeneration` ist `1.2.0`, die Leser lesen also unverändert 1.2.0.
+- Umstellen: `readGeneration` auf `2.0.0` setzen und im selben Branch einmal `[v13-archive:restore]` (alle 8 Teile über `r2-restore.mjs`) laufen lassen; optional `[v13-archive:demos]` als fachliche Gegenprobe (16 Demos bytegleich). Beides braucht `V13_ARCHIVE_PRIVATE_KEY` und ist eine Owner-Freigabe.
+- Ein weiterer Leser liegt in der Supertrader-Welt (`supertrader-st9-v13-study.yml`, `fetch-v13-archive-parts.mjs`, fest 1.2.0). Er wird wegen Gate A in einem eigenen Supertrader-PR umgestellt, ebenfalls vor einer Löschung von 1.2.0.
 
 ## Inhalt ([manifest-1.2.0.json](manifest-1.2.0.json), Inhalt identisch in 2.0.0)
 

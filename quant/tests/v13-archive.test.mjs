@@ -87,3 +87,47 @@ test('existing archive manifests stay frozen: a 2.x manifest only under a new st
   });
   assert.ok(!/PRIVATE KEY|\/tmp\//.test(fs.readFileSync(f, 'utf8')));
 });
+
+// H3: Leser (get, verify, keycheck, restore, demos, catalog) lesen die Generation aus readers.json, nicht fest 1.2.0.
+test('reader pin resolves both generations against their committed manifests; read modes use it', async () => {
+  const { resolveReader, DEFAULT_PIN } = await import('../../scripts/quant/v13/archive/reader-generation.mjs');
+  const pin = JSON.parse(fs.readFileSync(path.join(ROOT, DEFAULT_PIN), 'utf8'));
+  const read = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, f), 'utf8'));
+  assert.ok(['1.2.0', '2.0.0'].includes(pin.readGeneration));
+  const a = resolveReader(pin, read, '1.2.0'), b = resolveReader(pin, read, '2.0.0');
+  assert.equal(a.prefix, 'research-snapshots/quant-v13/archive-1.2.0/');
+  assert.equal(b.prefix, 'research-snapshots/quant-v13/archive-2.0.0/');
+  // gleiche Teile in gleicher Reihenfolge: --parts v13-derived,v10-factor-panel der Demo-/Katalogschritte gilt fuer beide
+  assert.deepEqual(a.parts, b.parts);
+  for (const p of ['v13-derived', 'v10-factor-panel']) assert.ok(b.parts.includes(p));
+  for (const q of read(b.manifest).parts) assert.equal(q.object, q.part + '.tar.enc');
+  assert.throws(() => resolveReader(pin, read, '1.1.0'), /GENERATION_UNKNOWN/);
+  assert.throws(() => resolveReader({ ...pin, generations: { ...pin.generations, '2.0.0': { ...pin.generations['2.0.0'], prefix: a.prefix } } }, read, '2.0.0'), /PREFIX_MISMATCH/);
+  assert.throws(() => resolveReader({ ...pin, generations: { ...pin.generations, '2.0.0': { ...pin.generations['2.0.0'], manifest: a.manifest } } }, read, '2.0.0'), /MANIFEST_VERSION_MISMATCH/);
+  const wf = fs.readFileSync(path.join(ROOT, '.github/workflows/quant-v13-archive.yml'), 'utf8');
+  assert.match(wf, /reader-generation\.mjs >> "\$GITHUB_OUTPUT"/);
+  assert.equal((wf.match(/r2-restore\.mjs[^\n]*\n?[^\n]*--manifest "\$READ_MANIFEST" --prefix "\$READ_PREFIX"/g) || []).length, 2);
+  assert.ok(!/r2-restore\.mjs[^\n]*manifest-1\.2\.0/.test(wf.replace(/\\\n\s*/g, ' ')), 'kein Leser fest auf 1.2.0');
+  assert.ok(!/\$\{\{\s*steps\.g\.outputs\.[a-z]+\s*\}\}"?\s*(--|$)/m.test(wf.split('\n').filter(l => /node /.test(l)).join('\n')), 'Ausgaben nur ueber env');
+});
+
+test('restore-archive.sh restores a part sealed by seal-part.sh (hex64-lf key, test keypair, no secret)', { skip: !fs.existsSync('/usr/bin/openssl') && 'openssl fehlt' }, async () => {
+  const { execFileSync } = await import('node:child_process');
+  const os = await import('node:os');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'v13-h3-'));
+  try {
+    const sh = (cmd, args, o = {}) => execFileSync(cmd, args, { cwd: dir, stdio: ['ignore', 'pipe', 'pipe'], ...o });
+    sh('openssl', ['genpkey', '-algorithm', 'RSA', '-pkeyopt', 'rsa_keygen_bits:2048', '-out', 'priv.pem']);
+    sh('openssl', ['pkey', '-in', 'priv.pem', '-pubout', '-out', 'pub.pem']);
+    fs.mkdirSync(path.join(dir, 'src/x'), { recursive: true }); fs.mkdirSync(path.join(dir, 'enc'));
+    fs.writeFileSync(path.join(dir, 'src/x/a.json'), '{"a":1}\n');
+    sh('bash', ['-c', 'cd src && sha256sum x/a.json > _inventory.tsv && tar -cf ../part.tar _inventory.tsv x']);
+    const wrapped = sh('bash', [path.join(ROOT, 'scripts/quant/v13/archive/seal-part.sh'), 'part.tar', 'enc/p.tar.enc', 'pub.pem'], { env: { ...process.env, TMPDIR: dir }, encoding: 'utf8' }).trim();
+    const sha = (f) => sh('sha256sum', [f], { encoding: 'utf8' }).slice(0, 64);
+    const m = { schemaVersion: 'v13-research-archive-manifest-2.0.0', keyFormat: 'hex64-lf', parts: [{ part: 'p', object: 'p.tar.enc', cipherSha256: sha('enc/p.tar.enc'), plainSha256: sha('part.tar'), wrappedKeyB64: wrapped }] };
+    fs.writeFileSync(path.join(dir, 'm.json'), JSON.stringify(m));
+    const out = sh('bash', [path.join(ROOT, 'scripts/quant/v13/archive/restore-archive.sh'), 'm.json', 'enc', 'priv.pem', 'out'], { encoding: 'utf8' });
+    assert.match(out, /^p: OK \(1 Dateien\)/m);
+    assert.equal(fs.readFileSync(path.join(dir, 'out/p/x/a.json'), 'utf8'), '{"a":1}\n');
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});

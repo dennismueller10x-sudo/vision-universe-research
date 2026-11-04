@@ -1,0 +1,15 @@
+{
+ "schemaVersion": "v13-archive-readers-1.0.0",
+ "description": "Lesegeneration des privaten V13-Archivs fuer die Lesemodi von quant-v13-archive.yml (get, verify, keycheck, restore, demos, catalog). Schreibende und pruefende Modi (usage, put, keyaudit, regen, verify2) sind fest verdrahtet und lesen diese Datei nicht. Umstellen heisst nur readGeneration aendern; beide Generationen haben bytegleichen Klartext (verify2, Run 41399476800). Eine Loeschung von 1.2.0 ist eine eigene Owner-Entscheidung und setzt readGeneration 2.0.0 voraus.",
+ "readGeneration": "1.2.0",
+ "generations": {
+  "1.2.0": {
+   "manifest": "docs/quant-recovery/v13/archive/manifest-1.2.0.json",
+   "prefix": "research-snapshots/quant-v13/archive-1.2.0/"
+  },
+  "2.0.0": {
+   "manifest": "docs/quant-recovery/v13-archive-gen2/manifest-2.0.0.json",
+   "prefix": "research-snapshots/quant-v13/archive-2.0.0/"
+  }
+ }
+}

@@ -25,6 +25,9 @@ name: Quant V13 Research-Archiv (R2, verschluesselt)
 #                         (committet unter docs/quant-recovery/v13-archive-gen2/, da v13/ eingefroren ist, SMF-1).
 #   [v13-archive:verify2] unabhaengige Probe in eigenem Lauf: nur archive-2.0.0/ lesen, entschluesseln, alle Hashes gegen
 #                         manifest-2.0.0 und manifest-1.2.0, Schluesselformat (wirksam 64) pruefen.
+# Lesegeneration: get, verify, keycheck, restore, demos und catalog lesen Manifest und Praefix aus
+# docs/quant-recovery/v13-archive-gen2/readers.json (readGeneration; aufgeloest von reader-generation.mjs, ohne Secret).
+# usage und put bleiben fest auf 1.2.0, keyaudit/regen/verify2 nennen ihre Generationen selbst.
 # Keine URL, kein Endpunkt und kein Secret erscheint im Log; Ausgaben nur Zaehlungen und Hashes.
 on:
   push:
@@ -56,10 +59,17 @@ jobs:
           m=$(printf '%s' "$MSG" | grep -oE '\[v13-archive:(usage|put|get|verify|keycheck|restore|demos|catalog|keyaudit|regen|verify2)\]' | head -1 | sed -E 's/\[v13-archive:([a-z0-9]+)\]/\1/')
           test -n "$m"
           echo "mode=$m" >> "$GITHUB_OUTPUT"
+      - name: Lesegeneration aus readers.json (ohne Secret)
+        id: g
+        run: |
+          set -euo pipefail
+          node scripts/quant/v13/archive/reader-generation.mjs >> "$GITHUB_OUTPUT"
       - name: R2 (nur Zaehlungen im Log)
         if: steps.m.outputs.mode == 'usage' || steps.m.outputs.mode == 'put' || steps.m.outputs.mode == 'get' || steps.m.outputs.mode == 'verify'
         env:
           MODE: ${{ steps.m.outputs.mode }}
+          READ_MANIFEST: ${{ steps.g.outputs.manifest }}
+          READ_PREFIX: ${{ steps.g.outputs.prefix }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
           VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
@@ -68,17 +78,21 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/a"
+          # usage/put: fest 1.2.0 (schreibend bzw. Vorpruefung dazu); get/verify: Lesegeneration
           P=research-snapshots/quant-v13/archive-1.2.0/
           M=docs/quant-recovery/v13/archive/manifest-1.2.0.json
           case "$MODE" in
             usage) node scripts/quant/v13/archive/presign.mjs --mode usage --manifest "$M" --prefix "$P" ;;
-            put|get) node scripts/quant/v13/archive/presign.mjs --mode "$MODE" --manifest "$M" --prefix "$P" --out "$RUNNER_TEMP/a/urls.json" ;;
-            verify) node scripts/quant/v13/archive/presign.mjs --mode verify --manifest "$M" --prefix "$P" ;;
+            put) node scripts/quant/v13/archive/presign.mjs --mode put --manifest "$M" --prefix "$P" --out "$RUNNER_TEMP/a/urls.json" ;;
+            get) node scripts/quant/v13/archive/presign.mjs --mode get --manifest "$READ_MANIFEST" --prefix "$READ_PREFIX" --out "$RUNNER_TEMP/a/urls.json" ;;
+            verify) node scripts/quant/v13/archive/presign.mjs --mode verify --manifest "$READ_MANIFEST" --prefix "$READ_PREFIX" ;;
           esac
       - name: Schluesselprobe und Wiederherstellung auf dem Runner (privater Schluessel nur in diesem Schritt)
         if: steps.m.outputs.mode == 'keycheck' || steps.m.outputs.mode == 'restore'
         env:
           MODE: ${{ steps.m.outputs.mode }}
+          READ_MANIFEST: ${{ steps.g.outputs.manifest }}
+          READ_PREFIX: ${{ steps.g.outputs.prefix }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
           VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
@@ -87,10 +101,12 @@ jobs:
           V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
         run: |
           set -euo pipefail
-          node scripts/quant/v13/archive/r2-restore.mjs --mode "$MODE" --manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json --prefix research-snapshots/quant-v13/archive-1.2.0/
+          node scripts/quant/v13/archive/r2-restore.mjs --mode "$MODE" --manifest "$READ_MANIFEST" --prefix "$READ_PREFIX"
       - name: Private Teile fuer Demofaelle bzw. Katalog wiederherstellen (privater Schluessel nur in diesem Schritt)
         if: steps.m.outputs.mode == 'demos' || steps.m.outputs.mode == 'catalog'
         env:
+          READ_MANIFEST: ${{ steps.g.outputs.manifest }}
+          READ_PREFIX: ${{ steps.g.outputs.prefix }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
           VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
@@ -100,7 +116,7 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/quant/v13/archive/r2-restore.mjs --mode extract --parts v13-derived,v10-factor-panel \
-            --dest "$RUNNER_TEMP/priv" --manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json --prefix research-snapshots/quant-v13/archive-1.2.0/
+            --dest "$RUNNER_TEMP/priv" --manifest "$READ_MANIFEST" --prefix "$READ_PREFIX"
       - name: Demofaelle neu bauen, gegenrechnen, vergleichen (Ausgabe nur Zaehlungen)
         if: steps.m.outputs.mode == 'demos'
         run: |
