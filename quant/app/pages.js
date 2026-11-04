@@ -579,6 +579,14 @@
      hier "Wert 70 oder mehr" - fuer jede Frage gleich, nicht angepasst,
      damit eine Frage mehr Treffer liefert. */
   var SIMPLE_THRESHOLD = 70;
+  /* Redesign 2027 (Folie Q02): Schnellwahl als Fragekarten (Alltagsfrage + Fachname), „Deine Frage“ als Satz mit Regel. */
+  var ASK_Q = { qualitaet: ["Verdient gut, solide Zahlen", "Qualität"], momentum: ["Kurs läuft besser als der Markt", "Momentum"], "wachstum-qualitaet": ["Wächst und verdient gut", "Wachstum + Qualität"],
+    guenstig: ["Eher günstig bewertet", "Bewertung"], ruhig: ["Ruhiger Kurs", "Risiko niedrig"], setups: ["Chart zeigt ein Setup", "Setups"], hoch: ["Nahe am Jahreshoch", "52-Wochen-Hoch"] };
+  var ASK_SENT = { qualitaet: "Aktien, die gut verdienen und solide Zahlen haben.", momentum: "Aktien, deren Kurs besser läuft als der Markt.", "wachstum-qualitaet": "Aktien, die wachsen und dabei gut verdienen.",
+    guenstig: "Aktien, die im Verhältnis zu Gewinn und Substanz günstig sind.", ruhig: "Aktien mit ruhigem Kursverlauf.", setups: "Aktien, bei denen der Chart ein Setup zeigt.", hoch: "Aktien höchstens 3 % unter ihrem Jahreshoch." };
+  var FACTOR_SHORT = { profitability: "Verdient gut", quality: "Zahlen solide", growth: "Wächst", momentum: "Kurs läuft", value: "Günstig", risk: "Ruhiger Kurs", revisions: "Schätzungen" };
+  function ruleLine(factors, min, max) { return factors.map(function (id) { return (FACTOR_SHORT[id] || shortName(id)) + " ≥ " + min + (max < 100 ? " und ≤ " + max : ""); }).join(" · "); }
+  function shortWhy(row, factorIds) { return factorIds.map(function (id) { var v = row && row[FIELD(id)]; return (FACTOR_SHORT[id] || shortName(id)) + " " + (typeof v === "number" ? Math.round(v) : "–"); }).join(" · "); }
 
   /* Stufe neben dem Wert: die gezaehlte Position unter allen bewerteten
      Aktien (factor-band-2.0.0), aus derselben Verteilung wie die Aktienseite. */
@@ -602,7 +610,11 @@
   function shortName(id) { var c = FILTER_CHIPS.filter(function (x) { return x.id === id; })[0]; return c ? c.label : (VM.FACTORS[id] ? VM.FACTORS[id].name : id); }
 
   async function screener(main, ctx, params, pro) {
-    main.append(el("header", { class: "q-hero q-hero--screener" }, [
+    if (global.VUUI && !pro) {
+      main.append(el("header", { class: "qv3-intro qv3-pad" }, [el("p", { class: "vu-ltag", text: "Quant" }), el("h1", { class: "vu-lt", text: "Welche Aktien suchst du?" }),
+        el("p", { class: "vu-lead", text: "Wähle eine Frage. Quant zeigt, welche Aktien sie heute erfüllen und warum." }),
+        el("nav", { class: "vu-seg qv3-mode", "aria-label": "Screener-Modus" }, [el("a", { href: X.routes.screener(), "aria-current": "page", text: "Einfach" }), el("a", { href: X.routes.screenerPro(), text: "Profi" })])]));
+    } else main.append(el("header", { class: "q-hero q-hero--screener" }, [
       X.globe(),
       el("p", { class: "q-kicker", text: "Vision Universe Quant" }),
       el("h1", { class: "qx-h1", text: pro ? "Quant Screener · Profi" : "Quant Screener" }),
@@ -623,9 +635,10 @@
     if (!sel.factors.length) sel.factors = ["momentum"];
     var list = el("div", { class: "qx-questions", role: "group", "aria-label": "Schnellwahl" });
     QUESTIONS.forEach(function (q) {
+      var ask = ASK_Q[q.id] || [q.chip, q.hint];
       list.append(el("button", { type: "button", class: "qx-question", "aria-pressed": q === chosen ? "true" : "false", dataset: { question: q.id }, title: q.hint,
         onclick: function () { history.replaceState(null, "", X.routes.screener("frage=" + q.id)); chosen = q; if (q.factors) { sel.factors = q.factors.slice(); sel.min = SIMPLE_THRESHOLD; sel.max = 100; } sync(); run(); } },
-        [el("strong", { text: q.chip }), el("span", { text: q.hint })]));
+        [el("strong", { text: ask[0] }), el("span", { text: ask[1] }), el("i", { class: "qx-q-mark", "aria-hidden": "true" })]));
     });
     /* Faktor-Filter */
     var chipsHost = el("div", { class: "q-chips", role: "group", "aria-label": "Faktoren" });
@@ -650,7 +663,7 @@
     function drawRange() { fill.style.left = sel.min + "%"; fill.style.width = (sel.max - sel.min) + "%"; rangeText.textContent = "Min. " + sel.min + " – Max. " + sel.max; }
     /* VU3: Schnellwahl und Treffer zuerst; der Faktor-Filter (eigene Bedingungen) steht hinter einer Aufklappzeile -
        offen, wenn die Adresse eigene Bedingungen traegt. Das Ergebnis selbst liegt nie in einem Aufklapper. */
-    var panel = el("details", { class: "qx-more q-filter-more" }, [el("summary", {}, [el("span", { text: "Eigene Bedingungen: Faktoren und Wertebereich" })]), el("section", { class: "q-filter", "aria-label": "Faktor-Filter" }, [
+    var panel = el("details", { class: "qx-more q-filter-more" }, [el("summary", {}, [el("span", { text: "Eigene Bedingung" }), el("small", { class: "qx-own-hint", text: "z. B. Wachstum ab 70" })]), el("section", { class: "q-filter", "aria-label": "Faktor-Filter" }, [
       el("h3", {}, [el("span", { text: "Faktor-Filter" }), el("a", { href: X.routes.method("faktoren"), text: "Alle Faktoren →" })]),
       chipsHost,
       el("div", { class: "q-range" }, [el("div", { class: "q-range-head" }, [el("span", { text: "Wertebereich (0–100) je gewählter Eigenschaft" }), rangeText]),
@@ -669,14 +682,18 @@
       sync(); run();
     }
     var sentence = el("p", { class: "qx-sentence", "aria-live": "polite" });
+    var sentenceBox = el("div", { class: "vu-box vu-box--lime qv3-ask" }, [el("p", { class: "vu-ltag", text: "Deine Frage" }), sentence, el("p", { class: "qv3-ask-rule" })]);
     var out = el("div", { "aria-live": "polite" });
     var results = el("section", { class: "q-results", "aria-label": "Ergebnisse" }, [out]);
     panel.open = !chosen;
-    main.append(el("p", { class: "q-kicker", style: "margin-top:20px", text: "Schnellwahl" }), list, panel, sentence, results);
+    main.append(global.VUUI ? el("h2", { class: "vu-sect qv3-pad", text: "Schnellwahl" }) : el("p", { class: "q-kicker", style: "margin-top:20px", text: "Schnellwahl" }), list, panel, global.VUUI ? sentenceBox : sentence, results);
     var run_id = 0;
     async function run() {
       var mine = ++run_id, q = chosen;
-      sentence.textContent = q ? q.sentence : "Du suchst Aktien mit " + sel.factors.map(shortName).join(" und ") + " zwischen " + sel.min + " und " + sel.max + " von 100.";
+      sentence.textContent = global.VUUI ? (q ? ASK_SENT[q.id] || q.sentence : "Aktien mit " + sel.factors.map(function (id) { return FACTOR_SHORT[id] || shortName(id); }).join(" und ") + " zwischen " + sel.min + " und " + sel.max + " von 100.")
+        : q ? q.sentence : "Du suchst Aktien mit " + sel.factors.map(shortName).join(" und ") + " zwischen " + sel.min + " und " + sel.max + " von 100.";
+      var ruleNode = sentenceBox.querySelector(".qv3-ask-rule");
+      ruleNode.textContent = q && q.setups ? "Setup bestätigt oder im Aufbau" : q && q.high ? "Abstand zum 52-Wochen-Hoch ≤ 3 %" : ruleLine(sel.factors, sel.min, sel.max);
       out.replaceChildren(X.loading("Wird gesucht …"));
       var result;
       try {
@@ -687,11 +704,15 @@
       if (mine !== run_id) return;
       if (result.error) { out.replaceChildren(X.notice("Treffer derzeit nicht verfügbar", "Die Auswertung konnte nicht geladen werden. Bitte versuche es erneut.")); return; }
       var total = result.total || result.rows.length;
-      out.replaceChildren(el("div", { class: "q-results-head" }, [el("b", { text: total.toLocaleString("de-DE") + " Ergebnisse" }), el("span", { text: result.sortLabel || "Nach Wert" })]),
+      var FIRST = global.VUUI ? 10 : 40, shown = el("div", { class: "qx-list" }, result.rows.slice(0, FIRST));
+      var moreBtn = result.rows.length > FIRST ? el("button", { type: "button", class: "vu-btn vu-btn--line vu-btn--block qv3-all", text: "Alle " + Math.min(total, result.rows.length).toLocaleString("de-DE") + " zeigen",
+        onclick: function () { shown.append.apply(shown, result.rows.slice(FIRST)); moreBtn.remove(); } }) : null;
+      out.replaceChildren(el("div", { class: "q-results-head" }, [el("b", { text: total.toLocaleString("de-DE") + (global.VUUI ? " Treffer" : " Ergebnisse") }), el("span", { text: global.VUUI ? "Sortiert: " + (result.sortLabel || "Nach Wert").replace(/^Nach /, "") : result.sortLabel || "Nach Wert" })]),
         el("p", { class: "qx-count", text: result.summary }),
-        result.rows.length ? el("div", { class: "qx-list" }, result.rows.slice(0, 40)) : X.notice("Keine Treffer", "Heute erfüllt keine Aktie alle Bedingungen dieser Auswahl."),
-        total > 40 ? el("p", { class: "qx-small", text: "Gezeigt werden die ersten 40 von " + total.toLocaleString("de-DE") + " Treffern. Im Profi-Modus lassen sich alle Treffer sortieren und weiter eingrenzen." }) : null,
-        el("p", { class: "qx-small", text: result.method }),
+        result.rows.length ? shown : X.notice("Keine Treffer", "Heute erfüllt keine Aktie alle Bedingungen dieser Auswahl."),
+        moreBtn,
+        result.rows.length > 400 && total > result.rows.length ? el("p", { class: "qx-small", text: "Im Profi-Modus lassen sich alle " + total.toLocaleString("de-DE") + " Treffer sortieren und weiter eingrenzen." }) : null,
+        global.VUUI ? (function () { var h = document.createElement("div"); h.className = "qv3-help"; h.innerHTML = global.VUUI.help(result.method); return h; })() : el("p", { class: "qx-small", text: result.method }),
         X.actions([X.btn("Im Profi-Modus verfeinern", X.routes.screenerPro(result.query ? "query=" + encodeURIComponent(global.VUScreenerWorkspace.encode(result.query)) : ""), "secondary")]));
     }
     sync(); await run();
@@ -722,9 +743,9 @@
     if (!res || res.state !== "AVAILABLE") return { error: true };
     var rows = (res.stocks || []).map(function (s, i) {
       var v = VM.fromScreeningRow(s.evidence, dist), val = s.evidence && s.evidence[FIELD(factors[0])];
-      return X.stockRow({ ticker: s.ticker, name: X.companyName(s), kicker: strat[s.ticker] || null, why: screeningWhy(s.evidence, factors, dist), withLogo: i < 8,
+      return X.stockRow({ ticker: s.ticker, name: X.companyName(s), kicker: strat[s.ticker] || null, why: global.VUUI ? shortWhy(s.evidence, factors.length > 1 ? factors : factors.concat(factors[0] === "quality" ? [] : ["quality"])) : screeningWhy(s.evidence, factors, dist), withLogo: !global.VUUI && i < 8,
         score: { label: shortName(factors[0]), value: typeof val === "number" ? Math.round(val) : null, tone: typeof val === "number" && dist ? VM.factorView({ id: factors[0], state: "AVAILABLE", score: val, position: VM.positionIn(dist[factors[0]], val), components: [] }).tone : null },
-        verdict: v && v.overall.id !== "KEINE_DATEN" ? { text: "Eigenschaften: " + v.overall.text.charAt(0).toLowerCase() + v.overall.text.slice(1), tone: v.overall.tone } : null });
+        verdict: v && v.overall.id !== "KEINE_DATEN" ? { text: global.VUUI ? (v.overall.tone === "good" ? "▲ " : v.overall.tone === "bad" ? "▼ " : "◆ ") + v.overall.text : "Eigenschaften: " + v.overall.text.charAt(0).toLowerCase() + v.overall.text.slice(1), tone: v.overall.tone } : null });
     });
     /* Die Zahl der Treffer wird gezaehlt, nicht aus der begrenzten Liste
        abgelesen: dieselben veroeffentlichten Faktorwerte, dieselbe Regel. */
