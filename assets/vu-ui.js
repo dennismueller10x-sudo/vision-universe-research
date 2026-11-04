@@ -8,17 +8,17 @@
    erfundenen Zahlen).
 
    C01–C03 (Kopfzeile, Produkt-Leiste, Menü): assets/site-navigation.js
-   C06 (der eine Chart): assets/vu-chart.js; hier nur über VUChart.sparkline.
+   C06 (der eine Chart): assets/vu-chart.js. Diese Datei kennt den Chart nicht: Aktienzeilen bekommen
+   die fertige Kleinform (Chart-Modul .sparkline) als `chart`, damit Seiten ohne Chart-Skript sie nutzen können.
 
    Browser: globalThis.VUUI; Node (Tests): module.exports.
    ========================================================================= */
 (function (root, factory) {
   "use strict";
-  var chart = typeof module === "object" && module.exports ? require("./vu-chart.js") : root.VUChart;
-  var api = factory(root, chart);
+  var api = factory(root);
   if (typeof module === "object" && module.exports) module.exports = api;
   root.VUUI = api;
-})(typeof globalThis !== "undefined" ? globalThis : this, function (root, VUChart) {
+})(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
   var VERSION = "vu-ui-1.1.0";
@@ -169,9 +169,9 @@
   }
 
   /* ------------------------------------------------------------- C10–C14 */
-  /** C10 Aktienzeile: Logo, Name + Zusatz, Mini-Chart (C06 klein), Kurs + Bewegung. */
+  /** C10 Aktienzeile: Logo, Name + Zusatz, Mini-Chart (C06 klein, als fertiges SVG in r.chart), Kurs + Bewegung. */
   function stockRow(r) {
-    var x = r || {}, spark = x.series && VUChart && VUChart.sparkline ? VUChart.sparkline(x.series) : "";
+    var x = r || {}, spark = x.chart || "";
     var tag = x.href ? "a" : "div";
     return "<" + tag + ' class="vu-lrow' + (spark ? "" : " vu-lrow--nochart") + '"' + (x.href ? ' href="' + esc(x.href) + '"' : "") + ">" + logo(x.ticker, { src: x.logo }) +
       '<div class="vu-lrow__name"><b>' + esc(x.name || x.ticker) + "</b><span>" + esc(x.sub || x.ticker) + "</span></div>" +
@@ -205,7 +205,7 @@
   }
   /** Zeitleiste C06: 1T · 1W · 1M · 1J · 5J · Max (Segment). */
   function ranges(active) {
-    var r = VUChart && VUChart.RANGES ? VUChart.RANGES : ["1T", "1W", "1M", "1J", "5J", "Max"];
+    var r = ["1T", "1W", "1M", "1J", "5J", "Max"]; /* gleich assets/vu-chart.js RANGES (Test core/tests/vu-ui.test.mjs) */
     return seg(r.map(function (x) { return { id: x, label: x }; }), active || "1J", { label: "Zeitraum" });
   }
 

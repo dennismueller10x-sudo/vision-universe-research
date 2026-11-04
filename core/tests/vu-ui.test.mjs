@@ -49,6 +49,9 @@ test("UI5 C06: eine Zeitleiste, Kleinformat ohne erfundene Punkte", () => {
   assert.match(s, /stroke="currentColor"/);
   assert.match(s, /#c8f531/);
   assert.match(U.ranges("1J"), /aria-pressed="true">1J</);
+  assert.deepEqual([...U.ranges().matchAll(/data-id="([^"]+)"/g)].map((m) => m[1]), [...C.RANGES], "VUUI und VUChart nennen dieselbe Zeitleiste");
+  assert.match(U.stockRow({ ticker: "A", chart: C.sparkline([1, 2, 3]) }), /vu-lrow__mini/);
+  assert.doesNotMatch(U.stockRow({ ticker: "A" }), /vu-lrow__mini/);
 });
 
 test("UI6 Regel 1: nur Weiß, Schwarz, Neongrün und Graustufen in den Bausteinen", () => {

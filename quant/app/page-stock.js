@@ -66,6 +66,13 @@
   /* Stufenzeichen: stark / Mittelfeld / schwach / nicht bewertbar. */
   var TONE_GLYPH = { good: "▲", neutral: "◆", bad: "▼", unknown: "–" };
   function glyphPill(pill, tone) { pill.prepend(el("i", { class: "qx-glyph", "aria-hidden": "true", text: TONE_GLYPH[tone] || "–" })); return pill; }
+  /* Redesign 2027 (Q07): jede Eigenschaft als Alltagsfrage, Fachname und Rang darunter. */
+  var ASK = { growth: "Wächst die Firma?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs?", momentum: "Läuft der Kurs gut?", value: "Ist sie günstig?", quality: "Sind die Zahlen solide?", revisions: "Heben Analysten Schätzungen an?" };
+  function rankText(f) {
+    if (f.state !== "AVAILABLE" || typeof f.position !== "number") return f.name;
+    var p = Math.round(f.position);
+    return f.name + " · " + (p >= 99 ? "unter den besten 1 %" : "besser als " + p + " % der Aktien");
+  }
   function factorCard(f, ticker) {
     var d = el("details", { class: "qx-factor dx-zahlen-karte tone-" + f.tone, id: "faktor-" + f.id, dataset: { factor: f.id } });
     var available = f.state === "AVAILABLE";
@@ -77,7 +84,7 @@
     /* UI-Konzept 23.10.2026: Symbol, Name mit Stufe, Balken 0-100 und Wert in einer Zeile; der Pfeil sagt "mehr". */
     d.append(el("summary", { class: "qx-frow" }, [
       factorIcon(f.id, available ? f.tone : "unknown"),
-      el("span", { class: "qx-fr-name" }, [el("span", { class: "qx-fr-label", text: f.name }),
+      el("span", { class: "qx-fr-name" }, [el("span", { class: "qx-fr-label", text: ASK[f.id] || f.name }), el("small", { class: "qx-fr-rank", text: rankText(f) }),
         glyphPill(X.pill(available ? (f.word || f.label) : "Nicht bewertbar", f.tone), available ? f.tone : "unknown")]),
       el("b", { class: "qx-fr-value num", text: available ? String(Math.round(f.score)) : "–" }),
       available ? el("span", { class: "vu-bar qv2-fbar", "aria-hidden": "true", style: "--v:" + Math.max(2, Math.min(100, f.score)).toFixed(0) }, [el("i")])
@@ -186,13 +193,27 @@
     if (third) pick.push(third);
     return vm.factors.filter(function (f) { return pick.indexOf(f) >= 0; });
   }
+  /* Redesign 2027 (Q07): Kacheln mit Alltagswort statt Fachname. */
+  var KEY_SHORT = { profitability: "Verdient gut", risk: "Kurs ruhig", quality: "Zahlen solide", growth: "Wächst", momentum: "Kurs läuft", value: "Günstig", revisions: "Schätzungen" };
+  function capitalWord(w) { return w ? w.charAt(0).toUpperCase() + w.slice(1) : w; }
+  /* Gesamturteil als schwarze Karte: Zahl starker Eigenschaften von allen bewerteten, Segmente, Satz (Mockup Q07). */
+  function overallInk(vm) {
+    var rated = vm.factors.filter(function (f) { return f.state === "AVAILABLE"; });
+    var n = function (t) { return rated.filter(function (f) { return f.tone === t; }).length; };
+    var good = n("good"), mid = n("neutral"), bad = n("bad");
+    return el("div", { class: "qv3-ink" }, [
+      el("div", { class: "qv3-ink-top" }, [el("b", { class: "qv3-ink-n num", text: good + "/" + rated.length }),
+        el("div", {}, [el("h2", { class: "qv3-ink-t", text: vm.overall.text }), el("p", { class: "qv3-ink-s", text: good + " stark · " + mid + " Mittelfeld · " + bad + " schwach" })])]),
+      el("div", { class: "qv3-segs", "aria-hidden": "true" }, rated.map(function (f) { return el("i", { class: "is-" + f.tone }); }).concat(vm.factors.filter(function (f) { return f.state !== "AVAILABLE"; }).map(function () { return el("i", { class: "is-none" }); }))),
+      el("p", { class: "qv3-ink-note", text: "Im Vergleich zu allen bewerteten US-Aktien. Keine Empfehlung." })]);
+  }
   function keyTiles(vm) {
     var list = keyFactors(vm);
     return list.length ? el("ul", { class: "qv2-keys", "aria-label": "Wichtigste Kennzahlen, Wert 0 bis 100" }, list.map(function (f) {
       return el("li", { class: "tone-" + f.tone }, [el("a", { href: "#faktor-" + f.id, "aria-label": f.name + ": " + Math.round(f.score) + " von 100, " + (f.word || STRIP_WORD[f.tone]) }, [
-        el("span", { class: "qv2-key-n", "aria-hidden": "true", text: f.name }),
+        el("span", { class: "qv2-key-n", "aria-hidden": "true", text: KEY_SHORT[f.id] || f.name }),
         el("b", { class: "qv2-key-v num", "aria-hidden": "true", text: String(Math.round(f.score)) }),
-        el("small", { class: "qv2-key-w", "aria-hidden": "true", text: TONE_GLYPH[f.tone] + " " + (f.word || STRIP_WORD[f.tone]) })])]);
+        el("small", { class: "qv2-key-w qx-pill " + (f.tone === "good" ? "up" : f.tone === "bad" ? "down" : "warm"), "aria-hidden": "true", text: TONE_GLYPH[f.tone] + " " + capitalWord(f.word || STRIP_WORD[f.tone]) })])]);
     })) : null;
   }
   function verdictCard(vm, factorsReason, missingNote) {
@@ -200,7 +221,9 @@
     /* qx-verdict-card nur, wo es eine Aussage gibt - ein ETF oder ein Titel
        ohne Faktorzeile traegt keine. */
     var node = el("section", { class: "qx-glance qv-glance qv2-glance" + (vm.factorState === "AVAILABLE" ? " qx-verdict-card" : " qx-verdict-none"), id: "einordnung-kurz" });
-    if (vm.factorState === "AVAILABLE") {
+    if (vm.factorState === "AVAILABLE" && o.rated >= 3) {
+      node.append(el("p", { class: "qv3-step-k" }, [el("span", { text: "Überblick" })]), el("h2", { class: "qv3-step-q", text: "Was sagt Quant insgesamt?" }), overallInk(vm), keyTiles(vm) || el("span"));
+    } else if (vm.factorState === "AVAILABLE") {
       node.append(el("div", { class: "qx-verdict-top qv2-result", dataset: { tone: o.tone } }, [
         el("span", { class: "qv2-result-ico", "aria-hidden": "true" }, [ico(o.tone === "good" ? "up" : o.tone === "bad" ? "down" : "flat")]),
         el("div", {}, [el("h2", { class: "qv2-result-k", text: "Was sagt Quant insgesamt?" }),
@@ -216,7 +239,7 @@
           el("p", { class: "vu-result qv-result", text: factorsReason === "NOT_AN_EQUITY_LISTING" ? "Keine Unternehmensanalyse für diesen Titel" : "Noch keine Einordnung möglich" }),
           el("p", { class: "qv-sub", text: VM.reasonText(factorsReason, "Für diesen Titel ist keine Faktoranalyse veröffentlicht.") + " " + missingNote })])]));
     }
-    if (vm.factorState === "AVAILABLE" && o.rated > 0) node.append(el("a", { class: "qv2-cta", href: "#einordnung" }, [el("span", { text: "Zur Analyse" }), el("i", { class: "qv2-chev", "aria-hidden": "true" })]));
+    if (vm.factorState === "AVAILABLE" && o.rated > 0 && o.rated < 3) node.append(el("a", { class: "qv2-cta", href: "#einordnung" }, [el("span", { text: "Zur Analyse" }), el("i", { class: "qv2-chev", "aria-hidden": "true" })]));
     node.append(el("p", { class: "qv-limit", text: (vm.factorState === "AVAILABLE" ? "Einordnung im Vergleich zu allen bewerteten US-Aktien – " : "") + "keine Anlageempfehlung, keine Prognose." }));
     return node;
   }
@@ -718,7 +741,8 @@
   function deck(grid, onSelect) {
     var mq = global.matchMedia ? global.matchMedia("(max-width: 759px)") : null, active = null, raf = 0;
     var ro = global.ResizeObserver ? new global.ResizeObserver(function () { fit(); }) : null;
-    function on() { return !!(mq && mq.matches); }
+    /* Redesign 2027 (Folie Q07): eine lange Seite mit Sprung-Chips statt seitlich wischbarer Karten. */
+    function on() { return false; }
     function cards() { return Array.prototype.filter.call(grid.children, function (n) { return n.tagName === "SECTION"; }); }
     function fit() { grid.style.height = on() && active ? active.offsetHeight + "px" : ""; }
     function pick() {
