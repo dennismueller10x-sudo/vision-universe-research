@@ -18,10 +18,22 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | # | PR | Inhalt | Folien | Stand |
 |---|---|---|---|---|
 | 1 | #1340 | Vorlage `docs/design/redesign-2027/` nach `main`, diese Liste | – | gemergt |
-| 2 | #1345 | Schritt 1+2: Bausteine C04–C20 als eigene Komponente (`assets/vu-ui.css/.js`), C06 (`assets/vu-chart.js` 2.1.0), Musterseite `/status/bausteine/`, Regel 1, Shell aus #1331 ohne Datenläufe | A3, C, N1–N3 | offen |
-| 3 | #1346 | Schritt 3: Aktienkopf C04 + Perspektiven-Leiste C05 (sieben Perspektiven) für alle Welten | N4, N5 | offen |
-| 4 | #1350 | Discover D09: Aktienseite Überblick (discover/ui/overview.js), Analyse unter „Alle Kennzahlen“ PRO | D09 | offen |
-| 5 | #1351 | Quant: Startseite Q01, Screener Q02, Strategien Q03, Aktien Q04, Methodik Q05, Zahlen Q08, Aktienseite Q07 (Teil 1), Regel 1 in Quant | Q01–Q05, Q07, Q08 | offen |
+| 2 | #1345 | Schritt 1+2: Bausteine C04–C20 (`assets/vu-ui.css/.js`), C06 (`assets/vu-chart.js` 2.1.0), Musterseite `/status/bausteine/`, Regel 1, Shell | A3, C, N1–N3 | gemergt |
+| 3 | #1346 | Schritt 3: Aktienkopf C04 + Perspektiven-Leiste C05 (sieben Perspektiven) | N4, N5 | gemergt |
+| 4 | #1350 | Discover D09: Aktienseite Überblick, Analyse unter „Alle Kennzahlen“ PRO | D09 | CI läuft (Basis main) |
+| 5 | #1351 | Quant Q01–Q05, Q07 (Schritte 1–6), Q08; Prüfungen nachgezogen | Q01–Q05, Q07, Q08 | offen (nach #1350) |
+| 6 | #1353 | Z2: eine Aktienadresse `/aktie/<T>?p=` | Z2, N4 | offen (Basis #1351) |
+| 7 | #1355 | Fundamental | F01–F06 | offen (Basis #1351) |
+| 8 | #1356 | Elliott | W01–W05 | offen (Basis #1351) |
+| 9 | #1357 | Hedgefonds | H01–H07 | offen (Basis #1351) |
+| 10 | #1360 | Screener | S01–S05 | offen (Basis #1351) |
+| 11 | #1361 | Supertrader (Gate A) | ST01–ST08 | offen (Basis #1351) |
+| 12 | #1362 | Vorsorge | V01–V10 | offen (Basis #1351) |
+| 13 | #1363 | Technical | T01–T06 | offen (Basis #1351) |
+| 14 | #1366 | Einstieg, Konto, Mein Bereich, Atlas, erster Start | E01–E12, Z7, Z1 (Seite) | offen (Basis #1351) |
+| 15 | #1367 | Discover | D01–D08 | offen (Basis #1351) |
+| 16 | #1364 | Gemeinsam: Leisten Fundamental/Technical/Discover, Fundamental-Ansichten keine Aktien | C02, C03 | offen (nach #1355, #1363, #1367) |
+| – | #1359 | Konto Z1+Z3 (Worker, Migration, Tests), Basis main, unabhängig | Z1, Z3 | CI läuft |
 
 Übernommene Zweige der früheren Sitzung (Stand `docs/neustart/D-frontend.md` im Zweig `neustart/d-shell-dock`):
 `neustart/d-startseite` (E01), `neustart/d-mein-bereich` (E02, E08), `neustart/d-aktienkopf` (C04, C05, C06), `neustart/d-discover-aktie` (D09).
