@@ -44,6 +44,12 @@
     if(!catalog||!Array.isArray(catalog.securities)||!catalog.securities.length||catalog.securities.some(s=>s.region!=='EUROPE'||typeof s.securityId!=='string'))throw Error('EUROPE_DISPLAY_CATALOG_REQUIRED');
     const ids=catalog.securities.map(s=>s.securityId),published=Object.keys(manifest.series);
     if(manifest.securityCount!==ids.length||new Set(ids).size!==ids.length||published.length!==ids.length||ids.some(id=>!manifest.series[id]))throw Error('EUROPE_PUBLISHED_SERIES_CATALOG_MISMATCH');
+    // Freigabe je Aktie: die Sperrliste des Manifests muss genau den Katalog-Flags entsprechen.
+    const p=manifest.publication;
+    if(p!==undefined){
+      const listed=new Map((p&&Array.isArray(p.blocked)?p.blocked:[]).map(b=>[b.securityId,b]));
+      if(!p||p.universe!==ids.length||p.blockedCount!==listed.size||p.admitted+p.blockedCount!==ids.length||catalog.securities.some(s=>{const f=s.listings&&s.listings[0]&&s.listings[0].discoverPublication,b=listed.get(s.securityId);return b?!f||f.status!=='BLOCKED'||f.reasonClass!==b.reasonClass:!f||f.status!=='ADMITTED';}))throw Error('EUROPE_PUBLICATION_BLOCKED_LIST_MISMATCH');
+    }
     return ids;
   }
   function create(manifest){
@@ -70,7 +76,7 @@
           if(!cache.has(key))cache.set(key,read(binding).catch(error=>{cache.delete(key);throw error;}));
           return cache.get(key);
         }});
-        const product=root.VUDiscover.App.configureEurope({client,watchlist:Core.createWatchlist({catalog,storage:root.localStorage}),securityRefs:catalog.securities.map(s=>s.securityId),audience:'public'});
+        const product=root.VUDiscover.App.configureEurope({client,watchlist:Core.createWatchlist({catalog,storage:root.localStorage}),securityRefs:catalog.securities.map(s=>s.securityId),blocked:manifest.publication&&manifest.publication.blocked||[],audience:'public'});
         root.VUDiscover.publicEuropeManifest=manifest;return product;
       })().catch(error=>{ready=null;throw error;});
       return ready;
