@@ -142,7 +142,7 @@ Steuerung (Owner, 04.11.2026): Mockups sind verbindlich (Reihenfolge, Abstände,
 | # | Zusatz | Baut | Stand | Notiz |
 |---|---|---|---|---|
 | Z1 | Erster Start: Ziel, Erfahrung, erste Aktien; Konto-Einstellung | D (E11) + `workers/vu-account` | offen | Produktion bleibt aus |
-| Z2 | Eine Aktienadresse `/aktie/<T>` mit Weiterleitungen | D | offen | Herkunftswelt bestimmt Perspektive und Leiste |
+| Z2 | Eine Aktienadresse `/aktie/<T>` mit Weiterleitungen | D | in Arbeit (claude/redesign-z2-aktie) | `core/stock-address.js`, `/aktie/` und `404.html` lösen `/aktie/NVDA?p=zahlen` auf die Welt-Seite auf; ohne `p` bestimmt die Herkunftswelt die Perspektive. Abweichung: Die Seiten bleiben in ihren Welt-Apps (statische Seite, getrennte Apps), deshalb leitet die neue Adresse auf die alte und nicht umgekehrt; `fromWorldUrl` liefert zu jeder alten Adresse die neue zum Teilen. |
 | Z3 | Gespeicherte Suchen im Konto | D (Q02, Screener, T04) + Konto | offen | |
 | Z4 | Benachrichtigungen | Konto + Erzeuger | „bald“ | Versandweg braucht Owner-Freigabe |
 | Z5 | Screener-Kriterien aus 13F und Supertrader | A + B | „bald“ | |
