@@ -61,6 +61,21 @@
     return { remaining: need - have, date: d.toISOString().slice(0, 10) };
   }
 
+  /* Schwelle aus dem Methodikvertrag lesen; ein umbenannter Schluessel wird
+     ueber legacyAliases ({ alterName: neuerName }) weiter gelesen (Entscheidung
+     FV-1: independentWeeks -> eventCalendarMonths). Widersprechen sich alter
+     und neuer Wert oder fehlen beide, bricht der Lauf ab - nie ein Ersatzwert. */
+  function requirement(requirements, key, legacyAliases) {
+    var req = requirements || {}, value = req[key];
+    Object.keys(legacyAliases || {}).forEach(function (old) {
+      if (legacyAliases[old] !== key || req[old] === undefined) return;
+      if (value !== undefined && req[old] !== value) throw new Error("requirement " + key + " (" + value + ") contradicts legacy alias " + old + " (" + req[old] + ")");
+      if (value === undefined) value = req[old];
+    });
+    if (typeof value !== "number" || !isFinite(value)) throw new Error("requirement " + key + " missing");
+    return value;
+  }
+
   /* Pruefung eines Zertifizierungs-Artefakts: jeder Status muss aus seinen
      Gates folgen; CERTIFIED nie mit offenem Gate. */
   function certificationViolations(doc) {
@@ -79,6 +94,6 @@
     return errors;
   }
 
-  var api = { VERSION: VERSION, STATUSES: STATUSES, CATEGORIES: CATEGORIES, TRUST_RANK: TRUST_RANK, gate: gate, classify: classify, eta: eta, certificationViolations: certificationViolations };
+  var api = { VERSION: VERSION, STATUSES: STATUSES, CATEGORIES: CATEGORIES, TRUST_RANK: TRUST_RANK, gate: gate, classify: classify, eta: eta, requirement: requirement, certificationViolations: certificationViolations };
   if (isNode) module.exports = api; else global.VUBacktestCertification = api;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -104,7 +104,7 @@ test("M11-P3 Abweichung vom veroeffentlichten Produkt → nichts registriert", a
   const sh = JSON.parse(gunzipSync(readFileSync(join(V3, "shards", "AA.json.gz"))).toString());
   sh.instruments.AA.pro.elliott.primary.pattern = "MANIPULIERT";
   writeFileSync(join(pubDir, "shards", "AA.json.gz"), gzipSync(Buffer.from(JSON.stringify(sh))));
-  const id = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1, publishedDir: pubDir });
+  const id = await Reg.checkProductIdentity({ ...inputsAtPublishedStand(["AA"]), identitySymbols: ["AA"], workers: 1, publishedDir: pubDir });
   assert.equal(id.ok, false); assert.equal(id.different, 1);
   const w = weeklyDir(["ref_AA"]), reg = mkdtempSync(join(tmpdir(), "pv-r-"));
   await assert.rejects(Reg.register({ highlightGate: false, weeklyDir: w, registry: reg, week: "2026-09-25", workers: 1, identity: id }), /Produkt-Identitaet nicht bestaetigt/);
@@ -116,7 +116,7 @@ test("M11-P3 Abweichung vom veroeffentlichten Produkt → nichts registriert", a
 
 test("M11-P4 Produkt-Kohorten, Nachholen fehlender Wochen, Abdeckungs-Sperre, Pruefung", async () => {
   const w = weeklyDir(["ref_AA", "ref_AACG", "ref_ABBV", "ref_ABT", "ref_XOM"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-r-"));
-  const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
+  const identity = await Reg.checkProductIdentity({ ...inputsAtPublishedStand(["AA"]), identitySymbols: ["AA"], workers: 1 });
   const r1 = await Reg.register({ highlightGate: false, weeklyDir: w, registry: reg, week: "2026-09-11", workers: 3, identity });
   assert.equal(r1.analysed, 5); assert.equal(r1.productAnalysed, 5);
   /* Nachholen: 18.09. und 25.09. fehlen; 02.10. ist mit diesen Daten (Stand 01.10.) nicht abgedeckt → Abdeckungs-Sperre */
@@ -147,7 +147,7 @@ test("M11-P4 Produkt-Kohorten, Nachholen fehlender Wochen, Abdeckungs-Sperre, Pr
 
 test("M11-P5 Registry 1.3.0: angezeigte Motiv-Alternative (Welle 3) wird als eigene Kohorte eingefroren; Forschungskohorte meldet Sichtbarkeit wahrheitsgemäß", async () => {
   const w = weeklyDir(["ref_SE", "ref_VTEX", "ref_BCE", "ref_COLM", "ref_CE", "ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-m-"));
-  const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
+  const identity = await Reg.checkProductIdentity({ ...inputsAtPublishedStand(["AA"]), identitySymbols: ["AA"], workers: 1 });
   await Reg.register({ highlightGate: false, weeklyDir: w, registry: reg, week: "2026-09-25", workers: 2, identity });
   const L = Led.readLedger(reg), run = L.find((e) => e.type === "RUN");
   assert.equal(run.payload.code.registry, Reg.REGISTRY_VERSION); assert.equal(run.payload.code.projection, PJV);
@@ -166,7 +166,7 @@ test("M11-P5 Registry 1.3.0: angezeigte Motiv-Alternative (Welle 3) wird als eig
 
 test("M11-P6 Registry 1.5.0: kuratierte Explore Highlights als eigene Kohorte eingefroren (Rolle, Rang, Leitplanken, Zonen, Kuratierung, Versionen); Candidate Explorer nie registriert; Kette bleibt gültig", async () => {
   const w = weeklyDir(["ref_AB", "ref_BUR", "ref_GBTG", "ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-x-"));
-  const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
+  const identity = await Reg.checkProductIdentity({ ...inputsAtPublishedStand(["AA"]), identitySymbols: ["AA"], workers: 1 });
   await Reg.register({ highlightGate: false, weeklyDir: w, registry: reg, week: "2026-09-25", workers: 2, identity });
   const L = Led.readLedger(reg), run = L.find((e) => e.type === "RUN");
   assert.equal(Reg.REGISTRY_VERSION, "elliott-registry-1.5.0"); assert.equal(run.payload.code.registry, Reg.REGISTRY_VERSION);
@@ -196,7 +196,7 @@ test("M11-P6 Registry 1.5.0: kuratierte Explore Highlights als eigene Kohorte ei
 
 test("M11-P7 Registry 1.5.0: bestehende Ereignisse der breiten Kohorte (1.4.0) bleiben unverändert, neue Highlights werden angehängt; Kette und Nur-Anhängen gültig", async () => {
   const w = weeklyDir(["ref_AB", "ref_BUR", "ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-h-"));
-  const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
+  const identity = await Reg.checkProductIdentity({ ...inputsAtPublishedStand(["AA"]), identitySymbols: ["AA"], workers: 1 });
   await Reg.register({ highlightGate: false, weeklyDir: w, registry: reg, week: "2026-09-18", workers: 2, identity });
   /* ein Ereignis der alten breiten Kohorte, wie es der Bestand enthaelt (Registry 1.4.0) */
   const legacy = { type: "EVENT", id: "EV-legacy-explore", week: "2026-09-18", recordedAt: "2026-10-09T00:00:00Z", payload: { symbol: "ref_AB", cohort: "CUSTOMER_PRODUCT_EXPLORE_ELLIOTT", role: "EXPLORE", setupType: "EXPLORE_ELLIOTT_WAVE_C", view: "CUSTOMER_PRODUCT", registeredBarDate: "2026-09-18", dir: -1, setupStatus: "OPEN" } };
@@ -215,7 +215,7 @@ test("M11-P7 Registry 1.5.0: bestehende Ereignisse der breiten Kohorte (1.4.0) b
 test("M11-P8 Vollvergleich der Explore Highlights ist standardmaessig scharf: fehlen Titel mit veroeffentlichten Highlights im Register-Eingang, wird nichts registriert", async () => {
   /* Umfang des Tests ist der Highlight-Vergleich; der Datenstand-Vergleich (compareFreshness, #615) laeuft davor und wird auf den Fixture-Titel begrenzt (M11-P9 prueft ihn voll) */
   const w = weeklyDir(["ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-g-"));
-  const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
+  const identity = await Reg.checkProductIdentity({ ...inputsAtPublishedStand(["AA"]), identitySymbols: ["AA"], workers: 1 });
   await assert.rejects(Reg.register({ freshnessTickers: ["AA"], weeklyDir: w, registry: reg, week: "2026-09-25", workers: 1, identity }), /Explore Highlights weichen vom veroeffentlichten Produkt ab.*nichts registriert/);
   assert.equal(Led.readLedger(reg).length, 0, "nichts geschrieben");
 });
@@ -223,8 +223,23 @@ test("M11-P8 Vollvergleich der Explore Highlights ist standardmaessig scharf: fe
 test("M11-P9 Vollvergleich des Datenstands ist standardmaessig scharf: fehlen Produkttitel im Register-Eingang, wird nichts registriert (freshnessTickers begrenzt nur ausdruecklich)", async () => {
   /* Gegenstueck zu M11-P8: dort begrenzt freshnessTickers den Datenstand-Vergleich auf den Fixture-Titel, damit der Highlight-Vergleich erreicht wird. Ohne die Option gilt der Vollvergleich ueber alle Produkttitel. */
   const w = weeklyDir(["ref_AA"], "2026-10-01"), reg = mkdtempSync(join(tmpdir(), "pv-f-"));
-  const identity = await Reg.checkProductIdentity({ productInputDir: LONG, identitySymbols: ["AA"], workers: 1 });
+  const identity = await Reg.checkProductIdentity({ ...inputsAtPublishedStand(["AA"]), identitySymbols: ["AA"], workers: 1 });
   await assert.rejects(Reg.register({ weeklyDir: w, registry: reg, week: "2026-09-25", workers: 1, identity }), /Datenstand \(letzte Bar, Zustand\) weicht vom veroeffentlichten Produkt ab.*NOT_IN_REGISTRY_UNIVERSE.*nichts registriert/);
   assert.equal(Led.readLedger(reg).length, 0, "nichts geschrieben");
 });
 
+
+test("M11-P10 Gegenprobe: Eingang NEUER als das veroeffentlichte Produkt -> Identitaet nicht bestaetigt, nichts registriert (kein stilles 'identisch')", async () => {
+  /* Das ist der Zustand, den ein Datenlauf der Langreihen VOR der naechsten Materialisierung erzeugt (Issue #1292): die Langreihe endet am
+     Montag, das veroeffentlichte Produkt am Freitag davor. Die Sperre muss dann greifen, nicht durchlassen. M11-P3 bis P9 pruefen ihre
+     Fachaussagen deshalb auf dem Datenstand des Produkts (inputsAtPublishedStand), nicht auf dem Alter der Marktdaten. */
+  const inp = inputsAtPublishedStand(["AA"], 1);
+  const id = await Reg.checkProductIdentity({ ...inp, identitySymbols: ["AA"], workers: 1 });
+  assert.equal(id.ok, false, "neuer Eingang bestaetigt die Identitaet nicht");
+  assert.equal(id.compared, 0, "nichts verglichen");
+  assert.equal(id.notComparable, 1, "als nicht vergleichbar gemeldet");
+  assert.equal(id.different, 0, "und nicht als abweichend oder identisch");
+  const reg = mkdtempSync(join(tmpdir(), "pv-n-"));
+  await assert.rejects(Reg.register({ highlightGate: false, weeklyDir: weeklyDir(["ref_AA"], "2026-10-01"), registry: reg, week: "2026-09-25", workers: 1, identity: id }), /Produkt-Identitaet nicht bestaetigt/);
+  assert.equal(existsSync(join(reg, "ledger.jsonl")), false, "nichts geschrieben");
+});

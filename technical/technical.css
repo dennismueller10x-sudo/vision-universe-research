@@ -189,6 +189,29 @@ div.tc-signal{grid-template-columns:auto 1fr auto}
 .tc-detail dd,.tc-dq dd{margin:0}
 @media(max-width:480px){.tc-detail dl,.tc-dq dl{grid-template-columns:1fr}.tc-detail dd,.tc-dq dd{margin-bottom:6px}}
 .tc-dq dl{padding-bottom:14px}
+/* Diese Aktie in Quant und Supertrader (engine/world-context.js) */
+.tc-worlds{margin-top:8px}
+.tc-world-grid{display:grid;gap:10px}
+.tc-world-card{display:flex;flex-direction:column;gap:6px;min-width:0;padding:14px;border:1px solid var(--vu-line);border-radius:18px;background:var(--tc-card)}
+.tc-world-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 10px}
+.tc-world-head h3{margin:0;font-size:17px}
+.tc-world-card h4{margin:8px 0 0;font-size:13px;font-weight:800;color:var(--vu-muted);text-transform:uppercase;letter-spacing:.04em}
+.tc-world-stand{font-size:12px;color:var(--vu-muted)}
+.tc-world-stand.is-old{color:var(--tc-down)}
+.tc-world-lead{margin:0;font-size:15px;line-height:1.45}
+.tc-world-chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 0;padding:0;list-style:none}
+.tc-world-chips li{display:flex;flex-direction:column;min-width:0;padding:6px 10px;border-radius:12px;background:var(--vu-surface);font-size:12px;color:var(--vu-muted)}
+.tc-world-chips li b{font-size:14px;color:var(--vu-text)}
+.tc-world-chips li.is-up b{color:var(--tc-up)}
+:root[data-theme=dark] .tc-world-chips li.is-up b{color:var(--vu-accent)}
+.tc-world-chips li.is-down b{color:var(--tc-down)}
+.tc-world-list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.tc-world-list li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-width:0}
+.tc-world-list li b{min-width:0;overflow-wrap:anywhere}
+.tc-world-list li small{flex-basis:100%;font-size:12px;color:var(--vu-muted)}
+.tc-world-list li small.is-warn{color:var(--tc-down)}
+.tc-world-list .tc-badge{padding:3px 10px;font-size:13px;white-space:normal}
+.tc-world-card .tc-note{margin:4px 0 0}
 .tc-level-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:420px){.tc-level-grid{grid-template-columns:1fr}}
 .tc-level-card{display:flex;gap:12px;align-items:center;padding:14px;border:1px solid var(--vu-line);border-radius:18px;background:var(--tc-card)}
@@ -263,6 +286,8 @@ div.tc-signal{grid-template-columns:auto 1fr auto}
   .tc-studio{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);gap:0 20px;align-items:start}
   .tc-studio>.tc-chart-card,.tc-studio>.tc-layers,.tc-studio>.tc-dq,.tc-studio>.tc-disclaimer{grid-column:1}
   .tc-studio>.tc-signals,.tc-studio>.tc-levels{grid-column:2}
+  .tc-studio>.tc-worlds{grid-column:1/-1}
+  .tc-world-grid{grid-template-columns:1fr 1fr;align-items:start}
   .tc-studio>.tc-signals{grid-row:1/span 3}
   .tc-studio>.tc-signals>h2{margin-top:0}
 }
@@ -448,3 +473,33 @@ html body .vu-hero-fidelity[data-product=technical]{--vu-hero-art:url('/assets/h
 .tc-ticks li.is-fail{color:var(--tc-down);background:color-mix(in srgb,var(--tc-down) 12%,transparent)}
 .tc-ticks li.is-unknown{color:var(--tc-watch);background:transparent;border:1px dashed var(--vu-line-strong)}
 .tc-miss{color:var(--vu-text)}
+
+/* ---- Analyse-Assistent (#/assistent, engine/assistant.js) */
+.tc-step{display:flex;align-items:center;gap:10px;margin:22px 0 8px;font-size:20px;line-height:1.2;letter-spacing:-.01em;font-weight:800}
+.tc-step-n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:999px;background:var(--vu-accent);color:var(--vu-on-accent);font-size:14px;font-weight:850;flex:none}
+.tc-goal-sec{margin-top:4px}
+.tc-lead-s{margin:0 0 8px;color:var(--vu-text-secondary);font-size:16px;max-width:62ch}
+.tc-term{margin:4px 0 0;font-size:14px;color:var(--vu-text-secondary)}
+.tc-term>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--vu-text);font-weight:650;list-style:none}
+.tc-term>summary::-webkit-details-marker{display:none}
+.tc-term>summary::before{content:"ⓘ";margin-right:6px;color:var(--vu-muted)}
+.tc-term>p{margin:0 0 8px;max-width:62ch}
+.tc-opts{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.tc-opt{padding:8px 14px;border:1px solid var(--vu-line);border-radius:16px;background:var(--tc-card)}
+.tc-opt.is-on{border-color:var(--vu-line-strong)}
+.tc-opt .tc-check{align-items:flex-start;margin:0;padding:6px 0}
+.tc-opt .tc-check input{margin-top:2px;flex:none}
+.tc-opt .tc-check>span{display:grid;gap:2px;min-width:0}
+.tc-opt .tc-check b{color:var(--vu-text);font-size:15px}
+.tc-query-text{overflow-wrap:anywhere}
+.tc-goal-funnel{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.tc-goal-funnel li{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;font-size:14px}
+.tc-goal-funnel li .tc-mini{grid-column:1/-1;justify-self:start}
+.tc-levels{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.tc-level{display:grid;grid-template-columns:22px minmax(0,1fr);column-gap:8px;padding:12px 14px;border:1px solid var(--vu-line);border-radius:16px;background:var(--tc-card)}
+.tc-level>span:last-child{display:grid;gap:2px}
+.tc-level .tc-crit-mark{grid-row:auto;font-size:16px}
+.tc-level.is-pass .tc-crit-mark{color:var(--tc-up)}.tc-level.is-fail .tc-crit-mark{color:var(--tc-down)}.tc-level.is-unknown .tc-crit-mark{color:var(--tc-watch)}
+.tc-limits{margin:12px 0 0;padding-left:20px;color:var(--vu-text-secondary);font-size:14px;display:grid;gap:4px}
+.tc-goal-chosen .tc-step{margin-top:14px}.tc-goal-jumps{margin:4px 0 0}
+.tc-goal-jumps .tc-pill{text-decoration:none}

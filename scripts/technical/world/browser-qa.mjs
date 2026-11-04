@@ -9,8 +9,13 @@
      Screener     Vorlage liefert Treffer, ein Filter-Pill aendert Adresse
                   und Trefferzahl, Trichter vorhanden
      Chart Studio Kerzen gezeichnet, Zeitraum 3M zeichnet weniger Kerzen,
+                  Abschnitt "Diese Aktie in Quant und Supertrader" (Stufen ohne
+                  Zahl, Links, Research-Status),
                   RSI-Schicht legt den Indikatorbereich an, Befundkarten,
                   Aroon-Unterfenster, Ichimoku-Linien
+     Assistent    Ziel waehlen, Zweck, Kriterium an/aus aendert Adresse und Treffer,
+                  Begriffe, Abfrage -> Screener mit gleicher Trefferzahl, Treffer ->
+                  Chart Studio mit Pruefleiste, vier Ebenen (Vorteil "nicht nachgewiesen")
      Suche        Suche in Worten: Vorschau (erkannt/nicht erkannt), Ausfuehren,
                   "Erkannt als" und Treffer
      Fokus        Befundkarte -> Chart nur mit dieser Formation
@@ -136,6 +141,56 @@ async function main() {
       await clean("Vorlage und Chart");
     });
 
+    await check(key + " Assistent", async () => {
+      await page.goto(base + "#/assistent");
+      await page.waitForSelector(".tc-goal", { timeout: 30000 });
+      assert(await page.locator(".tc-goals .tc-goal").count() === 8, "Analyseziele fehlen");
+      await clean("Assistent-Auswahl");
+      await page.locator(".tc-goals .tc-goal", { hasText: "Trendfolge" }).click();
+      await page.waitForFunction(() => /#\/assistent\/trendfolge$/.test(location.hash));
+      await page.waitForSelector(".tc-hit .tc-ticks", { timeout: 30000 });
+      assert(await page.locator(".tc-hit").first().locator(".tc-ticks li").count() === 4, "Checkliste ohne 4 Kriterien");
+      assert((await page.locator(".tc-step-n").allTextContents()).join(",") === "1,2,3,4,5,6", "Schritte 1–6 nicht vollstaendig");
+      await page.locator(".tc-goal-jumps a", { hasText: "Treffer" }).click();
+      await page.waitForFunction(() => document.getElementById("tc-treffer").getBoundingClientRect().top < 200, null, { timeout: 5000 });
+      assert(await page.locator(".tc-level").count() === 4, "vier Ebenen fehlen");
+      assert(/Nicht nachgewiesen/.test(await page.locator(".tc-level.is-fail").innerText()), "Vorteil nicht als nicht nachgewiesen ausgewiesen");
+      const full = await page.locator(".tc-tpl-seg a", { hasText: "Erfüllt" }).first().innerText();
+      await page.locator(".tc-term summary", { hasText: "Begriff: ADX" }).click();
+      assert(/Trend/.test(await page.locator(".tc-term[open] p").first().innerText()), "Begriff nicht erklaert");
+      await page.locator(".tc-opt", { hasText: "RS-Rang mindestens 70" }).locator("input").check();
+      await page.waitForFunction(() => /k=.*rsRank70/.test(location.hash));
+      await page.waitForFunction(() => document.querySelector(".tc-hit .tc-ticks") && document.querySelector(".tc-hit .tc-ticks").children.length === 5, null, { timeout: 30000 });
+      const full2 = await page.locator(".tc-tpl-seg a", { hasText: "Erfüllt" }).first().innerText();
+      assert(full2 !== full, "Treffer aendern sich nicht mit dem Kriterium");
+      const n = Number(full2.replace(/\D/g, ""));
+      // Datenqualitaet: Hinweis nennt genau die gekennzeichneten Treffer der Liste (Datensatz-abhaengig, daher nur Konsistenz)
+      const dq = await page.evaluate(() => { const nt = document.querySelector(".tc-dq-note"); return { note: nt ? Number(nt.textContent.replace(/\D.*$/, "")) : 0 }; });
+      assert(dq.note <= n, "Datenqualitaets-Hinweis zaehlt mehr Treffer (" + dq.note + ") als die Liste hat (" + n + ")");
+      await clean("Analyseziel");
+      await page.locator("a", { hasText: "Im Screener bearbeiten" }).click();
+      await page.waitForFunction(() => /#\/screener\?z=trendfolge/.test(location.hash));
+      await page.waitForSelector(".tc-cta", { timeout: 30000 });
+      assert(/Analyse-Assistenten/.test(await page.locator(".tc-preset").first().innerText()), "Herkunft im Screener fehlt");
+      const cta = Number((await page.locator(".tc-cta").innerText()).replace(/\D/g, ""));
+      assert(cta === n, "Screener " + cta + " != Assistent " + n);
+      await page.goBack();
+      await page.waitForSelector(".tc-hit .tc-ticks", { timeout: 30000 });
+      await page.locator(".tc-hit").first().click();
+      await page.waitForFunction(() => /[?&]z=trendfolge/.test(location.hash));
+      await page.waitForSelector(".tc-tpl-panel .tc-crit-why", { timeout: 30000 });
+      assert(/Trendfolge/.test(await page.locator(".tc-tpl-panel summary").innerText()), "Pruefleiste ohne Analyseziel");
+      await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
+      await clean("Analyseziel und Chart");
+      await page.goto(base + "#/assistent/ausbruch?k=");
+      await page.waitForSelector(".tc-state", { timeout: 15000 });
+      assert(/Kein Kriterium/.test(await page.locator(".tc-state").innerText()), "leere Auswahl ohne Zustand");
+      await page.goto(base + "#/assistent/gibtsnicht");
+      await page.waitForSelector(".tc-title");
+      assert(/nicht gefunden/.test(await page.locator(".tc-title").innerText()), "unbekanntes Ziel ohne Zustand");
+      await clean("Assistent-Zustaende");
+    });
+
     await check(key + " Suche in Worten", async () => {
       await page.goto(base + "#/screener");
       await page.waitForSelector("#tc-ts-input", { timeout: 30000 });
@@ -211,6 +266,19 @@ async function main() {
       await page.getByRole("button", { name: "Hull MA 20", exact: true }).click();
       await page.getByRole("button", { name: "Chandelier-Stop", exact: true }).click();
       await page.waitForFunction((n) => document.querySelectorAll(".tc-chart .tc-overlay").length >= n + 2, ov);
+      /* Diese Aktie in Quant und Supertrader: bleibt nach jedem Neuzeichnen stehen, Stufen und Links aus den Artefakten. */
+      await page.waitForSelector(".tc-worlds .tc-world-card[data-world=supertrader]", { timeout: 30000 });
+      const w = await page.evaluate(() => {
+        const q = document.querySelector(".tc-world-card[data-world=quant]"), s = document.querySelector(".tc-world-card[data-world=supertrader]");
+        return { n: document.querySelectorAll(".tc-worlds").length, chips: q.querySelectorAll(".tc-world-chips li").length, lead: (q.querySelector(".tc-world-lead") || {}).textContent || "",
+          qHref: (q.querySelector("a.tc-link") || {}).getAttribute ? q.querySelector("a.tc-link").getAttribute("href") : null,
+          sHref: s.querySelector("a.tc-link") ? s.querySelector("a.tc-link").getAttribute("href") : null, sText: s.textContent,
+          digits: [...q.querySelectorAll(".tc-world-chips b")].some((b) => /\d/.test(b.textContent)) };
+      });
+      assert(w.n === 1, "Abschnitt Quant/Supertrader " + w.n + "-mal");
+      assert(w.chips >= 1 && w.lead.length > 20 && !w.digits, "Quant-Stufen fehlen oder zeigen Zahlen: " + JSON.stringify(w));
+      assert(w.qHref === "/quant/#/aktie/NVDA" && w.sHref === "/supertrader/stock/NVDA/", "Links: " + w.qHref + " " + w.sHref);
+      assert(/Modellsignale/.test(w.sText) && /Research, keine Empfehlung/.test(w.sText) && /nicht zertifiziert/.test(w.sText), "Supertrader-Status fehlt: " + w.sText.slice(0, 200));
       await clean("Chart Studio");
     });
 
@@ -237,6 +305,8 @@ async function main() {
       await page.goto(base + "#/chart/AAPL/signale");
       await page.waitForSelector(".tc-history", { timeout: 45000 });
       assert(await page.locator(".tc-signal").count() >= 1, "keine Befunde");
+      await page.waitForSelector(".tc-worlds .tc-world-card[data-world=quant]", { timeout: 30000 });
+      assert(await page.locator(".tc-worlds a[href='/quant/#/aktie/AAPL']").count() === 1, "Signale: Link zur Quant-Analyse fehlt");
       await clean("Signale");
     });
 

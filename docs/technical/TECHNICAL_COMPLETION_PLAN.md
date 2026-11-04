@@ -126,11 +126,20 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | Kriterium | Status | Nachweis bzw. Lücke | Prio |
 |---|---|---|---|
 | K1 Auffällige Kurssprünge generisch gekennzeichnet; Verdacht und bestätigter Fehler getrennt; in Screener, Vorlagen und Chart Studio | ✔ | #1180 (screen-row 1.13.0, `price-jumps.js`): 181 Kennzeichnungen, 1 bestätigt (GIBO). Keine tickerbezogene Regel. | P0 |
-| K2 Bestätigter Datenfehler (GIBO 25:1) ausschließlich in der Marktdaten-Pipeline bereinigt, mit Schutz gegen Doppelbereinigung | ◐ | #1177 (Beleg) und #1181 (Bereinigung, Status PIPELINE). Wirksam ab dem nächsten regulären Lauf; der Nachweis ist für den 31.10. geplant (CORPORATE_ACTION_GIBO_2026.md). | P0 |
+| K2 Bestätigter Datenfehler (GIBO 25:1) ausschließlich in der Marktdaten-Pipeline bereinigt, mit Schutz gegen Doppelbereinigung | ✔ | #1177 (Beleg) und #1181 (Bereinigung, Status PIPELINE). Nachweis 02.11. auf dem automatischen Stand `c307119` (Stichtag 30.10.): GIBO ohne Kurssprung-Kennzeichnung, `rs6m` 1,58 statt 55,27, „Etablierter Aufwärtstrend“ nicht erfüllt (7/8). TECHNICAL_ASSISTANT.md, Betriebsprüfungen. | P0 |
 | K3 Mobile Performance weiter verbessert ohne Architekturumbau | ◐ | #1184 gemergt: `spark` als eigene Datei, Screener-Datensatz −21,5 %, erste Vorlage mobil 4,78 → 3,00 s (lokal gemessen). Live-Messung nach Deploy offen. | P1 |
 | K4 Historische Tests der Vorlagen (S4) mit bestehender Backtest-Maschine, ehrlich eingestuft | ◐ | `scripts/technical/s4/template-study.mjs` über `runEventStudy`, `holm`, `buildWalkForward`, `classifyRegimes`. Status RESEARCH_LIMITED, nicht zertifiziert (S4_TEMPLATE_STUDY.md): ab 2016 kein Überschuss ggü. SPY, Walk-Forward ≈ 0. Formations-Vorlagen sind mangels Tages-OHLC-Historie nicht testbar. | P1 |
 | K5 Wochenkerzen und -formationen | ◐ | siehe D5, E4 | P2 |
 | K6 KI-Suche vorbereitet, standardmäßig aus | ✔ (vorbereitet) | siehe F5 | P2 |
+
+### L. Master Completion 3.0: Analyse-Assistent (Auftrag 02.11.2026, [TECHNICAL_ASSISTANT.md](TECHNICAL_ASSISTANT.md))
+
+| Kriterium | Status | Nachweis bzw. Lücke | Prio |
+|---|---|---|---|
+| L1 Bibliothek: acht Analyseziele aus den 13 Vorlagen, vier Ebenen getrennt (Methodik, Kriterien, historische Beobachtung, nachgewiesener Vorteil) | ✔ | `technical/engine/assistant.js`; Test prüft Evidenz-Verweise gegen `signal-evidence.json`, `formation-evidence.json` und S4 | P1 |
+| L2 Geführter Ablauf Ziel → Zweck → Kriterien → Abfrage → Treffer (✓/✗/?) → Chart Studio → Grenzen, ohne zweite Rechnung | ✔ | `#/assistent`; Test: Screener-Trefferzahl = „Erfüllt“ für jedes Ziel und jede geprüfte Auswahl; Prüfleiste `?z=` | P1 |
+| L3 Mobile und Desktop, hell und dunkel, Begriffe erklärt, keine Zukunftsaussage | ✔ | Browser-QA 66/66 (360/390/1280 px), Sprachtest | P1 |
+| L4 Owner liest Ziel- und Begriffstexte vor einer Hervorhebung außerhalb von Technical | offen | Freigabe der Produktsprache | P2 |
 
 ## 2. Arbeitspakete (Reihenfolge = Priorität)
 

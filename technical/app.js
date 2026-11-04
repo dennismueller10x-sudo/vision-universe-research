@@ -15,7 +15,7 @@
    ========================================================================= */
 (function (global) {
   "use strict";
-  var M = global.VUTechnicalModel, Q = global.VUTechnical.Query, QT = global.VUTechnical.QueryText, Chart = global.VUTechnicalChart, TPL = global.VUTechnical.Templates;
+  var M = global.VUTechnicalModel, Q = global.VUTechnical.Query, QT = global.VUTechnical.QueryText, Chart = global.VUTechnicalChart, TPL = global.VUTechnical.Templates, AS = global.VUTechnical.Assistant;
   var doc = global.document;
 
   /* -------------------------------------------------------------- DOM */
@@ -223,7 +223,7 @@
       glyph("chevron", "tc-chev")
     ]);
   }
-  var MAIN_TABS = [["home", "#/", "Überblick"], ["templates", "#/vorlagen", "Vorlagen"], ["build", "#/screener", "Screener"], ["saved", "#/screener/gespeichert", "Gespeichert"], ["method", "#/methodik", "Methodik"]];
+  var MAIN_TABS = [["home", "#/", "Überblick"], ["academy", "#/akademie", "Akademie"], ["assistant", "#/assistent", "Assistent"], ["templates", "#/vorlagen", "Vorlagen"], ["build", "#/screener", "Screener"], ["saved", "#/screener/gespeichert", "Gespeichert"], ["method", "#/methodik", "Methodik"]];
   function sectionHead(title, href, linkText) {
     return el("div", { class: "tc-sec-head" }, [el("h2", { text: title }), href ? el("a", { href: href, class: "tc-more" }, [linkText || "Alle", glyph("chevron", "tc-chev-s")]) : null]);
   }
@@ -262,7 +262,9 @@
     ]);
     var searchSlot = el("div", { class: "tc-search-slot" }), chips = el("div", { class: "tc-chips", role: "list" });
     var kpis = el("ul", { class: "tc-kpis", "aria-label": "Datenumfang" }), focus = el("div", { class: "tc-list" }), ranks = el("div", { class: "tc-list" }), tpls = el("div", { class: "tc-list" });
-    put(main, [hero, searchSlot, chips, kpis, sectionHead("Strategie-Vorlagen", "#/vorlagen", "Alle Vorlagen"), tpls, sectionHead("Setups im Fokus", "#/vorlagen"), focus, sectionHead("Technische Ranglisten", "#/vorlagen"), ranks, el("div", { class: "tc-foot-slot" })]);
+    var assist = AS ? el("div", { class: "tc-list" }, [el("a", { class: "tc-row tc-goal", href: "#/assistent" }, [el("span", { class: "tc-row-icon" }, glyph("search")),
+      el("span", { class: "tc-row-text" }, [el("b", { text: "Analyse-Assistent" }), el("span", { text: "Von der Frage zu passenden Kriterien: Trend, Ausbruch, Momentum, Trendwende und mehr – mit Erklärung und Grenzen." })]), glyph("chevron", "tc-chev")])]) : null;
+    put(main, [hero, searchSlot, chips, kpis, el("a", { class: "tc-row", href: "#/akademie", text: "Strategie-Akademie · Werkzeuge verstehen und anwenden" }), assist ? sectionHead("Analyse starten", "#/assistent", "Alle Ziele") : null, assist, sectionHead("Strategie-Vorlagen", "#/vorlagen", "Alle Vorlagen"), tpls, sectionHead("Setups im Fokus", "#/vorlagen"), focus, sectionHead("Technische Ranglisten", "#/vorlagen"), ranks, el("div", { class: "tc-foot-slot" })]);
     hero.append(searchSlot, chips);
     loadIndex().then(function (X) {
       var ix = X.index;
@@ -413,6 +415,9 @@
     var textQ = !preset && typeof p.q === "string" && p.q.trim() ? p.q.trim().slice(0, 300) : null;
     /* Aus einer Vorlage uebernommen (AP8): Kriterien als Baukasten-Filter, damit sie sich anpassen lassen. */
     var tplFrom = !preset && !textQ && p.vorlage && TPL.get(p.vorlage) ? TPL.toQuery(TPL.compose(p.vorlage, TPL.blocksFromParam(p.plus))) : null;
+    /* Aus dem Analyse-Assistenten uebernommen: dieselben Kriterien als Baukasten-Filter. */
+    var goalFrom = !preset && !textQ && !tplFrom && AS && p.z ? AS.fromParams(p) : null;
+    if (goalFrom && goalFrom.template) tplFrom = TPL.toQuery(goalFrom.template); else goalFrom = null;
     var parsed = textQ && QT ? QT.parse(textQ) : null;
     var head = el("header", { class: "tc-head" }, [
       el("a", { class: "tc-back", href: "#/" }, [glyph("back"), "Technical"]),
@@ -443,10 +448,10 @@
       var tf = built.query.timeframe;
       var controls = [textSearch(textQ, parsed), QT ? builderCard(parsed && parsed.query.groups.length ? M.builderFromQuery(parsed.query) : tplFrom ? M.builderFromQuery(tplFrom.query) : { tf: st.tf, groups: [[M.defaultRow("aboveSma200")]] }, !!parsed || !!tplFrom) : null];
       if (tplFrom) {
-        var tpl0 = TPL.get(p.vorlage);
-        controls.push(el("div", { class: "tc-preset" }, [el("b", { text: "Aus Vorlage „" + tpl0.title + "“" }), el("p", { text: Q.describe(built.query) }),
+        var tpl0 = goalFrom ? goalFrom.template : TPL.get(p.vorlage);
+        controls.push(el("div", { class: "tc-preset" }, [el("b", { text: (goalFrom ? "Aus dem Analyse-Assistenten „" : "Aus Vorlage „") + tpl0.title + "“" }), el("p", { text: Q.describe(built.query) }),
           tplFrom.dropped.length ? el("p", { class: "tc-note is-warn", text: "Im Baukasten nicht wählbar und deshalb weggelassen: " + tplFrom.dropped.join(", ") + ". Die Trefferzahl kann deshalb von der Vorlage abweichen." }) : null,
-          el("a", { class: "tc-link", href: TPL.href(p.vorlage, TPL.blocksFromParam(p.plus)), text: "Zurück zur Vorlage" })]));
+          goalFrom ? el("a", { class: "tc-link", href: AS.href(goalFrom.goal.id, goalFrom.selected), text: "Zurück zum Analyseziel" }) : el("a", { class: "tc-link", href: TPL.href(p.vorlage, TPL.blocksFromParam(p.plus)), text: "Zurück zur Vorlage" })]));
       } else if (parsed) {
         controls.push(el("div", { class: "tc-preset" }, [el("b", { text: "Erkannt als" }), el("p", { text: Q.describe(built.query) || "Keine auswertbare Bedingung" }),
           el("a", { class: "tc-link", href: "#/screener", text: "Filter per Klick setzen" })]));
@@ -692,27 +697,7 @@
       var ds = D.ds, entries = res[SHOW[showKey]], shown = 0, PAGE = 40, list = el("div", { class: "tc-hits" });
       var tq = TPL.toQuery(t), wanted = M.wantedFormations(tq.query), chartQ = "v=" + encodeURIComponent(t.id) + (blocks.length ? "&plus=" + blocks.join(",") : "");
       var more = el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Weitere anzeigen", onclick: function () { page(); } });
-      function hit(e) {
-        var row = ds.row(e.i), pass = e.states.filter(function (s) { return s === "PASS"; }).length;
-        var miss = e.states.map(function (s, k) { return s === "FAIL" ? t.criteria[k].label : null; }).filter(Boolean);
-        var unk = e.states.map(function (s, k) { return s === "UNKNOWN" ? t.criteria[k].label : null; }).filter(Boolean);
-        var flags = [];
-        if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
-        if (row.suspectJumpAt) flags.push(jumpFlag(row));
-        return el("a", { class: "tc-hit", href: M.chartHref(row.s, null, chartQ) }, [
-          el("div", { class: "tc-hit-top" }, [
-            el("span", { class: "tc-hit-id" }, [el("b", { text: row.s }), el("span", { text: shortName(row.n) })]),
-            el("span", { class: "tc-hit-px num" }, [M.price(row.close), el("em", { class: row.chg1d >= 0 ? "is-up" : "is-down", text: (row.chg1d >= 0 ? "▲ " : "▼ ") + M.pct(row.chg1d) })]),
-            sparkSpan(row),
-            el("span", { class: "tc-hit-score" }, [el("span", { text: "Kriterien" }), el("b", { class: "num", text: pass + "/" + e.states.length })]),
-            glyph("chevron", "tc-chev")
-          ]),
-          ticks(t, e.states),
-          miss.length ? el("p", { class: "tc-hit-text tc-miss" }, [el("b", { text: "Nicht erfüllt: " }), miss.join(", ")]) : null,
-          unk.length ? el("p", { class: "tc-hit-text" }, [el("b", { text: "Unbekannt (unvollständig): " }), unk.join(", ")]) : null,
-          wanted.length || flags.length ? el("p", { class: "tc-hit-text" }, [wanted.length ? M.hitSentence(row, wanted) : ""].concat(flags)) : null
-        ]);
-      }
+      function hit(e) { return checklistHit(ds, t, e, chartQ, wanted); }
       function page() { entries.slice(shown, shown + PAGE).forEach(function (e) { list.append(hit(e)); }); shown = Math.min(entries.length, shown + PAGE); more.hidden = shown >= entries.length; count.textContent = "Gezeigt: " + shown.toLocaleString("de-DE") + " von " + entries.length.toLocaleString("de-DE") + "."; }
       var count = el("p", { class: "tc-note" });
       var EMPTY = { voll: ["Keine Aktie erfüllt alle Kriterien", "Mit weniger Trendfiltern oder unter „Fast erfüllt“ finden sich Aktien, denen genau ein Kriterium fehlt."],
@@ -739,15 +724,152 @@
       page();
     }
   }
+  /* ------------------------------------------------------- Analyse-Assistent (T1/T2, engine/assistant.js) */
+  /* Ziel waehlen -> Zweck -> Kriterien (an/aus, Begriffe erklaert) -> Abfrage sichtbar und im Screener bearbeitbar
+     -> Treffer mit Checkliste -> Chart Studio mit Pruefleiste -> Grenzen und Evidenz-Ebenen. Gerechnet wird nur
+     mit templates.js#evaluate auf den Praedikaten von technical-query.js. */
+  function viewAssistant(main, route) {
+    if (!AS) { put(main, [templateHead("#/", "Technical", null, "Analyse-Assistent", "Der Assistent ist derzeit nicht verfügbar."), tabs(MAIN_TABS, "assistant")]); return; }
+    return route.id ? viewGoal(main, route) : viewGoalList(main);
+  }
+  function stepHead(n, title) { return el("h2", { class: "tc-step" }, [el("span", { class: "tc-step-n num", "aria-hidden": "true", text: String(n) }), el("span", { class: "tc-sr", text: "Schritt " + n + ": " }), title]); }
+  function viewGoalList(main) {
+    var head = templateHead("#/", "Technical", null, "Analyse-Assistent", "Welche Frage möchten Sie an den Chart stellen? Wählen Sie ein Ziel – der Assistent schlägt passende, geprüfte Kriterien vor und erklärt Treffer und Grenzen.");
+    var list = el("div", { class: "tc-list tc-goals" }, AS.list().map(function (g) {
+      return el("a", { class: "tc-row tc-goal", href: AS.href(g.id) }, [
+        el("span", { class: "tc-row-icon" }, glyph(g.icon)),
+        el("span", { class: "tc-row-text" }, [el("b", { text: g.title }), el("span", { text: g.question })]),
+        glyph("chevron", "tc-chev")]);
+    }));
+    put(main, [head, tabs(MAIN_TABS, "assistant"), stepHead(1, "Analyseziel wählen"), list,
+      el("p", { class: "tc-note", text: "Kein Ziel ist ein Kauf- oder Verkaufssignal. Jede Ansicht nennt, was historisch untersucht ist und was nicht." })]);
+  }
+  function termDetails(id) {
+    var tm = AS.term(id); if (!tm) return null;
+    return el("details", { class: "tc-term" }, [el("summary", { text: "Begriff: " + tm.title }), el("p", { text: tm.text })]);
+  }
+  function viewGoal(main, route) {
+    var g = AS.get(route.id);
+    if (!g) { put(main, [templateHead("#/assistent", "Assistent", null, "Analyseziel nicht gefunden", "Dieses Ziel gibt es nicht (mehr)."), tabs(MAIN_TABS, "assistant")]); return; }
+    var p = route.params || {}, sel = AS.selectionFromParam(g, p.k), showKey = SHOW[p.zeige] ? p.zeige : "voll", t = AS.build(g.id, sel);
+    var head = templateHead("#/assistent", "Assistent", "ANALYSEZIEL", g.title, g.question);
+    /* Schritt 2: Zweck und allgemein erklaerte Methodik */
+    var purpose = el("section", { class: "tc-goal-sec", "aria-labelledby": "tc-g-purpose" }, [
+      el("div", { id: "tc-g-purpose" }, stepHead(2, "Zweck")), el("p", { class: "tc-lead-s", text: g.purpose }),
+      el("details", { class: "tc-term" }, [el("summary", { text: "Wie diese Analyse üblicherweise verstanden wird" }), el("p", { text: g.method })])]);
+    /* Schritt 3: Kriterien an/aus */
+    var opts = AS.options(g), termSeen = {};
+    var critList = el("ul", { class: "tc-opts" }, opts.map(function (x) {
+      /* Jeder Begriff wird nur beim ersten Kriterium erklaert. */
+      var showTerm = x.term && !termSeen[x.term]; if (x.term) termSeen[x.term] = 1;
+      var on = sel.indexOf(x.id) >= 0;
+      return el("li", { class: "tc-opt" + (on ? " is-on" : "") }, [
+        el("label", { class: "tc-check" }, [el("input", { type: "checkbox", checked: on, onchange: function () {
+          var next = on ? sel.filter(function (k) { return k !== x.id; }) : sel.concat([x.id]);
+          location.hash = AS.href(g.id, opts.map(function (y) { return y.id; }).filter(function (k) { return next.indexOf(k) >= 0; }), showKey);
+        } }), el("span", {}, [el("b", { text: x.label }), el("span", { class: "tc-crit-why", text: x.why })])]),
+        showTerm ? termDetails(x.term) : null]);
+    }));
+    var crit = el("section", { class: "tc-goal-sec", "aria-labelledby": "tc-g-crit" }, [el("div", { id: "tc-g-crit" }, stepHead(3, "Kriterien")),
+      el("p", { class: "tc-note", text: "Vorgeschlagen sind die üblichen Kriterien dieses Ziels. Weitere lassen sich dazunehmen, jedes muss erfüllt sein. " + AS.TERMS.combine.text }), critList]);
+    var query = el("section", { class: "tc-goal-sec", "aria-labelledby": "tc-g-query" }), results = el("section", { class: "tc-results-sec tc-goal-sec", id: "tc-treffer", "aria-live": "polite" });
+    var limits = el("section", { class: "tc-goal-sec", "aria-labelledby": "tc-g-limits" }, [el("div", { id: "tc-g-limits" }, stepHead(6, "Was die Analyse sagt – und was nicht")),
+      el("ol", { class: "tc-levels" }, AS.LEVELS.map(function (L) {
+        var txt = L.id === "METHOD" ? "Beschrieben unter „Zweck“." : L.id === "CRITERIA" ? "Die gewählten Kriterien sind eindeutig definiert und im Chart Studio nachprüfbar." : L.id === "OBSERVED" ? g.evidence.text : AS.EDGE_TEXT;
+        var state = L.id === "EDGE" ? "is-fail" : L.id === "OBSERVED" ? "is-unknown" : "is-pass", mark = L.id === "EDGE" ? "✗" : L.id === "OBSERVED" ? "~" : "✓";
+        return el("li", { class: "tc-level " + state }, [el("span", { class: "tc-crit-mark", "aria-hidden": "true", text: mark }), el("span", {}, [el("b", { text: L.title }), el("span", { class: "tc-crit-why", text: txt })])]);
+      })),
+      el("ul", { class: "tc-limits" }, AS.LIMITS.map(function (x) { return el("li", { text: x }); })),
+      el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: "#/methodik", text: "Historische Auswertungen auf der Methodik-Seite" })]),
+      g.templates && g.templates.length ? el("p", { class: "tc-note" }, ["Passende Vorlagen: "].concat(g.templates.filter(function (id) { return !!TPL.get(id); }).map(function (id, k) {
+        return [k ? ", " : "", el("a", { class: "tc-link", href: TPL.href(id), text: TPL.get(id).title })];
+      }))) : null]);
+    /* Schritt 1 (gewaehlt) und Sprungmarken: auf dem iPhone ist die Seite lang, die Treffer liegen weit unten. */
+    function jump(id, text) { return el("a", { class: "tc-pill", href: "#", onclick: function (ev) { ev.preventDefault(); var n = doc.getElementById(id); if (n) n.scrollIntoView({ behavior: "smooth", block: "start" }); }, text: text }); }
+    var chosen = el("div", { class: "tc-goal-chosen" }, [stepHead(1, "Ziel gewählt"), el("p", { class: "tc-note" }, [g.title + " · ", el("a", { class: "tc-link", href: "#/assistent", text: "anderes Ziel wählen" })]),
+      el("nav", { class: "tc-pills tc-goal-jumps", "aria-label": "Abschnitte" }, [jump("tc-g-crit", "Kriterien"), jump("tc-g-query", "Abfrage"), jump("tc-treffer", "Treffer"), jump("tc-g-limits", "Grenzen")])]);
+    put(main, [head, tabs(MAIN_TABS, "assistant"), chosen, purpose, crit, query, results, limits]);
+    if (!t) {
+      put(query, [el("div", { id: "tc-g-query" }, stepHead(4, "Abfrage")), stateBox("Kein Kriterium gewählt", "Bitte mindestens ein Kriterium auswählen.", el("a", { class: "tc-link", href: AS.href(g.id), text: "Vorschlag wiederherstellen" }))]);
+      return;
+    }
+    var tq = AS.toQuery(g.id, sel);
+    put(query, [el("div", { id: "tc-g-query" }, stepHead(4, "Abfrage")),
+      el("div", { class: "tc-preset" }, [el("b", { text: "So sucht der Screener" }), el("p", { class: "tc-query-text", text: "Aktueller Kurs und " + Q.describe(Object.assign({}, tq.query, { groups: [{ op: "AND", filters: tq.query.groups[0].filters.slice(1) }] })) }),
+        el("a", { class: "tc-link", href: "#/screener?" + AS.paramsOf(g.id, sel), text: "Im Screener bearbeiten" })])]);
+    if (!dataset) { results.setAttribute("aria-busy", "true"); put(results, [stepHead(5, "Treffer"), el("p", { class: "tc-note", text: "Treffer werden berechnet. Beim ersten Öffnen lädt der Screener-Datensatz für alle Aktien." }), el("div", { class: "tc-skel", style: "height:220px" })]); }
+    loadScreener().then(function (D) {
+      results.removeAttribute("aria-busy");
+      var ds = D.ds, res = TPL.evaluate(ds, t), nearOk = t.criteria.length >= TPL.NEAR_MIN;
+      var seg = [["voll", "Erfüllt", res.full.length]];
+      if (nearOk) seg.push(["fast", "Fast erfüllt", res.near.length]);
+      if (res.incomplete.length || showKey === "offen") seg.push(["offen", "Unvollständig", res.incomplete.length]);
+      if (!seg.some(function (x) { return x[0] === showKey; })) showKey = "voll";
+      var segBar = el("div", { class: "tc-seg tc-tpl-seg", role: "tablist", "aria-label": "Treffer nach Erfüllung" }, seg.map(function (x) {
+        return el("a", { role: "tab", class: "tc-seg-b" + (showKey === x[0] ? " is-on" : ""), "aria-selected": String(showKey === x[0]), href: AS.href(g.id, sel, x[0]) }, [x[1] + " ", el("b", { class: "num", text: x[2].toLocaleString("de-DE") })]);
+      }));
+      /* Trichter: je Kriterium, wie viele Aktien es erfuellen bzw. unbekannt sind */
+      var funnel = el("ul", { class: "tc-goal-funnel" }, res.funnel.map(function (f) {
+        return el("li", {}, [el("span", { text: f.label }), el("b", { class: "num", text: f.pass.toLocaleString("de-DE") }), f.unknown ? el("span", { class: "tc-mini", text: f.unknown.toLocaleString("de-DE") + " unbekannt" }) : null]);
+      }));
+      var entries = res[SHOW[showKey]], shown = 0, PAGE = 30, list = el("div", { class: "tc-hits" }), chartQ = AS.paramsOf(g.id, sel), wanted = M.wantedFormations(tq.query);
+      var count = el("p", { class: "tc-note" }), more = el("button", { type: "button", class: "tc-btn tc-btn-ghost", text: "Weitere anzeigen", onclick: function () { page(); } });
+      function page() { entries.slice(shown, shown + PAGE).forEach(function (e) { list.append(checklistHit(ds, t, e, chartQ, wanted)); }); shown = Math.min(entries.length, shown + PAGE); more.hidden = shown >= entries.length; count.textContent = "Gezeigt: " + shown.toLocaleString("de-DE") + " von " + entries.length.toLocaleString("de-DE") + "."; }
+      var EXPLAIN = { voll: "Alle gewählten Kriterien erfüllt. Ein Treffer öffnet das Chart Studio mit der Prüfung je Kriterium.", fast: "Genau ein Kriterium nicht erfüllt, alle anderen erfüllt.", offen: "Kein Kriterium verfehlt, aber mindestens eines unbekannt (z. B. zu kurze Kurshistorie). Unbekannt zählt nicht als erfüllt." }[showKey];
+      put(results, [stepHead(5, "Treffer"), el("details", { class: "tc-filter" }, [el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("bars")), el("b", { text: "Wie viele Aktien jedes Kriterium erfüllen" }), glyph("chevron", "tc-chev tc-rot")]), el("div", { class: "tc-filter-body" }, funnel)]),
+        segBar, el("p", { class: "tc-note", text: EXPLAIN }),
+        entries.length ? list : stateBox("Keine Treffer in dieser Auswahl", nearOk ? "Unter „Fast erfüllt“ stehen Aktien, denen genau ein Kriterium fehlt. Mit weniger Kriterien wird die Liste größer." : "Mit weniger oder anderen Kriterien wird die Liste größer."),
+        count, more,
+        res.excluded ? el("p", { class: "tc-note", text: res.excluded.toLocaleString("de-DE") + " Aktien ohne aktuellen Kurs (hinter dem Stichtag oder eingefroren) sind nicht eingeordnet." }) : null,
+        disclaimer(D.meta)]);
+      /* Datenqualitaet: Titel mit Kurssprung-Kennzeichnung (price-jumps.js) zaehlen und vor der Liste nennen. */
+      var flagged = entries.filter(function (e) { return !!ds.row(e.i).suspectJumpAt; }).length;
+      if (flagged) results.insertBefore(el("p", { class: "tc-note is-warn tc-dq-note", role: "note", text: flagged.toLocaleString("de-DE") + (flagged === 1 ? " Treffer trägt" : " Treffer tragen") + " eine Datenqualitäts-Kennzeichnung (Kurssprung). Ein solcher Sprung kann Kennzahlen wie die relative Stärke verfälschen; die Kennzeichnung steht in der Trefferkarte und im Chart." }), entries.length ? list : results.querySelector(".tc-state"));
+      page();
+    }).catch(function (e) {
+      results.removeAttribute("aria-busy");
+      put(results, [stepHead(5, "Treffer"), stateBox("Daten derzeit nicht verfügbar", "Der Screener-Datensatz konnte nicht geladen werden (" + String(e && e.message || e) + ").")]);
+    });
+  }
+  /** Trefferkarte mit Kriterien-Checkliste (Vorlagen und Assistent; Einordnung aus templates.js#evaluate). */
+  function checklistHit(ds, t, e, chartQ, wanted) {
+    var row = ds.row(e.i), pass = e.states.filter(function (s) { return s === "PASS"; }).length;
+    var miss = e.states.map(function (s, k) { return s === "FAIL" ? t.criteria[k].label : null; }).filter(Boolean);
+    var unk = e.states.map(function (s, k) { return s === "UNKNOWN" ? t.criteria[k].label : null; }).filter(Boolean);
+    var flags = [];
+    if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
+    if (row.suspectJumpAt) flags.push(jumpFlag(row));
+    return el("a", { class: "tc-hit", href: M.chartHref(row.s, null, chartQ) }, [
+      el("div", { class: "tc-hit-top" }, [
+        el("span", { class: "tc-hit-id" }, [el("b", { text: row.s }), el("span", { text: shortName(row.n) })]),
+        el("span", { class: "tc-hit-px num" }, [M.price(row.close), el("em", { class: row.chg1d >= 0 ? "is-up" : "is-down", text: (row.chg1d >= 0 ? "▲ " : "▼ ") + M.pct(row.chg1d) })]),
+        sparkSpan(row),
+        el("span", { class: "tc-hit-score" }, [el("span", { text: "Kriterien" }), el("b", { class: "num", text: pass + "/" + e.states.length })]),
+        glyph("chevron", "tc-chev")
+      ]),
+      ticks(t, e.states),
+      miss.length ? el("p", { class: "tc-hit-text tc-miss" }, [el("b", { text: "Nicht erfüllt: " }), miss.join(", ")]) : null,
+      unk.length ? el("p", { class: "tc-hit-text" }, [el("b", { text: "Unbekannt (unvollständig): " }), unk.join(", ")]) : null,
+      wanted.length || flags.length ? el("p", { class: "tc-hit-text" }, [wanted.length ? M.hitSentence(row, wanted) : ""].concat(flags)) : null
+    ]);
+  }
   /** Chart Studio mit ?v=<Vorlage>: Checkliste dieses Titels; laedt den Screener-Datensatz nur fuer diese Leiste. */
+  /** Vorlage der Pruefleiste: ?v=<Vorlage>[&plus=] oder ?z=<Analyseziel>[&k=] (Assistent). null ohne gueltige Angabe. */
+  function panelSource(params) {
+    var a = AS && params.z ? AS.fromParams(params) : null;
+    if (a && a.template) return { t: a.template, back: AS.href(a.goal.id, a.selected), backText: "Zum Analyseziel", kind: "Analyseziel", limits: AS.LIMITS[0] + " " + AS.LIMITS[2] };
+    var base = params.v ? TPL.get(params.v) : null; if (!base) return null;
+    var blocks = TPL.blocksFromParam(params.plus);
+    return { t: TPL.compose(base.id, blocks), back: TPL.href(base.id, blocks), backText: "Zur Vorlage", kind: "Vorlage", limits: TPL.LIMITS };
+  }
   function templatePanel(T, params) {
-    var base = TPL.get(params.v); if (!base) return null;
-    var blocks = TPL.blocksFromParam(params.plus), t = TPL.compose(base.id, blocks);
+    var src = panelSource(params); if (!src) return null;
+    var t = src.t;
     /* Zugeklappt: die Zusammenfassung nennt das Ergebnis, der Chart bleibt auf dem iPhone sichtbar. */
-    var box = el("details", { class: "tc-filter tc-tpl-panel" }, [el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("bars")), el("b", { text: "Vorlage „" + t.title + "“ wird geprüft …" }), glyph("chevron", "tc-chev tc-rot")])]);
+    var box = el("details", { class: "tc-filter tc-tpl-panel" }, [el("summary", {}, [el("span", { class: "tc-row-icon" }, glyph("bars")), el("b", { text: src.kind + " „" + t.title + "“ wird geprüft …" }), glyph("chevron", "tc-chev tc-rot")])]);
     loadScreener().then(function (D) {
       var ck = TPL.checklist(D.ds, t, T);
-      if (!ck) { put(box, [el("summary", {}, [el("b", { text: "Vorlage „" + t.title + "“: für " + T + " kein Eintrag im Screener" })])]); return; }
+      if (!ck) { put(box, [el("summary", {}, [el("b", { text: src.kind + " „" + t.title + "“: für " + T + " kein Eintrag im Screener" })])]); return; }
       var STATUS = { FULL: "alle Kriterien erfüllt", NEAR: "fast erfüllt – ein Kriterium fehlt", INCOMPLETE: "unvollständig – " + ck.unknown + " unbekannt", NONE: ck.pass + " von " + ck.states.length + " erfüllt", EXCLUDED: "nicht eingeordnet – kein aktueller Kurs" };
       var row = D.ds.row(ck.i);
       put(box, [
@@ -760,15 +882,15 @@
             return el("li", { class: "tc-crit " + m[2] }, [el("span", { class: "tc-crit-mark", "aria-hidden": "true", text: m[0] }), el("b", { text: x.label }), el("span", { class: "tc-crit-why", text: m[1] + val })]);
           })),
           jumpNote(row),
-          el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: TPL.href(base.id, blocks), text: "Zur Vorlage" }), " · " + TPL.LIMITS])])
+          el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: src.back, text: src.backText }), " · " + src.limits])])
       ]);
-    }).catch(function () { put(box, [el("summary", {}, [el("b", { text: "Vorlage konnte nicht geprüft werden (Datensatz nicht geladen)." })])]); });
+    }).catch(function () { put(box, [el("summary", {}, [el("b", { text: src.kind + " konnte nicht geprüft werden (Datensatz nicht geladen)." })])]); });
     return box;
   }
   /** Schichten und Unterfenster, die die Kriterien einer Vorlage im Chart zeigen (model.js#FIELD_CHART). */
   function templateLayers(params) {
-    var base = TPL.get(params.v); if (!base) return;
-    var t = TPL.compose(base.id, TPL.blocksFromParam(params.plus)), pane = null;
+    var src = panelSource(params); if (!src) return;
+    var t = src.t, pane = null;
     t.criteria.forEach(function (x) {
       var fc = x.filter.field && M.FIELD_CHART[x.filter.field]; if (!fc) return;
       if (fc[0] === "layer") studio.layers[fc[1]] = true;
@@ -817,7 +939,7 @@
       if (SN && SCX) SN.mount(links, SCX.fromUs(T), "technical");
     } catch (e) { /* ungueltiges Kuerzel: kein Navigator */ }
     var body = el("div", { class: "tc-studio", "aria-busy": "true" }, [el("div", { class: "tc-skel", style: "height:360px" })]);
-    var tplPanel = route.params && route.params.v ? templatePanel(T, route.params) : null;
+    var tplPanel = route.params && (route.params.v || route.params.z) ? templatePanel(T, route.params) : null;
     if (tplPanel && route.tab !== "signals") templateLayers(route.params);
     put(main, [head, links, tabBar, tplPanel, body]);
 
@@ -850,8 +972,9 @@
       var st = M.seriesState(b.timestamps, b.close, D && (D.meta && D.meta.asOf || D.index.asOf), global.VUCore && global.VUCore.ListingStaleness);
       if (st.frozenSince) { analysis = { formations: [] }; levels = { supports: [], resistances: [] }; hist = []; F = {}; }
       body.removeAttribute("aria-busy");
-      if (route.tab === "signals") return renderSignals(body, analysis, F, b.close[t], levels, hist, inst, D, st);
-      renderStudio(body, { T: T, S: S, cs: cs, ind: ind, analysis: analysis, levels: levels, F: F, inst: inst, hist: hist, D: D, st: st, focus: route.params && route.params.f || null });
+      var worlds = worldsSection(T, b.timestamps[t]);
+      if (route.tab === "signals") return renderSignals(body, analysis, F, b.close[t], levels, hist, inst, D, st, worlds);
+      renderStudio(body, { T: T, S: S, cs: cs, ind: ind, analysis: analysis, levels: levels, F: F, inst: inst, hist: hist, D: D, st: st, worlds: worlds, focus: route.params && route.params.f || null });
     }).catch(function (e) {
       body.removeAttribute("aria-busy");
       put(body, stateBox("Kein technisches Chartbild für " + T, e && e.message === "NOT_AVAILABLE"
@@ -902,7 +1025,7 @@
       : ["Diese Formation ist im aktuellen Stand nicht mehr enthalten. ", el("a", { class: "tc-link", href: M.chartHref(X.T), text: "Alle Formationen zeigen" })]) : null;
     var weekly = !X.focus && (studio.range === "5J" || studio.range === "Max");
     var signals = el("section", { class: "tc-signals" }), levelsSec = el("section", { class: "tc-levels" });
-    put(body, [seriesNote(X.st), focusBar, card, layerBar, signals, levelsSec, dataQuality(X.inst, X.D, weekly), disclaimer(X.D && X.D.meta)]);
+    put(body, [seriesNote(X.st), focusBar, card, layerBar, signals, levelsSec, X.worlds || null, dataQuality(X.inst, X.D, weekly), disclaimer(X.D && X.D.meta)]);
     var chart = null;
 
     if (!X.focus && studio.range === "1J·W") {
@@ -1131,7 +1254,109 @@
         s ? el("small", { text: "Zone " + M.price(s.zoneLow) + " – " + M.price(s.zoneHigh) + " · " + s.touches + " Kontakte" }) : el("small", { text: "Keine Unterstützung unter dem Kurs im Betrachtungsfenster" })])])
     ])]);
   }
-  function renderSignals(body, analysis, F, close, levels, hist, inst, D, st) {
+  /* ------------------------------------------ Diese Aktie in Quant und Supertrader
+     Nur Lesen veroeffentlichter Artefakte (technical/engine/world-context.js): Quant-Stufen ueber die Quant-Engine,
+     Supertrader-Zustaende, Stufen und Status mit dem Wortlaut der Supertrader-Daten. Keine eigene Rechnung. */
+  var scriptP = {};
+  function loadScript(src) {
+    if (!scriptP[src]) scriptP[src] = new Promise(function (ok, fail) {
+      var s = doc.createElement("script"); s.src = src; s.async = false;
+      s.onload = ok; s.onerror = function () { delete scriptP[src]; fail(new Error("SCRIPT_LOAD:" + src)); };
+      doc.head.appendChild(s);
+    });
+    return scriptP[src];
+  }
+  var worldsP = {};
+  function loadWorlds(T) {
+    if (worldsP[T]) return worldsP[T];
+    var WC = global.VUTechnical.WorldContext, qKey = M.technicalShard(T), P = WC.paths(T, { quant: qKey, sf: global.VUCore.Identity.shardKey(T) });
+    var none = function (reason) { return function () { return { state: "UNAVAILABLE", reason: reason }; }; };
+    var quant = Promise.all([fetchGz(P.quant), global.VUFactorEvidence ? global.VUFactorEvidence : loadScript("/quant/engines/factor-evidence.js").then(function () { return global.VUFactorEvidence; })])
+      .then(function (r) { return WC.quant(r[0], qKey, T, r[1]); }, none("SOURCE_MISSING"));
+    /* build.json nennt die Aktien mit Supertrader-Seite: fuer alle anderen keine Anfrage (und kein 404). */
+    var st = fetchJSON("/supertrader/data/build.json").then(function (b) {
+      var listed = b && b.slices && Array.isArray(b.slices.stock) ? b.slices.stock : null;
+      if (!listed) return { state: "UNAVAILABLE", reason: "SOURCE_MISSING" };
+      if (listed.indexOf(T) < 0) return { state: "UNAVAILABLE", reason: "NOT_COVERED" };
+      return Promise.all([fetchJSON(P.supertrader), fetchJSON(P.registry)]).then(function (r) { return WC.supertrader(r[0], r[1], T); });
+    }).catch(none("SOURCE_MISSING"));
+    var sf = fetchJSON(P.sfSummary).then(function (sum) {
+      var listed = Array.isArray(sum && sum.tickerShards) && sum.tickerShards.indexOf(global.VUCore.Identity.shardKey(T)) >= 0;
+      return (listed ? fetchJSON(P.sfShard) : Promise.resolve(null)).then(function (sh) { return WC.research(sum, sh, T, new Date().toISOString().slice(0, 10)); });
+    }).catch(none("SOURCE_MISSING"));
+    worldsP[T] = Promise.all([quant, st, sf]).then(function (r) { return { quant: r[0], supertrader: r[1], research: r[2] }; });
+    return worldsP[T];
+  }
+  function worldHref(T, product) {
+    try { var SCX = global.VUCore && global.VUCore.StockContext; return SCX ? SCX.href(SCX.fromUs(T), product) : null; } catch (e) { return null; }
+  }
+  function standLine(asOf, chartAsOf) {
+    if (!asOf) return null;
+    return el("span", { class: "tc-world-stand" + (chartAsOf && asOf < chartAsOf ? " is-old" : "") }, "Stand " + M.dateDe(asOf) + (chartAsOf && asOf < chartAsOf ? " · älter als der Kurs im Chart (" + M.dateDe(chartAsOf) + ")" : ""));
+  }
+  function worldCard(id, title, stand, kids, href, linkText) {
+    return el("article", { class: "tc-world-card", "data-world": id }, [
+      el("div", { class: "tc-world-head" }, [el("h3", { text: title }), stand]),
+      kids,
+      href ? el("a", { class: "tc-link", href: href }, [linkText, glyph("chevron", "tc-chev-s")]) : null
+    ]);
+  }
+  var QUANT_REASON = {
+    NOT_COVERED: "Für diesen Titel hat Quant keine Faktoranalyse veröffentlicht.",
+    INVALID_ARTIFACT: "Die Quant-Daten entsprechen nicht dem erwarteten Vertrag und werden nicht gezeigt.",
+    PUBLICATION_GATE_VIOLATED: "Die Quant-Daten verletzen die Veröffentlichungsregel und werden nicht gezeigt.",
+    SOURCE_MISSING: "Die Quant-Daten konnten nicht geladen werden.", ENGINE_MISSING: "Die Quant-Daten konnten nicht geladen werden."
+  };
+  function quantCard(T, q, chartAsOf) {
+    var href = worldHref(T, "quant");
+    if (!q || q.state !== "AVAILABLE") return worldCard("quant", "Quant · Eigenschaften", null, [el("p", { class: "tc-note", text: QUANT_REASON[q && q.reason] || QUANT_REASON.SOURCE_MISSING })], q && q.reason === "NOT_COVERED" ? null : href, "Zur Quant-Analyse");
+    return worldCard("quant", "Quant · Eigenschaften", standLine(q.asOf, chartAsOf), [
+      el("p", { class: "tc-world-lead", text: q.sentence }),
+      q.factors.length ? el("ul", { class: "tc-world-chips", "aria-label": "Quant-Eigenschaften" }, q.factors.map(function (f) {
+        var tone = /STRONG/.test(f.band) ? "is-up" : /WEAK/.test(f.band) ? "is-down" : "";
+        return el("li", { class: tone, "data-band": f.band }, [el("span", { text: f.label }), el("b", { text: f.bandLabel })]);
+      })) : null,
+      q.dataQuality && q.dataQuality !== "PASS" ? el("p", { class: "tc-note is-warn", text: "Quant meldet für die Eingangsdaten dieses Titels einen Datenqualitätshinweis (" + q.dataQuality + "). Einzelheiten stehen in der Quant-Analyse." }) : null,
+      el("p", { class: "tc-note", text: "Einordnung gegenüber allen bewerteten US-Aktien. " + (q.publication.compositeAllowed ? "" : "Keine Gesamtnote und keine Rangliste: " + (q.publication.explanation || "Quant V2 ist nicht freigegeben.")) })
+    ], href, "Zur Quant-Analyse");
+  }
+  function supertraderCard(T, s, r, chartAsOf) {
+    var href = worldHref(T, "supertrader"), kids = [];
+    if (s && s.state === "AVAILABLE") {
+      kids.push(el("h4", { text: "Modellsignale" }));
+      kids.push(s.current.length ? el("ul", { class: "tc-world-list" }, s.current.map(function (c) {
+        return el("li", {}, [el("b", { text: c.name }), el("em", { class: "tc-badge tc-watch", text: c.stateLabel }),
+          el("small", { text: [c.since ? "seit " + M.dateDe(c.since) : null, c.presentationLabel !== c.stateLabel ? c.presentationLabel : null, c.evidenceLabel].filter(Boolean).join(" · ") })]);
+      })) : el("p", { class: "tc-note", text: "Kein laufendes Modellsignal." }));
+      if (s.history) kids.push(el("p", { class: "tc-note", text: s.history + (s.history === 1 ? " abgeschlossenes oder ungültiges Signal" : " abgeschlossene oder ungültige Signale") + " im Protokoll der Supertrader-Seite." }));
+    } else {
+      kids.push(el("p", { class: "tc-note", text: s && s.reason === "NOT_COVERED" ? "Keine Supertrader-Aktienseite für diesen Titel." : "Die Supertrader-Modellsignale konnten nicht geladen werden." }));
+    }
+    if (r && r.state === "AVAILABLE") {
+      kids.push(el("h4", { text: "Quellentreue Methoden (Research)" }));
+      kids.push(r.views.length ? el("ul", { class: "tc-world-list" }, r.views.map(function (v) {
+        return el("li", {}, [el("b", { text: v.name }), el("em", { class: "tc-badge tc-neutral", text: v.stageLabel }),
+          v.dataQuality && v.dataQuality !== "PASS" ? el("small", { class: "is-warn", text: "Datenqualität: " + v.dataQuality }) : null]);
+      })) : el("p", { class: "tc-note", text: "Am Stichtag " + M.dateDe(r.asOf) + " erkennt keine quellentreue Methode diese Aktie." }));
+      kids.push(el("p", { class: "tc-note" + (r.stale ? " is-warn" : ""), "data-stale": r.stale ? "true" : null, text: ["Research, keine Empfehlung", "Datenstand " + M.dateDe(r.asOf) + (r.stale ? " – nicht aktuell, kein Hinweis für heute" : "")]
+        .concat(r.status, r.locked ? ["Stufe „" + r.locked + "“ gesperrt"] : []).join(" · ") }));
+    }
+    /* Ohne eigene Aktienseite fuehrt Supertrader Research-Treffer unter /supertrader/stock/?s=<T>#sf (sf-research.js#stockUrl). */
+    if (s && s.reason === "NOT_COVERED") href = r && r.views && r.views.length ? "/supertrader/stock/?s=" + encodeURIComponent(T) + "#sf" : null;
+    return worldCard("supertrader", "Supertrader", standLine(s && s.state === "AVAILABLE" ? s.lastProcessed : null, chartAsOf), kids, href, "Zur Supertrader-Seite");
+  }
+  /** Abschnitt einmal je Aufruf von viewChart; renderStudio haengt denselben Knoten bei jedem Neuzeichnen wieder ein. */
+  function worldsSection(T, chartAsOf) {
+    var grid = el("div", { class: "tc-world-grid", "aria-busy": "true" }, [el("div", { class: "tc-skel", style: "height:120px" })]);
+    var sec = el("section", { class: "tc-worlds", "aria-labelledby": "tc-worlds-h" }, [el("h2", { id: "tc-worlds-h", text: "Diese Aktie in Quant und Supertrader" }),
+      el("p", { class: "tc-note", text: "Was die anderen Welten zu " + T + " veröffentlicht haben, unverändert übernommen und jeweils mit eigenem Stand." }), grid]);
+    loadWorlds(T).then(function (w) {
+      grid.removeAttribute("aria-busy");
+      put(grid, [quantCard(T, w.quant, chartAsOf), supertraderCard(T, w.supertrader, w.research, chartAsOf)]);
+    }).catch(function () { grid.removeAttribute("aria-busy"); put(grid, stateBox("Keine Angaben", "Die Daten der anderen Welten konnten nicht geladen werden.")); });
+    return sec;
+  }
+  function renderSignals(body, analysis, F, close, levels, hist, inst, D, st, worlds) {
     var cards = el("section", {}), lv = el("section", {});
     renderSignalCards(cards, analysis, F, close, false, st);
     if (!st.frozenSince) renderLevels(lv, levels);
@@ -1141,7 +1366,7 @@
         return el("li", {}, [el("b", { text: h.name }), el("span", { text: "erkannt " + M.dateDe(h.detectedAt) + (h.knownAt !== h.detectedAt ? " (ausgewertet " + M.dateDe(h.knownAt) + ")" : "") }),
           el("em", { class: "tc-badge tc-" + (h.stateNow === "CONFIRMED" ? "positive" : h.stateNow === "DETECTED" ? "watch" : h.stateNow === "INVALIDATED" ? "negative" : "neutral"), text: h.stateNow ? { CONFIRMED: "heute bestätigt", DETECTED: "heute beobachtet", INVALIDATED: "heute invalidiert" }[h.stateNow] : "nicht mehr aktiv" })]);
       })) : el("p", { class: "tc-note", text: "Keine Erkennungen im Zeitraum." })]);
-    put(body, [seriesNote(st), cards, lv, histList, dataQuality(inst, D, false), disclaimer(D && D.meta)]);
+    put(body, [seriesNote(st), cards, lv, histList, worlds || null, dataQuality(inst, D, false), disclaimer(D && D.meta)]);
   }
   function dataQuality(inst, D, weekly) {
     var b = inst.bars, bundle = inst.bundle || {};
@@ -1258,11 +1483,14 @@
     var main = doc.getElementById("tc-main"), route = M.parseRoute(location.hash);
     main.classList.toggle("is-home", route.view === "home");
     if (route.view === "home") { doc.title = "Technical · Vision Universe®"; viewHome(main); }
+    else if (route.view === "academy") { global.VUAcademy.render(main, route.id); }
     else if (route.view === "screener") { doc.title = "Screener · Technical · Vision Universe®"; viewScreener(main, route); }
     else if (route.view === "chart") { doc.title = (route.ticker ? route.ticker + " · " : "") + "Chart Studio · Technical · Vision Universe®"; viewChart(main, route); }
     else if (route.view === "method") { doc.title = "Methodik · Technical · Vision Universe®"; viewMethod(main); }
+    else if (route.view === "assistant") { var gg = route.id && AS && AS.get(route.id); doc.title = (gg ? gg.title + " · " : "") + "Analyse-Assistent · Technical · Vision Universe®"; viewAssistant(main, route); }
     else if (route.view === "templates") { var tt = route.id && TPL.get(route.id); doc.title = (tt ? tt.title + " · " : "") + "Vorlagen · Technical · Vision Universe®"; viewTemplates(main, route); }
     else put(main, stateBox("Seite nicht gefunden", "Diese Adresse kennt Technical nicht.", el("a", { class: "tc-link", href: "#/", text: "Zur Technical-Startseite" })));
+    if (route.view !== "academy" && global.VUAcademy) global.VUAcademy.renderReturn(main);
     main.setAttribute("aria-busy", "false");
     var last = lastTicker();
     if (global.VUNavigation) global.VUNavigation.dock(last ? { hrefs: { chart: "/technical/" + M.chartHref(last) } } : {});

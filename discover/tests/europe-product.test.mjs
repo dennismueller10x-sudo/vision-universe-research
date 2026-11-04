@@ -280,3 +280,33 @@ for(const scenario of [
       if(out)await writeFile(resolve(out,scenario.key+'.json'),JSON.stringify(evidence,null,2)+'\n');
     }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}
   });
+
+// Freigabe je Aktie (core/europe-publication-isolation.js): eine gesperrte Aktie bleibt sichtbar gekennzeichnet, ohne Kurs und ohne Chart.
+test('a publication-blocked security is labelled with its reason class in browse, detail and watchlist and never priced or charted',async()=>{
+  const {catalog,points}=fixtureCatalog(),blockedId='fixture_EUBLOCK_XETR',other=structuredClone(catalog.securities[0]);
+  other.securityId=blockedId;other.name='Synthetic Blocked Equity';other.ticker='EUBLOCK';other.listings[0].ticker='EUBLOCK';
+  const blockedListing='fixture_listing_EUBLOCK_XETR';other.primaryListingId=blockedListing;other.listings[0].listingId=blockedListing;other.instrumentId='fixture_instrument_eublock';
+  for(const p of [other.identityAdmission,other.listings[0].identityAdmission,other.listings[0].discoverChart,other.listings[0].discoverChart.quoteBasis]){p.securityId=blockedId;p.listingId=blockedListing;}
+  other.listings[0].discoverPublication={status:'BLOCKED',reasonClass:'PROVIDER_DATA_UNAVAILABLE',reasonCode:'PROVIDER_REQUEST_FAILED:HTTP422'};
+  catalog.securities[0].listings[0].discoverPublication={status:'ADMITTED'};catalog.securities.push(other);
+  const store=new Map(),storage={getItem:key=>store.get(key)??null,setItem:(key,value)=>store.set(key,value)};
+  const client=Core.create({usClient:{},catalog,rights,audience:'public',now,loadSeries:async request=>({...request,currency:'EUR',points,provenance:{evidenceRef:'SYNTHETIC_SERIES_ONLY'}})});
+  const watchlist=Core.createWatchlist({storage,catalog});
+  const product=Product.create({client,watchlist,securityRefs:[id,blockedId],blocked:[{securityId:blockedId,reasonClass:'PROVIDER_DATA_UNAVAILABLE',reasonCode:'PROVIDER_REQUEST_FAILED:HTTP422'}],audience:'public',now});
+  const page=await product.browse({offset:0,limit:48});
+  assert.equal(page.state,'AVAILABLE');assert.deepEqual(page.data.cards.map(c=>c.securityId),[id]);
+  assert.equal(page.data.unavailable.length,1);const w=page.data.unavailable[0];
+  assert.equal(w.securityId,blockedId);assert.equal(w.name,'Synthetic Blocked Equity');assert.equal(w.reasonClass,'PROVIDER_DATA_UNAVAILABLE');
+  assert.equal(w.message,'Für diese Aktie liegen derzeit keine geprüften aktuellen Kurse vor.');assert.match(w.reason,/^Grund: /);
+  for(const field of ['price','priceSeries','points','close','asOf'])assert.equal(w[field],undefined,field);
+  const detail=await product.detail(blockedId);assert.equal(detail.state,'UNAVAILABLE');assert.equal(detail.reason,'PUBLICATION_BLOCKED');assert.equal(detail.data,null);assert.equal(detail.withheld.reasonClass,'PROVIDER_DATA_UNAVAILABLE');
+  assert.notEqual((await product.series({region:'EUROPE',securityId:blockedId})).state,'AVAILABLE');
+  assert.equal((await product.toggle(blockedId)).state,'UNAVAILABLE','a blocked security cannot be newly saved with a price');
+  watchlist.reload();watchlist.add(blockedId);watchlist.save();
+  const saved=(await product.saved()).data.members.find(m=>m.securityId===blockedId);
+  assert.equal(saved.state,'UNAVAILABLE');assert.equal(saved.reasonClass,'PROVIDER_DATA_UNAVAILABLE');assert.equal(saved.name,'Synthetic Blocked Equity');
+  for(const reasonClass of ['PROVIDER_DATA_UNAVAILABLE','PRICE_DISCONTINUITY_UNRESOLVED','PRICES_NOT_CURRENT','ADMISSION_CHECK_FAILED'])assert.match(Product.REASONS[reasonClass],/^Grund: /);
+  // Ist keine einzige Aktie freigegeben, bleibt der globale Hinweis.
+  const none=Product.create({client,watchlist,securityRefs:[blockedId],blocked:[{securityId:blockedId,reasonClass:'PROVIDER_DATA_UNAVAILABLE',reasonCode:'X'}],audience:'public',now});
+  assert.equal((await none.browse({offset:0,limit:48})).state,'UNAVAILABLE');
+});

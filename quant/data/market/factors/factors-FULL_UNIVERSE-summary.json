@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-31T16:24:49.964Z",
+  "generatedAt": "2026-11-04T03:41:48.789Z",
   "gate": "FULL_UNIVERSE",
   "universeSource": "SECURITY_MASTER",
   "universeFile": "quant/data/market/security-master/eligibility.json",
@@ -7,23 +7,23 @@
   "engine": "market-factors-1.0.0",
   "benchmark": {
     "id": "SPY",
-    "bars": 8497,
-    "last": "2026-10-30",
+    "bars": 8499,
+    "last": "2026-11-03",
     "returnBasis": "SPLIT_ADJUSTED_PRICE",
     "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
     "adjustmentStatus": "adjusted",
     "adjustmentClaim": null,
     "maxLagSessions": 1,
-    "newestSecurityDate": "2026-10-30",
+    "newestSecurityDate": "2026-11-03",
     "lagBehindNewestSessions": 0,
     "securitiesWithoutRelativeStrength": 0,
     "state": "CURRENT"
   },
   "run": {
     "source": "github-actions",
-    "runId": "41213952384",
-    "commit": "ea95de8f07005d6028f30a61904f4561fe1d3af0",
-    "runtimeMs": 26195,
+    "runId": "41761342404",
+    "commit": "c0620ced34ddc60e1120d2aa94fc67d7e275ba94",
+    "runtimeMs": 25978,
     "msPerSymbol": 4
   },
   "redistribution": {
@@ -32,274 +32,279 @@
   },
   "coverage": {
     "requested": 6686,
-    "computed": 6568,
-    "skipped": 118,
+    "computed": 6559,
+    "skipped": 127,
     "skippedByReason": {
-      "FAIL": 113,
+      "FAIL": 122,
       "SOURCE_MISSING": 5
     },
     "fieldCoverage": {
       "sma20": {
-        "CALCULATED": 6568,
+        "CALCULATED": 6559,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "priceAboveSMA20": {
-        "CALCULATED": 6568,
+        "CALCULATED": 6559,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceToSMA20": {
-        "CALCULATED": 6568,
+        "CALCULATED": 6559,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "sma50": {
-        "CALCULATED": 6550,
-        "INSUFFICIENT_HISTORY": 18,
+        "CALCULATED": 6543,
+        "INSUFFICIENT_HISTORY": 16,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "priceAboveSMA50": {
-        "CALCULATED": 6550,
-        "INSUFFICIENT_HISTORY": 18,
+        "CALCULATED": 6543,
+        "INSUFFICIENT_HISTORY": 16,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceToSMA50": {
-        "CALCULATED": 6550,
-        "INSUFFICIENT_HISTORY": 18,
+        "CALCULATED": 6543,
+        "INSUFFICIENT_HISTORY": 16,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "sma100": {
-        "CALCULATED": 6408,
-        "INSUFFICIENT_HISTORY": 160,
+        "CALCULATED": 6406,
+        "INSUFFICIENT_HISTORY": 153,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "priceAboveSMA100": {
-        "CALCULATED": 6408,
-        "INSUFFICIENT_HISTORY": 160,
+        "CALCULATED": 6406,
+        "INSUFFICIENT_HISTORY": 153,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceToSMA100": {
-        "CALCULATED": 6408,
-        "INSUFFICIENT_HISTORY": 160,
+        "CALCULATED": 6406,
+        "INSUFFICIENT_HISTORY": 153,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "sma200": {
-        "CALCULATED": 5780,
-        "INSUFFICIENT_HISTORY": 788,
+        "CALCULATED": 5774,
+        "INSUFFICIENT_HISTORY": 785,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "priceAboveSMA200": {
-        "CALCULATED": 5780,
-        "INSUFFICIENT_HISTORY": 788,
+        "CALCULATED": 5774,
+        "INSUFFICIENT_HISTORY": 785,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceToSMA200": {
-        "CALCULATED": 5780,
-        "INSUFFICIENT_HISTORY": 788,
+        "CALCULATED": 5774,
+        "INSUFFICIENT_HISTORY": 785,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "aboveAllSMA": {
-        "CALCULATED": 5780,
-        "INSUFFICIENT_HISTORY": 788,
+        "CALCULATED": 5774,
+        "INSUFFICIENT_HISTORY": 785,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "aboveSMA20And50And200": {
-        "CALCULATED": 5780,
-        "INSUFFICIENT_HISTORY": 788,
+        "CALCULATED": 5774,
+        "INSUFFICIENT_HISTORY": 785,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "high52w": {
-        "CALCULATED": 5668,
-        "INSUFFICIENT_HISTORY": 900,
+        "CALCULATED": 5665,
+        "INSUFFICIENT_HISTORY": 894,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "low52w": {
-        "CALCULATED": 5668,
-        "INSUFFICIENT_HISTORY": 900,
+        "CALCULATED": 5665,
+        "INSUFFICIENT_HISTORY": 894,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceTo52wHigh": {
-        "CALCULATED": 5668,
-        "INSUFFICIENT_HISTORY": 900,
+        "CALCULATED": 5665,
+        "INSUFFICIENT_HISTORY": 894,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceTo52wLow": {
-        "CALCULATED": 5668,
-        "INSUFFICIENT_HISTORY": 900,
+        "CALCULATED": 5665,
+        "INSUFFICIENT_HISTORY": 894,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "newHigh52w": {
-        "CALCULATED": 5668,
-        "INSUFFICIENT_HISTORY": 900,
+        "CALCULATED": 5665,
+        "INSUFFICIENT_HISTORY": 894,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "closeAtHigh52w": {
-        "CALCULATED": 5668,
-        "INSUFFICIENT_HISTORY": 900,
+        "CALCULATED": 5665,
+        "INSUFFICIENT_HISTORY": 894,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "within5PctOf52wHigh": {
-        "CALCULATED": 5668,
-        "INSUFFICIENT_HISTORY": 900,
+        "CALCULATED": 5665,
+        "INSUFFICIENT_HISTORY": 894,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "returns.1M": {
-        "CALCULATED": 6568,
+        "CALCULATED": 6559,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "returns.3M": {
-        "CALCULATED": 6514,
-        "INSUFFICIENT_HISTORY": 54,
+        "CALCULATED": 6509,
+        "INSUFFICIENT_HISTORY": 50,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "returns.6M": {
-        "CALCULATED": 6162,
-        "INSUFFICIENT_HISTORY": 406,
+        "CALCULATED": 6165,
+        "INSUFFICIENT_HISTORY": 394,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "returns.12M": {
-        "CALCULATED": 5667,
-        "INSUFFICIENT_HISTORY": 901,
+        "CALCULATED": 5664,
+        "INSUFFICIENT_HISTORY": 895,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "return12M1M": {
-        "CALCULATED": 5667,
-        "INSUFFICIENT_HISTORY": 901,
+        "CALCULATED": 5664,
+        "INSUFFICIENT_HISTORY": 895,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "momentumAcceleration": {
-        "CALCULATED": 6514,
-        "INSUFFICIENT_HISTORY": 54,
+        "CALCULATED": 6509,
+        "INSUFFICIENT_HISTORY": 50,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volatility20d": {
-        "CALCULATED": 6568,
+        "CALCULATED": 6559,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volatility60d": {
-        "CALCULATED": 6519,
-        "INSUFFICIENT_HISTORY": 49,
+        "CALCULATED": 6516,
+        "INSUFFICIENT_HISTORY": 43,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volatility252d": {
-        "CALCULATED": 5667,
-        "INSUFFICIENT_HISTORY": 901,
+        "CALCULATED": 5664,
+        "INSUFFICIENT_HISTORY": 895,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "downsideVolatility252d": {
-        "CALCULATED": 5667,
-        "INSUFFICIENT_HISTORY": 901,
+        "CALCULATED": 5664,
+        "INSUFFICIENT_HISTORY": 895,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "maxDrawdown252d": {
-        "CALCULATED": 5668,
-        "INSUFFICIENT_HISTORY": 900,
+        "CALCULATED": 5665,
+        "INSUFFICIENT_HISTORY": 894,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "avgVolume20d": {
-        "CALCULATED": 6568,
+        "CALCULATED": 6559,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "avgVolume60d": {
-        "CALCULATED": 6523,
-        "INSUFFICIENT_HISTORY": 45,
+        "CALCULATED": 6518,
+        "INSUFFICIENT_HISTORY": 41,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volumeRatio20over60": {
-        "CALCULATED": 6176,
-        "INSUFFICIENT_HISTORY": 392,
+        "CALCULATED": 6171,
+        "INSUFFICIENT_HISTORY": 388,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volumeSpikeRatio": {
-        "CALCULATED": 6156,
-        "INSUFFICIENT_HISTORY": 392,
-        "SOURCE_MISSING": 20,
+        "CALCULATED": 6148,
+        "INSUFFICIENT_HISTORY": 388,
+        "SOURCE_MISSING": 23,
         "NOT_APPLICABLE": 0
       },
       "volumeBreakout": {
-        "CALCULATED": 6156,
-        "INSUFFICIENT_HISTORY": 412,
+        "CALCULATED": 6148,
+        "INSUFFICIENT_HISTORY": 411,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "relativeStrength.1M": {
-        "CALCULATED": 6568,
+        "CALCULATED": 6559,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "relativeStrength.3M": {
-        "CALCULATED": 6514,
-        "INSUFFICIENT_HISTORY": 54,
+        "CALCULATED": 6509,
+        "INSUFFICIENT_HISTORY": 50,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "relativeStrength.6M": {
-        "CALCULATED": 6162,
-        "INSUFFICIENT_HISTORY": 406,
+        "CALCULATED": 6165,
+        "INSUFFICIENT_HISTORY": 394,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "relativeStrength.12M": {
-        "CALCULATED": 5667,
-        "INSUFFICIENT_HISTORY": 901,
+        "CALCULATED": 5664,
+        "INSUFFICIENT_HISTORY": 895,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "relativeStrength12M1M": {
-        "CALCULATED": 5667,
-        "INSUFFICIENT_HISTORY": 901,
+        "CALCULATED": 5664,
+        "INSUFFICIENT_HISTORY": 895,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "beta252d": {
-        "CALCULATED": 5692,
-        "INSUFFICIENT_HISTORY": 876,
+        "CALCULATED": 5690,
+        "INSUFFICIENT_HISTORY": 869,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       }
     }
   },
   "skipped": [
+    {
+      "ticker": "ACA",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
     {
       "ticker": "ACV-A",
       "reason": "FAIL",
@@ -449,6 +454,11 @@
       "ticker": "EASY",
       "reason": "FAIL",
       "message": "unexplained_adjustment_step"
+    },
+    {
+      "ticker": "ELME",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
     },
     {
       "ticker": "ESOA",
@@ -661,7 +671,17 @@
       "message": "stale_last_bar"
     },
     {
+      "ticker": "MSGS",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
       "ticker": "MTUL",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "NATH",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -701,7 +721,17 @@
       "message": "stale_last_bar"
     },
     {
+      "ticker": "PAPL",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
       "ticker": "PCL",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "PERF",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -851,6 +881,11 @@
       "message": "stale_last_bar"
     },
     {
+      "ticker": "VSME",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
       "ticker": "VTAK",
       "reason": "FAIL",
       "message": "stale_last_bar"
@@ -881,7 +916,17 @@
       "message": "stale_last_bar"
     },
     {
+      "ticker": "WEAV",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
       "ticker": "WILC",
+      "reason": "FAIL",
+      "message": "stale_last_bar"
+    },
+    {
+      "ticker": "WPRT",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -894,7 +939,7 @@
   "detail": {
     "location": "repository",
     "file": "quant/data/market/factors/factors-FULL_UNIVERSE.json",
-    "symbols": 6568
+    "symbols": 6559
   },
   "canary": [
     {
@@ -906,55 +951,55 @@
       "instrumentType": "EQUITY_COMMON",
       "dataQuality": "PASS",
       "dataQualityReason": "clean",
-      "bars": 2975,
-      "asOf": "2026-10-30",
+      "bars": 2977,
+      "asOf": "2026-11-03",
       "basis": "close",
       "adjustmentStatus": "adjusted",
       "providedBasis": "TOTAL_RETURN",
       "returnBasis": "SPLIT_ADJUSTED_PRICE",
       "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
       "values": {
-        "priceAboveSMA20": true,
-        "distanceToSMA20": 0.007445,
-        "priceAboveSMA50": true,
-        "distanceToSMA50": 0.034798,
+        "priceAboveSMA20": false,
+        "distanceToSMA20": -0.030293,
+        "priceAboveSMA50": false,
+        "distanceToSMA50": -0.00644,
         "priceAboveSMA100": true,
-        "distanceToSMA100": 0.072122,
+        "distanceToSMA100": 0.02986,
         "priceAboveSMA200": true,
-        "distanceToSMA200": 0.162108,
-        "aboveAllSMA": true,
-        "aboveSMA20And50And200": true,
-        "distanceTo52wHigh": -0.020186,
-        "distanceTo52wLow": 0.415783,
+        "distanceToSMA200": 0.116236,
+        "aboveAllSMA": false,
+        "aboveSMA20And50And200": false,
+        "distanceTo52wHigh": -0.056378,
+        "distanceTo52wLow": 0.363487,
         "newHigh52w": false,
         "closeAtHigh52w": false,
-        "within5PctOf52wHigh": true,
+        "within5PctOf52wHigh": false,
         "returns": {
-          "1M": 0.043322,
-          "3M": 0.135818,
-          "6M": 0.230206,
-          "12M": 0.277827
+          "1M": -0.002974,
+          "3M": 0.067203,
+          "6M": 0.167922,
+          "12M": 0.227577
         },
-        "return12M1M": 0.224768,
-        "momentumAcceleration": -0.001951,
-        "volatility20d": 0.141754,
-        "volatility60d": 0.187458,
-        "volatility252d": 0.240841,
-        "downsideVolatility252d": 0.170311,
+        "return12M1M": 0.231239,
+        "momentumAcceleration": -0.025375,
+        "volatility20d": 0.17183,
+        "volatility60d": 0.193014,
+        "volatility252d": 0.242344,
+        "downsideVolatility252d": 0.172345,
         "maxDrawdown252d": -0.13823,
-        "avgVolume20d": 40170416,
-        "avgVolume60d": 40491403,
-        "volumeRatio20over60": 0.9921,
-        "volumeSpikeRatio": 1.6888,
+        "avgVolume20d": 43221997,
+        "avgVolume60d": 41268600,
+        "volumeRatio20over60": 1.0473,
+        "volumeSpikeRatio": 1.4142,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": 0.053293,
-          "3M": 0.12993,
-          "6M": 0.159665,
-          "12M": 0.150392
+          "1M": 0.023809,
+          "3M": 0.085302,
+          "6M": 0.113843,
+          "12M": 0.104304
         },
-        "relativeStrength12M1M": 0.097099,
-        "beta252d": 0.553968
+        "relativeStrength12M1M": 0.080495,
+        "beta252d": 0.565182
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -1011,12 +1056,12 @@
         "basis": "TOTAL_RETURN",
         "priceSource": "PROVIDER_COLUMN",
         "returns": {
-          "1M": 0.043322,
-          "3M": 0.136813,
-          "6M": 0.23242,
-          "12M": 0.282575
+          "1M": -0.002974,
+          "3M": 0.068137,
+          "6M": 0.170023,
+          "12M": 0.232138
         },
-        "return12M1M": 0.229319,
+        "return12M1M": 0.235813,
         "fieldStatus": {
           "returns.1M": "CALCULATED",
           "returns.3M": "CALCULATED",
@@ -1035,8 +1080,8 @@
       "instrumentType": "EQUITY_COMMON",
       "dataQuality": "PASS",
       "dataQualityReason": "clean",
-      "bars": 2975,
-      "asOf": "2026-10-30",
+      "bars": 2977,
+      "asOf": "2026-11-03",
       "basis": "close",
       "adjustmentStatus": "adjusted",
       "providedBasis": "TOTAL_RETURN",
@@ -1044,46 +1089,46 @@
       "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
       "values": {
         "priceAboveSMA20": true,
-        "distanceToSMA20": 0.006727,
+        "distanceToSMA20": 0.007293,
         "priceAboveSMA50": false,
-        "distanceToSMA50": -0.018196,
+        "distanceToSMA50": -0.013768,
         "priceAboveSMA100": false,
-        "distanceToSMA100": -0.017919,
+        "distanceToSMA100": -0.016782,
         "priceAboveSMA200": true,
-        "distanceToSMA200": 0.043636,
+        "distanceToSMA200": 0.045626,
         "aboveAllSMA": false,
         "aboveSMA20And50And200": false,
-        "distanceTo52wHigh": -0.080382,
-        "distanceTo52wLow": 0.207596,
+        "distanceTo52wHigh": -0.077817,
+        "distanceTo52wLow": 0.210964,
         "newHigh52w": false,
         "closeAtHigh52w": false,
         "within5PctOf52wHigh": false,
         "returns": {
-          "1M": 0.011585,
-          "3M": -0.044238,
-          "6M": 0.078632,
-          "12M": 0.103204
+          "1M": 0.016848,
+          "3M": -0.05918,
+          "6M": 0.092372,
+          "12M": 0.086333
         },
-        "return12M1M": 0.09057,
-        "momentumAcceleration": 0.026331,
-        "volatility20d": 0.149631,
-        "volatility60d": 0.159754,
-        "volatility252d": 0.220645,
-        "downsideVolatility252d": 0.162215,
+        "return12M1M": 0.068334,
+        "momentumAcceleration": 0.036575,
+        "volatility20d": 0.155679,
+        "volatility60d": 0.161096,
+        "volatility252d": 0.220614,
+        "downsideVolatility252d": 0.162397,
         "maxDrawdown252d": -0.154717,
-        "avgVolume20d": 6806744,
-        "avgVolume60d": 6823471,
-        "volumeRatio20over60": 0.9975,
-        "volumeSpikeRatio": 1.1402,
+        "avgVolume20d": 6863900,
+        "avgVolume60d": 6871560,
+        "volumeRatio20over60": 0.9989,
+        "volumeSpikeRatio": 0.9855,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": 0.022402,
-          "3M": -0.042669,
-          "6M": 0.028176,
-          "12M": 0.00345
+          "1M": 0.043495,
+          "3M": -0.040743,
+          "6M": 0.046969,
+          "12M": -0.017931
         },
-        "relativeStrength12M1M": -0.018953,
-        "beta252d": 0.729444
+        "relativeStrength12M1M": -0.061426,
+        "beta252d": 0.737536
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -1140,12 +1185,12 @@
         "basis": "TOTAL_RETURN",
         "priceSource": "PROVIDER_COLUMN",
         "returns": {
-          "1M": 0.016624,
-          "3M": -0.039477,
-          "6M": 0.088819,
-          "12M": 0.124295
+          "1M": 0.021913,
+          "3M": -0.054495,
+          "6M": 0.102689,
+          "12M": 0.107101
         },
-        "return12M1M": 0.105911,
+        "return12M1M": 0.083362,
         "fieldStatus": {
           "returns.1M": "CALCULATED",
           "returns.3M": "CALCULATED",
@@ -1164,8 +1209,8 @@
       "instrumentType": "EQUITY_COMMON",
       "dataQuality": "PASS",
       "dataQualityReason": "clean",
-      "bars": 2975,
-      "asOf": "2026-10-30",
+      "bars": 2977,
+      "asOf": "2026-11-03",
       "basis": "close",
       "adjustmentStatus": "adjusted",
       "providedBasis": "TOTAL_RETURN",
@@ -1173,46 +1218,46 @@
       "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
       "values": {
         "priceAboveSMA20": false,
-        "distanceToSMA20": -0.017083,
+        "distanceToSMA20": -0.016374,
         "priceAboveSMA50": true,
-        "distanceToSMA50": 0.017546,
+        "distanceToSMA50": 0.013477,
         "priceAboveSMA100": true,
-        "distanceToSMA100": 0.121136,
+        "distanceToSMA100": 0.11341,
         "priceAboveSMA200": true,
-        "distanceToSMA200": 0.191775,
+        "distanceToSMA200": 0.188161,
         "aboveAllSMA": false,
         "aboveSMA20And50And200": false,
-        "distanceTo52wHigh": -0.053053,
-        "distanceTo52wLow": 0.494588,
+        "distanceTo52wHigh": -0.054722,
+        "distanceTo52wLow": 0.491953,
         "newHigh52w": false,
         "closeAtHigh52w": false,
         "within5PctOf52wHigh": false,
         "returns": {
-          "1M": 0.017765,
-          "3M": 0.070255,
-          "6M": 0.259314,
-          "12M": -0.036266
+          "1M": -0.007978,
+          "3M": 0.068785,
+          "6M": 0.266445,
+          "12M": 0.006141
         },
-        "return12M1M": -0.053088,
-        "momentumAcceleration": -0.005653,
-        "volatility20d": 0.19774,
-        "volatility60d": 0.21036,
-        "volatility252d": 0.324814,
-        "downsideVolatility252d": 0.219163,
-        "maxDrawdown252d": -0.328914,
-        "avgVolume20d": 21978646,
-        "avgVolume60d": 22203803,
-        "volumeRatio20over60": 0.9899,
-        "volumeSpikeRatio": 1.6221,
+        "return12M1M": 0.014233,
+        "momentumAcceleration": -0.030906,
+        "volatility20d": 0.234718,
+        "volatility60d": 0.224142,
+        "volatility252d": 0.325509,
+        "downsideVolatility252d": 0.218518,
+        "maxDrawdown252d": -0.317583,
+        "avgVolume20d": 22330709,
+        "avgVolume60d": 22115488,
+        "volumeRatio20over60": 1.0097,
+        "volumeSpikeRatio": 0.8961,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": 0.028493,
-          "3M": 0.070474,
-          "6M": 0.18305,
-          "12M": -0.131709
+          "1M": 0.018777,
+          "3M": 0.086784,
+          "6M": 0.194831,
+          "12M": -0.094616
         },
-        "relativeStrength12M1M": -0.160202,
-        "beta252d": 1.001273
+        "relativeStrength12M1M": -0.113393,
+        "beta252d": 1.003167
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -1269,12 +1314,12 @@
         "basis": "TOTAL_RETURN",
         "priceSource": "PROVIDER_COLUMN",
         "returns": {
-          "1M": 0.017765,
-          "3M": 0.072279,
-          "6M": 0.264435,
-          "12M": -0.028292
+          "1M": -0.007978,
+          "3M": 0.070807,
+          "6M": 0.271595,
+          "12M": 0.014466
         },
-        "return12M1M": -0.045254,
+        "return12M1M": 0.022625,
         "fieldStatus": {
           "returns.1M": "CALCULATED",
           "returns.3M": "CALCULATED",
@@ -1293,8 +1338,8 @@
       "instrumentType": "EQUITY_COMMON",
       "dataQuality": "PASS",
       "dataQualityReason": "clean",
-      "bars": 2975,
-      "asOf": "2026-10-30",
+      "bars": 2977,
+      "asOf": "2026-11-03",
       "basis": "close",
       "adjustmentStatus": "adjusted",
       "providedBasis": "TOTAL_RETURN",
@@ -1302,46 +1347,46 @@
       "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
       "values": {
         "priceAboveSMA20": false,
-        "distanceToSMA20": -0.075948,
+        "distanceToSMA20": -0.051837,
         "priceAboveSMA50": false,
-        "distanceToSMA50": -0.077153,
+        "distanceToSMA50": -0.066692,
         "priceAboveSMA100": false,
-        "distanceToSMA100": -0.046055,
+        "distanceToSMA100": -0.036655,
         "priceAboveSMA200": true,
-        "distanceToSMA200": 0.00125,
+        "distanceToSMA200": 0.010403,
         "aboveAllSMA": false,
         "aboveSMA20And50And200": false,
-        "distanceTo52wHigh": -0.15914,
-        "distanceTo52wLow": 0.245754,
+        "distanceTo52wHigh": -0.150717,
+        "distanceTo52wLow": 0.258233,
         "newHigh52w": false,
         "closeAtHigh52w": false,
         "within5PctOf52wHigh": false,
         "returns": {
-          "1M": -0.113575,
-          "3M": -0.009679,
-          "6M": 0.031192,
-          "12M": -0.011592
+          "1M": -0.134826,
+          "3M": -0.057157,
+          "6M": 0.051858,
+          "12M": 0.020742
         },
-        "return12M1M": 0.11505,
-        "momentumAcceleration": -0.110349,
-        "volatility20d": 0.31647,
-        "volatility60d": 0.349252,
-        "volatility252d": 0.371885,
-        "downsideVolatility252d": 0.261376,
+        "return12M1M": 0.179811,
+        "momentumAcceleration": -0.115774,
+        "volatility20d": 0.317668,
+        "volatility60d": 0.345383,
+        "volatility252d": 0.372234,
+        "downsideVolatility252d": 0.26089,
         "maxDrawdown252d": -0.201614,
-        "avgVolume20d": 100487391,
-        "avgVolume60d": 112482043,
-        "volumeRatio20over60": 0.8934,
-        "volumeSpikeRatio": 1.6757,
+        "avgVolume20d": 99604500,
+        "avgVolume60d": 112310368,
+        "volumeRatio20over60": 0.8869,
+        "volumeSpikeRatio": 0.9231,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": -0.109675,
-          "3M": -0.007149,
-          "6M": -0.016802,
-          "12M": -0.106429
+          "1M": -0.118038,
+          "3M": -0.038594,
+          "6M": 0.009175,
+          "12M": -0.080209
         },
-        "relativeStrength12M1M": 0.003247,
-        "beta252d": 1.925947
+        "relativeStrength12M1M": 0.037829,
+        "beta252d": 1.932229
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -1398,12 +1443,12 @@
         "basis": "TOTAL_RETURN",
         "priceSource": "PROVIDER_COLUMN",
         "returns": {
-          "1M": -0.113575,
-          "3M": -0.008545,
-          "6M": 0.033553,
-          "12M": -0.009222
+          "1M": -0.134826,
+          "3M": -0.056078,
+          "6M": 0.054266,
+          "12M": 0.02319
         },
-        "return12M1M": 0.117724,
+        "return12M1M": 0.182641,
         "fieldStatus": {
           "returns.1M": "CALCULATED",
           "returns.3M": "CALCULATED",
@@ -1422,8 +1467,8 @@
       "instrumentType": "EQUITY_COMMON",
       "dataQuality": "PASS",
       "dataQualityReason": "clean",
-      "bars": 2975,
-      "asOf": "2026-10-30",
+      "bars": 2977,
+      "asOf": "2026-11-03",
       "basis": "close",
       "adjustmentStatus": "adjusted",
       "providedBasis": "TOTAL_RETURN",
@@ -1431,46 +1476,46 @@
       "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
       "values": {
         "priceAboveSMA20": true,
-        "distanceToSMA20": 0.064056,
+        "distanceToSMA20": 0.000282,
         "priceAboveSMA50": true,
-        "distanceToSMA50": 0.116167,
+        "distanceToSMA50": 0.054295,
         "priceAboveSMA100": true,
-        "distanceToSMA100": 0.183491,
+        "distanceToSMA100": 0.117383,
         "priceAboveSMA200": true,
-        "distanceToSMA200": 0.211198,
+        "distanceToSMA200": 0.144242,
         "aboveAllSMA": true,
         "aboveSMA20And50And200": true,
-        "distanceTo52wHigh": -0.006631,
-        "distanceTo52wLow": 0.664297,
-        "newHigh52w": true,
+        "distanceTo52wHigh": -0.058568,
+        "distanceTo52wLow": 0.577282,
+        "newHigh52w": false,
         "closeAtHigh52w": false,
-        "within5PctOf52wHigh": true,
+        "within5PctOf52wHigh": false,
         "returns": {
-          "1M": 0.143023,
-          "3M": 0.207597,
-          "6M": 0.225859,
-          "12M": 0.607986
+          "1M": 0.082073,
+          "3M": 0.170349,
+          "6M": 0.14579,
+          "12M": 0.551766
         },
-        "return12M1M": 0.406784,
-        "momentumAcceleration": 0.073824,
-        "volatility20d": 0.210193,
-        "volatility60d": 0.238695,
-        "volatility252d": 0.262064,
-        "downsideVolatility252d": 0.177141,
+        "return12M1M": 0.434068,
+        "momentumAcceleration": 0.02529,
+        "volatility20d": 0.273766,
+        "volatility60d": 0.241144,
+        "volatility252d": 0.265381,
+        "downsideVolatility252d": 0.181675,
         "maxDrawdown252d": -0.206508,
-        "avgVolume20d": 12008277,
-        "avgVolume60d": 13390886,
-        "volumeRatio20over60": 0.8967,
-        "volumeSpikeRatio": 1.8181,
+        "avgVolume20d": 12322163,
+        "avgVolume60d": 13221263,
+        "volumeRatio20over60": 0.932,
+        "volumeSpikeRatio": 0.9396,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": 0.14456,
-          "3M": 0.191209,
-          "6M": 0.156125,
-          "12M": 0.380214
+          "1M": 0.105666,
+          "3M": 0.177563,
+          "6M": 0.094712,
+          "12M": 0.338655
         },
-        "relativeStrength12M1M": 0.235653,
-        "beta252d": -0.687476
+        "relativeStrength12M1M": 0.232989,
+        "beta252d": -0.691613
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -1527,12 +1572,12 @@
         "basis": "TOTAL_RETURN",
         "priceSource": "PROVIDER_COLUMN",
         "returns": {
-          "1M": 0.143023,
-          "3M": 0.215301,
-          "6M": 0.241726,
-          "12M": 0.654149
+          "1M": 0.082073,
+          "3M": 0.177815,
+          "6M": 0.16062,
+          "12M": 0.596315
         },
-        "return12M1M": 0.44717,
+        "return12M1M": 0.475237,
         "fieldStatus": {
           "returns.1M": "CALCULATED",
           "returns.3M": "CALCULATED",
