@@ -19,6 +19,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 |---|---|---|---|---|
 | 1 | #1340 | Vorlage `docs/design/redesign-2027/` nach `main`, diese Liste | – | offen |
 | 2 | #1345 | Schritt 1+2: Bausteine C04–C20 als eigene Komponente (`assets/vu-ui.css/.js`), C06 (`assets/vu-chart.js` 2.1.0), Musterseite `/status/bausteine/`, Regel 1, Shell aus #1331 ohne Datenläufe | A3, C, N1–N3 | offen |
+| 3 | #1346 | Schritt 3: Aktienkopf C04 + Perspektiven-Leiste C05 (sieben Perspektiven) für alle Welten | N4, N5 | offen |
 
 Übernommene Zweige der früheren Sitzung (Stand `docs/neustart/D-frontend.md` im Zweig `neustart/d-shell-dock`):
 `neustart/d-startseite` (E01), `neustart/d-mein-bereich` (E02, E08), `neustart/d-aktienkopf` (C04, C05, C06), `neustart/d-discover-aktie` (D09).
@@ -33,8 +34,8 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | N1 | Das Navigationsmodell | in Arbeit | #1345 (ersetzt #1331) |  |
 | N2 | Produkt-Leiste je Welt | in Arbeit | #1345 (ersetzt #1331) |  |
 | N3 | Das Menü | in Arbeit | #1345 (ersetzt #1331) |  |
-| N4 | Aktienkopf: Icons oder Perspektiven-Leiste? | in Arbeit | Zweig neustart/d-aktienkopf (C04/C05, C06) |  |
-| N5 | Perspektive, Welt und Leiste | offen |  |  |
+| N4 | Aktienkopf: Icons oder Perspektiven-Leiste? | in Arbeit | #1346 |  |
+| N5 | Perspektive, Welt und Leiste | in Arbeit | #1346 |  |
 | N6 | Einsteiger und Profi | offen |  |  |
 | C | Bausteine C01–C20 | in Arbeit | #1345 (ersetzt #1331) |  |
 | E01 | Einstieg · Startseite | in Arbeit | Zweig neustart/d-startseite |  |
