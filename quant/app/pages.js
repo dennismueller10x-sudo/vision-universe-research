@@ -299,7 +299,136 @@
     ], { href: X.routes.method("grenzen"), label: "Grenzen" }, "Transparenz"));
   }
 
+  /* ================================================================ HOME (Redesign 2027, Folie Q01)
+     Zuerst die Frage „Was hat sich heute verändert?“, dann Suche, „So arbeitet Quant“ (Sheet), Marktlage, sechs
+     Tageszahlen, PRO-Vergleich, bestätigte Setups, Strategie-Wechsel als Liste, Wege, Vertrauen. Alle Zahlen aus
+     radar-home-v1, market-regime-v1, setup-screen-index und strategy-index; fehlt eine Quelle, entfällt ihr Block. */
+  function U() { return global.VUUI; }
+  function frag(html) { var t = document.createElement("template"); t.innerHTML = html; return t.content; }
+  var STEPS = [["Misst", "Sechs Eigenschaften je Aktie", "Für jede Aktie sechs Fragen: Wächst die Firma? Verdient sie gut? Ist sie günstig? Läuft der Kurs? Wie ruhig ist er? Sind die Zahlen solide?"],
+    ["Meldet", "Was sich seit gestern ändert", "Ändert sich etwas, meldet Quant es mit Auslöser und Datum, z. B. „Neu in Strategie“ oder „Risiko steigt“."],
+    ["Vergleicht", "Was früher in gleicher Lage geschah", "Quant zeigt, was früher in derselben Lage geschah, und sagt offen, wie belastbar das ist."]];
+  function homeStat(n, title, sub, dir, href) {
+    var mark = dir === "up" ? "▲" : dir === "down" ? "▼" : "◆";
+    return '<a class="vu-box qv3-stat" href="' + U().esc(href) + '"><span class="qv3-stat-n"><i class="qv3-dir is-' + dir + '" aria-hidden="true">' + mark + '</i><b class="vu-num">' + U().esc(n) + '</b></span><b class="qv3-stat-t">' + U().esc(title) + "</b>" + (sub ? '<span class="vu-xs vu-mu">' + U().esc(sub) + "</span>" : "") + "</a>";
+  }
+  function setupCardV3(ctx, c, closeBy) {
+    var tr = c.trade && c.trade.state === "AVAILABLE" ? c.trade : null;
+    var inv = tr && typeof tr.invalidation === "number" ? tr.invalidation : c.setup && typeof c.setup.invalidation === "number" ? c.setup.invalidation : null;
+    var box = function (l, v) { return '<div class="qv3-pbox"><span>' + U().esc(l) + "</span><b class=\"vu-num\">" + U().esc(v || "–") + "</b></div>"; };
+    var close = closeBy && typeof closeBy[c.ticker] === "number" ? " · Schluss " + usd(closeBy[c.ticker]) : "";
+    var frueher = c.replay && c.replay.sufficient ? "in " + Math.round(c.replay.positiveShare * 100) + " % von " + c.replay.completed + " Fällen höher" : c.replay && c.replay.state === "AVAILABLE" ? "zu wenige Fälle für eine Aussage" : null;
+    return '<a class="vu-box qv3-setup" href="' + U().esc(X.routes.stock(c.ticker)) + '"><div class="qv3-setup-h">' + U().logo(c.ticker) + '<span class="qv3-setup-n"><b>' + U().esc(nameOf(ctx, c.ticker) || c.ticker) + '</b><span class="vu-xs vu-mu"><b>' + U().esc(c.ticker + close) + "</b></span></span>" + U().verdict("strong", "Bestätigt") + "</div>" +
+      '<div class="qv3-pboxes">' + box("Interessant ab", tr && zoneText(tr.entry)) + box("Ungültig unter", inv != null ? usd(inv) : null) + box("Ziel 1", tr && tr.targets && tr.targets[0] && zoneText(tr.targets[0])) + "</div>" +
+      (frueher ? '<div class="vu-xs qv3-frueher"><b>Früher:</b> <span class="vu-mu">' + U().esc(frueher) + "</span></div>" : "") + "</a>";
+  }
   async function home(main, ctx) {
+    if (!U()) return homeLegacy(main, ctx);
+    var page = el("div", { class: "q-home vu-ui qv3" });
+    main.append(page);
+    page.append(frag('<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Was hat sich heute verändert?</h1><p class="vu-lead">Quant prüft jeden Tag über 6.000 US-Aktien nach festen Regeln und meldet dir, was sich bewegt.</p></header>'));
+    var search = el("button", { type: "button", class: "vu-find qv3-search q-searchbar", "aria-label": "Aktie suchen und analysieren", onclick: ctx.openSearch });
+    search.innerHTML = U().glyph("search", 18) + "<span>Aktie suchen, z. B. NVDA …</span><i aria-hidden=\"true\">" + U().glyph("spark", 18) + "</i>";
+    page.append(search);
+    /* So arbeitet Quant: drei Schritte, tippen öffnet das Sheet (C16) mit Erklärung, Versprechen und dem Beleg aus dem Radar. */
+    var how = el("button", { type: "button", class: "vu-box qv3-how", "aria-haspopup": "dialog" });
+    how.innerHTML = '<span class="qv3-how-h"><b>So arbeitet Quant</b><span class="vu-xs vu-mu"><b>in 30 Sekunden ›</b></span></span><span class="qv3-steps">' + STEPS.map(function (st, i) { return '<span class="qv3-step"><i>' + (i + 1) + "</i><b>" + st[0] + '</b><span class="vu-xs vu-mu">' + st[1] + "</span></span>"; }).join("") + "</span>";
+    page.append(how);
+    var sheet = frag(U().sheet("qv3-how-sheet", "So arbeitet Quant", '<p class="vu-ltag" style="margin:0">Drei Schritte, jeden Tag gleich</p><div class="vu-stack" style="margin-top:14px">' + STEPS.map(function (st, i) { return '<div class="qv3-sstep"><i>' + (i + 1) + "</i><div><b>" + ["Messen", "Melden", "Vergleichen"][i] + '</b><p class="vu-sm vu-mu">' + st[2] + "</p></div></div>"; }).join("") + "</div>" +
+      '<div class="vu-box" style="margin-top:14px;display:flex;gap:10px;align-items:center">' + U().verdict("none", "Keine Empfehlung") + '<span class="vu-sm">Quant sagt nie „kaufen“ oder „verkaufen“.</span></div><div class="qv3-proof"></div><button type="button" class="vu-btn vu-btn--ink vu-btn--block" data-close style="margin-top:14px">Verstanden</button>')).firstElementChild;
+    document.body.append(sheet);
+    var proofHost = sheet.querySelector(".qv3-proof");
+    proofHost.append(promiseList());
+    how.addEventListener("click", function () { U().openSheet(sheet); });
+    sheet.querySelector("[data-close]").addEventListener("click", function () { U().closeSheet(sheet); });
+    var off = function () { if (sheet.parentNode) sheet.remove(); global.removeEventListener("hashchange", off); };
+    global.addEventListener("hashchange", off);
+
+    var regimeHost = el("div"), todayHost = el("div", { class: "qv3-today" }, [X.loading("Aktuelle Stände werden geladen …")]), setupHost = el("div"), stratHost = el("div"), watchHost = el("div"), tiAlertHost = el("div");
+    page.append(regimeHost);
+    page.append(frag(U().sect("Heute bei Quant", { href: X.routes.radar(), link: "Radar" })));
+    page.append(todayHost, watchHost, tiAlertHost, setupHost, stratHost);
+    page.append(frag(U().sect("Selbst suchen") + '<div class="vu-stack">' +
+      U().navcard({ glyph: "search", title: "Eine Aktie verstehen", sub: "Was sagt Quant zu NVIDIA, Apple …?", href: X.routes.stocks() }) +
+      U().navcard({ glyph: "filter", title: "Aktien nach Fragen finden", sub: "Screener: „Verdient gut“, „Ist günstig“ …", href: X.routes.screener() }) +
+      U().navcard({ glyph: "target", title: "Nach Anlagestil suchen", sub: "Strategien, täglich geprüft", href: X.routes.strategies() }) +
+      U().navcard({ glyph: "line", title: "Technische Lagen", sub: "Charts mit klarer Lage, nach Regel", href: X.routes.chartlagen() }) + "</div>" +
+      '<a class="vu-box vu-box--lime qv3-trust" href="' + U().esc(X.routes.method()) + '"><span class="qv3-trust-i">' + U().glyph("book", 18) + '</span><span><b>Warum kann ich dem vertrauen?</b><span class="vu-xs">Methodik, Daten und Grenzen offen erklärt</span></span>' + U().glyph("next", 18) + "</a>" +
+      '<div class="vu-box vu-box--line qv3-note"><b class="vu-sm">Keine Anlageempfehlung</b><p class="vu-xs vu-mu">Quant ordnet ein und vergleicht. Keine Prognose, kein Kursziel. Einstieg, Ungültig-Marke und Ziele sind Szenarien der technischen Analyse. Daten: SEC EDGAR, Tiingo.</p></div>'));
+
+    var watched = X.watch.list();
+    var TI = global.VUTechnicalIntelligence;
+    if (watched.length && TI && TI.getWatchlistAlerts) TI.getWatchlistAlerts(watched).then(function (a) {
+      if (a.state !== "AVAILABLE") return;
+      tiAlertHost.replaceChildren(X.world("Chartbild bei deinen beobachteten Aktien", "Was der Kurs seit dem letzten Lauf im Chart getan hat. Szenarien sind Bedingungen, keine Prognose und keine Empfehlung.",
+        [el("div", { class: "q-rows" }, a.events.slice(0, 12).map(function (e) {
+          var nm = nameOf(ctx, e.symbol);
+          return el("a", { class: "q-rowlink", href: X.routes.chartbild(e.symbol) }, [el("span", { class: "q-icon", "aria-hidden": "true" }, [X.icon("bars")]),
+            el("span", {}, [el("strong", { text: e.symbol + (nm ? " · " + nm : "") }), el("small", { text: e.text + (e.asOf ? " · Stand " + X.dateDe(e.asOf) : "") })])]);
+        }))]));
+    });
+
+    var dataP = Promise.all([ctx.api.getSetupScreenIndex().catch(function () { return null; }), ctx.api.getStrategyIndex().catch(function () { return null; }),
+      ctx.api.getMarketRegime().catch(function () { return null; }), ctx.api.getStrategyProfiles().catch(function () { return null; }),
+      ctx.api.getQuantRadarHome().catch(function () { return null; })]);
+    await Promise.all([ctx.loadNames(), ctx.loadBacktestView()]);
+    var r = await dataP;
+    var setupIdx = r[0], stratIdx = r[1], regime = r[2], profiles = r[3], radar = r[4];
+
+    /* Marktlage als schwarze Karte: Urteil + Anteil über der 200-Tage-Linie + Balken + „?“ */
+    if (regime && regime.state === "AVAILABLE") {
+      var m = {}; (regime.measures || []).forEach(function (x) { m[x.id] = x; });
+      var above = m.above200 && typeof m.above200.share === "number" ? m.above200.share : null, trend = m.trendBullish && typeof m.trendBullish.share === "number" ? m.trendBullish.share : null;
+      var kind = regime.regime === "BROAD_STRENGTH" ? "strong" : regime.regime === "BROAD_WEAKNESS" ? "weak" : "mid";
+      var share = above == null ? "" : above < .4 ? "Weniger als zwei von fünf Aktien im langfristigen Aufwärtstrend." : above < .6 ? "Etwa die Hälfte der Aktien im langfristigen Aufwärtstrend." : "Die Mehrheit der Aktien im langfristigen Aufwärtstrend.";
+      regimeHost.append(frag('<div class="vu-box vu-box--ink qv3-regime"><div class="qv3-regime-h"><span class="vu-ltag">Wie steht der Markt?</span>' + U().verdict(kind, REGIME[regime.regime] || "Marktlage") + "</div>" +
+        (above != null ? '<div class="qv3-regime-v"><b class="vu-num">' + Math.round(above * 100) + ' %</b><span class="vu-sm">der Aktien liegen über ihrer 200-Tage-Linie</span></div>' + U().meter(above * 100, { lime: true, label: "Anteil über der 200-Tage-Linie" }) : "") +
+        '<p class="vu-xs">' + U().esc(share + (trend != null ? " " + Math.round(trend * 100) + " % mit Aufwärtstrend." : "")) + " Stand " + U().esc(X.dateDe(regime.asOf)) + ".</p></div>" +
+        '<div style="margin-top:8px">' + U().help("200-Tage-Linie: der Durchschnittskurs der letzten 200 Handelstage. Darüber heißt: langfristig eher aufwärts.") + "</div>"));
+    }
+    /* Heute bei Quant: sechs Tageszahlen mit Richtung, dann der PRO-Vergleich. */
+    if (radar && radar.state === "AVAILABLE") {
+      var sm = radar.summary, src = radar.sources || {};
+      var html = '<p class="vu-xs vu-mu qv3-asof"><b>Veränderungen zum Vortag · Stand ' + U().esc(X.dateDe(src.setup && src.setup.to)) + '</b></p><div class="vu-grid">' +
+        homeStat(sm.newSetups, "Neue Setups", "Chart zeigt ein neues Muster", "up", X.routes.radar("filter=setups")) +
+        homeStat(sm.confirmedSetups, "Setups bestätigt", "Alle Bedingungen erfüllt", "up", X.routes.radar("filter=setups")) +
+        homeStat(sm.improvingTickers.toLocaleString("de-DE"), "Aktien verbessern sich", "mind. ein positives Ereignis", "up", X.routes.radar()) +
+        homeStat(sm.riskRisingTickers, "Risiko steigt", "Kurs wird unruhiger", "down", X.routes.radar("filter=faktoren")) +
+        homeStat(sm.newHighs, "Neues Jahreshoch", "Höchster Kurs seit 52 Wochen", "up", X.routes.radar("filter=hoch")) +
+        homeStat(sm.newStrategyMatches, "Neu in einer Strategie", "erfüllt jetzt alle Bedingungen", "up", X.routes.radar("filter=strategien")) + "</div>";
+      if (typeof sm.edgeTickers === "number") html += '<a class="vu-box vu-box--line qv3-edge" href="' + U().esc(X.routes.radar("filter=vorteil")) + '"><span class="qv3-edge-h"><b class="vu-sm">Lief so etwas früher besser als der Markt?</b>' + U().pro() + '</span><span class="vu-grid"><span><b class="vu-num">' + sm.edgeTickers.toLocaleString("de-DE") + '</b><span class="vu-xs vu-mu">historisch besser als der Markt, meist nur leicht</span></span><span><b class="vu-num">' + sm.weakerEdgeTickers.toLocaleString("de-DE") + '</b><span class="vu-xs vu-mu">historisch schwächer als der Markt</span></span></span></a>';
+      todayHost.replaceChildren(frag(html));
+      var proof = proofCard(radar);
+      if (proof) proofHost.append(proof);
+      /* Setup bestätigt: drei Karten mit Interessant ab / Ungültig unter / Ziel 1 und früherer Quote. */
+      var confirmed = (radar.cards || []).filter(function (c) { return c.events && c.events.some(function (e) { return e.eventType === "SETUP_CONFIRMED"; }); });
+      var conf = setupIdx && setupIdx.state === "AVAILABLE" ? (setupIdx.states || []).filter(function (st) { return st.state === "CONFIRMED" && typeof st.count === "number"; })[0] : null;
+      if (confirmed.length) {
+        setupHost.replaceChildren(frag(U().sect("Setup bestätigt", { href: X.routes.screener("frage=setups"), link: conf ? "Alle " + conf.count.toLocaleString("de-DE") : "Alle" }) +
+          '<div class="vu-stack">' + confirmed.slice(0, 3).map(function (c) { return setupCardV3(ctx, c, null); }).join("") + "</div>" +
+          '<div style="margin-top:10px">' + U().help("Setup: Der Chart zeigt eine Lage mit klaren Regeln. „Ungültig unter“ heißt: fällt der Kurs darunter, gilt das Setup nicht mehr.") + "</div>"));
+      }
+      var hits = watched.length ? await ctx.api.getRadarCards(watched).catch(function () { return []; }) : [];
+      if (watched.length) watchHost.replaceChildren(X.world("Deine beobachteten Aktien", hits.length ? hits.length + " von " + watched.length + " beobachteten Aktien melden eine Veränderung." : "Bei deinen " + watched.length + " beobachteten Aktien hat sich zum letzten Stand nichts geändert.",
+        hits.length ? [el("div", { class: "q-radar-grid" }, hits.slice(0, 6).map(function (c) { return radarCard(ctx, c, { compact: true }); }))] : [], { href: X.routes.radar("filter=beobachtet"), label: "Alle beobachteten" }));
+    } else todayHost.replaceChildren(frag(U().blank("Der aktuelle Radar-Stand konnte nicht geladen werden. Suche und Screener funktionieren weiterhin.")));
+    /* Neu in einer Strategie: eine kompakte Liste je Strategie (+neu / −raus). */
+    if (stratIdx && stratIdx.state === "AVAILABLE" && stratIdx.historicalEvidence && stratIdx.historicalEvidence.transitions) {
+      var labels = {}, plains = {};
+      ((profiles && profiles.contract && profiles.contract.profiles) || stratIdx.profiles || []).forEach(function (p) { labels[p.profileId] = p.label; plains[p.profileId] = p.plain || p.description || ""; });
+      var moved = stratIdx.historicalEvidence.transitions.filter(function (t) { return (t.entered && t.entered.length) || (t.exited && t.exited.length); })
+        .sort(function (a, b) { return (b.entered || []).length - (a.entered || []).length; }).slice(0, 4);
+      if (moved.length) stratHost.replaceChildren(frag(U().sect("Neu in einer Strategie", { href: X.routes.strategies(), link: "Alle" }) + '<div class="vu-box qv3-strats">' + moved.map(function (t) {
+        var names = ctx.commonFirst(t.entered || []).slice(0, 2).map(function (tk) { return nameOf(ctx, tk) || tk; });
+        var label = (labels[t.profileId] || t.profileId).split(" · ")[0];
+        return '<a class="qv3-strat" href="' + U().esc(X.routes.strategy(t.profileId)) + '"><span class="qv3-strat-t"><b class="vu-sm">' + U().esc(label) + '</b><span class="vu-xs vu-mu">' + U().esc([plains[t.profileId], names.length ? names.join(", ") + " …" : ""].filter(Boolean).join(" · ")) + "</span></span>" +
+          ((t.entered || []).length ? '<span class="vu-chg">+' + t.entered.length + "</span>" : "") + ((t.exited || []).length ? '<span class="vu-chg vu-chg--down">−' + t.exited.length + "</span>" : "") + "</a>";
+      }).join("") + "</div>"));
+    }
+  }
+
+  /* Bisherige Startseite (ohne Bausteine VUUI). */
+  async function homeLegacy(main, ctx) {
     /* GERUEST ZUERST. Hero, Tafel "Heute bei Quant" und die Platzhalter sind statisch; sie stehen, sobald das Woerterbuch
        da ist. Namen und Evidenz-Ansicht laufen seit dem Routenstart (app.js) und werden dort abgewartet, wo
        Daten gezeichnet werden. Wer Beobachtetes oder Zuletzt-Angesehenes hat, braucht die Namen schon beim Aufbau

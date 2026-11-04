@@ -1393,3 +1393,58 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 /* VU3-Finalisierung: mobil eine Haarlinie und 44 px Luft zwischen den Abschnitten (vorher 64 px). */
 @media (max-width:760px){.qd .qv-stock .qx-section{margin-top:20px;padding-top:24px}}
 
+
+/* =====================================================================
+   Redesign 2027 · Quant (Folien Q01–Q09). Bausteine aus assets/vu-ui.css;
+   hier nur die Anordnung der Quant-Seiten. Nur Weiß, Schwarz, Neongrün, Grau.
+   ===================================================================== */
+.qv3{max-width:720px;margin:0 auto;padding:4px 0 24px}
+.qv3 .vu-stack>*,.qv3 .vu-grid>*{min-width:0}
+.qv3-intro{margin:4px 0 0}
+.qv3-intro .vu-lt{margin-top:2px}
+.qv3 .vu-find.qv3-search{width:100%;margin-top:14px;border:0;cursor:pointer;font:600 14.5px/1 var(--vu-font)}
+.qv3 .vu-find.qv3-search>span{text-align:left}
+.qv3-how{display:block;width:100%;margin-top:14px;padding:14px;border:0;text-align:left;cursor:pointer;font:inherit}
+.qv3-how-h{display:flex;justify-content:space-between;align-items:center}
+.qv3-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}
+.qv3-step{display:block;background:var(--vu-bg,#fff);border-radius:14px;padding:9px}
+.qv3-step>i,.qv3-sstep>i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--vu-ink);color:var(--vu-inv);font-style:normal;font-weight:900;font-size:11.5px}
+.qv3-step>b{display:block;margin-top:6px;font-size:13px}.qv3-step>span{display:block;line-height:1.3}
+.qv3-sstep{display:flex;gap:12px}.qv3-sstep>i{width:30px;height:30px;background:var(--vu-lime);color:#000}.qv3-sstep p{margin:2px 0 0}
+.qv3-regime{margin-top:12px;padding:14px}
+.qv3-regime .vu-ltag{color:inherit;opacity:.7}
+.qv3-regime-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.qv3-regime-h .vu-verdict--weak,.qv3-regime-h .vu-verdict--mid{background:var(--vu-inv);color:var(--vu-ink)}
+.qv3-regime-v{display:flex;align-items:baseline;gap:10px;margin-top:8px}
+.qv3-regime-v>b{font-size:40px;font-weight:900;letter-spacing:-.04em;line-height:1;color:var(--vu-lime);white-space:nowrap}
+.qv3-regime-v>span{opacity:.8}
+.qv3-regime .vu-meter{margin-top:10px;background:var(--vu-mute)}
+.qv3-regime p{margin:8px 0 0;opacity:.7}
+.qv3-asof{margin:-4px 0 10px}
+.qv3-stat{display:block;padding:12px;text-decoration:none}
+.qv3-stat-n{display:flex;align-items:center;gap:7px}
+.qv3-stat-n>b{font-size:24px;font-weight:800;letter-spacing:-.03em}
+.qv3-dir{font-style:normal;font-size:12px;font-weight:900;border-radius:6px;padding:0 5px;background:var(--vu-hair)}
+.qv3-dir.is-up{background:var(--vu-lime);color:#000}.qv3-dir.is-down{background:var(--vu-ink);color:var(--vu-inv)}
+.qv3-stat-t{display:block;margin-top:4px;font-size:13px;line-height:1.25}
+.qv3-stat>.vu-xs{display:block;margin-top:2px;line-height:1.3}
+.qv3-edge{display:block;margin-top:10px;padding:12px;text-decoration:none}
+.qv3-edge-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.qv3-edge .vu-grid{margin-top:8px}.qv3-edge .vu-grid b{display:block;font-size:20px}.qv3-edge .vu-grid .vu-xs{display:block}
+.qv3-setup{display:block;padding:12px;text-decoration:none}
+.qv3-setup-h{display:flex;gap:10px;align-items:center}
+.qv3-setup-n{flex:1;min-width:0}.qv3-setup-n>b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.qv3-setup-n>span{display:block}
+.qv3-pboxes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}
+.qv3-pbox{background:var(--vu-bg,#fff);border-radius:12px;padding:7px 9px;min-width:0}
+.qv3-pbox>span{display:block;font-size:10.5px;font-weight:700;color:var(--vu-mute)}
+.qv3-pbox>b{display:block;font-size:14px;line-height:1.25;overflow-wrap:anywhere}
+.qv3-frueher{margin-top:8px}
+.qv3-strats{padding:4px 14px}
+.qv3-strat{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--vu-hair);color:inherit;text-decoration:none}
+.qv3-strat:first-child{border-top:0}
+.qv3-strat-t{flex:1;min-width:0}.qv3-strat-t>*{display:block}.qv3-strat-t>.vu-xs{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qv3 .qv3-trust{display:flex;gap:12px;align-items:center;margin-top:14px;padding:14px;text-decoration:none}
+.qv3-trust>span:nth-child(2){flex:1}.qv3-trust b,.qv3-trust .vu-xs{display:block}.qv3-trust .vu-xs{opacity:.75}
+.qv3-trust-i{width:38px;height:38px;border-radius:50%;background:#000;color:var(--vu-lime);display:grid;place-items:center;flex:none}
+.qv3-note{margin-top:22px}.qv3-note p{margin:3px 0 0}
+.qv3-proof .q-promises{margin:14px 0 0}
