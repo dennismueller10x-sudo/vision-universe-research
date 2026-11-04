@@ -1,0 +1,68 @@
+name: Tiingo CA Probe (einmalig, nicht fuer main)
+
+# Kontrollierter Funktionstest des Tiingo-Corporate-Actions-Endpunkts
+# (Eigentuemerfreigabe 04.11.2026): hoechstens DREI Anfragen, ohne
+# Wiederholung, Zeitlimit je Anfrage, im bestehenden Abonnement.
+# Laeuft nur auf diesem Branch und nur genau einmal: der Waechterschritt
+# bricht ab, wenn es schon einen anderen Lauf dieses Workflows gibt oder
+# der Lauf eine Wiederholung ist - bevor der Schluessel gelesen wird.
+# Ausgabe nur abgeleitet (Status, Anzahlen, Schema, Treffer-Booleans);
+# keine Rohantwort im Log, kein Commit, kein Artefakt.
+# Dieser Workflow darf nicht auf main landen.
+
+on:
+  push:
+    branches:
+      - 'claude/tiingo-ca-probe'
+    paths:
+      - '.github/workflows/tiingo-ca-probe.yml'
+      - 'scripts/research/tiingo-ca-probe.mjs'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: tiingo-ca-probe-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/claude/tiingo-ca-probe'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Waechter genau einmal
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          if [ "$RUN_ATTEMPT" != "1" ]; then echo "ABBRUCH: Wiederholungslauf"; exit 1; fi
+          ids=$(gh api "repos/$REPO/actions/runs?branch=claude/tiingo-ca-probe&per_page=100" \
+            --jq '[.workflow_runs[] | select(.path == ".github/workflows/tiingo-ca-probe.yml") | .id] | map(tostring) | join(",")')
+          echo "Laeufe dieses Workflows: ${ids:-keine}"
+          if [ "$ids" != "$RUN_ID" ]; then echo "ABBRUCH: nicht der einzige Lauf"; exit 1; fi
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            scripts/research/tiingo-ca-probe.mjs
+            docs/quant-recovery/v10/corporate-actions/verdicts.json
+            quant/data/market/discover-series-long/ref_AAPL.json
+            quant/data/market/discover-series-long/ref_GE.json
+            quant/data/market/discover-series-long/ref_ACCS.json
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Probe (hoechstens 3 Anfragen, nur abgeleitete Ausgabe)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          PROBE_ALLOW_RUN: once
+        run: node scripts/research/tiingo-ca-probe.mjs --root "$GITHUB_WORKSPACE"
