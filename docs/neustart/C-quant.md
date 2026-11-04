@@ -13,10 +13,13 @@ Stand: **04.11.2026**. Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11
   - Python-Gegenrechnung.
 - **SEC Point-in-Time:** Bündel in der Lesart ORIGINAL (Wert wie erstmals eingereicht). Die committeten Consumer-Bündel tragen im Mittel 628 Tage Verzug und sind für historische Stichtage ungeeignet.
 
+- **Musterportfolios gerechnet** (Lauf 41867100079, [MODEL_PORTFOLIOS.md](../quant/research/portfolio-v1/MODEL_PORTFOLIOS.md)): 5 Profile, 2012–2026, Gesamtrendite inkl. delisteter Titel gegen SPY-Gesamtrendite 14,9 % p. a. **Keines schlägt den Index:** Defensive Quality 13,8 %, Value Momentum 13,0 %, Momentum Leader 12,9 %, Quality Compounder 11,2 %, GARP 5,6 %. Vol 15–21 %, Beta 0,81–1,07. In der internen Vorschau sichtbar, beschriftet „Forschung, nicht zertifiziert“.
+- **Setup-OOS A1–A6** umgesetzt (#1333): Schnitt 2027-05-31, Embargo 183 Tage, MEDIAN_EXCESS + SIGN_REPLICATES, SETUP_NEW/SETUP_CONFIRMED getrennt, effektive Ereignistage, Zeilenexport. Gate messbar frühestens um den 2028-01-08.
+
 ## Offen
 
-- Lauf der Musterportfolios im Workflow `quant-portfolio-research.yml` (R2-Tagesbalken, V13-Delistings, SEC ORIGINAL) und Ergebnis in der internen Vorschau.
-- Setup-OOS A1–A6 umsetzen (Empfehlung der Vorlage: Schnitt 2027-05-31, 183 Tage Embargo, MEDIAN_EXCESS + SIGN_REPLICATES, Arten getrennt, effektive Fälle, Zeilenexport).
+- Turnover der Musterportfolios hoch (220–500 % p. a.): Variante mit Puffer/Quartalsrhythmus als Forschungssensitivität.
+- `backtest-runner.cjs#setupOosFromCertificationPath` an A4 angleichen (berührt CODE_FILES → Demo-Neubau, eigener PR).
 - Historische Strategie- und Faktor-Backtests (Katalog-Arten) auf PIT-Basis über den Baukasten-Datenpfad.
 
 ## Braucht Owner
