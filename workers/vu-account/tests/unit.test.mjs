@@ -207,6 +207,45 @@ test('Eingaben: Passwortregeln, E-Mail, Einstellungen nur aus der Positivliste',
   assert.throws(() => v.priceKey('plus_month; drop table'), /PRICE_INVALID/);
 });
 
+test('Erster Start (Z1): Erfahrung mit Profi, Ziel, onboardedAt nur true', () => {
+  for (const level of ['beginner', 'advanced', 'pro']) assert.deepEqual(v.settingsPatch({experience_level: level}), {experience_level: level});
+  assert.throws(() => v.settingsPatch({experience_level: 'expert'}), /SETTING_INVALID/);
+  assert.throws(() => v.settingsPatch({experience_level: 'Pro'}), /SETTING_INVALID/);
+  for (const goal of ['vorsorge', 'aktie', 'ideen', 'strategien', null]) assert.deepEqual(v.settingsPatch({goal}), {goal});
+  for (const goal of ['reich', '', 'Vorsorge', 1, {}]) assert.throws(() => v.settingsPatch({goal}), /SETTING_INVALID/);
+  assert.deepEqual(v.settingsPatch({onboarded_at: true}), {onboarded_at: true});
+  for (const at of [false, null, '2026-11-04T00:00:00Z', 1]) assert.throws(() => v.settingsPatch({onboarded_at: at}), /SETTING_INVALID/);
+});
+
+test('Gespeicherte Suchen (Z3): Welt, Name, Abfrage, Kennung', () => {
+  for (const w of ['quant', 'screener', 'technical', 'fundamental', 'discover']) assert.equal(v.searchWorld(w), w);
+  for (const w of ['QUANT', 'krypto', '', null, undefined, ['quant']]) assert.throws(() => v.searchWorld(w), /WORLD_INVALID/);
+  assert.equal(v.searchName('  Qualität > 80 '), 'Qualität  80', 'Spitzklammern und Rand entfernt');
+  assert.equal(v.searchName('x'.repeat(80)).length, 80);
+  for (const n of ['', '   ', '<>', 'x'.repeat(81), 7, null, {}]) assert.throws(() => v.searchName(n), /NAME_INVALID/);
+  assert.deepEqual(v.searchQuery({minScore: 80, sectors: ['Tech'], sort: {by: 'score'}}), {minScore: 80, sectors: ['Tech'], sort: {by: 'score'}});
+  assert.deepEqual(v.searchQuery({}), {});
+  for (const q of [null, [], [1], 'x', 1, true]) assert.throws(() => v.searchQuery(q), /QUERY_INVALID/);
+  assert.throws(() => v.searchQuery({a: {b: {c: {d: {e: {f: {g: 1}}}}}}}), /QUERY_INVALID/, 'zu tief');
+  assert.doesNotThrow(() => v.searchQuery({a: {b: {c: {d: {e: 1}}}}}));
+  assert.throws(() => v.searchQuery({q: 'a'.repeat(4096)}), /QUERY_TOO_LARGE/);
+  assert.throws(() => v.searchQuery({q: 'ä'.repeat(2100)}), /QUERY_TOO_LARGE/, 'Grenze in Byte, nicht Zeichen');
+  assert.equal(v.searchId('3f2b8c1e-1d2a-4b5c-8d9e-0a1b2c3d4e5f'), '3f2b8c1e-1d2a-4b5c-8d9e-0a1b2c3d4e5f');
+  for (const id of ['3F2B8C1E-1D2A-4B5C-8D9E-0A1B2C3D4E5F', 'x', '', null, 1]) assert.throws(() => v.searchId(id), /SEARCH_ID_INVALID/);
+});
+
+test('Gespeicherte Suchen: Routen ohne Konfiguration 503, Ratenstufe vorhanden', async () => {
+  const app = createApp({env: {}, fetchImpl: () => { throw new Error('kein Netz'); }, log: () => {}});
+  const call = (method, path) => app.handle(new Request('https://account.example' + path, {method}));
+  for (const [m, p] of [['GET', '/v1/searches'], ['POST', '/v1/searches'], ['PATCH', '/v1/searches'], ['POST', '/v1/searches/remove']]) {
+    assert.equal((await call(m, p)).status, 503, `${m} ${p}`);
+  }
+  assert.equal((await call('DELETE', '/v1/searches')).status, 405);
+  assert.equal((await call('GET', '/v1/searches/remove')).status, 405);
+  const {LIMITS} = await import('../src/limits.mjs');
+  assert.ok(LIMITS.searches && LIMITS.searches.limit > 0);
+});
+
 test('Kuendigungsbestaetigung: Pflichtangaben nach § 312k Abs. 4, keine fremden Links, HTML maskiert', async () => {
   const {cancellationConfirmation, neutralize, createMailer} = await import('../src/mail.mjs');
   const m = cancellationConfirmation({confirmationId: '0b5c7e1a-0000-4000-8000-000000000001', receivedAt: '2026-10-25T14:03:00Z',
