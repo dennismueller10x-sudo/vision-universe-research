@@ -8,7 +8,7 @@ Alle Backtest-Ergebnisse sind **Forschung, nicht zertifiziert**. Keine öffentli
 - **Erster historischer Backtest der Top 5** (#1328, Lauf 41869479235):
   - Rahmen: DEV-Snapshot 2016-01-04 bis 2026-09-30, DQ-K5-Quarantäne (die 83 ungeklärten Kapitalmaßnahmen sind ausgeschlossen, E1), vier Kostenstufen, SPY-Vergleich, Universum B mit 229 V13-Delisting-Ketten.
   - Je Methode gerechnet: Trades, Trefferquote, Rendite, maximaler Verlust, Abstand zu SPY und Kosten.
-  - Das Ergebnis liegt intern beim Owner (verschlüsselt im Lauf-Artefakt). Kurzfassung ohne Zahlen: Keine Methode schlägt SPY.
+  - Das Ergebnis liegt intern beim Owner (verschlüsselt im Lauf-Artefakt).
 - V13-Studie (A gegen A+V13) lief erstmals: 41861419543. Secrets und Archiv 1.2.0 funktionieren. Exit 4 wegen des Audit-Befunds zum Kauf am letzten Handelstag; die Klärung steht in #1334.
 - Kandidaten-Tageslauf wieder frisch: Stand 03.11. (Läufe 41862433422 und 41865789914, Commit `4decd3b7`).
 - Papierhandel: #1272 gemergt. R6 41864439485 hat die Referenzgleichheit gezeigt, damit sind R1–R6 vollständig. Protokoll 1.2.0 ist festgeschrieben (`fde5283e…`, PREPARED_NOT_ACTIVE) in #1270, das #1268 enthält.
