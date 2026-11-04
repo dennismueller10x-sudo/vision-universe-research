@@ -31,7 +31,11 @@ permissions:
   contents: write
 
 concurrency:
-  group: sec-consumer-${{ github.ref }}
+  # Je Zweig eine Gruppe (ADR-005). Bewusst KEINE gemeinsame Gruppe mit den
+  # anderen Discover-Neubauern: GitHub haelt je Gruppe nur einen wartenden
+  # Lauf, ein neuer verdraengt ihn - der Montagslauf koennte so still
+  # ausfallen. Den Zusammenstoss loest der Neubau im Push (unten).
+  group: sec-consumer-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -42,7 +46,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -175,7 +179,17 @@ jobs:
           node --test "quant/tests/*.test.mjs"
           node --test "discover/tests/*.test.mjs"
 
+      # discover/data/meta.json (und jede andere Discover-Datei) schreiben
+      # fuenf Laeufe ueber denselben Erzeuger. Lauf 41490082062 (02.11.2026)
+      # verwarf die Fundamentaldaten an einem Konflikt mit "Lange
+      # Kursreihen". Kein Stand gewinnt: nach jedem Neuaufsetzen baut der
+      # Push Discover aus dem zusammengefuehrten Baum neu und prueft ihn
+      # (scripts/ci/push-with-retry.sh, SIEBTENS). Europa hat einen eigenen
+      # Erzeuger und bleibt aussen vor.
       - name: Commit und Push
+        env:
+          PUSH_REGENERATE_PATHS: "discover/data/ !discover/data/europe/"
+          PUSH_REGENERATE: "node scripts/discover/build-discover-data.mjs && node scripts/discover/verify-discover-data.mjs"
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"
