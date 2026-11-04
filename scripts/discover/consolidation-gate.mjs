@@ -42,7 +42,7 @@ assert(discoverGroup,'Discover-Gruppe fehlt');
 assert.equal(discoverGroup.href,'/discover/#/','Discover bleibt ein eigenstaendiger direkter Produkteinstieg');
 const entries=Array.from(discoverGroup.entries,([label,href])=>label+' '+href);
 assert.deepEqual(entries,[
-  'Übersicht /discover/#/','Welten /discover/#/welten','Strategien /discover/#/strategien','Entdecken /discover/#/einzeln/US_REAL',
+  'Übersicht /discover/#/','Welten /discover/#/welten','Strategien /discover/#/strategien','Entdecken /discover/#/swipen',
   'Suchen /discover/#/suche','Märkte /discover/#/maerkte','Watchlist /discover/#/watchlist'
 ],'Navigation: '+JSON.stringify(entries));
 
