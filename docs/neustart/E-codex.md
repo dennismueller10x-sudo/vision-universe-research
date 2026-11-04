@@ -58,3 +58,20 @@ for (const r of d.results) {
 ```
 
 Alle vier Differenzen in allen fünf Zeilen: 0. Private Tagesbalken, SEC-ORIGINAL-Bündel und Supertrader-Snapshot wurden nicht neu beschafft; eine vollständige End-to-End-Reproduktion bleibt offen. Keine Renditezahlen aus verschlüsselten Artefakten veröffentlicht.
+
+## E2 – SEC-Form-4-Erzeuger
+
+Separater Branch `codex/e2-sec-form4`, PR [#1369](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1369). Erzeuger `scripts/insider/form4.py`, Verwendung und Datenvertrag in `scripts/insider/README.md`. Point-in-Time anhand Einreichung/Acceptance, zehn Offline-Tests, genau ein Registry-Eintrag; kein Workflow. Strang A übernimmt Pipeline und erstes Artefakt. Keine historische Ticker-Zuordnung erfunden, Amendments nicht zu Originalen addieren.
+
+## Validierung
+
+- E1-Gegenrechnung oben: alle 20 Differenzen exakt 0.
+- Portfolio-Standard + Top-5: 14/14; Ausführungsaudit/Turtle-Stopps: 17/17.
+- Vollständige Core-Suite: 351 bestanden, 2 übersprungen, 0 Fehler.
+- E2: zehn Python-Tests bestanden, Registry/Health unter Node 22 bestanden. Kein Live-SEC-Abruf (tatsächlicher Betreiber-User-Agent muss beim Betrieb gesetzt werden).
+- Technical: 114/114; Python Quant: 590/590; Konten: 110 bestanden, 3 übersprungen, 0 Fehler.
+- E2: vollständige Core-Suite über die Isolationsprüfung unter Node 22 grün; keine Produktionsdatei verändert.
+- Discover + Supertrader + Screener: 1.782 bestanden, 21 übersprungen, 2 Fehler. Discover `names.test.mjs` NM3: ADIL-Suchindex weicht vom displayName ab; auf unveränderten main-Dateien auch unter Node 22 reproduziert. Discover `producer-ownership.test.mjs`: Neubau nach dem vorhandenen 600.000-ms-Zeitlimit beendet (SIGTERM), keine abgeschlossene Reproduzierbarkeitsprüfung. B/C-Code und Produktionsdaten unverändert.
+- `node scripts/quality/check-test-isolation.mjs`: keine Produktionsdatei verändert; die intern gestartete Quant-Suite erreichte das vorhandene 900.000-ms-Zeitlimit (Log 20:01:57–20:16:58 UTC), daher Hinweis Exit 1. Separater Quant-Lauf vollständig: 3.929 bestanden, 26 übersprungen, 1 Fehler unter Node 24 (`quant/tests/research-portfolio-exit-rules.test.mjs:19`, Golden-Hash). Genau dieser Test besteht unter Node 22.23.4; keine Änderung am Ledger oder an den Golden-Fixtures.
+- SQL-Flows nur mit PG_TEST_URL; diese Umgebung hat keine solche Konfiguration.
+- Laufzeit: bereitgestelltes Node 24.22.1 für die Bestandssuiten; E2-Core/Registry und die Gegenproben des Discover-Namensfehlers bzw. Quant-Golden-Tests zusätzlich unter Node 22.23.4.
