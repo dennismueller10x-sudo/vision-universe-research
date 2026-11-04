@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-03T11:06:29.640Z",
+ "generatedAt": "2026-11-04T01:31:43.629Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -45,7 +45,7 @@
    }
   ],
   "statement": "Normale Schwankungen – aber der Trend ist noch nicht breit bestätigt.",
-  "explanation": "Die Schwankungen sind normal, aber der Trend ist noch nicht breit bestätigt und die Dynamik ist uneinheitlich und nur wenige Aktien tragen die Bewegung.",
+  "explanation": "Die Schwankungen sind normal, aber der Trend ist noch nicht breit bestätigt und die Dynamik ist uneinheitlich. Die Marktbreite ist nicht aktuell – sie zählt deshalb weder dafür noch dagegen.",
   "investor": "Gegenwind überwiegt – das Umfeld spricht eher für Zurückhaltung als für zusätzliche Risikobereitschaft.",
   "why": {
    "support": [
@@ -56,14 +56,7 @@
      "text": "Die Kursschwankungen liegen im üblichen Rahmen."
     }
    ],
-   "headwind": [
-    {
-     "dimension": "BREADTH",
-     "state": "NARROW",
-     "label": "Schmal",
-     "text": "Nur eine Minderheit der Aktien liegt über ihrem Trend – die Bewegung hängt an wenigen Titeln."
-    }
-   ],
+   "headwind": [],
    "neutral": [
     {
      "dimension": "TREND",
@@ -78,36 +71,43 @@
      "text": "Die Kursentwicklung über drei und sechs Monate ist uneinheitlich."
     }
    ],
-   "open": [],
+   "open": [
+    {
+     "dimension": "BREADTH",
+     "state": "NOT_CURRENT",
+     "label": "Nicht aktuell",
+     "text": "Die Marktbreite ist nicht aktuell – sie zählt deshalb weder dafür noch dagegen."
+    }
+   ],
    "context": [
     {
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "label": "Auffällige Bewegungen",
-     "text": "Die langfristigen US-Renditen sind deutlich gefallen. Der Ölpreis ist deutlich gestiegen."
+     "text": "Die langfristigen US-Renditen sind deutlich gefallen. Gold ist deutlich gefallen. Der Ölpreis ist deutlich gestiegen."
     }
    ]
   },
   "counts": {
    "support": 1,
    "neutral": 2,
-   "headwind": 1,
-   "open": 0
+   "headwind": 0,
+   "open": 1
   },
   "states": {
    "TREND": "MIXED",
    "MOMENTUM": "MIXED",
    "RISK": "NORMAL",
-   "BREADTH": "NARROW",
+   "BREADTH": "NOT_CURRENT",
    "CROSS_ASSET": "OBSERVED"
   },
   "methodology": "Feste Entscheidungstabelle (market-environment-1.0.0): Trend und Momentum bilden gemeinsam die Basisstufe (sie überschneiden sich und zählen deshalb nicht doppelt). Das Risiko begrenzt nach oben (erhöht: höchstens „Selektiv“, hoch: höchstens „Vorsichtig“). Die Marktbreite bestätigt: „Breit konstruktiv“ nur mit aktueller breiter Beteiligung; schmale Breite begrenzt auf „Selektiv“. Fehlt die Marktbreite, zählt sie weder dafür noch dagegen. Der Cross-Asset-Kontext beschreibt Beziehungen und stimmt nicht mit ab. Kein Score, keine Gewichte, keine Prognose.",
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-03T11:06:29.640Z",
-  "dataAsOf": "2026-11-02",
-  "previousDataAsOf": "2026-10-30",
+  "generatedAt": "2026-11-04T01:31:43.629Z",
+  "dataAsOf": "2026-11-03",
+  "previousDataAsOf": "2026-11-02",
   "schedule": {
    "workflow": ".github/workflows/multi-asset-data.yml",
    "cron": "20 */3 * * *",
@@ -118,8 +118,8 @@
  },
  "comparison": {
   "state": "AVAILABLE",
-  "previousDate": "2026-10-30",
-  "currentDate": "2026-11-02",
+  "previousDate": "2026-11-02",
+  "currentDate": "2026-11-03",
   "rows": [
    {
     "key": "ENVIRONMENT",
@@ -142,11 +142,11 @@
     "key": "BREADTH",
     "label": "Marktbreite",
     "from": "Schmale Beteiligung",
-    "to": "Schmale Beteiligung",
-    "change": "UNCHANGED",
-    "fromValue": "36 % über 50 Tage",
-    "toValue": "38 % über 50 Tage",
-    "delta": 2.55
+    "to": "Nicht aktuell",
+    "change": "UNKNOWN",
+    "fromValue": "38 % über 50 Tage",
+    "toValue": null,
+    "delta": null
    },
    {
     "key": "MOMENTUM",
@@ -154,9 +154,9 @@
     "from": "Uneinheitliche Dynamik",
     "to": "Uneinheitliche Dynamik",
     "change": "UNCHANGED",
-    "fromValue": "−2,0 % (3 Monate)",
-    "toValue": "−4,9 % (3 Monate)",
-    "delta": -2.89
+    "fromValue": "−4,9 % (3 Monate)",
+    "toValue": "−4,6 % (3 Monate)",
+    "delta": 0.3
    },
    {
     "key": "RISK",
@@ -164,18 +164,18 @@
     "from": "Normale Schwankungen",
     "to": "Normale Schwankungen",
     "change": "UNCHANGED",
-    "fromValue": "11,6 % Schwankung",
-    "toValue": "11,4 % Schwankung",
-    "delta": -0.29
+    "fromValue": "11,4 % Schwankung",
+    "toValue": "11,2 % Schwankung",
+    "delta": -0.17
    },
    {
     "key": "US10Y",
     "label": "US-Rendite 10 Jahre",
-    "from": "4,94 %",
-    "to": "4,91 %",
+    "from": "4,91 %",
+    "to": "4,95 %",
     "change": "CONTEXT",
-    "delta": -3,
-    "deltaText": "−3 bp",
+    "delta": 4,
+    "deltaText": "+4 bp",
     "symbol": "US10Y"
    }
   ],
@@ -239,13 +239,13 @@
     "toLabel": "Aufwärtstrend",
     "level": 2,
     "levelLabel": "Selektiv",
-    "text": "wenn mindestens 3 der 4 großen US-Markt-Tracker über ihrer 50- und 200-Tage-Linie liegen (derzeit 0). Am nächsten dran: DIA (0,4 % bis über beide Linien), IWM (1,7 % bis über beide Linien), SPY (2,0 % bis über beide Linien)",
+    "text": "wenn mindestens 3 der 4 großen US-Markt-Tracker über ihrer 50- und 200-Tage-Linie liegen (derzeit 0). Am nächsten dran: DIA (0,8 % bis über beide Linien), IWM (1,3 % bis über beide Linien), SPY (1,7 % bis über beide Linien)",
     "symbols": [
      "DIA",
      "IWM",
      "SPY"
     ],
-    "distance": 1.97
+    "distance": 1.65
    },
    {
     "dimension": "MOMENTUM",
@@ -254,9 +254,9 @@
     "toLabel": "Positive Dynamik",
     "level": 2,
     "levelLabel": "Selektiv",
-    "text": "wenn die Tracker über 3 und 6 Monate im Mittel (Median) beide im Plus liegen (derzeit −4,9 % über 3 und +3,0 % über 6 Monate)",
+    "text": "wenn die Tracker über 3 und 6 Monate im Mittel (Median) beide im Plus liegen (derzeit −4,6 % über 3 und +2,4 % über 6 Monate)",
     "symbols": [],
-    "distance": 4.9
+    "distance": 4.6
    }
   ],
   "worse": [],
@@ -270,7 +270,7 @@
    "stateLabel": "Kein klarer Trend",
    "why": "Der Trend ist die Basis der Einordnung. Eine Bestätigung würde das Marktbild verbessern, ein Bruch es verschlechtern.",
    "watch": [
-    "Besser: wenn mindestens 3 der 4 großen US-Markt-Tracker über ihrer 50- und 200-Tage-Linie liegen (derzeit 0). Am nächsten dran: DIA (0,4 % bis über beide Linien), IWM (1,7 % bis über beide Linien), SPY (2,0 % bis über beide Linien)."
+    "Besser: wenn mindestens 3 der 4 großen US-Markt-Tracker über ihrer 50- und 200-Tage-Linie liegen (derzeit 0). Am nächsten dran: DIA (0,8 % bis über beide Linien), IWM (1,3 % bis über beide Linien), SPY (1,7 % bis über beide Linien)."
    ],
    "symbols": [
     "DIA",
@@ -279,6 +279,19 @@
    ],
    "near": true,
    "anchor": "puls-trend"
+  },
+  {
+   "dimension": "BREADTH",
+   "title": "Marktbreite",
+   "state": "NOT_CURRENT",
+   "stateLabel": "Nicht aktuell",
+   "why": "Aktuelle Breitendaten fehlen. Sie würden zeigen, ob viele Aktien die Bewegung mittragen – erst dann ist „Breit konstruktiv“ möglich.",
+   "watch": [
+    "Die Breitendaten stammen vom 2026-11-02 und sind älter als der letzte Handelstag (2026-11-03). Keine Einordnung."
+   ],
+   "symbols": [],
+   "near": false,
+   "anchor": "maerkte-breite"
   },
   {
    "dimension": "CROSS_ASSET",
@@ -300,7 +313,7 @@
    "stateLabel": "Uneinheitliche Dynamik",
    "why": "Die Dynamik zeigt, ob der Markt weiter Kraft hat. Dreht sie, ändert sich die Einordnung.",
    "watch": [
-    "Besser: wenn die Tracker über 3 und 6 Monate im Mittel (Median) beide im Plus liegen (derzeit −4,9 % über 3 und +3,0 % über 6 Monate)."
+    "Besser: wenn die Tracker über 3 und 6 Monate im Mittel (Median) beide im Plus liegen (derzeit −4,6 % über 3 und +2,4 % über 6 Monate)."
    ],
    "symbols": [],
    "near": false,
@@ -333,21 +346,21 @@
     }
    ],
    "previous": 0,
-   "previousDate": "2026-10-30"
+   "previousDate": "2026-11-02"
   },
   "BREADTH": {
    "value": 38.2,
    "min": 0,
    "max": 100,
    "unit": "PERCENT",
-   "current": true,
+   "current": false,
    "marks": [
     {
      "at": 50,
      "label": "Mehrheit"
     }
    ],
-   "valueText": "38 % über der 50-Tage-Linie",
+   "valueText": "38 % über der 50-Tage-Linie (Stand 2026-11-02, nicht aktuell)",
    "zones": [
     {
      "from": 0,
@@ -360,11 +373,11 @@
      "tone": "support"
     }
    ],
-   "previous": 35.65,
-   "previousDate": "2026-10-30"
+   "previous": 38.2,
+   "previousDate": "2026-11-02"
   },
   "MOMENTUM": {
-   "value": -4.9,
+   "value": -4.6,
    "min": -10,
    "max": 10,
    "unit": "PERCENT",
@@ -374,7 +387,7 @@
      "label": "0 %"
     }
    ],
-   "valueText": "−4,9 % über 3 Monate (Median)",
+   "valueText": "−4,6 % über 3 Monate (Median)",
    "zones": [
     {
      "from": -10,
@@ -387,11 +400,11 @@
      "tone": "support"
     }
    ],
-   "previous": -2.01,
-   "previousDate": "2026-10-30"
+   "previous": -4.9,
+   "previousDate": "2026-11-02"
   },
   "RISK": {
-   "value": 11.35,
+   "value": 11.18,
    "min": 0,
    "max": 40,
    "unit": "PERCENT",
@@ -410,7 +423,7 @@
      "label": "hoch"
     }
    ],
-   "valueText": "11,4 % Schwankung (SPY, 20 Tage)",
+   "valueText": "11,2 % Schwankung (SPY, 20 Tage)",
    "zones": [
     {
      "from": 0,
@@ -428,17 +441,17 @@
      "tone": "strong-headwind"
     }
    ],
-   "previous": 11.64,
-   "previousDate": "2026-10-30"
+   "previous": 11.35,
+   "previousDate": "2026-11-02"
   },
   "CROSS_ASSET": {
-   "value": 2,
+   "value": 3,
    "min": 0,
    "max": 6,
    "unit": "COUNT",
    "context": true,
    "marks": [],
-   "valueText": "2 von 6 Anlageklassen deutlich bewegt",
+   "valueText": "3 von 6 Anlageklassen deutlich bewegt",
    "zones": [
     {
      "from": 0,
@@ -450,8 +463,8 @@
  },
  "history": {
   "path": "/quant/data/market/intelligence/market-pulse-history.json",
-  "from": "2025-08-25",
-  "to": "2026-11-02",
+  "from": "2025-08-26",
+  "to": "2026-11-03",
   "days": 300,
   "method": "POINT_IN_TIME"
  },
@@ -465,42 +478,42 @@
     {
      "key": "SPY",
      "label": "S&P 500 (Tracker SPY)",
-     "text": "unter 50-Tage-Linie (−2,0 %), über 200-Tage-Linie (+3,1 %)",
+     "text": "unter 50-Tage-Linie (−1,7 %), über 200-Tage-Linie (+3,4 %)",
      "above50": false,
      "above200": true,
-     "dist50": -1.97,
-     "dist200": 3.15,
-     "asOf": "2026-11-02"
+     "dist50": -1.65,
+     "dist200": 3.41,
+     "asOf": "2026-11-03"
     },
     {
      "key": "QQQ",
      "label": "Nasdaq 100 (Tracker QQQ)",
-     "text": "unter 50-Tage-Linie (−6,0 %), über 200-Tage-Linie (+0,2 %)",
+     "text": "unter 50-Tage-Linie (−5,3 %), über 200-Tage-Linie (+0,8 %)",
      "above50": false,
      "above200": true,
-     "dist50": -5.97,
-     "dist200": 0.19,
-     "asOf": "2026-11-02"
+     "dist50": -5.34,
+     "dist200": 0.76,
+     "asOf": "2026-11-03"
     },
     {
      "key": "DIA",
      "label": "Dow Jones (Tracker DIA)",
-     "text": "unter 50-Tage-Linie (−0,4 %), über 200-Tage-Linie (+2,6 %)",
+     "text": "unter 50-Tage-Linie (−0,8 %), über 200-Tage-Linie (+2,1 %)",
      "above50": false,
      "above200": true,
-     "dist50": -0.4,
-     "dist200": 2.62,
-     "asOf": "2026-11-02"
+     "dist50": -0.77,
+     "dist200": 2.15,
+     "asOf": "2026-11-03"
     },
     {
      "key": "IWM",
      "label": "Russell 2000 (Tracker IWM)",
-     "text": "unter 50-Tage-Linie (−1,7 %), über 200-Tage-Linie (+0,1 %)",
+     "text": "unter 50-Tage-Linie (−1,3 %), über 200-Tage-Linie (+0,3 %)",
      "above50": false,
      "above200": true,
-     "dist50": -1.66,
-     "dist200": 0.13,
-     "asOf": "2026-11-02"
+     "dist50": -1.31,
+     "dist200": 0.33,
+     "asOf": "2026-11-03"
     }
    ],
    "explanation": "Liegen die Kurse über ihren gleitenden Durchschnitten, ist der Markt über Wochen und Monate gestiegen. Das beschreibt die Vergangenheit, keine Vorhersage.",
@@ -513,9 +526,9 @@
   },
   "BREADTH": {
    "id": "BREADTH",
-   "state": "NARROW",
-   "label": "Schmal",
-   "summary": "38 % der beobachteten Aktien liegen über ihrem 50-Tage-Trend, 40 % über dem 200-Tage-Trend.",
+   "state": "NOT_CURRENT",
+   "label": "Nicht aktuell",
+   "summary": "Die Breitendaten stammen vom 2026-11-02 und sind älter als der letzte Handelstag (2026-11-03). Keine Einordnung.",
    "evidence": [
     {
      "key": "above50",
@@ -525,7 +538,7 @@
      "matched": 2204,
      "evaluated": 5770,
      "asOf": "2026-11-02",
-     "current": true
+     "current": false
     },
     {
      "key": "above200",
@@ -535,7 +548,7 @@
      "matched": 2050,
      "evaluated": 5139,
      "asOf": "2026-11-02",
-     "current": true
+     "current": false
     },
     {
      "key": "newHighs",
@@ -544,7 +557,7 @@
      "value": 50,
      "evaluated": 5059,
      "asOf": "2026-11-02",
-     "current": true
+     "current": false
     },
     {
      "key": "newLows",
@@ -553,21 +566,7 @@
      "value": 69,
      "evaluated": 5059,
      "asOf": "2026-11-02",
-     "current": true
-    },
-    {
-     "key": "advDecl",
-     "label": "Gestiegen / gefallen",
-     "text": "2768 / 2536 von 5771 (48 % gestiegen)",
-     "advancers": 2768,
-     "decliners": 2536,
-     "unchanged": 467,
-     "evaluated": 5771,
-     "session": "2026-11-02",
-     "previousSession": "2026-10-30",
-     "complete": true,
-     "asOf": "2026-11-02",
-     "current": true
+     "current": false
     }
    ],
    "explanation": "Eine Bewegung ist breiter getragen, wenn viele Aktien gleichzeitig mitziehen. Steigen die großen Indizes, während nur wenige Aktien zulegen, hängt der Anstieg an wenigen Titeln.",
@@ -578,7 +577,7 @@
     "state": "NARROW"
    },
    "asOf": "2026-11-02",
-   "expectedAsOf": "2026-11-02"
+   "expectedAsOf": "2026-11-03"
   },
   "MOMENTUM": {
    "id": "MOMENTUM",
@@ -589,45 +588,45 @@
     {
      "key": "median1M",
      "label": "Median 1 Monat",
-     "text": "−1,6 %",
-     "value": -1.56
+     "text": "−2,0 %",
+     "value": -1.96
     },
     {
      "key": "median3M",
      "label": "Median 3 Monate",
-     "text": "−4,9 %",
-     "value": -4.9
+     "text": "−4,6 %",
+     "value": -4.6
     },
     {
      "key": "median6M",
      "label": "Median 6 Monate",
-     "text": "+3,0 %",
-     "value": 2.98
+     "text": "+2,4 %",
+     "value": 2.38
     },
     {
      "key": "SPY",
      "label": "S&P 500 (Tracker SPY)",
-     "text": "1M −2,3 % · 3M −2,5 % · 6M +4,7 %"
+     "text": "1M −2,6 % · 3M −2,0 % · 6M +4,2 %"
     },
     {
      "key": "QQQ",
      "label": "Nasdaq 100 (Tracker QQQ)",
-     "text": "1M −9,1 % · 3M −5,9 % · 6M +1,2 %"
+     "text": "1M −9,4 % · 3M −4,5 % · 6M +0,5 %"
     },
     {
      "key": "DIA",
      "label": "Dow Jones (Tracker DIA)",
-     "text": "1M +1,6 % · 3M −3,9 % · 6M +6,1 %"
+     "text": "1M +1,0 % · 3M −4,7 % · 6M +4,9 %"
     },
     {
      "key": "IWM",
      "label": "Russell 2000 (Tracker IWM)",
-     "text": "1M −0,8 % · 3M −7,5 % · 6M +0,5 %"
+     "text": "1M −1,3 % · 3M −6,7 % · 6M −1,0 %"
     }
    ],
    "explanation": "Momentum beschreibt, wie kräftig sich die Märkte zuletzt bewegt haben. Es ist eng mit dem Trend verwandt und zählt deshalb nicht doppelt.",
    "methodology": "Median der Kursveränderung der Tracker über 3 und 6 Monate (63/126 Handelstage). Steigend, wenn beide Mediane positiv sind; fallend, wenn beide negativ sind; sonst uneinheitlich. Tempo: Vergleich des 1-Monats-Medians mit dem durchschnittlichen Monat der letzten 3 Monate.",
-   "pace": "ACCELERATING"
+   "pace": "SLOWING"
   },
   "RISK": {
    "id": "RISK",
@@ -638,17 +637,17 @@
     {
      "key": "vol20",
      "label": "Schwankung von SPY (S&P-500-Markttracker), 20 Tage annualisiert",
-     "text": "11,4 %",
-     "value": 11.35,
+     "text": "11,2 %",
+     "value": 11.18,
      "context": "Median von SPY (S&P-500-Markttracker) seit 1995-02-01: 13,9 %",
-     "asOf": "2026-11-02"
+     "asOf": "2026-11-03"
     },
     {
      "key": "drawdown52w",
      "label": "Abstand von SPY (S&P-500-Markttracker) zum 52-Wochen-Hoch",
-     "text": "−3,5 %",
-     "value": -3.46,
-     "asOf": "2026-11-02"
+     "text": "−3,2 %",
+     "value": -3.18,
+     "asOf": "2026-11-03"
     }
    ],
    "explanation": "Starke Schwankungen bedeuten größere Tagesbewegungen in beide Richtungen. Das ist kein Signal zum Kaufen oder Verkaufen.",
@@ -662,36 +661,36 @@
    "id": "CROSS_ASSET",
    "state": "OBSERVED",
    "label": "Auffällige Bewegungen",
-   "summary": "Die langfristigen US-Renditen sind deutlich gefallen. Der Ölpreis ist deutlich gestiegen.",
+   "summary": "Die langfristigen US-Renditen sind deutlich gefallen. Gold ist deutlich gefallen. Der Ölpreis ist deutlich gestiegen.",
    "evidence": [
     {
      "key": "EQUITY",
      "label": "Aktien (S&P-500-Tracker SPY)",
-     "text": "−2,3 % · 0,5-fach typisch",
-     "change": -2.279,
-     "ratio": -0.48,
+     "text": "−2,0 % · 0,4-fach typisch",
+     "change": -1.987,
+     "ratio": -0.41,
      "notable": false,
-     "asOf": "2026-11-02",
+     "asOf": "2026-11-03",
      "kind": "PERCENT"
     },
     {
      "key": "US10Y",
      "label": "US-Rendite 10 Jahre",
-     "text": "−37 bp · 1,6-fach typisch (deutlich)",
-     "change": -37,
-     "ratio": -1.56,
+     "text": "−33 bp · 1,3-fach typisch (deutlich)",
+     "change": -33,
+     "ratio": -1.35,
      "notable": true,
-     "asOf": "2026-11-02",
+     "asOf": "2026-11-03",
      "kind": "BP"
     },
     {
      "key": "GOLD",
      "label": "Gold",
-     "text": "−4,6 % · 0,9-fach typisch",
-     "change": -4.604,
-     "ratio": -0.87,
-     "notable": false,
-     "asOf": "2026-11-02",
+     "text": "−5,3 % · 1,0-fach typisch (deutlich)",
+     "change": -5.317,
+     "ratio": -1,
+     "notable": true,
+     "asOf": "2026-11-03",
      "kind": "PERCENT"
     },
     {
@@ -707,21 +706,21 @@
     {
      "key": "BTC",
      "label": "Bitcoin",
-     "text": "−9,5 % · 0,4-fach typisch",
-     "change": -9.514,
-     "ratio": -0.39,
+     "text": "−10,6 % · 0,4-fach typisch",
+     "change": -10.597,
+     "ratio": -0.44,
      "notable": false,
-     "asOf": "2026-11-02",
+     "asOf": "2026-11-03",
      "kind": "PERCENT"
     },
     {
      "key": "EURUSD",
      "label": "EUR/USD",
-     "text": "−0,1 % · 0,0-fach typisch",
-     "change": -0.08,
-     "ratio": -0.04,
+     "text": "−0,4 % · 0,2-fach typisch",
+     "change": -0.41,
+     "ratio": -0.21,
      "notable": false,
-     "asOf": "2026-11-02",
+     "asOf": "2026-11-03",
      "kind": "PERCENT"
     }
    ],
@@ -736,6 +735,13 @@
      ]
     },
     {
+     "id": "GOLD_DOWN",
+     "text": "Gold ist deutlich gefallen.",
+     "symbols": [
+      "XAUUSD"
+     ]
+    },
+    {
      "id": "OIL_UP",
      "text": "Der Ölpreis ist deutlich gestiegen.",
      "symbols": [
@@ -747,79 +753,14 @@
  },
  "dimensionStates": {
   "TREND": "MIXED",
-  "BREADTH": "NARROW",
+  "BREADTH": "NOT_CURRENT",
   "MOMENTUM": "MIXED",
   "RISK": "NORMAL",
   "CROSS_ASSET": "OBSERVED"
  },
  "movers": {
-  "session": "2026-11-02",
-  "previousSession": "2026-10-30",
-  "complete": true,
-  "asOf": "2026-11-02",
-  "methodVersion": "movers-eod-1.0.0",
-  "basis": "EOD_PUBLISHED_SERIES",
-  "universe": "Discover-Aktienuniversum (stock-index US_REAL)",
-  "filter": {
-   "minAvgDollarVolume20d": 20000000,
-   "minPrice": 5
-  },
-  "eligible": 1956,
-  "gainers": [
-   {
-    "symbol": "VCIG",
-    "name": "VCI Global",
-    "changePercent": 168.42
-   },
-   {
-    "symbol": "CLRO",
-    "name": "ClearOne",
-    "changePercent": 65.69
-   },
-   {
-    "symbol": "LITZ",
-    "name": "Tradr 2X Short LITE Daily",
-    "changePercent": 38.03
-   },
-   {
-    "symbol": "IDXX",
-    "name": "Idexx Laboratories",
-    "changePercent": 21.85
-   },
-   {
-    "symbol": "ULCC",
-    "name": "Frontier Group Holdings",
-    "changePercent": 15.19
-   }
-  ],
-  "losers": [
-   {
-    "symbol": "CMPS",
-    "name": "Compass Pathways",
-    "changePercent": -27.31
-   },
-   {
-    "symbol": "PGEN",
-    "name": "Precigen",
-    "changePercent": -25.94
-   },
-   {
-    "symbol": "AXTX",
-    "name": "Tradr 2X Long AXTI Daily",
-    "changePercent": -25.35
-   },
-   {
-    "symbol": "LITE",
-    "name": "Lumentum Holdings",
-    "changePercent": -18.59
-   },
-   {
-    "symbol": "NN",
-    "name": "NextNav",
-    "changePercent": -16.49
-   }
-  ],
-  "method": "Tagesaenderung = Schluss der letzten Sitzung gegen Schluss der Vorsitzung aus der veroeffentlichten Tagesreihe (split-bereinigt, dieselbe Definition wie Discover-Karte und Aktienseite). Titel mit Luecke zaehlen nicht. Nur liquide Titel (Dollarumsatz 20 Tage >= 20 Mio., Kurs >= 5 USD). Vor movers-eod-1.0.0: letzter IEX-5-Minuten-Kurs zweier Sitzungen."
+  "state": "UNAVAILABLE",
+  "reason": "Keine Tagesreihe der Benchmark fuer die letzte Sitzung - ohne Sitzung und Vorsitzung keine Tagesaenderung."
  },
  "sectors": {
   "state": "NOT_IMPLEMENTED",
@@ -862,13 +803,13 @@
   },
   "XAUUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 3948.07,
+   "asOf": "2026-11-03",
+   "last": 3922.41,
    "observations": 1530,
    "changes": {
-    "1M": -4.6,
-    "3M": -2.61,
-    "1Y": -0.79
+    "1M": -5.32,
+    "3M": -3.69,
+    "1Y": -1.88
    },
    "high52w": {
     "date": "2026-01-28",
@@ -878,18 +819,18 @@
     "date": "2026-10-30",
     "value": 3873.01
    },
-   "rangePosition": 4.6,
-   "dist50": -5.74,
-   "dist200": -9.6,
+   "rangePosition": 3,
+   "dist50": -6.13,
+   "dist200": -10.07,
    "trend": "NEGATIVE",
-   "drawdown52w": -28.38,
-   "vol20": 18.88,
+   "drawdown52w": -28.85,
+   "vol20": 18.9,
    "volContext": {
     "median": 13.7,
     "p25": 10.5,
     "p75": 18.5,
     "samples": 1509,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "HIGHER"
    },
    "roles": [
@@ -897,19 +838,19 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −4,6 % – das 0,9-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −5,3 % – das 1,0-Fache einer typischen Monatsbewegung, also deutlich."
     }
    ]
   },
   "XAGUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 50.63,
+   "asOf": "2026-11-03",
+   "last": 49.4835,
    "observations": 1530,
    "changes": {
-    "1M": -16.11,
-    "3M": -13.11,
-    "1Y": 4.23
+    "1M": -18.42,
+    "3M": -16.76,
+    "1Y": 3.19
    },
    "high52w": {
     "date": "2026-01-28",
@@ -919,31 +860,31 @@
     "date": "2025-11-04",
     "value": 47.094
    },
-   "rangePosition": 5,
-   "dist50": -15.85,
-   "dist200": -24.21,
+   "rangePosition": 3.4,
+   "dist50": -17.3,
+   "dist200": -25.75,
    "trend": "NEGATIVE",
-   "drawdown52w": -57.02,
-   "vol20": 38.67,
+   "drawdown52w": -57.99,
+   "vol20": 38.74,
    "volContext": {
     "median": 25.5,
     "p25": 20.3,
     "p75": 33.9,
     "samples": 1509,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "HIGHER"
    },
    "roles": []
   },
   "XPTUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 1443.88,
-   "observations": 1500,
+   "asOf": "2026-11-03",
+   "last": 1435.55,
+   "observations": 1501,
    "changes": {
-    "1M": -15.05,
-    "3M": -11.57,
-    "1Y": -8.56
+    "1M": -15.91,
+    "3M": -17.31,
+    "1Y": -8.55
    },
    "high52w": {
     "date": "2026-01-23",
@@ -953,52 +894,52 @@
     "date": "2026-10-30",
     "value": 1435.44
    },
-   "rangePosition": 0.6,
-   "dist50": -14.45,
-   "dist200": -19.88,
+   "rangePosition": 0,
+   "dist50": -14.56,
+   "dist200": -20.22,
    "trend": "NEGATIVE",
-   "drawdown52w": -48.13,
-   "vol20": 27.33,
+   "drawdown52w": -48.43,
+   "vol20": 27.17,
    "volContext": {
     "median": 24.4,
     "p25": 20.3,
     "p75": 30.1,
-    "samples": 1479,
-    "from": "2021-11-03",
+    "samples": 1480,
+    "from": "2021-11-04",
     "state": "USUAL"
    },
    "roles": []
   },
   "XPDUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 968.75,
-   "observations": 1493,
+   "asOf": "2026-11-03",
+   "last": 953.29,
+   "observations": 1494,
    "changes": {
-    "1M": -17.79,
-    "3M": -23.56,
-    "1Y": -32.28
+    "1M": -19.07,
+    "3M": -29.42,
+    "1Y": -33.81
    },
    "high52w": {
     "date": "2026-01-28",
     "value": 2054.1
    },
    "low52w": {
-    "date": "2026-11-02",
-    "value": 968.75
+    "date": "2026-11-03",
+    "value": 953.29
    },
    "rangePosition": 0,
-   "dist50": -19.27,
-   "dist200": -27.55,
+   "dist50": -19.94,
+   "dist200": -28.52,
    "trend": "NEGATIVE",
-   "drawdown52w": -52.84,
-   "vol20": 24.04,
+   "drawdown52w": -53.59,
+   "vol20": 23.1,
    "volContext": {
     "median": 33.1,
     "p25": 27.5,
     "p75": 42.2,
-    "samples": 1472,
-    "from": "2021-11-03",
+    "samples": 1473,
+    "from": "2021-11-04",
     "state": "LOWER"
    },
    "roles": []
@@ -1114,34 +1055,34 @@
   },
   "BTCUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 76680.91851,
-   "observations": 5521,
+   "asOf": "2026-11-03",
+   "last": 77339.337464,
+   "observations": 5522,
    "changes": {
-    "1M": -9.51,
-    "3M": 20.81,
-    "1Y": -30.63
+    "1M": -10.6,
+    "3M": 20.74,
+    "1Y": -27.44
    },
    "high52w": {
-    "date": "2025-11-03",
-    "value": 106582.530555
+    "date": "2025-11-10",
+    "value": 105978.963064
    },
    "low52w": {
     "date": "2026-06-30",
     "value": 58532.412697
    },
-   "rangePosition": 37.8,
-   "dist50": -6.39,
-   "dist200": 4.81,
+   "rangePosition": 39.6,
+   "dist50": -5.57,
+   "dist200": 5.71,
    "trend": "MIXED",
-   "drawdown52w": -28.05,
-   "vol20": 28.82,
+   "drawdown52w": -27.02,
+   "vol20": 28.51,
    "volContext": {
     "median": 44.9,
     "p25": 33.9,
     "p75": 57.2,
     "samples": 1825,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "LOWER"
    },
    "roles": [
@@ -1149,53 +1090,53 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −9,5 % – das 0,4-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −10,6 % – das 0,4-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
   },
   "ETHUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 2249.953192,
-   "observations": 4085,
+   "asOf": "2026-11-03",
+   "last": 2271.701137,
+   "observations": 4086,
    "changes": {
-    "1M": -16.26,
-    "3M": 21.04,
-    "1Y": -42.41
+    "1M": -16.68,
+    "3M": 21.58,
+    "1Y": -36.96
    },
    "high52w": {
-    "date": "2025-11-03",
-    "value": 3603.342859
+    "date": "2025-11-09",
+    "value": 3583.118917
    },
    "low52w": {
     "date": "2026-06-25",
     "value": 1565.338975
    },
-   "rangePosition": 33.6,
-   "dist50": -10.4,
-   "dist200": 4.3,
+   "rangePosition": 35,
+   "dist50": -9.36,
+   "dist200": 5.34,
    "trend": "MIXED",
-   "drawdown52w": -37.56,
-   "vol20": 31.52,
+   "drawdown52w": -36.6,
+   "vol20": 29.79,
    "volContext": {
     "median": 60.5,
     "p25": 46.3,
     "p75": 77.8,
     "samples": 1825,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "LOWER"
    },
    "roles": []
   },
   "SOLUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 91.844356,
-   "observations": 2224,
+   "asOf": "2026-11-03",
+   "last": 92.722583,
+   "observations": 2225,
    "changes": {
-    "1M": -23.19,
-    "3M": 24.97,
-    "1Y": -51.07
+    "1M": -23.72,
+    "3M": 25.8,
+    "1Y": -44.15
    },
    "high52w": {
     "date": "2025-11-10",
@@ -1205,31 +1146,31 @@
     "date": "2026-06-06",
     "value": 62.169687
    },
-   "rangePosition": 28.2,
-   "dist50": -15.58,
-   "dist200": 3.36,
+   "rangePosition": 29.1,
+   "dist50": -14.62,
+   "dist200": 4.32,
    "trend": "MIXED",
-   "drawdown52w": -45.1,
-   "vol20": 37.45,
+   "drawdown52w": -44.58,
+   "vol20": 37.32,
    "volContext": {
     "median": 78.7,
     "p25": 62.2,
     "p75": 102.1,
     "samples": 1825,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "LOWER"
    },
    "roles": []
   },
   "XRPUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 1.248146,
-   "observations": 4080,
+   "asOf": "2026-11-03",
+   "last": 1.275164,
+   "observations": 4081,
    "changes": {
-    "1M": -16.01,
-    "3M": 16.11,
-    "1Y": -50.6
+    "1M": -16.11,
+    "3M": 18.84,
+    "1Y": -44.77
    },
    "high52w": {
     "date": "2025-11-10",
@@ -1239,31 +1180,31 @@
     "date": "2026-08-16",
     "value": 0.992569
    },
-   "rangePosition": 16.7,
-   "dist50": -10.09,
-   "dist200": -2.1,
-   "trend": "NEGATIVE",
-   "drawdown52w": -50.58,
-   "vol20": 42.63,
+   "rangePosition": 18.4,
+   "dist50": -7.94,
+   "dist200": 0.1,
+   "trend": "MIXED",
+   "drawdown52w": -49.51,
+   "vol20": 42.85,
    "volContext": {
-    "median": 60.7,
-    "p25": 45.2,
+    "median": 60.4,
+    "p25": 45.1,
     "p75": 83.2,
     "samples": 1825,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "LOWER"
    },
    "roles": []
   },
   "EURUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 1.1216,
-   "observations": 7127,
+   "asOf": "2026-11-03",
+   "last": 1.1179,
+   "observations": 7128,
    "changes": {
-    "1M": -0.08,
-    "3M": -2.77,
-    "1Y": -2.93
+    "1M": -0.41,
+    "3M": -2.92,
+    "1Y": -2.91
    },
    "high52w": {
     "date": "2026-01-28",
@@ -1273,18 +1214,18 @@
     "date": "2026-10-29",
     "value": 1.113
    },
-   "rangePosition": 10.2,
-   "dist50": -1.47,
-   "dist200": -2.97,
+   "rangePosition": 5.8,
+   "dist50": -1.71,
+   "dist200": -3.27,
    "trend": "NEGATIVE",
-   "drawdown52w": -6.33,
-   "vol20": 5.01,
+   "drawdown52w": -6.64,
+   "vol20": 4.66,
    "volContext": {
     "median": 6.8,
     "p25": 5.3,
     "p75": 8.6,
     "samples": 1279,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "LOWER"
    },
    "roles": [
@@ -1292,19 +1233,19 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −0,1 % – das 0,0-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −0,4 % – das 0,2-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
   },
   "US2Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-02",
-   "last": 4.59,
-   "observations": 9215,
+   "asOf": "2026-11-03",
+   "last": 4.61,
+   "observations": 9216,
    "changes": {
-    "1M": -24,
-    "3M": 34,
-    "1Y": 99
+    "1M": -22,
+    "3M": 41,
+    "1Y": 101
    },
    "high52w": {
     "date": "2026-09-28",
@@ -1314,20 +1255,20 @@
     "date": "2026-02-27",
     "value": 3.38
    },
-   "rangePosition": 78.6,
-   "vs200": 50.7,
-   "vs50": -4.2,
+   "rangePosition": 79.9,
+   "vs200": 52.2,
+   "vs50": -2.9,
    "roles": []
   },
   "US5Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-02",
-   "last": 4.7,
-   "observations": 9215,
+   "asOf": "2026-11-03",
+   "last": 4.74,
+   "observations": 9216,
    "changes": {
-    "1M": -36,
-    "3M": 30,
-    "1Y": 99
+    "1M": -32,
+    "3M": 41,
+    "1Y": 102
    },
    "high52w": {
     "date": "2026-09-30",
@@ -1337,20 +1278,20 @@
     "date": "2026-02-27",
     "value": 3.51
    },
-   "rangePosition": 75.3,
-   "vs200": 46.5,
-   "vs50": -9.8,
+   "rangePosition": 77.8,
+   "vs200": 50,
+   "vs50": -6.4,
    "roles": []
   },
   "US10Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-02",
-   "last": 4.91,
-   "observations": 9215,
+   "asOf": "2026-11-03",
+   "last": 4.95,
+   "observations": 9216,
    "changes": {
-    "1M": -37,
-    "3M": 21,
-    "1Y": 80
+    "1M": -33,
+    "3M": 32,
+    "1Y": 82
    },
    "high52w": {
     "date": "2026-10-05",
@@ -1360,27 +1301,27 @@
     "date": "2026-02-27",
     "value": 3.97
    },
-   "rangePosition": 70.1,
-   "vs200": 36.1,
-   "vs50": -9.6,
+   "rangePosition": 73.1,
+   "vs200": 39.7,
+   "vs50": -6.1,
    "roles": [
     {
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −37 bp – das 1,6-Fache einer typischen Monatsbewegung, also deutlich."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −33 bp – das 1,4-Fache einer typischen Monatsbewegung, also deutlich."
     }
    ]
   },
   "US30Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-02",
-   "last": 5.28,
-   "observations": 8221,
+   "asOf": "2026-11-03",
+   "last": 5.32,
+   "observations": 8222,
    "changes": {
-    "1M": -35,
-    "3M": 5,
-    "1Y": 61
+    "1M": -31,
+    "3M": 14,
+    "1Y": 63
    },
    "high52w": {
     "date": "2026-10-07",
@@ -1390,20 +1331,20 @@
     "date": "2026-02-27",
     "value": 4.64
    },
-   "rangePosition": 62.1,
-   "vs200": 21.6,
-   "vs50": -10.8,
+   "rangePosition": 66,
+   "vs200": 25.3,
+   "vs50": -6.9,
    "roles": []
   },
   "DE2Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-02",
-   "last": 3.03,
-   "observations": 7422,
+   "asOf": "2026-11-03",
+   "last": 3.04,
+   "observations": 7423,
    "changes": {
-    "1M": 1,
+    "1M": 2,
     "3M": 28,
-    "1Y": 106
+    "1Y": 108
    },
    "high52w": {
     "date": "2026-09-28",
@@ -1413,66 +1354,66 @@
     "date": "2025-11-04",
     "value": 1.96
    },
-   "rangePosition": 78.7,
-   "vs200": 38.1,
-   "vs50": -5.3,
+   "rangePosition": 79.4,
+   "vs200": 38.6,
+   "vs50": -4.7,
    "roles": []
   },
   "DE10Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-02",
-   "last": 3.37,
-   "observations": 7422,
+   "asOf": "2026-11-03",
+   "last": 3.38,
+   "observations": 7423,
    "changes": {
-    "1M": -12,
+    "1M": -11,
     "3M": 16,
-    "1Y": 66
+    "1Y": 67
    },
    "high52w": {
     "date": "2026-09-28",
     "value": 3.69
    },
    "low52w": {
-    "date": "2025-11-03",
-    "value": 2.71
+    "date": "2025-11-13",
+    "value": 2.72
    },
-   "rangePosition": 67.3,
-   "vs200": 20.2,
-   "vs50": -11.3,
+   "rangePosition": 68,
+   "vs200": 21,
+   "vs50": -10.4,
    "roles": []
   },
   "DE30Y": {
    "kind": "YIELD",
-   "asOf": "2026-11-02",
-   "last": 3.76,
-   "observations": 6670,
+   "asOf": "2026-11-03",
+   "last": 3.77,
+   "observations": 6671,
    "changes": {
-    "1M": -15,
+    "1M": -14,
     "3M": 0,
-    "1Y": 51
+    "1Y": 52
    },
    "high52w": {
     "date": "2026-10-01",
     "value": 4.03
    },
    "low52w": {
-    "date": "2025-11-03",
-    "value": 3.25
+    "date": "2025-11-13",
+    "value": 3.27
    },
-   "rangePosition": 65.4,
-   "vs200": 5.6,
-   "vs50": -13.5,
+   "rangePosition": 65.8,
+   "vs200": 6.5,
+   "vs50": -12.3,
    "roles": []
   },
   "US_EFFR": {
    "kind": "RATE",
-   "asOf": "2026-10-30",
+   "asOf": "2026-11-02",
    "last": 3.88,
-   "observations": 6617,
+   "observations": 6618,
    "changes": {
     "1M": 0,
     "3M": 25,
-    "1Y": 1
+    "1Y": 2
    },
    "high52w": {
     "date": "2025-12-10",
@@ -1483,19 +1424,19 @@
     "value": 3.62
    },
    "rangePosition": 96.3,
-   "vs200": 20.9,
-   "vs50": 9.5,
+   "vs200": 20.7,
+   "vs50": 9,
    "roles": []
   },
   "QQQ": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 681.09,
-   "observations": 6956,
+   "asOf": "2026-11-03",
+   "last": 685.28,
+   "observations": 6957,
    "changes": {
-    "1M": -9.14,
-    "3M": -2.71,
-    "1Y": 8.27
+    "1M": -8.58,
+    "3M": -5.33,
+    "1Y": 8.42
    },
    "high52w": {
     "date": "2026-10-06",
@@ -1505,18 +1446,18 @@
     "date": "2026-03-30",
     "value": 558.28
    },
-   "rangePosition": 61,
-   "dist50": -5.97,
-   "dist200": 0.19,
+   "rangePosition": 63.1,
+   "dist50": -5.34,
+   "dist200": 0.76,
    "trend": "MIXED",
-   "drawdown52w": -10.34,
-   "vol20": 22.56,
+   "drawdown52w": -9.79,
+   "vol20": 22.66,
    "volContext": {
     "median": 18.8,
-    "p25": 15.3,
+    "p25": 15.4,
     "p75": 25.9,
     "samples": 1253,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "USUAL"
    },
    "roles": [
@@ -1530,13 +1471,13 @@
   },
   "SPY": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 752.1,
-   "observations": 8012,
+   "asOf": "2026-11-03",
+   "last": 754.35,
+   "observations": 8013,
    "changes": {
-    "1M": -2.28,
-    "3M": -0.74,
-    "1Y": 10.27
+    "1M": -1.99,
+    "3M": -2.2,
+    "1Y": 10.39
    },
    "high52w": {
     "date": "2026-10-06",
@@ -1546,18 +1487,18 @@
     "date": "2026-03-30",
     "value": 631.97
    },
-   "rangePosition": 81.7,
-   "dist50": -1.97,
-   "dist200": 3.15,
+   "rangePosition": 83.2,
+   "dist50": -1.65,
+   "dist200": 3.41,
    "trend": "MIXED",
-   "drawdown52w": -3.46,
-   "vol20": 11.35,
+   "drawdown52w": -3.18,
+   "vol20": 11.18,
    "volContext": {
     "median": 13.6,
     "p25": 10.6,
     "p75": 18.5,
     "samples": 1253,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "USUAL"
    },
    "roles": [
@@ -1577,19 +1518,19 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −2,3 % – das 0,5-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −2,0 % – das 0,4-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
   },
   "DIA": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 519.34,
-   "observations": 7242,
+   "asOf": "2026-11-03",
+   "last": 517.06,
+   "observations": 7243,
    "changes": {
-    "1M": 1.61,
-    "3M": -2.24,
-    "1Y": 9.18
+    "1M": 1.17,
+    "3M": -4.32,
+    "1Y": 9.21
    },
    "high52w": {
     "date": "2026-08-05",
@@ -1599,18 +1540,18 @@
     "date": "2026-03-27",
     "value": 451.39
    },
-   "rangePosition": 74.3,
-   "dist50": -0.4,
-   "dist200": 2.62,
+   "rangePosition": 71.8,
+   "dist50": -0.77,
+   "dist200": 2.15,
    "trend": "MIXED",
-   "drawdown52w": -4.32,
-   "vol20": 10.05,
+   "drawdown52w": -4.74,
+   "vol20": 10.08,
    "volContext": {
     "median": 12.1,
     "p25": 10,
     "p75": 15.9,
     "samples": 1253,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "USUAL"
    },
    "roles": [
@@ -1624,13 +1565,13 @@
   },
   "IWM": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 279.14,
-   "observations": 6648,
+   "asOf": "2026-11-03",
+   "last": 279.79,
+   "observations": 6649,
    "changes": {
-    "1M": -0.85,
-    "3M": -5.77,
-    "1Y": 13.37
+    "1M": -0.61,
+    "3M": -7.27,
+    "1Y": 14
    },
    "high52w": {
     "date": "2026-08-14",
@@ -1640,18 +1581,18 @@
     "date": "2025-11-20",
     "value": 229.11
    },
-   "rangePosition": 65.8,
-   "dist50": -1.66,
-   "dist200": 0.13,
+   "rangePosition": 66.7,
+   "dist50": -1.31,
+   "dist200": 0.33,
    "trend": "MIXED",
-   "drawdown52w": -8.51,
-   "vol20": 16.1,
+   "drawdown52w": -8.29,
+   "vol20": 15.95,
    "volContext": {
     "median": 20.5,
     "p25": 16.7,
     "p75": 24.6,
     "samples": 1253,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "LOWER"
    },
    "roles": [
@@ -1665,13 +1606,13 @@
   },
   "FEZ": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 65.39,
-   "observations": 6047,
+   "asOf": "2026-11-03",
+   "last": 65.22,
+   "observations": 6048,
    "changes": {
-    "1M": -2.4,
-    "3M": -7.21,
-    "1Y": 4.66
+    "1M": -2.66,
+    "3M": -8.59,
+    "1Y": 4.29
    },
    "high52w": {
     "date": "2026-08-14",
@@ -1681,31 +1622,31 @@
     "date": "2026-03-27",
     "value": 59.8
    },
-   "rangePosition": 45.4,
-   "dist50": -3.54,
-   "dist200": -2.69,
+   "rangePosition": 44.1,
+   "dist50": -3.61,
+   "dist200": -2.93,
    "trend": "NEGATIVE",
-   "drawdown52w": -9.31,
+   "drawdown52w": -9.54,
    "vol20": 13.82,
    "volContext": {
     "median": 16.7,
     "p25": 14,
     "p75": 22.4,
     "samples": 1253,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "LOWER"
    },
    "roles": []
   },
   "URTH": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 204.15,
-   "observations": 3723,
+   "asOf": "2026-11-03",
+   "last": 204.28,
+   "observations": 3724,
    "changes": {
-    "1M": -1.63,
-    "3M": -0.83,
-    "1Y": 10.33
+    "1M": -1.57,
+    "3M": -2.37,
+    "1Y": 10.21
    },
    "high52w": {
     "date": "2026-08-13",
@@ -1715,31 +1656,31 @@
     "date": "2026-03-30",
     "value": 174.94
    },
-   "rangePosition": 79.9,
-   "dist50": -1.71,
-   "dist200": 2.64,
+   "rangePosition": 80.2,
+   "dist50": -1.6,
+   "dist200": 2.67,
    "trend": "MIXED",
-   "drawdown52w": -3.48,
-   "vol20": 10.28,
+   "drawdown52w": -3.42,
+   "vol20": 10,
    "volContext": {
     "median": 13,
     "p25": 10.7,
     "p75": 17.7,
     "samples": 1253,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "LOWER"
    },
    "roles": []
   },
   "EEM": {
    "kind": "PRICE",
-   "asOf": "2026-11-02",
-   "last": 61.11,
-   "observations": 5928,
+   "asOf": "2026-11-03",
+   "last": 61.1,
+   "observations": 5929,
    "changes": {
-    "1M": -9.69,
-    "3M": -4.99,
-    "1Y": 10.51
+    "1M": -9.71,
+    "3M": -7.42,
+    "1Y": 9.79
    },
    "high52w": {
     "date": "2026-06-22",
@@ -1750,17 +1691,17 @@
     "value": 52.6
    },
    "rangePosition": 45.7,
-   "dist50": -7.4,
-   "dist200": -4.36,
+   "dist50": -7.28,
+   "dist200": -4.4,
    "trend": "NEGATIVE",
-   "drawdown52w": -14.18,
-   "vol20": 20.51,
+   "drawdown52w": -14.2,
+   "vol20": 20.6,
    "volContext": {
     "median": 17,
     "p25": 14,
     "p75": 21.5,
     "samples": 1253,
-    "from": "2021-11-03",
+    "from": "2021-11-04",
     "state": "USUAL"
    },
    "roles": []
@@ -1769,42 +1710,42 @@
  "inputs": {
   "trackers": {
    "SPY": {
-    "asOf": "2026-11-02",
-    "observations": 8012,
+    "asOf": "2026-11-03",
+    "observations": 8013,
     "path": "/quant/data/market/multi-asset/series/SPY.json"
    },
    "QQQ": {
-    "asOf": "2026-11-02",
-    "observations": 6956,
+    "asOf": "2026-11-03",
+    "observations": 6957,
     "path": "/quant/data/market/multi-asset/series/QQQ.json"
    },
    "DIA": {
-    "asOf": "2026-11-02",
-    "observations": 7242,
+    "asOf": "2026-11-03",
+    "observations": 7243,
     "path": "/quant/data/market/multi-asset/series/DIA.json"
    },
    "IWM": {
-    "asOf": "2026-11-02",
-    "observations": 6648,
+    "asOf": "2026-11-03",
+    "observations": 6649,
     "path": "/quant/data/market/multi-asset/series/IWM.json"
    }
   },
   "crossAsset": {
    "EQUITY": {
     "symbol": "SPY",
-    "asOf": "2026-11-02",
-    "horizon": 21,
-    "samples": 2510
+    "asOf": "2026-11-03",
+    "horizon": 22,
+    "samples": 2511
    },
    "US10Y": {
     "symbol": "US10Y",
-    "asOf": "2026-11-02",
-    "horizon": 20,
-    "samples": 2496
+    "asOf": "2026-11-03",
+    "horizon": 21,
+    "samples": 2497
    },
    "GOLD": {
     "symbol": "XAUUSD",
-    "asOf": "2026-11-02",
+    "asOf": "2026-11-03",
     "horizon": 26,
     "samples": 1504
    },
@@ -1816,29 +1757,23 @@
    },
    "BTC": {
     "symbol": "BTCUSD",
-    "asOf": "2026-11-02",
+    "asOf": "2026-11-03",
     "horizon": 30,
     "samples": 3650
    },
    "EURUSD": {
     "symbol": "EURUSD",
-    "asOf": "2026-11-02",
-    "horizon": 21,
-    "samples": 2556
+    "asOf": "2026-11-03",
+    "horizon": 22,
+    "samples": 2557
    }
   },
   "breadth": {
    "asOf": "2026-11-02",
-   "expectedAsOf": "2026-11-02",
+   "expectedAsOf": "2026-11-03",
    "universeSize": 5781,
    "source": "quant/data/market/factors/factors-FULL_UNIVERSE.json"
   },
-  "eodMoves": {
-   "session": "2026-11-02",
-   "previousSession": "2026-10-30",
-   "asOf": "2026-11-02",
-   "methodVersion": "movers-eod-1.0.0",
-   "source": "quant/data/market/discover-series"
-  }
+  "eodMoves": null
  }
 }
