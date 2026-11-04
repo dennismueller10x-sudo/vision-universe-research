@@ -99,7 +99,9 @@ async function main() {
   const opened = await openSnapshot({ store: createSnapshotStore({ driver: await LIVE_IO.createDriver(), smoke: false }), snapshotId, requireRestoreReceipt: true });
   const pit = await loadPitData({ LIMIT: opened.manifest.capture.limit || 0, ...CANONICAL_LOAD, io: opened.io, log });
   const v = verifyAgainstManifest(opened.manifest, pit, { replay: false });
-  if (v.codeVersionChanged) die('INPUT_INTEGRITY_FAILURE: CODE_VERSION_CHANGED', 3);
+  // nach SF6-PAPER-2027 1.2.0 hat der Snapshot-Code einen neuen Fingerabdruck; die Referenzgleichheit ist mit R1–R6 belegt.
+  // Nur mit --allow-code-version-change und nur bei exakt verifiziertem Datensatz (wie supertrader-validation.yml).
+  if (v.codeVersionChanged && !(argv.includes('--allow-code-version-change') && v.datasetVerified === 'EXACT')) die('INPUT_INTEGRITY_FAILURE: CODE_VERSION_CHANGED', 3);
   const datasetSha256 = K.sha256(K.canonicalJson(v.dataset));
   const buf = await (await opened.io.createDriver()).get(pit.mine.seriesPrefix + SEC_PIT_KEY);
   if (!buf || !buf.length) die('SEC_PIT_MISSING', 3);
@@ -118,7 +120,7 @@ async function main() {
     result.universeB = census; result.quarantine.B = qb.census;
     result.B = runTop5(qb.ds, { costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF'), log });
   }
-  result.receipt = { version: ST_HIST_TOP5_VERSION, snapshotId, datasetSha256, datasetVerified: v.datasetVerified, engineCodeSha256: engineCodeSha256(), runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+  result.receipt = { version: ST_HIST_TOP5_VERSION, snapshotId, datasetSha256, datasetVerified: v.datasetVerified, codeVersionChanged: !!v.codeVersionChanged, engineCodeSha256: engineCodeSha256(), runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
   result.receipt.resultSha256 = sha({ A: result.A, B: result.B ?? null });
   fs.mkdirSync(OUT, { recursive: true });
   const plain = Buffer.from(JSON.stringify(result));
