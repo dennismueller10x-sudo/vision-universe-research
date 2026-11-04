@@ -524,6 +524,33 @@
       "consumers": [
         "spaetere Benachrichtigungen (nicht aktiviert, docs/accounts/WATCHLIST.md §7)"
       ]
+    },
+    {
+      "id": "insiderPurchases",
+      "label": "Insider-Kaeufe (SEC Form 4)",
+      "layer": "PRODUCT",
+      "group": "Products",
+      "critical": false,
+      "artifact": "/insider/data/purchases.json",
+      "timestamp": ["generatedAt"],
+      "asOf": ["asOf"],
+      "records": "purchases",
+      "role": "Gemeldete, bepreiste nicht-derivative Erwerbe (Code P/A) aus SEC Form 4/4-A; Einreichungsdatum und PIT-Verfuegbarkeit je Transaktion. Keine Handelssignale.",
+      "producer": "scripts/insider/form4.py --from YYYY-MM-DD --as-of YYYY-MM-DD --out FILE",
+      "workflow": null,
+      "schedule": "manuell; Strang A bindet den Erzeuger in die Tagespipeline ein (Neustart E2)",
+      "freshness": { "kind": "hours", "warnAfter": 48, "staleAfter": 168 },
+      "activation": {
+        "state": "ACTIVATING",
+        "decision": "E2 beauftragt am 04.11.2026; Erzeuger und Vertrag vorhanden, erstes Artefakt und Pipeline-Anschluss durch Strang A noch ausstehend."
+      },
+      "consumers": ["spaeter Discover/Hedgefonds (Z6; noch kein Consumer)"],
+      "knownGaps": [
+        "Begrenztes Einreichungsfenster, keine vollstaendige Historie; Code P umfasst auch private Kaeufe.",
+        "4/A bleibt ein eigenes Ereignis und darf nicht blind zum Original summiert werden.",
+        "Ticker wie eingereicht, keine historische Security-ID-Zuordnung; Waehrung im Formular nicht explizit.",
+        "Derivate und Transaktionen ohne positive numerische Preis-/Stueckangabe ausgeschlossen und gezaehlt."
+      ]
     }
   ]
 }
