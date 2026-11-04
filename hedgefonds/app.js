@@ -462,10 +462,10 @@
 
   /* ------------------------------------------------- Produkt-Leiste
      Kopf und Leiste kommen aus der gemeinsamen Vision-Universe-Shell
-     (assets/site-navigation.js): Hedgefonds | Investoren | Datenbank |
-     Aktien | ☰. Hedgefonds meldet ihr nur den aktiven Bereich. Die Suche
+     (assets/site-navigation.js): Hedgefonds | Investoren | Aktien |
+     Smart Money | ☰ (Redesign 11/2026: Datenbank ist ein Reiter unter Investoren). Hedgefonds meldet ihr nur den aktiven Bereich. Die Suche
      bleibt die Hedgefonds-Suche: im Hero, mit / und als Overlay. */
-  var DOCK = { start: "hedgefonds", investoren: "investoren", datenbank: "datenbank", aktien: "aktien" };
+  var DOCK = { start: "hedgefonds", investoren: "investoren", datenbank: "investoren", aktien: "aktien", "smart-money": "smart", smart: "smart" };
   function setDock(key) {
     if (window.VUNavigation) window.VUNavigation.dock({ active: key && DOCK[key] ? DOCK[key] : null });
   }

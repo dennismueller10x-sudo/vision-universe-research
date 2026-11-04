@@ -140,21 +140,23 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' home accessibility',()=>a11y(page,key+'-home'));
  await check(key+' shared menu separates Discover from platform products',async()=>{
   const nav=page.locator('vu-navigation');
-  const destinations=await nav.locator('[data-group="discover"] .links a').evaluateAll(nodes=>nodes.map(n=>({label:n.lastChild.textContent.trim(),href:n.getAttribute('href')})));
+  // Menue (Mockup N3): Raster der Produkte, darunter die Unterseiten der aktuellen Welt.
+  const destinations=await nav.locator('.here-links a').evaluateAll(nodes=>nodes.map(n=>({label:n.textContent.trim(),href:n.getAttribute('href')})));
   assert.deepEqual(destinations.map(x=>x.label),['Übersicht','Welten','Strategien','Entdecken','Suchen','Märkte','Watchlist']);
   assert.deepEqual(destinations.map(x=>x.href),['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist']);
-  assert.equal(await nav.locator('[data-group="discover"] .group-link').getAttribute('href'),'/discover/#/');
+  assert.equal(await nav.locator('.tile[data-group="discover"]').getAttribute('href'),'/discover/#/');
   assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
-  /* Gemeinsame Shell: der Kopf traegt Marke, AI Atlas und Farbschema; das
+  /* Gemeinsame Shell (Redesign C01): links die Welt (Discover), rechts Suche, AI Atlas und Mein Bereich; das
      globale Menue oeffnet ☰ rechts in der Produkt-Leiste (#vu-dock). */
-  const header=await nav.evaluate(n=>{const root=n.shadowRoot,brand=root.querySelector('.brand').getBoundingClientRect(),atlas=root.querySelector('.atlas').getBoundingClientRect();return {viewport:innerWidth,brand:brand.toJSON(),atlas:atlas.toJSON(),toggle:getComputedStyle(root.querySelector('.toggle')).display,section:getComputedStyle(root.querySelector('.section')).display};});
-  assert(header.brand.left>=0&&header.atlas.right<=header.viewport&&header.atlas.left>=header.brand.right,'Header overflows: '+JSON.stringify(header));
-  assert.equal(header.section,'none');assert.equal(header.toggle,'none','Redundant header menu button on a page with product dock');
+  const header=await nav.evaluate(n=>{const root=n.shadowRoot,world=root.querySelector('.world'),w=world.getBoundingClientRect(),atlas=root.querySelector('.atlas').getBoundingClientRect();return {viewport:innerWidth,world:w.toJSON(),worldName:world.textContent.trim(),worldHidden:world.hidden,atlas:atlas.toJSON(),toggle:getComputedStyle(root.querySelector('.toggle')).display};});
+  assert(!header.worldHidden&&header.worldName==='Discover','Header does not show the Discover world: '+JSON.stringify(header));
+  assert(header.world.left>=0&&header.atlas.right<=header.viewport&&header.atlas.left>=header.world.right,'Header overflows: '+JSON.stringify(header));
+  assert.equal(header.toggle,'none','Redundant header menu button on a page with product dock');
   const menu=page.locator('#vu-dock button.menu');
   await menu.click();
   try{
    await page.waitForFunction(()=>{const p=document.querySelector('vu-navigation').shadowRoot.querySelector('.panel').getBoundingClientRect();return p.left>=-1&&p.right<=innerWidth+1;},null,{timeout:3000});
-   const panel=await nav.evaluate(n=>{const root=n.shadowRoot,p=root.querySelector('.panel').getBoundingClientRect();return {left:p.left,right:p.right,columns:getComputedStyle(root.querySelector('.links')).gridTemplateColumns.split(' ').length,locked:document.documentElement.classList.contains('vu-menu-open'),dockInert:document.getElementById('vu-dock').inert};});
+   const panel=await nav.evaluate(n=>{const root=n.shadowRoot,p=root.querySelector('.panel').getBoundingClientRect();return {left:p.left,right:p.right,columns:getComputedStyle(root.querySelector('.here-links')).gridTemplateColumns.split(' ').length,locked:document.documentElement.classList.contains('vu-menu-open'),dockInert:document.getElementById('vu-dock').inert};});
    assert(panel.columns===1,'Mobile menu uses columns: '+JSON.stringify(panel));
    assert(panel.locked&&panel.dockInert,'Menu must lock page scroll and take the dock out of focus order: '+JSON.stringify(panel));
    await page.keyboard.press('Escape');
@@ -195,7 +197,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await page.evaluate(()=>scrollTo(0,innerHeight));await screenshot(page,key+'-discovery');
  await check(key+' responsive navigation remains reachable',async()=>{
   const nav=page.locator('#vu-dock nav');const state=await nav.evaluate(n=>({box:n.getBoundingClientRect().toJSON(),position:getComputedStyle(n.getRootNode().host).position,paddingBottom:parseFloat(getComputedStyle(n).paddingBottom),height:innerHeight,labels:Array.from(n.querySelectorAll('a,button')).map(a=>({label:a.textContent.trim(),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
-  assert.deepEqual(state.labels.map(i=>i.label),['Discover','Welten','Strategien','Entdecken','Menü']);assert(state.labels.some(i=>i.current==='page'),'Current route not identified');
+  assert.deepEqual(state.labels.map(i=>i.label),['Discover','Welten','Strategien','Swipen','Menü']);assert(state.labels.some(i=>i.current==='page'),'Current route not identified');
   assert.equal(state.position,'fixed');const gap=state.height-state.box.bottom;assert(gap>=6&&gap<=24,'Product dock must float just above the viewport edge: '+gap);assert(state.labels.every(i=>i.width>=44&&i.height>=44),'Dock targets smaller than 44px');assert(state.paddingBottom>=0);
   if(width>=500)assert(state.box.width<=760,'Desktop dock must not stretch across the viewport: '+state.box.width);interactionEvidence.push({key,type:'responsive-navigation',...state});
  });
