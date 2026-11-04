@@ -182,6 +182,19 @@ for (const [vpName, width, height] of VIEWPORTS) {
       checks.push({ where, end, sidebarEnd, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
+  // Seiten ohne Produkt-Leiste: der Kopf traegt den Menue-Knopf selbst und passt in jede Breite.
+  for (const path of ['/news/', '/willkommen/', '/konto/']) {
+    const where = `kopf ohne Leiste ${path} @${vpName}`;
+    await fresh();
+    try {
+      await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const h = await page.evaluate(() => { const root = document.querySelector('vu-navigation').shadowRoot, t = root.querySelector('.toggle').getBoundingClientRect();
+        return { overflow: document.documentElement.scrollWidth - innerWidth, left: t.left, right: t.right, w: t.width, h: t.height, vw: innerWidth, dock: !!document.getElementById('vu-dock') }; });
+      if (h.dock) fail(where, 'unerwartete Produkt-Leiste');
+      if (h.overflow > 1 || h.right > h.vw + 1 || h.left < 0 || h.w < 44 || h.h < 44) fail(where, 'Menü-Knopf im Kopf abgeschnitten oder zu klein: ' + JSON.stringify(h));
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
   // Farbschema: der Schalter im gemeinsamen Kopf wechselt Hell/Dunkel auf jedem Produkt; Leiste und Menue bleiben lesbar.
   for (const path of ['/discover/#/', '/quant/#/', '/vorsorge/#/', '/screener/', '/supertrader/', '/hedgefonds/#/']) {
     const where = `theme ${path} @${vpName}`;

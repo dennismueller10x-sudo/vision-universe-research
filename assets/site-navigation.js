@@ -350,6 +350,8 @@
         @media(max-width:1024px){.quick{display:none}}
         @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:56px;gap:8px}.brand img{width:min(150px,40vw)}.tools{gap:2px}.hb{width:40px}.atlas{padding:0 2px}
           .panel{width:100vw;box-shadow:none;transform:none}}
+        @media(max-width:520px){.toggle{width:44px;padding:0;display:grid;place-items:center;font-size:17px}.menu-label{display:none}}
+        @media(max-width:430px){:host(:not([dock])) .atlas .atlas-label{display:none}:host(:not([dock])) .atlas span.pill{width:36px;padding:0;justify-content:center}:host(:not([dock])) .brand img{width:min(132px,34vw)}}
         @media(max-width:360px){.shell{width:calc(100% - 20px)}.world{font-size:15px}.atlas .atlas-label{display:none}.atlas span.pill{width:36px;padding:0;justify-content:center}.panel{padding-inline:14px}.tile{padding:10px 8px}}
         :host([theme="dark"]) header .brand img{filter:invert(1) brightness(1.08)}
         :host([dock]) .quick,:host([dock]) .toggle{display:none}
