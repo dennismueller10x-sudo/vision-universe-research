@@ -62,8 +62,9 @@
     });
     if (!head.el) { host.remove(); return null; }
     if (back) back.remove();
-    var badges = hero.querySelector(".dx-index-badges"), names = head.el.querySelector(".vu-shead-names");
-    if (badges && names) names.appendChild(badges);
+    /* Redesign (D09): Index-Etiketten als eine Zeile unter Name und Merken, nicht im schmalen Namensblock. */
+    var badges = hero.querySelector(".dx-index-badges"), idRow = head.el.querySelector(".vu-shead-id");
+    if (badges && idRow) idRow.insertAdjacentElement("afterend", badges);
     [title, hero.querySelector(".dx-dhero-meta")].forEach(function (n) { if (n) n.remove(); });
     var nav = head.el.querySelector(".vu-shead-nav"), observer = null;
     if (nav && chart) {
