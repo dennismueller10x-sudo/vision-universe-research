@@ -100,6 +100,6 @@ Die Mockups (`docs/design/redesign-2027/`, README „Backend-Zusätze“) zeigen
 | Z4 | Benachrichtigungen: Kursgrenze ±5 %, Jahreshoch, Quartalszahlen, Setups, neue 13F-Meldungen | E08, E09, D08, D09, H | Konto + Erzeuger | Versandweg (E-Mail über Brevo, später App-Push) braucht Owner-Freigabe |
 | Z5 | Screener-Kriterien aus 13F (Hedgefonds) und Supertrader | Screener, H | A (Erzeuger) + B (Supertrader-Export) | keine Fachmodelle ändern, nur vorhandene Ergebnisse als Filter |
 | Z6 | Insider-Käufe als Datenquelle | H (Entdecken) | A (neuer Erzeuger) | SEC Form 4 ist frei verfügbar; Eintrag in `core/registry/domains.json` |
-| Z7 | AI Atlas mit Antworten | E10 | später | Anbieter und Budget sind Owner-Entscheidung (Geld) |
+| Z7 | AI Atlas mit Antworten, **visuell** in der App | E10 | D2 | Vorhandenen Worker `workers/vu-ask` übernehmen (Claude Haiku 4.5, Budget- und Tagesgrenzen, Cache): Das Modell übersetzt nur die Frage, gerechnet wird im Browser auf VU-Daten. Neu ist nur die Darstellung nach Mockup E10-b mit den VU-Bausteinen (Aktienzeilen, Urteile, Chart C06, Balken, Erklärung, Rechenweg) statt reinem Text. Modell, Budget und Grenzen bleiben unverändert. Öffentlich ohne Beta-Passwort = Owner-Freigabe (Kosten). |
 
-Reihenfolge: Z2 und Z1 zusammen mit den Seiten, danach Z3, Z5, Z6, zuletzt Z4 und Z7.
+Reihenfolge: Z2, Z1 und Z7 zusammen mit den Seiten, danach Z3, Z5, Z6, zuletzt Z4.
