@@ -104,11 +104,11 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | H05 | Hedgefonds · Fonds Pershing Square | in Arbeit | #1357 | Zeilen zusätzlich mit Wert und Stückzahl; Quartale im Akkordeon |
 | H06 | Hedgefonds · Smart Money | in Arbeit | #1357 | Insider-Käufe aus vorhandener Quelle `ownership-signals-v1` (Form 4) |
 | H07 | Hedgefonds · NVIDIA (Perspektive Investoren) | in Arbeit | #1357 | `#/aktie/<T>`, CUSIP leitet um; Urteil ≥ 60 % Käufe „Mehr Käufer“, ≥ 60 % Verkäufe „Mehr Verkäufer“, sonst „Ausgeglichen“ |
-| S01 | Screener · Übersicht | offen |  |  |
-| S02 | Screener · Filter hinzufügen | offen |  |  |
-| S03 | Screener · Treffer | offen |  |  |
-| S04 | Screener · Gespeichert | offen |  |  |
-| S05 | Screener · Watchlist | offen |  |  |
+| S01 | Screener · Übersicht | in Arbeit | #1360 | Satz startet leer statt mit Beispielsatz; Ideenzahlen live aus der Engine |
+| S02 | Screener · Filter hinzufügen | in Arbeit | #1360 | Profi: Gruppen UND/ODER bleiben; Kriterium-Sheet mit „Genau einstellen“ |
+| S03 | Screener · Treffer | in Arbeit | #1360 | Teil: „Aktie öffnen“ bleibt Sheet (Kopf, Leiste, „Treffer k von N“) statt eigener Aktienseite |
+| S04 | Screener · Gespeichert | in Arbeit | #1360 | Neu/raus aus den zwei letzten Läufen; „Im Konto speichern“ = bald bis Z3 (#1359) gemergt ist |
+| S05 | Screener · Watchlist | in Arbeit | #1360 | `?view=saved&tab=watchlist`; „Als Screen filtern“ bald (Engine filtert keine Symbolliste) |
 | V01 | Vorsorge · Start | offen |  |  |
 | V02 | Vorsorge · Planer | offen |  |  |
 | V03 | Vorsorge · ETFs | offen |  |  |
@@ -139,6 +139,8 @@ Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds 
 - UIP-Revisionsnummern der Welt-PRs (z. B. #1356 UIP-R30) beim Einbau neu vergeben (`uip.mjs`).
 - Gemeinsamer Sparkline-Lader und `VUUI`-Lesart-Karte in `assets/`.
 - Erledigt in #1351: Sheets (C16) liegen über Kopfzeile und Dock (`z-index`), Hedgefonds-Ausnahme kann entfallen.
+- Bausteine zusätzlich als DOM-Knoten (Screener hat C07/C08/C09/navcard/HUD lokal nachgebaut).
+- Einbettbare Aktienseite für S03-b; Symbol-Filter in der Screener-Engine für S05.
 - `VUUI.navcard` mit eigenem Symbol (Fundamental hat lokal nachgebaut).
 - Fundamental-Produktdokument: Urteilsregel F06 in einem Satz (schwächere der beiden Discover-Stufen aus `fundamentals.health`).
 
@@ -154,9 +156,9 @@ Steuerung (Owner, 04.11.2026): Mockups sind verbindlich (Reihenfolge, Abstände,
 
 | # | Zusatz | Baut | Stand | Notiz |
 |---|---|---|---|---|
-| Z1 | Erster Start: Ziel, Erfahrung, erste Aktien; Konto-Einstellung | D (E11) + `workers/vu-account` | offen | Produktion bleibt aus |
+| Z1 | Erster Start: Ziel, Erfahrung, erste Aktien; Konto-Einstellung | D (E11) + `workers/vu-account` | in Arbeit (#1359) | `settings.experienceLevel` beginner/advanced/pro, `settings.goal` vorsorge/aktie/ideen/strategien, `settings.onboardedAt` (PATCH `true`, Server setzt Zeit); Produktion bleibt aus |
 | Z2 | Eine Aktienadresse `/aktie/<T>` mit Weiterleitungen | D | offen | Herkunftswelt bestimmt Perspektive und Leiste |
-| Z3 | Gespeicherte Suchen im Konto | D (Q02, Screener, T04) + Konto | offen | |
+| Z3 | Gespeicherte Suchen im Konto | D (Q02, Screener, T04) + Konto | in Arbeit (#1359) | `GET/POST/PATCH /v1/searches`, `POST /v1/searches/remove`; Welt quant/screener/technical/fundamental/discover; 50 je Konto; Anbindung der Seiten (S04, Q02, T04) nach dem Merge |
 | Z4 | Benachrichtigungen | Konto + Erzeuger | „bald“ | Versandweg braucht Owner-Freigabe |
 | Z5 | Screener-Kriterien aus 13F und Supertrader | A + B | „bald“ | |
 | Z6 | Insider-Käufe als Datenquelle | A | „bald“ | |
