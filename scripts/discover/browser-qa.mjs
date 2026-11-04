@@ -146,16 +146,17 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert.deepEqual(destinations.map(x=>x.href),['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist']);
   assert.equal(await nav.locator('.tile[data-group="discover"]').getAttribute('href'),'/discover/#/');
   assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
-  /* Gemeinsame Shell: der Kopf traegt Marke, AI Atlas und Farbschema; das
+  /* Gemeinsame Shell (Redesign C01): links die Welt (Discover), rechts Suche, AI Atlas und Mein Bereich; das
      globale Menue oeffnet ☰ rechts in der Produkt-Leiste (#vu-dock). */
-  const header=await nav.evaluate(n=>{const root=n.shadowRoot,brand=root.querySelector('.brand').getBoundingClientRect(),atlas=root.querySelector('.atlas').getBoundingClientRect();return {viewport:innerWidth,brand:brand.toJSON(),atlas:atlas.toJSON(),toggle:getComputedStyle(root.querySelector('.toggle')).display,section:getComputedStyle(root.querySelector('.section')).display};});
-  assert(header.brand.left>=0&&header.atlas.right<=header.viewport&&header.atlas.left>=header.brand.right,'Header overflows: '+JSON.stringify(header));
-  assert.equal(header.section,'none');assert.equal(header.toggle,'none','Redundant header menu button on a page with product dock');
+  const header=await nav.evaluate(n=>{const root=n.shadowRoot,world=root.querySelector('.world'),w=world.getBoundingClientRect(),atlas=root.querySelector('.atlas').getBoundingClientRect();return {viewport:innerWidth,world:w.toJSON(),worldName:world.textContent.trim(),worldHidden:world.hidden,atlas:atlas.toJSON(),toggle:getComputedStyle(root.querySelector('.toggle')).display};});
+  assert(!header.worldHidden&&header.worldName==='Discover','Header does not show the Discover world: '+JSON.stringify(header));
+  assert(header.world.left>=0&&header.atlas.right<=header.viewport&&header.atlas.left>=header.world.right,'Header overflows: '+JSON.stringify(header));
+  assert.equal(header.toggle,'none','Redundant header menu button on a page with product dock');
   const menu=page.locator('#vu-dock button.menu');
   await menu.click();
   try{
    await page.waitForFunction(()=>{const p=document.querySelector('vu-navigation').shadowRoot.querySelector('.panel').getBoundingClientRect();return p.left>=-1&&p.right<=innerWidth+1;},null,{timeout:3000});
-   const panel=await nav.evaluate(n=>{const root=n.shadowRoot,p=root.querySelector('.panel').getBoundingClientRect();return {left:p.left,right:p.right,columns:getComputedStyle(root.querySelector('.links')).gridTemplateColumns.split(' ').length,locked:document.documentElement.classList.contains('vu-menu-open'),dockInert:document.getElementById('vu-dock').inert};});
+   const panel=await nav.evaluate(n=>{const root=n.shadowRoot,p=root.querySelector('.panel').getBoundingClientRect();return {left:p.left,right:p.right,columns:getComputedStyle(root.querySelector('.here-links')).gridTemplateColumns.split(' ').length,locked:document.documentElement.classList.contains('vu-menu-open'),dockInert:document.getElementById('vu-dock').inert};});
    assert(panel.columns===1,'Mobile menu uses columns: '+JSON.stringify(panel));
    assert(panel.locked&&panel.dockInert,'Menu must lock page scroll and take the dock out of focus order: '+JSON.stringify(panel));
    await page.keyboard.press('Escape');
