@@ -10,7 +10,11 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { runInNewContext } from 'node:vm';
+import { createRequire } from 'node:module';
 import { cancelLinkItem } from './cancel-link.mjs';
+
+/* Gemeinsame Bausteine (assets/vu-ui.js, UMD): dieselben Markup-Helfer wie auf jeder Seite. */
+const VUUI = createRequire(import.meta.url)('../../assets/vu-ui.js');
 
 const root = new URL('../../', import.meta.url);
 const outArg = process.argv.find(a => a.startsWith('--out='))?.slice(6);
@@ -41,10 +45,9 @@ const factorShard = t => {
 };
 const stock = t => json(`discover/data/stocks/US_REAL/${t}.json`);
 
-/* C07 Kursbewegung und C08 Urteil (assets/site-navigation.css). */
-const chg = (v, big) => `<span class="vu-chg${v < 0 ? ' vu-chg--down' : ''}${big ? ' vu-chg--big' : ''}">${(v >= 0 ? '+' : '−') + de(Math.abs(v), 2)} %</span>`;
-const VERDICT = { strong: 'vu-verdict--strong', mid: 'vu-verdict--mid', weak: 'vu-verdict--weak', none: 'vu-verdict--none' };
-const verdict = (k, t) => `<span class="vu-verdict ${VERDICT[k]}">${esc(t)}</span>`;
+/* C07 Kursbewegung und C08 Urteil aus assets/vu-ui.js (Pille mit ▲/▼/◆/○ im Markup, keine eigenen Klassen). */
+const chg = (v, big) => VUUI.chg(v, { big });
+const verdict = (k, t) => VUUI.verdict(k, t);
 const icon = id => `<svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#${id}"/></svg>`;
 
 // ---------- Live-Karte NVIDIA ----------
@@ -82,7 +85,7 @@ const verdictRows = [
   ['fundamental', 'Geschäft', revG, gradeKind(health?.grade), health?.grade || 'Keine Aussage'],
   ['quant', 'Eigenschaften', rated.length ? `${strongN} von ${rated.length} stark` : 'nicht bewertet', factorVerdict[0], factorVerdict[1]],
   ['technical', 'Chart', tr[2], tr[0], tr[1]]
-].map(([i, n, sub, k, label]) => `<li><span class="vu-hud" style="--vu-hud:36px">${icon(i)}</span><span class="v-name"><b>${n}</b><small>${esc(sub)}</small></span>${verdict(k, label)}</li>`).join('');
+].map(([i, n, sub, k, label]) => `<li><span class="vu-hud" style="--vu-hud:34px;border-radius:10px">${icon(i)}</span><span class="v-name"><b>${n}</b><small>${esc(sub)}</small></span>${verdict(k, label)}</li>`).join('');
 
 // ---------- Sieben Blickwinkel (Perspektiven-Leiste N5) ----------
 const PERSPECTIVES = [
@@ -93,13 +96,13 @@ const PERSPECTIVES = [
   ['supertrader', 'Methoden', 'Regeln berühmter Trader', `/supertrader/stock/${MAIN}/`],
   ['elliott', 'Wellen', 'Wellenstruktur im Kurs, experimentell', `/elliott/#/${MAIN}`],
   ['hedgefonds', 'Investoren', 'Wer die Aktie hält', '/hedgefonds/#/aktien']
-].map(([i, n, d, h]) => `<li><a href="${h}"><span class="vu-hud" style="--vu-hud:32px">${icon(i)}</span><b>${n}</b><span>${d}</span></a></li>`).join('');
+].map(([i, n, d, h]) => `<li><a href="${h}"><span class="vu-hud" style="--vu-hud:28px;border-radius:8px">${icon(i)}</span><b>${n}</b><span>${d}</span></a></li>`).join('');
 
 // ---------- Fundamental: Umsatz je Geschäftsjahr (SEC) ----------
 const rev = (s.fundamentals?.journey?.tracks?.revenue || []).filter(r => Number.isFinite(r.v));
 const bn = v => de(v / 1e9) + ' Mrd. $';
-const rMax = Math.max(...rev.map(r => r.v));
-const journeyBars = rev.map((r, i) => `<span class="b${i === rev.length - 1 ? ' on' : ''}" style="--h:${Math.max(2, r.v / rMax * 100).toFixed(1)}%"><i></i>${i % 2 === (rev.length - 1) % 2 ? `<small>${String(r.fy).slice(2)}</small>` : ''}</span>`).join('');
+/* C17 Säulen aus assets/vu-ui.js: letzte Säule neongrün, jedes zweite Jahr beschriftet. */
+const journeyBars = VUUI.bars(rev.map(r => [String(r.fy), r.v]), { label: `Umsatz je Geschäftsjahr, GJ ${rev[0]?.fy} bis GJ ${rev.at(-1)?.fy}` });
 
 // ---------- Discover: Swipe-Karte und Themenwelten ----------
 const ki = json('discover/data/rows/US_REAL/thema-ki.json');
@@ -126,7 +129,8 @@ const values = {
   NVDA_PRICE: usd(s.price.value), NVDA_CHG: chg(s.changePercent.value, true),
   NVDA_DATE: dateDe(asOf), NVDA_DATE_SHORT: shortDe(asOf),
   NVDA_CHART: chartSvg(close), CHART_FROM: shortDe(ts[0]), CHART_TO: shortDe(ts.at(-1)),
-  NVDA_VERDICTS: verdictRows, PERSPECTIVES,
+  NVDA_LOGO: VUUI.logo(MAIN), NVDA_VERDICTS: verdictRows, PERSPECTIVES, PERSP_BAR: VUUI.persp(MAIN, { active: 'discover' }),
+  REVENUE_HELP: VUUI.help('Umsatz ist alles Geld, das die Firma mit ihren Produkten einnimmt, bevor Kosten abgezogen sind.'),
   JOURNEY_SPAN: String(rev.length), JOURNEY_RANGE: `GJ ${rev[0].fy}–${rev.at(-1).fy}`,
   JOURNEY_FROM: bn(rev[0].v), JOURNEY_FROM_YEAR: 'GJ ' + rev[0].fy, JOURNEY_TO: bn(rev.at(-1).v), JOURNEY_TO_YEAR: 'GJ ' + rev.at(-1).fy,
   JOURNEY_BARS: journeyBars,

@@ -27,12 +27,13 @@
 <meta name="twitter:image" content="https://research.visionuniverse.de/assets/home/og-image.jpg">
 <link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site-navigation.css">
+<link rel="stylesheet" href="/assets/vu-ui.css">
 <link rel="stylesheet" href="/assets/home/home.css">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <script src="/assets/pwa.js" defer></script>
 </head>
-<body>
+<body class="vu-ui">
 <!-- Startseite (Mockup E01): eigener Kopf ohne Produkt-Leiste - Logo, Suche, Anmelden. -->
 <header class="hd">
   <div class="shell hd-row">
@@ -56,7 +57,7 @@
   <article class="live" aria-label="Beispiel mit echten Daten: %%NVDA_NAME%%">
     <div class="live-top"><span class="tag-lime">Echte Daten</span><span class="mute">Schluss %%NVDA_DATE%%</span></div>
     <div class="vu-stockhead__top">
-      <span class="vu-logo-tile">%%NVDA%%</span>
+      %%NVDA_LOGO%%
       <div class="vu-stockhead__name"><b><a href="/discover/#/s/US_REAL/%%NVDA%%">%%NVDA_NAME%%</a></b><span>%%NVDA%% · %%NVDA_WHAT%%</span></div>
     </div>
     <div class="vu-stockhead__price"><b>%%NVDA_PRICE%%</b>%%NVDA_CHG%%<span class="vu-stockhead__meta">Schluss<br>%%NVDA_DATE_SHORT%%</span></div>
@@ -86,6 +87,7 @@
   <p class="vu-ltag">Eine Aktie, jede Perspektive</p>
   <h2 class="vu-mt" id="persp-title">Sieben Blickwinkel. Eine Seite.</h2>
   <p class="sub">Oben wählst du, wie du auf die Aktie schaust. Jede Welt liefert ihr Urteil in derselben Form.</p>
+  %%PERSP_BAR%%
   <ul class="persp-list">%%PERSPECTIVES%%</ul>
 </section>
 
@@ -96,8 +98,8 @@
   <div class="vu-box fund">
     <div class="fund-top"><b>%%NVDA_NAME%% · Umsatz</b><span class="mute">%%JOURNEY_RANGE%%</span></div>
     <div class="fund-kpis"><div><b>%%JOURNEY_FROM%%</b><span>%%JOURNEY_FROM_YEAR%%</span></div><div><b>%%JOURNEY_TO%%</b><span>%%JOURNEY_TO_YEAR%%</span></div></div>
-    <div class="bars" role="img" aria-label="Umsatz je Geschäftsjahr, %%JOURNEY_FROM_YEAR%% bis %%JOURNEY_TO_YEAR%%">%%JOURNEY_BARS%%</div>
-    <p class="vu-help">Umsatz ist alles Geld, das die Firma mit ihren Produkten einnimmt, bevor Kosten abgezogen sind.</p>
+    <div class="fund-bars">%%JOURNEY_BARS%%</div>
+    %%REVENUE_HELP%%
   </div>
 </section>
 

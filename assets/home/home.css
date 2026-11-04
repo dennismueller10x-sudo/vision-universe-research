@@ -1,6 +1,6 @@
 /* Startseite (Mockup E01 „Vision Universe Redesign“). Hell, ruhig, nur Weiß, Schwarz, Neongrün.
-   Tokens und Bausteine (vu-btn, vu-box, vu-chg, vu-verdict, vu-hud, vu-stockhead …) kommen aus
-   /assets/site-navigation.css; hier steht nur das Seitenlayout. Keine Dauer-Animation. */
+   Tokens und Bausteine (vu-btn, vu-box, vu-chg, vu-verdict, vu-hud, vu-stockhead, vu-persp, vu-bars …) kommen aus
+   /assets/vu-ui.css (Markup über assets/vu-ui.js im Generator); hier steht nur das Seitenlayout. Keine Dauer-Animation. */
 @font-face{font-family:Inter;src:url(/assets/fonts/inter-latin.woff2) format("woff2");font-weight:100 900;font-display:swap}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-padding-top:72px}
@@ -9,7 +9,8 @@ body{margin:0;padding-top:56px!important;background:var(--vu-white);color:var(--
 a{color:inherit}
 img{max-width:100%;display:block}
 h1,h2,p{margin:0}
-.shell{width:min(1120px,100% - 36px);margin-inline:auto}
+.shell{width:min(1120px,100% - 36px);margin-inline:auto;--vu-gutter:18px}
+:root{--vu-bg:#fff}:root[data-theme=dark]{--vu-bg:#000}
 .mute{color:var(--vu-mute)}
 .vu-btn svg,.hd-btn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .tag-lime{display:inline-block;padding:3px 8px;border-radius:7px;background:var(--vu-lime);color:#000;font-size:10.5px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
@@ -47,8 +48,8 @@ h1,h2,p{margin:0}
 .vu-onechart .line{fill:none;stroke:var(--vu-ink);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .vu-onechart .dot{fill:var(--vu-lime);stroke:var(--vu-ink);stroke-width:2.4}
 .chart figcaption{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--vu-mute);font-variant-numeric:tabular-nums}
-.verdicts{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
-.verdicts li{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:18px;background:var(--vu-card)}
+.verdicts{list-style:none;margin:12px 0 0;padding:0}
+.verdicts li{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--vu-hair)}
 .v-name{flex:1;min-width:0}.v-name b{display:block;font-size:14px}.v-name small{display:block;font-size:12px;color:var(--vu-mute)}
 
 /* Zahlenband */
@@ -63,13 +64,14 @@ h1,h2,p{margin:0}
 .sub{margin-top:8px;color:var(--vu-mute);font-size:15px;max-width:56ch}
 .sub.small{font-size:13px}
 .paths{display:grid;gap:10px;margin-top:16px}
-.path{display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:22px;border:1.5px solid var(--vu-hair);text-decoration:none}
+.path{display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:22px;background:var(--vu-card);border:1.5px solid var(--vu-card);text-decoration:none}
 .path b{display:block;font-size:16px}.path small{display:block;margin-top:2px;font-size:13.5px;color:var(--vu-mute)}
 .path em{display:block;margin-top:8px;font-style:normal;font-weight:800;font-size:13px}
 .path--lime{background:var(--vu-lime);border-color:var(--vu-lime);color:#000}.path--lime small{color:#2d3500}
 .path:hover{border-color:var(--vu-ink)}
-.persp-list{list-style:none;margin:14px 0 0;padding:0}
-.persp-list a{display:grid;grid-template-columns:32px 96px 1fr;gap:12px;align-items:center;min-height:52px;padding:6px 0;border-top:1px solid var(--vu-hair);text-decoration:none}
+.sec .vu-persp{margin-top:14px}
+.persp-list{list-style:none;margin:6px 0 0;padding:0}
+.persp-list a{display:grid;grid-template-columns:28px 82px 1fr;gap:12px;align-items:center;min-height:52px;padding:6px 0;border-top:1px solid var(--vu-hair);text-decoration:none}
 .persp-list li:first-child a{border-top:0}
 .persp-list a span:last-child{font-size:13.5px;color:var(--vu-mute)}
 .persp-list a:hover b{text-decoration:underline}
@@ -78,11 +80,7 @@ h1,h2,p{margin:0}
 .fund-kpis{display:flex;gap:28px;margin-top:10px}
 .fund-kpis b{display:block;font-size:24px;font-weight:900;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .fund-kpis span{font-size:12px;color:var(--vu-mute)}
-.bars{display:flex;align-items:flex-end;gap:6px;height:150px;margin:16px 0 22px}
-.bars .b{position:relative;flex:1;height:100%;display:flex;align-items:flex-end}
-.bars .b i{display:block;width:100%;height:var(--h);min-height:3px;border-radius:5px;background:var(--vu-ink)}
-.bars .b.on i{background:var(--vu-lime)}
-.bars small{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:10.5px;color:var(--vu-mute)}
+.fund-bars{margin:18px 0 12px}
 .fund .vu-help{margin-top:4px}
 .swipe{display:grid;gap:4px;margin-top:16px;min-height:230px;padding:18px;border-radius:24px;text-decoration:none}
 .swipe-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:auto}

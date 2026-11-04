@@ -9,13 +9,13 @@ import { fileURLToPath } from 'node:url';
 /* Startseite (/) nach dem Redesign (Mockup E01): ruhig statt Werbeseite.
    Diese Tests halten fest, was die neue Seite leicht macht und was sie verspricht:
    - keine Dauer-Animation, kein Hero-JavaScript, nur pwa.js und ein kleines Inline-Skript;
-   - alle Bausteine kommen aus der gemeinsamen Grundlage (assets/site-navigation.css);
+   - alle Bausteine kommen aus der gemeinsamen Grundlage (assets/vu-ui.css, Markup über assets/vu-ui.js);
    - jede Zahl stammt aus dem Generator (index.html = Ausgabe von build-home.mjs);
    - der Pro-Preis steht nie im Code, Free kostet 0 €. */
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const read = p => readFileSync(join(root, p), 'utf8');
 const css = read('assets/home/home.css');
-const base = read('assets/site-navigation.css');
+const base = read('assets/vu-ui.css');
 const html = read('index.html');
 const template = read('scripts/home/index.template.html');
 
@@ -28,10 +28,12 @@ test('keine Dauer-Animation und kein Hero-JavaScript', () => {
 });
 
 test('die Seite nutzt die gemeinsamen Bausteine und definiert sie nicht neu', () => {
-  assert.match(html, /<link rel="stylesheet" href="\/assets\/site-navigation\.css">\s*<link rel="stylesheet" href="\/assets\/home\/home\.css">/);
+  assert.match(html, /<link rel="stylesheet" href="\/assets\/site-navigation\.css">\s*<link rel="stylesheet" href="\/assets\/vu-ui\.css">\s*<link rel="stylesheet" href="\/assets\/home\/home\.css">/);
+  assert.match(html, /<body class="vu-ui">/);
+  assert.match(read('scripts/home/build-home.mjs'), /createRequire\(import\.meta\.url\)\('\.\.\/\.\.\/assets\/vu-ui\.js'\)/, 'Markup kommt aus VUUI');
   for (const cls of ['vu-btn', 'vu-box', 'vu-chg', 'vu-verdict', 'vu-hud', 'vu-stockhead__price', 'vu-help', 'vu-logo-tile', 'vu-pro']) {
     assert.ok(html.includes(cls), cls + ' wird genutzt');
-    assert.match(base, new RegExp('\\.' + cls.replace(/[-_]/g, m => '\\' + m) + '[{.,:\\[ ]'), cls + ' kommt aus site-navigation.css');
+    assert.match(base, new RegExp('\\.' + cls.replace(/[-_]/g, m => '\\' + m) + '[{.,:\\[ ]'), cls + ' kommt aus vu-ui.css');
     assert.doesNotMatch(css, new RegExp('^\\.' + cls + '\\{', 'm'), cls + ' wird auf der Startseite nicht neu definiert');
   }
 });
