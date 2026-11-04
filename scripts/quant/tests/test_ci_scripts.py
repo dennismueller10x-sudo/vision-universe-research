@@ -73,6 +73,30 @@ class GroessenkontrolleTests(unittest.TestCase):
         ergebnis = self._lauf(grenze="5")
         self.assertEqual(ergebnis.returncode, 1)
 
+    def test_eine_vom_erzeuger_geloeschte_datei_bricht_nicht_ab(self):
+        """Laeufe 41474158720/41650347339: der Suchindex raeumt eine
+        verwaiste Scherbe weg; `stat` auf die verfolgte, aber fehlende
+        Datei liess xargs mit 123 abbrechen."""
+        self._schreibe("quant/data/universe/search/name/WU.json", 0)
+        self._schreibe("quant/data/universe/search/name/WX.json", 1)
+        git("add", "quant", cwd=self.repo)
+        git("commit", "-m", "x", cwd=self.repo)
+        (self.repo / "quant/data/universe/search/name/WU.json").unlink()
+        ergebnis = self._lauf()
+        self.assertEqual(ergebnis.returncode, 0, ergebnis.stdout + ergebnis.stderr)
+        self.assertIn("1 verfolgte Datei(en) in diesem Lauf geloescht", ergebnis.stdout)
+        self.assertIn("quant/data/universe: 1 MB im Commit", ergebnis.stdout)
+
+    def test_eine_loeschung_verdeckt_kein_uebermass(self):
+        self._schreibe("quant/data/universe/alt.json", 1)
+        git("add", "quant", cwd=self.repo)
+        git("commit", "-m", "x", cwd=self.repo)
+        (self.repo / "quant/data/universe/alt.json").unlink()
+        self._schreibe("quant/data/universe/gross.json", 12)
+        ergebnis = self._lauf(grenze="5")
+        self.assertEqual(ergebnis.returncode, 1)
+        self.assertIn("::error::", ergebnis.stdout)
+
     def test_ein_leerer_bestand_ist_kein_fehler(self):
         ergebnis = self._lauf()
         self.assertEqual(ergebnis.returncode, 0, ergebnis.stdout + ergebnis.stderr)

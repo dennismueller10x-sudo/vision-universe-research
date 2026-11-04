@@ -55,7 +55,7 @@
       if(result.state!=='AVAILABLE'){message(root,'Aktie derzeit nicht verfügbar','Identität, Datenqualität oder Anzeigerechte sind noch nicht freigegeben.');return;}
       const detail=result.data;root.classList.add('dx-detail');
       D.Views.Detail.render(root,detail,Object.assign({},ctx,{universeId:'EUROPE'}));
-      const title=root.querySelector('.dx-dhero-title h1');if(title)title.style.overflowWrap='anywhere';
+      /* Lange europaeische Namen ("AKTIENGESELLSCHAFT") umbrechen statt seitlich abzuschneiden - im einheitlichen Aktienkopf (ui/stock-head.js) wie im alten Kopf. */const title=root.querySelector('.vu-shead-name, .dx-dhero-title h1');if(title)title.style.overflowWrap='anywhere';
       const states=el('section',{class:'dx-chapter','aria-label':'Verfügbarkeit der Analysen'},[
         el('p',{text:detail.quantMessage}),el('p',{text:detail.technicalMessage})]);
       if(detail.privatePreview)states.prepend(el('p',{class:'dx-intraday-note',text:detail.disclaimer}));
