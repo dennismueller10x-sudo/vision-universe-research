@@ -312,7 +312,9 @@ test('CP-EXEC-BUY-STOP-FILL: Buy-Stop füllt nach Gap zur Eröffnung, sonst am N
 // 1.1.0 (Review #1196): neuer Pin nach der begründeten Planrevision (siehe plan.revision); der Prüfer pinnt zusätzlich
 // den Planinhalt (PINNED_PLAN_CONTENT_SHA256, Test CP-PLAN-PIN-IN-CHECKER).
 // 1.1.1 (02.11.2026): Feld token → sourcePhrase (Schlüsselsuche der Quality Gates), Werte unverändert; neuer Pin.
-const PINNED_PLAN_SHA256 = '4e01310d6bbeb4a3ffa46a4e93e467c61a07d6067bbedbb8a70c88330aad3e9a';
+// 1.1.2 (02.11.2026): X-LEDGER / C12-LEDGER DONE, Befunde mit status / contractText / ownerQuestion; kein
+// Abnahmekriterium, keine Regel, kein Parameter geändert; neuer Pin (Datei und Inhalt).
+const PINNED_PLAN_SHA256 = '9fae987f1b0d1bf300e824fbcb88491ec930c1b46465b60ea915ea1ce9a175b8';
 const CHECKER = path.join(path.dirname(PLAN_FILE), 'cert-prep-top5.mjs');
 
 test('CP-PLAN-VALID: der Prüfplan stimmt mit Verträgen, Parametern, #709-Wortlaut und Testnamen überein', async () => {

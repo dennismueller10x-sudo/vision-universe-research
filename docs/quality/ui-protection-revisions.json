@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "ui-protection-revisions-1.0.0",
+  "purpose": "Versionierte, einzeln freigegebene Fortschreibung der UI-Byte-Sperre. Die Basis bleibt unveraendert eingefroren (V5.1-Nachweis, Freeze-Manifest docs/data/security-master/v130-quant-freeze.json, Test SMF-1). Wirksame Sperre = Basis mit allen Revisionen in Reihenfolge. Keine pauschale Ausnahme: jede Revision nennt genau eine Datei, ihren alten und neuen Hash, den PR und die Owner-Freigabe.",
+  "base": {
+    "file": "docs/quant-recovery/v51/ui-protection.json",
+    "sha256": "019d0608e6c7e3c697160aaa84319321245d88c44a67f8dcaf7df7721b4b9c5c"
+  },
+  "revisions": [
+    {
+      "id": "UIP-R1",
+      "date": "2026-11-02",
+      "pr": 1236,
+      "ownerApproval": "Owner 01.11.2026 und 02.11.2026: richtungsabhaengige NVDA-Pruefung in scripts/vu2/browser-qa.mjs fachlich freigegeben; Freeze-Provenienz nicht beschaedigen",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "2655c462c8d6e52ba989f24e57232c86ec267937a0d1604f8ace7c418b0bfef2",
+      "to": "362a13b29c91b50a8148805109e9a73479baf0635c030469bee4bbd69a33132a",
+      "scope": "nur die Setup-Karten-Pruefung (Richtung des veroeffentlichten Basisszenarios, gleiche Regel wie scripts/quality/vu3-regression-qa.mjs); 44 px, Barrierefreiheit, Budgets und alle anderen Pruefungen unveraendert"
+    },
+    {
+      "id": "UIP-R2",
+      "date": "2026-11-03",
+      "pr": 1279,
+      "ownerApproval": "Owner 03.11.2026: eng begrenzte UI-Schutzrevision fuer quant/app/view-model.js#identityNote freigegeben (wiederverwendetes Kuerzel: kein Kuerzel doppelt, keine unbelegte Aussage zur Herkunft der Geschaeftszahlen)",
+      "file": "quant/app/view-model.js",
+      "from": "fd393a5b8219856fca0f6cd488e071e8b6a0367dd7f55fab5d920b6b752d6987",
+      "to": "d9d0e7fdde1e40df3c4d7941faa372bf1ea9abb9f6291148aca414e118333636",
+      "scope": "nur identityNote: eigene Notiz fuer identityConflict.kind TICKER_REUSE (ACTS, ENTL, FTPA, GNMX, NMBL, PCLN, TRIL, USX, WX; Name nach quant/config/ticker-reuse-quarantine.json zurueckgehalten) ohne zweites Kuerzel und ohne Aussage zur Herkunft der Geschaeftszahlen; bei den Arten D/F/G ersetzt kein Kuerzel mehr einen fehlenden Namen. Scores, Modelle, Kursdaten und Identitaetsregeln unveraendert"
+    },
+    {
+      "id": "UIP-R3",
+      "date": "2026-11-03",
+      "pr": 1291,
+      "ownerApproval": "Owner 03.11.2026 (ausdruecklich, eng begrenzt, Issue #1289): Pruefung des Blocks 'Was ist jetzt wichtig?' in scripts/vu2/browser-qa.mjs auf den gerenderten, fachlich gueltigen Zustand umstellen statt auf Wortlaut; keine Pruefung deaktivieren, keine pauschale Timeout-Erhoehung, keine Abschwaechung der fachlichen Anforderungen",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "362a13b29c91b50a8148805109e9a73479baf0635c030469bee4bbd69a33132a",
+      "to": "b4efd15d03d4c7c84a9500c500ccb5461a5e1c40280fe2bfb42d8c0e42ebfb2c",
+      "scope": "nur die eine Zeile 'await ...q-now.filter({hasText:/Setup|Veränderung|Stand/}).waitFor' wird durch das Urteil judgeNowBlock (scripts/vu2/qa-now-block.mjs) gegen den Zustand der Produkt-API (getRadarCard) ersetzt, plus dessen Import; Warte-Grenze unveraendert 30 s; 44 px, Barrierefreiheit, Budgets, die Setup-Karten-Pruefung (UIP-R1) und alle anderen Pruefungen unveraendert; Gegenproben in quant/tests/browser-qa-now-block.test.mjs"
+    }
+  ]
+}

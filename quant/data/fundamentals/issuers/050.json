@@ -421,9 +421,9 @@
       "cik": "0001389050",
       "name": "Archrock, Inc.",
       "sic": "4922",
-      "rawFacts": 25221,
-      "mappedFacts": 7466,
-      "unmappedFacts": 17446,
+      "rawFacts": 25547,
+      "mappedFacts": 7458,
+      "unmappedFacts": 17779,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -433,28 +433,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 71,
+      "quarterlyPeriods": 72,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "eps_diluted": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0,
@@ -467,28 +467,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 36,
+          "quarterlyPeriods": 37,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -502,14 +502,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 71,
+          "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -532,49 +532,50 @@
         }
       },
       "quality": {
-        "HIGH": 540,
-        "MEDIUM": 103
+        "HIGH": 547,
+        "MEDIUM": 104
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 643,
-        "resolvedValues": 643
+        "datableValues": 651,
+        "resolvedValues": 651
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 18677,
+        "rules_version": "1.1.0",
+        "total": 18936,
         "by_severity": {
-          "INFO": 17446,
+          "INFO": 17779,
           "ERROR": 1,
-          "WARNING": 1230
+          "WARNING": 1156
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 866,
+          "CONCEPT_DISAGREEMENT": 792,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 198,
           "RESTATEMENT_CONFLICT": 153,
           "UNEXPECTED_DURATION": 13,
-          "UNKNOWN_CONCEPT": 17446
+          "UNKNOWN_CONCEPT": 17779
         }
       },
       "latestFiling": {
-        "accession": "0001389050-26-000028",
-        "filing_date": "2026-08-05",
+        "accession": "0001389050-26-000039",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 79
+        "periodic_filings": 80,
+        "acceptance_datetime": "2026-11-03T20:02:44.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "af821c83b9f0a5674a20bf9bdb5419a371186305f4df35b7d2d08687d09c0d6a",
+      "sourceDigest": "728093dd0a72204dafdd41a927f4188796612e65133a89a682ba153a20a2a9fd",
       "issuerId": "iss_cik_0001389050"
     },
     {

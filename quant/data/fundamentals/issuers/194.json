@@ -322,9 +322,9 @@
       "cik": "0001162194",
       "name": "STANDARD BIOTOOLS INC.",
       "sic": "2834",
-      "rawFacts": 20130,
-      "mappedFacts": 6217,
-      "unmappedFacts": 14063,
+      "rawFacts": 20504,
+      "mappedFacts": 6333,
+      "unmappedFacts": 14436,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -334,28 +334,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2008-12-27",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -375,21 +375,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -403,14 +403,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-27",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -433,46 +433,47 @@
         }
       },
       "quality": {
-        "HIGH": 532,
-        "MEDIUM": 21
+        "HIGH": 538,
+        "MEDIUM": 22
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 553,
-        "resolvedValues": 553
+        "datableValues": 560,
+        "resolvedValues": 560
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 14717,
+        "rules_version": "1.1.0",
+        "total": 15064,
         "by_severity": {
-          "INFO": 14063,
-          "WARNING": 654
+          "INFO": 14436,
+          "WARNING": 628
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 565,
+          "CONCEPT_DISAGREEMENT": 539,
           "RESTATEMENT_CONFLICT": 82,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 14063
+          "UNKNOWN_CONCEPT": 14436
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-335103",
-        "filing_date": "2026-08-05",
+        "accession": "0001193125-26-445534",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 69
+        "periodic_filings": 70,
+        "acceptance_datetime": "2026-11-03T21:45:07.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "1dd1e328617e1896a073eea37d934ec3aae8139216f3542981665bc3a9d3a191",
+      "sourceDigest": "38cdb9f4b6957e8469ab570c22a23119f785a78e36f4aed8631b7c500e43f6cb",
       "issuerId": "iss_cik_0001162194"
     },
     {

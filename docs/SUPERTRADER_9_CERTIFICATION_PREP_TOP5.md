@@ -1,6 +1,6 @@
 # Supertrader 9 – Zertifizierungsvorbereitung der fünf zuerst prüfbaren Methoden
 
-Stand: 31.10.2026 (Plan 1.1.1: Feld `token` in `sourcePhrase` umbenannt, Werte unverändert). Grundlage: die Zertifizierungsmatrix `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md` (PR #1148, Stand 30.10.2026). Reihenfolge nach der Matrix: **C02 Turtle S2, C01 Turtle S1, C08 Kullamägi Breakout, C12 Buyable Gap-Up, C03 Darvas**.
+Stand: 31.10.2026 (Plan 1.1.1: Feld `token` in `sourcePhrase` umbenannt, Werte unverändert). Nachtrag 02.11.2026, Plan 1.1.2: X-LEDGER und C12-LEDGER erledigt, die vier Befunde aus §3 als Vertragstext ergänzt (§3.1). Die Aussagen unten zu `contracts/` gelten für die Vorbereitung selbst; der Nachtrag ändert nur Vertragstexte, keinen Code. Grundlage: die Zertifizierungsmatrix `docs/SUPERTRADER_9_CERTIFICATION_READINESS.md` (PR #1148, Stand 30.10.2026). Reihenfolge nach der Matrix: **C02 Turtle S2, C01 Turtle S1, C08 Kullamägi Breakout, C12 Buyable Gap-Up, C03 Darvas**.
 
 > **Abhängigkeit: erst nach #1148 mergen.** Die Matrix liegt heute nur auf dem Branch `claude/supertrader-9-data-certification-jnejw3` (Draft-PR #1148), nicht auf `main`. Alle Fundstellen „Matrix …“ in diesem Bericht und im Plan verweisen auf sie. Der Plan führt die Abhängigkeit in `dependsOn`: PR 1148, Commit `afa923a6…`, sha256 der Matrix `89a60269…` (`git show origin/claude/supertrader-9-data-certification-jnejw3:docs/SUPERTRADER_9_CERTIFICATION_READINESS.md | sha256sum`). Der Prüfer meldet `PENDING_PR_1148`, solange die Datei fehlt. Liegt sie vor und weicht ihr sha256 ab, ist der Plan ungültig. Die Matrix wird hier bewusst nicht kopiert.
 
@@ -75,7 +75,7 @@ node scripts/supertrader/source-faithful/certification/cert-prep-top5.mjs --run-
 | X-CC8 | CC-8 | d | SF6-PAPER-2027 nicht aktiv, Aufbewahrung offen (Matrix §0.6) | Owner-Aktivierung vor dem 01.01.2027 und 250 Sitzungen |
 | X-SURV | Daten | c (+d) | Delistings vor 2009 fehlen, keine Delisting-Renditen; V13 nur privat (Matrix §0.5) | Snapshot-Generation mit V13-Reihen |
 | X-PIT-MASTER | Daten | b | Produkt-Stammdaten nicht zeitpunktgenau (Querschnitt 4) | neuer Security Master |
-| X-LEDGER | CC-1 | a | `source-ledger.json` ohne Morales/Kacher-Quellen (Matrix §0.8) | eigener PR; berührt den Legacy-Build, deshalb nicht hier |
+| X-LEDGER | CC-1 | a | `source-ledger.json` ohne Morales/Kacher-Quellen (Matrix §0.8) | **DONE** (Plan 1.1.2): acht Einträge W-MOKAPP, W-MOKA12, W-MOKASTOP, W-MOKAV24, W-RAS04, W-RAS97, B07, W-MIN18, siehe §3.1 |
 
 ## 2. Methoden: Blocker vorher → nachher
 
@@ -152,7 +152,7 @@ CC erfüllt: 2, 4, 6, 7. Offen: 1, 3, 5, 8.
 | C12-CC5 14 K5 / 68 K3 ungeklärt; Gaps liegen nahe an Splits | Matrix C12 | d | offen | offen; Zählung der Signale auf DQ-markierten Sitzungen vorregistriert (PS-C12-CA-PROXIMITY, Snapshot-Lauf nicht ausgelöst) |
 | C12-CC8 | Matrix C12 | d | offen | offen |
 | C12-MEGACAP PIT-Marktkapitalisierung | Matrix C12 Daten | b (+d) | offen | offen |
-| C12-LEDGER kein Ledger-Eintrag | Matrix C12 Quellen | a | offen | OPEN_SEPARATE_PR (X-LEDGER) |
+| C12-LEDGER kein Ledger-Eintrag | Matrix C12 Quellen | a | offen | **DONE** (X-LEDGER, Plan 1.1.2) |
 | C12-RULE-CONFORMANCE | Abgleich MOKA12-004 / MOKA24-VOL | a | offen | **DONE**: CP-BGU-GAP-EXACT, -GAP-MEASURE, -ATR-SIMPLE-MEAN, -VOLUME-WINDOW-50, -STOP-AT-GAP-DAY-LOW |
 
 **Abgleich Code ↔ W-MOKA12 / W-MOKAV24**
@@ -204,6 +204,29 @@ Festgehalten sind vier Dokumentationsbefunde (`findings` im Plan, alle `modelCha
 | F-KK-ADR-DENOMINATOR | C08 | Dokulücke | Die Formel steht im Vertrag: `stops` in `contracts/kullamagi.mjs` nennt „reject if (entry − LoD) / entry > ADR20 %“, und `stopCheck` rechnet so. Die Lücke ist die Regel `KK-SF-BO-STOP`: Sie ist SOURCE_EXACT und hat keinen Ableitungstext. KK-012 sagt nur „Abstand ≤ ADR“. Der Nenner (Einstieg) und der Vergleich mit ADR20 (relativ zum Tief gemessen, KK-031) sind Ableitung. | Ableitungstext an `KK-SF-BO-STOP` ergänzen und die Statusfrage (SOURCE_EXACT oder SOURCE_DERIVED) dem Owner vorlegen; eigener PR, weil er den Vertragsfingerabdruck ändert |
 | F-DAR-SAME-BAR-ORDER | C03 | Dokulücke | Ein Balken über dem Trigger und unter dem Boden gilt als Ausbruch und wird am Einstiegsbalken pessimistisch ausgestoppt. Test `CP-DAR-SAME-BAR-BREAKOUT-AND-FAIL` hält das fest. | in MA-DAR-INTRABAR-ORDER nennen |
 | F-DAR-Q7-READING | C03 | Lesart | „Stop nie in der Box“ (DAR-Q7) wird als „nicht in der neuen Box“ gelesen; der Initialstop liegt in der Spanne der alten Box (folgt DAR-Q5). | als Lesart dokumentieren, für CC-1 dem Owner vorlegen |
+
+### 3.1 Stand der Befunde und des Ledgers (Plan 1.1.2, 02.11.2026)
+
+Die Befunde sind als Text im Vertrag ergänzt. Kein Regelstatus, keine Lesart, kein Parameter und kein Codepfad ist geändert. Die Owner-Fragen bleiben offen.
+
+| ID | Text ergänzt in | Owner-Frage |
+|---|---|---|
+| F-TUR-ADD-UNIT-N | `contracts/turtle.mjs`, `TUR-SF-ADD.derivation`: Unitgröße eines Adds mit N der Vorsitzung, Abstand und Stops mit dem Einstiegs-N | keine |
+| F-KK-ADR-DENOMINATOR | `contracts/kullamagi.mjs`, neues Feld `KK-SF-BO-STOP.derivation`: Nenner Einstieg, Vergleich mit ADR20 (KK-031) als Ableitung | **FP-KK-ADR-DENOMINATOR-STATUS**: bleibt die Regel `SOURCE_EXACT` oder wird sie `SOURCE_DERIVED`? Der Status ist unverändert `SOURCE_EXACT` |
+| F-DAR-SAME-BAR-ORDER | `contracts/darvas.mjs`, `DAR-SF-STOP-INIT.derivation`: nennt MA-DAR-INTRABAR-ORDER und den Test CP-DAR-SAME-BAR-BREAKOUT-AND-FAIL | keine |
+| F-DAR-Q7-READING | `contracts/darvas.mjs`, `DAR-SF-STOP-INIT.derivation`: Lesart „nicht in der neuen Box“ als bestehendes Verhalten | **FP-DAR-Q7-READING**: ist DAR-Q7 so zu lesen? Die Lesart ist beschrieben, nicht als richtig festgelegt |
+
+- Der Referenztext von `MA-DAR-INTRABAR-ORDER` steht in `research/darvas-lifecycle.mjs`. Die Datei gehört zum Code-Fingerabdruck `SF5_RESEARCH`. Deshalb steht der Text im Vertrag, nicht in der Annahme selbst.
+- Code-Fingerabdrücke unverändert: `codeSha256` `89fbcf86…` (gleich SF6-PAPER-2027), `sf5ResearchCodeSha256` `0726cac0…`, alle sechs Listen aus `sf7-code-coverage.mjs#fingerprintLists`.
+- Vertragsfingerabdrücke geändert (nur Text, Version unverändert): C01 `27aa2272…` → `9459e241…`, C02 `d001acfc…` → `6d8f9f14…`, C03 `18509819…` → `c3a2bb3a…`, C08 `7680207d…` → `b3c34f3c…`.
+- Nachgezogen über die Erzeuger: `build-artifacts.mjs` (STRATEGY-REGISTRY, STRATEGY-SOURCE-CONTRACTS), `completion/build-completion.mjs` (STRATEGY-SOURCE-FIDELITY-RESULTS, STRATEGY-RISK-VALIDATION). Pins: synthetische Produkt-Fixture (C02, C08), Plan-Datei-sha256 im Test und Planinhalt im Prüfer.
+- Ergebnisse unverändert: `record-golden-results.mjs --out` ist byte-gleich mit `STRATEGY-GOLDEN-CASE-RESULTS.json`; `cert-prep-top5.mjs --run-tests` gültig, C02 17/17, C01 14/14, C08 15/15, C12 14/14, C03 16/16.
+
+**Ledger (X-LEDGER).** `scripts/supertrader/source-ledger.json` führt jetzt W-MOKAPP, W-MOKA12, W-MOKASTOP, W-MOKAV24, W-RAS04, W-RAS97, B07 und W-MIN18.
+- Jedes Feld stammt aus dem #709-Extrakt und der SF-Registry. Für W-RAS97 stammt es aus `holy-grail-lifecycle.mjs#W_RAS97` und D-RAS97.
+- Nicht belegte Felder sind `null` und in `provenance_evidence.not_evidenced` genannt: Abrufdatum aller acht, Hash von W-MOKAPP, W-MOKASTOP, W-MOKAV24 und W-MIN18, URL von B07, Autor von W-RAS97.
+- `content_retrieved_by_vu` bleibt `false`, weil der Abrufweg der Runde 8 für diese Quellen nicht belegt ist.
+- `sf-x-ledger.test.mjs` gleicht jeden Eintrag Feld für Feld ab. Der Legacy-Build übernimmt die Einträge unverändert in `supertrader/data/sources.json`. Geprüft ist das nur mit `--out`; die Datei ist nicht committet, der nächste Signallauf schreibt sie.
 
 ## 4. Datenanforderungen je Methode
 
@@ -262,13 +285,15 @@ Die beiden Studien `PLANNED_NEEDS_SNAPSHOT_RUN` brauchen den eingefrorenen DEV-S
 4. **C08:** Ist die Zertifizierungsreferenz die Forschungsauswahl ohne Momentum oder die Produktauswahl mit P98 (O-6)?
 5. **C08:** Ist der Setup-Proxy CONSOLIDATION_10 für CC-3 tragfähig?
 6. **C12:** Volumenfenster und Verletzungslesart, mit Quellenstelle oder als Entscheidung.
-7. **C03:** Bodensuch-Beginn und die Lesart von DAR-Q7.
-8. **Alle:** CA-Quelle (E7-1) und die Aktivierung von SF6-PAPER-2027.
+7. **C03:** Bodensuch-Beginn und die Lesart von DAR-Q7 (FP-DAR-Q7-READING, Text im Vertrag seit Plan 1.1.2).
+8. **C08:** Status von `KK-SF-BO-STOP`, `SOURCE_EXACT` oder `SOURCE_DERIVED` (FP-KK-ADR-DENOMINATOR-STATUS).
+9. **Alle:** CA-Quelle (E7-1) und die Aktivierung von SF6-PAPER-2027.
 
 ## 8. Tests
 
 ```bash
 node --test scripts/supertrader/tests/sf-cert-prep-top5.test.mjs   # 33 Tests (23 CP-Regeltreue, 10 CP-PLAN)
+node --test scripts/supertrader/tests/sf-x-ledger.test.mjs        # 3 Tests (X-LEDGER-PSR709, -RAS97, -USED-FOR)
 node --test "scripts/supertrader/tests/*.test.mjs"
 node --test "core/tests/*.test.mjs"
 node scripts/supertrader/guard-protected-paths.mjs

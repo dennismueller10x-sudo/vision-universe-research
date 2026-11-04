@@ -478,10 +478,10 @@
       "cik": "0001737924",
       "name": "Nuveen Churchill Direct Lending Corp.",
       "sic": null,
-      "rawFacts": 5283,
-      "mappedFacts": 914,
-      "unmappedFacts": 4333,
-      "calendarYears": 8,
+      "rawFacts": 5681,
+      "mappedFacts": 934,
+      "unmappedFacts": 4756,
+      "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -489,10 +489,10 @@
         "NCDL"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 21,
+      "annualPeriods": 7,
+      "quarterlyPeriods": 22,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
@@ -524,21 +524,21 @@
         },
         "long_term_debt": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "net_income": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "operating_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -559,14 +559,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2019-12-31",
-          "lastAvailablePeriod": "2025-03-31",
-          "historyYears": 5.25
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -589,47 +589,46 @@
         }
       },
       "quality": {
-        "HIGH": 128,
-        "MEDIUM": 2
+        "HIGH": 138
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 130,
-        "resolvedValues": 130
+        "datableValues": 138,
+        "resolvedValues": 138
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4523,
+        "rules_version": "1.1.0",
+        "total": 4910,
         "by_severity": {
-          "INFO": 4333,
-          "WARNING": 190
+          "INFO": 4756,
+          "WARNING": 154
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 66,
-          "FISCAL_PERIOD_CONFLICT": 5,
+          "CONCEPT_DISAGREEMENT": 44,
           "PERIOD_MISMATCH": 93,
-          "RESTATEMENT_CONFLICT": 26,
-          "UNKNOWN_CONCEPT": 4333
+          "RESTATEMENT_CONFLICT": 17,
+          "UNKNOWN_CONCEPT": 4756
         }
       },
       "latestFiling": {
-        "accession": "0001737924-26-000084",
-        "filing_date": "2026-08-06",
+        "accession": "0001737924-26-000089",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 26
+        "periodic_filings": 27,
+        "acceptance_datetime": "2026-11-03T02:56:37.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "b6f8954ceeb0661567462d46e687eda05498ad79b0661e4bf77a0adc6241030a",
+      "sourceDigest": "08302361199a676ed85fcc63f8627c5af9a0e3e378be59cfc840b4e42da5e68a",
       "issuerId": "iss_cik_0001737924"
     }
   ]
