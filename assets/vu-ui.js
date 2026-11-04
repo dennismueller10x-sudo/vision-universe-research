@@ -125,7 +125,7 @@
       case "quant": return "/quant/#/aktie/" + t;
       case "supertrader": return "/supertrader/stock/" + t + "/";
       case "elliott": return "/elliott/#/" + t;
-      case "hedgefonds": return opt.cusip ? "/hedgefonds/#/aktie/" + encodeURIComponent(opt.cusip) : "/hedgefonds/#/aktien";
+      case "hedgefonds": return opt.cusip ? "/hedgefonds/#/aktie/" + encodeURIComponent(opt.cusip) : "/hedgefonds/#/aktie/" + t;
       default: return "#";
     }
   }

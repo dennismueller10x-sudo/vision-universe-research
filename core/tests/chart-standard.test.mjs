@@ -26,16 +26,16 @@ test("Reihenfolge: Hauptleiste 1T 1W 1M 1J 5J MAX, vorhandene weitere dahinter",
   assert.equal(CS.canonical("Max"), "MAX");
 });
 
-test("Start: 1T, sonst gemerkte Wahl, ohne Tagesverlauf der laengste bis 1J", () => {
+test("Start: 1J (Redesign C06), sonst gemerkte Wahl, ohne 1J der laengste kuerzere", () => {
   const all = () => true;
-  assert.equal(CS.startRange(all, null, mem()), "1T");
+  assert.equal(CS.startRange(all, null, mem()), "1J");
   const s = mem(); CS.rememberRange("5Y", s);
   assert.equal(CS.startRange(all, null, s), "5J", "gewaehlter Zeitraum gilt auch in der naechsten Welt");
-  assert.equal(CS.startRange((id) => id !== "5J", null, s), "1T", "gemerkter, hier nicht verfuegbarer Zeitraum faellt auf 1T");
+  assert.equal(CS.startRange((id) => id !== "5J", null, s), "1J", "gemerkter, hier nicht verfuegbarer Zeitraum faellt auf 1J");
   assert.equal(CS.startRange((id) => id !== "1T", null, mem()), "1J", "ohne Tagesverlauf kein kuenstliches 1T");
   assert.equal(CS.startRange((id) => id === "1M" || id === "MAX", null, mem()), "1M");
   assert.equal(CS.startRange(all, ["1J", "6M"], mem()), "1J", "nur angebotene Zeitraeume");
-  assert.equal(CS.startRange(all, null, null), "1T", "ohne Speicher");
+  assert.equal(CS.startRange(all, null, null), "1J", "ohne Speicher");
 });
 
 test("Intraday: entries zuerst, sonst juengste Sitzung aus available (wie live-hub.js)", () => {
