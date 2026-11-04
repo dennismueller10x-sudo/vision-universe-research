@@ -288,9 +288,15 @@ else {
     const wide = await page.evaluate(() => {
       const inScroller = (n) => { for (let p = n.parentElement; p && p !== document.body; p = p.parentElement) { const o = getComputedStyle(p).overflowX; if (o === 'auto' || o === 'scroll' || o === 'hidden') return true; } return false; };
       return {elements: [...document.querySelectorAll('body *')].filter(n => n.getBoundingClientRect().right > window.innerWidth + 1 && !inScroller(n)).length,
-        doc: document.documentElement.scrollWidth, vw: window.innerWidth};
+        doc: document.documentElement.scrollWidth, vw: window.innerWidth,
+        // Diagnose fuer Ueberlauf ohne eigenes Element (z. B. der Text der gewaehlten Option eines <select> in WebKit):
+        // die innersten Boxen, deren Inhalt breiter ist als sie selbst, ohne dass ein Kind-Element das erklaert.
+        sources: [...document.querySelectorAll('body *')].filter(n => n.scrollWidth > n.clientWidth + 1 && !inScroller(n)
+          && getComputedStyle(n).overflowX === 'visible' && ![...n.children].some(c => c.scrollWidth > c.clientWidth + 1 || c.getBoundingClientRect().right > n.getBoundingClientRect().right + 1))
+          .slice(0, 3).map(n => { const d = e => e.tagName.toLowerCase() + (e.id ? '#' + e.id : e.classList[0] ? '.' + e.classList[0] : '');
+            return `${d(n)}[${[...n.children].map(d).join(',')}] ${n.scrollWidth}/${n.clientWidth}`; })};
     });
-    check(wide.elements === 0 && wide.doc <= wide.vw, `Backtest-Vorschau 390 px, Auswahl ${idx}: Seite nicht breiter als der Bildschirm (${wide.elements} Elemente, ${wide.doc}/${wide.vw} px)`);
+    check(wide.elements === 0 && wide.doc <= wide.vw, `Backtest-Vorschau 390 px, Auswahl ${idx}: Seite nicht breiter als der Bildschirm (${wide.elements} Elemente, ${wide.doc}/${wide.vw} px)${wide.doc > wide.vw ? `; Ursache: ${wide.sources.join('; ') || 'unbekannt'}` : ''}`);
   }
   await shot(page, 'backtest-vorschau-iphone');
   await page.setViewportSize(vp);
