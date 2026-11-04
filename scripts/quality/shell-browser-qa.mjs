@@ -33,7 +33,7 @@ const ROUTES = [
   ['Elliott', '/elliott/', 'Elliott'], ['Elliott', '/elliott/#/?welle=3', 'Welle 3'], ['Elliott', '/elliott/#/?neu=1', 'Neu'], ['Elliott', '/elliott/#/?suche=1', 'Suche'],
   ['Elliott', '/elliott/#/?richtung=ab', null], ['Elliott', '/elliott/#/NVDA', null], ['Elliott', '/quant/#/elliott/NVDA', null],
   // Fundamental: eigenes Produkt; die Unternehmensseite /fundamental/#/<T> zeigt nur den Produktkontext
-  ['Fundamental', '/fundamental/#/', 'Fundamental'], ['Fundamental', '/fundamental/#/entdecken', 'Entdecken'], ['Fundamental', '/fundamental/#/suche', 'Suche'],
+  ['Fundamental', '/fundamental/#/', 'Fundamental'], ['Fundamental', '/fundamental/#/ranglisten', 'Ranglisten'], ['Fundamental', '/fundamental/#/branchen', 'Branchen'],
   ['Fundamental', '/fundamental/#/methodik', 'Methodik'], ['Fundamental', '/fundamental/#/NVDA', null],
   ['Vorsorge', '/vorsorge/#/', 'Vorsorge'], ['Vorsorge', '/vorsorge/#/plan', 'Planer'], ['Vorsorge', '/vorsorge/#/etfs', 'ETFs'],
   ['Vorsorge', '/vorsorge/#/portfolio', 'Portfolio'], ['Vorsorge', '/vorsorge/#/foerderung', null], ['Vorsorge', '/vorsorge/#/monitor', null],
