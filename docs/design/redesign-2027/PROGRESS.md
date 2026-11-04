@@ -97,13 +97,13 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | ST07 | Supertrader · Hausstrategie | offen |  |  |
 | ST08 | Supertrader · NVIDIA (Perspektive Methoden) | offen |  |  |
 | ST-Z | Supertrader · Zustände in Alltagssprache | offen |  |  |
-| H01 | Hedgefonds · Übersicht | offen |  |  |
-| H02 | Hedgefonds · Investoren | offen |  |  |
-| H03 | Hedgefonds · Datenbank | offen |  |  |
-| H04 | Hedgefonds · Aktien | offen |  |  |
-| H05 | Hedgefonds · Fonds Pershing Square | offen |  |  |
-| H06 | Hedgefonds · Smart Money | offen |  |  |
-| H07 | Hedgefonds · NVIDIA (Perspektive Investoren) | offen |  |  |
+| H01 | Hedgefonds · Übersicht | in Arbeit | #1357 | Suche bleibt echte Hedgefonds-Suche (ohne Atlas-Knopf) |
+| H02 | Hedgefonds · Investoren | in Arbeit | #1357 | 12 Stil-Chips aus den Daten; Sortierung im eigenen Sheet |
+| H03 | Hedgefonds · Datenbank | in Arbeit | #1357 | neue Adresse `#/investoren/alle`; Region nur Alle/DACH (Daten); alte Chips bleiben |
+| H04 | Hedgefonds · Aktien | in Arbeit | #1357 | „Alle 4.850“ lädt stufenweise statt eigener Seite |
+| H05 | Hedgefonds · Fonds Pershing Square | in Arbeit | #1357 | Zeilen zusätzlich mit Wert und Stückzahl; Quartale im Akkordeon |
+| H06 | Hedgefonds · Smart Money | in Arbeit | #1357 | Insider-Käufe aus vorhandener Quelle `ownership-signals-v1` (Form 4) |
+| H07 | Hedgefonds · NVIDIA (Perspektive Investoren) | in Arbeit | #1357 | `#/aktie/<T>`, CUSIP leitet um; Urteil ≥ 60 % Käufe „Mehr Käufer“, ≥ 60 % Verkäufe „Mehr Verkäufer“, sonst „Ausgeglichen“ |
 | S01 | Screener · Übersicht | offen |  |  |
 | S02 | Screener · Filter hinzufügen | offen |  |  |
 | S03 | Screener · Treffer | offen |  |  |
@@ -138,6 +138,7 @@ Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds 
 - Datenfrage an Strang A: negative Invalidierungspreise im Elliott-Index (z. B. CHGA −4,38 $), Karte zeigt „–“.
 - UIP-Revisionsnummern der Welt-PRs (z. B. #1356 UIP-R30) beim Einbau neu vergeben (`uip.mjs`).
 - Gemeinsamer Sparkline-Lader und `VUUI`-Lesart-Karte in `assets/`.
+- Erledigt in #1351: Sheets (C16) liegen über Kopfzeile und Dock (`z-index`), Hedgefonds-Ausnahme kann entfallen.
 - `VUUI.navcard` mit eigenem Symbol (Fundamental hat lokal nachgebaut).
 - Fundamental-Produktdokument: Urteilsregel F06 in einem Satz (schwächere der beiden Discover-Stufen aus `fundamentals.health`).
 
