@@ -1,6 +1,6 @@
 # Vision Universe – Neustart-Plan (Stand 04.11.2026)
 
-Ziel: in sechs Wochen launch-reif, öffentliche Beta Anfang Januar 2027 (abhängig von der Rechtsabnahme).
+Ziel: Infrastruktur schlank und erste echte Backtest-Ergebnisse in wenigen Tagen; Frontend parallel. Öffentlicher Start hängt nur noch an Recht, Steuer und Testkauf.
 Dieses Dokument ist der Wiederaufnahmepunkt für jede Sitzung, die am Neustart arbeitet. Visuelle Fassung: CEO-Präsentation „Vision Universe Neustart“.
 
 ## 1. Befund
