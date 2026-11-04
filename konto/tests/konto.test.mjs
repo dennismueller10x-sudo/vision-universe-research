@@ -154,7 +154,12 @@ test('Watchlist-Seite: Kennzahlen nur aus der gemeinsamen Uebersicht, kein Gesam
   assert.ok(!/StockContext/.test(js), 'kein eigener Produktverweis neben view.links');
   // Owner-Auftrag 29.10.2026: Die Watchlist ist Teil von "Mein Dashboard"; die Kontonavigation fuehrt dorthin,
   // die Detailseite /konto/watchlist/ bleibt unter ihrer Adresse erreichbar und fuehrt zurueck.
-  for (const p of ['index.html', 'abo/index.html', 'tarife/index.html', 'einstellungen/index.html']) {
+  // Redesign (E07): /konto/ ist eine Seite ohne Reiter (Platz 3 der Leiste „Mein Bereich“, die zur Watchlist fuehrt);
+  // die Unterseiten behalten die Kontonavigation mit dem Weg zu Mein Dashboard.
+  const overview = readFileSync(join(ROOT, 'index.html'), 'utf8');
+  assert.ok(!/class="ka-nav"/.test(overview), 'Konto-Startseite ohne Reiterleiste');
+  assert.match(overview, /href="\/mein-dashboard\/">Mein Dashboard<\/a>/, 'Weg zur Watchlist bleibt auf der Seite');
+  for (const p of ['abo/index.html', 'tarife/index.html', 'einstellungen/index.html']) {
     const html = readFileSync(join(ROOT, p), 'utf8');
     assert.match(html, /<a class="ka-nav-out" href="\/mein-dashboard\/">Mein Dashboard<\/a>/, p);
     assert.ok(!/class="ka-nav"[^]*?href="\/konto\/watchlist\/"[^]*?<\/nav>/.test(html), `${p}: Watchlist nicht mehr in der Kontonavigation`);
