@@ -17,8 +17,8 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 
 | # | PR | Inhalt | Folien | Stand |
 |---|---|---|---|---|
-| 1 | (dieser PR) | Vorlage `docs/design/redesign-2027/` nach `main`, diese Liste | – | offen |
-| 2 | #1331 | Shell und Dock (frühere Sitzung), wird korrigiert: Bausteine als eigene Komponenten unter `assets/`, Musterseite, kein Rot/Grün | A3, C, N1–N3 | Entwurf |
+| 1 | #1340 | Vorlage `docs/design/redesign-2027/` nach `main`, diese Liste | – | offen |
+| 2 | #1345 | Schritt 1+2: Bausteine C04–C20 als eigene Komponente (`assets/vu-ui.css/.js`), C06 (`assets/vu-chart.js` 2.1.0), Musterseite `/status/bausteine/`, Regel 1, Shell aus #1331 ohne Datenläufe | A3, C, N1–N3 | offen |
 
 Übernommene Zweige der früheren Sitzung (Stand `docs/neustart/D-frontend.md` im Zweig `neustart/d-shell-dock`):
 `neustart/d-startseite` (E01), `neustart/d-mein-bereich` (E02, E08), `neustart/d-aktienkopf` (C04, C05, C06), `neustart/d-discover-aktie` (D09).
@@ -29,14 +29,14 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 |---|---|---|---|---|
 | A1 | So liest du diese Präsentation | – |  | Übersichtsfolie, nichts zu bauen |
 | A2 | Für wen wir bauen | – |  | Übersichtsfolie, nichts zu bauen |
-| A3 | Sieben Regeln für jede Seite | in Arbeit | #1331 (Entwurf, frühere Sitzung) |  |
-| N1 | Das Navigationsmodell | in Arbeit | #1331 (Entwurf) |  |
-| N2 | Produkt-Leiste je Welt | in Arbeit | #1331 (Entwurf) |  |
-| N3 | Das Menü | in Arbeit | #1331 (Entwurf) |  |
+| A3 | Sieben Regeln für jede Seite | in Arbeit | #1345 (ersetzt #1331) |  |
+| N1 | Das Navigationsmodell | in Arbeit | #1345 (ersetzt #1331) |  |
+| N2 | Produkt-Leiste je Welt | in Arbeit | #1345 (ersetzt #1331) |  |
+| N3 | Das Menü | in Arbeit | #1345 (ersetzt #1331) |  |
 | N4 | Aktienkopf: Icons oder Perspektiven-Leiste? | in Arbeit | Zweig neustart/d-aktienkopf (C04/C05, C06) |  |
 | N5 | Perspektive, Welt und Leiste | offen |  |  |
 | N6 | Einsteiger und Profi | offen |  |  |
-| C | Bausteine C01–C20 | in Arbeit | #1331 (Entwurf) |  |
+| C | Bausteine C01–C20 | in Arbeit | #1345 (ersetzt #1331) |  |
 | E01 | Einstieg · Startseite | in Arbeit | Zweig neustart/d-startseite |  |
 | E02 | Mein Bereich · Willkommen | in Arbeit | Zweig neustart/d-mein-bereich |  |
 | E03 | Einstieg · Preise Free/Pro | offen |  |  |
@@ -124,7 +124,8 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 
 ## Nicht möglich / übersprungen
 
-(noch nichts)
+- WebKit ist in dieser Sitzung nicht installiert (Vorgabe: Playwright nicht neu installieren). Lokal prüft Chromium; WebKit prüft `shell-ci` in jedem PR.
+- Quant CI ist auf `main` vorbestehend rot (Strang A); die Kette wertet sie nur, wenn die Fehlschläge neu sind.
 
 ## Backend-Zusätze (nach den Schritten 1–6)
 
