@@ -17,9 +17,10 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 
 | # | PR | Inhalt | Folien | Stand |
 |---|---|---|---|---|
-| 1 | #1340 | Vorlage `docs/design/redesign-2027/` nach `main`, diese Liste | – | offen |
+| 1 | #1340 | Vorlage `docs/design/redesign-2027/` nach `main`, diese Liste | – | gemergt |
 | 2 | #1345 | Schritt 1+2: Bausteine C04–C20 als eigene Komponente (`assets/vu-ui.css/.js`), C06 (`assets/vu-chart.js` 2.1.0), Musterseite `/status/bausteine/`, Regel 1, Shell aus #1331 ohne Datenläufe | A3, C, N1–N3 | offen |
 | 3 | #1346 | Schritt 3: Aktienkopf C04 + Perspektiven-Leiste C05 (sieben Perspektiven) für alle Welten | N4, N5 | offen |
+| 4 | #1350 | Discover D09: Aktienseite Überblick (discover/ui/overview.js), Analyse unter „Alle Kennzahlen“ PRO | D09 | offen |
 
 Übernommene Zweige der früheren Sitzung (Stand `docs/neustart/D-frontend.md` im Zweig `neustart/d-shell-dock`):
 `neustart/d-startseite` (E01), `neustart/d-mein-bereich` (E02, E08), `neustart/d-aktienkopf` (C04, C05, C06), `neustart/d-discover-aktie` (D09).
@@ -58,7 +59,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | D06 | Discover · Suchen | offen |  |  |
 | D07 | Discover · Märkte | offen |  |  |
 | D08 | Discover · Watchlist | offen |  |  |
-| D09 | Discover · NVIDIA (Aktienseite) | in Arbeit | Zweig neustart/d-discover-aktie |  |
+| D09 | Discover · NVIDIA (Aktienseite) | in Arbeit | #1350 | Kurs im Kopf in Anzeigewährung (€) statt $ + ≈ € (Querschnitt Währung offen); Jahresspanne in % statt $; d09-c Merken-Sheet wartet auf Benachrichtigungen (Backend) |
 | Q00 | Quant · So ist die Welt gebaut | offen |  |  |
 | Q01 | Quant · Übersicht | offen |  |  |
 | Q02 | Quant · Screener | offen |  |  |
