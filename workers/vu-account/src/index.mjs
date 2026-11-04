@@ -21,6 +21,7 @@ import * as billing from './billing.mjs';
 import * as pricing from './pricing.mjs';
 import * as backtests from './backtests.mjs';
 import * as watchlist from './watchlist.mjs';
+import * as searches from './searches.mjs';
 import {runScheduled, needsAttention} from './cancellation.mjs';
 import {createBrevo, runBrevo} from './brevo.mjs';
 import * as pages from './public-pages.mjs';
@@ -81,6 +82,10 @@ const ROUTES = [
   ['PATCH', '/v1/watchlist/items', watchlist.update, {csrf: true}],
   ['POST', '/v1/watchlist/items/remove', watchlist.remove, {csrf: true}],
   ['POST', '/v1/watchlist/import', watchlist.importItems, {csrf: true}],
+  ['GET', '/v1/searches', searches.list],
+  ['POST', '/v1/searches', searches.create, {csrf: true}],
+  ['PATCH', '/v1/searches', searches.update, {csrf: true}],
+  ['POST', '/v1/searches/remove', searches.remove, {csrf: true}],
   ['GET', '/v1/plans', billing.plans],
   ['GET', '/v1/entitlements/check', billing.entitlementCheck],
   ['POST', '/v1/billing/checkout', billing.checkout, {csrf: true}],
