@@ -27,9 +27,9 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
 
 ## Offene PRs: Vorschlag (noch nichts geschlossen, Bestätigung durch die Steuerungssitzung)
 
-Stand 04.11.2026, 18:10 UTC: 134 offene PRs (inkl. eigener). Vorschlag: **24 behalten, 3 zusammenführen zu 1, 107 schließen**. Geschlossene PRs bleiben wiederherstellbar (Plan §6 Nr. 9).
+Stand 04.11.2026, 18:45 UTC: 133 offene PRs (inkl. #1347, #1348). Vorschlag: **23 behalten, 3 zusammenführen zu 1, 107 schließen**. Geschlossene PRs bleiben wiederherstellbar (Plan §6 Nr. 9).
 
-### Behalten (24)
+### Behalten (23)
 
 | PR | Inhalt | Strang | Grund |
 |---|---|---|---|
@@ -71,7 +71,7 @@ Stand 04.11.2026, 18:10 UTC: 134 offene PRs (inkl. eigener). Vorschlag: **24 beh
 | Doku-Übergaben | #1192, #1284, #1303 | keine neuen Übergabe-/Fortschrittsdokumente (CLAUDE.md); Stand steht im Plan |
 | Doppelt | #1325 | ersetzt durch #1343 (Test statt Umbenennung) |
 
-Nach dem Aufräumen: 24 + 1 = 25 offen; Ziel unter 15 erreicht, sobald die laufenden Strang-PRs gemergt sind.
+Nach dem Aufräumen: 23 + 1 = 24 offen; Ziel unter 15 erreicht, sobald die laufenden Strang-PRs gemergt sind.
 
 ## Umbau Plan §3: Konzept und Pilot
 
