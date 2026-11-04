@@ -38,3 +38,8 @@ jobs:
           git commit -m "chore: update dashboard news"
           # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+      # Datenzweig-Pilot (Plan Neustart §3, core/registry/data-branch.json, Phase DUAL_WRITE):
+      # derselbe Stand zusaetzlich in den Datenzweig; Pages liefert ihn aus und weist Gleichheit mit main nach.
+      - name: News in den Datenzweig
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live dashboard/data/news_feed.json
