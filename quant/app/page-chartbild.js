@@ -799,6 +799,8 @@
       host.classList.toggle("is-pro", v === "pro");
       draw();
     }
+    /* Redesign 2027 (W05): im Elliott-Produkt ein Knopf mit PRO-Marke (C19). */
+    if (inElliott) proOpen.replaceChildren("Elliott-Profi: Wellen, Regeln, Niveaus ", el("span", { class: "vu-pro", text: "PRO" }));
     proOpen.addEventListener("click", function () { setView("pro"); proHost.scrollIntoView({ behavior: "smooth", block: "start" }); });
 
     /* Reihenfolge (VU3, Ergebnis zuerst): Ausblick → Kennzahlen → Szenario-Auswahl → Chart → Szenario-Satz.
@@ -809,17 +811,31 @@
     var ewKids = [];
     if (!shown) {
       ewKids.push(el("div", { class: "cb-nothesis", role: "note" }, [
+        inElliott ? el("p", { class: "cb-nothesis-tag" }, [el("span", { class: "vu-verdict vu-verdict--none", "data-verdict": "none", text: "○ Keine Aussage" }), el("span", { class: "vu-ltag", text: "Elliott-Zählung" })]) : null,
         el("p", { class: "cb-nothesis-h" }, [el("b", { text: "Keine belastbare Elliott-Lesart" })]),
         el("p", { text: "Die Zählung ist derzeit nicht verlässlich genug – Vision Universe zeigt deshalb keine Elliott-Projektion." + (view === "pro" && pjSel && pjSel.p && pjSel.p.reason ? " Grund: " + pjSel.p.reason : "") }),
         inElliott ? el("a", { class: "cb-nothesis-link", href: "/elliott/#/", text: "Aktuelle Elliott-Lesarten ansehen" }) : null
       ]));
     }
-    ewKids.push(ewCard, pjCard, proOpen, proHost);
+    /* Redesign 2027 (W05, Perspektive „Wellen“): zuerst die Elliott-Aussage (oder die ehrliche Absage), dann der eine Chart mit der
+       Marktstruktur, danach Ausblick, Warum, Historie; Profi-Tiefe (Zeitreise, Zeitebenen) auf Abruf. */
+    if (inElliott) ewKids.push(pjCard, el("h3", { class: "cb-ms-h", text: shown ? "Kurs und Zonen" : "Stattdessen: Marktstruktur" }), chartCard, ewCard);
+    else ewKids.push(ewCard, pjCard, proOpen, proHost);
     var ewSec = X.section("Elliott", null, ewKids, null, null, "elliott", "vu-sec cb-sec cb-elliott");
     if (staleAlert) host.append(staleAlert);
-    order.forEach(function (n) { if (n) host.append(n); });
-    [ewSec, why, evidence, replay].forEach(function (n) { if (n) host.append(n); });
-    host.append(el("div", { class: "cb-more-end" }, [tfs]));
+    if (inElliott) {
+      var CLV = { CLEAR: ["strong", "▲ Stark"], MODERATE: ["mid", "◆ Mittel"], AMBIGUOUS: ["weak", "▼ Schwach"] }[clarity.level];
+      var kick = hero.querySelector(".cb-kicker"); if (kick) kick.textContent = tfLabel;
+      if (CLV) hero.append(el("span", { class: "vu-verdict vu-verdict--" + CLV[0] + " cb-hero-verdict", "data-verdict": CLV[0], title: "Strukturklarheit: " + (clarity.text || ""), text: CLV[1] }));
+      var evHead = evidence.querySelector("h2"); if (evHead && badge.label) evHead.parentNode.after(el("p", { class: "cb-ev-verdict" }, [el("span", { class: "vu-verdict vu-verdict--none", "data-verdict": "none", text: "○ " + badge.label })]));
+      [ewSec, X.section("Technischer Ausblick", null, [hero, levels, tabsBlock, textBlock], null, null, "ausblick", "vu-sec cb-sec cb-outlook-sec"), why, evidence, proOpen, proHost].forEach(function (n) { if (n) host.append(n); });
+      host.append(el("div", { class: "cb-pro-extra" }, [replay, el("div", { class: "cb-more-end" }, [tfs])].filter(Boolean)),
+        el("p", { class: "cb-exp" }, [el("b", { text: "Experimentell. " }), "Eine Lesart beschreibt eine mögliche Struktur mit klarer Grenze. Keine Vorhersage, kein Kursziel, keine Empfehlung."]));
+    } else {
+      order.forEach(function (n) { if (n) host.append(n); });
+      [ewSec, why, evidence, replay].forEach(function (n) { if (n) host.append(n); });
+      host.append(el("div", { class: "cb-more-end" }, [tfs]));
+    }
     /* Daten & Methodik: einmal je Seite, am Ende (Stand, Kursbasis, Hinweis, Methodik). */
     host.append(el("details", { class: "vu-dm cb-foot" }, [el("summary", {}, [el("span", { text: "Daten & Methodik" }), el("small", { text: "Stand " + X.dateDe(a.asOf) })]),
       el("dl", {}, [el("dt", { text: "Analysestand" }), el("dd", { text: X.dateDe(a.asOf) + " · " + tfLabel }),
