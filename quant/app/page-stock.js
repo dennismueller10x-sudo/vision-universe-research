@@ -1023,6 +1023,11 @@
         return b;
       }));
       applyFilter("all");
+      /* Redesign 2027 (Q07, Schritt 4): zwei Kacheln „Besser / Schlechter geworden … von …“ vor der Liste. */
+      var total = vm.change.items.length, names = function (t) { return vm.change.items.filter(function (i) { return i.tone === t; }).map(function (i) { return i.group; }).filter(function (g, k, a) { return g && a.indexOf(g) === k; }).slice(0, 3).join(", "); };
+      changeKids.push(el("div", { class: "qv3-tally" }, [
+        el("div", { class: "qv3-tally-c" }, [el("small", { text: "Besser geworden" }), el("b", { class: "num", text: nGood + " von " + total }), el("span", { text: names("good") })]),
+        el("div", { class: "qv3-tally-c" }, [el("small", { text: "Schlechter geworden" }), el("b", { class: "num", text: nBad + " von " + total }), el("span", { text: names("bad") })])]));
       changeKids.push(chips, list || el("p", { class: "qx-small", text: "Keine deutliche Veränderung." }));
       /* Alle Punkte (auch unveraenderte und nicht messbare) und die Messweise in EINEM Aufklapper. */
       changeKids.push(X.more("Alle Veränderungen und wie sie gemessen werden", function () {
