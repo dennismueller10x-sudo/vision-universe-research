@@ -119,3 +119,9 @@ Finanz-Profile `vmVxdjRcc7v07SQ8G`, `LgzyktH5O7puaRZjp`; Hashtag Finanz `yKLbKtn
 - **Clips am Anfang:** Owner will immer ein Video im Hook. Grafikkarte darf über dem Clip liegen (Video bleibt rundum sichtbar).
 - **Fremdclip als Fenster:** Szenen-Grafik im Clip-Fenster ausblenden, Headline und Untertitel bleiben (Porsche).
 - Whisper: `faster_whisper` mit Dateipfad scheitert an der `av`-Version; Audio vorher mit ffmpeg nach f32 16 kHz wandeln und als Array übergeben.
+
+## Format „Moderatorin + Analyse" (04.11.2026, vom Owner als „extrem gut" abgenommen)
+
+GTA 6 / Take-Two v3 (33 s): HeyGen-Fotoavatar „VU Moderatorin" (Look `f8adfdf11a754f9db84849dafb1fc6ee`), Engine Avatar IV, `expressiveness: high`, Ton aus eigener TTS (`POST /v3/voices/speech`, private Stimme „Warm German Adult" `HsKc399ykaEkR92czIDl`, ElevenLabs v3) als `audio_url` übergeben. Bild auf Oberkörper zugeschnitten (crop 760×1351 ab 30,30, skaliert auf 1080×1920). Ablauf: 0–6 s Moderatorin groß (Hook), ab 6,2 s Zoom in ein Fenster oben rechts (340 px breit, x 740, y 60), dort bis zum Ende; Chart im Vordergrund. Zwei Durchläufe in FFmpeg (Grundbild + Grafik, dann Bild-im-Bild mit `scale eval=frame` und `overlay`), weil ein einziger Filtergraph das Fenster verlor. Ton: Stimme EQ (Hochpass 80 Hz, −2,5 dB bei 250 Hz, +3 dB bei 3,2 kHz, Höhen +3,5 dB), Musik 0,4. Kosten: 30-s-Avatar etwa 75 API-Credits (gut 1 $).
+
+Lehren: Öffentliche ElevenLabs-Stimmen sind im Workspace gesperrt („requires Orca"); private Stimmen gehen. Motion-Prompt und Avatar V für Fotoavatare brauchen einen Digital Twin als Bewegungsvorlage. Avatar nie nur für den Hook erzeugen, wenn er sichtbar bleiben soll (Lippen). Bullische Fakten (GTA 5 → +1.091 %, Unterstützung) wirken besser als nur negative. Realistische Szenen-Avatare aus heygen-video-1 (Mann im Hoodie) lehnte der Owner als „komplett KI" ab.
