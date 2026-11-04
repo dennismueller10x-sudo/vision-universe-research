@@ -1715,9 +1715,9 @@
       "cik": "0001861107",
       "name": "Ceribell, Inc.",
       "sic": "3845",
-      "rawFacts": 2677,
-      "mappedFacts": 791,
-      "unmappedFacts": 1880,
+      "rawFacts": 3045,
+      "mappedFacts": 914,
+      "unmappedFacts": 2140,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -1727,28 +1727,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 15,
+      "quarterlyPeriods": 16,
       "firstPeriodEnd": "2022-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2023-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 2.0
-        },
-        "eps_diluted": {
           "annualPeriods": 3,
           "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
+        "eps_diluted": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
         "free_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0,
@@ -1768,21 +1768,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -1796,14 +1796,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -1826,44 +1826,45 @@
         }
       },
       "quality": {
-        "HIGH": 106
+        "HIGH": 113
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 106,
-        "resolvedValues": 106
+        "datableValues": 113,
+        "resolvedValues": 113
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1907,
+        "rules_version": "1.1.0",
+        "total": 2171,
         "by_severity": {
-          "INFO": 1880,
-          "WARNING": 27
+          "INFO": 2140,
+          "WARNING": 31
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 26,
+          "CONCEPT_DISAGREEMENT": 30,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 1880
+          "UNKNOWN_CONCEPT": 2140
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-342574",
-        "filing_date": "2026-08-10",
+        "accession": "0001193125-26-445555",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 8
+        "periodic_filings": 9,
+        "acceptance_datetime": "2026-11-03T21:50:57.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "c26c49e67c8fb36c39a5e0cc3a0373c5766a7e6a10a3c752fb69cd56e752e56a",
+      "sourceDigest": "1d89f4e7fbc229665797b0135164db66da9a60032c5cb1710c3cfdc24f847c9f",
       "issuerId": "iss_cik_0001861107"
     },
     {
