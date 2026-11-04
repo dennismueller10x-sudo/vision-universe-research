@@ -409,8 +409,8 @@
       "records": "securityCount",
       "role": "Licensed normalized identity and unadjusted Close display projection; provider RAW remains private.",
       "producer": "scripts/marketstack/europe-discover-publication.mjs",
-      "workflow": null,
-      "schedule": "manuell",
+      "workflow": "europe-discover-refresh.yml",
+      "schedule": "werktags 17:47 UTC (18:47 MEZ / 19:47 MESZ), nur mit Repo-Variable EUROPE_REFRESH_SCHEDULE_ENABLED=true; sonst manuell",
       "freshness": {
         "kind": "none"
       },
@@ -421,8 +421,8 @@
         "Close charts"
       ],
       "knownGaps": [
-        "Exact-MIC runtime freshness: lag 0 current, lag 1 delayed, lag 2–3 limited, >3 blocked; bounded calendar expiry fails closed.",
-        "No Marketstack refresh schedule enabled. History/latest updates require a reviewed manual producer run.",
+        "Exact-MIC runtime freshness: lag 0 current, lag 1 delayed, lag 2–3 limited, >3 blocked; the rule-based calendar window is derived from data and run date (core/europe-exchange-calendar.js), expiry still fails closed.",
+        "Daily Marketstack refresh (europe-discover-refresh.yml) runs only while the repository variable EUROPE_REFRESH_SCHEDULE_ENABLED is true; one /eod request per listing except the known-invalid symbols of the last refresh (HTTP 422, kept BLOCKED), cap 600 credits, quota reserve 5,000.",
         "Technical, Quant, SuperTrader and Backtesting remain separately gated."
       ]
     },
@@ -474,6 +474,34 @@
       "consumers": [
         "core/industry-classification.js",
         "Supertrader-Research-Adapter (nicht aktiviert)"
+      ]
+    },
+    {
+      "id": "watchlistEvents",
+      "label": "Watchlist-Ereignisse (vorbereitet, keine Zustellung)",
+      "layer": "PRODUCT",
+      "group": "Products",
+      "critical": false,
+      "artifact": "/core/data/watchlist-events-v1.json",
+      "timestamp": [
+        "generatedAt"
+      ],
+      "asOf": [
+        "after.sources.price"
+      ],
+      "records": "counts.total",
+      "role": "Ereignisse je Instrument (nicht je Nutzer) aus dem Vergleich zweier veroeffentlichter Watchlist-Uebersichten ueber core/watchlist-view.js#events: Kurs (neues 52W-Hoch, Volumen), Technik (Trendstruktur, SMA200), Supertrader (gueltige Eignung, Zustandswechsel, Forschung gekennzeichnet), Quant (Faktorstufe um zwei Stufen, Datenqualitaet), Datenstand (Quelle aktualisiert, Frische, Abschnitt). Idempotente eventId, Format core/contracts/events.schema.json. Keine E-Mail, kein Push, keine Zustellung an Nutzer.",
+      "producer": "scripts/account/build-watchlist-events.mjs --before=<Uebersicht> --after=<Uebersicht> --out=<Datei>",
+      "schedule": "keiner (kein Workflow, kein Zeitplan); nur von Hand nach --out",
+      "freshness": {
+        "kind": "none"
+      },
+      "activation": {
+        "state": "PREPARED_DISABLED",
+        "decision": "Vorbereitet, nicht freigegeben (docs/accounts/WATCHLIST.md §7 und §9). Das Artefakt darf nicht existieren; der Erzeuger verweigert den kanonischen Ort (Exit 3). Aktivierung nur in eigenen PRs mit Owner-Freigabe nach docs/accounts/FREIGABEN.md: erst Erzeugung als Schritt des Release-Baus (ACTIVATING), getrennt davon jede Zustellung (E-Mail, Push, Abmeldelinks, Ereignisse x watchlist_items.alerts x Tarif)."
+      },
+      "consumers": [
+        "spaetere Benachrichtigungen (nicht aktiviert, docs/accounts/WATCHLIST.md §7)"
       ]
     }
   ]

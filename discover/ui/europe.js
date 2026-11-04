@@ -38,6 +38,11 @@
     button.onclick=async()=>{if((await product.toggle(id)).state==='AVAILABLE')paint();};
     paint();root.prepend(button);
   }
+  /** Gekennzeichnete Aktie ohne geprüfte aktuelle Kurse: Name, Grundklasse, kein Kurs und kein Chart. */
+  function withheldRow(w){
+    return el('div',{class:'v2-watch-row','data-withheld':w.reasonClass,'data-security-id':w.securityId},[
+      el('a',{href:w.href,text:w.name+(w.ticker?' · '+w.ticker:'')}),el('span',{text:w.message+' '+w.reason})]);
+  }
   async function render(root,{parts,ctx,route,active,message}) {
     if(!D.europeProduct){await ensureLoader();if(D.europePublicLoader){try{await D.europePublicLoader.connect();}catch(_){}}}
     if(!active())return;
@@ -45,10 +50,12 @@
     if(!product){message(root,'Europa noch nicht verfügbar','Dieses Universum ist noch nicht freigegeben.');return;}
     if(parts[0]==='s'){
       const id=decodeURIComponent(parts[2]),result=await product.detail(id);if(!active())return;
+      if(result.state!=='AVAILABLE'&&result.withheld){const w=result.withheld;message(root,w.name+(w.ticker?' · '+w.ticker:''),w.message+' '+w.reason);
+        const box=root.querySelector('p')||root;box.setAttribute&&box.setAttribute('data-withheld',w.reasonClass);document.title=w.name+' — Discover';return;}
       if(result.state!=='AVAILABLE'){message(root,'Aktie derzeit nicht verfügbar','Identität, Datenqualität oder Anzeigerechte sind noch nicht freigegeben.');return;}
       const detail=result.data;root.classList.add('dx-detail');
       D.Views.Detail.render(root,detail,Object.assign({},ctx,{universeId:'EUROPE'}));
-      const title=root.querySelector('.dx-dhero-title h1');if(title)title.style.overflowWrap='anywhere';
+      /* Lange europaeische Namen ("AKTIENGESELLSCHAFT") umbrechen statt seitlich abzuschneiden - im einheitlichen Aktienkopf (ui/stock-head.js) wie im alten Kopf. */const title=root.querySelector('.vu-shead-name, .dx-dhero-title h1');if(title)title.style.overflowWrap='anywhere';
       const states=el('section',{class:'dx-chapter','aria-label':'Verfügbarkeit der Analysen'},[
         el('p',{text:detail.quantMessage}),el('p',{text:detail.technicalMessage})]);
       if(detail.privatePreview)states.prepend(el('p',{class:'dx-intraday-note',text:detail.disclaimer}));
@@ -70,9 +77,11 @@
       const members=result.data.members,list=el('div',{class:'v2-watch-list'});root.append(list);
       if(!members.length)list.append(el('p',{class:'v2-lead',text:'Noch keine europäischen Aktien gespeichert.'}));
       members.forEach(member=>{
-        const title=member.state==='AVAILABLE'?(member.name||member.ticker):'Gespeicherter Titel derzeit nicht verfügbar';
+        const title=member.state==='AVAILABLE'||member.reasonClass?(member.name||member.ticker):'Gespeicherter Titel derzeit nicht verfügbar';
         const label=member.href?el('a',{href:member.href,text:title}):el('span',{text:title});
-        const row=el('div',{class:'v2-watch-row'},[label,el('button',{type:'button',text:'Entfernen','aria-label':title+' aus Watchlist entfernen'})]);
+        const parts=[label];if(member.reasonClass)parts.push(el('span',{text:member.message+' '+member.reasonText}));
+        const row=el('div',{class:'v2-watch-row'},parts.concat([el('button',{type:'button',text:'Entfernen','aria-label':title+' aus Watchlist entfernen'})]));
+        if(member.reasonClass)row.setAttribute('data-withheld',member.reasonClass);
         row.querySelector('button').onclick=()=>{product.remove(member.securityId);route();};list.append(row);
       });
     }else{
@@ -81,11 +90,15 @@
       const grid=D.Cards.grid(result.data.cards,{universeId:'EUROPE'});
       grid.querySelectorAll('.dx-poster').forEach(card=>card.removeAttribute('aria-label'));
       root.append(el('h1',{text:result.data.title}),el('p',{class:'v2-lead',text:result.data.rule}),grid);
+      // Nicht freigegebene Aktien bleiben sichtbar, gekennzeichnet und ohne Kurs.
+      const held=el('section',{class:'v2-watch-list','aria-label':'Aktien ohne geprüfte aktuelle Kurse','data-europe-withheld':''},[el('h2',{text:'Ohne geprüfte aktuelle Kurse'})]);
+      const addHeld=list=>{(list||[]).forEach(w=>held.append(withheldRow(w)));held.hidden=held.childElementCount<2;};
+      addHeld(result.data.unavailable);root.append(held);
       let offset=result.data.nextOffset;
       if(offset!==null){const more=el('button',{type:'button',class:'v2-button',text:'Weitere Aktien'});root.append(more);
         more.onclick=async()=>{more.disabled=true;try{const next=await product.browse({offset,limit:48});if(!active())return;
           if(next.state!=='AVAILABLE'){more.textContent='Weitere Aktien derzeit nicht verfügbar';return;}
-          const extra=D.Cards.grid(next.data.cards,{universeId:'EUROPE'});extra.querySelectorAll('.dx-poster').forEach(card=>card.removeAttribute('aria-label'));more.before(extra);
+          const extra=D.Cards.grid(next.data.cards,{universeId:'EUROPE'});extra.querySelectorAll('.dx-poster').forEach(card=>card.removeAttribute('aria-label'));held.before(extra);addHeld(next.data.unavailable);
           offset=next.data.nextOffset;if(offset===null)more.remove();D.Cards.revealOnScroll(extra);
         }finally{more.disabled=false;}};}
     }
