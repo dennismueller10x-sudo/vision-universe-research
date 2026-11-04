@@ -160,3 +160,15 @@ Nächster Test (Hypothesen, nicht bewiesen): 20 bis 30 s, erstes Bild ohne Logo-
 Nachtrag 31.10.2026: KI-Jobs-Reel nach 17 h bei 141 Reichweite, Ø 5,3 s (8 %). Lehre: Eine Frage im Hook („Bist du bald arbeitslos?") lässt sich innerlich mit „Nein" beantworten; die ersten 10 Sekunden lösten das Versprechen „dein Job" nicht ein (Microsoft-Mitarbeiter, dann Investitionen), und die Testgruppe (Börse) passt nicht zum Job-Thema. Hook und erste 10 s müssen dasselbe Versprechen halten; Behauptung mit Lücke schlägt Frage.
 
 Nachtrag 01.11.2026 (24 h): Tech-Angst-Reel (32 s, ohne Logo-Zeile, Zahl ab Bild 1) bei 185 Reichweite, Ø 5,5 s (17 %). Die Kürzung hob den Anteil, aber nicht die absoluten Sekunden: Die Leute gehen weiterhin nach etwa 5 s. Muster über alle Reels: Besitz-Hooks auf breit gehaltene Großwerte halten am längsten (Fed „Wenn du Tech-Aktien hast …" 18,6 s, Amazon 16,3 s, Alphabet 13,9 s, Porsche 10,7 s). Hooks ohne direkte Ansprache (Zahlen, Fragen, „Explodiert diese Aktie?") liegen bei 2 bis 6 s. Nächster Test: Besitz-Ansprache „Wenn du Aktien hast …" im ersten Satz plus kurze Länge.
+
+Nachtrag 04.11.2026 (Branch `backup/instagram-20261104-0651`, 26 Beiträge, 132 Follower, eine Woche zuvor 131):
+
+| Reel (gepostet) | Länge | Ø Wiedergabe | Reichweite | Saves |
+|---|---|---|---|---|
+| Wahlzyklus „Alle haben Angst vor heute Nacht" (03.11. 17:37) | 26 s | 6,1 s | 135 | 0 |
+| „19 von 19" mit Besitz-Hook (03.11. 10:30) | 33 s | 6,7 s | 169 | 2 |
+| KI-Kredit „Du finanzierst den KI-Boom" (02.11. 18:34) | 24 s | 4,6 s | 155 | 0 |
+| Nvidia „3 Marken" (02.11. 12:20) | 44 s | 8,9 s | 156 | 0 |
+| „Gefährlichste Woche" (01.11. 15:06) | 30 s | 7,7 s | 143 | 0 |
+
+Befund: Neue Hooks, kürzere Längen, Sticker und Speicher-Aufrufe haben die Reichweite nicht verändert (135–185, wie zuvor). Alle Reels außer dem Fed-Reel (988) liegen in derselben Spanne, die ungefähr der Followerzahl plus kleiner Testgruppe entspricht. Bei zwei Reels pro Tag fällt die Reichweite je Reel eher. Follower stagnieren (+1 in einer Woche). Schluss: Am Video allein lässt sich die Grenze nach den bisherigen Tests nicht verschieben; der nächste Test betrifft die Verteilung (Werbe-Anschub, Trial Reels, ein Reel pro Tag).
