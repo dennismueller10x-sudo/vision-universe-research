@@ -1,24 +1,36 @@
 # Europe Discover Close refresh: owner-approved manual run, prepared daily schedule.
 # One bounded Marketstack /eod request per published primary listing, from the
 # last published session to the run date (449 requests / 449 reserved credits
-# at the conservative estimate, up to 462 with the one bounded retry pass;
-# hard cap 1,000). Provider RAW stays in the runner's private temp directory
+# at the conservative estimate; minus the known-invalid symbols below; one
+# bounded retry pass for transient failures only; hard cap 1,000). Provider RAW stays in the runner's private temp directory
 # and is deleted; only hashes are published.
 # Producer: scripts/marketstack/europe-discover-publication.mjs refresh.
 #
 # ============================================================================
-# DAILY SCHEDULE - PREPARED, NOT ACTIVE (owner approval of 03.11.2026 covers
-# the principle only; activation needs a separate approval).
+# DAILY SCHEDULE (owner approval of 04.11.2026, under conditions).
 # Two switches, both required:
-#   1. uncomment the `schedule:` block below, and
-#   2. set the repository variable EUROPE_REFRESH_SCHEDULE_ENABLED=true.
-# Either one alone does nothing. Switching off: unset the variable.
+#   1. the `schedule:` block below (active in this file), and
+#   2. the repository variable EUROPE_REFRESH_SCHEDULE_ENABLED=true
+#      (Settings > Secrets and variables > Actions > Variables; owner only).
+# Either one alone does nothing. Switching off: unset the variable (or set
+# it to anything but 'true'); a scheduled event then ends as a skipped job.
 #
 # Cron '47 17 * * 1-5' (UTC): 18:47 CET in winter, 19:47 CEST in summer.
-# Every Europe venue closes at 17:30 local (Copenhagen 17:00); closing
-# auctions end about 17:35, so the run starts 70-130 minutes after the last
-# close, inside the 18:30-19:30 CET window in winter. Weekends and venue
-# holidays are skipped by the preflight without a provider request.
+# All ten venues are on Central European time (CET/CEST switch together on
+# the last Sundays of March and October, both Sundays without a run). Every
+# venue closes at 17:30 local (Copenhagen 17:00); closing auctions end about
+# 17:35. 17:47 UTC is 18:47 CET (77 min after the 16:30 UTC close) in winter
+# and 19:47 CEST (137 min after the 15:30 UTC close) in summer, so the run
+# is after the last close in both. The preflight compares against the exact
+# close of core/europe-exchange-calendar.js in UTC. A start delayed past
+# midnight UTC becomes the next date and is skipped (before that day's
+# close). Weekends and venue holidays are skipped without a provider request.
+# Known-invalid symbols: a listing whose last real request was answered with
+# HTTP 422 no_valid_symbols_provided (manifest refresh.held + hash-bound
+# publication.blocked) is not requested again; it stays BLOCKED with the
+# same reason and provenance (refresh.preExcluded, lastProbedAt) and still
+# counts towards the 22 limit. Only a manual dispatch with
+# reprobe_known_invalid=true requests it again (a scheduled run never does).
 # Scheduled-run guards (all without a request unless stated):
 #   - preflight (core/europe-exchange-calendar.js): no session at any of the
 #     ten MICs, before the last close, refresh already done after today's
@@ -46,10 +58,13 @@ on:
         description: 'Only estimate the requests (no provider call, no commit)'
         type: boolean
         default: false
-  # ACTIVATION SWITCH 1 of 2 - keep commented until the owner approves the
-  # production schedule (see header).
-  # schedule:
-  #   - cron: '47 17 * * 1-5'
+      reprobe_known_invalid:
+        description: 'Also request the known-invalid symbols (HTTP 422 in the last refresh) again'
+        type: boolean
+        default: false
+  # ACTIVATION SWITCH 1 of 2 (switch 2 is the repository variable, see header).
+  schedule:
+    - cron: '47 17 * * 1-5'
 permissions:
   contents: write
   actions: write
@@ -72,6 +87,7 @@ jobs:
       SCHEDULED: ${{ github.event_name == 'schedule' }}
       MAX_CREDITS: ${{ inputs.max_credits || '600' }}
       DRY_RUN: ${{ inputs.dry_run == true }}
+      REPROBE_KNOWN_INVALID: ${{ github.event_name == 'workflow_dispatch' && inputs.reprobe_known_invalid == true }}
       MIN_QUOTA_REMAINING: '5000'
     steps:
       - uses: actions/checkout@v4
@@ -84,7 +100,7 @@ jobs:
         id: preflight
         run: |
           set -euo pipefail
-          node scripts/marketstack/europe-discover-publication.mjs preflight --minQuotaRemaining "$MIN_QUOTA_REMAINING"
+          node scripts/marketstack/europe-discover-publication.mjs preflight --minQuotaRemaining "$MIN_QUOTA_REMAINING" --reprobeKnownInvalid "$REPROBE_KNOWN_INVALID"
           if [ "$SCHEDULED" != "true" ]; then
             # A manual dispatch is the owner's decision; the preflight is informational.
             echo "go=true" >> "$GITHUB_OUTPUT"
@@ -93,10 +109,10 @@ jobs:
           fi
       - name: Calendar, session-proof, eligibility, schedule and refresh regressions
         if: steps.preflight.outputs.go == 'true'
-        run: node --test core/tests/europe-discover-refresh.test.mjs core/tests/europe-discover-schedule.test.mjs core/tests/europe-session-proof.test.mjs core/tests/europe-discover-contract.test.mjs
+        run: node --test core/tests/europe-discover-refresh.test.mjs core/tests/europe-discover-schedule.test.mjs core/tests/europe-discover-known-invalid.test.mjs core/tests/europe-session-proof.test.mjs core/tests/europe-discover-contract.test.mjs
       - name: Request estimate (no provider call)
         if: steps.preflight.outputs.go == 'true'
-        run: node scripts/marketstack/europe-discover-publication.mjs refresh --out discover/data/europe --maxCredits "$MAX_CREDITS" --dryRun true
+        run: node scripts/marketstack/europe-discover-publication.mjs refresh --out discover/data/europe --maxCredits "$MAX_CREDITS" --reprobeKnownInvalid "$REPROBE_KNOWN_INVALID" --dryRun true
       - name: Authenticated append-only refresh
         id: refresh
         if: steps.preflight.outputs.go == 'true' && env.DRY_RUN != 'true'
@@ -105,7 +121,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${MARKETSTACK_API_KEY:-}" ]; then echo "::error::MARKETSTACK_API_KEY secret is not configured"; exit 1; fi
-          node scripts/marketstack/europe-discover-publication.mjs refresh --out discover/data/europe --privateDir "${RUNNER_TEMP}/vu-europe-refresh-private" --maxCredits "$MAX_CREDITS" --minQuotaRemaining "$MIN_QUOTA_REMAINING" --scheduled "$SCHEDULED" --reportPath "${RUNNER_TEMP}/europe-refresh-report.json"
+          node scripts/marketstack/europe-discover-publication.mjs refresh --out discover/data/europe --privateDir "${RUNNER_TEMP}/vu-europe-refresh-private" --maxCredits "$MAX_CREDITS" --minQuotaRemaining "$MIN_QUOTA_REMAINING" --scheduled "$SCHEDULED" --reprobeKnownInvalid "$REPROBE_KNOWN_INVALID" --reportPath "${RUNNER_TEMP}/europe-refresh-report.json"
       - name: Remove private provider responses
         if: always()
         run: rm -rf -- "${RUNNER_TEMP}/vu-europe-refresh-private"
@@ -115,7 +131,7 @@ jobs:
           set -euo pipefail
           f="${RUNNER_TEMP}/europe-refresh-report.json"
           if [ ! -f "$f" ]; then echo "no run report"; exit 0; fi
-          node -e 'const r=require(process.argv[1]).run||{};const q=r.quota||{};const line="Marketstack: "+r.requests+" Requests, abgerechnet "+r.actualBilledCredits+" Credits, Kontingent "+q.remaining+" / "+q.limit+" (Stand "+q.observedAt+")";console.log(line);require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY,"### Europe-Refresh\n\n"+line+"\n");' "$f"
+          node -e 'const r=require(process.argv[1]).run||{};const q=r.quota||{};const line="Marketstack: "+r.requests+" Requests, abgerechnet "+r.actualBilledCredits+" Credits, Kontingent "+q.remaining+" / "+q.limit+" (Stand "+q.observedAt+"), ohne Anfrage gesperrt (bekannt ungueltig): "+((r.preExcluded||[]).length);console.log(line);require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY,"### Europe-Refresh\n\n"+line+"\n");' "$f"
       - name: Verify the refreshed publication against the wall clock
         if: steps.refresh.outcome == 'success'
         env:
