@@ -13,7 +13,8 @@
    Schritt - ausser der Methodikvertrag verlangt eine Owner-Freigabe.
 
    Schreibt quant/data/product/backtest-certification-v1.json
-   (--out <datei> schreibt stattdessen dorthin, z. B. fuer Vorher/Nachher).
+   (--out <datei> schreibt stattdessen dorthin, z. B. fuer Vorher/Nachher;
+   --pattern-study <datei> liest eine andere Musterstudie, nur fuer Tests).
    ========================================================================= */
 import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
@@ -39,7 +40,13 @@ const totalReturnQuality = existsSync(P("quant/data/product/total-return-quality
 const signalSource = BacktestSource.assertSignalSourceStatus(signal, totalReturnQuality);
 const outcomes = json("quant/data/product/setup-outcomes-v1.json");
 const replayStudy = existsSync(P("quant/data/product/setup-backtest-v1.json")) ? json("quant/data/product/setup-backtest-v1.json") : null;
-const pattern = json("quant/data/product/pattern-research-v1/study.json");
+const patternArg = process.argv.indexOf("--pattern-study");
+const pattern = patternArg >= 0 ? JSON.parse(readFileSync(process.argv[patternArg + 1], "utf8")) : json("quant/data/product/pattern-research-v1/study.json");
+/* Renditebasis der Musterstudie aus der Studie selbst (FV-5, P4.2), wie
+   bei SIGNAL: Gesamtrendite nur mit returnType TOTAL_RETURN, mixed false
+   und Abdeckung PASS. Eine Kursrendite-Studie ergibt exakt das bisherige
+   FAIL mit STUDY_RETURN_BASIS_NOT_TOTAL_RETURN. */
+const patternTR = BacktestSource.patternTotalReturnStatus(pattern);
 const setupMethod = json("quant/methodology/setup-state-v1.json");
 const returnSemantics = json("quant/methodology/return-semantics-v1.json");
 const trConfirmed = /TOTAL_RETURN_CONFIRMED/.test(JSON.stringify(returnSemantics.approval || {}));
@@ -97,7 +104,10 @@ kind("PATTERN_EVIDENCE", "Marktweite Muster", [
   G("pit", "Leckage-Vertrag, gepurgte Folds", "HARD", true, "assert in observe()"),
   G("oos", "außerhalb des Lernzeitraums", "QUALITY", (pattern.findings || []).some((f) => f.verdict === "ROBUST"), (pattern.findings || []).filter((f) => f.verdict === "ROBUST").length + " robuste Befunde"),
   G("survivorship", "Überlebende", "STRUCTURAL", false, "teilweise nicht quantifiziert", null, "PRESENT_AND_UNQUANTIFIED_IN_PART"),
-  G("returnBasis", "Gesamtrendite", "STRUCTURAL", false, "Diese Musterstudie verwendet Kursrendite", null, "STUDY_RETURN_BASIS_NOT_TOTAL_RETURN"),
+  G("returnBasis", "Gesamtrendite", "STRUCTURAL", patternTR.confirmed,
+    patternTR.confirmed ? "Gesamtrendite (" + patternTR.contract + ", " + patternTR.weeklyContract + ")"
+      : patternTR.returnType === "TOTAL_RETURN" ? "Gesamtrendite nicht bestätigt (Abdeckung " + (patternTR.coverageState || "fehlt") + ")" : "Diese Musterstudie verwendet Kursrendite",
+    null, patternTR.reason),
   G("certifiedAsBacktest", "als Backtest freigegeben", "QUALITY", pattern.backtest !== "NOT_CERTIFIED", "Häufigkeitsauswertung", null, "STUDY_DECLARES_BACKTEST_NOT_CERTIFIED")
 ], { trust: "LIMITED", published: true });
 

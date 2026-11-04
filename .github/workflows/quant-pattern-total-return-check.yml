@@ -1,0 +1,171 @@
+name: Quant - Musterstudie Kurs gegen Gesamtrendite (Pruefmodus, ohne Wirkung)
+
+# Entscheidung FV-5, Schritt 1 (Owner 02.11.2026): ein nachvollziehbarer
+# Vorher/Nachher-Lauf der Musterstudie ueber den VOLLSTAENDIGEN Bestand,
+# bevor der regulaere Schritt auf Gesamtrendite umgestellt wird.
+#
+# Rechnet den Erzeuger zweimal auf derselben Tageshistorie, die auch die
+# Materialisierung liest (--work-dir aus der privaten Ablage, nur lesen):
+#   --return-basis price --out $RUNNER_TEMP/pattern-price
+#   --return-basis total --out $RUNNER_TEMP/pattern-tr
+# und vergleicht beide (scripts/quant/research/compare-pattern-return-basis.mjs).
+#
+# Gepaarter Vergleich (Owner 02.11.2026, #1259): dazu ein dritter Lauf
+#   --return-basis price --population total-return --out $RUNNER_TEMP/pattern-price-trpop
+# (Kursrendite auf genau der Gesamtrendite-Population). A = Kurs/volle
+# Population, B = Kurs/TR-Population, C = Gesamtrendite/TR-Population;
+# Populationseffekt B-A, Renditeeffekt C-B. Ebenfalls nur RUNNER_TEMP.
+#
+# KEINE WIRKUNG: permissions contents: read, kein git add, kein Push, kein
+# Schreiben nach quant/data (beide Studien gehen per --out ins RUNNER_TEMP),
+# kein Schreiben in die Ablage (sync-history-store --pull). Ergebnis nur als
+# Laufartefakt. Der regulaere Commit-Pfad
+# (product-intelligence-materialization.yml) bleibt unveraendert.
+#
+# Warum ein eigener Workflow statt eines Modus in der Materialisierung: die
+# Materialisierung hat contents: write und dreissig Artefakte im Commit-Pfad;
+# ein Pruefmodus dort muesste an jedem Schritt "nicht committen" beweisen.
+# Hier kann er gar nicht committen.
+#
+# Ausloeser: manuell (sobald die Datei auf main liegt) oder eine Marke in der
+# Commit-Nachricht auf claude/**:
+#   [pattern-total-return-check]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  # Je Zweig eine Gruppe; Pushes ohne Marke (Job uebersprungen) bekommen
+  # eine eigene, damit sie keinen wartenden Lauf verdraengen.
+  group: quant-pattern-total-return-check-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[pattern-total-return-check]')) && github.run_id || 'run' }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[pattern-total-return-check]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Existing R2 credentials are available
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::$v fehlt"; exit 1; fi
+          done
+
+      - name: Measured read-only recovery preflight
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/pattern-check/preflight.json"
+
+      - name: Restore existing canonical history to runner-private state (read only)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/pattern-check/preflight.json"
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --report "$RUNNER_TEMP/pattern-check/sync.json"
+
+      # Vorher: genau der regulaere Schritt "Materialize Pattern Research
+      # study", nur mit --out statt des Produktpfads.
+      - name: Pattern Research - Kursrendite (vorher, wie der regulaere Schritt)
+        run: >-
+          node --max-old-space-size=6144 scripts/quant/build-pattern-research.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --return-basis price --out "$RUNNER_TEMP/pattern-price"
+
+      - name: Pattern Research - Gesamtrendite (nachher)
+        run: >-
+          node --max-old-space-size=6144 scripts/quant/build-pattern-research.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --return-basis total --out "$RUNNER_TEMP/pattern-tr"
+
+      # Gepaart: Kursrendite auf genau der Gesamtrendite-Population (reine
+      # Populationsauswahl, Forschungslauf, verlangt --out).
+      - name: Pattern Research - Kursrendite auf der Gesamtrendite-Population (gepaart)
+        run: >-
+          node --max-old-space-size=8192 scripts/quant/build-pattern-research.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --return-basis price --population total-return --out "$RUNNER_TEMP/pattern-price-trpop"
+
+      - name: Vergleich vorher/nachher und gepaart A/B/C (nur Aggregate)
+        run: >-
+          node scripts/quant/research/compare-pattern-return-basis.mjs
+          --price "$RUNNER_TEMP/pattern-price" --total "$RUNNER_TEMP/pattern-tr"
+          --price-population "$RUNNER_TEMP/pattern-price-trpop"
+          --out "$RUNNER_TEMP/pattern-check/pattern-total-return-comparison.json"
+          --summary-out "$RUNNER_TEMP/pattern-check/pattern-total-return-full-check.json"
+          --paired-out "$RUNNER_TEMP/pattern-check/pattern-total-return-paired-full.json"
+          --paired-summary-out "$RUNNER_TEMP/pattern-check/pattern-total-return-paired.json"
+
+      # Was die Zertifizierung mit dieser Studie saehe (vorbereitete
+      # Anbindung, nicht aktiv): --pattern-study liest die Gesamtrendite-
+      # Studie, --out schreibt ins RUNNER_TEMP. Das committete Zertifikat
+      # bleibt unberuehrt.
+      - name: Zertifizierungsanbindung mit der Gesamtrendite-Studie (nur Probe)
+        run: |
+          set -euo pipefail
+          node scripts/quant/build-backtest-certification.mjs \
+            --pattern-study "$RUNNER_TEMP/pattern-tr/study.json" \
+            --out "$RUNNER_TEMP/pattern-check/backtest-certification-with-tr.json"
+          node -e '
+            const d = require(process.env.RUNNER_TEMP + "/pattern-check/backtest-certification-with-tr.json");
+            const k = d.kinds.find((x) => x.id === "PATTERN_EVIDENCE");
+            console.log(JSON.stringify({ status: k.status, reason: k.reason, gates: k.gates.map((g) => [g.id, g.state, g.reason]) }));'
+
+      - name: Arbeitsbaum unveraendert (kein Produktartefakt geschrieben)
+        run: |
+          set -euo pipefail
+          git status --porcelain
+          test -z "$(git status --porcelain)"
+
+      - name: Retain comparison evidence only (no daily bars)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pattern-total-return-check
+          path: |
+            ${{ runner.temp }}/pattern-check/*.json
+            ${{ runner.temp }}/pattern-price/study.json
+            ${{ runner.temp }}/pattern-tr/study.json
+            ${{ runner.temp }}/pattern-price-trpop/study.json
+            ${{ runner.temp }}/pattern-price-trpop/paired-diagnostics.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      # Abbruch laut FV-5 erst NACH dem Hochladen, damit die Ausschluesse
+      # pruefbar bleiben.
+      - name: Abdeckung erreicht? (BELOW_MINIMUM_SHARE bricht ab)
+        run: |
+          set -euo pipefail
+          STATE=$(node -e 'console.log(require(process.env.RUNNER_TEMP + "/pattern-check/pattern-total-return-full-check.json").state)')
+          echo "Zustand: $STATE"
+          if [ "$STATE" != "PASS" ]; then echo "::error::BELOW_MINIMUM_SHARE - zuerst die Ausschluesse pruefen (Runbook R3)"; exit 1; fi
