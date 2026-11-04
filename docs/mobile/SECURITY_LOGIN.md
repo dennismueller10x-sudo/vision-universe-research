@@ -19,7 +19,7 @@ Folgen, die sich aus dem Code ergeben:
 
 **Bewertung:** Für den **privaten, internen** TestFlight-Build vertretbar (wenige bekannte Tester). Für alles Öffentliche **nicht** vertretbar. Die Anmeldung gehört dann über den Worker.
 
-## 2. Vorschlag (separater PR, nicht Teil von #1280, braucht Worker-Freigabe)
+## 2. Vorschlag (separater PR, braucht Worker-Freigabe)
 
 Neue Endpunkte im Worker, die dieselbe Logik und dieselben Limits wie `login`, `refresh` und `logout` nutzen, aber Tokens im **Antworttext** liefern. Die App braucht dann **keinen** Supabase-Schlüssel mehr (`authTransport: 'worker'` in `app/www/js/config.js`, bereits implementiert und getestet gegen einen simulierten Worker).
 

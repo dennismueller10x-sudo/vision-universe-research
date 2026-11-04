@@ -43,6 +43,13 @@ export async function produce({catalogPath,seriesPath,logosPath,calendarPath,out
 }
 // `refresh`: controlled append-only Close refresh of the published projection
 // (scripts/marketstack/europe-discover-refresh.mjs, manual workflow only).
-if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){const refresh=process.argv[2]==='refresh',argv=process.argv.slice(refresh?3:2),args={};for(let i=0;i<argv.length;i+=2)args[argv[i].replace(/^--/,'')]=argv[i+1];
- if(!refresh)console.log(JSON.stringify(await produce(args)));
- else{const {refreshPublication}=await import('./europe-discover-refresh.mjs');console.log(JSON.stringify(await refreshPublication({...args,dryRun:args.dryRun==='true'})));}}
+// `preflight`: schedule decision from committed data and the rule calendar
+// only (no provider request); writes run=true|false for the workflow.
+if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){const mode=['refresh','preflight'].includes(process.argv[2])?process.argv[2]:null,argv=process.argv.slice(mode?3:2),args={};for(let i=0;i<argv.length;i+=2)args[argv[i].replace(/^--/,'')]=argv[i+1];
+ if(!mode)console.log(JSON.stringify(await produce(args)));
+ else if(mode==='preflight'){const R=await import('./europe-discover-refresh.mjs'),root=process.cwd(),baseline=await R.loadBaseline(root),now=args.now||new Date().toISOString(),known=args.reprobeKnownInvalid==='true'?[]:R.knownInvalidSymbols(baseline.manifest,baseline.catalog),plan=R.planRefresh(baseline.catalog,now,{exclude:new Set(known.map(k=>k.securityId))});
+  const decision=R.scheduleDecision({manifest:baseline.manifest,catalog:baseline.catalog,now,plannedCredits:plan.estimate.credits,minRemaining:args.minQuotaRemaining===undefined?R.QUOTA_POLICY.minRemaining:Number(args.minQuotaRemaining)});
+  console.log('EUROPE-REFRESH-PREFLIGHT '+JSON.stringify({...decision,plannedRequests:plan.estimate.requests,preExcluded:known.map(k=>k.securityId)}));if(process.env.GITHUB_OUTPUT){const {appendFile}=await import('node:fs/promises');await appendFile(process.env.GITHUB_OUTPUT,'run='+decision.run+'\nreason='+decision.reason+'\n');}}
+ else{const {refreshPublication}=await import('./europe-discover-refresh.mjs'),result=await refreshPublication({...args,dryRun:args.dryRun==='true',scheduled:args.scheduled==='true',reprobeKnownInvalid:args.reprobeKnownInvalid==='true',...(args.minQuotaRemaining!==undefined?{minQuotaRemaining:Number(args.minQuotaRemaining)}:{})});
+  if(result.run)console.log('MARKETSTACK-USAGE '+JSON.stringify({requests:result.run.requests,reservedCredits:result.run.reservedCredits,actualBilledCredits:result.run.actualBilledCredits,quota:result.run.quota}));
+  console.log(JSON.stringify(result));}}

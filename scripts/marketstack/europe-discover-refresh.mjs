@@ -15,6 +15,11 @@
  * if it passes the unchanged admission gate on its own, otherwise it is listed
  * as BLOCKED with a reason (no chart, no price). More than 22 blocked (5 %)
  * abort the whole publication.
+ * Known-invalid provider symbols: a listing whose last real request was
+ * rejected with HTTP 422 no_valid_symbols_provided (recorded in the previous
+ * manifest's refresh.held and publication.blocked) is not requested again;
+ * it stays BLOCKED with the identical reason code and its provenance
+ * (refresh.preExcluded). Only an explicit re-probe requests it again.
  * Calendar: rule-based exact-MIC sessions (core/europe-exchange-calendar.js)
  * over a window derived from the data dates and the run date; the producer
  * refuses to run unless that calendar reproduces every published 1Y display
@@ -37,6 +42,18 @@ const DAY=86400000,shift=(d,n)=>new Date(Date.parse(d)+n*DAY).toISOString().slic
 // Conservative reservation: one credit per listing request; 449 listings plus
 // at most one extra page each still stays below the hard cap.
 export const REFRESH_LIMITS=Object.freeze({defaultMaxCredits:600,hardCap:1000,maxPagesPerListing:2,retryPasses:1});
+// Monthly quota protection across all runs and all Marketstack consumers:
+// a run never starts (from the last observed remainder of the same month) and
+// never continues (from the live x-quota-remaining header) when its remaining
+// requests would push the account below this reserve. No extra request is
+// made to read the quota: the first billed /eod response carries it.
+export const QUOTA_POLICY=Object.freeze({minRemaining:5000});
+// Deterministic provider rejection: Marketstack answers HTTP 422
+// no_valid_symbols_provided for a symbol it does not serve. Repeating the
+// request the next day (or in the retry pass) only costs credits. The evidence
+// is the previous refresh itself: the security was held with exactly this
+// reason after a real request and is published as BLOCKED with the same code.
+export const KNOWN_INVALID_POLICY=Object.freeze({providerErrorType:'no_valid_symbols_provided',holdReason:'providerError:no_valid_symbols_provided:HTTP422',reasonCode:'PROVIDER_REQUEST_FAILED:providerError:no_valid_symbols_provided:HTTP422',reasonClass:'PROVIDER_DATA_UNAVAILABLE',source:'PREVIOUS_REFRESH_PROVIDER_REJECTION'});
 export const CALENDAR_SOURCE_SHA256=hash({version:Calendar.VERSION,rules:Calendar.RULES,window:Calendar.WINDOW});
 const visualStatus=q=>q.breaks.some(b=>['UNKNOWN_BREAK','UNSAFE_BREAK'].includes(b.classification))?'CHART_BLOCKED':q.largeGapCount===0&&q.breaks.length===0&&q.missingRatio<=CONTINUITY.readyMissingRatio?'CHART_READY':'CHART_LIMITED';
 const yearBefore=d=>(+d.slice(0,4)-1)+d.slice(4);
@@ -60,46 +77,105 @@ export async function loadBaseline(root,dir=join(root,'discover/data/europe')){
  return {manifest,catalog,calendar,series,long,rights};
 }
 
-export function planRefresh(catalog,now){
+/** Known-invalid symbols from the recorded evidence of the previous refresh
+ * (no provider request). A security qualifies only if (a) refresh.held lists
+ * it with the exact 422 no_valid_symbols_provided reason, (b) the hash-bound
+ * publication.blocked list carries it with the same reason class and code and
+ * (c) its provider symbol and MIC are unchanged since the last real request.
+ * lastProbedAt is the evaluation time of the last run that actually sent the
+ * request; it is carried forward unchanged while the symbol stays excluded. */
+export function knownInvalidSymbols(manifest,catalog){
+ const r=manifest?.refresh,p=manifest?.publication,K=KNOWN_INVALID_POLICY;
+ if(!r||!p||!Array.isArray(r.held)||!Array.isArray(p.blocked)||typeof r.evaluatedAt!=='string')return [];
+ const held=new Set(r.held.filter(h=>h&&h.reason===K.reasonCode).map(h=>h.securityId)),prev=new Map((Array.isArray(r.preExcluded)?r.preExcluded:[]).map(x=>[x.securityId,x])),listings=new Map(catalog.securities.map(s=>[s.securityId,s.listings[0]]));
+ const out=[];
+ for(const b of p.blocked){const l=listings.get(b?.securityId),old=prev.get(b?.securityId);
+  if(!l||!held.has(b.securityId)||b.reasonClass!==K.reasonClass||b.reasonCode!==K.reasonCode)continue;
+  if(old&&(old.providerSymbol!==l.providerSymbol||old.mic!==l.mic||typeof old.lastProbedAt!=='string'))continue;
+  out.push({securityId:b.securityId,ticker:b.ticker??l.ticker??null,providerSymbol:l.providerSymbol,mic:l.mic,reasonClass:K.reasonClass,reasonCode:K.reasonCode,source:K.source,lastProbedAt:old?old.lastProbedAt:r.evaluatedAt});}
+ return out.sort((a,b)=>a.securityId<b.securityId?-1:a.securityId>b.securityId?1:0);
+}
+
+export function planRefresh(catalog,now,{exclude=new Set()}={}){
  const today=new Date(now).toISOString().slice(0,10);
- const operations=catalog.securities.map(s=>{const l=s.listings[0];return {securityId:s.securityId,listing:{securityId:s.securityId,listingId:l.listingId,providerTicker:l.providerSymbol,mic:l.mic,currency:l.currency,isin:s.isin??null},from:l.discoverChart.lastDate,to:today};});
+ const operations=catalog.securities.filter(s=>!exclude.has(s.securityId)).map(s=>{const l=s.listings[0];return {securityId:s.securityId,listing:{securityId:s.securityId,listingId:l.listingId,providerTicker:l.providerSymbol,mic:l.mic,currency:l.currency,isin:s.isin??null},from:l.discoverChart.lastDate,to:today};});
  if(operations.some(o=>o.from>o.to))throw Error('FUTURE_PUBLISHED_SESSION');
  const estimate=estimateEuropeBatch(operations.map(o=>({endpoint:'/eod',params:{symbols:o.listing.providerTicker},pages:1,attempts:1})));
  const worstCase=estimateEuropeBatch(operations.map(o=>({endpoint:'/eod',params:{symbols:o.listing.providerTicker},pages:REFRESH_LIMITS.maxPagesPerListing,attempts:1})));
- return {operations,today,estimate:{requests:estimate.requests,credits:estimate.credits,worstCaseRequests:worstCase.requests,worstCaseCredits:worstCase.credits,semantics:estimate.semantics}};
+ return {operations,today,estimate:{listings:catalog.securities.length,excluded:catalog.securities.length-operations.length,requests:estimate.requests,credits:estimate.credits,worstCaseRequests:worstCase.requests,worstCaseCredits:worstCase.credits,semantics:estimate.semantics}};
+}
+
+/** Billing as reported by the provider per response (header names observed in
+ * diagnostics run 41661792038): x-increment-usage = credits charged,
+ * x-quota-limit / x-quota-remaining = monthly plan and remainder. */
+export function usageLedger(){
+ const u={responses:0,responsesWithUsage:0,billedCredits:0,quotaLimit:null,quotaRemaining:null,observedAt:null};
+ const num=v=>v===undefined||v===null||v===''?null:Number.isFinite(Number(v))?Number(v):null;
+ return {
+  record(headers={},at=null){u.responses++;const inc=num(headers['x-increment-usage']),lim=num(headers['x-quota-limit']),rem=num(headers['x-quota-remaining']);
+   if(inc!==null){u.responsesWithUsage++;u.billedCredits+=inc;}
+   if(lim!==null)u.quotaLimit=lim;
+   if(rem!==null&&(u.quotaRemaining===null||rem<u.quotaRemaining)){u.quotaRemaining=rem;u.observedAt=at;}},
+  get quotaRemaining(){return u.quotaRemaining;},
+  summary(){return {actualBilledCredits:u.responses>0&&u.responsesWithUsage===u.responses?u.billedCredits:'UNKNOWN',quota:{limit:u.quotaLimit,remaining:u.quotaRemaining,observedAt:u.observedAt,responses:u.responses,responsesWithUsageHeader:u.responsesWithUsage,source:'MARKETSTACK_RESPONSE_HEADERS'}};}
+ };
+}
+
+/** Decision for a scheduled run, made from committed data and the rule
+ * calendar only (no provider request). Skips non-session days, runs before
+ * the close, a second run after an already completed refresh of the day, and
+ * runs the last observed quota of the same month cannot afford. */
+export function scheduleDecision({manifest,catalog,now,plannedCredits,minRemaining=QUOTA_POLICY.minRemaining}){
+ const at=new Date(now).toISOString(),today=at.slice(0,10),mics=[...new Set(catalog.securities.map(s=>s.listings[0].mic))].sort();
+ const sessions=mics.map(mic=>[mic,Calendar.sessions(mic,today,today)[0]||null]).filter(([,x])=>x);
+ const base={today,now:at,sessionMics:sessions.map(([m])=>m),closedMics:mics.filter(m=>!sessions.some(([x])=>x===m)),plannedCredits,minRemaining};
+ if(!sessions.length)return {...base,run:false,reason:'NO_EUROPE_SESSION_TODAY'};
+ const lastClose=sessions.map(([,x])=>x.close).sort().at(-1);
+ if(Date.parse(at)<Date.parse(lastClose))return {...base,run:false,reason:'BEFORE_LAST_EUROPE_CLOSE',lastClose};
+ const prev=manifest.refresh;
+ if(prev?.evaluatedAt&&Date.parse(prev.evaluatedAt)>=Date.parse(lastClose))return {...base,run:false,reason:'ALREADY_REFRESHED_AFTER_TODAYS_CLOSE',lastClose,previousRefresh:prev.evaluatedAt};
+ const q=prev?.quota;
+ if(q&&Number.isFinite(q.remaining)&&typeof q.observedAt==='string'&&q.observedAt.slice(0,7)===today.slice(0,7)&&q.remaining-plannedCredits<minRemaining)return {...base,run:false,reason:'QUOTA_RESERVE_FROM_LAST_RUN',lastClose,lastObservedQuota:q};
+ return {...base,run:true,reason:'EUROPE_SESSION_CLOSED',lastClose,lastObservedQuota:q??null};
 }
 
 /** Authenticated collection; RAW bytes and the credit ledger stay private. */
-export async function collect({operations,apiKey,fetchImpl,privateDir,maxCredits,sleep}){
+export async function collect({operations,apiKey,fetchImpl,privateDir,maxCredits,sleep,minRemaining=QUOTA_POLICY.minRemaining}){
  if(!apiKey||typeof apiKey!=='string')throw Error('MARKETSTACK_API_KEY_NOT_CONFIGURED');
  const out=privateRoot(privateDir);if(existsSync(join(out,'credits.json')))throw Error('REFRESH_RUN_REENTRY_REFUSED');
  mkdirSync(join(out,'raw'),{recursive:true,mode:0o700});
  const budget=createEuropeBudget(join(out,'credits.json'),{maxCredits,targetCredits:maxCredits,hardCap:REFRESH_LIMITS.hardCap,runId:'europe-discover-refresh'});
- let sequence=0,current=[];
+ let sequence=0,current=[];const usage=usageLedger();
  const api=createAuditAdapter({apiKey,fetchImpl,sleep,sharedBudget:budget,maxCredits,maxRequests:REFRESH_LIMITS.hardCap,maxRetries:0,timeoutMs:90000,cacheTtlMs:0,minIntervalMs:fetchImpl?0:250,onResponse:async response=>{
+  usage.record(response.usageHeaders,response.retrievedAt);
   const id='r'+String(++sequence).padStart(5,'0'),bytes=Buffer.from(response.rawText);
   writeFileSync(join(out,'raw',id+'.json.gz'),gzipSync(bytes),{flag:'wx',mode:0o600});
   const meta={id,sha256:sha(bytes),status:response.status,endpoint:response.endpoint,params:response.params,host:response.host,apiVersion:response.apiVersion,retrievedAt:response.retrievedAt};
   writeFileSync(join(out,'raw',id+'.meta.json'),JSON.stringify(meta)+'\n',{flag:'wx',mode:0o600});current.push({meta,body:response.body});}});
- const results=new Map();let terminal=null;const FATAL=['authError','quotaExceeded','budgetExceeded','EUROPE_RUN_BUDGET_EXCEEDED','budgetReservationFailed','accountingPersistenceFailed','responsePersistenceFailed','notConfigured','entitlementRestricted'];
+ const results=new Map();let terminal=null,remainingOps=operations.length;const FATAL=['authError','quotaExceeded','budgetExceeded','EUROPE_RUN_BUDGET_EXCEEDED','budgetReservationFailed','accountingPersistenceFailed','responsePersistenceFailed','notConfigured','entitlementRestricted'];
  // One bounded retry pass for transient provider failures (each retry is
- // reserved against the same credit cap; fatal account errors stop the run).
+ // reserved against the same credit cap; fatal account errors stop the run;
+ // a deterministic 422 no_valid_symbols_provided is not retried).
  let pending=operations;
  for(let pass=0;pass<=REFRESH_LIMITS.retryPasses&&pending.length&&!terminal;pass++){
  if(pass&&sleep)await sleep(5000);else if(pass)await new Promise(r=>setTimeout(r,5000));
  const failed=[];
  for(const op of pending){
   current=[];
+  // Live reserve: the remainder reported by the last billed response must
+  // cover every request still planned (one credit each) plus the reserve.
+  if(!terminal&&usage.quotaRemaining!==null&&usage.quotaRemaining-remainingOps<minRemaining)terminal='QUOTA_RESERVE_REACHED';
+  remainingOps--;
   if(terminal){results.set(op.securityId,{ok:false,reason:terminal});continue;}
   const res=await api.getHistoricalEOD(op.listing,{from:op.from,to:op.to,limit:1000,maxPages:REFRESH_LIMITS.maxPagesPerListing});
-  if(!res.ok){const reason=(res.reason||'REQUEST_FAILED')+(res.providerErrorType?':'+res.providerErrorType:'')+(res.status?':HTTP'+res.status:'');if(FATAL.includes(res.reason))terminal=res.reason;else failed.push(op);results.set(op.securityId,{ok:false,reason,attempts:pass+1});continue;}
+  if(!res.ok){const reason=(res.reason||'REQUEST_FAILED')+(res.providerErrorType?':'+res.providerErrorType:'')+(res.status?':HTTP'+res.status:'');if(FATAL.includes(res.reason))terminal=res.reason;else if(res.providerErrorType!==KNOWN_INVALID_POLICY.providerErrorType)failed.push(op);results.set(op.securityId,{ok:false,reason,attempts:pass+1});continue;}
   const responses=current.map(c=>c.meta),observations=res.data.map(o=>{const page=current.find(c=>Array.isArray(c.body?.data)&&c.body.data.some(r=>hash(r)===hash(o.raw)));if(!page)throw Error('RAW_NORMALIZED_OBSERVATION_BINDING');return {...o,provenance:{rawResponseId:page.meta.id,rawSha256:page.meta.sha256,normalizedSha256:hash(res.data),responses}};});
   results.set(op.securityId,{ok:true,complete:res.complete===true,observations,responses,attempts:pass+1});
  }
- pending=failed;
+ pending=failed;remainingOps=failed.length;
  }
  const status=budget.status();budget.close();
- const summary={requests:status.requests,reservedCredits:status.estimatedCredits,actualBilledCredits:'UNKNOWN',terminalReason:terminal,responses:sequence};
+ const summary={requests:status.requests,reservedCredits:status.estimatedCredits,...usage.summary(),minQuotaRemaining:minRemaining,terminalReason:terminal,responses:sequence};
  writeFileSync(join(out,'summary.json'),JSON.stringify(summary)+'\n',{mode:0o600});
  return {results,summary};
 }
@@ -265,21 +341,31 @@ export async function writeRefresh({root,out,baseline,merged,now}){
  manifest.catalog=await emit('catalog.json',merged.catalog);manifest.calendar=await emit('calendar.json',merged.calendar);
  manifest.generatedAt=now;
  manifest.publication=merged.publication;
- manifest.refresh={kind:'APPEND_ONLY_AUTHENTICATED_CLOSE',evaluatedAt:now,provider:'MARKETSTACK',requests:merged.runSummary.requests,reservedCredits:merged.runSummary.reservedCredits,actualBilledCredits:'UNKNOWN',refreshed:merged.rows.filter(r=>r.after.status==='REFRESHED').length,held:merged.held.map(h=>({securityId:h.before.securityId,reason:h.after.reason})),calendarSha256:CALENDAR_SOURCE_SHA256,calendarWindow:merged.window,schedule:false};
+ manifest.refresh={kind:'APPEND_ONLY_AUTHENTICATED_CLOSE',evaluatedAt:now,provider:'MARKETSTACK',requests:merged.runSummary.requests,reservedCredits:merged.runSummary.reservedCredits,actualBilledCredits:merged.runSummary.actualBilledCredits??'UNKNOWN',quota:merged.runSummary.quota??null,refreshed:merged.rows.filter(r=>r.after.status==='REFRESHED').length,held:merged.held.map(h=>({securityId:h.before.securityId,reason:h.after.reason})),calendarSha256:CALENDAR_SOURCE_SHA256,calendarWindow:merged.window,schedule:merged.runSummary.scheduled===true,preExcluded:merged.runSummary.preExcluded??[],knownInvalidReprobe:merged.runSummary.reprobeKnownInvalid===true};
  Isolation.verify(manifest,merged.catalog,sha);
  await emit('manifest.json',manifest);return manifest;
 }
 
-export async function refreshPublication({root=process.cwd(),out,privateDir,now=new Date().toISOString(),apiKey=process.env.MARKETSTACK_API_KEY,fetchImpl,maxCredits=REFRESH_LIMITS.defaultMaxCredits,dryRun=false,reportPath,sleep}={}){
+export async function refreshPublication({root=process.cwd(),out,privateDir,now=new Date().toISOString(),apiKey=process.env.MARKETSTACK_API_KEY,fetchImpl,maxCredits=REFRESH_LIMITS.defaultMaxCredits,dryRun=false,reportPath,sleep,scheduled=false,minQuotaRemaining=QUOTA_POLICY.minRemaining,reprobeKnownInvalid=false,baselineDir}={}){
  if(!out)throw Error('EXPLICIT_OUTPUT_REQUIRED');
  maxCredits=Number(maxCredits);if(!Number.isSafeInteger(maxCredits)||maxCredits<1||maxCredits>REFRESH_LIMITS.hardCap)throw Error('INVALID_CREDIT_CAP');
- const baseline=await loadBaseline(root),plan=planRefresh(baseline.catalog,now);
+ // baselineDir: tests chain runs over a copied publication (default: the committed one).
+ const baseline=await loadBaseline(root,baselineDir??join(root,'discover/data/europe'));
+ // Known-invalid symbols are not requested unless a re-probe is asked for
+ // explicitly (manual dispatch only); they stay BLOCKED with their reason.
+ const known=reprobeKnownInvalid===true?[]:knownInvalidSymbols(baseline.manifest,baseline.catalog),plan=planRefresh(baseline.catalog,now,{exclude:new Set(known.map(k=>k.securityId))});
  if(plan.estimate.credits>maxCredits)throw Error('PLANNED_REQUESTS_EXCEED_CREDIT_CAP');
- if(dryRun)return {dryRun:true,plan:plan.estimate,listings:plan.operations.length,from:[...new Set(plan.operations.map(o=>o.from))],to:plan.today};
- const {results,summary}=await collect({operations:plan.operations,apiKey,fetchImpl,privateDir,maxCredits,sleep});
- if(summary.terminalReason)throw Error('PROVIDER_RUN_STOPPED:'+summary.terminalReason);
+ minQuotaRemaining=Number(minQuotaRemaining);if(!Number.isSafeInteger(minQuotaRemaining)||minQuotaRemaining<0)throw Error('INVALID_QUOTA_RESERVE');
+ // A scheduled run re-checks the schedule decision itself (defence in depth:
+ // the workflow preflight is not the only guard against a request).
+ const decision=scheduled?scheduleDecision({manifest:baseline.manifest,catalog:baseline.catalog,now,plannedCredits:plan.estimate.credits,minRemaining:minQuotaRemaining}):null;
+ if(dryRun||decision&&!decision.run)return {dryRun:dryRun||undefined,skipped:decision&&!decision.run?true:undefined,decision:decision??undefined,plan:plan.estimate,listings:plan.operations.length,preExcluded:known,reprobeKnownInvalid:reprobeKnownInvalid===true,from:[...new Set(plan.operations.map(o=>o.from))],to:plan.today,requests:0};
+ const {results,summary:collected}=await collect({operations:plan.operations,apiKey,fetchImpl,privateDir,maxCredits,sleep,minRemaining:minQuotaRemaining}),summary={...collected,scheduled:scheduled===true,preExcluded:known,reprobeKnownInvalid:reprobeKnownInvalid===true};
+ // Pre-excluded listings keep the exact hold reason of their last real request.
+ for(const k of known)results.set(k.securityId,{ok:false,reason:KNOWN_INVALID_POLICY.holdReason,attempts:0,preExcluded:true});
+ if(summary.terminalReason){if(reportPath)await writeFile(reportPath,JSON.stringify({plan:plan.estimate,run:summary,failure:'PROVIDER_RUN_STOPPED:'+summary.terminalReason},null,1)+'\n');throw Error('PROVIDER_RUN_STOPPED:'+summary.terminalReason);}
  const merged=mergeRefresh({baseline,results,now,runSummary:summary});
- const report={plan:plan.estimate,run:summary,window:merged.window,refreshed:merged.rows.filter(r=>r.after.status==='REFRESHED').length,held:merged.held.map(h=>({securityId:h.before.securityId,reason:h.after.reason,criticalIssues:h.after.criticalIssues})),ineligible:merged.ineligible,admitted:449-merged.blocked.length,blocked:merged.blocked,maxBlocked:Isolation.POLICY.maxBlocked,failure:merged.failure,rows:merged.rows};
+ const report={plan:plan.estimate,run:summary,preExcluded:known,window:merged.window,refreshed:merged.rows.filter(r=>r.after.status==='REFRESHED').length,held:merged.held.map(h=>({securityId:h.before.securityId,reason:h.after.reason,criticalIssues:h.after.criticalIssues})),ineligible:merged.ineligible,admitted:449-merged.blocked.length,blocked:merged.blocked,maxBlocked:Isolation.POLICY.maxBlocked,failure:merged.failure,rows:merged.rows};
  if(reportPath)await writeFile(reportPath,JSON.stringify(report,null,1)+'\n');
  if(merged.failure)throw Error(merged.failure);
  await writeRefresh({root,out,baseline,merged,now});
