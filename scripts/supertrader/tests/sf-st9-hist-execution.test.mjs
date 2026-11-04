@@ -89,7 +89,10 @@ test('delisting: settlement on the last traded bar at its close; later rows, oth
   assert.deepEqual(tamper((r) => ({ ...r, date: '2016-05-06' })), { TERMINAL_NOT_ON_LAST_TRADED_BAR: 1 }, 'no forward-filled settlement');
   assert.deepEqual(tamper((r) => ({ ...r, reason: 'MA_EXIT', date: '2016-05-06' })), { EXIT_AFTER_LAST_BAR: 1 });
   const late = X.classifyExits(d, { ledger: [{ date: '2016-04-29', id: s.id, side: 'BUY', shares: 1, price: 20, gross: 20, fee: 0, reason: 'ENTRY' }] }, { slippageBps: COSTS.slippageBps });
-  assert.deepEqual(late.violations, { ENTRY_ON_OR_AFTER_TERMINAL: 1 });
+  assert.deepEqual(late.violations, {}, 'a buy on the last traded day is executable (counted, no violation)');
+  assert.deepEqual(late.classes, { ENTRY_ON_LAST_TRADED_DAY: 1 });
+  const after = X.classifyExits(d, { ledger: [{ date: '2016-05-02', id: s.id, side: 'BUY', shares: 1, price: 20, gross: 20, fee: 0, reason: 'ENTRY' }] }, { slippageBps: COSTS.slippageBps });
+  assert.deepEqual(after.violations, { ENTRY_AFTER_TERMINAL: 1 });
   const unavailable = X.classifyExits(d, { ledger: [{ ...sell, reason: 'SECURITY_UNAVAILABLE' }] }, { slippageBps: COSTS.slippageBps });
   assert.deepEqual(unavailable.classes, { DATA_EVENT_CENSORED: 1 });
 });
@@ -193,7 +196,7 @@ test('Turtle: missed unit stops are checked with an own Wilder N (no engine N); 
   assert.equal(res[0].missedStopCheck, 'TURTLE_INDEPENDENT_N_UNIT_STOPS');
   assert.equal(res[0].pass, true, JSON.stringify(res[0].violations));
   assert.ok(res[0].stopChecks.positions >= 1 && res[0].stopChecks.heldUnitBars > 0, JSON.stringify(res[0].stopChecks));
-  assert.equal(res[0].version, 'st9-hist-execution-1.1.0');
+  assert.equal(res[0].version, 'st9-hist-execution-1.2.0');
 });
 
 test('sec-pit r12: fail closed when absent or unreadable; its SHA-256 enters the input fingerprint', () => {
