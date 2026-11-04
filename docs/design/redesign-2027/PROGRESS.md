@@ -71,12 +71,12 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | Q07 | Quant · NVIDIA (Aktienseite, Perspektive Faktoren) | in Arbeit | #1351 | Lange Seite mit Schritten 1–6 nach Mockup (Überblick, Fragen, Stärken/Risiken, Veränderungen mit Kacheln, Setup-Karte + Stil-Karten mit Regel-Haken, Rückblick schwarz + Evidenz). Offen: Kopf in $ + ≈ € (Querschnitt Währung), Herz statt „Beobachten“, Quant-Chart → C06, Kursstärke-Verlauf mit Schwelle 70, Ereignis-Zeitleiste, Beleg-Sheet. Rückblick zeigt „ähnliche Situationen dieser Aktie“ (replay), nicht „Setup bestätigt in 552 Wochen“ (setup-replay-v1 lädt die Seite nicht). Alte Inhalte vollständig unter „Einstieg, Stop, Ziele …“ und „Alle Belege …“. |
 | Q08 | Quant · NVIDIA Zahlen (Perspektive Zahlen) | in Arbeit | #1351 | Kopf ohne Kurs (Seite lädt keinen Kurs); Kachel „Wachstum 3 Jahre“ durch „Stand“ ersetzt |
 | Q09 | Quant · NVIDIA Chartbild (Perspektive Chart) | offen |  |  |
-| T01 | Technical · Übersicht | offen |  |  |
-| T02 | Technical · Screener | offen |  |  |
-| T03 | Technical · Vorlagen | offen |  |  |
-| T04 | Technical · Gespeicherte Suchen | offen |  |  |
-| T05 | Technical · Methodik | offen |  |  |
-| T06 | Technical · NVIDIA im Chart | offen |  |  |
+| T01 | Technical · Übersicht | in Arbeit | #1363 | Sheet „Was ist ein Setup?“ ohne Beispielchart; „Heute neu im Chart“ lädt nach dem ersten Bild; Markt heute ≥ 60 % Stark, ≥ 40 % Gemischt, sonst Schwach |
+| T02 | Technical · Screener | in Arbeit | #1363 | „Melden“ ohne Funktion bis Z4 (Owner-Freigabe Versand) |
+| T03 | Technical · Vorlagen | in Arbeit | #1363 | Detail bleibt `#/vorlagen/<id>` (TPL.href in der Engine) |
+| T04 | Technical · Gespeicherte Suchen | in Arbeit | #1363 | Änderung „seit dem letzten Kursstand“ (im Browser) statt „seit gestern“; Glocke bis Z4 gesperrt; Konto-Speicherung über Z3 (#1359, keine Owner-Freigabe nötig) nachziehen |
+| T05 | Technical · Methodik | in Arbeit | #1363 | `#/muster`, `#/methodik` zeigt dieselbe Seite; früherer Inhalt unter „Regeln“ |
+| T06 | Technical · NVIDIA im Chart | in Arbeit | #1363 | Kopf aus dem Navigator ohne Satz zur Firmentätigkeit; 1T gesperrt (nur Tagesschlüsse); Urteil nach SMA 50/200, RSI ab 50 Stark |
 | F01 | Fundamental · Übersicht | in Arbeit | #1355 | Fehlerzustand unter den Ranglisten-Karten, wenn das Universum nicht lädt |
 | F02 | Fundamental · Entdecken | in Arbeit | #1355 | Titel „Ranglisten“/„Auswahlen“ statt „Entdecken“ (neuer Leistenplatz); `#/entdecken` leitet weiter |
 | F03 | Fundamental · Rangliste Wachstum | in Arbeit | #1355 | echte Plätze nur im Code geprüft (Universum lokal nicht da), CI prüft |
@@ -145,6 +145,8 @@ Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds 
 - `VUUI.glyph`: Stern, Kreis-Anteil, Abspielen, Säulen; `VUChart` mehrere Linien mit gestrichelten Szenarien; Bausteine Gewichtsbalken, Regler, ETF-Zeile, Ablauf-Kopf.
 - `site-navigation.css`: `.vu-bar>i` olivgrün und `.up` grün (Regel 1) – prüfen.
 - Dunkelmodus: `.vu-box--ink` kehrt sich wie in der Vorlage (`--a-ink:#fff`) um; Vorsorge hält ihre Karten dunkel (Abweichung, lime Zahlen sonst unlesbar).
+- Technical-Menü: Screener, Vorlagen (`#/screener?reiter=vorlagen`), Gespeichert (`?reiter=gespeichert`), Chart, Muster (aktiv bei muster und methodik); Menü-Check in `technical/…/browser-qa.mjs` mitziehen.
+- `VUStockNavigator.head`: Option für den Satz zur Firmentätigkeit; `VUChart`: Zonen.
 - `VUUI.navcard` mit eigenem Symbol (Fundamental hat lokal nachgebaut).
 - Fundamental-Produktdokument: Urteilsregel F06 in einem Satz (schwächere der beiden Discover-Stufen aus `fundamentals.health`).
 
