@@ -6,9 +6,9 @@
       "cik": "0000099302",
       "name": "TRANSCAT INC",
       "sic": "3825",
-      "rawFacts": 17666,
-      "mappedFacts": 6875,
-      "unmappedFacts": 11116,
+      "rawFacts": 17969,
+      "mappedFacts": 6987,
+      "unmappedFacts": 11434,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2009-03-28",
-      "lastPeriodEnd": "2026-06-27",
+      "lastPeriodEnd": "2026-09-26",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-27",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-27",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 16.0
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-27",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 16.0,
@@ -52,28 +52,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2011-03-26",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 15.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-27",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-27",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-27",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 16.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-03-28",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2011-03-26",
           "lastAvailablePeriod": "2026-03-28",
           "historyYears": 15.0
@@ -117,48 +117,49 @@
         }
       },
       "quality": {
-        "HIGH": 687,
+        "HIGH": 695,
         "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 698,
-        "resolvedValues": 698
+        "datableValues": 706,
+        "resolvedValues": 706
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 11533,
+        "rules_version": "1.1.0",
+        "total": 11832,
         "by_severity": {
-          "INFO": 11116,
+          "INFO": 11434,
           "ERROR": 21,
-          "WARNING": 396
+          "WARNING": 377
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 330,
+          "CONCEPT_DISAGREEMENT": 311,
           "FISCAL_PERIOD_CONFLICT": 51,
           "FUTURE_DATA_LEAK": 21,
           "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 11116
+          "UNKNOWN_CONCEPT": 11434
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-052738",
-        "filing_date": "2026-08-04",
+        "accession": "0001628280-26-069462",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 132
+        "periodic_filings": 133,
+        "acceptance_datetime": "2026-11-03T21:04:29.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "500bfff140b487f928a299e89f117aa20f1032fb6cce03c2945cc3310831b7cd",
+      "sourceDigest": "b081de2e16cdfef0e57365d1cf3207796013f3cda03280c677868cab48ff8249",
       "issuerId": "iss_cik_0000099302"
     },
     {

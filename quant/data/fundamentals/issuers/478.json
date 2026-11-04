@@ -1210,9 +1210,9 @@
       "cik": "0001766478",
       "name": "Angel Oak Mortgage REIT, Inc.",
       "sic": "6500",
-      "rawFacts": 4597,
-      "mappedFacts": 1649,
-      "unmappedFacts": 2891,
+      "rawFacts": 4831,
+      "mappedFacts": 1734,
+      "unmappedFacts": 3082,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1224,9 +1224,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 27,
+      "quarterlyPeriods": 28,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
@@ -1238,7 +1238,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -1258,21 +1258,21 @@
         },
         "long_term_debt": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 5,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -1293,14 +1293,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -1323,45 +1323,46 @@
         }
       },
       "quality": {
-        "HIGH": 159,
+        "HIGH": 165,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 161,
-        "resolvedValues": 161
+        "datableValues": 167,
+        "resolvedValues": 167
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2985,
+        "rules_version": "1.1.0",
+        "total": 3178,
         "by_severity": {
-          "INFO": 2891,
-          "WARNING": 94
+          "INFO": 3082,
+          "WARNING": 96
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 83,
+          "CONCEPT_DISAGREEMENT": 85,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 2891
+          "UNKNOWN_CONCEPT": 3082
         }
       },
       "latestFiling": {
-        "accession": "0001766478-26-000044",
-        "filing_date": "2026-08-04",
+        "accession": "0001766478-26-000068",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 22
+        "periodic_filings": 23,
+        "acceptance_datetime": "2026-11-03T21:17:52.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "a551807f8f4d8e323476f81590b2872b79a30a199d56146de48ebd4d76b61fae",
+      "sourceDigest": "7637eaab4c95cb1fb196a45996f62ddc47f99f5ca343175d89f25ede4dd60253",
       "issuerId": "iss_cik_0001766478"
     },
     {
