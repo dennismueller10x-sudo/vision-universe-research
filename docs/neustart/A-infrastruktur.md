@@ -27,7 +27,7 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
 
 ## Offene PRs: Vorschlag (noch nichts geschlossen, Bestätigung durch die Steuerungssitzung)
 
-Stand 04.11.2026, 18:45 UTC: 131 offene PRs (inkl. #1349). Vorschlag: **22 behalten, 3 zusammenführen zu 1, 107 schließen**. Geschlossene PRs bleiben wiederherstellbar (Plan §6 Nr. 9).
+Stand 04.11.2026, 18:45 UTC: 132 offene PRs (inkl. #1349). Vorschlag: **22 behalten, 3 zusammenführen zu 1, 107 schließen**. Geschlossene PRs bleiben wiederherstellbar (Plan §6 Nr. 9).
 
 ### Behalten (22)
 
