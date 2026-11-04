@@ -216,7 +216,7 @@ Lauf-IDs für Schritt 1:
 | `sf5` | 41608045341 |
 | `restoreDev` | 41627645169 |
 | `restoreHoldout` | 41628817276 |
-| `kk` | offen (R6) |
+| `kk` | 41864439485 (R6, 04.11.2026) |
 
 **Artefakt nach R4:** Der R4-Workflow schreibt einen neuen Restore in `SNAPSHOT-POINTER.json`. `STRATEGY-SNAPSHOT-PROVENANCE.json` bettet diese Liste ein. Deshalb ist das Artefakt mit seinem Erzeuger `build-artifacts.mjs` neu gebaut (nur der neue Restore-Eintrag) und SF-ARTIFACTS wieder grün.
 
