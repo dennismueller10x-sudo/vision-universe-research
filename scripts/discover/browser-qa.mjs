@@ -37,17 +37,9 @@ async function screenshot(page,name){
  const path=out+'/'+name+'.png';try{await page.screenshot({path,fullPage:false});shots.push(path);}catch(error){checks.push({name:name+' screenshot capture',pass:false,error:error.message});}
 }
 async function waitCounter(page,index){await page.waitForFunction(i=>new RegExp('^'+i+'\\s+von\\s','i').test(document.querySelector('.dx-feed-zaehler')?.textContent?.trim()||''),index);}
-async function visibleFeedStock(page){return page.locator('.dx-feed-spur').evaluate(n=>{const b=n.getBoundingClientRect();return Array.from(n.querySelectorAll('.dx-feed-screen[data-symbol]')).map(c=>{const r=c.getBoundingClientRect();return {index:Number(c.dataset.index),symbol:c.dataset.symbol,height:Math.max(0,Math.min(r.bottom,b.bottom)-Math.max(r.top,b.top))};}).sort((a,b)=>b.height-a.height)[0];});}
-async function loadCompleteHome(page){
- for(let attempt=0;attempt<8&&await page.locator('.v2-load-more').count();attempt++){
-  const before=await page.locator('.v2-journey > [data-surface]').count();
-  await page.locator('.v2-load-more').scrollIntoViewIfNeeded();
-  await page.waitForFunction(count=>document.querySelectorAll('.v2-journey > [data-surface]').length>count||document.querySelector('.v2-finish'),before);
- }
- assert.equal(await page.locator('.v2-load-more').count(),0,'Discovery journey still has an unloaded chunk');
-}
+async function visibleFeedStock(page){/* Redesign D05: eine Karte je Aktie. */return page.locator('.dv3-card[data-symbol]').evaluate(n=>({index:Number(n.dataset.index),symbol:n.dataset.symbol}));}
 async function premiumMobileAudit(page,key){
- await loadCompleteHome(page);
+
  const material=await page.evaluate(()=>{
   const css=n=>getComputedStyle(n),rgb=value=>(value.match(/[\d.]+/g)||[]).slice(0,4).map(Number);
   const luminance=value=>{const c=rgb(value);return c.length<3?null:(c[0]+c[1]+c[2])/3;};
@@ -65,48 +57,31 @@ async function premiumMobileAudit(page,key){
  assert(material.pureWhite,'Light neutral canvas/header must be pure white: '+JSON.stringify(material));
  assert.equal(material.dock.position,'fixed');assert(material.dock.left>=6&&material.dock.right>=6,'Dock must float inside viewport');assert(material.dock.bottom>=6&&material.dock.bottom<=16,'Dock must float just above the visible viewport edge: '+material.dock.bottom);assert(material.dock.borderRadius>=20,'Dock lacks capsule geometry');assert(material.dock.luminance!==null&&material.dock.luminance<40,'Dock must be the solid near-black Vision Universe surface');assert(!/^none$/.test(material.dock.boxShadow),'Dock needs depth');assert(material.active.luminance!==null&&material.active.luminance>80,'Active state must use the Discover signal lime');
 
- const surfaces=page.locator('.v2-journey > [data-surface]');
- const intensity=await surfaces.evaluateAll(nodes=>nodes.map((node,index)=>{let owner=node,s=getComputedStyle(owner),raw=s.backgroundColor,m=(raw.match(/[\d.]+/g)||[]).map(Number);while(owner.parentElement&&(raw==='transparent'||(m.length>3&&m[3]===0))){owner=owner.parentElement;s=getComputedStyle(owner);raw=s.backgroundColor;m=(raw.match(/[\d.]+/g)||[]).map(Number);}m=m.slice(0,3);const max=Math.max(...m),min=Math.min(...m),lum=m.length===3?(m[0]+m[1]+m[2])/3:null;return {index,id:node.dataset.surface,archetype:node.dataset.archetype||'',background:raw,lum,saturation:m.length===3?max-min:0};}));
- const pick={white:intensity.find(x=>x.lum!==null&&x.lum>245),color:intensity.find(x=>x.saturation>55&&x.lum>45),cinema:intensity.find(x=>x.lum!==null&&x.lum<55)};
- for(const [tone,entry] of Object.entries(pick)){assert(entry,'Missing '+tone+' surface for three-intensity rhythm');const target=surfaces.nth(entry.index);await target.evaluate(n=>n.scrollIntoView({block:'center',behavior:'instant'}));await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));await screenshot(page,key+'-dock-over-'+tone);}
-
- const rhythm=[];const maxY=await surfaces.last().evaluate(n=>Math.max(0,n.getBoundingClientRect().bottom+scrollY-innerHeight*.8));
- for(let i=0;i<12;i++){
-  const y=Math.round(maxY*i/11);await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),y);await page.evaluate(()=>new Promise(r=>requestAnimationFrame(r)));
-  rhythm.push(await page.evaluate(index=>{
-   const candidates=Array.from(document.querySelectorAll('.v2-journey > [data-surface]')).map((n,sectionIndex)=>{const r=n.getBoundingClientRect(),visible=Math.max(0,Math.min(r.bottom,innerHeight)-Math.max(r.top,0));return {n,r,visible,sectionIndex};}).filter(x=>x.visible>0).sort((a,b)=>b.visible-a.visible);
-   const hit=candidates[0],n=hit&&hit.n;if(!n)return {index,empty:true};const charts=Array.from(n.querySelectorAll('svg.dx-art,.dx-lazy-media')).map(c=>c.getBoundingClientRect().height).filter(Boolean);
-   return {index,y:scrollY,id:n.dataset.surface,sectionIndex:hit.sectionIndex,archetype:n.dataset.archetype||'',surfaceType:n.dataset.surfaceType||'',world:n.dataset.world||'',visible:hit.visible,features:{chart:charts.length>0,chartBand:charts.length?Math.round(Math.max(...charts)/50)*50:0,ranking:!!n.querySelector('.v2-stock-rank'),story:!!n.querySelector('.v2-motion-art'),cards:n.querySelectorAll('.v2-stock').length,layout:getComputedStyle(n.querySelector('.v2-track')||n).display}};
-  },i));
-  await screenshot(page,key+'-rhythm-'+String(i+1).padStart(2,'0'));
- }
- const semanticCharts=await page.locator('.v2-journey svg.dx-art[data-direction],.v2-journey svg.dx-micro[data-direction]').evaluateAll(nodes=>nodes.map(n=>({direction:n.dataset.direction,color:getComputedStyle(n).color})).filter(x=>x.direction==='up'||x.direction==='down'));
- for(const chart of semanticCharts){const c=(chart.color.match(/[\d.]+/g)||[]).slice(0,3).map(Number);if(chart.direction==='up')assert(c[1]>c[0]&&c[1]>c[2],'Positive discovery chart is not green: '+chart.color);else assert(c[0]>c[1]&&c[0]>c[2],'Negative discovery chart is not red: '+chart.color);}
- const semanticTokens=await page.evaluate(()=>{const root=document.querySelector('.v2-home'),probe=value=>{const n=document.createElement('i');n.style.color=value;root.append(n);const color=getComputedStyle(n).color;n.remove();return color;};return {positive:probe('var(--v2-green)'),negative:probe('var(--v2-red)'),neutral:probe('var(--v2-muted)')};});
- const positive=(semanticTokens.positive.match(/[\d.]+/g)||[]).slice(0,3).map(Number),negative=(semanticTokens.negative.match(/[\d.]+/g)||[]).slice(0,3).map(Number);assert(semanticCharts.length>0,'Canonical journey exposes no directional chart');assert(positive[1]>positive[0]&&positive[1]>positive[2],'Positive system token is not green');assert(negative[0]>negative[1]&&negative[0]>negative[2],'Negative system token is not red');designEvidence.push({key,type:'semantic-chart-colours',charts:semanticCharts,tokens:semanticTokens});
- // A long single section can cover several fixed viewport samples. Count it
- // once for module repetition; adjacent separate sections still count.
- const sampled=rhythm.filter(x=>!x.empty);
- const signatures=sampled.filter((x,i)=>i===0||x.sectionIndex!==sampled[i-1].sectionIndex).map(x=>[x.archetype,x.features.chartBand,x.features.ranking?'rank':'',x.features.story?'story':'',x.features.layout].join('|'));
- const archetypes=new Set(rhythm.map(x=>x.archetype).filter(Boolean)),unique=new Set(signatures);
- let longest=1,run=1;for(let i=1;i<signatures.length;i++){run=signatures[i]===signatures[i-1]?run+1:1;longest=Math.max(longest,run);}
- const portfolio=await surfaces.evaluateAll(nodes=>({ranking:nodes.some(n=>n.querySelector('.v2-stock-rank')),story:nodes.some(n=>n.querySelector('.v2-motion-art')),chartSurfaces:nodes.filter(n=>n.querySelector('svg.dx-art,.dx-lazy-media')).length,chartBands:[...new Set(nodes.flatMap(n=>Array.from(n.querySelectorAll('svg.dx-art,.dx-lazy-media')).map(c=>Math.round(c.getBoundingClientRect().height/50)*50).filter(Boolean)))]}));
- const composition={key,type:'ten-viewport-diversity',rhythm,archetypes:[...archetypes],signatures:[...unique],longestRepeat:longest,intensities:pick,portfolio};designEvidence.push(composition);
- assert(rhythm.length>=10&&rhythm.every(x=>!x.empty),'Ten mobile journey viewports need inspectable content');assert(archetypes.size>=5,'Need five distinct archetypes across the long journey: '+[...archetypes]);assert(unique.size>=7,'Colour alone is not surface diversity');assert(longest<=2,'Same surface composition repeats across more than two sampled viewports: '+JSON.stringify({longest,rhythm:rhythm.map(x=>({index:x.index,id:x.id,archetype:x.archetype,visible:x.visible,features:x.features}))}));assert(portfolio.ranking&&portfolio.story&&portfolio.chartSurfaces>=5&&portfolio.chartBands.length>=2,'Journey needs distinct ranking, visual interlude and differently sized chart beats: '+JSON.stringify(portfolio));
+ /* Redesign 2027 (D01): feste Reihenfolge statt Karussell-Rhythmus, nur Weiss, Schwarz, Neongruen und Graustufen (kein Rot, kein Gruen). */
+ await page.waitForFunction(()=>document.querySelector('.dv3-sec--hochs .dv3-rank'),null,{timeout:15000}).catch(()=>{});
+ const order=await page.locator('.v2-journey > section .vu-sect h2').allTextContents();
+ const expected=['Der Markt heute','Heute im Blick','Themenwelten','Die stärksten Aktien','Neue Jahreshochs','Strategien','Bekannte Namen in Bewegung'];
+ assert.deepEqual(order.filter(t=>expected.includes(t)),expected,'D01 section order: '+order.join(' | '));
+ const palette=await page.evaluate(()=>{const rgb=v=>(v.match(/[\d.]+/g)||[]).slice(0,3).map(Number),hue=c=>{const [r,g,b]=c,mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx-mn;};
+  const lime=c=>c[0]===200&&c[1]===245&&c[2]===49,grey=c=>hue(c)<=8;
+  return Array.from(document.querySelectorAll('.v2-journey .vu-chg')).map(n=>rgb(getComputedStyle(n).backgroundColor)).filter(c=>!(lime(c)||grey(c)));});
+ assert.deepEqual(palette,[],'Price pills must be lime or ink, never red/green: '+JSON.stringify(palette));
+ for(const sel of ['.dv3-sec--markt','.dv3-sec--top','.dv3-sec--strat','.dv3-swipecard']){const n=page.locator(sel).first();if(await n.count()){await n.scrollIntoViewIfNeeded();await screenshot(page,key+'-home'+sel.replace(/[^a-z]+/g,'-'));}}
+ designEvidence.push({key,type:'d01-order',order});
 }
 // Bekannte, unveraenderte Datenfehler (known-defects.json): ausserhalb von try, weil der Bericht nach dem Lauf sie zusammenfasst.
 const known=createRecorder(activeDefects());
 try{
-await check('captions use structured metadata, not accessibility copy',async()=>{const source=await readFile(new URL('../../discover/home.js',import.meta.url),'utf8');assert(source.includes('D.Artwork.verlauf'),'Caption renderer must consume the structured chart model');assert(!/getAttribute\(['"]aria-label['"]\)[\s\S]{0,160}\.match\(/.test(source),'Visible caption is reconstructed from an accessibility string');});
+await check('Discover views draw price lines with the one chart (C06)',async()=>{const source=await readFile(new URL('../../discover/ui/v3.js',import.meta.url),'utf8');assert(source.includes('VUChart.sparkline'),'D01-D08 must draw price lines with assets/vu-chart.js');assert(!/#(?:e4382f|d93a30|5cc850|1e8433)/i.test(source),'Red/green colours are not part of the redesign');});
 for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorScheme of (engine==='webkit'?['dark']:['light','dark'])){
  const ctx=await browser.newContext({viewport:{width,height:width<500?844:900},colorScheme,hasTouch:width<500,isMobile:width<500,deviceScaleFactor:1});
  await ctx.addInitScript(()=>{window.__dv2Vitals={cls:0,longTasks:0,longTaskMs:0,shiftSources:[]};try{new PerformanceObserver(list=>list.getEntries().forEach(e=>{if(!e.hadRecentInput){window.__dv2Vitals.cls+=e.value;window.__dv2Vitals.shiftSources.push({value:e.value,sources:(e.sources||[]).map(s=>({node:s.node?.className||s.node?.tagName,previousRect:s.previousRect,currentRect:s.currentRect}))});}})).observe({type:'layout-shift',buffered:true});new PerformanceObserver(list=>list.getEntries().forEach(e=>{window.__dv2Vitals.longTasks++;window.__dv2Vitals.longTaskMs+=e.duration;})).observe({type:'longtask',buffered:true});}catch{}});
  const page=await ctx.newPage();const key=width+'-'+colorScheme+(engine==='webkit'?'-webkit':'');
  page.on('pageerror',e=>errors.push({key,message:e.message}));
  const bad=[];page.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400)bad.push({status:r.status(),url:r.url()});});
- const entryStarted=Date.now();await page.goto(base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track .v2-stock').first().waitFor({state:'visible'});
+ const entryStarted=Date.now();await page.goto(base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor({state:'visible'});
  // Measure the cold Home entry before unrelated settings, theme and reload checks.
- await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/entdeck|versteh/i.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();const targets=[['purpose',page.locator('h1')],['search',page.locator('.v2-search-prompt')],['hero action',page.locator('.v2-intro-cta').first()]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=70&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
+ await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/entdeck|versteh/i.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();const targets=[['purpose',page.locator('h1')],['search',page.locator('.v2-search-prompt')],['quick links',page.locator('.dv3-quick a').first()]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=70&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
  await check(key+' fresh visit starts light regardless of device scheme',async()=>{
   assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
   assert.equal(await page.locator('html').getAttribute('data-theme-mode'),'light');
@@ -124,7 +99,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   await page.locator('.v2-settings-choices button').getByText('Hell').click();
   assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
   await page.goto(base+'/discover/',{waitUntil:'domcontentloaded'});
-  await page.locator('.v2-hero-track .v2-stock').first().waitFor({state:'visible'});
+  await page.locator('.v2-hero-track [data-symbol]').first().waitFor({state:'visible'});
  });
  await check(key+' canonical page is indexable',async()=>{const robots=page.locator('meta[name=robots]');assert(!(await robots.count())||!(await robots.getAttribute('content')).includes('noindex'),'canonical /discover/ must not be noindex');});
  await check(key+' main visible',async()=>assert(await page.locator('main').isVisible()));
@@ -189,7 +164,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
    const touch=await ctx.newCDPSession(page);await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:start,y}]});
    for(let step=1;step<=10;step++)await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:start+(end-start)*step/10,y}]});
    await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await touch.detach();
-  }else await track.evaluate(n=>{const cards=n.querySelectorAll('.v2-hero-item');n.scrollTo({left:cards[1].offsetLeft-cards[0].offsetLeft,behavior:'instant'});});
+  }else await track.evaluate(n=>{const cards=n.querySelectorAll('[data-symbol]');n.scrollTo({left:cards[1].offsetLeft-cards[0].offsetLeft,behavior:'instant'});});
   if(needsScroll){await page.waitForFunction(symbol=>{const n=document.querySelector('.v2-hero-track'),b=n.getBoundingClientRect();return Array.from(n.querySelectorAll('[data-symbol]')).map(c=>{const r=c.getBoundingClientRect();return {symbol:c.dataset.symbol,visible:Math.max(0,Math.min(r.right,b.right)-Math.max(r.left,b.left))};}).sort((a,b)=>b.visible-a.visible)[0]?.symbol!==symbol;},before.cards[0].symbol);
    const after=await evidence();assert(after.scrollLeft>before.scrollLeft,'Hero did not scroll horizontally');assert.notEqual(after.cards[0].symbol,before.cards[0].symbol,'Hero visible company did not change');interactionEvidence.push({key,type:'hero-swipe',input:width<500&&engine==='chromium'?'native-touch':'native-scroll',before,after});}
   await screenshot(page,key+'-hero-next');
@@ -204,33 +179,42 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  if(engine==='chromium'&&width===390&&colorScheme==='light'){
   await check(key+' premium mobile material and diversity',()=>premiumMobileAudit(page,key));
   await check(key+' themes and strategies stay separate',async()=>{
+    /* Redesign D02: Bereich-Filter, Bildkarten fuer die ersten Themen je Bereich, der Rest als Zeilen - alle 54 erreichbar. */
     await page.goto(base+'/discover/#/welten',{waitUntil:'networkidle'});
-    const themes=page.locator('.v2-theme-grid .v2-theme-tile');
-    assert(await themes.count()>=40,'All 40 Themenwelten must be listed');
-    assert.equal(await page.locator('.v2-world-directory,.v2-collection-links').count(),0,'Strategies must not appear in Welten');
+    const themes=page.locator('.dv3-welten [data-theme]');
+    assert(await themes.count()>=40,'All Themenwelten must be listed');
+    assert.equal(await page.locator('.dv3-srow').count(),0,'Strategies must not appear in Welten');
     await screenshot(page,key+'-worlds');
+    await page.locator('.dv3-chips button[data-g="e"]').click();
+    const filtered=await page.locator('.dv3-welten [data-theme]').evaluateAll(nodes=>nodes.map(n=>n.dataset.group));
+    assert(filtered.length>0&&filtered.every(g=>g==='e'),'Area filter must show only its themes: '+filtered.join(','));
+    await screenshot(page,key+'-worlds-filter');
+    /* D04: vier Gruppen, je Auswahl eine Zeile mit Trefferzahl. */
     await page.goto(base+'/discover/#/strategien',{waitUntil:'networkidle'});
-    const strategies=page.locator('.v2-main .v2-collection-link');
+    const strategies=page.locator('.v2-main .dv3-srow');
     assert(await strategies.count()>=19,'Canonical Discover strategies must be listed');
-    for(const rowId of ['sp500-staerkste','djia-staerkste','ndx-staerkste','qualitaet-zum-preis','qualitaet-wachstum']){
-      const image=page.locator('.v2-main .v2-collection-link[href$="/'+rowId+'"] .v2-collection-image');
-      assert.equal(await image.count(),1,'Strategy artwork missing: '+rowId);
-      const src=await image.getAttribute('src');assert(src.endsWith('/'+rowId+'.jpeg'),'Wrong artwork for '+rowId+': '+src);
-      const response=await page.request.get(base+src);assert(response.ok()&&/^image\/jpeg/.test(response.headers()['content-type']||''),'Strategy artwork cannot load: '+src);
-    }
-    assert.equal(await page.locator('.v2-theme-grid').count(),0,'Themes must not appear in Strategien');
+    assert.equal(await page.locator('.dv3-sgroup').count(),4,'Strategies come in four groups');
+    for(const rowId of ['sp500-staerkste','djia-staerkste','ndx-staerkste','qualitaet-zum-preis','qualitaet-wachstum'])assert.equal(await page.locator('.dv3-srow[data-row="'+rowId+'"]').count(),1,'Strategy missing: '+rowId);
+    assert(/Treffer/.test(await strategies.first().innerText()),'Strategy row needs its match count');
+    assert.equal(await page.locator('.dv3-welten').count(),0,'Themes must not appear in Strategien');
     assert.equal(await page.locator('#vu-dock a[aria-current=page]').innerText(),'Strategien');
-    const first=await strategies.first().boundingBox();assert(first&&first.width<=page.viewportSize().width,'Strategy card overflows mobile viewport');
+    const first=await strategies.first().boundingBox();assert(first&&first.width<=page.viewportSize().width,'Strategy row overflows mobile viewport');
     await screenshot(page,key+'-strategies');
     const href=await strategies.first().getAttribute('href');
     await page.goto(base+'/discover/'+href,{waitUntil:'networkidle'});
     assert.equal(await page.locator('.v2-back').getAttribute('href'),'#/strategien');
-    const stock=page.locator('.v2-main>.dx-grid .dx-poster').first();await stock.waitFor({state:'visible'});
+    assert(await page.locator('.dv3-rule').count()===1,'Strategy detail shows its rule verbatim');
+    const stock=page.locator('.dv3-hits a[href*="/s/"]').first();await stock.waitFor({state:'visible'});
     await screenshot(page,key+'-strategy-stocks');
-    await page.goto(base+'/discover/',{waitUntil:'networkidle'});
-    await page.locator('.v2-hero-track .v2-stock').first().waitFor();
+    /* Alte Sammlungsadresse leitet weiter (Thema bzw. Strategie). */
+    await page.goto(base+'/discover/#/c/US_REAL/thema-ki',{waitUntil:'networkidle'});
+    assert.equal(new URL(page.url()).hash,'#/thema/kuenstliche-intelligenz');
+    await page.locator('.dv3-firms a[href*="/s/"]').first().waitFor({state:'visible'});
+    await screenshot(page,key+'-theme');
+    await page.goto(base+'/discover/',{waitUntil:'domcontentloaded'});
+    await page.locator('.v2-hero-track [data-symbol]').first().waitFor();
   });
-  await check(key+' home freshness contract is visible',async()=>{await page.locator('.v2-hero-track .dx-lazy-media').first().scrollIntoViewIfNeeded();await page.waitForTimeout(250);const live=page.locator('.v2-stock .dx-lazy-media[data-live]');assert(await live.count()>0,'Home does not consume canonical snapshot/intraday artwork');const invalid=await live.evaluateAll(nodes=>nodes.filter(n=>!['LIVE','LAST_SESSION','STALE','UNAVAILABLE'].includes(n.dataset.freshness||'')).map(n=>({symbol:n.dataset.symbol,freshness:n.dataset.freshness})));assert.deepEqual(invalid,[]);const caption=await page.locator('.v2-hero-track .v2-stock-caption').first().innerText();assert(/Tagesverlauf|Kursverlauf|nicht verfügbar|Keine Kursreihe/i.test(caption),'Structured period/source caption is missing: '+caption);});
+  await check(key+' home freshness contract is visible',async()=>{/* Redesign D01: Schluss-Datum im Kopf statt Etikett je Karte. */await page.locator('.dv3-asof').waitFor();await page.waitForFunction(()=>/Schluss \S+ \d{2}\.\d{2}\./.test(document.querySelector('.dv3-asof')?.textContent||''),null,{timeout:10000});});
  }
  await check(key+' search opens traps focus and restores it',async()=>{const opener=page.locator('.v2-search-prompt:visible').first();await opener.click();const input=page.locator('input[type=search]').first();await input.waitFor({state:'visible'});await input.fill('AAPL');await page.waitForFunction(()=>Array.from(document.querySelectorAll('.dx-search .dx-result')).some(n=>/Apple|AAPL/.test(n.textContent)));for(let i=0;i<12;i++){await page.keyboard.press(i<6?'Tab':'Shift+Tab');assert(await page.locator('.dx-search').evaluate(n=>n.contains(document.activeElement)),'Focus escaped search');}await screenshot(page,key+'-search');if(width===390)await check(key+' search accessibility',()=>a11y(page,key+'-search'));await page.keyboard.press('Escape');await input.waitFor({state:'hidden'});assert(await opener.evaluate(n=>n===document.activeElement),'Search opener focus not restored');});
  await page.goto(base+'/discover/#/s/US_REAL/AAPL',{waitUntil:'networkidle'});await page.waitForTimeout(1000);
@@ -262,125 +246,66 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   }
   await page.locator(bizSel).scrollIntoViewIfNeeded();await screenshot(page,key+'-crowdstrike-business');
  });
+ /* Redesign D05: #/einzeln/<U> leitet auf #/swipen; eine Karte, drei Gesten (weiter, oeffnen, merken), Merken mit Rueckgaengig. */
+ await page.evaluate(()=>{try{localStorage.setItem('vu-discover-swipe-intro-v1','1');}catch(e){}});
  await page.goto(base+'/discover/#/einzeln/US_REAL',{waitUntil:'networkidle'});
- if(width<500)await check(key+' feed stock link remains reachable above the dock',async()=>{
-  const card=page.locator('.dx-feed-screen[data-symbol]').first(),button=card.locator('.dx-cta .dx-btn');
-  await button.evaluate(n=>n.scrollIntoView({block:'end',behavior:'instant'}));
-  const bounds=await page.evaluate(()=>{const button=document.querySelector('.dx-feed-screen[data-symbol] .dx-cta .dx-btn'),dock=document.getElementById('vu-dock').shadowRoot.querySelector('nav'),track=document.querySelector('.dx-feed-spur');const b=button.getBoundingClientRect(),d=dock.getBoundingClientRect(),t=track.getBoundingClientRect();return {button:b.toJSON(),dock:d.toJSON(),track:t.toJSON(),hit:document.elementFromPoint(b.left+b.width/2,b.top+b.height/2)?.closest('.dx-btn')===button,scrollTop:track.scrollTop};});
-  assert(bounds.button.top>=bounds.track.top&&bounds.button.bottom<=Math.min(bounds.dock.top-8,bounds.track.bottom),'Stock action is covered by the dock: '+JSON.stringify(bounds));
-  assert(bounds.hit,'Stock action is not tappable');
-  await card.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));
-  interactionEvidence.push({key,type:'feed-action-clearance',...bounds});
+ await check(key+' old feed address forwards to swipen',async()=>{await page.waitForURL(url=>new URL(url).hash==='#/swipen');});
+ await check(key+' swipe card shows one stock with sentence and chart',async()=>{
+  const card=page.locator('.dv3-card[data-symbol]');await card.waitFor();await waitCounter(page,1);
+  assert.equal(await page.locator('.dv3-card[data-symbol]').count(),1,'Exactly one card at a time');
+  assert(await card.locator('.dv3-chart svg').count()===1,'Card chart missing');
+  assert((await card.innerText()).length>=80,'Card text too short');
  });
- if(width===390)await check(key+' feed annual chart label stays above controls',async()=>{
-  const card=page.locator('.dx-feed-screen[data-symbol]').first();
-  await card.getByRole('tab',{name:'Umsatz'}).click();await card.locator('.v2-focus-bars').waitFor();
-  const caption=await card.locator('.v2-stock-caption').boundingBox(),tabs=await card.locator('.v2-focus-tabs').boundingBox();
-  assert(caption&&tabs&&caption.y+caption.height<=tabs.y-1,'Annual chart label overlaps chart controls');
-  assert(await card.locator('.dx-feed-metrics').evaluate(n=>n.scrollWidth<=n.clientWidth),'Annual chart overflows the feed');
-  await card.getByRole('tab',{name:'Chart'}).click();
+ if(width<500)await check(key+' swipe buttons remain reachable above the dock',async()=>{
+  const bounds=await page.evaluate(()=>{const b=document.querySelector('.dv3-swipe__btns').getBoundingClientRect(),dock=document.getElementById('vu-dock').shadowRoot.querySelector('nav').getBoundingClientRect();return {buttons:b.toJSON(),dock:dock.toJSON()};});
+  await page.locator('.dv3-swipe__btns').scrollIntoViewIfNeeded();
+  const after=await page.evaluate(()=>{const b=document.querySelector('.dv3-swipe__btns').getBoundingClientRect(),dock=document.getElementById('vu-dock').shadowRoot.querySelector('nav').getBoundingClientRect();return b.bottom<=dock.top+1;});
+  assert(after,'Swipe buttons hidden behind the dock: '+JSON.stringify(bounds));interactionEvidence.push({key,type:'swipe-button-clearance',...bounds});
  });
- await check(key+' feed is bounded and reaches the next stock',async()=>{
-  const track=page.locator('.dx-feed-spur');await track.waitFor();
-  const freeScroll=await track.evaluate(async n=>{
-   const first=n.querySelector('.dx-feed-screen[data-symbol]');
-   const target=Math.round(first.getBoundingClientRect().height*.45);
-   n.scrollTop=target;
-   await new Promise(resolve=>setTimeout(resolve,350));
-   const result={target,actual:n.scrollTop,snap:getComputedStyle(n).scrollSnapType};
-   n.scrollTop=0;
-   return result;
-  });
-  assert.equal(freeScroll.snap,'none','Feed must not snap between stocks');
-  assert(Math.abs(freeScroll.actual-freeScroll.target)<=2,'Feed jumped away from a free-scroll position: '+JSON.stringify(freeScroll));
-  const count=await page.locator('.dx-feed-screen[data-symbol]').count();assert(count>0&&count<=24,'Initial feed eagerly rendered '+count+' cards');
-  const visible=()=>track.evaluate(n=>{const bounds=n.getBoundingClientRect();const cards=Array.from(n.querySelectorAll('.dx-feed-screen[data-symbol]')).map(card=>{const box=card.getBoundingClientRect();return {symbol:card.dataset.symbol,index:card.dataset.index,visibleHeight:Math.max(0,Math.min(box.bottom,bounds.bottom)-Math.max(box.top,bounds.top))};}).sort((a,b)=>b.visibleHeight-a.visibleHeight);return {height:n.clientHeight,viewport:innerHeight,scrollTop:n.scrollTop,card:cards[0]};});
-  const before=await visible();assert(before.height>100&&before.height<=before.viewport,'Feed track is not viewport-bounded');
-  const counterBefore=await page.locator('.dx-feed-zaehler').innerText();
-  await page.locator('.dx-feed-screen[data-symbol]').nth(1).evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await waitCounter(page,2);
-  const after=await visible(),counterAfter=await page.locator('.dx-feed-zaehler').innerText();
-  assert(after.scrollTop>0,'Feed did not scroll');assert.notEqual(after.card.symbol,before.card.symbol,'Visible stock did not change');assert.equal(after.card.index,'1','Scrolling did not reach second stock');assert.notEqual(counterAfter,counterBefore,'Feed counter did not follow visible stock');assert(/^2 von /i.test(counterAfter),'Counter does not identify second stock: '+counterAfter);
-  interactionEvidence.push({key,type:'feed-single-screen',initialCards:count,before,after,counterBefore,counterAfter});
-  await screenshot(page,key+'-feed-second-stock');
+ await check(key+' skip shows the next stock',async()=>{
+  const before=await visibleFeedStock(page);await page.locator('.dv3-b--skip').click();await waitCounter(page,2);
+  await page.waitForFunction(s=>document.querySelector('.dv3-card[data-symbol]')?.dataset.symbol!==s,before.symbol);
+  const after=await visibleFeedStock(page);assert.notEqual(after.symbol,before.symbol);interactionEvidence.push({key,type:'swipe-skip',before,after});
  });
- await check(key+' feed continues beyond first batch',async()=>{await page.locator('.dx-feed-spur').waitFor();await page.locator('.dx-feed-spur').evaluate(n=>{n.scrollTop=n.scrollHeight;});await page.waitForFunction(()=>document.querySelectorAll('.dx-feed-screen[data-symbol]').length>12);const symbols=await page.locator('.dx-feed-screen[data-symbol]').evaluateAll(nodes=>nodes.map(n=>n.dataset.symbol));assert(symbols.length>12,'Feed stopped after first batch');assert.equal(symbols.length,new Set(symbols).size,'Feed contains duplicate symbols');});
+ await check(key+' keep saves to the watchlist and can be undone',async()=>{
+  const card=await visibleFeedStock(page);await page.locator('.dv3-b--keep').click();
+  await page.locator('.dv3-toast').waitFor({state:'visible'});await screenshot(page,key+'-swipe-kept');
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('vu-discover-watchlist-v1')||'[]'));assert(saved.includes(card.symbol),'Kept stock not on watchlist');
+  const undo=page.locator('.dv3-toast button');if(await undo.count()){await undo.click();await waitCounter(page,2);const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('vu-discover-watchlist-v1')||'[]'));assert(!after.includes(card.symbol),'Undo did not remove the stock');}
+ });
+ await check(key+' arrow key and collection filter',async()=>{
+  await page.keyboard.press('ArrowLeft');await waitCounter(page,3);
+  await page.locator('.dv3-swipe__bar .vu-chip[data-f="bekannt"]').click();await waitCounter(page,1);
+  await page.locator('.dv3-swipe__bar .vu-chip[data-f="alle"]').click();await waitCounter(page,3);
+ });
  await screenshot(page,key+'-feed');
  if(width===390)await check(key+' feed accessibility',()=>a11y(page,key+'-feed'));
- const savedCounter=await page.locator('.dx-feed-zaehler').innerText(),savedStock=await visibleFeedStock(page);
- await check(key+' feed exit cleanup',async()=>{await page.locator('.dx-feed-zurueck').click();await page.locator('.v2-home').waitFor({state:'visible'});assert(!await page.locator('body').evaluate(n=>n.classList.contains('dx-feed-aktiv')||n.classList.contains('v2-feed-active')));assert.equal(await page.locator('.dx-feed').count(),0);});
- await check(key+' feed session resumes exploration',async()=>{
-  await page.locator('#vu-dock a[data-id=entdecken]').click();await waitCounter(page,1);await page.locator('.v2-feed-resume').waitFor();
-  const resumed=await visibleFeedStock(page);assert.equal(resumed.symbol,savedStock.symbol,'Session must resume at the same canonical company');assert.equal(resumed.index,0,'Resumed suffix must start at its first screen');assert(await page.locator('.dx-feed-screen[data-symbol]').count()<=24,'Resume eagerly mounted predecessor stocks');interactionEvidence.push({key,type:'feed-resume',savedCounter,savedStock,resumed});await page.locator('.dx-feed-zurueck').click();await page.locator('.v2-home').waitFor({state:'visible'});
+ await check(key+' swipe session resumes',async()=>{
+  const saved=await visibleFeedStock(page);
+  await page.goto(base+'/discover/#/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor();
+  await page.goto(base+'/discover/#/swipen',{waitUntil:'domcontentloaded'});await page.locator('.dv3-card[data-symbol]').waitFor();
+  assert.equal((await visibleFeedStock(page)).symbol,saved.symbol,'Session must resume at the same canonical company');
+  await page.locator('.v2-feed-resume').waitFor();await page.locator('.v2-feed-restart').click();await waitCounter(page,1);
  });
  if(engine==='chromium'&&width===390&&colorScheme==='dark')await check(key+' deep session resume loads a bounded canonical suffix',async()=>{
-  const feed=await (await page.request.get(base+'/discover/data/feed/US_REAL.json')).json();const position=Math.min(120,feed.order.length-24);assert(position>84,'Need a genuine deep feed position');
+  const feed=await (await page.request.get(base+'/discover/data/feed/US_REAL.json')).json();const position=Math.min(120,feed.order.length-24);
   await page.evaluate(index=>window.VUDiscover.memory.setPosition('feed:US_REAL',index),position);
-  const deep=await ctx.newPage(),requests=[];deep.on('pageerror',error=>errors.push({key:key+'-deep-resume',message:error.message}));deep.on('response',response=>{if(response.url().startsWith(base)&&response.status()>=400)bad.push({status:response.status(),url:response.url()});});deep.on('request',request=>{if(new URL(request.url()).pathname.startsWith('/discover/data/stocks/US_REAL/'))requests.push(request.url());});
-  try{await deep.goto(base+'/discover/#/einzeln/US_REAL',{waitUntil:'networkidle'});await deep.locator('.v2-feed-resume').waitFor();const visible=await visibleFeedStock(deep),count=await deep.locator('.dx-feed-screen[data-symbol]').count();assert.equal(visible.symbol,feed.order[position].s);assert(count>0&&count<=24,'Deep resume mounted '+count+' stocks');assert(requests.length<=24,'Deep resume fetched '+requests.length+' stock bundles');const allowed=new Set(feed.order.slice(position,position+24).map(entry=>entry.s));assert(requests.every(url=>allowed.has(decodeURIComponent(new URL(url).pathname.split('/').at(-1).replace(/\.json$/,'')))),'Deep resume requested predecessor or unrelated stocks');interactionEvidence.push({key,type:'deep-feed-resume',position,visible,mounted:count,stockRequests:requests.length});await screenshot(deep,key+'-feed-deep-resume');await deep.locator('.v2-feed-restart').click();await deep.locator('.v2-feed-resume').waitFor({state:'hidden'});await waitCounter(deep,1);assert.equal((await visibleFeedStock(deep)).symbol,feed.order[0].s,'Restart did not restore the canonical beginning');}finally{await deep.close();}
+  const deep=await ctx.newPage(),requests=[];deep.on('pageerror',error=>errors.push({key:key+'-deep-resume',message:error.message}));deep.on('request',request=>{if(new URL(request.url()).pathname.startsWith('/discover/data/stocks/US_REAL/'))requests.push(request.url());});
+  try{await deep.goto(base+'/discover/#/swipen',{waitUntil:'networkidle'});await deep.locator('.v2-feed-resume').waitFor();await waitCounter(deep,position+1);
+   assert.equal((await visibleFeedStock(deep)).symbol,feed.order[position].s);assert(requests.length<=4,'Deep resume fetched '+requests.length+' stock bundles');
+   interactionEvidence.push({key,type:'deep-feed-resume',position,stockRequests:requests.length});await screenshot(deep,key+'-feed-deep-resume');}finally{await deep.close();}
  });
  if(engine==='chromium'&&width===390&&colorScheme==='dark')await check(key+' complete canonical home journey',async()=>{
-  const meta=await (await page.request.get(base+'/discover/data/meta.json')).json();
-  const contract=meta.home.find(h=>h.universeId==='US_REAL');
-  const chunks=await Promise.all(contract.chunks.map(async path=>(await (await page.request.get(base+path)).json())));
-  const expected=chunks.reduce((n,chunk)=>n+chunk.surfaces.length,0);
-  for(let attempt=0;attempt<chunks.length&&await page.locator('.v2-finish').count()===0;attempt++){
-   const before=await page.locator('.v2-journey > [data-surface]').count();
-   await page.locator('.v2-load-more').scrollIntoViewIfNeeded();
-   await page.waitForFunction(count=>document.querySelectorAll('.v2-journey > [data-surface]').length>count||document.querySelector('.v2-finish'),before);
-  }
-  assert.equal(await page.locator('.v2-finish').count(),1,'Journey must end once');
-  assert.equal(await page.locator('.v2-load-more').count(),0,'Unloaded chunk remains');
-  const surfaces=await page.locator('.v2-journey > :not(.v2-finish):not([data-block])').evaluateAll(nodes=>nodes.map(n=>({id:n.getAttribute('data-surface'),archetype:n.getAttribute('data-archetype'),className:n.className,title:n.querySelector('h2')?.textContent||''})));
-  assert(surfaces.length>=8,'Discovery journey is prematurely short');
-  assert.equal(await page.locator('.v2-top-tabs [role=tab]').count(),5,'Canonical top lists must remain reachable as tabs');
-  assert(await page.locator('.v2-collection-directory a').count()>=10,'Bundled stock worlds must remain reachable');
-  for(const selector of ['.v2-market-today','.v2-themes','.v2-spotlight','.v2-pulse-teaser'])assert.equal(await page.locator(selector).count(),1,selector+' missing');
-  const featured=page.locator('.v2-spotlight-featured .v2-focus');
-  assert.equal(await featured.locator('[role=tab]').allTextContents().then(x=>x.join('|')),'Chart|Umsatz|Gewinn|Cashflow');
-  // Die Erwartung kommt aus den ausgelieferten Daten der Karte (wie featured.js: >=2 Geschaeftsjahre mit endlichem Wert).
-  // Die Auswahl der Karte wechselt mit dem Datenstand; hat sie fuer eine Kennzahl keine zwei Jahre (z. B. BMBL: kein Free Cashflow),
-  // zeigt featured.js bewusst den Leerzustand. Mit Jahresreihe bleibt der Balkenblock Pflicht.
-  const featuredSymbol=await featured.getAttribute('data-symbol');
-  const featuredTracks=await page.evaluate(async symbol=>{const r=await fetch('/discover/data/stocks/US_REAL/'+encodeURIComponent(symbol)+'.json');const d=await r.json();return d?.fundamentals?.journey?.tracks||{};},featuredSymbol);
-  const trackKeys={Umsatz:'revenue',Gewinn:'net_income',Cashflow:'free_cash_flow'};
-  for(const label of ['Umsatz','Gewinn','Cashflow']){
-   await featured.getByRole('tab',{name:label}).click();
-   const years=(featuredTracks[trackKeys[label]]||[]).filter(p=>Number.isFinite(p.v)&&Number.isFinite(p.fy)).length;
-   if(years>=2){
-    await featured.locator('.v2-focus-bars').waitFor();
-    assert(await featured.locator('.v2-focus-bar').count()>=2,featuredSymbol+' '+label+' has no annual series');
-   }else{
-    await featured.locator('.v2-focus-empty').waitFor();
-    assert.equal(await featured.locator('.v2-focus-bars').count(),0,featuredSymbol+' '+label+' shows bars without two fiscal years');
-   }
-   assert.equal(await featured.locator('.v2-focus-stage').getAttribute('aria-label'),label);
-  }
-  await featured.getByRole('tab',{name:'Chart'}).click();
-  assert.equal(await featured.locator('.dx-lazy-media').count(),1,'Original price chart must remain available');
-  await featured.locator('.v2-stock-market-cap strong').waitFor({state:'visible'});
-  assert(!/^–$/.test(await featured.locator('.v2-stock-market-cap strong').innerText()),'Featured market capitalization did not load');
-  const small=page.locator('.v2-spotlight .v2-hero-item .v2-tile-shell').first();
-  assert.equal(await small.getByRole('tab').allTextContents().then(x=>x.join('|')),'Chart|Umsatz|Gewinn|Cashflow');
-  const symbol=await small.getAttribute('data-symbol');
-  await small.getByRole('tab',{name:'Umsatz'}).click();
-  await small.locator('.v2-focus-bars, .v2-focus-empty').first().waitFor();
-  assert.equal(await small.locator('.v2-tile-stage').getAttribute('aria-label'),'Umsatz');
-  await small.locator('.v2-stock-market-cap strong').waitFor({state:'visible'});
-  assert(!/^–$/.test(await small.locator('.v2-stock-market-cap strong').innerText()),'Compact market capitalization did not load');
-  await small.getByRole('tab',{name:'Chart'}).click();
-  assert.equal(await small.locator('.dx-lazy-media').count(),1,'Compact price chart must remain available');
-  assert((await small.locator('a.v2-tile').getAttribute('href')).endsWith('/'+symbol),'Compact profile link was lost');
-  const ranking=page.locator('.v2-top-panel .v2-tile-shell').first();
-  assert.equal(await ranking.getByRole('tab').count(),4,'Rankings also need all four chart views');
-  const narrow=page.locator('.v2-hero-track .v2-tile-shell').first();
-  const fit=await narrow.locator('.v2-focus-tabs button').evaluateAll(nodes=>nodes.map(n=>({text:n.textContent,button:n.getBoundingClientRect(),label:n.scrollWidth})).every((x,i,a)=>x.label<=x.button.width+1&&a.every((y,j)=>i===j||x.button.right<=y.button.left||y.button.right<=x.button.left||x.button.bottom<=y.button.top||y.button.bottom<=x.button.top)));
-  assert(fit,'Four chart tabs overlap or clip in a narrow mobile stock preview');
-  const ids=surfaces.map(s=>s.id).filter(Boolean);assert.equal(ids.length,new Set(ids).size,'Duplicated discovery surfaces');
-  interactionEvidence.push({key,type:'complete-home',chunks:chunks.length,expected,rendered:surfaces.length,surfaces});
-  const archetypes=[...new Set(surfaces.map(s=>s.archetype).filter(Boolean))];assert(archetypes.length>=5,'Discovery needs at least five distinct surface archetypes for visual review');
-  for(const archetype of archetypes){const surface=page.locator('.v2-journey > [data-archetype="'+archetype+'"]').first();await surface.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await screenshot(page,key+'-world-'+archetype);}
-  await page.locator('.v2-journey > :not(.v2-finish)').nth(Math.max(0,surfaces.length-4)).scrollIntoViewIfNeeded();await screenshot(page,key+'-late-discovery');
-  await page.locator('.v2-finish').scrollIntoViewIfNeeded();await screenshot(page,key+'-journey-finish');
+  /* Redesign D01: Markt, Heute im Blick (mit Sheet „Warum?“), Themen, Rangliste mit vier Reitern, Jahreshochs, Strategien, Bekannte Namen, Swipen. */
+  await page.goto(base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor();
+  assert(await page.locator('.v2-hero-track [data-symbol]').count()>=2,'Heute im Blick needs several stocks');
+  const tabs=page.locator('.dv3-sec--top [role=tab]');assert.equal(await tabs.count(),4,'Ranking tabs Alle / S&P 500 / Nasdaq 100 / Dow');
+  await tabs.nth(1).click();assert.equal(await tabs.nth(1).getAttribute('aria-selected'),'true');assert.equal(await page.locator('.dv3-top .dv3-rank').count(),4);
+  await page.locator('.dv3-why').first().click();await page.locator('#dv3-sheet:not([hidden])').waitFor();await screenshot(page,key+'-why-sheet');await page.keyboard.press('Escape');
+  assert(await page.locator('.dv3-sec--strat .vu-navcard').count()>=3,'Strategy teaser');assert(await page.locator('.dv3-sec--namen .vu-lrow').count()>=1,'Known names');
+  assert.equal(await page.locator('.dv3-swipecard[href="#/swipen"]').count(),1,'Swipe teaser');
+  await page.locator('.dv3-sec--hochs .dv3-rank').first().waitFor({timeout:15000});
+  for(const sel of ['.dv3-sec--blick','.dv3-sec--themen','.dv3-sec--hochs','.dv3-sec--namen']){await page.locator(sel).first().scrollIntoViewIfNeeded();await screenshot(page,key+'-world'+sel.replace(/[^a-z]+/g,'-'));}
  });
  await check(key+' no local HTTP errors',async()=>assert.deepEqual(bad,[]));
  await ctx.close();
