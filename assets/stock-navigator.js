@@ -80,7 +80,7 @@
         (stText ? '<span class="vu-snav-st">' + esc(stText) + "</span>" : "") + sr + "</span></a>";
     }
     return '<a class="vu-snav-chip"' + attrs + ' title="' + esc((m.plain || m.label) + (stText ? " · " + stText : "")) + '">' +
-      '<svg class="vu-snav-glyph" viewBox="0 0 24 24" aria-hidden="true"><use href="' + SPRITE + esc(m.icon) + '"/></svg><span>' + esc(PERSPECTIVE[st.product] || m.plain || m.label) + "</span>" +
+      '<svg class="vu-snav-glyph" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><use href="' + SPRITE + esc(m.icon) + '"/></svg><span>' + esc(PERSPECTIVE[st.product] || m.plain || m.label) + "</span>" +
       '<span class="vu-snav-sr"> (' + esc(m.plain || m.label) + ")</span>" + sr + "</a>";
   }
 
