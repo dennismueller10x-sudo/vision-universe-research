@@ -125,6 +125,10 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | Ü3 | Abnahmekriterien | – |  | Übersichtsfolie, nichts zu bauen |
 | Ü4 | Auftrag an Claude Code | – |  | Übersichtsfolie, nichts zu bauen |
 
+## Laufende Teilaufträge (parallel, je Welt ein PR auf Basis `claude/redesign-quant`)
+
+Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds (H01–H07), Screener (S01–S05), Vorsorge (V01–V10), Supertrader (ST01–ST08, Gate A), Discover (D01–D08), Einstieg und Mein Bereich (E01–E12, übernimmt `neustart/d-startseite` und `neustart/d-mein-bereich`). Zweige `claude/redesign-<welt>`, Nachweisbilder auf `claude/redesign-evidence-<welt>`.
+
 ## Nicht möglich / übersprungen
 
 - WebKit ist in dieser Sitzung nicht installiert (Vorgabe: Playwright nicht neu installieren). Lokal prüft Chromium; WebKit prüft `shell-ci` in jedem PR.
