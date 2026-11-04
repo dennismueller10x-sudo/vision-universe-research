@@ -35,6 +35,26 @@
       "from": "362a13b29c91b50a8148805109e9a73479baf0635c030469bee4bbd69a33132a",
       "to": "b4efd15d03d4c7c84a9500c500ccb5461a5e1c40280fe2bfb42d8c0e42ebfb2c",
       "scope": "nur die eine Zeile 'await ...q-now.filter({hasText:/Setup|Veränderung|Stand/}).waitFor' wird durch das Urteil judgeNowBlock (scripts/vu2/qa-now-block.mjs) gegen den Zustand der Produkt-API (getRadarCard) ersetzt, plus dessen Import; Warte-Grenze unveraendert 30 s; 44 px, Barrierefreiheit, Budgets, die Setup-Karten-Pruefung (UIP-R1) und alle anderen Pruefungen unveraendert; Gegenproben in quant/tests/browser-qa-now-block.test.mjs"
+    },
+    {
+      "id": "UIP-R4",
+      "date": "2026-11-04",
+      "pr": 0,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.js",
+      "from": "f181dc78a4573c9b374d5e21607eac20fd5a1e92785e9aefedf1d6f273c34591",
+      "to": "5e54d00781a72cb4863c09af37f714155db048f9abd829b5d0948d12e30371de",
+      "scope": "Shell-Redesign (Strang D): Kopfzeile C01 (Welt links; Suche, Atlas, Mein Bereich rechts), Produkt-Leiste C02 (schwarz, Beschriftungen nach Mockup), Vollbild-Menü C03 (3×3 Produkte, Unterseiten der aktuellen Welt, Mein Bereich, Weitere Produkte, Hell/Dunkel, Währung). Alle Ziele bleiben erreichbar; Opt-in der Leiste, Safe Areas, 44 px, Fokusfalle und Lazy-Sprite unverändert geprüft"
+    },
+    {
+      "id": "UIP-R5",
+      "date": "2026-11-04",
+      "pr": 0,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.css",
+      "from": "59631d91b7fa4dc0b110e42e097e2088bc5da153933d4757069096b89ae2c074",
+      "to": "dff70747dd30e2621e5575fc3248a02da8a25c061384f56927ab72c9f9bda62e",
+      "scope": "Shell-Redesign (Strang D): Inter selbst gehostet, Kopfhöhe 56/64 px, Leistenhöhe 68 px, Bausteine C04–C20 als Opt-in-Klassen; bestehende Tokens und Klassen unverändert"
     }
   ]
 }

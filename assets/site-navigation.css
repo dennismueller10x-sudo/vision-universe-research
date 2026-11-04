@@ -1,4 +1,6 @@
-:root{--vu-navigation-height:72px}
+@font-face{font-family:Inter;src:url(/assets/fonts/inter-latin.woff2) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Inter;src:url(/assets/fonts/inter-latin-ext.woff2) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+:root{--vu-navigation-height:64px}
 html{scroll-padding-top:calc(var(--vu-navigation-height) + 16px)}
 body{padding-top:var(--vu-navigation-height)!important}
 vu-navigation{display:block!important}
@@ -11,12 +13,12 @@ body.vu-magazine-one .mag{height:calc(100dvh - var(--nav) - var(--vu-navigation-
 body.vu-magazine-two .reader{height:calc(100dvh - var(--vu-navigation-height))}
 body.vu-magazine-two .page{height:100%}
 body.vu-magazine-two .progress{top:var(--vu-navigation-height)}
-@media(max-width:760px){:root{--vu-navigation-height:64px}}
+@media(max-width:760px){:root{--vu-navigation-height:56px}}
 body .q-tabs-wrap{top:var(--vu-navigation-height)}
 /* Produkt-Leiste (Dock) der gemeinsamen Shell: Abstand fuer den Inhalt als
    ein Token statt verstreuter Magic Numbers. Hoehe der Leiste + Safe Area +
    sichtbarer Abstand. Gesetzt nur, wenn die Seite eine Leiste traegt. */
-:root{--vu-dock-height:66px;--vu-dock-gap:10px;--vu-dock-space:calc(var(--vu-dock-height) + var(--vu-dock-gap) + 24px + env(safe-area-inset-bottom));--vu-accent:#c8f531;--vu-on-accent:#101318}
+:root{--vu-dock-height:68px;--vu-dock-gap:12px;--vu-dock-space:calc(var(--vu-dock-height) + var(--vu-dock-gap) + 24px + env(safe-area-inset-bottom));--vu-accent:#c8f531;--vu-on-accent:#101318}
 html[data-vu-dock]{scroll-padding-bottom:var(--vu-dock-space)}
 html[data-vu-dock] body{padding-bottom:var(--vu-dock-space)!important}
 html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
@@ -196,3 +198,116 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 [data-vu-href] a[data-vu-card-main]{color:inherit;text-decoration:none}
 [data-vu-href] a[data-vu-card-main]:focus-visible{outline:3px solid var(--vu-focus);outline-offset:3px;border-radius:6px}
 @media(hover:hover){[data-vu-href]:hover a[data-vu-card-main]{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}}
+
+/* =====================================================================
+   Redesign (Neustart 11/2026, Mockups „Vision Universe Redesign“ C01–C20).
+   Nur Weiß, Schwarz, Neongrün #c8f531 plus drei Graustufen. Opt-in-Klassen;
+   Produkte übernehmen sie Seite für Seite. Kursrichtung: ▲ neongrün, ▼ schwarz.
+   ===================================================================== */
+:root{
+  --vu-white:#fff;--vu-black:#000;--vu-lime:#c8f531;
+  --vu-ink:#000;--vu-inv:#fff;--vu-card:#f4f4f4;--vu-hair:#e9e9e9;--vu-mute:#6e6e6e;
+  --vu-font:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --vu-r-card:20px;--vu-r-tile:18px;--vu-r-logo:12px;
+}
+:root[data-theme=dark]{--vu-ink:#fff;--vu-inv:#000;--vu-card:#151515;--vu-hair:#262626;--vu-mute:#9b9b9b}
+.vu-ui{font-family:var(--vu-font);color:var(--vu-ink);-webkit-font-smoothing:antialiased}
+/* Typografie */
+.vu-lt{margin:0;font-size:34px;font-weight:900;letter-spacing:-.045em;line-height:1.02;text-wrap:balance}
+.vu-mt{margin:0;font-size:21px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.vu-ltag{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--vu-mute)}
+.vu-num{font-variant-numeric:tabular-nums}
+/* C13 Abschnittstitel */
+.vu-sect{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:22px 0 10px;font-size:17px;font-weight:800;letter-spacing:-.02em}
+.vu-sect>a{font-size:14px;font-weight:600;color:var(--vu-mute);text-decoration:none}
+/* Karte */
+.vu-box{background:var(--vu-card);border-radius:var(--vu-r-card);padding:14px;color:var(--vu-ink)}
+.vu-box--ink{background:var(--vu-ink);color:var(--vu-inv)}
+.vu-box--lime{background:var(--vu-lime);color:#000}
+.vu-box--line{background:transparent;border:1.5px solid var(--vu-hair)}
+.vu-grid{display:grid;grid-template-columns:repeat(var(--vu-cols,2),minmax(0,1fr));gap:10px}
+/* C07 Kursbewegung */
+.vu-chg{display:inline-flex;align-items:center;gap:3px;border-radius:999px;padding:3px 9px;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap;background:var(--vu-lime);color:#000}
+.vu-chg:before{content:"▲";font-size:.8em}
+.vu-chg--down{background:var(--vu-ink);color:var(--vu-inv)}.vu-chg--down:before{content:"▼"}
+.vu-chg--flat:before{content:"◆"}.vu-chg--flat{background:var(--vu-hair);color:var(--vu-ink)}
+.vu-chg--big{font-size:15px;padding:5px 11px}
+/* C08 Urteil */
+.vu-verdict{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 10px;font-weight:800;font-size:12px;line-height:1.3;white-space:nowrap}
+.vu-verdict:before{font-size:.85em}
+.vu-verdict--strong{background:var(--vu-lime);color:#000}.vu-verdict--strong:before{content:"▲"}
+.vu-verdict--mid{background:var(--vu-hair);color:var(--vu-ink)}.vu-verdict--mid:before{content:"◆"}
+.vu-verdict--weak{background:var(--vu-ink);color:var(--vu-inv)}.vu-verdict--weak:before{content:"▼"}
+.vu-verdict--none{border:1.5px dashed var(--vu-mute);color:var(--vu-mute);padding:3px 9px}.vu-verdict--none:before{content:"○"}
+/* C09 Erklärung */
+.vu-help{display:flex;gap:9px;align-items:flex-start;font-size:13px;line-height:1.4;color:var(--vu-mute)}
+.vu-help:before{content:"?";flex:none;width:20px;height:20px;margin-top:-1px;border-radius:50%;background:var(--vu-ink);color:var(--vu-inv);font-weight:900;font-size:12px;display:grid;place-items:center}
+/* Logo-Kachel und HUD */
+.vu-logo-tile{width:42px;height:42px;border-radius:var(--vu-r-logo);background:var(--vu-ink);color:var(--vu-inv);display:grid;place-items:center;flex:none;font-weight:900;font-size:10.5px;letter-spacing:-.02em;overflow:hidden}
+.vu-logo-tile--xl{width:54px;height:54px;border-radius:15px;font-size:12.5px}
+.vu-hud{width:var(--vu-hud,44px);height:var(--vu-hud,44px);border-radius:12px;background:#0e1013;color:var(--vu-lime);display:grid;place-items:center;flex:none}
+.vu-hud>svg{width:62%;height:62%;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+/* C10 Aktienzeile */
+.vu-lrow{display:grid;grid-template-columns:42px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--vu-hair);color:inherit;text-decoration:none}
+.vu-lrow:first-child{border-top:0}
+.vu-lrow__name{min-width:0}.vu-lrow__name b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vu-lrow__name span{display:block;font-size:12px;color:var(--vu-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vu-lrow__price{display:grid;gap:3px;justify-items:end;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
+/* C11 Kachel */
+.vu-tile{background:var(--vu-card);border-radius:var(--vu-r-card);padding:12px;min-width:0}
+.vu-tile__label{font-size:11.5px;font-weight:700;color:var(--vu-mute)}
+.vu-tile__value{margin-top:3px;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.vu-tile__sub{margin-top:2px;font-size:11.5px;color:var(--vu-mute)}
+/* C12 Navigationskarte */
+.vu-navcard{display:flex;gap:12px;align-items:center;padding:12px;border-radius:var(--vu-r-card);background:var(--vu-card);color:var(--vu-ink);text-decoration:none;min-height:56px}
+.vu-navcard__text{flex:1;min-width:0}.vu-navcard__text b{display:block;font-weight:800}.vu-navcard__text span{display:block;font-size:13px;color:var(--vu-mute)}
+.vu-navcard:after{content:"";width:8px;height:8px;margin-right:6px;border-top:2.2px solid currentColor;border-right:2.2px solid currentColor;transform:rotate(45deg);flex:none}
+/* Chips, C14 Segment, Linsen */
+.vu-chips{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}.vu-chips::-webkit-scrollbar{display:none}
+.vu-chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border:0;border-radius:999px;background:var(--vu-card);color:var(--vu-ink);font:700 14px/1 var(--vu-font);text-decoration:none;flex:none;cursor:pointer}
+.vu-chip[aria-pressed=true],.vu-chip[aria-current=page],.vu-chip--on{background:var(--vu-ink);color:var(--vu-inv)}
+.vu-chip--lime{background:var(--vu-lime);color:#000}
+.vu-seg{display:flex;gap:2px;padding:4px;border-radius:999px;background:var(--vu-card)}
+.vu-seg>*{flex:1;min-height:32px;border:0;border-radius:999px;background:transparent;color:var(--vu-mute);font:700 13px/1 var(--vu-font);text-align:center;text-decoration:none;display:grid;place-items:center;cursor:pointer}
+.vu-seg>[aria-pressed=true],.vu-seg>[aria-selected=true],.vu-seg>[aria-current=page]{background:var(--vu-ink);color:var(--vu-inv)}
+/* C05 Perspektiven-Leiste */
+.vu-persp{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:6px 0;border-block:1px solid var(--vu-hair);white-space:nowrap}
+.vu-persp::-webkit-scrollbar{display:none}
+.vu-persp>a{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:0 11px;border-radius:999px;color:var(--vu-mute);font-weight:700;font-size:13.5px;text-decoration:none;flex:none}
+.vu-persp>a svg{width:15px;height:15px}
+.vu-persp>a[aria-current=page]{background:var(--vu-ink);color:var(--vu-inv)}
+/* C04 Aktienkopf */
+.vu-stockhead__top{display:flex;align-items:center;gap:10px}
+.vu-stockhead__name{flex:1;min-width:0}.vu-stockhead__name b{display:block;font-size:18px;font-weight:900;letter-spacing:-.02em}
+.vu-stockhead__name span{display:block;font-size:12px;color:var(--vu-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vu-stockhead__price{display:flex;align-items:center;gap:10px;margin-top:10px}
+.vu-stockhead__price>b{font-size:34px;font-weight:900;letter-spacing:-.045em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.vu-stockhead__meta{margin-left:auto;text-align:right;font-size:11.5px;font-weight:700;color:var(--vu-mute)}
+.vu-round{width:36px;height:36px;border:0;border-radius:50%;background:var(--vu-card);color:var(--vu-ink);display:grid;place-items:center;flex:none;padding:0;cursor:pointer}
+/* Knöpfe */
+.vu-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:0 22px;border:0;border-radius:999px;background:var(--vu-lime);color:#000;font:800 16px/1 var(--vu-font);text-decoration:none;cursor:pointer}
+.vu-btn--ink{background:var(--vu-ink);color:var(--vu-inv)}
+.vu-btn--line{background:transparent;border:1.5px solid var(--vu-hair);color:var(--vu-ink)}
+.vu-btn--sm{min-height:44px;font-size:14px;padding:0 16px}
+/* C15 Schalter */
+.vu-switch{appearance:none;-webkit-appearance:none;width:46px;height:28px;margin:0;border-radius:999px;background:var(--vu-hair);position:relative;flex:none;cursor:pointer}
+.vu-switch:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--vu-mute);transition:left .15s}
+.vu-switch:checked{background:var(--vu-lime)}.vu-switch:checked:before{left:21px;background:#000}
+/* C17 Balken (Anteil über --v in Prozent) */
+.vu-meter{height:10px;border-radius:999px;background:var(--vu-hair);overflow:hidden}
+.vu-meter>i{display:block;height:100%;width:calc(var(--v,0)*1%);background:var(--vu-ink);border-radius:inherit}
+.vu-meter--lime>i{background:var(--vu-lime)}
+/* C18 Leerer Zustand, C19 PRO */
+.vu-blank{display:flex;gap:10px;align-items:center;padding:14px;border-radius:var(--vu-r-card);background:var(--vu-card);font-size:13px}
+.vu-pro{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.06em;background:var(--vu-ink);color:var(--vu-lime);border-radius:6px;padding:2px 6px;vertical-align:middle}
+.vu-research{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border:1.5px dashed var(--vu-mute);color:var(--vu-mute);border-radius:999px;padding:3px 10px}
+/* C20 Suche */
+.vu-find{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 6px 0 16px;border-radius:999px;background:var(--vu-card);color:var(--vu-mute);font-weight:600;font-size:14.5px;text-decoration:none}
+.vu-find>span{flex:1}
+.vu-find>i{width:36px;height:36px;border-radius:50%;background:var(--vu-lime);color:#000;display:grid;place-items:center;font-style:normal}
+/* C16 Sheet */
+.vu-sheet-ui{border-radius:30px 30px 0 0;background:var(--vu-white);color:var(--vu-ink);padding:10px 18px calc(24px + env(safe-area-inset-bottom))}
+:root[data-theme=dark] .vu-sheet-ui{background:var(--vu-black)}
+.vu-sheet-ui:before{content:"";display:block;width:40px;height:5px;border-radius:9px;background:var(--vu-hair);margin:0 auto 14px}
+.vu-chip:focus-visible,.vu-seg>:focus-visible,.vu-persp>a:focus-visible,.vu-btn:focus-visible,.vu-navcard:focus-visible,.vu-lrow:focus-visible,.vu-switch:focus-visible,.vu-find:focus-visible{outline:2px solid var(--vu-focus);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.vu-switch:before{transition:none}}

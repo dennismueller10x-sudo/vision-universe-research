@@ -140,10 +140,11 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' home accessibility',()=>a11y(page,key+'-home'));
  await check(key+' shared menu separates Discover from platform products',async()=>{
   const nav=page.locator('vu-navigation');
-  const destinations=await nav.locator('[data-group="discover"] .links a').evaluateAll(nodes=>nodes.map(n=>({label:n.lastChild.textContent.trim(),href:n.getAttribute('href')})));
+  // Menue (Mockup N3): Raster der Produkte, darunter die Unterseiten der aktuellen Welt.
+  const destinations=await nav.locator('.here-links a').evaluateAll(nodes=>nodes.map(n=>({label:n.textContent.trim(),href:n.getAttribute('href')})));
   assert.deepEqual(destinations.map(x=>x.label),['Übersicht','Welten','Strategien','Entdecken','Suchen','Märkte','Watchlist']);
   assert.deepEqual(destinations.map(x=>x.href),['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist']);
-  assert.equal(await nav.locator('[data-group="discover"] .group-link').getAttribute('href'),'/discover/#/');
+  assert.equal(await nav.locator('.tile[data-group="discover"]').getAttribute('href'),'/discover/#/');
   assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
   /* Gemeinsame Shell: der Kopf traegt Marke, AI Atlas und Farbschema; das
      globale Menue oeffnet ☰ rechts in der Produkt-Leiste (#vu-dock). */
@@ -195,7 +196,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await page.evaluate(()=>scrollTo(0,innerHeight));await screenshot(page,key+'-discovery');
  await check(key+' responsive navigation remains reachable',async()=>{
   const nav=page.locator('#vu-dock nav');const state=await nav.evaluate(n=>({box:n.getBoundingClientRect().toJSON(),position:getComputedStyle(n.getRootNode().host).position,paddingBottom:parseFloat(getComputedStyle(n).paddingBottom),height:innerHeight,labels:Array.from(n.querySelectorAll('a,button')).map(a=>({label:a.textContent.trim(),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
-  assert.deepEqual(state.labels.map(i=>i.label),['Discover','Welten','Strategien','Entdecken','Menü']);assert(state.labels.some(i=>i.current==='page'),'Current route not identified');
+  assert.deepEqual(state.labels.map(i=>i.label),['Discover','Welten','Strategien','Swipen','Menü']);assert(state.labels.some(i=>i.current==='page'),'Current route not identified');
   assert.equal(state.position,'fixed');const gap=state.height-state.box.bottom;assert(gap>=6&&gap<=24,'Product dock must float just above the viewport edge: '+gap);assert(state.labels.every(i=>i.width>=44&&i.height>=44),'Dock targets smaller than 44px');assert(state.paddingBottom>=0);
   if(width>=500)assert(state.box.width<=760,'Desktop dock must not stretch across the viewport: '+state.box.width);interactionEvidence.push({key,type:'responsive-navigation',...state});
  });

@@ -21,15 +21,15 @@ const loc = (url) => { const u = new URL(url, 'https://research.visionuniverse.d
 
 test('every product dock starts with the product name, never Home or Start, and has four entries plus the global menu', () => {
   assert.deepEqual(JSON.parse(JSON.stringify(PRODUCTS.map(p => [p.id, p.items.map(([, label]) => label)]))), [
-    ['discover', ['Discover','Welten','Strategien','Entdecken']],
+    ['discover', ['Discover','Welten','Strategien','Swipen']],
     ['elliott', ['Elliott','Welle 3','Neu','Suche']],
     ['quant', ['Quant','Screener','Strategien','Aktien']],
     ['fundamental', ['Fundamental','Entdecken','Suche','Methodik']],
-    ['technical', ['Technical','Screener','Chart Studio','Methodik']],
-    ['vorsorge', ['Vorsorge','Plan','ETFs','Portfolio']],
-    ['screener', ['Screener','Treffer','Gespeichert','Watchlist']],
+    ['technical', ['Technical','Screener','Chart','Methodik']],
+    ['vorsorge', ['Vorsorge','Planer','ETFs','Portfolio']],
+    ['screener', ['Screener','Filter','Treffer','Gespeichert']],
     ['supertrader', ['Supertrader','Methoden','Signale','Backtests']],
-    ['hedgefonds', ['Hedgefonds','Investoren','Datenbank','Aktien']]
+    ['hedgefonds', ['Hedgefonds','Investoren','Aktien','Smart Money']]
   ]);
   for (const p of PRODUCTS) {
     assert.equal(p.items[0][1], p.label);
@@ -59,7 +59,7 @@ test('dock targets are existing routes of their products', () => {
   const vorsorge = ['plan', 'etf', 'portfolio'].map(f => readFileSync(join(root, `vorsorge/ui/${f}.js`), 'utf8')).join('\n');
   for (const r of ['plan', 'etfs', 'portfolio']) assert.match(vorsorge, new RegExp(`VS\\.views\\.${r} = function`), `Vorsorge-Ansicht ${r}`);
   const hedge = readFileSync(join(root, 'hedgefonds/app.js'), 'utf8');
-  for (const r of ['investoren', 'datenbank', 'aktien']) assert.ok(hedge.includes(`#/${r}`));
+  for (const r of ['investoren', 'aktien', 'smart-money']) assert.ok(hedge.includes(`#/${r}`));
   // Fundamental-Dock-Ziele sind Routen, die fundamental/engine/model.js (parseRoute) wirklich kennt
   const fundamentalModel = require(join(root, 'fundamental/engine/model.js'));
   assert.deepEqual(fundamentalModel.parseRoute('#/entdecken'), { view: 'home', focus: 'entdecken' });
@@ -74,7 +74,7 @@ test('dock targets are existing routes of their products', () => {
   assert.equal(technicalModel.parseRoute('#/methodik').view, 'method');
   assert.match(readFileSync(join(root, 'technical/app.js'), 'utf8'), /VUNavigation\.dock\(/, 'Technical fordert die Leiste an');
   const screener = readFileSync(join(root, 'screener/app.js'), 'utf8');
-  for (const v of ['results', 'saved', 'watchlist']) assert.ok(screener.includes(`${v}: view`));
+  for (const v of ['build', 'results', 'saved']) assert.ok(screener.includes(`${v}: view`) || screener.includes(`'${v}'`), v);
 });
 
 test('active dock state follows deep links after reload', () => {
@@ -89,7 +89,11 @@ test('active dock state follows deep links after reload', () => {
   assert.equal(active('vorsorge', '/vorsorge/#/etf/IWDA'), 'etfs');
   assert.equal(active('vorsorge', '/vorsorge/#/xray'), 'portfolio');
   assert.equal(active('vorsorge', '/vorsorge/#/foerderung'), null);
-  assert.equal(active('screener', '/screener/?view=build&f=pe'), 'screener');
+  assert.equal(active('screener', '/screener/?view=build&f=pe'), 'filter');
+  assert.equal(active('screener', '/screener/?f=pe'), 'screener');
+  assert.equal(active('screener', '/screener/?view=watchlist'), 'gespeichert', 'Watchlist ist ein Reiter unter Gespeichert');
+  assert.equal(active('hedgefonds', '/hedgefonds/#/smart-money'), 'smart');
+  assert.equal(active('hedgefonds', '/hedgefonds/#/datenbank'), 'investoren', 'Datenbank ist ein Reiter unter Investoren');
   assert.equal(active('screener', '/screener/?view=compare'), 'treffer');
   assert.equal(active('supertrader', '/supertrader/stock/NVDA/'), 'signale');
   assert.equal(active('supertrader', '/supertrader/strategies/darvas-boxes/'), 'methoden');
@@ -100,8 +104,10 @@ test('active dock state follows deep links after reload', () => {
 
 test('the dock respects safe areas, keeps touch targets and sits below overlays and the menu', () => {
   assert.match(dockStyles, /env\(safe-area-inset-bottom\)/);
-  assert.match(dockStyles, /grid-template-columns:repeat\(5,minmax\(min-content,1fr\)\)/);
-  assert.match(dockStyles, /min-height:54px/);
+  assert.match(dockStyles, /grid-template-columns:minmax\(min-content,1\.35fr\) repeat\(4,minmax\(min-content,1fr\)\)/);
+  assert.match(dockStyles, /background:#000/, 'Leiste schwarz (Mockup C02)');
+  assert.match(dockStyles, /a\[aria-current=page\],a\[aria-current=page\]:hover\{background:#c8f531;color:#000\}/);
+  assert.match(dockStyles, /min-height:56px/);
   assert.match(dockStyles, /z-index:900/);
   assert.match(dockStyles, /:focus-visible/);
   assert.match(dockStyles, /prefers-reduced-motion/);
@@ -110,8 +116,11 @@ test('the dock respects safe areas, keeps touch targets and sits below overlays 
   assert.match(css, /html\[data-vu-dock\] body\{padding-bottom:var\(--vu-dock-space\)/);
   assert.match(css, /--vu-dock-space:calc\([^;]*env\(safe-area-inset-bottom\)\)/);
   assert.match(css, /html\.vu-menu-open/);
-  // Mit Leiste ist der Kopf ruhig: Logo, AI Atlas, Farbschema
-  assert.match(styles(THEMES.light), /:host\(\[dock\]\) \.section,:host\(\[dock\]\) \.quick,:host\(\[dock\]\) \.toggle\{display:none\}/);
+  // Mit Leiste ist der Kopf ruhig: Welt links, Suche, Atlas, Mein Bereich rechts (Mockup C01)
+  assert.match(styles(THEMES.light), /:host\(\[dock\]\) \.quick,:host\(\[dock\]\) \.toggle\{display:none\}/);
+  assert.match(source, /class="world" hidden/);
+  assert.match(source, /class="hb search" href="\/discover\/#\/suche"/);
+  assert.match(source, /class="hb profile" href="\/mein-dashboard\/"/);
 });
 
 test('the dock is opt-in: pages that never call VUNavigation.dock keep their header unchanged', () => {
@@ -134,7 +143,9 @@ test('the shell header loads the slim web logo, not the 129 KB master (stock pag
 
 
 test('compact menu preserves every old destination in nine products and one additional group', () => {
-  assert.deepEqual(Array.from(groups,g=>g.id), ['discover','quant','elliott','fundamental','technical','screener','vorsorge','supertrader','hedgefonds','more']);
+  // Reihenfolge des 3 x 3-Rasters im Menue (Mockup N3)
+  assert.deepEqual(Array.from(groups,g=>g.id), ['discover','quant','technical','fundamental','supertrader','hedgefonds','elliott','screener','vorsorge','more']);
+  for(const g of groups.filter(g=>g.id!=='more')) assert.ok(g.claim, g.id+': Kurzbeschreibung fuer die Kachel');
   const destinations = new Set(groups.flatMap(g=>[g.href,...g.entries.map(e=>e[1])]).filter(Boolean));
   const previous = ['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist','/dashboard/','/macro/','/etf/','/vorsorge/#/','/vorsorge/#/plan','/vorsorge/#/etfs','/vorsorge/#/portfolio','/vorsorge/#/vergleichen','/vorsorge/#/foerderung','/vorsorge/#/monitor','/vorsorge/#/wissen','/screener/','/quant/','/supertrader/','/analysten/','/hedgefonds/','/news/','/morning/','/magazin/','/reports/xpeng/','/academy/','/guide/','/budget/'];
   for(const href of previous) assert.ok(destinations.has(href),href+' remains reachable');
@@ -173,7 +184,7 @@ test('menu routes distinguish home, query, hash segment boundaries and detail pa
   assert.equal(routeScore('/quant/',loc('/quant/#/aktien')),-1);
 });
 
-test('accordion and original product symbols retain accessible shell behavior', () => {
+test('menu tiles keep original product symbols, load the sprite lazily and stay accessible', () => {
   const sprite=readFileSync(join(root,'assets/product-icons.svg'),'utf8');
   for(const group of groups) {
     const icon=productIcon(group.icon);
@@ -187,18 +198,20 @@ test('accordion and original product symbols retain accessible shell behavior', 
   }
   assert.match(source,/icon\.setAttribute\('href',icon\.getAttribute\('data-href'\)\)/);
   assert.match(source,/icon\.removeAttribute\('data-href'\)/);
-  assert.match(source,/disclosure\.setAttribute\('aria-controls','menu-links-'\+id\)/);
-  assert.match(source,/links\.hidden=true/);
-  assert.match(source,/section\.querySelector\('\.links'\)\.hidden = !open/);
+  // Raster der Produkte, Unterseiten der aktuellen Welt, Mein Bereich, Weitere Produkte
+  assert.match(source,/a\.className='tile'/);
+  assert.match(source,/class="here" hidden/);
+  assert.match(source,/<details class="more">/);
+  assert.match(source,/'In '\+group\.label/);
   assert.match(source,/filter\(n=>n\.getClientRects\(\)\.length&&!n\.closest\('\[hidden\]'\)\)/);
   assert.match(source,/dockProductIcon\(\(groups\.find\(g=>g\.id===product\.id\)\|\|\{icon:product\.id\}\)\.icon\)/);
-  assert.match(styles(THEMES.light),/\.mode\{width:44px;height:44px\}/);
-  assert.match(styles(THEMES.light),/\.links a\{[^}]*min-height:44px/);
-  assert.match(styles(THEMES.light),/\.choices button,\.choices a\{[^}]*min-width:44px;min-height:44px/);
+  const light=styles(THEMES.light);
+  assert.match(light,/\.hb\{width:44px;height:44px/);
+  assert.match(light,/\.links a,\.mine a,\.more summary\{[^}]*min-height:48px/);
+  assert.match(light,/\.choices button,\.choices a\{[^}]*min-width:44px;min-height:44px/);
+  assert.match(light,/\.tile\[aria-current=page\],\.tile\.is-current\{background:#c8f531;color:#000\}/);
 });
 
-
-/* Elliott ist ein eigenes Produkt: eigene Gruppe, eigene Leiste, eigener aktiver Zustand - auch fuer die Aktie, die die Quant-SPA unter #/elliott/<T> zeigt. */
 test('Elliott is a first-class product with its own menu group, dock and state', () => {
   const elliott = groups.find(g => g.id === 'elliott');
   assert.equal(elliott.href, '/elliott/');
@@ -208,9 +221,8 @@ test('Elliott is a first-class product with its own menu group, dock and state',
   const quant = groups.find(g => g.id === 'quant');
   assert.ok(!quant.entries.some(([label, href]) => /elliott/i.test(label) || /chartbild/.test(href)), 'Quant fuehrt Elliott nicht mehr');
   for (const g of groups) for (const [label, href] of g.entries) if (/elliott/i.test(label) || g.id === 'elliott') assert.ok(!/\/(NVDA|AAPL)\b/.test(href), `${href}: Elliott oeffnet nie auf einer festen Aktie`);
-  // Menue: Elliott steht auf Produktebene (neben Quant), nicht verschachtelt
-  const ids = Array.from(groups, g => g.id);
-  assert.ok(ids.indexOf('elliott') === ids.indexOf('quant') + 1);
+  // Menue: Elliott steht auf Produktebene, nicht verschachtelt
+  assert.ok(groups.some(g => g.id === 'elliott' && g.href));
   const state = url => menuState(loc(url));
   assert.equal(state('/elliott/').group, 'elliott');
   assert.equal(state('/elliott/').expanded, null, 'Startseite klappt das Menue nicht auf');
@@ -246,7 +258,7 @@ test('Elliott is a first-class product with its own menu group, dock and state',
   assert.match(source, /const reshape=\(\)=>/);
   // Eigenes Symbol: das Originalsymbol der Startseite, ohne Sprite-Abruf in der Leiste
   assert.ok(DOCK_PRODUCT_ICONS.elliott && !/use/.test(dockProductIcon('elliott')));
-  assert.match(source, /<a href="\/elliott\/">Elliott<\/a>/, 'Direktzugriff im Kopf');
+  assert.match(source, /<a href="\/elliott\/">Elliott<\/a>/, 'Direktzugriff im Kopf (Desktop ohne Leiste)');
 });
 
 /* Fundamental ist ein eigenes Produkt auf derselben Ebene wie Discover, Quant und Supertrader: eigene Gruppe, eigene Leiste,
@@ -257,10 +269,8 @@ test('Fundamental is a first-class product with its own menu group, dock and sta
   assert.equal(fundamental.href, '/fundamental/#/');
   assert.equal(fundamental.icon, 'fundamental');
   assert.deepEqual(Array.from(fundamental.entries, e => e[1]), ['/fundamental/#/', '/fundamental/#/entdecken', '/fundamental/#/suche', '/fundamental/#/methodik']);
-  // Produktebene: nicht unter "Weitere Produkte", direkt hinter den Analysewelten Quant und Elliott
+  // Produktebene: nicht unter "Weitere Produkte"
   assert.ok(!groups.find(g => g.id === 'more').entries.some(([, href]) => href.startsWith('/fundamental/')));
-  const ids = Array.from(groups, g => g.id);
-  assert.equal(ids.indexOf('fundamental'), ids.indexOf('elliott') + 1);
   const product = PRODUCTS.find(p => p.id === 'fundamental');
   assert.ok(product.match('/fundamental/', loc('/fundamental/#/NVDA')));
   assert.ok(!product.match('/quant/', loc('/quant/#/aktie/NVDA/zahlen')), 'Quant-Zahlen bleiben Quant');
@@ -285,9 +295,7 @@ test('Technical has its own dock, its own menu group and the exact sprite geomet
   assert.equal(dock.active(loc('/technical/#/chart/NVDA/signale')), 'chart');
   assert.equal(dock.active(loc('/technical/#/methodik')), 'methodik');
   for (const url of ['/technical/', '/technical/#/chart/NVDA']) assert.equal(PRODUCTS.filter(p => p.match(loc(url).pathname, loc(url))).length, 1, url);
-  /* Eigene Menuegruppe direkt nach Fundamental (Owner-Freigabe 25.10.2026); "Weitere Produkte" fuehrt Technical nicht mehr. */
-  const ids = Array.from(groups, g => g.id);
-  assert.equal(ids.indexOf('technical'), ids.indexOf('fundamental') + 1);
+  /* Eigene Menuegruppe (Owner-Freigabe 25.10.2026); "Weitere Produkte" fuehrt Technical nicht mehr. */
   const tg = groups.find(g => g.id === 'technical');
   assert.equal(tg.href, '/technical/#/');
   assert.equal(tg.icon, 'technical');

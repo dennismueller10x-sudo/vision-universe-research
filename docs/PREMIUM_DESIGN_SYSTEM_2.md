@@ -112,3 +112,34 @@ gesperrter Body bei erforderlichem Dokument-Scrollen bleiben Fehler.
 Browser-, Navigations-, Theme- und Performance-Evidenz wird im Delivery-
 Bericht geführt; dieses Dokument behauptet keine abgeschlossene QA und
 keinen Live- oder Deployment-Status.
+
+## Redesign 11/2026 (Mockups „Vision Universe Redesign“)
+
+Drei Farben: Weiß, Schwarz, Neongrün `#c8f531`, dazu drei Graustufen
+(`--vu-card`, `--vu-hair`, `--vu-mute`). Schrift Inter, selbst gehostet.
+Die Shell (`assets/site-navigation.js`) liefert Kopfzeile (C01), Produkt-Leiste
+(C02) und Menü (C03). Die übrigen Bausteine sind Opt-in-Klassen in
+`assets/site-navigation.css`:
+
+| Baustein | Klasse |
+| --- | --- |
+| C04 Aktienkopf | `vu-stockhead`, `vu-stockhead__top/__name/__price/__meta`, `vu-round`, `vu-logo-tile` |
+| C05 Perspektiven-Leiste | `vu-persp` (Links mit `aria-current=page`) |
+| C07 Kursbewegung | `vu-chg`, `vu-chg--down`, `vu-chg--flat`, `vu-chg--big` |
+| C08 Urteil | `vu-verdict--strong/--mid/--weak/--none` (Stark, Mittel, Schwach, Keine Aussage) |
+| C09 Erklärung | `vu-help` |
+| C10 Aktienzeile | `vu-lrow`, `vu-lrow__name`, `vu-lrow__price` |
+| C11 Kachel | `vu-tile`, `vu-tile__label/__value/__sub` |
+| C12 Navigationskarte | `vu-navcard`, `vu-navcard__text`, `vu-hud` |
+| C13 Abschnittstitel | `vu-sect` |
+| C14 Reiter / Segment | `vu-seg`, `vu-chips`, `vu-chip` |
+| C15 Schalter | `vu-switch` (auf `<input type=checkbox>`) |
+| C16 Sheet | `vu-sheet-ui` |
+| C17 Balken | `vu-meter` (`--v` in Prozent) |
+| C18 Leerer Zustand | `vu-blank` |
+| C19 PRO-Marke | `vu-pro`; Forschungsetikett `vu-research` |
+| C20 Suche | `vu-find` |
+
+Karten: `vu-box` (`--ink`, `--lime`, `--line`), Raster `vu-grid` (`--vu-cols`),
+Knöpfe `vu-btn` (`--ink`, `--line`, `--sm`). Kursrichtung zeigt Symbol und
+Fläche (▲ neongrün, ▼ schwarz), nie nur Farbe.
