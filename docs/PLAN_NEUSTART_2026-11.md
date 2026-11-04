@@ -27,20 +27,23 @@ Produktstand:
 
 Fünf Bremsen: Daten im Code-Repo · 137 Workflows mit unzuverlässigen GitHub-Crons · Isolations-Gates prüfen Pfade statt Verträge · Zertifizierung (frühestens 2028) als Voraussetzung für Ergebnisse · jeder Schritt läuft über den Owner.
 
-## 2. Backtesting in drei Stufen
+## 2. Backtesting: ab heute, rückwärts
 
-1. **Regeltreu** (zum Start): offene Regeln, heutige Kandidaten, keine Renditeversprechen.
-2. **Historisch getestet** (Ziel 27.11.2026): echter Lauf inkl. delisteter Titel und Kosten, beschriftet „Forschung, nicht zertifiziert“.
-3. **Zertifiziert** (frühestens 2028): Papierhandel SF6-PAPER-2027 muss **vor dem 01.01.2027** aktiviert sein (#1268, #1270).
+Ein Backtest rechnet über die Vergangenheit und läuft **jetzt**. Die bisherige Planung hat das Ergebnis an eine Zertifizierung gekoppelt
+(Papierhandel ab 2027, 24 Monate aufgezeichnete Snapshots). Das entfällt als Voraussetzung.
 
-Supertrader-Start mit Top 5: C01, C02, C03, C08, C12. Übrige Methoden als „in Forschung“.
-Offene Lesarten in einer Sitzung entscheiden: PS-C01, PS-C03, PS-C08, PS-C12, FP-ST-03, FP-ST-05.
+- **Historischer Backtest (jetzt):** Point-in-Time aus vorhandenen Quellen rekonstruiert (Kurse mit Split-Faktoren, SEC-Daten mit Einreichungsdatum, delistete Titel aus dem R2-Archiv), Kosten abgezogen. Intern sofort sichtbar, öffentlich mit Kennzeichnung „Forschung, nicht zertifiziert“ und offenen Grenzen (z. B. fehlende historische Indexmitgliedschaft, 83 unklare Kapitalmaßnahmen ausgeschlossen).
+- **Vorwärtstest (zusätzlich):** Papierhandel SF6-PAPER-2027 ab 01.01.2027 mit eingefrorenen Regeln. Das ist nur der zusätzliche Beweis, dass die Regeln nicht nachträglich angepasst wurden. Er wird eingeschaltet und läuft im Hintergrund.
+- **Ehrlicher Befund aus der Forschung:** Die Quant-Läufe V10–V13c haben nach strenger Mehrfachtest-Korrektur keinen robusten Vorsprung gegenüber dem S&P 500 gefunden. Das Produkt zeigt Ergebnisse so, wie sie sind.
 
-Quant – VU-Portfolio-Standard (Vorschlag, Owner-Entscheidung; Darstellung mit Rechtsberatung klären):
+Supertrader: Start mit C01, C02, C03, C08, C12. Die offenen Lesarten (PS-C01, PS-C03, PS-C08, PS-C12, FP-ST-03, FP-ST-05) entscheidet Claude nach der jeweils dokumentierten Empfehlung.
+Übrige Methoden als „in Forschung“ sichtbar.
+
+Quant – VU-Portfolio-Standard (freigegeben 04.11.2026; Darstellung als Musterportfolio mit der Rechtsberatung abstimmen):
 15–30 Titel, max. 8 % je Titel und 25 % je Branche · Liquiditätsgrenze · Gebühren, Spread, Slippage · delistete Titel im Lauf · Gesamtrendite gegen Gesamtrendite-Benchmark · Walk-forward · Volatilität, Max-Drawdown, Beta ausgewiesen.
 Fehlende Bausteine: Risikomodell (Vol/Kovarianz), Titel- und Branchengrenzen, Gesamtrendite-Benchmark, Spread-Kostenmodell, delistete Titel in Strategie-Läufen. Neues Fachmodell → eigener PR mit Vorher/Nachher.
 
-Später: ein gemeinsamer Backtest-Kern (`core/backtest/`) für Quant, Supertrader und Technical, eigener PR mit Vorher/Nachher-Gleichheit.
+Danach: ein gemeinsamer Backtest-Kern (`core/backtest/`) für Quant, Supertrader und Technical, eigener PR mit Vorher/Nachher-Gleichheit.
 
 ## 3. Restrukturierung
 
@@ -64,20 +67,23 @@ Voraussetzung: Die Arbeitsregeln in `CLAUDE.md` („Gates werden nicht abgeschw�
 4. Owner-Freigabe nur für Geld, Recht, öffentliche Renditeaussagen, Löschen. 5. Entscheidungen gebündelt einmal täglich.
 6. Tagesbericht statt Chatverlauf. 7. Fortschritt nur über gezählte Abnahmekriterien.
 
-## 5. Fahrplan
+## 5. Vier Arbeitsstränge parallel (ab 05.11.2026)
 
-| Phase | Zeitraum | Inhalt | Fertig, wenn |
+Jeder Strang ist eine eigene Claude-Sitzung, besitzt seine Pfade, mergt bei grüner CI selbst und schreibt seinen Stand nach `docs/neustart/<strang>.md`.
+
+| Strang | Besitzt | Tag 1 | Tag 2–4 |
 |---|---|---|---|
-| 0 Stabilisieren | 05.–10.11. | Security Master 1.3.0 (#1240), Quant-CI grün (`secrets.test.mjs` S5 vs. iOS-Workflow), Crons für News und Security Master, FV-8-Alarm, PR-Sichtung | kein STALE, CI grün, < 40 offene PRs |
-| 1 Entschlacken | 09.–20.11. | Datenzweig, 12 Pipelines, Cloudflare-Takt, Vertrags-Gates, Doku-Archiv | Querschnitts-PR geht durch, eine Woche ohne Datenkonflikt |
-| 2 Backtests | 09.–27.11. | Lesarten-Sitzung, V13-Lauf Top 5, interne Vorschau (#1227), Portfolio-Baukasten | Ergebnisse für 5 Methoden und 1 Musterportfolio intern sichtbar |
-| 3 Launch-Reife | 23.11.–18.12. | Frontend nach Redesign-Mockups, Recht/Testkauf/Branding, Papierhandel aktiv, Backtests öffentlich als Forschung | Checkout öffentlich schaltbar, Papierhandel vor 01.01. |
+| A Infrastruktur | `.github/workflows`, `scripts/ci`, `core/registry`, Gates, `docs/` | Security Master 1.3.0 (#1240) vor 11.11., Quant-CI grün, Crons News/Security Master, FV-8-Alarm, alte PRs schließen | Datenzweig statt `main`, Workflows bündeln, Pfad-Gates → Vertragstests, Doku-Archiv, Modul-Steckbrief |
+| B Supertrader-Backtest | `supertrader/`, `scripts/supertrader/` | Lesarten entscheiden, Tageslauf wieder frisch | V13-Historienlauf Top 5, Ergebnisse intern, Papierhandel 2027 aktivieren |
+| C Quant-Backtest & Portfolio | `quant/`, `scripts/quant/`, `konto/admin/backtests` | Interne Backtest-Vorschau an (#1227), Strategie-Backtest mit delisteten Titeln | Portfolio-Baukasten nach VU-Standard, Musterportfolios mit Ergebnis |
+| D Frontend | Shell, Navigation, Produktseiten (Web-Dateien) | Redesign-Grundlage (Tokens, Header, Dock) | Seite für Seite nach den Redesign-Mockups |
 
-Feste Termine: 10.11.2026 Security Master · 18.12.2026 Merge Papierhandel · 01.01.2027 Start Papierhandel · ca. 26.03.2027 Setup-OOS A1–A6.
+Außerhalb der Technik (Owner): Rechtsberatung beauftragen, Fragebogen R2, Steuerberater, Stripe-Branding, Testkauf Z1, Repo-Variable `SF8_AUTO_PUBLISH` setzen.
 
 ## 6. Owner-Entscheidungen
 
-1. Start als Research-Werkzeug ohne Renditeversprechen. 2. Security Master 1.3.0 sofort. 3. Arbeitsregeln in `CLAUDE.md` anpassen (Gates).
-4. Daten raus aus `main`. 5. Freigaben nur für Geld/Recht/öffentliche Aussagen/Löschen. 6. Supertrader Top 5.
+**Alle zehn am 04.11.2026 freigegeben** (Owner im Chat: „alles andere, was du da vorschlägst, gebe ich natürlich frei … ich verlasse mich da komplett auf dich“; Zeitplan in Tagen statt Wochen, Frontend parallel):
+1. Start als Research-Werkzeug ohne Renditeversprechen. 2. Security Master 1.3.0 sofort. 3. Arbeitsregeln in `CLAUDE.md` angepasst (Gates, Freigaben).
+4. Daten raus aus `main`. 5. Freigaben nur für Geld/Recht/öffentliche Renditeaussagen/Löschen. 6. Supertrader Top 5.
 7. Portfolio-Baukasten in den Umfang. 8. Interne Backtest-Vorschau + Geschäftskonto mit `backtest_reviewer`.
-9. Offene PRs aufräumen (Liste zur Bestätigung). 10. Lizenzangebote einholen (Kapitalmaßnahmen, Tiingo-Rechte).
+9. Offene PRs aufräumen (geschlossene PRs bleiben wiederherstellbar). 10. Lizenzangebote einholen (Kapitalmaßnahmen, Tiingo-Rechte).
