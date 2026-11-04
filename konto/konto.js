@@ -74,8 +74,8 @@
       var problems = A.passwordProblems(input.value);
       list.textContent = '';
       [['PASSWORD_LENGTH', '10 bis 72 Zeichen'], ['PASSWORD_WEAK', 'drei von vier: klein, GROSS, Ziffer, Sonderzeichen']].forEach(function (r) {
-        list.appendChild(el('li', {'data-ok': problems.indexOf(r[0]) === -1 ? 'true' : 'false',
-          text: (problems.indexOf(r[0]) === -1 ? '✓ ' : '· ') + r[1]}));
+        // Haken-Liste (E04): der Kreis wird neongrün, sobald die Regel erfüllt ist (Stil in konto.css).
+        list.appendChild(el('li', {'data-ok': problems.indexOf(r[0]) === -1 ? 'true' : 'false', text: r[1]}));
       });
     }
     input.addEventListener('input', update);
@@ -114,11 +114,30 @@
   // ------------------------------------------------------------ Seiten
   var views = {};
 
+  // Ziele nach der Anmeldung in Worten (E05): Grund bei Deep Link und Karte „Danach geht es weiter zu …“.
+  var DESTINATIONS = {'/konto/watchlist/': ['deine Watchlist zu sehen', 'Deine Watchlist mit allen Kennzahlen'],
+    '/mein-dashboard/': ['deine Watchlist zu sehen', 'Deine Watchlist in Mein Bereich'], '/konto/tarife/': ['deinen Tarif zu sehen', 'Tarife in deinem Konto'],
+    '/konto/abo/': ['dein Abonnement zu sehen', 'Dein Abonnement'], '/konto/einstellungen/': ['deine Einstellungen zu sehen', 'Deine Einstellungen'],
+    '/konto/kuendigen/': ['einen Vertrag zu kündigen', 'Verträge kündigen']};
+  function loginTargets() {
+    var next = A.safePath(param('next')), known = next && DESTINATIONS[next];
+    if (next && next !== '/konto/' && next !== A.HOME) {
+      $('ka-reason').hidden = false;
+      $('ka-reason-title').textContent = 'Melde dich an, um ' + (known ? known[0] : 'diese Seite zu sehen') + '.';
+      $('ka-login-title').textContent = 'Anmelden';
+      $('ka-login-lead').hidden = true;
+      $('ka-after').hidden = true;
+      return;
+    }
+    if (pendingChoice() === 'pro') { $('ka-after').href = A.PRO_CONFIRM; $('ka-after-text').textContent = 'Pro bestätigen: Preis und Laufzeit prüfen, dann Zahlung bei Stripe'; }
+  }
+
   views.login = function () {
     showStatusParam();
     if (!A.available()) return unavailable();
     // Bestaetigungslink auf einem anderen Geraet: die Tarifwahl kommt ueber den Link mit.
     if (param('plan') === 'pro') rememberChoice('pro');
+    loginTargets();
     $('ka-login').addEventListener('submit', function (e) {
       e.preventDefault();
       var email = $('email').value.trim(), pw = $('password').value, btn = e.submitter || this.querySelector('button[type=submit]');
@@ -128,19 +147,50 @@
         if (r.ok) return continueSignedIn({next: param('next')});
         busy(btn, false);
         $('password').value = '';
+        // Fehler direkt am Formular: beide Felder markiert, „Passwort zurücksetzen“ als Knopf (E05-b).
+        if (r.state === 'INVALID_CREDENTIALS') {
+          $('email').setAttribute('aria-invalid', 'true'); $('password').setAttribute('aria-invalid', 'true');
+          $('ka-reset').hidden = false;
+          return notice('E-Mail oder Passwort stimmt nicht. Prüfe die Eingabe oder setze dein Passwort zurück.', 'error');
+        }
         fail(r);
       });
     });
   };
 
+  // Schrittanzeige (E04/E06): 1 Konto · 2 E-Mail · 3 Pro bestätigen (nur bei Pro-Wahl).
+  function steps(now, pro) {
+    var list = $('ka-steps');
+    if (!list) return;
+    Array.prototype.forEach.call(list.children, function (li, i) {
+      if (li.hasAttribute('data-pro')) li.hidden = !pro;
+      li.className = i < now ? 'is-done' : i === now ? 'is-now' : '';
+    });
+  }
+
   views.register = function () {
     if (!A.available()) return unavailable();
     if (param('plan') === 'pro') rememberChoice('pro');
     if (param('plan') === 'free') forgetChoice();
-    if (pendingChoice() === 'pro') $('ka-plan-hint').hidden = false;
+    var pro = pendingChoice() === 'pro';
+    $('ka-plan-hint').hidden = !pro;
+    steps(0, pro);
+    $('ka-plan-free').addEventListener('click', function () {
+      forgetChoice(); pro = false;
+      $('ka-plan-hint').hidden = true; steps(0, false);
+      notice('Du startest mit Free. Pro kannst du später jederzeit im Konto wählen.', 'ok');
+    });
     passwordHints($('password'), $('pw-rules'));
-    // Newsletter nur anbieten, wenn er eingerichtet ist (freiwillig, nicht vorausgewaehlt).
-    A.get('/v1/plans').then(function (r) { if (r.ok && r.data && r.data.newsletter) $('newsletter-field').hidden = false; });
+    // Newsletter nur anbieten, wenn er eingerichtet ist (freiwillig, nicht vorausgewaehlt). Pro-Preis nur aus GET /v1/plans.
+    A.get('/v1/plans').then(function (r) {
+      if (r.ok && r.data && r.data.newsletter) $('newsletter-field').hidden = false;
+      var p = r.ok && r.data && (r.data.plans || []).filter(function (x) { return x.id === 'pro'; })[0];
+      var month = p && (p.prices || []).filter(function (x) { return x.interval === 'month'; })[0];
+      $('ka-plan-price').textContent = month ? A.money(month.unitAmount, month.currency) + ' / Monat' : '';
+    });
+    $('ka-register-change').addEventListener('click', function () {
+      $('ka-register-done').hidden = true; $('ka-register').hidden = false; steps(0, pro); $('email').focus();
+    });
     $('ka-register').addEventListener('submit', function (e) {
       e.preventDefault();
       var btn = this.querySelector('button[type=submit]');
@@ -156,8 +206,10 @@
         busy(btn, false);
         if (!r.ok) return fail(r);
         $('ka-register').hidden = true;
+        $('ka-plan-hint').hidden = true;
         $('ka-register-done').hidden = false;
         $('ka-register-done').querySelector('[data-email]').textContent = email;
+        steps(1, pro);
         notice('');
       });
     });
