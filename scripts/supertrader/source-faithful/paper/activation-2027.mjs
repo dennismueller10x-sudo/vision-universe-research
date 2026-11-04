@@ -33,7 +33,7 @@ export const DECISION_OPTIONS = Object.freeze({
   // MIN_CLOSED_TRADES / LONGER_WINDOW change evaluation.cc8 or window.minimumSessions = a new protocol version, fixed
   // before 2027-01-01.
   sampleCount: Object.freeze(['COUNT_ONLY', 'MIN_CLOSED_TRADES', 'LONGER_WINDOW']),
-  // data.freezing: where the frozen forward sessions live (cap snapshot/contract.mjs RETENTION.maxGenerations = 3, two
+  // data.freezing: where the frozen forward sessions live (cap snapshot/contract.mjs RETENTION.maxGenerations, 3 before E-P2 and 4 since; two
   // used by DEV and HOLDOUT, the third wanted by FP-ST-01 as well; deleting a generation is locked in the driver and an
   // owner decision, docs/SUPERTRADER_DURABLE_RESEARCH_SNAPSHOTS.md). Smoke generations have their own cap and free
   // nothing here.
@@ -60,9 +60,11 @@ export const SF6_PAPER_ACTIVATION = Object.freeze({
   schema: ACTIVATION_SCHEMA,
   protocol: Object.freeze({ id: SF6_PAPER_PROTOCOL.id, version: SF6_PAPER_PROTOCOL.version, sha256: ACTIVATED_PROTOCOL_SHA256 }),
   // ---- OWNER SWITCH --------------------------------------------------------------------------------------------
-  activated: false,
-  approval: null, // { by, on: 'YYYY-MM-DD', pr: <number> } – required with activated: true
-  decisions: Object.freeze({ sampleCount: null, retention: null, dataSource: null }),
+  // Owner-Freigabe Neustart 04.11.2026 (Plan-Entscheidung 6 und FP-ST-02 Option A, docs/PLAN_NEUSTART_2026-11.md §6);
+  // die Antworten folgen den dokumentierten Empfehlungen (docs/SUPERTRADER_PAPER_2027_ACTIVATION.md §6).
+  activated: true,
+  approval: Object.freeze({ by: 'Owner (Neustart-Freigabe vom 04.11.2026, umgesetzt von Claude, Strang B)', on: '2026-11-04', pr: 1354 }),
+  decisions: Object.freeze({ sampleCount: 'COUNT_ONLY', retention: 'RAISE_CAP_TO_4_FORWARD_GENERATION', dataSource: 'RESEARCH_FORWARD_WINDOW' }),
   // ---------------------------------------------------------------------------------------------------------------
   recording: Object.freeze({
     notBefore: SF6_PAPER_PROTOCOL.window.start, firstSession: '2027-01-04',

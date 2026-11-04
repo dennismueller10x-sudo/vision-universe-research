@@ -198,12 +198,15 @@ test('PAPER-2027-FWD-GUARD: Datenpfad implementiert; Referenzgleichheit gezeigt,
   const pinsOk = { pass: true, rows: [] };
   const on = (over = {}) => ({ ...SF6_PAPER_ACTIVATION, activated: true, approval: { by: 'owner', on: '2026-12-15', pr: 1 }, decisions: { sampleCount: 'COUNT_ONLY', retention: 'RAISE_CAP_TO_4_FORWARD_GENERATION', dataSource: 'RESEARCH_FORWARD_WINDOW' }, ...over });
   assert.equal(FORWARD_DATA_PATHS.RESEARCH_FORWARD_WINDOW.status, 'IMPLEMENTED');
-  assert.equal(SF6_PAPER_ACTIVATION.activated, false, 'Schalter bleibt aus');
+  assert.equal(SF6_PAPER_ACTIVATION.activated, true, 'Schalter an (Owner-Freigabe Neustart 04.11.2026)');
   assert.deepEqual((await activationState({ today: '2027-01-05', activation: on(), pins: pinsOk })).reasons, []);
   const old = await activationState({ today: '2027-01-05', activation: on({ protocol: { ...SF6_PAPER_ACTIVATION.protocol, version: '1.1.0', sha256: SUPERSEDED_1_1_0_SHA256 } }), pins: pinsOk });
   assert.deepEqual(old.reasons, ['PROTOCOL_SUPERSEDED:1.1.0']);
   assert.ok(!(await activationState({ today: '2027-01-05', activation: on(), pins: pinsOk })).reasons.includes('FORWARD_DATA_PATH_NOT_IMPLEMENTED'));
-  assert.deepEqual((await activationState({ today: '2026-11-03' })).reasons, ['NOT_ACTIVATED']);
+  assert.deepEqual((await activationState({ today: '2026-11-03', activation: { ...SF6_PAPER_ACTIVATION, activated: false } })).reasons, ['NOT_ACTIVATED']);
+  // der echte Schalter: vor dem Fenster untätig (grün, kein Eintrag), ab dem Fenster aktiv, ohne einen Blocker
+  assert.deepEqual(await activationState({ today: '2026-11-04' }).then((r) => [r.state, r.reasons]), ['INACTIVE', ['BEFORE_WINDOW_START']]);
+  assert.deepEqual(await activationState({ today: '2027-01-04' }).then((r) => [r.state, r.reasons]), ['ACTIVE', []]);
 });
 
 test('PAPER-2027-FWD-WORKFLOWS: Aufzeichnung im Forward-Fenster nach Fortschreibung; Snapshot-Modi; Codewechsel nur manuell mit Snapshot', () => {
