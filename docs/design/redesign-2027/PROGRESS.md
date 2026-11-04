@@ -40,18 +40,18 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | N5 | Perspektive, Welt und Leiste | in Arbeit | #1346 |  |
 | N6 | Einsteiger und Profi | offen |  |  |
 | C | Bausteine C01–C20 | in Arbeit | #1345 (ersetzt #1331) |  |
-| E01 | Einstieg · Startseite | in Arbeit | Zweig neustart/d-startseite |  |
-| E02 | Mein Bereich · Willkommen | in Arbeit | Zweig neustart/d-mein-bereich |  |
-| E03 | Einstieg · Preise Free/Pro | offen |  |  |
-| E04 | Einstieg · Registrieren mit Pro-Wahl | offen |  |  |
-| E05 | Einstieg · Anmelden | offen |  |  |
-| E06 | Konto · Pro-Bestellung | offen |  |  |
-| E07 | Mein Bereich · Konto | offen |  |  |
-| E08 | Mein Bereich · Mein Dashboard | in Arbeit | Zweig neustart/d-mein-bereich |  |
-| E09 | Mein Bereich · Watchlist-Detail | offen |  |  |
-| E10 | Einstieg · AI Atlas | offen |  |  |
-| E11 | Einstieg · Erster Start | offen |  |  |
-| E12 | Einstieg · Checkout-Ablauf Free → Pro | offen |  |  |
+| E01 | Einstieg · Startseite | in Arbeit | #1366 | Pro-Preis als „Preis ansehen“ (Startseite ohne Abruf) |
+| E02 | Mein Bereich · Willkommen | in Arbeit | #1366 |  |
+| E03 | Einstieg · Preise Free/Pro | in Arbeit | #1366 | Preis aus `/v1/plans`; Zustand „Gerade nicht buchbar“ |
+| E04 | Einstieg · Registrieren mit Pro-Wahl | in Arbeit | #1366 | kein „erneut senden“ (Worker ohne Endpunkt), dafür „Adresse ändern“; gemeinsame Kopfzeile bleibt |
+| E05 | Einstieg · Anmelden | in Arbeit | #1366 | gemeinsame Kopfzeile bleibt |
+| E06 | Konto · Pro-Bestellung | in Arbeit | #1366 | Platzhalter „1,00 €“ entfernt; Pflichttext wortgleich |
+| E07 | Mein Bereich · Konto | in Arbeit | #1366 | eine Seite statt Reiter; Erfahrung bis Z1-Anbindung lokal |
+| E08 | Mein Bereich · Mein Dashboard | in Arbeit | #1366 | Abmelden ins Konto verschoben |
+| E09 | Mein Bereich · Watchlist-Detail | in Arbeit | #1366 | Teil: aufklappbare Karte mit Chart, Faktorbalken und Sheet fehlt |
+| E10 | Einstieg · AI Atlas | in Arbeit | #1366 | Worker vu-ask unverändert; statt Jahresreihe Balken je Kennzahl über die Aktien (Atlas-Engine liefert keine Zeitreihe) |
+| E11 | Einstieg · Erster Start | in Arbeit | #1366 | `/willkommen/start/`, `localStorage vu-start-v1`; Anbindung an `/v1/me` (Z1, #1359) offen: `signale`→`strategien`, `mode`→`experienceLevel`, `onboardedAt:true` |
+| E12 | Einstieg · Checkout-Ablauf Free → Pro | – | #1366 | keine eigene Oberfläche (E03 → E04 → E06) |
 | D01 | Discover · Übersicht | offen |  |  |
 | D02 | Discover · Welten | offen |  |  |
 | D03 | Discover · Thema KI | offen |  |  |
@@ -147,6 +147,7 @@ Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds 
 - Dunkelmodus: `.vu-box--ink` kehrt sich wie in der Vorlage (`--a-ink:#fff`) um; Vorsorge hält ihre Karten dunkel (Abweichung, lime Zahlen sonst unlesbar).
 - Technical-Menü: Screener, Vorlagen (`#/screener?reiter=vorlagen`), Gespeichert (`?reiter=gespeichert`), Chart, Muster (aktiv bei muster und methodik); Menü-Check in `technical/…/browser-qa.mjs` mitziehen.
 - `VUStockNavigator.head`: Option für den Satz zur Firmentätigkeit; `VUChart`: Zonen.
+- `VUUI.bars` kürzt Beschriftungen auf 2 Zeichen (Ticker passen nicht); Tagesbewegungs-/Mini-Chart-Helfer (lokal `mein-dashboard/today.js`); Kopfzeilen-Modus „Zurück · Titel · Aktion“.
 - `VUUI.navcard` mit eigenem Symbol (Fundamental hat lokal nachgebaut).
 - Fundamental-Produktdokument: Urteilsregel F06 in einem Satz (schwächere der beiden Discover-Stufen aus `fundamentals.health`).
 
@@ -168,4 +169,4 @@ Steuerung (Owner, 04.11.2026): Mockups sind verbindlich (Reihenfolge, Abstände,
 | Z4 | Benachrichtigungen | Konto + Erzeuger | „bald“ | Versandweg braucht Owner-Freigabe |
 | Z5 | Screener-Kriterien aus 13F und Supertrader | A + B | „bald“ | |
 | Z6 | Insider-Käufe als Datenquelle | A | „bald“ | |
-| Z7 | AI Atlas visuell (E10-b) | D (E10) | offen | vorhandener Worker `workers/vu-ask` unverändert (Modell, Budget, Grenzen, Beta-Passwort); neu nur die Darstellung mit VU-Bausteinen |
+| Z7 | AI Atlas visuell (E10-b) | D (E10) | in Arbeit (#1366) | vorhandener Worker `workers/vu-ask` unverändert (Modell, Budget, Grenzen, Beta-Passwort); neu nur die Darstellung mit VU-Bausteinen |
