@@ -55,16 +55,19 @@
     hero.parentNode.insertBefore(host, hero);
     var head = N.head(host, {
       ctx: ctx, current: "discover", name: detail.companyName || detail.symbol,
-      exchange: [detail.exchange, detail.sector].filter(Boolean).join(" · "),
+      /* Redesign 2027 (C04): Kürzel · was die Firma macht; ohne Beschreibung Börse und Sektor. */
+      exchange: detail.was && global.VUDiscover && global.VUDiscover.Overview ? detail.was : [detail.exchange, detail.sector].filter(Boolean).join(" · "),
       logo: img && img.getAttribute("src") ? img.getAttribute("src") : false,
       back: back ? { href: back.getAttribute("href"), label: "Aktien entdecken" } : null,
       actions: node("div", "dv2-head-actions")
     });
     if (!head.el) { host.remove(); return null; }
     if (back) back.remove();
-    /* Redesign (D09): Index-Etiketten als eine Zeile unter Name und Merken, nicht im schmalen Namensblock. */
+    /* Redesign 2027 (D09): Index-Etiketten unter dem Namen entfallen; die Indizes stehen mit Gewicht im
+       Abschnitt „In welchen Indizes?“ (discover/ui/overview.js). Ohne Überblick bleiben sie als Zeile. */
     var badges = hero.querySelector(".dx-index-badges"), idRow = head.el.querySelector(".vu-shead-id");
-    if (badges && idRow) idRow.insertAdjacentElement("afterend", badges);
+    if (badges && global.VUDiscover && global.VUDiscover.Overview && global.VUUI) badges.remove();
+    else if (badges && idRow) idRow.insertAdjacentElement("afterend", badges);
     [title, hero.querySelector(".dx-dhero-meta")].forEach(function (n) { if (n) n.remove(); });
     var nav = head.el.querySelector(".vu-shead-nav"), observer = null;
     if (nav && chart) {

@@ -1,0 +1,83 @@
+/* Discover · Aktienseite nach dem Redesign 2027 (D09, discover/ui/overview.js). Eigene Datei außerhalb des
+   View-Budgets der vier Discover-Dateien; geladen nur auf der Aktienroute (#/s/...). */
+/* =====================================================================
+   Redesign 11/2026 (Mockup D09, Bausteine C06/C07): ein Chart für alle Welten -
+   Linie in Schriftfarbe, neongrüne Fläche, neongrüner Endpunkt; Kursbewegung
+   als Pille (▲ neongrün, ▼ schwarz). Werte und Richtung unverändert aus den Renderern.
+   ===================================================================== */
+body.dv2{--v2-chart-up:var(--vu-ink,#000);--v2-chart-down:var(--vu-ink,#000)}
+html:not([data-theme="light"]) body.dv2 .dv2-stock{--discover-up:var(--vu-ink,#fff);--discover-down:var(--vu-ink,#fff)}
+body.dv2 .dv2-stock .dx-art-fill{display:inline}
+body.dv2 .dv2-stock linearGradient stop{stop-color:#c8f531}
+body.dv2 .dv2-stock linearGradient stop[offset="0%"]{stop-opacity:.55}
+body.dv2 .dv2-stock .dx-micro .dx-art-line,body.dv2 .dv2-stock .dx-range-chart .dx-art-line,body.dv2 .dv2-stock .dx-micro--down .dx-art-line{stroke:var(--vu-ink,#000);stroke-width:2.2}
+body.dv2 .dv2-stock .dx-art-node{fill:#c8f531;stroke:var(--vu-ink,#000);stroke-width:2.4}
+body.dv2 .dv2-stock .dx-chart-hero-preis>b{font-weight:900;letter-spacing:-.045em}
+body.dv2 .dv2-stock .dx-chart-hero-preis>.up,body.dv2 .dv2-stock .dx-chart-hero-preis>.down{display:inline-flex;align-items:center;padding:5px 11px;border-radius:999px;font-size:15px;font-weight:800;align-self:center}
+body.dv2 .dv2-stock .dx-chart-hero-preis>.up{background:#c8f531;color:#000}
+body.dv2 .dv2-stock .dx-chart-hero-preis>.down{background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
+/* Index-Etiketten: eine ruhige Zeile kleiner Pillen statt eines Stapels unter dem Namen. */
+body.dv2 .dv2-head .dx-index-badges{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0 0 50px}
+body.dv2 .dv2-head .dx-index-badges>*{min-height:0;padding:3px 8px;border:0;border-radius:999px;background:var(--vu-card,#f4f4f4);color:var(--vu-ink,#000);font-size:10.5px;font-weight:800;letter-spacing:.02em}
+
+/* =====================================================================
+   Redesign 2027 · D09 Überblick (discover/ui/overview.js, Mockup d09-a).
+   Bausteine aus assets/vu-ui.css; hier nur die Anordnung der Abschnitte.
+   ===================================================================== */
+body.dv2 .dv3-overview{margin:16px 0 0}
+body.dv2 .dv3-sec{margin:0}
+body.dv2 .dv3-satz{padding:16px}
+body.dv2 .dv3-satz-t{margin:6px 0 0;font-size:23px;font-weight:800;letter-spacing:-.03em;line-height:1.1;text-wrap:balance}
+body.dv2 .dv3-satz-z{display:flex;align-items:center;gap:10px;margin-top:12px}
+body.dv2 .dv3-satz-z .vu-sm{font-weight:700}
+body.dv2 .dv3-big{display:inline-flex;align-items:center;gap:6px;flex:none;border-radius:999px;padding:6px 16px;font-size:30px;font-weight:900;letter-spacing:-.04em;font-variant-numeric:tabular-nums;background:var(--vu-lime);color:#000}
+body.dv2 .dv3-big.is-down{background:var(--vu-ink);color:var(--vu-inv)}body.dv2 .dv3-big.is-flat{background:var(--vu-hair);color:var(--vu-ink)}
+body.dv2 .dv3-big span{font-size:.7em}
+body.dv2 .dv3-zeit{padding:12px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+body.dv2 .dv3-spanne{padding:16px}
+body.dv2 .dv3-spanne-bar{position:relative;height:16px;margin-top:4px}
+body.dv2 .dv3-spanne-bar:before{content:"";position:absolute;inset:4px 0;border-radius:999px;background:var(--vu-hair)}
+body.dv2 .dv3-spanne-bar i{position:absolute;left:0;top:4px;height:8px;border-radius:999px;background:var(--vu-lime)}
+body.dv2 .dv3-spanne-bar b{position:absolute;top:-1px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--vu-ink);box-shadow:0 0 0 3px var(--vu-card)}
+body.dv2 .dv3-spanne-l{display:flex;justify-content:space-between;margin-top:10px;font-size:11.5px;font-weight:700}
+body.dv2 .dv3-spanne-l b{font-size:14px;font-variant-numeric:tabular-nums}
+body.dv2 .dv3-blick{display:flex;align-items:center;gap:12px;padding:11px 12px;text-decoration:none}
+body.dv2 .dv3-blick-t{flex:1;min-width:0}body.dv2 .dv3-blick-t b{display:block;font-size:13px}body.dv2 .dv3-blick-t span{display:block;font-weight:700}
+body.dv2 .dv3-firma{padding:16px}
+body.dv2 .dv3-firma-t{margin:0;font-size:16px;font-weight:700;line-height:1.35}
+body.dv2 .dv3-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+body.dv2 .dv3-chips .vu-chip{min-height:30px;font-size:12.5px;background:transparent}
+body.dv2 .dv3-chips .vu-chip--lime{background:var(--vu-lime)}
+body.dv2 .dv3-vonbis{display:flex;align-items:flex-end;gap:12px;margin-top:14px}
+body.dv2 .dv3-vonbis>span{margin-bottom:4px;font-size:22px;font-weight:900}
+body.dv2 .dv3-von{font-size:20px;font-weight:800;color:var(--vu-mute);font-variant-numeric:tabular-nums}
+body.dv2 .dv3-bis{font-size:26px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+body.dv2 .dv3-kern{margin-top:10px;padding:12px 14px}
+body.dv2 .dv3-checks{list-style:none;margin:10px 0 0;padding:0}
+body.dv2 .dv3-checks li{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--vu-hair);font-size:13px;font-weight:700}
+body.dv2 .dv3-checks li:before{content:"✓";flex:none;font-weight:900}
+body.dv2 .dv3-gesund{padding:12px}body.dv2 .dv3-gesund>b{display:block;margin-top:2px}
+body.dv2 .dv3-teuer{padding:16px}
+body.dv2 .dv3-teuer-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+body.dv2 .dv3-kgv{display:grid;grid-template-columns:76px 1fr 40px;gap:8px;align-items:center;margin-top:14px;font-size:13px;font-weight:700}
+body.dv2 .dv3-kgv>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.dv2 .dv3-kgv .vu-num{text-align:right}
+body.dv2 .dv3-markt>i{background:var(--vu-mute)}
+body.dv2 .dv3-liste{padding:4px 14px}
+body.dv2 .dv3-waage,body.dv2 .dv3-index{padding:10px 0;border-top:1px solid var(--vu-hair)}
+body.dv2 .dv3-liste>:first-child{border-top:0}
+body.dv2 .dv3-waage{display:flex;gap:10px}body.dv2 .dv3-waage b,body.dv2 .dv3-waage span{display:block}
+body.dv2 .dv3-mark{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:900;background:var(--vu-lime);color:#000}
+body.dv2 .dv3-mark.is-minus{background:var(--vu-ink);color:var(--vu-inv)}
+body.dv2 .dv3-index-h{display:flex;justify-content:space-between;gap:8px}
+body.dv2 .dv3-rang{display:flex;align-items:center;gap:10px;min-height:44px;padding:8px 12px;border-radius:14px;background:var(--vu-card);color:var(--vu-ink);text-decoration:none}
+body.dv2 .dv3-rang>.vu-num{width:40px;font-size:17px;font-weight:800}body.dv2 .dv3-rang>b{flex:1}
+body.dv2 .dv3-welt{display:grid;gap:6px;padding:11px;text-decoration:none}
+body.dv2 .dv3-welt b{font-size:13px}
+body.dv2 .dv3-profi{margin:24px 0 0;border-top:1px solid var(--vu-hair)}
+body.dv2 .dv3-profi>summary{display:flex;align-items:center;gap:8px;min-height:52px;font-size:17px;font-weight:800;cursor:pointer;list-style:none}
+body.dv2 .dv3-profi>summary::-webkit-details-marker{display:none}
+body.dv2 .dv3-profi>summary:after{content:"";width:8px;height:8px;margin-left:auto;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg)}
+body.dv2 .dv3-profi[open]>summary:after{transform:rotate(225deg)}
+body.dv2 .dv3-zeit .vu-sm{white-space:nowrap}
+body.dv2 .dv2-stock:has(.dv3-overview) .dx-werkzeuge{display:none}

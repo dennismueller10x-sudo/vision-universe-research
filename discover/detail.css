@@ -356,22 +356,3 @@ body.dv2 .dv2-dm dd>p,body.dv2 .dv2-dm dd>div{margin:0;padding:0;font-size:12.5p
 /* Dieselbe Aktie in ... (ui/stock-head.js#worlds): nur belegte Welten. */
 body.dv2 .dv2-worlds{margin:0 0 24px}body.dv2 .dv2-worlds ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}body.dv2 .dv2-worlds a{display:flex;flex-direction:column;gap:2px;min-height:44px;padding:12px 14px;border:1px solid var(--discover-line);border-radius:12px;color:var(--discover-text);text-decoration:none}body.dv2 .dv2-worlds a span{font-size:13px;color:var(--discover-muted)}
 
-/* =====================================================================
-   Redesign 11/2026 (Mockup D09, Bausteine C06/C07): ein Chart für alle Welten -
-   Linie in Schriftfarbe, neongrüne Fläche, neongrüner Endpunkt; Kursbewegung
-   als Pille (▲ neongrün, ▼ schwarz). Werte und Richtung unverändert aus den Renderern.
-   ===================================================================== */
-body.dv2{--v2-chart-up:var(--vu-ink,#000);--v2-chart-down:var(--vu-ink,#000)}
-html:not([data-theme="light"]) body.dv2 .dv2-stock{--discover-up:var(--vu-ink,#fff);--discover-down:var(--vu-ink,#fff)}
-body.dv2 .dv2-stock .dx-art-fill{display:inline}
-body.dv2 .dv2-stock linearGradient stop{stop-color:#c8f531}
-body.dv2 .dv2-stock linearGradient stop[offset="0%"]{stop-opacity:.55}
-body.dv2 .dv2-stock .dx-micro .dx-art-line,body.dv2 .dv2-stock .dx-range-chart .dx-art-line,body.dv2 .dv2-stock .dx-micro--down .dx-art-line{stroke:var(--vu-ink,#000);stroke-width:2.2}
-body.dv2 .dv2-stock .dx-art-node{fill:#c8f531;stroke:var(--vu-ink,#000);stroke-width:2.4}
-body.dv2 .dv2-stock .dx-chart-hero-preis>b{font-weight:900;letter-spacing:-.045em}
-body.dv2 .dv2-stock .dx-chart-hero-preis>.up,body.dv2 .dv2-stock .dx-chart-hero-preis>.down{display:inline-flex;align-items:center;padding:5px 11px;border-radius:999px;font-size:15px;font-weight:800;align-self:center}
-body.dv2 .dv2-stock .dx-chart-hero-preis>.up{background:#c8f531;color:#000}
-body.dv2 .dv2-stock .dx-chart-hero-preis>.down{background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
-/* Index-Etiketten: eine ruhige Zeile kleiner Pillen statt eines Stapels unter dem Namen. */
-body.dv2 .dv2-head .dx-index-badges{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0 0 50px}
-body.dv2 .dv2-head .dx-index-badges>*{min-height:0;padding:3px 8px;border:0;border-radius:999px;background:var(--vu-card,#f4f4f4);color:var(--vu-ink,#000);font-size:10.5px;font-weight:800;letter-spacing:.02em}
