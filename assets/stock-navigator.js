@@ -28,14 +28,14 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (SC, root) {
   "use strict";
 
-  var VERSION = "stock-navigator-3.0.0";
+  var VERSION = "stock-navigator-4.0.0";
   var SPRITE = "/assets/product-icons.svg#";
   /* Reihenfolge = StockContext.PRODUCTS. icon: Symbol im Sprite. "technik" ist das Chartbild (/elliott/#/<T>), "technical" die Produktwelt Technical. */
   var MODULES = {
     discover: { label: "Discover", icon: "discover", why: "Anlass, Kurs und Unternehmen im Überblick" },
     quant: { label: "Quant", icon: "quant", why: "Eigenschaften, Setup und Belege" },
     technical: { label: "Tech­nical", plain: "Technical", icon: "technical", why: "Chartanalyse, Indikatoren und Formationen" },
-    technik: { label: "Chartbild", icon: "chartbild", why: "Kursstruktur, Marken und Szenario" },
+    technik: { label: "Wellen", plain: "Elliott", icon: "elliott", why: "Kursstruktur, Wellen und Szenario" },
     elliott: { label: "Elliott", icon: "elliott", why: "Wellenzählung mit Gegenszenario" },
     supertrader: { label: "Super­trader", plain: "Supertrader", icon: "supertrader", why: "Regelcheck je Strategie" },
     fundamental: { label: "Funda­mental", plain: "Fundamental", icon: "fundamental", why: "Umsatz, Gewinn, Cashflow und Bilanz je Geschäftsjahr" },
@@ -43,9 +43,12 @@
   };
   /* Redesign 11/2026 (Mockup N4/N5, Baustein C05): Perspektiven statt Produktnamen, eine wischbare Zeile.
      Reihenfolge wie im Mockup; jede Perspektive gehoert zu genau einer Welt. */
-  var PERSPECTIVE = { discover: "Überblick", technical: "Chart", fundamental: "Zahlen", quant: "Faktoren", supertrader: "Methoden", elliott: "Wellen", technik: "Chartbild", hedgefonds: "Investoren" };
-  var ORDER = ["discover", "technical", "fundamental", "quant", "supertrader", "elliott", "technik", "hedgefonds"];
-  function ordered(states) { return states.slice().sort(function (a, b) { return ORDER.indexOf(a.product) - ORDER.indexOf(b.product); }); }
+  var PERSPECTIVE = { discover: "Überblick", technical: "Chart", fundamental: "Zahlen", quant: "Faktoren", supertrader: "Methoden", elliott: "Wellen", technik: "Wellen", hedgefonds: "Investoren" };
+  /* Redesign 2027 (N5): sieben Perspektiven. „Wellen“ ist das Bild unter /elliott/#/<T> (Modul technik); die
+     Profi-Ansicht desselben Bildes (Modul elliott, ?ansicht=profi) ist keine eigene Perspektive mehr. */
+  var ORDER = ["discover", "technical", "fundamental", "quant", "supertrader", "technik", "hedgefonds"];
+  function ordered(states) { return states.filter(function (s) { return ORDER.indexOf(s.product) >= 0; }).sort(function (a, b) { return ORDER.indexOf(a.product) - ORDER.indexOf(b.product); }); }
+  function perspectiveOf(current) { return current === "elliott" ? "technik" : current; }
   var STATE_TEXT = { available: "verfügbar", unavailable: "keine Abdeckung", planned: "In Planung", unknown: "" };
   var TICK = { available: "✓", unavailable: "–", planned: "…", unknown: "" };
 
@@ -87,7 +90,8 @@
   /** HTML des Navigators. states: StockContext.availability(ctx, manifest). */
   function html(ctx, states, current, panelId) {
     void panelId;
-    return '<ul class="vu-snav-list">' + ordered(states).map(function (st) { return "<li>" + item(st, ctx, current) + "</li>"; }).join("") + "</ul>" +
+    var cur = perspectiveOf(current);
+    return '<ul class="vu-snav-list">' + ordered(states).map(function (st) { return "<li>" + item(st, ctx, cur) + "</li>"; }).join("") + "</ul>" +
       '<p class="vu-snav-note" role="status" aria-live="polite"></p>';
   }
 

@@ -18,11 +18,11 @@ test("Perspektiven · Reihenfolge wie im Redesign (N5), aktuelle Welt; Fundament
   const c = chips(h);
   const mod = (a) => /data-module="(\w+)"/.exec(a)[1];
   const at = (list, id) => list.find((a) => mod(a) === id);
-  assert.equal(c.length, 8);
-  assert.deepEqual(c.map(mod), ["discover", "technical", "fundamental", "quant", "supertrader", "elliott", "technik", "hedgefonds"]);
-  assert.deepEqual([...SC.PRODUCTS].sort(), c.map(mod).sort(), "jede Welt genau einmal");
+  assert.equal(c.length, 7);
+  assert.deepEqual(c.map(mod), ["discover", "technical", "fundamental", "quant", "supertrader", "technik", "hedgefonds"]);
+  assert.deepEqual([...SC.PRODUCTS].filter((p) => p !== "elliott").sort(), c.map(mod).sort(), "jede Perspektive genau einmal");
   assert.match(at(c, "quant"), /aria-current="page"/);
-  assert.deepEqual([...h.matchAll(/<span>([^<]+)<\/span><span class="vu-snav-sr">/g)].map((m) => m[1]), ["Überblick", "Chart", "Zahlen", "Faktoren", "Methoden", "Wellen", "Chartbild", "Investoren"]);
+  assert.deepEqual([...h.matchAll(/<span>([^<]+)<\/span><span class="vu-snav-sr">/g)].map((m) => m[1]), ["Überblick", "Chart", "Zahlen", "Faktoren", "Methoden", "Wellen", "Investoren"]);
   /* Ohne Manifest: Fundamental neutral mit Link wie die anderen Welten, nicht mehr "In Planung". */
   assert.match(at(c, "fundamental"), /href="\/fundamental\/#\/NVDA" /);
   assert.match(at(c, "fundamental"), /data-state="unknown"/);
@@ -36,6 +36,14 @@ test("Perspektiven · Reihenfolge wie im Redesign (N5), aktuelle Welt; Fundament
   /* Ohne Beleg: neutral, Link bleibt. */
   assert.match(at(c, "supertrader"), /href="\/supertrader\/stock\/NVDA\/" /);
   assert.match(at(c, "supertrader"), /data-state="unknown"/);
+});
+
+test("Perspektiven · Elliott-Profiansicht aktiviert „Wellen“ (/elliott/#/<T>)", () => {
+  const ctx = SC.fromUs("NVDA");
+  const c = chips(NAV.html(ctx, SC.availability(ctx), "elliott"));
+  const w = c.find((a) => /data-module="technik"/.test(a));
+  assert.match(w, /aria-current="page"/);
+  assert.match(w, /href="\/elliott\/#\/NVDA"/);
 });
 
 test("Kacheln · Europa: nur Discover verlinkt, die anderen erklaeren die Region", () => {
