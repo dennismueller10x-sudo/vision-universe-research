@@ -88,14 +88,14 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | W03 | Elliott · Aufwärts | in Arbeit | #1356 | zusätzlicher Filter `rolle=motiv` |
 | W04 | Elliott · Neu und verändert | in Arbeit | #1356 | Schalter „Melden“ sichtbar, aus: kommt mit Z4 (Owner-Freigabe) |
 | W05 | Elliott · NVIDIA in Wellen | in Arbeit | #1356 | Teil: Reihenfolge, Ausblick schwarz mit C08, Profi-Knopf PRO. Offen: Chart mit Unterstützung/Widerstand statt Szenario-Zonen, kompakte Projektionskarte, kurze Profi-Ansicht |
-| ST01 | Supertrader · Übersicht | offen |  |  |
-| ST02 | Supertrader · Methoden | offen |  |  |
-| ST03 | Supertrader · Methode Minervini VCP | offen |  |  |
-| ST04 | Supertrader · Signale | offen |  |  |
-| ST05 | Supertrader · Backtests | offen |  |  |
-| ST06 | Supertrader · Quellen | offen |  |  |
-| ST07 | Supertrader · Hausstrategie | offen |  |  |
-| ST08 | Supertrader · NVIDIA (Perspektive Methoden) | offen |  |  |
+| ST01 | Supertrader · Übersicht | in Arbeit | #1361 | „Neu erkannt heute“ heißt „Heute durchgerechnet“ (Stufe-3-Treffer; kein sauberer Vortagsvergleich in den Daten) |
+| ST02 | Supertrader · Methoden | in Arbeit | #1361 | Karten führen in die bisherige Kandidatenansicht `?sf=Cxx` (noch alter Stil) |
+| ST03 | Supertrader · Methode Minervini VCP | in Arbeit | #1361 | Teil: fertig für 5 Musterdepot-Methoden; bei 52W, CAN SLIM, Piotroski, Greenblatt, Namenskarten nur Kopf + „Wie belastbar?“ |
+| ST04 | Supertrader · Signale | in Arbeit | #1361 | „Neu am letzten Handelstag“; vor Einstieg Leiste Grenze · Kurs · Marke |
+| ST05 | Supertrader · Backtests | in Arbeit | #1361 | „0 von 9“ aktive Regelversionen; Pilot mit S&P 500 gestrichelt, „Forschung, nicht zertifiziert“ |
+| ST06 | Supertrader · Quellen | in Arbeit | #1361 | echte Zahlen (59 Quellen, 53 mit Adresse, 10 im Volltext) |
+| ST07 | Supertrader · Hausstrategie | in Arbeit | #1361 |  |
+| ST08 | Supertrader · NVIDIA (Perspektive Methoden) | in Arbeit | #1361 | Antwort aus Daten („1 Methode erkennt NVIDIA“); Technical-Abschnitt entfällt (Perspektive Chart) |
 | ST-Z | Supertrader · Zustände in Alltagssprache | offen |  |  |
 | H01 | Hedgefonds · Übersicht | in Arbeit | #1357 | Suche bleibt echte Hedgefonds-Suche (ohne Atlas-Knopf) |
 | H02 | Hedgefonds · Investoren | in Arbeit | #1357 | 12 Stil-Chips aus den Daten; Sortierung im eigenen Sheet |
@@ -141,6 +141,7 @@ Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds 
 - Erledigt in #1351: Sheets (C16) liegen über Kopfzeile und Dock (`z-index`), Hedgefonds-Ausnahme kann entfallen.
 - Bausteine zusätzlich als DOM-Knoten (Screener hat C07/C08/C09/navcard/HUD lokal nachgebaut).
 - Einbettbare Aktienseite für S03-b; Symbol-Filter in der Screener-Engine für S05.
+- `VUChart`: Marken (①②), Zonen-Töne, Vergleichslinie (Supertrader zeichnet sie selbst); `VUUI.sheet` mit Schließen-Knopf; `VUUI` Suchfeld zum Tippen.
 - `VUUI.navcard` mit eigenem Symbol (Fundamental hat lokal nachgebaut).
 - Fundamental-Produktdokument: Urteilsregel F06 in einem Satz (schwächere der beiden Discover-Stufen aus `fundamentals.health`).
 
