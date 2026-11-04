@@ -128,11 +128,12 @@
   var MODULES = [];
 
   MODULES.push({id: 'greeting', render: function () {
+    // Redesign (Mockup E08): Titel „Watchlist“, Tarif-Marke „Free · 5 von 500“; die Begruessung steht auf /willkommen/.
     var me = ctx.me || {}, name = me.profile && me.profile.displayName;
-    $('md-hello').textContent = greeting(new Date().getHours()) + (name ? ', ' + name : '');
-    var plan = (me.entitlements && me.entitlements.plan_id) || 'free';
-    $('md-plan').textContent = {free: 'Free', plus: 'Plus', pro: 'Pro'}[plan] || plan;
-    $('md-plan').setAttribute('data-tone', plan === 'free' ? 'muted' : '');
+    $('md-hello').setAttribute('data-greeting', greeting(new Date().getHours()) + (name ? ', ' + name : ''));
+    var plan = (me.entitlements && me.entitlements.plan_id) || 'free', limit = ctx.limits && ctx.limits.items;
+    $('md-plan').textContent = ({free: 'Free', plus: 'Plus', pro: 'Pro'}[plan] || plan) + ' · ' + ctx.items.length + (limit ? ' von ' + limit : '');
+    $('md-plan').hidden = false;
     $('md-sub').hidden = false;
   }});
 
@@ -145,6 +146,18 @@
     $('md-watch-all').hidden = !all.length;
     $('md-watch-fine').hidden = !all.length;
     all.slice(0, SHOWN).forEach(function (v) { list.appendChild(row(v)); });
+    // Schwarze Tageskarte: Anzahl, Schlussdatum, Kürzel. Eine Tagesbewegung liefert die Watchlist-Übersicht
+    // (core/watchlist-view.js) heute nicht - deshalb steht hier keine „im Plus“-Zahl.
+    var priced = all.filter(function (v) { return v.price && v.price.date; }), day = $('md-day');
+    day.hidden = !all.length;
+    if (all.length) {
+      var last = priced.map(function (v) { return v.price.date; }).sort().pop();
+      $('md-day-date').textContent = last ? 'Schluss ' + fmtDate(last) : 'Noch kein Schlusskurs';
+      $('md-day-n').textContent = String(all.length);
+      $('md-day-unit').textContent = all.length === 1 ? 'Aktie' : 'Aktien';
+      var chips = $('md-day-chips'); chips.textContent = '';
+      all.slice(0, 6).forEach(function (v) { chips.appendChild(el('li', {text: v.ticker || '–'})); });
+    }
     if (all.length > SHOWN) {
       list.appendChild(el('li', {className: 'md-row md-row--more'}, [el('a', {className: 'ka-link', href: '/konto/watchlist/',
         text: 'Alle ' + all.length + ' Aktien anzeigen'})]));
@@ -308,5 +321,15 @@
     });
   }
 
-  if (typeof document !== 'undefined') start();
+  /* Platz 2 der Leiste „Mein Bereich“: #/gespeichert zeigt das lokal Gemerkte und den Schnellzugriff. */
+  function syncView() {
+    var saved = /^#\/gespeichert/.test(root.location.hash || '');
+    document.documentElement.setAttribute('data-md-view', saved ? 'gespeichert' : 'watchlist');
+    $('md-hello').textContent = saved ? 'Gespeichert' : 'Watchlist';
+  }
+  if (typeof document !== 'undefined') {
+    syncView(); root.addEventListener('hashchange', syncView);
+    if (root.VUNavigation) root.VUNavigation.dock({});
+    start();
+  }
 })(typeof globalThis !== 'undefined' ? globalThis : this);

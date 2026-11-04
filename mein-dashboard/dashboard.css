@@ -68,3 +68,30 @@ a.md-row-main:hover .md-name b{text-decoration:underline;text-underline-offset:3
 .md-logout{margin-left:auto;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--vu-line-strong);background:transparent;
   color:var(--vu-text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 @media(prefers-reduced-motion:reduce){.md-tile{transition:none}}
+
+/* ===== Redesign 11/2026 (Mockup E08): Platz 1 „Watchlist“ und Platz 2 „Gespeichert“ der Leiste „Mein Bereich“. */
+.md-titlerow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.md-title{font-size:34px;font-weight:900;letter-spacing:-.045em;margin:0}
+.md-plan{flex:none;padding:6px 12px;border-radius:999px;background:var(--vu-card);font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.md-card{background:transparent;border:0;padding:0}
+@media(min-width:761px){.md-card{padding:0}}
+.md-day{margin:0 0 14px;padding:16px;border-radius:20px;background:var(--vu-ink);color:var(--vu-inv)}
+.md-day-date{margin:0;font-size:12px;font-weight:700;opacity:.7}
+.md-day-big{margin:4px 0 0;font-size:18px;font-weight:800}.md-day-big b{font-size:40px;font-weight:900;letter-spacing:-.05em;color:var(--vu-lime)}
+:root[data-theme=dark] .md-day-big b{color:#000}
+.md-day-sub{margin:2px 0 0;font-size:12.5px;opacity:.7}
+.md-day-chips{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.md-day-chips li{padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.12);font-size:12px;font-weight:800}
+:root[data-theme=dark] .md-day-chips li{background:rgba(0,0,0,.1)}
+.md-ticker{border:0;background:var(--vu-ink);color:var(--vu-inv);border-radius:12px;width:42px;height:42px;font-weight:900}
+.md-row{border-top:1px solid var(--vu-hair)}
+.md-navcard{display:flex;align-items:center;gap:12px;min-height:56px;margin-top:10px;padding:14px;border-radius:20px;background:var(--vu-card);color:var(--vu-ink);text-decoration:none}
+.md-navcard-text{flex:1;min-width:0}.md-navcard-text b{display:block;font-weight:800}.md-navcard-text span{display:block;font-size:13px;color:var(--vu-mute)}
+.md-navcard:focus-visible{outline:2px solid var(--vu-focus);outline-offset:2px}
+.md-foot a{display:none}
+.md-source{border:0;background:var(--vu-card);border-radius:18px}
+/* Ansichten: Watchlist (Standard) und Gespeichert (#/gespeichert) */
+html[data-md-view=gespeichert] .md-watch{display:none}
+html[data-md-view=watchlist] .md-local,html[data-md-view=watchlist] .md-shortcuts{display:none}
+@media(min-width:900px){.md-grid{grid-template-columns:minmax(0,720px)}.md-watch{grid-row:auto}}
+.md-watch .md-sec-head{display:none}

@@ -20,13 +20,13 @@
 <body class="wk-body"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <a class="wk-skip" href="#wk-main">Zum Inhalt</a>
 <main id="wk-main" class="wk" tabindex="-1">
-  <h1 class="wk-visually-hidden">Willkommen bei Vision Universe</h1>
+  <header class="wk-top"><p class="wk-date" id="wk-date"></p><h1 class="wk-title" id="wk-title">Willkommen bei Vision Universe</h1></header>
   <section class="wk-hero" aria-labelledby="wk-hero-title">
     <button id="wk-hero-play" class="wk-hero-card" type="button" aria-describedby="wk-hero-sub">
       <span class="wk-hero-img" id="wk-hero-img" aria-hidden="true"></span>
       <span class="wk-hero-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
       <span class="wk-hero-copy">
-        <span class="wk-eyebrow" id="wk-hello">Hallo</span>
+        <span class="wk-eyebrow" id="wk-hello">Start</span>
         <span class="wk-hero-title" id="wk-hero-title">Ein kurzer Einblick in deine Möglichkeiten.</span>
         <span class="wk-hero-sub" id="wk-hero-sub">Vision Universe in 30&nbsp;Sekunden.</span>
       </span>
@@ -35,17 +35,14 @@
   </section>
 
   <p class="wk-flash" id="wk-flash" role="status" hidden></p>
-  <nav class="wk-sec wk-mine" aria-label="Mein Bereich">
-    <a class="wk-mine-main" href="/mein-dashboard/" id="wk-dashboard">
-      <span class="wk-mine-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg></span>
-      <span class="wk-mine-copy"><strong>Mein Dashboard</strong><span>Watchlist und gespeicherte Aktien</span></span>
-      <svg class="wk-mine-go" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </a>
-    <a class="wk-mine-account" href="/konto/" id="wk-account">Konto</a>
-  </nav>
+  <a class="wk-goal" id="wk-goal" href="/discover/#/s/US_REAL/NVDA">
+    <span class="wk-goal-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg></span>
+    <span class="wk-goal-copy"><small id="wk-goal-label">Dein Ziel: Eine Aktie verstehen</small><strong id="wk-goal-step">Starte mit NVIDIA im Überblick</strong></span>
+    <svg class="wk-goal-go" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
 
   <section class="wk-sec" aria-labelledby="wk-hl-title">
-    <div class="wk-head"><h2 id="wk-hl-title">Weitere Videos</h2><button class="wk-link" id="wk-hl-all" type="button">Alle ansehen<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    <div class="wk-head"><h2 id="wk-hl-title">Kurz erklärt in 30 Sekunden</h2><button class="wk-link" id="wk-hl-all" type="button">Alle ansehen<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
     <div class="wk-hl-wrap">
       <div id="wk-highlights" class="wk-highlights" aria-busy="true"></div>
       <button class="wk-hl-more" id="wk-hl-more" type="button" aria-label="Weitere Videos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -53,7 +50,7 @@
   </section>
 
   <section class="wk-sec" aria-labelledby="wk-products-title">
-    <div class="wk-head"><h2 id="wk-products-title">Deine Produktwelten</h2><button class="wk-link" id="wk-products-all" type="button">Alle Produkte<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    <div class="wk-head"><h2 id="wk-products-title">Deine Welten</h2><button class="wk-link" id="wk-products-all" type="button">Menü<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
     <nav id="wk-products" aria-labelledby="wk-products-title"></nav>
   </section>
 
@@ -63,6 +60,8 @@
   </section>
 </main>
 <noscript><p style="padding:24px">Die Willkommensseite benötigt JavaScript.</p></noscript>
+<script src="/konto/config.js"></script>
+<script src="/konto/account-api.js"></script>
 <script src="/willkommen/app.js"></script>
 </body>
 </html>
