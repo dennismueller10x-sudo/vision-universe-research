@@ -21,7 +21,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | 2 | #1345 | Schritt 1+2: Bausteine C04–C20 als eigene Komponente (`assets/vu-ui.css/.js`), C06 (`assets/vu-chart.js` 2.1.0), Musterseite `/status/bausteine/`, Regel 1, Shell aus #1331 ohne Datenläufe | A3, C, N1–N3 | offen |
 | 3 | #1346 | Schritt 3: Aktienkopf C04 + Perspektiven-Leiste C05 (sieben Perspektiven) für alle Welten | N4, N5 | offen |
 | 4 | #1350 | Discover D09: Aktienseite Überblick (discover/ui/overview.js), Analyse unter „Alle Kennzahlen“ PRO | D09 | offen |
-| 5 | #1351 | Quant: Startseite Q01, Screener Q02, Strategien Q03, Aktien Q04, Aktienseite Q07 (Teil 1), Regel 1 in Quant | Q01–Q04, Q07 | offen |
+| 5 | #1351 | Quant: Startseite Q01, Screener Q02, Strategien Q03, Aktien Q04, Methodik Q05, Aktienseite Q07 (Teil 1), Regel 1 in Quant | Q01–Q05, Q07 | offen |
 
 Übernommene Zweige der früheren Sitzung (Stand `docs/neustart/D-frontend.md` im Zweig `neustart/d-shell-dock`):
 `neustart/d-startseite` (E01), `neustart/d-mein-bereich` (E02, E08), `neustart/d-aktienkopf` (C04, C05, C06), `neustart/d-discover-aktie` (D09).
@@ -66,7 +66,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | Q02 | Quant · Screener | in Arbeit | #1351 | Einfach-Modus nach Mockup; „Eigene Bedingung“ klappt inline auf statt Sheet; Profi-Modus (dunkel, Regler, Tabelle) noch alt |
 | Q03 | Quant · Strategien | in Arbeit | #1351 | Liste nach Mockup (q03-a); Detail (q03-b) noch alt |
 | Q04 | Quant · Aktien | in Arbeit | #1351 | Aktienzeilen ohne Kurs/Mini-Chart (keine Kursabfrage je Zeile auf dieser Seite) |
-| Q05 | Quant · Methodik | offen |  |  |
+| Q05 | Quant · Methodik | in Arbeit | #1351 | Startseite der Methodik nach Mockup; Gewichte je Frage nicht als feste Zahl (stehen unter „Gewichtung“), Unterseiten noch alt |
 | Q06 | Quant · Technische Lagen | offen |  |  |
 | Q07 | Quant · NVIDIA (Aktienseite, Perspektive Faktoren) | in Arbeit | #1351 | Teil 1: lange Seite, Überblick, Fragen, Pillen. Offen: Kopf in $ + ≈ €, Herz statt „Beobachten“, Quant-Chart → C06, Schritt 4–6 nach Mockup, Beleg-Sheet |
 | Q08 | Quant · NVIDIA Zahlen (Perspektive Zahlen) | offen |  |  |
