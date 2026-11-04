@@ -38,7 +38,7 @@
 .vu-shead-value{font-size:34px;line-height:1;font-weight:900;letter-spacing:-.045em;white-space:nowrap;font-variant-numeric:tabular-nums}
 /* C07 Kursbewegung: neongrün ▲ für Plus, schwarz ▼ für Minus. */
 .vu-shead-change{display:inline-flex;align-items:center;gap:3px;padding:5px 11px;border-radius:999px;background:var(--vu-hair,var(--vu-line));color:var(--vu-ink,var(--vu-text));font-size:15px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
-.vu-shead-change small{font-size:12px;font-weight:650;opacity:.75}
+.vu-shead-change small{font-size:12px;font-weight:650}
 .vu-shead-price[data-direction=up] .vu-shead-change{background:var(--vu-lime,#c8f531);color:#000}
 .vu-shead-price[data-direction=down] .vu-shead-change{background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
 .vu-shead-when{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--vu-mute,var(--vu-muted));text-align:right}
@@ -53,5 +53,5 @@
  .vu-shead--compact .vu-shead-name{font-size:17px}
  .vu-shead--compact .vu-shead-value{font-size:30px}
 }
-.vu-shead-price .vu-shead-change small{color:inherit}
+.vu-shead .vu-shead-price .vu-shead-change small,.vu-shead-price .vu-shead-change small{color:inherit}
 .vu-snav .vu-snav-chip>svg.vu-snav-glyph{width:15px!important;height:15px!important;max-width:none;flex:none}
