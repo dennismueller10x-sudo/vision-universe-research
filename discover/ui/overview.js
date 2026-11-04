@@ -22,14 +22,12 @@
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function num(v, d) { return isNum(v) ? v.toLocaleString("de-DE", { minimumFractionDigits: d == null ? 1 : d, maximumFractionDigits: d == null ? 1 : d }) : "–"; }
   function pct(v, d) { return isNum(v) ? (v > 0 ? "+" : v < 0 ? "−" : "") + num(Math.abs(v), d) + " %" : "–"; }
-  /** US-Dollar in Mrd./Bio. (Fundamentalzahlen in Dollar wie die SEC-Quelle; D09 „Entfällt“). */
+  /** Beträge in Dollar wie die SEC-Quelle (D09 „Entfällt“), formatiert über den zentralen Formatter
+      (quant/engines/fx/money-format.js); ohne ihn nur die Zahl, nie ein fest verdrahtetes Zeichen. */
   function usd(v) {
     if (!isNum(v)) return "–";
-    var a = Math.abs(v);
-    if (a >= 1e12) return num(v / 1e12, 2) + " Bio. $";
-    if (a >= 1e9) return num(v / 1e9, 1) + " Mrd. $";
-    if (a >= 1e6) return num(v / 1e6, 0) + " Mio. $";
-    return num(v, 0) + " $";
+    var F = global.VUFx && global.VUFx.Format;
+    return F && F.formatCompact ? F.formatCompact(v, "USD", { numberLocale: "de-DE" }) : num(v, 0);
   }
   function U() { return global.VUUI; }
   function frag(html) { var t = document.createElement("template"); t.innerHTML = html; return t.content; }
