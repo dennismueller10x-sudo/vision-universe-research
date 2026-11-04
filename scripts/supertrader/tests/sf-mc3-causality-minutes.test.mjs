@@ -16,7 +16,10 @@
 //    Zukunft greifender Entscheider wird erkannt.
 //  - MC3-DETERMINISTIC-*: zwei Läufe auf tief eingefrorenen Eingaben sind gleich (SHA-256), die Eingaben unverändert.
 //  - MC3-EDGE-*: fehlende Minuten, Handelsunterbrechung / Gap, Sitzungsbeginn.
-//  - MC3-FINDING-*: Befunde (nicht repariert, Fachmodell): als Freigabevorschlag im Evidenzdokument geführt.
+//  - MC3-FINDING-*: Befunde F-MC3M-01/02 (Freigabevorlage im Evidenzdokument). Mit #1262 (Fachmodell, Zuteilung nach
+//    Füllminute; für INTRADAY_RESOLVED nur die Eröffnung als Vorbedingung) behoben: die Tests halten seither das korrigierte
+//    Verhalten fest und scheitern, sobald ein Befund wieder auftritt. Die IDs bleiben, bis der Erzeuger des
+//    Evidenzdokuments die Befunde nach der Owner-Freigabe als behoben führt (Folgeschritt nach dem Merge).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -31,7 +34,8 @@ import { withNextSession, DETECTORS } from '../source-faithful/product/detectors
 
 // Abdeckung dieser Datei (der Erzeuger des Evidenzdokuments liest diese Zeile; MC3-COVERAGE-MINUTES prüft sie gegen die Titel)
 const MC3M_COVERED = Object.freeze({ C09: ['MC3-CAUSAL-C09-OPEN', 'MC3-CAUSAL-C09-MINUTES', 'MC3-CAUSAL-C09-ENGINE', 'MC3-DETERMINISTIC-C09', 'MC3-EDGE-C09'], C10: ['MC3-CAUSAL-C10-CLOSE', 'MC3-CAUSAL-C10-MINUTES', 'MC3-DETERMINISTIC-C10', 'MC3-EDGE-C10'] });
-// Befunde dieser Datei (Erzeuger: Blocker der Dimension „reproduzierbare Berechnung“, Freigabevorschlag)
+// Befunde dieser Datei (Erzeuger: Blocker der Dimension „reproduzierbare Berechnung“, Freigabevorschlag); mit #1262 behoben,
+// die Tests prüfen das korrigierte Verhalten (Erzeuger und Evidenzdokument ziehen nach dem Merge nach)
 const MC3M_FINDINGS = Object.freeze({ 'F-MC3M-01': ['C09', 'MC3-FINDING-C09-ALLOC'], 'F-MC3M-02': ['C09', 'MC3-FINDING-C09-DAYBAR'] });
 
 const norm = (x) => JSON.stringify(x ?? null, (k, v) => (v instanceof Map ? [...v.entries()] : v instanceof Set ? [...v] : (typeof v === 'number' && !Number.isFinite(v) ? String(v) : v)));
@@ -278,30 +282,32 @@ test('MC3-EDGE-C09: fehlende Minuten, Identität am Sitzungsbeginn, Unterbrechun
   assert.deepEqual(ses.map((x) => [x.k, x.volume]), [[0, 0], [5, 5]]);
 });
 
-test('MC3-FINDING-C09-ALLOC: F-MC3M-01 – bei knapper Kapazität vergibt die Engine den Platz in fillRank-Reihenfolge, nicht nach der Füllminute', () => {
-  // Befund (nicht repariert, Fachmodell): Die Engine verarbeitet am Tag T die am Vortag scharfen Orders in der neutralen
-  // Reihenfolge fillRank(Datum, id) (research/lifecycle-engine.mjs, Schritt 2). Bei INTRADAY_RESOLVED kennt sie die
-  // Füllminute; ist nur ein Platz frei, bekommt ihn die Order mit dem kleineren Rang, auch wenn sie erst Stunden NACH
-  // der anderen füllt. Die Zuteilung in Minute 6 hängt damit davon ab, dass die andere Order in Minute 300 füllen wird.
+test('MC3-FINDING-C09-ALLOC: F-MC3M-01 behoben (#1262) – bei knapper Kapazität bekommt die früher gefüllte Order den Platz, unabhängig vom fillRank', () => {
+  // vorher (Befund F-MC3M-01): Schritt 2 teilte in der neutralen Reihenfolge fillRank(Datum, id) zu, die Füllung in Minute
+  // 300 verdrängte die in Minute 6. Seit #1262 teilt die Engine an Tagen nur mit INTRADAY_RESOLVED-Orders Plätze und Kasse
+  // nach der Füllminute zu (fillRank nur bei gleicher Minute): die Zuteilung in Minute 6 hängt nicht mehr von Minute 300 ab.
   const T = epBars()[EP_T].date, ids = ['US:EQ:EPA', 'US:EQ:EPB'].sort((a, b) => fillRank(T, a) - fillRank(T, b));
   const [first, second] = ids, tk = (id) => id.split(':')[2];
   const mins = { [`${tk(first)}|${T}`]: epMinutesLate(300), [`${tk(second)}|${T}`]: epMinutes() };
   const ds = { calendar: epBars().map((x) => x.date), securities: ids.map((id) => ({ id, bars: epBars(), terminal: null })), kkIntraday: epIntraday(mins) };
   const one = { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, maxOpenPositions: 1 };
   const r = runResearchLifecycle(ds, { adapter: KK_EP_ADAPTER, config: EP_REFERENCE_CONFIG, policy: one });
-  assert.deepEqual(r.trades.map((t) => [t.id, t.intradayEvidence.entryMinute]), [[first, 300]], 'Befund nicht mehr reproduzierbar: Evidenzdokument und Freigabevorschlag anpassen');
-  assert.deepEqual(r.rejections.map((x) => [x.id, x.reason]), [[second, 'REJECT_MAX_OPEN_POSITIONS']]);
-  // Beleg, dass die abgewiesene Order zeitlich zuerst füllt (Minute 6) und allein ausgeführt würde
+  assert.deepEqual(r.trades.map((t) => [t.id, t.intradayEvidence.entryMinute]), [[second, EP_FILL_K]], 'F-MC3M-01 wieder offen: Zuteilung nicht nach Füllminute');
+  assert.deepEqual(r.rejections.map((x) => [x.id, x.reason]), [[first, 'REJECT_MAX_OPEN_POSITIONS']]);
+  assert.equal(r.counts.intradayAllocationByMinute, 1, 'genau ein Engpasstag');
+  // die frühere Füllung entscheidet wie allein (Minute 6), die spätere wird abgewiesen
   const alone = runResearchLifecycle({ ...ds, securities: ds.securities.filter((s) => s.id === second) }, { adapter: KK_EP_ADAPTER, config: EP_REFERENCE_CONFIG, policy: one });
   assert.deepEqual(alone.trades.map((t) => [t.id, t.intradayEvidence.entryMinute]), [[second, EP_FILL_K]]);
-  // ohne Kapazitätsgrenze (Referenz: 20 Positionen, Risiko 0,5 %) entstehen beide Einstiege: der Befund wirkt nur bei knapper Kapazität
-  assert.equal(runResearchLifecycle(ds, { adapter: KK_EP_ADAPTER, config: EP_REFERENCE_CONFIG }).trades.length, 2);
+  // ohne Kapazitätsgrenze (Referenz: 20 Positionen, Risiko 0,5 %) entstehen beide Einstiege, kein Engpasstag
+  const ref = runResearchLifecycle(ds, { adapter: KK_EP_ADAPTER, config: EP_REFERENCE_CONFIG });
+  assert.equal(ref.trades.length, 2);
+  assert.equal(ref.counts.intradayAllocationByMinute, undefined);
 });
 
-test('MC3-FINDING-C09-DAYBAR: F-MC3M-02 – fillOrder prüft für INTRADAY_RESOLVED die Endlichkeit von Hoch/Tief des Entscheidungstags', () => {
-  // Befund (nicht repariert, Engine): fillOrder verlangt fin(bar.high) && fin(bar.low) des Gap-Tags, bevor es die Minuten
-  // auflöst. Hoch und Tief sind erst am Schluss bekannt. Ihr WERT ändert nichts (Extremwerte: gleicher Einstieg), nur ihr
-  // Fehlen (NaN) macht aus der Füllung NOT_EXECUTED_NO_SOURCE_BAR, obwohl Eröffnung und Minuten vorliegen.
+test('MC3-FINDING-C09-DAYBAR: F-MC3M-02 behoben (#1262) – fillOrder verlangt für INTRADAY_RESOLVED nur die offizielle Eröffnung, Hoch/Tief sind Evidenz', () => {
+  // vorher (Befund F-MC3M-02): fillOrder verlangte fin(bar.high) && fin(bar.low) des Gap-Tags; ihr Fehlen (NaN) machte aus der
+  // Füllung NOT_EXECUTED_NO_SOURCE_BAR, obwohl Eröffnung und Minuten vorlagen. Seit #1262 prüft fillOrder für
+  // INTRADAY_RESOLVED nur die Eröffnung: Wert UND Fehlen von Hoch/Tief (erst am Schluss bekannt) lassen den Einstieg gleich.
   const sec = epSecurity(), key = `EPX|${sec.bars[EP_T].date}`;
   const runWith = (bars) => runResearchLifecycle({ calendar: bars.map((x) => x.date), securities: [{ id: sec.id, bars, terminal: null }], kkIntraday: epIntraday({ [key]: epMinutes() }) }, { adapter: KK_EP_ADAPTER, config: EP_REFERENCE_CONFIG });
   const withDay = (f) => sec.bars.map((x, k) => (k === EP_T ? f(x) : x));
@@ -309,7 +315,8 @@ test('MC3-FINDING-C09-DAYBAR: F-MC3M-02 – fillOrder prüft für INTRADAY_RESOL
   assert.equal(base.trades.length, 1);
   assert.equal(norm(ext.trades.map((t) => [t.entryFill, t.initialStop, t.shares])), norm(base.trades.map((t) => [t.entryFill, t.initialStop, t.shares])), 'Werte von Hoch/Tief wirken auf den Einstieg');
   const nan = runWith(withDay((x) => ({ ...x, high: NaN, low: NaN })));
-  assert.deepEqual([nan.trades.length, nan.rejections.map((x) => x.reason)], [0, ['NOT_EXECUTED_NO_SOURCE_BAR']], 'Befund nicht mehr reproduzierbar: Evidenzdokument und Freigabevorschlag anpassen');
+  assert.deepEqual([nan.trades.length, nan.rejections.map((x) => x.reason)], [1, []], 'F-MC3M-02 wieder offen: fehlende Hoch/Tief verhindern die Minutenfüllung');
+  assert.equal(norm(nan.trades.map((t) => [t.entryFill, t.initialStop, t.shares, t.intradayEvidence.entryMinute])), norm(base.trades.map((t) => [t.entryFill, t.initialStop, t.shares, t.intradayEvidence.entryMinute])), 'ohne Hoch/Tief anderer Einstieg');
   // der Adapter selbst entscheidet ohne Hoch/Tief identisch (nur die Tagesspannen-Evidenz fehlt)
   const r = resolveEpDay({ minutes: epMinutes(), bar: DAY_FIELDS_LATE.nan(sec.bars[EP_T]), rawFactor: 1, adrPct: epChartCandidate(sec.bars, EP_T).adr20, iexBaseline: EP_BASELINE, cfg: EP_REFERENCE_CONFIG });
   assert.equal(r.status, 'FILLED');
