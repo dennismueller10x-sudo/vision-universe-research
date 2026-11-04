@@ -4,6 +4,7 @@
 //   node scripts/supertrader/validation/fetch.mjs --mode subset
 //   node scripts/supertrader/validation/fetch.mjs --mode full [--max-requests 15000]
 //   node scripts/supertrader/validation/fetch.mjs --mode plan     (ohne Kursanfragen)
+//   ST_WINDOW=PAPER_2027 ST_WINDOW_TO=<t> node scripts/supertrader/validation/fetch.mjs --mode forward   (SF6-PAPER-2027 1.2.0)
 //
 // Regeln: PREREGISTRATION.json (vor dem ersten Abruf committet).
 //  * Rohreihen nur in den privaten R2-Eimer (Namensraum tiingo-delisted).
@@ -28,7 +29,7 @@ const Master = require(path.join(root, 'quant/engines/us-security-master.js'));
 const argv = process.argv.slice(2);
 const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
 const MODE = arg('--mode', 'plan');
-const MAX_REQ = Number(arg('--max-requests', MODE === 'subset' ? '400' : '15000'));
+const MAX_REQ = Number(arg('--max-requests', MODE === 'subset' ? '400' : MODE === 'forward' ? '6000' : '15000'));
 const MAX_MIN = Number(arg('--max-minutes', '320'));
 const PACE_MS = Number(arg('--pace-ms', '1200')); // 50/min
 const OUT_DIR = arg('--out', path.join(os.tmpdir(), 'supertrader-validation'));
@@ -53,6 +54,17 @@ export function pickSubset(listings) {
   const activeNoStore = listings.filter((l) => l.source === 'FETCH' && l.active && l.plainTicker).sort(by).slice(0, 6);
   const seen = new Set();
   return [...early, ...late, ...anchors, ...reused, ...activeNoStore].filter((l) => !seen.has(l.id) && seen.add(l.id));
+}
+
+// SF6-PAPER-2027 1.2.0 (--mode forward, nur mit ST_WINDOW=PAPER_2027): taegliche Fortschreibung des Forward-
+// Namensraums bis zum rollenden Fensterende t. Abgerufen wird, was fehlt, fehlerhaft ist oder nur bis vor das Ziel
+// reicht (fetchedTo < min(Listenende, t)); SPY immer bis t. Aktive Titel im Hauptspeicher (STORE_ACTIVE) kommen wie in
+// DEV aus der taeglichen Kurspipeline und werden hier nicht abgerufen. DEV und HOLDOUT unberuehrt.
+export const FORWARD_SKIP = Object.freeze(['SKIPPED_CLASS', 'UNFETCHABLE_REUSED']);
+export const forwardTarget = (l, window) => (l.listEnd && l.listEnd < window.to ? l.listEnd : window.to);
+export function forwardTodo(listings, entries, window) {
+  const due = (l) => { const e = entries[l.id]; if (!e || e.status === 'ERROR') return true; if (FORWARD_SKIP.includes(e.status)) return false; return (e.fetchedTo || '') < forwardTarget(l, window); };
+  return [...listings.filter((l) => l.source !== 'STORE_ACTIVE' && due(l)), { id: 'BENCH:SPY', ticker: 'SPY', bench: true, startDate: '1993-01-29', listEnd: null, active: true }];
 }
 
 function storeActiveMap() {
@@ -100,7 +112,7 @@ async function main() {
   const zip = Buffer.from(await (await fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer());
   const rows = L.parseTickerCsv(L.unzipCsv(zip));
   const listedRoots = Master.collectListedRoots(rows);
-  const listings = L.buildListingTable(rows, storeActiveMap());
+  const listings = L.buildListingTable(rows, storeActiveMap(), L.LISTING_OPTS); // PAPER_2027: Stichtag = rollendes Fensterende
   const hash = L.tableHash(listings);
   const count = (f) => listings.filter(f).length;
   log(`Tickerliste ${rows.length} Zeilen; Listings im Fenster ${listings.length} (Hash ${hash.slice(0, 12)})`);
@@ -128,8 +140,9 @@ async function main() {
     log(`Manifest: ${Object.keys(manifest.entries).length} Einträge vorhanden`);
   }
 
-  const queue = MODE === 'subset' ? pickSubset(listings) : MODE === 'full' ? listings.filter((l) => l.source !== 'STORE_ACTIVE') : [];
-  const todo = queue.filter((l) => { const e = manifest.entries[l.id]; return !e || e.status === 'ERROR'; });
+  if (MODE === 'forward' && L.WINDOW_NAME !== L.FORWARD_WINDOW.name) { console.error(`FORWARD_MODE_REQUIRES_ST_WINDOW=${L.FORWARD_WINDOW.name}`); process.exit(2); }
+  const queue = MODE === 'subset' ? pickSubset(listings) : MODE === 'full' || MODE === 'forward' ? listings.filter((l) => l.source !== 'STORE_ACTIVE') : [];
+  const todo = MODE === 'forward' ? forwardTodo(listings, manifest.entries, L.WINDOW) : queue.filter((l) => { const e = manifest.entries[l.id]; return !e || e.status === 'ERROR'; });
   if (MODE === 'subset' || MODE === 'full') { todo.push({ id: 'BENCH:SPY', ticker: 'SPY', bench: true, startDate: '1993-01-29', listEnd: null, active: true }); }
   log(`Warteschlange ${queue.length}, offen ${todo.length}`);
 
@@ -142,7 +155,7 @@ async function main() {
   let done = 0;
   try {
     for (const l of todo) {
-      if (l.bench && manifest.entries[l.id]?.status === 'OK') continue;
+      if (l.bench && manifest.entries[l.id]?.status === 'OK' && MODE !== 'forward') continue;
       const e = { id: l.id, at: new Date().toISOString() };
       const t = encodeURIComponent(l.ticker);
       const from = l.startDate > L.WINDOW.warmupFrom ? l.startDate : L.WINDOW.warmupFrom;
@@ -160,7 +173,7 @@ async function main() {
       }
       const px = await tiingo(`https://api.tiingo.com/tiingo/daily/${t}/prices?startDate=${from}&endDate=${to}&format=json`);
       e.pricesStatus = px.status;
-      if (px.status !== 200 || !Array.isArray(px.body)) { e.status = px.status === 404 ? 'EMPTY' : 'ERROR'; if (l.source === 'UNFETCHABLE_REUSED') e.status = 'UNFETCHABLE_REUSED'; manifest.entries[l.id] = e; done++; continue; }
+      if (px.status !== 200 || !Array.isArray(px.body)) { e.status = px.status === 404 ? 'EMPTY' : 'ERROR'; if (l.source === 'UNFETCHABLE_REUSED') e.status = 'UNFETCHABLE_REUSED'; if (MODE === 'forward' && e.status === 'EMPTY') e.fetchedTo = forwardTarget(l, L.WINDOW); manifest.entries[l.id] = e; done++; continue; }
       const bars = px.body.map(L.toRawBar).filter((b) => /^\d{4}-\d{2}-\d{2}$/.test(b.date) && b.close != null).sort((a, b) => a.date.localeCompare(b.date));
       const fc = L.classifyFetch(l, bars, meta);
       Object.assign(e, { status: fc.status, bars: fc.bars, outsideWindow: fc.outsideWindow, first: fc.first || null, last: fc.last || null, flags: fc.flags, returnedFirst: bars[0]?.date || null, returnedLast: bars[bars.length - 1]?.date || null });
@@ -172,6 +185,7 @@ async function main() {
         e.sha256 = put.sha256; e.bytes = put.bytes;
         if (l.bench) e.status = 'OK';
       }
+      if (MODE === 'forward' && e.status !== 'ERROR') e.fetchedTo = l.bench ? L.WINDOW.to : forwardTarget(l, L.WINDOW);
       manifest.entries[l.id] = e; done++;
       if (done % 100 === 0) { await saveManifest(); log(`Fortschritt ${done}/${todo.length}, Anfragen ${requests}`); }
     }
@@ -194,9 +208,11 @@ async function main() {
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
   const sealed = L.encryptForOwner(pem, Buffer.from(JSON.stringify(summary)));
   if (KEY && sealed.includes(KEY)) throw new Error('Schluessel im Ergebnis');
-  fs.writeFileSync(path.join(OUT_DIR, `fetch-${MODE}${L.WINDOW_NAME === 'HOLDOUT' ? '-holdout' : ''}.sealed.json`), sealed);
+  fs.writeFileSync(path.join(OUT_DIR, `fetch-${MODE}${L.WINDOW_NAME === 'HOLDOUT' ? '-holdout' : L.WINDOW_NAME === L.FORWARD_WINDOW.name ? '-paper-2027' : ''}.sealed.json`), sealed);
   log(`Verschlüsseltes Ergebnis geschrieben (${sealed.length} Byte)`);
   if (stats.stoppedBy && !['MAX_REQUESTS', 'MAX_MINUTES', 'QUIET_WINDOW_MARKET_RUN'].includes(stats.stoppedBy)) process.exitCode = 5;
+  // Forward: eine Aufzeichnung auf unvollstaendig fortgeschriebenen Reihen waere spaeter nicht reproduzierbar (fail closed).
+  if (MODE === 'forward' && stats.stoppedBy) { console.error(`FORWARD_FETCH_INCOMPLETE: ${stats.stoppedBy}`); process.exitCode = 6; }
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) main().catch((e) => { console.error(String(e?.message || e).replaceAll(KEY || '\u0000', '***')); process.exit(1); });

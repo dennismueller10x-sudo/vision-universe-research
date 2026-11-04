@@ -308,7 +308,7 @@ export function runPlanTests(plan = loadPlan()) {
 export async function referenceCodeFingerprints() {
   const { codeSha256 } = await import('../runner/run-research.mjs');
   const { sf5ResearchCodeSha256 } = await import('../research/run-sf5-lifecycle.mjs');
-  const { SF6_PAPER_PROTOCOL } = await import('../completion/sf6-paper-protocol-2027.mjs');
+  const SF6_PAPER_PROTOCOL = (await import('../completion/sf6-paper-protocol-2027-v1_2_0.mjs')).currentPaperProtocol().protocol; // 1.2.0 since 2026-11-04
   const turtle = codeSha256(), pinned = SF6_PAPER_PROTOCOL.references.pinned.turtleEngineCodeSha256, sf5 = sf5ResearchCodeSha256();
   const turtleRow = { fingerprint: 'runner/run-research.mjs#codeSha256', head: turtle, pinnedReference: pinned, pinnedIn: 'SF6-PAPER-2027 references.pinned.turtleEngineCodeSha256', state: turtle === pinned ? 'HEAD_EQUALS_PINNED_REFERENCE_FINGERPRINT' : 'HEAD_DIFFERS_FROM_PINNED_REFERENCE_FINGERPRINT' };
   const sf5Row = { fingerprint: 'research/run-sf5-lifecycle.mjs#sf5ResearchCodeSha256', head: sf5, pinnedReference: null, pinnedIn: null, state: 'REFERENCE_FINGERPRINT_NOT_PINNED_REFERENCE_COMMIT_OPEN' };

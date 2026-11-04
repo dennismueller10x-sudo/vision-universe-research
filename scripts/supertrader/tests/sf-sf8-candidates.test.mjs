@@ -891,5 +891,5 @@ test('SF8-REFERENCE-PROTECTION: die Pipeline verändert keine Research-Artefakte
   const dir = path.join(ROOT, 'scripts/supertrader/source-faithful/artifacts');
   const snap = () => Object.fromEntries(fs.readdirSync(dir).sort().map((f) => [f, crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, f))).digest('hex')]));
   const before = snap(); run(); assert.deepEqual(snap(), before);
-  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, 'STRATEGY-SF6-READINESS.json'))).digest('hex').slice(0, 8), '4f9808aa');
+  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, 'STRATEGY-SF6-READINESS.json'))).digest('hex').slice(0, 8), '9658445d'); // 4f9808aa… -> 9658445d… (2026-11-04): only paperProtocol 1.1.0 -> 1.2.0 (SF6-PAPER-2027 V5), no grade changed
 });
