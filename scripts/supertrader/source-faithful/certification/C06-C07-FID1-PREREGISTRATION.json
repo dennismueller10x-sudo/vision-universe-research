@@ -1,0 +1,37 @@
+{
+  "schema": "supertrader-preregistration-1.0.0",
+  "id": "C06-C07-FID1-PREREG",
+  "label": "Forschung, nicht zertifiziert",
+  "registeredAt": "2026-11-05",
+  "decision": "Steuerung 05.11.2026: C06/C07 Minervini mit demselben Vorgehen wie C08 (Treuepruefung, goldene Trades). Genau eine vorab festgelegte Fassung je Methode; keine weiteren Varianten danach, egal wie es ausgeht.",
+  "basis": "Referenzmessung Lauf 42064067482 (PR #1447): Kapital gesaettigt (C06 5.166 Ablehnungen REJECT_INSUFFICIENT_CAPITAL bei 94 % Investitionsgrad), Auswahl nach neutraler Hash-Reihenfolge, kein RS-Gate; Regelabgleich Rechercheagent 05.11.2026.",
+  "methods": ["C06", "C07"],
+  "variant": "FID-1",
+  "rule": {
+    "base": "Referenz REFERENCE_CONFIG (research/minervini-lifecycle.mjs, gepinnt, unveraendert)",
+    "rsGate": { "proxy": "createRsPercentileProxy (252-Tage-Kursaenderung, VU-Perzentil des Forschungsuniversums)", "min": 70, "source": "MIN-TT-08: RS-Rang mindestens 70 (gedruckter Mindestwert); IBD-RS selbst bleibt DATA_BLOCKED" },
+    "dailySelection": { "max": 3, "order": "RS-Perzentil absteigend, Gleichstand securityId aufsteigend", "note": "VU-Konvention wie C08 FID-3: Fuehrungstitel zuerst statt Hash-Reihenfolge" },
+    "exitPolicy": "FREEROLL_2R",
+    "exitNote": "vorhandene, vorregistrierte Alternative der Referenz: bei +2R auf Schlusskurs die Haelfte verkaufen, Stopp auf Einstand; MIN-TTC-FREEROLL. Die Kombination mit einem MA50-Ausstieg fuer den Rest ist ohne Aenderung der gepinnten Engine nicht moeglich und deshalb nicht Teil von FID-1.",
+    "unchanged": ["Setup-Proxy VCP_FOOTPRINT_STRICT bzw. Power Play CONFIRMED_MECHANICAL_SETUP", "Kauf-Stopp am Pivot mit Limit Stopp/0,9", "Struktur-Stopp, hoechstens 10 % geplanter Verlust", "Risiko 1,25 %, Kappe 25 %, hoechstens 20 Positionen", "Kostenstufen", "DQ-K5-Quarantaene", "Delisting-Szenario S0"]
+  },
+  "costLevel": "REF",
+  "criteria": {
+    "allOf": [
+      "Netto-CAGR (Kosten REF) groesser als die CAGR der SPY-Gesamtrendite im selben Fenster",
+      "Erwartung je geschlossenem Trade groesser als 0 R (Kosten REF)",
+      "mindestens 100 geschlossene Trades"
+    ],
+    "machine": { "cagrAboveSpyCagr": true, "expectancyRAbove": 0, "minClosedTrades": 100 },
+    "perMethod": true
+  },
+  "sequence": [
+    { "window": "DEV", "range": "2016-01-04 bis 2026-09-30", "snapshot": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d", "runs": 1 },
+    { "window": "HOLDOUT", "range": "2008 bis 2015", "runs": 1, "onlyIf": "die Methode erfuellt auf DEV alle Kriterien", "approval": "vor dem Lauf bei der Steuerung bestaetigen" }
+  ],
+  "verdict": {
+    "pass": "DEV und HOLDOUT erfuellen alle Kriterien (je Methode)",
+    "fail": "die Methode wird als 'Erkennung gemessen, Portfolio nicht bestaetigt' abgeschlossen",
+    "publication": "Renditezahlen nur mit Owner-Freigabe"
+  }
+}
