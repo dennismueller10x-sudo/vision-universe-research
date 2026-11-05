@@ -21,11 +21,11 @@
       "records": "decisions",
       "role": "Produktuniversum: je Ticker eine Eignungsentscheidung (securityId, Klasse, Boerse, aktiv). Kanonische Universumsquelle (scripts/market/universe-source.mjs).",
       "producer": "scripts/market/build-us-eligibility.mjs (aus us-security-master.json)",
-      "workflow": null,
-      "schedule": "manuell",
+      "workflow": "security-master-eligibility.yml",
+      "schedule": "manuell mit Gate (scripts/core/eligibility-gate.mjs); Zeitplan nach dem Nachholen",
       "freshness": { "kind": "hours", "warnAfter": 336, "staleAfter": 840 },
       "consumers": ["market-data-refresh (Abrufumfang)", "build-market-factors", "build-discover-data", "build-capability-matrix", "screener", "supertrader (indirekt ueber Discover)"],
-      "knownGaps": ["Kein geplanter Erzeuger: Neuemissionen und Delistings kommen nur mit einem manuellen Lauf ins Universum.", "Identitaet ist tickerbasiert (ADR-001)."]
+      "knownGaps": ["Nachholstand seit 15.09. ueber den Gate-Grenzen (05.11.2026: 473 Wechsel, 129 ELIGIBLE->EXCLUDED, Produktuniversum 6.686 -> 6.739); Uebernahme nur mit eigenem PR und Vorher/Nachher.", "Identitaet ist tickerbasiert (ADR-001)."]
     },
     {
       "id": "usSecurityMaster",

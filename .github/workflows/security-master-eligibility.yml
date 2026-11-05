@@ -1,0 +1,89 @@
+name: Produktuniversum (Eignung aus dem Security Master, mit Gate)
+
+# Erzeuger: scripts/market/build-us-eligibility.mjs (bestehend, keine Kursabfrage).
+# Gate: scripts/core/eligibility-gate.mjs mit den Grenzen aus core/registry/eligibility-gate.json.
+# Ablauf: neuer Stand nach $RUNNER_TEMP, Gate gegen den committeten Stand, Bericht als Artefakt,
+# Commit nur mit commit=true UND Gate COMMIT. Ein Nachholen ueber die Grenzen hinaus braucht einen
+# eigenen PR mit Vorher/Nachher (CLAUDE.md), nicht diesen Lauf.
+# Kein Zeitplan, bis der Nachholstand uebernommen ist (Stand 05.11.2026: 473 Wechsel, Gate BLOCKED);
+# danach folgt dieser Lauf dem Security-Master-Lauf (workflow_run).
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: 'Ergebnis committen (nur bei Gate COMMIT)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  # dieselbe Gruppe wie Security Master und Marktdaten: kein paralleler Lauf auf denselben Dateien
+  group: market-data-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  eligibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Neuer Stand (bestehender Erzeuger, nach RUNNER_TEMP)
+        run: |
+          set -euo pipefail
+          N=quant/data/market/security-master
+          mkdir -p "$RUNNER_TEMP/elig/out" "$RUNNER_TEMP/elig/scale"
+          node scripts/market/build-us-eligibility.mjs --master "$N/us-security-master.json" \
+            --previous "$N/eligibility.json" --names "$N/company-names.json" \
+            --out "$RUNNER_TEMP/elig/out" --scale-out "$RUNNER_TEMP/elig/scale"
+
+      - name: Gate (fail closed)
+        id: gate
+        run: |
+          set +e
+          node scripts/core/eligibility-gate.mjs --prev quant/data/market/security-master/eligibility.json \
+            --next "$RUNNER_TEMP/elig/out/eligibility.json" \
+            --prev-universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json \
+            --next-universe "$RUNNER_TEMP/elig/scale/universe-ELIGIBLE_US_EQUITY.json" \
+            --out "$RUNNER_TEMP/elig/gate.json"
+          rc=$?
+          set -e
+          if [ "$rc" = 0 ]; then echo "decision=COMMIT" >> "$GITHUB_OUTPUT"; else echo "decision=BLOCKED" >> "$GITHUB_OUTPUT"; fi
+          { echo '### Produktuniversum'; echo '```'; cat "$RUNNER_TEMP/elig/gate.json"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          [ "$rc" = 0 ] || [ "$rc" = 4 ]
+
+      - name: Bericht als CI-Artefakt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eligibility-${{ github.run_id }}
+          path: ${{ runner.temp }}/elig
+          retention-days: 30
+
+      - name: Commit (nur mit commit=true und Gate COMMIT)
+        if: inputs.commit == true && steps.gate.outputs.decision == 'COMMIT'
+        env:
+          PUSH_OWNED_PATHS: quant/data/market/security-master/eligibility.json quant/data/market/security-master/eligibility-reconciliation.json quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json
+        run: |
+          set -euo pipefail
+          cp "$RUNNER_TEMP/elig/out/eligibility.json" "$RUNNER_TEMP/elig/out/eligibility-reconciliation.json" quant/data/market/security-master/
+          cp "$RUNNER_TEMP/elig/scale/universe-ELIGIBLE_US_EQUITY.json" quant/data/market/scale/
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add $PUSH_OWNED_PATHS
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -q -m "Produktuniversum: Eignung neu aus dem Security Master (Gate COMMIT)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+      - name: Ergebnis
+        if: steps.gate.outputs.decision != 'COMMIT'
+        run: |
+          echo "::error::Gate BLOCKED: Produktuniversum nicht uebernommen (Bericht im Artefakt und in der Zusammenfassung)."
+          exit 1

@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-11-04T05:01:35.185Z",
+ "generatedAt": "2026-11-05T05:07:53.281Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,22 +35,22 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5666,
+    "universe": 5669,
     "covered": 5309,
-    "available": 4511,
+    "available": 4481,
     "sufficient": {
-     "m1": 2225,
-     "m3": 2168,
-     "m6": 2099,
-     "m12": 2011
+     "m1": 2208,
+     "m3": 2148,
+     "m6": 2076,
+     "m12": 1988
     },
     "broad": {
-     "m6": 847
+     "m6": 826
     },
     "reasons": {
-     "NOT_COVERED": 357,
-     "NO_PRICE_CONDITION_TODAY": 734,
-     "NO_COMPARABLE_CASE": 64
+     "NOT_COVERED": 360,
+     "NO_PRICE_CONDITION_TODAY": 757,
+     "NO_COMPARABLE_CASE": 71
     }
    }
   },
@@ -78,10 +78,10 @@
     }
    },
    "trust": {
-    "sample": 955539,
+    "sample": 955543,
     "period": [
      "1992-01-31",
-     "2026-11-02"
+     "2026-11-03"
     ],
     "costs": {
      "roundTripBps": 20,
@@ -169,7 +169,7 @@
      "id": "PIT",
      "label": "Stände unverändert (contentHash)",
      "required": "bestanden",
-     "measured": "26 von 26 geprüft",
+     "measured": "27 von 27 geprüft",
      "state": "PASS"
     },
     {
@@ -183,14 +183,14 @@
      "id": "HISTORYDATES",
      "label": "veröffentlichte Stichtage",
      "required": "120",
-     "measured": "26",
+     "measured": "27",
      "state": "FAIL"
     },
     {
      "id": "HISTORYSPAN",
      "label": "Spanne der Historie",
      "required": "180 Tage",
-     "measured": "54 Tage",
+     "measured": "55 Tage",
      "state": "FAIL"
     },
     {
@@ -287,7 +287,7 @@
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 86520,
+     "n": 86518,
      "titles": 5062,
      "displayAllowed": true,
      "failed": [
@@ -298,7 +298,7 @@
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 86086,
+     "n": 86085,
      "titles": 5062,
      "displayAllowed": true,
      "failed": [
@@ -337,22 +337,22 @@
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5666,
+   "universe": 5669,
    "covered": 5309,
-   "available": 4511,
+   "available": 4481,
    "sufficient": {
-    "m1": 2225,
-    "m3": 2168,
-    "m6": 2099,
-    "m12": 2011
+    "m1": 2208,
+    "m3": 2148,
+    "m6": 2076,
+    "m12": 1988
    },
    "broad": {
-    "m6": 847
+    "m6": 826
    },
    "reasons": {
-    "NOT_COVERED": 357,
-    "NO_PRICE_CONDITION_TODAY": 734,
-    "NO_COMPARABLE_CASE": 64
+    "NOT_COVERED": 360,
+    "NO_PRICE_CONDITION_TODAY": 757,
+    "NO_COMPARABLE_CASE": 71
    }
   }
  }

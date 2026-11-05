@@ -1,0 +1,64 @@
+/* VISION UNIVERSE ELLIOTT — wellen.css: Aktienbild /elliott/#/<T> im Redesign 2027 (W05, Perspektive „Wellen“).
+   Wird nur mit dem Aktienbild geladen (app.js, wie die Quant-Stylesheets mit media "not all" bis zum Oeffnen) und legt
+   die Farben des Chartbilds auf die Grundregel: Weiß, Schwarz, Neongrün, drei Graustufen. Kein Rot, Grün, Blau, Gelb. */
+#el-detail .cb{--cb-entry:#c8f531;--cb-target:#9b9b9b;--cb-invalid:var(--vu-ink,#000);--cb-alt:#9b9b9b;--cb-up:var(--vu-ink,#000);--cb-down:var(--vu-ink,#000);--cb-flat:#9b9b9b;--cb-mixed:var(--vu-ink,#000)}
+#el-detail .cb .ti-zone-entry rect{fill:rgba(200,245,49,.35);stroke:rgba(200,245,49,.9)}
+#el-detail .cb .ti-zone-target rect{fill:rgba(155,155,155,.16);stroke:rgba(155,155,155,.55)}
+#el-detail .cb .ti-zone-target .ti-zone-label,#el-detail .cb .ti-zone-entry .ti-zone-label{fill:var(--vu-ink,#000);stroke:var(--vu-white,#fff)}
+#el-detail .cb .ti-invalid-label{stroke:var(--vu-white,#fff)}
+:root[data-theme=dark] #el-detail .cb .ti-zone-label,:root[data-theme=dark] #el-detail .cb .ti-invalid-label{stroke:#000}
+#el-detail .cb .ti-path-alt .ti-corridor,#el-detail .cb-tone-up .cb-dot,#el-detail .cb-tone-down .cb-dot{box-shadow:none}
+#el-detail .cb-tone-up .cb-dot{background:#c8f531}
+/* Reihenfolge der Seite: Absage oder Lesart zuerst, ohne eigene Überschrift */
+#el-detail .cb-elliott>.q-sec-head{display:none}
+#el-detail .cb-nothesis{margin:12px 0 0;padding:16px;border:0;border-radius:20px;background:var(--vu-card,#f4f4f4)}
+#el-detail .cb-nothesis-tag{display:flex;gap:10px;align-items:center;margin:0 0 8px}
+#el-detail .cb-nothesis-h{margin:0;font-size:18px}
+#el-detail .cb-nothesis p{color:var(--vu-mute,#6e6e6e)}
+#el-detail .cb-nothesis .cb-nothesis-h,#el-detail .cb-nothesis-link{color:var(--vu-ink,#000)}
+#el-detail .cb-ms-h{margin:22px 0 4px;font-size:19px;font-weight:800;letter-spacing:-.02em}
+#el-detail .cb-ew-card{border:0;border-radius:20px;background:var(--vu-card,#f4f4f4)}
+#el-detail .cb-ew-card.is-compact>.cb-ew-k{display:none}
+#el-detail .cb-badge-experimental{color:var(--vu-ink,#000);background:transparent;border:1.5px solid var(--vu-hair,#e9e9e9)}
+/* Einsteigeransicht: nur der Zeitraum; Linie/Kerzen, Wellen, Ebene, Preisachse und Legende stehen in Elliott-Profi */
+#el-detail .cb:not(.is-pro) .cb-controls>.cb-seg:not(:first-child),#el-detail .cb:not(.is-pro) .cb-legend-sc{display:none}
+#el-detail .cb-seg-btn[aria-pressed=true]{background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
+/* Technischer Ausblick: schwarze Karte mit Urteil (C08), drei Kacheln, Hauptszenario neongrün */
+#el-detail .cb-outlook-sec .cb-hero{position:relative;display:block;margin:0 0 10px;padding:16px 110px 16px 16px;border-radius:20px;background:#000;color:#fff}
+#el-detail .cb-outlook-sec .cb-hero .cb-kicker{color:#9b9b9b}
+#el-detail .cb-outlook-sec .cb-outlook{font-size:22px;gap:8px}
+#el-detail .cb-outlook-sec .cb-structure{color:rgba(255,255,255,.75);font-size:13px;margin:2px 0 0}
+#el-detail .cb-outlook-sec .cb-layers,#el-detail .cb-outlook-sec .cb-dot{display:none}
+#el-detail .cb-hero-verdict{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:#fff;color:#000;border-color:#fff}
+#el-detail .cb-level{border:0;border-radius:18px;background:var(--vu-card,#f4f4f4)}
+#el-detail .cb-level-icon{display:none}
+#el-detail .cb-switch-btn[aria-selected=true]{background:#c8f531;color:#000}
+/* Warum: ▲ dafür neongrüne Pille, ▼ dagegen schwarze Pille */
+#el-detail .cb-why-tally span{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:999px;border:1.5px solid var(--vu-hair,#e9e9e9);font-weight:800}
+#el-detail .cb-why-tally .tone-good{background:#c8f531;border-color:#c8f531;color:#000}
+#el-detail .cb-why-tally .tone-bad{background:var(--vu-ink,#000);border-color:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
+#el-detail .cb-why-tally .tone-good i,#el-detail .cb-why-tally .tone-bad i{color:inherit!important}
+#el-detail .cb-check-mark{color:var(--vu-ink,#000)!important}
+#el-detail .cb-edge-no_edge,#el-detail .cb-evidence-verdict{color:var(--vu-mute,#6e6e6e)}
+#el-detail .cb-ev-verdict{margin:0 0 8px}
+/* Elliott-Profi (PRO) und Hinweis */
+#el-detail .cb-pro-open{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:54px;margin:18px 0 0;border:0;border-radius:999px;background:var(--vu-ink,#000);color:var(--vu-inv,#fff);font-size:16px}
+#el-detail .cb-pro-open .vu-pro{background:#c8f531;color:#000}
+#el-detail .cb:not(.is-pro) .cb-pro-extra{display:none}
+#el-detail .cb-exp{margin:14px 0 0;padding:14px;border:1.5px solid var(--vu-hair,#e9e9e9);border-radius:20px;font-size:12px;line-height:1.45}
+#el-detail .cb-why-tally span b{color:inherit!important}
+#el-detail .cb-outlook-sec .cb-levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;overflow:visible}
+#el-detail .cb-outlook-sec .cb-level{padding:12px;min-width:0}
+#el-detail .cb-outlook-sec .cb-level-value{font-size:17px;letter-spacing:-.02em;white-space:normal}
+#el-detail .cb-outlook-sec .cb-level-label,#el-detail .cb-outlook-sec .cb-level-sub{font-size:11.5px}
+#el-detail .cb-elliott{margin-top:0!important;padding-top:0!important;border-top:0!important}
+/* Elliott-Projektion (w05-c): Basis neongrün, Erweitert grau, Ungültig-Grenze als schwarze Kachel */
+#el-detail .cb{--cb-pj-base:#c8f531;--cb-pj-ext:#9b9b9b;--cb-pj-xt:#6e6e6e}
+#el-detail .cb-pj-tier,#el-detail .cb-pj-extended,#el-detail .cb-pj-extreme,#el-detail .cb-pj-alt,#el-detail .cb-pj-motive,#el-detail .cb-pj-xcard,#el-detail .cb-pj-hlcard{background:var(--vu-card,#f4f4f4)!important;border-color:var(--vu-hair,#e9e9e9)}
+#el-detail .cb-pj-inv{border:0;background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
+#el-detail .cb-pj-inv *{color:inherit}
+#el-detail .cb-pj-btn{border:0;background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
+#el-detail .cb-pj-why,#el-detail .cb-pj-cnote{border-left-color:var(--vu-hair,#e9e9e9);background:transparent}
+:root[data-theme=dark] #el-detail .cb-outlook-sec .cb-hero{background:#151515}
+/* Text in Grau nur mit ausreichendem Kontrast: Linienfarben (--cb-alt, --cb-flat) bleiben Grau, Schrift nimmt das gedämpfte Token */
+#el-detail .cb-pt-exp .cb-pt-v,#el-detail .cb-pj-explore-sum,#el-detail .cb-pj-explore-sum>span{color:var(--vu-mute,#6e6e6e)}
