@@ -79,6 +79,20 @@ function render(b) {
       L.push('| ' + (r.v.id === winner ? '**' + r.v.id + '** (Auswahl)' : r.v.id) + tag + ' | ' + (e ? [pct(e.strategy.cagr), pct(e.SPY.cagr), pct(e.RSP.cagr), pct(e.IWM.cagr), num(e.strategy.sharpe), num(e.SPY.sharpe), pct(e.strategy.maxDrawdown), pct(e.SPY.maxDrawdown)].join(' | ') : ' | | | | | | | ') + ' | ' + pv(r.tst && r.tst.pLog) + ' / ' + pv(r.pLogHolm) + ' | ' + pv(r.tst && r.tst.pSharpe) + ' / ' + pv(r.pSharpeHolm) + ' | ' + r.verdict + ' |');
     }
   }
+  const ph = load(path.join(ROOT, 'docs/research/edge/runs'), 'posthoc-st.json');
+  if (ph) {
+    L.push('', '## Nachtrag nach Einsicht (05.11.2026): Supertrader mit Prüfende 2026-09-30', '',
+      '**Außerhalb der vorregistrierten Familie.** Entschieden nach Einsicht in die blockierten Supertrader-Prüfwerte. Begründung: Der eingefrorene Snapshot von Strang B endet am 2026-09-30; eine Verlängerung würde den gepinnten Papierhandel gefährden. SPY, RSP und IWM sind auf dieselben Wochenstichtage gekürzt. Die p-Werte sind unkorrigiert, sie gehen nicht in die Holm-Familie der Studie ein, und es gibt kein Urteil „schlägt“. Die vorregistrierten Urteile oben bleiben „nicht bestimmbar (blockiert)“.', '');
+    const h3 = ['Variante', 'Zeitraum', 'CAGR', 'SPY', 'RSP', 'IWM', 'Sharpe', 'SPY Sharpe', 'Max. Verlust', 'p Log (roh)', 'p Sharpe (roh)'];
+    L.push('| ' + h3.join(' | ') + ' |', '|' + h3.map(() => '---').join('|') + '|');
+    for (const r of ph.results) {
+      if (r.state !== 'RUN') { L.push('| ' + r.id + ' | ' + r.state + ' |' + ' |'.repeat(h3.length - 2)); continue; }
+      const e = r.evaluation; let t = null; try { t = S.pairedTest(r.weeklyReturns, r.spyWeeklyReturns); } catch { t = null; }
+      L.push('| ' + r.id + ' | ' + e.dates.join(' bis ') + ' | ' + [pct(e.strategy.cagr), pct(e.SPY.cagr), pct(e.RSP.cagr), pct(e.IWM.cagr), num(e.strategy.sharpe), num(e.SPY.sharpe), pct(e.strategy.maxDrawdown), pv(t && t.pLog), pv(t && t.pSharpe)].join(' | ') + ' |');
+    }
+    L.push('', 'Prüfhinweis: Schon die kostenfreien Kurven von Strang B zeigen im Prüfteil maximale Verluste von −80 % bis −98 % (Turtle S1 −98,3 %, Turtle S2 −96,8 %, KK Breakout −89,7 %, Buyable Gap Up −79,4 %; Darvas −29,7 %). Das liegt vor dem Overlay und ist für Long-only-Regeln auffällig; Strang B prüft. Bis dahin sind diese Werte nicht belastbar.');
+    L.push('', 'C03 Darvas: auf Tagesbalken nicht bestimmbar (Annahme dominiert); die Spannweite PESSIMISTIC/OPTIMISTIC von Strang B wird ergänzt, sobald sie vorliegt.');
+  }
   L.push('', '## Grenzen', '',
     '- Das Prüffenster 2020–2026 wurde in früheren Projektstudien verwendet: vorab fixierte Replikation mit zeitlicher Trennung, kein unberührter Holdout. Bestätigung nur mit neuen Vorwärtsdaten.',
     '- Supertrader-Prüfung: Der eingefrorene Snapshot von Strang B endet am 2026-09-30; für den Stichtag 2026-10-02 fehlt der Wochenwert. Nach Protokoll wird das Fenster nicht verkürzt: alle zwölf Supertrader-Varianten sind im Prüfteil „nicht bestimmbar (blockiert)“ (Tests mit p = 1 in der Holm-Familie); ihre Kennzahlen bis 2026-09-25 stehen nur beschreibend in der Tabelle.',
