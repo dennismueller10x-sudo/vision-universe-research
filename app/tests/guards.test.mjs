@@ -170,3 +170,9 @@ test('Android: minSdk mindestens 24 (Google Play verlangt es fuer den automatisc
   const m = v.match(/minSdkVersion\s*=\s*(\d+)/);
   assert.ok(m && Number(m[1]) >= 24, 'minSdkVersion ' + (m && m[1]));
 });
+
+test('Android: Ziel-API mindestens 36 (Google Play lehnt API 35 fuer neue Apps ab, Stand 11/2026)', () => {
+  const v = read(path.join(app, 'android/variables.gradle'));
+  assert.ok(Number(v.match(/targetSdkVersion\s*=\s*(\d+)/)[1]) >= 36, 'targetSdkVersion');
+  assert.ok(Number(v.match(/compileSdkVersion\s*=\s*(\d+)/)[1]) >= 36, 'compileSdkVersion');
+});
