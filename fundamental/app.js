@@ -1575,7 +1575,7 @@
       var range = tg && isNum(tg.low) && isNum(tg.high) && tg.high > tg.low ? function (v) { return Math.max(0, Math.min(100, (v - tg.low) / (tg.high - tg.low) * 100)); } : null;
       put(box, 
         el('div', { class: 'fu-kgrid' }, [
-          el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Konsens' }), el('b', { class: 'fu-k-v', text: a.label || '–' }), el('small', { class: 'fu-k-s', text: a.total ? a.total + ' Einstufungen · ' + monthDe(L.period) : '' })]),
+          el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Analystenkonsens (Angabe Dritter)' }), el('b', { class: 'fu-k-v', text: a.label || '–' }), el('small', { class: 'fu-k-s', text: a.total ? a.total + ' Einstufungen · ' + monthDe(L.period) : '' })]),
           tg ? el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Kursziel (Mittel)' }), el('b', { class: 'fu-k-v fu-num', text: C.fmt({ kind: 'perShare' }, tg.mean, 'USD') }),
             el('small', { class: 'fu-k-s', text: isNum(price) ? (tg.mean >= price ? '+' : '−') + M.pct(Math.abs(tg.mean / price - 1)) + ' zum Kurs' : '' })]) : null
         ]),

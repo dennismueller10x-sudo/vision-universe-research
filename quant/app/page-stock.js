@@ -696,14 +696,14 @@
         el("span", { class: "qv2-status-ico", "aria-hidden": "true" }, [ico(on ? "check" : st.state === "UNAVAILABLE" ? "flat" : "clock")]),
         el("span", {}, [el("b", { text: status }), el("small", { text: statusSub })])]),
       el("div", { class: "q-levels qv2-levels", role: "group", "aria-label": "Szenario-Marken" }, [
-        cell("is-entry", "Interessant ab", sc && sc.entry ? zone(sc.entry) : null, sc && sc.entry ? ENTRY_WORDS[sc.entryStatus] || "Zone laut Szenario" : null),
+        cell("is-entry", "Einstiegsmarke der Methode", sc && sc.entry ? zone(sc.entry) : null, sc && sc.entry ? ENTRY_WORDS[sc.entryStatus] || "Zone laut Szenario" : null),
       ].concat(sc && sc.stop && sc.stop.price === invPrice
         /* Stop und Invalidation auf derselben Marke: eine Zeile statt zwei gleicher Zahlen. */
-        ? [cell("is-stop is-inv", "Stop / Ungültig unter", usd(invPrice), "Schluss darunter: Szenario ungültig")]
+        ? [cell("is-stop is-inv", "Stopp-Marke der Methode", usd(invPrice), "Schluss darunter: Szenario ungültig")]
         : [cell("is-stop", "Stop / Risiko", sc && sc.stop ? usd(sc.stop.price) : null, sc && sc.stop ? "technischer Stop" : null),
-          cell("is-inv", "Ungültig unter", typeof invPrice === "number" ? usd(invPrice) : null, typeof invPrice === "number" ? "Schluss darunter: Szenario ungültig" : null)]).concat(targets.length ? targets.map(function (t, i) { return cell("is-target", "Ziel " + (i + 1), zone(t), i ? null : "Zielzone (technisches Szenario)"); })
+          cell("is-inv", "Stopp-Marke der Methode", typeof invPrice === "number" ? usd(invPrice) : null, typeof invPrice === "number" ? "Schluss darunter: Szenario ungültig" : null)]).concat(targets.length ? targets.map(function (t, i) { return cell("is-target", "Zielzone " + (i + 1) + " der Methode", zone(t), i ? null : "technisches Szenario, keine Empfehlung"); })
         : [cell("is-target", "Zielzonen", null, null)]).concat(ts && ts.riskReward && typeof ts.riskReward.low === "number" ? [
-        el("div", { class: "is-rr q-rr" }, [el("span", { text: "Chance/Risiko" }),
+        el("div", { class: "is-rr q-rr" }, [el("span", { text: "Abstand Zielzone : Stopp-Marke (Methode)" }),
           el("b", { class: "num", text: "bis Ziel 1: " + ratio(ts.riskReward.low, ts.riskReward.high) }),
           typeof ts.riskReward.target2Low === "number" ? el("b", { class: "num", text: "bis Ziel 2: " + ratio(ts.riskReward.target2Low, ts.riskReward.target2High) }) : null])] : []))];
     var deep = [];
