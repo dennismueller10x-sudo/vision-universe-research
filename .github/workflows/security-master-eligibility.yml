@@ -14,6 +14,10 @@ on:
         description: 'Ergebnis committen (nur bei Gate COMMIT)'
         type: boolean
         default: false
+      approved_catchup:
+        description: 'Freigabeliste docs/data/security-master/eligibility-catchup-2026-11.json anwenden (Nachholen, PR mit Vorher/Nachher)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -43,12 +47,25 @@ jobs:
           node scripts/market/build-us-eligibility.mjs --master "$N/us-security-master.json" \
             --previous "$N/eligibility.json" --names "$N/company-names.json" \
             --out "$RUNNER_TEMP/elig/out" --scale-out "$RUNNER_TEMP/elig/scale"
+          # Vollstaendige Erzeugerkette (wie der committete Stand entstanden ist): ohne die beiden Schritte kaemen
+          # boersennotierte Anleihen und ETNs als Stammaktie ins Produkt (Probelauf 05.11.2026: 147).
+          E="$RUNNER_TEMP/elig"
+          node scripts/market/apply-name-layer-class.mjs --classes DEBT --eligibility "$E/out/eligibility.json" \
+            --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json" \
+            --names "$N/company-names.json"
+          mkdir -p "$E/exchange-directory"
+          node scripts/market/apply-exchange-directory.mjs --dir "$E/exchange-directory" --eligibility "$E/out/eligibility.json" \
+            --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json"
 
       - name: Gate (fail closed)
         id: gate
+        env:
+          IN_APPROVED: ${{ inputs.approved_catchup }}
         run: |
+          extra=()
+          if [ "$IN_APPROVED" = "true" ]; then extra=(--approved docs/data/security-master/eligibility-catchup-2026-11.json); fi
           set +e
-          node scripts/core/eligibility-gate.mjs --prev quant/data/market/security-master/eligibility.json \
+          node scripts/core/eligibility-gate.mjs "${extra[@]}" --prev quant/data/market/security-master/eligibility.json \
             --next "$RUNNER_TEMP/elig/out/eligibility.json" \
             --prev-universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json \
             --next-universe "$RUNNER_TEMP/elig/scale/universe-ELIGIBLE_US_EQUITY.json" \
