@@ -139,7 +139,7 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 .vu-status[data-tone=accent]{color:var(--vu-accent-text);background:var(--vu-accent-soft)}
 /* Balken: Anteil 0..100 ueber --v (Prozent). */
 .vu-bar{position:relative;height:6px;border-radius:6px;background:var(--vu-line);overflow:hidden}
-.vu-bar>i{position:absolute;inset:0 auto 0 0;width:calc(var(--v,0) * 1%);border-radius:inherit;background:var(--vu-accent-text)}
+.vu-bar>i{position:absolute;inset:0 auto 0 0;width:calc(var(--v,0) * 1%);border-radius:inherit;background:var(--vu-text)}
 .vu-bar[data-tone=good]>i{background:var(--vu-up)}.vu-bar[data-tone=bad]>i{background:var(--vu-down)}
 /* Rangliste: Rang, Name, Wert - Zeilen statt Karten. */
 .vu-rank{list-style:none;margin:0;padding:0;counter-reset:vu-rank}
