@@ -317,6 +317,60 @@
     return kids;
   }
 
+  /* Redesign 2027 (Q07-b, Schritt 5/6): Setup als Karte mit Fortschritt, knapp verfehlte Stile mit Regel-Haken,
+     Rückblick als schwarze Karte. Die bisherigen Inhalte stehen vollständig darunter (eager, damit Nachladen greift). */
+  /* Nur für feste VUUI-Bausteine (Urteil, Glyphe) ohne Daten im Markup; el() setzt bewusst kein innerHTML. */
+  function vuHtml(tag, cls, markup) { var n = document.createElement(tag); if (cls) n.className = cls; n.innerHTML = markup; return n; }
+  function keepBelow(title, node) {
+    return el("details", { class: "qx-more qv3-more" }, [el("summary", {}, [el("span", { text: title })]), el("div", { class: "qx-more-body" }, [node])]);
+  }
+  function askOf(label) {
+    var F = VM.FACTORS || {}, id = Object.keys(F).filter(function (k) { return F[k] && F[k].name === label; })[0];
+    return id && ASK[id] ? ASK[id] : label;
+  }
+  function styleV3(vm) {
+    var U = global.VUUI, s = vm.setup, st = vm.strategy, kids = [];
+    if (s.state !== "UNAVAILABLE") {
+      var n = s.stages.length, at = Math.max(0, s.stageIndex + 1);
+      var since = (s.asOf ? "Seit " + X.dateDe(s.asOf).replace(/\.\d{4}$/, ".") : "") + (s.previous && s.previous.label ? " (vorher: " + s.previous.label + ")" : "") + (s.asOf ? ". " : "");
+      kids.push(el("div", { class: "vu-box qv3-setup" }, [
+        el("div", { class: "qv3-setup-h" }, [el("b", { text: "Setup im Chart" }), el("span", { class: "vu-chip qv3-chip-o", text: "○ " + (s.label || "Kein Setup") })]),
+        el("p", { class: "vu-xs vu-mu", text: since + (s.next && s.next.text ? s.next.text : "") }),
+        el("div", { class: "qv3-prog", role: "img", "aria-label": "Stufe " + at + " von " + n }, [el("i", { style: "width:" + Math.round(100 * at / n) + "%" })])]));
+    }
+    if (st.state === "AVAILABLE") {
+      var all = [{ id: st.best.id, label: st.best.label, conditions: st.best.met.concat(st.best.notMet, st.best.open), fits: st.best.fits }].concat(st.others.map(function (o) {
+        return { id: o.id, label: o.label, conditions: o.conditions, fits: o.conditions.every(function (c) { return c.state === "MET"; }) };
+      }));
+      all.slice(0, 2).forEach(function (p) {
+        kids.push(el("a", { class: "vu-box qv3-strat-card", href: X.routes.strategy(p.id) }, [
+          el("div", { class: "qv3-setup-h" }, [el("b", { text: p.label }), vuHtml("span", null, U.verdict(p.fits ? "strong" : "mid", p.fits ? "Passt" : "Knapp verfehlt"))]),
+          el("ul", { class: "qv3-rules" }, p.conditions.map(function (c) {
+            var k = c.state === "MET" ? "check" : c.state === "NOT_MET" ? "x" : null;
+            return el("li", { class: "is-" + (c.state === "MET" ? "met" : c.state === "NOT_MET" ? "miss" : "open") }, [
+              k ? vuHtml("i", null, U.glyph(k, 13)) : el("i", { text: "–" }),
+              el("span", { text: askOf(c.label) + (c.threshold != null ? " " + (c.operator === "lte" ? "≤ " : "≥ ") + c.threshold : "") }),
+              el("b", { class: "num", text: c.value != null ? String(c.value) : "–" })]);
+          }))]));
+      });
+      var fitN = all.filter(function (p) { return p.fits; }).length;
+      kids.push(el("p", { class: "vu-xs vu-mu", text: "Erfüllt heute " + fitN + " von " + all.length + " Strategien." }));
+    } else kids.push(el("p", { class: "qx-small", text: st.text }));
+    return kids;
+  }
+  function historyV3(vm) {
+    var r = vm.replay, same = (r && r.levels || []).filter(function (lv) { return lv.id === "SAME_STOCK"; })[0];
+    if (!same || same.state !== "AVAILABLE") return [el("p", { class: "qx-small", text: same ? same.text : "Für diese Aktie liegt kein Rückblick vor." })];
+    var main = (same.horizons || []).filter(function (h) { return h.id === "m6" && h.sufficient; })[0] || (same.horizons || []).filter(function (h) { return h.sufficient; }).slice(-1)[0] || null;
+    var nach = function (label) { return "nach " + String(label || "").replace(/Monate$/, "Monaten"); };
+    return [el("div", { class: "vu-box vu-box--ink qv3-replay" }, [
+      el("p", { class: "qv3-replay-k", text: "Rückblick seit " + String(same.from).slice(0, 4) + " · diese Aktie" }),
+      el("p", { class: "qv3-replay-big" }, [el("b", { class: "num", text: same.episodes + "×" }), el("span", { text: " ähnliche Situation" + (same.episodes === 1 ? "" : "en") })]),
+      main ? el("p", { class: "qv3-replay-s", text: (main.positivePct || "–") + " der Fälle lagen " + nach(main.label) + " höher · typisch " + (main.median || "–") }) : null]),
+      el("div", { class: "qv3-evid" }, [el("span", { class: "vu-chip qv3-chip-o", text: main ? "● Evidenz beobachtet" : "○ Evidenz dünn" }),
+        el("span", { class: "vu-xs vu-mu", text: main ? "Beobachtet, nicht getestet: nur die Vergangenheit dieser Aktie." : same.episodes + " vergleichbare Fälle. Zu wenig für eine belastbare Aussage." })])];
+  }
+
   /* ------------------------------------------------ 04 Anlagestil */
   function strategySection(vm, change) {
     var s = vm.strategy, changeText = VM.assignmentChangeText(change);
@@ -932,13 +986,15 @@
     tabs.onclick = function (e) { var a = e.target.closest("a"); if (a && !swipe.on()) { hold = e.timeStamp + 1500; setCurrent(a.dataset.target); } };
     if (global.IntersectionObserver) {
       var spy = new global.IntersectionObserver(function (entries) {
-        var id;
+        var id, top = -Infinity;
         entries.forEach(function (e) {
           if (!e.isIntersecting) return;
           /* Mobil liegen 2-6 nebeneinander: dort entscheidet das Wischen (deck), oben nur der Ueberblick. */
           if (swipe.on()) setCurrent(e.target.id === "ueberblick" ? "ueberblick" : swipe.current());
-          /* Kommen zwei Karten einer Zeile zugleich ins Band (Desktop-Raster), gilt die erste - die linke. */
-          else id = id || e.target.id;
+          /* Liegen zwei Abschnitte zugleich im Band (Ende des vorigen, Anfang des naechsten), gilt der, der im Band
+             beginnt - der mit dem tiefsten oberen Rand. Zwei Karten einer Zeile (Desktop-Raster) beginnen gleich hoch:
+             dann gilt die erste, die linke. */
+          else if (e.boundingClientRect.top > top + 1) { top = e.boundingClientRect.top; id = e.target.id; }
         });
         if (id && entries[0].time > hold) setCurrent(id);
       }, { rootMargin: "-30% 0px -60% 0px" });
@@ -949,12 +1005,18 @@
         if (t < hold) return;
         if (!layout.isConnected) return;
         if (layout.getBoundingClientRect().bottom > global.innerHeight * 0.45) setCurrent("ueberblick");
+        /* Am Seitenende erreicht der letzte Abschnitt das Band nicht mehr: dann gilt er. */
+        else if (!swipe.on() && global.innerHeight + global.scrollY >= document.documentElement.scrollHeight - 2) { var last = tabs.querySelector("a[data-target]:last-of-type"); if (last) setCurrent(last.dataset.target); }
         else if (swipe.on() && tabs.querySelector("a[aria-current=true][data-target=ueberblick]")) setCurrent(swipe.current());
       };
       var onScroll = function (e) { if (hold > e.timeStamp) hold = e.timeStamp + 150; if (!topRaf) topRaf = (global.requestAnimationFrame || setTimeout)(onTop); };
       global.addEventListener("scroll", onScroll, { passive: true });
       disposers.push(function () { global.removeEventListener("scroll", onScroll); });
-      setTimeout(function () { TABS.forEach(function (t) { var n = document.getElementById(t[0]); if (n) spy.observe(n); }); }, 0);
+      /* Abschnitte entstehen teils erst nach dem Laden (Schritt 6 wartet auf die Evidenz): neu angehaengte Ziele werden nachbeobachtet. */
+      var watched = {}, watch = function () { TABS.forEach(function (t) { var n = document.getElementById(t[0]); if (n && watched[t[0]] !== n) { watched[t[0]] = n; spy.observe(n); } }); };
+      setTimeout(watch, 0);
+      var moRoot = document.getElementById("qx-main");
+      if (global.MutationObserver && moRoot) { var mo = new global.MutationObserver(watch); mo.observe(moRoot, { childList: true, subtree: true }); disposers.push(function () { mo.disconnect(); }); }
     }
 
     /* 1: Chart und daneben das Quant-Ergebnis. */
@@ -1023,6 +1085,11 @@
         return b;
       }));
       applyFilter("all");
+      /* Redesign 2027 (Q07, Schritt 4): zwei Kacheln „Besser / Schlechter geworden … von …“ vor der Liste. */
+      var total = vm.change.items.length, names = function (t) { return vm.change.items.filter(function (i) { return i.tone === t; }).map(function (i) { return i.group; }).filter(function (g, k, a) { return g && a.indexOf(g) === k; }).slice(0, 3).join(", "); };
+      changeKids.push(el("div", { class: "qv3-tally" }, [
+        el("div", { class: "qv3-tally-c" }, [el("small", { text: "Besser geworden" }), el("b", { class: "num", text: nGood + " von " + total }), el("span", { text: names("good") })]),
+        el("div", { class: "qv3-tally-c" }, [el("small", { text: "Schlechter geworden" }), el("b", { class: "num", text: nBad + " von " + total }), el("span", { text: names("bad") })])]));
       changeKids.push(chips, list || el("p", { class: "qx-small", text: "Keine deutliche Veränderung." }));
       /* Alle Punkte (auch unveraenderte und nicht messbare) und die Messweise in EINEM Aufklapper. */
       changeKids.push(X.more("Alle Veränderungen und wie sie gemessen werden", function () {
@@ -1035,7 +1102,7 @@
       }));
     } else changeKids.push(el("p", { class: "qx-small", text: vm.change.text }));
     changeKids.push(el("div", { class: "qv-now qv2-now" }, [el("h3", { class: "qv-now-h", text: "Was ist jetzt wichtig?" }), nowHost]));
-    grid.append(card(X.section("Was verändert sich gerade?", null, changeKids, null, "Aktuelle Veränderungen", "veraenderung")));
+    grid.append(card(global.VUUI ? X.section("Was hat sich zuletzt bewegt?", null, changeKids, null, "Veränderungen", "veraenderung") : X.section("Was verändert sich gerade?", null, changeKids, null, "Aktuelle Veränderungen", "veraenderung")));
     var lifecycleBox = el("div", { class: "q-lifecycle-host" });
     var cardPromise = api.getRadarCard ? api.getRadarCard(ticker).catch(function () { return null; }) : Promise.resolve(null);
     Promise.all([cardPromise,
@@ -1063,8 +1130,9 @@
         el("span", { text: k && k.state !== "WITHHELD" ? " Setup-Ergebnisse siehe Backtesting." : " Zu wenige echte Setup-Fälle für eine Aussage. " + (k ? closedKindSentence(k) : "") + " Setup-Ergebnisse werden nicht mit den marktweiten Signal-Backtests vermischt." }));
     });
     var setupSec = card(X.section("Wie weit ist die Aktie im Setup?", null,
-      [setupCard].concat(vm.setup.state !== "UNAVAILABLE" ? [X.more("Die Setup-Stufen im Detail", function () { return [setupEvidence].concat(setupSection(vm)); })] : [setupEvidence]), null, "Setup & Strategie", "setup"));
-    grid.append(setupSec);
+      [setupCard].concat(vm.setup.state !== "UNAVAILABLE" ? [X.more("Die Setup-Stufen im Detail", function () { return [setupEvidence].concat(setupSection(vm)); })] : [setupEvidence]), null, global.VUUI ? null : "Setup & Strategie", global.VUUI ? null : "setup"));
+    if (global.VUUI) grid.append(card(X.section("Passt die Aktie gerade zu einem Stil?", null, styleV3(vm).concat([keepBelow("Einstieg, Stop, Ziele und alle Bedingungen", setupSec)]), null, "Setup & Strategie", "setup")));
+    else grid.append(setupSec);
     var setupKids = [sub(X.section("Welche Strategie passt?", null, strategySection(vm, assignment), { href: X.routes.strategies(), label: "Alle Strategien" }, null, "strategie"))];
     /* Absagen stehen EINMAL, gesammelt unter "Daten & Methodik" - nicht als
        Stapel von Hinweisen quer ueber die Seite. Der technische Ausblick
@@ -1083,7 +1151,9 @@
     var trackHost = el("div", { class: "q-track-host", "aria-live": "polite" }, [el("p", { class: "qx-small", text: "Radar-Status wird geladen …" })]);
     var alertHost = global.QXEvidence && global.QXEvidence.alertPanel ? global.QXEvidence.alertPanel(ticker) : null;
     var radarMore = el("details", { class: "vu-more qv-more", id: "radar-status" }, [el("summary", { text: "Radar-Status: was Quant für diese Aktie verfolgt" }), el("div", { class: "vu-more-body qv-more-body" }, [trackHost, alertHost].filter(Boolean))]);
-    grid.append(card(X.section("Was geschah früher in ähnlichen Situationen?", null, replaySection(vm, words, evidence, signalHost, evOverview).concat([radarMore]), { href: X.routes.method("historie"), label: "Methodik" }, "Historischer Vergleich", "historie")));
+    var histOld = card(X.section("Was geschah früher in ähnlichen Situationen?", null, replaySection(vm, words, evidence, signalHost, evOverview).concat([radarMore]), { href: X.routes.method("historie"), label: "Methodik" }, global.VUUI ? null : "Historischer Vergleich", global.VUUI ? null : "historie"));
+    if (global.VUUI) grid.append(card(X.section("Was geschah früher bei " + (displayName || ticker) + "?", null, historyV3(vm).concat([keepBelow("Alle Belege: diese Aktie, marktweit, Zertifizierung, Radar", histOld)]), { href: X.routes.method("historie"), label: "Methodik" }, "Historie", "historie")));
+    else grid.append(histOld);
     cardPromise.then(function (rc) {
       if (!signalHost.isConnected) return;
       var card = rc && rc.state === "AVAILABLE" ? rc.card : null;
