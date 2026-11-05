@@ -639,16 +639,17 @@
     if (!L || !L.decisions || !L.decisions.length) {
       append(main, U.blank('Der Start steht bevor. Die erste Entscheidung wird gerade festgeschrieben.'));
     } else {
-      var cur = L.current || {}, last = L.decisions[L.decisions.length - 1], hs = cur.holdings || [];
-      var w = hs.length ? U.num(hs[0].weight * 100, 0) + ' %' : '–';
-      append(main, kick('Musterdepot heute', hs.length + ' Aktien, je ' + w) +
-        '<div class="vu-grid">' + U.tile('Entschieden am', dDe(cur.date), last.kind === 'START' ? 'Start' : 'Monatsende') + U.tile('Nächste Entscheidung', dDe(L.nextDecision), 'nach Börsenschluss') + '</div>' +
-        '<div class="st-r-hold">' + hs.map(function (x) { var isNew = last.kind !== 'START' && (last.buys || []).indexOf(x.ticker) >= 0; return '<a class="vu-chip' + (isNew ? ' vu-chip--lime' : '') + '" href="' + esc(stockHref(x.ticker)) + '">' + esc(x.ticker) + '</a>'; }).join('') + '</div>' +
-        '<div class="st-r-legend"><span><i class="s3"></i>neu am ' + dShort(last.date) + '</span><span class="vu-mu">grau: gehalten</span></div>' +
-        '<div class="st-r-gap">' + U.help('Veröffentlicht werden Titel und Gewichte, keine Renditen. Kennzahlen folgen, wenn die Rechte geklärt sind. Umsetzung zur Eröffnung am ' + (last.executeOn ? dDe(last.executeOn) : 'nächsten Handelstag') + '.') + '</div>' +
+      /* Owner-Linie 05.11.2026 (L3): kein aktueller Bestand, kein Rein/Raus. Je Entscheidung Zahl der Titel und Fingerabdruck;
+         die Titel erst, wenn der Stichtag mindestens 365 Tage zurückliegt. */
+      var last = L.decisions[L.decisions.length - 1], lag = L.holdingsLagDays || 365;
+      append(main, kick('Musterdepot', (last.count || 0) + ' Aktien, gleich gewichtet') +
+        '<div class="vu-grid">' + U.tile('Zuletzt entschieden', dDe(last.date), last.kind === 'START' ? 'Start' : 'Monatsende') + U.tile('Nächste Entscheidung', dDe(L.nextDecision), 'nach Börsenschluss') + '</div>' +
+        '<div class="st-r-gap">' + U.help('Die Zusammensetzung erscheint erst, wenn der Stichtag mindestens ' + lag + ' Tage zurückliegt. Bis dahin belegt ein Fingerabdruck (SHA-256), dass die Entscheidung vorher festgeschrieben war. Keine Kurse, keine Renditen, keine Empfehlung.') + '</div>' +
         kick('Protokoll', 'Jede Entscheidung mit Zeitstempel') + L.decisions.slice().reverse().map(function (d) {
-          var start = d.kind === 'START' || !(d.sells || []).length && L.decisions.indexOf(d) === 0;
-          return '<div class="vu-box st-r-dec"><div class="vu-ltag">' + dDe(d.date) + ' · ' + (start ? 'Start' : 'Monatsende') + '</div><p><b>Rein:</b> ' + esc((d.buys || []).join(', ') || '–') + '</p>' + (start ? '' : '<p><b>Raus:</b> ' + esc((d.sells || []).join(', ') || '–') + '</p>') + '<span class="vu-xs vu-mu">festgeschrieben ' + dDe(d.decidedAt) + '</span></div>';
+          var shown = d.holdings && d.holdings.length;
+          return '<div class="vu-box st-r-dec"><div class="vu-ltag">' + dDe(d.date) + ' · ' + (d.kind === 'START' ? 'Start' : 'Monatsende') + ' · ' + (d.count || 0) + ' Titel</div>' +
+            (shown ? '<p>' + d.holdings.map(function (x) { return esc(x.ticker); }).join(', ') + '</p>' : '<p class="vu-xs vu-mu">Zusammensetzung ab ' + dDe(new Date(Date.parse(d.date + 'T00:00:00Z') + lag * 864e5).toISOString().slice(0, 10)) + ' · Fingerabdruck ' + esc(String(d.holdingsSha256 || '').slice(0, 12)) + '…</p>') +
+            '<span class="vu-xs vu-mu">festgeschrieben ' + dDe(d.decidedAt) + '</span></div>';
         }).join(''));
     }
     var hist = X.HOUSE_HISTORY || [], keys = ['H1', 'H2', 'H4', 'G', '→'];

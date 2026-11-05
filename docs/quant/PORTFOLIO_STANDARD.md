@@ -88,3 +88,11 @@ Nicht bereinigte Reverse-Splits erscheinen als Tagessprung auf ein Vielfaches. E
 Die Musterportfolios werden deshalb zusätzlich mit der DQ-K5-Quarantäne von Supertrader gerechnet (`model-portfolios.cjs#applyDq`). Regel: Sitzungsrelativ der Gesamtrendite ≥ 5 oder ≤ 1/5. Der Titel wird an dieser Stelle geschnitten, nicht korrigiert. Gerechnet wird in zwei Lesarten: BOOK rechnet zum Kurs der Sprungwoche ab, PRIOR zum Kurs der Woche davor.
 
 Entscheidung (05.11.2026): Ein Urteil wie „schlägt den Index“ oder „schlägt ihn nicht“ gilt nur, wenn es ohne Filter, mit BOOK und mit PRIOR gleich ausfällt. Weicht eine Fassung ab, zählt die vorsichtigere.
+
+## Bestände: nur verzögert und historisch
+
+Owner-Linie (Plan §11): Musterportfolios zeigen den Forschungsverlauf. Sie zeigen keine heutige Kaufliste und kein Protokoll, was rein- oder rausgeht.
+
+Ergebnisdatei und Vorschau-Paket enthalten deshalb nur den Bestand der letzten Umschichtung, die mindestens 365 Tage vor dem Ende des Zeitraums liegt (`holdingsSnapshot`, `portfolio-backtest.cjs#delayedHoldings`). Die Ziele der letzten Umschichtung werden nicht mehr ausgegeben. Der Worker lehnt ein Paket mit aktuellen oder zu jungen Beständen ab.
+
+Entscheidung (05.11.2026): Die Verzögerung beträgt 12 Monate.

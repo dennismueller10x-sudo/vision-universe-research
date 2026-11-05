@@ -1530,23 +1530,18 @@
     if (!L || !L.decisions || !L.decisions.length) {
       main.appendChild(sec('Modelldepot', [emptyBox('Start steht bevor', 'Die erste Entscheidung wird gerade festgeschrieben. Danach erscheinen hier die 20 Titel des Depots.')], { kicker: 'Vorwärtslauf' }));
     } else {
-      var cur = L.current || {}, last = L.decisions[L.decisions.length - 1];
+      // Owner-Linie 05.11.2026 (L3): kein aktueller Bestand, kein Rein/Raus; Titel erst nach mindestens 365 Tagen
+      var last = L.decisions[L.decisions.length - 1], lag = L.holdingsLagDays || 365;
       var kids = [h('div', { class: 'st-mphead' }, [
-        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Titel' }), h('strong', { text: String((cur.holdings || []).length) })]),
-        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Gewicht je Titel' }), h('strong', { text: cur.holdings && cur.holdings.length ? pct(1 / cur.holdings.length, 0) : '–' })]),
-        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Entschieden am' }), h('strong', { text: dateDe(cur.date) })]),
+        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Titel' }), h('strong', { text: String(last.count || 0) })]),
+        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Zuletzt entschieden' }), h('strong', { text: dateDe(last.date) })]),
         h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Nächste Entscheidung' }), h('strong', { text: dateDe(L.nextDecision) })]),
       ])];
-      kids.push(h('ul', { class: 'st-mplist st-grid3' }, (cur.holdings || []).map(function (x) {
-        return h('li', null, [h('a', { href: '/quant/#/aktie/' + encodeURIComponent(x.ticker) }, [
-          h('div', { class: 'r1' }, [h('strong', { text: x.ticker }), h('span', { class: 'w', text: pct(x.weight, 1) })]),
-          h('div', { class: 'r2', text: (last.buys || []).indexOf(x.ticker) >= 0 ? 'neu aufgenommen am ' + dateDe(last.date) : 'gehalten' }),
-        ])]);
-      })));
-      kids.push(h('p', { class: 'st-hint', text: 'Umsetzung zur Eröffnung am ' + (last.executeOn ? dateDe(last.executeOn) : 'nächsten Handelstag') + '. Live seit ' + dateDe(L.liveSince) + '. Veröffentlicht werden Titel und Zielgewichte, keine Kurse und keine Renditen.' }));
-      main.appendChild(sec('Modelldepot', kids, { kicker: 'Aktuelle Zusammensetzung' }));
+      kids.push(h('p', { class: 'st-hint', text: 'Live seit ' + dateDe(L.liveSince) + '. Die Zusammensetzung erscheint erst, wenn der Stichtag mindestens ' + lag + ' Tage zurückliegt; bis dahin belegt ein Fingerabdruck (SHA-256), dass die Entscheidung vorher festgeschrieben war. Keine Kurse, keine Renditen, keine Empfehlung.' }));
+      main.appendChild(sec('Modelldepot', kids, { kicker: 'Vorwärtslauf' }));
       main.appendChild(sec('Protokoll', [h('ul', { class: 'st-ul' }, L.decisions.slice().reverse().map(function (d) {
-        return h('li', { text: dateDe(d.date) + (d.kind === 'START' ? ' · Start' : ' · Monatsende') + ' · Aufnahme: ' + ((d.buys || []).join(', ') || '–') + ' · Abgabe: ' + ((d.sells || []).join(', ') || '–') + ' · festgeschrieben ' + dateDe(d.decidedAt) });
+        var shown = d.holdings && d.holdings.length;
+        return h('li', { text: dateDe(d.date) + (d.kind === 'START' ? ' · Start' : ' · Monatsende') + ' · ' + (d.count || 0) + ' Titel · ' + (shown ? d.holdings.map(function (x) { return x.ticker; }).join(', ') : 'Fingerabdruck ' + String(d.holdingsSha256 || '').slice(0, 12) + '…') + ' · festgeschrieben ' + dateDe(d.decidedAt) });
       }))], { kicker: 'Jede Entscheidung mit Zeitstempel' }));
     }
     main.appendChild(sec('Regeln', [h('ol', { class: 'st-chain' }, ((L && L.rules) || []).map(function (r) { return h('li', null, [h('p', { text: r })]); })),

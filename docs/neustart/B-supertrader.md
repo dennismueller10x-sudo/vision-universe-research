@@ -1,4 +1,4 @@
-# Strang B – Supertrader-Backtest (Stand 05.11.2026, nachmittags)
+# Strang B – Supertrader-Backtest (Stand 05.11.2026, abends)
 
 Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Produktdokument: [SUPERTRADER_9_HANDOVER.md](../SUPERTRADER_9_HANDOVER.md) §0.1.
 Alle Backtest-Ergebnisse sind **Forschung, nicht zertifiziert**. Keine öffentlichen Renditeaussagen ohne Owner.
@@ -15,7 +15,17 @@ Alle Backtest-Ergebnisse sind **Forschung, nicht zertifiziert**. Keine öffentli
   - E3-Export für Strang C (#1395).
   - Plausibilitätsprüfung Darvas/KK/Turtle: kein Umsetzungsfehler. Bei Darvas hängt das Ergebnis vor allem an der Annahme über die Reihenfolge innerhalb eines Balkens (#1408).
   - Screener-Kriterien (Z5, #1389).
-  - C08-Treueprüfung: Regelabgleich (#1420, `docs/research/supertrader/C08-TREUE.md`), die Forschungsvarianten FID-1/FID-2 (#1418) und FID-2L mit Liquiditätsfilter (#1422). Der Lauf mit FID-1/FID-2 läuft.
+  - **C08 abgeschlossen:**
+    - Weg: Regelabgleich (#1420), Diagnose der 16 belegten Trades (#1431, #1435), Varianten FID-1 bis FID-3 (#1418, #1422, #1436), dann FID-4 als vorab festgelegte letzte Fassung mit Erfolgsregel (#1442).
+    - FID-4 hat die Regel auf DEV nicht erfüllt (Lauf 42060179992). Deshalb kein Holdout und keine weitere Variante. Ergebnis: „Erkennung je Trade, Portfolio nicht bestätigt“.
+    - Bericht: `docs/research/supertrader/C08-TREUE.md`.
+  - **C06/C07 Minervini abgeschlossen:**
+    - Weg: Referenz gegen 13 belegte Trades (#1447, Lauf 42064067482), dann FID-1 vorab festgelegt (#1460: RS-Proxy mindestens 70, je Tag höchstens 3 nach RS, FREEROLL_2R).
+    - FID-1 hat die Regel auf DEV bei keiner der beiden Methoden erfüllt (Lauf 42080416659). Kein Holdout, keine weitere Variante. Ergebnis: „Erkennung gemessen, Portfolio nicht bestätigt“.
+    - Der Holdout 2008–2015 ist weiterhin unberührt.
+  - **Owner-Linie „keine Kauf- oder Verkaufsempfehlungen“ (L2/L3):**
+    - Die SF8-Ansichten tragen auch auf der Stufe MODELED keinen Plan und keine Order- oder Stoppmarke mehr (#1451).
+    - Das öffentliche Ledger der Hausstrategie hat keinen aktuellen Bestand und kein Rein/Raus-Protokoll mehr; Titel erscheinen erst nach 365 Tagen (#1452, umgestellt in Lauf 42082418848).
 - **Papierhandel SF6-PAPER-2027 eingeschaltet** (#1354): Protokoll 1.2.0 ist festgeschrieben (#1270, R1–R6, darunter R6 41864439485), Registry #1272 und #1273, E-P1 `COUNT_ONLY`, E-P2 Kappung 4. Der Wächter ist bis zum 31.12. untätig und zeichnet ab dem 04.01.2027 auf.
 - Security Master 1.3.0 ist produktiv (Strang A, #1347). Damit ist S6 erfüllt, und die Eingangsprüfung stoppt am 11.11. nicht.
 - Überholte Entwürfe geschlossen: #1099, #1142, #1315.
@@ -23,8 +33,10 @@ Alle Backtest-Ergebnisse sind **Forschung, nicht zertifiziert**. Keine öffentli
 ## Offen
 - Dezember: F1–F3 (Forward-Namensraum befüllen) und ein Core-PR, der den Registry-Eintrag `supertrader-paper-2027-log` auf `ACTIVATING` stellt (mit JSONL-Leser), vor dem 04.01.2027.
 - Kandidaten-Tageslauf: `SF8_AUTO_PUBLISH=true` hat der Owner am 05.11. gesetzt; der Workflow sieht die Variable (Lauf 42031553316: `AUTO_SWITCH: true`). Der erste automatische Lauf ist zu prüfen; danach entfallen die manuellen Läufe A und B.
+- Nach der ersten Veröffentlichung ohne Pläne: Core-PR, der DQ-SF8-4 auf alle Stufen ausweitet.
+- L2 mit D2 (#1446): Die Marken „Marke/Grenze/Stop“ im Chart von `st-redesign.js` (aus `signals.json`) entfernen, danach die Felder aus dem Erzeuger der Signaldatei nehmen.
 - Gate A ist noch nicht umgebaut (Strang A plant Vertragstests). C04–C13 bleiben „in Forschung“.
-- C08: R-Verteilung und goldene Trades für FID-1/FID-2 auswerten, dann ein eigener Lauf für FID-2L. Danach die Fassung wählen, die einmal auf dem Holdout bestätigt wird (Regel vorher festschreiben). Anschließend dasselbe für C06/C07.
+- Weitere Forschungsvarianten nur mit neuem Auftrag (Steuerung 05.11.).
 - Discovery-Regression NM3 (Firmennamen nach Security Master 1.3.0) und die Quant-Regression sind auf `main` rot. Sie gehören zu Strang A, C bzw. D und sind kein Supertrader-Thema. Supertrader-PRs werden bei sonst grünen Gates gemergt.
 - C09-Entwürfe #1262 und #1263 ruhen, weil C09 in Forschung ist.
 
