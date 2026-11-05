@@ -54,11 +54,13 @@ V1 sind C01, C02, C03, C08 und C12; die übrigen acht Methoden stehen im Produkt
 - **PS-C08-SETUP-PROXY:** CONSOLIDATION_10 ist für die Forschung tragfähig (CC-3 bleibt offen), der historische Test misst die Referenz ohne Momentum-Auswahl.
 - **PS-C12-READINGS:** 50-Sitzungen-Volumenfenster und Verletzungslesart LATER_DAYS (FAQ); NEXT_DAY bleibt Variante.
 - **FP-ST-03:** Option A, PIT-SIC-Gruppen aus EDGAR als Forschungsstudie; die Referenz ohne Gruppen bleibt hashgleich.
-- **FP-ST-05:** Option A, C06 zusätzlich als manuelle Methode (C); die Buchbeschaffung braucht als Ausgabe die Owner-Freigabe.
+- **FP-ST-05:** Owner-Entscheidung 05.11.2026: kein Buchkauf. Das Original war nur für CC-1 (Zertifizierung) nötig, und die ist keine Voraussetzung mehr. Die Minervini-Regeln bleiben auf Basis der Übersetzungen und der W-MIN18-Antworten. C06 wird zusätzlich als manuelle Methode geführt (Option C).
 
 - **Audit am letzten Handelstag:** Ein Kauf am letzten Handelstag vor einem Delisting (Order am Vortag scharf, Füllung zur Eröffnung, Abrechnung zum letzten Kurs) ist ausführbar und wird im Audit `st9-hist-execution-1.2.0` gezählt, nicht als Verstoß gewertet; nur ein Kauf danach bleibt ein Verstoß. Die Engines bleiben unverändert (ihr Code ist in SF6-PAPER-2027 gepinnt). Anlass: V13-Studie 41861419543 und Top-5-Lauf 41869479235 mit je 1–5 solchen Käufen je Methode.
 
+- **Top-5-Backtest nach der Prüfung durch Strang E (`st-hist-top5-1.1.0`):** Der Lauf weist den Delisting-Erlös als Sensitivität aus (100 / 70 / 0 % des letzten Schlusses, 100 % bleibt Referenz). DQ-K5 wird als Sensitivität mitgerechnet (dieselben Referenzen ohne Quarantäne). Gezählt werden die Endursachen der Population (DATA_GAP = zensiert) und die Austritte je Methode. Ein nicht bestandener Ausführungsaudit beendet den Lauf mit Exit 4 (fail closed). Grenze: Der Audit prüft Stopps und Füllungen teils mit den Leveln der Engine; Einstiegs- und Add-Trigger leitet er nicht unabhängig her. Die Ergebnisse sind daher „geprüft auf Buchhaltung und Ausführungsregeln“, nicht „unabhängig reproduziert“.
 - **Screener-Kriterien (Plan §7 Z5):** `scripts/supertrader/source-faithful/product/screener-export.mjs#screenerColumns` formt den veröffentlichten Kandidatenstand (`supertrader/data/sf-candidates/index.json`) je Ticker in Spalten um: Methoden, V1 bzw. in Forschung, höchste Stufe je Ticker und je Methode, Datenstand, Etikett „Research, keine Empfehlung“. Es ist kein neues Artefakt und kein Fachmodell. Den Einbau in `scripts/screener/build-universe.mjs` übernimmt der Screener-Erzeuger (Strang A).
+- **FP-ST-01:** Owner-Entscheidung 05.11.2026: keine weiteren Datenanbieter und auch keine Anfragen. Kapitalmaßnahmen kommen nur aus Tiingo und Marketstack. Die 83 ungeklärten Fälle bleiben ausgeschlossen bzw. werden als Sensitivität ausgewiesen; CC-5 bleibt damit offen.
 
 Der Tagesstand des Strangs steht in `docs/neustart/B-supertrader.md`.
 
