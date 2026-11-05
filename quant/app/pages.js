@@ -956,7 +956,8 @@
         el("b", { class: "num", text: ok ? String(Math.round(v)) : "–" })]);
     }));
   }
-  async function strategyDetail(main, ctx, p, ix, index, contract) {
+  async function strategyDetail(main, ctx, p, ix, index, contract, legacy) {
+    if (global.VUUI && p && !legacy) return strategyDetailV3(main, ctx, p, ix, index, contract);
     main.append(el("a", { class: "v2-back qx-back", href: X.routes.strategies(), text: "← Strategien" }));
     if (!p) { main.append(el("h1", { class: "qx-h1", text: "Strategie nicht gefunden" }), X.notice("Unbekannte Strategie", "Diese Strategie gibt es in der veröffentlichten Methodik nicht.")); return; }
     document.title = p.label + " – Quant-Strategie · Vision Universe®";
@@ -1017,6 +1018,59 @@
     main.append(X.actions([X.btn("Methodik der Strategien", X.routes.method("strategien"), "secondary"),
       X.btn("Im Quant Screener öffnen", X.routes.screenerPro("query=" + encodeURIComponent(global.VUScreenerWorkspace.encode(global.VUScreenerWorkspace.build(p.conditions.map(function (c) { return { field: c.field, operator: c.operator, value: c.value, scale: "raw" }; }), [{ field: p.conditions[0].field, direction: "desc" }])))), "secondary")]),
       el("p", { class: "qx-small", text: "Keine Erfolgs- oder Trefferquote: Ein Strategy Match zählt erfüllte Bedingungen. Methodik " + contract.methodologyVersion + "." }));
+  }
+
+  /* Redesign 2027 (Folie Q03, q03-b): Titel und Satz, zwei Kacheln, Regeln als Fragen mit Schwelle, bekannte Namen als
+     Aktienzeilen (C10), neu seit gestern, Melden (Z4: bald), Knopf in den Screener. Die bisherige Auswertung
+     (alle Treffer mit Balken, „Was verhindert einen Match?“) steht vollständig unter „Mehr zu dieser Strategie“. */
+  var ASK_STRAT = { growth: "Wächst die Firma?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs?", momentum: "Läuft der Kurs gut?",
+    value: "Ist sie günstig?", quality: "Sind die Zahlen solide?", revisions: "Heben Analysten Schätzungen an?" };
+  async function strategyDetailV3(main, ctx, p, ix, index, contract) {
+    var U = global.VUUI, page = el("div", { class: "vu-ui qv3 qv3-sdetail" }), html = function (h) { var d = el("div"); d.innerHTML = h; return d; };
+    document.title = p.label + " – Quant-Strategie · Vision Universe®";
+    main.append(page);
+    var name = p.label.split(" · ")[0], members = (ix && ix.tickers) || [];
+    var countable = ix && typeof ix.count === "number" && (!ix.availability || ix.availability.state === "AVAILABLE");
+    var screening = await ctx.api.getFactorEvidenceScreening().catch(function () { return null; });
+    var rated = screening && screening.rows ? screening.rows.length : null;
+    var he = index && index.historicalEvidence, tr = he && (he.transitions || []).filter(function (t) { return t.profileId === p.profileId; })[0];
+    var inN = tr ? (tr.entered || []).length : null, outN = tr ? (tr.exited || []).length : null;
+    var rules = p.conditions.map(function (c) {
+      var short = FACTOR_SHORT[c.id] ? (VM.FACTORS[c.id] ? VM.FACTORS[c.id].name : c.id) : c.id;
+      return '<div class="qv3-li"><span><b class="vu-sm">' + U.esc(ASK_STRAT[c.id] || short) + '</b><span class="vu-xs vu-mu">' + U.esc(short) + "</span></span>" +
+        '<span class="vu-chip vu-chip--on qv3-rule-v">' + U.glyph("check", 14) + U.esc((c.operator === "lte" ? "bis " : "ab ") + c.value) + "</span></div>";
+    }).join("");
+    var first = p.conditions[0], firstName = first && VM.FACTORS[first.id] ? VM.FACTORS[first.id].name : null;
+    /* Bekannte Namen zuerst: redaktionelle Bekanntheit aus Discover (discover/config/company-recognition.json), Taetigkeit als Unterzeile. */
+    var rec = await fetch("/discover/config/company-recognition.json", { cache: "default" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    var recBy = (rec && rec.companies) || {}, tierOf = function (t) { return recBy[t] && recBy[t].tier ? recBy[t].tier : 9; };
+    var known = members.slice().sort(function (a, b) { return tierOf(a) - tierOf(b); });
+    var listHref = X.routes.screenerPro("query=" + encodeURIComponent(global.VUScreenerWorkspace.encode(global.VUScreenerWorkspace.build(p.conditions.map(function (c) { return { field: c.field, operator: c.operator, value: c.value }; })))));
+    var entered = tr ? (ctx.commonFirst ? ctx.commonFirst((tr.entered || []).slice()) : (tr.entered || []).slice()) : [];
+    var h = '<a class="qv3-back" href="' + U.esc(X.routes.strategies()) + '"><span class="vu-round" aria-hidden="true">' + U.glyph("back", 18) + '</span><span class="vu-sm vu-mu">Strategien</span></a>' +
+      '<p class="vu-ltag" style="margin-top:12px">Strategie</p><h1 class="vu-lt">' + U.esc(name) + '</h1><p class="vu-lead">' + U.esc(p.plain) + "</p>" +
+      '<div class="vu-grid" style="margin-top:12px">' + U.tile("Erfüllen heute", countable ? ix.count.toLocaleString("de-DE") + " Aktien" : "nicht prüfbar", rated ? "von " + rated.toLocaleString("de-DE") + " bewerteten" : "") +
+      U.tile("Seit gestern", inN == null ? "–" : "+" + inN + " · −" + outN, "neu · herausgefallen") + "</div>" +
+      U.sect("Die Regeln") + '<div class="vu-box qv3-liste">' + rules + "</div>" +
+      (firstName && VM.FACTORS[first.id].measures ? '<div style="margin-top:8px">' + U.help(firstName + ": " + VM.FACTORS[first.id].measures) + "</div>" : "") +
+      (countable && members.length ? U.sect("Bekannte Namen in der Liste", { href: "#qv3-all", link: "Alle " + members.length.toLocaleString("de-DE") }) +
+        '<div class="qv3-rows">' + known.slice(0, 5).map(function (t) { return U.stockRow({ ticker: t, name: nameOf(ctx, t) || t, sub: recBy[t] && recBy[t].was ? recBy[t].was : t, href: X.routes.stock(t), noPrice: true }); }).join("") + "</div>" :
+        '<div class="vu-box vu-box--line" style="margin-top:14px">' + U.verdict("none", countable ? "Heute kein Treffer" : "Nicht prüfbar") + '<p class="vu-xs vu-mu" style="margin:6px 0 0">' + U.esc(countable ? "Keine Aktie erfüllt derzeit alle Regeln." : VM.reasonText(ix && ix.availability && ix.availability.reason, "Eine benötigte Eigenschaft hat für keine Aktie Werte.")) + "</p></div>") +
+      (entered.length ? U.sect("Neu seit gestern") + '<div class="vu-chips qv3-new">' + entered.slice(0, 2).map(function (t) { return '<a class="vu-chip" href="' + U.esc(X.routes.stock(t)) + '">' + U.esc(nameOf(ctx, t) || t) + "</a>"; }).join("") +
+        (entered.length > 2 ? '<span class="vu-chip">+' + (entered.length - 2) + " weitere</span>" : "") + "</div>" : "") +
+      '<div class="vu-box vu-box--line qv3-notify"><span class="vu-round" aria-hidden="true">' + U.glyph("bell", 18) + '</span><span class="qv3-notify-t"><b class="vu-sm">Melden, wenn eine Aktie neu dazukommt</b><span class="vu-xs vu-mu">über Mein Bereich</span></span>' + U.verdict("none", "bald") + "</div>" +
+      '<a class="vu-btn vu-btn--ink qv3-cta" href="' + U.esc(listHref) + '">Im Screener öffnen und anpassen</a>';
+    page.append(html(h));
+    /* Alles Bisherige bleibt erreichbar: volle Trefferliste mit Balken, Veränderung und „Was verhindert einen Match?“. */
+    var more = el("details", { class: "qv3-more", id: "qv3-all" }, [el("summary", { text: "Mehr zu dieser Strategie" })]);
+    page.append(more);
+    var legacy = el("div");
+    more.append(legacy);
+    await strategyDetail(legacy, ctx, p, ix, index, contract, true);
+    var old = legacy.querySelector(".qx-back"); if (old) old.remove();
+    var oldH = legacy.querySelector("h1"); if (oldH) oldH.replaceWith(el("h2", { class: "qx-h2", text: "Alle Treffer und Bedingungen" }));
+    if (location.hash.indexOf("#qv3-all") >= 0) more.open = true;
+    page.querySelector('a[href="#qv3-all"]') && page.querySelector('a[href="#qv3-all"]').addEventListener("click", function (e) { e.preventDefault(); more.open = true; more.scrollIntoView({ behavior: "smooth", block: "start" }); });
   }
 
   /* ============================================================== AKTIEN */
