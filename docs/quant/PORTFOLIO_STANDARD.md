@@ -80,3 +80,11 @@ python3 -I scripts/quant/verify-portfolio-construction.py --input cases.json   #
   node scripts/quant/portfolio/model-portfolios.cjs --out /tmp/mp.json [--fundamentals DIR]
   ```
   Nur Kursrendite und nur heutige Titel; als Survivorship-Lauf gekennzeichnet.
+
+## Datenqualität: Kurssprünge (DQ-K5)
+
+Nicht bereinigte Reverse-Splits erscheinen als Tagessprung auf ein Vielfaches. Ein Hinweis von Strang G am 05.11.2026 nennt KALA, VVOS und JSPR um den Jahreswechsel 2022/23. Solche Sprünge schönen Musterportfolios nach oben.
+
+Die Musterportfolios werden deshalb zusätzlich mit der DQ-K5-Quarantäne von Supertrader gerechnet (`model-portfolios.cjs#applyDq`). Regel: Sitzungsrelativ der Gesamtrendite ≥ 5 oder ≤ 1/5. Der Titel wird an dieser Stelle geschnitten, nicht korrigiert. Gerechnet wird in zwei Lesarten: BOOK rechnet zum Kurs der Sprungwoche ab, PRIOR zum Kurs der Woche davor.
+
+Entscheidung (05.11.2026): Ein Urteil wie „schlägt den Index“ oder „schlägt ihn nicht“ gilt nur, wenn es ohne Filter, mit BOOK und mit PRIOR gleich ausfällt. Weicht eine Fassung ab, zählt die vorsichtigere.

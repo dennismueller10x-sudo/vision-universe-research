@@ -34,7 +34,7 @@ function args(argv) {
     const k = argv[i], v = argv[i + 1];
     if (k === '--out') { a.out = v; i++; } else if (k === '--fundamentals') { a.fundamentals = v; i++; } else if (k === '--work-dir') { a.workDir = v; i++; }
     else if (k === '--delisted-dir') { a.delistedDir = v; i++; } else if (k === '--delisted-raw-dir') { a.delistedRawDir = v; i++; } else if (k === '--profiles') { a.profiles = v.split(','); i++; } else if (k === '--weighting') { a.weighting = v; i++; }
-    else if (k === '--window') { a.window = v.split(','); i++; } else if (k === '--limit') { a.limit = Number(v); i++; } else if (k === '--sensitivity') a.sensitivity = true;
+    else if (k === '--window') { a.window = v.split(','); i++; } else if (k === '--limit') { a.limit = Number(v); i++; } else if (k === '--sensitivity') a.sensitivity = true; else if (k === '--no-dq') a.noDq = true;
     else if (k === '--help') { console.log(fs.readFileSync(__filename, 'utf8').split('\n').slice(2, 13).join('\n')); process.exit(0); }
     else throw Error('UNKNOWN_ARG ' + k);
   }
@@ -164,6 +164,7 @@ function buildPanel(a) {
     if (!sector) { counts.noSector++; continue; }
     const adj = new Float64Array(T).fill(NaN), raw = new Float64Array(T).fill(NaN);
     let dv = null, srcHash;
+    const dqFlags = new Set();
     if (a.workDir) {
       const file = path.join(a.workDir, 'tiingo/daily', id + '.json');
       if (!fs.existsSync(file)) { counts.noBars++; continue; }
@@ -173,6 +174,8 @@ function buildPanel(a) {
       for (let k = 0; k < bars.length; k++) {
         const b = bars[k], d = b.date.slice(0, 10), w = weekIdx.get(isoWeek(d));
         tv.push(Number(b.close) * Number(b.volume));
+        // DQ-K5: Sitzungsrelativ der Gesamtrendite (adjustedClose zum Vortag) >= 5 oder <= 1/5, markiert in der Woche der Sitzung.
+        if (k > 0 && w !== undefined) { const q = Number(b.adjustedClose) / Number(bars[k - 1].adjustedClose); if (q >= DQ_K || q <= 1 / DQ_K) dqFlags.add(w); }
         if (w === undefined) continue;
         const next = bars[k + 1];
         if (next && isoWeek(next.date.slice(0, 10)) === isoWeek(d)) continue; // nur der letzte Tag der Woche
@@ -194,7 +197,7 @@ function buildPanel(a) {
       if (!(adj[lastIdx] > 0)) { counts.notInFinalWeek++; continue; }
     }
     if (!adj.some(x => x > 0)) { counts.noBars++; continue; }
-    securities.push({ id, sector, mic: 'XNYS', adj, raw, dv, bundle: bundles.bySecurity.get(id) || null, terminal: null });
+    securities.push({ id, sector, mic: 'XNYS', adj, raw, dv, bundle: bundles.bySecurity.get(id) || null, terminal: null, dqFlags: [...dqFlags].sort((x, y) => x - y) });
     sourceHashes.push([id, srcHash]);
   }
   if (a.delistedDir) {
@@ -222,8 +225,11 @@ function buildPanel(a) {
         li = Math.max(li, w);
       });
       if (li < 0) continue;
+      // DQ-K5 für V13-Ketten: nur Wochenpunkte vorhanden, daher Wochenrelativ der Gesamtrendite (Näherung, offengelegt).
+      const dqFlags = [];
+      for (let w = 1; w <= li; w++) if (adj[w] > 0 && adj[w - 1] > 0) { const q = adj[w] / adj[w - 1]; if (q >= DQ_K || q <= 1 / DQ_K) dqFlags.push(w); }
       const kind = lc.terminal && ['MERGER', 'DISTRESS', 'UNKNOWN'].includes(lc.terminal.kind) ? lc.terminal.kind : 'UNKNOWN';
-      securities.push({ id: doc.securityId, sector, mic: doc.mic || 'XNYS', adj, raw, dv, bundle: bundles.bySecurity.get(doc.securityId) || null, terminal: { lastIdx: li, kind } });
+      securities.push({ id: doc.securityId, sector, mic: doc.mic || 'XNYS', adj, raw, dv, bundle: bundles.bySecurity.get(doc.securityId) || null, terminal: { lastIdx: li, kind }, dqFlags });
       sourceHashes.push([doc.securityId, doc.identityHash]);
     }
   }
@@ -238,6 +244,40 @@ function buildPanel(a) {
     meta: { counts, securities: securities.length, withFundamentals: securities.filter(s => s.bundle).length, fundamentalsSource: a.fundamentals ? 'PIT_ORIGINAL_FILING' : 'LAGGED_LATEST_FILING_COMMITTED_CONSUMER', fundamentalsFiles: bundles.files },
   };
 }
+
+// DQ-K5-Quarantäne wie Supertrader (scripts/supertrader/source-faithful/integrity/discontinuity.mjs): keine Korrektur,
+// sondern Schnitt an jeder markierten Woche f. Kein Faktor des späteren Stücks reicht über f zurück (eigene Historie).
+//   BOOK:  das frühere Stück endet mit f (gehaltene Position zum Kurs von f abgerechnet), das spätere beginnt bei f;
+//   PRIOR: das frühere Stück endet mit f − 1 (Abrechnung vor dem Sprung), das spätere beginnt bei f.
+// Stücke mit weniger als DQ_MIN_WEEKS Kurswochen entfallen. Frühere Stücke enden als SERIES_END (Endwert 100 %),
+// das letzte behält den ursprünglichen Endwert (eine wirtschaftliche Delistung wird nie zur Datenlücke).
+const DQ_K = 5, DQ_MIN_WEEKS = 6, DQ_POLICIES = ['DQ-K5-BOOK', 'DQ-K5-PRIOR'];
+function applyDq(panel, policy) {
+  if (!DQ_POLICIES.includes(policy)) throw Error('DQ_POLICY_INVALID');
+  const T = panel.calendar.length, out = [], census = { flaggedSecurities: 0, flags: 0, pieces: 0, droppedPieces: 0 };
+  for (const s of panel.securities) {
+    const flags = s.dqFlags || [];
+    if (!flags.length) { out.push(s); continue; }
+    census.flaggedSecurities++; census.flags += flags.length;
+    const cuts = [];
+    let start = 0;
+    for (const f of flags) { cuts.push([start, policy === 'DQ-K5-BOOK' ? f : f - 1]); start = f; }
+    cuts.push([start, T - 1]);
+    cuts.forEach(([lo, hi], n) => {
+      const last = n === cuts.length - 1, pick = arr => { if (!arr) return arr; const x = new Float64Array(T).fill(NaN); for (let t = lo; t <= hi; t++) x[t] = arr[t]; return x; };
+      const adj = pick(s.adj), priced = adj.filter(v => v > 0).length;
+      if (priced < DQ_MIN_WEEKS) { census.droppedPieces++; return; }
+      let li = -1; for (let t = hi; t >= lo; t--) if (adj[t] > 0) { li = t; break; }
+      const terminal = last ? s.terminal : { lastIdx: li, kind: 'SERIES_END' };
+      census.pieces++;
+      out.push({ ...s, id: n === 0 ? s.id : s.id + ':dq' + n, adj, raw: pick(s.raw), dv: pick(s.dv), terminal, dqFlags: [] });
+    });
+  }
+  return { panel: { ...panel, securities: out }, census: { policy, k: DQ_K, minWeeks: DQ_MIN_WEEKS, ...census } };
+}
+
+// Größte Wochenrendite der Portfoliokurve (Kontrolle auf Sprungartefakte).
+function maxWeekly(r) { let m = -Infinity; const e = r.equity || []; for (let i = 1; i < e.length; i++) if (e[i - 1][1] > 0) m = Math.max(m, e[i][1] / e[i - 1][1] - 1); return Number.isFinite(m) ? m : null; }
 
 function coverageByYear(panel, years) {
   return years.map(y => {
@@ -281,13 +321,26 @@ function main() {
         turnover: r.metrics.annualizedOneWayTurnover, costsShareOfInitialCapital: r.metrics.costsShareOfInitialCapital });
     }
   }
+  // Vorher/Nachher DQ-K5 (nur Gesamtrendite-Panel): Hauptlauf ohne Filter (BASE), dazu BOOK und PRIOR je Profil.
+  const dq = [];
+  if (a.workDir && !a.noDq) for (const policy of DQ_POLICIES) {
+    const { panel: qp, census } = applyDq(panel, policy);
+    const rows = a.profiles.map(profileId => {
+      const r = BT.runModelPortfolio(qp, { profileId, weighting: a.weighting, window: a.window });
+      if (r.state !== 'RUN') return { profileId, state: r.state };
+      console.log(JSON.stringify({ policy, profileId, cagr: r.metrics.cagr, bench: r.metrics.benchmarkCagr }));
+      return { profileId, cagr: r.metrics.cagr, benchmarkCagr: r.metrics.benchmarkCagr, vol: r.metrics.annualizedVolatility, maxDrawdown: r.metrics.maxDrawdown, beta: r.metrics.beta,
+        turnover: r.metrics.annualizedOneWayTurnover, maxWeeklyReturn: maxWeekly(r) };
+    });
+    dq.push({ ...census, results: rows });
+  }
   const doc = {
     schemaVersion: VERSION, certification: 'NOT_CERTIFIED', label: 'Forschung, nicht zertifiziert', productionApproved: false, publiclyActivated: false,
     engines: { backtest: BT.VERSION, construction: C.VERSION, factors: F.VERSION, risk: Risk.VERSION },
     standard: C.STANDARD, spreadModel: { byAdv: C.SPREAD_BY_ADV, byMarketCap: C.SPREAD_BY_MCAP, lowPriceSurchargeBps: C.LOW_PRICE_SURCHARGE_BPS }, defaults: BT.DEFAULTS,
     data: { basis: panel.basis, benchmark: panel.benchmark.label, benchmarkFile: panel.benchmark.file, ...panel.meta, provenance: panel.provenance, coverageByYear: coverage,
       delistedSource: a.delistedDir ? 'V13_PRIVATE_ARCHIVE_REGISTER_1.0.0_QUALIFIED' : 'NONE_SURVIVOR_COHORT', priceSource: a.workDir ? 'R2_CANONICAL_DAILY_TIINGO' : 'COMMITTED_WEEKLY_SPLIT_ADJUSTED' },
-    window: a.window, requestedWindow: a.window, realizedWindow: realized, windowAlarm, weighting: a.weighting, results, sensitivity,
+    window: a.window, requestedWindow: a.window, realizedWindow: realized, windowAlarm, weighting: a.weighting, results, sensitivity, dqQuarantine: dq.length ? { rule: 'DQ-K5 wie Supertrader (Schnitt, keine Korrektur)', base: results.filter(r => r.state === 'RUN').map(r => ({ profileId: r.profileId, cagr: r.metrics.cagr, maxWeeklyReturn: maxWeekly(r) })), policies: dq } : null,
     population: panel.population,
     openLimits: ['KEINE_HISTORISCHE_INDEXMITGLIEDSCHAFT', 'POPULATION_HEUTIGE_DATEIEN_PLUS_V13_KETTEN', 'MITGLIEDSCHAFT_AUS_AUSFUEHRBARKEIT', 'WALK_FORWARD_OHNE_HOLDOUT_UND_MEHRFACHTEST', ...(windowAlarm ? ['ZEITRAUM_VERKUERZT'] : []), 'SIC_HEUTIGER_STAND', 'SPREAD_MODELLIERT_NICHT_BEOBACHTET', 'ENDWERT_DELISTETER_TITEL_ANNAHME_JE_KLASSE',
       ...(a.workDir ? [] : ['NUR_KURSRENDITE_KEINE_DIVIDENDEN', 'NUR_HEUTIGE_TITEL_SURVIVORSHIP']), ...(a.fundamentals ? [] : ['FUNDAMENTALDATEN_VERZOEGERT_ZULETZT_EINGEREICHT']),
@@ -300,4 +353,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { isoWeek, ff12, buildPanel, coverageByYear, delistedRawWeekly, loadRawByTicker, DEFAULT_PROFILES, VERSION };
+module.exports = { isoWeek, ff12, buildPanel, applyDq, DQ_POLICIES, coverageByYear, delistedRawWeekly, loadRawByTicker, DEFAULT_PROFILES, VERSION };
