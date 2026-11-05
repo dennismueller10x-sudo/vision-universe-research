@@ -77,5 +77,5 @@ test('PS-6 (L3): privater Zustand – einmalige Übernahme, danach nur privat; f
   const i = (x) => w.indexOf(x);
   assert.ok(i('private-state.mjs pull') > 0 && i('private-state.mjs pull') < i('scripts/supertrader/build.mjs') && i('scripts/supertrader/build.mjs') < i('private-state.mjs push') && i('private-state.mjs push') < i('commit-and-push.sh'), 'holen -> bauen -> testen -> sichern -> committen');
   const src = fs.readFileSync(new URL('../build.mjs', import.meta.url), 'utf8');
-  assert.match(src, /GITHUB_ACTIONS === 'true'\) throw new Error\('SUPERTRADER_LEDGER_DIR fehlt/);
+  assert.match(src, /GITHUB_ACTIONS === 'true' && OUT === path\.resolve\(ROOT, 'supertrader'\)\) throw new Error\('SUPERTRADER_LEDGER_DIR fehlt/);
 });

@@ -284,7 +284,7 @@ function greenblattCoverage() {
 const LEDGER_DIR = process.env.SUPERTRADER_LEDGER_DIR ? path.resolve(process.env.SUPERTRADER_LEDGER_DIR) : null;
 function ledgerDir() {
   if (LEDGER_DIR) return LEDGER_DIR;
-  if (process.env.GITHUB_ACTIONS === 'true') throw new Error('SUPERTRADER_LEDGER_DIR fehlt: der private Zustand wird nicht ins Repository geschrieben (L3, fail closed)');
+  if (process.env.GITHUB_ACTIONS === 'true' && OUT === path.resolve(ROOT, 'supertrader')) throw new Error('SUPERTRADER_LEDGER_DIR fehlt: der private Zustand wird nicht ins Repository geschrieben (L3, fail closed)');
   return path.join(DATA, 'ledger');
 }
 function ledgerPath(id) { return path.join(ledgerDir(), `${id}.json`); }
