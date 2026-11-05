@@ -74,8 +74,8 @@
       var problems = A.passwordProblems(input.value);
       list.textContent = '';
       [['PASSWORD_LENGTH', '10 bis 72 Zeichen'], ['PASSWORD_WEAK', 'drei von vier: klein, GROSS, Ziffer, Sonderzeichen']].forEach(function (r) {
-        list.appendChild(el('li', {'data-ok': problems.indexOf(r[0]) === -1 ? 'true' : 'false',
-          text: (problems.indexOf(r[0]) === -1 ? '✓ ' : '· ') + r[1]}));
+        // Haken-Liste (E04): der Kreis wird neongrün, sobald die Regel erfüllt ist (Stil in konto.css).
+        list.appendChild(el('li', {'data-ok': problems.indexOf(r[0]) === -1 ? 'true' : 'false', text: r[1]}));
       });
     }
     input.addEventListener('input', update);
@@ -114,11 +114,30 @@
   // ------------------------------------------------------------ Seiten
   var views = {};
 
+  // Ziele nach der Anmeldung in Worten (E05): Grund bei Deep Link und Karte „Danach geht es weiter zu …“.
+  var DESTINATIONS = {'/konto/watchlist/': ['deine Watchlist zu sehen', 'Deine Watchlist mit allen Kennzahlen'],
+    '/mein-dashboard/': ['deine Watchlist zu sehen', 'Deine Watchlist in Mein Bereich'], '/konto/tarife/': ['deinen Tarif zu sehen', 'Tarife in deinem Konto'],
+    '/konto/abo/': ['dein Abonnement zu sehen', 'Dein Abonnement'], '/konto/einstellungen/': ['deine Einstellungen zu sehen', 'Deine Einstellungen'],
+    '/konto/kuendigen/': ['einen Vertrag zu kündigen', 'Verträge kündigen']};
+  function loginTargets() {
+    var next = A.safePath(param('next')), known = next && DESTINATIONS[next];
+    if (next && next !== '/konto/' && next !== A.HOME) {
+      $('ka-reason').hidden = false;
+      $('ka-reason-title').textContent = 'Melde dich an, um ' + (known ? known[0] : 'diese Seite zu sehen') + '.';
+      $('ka-login-title').textContent = 'Anmelden';
+      $('ka-login-lead').hidden = true;
+      $('ka-after').hidden = true;
+      return;
+    }
+    if (pendingChoice() === 'pro') { $('ka-after').href = A.PRO_CONFIRM; $('ka-after-text').textContent = 'Pro bestätigen: Preis und Laufzeit prüfen, dann Zahlung bei Stripe'; }
+  }
+
   views.login = function () {
     showStatusParam();
     if (!A.available()) return unavailable();
     // Bestaetigungslink auf einem anderen Geraet: die Tarifwahl kommt ueber den Link mit.
     if (param('plan') === 'pro') rememberChoice('pro');
+    loginTargets();
     $('ka-login').addEventListener('submit', function (e) {
       e.preventDefault();
       var email = $('email').value.trim(), pw = $('password').value, btn = e.submitter || this.querySelector('button[type=submit]');
@@ -128,19 +147,50 @@
         if (r.ok) return continueSignedIn({next: param('next')});
         busy(btn, false);
         $('password').value = '';
+        // Fehler direkt am Formular: beide Felder markiert, „Passwort zurücksetzen“ als Knopf (E05-b).
+        if (r.state === 'INVALID_CREDENTIALS') {
+          $('email').setAttribute('aria-invalid', 'true'); $('password').setAttribute('aria-invalid', 'true');
+          $('ka-reset').hidden = false;
+          return notice('E-Mail oder Passwort stimmt nicht. Prüfe die Eingabe oder setze dein Passwort zurück.', 'error');
+        }
         fail(r);
       });
     });
   };
 
+  // Schrittanzeige (E04/E06): 1 Konto · 2 E-Mail · 3 Pro bestätigen (nur bei Pro-Wahl).
+  function steps(now, pro) {
+    var list = $('ka-steps');
+    if (!list) return;
+    Array.prototype.forEach.call(list.children, function (li, i) {
+      if (li.hasAttribute('data-pro')) li.hidden = !pro;
+      li.className = i < now ? 'is-done' : i === now ? 'is-now' : '';
+    });
+  }
+
   views.register = function () {
     if (!A.available()) return unavailable();
     if (param('plan') === 'pro') rememberChoice('pro');
     if (param('plan') === 'free') forgetChoice();
-    if (pendingChoice() === 'pro') $('ka-plan-hint').hidden = false;
+    var pro = pendingChoice() === 'pro';
+    $('ka-plan-hint').hidden = !pro;
+    steps(0, pro);
+    $('ka-plan-free').addEventListener('click', function () {
+      forgetChoice(); pro = false;
+      $('ka-plan-hint').hidden = true; steps(0, false);
+      notice('Du startest mit Free. Pro kannst du später jederzeit im Konto wählen.', 'ok');
+    });
     passwordHints($('password'), $('pw-rules'));
-    // Newsletter nur anbieten, wenn er eingerichtet ist (freiwillig, nicht vorausgewaehlt).
-    A.get('/v1/plans').then(function (r) { if (r.ok && r.data && r.data.newsletter) $('newsletter-field').hidden = false; });
+    // Newsletter nur anbieten, wenn er eingerichtet ist (freiwillig, nicht vorausgewaehlt). Pro-Preis nur aus GET /v1/plans.
+    A.get('/v1/plans').then(function (r) {
+      if (r.ok && r.data && r.data.newsletter) $('newsletter-field').hidden = false;
+      var p = r.ok && r.data && (r.data.plans || []).filter(function (x) { return x.id === 'pro'; })[0];
+      var month = p && (p.prices || []).filter(function (x) { return x.interval === 'month'; })[0];
+      $('ka-plan-price').textContent = month ? A.money(month.unitAmount, month.currency) + ' / Monat' : '';
+    });
+    $('ka-register-change').addEventListener('click', function () {
+      $('ka-register-done').hidden = true; $('ka-register').hidden = false; steps(0, pro); $('email').focus();
+    });
     $('ka-register').addEventListener('submit', function (e) {
       e.preventDefault();
       var btn = this.querySelector('button[type=submit]');
@@ -156,8 +206,10 @@
         busy(btn, false);
         if (!r.ok) return fail(r);
         $('ka-register').hidden = true;
+        $('ka-plan-hint').hidden = true;
         $('ka-register-done').hidden = false;
         $('ka-register-done').querySelector('[data-email]').textContent = email;
+        steps(1, pro);
         notice('');
       });
     });
@@ -214,6 +266,36 @@
     });
   };
 
+  /* „Deine App“ (E07): Erfahrung und Ziel aus dem ersten Start (willkommen/start/prefs.js, lokal auf dem Gerät;
+     das Konto übernimmt sie, sobald es settings.mode/settings.goal gibt), Darstellung wie im Menü (VUTheme)
+     und im Konto (PATCH /v1/me settings.appearance, bestehende Einstellung). */
+  function appSettings(me) {
+    var S = window.VUStart;
+    if (S) {
+      var eff = S.effective(me);
+      var paintMode = function (m) { Array.prototype.forEach.call($('ka-mode').children, function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-mode') === m)); }); };
+      paintMode(eff.mode);
+      $('ka-mode').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-mode]'); if (!b) return;
+        S.write({mode: b.getAttribute('data-mode')}); paintMode(b.getAttribute('data-mode'));
+        notice('Erfahrung gespeichert (auf diesem Gerät).', 'ok');
+      });
+      if (eff.goal) $('ka-goal').textContent = S.GOALS[eff.goal].title;
+    } else $('ka-mode').hidden = true;
+    var theme = (me.settings && me.settings.appearance) || 'system';
+    var paintTheme = function (t) { Array.prototype.forEach.call($('ka-theme').children, function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-theme') === t)); }); };
+    paintTheme(theme);
+    $('ka-theme').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-theme]'); if (!b) return;
+      var t = b.getAttribute('data-theme');
+      paintTheme(t);
+      if (t === 'system') { try { localStorage.removeItem('vu-discover-theme-v1'); } catch (err) { /* leer */ } }
+      if (window.VUTheme && window.VUTheme.set) window.VUTheme.set(t === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : t);
+      if (t === 'system') { try { localStorage.removeItem('vu-discover-theme-v1'); } catch (err) { /* leer */ } }
+      A.patch('/v1/me', {settings: {appearance: t}}).then(function (r) { if (!r.ok) fail(r); });
+    });
+  }
+
   views.account = function () {
     showStatusParam();
     if (!A.available()) return unavailable();
@@ -227,14 +309,29 @@
         // Direkt nach der E-Mail-Bestaetigung: Pro-Bestaetigung bzw. Willkommensseite statt Kontoverwaltung.
         if (param('status') === 'verified') return go(A.nextAfterSignIn({me: d, localChoice: pendingChoice(), verified: true}));
         var name = d.profile && d.profile.displayName;
-        $('ka-hello').textContent = name ? 'Hallo, ' + name : 'Mein Konto';
+        $('ka-hello').textContent = name || 'Mein Konto';
+        // Profil (E07): Initialen, Anzeigename, E-Mail, Mitglied seit.
+        var initials = String(name || d.user.email || '').split(/[\s@._-]+/).filter(Boolean).slice(0, 2).map(function (w) { return w.charAt(0).toUpperCase(); }).join('');
+        $('ka-initials').textContent = initials || '–';
+        var since = d.profile && d.profile.createdAt ? new Date(d.profile.createdAt) : null;
+        $('ka-profile-sub').textContent = d.user.email + (since && !isNaN(since) ? ' · Mitglied seit ' + since.toLocaleDateString('de-DE', {month: 'short', year: 'numeric'}) : '');
         var dl = $('ka-account-facts');
         dl.textContent = '';
-        [['E-Mail', d.user.email], ['Tarif', null], ['Mitglied seit', A.date(d.profile && d.profile.createdAt)]].forEach(function (row) {
+        [['E-Mail', d.user.email], ['Mitglied seit', A.date(d.profile && d.profile.createdAt)]].forEach(function (row) {
           dl.appendChild(el('dt', {text: row[0]}));
-          dl.appendChild(el('dd', {}, row[1] === null ? [planBadge(d.entitlements), (d.entitlements || {}).plan_id === 'pro' ? null
-            : el('a', {className: 'ka-link', href: '/konto/tarife/', text: ' Tarife ansehen'})] : [row[1] || '–']));
+          dl.appendChild(el('dd', {text: row[1] || '–'}));
         });
+        // Tarif-Karte: bei Pro „Abonnement verwalten“.
+        var plan = (d.entitlements && d.entitlements.plan_id) || 'free', names = {free: 'Free', plus: 'Plus', pro: 'Pro'};
+        $('ka-plan-name').textContent = names[plan] || plan;
+        $('ka-plan-sub').textContent = plan === 'free' ? 'kostenlos, ohne Laufzeit' : 'monatlich, kündbar zum Ende des bezahlten Monats';
+        if (plan !== 'free') { $('ka-plan-go').href = '/konto/abo/'; $('ka-plan-go').textContent = 'Abonnement verwalten'; }
+        $('ka-sub-line').textContent = plan === 'free' ? 'Kein Abo · Free' : names[plan] + ' aktiv';
+        var st = d.settings || {};
+        $('ka-currency').textContent = st.displayCurrency === 'EUR' ? '$ / €' : st.displayCurrency || 'Listing';
+        var NEWS = {confirmed: 'Du erhältst den Newsletter', pending: 'Bitte Link in der E-Mail bestätigen', requested: 'Bestätigungs-E-Mail unterwegs'};
+        $('ka-news-line').textContent = d.newsletter && d.newsletter.available === false ? 'Noch nicht verfügbar' : NEWS[d.newsletter && d.newsletter.status] || 'Freiwillig, Double-Opt-in';
+        appSettings(d);
         // Offene Pro-Wahl: eindeutig fortsetzen oder verwerfen, keine automatische Umleitung bei jedem Besuch.
         var pending = A.proPending(d, pendingChoice());
         $('ka-pro-pending').hidden = !pending;
@@ -247,6 +344,7 @@
         }
         $('ka-account').hidden = false;
         $('ka-loading').hidden = true;
+        if (window.VUNavigation) window.VUNavigation.dock({});
       });
     });
     $('ka-logout').addEventListener('click', function () {
@@ -365,6 +463,10 @@
     }
     var proPrice = null, me = null, signedIn = false, loaded = false, open = false;
     var confirmBox = $('ka-confirm'), terms = $('ka-confirm-terms'), pay = $('ka-checkout');
+    // Bestellweg (E06): mit ?plan=pro nur die Bestellbestätigung, ohne Reiter und ohne zweite Tarifwahl.
+    var order = param('plan') === 'pro' && !canceled;
+    if (order) { document.documentElement.setAttribute('data-ka-order', ''); $('ka-confirm-title').textContent = 'Deine Bestellung'; }
+    $('ka-ready-free').addEventListener('click', function () { $('ka-continue-free').click(); });
 
     $('ka-choose-free').addEventListener('click', forgetChoice);
     $('ka-choose-pro').addEventListener('click', function () {
@@ -430,6 +532,7 @@
         proAction.appendChild(el('span', {className: 'ka-badge', text: 'Dein Tarif'}));
         proAction.appendChild(el('a', {className: 'ka-btn ka-btn--block', href: '/konto/abo/', text: 'Abonnement verwalten'}));
         confirmBox.hidden = true;
+        if (order) { $('ka-subscribed').hidden = false; document.documentElement.setAttribute('data-ka-subscribed', ''); }
         return;
       }
       // Pro vor der Registrierung gewaehlt (Adresse, dieses Geraet oder im Konto): direkt zur Bestaetigung,
@@ -453,7 +556,7 @@
           + ' Dein kostenloses Konto mit Free ist aktiv. Es wurde nichts berechnet.';
       }
       if (state === 'signed-out' && open) { rememberChoice('pro'); go('/konto/registrieren/?plan=pro'); }
-      if (state === 'subscribed') confirmBox.hidden = true;
+      if (state === 'subscribed') { confirmBox.hidden = true; if (order) { $('ka-subscribed').hidden = false; document.documentElement.setAttribute('data-ka-subscribed', ''); } }
       return state;
     }
     function openConfirm() {
@@ -462,7 +565,7 @@
       var state = renderConfirm();
       if (state === 'signed-out' || state === 'subscribed') return;
       var title = $('ka-confirm-title');
-      if (title.scrollIntoView) title.scrollIntoView({block: 'start'});
+      if (title.scrollIntoView && !order) title.scrollIntoView({block: 'start'});
       title.focus({preventScroll: true});
     }
   };

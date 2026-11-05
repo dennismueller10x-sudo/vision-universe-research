@@ -4,11 +4,14 @@
    BROWSER-PRUEFUNG DER PRODUKTWELT /technical/ (Chromium, 360, 390 und 1280 px,
    Hell und Dunkel)
 
-   Prueft gegen das Repository (statischer Server, keine Auslieferung):
-     Start        Ranglisten und Kennzahlen aus dem Datensatz, Dock vorhanden
-     Screener     Vorlage liefert Treffer, ein Filter-Pill aendert Adresse
-                  und Trefferzahl, Trichter vorhanden
-     Chart Studio Kerzen gezeichnet, Zeitraum 3M zeichnet weniger Kerzen,
+   Prueft gegen das Repository (statischer Server, keine Auslieferung).
+   Struktur nach dem Redesign 2027 (Folien T01–T06); Absicht der Checks unveraendert:
+     Start        Frage, drei Kacheln mit Zahlen, Markt heute mit Urteil, fertige Suchen,
+                  vier Bestenlisten, Dock vorhanden
+     Screener     Schnellsuche liefert Treffer mit Befund-Pille, Filter-Sheet: ein Chip
+                  aendert Trefferzahl und Adresse, Trichter vorhanden; Profi-Tabelle
+     Chart        Einsteiger: Urteil, Linie (keine Kerzen), drei Saetze, Preise, Signal-Sheet
+     Chart Studio (PRO, #/chart/<T>/studio) Kerzen gezeichnet, Zeitraum 3M zeichnet weniger Kerzen,
                   Abschnitt "Diese Aktie in Quant und Supertrader" (Stufen ohne
                   Zahl, Links, Research-Status),
                   RSI-Schicht legt den Indikatorbereich an, Befundkarten,
@@ -23,7 +26,9 @@
                   Gespeichert zeigt Beschreibung und heutige Trefferzahl
      Signale      Befunde und Erkennungshistorie
      Menue        eigene Gruppe nach Fundamental, Chart Studio aktiv
-     Methodik     Indikatorkatalog, Evidenztabelle der Formationen
+     Muster       Heute im Markt (9 Muster), Beleg-Karte; Regeln: Indikatorkatalog,
+                  Evidenztabelle der Formationen (#/methodik zeigt dieselbe Seite)
+   Kein Rot und kein Gruen: Kerzen, Pillen und Zonen nur in Schwarz, Weiss, Neongruen, Grau.
    Je Ansicht: keine Seitenfehler, keine Konsolenfehler (ausser den zwei
    Pfaden, die nur der Release-Bau schreibt), kein horizontales Scrollen.
 
@@ -43,6 +48,8 @@ const out = outArg > 0 ? process.argv[outArg + 1] : null;
 
 /* Nur der Release-Bau schreibt diese Ausschnitte; lokal greift der Rueckfall (Scherbe bzw. neutraler Navigator). */
 export const RELEASE_ONLY = [/\/quant\/data\/product\/technical-signals-v1\/by-ticker\//, /\/core\/data\/stock-availability\//];
+/* Aktienkopf (assets/stock-navigator.js#head): fehlt ein Logo, faellt der Kopf auf das Monogramm zurueck (gewollt, kein Fehler). */
+export const OPTIONAL = [/\/discover\/logos\/files\/[^/]+\.png$/];
 
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json",
   ".svg": "image/svg+xml", ".gz": "application/gzip", ".png": "image/png", ".webp": "image/webp", ".woff2": "font/woff2" };
@@ -81,7 +88,7 @@ async function main() {
     await ctx.addInitScript((t) => { try { localStorage.setItem("vu-discover-theme-v1", t); } catch (e) { /* privat */ } }, theme);
     const page = await ctx.newPage(), errors = [];
     page.on("pageerror", (e) => errors.push("PAGEERROR " + e.message));
-    page.on("response", (r) => { if (r.status() >= 400 && !RELEASE_ONLY.some((re) => re.test(r.url()))) errors.push("HTTP " + r.status() + " " + new URL(r.url()).pathname); });
+    page.on("response", (r) => { if (r.status() >= 400 && !RELEASE_ONLY.concat(OPTIONAL).some((re) => re.test(r.url()))) errors.push("HTTP " + r.status() + " " + new URL(r.url()).pathname); });
     page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource/.test(m.text())) errors.push("CONSOLE " + m.text()); });
     async function clean(view) {
       const sw = await page.evaluate(() => document.documentElement.scrollWidth);
@@ -93,29 +100,40 @@ async function main() {
 
     await check(key + " Start", async () => {
       await page.goto(base + "#/");
-      await page.waitForSelector(".tc-row", { timeout: 30000 });
-      assert(await page.locator(".tc-row").count() >= 7, "Fokus-Setups und Ranglisten fehlen");
-      const kpi = await page.locator(".tc-kpis b").allTextContents();
+      await page.waitForSelector(".tc-tcard", { timeout: 30000 });
+      assert(/Was zeigt der Chart/.test(await page.locator("h1").innerText()), "Titel als Frage fehlt");
+      assert(await page.locator(".tc-tcard").count() === 3, "drei fertige Suchen fehlen");
+      assert(await page.locator(".tc-ranks .vu-tile").count() === 4, "vier Bestenlisten fehlen");
+      const kpi = await page.locator(".tc-tiles3 .vu-tile__value").allTextContents();
       assert(kpi.length === 3 && kpi.every((t) => /\d/.test(t)), "Kennzahlen ohne Werte: " + kpi.join(","));
+      assert(await page.locator(".tc-market [data-verdict]").count() === 1, "Markt heute ohne Urteil");
+      await page.waitForSelector(".tc-newbox .tc-hit, .tc-newbox .tc-note", { timeout: 30000 });
       await page.waitForFunction(() => !!document.getElementById("vu-dock"), null, { timeout: 10000 });
       await clean("Start");
     });
 
     await check(key + " Screener", async () => {
       await page.goto(base + "#/screener?preset=breakout");
-      await page.waitForSelector(".tc-hit", { timeout: 30000 });
-      await page.goto(base + "#/screener");
-      await page.waitForSelector(".tc-cta");
-      const before = await page.locator(".tc-cta").innerText();
+      await page.waitForSelector(".tc-hit .tc-befund", { timeout: 30000 });
+      await page.goto(base + "#/screener?trend=sma200");
+      await page.waitForSelector(".tc-countcard");
+      const before = await page.locator(".tc-countcard b").innerText();
+      await page.locator(".tc-filter-btn").click();
+      await page.waitForSelector("#tc-filter-sheet:not([hidden])");
+      const cta0 = await page.locator(".tc-sheet-cta").innerText();
       await page.getByRole("button", { name: "Dreiecksformation", exact: true }).click();
+      await page.waitForFunction((b) => document.querySelector(".tc-sheet-cta").innerText !== b, cta0);
+      await page.locator(".tc-sheet-cta").click();
       await page.waitForFunction(() => /muster=dreieck/.test(location.hash));
-      await page.waitForFunction((b) => document.querySelector(".tc-cta") && document.querySelector(".tc-cta").innerText !== b, before);
+      await page.waitForFunction((b) => document.querySelector(".tc-countcard b") && document.querySelector(".tc-countcard b").innerText !== b, before);
       assert(await page.locator(".tc-funnel li").count() >= 2, "Trichter ohne Filterschritt");
+      await page.goto(base + "#/screener?trend=sma200&muster=dreieck&ansicht=tabelle");
+      await page.waitForSelector(".tc-ptable tbody tr", { timeout: 30000 });
       await clean("Screener");
     });
 
     await check(key + " Vorlagen", async () => {
-      await page.goto(base + "#/vorlagen");
+      await page.goto(base + "#/screener?reiter=vorlagen");
       await page.waitForSelector(".tc-tpl-group .tc-row", { timeout: 30000 });
       assert(await page.locator(".tc-tpl-group .tc-row").count() >= 12, "Vorlagen fehlen");
       const counts = await page.locator(".tc-tpl-group .tc-row-count").allTextContents();
@@ -125,8 +143,7 @@ async function main() {
       await page.waitForSelector(".tc-hit .tc-ticks", { timeout: 30000 });
       assert(await page.locator(".tc-hit").first().locator(".tc-ticks li").count() === 5, "Checkliste ohne 5 Kriterien");
       assert(await page.locator(".tc-tpl-seg a", { hasText: "Fast erfüllt" }).count() === 1, "Fast erfüllt fehlt");
-      await page.locator(".tc-tpl-crit summary").click();
-      assert(await page.locator(".tc-tpl-crit .tc-crit").count() === 5, "Kriterienliste unvollstaendig");
+      assert(await page.locator(".tc-tpl-crit .tc-crit").count() === 5, "Regelliste unvollstaendig");
       await page.locator("summary", { hasText: "Trendfilter dazunehmen" }).click();
       await page.getByRole("button", { name: "Langfristiger Trend (Woche)", exact: true }).click();
       await page.waitForFunction(() => /plus=lang/.test(location.hash));
@@ -170,9 +187,9 @@ async function main() {
       await clean("Analyseziel");
       await page.locator("a", { hasText: "Im Screener bearbeiten" }).click();
       await page.waitForFunction(() => /#\/screener\?z=trendfolge/.test(location.hash));
-      await page.waitForSelector(".tc-cta", { timeout: 30000 });
+      await page.waitForSelector(".tc-countcard", { timeout: 30000 });
       assert(/Analyse-Assistenten/.test(await page.locator(".tc-preset").first().innerText()), "Herkunft im Screener fehlt");
-      const cta = Number((await page.locator(".tc-cta").innerText()).replace(/\D/g, ""));
+      const cta = Number((await page.locator(".tc-countcard b").innerText()).replace(/\D/g, ""));
       assert(cta === n, "Screener " + cta + " != Assistent " + n);
       await page.goBack();
       await page.waitForSelector(".tc-hit .tc-ticks", { timeout: 30000 });
@@ -201,7 +218,7 @@ async function main() {
       await page.locator(".tc-textsearch button[type=submit]").click();
       await page.waitForFunction(() => /q=Dreieck/.test(location.hash));
       await page.waitForSelector(".tc-preset");
-      const txt = await page.locator(".tc-preset p").innerText();
+      const txt = await page.locator(".tc-preset p").textContent();
       assert(/Dreieck/.test(txt) && /SMA 200/.test(txt), "Erkannt als: " + txt);
       assert(await page.locator(".tc-hit").count() >= 1, "keine Treffer fuer Dreieck ueber SMA 200");
       await clean("Suche in Worten");
@@ -209,6 +226,8 @@ async function main() {
 
     await check(key + " Baukasten und Gespeichert", async () => {
       await page.goto(base + "#/screener");
+      await page.waitForSelector(".tc-filter-btn", { timeout: 30000 });
+      await page.locator(".tc-filter-btn").click();
       await page.waitForSelector(".tc-builder summary", { timeout: 30000 });
       await page.locator(".tc-builder summary").click();
       await page.locator(".tc-builder .tc-bgroup .tc-btn-ghost").first().click();
@@ -219,19 +238,35 @@ async function main() {
       await page.locator(".tc-builder").getByRole("button", { name: "Anwenden", exact: true }).click();
       await page.waitForFunction(() => /q=/.test(location.hash) && /rsi14/.test(decodeURIComponent(location.hash)));
       await page.waitForSelector(".tc-preset");
-      assert(/RSI 14/.test(await page.locator(".tc-preset p").innerText()), "Baukasten-Abfrage nicht erkannt");
-      await page.locator(".tc-save summary").click();
+      assert(/RSI 14/.test(await page.locator(".tc-preset p").textContent()), "Baukasten-Abfrage nicht erkannt");
+      await page.locator(".tc-save-btn").click();
       await page.fill(".tc-save-form input", "QA Baukasten");
       await page.locator(".tc-save-form button[type=submit]").click();
-      await page.goto(base + "#/screener/gespeichert");
+      await page.goto(base + "#/screener?reiter=gespeichert");
       await page.waitForSelector(".tc-saved");
       await page.waitForFunction(() => /\d/.test(document.querySelector(".tc-saved .tc-hit-score b").textContent));
       assert(/RSI 14/.test(await page.locator(".tc-saved .tc-row-text span").first().innerText()), "Beschreibung fehlt");
       await clean("Baukasten und Gespeichert");
     });
 
-    await check(key + " Chart Studio", async () => {
+    await check(key + " Chart einfach", async () => {
       await page.goto(base + "#/chart/NVDA");
+      await page.waitForSelector(".tc-saycard [data-verdict]", { timeout: 45000 });
+      await page.waitForSelector(".tc-chart svg .tc-price-line");
+      assert(await page.locator(".tc-chart .tc-up rect, .tc-chart .tc-down rect").count() === 0, "Kerzen in der Einsteigeransicht");
+      assert(await page.locator(".vu-shead .vu-snav, .vu-shead-nav").count() >= 1, "Aktienkopf mit Perspektiven fehlt");
+      assert(await page.locator(".tc-sent [data-verdict]").count() === 3, "drei Saetze mit Urteil fehlen");
+      assert(await page.locator(".tc-ptile").count() === 2, "Preis-Kacheln fehlen");
+      if (await page.locator(".tc-sigrow").count()) { await page.locator(".tc-sigrow").first().click(); await page.waitForSelector("#tc-signal-sheet:not([hidden])"); await page.keyboard.press("Escape"); }
+      /* Kein Rot und kein Gruen auf der Seite (Regel 1): alle sichtbaren Hintergruende und Schriften. */
+      const bad = await page.evaluate(() => [...document.querySelectorAll("#tc-main *")].map((e) => [getComputedStyle(e).color, getComputedStyle(e).backgroundColor, e.getAttribute && e.tagName === "rect" ? getComputedStyle(e).fill : ""]).flat()
+        .filter((c) => { const m = /rgba?\((\d+), (\d+), (\d+)/.exec(c || ""); if (!m) return false; const [r, g, b] = m.slice(1).map(Number); return (r > 150 && g < 90 && b < 90) || (g > 120 && r < 110 && b < 110); }).slice(0, 3));
+      assert(!bad.length, "Rot oder Gruen: " + bad.join(" "));
+      await clean("Chart einfach");
+    });
+
+    await check(key + " Chart Studio", async () => {
+      await page.goto(base + "#/chart/NVDA/studio");
       await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
       const candles = () => page.locator(".tc-chart .tc-up rect, .tc-chart .tc-down rect").count();
       const year = await candles();
@@ -283,7 +318,7 @@ async function main() {
     });
 
     await check(key + " Formationsfokus", async () => {
-      await page.goto(base + "#/chart/AAPL");
+      await page.goto(base + "#/chart/AAPL/studio");
       await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
       assert(await page.locator(".tc-signals .tc-detail dt", { hasText: "Historisch" }).count() >= 1, "Evidenzzeile in der Befundkarte fehlt");
       const href = await page.locator(".tc-signals a[href*='?f=']").first().getAttribute("href");
@@ -342,13 +377,18 @@ async function main() {
       await clean("Menue");
     });
 
-    await check(key + " Methodik", async () => {
-      await page.goto(base + "#/methodik");
-      await page.waitForSelector(".tc-defs dt", { timeout: 30000 });
+    await check(key + " Muster", async () => {
+      await page.goto(base + "#/muster");
+      await page.waitForSelector(".tc-plist .tc-prow", { timeout: 30000 });
+      assert(await page.locator(".tc-plist .tc-prow").count() === 9, "Heute im Markt: 9 Muster erwartet");
+      await page.waitForSelector(".tc-evbig, .tc-evrow", { timeout: 15000 });
+      await clean("Muster");
+      await page.goto(base + "#/methodik?reiter=regeln");
+      await page.waitForSelector(".tc-defs dt", { timeout: 30000, state: "attached" });
       assert(await page.locator(".tc-defs dt").count() >= 18, "Indikatorkatalog unvollstaendig");
       await page.waitForSelector(".tc-table tbody tr", { timeout: 15000, state: "attached" });
       assert(await page.locator(".tc-table tbody tr").count() >= 10, "Evidenztabelle unvollstaendig");
-      await clean("Methodik");
+      await clean("Muster Regeln");
     });
     await ctx.close();
   }
