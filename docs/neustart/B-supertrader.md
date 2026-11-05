@@ -22,14 +22,13 @@ Alle Backtest-Ergebnisse sind **Forschung, nicht zertifiziert**. Keine öffentli
 
 ## Offen
 - Dezember: F1–F3 (Forward-Namensraum befüllen) und ein Core-PR, der den Registry-Eintrag `supertrader-paper-2027-log` auf `ACTIVATING` stellt (mit JSONL-Leser), vor dem 04.01.2027.
-- Kandidaten-Tageslauf: täglich die manuellen Läufe A und B, bis `SF8_AUTO_PUBLISH` gesetzt ist.
+- Kandidaten-Tageslauf: `SF8_AUTO_PUBLISH=true` hat der Owner am 05.11. gesetzt; der Workflow sieht die Variable (Lauf 42031553316: `AUTO_SWITCH: true`). Der erste automatische Lauf ist zu prüfen; danach entfallen die manuellen Läufe A und B.
 - Gate A ist noch nicht umgebaut (Strang A plant Vertragstests). C04–C13 bleiben „in Forschung“.
 - C08: R-Verteilung und goldene Trades für FID-1/FID-2 auswerten, dann ein eigener Lauf für FID-2L. Danach die Fassung wählen, die einmal auf dem Holdout bestätigt wird (Regel vorher festschreiben). Anschließend dasselbe für C06/C07.
 - Discovery-Regression NM3 (Firmennamen nach Security Master 1.3.0) und die Quant-Regression sind auf `main` rot. Sie gehören zu Strang A, C bzw. D und sind kein Supertrader-Thema. Supertrader-PRs werden bei sonst grünen Gates gemergt.
 - C09-Entwürfe #1262 und #1263 ruhen, weil C09 in Forschung ist.
 
 ## Braucht Owner
-- Repo-Variable `SF8_AUTO_PUBLISH=true` setzen. Empfehlung: jetzt. Jede Veröffentlichung prüft der Vertrag C1–C7 (fail closed).
 - Öffentliche Darstellung von Backtest-Renditen: nur mit Freigabe.
 - FP-ST-01 ruht (Owner, 05.11.): keine Anfragen an Anbieter. FP-ST-05: kein Buchkauf. Die Tabelle unten bleibt als Vergleich.
 
