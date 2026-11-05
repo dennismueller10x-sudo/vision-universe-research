@@ -208,7 +208,7 @@
       "expectedRecords": "coverage.productUniverse",
       "role": "Anzeigenamen mit Quelle und Datum (Tiingo-Stammdaten, SEC, kuratiert).",
       "producer": "scripts/market/build-company-names.mjs",
-      "workflow": "company-names.yml + security-master-weekly.yml",
+      "workflow": "company-names.yml + security-master-weekly.yml + security-master-eligibility.yml (offline nach neuer Eignung)",
       "schedule": "manuell",
       "freshness": { "kind": "hours", "warnAfter": 720, "staleAfter": 2160 },
       "consumers": ["Discover", "Supertrader", "Screener"]

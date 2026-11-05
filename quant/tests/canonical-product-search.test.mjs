@@ -17,7 +17,12 @@ const root=new URL('../../',import.meta.url);
 function api(mutate=()=>{},reads=[]){return Service.create({loadJSON:async p=>{reads.push(p);const d=JSON.parse(await readFile(new URL(p.slice(1),root),'utf8'));mutate(p,d);return d;},displayPolicy:Policy,queryEngine:Query});}
 test('canonical search resolves stable identities beyond the five-row panel without financial reads',async()=>{
  const reads=[],service=api(()=>{},reads),r=await service.searchInstruments('TSLA');assert.equal(r.state,'AVAILABLE');const hit=r.entries.find(e=>e.ticker==='TSLA');assert.match(hit.securityId,/^vu_/);assert.equal(hit.masterMemberId,'ref_TSLA');assert.ok(reads.every(p=>p.startsWith('/quant/data/universe/')));assert.ok(reads.length<15);
- const stock=await service.getStockIntelligence('TSLA');assert.equal(stock.securityId,hit.securityId);assert.equal(stock.identityState,'AVAILABLE');assert.equal(stock.state,'AVAILABLE');/* Produktuniversum nach Verzeichnisbeleg (exchange-directory-class-1.0.0): 6853 - 167 Anleihen/ETN/Rechte/Optionsscheine = 6686 */assert.equal((await service.getUniverse()).stocks.length,6686);
+ const stock=await service.getStockIntelligence('TSLA');assert.equal(stock.securityId,hit.securityId);assert.equal(stock.identityState,'AVAILABLE');assert.equal(stock.state,'AVAILABLE');/* Produktuniversum = Eignungsentscheidungen des Security Master in IN_PRODUCT_UNIVERSE (ELIGIBLE, SEPARATE_CLASS, REVIEW).
+    Verlauf: 6853 - 167 Anleihen/ETN/Rechte/Optionsscheine (Verzeichnisbeleg) = 6686; Stand 2026-11-05: - 131 belegte ETFs + 5 Stammaktien + 13 unbelegte Optionsscheine/Rechte/Units (REVIEW) = 6573. */
+ const elig=JSON.parse(await readFile(new URL('quant/data/market/security-master/eligibility.json',root),'utf8')),SM=require('../engines/us-security-master.js');
+ const inProduct=elig.decisions.filter(d=>SM.IN_PRODUCT_UNIVERSE.includes(d.product_eligibility)).length;
+ assert.ok(inProduct>6000,'Produktuniversum unplausibel klein: '+inProduct);assert.equal(elig.counts.productUniverse,inProduct);
+ assert.equal((await service.getUniverse()).stocks.length,inProduct);
 });
 test('missing issuer/CIK does not remove an eligible security from search or identity page',async()=>{
  const service=api((p,d)=>{if(p.includes('/instruments/'))for(const i of d.instruments){i.cik=null;i.issuerId=null;}}),r=await service.searchInstruments('TSLA');assert.ok(r.entries.some(e=>e.ticker==='TSLA'));const stock=await service.getStockIntelligence('TSLA');assert.equal(stock.identityState,'AVAILABLE');assert.equal(stock.issuerId,null);
