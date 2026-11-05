@@ -330,6 +330,28 @@
       "consumers": ["/supertrader/"]
     },
     {
+      "id": "supertrader-paper-2027-log",
+      "label": "Supertrader Paper-Test 2027 (Protokoll)",
+      "layer": "PRODUCT",
+      "group": "Products",
+      "critical": false,
+      "artifact": "/scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl",
+      "repositoryOnly": true,
+      "timestamp": [],
+      "records": null,
+      "role": "Prospektiver Paper-Test SF6-PAPER-2027: je XNYS-Sitzung ein hash-verketteter, nur angehaengter Eintrag (oeffentlich Zaehlungen und Hashes; Positions-IDs und Trade-Schluessel versiegelt fuer den Owner unter log/sealed). Keine Signale, keine Empfehlungen, keine Orders, kein Broker, keine Produktflaeche, LIVE_NOT_APPROVED.",
+      "producer": "scripts/supertrader/source-faithful/paper/run-paper-2027.mjs record",
+      "workflow": "supertrader-paper-2027.yml",
+      "schedule": "Di-Sa 02:37 UTC, Rueckfall 09:41 UTC, je fuer die letzte XNYS-Sitzung; Wirkung nur, wenn der Owner-Schalter (paper/activation-2027.mjs) ACTIVE meldet, und nur auf main. Vorher kein Commit.",
+      "freshness": { "kind": "none" },
+      "activation": {
+        "state": "PREPARED_DISABLED",
+        "decision": "Owner-Freigabe Option A: das Registry-Gate (registry-guard.mjs) erlaubt genau diesen gepinnten Eintrag. Aufzeichnung erst nach eigener Owner-Aktivierung des Paper-Tests (FP-ST-02); bis dahin darf das Protokoll nicht existieren."
+      },
+      "consumers": ["Owner (Auswertung des Paper-Tests, docs/SUPERTRADER_PAPER_2027_ACTIVATION.md)"],
+      "knownGaps": ["Das Protokoll ist JSONL (eine Zeile je Sitzung), der Systemzustand liest JSON. Vor dem Wechsel auf ACTIVATING (eigener Core-PR mit neuem Pin und Owner-Freigabe) braucht der Eintrag einen lesbaren Kopf oder einen JSONL-Leser; solange PREPARED_DISABLED gilt, wird nur das Fehlen geprueft."]
+    },
+    {
       "id": "marketPulse",
       "label": "Markets / Multi-Asset",
       "layer": "PRODUCT",
