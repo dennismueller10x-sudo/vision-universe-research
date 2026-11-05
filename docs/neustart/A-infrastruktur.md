@@ -47,16 +47,17 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - dann `pipeline-weekly`.
 - **Datenzweig:** Abnahme News am 11.11. (7 Tage nur `IDENTICAL`), danach News auf BRANCH_ONLY.
 - Folgearbeiten an 1.3.0 (Strang C): #1119 (H6), optional H7.
-- **PR-Liste:**
-  - 101 PRs zum Schließen, 3 Europa-PRs zum Zusammenführen.
-  - Die Steuerung meldet die Bestätigung des Owners. Das Schließen wurde aber blockiert, weil es nur auf der Nachricht einer anderen Sitzung beruht. Es wartet auf die direkte Bestätigung des Owners.
-  - Die Steuerung hat klargestellt, dass mit `codex/*` nur die laufenden PRs ab #1368 gemeint sind. Die sechs alten `codex/*`-PRs gehören deshalb zur Liste.
+- **PR-Aufräumen erledigt** (Owner-Bestätigung 05.11.2026 im Chat):
+  - 107 PRs mit Kommentar und Grund geschlossen (wiederherstellbar);
+  - die drei Europa-PRs #1294, #1295 und #1297 zu #1392 zusammengeführt und gemergt;
+  - #1268, #1270, #1273, #1331 und #1340 hatten ihre Stränge vorher selbst erledigt;
+  - offen sind danach nur noch die behaltenen PRs und laufende Strang-PRs.
 
 ## Braucht Owner
 - Nichts Neues.
 - Hinweis: Vercel meldet auf PRs „Deployment rate limited“, ein roter Status ohne Bezug zum Code. Empfehlung: die Vercel-Integration für dieses Repo abschalten, weil Pages die Seite ausliefert.
 
-## Offene PRs: Vorschlag (noch nichts geschlossen, Bestätigung durch die Steuerungssitzung)
+## Offene PRs: Liste vom 04.11. (umgesetzt am 05.11.2026)
 
 Stand 04.11.2026, 18:45 UTC: 131 offene PRs (Strang A: keine). Vorschlag: **21 behalten, 3 zusammenführen zu 1, 107 schließen**. Geschlossene PRs bleiben wiederherstellbar (Plan §6 Nr. 9).
 

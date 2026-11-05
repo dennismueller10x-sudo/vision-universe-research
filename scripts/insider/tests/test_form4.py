@@ -188,6 +188,23 @@ class Form4Tests(unittest.TestCase):
             self.assertEqual(list(out.parent.iterdir()), [out])
             self.assertNotEqual(subprocess.run(cmd[:-2], capture_output=True).returncode, 0)
 
+    def test_cli_raw_dir_keeps_each_readable_submission_once(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / PATH).parent.mkdir(parents=True)
+            (root / PATH).write_bytes(submission())
+            idx = root / "master.idx"
+            # same accession listed under issuer and owner CIK: kept once
+            idx.write_text(INDEX + "456|Person|4|2026-06-05|edgar/data/456/0000000123-26-000001.txt\n")
+            (root / "edgar/data/456").mkdir(parents=True)
+            (root / "edgar/data/456/0000000123-26-000001.txt").write_bytes(submission())
+            raw = root / "raw"
+            subprocess.run([sys.executable, str(SCRIPT), "--from", "2026-06-01", "--as-of", "2026-06-05", "--index-file", str(idx),
+                            "--filings-dir", str(root), "--out", str(root / "p.json"), "--raw-dir", str(raw)],
+                           check=True, capture_output=True)
+            self.assertEqual(json.loads((raw / "index.json").read_text()), [["0000000123-26-000001", "2026-06-05", "4"]])
+            self.assertEqual((raw / "0000000123-26-000001.txt").read_bytes(), submission())
+
 
 if __name__ == "__main__":
     unittest.main()

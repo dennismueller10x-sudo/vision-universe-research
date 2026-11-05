@@ -179,8 +179,11 @@ def quarters(start, end):
         y, q = (y + 1, 1) if q == 4 else (y, q + 1)
 
 
-def generate(start, as_of, indices, load, max_rejected_share=0.01):
-    """Bounded filing-date window; strict errors prevent publishing partial success."""
+def generate(start, as_of, indices, load, max_rejected_share=0.01, keep=None):
+    """Bounded filing-date window; strict errors prevent publishing partial success.
+
+    keep(accession, meta, payload) receives every readable submission once, so the same
+    fetch can feed the ownership-signals Form-4 cache (scripts/insider/form4-compact.mjs)."""
     rows, seen, excluded, filings, rejected = [], set(), {}, 0, []
     for content in indices:
         for meta in index_rows(content):
@@ -192,12 +195,15 @@ def generate(start, as_of, indices, load, max_rejected_share=0.01):
             seen.add(accession)
             filings += 1
             try:
-                purchases, counts = parse_filing(load(meta["path"]), meta)
+                payload = load(meta["path"])
+                purchases, counts = parse_filing(payload, meta)
             except (ValueError, ET.ParseError, UnicodeDecodeError) as exc:
                 # One unreadable submission must not stop the daily run; it is listed, never guessed.
                 # Network/HTTP errors are not caught here and still abort the run.
                 rejected.append({"accession": accession, "form": meta["form"], "reason": str(exc)[:200]})
                 continue
+            if keep:
+                keep(accession, meta, payload)
             for k, v in counts.items():
                 excluded[k] = excluded.get(k, 0) + v
             rows.extend(r for r in purchases if cutoff(r["availableAt"]) <= as_of)
@@ -222,6 +228,7 @@ def main(argv=None):
     ap.add_argument("--user-agent", default=os.environ.get("SEC_USER_AGENT"))
     ap.add_argument("--index-file", action="append", type=Path, help="offline master.idx (repeatable)")
     ap.add_argument("--filings-dir", type=Path, help="offline directory containing edgar/data/...txt")
+    ap.add_argument("--raw-dir", type=Path, help="also keep each readable submission plus index.json here (temporary run directory)")
     args = ap.parse_args(argv)
     if args.start > args.as_of.date() or args.as_of > datetime.now(timezone.utc):
         ap.error("invalid or future window")
@@ -234,7 +241,16 @@ def main(argv=None):
         client = Edgar(args.user_agent)
         indices = [client.get(p).decode("utf-8-sig") for p in quarters(args.start, args.as_of.date())]
         load = client.get
-    doc = generate(args.start, args.as_of, indices, load)
+    kept, keep = [], None
+    if args.raw_dir:
+        args.raw_dir.mkdir(parents=True, exist_ok=True)
+
+        def keep(accession, meta, payload):
+            (args.raw_dir / f"{accession}.txt").write_bytes(payload)
+            kept.append([accession, meta["filingDate"], meta["form"]])
+    doc = generate(args.start, args.as_of, indices, load, keep=keep)
+    if args.raw_dir:
+        (args.raw_dir / "index.json").write_text(json.dumps(sorted(kept)) + "\n", encoding="utf-8")
     args.out.parent.mkdir(parents=True, exist_ok=True)
     # Atomic replacement, only after every filing succeeds; no partial artifact on errors.
     name = None

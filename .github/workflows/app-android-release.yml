@@ -1,0 +1,107 @@
+# Android-App "Vision Universe": SIGNIERTES Bundle (AAB) fuer den Upload in die interne Google-Play-Testspur. NUR VON HAND.
+# Standard ist die Vorpruefung (preflight_only = an): Geheimnisse da, Keystore oeffnet sich, Alias und Laufzeit stimmen. Kein Build, kein Artefakt.
+# Mit preflight_only aus: baut das signierte AAB und legt es 7 Tage als Artefakt ab, damit Sie es herunterladen und in der Play Console hochladen.
+# Es gibt KEINEN automatischen Upload zu Google Play. Das Artefakt enthaelt nur die App (oeffentlicher Web-Teil), keinen Schluessel.
+# VORAUSSETZUNG: Umgebung "app-android" mit erforderlichem Pruefer (Owner) und Deployment-Branch nur main; ein Verweis auf eine fehlende
+# Umgebung wuerde sie ungeschuetzt anlegen (vgl. docs/accounts/FREIGABEN.md). Geheimnisse nur in dieser Umgebung.
+# Anleitung: docs/mobile/ANDROID_PLAN.md, docs/mobile/ANDROID_STEP_BY_STEP.md. Regeln aus CLAUDE.md / ADR-005: kein Commit-Push, Eingaben nur ueber env:.
+name: App - Android signiert (intern, von Hand)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: "Versionsname, z. B. 0.1.0"
+        required: true
+        default: "0.1.0"
+      preflight_only:
+        description: "Nur Vorpruefung (Geheimnisse, Keystore, Alias, Laufzeit). Kein Build, kein Artefakt."
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-android-release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  signiert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: app-android   # erforderlicher Pruefer = Owner; enthaelt die Geheimnisse unten
+    if: github.ref == 'refs/heads/main'
+    env:
+      VERSION_NAME: ${{ inputs.version_name }}
+      RUN_NUMBER: ${{ github.run_number }}
+      ANDROID_UPLOAD_KEYSTORE_BASE64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
+      VU_SUPABASE_URL: ${{ vars.VU_SUPABASE_URL }}                       # oeffentlich
+      VU_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VU_SUPABASE_PUBLISHABLE_KEY }} # oeffentlich
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - name: Vorpruefung (gibt keine Werte aus)
+        run: |
+          set -euo pipefail
+          fail=0; need() { [ -n "${!1:-}" ] || { echo "::error::Geheimnis/Variable $1 fehlt oder ist leer"; fail=1; }; }
+          for n in ANDROID_UPLOAD_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD VU_SUPABASE_URL VU_SUPABASE_PUBLISHABLE_KEY; do need "$n"; done
+          [ "$fail" = 0 ] || exit 1
+          [[ "$VU_SUPABASE_PUBLISHABLE_KEY" != sb_secret_* && "$VU_SUPABASE_PUBLISHABLE_KEY" != eyJ* ]] || { echo "::error::VU_SUPABASE_PUBLISHABLE_KEY sieht nach einem geheimen Schluessel aus. Abbruch."; exit 1; }
+          [[ "$VERSION_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::Version ungueltig"; exit 1; }
+          mkdir -p "$RUNNER_TEMP/sign"; chmod 700 "$RUNNER_TEMP/sign"
+          printf '%s' "$ANDROID_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/sign/upload.p12"
+          chmod 600 "$RUNNER_TEMP/sign/upload.p12"
+          printf '%s' "$ANDROID_KEYSTORE_PASSWORD" > "$RUNNER_TEMP/sign/pw"
+          openssl pkcs12 -in "$RUNNER_TEMP/sign/upload.p12" -passin file:"$RUNNER_TEMP/sign/pw" -nokeys -clcerts -out "$RUNNER_TEMP/sign/c.pem" >/dev/null 2>&1 || { echo "::error::Keystore laesst sich mit dem Passwort nicht oeffnen"; exit 1; }
+          openssl pkcs12 -in "$RUNNER_TEMP/sign/upload.p12" -passin file:"$RUNNER_TEMP/sign/pw" -nocerts -nodes >/dev/null 2>&1 || { echo "::error::Kein privater Schluessel im Keystore"; exit 1; }
+          # Google verlangt eine Gueltigkeit bis mindestens 2033-10-22.
+          openssl x509 -in "$RUNNER_TEMP/sign/c.pem" -noout -checkend $((8*365*86400)) >/dev/null || { echo "::error::Zertifikat laeuft vor 2033 ab. Neuen Upload-Schluessel erzeugen."; exit 1; }
+          echo "Zertifikat gueltig bis: $(openssl x509 -in "$RUNNER_TEMP/sign/c.pem" -noout -enddate | cut -d= -f2)"
+          echo "Fingerabdruck (SHA-256, kein Geheimnis): $(openssl x509 -in "$RUNNER_TEMP/sign/c.pem" -noout -fingerprint -sha256 | cut -d= -f2)"
+          echo "Vorpruefung bestanden. Es wurden keine Werte ausgegeben."
+      - uses: actions/setup-node@v4
+        if: ${{ !inputs.preflight_only }}
+        with:
+          node-version: "22"
+      - uses: actions/setup-java@v4
+        if: ${{ !inputs.preflight_only }}
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: App-Tests und Web-Teil
+        if: ${{ !inputs.preflight_only }}
+        working-directory: app
+        run: |
+          set -euo pipefail
+          npm ci --no-audit --no-fund
+          npm test
+          npm run build:www
+          ./node_modules/.bin/cap sync android
+      - name: Signiertes Bundle bauen
+        if: ${{ !inputs.preflight_only }}
+        working-directory: app/android
+        run: |
+          set -euo pipefail
+          chmod +x gradlew
+          export ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/sign/upload.p12" ANDROID_KEY_ALIAS=upload
+          ./gradlew --no-daemon bundleRelease -PvuVersionCode="$RUN_NUMBER" -PvuVersionName="$VERSION_NAME"
+          f=app/build/outputs/bundle/release/app-release.aab
+          test -s "$f"
+          jarsigner -verify "$f" | head -1
+          mkdir -p "$RUNNER_TEMP/out"; cp "$f" "$RUNNER_TEMP/out/vision-universe-$VERSION_NAME-$RUN_NUMBER.aab"
+          echo "AAB_DIR=$RUNNER_TEMP/out" >> "$GITHUB_ENV"
+      - name: Signiertes Bundle als Artefakt (7 Tage, nur die App, kein Schluessel)
+        if: ${{ !inputs.preflight_only }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: vision-universe-android-aab
+          path: ${{ env.AAB_DIR }}/*.aab
+          retention-days: 7
+          if-no-files-found: error
+      - name: Schluessel entfernen
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/sign"
