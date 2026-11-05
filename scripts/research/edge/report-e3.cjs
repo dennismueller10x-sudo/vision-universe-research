@@ -63,12 +63,15 @@ function render(b) {
     const h2 = ['Variante', 'CAGR', 'SPY', 'RSP', 'IWM', 'Sharpe', 'SPY Sharpe', 'Max. Verlust', 'SPY Max. Verlust', 'p Log (Holm)', 'p Sharpe (Holm)', 'Urteil'];
     L.push('| ' + h2.join(' | ') + ' |', '|' + h2.map(() => '---').join('|') + '|');
     for (const r of b.rows) {
-      const e = r.test && r.test.state === 'RUN' ? r.test.evaluation : null;
-      L.push('| ' + (r.v.id === winner ? '**' + r.v.id + '** (Auswahl)' : r.v.id) + ' | ' + (e ? [pct(e.strategy.cagr), pct(e.SPY.cagr), pct(e.RSP.cagr), pct(e.IWM.cagr), num(e.strategy.sharpe), num(e.SPY.sharpe), pct(e.strategy.maxDrawdown), pct(e.SPY.maxDrawdown)].join(' | ') : ' | | | | | | | ') + ' | ' + pv(r.pLogHolm) + ' | ' + pv(r.pSharpeHolm) + ' | ' + r.verdict + ' |');
+      const e = r.test && (r.test.state === 'RUN' || r.test.state === 'BLOCKED_COVERAGE') ? r.test.evaluation : null;
+      const tag = r.test && r.test.state === 'BLOCKED_COVERAGE' ? ' (beschreibend, bis ' + r.test.evaluation.dates[1] + ')' : '';
+      L.push('| ' + (r.v.id === winner ? '**' + r.v.id + '** (Auswahl)' : r.v.id) + tag + ' | ' + (e ? [pct(e.strategy.cagr), pct(e.SPY.cagr), pct(e.RSP.cagr), pct(e.IWM.cagr), num(e.strategy.sharpe), num(e.SPY.sharpe), pct(e.strategy.maxDrawdown), pct(e.SPY.maxDrawdown)].join(' | ') : ' | | | | | | | ') + ' | ' + pv(r.pLogHolm) + ' | ' + pv(r.pSharpeHolm) + ' | ' + r.verdict + ' |');
     }
   }
   L.push('', '## Grenzen', '',
     '- Das Prüffenster 2020–2026 wurde in früheren Projektstudien verwendet: vorab fixierte Replikation mit zeitlicher Trennung, kein unberührter Holdout. Bestätigung nur mit neuen Vorwärtsdaten.',
+    '- Supertrader-Prüfung: Der eingefrorene Snapshot von Strang B endet am 2026-09-30; für den Stichtag 2026-10-02 fehlt der Wochenwert. Nach Protokoll wird das Fenster nicht verkürzt: alle zwölf Supertrader-Varianten sind im Prüfteil „nicht bestimmbar (blockiert)“ (Tests mit p = 1 in der Holm-Familie); ihre Kennzahlen bis 2026-09-25 stehen nur beschreibend in der Tabelle.',
+    '- Supertrader-Kurven: kostenfreie Läufe von Strang B mit unveränderten REF-Regeln; Protokollkosten, Endwerte und SMA200-Filter als anteiliges Positions-Overlay (scripts/research/edge/st-e3.cjs), keine Neurechnung der Strategie. Der Snapshot kennt keine Insolvenz-Delistings (distress überall false).',
     '- Supertrader-Entwicklung beginnt 2016 (Lieferung Strang B); 2012–2015 fehlt für Supertrader. Der für eine spätere Bestätigung reservierte Holdout 2008–2015 wird in E3 nicht verwendet; die Quant-Entwicklung 2012–2019 ist protokollgemäß und war bereits Teil früherer Quant-Läufe (Musterportfolios #1332/#1383).',
     '- Lokaler Rauchtest vor dem Lauf (05.11.2026): zwei Quant-Varianten auf einer Teilmenge (Kursrendite, 1.500 heutige Titel) auch im Prüffenster ausgeführt, um Programmfehler auszuschließen. Keine Regel-, Parameter- oder Auswahländerung folgte; die Auswahl erfolgt mechanisch nach Protokoll.',
     '- Population: heutige Kursdateien plus qualifizierte V13-Ketten, heutiger SIC-Code; keine historische Indexmitgliedschaft.',
