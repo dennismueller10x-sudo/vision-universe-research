@@ -244,3 +244,30 @@ test('ST-HIST-14: Minervini-Treueprüfung Schritt 1: Referenz C06/C07 unverände
   for (let i = 300; i < sec.bars.length; i += 37) assert.equal(MF.setupStateAt('SEPA', sec, i) === 'SETUP_DETECTED', m.has(i), sec.bars[i].date);
   assert.doesNotMatch(JSON.stringify(g), /totalReturn|cagr|equity/);
 });
+
+test('ST-HIST-15: C06/C07 FID-1 genau wie vorregistriert (RS >= 70, höchstens 3 je Tag nach RS, FREEROLL_2R), Referenz unverändert', async () => {
+  const MF = await import('../source-faithful/research/minervini-fidelity.mjs');
+  const MX = await import('../source-faithful/research/minervini-execution.mjs'), ML = await import('../source-faithful/research/minervini-lifecycle.mjs');
+  const pre = JSON.parse(fs.readFileSync(new URL('../source-faithful/certification/C06-C07-FID1-PREREGISTRATION.json', import.meta.url), 'utf8'));
+  assert.deepEqual(MF.MINERVINI_FID1, { rsMin: pre.rule.rsGate.min, dailyTop: pre.rule.dailySelection.max, exitPolicy: pre.rule.exitPolicy });
+  assert.ok(ML.EXIT_POLICIES[pre.rule.exitPolicy], 'Ausstieg ist eine vorhandene Politik der gepinnten Engine');
+  assert.deepEqual(pre.criteria.machine, { cagrAboveSpyCagr: true, expectancyRAbove: 0, minClosedTrades: 100 });
+  assert.equal(ML.REFERENCE_CONFIG.exitPolicy, 'STOP_BE3R_MA50', 'Referenz unverändert');
+  const d = ds(), idx = MX.buildSetupIndex(d, 'SEPA', { from: null });
+  const rs = { at: (id, date) => ({ proxy: { vuPercentile: id.includes(':AAA:') ? 95 : id.includes(':BBB:') ? 80 : 50 } }) };
+  const sel = MF.selectSetupIndex(d, idx, { rs });
+  assert.ok(![...sel.index.keys()].some((id) => id.includes(':CCC:')), 'RS 50 < 70 fällt heraus');
+  const perDate = new Map(); for (const [id, m] of sel.index) for (const [i] of m) { const dt = d.securities.find((s) => s.id === id).bars[i].date; perDate.set(dt, (perDate.get(dt) || 0) + 1); assert.ok(idx.index.get(id).has(i), 'nur Setups der Referenz'); }
+  assert.ok([...perDate.values()].every((n) => n <= 3));
+  const one = MF.selectSetupIndex(d, idx, { rs, dailyTop: 1 });
+  const dateOf = (id, i) => d.securities.find((s) => s.id === id).bars[i].date, pct = (id) => rs.at(id).proxy.vuPercentile;
+  const setupsOn = new Map(); for (const [id, m] of idx.index) for (const [i] of m) { const dt = dateOf(id, i); if (pct(id) >= 70) (setupsOn.get(dt) || setupsOn.set(dt, []).get(dt)).push(id); }
+  for (const [id, m] of one.index) for (const [i] of m) { const dt = dateOf(id, i); assert.equal(pct(id), Math.max(...setupsOn.get(dt).map(pct)), `bei einem Platz gewinnt das höhere RS (${dt})`); }
+  const mk = (cagr, spyCagr, e, n) => ({ costs: { REF: { cagr, spyCagr, rDistribution: { expectancyR: e, closed: n } } } });
+  assert.equal(T.minerviniFid1Verdict(mk(0.2, 0.15, 0.1, 150), pre, 'DEV').pass, true);
+  assert.equal(T.minerviniFid1Verdict(mk(0.1, 0.15, 0.1, 150), pre, 'DEV').pass, false);
+  assert.equal(T.minerviniFid1Verdict(mk(0.2, 0.15, -0.01, 150), pre, 'DEV').pass, false);
+  assert.equal(T.minerviniFid1Verdict(mk(0.2, 0.15, 0.1, 99), pre, 'DEV').pass, false);
+  const out = T.minerviniGoldenRun(d, { window: WIN });
+  for (const m of Object.values(out.methods)) { assert.ok(m.fid1 && m.fid1.costs.REF && m.fid1.verdict && 'pass' in m.fid1.verdict || m.fid1.verdict.status === 'NOT_COMPUTED'); assert.ok(Array.isArray(m.fid1.costs.REF.golden)); }
+});
