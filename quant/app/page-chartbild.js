@@ -1193,7 +1193,7 @@
     var rule = el("div"), grid = el("div", { class: "vu-grid qv3-lgrid" }), more = el("button", { type: "button", class: "vu-btn vu-btn--line vu-btn--block qv3-lmore" });
     function paintChips() {
       chips.replaceChildren.apply(chips, visible.map(function (r) {
-        var on = r.id === active, b = el("button", { type: "button", role: "tab", class: "vu-chip", dataset: { id: r.id }, "aria-selected": on ? "true" : "false", "aria-pressed": on ? "true" : "false", text: r.title + (on ? " · " + r.tickers.length : "") });
+        var on = r.id === active, b = el("button", { type: "button", role: "tab", class: "vu-chip", dataset: { id: r.id }, "aria-selected": on ? "true" : "false", text: r.title + (on ? " · " + r.tickers.length : "") });
         b.addEventListener("click", function () { active = r.id; expanded = false; paint(); });
         return b;
       }));

@@ -1583,6 +1583,7 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 /* Q06 Technische Lagen */
 .qv3-lchips{margin:14px 0 0}
 .qv3-lchips .vu-chip{min-height:36px;font-size:13px}
+.qv3-lchips .vu-chip[aria-selected=true]{background:var(--vu-ink);color:var(--vu-inv)}
 .qv3 .qv3-lrule{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:12px}
 .qv3-lrule>svg{flex:none;margin-top:2px}.qv3-lrule p{margin:2px 0 0;line-height:1.4}
 .qv3-lagen .vu-help{margin-top:8px}
