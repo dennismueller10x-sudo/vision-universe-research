@@ -481,9 +481,14 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(!/Branchenvorlage/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Branchenvorlage ungenannt');
   }
   if(view==='aktie-aaac'){
-   /* Ein belegter ETF behaelt Kurs und Verlauf und verliert die Aktienaussage. */
+   /* Variante B (Steuerung 05.11.2026): ein belegter ETF ist nicht im Aktien-Produktuniversum. Vorher: Kurs und
+      Verlauf ohne Aktienaussage; jetzt: benannte Absage mit Name und Papierart, ohne Chart und ohne Aktienaussage. */
    if(await page.locator('.qx-verdict-card').count()||await page.locator('details.qx-factor').count())befund(view,width,'ETF traegt eine Aktienaussage');
-   if(await page.locator('section.qc-chart').count()!==1)befund(view,width,'ETF ohne Kursverlauf');
+   if(await page.locator('section.qc-chart').count())befund(view,width,'ETF zeigt einen Kursverlauf als Aktie');
+   const kopf=(await page.locator('main h1').innerText()).trim(),text=await page.locator('#qx-main').innerText();
+   if(!kopf||kopf==='Aktie nicht gefunden'||kopf==='AAAC')befund(view,width,'ETF ohne Namen in der Absage');
+   if(!(await page.locator('#qx-main [class*=tag]').allTextContents()).some(t=>t.trim()==='ETF'))befund(view,width,'Papierart ETF ungenannt');
+   if(!/keine Aktie/.test(text))befund(view,width,'Absage ohne Grund');
   }
   if(view==='aktie-edva'){
    /* Datenarm heisst reduziert, nicht kaputt: kein Code, die Luecken benannt. */

@@ -32,10 +32,13 @@ import { SF6_VALIDATION_PROTOCOL } from './run-sf6-validation.mjs';
 import * as S from './st9-v13-delisted-study.mjs';
 import * as X from './st9-hist-execution.mjs';
 import * as FID from './kk-breakout-fidelity.mjs';
+import * as MF from './minervini-fidelity.mjs';
+import * as MX from './minervini-execution.mjs';
+import * as ML from './minervini-lifecycle.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.8.0';
+export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.9.0';
 /** Delisting-Erlös als Sensitivität (Prüfung Strang E): echte Neuläufe mit den vorhandenen Abrechnungsszenarien der Engines
  *  (validation/portfolio.mjs SCENARIOS, Wiederanlage inklusive). 100 % = Referenz S0_LAST_PRICE, 70 % = S1_MINUS_30,
  *  S2_DISTRESS_ZERO = 0 % bei Insolvenz-Delisting, sonst 70 %. Ein Szenario „0 % für alle“ hat die Engine nicht (eine neue
@@ -277,6 +280,22 @@ export function fid4Verdict(kkFid, prereg = JSON.parse(fs.readFileSync(path.join
   return { id: prereg.id, window: windowName, costLevel: prereg.costLevel, checks, pass: Object.values(checks).every(Boolean) };
 }
 
+/** C06/C07 Referenz auf DEV: Kennzahlen je Kostenstufe (versiegelt), R-Verteilung, Ablehnungsgründe und goldene Trades. */
+export function minerviniGoldenRun(ds, { window = L.WINDOW, costLevels = SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF' || c.id === 'COST-0'), log = () => {} } = {}) {
+  const out = { methods: {} };
+  for (const [cid, strategy] of [['C06', 'SEPA'], ['C07', 'POWER_PLAY']]) {
+    const setupIndex = MX.buildSetupIndex(ds, strategy, { from: null }), m = (out.methods[cid] = { strategy, setupCounts: setupIndex.counts, costs: {} });
+    for (const c of costLevels) {
+      const run = MX.runMinerviniLifecycle(ds, { strategy, setupIndex, config: ML.REFERENCE_CONFIG, policy: { ...MX.EQUITY_RESEARCH_PORTFOLIO_POLICY, slippageBps: c.slippageBps, commissionBps: c.commissionBps }, from: window.from, to: window.to });
+      const x = summarizeRun({ run, trades: run.trades, metricTrades: run.trades.filter((t) => t.status === 'CLOSED') }, ds);
+      const rej = {}; for (const r of run.rejections) rej[r.reason] = (rej[r.reason] || 0) + 1;
+      m.costs[c.id] = { ...x, rDistribution: MF.rDistributionMin(run.trades), rejectionsByReason: rej, ...(c.id === 'REF' ? { golden: MF.minerviniGoldenDiagnose(ds, { strategy, setupIndex, run }) } : {}) };
+      log(`minervini ${cid} ${c.id}: ${run.trades.length} trades`);
+    }
+  }
+  return out;
+}
+
 export function publicPart(result) {
   return { schema: 'st-hist-top5-public-1.1.0', ...LABEL, status: result.status ?? null, receipt: result.receipt, population: result.population ?? null, methods: Object.fromEntries(Object.entries(result.A).map(([k, m]) => [k, { candidateId: m.candidateId, tradesRef: m.costs.REF.trades, tradesSha256Ref: m.costs.REF.tradesSha256, auditPass: m.audit ? m.audit.pass : null, auditViolations: m.audit ? m.audit.violations : null, missedStopCheck: m.audit ? m.audit.missedStopCheck : null }])), quarantine: result.quarantine.A, universeB: result.B ? 'COMPUTED' : 'NOT_REQUESTED' };
 }
@@ -307,6 +326,19 @@ async function main() {
   const dsA = datasetFromPit(pit); attachSecPit(dsA, secPit);
   const qa = S.applyQuarantine(dsA, { mode: 'DQ-K5-BOOK' });
   log(`universe A: ${dsA.securities.length} segments, quarantine ${JSON.stringify(qa.census)}`);
+  if (arg('--mode') === 'minervini-golden') {
+    // C06/C07-Treueprüfung Schritt 1: Referenz (gepinnt, unverändert) auf DEV gegen belegte Minervini-Trades; nur versiegelt.
+    const out = minerviniGoldenRun(qa.ds, { log });
+    const receipt = { version: ST_HIST_TOP5_VERSION, fidelity: MF.MINERVINI_FIDELITY_VERSION, mode: 'minervini-golden', snapshotId, datasetSha256, datasetVerified: v.datasetVerified, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+    if (!reviewerPem) die('REVIEWER_KEY_REQUIRED_FOR_MINERVINI_GOLDEN');
+    fs.mkdirSync(OUT, { recursive: true });
+    const plainM = Buffer.from(JSON.stringify({ schema: 'st-minervini-golden-1.0.0', ...LABEL, receipt, quarantine: qa.census, ...out }));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.sealed.reviewer.json'), L.encryptForOwner(reviewerPem, plainM));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.sealed.owner.json'), L.encryptForOwner(fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8'), plainM));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.public.json'), JSON.stringify({ schema: 'st-minervini-golden-public-1.0.0', ...LABEL, receipt, golden: MF.MINERVINI_GOLDEN_TRADES.length }, null, 1) + '\n');
+    log('done (minervini-golden)');
+    return;
+  }
   if (arg('--mode') === 'golden-diagnose') {
     // C08-Treueprüfung: warum die belegten Kullamägi-Trades nicht entstehen (Universum, Quarantäne, Momentum, Markt, Setup-Schritt).
     // Keine Renditezahlen; trotzdem nur versiegelt, öffentlich nur Zählungen.
