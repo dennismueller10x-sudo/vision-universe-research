@@ -35,9 +35,9 @@ Stand: **05.11.2026**. Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11
   - Stichprobe 1.000 Titel, Seed 20261105: 789 heutige, 211 delistete, Vorzugsaktien ausgeschlossen;
   - Zeitraum 2016–2026, exakter SPY-Vergleich; 2008–2015 bleibt für eine spätere Bestätigung unberührt;
   - Zahlen gehen versiegelt an den Owner, im Repo stehen Methodik, Abdeckung und Urteil.
+- **E3 Supertrader-Drawdowns geklärt** (#1421): Strang B fand keinen Fehler, Lauf 42004286201 und seine Hashes bleiben gültig. Darvas liegt zwischen −32 und −11 % p. a. Eine Liquiditätsgrenze käme nur als eigene, vorab registrierte Variante.
 
 ## Offen
-- ST-Nachprüfung (a)–(c) neu rechnen, sobald Strang B die korrigierte Lieferung bereitstellt (#1408). Hash-Änderungen werden offengelegt, die Auswahl bleibt.
 - `backtest-runner.cjs#setupOosFromCertificationPath` an A4 angleichen (berührt CODE_FILES → Demo-Neubau, eigener PR).
 - Historische Strategie- und Faktor-Backtests (Katalog-Arten) auf PIT-Basis über den Baukasten-Datenpfad.
 
