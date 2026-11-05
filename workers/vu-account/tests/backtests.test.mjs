@@ -291,4 +291,12 @@ test('Musterportfolios: gleiche Zugangsregeln, Paket hashgebunden und reproduzie
   const body = Exp.build(ROOT, 'docs/quant/research/portfolio-v1/model-portfolios.json');
   const {bundleHash, ...rest} = b;
   assert.deepEqual(rest, JSON.parse(JSON.stringify(body)), 'Paket = Export aus dem committeten Ergebnis');
+  /* Owner-Linie (Plan §11): keine heutige Kaufliste im Paket. */
+  const run = b.portfolios.find((p) => p.state === 'RUN');
+  if (run) {
+    const swap = (fn) => ({...b, portfolios: b.portfolios.map((p) => p === run ? fn(p) : p)});
+    assert.ok((await portfolioBundleViolations(swap((p) => ({...p, lastHoldings: []})))).includes('PORTFOLIO_CURRENT_HOLDINGS'));
+    assert.ok((await portfolioBundleViolations(swap((p) => ({...p, holdings: {...p.holdings, asOf: b.window[1]}})))).includes('PORTFOLIO_HOLDINGS_TOO_RECENT'));
+    assert.ok((await portfolioBundleViolations(swap((p) => ({...p, holdings: undefined})))).includes('PORTFOLIO_HOLDINGS_NOT_DELAYED'));
+  }
 });

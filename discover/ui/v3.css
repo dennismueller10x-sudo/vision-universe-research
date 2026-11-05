@@ -346,6 +346,8 @@ body.dv2 .dx-search .dx-search-hint:empty{display:none}
 .dv3 button.vu-btn,.dv3-home button.vu-btn{font-weight:800;font-family:var(--vu-font)}
 #dv3-sheet.vu-sheet-backdrop{z-index:1000}
 .dv3 .vu-seg>*,.dv3-home .vu-seg>*{font-family:var(--vu-font);font-weight:700}
+/* Dunkelmodus: Schrift auf Neongrün bleibt schwarz (Kontrast; Schritt 6 Browser-QA 390×844) */
+:root[data-theme=dark] .dv3-swipecard,:root[data-theme=dark] .dv3-swipecard b,:root[data-theme=dark] .dv3-swipecard span,:root[data-theme=dark] .vu-chip--lime,:root[data-theme=dark] .vu-chip--lime *{color:#000}
 /* N6 Profi: alle Perspektiven als Kacheln (sys-profi) */
 .dv3-pgrid{gap:8px}
 .dv3-ptile{display:block;padding:11px;color:inherit;text-decoration:none;min-width:0}

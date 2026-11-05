@@ -119,13 +119,13 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | H07 | Hedgefonds · NVIDIA (Perspektive Investoren) | fertig | #1357 | `#/aktie/<T>`, CUSIP leitet um; Urteil ≥ 60 % Käufe „Mehr Käufer“, ≥ 60 % Verkäufe „Mehr Verkäufer“, sonst „Ausgeglichen“ |
 | S01 | Screener · Übersicht | fertig | #1360 | Satz startet leer statt mit Beispielsatz; Ideenzahlen live aus der Engine |
 | S02 | Screener · Filter hinzufügen | fertig | #1360 | Profi: Gruppen UND/ODER bleiben; Kriterium-Sheet mit „Genau einstellen“ |
-| S03 | Screener · Treffer | teilweise | #1360 | Teil: „Aktie öffnen“ bleibt Sheet (Kopf, Leiste, „Treffer k von N“) statt eigener Aktienseite |
+| S03 | Screener · Treffer | fertig | #1360, (dieser PR) | „Aktie öffnen“ nach s03-b: Kopf (C04), Perspektiven-Leiste (C05), „Aus deinem Screen · Treffer k von N“ mit Urteil je Regel, dann der Inhalt der Perspektive der meistgenutzten Filter (Zahlen → Kennzahlen mit Säulen, letzte neongrün; Chart → Chart), Vor/Zurück darunter. Abweichung: bleibt ein Sheet über der Trefferliste statt eigener Seite, weil der Screener eine eigene statische App ist; so bleiben Treffer, Filter und die Screener-Leiste beim Blättern erhalten. „Aktie vollständig öffnen“ führt zur Aktienseite. |
 | S04 | Screener · Gespeichert | fertig | #1360 | Neu/raus aus den zwei letzten Läufen; „Im Konto speichern“ = bald bis Z3 (#1359) gemergt ist |
 | S05 | Screener · Watchlist | fertig | #1360 | `?view=saved&tab=watchlist`; „Als Screen filtern“ bald (Engine filtert keine Symbolliste) |
 | V01 | Vorsorge · Start | fertig | #1362 | Sheet „Erster Besuch“ öffnet in automatisierten Browsern nicht von selbst (`#/?lage=1` erzwingt) |
 | V02 | Vorsorge · Planer | fertig | #1362 | Monte-Carlo bleibt unter „Profi“ (als Spanne); Plan im Browser bis Konto |
 | V03 | Vorsorge · ETFs | fertig | #1362 | „Alle“ sortiert nach Historienlänge (Municipal-Fonds oben); Fondsvermögen wäre besser – Nacharbeit |
-| V04 | Vorsorge · ETF-Detail | teilweise | #1362 | Teil: Bestände noch alte Tabelle, Planspiel noch alte dunkle Karte |
+| V04 | Vorsorge · ETF-Detail | fertig | #1362, (dieser PR) | Bestände nach v04-b: Kacheln Top-10-Anteil (mit Vorwert aus dem letzten Bericht) und Effektiv, Top 10 als Liste mit „Die 25 größten zeigen“, „Seit dem letzten Bericht“ mit Urteil je Änderung. Planspiel nach v04-c: zwei Regler, Liste eingezahlt/Zulagen/wie bisher/schwächer, Erklärung, ein Knopf; Zulagen-Angaben und Annahmen unter „Mehr Angaben“ (Rechnung unverändert). Abweichung: kein Optimistisch-Wert und kein Verlaufschart im Sheet (Mockup zeigt beides nicht); „In meinen Plan übernehmen“ übernimmt weiter alle drei Szenarien. |
 | V05 | Vorsorge · Portfolio | teilweise | #1362 | Teil: X-Ray-Abschnitte altes Layout (neu gefärbt), Mischungen mit Kreisen statt Gewichtsbalken |
 | V06 | Vorsorge · Vergleichen | fertig | #1362 | Standard URTH gegen SPY; Kosten unter `#/vergleichen/kosten` |
 | V07 | Vorsorge · Förderung | fertig | #1362 | Beispielfälle unter `#/foerderung/faelle` |
