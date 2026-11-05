@@ -50,7 +50,7 @@ export const SPECS = {
     chart: {scope: '.dx-feed-screen', minW: 150, minH: 100, minGeom: 2}},
   daten: {path: '/discover/#/daten', h1: '^Daten & Quellen', minText: 3000, includes: ['Marktdaten']},
   maerkte: {path: '/discover/#/maerkte', h1: '^Märkte', minText: 3000, includes: ['Marktbarometer'], textRe: '[−+-]\\d+,\\d+\\s*%',
-    chart: {scope: 'main', minW: 100, minH: 20, minGeom: 2}},
+    chart: {scope: 'main', minW: 60, minH: 20, minGeom: 2}}, // D07: je Markt eine Verlaufslinie (74×32) statt eines großen Charts,
   strategien: {path: '/discover/#/strategien', h1: '^Strategien$', minText: 1500, list: {selector: '#v2-main a[href*="#/"]', min: 5}},
   aktien: {path: '/discover/#/aktien', h1: 'Alle Aktien', minText: 800, list: {selector: '#v2-main a[href*="/s/"]', min: 30}},
   start: {path: '/discover/', h1: '^Was bewegt die Börse', minText: 2000, list: {selector: '#v2-main a[href*="/s/"]', min: 4}},
