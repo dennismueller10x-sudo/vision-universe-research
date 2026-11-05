@@ -1,7 +1,7 @@
 {
   "schemaVersion": "rejection-ledger-1.0.0",
   "auftrag": "Owner 18.09.2026 P0: Rejection-Checkpoint klassifizieren statt loeschen",
-  "checkedAt": "2026-11-04T02:33:36.840Z",
+  "checkedAt": "2026-11-04T18:29:13.632Z",
   "applied": true,
   "staleAfterDays": 7,
   "checkpointsFound": 1,
@@ -19,18 +19,59 @@
         "too_few_bars": 2,
         "adjustment_status_contradicted": 4
       },
-      "retryDue": 6,
-      "keptBlocked": 0,
-      "oldest": "2026-11-03T03:43:58.861Z",
-      "newest": "2026-11-03T04:38:00.212Z",
-      "keptExamples": [],
-      "removed": 6
+      "retryDue": 2,
+      "keptBlocked": 4,
+      "oldest": "2026-11-04T02:42:40.793Z",
+      "newest": "2026-11-04T03:36:41.778Z",
+      "keptExamples": [
+        {
+          "securityId": "ref_NEWTO",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-11-04T03:14:40.961Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_PS",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-11-04T03:21:41.142Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_SCAG",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-11-04T03:25:50.699Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_VTAK",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-11-04T03:36:41.778Z",
+          "confirmations": 1
+        }
+      ],
+      "removed": 2
     }
   ],
   "totals": {
     "before": 6,
-    "retryDue": 6,
-    "keptBlocked": 0,
-    "removed": 6
+    "retryDue": 2,
+    "keptBlocked": 4,
+    "removed": 2
   }
 }

@@ -162,7 +162,7 @@ if (only.has('theme')) await guard('theme', async () => {
 /* ---------------------------------------------------------------- 3 Visual-First-Bausteine */
 // [Welt, Route, Selektor, Beschreibung]; Inhalte stammen aus den Visual-First-PRs (#759-#783, #794).
 const VISUAL = [
-  ['Quant', '/quant/#/', '.q-rc-chip', 'Radar-Kompaktkarte mit Belegchips'],
+  ['Quant', '/quant/#/radar', '.q-rc-chip', 'Radar-Kompaktkarte mit Belegchips (Redesign Q01: Radar-Karten stehen im Radar, die Startseite zeigt „Heute bei Quant“)'],
   ['Quant', '/quant/#/radar', '.q-radar-stats', 'Radar mit Richtungszeichen und Zaehlungen'],
   ['Quant', '/quant/#/radar', '.q-chip-n', 'Filterzaehlungen'],
   ['Quant', '/quant/#/aktie/NVDA', '.q-check-count', 'Setup-Regelcheckliste', 'setupDirection'],

@@ -195,7 +195,11 @@ test("the four layers are actually used: a section leads with meaning and folds 
     const call = [null, stockPage.slice(start + "X.section(".length, end)];
     const viaDictionary = new RegExp("VUProductLanguage\\.question\\(\"" + termId + "\"\\)").test(call[1]);
     const title = (call[1].match(/^"([^"]*)"/) || [])[1];
-    if (!viaDictionary && title !== Language.question(termId)) abweichend.push(sectionId + ": „" + title + "“ statt „" + Language.question(termId) + "“");
+    /* Redesign 2027 (Folie Q07-b, docs/design/redesign-2027/worlds/03-quant.js): Mit den Bausteinen (VUUI) stehen die Fragen
+       des Mockups als Titel; die Woerterbuch-Frage bleibt fuer die Ansicht ohne VUUI. */
+    const mockup = { veraenderung: "Was hat sich zuletzt bewegt?", setup: "Passt die Aktie gerade zu einem Stil?", historie: /^"Was geschah früher bei " \+ / };
+    const m = mockup[sectionId], viaMockup = m && (typeof m === "string" ? title === m : m.test(call[1]));
+    if (!viaDictionary && !viaMockup && title !== Language.question(termId)) abweichend.push(sectionId + ": „" + title + "“ statt „" + Language.question(termId) + "“");
   }
   assert.deepEqual(abweichend, [], "section questions are not the dictionary's questions");
   /* Bedeutung -> Erklaerung -> Beleg -> Methodik: die Faktorkarte zeigt
