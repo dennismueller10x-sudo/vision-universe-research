@@ -32,7 +32,7 @@ on:
         description: 'Anfragen je Stunde (Drossel)'
         default: '4500'
       nur_zusatz:
-        description: 'Nur die Zusatz-ETFs (Company Master CONFIRMED_NON_EQUITY:ETF), nicht die ganze Tickerliste'
+        description: 'Nur, was noch nicht im Universum steht (Zusatz-ETFs aus dem Company Master und neu gelistete ETFs)'
         type: boolean
         default: false
   push:

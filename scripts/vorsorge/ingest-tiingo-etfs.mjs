@@ -20,8 +20,9 @@
 
    ZUSATZ-ETFs  Papiere, die der Company Master als CONFIRMED_NON_EQUITY:ETF
                 ausscheidet, die Tiingo aber nicht als ETF listet (extraEtfRows),
-                laufen mit. --only-extra fragt nur sie ab (rund zwei Anfragen je
-                Zusatz-ETF); Universumszeilen frueherer Laeufe bleiben (mergeUniverse).
+                laufen mit. --only-extra fragt nur ab, was noch nicht im Universum
+                steht (Zusatz-ETFs und neu gelistete Katalog-ETFs, rund zwei Anfragen
+                je ETF); Universumszeilen frueherer Laeufe bleiben (mergeUniverse).
 
    FORTSETZBAR  .market-cache/vorsorge/checkpoint.json (verarbeitet,
                 gescheitert, letzter Ticker). Der Workflow sichert die
@@ -239,7 +240,9 @@ async function main() {
   const extra = extraEtfRows(instruments, cat.rows.filter((r) => r.active).map((r) => r.symbol));
   console.log("Zusatz-ETFs (Company Master, CONFIRMED_NON_EQUITY:ETF, nicht als ETF in der Tickerliste): " + extra.length);
   const catalogTickers = [...new Set(cat.rows.filter((r) => r.active).map((r) => r.symbol))];
-  const tickers = [...new Set((ONLY_EXTRA ? [] : catalogTickers).concat(extra.map((r) => r.symbol)))].sort();
+  // --only-extra: nur, was noch nicht im Universum steht - Zusatz-ETFs und neu gelistete Katalog-ETFs
+  const known = new Set((existsSync(join(OUT, "ingest/universe.json")) ? JSON.parse(readFileSync(join(OUT, "ingest/universe.json"), "utf8")).rows : []).map((r) => r.symbol));
+  const tickers = [...new Set((ONLY_EXTRA ? catalogTickers.filter((t) => !known.has(t)) : catalogTickers).concat(extra.map((r) => r.symbol)))].sort();
   const allActive = [...new Set(catalogTickers.concat(extra.map((r) => r.symbol)))];
   let done = 0, newly = 0, stopped = null;
   const save = () => { cp.lastSymbol = cp.lastSymbol || null; cp.updatedAt = new Date().toISOString(); writeFileSync(cpPath, JSON.stringify(cp)); };
