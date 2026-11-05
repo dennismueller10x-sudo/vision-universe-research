@@ -8,6 +8,11 @@ name: Produktuniversum (Eignung aus dem Security Master, mit Gate)
 # Zeitplan: folgt dem woechentlichen Security-Master-Lauf (workflow_run, nur main). Ein solcher Lauf committet nur bei
 # Gate COMMIT unter den normalen Grenzen, ohne Freigabeliste; sonst rot und Alarm. Das Nachholen vom 05.11.2026
 # (eligibility-catchup-2026-11, 228 Wechsel) ist uebernommen (Commit c5357718cb).
+# Umfangsfolgen: aendert sich das Produktuniversum, entfernen die Erzeuger selbst, was nicht mehr im Umfang
+# steht (Discover-Reihen, lange Reihen, Intraday; --prune-only/--index-only), Company Master und Discover werden
+# neu gebaut, und die Materialisierung wird
+# mit force neu angestossen (Technical-Signale). Sonst scheitern alle Laeufe mit Public-Data-Hygiene, auch
+# der naechtliche Marktdatenlauf vor seiner Materialisierung (Befund 05.11.2026: 131 ETFs nach dem Nachholen).
 on:
   workflow_run:
     workflows: ['Security Master + Firmennamen (wöchentlich)']
@@ -23,9 +28,14 @@ on:
         description: 'Freigabeliste docs/data/security-master/eligibility-catchup-2026-11.json anwenden (Nachholen, PR mit Vorher/Nachher)'
         type: boolean
         default: false
+      umfangsfolgen:
+        description: 'Nur die Umfangsfolgen nachziehen (Reihen ausserhalb des Umfangs entfernen, Materialisierung anstossen)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   # dieselbe Gruppe wie Security Master und Marktdaten: kein paralleler Lauf auf denselben Dateien
@@ -37,7 +47,7 @@ jobs:
     # nach dem Security-Master-Lauf nur, wenn dieser gruen war
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -92,6 +102,7 @@ jobs:
           retention-days: 30
 
       - name: Commit (nur mit commit=true und Gate COMMIT)
+        id: commit
         if: (github.event_name == 'workflow_run' || inputs.commit == true) && steps.gate.outputs.decision == 'COMMIT'
         env:
           PUSH_OWNED_PATHS: quant/data/market/security-master/eligibility.json quant/data/market/security-master/eligibility-reconciliation.json quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json
@@ -105,6 +116,61 @@ jobs:
           if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
           git commit -q -m "Produktuniversum: Eignung neu aus dem Security Master (Gate COMMIT)"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Umfangsfolgen - Reihen ausserhalb des Umfangs entfernen (Erzeuger, kein Abruf)
+        id: folgen
+        if: steps.commit.outputs.changed == 'true' || inputs.umfangsfolgen == true
+        env:
+          PUSH_OWNED_PATHS: quant/data/market/discover-series/ quant/data/market/discover-series-long/ quant/data/market/intraday/ quant/data/universe/
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+        run: |
+          set -euo pipefail
+          git pull -q --rebase origin "${GITHUB_REF_NAME}" || true
+          # Company Master und Universums-Indizes: market-capability.json bestimmt, wofuer die Materialisierung
+          # Technical-Signale baut. Derselbe Weg wie sec-fundamentals-daily.yml (dort erst am naechsten Morgen).
+          node scripts/universe/build-company-master.mjs
+          node scripts/universe/build-universe-indexes.mjs
+          node scripts/universe/build-issuer-master.mjs
+          node scripts/universe/verify-company-master.mjs
+          node scripts/market/publish-discover-series.mjs --prune-only
+          node scripts/market/publish-long-series.mjs --prune-only
+          node scripts/market/ingest-intraday.mjs --index-only
+          # Discover-Daten (Startseite, Live-Umfang, Aktienseiten, Meta) aus dem neuen Universum: derselbe Erzeuger
+          # und dieselbe Nachpruefung wie im Marktdatenlauf und in long-series.yml (Registereintrag discover/data/meta.json).
+          node scripts/discover/build-discover-data.mjs
+          node scripts/discover/verify-discover-data.mjs
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A $PUSH_OWNED_PATHS discover/data
+          if git diff --cached --quiet; then echo "nichts ausserhalb des Umfangs"; else
+            git commit -q -m "Umfangsfolgen: Reihen ausserhalb des Produktuniversums entfernt, Discover neu gebaut (Erzeuger)"
+            # wie long-series.yml: nach dem Rebase Discover auf dem zusammengefuehrten Stand neu bauen und pruefen
+            git pull -q --rebase origin "${GITHUB_REF_NAME}"
+            node scripts/discover/build-discover-data.mjs
+            node scripts/discover/verify-discover-data.mjs
+            git add -A discover/data
+            if ! git diff --cached --quiet; then git commit -q --amend --no-edit; fi
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+          fi
+          # Uebrig bleiben darf hoechstens die Technical-Materialisierung, die der naechste Schritt neu anstoesst.
+          set +e
+          node scripts/market/assert-public-data-hygiene.mjs > "$RUNNER_TEMP/hygiene.txt" 2>&1
+          set -e
+          rest="$(grep -E '^ *- ' "$RUNNER_TEMP/hygiene.txt" | grep -v 'technical-signals-v1/' || true)"
+          if [ -n "$rest" ]; then echo "$rest" | head -20; echo "::error::Hygiene-Befunde ausserhalb der Materialisierung"; exit 1; fi
+
+      - name: Umfangsfolgen - Materialisierung neu anstossen (Technical-Signale)
+        if: steps.folgen.outcome == 'success' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # ein wartender oder laufender Lauf baut ohnehin auf dem neuen Stand - kein zweiter
+          offen="$(gh run list --workflow product-intelligence-materialization.yml --branch main --limit 10 --json status \
+            --jq '[.[] | select(.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="pending")] | length')"
+          if [ "$offen" != "0" ]; then echo "Materialisierung laeuft schon ($offen) - kein zweiter Anstoss"; exit 0; fi
+          gh workflow run product-intelligence-materialization.yml --ref main -f force=true
 
       - name: Ergebnis
         if: steps.gate.outputs.decision != 'COMMIT'

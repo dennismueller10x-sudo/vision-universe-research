@@ -274,7 +274,7 @@
       "records": "universes.0.securities",
       "role": "Discover-Produktdaten: Startseite, Reihen, Aktienseiten (discover/data/stocks), Suche.",
       "producer": "scripts/discover/build-discover-data.mjs",
-      "workflow": "market-data-refresh.yml (+ index-membership, long-series, company-names, sec-consumer)",
+      "workflow": "market-data-refresh.yml (+ index-membership, long-series, company-names, sec-consumer, security-master-eligibility)",
       "schedule": "Mo-Fr 22:30 UTC",
       "freshness": { "kind": "sessions", "warnAfter": 1, "staleAfter": 2 },
       "consumers": ["/discover/", "/screener/ (Build-Projektion)", "Supertrader (Universum)"]

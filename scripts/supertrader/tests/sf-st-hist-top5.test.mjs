@@ -77,3 +77,40 @@ test('ST-HIST-5: Sensitivität Delisting-Erlös als echte Neuläufe (S0/S1/S2), 
   const runner = fs.readFileSync(new URL('../source-faithful/research/run-st-hist-top5.mjs', import.meta.url), 'utf8');
   assert.match(runner, /if \(!auditPass\) \{[^}]*process\.exit\(4\)/, 'fail closed');
 });
+
+test('ST-HIST-6: E3-Export je Methode und Fenster ab Cash, kostenfrei, mit Fills, Kurve, Terminalen und ADV20', () => {
+  const W = [{ id: 'W1', from: '2016-01-04', to: '2016-12-30' }, { id: 'W2', from: '2017-01-03', to: '2017-06-30' }];
+  const e = T.edgeExport(ds(), { windows: W });
+  assert.equal(e.schema, 'st-edge-export-1.0.0');
+  assert.ok(e.benchmark.spyClose.length > 0);
+  for (const k of T.TOP5) for (const w of W) {
+    const x = e.methods[k].windows[w.id];
+    assert.deepEqual(x.costs, { slippageBps: 0, commissionBps: 0 });
+    assert.ok(x.curve.every((p) => p.date >= w.from && p.date <= w.to), `${k} ${w.id}: Kurve im Fenster`);
+    assert.ok(x.fills.every((f) => f.date >= w.from && f.date <= w.to), `${k} ${w.id}: keine Position vor dem Fenster`);
+    for (const f of x.fills.filter((f) => f.side === 'BUY')) { assert.ok(f.securityId && f.ticker && f.shares > 0 && f.price > 0); assert.ok(f.adv20Usd === null || f.adv20Usd > 0); }
+    assert.ok(Math.abs(x.curve[0].equity - 100000) < 100000 * 0.2 || x.fills.length === 0, 'Start in Cash');
+    assert.equal(x.holdings.length, x.curve.length);
+    assert.deepEqual(x.holdings[0].positions.length <= x.fills.filter((f) => f.date === x.curve[0].date && f.side === 'BUY').length, true, 'Start ohne Altbestand');
+    for (const h of x.holdings) for (const [id, n] of h.positions) assert.ok(id && n > 0, `${k} ${w.id} ${h.date}: nur positive Bestände`);
+    if (x.curve.at(-1).positions !== null) assert.equal(x.holdings.at(-1).positions.length, x.curve.at(-1).positions, `${k} ${w.id}: Bestände = Positionszahl der Engine`);
+  }
+  assert.deepEqual(T.EDGE_WINDOWS.map((w) => [w.from, w.to]), [['2016-01-04', '2019-12-31'], ['2020-01-02', '2026-09-30']]);
+});
+
+test('ST-HIST-7: Darvas-Spannweite der Balkenreihenfolge nur mit der vorregistrierten Variante ALT-INTRABAR-OPTIMISTIC', () => {
+  const a = T.runTop5(ds(), { window: WIN, costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF') });
+  assert.deepEqual(Object.keys(a.DARVAS.intrabarVariants), ['ALT-INTRABAR-OPTIMISTIC']);
+  assert.deepEqual(a.DARVAS.intrabarVariants['ALT-INTRABAR-OPTIMISTIC'].changes, { intrabarOrder: 'OPTIMISTIC' });
+  for (const k of ['TURTLE_S1', 'TURTLE_S2', 'KK_BREAKOUT', 'BUYABLE_GAP_UP']) assert.equal(a[k].intrabarVariants, undefined, `${k}: keine nicht registrierte Variante`);
+});
+
+test('ST-HIST-8: Plausibilitätsdiagnose ohne Hebel (Exposure <= 1, Cash >= 0) und mit schlechtesten Trades und Tagen', () => {
+  const a = T.runTop5(ds(), { window: WIN, costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF') });
+  for (const k of T.TOP5) {
+    const p = a[k].plausibility;
+    assert.ok(p.maxExposure <= 1 + 1e-9 && p.minCash >= -1e-6, `${k}: kein Hebel`);
+    assert.ok(Array.isArray(p.worstTrades) && Array.isArray(p.worstDays));
+    assert.ok(p.worstDays.every((d, i, arr) => i === 0 || arr[i - 1].ret <= d.ret));
+  }
+});
