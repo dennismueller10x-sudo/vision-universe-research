@@ -203,3 +203,23 @@ test('Panel-Regeln: delistete Reihen nur mit Gesamtrendite und Rohbalken; Popula
   const bt = fs.readFileSync(ROOT + '/quant/engines/portfolio-backtest.cjs', 'utf8');
   assert.ok(!bt.includes("historicalPopulation: 'ALL_THEN_TRADEABLE_LISTINGS'"));
 });
+
+test('Öffentliches Bündel: ohne dokumentierte Owner-Freigabe nie in einen ausgelieferten Pfad; Inhalt ohne Positionen und Kurse', () => {
+  const P = require(ROOT + '/scripts/quant/portfolio/export-public-model-portfolios.cjs');
+  assert.equal(P.servedByPages('quant/data/product/model-portfolios-v1.json'), true);
+  assert.equal(P.servedByPages('docs/x.json'), false);
+  assert.equal(P.servedByPages('workers/vu-account/data/x.json'), false);
+  const doc = P.build(ROOT, 'docs/quant/research/portfolio-v1/model-portfolios.json');
+  if (doc.state === 'COMPUTED') {
+    assert.equal(doc.label, 'Forschung, nicht zertifiziert');
+    assert.equal(doc.claim, 'NO_PERFORMANCE_PROMISE');
+    const text = JSON.stringify(doc);
+    assert.equal(/lastHoldings|"weight"|"equity"|"ticker"/.test(text), false);
+    assert.ok(doc.limits.length >= 4);
+  }
+  if (!P.approved(ROOT)) {
+    const r = require('node:child_process').spawnSync(process.execPath, [ROOT + '/scripts/quant/portfolio/export-public-model-portfolios.cjs', '--out', ROOT + '/quant/data/product/__probe.json']);
+    assert.equal(r.status, 3);
+    assert.equal(fs.existsSync(ROOT + '/quant/data/product/__probe.json'), false);
+  }
+});
