@@ -53,8 +53,8 @@ export const SPECS = {
   radar: {path: '/quant/#/radar', h1: 'Was ist heute neu', minText: 8000, chart: GLOBE},
   /* Redesign 2027 (Q03): Frage als Titel, Strategie-Karten statt Globus. */
   strategien: {path: '/quant/#/strategien', h1: 'Welche Art von Firma', minText: 1500, includes: ['Aktien heute']},
-  /* Redesign 2027 (Q02): Frage als Titel, Fragen-Karten und Satz statt Globus; „Quant Screener“ steht als Kicker. */
-  screener: {path: '/quant/screener/', h1: 'Welche Aktien suchst du', minText: 1000, includes: ['Quant Screener']},
+  /* Redesign 2027 (Q02): „Quant Screener“ bleibt die Überschrift, darunter die Frage, Fragen-Karten und Satz statt Globus. */
+  screener: {path: '/quant/screener/', h1: 'Quant Screener', minText: 1000, includes: ['Welche Aktien suchst du']},
   // emptyOk: "Zuletzt analysiert" ist beim Erstbesuch ehrlich leer (die Einleitung erklaert, wo Aktien erscheinen) - kein Fehler.
   /* Redesign 2027 (Q04): Frage als Titel, Suche, bekannte Namen, ehrlicher Leerzustand „Beobachten“ - kurz und ohne Globus. */
   technical: {path: '/quant/technical/', h1: 'Welche Aktie', minText: 800, includes: ['Beobachten', 'Bekannte Aktien'], emptyOk: ['Zuletzt analysiert']},
