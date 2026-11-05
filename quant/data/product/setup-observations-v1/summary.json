@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-11-04T21:09:03.000Z",
- "asOf": "2026-11-03",
+ "generatedAt": "2026-11-05T04:44:26.000Z",
+ "asOf": "2026-11-04",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,25 +323,25 @@
    "predicateHash": null
   }
  ],
- "universe": 5666,
- "observed": 5666,
+ "universe": 5669,
+ "observed": 5669,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4525,
-  "WATCH": 661,
-  "SETUP_FORMING": 448,
-  "CONFIRMED": 32,
+  "NO_SETUP": 4447,
+  "WATCH": 689,
+  "SETUP_FORMING": 495,
+  "CONFIRMED": 38,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 448,
-  "setup.none.fallback": 4525,
-  "setup.watch.bullish-trend": 418,
-  "setup.watch.confirmed-structure-near-high": 243,
-  "setup.confirmed.structure-trend-volume": 32
+  "setup.forming.complete-setup-awaiting-trigger": 495,
+  "setup.none.fallback": 4447,
+  "setup.watch.bullish-trend": 441,
+  "setup.watch.confirmed-structure-near-high": 248,
+  "setup.confirmed.structure-trend-volume": 38
  },
  "pathTier": {
   "states": [
@@ -385,14 +385,15 @@
    "2026-10-29",
    "2026-10-30",
    "2026-11-02",
-   "2026-11-03"
+   "2026-11-03",
+   "2026-11-04"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5666
+   "instruments": 5669
   }
  },
  "shards": [
@@ -1034,8 +1035,8 @@
  ],
  "observationDrift": null,
  "staleBundles": {
-  "count": 92,
-  "cutoff": "2026-11-03",
+  "count": 93,
+  "cutoff": "2026-11-04",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
    "2026-10-23": 6,
@@ -1060,6 +1061,7 @@
    "2026-09-28": 1,
    "2026-10-01": 4,
    "2026-10-21": 1,
+   "2026-11-03": 1,
    "2026-09-17": 1,
    "2026-09-10": 2,
    "2026-11-02": 1,
@@ -1197,6 +1199,10 @@
     "dataCutoff": "2026-10-21"
    },
    {
+    "ticker": "GNTA",
+    "dataCutoff": "2026-11-03"
+   },
+   {
     "ticker": "GWH",
     "dataCutoff": "2026-10-02"
    },
@@ -1279,10 +1285,6 @@
    {
     "ticker": "MGPI",
     "dataCutoff": "2026-10-30"
-   },
-   {
-    "ticker": "MIMI",
-    "dataCutoff": "2026-10-12"
    }
   ]
  }
