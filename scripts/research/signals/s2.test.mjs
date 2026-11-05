@@ -28,3 +28,16 @@ test('S2-Stichprobe: 1.000 eindeutige Titel, Schichtung im Universumsverhältnis
   const tick = new Map(u.securities.map(s => [s.securityId, s.ticker]));
   for (const id of registered.ids.filter(i => !i.startsWith('dl_'))) assert.ok(!/-P(-|$)/.test(tick.get(id) || id.replace(/^ref_/, '').replace(/_/g, '-')), id);
 });
+
+test('S2 Ergänzung 1: K5-Trades fallen aus der Primärauswertung, bleiben in der Sensitivität', async () => {
+  const { aggregate } = await import('./s2.mjs');
+  const { FAMILIES } = await import('./study.mjs');
+  const zero = () => ({ activeObservations: 0, conditionalObservations: 0, signals: 0, overlap: 0, incomplete: 0, gapEntry: 0, rightCensored: 0, invalidWindow: 0 });
+  const t = (k, dq) => ({ family: FAMILIES[0], securityId: 'ref_X' + k, ticker: 'X' + k, signal: '2020-01-0' + (k % 9 + 1), entryDate: '2020-0' + (k % 9 + 1) + '-02', exitDate: '2020-03-01',
+    quarter: '2020Q1', regime: 'ABOVE_200', netR: 1, holdR: 0, deltaHoldR: 1, spyExactR: 0, deltaSpyExactR: 1, delisted: false, dqK5: dq });
+  const counts = Object.fromEntries(FAMILIES.map(f => [f, zero()]));
+  const out = aggregate([{ results: [{ id: 'ref_A', state: 'RUN', trades: [t(1, false), t(2, true), t(3, true)], counts, k5Sessions: 2 }] }]);
+  const p = out.families.find(f => f.family === FAMILIES[0]), r = out.familiesWithoutDq.find(f => f.family === FAMILIES[0]);
+  assert.equal(p.n, 1); assert.equal(p.dqK5Excluded, 2); assert.equal(r.n, 3);
+  assert.deepEqual(out.dq, { rule: 'DQ-K5', k5Titles: 1, excludedTrades: 2 });
+});

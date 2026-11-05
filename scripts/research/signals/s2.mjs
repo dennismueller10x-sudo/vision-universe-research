@@ -19,7 +19,10 @@ const require = createRequire(import.meta.url);
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const Trade = require('../../../quant/engines/technical/trade-setup.js');
 const { FAMILIES, HORIZON, net, seriesOf, detect, replay, stats, clusterP, holm } = S1;
-const VERSION = 'e4-signals-s2-1.0.0';
+const VERSION = 'e4-signals-s2-1.1.0';
+// Ergänzung 1 der Registrierung (vor dem ersten Ergebnis): DQ-K5-Quarantäne. Ein Trade ist betroffen, wenn eine K5-Sitzung
+// im Erkennungsfenster (300 Sitzungen bis zum Signal) oder bis zum Ausstieg liegt.
+const DQ_K5 = 5, DQ_K5_LOOKBACK = 300;
 const mean = a => a.length ? a.reduce((s, v) => s + v, 0) / a.length : null;
 const goodBar = b => ['open', 'high', 'low', 'close', 'splitFactor'].every(k => Number.isFinite(b[k]) && b[k] > 0) && b.high >= Math.max(b.open, b.close) && b.low <= Math.min(b.open, b.close);
 const sha = x => createHash('sha256').update(x).digest('hex');
@@ -42,6 +45,10 @@ export function processStock(payload, ctx) {
   const { spy, spyMap, regime, exact } = ctx;
   const trades = [], counts = Object.fromEntries(FAMILIES.map(f => [f, { activeObservations: 0, conditionalObservations: 0, signals: 0, overlap: 0, incomplete: 0, gapEntry: 0, rightCensored: 0, invalidWindow: 0 }]));
   const bars = payload.bars, full = seriesOf(payload, bars), busy = {};
+  // S2-Ergänzung 1 (DQ-K5, wie Supertrader): Sitzung mit splitbereinigtem Schlussverhältnis >= 5 oder <= 1/5 zum Vortag.
+  const k5 = [];
+  for (let t = 1; t < bars.length; t++) { const q = full.close[t] / full.close[t - 1]; if (q >= DQ_K5 || q <= 1 / DQ_K5) k5.push(t); }
+  const touchesK5 = (from, to) => k5.some(t => t >= from && t <= to);
   for (let i = 299; i < bars.length; i++) {
     if (bars[i].date < '2016-01-01' || bars[i].date > '2026-12-31') continue;
     const cut = bars.slice(0, i + 1);
@@ -75,10 +82,11 @@ export function processStock(payload, ctx) {
       trades.push({ family: s.template, ticker: payload.ticker, securityId: payload.securityId, signal: bars[i].date, entryDate: bars[e].date, exitDate: bars[r.j].date,
         quarter: bars[e].date.slice(0, 4) + 'Q' + (Math.floor((+bars[e].date.slice(5, 7) - 1) / 3) + 1), regime: regime(bars[i].date),
         setupId: setup.setupId, setupStatus: setup.status, entry, stop, target, exit: r.exit, kind: r.kind, risk, grossR: (r.exit - entry) / risk, netR, netReturn: net(entry, r.exit) / entry,
-        holdR, deltaHoldR: netR - holdR, spyProxyR, spyExactR, deltaSpyExactR: spyExactR === null ? null : netR - spyExactR, holdingDays: r.j - e + 1, ambiguous: r.ambiguous, delisted: !!payload.delisted });
+        holdR, deltaHoldR: netR - holdR, spyProxyR, spyExactR, deltaSpyExactR: spyExactR === null ? null : netR - spyExactR, holdingDays: r.j - e + 1, ambiguous: r.ambiguous, delisted: !!payload.delisted,
+        dqK5: touchesK5(Math.max(1, i - DQ_K5_LOOKBACK + 1), r.j) });
     }
   }
-  return { trades, counts };
+  return { trades, counts, k5Sessions: k5.length };
 }
 
 // ------------------------------------------------------------ Datenquellen
@@ -151,7 +159,7 @@ function workerMain() {
       else payload = r2Payload(a.workDir, id);
       if (!payload || payload.bars.length < 300) { parentPort.postMessage({ id, state: 'NO_DATA', bars: payload ? payload.bars.length : 0 }); return; }
       const r = processStock(payload, ctx);
-      parentPort.postMessage({ id, state: r.error ? 'INVALID_HISTORY' : 'RUN', error: r.error || null, bars: payload.bars.length, trades: r.trades, counts: r.counts });
+      parentPort.postMessage({ id, state: r.error ? 'INVALID_HISTORY' : 'RUN', error: r.error || null, bars: payload.bars.length, trades: r.trades, counts: r.counts, k5Sessions: r.k5Sessions });
     } catch (e) { parentPort.postMessage({ id, state: 'FAILED', error: String(e.message).slice(0, 160) }); }
   });
 }
@@ -167,6 +175,13 @@ export function aggregate(shardDocs) {
     trades.push(...r.trades);
     for (const f of FAMILIES) for (const [k, v] of Object.entries(r.counts[f])) counts[f][k] += v;
   }
+  const k5Titles = shardDocs.reduce((n, d) => n + d.results.filter(r => r.k5Sessions > 0).length, 0);
+  const primary = familiesOf(trades.filter(r => !r.dqK5), counts), registered = familiesOf(trades, counts);
+  for (const f of primary) f.dqK5Excluded = trades.filter(r => r.family === f.family && r.dqK5).length;
+  return { families: primary, familiesWithoutDq: registered, trades, titles, delistedTitles, dq: { rule: 'DQ-K5', k5Titles, excludedTrades: trades.filter(r => r.dqK5).length } };
+}
+
+function familiesOf(trades, counts) {
   const families = FAMILIES.map(f => {
     const rows = trades.filter(r => r.family === f), exactRows = rows.filter(r => r.spyExactR !== null);
     const st = stats(rows);
@@ -187,7 +202,7 @@ export function aggregate(shardDocs) {
     f.s2Candidate = f.netR > 0 && f.deltaHoldR > 0;
   });
   families.sort((a, b) => (b.netR ?? -Infinity) - (a.netR ?? -Infinity));
-  return { families, trades, titles, delistedTitles };
+  return families;
 }
 
 function args(argv) { const a = {}; for (let i = 2; i < argv.length; i++) { const k = argv[i]; a[k.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = argv[i + 1]; i++; } return a; }
@@ -197,10 +212,12 @@ async function main() {
     const docs = a.aggregate.split(',').map(d => JSON.parse(readFileSync(join(d, 'shard.json'), 'utf8')));
     const out = aggregate(docs);
     mkdirSync(a.out, { recursive: true });
-    const plain = JSON.stringify({ schema: VERSION, label: 'Forschung, nicht zertifiziert', families: out.families, titles: out.titles, delistedTitles: out.delistedTitles, trades: out.trades });
+    const plain = JSON.stringify({ schema: VERSION, label: 'Forschung, nicht zertifiziert', families: out.families, familiesWithoutDq: out.familiesWithoutDq, dq: out.dq, titles: out.titles, delistedTitles: out.delistedTitles, trades: out.trades });
     // Öffentlich (Repo): Methodik, Abdeckung, Urteil, keine Kennzahlen. Privat (an den Owner verschlüsselt): alle Zahlen und Trades.
     const pub = { schema: VERSION, label: 'Forschung, nicht zertifiziert', titles: out.titles, delistedTitles: out.delistedTitles,
-      families: out.families.map(f => ({ family: f.family, n: f.n, tickers: f.tickers, quarters: f.quarters, delistedTrades: f.delistedTrades, exactCoverage: f.exactCoverage, verdict: f.verdict, counts: f.counts })),
+      dq: out.dq,
+      families: out.families.map(f => ({ family: f.family, n: f.n, tickers: f.tickers, quarters: f.quarters, delistedTrades: f.delistedTrades, dqK5Excluded: f.dqK5Excluded, exactCoverage: f.exactCoverage, verdict: f.verdict, counts: f.counts })),
+      familiesWithoutDq: out.familiesWithoutDq.map(f => ({ family: f.family, n: f.n, verdict: f.verdict })),
       privateSha256: sha(plain) };
     writeFileSync(join(a.out, 'public.json'), JSON.stringify(pub, null, 1) + '\n');
     if (a.sealTo) {

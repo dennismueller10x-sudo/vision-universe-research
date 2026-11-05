@@ -24,3 +24,21 @@ Nach diesem Commit wird die Registrierung nicht geändert. Abweichungen stehen n
 ## Unverändert
 
 Die fünf Familien und die Erkennung, nächster Open, 60-Tage-Fenster, Kosten 10 + 10 bp, R und Netto-R, Halten derselben Aktie, Cluster-Bootstrap nach Quartalen (9.999 Ziehungen, Seed 20261105), Holm über 10 Hypothesen, Mindestabdeckung 100 Trades, 20 Aktien und 20 Quartale, die Urteilsregeln. Keine Parametersuche, kein zweiter Variantenlauf.
+
+## Ergänzung 1 (05.11.2026, vor dem ersten Ergebnis): DQ-K5-Quarantäne
+
+**Anlass:** Strang G hat in den Quant-Kursreihen um den Jahreswechsel 2022/23 Wochensprünge gefunden, die wie nicht bereinigte Reverse-Splits aussehen. Beispiele: KALA 194 → 1.907,5, VVOS 10,05 → 38,25, JSPR 4,83 → 14,8. Die Supertrader-Quarantäne DQ-K5 greift im Quant-Datenpfad nicht. Ein Fehler dieser Art schönt Long-Signale nach oben.
+
+**Kein Ergebnis gesehen:** Die beiden ersten S2-Läufe brachen vor jedem Ergebnis ab, Lauf 42024768219 wegen Speichermangel, Lauf 42025838520 per Abbruch. Es gibt weder ein Teilergebnis noch eine Kennzahl.
+
+**Regel (wie Supertrader DQ-K5):**
+- Eine K5-Sitzung ist ein Tag, dessen splitbereinigter Schluss das Fünffache des Vortagsschlusses erreicht oder überschreitet oder auf ein Fünftel davon fällt oder darunter.
+- Ein Trade gilt als betroffen, wenn eine K5-Sitzung zwischen 299 Sitzungen vor dem Signal und dem Ausstieg liegt. Das deckt das Erkennungsfenster von 300 Balken und das Haltefenster ab.
+- Echte Kursvervielfachungen fallen ebenfalls darunter. Die Regel ist bewusst vorsichtig.
+
+**Auswertung:**
+- Primär, für das Urteil, zählen die Trades ohne K5-Berührung, mit Holm über die 10 Hypothesen.
+- Die Auswertung mit allen Trades, so wie oben registriert, wird als Sensitivität mit eigenem Urteil ausgewiesen.
+- Ausgeschlossene Trades und betroffene Titel werden gezählt.
+
+Erkennung, Zählung und alle übrigen Regeln bleiben unverändert. Auf den fünf S1-Titeln gibt es keine K5-Sitzung, die Parität bleibt bestehen.
