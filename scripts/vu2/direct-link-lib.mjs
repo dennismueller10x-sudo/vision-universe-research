@@ -55,7 +55,8 @@ export const SPECS = {
   strategien: {path: '/quant/#/strategien', h1: 'Welche Art von Firma', minText: 1500, includes: ['Aktien heute']},
   screener: {path: '/quant/screener/', h1: 'Quant Screener', minText: 2000, chart: GLOBE, includes: ['Alle Kennzahlen']},
   // emptyOk: "Zuletzt analysiert" ist beim Erstbesuch ehrlich leer (die Einleitung erklaert, wo Aktien erscheinen) - kein Fehler.
-  technical: {path: '/quant/technical/', h1: 'Welche Aktie', minText: 2500, chart: GLOBE, includes: ['Beobachten'], emptyOk: ['Zuletzt analysiert']},
+  /* Redesign 2027 (Q04): Frage als Titel, Suche, bekannte Namen, ehrlicher Leerzustand „Beobachten“ - kurz und ohne Globus. */
+  technical: {path: '/quant/technical/', h1: 'Welche Aktie', minText: 800, includes: ['Beobachten', 'Bekannte Aktien'], emptyOk: ['Zuletzt analysiert']},
   // Chartbild (Elliott/Kursstruktur): das Bild selbst muss gezeichnet sein; der Kopf (h1) nennt den Trend und ist datenabhaengig.
   chartbild: {path: '/quant/#/elliott/NVDA', h1: '\\S', minText: 1500, includes: ['Warum dieses Bild'], chart: {scope: '.cb-chart-card', minW: 150, minH: 100, minGeom: 5}},
   // Die beiden Nicht-gefunden-Seiten SIND die erwartete Auskunft; Datenabrufe, die ins Leere laufen, gehoeren dazu.
