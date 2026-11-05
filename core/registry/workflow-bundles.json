@@ -4,8 +4,21 @@
  "bundles": {
   "ci": {
    "purpose": "Pruef-Workflows (Tests, Gates) als eine Matrix je Produkt",
-   "workflow": null,
-   "replaces": []
+   "workflow": "ci.yml",
+   "replaces": [
+    "ask-ci.yml",
+    "brevo-ci.yml",
+    "ci-config.yml",
+    "creative-job-guard.yml",
+    "etf-dashboard-ci.yml",
+    "fundamental-ci.yml",
+    "hedgefonds-dashboard-ci.yml",
+    "landing-ci.yml",
+    "research-access-ci.yml",
+    "screener-ci.yml",
+    "vorsorge-ci.yml",
+    "willkommen-ci.yml"
+   ]
   },
   "deploy": {
    "purpose": "Auslieferung: Pages, Cloudflare-Worker",
@@ -108,9 +121,6 @@
   "app-ios-testflight.yml": {
    "bundle": "app"
   },
-  "ask-ci.yml": {
-   "bundle": "ci"
-  },
   "brand-media-higgsfield-images.yml": {
    "bundle": "maintenance"
   },
@@ -120,17 +130,11 @@
   "brevo-admin.yml": {
    "bundle": "account"
   },
-  "brevo-ci.yml": {
-   "bundle": "ci"
-  },
   "brevo-internal-membership.yml": {
    "bundle": "account"
   },
   "brevo-newsletter.yml": {
    "bundle": "account"
-  },
-  "ci-config.yml": {
-   "bundle": "ci"
   },
   "cloudflare-ask-deploy.yml": {
    "bundle": "deploy"
@@ -184,9 +188,6 @@
   "coverage-metrics.yml": {
    "bundle": "pipeline-weekly"
   },
-  "creative-job-guard.yml": {
-   "bundle": "ci"
-  },
   "currency-fx-verify.yml": {
    "bundle": "ci"
   },
@@ -221,9 +222,6 @@
   "emerging-leaders-study.yml": {
    "bundle": "research"
   },
-  "etf-dashboard-ci.yml": {
-   "bundle": "ci"
-  },
   "europe-discover-refresh.yml": {
    "bundle": "pipeline-daily"
   },
@@ -233,17 +231,11 @@
   "freshness-monitor.yml": {
    "bundle": "monitor"
   },
-  "fundamental-ci.yml": {
-   "bundle": "ci"
-  },
   "fundamental-sec-freshness.yml": {
    "bundle": "monitor"
   },
   "fx-ecb-daily.yml": {
    "bundle": "pipeline-daily"
-  },
-  "hedgefonds-dashboard-ci.yml": {
-   "bundle": "ci"
   },
   "history-store-sync.yml": {
    "bundle": "maintenance"
@@ -262,9 +254,6 @@
   },
   "intraday-snapshots.yml": {
    "bundle": "pipeline-intraday"
-  },
-  "landing-ci.yml": {
-   "bundle": "ci"
   },
   "landing-cloudflare-audit.yml": {
    "bundle": "maintenance"
@@ -321,12 +310,6 @@
   },
   "realtime-production-smoke.yml": {
    "bundle": "monitor"
-  },
-  "research-access-ci.yml": {
-   "bundle": "ci"
-  },
-  "screener-ci.yml": {
-   "bundle": "ci"
   },
   "sec-consumer-fundamentals.yml": {
    "bundle": "pipeline-daily"
@@ -473,9 +456,6 @@
    "bundle": "pipeline-weekly",
    "retireCandidate": true
   },
-  "vorsorge-ci.yml": {
-   "bundle": "ci"
-  },
   "vorsorge-daily-rebuild.yml": {
    "bundle": "pipeline-daily"
   },
@@ -495,9 +475,6 @@
    "bundle": "ci"
   },
   "vu2-lifecycle-handoff.yml": {
-   "bundle": "ci"
-  },
-  "willkommen-ci.yml": {
    "bundle": "ci"
   }
  }

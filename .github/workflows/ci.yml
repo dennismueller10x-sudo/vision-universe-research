@@ -1,0 +1,526 @@
+name: CI (Pruefungen je Produkt)
+
+# Buendel `ci` (core/registry/workflow-bundles.json, Plan Neustart §3), Stufe 1: die kleinen Pruefungen.
+# Jede ist ein eigener Job mit unveraendertem Inhalt; der Job `auswahl` entscheidet mit
+# scripts/ci/select-checks.mjs nach scripts/ci/ci-checks.json (Pfade/Zweige wie die frueheren Filter):
+#   ask                    vormals ask-ci.yml
+#   brevo                  vormals brevo-ci.yml
+#   ci-config              vormals ci-config.yml
+#   creative-job-guard     vormals creative-job-guard.yml
+#   etf-dashboard          vormals etf-dashboard-ci.yml
+#   fundamental            vormals fundamental-ci.yml
+#   hedgefonds-dashboard   vormals hedgefonds-dashboard-ci.yml
+#   landing                vormals landing-ci.yml
+#   research-access        vormals research-access-ci.yml
+#   screener               vormals screener-ci.yml
+#   vorsorge               vormals vorsorge-ci.yml
+#   willkommen             vormals willkommen-ci.yml
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - '.github/workflows/brevo-*.yml'
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/fundamental-sec-freshness.yml'
+      - '.github/workflows/landing-pages-publish.yml'
+      - '.github/workflows/vorsorge-etf-universe.yml'
+      - 'ask/**'
+      - 'assets/product-icons.svg'
+      - 'assets/site-navigation.css'
+      - 'assets/site-navigation.js'
+      - 'assets/stories/**'
+      - 'authoring/requests/**'
+      - 'docs/brevo/**'
+      - 'etf/**'
+      - 'fundamental/**'
+      - 'hedgefonds/**'
+      - 'landing/**'
+      - 'quant/engines/technical/ti/ai-tools.js'
+      - 'quant/tests/workflow-npx-pinned.test.mjs'
+      - 'screener/**'
+      - 'screener/engine/**'
+      - 'scripts/access-gate/**'
+      - 'scripts/brevo/**'
+      - 'scripts/ci/**'
+      - 'scripts/ci/ci-checks.json'
+      - 'scripts/ci/select-checks.mjs'
+      - 'scripts/fundamental/**'
+      - 'scripts/hedgefonds/**'
+      - 'scripts/screener/**'
+      - 'scripts/screener/sic.mjs'
+      - 'scripts/supertrader/build.mjs'
+      - 'scripts/vorsorge/**'
+      - 'scripts/vu2/build-release.mjs'
+      - 'scripts/vu2/production-smoke.mjs'
+      - 'studio/stories/**'
+      - 'vorsorge/**'
+      - 'willkommen/**'
+      - 'workers/vu-ask/**'
+  push:
+    paths:
+      - '.github/workflows/**'
+      - '.github/workflows/brevo-*.yml'
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/fundamental-sec-freshness.yml'
+      - 'ask/**'
+      - 'assets/stories/**'
+      - 'docs/brevo/**'
+      - 'etf/**'
+      - 'fundamental/**'
+      - 'hedgefonds/**'
+      - 'quant/engines/technical/ti/ai-tools.js'
+      - 'quant/tests/workflow-npx-pinned.test.mjs'
+      - 'screener/**'
+      - 'screener/engine/**'
+      - 'scripts/access-gate/**'
+      - 'scripts/brevo/**'
+      - 'scripts/ci/**'
+      - 'scripts/ci/ci-checks.json'
+      - 'scripts/ci/select-checks.mjs'
+      - 'scripts/fundamental/**'
+      - 'scripts/hedgefonds/**'
+      - 'scripts/screener/**'
+      - 'scripts/vorsorge/**'
+      - 'scripts/vu2/production-smoke.mjs'
+      - 'studio/stories/**'
+      - 'vorsorge/**'
+      - 'willkommen/**'
+      - 'workers/vu-ask/**'
+  workflow_dispatch:
+    inputs:
+      pruefung:
+        description: 'Welche Pruefung (oder alle)'
+        type: choice
+        required: true
+        options:
+          - alle
+          - ask
+          - brevo
+          - ci-config
+          - creative-job-guard
+          - etf-dashboard
+          - fundamental
+          - hedgefonds-dashboard
+          - landing
+          - research-access
+          - screener
+          - vorsorge
+          - willkommen
+
+permissions:
+  contents: read
+
+jobs:
+  auswahl:
+    name: Auswahl der Pruefungen
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      ask: ${{ steps.wahl.outputs.ask }}
+      brevo: ${{ steps.wahl.outputs.brevo }}
+      ci_config: ${{ steps.wahl.outputs.ci_config }}
+      creative_job_guard: ${{ steps.wahl.outputs.creative_job_guard }}
+      etf_dashboard: ${{ steps.wahl.outputs.etf_dashboard }}
+      fundamental: ${{ steps.wahl.outputs.fundamental }}
+      hedgefonds_dashboard: ${{ steps.wahl.outputs.hedgefonds_dashboard }}
+      landing: ${{ steps.wahl.outputs.landing }}
+      research_access: ${{ steps.wahl.outputs.research_access }}
+      screener: ${{ steps.wahl.outputs.screener }}
+      vorsorge: ${{ steps.wahl.outputs.vorsorge }}
+      willkommen: ${{ steps.wahl.outputs.willkommen }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/ci
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Pruefungen waehlen
+        id: wahl
+        env:
+          # Ereignisdaten nur ueber env: (ADR-005)
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          PRUEFUNG: ${{ inputs.pruefung }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          COMMITS: ${{ toJSON(github.event.commits) }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          files="$RUNNER_TEMP/files.txt"; : > "$files"; unbekannt=()
+          if [ "$EVENT" = pull_request ]; then
+            gh api "repos/$REPO/pulls/$PR_NUMBER/files" --paginate --jq '.[].filename' > "$files"
+            # GitHub liefert hoechstens 3000 Dateien je PR: darueber ist die Liste unvollstaendig
+            [ "$(wc -l < "$files")" -lt 3000 ] || unbekannt=(--unknown-files)
+          elif [ "$EVENT" = push ]; then
+            printf '%s' "${COMMITS:-[]}" | jq -r '(. // [])[] | (.added + .modified + .removed)[]' | sort -u > "$files"
+            # Push-Ereignisse tragen hoechstens 20 Commits; leer bei neuem Zweig
+            n="$(printf '%s' "${COMMITS:-[]}" | jq '(. // []) | length')"
+            if [ "$n" -ge 20 ] || [ "$n" -eq 0 ]; then unbekannt=(--unknown-files); fi
+          fi
+          node scripts/ci/select-checks.mjs --checks scripts/ci/ci-checks.json --event "$EVENT" --ref "$REF" \
+            --files "$files" --pruefung "${PRUEFUNG:-}" "${unbekannt[@]}"
+
+  # --- ask: vormals ask-ci.yml
+  ask:
+    needs: auswahl
+    if: needs.auswahl.outputs.ask == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Worker und Auswertung
+        run: node --test "workers/vu-ask/tests/*.test.mjs" "ask/tests/*.test.mjs"
+      - name: Worker laesst sich buendeln (ohne Ausrollen)
+        working-directory: workers/vu-ask
+        run: npx --yes wrangler@4.147.0 deploy --dry-run --outdir /tmp/vu-ask-bundle
+
+  # --- brevo: vormals brevo-ci.yml
+  brevo:
+    needs: auswahl
+    if: needs.auswahl.outputs.brevo == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/brevo
+      - run: python3 -m unittest discover -s scripts/brevo/tests -v
+
+  # --- ci-config: vormals ci-config.yml
+  ci-config:
+    needs: auswahl
+    if: needs.auswahl.outputs.ci_config == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Workflow-Regeln
+        run: node --test "scripts/ci/tests/*.test.mjs" quant/tests/workflow-npx-pinned.test.mjs
+
+  # --- creative-job-guard: vormals creative-job-guard.yml
+  creative-job-guard:
+    needs: auswahl
+    if: needs.auswahl.outputs.creative_job_guard == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Jeder Request-PR gehoert zu genau einem beschlossenen Job
+        env:
+          PR_BRANCH: ${{ github.head_ref }}
+        run: node scripts/social/verify-creative-dispatch.mjs --branch "$PR_BRANCH"
+
+  # --- etf-dashboard: vormals etf-dashboard-ci.yml
+  etf-dashboard:
+    needs: auswahl
+    if: needs.auswahl.outputs.etf_dashboard == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate HTML syntax
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          import sys
+
+          path = "etf/index.html"
+          with open(path, encoding="utf-8") as f:
+              html = f.read()
+
+          class Checker(HTMLParser):
+              def error(self, message):
+                  raise AssertionError(message)
+
+          Checker().feed(html)
+          print(f"{path}: OK ({len(html)} bytes)")
+          PY
+
+      - name: Check required markers are present
+        run: |
+          grep -q '<vu-navigation></vu-navigation>' etf/index.html
+          grep -q '/assets/site-navigation.js' etf/index.html
+          grep -q 'alt="Vision Universe"' assets/site-navigation.js
+          grep -q "const ETF=" etf/index.html
+          echo "Markers OK"
+
+  # --- fundamental: vormals fundamental-ci.yml
+  fundamental:
+    needs: auswahl
+    if: needs.auswahl.outputs.fundamental == 'true'
+    concurrency:
+      group: fundamental-ci-${{ github.ref_name }}-ci
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: |
+          node --check fundamental/engine/model.js
+          node --check fundamental/engine/catalog.js
+          node --check fundamental/engine/compare.js
+          node --check fundamental/app.js
+          node --check scripts/fundamental/build-history.mjs
+          node --check scripts/fundamental/sec-freshness.mjs
+          node --check scripts/fundamental/verify-publication.mjs
+      - name: Model and data tests
+        run: node --test "fundamental/tests/*.test.mjs"
+
+  # --- hedgefonds-dashboard: vormals hedgefonds-dashboard-ci.yml
+  hedgefonds-dashboard:
+    needs: auswahl
+    if: needs.auswahl.outputs.hedgefonds_dashboard == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate HTML syntax
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+
+          path = "hedgefonds/index.html"
+          with open(path, encoding="utf-8") as f:
+              html = f.read()
+
+          class Checker(HTMLParser):
+              def error(self, message):
+                  raise AssertionError(message)
+
+          Checker().feed(html)
+          print(f"{path}: OK ({len(html)} bytes)")
+          PY
+
+      - name: Check required markers are present
+        run: |
+          grep -q "VISION UNIVERSE" hedgefonds/index.html
+          grep -q "data.sec.gov" hedgefonds/index.html
+          grep -q "DATA_URL" hedgefonds/index.html
+          echo "Markers OK"
+
+      - name: Validate generated data JSON
+        run: |
+          python3 - <<'PY'
+          import json, os
+          d = json.load(open("hedgefonds/data/hedgefonds.json"))
+          assert d.get("funds"), "keine Fonds"
+          for f in d["funds"]:
+              if d.get("schema", "").startswith("hedgefonds-2"):
+                  assert os.path.exists(f"hedgefonds/data/funds/{f['slug']}.json"), f["slug"]
+                  if f.get("photo"):
+                      assert os.path.exists("hedgefonds/" + f["photo"]["src"]), f["photo"]["src"]
+          if os.path.exists("hedgefonds/data/universe.json"):
+              u = json.load(open("hedgefonds/data/universe.json"))
+              for f in u["funds"]:
+                  assert os.path.exists(f"hedgefonds/data/funds/{f['slug']}.json"), f["slug"]
+              print("universe.json OK:", len(u["funds"]), "Fonds")
+          print("hedgefonds.json OK:", len(d["funds"]), "Fonds")
+          PY
+
+      - name: Validate fetch script syntax
+        run: python3 -m py_compile scripts/hedgefonds/fetch_edgar_data.py scripts/hedgefonds/fund_meta.py
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow (Porträt-Tests)
+        run: python -m pip install "Pillow==12.3.0"
+
+      - name: Run fetch-script logic unit tests (no network)
+        run: python3 -m unittest scripts/hedgefonds/test_fetch_edgar_data.py -v
+
+  # --- landing: vormals landing-ci.yml
+  landing:
+    needs: auswahl
+    if: needs.auswahl.outputs.landing == 'true'
+    concurrency:
+      group: landing-ci-${{ github.ref_name }}-ci
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: landing
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: landing
+      - name: Load immutable landing design baseline
+        run: git fetch --no-tags --depth=1 origin 11bda0c1a2a0d8add32ea0338a1ec32dfd8e3f49
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: landing/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: node node_modules/playwright/cli.js install --with-deps chromium webkit
+      - run: npm test
+      - run: npm run test:edge
+      - run: npm run test:browser
+      - run: npm run test:private
+      - run: npm run test:public
+      - run: npm run test:design
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vision-universe-coming-soon-review
+          path: |
+            landing/dist/
+            landing/review/
+          retention-days: 14
+          include-hidden-files: true
+
+  # --- research-access: vormals research-access-ci.yml
+  research-access:
+    needs: auswahl
+    if: needs.auswahl.outputs.research_access == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check whether the separate GitHub build secret is configured (no values)
+        env:
+          BUILD_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import os
+          print('GITHUB_RESEARCH_ACCESS_PASSWORD_CONFIGURED=' + str(bool(os.environ.get('BUILD_PASSWORD'))).lower())
+          PY
+      - run: node --test scripts/access-gate/build.test.mjs
+      - name: Browser dependencies
+        run: |
+          npm install --prefix /tmp/research-access-qa --no-audit --no-fund playwright@1.57.0
+          /tmp/research-access-qa/node_modules/.bin/playwright install --with-deps chromium webkit
+      - name: Password flow, no content flash and persistent shared access in Chromium and iPhone WebKit
+        env:
+          PLAYWRIGHT_PATH: /tmp/research-access-qa/node_modules/playwright
+        run: node scripts/access-gate/browser-qa.mjs
+
+  # --- screener: vormals screener-ci.yml
+  screener:
+    needs: auswahl
+    if: needs.auswahl.outputs.screener == 'true'
+    concurrency:
+      group: screener-qa-${{ github.ref }}-ci
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build screener universe from committed product data
+        run: node scripts/screener/build-universe.mjs
+      - name: Engine, registry and universe tests
+        run: node --test "screener/tests/*.test.mjs" discover/tests/navigation-theme.test.mjs
+      - name: Browser QA dependencies
+        run: |
+          npm install --prefix /tmp/screener-qa-deps --no-audit --no-fund playwright@1.56.1
+          node /tmp/screener-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/screener-release"
+      - name: Browser QA (390, 430, 820, 1440 · light and dark)
+        env:
+          NODE_PATH: /tmp/screener-qa-deps/node_modules
+        run: |
+          mkdir -p /tmp/screener-evidence
+          test -f "$RUNNER_TEMP/screener-release/screener/data/universe-US_REAL.json"
+          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/screener-release" > /tmp/screener-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/screener/ > /dev/null && break; sleep 1; done
+          PLAYWRIGHT_PATH=/tmp/screener-qa-deps/node_modules/playwright node scripts/screener/browser-qa.mjs --url http://127.0.0.1:8765 --out /tmp/screener-evidence
+      - name: Preserve screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screener-browser-evidence
+          path: /tmp/screener-evidence
+          if-no-files-found: warn
+
+  # --- vorsorge: vormals vorsorge-ci.yml
+  vorsorge:
+    needs: auswahl
+    if: needs.auswahl.outputs.vorsorge == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Engine- und Contract-Tests
+        run: node --test "vorsorge/tests/*.test.mjs"
+      - name: Daten-Build ist reproduzierbar
+        run: |
+          node scripts/vorsorge/build-etf-data.mjs --quiet
+          if [ -n "$(git status --porcelain -- vorsorge)" ]; then
+            git status --short -- vorsorge | head -20
+            echo "Der Neubau ergibt andere Vorsorge-Daten als der eingecheckte Stand."
+            exit 1
+          fi
+          echo "Build reproduzierbar."
+      - name: Seite bindet Navigation, Engines und Disclaimer ein
+        run: |
+          page=vorsorge/index.html
+          grep -q 'vu-navigation' "$page"
+          grep -q 'site-navigation.css' "$page"
+          grep -q 'keine individuelle Anlage-, Steuer- oder Rechtsberatung' vorsorge/app.js
+          for e in vorsorge-math series-codec etf-taxonomy etf-analytics etf-master etf-provider etf-fundamentals etf-holdings etf-changes xray funding monitor; do grep -q "engines/$e.js" "$page" || { echo "$e fehlt"; exit 1; }; done
+      - name: Qualitaets- und Regressions-Gates der Vorsorge-Daten
+        run: node scripts/vorsorge/assert-vorsorge-data.mjs
+      - name: Foerderregeln - Pruefsumme und Primaerquellen
+        run: |
+          node -e "
+          const F=require('./vorsorge/engines/funding.js'),fs=require('fs');
+          for(const f of fs.readdirSync('vorsorge/data/funding-rules').filter(x=>x.endsWith('.json'))){
+            const r=JSON.parse(fs.readFileSync('vorsorge/data/funding-rules/'+f));const e=F.validateRules(r);
+            if(e.length){console.error(f,e);process.exit(1)}console.log(f,r.ruleVersion,r.verification.primaryVerified?'primaer geprueft':'nicht primaer geprueft')}"
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+  # --- willkommen: vormals willkommen-ci.yml
+  willkommen:
+    needs: auswahl
+    if: needs.auswahl.outputs.willkommen == 'true'
+    concurrency:
+      group: willkommen-ci-${{ github.ref_name }}-ci
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: |
+          node --check willkommen/app.js
+          node --check studio/stories/build-story.mjs
+      - name: Inhalt und Seite
+        run: node --test "willkommen/tests/*.test.mjs"
