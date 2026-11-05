@@ -30,7 +30,14 @@ Stand: **05.11.2026**. Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11
   - 84 Quant-Varianten „schlägt nicht“, keine mit Holm-p ≤ 0,05;
   - 12 Supertrader-Varianten blockiert (Snapshot endet 30.09.).
 
+- **E4/S2 Signal-Studie registriert und gestartet** (05.11., [Registrierung](../research/signals/S2_REGISTRIERUNG.md)):
+  - dieselbe Studie wie S1, Parität 383 von 383 Trades;
+  - Stichprobe 1.000 Titel, Seed 20261105: 789 heutige, 211 delistete, Vorzugsaktien ausgeschlossen;
+  - Zeitraum 2016–2026, exakter SPY-Vergleich; 2008–2015 bleibt für eine spätere Bestätigung unberührt;
+  - Zahlen gehen versiegelt an den Owner, im Repo stehen Methodik, Abdeckung und Urteil.
+
 ## Offen
+- ST-Nachprüfung (a)–(c) neu rechnen, sobald Strang B die korrigierte Lieferung bereitstellt (#1408). Hash-Änderungen werden offengelegt, die Auswahl bleibt.
 - `backtest-runner.cjs#setupOosFromCertificationPath` an A4 angleichen (berührt CODE_FILES → Demo-Neubau, eigener PR).
 - Historische Strategie- und Faktor-Backtests (Katalog-Arten) auf PIT-Basis über den Baukasten-Datenpfad.
 
