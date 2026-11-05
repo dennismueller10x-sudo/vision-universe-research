@@ -333,7 +333,7 @@ export async function loadPitData({ LIMIT = 0, log = () => {}, excludeNonEquity 
   if (!uni || !elig) throw new Error('PIT_REPO_INPUT_MISSING');
   const cls = new Map(elig.decisions.map((d) => [d.ticker, d.instrument_type]));
   const storeActive = new Map(uni.securities.filter((s) => s.active !== false).map((s) => [s.ticker, { startDate: s.startDate, instrumentType: cls.get(s.ticker) || null }]));
-  const listings = L.buildListingTable(rows, storeActive);
+  const listings = L.buildListingTable(rows, storeActive, L.LISTING_OPTS); // PAPER_2027: Stichtag = rollendes Fensterende
   const listedRoots = Master.collectListedRoots(rows);
   const hash = L.tableHash(listings);
   log(`Listings ${listings.length}, Hash ${hash.slice(0, 12)}`);
