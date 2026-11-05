@@ -122,7 +122,7 @@ jobs:
         id: folgen
         if: steps.commit.outputs.changed == 'true' || inputs.umfangsfolgen == true
         env:
-          PUSH_OWNED_PATHS: quant/data/market/discover-series/ quant/data/market/discover-series-long/ quant/data/market/intraday/ quant/data/universe/
+          PUSH_OWNED_PATHS: quant/data/market/discover-series/ quant/data/market/discover-series-long/ quant/data/market/intraday/ quant/data/universe/ quant/data/market/capabilities/ quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
         run: |
           set -euo pipefail
@@ -133,6 +133,10 @@ jobs:
           node scripts/universe/build-universe-indexes.mjs
           node scripts/universe/build-issuer-master.mjs
           node scripts/universe/verify-company-master.mjs
+          # Faehigkeitsmatrix und Produkt-Projektion (Quelle von productUniverse fuer Strategie, Watchlist, Radar):
+          # dieselben Schritte wie im Marktdatenlauf, ohne Kursabruf.
+          node scripts/market/build-capability-matrix.mjs
+          node scripts/vu2/build-product-capabilities.mjs
           node scripts/market/publish-discover-series.mjs --prune-only
           node scripts/market/publish-long-series.mjs --prune-only
           node scripts/market/ingest-intraday.mjs --index-only
