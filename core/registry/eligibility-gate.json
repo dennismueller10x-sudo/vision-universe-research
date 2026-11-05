@@ -1,0 +1,10 @@
+{
+  "schema": "vu-eligibility-gate-1",
+  "purpose": "Grenzen fuer die Uebernahme eines neuen Produktuniversums (eligibility.json) durch scripts/core/eligibility-gate.mjs. Darueber: kein Commit, Alarm, Nachholen nur mit eigenem PR und Vorher/Nachher.",
+  "limits": {
+    "statusChanges": 60,
+    "eligibleToExcluded": 15,
+    "productUniverseDeltaPct": 1.0,
+    "universeMembersChanged": 0
+  }
+}

@@ -22,7 +22,7 @@ import { fileURLToPath } from 'node:url';
 import * as L from '../../validation/lib.mjs';
 import { datasetFromPit } from '../runner/snapshot-input.mjs';
 import { codeSha256 as engineCodeSha256 } from '../runner/run-research.mjs';
-import { computeDiagnosticMetrics } from '../runner/metrics.mjs';
+import { computeDiagnosticMetrics, cagr, maxDrawdown } from '../runner/metrics.mjs';
 import { attachSecPit } from './run-sf3-research.mjs';
 import { SF6_REFERENCES } from './sf6-references.mjs';
 import { SF6_VALIDATION_PROTOCOL } from './run-sf6-validation.mjs';
@@ -31,7 +31,10 @@ import * as X from './st9-hist-execution.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.0.0';
+export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.1.0';
+/** Delisting-Erlös als Sensitivität (Prüfung Strang E): 100 %, 70 % und 0 % des letzten Schlusses, nachträglich auf die Kurve
+ *  gebucht (keine Wiederanlage der Differenz, wie st9-v13-delisted-study#terminalScenarioAdjust). Die Referenz bleibt 100 %. */
+export const DELISTING_PROCEEDS = Object.freeze([['DELIST_100', 0], ['DELIST_70', -0.3], ['DELIST_0', -1]]);
 export const TOP5 = Object.freeze(['TURTLE_S1', 'TURTLE_S2', 'DARVAS', 'KK_BREAKOUT', 'BUYABLE_GAP_UP']);
 export const LABEL = Object.freeze({ evidenceKind: 'HISTORICAL_RESEARCH_BACKTEST', label: 'Forschung, nicht zertifiziert', certification: 'DIAGNOSTIC_NOT_CERTIFIED', productionApproved: false, performanceClaim: 'NONE', publication: 'OWNER_DECISION_REQUIRED' });
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz';
@@ -56,6 +59,32 @@ export function summarizeRun(r, ds, { protocol = SF6_VALIDATION_PROTOCOL } = {})
   };
 }
 
+/** Gesamtrendite, CAGR und max. Verlust je Annahme zum Delisting-Erlös (nur Abrechnungen TERMINAL_DELISTED). */
+export function delistingSensitivity(r) {
+  return Object.fromEntries(DELISTING_PROCEEDS.map(([id], k) => {
+    const adj = S.terminalScenarioAdjust(r.run.curve, r.run.ledger, () => DELISTING_PROCEEDS.map(([, d]) => d), k);
+    const curve = adj.curve.length ? [{ date: adj.curve[0].date, equity: INITIAL_CAPITAL }, ...adj.curve] : adj.curve;
+    const end = curve.at(-1)?.equity ?? null;
+    return [id, { totalReturn: end !== null ? end / INITIAL_CAPITAL - 1 : null, cagr: cagr(curve), maxDrawdown: maxDrawdown(curve), settlements: adj.shocks }];
+  }));
+}
+/** Wie oft endet eine Position durch Delisting, durch eine Datenlücke (zensiert) oder regulär. */
+export function exitCensus(r) {
+  const out = { TERMINAL_DELISTED: 0, SECURITY_UNAVAILABLE: 0, OTHER: 0 };
+  for (const x of r.run.ledger) if (x.side === 'SELL') out[x.reason === 'TERMINAL_DELISTED' || x.reason === 'SECURITY_UNAVAILABLE' ? x.reason : 'OTHER']++;
+  return out;
+}
+/** Population: Segmente nach Endursache (DATA_GAP = zensiert, kein Delisting-Erlös). */
+export function populationCensus(ds) {
+  const out = {};
+  for (const s of ds.securities) { const c = s.terminal?.cause ?? 'ACTIVE_AT_WINDOW_END'; out[c] = (out[c] || 0) + 1; }
+  return out;
+}
+/** Audit-Ergebnis über alle Rahmen, in denen der Audit läuft (fail closed). */
+export function auditPassAll(frames) {
+  return Object.values(frames).every((f) => Object.values(f).every((m) => !m.audit || m.audit.pass === true));
+}
+
 /** Top 5 je Kostenstufe auf einem (bereits quarantänierten) Datensatz. */
 export function runTop5(ds, { methods = TOP5, costLevels = SF6_VALIDATION_PROTOCOL.costLevels, window = L.WINDOW, audit = true, log = () => {} } = {}) {
   const out = {};
@@ -68,6 +97,10 @@ export function runTop5(ds, { methods = TOP5, costLevels = SF6_VALIDATION_PROTOC
       const r = ref.run(ds, { from: window.from, to: window.to, costs: { slippageBps: c.slippageBps, commissionBps: c.commissionBps }, ...prep });
       out[key].costs[c.id] = summarizeRun(r, ds);
       out[key].costs[c.id].tradesSha256 = sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.pnl]));
+      if (c.id === 'REF') {
+        out[key].delistingProceeds = delistingSensitivity(r);
+        out[key].exitCensus = exitCensus(r);
+      }
       if (c.id === 'REF' && audit) {
         // unabhängiger Ausführungsaudit (st9-hist-execution: Ausstiege, Gap-Stopps, Delisting, Bücher); nur Beobachter
         const a = X.auditRun(ds, r, { key, costs: { slippageBps: c.slippageBps, commissionBps: c.commissionBps }, from: window.from });
@@ -80,7 +113,7 @@ export function runTop5(ds, { methods = TOP5, costLevels = SF6_VALIDATION_PROTOC
 }
 
 export function publicPart(result) {
-  return { schema: 'st-hist-top5-public-1.0.0', ...LABEL, receipt: result.receipt, methods: Object.fromEntries(Object.entries(result.A).map(([k, m]) => [k, { candidateId: m.candidateId, tradesRef: m.costs.REF.trades, tradesSha256Ref: m.costs.REF.tradesSha256, auditPass: m.audit ? m.audit.pass : null, auditViolations: m.audit ? m.audit.violations : null, missedStopCheck: m.audit ? m.audit.missedStopCheck : null }])), quarantine: result.quarantine.A, universeB: result.B ? 'COMPUTED' : 'NOT_REQUESTED' };
+  return { schema: 'st-hist-top5-public-1.1.0', ...LABEL, status: result.status ?? null, receipt: result.receipt, population: result.population ?? null, methods: Object.fromEntries(Object.entries(result.A).map(([k, m]) => [k, { candidateId: m.candidateId, tradesRef: m.costs.REF.trades, tradesSha256Ref: m.costs.REF.tradesSha256, auditPass: m.audit ? m.audit.pass : null, auditViolations: m.audit ? m.audit.violations : null, missedStopCheck: m.audit ? m.audit.missedStopCheck : null }])), quarantine: result.quarantine.A, universeB: result.B ? 'COMPUTED' : 'NOT_REQUESTED' };
 }
 
 async function main() {
@@ -109,7 +142,9 @@ async function main() {
   const dsA = datasetFromPit(pit); attachSecPit(dsA, secPit);
   const qa = S.applyQuarantine(dsA, { mode: 'DQ-K5-BOOK' });
   log(`universe A: ${dsA.securities.length} segments, quarantine ${JSON.stringify(qa.census)}`);
-  const result = { schema: 'st-hist-top5-result-1.0.0', ...LABEL, window: { name: L.WINDOW_NAME, ...L.WINDOW }, costLevels: SF6_VALIDATION_PROTOCOL.costLevels, quarantine: { A: qa.census }, A: runTop5(qa.ds, { log }) };
+  const result = { schema: 'st-hist-top5-result-1.1.0', ...LABEL, window: { name: L.WINDOW_NAME, ...L.WINDOW }, costLevels: SF6_VALIDATION_PROTOCOL.costLevels, quarantine: { A: qa.census }, population: { A: populationCensus(dsA) }, A: runTop5(qa.ds, { log }) };
+  // Sensitivität DQ-K5: dieselben Referenzen ohne Quarantäne (Referenzkosten; Audit nur in den Rahmen A und B)
+  result.A_NO_DQK5 = runTop5(dsA, { costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF'), audit: false, log });
   if (arg('--v13-series') && arg('--v13-raw')) {
     const v13 = S.loadV13Additions({ root: ROOT, seriesDir: arg('--v13-series'), rawDir: arg('--v13-raw') });
     const aCik = new Map(Object.entries(secPit).filter(([, f]) => f && f.cik).map(([k, f]) => [k, String(Number(f.cik))]));
@@ -117,16 +152,20 @@ async function main() {
     const { dsB, addedIds, census } = S.buildUniverseB(dsA, chains, { calendarDates: pit.spyRaw.map((b) => b.date), aCikByListing: aCik });
     const qb = S.applyQuarantine(dsB, { mode: 'DQ-K5-BOOK', addedIds });
     log(`universe B: +${census.added} chains`);
-    result.universeB = census; result.quarantine.B = qb.census;
+    result.universeB = census; result.quarantine.B = qb.census; result.population.B = populationCensus(dsB);
     result.B = runTop5(qb.ds, { costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF'), log });
   }
   result.receipt = { version: ST_HIST_TOP5_VERSION, snapshotId, datasetSha256, datasetVerified: v.datasetVerified, codeVersionChanged: !!v.codeVersionChanged, engineCodeSha256: engineCodeSha256(), runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
-  result.receipt.resultSha256 = sha({ A: result.A, B: result.B ?? null });
+  result.receipt.resultSha256 = sha({ A: result.A, B: result.B ?? null, A_NO_DQK5: result.A_NO_DQK5 });
+  const auditPass = auditPassAll({ A: result.A, ...(result.B ? { B: result.B } : {}) });
+  result.status = auditPass ? 'COMPLETE' : 'EXECUTION_AUDIT_FAILED';
   fs.mkdirSync(OUT, { recursive: true });
   const plain = Buffer.from(JSON.stringify(result));
   fs.writeFileSync(path.join(OUT, 'st-hist-top5.sealed.owner.json'), L.encryptForOwner(fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8'), plain));
   if (reviewerPem) fs.writeFileSync(path.join(OUT, 'st-hist-top5.sealed.reviewer.json'), L.encryptForOwner(reviewerPem, plain));
   fs.writeFileSync(path.join(OUT, 'st-hist-top5.public.json'), JSON.stringify(publicPart(result), null, 1) + '\n');
+  // fail closed: ein nicht bestandener Ausführungsaudit macht den Lauf rot; der versiegelte Teil bleibt zur Diagnose
+  if (!auditPass) { console.error('EXECUTION_AUDIT_FAILED (Beispiele im versiegelten Teil)'); process.exit(4); }
   log('done');
 }
 

@@ -24,8 +24,8 @@ test('every product dock starts with the product name, never Home or Start, and 
     ['discover', ['Discover','Welten','Strategien','Swipen']],
     ['elliott', ['Elliott','Welle 3','Neu','Suche']],
     ['quant', ['Quant','Screener','Strategien','Aktien']],
-    ['fundamental', ['Fundamental','Entdecken','Suche','Methodik']],
-    ['technical', ['Technical','Screener','Chart','Methodik']],
+    ['fundamental', ['Fundamental','Ranglisten','Branchen','Methodik']],
+    ['technical', ['Technical','Screener','Chart','Muster']],
     ['vorsorge', ['Vorsorge','Planer','ETFs','Portfolio']],
     ['screener', ['Screener','Filter','Treffer','Gespeichert']],
     ['supertrader', ['Supertrader','Methoden','Signale','Backtests']],
@@ -269,7 +269,7 @@ test('Fundamental is a first-class product with its own menu group, dock and sta
   assert.equal(fundamental.label, 'Fundamental');
   assert.equal(fundamental.href, '/fundamental/#/');
   assert.equal(fundamental.icon, 'fundamental');
-  assert.deepEqual(Array.from(fundamental.entries, e => e[1]), ['/fundamental/#/', '/fundamental/#/entdecken', '/fundamental/#/suche', '/fundamental/#/methodik']);
+  assert.deepEqual(Array.from(fundamental.entries, e => e[1]), ['/fundamental/#/', '/fundamental/#/ranglisten', '/fundamental/#/branchen', '/fundamental/#/suche', '/fundamental/#/methodik']);
   // Produktebene: nicht unter "Weitere Produkte"
   assert.ok(!groups.find(g => g.id === 'more').entries.some(([, href]) => href.startsWith('/fundamental/')));
   const product = PRODUCTS.find(p => p.id === 'fundamental');
@@ -280,7 +280,7 @@ test('Fundamental is a first-class product with its own menu group, dock and sta
   const state = url => menuState(loc(url));
   assert.equal(state('/fundamental/#/').group, 'fundamental');
   assert.equal(state('/fundamental/#/').expanded, null, 'Startseite klappt das Menue nicht auf');
-  assert.equal(state('/fundamental/#/entdecken').href, '/fundamental/#/entdecken');
+  assert.equal(state('/fundamental/#/ranglisten').href, '/fundamental/#/ranglisten');
   assert.equal(state('/fundamental/#/methodik').href, '/fundamental/#/methodik');
   assert.equal(state('/fundamental/#/NVDA').group, 'fundamental');
   assert.equal(state('/fundamental/#/NVDA').expanded, 'fundamental');
@@ -294,13 +294,14 @@ test('Technical has its own dock, its own menu group and the exact sprite geomet
   assert.equal(dock.active(loc('/technical/#/screener?muster=dreieck')), 'screener');
   assert.equal(dock.active(loc('/technical/#/chart/NVDA')), 'chart');
   assert.equal(dock.active(loc('/technical/#/chart/NVDA/signale')), 'chart');
-  assert.equal(dock.active(loc('/technical/#/methodik')), 'methodik');
+  assert.equal(dock.active(loc('/technical/#/methodik')), 'muster', 'Redesign T05: #/methodik zeigt die Muster-Seite');
+  assert.equal(dock.active(loc('/technical/#/muster')), 'muster');
   for (const url of ['/technical/', '/technical/#/chart/NVDA']) assert.equal(PRODUCTS.filter(p => p.match(loc(url).pathname, loc(url))).length, 1, url);
   /* Eigene Menuegruppe (Owner-Freigabe 25.10.2026); "Weitere Produkte" fuehrt Technical nicht mehr. */
   const tg = groups.find(g => g.id === 'technical');
   assert.equal(tg.href, '/technical/#/');
   assert.equal(tg.icon, 'technical');
-  assert.deepEqual(Array.from(tg.entries, e => e[1]), ['/technical/#/', '/technical/#/screener', '/technical/#/chart', '/technical/#/screener/gespeichert', '/technical/#/methodik']);
+  assert.deepEqual(Array.from(tg.entries, e => e[1]), ['/technical/#/', '/technical/#/screener', '/technical/#/chart', '/technical/#/screener/gespeichert', '/technical/#/muster']);
   assert.ok(!groups.find(g => g.id === 'more').entries.some(([, href]) => href.startsWith('/technical/')));
   const state = url => menuState(loc(url));
   assert.deepEqual(JSON.parse(JSON.stringify(state('/technical/#/'))), { group: 'technical', href: '/technical/#/', expanded: null });
