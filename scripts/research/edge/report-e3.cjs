@@ -38,6 +38,16 @@ function render(b) {
   const L = [], winner = b.sel && b.sel.winner;
   L.push('# E3 – Edge-Studie: Bericht', '', '**Forschung, nicht zertifiziert.** Ausführung nach dem eingefrorenen [Protokoll](PROTOKOLL.md) (SHA-256 `' + S.PROTOCOL_SHA256 + '`). Keine Empfehlung, keine Renditewerbung.', '');
   const state = !b.devQ ? 'Entwicklung nicht gerechnet' : !b.devS ? 'Entwicklung Quant gerechnet, Supertrader ausstehend (Strang B); Auswahl und Prüfung gesperrt' : !b.sel ? 'Entwicklung vollständig, Auswahl ausstehend' : !b.testQ || !b.testS ? 'Auswahl festgeschrieben, Prüfung teilweise' : 'vollständig';
+  if (b.sel && b.testQ) {
+    const w = b.rows.find(r => r.v.id === winner), e = w && w.test && w.test.state === 'RUN' ? w.test.evaluation : null;
+    const counts = b.rows.reduce((o, r) => (o[r.verdict] = (o[r.verdict] || 0) + 1, o), {});
+    const rawBeat = b.rows.filter(r => r.test && r.test.state === 'RUN' && r.test.evaluation.strategy.totalReturn > r.test.evaluation.SPY.totalReturn);
+    L.push('## Ergebnis', '');
+    if (e) L.push('- Vorab gewählte Variante **' + winner + '** im Prüfteil ' + e.dates.join(' bis ') + ': CAGR ' + pct(e.strategy.cagr) + ' gegen SPY ' + pct(e.SPY.cagr) + ' (RSP ' + pct(e.RSP.cagr) + ', IWM ' + pct(e.IWM.cagr) + '), Sharpe ' + num(e.strategy.sharpe) + ' gegen ' + num(e.SPY.sharpe) + ', maximaler Verlust ' + pct(e.strategy.maxDrawdown) + ' gegen ' + pct(e.SPY.maxDrawdown) + '. Urteil: **' + w.verdict + '**.');
+    L.push('- Urteile über alle 96 Varianten: ' + Object.entries(counts).map(([k, v]) => v + '× „' + k + '“').join(', ') + '. Keine Variante erreicht Holm-p ≤ 0,05.');
+    L.push('- Roh (ohne Signifikanz) über der SPY-Gesamtrendite im Prüfteil: ' + (rawBeat.length ? rawBeat.map(r => r.v.id + ' (' + pct(r.test.evaluation.strategy.cagr) + ')').join(', ') : 'keine') + '. Diese Varianten waren nicht die vorab gewählten; eine nachträgliche Auswahl ist nach Protokoll ausgeschlossen.');
+    L.push('- Befund: kein robuster Nachweis, dass eine der geprüften Methoden den S&P 500 nach Kosten schlägt. Das ist keine bewiesene Gleichheit.', '');
+  }
   L.push('## Stand', '', '- Status: **' + state + '**.');
   if (b.devQ) L.push('- Entwicklung Quant: ' + b.devQ.window.join(' bis ') + ', Anker ' + b.devQ.anchorDate + ', Datei `runs/dev-quant.json`.');
   if (b.sel) L.push('- Auswahl (vor Öffnen des Prüfteils festgeschrieben): **' + winner + '**, Regel: ' + b.sel.rule + '. Hashes: dev-quant `' + b.sel.devQuantSha256.slice(0, 16) + '…`, dev-st `' + b.sel.devStSha256.slice(0, 16) + '…`.');
@@ -60,12 +70,12 @@ function render(b) {
   L.push('', '## Prüfung 2020-01-01 bis 2026-10-02 (alle 96 Varianten, Cash-Start)', '');
   if (!b.sel) L.push('Gesperrt, bis die Auswahl über alle 96 Entwicklungsergebnisse festgeschrieben ist.', '');
   else {
-    const h2 = ['Variante', 'CAGR', 'SPY', 'RSP', 'IWM', 'Sharpe', 'SPY Sharpe', 'Max. Verlust', 'SPY Max. Verlust', 'p Log (Holm)', 'p Sharpe (Holm)', 'Urteil'];
+    const h2 = ['Variante', 'CAGR', 'SPY', 'RSP', 'IWM', 'Sharpe', 'SPY Sharpe', 'Max. Verlust', 'SPY Max. Verlust', 'p Log roh / Holm', 'p Sharpe roh / Holm', 'Urteil'];
     L.push('| ' + h2.join(' | ') + ' |', '|' + h2.map(() => '---').join('|') + '|');
     for (const r of b.rows) {
       const e = r.test && (r.test.state === 'RUN' || r.test.state === 'BLOCKED_COVERAGE') ? r.test.evaluation : null;
       const tag = r.test && r.test.state === 'BLOCKED_COVERAGE' ? ' (beschreibend, bis ' + r.test.evaluation.dates[1] + ')' : '';
-      L.push('| ' + (r.v.id === winner ? '**' + r.v.id + '** (Auswahl)' : r.v.id) + tag + ' | ' + (e ? [pct(e.strategy.cagr), pct(e.SPY.cagr), pct(e.RSP.cagr), pct(e.IWM.cagr), num(e.strategy.sharpe), num(e.SPY.sharpe), pct(e.strategy.maxDrawdown), pct(e.SPY.maxDrawdown)].join(' | ') : ' | | | | | | | ') + ' | ' + pv(r.pLogHolm) + ' | ' + pv(r.pSharpeHolm) + ' | ' + r.verdict + ' |');
+      L.push('| ' + (r.v.id === winner ? '**' + r.v.id + '** (Auswahl)' : r.v.id) + tag + ' | ' + (e ? [pct(e.strategy.cagr), pct(e.SPY.cagr), pct(e.RSP.cagr), pct(e.IWM.cagr), num(e.strategy.sharpe), num(e.SPY.sharpe), pct(e.strategy.maxDrawdown), pct(e.SPY.maxDrawdown)].join(' | ') : ' | | | | | | | ') + ' | ' + pv(r.tst && r.tst.pLog) + ' / ' + pv(r.pLogHolm) + ' | ' + pv(r.tst && r.tst.pSharpe) + ' / ' + pv(r.pSharpeHolm) + ' | ' + r.verdict + ' |');
     }
   }
   L.push('', '## Grenzen', '',
@@ -85,7 +95,7 @@ function main(dir) {
   const b = build(dir);
   fs.writeFileSync(path.join(ROOT, 'docs/research/edge/BERICHT.md'), render(b));
   const json = { schemaVersion: 'edge-e3-report-1.0.0', label: 'Forschung, nicht zertifiziert', protocolSha256: S.PROTOCOL_SHA256, winner: b.sel ? b.sel.winner : null,
-    variants: b.rows.map(r => ({ id: r.v.id, dev: r.dev ? r.dev.state : 'NOT_RUN', test: r.test ? r.test.state : 'NOT_RUN', logEffect: r.tst && r.tst.logEffect, sharpeEffect: r.tst && r.tst.sharpeEffect, pLogHolm: r.pLogHolm, pSharpeHolm: r.pSharpeHolm, verdict: r.verdict })) };
+    variants: b.rows.map(r => ({ id: r.v.id, dev: r.dev ? r.dev.state : 'NOT_RUN', test: r.test ? r.test.state : 'NOT_RUN', logEffect: r.tst && r.tst.logEffect, pLog: r.tst ? r.tst.pLog : null, pSharpe: r.tst ? r.tst.pSharpe : null, sharpeEffect: r.tst && r.tst.sharpeEffect, pLogHolm: r.pLogHolm, pSharpeHolm: r.pSharpeHolm, verdict: r.verdict })) };
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'report.json'), JSON.stringify(json) + '\n');
   console.log(JSON.stringify({ winner: json.winner, verdicts: json.variants.reduce((o, v) => (o[v.verdict] = (o[v.verdict] || 0) + 1, o), {}) }));

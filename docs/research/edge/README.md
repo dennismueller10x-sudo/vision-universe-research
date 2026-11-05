@@ -1,6 +1,8 @@
 # E3 – Edge-Studie
 
-Status: **Vorbereitung, empirischer Teil blockiert**. Kein belastbarer Sieger bestimmt. Der Bericht ist ausdrücklich kein abgeschlossener Backtest.
+Status (05.11.2026): **gerechnet nach Protokoll.** Auswahl vor dem Prüfteil festgeschrieben (`runs/selection.json`). Ergebnis: keine der 84 Quant-Varianten schlägt SPY nach Holm. Die 12 Supertrader-Varianten sind im Prüfteil blockiert: Ihr Snapshot endet am 30.09., das Protokoll endet am 02.10. Siehe [BERICHT.md](BERICHT.md).
+
+Ausführung: `scripts/research/edge/run-e3.cjs` (Phasen `dev-quant`, `dev-st`, `select`, `test-quant`, `test-st`, `report`) über den Workflow `quant-portfolio-research.yml` (Marken `[edge-e3:dev-quant]`, `[edge-e3:test-quant]`). Die Supertrader-Phasen rechnen lokal aus der verschlüsselten Lieferung von Strang B. Adapter: `quant-e3.cjs` (mit Paritätstest gegen den Baukasten) und `st-e3.cjs` (Kosten, Endwerte, Filter als Positions-Overlay).
 
 - [Unveränderliches Protokoll](PROTOKOLL.md), vor dem ersten E3-Lauf als eigener Commit festgehalten.
 - [Vollständiger Vorbereitungsbericht mit 96 Varianten](BERICHT.md).
