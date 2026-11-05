@@ -28,13 +28,16 @@ test("EG-2 · zu viele Wechsel, zu viele Ausschluesse, Universumssprung, Mitglie
   assert.match(evaluate({ prev: doc(base), next: doc(base.slice(1)), prevUniverse: uni(900), nextUniverse: uni(900), limits: LIMITS }).failures.join(), /universeMembersChanged/);
 });
 
-test("EG-3 · Workflow: Ausgabe nach RUNNER_TEMP, Commit nur mit commit=true und Gate COMMIT, kein Zeitplan vor dem Nachholen", () => {
+test("EG-3 · Workflow: Ausgabe nach RUNNER_TEMP, Commit nur mit Gate COMMIT, folgt dem Security-Master-Lauf", () => {
   const wf = readFileSync(join(ROOT, ".github/workflows/security-master-eligibility.yml"), "utf8");
   assert.match(wf, /--out "\$RUNNER_TEMP\/elig\/out" --scale-out "\$RUNNER_TEMP\/elig\/scale"/);
-  assert.match(wf, /if: inputs\.commit == true && steps\.gate\.outputs\.decision == 'COMMIT'/);
+  assert.match(wf, /if: \(github\.event_name == 'workflow_run' \|\| inputs\.commit == true\) && steps\.gate\.outputs\.decision == 'COMMIT'/);
+  const smName = readFileSync(join(ROOT, ".github/workflows/security-master-weekly.yml"), "utf8").match(/^name:\s*(.+)$/m)[1].trim();
+  assert.ok(wf.includes(`workflows: ['${smName}']`), "workflow_run haengt am Namen des Security-Master-Laufs");
+  assert.match(wf, /github\.event\.workflow_run\.conclusion == 'success'/);
   assert.match(wf, /group: market-data-\$\{\{ github\.ref_name \}\}/);
   assert.match(wf, /scripts\/ci\/push-with-retry\.sh/);
-  assert.doesNotMatch(wf, /^\s*(schedule|cron)\s*:/m);
+  assert.doesNotMatch(wf, /^\s*(schedule|cron)\s*:/m, "kein eigener Zeitplan: der Takt kommt vom Security-Master-Lauf");
 });
 
 test("EG-4 · Freigabeliste: freigegebene Wechsel zaehlen nicht, Zielumfang exakt, ungenutzte Eintraege und fremder Vorstand sind rot", () => {

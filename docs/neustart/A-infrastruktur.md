@@ -1,4 +1,4 @@
-# Strang A – Infrastruktur (Stand 05.11.2026, 08:00 UTC)
+# Strang A – Infrastruktur (Stand 05.11.2026, 08:15 UTC)
 
 Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/workflows`, `scripts/ci`, `scripts/core`, `core/registry`, dieses Dokument.
 
@@ -20,7 +20,7 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - `system-health`: US-Wertpapierstamm OK;
   - Generation 1.3.0 eingefroren (#1347).
 - **Datenzweig-Pilot News** (#1348, Phase DUAL_WRITE): `data/live` enthält nur `dashboard/data/news_feed.json`. Der ausgelieferte Pages-Lauf 41890840080 meldet `IDENTICAL 1`, vollständig.
-- **Produktuniversum mit Gate** (#1376): `security-master-eligibility.yml` und `scripts/core/eligibility-gate.mjs`. Ein Commit gibt es nur bei Gate COMMIT. Heute ist das Gate BLOCKED (siehe Offen). Core auf `main` ist wieder grün: `stock-availability` hatte AAL fest als Beispiel.
+- **Produktuniversum mit Gate** (#1376): `security-master-eligibility.yml` und `scripts/core/eligibility-gate.mjs`. Ein Commit gibt es nur bei Gate COMMIT. Core auf `main` ist wieder grün: `stock-availability` hatte AAL fest als Beispiel.
 - **Insider-Käufe E2 in der Tagespipeline:**
   - #1369 geprüft, zwei Fehler behoben:
     - Doppelzählung über mehrere CIKs;
@@ -29,20 +29,28 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - Erster Stand in `data/live`: 141 Käufe aus 1.423 Einreichungen (03.–05.11.), 0 abgewiesen.
 - **Erstes Bündel `content`** (#1385): News, Analystenbewertungen, Hedgefonds 13F und Morning in einem Workflow, Schritte bytegleich übernommen. 141 → 138 Workflows.
 - **Bündel-Verzeichnis** (#1379) mit Vertragstest. Jeder neue Workflow braucht ein Ziel-Bündel.
+- **Produktuniversum nachgeholt** (#1388, Commit `c5357718cb` vom Erzeuger):
+  - Freigabeliste der 228 Wechsel mit Vorher/Nachher je Produkt (`docs/data/security-master/ELIGIBILITY_CATCHUP_2026-11.md`);
+  - 131 ETFs verlassen das Produkt; sie standen bis dahin als Aktie in Discover (123) und Quant (131);
+  - 18 Titel kommen dazu;
+  - Produktuniversum 6.686 → 6.573;
+  - Statusseite „Security Master“ wieder OK, vorher seit 20.10. STALE.
+  - Befund dabei: Der Erzeuger allein hätte 147 Anleihen und ETNs als Aktie aufgenommen. Der Workflow läuft jetzt die vollständige Kette (Namensschicht DEBT, Börsenverzeichnis).
+  - Ab jetzt läuft der Eignungslauf nach jedem Security-Master-Lauf, mit normalen Grenzen. Die Produkte übernehmen den Stand mit dem nächsten Marktdaten-Lauf.
+- **Screener-Spalten Supertrader-Methoden** (#1389, Z5): `stMeth`, `stV1`, `stStage` aus #1377; 1.719 Titel mit Methode, 564 mit V1. Die Oberfläche baut D2.
 
 ## Offen
-- **Überschneidung Insider:** `ownership-signals.yml` baut wöchentlich Insider-Transaktionen (`quant/data/product/ownership-signals-v1/`). E2 ergänzt die tagesgenaue Point-in-Time-Verfügbarkeit. Empfehlung: zu einem Erzeuger zusammenführen, bevor ein Konsument E2 liest.
-- **Produktuniversum nachholen:**
-  - Gegen den Stamm 1.3.0 ergibt der Erzeuger 473 Statuswechsel, davon 129 ELIGIBLE→EXCLUDED, und ein Produktuniversum von 6.686 auf 6.739.
-  - Das geht nur über einen eigenen PR mit Vorher/Nachher je Produkt.
-  - Danach den Zeitplan einschalten.
+- **Insider zusammenführen** (Entscheidung der Steuerung vom 05.11.): `ownership-signals.yml` (wöchentlich, `quant/data/product/ownership-signals-v1/`) und E2 (täglich, Point-in-Time, `data/live`) werden zu einem Erzeuger zusammengeführt, bevor ein Konsument liest.
 - **Bündelung, nächste Schritte:**
   - `monitor` (14 Workflows);
   - dann die 14 Löschkandidaten prüfen;
   - dann `pipeline-weekly`.
 - **Datenzweig:** Abnahme News am 11.11. (7 Tage nur `IDENTICAL`), danach News auf BRANCH_ONLY.
 - Folgearbeiten an 1.3.0 (Strang C): #1119 (H6), optional H7.
-- PR-Liste: liegt beim Owner zur Bestätigung, bis dahin wird nichts geschlossen.
+- **PR-Liste:**
+  - 101 PRs zum Schließen, 3 Europa-PRs zum Zusammenführen.
+  - Die Steuerung meldet die Bestätigung des Owners. Das Schließen wurde aber blockiert, weil es nur auf der Nachricht einer anderen Sitzung beruht. Es wartet auf die direkte Bestätigung des Owners.
+  - Die Steuerung hat klargestellt, dass mit `codex/*` nur die laufenden PRs ab #1368 gemeint sind. Die sechs alten `codex/*`-PRs gehören deshalb zur Liste.
 
 ## Braucht Owner
 - Nichts Neues.
