@@ -156,6 +156,75 @@ export function createKkFidelityAdapter({ leaders, market, variant = 'FID-1' }) 
   });
 }
 
+/** Diagnose (verändert keine Regel): erster nicht erfüllter Schritt von kkFidelitySetupAt am Schluss i, oder 'OK'.
+ *  Muss Schritt für Schritt kkFidelitySetupAt folgen; der Test ST-FID-EXPLAIN prüft die Gleichheit. */
+export function kkFidelitySetupExplain(bars, i, proxy = KK_SETUP_PROXIES.CONSOLIDATION_10, { quality = false, minAdv20Usd = null } = {}) {
+  if (minAdv20Usd !== null) { const a = adv20Usd(bars, i); if (!(fin(a) && a >= minAdv20Usd)) return { step: 'LIQUIDITY', adv20Usd: a }; }
+  const W = proxy.window, b = bars[i];
+  if (i < W + proxy.priorMoveSessions + 1 || !fin(b?.close) || !fin(b.low)) return { step: 'HISTORY' };
+  const level = priorHigh(bars, i + 1, W);
+  if (!fin(level) || !(b.close <= level)) return { step: 'CLOSE_ABOVE_LEVEL', level, close: b.close };
+  const s = i + 1 - W;
+  let lo = Infinity; for (let k = s - proxy.priorMoveSessions; k < s; k++) { const l = bars[k]?.low; if (!fin(l)) return { step: 'HISTORY' }; lo = Math.min(lo, l); }
+  const base = bars[s].close; if (!fin(base) || !(lo > 0)) return { step: 'HISTORY' };
+  const priorMove = base / lo - 1;
+  if (!(priorMove >= proxy.priorMove)) return { step: 'PRIOR_MOVE', priorMove };
+  const rising = (n) => { const a = smaAt(bars, i, n), c = smaAt(bars, i - 5, n); return fin(a) && fin(c) ? a > c : null; };
+  if (proxy.maRising && !(rising(10) === true && rising(20) === true)) return { step: 'MA_NOT_RISING', ma10: rising(10), ma20: rising(20), priorMove };
+  if (quality) {
+    const lowOf = (a, z) => { let v = Infinity; for (let k = a; k <= z; k++) { const l = bars[k].low; if (!fin(l)) return null; v = Math.min(v, l); } return v; };
+    const highOf = (a, z) => { let v = -Infinity; for (let k = a; k <= z; k++) { const h = bars[k].high; if (!fin(h)) return null; v = Math.max(v, h); } return v; };
+    const h = Math.floor(W / 2), l1 = lowOf(s, s + h - 1), l2 = lowOf(i - h + 1, i), r1 = highOf(s, s + h - 1) - l1, r2 = highOf(i - h + 1, i) - l2;
+    if (![l1, l2, r1, r2].every(fin) || !(l2 > l1) || !(r2 < r1)) return { step: 'QUALITY', higherLows: l2 > l1, tightening: r2 < r1, priorMove };
+  }
+  const adrNext = adr20(bars, i + 1);
+  if (!fin(adrNext)) return { step: 'ADR' };
+  return { step: 'OK', level, priorMove, adr20: adrNext };
+}
+
+/** Bestes 1/3/6-Monats-Perzentil eines Titels an ausgewählten Daten (gleiche Rechnung wie momentumLeaders). */
+export function momentumPercentileAt(securities, id, dates, { minRawClose = KK_FIDELITY_RULES.universeMinRawClose, P = KK_PARAMS } = {}) {
+  const want = new Set(dates), rows = new Map();
+  for (const s of securities) {
+    const b = s.bars;
+    for (let i = 0; i < b.length; i++) {
+      if (!want.has(b[i].date)) continue;
+      const c = b[i].close, rc = b[i].rawClose ?? c;
+      if (!fin(c) || !(rc >= minRawClose)) continue;
+      const ret = (n) => (i >= n && b[i - n].close > 0 ? c / b[i - n].close - 1 : null);
+      (rows.get(b[i].date) || rows.set(b[i].date, []).get(b[i].date)).push([s.id, ret(P.momentumSessions.m1), ret(P.momentumSessions.m3), ret(P.momentumSessions.m6)]);
+    }
+  }
+  const out = {};
+  for (const d of dates) {
+    const r = rows.get(d) || []; let best = null;
+    for (const k of [1, 2, 3]) { const v = r.filter((x) => x[k] !== null).sort((a, z) => a[k] - z[k]); const j = v.findIndex((x) => x[0] === id); if (j >= 0 && v.length > 1) best = Math.max(best ?? -1, (j / (v.length - 1)) * 100); }
+    out[d] = { eligible: r.some((x) => x[0] === id), bestPercentile: best, crossSection: r.length };
+  }
+  return out;
+}
+
+/** Je goldenem Trade und Variante: im Universum?, und für jede Sitzung im Fenster ±8 Tage Rohkurs, Momentum-Perzentil,
+ *  Marktfilter, erster nicht erfüllter Setup-Schritt und ob der Folgetag das Niveau erreicht. Keine Renditezahlen. */
+export function goldenDiagnose(ds, { leaders, market, golden = KK_GOLDEN_TRADES, proxy = KK_SETUP_PROXIES.CONSOLIDATION_10, topPct = KK_FIDELITY_RULES.momentumTopPct } = {}) {
+  const tickerOf = (id) => String(id).split('#')[0].split(':')[2];
+  return golden.map((g) => {
+    const secs = ds.securities.filter((s) => tickerOf(s.id) === g.ticker);
+    const lo = new Date(Date.parse(g.date) - 8 * 864e5).toISOString().slice(0, 10), hi = new Date(Date.parse(g.date) + 8 * 864e5).toISOString().slice(0, 10);
+    if (!secs.length) return { ...g, inUniverse: false };
+    return { ...g, inUniverse: true, securities: secs.map((s) => {
+      const b = s.bars, idx = []; for (let i = 0; i < b.length; i++) if (b[i].date >= lo && b[i].date <= hi) idx.push(i);
+      const mom = momentumPercentileAt(ds.securities, s.id, idx.map((i) => b[i].date));
+      return { id: s.id, firstBar: b[0]?.date ?? null, lastBar: b[b.length - 1]?.date ?? null, barsInWindow: idx.length, sessions: idx.map((i) => {
+        const d = b[i].date, out = { date: d, rawClose: b[i].rawClose ?? b[i].close, momentum: mom[d], leader: !!leaders?.get(d)?.has(s.id), marketOn: market ? market.has(d) : null, topPct };
+        for (const [v, V] of Object.entries(KK_FIDELITY_VARIANTS)) out[v] = kkFidelitySetupExplain(b, i, proxy, { quality: V.quality, minAdv20Usd: V.minAdv20Usd ?? null }).step;
+        const lvl = priorHigh(b, i + 1, proxy.window); out.nextDayReachesLevel = i + 1 < b.length && fin(lvl) ? b[i + 1].high >= lvl : null;
+        return out;
+      }) };
+    }) };
+  });
+}
+
 /** R-Verteilung geschlossener Trades (R = Gewinn / anfängliches Risiko): Trefferquote, mittleres Gewinner-R, Anteil > 5 R, Haltedauer. */
 export function rDistribution(trades) {
   const closed = trades.filter((t) => t.status === 'CLOSED' && fin(t.pnl) && t.initialRiskAmount > 0);

@@ -35,7 +35,7 @@ import * as FID from './kk-breakout-fidelity.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.4.0';
+export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.5.0';
 /** Delisting-Erlös als Sensitivität (Prüfung Strang E): echte Neuläufe mit den vorhandenen Abrechnungsszenarien der Engines
  *  (validation/portfolio.mjs SCENARIOS, Wiederanlage inklusive). 100 % = Referenz S0_LAST_PRICE, 70 % = S1_MINUS_30,
  *  S2_DISTRESS_ZERO = 0 % bei Insolvenz-Delisting, sonst 70 %. Ein Szenario „0 % für alle“ hat die Engine nicht (eine neue
@@ -255,6 +255,22 @@ async function main() {
   const dsA = datasetFromPit(pit); attachSecPit(dsA, secPit);
   const qa = S.applyQuarantine(dsA, { mode: 'DQ-K5-BOOK' });
   log(`universe A: ${dsA.securities.length} segments, quarantine ${JSON.stringify(qa.census)}`);
+  if (arg('--mode') === 'golden-diagnose') {
+    // C08-Treueprüfung: warum die belegten Kullamägi-Trades nicht entstehen (Universum, Quarantäne, Momentum, Markt, Setup-Schritt).
+    // Keine Renditezahlen; trotzdem nur versiegelt, öffentlich nur Zählungen.
+    const leaders = FID.momentumLeaders(qa.ds.securities), market = FID.marketOn(qa.ds.benchmark);
+    const tickerOf = (id) => String(id).split('#')[0].split(':')[2];
+    const diag = FID.goldenDiagnose(qa.ds, { leaders, market }).map((g) => ({ ...g, inRawUniverse: dsA.securities.some((x) => tickerOf(x.id) === g.ticker) }));
+    const receipt = { version: ST_HIST_TOP5_VERSION, fidelity: FID.KK_FIDELITY_VERSION, mode: 'golden-diagnose', snapshotId, datasetSha256, datasetVerified: v.datasetVerified, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+    if (!reviewerPem) die('REVIEWER_KEY_REQUIRED_FOR_GOLDEN_DIAGNOSE');
+    fs.mkdirSync(OUT, { recursive: true });
+    const plainG = Buffer.from(JSON.stringify({ schema: 'st-kk-golden-diagnose-1.0.0', ...LABEL, receipt, rules: FID.KK_FIDELITY_RULES, golden: diag }));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.sealed.reviewer.json'), L.encryptForOwner(reviewerPem, plainG));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.sealed.owner.json'), L.encryptForOwner(fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8'), plainG));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.public.json'), JSON.stringify({ schema: 'st-kk-golden-diagnose-public-1.0.0', ...LABEL, receipt, golden: diag.length, inUniverse: diag.filter((g) => g.inUniverse).length, inRawUniverse: diag.filter((g) => g.inRawUniverse).length }, null, 1) + '\n');
+    log('done (golden-diagnose)');
+    return;
+  }
   if (arg('--mode') === 'edge-export') {
     // E3 (Strang C): kostenfrei, Terminal S0, je Fenster ab Cash, mit DQ-K5-Quarantäne wie die Referenz; Ausgabe nur versiegelt
     const exp = edgeExport(qa.ds, { log });
