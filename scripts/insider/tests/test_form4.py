@@ -145,7 +145,7 @@ class Form4Tests(unittest.TestCase):
         entries = [d for d in registry["domains"] if d["id"] == "insiderPurchases"]
         self.assertEqual(len(entries), 1)
         self.assertIn("scripts/insider/form4.py", entries[0]["producer"])
-        self.assertIsNone(entries[0]["workflow"])
+        self.assertEqual(entries[0]["workflow"], "sec-fundamentals-daily.yml")
         doc = f.generate(date(2026, 6, 1), f.cutoff("2026-06-05"), [INDEX], lambda p: submission())
         self.assertEqual(len(doc[entries[0]["records"]]), doc["records"])
         tx = TX.replace("10.25", "12345678901234567890123456789").replace("2.40", "10")

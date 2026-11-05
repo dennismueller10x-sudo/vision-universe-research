@@ -537,8 +537,8 @@
       "records": "purchases",
       "role": "Gemeldete, bepreiste nicht-derivative Erwerbe (Code P/A) aus SEC Form 4/4-A; Einreichungsdatum und PIT-Verfuegbarkeit je Transaktion. Keine Handelssignale.",
       "producer": "scripts/insider/form4.py --from YYYY-MM-DD --as-of YYYY-MM-DD --out FILE",
-      "workflow": null,
-      "schedule": "manuell; Strang A bindet den Erzeuger in die Tagespipeline ein (Neustart E2)",
+      "workflow": "sec-fundamentals-daily.yml",
+      "schedule": "taeglich 06:15 UTC (Job insider): zwei Einreichungstage, 90-Tage-Fenster (scripts/insider/merge.py), nur im Datenzweig data/live",
       "freshness": { "kind": "hours", "warnAfter": 48, "staleAfter": 168 },
       "activation": {
         "state": "ACTIVATING",
