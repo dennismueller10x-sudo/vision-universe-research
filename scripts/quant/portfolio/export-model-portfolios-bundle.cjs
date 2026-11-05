@@ -8,7 +8,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const ROOT = path.resolve(__dirname, '../../..');
-const SCHEMA = 'model-portfolios-bundle-1.0.0';
+const SCHEMA = 'model-portfolios-bundle-1.1.0';
 const IN = 'docs/quant/research/portfolio-v1/model-portfolios.json';
 const OUT = 'workers/vu-account/data/model-portfolios-bundle.json';
 
@@ -36,6 +36,12 @@ const LIMIT_TEXT = {
   FUNDAMENTALDATEN_VERZOEGERT_ZULETZT_EINGEREICHT: 'Fundamentaldaten verzögert (zuletzt eingereichte Fassung).',
   DELISTETE_TITEL_OHNE_TAGESUMSATZ_LIQUIDITAET_UEBER_MARKTKAPITALISIERUNG: 'Delistete Titel ohne Tagesumsatz: Liquidität über die Marktkapitalisierung.',
 };
+function holdingsOf(r) {
+  const h = r.holdingsSnapshot;
+  if (!h || h.policy !== 'DELAYED_HISTORICAL_ONLY' || !(h.delayDays >= 365)) throw Error('HOLDINGS_NOT_DELAYED: ' + r.profileId);
+  if (h.asOf && h.asOf > h.cutoff) throw Error('HOLDINGS_AFTER_CUTOFF: ' + r.profileId);
+  return { asOf: h.asOf, delayDays: h.delayDays, positions: h.positions.map(x => ({ ticker: ticker(x.id), weight: x.weight })) };
+}
 const ticker = id => id.startsWith('ref_') ? id.slice(4) : id.startsWith('dl_') ? 'delistet' : id;
 
 function build(root, inFile) {
@@ -54,7 +60,8 @@ function build(root, inFile) {
     costs: r.costs,
     // Wertentwicklung ausgedünnt (jede 4. Woche + letzte), [Datum, Portfolio, Benchmark] normiert auf 100.
     equity: r.equity.filter((e, i, a) => i % 4 === 0 || i === a.length - 1).map(([d, v, b]) => [d, +(100 * v / r.equity[0][1]).toFixed(3), +(100 * b / r.equity[0][2]).toFixed(3)]),
-    lastHoldings: r.lastHoldings.map(h => ({ ticker: ticker(h.id), weight: h.weight })),
+    // Nur ein verzögerter, historischer Bestand (Owner-Linie Plan §11): keine heutige Kaufliste, kein Rein/Raus.
+    holdings: holdingsOf(r),
   });
   // Diagrammpunkte (logarithmisch, auf [0,1] normiert) für die Anzeige; die Seite rechnet nichts.
   for (const p of portfolios) if (p.state === 'RUN') {
