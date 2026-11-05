@@ -669,8 +669,8 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       el("p", { class: "dx-kicker", text: "Chancen und Risiken" }),
       el("h2", { text: "Was dafür spricht — und was dagegen" }),
       el("div", { class: "dx-waage" }, [
-        spalte("Das spricht dafür", w.dafuer, "pro"),
-        spalte("Das sollte man beachten", w.beachten, "contra")
+        spalte("Stärken laut Kennzahlen", w.dafuer, "pro"),
+        spalte("Schwächen laut Kennzahlen", w.beachten, "contra")
       ]),
       el("p", { class: "dx-kapitel-fuss", text: w.hinweis })
     ]);
