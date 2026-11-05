@@ -70,16 +70,28 @@ function loadRows() {
   for (const r of ingest?.rows || []) ingestBySym[r.symbol] = r;
   // Ticker-Identitaet: der Tiingo-Tagesendpunkt ist tickergebunden. Liegt ein
   // Ticker im Ingest vor, gilt dessen Boerse auch fuer die Repository-Zeilen.
+  // Ohne Ingest-Zeile gilt fuer ein AKTIVES Listing die Boerse der einzigen aktiven ETF-Zeile des Security Masters
+  // (Tiingo-Tickerliste): Company Master und Tickerliste schreiben dieselbe Boerse verschieden ("NYSE" / "NYSE ARCA"),
+  // sonst entstehen aus einem Fonds zwei Listings (CAM, 05.11.2026). Schluessel: die kanonische Identitaet (ADR-001).
+  const sm = tryJson(join(root, "quant/data/market/security-master/us-security-master.json"));
+  const smActive = {};
+  for (const r of sm?.rows || []) {
+    if ((r.instrument_type !== "ETF" && r.asset_type !== "ETF") || r.active_status === "INACTIVE" || !r.exchange) continue;
+    let id; try { id = Identity.securityIdForTicker(r.ticker); } catch { continue; }
+    (smActive[id] = smActive[id] || new Set()).add(r.exchange);
+  }
+  const activeEx = (sym) => { let id; try { id = Identity.securityIdForTicker(sym); } catch { return null; }
+    return smActive[id] && smActive[id].size === 1 ? [...smActive[id]][0] : null; };
   const ex = (sym, exch) => (ingestBySym[sym] && ingestBySym[sym].exchange) || exch;
+  const exActive = (sym, exch, active) => (ingestBySym[sym] && ingestBySym[sym].exchange) || (active !== false && activeEx(sym)) || exch;
   const dir = join(root, "quant/data/universe/instruments");
   for (const f of readdirSync(dir).filter((f) => f.endsWith(".json")).sort()) {
     for (const it of readJson(join(dir, f)).instruments || []) {
-      rows.push({ symbol: it.symbol, name: it.companyName, exchange: ex(it.symbol, it.exchange), currency: it.currency, country: it.country,
+      rows.push({ symbol: it.symbol, name: it.companyName, exchange: exActive(it.symbol, it.exchange, it.active), currency: it.currency, country: it.country,
         securityType: it.securityType, firstTradeDate: it.firstTradeDate, lastTradeDate: it.lastTradeDate || it.delistedAt || null,
         active: it.active, source: "tiingo:company-master" });
     }
   }
-  const sm = tryJson(join(root, "quant/data/market/security-master/us-security-master.json"));
   for (const r of sm?.rows || []) {
     if (r.instrument_type !== "ETF" && r.asset_type !== "ETF") continue;
     rows.push({ symbol: r.ticker, name: r.security_name || null, exchange: ex(r.ticker, r.exchange), currency: r.currency, country: r.country,
@@ -120,19 +132,7 @@ function seriesFor(symbol, written) {
       total: existing.total ? { daily: Codec.decode(existing.total.daily), weekly: Codec.decode(existing.total.weekly) } : null, sources: ["tiingo:etf-ingest"] };
   }
   const s = repoSeries(symbol);
-  if (!s) {
-    // Die Repository-Quellen (discover-series) fuehren seit den Umfangsfolgen vom 05.11.2026 nur noch das
-    // Aktienuniversum. Ein belegtes Nicht-Aktien-Papier (ETF, den Tiingo als "Stock" fuehrt und der darum nicht
-    // im ETF-Ingest steht) behaelt seine zuletzt veroeffentlichte Reihe mit ihrem Stand, statt aus Vorsorge zu
-    // verschwinden - bis der ETF-Ingest es selbst fuehrt. Nur fuer aktuell gelistete ETFs (seriesFor);
-    // nicht mehr gebrauchte Reihen entfernt der Aufraeumschritt unten wie bisher.
-    if (existing && existing.origin === "repository-sources" && existing.price && existing.price.daily) {
-      written.add(symbol + ".json");
-      return { record: existing, price: { daily: Codec.decode(existing.price.daily), weekly: Codec.decode(existing.price.weekly) },
-        total: null, sources: existing.sources || [] };
-    }
-    return null;
-  }
+  if (!s) return null;
   const record = { schemaVersion: "vu-vorsorge-series-1.0.0", symbol, origin: "repository-sources", sources: s.sources,
     priceHistoryFrom: (s.weekly[0] || s.daily[0] || [null])[0], asOf: (s.daily[s.daily.length - 1] || s.weekly[s.weekly.length - 1] || [null])[0],
     observations: s.daily.length, recycledTickerSuspected: false, dividendEvents: null,

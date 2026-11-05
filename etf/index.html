@@ -699,7 +699,7 @@ function renderRechner(){
       ${[["Rente/Mo.",eu(res.mo)],["Einzahlungen",eu(res.ein)],["Kursgewinne",eu(res.gew)]].map(([l,v])=>`<div><div style="font-size:10px;color:#555;margin-bottom:3px">${l}</div><div style="font-size:13px;font-weight:700;color:#fff">${v}</div></div>`).join("")}
     </div>`;
   const sls=[
-    {k:"s",l:"Sparrate / Monat",min:25,max:1500,step:25,u:" €",h:"Empfehlung: 10–15% Nettoeinkommen"},
+    {k:"s",l:"Sparrate / Monat",min:25,max:1500,step:25,u:" €",h:"Faustregel: 10–15 % des Nettoeinkommens"},
     {k:"j",l:"Anlagezeitraum",min:5,max:45,step:1,u:" Jahre",h:""},
     {k:"r",l:"Rendite p.a.",min:3,max:12,step:0.5,u:"%",h:"MSCI World historisch ~7–8%"},
     {k:"z",l:"Staatszulage / Jahr",min:0,max:840,step:60,u:" €",h:"Ab 2027: bis 540€"},
