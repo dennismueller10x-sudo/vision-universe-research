@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.2.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-11-04T04:38:25.000Z",
+ "generatedAt": "2026-11-04T21:08:43.000Z",
  "asOf": "2026-11-03",
  "publication": {
   "compositeAllowed": false,
@@ -44,14 +44,14 @@
   "scoreCuts": {
    "quality": {
     "VERY_STRONG": 67.61,
-    "STRONG": 60.74,
-    "NEUTRAL": 50.49,
+    "STRONG": 60.76,
+    "NEUTRAL": 50.52,
     "WEAK": 41.9
    },
    "growth": {
     "VERY_STRONG": 75.52,
     "STRONG": 64.23,
-    "NEUTRAL": 46.95,
+    "NEUTRAL": 46.94,
     "WEAK": 36.44
    },
    "momentum": {
@@ -62,7 +62,7 @@
    },
    "value": {
     "VERY_STRONG": 76.75,
-    "STRONG": 66.24,
+    "STRONG": 66.22,
     "NEUTRAL": 49.7,
     "WEAK": 38.72
    },
@@ -74,10 +74,10 @@
    },
    "revisions": null,
    "risk": {
-    "VERY_STRONG": 87.42,
+    "VERY_STRONG": 87.44,
     "STRONG": 75.47,
-    "NEUTRAL": 50.07,
-    "WEAK": 31.21
+    "NEUTRAL": 50.03,
+    "WEAK": 31.22
    }
   },
   "minimumUniverse": 100,
@@ -798,13 +798,20 @@
   "velocityWindowDays": 30,
   "velocityToleranceDays": 10,
   "scoreMomentumOpen": true,
-  "recomputationDrift": null
+  "recomputationDrift": {
+   "asOf": "2026-11-03",
+   "publishedHash": "e146b9b2c541016e",
+   "recomputedHash": "f1b27e6747126dd3",
+   "rowsDiffering": 961,
+   "rowsTotal": 6408,
+   "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
+  }
  },
  "scope": "CANONICAL_PRODUCT_UNIVERSE",
  "source": {
   "priceFactors": {
    "engine": "market-factors-1.0.0",
-   "generatedAt": "2026-11-04T03:41:48.789Z",
+   "generatedAt": "2026-11-04T19:37:21.574Z",
    "securities": 6546,
    "benchmark": {
     "id": "SPY",
@@ -1170,6 +1177,6 @@
   "SHARE_COUNT_SCALE_SUSPECT": 4,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 21855,
- "contentHash": "97defe26b1eac9ca"
+ "runtimeMs": 21983,
+ "contentHash": "13dd7c292f9cc05f"
 }

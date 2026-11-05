@@ -56,11 +56,11 @@ export const PATHS = Object.freeze({
   caDocs: ['docs/SUPERTRADER_6_V4D1_CONTAINMENT.md', 'docs/SUPERTRADER_7_EDGAR_CA_CHECK.md', 'docs/SUPERTRADER_7_TIINGO_SPLITS_PROBE.md', 'docs/SUPERTRADER_7_OWNER_DECISIONS_E7.md'],
   dataGaps: 'docs/SUPERTRADER_2_DATA_GAPS.md',
   activation: 'docs/SUPERTRADER_8_ACTIVATION_READINESS.md',
-  paper: 'scripts/supertrader/source-faithful/completion/sf6-paper-protocol-2027.mjs',
+  paper: 'scripts/supertrader/source-faithful/completion/sf6-paper-protocol-2027-v1_2_0.mjs', // current version (1.2.0, 2026-11-04)
   criteria: 'scripts/supertrader/source-faithful/completion/sf6-readiness-criteria.mjs',
   histUniverse: 'scripts/supertrader/source-faithful/research/st9-hist-universe.mjs',
   histExecution: 'scripts/supertrader/source-faithful/research/st9-hist-execution.mjs',
-  registration: 'scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.0.json',
+  registration: 'scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.1.json', // 1.0.1 amends 1.0.0 (two file hashes)
   detectors: 'scripts/supertrader/source-faithful/product/detectors.mjs',
   inputGate: 'scripts/supertrader/source-faithful/product/input-gate.mjs',
   publication: 'scripts/supertrader/source-faithful/product/publication-contract.mjs',
@@ -291,7 +291,7 @@ export async function loadSources(root = ROOT) {
   const readiness = readJson(PATHS.readiness), golden = readJson(PATHS.golden), plan = readJson(PATHS.plan), summary = readJson(PATHS.summary);
   const domains = readJson(PATHS.domains), registration = readJson(PATHS.registration);
   const matrixText = readText(PATHS.matrixDoc), handoverText = readText(PATHS.handover), opsText = readText(PATHS.dailyOps);
-  const { SF6_PAPER_PROTOCOL, sf6PaperProtocolSha256 } = await import(path.join(ROOT, PATHS.paper));
+  const { protocol: SF6_PAPER_PROTOCOL, sha256: sf6PaperProtocolSha256 } = (await import(path.join(ROOT, PATHS.paper))).currentPaperProtocol();
   const { AUX_MAX_AGE_DAYS, lastCompletedSession } = await import(path.join(ROOT, PATHS.inputGate));
   const { createCalendar, SOURCES } = await import(path.join(ROOT, 'scripts/supertrader/source-faithful/product/eod-adapter.mjs'));
   const { PUBLICATION_CONTRACT } = await import(path.join(ROOT, PATHS.publication));

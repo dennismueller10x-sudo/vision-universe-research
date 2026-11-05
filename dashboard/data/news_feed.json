@@ -1,58 +1,230 @@
 {
-  "updated_at": "2026-10-13T08:10:31.402Z",
-  "freshness_hours": 24,
+  "updated_at": "2026-11-04T18:46:15.373Z",
+  "freshness_hours": 72,
   "sources": [
-    "IonQ",
-    "Elisity",
-    "Reuters"
+    "FinanzNachrichten.de",
+    "wallstreet-online.de",
+    "Investing.com"
   ],
-  "coverage": [
-    "Nasdaq 100",
-    "S&P 500",
-    "DAX",
-    "TecDAX",
-    "MDAX",
-    "SDAX",
-    "Russell 2000",
-    "Weltmärkte"
-  ],
-  "methodology": "Eigenständig formulierte Kurzanalysen der Vision Universe Redaktion auf Basis aktueller, verlinkter Primärquellen und etablierter Nachrichtenagenturen. Es erscheinen nur potenziell marktbewegende Themen der letzten 24 Stunden; ältere Meldungen und Dubletten werden entfernt.",
+  "methodology": "Automatisch aggregierte Kurzmeldungen auf Basis deutschsprachiger Quellen (Originalzusammenfassungen, redaktionell nicht umformuliert).",
   "items": [
     {
-      "id": "ionq-elisity-uebernahme-2026-10-12",
-      "symbol": "IONQ",
-      "company": "IonQ",
-      "market": "NYSE / US-Technologie",
+      "id": "fn-AMD-1793803320000",
+      "symbol": "AMD",
+      "company": "AMD",
+      "market": "Deutschland",
       "tags": [
-        "IonQ",
-        "Quantencomputing",
-        "Cybersecurity",
-        "Übernahme",
-        "USA"
+        "Deutschland",
+        "Tech"
       ],
-      "category": "Unternehmen & Technologie",
-      "title": "IonQ wettet 1,3 Milliarden Dollar auf Quantensicherheit",
-      "summary": "IonQ will den Zero-Trust-Spezialisten Elisity in einem reinen Aktiendeal für bis zu 1,3 Milliarden Dollar übernehmen; darin enthalten sind bis zu 150 Millionen Dollar erfolgsabhängige Zahlungen. Die Transaktion soll noch im vierten Quartal 2026 abgeschlossen werden und IonQs Quantenverschlüsselung mit Elisitys Sicherheitsplattform und mehr als 100 Kundeninstallationen verbinden.",
-      "why_it_matters": "Der Zukauf erweitert IonQ in einen schnell wachsenden Cybersecurity-Markt, belastet die Aktie aber durch die mögliche Verwässerung – die Anteilsscheine verloren im Handel rund 9 Prozent.",
-      "source": "IonQ / Reuters",
-      "source_url": "https://investors.ionq.com/news/news-details/2026/IonQ-to-Acquire-Elisity-to-Accelerate-Zero-Trust-for-the-Quantum-Era/default.aspx",
-      "research_sources": [
-        {
-          "name": "IonQ Investor Relations",
-          "url": "https://investors.ionq.com/news/news-details/2026/IonQ-to-Acquire-Elisity-to-Accelerate-Zero-Trust-for-the-Quantum-Era/default.aspx"
-        },
-        {
-          "name": "Elisity",
-          "url": "https://www.elisity.com/news/elisity-announces-acquisition-by-ionq-to-advance-zero-trust-for-the-quantum-era"
-        },
-        {
-          "name": "Reuters",
-          "url": "https://www.boursorama.com/bourse/actualites/ionq-va-racheter-la-societe-de-cybersecurite-elisity-dans-le-cadre-d-une-operation-pouvant-atteindre-1-3-milliard-de-dollars-0a405770edb2f64cffbd781dd8b1aaed"
-        }
-      ],
+      "category": "Unternehmen",
+      "title": "DZ BANK stuft AMD auf 'Kaufen'",
+      "summary": "FRANKFURT (dpa-AFX Analyser) - Die DZ Bank hat den fairen Wert für AMD nach Quartalszahlen von 590 auf 620 US-Dollar angehoben und die Einstufung auf \"Kaufen\" belassen. \"Es läuft\", schrieb Ingo Wer...",
+      "source": "FinanzNachrichten.de",
+      "source_url": "https://www.finanznachrichten.de/nachrichten-2026-11/70033922-dz-bank-stuft-amd-auf-kaufen-322.htm",
       "image_url": "/dashboard/assets/news-us-tech.jpg",
-      "published_at": "2026-10-12T16:00:00.000Z",
-      "relevance": 93,
+      "published_at": "2026-11-04T14:42:00.000Z",
+      "relevance": 146,
+      "editorial": "Vision Universe Redaktion"
+    },
+    {
+      "id": "wo-AMZN-1793793540000",
+      "symbol": "AMZN",
+      "company": "Amazon",
+      "market": "US-Märkte",
+      "tags": [
+        "US-Märkte",
+        "Tech"
+      ],
+      "category": "Unternehmen",
+      "title": "Trading Desk: Apple short, Amazon long! So handeln Trading-Experten nach den Earnings",
+      "summary": "Nach den US-Zwischenwahlen rücken wieder Einzelaktien in den Fokus. Im wallstreetONLINE Trading Desk analysiert Experte Benjamin Feingold die jüngsten Quartalszahlen von Apple und Amazon.",
+      "source": "wallstreet-online.de",
+      "source_url": "https://www.wallstreet-online.de/video/21636912-trading-desk-apple-short-amazon-long-handeln-trading-experten-earnings",
+      "image_url": "/dashboard/assets/news-us-tech.jpg",
+      "published_at": "2026-11-04T11:59:00.000Z",
+      "relevance": 143,
+      "editorial": "Vision Universe Redaktion"
+    },
+    {
+      "id": "wo-AMD-1793773860000",
+      "symbol": "AMD",
+      "company": "AMD",
+      "market": "US-Märkte",
+      "tags": [
+        "US-Märkte",
+        "Tech"
+      ],
+      "category": "Unternehmen",
+      "title": "Quartalszahlen: AMD mit Rekordquartal – Aktie knallt nachbörslich hoch!",
+      "summary": "AMD übertrifft die Erwartungen, die Aktie zieht nachbörslich deutlich an. Konzernchefin Lisa Su stellt für 2027 einen massiven Wachstumsschub in Aussicht. Doch eine wichtige Kennzahl bleibt hinter den Erwartungen zurück.",
+      "source": "wallstreet-online.de",
+      "source_url": "https://www.wallstreet-online.de/nachricht/21634086-quartalszahlen-amd-rekordquartal-aktie-knallt-nachboerslich-hoch",
+      "image_url": "/dashboard/assets/news-us-tech.jpg",
+      "published_at": "2026-11-04T06:31:00.000Z",
+      "relevance": 138,
+      "editorial": "Vision Universe Redaktion"
+    },
+    {
+      "id": "wo-markt-1793815200000",
+      "symbol": null,
+      "company": "Marktbericht",
+      "market": "Weltmärkte",
+      "tags": [
+        "Weltmärkte"
+      ],
+      "category": "Marktbericht",
+      "title": "Nach der US-Wahl: Diese Aktien werden jetzt zu Gewinnern – deutsche Konzerne dabei",
+      "summary": "Der Wahlsieg der Demokraten verändert die Spielregeln an der Börse. Solaraktien schießen nach oben, auch Europas Industrie hofft auf Entlastung. Welche Unternehmen kurz- und langfristig profitieren könnten.",
+      "source": "wallstreet-online.de",
+      "source_url": "https://www.wallstreet-online.de/nachricht/21639078-us-wahl-aktien-gewinnern-deutsche-konzerne",
+      "image_url": "/dashboard/assets/news-small-caps.jpg",
+      "published_at": "2026-11-04T18:00:00.000Z",
+      "relevance": 134,
+      "editorial": "Vision Universe Redaktion"
+    },
+    {
+      "id": "fn-markt-1793810520000",
+      "symbol": null,
+      "company": "Marktbericht",
+      "market": "Deutschland",
+      "tags": [
+        "Deutschland"
+      ],
+      "category": "Marktbericht",
+      "title": "DZ BANK stuft Heidelberg Materials auf 'Kaufen'",
+      "summary": "FRANKFURT (dpa-AFX Analyser) - Die DZ Bank hat den fairen Wert für Heidelberg Materials nach Zahlen von 203 auf 206 Euro angehoben und die Einstufung auf \"Kaufen\" belassen. Der Wachstumsschwung bei...",
+      "source": "FinanzNachrichten.de",
+      "source_url": "https://www.finanznachrichten.de/nachrichten-2026-11/70035380-dz-bank-stuft-heidelberg-materials-auf-kaufen-322.htm",
+      "image_url": "/dashboard/assets/news-small-caps.jpg",
+      "published_at": "2026-11-04T16:42:00.000Z",
+      "relevance": 133,
+      "editorial": "Vision Universe Redaktion"
+    },
+    {
+      "id": "fn-markt-1793809800000",
+      "symbol": null,
+      "company": "Marktbericht",
+      "market": "US-Märkte",
+      "tags": [
+        "US-Märkte"
+      ],
+      "category": "Marktbericht",
+      "title": "JPMORGAN stuft INFINEON TECHNOLOGIES AG auf 'Overweight'",
+      "summary": "NEW YORK (dpa-AFX Analyser) - Die US-Bank JPMorgan hat die Einstufung für Infineon vor Zahlen auf \"Overweight\" mit einem Kursziel von 96 Euro belassen. Sandeep Deshpande äußerte in einem am Mittwoc...",
+      "source": "FinanzNachrichten.de",
+      "source_url": "https://www.finanznachrichten.de/nachrichten-2026-11/70035207-jpmorgan-stuft-infineon-technologies-ag-auf-overweight-322.htm",
+      "image_url": "/dashboard/assets/news-us-tech.jpg",
+      "published_at": "2026-11-04T16:30:00.000Z",
+      "relevance": 133,
+      "editorial": "Vision Universe Redaktion"
+    },
+    {
+      "id": "iv-markt-1793812424000",
+      "symbol": null,
+      "company": "Marktbericht",
+      "market": "Weltmärkte",
+      "tags": [
+        "Weltmärkte"
+      ],
+      "category": "Marktbericht",
+      "title": "Dominion Energy-Aktie im Aufwind: Fortschritte bei 67-Milliarden-Dollar-Übernahme durch Ne",
+      "summary": "Dominion Energy-Aktie im Aufwind: Fortschritte bei 67-Milliarden-Dollar-Übernahme durch NextEra Energy beflügeln Kurs",
+      "source": "Investing.com",
+      "source_url": "https://de.investing.com/news/stock-market-news/dominion-energyaktie-im-aufwind-fortschritte-bei-67milliardendollarubernahme-durch-nextera-energy-beflugeln-kurs-93CH-3747078",
+      "image_url": "https://content-media.investing.com/news/CrudeOil_800x533_L_1622740597.jpg",
+      "published_at": "2026-11-04T17:13:44.000Z",
+      "relevance": 133,
+      "editorial": "Vision Universe Redaktion"
+    },
+    {
+      "id": "iv-markt-1793812288000",
+      "symbol": null,
+      "company": "Marktbericht",
+      "market": "Weltmärkte",
+      "tags": [
+        "Weltmärkte"
+      ],
+      "category": "Marktbericht",
+      "title": "WW Grainger auf Allzeithoch: Starke Q3-Zahlen und angehobene Prognose treiben die Aktie an",
+      "summary": "WW Grainger auf Allzeithoch: Starke Q3-Zahlen und angehobene Prognose treiben die Aktie an",
+      "source": "Investing.com",
+      "source_url": "https://de.investing.com/news/stock-market-news/ww-grainger-auf-allzeithoch-starke-q3zahlen-und-angehobene-prognose-treiben-die-aktie-an-93CH-3747073",
+      "image_url": "https://content-media.investing.com/news/LYNXNPEB6J0AJ_M.jpg",
+      "published_at": "2026-11-04T17:11:28.000Z",
+      "relevance": 133,
+      "editorial": "Vision Universe Redaktion"
+    },
+    {
+      "id": "wo-markt-1793806200000",
+      "symbol": null,
+      "company": "Marktbericht",
+      "market": "Weltmärkte",
+      "tags": [
+        "Weltmärkte"
+      ],
+      "category": "Marktbericht",
+      "title": "Rescheduling, Fusion & Zahlen: Dramatisches Jahresfinale im Cannabis-Sektor: Tilray, Auror",
+      "summary": "Auf den ersten Blick ist der Cannabis-Sektor noch immer im altbekannten und von Lethargie geprägten Muster gefangen. Doch ein zweiter Blick offenbart spannende Entwicklungen.",
+      "source": "wallstreet-online.de",
+      "source_url": "https://www.wallstreet-online.de/nachricht/21637620-rescheduling-fusion-zahlen-dramatisches-jahresfinale-cannabis-sektor-tilray-aurora-co-aufruhr",
+      "image_url": "/dashboard/assets/news-small-caps.jpg",
+      "published_at": "2026-11-04T15:30:00.000Z",
+      "relevance": 132,
+      "editorial": "Vision Universe Redaktion"
+    },
+    {
+      "id": "wo-markt-1793804520000",
+      "symbol": null,
+      "company": "Marktbericht",
+      "market": "Deutschland",
+      "tags": [
+        "Deutschland"
+      ],
+      "category": "Marktbericht",
+      "title": "10-Prozent-Rallye: Darum läuft die Heidelberg-Materials-Aktie heute allen davon!",
+      "summary": "Starke Zahlen, bestätigter Ausblick, höheres Sparziel: Heidelberg Materials überrascht im dritten Quartal. Die Aktie, 2026 einer der schwächsten DAX-Werte, springt zweistellig an. Analysten bleiben optimistisch.",
+      "source": "wallstreet-online.de",
+      "source_url": "https://www.wallstreet-online.de/nachricht/21638472-10-prozent-rallye-laeuft-heidelberg-materials-aktie-davon",
+      "image_url": "/dashboard/assets/news-small-caps.jpg",
+      "published_at": "2026-11-04T15:02:00.000Z",
+      "relevance": 131,
+      "editorial": "Vision Universe Redaktion"
+    },
+    {
+      "id": "wo-markt-1793802600000",
+      "symbol": null,
+      "company": "Marktbericht",
+      "market": "Weltmärkte",
+      "tags": [
+        "Weltmärkte"
+      ],
+      "category": "Marktbericht",
+      "title": "Der Schein trügt: Circle schlägt alle Erwartungen – doch die Zahlen haben einen Haken",
+      "summary": "Circle übertrifft mit seinen Quartalszahlen die Prognosen. Doch hohe Sondereinnahmen wecken Zweifel am Wachstum, während der Konzern Stellen abbaut.",
+      "source": "wallstreet-online.de",
+      "source_url": "https://www.wallstreet-online.de/nachricht/21637683-schein-truegt-circle-schlaegt-erwartungen-zahlen-haken",
+      "image_url": "/dashboard/assets/news-small-caps.jpg",
+      "published_at": "2026-11-04T14:30:00.000Z",
+      "relevance": 131,
+      "editorial": "Vision Universe Redaktion"
+    },
+    {
+      "id": "fn-markt-1793804760000",
+      "symbol": null,
+      "company": "Marktbericht",
+      "market": "US-Märkte",
+      "tags": [
+        "US-Märkte"
+      ],
+      "category": "Marktbericht",
+      "title": "UBS stuft PFIZER INC auf 'Neutral'",
+      "summary": "ZÜRICH (dpa-AFX Analyser) - Die Schweizer Großbank UBS hat das Kursziel für Pfizer nach Zahlen von 27 auf 30 US-Dollar angehoben und die Einstufung auf \"Neutral\" belassen. Das dritte Quartal sei gu...",
+      "source": "FinanzNachrichten.de",
+      "source_url": "https://www.finanznachrichten.de/nachrichten-2026-11/70034191-ubs-stuft-pfizer-inc-auf-neutral-322.htm",
+      "image_url": "/dashboard/assets/news-small-caps.jpg",
+      "published_at": "2026-11-04T15:06:00.000Z",
+      "relevance": 131,
       "editorial": "Vision Universe Redaktion"
     }
   ]

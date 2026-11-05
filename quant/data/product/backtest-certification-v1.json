@@ -1,8 +1,8 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-11-04T05:01:02.964Z",
+ "generatedAt": "2026-11-04T21:31:37.500Z",
  "asOf": "2026-11-04",
- "methodology": "backtest-certification-1.0.0",
+ "methodology": "backtest-certification-1.1.0",
  "kinds": [
   {
    "id": "SAME_STOCK_REPLAY",
@@ -334,7 +334,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1842 Wochen, 142 Quartale, effektiv ≈ 20310 unabhängige Fälle",
+       "value": "1842 Wochen, 142 Quartale, effektiv ≈ 20311 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -401,7 +401,7 @@
       "uniquePeriods": 1842,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 20310,
+      "effectiveN": 20311,
       "designEffect": 4.39
      },
      "returnType": "TOTAL_RETURN",
@@ -650,7 +650,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "86520 Fälle mit 6-Monats-Ergebnis aus 5062 Titeln",
+       "value": "86518 Fälle mit 6-Monats-Ergebnis aus 5062 Titeln",
        "required": null,
        "reason": null
       },
@@ -731,7 +731,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1842 Wochen, 142 Quartale, effektiv ≈ 26660 unabhängige Fälle",
+       "value": "1842 Wochen, 142 Quartale, effektiv ≈ 26666 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -797,7 +797,7 @@
       }
      ],
      "sample": {
-      "n": 86520,
+      "n": 86518,
       "titles": 5062
      },
      "independence": {
@@ -805,8 +805,8 @@
       "uniquePeriods": 1842,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 26660,
-      "designEffect": 3.25
+      "effectiveN": 26666,
+      "designEffect": 3.24
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
@@ -845,7 +845,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "86086 Fälle mit 6-Monats-Ergebnis aus 5062 Titeln",
+       "value": "86085 Fälle mit 6-Monats-Ergebnis aus 5062 Titeln",
        "required": null,
        "reason": null
       },
@@ -926,7 +926,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1841 Wochen, 142 Quartale, effektiv ≈ 25071 unabhängige Fälle",
+       "value": "1841 Wochen, 142 Quartale, effektiv ≈ 25060 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -1013,7 +1013,7 @@
       }
      ],
      "sample": {
-      "n": 86086,
+      "n": 86085,
       "titles": 5062
      },
      "independence": {
@@ -1021,8 +1021,8 @@
       "uniquePeriods": 1841,
       "independentClusters": 142,
       "clusterUnit": "Quartal",
-      "effectiveN": 25071,
-      "designEffect": 3.43
+      "effectiveN": 25060,
+      "designEffect": 3.44
      },
      "returnType": "TOTAL_RETURN",
      "baseRate": {
@@ -1247,7 +1247,7 @@
    ],
    "source": {
     "asOf": "2026-11-06",
-    "generatedAt": "2026-11-04T04:58:01.379Z",
+    "generatedAt": "2026-11-04T21:28:34.756Z",
     "returnType": "TOTAL_RETURN",
     "studySchemaVersion": "signal-backtest-study-2.0.0",
     "studyEngineVersion": "signal-backtest-2.0.0",
@@ -1504,6 +1504,37 @@
     },
     "firstCompletedM6": "2027-03-26"
    },
+   "oos": {
+    "evaluator": "setup-oos-1.0.0",
+    "segmentation": "setup-oos-2027-05-31",
+    "gateLabel": "OOS_DIRECTIONAL_REPLICATION",
+    "population": {
+     "eventTypes": [
+      "SETUP_NEW",
+      "SETUP_CONFIRMED"
+     ],
+     "entryVariant": "NEXT_CLOSE",
+     "horizon": "m6",
+     "aggregation": "ALL_EVENT_TYPES_PASS"
+    },
+    "rowsExported": true,
+    "byEventType": {
+     "SETUP_NEW": {
+      "status": "FAIL",
+      "reasonCode": "OOS_NOT_MEASURABLE_YET",
+      "completed": 0,
+      "purged": 0,
+      "segments": null
+     },
+     "SETUP_CONFIRMED": {
+      "status": "FAIL",
+      "reasonCode": "OOS_NOT_MEASURABLE_YET",
+      "completed": 0,
+      "purged": 0,
+      "segments": null
+     }
+    }
+   },
    "progress": {
     "historyDates": 26,
     "spanDays": 54,
@@ -1517,7 +1548,7 @@
    },
    "replay": {
     "role": "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)",
-    "parity": "3929/3929",
+    "parity": "3930/3930",
     "mismatches": 0
    }
   },
@@ -1787,17 +1818,17 @@
    "inMainStudy": false,
    "meaning": "Kontrolle: historische Nicht-Überlebende sind in der Studie enthalten. Nur dann ist der Überlebenden-Effekt kontrolliert."
   },
-  "DELISTED_IDENTIFIED": 3919,
-  "DELISTED_WITH_HISTORY": 3325,
+  "DELISTED_IDENTIFIED": 4010,
+  "DELISTED_WITH_HISTORY": 3370,
   "DELISTED_BACKTEST_ELIGIBLE": 3058,
-  "tickerReuseAmbiguous": 514,
+  "tickerReuseAmbiguous": 545,
   "securityMasterClasses": {
-   "A": 0,
-   "B": 0,
-   "C": 1,
-   "D": 183,
+   "A": 40,
+   "B": 5,
+   "C": 16,
+   "D": 204,
    "E": 0,
-   "F": 7
+   "F": 17
   },
   "delistedStoreClasses": {
    "A": 3257,

@@ -21,7 +21,9 @@
       "properties": {
         "displayCurrency": { "type": "string", "pattern": "^[A-Z]{3}$", "default": "EUR", "description": "heute: vu-currency-preference-v1" },
         "appearance": { "enum": ["light", "dark", "system"], "default": "system", "description": "heute: vu-discover-theme-v1" },
-        "experienceLevel": { "enum": ["beginner", "advanced"], "default": "beginner" }
+        "experienceLevel": { "enum": ["beginner", "advanced", "pro"], "default": "beginner" },
+        "goal": { "enum": ["vorsorge", "aktie", "ideen", "strategien", null], "default": null, "description": "Ziel aus dem ersten Start (Folie E11)" },
+        "onboardedAt": { "type": ["string", "null"], "format": "date-time", "description": "erster Start abgeschlossen oder uebersprungen; setzt der Server" }
       }
     },
     "watchlists": {
