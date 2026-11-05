@@ -9,7 +9,8 @@ name: Produktuniversum (Eignung aus dem Security Master, mit Gate)
 # Gate COMMIT unter den normalen Grenzen, ohne Freigabeliste; sonst rot und Alarm. Das Nachholen vom 05.11.2026
 # (eligibility-catchup-2026-11, 228 Wechsel) ist uebernommen (Commit c5357718cb).
 # Umfangsfolgen: aendert sich das Produktuniversum, entfernen die Erzeuger selbst, was nicht mehr im Umfang
-# steht (Discover-Reihen, lange Reihen, Intraday; --prune-only/--index-only), und die Materialisierung wird
+# steht (Discover-Reihen, lange Reihen, Intraday; --prune-only/--index-only), Company Master und Discover werden
+# neu gebaut, und die Materialisierung wird
 # mit force neu angestossen (Technical-Signale). Sonst scheitern alle Laeufe mit Public-Data-Hygiene, auch
 # der naechtliche Marktdatenlauf vor seiner Materialisierung (Befund 05.11.2026: 131 ETFs nach dem Nachholen).
 on:
@@ -121,10 +122,17 @@ jobs:
         id: folgen
         if: steps.commit.outputs.changed == 'true' || inputs.umfangsfolgen == true
         env:
-          PUSH_OWNED_PATHS: quant/data/market/discover-series/ quant/data/market/discover-series-long/ quant/data/market/intraday/
+          PUSH_OWNED_PATHS: quant/data/market/discover-series/ quant/data/market/discover-series-long/ quant/data/market/intraday/ quant/data/universe/
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
         run: |
           set -euo pipefail
           git pull -q --rebase origin "${GITHUB_REF_NAME}" || true
+          # Company Master und Universums-Indizes: market-capability.json bestimmt, wofuer die Materialisierung
+          # Technical-Signale baut. Derselbe Weg wie sec-fundamentals-daily.yml (dort erst am naechsten Morgen).
+          node scripts/universe/build-company-master.mjs
+          node scripts/universe/build-universe-indexes.mjs
+          node scripts/universe/build-issuer-master.mjs
+          node scripts/universe/verify-company-master.mjs
           node scripts/market/publish-discover-series.mjs --prune-only
           node scripts/market/publish-long-series.mjs --prune-only
           node scripts/market/ingest-intraday.mjs --index-only

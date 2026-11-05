@@ -5,7 +5,7 @@ name: Konten und Abos — Tests
 # Stripe, keine Konten, keine Zahlungen.
 on:
   pull_request:
-    paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'preise/**', 'mein-dashboard/**', 'willkommen/index.html', 'willkommen/app.js', 'scripts/home/cancel-link.mjs', 'scripts/watchlist/**',
+    paths: ['supabase/**', 'workers/vu-account/**', 'scripts/account/**', 'konto/**', 'preise/**', 'mein-dashboard/**', 'willkommen/index.html', 'willkommen/app.js', 'willkommen/start/**', 'scripts/home/cancel-link.mjs', 'scripts/watchlist/**',
       'core/watchlist-view.js', 'assets/watchlist-button.js', 'fundamental/index.html', 'hedgefonds/index.html', '.github/workflows/account-*.yml',
       'discover/app.js', 'discover/index.html', 'scripts/discover/watchlist-coupling-qa.mjs', 'quant/index.html']
   push:
