@@ -55,13 +55,14 @@
   /* ------------------------------------------- Produktsprache (Kunde) */
   // Phasen: strikt getrennt. „Nahe am Trigger“ ist Vorbereitung, kein Einstieg.
   var PHASE = {
-    DISCOVERED: ['cand', 'Kandidat'], WATCH: ['cand', 'Kandidat'],
-    SETUP: ['prep', 'Vorbereitet'], ENTRY_READY: ['prep', 'Vorbereitet · nahe Trigger'],
-    TRIGGERED: ['conf', 'Einstiegsregel erfüllt'], ACTIVE: ['pos', 'Modellposition aktiv'], WARNING: ['warn', 'Position · Warnung'],
-    EXIT: ['exit', 'Ausstieg ausgelöst'], CLOSED: ['closed', 'Geschlossen'], INVALIDATED: ['inv', 'Ungültig'],
-    PARTIAL: ['partial', 'Teiltreffer'], RETIRED: ['inv', 'Regelwechsel'], REASSESSED: ['inv', 'Regelwechsel'],
+    DISCOVERED: ['cand', 'Entdeckt'], WATCH: ['cand', 'Auf Beobachtung'],
+    SETUP: ['prep', 'Muster entsteht'], ENTRY_READY: ['prep', 'Kurz vor der Marke'],
+    TRIGGERED: ['conf', 'Marke erreicht'], ACTIVE: ['pos', 'Modell ist dabei'], WARNING: ['warn', 'Warnzeichen'],
+    EXIT: ['exit', 'Ausstieg ausgelöst'], CLOSED: ['closed', 'Abgeschlossen'], INVALIDATED: ['inv', 'Muster geplatzt'],
+    PARTIAL: ['partial', 'Teiltreffer'], RETIRED: ['inv', 'Durch neue Regel ersetzt'], REASSESSED: ['inv', 'Nach Regeländerung neu bewertet'],
   };
-  var PHASE_FILTERS = [['', 'Alle aktuellen'], ['prep', 'Vorbereitet'], ['watch', 'Beobachtung'], ['conf', 'Bestätigt'], ['pos', 'Position'], ['exit', 'Ausstieg'], ['obs', 'Forschung'], ['cand', 'Kandidaten'], ['partial', 'Teiltreffer'], ['closed', 'Geschlossen'], ['inv', 'Ungültig']];
+  // Alltagsnamen nach Folie ST-Z (gleich STATE in st-redesign.js); der Code-Zustand bleibt.
+  var PHASE_FILTERS = [['', 'Alle aktuellen'], ['prep', 'Muster entsteht'], ['watch', 'Beobachtung'], ['conf', 'Marke erreicht'], ['pos', 'Modell ist dabei'], ['exit', 'Ausstieg'], ['obs', 'Forschung'], ['cand', 'Entdeckt'], ['partial', 'Teiltreffer'], ['closed', 'Abgeschlossen'], ['inv', 'Muster geplatzt']];
   var PHASE_ORDER = ['conf', 'pos', 'warn', 'exit', 'prep', 'partial', 'watch', 'obs', 'cand', 'closed', 'inv'];
   function phaseOfState(st) { return (PHASE[st] || ['cand'])[0]; }
   function phaseBadge(st) { var p = PHASE[st] || [st, st]; return h('span', { class: 'st-phase', 'data-p': p[0], text: p[1] }); }
