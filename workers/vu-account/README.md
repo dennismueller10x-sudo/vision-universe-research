@@ -10,8 +10,10 @@ Einrichtung: [docs/accounts/SETUP.md](../../docs/accounts/SETUP.md) · Entscheid
 | `src/http.mjs` | Antworten, CORS, Cookies, CSRF, Körpergrenzen |
 | `src/jwt.mjs` | Supabase-Zugriffstoken (ES256/RS256 über JWKS) |
 | `src/auth.mjs` | Sitzung, Login, Registrierung (PKCE), Passwort |
-| `src/account.mjs` | Profil, Einstellungen, Abo-Übersicht, Export, Löschung |
+| `src/account.mjs` | Profil, Einstellungen (inkl. erster Start: `experienceLevel` mit `pro`, `goal`, `onboardedAt`), Abo-Übersicht, Export, Löschung |
 | `src/billing.mjs` | Tarife, Checkout, Portal, Kündigung, Stripe-Webhook, `requireFeature` |
+| `src/watchlist.mjs` | Persönliche Watchlist (`/v1/watchlist*`) |
+| `src/searches.mjs` | Gespeicherte Suchen (`/v1/searches*`): je Welt, RLS, 50 je Konto ([Endpunkte](../../docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md)) |
 | `src/cancellation.mjs` | Kündigung § 312k: Eingang, Zuordnung, Ausführung, Postausgang, Cron-Überwachung (auch von `scripts/account/cancellations.mjs` genutzt) |
 | `src/mail.mjs` | Brevo-Versand, Kündigungs- und Alarm-E-Mails |
 | `src/providers/` | Stripe-Adapter (aktiv), Apple/Google (vorbereitet) |

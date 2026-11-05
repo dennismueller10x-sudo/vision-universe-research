@@ -1,9 +1,9 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-11-04T05:01:36.360Z",
+ "generatedAt": "2026-11-04T21:32:12.152Z",
  "asOf": "2026-11-03",
  "measures": {
-  "RADAR_EVENTS_TOTAL": 2399,
+  "RADAR_EVENTS_TOTAL": 1897,
   "RADAR_EVENTS_BY_TYPE": {
    "SETUP_CONFIRMED": 9,
    "SETUP_NEW": 59,
@@ -11,7 +11,7 @@
    "NEW_52W_HIGH": 156,
    "MOMENTUM_IMPROVED": 57,
    "TREND_UP": 72,
-   "PATTERN_MATCH_NEW": 743,
+   "PATTERN_MATCH_NEW": 241,
    "FACTOR_CHANGED": 287,
    "RISK_RISING": 5,
    "SETUP_WEAKENED": 85,
@@ -29,30 +29,30 @@
   "HISTORICAL_REPLAY_COVERAGE": {
    "universe": 5666,
    "covered": 5309,
-   "available": 4511,
+   "available": 4481,
    "sufficient": {
-    "m1": 2225,
-    "m3": 2168,
-    "m6": 2099,
-    "m12": 2011
+    "m1": 2208,
+    "m3": 2148,
+    "m6": 2076,
+    "m12": 1988
    },
    "broad": {
-    "m6": 847
+    "m6": 826
    },
    "reasons": {
     "NOT_COVERED": 357,
-    "NO_PRICE_CONDITION_TODAY": 734,
-    "NO_COMPARABLE_CASE": 64
+    "NO_PRICE_CONDITION_TODAY": 757,
+    "NO_COMPARABLE_CASE": 71
    }
   },
   "WATCHLIST_TRACKABLE_TITLES": 5574,
-  "ALERT_READY_EVENTS": 2399
+  "ALERT_READY_EVENTS": 1897
  },
  "criteria": [
   {
    "question": "welche Aktien heute interessant werden",
    "pass": true,
-   "measured": "1689 Karten aus 2399 Ereignissen"
+   "measured": "1454 Karten aus 1897 Ereignissen"
   },
   {
    "question": "warum",
@@ -77,7 +77,7 @@
   {
    "question": "was historisch bei derselben Lage geschah",
    "pass": true,
-   "measured": "2099 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
+   "measured": "2076 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
   },
   {
    "question": "wie belastbar diese Evidenz ist",
@@ -95,7 +95,8 @@
    "ticker": "NVDA",
    "kind": "Großwert",
    "radarEvents": [
-    "TREND_UP"
+    "TREND_UP",
+    "PATTERN_MATCH_NEW"
    ],
    "setup": {
     "state": "NO_SETUP",
@@ -130,11 +131,11 @@
     "direction": "BEARISH"
    },
    "replay": {
-    "episodes": 18,
+    "episodes": 29,
     "horizon": "m6",
     "evidence": "THIN",
-    "positiveShare": 0.7777777777777778,
-    "medianReturn": 0.15975534391993818
+    "positiveShare": 0.7586206896551724,
+    "medianReturn": 0.1770764119601329
    },
    "factors": 6
   },
@@ -189,7 +190,8 @@
    "ticker": "MSFT",
    "kind": "Großwert",
    "radarEvents": [
-    "FACTOR_CHANGED"
+    "FACTOR_CHANGED",
+    "PATTERN_MATCH_NEW"
    ],
    "setup": {
     "state": "WATCH",
@@ -224,11 +226,11 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 50,
+    "episodes": 71,
     "horizon": "m6",
     "evidence": "BROAD",
-    "positiveShare": 0.6122448979591837,
-    "medianReturn": 0.0224839400428265
+    "positiveShare": 0.8115942028985508,
+    "medianReturn": 0.19010819165378678
    },
    "factors": 6
   },
@@ -460,7 +462,6 @@
    "kind": "Regionalbank",
    "radarEvents": [
     "TREND_DOWN",
-    "PATTERN_MATCH_NEW",
     "EVIDENCE_CHANGED"
    ],
    "setup": {
@@ -496,18 +497,16 @@
     "direction": "BEARISH"
    },
    "replay": {
-    "episodes": 59,
-    "horizon": "m6",
-    "evidence": "BROAD",
-    "positiveShare": 0.6949152542372882,
-    "medianReturn": 0.1020833333333333
+    "reason": "NO_PRICE_CONDITION_TODAY"
    },
    "factors": 5
   },
   {
    "ticker": "O",
    "kind": "REIT",
-   "radarEvents": [],
+   "radarEvents": [
+    "PATTERN_MATCH_NEW"
+   ],
    "setup": {
     "state": "NO_SETUP",
     "since": "2026-09-10",

@@ -42,8 +42,8 @@ export async function me(ctx) {
     user: {id: user.id, email: user.email},
     profile: profile && {displayName: profile.display_name, locale: profile.locale, createdAt: profile.created_at},
     settings: settings && {displayCurrency: settings.display_currency, appearance: settings.appearance,
-      experienceLevel: settings.experience_level, notifications: settings.notification_settings,
-      marketingEmails: settings.marketing_emails},
+      experienceLevel: settings.experience_level, goal: settings.goal ?? null, onboardedAt: settings.onboarded_at ?? null,
+      notifications: settings.notification_settings, marketingEmails: settings.marketing_emails},
     roles: (roles || []).map(r => r.role),
     entitlements,
     planIntent: planIntentOf(authUser, entitlements, ctx.now()),
@@ -100,8 +100,9 @@ export async function newsletter(ctx) {
 }
 
 // marketingEmails ist nicht mehr direkt schreibbar (nur bestaetigter Double-Opt-in, siehe newsletter()).
+// onboardedAt: nur true ("erster Start erledigt/uebersprungen"); den Zeitpunkt setzt die Datenbank (Trigger).
 const SETTING_COLUMNS = {displayCurrency: 'display_currency', appearance: 'appearance', experienceLevel: 'experience_level',
-  notifications: 'notification_settings'};
+  goal: 'goal', onboardedAt: 'onboarded_at', notifications: 'notification_settings'};
 
 export async function updateMe(ctx) {
   const user = await requireUser(ctx);
@@ -114,6 +115,7 @@ export async function updateMe(ctx) {
   })));
   const filter = {user_id: `eq.${user.id}`};
   if (Object.keys(profile).length) await ctx.sb.user.update(user.accessToken, 'profiles', filter, profile);
+  if (settings.onboarded_at === true) settings.onboarded_at = new Date(ctx.now()).toISOString();
   if (Object.keys(settings).length) await ctx.sb.user.update(user.accessToken, 'user_settings', filter, settings);
   return me(ctx);
 }
@@ -144,13 +146,13 @@ export async function exportData(ctx) {
   const user = await requireUser(ctx);
   const t = user.accessToken;
   const f = {user_id: `eq.${user.id}`};
-  const [profiles, settings, roles, watchlists, items, subscriptions, invoices, entitlements] = await Promise.all([
+  const [profiles, settings, roles, watchlists, items, savedSearches, subscriptions, invoices, entitlements] = await Promise.all([
     ctx.sb.user.select(t, 'profiles', f), ctx.sb.user.select(t, 'user_settings', f), ctx.sb.user.select(t, 'user_roles', f),
-    ctx.sb.user.select(t, 'watchlists', f), ctx.sb.user.select(t, 'watchlist_items', f),
+    ctx.sb.user.select(t, 'watchlists', f), ctx.sb.user.select(t, 'watchlist_items', f), ctx.sb.user.select(t, 'saved_searches', f),
     ctx.sb.user.select(t, 'subscriptions', f), ctx.sb.user.select(t, 'invoices', f), ctx.sb.user.rpc(t, 'my_entitlements')]);
   const body = {schemaVersion: 'vu-account-export-1', exportedAt: new Date(ctx.now()).toISOString(),
     account: {id: user.id, email: user.email}, profile: one(profiles), settings: one(settings), roles, watchlists,
-    watchlistItems: items, subscriptions, invoices, entitlements,
+    watchlistItems: items, savedSearches, subscriptions, invoices, entitlements,
     notice: 'Zahlungsdaten (Karte, Konto) speichert Vision Universe nicht; sie liegen beim Zahlungsanbieter.'};
   return json(ctx.request, ctx.cfg, 200, body, {cookies: ctx.outCookies,
     headers: {'Content-Disposition': 'attachment; filename="vision-universe-konto.json"'}});
@@ -159,7 +161,7 @@ export async function exportData(ctx) {
 // Kontoloeschung (Art. 17 DSGVO). Reihenfolge:
 //   1 Passwort bestaetigen  2 laufende Stripe-Abos sofort beenden
 //   3 Loeschnachweis (nur Hash)  4 Supabase-Nutzer loeschen -> Profil,
-//   Einstellungen, Rollen, Watchlists per Cascade; Abos/Rechnungen werden
+//   Einstellungen, Rollen, Watchlists, gespeicherte Suchen per Cascade; Abos/Rechnungen werden
 //   pseudonymisiert aufbewahrt (§ 147 AO, § 257 HGB).
 export async function deleteAccount(ctx) {
   const user = await requireUser(ctx);

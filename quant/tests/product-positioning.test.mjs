@@ -43,8 +43,20 @@ test("Vier Kernversprechen, jedes mit einem Weg zu der Funktion, die es einloest
   for (const t of titles) assert.ok(doc.includes(t), "Versprechen fehlt im Dokument: " + t);
 });
 
-test("Home: erst Claim und Suche, dann was heute neu ist, dann eigene Aktien, dann Werkzeuge", () => {
-  const home = slice(pages, "async function home(", "/* ============================================================ SCREENER");
+/* Redesign 2027 (Folie Q01): die neue Startseite. Frage als Titel, Suche, „So arbeitet Quant“, Markt, heute, Werkzeuge.
+   Die bisherige Startseite bleibt als homeLegacy (ohne VUUI) und behaelt ihre Pruefung unten. */
+test("Q01 · Home: Frage, Suche, So arbeitet Quant, Markt, Heute bei Quant, Selbst suchen", () => {
+  const home = slice(pages, "async function home(", "async function homeLegacy(");
+  const at = (s) => { const i = home.indexOf(s); assert.ok(i >= 0, "fehlt auf Home: " + s); return i; };
+  const order = [at("Was hat sich heute verändert?"), at("page.append(search)"), at("page.append(how)"), at("page.append(regimeHost)"),
+    at('sect("Heute bei Quant"'), at('sect("Selbst suchen")')];
+  assert.deepEqual(order.slice().sort((a, b) => a - b), order, "Reihenfolge der Startseite weicht vom Mockup Q01 ab");
+  assert.ok(!/KNOWN\b/.test(home), "Home zeigt feste Demo-Aktien");
+  assert.match(home, /promiseList\(\)/, "das Versprechen (Beleg) fehlt");
+});
+
+test("Home (ohne VUUI): erst Claim und Suche, dann was heute neu ist, dann eigene Aktien, dann Werkzeuge", () => {
+  const home = slice(pages, "async function homeLegacy(", "/* ============================================================ SCREENER");
   const at = (s) => { const i = home.indexOf(s); assert.ok(i >= 0, "fehlt auf Home: " + s); return i; };
   const heading = home.match(/el\("h1", \{ class: "([^"]+)", text: HERO_TITLE \}\)/);
   assert.ok(heading, "Hero-Überschrift fehlt auf Home");

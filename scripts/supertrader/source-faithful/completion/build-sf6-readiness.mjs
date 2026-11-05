@@ -15,7 +15,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SF6_READINESS_VERSION, DIMENSIONS, CERTIFICATION_CRITERIA, CC5, SF6_OWNER_DECISIONS, sf6ReadinessCriteriaSha256 } from './sf6-readiness-criteria.mjs';
-import { SF6_PAPER_PROTOCOL, sf6PaperProtocolSha256 } from './sf6-paper-protocol-2027.mjs';
+import { currentPaperProtocol } from './sf6-paper-protocol-2027-v1_2_0.mjs';
+// the current (activatable) version of SF6-PAPER-2027: 1.2.0 since 2026-11-04 (1.1.0 superseded, never activated)
+const SF6_PAPER_PROTOCOL = currentPaperProtocol().protocol, sf6PaperProtocolSha256 = currentPaperProtocol().sha256;
 import { SF6_RUN_FACTS } from './sf6-run-facts.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
