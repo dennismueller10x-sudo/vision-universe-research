@@ -97,3 +97,43 @@ test('ST-HIST-6: E3-Export je Methode und Fenster ab Cash, kostenfrei, mit Fills
   }
   assert.deepEqual(T.EDGE_WINDOWS.map((w) => [w.from, w.to]), [['2016-01-04', '2019-12-31'], ['2020-01-02', '2026-09-30']]);
 });
+
+test('ST-HIST-7: Darvas-Spannweite der Balkenreihenfolge nur mit der vorregistrierten Variante ALT-INTRABAR-OPTIMISTIC', () => {
+  const a = T.runTop5(ds(), { window: WIN, costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF') });
+  assert.deepEqual(Object.keys(a.DARVAS.intrabarVariants), ['ALT-INTRABAR-OPTIMISTIC']);
+  assert.deepEqual(a.DARVAS.intrabarVariants['ALT-INTRABAR-OPTIMISTIC'].changes, { intrabarOrder: 'OPTIMISTIC' });
+  for (const k of ['TURTLE_S1', 'TURTLE_S2', 'KK_BREAKOUT', 'BUYABLE_GAP_UP']) assert.equal(a[k].intrabarVariants, undefined, `${k}: keine nicht registrierte Variante`);
+});
+
+test('ST-HIST-8: Plausibilitätsdiagnose ohne Hebel (Exposure <= 1, Cash >= 0) und mit schlechtesten Trades und Tagen', () => {
+  const a = T.runTop5(ds(), { window: WIN, costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF') });
+  for (const k of T.TOP5) {
+    const p = a[k].plausibility;
+    assert.ok(p.maxExposure <= 1 + 1e-9 && p.minCash >= -1e-6, `${k}: kein Hebel`);
+    assert.ok(Array.isArray(p.worstTrades) && Array.isArray(p.worstDays));
+    assert.ok(p.worstDays.every((d, i, arr) => i === 0 || arr[i - 1].ret <= d.ret));
+  }
+});
+
+test('ST-HIST-9: C08-Treuevariante FID-1 neben der Referenz; R-Verteilung und goldene Trades; Referenz unverändert', async () => {
+  const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
+  const d = ds();
+  const f = T.kkFidelityRun(d, { window: WIN });
+  assert.deepEqual(Object.keys(f.variants), ['FID-1', 'FID-2', 'FID-2L']);
+  assert.equal(FID.KK_FIDELITY_VARIANTS['FID-2L'].minAdv20Usd, 2.5e6);
+  for (const v of Object.values(f.variants)) {
+    assert.deepEqual(Object.keys(v.costs), ['COST-0', 'REF']);
+    assert.ok(v.costs.REF.rDistribution && 'avgWinR' in v.costs.REF.rDistribution && 'shareAbove5R' in v.costs.REF.rDistribution);
+    assert.equal(v.costs.REF.goldenTrades.length, FID.KK_GOLDEN_TRADES.length);
+  }
+  assert.throws(() => FID.createKkFidelityAdapter({ leaders: new Map(), market: new Set(), variant: 'FID-9' }), /UNKNOWN_FID_VARIANT/);
+  assert.ok(f.marketOnShare >= 0 && f.marketOnShare <= 1);
+  // Querschnitt: in drei Titeln sind die besten 2 % genau ein Titel je Datum mit voller Historie
+  const L1 = FID.momentumLeaders(d.securities);
+  assert.ok([...L1.values()].every((s) => s.size <= 3));
+  // Referenz C08 unverändert: die gepinnte Variantenregistrierung bleibt gleich
+  const KK = await import('../source-faithful/research/kk-breakout-lifecycle.mjs');
+  assert.equal(KK.KK_REFERENCE_CONFIG.entryTiming, 'NEXT_OPEN');
+  const a = T.runTop5(d, { window: WIN, costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF') });
+  assert.ok(a.KK_BREAKOUT.rDistribution && Array.isArray(a.KK_BREAKOUT.goldenTrades));
+});
