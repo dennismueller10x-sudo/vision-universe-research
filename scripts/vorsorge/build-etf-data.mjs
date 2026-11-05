@@ -120,7 +120,19 @@ function seriesFor(symbol, written) {
       total: existing.total ? { daily: Codec.decode(existing.total.daily), weekly: Codec.decode(existing.total.weekly) } : null, sources: ["tiingo:etf-ingest"] };
   }
   const s = repoSeries(symbol);
-  if (!s) return null;
+  if (!s) {
+    // Die Repository-Quellen (discover-series) fuehren seit den Umfangsfolgen vom 05.11.2026 nur noch das
+    // Aktienuniversum. Ein belegtes Nicht-Aktien-Papier (ETF, den Tiingo als "Stock" fuehrt und der darum nicht
+    // im ETF-Ingest steht) behaelt seine zuletzt veroeffentlichte Reihe mit ihrem Stand, statt aus Vorsorge zu
+    // verschwinden - bis der ETF-Ingest es selbst fuehrt. Nur fuer aktuell gelistete ETFs (seriesFor);
+    // nicht mehr gebrauchte Reihen entfernt der Aufraeumschritt unten wie bisher.
+    if (existing && existing.origin === "repository-sources" && existing.price && existing.price.daily) {
+      written.add(symbol + ".json");
+      return { record: existing, price: { daily: Codec.decode(existing.price.daily), weekly: Codec.decode(existing.price.weekly) },
+        total: null, sources: existing.sources || [] };
+    }
+    return null;
+  }
   const record = { schemaVersion: "vu-vorsorge-series-1.0.0", symbol, origin: "repository-sources", sources: s.sources,
     priceHistoryFrom: (s.weekly[0] || s.daily[0] || [null])[0], asOf: (s.daily[s.daily.length - 1] || s.weekly[s.weekly.length - 1] || [null])[0],
     observations: s.daily.length, recycledTickerSuspected: false, dividendEvents: null,
