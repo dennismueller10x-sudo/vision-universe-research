@@ -10,7 +10,7 @@ on:
     paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'elliott/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**', 'scripts/quality/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
-            '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
+            '.github/workflows/quant-ci.yml']
   pull_request:
     # Full-universe refresh PRs change well over GitHub's 300-file path-filter
     # window. Keep this workflow file in those PRs so Quant CI cannot be
@@ -18,7 +18,7 @@ on:
     paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'elliott/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**', 'scripts/quality/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
-            '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
+            '.github/workflows/quant-ci.yml']
   workflow_dispatch:
     inputs:
       recover_v8_archives:

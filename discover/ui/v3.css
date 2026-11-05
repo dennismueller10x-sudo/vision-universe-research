@@ -346,6 +346,8 @@ body.dv2 .dx-search .dx-search-hint:empty{display:none}
 .dv3 button.vu-btn,.dv3-home button.vu-btn{font-weight:800;font-family:var(--vu-font)}
 #dv3-sheet.vu-sheet-backdrop{z-index:1000}
 .dv3 .vu-seg>*,.dv3-home .vu-seg>*{font-family:var(--vu-font);font-weight:700}
+/* Dunkelmodus: Schrift auf Neongrün bleibt schwarz (Kontrast; Schritt 6 Browser-QA 390×844) */
+:root[data-theme=dark] .dv3-swipecard,:root[data-theme=dark] .dv3-swipecard b,:root[data-theme=dark] .dv3-swipecard span,:root[data-theme=dark] .vu-chip--lime,:root[data-theme=dark] .vu-chip--lime *{color:#000}
 /* D08 Benachrichtigungen (Z4 „bald“) */
 .dv3-alerts{padding:4px 14px}
 .dv3-alert{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px;border-top:1px solid var(--vu-hair)}

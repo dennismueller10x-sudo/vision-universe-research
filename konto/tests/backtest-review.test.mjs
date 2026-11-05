@@ -201,7 +201,12 @@ test('Musterportfolios: Tabelle nur aus dem Paket, Kennzeichnung immer sichtbar,
   R.renderPortfolios(doc, mount, none);
   assert.ok(mount.textContent.includes('Forschung, nicht zertifiziert') && mount.textContent.includes('Noch nicht gerechnet'));
   const m = R.portfolioModel({state: 'COMPUTED', label: 'Forschung, nicht zertifiziert', limits: ['L'], openLimits: ['O'], window: ['2012-01-06', '2026-10-02'], data: {},
-    portfolios: [{name: 'GARP', state: 'RUN', metrics: {cagr: 0.1, benchmarkCagr: 0.12, excessCagr: -0.02, annualizedVolatility: 0.15, maxDrawdown: -0.3, beta: 0.9}, construction: {averagePositions: 25}, chart: [], lastHoldings: []}]});
+    portfolios: [{name: 'GARP', state: 'RUN', metrics: {cagr: 0.1, benchmarkCagr: 0.12, excessCagr: -0.02, annualizedVolatility: 0.15, maxDrawdown: -0.3, beta: 0.9}, construction: {averagePositions: 25}, chart: [], holdings: {asOf: '2025-09-26', delayDays: 365, positions: [{ticker: 'AAA', weight: 0.05}]}}]});
   assert.deepEqual(m.rows[0], ['GARP', R.pct(0.1), R.pct(0.12), R.pct(-0.02), R.pct(0.15), R.pct(-0.3), '0,90', '25,0']);
   assert.deepEqual(m.limits, ['L', 'O']);
+  /* Owner-Linie (Plan §11): Bestand nur historisch und mit Stichtag, nie als heutige Auswahl. */
+  assert.deepEqual(m.charts[0].holdings, [{ticker: 'AAA', weight: 0.05}]); assert.equal(m.charts[0].holdingsAsOf, '2025-09-26');
+  const shown = fakeDocument(), box = shown.createElement('section');
+  R.renderPortfolios(shown, box, m);
+  assert.ok(box.textContent.includes('Historischer Bestand zum 2025-09-26') && box.textContent.includes('keine heutige Auswahl'));
 });

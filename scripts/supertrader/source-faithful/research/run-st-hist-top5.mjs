@@ -38,7 +38,7 @@ import * as ML from './minervini-lifecycle.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.9.0';
+export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.10.0';
 /** Delisting-Erlös als Sensitivität (Prüfung Strang E): echte Neuläufe mit den vorhandenen Abrechnungsszenarien der Engines
  *  (validation/portfolio.mjs SCENARIOS, Wiederanlage inklusive). 100 % = Referenz S0_LAST_PRICE, 70 % = S1_MINUS_30,
  *  S2_DISTRESS_ZERO = 0 % bei Insolvenz-Delisting, sonst 70 %. Ein Szenario „0 % für alle“ hat die Engine nicht (eine neue
@@ -280,6 +280,15 @@ export function fid4Verdict(kkFid, prereg = JSON.parse(fs.readFileSync(path.join
   return { id: prereg.id, window: windowName, costLevel: prereg.costLevel, checks, pass: Object.values(checks).every(Boolean) };
 }
 
+/** C06/C07 FID-1: Urteil je Methode nach der vorregistrierten Regel (certification/C06-C07-FID1-PREREGISTRATION.json). */
+export function minerviniFid1Verdict(fid1, prereg = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/supertrader/source-faithful/certification/C06-C07-FID1-PREREGISTRATION.json'), 'utf8')), windowName = L.WINDOW_NAME) {
+  const c = fid1?.costs?.[prereg.costLevel];
+  if (!c) return { id: prereg.id, window: windowName, status: 'NOT_COMPUTED' };
+  const m = prereg.criteria.machine, r = c.rDistribution || {};
+  const checks = { cagrAboveSpyCagr: Number.isFinite(c.cagr) && Number.isFinite(c.spyCagr) ? c.cagr > c.spyCagr : false, expectancyRAbove: Number.isFinite(r.expectancyR) ? r.expectancyR > m.expectancyRAbove : false, minClosedTrades: (r.closed ?? 0) >= m.minClosedTrades };
+  return { id: prereg.id, window: windowName, costLevel: prereg.costLevel, checks, pass: Object.values(checks).every(Boolean) };
+}
+
 /** C06/C07 Referenz auf DEV: Kennzahlen je Kostenstufe (versiegelt), R-Verteilung, Ablehnungsgründe und goldene Trades. */
 export function minerviniGoldenRun(ds, { window = L.WINDOW, costLevels = SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF' || c.id === 'COST-0'), log = () => {} } = {}) {
   const out = { methods: {} };
@@ -292,6 +301,16 @@ export function minerviniGoldenRun(ds, { window = L.WINDOW, costLevels = SF6_VAL
       m.costs[c.id] = { ...x, rDistribution: MF.rDistributionMin(run.trades), rejectionsByReason: rej, ...(c.id === 'REF' ? { golden: MF.minerviniGoldenDiagnose(ds, { strategy, setupIndex, run }) } : {}) };
       log(`minervini ${cid} ${c.id}: ${run.trades.length} trades`);
     }
+    // FID-1 (vorregistriert): RS-Gate, Tagesauswahl nach RS, FREEROLL_2R; Referenz-Engine unverändert
+    const fidIndex = MF.selectSetupIndex(ds, setupIndex), fidCfg = { ...ML.REFERENCE_CONFIG, exitPolicy: MF.MINERVINI_FID1.exitPolicy }, f = (m.fid1 = { rule: MF.MINERVINI_FID1, selected: fidIndex.counts.FID1_SELECTED, costs: {} });
+    for (const c of costLevels) {
+      const run = MX.runMinerviniLifecycle(ds, { strategy, setupIndex: fidIndex, config: fidCfg, policy: { ...MX.EQUITY_RESEARCH_PORTFOLIO_POLICY, slippageBps: c.slippageBps, commissionBps: c.commissionBps }, from: window.from, to: window.to });
+      const x = summarizeRun({ run, trades: run.trades, metricTrades: run.trades.filter((t) => t.status === 'CLOSED') }, ds);
+      const rej = {}; for (const r of run.rejections) rej[r.reason] = (rej[r.reason] || 0) + 1;
+      f.costs[c.id] = { ...x, rDistribution: MF.rDistributionMin(run.trades), rejectionsByReason: rej, ...(c.id === 'REF' ? { golden: MF.minerviniGoldenDiagnose(ds, { strategy, setupIndex: fidIndex, run }) } : {}) };
+      log(`minervini ${cid} FID-1 ${c.id}: ${run.trades.length} trades`);
+    }
+    f.verdict = minerviniFid1Verdict(f);
   }
   return out;
 }
