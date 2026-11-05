@@ -837,6 +837,22 @@
     var src = (brief && brief.sources) || {};
     var s = src.stock || await api.getStockIntelligence(ticker).catch(function () { return null; });
     if (!s) { X.recent.add(ticker); bodyHost.replaceChildren(X.notice("Daten derzeit nicht verfügbar", "Die Daten dieses Titels konnten gerade nicht geladen werden. Bitte versuche es später erneut.")); return function () {}; }
+    /* Variante B (05.11.2026): ein belegtes Nicht-Aktien-Papier (ETF, Fonds, Anleihe) ist im Verzeichnis, aber nicht
+       im Aktien-Produktuniversum. Absage mit Name und Papierart statt "nicht gefunden" - keine Kurse, keine Aktienaussage. */
+    if (s.reason === "OUTSIDE_EQUITY_UNIVERSE" && s.instrument) {
+      var inst = s.instrument, ART = { ETF: "ETF", ETN: "ETN", FUND: "Fonds", CEF: "geschlossener Fonds", DEBT: "Anleihe", WARRANT: "Optionsschein", RIGHT: "Bezugsrecht", UNIT: "Unit", PREFERRED: "Vorzugsaktie" };
+      var art = ART[inst.securityClass] || "keine Stammaktie";
+      document.title = (inst.name ? inst.name + " (" + ticker + ")" : ticker) + " – keine Aktie · Vision Universe®";
+      heroHost.append(el("section", { class: "v2-message" }, [
+        el("h1", { class: "qx-h1", text: inst.name || ticker }),
+        el("p", { class: "qx-sub", text: ticker + (inst.exchange ? " · " + inst.exchange : "") }),
+        el("span", { class: "dx-index-badge qx-tag", text: art })]));
+      bodyHost.replaceChildren(X.notice("„" + ticker + "“ ist ein " + art + ", keine Aktie",
+        "Vision Universe analysiert in Quant US-Aktien mit belegten Kurs- und SEC-Daten. " + (inst.name || ticker) + " ist laut Wertpapierstamm ein " + art +
+        " und gehört deshalb nicht zum Analyseuniversum: keine Faktoren, keine Kennzahlen und keine Aktienaussage. Das Papier bleibt in der Suche auffindbar, damit klar ist, warum es hier fehlt."),
+        X.actions([X.btn("Aktie suchen", X.routes.stocks())]));
+      return function () {};
+    }
     if (s.identityState === "UNAVAILABLE" || (s.state !== "AVAILABLE" && s.reason === "INVALID_IDENTITY")) {
       heroHost.append(el("section", { class: "v2-message" }, [el("h1", { class: "qx-h1", text: "Aktie nicht gefunden" })]));
       bodyHost.replaceChildren(X.notice("„" + ticker + "“ ist nicht im Analyseuniversum", "Quant analysiert US-Aktien mit belegten Kurs- und SEC-Daten. Fonds und ETFs wie SPY oder QQQ gehören nicht dazu – ihre Kurse findest du in Discover. Prüfe sonst das Kürzel oder suche nach dem Namen."),

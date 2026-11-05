@@ -24,6 +24,20 @@ Stand: **05.11.2026**. Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11
   - Die „fraglich“-Punkte stehen als Grenzen im Bericht.
   - Neulauf mit Umschlag-Varianten (Puffer 50, Quartal).
 
+- **E3 Edge-Studie gerechnet** (05.11., [Bericht](../research/edge/BERICHT.md)):
+  - nach eingefrorenem Protokoll, Auswahl vor dem Prüfteil festgeschrieben;
+  - vorab gewählt: Momentum Leader N20/13 Wochen, im Prüfteil 2020–2026 9,3 % p. a. gegen SPY 15,4 %;
+  - 84 Quant-Varianten „schlägt nicht“, keine mit Holm-p ≤ 0,05;
+  - 12 Supertrader-Varianten blockiert (Snapshot endet 30.09.).
+
+- **E4/S2 Signal-Studie gerechnet** (05.11., [Ergebnis](../research/signals/S2_ERGEBNIS.md)): keine Familie besser als Halten, mit und ohne DQ-K5. [Registrierung](../research/signals/S2_REGISTRIERUNG.md):
+  - dieselbe Studie wie S1, Parität 383 von 383 Trades;
+  - Stichprobe 1.000 Titel, Seed 20261105: 789 heutige, 211 delistete, Vorzugsaktien ausgeschlossen;
+  - Zeitraum 2016–2026, exakter SPY-Vergleich; 2008–2015 bleibt für eine spätere Bestätigung unberührt;
+  - Zahlen gehen versiegelt an den Owner, im Repo stehen Methodik, Abdeckung und Urteil;
+  - DQ-K5 vor dem ersten Ergebnis ergänzt (Hinweis Strang G), die Musterportfolios rechnen sie als Vorher/Nachher mit (#1434, Wirkung ≤ 0,1 Prozentpunkte CAGR).
+- **E3 Supertrader-Drawdowns geklärt** (#1421): Strang B fand keinen Fehler, Lauf 42004286201 und seine Hashes bleiben gültig. Darvas liegt zwischen −32 und −11 % p. a. Eine Liquiditätsgrenze käme nur als eigene, vorab registrierte Variante.
+
 ## Offen
 - `backtest-runner.cjs#setupOosFromCertificationPath` an A4 angleichen (berührt CODE_FILES → Demo-Neubau, eigener PR).
 - Historische Strategie- und Faktor-Backtests (Katalog-Arten) auf PIT-Basis über den Baukasten-Datenpfad.

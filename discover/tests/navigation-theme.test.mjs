@@ -78,10 +78,10 @@ test('pages with dark styles switch the scheme in the menu (Hell/Dunkel), not in
   for (const page of ['discover/index.html', 'screener/index.html', 'hedgefonds/index.html']) {
     assert.match(readFileSync(join(root, page), 'utf8'), /<vu-navigation[^>]*\btheme-switch\b/, `${page} ohne Schalter`);
   }
-  // AI Atlas: bis zum Redesign mit gemeinsamem Kopf und Schalter; als Vollbild-Werkzeug (Mockup E10) ohne Kopf,
-  // dann folgt die Seite dem gewaehlten Farbschema ueber denselben Schluessel.
+  // AI Atlas: mit Schalter im gemeinsamen Kopf oder (Vollbild-Werkzeug, Mockup E10) dem gewaehlten Farbschema ueber
+  // denselben Schluessel folgend - auch wenn der gemeinsame Kopf ohne Schalter eingebunden ist.
   const ask = readFileSync(join(root, 'ask/index.html'), 'utf8');
-  assert.ok(/<vu-navigation[^>]*\btheme-switch\b/.test(ask) || (!/<vu-navigation/.test(ask) && /vu-discover-theme-v1/.test(ask)), 'ask/index.html ohne Schalter und ohne gewaehltes Farbschema');
+  assert.ok(/<vu-navigation[^>]*\btheme-switch\b/.test(ask) || /vu-discover-theme-v1/.test(ask), 'ask/index.html ohne Schalter und ohne gewaehltes Farbschema');
 });
 
 test('der fuenfte Direktlink (Vorsorge) weicht unter 900 px, damit der Menue-Button sichtbar bleibt', () => {

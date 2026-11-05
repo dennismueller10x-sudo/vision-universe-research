@@ -1,7 +1,7 @@
 # Rechtliche Abnahme – Free/Pro, Newsletter, Kündigen, Widerrufen
 
-Stand 02.11.2026. **Keine Rechtsberatung, keine Freigabe.** Alle Texte sind Entwürfe der Fassung
-`vu-recht-2026-11-02-entwurf-2` (`workers/vu-account/src/legal/texts.mjs`, `LEGAL_STATUS = 'entwurf'`). Jede Seite trägt ein
+Stand 05.11.2026. **Keine Rechtsberatung, keine Freigabe.** Alle Texte sind Entwürfe der Fassung
+`vu-recht-2026-11-05-entwurf-3` (`workers/vu-account/src/legal/texts.mjs`, `LEGAL_STATUS = 'entwurf'`). Jede Seite trägt ein
 sichtbares Entwurfsbanner. Offene Stellen stehen im Text als **[[OFFEN: …]]** (Angabe fehlt) bzw. **[[PRÜFEN: …]]** (Wertung
 der Rechtsberatung nötig). Der Code nimmt keinen dieser Punkte als gelöst an. Ersetzt die Liste in
 [RECHTLICHE_PRUEFUNG_CHECKOUT.md](RECHTLICHE_PRUEFUNG_CHECKOUT.md).
@@ -42,6 +42,8 @@ deshalb liefert der Konto-Worker diese Seiten aus, ohne Skript, mit strenger CSP
 | Muster-Widerrufsformular | `…/rechtliches/widerrufsformular` | `DOCS.widerrufsformular` |
 | Datenschutzhinweise (Konto, Abo, Anbieter, Newsletter) | `…/rechtliches/datenschutz` | `DOCS.datenschutz` |
 | Newsletter-Hinweise (Brevo, DOI, Abmeldung) | `…/rechtliches/newsletter` | `DOCS.newsletter` |
+| Risikohinweise und Haftungsausschluss | `…/rechtliches/risikohinweise` | `DOCS.risikohinweise` |
+| Hinweise nach MAR und WpHG (Ersteller, Methodik, Interessenkonflikte) | `…/rechtliches/mar-hinweise` | `DOCS['mar-hinweise']` |
 | Kündigungsfunktion (§ 312k BGB, „Jetzt kündigen“) | `…/kuendigen` | `cancelGet/cancelPost` |
 | Elektronische Widerrufsfunktion (§ 356a BGB, „Vertrag widerrufen“ → „Widerruf bestätigen“) | `…/widerrufen` | `withdrawGet/withdrawPost` |
 
@@ -88,6 +90,7 @@ Bestätigungen auf dauerhaftem Datenträger (E-Mail über Brevo, `billing.mail_o
 | A12 | Umsatzsteuer: Ausweis, Rechnungsangaben, internationale Kunden (siehe [STEUER.md](STEUER.md)) | Preis inkl. USt (`inclusive`); Stripe Tax aktiv seit 30.10.2026 (`STRIPE_TAX_MODE = "automatic"`, `stripeTax: ok`); öffentlicher Checkout verlangt Stripe Tax | Steuerberatung | technisch umgesetzt, Bestätigung offen |
 | A13 | Stripe öffentliche Angaben: Name in der Abrechnung, Abrechnungsbeschreibung (statement descriptor), Logo, Support-Adresse; keine Privatnamen | Befund 29.10.: Firma und Kontoauszug „VISION UNIVERSE“ korrekt, kein Privatname; Support-E-Mail/-URL leer, kein Logo, keine Steuer-ID für Rechnungen | Owner (Schritte in [STRIPE_BRANDING.md](STRIPE_BRANDING.md)) | **offen** |
 | A14 | Klarna als Zahlungsart für ein 1-€-Abo (Stripe zeigt nur, was zulässig ist) | dynamische Zahlungsarten | Owner | Entscheidung offen |
+| A15 | Kapitalmarktrecht: Leistung als Analyse-Software, keine Anlageberatung/-vermittlung/Vermögensverwaltung (AGB Ziff. 2–4), Risikohinweise, MAR-Hinweise, § 86 WpHG, Pflicht-Hinweise im Frontend (`assets/legal-notices.json`) | Entwurf mit [[OFFEN]]/[[PRÜFEN]] (Fassung 3, 05.11.2026); Einordnung und Fragen in [../legal/EINORDNUNG.md](../legal/EINORDNUNG.md), [../legal/ANWALTSMAPPE.md](../legal/ANWALTSMAPPE.md) | Owner + Fachanwalt Kapitalmarktrecht | **offen** |
 
 ## Fragebogen für den Owner (R2)
 

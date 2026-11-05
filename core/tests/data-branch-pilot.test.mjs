@@ -98,3 +98,16 @@ test("DB-7 · push-data-branch.sh: legt den Zweig an, schreibt nur die genannten
   assert.equal(git(remote, "rev-parse", "main").trim(), git(work, "rev-parse", "main").trim(), "main unberuehrt");
   assert.throws(() => execFileSync("bash", [script, "main", NEWS], { cwd: work, env, stdio: "pipe" }));
 });
+
+test("DB-8 · interne Datenzweig-Pfade: Erzeuger und Workflows existieren, kein Overlay, kein Pfad in main", () => {
+  for (const d of MANIFEST.internal || []) {
+    assert.ok(existsSync(join(ROOT, ".github/workflows", d.workflow)), d.id + " Workflow");
+    assert.ok(existsSync(join(ROOT, d.producer.split(" ")[0])), d.id + " Erzeuger");
+    for (const c of d.consumers) assert.ok(existsSync(join(ROOT, ".github/workflows", c.split(" ")[0])), d.id + " Verbraucher " + c);
+    assert.ok(d.pathPrefix.endsWith("/") && !d.pathPrefix.startsWith("/"), d.id);
+    assert.ok(!MANIFEST.domains.some((x) => x.paths.some((p) => p.startsWith(d.pathPrefix))), d.id + " wird nicht ausgeliefert");
+    assert.ok(!existsSync(join(ROOT, d.pathPrefix)), d.pathPrefix + " gehoert nicht nach main");
+    const wf = readFileSync(join(ROOT, ".github/workflows", d.workflow), "utf8");
+    assert.match(wf, new RegExp("push-data-branch\\.sh data/live .*" + d.pathPrefix.replace(/\//g, "\\/")), d.id + " schreibt in den Datenzweig");
+  }
+});

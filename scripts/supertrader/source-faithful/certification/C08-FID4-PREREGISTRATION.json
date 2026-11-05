@@ -1,0 +1,34 @@
+{
+  "schema": "supertrader-preregistration-1.0.0",
+  "id": "C08-FID4-PREREG",
+  "label": "Forschung, nicht zertifiziert",
+  "registeredAt": "2026-11-05",
+  "decision": "Steuerung 05.11.2026, Weg (a): genau eine weitere, vorab festgelegte Fassung; keine weiteren Varianten danach, egal wie es ausgeht.",
+  "method": "C08 Kullamaegi Breakout",
+  "variant": "FID-4",
+  "rule": {
+    "base": "FID-3 (FID-1 plus je Tag hoechstens 3 neue Kauf-Stopps nach bestem 1/3/6-Monats-Perzentil)",
+    "riskFraction": 0.01,
+    "maxPositionWeight": 0.25,
+    "maxOpenPositions": 5,
+    "unchanged": ["Momentum-Schwelle 2 %", "Preisgrenze 5 USD", "Marktfilter SPY SMA10 > SMA20, beide steigend", "Setup CONSOLIDATION_10", "Kauf-Stopp am Niveau, Risiko hoechstens 1 ADR20", "Teilverkauf 1/3 nach 3 Sitzungen mit Breakeven, Rest unter MA10", "Kostenstufen", "DQ-K5-Quarantaene", "Delisting-Szenario S0"]
+  },
+  "costLevel": "REF",
+  "criteria": {
+    "allOf": [
+      "Netto-CAGR (Kosten REF) groesser als die CAGR der SPY-Gesamtrendite im selben Fenster",
+      "Erwartung je geschlossenem Trade groesser als 0 R (rDistribution.expectancyR, Kosten REF)",
+      "mindestens 100 geschlossene Trades"
+    ],
+    "machine": { "cagrAboveSpyCagr": true, "expectancyRAbove": 0, "minClosedTrades": 100 }
+  },
+  "sequence": [
+    { "window": "DEV", "range": "2016-01-04 bis 2026-09-30", "snapshot": "sts1-134d4d62eb88b6ff8d98fe6e56b12a6d", "runs": 1 },
+    { "window": "HOLDOUT", "range": "2008 bis 2015", "runs": 1, "onlyIf": "DEV erfuellt alle Kriterien", "approval": "Steuerung 05.11.2026, erteilt fuer genau diesen einen Lauf, sofern DEV das Kriterium erfuellt" }
+  ],
+  "verdict": {
+    "pass": "DEV und HOLDOUT erfuellen alle Kriterien",
+    "fail": "ein Kriterium in einem Fenster verfehlt; C08 wird dann als 'Erkennung je Trade, Portfolio nicht bestaetigt' abgeschlossen",
+    "publication": "Renditezahlen nur mit Owner-Freigabe"
+  }
+}
