@@ -90,6 +90,10 @@ test('ST-HIST-6: E3-Export je Methode und Fenster ab Cash, kostenfrei, mit Fills
     assert.ok(x.fills.every((f) => f.date >= w.from && f.date <= w.to), `${k} ${w.id}: keine Position vor dem Fenster`);
     for (const f of x.fills.filter((f) => f.side === 'BUY')) { assert.ok(f.securityId && f.ticker && f.shares > 0 && f.price > 0); assert.ok(f.adv20Usd === null || f.adv20Usd > 0); }
     assert.ok(Math.abs(x.curve[0].equity - 100000) < 100000 * 0.2 || x.fills.length === 0, 'Start in Cash');
+    assert.equal(x.holdings.length, x.curve.length);
+    assert.deepEqual(x.holdings[0].positions.length <= x.fills.filter((f) => f.date === x.curve[0].date && f.side === 'BUY').length, true, 'Start ohne Altbestand');
+    for (const h of x.holdings) for (const [id, n] of h.positions) assert.ok(id && n > 0, `${k} ${w.id} ${h.date}: nur positive Bestände`);
+    if (x.curve.at(-1).positions !== null) assert.equal(x.holdings.at(-1).positions.length, x.curve.at(-1).positions, `${k} ${w.id}: Bestände = Positionszahl der Engine`);
   }
   assert.deepEqual(T.EDGE_WINDOWS.map((w) => [w.from, w.to]), [['2016-01-04', '2019-12-31'], ['2020-01-02', '2026-09-30']]);
 });

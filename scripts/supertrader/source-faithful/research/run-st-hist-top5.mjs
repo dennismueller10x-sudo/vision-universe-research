@@ -148,7 +148,14 @@ export function edgeExport(ds, { methods = TOP5, windows = EDGE_WINDOWS, log = (
         const [id, date, reason] = k.split('|'); const t = sec.get(id)?.s.terminal;
         return { securityId: id, ticker: tickerOf(id), date, reason, cause: t?.cause ?? null, distress: t?.distress ?? null, delistClass: t?.delistClass ?? null, terminalDate: t?.date ?? null };
       });
-      out[key].windows[w.id] = { window: w, costs: { slippageBps: 0, commissionBps: 0 }, terminalScenario: 'S0_LAST_PRICE', initialCapital: INITIAL_CAPITAL,
+      // tägliche Bestände aus den Fills rekonstruiert (Overlay Marktfilter bei C): [securityId, Stückzahl, Schlusskurs]
+      const held = new Map(), byDate = new Map();
+      for (const f of fills) { if (f.side !== 'BUY' && f.side !== 'SELL') continue; (byDate.get(f.date) || byDate.set(f.date, []).get(f.date)).push(f); }
+      const holdings = r.run.curve.map((p) => {
+        for (const f of byDate.get(p.date) || []) { const n = (held.get(f.securityId) || 0) + (f.side === 'BUY' ? 1 : -1) * (f.shares || 0); if (Math.abs(n) < 1e-9) held.delete(f.securityId); else held.set(f.securityId, n); }
+        return { date: p.date, positions: [...held].map(([id, n]) => { const s = sec.get(id), i = s?.at.get(p.date); return [id, n, i !== undefined ? s.s.bars[i].close : null]; }) };
+      });
+      out[key].windows[w.id] = { window: w, holdings, costs: { slippageBps: 0, commissionBps: 0 }, terminalScenario: 'S0_LAST_PRICE', initialCapital: INITIAL_CAPITAL,
         curve: r.run.curve.map((p) => ({ date: p.date, equity: p.equity, cash: p.equity * (1 - (p.exposure ?? 0)), exposure: p.exposure ?? 0, positions: p.positions ?? null })),
         fills, terminals, reconciliation: r.run.reconciliation ? { pass: r.run.reconciliation.pass } : null, fillsSha256: sha(fills) };
       log(`edge ${key} ${w.id}: ${fills.length} fills`);
