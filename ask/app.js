@@ -191,6 +191,8 @@
     h('span', { class: 'ak-trust-icon' }, [icon('check')]),
     h('div', {}, [h('b', { text: 'Atlas deutet, Vision Universe rechnet.' }), h('span', { text: 'Keine erfundenen Zahlen, keine Anlageberatung.' })])
   ]));
+  /* Strang F, Hinweis „ai“ (assets/legal-notices.json): erscheint erst nach der rechtlichen Freigabe (VUUI.legal). */
+  if (U.legal && U.legal('ai')) main.appendChild(markup(U.legal('ai')));
   main.appendChild(markup(U.help('Beta: Neue Fragen pro Tag sind begrenzt; bereits gestellte Fragen kommen kostenlos aus dem Archiv. Fragen werden ohne Personenbezug gespeichert, damit wir fehlende Daten nachbauen können – bitte keine persönlichen Angaben eingeben. Die AI übersetzt nur; sie rechnet nicht und gibt keine Anlageberatung.' + (Speech ? ' Die Spracheingabe nutzt die Spracherkennung deines Browsers (in Chrome über Google-Server).' : ''))));
   /* Zurück und Schließen: zur Seite, von der Atlas geöffnet wurde (nur eigene Seiten), sonst zur Startseite. */
   (function () {
