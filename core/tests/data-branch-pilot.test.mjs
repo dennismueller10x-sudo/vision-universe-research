@@ -33,9 +33,8 @@ test("DB-1 · Steckbrief: jede Datenart ist registriert, ihr Pfad gehoert genau 
         assert.ok(existsSync(join(ROOT, p)), p + " liegt als Rueckfall in main");
         // Rueckfall muss lesbar sein; die Mindestzahl prueft die Frische-Ueberwachung, nicht dieser Test.
         assert.notEqual(inspect(readFileSync(join(ROOT, p)), contractFor(DOMAINS, p)).reason, "INVALID_JSON", p);
-      } else {
-        assert.ok(existsSync(join(ROOT, p)) || d.pendingFirstRun, p + ": BRANCH_ONLY ohne Rueckfall nur vor dem ersten Lauf");
       }
+      // BRANCH_ONLY: die Daten liegen nur im Datenzweig. Fehlt der Pfad dort, bricht der Pages-Bau ab (MISSING, DB-5).
     }
     assert.match(readFileSync(join(ROOT, ".github/workflows", d.workflow), "utf8"), /scripts\/ci\/push-data-branch\.sh/, d.workflow);
   }
