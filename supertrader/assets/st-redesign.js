@@ -225,7 +225,7 @@
       '<div class="vu-grid st-r-tiles">' + [['Muster entsteht', prep, 'vorbereitet'], ['Marke erreicht', c.TRIGGERED || 0, 'heute bestätigt'], ['Modell ist dabei', held, 'offene Positionen'], ['Abgeschlossen', c.CLOSED || 0, 'seit Start']].map(function (t) {
         return '<button type="button" class="st-r-tilebtn" data-sheet="st-life">' + U.tile(t[0], n0(t[1]), t[2]) + '</button>';
       }).join('') + '</div>' +
-      '<div class="st-r-gap">' + U.help('Ein Musterdepot ist ein Rechenmodell. Es kauft und verkauft streng nach Regel, damit man sieht, was die Methode tut. Kein echtes Geld.') + '</div>' +
+      '<div class="st-r-gap">' + U.help('Ein Musterdepot ist ein Rechenmodell. Es nimmt Aktien streng nach Regel auf und gibt sie wieder ab, damit man sieht, was die Methode tut. Kein echtes Geld.') + '</div>' +
       '<button type="button" class="st-r-link" data-sheet="st-life">Der Lebenslauf eines Signals ' + U.glyph('next', 14) + '</button>');
     addSheet('st-life', 'Der Lebenslauf eines Signals', '<p class="vu-sm vu-mu">Jedes Signal durchläuft dieselben Stationen. Nichts wird gelöscht, auch keine Verlierer.</p>' +
       LIFE.map(function (k, i) { return '<div class="st-r-life"><span class="st-r-num' + (k === 'ACTIVE' ? ' is-lime' : '') + '">' + (i + 1) + '</span><div><b>' + esc(STATE[k][0]) + '</b><span>' + esc(STATE[k][1]) + '</span><small>Fachname ' + esc(k) + '</small></div><b class="vu-num">' + n0(c[k] || 0) + '</b></div>'; }).join(''), 'Verstanden');
@@ -411,7 +411,7 @@
     append(after, kick('Protokoll seit ' + dDe(st.liveSince), 'Was bisher passiert ist') +
       '<div class="vu-grid st-r-g3">' + U.tile('Abgeschlossen', n0(X.closedCount(st)), '') + U.tile('Geplatzt', n0(st.invalidatedTotal || 0), '') + U.tile('Regelwechsel', n0(st.retiredTotal || 0), '') + '</div>' +
       (mp ? kick('Musterdepot', 'Laufend nach Regel') + '<div class="vu-box st-r-kv">' + [['Investiert', pp(mp.investedPct || 0, 0)], ['Bargeld', pp(mp.cashPct == null ? 1 : mp.cashPct, 0)], ['Positionen', (mp.openCount || 0) + ' von ' + (cfg.maxPositions || '–')], ['Risiko je Kauf', isNum(cfg.riskPerTrade) ? U.num(cfg.riskPerTrade * 100, 2) + ' %' : '–']].map(function (r) { return '<div><span>' + esc(r[0]) + '</span><b class="vu-num">' + esc(r[1]) + '</b></div>'; }).join('') + '</div>' +
-        '<div class="st-r-gap">' + U.help('Risiko je Kauf: Wird der Stop erreicht, verliert das Musterdepot höchstens ' + (isNum(cfg.riskPerTrade) ? U.num(cfg.riskPerTrade * 100, 2) + ' %' : 'den festgelegten Anteil') + ' seines Werts.') + '</div>' : '') +
+        '<div class="st-r-gap">' + U.help('Risiko je Position (Modell): Wird der Stop erreicht, verliert das Musterdepot höchstens ' + (isNum(cfg.riskPerTrade) ? U.num(cfg.riskPerTrade * 100, 2) + ' %' : 'den festgelegten Anteil') + ' seines Werts.') + '</div>' : '') +
       (fid && fidTotal ? kick('Woher die Regel stammt', 'Methodentreue') + '<div class="vu-box"><div class="st-r-fid">' + fid.filter(function (x) { return x[0]; }).map(function (x) { return '<i class="' + x[2] + '" style="flex:' + x[0] + '"></i>'; }).join('') + '</div><div class="st-r-fidl">' + fid.filter(function (x) { return x[0]; }).map(function (x) { return '<span class="' + (x[2] === 'l' || x[2] === 'k' ? '' : 'vu-mu') + '">' + x[0] + ' ' + esc(x[1]) + '</span>'; }).join('') + '</div></div>' +
         '<div class="st-r-gap">' + U.help(fidTotal + ' Regelteile: ' + fid.map(function (x) { return x[0] + ' ' + x[1]; }).join(', ') + '. ' + (s.fidelity.statusPlain || '')) + '</div>' : ''));
 
