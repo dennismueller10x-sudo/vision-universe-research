@@ -51,7 +51,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | N3 | Das Menü | fertig | #1345 (ersetzt #1331) |  |
 | N4 | Aktienkopf: Icons oder Perspektiven-Leiste? | fertig | #1346 |  |
 | N5 | Perspektive, Welt und Leiste | fertig | #1346 |  |
-| N6 | Einsteiger und Profi | offen |  |  |
+| N6 | Einsteiger und Profi | fertig | #1459 | Discover-Start liest `vu-start-v1` (Erster Start, Z1); Profi sieht das 6-Perspektiven-Raster. Die übrigen Welten zeigen Profi-Inhalte über ihre PRO-Knöpfe (Q02, W05, T04). |
 | C | Bausteine C01–C20 | fertig | #1345 (ersetzt #1331) |  |
 | E01 | Einstieg · Startseite | fertig | #1366 | Pro-Preis als „Preis ansehen“ (Startseite ohne Abruf) |
 | E02 | Mein Bereich · Willkommen | fertig | #1366 |  |
@@ -71,8 +71,8 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | D04 | Discover · Strategien | fertig | #1367 | „Täglich neu: Heute im Blick“ statt „Beliebteste“; vier Gruppen fest in v3.js bis Registry-Feld `group`; `#/strategien/<id>` |
 | D05 | Discover · Swipen | fertig | #1367 | `#/swipen` (`#/einzeln/<U>` leitet um); Zähler „1 von 400“; Leiste über #1364 |
 | D06 | Discover · Suchen | fertig | #1367 | „Bekannte Namen“ mit 12-Monats-Pille statt „Oft gesucht“ (keine Suchstatistik) |
-| D07 | Discover · Märkte | teilweise | #1367 | nur die Übersicht; `#/maerkte/<Symbol>` und Einordnung noch alt |
-| D08 | Discover · Watchlist | teilweise | #1367 | Teil: bleibt `/discover/#/watchlist`; Benachrichtigungen fehlen (Z4); „Liste bearbeiten“ |
+| D07 | Discover · Märkte | fertig | #1367, #1463 | Unterseiten `#/maerkte/<Symbol>` in der Palette. Abweichung: die Einordnung behält ihre Stufen-Skala, weil die Stufenfarben die Aussage tragen (keine Vorlage für die Unterseite). |
+| D08 | Discover · Watchlist | fertig | #1367, #1461 | Benachrichtigungen als „bald“ (Z4 braucht Owner-Freigabe des Versandwegs). Abweichung: Adresse bleibt `/discover/#/watchlist`, weil Konto-Watchlist und Discover denselben Speicher lesen. |
 | D09 | Discover · NVIDIA (Aktienseite) | fertig | #1350 | Kurs im Kopf in Anzeigewährung (€) statt $ + ≈ € (Querschnitt Währung offen); Jahresspanne in % statt $; d09-c Merken-Sheet wartet auf Benachrichtigungen (Backend) |
 | Q00 | Quant · So ist die Welt gebaut | fertig | #1412 | Methodik/Backtest unter „Quant“, Technische Lagen unter „Aktien“ (Leiste und App) |
 | Q01 | Quant · Übersicht | fertig | #1351 | Setup-Karten ohne „Schluss … $“ (Ressourcen-Budget der Startseite) |
@@ -102,8 +102,8 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | W04 | Elliott · Neu und verändert | fertig | #1356 | Schalter „Melden“ sichtbar, aus: kommt mit Z4 (Owner-Freigabe) |
 | W05 | Elliott · NVIDIA in Wellen | fertig | #1356, #1470 | Reihenfolge, Ausblick schwarz mit C08, Profi-Knopf PRO; ohne belastbare Lesart zeigt der Chart die Marktstruktur (Unterstützung neongrün, Widerstand grau, überlappend als eine Zone). Abweichung: Projektionskarte (w05-c) und Profi-Ansicht (w05-b) bleiben ausführlicher als im Mockup, weil sie die Pflichtangaben des experimentellen Elliott-Modells tragen (Status, Lesarten, Regeln, Neuzuordnungs-Risiko). |
 | ST01 | Supertrader · Übersicht | fertig | #1361 | „Neu erkannt heute“ heißt „Heute durchgerechnet“ (Stufe-3-Treffer; kein sauberer Vortagsvergleich in den Daten) |
-| ST02 | Supertrader · Methoden | teilweise | #1361 | Karten führen in die bisherige Kandidatenansicht `?sf=Cxx` (noch alter Stil) |
-| ST03 | Supertrader · Methode Minervini VCP | teilweise | #1361 | Teil: fertig für 5 Musterdepot-Methoden; bei 52W, CAN SLIM, Piotroski, Greenblatt, Namenskarten nur Kopf + „Wie belastbar?“ |
+| ST02 | Supertrader · Methoden | fertig | #1361, #1446 | Kandidatenansicht `?sf=Cxx` im Redesign-Kopf mit Kacheln und kompakten Zeilen (Stufennamen nach ST-Z). |
+| ST03 | Supertrader · Methode Minervini VCP | fertig | #1361, #1446 | Alle Methoden mit „Wie belastbar?“ und Tiefenblock; bisherige Angaben unter „Weitere Angaben dieser Methode“. |
 | ST04 | Supertrader · Signale | fertig | #1361 | „Neu am letzten Handelstag“; vor Einstieg Leiste Grenze · Kurs · Marke |
 | ST05 | Supertrader · Backtests | fertig | #1361 | „0 von 9“ aktive Regelversionen; Pilot mit S&P 500 gestrichelt, „Forschung, nicht zertifiziert“ |
 | ST06 | Supertrader · Quellen | fertig | #1361 | echte Zahlen (59 Quellen, 53 mit Adresse, 10 im Volltext) |
@@ -119,7 +119,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | H07 | Hedgefonds · NVIDIA (Perspektive Investoren) | fertig | #1357 | `#/aktie/<T>`, CUSIP leitet um; Urteil ≥ 60 % Käufe „Mehr Käufer“, ≥ 60 % Verkäufe „Mehr Verkäufer“, sonst „Ausgeglichen“ |
 | S01 | Screener · Übersicht | fertig | #1360 | Satz startet leer statt mit Beispielsatz; Ideenzahlen live aus der Engine |
 | S02 | Screener · Filter hinzufügen | fertig | #1360 | Profi: Gruppen UND/ODER bleiben; Kriterium-Sheet mit „Genau einstellen“ |
-| S03 | Screener · Treffer | fertig | #1360, (dieser PR) | „Aktie öffnen“ nach s03-b: Kopf (C04), Perspektiven-Leiste (C05), „Aus deinem Screen · Treffer k von N“ mit Urteil je Regel, dann der Inhalt der Perspektive der meistgenutzten Filter (Zahlen → Kennzahlen mit Säulen, letzte neongrün; Chart → Chart), Vor/Zurück darunter. Abweichung: bleibt ein Sheet über der Trefferliste statt eigener Seite, weil der Screener eine eigene statische App ist; so bleiben Treffer, Filter und die Screener-Leiste beim Blättern erhalten. „Aktie vollständig öffnen“ führt zur Aktienseite. |
+| S03 | Screener · Treffer | fertig | #1360, #1455 | „Aktie öffnen“ nach s03-b: Kopf (C04), Perspektiven-Leiste (C05), „Aus deinem Screen · Treffer k von N“ mit Urteil je Regel, dann der Inhalt der Perspektive der meistgenutzten Filter (Zahlen → Kennzahlen mit Säulen, letzte neongrün; Chart → Chart), Vor/Zurück darunter. Abweichung: bleibt ein Sheet über der Trefferliste statt eigener Seite, weil der Screener eine eigene statische App ist; so bleiben Treffer, Filter und die Screener-Leiste beim Blättern erhalten. „Aktie vollständig öffnen“ führt zur Aktienseite. |
 | S04 | Screener · Gespeichert | fertig | #1360 | Neu/raus aus den zwei letzten Läufen; „Im Konto speichern“ = bald bis Z3 (#1359) gemergt ist |
 | S05 | Screener · Watchlist | fertig | #1360 | `?view=saved&tab=watchlist`; „Als Screen filtern“ bald (Engine filtert keine Symbolliste) |
 | V01 | Vorsorge · Start | fertig | #1362 | Sheet „Erster Besuch“ öffnet in automatisierten Browsern nicht von selbst (`#/?lage=1` erzwingt) |
@@ -157,6 +157,16 @@ danach die übrigen `teilweise`-Folien. Vorbestehend rot auf `main` (Daten, nich
 Gemergt nach der Kette: #1391 (Z5 Methoden im Screener), #1413 (Erster Start, Atlas, Preise ohne eingefügte Navigation; sync-navigation-Ausstieg per Meta), #1411 (E09), #1410 (Q02 Profi und Eigene Bedingung, Q03 Detail, Q05 Anteile; PRO-Marke und Zeitraum-Leiste barrierefrei), #1426 (Momentaufnahme der Abfrage-Engine um die Z5-Felder). Q00 in #1412.
 Rest: N6 (Einsteiger/Profi über alle Seiten, braucht settings.experienceLevel in jeder Welt), D07 Unterseiten (keine Vorlage), D08, W05, ST02, ST03, S03, V04, V05, Q06, Q09, ST-Z; Wortwahl-Befunde aus #1405 (Strang F) als eigener PR; Schritt 6 (Dunkel, Feinschliff, Browser-QA aller Seiten gegen Ü3).
 Datenstand auf `main` (nicht Redesign): Quant Browser-QA „aktie-aaac: ETF ohne Kursverlauf“ (AAAC nicht mehr im Analyseuniversum), Security-Master-Neubau.
+
+## Stand 05.11.2026 abends
+
+Gemergt: #1444 Wortwahl Quant/Screener/Fundamental/Analysten/Hedgefonds, #1445 Wortwahl Discover, #1446 Supertrader (Wortwahl, ST-Z, ST02, ST03, Backtest-Hinweis), #1450 Q06/Q09, #1453 V04, #1454 V05, #1455 S03, #1456 Pflicht-Hinweise, #1458 Discover dunkel, #1459 N6, #1461 D08, #1463 D07, #1464 Direktlink-QA Screener, #1470 W05.
+
+Strang F (`docs/legal/WORTWAHL-BEFUNDE.md`): Befunde 1–18 in der Oberfläche umgesetzt. Die Pflicht-Hinweise aus `assets/legal-notices.json` werden von `scripts/legal/sync-legal-notices.mjs` in `assets/vu-ui.js` und `assets/site-navigation.js` gespiegelt (`--check` in CI), sichtbar erst mit `legalApproved: true` (Rechtliche Abnahme A15, Owner-Freigabe Recht).
+
+Schritt 6 (Dunkelmodus und Browser-QA, 36 Seiten × hell/dunkel bei 390×844: Konsolenfehler, Überlauf, axe-Kontrast): sauber bis auf Discover dunkel (Lime-Flächen mit weißer Schrift, behoben in #1458) und Supertrader `/supertrader/stock/NVDA/` (Urteil „keine“ 4,11:1, behoben in #1450). `/elliott/` erreicht in der lokalen Prüfung kein „networkidle“ (Dauerabfrage), mit dem Load-Ereignis fehlerfrei.
+
+Bleibende Abweichungen: S03 als Sheet über der Trefferliste; D07 Einordnung mit Stufen-Skala; D08 Adresse in Discover; W05 ohne belastbare Lesart nur Marktstruktur; Vorsorge hält ihre Karten im Dunkelmodus dunkel. Alle übrigen Folien sind fertig.
 
 ## Gemeinsame Nacharbeit aus den Welt-PRs (ein PR nach allen Berichten)
 
