@@ -8,14 +8,16 @@
 <meta name="theme-color" content="#ffffff">
 <title>Watchlist · Vision Universe</title>
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/vu-ui.css">
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/konto/konto.css">
 </head>
-<body class="ka-body" data-view="watchlist"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<body class="ka-body vu-ui" data-view="watchlist"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <main class="ka ka--wide" id="main">
-<nav class="ka-crumbs" aria-label="Pfad"><a class="ka-link" href="/mein-dashboard/">Mein Dashboard</a><span aria-hidden="true">›</span><span aria-current="page">Watchlist</span></nav>
-<h1 class="ka-title">Watchlist</h1>
-<p class="ka-lead ka-lead--tight">Alle Kennzahlen deiner gespeicherten Aktien. Kurzansicht im <a class="ka-link" href="/mein-dashboard/">Dashboard</a>.</p>
+<!-- Watchlist-Detail (Mockup E09): Profi-Ansicht von Platz 1 der Leiste „Mein Bereich“; Zurück statt Brotkrumen. -->
+<nav class="ka-back" aria-label="Zurück"><a class="ka-back-link" href="/mein-dashboard/"><span class="vu-round" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></span><b>Watchlist</b></a></nav>
+<h1 class="ka-title">Alle Kennzahlen <span class="vu-pro">PRO</span></h1>
+<p class="ka-lead ka-lead--tight">Tiefe je Aktie: Faktoren, Signale, deine Notiz. Kurzansicht in <a class="ka-link" href="/mein-dashboard/">Mein Dashboard</a>.</p>
 
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
 <div class="ka-skeleton" id="wl-loading" aria-hidden="true"></div>
