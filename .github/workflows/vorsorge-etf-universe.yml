@@ -31,6 +31,10 @@ on:
       per_hour:
         description: 'Anfragen je Stunde (Drossel)'
         default: '4500'
+      nur_zusatz:
+        description: 'Nur die Zusatz-ETFs (Company Master CONFIRMED_NON_EQUITY:ETF), nicht die ganze Tickerliste'
+        type: boolean
+        default: false
   push:
     branches:
       - 'claude/**'
@@ -96,7 +100,11 @@ jobs:
       - name: ETF-Universum von Tiingo aufnehmen
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
-        run: node scripts/vorsorge/ingest-tiingo-etfs.mjs --limit "${{ steps.params.outputs.limit }}" --per-hour "${{ steps.params.outputs.per_hour }}" --max-minutes 290
+          IN_NUR_ZUSATZ: ${{ github.event.inputs.nur_zusatz }}
+        run: |
+          extra=""
+          if [ "$IN_NUR_ZUSATZ" = "true" ]; then extra="--only-extra"; fi
+          node scripts/vorsorge/ingest-tiingo-etfs.mjs --limit "${{ steps.params.outputs.limit }}" --per-hour "${{ steps.params.outputs.per_hour }}" --max-minutes 290 $extra
 
       - name: Arbeitsablage sichern (auch bei Abbruch)
         if: always()
