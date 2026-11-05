@@ -47,7 +47,7 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
 ## Offen
 - **Insider, Schritt 2:** nach dem ersten grünen Wochenlauf der Eigentümer-Signale mit gesätem Cache lesen Verbraucher nur noch eine Quelle; die eigene Abholung der Eigentümer-Signale bleibt Lückenfüller (Form 5, Ausfälle).
 - **Bündelung, nächste Schritte:**
-  - `pipeline-intraday`: der Cloudflare-Wecker startet `intraday-pacemaker.yml` und `discover-im-blick-live.yml` per Dateiname. Reihenfolge: Bündel-Workflow anlegen → Wecker auf den neuen Namen umstellen und ausrollen → alte Dateien löschen.
+  - `pipeline-intraday`: der Cloudflare-Wecker startet `intraday-pacemaker.yml` und `discover-im-blick-live.yml` per Dateiname. Er prüft außerdem je Datei, ob schon ein Lauf aktiv ist (`laeuftSchon`); in einem gemeinsamen Workflow hielte ein laufender Taktgeber-Block (bis 345 min) „Im Blick“ an. Deshalb: Bündel-Workflow mit `run-name` je Teil anlegen → Wecker filtert Läufe nach `display_title` und startet den neuen Namen (Test in `worker-waker/tests`) → ausrollen (`cloudflare-waker-deploy.yml`) → alte Dateien löschen.
   - `pipeline-daily` (17 Workflows, `workflow_run`-Ketten nach Namen): zuerst die Kette als Liste mit Auslösern, dann Stufe für Stufe.
   - `ci` (26): eine `ci.yml` mit Auswahl-Job wie `monitor`; `product-contracts.json` zeigt dann auf Jobs statt Dateien.
   - Rest-Kandidaten nach Gate-Umbau: supertrader-delisting-probe; `monitor` noch ohne freshness-monitor, fundamental-sec-freshness, supertrader-live-smoke, company-intelligence-health/-watchdog.
