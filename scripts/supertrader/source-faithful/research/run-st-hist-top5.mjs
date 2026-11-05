@@ -211,14 +211,16 @@ export function edgeExport(ds, { methods = TOP5, windows = EDGE_WINDOWS, log = (
 /** C08-Treueprüfung: Variante FID-1 (research/kk-breakout-fidelity.mjs) zu Referenz- und Nullkosten, mit R-Verteilung und
  *  goldenen Trades; die Referenz C08 bleibt unverändert. */
 export function kkFidelityRun(ds, { window = L.WINDOW, costLevels = SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF' || c.id === 'COST-0'), log = () => {} } = {}) {
-  const leaders = FID.momentumLeaders(ds.securities), market = FID.marketOn(ds.benchmark);
-  const adapter = FID.createKkFidelityAdapter({ leaders, market }), config = FID.KK_FIDELITY_CONFIG;
-  const prepared = prepareAll(ds, adapter, config), out = { version: FID.KK_FIDELITY_VERSION, rules: FID.KK_FIDELITY_RULES, marketOnShare: ds.benchmark.length ? market.size / ds.benchmark.length : null, costs: {} };
-  for (const c of costLevels) {
-    const run = runResearchLifecycle(ds, { adapter, config, policy: { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, slippageBps: c.slippageBps, commissionBps: c.commissionBps }, prepared, from: window.from, to: window.to });
-    const x = summarizeRun({ run, trades: run.trades, metricTrades: run.trades.filter((t) => t.status === 'CLOSED') }, ds);
-    out.costs[c.id] = { ...x, rDistribution: FID.rDistribution(run.trades), ...(c.id === 'REF' ? { goldenTrades: FID.goldenTradeCheck(run.trades, FID.KK_GOLDEN_TRADES), exitCensus: exitCensus({ run }) } : {}) };
-    log(`kk-fid1 ${c.id}: ${run.trades.length} trades`);
+  const leaders = FID.momentumLeaders(ds.securities), market = FID.marketOn(ds.benchmark), config = FID.KK_FIDELITY_CONFIG;
+  const out = { version: FID.KK_FIDELITY_VERSION, rules: FID.KK_FIDELITY_RULES, marketOnShare: ds.benchmark.length ? market.size / ds.benchmark.length : null, variants: {} };
+  for (const variant of Object.keys(FID.KK_FIDELITY_VARIANTS)) {
+    const adapter = FID.createKkFidelityAdapter({ leaders, market, variant }), prepared = prepareAll(ds, adapter, config), v = (out.variants[variant] = { definition: FID.KK_FIDELITY_VARIANTS[variant], costs: {} });
+    for (const c of costLevels) {
+      const run = runResearchLifecycle(ds, { adapter, config, policy: { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, slippageBps: c.slippageBps, commissionBps: c.commissionBps }, prepared, from: window.from, to: window.to });
+      const x = summarizeRun({ run, trades: run.trades, metricTrades: run.trades.filter((t) => t.status === 'CLOSED') }, ds);
+      v.costs[c.id] = { ...x, rDistribution: FID.rDistribution(run.trades), ...(c.id === 'REF' ? { goldenTrades: FID.goldenTradeCheck(run.trades, FID.KK_GOLDEN_TRADES), exitCensus: exitCensus({ run }) } : {}) };
+      log(`kk-${variant} ${c.id}: ${run.trades.length} trades`);
+    }
   }
   return out;
 }

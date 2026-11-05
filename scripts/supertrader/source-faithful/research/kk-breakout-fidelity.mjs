@@ -16,6 +16,14 @@
  *                mehr als ATR gestiegen“). Ab dem Schluss des Kauftags gilt der Stopp am Tagestief (KK-012), falls höher.
  * Unverändert aus der Referenz: Setup-Proxy CONSOLIDATION_10 (Vorlauf >= 30 % in 63 Sitzungen, MA10/20 steigend),
  * Teilverkauf 1/3 nach 3 Sitzungen mit Breakeven, Rest am ersten Schluss unter MA10 (KK-013/014), Risiko 0,5 %, Kappe.
+ * FID-2 (vor dem ersten Lauf festgelegt, unabhängige Prüfung Strang E, PR #1417) ergänzt FID-1 um:
+ *  FID2-QUALITY  Setup-Qualität: höhere Tiefs (Tief der letzten 5 Sitzungen der Konsolidierung > Tief der ersten 5) und
+ *                enger werdende Spanne (Spanne der letzten 5 < Spanne der ersten 5) („orderly pullback, higher lows,
+ *                tightening“, 3-Setups-Artikel); die Fünfer-Teilung ist eine VU-Konvention.
+ *  FID2-ADR      Risiko gleich normiert wie ADR20 (Hoch/Tief - 1, relativ zum Tief): Stopp = Niveau / (1 + ADR20).
+ *  FID2-TRAIL    Rest am ersten Schluss unter MA10 bei schnellen, unter MA20 bei langsamen Titeln („10-day for fast,
+ *                20-day for slower movers“, Interview); schnell = ADR20 beim Einstieg >= 5 % (VU-Konvention, sein Beispiel
+ *                „5 % ADR“).
  * Bewertet wird nur auf DEV; der HOLDOUT 2008–2015 wird später einmalig mit dieser festgeschriebenen Regel geprüft.
  */
 import { fin, smaAt, priorHigh } from '../common/series.mjs';
@@ -23,7 +31,8 @@ import { adr20, KK_PARAMS } from '../methods/kullamagi.mjs';
 import { eligibilityResult, STUDY_LABEL } from './lifecycle-engine.mjs';
 import { KK_SETUP_PROXIES, KK_EXIT_POLICIES, KK_OPEN_MANUAL_DECISIONS } from './kk-breakout-lifecycle.mjs';
 
-export const KK_FIDELITY_VERSION = 'kk-breakout-fidelity-1.0.0';
+export const KK_FIDELITY_VERSION = 'kk-breakout-fidelity-1.1.0';
+export const KK_FIDELITY_VARIANTS = Object.freeze({ 'FID-1': Object.freeze({ quality: false, adrNorm: 'ENTRY', trail: 'MA10' }), 'FID-2': Object.freeze({ quality: true, adrNorm: 'LOW', trail: 'TEMPO', fastAdrPct: 5 }) });
 export const KK_FIDELITY_RULES = Object.freeze({
   id: 'FID-1', momentumTopPct: 2, universeMinRawClose: 5, marketSma: [10, 20], marketSlopeSessions: 5,
   setupProxy: 'CONSOLIDATION_10', exitPolicy: 'PARTIAL3_THIRD_BE_MA10', riskFraction: 0.005, maxRiskAdr: 1,
@@ -66,7 +75,7 @@ export function marketOn(benchmark, { sma = KK_FIDELITY_RULES.marketSma, slope =
 }
 
 /** Setup am Schluss i für einen Kauf-Stopp in i+1: Konsolidierung noch nicht gebrochen, Niveau = Hoch der 10 Sitzungen bis i. */
-export function kkFidelitySetupAt(bars, i, proxy = KK_SETUP_PROXIES.CONSOLIDATION_10) {
+export function kkFidelitySetupAt(bars, i, proxy = KK_SETUP_PROXIES.CONSOLIDATION_10, { quality = false } = {}) {
   const W = proxy.window, b = bars[i];
   if (i < W + proxy.priorMoveSessions + 1 || !fin(b?.close) || !fin(b.low)) return null;
   const level = priorHigh(bars, i + 1, W); // höchstes Hoch der Sitzungen i-W+1 .. i, am Schluss i bekannt
@@ -78,46 +87,58 @@ export function kkFidelitySetupAt(bars, i, proxy = KK_SETUP_PROXIES.CONSOLIDATIO
   if (!(priorMove >= proxy.priorMove)) return null;
   const rising = (n) => { const a = smaAt(bars, i, n), c = smaAt(bars, i - 5, n); return fin(a) && fin(c) ? a > c : null; };
   if (proxy.maRising && !(rising(10) === true && rising(20) === true)) return null;
+  if (quality) {
+    // FID2-QUALITY: Konsolidierung = Sitzungen s .. i (W Sitzungen); erste und letzte fünf
+    const lowOf = (a, z) => { let v = Infinity; for (let k = a; k <= z; k++) { const l = bars[k].low; if (!fin(l)) return null; v = Math.min(v, l); } return v; };
+    const highOf = (a, z) => { let v = -Infinity; for (let k = a; k <= z; k++) { const h = bars[k].high; if (!fin(h)) return null; v = Math.max(v, h); } return v; };
+    const h = Math.floor(W / 2), l1 = lowOf(s, s + h - 1), l2 = lowOf(i - h + 1, i), r1 = highOf(s, s + h - 1) - l1, r2 = highOf(i - h + 1, i) - l2;
+    if (![l1, l2, r1, r2].every(fin) || !(l2 > l1) || !(r2 < r1)) return null;
+  }
   const adrNext = adr20(bars, i + 1);
   if (!fin(adrNext)) return null;
   return { i, date: b.date, level, priorMove, adr20: adrNext };
 }
 
 /** Adapter für research/lifecycle-engine.mjs; leaders und market kommen aus momentumLeaders / marketOn (Querschnitt). */
-export function createKkFidelityAdapter({ leaders, market }) {
+export function createKkFidelityAdapter({ leaders, market, variant = 'FID-1' }) {
+  const V = KK_FIDELITY_VARIANTS[variant];
+  if (!V) throw new Error(`UNKNOWN_FID_VARIANT ${variant}`);
   return Object.freeze({
-    strategy: 'KK_BREAKOUT_FID1', version: KK_FIDELITY_VERSION, methodVersion: KK_FIDELITY_VERSION, label: STUDY_LABEL.MODEL,
+    strategy: `KK_BREAKOUT_${variant.replace('-', '')}`, version: KK_FIDELITY_VERSION, methodVersion: KK_FIDELITY_VERSION, label: STUDY_LABEL.MODEL,
     sourceMaxPositionWeight: KK_PARAMS.overnightCap,
     validateConfig: (cfg) => (cfg.entryTiming === 'BUY_STOP_LEVEL' && KK_EXIT_POLICIES[cfg.exitPolicy] && KK_SETUP_PROXIES[cfg.setupProxy] ? [] : ['FID_CONFIG']),
-    prepareKey: (cfg) => `${cfg.setupProxy}|FID1`,
+    prepareKey: (cfg) => `${cfg.setupProxy}|${variant}`,
     closeEntry: () => false,
     prepare(security, cfg) {
       const proxy = KK_SETUP_PROXIES[cfg.setupProxy], bars = security.bars, setups = new Map();
       for (let i = 0; i < bars.length; i++) {
         const d = bars[i].date;
         if (!market.has(d) || !leaders.get(d)?.has(security.id)) continue;
-        const s = kkFidelitySetupAt(bars, i, proxy); if (s) setups.set(i, s);
+        const s = kkFidelitySetupAt(bars, i, proxy, { quality: V.quality }); if (s) setups.set(i, s);
       }
       return setups.size ? { setups, bars } : null;
     },
     signalAt(ctx, i) { return ctx.setups.get(i) ?? null; },
     eligibility({ setup, bars, i }) {
-      const stop = setup.level * (1 - (KK_FIDELITY_RULES.maxRiskAdr * setup.adr20) / 100);
-      return eligibilityResult({ strategy: 'KK_BREAKOUT_FID1', bars, i, blockers: [], openManualDecisions: KK_OPEN_MANUAL_DECISIONS,
-        order: { type: 'BUY_STOP', level: setup.level, stop, maxPlannedLoss: (KK_FIDELITY_RULES.maxRiskAdr * setup.adr20) / 100, rule: 'FID-ENTRY Kauf-Stopp am Niveau, Risiko <= 1 ADR20' } });
+      const a = (KK_FIDELITY_RULES.maxRiskAdr * setup.adr20) / 100;
+      const stop = V.adrNorm === 'LOW' ? setup.level / (1 + a) : setup.level * (1 - a);
+      const maxLoss = V.adrNorm === 'LOW' ? 1 - 1 / (1 + a) : a;
+      return eligibilityResult({ strategy: `KK_BREAKOUT_${variant.replace('-', '')}`, bars, i, blockers: [], openManualDecisions: KK_OPEN_MANUAL_DECISIONS,
+        order: { type: 'BUY_STOP', level: setup.level, stop, maxPlannedLoss: maxLoss, rule: `FID-ENTRY Kauf-Stopp am Niveau, Risiko <= 1 ADR20 (${V.adrNorm})` }, extra: { adr20: setup.adr20 } });
     },
     onClose(pos, ctx, i, api, cfg) {
       const P = KK_EXIT_POLICIES[cfg.exitPolicy], bars = ctx.bars, c = bars[i].close;
       const after = i - pos.entryIndex;
       if (after === 0 && fin(bars[i].low)) api.raiseStop(bars[i].low, 'KK-012-LOD'); // Stopp am Tagestief ab der Folgesitzung
+      if (after === 0) { const ad = adr20(bars, i); pos.state.trailMa = V.trail === 'TEMPO' ? (fin(ad) && ad >= V.fastAdrPct ? 10 : 20) : P.trailMa; }
       if (!fin(c)) return;
       if (P.partialAfter && !pos.state.partialDone && after >= P.partialAfter) {
         pos.state.partialDone = true;
         if (c > pos.entry) { api.scheduleExit(P.partialFraction, 'KK_PARTIAL_AFTER_DAYS'); api.raiseStop(pos.entry, 'KK-013-BREAKEVEN'); }
       }
       if (P.partialAfter && after < P.partialAfter) return;
-      const m = smaAt(bars, i, P.trailMa);
-      if (fin(m) && c < m) api.scheduleExit(1, `KK_TRAIL_CLOSE_BELOW_MA${P.trailMa}`);
+      const n = pos.state.trailMa ?? P.trailMa, m = smaAt(bars, i, n);
+      if (fin(m) && c < m) api.scheduleExit(1, `KK_TRAIL_CLOSE_BELOW_MA${n}`);
     },
   });
 }
