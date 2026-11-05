@@ -162,3 +162,17 @@ test('ST-HIST-10: Diagnose der goldenen Trades folgt kkFidelitySetupAt Schritt f
   const w = fs.readFileSync(new URL('../../../.github/workflows/supertrader-st-hist-top5.yml', import.meta.url), 'utf8');
   assert.match(w, /options: \[backtest, edge-export, golden-diagnose\]/);
 });
+
+test('ST-HIST-11: Ausführungsdiagnose der goldenen Trades: Setups, Ablehnungen mit Grund, offene Positionen, keine Renditezahl', async () => {
+  const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
+  const d = ds(), leaders = FID.momentumLeaders(d.securities), market = FID.marketOn(d.benchmark);
+  const golden = [{ ticker: 'CCC', date: '2016-09-15', source: 'Test' }];
+  const x = T.goldenExecution(d, { leaders, market, golden, window: WIN })['CCC|2016-09-15'];
+  assert.deepEqual(Object.keys(x), ['FID-1', 'FID-2', 'FID-2L']);
+  for (const v of Object.values(x)) {
+    assert.ok(Array.isArray(v.setupDays) && Array.isArray(v.rejections) && Array.isArray(v.trades));
+    assert.equal(v.maxOpenPositions, 20);
+    assert.ok(Object.values(v.openPositions).every((n) => n === null || (n >= 0 && n <= 20)));
+  }
+  assert.doesNotMatch(JSON.stringify(x), /pnl|equity|totalReturn|cagr/);
+});
