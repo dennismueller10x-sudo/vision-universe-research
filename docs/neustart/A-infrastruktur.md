@@ -1,4 +1,4 @@
-# Strang A – Infrastruktur (Stand 04.11.2026, 20:15 UTC)
+# Strang A – Infrastruktur (Stand 05.11.2026, morgens)
 
 Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/workflows`, `scripts/ci`, `scripts/core`, `core/registry`, dieses Dokument.
 
@@ -20,12 +20,26 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - `system-health`: US-Wertpapierstamm OK;
   - Generation 1.3.0 eingefroren (#1347).
 - **Datenzweig-Pilot News** (#1348, Phase DUAL_WRITE): `data/live` enthält nur `dashboard/data/news_feed.json`. Der ausgelieferte Pages-Lauf 41890840080 meldet `IDENTICAL 1`, vollständig.
+- **Produktuniversum mit Gate** (#1376): `security-master-eligibility.yml` und `scripts/core/eligibility-gate.mjs`. Ein Commit gibt es nur bei Gate COMMIT. Heute ist das Gate BLOCKED (siehe Offen). Core auf `main` ist wieder grün: `stock-availability` hatte AAL fest als Beispiel.
+- **Bündel-Verzeichnis:** `core/registry/workflow-bundles.json` ordnet allen 141 Workflows eines von 12 Ziel-Bündeln zu. `core/tests/workflow-bundles.test.mjs` verlangt diese Zuordnung für jeden neuen Workflow. Ein Bündel ersetzt seine Quellen erst, wenn sie gelöscht sind. `quant-portfolio-research.yml` (Strang C) ist dem Bündel `research` zugeordnet.
 
 ## Offen
-- Datenzweig: Abnahme nach 7 Tagen nur `IDENTICAL` (bis 11.11.), dann News auf BRANCH_ONLY; nächste Datenarten Analyst Ratings, Market Pulse.
-- `eligibility.json` (Statusseite „Security Master“) ist seit 20.10. STALE. Eigener Erzeuger `build-us-eligibility.mjs`, kein Zeitplan. Nächster Schritt: einen Lauf mit Gate einplanen.
+- **Insider-Käufe E2:**
+  - In #1369 habe ich einen Fehler gefunden und behoben: dieselbe Einreichung wurde unter mehreren CIKs doppelt gezählt.
+  - Live-Lauf 03.11.: 820 Einreichungen, 63 Käufe, 3:48 min.
+  - Die Einbindung in den SEC-Tageslauf, nur im Datenzweig, steht in #1378 und wird nach #1369 gemergt.
+  - **Überschneidung:** `ownership-signals.yml` baut schon wöchentlich Insider-Transaktionen (`quant/data/product/ownership-signals-v1/`). E2 ergänzt die tagesgenaue Point-in-Time-Verfügbarkeit. Empfehlung: Beide wachsen im Bündel `pipeline-weekly`/`pipeline-daily` zu einem Erzeuger zusammen. Bis dahin hat E2 noch keinen Konsumenten.
+- **Produktuniversum nachholen:**
+  - Gegen den Stamm 1.3.0 ergibt der Erzeuger 473 Statuswechsel, davon 129 ELIGIBLE→EXCLUDED, und ein Produktuniversum von 6.686 auf 6.739.
+  - Das geht nur über einen eigenen PR mit Vorher/Nachher je Produkt (Discover, Faktoren, Screener).
+  - Danach den Zeitplan einschalten, im Anschluss an den Security-Master-Lauf.
+- **Bündelung:**
+  - erster Kandidat ist `content` (7 Workflows, alle nur Datei-Commits);
+  - danach `monitor`;
+  - 14 Workflows sind als Löschkandidaten markiert (Einmal-Läufe, Proben, Altpfade).
+- **Datenzweig:** Abnahme News am 11.11. (7 Tage nur `IDENTICAL`).
 - Folgearbeiten an 1.3.0 (Strang C): #1119 (H6), optional H7.
-- Die PR-Liste unten wartet auf die Bestätigung der Steuerungssitzung.
+- PR-Liste: liegt beim Owner zur Bestätigung, bis dahin wird nichts geschlossen.
 
 ## Braucht Owner
 - Nichts Neues.

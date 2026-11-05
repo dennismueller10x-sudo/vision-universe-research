@@ -1,0 +1,505 @@
+{
+ "schema": "vu-workflow-bundles-1",
+ "purpose": "Zielbild Plan Neustart §3: ca. 12 Workflows. Jede Datei in .github/workflows hat hier ein Ziel-Buendel. Ein Buendel-Workflow ersetzt seine Quellen erst, wenn er sie in 'replaces' nennt und die Quellen geloescht sind (core/tests/workflow-bundles.test.mjs).",
+ "bundles": {
+  "ci": {
+   "purpose": "Pruef-Workflows (Tests, Gates) als eine Matrix je Produkt",
+   "workflow": null,
+   "replaces": []
+  },
+  "deploy": {
+   "purpose": "Auslieferung: Pages, Cloudflare-Worker",
+   "workflow": null,
+   "replaces": []
+  },
+  "pipeline-daily": {
+   "purpose": "Tageskette nach US-Schluss: Kurse, Faktoren, Discover, Technical, Supertrader, SEC-Tagesindex",
+   "workflow": null,
+   "replaces": []
+  },
+  "pipeline-intraday": {
+   "purpose": "Takt waehrend der Sitzung: Snapshots, Im Blick, Realtime",
+   "workflow": null,
+   "replaces": []
+  },
+  "pipeline-weekly": {
+   "purpose": "Wochenlaeufe: Security Master, Universum, lange Reihen, Index, Eigentuemer-Signale",
+   "workflow": null,
+   "replaces": []
+  },
+  "content": {
+   "purpose": "Redaktionelle Daten: News, Ratings, Morning, Hedgefonds, Dashboard",
+   "workflow": null,
+   "replaces": []
+  },
+  "monitor": {
+   "purpose": "Waechter und Alarme: Freshness, Live-Smoke, Health",
+   "workflow": null,
+   "replaces": []
+  },
+  "account": {
+   "purpose": "Konten, Abos, Brevo",
+   "workflow": null,
+   "replaces": []
+  },
+  "social": {
+   "purpose": "Social und Reels",
+   "workflow": null,
+   "replaces": []
+  },
+  "app": {
+   "purpose": "native App",
+   "workflow": null,
+   "replaces": []
+  },
+  "research": {
+   "purpose": "manuelle Forschungslaeufe und Studien",
+   "workflow": null,
+   "replaces": []
+  },
+  "maintenance": {
+   "purpose": "manuelle Betriebswerkzeuge, Diagnosen, Einmal-Laeufe",
+   "workflow": null,
+   "replaces": []
+  }
+ },
+ "workflows": {
+  "account-backup.yml": {
+   "bundle": "account"
+  },
+  "account-cancellations.yml": {
+   "bundle": "account"
+  },
+  "account-ci.yml": {
+   "bundle": "ci"
+  },
+  "account-db-approved.yml": {
+   "bundle": "account"
+  },
+  "account-monitor.yml": {
+   "bundle": "account"
+  },
+  "account-production-auth.yml": {
+   "bundle": "account"
+  },
+  "account-production-auto.yml": {
+   "bundle": "account"
+  },
+  "account-production-checks.yml": {
+   "bundle": "account"
+  },
+  "account-production-deploy.yml": {
+   "bundle": "account"
+  },
+  "account-production-stripe.yml": {
+   "bundle": "account"
+  },
+  "app-ios-testflight.yml": {
+   "bundle": "app"
+  },
+  "ask-ci.yml": {
+   "bundle": "ci"
+  },
+  "brand-media-higgsfield-images.yml": {
+   "bundle": "maintenance"
+  },
+  "brand-media-higgsfield.yml": {
+   "bundle": "maintenance"
+  },
+  "brevo-admin.yml": {
+   "bundle": "account"
+  },
+  "brevo-ci.yml": {
+   "bundle": "ci"
+  },
+  "brevo-internal-membership.yml": {
+   "bundle": "account"
+  },
+  "brevo-newsletter.yml": {
+   "bundle": "account"
+  },
+  "build-morning.yml": {
+   "bundle": "content"
+  },
+  "ci-config.yml": {
+   "bundle": "ci"
+  },
+  "cloudflare-ask-deploy.yml": {
+   "bundle": "deploy"
+  },
+  "cloudflare-deploy.yml": {
+   "bundle": "deploy"
+  },
+  "cloudflare-probe.yml": {
+   "bundle": "maintenance",
+   "retireCandidate": true
+  },
+  "cloudflare-proof.yml": {
+   "bundle": "monitor"
+  },
+  "cloudflare-waker-deploy.yml": {
+   "bundle": "deploy"
+  },
+  "cloudflare-waker-proof.yml": {
+   "bundle": "monitor"
+  },
+  "company-intelligence-health.yml": {
+   "bundle": "monitor"
+  },
+  "company-intelligence-profile-source.yml": {
+   "bundle": "research"
+  },
+  "company-intelligence-refreeze-auto.yml": {
+   "bundle": "research"
+  },
+  "company-intelligence-refresh-watchdog.yml": {
+   "bundle": "monitor"
+  },
+  "company-intelligence-refresh.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "company-intelligence-universe-release.yml": {
+   "bundle": "research"
+  },
+  "company-intelligence.yml": {
+   "bundle": "ci"
+  },
+  "company-logos.yml": {
+   "bundle": "pipeline-weekly"
+  },
+  "company-names.yml": {
+   "bundle": "pipeline-weekly"
+  },
+  "core-ci.yml": {
+   "bundle": "ci"
+  },
+  "coverage-metrics.yml": {
+   "bundle": "pipeline-weekly"
+  },
+  "creative-job-guard.yml": {
+   "bundle": "ci"
+  },
+  "currency-fx-verify.yml": {
+   "bundle": "ci"
+  },
+  "currency-production-proof.yml": {
+   "bundle": "monitor"
+  },
+  "currency-realtime-proof.yml": {
+   "bundle": "pipeline-intraday"
+  },
+  "diagnose-adjustment-steps.yml": {
+   "bundle": "maintenance",
+   "retireCandidate": true
+  },
+  "discover-ci.yml": {
+   "bundle": "ci"
+  },
+  "discover-frontend-ci.yml": {
+   "bundle": "ci"
+  },
+  "discover-im-blick-live.yml": {
+   "bundle": "pipeline-intraday"
+  },
+  "discover-live-smoke.yml": {
+   "bundle": "monitor"
+  },
+  "discover-realtime-qa.yml": {
+   "bundle": "monitor"
+  },
+  "elliott-prospective-registry.yml": {
+   "bundle": "research"
+  },
+  "emerging-leaders-study.yml": {
+   "bundle": "research"
+  },
+  "etf-dashboard-ci.yml": {
+   "bundle": "ci"
+  },
+  "europe-discover-refresh.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "europe-discover-release-qa.yml": {
+   "bundle": "monitor"
+  },
+  "freshness-monitor.yml": {
+   "bundle": "monitor"
+  },
+  "fundamental-ci.yml": {
+   "bundle": "ci"
+  },
+  "fundamental-sec-freshness.yml": {
+   "bundle": "monitor"
+  },
+  "fx-ecb-daily.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "hedgefonds-dashboard-ci.yml": {
+   "bundle": "ci"
+  },
+  "history-store-sync.yml": {
+   "bundle": "maintenance"
+  },
+  "home-refresh.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "index-membership.yml": {
+   "bundle": "pipeline-weekly"
+  },
+  "intraday-delivery-watchdog.yml": {
+   "bundle": "pipeline-intraday"
+  },
+  "intraday-pacemaker.yml": {
+   "bundle": "pipeline-intraday"
+  },
+  "intraday-snapshots.yml": {
+   "bundle": "pipeline-intraday"
+  },
+  "landing-ci.yml": {
+   "bundle": "ci"
+  },
+  "landing-cloudflare-audit.yml": {
+   "bundle": "maintenance"
+  },
+  "landing-cloudflare-prepare.yml": {
+   "bundle": "maintenance"
+  },
+  "landing-pages-publish.yml": {
+   "bundle": "deploy"
+  },
+  "long-series.yml": {
+   "bundle": "pipeline-weekly"
+  },
+  "market-data-refresh.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "market-data.yml": {
+   "bundle": "maintenance",
+   "retireCandidate": true
+  },
+  "market-validation-data.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "marketstack-diagnostics-once.yml": {
+   "bundle": "maintenance",
+   "retireCandidate": true
+  },
+  "multi-asset-data.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "ownership-signals.yml": {
+   "bundle": "pipeline-weekly"
+  },
+  "pages-release.yml": {
+   "bundle": "deploy"
+  },
+  "pattern-research-volume.yml": {
+   "bundle": "research"
+  },
+  "product-intelligence-materialization.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "quant-ci.yml": {
+   "bundle": "ci"
+  },
+  "quant-portfolio-research.yml": {
+   "bundle": "research"
+  },
+  "quant-v13-archive.yml": {
+   "bundle": "research"
+  },
+  "r2-audit.yml": {
+   "bundle": "maintenance"
+  },
+  "realtime-production-smoke.yml": {
+   "bundle": "monitor"
+  },
+  "research-access-ci.yml": {
+   "bundle": "ci"
+  },
+  "screener-ci.yml": {
+   "bundle": "ci"
+  },
+  "sec-consumer-fundamentals.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "sec-fundamentals-ci.yml": {
+   "bundle": "ci"
+  },
+  "sec-fundamentals-daily.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "sec-fundamentals-universe.yml": {
+   "bundle": "research"
+  },
+  "sec-sic-history.yml": {
+   "bundle": "pipeline-weekly"
+  },
+  "security-master-eligibility.yml": {
+   "bundle": "pipeline-weekly"
+  },
+  "security-master-weekly.yml": {
+   "bundle": "pipeline-weekly"
+  },
+  "shell-ci.yml": {
+   "bundle": "ci"
+  },
+  "social-ci.yml": {
+   "bundle": "ci"
+  },
+  "social-cloudflare.yml": {
+   "bundle": "social"
+  },
+  "social-external-intelligence.yml": {
+   "bundle": "social"
+  },
+  "social-external-observe.yml": {
+   "bundle": "social"
+  },
+  "social-hashtag-capability.yml": {
+   "bundle": "social",
+   "retireCandidate": true
+  },
+  "social-ig-check.yml": {
+   "bundle": "social",
+   "retireCandidate": true
+  },
+  "social-manual-dispatch-proof.yml": {
+   "bundle": "social",
+   "retireCandidate": true
+  },
+  "social-orchestrator.yml": {
+   "bundle": "social"
+  },
+  "social-publish-candidate.yml": {
+   "bundle": "social"
+  },
+  "social-reel.yml": {
+   "bundle": "social"
+  },
+  "social-resume-verified-web.yml": {
+   "bundle": "social"
+  },
+  "social-smoke-publish.yml": {
+   "bundle": "social",
+   "retireCandidate": true
+  },
+  "social-work-delivery.yml": {
+   "bundle": "social"
+  },
+  "supertrader-ci.yml": {
+   "bundle": "ci"
+  },
+  "supertrader-delisting-probe.yml": {
+   "bundle": "research",
+   "retireCandidate": true
+  },
+  "supertrader-house-live.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "supertrader-house.yml": {
+   "bundle": "research"
+  },
+  "supertrader-live-smoke.yml": {
+   "bundle": "monitor"
+  },
+  "supertrader-paper-2027.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "supertrader-research-snapshot.yml": {
+   "bundle": "research"
+  },
+  "supertrader-sf8-candidates.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "supertrader-signals.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "supertrader-st-hist-top5.yml": {
+   "bundle": "research"
+  },
+  "supertrader-st9-v13-study.yml": {
+   "bundle": "research"
+  },
+  "supertrader-validation.yml": {
+   "bundle": "research"
+  },
+  "sync-navigation.yml": {
+   "bundle": "deploy"
+  },
+  "technical-ci.yml": {
+   "bundle": "ci"
+  },
+  "technical-intelligence-build.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "technical-live-qa.yml": {
+   "bundle": "monitor"
+  },
+  "technical-world.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "tiingo-scale.yml": {
+   "bundle": "maintenance",
+   "retireCandidate": true
+  },
+  "tiingo-verify.yml": {
+   "bundle": "maintenance",
+   "retireCandidate": true
+  },
+  "tiingo2-universe-refresh.yml": {
+   "bundle": "pipeline-weekly"
+  },
+  "universe-master.yml": {
+   "bundle": "pipeline-weekly"
+  },
+  "update-analyst-ratings.yml": {
+   "bundle": "content"
+  },
+  "update-dashboard.yml": {
+   "bundle": "content",
+   "retireCandidate": true
+  },
+  "update-fundamentals.yml": {
+   "bundle": "content",
+   "retireCandidate": true
+  },
+  "update-hedgefonds.yml": {
+   "bundle": "content"
+  },
+  "update-news.yml": {
+   "bundle": "content"
+  },
+  "update-sec-fundamentals.yml": {
+   "bundle": "content",
+   "retireCandidate": true
+  },
+  "vorsorge-ci.yml": {
+   "bundle": "ci"
+  },
+  "vorsorge-daily-rebuild.yml": {
+   "bundle": "pipeline-daily"
+  },
+  "vorsorge-etf-sources.yml": {
+   "bundle": "research"
+  },
+  "vorsorge-etf-universe.yml": {
+   "bundle": "research"
+  },
+  "vorsorge-legal-sources.yml": {
+   "bundle": "research"
+  },
+  "vorsorge-live-smoke.yml": {
+   "bundle": "monitor"
+  },
+  "vu2-browser-qa.yml": {
+   "bundle": "ci"
+  },
+  "vu2-lifecycle-handoff.yml": {
+   "bundle": "ci"
+  },
+  "willkommen-ci.yml": {
+   "bundle": "ci"
+  }
+ }
+}
