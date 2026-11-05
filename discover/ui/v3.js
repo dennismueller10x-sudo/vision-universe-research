@@ -95,9 +95,9 @@
   }
   function zahlLabel(c) {
     var z = c && c.plain && c.plain.zahl;
-    return z && z.label ? String(z.label).replace(/^in (\d+) Monaten$/, '$1 Mon.').replace(/ · (\d+) Jahre$/, ' · $1 J.') : '';
+    return z && z.label ? String(z.label).replace(/^in (\d+) Monaten$/, function (m, n) { return n + ' Mon.'; }).replace(/ · (\d+) Jahre$/, function (m, n) { return ' · ' + n + ' J.'; }) : '';
   }
-  function price(c) { var p = val(c.price); return isNum(p) ? (D.Cards && D.Cards.money ? D.Cards.money(p, c.asOf) : U().money(p, 'USD')) : '–'; }
+  function price(c) { var p = val(c.price); return isNum(p) ? (D.Cards && D.Cards.money ? D.Cards.money(p, c.asOf) : '–') : '–'; }
 
   /* Kurslinie (C06 klein): Punkte der Karte oder die Reihe hinter priceSeries.path, erst wenn sichtbar. */
   var io = null, pending = typeof Map === 'function' ? new Map() : null;
