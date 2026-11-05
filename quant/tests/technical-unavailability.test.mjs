@@ -89,6 +89,24 @@ test("the reason is never silently dropped: the shard of an unavailable title ex
 
 /* --------------------------------------------------- 2. Der Leser */
 
+/* WARUM KEIN FESTER TITEL MEHR (05.11.2026).
+   Bis hierher stand COOL fest als "der gemessene Fall". COOL ist ein ETF und hat mit der Eignung
+   aus dem Security Master 1.3.0 das Produktuniversum verlassen; der Dienst antwortet fuer ihn jetzt
+   zu Recht INVALID_IDENTITY. Die Faelle unten pruefen den Leser, nicht einen bestimmten Titel:
+   gebraucht wird ein Titel des Produktuniversums (fuer den synthetischen Shard einer mit Schluessel
+   "CO") bzw. einer, fuer den der veroeffentlichte Shard einen Grund ohne Bundle fuehrt. */
+const Identity = require("../../core/identity.js");
+const MITGLIEDER = JSON.parse(readFileSync(join(root, "quant/data/universe/market-capability.json"), "utf8")).members.map((m) => m.s);
+const CO_TITEL = MITGLIEDER.find((t) => Identity.shardKey(t) === "CO");
+function titelOhneBundle() {
+  const dir = join(root, "quant/data/product/technical-signals-v1"), imProdukt = new Set(MITGLIEDER);
+  for (const datei of readdirSync(dir).filter((f) => /^[A-Z0-9_-]{2}\.json\.gz$/.test(f)).sort()) {
+    const shard = JSON.parse(gunzipSync(readFileSync(join(dir, datei))));
+    for (const [t, u] of Object.entries(shard.unavailable || {})) if (u && u.reason && imProdukt.has(t) && !(shard.instruments || {})[t]) return t;
+  }
+  return null;
+}
+
 function apiMit(unavailableBlock) {
   const shard = { schemaVersion: Product.VERSION, shard: "CO", generatedAt: "2026-09-25T00:00:00.000Z",
     instruments: {}, ...unavailableBlock };
@@ -104,8 +122,8 @@ function apiMit(unavailableBlock) {
 
 test("the service hands the surface the reason of exactly this title", async () => {
   const api = apiMit({ unavailableSchemaVersion: UNAVAILABLE_SCHEMA,
-    unavailable: { COOL: { reason: "INSUFFICIENT_HISTORY", bars: 20, requiredBars: 300 } } });
-  const technical = await api.getTechnicalIntelligence("COOL");
+    unavailable: { [CO_TITEL]: { reason: "INSUFFICIENT_HISTORY", bars: 20, requiredBars: 300 } } });
+  const technical = await api.getTechnicalIntelligence(CO_TITEL);
   assert.equal(technical.state, "UNAVAILABLE");
   /* Der bisherige Grund bleibt unveraendert - die Reisemessung liest ihn. */
   assert.equal(technical.reason, "TECHNICAL_EVIDENCE_NOT_PUBLISHED");
@@ -115,7 +133,7 @@ test("the service hands the surface the reason of exactly this title", async () 
 
 test("an older artifact without the block answers as before, not with a guess", async () => {
   const api = apiMit({});
-  const technical = await api.getTechnicalIntelligence("COOL");
+  const technical = await api.getTechnicalIntelligence(CO_TITEL);
   assert.equal(technical.state, "UNAVAILABLE");
   assert.equal(technical.reason, "TECHNICAL_EVIDENCE_NOT_PUBLISHED");
   assert.equal(technical.unavailability, null);
@@ -123,8 +141,8 @@ test("an older artifact without the block answers as before, not with a guess", 
 
 test("a demand that does not exceed what is there is withheld instead of contradicting itself", async () => {
   const api = apiMit({ unavailableSchemaVersion: UNAVAILABLE_SCHEMA,
-    unavailable: { COOL: { reason: "INSUFFICIENT_HISTORY", bars: 400, requiredBars: 300 } } });
-  const technical = await api.getTechnicalIntelligence("COOL");
+    unavailable: { [CO_TITEL]: { reason: "INSUFFICIENT_HISTORY", bars: 400, requiredBars: 300 } } });
+  const technical = await api.getTechnicalIntelligence(CO_TITEL);
   assert.equal(technical.unavailability.bars, 400);
   assert.equal(technical.unavailability.requiredBars, null);
 });
@@ -353,8 +371,10 @@ test("without a bundle the answer stays withheld, with the reason of exactly thi
     loadCompressedJSON: async (path) => JSON.parse(gunzipSync(readFileSync(join(root, path.slice(1))))),
     displayPolicy: Policy, queryEngine: Query
   });
-  /* COOL ist der gemessene Fall: zu kurze Historie, kein Bundle. */
-  const technical = await api.getTechnicalIntelligence("COOL");
+  /* Ein gemessener Fall aus dem veroeffentlichten Stand: Grund im Shard, kein Bundle. */
+  const titel = titelOhneBundle();
+  assert.ok(titel, "kein Titel des Produktuniversums mit Grund ohne Bundle im veroeffentlichten Stand");
+  const technical = await api.getTechnicalIntelligence(titel);
   assert.equal(technical.state, "UNAVAILABLE");
   assert.equal(technical.reason, "TECHNICAL_EVIDENCE_NOT_PUBLISHED");
   assert.ok(technical.unavailability && technical.unavailability.reason,
