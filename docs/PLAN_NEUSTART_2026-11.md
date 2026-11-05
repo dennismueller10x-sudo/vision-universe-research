@@ -112,3 +112,22 @@ Codex (ChatGPT) arbeitet mit eigenem Nutzungslimit an Aufgaben, die keinen Claud
 |---|---|---|---|
 | E1 | Unabhängige Gegenprüfung der historischen Backtests aus B und C (Rechenweg, Look-ahead, Survivorship, Kosten, Benchmark) | nur lesen; Bericht `docs/neustart/E-codex.md` | Liste bestätigter und fraglicher Punkte mit Datei und Zeile; keine Codeänderung an B/C |
 | E2 | Z6 Insider-Käufe: Erzeuger aus SEC Form 4 (frei verfügbar), Point-in-Time mit Einreichungsdatum | `scripts/insider/`, `core/registry/domains.json` (ein Eintrag), Tests | Skript mit `--out` und Tests; Strang A bindet es in die Tagespipeline ein |
+
+## 9. Owner-Entscheidungen 05.11.2026
+
+- **Alte PRs:** Liste aus `docs/neustart/A-infrastruktur.md` bestätigt: vorgeschlagene PRs schließen, 21 behalten.
+- **Keine weiteren Datenanbieter**, auch keine Anfragen. Daten nur aus Tiingo und Marketstack. FP-ST-01 ruht.
+- **Kein Buchkauf:** Die englische Minervini-Ausgabe war nur für die Zertifizierung (CC-1) nötig; Minervini-Regeln bleiben auf den bereitgestellten Übersetzungen und den englischen W-MIN18-Antworten.
+- **Backtest-Ergebnisse dürfen ins Produkt**, beschriftet „Forschung, nicht zertifiziert“, mit Grenzen und ohne Renditeversprechen. Keine interne Vorschau und kein Geschäftskonto nötig. Die Darstellung wird mit der Rechtsberatung (R1) mit abgestimmt.
+- **Ziel:** eine Methode finden, die den S&P 500 auf ehrlicher Basis schlägt (Strang E, E3).
+
+### E3 (Codex): Edge-Studie gegen den S&P 500
+
+Frage: Welche Methode oder Kombination schlägt den S&P 500 (Gesamtrendite) nach Kosten, ohne Look-ahead und ohne Überanpassung?
+Vorgehen, vor dem ersten Lauf in `docs/research/edge/PROTOKOLL.md` festschreiben (vorregistriert):
+- Kandidaten nur aus vorhandenen Engines und dokumentierten Regeln: Supertrader Top 5 einzeln und kombiniert; Quant-Profile konzentriert (Top 10–20 statt 15–30), mit Marktfilter (S&P über 200-Tage-Linie, sonst Cash), seltener umgeschichtet; Momentum und Qualität kombiniert.
+- Zeitraum geteilt: Entwicklung 2012–2019, unangetastete Prüfung 2020–2026. Parameter nur im Entwicklungsteil wählen.
+- Vergleich: SPY-Gesamtrendite, gleichgewichteter S&P 500 (RSP) und Russell 2000 (IWM); dazu risikobereinigt (Sharpe, max. Verlust).
+- Mehrfachtest-Korrektur (Deflated Sharpe oder Holm) über alle getesteten Varianten; alle Varianten berichten, auch die schlechten.
+- Delistete Titel und Kosten wie in C (`quant/engines/portfolio-backtest.cjs`).
+Pfade: `scripts/research/edge/`, `docs/research/edge/`. Keine Produktdateien, keine Fachmodelle, keine Workflows. Ergebnis: Bericht mit Tabelle je Variante, Urteil „schlägt / schlägt nicht / nur risikobereinigt“, und eine Empfehlung für die Produktdarstellung.
