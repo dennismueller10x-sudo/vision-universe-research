@@ -8,15 +8,16 @@
   var VS = global.VS, V = global.VUVorsorge, X = V.XRay, F = VS.fmt, esc = VS.esc;
 
   VS.views.portfolio = function (r) {
-    var sub = r.args[0] === "szenarien" ? "szenarien" : "xray";
+    var sub = r.args[0] === "szenarien" ? "szenarien" : r.args[0] === "modelle" ? "modelle" : "xray";
     if (r.query.add) {
       var s = r.query.add.toUpperCase();
       if (!VS.state.portfolio.some(function (p) { return p.symbol === s; })) { VS.state.portfolio.push({ symbol: s, weight: 0.1 }); VS.save(); }
     }
-    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Vorsorge-Portfolio</p><h1>Was steckt wirklich<br>in deinem Portfolio?</h1><p class="vs-lead">Regionen, Risiko, Konzentration und Überschneidungen deiner ETFs – keine Kaufempfehlung.</p>' +
-      '<div class="vs-tabs"><a class="vs-pill' + (sub === "xray" ? " primary" : "") + '" href="#/portfolio">Portfolio-X-Ray</a><a class="vs-pill' + (sub === "szenarien" ? " primary" : "") + '" href="#/portfolio/szenarien">Szenario-Lab</a></div></section>' +
-      '<section class="vs-section vs-section--first"><div class="vs-grid side"><div class="vs-card app" id="vs-editor"></div><div id="vs-pf-out"><div class="vs-loading">Berechne …</div></div></div></section>' +
-      '<section class="vu-sec"><div class="vu-sec-head"><h2 class="vu-sec-title">Strategiemodelle</h2></div><p class="vs-sub" style="margin:-8px 0 14px">Beispiel-Strukturen zum Verstehen – keine Empfehlung</p><div class="vs-grid g3" id="vs-models"><div class="vs-loading">…</div></div><div id="vs-model-play" style="margin-top:14px"></div></section>', { dm: [
+    /* V05 (Redesign 2027): Titel als Frage, Reiter X-Ray / Beispiel-Mischungen / Szenario-Lab; Mischungen auf eigener Seite. */
+    var root = VS.render(VS.intro(sub === "modelle" ? "Beispiel-Mischungen" : "Was steckt in deinem Portfolio?", sub === "modelle" ? "Zum Verstehen, wie Bausteine wirken. Keine Empfehlung, Gewichte frei änderbar." : "") +
+      '<div class="vs-segwrap">' + VS.U.seg([{ id: "xray", label: "X-Ray", href: "#/portfolio" }, { id: "modelle", label: "Mischungen", href: "#/portfolio/modelle" }, { id: "szenarien", label: "Szenario-Lab", href: "#/portfolio/szenarien" }], sub, { label: "Ansicht" }) + '</div>' +
+      '<section class="vs-section vs-section--first"' + (sub === "modelle" ? " hidden" : "") + '><div class="vs-grid side"><div class="vs-card app" id="vs-editor"></div><div id="vs-pf-out"><div class="vs-loading">Berechne …</div></div></div></section>' +
+      '<section class="vu-sec"' + (sub === "modelle" ? "" : " hidden") + '><div class="vu-sec-head"><h2 class="vu-sec-title">Strategiemodelle</h2></div><p class="vs-sub" style="margin:-8px 0 14px">Beispiel-Strukturen zum Verstehen – keine Empfehlung</p><div class="vs-grid g3" id="vs-models"><div class="vs-loading">…</div></div><div id="vs-model-play" style="margin-top:14px"></div></section>', { dm: [
         ["Portfolio-Kennzahlen", "Kurse Tiingo (Wochenwerte, gemeinsame Historie), Bestände SEC N-PORT, Kostenquoten laut US-Prospekt (SEC). Vergangene Entwicklung, keine Prognose."]] });
     Promise.all([VS.master(), VS.getJSON("/vorsorge/data/model-portfolios.json")]).then(function (res) {
       var m = res[0], models = res[1];
@@ -24,7 +25,7 @@
         var w = 0, c = 0; p.positions.forEach(function (x) { var e = m._bySymbol[x.symbol]; if (e && e.cost !== null) { w += x.weight; c += x.weight * e.cost; } });
         return w >= 0.999 ? VS.costPct(c) : w > 0 ? VS.costPct(c / w) + ' <span class="vs-fine">(für ' + F.pct(w, 0) + ')</span>' : '<span class="vs-fine">Quelle fehlt</span>';
       }
-      var RING = ["#ccf54a", "#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#8a94a6"];
+      var RING = ["#c8f531", "#000", "#6e6e6e", "#bdbdbd", "#e9e9e9", "#6e6e6e", "#bdbdbd"];
       // Gewichtete Kennzahlen aus der bisherigen Entwicklung der Bausteine (nur wenn alle Bausteine die Kennzahl haben)
       function wavg(p, f) { var w = 0, s = 0, ok = true; p.positions.forEach(function (x) { var e = m._bySymbol[x.symbol], v = e ? f(e) : null; if (v === null || v === undefined || !isFinite(v)) ok = false; else { w += x.weight; s += x.weight * v; } }); return ok && w > 0 ? s / w : null; }
       function modelStats(p) {
