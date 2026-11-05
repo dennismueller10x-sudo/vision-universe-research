@@ -1,53 +1,59 @@
-# Strang C – Quant-Backtest und qualifizierte Portfolios
+# Strang C – Quant-Backtest und qualifizierte Portfolios (Abschluss)
 
-Stand: **05.11.2026**. Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Fachdokument Baukasten: [PORTFOLIO_STANDARD.md](../quant/PORTFOLIO_STANDARD.md).
+Stand: **05.11.2026**, Strang abgeschlossen (Owner-Entscheidung). Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Fachdokument: [PORTFOLIO_STANDARD.md](../quant/PORTFOLIO_STANDARD.md).
 
-## Fertig
+Alles hier ist **Forschung, nicht zertifiziert**. Öffentlich wird keine Rendite gezeigt. Der öffentliche Export (`export-public-model-portfolios.cjs`) bleibt gesperrt, bis die Owner-Freigabe „Freigabe öffentliche Backtest-Darstellung“ im Plan steht und die Rechtsberatung zugestimmt hat.
 
-- **#1227 gemergt:** interne Backtest-Vorschau in Produktion eingeschaltet (`VU_BACKTEST_REVIEW_ENABLED="true"` nur in `[env.production.vars]`). Zugang nur mit Sitzung und Rolle `backtest_reviewer`.
-- **Portfolio-Baukasten v1** (VU-Portfolio-Standard) gebaut, als neue Module ohne Änderung bestehender Engines:
-  - Risikomodell mit Ledoit/Wolf-Schrumpfung;
-  - Konstruktion: 15–30 Titel, 8 %/25 %, Liquidität, Spread-Modell;
-  - PIT-Faktoren mit SEC-Einreichungsdatum;
-  - Walk-forward über den unveränderten Ledger `runPortfolio`, mit delisteten Titeln per `TERMINAL_CASH`.
-  - Python-Gegenrechnung.
-- **SEC Point-in-Time:** Bündel in der Lesart ORIGINAL (Wert wie erstmals eingereicht). Die committeten Consumer-Bündel tragen im Mittel 628 Tage Verzug und sind für historische Stichtage ungeeignet.
+## Was automatisch läuft
 
-- **Musterportfolios gerechnet** (Lauf 41867100079, [MODEL_PORTFOLIOS.md](../quant/research/portfolio-v1/MODEL_PORTFOLIOS.md)): 5 Profile, 2012–2026, Gesamtrendite inkl. delisteter Titel gegen SPY-Gesamtrendite 14,9 % p. a. **Keines schlägt den Index:** Defensive Quality 13,8 %, Value Momentum 13,0 %, Momentum Leader 12,9 %, Quality Compounder 11,2 %, GARP 5,6 %. Vol 15–21 %, Beta 0,81–1,07. In der internen Vorschau sichtbar, beschriftet „Forschung, nicht zertifiziert“.
-- **Setup-OOS A1–A6** umgesetzt (#1333): Schnitt 2027-05-31, Embargo 183 Tage, MEDIAN_EXCESS + SIGN_REPLICATES, SETUP_NEW/SETUP_CONFIRMED getrennt, effektive Ereignistage, Zeilenexport. Gate messbar frühestens um den 2028-01-08.
+**Nichts von Strang C läuft nach Zeitplan.** Beide Rechen-Workflows starten nur manuell oder über eine Marke in der Commit-Nachricht auf `claude/**`. Sie rechnen auf R2-Tagesbalken und dem privaten V13-Archiv, die nur im Runner liegen:
 
-- **Prüfung Strang E (#1368) umgesetzt** (05.11.):
-  - Zeitraum wird angefragt/realisiert getrennt ausgewiesen und bei Verkürzung alarmiert (SPY-Reihe endet 02.10.).
-  - Rohschluss delisteter Titel je Datum aus `v13-raw` über `splitFactors`.
-  - Delistete Titel ohne Gesamtrendite werden ausgeschlossen.
-  - Die Population heißt jetzt ehrlich `CUSTOM_STRATEGY_UNIVERSE`.
-  - Die „fraglich“-Punkte stehen als Grenzen im Bericht.
-  - Neulauf mit Umschlag-Varianten (Puffer 50, Quartal).
+| Workflow | Auslöser | rechnet | schreibt |
+|---|---|---|---|
+| `quant-portfolio-research.yml` | manuell, `[quant-portfolio-research]`, `[edge-e3:dev-quant\|test-quant]` | Musterportfolios mit Sensitivitäten und DQ-K5 Vorher/Nachher, oder eine E3-Phase | `docs/quant/research/portfolio-v1/`, `workers/vu-account/data/model-portfolios-bundle.json`, `docs/research/edge/` |
+| `research-signals-s2.yml` | manuell, `[signals-s2]`; Eingabe `from_run` führt nur zusammen | S2 in 8 Teilen, Teilergebnisse verschlüsselt | `docs/research/signals/results-s2/` |
 
-- **E3 Edge-Studie gerechnet** (05.11., [Bericht](../research/edge/BERICHT.md)):
-  - nach eingefrorenem Protokoll, Auswahl vor dem Prüfteil festgeschrieben;
-  - vorab gewählt: Momentum Leader N20/13 Wochen, im Prüfteil 2020–2026 9,3 % p. a. gegen SPY 15,4 %;
-  - 84 Quant-Varianten „schlägt nicht“, keine mit Holm-p ≤ 0,05;
-  - 12 Supertrader-Varianten blockiert (Snapshot endet 30.09.).
+Die interne Vorschau `/konto/admin/backtests/` ist mit Sitzung und Rolle `backtest_reviewer` zugänglich und liest das Paket über die Worker-Route `/v1/admin/backtests/portfolios`. Der Worker lehnt Pakete mit falschen Kennzeichen, falschem Hash oder zu jungen Beständen ab.
 
-- **E4/S2 Signal-Studie gerechnet** (05.11., [Ergebnis](../research/signals/S2_ERGEBNIS.md)): keine Familie besser als Halten, mit und ohne DQ-K5. [Registrierung](../research/signals/S2_REGISTRIERUNG.md):
-  - dieselbe Studie wie S1, Parität 383 von 383 Trades;
-  - Stichprobe 1.000 Titel, Seed 20261105: 789 heutige, 211 delistete, Vorzugsaktien ausgeschlossen;
-  - Zeitraum 2016–2026, exakter SPY-Vergleich; 2008–2015 bleibt für eine spätere Bestätigung unberührt;
-  - Zahlen gehen versiegelt an den Owner, im Repo stehen Methodik, Abdeckung und Urteil;
-  - DQ-K5 vor dem ersten Ergebnis ergänzt (Hinweis Strang G), die Musterportfolios rechnen sie als Vorher/Nachher mit (#1434, Wirkung ≤ 0,1 Prozentpunkte CAGR).
-- **E3 Supertrader-Drawdowns geklärt** (#1421): Strang B fand keinen Fehler, Lauf 42004286201 und seine Hashes bleiben gültig. Darvas liegt zwischen −32 und −11 % p. a. Eine Liquiditätsgrenze käme nur als eigene, vorab registrierte Variante.
+## Wo die Ergebnisse liegen
+
+| Ergebnis | Urteil | Dateien |
+|---|---|---|
+| Musterportfolios (5 Profile, 2012-01 bis 2026-10, Gesamtrendite inkl. delisteter Titel) | Keines schlägt SPY TR (14,9 % p. a.): Defensive Quality 13,4 %, Momentum Leader 12,9 %, Value Momentum 12,6 %, Quality Compounder 10,9 %, GARP 6,0 %. Mit DQ-K5 höchstens −0,1 Prozentpunkte. | [MODEL_PORTFOLIOS.md](../quant/research/portfolio-v1/MODEL_PORTFOLIOS.md), `docs/quant/research/portfolio-v1/model-portfolios.json` |
+| E3 Edge-Studie (96 Varianten, eingefrorenes Protokoll) | Vorab gewählt: Momentum Leader N20/13 W, im Prüfteil 2020–2026 9,3 % gegen SPY 15,4 %. 84 Varianten „schlägt nicht“, 12 Supertrader-Varianten blockiert. | [BERICHT.md](../research/edge/BERICHT.md), `docs/research/edge/runs/*.json` |
+| E4/S1 Signal-Studie (5 Titel) | eingeschränkt, siehe Bericht | [ERGEBNISSE.md](../research/signals/ERGEBNISSE.md) |
+| E4/S2 Signal-Studie (1.000 Titel, 2016–2026, exakter SPY) | Keine Familie besser als Halten, mit und ohne DQ-K5 | [S2_ERGEBNIS.md](../research/signals/S2_ERGEBNIS.md), [S2_REGISTRIERUNG.md](../research/signals/S2_REGISTRIERUNG.md) |
+
+**Bestände:** Ergebnis und Paket führen nur den Bestand der letzten Umschichtung, die mindestens 12 Monate vor dem Ende liegt (derzeit 05.09.2025, `holdingsSnapshot`). Eine heutige Kaufliste und ein Rein/Raus-Protokoll gibt es nicht (Owner-Linie Plan §11, #1462).
+
+## Versiegelte Dateien öffnen (nur Owner)
+
+Die S2-Kennzahlen (Netto-R, Differenz gegen Halten und den exakten SPY, Marktphasen, alle Trades) liegen in `docs/research/signals/results-s2/results.sealed.owner.json`. Sie sind verschlüsselt an `scripts/supertrader/validation/results-public-key.pem` (RSA-OAEP-256 + AES-256-GCM + gzip). Öffnen mit dem privaten Owner-Schlüssel, aus dem Repository-Wurzelverzeichnis:
+
+```bash
+node --input-type=module -e "
+import { readFileSync, writeFileSync } from 'node:fs';
+import { decryptSealed } from './scripts/supertrader/validation/lib.mjs';
+const plain = decryptSealed(readFileSync(process.argv[1], 'utf8'), readFileSync('docs/research/signals/results-s2/results.sealed.owner.json', 'utf8'));
+writeFileSync(process.argv[2], plain);" /pfad/zum/owner-key.pem /tmp/s2-results.json
+```
+
+Prüfsumme: `sha256sum /tmp/s2-results.json` muss `privateSha256` in `results-s2/public.json` ergeben. Wichtige Felder: `families[].netR`, `deltaHoldR`, `deltaSpyExactR`, `pHoldHolm`, `pSpyExactHolm`, `regimes.ABOVE_200|BELOW_200`, `familiesWithoutDq`. Den Klartext nicht committen.
 
 ## Offen
-- `backtest-runner.cjs#setupOosFromCertificationPath` an A4 angleichen (berührt CODE_FILES → Demo-Neubau, eigener PR).
-- Historische Strategie- und Faktor-Backtests (Katalog-Arten) auf PIT-Basis über den Baukasten-Datenpfad.
+
+- **`test_canonical_market.py`:** Neuabnahme der Deckungskennzahlen über `coverage-metrics.yml`, mit R2 und `coverage-delta` je Titel. Ändern sich die Kennzahlen, Stand 6.686/6.683/5.644 → neues Produktuniversum (6.577), dann die Konstanten in `ABGENOMMEN` mit Begründung nachziehen. Geht erst, wenn die übrigen roten Quant-Tests grün sind, denn der Workflow fährt die ganze Suite.
+- `backtest-runner.cjs#setupOosFromCertificationPath` an A4 angleichen (berührt CODE_FILES → Demo-Neubau, eigener PR). Setup-OOS-Gate frühestens um den 2028-01-08 messbar.
+- Bestätigung von S2 und E3 nur auf unberührten Jahren (2008–2015) oder neuen Vorwärtsdaten. Eine weitere Variantensuche ist bis dahin unzulässig. Value Momentum N20 steht nur als Hypothese für eine spätere Holdout-Studie.
+- Eine Liquiditätsgrenze für Supertrader-Varianten wäre eine neue, vorab registrierte Variante (nicht E3).
 
 ## Braucht Owner
 
 - **Geschäftskonto für die Vorschau:** registrieren (eigene E-Mail, nicht das Konto mit `pricing_admin`) und die Rolle `backtest_reviewer` per SQL vergeben. Anleitung: [BACKTEST_VORSCHAU_AKTIVIERUNG.md](../accounts/BACKTEST_VORSCHAU_AKTIVIERUNG.md), Abschnitt 2.
-- **Öffentliche Darstellung von Musterportfolio-Renditen:** eigene Freigabe (öffentliche Renditeaussage), abgestimmt mit der Rechtsberatung. Bis dahin nur intern.
+- **Öffentliche Darstellung von Renditen:** eigene Freigabe (öffentliche Renditeaussage) mit Rechtsberatung. Nach Owner-Linie nur für eine Methode, die den S&P 500 in einem vorab registrierten Test schlägt. Das tut derzeit keine.
 
-## An andere Stränge
+## Übergaben
 
-- **A:** neuer Workflow `quant-portfolio-research.yml` (nur Marke oder manuell, schreibt nur `docs/quant/research/portfolio-v1/`), bitte bei der Workflow-Bündelung übernehmen.
-- **D:** Musterportfolio-Abschnitt der Vorschau. C liefert Daten und Logik (Worker-Route, Bündel), D gestaltet.
+- **A:** `quant-portfolio-research.yml` und `research-signals-s2.yml` sind im Bündel `research` (`core/registry/workflow-bundles.json`).
+- **D2:** Musterportfolio-Anzeige. Datenform `portfolios[].holdings = {asOf, delayDays, positions[{ticker, weight}]}`, Kurve in `chart`, nur historisch.
+- **B und G:** `lastHoldings` in `scripts/supertrader/house/analyze.mjs` und `scripts/research/labor/` unterliegen derselben Owner-Linie (§11).
