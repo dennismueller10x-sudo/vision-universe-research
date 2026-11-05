@@ -18,6 +18,11 @@
                120 Kalendertagen trennt Vorgaenger und Nachfolger; nur
                das juengste Segment zaehlt.
 
+   ZUSATZ-ETFs  Papiere, die der Company Master als CONFIRMED_NON_EQUITY:ETF
+                ausscheidet, die Tiingo aber nicht als ETF listet (extraEtfRows),
+                laufen mit. --only-extra fragt nur sie ab (rund zwei Anfragen je
+                Zusatz-ETF); Universumszeilen frueherer Laeufe bleiben (mergeUniverse).
+
    FORTSETZBAR  .market-cache/vorsorge/checkpoint.json (verarbeitet,
                 gescheitert, letzter Ticker). Der Workflow sichert die
                 Arbeitsablage mit actions/cache; ein Folgelauf macht dort
@@ -87,6 +92,34 @@ export function catalog(rows) {
   };
 }
 
+/** Zusatz-ETFs: Papiere, die der Company Master als belegtes Nicht-Aktien-Papier der Art ETF ausscheidet
+ *  (productEligibilityReason CONFIRMED_NON_EQUITY:ETF), die Tiingo in der Tickerliste aber nicht als ETF fuehrt.
+ *  Sie bekamen ihre Kursreihe bis 05.11.2026 aus den Discover-Reihen (Aktienuniversum) und laufen jetzt hier. */
+export function extraEtfRows(instruments, catalogSymbols) {
+  const have = new Set(catalogSymbols || []);
+  const out = [];
+  for (const it of instruments || []) {
+    if (!it || !it.symbol || it.active === false || it.productEligibility !== "EXCLUDED") continue;
+    if (!/^CONFIRMED_NON_EQUITY:ETF$/.test(String(it.productEligibilityReason || ""))) continue;
+    const symbol = String(it.symbol).toUpperCase();
+    if (have.has(symbol) || !/^[A-Z0-9.\-]+$/.test(symbol)) continue;
+    have.add(symbol);
+    out.push({ symbol, exchange: it.exchange ? String(it.exchange).toUpperCase() : null, currency: it.currency ? String(it.currency).toUpperCase() : null,
+      providerStartDate: it.firstTradeDate || null, providerEndDate: null, active: true, origin: "company-master:CONFIRMED_NON_EQUITY:ETF" });
+  }
+  return out.sort((a, b) => (a.symbol < b.symbol ? -1 : 1));
+}
+
+/** Universumszeilen frueherer Laeufe, die dieser Lauf nicht neu abgefragt hat, bleiben (ein Teillauf oder ein
+ *  verlorener Checkpoint darf das Universum nicht schrumpfen lassen). Nur noch aktive Ticker bleiben. */
+export function mergeUniverse(previousRows, freshRows, activeSymbols) {
+  const active = new Set(activeSymbols || []);
+  const bySym = {};
+  for (const r of previousRows || []) if (r && r.symbol && active.has(r.symbol)) bySym[r.symbol] = r;
+  for (const r of freshRows || []) bySym[r.symbol] = r;
+  return Object.keys(bySym).sort().map((k) => bySym[k]);
+}
+
 /** Juengstes zusammenhaengendes Segment; Luecke > RECYCLE_GAP_DAYS = anderer Titel. */
 export function latestSegment(bars) {
   let start = 0;
@@ -146,6 +179,7 @@ async function main() {
   const LIMIT = Number(opt("--limit", "0")) || Infinity;
   const PER_HOUR = Number(opt("--per-hour", "4500"));
   const MAX_MIN = Number(opt("--max-minutes", "320"));
+  const ONLY_EXTRA = argv.includes("--only-extra");
   const KEY = process.env.TIINGO_API_KEY || "";
   if (!KEY) { console.error("TIINGO_API_KEY fehlt. Kein Lauf, keine Ersatzdaten."); process.exit(2); }
   const scrub = (s) => String(s).split(KEY).join("***");
@@ -199,7 +233,14 @@ async function main() {
   // Phase B
   const cpPath = join(WORK, "checkpoint.json");
   const cp = existsSync(cpPath) ? JSON.parse(readFileSync(cpPath, "utf8")) : { processed: {}, failed: {}, meta: {} };
-  const tickers = [...new Set(cat.rows.filter((r) => r.active).map((r) => r.symbol))].sort();
+  const { readdirSync: listDir } = await import("node:fs");
+  const instDir = join(root, "quant/data/universe/instruments");
+  const instruments = existsSync(instDir) ? listDir(instDir).filter((f) => f.endsWith(".json")).flatMap((f) => JSON.parse(readFileSync(join(instDir, f), "utf8")).instruments || []) : [];
+  const extra = extraEtfRows(instruments, cat.rows.filter((r) => r.active).map((r) => r.symbol));
+  console.log("Zusatz-ETFs (Company Master, CONFIRMED_NON_EQUITY:ETF, nicht als ETF in der Tickerliste): " + extra.length);
+  const catalogTickers = [...new Set(cat.rows.filter((r) => r.active).map((r) => r.symbol))];
+  const tickers = [...new Set((ONLY_EXTRA ? [] : catalogTickers).concat(extra.map((r) => r.symbol)))].sort();
+  const allActive = [...new Set(catalogTickers.concat(extra.map((r) => r.symbol)))];
   let done = 0, newly = 0, stopped = null;
   const save = () => { cp.lastSymbol = cp.lastSymbol || null; cp.updatedAt = new Date().toISOString(); writeFileSync(cpPath, JSON.stringify(cp)); };
   for (const sym of tickers) {
@@ -235,19 +276,22 @@ async function main() {
   const { readdirSync, copyFileSync } = await import("node:fs");
   for (const f of readdirSync(join(WORK, "series"))) if (cp.processed[f.replace(/\.json$/, "")] === "OK") copyFileSync(join(WORK, "series", f), join(OUT, "series", f));
   const rowsBySym = {};
-  cat.rows.filter((r) => r.active).forEach((r) => { (rowsBySym[r.symbol] = rowsBySym[r.symbol] || []).push(r); });
-  const universe = tickers.filter((s) => cp.processed[s] === "OK").map((s) => {
+  cat.rows.filter((r) => r.active).concat(extra).forEach((r) => { (rowsBySym[r.symbol] = rowsBySym[r.symbol] || []).push(r); });
+  const fresh = tickers.filter((s) => cp.processed[s] === "OK").map((s) => {
     const m = cp.meta[s] || {}, rows = rowsBySym[s] || [];
     const r = rows.find((x) => (m.exchangeCode && x.exchange === String(m.exchangeCode).toUpperCase())) || rows[0] || {};
     return { symbol: s, name: m.name, description: m.description, exchange: r.exchange || (m.exchangeCode ? String(m.exchangeCode).toUpperCase() : null),
       currency: r.currency || null, providerStartDate: r.providerStartDate || m.startDate || null, providerEndDate: r.providerEndDate || m.endDate || null,
-      catalogRows: rows.length, series: m.series || null };
+      catalogRows: rows.length, series: m.series || null, ...(rows[0] && rows[0].origin ? { origin: rows[0].origin } : {}) };
   });
+  const prevUniverse = existsSync(join(OUT, "ingest/universe.json")) ? JSON.parse(readFileSync(join(OUT, "ingest/universe.json"), "utf8")).rows : [];
+  const universe = mergeUniverse(prevUniverse, fresh, allActive);
   writeFileSync(join(OUT, "ingest/universe.json"), JSON.stringify({ schemaVersion: "vu-vorsorge-ingest-universe-1.0.0", ingest: VERSION, source: "tiingo",
     asOf: universe.reduce((a, u) => (u.series && u.series.asOf > a ? u.series.asOf : a), ""), rows: universe }));
   const failed = Object.values(cp.failed).sort((a, b) => (a.symbol < b.symbol ? -1 : 1));
   writeFileSync(join(OUT, "ingest/failed-etf-ingest.json"), JSON.stringify({ schemaVersion: "vu-vorsorge-failed-ingest-1.0.0", count: failed.length, failed }, null, 1));
   const report = { schemaVersion: "vu-vorsorge-ingest-report-1.0.0", ingest: VERSION, activeTickers: tickers.length,
+    extraEtfs: extra.length, onlyExtra: ONLY_EXTRA, universeRows: universe.length, keptFromPreviousRuns: universe.length - fresh.length,
     processedOk: tickers.filter((s) => cp.processed[s] === "OK").length, notFound: tickers.filter((s) => cp.processed[s] === "NOT_FOUND").length,
     noPrices: tickers.filter((s) => cp.processed[s] === "NO_PRICES").length, failed: failed.length,
     pending: tickers.filter((s) => !cp.processed[s]).length, complete: tickers.every((s) => cp.processed[s]) && !stopped,
