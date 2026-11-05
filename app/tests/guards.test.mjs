@@ -58,7 +58,7 @@ test('Gate-Hygiene: App-Branch beruehrt nur app/, die Mobile-Dokumente und den f
   const files = execFileSync('git', ['diff', '--name-only', base], {cwd: repo, encoding: 'utf8'}).split('\n').filter(Boolean);
   // Ausschluss von app/ aus Pages: Owner-Freigabe Phase 2 (eine Zeile in permitted() und seine Pruefung)
   // Aktivierung der TestFlight-Pipeline (Owner-Auftrag 03.11.2026): genau eine Workflow-Datei, deren Rumpf der Vorlage gleicht (naechster Test)
-  const approved = new Set(['scripts/vu2/build-release.mjs', 'quant/tests/release-delivery.test.mjs', '.github/workflows/app-ios-testflight.yml']);
+  const approved = new Set(['scripts/vu2/build-release.mjs', 'quant/tests/release-delivery.test.mjs', '.github/workflows/app-ios-testflight.yml', '.github/workflows/app-android-build.yml', 'core/registry/workflow-bundles.json']);
   const bad = files.filter(f => !approved.has(f) && !/^(app\/|docs\/architecture\/ADR-00[4-9]|docs\/mobile\/|docs\/handover\/)/.test(f));
   assert.deepEqual(bad, []);
 });
@@ -67,7 +67,7 @@ test('Signier- und Zugangsdaten: ignoriert und nirgends im App-Verzeichnis einge
   const ignore = read(path.join(app, '.gitignore'));
   for (const p of ['*.p12', '*.p8', '*.key', '*.pem', '*.csr', '*.cer', '*.mobileprovision', 'vu-signing/', 'AuthKey_*.p8']) assert.ok(ignore.includes(p), p);
   const tracked = execFileSync('git', ['ls-files', '-z', 'app'], {cwd: repo, encoding: 'utf8'}).split('\0').filter(Boolean);
-  const bad = tracked.filter(f => /\.(p12|p8|pfx|key|pem|csr|cer|mobileprovision|provisionprofile)$/i.test(f) || /(^|\/)AuthKey_/.test(f) || /(^|\/)\.env/.test(f));
+  const bad = tracked.filter(f => /\.(p12|p8|pfx|key|pem|csr|cer|mobileprovision|provisionprofile|jks|keystore)$/i.test(f) || /(^|\/)AuthKey_/.test(f) || /(^|\/)\.env/.test(f));
   assert.deepEqual(bad, []);
   for (const f of tracked.filter(f => /\.(m?js|json|sh|md|template|plist|yml|yaml|html|css|swift|rb)$/i.test(f) || /Fastfile$/.test(f))) {
     const t = fs.readFileSync(path.join(repo, f), 'utf8');
@@ -98,4 +98,33 @@ test('aktiver Workflow: gleicher Rumpf wie die Vorlage, nur von Hand, Vorpruefun
   const steps = live.split('\n      - ').filter(s => /fastlane ios beta/.test(s));
   assert.equal(steps.length, 1);
   assert.match(steps[0], /if:\s*\$\{\{\s*!inputs\.preflight_only\s*\}\}/, 'Upload nur ohne preflight_only');
+});
+
+test('Android: Projekt vorhanden, kein Backup, kein Klartext, Version aus der Pipeline, keine Schluessel', () => {
+  const manifest = read(path.join(app, 'android/app/src/main/AndroidManifest.xml'));
+  assert.match(manifest, /android:allowBackup="false"/, 'Sitzungs-Token duerfen nicht in Backups wandern');
+  assert.match(manifest, /android:usesCleartextTraffic="false"/);
+  assert.doesNotMatch(manifest, /READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE|RECORD_AUDIO|CAMERA|ACCESS_FINE_LOCATION/, 'nur INTERNET');
+  const gradle = read(path.join(app, 'android/app/build.gradle'));
+  assert.match(gradle, /applicationId "de\.visionuniverse\.app"/);
+  assert.match(gradle, /vuVersionCode/);
+  assert.doesNotMatch(gradle, /signingConfigs|storePassword|keyPassword|storeFile/, 'Signierung gehoert in einen eigenen, geschuetzten PR');
+  const c = JSON.parse(read(path.join(app, 'capacitor.config.json')));
+  assert.equal(c.android.allowMixedContent, false);
+  assert.equal(c.android.webContentsDebuggingEnabled, false);
+  assert.equal(c.server.androidScheme, 'https');
+  const tracked = execFileSync('git', ['ls-files', '-z', 'app/android'], {cwd: repo, encoding: 'utf8'}).split('\0').filter(Boolean);
+  assert.ok(tracked.includes('app/android/gradlew'));
+  assert.deepEqual(tracked.filter(f => /\/build\/|local\.properties|\.jks$|\.keystore$|google-services\.json|service-account/i.test(f)), []);
+});
+
+test('Android-Workflow: Bauprobe ohne Geheimnisse, Umgebung und Upload', () => {
+  const wf = read(path.join(repo, '.github/workflows/app-android-build.yml'));
+  assert.doesNotMatch(wf, /\$\{\{\s*secrets\./, 'keine Geheimnisse');
+  assert.doesNotMatch(wf, /^\s+environment:/m, 'keine Umgebung: der signierte Build kommt in einem eigenen PR');
+  assert.doesNotMatch(wf, /upload-artifact|upload_to_play|r0adkll|supply|actions\/cache/);
+  assert.match(wf, /permissions:\s*\n\s+contents:\s*read/);
+  assert.doesNotMatch(wf, /pull_request_target|\n\s+(push|schedule|workflow_run):/);
+  const runBlocks = wf.split('\n').filter(l => /^\s+run:/.test(l) || /^\s{10,}/.test(l)).join('\n');
+  assert.doesNotMatch(runBlocks, /\$\{\{\s*(inputs|secrets|vars)\./, 'in run-Bloecken nur env');
 });
