@@ -176,7 +176,7 @@ const VISUAL = [
   ['Vorsorge', '/vorsorge/#/etf/VT', '.vs-bilanz', 'Bilanz der Einordnung'],
   ['Hedgefonds', '/hedgefonds/#/', '.hf-card-val .hf-chg', 'Richtung der Fondsgroesse'],
   ['Hedgefonds', '/hedgefonds/#/aktie/NVDA', '.hf-balance', 'Kaeufer gegen Verkaeufer'],
-  ['Elliott', '/elliott/', '.el-splitrow', 'beschrifteter Richtungsbalken'],
+  ['Elliott', '/elliott/', '.el-split', 'beschrifteter Richtungsbalken'],
   ['Fundamental', '/fundamental/#/PLTR', '.fu-k .fu-chg', 'Kennzahl mit Richtung zum Vorjahr'],
   ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahlen', '.fu-crow .fu-spark i', 'Kennzahlenkatalog mit Mini-Verlauf'],
   ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=revenue', '.fu-cagr', 'Wachstum pro Jahr ueber 3/5/10 Jahre'],

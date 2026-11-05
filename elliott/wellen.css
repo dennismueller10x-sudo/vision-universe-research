@@ -60,3 +60,5 @@
 #el-detail .cb-pj-btn{border:0;background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
 #el-detail .cb-pj-why,#el-detail .cb-pj-cnote{border-left-color:var(--vu-hair,#e9e9e9);background:transparent}
 :root[data-theme=dark] #el-detail .cb-outlook-sec .cb-hero{background:#151515}
+/* Text in Grau nur mit ausreichendem Kontrast: Linienfarben (--cb-alt, --cb-flat) bleiben Grau, Schrift nimmt das gedämpfte Token */
+#el-detail .cb-pt-exp .cb-pt-v,#el-detail .cb-pj-explore-sum,#el-detail .cb-pj-explore-sum>span{color:var(--vu-mute,#6e6e6e)}
