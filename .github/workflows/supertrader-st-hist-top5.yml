@@ -20,11 +20,11 @@ on:
         default: ''
         type: string
       mode:
-        description: 'backtest (Kennzahlen Top 5) oder edge-export (Kurven, Fills, Terminale fuer die E3-Studie, kostenfrei, nur mit Pruefschluessel) oder golden-diagnose (C08: warum belegte Trades fehlen, nur mit Pruefschluessel)'
+        description: 'backtest (Kennzahlen Top 5) oder edge-export (Kurven, Fills, Terminale fuer die E3-Studie, kostenfrei, nur mit Pruefschluessel) oder golden-diagnose (C08: warum belegte Trades fehlen) oder minervini-golden (C06/C07 Referenz gegen belegte Trades); beide nur mit Pruefschluessel'
         required: false
         default: 'backtest'
         type: choice
-        options: [backtest, edge-export, golden-diagnose]
+        options: [backtest, edge-export, golden-diagnose, minervini-golden]
       with_v13:
         description: 'Universum B mit V13-Delisting-Ketten zusaetzlich rechnen (Archiv 1.2.0)'
         required: false
@@ -116,7 +116,7 @@ jobs:
           W="$RUNNER_TEMP/sth"; OUT="$W/out"; mkdir -p "$OUT"
           args=(--snapshot "$SNAPSHOT_ID" --out "$OUT" --allow-code-version-change)
           [ -f "$W/reviewer.pem" ] && args+=(--reviewer-key "$W/reviewer.pem")
-          [[ "$MODE" == "backtest" || "$MODE" == "edge-export" || "$MODE" == "golden-diagnose" ]] || { echo "MODE_INVALID"; exit 2; }
+          [[ "$MODE" == "backtest" || "$MODE" == "edge-export" || "$MODE" == "golden-diagnose" || "$MODE" == "minervini-golden" ]] || { echo "MODE_INVALID"; exit 2; }
           args+=(--mode "$MODE")
           [ "$WITH_V13" = "true" ] && [ "$MODE" = "backtest" ] && args+=(--v13-series "$W/v13/v13-derived/series" --v13-raw "$W/v13/v13-raw/raw")
           set +e
