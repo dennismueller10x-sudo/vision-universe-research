@@ -17,6 +17,7 @@
 // Regeln auf den bereits veroeffentlichten Reihen.
 //
 // Aufruf: node scripts/supertrader/build.mjs [--root=.] [--out=supertrader] [--check]
+import { publicSignals } from './public-signals.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
@@ -593,13 +594,15 @@ export function build() {
   signals.discoverAvailability = discoverAvailability(
     [...Object.keys(signals.bySymbol), ...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)],
     readJson(rel('discover/data/stock-index/US_REAL.json')).symbols || []);
-  writeJson(path.join(DATA, 'signals.json'), signals);
+  // Owner-Linie 05.11.2026 (L2): öffentlich ohne Order-, Stopp- und Ergebnisgrößen; die Ledger behalten den vollen Zustand
+  const pub = publicSignals(signals);
+  writeJson(path.join(DATA, 'signals.json'), pub);
   /* Ausschnitte (Payload-Audit 03.10.2026: jede der 822 Seiten lud 3,3 MB):
      signals-core.json fuer Start, Strategien, Methodik, Backtests (ohne die
      Historienlisten), stock/<SYM>.json fuer die Aktienseite. signals.json
      bleibt vollstaendig fuer die Signalliste. */
-  writeJson(path.join(DATA, 'signals-core.json'), signalsCore(signals));
-  const slices = signalsBySymbol(signals, [...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)]);
+  writeJson(path.join(DATA, 'signals-core.json'), signalsCore(pub));
+  const slices = signalsBySymbol(pub, [...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)]);
   /* Ein Ausschnitt eines Symbols, das heraus faellt, darf nicht stehen
      bleiben - er zeigte sonst alte Signale. Ohne Ausschnitt laedt die Seite
      die vollstaendige Datei. */

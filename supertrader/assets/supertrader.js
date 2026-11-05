@@ -396,7 +396,7 @@
 
     // Laufende Modellpositionen (simuliert, keine Orders)
     if (positions.length) {
-      var posSorted = positions.slice().sort(function (a, b) { return (b.entry.date || '').localeCompare(a.entry.date || '') || a.symbol.localeCompare(b.symbol); });
+      var posSorted = positions.slice().sort(function (a, b) { return ((b.entry && b.entry.date) || '').localeCompare((a.entry && a.entry.date) || '') || a.symbol.localeCompare(b.symbol); });
       main.appendChild(sec('Modellpositionen', [
         h('div', { class: 'st-list' }, posSorted.slice(0, 3).map(function (x) { return stockCard(x, S[x.strategyId]); })),
         moreBox('Wie das Modell einsteigt', [h('p', { text: 'Modelleinstieg nach der Regel der jeweiligen Version: Momentum, Weinstein, Darvas und Turtle per Kauf-Stop am Ausbruchspunkt im Tagesverlauf, Minervini nach einem Schlusskurs über dem Pivot zur nächsten Eröffnung. Das ist die Umsetzung von Vision Universe auf Tageskursen, nicht überall wörtlich die Regel des Traders. Simulation, keine Orders.' })]),
@@ -1343,14 +1343,14 @@
       }
       var asOf = s.plan ? ' · geplant, Stand ' + dateShort(s.plan.trigger.dataAsOf) : ' · geplant';
       if (isFinite(lv.trigger)) levels.push({ id: 'trigger', label: 'Trigger' + asOf, value: lv.trigger, color: 'var(--chart-trigger)' });
-      if (s.entry) levels.push({ id: 'entry', label: 'Modelleinstieg ' + dateShort(s.entry.date), value: s.entry.price, color: 'var(--chart-entry)', dash: '2 3' });
+      if (s.entry && isFinite(s.entry.price)) levels.push({ id: 'entry', label: 'Modelleinstieg ' + dateShort(s.entry.date), value: s.entry.price, color: 'var(--chart-entry)', dash: '2 3' });
       if (isFinite(s.stop)) levels.push({ id: 'stop', label: 'Stop', value: s.stop, color: 'var(--chart-stop)' });
       else if (isFinite(lv.invalidation)) levels.push({ id: 'inv', label: 'Ungültig unter' + asOf, value: lv.invalidation, color: 'var(--chart-stop)' });
       if (s.strategyId === 'DARVAS_BOX' && isFinite(lv.boxBottom)) boxes.push({ from: lv.boxTopDate, to: null, top: lv.boxTop, bottom: lv.boxBottom, color: 'var(--chart-box-darvas)', label: 'Darvas-Box (VU)' });
       if (s.strategyId === 'MOMENTUM_BREAKOUT' && lv.baseStartDate) boxes.push({ from: lv.baseStartDate, to: null, top: lv.baseHigh, bottom: lv.baseLow, color: 'var(--chart-box-base)', label: 'Basis (VU)' });
       if (s.confirmation) markers.push({ date: s.confirmation.date, price: s.confirmation.close, kind: 'confirm' });
-      if (s.entry) markers.push({ date: s.entry.date, price: s.entry.price, kind: 'entry' });
-      (s.exits || []).forEach(function (x, i, arr) { markers.push({ date: x.date, price: x.price, kind: i < arr.length - 1 || x.fraction < 1 ? 'partial' : 'exit' }); });
+      if (s.entry && isFinite(s.entry.price)) markers.push({ date: s.entry.date, price: s.entry.price, kind: 'entry' });
+      (s.exits || []).filter(function (x) { return isFinite(x.price); }).forEach(function (x, i, arr) { markers.push({ date: x.date, price: x.price, kind: i < arr.length - 1 || x.fraction < 1 ? 'partial' : 'exit' }); });
       STChart.render(box, { bars: bars, mode: weekly ? 'line' : 'candles', window: weekly ? 104 : 90, overlays: overlays, levels: levels, boxes: boxes, markers: markers, showVolume: !weekly, title: s.symbol,
         status: (s.entry ? 'Modelleinstieg ▲ zur Eröffnung am ' + dateDe(s.entry.date) + '. ' : 'Noch kein Modelleinstieg — Linien sind geplante Schwellen. ') + 'Kurse bis ' + dateDe(bars.date[bars.date.length - 1]) + '.' });
     }).catch(function () { host.innerHTML = ''; host.appendChild(emptyBox('Chart nicht verfügbar', 'Die Kursdaten für diesen Titel konnten nicht geladen werden. Es wird kein Ersatzchart gezeichnet.')); });
