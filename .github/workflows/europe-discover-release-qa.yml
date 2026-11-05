@@ -3,9 +3,28 @@
 # workflow_dispatch re-runs the same checks against the current main head
 # without a push (e.g. after a data refresh committed by GITHUB_TOKEN, which
 # never triggers push workflows).
+#
+# ANCHOR (05.11.2026): runs 41929718926 and 41981113129 could not confirm the
+# first scheduled refresh. The resolver bound its review to the main head at
+# dispatch time and then (a) waited only 20 minutes for a release that, without
+# a pages-release trigger for the refresh, never came, and (b) refused the
+# release that finally shipped the data because an unrelated reviewed PR had
+# changed protected code (core/registry/workflow-bundles.json) in between.
+# Now: first wait (up to 40 minutes; a Pages release takes about 20 plus queue)
+# until the site serves a verified release of main that CONTAINS the required
+# commit (the refresh data commit, or this run's commit), then check out
+# exactly that published commit and run every assertion from it. The protected
+# scope check stays unchanged: it compares the published commit with itself
+# and with every later release observed during the run, so a further protected
+# change on the live site still fails closed.
 name: Europe Discover published release QA
 on:
   workflow_dispatch:
+    inputs:
+      required_source_sha:
+        description: 'Commit the published release must contain (default: the dispatched commit)'
+        type: string
+        default: ''
   push:
     branches: [main]
     paths:
@@ -23,7 +42,11 @@ concurrency:
 jobs:
   live:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
+    env:
+      # Validated as a 40-hex SHA by the resolver before any request.
+      REQUIRED_SOURCE_SHA: ${{ inputs.required_source_sha || github.sha }}
+      MAIN_REF: refs/remotes/origin/main
     steps:
       # No full clone: fetch-depth 0 pulled every branch, tag and blob (.git
       # about 16 GB). On 03.11.2026 run 41674582295 spent 43.5 of its 45
@@ -41,6 +64,36 @@ jobs:
           sparse-checkout: |
             scripts/discover
             scripts/access-gate
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # A re-dispatch may name an older refresh commit: deepen (commits and
+      # trees only) until it is reachable from the dispatched main commit.
+      - name: Required commit on the dispatched history (blobless, deepened)
+        run: |
+          set -euo pipefail
+          for deepen in 0 200 1000 5000; do
+            if [ "$deepen" != 0 ]; then git fetch --no-tags --filter=blob:none --deepen="$deepen" origin "$GITHUB_SHA"; fi
+            if git merge-base --is-ancestor "$REQUIRED_SOURCE_SHA" "$GITHUB_SHA" 2>/dev/null; then exit 0; fi
+          done
+          echo "::error::required commit is not on the history of the dispatched commit"; exit 1
+      - name: Await a verified main release that contains the required commit
+        id: published
+        env:
+          AWAIT_ONLY: '1'
+          SITE_URL: https://research.visionuniverse.de
+        run: node scripts/discover/resolve-europe-live-release.mjs
+      # From here on the QA is the published commit's own QA: same scripts,
+      # same protected code and data as the release the site serves.
+      - name: Check out exactly the published commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.published.outputs.published_sha }}
+          fetch-depth: 50
+          filter: blob:none
+          sparse-checkout: |
+            scripts/discover
+            scripts/access-gate
       # The resolver binds the reviewed commit to the latest first-parent
       # commit that touched the protected Europe code or data scope. In a
       # shallow history the boundary commit looks as if it touched every
@@ -49,7 +102,7 @@ jobs:
       # never is, fail loudly instead of binding to a wrong baseline.
       - name: First-parent history for the publication binding (blobless, deepened until the baseline is real)
         env:
-          REVIEWED_SHA: ${{ github.sha }}
+          REVIEWED_SHA: ${{ steps.published.outputs.published_sha }}
         run: |
           set -euo pipefail
           code='core discover scripts/discover scripts/marketstack quant/ui quant/engines'
@@ -63,18 +116,18 @@ jobs:
             echo "code baseline candidate: $c"; echo "data baseline candidate: $d"
             return 1
           }
+          required_reachable() { git merge-base --is-ancestor "$REQUIRED_SOURCE_SHA" "$REVIEWED_SHA" 2>/dev/null; }
           ok=""
           for deepen in 0 200 1000 5000; do
             if [ "$deepen" != 0 ]; then
-              echo "baseline candidate is a shallow boundary - deepening by $deepen"
+              echo "baseline candidate is a shallow boundary or the required commit is not yet reachable - deepening by $deepen"
               git fetch --no-tags --filter=blob:none --deepen="$deepen" origin "$REVIEWED_SHA"
             fi
-            if ! boundary_hit; then ok=1; break; fi
+            if ! boundary_hit && required_reachable; then ok=1; break; fi
           done
-          if [ -z "$ok" ]; then echo "::error::no real production baseline within the fetched history"; exit 1; fi
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+          if [ -z "$ok" ]; then echo "::error::no real production baseline (or the required commit) within the fetched history"; exit 1; fi
+          # Main history for the resolver's "published release is a release of main" check.
+          git fetch --no-tags --filter=blob:none origin "+refs/heads/main:$MAIN_REF"
       - name: Install pinned browser tools
         run: |
           npm install --prefix /tmp/europe-qa --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
@@ -83,7 +136,7 @@ jobs:
         id: resolve_europe
         if: ${{ !cancelled() }}
         env:
-          BASELINE_SOURCE_SHA: ${{ github.sha }}
+          BASELINE_SOURCE_SHA: ${{ steps.published.outputs.published_sha }}
           SITE_URL: https://research.visionuniverse.de
           RELEASE_TARGET_OUT: ${{ runner.temp }}/europe-live-target.json
         run: node scripts/discover/resolve-europe-live-release.mjs
@@ -107,7 +160,7 @@ jobs:
         id: resolve_global
         if: ${{ !cancelled() }}
         env:
-          BASELINE_SOURCE_SHA: ${{ github.sha }}
+          BASELINE_SOURCE_SHA: ${{ steps.published.outputs.published_sha }}
           SITE_URL: https://research.visionuniverse.de
           RELEASE_TARGET_OUT: ${{ runner.temp }}/global-live-target.json
         run: node scripts/discover/resolve-europe-live-release.mjs
@@ -130,7 +183,7 @@ jobs:
         id: resolve_continuity
         if: ${{ !cancelled() }}
         env:
-          BASELINE_SOURCE_SHA: ${{ github.sha }}
+          BASELINE_SOURCE_SHA: ${{ steps.published.outputs.published_sha }}
           SITE_URL: https://research.visionuniverse.de
           RELEASE_TARGET_OUT: ${{ runner.temp }}/continuity-live-target.json
         run: node scripts/discover/resolve-europe-live-release.mjs
