@@ -51,7 +51,8 @@ export const SPECS = {
      Gezeichnet ist der Marktbalken (C17); geprueft wird weiter: Titel, genug Inhalt, Quant genannt. */
   start: {path: '/quant/', critical: true, h1: 'Was hat sich heute verändert', minText: 2000, includes: ['Quant', 'Heute bei Quant']},
   radar: {path: '/quant/#/radar', h1: 'Was ist heute neu', minText: 8000, chart: GLOBE},
-  strategien: {path: '/quant/#/strategien', h1: 'Welche Art von Unternehmen', minText: 1500, chart: GLOBE},
+  /* Redesign 2027 (Q03): Frage als Titel, Strategie-Karten statt Globus. */
+  strategien: {path: '/quant/#/strategien', h1: 'Welche Art von Firma', minText: 1500, includes: ['Aktien heute']},
   screener: {path: '/quant/screener/', h1: 'Quant Screener', minText: 2000, chart: GLOBE, includes: ['Alle Kennzahlen']},
   // emptyOk: "Zuletzt analysiert" ist beim Erstbesuch ehrlich leer (die Einleitung erklaert, wo Aktien erscheinen) - kein Fehler.
   technical: {path: '/quant/technical/', h1: 'Welche Aktie', minText: 2500, chart: GLOBE, includes: ['Beobachten'], emptyOk: ['Zuletzt analysiert']},
