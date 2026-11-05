@@ -140,7 +140,7 @@
 .vu-switch:checked:before{left:21px;background:#000}
 
 /* C16 Sheet: von unten, abgerundet, Griff oben, dunkler Hintergrund */
-.vu-sheet-backdrop{position:fixed;inset:0;z-index:90;background:rgb(0 0 0/.45);display:flex;align-items:flex-end;justify-content:center}
+.vu-sheet-backdrop{position:fixed;inset:0;z-index:1000001;background:rgb(0 0 0/.45);display:flex;align-items:flex-end;justify-content:center}
 .vu-sheet-backdrop[hidden]{display:none}
 .vu-sheet-ui{width:100%;max-width:560px;max-height:88dvh;overflow:auto;border-radius:var(--vu-r-sheet) var(--vu-r-sheet) 0 0;background:var(--vu-white);color:var(--vu-ink);padding:10px 18px calc(24px + env(safe-area-inset-bottom))}
 :root[data-theme=dark] .vu-sheet-ui{background:var(--vu-black)}

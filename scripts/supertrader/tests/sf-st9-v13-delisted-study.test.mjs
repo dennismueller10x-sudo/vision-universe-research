@@ -10,7 +10,7 @@ import crypto from 'node:crypto';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import * as S from '../source-faithful/research/st9-v13-delisted-study.mjs';
-import { verifyRegistration, REGISTRATION_SHA256, REGISTRATION_FILE } from '../source-faithful/research/run-st9-v13-delisted-study.mjs';
+import { verifyRegistration, REGISTRATION_SHA256, REGISTRATION_FILE, REGISTRATION_1_0_0_SHA256 } from '../source-faithful/research/run-st9-v13-delisted-study.mjs';
 import { securityFromSegment } from '../source-faithful/runner/snapshot-input.mjs';
 import { REFERENCE_COSTS, SF6_REFERENCE_KEYS } from '../source-faithful/research/sf6-references.mjs';
 
@@ -74,6 +74,15 @@ const A0 = () => dsA([secA('tiingo:NYSE:BASE:2010-01-04', rows('2014-06-02', '20
 
 test('registration is pinned, frozen parameters reference the unchanged REF configuration', () => {
   assert.equal(verifyRegistration(ROOT), REGISTRATION_SHA256);
+  // 1.0.0 stays byte-identical; 1.0.1 amends only the hashes of validation/lib.mjs and analyze-methods.mjs (SF6-PAPER-2027 1.2.0)
+  const r100 = fs.readFileSync(path.join(ROOT, 'scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.0.json'));
+  assert.equal(crypto.createHash('sha256').update(r100).digest('hex'), REGISTRATION_1_0_0_SHA256);
+  const j100 = JSON.parse(r100), j101 = JSON.parse(fs.readFileSync(path.join(ROOT, REGISTRATION_FILE), 'utf8'));
+  assert.equal(j101.amends.sha256, REGISTRATION_1_0_0_SHA256);
+  const changed = Object.keys(j100.references.sha256).filter((k) => j100.references.sha256[k] !== j101.references.sha256[k]).sort();
+  assert.deepEqual(changed, ['scripts/supertrader/validation/analyze-methods.mjs', 'scripts/supertrader/validation/lib.mjs']);
+  for (const k of Object.keys(j100)) if (!['schemaVersion', 'registeredAt', 'references'].includes(k)) assert.deepEqual(j101[k], j100[k], k);
+  assert.deepEqual(Object.keys(j101.references.sha256), Object.keys(j100.references.sha256));
   const reg = JSON.parse(fs.readFileSync(path.join(ROOT, REGISTRATION_FILE), 'utf8'));
   assert.equal(reg.productionApproved, false);
   assert.deepEqual(reg.terminalScenarios.values, { MERGER: [0, -0.1, 0.1], DISTRESS: [0, -0.3, -1], UNKNOWN: [0, -0.3, -1] });

@@ -1,91 +1,91 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-11-04T03:43:55.035Z",
+  "checkedAt": "2026-11-04T19:39:29.550Z",
   "target": "repository",
   "market": {
-    "state": "CLOSED",
-    "localDate": "2026-11-03",
-    "localTime": "22:43:55",
+    "state": "OPEN",
+    "localDate": "2026-11-04",
+    "localTime": "14:39:29",
     "lastCompletedSession": "2026-11-03",
-    "currentSession": "2026-11-03",
-    "expectedIntradaySession": "2026-11-03"
+    "currentSession": "2026-11-04",
+    "expectedIntradaySession": "2026-11-04"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-11-03T20:08:28.120Z",
+    "indexGeneratedAt": "2026-11-04T18:19:47.035Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
-      "sessionDate": "2026-11-03",
+      "sessionDate": "2026-11-04",
       "kind": "current",
       "isRunning": true,
       "isComplete": false
     },
     "dataSession": {
-      "sessionDate": "2026-11-03",
-      "asOf": "2026-11-03T20:05:00.000Z",
-      "asOfLocal": "15:05",
+      "sessionDate": "2026-11-04",
+      "asOf": "2026-11-04T18:15:00.000Z",
+      "asOfLocal": "13:15",
       "regularComplete": false,
-      "snapshots": 1389,
+      "snapshots": 1376,
       "fetchedAfterClose": false,
       "afterCloseSnapshots": 0,
       "finalSlotSnapshots": 0,
       "universe": false
     },
     "dataState": "STALE",
-    "dataReason": "closeMissing",
-    "dataLabel": "Heute · Stand 15:05 · nicht aktuell",
-    "entries": 1404,
+    "dataReason": "runningSessionStaleAsOf",
+    "dataLabel": "Heute · Stand 13:15 · nicht aktuell",
+    "entries": 1397,
     "byState": {
       "LIVE": 0,
       "LAST_SESSION": 0,
-      "STALE": 1404,
+      "STALE": 1397,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "closeMissing": 1389,
-      "lastSessionMissing": 15
+      "runningSessionStaleAsOf": 1376,
+      "currentSessionMissing": 21
     },
     "staleSample": [
       "A",
       "AAMI",
-      "AAOI",
+      "AAON",
       "AAPL",
       "ABBV",
       "ABCL",
-      "ABG",
-      "ABLV",
       "ABNB",
       "ABT",
       "ABTC",
       "ABX",
+      "ACB",
       "ACCO",
       "ACEL",
+      "ACHC",
       "ACHR",
       "ACM",
       "ACMR",
       "ACN",
       "ACTG",
       "ACU",
-      "ADBE",
       "ADC",
       "ADI",
       "ADM",
-      "ADMA"
+      "ADMA",
+      "ADP"
     ],
     "universeSessions": [
-      "2026-11-02"
+      "2026-11-03"
     ],
-    "universeCoversLastSession": false,
+    "universeCoversLastSession": true,
     "state": "STALE"
   },
   "daily": {
     "universeAsOf": "2026-11-03",
-    "generatedAt": "2026-11-04T03:43:48.128Z",
+    "generatedAt": "2026-11-04T19:39:22.659Z",
     "state": "LAST_SESSION",
     "basis": "series",
     "summaryState": "LAST_SESSION",
     "reason": "lastCompletedSession",
-    "label": "Schluss Heute",
+    "label": "Schluss Dienstag",
     "seriesState": "LAST_SESSION",
     "summaryContradictsSeries": false,
     "expectedSession": "2026-11-03",
@@ -106,8 +106,7 @@
   },
   "overall": "STALE",
   "findings": [
-    "Intraday STALE: Datenstand 2026-11-03, erwartet 2026-11-03 (closeMissing)",
-    "Universumslauf fehlt: Sitzung 2026-11-03 liegt nur fuer den Discover-Umfang vor (6.7 h nach Schluss)"
+    "Intraday STALE: Datenstand 2026-11-04, erwartet 2026-11-04 (runningSessionStaleAsOf)"
   ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
