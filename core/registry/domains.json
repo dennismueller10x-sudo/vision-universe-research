@@ -22,10 +22,10 @@
       "role": "Produktuniversum: je Ticker eine Eignungsentscheidung (securityId, Klasse, Boerse, aktiv). Kanonische Universumsquelle (scripts/market/universe-source.mjs).",
       "producer": "scripts/market/build-us-eligibility.mjs (aus us-security-master.json)",
       "workflow": "security-master-eligibility.yml",
-      "schedule": "manuell mit Gate (scripts/core/eligibility-gate.mjs); Zeitplan nach dem Nachholen",
+      "schedule": "nach dem Security-Master-Lauf (mittwochs), mit Gate (scripts/core/eligibility-gate.mjs); manuell per workflow_dispatch",
       "freshness": { "kind": "hours", "warnAfter": 336, "staleAfter": 840 },
       "consumers": ["market-data-refresh (Abrufumfang)", "build-market-factors", "build-discover-data", "build-capability-matrix", "screener", "supertrader (indirekt ueber Discover)"],
-      "knownGaps": ["Nachholstand seit 15.09. ueber den Gate-Grenzen (05.11.2026: 473 Wechsel, 129 ELIGIBLE->EXCLUDED, Produktuniversum 6.686 -> 6.739); Uebernahme nur mit eigenem PR und Vorher/Nachher.", "Identitaet ist tickerbasiert (ADR-001)."]
+      "knownGaps": ["Identitaet ist tickerbasiert (ADR-001)."]
     },
     {
       "id": "usSecurityMaster",
@@ -379,7 +379,7 @@
       "minRecords": 3,
       "role": "Primaerquellen-Meldungen, redaktionell neu formuliert.",
       "producer": "scripts/dashboard/update_news.mjs",
-      "workflow": "update-news.yml",
+      "workflow": "content.yml",
       "schedule": "taeglich 05:17, 11:17, 17:17 UTC",
       "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 168 },
       "consumers": ["/news/"]
@@ -395,7 +395,7 @@
       "records": "symbols",
       "role": "Analystenurteile (Finnhub, FMP) fuer das Dashboard-Universum.",
       "producer": "scripts/dashboard/fetch_analyst_ratings.py",
-      "workflow": "update-analyst-ratings.yml",
+      "workflow": "content.yml",
       "schedule": "So 08:00 UTC",
       "freshness": { "kind": "hours", "warnAfter": 192, "staleAfter": 384 },
       "consumers": ["/analysten/"]
@@ -523,6 +523,33 @@
       },
       "consumers": [
         "spaetere Benachrichtigungen (nicht aktiviert, docs/accounts/WATCHLIST.md §7)"
+      ]
+    },
+    {
+      "id": "insiderPurchases",
+      "label": "Insider-Kaeufe (SEC Form 4)",
+      "layer": "PRODUCT",
+      "group": "Products",
+      "critical": false,
+      "artifact": "/insider/data/purchases.json",
+      "timestamp": ["generatedAt"],
+      "asOf": ["asOf"],
+      "records": "purchases",
+      "role": "Gemeldete, bepreiste nicht-derivative Erwerbe (Code P/A) aus SEC Form 4/4-A; Einreichungsdatum und PIT-Verfuegbarkeit je Transaktion. Keine Handelssignale.",
+      "producer": "scripts/insider/form4.py --from YYYY-MM-DD --as-of YYYY-MM-DD --out FILE",
+      "workflow": "sec-fundamentals-daily.yml",
+      "schedule": "taeglich 06:15 UTC (Job insider): zwei Einreichungstage, 90-Tage-Fenster (scripts/insider/merge.py), nur im Datenzweig data/live",
+      "freshness": { "kind": "hours", "warnAfter": 48, "staleAfter": 168 },
+      "activation": {
+        "state": "ACTIVATING",
+        "decision": "E2 beauftragt am 04.11.2026; im SEC-Tageslauf seit 05.11.2026 (#1378), erstes Artefakt im Datenzweig data/live (141 Kaeufe, 1.423 Einreichungen, 03.-05.11.). Bleibt ACTIVATING bis zum ersten Consumer."
+      },
+      "consumers": ["spaeter Discover/Hedgefonds (Z6; noch kein Consumer)"],
+      "knownGaps": [
+        "Begrenztes Einreichungsfenster, keine vollstaendige Historie; Code P umfasst auch private Kaeufe.",
+        "4/A bleibt ein eigenes Ereignis und darf nicht blind zum Original summiert werden.",
+        "Ticker wie eingereicht, keine historische Security-ID-Zuordnung; Waehrung im Formular nicht explizit.",
+        "Derivate und Transaktionen ohne positive numerische Preis-/Stueckangabe ausgeschlossen und gezaehlt."
       ]
     }
   ]

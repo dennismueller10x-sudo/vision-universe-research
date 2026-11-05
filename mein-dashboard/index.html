@@ -8,57 +8,79 @@
 <meta name="theme-color" content="#ffffff">
 <title>Mein Dashboard · Vision Universe</title>
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/vu-ui.css">
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#000000":"#ffffff");})();</script>
 <link rel="stylesheet" href="/konto/konto.css">
 <link rel="stylesheet" href="/mein-dashboard/dashboard.css">
 </head>
-<body class="ka-body md-body"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<body class="ka-body md-body vu-ui"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<!-- Mein Bereich, Plätze 1 und 2 der Leiste (Mockups E08 a–c): Watchlist mit Tageskarte, Gespeichert unter #/gespeichert. -->
 <main class="ka md" id="main">
 <header class="md-head">
-<p class="ka-eyebrow">Mein Dashboard</p>
-<h1 class="md-title" id="md-hello">Dein Bereich</h1>
-<p class="md-sub" id="md-sub" hidden><span class="ka-badge" id="md-plan"></span><a class="ka-link" href="/konto/">Konto und Abo</a></p>
+<p class="vu-ltag" id="md-eyebrow">Mein Dashboard</p>
+<div class="md-titlerow"><h1 class="vu-lt" id="md-hello">Watchlist</h1><span class="md-plan" id="md-plan" hidden></span></div>
+<p class="vu-lead md-only-saved">Was du in den Welten gemerkt hast. Übernimm es in deine Watchlist, dann ist es auf jedem Gerät da.</p>
 </header>
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
 <div class="ka-skeleton" id="md-loading" aria-hidden="true"></div>
 <div class="md-grid" id="md-app" hidden>
 
-<section class="md-card md-watch" id="md-watchlist" aria-labelledby="md-watch-title">
-<div class="md-sec-head"><h2 id="md-watch-title">Watchlist</h2><span class="md-count" id="md-watch-count"></span><a class="ka-link md-more" id="md-watch-all" href="/konto/watchlist/">Alle Kennzahlen</a></div>
-<div class="wl-add md-add">
-<label class="ka-legend md-visually-hidden" for="md-add">Aktie hinzufügen</label>
-<input class="ka-input" id="md-add" type="search" autocomplete="off" spellcheck="false" placeholder="Aktie hinzufügen, z. B. NVDA" role="combobox" aria-expanded="false" aria-controls="md-results" aria-autocomplete="list">
-<div class="wl-results" id="md-results" role="listbox" aria-label="Treffer" hidden></div>
+<section class="md-watch md-only-watch" id="md-watchlist" aria-labelledby="md-watch-title">
+<h2 id="md-watch-title" class="md-visually-hidden">Watchlist</h2>
+<div class="vu-box vu-box--ink md-day" id="md-day" hidden>
+<p class="md-day-date" id="md-day-date"></p>
+<p class="md-day-big"><b id="md-day-n"></b> <span id="md-day-unit"></span></p>
+<p class="md-day-sub" id="md-day-sub"></p>
+<ul class="md-day-chips" id="md-day-chips"></ul>
+</div>
+<div class="md-find" id="md-find">
+<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+<label class="md-visually-hidden" for="md-add">Aktie hinzufügen</label>
+<input id="md-add" type="search" autocomplete="off" spellcheck="false" placeholder="Aktie hinzufügen, z. B. Apple" role="combobox" aria-expanded="false" aria-controls="md-results" aria-autocomplete="list">
+<a class="md-find-atlas" href="/ask/" aria-label="Im AI Atlas fragen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></a>
+<div class="wl-results md-results" id="md-results" role="listbox" aria-label="Treffer" hidden></div>
+</div>
+<div class="vu-chips md-sort" id="md-sort" role="group" aria-label="Sortierung" hidden>
+<button class="vu-chip" type="button" data-sort="own" aria-pressed="true">Meine Reihenfolge</button>
+<button class="vu-chip" type="button" data-sort="move" aria-pressed="false">Bewegung heute</button>
+<button class="vu-chip" type="button" data-sort="name" aria-pressed="false">Name</button>
 </div>
 <ul class="md-rows" id="md-rows"></ul>
 <div class="md-empty" id="md-watch-empty" hidden>
-<p class="md-empty-title">Noch keine Aktien gespeichert</p>
-<p class="ka-muted">Suche oben nach einem Unternehmen oder tippe auf einer Aktienseite auf das Lesezeichen. Deine Auswahl gehört zu deinem Konto und ist auf jedem Gerät da.</p>
-<div class="ka-actions"><a class="ka-btn ka-btn--secondary" href="/discover/#/einzeln/US_REAL">Aktien entdecken</a></div>
+<div class="vu-box md-empty-box"><span class="vu-verdict vu-verdict--none" data-verdict="none"><span aria-hidden="true">○</span> Noch leer</span><p class="md-empty-title">Noch keine Aktien gespeichert</p><p class="vu-mu vu-sm">Merke dir Aktien, die dich interessieren: Tippe auf das Herz bei einer Aktie oder such sie oben. Hier siehst du dann jeden Tag, wie sie sich bewegt.</p></div>
+<h2 class="vu-sect">Beliebt zum Start</h2>
+<p class="vu-mu vu-xs md-popular-note">Häufig gesuchte Kürzel, keine Empfehlung.</p>
+<div class="md-popular" id="md-popular"></div>
 </div>
-<p class="md-fine" id="md-watch-fine">Schlusskurse aus den veröffentlichten Daten der Produktwelten, in der Währung des Listings. Keine Anlageberatung.</p>
+<p class="md-fine vu-mu vu-xs" id="md-watch-fine">Schlusskurse aus den veröffentlichten Daten, in der Währung des Listings. Keine Anlageberatung.</p>
+<div class="vu-stack md-cards">
+<a class="vu-navcard" id="md-watch-all" href="/konto/watchlist/"><span class="vu-hud md-hud"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg></span><span class="vu-navcard__text"><b>Alle Kennzahlen</b><span>Faktoren, Signale, Notizen je Aktie</span></span><span class="vu-pro">PRO-ANSICHT</span></a>
+<a class="vu-navcard" id="md-local-card" href="#/gespeichert"><span class="vu-hud md-hud"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg></span><span class="vu-navcard__text"><b id="md-local-card-title">Auf diesem Gerät gemerkt</b><span>Listen aus Discover und Quant übernehmen</span></span><svg class="vu-navcard__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+</div>
+<div class="vu-help md-help" id="md-help"><i aria-hidden="true">?</i><span>Die Bewegung ist die Änderung zum Schluss des Vortags. Neongrün heißt im Plus, schwarz im Minus. Nach links wischen entfernt eine Aktie.</span></div>
 </section>
 
-<section class="md-card md-local" id="md-local" hidden aria-labelledby="md-local-title">
-<div class="md-sec-head"><h2 id="md-local-title">Auf diesem Gerät gemerkt</h2></div>
-<p class="ka-muted" id="md-local-text"></p>
+<section class="md-local md-only-saved" id="md-local" aria-labelledby="md-local-title">
+<h2 class="vu-sect" id="md-local-title">Auf diesem Gerät gemerkt</h2>
+<p class="vu-mu vu-sm" id="md-local-text"></p>
 <ul class="md-sources" id="md-local-sources"></ul>
-<div class="ka-actions" id="md-local-actions" hidden><button class="ka-btn" type="button" id="md-local-import">In meine Watchlist übernehmen</button></div>
 </section>
 
-<section class="md-card md-shortcuts" aria-labelledby="md-short-title">
-<div class="md-sec-head"><h2 id="md-short-title">Schnellzugriff</h2></div>
+<section class="md-shortcuts md-only-saved" aria-labelledby="md-short-title">
+<h2 class="vu-sect" id="md-short-title">Schnellzugriff</h2>
 <ul class="md-tiles" id="md-tiles"></ul>
 </section>
 
 </div>
-<nav class="md-foot" aria-label="Weitere Bereiche"><a class="ka-link" href="/willkommen/">Startseite</a><a class="ka-link" href="/konto/">Mein Konto</a><a class="ka-link" href="/konto/einstellungen/">Einstellungen</a><button class="md-logout" type="button" id="md-logout" hidden>Abmelden</button></nav>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>
 <script src="/core/identity.js"></script>
 <script src="/core/stock-context.js"></script>
 <script src="/core/watchlist-view.js"></script>
+<script src="/assets/vu-ui.js"></script>
+<script src="/assets/vu-chart.js"></script>
+<script src="/mein-dashboard/today.js"></script>
 <script src="/mein-dashboard/dashboard.js"></script>
 </body>
 </html>

@@ -264,7 +264,7 @@
   };
   VS.bars = function (list, opts) {
     opts = opts || {};
-    var colors = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)", "var(--s5)"];
+    var colors = ["var(--ink)", "var(--ink)", "var(--ink)", "var(--ink)", "var(--ink)"];
     if (!list || !list.length) return VS.pending("Keine Daten", "Für diese Aufteilung liegen keine Werte vor.");
     var shown = list.slice(0, 5), rest = list.slice(5).reduce(function (a, x) { return a + x.weight; }, 0);
     if (rest > 0) shown.push({ label: "Weitere", weight: rest, other: true });
@@ -275,13 +275,108 @@
     }).join("") + '</div>';
   };
 
+  /* ------------------------------------------------- Redesign 2027: Muster
+     Bausteine aus assets/vu-ui.js (VUUI) plus die Vorsorge-Muster der Vorlage
+     (docs/design/redesign-2027, Kapitel 10): Beispiel-Marke, Gewichtsbalken,
+     ETF-Zeile, Regler, Ablauf-Kopf. Nur Weiss, Schwarz, Neongruen, Grau. */
+  var U = global.VUUI || null;
+  VS.U = U;
+  /** Seitenkopf: Etikett, Titel als Frage, ein Satz. */
+  VS.intro = function (title, lead, tag) {
+    return '<header class="vs-intro"><p class="vu-ltag">' + VS.esc(tag || "Vorsorge") + '</p><h1 class="vu-lt">' + VS.esc(title) + '</h1>' + (lead ? '<p class="vu-lead">' + VS.esc(lead) + '</p>' : "") + '</header>';
+  };
+  /** Vorsorge-Muster Beispiel-Marke: jede Rechnung mit Annahmen ist so markiert. */
+  VS.bsp = function (text) { return '<span class="vs-bsp">' + VS.esc(text || "Beispielrechnung") + '</span>'; };
+  /** Abschnittstitel (C13). */
+  VS.sect = function (title, href, link) { return U ? U.sect(title, href ? { href: href, link: link } : {}) : '<h2>' + VS.esc(title) + '</h2>'; };
+  /** Vorsorge-Muster Gewichtsbalken: Bezeichnung, Wert, Balken (lime = hervorgehoben). */
+  VS.wbar = function (label, value, share, lime, sub) {
+    var w = Math.max(0, Math.min(100, Number(share) || 0));
+    return '<div class="vs-wbar"><div class="vs-wbar-top"><span>' + VS.esc(label) + (sub ? ' <small>' + VS.esc(sub) + '</small>' : "") + '</span><b class="num">' + VS.esc(value) + '</b></div>' +
+      '<span class="vs-wbar-track"><i class="' + (lime ? "is-lime" : "") + '" style="width:' + w.toFixed(1) + '%"></i></span></div>';
+  };
+  /** Kachel (C11) mit optionaler Erklaerung (C09 „?“). */
+  VS.tile = function (label, value, sub, helpText) {
+    return '<div class="vu-tile"><div class="vu-tile__label">' + VS.esc(label) + (helpText && U ? " " + U.q(helpText, label) : "") + '</div><div class="vu-tile__value num">' + VS.esc(value === null || value === undefined || value === "" ? "–" : value) + '</div>' + (sub ? '<div class="vu-tile__sub">' + VS.esc(sub) + '</div>' : "") + '</div>';
+  };
+  VS.help = function (text) { return U ? U.help(text) : '<p class="vs-fine">' + VS.esc(text) + '</p>'; };
+  VS.verdict = function (kind, text) { return U ? U.verdict(kind, text) : '<span>' + VS.esc(text) + '</span>'; };
+  /** Kursbewegung C07 (Plus neongruene Pille, Minus schwarze Pille); Bruchteil (0.12 = 12 %). Traegt .vs-chg fuer die Regressions-QA. */
+  VS.chg = function (v, digits) {
+    var ok = v !== null && v !== undefined && isFinite(v);
+    return '<span class="vs-chg">' + (U ? U.chg(ok ? v * 100 : null, { digits: digits === undefined ? 2 : digits }) : VS.fmt.spct(v)) + '</span>';
+  };
+  /** Urteil zur Zielerreichung (Auf Kurs / Knapp / Nicht auf Kurs) als C08. */
+  VS.trackVerdict = function (t) {
+    var k = { ON_TRACK: "strong", CLOSE: "mid", OFF_TRACK: "weak" }[t && t.state] || "none";
+    return VS.verdict(k, t ? t.label : "Keine Aussage");
+  };
+  /** Vorsorge-Muster Regler: Bezeichnung, Wert gross, Schieberegler (echtes input type=range). */
+  VS.slider = function (id, label, value, o) {
+    o = o || {};
+    return '<div class="vs-slider"><label for="' + id + '"><span>' + VS.esc(label) + '</span><b class="num"><output id="' + id + '-out">' + VS.esc(o.fmt ? o.fmt(value) : value) + '</output> <small>' + VS.esc(o.unit || "") + '</small></b></label>' +
+      '<input type="range" id="' + id + '" name="' + id + '" min="' + o.min + '" max="' + o.max + '" step="' + (o.step || 1) + '" value="' + VS.esc(value) + '"></div>';
+  };
+  /* Zusatz-Symbole der Vorsorge-Mockups (Stern, Kreis-Anteil, Abspielen, Saeulen); alle anderen aus VUUI.glyph. */
+  var GLYPH_VS = {
+    star: '<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"/>',
+    pie: '<path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/>',
+    play: '<path d="M8 5.5v13l10-6.5z"/>',
+    bars: '<path d="M5 20V11M10 20V5M15 20v-7M20 20V8"/>'
+  };
+  VS.glyph = function (name, size) {
+    if (!GLYPH_VS[name]) return U ? U.glyph(name, size) : "";
+    var z = size || 18;
+    return '<svg width="' + z + '" height="' + z + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + GLYPH_VS[name] + '</svg>';
+  };
+  /** Navigationskarte (C12) mit Vorsorge-Symbolen. */
+  VS.navcard = function (o) {
+    return '<a class="vu-navcard" href="' + VS.esc(o.href) + '"><span class="vu-hud" style="--vu-hud:42px">' + VS.glyph(o.glyph, 21) + '</span><span class="vu-navcard__text"><b>' + VS.esc(o.title) + '</b>' + (o.sub ? '<span>' + VS.esc(o.sub) + '</span>' : "") + '</span>' + VS.glyph("next", 18).replace("<svg ", '<svg class="vu-navcard__go" ') + '</a>';
+  };
+  /** Logo-Kachel (C10) fuer ETFs: Kuerzel. */
+  VS.logo = function (sym) { return U ? U.logo(sym) : '<span class="vs-ava">' + VS.esc(sym) + '</span>'; };
+  /** Vorsorge-Muster ETF-Zeile: Logo, Alltagsname + Index, Mini-Chart, 1-Jahres-Bewegung. */
+  VS.etfRow = function (e, o) {
+    o = o || {};
+    var v = e.m && e.m.p ? e.m.p["1Y"] : null;
+    return '<a class="vs-erow" href="' + (VS.etfHref ? VS.etfHref(e) : "#/etf/" + encodeURIComponent(e.slug || e.symbol)) + '" data-sym="' + VS.esc(e.symbol) + '">' + VS.logo(e.symbol) +
+      '<span class="vs-erow-n"><b>' + VS.esc(o.title || e.category || e.symbol) + '</b><span>' + VS.esc(o.sub || e.index || VS.displayName(e.name)) + '</span></span>' +
+      (o.noSpark ? "" : '<span class="vs-erow-mini" aria-hidden="true"></span>') +
+      '<span class="vs-erow-p"><small>' + VS.esc(o.label || "1 Jahr") + '</small>' + VS.chg(v) + '</span></a>';
+  };
+  /** Wochenreihe eines ETFs (series/<slug>.json) – nur fuer Mini-Charts und Beispiele; null, wenn sie fehlt. */
+  VS.weekly = function (slug) {
+    return getJSON("/vorsorge/data/series/" + encodeURIComponent(slug) + ".json").then(function (s) { return V.Codec.decode(s.price.weekly); }).catch(function () { return null; });
+  };
+  /** Mini-Charts (C06 klein) in alle ETF-Zeilen eines Bereichs: die letzten 53 Wochen. */
+  VS.fillSparks = function (root) {
+    if (!global.VUChart) return;
+    [].forEach.call(root.querySelectorAll(".vs-erow[data-sym] .vs-erow-mini:empty"), function (el) {
+      var sym = el.parentNode.getAttribute("data-sym");
+      VS.weekly(sym).then(function (w) { if (w && w.length > 2) el.innerHTML = global.VUChart.sparkline(w.slice(-53).map(function (p) { return p[1]; }), { width: 58, height: 30 }); });
+    });
+  };
+  /** Sheet (C16) einmalig je Seite anlegen und oeffnen. */
+  VS.sheet = function (id, title, body) {
+    var old = document.getElementById(id); if (old) old.remove();
+    var wrap = document.createElement("div"); wrap.innerHTML = U ? U.sheet(id, title, body) : "";
+    var el = wrap.firstChild; if (!el) return null;
+    el.classList.add("vu-ui", "vs-vsheet");
+    document.body.appendChild(el);
+    if (U) U.openSheet(el);
+    el.addEventListener("click", function (ev) { if (ev.target.closest && ev.target.closest("[data-close]")) U.closeSheet(el); });
+    return el;
+  };
+  var helpBound = false;
+  VS.bindHelp = function () { if (!helpBound && U) { U.bindHelp(document); helpBound = true; } };
+
   /* ------------------------------------------------------------ Charts
      Linien-/Flaechendiagramm in SVG mit Fadenkreuz und Tooltip. Eine
      Achse, duenne Linien, Legende ab zwei Reihen. */
   VS.lineChart = function (el, series, opts) {
     opts = opts || {};
     var W = Math.max(300, Math.min(1100, Math.round(el.clientWidth || 720)));
-    var H = opts.height || (W < 500 ? 220 : 260), P = { l: W < 500 ? 46 : 58, r: 12, t: 12, b: 26 };
+    var H = opts.height || (W < 500 ? 220 : 260), P = { l: opts.padL || (W < 500 ? 46 : 58), r: 12, t: 12, b: 26 };
     var all = [];
     series.forEach(function (s) { s.points.forEach(function (p) { all.push(p); }); });
     if (all.length < 2) { el.innerHTML = VS.pending("Keine Kurshistorie", "Für diesen Zeitraum liegen keine Kurse vor."); return; }
@@ -312,14 +407,15 @@
       var xv = x0 + (x1 - x0) * j / xt;
       axis += '<text x="' + X(xv) + '" y="' + (H - 6) + '" text-anchor="' + (j === 0 ? "start" : j === xt ? "end" : "middle") + '">' + VS.esc(fmtX(xv)) + '</text>';
     }
-    var colors = opts.colors || ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)", "var(--s5)"];
+    /* C06 (Redesign 2027): eine schwarze Linie, weitere Reihen grau gestrichelt – keine Reihenfarben. */
+    var colors = opts.colors || ["var(--ink)", "var(--dim)", "var(--dim)", "var(--dim)", "var(--dim)"];
     var paths = series.map(function (s, k) {
       var d = s.points.map(function (p, n) { var xv = typeof p[0] === "number" ? p[0] : Date.parse(p[0]); return (n ? "L" : "M") + X(xv).toFixed(1) + "," + Y(p[1]).toFixed(1); }).join("");
       var col = s.color || colors[k % colors.length];
-      var area = s.area ? '<path d="' + d + "L" + X(typeof s.points[s.points.length - 1][0] === "number" ? s.points[s.points.length - 1][0] : Date.parse(s.points[s.points.length - 1][0])).toFixed(1) + "," + Y(Math.max(y0, 0)) + "L" + X(typeof s.points[0][0] === "number" ? s.points[0][0] : Date.parse(s.points[0][0])).toFixed(1) + "," + Y(Math.max(y0, 0)) + 'Z" fill="' + col + '" opacity=".14"/>' : "";
-      return area + '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"' + (s.dash ? ' stroke-dasharray="5 4"' : "") + '/>';
+      var area = (s.area || (k === 0 && opts.area !== false && !s.color)) ? '<path d="' + d + "L" + X(typeof s.points[s.points.length - 1][0] === "number" ? s.points[s.points.length - 1][0] : Date.parse(s.points[s.points.length - 1][0])).toFixed(1) + "," + Y(Math.max(y0, 0)) + "L" + X(typeof s.points[0][0] === "number" ? s.points[0][0] : Date.parse(s.points[0][0])).toFixed(1) + "," + Y(Math.max(y0, 0)) + 'Z" fill="' + (k === 0 ? "var(--accent)" : col) + '" opacity="' + (k === 0 ? ".28" : ".14") + '"/>' : "";
+      return area + '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"' + ((s.dash !== undefined ? s.dash : k > 0) ? ' stroke-dasharray="5 4"' : "") + '/>';
     }).join("");
-    var legend = series.length > 1 ? '<div class="vs-legend">' + series.map(function (s, k) { return '<span><i style="background:' + (s.color || colors[k % colors.length]) + '"></i>' + VS.esc(s.label) + '</span>'; }).join("") + '</div>' : "";
+    var legend = series.length > 1 ? '<div class="vs-legend">' + series.map(function (s, k) { var dashed = s.dash !== undefined ? s.dash : k > 0; return '<span><i class="' + (dashed ? "is-dash" : "") + '" style="background:' + (s.color || colors[k % colors.length]) + '"></i>' + VS.esc(s.label) + '</span>'; }).join("") + '</div>' : "";
     el.innerHTML = '<div class="vs-chart"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + VS.esc(opts.label || "Diagramm") + '"><g class="axis">' + grid + axis + '</g>' + paths +
       '<line class="xh" y1="' + P.t + '" y2="' + (H - P.b) + '" stroke="var(--dim)" stroke-width="1" visibility="hidden"/></svg><div class="tip" hidden></div></div>' + legend;
     var svg = el.querySelector("svg"), tip = el.querySelector(".tip"), xh = el.querySelector(".xh");
@@ -350,17 +446,20 @@
   /* Navigation: die gemeinsame Produkt-Leiste der Vision-Universe-Shell
      traegt Vorsorge | Plan | ETFs | Portfolio | ☰. Die weiteren Bereiche
      stehen am Ende jeder Ansicht (#vs-more) und im globalen Menue. */
-  var DOCK = { home: "vorsorge", plan: "plan", etfs: "etfs", portfolio: "portfolio" };
-  var MORE = [["vergleichen", "#/vergleichen", "Vergleichen"], ["foerderung", "#/foerderung", "Förderung"], ["monitor", "#/monitor", "Veränderungen"], ["wissen", "#/wissen", "Wissen"]];
+  var DOCK = { home: "vorsorge", plan: "plan", etfs: "etfs", portfolio: "portfolio", foerderung: "plan", monitor: "portfolio", vergleichen: "etfs", wissen: "vorsorge" };
+  var MORE = [["vergleichen", "#/vergleichen", "Vergleichen", "grid", "ETFs und Kosten"], ["foerderung", "#/foerderung", "Förderung", "star", "Zulagen 2027"],
+    ["monitor", "#/monitor", "Veränderungen", "bell", "Bin ich auf Kurs?"], ["wissen", "#/wissen", "Wissen", "book", "Begriffe, je ein Satz"]];
   VS.SECTION_OF = { home: "home", rechner: "plan", plan: "plan", luecke: "plan", kosten: "vergleichen", szenarien: "portfolio", etfs: "etfs", etf: "etfs",
     vergleich: "vergleichen", vergleichen: "vergleichen", portfolio: "portfolio", xray: "portfolio", foerderung: "foerderung", riester: "vergleichen",
-    fruehstart: "foerderung", anbieter: "vergleichen", monitor: "monitor", watchlist: "etfs", wissen: "wissen", daten: "wissen" };
+    fruehstart: "foerderung", anbieter: "vergleichen", monitor: "monitor", watchlist: "etfs", wissen: "wissen", daten: "wissen", start: "home" };
 
   function sections(active) {
     if (global.VUNavigation) global.VUNavigation.dock({ active: DOCK[active] || null });
     var el = document.getElementById("vs-more"); if (!el) return;
-    el.innerHTML = '<p class="vs-label">Mehr in Vorsorge</p><div>' + MORE.map(function (n) {
-      return '<a href="' + n[1] + '"' + (n[0] === active ? ' aria-current="page"' : "") + '>' + n[2] + '</a>';
+    var G = global.VUUI;
+    el.className = "vs-more vs-wrap vu-ui";
+    el.innerHTML = '<h2 class="vs-more-t">Mehr in Vorsorge</h2><div class="vs-more-grid">' + MORE.map(function (n) {
+      return '<a href="' + n[1] + '"' + (n[0] === active ? ' aria-current="page"' : "") + '><span class="vu-hud" style="--vu-hud:34px;border-radius:10px">' + VS.glyph(n[3], 18) + '</span><b>' + n[2] + '</b><small>' + n[4] + '</small></a>';
     }).join("") + '</div>';
   }
 
@@ -376,13 +475,16 @@
   function route() {
     var r = VS.parseHash();
     var view = VS.views[r.name] || VS.views.notfound;
+    /* V10: Vollbild-Ablauf ohne Kopf und Produkt-Leiste. */
+    document.documentElement.classList.toggle("vs-flow", r.name === "start");
+    [].forEach.call(document.querySelectorAll(".vs-vsheet"), function (x) { if (VS.U) VS.U.closeSheet(x); x.remove(); });
     sections(VS.SECTION_OF[r.name] || "home");
     if (first) { VS.analytics.track("vorsorge_open", {}); VS.analytics.track("retirement_open", {}); first = false; }
     try { view(r); }
     catch (e) { VS.render('<section class="vs-section"><h2>Diese Ansicht konnte nicht geladen werden.</h2><p class="vs-sub">' + VS.esc(e.message) + '</p></section>'); if (global.console) console.error(e); }
     if (!r.query.keepScroll) global.scrollTo(0, 0);
     var t = { home: "Vorsorge", rechner: "Altersvorsorge-Rechner", plan: "Vorsorgeplaner", etfs: "ETF Intelligence", etf: (r.args[0] || "") + " · ETF", portfolio: "Vorsorge-Portfolio",
-      vergleichen: "Vergleichen", foerderung: "Förderung", monitor: "Vorsorge-Monitor", wissen: "Wissen", europa: "Europäische ETFs" }[r.name] || "Vorsorge";
+      vergleichen: "Vergleichen", foerderung: "Förderung", monitor: "Bin ich auf Kurs?", wissen: "Wissen", europa: "Europäische ETFs", start: "Der 10-Euro-Sparplan" }[r.name] || "Vorsorge";
     document.title = t + " — Vision Universe®";
   }
   VS.go = function (hash) { if (location.hash === hash) route(); else location.hash = hash; };
@@ -405,6 +507,7 @@
   /* Theme: Hell/Dunkel schaltet der Knopf im gemeinsamen Kopf (theme-switch,
      dieselbe gemerkte Wahl vu-discover-theme-v1 wie alle Produkte). */
   VS.start = function () {
+    VS.bindHelp();
     global.addEventListener("hashchange", route);
     route();
   };

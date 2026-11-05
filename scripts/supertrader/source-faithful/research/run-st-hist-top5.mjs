@@ -22,7 +22,8 @@ import { fileURLToPath } from 'node:url';
 import * as L from '../../validation/lib.mjs';
 import { datasetFromPit } from '../runner/snapshot-input.mjs';
 import { codeSha256 as engineCodeSha256 } from '../runner/run-research.mjs';
-import { computeDiagnosticMetrics, cagr, maxDrawdown } from '../runner/metrics.mjs';
+import { computeDiagnosticMetrics } from '../runner/metrics.mjs';
+import { runTurtle } from '../methods/turtle.mjs';
 import { attachSecPit } from './run-sf3-research.mjs';
 import { SF6_REFERENCES } from './sf6-references.mjs';
 import { SF6_VALIDATION_PROTOCOL } from './run-sf6-validation.mjs';
@@ -31,10 +32,13 @@ import * as X from './st9-hist-execution.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.1.0';
-/** Delisting-Erlös als Sensitivität (Prüfung Strang E): 100 %, 70 % und 0 % des letzten Schlusses, nachträglich auf die Kurve
- *  gebucht (keine Wiederanlage der Differenz, wie st9-v13-delisted-study#terminalScenarioAdjust). Die Referenz bleibt 100 %. */
-export const DELISTING_PROCEEDS = Object.freeze([['DELIST_100', 0], ['DELIST_70', -0.3], ['DELIST_0', -1]]);
+export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.2.0';
+/** Delisting-Erlös als Sensitivität (Prüfung Strang E): echte Neuläufe mit den vorhandenen Abrechnungsszenarien der Engines
+ *  (validation/portfolio.mjs SCENARIOS, Wiederanlage inklusive). 100 % = Referenz S0_LAST_PRICE, 70 % = S1_MINUS_30,
+ *  S2_DISTRESS_ZERO = 0 % bei Insolvenz-Delisting, sonst 70 %. Ein Szenario „0 % für alle“ hat die Engine nicht (eine neue
+ *  Abrechnungsregel wäre ein Fachmodell). Version 1.1.0 buchte die Differenz nachträglich auf die Kurve; das ergibt bei fast
+ *  leerem Konto Verluste über 100 % und ist ersetzt. */
+export const DELISTING_PROCEEDS = Object.freeze([['DELIST_100', 'S0_LAST_PRICE'], ['DELIST_70', 'S1_MINUS_30'], ['DELIST_DISTRESS_0', 'S2_DISTRESS_ZERO']]);
 export const TOP5 = Object.freeze(['TURTLE_S1', 'TURTLE_S2', 'DARVAS', 'KK_BREAKOUT', 'BUYABLE_GAP_UP']);
 export const LABEL = Object.freeze({ evidenceKind: 'HISTORICAL_RESEARCH_BACKTEST', label: 'Forschung, nicht zertifiziert', certification: 'DIAGNOSTIC_NOT_CERTIFIED', productionApproved: false, performanceClaim: 'NONE', publication: 'OWNER_DECISION_REQUIRED' });
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz';
@@ -59,13 +63,19 @@ export function summarizeRun(r, ds, { protocol = SF6_VALIDATION_PROTOCOL } = {})
   };
 }
 
-/** Gesamtrendite, CAGR und max. Verlust je Annahme zum Delisting-Erlös (nur Abrechnungen TERMINAL_DELISTED). */
-export function delistingSensitivity(r) {
-  return Object.fromEntries(DELISTING_PROCEEDS.map(([id], k) => {
-    const adj = S.terminalScenarioAdjust(r.run.curve, r.run.ledger, () => DELISTING_PROCEEDS.map(([, d]) => d), k);
-    const curve = adj.curve.length ? [{ date: adj.curve[0].date, equity: INITIAL_CAPITAL }, ...adj.curve] : adj.curve;
-    const end = curve.at(-1)?.equity ?? null;
-    return [id, { totalReturn: end !== null ? end / INITIAL_CAPITAL - 1 : null, cagr: cagr(curve), maxDrawdown: maxDrawdown(curve), settlements: adj.shocks }];
+/** Ein Lauf derselben Referenz mit anderem Abrechnungsszenario für Delistings (Turtle: Szenario-Option; sf5: Policy). */
+export function runWithTerminalScenario(ref, ds, { window, costs, prep, scenario }) {
+  if (ref.key.startsWith('TURTLE_')) {
+    const r = runTurtle(ds, { system: ref.key === 'TURTLE_S1' ? 'S1' : 'S2', from: window.from, to: window.to, scenario, slippageBps: costs.slippageBps, commissionBps: costs.commissionBps });
+    return { run: r, trades: r.positionTrades.map((t) => ({ id: t.id, entryDate: t.entryDate, exitDate: t.exitDate, exitReason: t.reason, status: 'CLOSED', pnl: t.pnl })), metricTrades: r.positionTrades };
+  }
+  return ref.run(ds, { from: window.from, to: window.to, costs: { ...costs, terminalScenario: scenario }, ...prep });
+}
+/** Gesamtrendite, CAGR, max. Verlust und Trefferquote je Annahme zum Delisting-Erlös. */
+export function delistingSensitivity(ref, ds, { window, costs, prep }) {
+  return Object.fromEntries(DELISTING_PROCEEDS.map(([id, scenario]) => {
+    const x = summarizeRun(runWithTerminalScenario(ref, ds, { window, costs, prep, scenario }), ds);
+    return [id, { scenario, trades: x.trades, hitRate: x.hitRate, totalReturn: x.totalReturn, cagr: x.cagr, maxDrawdown: x.maxDrawdown }];
   }));
 }
 /** Wie oft endet eine Position durch Delisting, durch eine Datenlücke (zensiert) oder regulär. */
@@ -98,7 +108,7 @@ export function runTop5(ds, { methods = TOP5, costLevels = SF6_VALIDATION_PROTOC
       out[key].costs[c.id] = summarizeRun(r, ds);
       out[key].costs[c.id].tradesSha256 = sha(r.trades.map((t) => [t.id, t.entryDate, t.exitDate, t.pnl]));
       if (c.id === 'REF') {
-        out[key].delistingProceeds = delistingSensitivity(r);
+        out[key].delistingProceeds = delistingSensitivity(ref, ds, { window, costs: { slippageBps: c.slippageBps, commissionBps: c.commissionBps }, prep });
         out[key].exitCensus = exitCensus(r);
       }
       if (c.id === 'REF' && audit) {

@@ -5,13 +5,22 @@ name: Produktuniversum (Eignung aus dem Security Master, mit Gate)
 # Ablauf: neuer Stand nach $RUNNER_TEMP, Gate gegen den committeten Stand, Bericht als Artefakt,
 # Commit nur mit commit=true UND Gate COMMIT. Ein Nachholen ueber die Grenzen hinaus braucht einen
 # eigenen PR mit Vorher/Nachher (CLAUDE.md), nicht diesen Lauf.
-# Kein Zeitplan, bis der Nachholstand uebernommen ist (Stand 05.11.2026: 473 Wechsel, Gate BLOCKED);
-# danach folgt dieser Lauf dem Security-Master-Lauf (workflow_run).
+# Zeitplan: folgt dem woechentlichen Security-Master-Lauf (workflow_run, nur main). Ein solcher Lauf committet nur bei
+# Gate COMMIT unter den normalen Grenzen, ohne Freigabeliste; sonst rot und Alarm. Das Nachholen vom 05.11.2026
+# (eligibility-catchup-2026-11, 228 Wechsel) ist uebernommen (Commit c5357718cb).
 on:
+  workflow_run:
+    workflows: ['Security Master + Firmennamen (wöchentlich)']
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       commit:
         description: 'Ergebnis committen (nur bei Gate COMMIT)'
+        type: boolean
+        default: false
+      approved_catchup:
+        description: 'Freigabeliste docs/data/security-master/eligibility-catchup-2026-11.json anwenden (Nachholen, PR mit Vorher/Nachher)'
         type: boolean
         default: false
 
@@ -25,6 +34,8 @@ concurrency:
 
 jobs:
   eligibility:
+    # nach dem Security-Master-Lauf nur, wenn dieser gruen war
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -43,12 +54,25 @@ jobs:
           node scripts/market/build-us-eligibility.mjs --master "$N/us-security-master.json" \
             --previous "$N/eligibility.json" --names "$N/company-names.json" \
             --out "$RUNNER_TEMP/elig/out" --scale-out "$RUNNER_TEMP/elig/scale"
+          # Vollstaendige Erzeugerkette (wie der committete Stand entstanden ist): ohne die beiden Schritte kaemen
+          # boersennotierte Anleihen und ETNs als Stammaktie ins Produkt (Probelauf 05.11.2026: 147).
+          E="$RUNNER_TEMP/elig"
+          node scripts/market/apply-name-layer-class.mjs --classes DEBT --eligibility "$E/out/eligibility.json" \
+            --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json" \
+            --names "$N/company-names.json"
+          mkdir -p "$E/exchange-directory"
+          node scripts/market/apply-exchange-directory.mjs --dir "$E/exchange-directory" --eligibility "$E/out/eligibility.json" \
+            --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json"
 
       - name: Gate (fail closed)
         id: gate
+        env:
+          IN_APPROVED: ${{ inputs.approved_catchup }}
         run: |
+          extra=()
+          if [ "$IN_APPROVED" = "true" ]; then extra=(--approved docs/data/security-master/eligibility-catchup-2026-11.json); fi
           set +e
-          node scripts/core/eligibility-gate.mjs --prev quant/data/market/security-master/eligibility.json \
+          node scripts/core/eligibility-gate.mjs "${extra[@]}" --prev quant/data/market/security-master/eligibility.json \
             --next "$RUNNER_TEMP/elig/out/eligibility.json" \
             --prev-universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json \
             --next-universe "$RUNNER_TEMP/elig/scale/universe-ELIGIBLE_US_EQUITY.json" \
@@ -68,7 +92,7 @@ jobs:
           retention-days: 30
 
       - name: Commit (nur mit commit=true und Gate COMMIT)
-        if: inputs.commit == true && steps.gate.outputs.decision == 'COMMIT'
+        if: (github.event_name == 'workflow_run' || inputs.commit == true) && steps.gate.outputs.decision == 'COMMIT'
         env:
           PUSH_OWNED_PATHS: quant/data/market/security-master/eligibility.json quant/data/market/security-master/eligibility-reconciliation.json quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json
         run: |

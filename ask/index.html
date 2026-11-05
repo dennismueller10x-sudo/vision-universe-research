@@ -7,7 +7,7 @@
 <link rel="icon" href="data:,">
 <meta name="robots" content="noindex, nofollow">
 <title>AI Atlas — Vision Universe</title>
-<meta name="description" content="Stellen Sie eine Investmentfrage in eigenen Worten – Vision Universe übersetzt sie in Filter und rechnet sie auf echten Daten aus Screener, Supertrader und Quant.">
+<meta name="description" content="Stell deine Frage in eigenen Worten – Atlas übersetzt sie in Filter, gerechnet wird auf den Daten von Vision Universe (Screener, Supertrader, Quant).">
 <!-- Adresse des Workers workers/vu-ask. Antwortet er nicht oder fehlt der
      Anthropic-Schluessel, sagt die Seite "noch nicht freigeschaltet", statt
      still zu scheitern. Leer = Fragefunktion aus. -->
@@ -15,10 +15,13 @@
 <!-- Optional: Cloudflare-Turnstile-Site-Key (oeffentlich). Leer = aus. -->
 <meta name="vu-ask-turnstile" content="">
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/vu-ui.css">
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#000000":"#ffffff");})();</script>
 <link rel="stylesheet" href="/ask/ask.css">
 </head>
-<body class="ak"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<body class="ak vu-ui"><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<!-- AI Atlas (Mockup E10): Vollbild-Werkzeug mit eigener Kopfzeile (Zurück, Atlas, BETA, Schließen), ohne Produkt-Leiste. -->
+<header class="ak-hd"><a class="vu-round ak-hd-back" id="ak-back" href="/" aria-label="Zurück"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a><b class="ak-hd-title">Atlas</b><span class="ak-beta">BETA</span><a class="vu-round ak-hd-close" id="ak-close" href="/" aria-label="Atlas schließen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></a></header>
 <main id="ak-main" class="ak-app" tabindex="-1"></main>
 <noscript><p style="padding:24px">Die Fragefunktion benötigt JavaScript.</p></noscript>
 <script src="/core/query-engine.js"></script>
@@ -28,6 +31,10 @@
 <script src="/screener/engine/adapters.js"></script>
 <script src="/quant/api/technical-intelligence-workspace.js"></script>
 <script src="/quant/engines/technical/ti/ai-tools.js"></script>
+<script src="/core/identity.js"></script>
+<script src="/assets/vu-ui.js"></script>
+<script src="/assets/vu-chart.js"></script>
+<script src="/mein-dashboard/today.js"></script>
 <script src="/ask/engine.js"></script>
 <script src="/ask/app.js"></script>
 </body>

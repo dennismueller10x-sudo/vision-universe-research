@@ -76,7 +76,10 @@ const shownPro = (await page.textContent('[data-price=pro]')).replace(/\s/g, ' '
 const expectedPro = new Intl.NumberFormat('de-DE', {style: 'currency', currency: proMonth.currency}).format(proMonth.unitAmount / 100).replace(/\s/g, ' ');
 check(shownPro === expectedPro, `Preise: Pro-Preis aus dem Backend (${shownPro} = ${expectedPro})`);
 check(await page.isVisible('#pr-test-tag') === (plansApi.checkout !== 'public'), `Preise: Hinweis "interner Testpreis" genau solange der Checkout nicht oeffentlich ist (${plansApi.checkout})`);
-check(await page.isVisible('#pr-same') && await page.locator('#pr-rows tr').count() === Object.keys(plansApi.plans.find(p => p.id === 'free').features).length,
+// E08: der Vergleich traegt feste Zeilen zum Tarif und darunter jede Funktion genau wie im Backend.
+const freeKeys = Object.keys(plansApi.plans.find(p => p.id === 'free').features), rowsText = await page.textContent('#pr-rows');
+const featureName = (k) => ((plansApi.features || []).find(f => f.key === k) || {}).description || k;
+check(await page.isVisible('#pr-same') && freeKeys.length > 0 && freeKeys.every(k => rowsText.includes(featureName(k))),
   'Preise: Funktionsumfang aus dem Backend, identisch');
 await audit(page, 'Preise ohne Anmeldung');
 await shot(page, '00-preise');
@@ -89,7 +92,8 @@ check(await page.isVisible('#ka-plan-hint'), 'Hinweis: Pro gewaehlt');
 await page.fill('#email', email);
 await page.fill('#display-name', 'QA Person');
 await page.fill('#password', 'kurz');
-check((await page.textContent('#pw-rules')).includes('· 10 bis 72 Zeichen'), 'Passwort-Hinweis live');
+// E04: Haken-Liste; die Laengen-Regel ist bei „kurz“ offen.
+check(await page.locator('#pw-rules li', {hasText: '10 bis 72 Zeichen'}).getAttribute('data-ok') === 'false', 'Passwort-Hinweis live');
 await page.fill('#password', password);
 await page.check('#terms');
 await shot(page, '01-registrieren');
@@ -136,7 +140,8 @@ await page.click('text=Zahlungspflichtig abonnieren');
 await page.waitForURL(/\/konto\/abo\/\?checkout=success/);
 // Bestaetigt die Datenbank Pro (Webhook), geht es weiter zur Willkommensseite.
 await page.waitForURL(/\/willkommen\/$/, {timeout: 20000});
-check((await page.textContent('#wk-flash')).includes('Pro-Abonnement ist aktiv'), 'nach bestaetigter Zahlung: Willkommensseite');
+// E02: der Hinweis bestaetigt Pro in Worten der Vorlage („Willkommen bei Pro. Dein Abo ist aktiv.“).
+check(/Pro\b[\s\S]*\bist aktiv/.test(await page.textContent('#wk-flash')), 'nach bestaetigter Zahlung: Willkommensseite');
 await page.goto(`${base}/konto/abo/`);
 await page.waitForSelector('#ka-sub .ka-kv');
 check((await page.textContent('#ka-sub')).includes('Pro') && (await page.textContent('#ka-sub')).includes('Aktiv'), 'Pro aktiv nach Checkout');
@@ -157,9 +162,11 @@ await page.waitForSelector('.ka-plan[data-plan=pro][data-current=true]');
 check((await page.textContent('.ka-plan[data-plan=pro]')).includes('Dein Tarif') && !(await page.$('#ka-choose-pro')), 'Doppelabo verhindert');
 await page.goto(`${base}/konto/`);
 await page.waitForSelector('#ka-account:not([hidden])');
-check((await page.textContent('#ka-account-facts')).includes('Pro'), 'Konto zeigt Pro');
+// E07: der Tarif steht in der Tarif-Karte des Kontos.
+check((await page.textContent('#ka-plan-name')).includes('Pro'), 'Konto zeigt Pro');
 await page.goto(`${base}/preise/`);
-await page.waitForSelector('#pr-signed-in:not([hidden])');
+// E08: angemeldet markiert die Preisseite den eigenen Tarif („Dein Tarif“) und fuehrt zu „Mein Bereich“.
+await page.waitForSelector('.pr-plan[data-current=true]');
 check(await page.isVisible('.pr-plan[data-plan=pro] [data-current-tag]') && (await page.getAttribute('#pr-choose-pro', 'href')) === '/konto/abo/',
   'Preise angemeldet: Pro ist dein Tarif, Verwaltung im Konto');
 

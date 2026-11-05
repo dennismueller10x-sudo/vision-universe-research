@@ -29,9 +29,12 @@ test("DB-1 · Steckbrief: jede Datenart ist registriert, ihr Pfad gehoert genau 
     const reg = DOMAINS.domains.find((x) => x.id === d.id); assert.ok(reg, d.id + " fehlt in domains.json");
     for (const p of d.paths) {
       assert.equal(contractFor(DOMAINS, p)?.id, d.id, p);
-      assert.ok(existsSync(join(ROOT, p)), p + " liegt als Rueckfall in main");
-      // Rueckfall muss lesbar sein; die Mindestzahl prueft die Frische-Ueberwachung, nicht dieser Test.
-      assert.notEqual(inspect(readFileSync(join(ROOT, p)), contractFor(DOMAINS, p)).reason, "INVALID_JSON", p);
+      if (d.phase === "DUAL_WRITE") {
+        assert.ok(existsSync(join(ROOT, p)), p + " liegt als Rueckfall in main");
+        // Rueckfall muss lesbar sein; die Mindestzahl prueft die Frische-Ueberwachung, nicht dieser Test.
+        assert.notEqual(inspect(readFileSync(join(ROOT, p)), contractFor(DOMAINS, p)).reason, "INVALID_JSON", p);
+      }
+      // BRANCH_ONLY: die Daten liegen nur im Datenzweig. Fehlt der Pfad dort, bricht der Pages-Bau ab (MISSING, DB-5).
     }
     assert.match(readFileSync(join(ROOT, ".github/workflows", d.workflow), "utf8"), /scripts\/ci\/push-data-branch\.sh/, d.workflow);
   }
@@ -39,7 +42,7 @@ test("DB-1 · Steckbrief: jede Datenart ist registriert, ihr Pfad gehoert genau 
 
 test("DB-2 · Gleichstand (DUAL_WRITE) wird als IDENTICAL ausgeliefert", () => {
   const w = world({ main: feed("2026-11-04T10:00:00Z"), branch: feed("2026-11-04T10:00:00Z"), site: feed("2026-11-04T10:00:00Z") });
-  const r = overlay(w); assert.equal(r.complete, true); assert.deepEqual(r.counts, { IDENTICAL: 1, OVERLAID: 0, KEPT_MAIN: 0, MISSING: 0 });
+  const r = overlay(w); assert.equal(r.complete, true); assert.deepEqual(r.counts, { IDENTICAL: 1, OVERLAID: 0, KEPT_MAIN: 0, MISSING: 0, PENDING_FIRST_RUN: 0 });
 });
 
 test("DB-3 · Neuerer Datenzweig wird ausgeliefert, aelterer nicht (monoton)", () => {
@@ -62,6 +65,11 @@ test("DB-5 · Vollstaendigkeit: fehlt der Datenzweig, bleibt main; fehlt beides,
   let w = world({ main: feed("2026-11-04T10:00:00Z"), branch: null, site: null });
   let r = overlay(w); assert.equal(r.rows[0].reason, "NOT_ON_BRANCH"); assert.equal(r.complete, true); assert.ok(existsSync(join(w.siteDir, NEWS)));
   w = world({ main: null, branch: null, site: null });
+  r = overlay(w); assert.equal(r.rows[0].status, "MISSING"); assert.equal(r.complete, false);
+  // Neue Datenart vor ihrem ersten Lauf: nichts auszuliefern, kein Abbruch; danach gilt die volle Regel.
+  w = world({ main: null, branch: null, site: null }); w.manifest.domains[0].pendingFirstRun = true;
+  r = overlay(w); assert.equal(r.rows[0].status, "PENDING_FIRST_RUN"); assert.equal(r.complete, true);
+  w = world({ main: null, branch: "{kaputt", site: null }); w.manifest.domains[0].pendingFirstRun = true;
   r = overlay(w); assert.equal(r.rows[0].status, "MISSING"); assert.equal(r.complete, false);
 });
 

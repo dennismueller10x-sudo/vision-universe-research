@@ -6,8 +6,8 @@
   const groups = [
     {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', claim:'Aktien entdecken', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
     {id:'quant', label:'Quant', href:'/quant/', icon:'quant', claim:'Faktoren je Aktie', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Strategien','/quant/#/strategien','◬'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
-    {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Methodik','/technical/#/methodik','▤']]},
-    {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', claim:'Zahlen aus SEC-Berichten', entries:[['Übersicht','/fundamental/#/','⌂'],['Entdecken','/fundamental/#/entdecken','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
+    {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Muster','/technical/#/muster','▤']]},
+    {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', claim:'Zahlen aus SEC-Berichten', entries:[['Übersicht','/fundamental/#/','⌂'],['Ranglisten','/fundamental/#/ranglisten','◇'],['Branchen','/fundamental/#/branchen','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
     {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', claim:'Methoden der Profis', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Signale','/supertrader/signals/','◬'],['Backtests','/supertrader/backtests/','▧'],['Quellen','/supertrader/sources/','▤']]},
     {id:'hedgefonds', label:'Hedgefonds', href:'/hedgefonds/', icon:'hedgefonds', claim:'Was Investoren halten', entries:[['Übersicht','/hedgefonds/','⌂'],['Investoren','/hedgefonds/#/investoren','♙'],['Datenbank','/hedgefonds/#/datenbank','▧'],['Aktien','/hedgefonds/#/aktien','⌁'],['Smart Money','/hedgefonds/#/smart-money','◬']]},
     {id:'elliott', label:'Elliott', href:'/elliott/', icon:'elliott', claim:'Wellenstruktur', entries:[['Übersicht','/elliott/','⌂'],['Welle 3','/elliott/#/?welle=3','◬'],['Aufwärts','/elliott/#/?richtung=auf','↗'],['Abwärts','/elliott/#/?richtung=ab','↘'],['Neu und verändert','/elliott/#/?neu=1','✧'],['Suchen','/elliott/#/?suche=1','⌕']]},
@@ -37,7 +37,7 @@
         const k = hashPart(loc, 0);
         if (!k) return 'discover';
         if (k === 'c') { const themes = globalThis.VUDiscover?.Views?.Themes; return themes && themes.byRow(hashPart(loc, 2)) ? 'welten' : 'strategien'; }
-        return {welten: 'welten', thema: 'welten', strategien: 'strategien', einzeln: 'entdecken'}[k] || null;
+        return {welten: 'welten', thema: 'welten', strategien: 'strategien', einzeln: 'entdecken', swipen: 'entdecken'}[k] || null;
       }},
     {id: 'elliott', label: 'Elliott', match: (p, loc) => p.startsWith('/elliott/') || isElliottDetail(p, loc),
       items: [['elliott','Elliott','/elliott/','elliott'],['welle3','Welle 3','/elliott/#/?welle=3','wave'],['neu','Neu','/elliott/#/?neu=1','spark'],['suche','Suche','/elliott/#/?suche=1','search']],
@@ -62,13 +62,15 @@
     /* Fundamental: eigenes Produkt. #/<TICKER> ist die Unternehmensseite (nur Produktkontext); Entdecken und Suche sind
        Ansichten der Startseite, die fundamental/app.js (VUFundamental.Model.parseRoute) liest. */
     {id: 'fundamental', label: 'Fundamental', match: p => p.startsWith('/fundamental/'),
-      items: [['fundamental','Fundamental','/fundamental/#/','fundamental'],['entdecken','Entdecken','/fundamental/#/entdecken','explore'],['suche','Suche','/fundamental/#/suche','search'],['methodik','Methodik','/fundamental/#/methodik','table']],
-      active: loc => loc.pathname === '/fundamental/' ? ({'': 'fundamental', entdecken: 'entdecken', suche: 'suche', methodik: 'methodik'}[hashPart(loc, 0)] || null) : null},
+      /* Redesign 2027 (F01–F05): Ranglisten · Branchen · Methodik; die Suche steht im Kopf (#/suche bleibt erreichbar). */
+      items: [['fundamental','Fundamental','/fundamental/#/','fundamental'],['ranglisten','Ranglisten','/fundamental/#/ranglisten','explore'],['branchen','Branchen','/fundamental/#/branchen','worlds'],['methodik','Methodik','/fundamental/#/methodik','table']],
+      active: loc => loc.pathname === '/fundamental/' ? ({'': 'fundamental', ranglisten: 'ranglisten', entdecken: 'ranglisten', branchen: 'branchen', methodik: 'methodik'}[hashPart(loc, 0)] || null) : null},
     /* Technical: eigenes Produkt. #/chart/<TICKER> ist das Chart Studio einer Aktie; ohne Kuerzel die Auswahl.
        Der Chart-Eintrag zeigt per dock({hrefs:{chart}}) auf die zuletzt geoeffnete Aktie (technical/app.js). */
     {id: 'technical', label: 'Technical', match: p => p.startsWith('/technical/'),
-      items: [['technical','Technical','/technical/#/','technical'],['screener','Screener','/technical/#/screener','screener'],['chart','Chart','/technical/#/chart','signals','Chart Studio'],['methodik','Methodik','/technical/#/methodik','table']],
-      active: loc => loc.pathname === '/technical/' ? ({'': 'technical', screener: 'screener', chart: 'chart', methodik: 'methodik'}[hashPart(loc, 0)] || null) : null},
+      items: [['technical','Technical','/technical/#/','technical'],['screener','Screener','/technical/#/screener','screener'],['chart','Chart','/technical/#/chart','signals','Chart Studio'],['muster','Muster','/technical/#/muster','table']],
+      /* Redesign 2027 (T05): „Muster“ ersetzt „Methodik“; #/methodik zeigt dieselbe Seite. */
+      active: loc => loc.pathname === '/technical/' ? ({'': 'technical', screener: 'screener', chart: 'chart', muster: 'muster', methodik: 'muster'}[hashPart(loc, 0)] || null) : null},
     {id: 'vorsorge', label: 'Vorsorge', match: p => p.startsWith('/vorsorge/'),
       items: [['vorsorge','Vorsorge','/vorsorge/#/','vorsorge'],['plan','Planer','/vorsorge/#/plan','plan'],['etfs','ETFs','/vorsorge/#/etfs','etf'],['portfolio','Portfolio','/vorsorge/#/portfolio','portfolio']],
       active: loc => {
@@ -90,7 +92,17 @@
       }},
     {id: 'hedgefonds', label: 'Hedgefonds', match: p => p.startsWith('/hedgefonds/'),
       items: [['hedgefonds','Hedgefonds','/hedgefonds/#/','hedgefonds'],['investoren','Investoren','/hedgefonds/#/investoren','users'],['aktien','Aktien','/hedgefonds/#/aktien','stocks'],['smart','Smart Money','/hedgefonds/#/smart-money','signals']],
-      active: loc => ({'': 'hedgefonds', investoren: 'investoren', datenbank: 'investoren', aktien: 'aktien', aktie: 'aktien', 'smart-money': 'smart'}[hashPart(loc, 0)] || null)}
+      active: loc => ({'': 'hedgefonds', investoren: 'investoren', datenbank: 'investoren', aktien: 'aktien', aktie: 'aktien', 'smart-money': 'smart'}[hashPart(loc, 0)] || null)},
+    /* Mein Bereich (Mockups E02, E07, E08): Start /willkommen/, Watchlist /mein-dashboard/, lokal Gemerktes
+       /mein-dashboard/#/gespeichert, Konto /konto/. Bestellweg und Anmeldung tragen keine Leiste (sie fordern sie nicht an). */
+    {id: 'mein', label: 'Mein Bereich', icon: 'person', match: p => p.startsWith('/willkommen/') || p.startsWith('/mein-dashboard/') || p === '/konto/' || p.startsWith('/konto/watchlist/'),
+      items: [['mein','Mein Bereich','/willkommen/','person'],['watchlist','Watchlist','/mein-dashboard/','heart'],['gespeichert','Gespeichert','/mein-dashboard/#/gespeichert','saved'],['konto','Konto','/konto/','gear']],
+      active: loc => {
+        if (loc.pathname.startsWith('/willkommen/')) return 'mein';
+        if (loc.pathname.startsWith('/konto/watchlist/')) return 'watchlist';
+        if (loc.pathname === '/konto/') return 'konto';
+        return hashPart(loc, 0) === 'gespeichert' ? 'gespeichert' : 'watchlist';
+      }}
   ];
   // Original sprite geometry is inlined only for the always-visible dock: no extra request
   // on resource-budgeted workspaces. The provenance test keeps these six symbols exact.
@@ -105,7 +117,7 @@
   "technical": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2.5 4.5 20.5 12.5M2.5 20.5l18-8\"/><path class=\"dim\" opacity=\".45\" d=\"M7 8v9M11.5 10v5.5M15.5 11.3v3\"/><rect x=\"6\" y=\"10\" width=\"2\" height=\"5\" rx=\".4\"/><rect x=\"10.5\" y=\"11\" width=\"2\" height=\"3.5\" rx=\".4\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"20.5\" cy=\"12.5\" r=\"1.7\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"2.5\" cy=\"4.5\" r=\"1.1\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"2.5\" cy=\"20.5\" r=\"1.1\"/></g>",
   "hedgefonds": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"6\" r=\"2.4\"/><circle class=\"dim\" opacity=\".45\" cx=\"5\" cy=\"8\" r=\"1.8\"/><circle class=\"dim\" opacity=\".45\" cx=\"19\" cy=\"8\" r=\"1.8\"/><path d=\"M8 19v-5a4 4 0 0 1 8 0v5\"/><path class=\"dim\" opacity=\".45\" d=\"M2 19v-4a3 3 0 0 1 5-2.2M22 19v-4a3 3 0 0 0-5-2.2M3 22h18\"/><path d=\"M12 13v6\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"12\" cy=\"22\" r=\"1\"/></g>"
 };
-  const dockProductIcon = id => `<svg viewBox="0 0 24 24" aria-hidden="true">${DOCK_PRODUCT_ICONS[id]}</svg>`;
+  const dockProductIcon = id => DOCK_PRODUCT_ICONS[id] ? `<svg viewBox="0 0 24 24" aria-hidden="true">${DOCK_PRODUCT_ICONS[id]}</svg>` : `<svg class="line" viewBox="0 0 24 24" aria-hidden="true">${dockIcons[id] || ''}</svg>`;
   // Hidden menu symbols acquire href only when the menu opens.
   const productIcon = id => `<svg viewBox="0 0 24 24" aria-hidden="true"><use data-href="/assets/product-icons.svg#${id}"/></svg>`;
   const segmentPrefix = (value, prefix) => value === prefix || value.startsWith(prefix.replace(/\/$/, '') + '/');
@@ -292,7 +304,7 @@
         .world{gap:9px;font-size:17px;font-weight:900;letter-spacing:-.02em;min-height:44px}
         .world[hidden],.brand[hidden]{display:none}
         .hud{width:30px;height:30px;border-radius:9px;background:#0e1013;color:#c8f531;display:grid;place-items:center;flex:none}
-        .hud svg{width:62%;height:62%}
+        .hud svg{width:62%;height:62%}.hud svg.line{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
         :host([theme="dark"]) .hud{box-shadow:0 0 0 1px #262a2f inset}
         .world-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .quick{display:flex;align-items:center;gap:22px;margin-left:auto}.quick a{color:${t.ink};font-size:13px;font-weight:700;text-decoration:none}
@@ -406,7 +418,7 @@
         world.hidden=!product;brand.hidden=!!product;
         if(!product)return;
         world.href=product.items[0][2];world.setAttribute('aria-label',product.label+' Startseite');
-        world.querySelector('.hud').innerHTML=dockProductIcon((group||{icon:product.id}).icon);
+        world.querySelector('.hud').innerHTML=dockProductIcon((group||{icon:product.icon||product.id}).icon);
         world.querySelector('.world-name').textContent=product.label;
       };
       syncWorld();
@@ -476,7 +488,7 @@
       const nav=root.querySelector('nav');
       const links=product.items.map(([id,label,href,icon,name],i)=>{
         const a=document.createElement('a');a.href=href;a.dataset.id=id;if(!i)a.className='product';if(name)a.setAttribute('aria-label',name);
-        a.innerHTML=`${i?'<svg viewBox="0 0 24 24" aria-hidden="true">'+(dockIcons[icon]||'')+'</svg>':dockProductIcon((groups.find(g=>g.id===product.id)||{icon:product.id}).icon)}<span class="label">${label}</span>`;
+        a.innerHTML=`${i?'<svg viewBox="0 0 24 24" aria-hidden="true">'+(dockIcons[icon]||'')+'</svg>':dockProductIcon((groups.find(g=>g.id===product.id)||{icon:product.icon||product.id}).icon)}<span class="label">${label}</span>`;
         a.addEventListener('click',event=>{
           if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
           const intent=new CustomEvent('vu-dock-navigate',{cancelable:true,detail:{product:product.id,id,href:a.getAttribute('href')}});

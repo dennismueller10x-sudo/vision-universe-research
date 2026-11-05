@@ -1,6 +1,6 @@
 # Strang C – Quant-Backtest und qualifizierte Portfolios
 
-Stand: **04.11.2026**. Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Fachdokument Baukasten: [PORTFOLIO_STANDARD.md](../quant/PORTFOLIO_STANDARD.md).
+Stand: **05.11.2026**. Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Fachdokument Baukasten: [PORTFOLIO_STANDARD.md](../quant/PORTFOLIO_STANDARD.md).
 
 ## Fertig
 
@@ -16,9 +16,15 @@ Stand: **04.11.2026**. Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11
 - **Musterportfolios gerechnet** (Lauf 41867100079, [MODEL_PORTFOLIOS.md](../quant/research/portfolio-v1/MODEL_PORTFOLIOS.md)): 5 Profile, 2012–2026, Gesamtrendite inkl. delisteter Titel gegen SPY-Gesamtrendite 14,9 % p. a. **Keines schlägt den Index:** Defensive Quality 13,8 %, Value Momentum 13,0 %, Momentum Leader 12,9 %, Quality Compounder 11,2 %, GARP 5,6 %. Vol 15–21 %, Beta 0,81–1,07. In der internen Vorschau sichtbar, beschriftet „Forschung, nicht zertifiziert“.
 - **Setup-OOS A1–A6** umgesetzt (#1333): Schnitt 2027-05-31, Embargo 183 Tage, MEDIAN_EXCESS + SIGN_REPLICATES, SETUP_NEW/SETUP_CONFIRMED getrennt, effektive Ereignistage, Zeilenexport. Gate messbar frühestens um den 2028-01-08.
 
-## Offen
+- **Prüfung Strang E (#1368) umgesetzt** (05.11.):
+  - Zeitraum wird angefragt/realisiert getrennt ausgewiesen und bei Verkürzung alarmiert (SPY-Reihe endet 02.10.).
+  - Rohschluss delisteter Titel je Datum aus `v13-raw` über `splitFactors`.
+  - Delistete Titel ohne Gesamtrendite werden ausgeschlossen.
+  - Die Population heißt jetzt ehrlich `CUSTOM_STRATEGY_UNIVERSE`.
+  - Die „fraglich“-Punkte stehen als Grenzen im Bericht.
+  - Neulauf mit Umschlag-Varianten (Puffer 50, Quartal).
 
-- Turnover der Musterportfolios hoch (220–500 % p. a.): Variante mit Puffer/Quartalsrhythmus als Forschungssensitivität.
+## Offen
 - `backtest-runner.cjs#setupOosFromCertificationPath` an A4 angleichen (berührt CODE_FILES → Demo-Neubau, eigener PR).
 - Historische Strategie- und Faktor-Backtests (Katalog-Arten) auf PIT-Basis über den Baukasten-Datenpfad.
 
