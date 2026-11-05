@@ -134,6 +134,10 @@ function workerMain() {
       const D = require('../../../quant/engines/research-delisted-series.cjs');
       delistedDocs = D.loadDelisted(ROOT, { dir: a.delistedDir }).docs;
       const MP = require('../../../scripts/quant/portfolio/model-portfolios.cjs');
+      // Nur die Rohreihen der delisteten Titel dieses Teils laden (Speicher: vier Worker je Runner).
+      const ids = JSON.parse(readFileSync(a.sample, 'utf8')).ids, [k, K] = (a.shard || '1/1').split('/').map(Number);
+      const mineDl = new Set(ids.filter((id, i) => i % K === k - 1 && id.startsWith('dl_')));
+      for (const id of [...delistedDocs.keys()]) if (!mineDl.has(id)) delistedDocs.delete(id);
       rawIndex = MP.loadRawByTicker(a.delistedRawDir, new Set([...delistedDocs.values()].map(d => d.ticker)));
     }
   };
@@ -143,7 +147,7 @@ function workerMain() {
     let payload = null;
     try {
       if (a.source === 'golden') payload = goldenPayloads().find(x => x.id === id).load();
-      else if (id.startsWith('dl_')) { const doc = delistedDocs.get(id) || [...delistedDocs.values()].find(d => d.securityId === id); payload = doc ? delistedPayload(doc, rawIndex.byTicker.get(doc.ticker)) : null; }
+      else if (id.startsWith('dl_')) { const doc = delistedDocs.get(id); payload = doc ? delistedPayload(doc, rawIndex.byTicker.get(doc.ticker)) : null; }
       else payload = r2Payload(a.workDir, id);
       if (!payload || payload.bars.length < 300) { parentPort.postMessage({ id, state: 'NO_DATA', bars: payload ? payload.bars.length : 0 }); return; }
       const r = processStock(payload, ctx);

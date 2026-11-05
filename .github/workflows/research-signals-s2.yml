@@ -105,7 +105,9 @@ jobs:
           K: ${{ matrix.k }}
         run: |
           set -euo pipefail
-          node --max-old-space-size=12288 scripts/research/signals/s2.mjs --source r2 \
+          free -m
+          ( while sleep 60; do free -m | awk 'NR==2{print "Speicher belegt MB: "$3" von "$2}'; done ) &
+          node --max-old-space-size=4096 scripts/research/signals/s2.mjs --source r2 \
             --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" --delisted-raw-dir "$DELISTED_RAW_DIR" \
             --sample docs/research/signals/s2/sample.json --shard "$K/8" --workers 4 --out "$RUNNER_TEMP/s2-shard"
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
