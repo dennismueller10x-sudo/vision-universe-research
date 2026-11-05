@@ -71,6 +71,21 @@ class Form4Tests(unittest.TestCase):
         self.assertEqual(d["filingsProcessed"], 1)
         self.assertEqual(d["records"], 1)
 
+    def test_html_exhibit_with_doctype_outside_xml_is_ignored(self):
+        payload = submission().replace(b"<XML>", b"<TEXT><!DOCTYPE html><html></html></TEXT><XML>")
+        self.assertEqual(len(f.parse_filing(payload, META)[0]), 1)
+
+    def test_single_unreadable_filing_is_listed_not_fatal_but_many_are(self):
+        paths = [PATH.replace("000001", "%06d" % i) for i in range(1, 201)]
+        index = HEADER + "".join("123|Example Inc|4|2026-06-05|%s\n" % p for p in paths)
+        load = lambda p: b"<html>broken</html>" if p == paths[0] else submission()
+        d = f.generate(date(2026, 6, 1), f.cutoff("2026-06-05T21:30:00Z"), [index], load)
+        self.assertEqual(d["filingsProcessed"], 200)
+        self.assertEqual(len(d["rejectedFilings"]), 1)
+        self.assertEqual(d["records"], 199)
+        with self.assertRaises(ValueError):
+            f.generate(date(2026, 6, 1), f.cutoff("2026-06-05T21:30:00Z"), [index], lambda p: b"<html>broken</html>")
+
     def test_no_acceptance_conservative_next_day_dst(self):
         r, _ = f.parse_filing(submission(accepted=None), META)
         self.assertEqual(r[0]["availableAt"], "2026-06-06T04:00:00Z")
