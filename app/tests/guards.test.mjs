@@ -164,3 +164,9 @@ test('Signier-Skripte: Git Bash unter Windows darf "/CN=..." nicht in einen Pfad
     assert.ok(sh.indexOf('MSYS2_ARG_CONV_EXCL') < sh.indexOf('openssl'), f + ': vor dem ersten OpenSSL-Aufruf');
   }
 });
+
+test('Android: minSdk mindestens 24 (Google Play verlangt es fuer den automatischen Schutz)', () => {
+  const v = read(path.join(app, 'android/variables.gradle'));
+  const m = v.match(/minSdkVersion\s*=\s*(\d+)/);
+  assert.ok(m && Number(m[1]) >= 24, 'minSdkVersion ' + (m && m[1]));
+});
