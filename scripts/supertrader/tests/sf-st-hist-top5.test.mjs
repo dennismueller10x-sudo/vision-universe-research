@@ -119,7 +119,8 @@ test('ST-HIST-9: C08-Treuevariante FID-1 neben der Referenz; R-Verteilung und go
   const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
   const d = ds();
   const f = T.kkFidelityRun(d, { window: WIN });
-  assert.deepEqual(Object.keys(f.variants), ['FID-1', 'FID-2']);
+  assert.deepEqual(Object.keys(f.variants), ['FID-1', 'FID-2', 'FID-2L']);
+  assert.equal(FID.KK_FIDELITY_VARIANTS['FID-2L'].minAdv20Usd, 2.5e6);
   for (const v of Object.values(f.variants)) {
     assert.deepEqual(Object.keys(v.costs), ['COST-0', 'REF']);
     assert.ok(v.costs.REF.rDistribution && 'avgWinR' in v.costs.REF.rDistribution && 'shareAbove5R' in v.costs.REF.rDistribution);

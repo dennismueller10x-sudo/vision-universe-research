@@ -24,6 +24,12 @@
  *  FID2-TRAIL    Rest am ersten Schluss unter MA10 bei schnellen, unter MA20 bei langsamen Titeln („10-day for fast,
  *                20-day for slower movers“, Interview); schnell = ADR20 beim Einstieg >= 5 % (VU-Konvention, sein Beispiel
  *                „5 % ADR“).
+ * FID-2L (vor dem ersten Lauf von FID-2L festgelegt; Wunsch der Steuerung 05.11.2026): FID-2 plus Liquiditätsgrenze.
+ *  Eine feste Dollarvolumen-Schwelle steht in seinem Material nicht („preferably liquid“, „enough liquidity“, Streams und
+ *  Interview); belegt ist nur „nie mehr als 1 % des Tagesvolumens einer Aktie“ (Stream 1, Mitschrift Retail Trader's
+ *  Repository). Abgeleitete Konvention: bei der Positionskappe von 25 % auf 100.000 USD Startkapital muss der
+ *  20-Tage-Durchschnitt des Dollarvolumens (Rohkurs x Rohvolumen, Sitzungen vor dem Kauftag) mindestens 2,5 Mio. USD
+ *  betragen. Deshalb eine eigene, gekennzeichnete Variante, nicht Teil von FID-2.
  * Bewertet wird nur auf DEV; der HOLDOUT 2008–2015 wird später einmalig mit dieser festgeschriebenen Regel geprüft.
  */
 import { fin, smaAt, priorHigh } from '../common/series.mjs';
@@ -31,8 +37,8 @@ import { adr20, KK_PARAMS } from '../methods/kullamagi.mjs';
 import { eligibilityResult, STUDY_LABEL } from './lifecycle-engine.mjs';
 import { KK_SETUP_PROXIES, KK_EXIT_POLICIES, KK_OPEN_MANUAL_DECISIONS } from './kk-breakout-lifecycle.mjs';
 
-export const KK_FIDELITY_VERSION = 'kk-breakout-fidelity-1.1.0';
-export const KK_FIDELITY_VARIANTS = Object.freeze({ 'FID-1': Object.freeze({ quality: false, adrNorm: 'ENTRY', trail: 'MA10' }), 'FID-2': Object.freeze({ quality: true, adrNorm: 'LOW', trail: 'TEMPO', fastAdrPct: 5 }) });
+export const KK_FIDELITY_VERSION = 'kk-breakout-fidelity-1.2.0';
+export const KK_FIDELITY_VARIANTS = Object.freeze({ 'FID-1': Object.freeze({ quality: false, adrNorm: 'ENTRY', trail: 'MA10' }), 'FID-2': Object.freeze({ quality: true, adrNorm: 'LOW', trail: 'TEMPO', fastAdrPct: 5 }), 'FID-2L': Object.freeze({ quality: true, adrNorm: 'LOW', trail: 'TEMPO', fastAdrPct: 5, minAdv20Usd: 2.5e6 }) });
 export const KK_FIDELITY_RULES = Object.freeze({
   id: 'FID-1', momentumTopPct: 2, universeMinRawClose: 5, marketSma: [10, 20], marketSlopeSessions: 5,
   setupProxy: 'CONSOLIDATION_10', exitPolicy: 'PARTIAL3_THIRD_BE_MA10', riskFraction: 0.005, maxRiskAdr: 1,
@@ -75,7 +81,14 @@ export function marketOn(benchmark, { sma = KK_FIDELITY_RULES.marketSma, slope =
 }
 
 /** Setup am Schluss i für einen Kauf-Stopp in i+1: Konsolidierung noch nicht gebrochen, Niveau = Hoch der 10 Sitzungen bis i. */
-export function kkFidelitySetupAt(bars, i, proxy = KK_SETUP_PROXIES.CONSOLIDATION_10, { quality = false } = {}) {
+/** 20-Tage-Durchschnitt des Dollarvolumens (Rohkurs x Rohvolumen) der Sitzungen i-19 .. i. */
+export function adv20Usd(bars, i, n = 20) {
+  if (i < n - 1) return null;
+  let s = 0; for (let k = i - n + 1; k <= i; k++) { const b = bars[k], v = (b.rawClose ?? b.close) * (b.rawVolume ?? b.volume); if (!fin(v)) return null; s += v; }
+  return s / n;
+}
+export function kkFidelitySetupAt(bars, i, proxy = KK_SETUP_PROXIES.CONSOLIDATION_10, { quality = false, minAdv20Usd = null } = {}) {
+  if (minAdv20Usd !== null) { const a = adv20Usd(bars, i); if (!(fin(a) && a >= minAdv20Usd)) return null; }
   const W = proxy.window, b = bars[i];
   if (i < W + proxy.priorMoveSessions + 1 || !fin(b?.close) || !fin(b.low)) return null;
   const level = priorHigh(bars, i + 1, W); // höchstes Hoch der Sitzungen i-W+1 .. i, am Schluss i bekannt
@@ -114,7 +127,7 @@ export function createKkFidelityAdapter({ leaders, market, variant = 'FID-1' }) 
       for (let i = 0; i < bars.length; i++) {
         const d = bars[i].date;
         if (!market.has(d) || !leaders.get(d)?.has(security.id)) continue;
-        const s = kkFidelitySetupAt(bars, i, proxy, { quality: V.quality }); if (s) setups.set(i, s);
+        const s = kkFidelitySetupAt(bars, i, proxy, { quality: V.quality, minAdv20Usd: V.minAdv20Usd ?? null }); if (s) setups.set(i, s);
       }
       return setups.size ? { setups, bars } : null;
     },
