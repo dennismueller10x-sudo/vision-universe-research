@@ -37,6 +37,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Master = require(join(root, "quant", "engines", "us-security-master.js"));
+const CompanyMaster = require(join(root, "quant", "engines", "company-master.js"));
 const argv = process.argv.slice(2);
 const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
 const CLASSES = String(arg("--classes", "")).split(",").map((s) => s.trim()).filter(Boolean);
@@ -123,7 +124,7 @@ function main() {
   const product = JSON.parse(readFileSync(PRODUCT, "utf8"));
   const out = new Set(changes.filter((c) => c.to.productEligibility === "EXCLUDED").map((c) => c.securityId));
   const byId = new Map(elig.decisions.map((d) => [d.securityId, d]));
-  product.securities = product.securities.filter((s) => !out.has(s.securityId)).map((s) => { const d = byId.get(s.securityId); return d ? { ...s, productEligibility: d.product_eligibility } : s; });
+  product.securities = product.securities.filter((s) => !out.has(s.securityId)).map((s) => { const d = byId.get(s.securityId); return d ? { ...s, instrumentType: CompanyMaster.SECURITY_CLASS_TO_TYPE[d.instrument_type] || s.instrumentType, productEligibility: d.product_eligibility } : s; });
   product.actualSize = product.securities.length;
   product.counts = { ELIGIBLE: counts.ELIGIBLE, SEPARATE_CLASS: counts.SEPARATE_CLASS, REVIEW: counts.REVIEW, EXCLUDED_NOT_LISTED_HERE: counts.EXCLUDED };
   product.version = Master.VERSION;

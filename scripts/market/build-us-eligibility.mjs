@@ -67,6 +67,7 @@ import { loadTickerReuseQuarantine } from "./universe-source.mjs";
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Master = require(join(root, "quant", "engines", "us-security-master.js"));
+const CompanyMaster = require(join(root, "quant", "engines", "company-master.js"));
 const SCALE = JSON.parse(readFileSync(join(root, "quant", "config", "tiingo-scale.json"), "utf8"));
 
 const argv = process.argv.slice(2);
@@ -472,11 +473,15 @@ const labelByTicker = new Map(decisions.map((d) => [d.ticker, d.product_eligibil
 /* Das Produktuniversum. Verdachtsfaelle sind DRIN - sie sind nicht
    widerlegt - aber sie tragen ihre Markierung mit. */
 const IN_PRODUCT = new Set(Master.IN_PRODUCT_UNIVERSE);
+/* instrumentType der Projektion folgt der Gattung der Entscheidung (Company-Master-Abbildung), nicht der Anbieterzeile
+   der Mitgliedsliste: eine Vorzugsaktie (WFC-P-Y) ist PREFERRED, keine COMMON_STOCK (05.11.2026, 308 Titel). */
+const classByTicker = new Map(decisions.map((d) => [d.ticker, d.instrument_type]));
 const productMembers = members.filter((s) =>
   IN_PRODUCT.has(labelByTicker.get(String(s.ticker || "").toUpperCase()))
-).map((s) => ({
-  ...s, productEligibility: labelByTicker.get(String(s.ticker || "").toUpperCase())
-}));
+).map((s) => {
+  const t = String(s.ticker || "").toUpperCase();
+  return { ...s, instrumentType: CompanyMaster.SECURITY_CLASS_TO_TYPE[classByTicker.get(t)] || s.instrumentType, productEligibility: labelByTicker.get(t) };
+});
 
 const eligibility = {
   generatedAt: stamp,
