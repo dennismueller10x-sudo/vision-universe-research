@@ -69,167 +69,184 @@
   }
   VS.attachSearch = attachSearch;
 
-  VS.views.home = function () {
+  /* V01 (Redesign 2027): ein Hauptweg „Starte mit 10 €“, drei Wege nach Lage, eine markierte Beispielrechnung,
+     Förderung in drei Zahlen, Kern-ETFs mit Mini-Chart, drei Änderungen. Die Lage aus dem ersten Besuch steuert die Reihenfolge. */
+  var CORE = ["URTH","SPY","EEM","QQQ","FEZ","IWM"];
+  var CORE_TITLE = { URTH: "Aktien Welt", SPY: "Aktien USA", EEM: "Schwellenländer", QQQ: "USA Technik", FEZ: "Aktien Europa", IWM: "US-Nebenwerte" };
+  VS.CORE_TITLE = CORE_TITLE;
+  var LAGEN = [["neu", "spark", "Ich habe noch nie gespart", "10-Euro-Sparplan, Schritt für Schritt"], ["plan", "target", "Ich will wissen, ob es reicht", "Planer mit drei Beispielen"],
+    ["etfs", "pie", "Ich habe schon ETFs", "Portfolio-X-Ray und Veränderungen"], ["profi", "bars", "Ich kenne mich aus", "Alle ETFs, Kosten, Bestände"]];
+  function firstVisit() {
+    var U = VS.U, el = VS.sheet("vs-lage", "Womit fängst du an?", '<p class="vu-ltag">Erster Besuch</p><p class="vu-lead" style="margin-top:4px">Wir zeigen dir zuerst, was zu dir passt. Ändern kannst du es jederzeit.</p><div class="vu-stack vs-lagen">' +
+      LAGEN.map(function (l, i) { return '<button type="button" class="vs-lage' + (i === 0 ? " is-ink" : "") + '" data-lage="' + l[0] + '"><span class="vu-hud" style="--vu-hud:38px;border-radius:11px">' + VS.glyph(l[1], 20) + '</span><span><b>' + esc(l[2]) + (l[0] === "profi" ? " " + U.pro() : "") + '</b><small>' + esc(l[3]) + '</small></span>' + VS.glyph("next", 16) + '</button>'; }).join("") + '</div>');
+    if (!el) return;
+    el.addEventListener("click", function (ev) {
+      var b = ev.target.closest && ev.target.closest("[data-lage]");
+      if (!b) return;
+      VS.state.lage = b.getAttribute("data-lage"); VS.save(); U.closeSheet(el); VS.views.home({ query: {} });
+    });
+  }
+
+  VS.views.home = function (r) {
+    var U = VS.U, pl = VS.state.plan, done = VS.state.planDone;
     var p = VS.currentPlan(), base = p.scenarios[1];
-    var track = V.Monitor.onTrack(VS.state.planDone ? base.goalAttainment : null);
-    var lever = M.leverAnalysis(VS.state.plan, VS.state.plan.returns.basis).levers[0];
-    var fee = M.feeImpact({ start: VS.state.plan.start, monthly: VS.state.plan.monthly, years: p.years, annualReturn: VS.state.plan.returns.basis, costA: 0.002, costB: 0.015 });
-    var root = VS.render(
-      '<section class="vs-hero vs-product-hero vu-product-hero vu-hero-fidelity" data-product="vorsorge" aria-labelledby="vs-product-title"><div class="vu-hero-scene" aria-hidden="true"></div><span class="vu-product-icon vu-product-icon--hero" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#vorsorge"></use></svg></span>' +
-      '<p class="vu-hero-name">Vorsorge</p><h1 class="vu-hero-headline" id="vs-product-title">Was wird aus<br>deiner Rente?</h1>' +
-      '<p class="vu-hero-description">Fünf Fragen, dann siehst du, was der Staat dazulegt und was daraus werden kann. Mit amtlichen Regeln, offenen Annahmen und ohne Produktverkauf.</p>' +
-      '<form id="vs-search-form" class="vs-search" role="search"><svg class="vs-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg><input id="vs-q" autocomplete="off" placeholder="ETF, Ziel oder Frage eingeben …" aria-label="ETF, Ziel oder Frage eingeben"><button type="submit">Suchen</button></form>' +
-      '<div class="vs-suggest" id="vs-suggest"></div>' +
-      '<nav class="vs-tabs vs-hero-actions" aria-label="Einstieg"><a class="vs-pill primary" href="#/rechner">Altersvorsorge berechnen</a><a class="vs-pill" href="#/plan">Eigenen Plan erstellen</a></nav></section>' +
+    var lage = VS.state.lage || "neu";
+    var mx = Math.max.apply(null, p.scenarios.map(function (s) { return s.real; }).concat([1]));
+    var LBL = { konservativ: "Vorsichtig", basis: "Mittel", optimistisch: "Gut" };
+    var calc = VS.sect(done ? "Dein Plan" : "So könnte es aussehen") + '<div class="vu-box vs-calc">' +
+      '<div class="vs-row-sb">' + (done ? VS.trackVerdict(V.Monitor.onTrack(base.goalAttainment)) : VS.bsp()) + '<span class="vu-xs vu-mu"><b>' + F.eur(pl.monthly) + ' im Monat · ' + p.input.age + ' → ' + p.input.targetAge + ' J.</b></span></div>' +
+      '<p class="vs-big num">' + F.eurK(base.real) + '</p><p class="vu-sm vu-mu">mit ' + p.input.targetAge + ', in heutiger Kaufkraft, bei ' + F.pct(base.annualReturn, 0) + ' pro Jahr</p>' +
+      '<div class="vs-wbars">' + p.scenarios.map(function (s) { return VS.wbar((LBL[s.id] || s.label) + " · " + F.pct(s.annualReturn, 0), F.eurK(s.real), s.real / mx * 100, s.id === "basis"); }).join("") + '</div>' +
+      VS.help("Heutige Kaufkraft: was das Geld nach " + F.pct(p.input.inflation, 0) + " Inflation pro Jahr heute wert wäre. Keine Prognose.") + '</div>';
+    var hero = '<a class="vu-box vu-box--lime vs-start-card" href="#/start"><span class="vu-ltag">Neu hier?</span><span class="vs-start-t">Starte mit 10&nbsp;€ im Monat.</span><span class="vu-sm">In 6 Schritten zu deinem ersten ETF-Sparplan. Dauert 3 Minuten.</span><span class="vu-btn vu-btn--ink vu-btn--block">10-Euro-Sparplan starten ' + VS.glyph("next", 18) + '</span></a>';
+    var ways = VS.sect("Wo stehst du?") + '<div class="vu-stack">' + VS.navcard({ href: "#/start", glyph: "spark", title: "Ich fange an", sub: "Sparplan in 6 Schritten" }) +
+      VS.navcard({ href: "#/plan", glyph: "target", title: "Ich plane meine Rente", sub: "Planer: wie viel muss ich sparen?" }) + VS.navcard({ href: "#/portfolio", glyph: "pie", title: "Ich habe schon ETFs", sub: "Portfolio durchleuchten" }) + '</div>' +
+      '<p class="vu-xs vs-lage-link"><button type="button" class="vs-link" id="vs-lage-open">Lage ändern</button></p>';
+    var funding = '<section id="vs-home-fd">' + VS.sect("Was der Staat ab 2027 dazulegt") + '<div class="vu-grid" style="--vu-cols:3">' + VS.tile("Grundzulage", "…") + VS.tile("Je Kind", "…") + VS.tile("Unter 25", "…") + '</div></section>';
+    var etfs = '<section id="vs-home-world">' + VS.sect("Kern-ETFs", "#/etfs", "Alle") + '<div class="vs-loading">ETF-Verzeichnis wird geladen …</div></section>';
+    var changes = '<section id="vs-home-changes">' + VS.sect("Was hat sich geändert?", "#/monitor", "Alle") + '<div class="vs-loading">…</div></section>';
+    var order = lage === "profi" ? [etfs, hero, ways, calc, funding, changes] : lage === "etfs" ? [ways, hero, calc, etfs, changes, funding] : lage === "plan" ? [calc, hero, ways, funding, etfs, changes] : [hero, ways, calc, funding, etfs, changes];
+    var root = VS.render(VS.intro("Was wird aus deiner Rente?", "Rechnen, verstehen, anfangen. Ohne Produktverkauf, mit amtlichen Regeln.") + order.join(""), { dm: [["Beispielrechnung", "Planer-Formel mit " + (done ? "deinen gespeicherten Angaben" : "Standardannahmen") + ": " + F.eur(pl.monthly) + " im Monat, " + F.eur(pl.start) + " Startvermögen, Kosten " + F.pct(pl.cost, 2) + ", Inflation " + F.pct(pl.inflation, 1) + ", Szenarien 3 / 5 / 7 % pro Jahr vor Kosten."]] });
+    root.querySelector("#vs-lage-open").onclick = firstVisit;
+    if ((!VS.state.lage && !(global.navigator && global.navigator.webdriver)) || (r && r.query && r.query.lage === "1")) firstVisit();
 
-      /* 1 Ergebnis zuerst: Vermoegen im Basisszenario, Zielerreichung, drei Szenarien als Balken */
-      '<section class="vu-sec vs-home-result" aria-labelledby="vs-res-t"><div class="vu-sec-head"><h2 class="vu-sec-title" id="vs-res-t">' + (VS.state.planDone ? "Dein Plan" : "So könnte es aussehen") + '</h2>' +
-      (VS.state.planDone ? '<span class="vs-light ' + track.state + '"><i></i>' + esc(track.label) + '</span>' : '<span class="vu-status" data-tone="warn">Beispielrechnung</span>') + '</div>' +
-      '<div class="vu-kpis vs-res-kpis"><div class="vu-kpi vu-kpi--xl"><span class="vu-kpi-label">Vermögen mit ' + p.input.targetAge + ' · heutige Kaufkraft</span><span class="vu-kpi-value">' + F.eurK(base.real) + '</span><span class="vu-kpi-sub">Basisszenario ' + F.pct(base.annualReturn, 0) + ' p. a.</span></div>' +
-      '<div class="vu-kpi vu-kpi--xl"><span class="vu-kpi-label">Zielerreichung</span><span class="vu-kpi-value">' + F.pct(base.goalAttainment, 0) + '</span><span class="vu-kpi-sub">von ' + F.eur(p.input.desiredIncome) + ' Wunscheinkommen</span></div></div>' +
-      '<ul class="vs-scen-bars" aria-label="Drei Szenarien">' + p.scenarios.map(function (s) {
-        return '<li' + (s.id === "basis" ? ' class="is-base"' : "") + '><span class="vs-scen-l">' + esc(s.label) + ' <small>' + F.pct(s.annualReturn, 0) + ' p. a.</small></span><b class="num">' + F.eurK(s.real) + '</b>' +
-          '<span class="vu-bar" aria-label="Ziel ' + F.pct(s.goalAttainment, 0) + '"><i style="--v:' + Math.min(100, s.goalAttainment * 100).toFixed(0) + '"></i></span><small class="vs-scen-goal">Ziel ' + F.pct(s.goalAttainment, 0) + '</small></li>';
-      }).join("") + '</ul>' +
-      '<div class="vs-tabs"><a class="vs-pill lime" href="#/plan">' + (VS.state.planDone ? "Plan anpassen" : "Eigenen Plan erstellen") + '</a><a class="vs-pill" href="#/rechner">Geführter Rechner</a></div>' +
-      '<details class="vu-more"><summary>Annahmen dieser Rechnung</summary><div class="vu-more-body">' + (VS.state.planDone ? "" : "Beispiel mit Standardannahmen (" + p.input.age + " Jahre, " + F.eur(p.input.monthly) + " im Monat, Ziel " + F.eur(p.input.desiredIncome) + " Einkommen) – noch nicht deine Zahlen. ") +
-      'Drei Szenarien statt einer Prognose: Annahmen, keine Vorhersage. Renditen nach Kosten von ' + F.pct(p.input.cost, 2) + ' und Inflation von ' + F.pct(p.input.inflation, 1) + '.</div></details></section>' +
+    VS.rules().then(function (rules) {
+      var avd = rules.filter(function (x) { return x.ruleId === "DE-ALTERSVORSORGEDEPOT"; })[0] || rules[0], mf = avd.maximumFunding || {}, cr = avd.contributionRules || {};
+      var min = cr.minimumAnnualOwnContribution, z = V.Funding.altersvorsorgedepot(avd, { ownContribution: min });
+      root.querySelector("#vs-home-fd").innerHTML = VS.sect("Was der Staat ab 2027 dazulegt") + '<div class="vu-grid" style="--vu-cols:3">' + VS.tile("Grundzulage", F.eur(mf.basicAllowancePerYear), "höchstens / Jahr") +
+        VS.tile("Je Kind", F.eur(mf.childAllowancePerChildPerYear), "höchstens / Jahr") + VS.tile("Unter 25", F.eur(mf.careerStarterOneTime), "einmalig") + '</div>' +
+        VS.help("Gilt für das neue geförderte Altersvorsorgedepot. Schon ab " + F.eur(min / 12) + " im Monat gibt es " + F.eur(z.total) + " Zulage im Jahr.") +
+        '<div style="margin-top:10px">' + VS.navcard({ href: "#/foerderung", glyph: "star", title: "Förderung ausrechnen", sub: "Altersvorsorgedepot ab " + F.date(avd.validFrom) }) + '</div>';
+    }).catch(function () { root.querySelector("#vs-home-fd").innerHTML = VS.sect("Was der Staat ab 2027 dazulegt") + U.blank("Die Förderregeln konnten nicht geladen werden."); });
 
-      /* 2 Hebel und Kosten: zwei Kennzahlen, Kosten als Balkenvergleich */
-      '<section class="vu-sec" aria-labelledby="vs-lev-t"><div class="vu-sec-head"><h2 class="vu-sec-title" id="vs-lev-t">Was am meisten bewirkt</h2></div>' +
-      '<div class="vs-home-levers"><a class="vs-lever" href="#/plan"><span class="vu-kpi-label">Größter Hebel in deinem Plan</span><span class="vu-kpi-value">' + esc(lever.label) + '</span><span class="vu-kpi-sub"><span class="' + (lever.delta >= 0 ? "vu-up" : "vu-down") + '">' + (lever.delta >= 0 ? "▲ " : "▼ ") + F.spct(lever.delta, 0) + '-Punkte</span> Zielerreichung</span></a>' +
-      '<a class="vs-lever" href="#/kosten"><span class="vu-kpi-label">Kosten über ' + p.years + ' Jahre</span><span class="vu-kpi-value">' + F.eurK(fee.a.endValue - fee.b.endValue) + '</span><span class="vu-kpi-sub">Unterschied 0,2 % statt 1,5 % laufende Kosten</span>' +
-      '<span class="vs-fee-bars"><span><small>0,2 %</small><span class="vu-bar" data-tone="good"><i style="--v:100"></i></span><b class="num">' + F.eurK(fee.a.endValue) + '</b></span>' +
-      '<span><small>1,5 %</small><span class="vu-bar" data-tone="bad"><i style="--v:' + Math.max(1, fee.b.endValue / Math.max(1, fee.a.endValue) * 100).toFixed(0) + '"></i></span><b class="num">' + F.eurK(fee.b.endValue) + '</b></span></span></a></div>' +
-      '<p class="vs-fine" style="margin-top:10px">Gerechnet im Basisszenario, keine Empfehlung.</p></section>' +
-
-      /* 3 ETF-Welt und Veraenderungen */
-      '<section class="vu-sec" id="vs-home-world" aria-label="Deine ETF-Welt"><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></section>' +
-      '<section class="vu-sec" id="vs-home-changes" aria-label="Veränderungen"><div class="vs-loading">…</div></section>' +
-
-      /* 4 Alle Bereiche als ruhige Linkliste */
-      '<section class="vu-sec" aria-label="Bereiche"><div class="vs-grid g3">' + [
-        ["Berechnen", "Wie viel Rente, wie viel sparen?", [["#/rechner", "Altersvorsorge-Rechner"], ["#/plan", "Vorsorgeplaner"], ["#/plan/luecke", "Vorsorgelücke"], ["#/kosten", "Kosten"]]],
-        ["Fördern & vergleichen", "Was legt der Staat dazu?", [["#/foerderung", "Förderrechner"], ["#/fruehstart", "Frühstart / Kinder"], ["#/riester", "Riester-Analyse"], ["#/anbieter", "Anbieter"]]],
-        ["ETFs & Portfolio", "Verstehen, was drinsteckt.", [["#/etfs", "ETFs entdecken"], ["#/portfolio", "Portfolio durchleuchten"], ["#/watchlist", "Watchlist"], ["#/monitor", "Veränderungen"]]]
-      ].map(function (g) {
-        return '<div class="vs-area"><p class="vs-label">' + g[0] + '</p><h3>' + g[1] + '</h3><ul>' + g[2].map(function (l) { return '<li><a href="' + l[0] + '">' + l[1] + '</a></li>'; }).join("") + '</ul></div>'; }).join("") +
-      '</div></section>'
-    );
-    // Volles ETF-Verzeichnis erst bei Bedarf (Suche, eigene ETFs ausserhalb des Startseiten-Auszugs).
-    attachSearch(root, VS.master);
-    var CORE = ["URTH", "SPY", "EEM", "QQQ", "FEZ", "IWM"];
-    var mineKeys = VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; }));
     VS.masterFor(CORE).then(function (m) {
       var world = root.querySelector("#vs-home-world");
       var core = CORE.map(function (s) { return m._bySymbol[s]; }).filter(Boolean);
-      var mx = Math.max.apply(null, core.map(function (e) { return Math.abs((e.m && e.m.p["1Y"]) || 0); }).concat([0.01]));
-      world.innerHTML = '<div class="vu-sec-head"><h2 class="vu-sec-title">Deine ETF-Welt</h2><a class="vu-sec-link" href="#/etfs">Alle ETFs →</a></div>' +
-        '<div class="vu-kpis"><div class="vu-kpi"><span class="vu-kpi-label">Standard-ETFs</span><span class="vu-kpi-value">' + m.counts.publicAnalysis.toLocaleString("de-DE") + '</span><span class="vu-kpi-sub">von ' + m.counts.listings.toLocaleString("de-DE") + ' Listings</span></div>' +
-        '<div class="vu-kpi"><span class="vu-kpi-label">≥ 3 Jahre Kurshistorie</span><span class="vu-kpi-value">' + m.counts.withHistory3Y.toLocaleString("de-DE") + '</span><span class="vu-kpi-sub">' + m.counts.complex.toLocaleString("de-DE") + ' komplexe separat</span></div></div>' +
-        '<p class="vs-sub" style="margin:22px 0 4px">Kern-ETFs · Kursentwicklung 1 Jahr</p><ul class="vs-perf-rows">' + core.map(function (e) {
-          var v = e.m && e.m.p["1Y"];
-          return '<li><a href="' + VS.etfHref(e) + '"><b>' + esc(e.symbol) + '</b><span>' + esc(e.category) + '</span></a><span class="vu-bar"' + (v < 0 ? ' data-tone="bad"' : ' data-tone="good"') + '><i style="--v:' + (v === null || v === undefined ? 0 : Math.max(2, Math.abs(v) / mx * 100)).toFixed(0) + '"></i></span><b class="num vs-chg ' + F.cls(v) + '">' + F.spct(v) + '</b></li>';
-        }).join("") + '</ul>' +
-        '<div class="vs-tabs"><a class="vs-pill small" href="#/watchlist">Watchlist (' + VS.state.watchlist.length + ')</a></div>';
+      world.innerHTML = VS.sect("Kern-ETFs", "#/etfs", "Alle " + m.counts.publicAnalysis.toLocaleString("de-DE")) + '<div class="vs-erows">' + core.map(function (e) { return VS.etfRow(e, { title: CORE_TITLE[e.symbol], sub: e.index || "" }); }).join("") + '</div>' +
+        VS.help("Ein ETF ist ein Korb mit vielen Aktien. „1 Jahr“ zeigt, wie sich der Kurs in 12 Monaten bewegt hat.");
+      VS.fillSparks(world);
       VS.dm([["ETF-Daten", "Kurse Tiingo · Holdings SEC N-PORT · Kategorien aus dem Fondsnamen"]], m.asOf);
-    }).catch(function () { root.querySelector("#vs-home-world").innerHTML = VS.pending("ETF-Verzeichnis nicht erreichbar", "Die ETF-Daten konnten nicht geladen werden. Planer und Rechner funktionieren weiter."); });
-    Promise.all([VS.getJSON("/vorsorge/data/changes.json").catch(function () { return { events: [] }; }), VS.holdingsFeed().catch(function () { return null; }), VS.masterFor(mineKeys).catch(function () { return null; })]).then(function (res) {
-      var c = res[0], hi = res[1], m = res[2];
-      var plan = VS.state.snapshot ? V.Monitor.diffPlan(VS.state.snapshot, V.Monitor.snapshotPlan(p, VS.state.portfolio)) : [];
-      var mine = {}; VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })).forEach(function (s) { var e = m && m.find(s); if (e) mine[e.symbol] = e; });
-      var mineList = Object.keys(mine).map(function (k) { return mine[k]; });
-      var changed = mineList.filter(function (e) { return e.holdingsChanges > 0; });
-      var feed = hi ? hi.feed : [];
-      var feedMine = feed.filter(function (f) { return mine[f.symbol]; });
-      var lines = plan.map(function (x) { return esc(x.text); });
-      if (mineList.length) lines.push(changed.length ? '<b>' + changed.length + ' deiner ' + mineList.length + ' ETFs</b> mit relevanten Bestandsänderungen: ' + changed.slice(0, 4).map(function (e) { return '<a href="' + VS.etfHref(e) + '?tab=aenderungen">' + esc(e.symbol) + '</a>'; }).join(", ") : "Keine relevanten Bestandsänderungen bei deinen " + mineList.length + " ETFs.");
-      (feedMine.length ? feedMine : feed).slice(0, mineList.length ? 2 : 3).forEach(function (f) { lines.push('<a href="#/etf/' + encodeURIComponent(f.symbol) + '?tab=aenderungen"><b>' + esc(f.symbol) + '</b></a> ' + esc(f.text)); });
-      // Produkt- und Kostenmeldungen nur zu eigenen ETFs - keine zufaelligen Exoten auf der Startseite
-      c.events.filter(function (x) { return x.symbol && mine[x.symbol]; }).slice(0, 2).forEach(function (x) { lines.push(esc(x.text)); });
-      root.querySelector("#vs-home-changes").innerHTML = '<div class="vu-sec-head"><h2 class="vu-sec-title">Was hat sich geändert?</h2><a class="vu-sec-link" href="#/monitor">Monitor →</a></div>' +
-        (lines.length ? '<ul class="vs-change-list">' + lines.slice(0, 6).map(function (t) { return '<li>' + t + '</li>'; }).join("") + '</ul>'
-          : '<p class="vu-empty">Keine Änderungen seit dem letzten Datenstand.</p>');
-      VS.dm([["Veränderungen", "Bestände: SEC N-PORT, Stand " + (hi ? esc(hi.quarters.join(", ")) : "–") + " · Kurse: Tiingo " + F.date(c.asOf)]]);
-    }).catch(function () { root.querySelector("#vs-home-changes").innerHTML = VS.pending("Änderungen nicht verfügbar", "Die Änderungsliste konnte nicht geladen werden."); });
+    }).catch(function () { root.querySelector("#vs-home-world").innerHTML = VS.sect("Kern-ETFs") + U.blank("Das ETF-Verzeichnis ist nicht erreichbar. Planer und Rechner funktionieren weiter."); });
+
+    VS.holdingsFeed().then(function (hi) {
+      var mine = {}; VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })).forEach(function (s) { mine[String(s).toUpperCase()] = 1; });
+      var feed = (hi.feed || []).slice(), own = feed.filter(function (f) { return mine[f.symbol]; });
+      var list = (own.length ? own : feed).slice(0, 3);
+      root.querySelector("#vs-home-changes").innerHTML = VS.sect("Was hat sich geändert?", "#/monitor", "Alle") + (list.length ? '<div class="vu-box vs-kvbox">' + list.map(function (f) {
+        return '<a class="vs-kv" href="#/etf/' + encodeURIComponent(f.symbol) + '?tab=aenderungen"><span class="vu-sm"><b>' + esc(f.symbol) + '</b> ' + esc(String(f.text || "").replace(/\s*\([^)]*Prozentpunkte\)\.?$/, "")) + '</span>' + VS.glyph("next", 15) + '</a>'; }).join("") + '</div>' : U.blank("Keine Änderungen seit dem letzten Datenstand."));
+      VS.dm([["Veränderungen", "Bestände: SEC N-PORT, Stand " + esc((hi.quarters || []).join(", "))]]);
+    }).catch(function () { root.querySelector("#vs-home-changes").innerHTML = VS.sect("Was hat sich geändert?") + U.blank("Die Änderungsliste konnte nicht geladen werden."); });
   };
+
 
   /* ============================================================== PLANER */
   var started = false;
+  /* V02 (Redesign 2027): Regler oben, ein Ergebnis mit Urteil, der eine Chart (Basis als Linie, Szenarien
+     gestrichelt), Stellschrauben, Kosten, Annahmen im Sheet, Profi-Tabelle. Gerechnet wird nur in der Engine. */
+  var SLIDERS = [["age", "Dein Alter", "Jahre", 18, 70, 1], ["targetAge", "Rente ab", "Jahre", 55, 75, 1], ["monthly", "Sparrate", "€ / Monat", 0, 2000, 10],
+    ["start", "Schon gespart", "€", 0, 200000, 1000], ["desiredIncome", "Wunsch im Alter", "€ / Monat", 500, 6000, 50]];
+  var SC_LBL = { konservativ: "vorsichtig", basis: "mittel", optimistisch: "gut" };
+  function fill(inp) { inp.style.setProperty("--p", ((inp.value - inp.min) / (inp.max - inp.min) * 100).toFixed(1) + "%"); }
   VS.views.plan = function (r) {
-    var tab = r.args[0] === "luecke" ? "luecke" : "planer";
-    var pl = VS.state.plan;
-    var root = VS.render(
-      '<section class="vs-hero"><p class="vs-eyebrow">Vorsorgeplaner</p><h1>Wie viel muss ich sparen?</h1><p class="vs-lead">Gib ein, wo du stehst und was du willst. Wir rechnen drei Szenarien – nominal und in heutiger Kaufkraft.</p>' +
-      '<div class="vs-tabs"><a class="vs-pill lime" href="#/rechner">Geführter Rechner</a><a class="vs-pill' + (tab === "planer" ? " primary" : "") + '" href="#/plan">Planer</a><a class="vs-pill' + (tab === "luecke" ? " primary" : "") + '" href="#/plan/luecke">Vorsorgelücke</a><a class="vs-pill" href="#/kosten">Kosten</a><a class="vs-pill" href="#/portfolio/szenarien">Szenarien</a></div></section>' +
-      '<section class="vs-section"><div class="vs-grid side"><form class="vs-card app" id="vs-plan-form" novalidate><p class="vs-label">Deine Angaben</p><div class="vs-form" style="margin-top:12px">' +
-      VS.field("age", "Aktuelles Alter", pl.age, { min: 0, max: 90, unit: "Jahre" }) + VS.field("targetAge", "Zielalter", pl.targetAge, { min: 1, max: 100, unit: "Rentenbeginn" }) +
-      VS.field("start", "Startvermögen", pl.start, { min: 0, unit: "€" }) + VS.field("lumpSum", "Einmalanlage", pl.lumpSum, { min: 0, unit: "€ heute" }) +
-      VS.field("monthly", "Monatliche Sparrate", pl.monthly, { min: 0, unit: "€ / Monat" }) + VS.field("cost", "Laufende Kosten", (pl.cost * 100).toFixed(2), { min: 0, max: 5, step: 0.05, unit: "% p.a. (TER + Depot)" }) +
-      VS.field("inflation", "Inflation", (pl.inflation * 100).toFixed(1), { step: 0.1, unit: "% p.a." }) + VS.field("payoutYears", "Auszahldauer", pl.payoutYears, { min: 1, max: 50, unit: "Jahre" }) +
-      VS.field("desiredIncome", "Wunscheinkommen im Alter", pl.desiredIncome, { min: 0, unit: "€ / Monat, heutige Kaufkraft" }) + VS.field("existingIncome", "Erwartete Rente & Einkünfte", pl.existingIncome, { min: 0, unit: "€ / Monat, heutige Kaufkraft" }) +
-      VS.field("rk", "Rendite konservativ", (pl.returns.konservativ * 100).toFixed(1), { step: 0.5, unit: "% p.a. vor Kosten" }) + VS.field("rb", "Rendite Basis", (pl.returns.basis * 100).toFixed(1), { step: 0.5, unit: "% p.a." }) +
-      VS.field("ro", "Rendite optimistisch", (pl.returns.optimistisch * 100).toFixed(1), { step: 0.5, unit: "% p.a." }) +
-      '</div><button type="submit" class="vs-pill lime" style="margin-top:16px;width:100%;justify-content:center">Plan speichern</button><p class="vs-fine" style="margin-top:10px">Wird nur in diesem Browser gespeichert.</p></form>' +
-      '<div id="vs-plan-out"></div></div></section>'
-    );
+    var pl = VS.state.plan, sp = VS.state.sparplan;
+    var nf = function (v) { return Number(v).toLocaleString("de-DE"); };
+    var root = VS.render(VS.intro("Wie viel muss ich sparen?", "Fünf Angaben, drei Beispiele. In heutiger Kaufkraft gerechnet.") +
+      (sp && !VS.state.planDone ? '<div class="vu-box vu-box--line vs-row-sb" style="margin-top:14px"><span class="vu-sm">Dein Sparplan aus dem 10-Euro-Ablauf: <b>' + F.eur(sp.amount) + ' im Monat</b>, ' + esc(sp.index) + '.</span><button type="button" class="vu-btn vu-btn--sm" id="vs-take-sp">Als Sparrate nehmen</button></div>' : "") +
+      '<form class="vu-box vs-sliders" id="vs-plan-form" style="margin-top:16px" novalidate>' + SLIDERS.map(function (s) { return VS.slider(s[0], s[1], pl[s[0]], { unit: s[2], min: s[3], max: s[4], step: s[5], fmt: nf }); }).join("") + '</form>' +
+      '<p class="vu-xs vu-mu" style="margin-top:6px">Gesetzliche Rente und andere Einkünfte: <b>' + F.eur(pl.existingIncome) + ' / Monat</b> · <button type="button" class="vs-link" data-open="annahmen">ändern</button></p>' +
+      '<div id="vs-plan-out"></div>' +
+      '<details class="vu-more" id="vs-luecke"' + (r.args[0] === "luecke" ? " open" : "") + '><summary>Vorsorgelücke und was Warten kostet</summary><div class="vu-more-body" id="vs-gap-out"></div></details>',
+      { dm: [["Annahmen", "Szenarien " + F.pct(pl.returns.konservativ, 0) + " / " + F.pct(pl.returns.basis, 0) + " / " + F.pct(pl.returns.optimistisch, 0) + " pro Jahr vor Kosten, Kosten " + F.pct(pl.cost, 2) + ", Inflation " + F.pct(pl.inflation, 1) + ", Auszahldauer " + pl.payoutYears + " Jahre. Gespeichert wird nur in diesem Browser."]] });
     var form = root.querySelector("#vs-plan-form");
+    form.querySelectorAll("input[type=range]").forEach(fill);
     function read() {
-      var n = function (id, f, s) { return VS.readNum(form, id, f, s); };
-      VS.state.plan = { age: n("age", 35), targetAge: n("targetAge", 67), start: n("start", 0), lumpSum: n("lumpSum", 0), monthly: n("monthly", 0),
-        cost: n("cost", 0.3, 0.01), inflation: n("inflation", 2, 0.01), payoutYears: n("payoutYears", 25), desiredIncome: n("desiredIncome", 0), existingIncome: n("existingIncome", 0),
-        returns: { konservativ: n("rk", 3, 0.01), basis: n("rb", 5, 0.01), optimistisch: n("ro", 7, 0.01) } };
+      SLIDERS.forEach(function (s) { var el = form.querySelector("#" + s[0]); VS.state.plan[s[0]] = Number(el.value); root.querySelector("#" + s[0] + "-out").textContent = nf(el.value); fill(el); });
+      if (VS.state.plan.targetAge <= VS.state.plan.age) VS.state.plan.targetAge = VS.state.plan.age + 1;
       VS.save();
     }
-    function draw() { (tab === "luecke" ? drawGap : drawPlan)(root.querySelector("#vs-plan-out")); }
+    function draw() { drawPlan(root.querySelector("#vs-plan-out")); drawGap(root.querySelector("#vs-gap-out")); }
     form.addEventListener("input", function () { if (!started) { VS.analytics.track("planner_start", {}); started = true; } read(); draw(); });
-    form.addEventListener("submit", function (ev) {
-      ev.preventDefault(); read();
+    var take = root.querySelector("#vs-take-sp");
+    if (take) take.onclick = function () { form.querySelector("#monthly").value = sp.amount; read(); draw(); take.closest(".vu-box").remove(); };
+    root.addEventListener("click", function (ev) {
+      var b = ev.target.closest && ev.target.closest("[data-open],[data-save]");
+      if (!b) return;
+      if (b.hasAttribute("data-save")) return save(b);
+      assumptions();
+    });
+    function save(b) {
       var p = VS.currentPlan();
       VS.state.planDone = true; VS.state.snapshot = V.Monitor.snapshotPlan(p, VS.state.portfolio, new Date().toISOString().slice(0, 10)); VS.save();
       VS.snapshotContext().then(function (ctx) { VS.state.snapshot = V.Monitor.snapshotPlan(p, VS.state.portfolio, VS.state.snapshot.at, ctx); VS.save(); });
       VS.analytics.track("planner_complete", { years: p.years });
-      var b = form.querySelector("button[type=submit]"); b.textContent = "✓ Gespeichert – im Monitor sichtbar"; setTimeout(function () { b.textContent = "Plan speichern"; }, 2500);
-    });
+      b.textContent = "Gespeichert"; setTimeout(function () { b.textContent = "Plan speichern"; }, 2500);
+    }
+    function assumptions() {
+      var x = VS.state.plan;
+      var el = VS.sheet("vs-ann", "Annahmen", '<div class="vs-row-sb">' + VS.bsp("Beispiel") + '</div><p class="vu-sm vu-mu" style="margin-top:6px">So rechnen wir. Alles änderbar, nichts davon ist versprochen.</p>' +
+        '<form id="vs-ann-form" class="vs-form" style="margin-top:12px">' +
+        VS.field("existingIncome", "Rente und andere Einkünfte", x.existingIncome, { min: 0, unit: "€ / Monat, heutige Kaufkraft" }) +
+        VS.field("rk", "Rendite vorsichtig", (x.returns.konservativ * 100).toFixed(1), { step: 0.5, unit: "% pro Jahr vor Kosten" }) + VS.field("rb", "Rendite mittel", (x.returns.basis * 100).toFixed(1), { step: 0.5, unit: "% pro Jahr" }) +
+        VS.field("ro", "Rendite gut", (x.returns.optimistisch * 100).toFixed(1), { step: 0.5, unit: "% pro Jahr" }) + VS.field("cost", "Laufende Kosten (ETF + Depot)", (x.cost * 100).toFixed(2), { min: 0, max: 5, step: 0.05, unit: "% pro Jahr" }) +
+        VS.field("inflation", "Inflation", (x.inflation * 100).toFixed(1), { step: 0.1, unit: "% pro Jahr" }) + VS.field("lumpSum", "Einmalanlage", x.lumpSum, { min: 0, unit: "€ heute" }) +
+        VS.field("payoutYears", "Auszahldauer", x.payoutYears, { min: 1, max: 50, unit: "Jahre" }) + '</form>' +
+        VS.help("Rendite: wie stark das Geld im Jahr im Schnitt wächst. Auch Jahre mit Verlust sind möglich.") +
+        '<button type="button" class="vu-btn vu-btn--block" id="vs-ann-ok" style="margin-top:14px">Übernehmen</button>');
+      el.querySelector("#vs-ann-ok").onclick = function () {
+        var f = el.querySelector("#vs-ann-form"), n = function (id, d, s) { return VS.readNum(f, id, d, s); };
+        Object.assign(VS.state.plan, { existingIncome: n("existingIncome", 0), cost: n("cost", 0.3, 0.01), inflation: n("inflation", 2, 0.01), lumpSum: n("lumpSum", 0), payoutYears: n("payoutYears", 25),
+          returns: { konservativ: n("rk", 3, 0.01), basis: n("rb", 5, 0.01), optimistisch: n("ro", 7, 0.01) } });
+        VS.save(); VS.U.closeSheet(el); VS.views.plan(r);
+      };
+    }
     draw();
   };
 
   function drawPlan(out) {
-    var p = VS.currentPlan(), pl = VS.state.plan;
-    var paths = p.scenarios.map(function (s) {
+    var p = VS.currentPlan(), pl = VS.state.plan, base = p.scenarios[1], U = VS.U;
+    var track = V.Monitor.onTrack(base.goalAttainment);
+    var order = [p.scenarios[1], p.scenarios[0], p.scenarios[2]];
+    var paths = order.map(function (s) {
       var pts = [];
       for (var y = 0; y <= p.years; y++) {
         var fv = M.futureValue({ start: pl.start, lumpSum: pl.lumpSum, monthly: pl.monthly, years: y, annualReturn: s.annualReturn, annualCost: pl.cost }).nominal;
         pts.push([p.input.age + y, M.inflationAdjustedValue(fv, y, pl.inflation)]);
       }
-      return { label: s.label, points: pts, dash: s.id !== "basis" };
+      return { label: F.pct(s.annualReturn, 0) + " · " + (SC_LBL[s.id] || s.label), points: pts };
     });
-    var base = p.scenarios[1];
+    var levers = M.leverAnalysis(pl, pl.returns.basis).levers;
+    var fee = M.feeImpact({ start: pl.start, monthly: pl.monthly, years: p.years, annualReturn: pl.returns.basis, costA: 0.002, costB: 0.015 });
     var prob = M.goalProbability({ start: pl.start, lumpSum: pl.lumpSum, monthly: pl.monthly, years: p.years, annualReturn: pl.returns.basis, annualCost: pl.cost, volatility: 0.15,
       target: M.inflate(base.requiredCapitalReal, p.years, pl.inflation), paths: 1500 });
+    var kT = function (v) { return F.eurK(v).replace(" €", ""); };
     out.innerHTML =
-      '<div class="vs-result-block"><div class="vu-sec-head"><p class="vs-label">Ergebnis nach ' + p.years + ' Jahren</p>' +
-      '<span class="vs-light ' + V.Monitor.onTrack(base.goalAttainment).state + '"><i></i>' + esc(V.Monitor.onTrack(base.goalAttainment).label) + '</span></div>' +
-      '<div class="vu-kpis vs-res-kpis"><div class="vu-kpi vu-kpi--xl"><span class="vu-kpi-label">Vermögen · heutige Kaufkraft</span><span class="vu-kpi-value">' + F.eurK(base.real) + '</span><span class="vu-kpi-sub">Basis ' + F.pct(base.annualReturn, 1) + ' p. a. · nominal ' + F.eurK(base.nominal) + '</span></div>' +
-      '<div class="vu-kpi vu-kpi--xl"><span class="vu-kpi-label">Zielerreichung</span><span class="vu-kpi-value">' + F.pct(base.goalAttainment, 0) + '</span><span class="vu-kpi-sub">Lücke ' + F.eur(base.gapMonthlyReal) + ' / Monat</span></div></div>' +
-      '<ul class="vs-scen-bars" aria-label="Drei Szenarien">' + p.scenarios.map(function (s) {
-        return '<li' + (s.id === "basis" ? ' class="is-base"' : "") + '><span class="vs-scen-l">' + esc(s.label) + ' <small>' + F.pct(s.annualReturn, 1) + ' p. a.</small></span><b class="num">' + F.eurK(s.real) + '</b>' +
-          '<span class="vu-bar" aria-label="Ziel ' + F.pct(s.goalAttainment, 0) + '"><i style="--v:' + Math.min(100, s.goalAttainment * 100).toFixed(0) + '"></i></span><small class="vs-scen-goal">Ziel ' + F.pct(s.goalAttainment, 0) + (s.requiredMonthly === null ? "" : ' · nötige Sparrate ' + F.eur(s.requiredMonthly)) + '</small></li>';
-      }).join("") + '</ul>' +
-      '<h3 style="margin-top:26px">Vermögensverlauf in heutiger Kaufkraft</h3><div id="vs-plan-chart" style="margin-top:8px"></div>' +
-      '<details class="vu-more"><summary>Alle Kennzahlen je Szenario</summary><div class="vu-more-body"><div class="vs-table-wrap"><table class="vs-table" style="min-width:520px"><thead><tr><th scope="col">Kennzahl</th>' + p.scenarios.map(function (s) { return '<th scope="col">' + esc(s.label) + ' (' + F.pct(s.annualReturn, 1) + ')</th>'; }).join("") + '</tr></thead><tbody>' +
-      row("Endvermögen nominal", p.scenarios.map(function (s) { return F.eur(s.nominal); })) +
-      row("Endvermögen real (Kaufkraft heute)", p.scenarios.map(function (s) { return F.eur(s.real); })) +
-      row("davon eingezahlt", p.scenarios.map(function (s) { return F.eur(s.invested); })) +
-      row("Kaufkraftverlust durch Inflation", p.scenarios.map(function (s) { return F.eur(s.purchasingPowerLoss); })) +
-      row("Modellierte Entnahme / Monat (heutige Kaufkraft, " + p.input.payoutYears + " J.)", p.scenarios.map(function (s) { return F.eur(s.monthlyIncomeReal); })) +
-      row("Zielerreichung", p.scenarios.map(function (s) { return F.pct(s.goalAttainment, 0); })) +
-      row("Verbleibende Lücke / Monat", p.scenarios.map(function (s) { return F.eur(s.gapMonthlyReal); })) +
-      row("Nötige Sparrate fürs Ziel", p.scenarios.map(function (s) { return s.requiredMonthly === null ? "–" : F.eur(s.requiredMonthly); })) +
-      '</tbody></table></div></div></details>' +
-      '<details class="vu-more"><summary>Wie sicher ist das Ziel?</summary><div class="vu-more-body"><b>Modellrechnung Schwankung:</b> Bei 15 % jährlicher Schwankung (grob ein breiter Aktien-ETF) erreichen in ' + prob.paths.toLocaleString("de-DE") + ' simulierten Verläufen <b>' + F.pct(prob.probability, 0) + '</b> das Kapitalziel von ' + F.eurK(M.inflate(base.requiredCapitalReal, p.years, pl.inflation)) + ' (nominal). Spanne (10 %–90 %): ' + F.eurK(prob.percentiles ? prob.percentiles.p10 : null) + ' bis ' + F.eurK(prob.percentiles ? prob.percentiles.p90 : null) + '. Feste Saat – gleiche Eingabe, gleiches Ergebnis.</div></details>' +
-      '<details class="vu-more"><summary>Wie wird das berechnet?</summary><div class="vu-more-body">Rechenweg: monatliche Verzinsung, Sparrate am Monatsende, Kosten als laufender Abzug ((1+Rendite)×(1−Kosten)−1), Entnahme: gleichbleibende Kaufkraft über ' + p.input.payoutYears + ' Jahre, danach ist das Kapital aufgebraucht; das Restkapital bleibt in der Auszahlphase mit derselben Rendite nach Kosten und Inflation angelegt. Das ist eine modellierte Entnahme, keine garantierte Rente. Steuern und Sozialabgaben sind nicht berücksichtigt.</div></details></div>';
-    VS.lineChart(out.querySelector("#vs-plan-chart"), paths, { label: "Vermögensverlauf je Szenario", zero: true, fmtY: function (v) { return F.eurK(v); }, fmtX: function (v) { return Math.round(v) + " J."; }, fmtTipX: function (v) { return "Alter " + Math.round(v); } });
+      '<div class="vu-box vu-box--ink vs-result"><div class="vs-row-sb">' + VS.bsp() + VS.trackVerdict(track) + '</div>' +
+      '<p class="vs-big num">' + F.pct(base.goalAttainment, 0) + '</p><p class="vu-sm" style="opacity:1">deines Ziels erreichst du bei ' + F.pct(base.annualReturn, 0) + ' pro Jahr.</p>' +
+      '<p class="vu-sm" style="margin-top:4px">Lücke: ' + F.eur(base.gapMonthlyReal) + ' im Monat · Vermögen mit ' + p.input.targetAge + ': ' + F.eurK(base.real) + '</p></div>' +
+      VS.sect("Dein Vermögen bis " + p.input.targetAge) +
+      '<div class="vs-chipline">' + VS.bsp("Beispiel") + '<span class="vu-chip">Linie: ' + F.pct(base.annualReturn, 0) + '</span><span class="vu-chip">gestrichelt: ' + F.pct(p.scenarios[0].annualReturn, 0) + ' und ' + F.pct(p.scenarios[2].annualReturn, 0) + '</span></div>' +
+      '<div id="vs-plan-chart"></div>' +
+      '<div class="vu-grid" style="--vu-cols:3;margin-top:12px">' + p.scenarios.map(function (s) { return VS.tile(F.pct(s.annualReturn, 0) + " · " + (SC_LBL[s.id] || s.label), kT(s.real), "€ · Ziel " + F.pct(s.goalAttainment, 0)); }).join("") + '</div>' +
+      VS.help("Ziel " + F.pct(base.goalAttainment, 0) + ": So viel der Lücke zwischen Rente und Wunsch deckt dein Vermögen für " + p.input.payoutYears + " Jahre. In heutiger Kaufkraft.") +
+      VS.sect("Was am meisten bewirkt") + '<div class="vu-box vs-kvbox">' + levers.map(function (l, i) {
+        return '<div class="vs-kv"><span class="vu-sm"><b>' + (i + 1) + '. ' + esc(l.label) + '</b></span>' + (U ? U.chg(Math.round(l.delta * 100), { digits: 0 }).replace(" %", " %-Pkt.") : F.spct(l.delta, 0)) + '</div>'; }).join("") + '</div>' +
+      '<p class="vu-xs vu-mu" style="margin-top:6px">Veränderung der Zielerreichung im Beispiel mit ' + F.pct(pl.returns.basis, 0) + '.</p>' +
+      VS.sect("Kosten über " + p.years + " Jahre") + '<div class="vu-box"><p class="vs-big num" style="font-size:28px;margin-top:0">' + F.eurK(fee.difference) + '</p><p class="vu-sm vu-mu">Unterschied zwischen 0,2 % und 1,5 % laufenden Kosten</p>' +
+      '<div class="vs-wbars">' + VS.wbar("0,2 % Kosten", F.eurK(fee.a.endValue), 100, true) + VS.wbar("1,5 % Kosten", F.eurK(fee.b.endValue), fee.b.endValue / Math.max(1, fee.a.endValue) * 100) + '</div>' +
+      '<a class="vu-xs vs-link" href="#/kosten">Kosten selbst durchrechnen</a></div>' +
+      '<div class="vs-btnrow"><button type="button" class="vu-btn" data-save>Plan speichern</button><button type="button" class="vu-btn vu-btn--line" data-open="annahmen">Annahmen</button></div>' +
+      '<details class="vu-more"><summary>Profi: alle Kennzahlen je Szenario</summary><div class="vu-more-body">' +
+      '<div class="vs-tbl"><span></span>' + p.scenarios.map(function (s) { return '<span>' + F.pct(s.annualReturn, 0) + '</span>'; }).join("") + '</div>' +
+      [["Vermögen nominal", function (s) { return kT(s.nominal); }], ["in Kaufkraft", function (s) { return kT(s.real); }], ["davon eingezahlt", function (s) { return kT(s.invested); }],
+        ["Entnahme / Monat", function (s) { return F.eur(s.monthlyIncomeReal); }], ["Zielerreichung", function (s) { return F.pct(s.goalAttainment, 0); }], ["Lücke / Monat", function (s) { return F.eur(s.gapMonthlyReal); }],
+        ["Nötige Sparrate", function (s) { return s.requiredMonthly === null ? "–" : F.eur(s.requiredMonthly); }]].map(function (rw) {
+        return '<div class="vs-tbl"><b>' + esc(rw[0]) + '</b>' + p.scenarios.map(function (s) { return '<span class="num' + (s.id === "basis" ? " is-hi" : "") + '">' + rw[1](s) + '</span>'; }).join("") + '</div>'; }).join("") +
+      '<p class="vu-xs vu-mu" style="margin-top:6px">Vermögen in Tsd. € mit ' + p.input.targetAge + ' · nötige Sparrate für 100 % Ziel · Beispielrechnung</p>' +
+      '<h3 class="vu-mt" style="font-size:16px;margin-top:16px">Wie sicher ist das Ziel?</h3><div class="vs-row-sb" style="margin-top:8px;justify-content:flex-start">' + VS.verdict("none") + '<span class="vu-sm">Wir rechnen feste Szenarien, keine Wahrscheinlichkeiten.</span></div>' +
+      '<p class="vu-xs vu-mu" style="margin-top:8px">Zur Einordnung der Schwankung: In ' + prob.paths.toLocaleString("de-DE") + ' simulierten Verläufen mit 15 % Schwankung lag das Endvermögen (nominal) zwischen ' + F.eurK(prob.percentiles ? prob.percentiles.p10 : null) + ' und ' + F.eurK(prob.percentiles ? prob.percentiles.p90 : null) + ' (10.–90. Perzentil, feste Saat). Das ist eine Spanne, keine Wahrscheinlichkeit für dein Ziel.</p>' +
+      '<h3 class="vu-mt" style="font-size:16px;margin-top:16px">Formel</h3><div class="vu-box vs-mono" style="margin-top:8px">V(t+1) = V(t) · (1 + r − k) + 12 · Rate<br>Kaufkraft = V / (1 + i)^t</div>' +
+      '<p class="vu-xs vu-mu" style="margin-top:8px">Monatliche Verzinsung, Sparrate am Monatsende, Kosten als laufender Abzug. Entnahme mit gleichbleibender Kaufkraft über ' + p.input.payoutYears + ' Jahre; modellierte Entnahme, keine garantierte Rente. Steuern und Sozialabgaben nicht berücksichtigt.</p></div></details>';
+    VS.lineChart(out.querySelector("#vs-plan-chart"), paths, { height: 180, padL: 64, label: "Vermögensverlauf je Szenario in heutiger Kaufkraft", zero: true, fmtY: function (v) { return F.eurK(v); }, fmtX: function (v) { return Math.round(v) + " J."; }, fmtTipX: function (v) { return "Alter " + Math.round(v); } });
   }
   function row(label, cells) { return '<tr><td>' + esc(label) + '</td>' + cells.map(function (c) { return '<td class="num">' + c + '</td>'; }).join("") + '</tr>'; }
   VS.row = row;
@@ -283,71 +300,75 @@
   };
 
   /* ============================================================= MONITOR */
+  /* V08 (Redesign 2027): oben das eine Urteil „auf Kurs?“, die stärkste Stellschraube, danach Portfolio,
+     Bestandsänderungen und Kostenänderungen als Zeilen mit Urteil. Ohne Plan: ehrlicher Leerzustand. */
+  /** Richtung einer Änderungszeile aus ihrem Text: „a % → b %“ oder „(±x Prozentpunkte)“. */
+  VS.changeDirection = function (text) {
+    var t = String(text || ""), m = t.match(/(-?\d+(?:\.\d{3})*(?:,\d+)?)\s*%\s*→\s*(-?\d+(?:\.\d{3})*(?:,\d+)?)\s*%/);
+    var n = function (x) { return Number(x.replace(/\./g, "").replace(",", ".")); };
+    if (m) { var a = n(m[1]), b = n(m[2]); return b > a ? 1 : b < a ? -1 : 0; }
+    if (/neu unter|aufgenommen|neu im/i.test(t)) return 1;
+    if (/nicht mehr unter|entfernt|verkauft/i.test(t)) return -1;
+    return 0;
+  };
+  function changeRow(f, kindUp, kindDown) {
+    var d = VS.changeDirection(f.text), txt = String(f.text || "").replace(/\s*\([^)]*Prozentpunkte\)\.?$/, "").replace(/^[A-Z0-9.]+ · /, "").replace(/\s*\(Prospekt[^)]*\)\.?$/, "");
+    var v = d > 0 ? VS.verdict(kindUp[0], kindUp[1]) : d < 0 ? VS.verdict(kindDown[0], kindDown[1]) : VS.verdict("mid", "geändert");
+    return '<a class="vs-kv vs-chrow" href="#/etf/' + encodeURIComponent(f.symbol) + '?tab=aenderungen">' + VS.logo(f.symbol) + '<span class="vu-sm"><b>' + esc(txt) + '</b></span>' + v + '</a>';
+  }
   VS.views.monitor = function () {
-    var p = VS.currentPlan(), base = p.scenarios[1], snap = VS.state.snapshot;
-    var track = V.Monitor.onTrack(VS.state.planDone ? base.goalAttainment : null);
-    var levers = M.leverAnalysis(VS.state.plan, VS.state.plan.returns.basis);
-    var LBL = V.Monitor.CATEGORY_LABEL;
-    var root = VS.render('<section class="vs-hero"><p class="vs-eyebrow">Vorsorge-Monitor</p><h1>Bin ich auf Kurs?</h1><p class="vs-lead">Was sich seit deinem letzten gespeicherten Stand nachweislich verändert hat.</p></section>' +
-      '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card app"><p class="vs-label">Status</p><p class="vs-light ' + track.state + '" style="margin-top:10px"><i></i>' + esc(track.label) + '</p>' +
-      (VS.state.planDone ? '<div class="vs-progress"><i style="width:' + Math.min(100, base.goalAttainment * 100).toFixed(0) + '%"></i></div>' +
-        '<div class="vs-row" style="margin-top:12px"><span>Zielerreichung (Basis)</span><span class="num">' + F.pct(base.goalAttainment, 0) + '</span></div>' +
-        '<div class="vs-row"><span>Sparrate</span><span class="num">' + F.eur(p.input.monthly) + ' / Monat</span></div>' +
-        '<div class="vs-row"><span>Nötige Sparrate fürs Ziel</span><span class="num">' + F.eur(base.requiredMonthly) + ' / Monat</span></div>' +
-        '<div class="vs-row"><span>Kostenannahme</span><span class="num">' + F.pct(p.input.cost, 2) + ' p.a.</span></div>' +
-        '<div class="vs-row"><span>Plan gespeichert am</span><span class="num">' + F.date(snap && snap.at) + '</span></div>'
-        : '<p class="vs-sub" style="margin-top:10px">Noch kein Plan gespeichert. Ohne Plan zeigt der Monitor nur Daten- und Produktänderungen.</p><a class="vs-pill lime" style="margin-top:12px" href="#/plan">Zum Planer</a>') + '</div>' +
-      '<div class="vs-card"><p class="vs-label">Welche Stellschraube wirkt am stärksten?</p><div style="margin-top:10px">' + levers.levers.map(function (l, i) {
-        return '<div class="vs-row"><span>' + (i + 1) + '. ' + esc(l.label) + '</span><span class="num ' + F.cls(l.delta) + '">' + F.spct(l.delta, 0) + '-Pkt.</span></div>';
-      }).join("") + '</div><p class="vs-fine" style="margin-top:8px">Veränderung der Zielerreichung im Basisszenario. Modellrechnung, keine Empfehlung.</p></div></div></section>' +
-      '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card" id="vs-mon-plan"><p class="vs-label">Was hat sich bei dir verändert?</p><div class="vs-loading">…</div></div>' +
-      '<div class="vs-card" id="vs-mon-portfolio"><p class="vs-label">Portfolio · Risiko & Allokation</p><div class="vs-loading">…</div></div></div></section>' +
-      '<section class="vs-section"><div class="vs-card" id="vs-mon-holdings"><p class="vs-label">Bestandsänderungen deiner ETFs</p><div class="vs-loading">…</div></div></section>' +
-      '<section class="vs-section"><div class="vs-card" id="vs-mon-changes"><p class="vs-label">Daten & Produkte – was hat sich verändert?</p><div class="vs-loading">…</div></div></section>');
-    function evRow(e) { return '<div class="vs-row"><span style="color:var(--ink)">' + esc(e.text) + '</span><span class="vs-badge">' + esc(LBL[e.category] || e.category) + '</span></div>'; }
+    var U = VS.U, p = VS.currentPlan(), base = p.scenarios[1], snap = VS.state.snapshot, sp = VS.state.sparplan, done = VS.state.planDone;
+    var track = V.Monitor.onTrack(done ? base.goalAttainment : null);
+    var lever = M.leverAnalysis(VS.state.plan, VS.state.plan.returns.basis).levers[0];
+    var top = done ? '<div class="vu-box vu-box--ink vs-result"><div class="vs-row-sb"><span class="vu-ltag" style="color:#8a8a8a">Dein Plan · gespeichert ' + F.date(snap && snap.at) + '</span>' + VS.trackVerdict(track) + '</div>' +
+        '<p class="vs-big num">' + F.pct(base.goalAttainment, 0) + '</p><p class="vu-sm">deines Ziels bei ' + F.pct(base.annualReturn, 0) + ' pro Jahr (Beispielrechnung)</p></div>' +
+        VS.sect("Stärkste Stellschraube") + '<a class="vu-box vu-box--lime vs-row-sb" href="#/plan" style="text-decoration:none;flex-wrap:nowrap"><span><b>' + esc(lever.label) + '</b><span class="vu-sm" style="display:block">bringt dich ' + Math.round(lever.delta * 100) + ' %-Punkte näher ans Ziel</span></span>' + U.glyph("next", 18) + '</a>'
+      : '<div class="vu-box vs-noplan"><div>' + VS.verdict("none", "Noch kein Plan") + '</div><h2 class="vu-mt" style="margin-top:12px">Ohne Plan kein Kurs.</h2><p class="vu-sm vu-mu" style="margin-top:8px">Speichere einen Plan im Planer. Dann zeigen wir hier, ob du auf Kurs bist und was sich ändert.</p>' +
+        '<a class="vu-btn vu-btn--block" href="#/start" style="margin-top:14px">10-Euro-Sparplan starten</a><a class="vu-btn vu-btn--line vu-btn--block" href="#/plan" style="margin-top:8px">Zum Planer</a></div>';
+    var spCard = sp ? VS.sect("Dein Sparplan") + '<a class="vu-box vs-kvbox" href="#/start/6" style="display:block;text-decoration:none;color:inherit">' + [["Sparrate", F.eur(sp.amount) + " im Monat"], ["Index", sp.index], ["Form", sp.form === "avd" ? "Altersvorsorgedepot" : "Freier Sparplan"], ["Angelegt", F.date(sp.saved)]].map(function (x) {
+        return '<span class="vs-kv"><span class="vu-sm"><b>' + esc(x[0]) + '</b></span><span class="vu-sm">' + esc(x[1]) + '</span></span>'; }).join("") + '</a>' : "";
+    var root = VS.render(VS.intro("Bin ich auf Kurs?", "Was sich seit deinem letzten Stand verändert hat.") + '<div style="margin-top:14px">' + top + '</div>' + spCard +
+      (done ? '<section id="vs-mon-portfolio">' + VS.sect("Dein Portfolio", "#/portfolio", "X-Ray") + '<div class="vs-loading">…</div></section>' : "") +
+      '<section id="vs-mon-holdings">' + VS.sect(done ? "In deinen ETFs" : "Bis dahin: Änderungen bei Kern-ETFs") + '<div class="vs-loading">…</div></section>' +
+      '<section id="vs-mon-changes">' + VS.sect("Kosten von Produkten") + '<div class="vs-loading">…</div></section>' +
+      '<div class="vs-kv" style="margin-top:14px;border-top:1px solid var(--line)"><span class="vu-sm"><b>Bei Änderungen benachrichtigen</b><small class="vu-mu" style="display:block">Merkt sich die Wahl in diesem Browser; Nachrichten folgen mit dem Konto.</small></span>' + U.toggle(!!VS.state.notify, "", "notify") + '</div>' +
+      '<details class="vu-more" id="vs-mon-plan"><summary>Was hat sich bei dir verändert?</summary><div class="vu-more-body"><div class="vs-loading">…</div></div></details>' +
+      '<details class="vu-more" id="vs-mon-more"><summary>Datenmeldungen und was nicht überwacht wird</summary><div class="vu-more-body"></div></details>');
+    root.querySelector('input[name="notify"]').addEventListener("change", function () { VS.state.notify = this.checked; VS.save(); });
+    function evRow(e) { return '<div class="vs-kv"><span class="vu-sm">' + esc(e.text) + '</span></div>'; }
     VS.snapshotContext().then(function (ctx) {
       var d = snap ? V.Monitor.diffPlan(snap, V.Monitor.snapshotPlan(p, VS.state.portfolio, null, ctx)) : [];
-      root.querySelector("#vs-mon-plan").innerHTML = '<p class="vs-label">Was hat sich bei dir verändert?</p><div style="margin-top:8px">' +
-        (snap ? (d.length ? d.map(evRow).join("") : '<p class="vs-sub">Keine Veränderung gegenüber deinem gespeicherten Stand.</p>') : '<p class="vs-sub">Speichere einen Plan, dann vergleicht der Monitor Plan, Portfolio, Regelversionen und Datenstand.</p>') + '</div>';
+      root.querySelector("#vs-mon-plan .vu-more-body").innerHTML = snap ? (d.length ? d.map(evRow).join("") : '<p class="vu-sm">Keine Veränderung gegenüber deinem gespeicherten Stand.</p>') : '<p class="vu-sm">Speichere einen Plan, dann vergleicht der Monitor Plan, Portfolio, Regelversionen und Datenstand.</p>';
     });
     Promise.all([VS.getJSON("/vorsorge/data/changes.json"), VS.master().catch(function () { return null; })]).then(function (res) {
-      var c = res[0], m = res[1], mineSym = {};
-      VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })).forEach(function (s) { var e = m && m.find(s); if (e) mineSym[e.symbol] = 1; });
-      // Prioritaet: eigene ETFs, dann Kosten, Fondsstatus, Produkt; Datenmeldungen (Pipeline) gebuendelt am Ende
-      var RANK = { COST_CHANGE: 0, CLOSED_OR_DELISTED: 1, STATUS_CHANGE: 1, REMOVED: 1 };
-      var rank = function (e) { return RANK[e.type] === undefined ? 2 : RANK[e.type]; };
-      var prod = c.events.filter(function (e) { return e.category !== "DATA_UPDATE"; }), data = c.events.filter(function (e) { return e.category === "DATA_UPDATE"; });
-      prod = prod.map(function (e, i) { return [e, i]; }).sort(function (a, b) { return (mineSym[b[0].symbol] ? 1 : 0) - (mineSym[a[0].symbol] ? 1 : 0) || rank(a[0]) - rank(b[0]) || a[1] - b[1]; }).map(function (x) { return x[0]; });
-      root.querySelector("#vs-mon-changes").innerHTML = '<p class="vs-label">Produkte & Kosten – was hat sich verändert? · Stand ' + F.date(c.asOf) + '</p><div style="margin-top:8px">' +
-        (prod.length ? prod.slice(0, 20).map(function (e) { return mineSym[e.symbol] ? evRow(e).replace('<span class="vs-badge">', '<span class="vs-badge lime">Dein ETF · ') : evRow(e); }).join("") : '<p class="vs-sub">Keine Produkt- oder Kostenänderungen gegenüber dem vorherigen Datenstand.</p>') +
-        (data.length ? '<details style="margin-top:10px"><summary class="vs-fine">Datenaktualisierungen (' + data.length + ')</summary>' + data.map(evRow).join("") + '</details>' : "") +
-        '</div><details class="vu-more"><summary>Was noch nicht überwacht wird</summary><div class="vu-more-body">' + (V.Monitor.UNMONITORED || c.unmonitored).map(function (u) { return '<div class="vs-row"><span>' + esc(u.label) + '</span><span class="vs-fine" style="text-align:right">' + esc(u.reason) + '</span></div>'; }).join("") +
-        '<div class="vs-row"><span>Regulatorische Änderung</span><span class="vs-fine" style="text-align:right">Nur über neue Versionen der Förderregeln mit Quelle.</span></div></div></details>';
-    }).catch(function () { root.querySelector("#vs-mon-changes").innerHTML = VS.pending("Änderungen nicht verfügbar", "Die Änderungsliste konnte nicht geladen werden."); });
-    Promise.all([VS.master(), VS.holdingsFeed().catch(function () { return null; })]).then(function (res) {
-      var m = res[0], hi = res[1], seen = {}, mine = [];
-      VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })).forEach(function (s) { var e = m.find(s); if (e && !seen[e.symbol]) { seen[e.symbol] = 1; mine.push(e); } });
-      var feed = hi ? hi.feed : [];
-      var head = '<p class="vs-label">Bestandsänderungen deiner ETFs' + (hi ? ' · Quartale ' + esc(hi.quarters.join(", ")) : "") + '</p><div style="margin-top:8px">';
-      var body = mine.length ? mine.map(function (e) {
-        var st = e.holdingsAsOf ? (e.holdingsChanges > 0 ? e.holdingsChanges + " relevante Änderung" + (e.holdingsChanges === 1 ? "" : "en") : "keine relevante Änderung") : "keine Bestandsdaten (nicht in SEC N-PORT)";
-        return '<div class="vs-row"><span><a href="' + VS.etfHref(e) + (e.holdingsAsOf ? "?tab=aenderungen" : "") + '"><b style="color:var(--ink)">' + esc(e.symbol) + '</b></a> ' + esc(e.name || "") + '</span><span class="vs-fine" style="text-align:right">' + esc(st) + (e.holdingsAsOf ? " · Stand " + F.date(e.holdingsAsOf) : "") + '</span></div>';
-      }).join("") : '<p class="vs-sub">Noch keine ETFs in Watchlist oder Portfolio. Auffällige Änderungen im gesamten Bestand:</p>' +
-        feed.slice(0, 6).map(function (f) { return '<div class="vs-row"><span><a href="#/etf/' + encodeURIComponent(f.symbol) + '?tab=aenderungen"><b>' + esc(f.symbol) + '</b></a> ' + esc(f.text) + '</span></div>'; }).join("");
-      root.querySelector("#vs-mon-holdings").innerHTML = head + body + '</div>';
-      VS.dm([["Bestandsänderungen", "Quelle: SEC N-PORT (Quartalsberichte US-registrierter Fonds). Änderungen unter 0,25 Prozentpunkten zählen als Rauschen. Europäische ETFs: Bestände noch nicht angebunden."]]);
-    }).catch(function () { root.querySelector("#vs-mon-holdings").innerHTML = VS.pending("Bestandsänderungen nicht verfügbar", "Die Holdings-Übersicht konnte nicht geladen werden."); });
-    Promise.all([VS.master(), VS.seriesFor(VS.state.portfolio.map(function (x) { return x.symbol; }))]).then(function (res) {
+      var c = res[0], mineSym = {};
+      VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })).forEach(function (s) { mineSym[String(s).toUpperCase()] = 1; });
+      var cost = c.events.filter(function (e) { return e.type === "COST_CHANGE" && e.symbol; }).sort(function (a, b) { return (mineSym[b.symbol] ? 1 : 0) - (mineSym[a.symbol] ? 1 : 0); });
+      var other = c.events.filter(function (e) { return e.type !== "COST_CHANGE" || !e.symbol; });
+      root.querySelector("#vs-mon-changes").innerHTML = VS.sect("Kosten von Produkten") + (cost.length ? '<div class="vu-box vs-kvbox">' + cost.slice(0, 6).map(function (e) {
+        var dir = VS.changeDirection(e.text), m = String(e.text).match(/(\d+(?:,\d+)?\s*%\s*→\s*\d+(?:,\d+)?\s*%)/);
+        return '<a class="vs-kv" href="#/etf/' + encodeURIComponent(e.symbol) + '?tab=kosten"><span class="vu-sm"><b>' + esc(e.symbol) + '</b> ' + esc(m ? m[1] : e.text) + (mineSym[e.symbol] ? ' · dein ETF' : "") + '</span>' + (dir > 0 ? VS.verdict("weak", "teurer") : dir < 0 ? VS.verdict("strong", "günstiger") : VS.verdict("mid", "geändert")) + '</a>';
+      }).join("") + '</div>' : U.blank("Keine Kostenänderungen gegenüber dem vorherigen Datenstand.")) +
+        VS.help("Kostenquote laut Prospekt, brutto. Stand " + F.date(c.asOf) + ". Neue Prospekte prüfen wir automatisch.");
+      root.querySelector("#vs-mon-more .vu-more-body").innerHTML = (other.length ? other.map(evRow).join("") : '<p class="vu-sm">Keine weiteren Meldungen.</p>') +
+        '<p class="vu-ltag" style="margin-top:12px">Noch nicht überwacht</p>' + (V.Monitor.UNMONITORED || c.unmonitored || []).map(function (u) { return '<div class="vs-kv"><span class="vu-sm"><b>' + esc(u.label) + '</b></span><span class="vu-xs vu-mu" style="text-align:right">' + esc(u.reason) + '</span></div>'; }).join("");
+    }).catch(function () { root.querySelector("#vs-mon-changes").innerHTML = VS.sect("Kosten von Produkten") + U.blank("Die Änderungsliste konnte nicht geladen werden."); });
+    VS.holdingsFeed().then(function (hi) {
+      var mine = {}; (done ? VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })) : ["URTH", "EEM", "SPY"]).forEach(function (s) { mine[String(s).toUpperCase()] = 1; });
+      var list = (hi.feed || []).filter(function (f) { return mine[f.symbol]; });
+      root.querySelector("#vs-mon-holdings").innerHTML = VS.sect(done ? "In deinen ETFs" : "Bis dahin: Änderungen bei Kern-ETFs") +
+        (list.length ? '<div class="vs-chrows">' + list.slice(0, 8).map(function (f) { return changeRow(f, ["mid", "gestiegen"], ["mid", "gesunken"]); }).join("") + '</div>' : U.blank("Keine relevanten Bestandsänderungen bei diesen ETFs.")) +
+        '<p class="vu-xs vu-mu" style="margin-top:6px">Bestände laut SEC N-PORT, Quartale ' + esc((hi.quarters || []).join(", ")) + '</p>';
+    }).catch(function () { root.querySelector("#vs-mon-holdings").innerHTML = VS.sect("In deinen ETFs") + U.blank("Die Bestandsänderungen konnten nicht geladen werden."); });
+    if (done) Promise.all([VS.master(), VS.seriesFor(VS.state.portfolio.map(function (x) { return x.symbol; }))]).then(function (res) {
       var m = res[0], x = V.XRay.portfolioXRay(VS.state.portfolio, m._bySymbol, res[1].series, { regionLabels: VS.REGION });
-      root.querySelector("#vs-mon-portfolio").innerHTML = '<p class="vs-label">Portfolio · Risiko & Allokation</p>' +
-        '<div class="vs-row" style="margin-top:8px"><span>Positionen</span><span>' + VS.state.portfolio.map(function (p) { return esc(p.symbol) + " " + F.pct(p.weight, 0); }).join(" · ") + '</span></div>' +
-        '<div class="vs-row"><span>Schwankung (p.a.)</span><span class="num">' + F.pct(x.risk && x.risk.volatility.value) + '</span></div>' +
-        '<div class="vs-row"><span>Größter historischer Rückgang</span><span class="num down">' + F.pct(x.risk && x.risk.maxDrawdown.value) + '</span></div>' +
-        '<div class="vs-row"><span>Kursentwicklung 1 Jahr</span><span class="num ' + F.cls(x.performance && x.performance.windows["1Y"].value) + '">' + F.spct(x.performance && x.performance.windows["1Y"].value) + '</span></div>' +
-        '<div class="vs-row"><span>Nicht in Euro gehandelt</span><span class="num">' + F.pct(x.fxExposure.share, 0) + '</span></div>' +
-        '<div style="margin-top:12px">' + VS.bars(x.assetClasses.map(function (a) { return { key: a.key, label: VS.ASSET[a.key] || a.key, weight: a.weight }; })) + '</div>' +
-        '<a class="vs-pill small" style="margin-top:12px" href="#/portfolio">Portfolio-X-Ray öffnen</a>';
-    }).catch(function () { root.querySelector("#vs-mon-portfolio").innerHTML = VS.pending("Portfolio nicht berechenbar", "ETF-Daten nicht erreichbar."); });
+      var y1 = x.performance && x.performance.windows["1Y"].value;
+      root.querySelector("#vs-mon-portfolio").innerHTML = VS.sect("Dein Portfolio", "#/portfolio", "X-Ray") + '<div class="vu-box vs-kvbox">' +
+        [["Schwankung", F.pct(x.risk && x.risk.volatility.value)], ["Größter Rückgang", F.spct(x.risk && x.risk.maxDrawdown.value)], ["Letzte 12 Monate", VS.chg(y1, 1)], ["Nicht in Euro", F.pct(x.fxExposure.share, 0)]].map(function (k) {
+          return '<div class="vs-kv"><span class="vu-sm"><b>' + k[0] + '</b></span><b class="num">' + k[1] + '</b></div>'; }).join("") + '</div>' +
+        '<p class="vu-xs vu-mu" style="margin-top:6px">' + VS.state.portfolio.map(function (q) { return esc(q.symbol) + " " + F.pct(q.weight, 0); }).join(" · ") + '</p>';
+    }).catch(function () { root.querySelector("#vs-mon-portfolio").innerHTML = VS.sect("Dein Portfolio") + U.blank("ETF-Daten nicht erreichbar."); });
   };
+
 
 })(window);

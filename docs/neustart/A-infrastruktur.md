@@ -1,4 +1,4 @@
-# Strang A – Infrastruktur (Stand 04.11.2026, 20:15 UTC)
+# Strang A – Infrastruktur (Stand 05.11.2026, 08:00 UTC)
 
 Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/workflows`, `scripts/ci`, `scripts/core`, `core/registry`, dieses Dokument.
 
@@ -20,12 +20,29 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - `system-health`: US-Wertpapierstamm OK;
   - Generation 1.3.0 eingefroren (#1347).
 - **Datenzweig-Pilot News** (#1348, Phase DUAL_WRITE): `data/live` enthält nur `dashboard/data/news_feed.json`. Der ausgelieferte Pages-Lauf 41890840080 meldet `IDENTICAL 1`, vollständig.
+- **Produktuniversum mit Gate** (#1376): `security-master-eligibility.yml` und `scripts/core/eligibility-gate.mjs`. Ein Commit gibt es nur bei Gate COMMIT. Heute ist das Gate BLOCKED (siehe Offen). Core auf `main` ist wieder grün: `stock-availability` hatte AAL fest als Beispiel.
+- **Insider-Käufe E2 in der Tagespipeline:**
+  - #1369 geprüft, zwei Fehler behoben:
+    - Doppelzählung über mehrere CIKs;
+    - eine HTML-Anlage stoppte den Lauf; einzelne nicht lesbare Einreichungen werden jetzt ausgewiesen statt zu stoppen.
+  - #1378: eigener Job im SEC-Tageslauf, 90-Tage-Fenster, nur im Datenzweig.
+  - Erster Stand in `data/live`: 141 Käufe aus 1.423 Einreichungen (03.–05.11.), 0 abgewiesen.
+- **Erstes Bündel `content`** (#1385): News, Analystenbewertungen, Hedgefonds 13F und Morning in einem Workflow, Schritte bytegleich übernommen. 141 → 138 Workflows.
+- **Bündel-Verzeichnis** (#1379) mit Vertragstest. Jeder neue Workflow braucht ein Ziel-Bündel.
 
 ## Offen
-- Datenzweig: Abnahme nach 7 Tagen nur `IDENTICAL` (bis 11.11.), dann News auf BRANCH_ONLY; nächste Datenarten Analyst Ratings, Market Pulse.
-- `eligibility.json` (Statusseite „Security Master“) ist seit 20.10. STALE. Eigener Erzeuger `build-us-eligibility.mjs`, kein Zeitplan. Nächster Schritt: einen Lauf mit Gate einplanen.
+- **Überschneidung Insider:** `ownership-signals.yml` baut wöchentlich Insider-Transaktionen (`quant/data/product/ownership-signals-v1/`). E2 ergänzt die tagesgenaue Point-in-Time-Verfügbarkeit. Empfehlung: zu einem Erzeuger zusammenführen, bevor ein Konsument E2 liest.
+- **Produktuniversum nachholen:**
+  - Gegen den Stamm 1.3.0 ergibt der Erzeuger 473 Statuswechsel, davon 129 ELIGIBLE→EXCLUDED, und ein Produktuniversum von 6.686 auf 6.739.
+  - Das geht nur über einen eigenen PR mit Vorher/Nachher je Produkt.
+  - Danach den Zeitplan einschalten.
+- **Bündelung, nächste Schritte:**
+  - `monitor` (14 Workflows);
+  - dann die 14 Löschkandidaten prüfen;
+  - dann `pipeline-weekly`.
+- **Datenzweig:** Abnahme News am 11.11. (7 Tage nur `IDENTICAL`), danach News auf BRANCH_ONLY.
 - Folgearbeiten an 1.3.0 (Strang C): #1119 (H6), optional H7.
-- Die PR-Liste unten wartet auf die Bestätigung der Steuerungssitzung.
+- PR-Liste: liegt beim Owner zur Bestätigung, bis dahin wird nichts geschlossen.
 
 ## Braucht Owner
 - Nichts Neues.

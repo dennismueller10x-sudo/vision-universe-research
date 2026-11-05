@@ -171,3 +171,55 @@ test('Python-Gegenrechnung: Schrumpfung, Gewichte und Grenzen auf 24 Fällen', (
   assert.ok(rep.checks > 10000);
   fs.rmSync(dir, { recursive: true, force: true });
 });
+
+test('Delistete Titel: Rohschluss je Datum aus splitFactors (ADR-002), nicht per konstantem Verhältnis; Prüfung gegen Registerpunkte', () => {
+  const MP = require(ROOT + '/scripts/quant/portfolio/model-portfolios.cjs');
+  // 2:1-Split am 2015-03-02: vorher Rohschluss 100 (bereinigt 50), danach 50.
+  const days = [], rows = [];
+  for (let t = Date.parse('2015-01-05'); t <= Date.parse('2015-05-29'); t += 86400000) {
+    const d = new Date(t), iso = d.toISOString().slice(0, 10);
+    if (d.getUTCDay() === 0 || d.getUTCDay() === 6) continue;
+    days.push(iso); rows.push([iso, iso < '2015-03-02' ? 100 : 50, 1000, iso === '2015-03-02' ? 2 : 1]);
+  }
+  const weekly = new Map(); days.forEach(d => weekly.set(MP.isoWeek(d), d));
+  const points = [...weekly.values()].map(d => [d, 50]);
+  const doc = { points, listingLifecycle: { lastTradeDate: points.at(-1)[0] } };
+  const r = MP.delistedRawWeekly(doc, { cols: ['date', 'close', 'volume', 'splitFactor'], rows }, MP.isoWeek);
+  assert.equal(r.error, undefined);
+  assert.equal(r.raw.get(MP.isoWeek('2015-01-09')), 100, 'vor dem Split: Rohschluss 100, nicht 50');
+  assert.equal(r.raw.get(MP.isoWeek('2015-05-29')), 50);
+  assert.equal(r.dv.get(MP.isoWeek('2015-05-29')), 50 * 1000);
+  // Widerspricht der Registerpunkt den Balken, wird der Titel nicht verwendet.
+  const bad = { ...doc, points: points.map(([d]) => [d, 80]) };
+  assert.equal(MP.delistedRawWeekly(bad, { cols: ['date', 'close', 'volume', 'splitFactor'], rows }, MP.isoWeek).error, 'RAW_SPLIT_ADJUSTED_MISMATCH');
+  assert.equal(MP.delistedRawWeekly(doc, null, MP.isoWeek).error, 'RAW_SERIES_MISSING');
+});
+
+test('Panel-Regeln: delistete Reihen nur mit Gesamtrendite und Rohbalken; Population ehrlich benannt', () => {
+  const src = fs.readFileSync(ROOT + '/scripts/quant/portfolio/model-portfolios.cjs', 'utf8');
+  assert.match(src, /if \(!tr\) \{ counts\.delistedExcludedNoTotalReturn\+\+; continue; \}/);
+  assert.match(src, /--delisted-dir verlangt --delisted-raw-dir/);
+  assert.ok(!/lastRawClose \/|lastRaw \/ lastAdj/.test(src), 'kein konstantes Verhältnis mehr');
+  const bt = fs.readFileSync(ROOT + '/quant/engines/portfolio-backtest.cjs', 'utf8');
+  assert.ok(!bt.includes("historicalPopulation: 'ALL_THEN_TRADEABLE_LISTINGS'"));
+});
+
+test('Öffentliches Bündel: ohne dokumentierte Owner-Freigabe nie in einen ausgelieferten Pfad; Inhalt ohne Positionen und Kurse', () => {
+  const P = require(ROOT + '/scripts/quant/portfolio/export-public-model-portfolios.cjs');
+  assert.equal(P.servedByPages('quant/data/product/model-portfolios-v1.json'), true);
+  assert.equal(P.servedByPages('docs/x.json'), false);
+  assert.equal(P.servedByPages('workers/vu-account/data/x.json'), false);
+  const doc = P.build(ROOT, 'docs/quant/research/portfolio-v1/model-portfolios.json');
+  if (doc.state === 'COMPUTED') {
+    assert.equal(doc.label, 'Forschung, nicht zertifiziert');
+    assert.equal(doc.claim, 'NO_PERFORMANCE_PROMISE');
+    const text = JSON.stringify(doc);
+    assert.equal(/lastHoldings|"weight"|"equity"|"ticker"/.test(text), false);
+    assert.ok(doc.limits.length >= 4);
+  }
+  if (!P.approved(ROOT)) {
+    const r = require('node:child_process').spawnSync(process.execPath, [ROOT + '/scripts/quant/portfolio/export-public-model-portfolios.cjs', '--out', ROOT + '/quant/data/product/__probe.json']);
+    assert.equal(r.status, 3);
+    assert.equal(fs.existsSync(ROOT + '/quant/data/product/__probe.json'), false);
+  }
+});

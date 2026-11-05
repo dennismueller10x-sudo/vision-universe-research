@@ -41,18 +41,20 @@
     if (qi >= 0) h.slice(qi + 1).split("&").forEach(function (kv) { if (!kv) return; var p = kv.split("="); params[decodeURIComponent(p[0])] = decodeURIComponent(p.slice(1).join("=") || ""); });
     var head = path[0] || "";
     if (!head) return { view: "home", params: params };
-    if (head === "screener") return { view: "screener", tab: path[1] === "gespeichert" ? "saved" : "build", params: params };
-    if (head === "methodik") return { view: "method", params: params };
+    /* Redesign 2027 (T02-T04): Reiter Suchen · Vorlagen · Gespeichert im Screener (?reiter=); alte Adressen bleiben gueltig. */
+    if (head === "screener") return { view: "screener", tab: path[1] === "gespeichert" || params.reiter === "gespeichert" ? "saved" : params.reiter === "vorlagen" ? "templates" : "build", params: params };
+    /* T05: der Leistenplatz "Muster" (#/muster); #/methodik zeigt dieselbe Seite. Reiter ?reiter=indikatoren|regeln. */
+    if (head === "methodik" || head === "muster") return { view: "method", params: params };
     if (head === "akademie") return { view: "academy", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
     if (head === "assistent") return { view: "assistant", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
     if (head === "vorlagen") return { view: "templates", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
     if (head === "chart") {
       var t = String(path[1] || "").toUpperCase();
-      return TICKER.test(t) ? { view: "chart", ticker: t, tab: path[2] === "signale" ? "signals" : "chart", params: params } : { view: "chart", ticker: null, params: params };
+      return TICKER.test(t) ? { view: "chart", ticker: t, tab: path[2] === "signale" ? "signals" : path[2] === "studio" ? "studio" : "chart", params: params } : { view: "chart", ticker: null, params: params };
     }
     return { view: "notfound", params: params };
   }
-  function chartHref(ticker, tab, query) { return "#/chart/" + encodeURIComponent(ticker) + (tab === "signals" ? "/signale" : "") + (query ? "?" + query : ""); }
+  function chartHref(ticker, tab, query) { return "#/chart/" + encodeURIComponent(ticker) + (tab === "signals" ? "/signale" : tab === "studio" ? "/studio" : "") + (query ? "?" + query : ""); }
   /** Zweistelliger Schluessel der technical-signals-Scherben (wie quant/api/product-services.js#technicalShard). */
   function technicalShard(ticker) { return (String(ticker) + "_").slice(0, 2); }
   function technicalPaths(ticker) { return [TECH_DIR + "by-ticker/" + ticker + ".json.gz", TECH_DIR + technicalShard(ticker) + ".json.gz"]; }

@@ -14,14 +14,18 @@ L.push('> Erzeugt von `scripts/quant/portfolio/render-model-portfolios.cjs` aus 
 L.push('**Forschung, nicht zertifiziert.** Historische Rekonstruktion, keine Empfehlung, keine Renditezusage. Interne Vorschau; eine öffentliche Darstellung braucht die Owner-Freigabe (öffentliche Renditeaussage) und die Abstimmung mit der Rechtsberatung.', '');
 L.push('## Datenbasis', '');
 L.push('| Größe | Wert |', '|---|---|');
-L.push('| Zeitraum | ' + doc.window.join(' bis ') + ' |');
+L.push('| Zeitraum angefragt | ' + (doc.requestedWindow || doc.window).join(' bis ') + ' |');
+L.push('| Zeitraum realisiert | ' + (doc.realizedWindow ? doc.realizedWindow.join(' bis ') : '–') + (doc.windowAlarm ? ' (**verkürzt:** Benchmark endet ' + doc.windowAlarm.benchmarkLastDate + ', ' + doc.windowAlarm.missingWeeks + ' Wochen fehlen)' : '') + ' |');
+if (doc.population) L.push('| Population | ' + doc.population.description + ' |');
 L.push('| Rendite-Basis | ' + doc.data.basis + ' |', '| Benchmark | ' + doc.data.benchmark + ' |', '| Kurse | ' + doc.data.priceSource + ' |', '| delistete Titel | ' + doc.data.delistedSource + ' |');
 L.push('| Fundamentaldaten | ' + doc.data.fundamentalsSource + ' |', '| Titel im Panel | ' + doc.data.securities + ' (mit Fundamentaldaten ' + doc.data.withFundamentals + ') |');
 L.push('| Gewichtung | ' + doc.weighting + ' (Risikoparität auf Ledoit/Wolf-geschrumpfter Kovarianz, 104 Wochen) |');
 L.push('| Standard | ' + doc.standard.minPositions + '–' + doc.standard.maxPositions + ' Titel (Ziel ' + doc.standard.targetPositions + '), max. ' + pct(doc.standard.maxPositionWeight) + ' je Titel, max. ' + pct(doc.standard.maxSectorWeight) + ' je Branche (Fama/French 12 aus SIC), Kurs ≥ ' + doc.standard.minPrice + ' USD, ADV ≥ ' + doc.standard.minDollarVolumeUsd / 1e6 + ' Mio. USD (ersatzweise Marktkap. ≥ ' + doc.standard.minMarketCapUsd / 1e6 + ' Mio.), höchstens ' + pct(doc.standard.maxParticipationOfAdv) + ' des ADV bei ' + doc.standard.assumedPortfolioUsd / 1e6 + ' Mio. USD Vermögen |');
 L.push('| Kosten je Seite | Gebühr ' + doc.standard.feeBps + ' bp + Slippage ' + doc.standard.slippageBps + ' bp + halber Spread nach Liquiditätsklasse (2–50 bp) |');
 L.push('| Rebalancing | alle ' + doc.defaults.rebalanceWeeks + ' Wochen, Entscheidung zum Wochenschluss, Ausführung zum Schluss der Folgewoche |');
-L.push('| Endwert delisteter Titel | Übernahme 100 %, unbekannt 70 %, Notlage 0 % des letzten Schlusses (Sensitivität unten) |', '');
+L.push('| Endwert delisteter Titel | Übernahme 100 %, unbekannt 70 %, Notlage 0 % des letzten Schlusses: Klassenannahme, kein beobachteter Erlös (Sensitivität unten) |', '');
+const cn = doc.data.counts || {};
+L.push('Ausgeschlossen: ' + (cn.noSector ?? 0) + ' heutige Titel ohne Branche, ' + (cn.delistedNoSector ?? 0) + ' delistete ohne Branche, ' + (cn.delistedExcludedNoTotalReturn ?? 0) + ' delistete ohne Gesamtrendite, ' + ((cn.delistedExcludedRawMissing ?? 0) + (cn.delistedExcludedRawMismatch ?? 0)) + ' delistete ohne passende Tagesbalken.', '');
 L.push('## Ergebnis je Musterportfolio', '');
 L.push('| Portfolio | CAGR | Benchmark CAGR | Differenz | Volatilität | Max. Drawdown | Beta | Sharpe (rf 0) | Turnover p. a. | Ø Titel |', '|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|');
 for (const r of doc.results) {
@@ -34,13 +38,18 @@ L.push('## Walk-forward: je Testfenster', '', 'Die Regeln sind vorab festgelegt 
 L.push('| Portfolio | Fenster | CAGR | Benchmark | Differenz | Max. Drawdown | Beta |', '|---|---|--:|--:|--:|--:|--:|');
 for (const r of doc.results) if (r.state === 'RUN') for (const f of r.folds) L.push('| ' + (NAMES[r.profileId] || r.profileId) + ' | ' + f.from + ' bis ' + f.to + ' | ' + pct(f.cagr) + ' | ' + pct(f.benchmarkCagr) + ' | ' + pct(f.excessCagr) + ' | ' + pct(f.maxDrawdown) + ' | ' + num(f.beta) + ' |');
 if (doc.sensitivity && doc.sensitivity.length) {
-  L.push('', '## Sensitivität', '', '| Portfolio | Variante | CAGR | Benchmark | Volatilität | Max. Drawdown | Beta |', '|---|---|--:|--:|--:|--:|--:|');
-  for (const s of doc.sensitivity) L.push('| ' + (NAMES[s.profileId] || s.profileId) + ' | ' + s.variant + ' | ' + pct(s.cagr) + ' | ' + pct(s.benchmarkCagr) + ' | ' + pct(s.vol) + ' | ' + pct(s.maxDrawdown) + ' | ' + num(s.beta) + ' |');
+  L.push('', '## Sensitivität', '', 'Varianten gegen den Standardlauf: Gleichgewichtung, Umschlag-Puffer (gehaltene Titel bleiben, solange sie unter den besten 50 liegen), Quartalsrhythmus (13 Wochen) und Endwertannahmen.', '', '| Portfolio | Variante | CAGR | Benchmark | Volatilität | Max. Drawdown | Beta | Turnover p. a. |', '|---|---|--:|--:|--:|--:|--:|--:|');
+  for (const s of doc.sensitivity) L.push('| ' + (NAMES[s.profileId] || s.profileId) + ' | ' + s.variant + ' | ' + pct(s.cagr) + ' | ' + pct(s.benchmarkCagr) + ' | ' + pct(s.vol) + ' | ' + pct(s.maxDrawdown) + ' | ' + num(s.beta) + ' | ' + pct(s.turnover) + ' |');
 }
 L.push('', '## Abdeckung je Jahr (Stichtag 30.06.)', '', '| Jahr | Titel mit Kurs | mit frischen Fundamentaldaten | davon später delistet |', '|--:|--:|--:|--:|');
 for (const c of doc.data.coverageByYear) L.push('| ' + c.year + ' | ' + (c.priced ?? '–') + ' | ' + (c.withFreshFundamentals ?? '–') + ' | ' + (c.laterDelisted ?? '–') + ' |');
 L.push('', '## Offene Grenzen', '');
 const TEXT = {
+  POPULATION_HEUTIGE_DATEIEN_PLUS_V13_KETTEN: 'Population: heute vorhandene Kursdateien mit heutigem SIC-Code plus qualifizierte V13-Ketten delisteter Titel. Das ist keine vollständige damalige Population; Titel ohne SIC und nicht qualifizierte Delistings fehlen (Zählung in model-portfolios.json, data.counts).',
+  MITGLIEDSCHAFT_AUS_AUSFUEHRBARKEIT: 'Die je Stichtag gespeicherte Mitgliedschaft enthält nur in der Folgewoche ausführbare Titel; nicht ausgeführte Ziele stehen getrennt (unfilledAtExecution) und bleiben Cash.',
+  WALK_FORWARD_OHNE_HOLDOUT_UND_MEHRFACHTEST: 'Walk-forward heißt hier rollierende Schätzung mit festen Regeln. Es gibt keine unberührte OOS-Periode, die Testfenster teilen denselben Pfad, und über die fünf Profile wird nicht für Mehrfachtests korrigiert.',
+  ZEITRAUM_VERKUERZT: 'Der realisierte Zeitraum endet früher als angefragt, weil die Benchmark-Reihe früher endet (siehe Datenbasis).',
+  DELISTETE_TITEL_NUR_QUALIFIZIERTE_KETTEN_MIT_GESAMTRENDITE_UND_ROHBALKEN: 'Delistete Titel nur mit vollständiger Gesamtrendite-Reihe und passenden Tagesbalken (Rohschluss je Datum über splitFactors, Tagesumsatz aus den Balken); andere werden ausgeschlossen und gezählt.',
   KEINE_HISTORISCHE_INDEXMITGLIEDSCHAFT: 'Keine historische Indexmitgliedschaft: Universum sind alle damals handelbaren US-Stammaktien mit SIC, Kurs- und Liquiditätsfilter, nicht der S&P 500 von damals.',
   SIC_HEUTIGER_STAND: 'Branche aus dem heutigen SIC-Code (SEC), keine historische Klassifikation.',
   SPREAD_MODELLIERT_NICHT_BEOBACHTET: 'Spread aus Liquiditätsklassen modelliert, keine beobachteten Geld-Brief-Kurse.',

@@ -293,7 +293,7 @@ test("Katalog 1.2.0: neue Eintraege dokumentiert, nur Katalog (catalogOnly), bes
   }
   assert.equal(I.CATALOG.filter((e) => !e.catalogOnly).length, 24, "gelistete Indikatoren wie in 1.1.0 (auch nach 1.3.0)");
   const app = readFileSync(new URL("../../technical/app.js", import.meta.url), "utf8");
-  assert.match(app, /c\.family === k && !c\.catalogOnly/, "Methodik-Seite zeigt nur freigegebene Indikatoren");
+  assert.match(app, /c\.family === k && !c\.catalogOnly|CATALOG\.filter\(function \(c\) \{ return !c\.catalogOnly; \}\)/, "Methodik-Seite zeigt nur freigegebene Indikatoren");
   assert.equal(I.compute({ close: C }, "heikinAshi").error, "MISSING_INPUT:open,high,low");
   assert.equal(I.compute(S, "hma", { period: 2.5 }).error, "INVALID_PARAM:period");
 });

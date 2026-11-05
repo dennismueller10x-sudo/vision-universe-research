@@ -126,7 +126,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
   await page.locator('fieldset').waitFor();assert(await page.locator('input[value=a]').isChecked(),'answer restored');await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
   await page.waitForFunction(()=>scrollY>0,{},{timeout:5000});
   await page.locator('a[data-practice]').click();await page.reload();await page.getByRole('link',{name:'← Zur Lektion: Aufbau einer Kurskerze',exact:true}).click();await page.locator('fieldset').waitFor();assert(await page.locator('input[value=a]').isChecked(),'answer restored after practice reload');
-  await page.goto(base+'#/akademie/trend-4');await page.getByRole('link',{name:'Etablierte Trendvorlage öffnen'}).click();await page.getByRole('heading',{name:'Etablierter Aufwärtstrend',exact:true}).waitFor();
+  await page.goto(base+'#/akademie/trend-4');await page.getByRole('link',{name:'Etablierte Trendvorlage öffnen'}).click();await page.getByRole('heading',{name:'Steigt seit Monaten',exact:true}).waitFor();/* Redesign T03: Alltagstitel als Ueberschrift, Fachname im Satz darunter */await page.getByText('Etablierter Aufwärtstrend.',{exact:false}).first().waitFor();
   await page.goto(base+'#/akademie/routine-1');await page.getByRole('link',{name:'Analyseziel im Assistenten wählen'}).click();await page.getByRole('heading',{name:'Analyse-Assistent',exact:true}).waitFor();
  });
  await check(prefix+' 32 semantic practice routes and return',async()=>{
@@ -203,7 +203,7 @@ if(!site)await check('cold Academy loading with mobile network and CPU profile',
 await check('real chart analysis and screener handoff retain academy return',async()=>{
  const context=await createContext({viewport:{width:390,height:844}}),page=await context.newPage();
  await page.goto(base+'#/akademie/momentum-2');await page.locator('a[data-practice]').click();await page.getByRole('heading',{name:'Chart Studio',exact:true}).waitFor();
- await page.evaluate(()=>location.hash='#/chart/NVDA');const rsi=page.getByRole('button',{name:'RSI',exact:true});await rsi.waitFor();if(await rsi.getAttribute('aria-pressed')!=='true')await rsi.click();assert(await rsi.getAttribute('aria-pressed')==='true','RSI enabled');
+ await page.evaluate(()=>location.hash='#/chart/NVDA/studio');/* Redesign T06: Unterfenster im Chart Studio */const rsi=page.getByRole('button',{name:'RSI',exact:true});await rsi.waitFor();if(await rsi.getAttribute('aria-pressed')!=='true')await rsi.click();assert(await rsi.getAttribute('aria-pressed')==='true','RSI enabled');
  await page.getByRole('link',{name:'← Zur Lektion: RSI',exact:true}).click();await page.getByRole('heading',{name:'RSI',exact:true}).waitFor();
  await page.evaluate(()=>{dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}));dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));});await page.locator('input[value=a]').check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
  await page.goto(base+'#/akademie/routine-2');await page.locator('a[data-practice]').click();await page.getByRole('heading',{name:'Kriterien kombinieren',exact:true}).waitFor();
