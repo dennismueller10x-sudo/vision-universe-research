@@ -55,7 +55,11 @@ test("SMW-3 · Workflow: committet genau die sechs Dateien der beiden registrier
   const sm = reg.find((d) => d.id === "usSecurityMaster"), cn = reg.find((d) => d.id === "companyNames");
   assert.ok(sm && /build-us-security-master\.mjs/.test(sm.producer) && /security-master-weekly\.yml/.test(sm.workflow));
   assert.ok(cn && /build-company-names\.mjs/.test(cn.producer) && /security-master-weekly\.yml/.test(cn.workflow));
-  assert.equal(reg.find((d) => d.id === "securityMaster").workflow, null, "Produkteignung bleibt ohne Workflow (nicht Teil des Laufs)");
+  /* Produkteignung ist NICHT Teil dieses Laufs: sie hat seit 05.11.2026 einen eigenen Workflow mit Gate
+     (security-master-eligibility.yml, folgt diesem Lauf per workflow_run), nie security-master-weekly.yml. */
+  const elig = reg.find((d) => d.id === "securityMaster").workflow;
+  assert.equal(elig, "security-master-eligibility.yml", "Produkteignung hat ihren eigenen Workflow");
+  assert.doesNotMatch(String(elig), /security-master-weekly/, "Produkteignung bleibt ausserhalb des Wochenlaufs");
 });
 
 /* ------------------------------------------------------------------ Gate */
