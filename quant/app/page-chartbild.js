@@ -1157,7 +1157,114 @@
   function stat(label, value, sub) { return value ? el("div", { class: "cb-stat" }, [el("span", { class: "cb-stat-label", text: label }), el("strong", { class: "num", text: value }), el("span", { class: "cb-stat-sub", text: sub })]) : null; }
 
   // ================================================================ Uebersicht
+  /* ------------------------------------------------ Q06 Technische Lagen (Redesign 2027)
+     Lage als Urteil (C08), Kurs neben der Zone, 12 Kacheln mit „Alle zeigen“, Filter als Sheet mit Fragen.
+     Dieselben Daten wie die Übersicht davor (discover-rows.json, index.json.gz); ?daten=v1 zeigt die alte Fassung. */
+  var LAGE = { UPTREND_ADVANCING: ["strong", "Aufwärtstrend"], CORRECTION_IN_UPTREND: ["mid", "Rücksetzer"], RALLY_IN_DOWNTREND: ["mid", "Erholung"],
+    DOWNTREND_ADVANCING: ["weak", "Abwärtstrend"], SIDEWAYS_RANGE: ["none", "Seitwärts"], NO_CLEAR_TREND: ["none", "Kein klarer Trend"] };
+  var LAGE_FIRST = 12, OWN_MAX = 48;
+  async function overviewV3(main, ctx, params) {
+    var U = global.VUUI;
+    function html(s) { var t = document.createElement("template"); t.innerHTML = s; return t.content; }
+    function de(v, d) { return isNum(v) ? v.toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d }) : "–"; }
+    function zone(z) { return z.map(function (v) { return isNum(v) ? v.toLocaleString("de-DE", { maximumFractionDigits: Math.abs(v) < 100 ? 1 : 0 }) : "–"; }).join("–"); }
+    var page = el("div", { class: "qv3 qv3-lagen" });
+    page.append(html('<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Wo steht der Chart gerade?</h1><p class="vu-lead">Aktien mit einer klar beschreibbaren Lage im Chart, jeweils mit der Regel, warum sie hier stehen.</p></header>'));
+    var host = el("div", {}, [X.loading()]); page.append(host); main.append(page);
+    var names = ctx.loadNames ? ctx.loadNames().catch(function () { return null; }) : null;
+    var rows = await TI.getDiscoverRows().catch(function () { return null; }), idx = await TI.getIndex().catch(function () { return null; });
+    await names;
+    host.replaceChildren();
+    if (!rows || !idx) { host.append(html(U.blank("Die Lagen konnten gerade nicht geladen werden."))); return; }
+    var byT = {}; idx.rows.forEach(function (r) { byT[r.t] = r; });
+    function tile(t) {
+      var r = byT[t] || { t: t }, l = LAGE[r.structure] || ["none", (Ex && Ex.STRUCTURE[r.structure]) || "Keine Aussage"], nm = (ctx.names && ctx.names[t]) || "";
+      return '<a class="vu-box qv3-lage" href="' + U.esc(X.routes.elliott(t)) + '"><span class="qv3-lage-h"><b>' + U.esc(t) + '</b><span class="vu-xs vu-mu vu-num">' + (isNum(r.close) ? de(r.close, 2) + " $" : "") + "</span></span>" +
+        '<span class="vu-xs vu-mu qv3-lage-n">' + U.esc(nm || "\u00a0") + "</span>" + '<span class="qv3-lage-v">' + U.verdict(l[0], l[1]) + "</span>" +
+        (r.entry ? '<span class="vu-sm vu-num qv3-lage-z">Zone ' + zone(r.entry) + " $</span>" : '<span class="vu-sm vu-mu qv3-lage-z">Keine Zone</span>') +
+        '<span class="vu-xs vu-mu">' + (r.tf === "1W" ? "Woche" : "Tag") + " · Struktur " + U.esc((CLARITY[r.clarity] || "–").toLowerCase()) + "</span></a>";
+    }
+    // Reihen als Chips: nur Reihen mit Treffern (die gewählte bleibt sichtbar, auch wenn sie leer ist).
+    var all = rows.rows, wanted = params && params.get("reihe");
+    var visible = all.filter(function (r) { return r.tickers.length || r.id === wanted; });
+    if (!visible.length) { host.append(html(U.blank("Gerade erfüllt keine Aktie eine der Lagen."))); return; }
+    var active = visible.some(function (r) { return r.id === wanted; }) ? wanted : visible[0].id, expanded = false;
+    var chips = el("div", { class: "vu-chips qv3-lchips", role: "tablist", "aria-label": "Lagen" });
+    var rule = el("div"), grid = el("div", { class: "vu-grid qv3-lgrid" }), more = el("button", { type: "button", class: "vu-btn vu-btn--line vu-btn--block qv3-lmore" });
+    function paintChips() {
+      chips.replaceChildren.apply(chips, visible.map(function (r) {
+        var on = r.id === active, b = el("button", { type: "button", role: "tab", class: "vu-chip", dataset: { id: r.id }, "aria-selected": on ? "true" : "false", "aria-pressed": on ? "true" : "false", text: r.title + (on ? " · " + r.tickers.length : "") });
+        b.addEventListener("click", function () { active = r.id; expanded = false; paint(); });
+        return b;
+      }));
+    }
+    function paint() {
+      var row = all.filter(function (r) { return r.id === active; })[0];
+      paintChips();
+      rule.replaceChildren(html('<div class="vu-box qv3-lrule">' + U.glyph("filter", 16) + '<div><b class="vu-sm">Die Regel</b><p class="vu-xs vu-mu">' + U.esc(row.rule) + "</p></div></div>"),
+        html(U.help("Zone: ein Preisbereich, an dem der Kurs früher oft gedreht hat. Eine Lage beschreibt, sie empfiehlt nichts.")));
+      var list = row.tickers.slice(0, expanded ? row.tickers.length : LAGE_FIRST);
+      grid.replaceChildren(html(list.length ? list.map(tile).join("") : U.blank("Derzeit erfüllt keine Aktie diese Lage.")));
+      more.hidden = expanded || row.tickers.length <= LAGE_FIRST;
+      more.textContent = "Alle " + row.tickers.length + " zeigen";
+      try { var q = new URLSearchParams(location.hash.split("?")[1] || ""); if (q.get("reihe") !== active) { q.set("reihe", active); history.replaceState(null, "", "#/chartlagen?" + q.toString()); } } catch (e) { /* Adresse ist Komfort */ }
+    }
+    more.addEventListener("click", function () { expanded = true; paint(); });
+    host.append(chips, rule, grid, more);
+
+    // Eigene Auswahl: Karte öffnet ein Sheet mit Fragen; Ergebnis erscheint erst nach dem Filtern.
+    var F = { trend: "BULLISH", clarity: "CLEAR", universe: "INDEX", near: true, elliott: false };
+    var inIndex = function (r) { return !!(r.indexes && r.indexes.length && r.close >= 5); };
+    function match(r) {
+      if (F.universe === "INDEX" && !inIndex(r)) return false;
+      if (F.trend !== "ALL" && r.outlook !== F.trend) return false;
+      if (F.clarity === "CLEAR" && r.clarity !== "CLEAR") return false;
+      if (F.clarity === "UNCLEAR" && r.clarity === "CLEAR") return false;
+      if (F.near && !(isNum(r.distAtr) && r.distAtr <= 1 && r.status !== "INVALIDATED")) return false;
+      if (F.elliott && !(r.elliottApplicable === "HIGH" && r.countQuality === "HIGH")) return false;
+      return true;
+    }
+    function result() { return idx.rows.filter(match).sort(function (x, y) { return Math.abs(y.agreement || 0) - Math.abs(x.agreement || 0); }); }
+    function label(n) { return n > OWN_MAX ? OWN_MAX + " Aktien mit dem klarsten Bild" : n ? n.toLocaleString("de-DE") + (n === 1 ? " Aktie zeigen" : " Aktien zeigen") : "Keine Aktie passt"; }
+    var nIndex = idx.rows.filter(inIndex).length;
+    var ownCard = html('<button type="button" class="vu-box vu-box--line qv3-lown"><span class="vu-hud">' + U.glyph("filter", 18) + '</span><span class="qv3-lown-t"><b class="vu-sm">Eigene Auswahl</b><span class="vu-xs vu-mu">Trend, Struktur, Index · ' + nIndex.toLocaleString("de-DE") + " Aktien</span></span>" + U.glyph("next", 16) + "</button>").firstElementChild;
+    var ownOut = el("div", { class: "qv3-lownout", "aria-live": "polite" });
+    var QS = [["trend", "Wohin zeigt der Trend?", [["ALL", "Alle"], ["BULLISH", "Aufwärts"], ["NEUTRAL", "Seitwärts"], ["BEARISH", "Abwärts"]]],
+      ["clarity", "Wie klar ist das Bild?", [["ALL", "Alle"], ["CLEAR", "Struktur klar"], ["UNCLEAR", "Unklar"]]],
+      ["universe", "Welche Aktien?", [["INDEX", "S&P 500, Nasdaq-100, Dow"], ["ALL", "Alle US"]]]];
+    var sheetEl = html(U.sheet("qv3-lagen-sheet", "Eigene Auswahl", '<p class="vu-sm vu-mu" style="margin:-8px 0 0">Filter in Alltagssprache. Kein Filter ist ein Kaufsignal.</p>' +
+      QS.map(function (q) { return '<p class="vu-sm qv3-lq"><b>' + U.esc(q[1]) + '</b></p><div class="vu-chips qv3-lqc" data-k="' + q[0] + '">' + q[2].map(function (o) { return '<button type="button" class="vu-chip" data-v="' + o[0] + '">' + U.esc(o[1]) + "</button>"; }).join("") + "</div>"; }).join("") +
+      '<div class="qv3-lsw">' + [["near", "Nahe der Schlüsselzone", ""], ["clear", "Klare Struktur", ""], ["elliott", "Klare Elliott-Zählung", " " + U.pro()]].map(function (w) { return '<label class="qv3-lswr"><b class="vu-sm">' + U.esc(w[1]) + w[2] + '</b><input type="checkbox" role="switch" class="vu-switch" data-sw="' + w[0] + '"></label>'; }).join("") + "</div>" +
+      '<button type="button" class="vu-btn vu-btn--ink vu-btn--block" data-go style="margin-top:12px"></button>')).firstElementChild;
+    function paintSheet() {
+      [].forEach.call(sheetEl.querySelectorAll("[data-k]"), function (g) { [].forEach.call(g.children, function (b) { b.setAttribute("aria-pressed", F[g.dataset.k] === b.dataset.v ? "true" : "false"); }); });
+      [].forEach.call(sheetEl.querySelectorAll("[data-sw]"), function (c) { c.checked = c.dataset.sw === "clear" ? F.clarity === "CLEAR" : !!F[c.dataset.sw]; });
+      var n = result().length, go = sheetEl.querySelector("[data-go]"); go.textContent = label(n); go.disabled = !n;
+    }
+    sheetEl.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("[data-v]");
+      if (b) { F[b.parentNode.dataset.k] = b.dataset.v; paintSheet(); return; }
+      if (e.target.closest && e.target.closest("[data-go]")) { U.closeSheet(sheetEl); showOwn(); }
+    });
+    sheetEl.addEventListener("change", function (e) {
+      var k = e.target.dataset && e.target.dataset.sw; if (!k) return;
+      if (k === "clear") F.clarity = e.target.checked ? "CLEAR" : "ALL"; else F[k] = e.target.checked;
+      paintSheet();
+    });
+    function showOwn() {
+      var res = result();
+      ownOut.replaceChildren(html(U.sect("Deine Auswahl", { level: 2 }) + '<p class="vu-xs vu-mu qv3-lcount">' + res.length.toLocaleString("de-DE") + " Aktien" + (res.length > OWN_MAX ? " · die " + OWN_MAX + " mit dem klarsten Bild" : "") + "</p>" +
+        (res.length ? '<div class="vu-grid qv3-lgrid">' + res.slice(0, OWN_MAX).map(function (r) { return tile(r.t); }).join("") + "</div>" : U.blank("Keine Aktie passt zu dieser Auswahl."))));
+      var h = ownOut.querySelector("h2"); if (h) { h.tabIndex = -1; h.focus(); }
+    }
+    ownCard.addEventListener("click", function () { paintSheet(); U.openSheet(sheetEl); });
+    host.append(ownCard, ownOut, sheetEl,
+      html('<div class="vu-box qv3-lnote">' + U.verdict("none", "Kein Vorteil belegt") + '<span class="vu-xs vu-mu">Für keine Lage ist ein Prognosevorteil belegt. Stand ' + U.esc(X.dateDe(rows.generatedAt)) + ".</span></div>"));
+    paint();
+  }
+
   async function overview(main, ctx, params) {
+    if (!(params && params.get && params.get("daten") === "v1") && global.VUUI) return overviewV3(main, ctx, params);
     main.append(el("p", { class: "v2-eyebrow", text: "Chartbild · Übersicht" }), el("h1", { class: "qx-h1", text: "Technische Lagen im Überblick" }),
       el("p", { class: "v2-lead qx-lead", text: "Aktien, deren Chart gerade eine klar beschreibbare Lage zeigt – mit der Regel, warum sie hier stehen. Lagen beschreiben, sie empfehlen nicht." }));
     var host = el("div", {}, [X.loading()]); main.append(host);

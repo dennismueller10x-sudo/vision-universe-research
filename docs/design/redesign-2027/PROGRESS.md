@@ -33,7 +33,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | 14 | #1366 | Einstieg, Konto, Mein Bereich, Atlas, erster Start | E01–E12, Z7, Z1 (Seite) | gemergt |
 | 15 | #1367 | Discover | D01–D08 | gemergt |
 | 16 | #1364 | Gemeinsam: Leisten Fundamental/Technical/Discover, Fundamental-Ansichten keine Aktien | C02, C03 | gemergt |
-| 17 | #1391 | Z5: Screener-Kriteriengruppe „Methoden“ aus den Supertrader-Spalten (#1389) | S02, Z5 | offen |
+| 17 | #1391 | Z5: Screener-Kriteriengruppe „Methoden“ aus den Supertrader-Spalten (#1389) | S02, Z5 | gemergt |
 | – | #1359 | Konto Z1+Z3 (Worker, Migration, Tests), Basis main, unabhängig | Z1, Z3 | gemergt |
 
 Übernommene Zweige der früheren Sitzung (Stand `docs/neustart/D-frontend.md` im Zweig `neustart/d-shell-dock`):
@@ -80,7 +80,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | Q03 | Quant · Strategien | fertig | #1351, #1410 | Detail (q03-b) nach Mockup; Knopf „Im Quant Screener öffnen und anpassen“ (Produktgrenze: Verweise in den Quant-Screener nennen Quant); bekannte Namen nach redaktioneller Bekanntheit (Discover) |
 | Q04 | Quant · Aktien | fertig | #1351 | Aktienzeilen ohne Kurs/Mini-Chart (keine Kursabfrage je Zeile auf dieser Seite) |
 | Q05 | Quant · Methodik | fertig | #1351, #1410 | Anteil je Frage (PRO) aus factorWeights; Unterkapitel ohne eigene Vorlage (nur q05-a), bleiben im bisherigen Stil |
-| Q06 | Quant · Technische Lagen | offen |  |  |
+| Q06 | Quant · Technische Lagen | fertig | (dieser PR) | Lage als Urteil (C08), Kurs neben der Zone, 12 Kacheln + „Alle N zeigen“, Regel der Reihe, Eigene Auswahl als Sheet mit Fragen, Ergebnis erst nach dem Filtern. Abweichung: Reihen ohne Treffer erscheinen nicht als Chip (heute 2 von 7 leer); Schalter „Klare Struktur“ und Frage „Wie klar ist das Bild?“ sind gekoppelt, weil beide dieselbe Klarheit filtern. Alte Fassung unter `?daten=v1`. |
 | Q07 | Quant · NVIDIA (Aktienseite, Perspektive Faktoren) | fertig | #1351 | Lange Seite mit Schritten 1–6 nach Mockup (Überblick, Fragen, Stärken/Risiken, Veränderungen mit Kacheln, Setup-Karte + Stil-Karten mit Regel-Haken, Rückblick schwarz + Evidenz). Offen: Kopf in $ + ≈ € (Querschnitt Währung), Herz statt „Beobachten“, Quant-Chart → C06, Kursstärke-Verlauf mit Schwelle 70, Ereignis-Zeitleiste, Beleg-Sheet. Rückblick zeigt „ähnliche Situationen dieser Aktie“ (replay), nicht „Setup bestätigt in 552 Wochen“ (setup-replay-v1 lädt die Seite nicht). Alte Inhalte vollständig unter „Einstieg, Stop, Ziele …“ und „Alle Belege …“. |
 | Q08 | Quant · NVIDIA Zahlen (Perspektive Zahlen) | fertig | #1351 | Kopf ohne Kurs (Seite lädt keinen Kurs); Kachel „Wachstum 3 Jahre“ durch „Stand“ ersetzt |
 | Q09 | Quant · NVIDIA Chartbild (Perspektive Chart) | offen |  |  |

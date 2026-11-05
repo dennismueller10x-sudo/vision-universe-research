@@ -514,6 +514,15 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   }
   if(view==='chartlagen'){
    if(!/Chart|Lage/i.test(await page.locator('#qx-main').innerText()))befund(view,width,'Chartlagen leer');
+   /* Redesign 2027 (Q06): Lage als Urteil, Regel der Reihe, Eigene Auswahl als Sheet mit Ergebnis erst nach dem Filtern. */
+   if(v3){
+    await page.locator('#qx-main .qv3-lage').first().waitFor();
+    if(!await page.locator('#qx-main .qv3-lage .vu-verdict').count())befund(view,width,'Lage ohne Urteil');
+    if(!/Die Regel/.test(await page.locator('#qx-main .qv3-lrule').innerText()))befund(view,width,'Regel der Reihe fehlt');
+    await page.locator('#qx-main .qv3-lown').click();
+    await page.locator('#qv3-lagen-sheet [data-go]').click();
+    await page.locator('#qx-main .qv3-lownout .qv3-lage, #qx-main .qv3-lownout .vu-blank').first().waitFor({timeout:10000}).catch(()=>befund(view,width,'Eigene Auswahl ohne Ergebnis'));
+   }
   }
   if(view==='zahlen'&&v3){
    /* Redesign 2027 (Q08): Berichtsart als Segment, Kennzahl als Chips - dieselben Zusagen: 12 Monate gezeigt oder begruendet,
