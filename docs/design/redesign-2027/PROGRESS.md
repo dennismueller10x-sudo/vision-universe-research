@@ -168,6 +168,7 @@ Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds 
 
 - WebKit ist in dieser Sitzung nicht installiert (Vorgabe: Playwright nicht neu installieren). Lokal prüft Chromium; WebKit prüft `shell-ci` in jedem PR.
 - Quant CI ist auf `main` vorbestehend rot (Strang A); die Kette wertet sie nur, wenn die Fehlschläge neu sind.
+- Seit 04.11. abends auf `main` rot durch Datenläufe (Strang A, nicht Redesign): Quant „published inventory … 191 inactive security-master rows“ (nach #1370 Security Master 1.3.0); Core `discover-universe.test.mjs` (golden company searches, ISIN/Aliase, kanonischer Lader) und Discover „Pflichttitel in der Suchdatei“ nach dem automatischen Europe-Schlusskurs-Lauf (mit dem Europa-Datenstand vor dem Lauf grün, lokal nachgeprüft).
 - Ebenfalls vorbestehend auf `main` (Datenstand, nicht Code): Discover `names.test.mjs` NM3 und `producer-ownership` (Neubau), Vorsorge „Build reproduzierbar“. Nach CLAUDE.md (Neustart) blockiert veralteter Datenstand keinen Code-PR; die Kette mergt, wenn alle übrigen Prüfungen grün sind.
 
 ## Backend-Zusätze (Projekt Z1–Z7, `docs/PLAN_NEUSTART_2026-11.md` §7)
