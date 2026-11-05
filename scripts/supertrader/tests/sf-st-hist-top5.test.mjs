@@ -97,3 +97,10 @@ test('ST-HIST-6: E3-Export je Methode und Fenster ab Cash, kostenfrei, mit Fills
   }
   assert.deepEqual(T.EDGE_WINDOWS.map((w) => [w.from, w.to]), [['2016-01-04', '2019-12-31'], ['2020-01-02', '2026-09-30']]);
 });
+
+test('ST-HIST-7: Darvas-Spannweite der Balkenreihenfolge nur mit der vorregistrierten Variante ALT-INTRABAR-OPTIMISTIC', () => {
+  const a = T.runTop5(ds(), { window: WIN, costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF') });
+  assert.deepEqual(Object.keys(a.DARVAS.intrabarVariants), ['ALT-INTRABAR-OPTIMISTIC']);
+  assert.deepEqual(a.DARVAS.intrabarVariants['ALT-INTRABAR-OPTIMISTIC'].changes, { intrabarOrder: 'OPTIMISTIC' });
+  for (const k of ['TURTLE_S1', 'TURTLE_S2', 'KK_BREAKOUT', 'BUYABLE_GAP_UP']) assert.equal(a[k].intrabarVariants, undefined, `${k}: keine nicht registrierte Variante`);
+});

@@ -26,13 +26,15 @@ import { computeDiagnosticMetrics } from '../runner/metrics.mjs';
 import { runTurtle } from '../methods/turtle.mjs';
 import { attachSecPit } from './run-sf3-research.mjs';
 import { SF6_REFERENCES } from './sf6-references.mjs';
+import { SF5_LIFECYCLES } from './sf5-lifecycles.mjs';
+import { runResearchLifecycle, prepareAll, PLATFORM_RESEARCH_PORTFOLIO_POLICY } from './lifecycle-engine.mjs';
 import { SF6_VALIDATION_PROTOCOL } from './run-sf6-validation.mjs';
 import * as S from './st9-v13-delisted-study.mjs';
 import * as X from './st9-hist-execution.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.2.0';
+export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.3.0';
 /** Delisting-Erlös als Sensitivität (Prüfung Strang E): echte Neuläufe mit den vorhandenen Abrechnungsszenarien der Engines
  *  (validation/portfolio.mjs SCENARIOS, Wiederanlage inklusive). 100 % = Referenz S0_LAST_PRICE, 70 % = S1_MINUS_30,
  *  S2_DISTRESS_ZERO = 0 % bei Insolvenz-Delisting, sonst 70 %. Ein Szenario „0 % für alle“ hat die Engine nicht (eine neue
@@ -78,6 +80,21 @@ export function delistingSensitivity(ref, ds, { window, costs, prep }) {
     return [id, { scenario, trades: x.trades, hitRate: x.hitRate, totalReturn: x.totalReturn, cagr: x.cagr, maxDrawdown: x.maxDrawdown }];
   }));
 }
+/** Vorregistrierte Gegenvarianten zur Reihenfolge innerhalb des Balkens (nur die in den sf5-Lifecycles registrierten,
+ *  heute ALT-INTRABAR-OPTIMISTIC für Darvas): Spannweite einer auf Tagesbalken nicht entscheidbaren Annahme. */
+export function intrabarVariants(key, ds, { window, costs }) {
+  const lc = SF5_LIFECYCLES.find((x) => x.key === key);
+  if (!lc) return null;
+  const vs = lc.variants.filter((v) => /^ALT-INTRABAR/.test(v.id));
+  if (!vs.length) return null;
+  const ref = lc.variants.find((v) => v.id === 'REF');
+  return Object.fromEntries(vs.map((v) => {
+    const config = v.config ?? { ...ref.config, ...v.changes };
+    const r = runResearchLifecycle(ds, { adapter: lc.adapter, config, policy: { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, ...costs }, prepared: prepareAll(ds, lc.adapter, config), from: window.from, to: window.to });
+    const x = summarizeRun({ run: r, trades: r.trades, metricTrades: r.trades.filter((t) => t.status === 'CLOSED') }, ds);
+    return [v.id, { changes: v.changes, trades: x.trades, hitRate: x.hitRate, totalReturn: x.totalReturn, cagr: x.cagr, maxDrawdown: x.maxDrawdown, costsPaid: x.costsPaid, medianHoldingSessions: x.medianHoldingSessions }];
+  }));
+}
 /** Wie oft endet eine Position durch Delisting, durch eine Datenlücke (zensiert) oder regulär. */
 export function exitCensus(r) {
   const out = { TERMINAL_DELISTED: 0, SECURITY_UNAVAILABLE: 0, OTHER: 0 };
@@ -110,6 +127,8 @@ export function runTop5(ds, { methods = TOP5, costLevels = SF6_VALIDATION_PROTOC
       if (c.id === 'REF') {
         out[key].delistingProceeds = delistingSensitivity(ref, ds, { window, costs: { slippageBps: c.slippageBps, commissionBps: c.commissionBps }, prep });
         out[key].exitCensus = exitCensus(r);
+        const iv = intrabarVariants(key, ds, { window, costs: { slippageBps: c.slippageBps, commissionBps: c.commissionBps } });
+        if (iv) out[key].intrabarVariants = iv;
       }
       if (c.id === 'REF' && audit) {
         // unabhängiger Ausführungsaudit (st9-hist-execution: Ausstiege, Gap-Stopps, Delisting, Bücher); nur Beobachter

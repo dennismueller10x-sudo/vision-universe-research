@@ -62,6 +62,8 @@ V1 sind C01, C02, C03, C08 und C12; die übrigen acht Methoden stehen im Produkt
 - **Screener-Kriterien (Plan §7 Z5):** `scripts/supertrader/source-faithful/product/screener-export.mjs#screenerColumns` formt den veröffentlichten Kandidatenstand (`supertrader/data/sf-candidates/index.json`) je Ticker in Spalten um: Methoden, V1 bzw. in Forschung, höchste Stufe je Ticker und je Methode, Datenstand, Etikett „Research, keine Empfehlung“. Es ist kein neues Artefakt und kein Fachmodell. Den Einbau in `scripts/screener/build-universe.mjs` übernimmt der Screener-Erzeuger (Strang A).
 - **FP-ST-01:** Owner-Entscheidung 05.11.2026: keine weiteren Datenanbieter und auch keine Anfragen. Kapitalmaßnahmen kommen nur aus Tiingo und Marketstack. Die 83 ungeklärten Fälle bleiben ausgeschlossen bzw. werden als Sensitivität ausgewiesen; CC-5 bleibt damit offen.
 
+- **Plausibilität Darvas (C03), `st-hist-top5-1.3.0`:** Der Einstieg liegt 1 Cent über dem Box-Hoch, der Stopp 1 Cent darunter. Erreicht ein Tagesbalken beides, bucht die Referenz (MA-DAR-INTRABAR-ORDER = PESSIMISTIC) den Stopp am selben Tag. Im Lauf 41984749745 traf das 87 % der Trades, mit etwa 390-fachem Jahresumschlag. Der Lauf rechnet deshalb die vorregistrierte Variante ALT-INTRABAR-OPTIMISTIC als Spannweite mit. C03 gilt bis zu Intraday-Daten als „auf Tagesbalken nicht bestimmbar“. Kein Buchungsfehler: Abgleich und Audit sind bestanden.
+
 Der Tagesstand des Strangs steht in `docs/neustart/B-supertrader.md`.
 
 ---
