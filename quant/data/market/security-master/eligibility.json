@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-05T08:02:55.831Z",
+ "generatedAt": "2026-11-05T15:31:01.352Z",
  "version": "us-security-master-1.3.0",
  "classificationRuleVersion": "us-security-master-rules-1.3.3",
  "coverageEngine": "coverage-metrics-1.0.0",
@@ -28,9 +28,9 @@
   "reclassified": {
    "EQUITY_COMMON->TRUST": 117,
    "EQUITY_COMMON->REIT": 19,
-   "EQUITY_COMMON->ETF": 130,
-   "EQUITY_COMMON->ADR": 9,
-   "EQUITY_COMMON->SPAC": 230,
+   "EQUITY_COMMON->ADR": 7,
+   "EQUITY_COMMON->ETF": 126,
+   "EQUITY_COMMON->SPAC": 229,
    "EQUITY_COMMON->PREFERRED": 6,
    "EQUITY_COMMON->TEST_SECURITY": 3,
    "EQUITY_COMMON->DEBT": 22,
@@ -41,7 +41,8 @@
    "EQUITY_COMMON->ETN": 4,
    "RIGHT->RIGHT (bestaetigt)": 7,
    "EQUITY_COMMON->CEF": 1
-  }
+  },
+  "skippedTickerReuse": 13
  },
  "nonDestructive": {
   "universeFile": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
@@ -54,14 +55,14 @@
  },
  "counts": {
   "universeMembers": 7803,
-  "ELIGIBLE": 5671,
-  "SEPARATE_CLASS": 807,
-  "EXCLUDED": 1230,
-  "REVIEW": 95,
-  "productUniverse": 6573
+  "ELIGIBLE": 5670,
+  "SEPARATE_CLASS": 804,
+  "EXCLUDED": 1226,
+  "REVIEW": 103,
+  "productUniverse": 6577
  },
  "excludedByClass": {
-  "ETF": 133,
+  "ETF": 129,
   "DEBT": 147,
   "TEST_SECURITY": 44,
   "WARRANT": 461,
@@ -73,12 +74,12 @@
  "separateByClass": {
   "TRUST": 103,
   "REIT": 15,
-  "ADR": 9,
-  "SPAC": 230,
+  "ADR": 7,
+  "SPAC": 229,
   "PREFERRED": 450
  },
  "reviewByReason": {
-  "UNCONFIRMED:LISTING_INACTIVE": 94,
+  "UNCONFIRMED:LISTING_INACTIVE": 101,
   "UNCONFIRMED:OTC_VENUE_OUT_OF_CURRENT_POLICY": 9,
   "UNCONFIRMED:CLASS_PREFERRED_SEPARATE_FROM_PRIMARY_COMMON_EQUITY": 35,
   "UNCONFIRMED:CLASS_WARRANT_NOT_AN_EQUITY": 13,
@@ -6071,15 +6072,16 @@
    "ticker": "WR",
    "securityId": "ref_WR",
    "exchange": "NYSE",
-   "instrument_type": "ETF",
+   "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "INACTIVE",
-   "product_eligibility": "EXCLUDED",
-   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:ETF",
-   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
-    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
+    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
+    "MASTER_REJUDGED:EQUITY_COMMON"
    ],
    "start_date": "1987-08-25"
   },
@@ -15775,15 +15777,16 @@
    "ticker": "NYNY",
    "securityId": "ref_NYNY",
    "exchange": "NASDAQ",
-   "instrument_type": "ETF",
+   "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "INACTIVE",
-   "product_eligibility": "EXCLUDED",
-   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:ETF",
-   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
-    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
+    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
+    "MASTER_REJUDGED:EQUITY_COMMON"
    ],
    "start_date": "1993-11-05"
   },
@@ -18254,15 +18257,16 @@
    "ticker": "BREW",
    "securityId": "ref_BREW",
    "exchange": "NASDAQ",
-   "instrument_type": "ETF",
+   "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "INACTIVE",
-   "product_eligibility": "EXCLUDED",
-   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:ETF",
-   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
-    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
+    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
+    "MASTER_REJUDGED:EQUITY_COMMON"
    ],
    "start_date": "1995-08-18"
   },
@@ -33336,15 +33340,16 @@
    "ticker": "ACTS",
    "securityId": "ref_ACTS",
    "exchange": "NYSE",
-   "instrument_type": "ADR",
+   "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "INACTIVE",
-   "product_eligibility": "SEPARATE_CLASS",
-   "product_eligibility_reason": "CONFIRMED_SEPARATE_CLASS:ADR",
-   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
-    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
+    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
+    "MASTER_REJUDGED:EQUITY_COMMON"
    ],
    "start_date": "2005-11-30"
   },
@@ -36239,15 +36244,16 @@
    "ticker": "WX",
    "securityId": "ref_WX",
    "exchange": "NYSE",
-   "instrument_type": "ADR",
+   "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "INACTIVE",
-   "product_eligibility": "SEPARATE_CLASS",
-   "product_eligibility_reason": "CONFIRMED_SEPARATE_CLASS:ADR",
-   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
-    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
+    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
+    "MASTER_REJUDGED:EQUITY_COMMON"
    ],
    "start_date": "2007-08-15"
   },
@@ -41271,15 +41277,16 @@
    "ticker": "INVN",
    "securityId": "ref_INVN",
    "exchange": "NYSE",
-   "instrument_type": "ETF",
+   "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "INACTIVE",
-   "product_eligibility": "EXCLUDED",
-   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:ETF",
-   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
-    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
+    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
+    "MASTER_REJUDGED:EQUITY_COMMON"
    ],
    "start_date": "2011-11-16"
   },
@@ -41443,14 +41450,13 @@
    "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
-   "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED+EXCHANGE_DIRECTORY",
+   "active_status": "INACTIVE",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
     "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON",
-    "EXCHANGE_DIRECTORY_LISTED_ACTIVE"
+    "MASTER_REJUDGED:EQUITY_COMMON"
    ],
    "start_date": "2012-02-08"
   },
@@ -78881,15 +78887,16 @@
    "ticker": "FTPA",
    "securityId": "ref_FTPA",
    "exchange": "NYSE",
-   "instrument_type": "SPAC",
+   "instrument_type": "EQUITY_COMMON",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "INACTIVE",
-   "product_eligibility": "SEPARATE_CLASS",
-   "product_eligibility_reason": "CONFIRMED_SEPARATE_CLASS:SPAC",
-   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
+   "product_eligibility": "REVIEW",
+   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
+   "evidence_source": "SECURITY_MASTER_REJUDGED",
    "review_flags": [
-    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
+    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
+    "MASTER_REJUDGED:EQUITY_COMMON"
    ],
    "start_date": "2021-05-07"
   },
@@ -132011,10 +132018,10 @@
   }
  ],
  "exchangeDirectoryApplied": {
-  "at": "2026-11-05T08:02:57.632Z",
+  "at": "2026-11-05T15:31:04.546Z",
   "ruleVersion": "exchange-directory-class-1.0.0",
   "source": "NASDAQ_TRADER_SYMBOL_DIRECTORY",
-  "directoryAsOf": "2026-11-04",
+  "directoryAsOf": "2026-11-05",
   "classes": [
    "DEBT",
    "ETN",
@@ -132023,9 +132030,9 @@
    "RIGHT",
    "UNIT"
   ],
-  "changed": 248,
+  "changed": 247,
   "byTransition": {
-   "EQUITY_COMMON/REVIEW -> EQUITY_COMMON/ELIGIBLE": 38,
+   "EQUITY_COMMON/REVIEW -> EQUITY_COMMON/ELIGIBLE": 37,
    "PREFERRED/REVIEW -> PREFERRED/SEPARATE_CLASS": 25,
    "EQUITY_COMMON/ELIGIBLE -> DEBT/EXCLUDED": 110,
    "TRUST/SEPARATE_CLASS -> DEBT/EXCLUDED": 12,
@@ -132040,10 +132047,10 @@
   "countsBefore": {
    "universeMembers": 7803,
    "ELIGIBLE": 5791,
-   "SEPARATE_CLASS": 781,
-   "EXCLUDED": 1064,
-   "REVIEW": 167,
-   "productUniverse": 6739
+   "SEPARATE_CLASS": 778,
+   "EXCLUDED": 1060,
+   "REVIEW": 174,
+   "productUniverse": 6743
   },
   "script": "scripts/market/apply-exchange-directory.mjs"
  }

@@ -69,3 +69,26 @@ test("committetes Register: jeder Eintrag durch Stamm (alte Zeile), Kursreihe un
   const flagged = u.securities.filter((s) => s.identityStatus === "IDENTITY_QUARANTINED").map((s) => s.securityId).sort();
   assert.deepEqual(flagged, [...q.records.keys()].sort(), "genau die belegten Titel sind markiert");
 });
+
+test("Erzeuger der Eignung: ein belegt wiederverwendetes Kuerzel wird nie ueber den Namen des heutigen Wertpapiers umgestuft", async () => {
+  /* Stand 05.11.2026: WR, NYNY, BREW und INVN waren ueber den ETF-Namen des heutigen Wertpapiers als ETF ausgeschlossen,
+     ACTS/WX/FTPA ueber ADR/SPAC-Namen umgestuft - obwohl die Stammzeile der alten Aktie gehoert (Ticker-Join). */
+  const { spawnSync } = await import("node:child_process");
+  const dir = mkdtempSync(join(tmpdir(), "elig-reuse-"));
+  try {
+    mkdirSync(join(dir, "out")); mkdirSync(join(dir, "scale"));
+    const N = join(root, "quant/data/market/security-master");
+    const r = spawnSync(process.execPath, [join(root, "scripts/market/build-us-eligibility.mjs"), "--master", join(N, "us-security-master.json"),
+      "--previous", join(N, "eligibility.json"), "--names", join(N, "company-names.json"), "--out", join(dir, "out"), "--scale-out", join(dir, "scale")], { encoding: "utf8" });
+    assert.equal(r.status, 0, r.stderr);
+    const out = JSON.parse(readFileSync(join(dir, "out", "eligibility.json"), "utf8"));
+    const q = loadTickerReuseQuarantine(root);
+    const byId = new Map(out.decisions.map((d) => [d.securityId, d]));
+    for (const id of q.records.keys()) {
+      const d = byId.get(id);
+      assert.ok(d, id + " fehlt in der Eignung");
+      assert.doesNotMatch(d.evidence_source || "", /NAME_LAYER/, id + ": ueber den Namen des heutigen Wertpapiers umgestuft");
+      assert.notEqual(d.product_eligibility, "EXCLUDED", id + ": wegen des heutigen Wertpapiers ausgeschlossen");
+    }
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

@@ -109,7 +109,7 @@ const ROUTES = [
 const PAGES = [
   ['GET', '/rechtliches/', pages.legalIndex, {db: false}],
   ['GET', '/rechtliches', pages.legalIndex, {db: false}],
-  ...['impressum', 'datenschutz', 'agb', 'widerrufsbelehrung', 'widerrufsformular', 'newsletter']
+  ...['impressum', 'datenschutz', 'agb', 'widerrufsbelehrung', 'widerrufsformular', 'newsletter', 'risikohinweise', 'mar-hinweise']
     .map(k => ['GET', `/rechtliches/${k}`, pages.legalPage(k), {db: false}]),
   ['GET', '/kuendigen', pages.cancelGet, {db: false}],
   ['POST', '/kuendigen', pages.cancelPost],
