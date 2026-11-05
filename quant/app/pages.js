@@ -363,7 +363,7 @@
       tiAlertHost.replaceChildren(X.world("Chartbild bei deinen beobachteten Aktien", "Was der Kurs seit dem letzten Lauf im Chart getan hat. Szenarien sind Bedingungen, keine Prognose und keine Empfehlung.",
         [el("div", { class: "q-rows" }, a.events.slice(0, 12).map(function (e) {
           var nm = nameOf(ctx, e.symbol);
-          return el("a", { class: "q-rowlink", href: X.routes.chartbild(e.symbol) }, [el("span", { class: "q-icon", "aria-hidden": "true" }, [X.icon("bars")]),
+          return el("a", { class: "q-rowlink", href: X.routes.chart(e.symbol) }, [el("span", { class: "q-icon", "aria-hidden": "true" }, [X.icon("bars")]),
             el("span", {}, [el("strong", { text: e.symbol + (nm ? " · " + nm : "") }), el("small", { text: e.text + (e.asOf ? " · Stand " + X.dateDe(e.asOf) : "") })])]);
         }))]));
     });
@@ -496,7 +496,7 @@
       tiAlertHost.replaceChildren(X.world("Chartbild bei deinen beobachteten Aktien", "Was der Kurs seit dem letzten Lauf im Chart getan hat. Szenarien sind Bedingungen, keine Prognose und keine Empfehlung.",
         [el("div", { class: "q-rows" }, a.events.slice(0, 12).map(function (e) {
           var nm = nameOf(ctx, e.symbol);
-          return el("a", { class: "q-rowlink", href: X.routes.chartbild(e.symbol) }, [el("span", { class: "q-icon", "aria-hidden": "true" }, [X.icon("bars")]),
+          return el("a", { class: "q-rowlink", href: X.routes.chart(e.symbol) }, [el("span", { class: "q-icon", "aria-hidden": "true" }, [X.icon("bars")]),
             el("span", {}, [el("strong", { text: e.symbol + (nm ? " · " + nm : "") }), el("small", { text: e.text + (e.asOf ? " · Stand " + X.dateDe(e.asOf) : "") })])]);
         }))]));
     });

@@ -80,6 +80,7 @@ const ROUTES=[
  /* Native Elliott-Route: dieselbe Seite, ohne /quant/ in der Adresse. */
  ['elliott-nativ','/elliott/#/NVDA?ansicht=profi'],
  ['chartbild','#/aktie/NVDA/chartbild'],
+ ['chart','#/aktie/NVDA/chart'],
  ['chartlagen','#/chartlagen'],
  ['zahlen','#/aktie/NVDA/zahlen'],
  ['vergleich','#/vergleich/NVDA,MSFT'],
@@ -511,6 +512,15 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
     await page.locator('#qx-main section.cb-pro').waitFor();
     if(!/Elliott/i.test(await page.locator('#qx-main section.cb-pro').innerText()))befund(view,width,'Profi-Ansicht ohne Elliott');
    }
+  }
+  if(view==='chart'&&v3){
+   /* Redesign 2027 (Q09): Perspektive Chart bleibt in Quant - Urteil, Chart mit Zonen, Szenarien, Historie gegen Zufall, Zeitreise. */
+   await page.locator('#qx-main .qv3-ch-h').waitFor();
+   if(!await page.locator('#qx-main .qv3-ch-chart svg .qv3-ch-zone').count())befund(view,width,'Chart ohne Zonen');
+   if(!/Szenari/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Szenarien fehlen');
+   if(!/Zufall/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Historie ohne Zufallsvergleich');
+   if(!await page.locator('#qx-main input.qv3-ch-range').count())befund(view,width,'Zeitreise fehlt');
+   if(!/^#\/aktie\/NVDA\/chart/.test(await page.evaluate(()=>location.hash)))befund(view,width,'Chart verlaesst Quant');
   }
   if(view==='chartlagen'){
    if(!/Chart|Lage/i.test(await page.locator('#qx-main').innerText()))befund(view,width,'Chartlagen leer');

@@ -73,6 +73,8 @@
 .vu-verdict--mid{background:var(--vu-hair);color:var(--vu-ink)}
 .vu-verdict--weak{background:var(--vu-ink);color:var(--vu-inv)}
 .vu-verdict--none{border:1.5px dashed var(--vu-mute);color:var(--vu-mute);padding:2.5px 8.5px}
+/* Auf schwarzen Flächen (C02 ink) wäre Grau unter 4,5:1 - dort hell, im Dunkelmodus (Fläche hell) dunkel. */
+.vu-box--ink .vu-verdict--none{color:var(--vu-inv);border-color:var(--vu-inv);opacity:.85}
 
 /* C09 Erklärung „?“ */
 .vu-help{display:flex;gap:9px;align-items:flex-start;font-size:13px;line-height:1.4;color:var(--vu-mute)}

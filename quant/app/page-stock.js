@@ -607,7 +607,7 @@
         return X.stat(p[0], (p[1] && p[1].label) || "–");
       })),
       foot("Analyse bis " + X.dateDe(t.asOf) + ". " + (lag || "") + (t.fullWorkspace ? " Szenarien, Zonen und die experimentelle Elliott-Struktur stehen im Chartbild." : "")),
-      t.fullWorkspace ? X.actions([X.btn("Chartbild öffnen", X.routes.chartbild(ticker), "secondary")])
+      t.fullWorkspace ? X.actions([X.btn("Chartbild öffnen", X.routes.chart(ticker), "secondary")])
         : el("p", { class: "qx-small", text: (VM.technicalReasonText(t.unavailability) || "Eine vollständige technische Auswertung ist für diesen Titel noch nicht veröffentlicht.") })];
   }
 
@@ -1180,7 +1180,7 @@
         var a = r.analysis, Ex = global.VUTechnical && global.VUTechnical.TIExplain, p = a.scenarios[0];
         /* Datenstand-Richtlinie: zurueckgehaltene Titel zeigen statt des Ausblicks nur den Hinweis */
         if (a.withheld) {
-          cbHost.append(el("a", { class: "cb-teaser cb-tone-flat", href: X.routes.chartbild(ticker) }, [
+          cbHost.append(el("a", { class: "cb-teaser cb-tone-flat", href: X.routes.chart(ticker) }, [
             el("span", { class: "cb-teaser-k", text: "Technischer Ausblick" }),
             el("b", { class: "cb-teaser-o" }, [el("span", { text: (a.freshness && a.freshness.title) || "Analyse zurückgehalten" })]),
             el("span", { class: "cb-small cb-dim", text: (a.freshness && a.freshness.text) || "" })]));
@@ -1189,7 +1189,7 @@
         /* §55: kompakte Karte — Ausblick, Schluesselzone, Ungueltig-Linie, Strukturklarheit. */
         var tone = { BULLISH: "up", BEARISH: "down", MIXED: "mixed" }[a.outlook.label] || "flat";
         var cl = a.clarity ? { CLEAR: "klar", MODERATE: "mittel", AMBIGUOUS: "unklar" }[a.clarity.level] : null;
-        cbHost.append(el("a", { class: "cb-teaser cb-tone-" + tone, href: X.routes.chartbild(ticker) }, [
+        cbHost.append(el("a", { class: "cb-teaser cb-tone-" + tone, href: X.routes.chart(ticker) }, [
           el("span", { class: "cb-teaser-k", text: "Technischer Ausblick" }),
           el("b", { class: "cb-teaser-o" }, [el("span", { class: "cb-dot", "aria-hidden": "true" }), el("span", { text: (Ex && Ex.STRUCTURE[a.outlook.structure]) || ((Ex && Ex.OUTLOOK[a.outlook.label]) || a.outlook.label) })]),
           el("span", { class: "cb-teaser-grid" }, [
