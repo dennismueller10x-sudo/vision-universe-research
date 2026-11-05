@@ -167,6 +167,7 @@
     return null;
   }
 
+  var FUNDAMENTAL_VIEWS = ["methodik", "ranglisten", "branchen", "suche", "entdecken"];
   function dec(s) { try { return decodeURIComponent(s); } catch (e) { return null; } }
 
   /** Adresse (Pfad + Hash, ohne Host) -> {product, ctx} oder null. Liest dieselben Formen wie die Router,
@@ -197,7 +198,8 @@
     /* technical/engine/model.js#parseRoute: #/chart/<T> und #/chart/<T>/signale. */
     if (path === "/technical/" && parts[0] === "chart" && parts[1] && (parts.length === 2 || (parts.length === 3 && parts[2] === "signale"))) return us("technical", parts[1].toUpperCase());
     /* fundamental/engine/model.js#parseRoute: #/<T> (dekodiert, Grossschreibung); #/methodik ist keine Aktie. */
-    if (path === "/fundamental/" && parts.length === 1 && parts[0].toLowerCase() !== "methodik") return us("fundamental", parts[0].toUpperCase());
+    /* Ansichten der Fundamental-Welt (Redesign 2027: Ranglisten, Branchen, Suche) sind keine Aktien. */
+    if (path === "/fundamental/" && parts.length === 1 && FUNDAMENTAL_VIEWS.indexOf(parts[0].toLowerCase()) < 0) return us("fundamental", parts[0].toUpperCase());
     /* Hedgefonds: nur die Kuerzel-Adresse; eine CUSIP (#/aktie/69608A108) traegt kein Kuerzel, dort zeichnet die Seite selbst. */
     if (path === "/hedgefonds/" && parts[0] === "aktie" && parts[1] && parts.length === 2 && !/^[0-9A-Z]{8}[0-9]$/.test(parts[1])) return us("hedgefonds", parts[1]);
     var st = /^\/supertrader\/stock\/([^/]+)\/$/.exec(path);

@@ -15,17 +15,14 @@
 (function (global) {
   "use strict";
 
-  var VERSION = "elliott-home-model-1.1.0";
-  /* 1.1.0 fuegt Reihen (kind, cap, vollstaendige ids) und Kennzahlen hinzu; die Karten bleiben gleich: 1.0.0 wird weiter gelesen. */
+  var VERSION = "elliott-home-model-1.2.0";
   var SCHEMAS = { "vu-elliott-home-1.0.0": "elliott-home-1.0.0", "vu-elliott-home-1.1.0": "elliott-home-1.1.0" };
   var INDEX_PATH = "/quant/data/technical-intelligence/v3/elliott-home.json";
-  /* Das Aktienbild gehoert dem Produkt: /elliott/#/<TICKER>[?ansicht=profi]. */
   var DETAIL_BASE = "/elliott/#/";
   var PAGE = 24;
 
   var WAVE_LABEL = { "3": "Mögliche Welle 3", "5": "Mögliche Welle 5", C: "Mögliche Welle C" };
   var TYPE_LABEL = { NEXT_MOVE: "Mögliche Folgebewegung", REVERSAL: "Mögliche Gegenbewegung", THRUST: "Möglicher Ausbruch" };
-  /* Die Rolle sagt, WAS die Karte ist. Ein Explore Highlight wird nie als Primärlesart dargestellt. */
   var ROLE_LABEL = {
     PRIMARY: "Primäre Lesart",
     ALTERNATIVE: "Alternative",
@@ -47,10 +44,8 @@
   var TREND_WORD = { POSITIVE: "positiv", NEGATIVE: "negativ", NEUTRAL: "neutral" };
   var TREND_LABEL = { POSITIVE: "Trend positiv", NEGATIVE: "Trend negativ", NEUTRAL: "Trend neutral" };
 
-  /* ---------------------------------------------------------- Zahlen */
   var MINUS = "−";
   function group(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
-  /** Bruchteil des Kurses -> "+175 %" / "−63 %". Tausender mit Punkt; nie wissenschaftliche Schreibweise, nie NaN. */
   function pct(f) {
     if (typeof f !== "number" || !isFinite(f)) return "–";
     var v = Math.round(Math.abs(f) * 100);
@@ -62,7 +57,6 @@
     var a = pct(pair[0]), b = pct(pair[1]);
     return a === b ? a : a + " bis " + b;
   }
-  /** Die Stufe, die die Karte groß zeigt: Erweitert, sonst Basis, sonst Extrem. */
   function headlineTier(card) {
     var t = (card && card.tiers) || {};
     var key = t.ext ? "ext" : t.base ? "base" : t.xtr ? "xtr" : null;
@@ -82,7 +76,6 @@
   }
   function dateDe(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ""); return m ? m[3] + "." + m[2] + "." + m[1] : "–"; }
 
-  /* ---------------------------------------------------------- Worte */
   function waveLabel(card) { return (card.wave && WAVE_LABEL[card.wave]) || TYPE_LABEL[card.type] || "Mögliche Elliott-Lesart"; }
   function roleLabel(role) { return ROLE_LABEL[role] || "Lesart"; }
   function contextLine(card) {
@@ -91,7 +84,6 @@
     if (c && typeof c.rs === "number") out.push("RS stärker als " + Math.round(c.rs * 100) + " %");
     return out;
   }
-  /** Kontext in drei knappen Angaben: Trend, Relative Staerke (Rang 0-100 im 26-Wochen-Vergleich), Marktstruktur. Fehlt eine, entfaellt sie. */
   function structureLabel(ms) { return typeof ms !== "number" ? null : ms >= 0.25 ? "positiv" : ms <= -0.25 ? "negativ" : "neutral"; }
   function contextChips(card) {
     var out = [], c = card.ctx;
@@ -108,13 +100,10 @@
   }
   function detailHref(ticker) { return DETAIL_BASE + encodeURIComponent(String(ticker || "").toUpperCase()); }
 
-  /* ---------------------------------------------------------- Filter (URL-Zustand) */
   var DIR_PARAM = { auf: "UP", ab: "DOWN" };
   var ST_PARAM = { bestaetigt: "CONFIRMED", aufbau: "DEVELOPING" };
-  var ROLE_PARAM = { engine: ["PRIMARY", "ALTERNATIVE", "HIGH_UPSIDE"], primaer: ["PRIMARY"], alternative: ["ALTERNATIVE", "HIGH_UPSIDE", "MOTIVE_ALTERNATIVE"], highlight: ["EXPLORE_HIGHLIGHT"] };
+  var ROLE_PARAM = { engine: ["PRIMARY", "ALTERNATIVE", "HIGH_UPSIDE"], primaer: ["PRIMARY"], alternative: ["ALTERNATIVE", "HIGH_UPSIDE", "MOTIVE_ALTERNATIVE"], motiv: ["MOTIVE_ALTERNATIVE"], highlight: ["EXPLORE_HIGHLIGHT"] };
 
-  /** "#/?welle=3&richtung=ab" -> Zustand. Unbekannte Werte werden verworfen (keine leere Liste durch einen Tippfehler in der Adresse).
-      "#/<TICKER>?ansicht=profi" -> Aktienbild: ticker und detailQuery (der Rest gehoert dem Chartbild). */
   function parseHash(hash) {
     var h = String(hash || "").replace(/^#\/?/, ""), q = h.indexOf("?"), params = new URLSearchParams(q >= 0 ? h.slice(q + 1) : "");
     var lead = (q >= 0 ? h.slice(0, q) : h).replace(/\/+$/, "");
@@ -151,16 +140,13 @@
     if (s.neu && !card.chg) return false;
     return true;
   }
-  /** Gefilterte Karten in der Reihenfolge des Index (Index ist bereits geordnet). Neu-Filter: juengste Ereignisse zuerst. */
   function filterCards(cards, s, rows) {
     var out = cards.filter(function (c) { return matches(c, s); });
-    /* Eine Reihe als Liste: die Karten der Reihe in der Reihenfolge des Erzeugers (nicht neu sortiert). */
     if (s.reihe && rows) {
       var row = rows.filter(function (r) { return r.id === s.reihe; })[0], pos = {};
       if (row) { row.ids.forEach(function (id, i) { pos[id] = i; }); out = out.filter(function (c) { return pos[c.id] !== undefined; }).sort(function (a, b) { return pos[a.id] - pos[b.id]; }); }
       else out = [];
     }
-    /* Neu und veraendert: dieselbe Reihenfolge wie die Reihe (juengstes Datum, dann Ereignisart), sonst die Ordnung des Index */
     if (s.neu && !s.reihe) {
       var prio = { CONFIRMED: 0, ROLE: 1, NEW: 2, ZONE: 3, REVISED: 4 };
       out = out.map(function (c, i) { return { c: c, i: i }; }).sort(function (a, b) {
@@ -169,7 +155,6 @@
     }
     return out;
   }
-  /** Chips mit Anzahl; Gruppen ohne Karten entfallen, eine einzelne Karte reicht fuer einen Chip (z. B. Welle 5). */
   function chipGroups(home, s) {
     var cards = home.cards, count = function (patch) { return cards.filter(function (c) { return matches(c, Object.assign({}, s, patch)); }).length; };
     var groups = [
@@ -199,14 +184,11 @@
     if (s.welle) parts.push("Welle " + s.welle);
     if (s.richtung) parts.push(DIR_LABEL[DIR_PARAM[s.richtung]]);
     if (s.status) parts.push(STATUS_LABEL[ST_PARAM[s.status]]);
-    if (s.rolle) parts.push({ engine: "Bevorzugte Lesart der Engine", primaer: "Primäre Lesart", alternative: "Alternativen", highlight: "Explore Highlights" }[s.rolle]);
+    if (s.rolle) parts.push({ engine: "Bevorzugte Lesart der Engine", primaer: "Primäre Lesart", alternative: "Alternativen", motiv: "Motiv-Alternativen", highlight: "Explore Highlights" }[s.rolle]);
     if (s.neu) parts.unshift("Neu und verändert");
     return parts.join(" · ");
   }
 
-  /* ---------------------------------------------------------- Reihen */
-  /** Reihen der Startseite mit aufgeloesten Karten (nur die ersten cap; total und ids tragen alle). Karten, die der Index nicht (mehr) kennt,
-      entfallen still (nie eine leere Kachel). */
   function rowsOf(home) {
     var byId = {};
     home.cards.forEach(function (c) { byId[c.id] = c; });
@@ -216,34 +198,27 @@
         cards: r.ids.slice(0, cap).map(function (id) { return byId[id]; }).filter(Boolean) };
     }).filter(function (r) { return r.cards.length > 0; });
   }
-  /** "Alle N" einer Reihe: die ganze Reihe als Liste (#/?reihe=<id>), in der Reihenfolge des Erzeugers. */
   function rowHref(row) { return buildHash({ reihe: row.id }); }
 
-  /* ---------------------------------------------------------- Vertrag */
-  /** Prueft den Index. Eine fremde Version wird nicht "irgendwie" angezeigt, sondern als nicht verfuegbar behandelt. */
   function validate(home) {
     if (!home || !SCHEMAS[home.schemaVersion] || home.version !== SCHEMAS[home.schemaVersion]) return { ok: false, reason: "VERSION" };
     if (!Array.isArray(home.cards) || !Array.isArray(home.rows)) return { ok: false, reason: "SHAPE" };
     return { ok: true };
   }
 
-  /* ---------------------------------------------------------- Leerzustaende */
   function emptyState(home, s, query, resultCount) {
     if (query && query.length >= 2) return { kind: "SEARCH", title: "Keine Aktie gefunden", text: "Zu „" + query + "“ gibt es keinen Treffer im Aktienbestand. Prüfe Schreibweise oder Kürzel." };
     if (!home || !home.cards || !home.cards.length) return { kind: "NO_THESES", title: "Zurzeit keine Elliott-Lesarten", text: "Im aktuellen Datenstand zeigt Vision Universe keine Elliott-Lesart. Das ist ein ehrlicher Zustand: Die Engine enthält sich, wenn keine Zählung verlässlich ist. Du kannst trotzdem jede Aktie suchen." };
     if (isFiltered(s) && resultCount === 0) return { kind: "FILTER", title: "Keine Lesart für diese Auswahl", text: "Mit dieser Kombination gibt es im aktuellen Datenstand keine Lesart. Nimm einen Filter heraus." };
     return null;
   }
-  /** Reihen ohne Karten werden nicht gebaut. Fehlt eine erwartete Reihe (z. B. Welle 5), nennt die Seite das ehrlich statt eine Reihe zu erfinden. */
   function missingRowNote(home, rowId) {
     var s = home.summary || {};
     if (rowId === "wave5") return s.wave5 > 0 ? null : "Aktuell keine Welle-5-Lesart im Datenstand.";
     return null;
   }
 
-  /* ---------------------------------------------------------- Suche */
   function norm(t) { return String(t || "").toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9. -]/g, " ").replace(/\s+/g, " ").trim(); }
-  /** entries: [{s: Kuerzel, n: Name}]. Rang: Kuerzel genau, Kuerzel-Anfang, Namensanfang, Wortanfang, enthalten. Stabil, deterministisch. */
   function searchEntries(entries, q, limit) {
     var needle = norm(q); if (needle.length < 1) return [];
     var tq = needle.toUpperCase(), out = [];
@@ -256,7 +231,6 @@
     out.sort(function (a, b) { return a.rank - b.rank || a.len - b.len || (a.e.s < b.e.s ? -1 : a.e.s > b.e.s ? 1 : 0); });
     return out.slice(0, limit || 8).map(function (x) { return x.e; });
   }
-  /** Karten eines Titels (fuer den Hinweis im Suchtreffer). */
   function cardsByTicker(home) {
     var m = {};
     (home.cards || []).forEach(function (c) { (m[c.t] = m[c.t] || []).push(c); });
@@ -270,7 +244,7 @@
 
   var api = {
     VERSION: VERSION, SCHEMAS: SCHEMAS, INDEX_PATH: INDEX_PATH, DETAIL_BASE: DETAIL_BASE, PAGE: PAGE,
-    ROLE_LABEL: ROLE_LABEL, ROLE_NOTE: ROLE_NOTE, STATUS_LABEL: STATUS_LABEL, DIR_LABEL: DIR_LABEL, CHANGE_LABEL: CHANGE_LABEL,
+    ROLE_LABEL: ROLE_LABEL, ROLE_NOTE: ROLE_NOTE, STATUS_LABEL: STATUS_LABEL, DIR_LABEL: DIR_LABEL, TIER_LABEL: TIER_LABEL, CHANGE_LABEL: CHANGE_LABEL,
     pct: pct, range: range, headlineTier: headlineTier, otherTiers: otherTiers, price: price, dateDe: dateDe,
     waveLabel: waveLabel, roleLabel: roleLabel, contextLine: contextLine, contextChips: contextChips, structureLabel: structureLabel, poolLine: poolLine, ariaLabel: ariaLabel, detailHref: detailHref,
     parseHash: parseHash, buildHash: buildHash, isFiltered: isFiltered, matches: matches, filterCards: filterCards, chipGroups: chipGroups, withChip: withChip, filterTitle: filterTitle,
