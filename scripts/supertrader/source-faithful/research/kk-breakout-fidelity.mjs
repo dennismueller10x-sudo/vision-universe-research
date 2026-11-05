@@ -30,6 +30,13 @@
  *  Repository). Abgeleitete Konvention: bei der Positionskappe von 25 % auf 100.000 USD Startkapital muss der
  *  20-Tage-Durchschnitt des Dollarvolumens (Rohkurs x Rohvolumen, Sitzungen vor dem Kauftag) mindestens 2,5 Mio. USD
  *  betragen. Deshalb eine eigene, gekennzeichnete Variante, nicht Teil von FID-2.
+ * FID-3 (vor dem ersten Lauf von FID-3 festgelegt, nach der Diagnose der goldenen Trades 05.11.2026, Läufe 42040595941
+ *  und 42043947326): FID-1 plus Auswahl. Vier belegte Trades (KOD, JMIA, ZM, PDD) waren erkannt und ausgelöst, wurden aber
+ *  mangels freien Kapitals abgelehnt, weil die Engine die Orders in neutraler Zufallsreihenfolge füllt. Kullamägi hält
+ *  wenige, konzentrierte Positionen in den stärksten Titeln („top 1–2 %“, „only the strongest stocks“). Regel: an jedem
+ *  Tag werden höchstens 3 neue Kauf-Stopps scharfgestellt, die Setups mit dem höchsten besten 1/3/6-Monats-Perzentil
+ *  (Gleichstand: securityId aufsteigend). Die Zahl 3 ist eine VU-Konvention. Momentum-Schwelle (2 %), Preisgrenze (5 USD),
+ *  Setup, Stopp und Ausstieg bleiben wie FID-1; nichts davon ist an die 16 Beispiele angepasst.
  * Bewertet wird nur auf DEV; der HOLDOUT 2008–2015 wird später einmalig mit dieser festgeschriebenen Regel geprüft.
  */
 import { fin, smaAt, priorHigh } from '../common/series.mjs';
@@ -37,8 +44,8 @@ import { adr20, KK_PARAMS } from '../methods/kullamagi.mjs';
 import { eligibilityResult, STUDY_LABEL } from './lifecycle-engine.mjs';
 import { KK_SETUP_PROXIES, KK_EXIT_POLICIES, KK_OPEN_MANUAL_DECISIONS } from './kk-breakout-lifecycle.mjs';
 
-export const KK_FIDELITY_VERSION = 'kk-breakout-fidelity-1.2.0';
-export const KK_FIDELITY_VARIANTS = Object.freeze({ 'FID-1': Object.freeze({ quality: false, adrNorm: 'ENTRY', trail: 'MA10' }), 'FID-2': Object.freeze({ quality: true, adrNorm: 'LOW', trail: 'TEMPO', fastAdrPct: 5 }), 'FID-2L': Object.freeze({ quality: true, adrNorm: 'LOW', trail: 'TEMPO', fastAdrPct: 5, minAdv20Usd: 2.5e6 }) });
+export const KK_FIDELITY_VERSION = 'kk-breakout-fidelity-1.3.0';
+export const KK_FIDELITY_VARIANTS = Object.freeze({ 'FID-1': Object.freeze({ quality: false, adrNorm: 'ENTRY', trail: 'MA10' }), 'FID-2': Object.freeze({ quality: true, adrNorm: 'LOW', trail: 'TEMPO', fastAdrPct: 5 }), 'FID-2L': Object.freeze({ quality: true, adrNorm: 'LOW', trail: 'TEMPO', fastAdrPct: 5, minAdv20Usd: 2.5e6 }), 'FID-3': Object.freeze({ quality: false, adrNorm: 'ENTRY', trail: 'MA10', dailyTop: 3 }) });
 export const KK_FIDELITY_RULES = Object.freeze({
   id: 'FID-1', momentumTopPct: 2, universeMinRawClose: 5, marketSma: [10, 20], marketSlopeSessions: 5,
   setupProxy: 'CONSOLIDATION_10', exitPolicy: 'PARTIAL3_THIRD_BE_MA10', riskFraction: 0.005, maxRiskAdr: 1,
@@ -46,7 +53,7 @@ export const KK_FIDELITY_RULES = Object.freeze({
 export const KK_FIDELITY_CONFIG = Object.freeze({ manualSubstitute: 'ACCEPT_AS_MODEL_ASSUMPTION', setupProxy: 'CONSOLIDATION_10', entryTiming: 'BUY_STOP_LEVEL', exitPolicy: 'PARTIAL3_THIRD_BE_MA10', intrabarOrder: 'PESSIMISTIC', sizing: Object.freeze({ mode: 'RISK', riskFraction: 0.005 }) });
 
 /** Querschnitt: je Datum die Titel mit bestPercentile >= 100 - topPct (1/3/6 Monate, Rohkurs >= Grenze). */
-export function momentumLeaders(securities, { topPct = KK_FIDELITY_RULES.momentumTopPct, minRawClose = KK_FIDELITY_RULES.universeMinRawClose, P = KK_PARAMS } = {}) {
+export function momentumRanks(securities, { minRawClose = KK_FIDELITY_RULES.universeMinRawClose, P = KK_PARAMS } = {}) {
   const byDate = new Map();
   for (const s of securities) {
     const b = s.bars;
@@ -57,17 +64,41 @@ export function momentumLeaders(securities, { topPct = KK_FIDELITY_RULES.momentu
       (byDate.get(b[i].date) || byDate.set(b[i].date, []).get(b[i].date)).push([s.id, ret(P.momentumSessions.m1), ret(P.momentumSessions.m3), ret(P.momentumSessions.m6)]);
     }
   }
-  const leaders = new Map();
+  const ranks = new Map();
   for (const [date, rows] of byDate) {
     const best = new Map();
     for (const k of [1, 2, 3]) {
       const v = rows.filter((r) => r[k] !== null).sort((a, z) => a[k] - z[k]);
       v.forEach((r, j) => { const p = v.length > 1 ? (j / (v.length - 1)) * 100 : null; if (p !== null) best.set(r[0], Math.max(best.get(r[0]) ?? -1, p)); });
     }
-    const set = new Set(); for (const [id, p] of best) if (p >= 100 - topPct) set.add(id);
-    leaders.set(date, set);
+    ranks.set(date, best);
   }
+  return ranks;
+}
+export function momentumLeaders(securities, { topPct = KK_FIDELITY_RULES.momentumTopPct, minRawClose = KK_FIDELITY_RULES.universeMinRawClose, P = KK_PARAMS, ranks = null } = {}) {
+  const R = ranks ?? momentumRanks(securities, { minRawClose, P }), leaders = new Map();
+  for (const [date, best] of R) { const set = new Set(); for (const [id, p] of best) if (p >= 100 - topPct) set.add(id); leaders.set(date, set); }
   return leaders;
+}
+
+/** FID-3: je Datum die höchstens dailyTop Titel mit Setup (Regeln der Variante), Führer und offenem Markt, nach bestem
+ *  Perzentil absteigend, Gleichstand securityId aufsteigend. */
+export function dailySelection(ds, { leaders, market, ranks, variant = 'FID-3', proxy = KK_SETUP_PROXIES.CONSOLIDATION_10 }) {
+  const V = KK_FIDELITY_VARIANTS[variant];
+  if (!V || !V.dailyTop) throw new Error(`NO_DAILY_TOP ${variant}`);
+  const byDate = new Map();
+  for (const sec of ds.securities) {
+    const bars = sec.bars;
+    for (let i = 0; i < bars.length; i++) {
+      const d = bars[i].date;
+      if (!market.has(d) || !leaders.get(d)?.has(sec.id)) continue;
+      if (!kkFidelitySetupAt(bars, i, proxy, { quality: V.quality, minAdv20Usd: V.minAdv20Usd ?? null })) continue;
+      (byDate.get(d) || byDate.set(d, []).get(d)).push([sec.id, ranks.get(d)?.get(sec.id) ?? -1]);
+    }
+  }
+  const sel = new Map();
+  for (const [d, rows] of byDate) sel.set(d, new Set(rows.sort((a, z) => z[1] - a[1] || (a[0] < z[0] ? -1 : a[0] > z[0] ? 1 : 0)).slice(0, V.dailyTop).map((r) => r[0])));
+  return sel;
 }
 
 /** Marktfilter je Datum: SMA10 > SMA20 und beide steigend (5 Sitzungen) am Schluss des Datums. */
@@ -113,9 +144,10 @@ export function kkFidelitySetupAt(bars, i, proxy = KK_SETUP_PROXIES.CONSOLIDATIO
 }
 
 /** Adapter für research/lifecycle-engine.mjs; leaders und market kommen aus momentumLeaders / marketOn (Querschnitt). */
-export function createKkFidelityAdapter({ leaders, market, variant = 'FID-1' }) {
+export function createKkFidelityAdapter({ leaders, market, variant = 'FID-1', selection = null }) {
   const V = KK_FIDELITY_VARIANTS[variant];
   if (!V) throw new Error(`UNKNOWN_FID_VARIANT ${variant}`);
+  if (V.dailyTop && !selection) throw new Error(`SELECTION_REQUIRED ${variant}`);
   return Object.freeze({
     strategy: `KK_BREAKOUT_${variant.replace('-', '')}`, version: KK_FIDELITY_VERSION, methodVersion: KK_FIDELITY_VERSION, label: STUDY_LABEL.MODEL,
     sourceMaxPositionWeight: KK_PARAMS.overnightCap,
@@ -127,6 +159,7 @@ export function createKkFidelityAdapter({ leaders, market, variant = 'FID-1' }) 
       for (let i = 0; i < bars.length; i++) {
         const d = bars[i].date;
         if (!market.has(d) || !leaders.get(d)?.has(security.id)) continue;
+        if (V.dailyTop && !selection.get(d)?.has(security.id)) continue;
         const s = kkFidelitySetupAt(bars, i, proxy, { quality: V.quality, minAdv20Usd: V.minAdv20Usd ?? null }); if (s) setups.set(i, s);
       }
       return setups.size ? { setups, bars } : null;
