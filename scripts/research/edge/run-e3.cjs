@@ -159,6 +159,15 @@ function main() {
     if (!s || !s.doc.winner) throw Error('SELECTION_NOT_FROZEN: Prüfteil bleibt geschlossen');
     console.log(JSON.stringify({ sha256: write('test-st.json', { ...runSt(a, 'E3_TEST_2020_2026', 'test-st', TEST), selectionSha256: s.sha256 }) }));
   }
+  else if (a.phase === 'posthoc-st') {
+    // Nachtrag nach Einsicht (Steuerung, 05.11.2026): ST-Prüfung mit Ende 2026-09-30 (eingefrorener Snapshot), Benchmarks
+    // auf dieselben Wochenstichtage gekürzt. Außerhalb der vorregistrierten Familie: keine Holm-Familie, kein Urteil „schlägt“.
+    if (!read('test-st.json')) throw Error('TEST_ST_MISSING');
+    const doc = runSt(a, 'E3_TEST_2020_2026', 'posthoc-st', [TEST[0], '2026-09-30']);
+    doc.posthoc = { decidedAt: '2026-11-05', reason: 'eingefrorener Snapshot von Strang B endet 2026-09-30; Verlängerung würde den gepinnten Papierhandel gefährden',
+      afterInspection: true, inPreregisteredFamily: false, verdictAllowed: false };
+    console.log(JSON.stringify({ sha256: write('posthoc-st.json', doc) }));
+  }
   else if (a.phase === 'select') console.log(JSON.stringify({ sha256: select() }));
   else if (a.phase === 'test-quant') {
     const s = read('selection.json');

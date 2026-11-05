@@ -229,6 +229,29 @@ Supertrader-Entwicklung nur 2016–2019 (Lücke 2012–2015, siehe Grenzen); Qua
 | Q-value-momentum-N20-W26-F0 | 16,6 % | 15,4 % | 11,2 % | 9,6 % | 0,71 | 0,85 | -42,5 % | -31,8 % | 0,4421 / 1,0000 | 1,0000 / 1,0000 | schlägt nicht |
 | Q-value-momentum-N20-W26-F1 | 11,9 % | 15,4 % | 11,2 % | 9,6 % | 0,73 | 0,85 | -26,1 % | -31,8 % | 1,0000 / 1,0000 | 1,0000 / 1,0000 | schlägt nicht |
 
+## Nachtrag nach Einsicht (05.11.2026): Supertrader mit Prüfende 2026-09-30
+
+**Außerhalb der vorregistrierten Familie.** Entschieden nach Einsicht in die blockierten Supertrader-Prüfwerte. Begründung: Der eingefrorene Snapshot von Strang B endet am 2026-09-30; eine Verlängerung würde den gepinnten Papierhandel gefährden. SPY, RSP und IWM sind auf dieselben Wochenstichtage gekürzt. Die p-Werte sind unkorrigiert, sie gehen nicht in die Holm-Familie der Studie ein, und es gibt kein Urteil „schlägt“. Die vorregistrierten Urteile oben bleiben „nicht bestimmbar (blockiert)“.
+
+| Variante | Zeitraum | CAGR | SPY | RSP | IWM | Sharpe | SPY Sharpe | Max. Verlust | p Log (roh) | p Sharpe (roh) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| ST-C01-F0 | 2020-01-03 bis 2026-09-25 | -52,0 % | 15,5 % | 11,3 % | 9,6 % | -1,33 | 0,85 | -99,3 % | 1,0000 | 1,0000 |
+| ST-C01-F1 | 2020-01-03 bis 2026-09-25 | -42,4 % | 15,5 % | 11,3 % | 9,6 % | -1,28 | 0,85 | -97,6 % | 1,0000 | 1,0000 |
+| ST-C02-F0 | 2020-01-03 bis 2026-09-25 | -42,6 % | 15,5 % | 11,3 % | 9,6 % | -1,14 | 0,85 | -97,6 % | 1,0000 | 1,0000 |
+| ST-C02-F1 | 2020-01-03 bis 2026-09-25 | -31,3 % | 15,5 % | 11,3 % | 9,6 % | -0,78 | 0,85 | -92,0 % | 1,0000 | 1,0000 |
+| ST-C03-F0 | 2020-01-03 bis 2026-09-25 | -42,7 % | 15,5 % | 11,3 % | 9,6 % | -3,22 | 0,85 | -97,6 % | 1,0000 | 1,0000 |
+| ST-C03-F1 | 2020-01-03 bis 2026-09-25 | -39,0 % | 15,5 % | 11,3 % | 9,6 % | -2,88 | 0,85 | -96,4 % | 1,0000 | 1,0000 |
+| ST-C08-F0 | 2020-01-03 bis 2026-09-25 | -48,0 % | 15,5 % | 11,3 % | 9,6 % | -1,71 | 0,85 | -98,8 % | 1,0000 | 1,0000 |
+| ST-C08-F1 | 2020-01-03 bis 2026-09-25 | -41,3 % | 15,5 % | 11,3 % | 9,6 % | -1,66 | 0,85 | -97,4 % | 1,0000 | 1,0000 |
+| ST-C12-F0 | 2020-01-03 bis 2026-09-25 | -24,4 % | 15,5 % | 11,3 % | 9,6 % | -0,75 | 0,85 | -89,1 % | 1,0000 | 1,0000 |
+| ST-C12-F1 | 2020-01-03 bis 2026-09-25 | -11,9 % | 15,5 % | 11,3 % | 9,6 % | -0,37 | 0,85 | -74,9 % | 1,0000 | 1,0000 |
+| ST-TOP5-F0 | 2020-01-03 bis 2026-09-25 | -37,2 % | 15,5 % | 11,3 % | 9,6 % | -1,82 | 0,85 | -95,6 % | 1,0000 | 1,0000 |
+| ST-TOP5-F1 | 2020-01-03 bis 2026-09-25 | -27,1 % | 15,5 % | 11,3 % | 9,6 % | -1,37 | 0,85 | -88,1 % | 1,0000 | 1,0000 |
+
+Prüfhinweis: Schon die kostenfreien Kurven von Strang B zeigen im Prüfteil maximale Verluste von −80 % bis −98 % (Turtle S1 −98,3 %, Turtle S2 −96,8 %, KK Breakout −89,7 %, Buyable Gap Up −79,4 %; Darvas −29,7 %). Das liegt vor dem Overlay und ist für Long-only-Regeln auffällig; Strang B prüft. Bis dahin sind diese Werte nicht belastbar.
+
+C03 Darvas: auf Tagesbalken nicht bestimmbar (Annahme dominiert); die Spannweite PESSIMISTIC/OPTIMISTIC von Strang B wird ergänzt, sobald sie vorliegt.
+
 ## Grenzen
 
 - Das Prüffenster 2020–2026 wurde in früheren Projektstudien verwendet: vorab fixierte Replikation mit zeitlicher Trennung, kein unberührter Holdout. Bestätigung nur mit neuen Vorwärtsdaten.
