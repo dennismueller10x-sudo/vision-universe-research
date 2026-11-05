@@ -46,7 +46,7 @@ jobs:
     # nach dem Security-Master-Lauf nur, wenn dieser gruen war
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -128,11 +128,21 @@ jobs:
           node scripts/market/publish-discover-series.mjs --prune-only
           node scripts/market/publish-long-series.mjs --prune-only
           node scripts/market/ingest-intraday.mjs --index-only
+          # Discover-Daten (Startseite, Live-Umfang, Aktienseiten, Meta) aus dem neuen Universum: derselbe Erzeuger
+          # und dieselbe Nachpruefung wie im Marktdatenlauf und in long-series.yml (Registereintrag discover/data/meta.json).
+          node scripts/discover/build-discover-data.mjs
+          node scripts/discover/verify-discover-data.mjs
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -A $PUSH_OWNED_PATHS
+          git add -A $PUSH_OWNED_PATHS discover/data
           if git diff --cached --quiet; then echo "nichts ausserhalb des Umfangs"; else
-            git commit -q -m "Umfangsfolgen: Reihen ausserhalb des Produktuniversums entfernt (Erzeuger --prune-only)"
+            git commit -q -m "Umfangsfolgen: Reihen ausserhalb des Produktuniversums entfernt, Discover neu gebaut (Erzeuger)"
+            # wie long-series.yml: nach dem Rebase Discover auf dem zusammengefuehrten Stand neu bauen und pruefen
+            git pull -q --rebase origin "${GITHUB_REF_NAME}"
+            node scripts/discover/build-discover-data.mjs
+            node scripts/discover/verify-discover-data.mjs
+            git add -A discover/data
+            if ! git diff --cached --quiet; then git commit -q --amend --no-edit; fi
             scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           fi
           # Uebrig bleiben darf hoechstens die Technical-Materialisierung, die der naechste Schritt neu anstoesst.
@@ -146,7 +156,13 @@ jobs:
         if: steps.folgen.outcome == 'success' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run product-intelligence-materialization.yml --ref main -f force=true
+        run: |
+          set -euo pipefail
+          # ein wartender oder laufender Lauf baut ohnehin auf dem neuen Stand - kein zweiter
+          offen="$(gh run list --workflow product-intelligence-materialization.yml --branch main --limit 10 --json status \
+            --jq '[.[] | select(.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="pending")] | length')"
+          if [ "$offen" != "0" ]; then echo "Materialisierung laeuft schon ($offen) - kein zweiter Anstoss"; exit 0; fi
+          gh workflow run product-intelligence-materialization.yml --ref main -f force=true
 
       - name: Ergebnis
         if: steps.gate.outputs.decision != 'COMMIT'
