@@ -609,7 +609,7 @@ html[data-theme=dark] .fu{--vu-bg:#000}
 .fu-tabs.vu-seg a[aria-current=page]{background:var(--vu-ink);color:var(--vu-inv)}
 .fu-verdict{display:flex;gap:12px;align-items:center;margin-top:12px;padding:16px}
 .fu-verdict>div:first-child{flex:1;min-width:0}
-.fu-verdict .vu-ltag{color:#9b9b9b;margin:0}
+.fu-verdict .vu-ltag{margin:0}
 .fu-verdict-t{margin:2px 0 0;font-size:18px;font-weight:850;line-height:1.2}
 .fu-verdict-s{margin:4px 0 0;opacity:.7}
 .fu-verdict-r{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
@@ -635,3 +635,6 @@ html[data-theme=dark] .fu{--vu-bg:#000}
 .fu .fu-bigq-in:focus-visible{outline:none}
 .fu-bigq:focus-within{box-shadow:0 0 0 3px var(--vu-lime)}
 .fu-bigq-in::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+/* Chips und Aussage-Karte: .fu a erbt die Textfarbe; Chip- und Kartenfarben haben Vorrang (Kontrast im Dunkelmodus) */
+.fu a.vu-chip--lime{color:#000}.fu a.vu-chip--on,.fu a.vu-chip[aria-current=page],.fu a.vu-chip[aria-pressed=true]{color:var(--vu-inv)}
+.fu-verdict .vu-ltag{color:inherit;opacity:.72}
