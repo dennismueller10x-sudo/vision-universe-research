@@ -1,4 +1,4 @@
-# Strang B – Supertrader-Backtest (Stand 04.11.2026, spätabends)
+# Strang B – Supertrader-Backtest (Stand 05.11.2026, nachmittags)
 
 Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Produktdokument: [SUPERTRADER_9_HANDOVER.md](../SUPERTRADER_9_HANDOVER.md) §0.1.
 Alle Backtest-Ergebnisse sind **Forschung, nicht zertifiziert**. Keine öffentlichen Renditeaussagen ohne Owner.
@@ -10,22 +10,27 @@ Alle Backtest-Ergebnisse sind **Forschung, nicht zertifiziert**. Keine öffentli
   - Je Methode gerechnet: Trades, Trefferquote, Rendite, maximaler Verlust, Abstand zu SPY und Kosten.
   - Das Ergebnis liegt intern beim Owner (verschlüsselt im Lauf-Artefakt).
 - V13-Studie (A gegen A+V13, Top 5): 41880752043 grün. Audit bestanden, Wiederholungsprüfung mit gleichem Hash. Davor endete 41861419543 mit Exit 4, Klärung in #1334: Ein Kauf am letzten Handelstag wird gezählt, ist aber kein Verstoß.
-- Kandidaten-Tageslauf wieder frisch: Stand 03.11. (Läufe 41862433422 und 41865789914, Commit `4decd3b7`).
+- Kandidaten-Tageslauf frisch: Stand 04.11. (Lauf A 42031553316, Lauf B 42033163619, Commit `1ba58b94`). Lauf A war zunächst am Datenbudget rot (42027770857): Mit Security Master 1.3.0 verdoppeln sich die Kandidaten (3.133 → 6.057, 22,1 MB öffentlich). Das Budget wurde deshalb auf 32 MB bzw. 4 MB je Datei angehoben (#1425 Core DQ-SF8-7, #1427 Workflow). Die übrigen DQ-Regeln und der Vertrag C1–C7 waren grün.
+- Weitere Arbeit am 05.11., ohne Renditezahlen; die Ergebnisse liegen privat beim Owner:
+  - E3-Export für Strang C (#1395).
+  - Plausibilitätsprüfung Darvas/KK/Turtle: kein Umsetzungsfehler. Bei Darvas hängt das Ergebnis vor allem an der Annahme über die Reihenfolge innerhalb eines Balkens (#1408).
+  - Screener-Kriterien (Z5, #1389).
+  - C08-Treueprüfung: Regelabgleich (#1420, `docs/research/supertrader/C08-TREUE.md`), die Forschungsvarianten FID-1/FID-2 (#1418) und FID-2L mit Liquiditätsfilter (#1422). Der Lauf mit FID-1/FID-2 läuft.
 - **Papierhandel SF6-PAPER-2027 eingeschaltet** (#1354): Protokoll 1.2.0 ist festgeschrieben (#1270, R1–R6, darunter R6 41864439485), Registry #1272 und #1273, E-P1 `COUNT_ONLY`, E-P2 Kappung 4. Der Wächter ist bis zum 31.12. untätig und zeichnet ab dem 04.01.2027 auf.
 - Security Master 1.3.0 ist produktiv (Strang A, #1347). Damit ist S6 erfüllt, und die Eingangsprüfung stoppt am 11.11. nicht.
 - Überholte Entwürfe geschlossen: #1099, #1142, #1315.
 
 ## Offen
 - Dezember: F1–F3 (Forward-Namensraum befüllen) und ein Core-PR, der den Registry-Eintrag `supertrader-paper-2027-log` auf `ACTIVATING` stellt (mit JSONL-Leser), vor dem 04.01.2027.
-- Kandidaten-Tageslauf: täglich die manuellen Läufe A und B, bis `SF8_AUTO_PUBLISH` gesetzt ist.
+- Kandidaten-Tageslauf: `SF8_AUTO_PUBLISH=true` hat der Owner am 05.11. gesetzt; der Workflow sieht die Variable (Lauf 42031553316: `AUTO_SWITCH: true`). Der erste automatische Lauf ist zu prüfen; danach entfallen die manuellen Läufe A und B.
+- Gate A ist noch nicht umgebaut (Strang A plant Vertragstests). C04–C13 bleiben „in Forschung“.
+- C08: R-Verteilung und goldene Trades für FID-1/FID-2 auswerten, dann ein eigener Lauf für FID-2L. Danach die Fassung wählen, die einmal auf dem Holdout bestätigt wird (Regel vorher festschreiben). Anschließend dasselbe für C06/C07.
 - Discovery-Regression NM3 (Firmennamen nach Security Master 1.3.0) und die Quant-Regression sind auf `main` rot. Sie gehören zu Strang A, C bzw. D und sind kein Supertrader-Thema. Supertrader-PRs werden bei sonst grünen Gates gemergt.
 - C09-Entwürfe #1262 und #1263 ruhen, weil C09 in Forschung ist.
 
 ## Braucht Owner
-- Repo-Variable `SF8_AUTO_PUBLISH=true` setzen. Empfehlung: jetzt. Jede Veröffentlichung prüft der Vertrag C1–C7 (fail closed).
-- Buch (englische Originalausgabe Minervini) für FP-ST-05: eine Ausgabe, nur mit Freigabe.
 - Öffentliche Darstellung von Backtest-Renditen: nur mit Freigabe.
-- Lizenzanfragen für Kapitalmaßnahmen-Daten (FP-ST-01, Tabelle unten): Anfragen kosten nichts, ein Kauf braucht die Freigabe.
+- FP-ST-01 ruht (Owner, 05.11.): keine Anfragen an Anbieter. FP-ST-05: kein Buchkauf. Die Tabelle unten bleibt als Vergleich.
 
 ## FP-ST-01: Lizenzangebote für Kapitalmaßnahmen-Daten (Vergleich, nichts gekauft)
 
