@@ -21,7 +21,7 @@ Diese Gates wurden ebenfalls gestartet. Sie sind **nicht grün**. Erster Versuch
 | Python `scripts/quant/tests/test_*.py` | 590 Tests: 5 Fehlschläge, 1 Fehler, 21 übersprungen |
 | Konten / Workers / Dashboard | 116 Tests: 109 bestanden, 4 fehlgeschlagen, 3 übersprungen |
 | Quant `quant/tests/*.test.mjs` | Lauf beim Anlegen dieses Prüfstands noch aktiv; bereits Fehler außerhalb E4 |
-| Discover / Supertrader / Screener | Lauf beim Anlegen dieses Prüfstands noch aktiv; bereits Fehler außerhalb E4 |
+| Discover / Supertrader / Screener | 1808 Tests: 1759 bestanden, 27 fehlgeschlagen, 22 übersprungen |
 
 Beispiele: Kontentests finden `assets/site-navigation.js`, `supabase/seed.sql` und `landing/server/newsletter.mjs` im Sparse-Checkout nicht. Technical findet Academy-/Dokumentationsdateien nicht. Die Python-Gates melden zusätzlich Datenstandsabweichungen (166 statt 167 ausgeschlossene Titel; 6570 statt 6683 verfügbare Charts) und fehlende Fundamental-Artefakte. Quant/Discover melden fehlende importierte oder referenzierte Produktartefakte und Datenverträge. Keine dieser Dateien wird im PR verändert.
 
