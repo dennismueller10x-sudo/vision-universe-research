@@ -386,7 +386,8 @@
         '<p class="vu-xs">' + U().esc(share + (trend != null ? " " + Math.round(trend * 100) + " % mit Aufwärtstrend." : "")) + " Stand " + U().esc(X.dateDe(regime.asOf)) + ".</p></div>" +
         '<div style="margin-top:8px">' + U().help("200-Tage-Linie: der Durchschnittskurs der letzten 200 Handelstage. Darüber heißt: langfristig eher aufwärts.") + "</div>"));
     }
-    /* Heute bei Quant: sechs Tageszahlen mit Richtung, dann der PRO-Vergleich. */
+    /* Heute bei Quant: sechs Tageszahlen mit Richtung, dann der PRO-Vergleich. Ohne Radar der ehrliche Satz statt Leere. */
+    if (!radar || radar.state !== "AVAILABLE") todayHost.replaceChildren(frag('<p class="vu-xs vu-mu">Gerade keine Veränderungen abrufbar. Die Tageszahlen erscheinen, sobald der Radar-Lauf veröffentlicht ist.</p>'));
     if (radar && radar.state === "AVAILABLE") {
       var sm = radar.summary, src = radar.sources || {};
       var html = '<p class="vu-xs vu-mu qv3-asof"><b>Veränderungen zum Vortag · Stand ' + U().esc(X.dateDe(src.setup && src.setup.to)) + '</b></p><div class="vu-grid">' +

@@ -18,10 +18,22 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | # | PR | Inhalt | Folien | Stand |
 |---|---|---|---|---|
 | 1 | #1340 | Vorlage `docs/design/redesign-2027/` nach `main`, diese Liste | – | gemergt |
-| 2 | #1345 | Schritt 1+2: Bausteine C04–C20 als eigene Komponente (`assets/vu-ui.css/.js`), C06 (`assets/vu-chart.js` 2.1.0), Musterseite `/status/bausteine/`, Regel 1, Shell aus #1331 ohne Datenläufe | A3, C, N1–N3 | offen |
-| 3 | #1346 | Schritt 3: Aktienkopf C04 + Perspektiven-Leiste C05 (sieben Perspektiven) für alle Welten | N4, N5 | offen |
-| 4 | #1350 | Discover D09: Aktienseite Überblick (discover/ui/overview.js), Analyse unter „Alle Kennzahlen“ PRO | D09 | offen |
-| 5 | #1351 | Quant: Startseite Q01, Screener Q02, Strategien Q03, Aktien Q04, Methodik Q05, Zahlen Q08, Aktienseite Q07 (Teil 1), Regel 1 in Quant | Q01–Q05, Q07, Q08 | offen |
+| 2 | #1345 | Schritt 1+2: Bausteine C04–C20 (`assets/vu-ui.css/.js`), C06 (`assets/vu-chart.js` 2.1.0), Musterseite `/status/bausteine/`, Regel 1, Shell | A3, C, N1–N3 | gemergt |
+| 3 | #1346 | Schritt 3: Aktienkopf C04 + Perspektiven-Leiste C05 (sieben Perspektiven) | N4, N5 | gemergt |
+| 4 | #1350 | Discover D09: Aktienseite Überblick, Analyse unter „Alle Kennzahlen“ PRO | D09 | CI läuft (Basis main) |
+| 5 | #1351 | Quant Q01–Q05, Q07 (Schritte 1–6), Q08; Prüfungen nachgezogen | Q01–Q05, Q07, Q08 | offen (nach #1350) |
+| 6 | #1353 | Z2: eine Aktienadresse `/aktie/<T>?p=` | Z2, N4 | offen (Basis #1351) |
+| 7 | #1355 | Fundamental | F01–F06 | offen (Basis #1351) |
+| 8 | #1356 | Elliott | W01–W05 | offen (Basis #1351) |
+| 9 | #1357 | Hedgefonds | H01–H07 | offen (Basis #1351) |
+| 10 | #1360 | Screener | S01–S05 | offen (Basis #1351) |
+| 11 | #1361 | Supertrader (Gate A) | ST01–ST08 | offen (Basis #1351) |
+| 12 | #1362 | Vorsorge | V01–V10 | offen (Basis #1351) |
+| 13 | #1363 | Technical | T01–T06 | offen (Basis #1351) |
+| 14 | #1366 | Einstieg, Konto, Mein Bereich, Atlas, erster Start | E01–E12, Z7, Z1 (Seite) | offen (Basis #1351) |
+| 15 | #1367 | Discover | D01–D08 | offen (Basis #1351) |
+| 16 | #1364 | Gemeinsam: Leisten Fundamental/Technical/Discover, Fundamental-Ansichten keine Aktien | C02, C03 | offen (nach #1355, #1363, #1367) |
+| – | #1359 | Konto Z1+Z3 (Worker, Migration, Tests), Basis main, unabhängig | Z1, Z3 | CI läuft |
 
 Übernommene Zweige der früheren Sitzung (Stand `docs/neustart/D-frontend.md` im Zweig `neustart/d-shell-dock`):
 `neustart/d-startseite` (E01), `neustart/d-mein-bereich` (E02, E08), `neustart/d-aktienkopf` (C04, C05, C06), `neustart/d-discover-aktie` (D09).
@@ -40,26 +52,26 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `–` (Über
 | N5 | Perspektive, Welt und Leiste | in Arbeit | #1346 |  |
 | N6 | Einsteiger und Profi | offen |  |  |
 | C | Bausteine C01–C20 | in Arbeit | #1345 (ersetzt #1331) |  |
-| E01 | Einstieg · Startseite | in Arbeit | Zweig neustart/d-startseite |  |
-| E02 | Mein Bereich · Willkommen | in Arbeit | Zweig neustart/d-mein-bereich |  |
-| E03 | Einstieg · Preise Free/Pro | offen |  |  |
-| E04 | Einstieg · Registrieren mit Pro-Wahl | offen |  |  |
-| E05 | Einstieg · Anmelden | offen |  |  |
-| E06 | Konto · Pro-Bestellung | offen |  |  |
-| E07 | Mein Bereich · Konto | offen |  |  |
-| E08 | Mein Bereich · Mein Dashboard | in Arbeit | Zweig neustart/d-mein-bereich |  |
-| E09 | Mein Bereich · Watchlist-Detail | offen |  |  |
-| E10 | Einstieg · AI Atlas | offen |  |  |
-| E11 | Einstieg · Erster Start | offen |  |  |
-| E12 | Einstieg · Checkout-Ablauf Free → Pro | offen |  |  |
-| D01 | Discover · Übersicht | offen |  |  |
-| D02 | Discover · Welten | offen |  |  |
-| D03 | Discover · Thema KI | offen |  |  |
-| D04 | Discover · Strategien | offen |  |  |
-| D05 | Discover · Swipen | offen |  |  |
-| D06 | Discover · Suchen | offen |  |  |
-| D07 | Discover · Märkte | offen |  |  |
-| D08 | Discover · Watchlist | offen |  |  |
+| E01 | Einstieg · Startseite | in Arbeit | #1366 | Pro-Preis als „Preis ansehen“ (Startseite ohne Abruf) |
+| E02 | Mein Bereich · Willkommen | in Arbeit | #1366 |  |
+| E03 | Einstieg · Preise Free/Pro | in Arbeit | #1366 | Preis aus `/v1/plans`; Zustand „Gerade nicht buchbar“ |
+| E04 | Einstieg · Registrieren mit Pro-Wahl | in Arbeit | #1366 | kein „erneut senden“ (Worker ohne Endpunkt), dafür „Adresse ändern“; gemeinsame Kopfzeile bleibt |
+| E05 | Einstieg · Anmelden | in Arbeit | #1366 | gemeinsame Kopfzeile bleibt |
+| E06 | Konto · Pro-Bestellung | in Arbeit | #1366 | Platzhalter „1,00 €“ entfernt; Pflichttext wortgleich |
+| E07 | Mein Bereich · Konto | in Arbeit | #1366 | eine Seite statt Reiter; Erfahrung bis Z1-Anbindung lokal |
+| E08 | Mein Bereich · Mein Dashboard | in Arbeit | #1366 | Abmelden ins Konto verschoben |
+| E09 | Mein Bereich · Watchlist-Detail | in Arbeit | #1366 | Teil: aufklappbare Karte mit Chart, Faktorbalken und Sheet fehlt |
+| E10 | Einstieg · AI Atlas | in Arbeit | #1366 | Worker vu-ask unverändert; statt Jahresreihe Balken je Kennzahl über die Aktien (Atlas-Engine liefert keine Zeitreihe) |
+| E11 | Einstieg · Erster Start | in Arbeit | #1366 | `/willkommen/start/`, `localStorage vu-start-v1`; Anbindung an `/v1/me` (Z1, #1359) offen: `signale`→`strategien`, `mode`→`experienceLevel`, `onboardedAt:true` |
+| E12 | Einstieg · Checkout-Ablauf Free → Pro | – | #1366 | keine eigene Oberfläche (E03 → E04 → E06) |
+| D01 | Discover · Übersicht | in Arbeit | #1367 | Swipen-Karte ohne „400“ (Feed nicht auf der Startseite geladen); Index/Kurse in Anzeigewährung |
+| D02 | Discover · Welten | in Arbeit | #1367 | große Karte „Zum Einstieg“ statt „Meistgeöffnet“ (keine Nutzungsdaten) |
+| D03 | Discover · Thema KI | in Arbeit | #1367 | Mini-Charts laden in Sichtweite |
+| D04 | Discover · Strategien | in Arbeit | #1367 | „Täglich neu: Heute im Blick“ statt „Beliebteste“; vier Gruppen fest in v3.js bis Registry-Feld `group`; `#/strategien/<id>` |
+| D05 | Discover · Swipen | in Arbeit | #1367 | `#/swipen` (`#/einzeln/<U>` leitet um); Zähler „1 von 400“; Leiste über #1364 |
+| D06 | Discover · Suchen | in Arbeit | #1367 | „Bekannte Namen“ mit 12-Monats-Pille statt „Oft gesucht“ (keine Suchstatistik) |
+| D07 | Discover · Märkte | in Arbeit | #1367 | nur die Übersicht; `#/maerkte/<Symbol>` und Einordnung noch alt |
+| D08 | Discover · Watchlist | in Arbeit | #1367 | Teil: bleibt `/discover/#/watchlist`; Benachrichtigungen fehlen (Z4); „Liste bearbeiten“ |
 | D09 | Discover · NVIDIA (Aktienseite) | in Arbeit | #1350 | Kurs im Kopf in Anzeigewährung (€) statt $ + ≈ € (Querschnitt Währung offen); Jahresspanne in % statt $; d09-c Merken-Sheet wartet auf Benachrichtigungen (Backend) |
 | Q00 | Quant · So ist die Welt gebaut | offen |  |  |
 | Q01 | Quant · Übersicht | in Arbeit | #1351 | Setup-Karten ohne „Schluss … $“ (Ressourcen-Budget der Startseite) |
@@ -147,6 +159,8 @@ Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds 
 - Dunkelmodus: `.vu-box--ink` kehrt sich wie in der Vorlage (`--a-ink:#fff`) um; Vorsorge hält ihre Karten dunkel (Abweichung, lime Zahlen sonst unlesbar).
 - Technical-Menü: Screener, Vorlagen (`#/screener?reiter=vorlagen`), Gespeichert (`?reiter=gespeichert`), Chart, Muster (aktiv bei muster und methodik); Menü-Check in `technical/…/browser-qa.mjs` mitziehen.
 - `VUStockNavigator.head`: Option für den Satz zur Firmentätigkeit; `VUChart`: Zonen.
+- `VUUI.bars` kürzt Beschriftungen auf 2 Zeichen (Ticker passen nicht); Tagesbewegungs-/Mini-Chart-Helfer (lokal `mein-dashboard/today.js`); Kopfzeilen-Modus „Zurück · Titel · Aktion“.
+- Aufräumen später: `discover/home.css` alte Startseiten-Stile, `discover/ui/feed.js` ungenutzt.
 - `VUUI.navcard` mit eigenem Symbol (Fundamental hat lokal nachgebaut).
 - Fundamental-Produktdokument: Urteilsregel F06 in einem Satz (schwächere der beiden Discover-Stufen aus `fundamentals.health`).
 
@@ -154,6 +168,7 @@ Technical (T01–T06), Fundamental (F01–F06), Elliott (W01–W05), Hedgefonds 
 
 - WebKit ist in dieser Sitzung nicht installiert (Vorgabe: Playwright nicht neu installieren). Lokal prüft Chromium; WebKit prüft `shell-ci` in jedem PR.
 - Quant CI ist auf `main` vorbestehend rot (Strang A); die Kette wertet sie nur, wenn die Fehlschläge neu sind.
+- Seit 04.11. abends auf `main` rot durch Datenläufe (Strang A, nicht Redesign): Quant „published inventory … 191 inactive security-master rows“ (nach #1370 Security Master 1.3.0); Core `discover-universe.test.mjs` (golden company searches, ISIN/Aliase, kanonischer Lader) und Discover „Pflichttitel in der Suchdatei“ nach dem automatischen Europe-Schlusskurs-Lauf (mit dem Europa-Datenstand vor dem Lauf grün, lokal nachgeprüft).
 - Ebenfalls vorbestehend auf `main` (Datenstand, nicht Code): Discover `names.test.mjs` NM3 und `producer-ownership` (Neubau), Vorsorge „Build reproduzierbar“. Nach CLAUDE.md (Neustart) blockiert veralteter Datenstand keinen Code-PR; die Kette mergt, wenn alle übrigen Prüfungen grün sind.
 
 ## Backend-Zusätze (Projekt Z1–Z7, `docs/PLAN_NEUSTART_2026-11.md` §7)
@@ -168,4 +183,4 @@ Steuerung (Owner, 04.11.2026): Mockups sind verbindlich (Reihenfolge, Abstände,
 | Z4 | Benachrichtigungen | Konto + Erzeuger | „bald“ | Versandweg braucht Owner-Freigabe |
 | Z5 | Screener-Kriterien aus 13F und Supertrader | A + B | „bald“ | |
 | Z6 | Insider-Käufe als Datenquelle | A | „bald“ | |
-| Z7 | AI Atlas visuell (E10-b) | D (E10) | offen | vorhandener Worker `workers/vu-ask` unverändert (Modell, Budget, Grenzen, Beta-Passwort); neu nur die Darstellung mit VU-Bausteinen |
+| Z7 | AI Atlas visuell (E10-b) | D (E10) | in Arbeit (#1366) | vorhandener Worker `workers/vu-ask` unverändert (Modell, Budget, Grenzen, Beta-Passwort); neu nur die Darstellung mit VU-Bausteinen |

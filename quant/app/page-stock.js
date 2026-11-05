@@ -986,13 +986,15 @@
     tabs.onclick = function (e) { var a = e.target.closest("a"); if (a && !swipe.on()) { hold = e.timeStamp + 1500; setCurrent(a.dataset.target); } };
     if (global.IntersectionObserver) {
       var spy = new global.IntersectionObserver(function (entries) {
-        var id;
+        var id, top = -Infinity;
         entries.forEach(function (e) {
           if (!e.isIntersecting) return;
           /* Mobil liegen 2-6 nebeneinander: dort entscheidet das Wischen (deck), oben nur der Ueberblick. */
           if (swipe.on()) setCurrent(e.target.id === "ueberblick" ? "ueberblick" : swipe.current());
-          /* Kommen zwei Karten einer Zeile zugleich ins Band (Desktop-Raster), gilt die erste - die linke. */
-          else id = id || e.target.id;
+          /* Liegen zwei Abschnitte zugleich im Band (Ende des vorigen, Anfang des naechsten), gilt der, der im Band
+             beginnt - der mit dem tiefsten oberen Rand. Zwei Karten einer Zeile (Desktop-Raster) beginnen gleich hoch:
+             dann gilt die erste, die linke. */
+          else if (e.boundingClientRect.top > top + 1) { top = e.boundingClientRect.top; id = e.target.id; }
         });
         if (id && entries[0].time > hold) setCurrent(id);
       }, { rootMargin: "-30% 0px -60% 0px" });
@@ -1003,12 +1005,18 @@
         if (t < hold) return;
         if (!layout.isConnected) return;
         if (layout.getBoundingClientRect().bottom > global.innerHeight * 0.45) setCurrent("ueberblick");
+        /* Am Seitenende erreicht der letzte Abschnitt das Band nicht mehr: dann gilt er. */
+        else if (!swipe.on() && global.innerHeight + global.scrollY >= document.documentElement.scrollHeight - 2) { var last = tabs.querySelector("a[data-target]:last-of-type"); if (last) setCurrent(last.dataset.target); }
         else if (swipe.on() && tabs.querySelector("a[aria-current=true][data-target=ueberblick]")) setCurrent(swipe.current());
       };
       var onScroll = function (e) { if (hold > e.timeStamp) hold = e.timeStamp + 150; if (!topRaf) topRaf = (global.requestAnimationFrame || setTimeout)(onTop); };
       global.addEventListener("scroll", onScroll, { passive: true });
       disposers.push(function () { global.removeEventListener("scroll", onScroll); });
-      setTimeout(function () { TABS.forEach(function (t) { var n = document.getElementById(t[0]); if (n) spy.observe(n); }); }, 0);
+      /* Abschnitte entstehen teils erst nach dem Laden (Schritt 6 wartet auf die Evidenz): neu angehaengte Ziele werden nachbeobachtet. */
+      var watched = {}, watch = function () { TABS.forEach(function (t) { var n = document.getElementById(t[0]); if (n && watched[t[0]] !== n) { watched[t[0]] = n; spy.observe(n); } }); };
+      setTimeout(watch, 0);
+      var moRoot = document.getElementById("qx-main");
+      if (global.MutationObserver && moRoot) { var mo = new global.MutationObserver(watch); mo.observe(moRoot, { childList: true, subtree: true }); disposers.push(function () { mo.disconnect(); }); }
     }
 
     /* 1: Chart und daneben das Quant-Ergebnis. */

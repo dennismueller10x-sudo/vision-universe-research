@@ -85,7 +85,7 @@
     try { if (N && SC) N.head(headHost, { ctx: SC.fromUs(ticker), current: "fundamental", name: (ctx.names && ctx.names[ticker]) || ticker, back: { href: X.routes.stock(ticker), label: "Zur Aktienanalyse" } }); } catch (e) { /* ohne Kopf weiter */ }
     var from = el("div", { class: "vu-box qv3-from" });
     from.innerHTML = U.hud("quant", 32, 9) + '<span class="vu-xs"><b>Du kommst aus Quant. Faktoren bleiben einen Tipp entfernt.</b></span><a class="vu-chip qv3-from-back" href="' + U.esc(X.routes.stock(ticker)) + '">‹ Faktoren</a>';
-    page.append(from, el("h1", { class: "vu-mt qv3-zahlen-t", text: "Wie entwickelt sich das Geschäft?" }));
+    page.append(from, el("h2", { class: "vu-mt qv3-zahlen-t", text: "Wie entwickelt sich das Geschäft?" }));
     var metricId = C.metrics.some(function (m) { return m.id === params.get("kennzahl"); }) ? params.get("kennzahl") : "revenue";
     var periodId = ["annual", "quarterly", "ttm"].indexOf(params.get("periode")) >= 0 ? params.get("periode") : "annual";
     var chips = el("div", { class: "vu-chips qv3-mchips", role: "group", "aria-label": "Kennzahl" });
