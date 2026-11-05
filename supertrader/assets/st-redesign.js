@@ -367,10 +367,27 @@
       '<div class="vu-box st-r-belast"><div class="st-r-bh"><b>Wie belastbar?</b>' + evVerdict(s) + '</div><p class="vu-sm">' + esc(s.mode === 'LIVE' ? 'Neue Treffer sind Beobachtungen, keine Einstiegschancen. Ein Vorteil ist noch nicht belegt.' : (e.levelPlain || 'Für diese Methode ist kein Vorteil belegt.')) + '</p>' +
       '<div class="st-r-gap8">' + U.research() + '</div></div>');
     if (s.mode !== 'LIVE') {
-      /* Musterdepot 52W, Teilprüfung, fehlende Daten, Namenskarte: bisheriger Inhalt unter dem neuen Kopf */
-      var host = document.createElement('div'); host.className = 'st-r-legacy'; main.appendChild(host);
+      /* ST03 für Methoden ohne Live-Musterdepot (52W, Teilprüfung, fehlende Daten, Namenskarte): dieselben Bausteine wie die
+         Live-Methoden (Treffer der Originalregel, Methodentreue, Tiefer einsteigen); die übrigen Angaben der bisherigen Seite
+         vollständig unter „Weitere Angaben“. */
+      var nl = document.createElement('div'); main.appendChild(nl);
+      var cid0 = SF_OF[id];
+      if (cid0) {
+        var t0 = document.createElement('div'); t0.className = 'vu-grid st-r-gap'; nl.appendChild(t0);
+        t0.innerHTML = U.tile('Treffer heute', '…', 'Originalregel');
+        X.getJSON('sf-candidates/summary.json').then(function (sum) {
+          var m = sum.strategies.filter(function (x) { return x.candidateId === cid0; })[0];
+          t0.innerHTML = '<a class="st-r-tilebtn" href="/supertrader/strategies/?sf=' + cid0 + '">' + U.tile('Treffer heute', m ? n0(m.counts.published) : '–', m ? cleanName(m.name) + ', Originalregel' : 'nicht verfügbar') + '</a>';
+        }).catch(function () { t0.innerHTML = U.tile('Treffer heute', '–', 'gerade nicht erreichbar'); });
+      }
+      append(nl, fidelityBox(s));
+      deepDive(nl, s, c, D, X);
+      var more = document.createElement('details'); more.className = 'st-r-acc st-r-legacy-acc';
+      more.innerHTML = '<summary><b>Weitere Angaben dieser Methode</b>' + U.glyph('next', 16) + '</summary>';
+      var host = document.createElement('div'); host.className = 'st-r-accb st-r-legacy'; more.appendChild(host); nl.appendChild(more);
       X.legacy(host, D);
       [].forEach.call(host.querySelectorAll('.st-hero, .st-productline, .st-evbanner'), function (n) { n.remove(); });
+      append(nl, note('Regelbasierte Nachbildung einer Methode. Keine Anlageberatung.'));
       return;
     }
     var st = sig.strategies[id] || { open: [] };
@@ -405,16 +422,27 @@
     }
     var after = document.createElement('div'); main.appendChild(after);
     var mp = D.portfolio && D.portfolio.strategies && D.portfolio.strategies[id], cfg = (mp && mp.config) || {};
-    var fc = (s.fidelity && s.fidelity.counts) || null;
-    var fid = fc ? [[fc.ORIGINAL || 0, 'Original', 'l'], [(fc.OPERATIONALIZATION || 0) + (fc.DOCUMENTED_VARIANT || 0), 'umgesetzt', 'k'], [fc.VU_EXTENSION || 0, 'VU-Erweiterung', 'm'], [fc.UNBACKED || 0, 'unbelegt', 'm'], [fc.MISSING || 0, 'fehlen', 'h']] : null;
-    var fidTotal = fid ? fid.reduce(function (a, x) { return a + x[0]; }, 0) : 0;
+    var fidHtml = fidelityBox(s);
     append(after, kick('Protokoll seit ' + dDe(st.liveSince), 'Was bisher passiert ist') +
       '<div class="vu-grid st-r-g3">' + U.tile('Abgeschlossen', n0(X.closedCount(st)), '') + U.tile('Geplatzt', n0(st.invalidatedTotal || 0), '') + U.tile('Regelwechsel', n0(st.retiredTotal || 0), '') + '</div>' +
       (mp ? kick('Musterdepot', 'Laufend nach Regel') + '<div class="vu-box st-r-kv">' + [['Investiert', pp(mp.investedPct || 0, 0)], ['Bargeld', pp(mp.cashPct == null ? 1 : mp.cashPct, 0)], ['Positionen', (mp.openCount || 0) + ' von ' + (cfg.maxPositions || '–')], ['Risiko je Kauf', isNum(cfg.riskPerTrade) ? U.num(cfg.riskPerTrade * 100, 2) + ' %' : '–']].map(function (r) { return '<div><span>' + esc(r[0]) + '</span><b class="vu-num">' + esc(r[1]) + '</b></div>'; }).join('') + '</div>' +
         '<div class="st-r-gap">' + U.help('Risiko je Position (Modell): Wird der Stop erreicht, verliert das Musterdepot höchstens ' + (isNum(cfg.riskPerTrade) ? U.num(cfg.riskPerTrade * 100, 2) + ' %' : 'den festgelegten Anteil') + ' seines Werts.') + '</div>' : '') +
-      (fid && fidTotal ? kick('Woher die Regel stammt', 'Methodentreue') + '<div class="vu-box"><div class="st-r-fid">' + fid.filter(function (x) { return x[0]; }).map(function (x) { return '<i class="' + x[2] + '" style="flex:' + x[0] + '"></i>'; }).join('') + '</div><div class="st-r-fidl">' + fid.filter(function (x) { return x[0]; }).map(function (x) { return '<span class="' + (x[2] === 'l' || x[2] === 'k' ? '' : 'vu-mu') + '">' + x[0] + ' ' + esc(x[1]) + '</span>'; }).join('') + '</div></div>' +
-        '<div class="st-r-gap">' + U.help(fidTotal + ' Regelteile: ' + fid.map(function (x) { return x[0] + ' ' + x[1]; }).join(', ') + '. ' + (s.fidelity.statusPlain || '')) + '</div>' : ''));
+      fidHtml);
 
+    deepDive(after, s, c, D, X);
+    append(after, note('Modellsignale einer regelbasierten Nachbildung. Keine Anlageberatung.'));
+    foot(after, X, sig);
+  }
+  /* ST03: Methodentreue als ein Balken (für jede Methode, auch ohne Live-Musterdepot). */
+  function fidelityBox(s) {
+    var fc = (s.fidelity && s.fidelity.counts) || null;
+    var fid = fc ? [[fc.ORIGINAL || 0, 'Original', 'l'], [(fc.OPERATIONALIZATION || 0) + (fc.DOCUMENTED_VARIANT || 0), 'umgesetzt', 'k'], [fc.VU_EXTENSION || 0, 'VU-Erweiterung', 'm'], [fc.UNBACKED || 0, 'unbelegt', 'm'], [fc.MISSING || 0, 'fehlen', 'h']] : null;
+    var fidTotal = fid ? fid.reduce(function (a, x) { return a + x[0]; }, 0) : 0;
+    return (fid && fidTotal ? kick('Woher die Regel stammt', 'Methodentreue') + '<div class="vu-box"><div class="st-r-fid">' + fid.filter(function (x) { return x[0]; }).map(function (x) { return '<i class="' + x[2] + '" style="flex:' + x[0] + '"></i>'; }).join('') + '</div><div class="st-r-fidl">' + fid.filter(function (x) { return x[0]; }).map(function (x) { return '<span class="' + (x[2] === 'l' || x[2] === 'k' ? '' : 'vu-mu') + '">' + x[0] + ' ' + esc(x[1]) + '</span>'; }).join('') + '</div></div>' +
+        '<div class="st-r-gap">' + U.help(fidTotal + ' Regelteile: ' + fid.map(function (x) { return x[0] + ' ' + x[1]; }).join(', ') + '. ' + (s.fidelity.statusPlain || '')) + '</div>' : '');
+  }
+  /* ST03: „Tiefer einsteigen“ (So denkt die Methode, Regelkarte PRO, alle Regeln PRO, Lücken, Was sie nicht ist, Quellen). */
+  function deepDive(after, s, c, D, X) {
     /* Tiefer einsteigen */
     var srcs = (s.sources || []).map(function (sid) { return D.srcMap[sid] || { title: sid }; });
     append(after, U.sect('Tiefer einsteigen') + '<div class="st-r-accs">' +
@@ -437,8 +465,6 @@
     [].forEach.call(after.querySelectorAll('[data-slot]'), function (n) { n.remove(); });
     if (c) addSheet('st-rulecard', 'Regelkarte', '<p class="vu-sm vu-mu">' + U.pro() + ' Version ' + esc(c.rule_version) + ' · ' + c.sections.length + ' Abschnitte · eingefroren</p>' +
       c.sections.map(function (x) { return '<div class="st-r-rc"><div><b>' + esc(x.title) + '</b><span>' + esc(x.text) + '</span></div>' + provVerdict(x.provenance) + '</div>'; }).join(''));
-    append(after, note('Modellsignale einer regelbasierten Nachbildung. Keine Anlageberatung.'));
-    foot(after, X, sig);
   }
   function srcCard(x) {
     var TYPE = { BOOK_BIBLIOGRAPHIC: 'Buch', BOOK_TRANSLATION: 'Buch (Übersetzung)', OWN_WEBSITE: 'Website des Traders', OWN_ARTICLE: 'eigener Beitrag', OWN_SOCIAL: 'eigener Beitrag', ORIGINAL_INTERVIEW: 'Interview', SECONDARY: 'Sekundärquelle', SECONDARY_SUMMARY: 'Sekundärquelle', PRESS: 'Presse', PRESS_CONTEMPORARY: 'Presse (zeitgenössisch)', ACADEMIC: 'Fachartikel', INSTITUTIONAL: 'Institution', LEGAL_RECORD: 'Rechtsdokument', PUBLISHER_PAGE: 'Verlagsseite', VU_INTERNAL: 'Vision Universe' };
