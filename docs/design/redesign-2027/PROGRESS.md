@@ -160,7 +160,7 @@ Datenstand auf `main` (nicht Redesign): Quant Browser-QA „aktie-aaac: ETF ohne
 
 ## Stand 05.11.2026 abends
 
-Gemergt: #1444 Wortwahl Quant/Screener/Fundamental/Analysten/Hedgefonds, #1445 Wortwahl Discover, #1446 Supertrader (Wortwahl, ST-Z, ST02, ST03, Backtest-Hinweis), #1450 Q06/Q09, #1453 V04, #1454 V05, #1455 S03, #1456 Pflicht-Hinweise, #1458 Discover dunkel, #1459 N6, #1461 D08, #1463 D07, #1464 Direktlink-QA Screener, #1470 W05, #1472 UI-Sperre (Leiste aus #1456 nachgetragen), #1473 Supertrader L2, #1474 Atlas L6, #1477 Quant L1/L7, #1485 Supertrader L3.
+Gemergt: #1444 Wortwahl Quant/Screener/Fundamental/Analysten/Hedgefonds, #1445 Wortwahl Discover, #1446 Supertrader (Wortwahl, ST-Z, ST02, ST03, Backtest-Hinweis), #1450 Q06/Q09, #1453 V04, #1454 V05, #1455 S03, #1456 Pflicht-Hinweise, #1458 Discover dunkel, #1459 N6, #1461 D08, #1463 D07, #1464 Direktlink-QA Screener, #1470 W05, #1472 UI-Sperre (Leiste aus #1456 nachgetragen), #1473 Supertrader L2, #1474 Atlas L6, #1477 Quant L1/L7, #1485 Supertrader L3, #1487 Journey-Prüfung (AAAP/AAAC sind ETFs), #1489 vu3-Reise Quant→Supertrader (NVDA ohne Supertrader-Seite seit L3).
 
 Strang F (`docs/legal/WORTWAHL-BEFUNDE.md`): Befunde 1–18 in der Oberfläche umgesetzt. Die Pflicht-Hinweise aus `assets/legal-notices.json` werden von `scripts/legal/sync-legal-notices.mjs` in `assets/vu-ui.js` und `assets/site-navigation.js` gespiegelt (`--check` in CI), sichtbar erst mit `legalApproved: true` (Rechtliche Abnahme A15, Owner-Freigabe Recht).
 
