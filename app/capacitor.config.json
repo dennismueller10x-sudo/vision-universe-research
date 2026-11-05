@@ -6,12 +6,17 @@
   "server": {
     "iosScheme": "capacitor",
     "cleartext": false,
-    "allowNavigation": ["research.visionuniverse.de"]
+    "allowNavigation": ["research.visionuniverse.de"],
+    "androidScheme": "https"
   },
   "ios": {
     "contentInset": "never",
     "limitsNavigationsToAppBoundDomains": false,
     "scheme": "Vision Universe"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
   },
   "plugins": {
     "CapacitorHttp": { "enabled": true },

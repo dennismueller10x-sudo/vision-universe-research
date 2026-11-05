@@ -289,7 +289,7 @@ function create(options){
     if(versionState!=='CURRENT')return {state:'UNAVAILABLE',reason:'INVALID_SCREENING_ARTIFACT',rows:[]};
     const rows=Object.entries(payload.rows).map(([ticker,values])=>FactorEvidence.screeningRow(ticker,values,payload.fields)).filter(Boolean);
     return {state:'AVAILABLE',namespace:payload.namespace,methodologyVersion:payload.methodologyVersion,
-     asOf:payload.asOf,fields:payload.fields,publication:payload.publication,rows};
+     asOf:payload.asOf,fields:payload.fields,publication:payload.publication,factorWeights:payload.factorWeights||null,rows};
    }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING',rows:[]};}
   })();
   return screeningPromise;

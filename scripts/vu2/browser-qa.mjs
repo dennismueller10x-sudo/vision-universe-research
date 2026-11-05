@@ -255,7 +255,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.getByRole('link',{name:'Im Profi-Modus verfeinern',exact:true}).click();
    await bereit(page,'screener');
    if(!/^#\/screener\/profi\?query=/.test(await page.evaluate(()=>location.hash)))befund(view,width,'der Profi-Modus bekommt die Regel nicht');
-   if(await page.locator('.qx-rules .qx-rule').count()<1)befund(view,width,'Profi-Modus ohne Regel');
+   if(await page.locator(v3?'.qv3-cond':'.qx-rules .qx-rule').count()<1)befund(view,width,'Profi-Modus ohne Regel');
   }
   if(view==='screener-hoch'){
    /* Redesign 2027 (Q02): zuerst 10 Zeilen und „Alle N zeigen“ - gezaehlt wird die ganze Liste. */
@@ -265,7 +265,24 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const mitKurs=zeilen.filter(t=>/\d+,\d+\s*\$/.test(t)&&/\d{2}\.\d{2}\.\d{4}/.test(t)).length;
    if(mitKurs<zeilen.length*0.8)befund(view,width,'nahe am Hoch: nur '+mitKurs+' von '+zeilen.length+' Zeilen mit Kurs und Datum');
   }
-  if(view==='screener-profi'){
+  if(view==='screener-profi'&&v3){
+   /* Redesign 2027 (Q02, q02-b): dunkle Profi-Fläche. Dieselben Zusagen: andere Datenbasis waehlbar, Regeln sichtbar und
+      teilbar, eine unerfuellbare Regel liefert keine Treffer statt Ersatz, ungueltige Regeln werden nicht still ersetzt. */
+   if(!await page.locator('#qx-main a[href*="daten=v1"]').count())befund(view,width,'screener methodologies missing');
+   if(await page.locator('.qv3-cond').count()<1)befund(view,width,'Profi-Modus ohne Regel');
+   await page.waitForFunction(()=>document.querySelectorAll('#qx-main a.qv3-prow').length>0,null,{timeout:15000}).catch(()=>{});
+   if(!await page.locator('#qx-main a.qv3-prow').count())befund(view,width,'Profi-Modus liefert nichts');
+   await page.evaluate(()=>document.querySelectorAll('.qv3-cond input[aria-label$=" ab"]').forEach(i=>{i.value='100';i.dispatchEvent(new Event('input',{bubbles:true}));}));
+   const leer=await page.waitForFunction(()=>/^0 Treffer$/.test((document.querySelector('.qv3-pro-n')||{}).textContent||''),null,{timeout:10000}).then(()=>true,()=>false);
+   if(!leer)befund(view,width,'unerfuellbare Regel (100–100 je Bedingung): keine Antwort oder Treffer');
+   else if(await page.locator('#qx-main a.qv3-prow').count())befund(view,width,'unerfuellbare Regel liefert Treffer');
+   if(!/query=/.test(await page.evaluate(()=>location.hash)))befund(view,width,'die Regeln stehen nicht in der Adresse (teilen)');
+   if(!await page.getByRole('button',{name:/Regeln teilen/}).count())befund(view,width,'kein Knopf „Regeln teilen“');
+   await frisch(page,'#/screener/profi?query=invalid','screener');
+   await page.getByText('Gespeicherte Regeln konnten nicht geöffnet werden',{exact:true}).waitFor();
+   if(await page.locator('#qx-main a.qx-row, #qx-main a.qv3-prow').count())befund(view,width,'invalid rules silently replaced');
+  }
+  if(view==='screener-profi'&&!v3){
    /* Die Datenbasis ist waehlbar, eine Regel ist sichtbar und teilbar, und
       eine unerfuellbare Regel liefert "Keine Treffer" statt Ersatz. */
    const basis=page.getByRole('combobox',{name:'Datenbasis',exact:true});
@@ -318,7 +335,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(view.startsWith('strategie-')){
    const text=await page.locator('#qx-main').innerText();
    if(/Gerade nicht erreichbar/.test(text))befund(view,width,'Strategieseite faellt in die Wiederherstellung');
-   for(const satz of ['Welche Bedingungen gelten?','Wer passt heute?'])if(!text.includes(satz))befund(view,width,'fehlt: '+satz);
+   /* Redesign 2027 (Q03, q03-b): „Die Regeln“ und „Erfüllen heute“ oben; die bisherige Auswertung unter „Mehr zu dieser Strategie“. */
+   for(const satz of v3?['Die Regeln','Erfüllen heute','Mehr zu dieser Strategie']:['Welche Bedingungen gelten?','Wer passt heute?'])if(!text.includes(satz))befund(view,width,'fehlt: '+satz);
   }
   if(view==='aktie-nvda'){
    /* Redesign 2027 (Q07): die bisherigen Inhalte stehen vollstaendig unter den Ausklappern von Schritt 5 und 6. */

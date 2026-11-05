@@ -56,7 +56,7 @@ function page(title, body, {status = 200, robots = 'index'} = {}) {
   const html = `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="${robots === 'index' ? 'index,follow' : 'noindex,nofollow'}"><title>${esc(title)} · Vision Universe</title><style>${CSS}</style></head>
 <body><main><header><a href="${LINKS.index}">VISION UNIVERSE</a></header><h1>${esc(title)}</h1>${draft}${body}
-<footer><a href="${LINKS.kuendigen}">Verträge hier kündigen</a><a href="${LINKS.widerrufen}">Vertrag widerrufen</a><a href="${LINKS.agb}">Bedingungen</a><a href="${LINKS.datenschutz}">Datenschutz</a><a href="${LINKS.impressum}">Impressum</a></footer>
+<footer><a href="${LINKS.kuendigen}">Verträge hier kündigen</a><a href="${LINKS.widerrufen}">Vertrag widerrufen</a><a href="${LINKS.agb}">Bedingungen</a><a href="${LINKS.risikohinweise}">Risikohinweise</a><a href="${LINKS.datenschutz}">Datenschutz</a><a href="${LINKS.impressum}">Impressum</a></footer>
 </main></body></html>`;
   return new Response(html, {status, headers: HEADERS});
 }
@@ -70,7 +70,8 @@ export function legalPage(key) {
 
 export function legalIndex() {
   const items = [['impressum', 'Impressum'], ['agb', 'Nutzungs- und Vertragsbedingungen (Free und Pro)'], ['widerrufsbelehrung', 'Widerrufsbelehrung'],
-    ['widerrufsformular', 'Muster-Widerrufsformular'], ['datenschutz', 'Datenschutzerklärung'], ['newsletter', 'Newsletter: Datenschutz und Einwilligung']];
+    ['widerrufsformular', 'Muster-Widerrufsformular'], ['datenschutz', 'Datenschutzerklärung'], ['newsletter', 'Newsletter: Datenschutz und Einwilligung'],
+    ['risikohinweise', 'Risikohinweise und Haftungsausschluss'], ['mar-hinweise', 'Hinweise nach MAR und WpHG (Ersteller, Methodik, Interessenkonflikte)']];
   return page('Rechtliches', `<ul>${items.map(([k, t]) => `<li><a href="${LINKS[k]}">${esc(t)}</a></li>`).join('')}</ul>
 <p><a href="${LINKS.kuendigen}">Verträge hier kündigen</a> · <a href="${LINKS.widerrufen}">Vertrag widerrufen</a></p>
 <p class="muted">Anbieter: ${esc(COMPANY.name)}, ${esc(COMPANY.street)}, ${esc(COMPANY.city)}.</p>`);

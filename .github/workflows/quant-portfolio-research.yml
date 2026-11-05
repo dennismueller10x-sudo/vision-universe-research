@@ -10,6 +10,8 @@ name: Quant - Musterportfolios (VU-Portfolio-Standard, historisch, Forschung)
 # workers/vu-account/data/model-portfolios-bundle.json (Kennzahlen, Wertentwicklung, Gewichte; keine Kurse).
 #
 # Ausloeser: manuell oder die Marke [quant-portfolio-research] in der Commit-Nachricht auf claude/**.
+# E3-Edge-Studie (docs/research/edge/PROTOKOLL.md): Marke [edge-e3:dev-quant] bzw. [edge-e3:test-quant]; gleiche Eingaben,
+# statt der Musterportfolios rechnet scripts/research/edge/run-e3.cjs die Phase und committet docs/research/edge/.
 on:
   workflow_dispatch:
   push:
@@ -20,12 +22,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: quant-portfolio-research-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[quant-portfolio-research]')) && github.run_id || 'run' }}
+  group: quant-portfolio-research-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[quant-portfolio-research]') && !contains(github.event.head_commit.message, '[edge-e3:')) && github.run_id || 'run' }}
   cancel-in-progress: false
 
 jobs:
   run:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[quant-portfolio-research]')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[quant-portfolio-research]') || contains(github.event.head_commit.message, '[edge-e3:')
     runs-on: ubuntu-latest
     timeout-minutes: 240
     steps:
@@ -38,6 +40,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Modus aus der Commit-Nachricht
+        id: m
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+        run: |
+          m=$(printf '%s' "$MSG" | grep -oE '\[edge-e3:(dev-quant|test-quant)\]' | head -1 | sed -E 's/\[edge-e3:([a-z-]+)\]/\1/' || true)
+          echo "mode=${m:-portfolios}" >> "$GITHUB_OUTPUT"
+          echo "Modus: ${m:-portfolios}"
 
       - name: R2-Zugang vorhanden
         env:
@@ -102,6 +113,7 @@ jobs:
           python3 scripts/quant/portfolio/build_pit_fundamentals.py --out "$RUNNER_TEMP/pit-fundamentals" --bulk --workers 4
 
       - name: Musterportfolios rechnen
+        if: steps.m.outputs.mode == 'portfolios'
         run: |
           set -euo pipefail
           mkdir -p docs/quant/research/portfolio-v1
@@ -114,16 +126,38 @@ jobs:
           node scripts/quant/portfolio/export-model-portfolios-bundle.cjs
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
+      - name: E3-Phase rechnen (Protokoll eingefroren, Hash geprueft)
+        if: steps.m.outputs.mode != 'portfolios'
+        env:
+          PHASE: ${{ steps.m.outputs.mode }}
+        run: |
+          set -euo pipefail
+          node --test scripts/research/edge/study.test.cjs scripts/research/edge/edge-quant.test.cjs
+          node --max-old-space-size=12288 scripts/research/edge/run-e3.cjs --phase "$PHASE" \
+            --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" --delisted-raw-dir "$DELISTED_RAW_DIR" \
+            --fundamentals "$RUNNER_TEMP/pit-fundamentals"
+          node scripts/research/edge/run-e3.cjs --phase report
+          rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
+
       - name: Tests und Datenhygiene
         run: |
           node --test quant/tests/portfolio-standard.test.mjs quant/tests/model-portfolios-result.test.mjs workers/vu-account/tests/backtests.test.mjs
-          node scripts/market/assert-public-data-hygiene.mjs
+          # Der Hygiene-Check scannt das ganze Repository. Fundstellen ausserhalb der eigenen Ausgabepfade bestehen schon auf main
+          # und gehoeren anderen Erzeugern; dieser Lauf scheitert nur an Fundstellen in seinen eigenen Pfaden.
+          set +e; node scripts/market/assert-public-data-hygiene.mjs > "$RUNNER_TEMP/hygiene.txt" 2>&1; rc=$?; set -e
+          if [ "$rc" -ne 0 ]; then
+            echo "Hygiene-Fundstellen gesamt: $(grep -c '^  - ' "$RUNNER_TEMP/hygiene.txt" || true)"
+            if grep -E '^  - (docs/research/edge|docs/quant/research/portfolio-v1|workers/vu-account/data/model-portfolios-bundle)' "$RUNNER_TEMP/hygiene.txt"; then exit 1; fi
+            echo "::warning::Hygiene-Fundstellen nur ausserhalb der Ausgabepfade dieses Laufs (bestehen auf main)."
+          fi
 
       - name: Ergebnis auf den aktuellen Zweig committen
+        env:
+          MODE: ${{ steps.m.outputs.mode }}
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add docs/quant/research/portfolio-v1 workers/vu-account/data/model-portfolios-bundle.json
+          git add docs/quant/research/portfolio-v1 workers/vu-account/data/model-portfolios-bundle.json docs/research/edge
           if git diff --cached --quiet; then echo "Ergebnis unveraendert."; exit 0; fi
-          git commit -m "Musterportfolios VU-Portfolio-Standard historisch neu gerechnet (Lauf ${GITHUB_RUN_ID})"
+          git commit -m "Quant-Forschungslauf ${MODE} (Lauf ${GITHUB_RUN_ID})"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

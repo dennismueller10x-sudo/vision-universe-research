@@ -1,0 +1,149 @@
+{
+ "schema": "e4-signals-s2-1.1.0",
+ "label": "Forschung, nicht zertifiziert",
+ "titles": {
+  "RUN": 888,
+  "NO_DATA": 111,
+  "INVALID_HISTORY": 1,
+  "FAILED": 0
+ },
+ "delistedTitles": {
+  "RUN": 207,
+  "other": 4
+ },
+ "dq": {
+  "rule": "DQ-K5",
+  "k5Titles": 61,
+  "excludedTrades": 122
+ },
+ "families": [
+  {
+   "family": "DEEPER_CORRECTION",
+   "n": 8682,
+   "tickers": 765,
+   "quarters": 43,
+   "delistedTrades": 769,
+   "dqK5Excluded": 39,
+   "exactCoverage": 1,
+   "verdict": "nicht besser",
+   "counts": {
+    "activeObservations": 41623,
+    "conditionalObservations": 592872,
+    "signals": 9998,
+    "overlap": 31625,
+    "incomplete": 0,
+    "gapEntry": 54,
+    "rightCensored": 1172,
+    "invalidWindow": 51
+   }
+  },
+  {
+   "family": "PULLBACK_TO_SUPPORT",
+   "n": 14877,
+   "tickers": 776,
+   "quarters": 43,
+   "delistedTrades": 1341,
+   "dqK5Excluded": 54,
+   "exactCoverage": 1,
+   "verdict": "nicht besser",
+   "counts": {
+    "activeObservations": 88066,
+    "conditionalObservations": 493074,
+    "signals": 17247,
+    "overlap": 70762,
+    "incomplete": 57,
+    "gapEntry": 120,
+    "rightCensored": 2131,
+    "invalidWindow": 65
+   }
+  },
+  {
+   "family": "BREAKOUT_RETEST",
+   "n": 9932,
+   "tickers": 751,
+   "quarters": 43,
+   "delistedTrades": 921,
+   "dqK5Excluded": 29,
+   "exactCoverage": 1,
+   "verdict": "nicht besser",
+   "counts": {
+    "activeObservations": 28357,
+    "conditionalObservations": 24998,
+    "signals": 10557,
+    "overlap": 17791,
+    "incomplete": 9,
+    "gapEntry": 58,
+    "rightCensored": 522,
+    "invalidWindow": 16
+   }
+  },
+  {
+   "family": "SMA50_PULLBACK_NOT_SUPPLIED",
+   "n": 0,
+   "tickers": 0,
+   "quarters": 0,
+   "delistedTrades": 0,
+   "dqK5Excluded": 0,
+   "exactCoverage": null,
+   "verdict": "zu wenig Fälle",
+   "counts": {
+    "activeObservations": 0,
+    "conditionalObservations": 0,
+    "signals": 0,
+    "overlap": 0,
+    "incomplete": 0,
+    "gapEntry": 0,
+    "rightCensored": 0,
+    "invalidWindow": 0
+   }
+  },
+  {
+   "family": "RANGE_BREAKOUT_UP",
+   "n": 0,
+   "tickers": 0,
+   "quarters": 0,
+   "delistedTrades": 0,
+   "dqK5Excluded": 0,
+   "exactCoverage": null,
+   "verdict": "zu wenig Fälle",
+   "counts": {
+    "activeObservations": 0,
+    "conditionalObservations": 245299,
+    "signals": 0,
+    "overlap": 0,
+    "incomplete": 0,
+    "gapEntry": 0,
+    "rightCensored": 0,
+    "invalidWindow": 0
+   }
+  }
+ ],
+ "familiesWithoutDq": [
+  {
+   "family": "DEEPER_CORRECTION",
+   "n": 8721,
+   "verdict": "nicht besser"
+  },
+  {
+   "family": "PULLBACK_TO_SUPPORT",
+   "n": 14931,
+   "verdict": "nicht besser"
+  },
+  {
+   "family": "BREAKOUT_RETEST",
+   "n": 9961,
+   "verdict": "nicht besser"
+  },
+  {
+   "family": "SMA50_PULLBACK_NOT_SUPPLIED",
+   "n": 0,
+   "verdict": "zu wenig Fälle"
+  },
+  {
+   "family": "RANGE_BREAKOUT_UP",
+   "n": 0,
+   "verdict": "zu wenig Fälle"
+  }
+ ],
+ "privateSha256": "1260eb953b4fcc7b39bbe073d2ddec815b93f67f99f53a190c96e626b05ab73d"
+}

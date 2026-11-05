@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-11-05T05:07:23.356Z",
+ "generatedAt": "2026-11-05T16:09:32.352Z",
  "signalStudy": {
   "asOf": "2026-11-06",
-  "generatedAt": "2026-11-05T05:04:15.013Z",
+  "generatedAt": "2026-11-05T16:07:43.811Z",
   "returnType": "TOTAL_RETURN",
   "studySchemaVersion": "signal-backtest-study-2.0.0",
   "studyEngineVersion": "signal-backtest-2.0.0",
@@ -17,9 +17,9 @@
    "contract": "canonical-total-return-1.0.0",
    "coverage": {
     "unit": "SECURITY_PRICE_SERIES",
-    "titles": 6225,
-    "withTotalReturn": 6086,
-    "share": 0.978,
+    "titles": 6151,
+    "withTotalReturn": 6012,
+    "share": 0.977,
     "minimumShare": 0.95
    }
   },
@@ -90,14 +90,14 @@
    "id": "priceSplitAdjusted",
    "label": "Kurshistorie splitbereinigt",
    "weekly": {
-    "titles": 6225,
+    "titles": 6151,
     "from": "1990-01-05",
     "grain": "WEEKLY",
     "endedBeforeMarch2026": 0
    },
    "daily": {
     "titlesFullHistory": 5,
-    "titlesLastYear": 6679
+    "titlesLastYear": 6548
    }
   },
   {
@@ -105,14 +105,14 @@
    "label": "Kurshistorie Gesamtrendite",
    "weekly": {
     "unit": "SECURITY_PRICE_SERIES",
-    "titles": 6086,
-    "eligibleTitles": 6225,
-    "share": 0.978,
+    "titles": 6012,
+    "eligibleTitles": 6151,
+    "share": 0.977,
     "state": "AVAILABLE",
     "reason": null,
     "contract": "canonical-total-return-1.0.0",
     "asOf": "2026-11-06",
-    "generatedAt": "2026-11-05T05:04:15.013Z"
+    "generatedAt": "2026-11-05T16:07:43.811Z"
    },
    "daily": {
     "titles": 5,
@@ -186,8 +186,8 @@
   {
    "id": "pitFundamentals",
    "label": "Fundamentaldaten point-in-time",
-   "ready": 4989,
-   "of": 6686
+   "ready": 4998,
+   "of": 6573
   },
   {
    "id": "survivorship",
@@ -210,7 +210,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6225 Titel seit 1990-01-05",
+     "value": "6151 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -242,7 +242,7 @@
      "id": "pit",
      "label": "Point-in-Time-Wiederholung",
      "state": "PASS",
-     "value": "4080 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "value": "4081 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
      "reason": null
     },
     {
@@ -317,14 +317,14 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6225 Titel seit 1990-01-05",
+     "value": "6151 Titel seit 1990-01-05",
      "reason": null
     },
     {
      "id": "totalReturn",
      "label": "Gesamtrendite",
      "state": "PASS",
-     "value": "6086 von 6225 Wertpapier-Zeitreihen (97.8 %), canonical-total-return-1.0.0",
+     "value": "6012 von 6151 Wertpapier-Zeitreihen (97.7 %), canonical-total-return-1.0.0",
      "reason": null
     },
     {
@@ -354,24 +354,24 @@
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 89083,
-     "titles": 5095,
+     "n": 89082,
+     "titles": 5094,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 86518,
-     "titles": 5062,
+     "n": 86517,
+     "titles": 5061,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 86085,
-     "titles": 5062,
+     "n": 86083,
+     "titles": 5060,
      "displayAllowed": true,
      "returnType": "TOTAL_RETURN"
     },
@@ -463,7 +463,7 @@
      "id": "pitFundamentals",
      "label": "Fundamentaldaten datierbar",
      "state": "PASS",
-     "value": "4989 von 6686 Titeln",
+     "value": "4998 von 6573 Titeln",
      "reason": null
     },
     {
