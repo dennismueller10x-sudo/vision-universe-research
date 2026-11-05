@@ -688,6 +688,46 @@
     var out = el("div", { "aria-live": "polite" });
     var results = el("section", { class: "q-results", "aria-label": "Ergebnisse" }, [out]);
     panel.open = !chosen;
+    /* Redesign 2027 (q02-c): „Eigene Bedingung“ öffnet ein Sheet mit den sechs Fragen, Schwelle ab 50/70/90 oder eigener Wert
+       und der Trefferzahl auf dem Knopf. Dieselbe Auswertung wie der Faktor-Filter (factorHits). */
+    var own = null;
+    if (global.VUUI) {
+      var U3 = global.VUUI, OWN = [["growth", "Wächst die Firma?"], ["profitability", "Verdient sie gut?"], ["value", "Ist sie günstig?"], ["momentum", "Läuft der Kurs gut?"], ["risk", "Wie ruhig ist der Kurs?"], ["quality", "Sind die Zahlen solide?"]];
+      var tmp = { factors: [], min: 70 };
+      var shEl = document.createElement("div"); shEl.innerHTML = U3.sheet("qv3-own-sheet", "Eigene Bedingung", '<p class="vu-sm vu-mu" style="margin:-4px 0 8px">Welche Eigenschaft soll stark sein?</p><div data-q></div><div data-seg></div><button type="button" class="vu-btn vu-btn--block" data-go style="margin-top:14px">Hinzufügen</button>');
+      var sheetEl = shEl.firstElementChild; document.body.append(sheetEl);
+      global.addEventListener("hashchange", function off() { sheetEl.remove(); global.removeEventListener("hashchange", off); });
+      sheetEl.querySelector("[data-close]") && sheetEl.querySelector("[data-close]").addEventListener("click", function () { U3.closeSheet(sheetEl); });
+      var qHost = sheetEl.querySelector("[data-q]"), segHost = sheetEl.querySelector("[data-seg]"), go = sheetEl.querySelector("[data-go]");
+      var cnt = 0;
+      async function countOwn() {
+        var mine = ++cnt;
+        if (!tmp.factors.length) { go.disabled = true; go.textContent = "Eigenschaft wählen"; return; }
+        go.disabled = false; go.textContent = "Hinzufügen · …";
+        var r = await factorHits(ctx, tmp.factors, tmp.min, 100).catch(function () { return null; });
+        if (mine !== cnt) return;
+        go.textContent = r && !r.error ? "Hinzufügen · " + (r.total || r.rows.length).toLocaleString("de-DE") + " Treffer" : "Hinzufügen";
+      }
+      function paintOwn() {
+        qHost.replaceChildren.apply(qHost, OWN.map(function (o) {
+          var on = tmp.factors.indexOf(o[0]) >= 0, b = el("button", { type: "button", class: "qv3-li qv3-li-btn", "aria-pressed": on ? "true" : "false" }, [el("span", {}, [el("b", { class: "vu-sm", text: o[1] }), el("span", { class: "vu-xs vu-mu", text: VM.FACTORS[o[0]] ? VM.FACTORS[o[0]].name : o[0] })])]);
+          b.insertAdjacentHTML("beforeend", on ? '<span class="vu-chip vu-chip--lime qv3-own-on">ab ' + tmp.min + "</span>" : U3.glyph("plus", 18));
+          b.addEventListener("click", function () { var i = tmp.factors.indexOf(o[0]); if (i >= 0) tmp.factors.splice(i, 1); else tmp.factors.push(o[0]); paintOwn(); countOwn(); });
+          return b;
+        }).concat([el("div", { class: "qv3-li is-off" }, [el("span", {}, [el("b", { class: "vu-sm", text: "Heben Analysten Schätzungen an?" }), el("span", { class: "vu-xs vu-mu", text: "Erwartungstrend · derzeit keine Daten" })])])]));
+        var seg = el("div", { class: "vu-seg", role: "group", "aria-label": "Schwelle", style: "margin-top:10px" });
+        [50, 70, 90].forEach(function (v) { seg.append(el("button", { type: "button", "aria-pressed": tmp.min === v ? "true" : "false", text: "ab " + v, onclick: function () { tmp.min = v; paintOwn(); countOwn(); } })); });
+        var custom3 = el("input", { type: "number", min: "0", max: "100", step: "1", inputmode: "numeric", "aria-label": "Eigener Wert", placeholder: "eigener Wert", value: [50, 70, 90].indexOf(tmp.min) < 0 ? String(tmp.min) : "" });
+        custom3.addEventListener("change", function () { var v = Math.max(0, Math.min(100, Math.round(Number(custom3.value)))); if (isFinite(v)) { tmp.min = v; paintOwn(); countOwn(); } });
+        seg.append(custom3);
+        segHost.replaceChildren(seg);
+      }
+      go.addEventListener("click", function () { if (!tmp.factors.length) return; sel.factors = tmp.factors.slice(); sel.min = tmp.min; sel.max = 100; chosen = null; U3.closeSheet(sheetEl); custom(); });
+      own = el("button", { type: "button", class: "vu-box vu-box--line qv3-own" }, [el("span", {}, [el("b", { class: "vu-sm", text: "Eigene Bedingung" }), el("span", { class: "vu-xs vu-mu", text: "z. B. Wachstum ab 70" })])]);
+      own.insertAdjacentHTML("beforeend", U3.glyph("plus", 18));
+      own.addEventListener("click", function () { tmp = { factors: chosen ? [] : sel.factors.slice(), min: chosen ? 70 : sel.min }; paintOwn(); countOwn(); U3.openSheet(sheetEl); });
+      panel = own;
+    }
     main.append(global.VUUI ? el("h2", { class: "vu-sect qv3-pad", text: "Schnellwahl" }) : el("p", { class: "q-kicker", style: "margin-top:20px", text: "Schnellwahl" }), list, panel, sentence, results);
     var run_id = 0;
     async function run() {
@@ -794,8 +834,164 @@
       method: "Abstand des letzten Schlusskurses zum höchsten Tageskurs (Tageshoch) der letzten 52 Wochen (252 Handelstage), aus den split-bereinigten Tageskursen. Ein Jahreshoch beschreibt den bisherigen Verlauf – keine Prognose." };
   }
 
+  /* Redesign 2027 (Folie Q02, q02-b): Profi dunkel. Je Eigenschaft ein Bereichsregler 0–100, Bedingung hinzufügen,
+     Datenbasis, Sortierung, Regeln teilen, sortierbare Tabelle aller Treffer mit Spaltenwahl. Gleiche Abfrage wie bisher
+     (VUScreenerWorkspace, Quant V2 Faktorevidenz): ein Bereich ist „mindestens“ plus „höchstens“. Andere Datenbasis
+     (Quant V1 & Marktdaten) öffnet den bisherigen Regel-Editor (?daten=v1). */
+  var PRO_F = [["profitability", "Profitabilität", "Profit"], ["quality", "Bilanz & Ergebnis", "Bilanz"], ["growth", "Wachstum", "Wachs."],
+    ["value", "Bewertung", "Bewert."], ["momentum", "Kursstärke", "Kurs"], ["risk", "Risiko", "Risiko"]];
+  var PRO_ASK = { growth: "Wächst die Firma?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs?", momentum: "Läuft der Kurs gut?", value: "Ist sie günstig?", quality: "Sind die Zahlen solide?" };
+  var PRO_COLS_KEY = "vu.quant.pro.cols.v1";
+  async function screenerProV3(main, ctx, params) {
+    var W = global.VUScreenerWorkspace, U = global.VUUI, api = ctx.api;
+    var conds = [], sortF = null, sortDir = "desc";
+    function dropHero() { var hero = main.querySelector(".q-hero--screener"); if (hero) hero.remove(); }
+    if (params.get("query")) {
+      var q; try { q = W.decode(params.get("query")); } catch (e) { return false; }
+      if (q && (W.methodologyOf(q) || {}).id === "legacy") return false;
+      (q.filters || []).forEach(function (f) {
+        var id = String(f.field).replace("quantV2.factorEvidence.", ""), c = conds.filter(function (x) { return x.id === id; })[0];
+        if (!PRO_ASK[id]) return;
+        if (!c) { c = { id: id, lo: 0, hi: 100 }; conds.push(c); }
+        if (f.operator === "gte" || f.operator === "gt") c.lo = Math.max(0, Math.min(100, Number(f.value) || 0));
+        if (f.operator === "lte" || f.operator === "lt") c.hi = Math.max(0, Math.min(100, Number(f.value) || 0));
+      });
+      if (q.sort && q.sort[0]) { sortF = String(q.sort[0].field).replace("quantV2.factorEvidence.", ""); sortDir = q.sort[0].direction === "asc" ? "asc" : "desc"; }
+    }
+    var DEFAULT = function () { return [{ id: "profitability", lo: 70, hi: 100 }, { id: "quality", lo: 70, hi: 100 }]; };
+    if (!conds.length) conds = DEFAULT();
+    if (!sortF || !PRO_ASK[sortF]) sortF = conds[0].id;
+    var cols; try { cols = JSON.parse(localStorage.getItem(PRO_COLS_KEY) || "null"); } catch (e) { cols = null; }
+    if (!Array.isArray(cols) || !cols.length) cols = ["profitability", "quality", "growth", "risk"];
+    var nameOfF = function (id) { return (PRO_F.filter(function (f) { return f[0] === id; })[0] || [id, id, id]); };
+    dropHero(); /* die dunkle Profi-Fläche trägt Titel und Umschalter selbst */
+    var page = el("div", { class: "vu-ui qv3 qv3-pro" }), html = function (h) { var d = el("div"); d.innerHTML = h; return d.firstElementChild; };
+    main.append(page);
+    page.append(el("div", { class: "qv3-pro-head" }, [el("h1", { class: "qv3-pro-t", text: "Quant Screener" }), html(U.pro())]),
+      el("nav", { class: "vu-seg qv3-mode", "aria-label": "Screener-Modus" }, [el("a", { href: X.routes.screener(), text: "Einfach" }), el("a", { href: X.routes.screenerPro(), "aria-current": "page", text: "Profi" })]));
+    var head = html(U.sect("Bedingungen")), reset = el("button", { type: "button", class: "qv3-linkbtn", text: "Zurücksetzen" });
+    head.append(reset);
+    var condHost = el("div", { class: "vu-stack qv3-conds" }), addBtn = el("button", { type: "button", class: "vu-box vu-box--line qv3-add" });
+    addBtn.innerHTML = U.glyph("plus", 18) + '<b class="vu-sm">Bedingung hinzufügen</b>';
+    var sortChip = el("button", { type: "button", class: "vu-chip" }), shareChip = el("button", { type: "button", class: "vu-chip" });
+    shareChip.innerHTML = U.glyph("share", 14) + " Regeln teilen";
+    var baseChip = el("a", { class: "vu-chip vu-chip--on", href: X.routes.screenerPro("daten=v1"), title: "Andere Datenbasis: Quant V1 & Marktdaten" , text: "Datenbasis: Faktoren" });
+    var count = el("b", { class: "qv3-pro-n" }), colsBtn = el("button", { type: "button", class: "qv3-linkbtn" }), table = el("div", { class: "qv3-ptable", role: "table", "aria-label": "Treffer" }), foot = el("p", { class: "vu-xs vu-mu" });
+    colsBtn.innerHTML = "Spalten " + U.glyph("gear", 12);
+    page.append(head, condHost, addBtn, el("div", { class: "vu-chips qv3-pro-chips" }, [baseChip, sortChip, shareChip]),
+      el("div", { class: "qv3-pro-bar" }, [count, colsBtn]), table, foot);
+    /* Sheets: Bedingung hinzufügen, Spalten */
+    function sheet(id, title) {
+      var sh = html(U.sheet(id, title, "<div data-body></div>"));
+      document.body.append(sh);
+      sh.querySelector("[data-close]") && sh.querySelector("[data-close]").addEventListener("click", function () { U.closeSheet(sh); });
+      global.addEventListener("hashchange", function off() { sh.remove(); global.removeEventListener("hashchange", off); });
+      return sh;
+    }
+    var addSheet = sheet("qv3-pro-add", "Bedingung hinzufügen"), colSheet = sheet("qv3-pro-cols", "Spalten");
+    function slider(c) {
+      var f = nameOfF(c.id), box = el("div", { class: "vu-box qv3-cond" });
+      var val = el("b", { class: "num qv3-cond-v" }), lo = el("input", { type: "range", min: "0", max: "100", step: "1", value: String(c.lo), "aria-label": f[1] + " ab" }),
+        hi = el("input", { type: "range", min: "0", max: "100", step: "1", value: String(c.hi), "aria-label": f[1] + " bis" });
+      var track = el("div", { class: "qv3-range" }, [el("i", { class: "qv3-range-fill" }), lo, hi]);
+      var del = el("button", { type: "button", class: "qv3-cond-x", "aria-label": f[1] + " entfernen", text: "×" });
+      function paint() { val.textContent = c.lo + "–" + c.hi; track.style.setProperty("--a", c.lo + "%"); track.style.setProperty("--b", c.hi + "%"); }
+      lo.addEventListener("input", function () { c.lo = Math.min(Number(lo.value), c.hi); lo.value = c.lo; paint(); schedule(); });
+      hi.addEventListener("input", function () { c.hi = Math.max(Number(hi.value), c.lo); hi.value = c.hi; paint(); schedule(); });
+      del.addEventListener("click", function () { conds = conds.filter(function (x) { return x !== c; }); render(); schedule(); });
+      paint();
+      box.append(el("div", { class: "qv3-cond-h" }, [el("span", {}, [el("b", { class: "vu-sm", text: f[1] }), el("span", { class: "vu-xs vu-mu", text: PRO_ASK[c.id] })]), val, del]), track);
+      return box;
+    }
+    function render() {
+      condHost.replaceChildren.apply(condHost, conds.map(slider));
+      addBtn.hidden = conds.length >= PRO_F.length;
+      var f = nameOfF(sortF); sortChip.textContent = "Sortieren: " + f[1] + (sortDir === "desc" ? " ▼" : " ▲");
+    }
+    addBtn.addEventListener("click", function () {
+      var body = addSheet.querySelector("[data-body]"); body.replaceChildren();
+      PRO_F.filter(function (f) { return !conds.some(function (c) { return c.id === f[0]; }); }).forEach(function (f) {
+        var b = el("button", { type: "button", class: "qv3-li qv3-li-btn" }, [el("span", {}, [el("b", { class: "vu-sm", text: PRO_ASK[f[0]] }), el("span", { class: "vu-xs vu-mu", text: f[1] })])]);
+        b.insertAdjacentHTML("beforeend", U.glyph("plus", 18));
+        b.addEventListener("click", function () { conds.push({ id: f[0], lo: 70, hi: 100 }); U.closeSheet(addSheet); render(); schedule(); });
+        body.append(b);
+      });
+      body.append(el("div", { class: "qv3-li is-off" }, [el("span", {}, [el("b", { class: "vu-sm", text: "Heben Analysten Schätzungen an?" }), el("span", { class: "vu-xs vu-mu", text: "Erwartungstrend · derzeit keine Daten" })])]));
+      U.openSheet(addSheet);
+    });
+    colsBtn.addEventListener("click", function () {
+      var body = colSheet.querySelector("[data-body]"); body.replaceChildren();
+      PRO_F.forEach(function (f) {
+        var box = el("input", { type: "checkbox", checked: cols.indexOf(f[0]) >= 0 ? "checked" : null });
+        box.checked = cols.indexOf(f[0]) >= 0;
+        box.addEventListener("change", function () {
+          cols = PRO_F.map(function (x) { return x[0]; }).filter(function (id) { return id === f[0] ? box.checked : cols.indexOf(id) >= 0; });
+          if (!cols.length) { cols = [f[0]]; box.checked = true; }
+          try { localStorage.setItem(PRO_COLS_KEY, JSON.stringify(cols)); } catch (e) { /* nur Komfort */ }
+          paintTable();
+        });
+        body.append(el("label", { class: "qv3-li qv3-colpick" }, [el("span", {}, [el("b", { class: "vu-sm", text: f[1] })]), box]));
+      });
+      U.openSheet(colSheet);
+    });
+    sortChip.addEventListener("click", function () { sortDir = sortDir === "desc" ? "asc" : "desc"; render(); schedule(); });
+    reset.addEventListener("click", function () { conds = DEFAULT(); sortF = conds[0].id; sortDir = "desc"; render(); schedule(); });
+    var lastQuery = null, lastRes = null;
+    shareChip.addEventListener("click", function () {
+      if (!lastQuery) return;
+      var url = location.origin + location.pathname + X.routes.screenerPro("query=" + encodeURIComponent(W.encode(lastQuery)));
+      (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { shareChip.lastChild.textContent = " Link kopiert"; }, function () { prompt("Link zu diesen Regeln", url); });
+    });
+    function paintTable() {
+      var res = lastRes;
+      if (!res) return;
+      var show = PRO_F.filter(function (f) { return cols.indexOf(f[0]) >= 0; });
+      table.style.setProperty("--cols", show.length);
+      var hr = el("div", { class: "qv3-prow qv3-prow--h", role: "row" }, [el("span", { role: "columnheader", text: "Aktie" })].concat(show.map(function (f) {
+        var b = el("button", { type: "button", class: "num", role: "columnheader", "aria-sort": sortF === f[0] ? (sortDir === "desc" ? "descending" : "ascending") : "none", text: f[2] + (sortF === f[0] ? (sortDir === "desc" ? " ▼" : " ▲") : "") });
+        b.addEventListener("click", function () { if (sortF === f[0]) sortDir = sortDir === "desc" ? "asc" : "desc"; else { sortF = f[0]; sortDir = "desc"; } render(); schedule(); });
+        return b;
+      })));
+      var rowsEl = res.stocks.slice(0, 500).map(function (st) {
+        var ev = st.evidence || {};
+        return el("a", { class: "qv3-prow", role: "row", href: X.routes.stock(st.ticker), title: X.companyName(st) }, [el("b", { role: "cell", text: st.ticker })].concat(show.map(function (f) {
+          var v = ev[FIELD(f[0])];
+          return el("span", { role: "cell", class: "num" + (sortF === f[0] ? " is-sort" : ""), text: typeof v === "number" ? String(Math.round(v)) : "–" });
+        })));
+      });
+      table.replaceChildren.apply(table, [hr].concat(rowsEl));
+      foot.textContent = "„–“: kein Wert, Daten fehlen. " + (res.stocks.length > 500 ? "Gezeigt werden die ersten 500 von " + res.stocks.length.toLocaleString("de-DE") + " Treffern. " : "Alle " + res.stocks.length.toLocaleString("de-DE") + " Treffer sortierbar, ") + "Regeln teilbar. Faktorwerte 0–100 je Eigenschaft (Quant V2), Stand " + X.dateDe(res.asOf) + ".";
+    }
+    var timer = 0, request = 0;
+    function schedule() { clearTimeout(timer); timer = setTimeout(run, 180); }
+    async function run() {
+      var mine = ++request, filters = [];
+      conds.forEach(function (c) {
+        if (c.lo > 0) filters.push({ field: FIELD(c.id), operator: "gte", value: c.lo, scale: "raw" });
+        if (c.hi < 100) filters.push({ field: FIELD(c.id), operator: "lte", value: c.hi, scale: "raw" });
+      });
+      if (!filters.length && conds.length) filters.push({ field: FIELD(conds[0].id), operator: "gte", value: 0, scale: "raw" });
+      var query;
+      try { query = W.build(filters.length ? filters : [{ field: FIELD("profitability"), operator: "gte", value: 0, scale: "raw" }], [{ field: FIELD(sortF), direction: sortDir }]); }
+      catch (e) { count.textContent = "Regeln nicht ausführbar"; table.replaceChildren(); return; }
+      count.textContent = "…";
+      var res = await api.screen(query).catch(function () { return null; });
+      if (mine !== request) return;
+      if (!res || res.state !== "AVAILABLE") { count.textContent = "Ergebnisse derzeit nicht verfügbar"; table.replaceChildren(); return; }
+      lastQuery = query; lastRes = res;
+      try { history.replaceState(null, "", X.routes.screenerPro("query=" + encodeURIComponent(W.encode(query)))); } catch (e) { /* Adresse ist nur Komfort */ }
+      count.textContent = res.stocks.length.toLocaleString("de-DE") + " Treffer";
+      paintTable();
+    }
+    render();
+    await run();
+    return true;
+  }
+
   /* -------------------------------------------------------- Profi-Modus */
   async function screenerPro(main, ctx, params) {
+    /* Redesign 2027 (q02-b): dunkle Profi-Ansicht; die Datenbasis Quant V1 & Marktdaten (?daten=v1) bleibt im Regel-Editor. */
+    if (global.VUUI && params.get("daten") !== "v1" && await screenerProV3(main, ctx, params)) return;
     var W = global.VUScreenerWorkspace, api = ctx.api;
     var initial, invalidLink = false;
     try { initial = params.get("query") ? W.decode(params.get("query")) : W.build([{ field: FIELD("momentum"), operator: "gte", value: 70, scale: "raw" }], [{ field: FIELD("momentum"), direction: "desc" }]); }
@@ -1059,7 +1255,7 @@
       (entered.length ? U.sect("Neu seit gestern") + '<div class="vu-chips qv3-new">' + entered.slice(0, 2).map(function (t) { return '<a class="vu-chip" href="' + U.esc(X.routes.stock(t)) + '">' + U.esc(nameOf(ctx, t) || t) + "</a>"; }).join("") +
         (entered.length > 2 ? '<span class="vu-chip">+' + (entered.length - 2) + " weitere</span>" : "") + "</div>" : "") +
       '<div class="vu-box vu-box--line qv3-notify"><span class="vu-round" aria-hidden="true">' + U.glyph("bell", 18) + '</span><span class="qv3-notify-t"><b class="vu-sm">Melden, wenn eine Aktie neu dazukommt</b><span class="vu-xs vu-mu">über Mein Bereich</span></span>' + U.verdict("none", "bald") + "</div>" +
-      '<a class="vu-btn vu-btn--ink qv3-cta" href="' + U.esc(listHref) + '">Im Screener öffnen und anpassen</a>';
+      '<a class="vu-btn vu-btn--ink qv3-cta" href="' + U.esc(listHref) + '">Im Quant Screener öffnen und anpassen</a>';
     page.append(html(h));
     /* Alles Bisherige bleibt erreichbar: volle Trefferliste mit Balken, Veränderung und „Was verhindert einen Match?“. */
     var more = el("details", { class: "qv3-more", id: "qv3-all" }, [el("summary", { text: "Mehr zu dieser Strategie" })]);
