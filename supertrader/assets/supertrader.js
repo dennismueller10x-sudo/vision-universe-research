@@ -1604,15 +1604,42 @@
       }).catch(function () { return getJSON(FILE.signals); });
     });
   }
+  /* Redesign 2027: gemeinsame Bausteine (assets/vu-ui.*, assets/vu-chart.js) und das Seitenmodul st-redesign.js.
+     Laedt parallel zu den Daten; ein Fehler laesst die bisherige Oberflaeche stehen. */
+  var UI = page === 'replay' ? Promise.resolve() : Promise.all([loadScript('/assets/vu-ui.js'), loadScript('/assets/vu-chart.js')]).then(function () {
+    loadCss('/assets/vu-ui.css'); loadCss(BASE + 'assets/st-redesign.css');
+    return loadScript(BASE + 'assets/st-redesign.js');
+  }).catch(function () { return null; });
+  /* Helfer der bisherigen Oberflaeche fuer das Redesign-Modul. legacy(host, D) zeichnet die bisherige Ansicht der Seite in host. */
+  function redesignContext() {
+    PROVLAB = (APP && APP.registry && APP.registry.provenanceClasses) || {};
+    return { main: main, page: page, SYM: SYM, BASE: BASE, getJSON: getJSON, loadScript: loadScript, loadCss: loadCss, disclaimer: disclaimer, dmAdd: dmAdd,
+      ruleText: ruleText, closedCount: closedCount, stratMap: stratMap, rulesBlock: rulesBlock, fidelityList: fidelityList, assessments: assessments, ruleCardList: ruleCardList,
+      trend52For: trend52For, noRun: noRun, dist: dist, sortSignals: sortSignals, shortWhy: shortWhy, stockKit: stockKit, stratUrl: stratUrl, HOUSE_HISTORY: HOUSE_HISTORY,
+      legacy: function (host, D) {
+        var keep = main; main = host;
+        try { PROVLAB = (D.registry && D.registry.provenanceClasses) || {}; ({ strategy: renderStrategy }[page] || renderHome)(D); } finally { main = keep; }
+      } };
+  }
   Promise.all(need.map(function (k) { return load(k).catch(function (e) { if (k === 'pilot' || k === 'replay' || k === 'portfolio' || k === 'trend52' || k === 'house') return null; throw e; }); })).then(function (res) {
     var D = {}; need.forEach(function (k, i) { D[k] = res[i]; });
     D.srcMap = D.sources ? byId(D.sources.sources, 'source_id') : {};
     if (D.registry) D.registry.strategies.forEach(function (x) { if (x.pending_semantics === 'WATCHLIST' && !isResearchS(x)) WATCH[x.strategy_id] = x.watchlist_label || 'Beobachtung'; if (isResearchS(x)) RESEARCH[x.strategy_id] = true; }); if (D.registry) HAS_CURRENT = D.registry.strategies.some(function (x) { return x.mode === 'LIVE' && !isResearchS(x); });
-    main.innerHTML = '';
     APP = D;
-    chrome();
-    ({ home: renderHome, strategies: renderStrategies, strategy: renderStrategy, signals: renderSignals, stock: renderStock, backtests: renderBacktests, replay: renderReplay, sources: renderSources, house: renderHouse }[page] || renderHome)(D);
-    mountResearch();
+    return UI.then(function () {
+      main.innerHTML = '';
+      /* Redesign 2027 (ST01–ST08): neue Oberflaeche, sofern ihr Modul geladen ist. Die Methodenansicht der quellentreuen
+         Kandidaten (?sf=) und das historische Beispiel bleiben bei der bisherigen Oberflaeche. */
+      var R = window.STRedesign && window.STRedesign.render[page];
+      if (R && !(page === 'strategies' && new URLSearchParams(location.search).get('sf'))) {
+        if (window.VUNavigation) window.VUNavigation.dock(page === 'stock' ? { active: null } : {});
+        R(D, redesignContext());
+        return;
+      }
+      chrome();
+      ({ home: renderHome, strategies: renderStrategies, strategy: renderStrategy, signals: renderSignals, stock: renderStock, backtests: renderBacktests, replay: renderReplay, sources: renderSources, house: renderHouse }[page] || renderHome)(D);
+      mountResearch();
+    });
   }).catch(function (e) {
     main.innerHTML = '';
     main.appendChild(emptyBox('Supertrader konnte nicht geladen werden', 'Die Daten sind gerade nicht erreichbar (' + (e && e.message) + '). Bitte später erneut versuchen.'));
