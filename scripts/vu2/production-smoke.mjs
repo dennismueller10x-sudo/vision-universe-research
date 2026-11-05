@@ -135,7 +135,7 @@ const LEGACY={
    dafuer wird genau diese Auskunft verlangt. */
 const ABSAGE={'/quant/#/aktie/ZZZZZ':'Aktie nicht gefunden','/quant/#/gibtsnicht':'Diese Seite gibt es nicht'};
 const DATENREICH=['NVDA','AAPL','MSFT','JPM','O','T','SO','GOOG','GOOGL'];
-const DATENARM=['ACAA','EDVA','ABTC','AAAC'];
+const DATENARM=['ACAA','EDVA','ABTC'];
 const BRANCHENVORLAGE=['JPM','O','WSBCO','ABCB'];
 /* ZURUECKHALTUNG AUS DEN DATEN (04.10.2026).
    Ob ein Boersenwert zurueckgehalten wird, entscheidet die Materialisierung
@@ -156,10 +156,25 @@ for(const t of ZURUECKHALTUNG_KANDIDATEN){
  else if(ZURUECKHALTUNG_PFLICHT.includes(t)){console.log('FAIL Zurueckhaltung '+t+': Daten halten den Boersenwert nicht mehr zurueck ('+grund+')');vorabFehler++;}
  else console.log('     Zurueckhaltung '+t+': laut Daten nicht zurueckgehalten ('+grund+')');
 }
-const NICHT_STAMMAKTIE=['AHT-P-D','ALL-P-B','ABR-P-D','AAAC'];
+const NICHT_STAMMAKTIE=['AHT-P-D','ALL-P-B','ABR-P-D'];
+/* AUSGESCHIEDENE NICHT-AKTIE (Variante B, Steuerung 05.11.2026).
+   Seit der Eignung aus Security Master 1.3.0 gehoeren belegte Nicht-Aktien (ETF, Fonds, Anleihen) nicht mehr zum
+   Aktien-Produktuniversum. AAAC (ein ETF) war hier der "belegte ETF mit Kurs ohne Aktienaussage"; jetzt ist er der Fall
+   "im Verzeichnis auffindbar, im Produkt eine benannte Absage". Ebenso streng: der Name im Kopf muss der des
+   Verzeichnisses sein, die Papierart steht als Marke, der Grund nennt "keine Aktie", ein Weg zurueck, KEIN Chart,
+   KEINE Aktienaussage. Ist AAAC im Verzeichnis nicht mehr als belegte Nicht-Aktie gefuehrt, scheitert der Lauf vorab -
+   dann muss ein anderer belegter Fall hierher. */
+const AUSGESCHIEDEN={};
+for(const t of ['AAAC']){
+ let inst=null;
+ try{const shard=JSON.parse(await readFile(resolve(root,'quant/data/universe/instruments/'+(t+'_').slice(0,2)+'.json'),'utf8'));inst=(shard.instruments||[]).find(i=>i.symbol===t)||null;}catch(e){inst=null;}
+ if(!inst||inst.productEligibility!=='EXCLUDED'||!/^CONFIRMED_NON_EQUITY:/.test(String(inst.productEligibilityReason||''))||!inst.companyName){
+  console.log('FAIL Ausgeschiedene Nicht-Aktie '+t+': nicht als belegte Nicht-Aktie im Verzeichnis ('+(inst?inst.productEligibility+' '+inst.productEligibilityReason:'fehlt')+')');vorabFehler++;continue;}
+ AUSGESCHIEDEN['/quant/#/aktie/'+t]={ticker:t,name:inst.companyName,art:{ETF:'ETF',ETN:'ETN',FUND:'Fonds',CEF:'geschlossener Fonds',DEBT:'Anleihe',WARRANT:'Optionsschein',RIGHT:'Bezugsrecht',UNIT:'Unit',PREFERRED:'Vorzugsaktie'}[inst.securityClass]||'keine Stammaktie'};
+}
 /* Markierter Eintrag der gemeinsamen Produkt-Leiste je Ansicht; Methodik
    ist sekundaer und markiert keinen der vier Eintraege (leer). */
-const SECTION={home:'Quant',screener:'Screener',strategien:'Strategien',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:''};
+const SECTION={home:'Quant',screener:'Screener',strategien:'Strategien',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:'Quant'}; /* Q00 (#1412): Methodik gehoert zum Start „Quant“ */
 
 /* Bereit ist eine Route, wenn die App sie fertig gemeldet hat, kein
    Ladeplatzhalter mehr steht und der Chart (falls es einen gibt) einen
@@ -214,7 +229,7 @@ for(const width of [1440,390]){
   const ort=await page.evaluate(()=>location.pathname+location.search+location.hash);
   const route=app?await page.evaluate(()=>(document.querySelector('main#qx-main')||{dataset:{}}).dataset.view||''):'';
   const text=await page.locator(app?'main#qx-main':'main').first().innerText().catch(()=>'');
-  const absage=ABSAGE[view]||null;
+  const absage=ABSAGE[view]||null,ausgeschieden=AUSGESCHIEDEN[view]||null;
   const recovered=text.includes('Gerade nicht erreichbar')||text.includes('Daten derzeit nicht verfügbar')
    ||(!absage&&(text.includes('Diese Seite gibt es nicht')||text.includes('Aktie nicht gefunden')));
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);
@@ -233,7 +248,19 @@ for(const width of [1440,390]){
      fangen also den Fall "nichts gerendert", ohne einen Inhaltsstand
      einzufrieren - gemessen werden soll ein Rueckschritt, nicht der
      Tagesstand. */
-  if(!absage&&text.length<400)bad.push('ZU_WENIG_INHALT='+text.length);
+  if(!absage&&!ausgeschieden&&text.length<400)bad.push('ZU_WENIG_INHALT='+text.length);
+  if(ausgeschieden){
+   const kopf=(await page.locator('main#qx-main h1').first().innerText().catch(()=>'')).trim();
+   if(kopf!==ausgeschieden.name)bad.push('NAME_FALSCH:'+kopf);
+   if(!text.includes(ausgeschieden.ticker))bad.push('TICKER_FEHLT');
+   const marke=(await page.locator('main#qx-main [class*=tag]').allTextContents()).join('|');
+   if(!marke.split('|').map(x=>x.trim()).includes(ausgeschieden.art))bad.push('PAPIERART_UNGENANNT:'+marke);
+   if(!await page.locator('main#qx-main .qx-notice').count()||!/keine Aktie/.test(text)||!/analysiert/.test(text))bad.push('ABSAGE_OHNE_GRUND');
+   if(!await page.locator('main#qx-main a[href^="#/"]').count())bad.push('ABSAGE_OHNE_WEG');
+   if(await page.locator('section.qc-chart').count())bad.push('CHART_BEI_NICHT_AKTIE');
+   if(await page.locator('.qx-verdict-card').count()||await page.locator('details.qx-factor').count())bad.push('AKTIENAUSSAGE_BEI_NICHT_AKTIE');
+   if(text.length<100)bad.push('ABSAGE_OHNE_INHALT='+text.length);
+  }
   if(absage){
    const kopf=(await page.locator('main#qx-main h1').first().innerText().catch(()=>'')).trim();
    if(kopf!==absage)bad.push('ABSAGE_FALSCH:'+kopf);
@@ -348,9 +375,12 @@ for(const width of [1440,390]){
    }
   }
   if(route==='screener'&&view.includes('/profi')){
-   const regeln=await page.locator('main#qx-main .qx-rules .qx-rule').count();
+   /* Redesign 2027 (Q02, #1410): dunkle Profi-Flaeche mit Bereichsreglern (.qv3-cond) und Treffertabelle (a.qv3-prow);
+      der Regel-Editor (.qx-rule, a.qx-row) bleibt fuer ?daten=v1. Geprueft wird dasselbe: eine Regel und Treffer sichtbar. */
+   await page.waitForFunction(()=>document.querySelectorAll('main#qx-main a.qx-row, main#qx-main a.qv3-prow').length>0,null,{timeout:20000}).catch(()=>{});
+   const regeln=await page.locator('main#qx-main .qx-rules .qx-rule, main#qx-main .qv3-cond').count();
    if(!regeln)bad.push('KEINE_REGEL');
-   const zeilen=await page.locator('main#qx-main a.qx-row').count();
+   const zeilen=await page.locator('main#qx-main a.qx-row, main#qx-main a.qv3-prow').count();
    if(!zeilen)bad.push('KEINE_TREFFER');
   }
   if(route==='aktien'){
@@ -373,13 +403,21 @@ for(const width of [1440,390]){
    if(!/keine (Erfolgs- oder )?Trefferquote/.test(text))bad.push('TREFFERQUOTE_UNGENANNT');
   }
   if(route==='strategien'&&/strategien\/[a-z]/.test(view)){
-   if(!/Welche Bedingungen gelten\?/.test(text))bad.push('BEDINGUNGEN_FEHLEN');
-   if(!/Wer passt heute\?/.test(text))bad.push('TREFFER_FEHLEN');
+   /* Redesign 2027 (Q03, #1410): „Die Regeln“ als Fragen mit Schwelle und „Erfüllen heute“ mit Trefferzahl; die bisherige
+      Auswertung steht unter „Mehr zu dieser Strategie“. Geprueft wird dasselbe: Bedingungen und heutige Treffer sichtbar. */
+   const v3s=await page.locator('main#qx-main .qv3-sdetail').count();
+   if(v3s){
+    if(!/Die Regeln/.test(text)||!await page.locator('main#qx-main .qv3-sdetail .qv3-liste .qv3-li').count())bad.push('BEDINGUNGEN_FEHLEN');
+    if(!/Erfüllen heute\s*(\d[\d.]*\s+Aktien|nicht prüfbar)/.test(text))bad.push('TREFFER_FEHLEN');
+   }else{
+    if(!/Welche Bedingungen gelten\?/.test(text))bad.push('BEDINGUNGEN_FEHLEN');
+    if(!/Wer passt heute\?/.test(text))bad.push('TREFFER_FEHLEN');
+   }
   }
 
   /* DIE AKTIENSEITE. */
   const stock=(view.match(/#\/aktie\/([A-Z0-9.-]+)$/)||[])[1]||(LEGACY[view]&&(LEGACY[view].match(/#\/aktie\/([A-Z0-9.-]+)$/)||[])[1])||null;
-  if(stock&&!absage){
+  if(stock&&!absage&&!ausgeschieden){
    const idTicker=(await page.locator('.qx-stock-hero .qx-stock-id b').first().innerText().catch(()=>'')).trim();
    if(idTicker!==stock)bad.push('TICKER_FALSCH:'+idTicker);
    const kopf=(await page.locator('.qx-stock-hero h1').first().innerText().catch(()=>'')).trim();
