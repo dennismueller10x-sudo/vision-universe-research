@@ -6,8 +6,8 @@
   const groups = [
     {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', claim:'Aktien entdecken', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
     {id:'quant', label:'Quant', href:'/quant/', icon:'quant', claim:'Faktoren je Aktie', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Strategien','/quant/#/strategien','◬'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
-    {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Methodik','/technical/#/methodik','▤']]},
-    {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', claim:'Zahlen aus SEC-Berichten', entries:[['Übersicht','/fundamental/#/','⌂'],['Entdecken','/fundamental/#/entdecken','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
+    {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Muster','/technical/#/muster','▤']]},
+    {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', claim:'Zahlen aus SEC-Berichten', entries:[['Übersicht','/fundamental/#/','⌂'],['Ranglisten','/fundamental/#/ranglisten','◇'],['Branchen','/fundamental/#/branchen','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
     {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', claim:'Methoden der Profis', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Signale','/supertrader/signals/','◬'],['Backtests','/supertrader/backtests/','▧'],['Quellen','/supertrader/sources/','▤']]},
     {id:'hedgefonds', label:'Hedgefonds', href:'/hedgefonds/', icon:'hedgefonds', claim:'Was Investoren halten', entries:[['Übersicht','/hedgefonds/','⌂'],['Investoren','/hedgefonds/#/investoren','♙'],['Datenbank','/hedgefonds/#/datenbank','▧'],['Aktien','/hedgefonds/#/aktien','⌁'],['Smart Money','/hedgefonds/#/smart-money','◬']]},
     {id:'elliott', label:'Elliott', href:'/elliott/', icon:'elliott', claim:'Wellenstruktur', entries:[['Übersicht','/elliott/','⌂'],['Welle 3','/elliott/#/?welle=3','◬'],['Aufwärts','/elliott/#/?richtung=auf','↗'],['Abwärts','/elliott/#/?richtung=ab','↘'],['Neu und verändert','/elliott/#/?neu=1','✧'],['Suchen','/elliott/#/?suche=1','⌕']]},
@@ -37,7 +37,7 @@
         const k = hashPart(loc, 0);
         if (!k) return 'discover';
         if (k === 'c') { const themes = globalThis.VUDiscover?.Views?.Themes; return themes && themes.byRow(hashPart(loc, 2)) ? 'welten' : 'strategien'; }
-        return {welten: 'welten', thema: 'welten', strategien: 'strategien', einzeln: 'entdecken'}[k] || null;
+        return {welten: 'welten', thema: 'welten', strategien: 'strategien', einzeln: 'entdecken', swipen: 'entdecken'}[k] || null;
       }},
     {id: 'elliott', label: 'Elliott', match: (p, loc) => p.startsWith('/elliott/') || isElliottDetail(p, loc),
       items: [['elliott','Elliott','/elliott/','elliott'],['welle3','Welle 3','/elliott/#/?welle=3','wave'],['neu','Neu','/elliott/#/?neu=1','spark'],['suche','Suche','/elliott/#/?suche=1','search']],
@@ -62,13 +62,15 @@
     /* Fundamental: eigenes Produkt. #/<TICKER> ist die Unternehmensseite (nur Produktkontext); Entdecken und Suche sind
        Ansichten der Startseite, die fundamental/app.js (VUFundamental.Model.parseRoute) liest. */
     {id: 'fundamental', label: 'Fundamental', match: p => p.startsWith('/fundamental/'),
-      items: [['fundamental','Fundamental','/fundamental/#/','fundamental'],['entdecken','Entdecken','/fundamental/#/entdecken','explore'],['suche','Suche','/fundamental/#/suche','search'],['methodik','Methodik','/fundamental/#/methodik','table']],
-      active: loc => loc.pathname === '/fundamental/' ? ({'': 'fundamental', entdecken: 'entdecken', suche: 'suche', methodik: 'methodik'}[hashPart(loc, 0)] || null) : null},
+      /* Redesign 2027 (F01–F05): Ranglisten · Branchen · Methodik; die Suche steht im Kopf (#/suche bleibt erreichbar). */
+      items: [['fundamental','Fundamental','/fundamental/#/','fundamental'],['ranglisten','Ranglisten','/fundamental/#/ranglisten','explore'],['branchen','Branchen','/fundamental/#/branchen','worlds'],['methodik','Methodik','/fundamental/#/methodik','table']],
+      active: loc => loc.pathname === '/fundamental/' ? ({'': 'fundamental', ranglisten: 'ranglisten', entdecken: 'ranglisten', branchen: 'branchen', methodik: 'methodik'}[hashPart(loc, 0)] || null) : null},
     /* Technical: eigenes Produkt. #/chart/<TICKER> ist das Chart Studio einer Aktie; ohne Kuerzel die Auswahl.
        Der Chart-Eintrag zeigt per dock({hrefs:{chart}}) auf die zuletzt geoeffnete Aktie (technical/app.js). */
     {id: 'technical', label: 'Technical', match: p => p.startsWith('/technical/'),
-      items: [['technical','Technical','/technical/#/','technical'],['screener','Screener','/technical/#/screener','screener'],['chart','Chart','/technical/#/chart','signals','Chart Studio'],['methodik','Methodik','/technical/#/methodik','table']],
-      active: loc => loc.pathname === '/technical/' ? ({'': 'technical', screener: 'screener', chart: 'chart', methodik: 'methodik'}[hashPart(loc, 0)] || null) : null},
+      items: [['technical','Technical','/technical/#/','technical'],['screener','Screener','/technical/#/screener','screener'],['chart','Chart','/technical/#/chart','signals','Chart Studio'],['muster','Muster','/technical/#/muster','table']],
+      /* Redesign 2027 (T05): „Muster“ ersetzt „Methodik“; #/methodik zeigt dieselbe Seite. */
+      active: loc => loc.pathname === '/technical/' ? ({'': 'technical', screener: 'screener', chart: 'chart', muster: 'muster', methodik: 'muster'}[hashPart(loc, 0)] || null) : null},
     {id: 'vorsorge', label: 'Vorsorge', match: p => p.startsWith('/vorsorge/'),
       items: [['vorsorge','Vorsorge','/vorsorge/#/','vorsorge'],['plan','Planer','/vorsorge/#/plan','plan'],['etfs','ETFs','/vorsorge/#/etfs','etf'],['portfolio','Portfolio','/vorsorge/#/portfolio','portfolio']],
       active: loc => {

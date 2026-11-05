@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
-import { writeAvailability, buildShards, AVAILABILITY_DIR, SHARD_BUDGET } from "../../scripts/core/stock-availability.mjs";
+import { writeAvailability, buildShards, collectEvidence, AVAILABILITY_DIR, SHARD_BUDGET } from "../../scripts/core/stock-availability.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -36,8 +36,15 @@ test("Bestand · Manifest aus den veroeffentlichten Artefakten, nur in --out, im
     const sapDe = state(SC.parse("/discover/#/s/EUROPE/ref_SAP_DE_XETR").ctx);
     assert.equal(sapDe.discover, "available");
     assert.equal(sapDe.quant, "unavailable");
-    /* Supertrader nur mit Seite UND Daten: AAL hat eine Seite, aber keine Daten. */
-    assert.equal(state(SC.fromUs("AAL")).supertrader, "unavailable");
+    /* Supertrader nur mit Seite UND Daten. Das Beispiel kommt aus den Daten selbst (frueher fest AAL;
+       seit dem frischen Kandidatenlauf 04.11.2026 hat AAL Daten): ein Titel mit Discover-Seite ohne Supertrader-Daten. */
+    const { evidence } = collectEvidence(ROOT);
+    const st = new Set(evidence.supertrader.US);
+    const ohne = evidence.discover.US.find((t) => !st.has(t));
+    assert.ok(ohne, "kein Titel mit Seite und ohne Supertrader-Daten");
+    assert.equal(state(SC.fromUs(ohne)).discover, "available");
+    assert.equal(state(SC.fromUs(ohne)).supertrader, "unavailable");
+    assert.equal(state(SC.fromUs(evidence.supertrader.US[0])).supertrader, "available");
     /* Ein Name je Aktie (VU3-Finalisierung): der Anzeigename des Security-Masters steht im Ausschnitt. */
     const master = JSON.parse(readFileSync(join(ROOT, "quant/data/market/security-master/company-names.json"), "utf8")).rows.find((x) => x.ticker === "PLTR");
     const pl = JSON.parse(readFileSync(join(out, SC.availabilityShard(SC.fromUs("PLTR")) + ".json"), "utf8"));
