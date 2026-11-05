@@ -4,8 +4,9 @@
 
 ## Stand
 
-- Status: **Entwicklung vollständig, Auswahl ausstehend**.
+- Status: **vollständig**.
 - Entwicklung Quant: 2012-01-01 bis 2019-12-31, Anker 2012-01-06, Datei `runs/dev-quant.json`.
+- Auswahl (vor Öffnen des Prüfteils festgeschrieben): **Q-momentum-leader-N20-W13-F0**, Regel: höchster Netto-Sharpe (rf=0), dann Netto-CAGR, dann Varianten-ID. Hashes: dev-quant `2d7a4924891b03ab…`, dev-st `f78065c0396c3ff4…`.
 - Hypothesen in der Holm-Familie: 192 (fehlende oder blockierte Tests mit p = 1, die Familie wird nie verkleinert).
 
 ## Daten
@@ -121,8 +122,104 @@ Supertrader-Entwicklung nur 2016–2019 (Lücke 2012–2015, siehe Grenzen); Qua
 
 ## Prüfung 2020-01-01 bis 2026-10-02 (alle 96 Varianten, Cash-Start)
 
-Gesperrt, bis die Auswahl über alle 96 Entwicklungsergebnisse festgeschrieben ist.
-
+| Variante | CAGR | SPY | RSP | IWM | Sharpe | SPY Sharpe | Max. Verlust | SPY Max. Verlust | p Log (Holm) | p Sharpe (Holm) | Urteil |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| ST-C01-F0 |  | | | | | | |  | 1,0000 | 1,0000 | nicht bestimmbar (blockiert) |
+| ST-C01-F1 |  | | | | | | |  | 1,0000 | 1,0000 | nicht bestimmbar (blockiert) |
+| ST-C02-F0 |  | | | | | | |  | 1,0000 | 1,0000 | nicht bestimmbar (blockiert) |
+| ST-C02-F1 |  | | | | | | |  | 1,0000 | 1,0000 | nicht bestimmbar (blockiert) |
+| ST-C03-F0 |  | | | | | | |  | 1,0000 | 1,0000 | nicht bestimmbar (blockiert) |
+| ST-C03-F1 |  | | | | | | |  | 1,0000 | 1,0000 | nicht bestimmbar (blockiert) |
+| ST-C08-F0 |  | | | | | | |  | 1,0000 | 1,0000 | nicht bestimmbar (blockiert) |
+| ST-C08-F1 |  | | | | | | |  | 1,0000 | 1,0000 | nicht bestimmbar (blockiert) |
+| ST-C12-F0 |  | | | | | | |  | 1,0000 | 1,0000 | nicht bestimmbar (blockiert) |
+| ST-C12-F1 |  | | | | | | |  | 1,0000 | 1,0000 | nicht bestimmbar (blockiert) |
+| ST-TOP5-F0 |  | | | | | | |  | 1,0000 | 1,0000 | nicht bestimmbar (blockiert) |
+| ST-TOP5-F1 |  | | | | | | |  | 1,0000 | 1,0000 | nicht bestimmbar (blockiert) |
+| Q-quality-compounder-N10-W13-F0 | 4,7 % | 15,4 % | 11,2 % | 9,6 % | 0,35 | 0,85 | -30,4 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-compounder-N10-W13-F1 | 0,9 % | 15,4 % | 11,2 % | 9,6 % | 0,14 | 0,85 | -20,5 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-compounder-N10-W26-F0 | 9,1 % | 15,4 % | 11,2 % | 9,6 % | 0,59 | 0,85 | -30,4 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-compounder-N10-W26-F1 | 2,5 % | 15,4 % | 11,2 % | 9,6 % | 0,27 | 0,85 | -25,5 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-compounder-N15-W13-F0 | 6,5 % | 15,4 % | 11,2 % | 9,6 % | 0,43 | 0,85 | -33,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-compounder-N15-W13-F1 | 2,1 % | 15,4 % | 11,2 % | 9,6 % | 0,23 | 0,85 | -22,5 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-compounder-N15-W26-F0 | 8,3 % | 15,4 % | 11,2 % | 9,6 % | 0,52 | 0,85 | -33,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-compounder-N15-W26-F1 | 1,9 % | 15,4 % | 11,2 % | 9,6 % | 0,21 | 0,85 | -25,8 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-compounder-N20-W13-F0 | 7,3 % | 15,4 % | 11,2 % | 9,6 % | 0,48 | 0,85 | -35,0 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-compounder-N20-W13-F1 | 3,5 % | 15,4 % | 11,2 % | 9,6 % | 0,33 | 0,85 | -28,2 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-compounder-N20-W26-F0 | 7,0 % | 15,4 % | 11,2 % | 9,6 % | 0,45 | 0,85 | -35,0 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-compounder-N20-W26-F1 | 1,2 % | 15,4 % | 11,2 % | 9,6 % | 0,15 | 0,85 | -31,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-momentum-leader-N10-W13-F0 | 7,3 % | 15,4 % | 11,2 % | 9,6 % | 0,46 | 0,85 | -32,2 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-momentum-leader-N10-W13-F1 | 4,1 % | 15,4 % | 11,2 % | 9,6 % | 0,34 | 0,85 | -23,8 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-momentum-leader-N10-W26-F0 | 5,2 % | 15,4 % | 11,2 % | 9,6 % | 0,35 | 0,85 | -32,2 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-momentum-leader-N10-W26-F1 | 2,3 % | 15,4 % | 11,2 % | 9,6 % | 0,22 | 0,85 | -24,1 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-momentum-leader-N15-W13-F0 | 7,6 % | 15,4 % | 11,2 % | 9,6 % | 0,45 | 0,85 | -38,0 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-momentum-leader-N15-W13-F1 | 6,2 % | 15,4 % | 11,2 % | 9,6 % | 0,45 | 0,85 | -23,9 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-momentum-leader-N15-W26-F0 | 3,1 % | 15,4 % | 11,2 % | 9,6 % | 0,25 | 0,85 | -38,0 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-momentum-leader-N15-W26-F1 | 1,4 % | 15,4 % | 11,2 % | 9,6 % | 0,16 | 0,85 | -30,7 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| **Q-momentum-leader-N20-W13-F0** (Auswahl) | 9,3 % | 15,4 % | 11,2 % | 9,6 % | 0,52 | 0,85 | -36,7 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-momentum-leader-N20-W13-F1 | 7,1 % | 15,4 % | 11,2 % | 9,6 % | 0,51 | 0,85 | -25,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-momentum-leader-N20-W26-F0 | 6,8 % | 15,4 % | 11,2 % | 9,6 % | 0,40 | 0,85 | -36,7 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-momentum-leader-N20-W26-F1 | 4,2 % | 15,4 % | 11,2 % | 9,6 % | 0,33 | 0,85 | -28,8 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-momentum-N10-W13-F0 | 3,2 % | 15,4 % | 11,2 % | 9,6 % | 0,25 | 0,85 | -44,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-momentum-N10-W13-F1 | -3,8 % | 15,4 % | 11,2 % | 9,6 % | -0,13 | 0,85 | -45,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-momentum-N10-W26-F0 | -0,1 % | 15,4 % | 11,2 % | 9,6 % | 0,10 | 0,85 | -45,5 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-momentum-N10-W26-F1 | -5,7 % | 15,4 % | 11,2 % | 9,6 % | -0,26 | 0,85 | -51,1 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-momentum-N15-W13-F0 | 8,7 % | 15,4 % | 11,2 % | 9,6 % | 0,45 | 0,85 | -34,8 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-momentum-N15-W13-F1 | -1,3 % | 15,4 % | 11,2 % | 9,6 % | 0,03 | 0,85 | -41,5 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-momentum-N15-W26-F0 | 4,4 % | 15,4 % | 11,2 % | 9,6 % | 0,30 | 0,85 | -41,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-momentum-N15-W26-F1 | -3,6 % | 15,4 % | 11,2 % | 9,6 % | -0,10 | 0,85 | -51,4 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-momentum-N20-W13-F0 | 9,3 % | 15,4 % | 11,2 % | 9,6 % | 0,47 | 0,85 | -33,4 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-momentum-N20-W13-F1 | 0,2 % | 15,4 % | 11,2 % | 9,6 % | 0,11 | 0,85 | -38,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-momentum-N20-W26-F0 | 3,8 % | 15,4 % | 11,2 % | 9,6 % | 0,27 | 0,85 | -35,7 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-quality-momentum-N20-W26-F1 | -4,0 % | 15,4 % | 11,2 % | 9,6 % | -0,12 | 0,85 | -46,9 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-garp-N10-W13-F0 | 3,3 % | 15,4 % | 11,2 % | 9,6 % | 0,26 | 0,85 | -43,2 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-garp-N10-W13-F1 | -0,6 % | 15,4 % | 11,2 % | 9,6 % | 0,03 | 0,85 | -42,7 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-garp-N10-W26-F0 | 6,8 % | 15,4 % | 11,2 % | 9,6 % | 0,43 | 0,85 | -39,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-garp-N10-W26-F1 | 1,3 % | 15,4 % | 11,2 % | 9,6 % | 0,16 | 0,85 | -42,9 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-garp-N15-W13-F0 | 9,1 % | 15,4 % | 11,2 % | 9,6 % | 0,47 | 0,85 | -41,9 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-garp-N15-W13-F1 | 2,2 % | 15,4 % | 11,2 % | 9,6 % | 0,21 | 0,85 | -44,7 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-garp-N15-W26-F0 | 13,0 % | 15,4 % | 11,2 % | 9,6 % | 0,64 | 0,85 | -36,0 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-garp-N15-W26-F1 | 5,1 % | 15,4 % | 11,2 % | 9,6 % | 0,38 | 0,85 | -35,7 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-garp-N20-W13-F0 | 6,3 % | 15,4 % | 11,2 % | 9,6 % | 0,36 | 0,85 | -43,9 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-garp-N20-W13-F1 | 1,0 % | 15,4 % | 11,2 % | 9,6 % | 0,15 | 0,85 | -50,0 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-garp-N20-W26-F0 | 10,2 % | 15,4 % | 11,2 % | 9,6 % | 0,52 | 0,85 | -39,8 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-garp-N20-W26-F1 | 3,6 % | 15,4 % | 11,2 % | 9,6 % | 0,28 | 0,85 | -42,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-future-leader-N10-W13-F0 | 3,4 % | 15,4 % | 11,2 % | 9,6 % | 0,26 | 0,85 | -60,8 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-future-leader-N10-W13-F1 | -4,1 % | 15,4 % | 11,2 % | 9,6 % | -0,07 | 0,85 | -61,9 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-future-leader-N10-W26-F0 | 0,8 % | 15,4 % | 11,2 % | 9,6 % | 0,17 | 0,85 | -61,7 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-future-leader-N10-W26-F1 | -6,0 % | 15,4 % | 11,2 % | 9,6 % | -0,18 | 0,85 | -66,5 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-future-leader-N15-W13-F0 | 4,8 % | 15,4 % | 11,2 % | 9,6 % | 0,31 | 0,85 | -60,2 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-future-leader-N15-W13-F1 | -2,0 % | 15,4 % | 11,2 % | 9,6 % | 0,03 | 0,85 | -59,4 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-future-leader-N15-W26-F0 | 2,4 % | 15,4 % | 11,2 % | 9,6 % | 0,23 | 0,85 | -61,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-future-leader-N15-W26-F1 | -3,8 % | 15,4 % | 11,2 % | 9,6 % | -0,05 | 0,85 | -64,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-future-leader-N20-W13-F0 | 5,5 % | 15,4 % | 11,2 % | 9,6 % | 0,33 | 0,85 | -61,0 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-future-leader-N20-W13-F1 | -0,1 % | 15,4 % | 11,2 % | 9,6 % | 0,12 | 0,85 | -58,2 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-future-leader-N20-W26-F0 | 3,5 % | 15,4 % | 11,2 % | 9,6 % | 0,27 | 0,85 | -61,0 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-future-leader-N20-W26-F1 | -0,7 % | 15,4 % | 11,2 % | 9,6 % | 0,09 | 0,85 | -59,4 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-defensive-quality-N10-W13-F0 | 7,0 % | 15,4 % | 11,2 % | 9,6 % | 0,47 | 0,85 | -29,2 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-defensive-quality-N10-W13-F1 | 3,0 % | 15,4 % | 11,2 % | 9,6 % | 0,29 | 0,85 | -24,1 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-defensive-quality-N10-W26-F0 | 6,9 % | 15,4 % | 11,2 % | 9,6 % | 0,47 | 0,85 | -29,2 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-defensive-quality-N10-W26-F1 | 3,6 % | 15,4 % | 11,2 % | 9,6 % | 0,34 | 0,85 | -24,1 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-defensive-quality-N15-W13-F0 | 6,2 % | 15,4 % | 11,2 % | 9,6 % | 0,43 | 0,85 | -29,6 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-defensive-quality-N15-W13-F1 | 2,9 % | 15,4 % | 11,2 % | 9,6 % | 0,29 | 0,85 | -24,1 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-defensive-quality-N15-W26-F0 | 8,2 % | 15,4 % | 11,2 % | 9,6 % | 0,52 | 0,85 | -30,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-defensive-quality-N15-W26-F1 | 4,0 % | 15,4 % | 11,2 % | 9,6 % | 0,37 | 0,85 | -26,2 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-defensive-quality-N20-W13-F0 | 8,2 % | 15,4 % | 11,2 % | 9,6 % | 0,53 | 0,85 | -31,4 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-defensive-quality-N20-W13-F1 | 4,4 % | 15,4 % | 11,2 % | 9,6 % | 0,40 | 0,85 | -23,6 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-defensive-quality-N20-W26-F0 | 7,4 % | 15,4 % | 11,2 % | 9,6 % | 0,47 | 0,85 | -31,4 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-defensive-quality-N20-W26-F1 | 3,0 % | 15,4 % | 11,2 % | 9,6 % | 0,30 | 0,85 | -27,6 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-value-momentum-N10-W13-F0 | 11,7 % | 15,4 % | 11,2 % | 9,6 % | 0,59 | 0,85 | -36,1 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-value-momentum-N10-W13-F1 | 6,0 % | 15,4 % | 11,2 % | 9,6 % | 0,48 | 0,85 | -24,4 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-value-momentum-N10-W26-F0 | 13,1 % | 15,4 % | 11,2 % | 9,6 % | 0,67 | 0,85 | -36,0 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-value-momentum-N10-W26-F1 | 8,5 % | 15,4 % | 11,2 % | 9,6 % | 0,65 | 0,85 | -25,9 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-value-momentum-N15-W13-F0 | 13,6 % | 15,4 % | 11,2 % | 9,6 % | 0,63 | 0,85 | -41,3 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-value-momentum-N15-W13-F1 | 8,5 % | 15,4 % | 11,2 % | 9,6 % | 0,57 | 0,85 | -25,9 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-value-momentum-N15-W26-F0 | 15,2 % | 15,4 % | 11,2 % | 9,6 % | 0,69 | 0,85 | -41,2 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-value-momentum-N15-W26-F1 | 10,8 % | 15,4 % | 11,2 % | 9,6 % | 0,71 | 0,85 | -25,1 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-value-momentum-N20-W13-F0 | 17,1 % | 15,4 % | 11,2 % | 9,6 % | 0,74 | 0,85 | -42,6 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-value-momentum-N20-W13-F1 | 11,6 % | 15,4 % | 11,2 % | 9,6 % | 0,71 | 0,85 | -24,7 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-value-momentum-N20-W26-F0 | 16,6 % | 15,4 % | 11,2 % | 9,6 % | 0,71 | 0,85 | -42,5 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
+| Q-value-momentum-N20-W26-F1 | 11,9 % | 15,4 % | 11,2 % | 9,6 % | 0,73 | 0,85 | -26,1 % | -31,8 % | 1,0000 | 1,0000 | schlägt nicht |
 
 ## Grenzen
 
