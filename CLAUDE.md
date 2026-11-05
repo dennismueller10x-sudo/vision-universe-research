@@ -14,17 +14,18 @@ Daten entstehen in GitHub-Actions-Läufen und werden nach `main` committet.
 
 ## Gates, die PRs aufteilen
 
-Mehrere Produkte haben Isolations-Gates. Ein PR, der ihre Pfade berührt, darf nur ihre Welt ändern:
+Pfad-Isolation ist durch **Vertragstests** ersetzt (05.11.2026, [docs/PLAN_NEUSTART_2026-11.md](docs/PLAN_NEUSTART_2026-11.md) §3):
+`core/registry/product-contracts.json` nennt je Produkt Pfade, CI und Vertragstests sowie die Schnittstellen (Artefakt + Schema), die es liest;
+`core/tests/product-contracts.test.mjs` prüft, dass jede Produktänderung die Produkt-CI auslöst und jedes Schnittstellen-Schema stimmt.
+Ein Querschnitts-PR ist erlaubt; er muss die CI jedes berührten Produkts grün bekommen. Ändert ein PR ein Schnittstellen-Schema, zieht er Verbraucher und Registry im selben PR nach.
 
-| Gate | Auslöser | Regel |
-|---|---|---|
-| Supertrader Gate A (`scripts/supertrader/guard-protected-paths.mjs`) | `supertrader/**`, `scripts/supertrader/**`, `docs/SUPERTRADER_*.md`, `.github/workflows/supertrader-*.yml` | nur diese Pfade im PR |
-| Company Intelligence `validate` | `company-intelligence/**`, `scripts/company_intelligence/**`, ihr Workflow | keine Quant-, Discover-, Market-, API-Pfade |
-| Discover „verändert keine bestehende Engine“ | `discover/**`, `scripts/discover/**` | kein `quant`, `scripts/market`, `scripts/technical` … |
-| Discover Frontend Budget (`scripts/discover/browser-qa.mjs`) | Discover-Views | `discover/(app|home|detail|themes).(js|css)` ≤ 180.000 Byte decoded, ≤ 12 Requests |
+| Gate | Stand |
+|---|---|
+| Supertrader Gate A (`scripts/supertrader/guard-protected-paths.mjs`) | nur noch Bericht, blockiert nicht |
+| Company Intelligence `validate` (Pfadverbot) | entfernt; Currency-Befunde-Prüfung bleibt |
+| Discover „verändert keine bestehende Engine“ | entfernt |
+| Discover Frontend Budget (`scripts/discover/browser-qa.mjs`) | bleibt: `discover/(app|home|detail|themes).(js|css)` ≤ 180.000 Byte decoded, ≤ 12 Requests |
 
-**Neustart (Owner-Entscheidung 04.11.2026, [docs/PLAN_NEUSTART_2026-11.md](docs/PLAN_NEUSTART_2026-11.md)):** Diese Pfad-Gates werden durch Vertragstests ersetzt
-(prüfen Daten und Schnittstellen statt berührter Ordner). Bis ein Gate umgebaut ist, gilt es weiter; der Umbau selbst ist ausdrücklich erlaubt.
 Veraltete Daten lösen einen Alarm aus und blockieren keinen Code-PR.
 
 ## Freigaben und Merge (Owner-Entscheidung 04.11.2026)

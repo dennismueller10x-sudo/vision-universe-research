@@ -330,7 +330,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -4700,7 +4700,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -9505,7 +9505,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -17046,7 +17046,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -17216,7 +17216,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -20279,7 +20279,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -20781,6 +20781,76 @@
     {
      "d": "2026-11-03",
      "type": "ARCHIVED",
+     "rev": 1
+    }
+   ]
+  },
+  "AGM|1W|FLAT|2024-07-26|-1|WAVE_C|C#2": {
+   "id": "AGM|1W|FLAT|2024-07-26|-1|WAVE_C|C#2",
+   "symbol": "AGM",
+   "timeframe": "1W",
+   "key": "FLAT|2024-07-26|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "FLAT|2024-07-26|-1|WAVE_C|C|235.54|0|74.94||290.12|140.24|BASE:114.28708-131.97292,EXTENDED:39.34708-114.28708",
+     "anchor": {
+      "price": 235.54,
+      "time": "2026-08-07",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 74.94,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 114.28708,
+       "high": 131.97292,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 39.34708,
+       "high": 114.28708,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 290.12,
+      "direction": "above",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 140.24,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
      "rev": 1
     }
    ]
@@ -22043,6 +22113,70 @@
     }
    ]
   },
+  "AGRO|1W|FLAT|2022-04-14|-1|WAVE_C|C": {
+   "id": "AGRO|1W|FLAT|2022-04-14|-1|WAVE_C|C",
+   "symbol": "AGRO",
+   "timeframe": "1W",
+   "key": "FLAT|2022-04-14|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "FLAT|2022-04-14|-1|WAVE_C|C|15.22|0|5.92||18.97|7.13|BASE:5.64144-7.03856",
+     "anchor": {
+      "price": 15.22,
+      "time": "2026-04-02",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 5.92,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 5.64144,
+       "high": 7.03856,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 18.97,
+      "direction": "above",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 7.13,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "AGRO|1W|FLAT|2026-08-14|1|WAVE_C|C": {
    "id": "AGRO|1W|FLAT|2026-08-14|1|WAVE_C|C",
    "symbol": "AGRO",
@@ -23224,7 +23358,7 @@
    "createdAt": "2026-11-03",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -23469,6 +23603,82 @@
     }
    ]
   },
+  "AHG|1W|ZIGZAG|2023-07-28|1|WAVE_C|C#2": {
+   "id": "AHG|1W|ZIGZAG|2023-07-28|1|WAVE_C|C#2",
+   "symbol": "AHG",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2023-07-28|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2023-07-28|1|WAVE_C|C|0.75|0|2.33||0.27|2.6|BASE:2.18994-3.08,EXTENDED:3.08-4.51994,EXTREME:4.51994-6.84994",
+     "anchor": {
+      "price": 0.75,
+      "time": "2026-09-25",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 2.33,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 2.18994,
+       "high": 3.08,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 3.08,
+       "high": 4.51994,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 4.51994,
+       "high": 6.84994,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.27,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 2.6,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "AHG|1W|ZIGZAG|2026-03-13|-1|WAVE_C|C": {
    "id": "AHG|1W|ZIGZAG|2026-03-13|-1|WAVE_C|C",
    "symbol": "AHG",
@@ -23657,7 +23867,7 @@
    "createdAt": "2026-11-03",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -23913,7 +24123,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -28804,7 +29014,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -38932,7 +39142,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -40353,7 +40563,7 @@
    "createdAt": "2026-11-02",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -50367,7 +50577,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "BASE_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -52991,6 +53201,82 @@
     {
      "d": "2026-10-16",
      "type": "ARCHIVED",
+     "rev": 1
+    }
+   ]
+  },
+  "ARDX|1W|IMPULSE|2022-06-17|1|WAVE_3|3#2": {
+   "id": "ARDX|1W|IMPULSE|2022-06-17|1|WAVE_3|3#2",
+   "symbol": "ARDX",
+   "timeframe": "1W",
+   "key": "IMPULSE|2022-06-17|1|WAVE_3|3",
+   "type": "WAVE_3",
+   "label": "Mögliche Welle 3 · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "IMPULSE|2022-06-17|1|WAVE_3|3|3.03|0|9.1724||0.5676|9.74|BASE:12.2024-17.870943,EXTENDED:17.870943-27.043343,EXTREME:27.043343-41.884286",
+     "anchor": {
+      "price": 3.03,
+      "time": "2026-10-30",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 1",
+      "length": 9.1724,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 12.2024,
+       "high": 17.870943,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 17.870943,
+       "high": 27.043343,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 27.043343,
+       "high": 41.884286,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.5676,
+      "direction": "below",
+      "ruleId": "W2_NOT_BEYOND_W1_ORIGIN"
+     },
+     "confirmation": {
+      "price": 9.74,
+      "ruleId": "W3_BEYOND_W1_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
      "rev": 1
     }
    ]
@@ -75315,11 +75601,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-16",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -75378,6 +75664,24 @@
     {
      "d": "2026-10-16",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -83175,6 +83479,82 @@
     }
    ]
   },
+  "BBAI|1W|ZIGZAG|2022-12-30|1|WAVE_C|C#2": {
+   "id": "BBAI|1W|ZIGZAG|2022-12-30|1|WAVE_C|C#2",
+   "symbol": "BBAI",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2022-12-30|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2022-12-30|1|WAVE_C|C|2.14|0|8.3463||0.6737|9.02|BASE:7.2980134-10.4863,EXTENDED:10.4863-15.644313,EXTREME:15.644313-23.990613",
+     "anchor": {
+      "price": 2.14,
+      "time": "2026-10-23",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 8.3463,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 7.2980134,
+       "high": 10.4863,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 10.4863,
+       "high": 15.644313,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 15.644313,
+       "high": 23.990613,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.6737,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 9.02,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "BBAI|1W|ZIGZAG|2025-02-14|-1|WAVE_C|C": {
    "id": "BBAI|1W|ZIGZAG|2025-02-14|-1|WAVE_C|C",
    "symbol": "BBAI",
@@ -90696,7 +91076,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -94391,6 +94771,82 @@
     }
    ]
   },
+  "BF-A|1W|IMPULSE|2020-12-11|-1|WAVE_3|3#3": {
+   "id": "BF-A|1W|IMPULSE|2020-12-11|-1|WAVE_3|3#3",
+   "symbol": "BF-A",
+   "timeframe": "1W",
+   "key": "IMPULSE|2020-12-11|-1|WAVE_3|3",
+   "type": "WAVE_3",
+   "label": "Mögliche Welle 3 · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "IMPULSE|2020-12-11|-1|WAVE_3|3|75.5|0|22.83||80.92|58.09|BASE:38.56106-52.67,EXTENDED:15.73106-38.56106",
+     "anchor": {
+      "price": 75.5,
+      "time": "2022-08-19",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 1",
+      "length": 22.83,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 38.56106,
+       "high": 52.67,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 15.73106,
+       "high": 38.56106,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 80.92,
+      "direction": "above",
+      "ruleId": "W2_NOT_BEYOND_W1_ORIGIN"
+     },
+     "confirmation": {
+      "price": 58.09,
+      "ruleId": "W3_BEYOND_W1_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
   "BF-B|1W|FLAT|2025-06-20|1|WAVE_C|C": {
    "id": "BF-B|1W|FLAT|2025-06-20|1|WAVE_C|C",
    "symbol": "BF-B",
@@ -94937,7 +95393,7 @@
    "createdAt": "2026-11-02",
    "rev": 2,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -95935,11 +96391,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -96005,6 +96461,24 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -102079,11 +102553,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-30",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -102130,6 +102604,24 @@
     {
      "d": "2026-10-30",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -102459,11 +102951,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -102510,6 +103002,24 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -106426,7 +106936,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -106503,7 +107013,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -112926,7 +113436,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -112986,9 +113496,84 @@
      "type": "WITHHELD",
      "rev": 1,
      "note": "Die Projektion wird derzeit nicht angezeigt (keine verlässliche Zählung oder Datenproblem); die eingefrorene These wird weiter verfolgt."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "SHOWN_AGAIN",
+     "rev": 1
     }
    ],
-   "withheld": true
+   "withheld": false
+  },
+  "BOOM|1W|FLAT|2025-11-21|1|WAVE_C|C": {
+   "id": "BOOM|1W|FLAT|2025-11-21|1|WAVE_C|C",
+   "symbol": "BOOM",
+   "timeframe": "1W",
+   "key": "FLAT|2025-11-21|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "FLAT|2025-11-21|1|WAVE_C|C|4.73|0|2.95||2.7|8.6|BASE:8.8069-9.5031,EXTENDED:9.5031-12.4531",
+     "anchor": {
+      "price": 4.73,
+      "time": "2026-03-13",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 2.95,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 8.8069,
+       "high": 9.5031,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 9.5031,
+       "high": 12.4531,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 2.7,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 8.6,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
   },
   "BOOM|1W|FLAT|2026-03-13|1|WAVE_C|C": {
    "id": "BOOM|1W|FLAT|2026-03-13|1|WAVE_C|C",
@@ -116860,7 +117445,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -118270,7 +118855,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -118427,7 +119012,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -124435,7 +125020,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -124611,7 +125196,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -125790,11 +126375,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -125853,6 +126438,24 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -138722,6 +139325,70 @@
     }
    ]
   },
+  "CBT|1W|IMPULSE|2024-11-08|-1|WAVE_3|3#2": {
+   "id": "CBT|1W|IMPULSE|2024-11-08|-1|WAVE_3|3#2",
+   "symbol": "CBT",
+   "timeframe": "1W",
+   "key": "IMPULSE|2024-11-08|-1|WAVE_3|3",
+   "type": "WAVE_3",
+   "label": "Mögliche Welle 3 · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "IMPULSE|2024-11-08|-1|WAVE_3|3|93.4|0|53.51||114.99|61.48|BASE:6.82082-39.89",
+     "anchor": {
+      "price": 93.4,
+      "time": "2026-06-26",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 1",
+      "length": 53.51,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 6.82082,
+       "high": 39.89,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 114.99,
+      "direction": "above",
+      "ruleId": "W2_NOT_BEYOND_W1_ORIGIN"
+     },
+     "confirmation": {
+      "price": 61.48,
+      "ruleId": "W3_BEYOND_W1_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "CBT|1W|IMPULSE|2026-06-26|-1|WAVE_3|3": {
    "id": "CBT|1W|IMPULSE|2026-06-26|-1|WAVE_3|3",
    "symbol": "CBT",
@@ -138906,6 +139573,76 @@
     {
      "d": "2026-11-02",
      "type": "ARCHIVED",
+     "rev": 1
+    }
+   ]
+  },
+  "CBT|1W|ZIGZAG|2024-11-08|-1|WAVE_C|C#2": {
+   "id": "CBT|1W|ZIGZAG|2024-11-08|-1|WAVE_C|C#2",
+   "symbol": "CBT",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2024-11-08|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2024-11-08|-1|WAVE_C|C|93.4|0|53.51||114.99|61.48|BASE:39.89-60.33082,EXTENDED:6.82082-39.89",
+     "anchor": {
+      "price": 93.4,
+      "time": "2026-06-26",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 53.51,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 39.89,
+       "high": 60.33082,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 6.82082,
+       "high": 39.89,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 114.99,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 61.48,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
      "rev": 1
     }
    ]
@@ -139800,7 +140537,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -139870,7 +140607,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -140804,7 +141541,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -141075,7 +141812,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "EXTENDED_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -143825,7 +144562,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -153324,9 +154061,9 @@
    "source": "ALTERNATIVE",
    "role": "ALTERNATIVE",
    "createdAt": "2026-10-06",
-   "rev": 6,
+   "rev": 7,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -153603,6 +154340,52 @@
       "ruleSet": "elliott-rules-3.1.0",
       "api": "vu-ti-api-3.0.0"
      }
+    },
+    {
+     "rev": 7,
+     "frozenAt": "2026-11-04",
+     "signature": "FLAT|2026-02-06|1|WAVE_C|C|0.8948|1|17.09||-4.38|29.8|BASE:24.51318-28.54642,EXTENDED:28.54642-45.63642",
+     "anchor": {
+      "price": 0.8948,
+      "time": "2026-11-04",
+      "provisional": true,
+      "text": "vorläufig: laufendes Extrem der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 17.09,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 24.51318,
+       "high": 28.54642,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 28.54642,
+       "high": 45.63642,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": -4.38,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 29.8,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
     }
    ],
    "events": [
@@ -153639,6 +154422,12 @@
      "d": "2026-11-03",
      "type": "REVISED",
      "rev": 6,
+     "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "REVISED",
+     "rev": 7,
      "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
     }
    ]
@@ -163411,8 +164200,8 @@
    "role": "PRIMARY",
    "createdAt": "2026-10-06",
    "rev": 1,
-   "state": "BASE_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "state": "CONFIRMED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -163477,6 +164266,12 @@
      "d": "2026-10-23",
      "type": "SHOWN_AGAIN",
      "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "close": 6.8
     }
    ],
    "withheld": false
@@ -163581,8 +164376,8 @@
    "role": "ALTERNATIVE",
    "createdAt": "2026-10-06",
    "rev": 1,
-   "state": "BASE_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "state": "CONFIRMED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -163647,6 +164442,12 @@
      "d": "2026-10-23",
      "type": "SHOWN_AGAIN",
      "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "close": 6.8
     }
    ],
    "withheld": false
@@ -167055,7 +167856,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -175266,7 +176067,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -175348,7 +176149,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -178847,9 +179648,9 @@
    "source": "EXPLORE",
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-10-23",
-   "rev": 3,
+   "rev": 4,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -178970,6 +179771,52 @@
       "ruleSet": "elliott-rules-3.1.0",
       "api": "vu-ti-api-3.0.0"
      }
+    },
+    {
+     "rev": 4,
+     "frozenAt": "2026-11-04",
+     "signature": "FLAT|2022-02-25|-1|WAVE_C|C|28.75|1|10.84||35.83|14.15|BASE:11.21088-13.76912,EXTENDED:0.37088-11.21088",
+     "anchor": {
+      "price": 28.75,
+      "time": "2026-11-04",
+      "provisional": true,
+      "text": "vorläufig: laufendes Extrem der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 10.84,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 11.21088,
+       "high": 13.76912,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 0.37088,
+       "high": 11.21088,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 35.83,
+      "direction": "above",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 14.15,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
     }
    ],
    "events": [
@@ -178988,6 +179835,12 @@
      "d": "2026-11-03",
      "type": "REVISED",
      "rev": 3,
+     "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "REVISED",
+     "rev": 4,
      "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
     }
    ]
@@ -179709,6 +180562,76 @@
     {
      "d": "2026-10-16",
      "type": "ARCHIVED",
+     "rev": 1
+    }
+   ]
+  },
+  "COUR|1W|FLAT|2022-09-02|1|WAVE_C|C": {
+   "id": "COUR|1W|FLAT|2022-09-02|1|WAVE_C|C",
+   "symbol": "COUR",
+   "timeframe": "1W",
+   "key": "FLAT|2022-09-02|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "FLAT|2022-09-02|1|WAVE_C|C|3.47|0|9.45||1.82|20.72|BASE:16.5299-18.7601,EXTENDED:18.7601-28.2101",
+     "anchor": {
+      "price": 3.47,
+      "time": "2026-10-30",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 9.45,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 16.5299,
+       "high": 18.7601,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 18.7601,
+       "high": 28.2101,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 1.82,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 20.72,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
      "rev": 1
     }
    ]
@@ -181114,11 +182037,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-02",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -181172,6 +182095,24 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -181275,8 +182216,8 @@
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-11-02",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -181336,6 +182277,17 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -182130,7 +183082,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -182463,7 +183415,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -198318,7 +199270,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -198587,7 +199539,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -201897,6 +202849,76 @@
      "d": "2026-11-03",
      "type": "ARCHIVED",
      "rev": 1
+    }
+   ]
+  },
+  "CWH|1W|ZIGZAG|2021-05-07|-1|WAVE_C|C#2": {
+   "id": "CWH|1W|ZIGZAG|2021-05-07|-1|WAVE_C|C#2",
+   "symbol": "CWH",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-05-07|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2021-05-07|-1|WAVE_C|C|27.85|0|27.18||46.34|19.16|BASE:0.67-11.05276",
+     "anchor": {
+      "price": 27.85,
+      "time": "2024-03-28",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 27.18,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 0.67,
+       "high": 11.05276,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 46.34,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 19.16,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
     }
    ]
   },
@@ -208916,7 +209938,7 @@
    "createdAt": "2026-11-02",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -208993,7 +210015,7 @@
    "createdAt": "2026-11-02",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -215831,7 +216853,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -227688,7 +228710,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -231101,7 +232123,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -231486,7 +232508,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -232113,7 +233135,7 @@
    "createdAt": "2026-10-06",
    "rev": 3,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -233029,11 +234051,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-23",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -233080,6 +234102,24 @@
     {
      "d": "2026-10-23",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -235109,11 +236149,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -235179,6 +236219,24 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -238429,7 +239487,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -240436,7 +241494,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -242104,7 +243162,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "BASE_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -242192,7 +243250,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "BASE_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -243377,7 +244435,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -244656,7 +245714,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -247077,7 +248135,7 @@
    "createdAt": "2026-11-03",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -256688,7 +257746,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -271057,7 +272115,7 @@
    "createdAt": "2026-11-02",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -274534,9 +275592,9 @@
    "source": "EXPLORE",
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-11-02",
-   "rev": 2,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "rev": 3,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -274629,6 +275687,46 @@
       "ruleSet": "elliott-rules-3.1.0",
       "api": "vu-ti-api-3.0.0"
      }
+    },
+    {
+     "rev": 3,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2021-11-12|-1|WAVE_C|C|42.77|0|28.65||54.42|25.77|BASE:14.12-25.0643",
+     "anchor": {
+      "price": 42.77,
+      "time": "2024-11-22",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 28.65,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 14.12,
+       "high": 25.0643,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 54.42,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 25.77,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
     }
    ],
    "events": [
@@ -274641,6 +275739,12 @@
      "d": "2026-11-03",
      "type": "REVISED",
      "rev": 2,
+     "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "REVISED",
+     "rev": 3,
      "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
     }
    ]
@@ -277197,7 +278301,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "BASE_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -277525,11 +278629,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-30",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -277582,6 +278686,24 @@
     {
      "d": "2026-10-30",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -282702,11 +283824,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-30",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -282772,6 +283894,24 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -286342,8 +287482,8 @@
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -286390,6 +287530,17 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -289162,7 +290313,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -289238,7 +290389,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "BASE_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -297603,7 +298754,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -297855,7 +299006,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -303861,6 +305012,88 @@
     }
    ]
   },
+  "GCT|1W|IMPULSE|2022-11-04|1|WAVE_3|3#3": {
+   "id": "GCT|1W|IMPULSE|2022-11-04|1|WAVE_3|3#3",
+   "symbol": "GCT",
+   "timeframe": "1W",
+   "key": "IMPULSE|2022-11-04|1|WAVE_3|3",
+   "type": "WAVE_3",
+   "label": "Mögliche Welle 3 · Alternative Lesart",
+   "direction": "UP",
+   "source": "MOTIVE_ALTERNATIVE",
+   "role": "MOTIVE_ALTERNATIVE",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "IMPULSE|2022-11-04|1|WAVE_3|3|31.53|0|47.14||4.66|51.8|BASE:78.67-107.80252,EXTENDED:107.80252-154.94252,EXTREME:154.94252-231.21504",
+     "anchor": {
+      "price": 31.53,
+      "time": "2026-06-05",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 1",
+      "length": 47.14,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 78.67,
+       "high": 107.80252,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 107.80252,
+       "high": 154.94252,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 154.94252,
+       "high": 231.21504,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 4.66,
+      "direction": "below",
+      "ruleId": "W2_NOT_BEYOND_W1_ORIGIN"
+     },
+     "confirmation": {
+      "price": 51.8,
+      "ruleId": "W3_BEYOND_W1_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
   "GDDY|1W|FLAT|2026-06-12|1|WAVE_C|C": {
    "id": "GDDY|1W|FLAT|2026-06-12|1|WAVE_C|C",
    "symbol": "GDDY",
@@ -305979,7 +307212,7 @@
    "createdAt": "2026-11-02",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -308479,7 +309712,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -314937,8 +316170,8 @@
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -314992,6 +316225,17 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -317410,7 +318654,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -319162,6 +320406,76 @@
      "d": "2026-10-16",
      "type": "ARCHIVED",
      "rev": 1
+    }
+   ]
+  },
+  "GOOD|1W|ZIGZAG|2021-12-31|-1|WAVE_C|C": {
+   "id": "GOOD|1W|ZIGZAG|2021-12-31|-1|WAVE_C|C",
+   "symbol": "GOOD",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-12-31|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2021-12-31|-1|WAVE_C|C|17.61|0|14.11||25.77|11.66|BASE:3.5-8.89002",
+     "anchor": {
+      "price": 17.61,
+      "time": "2024-11-29",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 14.11,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 3.5,
+       "high": 8.89002,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 25.77,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 11.66,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
     }
    ]
   },
@@ -322086,7 +323400,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -322314,7 +323628,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "BASE_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -323454,11 +324768,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-06",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-10-06",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-10-09",
    "revisions": [
     {
      "rev": 1,
@@ -323524,6 +324838,24 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-10-09",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-10-09",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-10-09",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -330773,7 +332105,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -342326,8 +343658,8 @@
    "role": "MOTIVE_ALTERNATIVE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -342381,6 +343713,17 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -346620,11 +347963,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-06",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -346691,6 +348034,24 @@
      "rev": 1,
      "from": "EXPLORE",
      "to": "EXPLORE_HIGHLIGHT"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -348814,11 +350175,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-09",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -348865,6 +350226,24 @@
     {
      "d": "2026-10-09",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -351920,11 +353299,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -351984,6 +353363,24 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -353509,8 +354906,8 @@
    "role": "MOTIVE_ALTERNATIVE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -353564,6 +354961,17 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -355169,7 +356577,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -356603,7 +358011,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -357871,7 +359279,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -357941,7 +359349,7 @@
    "createdAt": "2026-10-06",
    "rev": 2,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -359049,7 +360457,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "EXTREME_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -359237,7 +360645,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -361017,11 +362425,11 @@
    "label": "Mögliche Welle 3 · Alternative Lesart",
    "direction": "DOWN",
    "source": "MOTIVE_ALTERNATIVE",
-   "role": "MOTIVE_ALTERNATIVE",
+   "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -361075,6 +362483,13 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "MOTIVE_ALTERNATIVE",
+     "to": "EXPLORE_HIGHLIGHT"
     }
    ]
   },
@@ -361777,7 +363192,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -363702,7 +365117,7 @@
    "createdAt": "2026-10-16",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -375837,7 +377252,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -376403,7 +377818,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -378000,7 +379415,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -382342,7 +383757,7 @@
    "createdAt": "2026-11-03",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -382424,7 +383839,7 @@
    "createdAt": "2026-11-03",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -384437,7 +385852,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -387529,11 +388944,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-23",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -387599,6 +389014,24 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -389732,8 +391165,8 @@
    "role": "MOTIVE_ALTERNATIVE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -389787,6 +391220,17 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -391322,7 +392766,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -391538,7 +392982,7 @@
    "createdAt": "2026-10-09",
    "rev": 3,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -391824,7 +393268,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -393310,7 +394754,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -393380,7 +394824,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -395157,7 +396601,7 @@
    "createdAt": "2026-11-02",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -396924,11 +398368,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -396987,6 +398431,24 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -399452,6 +400914,82 @@
     }
    ]
   },
+  "JOUT|1W|IMPULSE|2025-04-17|1|WAVE_3|3": {
+   "id": "JOUT|1W|IMPULSE|2025-04-17|1|WAVE_3|3",
+   "symbol": "JOUT",
+   "timeframe": "1W",
+   "key": "IMPULSE|2025-04-17|1|WAVE_3|3",
+   "type": "WAVE_3",
+   "label": "Mögliche Welle 3 · Alternative Lesart",
+   "direction": "UP",
+   "source": "MOTIVE_ALTERNATIVE",
+   "role": "MOTIVE_ALTERNATIVE",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "IMPULSE|2025-04-17|1|WAVE_3|3|40.88|0|31.41||21.93|53.34|BASE:72.29-91.70138,EXTENDED:91.70138-123.11138,EXTREME:123.11138-173.93276",
+     "anchor": {
+      "price": 40.88,
+      "time": "2026-05-15",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 1",
+      "length": 31.41,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 72.29,
+       "high": 91.70138,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 91.70138,
+       "high": 123.11138,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 123.11138,
+       "high": 173.93276,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 21.93,
+      "direction": "below",
+      "ruleId": "W2_NOT_BEYOND_W1_ORIGIN"
+     },
+     "confirmation": {
+      "price": 53.34,
+      "ruleId": "W3_BEYOND_W1_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "JOUT|1W|IMPULSE|2026-05-01|-1|WAVE_3|3": {
    "id": "JOUT|1W|IMPULSE|2026-05-01|-1|WAVE_3|3",
    "symbol": "JOUT",
@@ -400989,9 +402527,9 @@
    "source": "EXPLORE",
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-10-23",
-   "rev": 2,
+   "rev": 3,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -401096,6 +402634,58 @@
       "ruleSet": "elliott-rules-3.1.0",
       "api": "vu-ti-api-3.0.0"
      }
+    },
+    {
+     "rev": 3,
+     "frozenAt": "2026-11-04",
+     "signature": "IMPULSE|2023-10-27|1|WAVE_3|3|3.1|1|8.8701||0.6999|9.57|BASE:11.9701-17.451822,EXTENDED:17.451822-26.321922,EXTREME:26.321922-40.673744",
+     "anchor": {
+      "price": 3.1,
+      "time": "2026-02-06",
+      "provisional": true,
+      "text": "vorläufig: laufendes Extrem der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 1",
+      "length": 8.8701,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 11.9701,
+       "high": 17.451822,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 17.451822,
+       "high": 26.321922,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 26.321922,
+       "high": 40.673744,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.6999,
+      "direction": "below",
+      "ruleId": "W2_NOT_BEYOND_W1_ORIGIN"
+     },
+     "confirmation": {
+      "price": 9.57,
+      "ruleId": "W3_BEYOND_W1_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
     }
    ],
    "events": [
@@ -401108,6 +402698,12 @@
      "d": "2026-10-30",
      "type": "REVISED",
      "rev": 2,
+     "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "REVISED",
+     "rev": 3,
      "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
     }
    ]
@@ -404380,6 +405976,82 @@
     }
    ]
   },
+  "KD|1W|IMPULSE|2022-10-14|1|WAVE_3|3#2": {
+   "id": "KD|1W|IMPULSE|2022-10-14|1|WAVE_3|3#2",
+   "symbol": "KD",
+   "timeframe": "1W",
+   "key": "IMPULSE|2022-10-14|1|WAVE_3|3",
+   "type": "WAVE_3",
+   "label": "Mögliche Welle 3 · Alternative Lesart",
+   "direction": "UP",
+   "source": "MOTIVE_ALTERNATIVE",
+   "role": "MOTIVE_ALTERNATIVE",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "IMPULSE|2022-10-14|1|WAVE_3|3|11|0|33.57||8.23|41.8|BASE:44.57-65.31626,EXTENDED:65.31626-98.88626,EXTREME:98.88626-153.20252",
+     "anchor": {
+      "price": 11,
+      "time": "2026-06-18",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 1",
+      "length": 33.57,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 44.57,
+       "high": 65.31626,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 65.31626,
+       "high": 98.88626,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 98.88626,
+       "high": 153.20252,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 8.23,
+      "direction": "below",
+      "ruleId": "W2_NOT_BEYOND_W1_ORIGIN"
+     },
+     "confirmation": {
+      "price": 41.8,
+      "ruleId": "W3_BEYOND_W1_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "KEEL|1W|FLAT|2025-10-17|-1|WAVE_C|C": {
    "id": "KEEL|1W|FLAT|2025-10-17|-1|WAVE_C|C",
    "symbol": "KEEL",
@@ -405262,6 +406934,82 @@
      "d": "2026-10-16",
      "type": "ARCHIVED",
      "rev": 2
+    }
+   ]
+  },
+  "KEP|1W|IMPULSE|2022-10-14|1|WAVE_3|3": {
+   "id": "KEP|1W|IMPULSE|2022-10-14|1|WAVE_3|3",
+   "symbol": "KEP",
+   "timeframe": "1W",
+   "key": "IMPULSE|2022-10-14|1|WAVE_3|3",
+   "type": "WAVE_3",
+   "label": "Mögliche Welle 3 · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "IMPULSE|2022-10-14|1|WAVE_3|3|10.34|0|16.53||5.92|22.45|BASE:26.87-37.08554,EXTENDED:37.08554-53.61554,EXTREME:53.61554-80.36108",
+     "anchor": {
+      "price": 10.34,
+      "time": "2026-10-30",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 1",
+      "length": 16.53,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 26.87,
+       "high": 37.08554,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 37.08554,
+       "high": 53.61554,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 53.61554,
+       "high": 80.36108,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 5.92,
+      "direction": "below",
+      "ruleId": "W2_NOT_BEYOND_W1_ORIGIN"
+     },
+     "confirmation": {
+      "price": 22.45,
+      "ruleId": "W3_BEYOND_W1_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
     }
    ]
   },
@@ -410096,7 +411844,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -429029,11 +430777,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -429087,6 +430835,24 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -433233,7 +434999,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -435987,7 +437753,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -436955,7 +438721,7 @@
    "createdAt": "2026-10-09",
    "rev": 2,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -443639,7 +445405,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -443799,11 +445565,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-30",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -443857,6 +445623,24 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -444846,7 +446630,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -445123,11 +446907,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-02",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -445187,6 +446971,24 @@
      "d": "2026-11-02",
      "type": "CREATED",
      "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -445203,7 +447005,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -446334,7 +448136,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -446592,7 +448394,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -449659,7 +451461,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -449729,7 +451531,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "BASE_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -453063,7 +454865,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -453321,7 +455123,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -454465,6 +456267,76 @@
     }
    ]
   },
+  "MBC|1W|ZIGZAG|2024-10-18|-1|WAVE_C|C#3": {
+   "id": "MBC|1W|ZIGZAG|2024-10-18|-1|WAVE_C|C#3",
+   "symbol": "MBC",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2024-10-18|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2024-10-18|-1|WAVE_C|C|13.59|0|9.4||19.2|9.8|BASE:4.19-7.7808",
+     "anchor": {
+      "price": 13.59,
+      "time": "2026-02-06",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 9.4,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 4.19,
+       "high": 7.7808,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 19.2,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 9.8,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
   "MBIN|1W|FLAT|2024-07-26|-1|WAVE_C|C": {
    "id": "MBIN|1W|FLAT|2024-07-26|-1|WAVE_C|C",
    "symbol": "MBIN",
@@ -454648,7 +456520,7 @@
    "createdAt": "2026-11-02",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -454718,7 +456590,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -455608,7 +457480,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -455678,7 +457550,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -458168,11 +460040,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-09",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -458238,6 +460110,24 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -467675,11 +469565,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -467738,6 +469628,24 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -472217,8 +474125,8 @@
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -472265,6 +474173,17 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -474557,7 +476476,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "EXTREME_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -474663,7 +476582,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -475108,7 +477027,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -475265,7 +477184,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -477382,8 +479301,8 @@
    "role": "MOTIVE_ALTERNATIVE",
    "createdAt": "2026-10-06",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -477437,6 +479356,17 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -491652,6 +493582,70 @@
     }
    ]
   },
+  "MX|1W|IMPULSE|2021-03-26|-1|WAVE_3|3#3": {
+   "id": "MX|1W|IMPULSE|2021-03-26|-1|WAVE_3|3#3",
+   "symbol": "MX",
+   "timeframe": "1W",
+   "key": "IMPULSE|2021-03-26|-1|WAVE_3|3",
+   "type": "WAVE_3",
+   "label": "Mögliche Welle 3 · Alternative Lesart",
+   "direction": "DOWN",
+   "source": "MOTIVE_ALTERNATIVE",
+   "role": "MOTIVE_ALTERNATIVE",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "IMPULSE|2021-03-26|-1|WAVE_3|3|19.94|1|11.03||26.01|14.98|BASE:2.09346-8.91",
+     "anchor": {
+      "price": 19.94,
+      "time": "2022-06-03",
+      "provisional": true,
+      "text": "vorläufig: laufendes Extrem der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 1",
+      "length": 11.03,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 2.09346,
+       "high": 8.91,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 26.01,
+      "direction": "above",
+      "ruleId": "W2_NOT_BEYOND_W1_ORIGIN"
+     },
+     "confirmation": {
+      "price": 14.98,
+      "ruleId": "W3_BEYOND_W1_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "MX|1W|IMPULSE|2025-11-07|1|WAVE_3|3": {
    "id": "MX|1W|IMPULSE|2025-11-07|1|WAVE_3|3",
    "symbol": "MX",
@@ -492004,7 +493998,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -496363,6 +498357,82 @@
      "d": "2026-11-03",
      "type": "ARCHIVED",
      "rev": 1
+    }
+   ]
+  },
+  "NAVI|1W|ZIGZAG|2021-09-17|-1|WAVE_C|C#2": {
+   "id": "NAVI|1W|ZIGZAG|2021-09-17|-1|WAVE_C|C#2",
+   "symbol": "NAVI",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-09-17|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2021-09-17|-1|WAVE_C|C|19.21|0|10.3||23.49|13.19|BASE:8.91-12.8446,EXTENDED:2.5446-8.91",
+     "anchor": {
+      "price": 19.21,
+      "time": "2023-12-15",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 10.3,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 8.91,
+       "high": 12.8446,
+       "stateAtFreeze": "INSIDE"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 2.5446,
+       "high": 8.91,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 23.49,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 13.19,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
     }
    ]
   },
@@ -507219,8 +509289,8 @@
    "role": "MOTIVE_ALTERNATIVE",
    "createdAt": "2026-10-30",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "BASE_PROJECTION_REACHED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -507274,6 +509344,12 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "BASE_PROJECTION_REACHED",
+     "rev": 1,
+     "close": 99.59
     }
    ]
   },
@@ -507289,8 +509365,8 @@
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "EXTENDED_PROJECTION_REACHED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -507350,6 +509426,12 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "EXTENDED_PROJECTION_REACHED",
+     "rev": 1,
+     "close": 99.59
     }
    ]
   },
@@ -509628,7 +511710,7 @@
    "createdAt": "2026-11-02",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -515925,7 +518007,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "EXTENDED_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -520078,7 +522160,7 @@
    "createdAt": "2026-11-02",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -523341,7 +525423,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -523418,7 +525500,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -523763,8 +525845,8 @@
    "role": "MOTIVE_ALTERNATIVE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -523824,6 +525906,17 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -524191,8 +526284,8 @@
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -524258,6 +526351,17 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -529811,11 +531915,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -529868,6 +531972,24 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -533434,7 +535556,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -533604,7 +535726,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -533996,7 +536118,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -534166,7 +536288,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -535209,7 +537331,7 @@
    "createdAt": "2026-10-06",
    "rev": 3,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -536162,7 +538284,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -536836,7 +538958,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -537121,7 +539243,7 @@
    "createdAt": "2026-11-03",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -540418,7 +542540,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -542796,11 +544918,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-06",
    "rev": 1,
-   "state": "BASE_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -542879,6 +545001,24 @@
      "type": "BASE_PROJECTION_REACHED",
      "rev": 1,
      "close": 10.04
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -542976,7 +545116,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -544995,7 +547135,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "EXTENDED_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -545165,7 +547305,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -551797,7 +553937,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -551880,7 +554020,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -554697,8 +556837,8 @@
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-10-09",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -554759,6 +556899,17 @@
      "rev": 1,
      "from": "EXPLORE",
      "to": "EXPLORE_HIGHLIGHT"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -556340,7 +558491,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -557060,11 +559211,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -557111,6 +559262,24 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -561521,6 +563690,76 @@
     }
    ]
   },
+  "PCYO|1W|ZIGZAG|2021-04-16|-1|WAVE_C|C#2": {
+   "id": "PCYO|1W|ZIGZAG|2021-04-16|-1|WAVE_C|C#2",
+   "symbol": "PCYO",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-04-16|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2021-04-16|-1|WAVE_C|C|14.54|0|8.63||16.44|7.81|BASE:5.91-9.20666,EXTENDED:0.57666-5.91",
+     "anchor": {
+      "price": 14.54,
+      "time": "2024-11-29",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 8.63,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 5.91,
+       "high": 9.20666,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 0.57666,
+       "high": 5.91,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 16.44,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 7.81,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "PDD|1W|FLAT|2024-01-12|-1|WAVE_C|C": {
    "id": "PDD|1W|FLAT|2024-01-12|-1|WAVE_C|C",
    "symbol": "PDD",
@@ -561780,7 +564019,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -563379,7 +565618,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -563455,7 +565694,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -566570,7 +568809,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -566646,7 +568885,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -581903,8 +584142,8 @@
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -581958,6 +584197,17 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -592034,7 +594284,7 @@
    "createdAt": "2026-11-02",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -594673,7 +596923,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -594744,9 +596994,15 @@
      "d": "2026-10-30",
      "type": "SHOWN_AGAIN",
      "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "WITHHELD",
+     "rev": 1,
+     "note": "Die Projektion wird derzeit nicht angezeigt (keine verlässliche Zählung oder Datenproblem); die eingefrorene These wird weiter verfolgt."
     }
    ],
-   "withheld": false
+   "withheld": true
   },
   "PTON|1W|FLAT|2026-03-13|1|WAVE_C|C": {
    "id": "PTON|1W|FLAT|2026-03-13|1|WAVE_C|C",
@@ -594894,7 +597150,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -594965,9 +597221,15 @@
      "d": "2026-10-30",
      "type": "SHOWN_AGAIN",
      "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "WITHHELD",
+     "rev": 1,
+     "note": "Die Projektion wird derzeit nicht angezeigt (keine verlässliche Zählung oder Datenproblem); die eingefrorene These wird weiter verfolgt."
     }
    ],
-   "withheld": false
+   "withheld": true
   },
   "PUBM|1W|FLAT|2023-05-05|1|WAVE_C|C": {
    "id": "PUBM|1W|FLAT|2023-05-05|1|WAVE_C|C",
@@ -596906,11 +599168,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -596963,6 +599225,24 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -597596,6 +599876,76 @@
     {
      "d": "2026-10-16",
      "type": "ARCHIVED",
+     "rev": 1
+    }
+   ]
+  },
+  "PZZA|1W|FLAT|2025-04-17|1|WAVE_C|C#2": {
+   "id": "PZZA|1W|FLAT|2025-04-17|1|WAVE_C|C#2",
+   "symbol": "PZZA",
+   "timeframe": "1W",
+   "key": "FLAT|2025-04-17|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "FLAT|2025-04-17|1|WAVE_C|C|18.1|0|24.15||7.01|55.31|BASE:51.4753-57.1747,EXTENDED:57.1747-81.3247",
+     "anchor": {
+      "price": 18.1,
+      "time": "2026-10-23",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 24.15,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 51.4753,
+       "high": 57.1747,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 57.1747,
+       "high": 81.3247,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 7.01,
+      "direction": "below",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 55.31,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
      "rev": 1
     }
    ]
@@ -599320,7 +601670,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -599582,7 +601932,7 @@
    "createdAt": "2026-10-16",
    "rev": 1,
    "state": "EXTENDED_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -600572,7 +602922,7 @@
    "createdAt": "2026-11-02",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -602343,7 +604693,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -606190,7 +608540,7 @@
    "createdAt": "2026-10-06",
    "rev": 3,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -609213,11 +611563,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -609276,6 +611626,24 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -609721,11 +612089,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-02",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -609779,6 +612147,24 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -612813,8 +615199,8 @@
    "role": "MOTIVE_ALTERNATIVE",
    "createdAt": "2026-10-30",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -612868,6 +615254,17 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -613561,7 +615958,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -613650,7 +616047,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -615330,8 +617727,8 @@
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-10-30",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "EXTENDED_PROJECTION_REACHED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -615385,6 +617782,24 @@
      "d": "2026-10-30",
      "type": "CREATED",
      "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "close": 49.91
+    },
+    {
+     "d": "2026-11-04",
+     "type": "BASE_PROJECTION_REACHED",
+     "rev": 1,
+     "close": 49.91
+    },
+    {
+     "d": "2026-11-04",
+     "type": "EXTENDED_PROJECTION_REACHED",
+     "rev": 1,
+     "close": 49.91
     }
    ]
   },
@@ -620250,7 +622665,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -621176,7 +623591,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -621414,7 +623829,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -624808,7 +627223,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -624874,8 +627289,15 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "WITHHELD",
+     "rev": 1,
+     "note": "Die Projektion wird derzeit nicht angezeigt (keine verlässliche Zählung oder Datenproblem); die eingefrorene These wird weiter verfolgt."
     }
-   ]
+   ],
+   "withheld": true
   },
   "RNAC|1W|WXY|2024-09-06|1|NEXT_MOVE|Folgebewegung": {
    "id": "RNAC|1W|WXY|2024-09-06|1|NEXT_MOVE|Folgebewegung",
@@ -624890,7 +627312,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -624956,8 +627378,15 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "WITHHELD",
+     "rev": 1,
+     "note": "Die Projektion wird derzeit nicht angezeigt (keine verlässliche Zählung oder Datenproblem); die eingefrorene These wird weiter verfolgt."
     }
-   ]
+   ],
+   "withheld": true
   },
   "RNAZ|1W|FLAT|2026-06-18|1|WAVE_C|C": {
    "id": "RNAZ|1W|FLAT|2026-06-18|1|WAVE_C|C",
@@ -625960,7 +628389,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -626166,11 +628595,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-06",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -626237,6 +628666,24 @@
      "rev": 1,
      "from": "EXPLORE",
      "to": "EXPLORE_HIGHLIGHT"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -629566,7 +632013,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -629701,7 +632148,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -630585,8 +633032,8 @@
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-11-02",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -630646,6 +633093,23 @@
      "type": "CONFIRMED",
      "rev": 1,
      "close": 51.39
+    },
+    {
+     "d": "2026-11-04",
+     "type": "EXTENDED_PROJECTION_REACHED",
+     "rev": 1,
+     "close": 48.66
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -633623,7 +636087,7 @@
    "createdAt": "2026-10-09",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -635142,6 +637606,82 @@
     }
    ]
   },
+  "RYAAY|1W|FLAT|2023-01-27|-1|NEXT_MOVE|Folgebewegung": {
+   "id": "RYAAY|1W|FLAT|2023-01-27|-1|NEXT_MOVE|Folgebewegung",
+   "symbol": "RYAAY",
+   "timeframe": "1W",
+   "key": "FLAT|2023-01-27|-1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "UP",
+   "source": "ALTERNATIVE",
+   "role": "ALTERNATIVE",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "FLAT|2023-01-27|-1|NEXT_MOVE|Folgebewegung|35.11|0|3.18||35.11|38.93|BASE:37.07524-38.29,EXTENDED:38.29-40.25524,EXTREME:40.25524-43.43524",
+     "anchor": {
+      "price": 35.11,
+      "time": "2023-03-17",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 3.18,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 37.07524,
+       "high": 38.29,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 38.29,
+       "high": 40.25524,
+       "stateAtFreeze": "PASSED"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 40.25524,
+       "high": 43.43524,
+       "stateAtFreeze": "PASSED"
+      }
+     ],
+     "invalidation": {
+      "price": 35.11,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 38.93,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    }
+   ]
+  },
   "RYAAY|1W|FLAT|2024-04-05|-1|WAVE_C|C": {
    "id": "RYAAY|1W|FLAT|2024-04-05|-1|WAVE_C|C",
    "symbol": "RYAAY",
@@ -635313,6 +637853,82 @@
     {
      "d": "2026-10-16",
      "type": "ARCHIVED",
+     "rev": 1
+    }
+   ]
+  },
+  "RYAAY|1W|ZIGZAG|1490|-1|NEXT_MOVE|Folgebewegung": {
+   "id": "RYAAY|1W|ZIGZAG|1490|-1|NEXT_MOVE|Folgebewegung",
+   "symbol": "RYAAY",
+   "timeframe": "1W",
+   "key": "ZIGZAG|1490|-1|NEXT_MOVE|Folgebewegung",
+   "type": "NEXT_MOVE",
+   "label": "Mögliche Folgebewegung nach Korrektur",
+   "direction": "UP",
+   "source": "PRIMARY",
+   "role": "PRIMARY",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|1490|-1|NEXT_MOVE|Folgebewegung|52.53|0|21.19||52.53|65.49|BASE:65.62542-73.72,EXTENDED:73.72-86.81542,EXTREME:86.81542-108.00542",
+     "anchor": {
+      "price": 52.53,
+      "time": "2026-10-23",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge der Korrektur",
+      "length": 21.19,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 65.62542,
+       "high": 73.72,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 73.72,
+       "high": 86.81542,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 86.81542,
+       "high": 108.00542,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 52.53,
+      "direction": "below",
+      "ruleId": "PATTERN_END"
+     },
+     "confirmation": {
+      "price": 65.49,
+      "ruleId": "S3_CORRECTION_COMPLETE"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
      "rev": 1
     }
    ]
@@ -642385,11 +645001,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-02",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -642442,6 +645058,24 @@
     {
      "d": "2026-11-02",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -643722,7 +646356,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -643804,7 +646438,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -648626,11 +651260,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -648683,6 +651317,24 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -658127,7 +660779,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -658824,11 +661476,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -658875,6 +661527,24 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -663235,11 +665905,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-30",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -663298,6 +665968,24 @@
     {
      "d": "2026-10-30",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -665051,11 +667739,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-06",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -665122,6 +667810,24 @@
      "rev": 1,
      "from": "EXPLORE",
      "to": "EXPLORE_HIGHLIGHT"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -665134,11 +667840,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-06",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -665205,6 +667911,94 @@
      "rev": 1,
      "from": "EXPLORE",
      "to": "EXPLORE_HIGHLIGHT"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
+    }
+   ]
+  },
+  "SLSN|1W|FLAT|2021-12-31|-1|WAVE_C|C": {
+   "id": "SLSN|1W|FLAT|2021-12-31|-1|WAVE_C|C",
+   "symbol": "SLSN",
+   "timeframe": "1W",
+   "key": "FLAT|2021-12-31|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "FLAT|2021-12-31|-1|WAVE_C|C|5.21|0|3.01||7.41|1.39|BASE:0.33982-1.05018",
+     "anchor": {
+      "price": 5.21,
+      "time": "2025-06-20",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 3.01,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 0.33982,
+       "high": 1.05018,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 7.41,
+      "direction": "above",
+      "ruleId": "FLAT_B_NOT_EXCESSIVE"
+     },
+     "confirmation": {
+      "price": 1.39,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
     }
    ]
   },
@@ -667458,11 +670252,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-10-23",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -667515,6 +670309,24 @@
     {
      "d": "2026-10-23",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -667720,7 +670532,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -668059,7 +670871,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -673774,7 +676586,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -674002,7 +676814,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -690454,7 +693266,7 @@
    "createdAt": "2026-10-06",
    "rev": 3,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -693810,7 +696622,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "EXTENDED_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -703465,11 +706277,11 @@
    "label": "Mögliche Welle 3 · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-02",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -703529,6 +706341,24 @@
      "d": "2026-11-02",
      "type": "CREATED",
      "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -703545,7 +706375,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -703616,7 +706446,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -704369,7 +707199,7 @@
    "createdAt": "2026-11-02",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -704628,6 +707458,88 @@
      "d": "2026-11-03",
      "type": "ARCHIVED",
      "rev": 1
+    }
+   ]
+  },
+  "TCBX|1W|ZIGZAG|2023-04-28|1|WAVE_C|C#3": {
+   "id": "TCBX|1W|ZIGZAG|2023-04-28|1|WAVE_C|C#3",
+   "symbol": "TCBX",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2023-04-28|1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "UP",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2023-04-28|1|WAVE_C|C|27.53|0|24.22||13.94|38.16|BASE:42.49796-51.75,EXTENDED:51.75-66.71796,EXTREME:66.71796-90.93796",
+     "anchor": {
+      "price": 27.53,
+      "time": "2025-04-11",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 24.22,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 42.49796,
+       "high": 51.75,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 51.75,
+       "high": 66.71796,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 66.71796,
+       "high": 90.93796,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 13.94,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 38.16,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
     }
    ]
   },
@@ -713471,7 +716383,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -725177,7 +728089,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -729615,8 +732527,8 @@
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -729670,6 +732582,17 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -730230,7 +733153,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -730312,7 +733235,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "EXTENDED_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -730400,7 +733323,7 @@
    "createdAt": "2026-10-16",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -730471,9 +733394,15 @@
      "d": "2026-11-03",
      "type": "SHOWN_AGAIN",
      "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "WITHHELD",
+     "rev": 1,
+     "note": "Die Projektion wird derzeit nicht angezeigt (keine verlässliche Zählung oder Datenproblem); die eingefrorene These wird weiter verfolgt."
     }
    ],
-   "withheld": false
+   "withheld": true
   },
   "TRTX-P-C|1W|TRIANGLE|2022-11-04|1|THRUST|Ausbruch": {
    "id": "TRTX-P-C|1W|TRIANGLE|2022-11-04|1|THRUST|Ausbruch",
@@ -730488,7 +733417,7 @@
    "createdAt": "2026-10-16",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -730553,9 +733482,15 @@
      "d": "2026-11-03",
      "type": "SHOWN_AGAIN",
      "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "WITHHELD",
+     "rev": 1,
+     "note": "Die Projektion wird derzeit nicht angezeigt (keine verlässliche Zählung oder Datenproblem); die eingefrorene These wird weiter verfolgt."
     }
    ],
-   "withheld": false
+   "withheld": true
   },
   "TRT|1W|ENDING_DIAGONAL|2026-05-15|-1|WAVE_5|5": {
    "id": "TRT|1W|ENDING_DIAGONAL|2026-05-15|-1|WAVE_5|5",
@@ -740388,9 +743323,9 @@
    "source": "EXPLORE",
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-10-30",
-   "rev": 2,
+   "rev": 3,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -740495,6 +743430,58 @@
       "ruleSet": "elliott-rules-3.1.0",
       "api": "vu-ti-api-3.0.0"
      }
+    },
+    {
+     "rev": 3,
+     "frozenAt": "2026-11-04",
+     "signature": "IMPULSE|2025-03-14|1|WAVE_3|3|1.8|1|1.8848||0.7252|2.61|BASE:3.6848-4.8496064,EXTENDED:4.8496064-6.7344064,EXTREME:6.7344064-9.7840128",
+     "anchor": {
+      "price": 1.8,
+      "time": "2026-10-23",
+      "provisional": true,
+      "text": "vorläufig: laufendes Extrem der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle 1",
+      "length": 1.8848,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 3.6848,
+       "high": 4.8496064,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 4.8496064,
+       "high": 6.7344064,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 6.7344064,
+       "high": 9.7840128,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.7252,
+      "direction": "below",
+      "ruleId": "W2_NOT_BEYOND_W1_ORIGIN"
+     },
+     "confirmation": {
+      "price": 2.61,
+      "ruleId": "W3_BEYOND_W1_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
     }
    ],
    "events": [
@@ -740507,6 +743494,12 @@
      "d": "2026-11-03",
      "type": "REVISED",
      "rev": 2,
+     "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "REVISED",
+     "rev": 3,
      "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
     }
    ]
@@ -740703,9 +743696,9 @@
    "source": "EXPLORE",
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-10-30",
-   "rev": 2,
+   "rev": 3,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -740810,6 +743803,58 @@
       "ruleSet": "elliott-rules-3.1.0",
       "api": "vu-ti-api-3.0.0"
      }
+    },
+    {
+     "rev": 3,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2025-03-14|1|WAVE_C|C|1.8|1|1.8848||0.7252|2.61|BASE:2.9648064-3.6848,EXTENDED:3.6848-4.8496064,EXTREME:4.8496064-6.7344064",
+     "anchor": {
+      "price": 1.8,
+      "time": "2026-10-23",
+      "provisional": true,
+      "text": "vorläufig: laufendes Extrem der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 1.8848,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 2.9648064,
+       "high": 3.6848,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 3.6848,
+       "high": 4.8496064,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 4.8496064,
+       "high": 6.7344064,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 0.7252,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 2.61,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
     }
    ],
    "events": [
@@ -740822,6 +743867,12 @@
      "d": "2026-11-03",
      "type": "REVISED",
      "rev": 2,
+     "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "REVISED",
+     "rev": 3,
      "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
     }
    ]
@@ -741913,7 +744964,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -742072,7 +745123,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -745092,8 +748143,8 @@
    "role": "MOTIVE_ALTERNATIVE",
    "createdAt": "2026-10-30",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -745147,6 +748198,17 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -750154,6 +753216,70 @@
      "d": "2026-11-02",
      "type": "ARCHIVED",
      "rev": 3
+    }
+   ]
+  },
+  "UMH|1W|ZIGZAG|2021-12-31|-1|WAVE_C|C#3": {
+   "id": "UMH|1W|ZIGZAG|2021-12-31|-1|WAVE_C|C#3",
+   "symbol": "UMH",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-12-31|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "DEVELOPING",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2021-12-31|-1|WAVE_C|C|19.37|0|13.43||27.33|13.9|BASE:5.94-11.07026",
+     "anchor": {
+      "price": 19.37,
+      "time": "2024-12-13",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 13.43,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 5.94,
+       "high": 11.07026,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 27.33,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 13.9,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
     }
    ]
   },
@@ -757781,7 +760907,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -757857,7 +760983,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -761448,7 +764574,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -763042,11 +766168,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "DOWN",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -763093,6 +766219,24 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -764230,7 +767374,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -764306,7 +767450,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -775102,6 +778246,76 @@
     }
    ]
   },
+  "VRTS|1W|ZIGZAG|2021-11-12|-1|WAVE_C|C#2": {
+   "id": "VRTS|1W|ZIGZAG|2021-11-12|-1|WAVE_C|C#2",
+   "symbol": "VRTS",
+   "timeframe": "1W",
+   "key": "ZIGZAG|2021-11-12|-1|WAVE_C|C",
+   "type": "WAVE_C",
+   "label": "Mögliche Welle C · Wochenchart",
+   "direction": "DOWN",
+   "source": "EXPLORE",
+   "role": "EXPLORE_HIGHLIGHT",
+   "createdAt": "2026-11-04",
+   "rev": 1,
+   "state": "CONFIRMED",
+   "checkedAt": "2026-11-04",
+   "revisions": [
+    {
+     "rev": 1,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2021-11-12|-1|WAVE_C|C|250.52|0|185.47||333.46|147.99|BASE:65.05-135.89954",
+     "anchor": {
+      "price": 250.52,
+      "time": "2024-03-08",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 185.47,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 65.05,
+       "high": 135.89954,
+       "stateAtFreeze": "INSIDE"
+      }
+     ],
+     "invalidation": {
+      "price": 333.46,
+      "direction": "above",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 147.99,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": true,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
+    }
+   ],
+   "events": [
+    {
+     "d": "2026-11-04",
+     "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "atCreation": true
+    }
+   ]
+  },
   "VRTX|1W|IMPULSE|2026-08-21|-1|WAVE_3|3": {
    "id": "VRTX|1W|IMPULSE|2026-08-21|-1|WAVE_3|3",
    "symbol": "VRTX",
@@ -776402,8 +779616,8 @@
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -776469,6 +779683,17 @@
      "type": "CONFIRMED",
      "rev": 1,
      "atCreation": true
+    },
+    {
+     "d": "2026-11-04",
+     "type": "RELABELLED",
+     "rev": 1,
+     "note": "Die Zählung liefert diese These nicht mehr (andere Lesart oder Abschluss)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
+     "rev": 1
     }
    ]
   },
@@ -777400,7 +780625,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -777570,7 +780795,7 @@
    "createdAt": "2026-11-02",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -777964,11 +781189,11 @@
    "label": "Mögliche Welle C · Wochenchart",
    "direction": "UP",
    "source": "EXPLORE",
-   "role": "EXPLORE_HIGHLIGHT",
+   "role": "EXPLORE_CANDIDATE",
    "createdAt": "2026-11-03",
    "rev": 1,
-   "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "state": "ARCHIVED",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -778027,6 +781252,30 @@
     {
      "d": "2026-11-03",
      "type": "CREATED",
+     "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "CONFIRMED",
+     "rev": 1,
+     "close": 37.01
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ROLE_CHANGED",
+     "rev": 1,
+     "from": "EXPLORE_HIGHLIGHT",
+     "to": "EXPLORE_CANDIDATE"
+    },
+    {
+     "d": "2026-11-04",
+     "type": "NOT_PROMOTED",
+     "rev": 1,
+     "note": "Die Zählung besteht weiter, wird aber nicht mehr als Explore-Highlight gezeigt (nur noch im Candidate Explorer, dort nicht verfolgt)."
+    },
+    {
+     "d": "2026-11-04",
+     "type": "ARCHIVED",
      "rev": 1
     }
    ]
@@ -791656,7 +794905,7 @@
    "createdAt": "2026-10-16",
    "rev": 1,
    "state": "EXTENDED_PROJECTION_REACHED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -791838,7 +795087,7 @@
    "createdAt": "2026-10-16",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -793852,7 +797101,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -793928,7 +797177,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -800424,7 +803673,7 @@
    "createdAt": "2026-10-30",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -805091,9 +808340,9 @@
    "source": "EXPLORE",
    "role": "EXPLORE_HIGHLIGHT",
    "createdAt": "2026-11-03",
-   "rev": 1,
+   "rev": 2,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -805146,6 +808395,58 @@
       "ruleSet": "elliott-rules-3.1.0",
       "api": "vu-ti-api-3.0.0"
      }
+    },
+    {
+     "rev": 2,
+     "frozenAt": "2026-11-04",
+     "signature": "ZIGZAG|2024-08-09|1|WAVE_C|C|9.04|0|16.87||6.86|23.73|BASE:19.46566-25.91,EXTENDED:25.91-36.33566,EXTREME:36.33566-53.20566",
+     "anchor": {
+      "price": 9.04,
+      "time": "2026-10-30",
+      "provisional": false,
+      "text": "Ende der Vorwelle"
+     },
+     "reference": {
+      "label": "Länge von Welle A",
+      "length": 16.87,
+      "net13": null
+     },
+     "zones": [
+      {
+       "tier": "BASE",
+       "low": 19.46566,
+       "high": 25.91,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTENDED",
+       "low": 25.91,
+       "high": 36.33566,
+       "stateAtFreeze": "OPEN"
+      },
+      {
+       "tier": "EXTREME",
+       "low": 36.33566,
+       "high": 53.20566,
+       "stateAtFreeze": "OPEN"
+      }
+     ],
+     "invalidation": {
+      "price": 6.86,
+      "direction": "below",
+      "ruleId": "B_NOT_BEYOND_A_ORIGIN"
+     },
+     "confirmation": {
+      "price": 23.73,
+      "ruleId": "C_BEYOND_A_END"
+     },
+     "confirmationPassedAtFreeze": false,
+     "versions": {
+      "projection": "elliott-projection-1.3.0",
+      "elliott": "elliott-3.2.2",
+      "ruleSet": "elliott-rules-3.1.0",
+      "api": "vu-ti-api-3.0.0"
+     }
     }
    ],
    "events": [
@@ -805153,6 +808454,12 @@
      "d": "2026-11-03",
      "type": "CREATED",
      "rev": 1
+    },
+    {
+     "d": "2026-11-04",
+     "type": "REVISED",
+     "rev": 2,
+     "note": "Anker oder Grenzen der Zählung haben sich geändert – neue Revision, die vorige bleibt erhalten."
     }
    ]
   },
@@ -806127,7 +809434,7 @@
    "createdAt": "2026-10-23",
    "rev": 1,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -808909,7 +812216,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -808979,7 +812286,7 @@
    "createdAt": "2026-10-06",
    "rev": 1,
    "state": "DEVELOPING",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
@@ -815921,7 +819228,7 @@
    "createdAt": "2026-10-06",
    "rev": 2,
    "state": "CONFIRMED",
-   "checkedAt": "2026-11-03",
+   "checkedAt": "2026-11-04",
    "revisions": [
     {
      "rev": 1,
