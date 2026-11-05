@@ -95,6 +95,27 @@ export function intrabarVariants(key, ds, { window, costs }) {
     return [v.id, { changes: v.changes, trades: x.trades, hitRate: x.hitRate, totalReturn: x.totalReturn, cagr: x.cagr, maxDrawdown: x.maxDrawdown, costsPaid: x.costsPaid, medianHoldingSessions: x.medianHoldingSessions }];
   }));
 }
+/** Plausibilitätsdiagnose (Hinweis Strang C, tiefe Verluste ohne Kosten): höchstes Exposure, geringstes Cash, die
+ *  schlechtesten Trades und Tage mit Titel und Datum, Anteil der Trades unter -50 %. Nur im versiegelten Teil. */
+export function plausibility(r, ds) {
+  const curve = r.run.curve, sec = new Map(ds.securities.map((x) => [x.id, x]));
+  let maxExposure = 0, minCash = Infinity;
+  const days = [];
+  for (let i = 0; i < curve.length; i++) {
+    const p = curve[i], cash = p.equity * (1 - (p.exposure ?? 0));
+    maxExposure = Math.max(maxExposure, p.exposure ?? 0); minCash = Math.min(minCash, cash);
+    if (i > 0 && curve[i - 1].equity > 0) days.push({ date: p.date, ret: p.equity / curve[i - 1].equity - 1, equity: p.equity });
+  }
+  days.sort((a, b) => a.ret - b.ret);
+  const closed = (r.metricTrades || []).filter((t) => Number.isFinite(t.returnPct));
+  const worst = [...closed].sort((a, b) => a.returnPct - b.returnPct).slice(0, 15).map((t) => {
+    const x = sec.get(t.id), bars = x?.bars ?? [], e = bars.find((b) => b.date === t.entryDate), q = bars.find((b) => b.date === t.exitDate);
+    return { id: t.id, entryDate: t.entryDate, exitDate: t.exitDate, returnPct: t.returnPct, pnl: t.pnl ?? null, reason: t.reason ?? t.exitReason ?? null, entryClose: e?.close ?? null, entryRawClose: e?.rawClose ?? null, exitClose: q?.close ?? null, exitRawClose: q?.rawClose ?? null, exitSplitAdj: q?.splitAdj ?? null };
+  });
+  const byYear = {};
+  for (const t of closed) { const y = String(t.exitDate).slice(0, 4); const b = byYear[y] || (byYear[y] = { trades: 0, pnl: 0, below50: 0 }); b.trades++; b.pnl += t.pnl ?? 0; if (t.returnPct < -0.5) b.below50++; }
+  return { maxExposure, minCash, worstDays: days.slice(0, 15), worstTrades: worst, tradesBelowMinus50: closed.filter((t) => t.returnPct < -0.5).length, closedTrades: closed.length, byYear };
+}
 /** Wie oft endet eine Position durch Delisting, durch eine Datenlücke (zensiert) oder regulär. */
 export function exitCensus(r) {
   const out = { TERMINAL_DELISTED: 0, SECURITY_UNAVAILABLE: 0, OTHER: 0 };
@@ -127,6 +148,7 @@ export function runTop5(ds, { methods = TOP5, costLevels = SF6_VALIDATION_PROTOC
       if (c.id === 'REF') {
         out[key].delistingProceeds = delistingSensitivity(ref, ds, { window, costs: { slippageBps: c.slippageBps, commissionBps: c.commissionBps }, prep });
         out[key].exitCensus = exitCensus(r);
+        out[key].plausibility = plausibility(r, ds);
         const iv = intrabarVariants(key, ds, { window, costs: { slippageBps: c.slippageBps, commissionBps: c.commissionBps } });
         if (iv) out[key].intrabarVariants = iv;
       }
