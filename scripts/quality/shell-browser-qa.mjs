@@ -36,7 +36,7 @@ const ROUTES = [
   ['Fundamental', '/fundamental/#/', 'Fundamental'], ['Fundamental', '/fundamental/#/ranglisten', 'Ranglisten'], ['Fundamental', '/fundamental/#/branchen', 'Branchen'],
   ['Fundamental', '/fundamental/#/methodik', 'Methodik'], ['Fundamental', '/fundamental/#/NVDA', null],
   ['Vorsorge', '/vorsorge/#/', 'Vorsorge'], ['Vorsorge', '/vorsorge/#/plan', 'Planer'], ['Vorsorge', '/vorsorge/#/etfs', 'ETFs'],
-  ['Vorsorge', '/vorsorge/#/portfolio', 'Portfolio'], ['Vorsorge', '/vorsorge/#/foerderung', null], ['Vorsorge', '/vorsorge/#/monitor', null],
+  ['Vorsorge', '/vorsorge/#/portfolio', 'Portfolio'], ['Vorsorge', '/vorsorge/#/foerderung', [null, 'Planer']], ['Vorsorge', '/vorsorge/#/monitor', [null, 'Portfolio']], // V03/V05: Förderung gehört zum Planer, Veränderungen zum Portfolio
   ['Screener', '/screener/', 'Screener'], ['Screener','/screener/?f=roic:gt:0.1','Filter'], ['Screener','/screener/?mode=pro','Filter'], ['Screener', '/screener/?view=build', 'Filter'], ['Screener', '/screener/?view=saved', 'Gespeichert'], ['Screener', '/screener/?view=watchlist', 'Gespeichert'],
   ['Supertrader', '/supertrader/', 'Supertrader'], ['Supertrader', '/supertrader/strategies/', 'Methoden'], ['Supertrader', '/supertrader/signals/', 'Signale'],
   ['Supertrader', '/supertrader/backtests/', 'Backtests'], ['Supertrader', '/supertrader/sources/', null],
@@ -115,7 +115,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
         if (!s) { fail(where, 'keine Produkt-Leiste'); break; }
         if (s.labels[0] !== product) fail(where, 'erster Eintrag ist nicht der Produktname: ' + s.labels[0]);
         if (s.labels.length !== 4 || !s.menu) fail(where, 'Leiste ist nicht [Produkt] + 3 Funktionen + ☰: ' + s.labels.join('|'));
-        if ((s.current[0] || null) !== expected || s.current.length > 1) fail(where, `${pass}: aktiv ${s.current.join('|') || '-'} statt ${expected || '-'}`);
+        if (!(Array.isArray(expected) ? expected : [expected]).includes(s.current[0] || null) || s.current.length > 1) fail(where, `${pass}: aktiv ${s.current.join('|') || '-'} statt ${[].concat(expected).map((x) => x || '-').join(' oder ')}`);
         if(!s.menuIconsDeferred||!s.dockOriginalInline) fail(where,'Icon-Laden ist nicht menu-lazy bzw Dock inline');
         if(path==='/quant/#/screener'&&s.spriteRequested) fail(where,'Quant Screener lädt ungeöffneten Menü-Sprite');
         if (s.toggle !== 'none') fail(where, 'Menue-Knopf im Kopf doppelt');
