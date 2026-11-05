@@ -37,7 +37,7 @@
     },
     "screener": {
       "paths": ["screener/**", "scripts/screener/**"],
-      "ci": "screener-ci.yml",
+      "ci": "ci.yml",
       "contractTests": ["screener/tests/*.test.mjs"],
       "consumes": ["technicalScreener"]
     }
