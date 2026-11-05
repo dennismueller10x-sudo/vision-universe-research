@@ -41,7 +41,7 @@ async function checkLayout(page, vp, label) {
     const offenders = [];
     for (const el of document.querySelectorAll('body *')) {
       const rc = el.getBoundingClientRect();
-      if (rc.width && rc.right > doc.clientWidth + 1 && !el.closest('.sc-tablewrap,.sc-cmp,.sc-toolbar,.sc-filterline,.sc-tabs,.sc-sheet,vu-navigation,.sc-skip,.sc-toast,.sc-sr')) offenders.push((el.className || el.tagName) + ' ' + Math.round(rc.right));
+      if (rc.width && rc.right > doc.clientWidth + 1 && !el.closest('.sc-tablewrap,.sc-cmp,.sc-toolbar,.sc-filterline,.sc-tabs,.sc-sheet,.sc-ptabs,.vu-persp,vu-navigation,.sc-skip,.sc-toast,.sc-sr')) offenders.push((el.className || el.tagName) + ' ' + Math.round(rc.right));
       if (offenders.length > 4) break;
     }
     /* Das globale Menue oeffnet ☰ in der Produkt-Leiste (der Kopf traegt dann keinen eigenen Knopf). */
@@ -94,8 +94,14 @@ for (const theme of ['light', 'dark']) {
       await checkLayout(page, vp, 'Start');
       await shot(page, vp, '01-start');
 
-      // 2 Filterbibliothek + Suche "200"
-      await page.click('.sc-searchfake');
+      // Redesign 2027 (S01): Satz-Bauer, fertige Ideen mit echter Trefferzahl, sechs Perspektiven
+      const ideas = await page.$$eval('.sc-idea .sc-n', (n) => n.map((x) => x.textContent));
+      if (ideas.length !== 4 || ideas.some((t) => !/^\d/.test(t))) fail(vp, 'Fertige Ideen ohne echte Trefferzahl: ' + ideas.join(', ')); else ok('Fertige Ideen: ' + ideas.join(' · '));
+      const persp = await page.$$eval('.sc-plist .sc-prow b', (b) => b.map((x) => x.textContent.replace('PRO', '').trim()));
+      if (persp.join(',') !== 'Basis,Zahlen,Faktoren,Chart,Methoden,Investoren') fail(vp, 'Perspektiven: ' + persp.join(',')); else ok('Sechs Perspektiven');
+
+      // 2 Filterbibliothek (über die Perspektive „Chart“) + Suche "200"
+      await page.click('.sc-plist .sc-prow:has-text("Chart")');
       await page.waitForSelector('.sc-sheet.is-open input[type=search]');
       await settle(page);
       await page.fill('.sc-sheet.is-open input[type=search]', '200');
@@ -129,10 +135,17 @@ for (const theme of ['light', 'dark']) {
       await addViaSearch('sektor', 'Sektor', async () => { await page.click('.sc-sheet.is-open .sc-enum label:has-text("Technologie")'); });
       await addViaSearch('market cap', 'Marktkapitalisierung', async () => { await page.click('.sc-sheet.is-open .sc-preset:has-text("Small")'); });
       await addViaSearch('52w', 'Abstand zum 52W-Hoch', async () => { await page.click('.sc-sheet.is-open .sc-preset:has-text("Näher als 10")'); });
-      const chips = await page.$$eval('.sc-chip-body b', (b) => b.map((x) => x.textContent));
-      if (chips.length !== 4) fail(vp, 'Erwartet 4 Filter, gefunden ' + chips.length + ': ' + chips.join(' | ')); else ok('Filterstack: ' + chips.join(' | '));
-      const funnel = await page.$$eval('.sc-tl-main b', (s) => s.map((x) => Number(x.textContent.replace(/\./g, ''))));
-      if (funnel.length !== 5 || funnel.some((v, i) => i && v > funnel[i - 1])) fail(vp, 'Trichter nicht monoton: ' + funnel.join(' → ')); else ok('Filter-Impact: ' + funnel.join(' → '));
+      /* Mobil (Einfach): Regeln stehen als Lücken im Satz; Desktop: Filterstapel links und Trichter. */
+      const ruleSel = desk ? '.sc-chip-body b' : '.sc-sentence .sc-gap:not(.is-add):not(.is-empty)';
+      const chips = await page.$$eval(ruleSel, (b) => b.map((x) => x.textContent));
+      if (chips.length !== 4) fail(vp, 'Erwartet 4 Filter, gefunden ' + chips.length + ': ' + chips.join(' | ')); else ok('Regeln: ' + chips.join(' | '));
+      if (desk) {
+        const funnel = await page.$$eval('.sc-funnel .sc-tl-top > b', (s) => s.map((x) => Number(x.textContent.replace(/\./g, ''))));
+        if (funnel.length !== 5 || funnel.some((v, i) => i && v > funnel[i - 1])) fail(vp, 'Trichter nicht monoton: ' + funnel.join(' → ')); else ok('Trichter: ' + funnel.join(' → '));
+      } else {
+        const props = await page.$$eval('.sc-prop', (b) => b.length);
+        if (props !== 6) fail(vp, 'Erwartet 6 Eigenschaften, gefunden ' + props); else ok('Sechs Eigenschaften mit Zielzahl');
+      }
       await checkLayout(page, vp, 'Build');
       await shot(page, vp, '04-build', true);
       if (!desk) {
@@ -147,8 +160,8 @@ for (const theme of ['light', 'dark']) {
       // den Tagesdaten zufaellig gleich bleiben (16.10.2026: Small 83 -> Mid 73 Titel, nach dem 52W-Filter beide Male 17).
       const filterState = async () => ({
         count: await page.textContent('.sc-counter strong'),
-        chips: (await page.$$eval('.sc-chip-body b', (b) => b.map((x) => x.textContent))).join(' | '),
-        funnel: (await page.$$eval('.sc-tl-main b', (s) => s.map((x) => x.textContent))).join(' → ')
+        chips: (await page.$$eval('.sc-chip-body', (b) => b.map((x) => x.textContent))).join(' | '),
+        funnel: desk ? (await page.$$eval('.sc-funnel .sc-tl-top > b', (s) => s.map((x) => x.textContent))).join(' → ') : (await page.$$eval('.sc-chip-body span', (s) => s.map((x) => x.textContent))).join(' | ')
       });
       const before = await filterState();
       await page.click('.sc-chip-body:has-text("Market Cap")');
@@ -168,42 +181,39 @@ for (const theme of ['light', 'dark']) {
 
       // 5 Ergebnisse (Karten), Sortierung, Ansichten
       if (!desk) { await page.click('.sc-cta button'); await settle(page, 600); }
-      await page.waitForSelector('.sc-rc, .sc-state');
+      await page.waitForSelector('.sc-rc, .sc-empty');
       const cards = await page.$$('.sc-rc');
       ok('Ergebnis-Karten: ' + cards.length);
       await settle(page, 800);
       await checkLayout(page, vp, 'Ergebnisse Karten');
       await shot(page, vp, '05-results-cards');
       // Tab-Leiste verdeckt nichts: letztes Element erreichbar
-      await page.click('.sc-toolbar .sc-btn:has-text("↓"), .sc-toolbar .sc-btn:has-text("↑")');
+      await page.click('.sc-toolbar .sc-sortbtn');
       await page.waitForSelector('.sc-sheet.is-open input[name=sc-sort]');
       await page.click('.sc-sheet.is-open label:has-text("Performance 6 Monate")');
       await page.click('.sc-sheet.is-open .sc-sheet-foot .sc-btn-primary');
       await settle(page, 700);
       if (!(await page.url()).includes('sort=perf6m')) fail(vp, 'Sortierung nicht in der URL'); else ok('Sortierung Performance 6M in URL');
-      await page.click('.sc-toolbar .sc-seg button[aria-label=Tabelle]');
-      await settle(page, 500);
+      /* Ansicht (Karten · Kompakt · Tabelle) liegt im Sheet „Sortieren & Ansicht“. */
+      const setView = async (label) => { await page.click('.sc-toolbar .sc-sortbtn'); await page.waitForSelector('.sc-sheet.is-open .sc-viewtiles'); await page.click('.sc-sheet.is-open .sc-viewtiles button:has-text("' + label + '")'); await page.click('.sc-sheet.is-open .sc-sheet-foot .sc-btn-primary'); await settle(page, 600); };
+      await setView('Tabelle');
       await checkLayout(page, vp, 'Tabelle');
       await shot(page, vp, '06-results-table');
-      await page.click('.sc-toolbar .sc-seg button[aria-label=Kompakt]');
-      await settle(page, 400);
+      await setView('Kompakt');
       await shot(page, vp, '07-results-compact');
-      await page.click('.sc-toolbar .sc-seg button[aria-label=Karten]');
-      await settle(page, 400);
+      await setView('Karten');
 
       // 6 Why Match + Quick Research
       if (cards.length) {
-        await page.click('.sc-rc button[aria-label^="Warum"] >> nth=0');
-        await page.waitForSelector('.sc-sheet.is-open .sc-why-item');
-        await settle(page, 900);
-        const items = await page.$$eval('.sc-sheet.is-open .sc-why-item', (x) => x.length);
-        const good = await page.$('.sc-sheet.is-open .sc-allgood b:has-text("Alle Kriterien erfüllt")');
-        if (items !== 4 || !good) fail(vp, 'Why Match unvollständig (' + items + ')'); else ok('Why Match: 4 Kriterien erfüllt');
-        await checkLayout(page, vp, 'Why');
-        await shot(page, vp, '08-why');
-        await page.keyboard.press('Escape'); await settle(page, 500);
+        /* „Warum passt …?“ für den ersten Treffer: je Regel ein Urteil (C08). */
+        await page.waitForSelector('.sc-whybox .sc-kvrow');
+        const verdicts = await page.$$eval('.sc-whybox .sc-kvrow [data-verdict]', (x) => x.map((v) => v.dataset.verdict));
+        if (verdicts.length !== 4 || verdicts.some((v) => v !== 'strong')) fail(vp, 'Warum passt unvollständig (' + verdicts.join(',') + ')'); else ok('Warum passt: 4 Regeln erfüllt');
+        const chgBg = await page.$$eval('.sc-rc .vu-chg', (x) => [...new Set(x.map((v) => getComputedStyle(v).backgroundColor))]);
+        if (chgBg.some((c) => !/rgb\((200, 245, 49|0, 0, 0|255, 255, 255|233, 233, 233|38, 38, 38)\)/.test(c))) fail(vp, 'Kursbewegung nicht neongrün/schwarz: ' + chgBg.join(', ')); else ok('Kursbewegung als C07-Pille');
         await page.click('.sc-rc >> nth=0');
         await page.waitForSelector('.sc-sheet.is-open .sc-tabs');
+        if (!(await page.$('.sc-sheet.is-open .sc-fromscreen'))) fail(vp, 'Aktie öffnen: Karte „Aus deinem Screen“ fehlt'); else ok('Aktie öffnen: Aus deinem Screen');
         await settle(page, 900);
         await shot(page, vp, '09-quick-overview');
         await page.click('.sc-sheet.is-open .sc-tabs button:has-text("Kennzahlen")');
@@ -221,7 +231,7 @@ for (const theme of ['light', 'dark']) {
 
       // 7 Vergleich
       if (cards.length >= 2) {
-        await page.click('.sc-toolbar .sc-btn:has-text("Vergleichen")');
+        await page.click('.sc-toolbar button[aria-label="Aktien vergleichen"]');
         await settle(page, 300);
         await page.click('.sc-rc .sc-check >> nth=0'); await settle(page, 250);
         await page.click('.sc-rc .sc-check >> nth=1'); await settle(page, 250);
@@ -237,7 +247,7 @@ for (const theme of ['light', 'dark']) {
       // 8 Speichern + erneut oeffnen + Veraenderungen
       await page.goto(BASE + '/screener/' + (await page.url()).split('/screener/')[1].replace(/&?cmp=[^&]*/, '').replace('view=compare', 'view=results'), { waitUntil: 'networkidle' });
       await page.waitForSelector('.sc-rc, .sc-state, .sc-cr, .sc-table');
-      await page.click(desk ? '.sc-row:has-text("Screen speichern")' : '.sc-bar button[aria-label="Screen speichern"]');
+      await page.click(desk ? '.sc-buildact button:has-text("Screen speichern")' : '.sc-resact .sc-save');
       await page.waitForSelector('.sc-sheet.is-open input');
       await page.fill('.sc-sheet.is-open input', 'Tech Small Caps');
       await page.click('.sc-sheet.is-open .sc-sheet-foot .sc-btn-primary');
@@ -257,15 +267,23 @@ for (const theme of ['light', 'dark']) {
 
       // 9 0 Ergebnisse
       await page.goto(BASE + '/screener/?f=marketCap:gt:1e13&view=results', { waitUntil: 'networkidle' });
-      await page.waitForSelector('.sc-state h3');
-      const empty = await page.textContent('.sc-state h3');
-      if (!/Keine Aktie/.test(empty)) fail(vp, 'Leerer Zustand fehlt'); else ok('0 Ergebnisse: ' + empty);
+      await page.waitForSelector('.sc-empty .vu-blank');
+      const empty = await page.textContent('.sc-empty .vu-blank');
+      if (!/Keine Treffer/.test(empty)) fail(vp, 'Leerer Zustand fehlt'); else ok('0 Ergebnisse: ' + empty.trim());
+      const loosen = await page.$$eval('.sc-empty .sc-loose', (x) => x.length);
+      if (loosen < 1) fail(vp, 'Leerzustand ohne „Lockere eine Regel“'); else ok('Lockere eine Regel: ' + loosen);
       await shot(page, vp, '15-empty');
 
       // 10 Ungueltiger Link
       await page.goto(BASE + '/screener/?f=nope:gt:1', { waitUntil: 'networkidle' });
       await page.waitForSelector('[role=alert]');
       ok('Ungültiger Link wird gemeldet');
+
+      // Gespeichert: Reiter Screens / Watchlist (S04, S05)
+      await page.goto(BASE + '/screener/?view=saved&tab=watchlist', { waitUntil: 'networkidle' });
+      await page.waitForSelector('.sc-wlnote');
+      if ((await page.getAttribute('.sc-modeseg [aria-selected=true]', 'role')) !== 'tab' || !/Watchlist/.test(await page.textContent('.sc-modeseg [aria-selected=true]'))) fail(vp, 'Reiter Watchlist nicht aktiv'); else ok('Watchlist als Reiter unter Gespeichert');
+      await checkLayout(page, vp, 'Watchlist');
 
       // 11 Pro-Modus: Gruppen + Ranking + 15 Filter
       const pro = '/screener/?mode=pro&f=revenueGrowth:gt:0.2&f=epsGrowth:gt:0.15&f=g2~priceVsSma200:gt:0&f=g2~rsi:lt:70&go=g2:OR&gn=g2:Technik&rank=momentum:40,growth:30,quality:20,value:10';
