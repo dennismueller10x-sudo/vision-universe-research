@@ -102,11 +102,12 @@ function sleeves(curves, initial = 1e6) {
     costs: curves.reduce((s, c, k) => s + c.costs * 0.2 * initial / starts[k], 0), terminalByKind: curves.reduce((o, c) => { for (const [k, v] of Object.entries(c.terminalByKind)) o[k] = (o[k] || 0) + v; return o; }, {}) };
 }
 
-// Tägliche Kurve -> Werte an den Wochenstichtagen der Benchmark (letzter Tageswert <= Stichtag, innerhalb derselben ISO-Woche).
+// Tägliche Kurve -> Werte an den Wochenstichtagen der Benchmark (Tageswert genau am Stichtag).
 function weekly(equity, weekDates, isoWeek) {
   const byWeek = new Map();
   for (const [d, v] of equity) byWeek.set(isoWeek(d), [d, v]);
-  return weekDates.map(wd => { const x = byWeek.get(isoWeek(wd)); return x && x[0] <= wd ? [wd, x[1]] : [wd, null]; });
+  // Nur ein Tageswert genau am Stichtag zählt; ein früherer Tag derselben Woche ist eine Lücke (kein Fortschreiben).
+  return weekDates.map(wd => { const x = byWeek.get(isoWeek(wd)); return x && x[0] === wd ? [wd, x[1]] : [wd, null]; });
 }
 
 module.exports = { VERSION, RECOVERY, sideCostRate, terminalClass, fromExport, overlay, sleeves, weekly };
