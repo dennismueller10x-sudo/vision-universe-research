@@ -43,7 +43,7 @@ function validatePanel(panel) {
 function firstIndex(s) { if (s._first === undefined) s._first = s.adj.findIndex(x => x > 0); return s._first; }
 
 // Ein Stichtag: Kandidaten mit Profilscore und Risikohistorie.
-function decide(panel, t, cfg, std) {
+function decide(panel, t, cfg, std, held = null) {
   const W = cfg.riskWindowWeeks, date = panel.calendar[t], rows = [], secs = [];
   for (const s of panel.securities) {
     if (!(s.adj[t] > 0) || !s.sector) continue;
@@ -60,7 +60,13 @@ function decide(panel, t, cfg, std) {
     const s = secs[i];
     cands.push({ id: s.id, score: score[i], sector: s.sector, price: s.raw[t], dollarVolume: s.dv ? s.dv[t] : undefined, marketCap: isNum(r.marketCap) ? r.marketCap : undefined, sec: s });
   });
-  const liquid = cands.filter(c => C.liquidity(c, std).eligible).sort((a, b) => b.score - a.score || (a.id < b.id ? -1 : 1));
+  let liquid = cands.filter(c => C.liquidity(c, std).eligible).sort((a, b) => b.score - a.score || (a.id < b.id ? -1 : 1));
+  // Puffer (opt-in, cfg.bufferRank): gehaltene Titel bleiben, solange sie unter den besten bufferRank liegen. Sie rücken in der
+  // Auswahlreihenfolge nach vorn; Grenzen und Risikomodell gelten unverändert. Der Score selbst bleibt unverändert im Bericht.
+  if (cfg.bufferRank && held && held.size) {
+    const keep = new Set(liquid.slice(0, cfg.bufferRank).filter(c => held.has(c.id)).map(c => c.id));
+    liquid = [...liquid.filter(c => keep.has(c.id)).map(c => ({ ...c, score: 1 + c.score })), ...liquid.filter(c => !keep.has(c.id))];
+  }
   const pool = [], returnsById = new Map();
   for (const c of liquid) {
     if (pool.length >= cfg.candidatePool) break;
@@ -86,7 +92,12 @@ function runModelPortfolio(panel, config) {
   const first = idx[0], last = idx.at(-1), byId = new Map(panel.securities.map(s => [s.id, s]));
   // 1.-3. Entscheidungen
   const decisions = [];
-  for (let t = first; t < last; t += cfg.rebalanceWeeks) decisions.push({ t, ...decide(panel, t, cfg, std) });
+  let held = null;
+  for (let t = first; t < last; t += cfg.rebalanceWeeks) {
+    const d = { t, ...decide(panel, t, cfg, std, held) };
+    if (d.built.state === 'CONSTRUCTED') held = new Set(Object.keys(d.built.weights));
+    decisions.push(d);
+  }
   // 4. Ziele zur Ausführung t+1; Titel ohne Kurs dann (oder schon beendet) bleiben Cash.
   const targets = [], memberships = [], unfilled = [];
   for (const d of decisions) {
@@ -148,7 +159,7 @@ function runModelPortfolio(panel, config) {
   const pv = panel.provenance;
   const provenance = tr
     ? { mode: 'HISTORICAL_OBSERVED', datasetHash: pv.datasetHash, identityEvidence: pv.identityEvidence, populationEvidence: pv.populationEvidence, corporateActionEvidence: pv.corporateActionEvidence,
-      lifecycleEvidence: pv.lifecycleEvidence, licenseEvidence: pv.licenseEvidence, historicalPopulation: 'ALL_THEN_TRADEABLE_LISTINGS', unresolvedIdentityCount: 0, unresolvedTerminalCount: 0 }
+      lifecycleEvidence: pv.lifecycleEvidence, licenseEvidence: pv.licenseEvidence, historicalPopulation: 'CUSTOM_STRATEGY_UNIVERSE', unresolvedIdentityCount: 0, unresolvedTerminalCount: 0 }
     : { mode: 'HISTORICAL_PRICE_SIMULATION', datasetHash: pv.datasetHash, priceSeriesType: 'SPLIT_ADJUSTED', populationBasis: 'CONDITIONAL_FIXED_CURRENT_COHORT', clockBasis: 'MODELED_WEEK_END_DATE' };
   const usedTargets = targets.filter(tg => Object.keys(tg.weights).length || true);
   const input = { sessions, initialCapital: cfg.initialCapital, currency: 'USD', returnBasis: panel.basis, provenance,
@@ -209,7 +220,8 @@ function runModelPortfolio(panel, config) {
   return {
     schemaVersion: VERSION, certification: 'NOT_CERTIFIED', label: 'Forschung, nicht zertifiziert', productionApproved: false, state: 'RUN',
     profileId: cfg.profileId, weighting: cfg.weighting, standard: std.id, basis: panel.basis, benchmark: benchLabel,
-    window: [rows[0].date, rows.at(-1).date], rebalanceWeeks: cfg.rebalanceWeeks, riskWindowWeeks: cfg.riskWindowWeeks,
+    population: panel.population || null,
+    window: [rows[0].date, rows.at(-1).date], requestedWindow: cfg.window.slice(), rebalanceWeeks: cfg.rebalanceWeeks, bufferRank: cfg.bufferRank || null, riskWindowWeeks: cfg.riskWindowWeeks,
     metrics: {
       totalReturn: metrics.returns.totalReturn, cagr: metrics.returns.cagr, annualizedVolatility: metrics.risk.annualizedVolatility, sharpeRf0: metrics.risk.sharpe,
       maxDrawdown: metrics.risk.maxDrawdown, maxDrawdownPeak: metrics.risk.peakDate, maxDrawdownTrough: metrics.risk.troughDate,
@@ -233,7 +245,8 @@ function runModelPortfolio(panel, config) {
     lastHoldings: Object.entries(targets.at(-1).weights).sort((a, b) => b[1] - a[1]).map(([id, w]) => ({ id, weight: w })),
     limitations: [...new Set([...result.limitations, 'PIT_RECONSTRUCTION_NOT_LIVE_FACTOR_EVIDENCE', 'CURRENT_SIC_CLASSIFICATION_NOT_HISTORICAL', 'NO_HISTORICAL_INDEX_MEMBERSHIP_UNIVERSE_IS_ALL_LISTED_US_COMMON',
       'SPREAD_IS_MODELLED_BY_LIQUIDITY_BUCKET_NOT_OBSERVED_QUOTES', 'SPREAD_PROPORTIONAL_EQUITY_HAIRCUT_AT_TRADE_SESSION', 'TERMINAL_VALUE_ASSUMPTION_BY_DELISTING_CLASS',
-      'RULES_PREREGISTERED_NOT_FITTED_WALK_FORWARD_IS_ROLLING_ESTIMATION', 'WEEKLY_CLOSE_EXECUTION_NEXT_WEEK', ...(panel.basis === 'PRICE_RETURN' ? ['PRICE_RETURN_SURVIVOR_PANEL_NOT_PIT_POPULATION'] : []),
+      'RULES_PREREGISTERED_NOT_FITTED_WALK_FORWARD_IS_ROLLING_ESTIMATION', 'NO_UNTOUCHED_HOLDOUT_NO_MULTIPLE_TESTING_CORRECTION_ACROSS_PROFILES',
+      'POPULATION_IS_TODAYS_FILES_PLUS_QUALIFIED_V13_CHAINS_NOT_COMPLETE_HISTORICAL_LISTINGS', 'MEMBERSHIP_SNAPSHOT_EQUALS_EXECUTABLE_FILLS_PLANNED_TARGETS_REPORTED_SEPARATELY', 'WEEKLY_CLOSE_EXECUTION_NEXT_WEEK', ...(panel.basis === 'PRICE_RETURN' ? ['PRICE_RETURN_SURVIVOR_PANEL_NOT_PIT_POPULATION'] : []),
       ...(carried.length ? ['CARRIED_LAST_CLOSE_FOR_' + carried.length + '_MISSING_WEEKLY_BARS'] : [])])],
   };
 }

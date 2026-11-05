@@ -27,10 +27,10 @@ Ablauf je Stichtag: Kandidaten nach Profilscore absteigend, höchstens `floor(25
 | Kurse | kanonische Tagesbalken (Tiingo, R2) im Workflow; lokal die committeten Wochenreihen | nur bis zum Stichtag; Rohschluss für die Marktkapitalisierung über `return-series.js#splitFactors` (ADR-002) |
 | Gesamtrendite | `adjustedClose` der Tagesbalken (Split und Dividende); delistete Titel aus dem V13-Archiv (`totalReturn`) | Dividenden am Ex-Tag im Titel reinvestiert (virtuelle Stücke) |
 | Fundamentaldaten | SEC companyfacts, Lesart ORIGINAL (`scripts/quant/portfolio/build_pit_fundamentals.py`) | sichtbar erst nach dem Einreichungsdatum (`filed < Stichtag`); jüngstes Geschäftsjahr höchstens 548 Tage alt |
-| delistete Titel | V13-Register 1.0.0, 1.675 QUALIFIED, private Reihen aus dem R2-Archiv | im Universum bis zum letzten Handelstag; danach `TERMINAL_CASH` |
+| delistete Titel | V13-Register 1.0.0, 1.675 QUALIFIED, private Reihen aus dem R2-Archiv (`v13-derived`), Tagesbalken aus `v13-raw` | im Universum bis zum letzten Handelstag; danach `TERMINAL_CASH`. Nur mit vollständiger Gesamtrendite-Reihe; Rohschluss je Datum aus den Tagesbalken über `splitFactors` (ADR-002), geprüft gegen die Registerpunkte (Abweichung > 1 % in mehr als 2 % der Wochen: ausgeschlossen); Tagesumsatz aus denselben Balken |
 | Endwert delisteter Titel | Klasse aus dem Register | Übernahme 100 %, unbekannt 70 %, Notlage 0 % des letzten Schlusses; Sensitivität 100/100/100 und 100/30/0 |
 | Branche | heutiger SIC-Code (SEC) | **nicht** historisch |
-| Universum | alle handelbaren US-Stammaktien mit SIC, mindestens 105 Wochen Historie | **keine** historische Indexmitgliedschaft |
+| Universum | heute vorhandene Kursdateien mit heutigem SIC-Code plus qualifizierte V13-Ketten, mindestens 105 Wochen Historie (Ledger-Kennzeichen `CUSTOM_STRATEGY_UNIVERSE`) | **keine** vollständige damalige Population, **keine** historische Indexmitgliedschaft; Ausschlüsse werden gezählt |
 
 Faktoren (`portfolio-pit-factors.cjs`) sind eine dokumentierte Rekonstruktion der Profilfamilien, nicht die Live-Faktorevidenz:
 Momentum 12-1 Monate, Risiko (negative 52-Wochen-Volatilität), Qualität (Bruttomarge, Eigenkapitalquote, FCF-Marge), Profitabilität (Netto- und FCF-Marge), Wachstum (Umsatz 3 Jahre und Vorjahr), Value (Gewinn-, FCF- und Buchrendite auf die Marktkapitalisierung).
@@ -47,8 +47,12 @@ Profile wie in `strategy-index-v1`: quality-compounder, momentum-leader, quality
 
 ## 4. Walk-forward
 
+Zeitraum: angefragt und realisiert werden getrennt ausgewiesen. Endet die Benchmark-Reihe früher, warnt der Lauf (`windowAlarm`, Workflow-Warnung).
+
+Umschlag: Sensitivitäten mit Puffer (gehaltene Titel bleiben, solange sie unter den besten 50 liegen) und mit Quartalsrhythmus (13 Wochen).
+
 Keine Größe wird auf Ergebnissen angepasst. Regeln, Schwellen, Profile und Endwerte sind vorab festgelegt. Risikomodell und Scores werden je Stichtag rollierend nur aus der Vergangenheit geschätzt.
-Zusätzlich weist jeder Lauf seine Kennzahlen je festem Drei-Jahres-Testfenster aus (2012–2014, 2015–2017, …).
+Zusätzlich weist jeder Lauf seine Kennzahlen je festem Drei-Jahres-Testfenster aus (2012–2014, 2015–2017, …). Das ist keine unberührte OOS-Periode: Die Fenster teilen denselben Pfad, und über die Profile wird nicht für Mehrfachtests korrigiert.
 
 ## 5. Vorher/Nachher
 

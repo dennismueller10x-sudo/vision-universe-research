@@ -8,6 +8,8 @@
 //        [--work-dir DIR]       kanonische Tagesbalken DIR/tiingo/daily/<securityId>.json (R2, nur im Workflow): Gesamtrendite,
 //                               Rohschluss, Tagesumsatz. Ohne: committete Wochenreihen (nur Kurs, nur heutige Titel).
 //        [--delisted-dir DIR]   private V13-Reihen delisteter Titel (R2-Archiv, nur im Workflow; verlangt --work-dir)
+//        [--delisted-raw-dir DIR] V13-Archivteil v13-raw (raw/*/series.jsonl.gz): Tagesbalken mit splitFactor und Volumen;
+//                               Rohschluss je Datum über return-series.js#splitFactors (ADR-002), Tagesumsatz
 //        [--profiles a,b] [--weighting RISK_PARITY] [--window 2012-01-01,2026-10-31] [--limit N] [--sensitivity]
 //
 // Liest nur; schreibt ausschließlich --out. Kein Anbieterabruf.
@@ -31,7 +33,7 @@ function args(argv) {
   for (let i = 2; i < argv.length; i++) {
     const k = argv[i], v = argv[i + 1];
     if (k === '--out') { a.out = v; i++; } else if (k === '--fundamentals') { a.fundamentals = v; i++; } else if (k === '--work-dir') { a.workDir = v; i++; }
-    else if (k === '--delisted-dir') { a.delistedDir = v; i++; } else if (k === '--profiles') { a.profiles = v.split(','); i++; } else if (k === '--weighting') { a.weighting = v; i++; }
+    else if (k === '--delisted-dir') { a.delistedDir = v; i++; } else if (k === '--delisted-raw-dir') { a.delistedRawDir = v; i++; } else if (k === '--profiles') { a.profiles = v.split(','); i++; } else if (k === '--weighting') { a.weighting = v; i++; }
     else if (k === '--window') { a.window = v.split(','); i++; } else if (k === '--limit') { a.limit = Number(v); i++; } else if (k === '--sensitivity') a.sensitivity = true;
     else if (k === '--help') { console.log(fs.readFileSync(__filename, 'utf8').split('\n').slice(2, 13).join('\n')); process.exit(0); }
     else throw Error('UNKNOWN_ARG ' + k);
@@ -39,6 +41,7 @@ function args(argv) {
   if (!a.out) throw Error('--out required');
   if (path.resolve(a.out).startsWith(path.join(ROOT, 'quant/data'))) throw Error('--out darf nicht unter quant/data liegen');
   if (a.delistedDir && !a.workDir) throw Error('--delisted-dir verlangt --work-dir (Gesamtrendite-Basis)');
+  if (a.delistedDir && !a.delistedRawDir) throw Error('--delisted-dir verlangt --delisted-raw-dir (Tagesbalken mit splitFactor, ADR-002)');
   return a;
 }
 
@@ -98,6 +101,48 @@ function loadBundles(dir) {
   return { bySecurity, files: files.length };
 }
 
+// V13-Rohzeilen (v13-raw/raw/*/series.jsonl.gz): je Ticker {ticker, cols, rows}; wie qualify.py#load_series die erste
+// nicht leere Fassung je Ticker.
+function loadRawByTicker(dir, wanted = null) {
+  const zlib = require('node:zlib'), out = new Map(), files = [];
+  const walk = d => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const f = path.join(d, e.name); if (e.isDirectory()) walk(f); else if (e.name === 'series.jsonl.gz') files.push(f); } };
+  walk(dir);
+  for (const f of files.sort()) for (const line of zlib.gunzipSync(fs.readFileSync(f)).toString('utf8').split('\n')) {
+    if (!line.trim()) continue;
+    if (wanted) { const m = /"ticker"\s*:\s*"([^"]+)"/.exec(line); if (m && !wanted.has(m[1])) continue; }
+    const r = JSON.parse(line), prev = out.get(r.ticker);
+    if (!prev || (!(prev.rows || []).length && (r.rows || []).length)) out.set(r.ticker, r);
+  }
+  return { byTicker: out, files: files.length };
+}
+
+// Delisteter Titel: Rohschluss je Woche aus den Tagesbalken mit datumsabhängigen Split-Faktoren
+// (return-series.js#splitFactors, ADR-002), geprüft gegen die registergebundenen split-bereinigten Wochenpunkte.
+// Ergebnis: {raw: Map(Woche -> Rohschluss), dv: Map(Woche -> Ø Tagesumsatz 20 Tage)} oder {error}.
+function delistedRawWeekly(doc, rawSeries, weekOf) {
+  if (!rawSeries || !Array.isArray(rawSeries.rows) || !rawSeries.rows.length) return { error: 'RAW_SERIES_MISSING' };
+  const ix = Object.fromEntries(rawSeries.cols.map((c, i) => [c, i]));
+  const from = doc.points[0][0], to = doc.listingLifecycle?.lastTradeDate || doc.points.at(-1)[0];
+  const lo = new Date(Date.parse(from) - 7 * 86400000).toISOString().slice(0, 10);
+  const rows = rawSeries.rows.filter(r => r[ix.close] !== null && r[0].slice(0, 10) >= lo && r[0].slice(0, 10) <= to)
+    .map(r => ({ date: r[0].slice(0, 10), close: Number(r[ix.close]), volume: Number(r[ix.volume]) || 0, splitFactor: Number(r[ix.splitFactor]) || 1 }));
+  if (!rows.length) return { error: 'RAW_ROWS_OUTSIDE_LISTING' };
+  const fac = Returns.splitFactors(rows), want = new Map(doc.points.map(p => [weekOf(p[0]), p[1]]));
+  const raw = new Map(), dv = new Map(), tv = [];
+  let checked = 0, bad = 0;
+  rows.forEach((b, k) => {
+    tv.push(b.close * b.volume);
+    const w = weekOf(b.date), next = rows[k + 1];
+    if (next && weekOf(next.date) === w) return;
+    raw.set(w, b.close);
+    const win = tv.slice(-20);
+    if (win.length >= 10) dv.set(w, win.reduce((s, x) => s + x, 0) / win.length);
+    if (want.has(w)) { checked++; if (Math.abs((b.close / fac[k]) / want.get(w) - 1) > 0.01) bad++; }
+  });
+  if (checked < 0.9 * want.size || bad > 0.02 * checked) return { error: 'RAW_SPLIT_ADJUSTED_MISMATCH', checked, bad };
+  return { raw, dv, checked, bad };
+}
+
 function buildPanel(a) {
   const basis = a.workDir ? 'TOTAL_RETURN' : 'PRICE_RETURN';
   const bench = loadBenchmark(basis);
@@ -107,7 +152,7 @@ function buildPanel(a) {
   const fundDir = a.fundamentals || path.join(ROOT, 'quant/data/sec/consumer');
   const fundIndex = a.fundamentals && fs.existsSync(path.join(a.fundamentals, 'index.json')) ? JSON.parse(fs.readFileSync(path.join(a.fundamentals, 'index.json'), 'utf8')) : null;
   const bundles = loadBundles(fundDir), sics = sicIndex(fundIndex);
-  const securities = [], counts = { candidates: 0, noSector: 0, notReal: 0, noBars: 0, notInFinalWeek: 0, delisted: 0, delistedNoSector: 0, delistedPriceOnly: 0 }, sourceHashes = [];
+  const securities = [], counts = { candidates: 0, noSector: 0, notReal: 0, noBars: 0, notInFinalWeek: 0, delisted: 0, delistedNoSector: 0, delistedExcludedNoTotalReturn: 0, delistedExcludedRawMissing: 0, delistedExcludedRawMismatch: 0 }, sourceHashes = [];
   const lastIdx = calendar.findLastIndex(d => d <= a.window[1]);
   const seriesDir = path.join(ROOT, 'quant/data/market/discover-series-long');
   let files = fs.readdirSync(seriesDir).filter(f => /^ref_.+\.json$/.test(f)).sort();
@@ -155,23 +200,30 @@ function buildPanel(a) {
   if (a.delistedDir) {
     const D = require(path.join(ROOT, 'quant/engines/research-delisted-series.cjs'));
     const { docs } = D.loadDelisted(ROOT, { dir: a.delistedDir });
+    const rawIndex = loadRawByTicker(a.delistedRawDir, new Set([...docs.values()].map(d => d.ticker)));
+    counts.delistedRawFiles = rawIndex.files;
     for (const doc of docs.values()) {
       counts.delisted++;
       const sector = ff12(sics.get(doc.securityId));
       if (!sector) { counts.delistedNoSector++; continue; }
-      const adj = new Float64Array(T).fill(NaN), raw = new Float64Array(T).fill(NaN);
+      // Gesamtrendite-Panel: ohne vollständige Gesamtrendite-Reihe kein Titel (keine Kursrendite gegen Gesamtrendite).
       const tr = Array.isArray(doc.totalReturnPoints) && doc.totalReturnPoints.length === doc.points.length ? doc.totalReturnPoints : null;
-      if (!tr) counts.delistedPriceOnly++;
-      const lc = doc.listingLifecycle || {}, lastRaw = lc.terminal && lc.terminal.lastRawClose, lastAdj = doc.points.at(-1)[1];
+      if (!tr) { counts.delistedExcludedNoTotalReturn++; continue; }
+      const rw = delistedRawWeekly(doc, rawIndex.byTicker.get(doc.ticker), isoWeek);
+      if (rw.error) { if (rw.error === 'RAW_SPLIT_ADJUSTED_MISMATCH') counts.delistedExcludedRawMismatch++; else counts.delistedExcludedRawMissing++; continue; }
+      const adj = new Float64Array(T).fill(NaN), raw = new Float64Array(T).fill(NaN), dv = new Float64Array(T).fill(NaN);
+      const lc = doc.listingLifecycle || {};
       let li = -1;
       doc.points.forEach((p, k) => {
-        const w = weekIdx.get(isoWeek(p[0])); if (w === undefined) return;
-        adj[w] = tr ? tr[k][1] : p[1];
-        raw[w] = lastRaw > 0 ? p[1] * lastRaw / lastAdj : p[1]; li = Math.max(li, w);
+        const key = isoWeek(p[0]), w = weekIdx.get(key); if (w === undefined) return;
+        adj[w] = tr[k][1];
+        if (rw.raw.has(key)) raw[w] = rw.raw.get(key);
+        if (rw.dv.has(key)) dv[w] = rw.dv.get(key);
+        li = Math.max(li, w);
       });
       if (li < 0) continue;
       const kind = lc.terminal && ['MERGER', 'DISTRESS', 'UNKNOWN'].includes(lc.terminal.kind) ? lc.terminal.kind : 'UNKNOWN';
-      securities.push({ id: doc.securityId, sector, mic: doc.mic || 'XNYS', adj, raw, dv: null, bundle: bundles.bySecurity.get(doc.securityId) || null, terminal: { lastIdx: li, kind } });
+      securities.push({ id: doc.securityId, sector, mic: doc.mic || 'XNYS', adj, raw, dv, bundle: bundles.bySecurity.get(doc.securityId) || null, terminal: { lastIdx: li, kind } });
       sourceHashes.push([doc.securityId, doc.identityHash]);
     }
   }
@@ -181,7 +233,8 @@ function buildPanel(a) {
     lifecycleEvidence: sha({ delisted: a.delistedDir ? 'V13_REGISTER_1.0.0' : 'NONE' }), licenseEvidence: sha('TIINGO_COMMERCIAL_LICENSE_DERIVED_RESULTS_ONLY'),
   };
   return {
-    calendar, basis, benchmark: { label: bench.label, levels, sourceHash: bench.sourceHash, file: bench.file }, securities, provenance: prov,
+    calendar, basis, benchmark: { label: bench.label, levels, sourceHash: bench.sourceHash, file: bench.file, lastDate: calendar.at(-1) }, securities, provenance: prov,
+    population: { label: 'CUSTOM_STRATEGY_UNIVERSE', description: 'Heute vorhandene Kursdateien (' + (a.workDir ? 'R2-Tagesbalken' : 'committete Wochenreihen') + ') mit heutigem SIC-Code' + (a.delistedDir ? ' plus qualifizierte V13-Ketten delisteter Titel (Register 1.0.0)' : '') + '; keine vollständige damalige Population, keine historische Indexmitgliedschaft.' },
     meta: { counts, securities: securities.length, withFundamentals: securities.filter(s => s.bundle).length, fundamentalsSource: a.fundamentals ? 'PIT_ORIGINAL_FILING' : 'LAGGED_LATEST_FILING_COMMITTED_CONSUMER', fundamentalsFiles: bundles.files },
   };
 }
@@ -212,11 +265,20 @@ function main() {
     results.push(r);
     console.log(JSON.stringify({ profileId, cagr: r.metrics.cagr, bench: r.metrics.benchmarkCagr, vol: r.metrics.annualizedVolatility, mdd: r.metrics.maxDrawdown, beta: r.metrics.beta, positions: r.construction.averagePositions }));
   }
+  // Angefragter gegen realisierten Zeitraum: der Benchmark-Kalender kann früher enden. Fehlende Wochen werden alarmiert.
+  const ran = results.filter(r => r.state === 'RUN');
+  const realized = ran.length ? [ran[0].window[0], ran[0].window[1]] : null;
+  const missingWeeks = realized ? Math.max(0, Math.round((Date.parse(a.window[1]) - Date.parse(realized[1])) / (7 * 86400000))) : null;
+  const windowAlarm = missingWeeks > 1 ? { state: 'WINDOW_TRUNCATED', benchmarkLastDate: panel.benchmark.lastDate, missingWeeks } : null;
+  if (windowAlarm) console.log('::warning::Musterportfolios: Zeitraum endet am ' + realized[1] + ' statt ' + a.window[1] + ' (' + missingWeeks + ' Wochen fehlen, Benchmark endet ' + panel.benchmark.lastDate + ')');
   const sensitivity = [];
   if (a.sensitivity) for (const profileId of a.profiles) {
-    for (const v of [{ weighting: 'EQUAL' }, ...(a.delistedDir ? [{ terminalRecovery: { MERGER: 1, UNKNOWN: 1, DISTRESS: 1 }, label: 'TERMINAL_LAST_CLOSE' }, { terminalRecovery: { MERGER: 1, UNKNOWN: 0.3, DISTRESS: 0 }, label: 'TERMINAL_HARSH' }] : [])]) {
-      const r = BT.runModelPortfolio(panel, { profileId, weighting: v.weighting || a.weighting, window: a.window, terminalRecovery: v.terminalRecovery });
-      sensitivity.push({ profileId, variant: v.label || ('WEIGHTING_' + v.weighting), cagr: r.metrics.cagr, benchmarkCagr: r.metrics.benchmarkCagr, vol: r.metrics.annualizedVolatility, maxDrawdown: r.metrics.maxDrawdown, beta: r.metrics.beta });
+    for (const v of [{ weighting: 'EQUAL' }, { bufferRank: 50, label: 'TURNOVER_BUFFER_50' }, { rebalanceWeeks: 13, label: 'TURNOVER_QUARTERLY' }, { bufferRank: 50, rebalanceWeeks: 13, label: 'TURNOVER_BUFFER_50_QUARTERLY' }, ...(a.delistedDir ? [{ terminalRecovery: { MERGER: 1, UNKNOWN: 1, DISTRESS: 1 }, label: 'TERMINAL_LAST_CLOSE' }, { terminalRecovery: { MERGER: 1, UNKNOWN: 0.3, DISTRESS: 0 }, label: 'TERMINAL_HARSH' }] : [])]) {
+      const r = BT.runModelPortfolio(panel, { profileId, weighting: v.weighting || a.weighting, window: a.window, terminalRecovery: v.terminalRecovery,
+        ...(v.bufferRank ? { bufferRank: v.bufferRank } : {}), ...(v.rebalanceWeeks ? { rebalanceWeeks: v.rebalanceWeeks } : {}) });
+      if (r.state !== 'RUN') { sensitivity.push({ profileId, variant: v.label || ('WEIGHTING_' + v.weighting), state: r.state }); continue; }
+      sensitivity.push({ profileId, variant: v.label || ('WEIGHTING_' + v.weighting), cagr: r.metrics.cagr, benchmarkCagr: r.metrics.benchmarkCagr, vol: r.metrics.annualizedVolatility, maxDrawdown: r.metrics.maxDrawdown, beta: r.metrics.beta,
+        turnover: r.metrics.annualizedOneWayTurnover, costsShareOfInitialCapital: r.metrics.costsShareOfInitialCapital });
     }
   }
   const doc = {
@@ -225,10 +287,11 @@ function main() {
     standard: C.STANDARD, spreadModel: { byAdv: C.SPREAD_BY_ADV, byMarketCap: C.SPREAD_BY_MCAP, lowPriceSurchargeBps: C.LOW_PRICE_SURCHARGE_BPS }, defaults: BT.DEFAULTS,
     data: { basis: panel.basis, benchmark: panel.benchmark.label, benchmarkFile: panel.benchmark.file, ...panel.meta, provenance: panel.provenance, coverageByYear: coverage,
       delistedSource: a.delistedDir ? 'V13_PRIVATE_ARCHIVE_REGISTER_1.0.0_QUALIFIED' : 'NONE_SURVIVOR_COHORT', priceSource: a.workDir ? 'R2_CANONICAL_DAILY_TIINGO' : 'COMMITTED_WEEKLY_SPLIT_ADJUSTED' },
-    window: a.window, weighting: a.weighting, results, sensitivity,
-    openLimits: ['KEINE_HISTORISCHE_INDEXMITGLIEDSCHAFT', 'SIC_HEUTIGER_STAND', 'SPREAD_MODELLIERT_NICHT_BEOBACHTET', 'ENDWERT_DELISTETER_TITEL_ANNAHME_JE_KLASSE',
+    window: a.window, requestedWindow: a.window, realizedWindow: realized, windowAlarm, weighting: a.weighting, results, sensitivity,
+    population: panel.population,
+    openLimits: ['KEINE_HISTORISCHE_INDEXMITGLIEDSCHAFT', 'POPULATION_HEUTIGE_DATEIEN_PLUS_V13_KETTEN', 'MITGLIEDSCHAFT_AUS_AUSFUEHRBARKEIT', 'WALK_FORWARD_OHNE_HOLDOUT_UND_MEHRFACHTEST', ...(windowAlarm ? ['ZEITRAUM_VERKUERZT'] : []), 'SIC_HEUTIGER_STAND', 'SPREAD_MODELLIERT_NICHT_BEOBACHTET', 'ENDWERT_DELISTETER_TITEL_ANNAHME_JE_KLASSE',
       ...(a.workDir ? [] : ['NUR_KURSRENDITE_KEINE_DIVIDENDEN', 'NUR_HEUTIGE_TITEL_SURVIVORSHIP']), ...(a.fundamentals ? [] : ['FUNDAMENTALDATEN_VERZOEGERT_ZULETZT_EINGEREICHT']),
-      ...(a.delistedDir ? ['DELISTETE_TITEL_OHNE_TAGESUMSATZ_LIQUIDITAET_UEBER_MARKTKAPITALISIERUNG'] : [])],
+      ...(a.delistedDir ? ['DELISTETE_TITEL_NUR_QUALIFIZIERTE_KETTEN_MIT_GESAMTRENDITE_UND_ROHBALKEN'] : [])],
     runtimeSeconds: Math.round((Date.now() - t0) / 1000),
   };
   fs.mkdirSync(path.dirname(path.resolve(a.out)), { recursive: true });
@@ -237,4 +300,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { isoWeek, ff12, buildPanel, coverageByYear, DEFAULT_PROFILES, VERSION };
+module.exports = { isoWeek, ff12, buildPanel, coverageByYear, delistedRawWeekly, loadRawByTicker, DEFAULT_PROFILES, VERSION };
