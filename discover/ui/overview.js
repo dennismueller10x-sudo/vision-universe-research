@@ -80,6 +80,8 @@
   }
   var GRADE = { "Sehr stark": "strong", "Stark": "strong", "Sehr solide": "strong", "Solide": "mid", "Mittel": "mid", "Flach": "weak", "Schwach": "weak", "Rückläufig": "weak", "Angespannt": "weak" };
   function gradeKind(g) { return GRADE[g] || "mid"; }
+  /* N6: Erfahrungsstufe aus dem ersten Start bzw. Konto (willkommen/start/prefs.js, localStorage "vu-start-v1".mode). */
+  function mode() { try { var o = JSON.parse(localStorage.getItem("vu-start-v1") || "{}"); return o && (o.mode === "pro" || o.mode === "advanced") ? o.mode : "beginner"; } catch (e) { return "beginner"; } }
   /** Bewertung gegen den Marktmedian (fundamentals.valuation.relative.stufe; Regel steht in valuation.context.rule). */
   function bewertungsUrteil(v) {
     var r = v && v.relative;
@@ -105,6 +107,17 @@
     var k = kursUrteil(d.metrics && d.metrics.return1M);
     if (k) rows.push(["technical", "Kurs", k[0], k[1], pctFromRatio(d.metrics.return1M, 1) + " in 1 Monat", "/technical/#/chart/" + t]);
     if (!rows.length) return "";
+    /* N6 Profi (sys-profi): alle sechs Perspektiven als Kacheln. Urteile nur, wo Discover die Daten schon hat (Zahlen, Chart);
+       die übrigen Kacheln führen in ihre Welt, ohne ein Urteil zu erfinden (Discover-Budget: keine Zusatzanfragen). */
+    if (mode() === "pro") {
+      var byW = {}; rows.forEach(function (r) { if (!byW[r[0]]) byW[r[0]] = r; });
+      var o = { universe: "US_REAL" }, P = [["fundamental", "Zahlen"], ["quant", "Faktoren"], ["technical", "Chart"], ["supertrader", "Methoden"], ["elliott", "Wellen"], ["hedgefonds", "Investoren"]];
+      return section("blick", "Alle Perspektiven", '<div class="vu-grid dv3-pgrid">' + P.map(function (p) {
+        var r = byW[p[0]];
+        return '<a class="vu-box dv3-ptile" href="' + esc(U().perspectiveHref(p[0], d.symbol, o)) + '"><span class="dv3-ptile-h">' + U().hud(p[0], 28, 8) + "<b>" + esc(p[1]) + "</b></span>" +
+          (r ? U().verdict(r[2], r[3]) + '<span class="vu-xs vu-mu dv3-ptile-s">' + esc(r[4]) + "</span>" : '<span class="vu-xs vu-mu dv3-ptile-s">Perspektive öffnen ›</span>') + "</a>";
+      }).join("") + "</div>");
+    }
     return section("blick", "Auf einen Blick", '<div class="vu-stack">' + rows.map(function (r) {
       return '<a class="vu-box dv3-blick" href="' + esc(r[5]) + '">' + U().hud(r[0], 36, 10) + '<span class="dv3-blick-t"><b>' + esc(r[1]) + '</b><span class="vu-xs vu-mu">' + esc(r[4]) + "</span></span>" + U().verdict(r[2], r[3]) + "</a>";
     }).join("") + "</div>");

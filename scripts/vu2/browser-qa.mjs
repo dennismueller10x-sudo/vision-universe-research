@@ -80,6 +80,7 @@ const ROUTES=[
  /* Native Elliott-Route: dieselbe Seite, ohne /quant/ in der Adresse. */
  ['elliott-nativ','/elliott/#/NVDA?ansicht=profi'],
  ['chartbild','#/aktie/NVDA/chartbild'],
+ ['chart','#/aktie/NVDA/chart'],
  ['chartlagen','#/chartlagen'],
  ['zahlen','#/aktie/NVDA/zahlen'],
  ['vergleich','#/vergleich/NVDA,MSFT'],
@@ -517,8 +518,26 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
     if(!/Elliott/i.test(await page.locator('#qx-main section.cb-pro').innerText()))befund(view,width,'Profi-Ansicht ohne Elliott');
    }
   }
+  if(view==='chart'&&v3){
+   /* Redesign 2027 (Q09): Perspektive Chart bleibt in Quant - Urteil, Chart mit Zonen, Szenarien, Historie gegen Zufall, Zeitreise. */
+   await page.locator('#qx-main .qv3-ch-h').waitFor();
+   if(!await page.locator('#qx-main .qv3-ch-chart svg .qv3-ch-zone').count())befund(view,width,'Chart ohne Zonen');
+   if(!/Szenari/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Szenarien fehlen');
+   if(!/Zufall/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Historie ohne Zufallsvergleich');
+   if(!await page.locator('#qx-main input.qv3-ch-range').count())befund(view,width,'Zeitreise fehlt');
+   if(!/^#\/aktie\/NVDA\/chart/.test(await page.evaluate(()=>location.hash)))befund(view,width,'Chart verlaesst Quant');
+  }
   if(view==='chartlagen'){
    if(!/Chart|Lage/i.test(await page.locator('#qx-main').innerText()))befund(view,width,'Chartlagen leer');
+   /* Redesign 2027 (Q06): Lage als Urteil, Regel der Reihe, Eigene Auswahl als Sheet mit Ergebnis erst nach dem Filtern. */
+   if(v3){
+    await page.locator('#qx-main .qv3-lage').first().waitFor();
+    if(!await page.locator('#qx-main .qv3-lage .vu-verdict').count())befund(view,width,'Lage ohne Urteil');
+    if(!/Die Regel/.test(await page.locator('#qx-main .qv3-lrule').innerText()))befund(view,width,'Regel der Reihe fehlt');
+    await page.locator('#qx-main .qv3-lown').click();
+    await page.locator('#qv3-lagen-sheet [data-go]').click();
+    await page.locator('#qx-main .qv3-lownout .qv3-lage, #qx-main .qv3-lownout .vu-blank').first().waitFor({timeout:10000}).catch(()=>befund(view,width,'Eigene Auswahl ohne Ergebnis'));
+   }
   }
   if(view==='zahlen'&&v3){
    /* Redesign 2027 (Q08): Berichtsart als Segment, Kennzahl als Chips - dieselben Zusagen: 12 Monate gezeigt oder begruendet,

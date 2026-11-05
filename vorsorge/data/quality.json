@@ -1,6 +1,6 @@
 {
  "schemaVersion": "vu-vorsorge-data-qa-2.0.0",
- "asOf": "2026-11-03",
+ "asOf": "2026-11-04",
  "scope": "TIINGO_ETF_INGEST",
  "ingest": {
   "status": "COMPLETE",
@@ -86,37 +86,37 @@
  },
  "layers": {
   "raw": 9777,
-  "canonical": 7397,
-  "listings": 7414,
+  "canonical": 7398,
+  "listings": 7415,
   "publicAnalysis": 4007,
-  "complex": 2065,
+  "complex": 2061,
   "archive": 8,
-  "review": 1334
+  "review": 1339
  },
  "counts": {
-  "rowsRead": 15091,
-  "listings": 7414,
-  "canonicalFunds": 7397,
-  "shareClasses": 7397,
+  "rowsRead": 15101,
+  "listings": 7415,
+  "canonicalFunds": 7398,
+  "shareClasses": 7398,
   "uniqueTickers": 7413,
   "publicAnalysis": 4007,
-  "complex": 2065,
+  "complex": 2061,
   "archive": 8,
-  "review": 1334,
-  "consumerVisible": 6072,
-  "withPriceHistory": 7405,
-  "withHistory1Y": 5191,
+  "review": 1339,
+  "consumerVisible": 6068,
+  "withPriceHistory": 7406,
+  "withHistory1Y": 5192,
   "withHistory3Y": 3522,
   "withHistory5Y": 2759,
   "withHistory10Y": 1620,
   "withTotalReturn": 7010,
-  "leveragedOrInverse": 773,
+  "leveragedOrInverse": 772,
   "inactive": 8
  },
  "priceCoverage": {
-  "withAnyHistory": 7405,
-  "ratio": 0.9987860803884543,
-  "y1": 5191,
+  "withAnyHistory": 7406,
+  "ratio": 0.9987862440997977,
+  "y1": 5192,
   "y3": 3522,
   "y5": 2759,
   "y10": 1620,
@@ -124,12 +124,12 @@
  },
  "metadataCoverage": {
   "symbol": 1,
-  "name": 0.999,
+  "name": 0.998,
   "exchange": 1,
   "currency": 1,
   "country": 1,
-  "assetClass": 0.888,
-  "issuer": 0.576,
+  "assetClass": 0.887,
+  "issuer": 0.575,
   "index": 0.147,
   "category": 1,
   "region": 0.445,
@@ -150,24 +150,24 @@
   "priceHistoryAvailable": 1
  },
  "missingMetadata": {
-  "issuer": 3144,
-  "sector": 7414,
-  "theme": 5884,
-  "distributionPolicy": 2623,
-  "replicationMethod": 7414,
-  "ter": 7414,
-  "fundSize": 7414,
-  "inceptionDate": 7414,
-  "holdingsCount": 7414,
-  "isin": 7414,
-  "wkn": 7414,
-  "index": 6327,
-  "benchmark": 6327,
-  "assetClass": 833,
-  "region": 4112,
-  "name": 6
+  "issuer": 3150,
+  "sector": 7415,
+  "theme": 5885,
+  "distributionPolicy": 2624,
+  "replicationMethod": 7415,
+  "ter": 7415,
+  "fundSize": 7415,
+  "inceptionDate": 7415,
+  "holdingsCount": 7415,
+  "isin": 7415,
+  "wkn": 7415,
+  "index": 6328,
+  "benchmark": 6328,
+  "assetClass": 836,
+  "region": 4113,
+  "name": 12
  },
- "missingName": 6,
+ "missingName": 12,
  "missingPrice": 9,
  "noSourceFields": [
   "distributionPolicy",
@@ -182,10 +182,17 @@
  "duplicates": {
   "duplicateTickers": [
    {
+    "symbol": "CAM",
+    "listings": [
+     "CAM@NYSE",
+     "CAM@NYSE ARCA"
+    ]
+   },
+   {
     "symbol": "CHAI",
     "listings": [
-     "CHAI@NASDAQ",
-     "CHAI@NYSE ARCA"
+     "CHAI@NYSE ARCA",
+     "CHAI@NASDAQ"
     ]
    }
   ],
@@ -1781,14 +1788,6 @@
    ]
   },
   {
-   "symbol": "PTNT",
-   "exchange": "BATS",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Corgi IP Licensing & Royalties"
-   ]
-  },
-  {
    "symbol": "PZIV",
    "exchange": "NYSE",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -2592,7 +2591,7 @@
   }
  ],
  "productTypes": {
-  "ETF": 7318,
+  "ETF": 7319,
   "ETN": 19,
   "CEF": 37,
   "ETP": 32,
@@ -2602,31 +2601,31 @@
   "EQUITY": 3081,
   "THEMATIC": 489,
   "COMMODITY": 142,
-  "UNKNOWN": 710,
+  "UNKNOWN": 715,
   "BOND": 1141,
-  "ALTERNATIVE": 158,
+  "ALTERNATIVE": 157,
   "MULTI_ASSET": 72,
-  "LEVERAGED": 573,
+  "LEVERAGED": 572,
   "LEVERAGED_INVERSE": 153,
   "INVERSE": 47,
   "SINGLE_STOCK": 79,
-  "BUFFER": 340,
+  "BUFFER": 339,
   "DEFINED_OUTCOME": 72,
   "CRYPTO": 133,
-  "OPTION_INCOME": 152,
+  "OPTION_INCOME": 151,
   "COVERED_CALL": 45,
   "MONEY_MARKET": 27
  },
  "retirementClasses": {
   "STANDARD": 4600,
-  "KOMPLEX": 1333,
-  "NICHT_EINORDENBAR": 629,
-  "SEHR_KOMPLEX": 852
+  "KOMPLEX": 1330,
+  "NICHT_EINORDENBAR": 634,
+  "SEHR_KOMPLEX": 851
  },
- "leveragedInverse": 773,
- "singleStock": 438,
+ "leveragedInverse": 772,
+ "singleStock": 437,
  "currencies": {
-  "USD": 6685,
+  "USD": 6686,
   "CNY": 727,
   "AUD": 2
  },
@@ -2635,7 +2634,7 @@
   "SHG": 416,
   "NYSE": 2761,
   "BATS": 1583,
-  "NYSE ARCA": 244,
+  "NYSE ARCA": 245,
   "NASDAQ": 1382,
   "PINK": 523,
   "AMEX": 31,
@@ -2649,14 +2648,14 @@
  },
  "countries": {
   "CN": 792,
-  "US": 6622
+  "US": 6623
  },
  "assetClasses": {
-  "EQUITY": 4612,
+  "EQUITY": 4611,
   "COMMODITY": 177,
-  "UNKNOWN": 833,
+  "UNKNOWN": 836,
   "BOND": 1192,
-  "MULTI_ASSET": 299,
+  "MULTI_ASSET": 298,
   "CRYPTO": 178,
   "REAL_ESTATE": 71,
   "MONEY_MARKET": 52
@@ -2665,7 +2664,7 @@
   "CHINA": 848,
   "GERMANY": 8,
   "USA": 1434,
-  "UNKNOWN": 4112,
+  "UNKNOWN": 4113,
   "GLOBAL": 418,
   "JAPAN": 42,
   "INTERNATIONAL": 213,
@@ -2676,7 +2675,7 @@
   "VIETNAM": 2
  },
  "issuers": {
-  "UNKNOWN": 3144,
+  "UNKNOWN": 3150,
   "Invesco": 316,
   "UBS": 16,
   "Columbia Threadneedle": 24,
@@ -2685,7 +2684,7 @@
   "Goldman Sachs": 51,
   "Leverage Shares": 105,
   "Tradr": 78,
-  "GraniteShares": 88,
+  "GraniteShares": 87,
   "Direxion": 142,
   "Innovator": 191,
   "REX Shares (T-Rex)": 48,
@@ -2693,18 +2692,18 @@
   "BlackRock (iShares)": 747,
   "VictoryShares": 33,
   "American Century": 21,
-  "Corgi": 128,
+  "Corgi": 127,
   "ProShares": 174,
   "State Street (SPDR)": 228,
   "First Trust": 334,
   "Bitwise": 13,
   "VanEck": 99,
-  "Simplify": 41,
+  "Simplify": 39,
   "WisdomTree": 111,
   "SoFi": 5,
   "KraneShares": 42,
   "Global X": 140,
-  "Defiance": 94,
+  "Defiance": 93,
   "Amundi": 9,
   "Alger": 5,
   "21Shares": 18,
@@ -2732,33 +2731,33 @@
   "T. Rowe Price": 36
  },
  "statuses": {
-  "ACTIVE": 7179,
-  "REVIEW": 227,
+  "ACTIVE": 7181,
+  "REVIEW": 226,
   "INACTIVE": 8
  },
- "unknownClassification": 833,
+ "unknownClassification": 836,
  "intelligence": {
-  "publicUniverse": 6072,
+  "publicUniverse": 6068,
   "coverage": {
    "costs": {
-    "count": 4002,
-    "ratio": 0.6591
+    "count": 4001,
+    "ratio": 0.6594
    },
    "aum": {
-    "count": 3836,
-    "ratio": 0.6318
+    "count": 3835,
+    "ratio": 0.632
    },
    "holdings": {
-    "count": 3836,
-    "ratio": 0.6318
+    "count": 3835,
+    "ratio": 0.632
    },
    "domicile": {
-    "count": 3836,
-    "ratio": 0.6318
+    "count": 3835,
+    "ratio": 0.632
    },
    "ucitsStatus": {
-    "count": 3836,
-    "ratio": 0.6318
+    "count": 3835,
+    "ratio": 0.632
    },
    "isin": {
     "count": 0,
@@ -2869,7 +2868,7 @@
     "type": "MARKET_DATA_PROVIDER",
     "status": "HEALTHY",
     "lastSuccessfulFetch": "2026-10-02",
-    "items": 7405,
+    "items": 7406,
     "fields": "Kurse, Ausschüttungen, Splits, Namen"
    },
    {

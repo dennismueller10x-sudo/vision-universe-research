@@ -33,7 +33,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | 14 | #1366 | Einstieg, Konto, Mein Bereich, Atlas, erster Start | E01–E12, Z7, Z1 (Seite) | gemergt |
 | 15 | #1367 | Discover | D01–D08 | gemergt |
 | 16 | #1364 | Gemeinsam: Leisten Fundamental/Technical/Discover, Fundamental-Ansichten keine Aktien | C02, C03 | gemergt |
-| 17 | #1391 | Z5: Screener-Kriteriengruppe „Methoden“ aus den Supertrader-Spalten (#1389) | S02, Z5 | offen |
+| 17 | #1391 | Z5: Screener-Kriteriengruppe „Methoden“ aus den Supertrader-Spalten (#1389) | S02, Z5 | gemergt |
 | – | #1359 | Konto Z1+Z3 (Worker, Migration, Tests), Basis main, unabhängig | Z1, Z3 | gemergt |
 
 Übernommene Zweige der früheren Sitzung (Stand `docs/neustart/D-frontend.md` im Zweig `neustart/d-shell-dock`):
@@ -80,10 +80,10 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | Q03 | Quant · Strategien | fertig | #1351, #1410 | Detail (q03-b) nach Mockup; Knopf „Im Quant Screener öffnen und anpassen“ (Produktgrenze: Verweise in den Quant-Screener nennen Quant); bekannte Namen nach redaktioneller Bekanntheit (Discover) |
 | Q04 | Quant · Aktien | fertig | #1351 | Aktienzeilen ohne Kurs/Mini-Chart (keine Kursabfrage je Zeile auf dieser Seite) |
 | Q05 | Quant · Methodik | fertig | #1351, #1410 | Anteil je Frage (PRO) aus factorWeights; Unterkapitel ohne eigene Vorlage (nur q05-a), bleiben im bisherigen Stil |
-| Q06 | Quant · Technische Lagen | offen |  |  |
+| Q06 | Quant · Technische Lagen | fertig | #1450 | Lage als Urteil (C08), Kurs neben der Zone, 12 Kacheln + „Alle N zeigen“, Regel der Reihe, Eigene Auswahl als Sheet mit Fragen, Ergebnis erst nach dem Filtern. Abweichung: Reihen ohne Treffer erscheinen nicht als Chip (heute 2 von 7 leer); Schalter „Klare Struktur“ und Frage „Wie klar ist das Bild?“ sind gekoppelt, weil beide dieselbe Klarheit filtern. Alte Fassung unter `?daten=v1`. |
 | Q07 | Quant · NVIDIA (Aktienseite, Perspektive Faktoren) | fertig | #1351 | Lange Seite mit Schritten 1–6 nach Mockup (Überblick, Fragen, Stärken/Risiken, Veränderungen mit Kacheln, Setup-Karte + Stil-Karten mit Regel-Haken, Rückblick schwarz + Evidenz). Offen: Kopf in $ + ≈ € (Querschnitt Währung), Herz statt „Beobachten“, Quant-Chart → C06, Kursstärke-Verlauf mit Schwelle 70, Ereignis-Zeitleiste, Beleg-Sheet. Rückblick zeigt „ähnliche Situationen dieser Aktie“ (replay), nicht „Setup bestätigt in 552 Wochen“ (setup-replay-v1 lädt die Seite nicht). Alte Inhalte vollständig unter „Einstieg, Stop, Ziele …“ und „Alle Belege …“. |
 | Q08 | Quant · NVIDIA Zahlen (Perspektive Zahlen) | fertig | #1351 | Kopf ohne Kurs (Seite lädt keinen Kurs); Kachel „Wachstum 3 Jahre“ durch „Stand“ ersetzt |
-| Q09 | Quant · NVIDIA Chartbild (Perspektive Chart) | offen |  |  |
+| Q09 | Quant · NVIDIA Chartbild (Perspektive Chart) | fertig | #1450 | Perspektive „Chart“ bleibt in Quant (Kopf mit Leiste, Quant-Dock): Urteil + Lage, der eine Chart (C06) mit Schlüsselzone (neongrün), Zielbereich (grau), Ungültig-Linie gestrichelt, drei Kacheln, Szenarien (Haupt schwarz, Tippen zeigt Marken), „Warum dieses Bild?“ mit dafür/dagegen/neutral und „Alle n“, Querverweise Wellen und Chart Studio (PRO), Historie gegen Zufall, Prüfweg, frühere Fälle, Zeitreise-Regler. Abweichung: eigene Adresse `#/aktie/<T>/chart` statt `#/aktie/<T>/chartbild`, weil die alte Adresse laut Mission IV und ihren Tests zu Elliott führt (Lesezeichen bleiben gültig); Quant-Links (Radar, Aktienseite, Q06) zeigen auf die neue Adresse. Zeitleiste: 1W/1M/1J aktiv, 1T/5J/Max abgeschaltet mit Grund (das Chartbild rechnet mit Tagesschlüssen über ein Jahr). Historie in beiden Farbmodi schwarz (Lesbarkeit der neongrünen Zahl). |
 | T01 | Technical · Übersicht | fertig | #1363 | Sheet „Was ist ein Setup?“ ohne Beispielchart; „Heute neu im Chart“ lädt nach dem ersten Bild; Markt heute ≥ 60 % Stark, ≥ 40 % Gemischt, sonst Schwach |
 | T02 | Technical · Screener | fertig | #1363 | „Melden“ ohne Funktion bis Z4 (Owner-Freigabe Versand) |
 | T03 | Technical · Vorlagen | fertig | #1363 | Detail bleibt `#/vorlagen/<id>` (TPL.href in der Engine) |
@@ -109,7 +109,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | ST06 | Supertrader · Quellen | fertig | #1361 | echte Zahlen (59 Quellen, 53 mit Adresse, 10 im Volltext) |
 | ST07 | Supertrader · Hausstrategie | fertig | #1361 |  |
 | ST08 | Supertrader · NVIDIA (Perspektive Methoden) | fertig | #1361 | Antwort aus Daten („1 Methode erkennt NVIDIA“); Technical-Abschnitt entfällt (Perspektive Chart) |
-| ST-Z | Supertrader · Zustände in Alltagssprache | offen |  |  |
+| ST-Z | Supertrader · Zustände in Alltagssprache | fertig | #1446 | Neue Ansicht hatte die Zuordnung schon; jetzt tragen auch Phasen-Pillen und Filter der älteren Ansicht die Alltagsnamen. Engine-Etiketten (generierte Artefakte) bleiben. |
 | H01 | Hedgefonds · Übersicht | fertig | #1357 | Suche bleibt echte Hedgefonds-Suche (ohne Atlas-Knopf) |
 | H02 | Hedgefonds · Investoren | fertig | #1357 | 12 Stil-Chips aus den Daten; Sortierung im eigenen Sheet |
 | H03 | Hedgefonds · Datenbank | fertig | #1357 | neue Adresse `#/investoren/alle`; Region nur Alle/DACH (Daten); alte Chips bleiben |
@@ -119,14 +119,14 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | H07 | Hedgefonds · NVIDIA (Perspektive Investoren) | fertig | #1357 | `#/aktie/<T>`, CUSIP leitet um; Urteil ≥ 60 % Käufe „Mehr Käufer“, ≥ 60 % Verkäufe „Mehr Verkäufer“, sonst „Ausgeglichen“ |
 | S01 | Screener · Übersicht | fertig | #1360 | Satz startet leer statt mit Beispielsatz; Ideenzahlen live aus der Engine |
 | S02 | Screener · Filter hinzufügen | fertig | #1360 | Profi: Gruppen UND/ODER bleiben; Kriterium-Sheet mit „Genau einstellen“ |
-| S03 | Screener · Treffer | teilweise | #1360 | Teil: „Aktie öffnen“ bleibt Sheet (Kopf, Leiste, „Treffer k von N“) statt eigener Aktienseite |
+| S03 | Screener · Treffer | fertig | #1360, (dieser PR) | „Aktie öffnen“ nach s03-b: Kopf (C04), Perspektiven-Leiste (C05), „Aus deinem Screen · Treffer k von N“ mit Urteil je Regel, dann der Inhalt der Perspektive der meistgenutzten Filter (Zahlen → Kennzahlen mit Säulen, letzte neongrün; Chart → Chart), Vor/Zurück darunter. Abweichung: bleibt ein Sheet über der Trefferliste statt eigener Seite, weil der Screener eine eigene statische App ist; so bleiben Treffer, Filter und die Screener-Leiste beim Blättern erhalten. „Aktie vollständig öffnen“ führt zur Aktienseite. |
 | S04 | Screener · Gespeichert | fertig | #1360 | Neu/raus aus den zwei letzten Läufen; „Im Konto speichern“ = bald bis Z3 (#1359) gemergt ist |
 | S05 | Screener · Watchlist | fertig | #1360 | `?view=saved&tab=watchlist`; „Als Screen filtern“ bald (Engine filtert keine Symbolliste) |
 | V01 | Vorsorge · Start | fertig | #1362 | Sheet „Erster Besuch“ öffnet in automatisierten Browsern nicht von selbst (`#/?lage=1` erzwingt) |
 | V02 | Vorsorge · Planer | fertig | #1362 | Monte-Carlo bleibt unter „Profi“ (als Spanne); Plan im Browser bis Konto |
 | V03 | Vorsorge · ETFs | fertig | #1362 | „Alle“ sortiert nach Historienlänge (Municipal-Fonds oben); Fondsvermögen wäre besser – Nacharbeit |
-| V04 | Vorsorge · ETF-Detail | teilweise | #1362 | Teil: Bestände noch alte Tabelle, Planspiel noch alte dunkle Karte |
-| V05 | Vorsorge · Portfolio | teilweise | #1362 | Teil: X-Ray-Abschnitte altes Layout (neu gefärbt), Mischungen mit Kreisen statt Gewichtsbalken |
+| V04 | Vorsorge · ETF-Detail | fertig | #1362, #1453 | Bestände nach v04-b: Kacheln Top-10-Anteil (mit Vorwert aus dem letzten Bericht) und Effektiv, Top 10 als Liste mit „Die 25 größten zeigen“, „Seit dem letzten Bericht“ mit Urteil je Änderung. Planspiel nach v04-c: zwei Regler, Liste eingezahlt/Zulagen/wie bisher/schwächer, Erklärung, ein Knopf; Zulagen-Angaben und Annahmen unter „Mehr Angaben“ (Rechnung unverändert). Abweichung: kein Optimistisch-Wert und kein Verlaufschart im Sheet (Mockup zeigt beides nicht); „In meinen Plan übernehmen“ übernimmt weiter alle drei Szenarien. |
+| V05 | Vorsorge · Portfolio | fertig | #1362, #1454 | X-Ray nach v05-a in einer Spalte: deine ETFs mit Gewicht und „ETF hinzufügen“, der eine Chart (C06, Start = 100), drei Kacheln, „Was du wirklich besitzt“ schwarz, größte Firmen und Länder effektiv als Gewichtsbalken, „Auf einen Blick“ mit Urteilen, Knopf zu den Mischungen; Fachdaten (Assetklassen, Regionen, Währung, Wirtschaftszweige, Bestandsänderungen mit Urteil, Prüfweg) und Szenario-Lab unter „Mehr“. Mischungen nach v05-b: Karte je Modell mit Gewichtsbalken statt Kreis, eigenes Portfolio schwarz mit „dein Portfolio“, Antippen übernimmt; Hinweis bei fehlender 10-Jahres-Historie. Schwellen der Urteile (Claude-Entscheidung nach Mockup): Kosten ≤ 0,30 % günstig, ≤ 0,60 % mittel; Gleichlauf < 0,5 gering, < 0,85 mittel; Überschneidung < 0,5 % keine, < 5 % gering, < 25 % mittel; Handelswährung > 50 % nicht Euro = Währung. Abweichung: Planspiel je Mischung entfällt (Mockup: Karte antippen). |
 | V06 | Vorsorge · Vergleichen | fertig | #1362 | Standard URTH gegen SPY; Kosten unter `#/vergleichen/kosten` |
 | V07 | Vorsorge · Förderung | fertig | #1362 | Beispielfälle unter `#/foerderung/faelle` |
 | V08 | Vorsorge · Veränderungen | fertig | #1362 | „Benachrichtigen“ nur lokal (Z4) |

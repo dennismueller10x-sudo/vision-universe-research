@@ -9,8 +9,13 @@
  */
 import { fin } from '../common/series.mjs';
 import { sepaSetupSeries, powerPlaySetupSeries } from './minervini-lifecycle.mjs';
+import { createRsPercentileProxy } from './minervini-components.mjs';
 
-export const MINERVINI_FIDELITY_VERSION = 'minervini-fidelity-1.0.0';
+export const MINERVINI_FIDELITY_VERSION = 'minervini-fidelity-1.1.0';
+
+/** FID-1 (vorregistriert in certification/C06-C07-FID1-PREREGISTRATION.json): RS-Gate 70, je Tag höchstens 3 neue
+ *  Kauf-Stopps nach RS-Perzentil, Ausstieg FREEROLL_2R; sonst die Referenz. */
+export const MINERVINI_FID1 = Object.freeze({ rsMin: 70, dailyTop: 3, exitPolicy: 'FREEROLL_2R' });
 
 export const MINERVINI_GOLDEN_TRADES = Object.freeze([
   { ticker: 'MTLS', date: '2019-01-08', setup: 'SEPA', setupStated: false, source: 'X @markminervini 1082650684594548737 (08.01.2019): "moving into new high ground today - I have a position"; Ausbruchstag genau' },
@@ -61,4 +66,22 @@ export function minerviniGoldenDiagnose(ds, { strategy, setupIndex, run, golden 
       setupDays, rejections: run.rejections.filter((r) => mine(r.id) && inWin(r.date)).map((r) => ({ date: r.date, reason: r.reason })), trades,
     };
   });
+}
+
+/** FID-1-Auswahl: aus dem Referenz-Setup-Index je Datum nur Setups mit RS-Perzentil >= rsMin, davon die dailyTop mit dem
+ *  höchsten Perzentil (Gleichstand securityId aufsteigend). Der Referenz-Index bleibt unverändert. */
+export function selectSetupIndex(ds, setupIndex, { rsMin = MINERVINI_FID1.rsMin, dailyTop = MINERVINI_FID1.dailyTop, rs = createRsPercentileProxy(ds) } = {}) {
+  const byDate = new Map(), sec = new Map(ds.securities.map((s) => [s.id, s]));
+  for (const [id, m] of setupIndex.index) {
+    const s = sec.get(id); if (!s) continue;
+    for (const [i, rec] of m) {
+      const d = s.bars[i]?.date; if (!d) continue;
+      const p = rs.at(id, d)?.proxy?.vuPercentile;
+      if (!(Number.isFinite(p) && p >= rsMin)) continue;
+      (byDate.get(d) || byDate.set(d, []).get(d)).push([id, i, rec, p]);
+    }
+  }
+  const index = new Map(); let kept = 0;
+  for (const rows of byDate.values()) for (const [id, i, rec] of rows.sort((a, z) => z[3] - a[3] || (a[0] < z[0] ? -1 : a[0] > z[0] ? 1 : 0)).slice(0, dailyTop)) { (index.get(id) || index.set(id, new Map()).get(id)).set(i, rec); kept++; }
+  return { strategy: setupIndex.strategy, index, counts: { ...setupIndex.counts, FID1_SELECTED: kept }, selection: { rsMin, dailyTop } };
 }

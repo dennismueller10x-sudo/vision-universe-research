@@ -196,7 +196,7 @@
       return [p.name, pct(m.cagr), pct(m.benchmarkCagr), pct(m.excessCagr), pct(m.annualizedVolatility), pct(m.maxDrawdown), dec(m.beta, 2), dec(p.construction.averagePositions, 1)];
     });
     return {state: 'COMPUTED', label: b.label, window: b.window, data: b.data, limits: b.limits.concat(b.openLimits || []), rows: rows,
-      charts: b.portfolios.filter(function (p) { return p.state === 'RUN'; }).map(function (p) { return {name: p.name, chart: p.chart || [], holdings: p.lastHoldings}; })};
+      charts: b.portfolios.filter(function (p) { return p.state === 'RUN'; }).map(function (p) { return {name: p.name, chart: p.chart || [], holdings: (p.holdings && p.holdings.positions) || [], holdingsAsOf: (p.holdings && p.holdings.asOf) || null}; })};
   }
   var SVGNS = 'http://www.w3.org/2000/svg';
   function svg(doc, tag, attrs) { var n = doc.createElementNS(SVGNS, tag); Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); }); return n; }
@@ -227,7 +227,7 @@
       var top = c.holdings.slice(0, 10).map(function (h) { return h.ticker + ' ' + pct(h.weight); }).join(', ');
       mount.appendChild(el(doc, 'h3', {text: c.name}));
       if (c.chart.length) mount.appendChild(equityChart(doc, c.chart, c.name));
-      mount.appendChild(el(doc, 'p', {className: 'ka-muted', text: 'Durchgezogen: Portfolio, gestrichelt: Benchmark. Größte Positionen zuletzt: ' + (top || '–')}));
+      mount.appendChild(el(doc, 'p', {className: 'ka-muted', text: 'Durchgezogen: Portfolio, gestrichelt: Benchmark. Historischer Bestand' + (c.holdingsAsOf ? ' zum ' + c.holdingsAsOf : '') + ' (mindestens zwölf Monate zurück, keine heutige Auswahl): ' + (top || '–')}));
     });
     mount.appendChild(el(doc, 'h3', {text: 'Grenzen'}));
     mount.appendChild(list(doc, model.limits));
