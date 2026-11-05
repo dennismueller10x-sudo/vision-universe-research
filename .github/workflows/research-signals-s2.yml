@@ -1,0 +1,195 @@
+name: Forschung - E4/S2 Signal-Studie (Stichprobe, 2016-2026)
+
+# Rechnet S2 nach docs/research/signals/S2_REGISTRIERUNG.md (S1-Protokoll unveraendert) auf der registrierten Stichprobe
+# docs/research/signals/s2/sample.json. Forschung, nicht zertifiziert.
+# Kurse existieren nur im Runner: kanonische Tagesbalken (R2-Historienablage) und delistete V13-Ketten (privates Archiv).
+# Teilergebnisse wandern zwischen den Jobs nur verschluesselt (Schluessel aus einem Secret und der Lauf-ID).
+# Committet werden nur docs/research/signals/results-s2/public.json (Abdeckung, Urteil, keine Kennzahlen) und
+# results.sealed.owner.json (alle Zahlen und Trades, verschluesselt an den Owner-Schluessel).
+#
+# Ausloeser: manuell oder die Marke [signals-s2] in der Commit-Nachricht auf claude/**.
+on:
+  workflow_dispatch:
+    inputs:
+      from_run:
+        description: 'Nur zusammenfuehren: Lauf-ID, deren verschluesselte Teilergebnisse (1 Tag aufbewahrt) verwendet werden'
+        required: false
+        default: ''
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-signals-s2-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[signals-s2]')) && github.run_id || 'run' }}
+  cancel-in-progress: false
+
+jobs:
+  shard:
+    if: (github.event_name == 'workflow_dispatch' && inputs.from_run == '') || contains(github.event.head_commit.message, '[signals-s2]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: true
+      matrix:
+        k: [1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Registrierung und Paritaetsbasis pruefen
+        run: |
+          set -euo pipefail
+          node --test scripts/research/signals/s2.test.mjs scripts/research/signals/study.test.mjs
+
+      - name: R2-Zugang vorhanden
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY V13_ARCHIVE_PRIVATE_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::$v fehlt"; exit 1; fi
+          done
+
+      - name: Lesender Vorabcheck (Nullkostengrenze)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/s2-preflight.json"
+
+      - name: Tagesbalken aus der Historienablage (nur Runner)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24 \
+            --preflight "$RUNNER_TEMP/s2-preflight.json" \
+            --work-dir "$RUNNER_TEMP/canonical-history" \
+            --report "$RUNNER_TEMP/s2-sync.json"
+          # Exakter SPY-Vergleich braucht die SPY-Tagesbalken mit Open; fehlen sie, ist der Test blockiert (p = 1).
+          if [ -f "$RUNNER_TEMP/canonical-history/tiingo/daily/ref_SPY.json" ]; then echo "SPY-Tagesbalken vorhanden."; else echo "::warning::ref_SPY fehlt: exakter SPY-Test blockiert."; fi
+
+      - name: Delistete Ketten aus dem V13-Archiv (privater Schluessel nur in diesem Schritt)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/quant/v13/archive/r2-restore.mjs --mode extract --parts v13-derived,v13-raw \
+            --dest "$RUNNER_TEMP/priv" --manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json --prefix research-snapshots/quant-v13/archive-1.2.0/
+          first=$(python3 -I -c 'import json,sys;r=json.load(open(sys.argv[1]));f=r["columns"];rows=r["rows"];i=f.index("chainId");s=f.index("status");print(next(x[i] for x in rows if x[s]=="QUALIFIED"))' docs/quant-recovery/v13/delisted/register-1.0.0.json)
+          hit=$(find "$RUNNER_TEMP/priv/v13-derived" -name "$first.json" -print -quit); test -n "$hit"
+          echo "DELISTED_DIR=$(dirname "$hit")" >> "$GITHUB_ENV"
+          echo "DELISTED_RAW_DIR=$RUNNER_TEMP/priv/v13-raw" >> "$GITHUB_ENV"
+
+      - name: Teil rechnen
+        env:
+          K: ${{ matrix.k }}
+        run: |
+          set -euo pipefail
+          free -m
+          ( while sleep 60; do free -m | awk 'NR==2{print "Speicher belegt MB: "$3" von "$2}'; done ) &
+          node --max-old-space-size=4096 scripts/research/signals/s2.mjs --source r2 \
+            --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" --delisted-raw-dir "$DELISTED_RAW_DIR" \
+            --sample docs/research/signals/s2/sample.json --shard "$K/8" --workers 4 --out "$RUNNER_TEMP/s2-shard"
+          rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
+
+      - name: Teilergebnis verschluesseln
+        env:
+          K: ${{ matrix.k }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          key=$(printf 's2-shard:%s:%s' "$GITHUB_RUN_ID" "$V13_ARCHIVE_PRIVATE_KEY" | sha256sum | cut -c1-64)
+          echo "::add-mask::$key"
+          mkdir -p "$RUNNER_TEMP/s2-out"
+          SHARD_KEY="$key" openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass env:SHARD_KEY \
+            -in "$RUNNER_TEMP/s2-shard/shard.json" -out "$RUNNER_TEMP/s2-out/shard-$K.enc"
+          rm -rf "$RUNNER_TEMP/s2-shard"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: s2-shard-${{ matrix.k }}
+          path: ${{ runner.temp }}/s2-out/shard-${{ matrix.k }}.enc
+          retention-days: 1
+          if-no-files-found: error
+
+  aggregate:
+    needs: shard
+    if: always() && (needs.shard.result == 'success' || (github.event_name == 'workflow_dispatch' && inputs.from_run != '' && needs.shard.result == 'skipped'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: s2-shard-*
+          path: ${{ runner.temp }}/s2-in
+          merge-multiple: true
+          run-id: ${{ inputs.from_run || github.run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Entschluesseln, zusammenfuehren, an den Owner versiegeln
+        env:
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+          FROM_RUN: ${{ inputs.from_run }}
+        run: |
+          set -euo pipefail
+          src="${FROM_RUN:-$GITHUB_RUN_ID}"
+          case "$src" in (*[!0-9]*|'') echo "::error::from_run muss eine Lauf-ID sein"; exit 1;; esac
+          key=$(printf 's2-shard:%s:%s' "$src" "$V13_ARCHIVE_PRIVATE_KEY" | sha256sum | cut -c1-64)
+          echo "::add-mask::$key"
+          dirs=""
+          for k in 1 2 3 4 5 6 7 8; do
+            d="$RUNNER_TEMP/s2-dec/$k"; mkdir -p "$d"
+            SHARD_KEY="$key" openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass env:SHARD_KEY \
+              -in "$RUNNER_TEMP/s2-in/shard-$k.enc" -out "$d/shard.json"
+            dirs="${dirs:+$dirs,}$d"
+          done
+          node --max-old-space-size=8192 scripts/research/signals/s2.mjs --aggregate "$dirs" \
+            --seal-to scripts/supertrader/validation/results-public-key.pem --out docs/research/signals/results-s2
+          rm -rf "$RUNNER_TEMP/s2-dec" "$RUNNER_TEMP/s2-in"
+          test ! -e docs/research/signals/results-s2/results.private.json
+
+      - name: Ergebnis auf den aktuellen Zweig committen
+        env:
+          FROM_RUN: ${{ inputs.from_run }}
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/research/signals/results-s2
+          if git diff --cached --quiet; then echo "Ergebnis unveraendert."; exit 0; fi
+          git commit -m "E4/S2 Signal-Studie gerechnet (Lauf ${FROM_RUN:-$GITHUB_RUN_ID})"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
