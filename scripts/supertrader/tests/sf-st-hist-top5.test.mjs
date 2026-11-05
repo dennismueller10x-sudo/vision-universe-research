@@ -114,3 +114,21 @@ test('ST-HIST-8: Plausibilitätsdiagnose ohne Hebel (Exposure <= 1, Cash >= 0) u
     assert.ok(p.worstDays.every((d, i, arr) => i === 0 || arr[i - 1].ret <= d.ret));
   }
 });
+
+test('ST-HIST-9: C08-Treuevariante FID-1 neben der Referenz; R-Verteilung und goldene Trades; Referenz unverändert', async () => {
+  const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
+  const d = ds();
+  const f = T.kkFidelityRun(d, { window: WIN });
+  assert.deepEqual(Object.keys(f.costs), ['COST-0', 'REF']);
+  assert.ok(f.costs.REF.rDistribution && 'avgWinR' in f.costs.REF.rDistribution && 'shareAbove5R' in f.costs.REF.rDistribution);
+  assert.equal(f.costs.REF.goldenTrades.length, FID.KK_GOLDEN_TRADES.length);
+  assert.ok(f.marketOnShare >= 0 && f.marketOnShare <= 1);
+  // Querschnitt: in drei Titeln sind die besten 2 % genau ein Titel je Datum mit voller Historie
+  const L1 = FID.momentumLeaders(d.securities);
+  assert.ok([...L1.values()].every((s) => s.size <= 3));
+  // Referenz C08 unverändert: die gepinnte Variantenregistrierung bleibt gleich
+  const KK = await import('../source-faithful/research/kk-breakout-lifecycle.mjs');
+  assert.equal(KK.KK_REFERENCE_CONFIG.entryTiming, 'NEXT_OPEN');
+  const a = T.runTop5(d, { window: WIN, costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF') });
+  assert.ok(a.KK_BREAKOUT.rDistribution && Array.isArray(a.KK_BREAKOUT.goldenTrades));
+});

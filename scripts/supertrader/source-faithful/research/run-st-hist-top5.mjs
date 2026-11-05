@@ -31,10 +31,11 @@ import { runResearchLifecycle, prepareAll, PLATFORM_RESEARCH_PORTFOLIO_POLICY } 
 import { SF6_VALIDATION_PROTOCOL } from './run-sf6-validation.mjs';
 import * as S from './st9-v13-delisted-study.mjs';
 import * as X from './st9-hist-execution.mjs';
+import * as FID from './kk-breakout-fidelity.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.3.0';
+export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.4.0';
 /** Delisting-Erlös als Sensitivität (Prüfung Strang E): echte Neuläufe mit den vorhandenen Abrechnungsszenarien der Engines
  *  (validation/portfolio.mjs SCENARIOS, Wiederanlage inklusive). 100 % = Referenz S0_LAST_PRICE, 70 % = S1_MINUS_30,
  *  S2_DISTRESS_ZERO = 0 % bei Insolvenz-Delisting, sonst 70 %. Ein Szenario „0 % für alle“ hat die Engine nicht (eine neue
@@ -149,6 +150,8 @@ export function runTop5(ds, { methods = TOP5, costLevels = SF6_VALIDATION_PROTOC
         out[key].delistingProceeds = delistingSensitivity(ref, ds, { window, costs: { slippageBps: c.slippageBps, commissionBps: c.commissionBps }, prep });
         out[key].exitCensus = exitCensus(r);
         out[key].plausibility = plausibility(r, ds);
+        if (r.run.trades && r.run.trades[0]?.initialRiskAmount !== undefined) out[key].rDistribution = FID.rDistribution(r.run.trades);
+        if (key === 'KK_BREAKOUT') out[key].goldenTrades = FID.goldenTradeCheck(r.run.trades, FID.KK_GOLDEN_TRADES);
         const iv = intrabarVariants(key, ds, { window, costs: { slippageBps: c.slippageBps, commissionBps: c.commissionBps } });
         if (iv) out[key].intrabarVariants = iv;
       }
@@ -205,6 +208,21 @@ export function edgeExport(ds, { methods = TOP5, windows = EDGE_WINDOWS, log = (
   return { schema: 'st-edge-export-1.0.0', ...LABEL, windows, benchmark: { spyClose: ds.benchmark.map((b) => ({ date: b.date, close: b.close })), spyTR: ds.spyTR }, methods: out };
 }
 
+/** C08-Treueprüfung: Variante FID-1 (research/kk-breakout-fidelity.mjs) zu Referenz- und Nullkosten, mit R-Verteilung und
+ *  goldenen Trades; die Referenz C08 bleibt unverändert. */
+export function kkFidelityRun(ds, { window = L.WINDOW, costLevels = SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF' || c.id === 'COST-0'), log = () => {} } = {}) {
+  const leaders = FID.momentumLeaders(ds.securities), market = FID.marketOn(ds.benchmark);
+  const adapter = FID.createKkFidelityAdapter({ leaders, market }), config = FID.KK_FIDELITY_CONFIG;
+  const prepared = prepareAll(ds, adapter, config), out = { version: FID.KK_FIDELITY_VERSION, rules: FID.KK_FIDELITY_RULES, marketOnShare: ds.benchmark.length ? market.size / ds.benchmark.length : null, costs: {} };
+  for (const c of costLevels) {
+    const run = runResearchLifecycle(ds, { adapter, config, policy: { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, slippageBps: c.slippageBps, commissionBps: c.commissionBps }, prepared, from: window.from, to: window.to });
+    const x = summarizeRun({ run, trades: run.trades, metricTrades: run.trades.filter((t) => t.status === 'CLOSED') }, ds);
+    out.costs[c.id] = { ...x, rDistribution: FID.rDistribution(run.trades), ...(c.id === 'REF' ? { goldenTrades: FID.goldenTradeCheck(run.trades, FID.KK_GOLDEN_TRADES), exitCensus: exitCensus({ run }) } : {}) };
+    log(`kk-fid1 ${c.id}: ${run.trades.length} trades`);
+  }
+  return out;
+}
+
 export function publicPart(result) {
   return { schema: 'st-hist-top5-public-1.1.0', ...LABEL, status: result.status ?? null, receipt: result.receipt, population: result.population ?? null, methods: Object.fromEntries(Object.entries(result.A).map(([k, m]) => [k, { candidateId: m.candidateId, tradesRef: m.costs.REF.trades, tradesSha256Ref: m.costs.REF.tradesSha256, auditPass: m.audit ? m.audit.pass : null, auditViolations: m.audit ? m.audit.violations : null, missedStopCheck: m.audit ? m.audit.missedStopCheck : null }])), quarantine: result.quarantine.A, universeB: result.B ? 'COMPUTED' : 'NOT_REQUESTED' };
 }
@@ -250,6 +268,7 @@ async function main() {
   }
   const result = { schema: 'st-hist-top5-result-1.1.0', ...LABEL, window: { name: L.WINDOW_NAME, ...L.WINDOW }, costLevels: SF6_VALIDATION_PROTOCOL.costLevels, quarantine: { A: qa.census }, population: { A: populationCensus(dsA) }, A: runTop5(qa.ds, { log }) };
   // Sensitivität DQ-K5: dieselben Referenzen ohne Quarantäne (Referenzkosten; Audit nur in den Rahmen A und B)
+  result.KK_FID1 = kkFidelityRun(qa.ds, { log });
   result.A_NO_DQK5 = runTop5(dsA, { costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF'), audit: false, log });
   if (arg('--v13-series') && arg('--v13-raw')) {
     const v13 = S.loadV13Additions({ root: ROOT, seriesDir: arg('--v13-series'), rawDir: arg('--v13-raw') });
