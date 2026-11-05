@@ -19,6 +19,12 @@ on:
         required: false
         default: ''
         type: string
+      mode:
+        description: 'backtest (Kennzahlen Top 5) oder edge-export (Kurven, Fills, Terminale fuer die E3-Studie, kostenfrei, nur mit Pruefschluessel) oder golden-diagnose (C08: warum belegte Trades fehlen, nur mit Pruefschluessel)'
+        required: false
+        default: 'backtest'
+        type: choice
+        options: [backtest, edge-export, golden-diagnose]
       with_v13:
         description: 'Universum B mit V13-Delisting-Ketten zusaetzlich rechnen (Archiv 1.2.0)'
         required: false
@@ -102,6 +108,7 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           SNAPSHOT_ID: ${{ inputs.snapshot_id }}
           WITH_V13: ${{ inputs.with_v13 }}
+          MODE: ${{ inputs.mode }}
           NODE_OPTIONS: --max-old-space-size=12000
           ST_WINDOW: DEV
         run: |
@@ -109,7 +116,9 @@ jobs:
           W="$RUNNER_TEMP/sth"; OUT="$W/out"; mkdir -p "$OUT"
           args=(--snapshot "$SNAPSHOT_ID" --out "$OUT" --allow-code-version-change)
           [ -f "$W/reviewer.pem" ] && args+=(--reviewer-key "$W/reviewer.pem")
-          [ "$WITH_V13" = "true" ] && args+=(--v13-series "$W/v13/v13-derived/series" --v13-raw "$W/v13/v13-raw/raw")
+          [[ "$MODE" == "backtest" || "$MODE" == "edge-export" || "$MODE" == "golden-diagnose" ]] || { echo "MODE_INVALID"; exit 2; }
+          args+=(--mode "$MODE")
+          [ "$WITH_V13" = "true" ] && [ "$MODE" = "backtest" ] && args+=(--v13-series "$W/v13/v13-derived/series" --v13-raw "$W/v13/v13-raw/raw")
           set +e
           node scripts/supertrader/source-faithful/research/run-st-hist-top5.mjs "${args[@]}" > "$OUT/run.log" 2>&1
           rc=$?
