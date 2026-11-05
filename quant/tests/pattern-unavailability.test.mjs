@@ -31,7 +31,7 @@
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { join } from "node:path";
 import { createRequire } from "node:module";
@@ -140,7 +140,18 @@ test("the setup gap borrows the technical reason instead of inventing a second o
   /* Die Setup-Beobachtung ist eine Projektion ueber die technischen Bundles.
      Fehlt der Titel dort, ist die Ursache dieselbe - und der Leser soll nicht
      zwei Saetze fuer eine Ursache bekommen. */
-  const setup = await api.getSetupObservation("COOL");
+  /* Vorher fest COOL (ein ETF, seit 05.11.2026 nicht mehr im Produktuniversum): jetzt ein Titel des
+     Produktuniversums, fuer den der veroeffentlichte Technical-Shard einen Grund ohne Bundle fuehrt. */
+  const imProdukt = new Set(JSON.parse(readFileSync(join(root, "quant/data/universe/market-capability.json"), "utf8")).members.map((m) => m.s));
+  const tsDir = join(root, "quant/data/product/technical-signals-v1");
+  let titel = null, shard = null;
+  for (const datei of readdirSync(tsDir).filter((f) => /^[A-Z0-9_-]{2}\.json\.gz$/.test(f)).sort()) {
+    const s = JSON.parse(gunzipSync(readFileSync(join(tsDir, datei))));
+    const t = Object.keys(s.unavailable || {}).find((k) => imProdukt.has(k) && s.unavailable[k] && s.unavailable[k].reason && !(s.instruments || {})[k]);
+    if (t) { titel = t; shard = s; break; }
+  }
+  if (!titel) return;   /* aelteres Technical-Artefakt ohne Grundblock */
+  const setup = await api.getSetupObservation(titel);
   if (setup.state === "AVAILABLE") return;
   assert.equal(setup.reason, "NOT_COVERED_BY_SETUP_OBSERVATION");
 
@@ -157,16 +168,12 @@ test("the setup gap borrows the technical reason instead of inventing a second o
    * AKZEPTIEREN. Deshalb wird der Shard direkt gelesen - gibt es dort einen
    * Grundblock, darf der Dienst ihn nicht verschweigen. Genau das wuerde
    * eine unbekannte Fassung tun, und zwar still. */
-  const shard = JSON.parse(gunzipSync(readFileSync(
-    join(root, "quant/data/product/technical-signals-v1/CO.json.gz"))));
-  const blockVorhanden = !!(shard.unavailable && shard.unavailable.COOL && shard.unavailable.COOL.reason);
-  if (!blockVorhanden) return;   /* aelteres Technical-Artefakt ohne Grundblock */
   assert.ok(setup.unavailability,
     "der Shard traegt einen Grund, der Dienst gibt ihn nicht weiter - die Fassung "
     + shard.unavailableSchemaVersion + " kennt er nicht");
   assert.equal(setup.unavailability.schemaVersion, shard.unavailableSchemaVersion);
   assert.match(setup.unavailability.schemaVersion, /^technical-unavailable-1\.\d+\.0$/);
-  const technical = await api.getTechnicalIntelligence("COOL");
+  const technical = await api.getTechnicalIntelligence(titel);
   assert.deepEqual(setup.unavailability, technical.unavailability,
     "Setup und Kursstruktur nennen verschiedene Gruende fuer dieselbe Ursache");
 });

@@ -286,13 +286,15 @@ test("DQ-SF8 · jede veroeffentlichte Ansicht zaehlt: Scherben, index.json, summ
   const f = failing(extra); assert.ok(f.includes("DQ-SF8-6") && f.includes("DQ-SF8-3"), "C14 ist keine Methode und wird trotzdem geprueft");
 });
 
-test("DQ-SF8-7 · Budget: eine Datei ueber 2 MB, zusammen ueber 16 MB", () => {
-  const big = bundle(); big.files.push({ path: "strategy/C06.json", bytes: 2 * 1024 * 1024 + 1 });
+test("DQ-SF8-7 · Budget: eine Datei ueber 4 MB, zusammen ueber 32 MB", () => {
+  const big = bundle(); big.files.push({ path: "strategy/C06.json", bytes: 4 * 1024 * 1024 + 1 });
   assert.ok(failing(big).includes("DQ-SF8-7"));
-  const sum = bundle(); sum.files = Array.from({ length: 9 }, (_, k) => ({ path: "ticker/" + k + ".json", bytes: 1.9 * 1024 * 1024 }));
+  const sum = bundle(); sum.files = Array.from({ length: 9 }, (_, k) => ({ path: "ticker/" + k + ".json", bytes: 3.9 * 1024 * 1024 }));
   assert.ok(failing(sum).includes("DQ-SF8-7"));
-  const edge = bundle(); edge.files = [{ path: "strategy/C06.json", bytes: 2 * 1024 * 1024 }];
-  assert.ok(!failing(edge).includes("DQ-SF8-7"), "genau 2 MB ist zulaessig");
+  const edge = bundle(); edge.files = [{ path: "strategy/C06.json", bytes: 4 * 1024 * 1024 }];
+  assert.ok(!failing(edge).includes("DQ-SF8-7"), "genau 4 MB ist zulaessig");
+  const run1105 = bundle(); run1105.files = [{ path: "strategy/C12.json", bytes: 2231556 }].concat(Array.from({ length: 10 }, (_, k) => ({ path: "teil/" + k + ".json", bytes: (22119077 - 2231556) / 10 })));
+  assert.ok(!failing(run1105).includes("DQ-SF8-7"), "Kandidatenlauf 05.11.2026 (22,1 MB, C12 2,23 MB) liegt im Budget");
 });
 
 test("DQ-SF8-8 · eine Preiswahrheit: ohne Toleranz, gleiche Sitzung, gleiche Identitaet", () => {

@@ -170,3 +170,19 @@ test('Android: minSdk mindestens 24 (Google Play verlangt es fuer den automatisc
   const m = v.match(/minSdkVersion\s*=\s*(\d+)/);
   assert.ok(m && Number(m[1]) >= 24, 'minSdkVersion ' + (m && m[1]));
 });
+
+test('Android: Ziel-API mindestens 36 (Google Play lehnt API 35 fuer neue Apps ab, Stand 11/2026)', () => {
+  const v = read(path.join(app, 'android/variables.gradle'));
+  assert.ok(Number(v.match(/targetSdkVersion\s*=\s*(\d+)/)[1]) >= 36, 'targetSdkVersion');
+  assert.ok(Number(v.match(/compileSdkVersion\s*=\s*(\d+)/)[1]) >= 36, 'compileSdkVersion');
+});
+
+test('Shell: das native Bundle wird vom richtigen Pfad geladen und das Startbild nie vergessen', () => {
+  const main = read(path.join(app, 'www/js/main.js'));
+  const m = main.match(/import\('([^']*native\.js)'\)/);
+  assert.ok(m, 'dynamischer Import des Bundles');
+  const target = path.resolve(app, 'www/js', m[1]);
+  assert.equal(target, path.join(app, 'www/vendor/native.js'), 'Pfad ist relativ zu www/js/main.js');
+  assert.match(main, /setTimeout\(hideSplash, 5000\)/, 'Startbild verschwindet spaetestens nach 5 s');
+  assert.match(main, /Promise\.race\(\[auth\.restore\(\)/, 'ein haengender Speicher blockiert den Start nicht');
+});

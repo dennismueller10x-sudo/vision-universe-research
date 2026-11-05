@@ -4,7 +4,11 @@ import {createAuth, OFFLINE} from './auth.js';
 import {createApi} from './api.js';
 
 const $ = id => document.getElementById(id);
-if (globalThis.Capacitor?.isNativePlatform?.()) { try { await import('./vendor/native.js'); } catch { /* ohne Bundle: Arbeitsspeicher, Anmeldung bleibt nutzbar */ } }
+// Startbild: wird nach dem Start ausgeblendet; zusaetzlich nach spaetestens 5 s, damit ein Fehler nie ein weisses Startbild stehen laesst.
+const hideSplash = () => { try { (globalThis.VUNative?.SplashScreen || globalThis.Capacitor?.Plugins?.SplashScreen)?.hide?.(); } catch { /* ohne Plugin weiter */ } };
+if (globalThis.Capacitor?.isNativePlatform?.()) setTimeout(hideSplash, 5000);
+// Der Pfad gilt von js/main.js aus: das Bundle liegt in www/vendor/ (nicht in www/js/vendor/).
+if (globalThis.Capacitor?.isNativePlatform?.()) { try { await import('../vendor/native.js'); } catch { /* ohne Bundle: Arbeitsspeicher, Anmeldung bleibt nutzbar */ } }
 const config = readConfig();
 const auth = createAuth({config, store: pickStore()});
 const api = createApi({config, auth});
@@ -85,11 +89,11 @@ async function loadWatchlist() {
 // ---- Start ---------------------------------------------------------------
 $('config-missing').hidden = config.configured;
 (async () => {
-  await auth.restore();
+  try { await Promise.race([auth.restore(), new Promise(resolve => setTimeout(resolve, 4000))]); } catch { /* ohne gespeicherte Sitzung weiter */ }
   show('discover');
   if (native) {
     const n = globalThis.VUNative || {};
-    try { await n.SplashScreen?.hide(); } catch { /* ohne Plugin weiter */ }
+    hideSplash();
     try { n.App?.addListener('resume', () => { auth.accessToken().catch(() => {}); }); } catch { /* optional */ }
     try { n.Network?.addListener('networkStatusChange', st => setOffline(!st.connected)); } catch { /* optional */ }
   }
