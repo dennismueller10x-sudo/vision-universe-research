@@ -120,7 +120,7 @@
     root.appendChild(grid);
     /* ---------------------------------------------------------- Szenario-Raum */
     root.appendChild(svg("rect", { x: xNow, y: padT, width: Math.max(0, xEnd - xNow), height: plotH, class: "ti-proj-bg" }));
-    root.appendChild(svg("text", { x: xNow + 8, y: padT + plotH - 8, class: "ti-proj-label" }, [PJ ? (narrow ? "Projektion" : "Projektion · keine Zeitangabe" + (LOG ? " · log" : "")) : narrow ? "Szenario" : "Szenario · keine Zeitangabe"]));
+    if (o.scenarioKind !== "STRUCTURE") root.appendChild(svg("text", { x: xNow + 8, y: padT + plotH - 8, class: "ti-proj-label" }, [PJ ? (narrow ? "Projektion" : "Projektion · keine Zeitangabe" + (LOG ? " · log" : "")) : narrow ? "Szenario" : "Szenario · keine Zeitangabe"]));
     /* ---------------------------------------------------------- Zonen */
     var zoneStart = Math.max(x0, xNow - histW * 0.2);
     function band(z, cls, label) {
@@ -131,7 +131,7 @@
       if (label && o.labels !== false) g.appendChild(svg("text", { x: xEnd - 8, y: (y1 + y2) / 2 + 4, "text-anchor": "end", class: "ti-zone-label" }, [label]));
       return g;
     }
-    v.range.forEach(function (z) { root.appendChild(band(z, "ti-zone-range", z.kind === "RANGE_LOW" ? "Untergrenze" : "Obergrenze")); });
+    v.range.forEach(function (z) { root.appendChild(band(z, "ti-zone-range" + (z.tone ? " ti-zone-" + z.tone : ""), z.label || (z.kind === "RANGE_LOW" ? "Untergrenze" : "Obergrenze"))); });
     v.targets.slice(0, 2).forEach(function (z, q) { var b = band(z, "ti-zone-target", narrow ? (q ? "Ziel 2" : "Ziel 1") : "Zielbereich " + (q + 1)); if (b) root.appendChild(b); });
     var eb = band(v.entry, "ti-zone-entry", v.kind === "TAIL" ? "Tiefere Zone" : "Schlüsselzone"); if (eb) root.appendChild(eb);
     if (v.invalidation && isNum(v.invalidation.price)) {

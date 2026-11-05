@@ -677,13 +677,27 @@
       pjLegend.hidden = !pjOnChart; motiveNote.hidden = !(pjOnChart && pjT.source === "MOTIVE_ALTERNATIVE"); exploreNote.hidden = !(pjOnChart && pjT.role === "EXPLORE_HIGHLIGHT"); candidateNote.hidden = !(pjOnChart && pjT.role === "EXPLORE_CANDIDATE");
       if (waveSeg) waveSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", (q === 1) === !!wavesOn ? "true" : "false"); }); var scLeg = chartCard && chartCard.querySelector(".cb-legend-sc"); if (scLeg) scLeg.hidden = pjOnChart;
       chartHost.dataset.direction = direction(); chartHost.dataset.mode = mode;
-      chartHost.replaceChildren(Chart.render({ chart: a.chart, overlays: replayStep ? overlaysFromStep(replayStep) : a.overlays, scenarioKind: replayStep ? "PRIMARY" : kind, scenario: scenarioOf(kind),
+      /* W05: in Elliott ohne belastbare Lesart zeigt der Chart die Marktstruktur (Unterstützung neongrün, Widerstand grau) statt Szenario-Zonen. */
+      var ms = structureOnly() ? structureOverlay() : null;
+      if (scLeg0) scLeg0.hidden = !!ms; if (msLeg) msLeg.hidden = !ms;
+      chartHost.replaceChildren(Chart.render({ chart: a.chart, overlays: ms ? ms : replayStep ? overlaysFromStep(replayStep) : a.overlays, scenarioKind: ms ? "STRUCTURE" : replayStep ? "PRIMARY" : kind, scenario: ms ? null : scenarioOf(kind),
         projection: pjOnChart ? pjChart(pjT, pjT.source === "ALTERNATIVE" || altSource(pjT) ? "alt" : null) : null, logScale: pjOnChart ? (pjLog === null ? pjAutoLog(pjT) : pjLog) : false,
-        cutoff: replayStep ? replayStep.d : null, showPath: !replayStep, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
+        cutoff: replayStep ? replayStep.d : null, showPath: !replayStep && !ms, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
         waves: wavesOn ? waveMarks() : null, waveTone: !replayStep && (waveSet === "alt" || (pjOnChart && altSource(pjT))) ? "alt" : null, onWave: replayStep || waveSet === "alt" || (pjOnChart && (pjT.degree === "HIGHER" || altSource(pjT))) ? null : function (w) { waveInspector(a, w, rules, methodEv); },
         width: width, height: width < 520 ? 380 : 460, bars: barsFor(), mode: mode, title: ticker + " · Chartbild · " + tfLabel, labels: true }));
       if (replayStep) chartHost.prepend(el("p", { class: "cb-replay-flag", role: "status", text: "Zeitreise · Stand " + X.dateDe(replayStep.d) + " · nur damals verfügbare Daten" }));
       chartCard.classList.toggle("is-replay", !!replayStep);
+    }
+    function structureOnly() { return inElliott && view !== "pro" && !replayStep && lens !== "projection" && !(pjSel && (pjSel.p.consumerVisible || pjSel.motive || (pjSel.exploreH || []).length)); }
+    function structureOverlay() {
+      var sr = (a.pro && a.pro.supportResistance) || {}, sp = (sr.supports || [])[0], rs = (sr.resistances || [])[0], zones = [];
+      if (sp && rs && isNum(sp.zoneLow) && isNum(rs.zoneLow) && sp.zoneHigh >= rs.zoneLow && rs.zoneHigh >= sp.zoneLow) {
+        var lo = Math.min(sp.zoneLow, rs.zoneLow), hi = Math.max(sp.zoneHigh, rs.zoneHigh);
+        return { zones: [{ scenario: "STRUCTURE", kind: "RANGE_LOW", low: lo, high: hi, tone: "support", label: "Unterstützung und Widerstand " + zoneText({ zoneLow: lo, zoneHigh: hi }) }], invalidations: [], projectedPaths: [] };
+      }
+      if (sp && isNum(sp.zoneLow)) zones.push({ scenario: "STRUCTURE", kind: "RANGE_LOW", low: sp.zoneLow, high: sp.zoneHigh, tone: "support", label: "Unterstützung " + zoneText(sp) });
+      if (rs && isNum(rs.zoneLow)) zones.push({ scenario: "STRUCTURE", kind: "RANGE_HIGH", low: rs.zoneLow, high: rs.zoneHigh, tone: "resistance", label: "Widerstand " + zoneText(rs) });
+      return zones.length ? { zones: zones, invalidations: [], projectedPaths: [] } : null;
     }
     var motiveNote = el("p", { class: "cb-small", hidden: true, text: "Im Chart: Wellen der alternativen Lesart (mögliche Welle 3) – nicht die bevorzugte Zählung, niedrige Strukturklarheit." });
     var exploreNote = el("p", { class: "cb-small", hidden: true, text: "Im Chart: Wellen eines Explore Highlights (explorativ) – regelkonforme alternative Lesart, aber nicht als reguläre Alternative freigegeben." });
@@ -704,9 +718,11 @@
       a.chart.closeOnly ? null : segmented("Darstellung", [["line", "Linie"], ["candles", "Kerzen"]], mode, function (v) { mode = v; draw(); }),
       waveSeg, lensSeg, logSeg
     ]);
+    var msLeg = null, scLeg0 = null;
     var chartCard = el("section", { class: "cb-chart-card", "aria-label": "Chart" }, [chartHost, controls,
       pjLegend, motiveNote, exploreNote, candidateNote,
-      el("p", { class: "cb-legend cb-legend-sc" }, [el("span", { class: "cb-key cb-key-entry", text: "Schlüsselzone" }), el("span", { class: "cb-key cb-key-target", text: "Zielbereich" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-key cb-key-path", text: "Szenario-Korridor – keine Zeitangabe" })]),
+      msLeg = el("p", { class: "cb-legend cb-legend-ms", hidden: true }, [el("span", { class: "cb-key cb-key-support", text: "Unterstützung" }), el("span", { class: "cb-key cb-key-resistance", text: "Widerstand" }), el("span", { class: "cb-dim", text: "Preisbereiche, an denen der Kurs früher gedreht hat" })]),
+      scLeg0 = el("p", { class: "cb-legend cb-legend-sc" }, [el("span", { class: "cb-key cb-key-entry", text: "Schlüsselzone" }), el("span", { class: "cb-key cb-key-target", text: "Zielbereich" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-key cb-key-path", text: "Szenario-Korridor – keine Zeitangabe" })]),
       wavesOn && !abstain && E && E.primary ? el("p", { class: "cb-small cb-dim", text: "Tipp: Eine Wellenmarke antippen erklärt die Welle." }) : null]);
 
     // ---------------------------------------------- Elliott-Bereich (Mission III §41–§47, §57, §98–§100)
