@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Seite nicht gefunden — Vision Universe®</title>
 <meta name="robots" content="noindex">
+<!-- Z2: /aktie/<T>?p=… gibt es als Datei nicht; GitHub Pages liefert diese Seite. Sie löst die Aktienadresse auf. -->
+<script>
+  if (/^\/aktie\/[^/]+\/?$/.test(location.pathname)) {
+    document.write('<script src="/core/identity.js"><\/script><script src="/core/stock-context.js"><\/script><script src="/core/stock-address.js"><\/script>' +
+      '<script>(function(){var r=VUCore.StockAddress.resolve(location.pathname,location.search,document.referrer);if(r.state==="OK")location.replace(r.href);})()<\/script>');
+  }
+</script>
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <style>
   :root{color-scheme:light}
