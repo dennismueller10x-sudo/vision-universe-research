@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-input-audit-1.0.0",
- "generatedAt": "2026-11-05T14:05:23.000Z",
+ "generatedAt": "2026-11-05T15:44:11.000Z",
  "versions": {
   "audit_logic": "1.0.0"
  },
@@ -9,22 +9,22 @@
  "scope": "CANONICAL_HISTORY",
  "scopeNote": "Gelesen wurde der wiederhergestellte kanonische Barstore.",
  "counters": {
-  "CANONICAL_PRODUCT_UNIVERSE": 6573,
-  "CANONICAL_HISTORY_UNIVERSE": 6572,
-  "RAW_CLOSE_AVAILABLE": 6572,
-  "SPLIT_FACTOR_AVAILABLE": 6572,
-  "DIVIDEND_COLUMN_AVAILABLE": 6572,
-  "DIVIDEND_EVENTS_AVAILABLE": 3130,
-  "ADJUSTED_CLOSE_AVAILABLE": 6572,
-  "TRADING_DATES_AVAILABLE": 6572,
-  "ADJUSTMENT_STATUS_PRESENT": 6572,
-  "RETURN_BASIS_IDENTIFIABLE_UNIVERSE": 6572
+  "CANONICAL_PRODUCT_UNIVERSE": 6577,
+  "CANONICAL_HISTORY_UNIVERSE": 6576,
+  "RAW_CLOSE_AVAILABLE": 6576,
+  "SPLIT_FACTOR_AVAILABLE": 6576,
+  "DIVIDEND_COLUMN_AVAILABLE": 6576,
+  "DIVIDEND_EVENTS_AVAILABLE": 3132,
+  "ADJUSTED_CLOSE_AVAILABLE": 6576,
+  "TRADING_DATES_AVAILABLE": 6576,
+  "ADJUSTMENT_STATUS_PRESENT": 6576,
+  "RETURN_BASIS_IDENTIFIABLE_UNIVERSE": 6576
  },
  "bySource": {
-  "CANONICAL_STORE": 6572
+  "CANONICAL_STORE": 6576
  },
  "byAdjustmentStatus": {
-  "adjusted": 6572
+  "adjusted": 6576
  },
  "exclusions": {
   "NO_SERIES": 1
@@ -39,7 +39,7 @@
   "Energy": 8,
   "Utilities": 7,
   "Real Estate": 8,
-  "(unclassified)": 6472
+  "(unclassified)": 6476
  },
  "series": [
   {
@@ -4239,6 +4239,18 @@
    "to": "2026-11-04",
    "dividendEvents": 147,
    "splitEvents": 2,
+   "adjustmentStatus": "adjusted",
+   "source": "CANONICAL_STORE"
+  },
+  {
+   "securityId": "ref_WR",
+   "ticker": "WR",
+   "sector": "(unclassified)",
+   "bars": 7290,
+   "from": "1990-01-02",
+   "to": "2026-11-04",
+   "dividendEvents": 127,
+   "splitEvents": 0,
    "adjustmentStatus": "adjusted",
    "source": "CANONICAL_STORE"
   },
@@ -11059,6 +11071,18 @@
    "source": "CANONICAL_STORE"
   },
   {
+   "securityId": "ref_NYNY",
+   "ticker": "NYNY",
+   "sector": "(unclassified)",
+   "bars": 6687,
+   "from": "1993-11-05",
+   "to": "2026-11-04",
+   "dividendEvents": 0,
+   "splitEvents": 3,
+   "adjustmentStatus": "adjusted",
+   "source": "CANONICAL_STORE"
+  },
+  {
    "securityId": "ref_ROCK",
    "ticker": "ROCK",
    "sector": "(unclassified)",
@@ -12783,6 +12807,18 @@
    "to": "2026-11-04",
    "dividendEvents": 105,
    "splitEvents": 2,
+   "adjustmentStatus": "adjusted",
+   "source": "CANONICAL_STORE"
+  },
+  {
+   "securityId": "ref_BREW",
+   "ticker": "BREW",
+   "sector": "(unclassified)",
+   "bars": 6451,
+   "from": "1995-08-18",
+   "to": "2026-11-04",
+   "dividendEvents": 0,
+   "splitEvents": 0,
    "adjustmentStatus": "adjusted",
    "source": "CANONICAL_STORE"
   },
@@ -28910,6 +28946,18 @@
    "from": "2011-11-08",
    "to": "2026-11-04",
    "dividendEvents": 43,
+   "splitEvents": 0,
+   "adjustmentStatus": "adjusted",
+   "source": "CANONICAL_STORE"
+  },
+  {
+   "securityId": "ref_INVN",
+   "ticker": "INVN",
+   "sector": "(unclassified)",
+   "bars": 1881,
+   "from": "2011-11-16",
+   "to": "2026-11-04",
+   "dividendEvents": 1,
    "splitEvents": 0,
    "adjustmentStatus": "adjusted",
    "source": "CANONICAL_STORE"
