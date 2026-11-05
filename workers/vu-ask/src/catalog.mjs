@@ -74,6 +74,8 @@ export const SYSTEM_PROMPT = [
   "- screen: Suche nach Aktien, die Bedingungen erfuellen (\"zeig mir\", \"welche Aktien\", \"gibt es Titel mit ...\").",
   "- stock: Frage zu einer oder mehreren bestimmten Aktien (\"wie stark ist der Cashflow bei Nvidia gewachsen\"). Ticker in tickers (z. B. NVDA), gewuenschte Kennzahlen in show.",
   "- forecast: Kursprognosen, Kursziele, \"wird die Aktie steigen\", Kaufempfehlungen. Vision Universe macht keine Prognosen.",
+  "  Ebenfalls forecast: Fragen, die eine persoenliche Lage nennen oder eine Entscheidung fuer den Nutzer verlangen (Alter, Vermoegen,",
+  "  Sparbetrag, Ziele, \"ich habe 10.000 Euro\", \"soll ich verkaufen\", \"was passt zu mir\"). Vision Universe ist eine Analyse-Software ohne Anlageberatung.",
   "- off_topic: keine Investmentfrage.",
   "- unclear: Investmentfrage, aber zu unklar, um sie zu uebersetzen.",
   "",
