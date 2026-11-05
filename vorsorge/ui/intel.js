@@ -103,22 +103,38 @@
         if (m && !changeBy["CUSIP:" + m[2]]) changeBy["CUSIP:" + m[2]] = ev; if (nameCount[nk] === 1 && !changeBy[nk]) changeBy[nk] = ev; });
       function rowKeys(r) { var c = r.isin && /^(US|CA)/.test(r.isin) ? r.isin.slice(2, 11) : null, nk = "N:" + String(r.name || "").toLowerCase();
         return [r.isin ? "ISIN:" + r.isin : null, r.cusip ? "CUSIP:" + r.cusip : null, c ? "CUSIP:" + c : null, r.ticker ? "TICKER:" + r.ticker + "@" : null, nameCount[nk] === 1 ? nk : null].filter(Boolean); }
-      var n = 10;
+      /* Redesign 2027 (Folie V04, Screen v04-b): zwei Kacheln (Top-10-Anteil mit Vorwert, effektive Zahl), Top 10 als Liste,
+         „Seit dem letzten Bericht“ mit Urteil je Änderung. Dieselben Werte wie die Tabelle davor (Bestandsdatei aus SEC N-PORT). */
+      var U = VS.U, n = 10, conc = f.concentration || {}, hist = (f.history || []).filter(function (h) { return h.asOf !== f.asOf && Number.isFinite(h.top10); });
+      var prev = hist.length ? hist[hist.length - 1] : null, eff = conc.effectiveNumber;
+      var IMP = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+      var evs = (f.changes && f.changes.events || []).slice().sort(function (a, b) { return (IMP[a.importance] || 3) - (IMP[b.importance] || 3); }).slice(0, 5);
+      function evVerdict(ev) {
+        if (/^ENTERED_|HOLDING_ADDED/.test(ev.eventType)) return U.verdict("strong", "neu dabei");
+        if (/^LEFT_|HOLDING_REMOVED/.test(ev.eventType)) return U.verdict("weak", "nicht mehr dabei");
+        if (Number.isFinite(ev.absoluteChange)) return U.verdict("mid", ev.absoluteChange > 0 ? "gestiegen" : "gesunken");
+        return U.verdict("none", "geändert");
+      }
       function draw() {
         var rows = f.rows.slice(0, n);
-        el.innerHTML = '<section class="vs-section"><div class="vs-card"><div class="vs-section-head"><div><p class="vs-label">Bestandteile</p><p class="vs-fine">' +
-          f.positions.toLocaleString("de-DE") + ' Positionen · die zehn größten: ' + wpct(f.concentration.top10) + '</p></div><div class="vs-seg" role="group" aria-label="Anzahl">' +
-          [10, 25, 100].filter(function (k) { return k <= Math.max(10, f.holdingsShown); }).map(function (k) { return '<button data-n="' + k + '" aria-pressed="' + (k === n) + '">' + (k === 100 ? "Alle gezeigten" : "Top " + k) + '</button>'; }).join("") + '</div></div>' +
-          '<div class="vs-table-wrap"><table class="vs-table ranked"><caption class="vs-sr">Bestandteile nach Gewicht</caption><thead><tr><th scope="col">#</th><th scope="col">Position</th><th scope="col">Gewicht</th><th scope="col">Wirtschaftszweig</th><th scope="col">Land</th><th scope="col">Seit letzter Meldung</th></tr></thead><tbody>' +
-          rows.map(function (r, i) {
-            var href = VS.stockHref(r), ev = rowKeys(r).map(function (k) { return changeBy[k]; }).filter(Boolean)[0];
-            var chg = ev ? (ev.eventType === "HOLDING_ADDED" ? '<span class="vs-badge">neu</span>' : ev.absoluteChange !== null ? '<span class="num ' + F.cls(ev.absoluteChange) + '">' + (ev.absoluteChange > 0 ? "+" : "−") + (Math.abs(ev.absoluteChange) * 100).toLocaleString("de-DE", { maximumFractionDigits: 2 }) + ' PP</span>' : '<span class="vs-fine">' + esc(ev.eventType === "ENTERED_TOP_10" ? "neu in Top 10" : "") + '</span>') : '<span class="vs-fine">–</span>';
-            return '<tr><td class="num">' + (i + 1) + '</td><td>' + (href ? '<a href="' + href + '">' + esc(r.ticker || r.name) + '</a>' : '<b>' + esc(r.ticker || "") + '</b>') + '<span class="t-name">' + esc(r.name || "") + '</span>' +
-              (r.assetType !== "EQUITY" ? '<span class="t-name">' + esc(VS.assetName(r.assetType)) + '</span>' : "") + '</td><td class="num">' + wpct(r.weight) + '</td><td>' + esc(r.sector ? VS.sectorName(r.sector) : "–") + '</td><td>' + esc(VS.countryName(r.country)) + '</td><td>' + chg + '</td></tr>';
-          }).join("") + '</tbody></table></div>' +
-          (n >= f.holdingsShown && f.positions > f.holdingsShown ? '<p class="vs-fine" style="margin-top:8px">Gezeigt werden die ' + f.holdingsShown + ' größten Positionen (' + wpct(f.shownWeight) + ' des Fonds). Kennzahlen, Länder und Wirtschaftszweige sind aus allen ' + f.positions.toLocaleString("de-DE") + ' Positionen berechnet.</p>' : "") +
-          '<p class="vs-fine" style="margin-top:8px">Klick auf einen Ticker öffnet die Aktienanalyse in Discover. Wirtschaftszweig nach SEC-SIC (nicht GICS).</p>' + sourceLine(f) + '</div></section>';
-        el.querySelectorAll("[data-n]").forEach(function (b) { b.onclick = function () { n = Number(b.dataset.n); draw(); }; });
+        el.innerHTML = '<section class="vs-section vs-best">' +
+          '<div class="vu-grid">' + U.tile("Top 10 Anteil", wpct(conc.top10), prev ? "vorher " + wpct(prev.top10) : "ein Bericht") +
+          U.tile("Effektiv", Number.isFinite(eff) ? eff.toLocaleString("de-DE", { maximumFractionDigits: 1 }) : "–", "gleich große Firmen") + '</div>' +
+          (Number.isFinite(eff) ? '<div style="margin-top:8px">' + U.help("„Effektiv " + eff.toLocaleString("de-DE", { maximumFractionDigits: 1 }) + "“: So breit gestreut wie " + Math.floor(eff).toLocaleString("de-DE") + " gleich große Firmen.") + '</div>' : "") +
+          U.sect((n === 10 ? "Top 10" : "Top " + Math.min(n, f.rows.length)) + " · SEC N-PORT " + F.date(f.asOf)) +
+          '<div class="vu-box vs-kvbox">' + rows.map(function (r) {
+            var href = VS.stockHref(r), nm = esc(VS.displayName ? VS.displayName(r.name || r.ticker || "") : (r.name || r.ticker || ""));
+            return '<' + (href ? 'a href="' + href + '"' : "div") + ' class="vs-kv"><span class="vu-sm"><b>' + nm + '</b>' + (r.ticker ? ' <span class="vu-mu">' + esc(r.ticker) + '</span>' : "") +
+              (r.assetType !== "EQUITY" ? ' <span class="vu-mu">· ' + esc(VS.assetName(r.assetType)) + '</span>' : "") + '</span><b class="num">' + wpct(r.weight) + '</b></' + (href ? "a" : "div") + '>';
+          }).join("") + '</div>' +
+          (f.rows.length > 10 ? '<button type="button" class="vu-btn vu-btn--line vu-btn--block vs-best-more" data-more style="margin-top:10px">' + (n === 10 ? "Die " + Math.min(25, f.rows.length) + " größten zeigen" : n < f.rows.length ? "Alle " + f.rows.length + " gezeigten" : "Nur Top 10") + '</button>' : "") +
+          (n >= f.rows.length && f.positions > f.holdingsShown ? '<p class="vu-xs vu-mu" style="margin-top:8px">Gezeigt werden die ' + f.holdingsShown + ' größten Positionen (' + wpct(f.shownWeight) + ' des Fonds). Kennzahlen, Länder und Wirtschaftszweige sind aus allen ' + f.positions.toLocaleString("de-DE") + ' Positionen berechnet.</p>' : "") +
+          (evs.length ? U.sect("Seit dem letzten Bericht") + '<div class="vu-box vs-kvbox">' + evs.map(function (ev) {
+            return '<div class="vs-kv"><span class="vu-sm">' + esc(String(ev.explanation || ev.entityName || "").replace(/\s*\([^)]*\)\.?$/, "").replace(/\.$/, "").replace(/: /, " ")) + '</span>' + evVerdict(ev) + '</div>';
+          }).join("") + '</div><p class="vu-xs vu-mu" style="margin-top:6px">Bericht ' + F.date(f.changes.from) + ' → ' + F.date(f.changes.to) + '.</p>' : "") +
+          '<p class="vu-xs vu-mu" style="margin-top:10px">Tippen auf eine Firma öffnet die Aktie in Discover. Wirtschaftszweig nach SEC-SIC (nicht GICS).</p>' + sourceLine(f) + '</section>';
+        var more = el.querySelector("[data-more]");
+        if (more) more.onclick = function () { n = n === 10 ? 25 : n < f.rows.length ? f.rows.length : 10; draw(); };
       }
       draw();
     });
@@ -213,32 +229,36 @@
      Altersvorsorgedepots (Regeln 2027-DE). Modellrechnung, keine Prognose, keine Empfehlung. */
   VS.renderPlanspiel = function (el, ctx) {
     if (!el) return;
-    if (ctx.complex) { el.innerHTML = '<div class="vs-play"><p class="vs-label" style="color:var(--app-muted)">Planspiel</p><h3>Nicht für ein Vorsorge-Planspiel geeignet.</h3><p class="vs-sub" style="margin-top:8px">Hebel-, Short- und Optionsprodukte verlieren über lange Zeiträume oft durch tägliche Neugewichtung an Wert – eine Hochrechnung aus der Vergangenheit wäre irreführend.</p></div>'; return; }
+    if (ctx.complex) { el.innerHTML = '<div class="vu-box vs-pl-no"><b>Nicht für ein Vorsorge-Planspiel geeignet.</b><p class="vu-sm vu-mu">Hebel-, Short- und Optionsprodukte verlieren über lange Zeiträume oft durch tägliche Neugewichtung an Wert – eine Hochrechnung aus der Vergangenheit wäre irreführend.</p></div>'; return; }
     if (!Number.isFinite(ctx.cagr) || !Number.isFinite(ctx.vol) || !(ctx.years >= 10)) {
-      el.innerHTML = '<div class="vs-play"><p class="vs-label" style="color:var(--app-muted)">Planspiel</p><h3>Für ein Planspiel ist die Historie zu kurz.</h3><p class="vs-sub" style="margin-top:8px">Wir rechnen nur mit mindestens zehn Jahren echter Kurshistorie. Im Planer kannst du mit eigenen Annahmen rechnen.</p><a class="vs-pill lime" style="margin-top:14px" href="#/plan">Zum Planer</a></div>'; return;
+      el.innerHTML = '<div class="vu-box vs-pl-no"><b>Für ein Planspiel ist die Historie zu kurz.</b><p class="vu-sm vu-mu">Wir rechnen nur mit mindestens zehn Jahren echter Kurshistorie. Im Planer kannst du mit eigenen Annahmen rechnen.</p><a class="vu-btn vu-btn--line vu-btn--sm" href="#/plan">Zum Planer</a></div>'; return;
     }
-    var st = VS.state.plan, st0 = { monthly: 100, years: Math.max(5, Math.min(45, (st.targetAge || 67) - (st.age || 35))), zulage: true, kids: 0, starter: false };
+    var st = VS.state.plan, st0 = { monthly: 100, years: Math.max(5, Math.min(45, (st.targetAge || 67) - (st.age || 35))) };
     if (!VS.state.planDone) st0.years = 20;
-    el.innerHTML = '<div class="vs-play"><p class="vs-label" style="color:var(--app-muted)">Planspiel · Altersvorsorgedepot</p>' +
-      '<h3>Was wäre, wenn du ' + esc(ctx.symbol) + ' in dein Vorsorgedepot legst?</h3>' +
-      '<p class="vs-sub" style="margin-top:6px">Mit der bisherigen Entwicklung seit ' + esc(String(ctx.since || "")) + ': <b style="color:var(--app-ink)">' + F.pct(ctx.cagr, 1) + ' p. a.</b> inkl. Ausschüttungen, Schwankung ' + F.pct(ctx.vol, 0) + ' p. a.</p>' +
-      '<div class="vs-play-grid"><form id="vs-pl-f" onsubmit="return false">' +
-      '<div class="vs-slider"><label for="pl-m">Sparrate pro Monat <b id="pl-mv"></b></label><input id="pl-m" type="range" min="25" max="1000" step="25" value="' + st0.monthly + '"></div>' +
-      '<div class="vs-slider"><label for="pl-y">Laufzeit bis zur Rente <b id="pl-yv"></b></label><input id="pl-y" type="range" min="5" max="45" step="1" value="' + st0.years + '"></div>' +
+    /* Redesign 2027 (Folie V04, Sheet v04-c): zwei Regler, vier Zeilen (eingezahlt, Zulagen, wie bisher, schwächer), ein Satz, ein Knopf.
+       Zulagen-Angaben und Annahmen stehen unter „Mehr Angaben“; gerechnet wird unverändert mit V.Math.historicalScenarios und V.Funding. */
+    var slider = function (id, label, unit, min, max, step, val) {
+      return '<label class="vs-pl-in" for="' + id + '"><span class="vs-pl-h"><b class="vu-sm">' + label + '</b><span class="vs-pl-v"><b class="vu-num" id="' + id + 'v"></b> <span class="vu-sm vu-mu">' + unit + '</span></span></span>' +
+        '<input id="' + id + '" type="range" min="' + min + '" max="' + max + '" step="' + step + '" value="' + val + '"></label>';
+    };
+    el.innerHTML = '<form id="vs-pl-f" class="vs-pl" onsubmit="return false">' + slider("pl-m", "Sparrate", "€ / Monat", 25, 1000, 25, st0.monthly) + slider("pl-y", "Laufzeit", "Jahre", 5, 45, 1, st0.years) +
+      '<div class="vu-box vs-pl-res" id="pl-res"></div>' +
+      '<div style="margin-top:8px">' + VS.U.help("Rechnet mit der Vergangenheit seit " + (ctx.since || "Beginn der Kurshistorie") + ". Die Zukunft kann deutlich schlechter ausfallen.") + '</div>' +
+      '<details class="vu-more vs-pl-more"><summary>Mehr Angaben</summary><div class="vu-more-body">' +
       '<label class="vs-toggle"><span>Staatliche Zulage (Altersvorsorgedepot ab 2027)</span><input id="pl-z" type="checkbox" checked></label>' +
-      '<div id="pl-zx"><div class="vs-slider"><label for="pl-k">Kinder mit Kindergeld <b id="pl-kv"></b></label><input id="pl-k" type="range" min="0" max="4" step="1" value="0"></div>' +
-      '<label class="vs-toggle"><span>Unter 25, erster Vertrag (Einsteigerbonus)</span><input id="pl-s" type="checkbox"></label></div>' +
-      '</form><div><div class="vs-play-result" id="pl-res"></div><div class="vs-play-split" id="pl-split"></div><div class="vs-legend" id="pl-leg"></div><div id="pl-chart" style="margin-top:12px"></div></div></div>' +
-      '<div class="vs-tabs" style="margin-top:6px"><button class="vs-pill lime" id="pl-apply" type="button">In meinen Plan übernehmen</button><a class="vs-pill" style="background:transparent;color:var(--app-ink);border-color:var(--app-line)" href="#/foerderung">So funktioniert die Zulage</a></div>' +
-      '<p class="vs-fine" style="margin-top:12px">Modellrechnung, keine Prognose und keine Empfehlung.</p><details class="vu-more vs-more-app"><summary>Annahmen der Rechnung</summary><div class="vu-more-body">Basis: bisherige Gesamtrendite p. a. nach Fondskosten (' + esc(ctx.basis || "Tiingo") + '); pessimistisch/optimistisch = 10 %/90 %-Bandbreite der Durchschnittsrendite über die Laufzeit (Schwankung ÷ √Jahre). ' +
-      (ctx.us ? 'In US-Dollar gemessen, Wechselkurs nicht berücksichtigt. US-ETFs selbst sind im Altersvorsorgedepot nicht zulässig (kein Basisinformationsblatt) – die Rechnung zeigt, was die bisherige Entwicklung dieses Engagements bedeutet hätte, etwa über einen UCITS-ETF auf denselben Index. ' : '') +
-      'Zulagen nach den Regeln ab 2027 (Grundzulage 50 % auf die ersten 360 €, 25 % bis 1.800 € Eigenbeitrag im Jahr; Kinderzulage bis 300 € je Kind), jährlich eingezahlt und mitverzinst. Steuern und Inflation sind nicht berücksichtigt.</div></details></div>';
+      '<div id="pl-zx">' + slider("pl-k", "Kinder mit Kindergeld", "", 0, 4, 1, 0) + '<label class="vs-toggle"><span>Unter 25, erster Vertrag (Einsteigerbonus)</span><input id="pl-s" type="checkbox"></label></div>' +
+      '<p class="vu-xs vu-mu" style="margin-top:10px">Basis: bisherige Gesamtrendite pro Jahr nach Fondskosten (' + esc(ctx.basis || "Tiingo") + '). „Schwächer“ ist das untere Ende der Bandbreite (10 %), aus der Schwankung über die Laufzeit. ' +
+      (ctx.us ? 'In US-Dollar gemessen, Wechselkurs nicht berücksichtigt. US-ETFs selbst sind im Altersvorsorgedepot nicht zulässig; die Rechnung zeigt, was die bisherige Entwicklung dieses Index bedeutet hätte, etwa über einen UCITS-ETF. ' : '') +
+      'Zulagen nach den Regeln ab 2027 (Grundzulage 50 % auf die ersten 360 €, 25 % bis 1.800 € Eigenbeitrag im Jahr; Kinderzulage bis 300 € je Kind). Steuern und Inflation sind nicht berücksichtigt. <a href="#/foerderung">So funktioniert die Zulage</a></p></div></details>' +
+      '<button class="vu-btn vu-btn--ink vu-btn--block" id="pl-apply" type="button" style="margin-top:12px">In meinen Plan übernehmen</button>' +
+      '<p class="vu-xs vu-mu" style="margin-top:8px">Modellrechnung, keine Prognose und keine Empfehlung.</p></form>';
     var form = el.querySelector("#vs-pl-f"), rules = null, last = null;
     VS.rules().then(function (r) { rules = r[0]; draw(); }).catch(function () { draw(); });
     function draw() {
       var m = Number(form.querySelector("#pl-m").value), y = Number(form.querySelector("#pl-y").value), z = form.querySelector("#pl-z").checked;
       var kids = Number(form.querySelector("#pl-k").value), starter = form.querySelector("#pl-s").checked;
-      el.querySelector("#pl-mv").textContent = F.eur(m); el.querySelector("#pl-yv").textContent = y + " Jahre"; el.querySelector("#pl-kv").textContent = String(kids);
+      el.querySelector("#pl-mv").textContent = m.toLocaleString("de-DE"); el.querySelector("#pl-yv").textContent = String(y); el.querySelector("#pl-kv").textContent = String(kids);
+      [["pl-m", 25, 1000], ["pl-y", 5, 45], ["pl-k", 0, 4]].forEach(function (x) { var i = form.querySelector("#" + x[0]); i.style.setProperty("--p", ((Number(i.value) - x[1]) / (x[2] - x[1]) * 100).toFixed(1) + "%"); });
       el.querySelector("#pl-zx").hidden = !z;
       var sub = 0, bonus = 0;
       if (z && rules && V.Funding) {
@@ -248,18 +268,11 @@
       }
       var r = V.Math.historicalScenarios({ cagr: ctx.cagr, vol: ctx.vol, years: y, monthly: m, annualSubsidy: sub, bonus: bonus });
       last = r;
-      var L = { pessimistisch: "Pessimistisch", basis: "Wie bisher", optimistisch: "Optimistisch" };
-      el.querySelector("#pl-res").innerHTML = r.scenarios.map(function (sc) {
-        return '<div class="' + (sc.id === "basis" ? "base" : "") + '"><span>' + L[sc.id] + ' · ' + F.pct(sc.annualReturn, 1) + ' p. a.</span><b class="num">' + F.eur(sc.nominal) + '</b><small>nach ' + y + ' Jahren</small></div>';
-      }).join("");
-      var base = r.scenarios[1].nominal, gain = Math.max(0, base - r.invested), tot = Math.max(base, r.invested);
-      el.querySelector("#pl-split").innerHTML = '<i style="width:' + (r.ownContributions / tot * 100).toFixed(1) + '%;background:#f4f4f4"></i><i style="width:' + (r.subsidies / tot * 100).toFixed(1) + '%;background:#6e6e6e"></i><i style="width:' + (gain / tot * 100).toFixed(1) + '%;background:var(--accent)"></i>';
-      el.querySelector("#pl-leg").innerHTML = '<span><i style="background:#f4f4f4"></i>Eigene Einzahlungen ' + F.eur(r.ownContributions) + '</span><span><i style="background:#6e6e6e"></i>Staatliche Zulagen ' + F.eur(r.subsidies) + '</span><span><i style="background:var(--accent)"></i>Wertzuwachs (Szenario „wie bisher“) ' + F.eur(gain) + '</span>';
-      VS.lineChart(el.querySelector("#pl-chart"), [
-        { label: "Wie bisher", points: r.path.map(function (p) { return [p[0], p[2]]; }), color: "var(--app-ink)" },
-        { label: "Optimistisch", points: r.path.map(function (p) { return [p[0], p[3]]; }), color: "var(--app-muted)", dash: true },
-        { label: "Pessimistisch", points: r.path.map(function (p) { return [p[0], p[1]]; }), color: "var(--app-muted)", dash: true }],
-        { label: "Vermögensverlauf im Planspiel", zero: true, height: 220, fmtX: function (v) { return "Jahr " + Math.round(v); }, fmtTipX: function (v) { return "nach " + Math.round(v) + " Jahren"; }, fmtY: function (v) { return F.eurK ? F.eurK(v) : F.eur(v); }, fmtTip: function (v) { return F.eur(v); } });
+      var row = function (k, v, strong) { return '<div class="vs-kv"><span class="vu-sm"><b>' + k + '</b></span><b class="num' + (strong ? " vs-pl-strong" : "") + '">' + v + '</b></div>'; };
+      el.querySelector("#pl-res").innerHTML = row("Selbst eingezahlt", F.eur(r.ownContributions)) +
+        (z ? row("Staatliche Zulagen (ab 2027)", F.eur(r.subsidies)) : "") +
+        row("Wie bisher · " + F.pct(r.scenarios[1].annualReturn, 1) + " pro Jahr", F.eur(r.scenarios[1].nominal), true) +
+        row("Schwächer · " + F.pct(r.scenarios[0].annualReturn, 1) + " pro Jahr", F.eur(r.scenarios[0].nominal));
     }
     form.addEventListener("input", draw);
     el.querySelector("#pl-apply").onclick = function () {
