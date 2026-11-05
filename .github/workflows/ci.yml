@@ -147,7 +147,8 @@ jobs:
           REF: ${{ github.ref }}
           PRUEFUNG: ${{ inputs.pruefung }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          COMMITS: ${{ toJSON(github.event.commits) }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
         run: |
@@ -158,10 +159,15 @@ jobs:
             # GitHub liefert hoechstens 3000 Dateien je PR: darueber ist die Liste unvollstaendig
             [ "$(wc -l < "$files")" -lt 3000 ] || unbekannt=(--unknown-files)
           elif [ "$EVENT" = push ]; then
-            printf '%s' "${COMMITS:-[]}" | jq -r '(. // [])[] | (.added + .modified + .removed)[]' | sort -u > "$files"
-            # Push-Ereignisse tragen hoechstens 20 Commits; leer bei neuem Zweig
-            n="$(printf '%s' "${COMMITS:-[]}" | jq '(. // []) | length')"
-            if [ "$n" -ge 20 ] || [ "$n" -eq 0 ]; then unbekannt=(--unknown-files); fi
+            # Dateiliste ueber die Compare-API (die Commits im Push-Ereignis tragen nicht immer added/modified/removed).
+            # Neuer Zweig (Basis 000…), Fehler oder abgeschnittene Liste (300 Dateien): alle in Frage kommenden.
+            if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              unbekannt=(--unknown-files)
+            elif gh api "repos/$REPO/compare/$BEFORE...$AFTER" --jq '.files[].filename' > "$files"; then
+              [ "$(wc -l < "$files")" -lt 300 ] || unbekannt=(--unknown-files)
+            else
+              echo "::warning::Compare-API ohne Ergebnis - alle in Frage kommenden Pruefungen"; : > "$files"; unbekannt=(--unknown-files)
+            fi
           fi
           node scripts/ci/select-checks.mjs --checks scripts/ci/ci-checks.json --event "$EVENT" --ref "$REF" \
             --files "$files" --pruefung "${PRUEFUNG:-}" "${unbekannt[@]}"
