@@ -240,7 +240,7 @@
     var save = el('button', {type: 'button', className: 'ka-btn ka-btn--secondary', text: 'Notiz speichern'});
     save.addEventListener('click', function () { patchItem(v, {note: ta.value}, save, 'Notiz gespeichert.'); });
     ns.appendChild(ta); ns.appendChild(el('div', {className: 'ka-actions'}, [save]));
-    var fs = el('fieldset', {className: 'ka-fieldset wl-alerts'}, [el('legend', {className: 'ka-legend', text: 'Benachrichtigen bei'})]);
+    var fs = el('fieldset', {className: 'ka-fieldset wl-alerts'}, [el('legend', {className: 'ka-legend'}, ['Benachrichtigen bei ', el('span', {className: 'wl-soon', text: 'bald'})])]);
     ALERTS.forEach(function (a) {
       var id = 'wl-' + v.instrumentId + '-' + a[0], cb = el('input', {type: 'checkbox', id: id});
       cb.checked = v.alerts && v.alerts[a[0]] === true;
