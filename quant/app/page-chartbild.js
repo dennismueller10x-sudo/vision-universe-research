@@ -1280,7 +1280,7 @@
     if (s.template === "BREAKOUT_RETEST") return up ? "Ausbruch, Rücktest, weiter aufwärts" : "Ausbruch nach unten, Rücktest";
     return (Ex && Ex.TEMPLATE && Ex.TEMPLATE[s.template]) || (up ? "Aufwärts" : "Abwärts");
   }
-  async function chartV3(main, ctx, ticker, params) {
+  async function chartV3(main, ctx, ticker, params, chartLib) {
     var U = global.VUUI, N = global.VUStockNavigator, SC = global.VUCore && global.VUCore.StockContext;
     function html(s) { var t = document.createElement("template"); t.innerHTML = s; return t.content; }
     function n0(v) { return isNum(v) ? v.toLocaleString("de-DE", { maximumFractionDigits: Math.abs(v) < 100 ? 2 : 0 }) : "–"; }
@@ -1308,10 +1308,10 @@
     if (entry) zones.push({ lo: entry.zoneLow, hi: entry.zoneHigh, k: "key", label: "Schlüsselzone " + band(entry.zoneLow, entry.zoneHigh) });
     if (t1) zones.push({ lo: t1.zoneLow, hi: tLast.zoneHigh, k: "target", label: "Zielbereich " + band(t1.zoneLow, tLast.zoneHigh) });
     var chartHost = el("div", { class: "qv3-ch-chart" }); host.append(chartHost);
-    if (global.VUChart && pts.length > 1) {
+    if (chartLib && pts.length > 1) {
       var last = pts[pts.length - 1][0], since = function (days) { var lim = new Date(Date.parse(last) - days * 864e5).toISOString().slice(0, 10); return pts.filter(function (p) { return p[0] >= lim; }); };
       var NS = "http://www.w3.org/2000/svg";
-      global.VUChart.mount(chartHost, {
+      chartLib.mount(chartHost, {
         label: ticker + " " + tf, currency: "USD", height: 200, initial: "1J",
         levels: isNum(inv) ? [{ value: inv, label: "", tone: "" }] : [], /* gestrichelt, ohne Beschriftung: die Kachel „Ungültig unter“ nennt den Wert */
         extent: zones.reduce(function (acc, z) { return acc.concat([z.lo, z.hi]); }, []),

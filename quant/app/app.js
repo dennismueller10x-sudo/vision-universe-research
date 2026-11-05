@@ -393,7 +393,7 @@
         /* Mission IV §55: die V1-Technikseite ist abgeloest — die Route bleibt (Links, Lesezeichen), zeigt aber das Chartbild;
            der alte Elliott-Link oeffnet die Profi-Ansicht. Keine zweite, widerspruechliche Szenario-Darstellung mehr. */
         /* Redesign 2027 (Q09): Perspektive „Chart“ bleibt in Quant (eigene Adresse; #/aktie/<T>/chartbild fuehrt weiter zu Elliott). */
-        case "chart": await ctx.loadNames(); await (await loadChartbild()).chartV3(main, ctx, r.ticker, r.params); break;
+        case "chart": await Promise.all([ctx.loadNames(), pack("stock")]); await (await loadChartbild()).chartV3(main, ctx, r.ticker, r.params, global.VUChart); break; /* der Kurschart (C06) liegt im Paket der Aktienseite */
         case "chartlagen": await (await loadChartbild()).overview(main, ctx, r.params); hideEmptyLagen(main, r.params); break;
         case "zahlen": await viewPack; await global.QXTools.fundamentals(main, ctx, r.ticker, r.params); break;
         case "vergleich": await viewPack; await global.QXTools.compare(main, ctx, r.list); break;
