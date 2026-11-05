@@ -769,6 +769,9 @@
     }
     page.querySelector('.vu-seg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) draw(b.dataset.id); });
     draw('heute');
+    /* D08: Benachrichtigungen wie im Mockup d08-a; der Dienst (Z4) kommt später, deshalb ehrlich „bald“ statt wirkungsloser Schalter. */
+    page.insertAdjacentHTML('beforeend', sect('Benachrichtigungen') + '<div class="vu-box dv3-alerts">' + ['Bewegung über ±5 % am Tag', 'Neues Jahreshoch', 'Neue Quartalszahlen (SEC)'].map(function (t) {
+      return '<div class="dv3-alert"><b>' + esc(t) + '</b>' + U().verdict('none', 'bald') + '</div>'; }).join('') + '</div>');
     var first = known[0], sim = first && first.discoverNext && first.discoverNext.similar && (first.discoverNext.similar.cards || []).filter(function (c) { return symbols.indexOf(c.symbol) < 0; }).slice(0, 2);
     if (sim && sim.length) {
       page.insertAdjacentHTML('beforeend', sect('Passt zu deiner Liste'));
