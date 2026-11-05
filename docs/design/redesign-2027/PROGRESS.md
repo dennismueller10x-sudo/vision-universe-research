@@ -33,7 +33,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | 14 | #1366 | Einstieg, Konto, Mein Bereich, Atlas, erster Start | E01–E12, Z7, Z1 (Seite) | gemergt |
 | 15 | #1367 | Discover | D01–D08 | gemergt |
 | 16 | #1364 | Gemeinsam: Leisten Fundamental/Technical/Discover, Fundamental-Ansichten keine Aktien | C02, C03 | gemergt |
-| 17 | #1391 | Z5: Screener-Kriteriengruppe „Methoden“ aus den Supertrader-Spalten (#1389) | S02, Z5 | offen |
+| 17 | #1391 | Z5: Screener-Kriteriengruppe „Methoden“ aus den Supertrader-Spalten (#1389) | S02, Z5 | gemergt |
 | – | #1359 | Konto Z1+Z3 (Worker, Migration, Tests), Basis main, unabhängig | Z1, Z3 | gemergt |
 
 Übernommene Zweige der früheren Sitzung (Stand `docs/neustart/D-frontend.md` im Zweig `neustart/d-shell-dock`):
@@ -80,10 +80,10 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | Q03 | Quant · Strategien | fertig | #1351, #1410 | Detail (q03-b) nach Mockup; Knopf „Im Quant Screener öffnen und anpassen“ (Produktgrenze: Verweise in den Quant-Screener nennen Quant); bekannte Namen nach redaktioneller Bekanntheit (Discover) |
 | Q04 | Quant · Aktien | fertig | #1351 | Aktienzeilen ohne Kurs/Mini-Chart (keine Kursabfrage je Zeile auf dieser Seite) |
 | Q05 | Quant · Methodik | fertig | #1351, #1410 | Anteil je Frage (PRO) aus factorWeights; Unterkapitel ohne eigene Vorlage (nur q05-a), bleiben im bisherigen Stil |
-| Q06 | Quant · Technische Lagen | offen |  |  |
+| Q06 | Quant · Technische Lagen | fertig | #1450 | Lage als Urteil (C08), Kurs neben der Zone, 12 Kacheln + „Alle N zeigen“, Regel der Reihe, Eigene Auswahl als Sheet mit Fragen, Ergebnis erst nach dem Filtern. Abweichung: Reihen ohne Treffer erscheinen nicht als Chip (heute 2 von 7 leer); Schalter „Klare Struktur“ und Frage „Wie klar ist das Bild?“ sind gekoppelt, weil beide dieselbe Klarheit filtern. Alte Fassung unter `?daten=v1`. |
 | Q07 | Quant · NVIDIA (Aktienseite, Perspektive Faktoren) | fertig | #1351 | Lange Seite mit Schritten 1–6 nach Mockup (Überblick, Fragen, Stärken/Risiken, Veränderungen mit Kacheln, Setup-Karte + Stil-Karten mit Regel-Haken, Rückblick schwarz + Evidenz). Offen: Kopf in $ + ≈ € (Querschnitt Währung), Herz statt „Beobachten“, Quant-Chart → C06, Kursstärke-Verlauf mit Schwelle 70, Ereignis-Zeitleiste, Beleg-Sheet. Rückblick zeigt „ähnliche Situationen dieser Aktie“ (replay), nicht „Setup bestätigt in 552 Wochen“ (setup-replay-v1 lädt die Seite nicht). Alte Inhalte vollständig unter „Einstieg, Stop, Ziele …“ und „Alle Belege …“. |
 | Q08 | Quant · NVIDIA Zahlen (Perspektive Zahlen) | fertig | #1351 | Kopf ohne Kurs (Seite lädt keinen Kurs); Kachel „Wachstum 3 Jahre“ durch „Stand“ ersetzt |
-| Q09 | Quant · NVIDIA Chartbild (Perspektive Chart) | offen |  |  |
+| Q09 | Quant · NVIDIA Chartbild (Perspektive Chart) | fertig | #1450 | Perspektive „Chart“ bleibt in Quant (Kopf mit Leiste, Quant-Dock): Urteil + Lage, der eine Chart (C06) mit Schlüsselzone (neongrün), Zielbereich (grau), Ungültig-Linie gestrichelt, drei Kacheln, Szenarien (Haupt schwarz, Tippen zeigt Marken), „Warum dieses Bild?“ mit dafür/dagegen/neutral und „Alle n“, Querverweise Wellen und Chart Studio (PRO), Historie gegen Zufall, Prüfweg, frühere Fälle, Zeitreise-Regler. Abweichung: eigene Adresse `#/aktie/<T>/chart` statt `#/aktie/<T>/chartbild`, weil die alte Adresse laut Mission IV und ihren Tests zu Elliott führt (Lesezeichen bleiben gültig); Quant-Links (Radar, Aktienseite, Q06) zeigen auf die neue Adresse. Zeitleiste: 1W/1M/1J aktiv, 1T/5J/Max abgeschaltet mit Grund (das Chartbild rechnet mit Tagesschlüssen über ein Jahr). Historie in beiden Farbmodi schwarz (Lesbarkeit der neongrünen Zahl). |
 | T01 | Technical · Übersicht | fertig | #1363 | Sheet „Was ist ein Setup?“ ohne Beispielchart; „Heute neu im Chart“ lädt nach dem ersten Bild; Markt heute ≥ 60 % Stark, ≥ 40 % Gemischt, sonst Schwach |
 | T02 | Technical · Screener | fertig | #1363 | „Melden“ ohne Funktion bis Z4 (Owner-Freigabe Versand) |
 | T03 | Technical · Vorlagen | fertig | #1363 | Detail bleibt `#/vorlagen/<id>` (TPL.href in der Engine) |
@@ -109,7 +109,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | ST06 | Supertrader · Quellen | fertig | #1361 | echte Zahlen (59 Quellen, 53 mit Adresse, 10 im Volltext) |
 | ST07 | Supertrader · Hausstrategie | fertig | #1361 |  |
 | ST08 | Supertrader · NVIDIA (Perspektive Methoden) | fertig | #1361 | Antwort aus Daten („1 Methode erkennt NVIDIA“); Technical-Abschnitt entfällt (Perspektive Chart) |
-| ST-Z | Supertrader · Zustände in Alltagssprache | offen |  |  |
+| ST-Z | Supertrader · Zustände in Alltagssprache | fertig | #1446 | Neue Ansicht hatte die Zuordnung schon; jetzt tragen auch Phasen-Pillen und Filter der älteren Ansicht die Alltagsnamen. Engine-Etiketten (generierte Artefakte) bleiben. |
 | H01 | Hedgefonds · Übersicht | fertig | #1357 | Suche bleibt echte Hedgefonds-Suche (ohne Atlas-Knopf) |
 | H02 | Hedgefonds · Investoren | fertig | #1357 | 12 Stil-Chips aus den Daten; Sortierung im eigenen Sheet |
 | H03 | Hedgefonds · Datenbank | fertig | #1357 | neue Adresse `#/investoren/alle`; Region nur Alle/DACH (Daten); alte Chips bleiben |

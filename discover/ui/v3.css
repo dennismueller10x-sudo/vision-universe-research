@@ -354,3 +354,7 @@ body.dv2 .dx-search .dx-search-hint:empty{display:none}
 .dv3-ptile-h{display:flex;align-items:center;gap:7px}.dv3-ptile-h>b{font-size:14px}
 .dv3-ptile>.vu-verdict{margin-top:8px}
 .dv3-ptile-s{display:block;margin-top:6px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* D08 Benachrichtigungen (Z4 „bald“) */
+.dv3-alerts{padding:4px 14px}
+.dv3-alert{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px;border-top:1px solid var(--vu-hair)}
+.dv3-alert:first-child{border-top:0}.dv3-alert>b{font-size:13.5px}
