@@ -100,7 +100,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | W02 | Elliott · Welle 3 | fertig | #1356 | Karten in Reihenfolge der Reihe, 10 je Seite |
 | W03 | Elliott · Aufwärts | fertig | #1356 | zusätzlicher Filter `rolle=motiv` |
 | W04 | Elliott · Neu und verändert | fertig | #1356 | Schalter „Melden“ sichtbar, aus: kommt mit Z4 (Owner-Freigabe) |
-| W05 | Elliott · NVIDIA in Wellen | teilweise | #1356 | Teil: Reihenfolge, Ausblick schwarz mit C08, Profi-Knopf PRO. Offen: Chart mit Unterstützung/Widerstand statt Szenario-Zonen, kompakte Projektionskarte, kurze Profi-Ansicht |
+| W05 | Elliott · NVIDIA in Wellen | fertig | #1356, #1470 | Reihenfolge, Ausblick schwarz mit C08, Profi-Knopf PRO; ohne belastbare Lesart zeigt der Chart die Marktstruktur (Unterstützung neongrün, Widerstand grau, überlappend als eine Zone). Abweichung: Projektionskarte (w05-c) und Profi-Ansicht (w05-b) bleiben ausführlicher als im Mockup, weil sie die Pflichtangaben des experimentellen Elliott-Modells tragen (Status, Lesarten, Regeln, Neuzuordnungs-Risiko). |
 | ST01 | Supertrader · Übersicht | fertig | #1361 | „Neu erkannt heute“ heißt „Heute durchgerechnet“ (Stufe-3-Treffer; kein sauberer Vortagsvergleich in den Daten) |
 | ST02 | Supertrader · Methoden | teilweise | #1361 | Karten führen in die bisherige Kandidatenansicht `?sf=Cxx` (noch alter Stil) |
 | ST03 | Supertrader · Methode Minervini VCP | teilweise | #1361 | Teil: fertig für 5 Musterdepot-Methoden; bei 52W, CAN SLIM, Piotroski, Greenblatt, Namenskarten nur Kopf + „Wie belastbar?“ |
