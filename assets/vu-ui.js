@@ -293,7 +293,7 @@
     var n = legalNotice(key), x = o || {};
     if (!n) return "";
     return '<aside class="vu-legal" data-legal="' + esc(key) + '"><p>' + esc(n.text) + "</p>" +
-      (x.facts && n.required ? '<ul class="vu-legal-facts">' + n.required.map(function (r) { return "<li><b>" + esc(r) + ":</b> " + esc(x.facts[r] == null ? "–" : x.facts[r]) + "</li>"; }).join("") + "</ul>" : "") +
+      (x.facts && n.required ? '<ul class="vu-legal-facts">' + n.required.map(function (r) { return "<li><b>" + esc(String(r).replace(/\s*\(z\. B\.[^)]*\)/, "").replace(/:\s*ja\/nein$/, "")) + ":</b> " + esc(x.facts[r] == null ? "–" : x.facts[r]) + "</li>"; }).join("") + "</ul>" : "") +
       (n.links.length ? '<p class="vu-legal-links">' + n.links.map(function (l) { return '<a href="' + esc(l[1]) + '">' + esc(l[0]) + "</a>"; }).join(" · ") + "</p>" : "") + "</aside>";
   }
 
