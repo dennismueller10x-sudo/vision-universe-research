@@ -275,7 +275,7 @@
   }
   /* Bereich -> Eintrag der Produkt-Leiste. Methodik und Backtesting sind
      sekundaere Bereiche (Hero, Fuss, Menue) und markieren nur das Produkt. */
-  var DOCK = { home: "quant", screener: "screener", strategien: "strategien", aktien: "aktien", methodik: null, elliott: null };
+  var DOCK = { home: "quant", screener: "screener", strategien: "strategien", aktien: "aktien", methodik: "quant", elliott: null }; /* Q00: Methodik und Backtest gehören zum Start „Quant“ */
   function markNav(section) {
     if (global.VUNavigation) global.VUNavigation.dock({ active: Object.prototype.hasOwnProperty.call(DOCK, section) ? DOCK[section] : null });
   }

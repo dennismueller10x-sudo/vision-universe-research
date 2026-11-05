@@ -28,7 +28,7 @@ const ROUTES = [
   ['Discover', '/discover/#/', 'Discover'], ['Discover', '/discover/#/welten', 'Welten'], ['Discover', '/discover/#/strategien', 'Strategien'],
   ['Discover', '/discover/#/swipen', 'Swipen'], ['Discover', '/discover/#/einzeln/US_REAL', 'Swipen'], ['Discover', '/discover/#/maerkte', null], ['Discover', '/discover/#/watchlist', null],
   ['Quant', '/quant/#/', 'Quant'], ['Quant', '/quant/#/screener', 'Screener'], ['Quant', '/quant/#/strategien', 'Strategien'],
-  ['Quant', '/quant/#/aktien', 'Aktien'], ['Quant', '/quant/#/aktie/NVDA', 'Aktien'], ['Quant', '/quant/#/methodik', null],
+  ['Quant', '/quant/#/aktien', 'Aktien'], ['Quant', '/quant/#/aktie/NVDA', 'Aktien'], ['Quant', '/quant/#/methodik', 'Quant'],
   // Elliott: eigenes Produkt; das Aktienbild liegt unter /elliott/#/<T> (alt: /quant/#/elliott/<T>, leitet um), gehoert aber zu Elliott (nur Produktkontext)
   ['Elliott', '/elliott/', 'Elliott'], ['Elliott', '/elliott/#/?welle=3', 'Welle 3'], ['Elliott', '/elliott/#/?neu=1', 'Neu'], ['Elliott', '/elliott/#/?suche=1', 'Suche'],
   ['Elliott', '/elliott/#/?richtung=ab', null], ['Elliott', '/elliott/#/NVDA', null], ['Elliott', '/quant/#/elliott/NVDA', null],
@@ -45,7 +45,7 @@ const ROUTES = [
   // Alte Quant-Unterseiten: Weiterleitungen auf die App unter /quant/ (quant/ui/legacy-redirect.js). Erwartet ist die Leiste
   // am Ziel: Ranking -> #/screener (Screener), Watchlist -> #/aktien (Aktien).
   ['Quant', '/quant/screener/', 'Screener'], ['Quant', '/quant/strategies/', 'Strategien'], ['Quant', '/quant/ranking/', 'Screener'],
-  ['Quant', '/quant/technical/', 'Aktien'], ['Quant', '/quant/watchlist/', 'Aktien'], ['Quant', '/quant/methodology/', null]
+  ['Quant', '/quant/technical/', 'Aktien'], ['Quant', '/quant/watchlist/', 'Aktien'], ['Quant', '/quant/methodology/', 'Quant']
 ];
 const VIEWPORTS = (arg('viewports', '390x844,430x932,768x1024,1024x768,1440x900')).split(',').map((v) => { const [w, h] = v.split('x').map(Number); return [String(w), w, h]; });
 const findings = [], checks = [];

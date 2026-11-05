@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-11-05T05:07:53.281Z",
+ "generatedAt": "2026-11-05T14:39:12.844Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,7 +35,7 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5669,
+    "universe": 5658,
     "covered": 5309,
     "available": 4481,
     "sufficient": {
@@ -48,7 +48,7 @@
      "m6": 826
     },
     "reasons": {
-     "NOT_COVERED": 360,
+     "NOT_COVERED": 349,
      "NO_PRICE_CONDITION_TODAY": 757,
      "NO_COMPARABLE_CASE": 71
     }
@@ -116,7 +116,7 @@
      "id": "SURVIVORSHIP",
      "label": "Dekotierte Titel mit Kurshistorie, Überlebenden-Kontrolle",
      "required": "Kontrolle aktiv",
-     "measured": "193 Titel mit Historie, Kontrolle nicht aktiv",
+     "measured": "287 Titel mit Historie, Kontrolle nicht aktiv",
      "state": "FAIL"
     },
     {
@@ -274,8 +274,8 @@
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 89083,
-     "titles": 5095,
+     "n": 89082,
+     "titles": 5094,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -287,8 +287,8 @@
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 86518,
-     "titles": 5062,
+     "n": 86517,
+     "titles": 5061,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -298,8 +298,8 @@
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 86085,
-     "titles": 5062,
+     "n": 86083,
+     "titles": 5060,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -337,7 +337,7 @@
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5669,
+   "universe": 5658,
    "covered": 5309,
    "available": 4481,
    "sufficient": {
@@ -350,7 +350,7 @@
     "m6": 826
    },
    "reasons": {
-    "NOT_COVERED": 360,
+    "NOT_COVERED": 349,
     "NO_PRICE_CONDITION_TODAY": 757,
     "NO_COMPARABLE_CASE": 71
    }

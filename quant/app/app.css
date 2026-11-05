@@ -1531,3 +1531,52 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 .qd .vu-box--lime,.qd .vu-box--lime b,.qd .vu-box--lime span,.qd .vu-box--lime .vu-xs{color:#000}
 .qd .vu-box--lime .vu-mu{color:rgba(0,0,0,.68)}
 :root[data-theme=dark] .qd .qv3-regime-v .vu-num{color:var(--vu-inv,#000)}
+/* Q03 Strategie-Detail (q03-b) */
+.qd .qv3-back{display:inline-flex;align-items:center;gap:8px;min-height:44px;text-decoration:none;color:var(--vu-ink)}
+.qv3-sdetail .qv3-rule-v{min-height:30px;font-size:13px;gap:4px}
+.qv3-sdetail .qv3-rule-v svg{width:14px;height:14px}
+.qd .qv3-new{flex-wrap:wrap;gap:6px}
+.qd .qv3-sdetail .qv3-notify{display:flex;flex-direction:row;align-items:center;gap:10px;margin-top:16px;padding:12px 14px}
+.qv3-notify-t{flex:1;min-width:0}.qv3-notify-t>*{display:block}.qv3-notify .vu-verdict{flex:none}
+.qd .qv3-sdetail a.qv3-cta{display:flex;justify-content:center;align-items:center;margin-top:14px;min-height:50px;text-decoration:none;color:var(--vu-inv)}
+/* Q02 Profi (q02-b): dunkle Fläche unabhängig vom Farbschema */
+.qd .qv3-pro{--vu-ink:#fff;--vu-inv:#000;--vu-card:#151515;--vu-hair:#262626;--vu-mute:#9b9b9b;background:#000;color:#fff;margin:0 -16px;padding:16px 16px 24px;border-radius:0}
+.qv3-pro-head{display:flex;justify-content:space-between;align-items:center}
+.qv3-pro-t{margin:0;font-size:22px;font-weight:900;letter-spacing:-.03em}
+.qd .qv3-pro .qv3-mode{margin-top:12px}
+.qv3-pro .vu-sect{display:flex;justify-content:space-between;align-items:baseline}
+.qd .qv3-pro .qv3-linkbtn{background:none;border:0;color:var(--vu-mute);font:700 13px/1 var(--vu-font);min-height:44px;padding:0 4px;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.qv3-conds{gap:8px}
+.qv3-cond{padding:12px}
+.qv3-cond-h{display:flex;align-items:center;gap:10px}
+.qv3-cond-h>span{flex:1;min-width:0}.qv3-cond-h>span>*{display:block}
+.qd .qv3-cond-x{width:32px;height:32px;border-radius:50%;border:0;background:var(--vu-hair);color:var(--vu-ink);font:800 16px/1 var(--vu-font);cursor:pointer}
+.qv3-range{position:relative;height:28px;margin-top:8px}
+.qv3-range:before{content:"";position:absolute;left:0;right:0;top:12px;height:4px;border-radius:2px;background:var(--vu-hair)}
+.qv3-range-fill{position:absolute;top:12px;height:4px;border-radius:2px;left:var(--a);right:calc(100% - var(--b));background:var(--vu-lime)}
+.qv3-range input{position:absolute;left:0;top:0;width:100%;height:28px;margin:0;background:none;pointer-events:none;-webkit-appearance:none;appearance:none}
+.qv3-range input::-webkit-slider-thumb{pointer-events:auto;-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px var(--vu-lime);cursor:pointer}
+.qv3-range input::-moz-range-thumb{pointer-events:auto;width:24px;height:24px;border-radius:50%;background:#fff;border:0;box-shadow:0 0 0 3px var(--vu-lime);cursor:pointer}
+.qv3-range input::-webkit-slider-runnable-track{background:none}
+.qd .qv3-pro .qv3-add{display:flex;align-items:center;gap:10px;width:100%;margin-top:8px;padding:11px 14px;color:var(--vu-ink);background:none;cursor:pointer;min-height:48px}
+.qv3-pro-chips{margin-top:12px;flex-wrap:wrap;gap:6px;white-space:normal}
+.qd .qv3-pro .vu-chip svg{width:14px;height:14px}
+.qv3-pro-bar{display:flex;justify-content:space-between;align-items:center;margin:14px 0 4px}
+.qv3-ptable{--cols:4;font-size:13px}
+.qd .qv3-prow{display:grid;grid-template-columns:minmax(0,1fr) repeat(var(--cols),46px);gap:4px;align-items:center;min-height:40px;border-bottom:1px solid var(--vu-hair);color:var(--vu-ink);text-decoration:none}
+.qv3-prow>.num{text-align:right}.qv3-prow .is-sort{color:var(--vu-lime);font-weight:800}
+.qd .qv3-prow--h{font-size:10.5px;font-weight:800;color:var(--vu-mute);min-height:44px}
+.qd .qv3-prow--h button{background:none;border:0;color:inherit;font:inherit;text-align:right;min-height:44px;padding:0;cursor:pointer}
+.qd .qv3-li-btn{width:100%;background:none;border:0;border-top:1px solid var(--vu-hair);font:inherit;text-align:left;cursor:pointer}
+.qv3-colpick input{width:22px;height:22px;accent-color:var(--vu-lime)}
+/* Q02 Einfach: „Eigene Bedingung“ als Karte mit Sheet (q02-c) */
+.qd .qv3-own{display:flex;align-items:center;gap:10px;width:100%;margin-top:8px;padding:12px 14px;background:none;color:var(--vu-ink);text-align:left;cursor:pointer;min-height:56px}
+.qv3-own>span{flex:1;min-width:0}.qv3-own>span>*{display:block}
+.qv3-own-on{min-height:30px;font-size:12.5px}
+#qv3-own-sheet .vu-seg input{width:96px;min-height:40px;border:0;border-radius:999px;background:none;font:700 14px/1 var(--vu-font);text-align:center;color:var(--vu-ink)}
+.qd #qv3-own-sheet .vu-btn{font:800 16px/1 var(--vu-font)}
+.qd #qv3-own-sheet .vu-seg>button{font:700 13px/1 var(--vu-font);min-height:40px}
+.qd #qv3-own-sheet .vu-seg input{width:84px;font-size:13px;padding:0 6px}
+.qv3-q6-head{display:flex;justify-content:space-between;gap:8px;margin:-4px 0 8px}
+.qv3-w{flex:none;min-width:40px;text-align:right}
+.qd .qv3-pro .vu-pro{background:var(--vu-lime);color:#000}

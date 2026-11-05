@@ -136,7 +136,7 @@
     var box = doc.createElement("div"); box.className = "vu-chart" + (o.bleed === false ? "" : " vu-chart--bleed");
     var plot = doc.createElement("div"); plot.className = "vu-chart-plot"; plot.style.position = "relative";
     var tip = doc.createElement("div"); tip.className = "vu-chart-tip"; tip.hidden = true;
-    var bar = doc.createElement("div"); bar.className = "vu-ranges"; bar.setAttribute("role", "group"); bar.setAttribute("aria-label", "Zeitraum");
+    var bar = doc.createElement("div"); bar.className = "vu-ranges"; bar.setAttribute("role", "group"); bar.setAttribute("aria-label", "Zeitraum"); bar.tabIndex = 0; /* waagrecht scrollbar auf schmalen Schirmen: per Tastatur erreichbar */
     box.appendChild(plot); plot.appendChild(tip);
     if (ranges.length > 1) box.appendChild(bar);
     host.replaceChildren(box);
