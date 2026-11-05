@@ -37,6 +37,7 @@ on:
       - '.github/workflows/sec-fundamentals-daily.yml'
       - 'scripts/quant/sec/daily.py'
       - 'scripts/quant/cli.py'
+      - 'scripts/insider/**'
   workflow_dispatch:
     inputs:
       since:
@@ -244,3 +245,57 @@ jobs:
           if r["STATUS"] == "FAILURE":
               raise SystemExit(1)
           PY
+
+  # ===================================================================
+  # INSIDER-KAEUFE (SEC FORM 4, E2) - TAGESLAUF IM DATENZWEIG
+  #
+  # Erzeuger scripts/insider/form4.py liest die EDGAR-Quartalsindizes und die
+  # Einreichungen der letzten zwei Einreichungstage (Ueberlappung), merge.py
+  # fuehrt sie mit dem bisherigen Stand zu einem 90-Tage-Fenster zusammen.
+  # Ausgabe nur in den Datenzweig data/live (core/registry/data-branch.json,
+  # Phase BRANCH_ONLY), nie nach main. Unabhaengig vom Fundamental-Job: ein
+  # Fehler hier haelt die Fundamentaldaten nicht auf und umgekehrt.
+  # Bei einem Fehler bleibt der vorige Stand im Datenzweig unveraendert.
+  # ===================================================================
+  insider:
+    name: Insider-Kaeufe (Form 4) in den Datenzweig
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Erzeuger-Tests (ohne Netz)
+        run: python3 -m unittest discover -s scripts/insider/tests -p 'test_*.py'
+      - name: Bisheriger Stand aus dem Datenzweig
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/insider"
+          if git ls-remote --exit-code --heads origin data/live >/dev/null \
+             && git fetch --quiet --depth=1 origin refs/heads/data/live \
+             && git cat-file -e FETCH_HEAD:insider/data/purchases.json 2>/dev/null; then
+            git show FETCH_HEAD:insider/data/purchases.json > "$RUNNER_TEMP/insider/prev.json"
+          else
+            echo "noch kein Stand im Datenzweig (erster Lauf)"
+          fi
+      - name: Form 4 der letzten zwei Einreichungstage
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: |
+          set -euo pipefail
+          von="$(date -u -d '2 days ago' +%F)"
+          stand="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          python3 scripts/insider/form4.py --from "$von" --as-of "$stand" --out "$RUNNER_TEMP/insider/next.json"
+      - name: 90-Tage-Fenster zusammenfuehren
+        run: |
+          set -euo pipefail
+          prev=()
+          [ -f "$RUNNER_TEMP/insider/prev.json" ] && prev=(--prev "$RUNNER_TEMP/insider/prev.json")
+          python3 scripts/insider/merge.py --next "$RUNNER_TEMP/insider/next.json" "${prev[@]}" \
+            --keep-days 90 --out insider/data/purchases.json
+      - name: In den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live insider/data/purchases.json
