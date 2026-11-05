@@ -424,7 +424,7 @@
       el("h2", { text: titel }),
       el("p", { class: "dx-maerkte-unter", text: "Sitzung vom " + standText(m.session) + " gegenüber " + standText(m.previousSession) +
         (m.complete ? "" : " (Sitzung läuft)") + " · " + m.eligible + " liquide Titel aus dem Discover-Universum" }),
-      el("div", { class: "dx-movers-raster" }, [spalte("Stärkste Gewinner", m.gainers, "hoch", "kurs-up"), spalte("Stärkste Verlierer", m.losers, "runter", "kurs-down")])
+      el("div", { class: "dx-movers-raster" }, [spalte("Größte Anstiege", m.gainers, "hoch", "kurs-up"), spalte("Größte Rückgänge", m.losers, "runter", "kurs-down")])
     ]);
   }
 
