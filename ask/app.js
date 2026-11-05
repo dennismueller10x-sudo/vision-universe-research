@@ -193,6 +193,8 @@
   ]));
   /* Strang F, Hinweis „ai“ (assets/legal-notices.json): erscheint erst nach der rechtlichen Freigabe (VUUI.legal). */
   if (U.legal && U.legal('ai')) main.appendChild(markup(U.legal('ai')));
+  /* Owner-Linie Plan §11, L6: Atlas lehnt Kauf-/Verkaufsfragen und Fragen mit persönlichen Angaben neutral ab. */
+  main.appendChild(markup(U.help('Atlas sagt nicht, ob du kaufen oder verkaufen sollst, und beantwortet keine Fragen zu deiner persönlichen Lage.')));
   main.appendChild(markup(U.help('Beta: Neue Fragen pro Tag sind begrenzt; bereits gestellte Fragen kommen kostenlos aus dem Archiv. Fragen werden ohne Personenbezug gespeichert, damit wir fehlende Daten nachbauen können – bitte keine persönlichen Angaben eingeben. Die AI übersetzt nur; sie rechnet nicht und gibt keine Anlageberatung.' + (Speech ? ' Die Spracheingabe nutzt die Spracherkennung deines Browsers (in Chrome über Google-Server).' : ''))));
   /* Zurück und Schließen: zur Seite, von der Atlas geöffnet wurde (nur eigene Seiten), sonst zur Startseite. */
   (function () {
@@ -407,7 +409,7 @@
 
     var understoodMount = h('div', {}), resultMount = h('div', {}), atlasMount = h('div', {});
     turn.appendChild(understoodMount);
-    if (r.kind === 'forecast') { understoodMount.appendChild(understood(r, answer.source)); return say('Keine Prognosen', 'Vision Universe sagt keine Kurse voraus und gibt keine Kaufempfehlungen. Du kannst aber nach Kennzahlen, Trends und Strategiesignalen suchen – zum Beispiel „Welche Aktien stehen im Weinstein-Stage-2?“'); }
+    if (r.kind === 'forecast') { understoodMount.appendChild(understood(r, answer.source)); return say('Keine Prognosen, keine Beratung', 'Vision Universe sagt keine Kurse voraus, gibt keine Kauf- oder Verkaufsempfehlungen und beantwortet keine Fragen zu deiner persönlichen Lage. Du kannst aber nach Kennzahlen, Trends und Strategiesignalen suchen – zum Beispiel „Welche Aktien stehen im Weinstein-Stage-2?“'); }
     if (r.kind === 'off_topic') { understoodMount.appendChild(understood(r, answer.source)); return say('Keine Investmentfrage', 'Hier lassen sich Fragen zu Aktien, Kennzahlen und den Vision-Universe-Strategien beantworten.'); }
     if (r.kind === 'unclear') { understoodMount.appendChild(understood(r, answer.source)); return say('Nicht eindeutig', 'Die Frage ließ sich nicht sicher in Filter übersetzen. Versuch es mit einer konkreten Kennzahl, Größe oder Strategie.' + gapText); }
 

@@ -173,7 +173,7 @@
 
   <div class="summary-grid" id="summaryGrid"></div>
 
-  <div class="section-label">Konsens-Ranking<span class="section-label-note">bullish ↔ bearish</span></div>
+  <div class="section-label">Analystenkonsens (Angabe Dritter)<span class="section-label-note">positiv ↔ negativ</span></div>
   <div class="legend">
     <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Kaufen-Konsens</span>
     <span class="legend-item"><span class="legend-dot" style="background:var(--gray-light)"></span>Halten</span>
@@ -181,7 +181,7 @@
   </div>
   <div class="bar-list" id="consensusList"></div>
 
-  <div class="section-label">Kursziel-Potenzial<span class="section-label-note">Ø Kursziel vs. aktueller Kurs</span></div>
+  <div class="section-label">Abstand zum mittleren Analysten-Kursziel<span class="section-label-note">Angabe Dritter · Ø Kursziel vs. letzter Schluss</span></div>
   <div class="bar-list" id="upsideList"></div>
 
   <div class="section-label">Aktien im Überblick<span class="section-label-note">antippen für Details</span></div>
@@ -233,7 +233,7 @@
    dashboard/data/analyst_ratings.json. Diese Seite lädt nur noch
    diese kleine, gleiche-Origin-JSON-Datei — plus universe.json für
    die Firmennamen und market_data.json für den aktuellen Kurs
-   (Kursziel-Potenzial = Kursziel vs. letzter Schlusskurs).
+   (Abstand zum mittleren Analysten-Kursziel = Kursziel vs. letzter Schlusskurs; Angabe Dritter).
    ========================================================= */
 
 var UNIVERSE_URL = "../dashboard/config/universe.json";
@@ -241,7 +241,7 @@ var RATINGS_URL = "../dashboard/data/analyst_ratings.json";
 var MARKET_URL = "../dashboard/data/market_data.json";
 
 var CONSENSUS_META = {
-  strong_buy:   { label: "Klarer Kauf", badge: "buy" },
+  strong_buy:   { label: "Analysten: starkes Kaufen", badge: "buy" },
   buy:          { label: "Kaufen", badge: "buy" },
   hold:         { label: "Halten", badge: "hold" },
   sell:         { label: "Verkaufen", badge: "sell" },

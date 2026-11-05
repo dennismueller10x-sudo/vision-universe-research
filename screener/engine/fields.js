@@ -269,7 +269,7 @@
     n('epsRevision30', { group: 'analysts', unit: 'pct', label: 'EPS-Revision 30 Tage', en: 'EPS Revision 30D', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['revision', 'eps'] }),
     n('epsRevision90', { group: 'analysts', unit: 'pct', label: 'EPS-Revision 90 Tage', en: 'EPS Revision 90D', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['revision', 'eps'] }),
     n('analystConsensus', { group: 'analysts', kind: 'enum', label: 'Analystenkonsens', en: 'Analyst Consensus', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['konsens', 'rating', 'analyst'] }),
-    n('priceTargetUpside', { group: 'analysts', unit: 'pct', label: 'Kursziel-Potenzial', en: 'Price Target Upside', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['kursziel', 'target', 'upside'] }),
+    n('priceTargetUpside', { group: 'analysts', unit: 'pct', label: 'Abstand zum mittleren Analysten-Kursziel', en: 'Price Target Upside', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['kursziel', 'target', 'upside'] }),
     n('estimateDispersion', { group: 'analysts', unit: 'pct', label: 'Streuung der Schätzungen', en: 'Estimate Dispersion', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['dispersion', 'streuung'] }),
 
     // ---------------- VISION UNIVERSE ----------------
@@ -319,7 +319,7 @@
     evEbitda: ['Wie teuer ist das operative Ergebnis?', 'EV / EBITDA'], pFcf: ['Wie teuer ist der freie Cashflow?', 'Kurs / Free Cashflow'], fcfYield: ['Welche Cashflow-Rendite bietet der Kurs?', 'Free Cashflow / Marktwert'],
     perf1d: ['Wie hat sich der Kurs heute entwickelt?', 'Letzter Handelstag'], perf1w: ['Wie war die letzte Woche?', 'Fünf Handelstage'], perf1m: ['Wie war der letzte Monat?', 'Kursveränderung'],
     perf3m: ['Wie waren die letzten drei Monate?', 'Kursveränderung'], perf6m: ['Wie waren die letzten sechs Monate?', 'Mittelfristiges Momentum'], perfYtd: ['Wie läuft das Jahr bisher?', 'Seit Jahresbeginn'],
-    perf1y: ['Wie war das letzte Jahr?', 'Zwölf Monate'], relativeStrength: ['Schlägt die Aktie den Markt?', 'Mehrrendite ggü. Markt, 6 Monate'],
+    perf1y: ['Wie war das letzte Jahr?', 'Zwölf Monate'], relativeStrength: ['Wie lief die Aktie gegenüber dem Markt?', 'Kursentwicklung gegenüber dem Markt, 6 Monate'],
     relativeStrengthPct: ['Wie stark ist die Aktie im Vergleich zu allen anderen?', 'Rang 0–100 im Universum'], momentumPct: ['Wie stark ist das Momentum im Vergleich?', 'Rang 0–100 im Universum'],
     priceVsSma20: ['Wie steht der Kurs zum kurzfristigen Trend?', 'Aktueller Kurs vs. 20-Tage-Durchschnitt'], priceVsSma50: ['Wie steht der Kurs zum mittelfristigen Trend?', 'Aktueller Kurs vs. 50-Tage-Durchschnitt'],
     priceVsSma100: ['Wie steht der Kurs zum 100-Tage-Trend?', 'Aktueller Kurs vs. 100-Tage-Durchschnitt'], priceVsSma200: ['Wie steht der aktuelle Kurs zum langfristigen Trend?', 'Aktueller Kurs vs. SMA 200'],

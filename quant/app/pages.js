@@ -320,6 +320,7 @@
     var frueher = c.replay && c.replay.sufficient ? "in " + Math.round(c.replay.positiveShare * 100) + " % von " + c.replay.completed + " Fällen höher" : c.replay && c.replay.state === "AVAILABLE" ? "zu wenige Fälle für eine Aussage" : null;
     return '<a class="vu-box qv3-setup" href="' + U().esc(X.routes.stock(c.ticker)) + '"><div class="qv3-setup-h">' + U().logo(c.ticker) + '<span class="qv3-setup-n"><b>' + U().esc(nameOf(ctx, c.ticker) || c.ticker) + '</b><span class="vu-xs vu-mu"><b>' + U().esc(c.ticker + close) + "</b></span></span>" + U().verdict("strong", "Bestätigt") + "</div>" +
       '<div class="qv3-pboxes">' + box("Zone laut Methode", tr && zoneText(tr.entry)) + box("Ungültig-Marke laut Methode", inv != null ? usd(inv) : null) + "</div>" +
+      '<div class="vu-xs vu-mu qv3-pnote">Marken der Methode, keine Empfehlung.</div>' +
       (frueher ? '<div class="vu-xs qv3-frueher"><b>Früher:</b> <span class="vu-mu">' + U().esc(frueher) + "</span></div>" : "") + "</a>";
   }
   async function home(main, ctx) {
