@@ -159,7 +159,7 @@ for(const t of ZURUECKHALTUNG_KANDIDATEN){
 const NICHT_STAMMAKTIE=['AHT-P-D','ALL-P-B','ABR-P-D','AAAC'];
 /* Markierter Eintrag der gemeinsamen Produkt-Leiste je Ansicht; Methodik
    ist sekundaer und markiert keinen der vier Eintraege (leer). */
-const SECTION={home:'Quant',screener:'Screener',strategien:'Strategien',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:''};
+const SECTION={home:'Quant',screener:'Screener',strategien:'Strategien',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:'Quant'}; /* Q00 (#1412): Methodik gehoert zum Start „Quant“ */
 
 /* Bereit ist eine Route, wenn die App sie fertig gemeldet hat, kein
    Ladeplatzhalter mehr steht und der Chart (falls es einen gibt) einen
@@ -348,9 +348,12 @@ for(const width of [1440,390]){
    }
   }
   if(route==='screener'&&view.includes('/profi')){
-   const regeln=await page.locator('main#qx-main .qx-rules .qx-rule').count();
+   /* Redesign 2027 (Q02, #1410): dunkle Profi-Flaeche mit Bereichsreglern (.qv3-cond) und Treffertabelle (a.qv3-prow);
+      der Regel-Editor (.qx-rule, a.qx-row) bleibt fuer ?daten=v1. Geprueft wird dasselbe: eine Regel und Treffer sichtbar. */
+   await page.waitForFunction(()=>document.querySelectorAll('main#qx-main a.qx-row, main#qx-main a.qv3-prow').length>0,null,{timeout:20000}).catch(()=>{});
+   const regeln=await page.locator('main#qx-main .qx-rules .qx-rule, main#qx-main .qv3-cond').count();
    if(!regeln)bad.push('KEINE_REGEL');
-   const zeilen=await page.locator('main#qx-main a.qx-row').count();
+   const zeilen=await page.locator('main#qx-main a.qx-row, main#qx-main a.qv3-prow').count();
    if(!zeilen)bad.push('KEINE_TREFFER');
   }
   if(route==='aktien'){
@@ -373,8 +376,16 @@ for(const width of [1440,390]){
    if(!/keine (Erfolgs- oder )?Trefferquote/.test(text))bad.push('TREFFERQUOTE_UNGENANNT');
   }
   if(route==='strategien'&&/strategien\/[a-z]/.test(view)){
-   if(!/Welche Bedingungen gelten\?/.test(text))bad.push('BEDINGUNGEN_FEHLEN');
-   if(!/Wer passt heute\?/.test(text))bad.push('TREFFER_FEHLEN');
+   /* Redesign 2027 (Q03, #1410): „Die Regeln“ als Fragen mit Schwelle und „Erfüllen heute“ mit Trefferzahl; die bisherige
+      Auswertung steht unter „Mehr zu dieser Strategie“. Geprueft wird dasselbe: Bedingungen und heutige Treffer sichtbar. */
+   const v3s=await page.locator('main#qx-main .qv3-sdetail').count();
+   if(v3s){
+    if(!/Die Regeln/.test(text)||!await page.locator('main#qx-main .qv3-sdetail .qv3-liste .qv3-li').count())bad.push('BEDINGUNGEN_FEHLEN');
+    if(!/Erfüllen heute\s*(\d[\d.]*\s+Aktien|nicht prüfbar)/.test(text))bad.push('TREFFER_FEHLEN');
+   }else{
+    if(!/Welche Bedingungen gelten\?/.test(text))bad.push('BEDINGUNGEN_FEHLEN');
+    if(!/Wer passt heute\?/.test(text))bad.push('TREFFER_FEHLEN');
+   }
   }
 
   /* DIE AKTIENSEITE. */
