@@ -75,7 +75,7 @@ for (const vp of VIEWPORTS) {
     // Startseite
     await page.goto(BASE + '/elliott/', { waitUntil: 'networkidle' });
     await page.waitForSelector('#el-main[data-state="ready"]');
-    check(await page.locator('h1.el-title').innerText() === 'Elliott', 'Startseite zeigt Elliott, keine Aktie');
+    check(/Wellen/.test(await page.locator('h1.el-title').innerText()) && await page.locator('.el-tag .vu-ltag').innerText().then((t) => /Elliott/i.test(t)), 'Startseite zeigt Elliott (Frage als Titel), keine Aktie');
     check(!/NVIDIA|NVDA/.test(await page.locator('h1.el-title').innerText()), 'kein Standardtitel');
     check(await page.locator('.el-row').count() >= 1, 'mindestens eine Reihe');
     check(await page.locator('#vu-dock a[aria-current=page]').first().innerText().then((t) => /Elliott/.test(t)), 'Leiste: Elliott aktiv');
@@ -132,7 +132,10 @@ for (const vp of VIEWPORTS) {
     check(/\/elliott\/#\/[A-Z]/.test(page.url()) && await page.locator('.cb-crumbs').count() === 1, 'Detail-Deep-Link ueberlebt den Reload (bleibt auf der Aktie)');
     await page.goto(BASE + '/elliott/#/?welle=3&status=bestaetigt', { waitUntil: 'networkidle' });
     await page.waitForSelector('#el-main[data-state="ready"]');
-    check(await page.locator('.el-chip.is-on').count() >= 2, 'Filter-Deep-Link stellt die Auswahl her');
+    check(/Welle 3/.test(await page.locator('h1.el-title').innerText()) && (await page.locator('.el-chip.is-on').allInnerTexts()).some((t) => /Bestätigt/.test(t)), 'Filter-Deep-Link stellt die Auswahl her');
+    // Redesign 2027: Plus/Minus nur neongrün/schwarz, kein Rot und kein Grün in Karten und Chips
+    const loud = await page.evaluate(() => [...document.querySelectorAll('.el-card *, .el-chip, .el-split *')].filter((n) => { const c = getComputedStyle(n); return [c.color, c.backgroundColor].some((v) => { const m = /rgba?\((\d+), (\d+), (\d+)/.exec(v); if (!m) return false; const [r, g, b] = m.slice(1).map(Number); return (r > 150 && g < 110 && b < 110) || (g > 120 && r < 110 && b < 110); }); }).length);
+    check(loud === 0, 'keine roten oder grünen Flächen (' + loud + ')');
 
     // Weg 2: Suche NVDA -> Detail
     await page.goto(BASE + '/elliott/', { waitUntil: 'networkidle' });
