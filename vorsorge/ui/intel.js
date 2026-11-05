@@ -253,12 +253,12 @@
         return '<div class="' + (sc.id === "basis" ? "base" : "") + '"><span>' + L[sc.id] + ' · ' + F.pct(sc.annualReturn, 1) + ' p. a.</span><b class="num">' + F.eur(sc.nominal) + '</b><small>nach ' + y + ' Jahren</small></div>';
       }).join("");
       var base = r.scenarios[1].nominal, gain = Math.max(0, base - r.invested), tot = Math.max(base, r.invested);
-      el.querySelector("#pl-split").innerHTML = '<i style="width:' + (r.ownContributions / tot * 100).toFixed(1) + '%;background:#f4f5f0"></i><i style="width:' + (r.subsidies / tot * 100).toFixed(1) + '%;background:var(--s1)"></i><i style="width:' + (gain / tot * 100).toFixed(1) + '%;background:var(--accent)"></i>';
-      el.querySelector("#pl-leg").innerHTML = '<span><i style="background:#f4f5f0"></i>Eigene Einzahlungen ' + F.eur(r.ownContributions) + '</span><span><i style="background:var(--s1)"></i>Staatliche Zulagen ' + F.eur(r.subsidies) + '</span><span><i style="background:var(--accent)"></i>Wertzuwachs (Szenario „wie bisher“) ' + F.eur(gain) + '</span>';
+      el.querySelector("#pl-split").innerHTML = '<i style="width:' + (r.ownContributions / tot * 100).toFixed(1) + '%;background:#f4f4f4"></i><i style="width:' + (r.subsidies / tot * 100).toFixed(1) + '%;background:#6e6e6e"></i><i style="width:' + (gain / tot * 100).toFixed(1) + '%;background:var(--accent)"></i>';
+      el.querySelector("#pl-leg").innerHTML = '<span><i style="background:#f4f4f4"></i>Eigene Einzahlungen ' + F.eur(r.ownContributions) + '</span><span><i style="background:#6e6e6e"></i>Staatliche Zulagen ' + F.eur(r.subsidies) + '</span><span><i style="background:var(--accent)"></i>Wertzuwachs (Szenario „wie bisher“) ' + F.eur(gain) + '</span>';
       VS.lineChart(el.querySelector("#pl-chart"), [
-        { label: "Optimistisch", points: r.path.map(function (p) { return [p[0], p[3]]; }), color: "var(--s3)", dash: true },
-        { label: "Wie bisher", points: r.path.map(function (p) { return [p[0], p[2]]; }), color: "var(--accent)", area: true },
-        { label: "Pessimistisch", points: r.path.map(function (p) { return [p[0], p[1]]; }), color: "var(--s2)", dash: true }],
+        { label: "Wie bisher", points: r.path.map(function (p) { return [p[0], p[2]]; }), color: "var(--app-ink)" },
+        { label: "Optimistisch", points: r.path.map(function (p) { return [p[0], p[3]]; }), color: "var(--app-muted)", dash: true },
+        { label: "Pessimistisch", points: r.path.map(function (p) { return [p[0], p[1]]; }), color: "var(--app-muted)", dash: true }],
         { label: "Vermögensverlauf im Planspiel", zero: true, height: 220, fmtX: function (v) { return "Jahr " + Math.round(v); }, fmtTipX: function (v) { return "nach " + Math.round(v) + " Jahren"; }, fmtY: function (v) { return F.eurK ? F.eurK(v) : F.eur(v); }, fmtTip: function (v) { return F.eur(v); } });
     }
     form.addEventListener("input", draw);

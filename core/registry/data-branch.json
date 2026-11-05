@@ -4,7 +4,7 @@
   "purpose": "Erzeugte Daten ausserhalb von main (Plan Neustart §3). Pages holt sie beim Bau (scripts/ci/overlay-data-branch.mjs).",
   "phases": {
     "DUAL_WRITE": "Erzeuger schreibt nach main UND in den Datenzweig; Pages liefert den Datenzweig aus und weist Gleichheit mit main nach.",
-    "BRANCH_ONLY": "Erzeuger schreibt nur in den Datenzweig; die Kopie in main ist eingefroren und dient nur als Rueckfall."
+    "BRANCH_ONLY": "Erzeuger schreibt nur in den Datenzweig; eine Kopie in main ist, wenn vorhanden, eingefroren und dient nur als Rueckfall. pendingFirstRun: bis zum ersten Lauf darf der Pfad fehlen."
   },
   "domains": [
     {
@@ -12,6 +12,13 @@
       "phase": "DUAL_WRITE",
       "workflow": "update-news.yml",
       "paths": ["dashboard/data/news_feed.json"]
+    },
+    {
+      "id": "insiderPurchases",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "sec-fundamentals-daily.yml",
+      "paths": ["insider/data/purchases.json"]
     }
   ]
 }

@@ -71,14 +71,15 @@ def parse_filing(payload, meta):
     if not match:
         raise ValueError("invalid filing path")
     text = payload.decode("utf-8-sig")
-    if re.search(r"<!DOCTYPE|<!ENTITY", text, re.I):
-        raise ValueError("DTD/entities not allowed")
-    # SEC complete-submission SGML contains the actual ownership XML in an XML block.
+    # SEC complete-submission SGML contains the actual ownership XML in an XML block. Other documents of the
+    # same submission (HTML exhibits with <!DOCTYPE html>) are never parsed, so only the parsed block is checked.
     blocks = re.findall(r"<XML>\s*(.*?)\s*</XML>", text, re.I | re.S) or [text]
     roots = []
     for block in blocks:
         if "ownershipDocument" not in block:
             continue
+        if re.search(r"<!DOCTYPE|<!ENTITY", block, re.I):
+            raise ValueError("DTD/entities not allowed")
         root = ET.fromstring(block.strip())
         for node in root.iter():
             node.tag = node.tag.rsplit("}", 1)[-1]
@@ -178,9 +179,9 @@ def quarters(start, end):
         y, q = (y + 1, 1) if q == 4 else (y, q + 1)
 
 
-def generate(start, as_of, indices, load):
+def generate(start, as_of, indices, load, max_rejected_share=0.01):
     """Bounded filing-date window; strict errors prevent publishing partial success."""
-    rows, seen, excluded, filings = [], set(), {}, 0
+    rows, seen, excluded, filings, rejected = [], set(), {}, 0, []
     for content in indices:
         for meta in index_rows(content):
             # EDGAR lists one submission under every involved CIK (issuer and each reporting owner):
@@ -189,16 +190,25 @@ def generate(start, as_of, indices, load):
             if not start <= date.fromisoformat(meta["filingDate"]) <= as_of.date() or accession in seen:
                 continue
             seen.add(accession)
-            purchases, counts = parse_filing(load(meta["path"]), meta)
             filings += 1
+            try:
+                purchases, counts = parse_filing(load(meta["path"]), meta)
+            except (ValueError, ET.ParseError, UnicodeDecodeError) as exc:
+                # One unreadable submission must not stop the daily run; it is listed, never guessed.
+                # Network/HTTP errors are not caught here and still abort the run.
+                rejected.append({"accession": accession, "form": meta["form"], "reason": str(exc)[:200]})
+                continue
             for k, v in counts.items():
                 excluded[k] = excluded.get(k, 0) + v
             rows.extend(r for r in purchases if cutoff(r["availableAt"]) <= as_of)
+    if filings and (len(rejected) == filings or len(rejected) > max(1, filings * max_rejected_share)):
+        raise ValueError(f"too many unreadable filings: {len(rejected)} of {filings}")
     rows.sort(key=lambda r: (r["availableAt"], r["id"]))
     return {"schemaVersion": VERSION, "generatedAt": utc(datetime.now(timezone.utc)), "asOf": utc(as_of),
             "window": {"filingDateFrom": start.isoformat(), "filingDateTo": as_of.date().isoformat()},
             "source": "SEC EDGAR quarterly master index and complete Form 4 submissions",
-            "filingsProcessed": filings, "records": len(rows), "excluded": excluded, "purchases": rows,
+            "filingsProcessed": filings, "records": len(rows), "excluded": excluded,
+            "rejectedFilings": rejected, "purchases": rows,
             "limitations": ["FILING_WINDOW_NOT_FULL_HISTORY", "P_IS_OPEN_MARKET_OR_PRIVATE_PURCHASE",
                             "AMENDMENTS_ARE_SEPARATE_EVENTS_DO_NOT_SUM_WITH_ORIGINALS", "NO_HISTORICAL_TICKER_IDENTITY_MAPPING",
                             "NO_DERIVATIVES_OR_UNPRICED_PURCHASES", "CURRENCY_NOT_DECLARED_BY_FORM_4"]}

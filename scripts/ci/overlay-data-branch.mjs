@@ -9,6 +9,7 @@
      IDENTICAL  Datenzweig = main (Phase DUAL_WRITE: der Nachweis, dass der Weg traegt)
      OVERLAID   Datenzweig neuer als main, uebernommen
      KEPT_MAIN  Datenzweig fehlt, ist ungueltig (JSON, Mindestzahl Datensaetze) oder aelter als main
+     PENDING_FIRST_RUN  neue Datenart (pendingFirstRun) vor ihrem ersten Lauf: noch nichts auszuliefern
      MISSING    weder Datenzweig noch main -> Exit 1
 
    Aufruf: node scripts/ci/overlay-data-branch.mjs --data <datenzweig-dir> --site <site-dir> [--root .] [--out bericht.json] */
@@ -56,6 +57,7 @@ export function overlay({ root, dataDir, siteDir, manifest, domains }) {
       if (brBytes && mainBytes && sha(brBytes) === sha(mainBytes)) row.status = "IDENTICAL";
       else if (brBytes && brInfo.ok && (!mainInfo || !mainInfo.ok || !mainInfo.ts || !brInfo.ts || brInfo.ts >= mainInfo.ts)) row.status = "OVERLAID";
       else if (mainBytes) row.status = "KEPT_MAIN", row.reason = !brBytes ? "NOT_ON_BRANCH" : !brInfo.ok ? brInfo.reason : "BRANCH_OLDER";
+      else if (d.pendingFirstRun && !brBytes) row.status = "PENDING_FIRST_RUN";
       else row.status = "MISSING", row.reason = brBytes ? brInfo.reason : "NOWHERE";
       if (row.status === "IDENTICAL" || row.status === "OVERLAID") { mkdirSync(dirname(site), { recursive: true }); copyFileSync(branch, site); }
       else if (row.status === "KEPT_MAIN" && !existsSync(site)) { mkdirSync(dirname(site), { recursive: true }); copyFileSync(main, site); }
@@ -64,9 +66,9 @@ export function overlay({ root, dataDir, siteDir, manifest, domains }) {
       rows.push(row);
     }
   }
-  const complete = rows.every((r) => r.delivered);
+  const complete = rows.every((r) => r.delivered || r.status === "PENDING_FIRST_RUN");
   const count = (s) => rows.filter((r) => r.status === s).length;
-  return { schema: "vu-data-branch-delivery-1", branch: manifest.branch, complete, counts: { IDENTICAL: count("IDENTICAL"), OVERLAID: count("OVERLAID"), KEPT_MAIN: count("KEPT_MAIN"), MISSING: count("MISSING") }, rows };
+  return { schema: "vu-data-branch-delivery-1", branch: manifest.branch, complete, counts: { IDENTICAL: count("IDENTICAL"), OVERLAID: count("OVERLAID"), KEPT_MAIN: count("KEPT_MAIN"), MISSING: count("MISSING"), PENDING_FIRST_RUN: count("PENDING_FIRST_RUN") }, rows };
 }
 
 function main(argv) {
