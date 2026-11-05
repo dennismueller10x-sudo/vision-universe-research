@@ -25,9 +25,16 @@ const sideCostRate = adv => (FEE_BPS + SLIPPAGE_BPS + C.halfSpreadBps({ dollarVo
 
 function terminalClass(t) {
   if (t.distress === true || t.delistClass === 'DISTRESS' || t.delistClass === 'BANKRUPTCY') return 'DISTRESS';
-  if (t.delistClass === 'MERGER' || t.delistClass === 'MERGER_ACQUISITION_COMPLETED' || t.delistClass === 'ACQUISITION') return 'MERGER';
+  if (['MERGER', 'MERGER_ACQUISITION_COMPLETED', 'ACQUISITION'].includes(t.delistClass)) return 'MERGER';
   if (t.cause === 'DATA_GAP' && !t.delistClass) return 'SERIES_END';
   return t.delistClass && RECOVERY[t.delistClass] !== undefined ? t.delistClass : 'UNKNOWN';
+}
+
+// Format von Strang B (st-edge-export-1.0.0) -> Adaptereingabe.
+function fromExport(w) {
+  return { initialCapital: w.initialCapital, daily: w.curve.map(c => ({ date: c.date, equity: c.equity, cash: c.cash, exposure: c.exposure })), holdings: w.holdings,
+    fills: w.fills.map(f => ({ date: f.date, securityId: f.securityId, side: f.side, units: f.shares, price: f.price, notional: f.notional, reason: f.reason, adv20: f.adv20Usd })),
+    terminals: w.terminals.map(t => ({ securityId: t.securityId, date: t.date, cause: t.cause, distress: t.distress, delistClass: t.delistClass })) };
 }
 
 function validate(run) {
@@ -44,15 +51,15 @@ function overlay(runIn, { filterStateAt = null } = {}) {
   for (const f of run.fills || []) { if (!fillsBy.has(f.date)) fillsBy.set(f.date, []); fillsBy.get(f.date).push(f); }
   for (const t of run.terminals || []) { if (!termBy.has(t.date)) termBy.set(t.date, []); termBy.get(t.date).push(t); }
   for (const h of run.holdings || []) holdBy.set(h.date, h.positions);
-  const E = new Array(n);
-  let cap = days[0].equity, invested = !filterStateAt, pending = null, costTotal = 0, terminalHaircut = 0, switches = 0, blocked = 0;
+  const E = new Array(n), start = Number.isFinite(run.initialCapital) && run.initialCapital > 0 ? run.initialCapital : days[0].equity;
+  let cap = start, invested = !filterStateAt, pending = null, costTotal = 0, terminalHaircut = 0, switches = 0, blocked = 0;
   const kinds = {};
   const positionsValue = (date) => (holdBy.get(date) || []).reduce((s, [, u, c]) => s + u * c, 0);
   const exposureCost = (date, scale) => (holdBy.get(date) || []).reduce((s, [id, u, c]) => s + u * c * scale * sideCostRate(lastAdv.get(id)), 0);
   for (let i = 0; i < n; i++) {
     const d = days[i], prev = days[i - 1];
     // 1. Marktbewegung des Tages (nur investiert): Tagesrendite des kostenfreien Laufs.
-    if (i > 0 && invested) cap *= d.equity / prev.equity;
+    if (invested) cap *= d.equity / (i > 0 ? prev.equity : start);
     // ADV der Fills dieses Tages merken (für spätere Filter-Handel derselben Position).
     for (const f of fillsBy.get(d.date) || []) if (Number.isFinite(f.adv20)) lastAdv.set(f.securityId, f.adv20);
     // 2. Ausführung eines am Vortag beschlossenen Filterwechsels zum heutigen Schluss.
@@ -69,7 +76,7 @@ function overlay(runIn, { filterStateAt = null } = {}) {
         const k = terminalClass(t), rec = RECOVERY[k];
         kinds[k] = (kinds[k] || 0) + 1;
         const fill = (fillsBy.get(d.date) || []).find(f => f.securityId === t.securityId && f.side === 'SELL');
-        const value = fill ? Math.abs(fill.notional) : (holdBy.get(prev ? prev.date : d.date) || []).filter(p => p[0] === t.securityId).reduce((s, [, u]) => s + u * t.settlePrice, 0);
+        const value = fill ? Math.abs(fill.notional) : (holdBy.get(prev ? prev.date : d.date) || []).filter(p => p[0] === t.securityId).reduce((s, [, u, c]) => s + u * c, 0);
         const loss = value * scale * (1 - rec);
         cap -= loss; terminalHaircut += loss;
       }
@@ -83,7 +90,7 @@ function overlay(runIn, { filterStateAt = null } = {}) {
     if (!(cap > 0)) fail('CAPITAL_NON_POSITIVE', d.date);
     E[i] = [d.date, cap];
   }
-  return { version: VERSION, equity: E, costs: costTotal, terminalHaircut, terminalByKind: kinds, filterSwitches: switches, filterBlockedDays: blocked, finalInvested: invested };
+  return { version: VERSION, start, equity: E, costs: costTotal, terminalHaircut, terminalByKind: kinds, filterSwitches: switches, filterBlockedDays: blocked, finalInvested: invested };
 }
 
 // TOP5: fünf getrennte Sleeves zu je 20 % des Startkapitals, ohne Umschichtung. Gemeinsame Tage = Schnittmenge.
@@ -102,4 +109,4 @@ function weekly(equity, weekDates, isoWeek) {
   return weekDates.map(wd => { const x = byWeek.get(isoWeek(wd)); return x && x[0] <= wd ? [wd, x[1]] : [wd, null]; });
 }
 
-module.exports = { VERSION, RECOVERY, sideCostRate, terminalClass, overlay, sleeves, weekly };
+module.exports = { VERSION, RECOVERY, sideCostRate, terminalClass, fromExport, overlay, sleeves, weekly };

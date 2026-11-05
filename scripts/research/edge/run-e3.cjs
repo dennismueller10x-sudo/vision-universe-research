@@ -91,6 +91,50 @@ function runQuant(a, window, phase) {
     results };
 }
 
+
+// ------------------------------------------------------------ Supertrader (Lieferung Strang B, kostenfrei) -> Protokollkurven
+const ST_KEYS = { TURTLE_S1: 'C01', TURTLE_S2: 'C02', DARVAS: 'C03', KK_BREAKOUT: 'C08', BUYABLE_GAP_UP: 'C12' };
+function runSt(a, windowKey, phase, protocolWindow) {
+  const ST = require('./st-e3.cjs'), MP = require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs'));
+  if (!a.stInput) throw Error('--st-input fehlt (entschlüsselte Lieferung, außerhalb des Repositorys)');
+  if (path.resolve(a.stInput).startsWith(ROOT)) throw Error('ST_INPUT_INSIDE_REPOSITORY');
+  const doc = JSON.parse(fs.readFileSync(a.stInput, 'utf8'));
+  const bm = benchmarks(MP), spy = spyDaily(), filterStateAt = Q.marketFilter(spy.points);
+  const spyWeeks = [...bm.SPY.byWeek.keys()];
+  const Codec = require(path.join(ROOT, 'vorsorge/engines/series-codec.js'));
+  const weekDates = Codec.decode(JSON.parse(fs.readFileSync(path.join(ROOT, 'vorsorge/data/series/SPY.json'), 'utf8')).total.weekly).map(p => p[0]);
+  const curves = {}, results = [];
+  for (const [key, code] of Object.entries(ST_KEYS)) {
+    const w = doc.methods[key] && doc.methods[key].windows[windowKey];
+    if (!w) { for (const f of [0, 1]) results.push({ id: `ST-${code}-F${f}`, state: 'NOT_DELIVERED' }); continue; }
+    const run = ST.fromExport(w);
+    for (const f of [0, 1]) curves[code + f] = { o: ST.overlay(run, f ? { filterStateAt } : {}), run };
+  }
+  const deliveredEnd = Object.values(curves).length ? Object.values(curves)[0].run.daily.at(-1).date : null;
+  const add = (id, o) => {
+    const first = o.equity[0][0], last = o.equity.at(-1)[0];
+    const wk = ST.weekly(o.equity, weekDates.filter(d => d >= protocolWindow[0] && d <= protocolWindow[1]), MP.isoWeek);
+    const missing = wk.filter(x => x[1] === null).map(x => x[0]);
+    const usable = wk.filter(x => x[1] !== null);
+    const ev = evaluate(usable, bm, MP);
+    const blocked = missing.length > 0;
+    results.push({ id, state: blocked ? 'BLOCKED_COVERAGE' : 'RUN', coverage: { delivered: [first, last], protocolWindow, missingWeeks: missing },
+      evaluation: { ...ev, returns: undefined, spyReturns: undefined }, weeklyReturns: blocked ? null : ev.returns, spyWeeklyReturns: blocked ? null : ev.spyReturns,
+      costs: { shareOfInitialCapital: o.costs / (o.start || 1e6) }, terminalEvents: o.terminalByKind, construction: { filterSwitches: o.filterSwitches, filterBlockedDays: o.filterBlockedDays } });
+    console.log(JSON.stringify({ id, state: blocked ? 'BLOCKED_COVERAGE' : 'RUN', sharpe: ev.strategy.sharpe, cagr: ev.strategy.cagr, spyCagr: ev.SPY.cagr, missing: missing.length }));
+  };
+  for (const code of Object.values(ST_KEYS)) for (const f of [0, 1]) if (curves[code + f]) add(`ST-${code}-F${f}`, curves[code + f].o);
+  for (const f of [0, 1]) {
+    const five = Object.values(ST_KEYS).map(c => curves[c + f] && curves[c + f].o);
+    if (five.every(Boolean)) { const s = ST.sleeves(five, 1e6); s.start = 1e6; s.filterSwitches = five.reduce((x, c) => x + c.filterSwitches, 0); s.filterBlockedDays = 0; add(`ST-TOP5-F${f}`, s); }
+    else results.push({ id: `ST-TOP5-F${f}`, state: 'NOT_DELIVERED' });
+  }
+  return { schemaVersion: VERSION, phase, label: 'Forschung, nicht zertifiziert', protocolSha256: S.PROTOCOL_SHA256, adapter: require('./st-e3.cjs').VERSION, window: protocolWindow, deliveredEnd,
+    source: { schema: doc.schema, receipt: doc.receipt, quarantine: doc.quarantine ? { count: Array.isArray(doc.quarantine) ? doc.quarantine.length : (doc.quarantine.count ?? null) } : null,
+      fillsSha256: Object.fromEntries(Object.entries(ST_KEYS).map(([k, c]) => [c, doc.methods[k] && doc.methods[k].windows[windowKey] ? doc.methods[k].windows[windowKey].fillsSha256 : null])) },
+    results };
+}
+
 function select() {
   const q = read('dev-quant.json'), st = read('dev-st.json');
   if (!q) throw Error('DEV_QUANT_MISSING');
@@ -109,6 +153,12 @@ function main() {
   const a = args(process.argv);
   protocolGuard();
   if (a.phase === 'dev-quant') console.log(JSON.stringify({ sha256: write('dev-quant.json', runQuant(a, DEV, 'dev-quant')) }));
+  else if (a.phase === 'dev-st') console.log(JSON.stringify({ sha256: write('dev-st.json', runSt(a, 'E3_DEV_2016_2019', 'dev-st', ['2016-01-01', DEV[1]])) }));
+  else if (a.phase === 'test-st') {
+    const s = read('selection.json');
+    if (!s || !s.doc.winner) throw Error('SELECTION_NOT_FROZEN: Prüfteil bleibt geschlossen');
+    console.log(JSON.stringify({ sha256: write('test-st.json', { ...runSt(a, 'E3_TEST_2020_2026', 'test-st', TEST), selectionSha256: s.sha256 }) }));
+  }
   else if (a.phase === 'select') console.log(JSON.stringify({ sha256: select() }));
   else if (a.phase === 'test-quant') {
     const s = read('selection.json');
