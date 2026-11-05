@@ -1,6 +1,6 @@
 # Signal-Studie E4 / S1
 
-Forschung, nicht zertifiziert. [Protokoll](PROTOKOLL.md) vorregistriert im eigenen ersten Commit, danach unverändert. [Ergebnisse und Rangliste](ERGEBNISSE.md), [Prüfstand](VALIDIERUNG.md).
+Forschung, nicht zertifiziert. [Protokoll](PROTOKOLL.md) vorregistriert im eigenen ersten Commit, danach unverändert. [Ergebnisse und Rangliste](ERGEBNISSE.md), [Prüfstand](VALIDIERUNG.md). **S2** (1.000 Titel, 2016–2026, exakter SPY): [Registrierung](S2_REGISTRIERUNG.md), [Ergebnis](S2_ERGEBNIS.md).
 
 Aus dem Repository-Wurzelverzeichnis (keine Abhängigkeiten):
 
