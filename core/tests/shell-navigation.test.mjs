@@ -85,7 +85,9 @@ test('active dock state follows deep links after reload', () => {
   assert.equal(active('discover', '/discover/#/s/US_REAL/NVDA'), null);
   assert.equal(active('quant', '/quant/#/screener/profi'), 'screener');
   assert.equal(active('quant', '/quant/#/aktie/NVDA/technik'), 'aktien');
-  assert.equal(active('quant', '/quant/#/methodik'), null);
+  /* Q00: Methodik gehoert zum Start „Quant“, Technische Lagen zu „Aktien“. */
+  assert.equal(active('quant', '/quant/#/methodik'), 'quant');
+  assert.equal(active('quant', '/quant/#/chartlagen'), 'aktien');
   assert.equal(active('quant', '/quant/screener/'), 'screener');
   assert.equal(active('vorsorge', '/vorsorge/etf/IWR/'), 'etfs');
   assert.equal(active('vorsorge', '/vorsorge/#/etf/IWDA'), 'etfs');
