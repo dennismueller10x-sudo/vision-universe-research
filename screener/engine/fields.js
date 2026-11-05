@@ -254,6 +254,15 @@
     n('tiElliottApplicable', { col: 'tiEw', group: 'technical', kind: 'enum', label: 'Elliott-Strukturklarheit', short: 'Elliott-Klarheit', en: 'Elliott Structure Clarity', source: 'technicalIntelligence', timeframe: '1W', pro: true,
       desc: 'Experimentell: Wie eindeutig sich der Kursverlauf als Elliott-Wellenstruktur lesen lässt. Für die meisten Titel gibt es keine belastbare Zählung („Niedrig“). Nicht von Experten validiert, fließt nicht in den Ausblick ein, keine Prognose.', keywords: ['elliott', 'wellen', 'wave', 'experimentell', 'chartbild'] }),
 
+    // Supertrader (Plan §7 Z5): Spalten aus dem veroeffentlichten Kandidatenstand (scripts/supertrader/source-faithful/product/screener-export.mjs).
+    // Research, keine Empfehlung; keine eigene Berechnung im Screener.
+    n('stMethods', { col: 'stMeth', group: 'technical', kind: 'enum', multi: true, label: 'Supertrader-Methode', short: 'Methode', en: 'Supertrader Method', source: 'supertrader', timeframe: '1D', pro: true,
+      desc: 'Methoden aus Supertrader, deren veröffentlichter Kandidatenstand die Aktie führt (alle 13 Methoden). Research, keine Empfehlung.', keywords: ['supertrader', 'methode', 'minervini', 'vcp', 'can slim', 'kandidat'] }),
+    n('stV1', { col: 'stV1', group: 'technical', kind: 'enum', multi: true, label: 'Supertrader V1-Methode', short: 'V1-Methode', en: 'Supertrader V1 Method', source: 'supertrader', timeframe: '1D', pro: true,
+      desc: 'Nur die fünf Methoden der ersten Version (V1), die die Aktie führen. Die übrigen Methoden sind in Forschung. Research, keine Empfehlung.', keywords: ['supertrader', 'v1', 'methode'] }),
+    n('stStage', { col: 'stStage', group: 'technical', kind: 'enum', label: 'Supertrader-Stufe', short: 'Stufe', en: 'Supertrader Stage', source: 'supertrader', timeframe: '1D', pro: true,
+      desc: 'Höchste Stufe, die eine Methode für die Aktie erreicht: Chart-Kandidat, bestätigtes Setup oder durchgerechneter Plan. Research, keine Empfehlung.', keywords: ['supertrader', 'stufe', 'setup', 'kandidat'] }),
+
     // ---------------- ANALYSTEN & ESTIMATES ----------------
     n('revenueEstimates', { group: 'analysts', unit: 'usd', label: 'Umsatzschätzungen', en: 'Revenue Estimates', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['revenue', 'estimates', 'schätzung'] }),
     n('epsEstimates', { group: 'analysts', unit: 'usd', label: 'EPS-Schätzungen', en: 'EPS Estimates', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['eps', 'estimates'] }),
@@ -419,6 +428,8 @@
     if (D) {
       if ((id === 'chartPattern' || id === 'chartPatternConfirmed' || id === 'chartPatternOpen') && D.formations && D.formations[v]) return D.formations[v];
       if (id === 'sector' && D.sectors && D.sectors[v]) return D.sectors[v];
+      if ((id === 'stMethods' || id === 'stV1') && D.stMethods && D.stMethods[v]) return D.stMethods[v];
+      if (id === 'stStage' && D.stStages && D.stStages[v]) return D.stStages[v];
       if (id === 'industry' && D.majorGroups && D.majorGroups[v]) return D.majorGroups[v];
     }
     return String(v);
