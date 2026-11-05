@@ -7,6 +7,8 @@
 # Arbeitsordner: $VU_SIGNING_DIR oder ~/vu-signing (AUSSERHALB jedes Git-Repositorys und ausserhalb von Cloud-Ordnern wie OneDrive/iCloud/Dropbox).
 # Nie in ein Repository, in Chat oder PR legen: vu-dist.key, vu-dist.p12, das Passwort, die Base64-Werte.
 set -euo pipefail
+# Git Bash (Windows) wandelt Argumente wie "/CN=..." sonst in Dateipfade um ("C:/Program Files/Git/CN=...") und OpenSSL bricht ab.
+export MSYS_NO_PATHCONV=1
 mode="${1:-}"; dir="${VU_SIGNING_DIR:-$HOME/vu-signing}"; umask 077
 
 guard_dir() {

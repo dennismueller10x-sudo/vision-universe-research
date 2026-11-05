@@ -155,3 +155,11 @@ test('Android-Upload-Schluessel-Skript: lokal, verweigert Repository und Cloud-O
   assert.match(sh, /-ge 16/);
   assert.doesNotMatch(sh, /curl|wget|scp |git push/);
 });
+
+test('Signier-Skripte: Git Bash unter Windows darf "/CN=..." nicht in einen Pfad umwandeln', () => {
+  for (const f of ['ci/make-android-upload-key.sh', 'ci/make-signing-request.sh']) {
+    const sh = read(path.join(app, f));
+    assert.match(sh, /export MSYS_NO_PATHCONV=1/, f);
+    assert.ok(sh.indexOf('MSYS_NO_PATHCONV') < sh.indexOf('openssl'), f + ': vor dem ersten OpenSSL-Aufruf');
+  }
+});
