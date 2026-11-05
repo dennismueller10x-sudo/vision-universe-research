@@ -19,5 +19,16 @@
       "workflow": "sec-fundamentals-daily.yml",
       "paths": ["insider/data/purchases.json"]
     }
+  ],
+  "internal": [
+    {
+      "id": "insiderForm4Compact",
+      "workflow": "sec-fundamentals-daily.yml",
+      "pathPrefix": "insider/data/form4/",
+      "files": "<YYYY-MM>.json; geschrieben und gesaet werden die letzten 6 Monate",
+      "producer": "scripts/insider/form4-compact.mjs (aus derselben Abholung wie insider/data/purchases.json)",
+      "consumers": ["ownership-signals.yml (saet .ownership-cache/form4 vor dem Bau)"],
+      "note": "Nicht ausgeliefert (kein Pages-Overlay). Eine Form-4-Abholung fuer Insider-Kaeufe (E2) und Eigentuemer-Signale."
+    }
   ]
 }

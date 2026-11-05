@@ -268,8 +268,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Erzeuger-Tests (ohne Netz)
-        run: python3 -m unittest discover -s scripts/insider/tests -p 'test_*.py'
+        run: |
+          python3 -m unittest discover -s scripts/insider/tests -p 'test_*.py'
+          node --test scripts/insider/tests/form4-compact.test.mjs
       - name: Bisheriger Stand aus dem Datenzweig
         run: |
           set -euo pipefail
@@ -278,6 +283,13 @@ jobs:
              && git fetch --quiet --depth=1 origin refs/heads/data/live \
              && git cat-file -e FETCH_HEAD:insider/data/purchases.json 2>/dev/null; then
             git show FETCH_HEAD:insider/data/purchases.json > "$RUNNER_TEMP/insider/prev.json"
+            # Form-4-Auszug der Eigentuemer-Signale: laufender und voriger Monat
+            mkdir -p "$RUNNER_TEMP/insider/prev-form4"
+            for m in "$(date -u +%Y-%m)" "$(date -u -d "$(date -u +%Y-%m-01) -1 day" +%Y-%m)"; do
+              if git cat-file -e "FETCH_HEAD:insider/data/form4/$m.json" 2>/dev/null; then
+                git show "FETCH_HEAD:insider/data/form4/$m.json" > "$RUNNER_TEMP/insider/prev-form4/$m.json"
+              fi
+            done
           else
             echo "noch kein Stand im Datenzweig (erster Lauf)"
           fi
@@ -288,7 +300,13 @@ jobs:
           set -euo pipefail
           von="$(date -u -d '2 days ago' +%F)"
           stand="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          python3 scripts/insider/form4.py --from "$von" --as-of "$stand" --out "$RUNNER_TEMP/insider/next.json"
+          python3 scripts/insider/form4.py --from "$von" --as-of "$stand" --out "$RUNNER_TEMP/insider/next.json" \
+            --raw-dir "$RUNNER_TEMP/insider/raw"
+      - name: Form-4-Auszug fuer die Eigentuemer-Signale (dieselbe Abholung)
+        run: |
+          set -euo pipefail
+          node scripts/insider/form4-compact.mjs --raw "$RUNNER_TEMP/insider/raw" \
+            --prev-dir "$RUNNER_TEMP/insider/prev-form4" --out-dir insider/data/form4
       - name: 90-Tage-Fenster zusammenfuehren
         run: |
           set -euo pipefail
@@ -298,4 +316,7 @@ jobs:
             --keep-days 90 --out insider/data/purchases.json
       - name: In den Datenzweig (nur main)
         if: github.ref == 'refs/heads/main'
-        run: scripts/ci/push-data-branch.sh data/live insider/data/purchases.json
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          scripts/ci/push-data-branch.sh data/live insider/data/purchases.json insider/data/form4/*.json

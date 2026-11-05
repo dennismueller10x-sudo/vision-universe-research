@@ -24,6 +24,12 @@ Stand: **05.11.2026**. Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11
   - Die „fraglich“-Punkte stehen als Grenzen im Bericht.
   - Neulauf mit Umschlag-Varianten (Puffer 50, Quartal).
 
+- **E3 Edge-Studie gerechnet** (05.11., [Bericht](../research/edge/BERICHT.md)):
+  - nach eingefrorenem Protokoll, Auswahl vor dem Prüfteil festgeschrieben;
+  - vorab gewählt: Momentum Leader N20/13 Wochen, im Prüfteil 2020–2026 9,3 % p. a. gegen SPY 15,4 %;
+  - 84 Quant-Varianten „schlägt nicht“, keine mit Holm-p ≤ 0,05;
+  - 12 Supertrader-Varianten blockiert (Snapshot endet 30.09.).
+
 ## Offen
 - `backtest-runner.cjs#setupOosFromCertificationPath` an A4 angleichen (berührt CODE_FILES → Demo-Neubau, eigener PR).
 - Historische Strategie- und Faktor-Backtests (Katalog-Arten) auf PIT-Basis über den Baukasten-Datenpfad.

@@ -1,23 +1,23 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-11-05T05:07:54.405Z",
+ "generatedAt": "2026-11-05T14:39:13.770Z",
  "asOf": "2026-11-04",
  "measures": {
-  "RADAR_EVENTS_TOTAL": 2175,
+  "RADAR_EVENTS_TOTAL": 2172,
   "RADAR_EVENTS_BY_TYPE": {
    "SETUP_CONFIRMED": 16,
    "SETUP_NEW": 152,
    "STRATEGY_MATCH_NEW": 49,
    "NEW_52W_HIGH": 364,
-   "MOMENTUM_IMPROVED": 173,
-   "TREND_UP": 254,
+   "MOMENTUM_IMPROVED": 172,
+   "TREND_UP": 253,
    "PATTERN_MATCH_NEW": 241,
    "FACTOR_CHANGED": 353,
    "RISK_RISING": 12,
    "SETUP_WEAKENED": 110,
    "SETUP_INVALIDATED": 0,
    "STRATEGY_MATCH_LOST": 61,
-   "MOMENTUM_DETERIORATED": 97,
+   "MOMENTUM_DETERIORATED": 96,
    "TREND_DOWN": 97,
    "EVIDENCE_CHANGED": 196
   },
@@ -27,7 +27,7 @@
   "BACKTEST_ELIGIBLE_RULES": 96,
   "BACKTEST_WITHHELD_RULES": 84,
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5669,
+   "universe": 5658,
    "covered": 5309,
    "available": 4481,
    "sufficient": {
@@ -40,19 +40,19 @@
     "m6": 826
    },
    "reasons": {
-    "NOT_COVERED": 360,
+    "NOT_COVERED": 349,
     "NO_PRICE_CONDITION_TODAY": 757,
     "NO_COMPARABLE_CASE": 71
    }
   },
   "WATCHLIST_TRACKABLE_TITLES": 5576,
-  "ALERT_READY_EVENTS": 2175
+  "ALERT_READY_EVENTS": 2172
  },
  "criteria": [
   {
    "question": "welche Aktien heute interessant werden",
    "pass": true,
-   "measured": "1560 Karten aus 2175 Ereignissen"
+   "measured": "1557 Karten aus 2172 Ereignissen"
   },
   {
    "question": "warum",

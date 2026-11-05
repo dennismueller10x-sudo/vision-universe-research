@@ -16,14 +16,14 @@
 | Kurse | R2_CANONICAL_DAILY_TIINGO |
 | delistete Titel | V13_PRIVATE_ARCHIVE_REGISTER_1.0.0_QUALIFIED |
 | Fundamentaldaten | PIT_ORIGINAL_FILING |
-| Titel im Panel | 6870 (mit Fundamentaldaten 6817) |
+| Titel im Panel | 6865 (mit Fundamentaldaten 6812) |
 | Gewichtung | RISK_PARITY (Risikoparität auf Ledoit/Wolf-geschrumpfter Kovarianz, 104 Wochen) |
 | Standard | 15–30 Titel (Ziel 25), max. 8,0 % je Titel, max. 25,0 % je Branche (Fama/French 12 aus SIC), Kurs ≥ 5 USD, ADV ≥ 2 Mio. USD (ersatzweise Marktkap. ≥ 300 Mio.), höchstens 5,0 % des ADV bei 10 Mio. USD Vermögen |
 | Kosten je Seite | Gebühr 1 bp + Slippage 5 bp + halber Spread nach Liquiditätsklasse (2–50 bp) |
 | Rebalancing | alle 4 Wochen, Entscheidung zum Wochenschluss, Ausführung zum Schluss der Folgewoche |
 | Endwert delisteter Titel | Übernahme 100 %, unbekannt 70 %, Notlage 0 % des letzten Schlusses: Klassenannahme, kein beobachteter Erlös (Sensitivität unten) |
 
-Ausgeschlossen: 972 heutige Titel ohne Branche, 58 delistete ohne Branche, 0 delistete ohne Gesamtrendite, 0 delistete ohne passende Tagesbalken.
+Ausgeschlossen: 903 heutige Titel ohne Branche, 58 delistete ohne Branche, 0 delistete ohne Gesamtrendite, 0 delistete ohne passende Tagesbalken.
 
 ## Ergebnis je Musterportfolio
 
@@ -106,6 +106,23 @@ Varianten gegen den Standardlauf: Gleichgewichtung, Umschlag-Puffer (gehaltene T
 | Value Momentum | TERMINAL_LAST_CLOSE | 12,9 % | 14,9 % | 19,3 % | -45,1 % | 0,98 | 515,3 % |
 | Value Momentum | TERMINAL_HARSH | 12,3 % | 14,9 % | 19,3 % | -45,1 % | 0,99 | 515,4 % |
 
+## Datenqualität: Kurssprünge (DQ-K5, vorher/nachher)
+
+Ein Tag, dessen Gesamtrendite das Fünffache des Vortags erreicht oder auf ein Fünftel davon fällt, deutet oft auf einen nicht bereinigten (Reverse-)Split hin. Er kann aber auch eine echte Bewegung sein.
+Wie bei Supertrader wird ein solcher Titel an dieser Stelle geschnitten, nicht korrigiert. Kein Faktor greift über den Sprung zurück.
+BOOK rechnet eine gehaltene Position mit dem Kurs der Sprungwoche ab, PRIOR mit dem Kurs der Woche davor. Delistete V13-Ketten werden mangels Tagesbalken mit dem Wochenrelativ geprüft.
+
+- DQ-K5-BOOK: 418 Titel mit 810 markierten Wochen, 989 Stücke, 239 kurze Stücke entfallen.
+- DQ-K5-PRIOR: 418 Titel mit 810 markierten Wochen, 977 Stücke, 251 kurze Stücke entfallen.
+
+| Portfolio | CAGR ohne Filter | größte Wochenrendite | CAGR BOOK | größte Wochenrendite | CAGR PRIOR | größte Wochenrendite | Benchmark |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| Quality Compounder | 10,9 % | 11,7 % | 10,9 % | 11,7 % | 10,9 % | 11,7 % | 14,9 % |
+| Momentum Leader | 13,0 % | 12,1 % | 12,9 % | 12,1 % | 12,9 % | 12,1 % | 14,9 % |
+| GARP | 6,0 % | 15,3 % | 6,0 % | 15,3 % | 6,0 % | 15,3 % | 14,9 % |
+| Defensive Quality | 13,4 % | 12,5 % | 13,4 % | 12,5 % | 13,4 % | 12,5 % | 14,9 % |
+| Value Momentum | 12,6 % | 16,7 % | 12,5 % | 16,7 % | 12,5 % | 16,7 % | 14,9 % |
+
 ## Abdeckung je Jahr (Stichtag 30.06.)
 
 | Jahr | Titel mit Kurs | mit frischen Fundamentaldaten | davon später delistet |
@@ -124,7 +141,7 @@ Varianten gegen den Standardlauf: Gleichgewichtung, Umschlag-Puffer (gehaltene T
 | 2023 | 4821 | 3935 | 402 |
 | 2024 | 4832 | 3969 | 226 |
 | 2025 | 5047 | 4143 | 138 |
-| 2026 | 5270 | 4308 | 17 |
+| 2026 | 5265 | 4308 | 17 |
 
 ## Offene Grenzen
 
