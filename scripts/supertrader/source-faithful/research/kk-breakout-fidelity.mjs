@@ -37,6 +37,9 @@
  *  Tag werden höchstens 3 neue Kauf-Stopps scharfgestellt, die Setups mit dem höchsten besten 1/3/6-Monats-Perzentil
  *  (Gleichstand: securityId aufsteigend). Die Zahl 3 ist eine VU-Konvention. Momentum-Schwelle (2 %), Preisgrenze (5 USD),
  *  Setup, Stopp und Ausstieg bleiben wie FID-1; nichts davon ist an die 16 Beispiele angepasst.
+ * FID-4 (vorregistriert in certification/C08-FID4-PREREGISTRATION.json, Steuerung 05.11.2026, Weg a): FID-3 mit
+ *  Kullamägis Positionsgröße: 1 % Risiko je Trade, Kappe 25 % je Position, höchstens 5 offene Positionen. Die letzte
+ *  Fassung für C08; danach keine weiteren Varianten.
  * Bewertet wird nur auf DEV; der HOLDOUT 2008–2015 wird später einmalig mit dieser festgeschriebenen Regel geprüft.
  */
 import { fin, smaAt, priorHigh } from '../common/series.mjs';
@@ -44,8 +47,18 @@ import { adr20, KK_PARAMS } from '../methods/kullamagi.mjs';
 import { eligibilityResult, STUDY_LABEL } from './lifecycle-engine.mjs';
 import { KK_SETUP_PROXIES, KK_EXIT_POLICIES, KK_OPEN_MANUAL_DECISIONS } from './kk-breakout-lifecycle.mjs';
 
-export const KK_FIDELITY_VERSION = 'kk-breakout-fidelity-1.3.0';
-export const KK_FIDELITY_VARIANTS = Object.freeze({ 'FID-1': Object.freeze({ quality: false, adrNorm: 'ENTRY', trail: 'MA10' }), 'FID-2': Object.freeze({ quality: true, adrNorm: 'LOW', trail: 'TEMPO', fastAdrPct: 5 }), 'FID-2L': Object.freeze({ quality: true, adrNorm: 'LOW', trail: 'TEMPO', fastAdrPct: 5, minAdv20Usd: 2.5e6 }), 'FID-3': Object.freeze({ quality: false, adrNorm: 'ENTRY', trail: 'MA10', dailyTop: 3 }) });
+export const KK_FIDELITY_VERSION = 'kk-breakout-fidelity-1.4.0';
+export const KK_FIDELITY_VARIANTS = Object.freeze({ 'FID-1': Object.freeze({ quality: false, adrNorm: 'ENTRY', trail: 'MA10' }), 'FID-2': Object.freeze({ quality: true, adrNorm: 'LOW', trail: 'TEMPO', fastAdrPct: 5 }), 'FID-2L': Object.freeze({ quality: true, adrNorm: 'LOW', trail: 'TEMPO', fastAdrPct: 5, minAdv20Usd: 2.5e6 }), 'FID-3': Object.freeze({ quality: false, adrNorm: 'ENTRY', trail: 'MA10', dailyTop: 3 }), 'FID-4': Object.freeze({ quality: false, adrNorm: 'ENTRY', trail: 'MA10', dailyTop: 3, riskFraction: 0.01, maxPositionWeight: 0.25, maxOpenPositions: 5 }) });
+
+/** Konfiguration und Portfolio-Grenzen je Variante (FID-4 ändert nur Risiko, Kappe und Positionszahl). */
+export function kkFidelityConfigFor(variant) {
+  const V = KK_FIDELITY_VARIANTS[variant];
+  return V.riskFraction ? Object.freeze({ ...KK_FIDELITY_CONFIG, sizing: Object.freeze({ mode: 'RISK', riskFraction: V.riskFraction }) }) : KK_FIDELITY_CONFIG;
+}
+export function kkFidelityPolicyFor(variant, base) {
+  const V = KK_FIDELITY_VARIANTS[variant];
+  return { ...base, ...(V.maxPositionWeight ? { maxPositionWeight: V.maxPositionWeight } : {}), ...(V.maxOpenPositions ? { maxOpenPositions: V.maxOpenPositions } : {}) };
+}
 export const KK_FIDELITY_RULES = Object.freeze({
   id: 'FID-1', momentumTopPct: 2, universeMinRawClose: 5, marketSma: [10, 20], marketSlopeSessions: 5,
   setupProxy: 'CONSOLIDATION_10', exitPolicy: 'PARTIAL3_THIRD_BE_MA10', riskFraction: 0.005, maxRiskAdr: 1,

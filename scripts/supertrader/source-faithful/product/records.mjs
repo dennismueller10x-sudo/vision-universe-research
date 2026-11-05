@@ -171,8 +171,11 @@ const STRUCTURE_MARK = Object.freeze({
 // Bis 28.10.2026 las chartMarks die Tabellen mit der strategyId und fand nie einen Eintrag: unterhalb von MODELED fehlten
 // alle Strukturmarken. Eine unbekannte Strategie bekommt weiterhin keine Marke (fail closed).
 const candidateIdOf = (strategyId) => (STRUCTURE_LEVELS[strategyId] ? strategyId : contractOf(strategyId)?.candidateId ?? null);
+// Owner-Linie 05.11.2026 (Plan §11, EINORDNUNG §0 L2): Vision Universe zeigt keine Kauf- oder Verkaufsempfehlungen. Auch auf
+// der Stufe MODELED_TRADE_PLAN trägt die öffentliche Ansicht deshalb keine Einstiegs-, Stop- oder Limitmarke, keinen Plan und
+// keine daraus rückrechenbare Kennzahl; es gelten dieselben Regeln wie unterhalb von MODELED. Der vollständige Plan bleibt im
+// Vertragsdatensatz (records/, nicht veröffentlicht) und in der Forschung.
 export function chartMarks(det, stage, close) {
-  if (stage === STAGE.MODELED_TRADE_PLAN) return { pivot: det.pivot ?? null, levels: det.levels ?? {} };
   const cid = candidateIdOf(det.strategyId);
   const src = det.levels ?? {}, keep = (cid && STRUCTURE_LEVELS[cid]) || [];
   const levels = Object.fromEntries(keep.filter((k) => src[k] !== undefined && src[k] !== null).map((k) => [k, src[k]]));
@@ -209,13 +212,12 @@ export const ORDER_DERIVED_SUBFIELDS_BY_METHOD = Object.freeze({ C06: Object.fre
 // nicht den Abstand dazu (close / (1 − belowHigh252) ergäbe es wieder). Das allgemeine 52-Wochen-Hoch des Aktiencharts bleibt.
 export const TREND_HIDDEN_BY_METHOD = Object.freeze({ C06: Object.freeze(['high252', 'belowHigh252']), C07: Object.freeze(['high252', 'belowHigh252']), C13: Object.freeze(['high252', 'belowHigh252']) });
 export function publicTrend(det, stage, trend) {
-  if (stage === STAGE.MODELED_TRADE_PLAN || !trend) return trend;
+  if (!trend) return trend;
   const cid = candidateIdOf(det.strategyId), hide = (cid && TREND_HIDDEN_BY_METHOD[cid]) || [];
   return hide.length ? Object.fromEntries(Object.entries(trend).filter(([k]) => !hide.includes(k))) : trend;
 }
 export function publicFeatures(det, stage) {
   const f = det.features ?? {};
-  if (stage === STAGE.MODELED_TRADE_PLAN) return f;
   const cid = candidateIdOf(det.strategyId), extra = (cid && ORDER_DERIVED_BY_METHOD[cid]) || [];
   const sub = (cid && ORDER_DERIVED_SUBFIELDS_BY_METHOD[cid]) || {};
   return Object.fromEntries(Object.entries(f).filter(([k]) => !ORDER_DERIVED_FEATURES.includes(k) && !extra.includes(k))
@@ -252,7 +254,7 @@ export function buildCandidate({ det, sec, dq, asOf, nextSession, inputsSha256, 
   const record = buildContractRecord({ det, sec, stage, asOf, nextSession, inputsSha256, dq, readiness });
   const v = validateCandidateRecord(record, { readiness });
   if (!v.ok) return { rejected: { strategyId: det.strategyId, ticker: sec.ticker, reason: 'CONTRACT_VALIDATION_FAILED', stage, errors: v.errors } };
-  const plan = stage === STAGE.MODELED_TRADE_PLAN ? planView(det.plan, nextSession) : null;
+  const plan = null; // Owner-Linie 05.11.2026: kein öffentlicher Plan (planView bleibt für interne Auswertungen)
   const view = {
     strategyId: det.strategyId, candidateId: record.candidateId, ticker: sec.ticker, securityId: sec.id,
     companyName: meta?.companyName ?? null, exchange: meta?.exchange ?? null, shard: meta?.shard ?? null,
