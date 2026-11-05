@@ -11,6 +11,8 @@
   'use strict';
   var S = root.VUStart, U = root.VUUI, A = root.VUAccount, C = root.VUCore || {}, W = C.WatchlistView;
   var doc = document, step = 1, state = S.read(), picked = state.tickers.slice(), names = null, signedIn = false;
+  /* Nach der E-Mail-Bestätigung (?konto=verified) trägt der Rückweg die Bestätigung mit, damit Mein Bereich den Hinweis zeigt. */
+  var HOME = '/willkommen/' + (/[?&]konto=verified(?:&|$)/.test(root.location.search) ? '?konto=verified' : '');
   var GOAL_ICON = { vorsorge: 'vorsorge', aktie: 'discover', ideen: null, signale: 'supertrader' };
   var SPARK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" fill="currentColor"/></svg>';
   function $(id) { return doc.getElementById(id); }
@@ -107,7 +109,7 @@
   function finish() {
     state.tickers = picked.slice(); state.done = true; S.write(state);
     var btn = $('fs-next'); btn.disabled = true;
-    var go = function () { root.location.assign('/willkommen/'); };
+    var go = function () { root.location.assign(HOME); };
     if (!signedIn) return go();
     /* Z1: Ziel, Erfahrung und „erster Start erledigt“ ins Konto; scheitert das, bleibt die Wahl auf dem Gerät. */
     var saved = A.patch('/v1/me', { settings: S.toAccount(state, true) }).catch(function () { return null; });
@@ -126,8 +128,8 @@
   function init() {
     renderGoals(); renderModes(); renderChips(); bindSearch();
     $('fs-next').addEventListener('click', function () { if (step < 3) show(step + 1); else finish(); });
-    $('fs-back').addEventListener('click', function () { if (step > 1) show(step - 1); else root.history.length > 1 ? root.history.back() : root.location.assign('/willkommen/'); });
-    $('fs-skip').addEventListener('click', function (e) { e.preventDefault(); state.done = true; S.write(state); if (step < 3) show(step + 1); else (signedIn ? A.patch('/v1/me', { settings: S.toAccount(state, true) }).catch(function () { return null; }) : Promise.resolve()).then(function () { root.location.assign('/willkommen/'); }); });
+    $('fs-back').addEventListener('click', function () { if (step > 1) show(step - 1); else root.history.length > 1 ? root.history.back() : root.location.assign(HOME); });
+    $('fs-skip').addEventListener('click', function (e) { e.preventDefault(); state.done = true; S.write(state); if (step < 3) show(step + 1); else (signedIn ? A.patch('/v1/me', { settings: S.toAccount(state, true) }).catch(function () { return null; }) : Promise.resolve()).then(function () { root.location.assign(HOME); }); });
     if (A && A.available && A.available()) A.get('/v1/session').then(function (r) { signedIn = !!(r.ok && r.data && r.data.authenticated); });
     show(1);
   }

@@ -28,7 +28,7 @@ html[data-md-view=gespeichert] .md-only-watch,html[data-md-view=watchlist] .md-o
 /* Suche mit Atlas-Knopf (C20) */
 .md-find{position:relative;display:flex;align-items:center;gap:10px;min-height:52px;margin-top:12px;padding:0 7px 0 16px;border-radius:999px;background:var(--vu-card);color:var(--vu-mute)}
 .md-find>svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
-.md-find input{flex:1;min-width:0;height:48px;border:0;background:transparent;color:var(--vu-ink);font:600 15px/1 var(--vu-font);outline:none}
+.md-find input{flex:1;min-width:0;height:48px;border:0;background:transparent;color:var(--vu-ink);font:600 16px/1 var(--vu-font);outline:none}
 .md-find input::placeholder{color:var(--vu-mute)}
 .md-find:focus-within{box-shadow:0 0 0 2px var(--vu-ink) inset}
 .md-find-atlas{width:38px;height:38px;border-radius:50%;background:var(--vu-lime);color:#000;display:grid;place-items:center;flex:none}
@@ -77,5 +77,5 @@ html[data-md-view=gespeichert] .md-only-watch,html[data-md-view=watchlist] .md-o
 .md-tile b{margin-top:6px;font-size:14px}
 .md-tile small{font-size:11px;line-height:1.3;color:var(--vu-mute)}
 .md-tile:focus-visible,.md-source-text:focus-visible,.md-find-atlas:focus-visible,.md-undo:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
-.md-undo{margin-left:6px;padding:4px 10px;border:0;border-radius:999px;background:var(--vu-ink);color:var(--vu-inv);font:800 13px/1.2 var(--vu-font);cursor:pointer}
+.md-undo{margin-left:6px;min-height:36px;padding:4px 12px;border:0;border-radius:999px;background:var(--vu-ink);color:var(--vu-inv);font:800 13px/1.2 var(--vu-font);cursor:pointer}
 @media(prefers-reduced-motion:reduce){.md-slide{transition:none}}
