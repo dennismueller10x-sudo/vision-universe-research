@@ -119,7 +119,7 @@ test('ST-HIST-9: C08-Treuevariante FID-1 neben der Referenz; R-Verteilung und go
   const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
   const d = ds();
   const f = T.kkFidelityRun(d, { window: WIN });
-  assert.deepEqual(Object.keys(f.variants), ['FID-1', 'FID-2', 'FID-2L']);
+  assert.deepEqual(Object.keys(f.variants), ['FID-1', 'FID-2', 'FID-2L', 'FID-3']);
   assert.equal(FID.KK_FIDELITY_VARIANTS['FID-2L'].minAdv20Usd, 2.5e6);
   for (const v of Object.values(f.variants)) {
     assert.deepEqual(Object.keys(v.costs), ['COST-0', 'REF']);
@@ -168,11 +168,32 @@ test('ST-HIST-11: Ausführungsdiagnose der goldenen Trades: Setups, Ablehnungen 
   const d = ds(), leaders = FID.momentumLeaders(d.securities), market = FID.marketOn(d.benchmark);
   const golden = [{ ticker: 'CCC', date: '2016-09-15', source: 'Test' }];
   const x = T.goldenExecution(d, { leaders, market, golden, window: WIN })['CCC|2016-09-15'];
-  assert.deepEqual(Object.keys(x), ['FID-1', 'FID-2', 'FID-2L']);
+  assert.deepEqual(Object.keys(x), ['FID-1', 'FID-2', 'FID-2L', 'FID-3']);
   for (const v of Object.values(x)) {
     assert.ok(Array.isArray(v.setupDays) && Array.isArray(v.rejections) && Array.isArray(v.trades));
     assert.equal(v.maxOpenPositions, 20);
     assert.ok(Object.values(v.openPositions).every((n) => n === null || (n >= 0 && n <= 20)));
   }
   assert.doesNotMatch(JSON.stringify(x), /pnl|equity|totalReturn|cagr/);
+});
+
+test('ST-HIST-12: FID-3 = FID-1 plus Tagesauswahl der höchstens 3 stärksten Setups; Leader-Rechnung unverändert', async () => {
+  const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
+  const d = ds();
+  assert.deepEqual(FID.KK_FIDELITY_VARIANTS['FID-3'], { quality: false, adrNorm: 'ENTRY', trail: 'MA10', dailyTop: 3 });
+  const ranks = FID.momentumRanks(d.securities), L1 = FID.momentumLeaders(d.securities), L2 = FID.momentumLeaders(d.securities, { ranks });
+  assert.deepEqual([...L1].map(([k, v]) => [k, [...v].sort()]), [...L2].map(([k, v]) => [k, [...v].sort()]), 'Leader aus ranks gleich der bisherigen Rechnung');
+  const market = FID.marketOn(d.benchmark), sel = FID.dailySelection(d, { leaders: L1, market, ranks, variant: 'FID-3' });
+  for (const [date, set] of sel) {
+    assert.ok(set.size <= 3);
+    for (const id of set) assert.ok(L1.get(date).has(id) && market.has(date));
+  }
+  // mit dailyTop 1 bleibt je Datum der Titel mit dem höchsten Perzentil
+  const one = FID.dailySelection(d, { leaders: new Map([...L1].map(([k]) => [k, new Set(d.securities.map((s) => s.id))])), market: new Set(d.calendar.concat(d.benchmark.map((b) => b.date))), ranks, variant: 'FID-3' });
+  for (const [date, set] of one) { const best = Math.max(...[...set].map((id) => ranks.get(date).get(id) ?? -1)); for (const id of set) assert.ok((ranks.get(date).get(id) ?? -1) <= best); }
+  assert.throws(() => FID.createKkFidelityAdapter({ leaders: L1, market, variant: 'FID-3' }), /SELECTION_REQUIRED/);
+  assert.throws(() => FID.dailySelection(d, { leaders: L1, market, ranks, variant: 'FID-1' }), /NO_DAILY_TOP/);
+  // FID-3 stellt nur an ausgewählten Tagen Setups bereit
+  const ad = FID.createKkFidelityAdapter({ leaders: L1, market, variant: 'FID-3', selection: sel });
+  for (const s of d.securities) { const c = ad.prepare(s, FID.KK_FIDELITY_CONFIG); if (c) for (const [, st] of c.setups) assert.ok(sel.get(st.date)?.has(s.id)); }
 });

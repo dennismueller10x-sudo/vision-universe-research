@@ -35,7 +35,7 @@ import * as FID from './kk-breakout-fidelity.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.6.0';
+export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.7.0';
 /** Delisting-Erlös als Sensitivität (Prüfung Strang E): echte Neuläufe mit den vorhandenen Abrechnungsszenarien der Engines
  *  (validation/portfolio.mjs SCENARIOS, Wiederanlage inklusive). 100 % = Referenz S0_LAST_PRICE, 70 % = S1_MINUS_30,
  *  S2_DISTRESS_ZERO = 0 % bei Insolvenz-Delisting, sonst 70 %. Ein Szenario „0 % für alle“ hat die Engine nicht (eine neue
@@ -208,13 +208,24 @@ export function edgeExport(ds, { methods = TOP5, windows = EDGE_WINDOWS, log = (
   return { schema: 'st-edge-export-1.0.0', ...LABEL, windows, benchmark: { spyClose: ds.benchmark.map((b) => ({ date: b.date, close: b.close })), spyTR: ds.spyTR }, methods: out };
 }
 
+/** Adapter je Fidelity-Variante; FID-3 bekommt die Tagesauswahl (dailySelection) aus demselben Querschnitt. */
+function fidAdapters(ds) {
+  const ranks = FID.momentumRanks(ds.securities), leaders = FID.momentumLeaders(ds.securities, { ranks }), market = FID.marketOn(ds.benchmark);
+  const adapters = {};
+  for (const variant of Object.keys(FID.KK_FIDELITY_VARIANTS)) {
+    const selection = FID.KK_FIDELITY_VARIANTS[variant].dailyTop ? FID.dailySelection(ds, { leaders, market, ranks, variant }) : null;
+    adapters[variant] = FID.createKkFidelityAdapter({ leaders, market, variant, selection });
+  }
+  return { leaders, market, adapters };
+}
+
 /** C08-Treueprüfung: Variante FID-1 (research/kk-breakout-fidelity.mjs) zu Referenz- und Nullkosten, mit R-Verteilung und
  *  goldenen Trades; die Referenz C08 bleibt unverändert. */
 export function kkFidelityRun(ds, { window = L.WINDOW, costLevels = SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF' || c.id === 'COST-0'), log = () => {} } = {}) {
-  const leaders = FID.momentumLeaders(ds.securities), market = FID.marketOn(ds.benchmark), config = FID.KK_FIDELITY_CONFIG;
+  const { market, adapters } = fidAdapters(ds), config = FID.KK_FIDELITY_CONFIG;
   const out = { version: FID.KK_FIDELITY_VERSION, rules: FID.KK_FIDELITY_RULES, marketOnShare: ds.benchmark.length ? market.size / ds.benchmark.length : null, variants: {} };
   for (const variant of Object.keys(FID.KK_FIDELITY_VARIANTS)) {
-    const adapter = FID.createKkFidelityAdapter({ leaders, market, variant }), prepared = prepareAll(ds, adapter, config), v = (out.variants[variant] = { definition: FID.KK_FIDELITY_VARIANTS[variant], costs: {} });
+    const adapter = adapters[variant], prepared = prepareAll(ds, adapter, config), v = (out.variants[variant] = { definition: FID.KK_FIDELITY_VARIANTS[variant], costs: {} });
     for (const c of costLevels) {
       const run = runResearchLifecycle(ds, { adapter, config, policy: { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, slippageBps: c.slippageBps, commissionBps: c.commissionBps }, prepared, from: window.from, to: window.to });
       const x = summarizeRun({ run, trades: run.trades, metricTrades: run.trades.filter((t) => t.status === 'CLOSED') }, ds);
@@ -230,8 +241,9 @@ export function kkFidelityRun(ds, { window = L.WINDOW, costLevels = SF6_VALIDATI
 export function goldenExecution(ds, { leaders, market, golden = FID.KK_GOLDEN_TRADES, window = L.WINDOW } = {}) {
   const tickerOf = (id) => String(id).split('#')[0].split(':')[2], config = FID.KK_FIDELITY_CONFIG, out = {};
   const ref = SF6_VALIDATION_PROTOCOL.costLevels.find((c) => c.id === 'REF');
+  const { adapters } = fidAdapters(ds);
   for (const variant of Object.keys(FID.KK_FIDELITY_VARIANTS)) {
-    const adapter = FID.createKkFidelityAdapter({ leaders, market, variant }), prepared = prepareAll(ds, adapter, config);
+    const adapter = adapters[variant], prepared = prepareAll(ds, adapter, config);
     const run = runResearchLifecycle(ds, { adapter, config, policy: { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, slippageBps: ref.slippageBps, commissionBps: ref.commissionBps }, prepared, from: window.from, to: window.to });
     const posBy = new Map(run.curve.map((p) => [p.date, p.positions ?? null]));
     for (const g of golden) {
