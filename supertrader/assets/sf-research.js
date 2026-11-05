@@ -13,7 +13,7 @@
   var STAGE_TXT = {
     CHART_CANDIDATE: ['Chart-Kandidat', 'chart', 'Ein Chartmuster der Methode ist erkannt. Ein vollständiges Setup ist damit nicht bestätigt.', 1],
     CONFIRMED_RESEARCH_SETUP: ['Bestätigtes Research-Setup', 'setup', 'Alle mechanischen Setup-Regeln der Methode sind am Stichtag erfüllt. Ermessensfragen bleiben offen.', 2],
-    MODELED_TRADE_PLAN: ['Modellierter Handelsablauf', 'model', 'Ein Forschungsmodell liefert zusätzlich hypothetische Einstiegs- und Stop-Marken. Keine Order, keine Empfehlung.', 3],
+    MODELED_TRADE_PLAN: ['Modellierter Handelsablauf', 'model', 'Ein Forschungsmodell rechnet die Methode zusätzlich nach. Öffentlich ohne Einstiegs- oder Stop-Marken. Keine Order, keine Empfehlung.', 3],
   };
   var LOCKED = ['Geprüfte Handelsfreigabe', 'Für alle 13 Methoden gesperrt: keine Zertifizierung, keine Freigabe, kein Live-Betrieb.', 4];
   /* Stufennamen kommen aus den Daten (catalog.mjs#STAGE_LABELS, Owner-Entscheidung O-3); die Werte oben sind nur Rückfall */
