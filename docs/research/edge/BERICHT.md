@@ -1,143 +1,135 @@
-# E3 – Edge-Studie: Vorbereitungsbefund
+# E3 – Edge-Studie: Bericht
 
-**Forschung, nicht zertifiziert. Status: BLOCKIERT – keine E3-Renditeergebnisse.**
+**Forschung, nicht zertifiziert.** Ausführung nach dem eingefrorenen [Protokoll](PROTOKOLL.md) (SHA-256 `9d4c41e36418e1d4df4d020ec4c7fb015bbc91a7df8bb193eb629e397da6e818`). Keine Empfehlung, keine Renditewerbung.
 
-Basis: main `dfa38ce2794b03267ef0c21b671e6ff50bffbf72`. Protokoll vor jedem E3-Lauf im Commit `e253393` eingefroren; SHA-256 `9d4c41e36418e1d4df4d020ec4c7fb015bbc91a7df8bb193eb629e397da6e818`.
+## Stand
 
-Die Leitfrage ist derzeit nicht beantwortbar. Kein Strategie- oder Auswertungslauf wurde ausgeführt. Fehlende Evidenz wird nicht als Underperformance gewertet. Die drei gewünschten Ergebnisurteile dürfen erst nach einem gültigen Lauf vergeben werden.
+- Status: **Entwicklung vollständig, Auswahl ausstehend**.
+- Entwicklung Quant: 2012-01-01 bis 2019-12-31, Anker 2012-01-06, Datei `runs/dev-quant.json`.
+- Hypothesen in der Holm-Familie: 192 (fehlende oder blockierte Tests mit p = 1, die Familie wird nie verkleinert).
 
-## Verfügbarkeit und Grenzen
+## Daten
 
-- **PRIVATE_INPUTS_NOT_RESTORED:** Keine hashverifizierten Tageshistorien inkl. V13-Delistings und originalen PIT-Bündeln lokal bereitgestellt. Kein automatischer Price-only-/Consumer-Fallback.
-- **RESEARCH_ADAPTERS_NOT_IMPLEMENTED:** Kein geprüfter E3-Adapter für tägliche Filter-Ausführung, persistente Rebalancing-Uhr, gemeinsamen Kosten-/Terminal-Ledger und Top5-Sleeves. Unveränderte Supertrader-REF-Läufe allein erfüllen das Protokoll nicht.
-- **BENCHMARK_COVERAGE_NOT_VALIDATED:** ETF-Metadaten vorhanden; gemeinsame Wochenstichtage, täglicher Filter-Warm-up und lückenlose Fenster müssen vor einem Strategielauf geprüft werden.
+- Population: Heute vorhandene Kursdateien (R2-Tagesbalken) mit heutigem SIC-Code plus qualifizierte V13-Ketten delisteter Titel (Register 1.0.0); keine vollständige damalige Population, keine historische Indexmitgliedschaft.
+- Titel im Panel: 6870 (mit Fundamentaldaten 6817); Fundamentaldaten PIT_ORIGINAL_FILING.
+- Ausschlüsse: {"candidates":6225,"noSector":972,"notReal":0,"noBars":0,"notInFinalWeek":0,"delisted":1675,"delistedNoSector":58,"delistedExcludedNoTotalReturn":0,"delistedExcludedRawMissing":0,"delistedExcludedRawMismatch":0,"delistedRawFiles":3}
+- Benchmarks (Gesamtrendite, Wochenraster ohne Auffüllen): SPY `vorsorge/data/series/SPY.json` `92980c690d9e…`, RSP `vorsorge/data/series/RSP.json` `662f99adb33b…`, IWM `vorsorge/data/series/IWM.json` `02516fa77f61…`.
+- Marktfilter: SPY-Tagesschluss `quant/data/market/multi-asset/series/SPY.json` (`25366d61d2b4…`), Schluss > SMA200 inklusive Tag, Gleichstand = Cash.
 
-Der Runtime-Status meldete keine konfigurierten Secrets oder Identitäten. Die folgende Prüfung meldet ausschließlich Variablen-Präsenz, keinen Inhalt und keinen erfolgreichen Archivzugriff:
+## Entwicklung (alle 96 Varianten)
 
-- V13_ARCHIVE_PRIVATE_KEY: nicht konfiguriert
-- VU_HISTORY_S3_ENDPOINT: nicht konfiguriert
-- VU_HISTORY_S3_ACCESS_KEY_ID: nicht konfiguriert
-- VU_HISTORY_S3_SECRET_ACCESS_KEY: nicht konfiguriert
+Supertrader-Entwicklung nur 2016–2019 (Lücke 2012–2015, siehe Grenzen); Quant 2012–2019.
 
-| Benchmark | Stand | Gesamtrendite | Prüfung |
-|---|---|---|---|
-| SPY | 2026-10-02 | TOTAL_RETURN_RECONSTRUCTED | METADATA_PRESENT_NOT_COVERAGE_VALIDATED |
-| RSP | 2026-10-02 | TOTAL_RETURN_RECONSTRUCTED | METADATA_PRESENT_NOT_COVERAGE_VALIDATED |
-| IWM | 2026-10-02 | TOTAL_RETURN_RECONSTRUCTED | METADATA_PRESENT_NOT_COVERAGE_VALIDATED |
+| Variante | Status | CAGR | SPY | Sharpe | SPY Sharpe | Max. Verlust | Vol | Turnover | Kosten | Titel | zu wenige | Terminal |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| ST-C01-F0 | RUN | -20,7 % | 16,3 % | -0,19 | 1,29 | -74,2 % | 52,4 % | – | 24,7 % | – | undefined | MERGER:3,UNKNOWN:5 |
+| ST-C01-F1 | RUN | -16,7 % | 16,3 % | -0,13 | 1,29 | -65,8 % | 50,0 % | – | 24,6 % | – | undefined | UNKNOWN:5,MERGER:1 |
+| ST-C02-F0 | RUN | 23,6 % | 16,3 % | 0,69 | 1,29 | -60,5 % | 45,2 % | – | 32,6 % | – | undefined | MERGER:4,UNKNOWN:1 |
+| ST-C02-F1 | RUN | 13,0 % | 16,3 % | 0,49 | 1,29 | -62,2 % | 43,6 % | – | 26,5 % | – | undefined | UNKNOWN:1,MERGER:1 |
+| ST-C03-F0 | RUN | -54,0 % | 16,3 % | -5,70 | 1,29 | -95,5 % | 13,3 % | – | 91,2 % | – | undefined | MERGER:7,UNKNOWN:2 |
+| ST-C03-F1 | RUN | -52,3 % | 16,3 % | -5,31 | 1,29 | -94,8 % | 13,6 % | – | 90,7 % | – | undefined | UNKNOWN:2,MERGER:5 |
+| ST-C08-F0 | RUN | -51,2 % | 16,3 % | -2,80 | 1,29 | -94,9 % | 24,3 % | – | 43,3 % | – | undefined | MERGER:9,UNKNOWN:2 |
+| ST-C08-F1 | RUN | -48,1 % | 16,3 % | -2,73 | 1,29 | -93,4 % | 22,8 % | – | 42,3 % | – | undefined | MERGER:5,UNKNOWN:1 |
+| ST-C12-F0 | RUN | -14,0 % | 16,3 % | -0,71 | 1,29 | -52,7 % | 18,7 % | – | 21,6 % | – | undefined | UNKNOWN:5,MERGER:5,SERIES_END:1 |
+| ST-C12-F1 | RUN | -15,0 % | 16,3 % | -0,87 | 1,29 | -55,6 % | 17,0 % | – | 20,6 % | – | undefined | UNKNOWN:5,MERGER:4,SERIES_END:1 |
+| ST-TOP5-F0 | RUN | -9,5 % | 16,3 % | -0,17 | 1,29 | -59,2 % | 30,9 % | – | 42,8 % | – | undefined | MERGER:28,UNKNOWN:15,SERIES_END:1 |
+| ST-TOP5-F1 | RUN | -13,9 % | 16,3 % | -0,39 | 1,29 | -58,2 % | 28,3 % | – | 40,9 % | – | undefined | UNKNOWN:14,MERGER:16,SERIES_END:1 |
+| Q-quality-compounder-N10-W13-F0 | RUN | 14,0 % | 14,6 % | 1,07 | 1,18 | -21,0 % | 13,0 % | 140,7 % | 4,6 % | 10,00 | 0 | MERGER:7,UNKNOWN:1 |
+| Q-quality-compounder-N10-W13-F1 | RUN | 11,2 % | 14,6 % | 0,99 | 1,18 | -15,0 % | 11,4 % | 250,4 % | 7,3 % | 10,00 | 0 | MERGER:7,UNKNOWN:1 |
+| Q-quality-compounder-N10-W26-F0 | RUN | 13,1 % | 14,6 % | 1,03 | 1,18 | -17,2 % | 12,7 % | 92,3 % | 2,7 % | 10,00 | 0 | MERGER:7,UNKNOWN:1 |
+| Q-quality-compounder-N10-W26-F1 | RUN | 9,4 % | 14,6 % | 0,86 | 1,18 | -17,1 % | 11,2 % | 213,1 % | 5,5 % | 10,00 | 0 | MERGER:7,UNKNOWN:1 |
+| Q-quality-compounder-N15-W13-F0 | RUN | 13,7 % | 14,6 % | 1,02 | 1,18 | -20,4 % | 13,5 % | 147,2 % | 5,1 % | 15,00 | 0 | MERGER:8,UNKNOWN:1 |
+| Q-quality-compounder-N15-W13-F1 | RUN | 10,1 % | 14,6 % | 0,87 | 1,18 | -14,6 % | 11,8 % | 268,3 % | 7,9 % | 15,00 | 0 | MERGER:8,UNKNOWN:1 |
+| Q-quality-compounder-N15-W26-F0 | RUN | 14,4 % | 14,6 % | 1,07 | 1,18 | -15,6 % | 13,5 % | 96,4 % | 3,1 % | 15,00 | 0 | MERGER:7,UNKNOWN:1 |
+| Q-quality-compounder-N15-W26-F1 | RUN | 10,3 % | 14,6 % | 0,89 | 1,18 | -13,8 % | 11,8 % | 225,8 % | 6,3 % | 15,00 | 0 | MERGER:7,UNKNOWN:1 |
+| Q-quality-compounder-N20-W13-F0 | RUN | 13,7 % | 14,6 % | 1,05 | 1,18 | -19,3 % | 13,0 % | 133,2 % | 4,5 % | 20,00 | 0 | MERGER:10,UNKNOWN:1 |
+| Q-quality-compounder-N20-W13-F1 | RUN | 10,0 % | 14,6 % | 0,90 | 1,18 | -12,9 % | 11,2 % | 256,5 % | 7,5 % | 20,00 | 0 | MERGER:10,UNKNOWN:1 |
+| Q-quality-compounder-N20-W26-F0 | RUN | 13,6 % | 14,6 % | 1,05 | 1,18 | -16,6 % | 12,9 % | 93,8 % | 3,0 % | 20,00 | 0 | MERGER:8,UNKNOWN:1 |
+| Q-quality-compounder-N20-W26-F1 | RUN | 9,6 % | 14,6 % | 0,88 | 1,18 | -11,7 % | 11,1 % | 223,3 % | 6,2 % | 20,00 | 0 | MERGER:8,UNKNOWN:1 |
+| Q-momentum-leader-N10-W13-F0 | RUN | 13,3 % | 14,6 % | 1,05 | 1,18 | -14,5 % | 12,6 % | 215,7 % | 7,3 % | 10,00 | 0 | MERGER:12,UNKNOWN:1 |
+| Q-momentum-leader-N10-W13-F1 | RUN | 10,8 % | 14,6 % | 0,97 | 1,18 | -13,8 % | 11,2 % | 311,9 % | 9,7 % | 10,00 | 0 | MERGER:12 |
+| Q-momentum-leader-N10-W26-F0 | RUN | 11,5 % | 14,6 % | 0,91 | 1,18 | -22,4 % | 12,8 % | 138,1 % | 4,2 % | 10,00 | 0 | MERGER:10,UNKNOWN:1 |
+| Q-momentum-leader-N10-W26-F1 | RUN | 9,6 % | 14,6 % | 0,88 | 1,18 | -13,6 % | 11,1 % | 239,5 % | 6,5 % | 10,00 | 0 | MERGER:10 |
+| Q-momentum-leader-N15-W13-F0 | RUN | 14,0 % | 14,6 % | 1,01 | 1,18 | -16,9 % | 13,8 % | 235,5 % | 9,1 % | 15,00 | 0 | MERGER:16,UNKNOWN:2 |
+| Q-momentum-leader-N15-W13-F1 | RUN | 11,4 % | 14,6 % | 0,95 | 1,18 | -18,3 % | 12,2 % | 343,5 % | 12,0 % | 15,00 | 0 | MERGER:16,UNKNOWN:1 |
+| Q-momentum-leader-N15-W26-F0 | RUN | 11,6 % | 14,6 % | 0,87 | 1,18 | -21,0 % | 13,7 % | 154,0 % | 4,9 % | 15,00 | 0 | MERGER:13,UNKNOWN:1 |
+| Q-momentum-leader-N15-W26-F1 | RUN | 9,0 % | 14,6 % | 0,78 | 1,18 | -17,0 % | 12,0 % | 271,3 % | 7,5 % | 15,00 | 0 | MERGER:13 |
+| Q-momentum-leader-N20-W13-F0 | RUN | 16,9 % | 14,6 % | 1,23 | 1,18 | -14,7 % | 13,4 % | 227,4 % | 10,3 % | 20,00 | 0 | MERGER:20,UNKNOWN:2 |
+| Q-momentum-leader-N20-W13-F1 | RUN | 13,8 % | 14,6 % | 1,13 | 1,18 | -15,1 % | 12,0 % | 338,8 % | 13,8 % | 20,00 | 0 | MERGER:20,UNKNOWN:1 |
+| Q-momentum-leader-N20-W26-F0 | RUN | 14,5 % | 14,6 % | 1,08 | 1,18 | -19,4 % | 13,4 % | 146,4 % | 5,5 % | 20,00 | 0 | MERGER:18,UNKNOWN:1 |
+| Q-momentum-leader-N20-W26-F1 | RUN | 11,5 % | 14,6 % | 0,98 | 1,18 | -14,1 % | 11,8 % | 266,6 % | 8,8 % | 20,00 | 0 | MERGER:18 |
+| Q-quality-momentum-N10-W13-F0 | RUN | 14,1 % | 14,6 % | 0,81 | 1,18 | -33,5 % | 18,2 % | 197,7 % | 7,5 % | 10,00 | 0 | MERGER:10,UNKNOWN:2 |
+| Q-quality-momentum-N10-W13-F1 | RUN | 12,3 % | 14,6 % | 0,81 | 1,18 | -19,8 % | 15,8 % | 294,2 % | 10,2 % | 10,00 | 0 | MERGER:10,UNKNOWN:2 |
+| Q-quality-momentum-N10-W26-F0 | RUN | 12,2 % | 14,6 % | 0,73 | 1,18 | -37,5 % | 18,0 % | 129,2 % | 4,4 % | 10,00 | 0 | MERGER:7 |
+| Q-quality-momentum-N10-W26-F1 | RUN | 10,5 % | 14,6 % | 0,72 | 1,18 | -25,0 % | 15,5 % | 237,4 % | 7,4 % | 10,00 | 0 | MERGER:7 |
+| Q-quality-momentum-N15-W13-F0 | RUN | 12,3 % | 14,6 % | 0,68 | 1,18 | -35,1 % | 19,8 % | 206,1 % | 7,5 % | 15,00 | 0 | MERGER:12,UNKNOWN:4 |
+| Q-quality-momentum-N15-W13-F1 | RUN | 8,9 % | 14,6 % | 0,59 | 1,18 | -24,1 % | 17,0 % | 321,6 % | 10,0 % | 15,00 | 0 | MERGER:12,UNKNOWN:4 |
+| Q-quality-momentum-N15-W26-F0 | RUN | 13,6 % | 14,6 % | 0,74 | 1,18 | -38,3 % | 19,9 % | 137,2 % | 5,2 % | 15,00 | 0 | MERGER:8,UNKNOWN:1 |
+| Q-quality-momentum-N15-W26-F1 | RUN | 10,6 % | 14,6 % | 0,68 | 1,18 | -25,8 % | 17,0 % | 266,1 % | 8,7 % | 15,00 | 0 | MERGER:8,UNKNOWN:1 |
+| Q-quality-momentum-N20-W13-F0 | RUN | 11,4 % | 14,6 % | 0,66 | 1,18 | -33,0 % | 19,3 % | 200,9 % | 7,8 % | 20,00 | 0 | MERGER:17,UNKNOWN:4 |
+| Q-quality-momentum-N20-W13-F1 | RUN | 9,0 % | 14,6 % | 0,60 | 1,18 | -25,8 % | 16,8 % | 317,7 % | 10,7 % | 20,00 | 0 | MERGER:17,UNKNOWN:4 |
+| Q-quality-momentum-N20-W26-F0 | RUN | 13,1 % | 14,6 % | 0,74 | 1,18 | -30,9 % | 19,2 % | 129,5 % | 5,3 % | 20,00 | 0 | MERGER:14,UNKNOWN:1 |
+| Q-quality-momentum-N20-W26-F1 | RUN | 10,5 % | 14,6 % | 0,69 | 1,18 | -21,8 % | 16,3 % | 257,0 % | 9,2 % | 20,00 | 0 | MERGER:14,UNKNOWN:1 |
+| Q-garp-N10-W13-F0 | RUN | 5,2 % | 14,6 % | 0,39 | 1,18 | -34,7 % | 16,2 % | 132,7 % | 4,3 % | 10,00 | 0 | MERGER:9 |
+| Q-garp-N10-W13-F1 | RUN | 2,5 % | 14,6 % | 0,24 | 1,18 | -36,1 % | 14,5 % | 214,2 % | 5,8 % | 10,00 | 0 | MERGER:9 |
+| Q-garp-N10-W26-F0 | RUN | 6,1 % | 14,6 % | 0,45 | 1,18 | -31,6 % | 15,9 % | 92,3 % | 2,9 % | 10,00 | 0 | MERGER:7 |
+| Q-garp-N10-W26-F1 | RUN | 3,1 % | 14,6 % | 0,28 | 1,18 | -30,3 % | 14,4 % | 183,7 % | 4,8 % | 10,00 | 0 | MERGER:7 |
+| Q-garp-N15-W13-F0 | RUN | 4,7 % | 14,6 % | 0,34 | 1,18 | -38,9 % | 18,7 % | 147,0 % | 4,9 % | 15,00 | 0 | MERGER:15,UNKNOWN:2 |
+| Q-garp-N15-W13-F1 | RUN | 0,5 % | 14,6 % | 0,11 | 1,18 | -40,8 % | 16,1 % | 254,6 % | 6,6 % | 15,00 | 0 | MERGER:15,UNKNOWN:2 |
+| Q-garp-N15-W26-F0 | RUN | 6,4 % | 14,6 % | 0,43 | 1,18 | -34,6 % | 18,6 % | 108,1 % | 3,5 % | 15,00 | 0 | MERGER:14,UNKNOWN:2 |
+| Q-garp-N15-W26-F1 | RUN | 1,7 % | 14,6 % | 0,18 | 1,18 | -34,1 % | 16,2 % | 226,1 % | 5,6 % | 15,00 | 0 | MERGER:14,UNKNOWN:2 |
+| Q-garp-N20-W13-F0 | RUN | 5,0 % | 14,6 % | 0,34 | 1,18 | -37,1 % | 19,7 % | 153,6 % | 5,7 % | 20,00 | 0 | MERGER:18,UNKNOWN:2 |
+| Q-garp-N20-W13-F1 | RUN | 0,8 % | 14,6 % | 0,13 | 1,18 | -39,4 % | 17,3 % | 274,6 % | 7,7 % | 20,00 | 0 | MERGER:18,UNKNOWN:2 |
+| Q-garp-N20-W26-F0 | RUN | 5,2 % | 14,6 % | 0,36 | 1,18 | -32,8 % | 19,3 % | 112,2 % | 3,9 % | 20,00 | 0 | MERGER:17,UNKNOWN:2 |
+| Q-garp-N20-W26-F1 | RUN | 0,4 % | 14,6 % | 0,11 | 1,18 | -35,6 % | 17,0 % | 241,8 % | 6,2 % | 20,00 | 0 | MERGER:17,UNKNOWN:2 |
+| Q-future-leader-N10-W13-F0 | RUN | 10,6 % | 14,6 % | 0,60 | 1,18 | -47,4 % | 20,3 % | 188,6 % | 8,0 % | 10,00 | 0 | MERGER:6,DISTRESS:1 |
+| Q-future-leader-N10-W13-F1 | RUN | 11,1 % | 14,6 % | 0,69 | 1,18 | -32,6 % | 17,3 % | 284,6 % | 11,4 % | 10,00 | 0 | MERGER:6,DISTRESS:1 |
+| Q-future-leader-N10-W26-F0 | RUN | 14,2 % | 14,6 % | 0,77 | 1,18 | -32,4 % | 19,9 % | 120,5 % | 4,8 % | 10,00 | 0 | MERGER:2,DISTRESS:1 |
+| Q-future-leader-N10-W26-F1 | RUN | 11,0 % | 14,6 % | 0,69 | 1,18 | -30,0 % | 17,2 % | 223,2 % | 8,1 % | 10,00 | 0 | MERGER:2,DISTRESS:1 |
+| Q-future-leader-N15-W13-F0 | RUN | 13,3 % | 14,6 % | 0,68 | 1,18 | -44,0 % | 21,7 % | 204,4 % | 9,6 % | 15,00 | 0 | MERGER:9,DISTRESS:1,UNKNOWN:1 |
+| Q-future-leader-N15-W13-F1 | RUN | 12,6 % | 14,6 % | 0,73 | 1,18 | -33,5 % | 18,5 % | 319,5 % | 14,0 % | 15,00 | 0 | MERGER:9,DISTRESS:1,UNKNOWN:1 |
+| Q-future-leader-N15-W26-F0 | RUN | 17,0 % | 14,6 % | 0,86 | 1,18 | -33,6 % | 20,7 % | 130,5 % | 5,8 % | 15,00 | 0 | MERGER:3,DISTRESS:1 |
+| Q-future-leader-N15-W26-F1 | RUN | 14,2 % | 14,6 % | 0,82 | 1,18 | -27,6 % | 18,1 % | 249,0 % | 10,3 % | 15,00 | 0 | MERGER:3,DISTRESS:1 |
+| Q-future-leader-N20-W13-F0 | RUN | 13,7 % | 14,6 % | 0,73 | 1,18 | -39,8 % | 20,5 % | 196,7 % | 8,9 % | 20,00 | 0 | MERGER:16,UNKNOWN:3,DISTRESS:1 |
+| Q-future-leader-N20-W13-F1 | RUN | 11,9 % | 14,6 % | 0,73 | 1,18 | -32,2 % | 17,5 % | 314,6 % | 12,8 % | 20,00 | 0 | MERGER:16,UNKNOWN:3,DISTRESS:1 |
+| Q-future-leader-N20-W26-F0 | RUN | 15,1 % | 14,6 % | 0,80 | 1,18 | -33,7 % | 20,1 % | 125,7 % | 5,2 % | 20,00 | 0 | MERGER:7,UNKNOWN:3,DISTRESS:1 |
+| Q-future-leader-N20-W26-F1 | RUN | 11,9 % | 14,6 % | 0,73 | 1,18 | -26,7 % | 17,4 % | 247,8 % | 9,3 % | 20,00 | 0 | MERGER:7,UNKNOWN:3,DISTRESS:1 |
+| Q-defensive-quality-N10-W13-F0 | RUN | 10,8 % | 14,6 % | 0,87 | 1,18 | -18,7 % | 12,7 % | 199,3 % | 5,8 % | 10,00 | 0 | MERGER:8,UNKNOWN:1 |
+| Q-defensive-quality-N10-W13-F1 | RUN | 8,0 % | 14,6 % | 0,73 | 1,18 | -14,1 % | 11,3 % | 299,4 % | 7,5 % | 10,00 | 0 | MERGER:8,UNKNOWN:1 |
+| Q-defensive-quality-N10-W26-F0 | RUN | 12,7 % | 14,6 % | 1,03 | 1,18 | -15,6 % | 12,3 % | 116,9 % | 3,7 % | 10,00 | 0 | MERGER:6 |
+| Q-defensive-quality-N10-W26-F1 | RUN | 10,1 % | 14,6 % | 0,93 | 1,18 | -11,6 % | 11,0 % | 224,1 % | 6,5 % | 10,00 | 0 | MERGER:5 |
+| Q-defensive-quality-N15-W13-F0 | RUN | 15,4 % | 14,6 % | 1,16 | 1,18 | -19,0 % | 13,1 % | 205,1 % | 7,2 % | 15,00 | 0 | MERGER:8,UNKNOWN:2 |
+| Q-defensive-quality-N15-W13-F1 | RUN | 11,6 % | 14,6 % | 1,00 | 1,18 | -14,9 % | 11,6 % | 319,9 % | 9,6 % | 15,00 | 0 | MERGER:8,UNKNOWN:2 |
+| Q-defensive-quality-N15-W26-F0 | RUN | 16,4 % | 14,6 % | 1,23 | 1,18 | -20,5 % | 13,0 % | 130,5 % | 4,9 % | 15,00 | 0 | MERGER:6,UNKNOWN:1 |
+| Q-defensive-quality-N15-W26-F1 | RUN | 13,0 % | 14,6 % | 1,12 | 1,18 | -14,2 % | 11,5 % | 250,6 % | 8,4 % | 15,00 | 0 | MERGER:6,UNKNOWN:1 |
+| Q-defensive-quality-N20-W13-F0 | RUN | 15,3 % | 14,6 % | 1,21 | 1,18 | -17,5 % | 12,4 % | 186,6 % | 6,9 % | 20,00 | 0 | MERGER:9,UNKNOWN:2 |
+| Q-defensive-quality-N20-W13-F1 | RUN | 11,7 % | 14,6 % | 1,06 | 1,18 | -12,6 % | 11,0 % | 306,8 % | 9,8 % | 20,00 | 0 | MERGER:9,UNKNOWN:2 |
+| Q-defensive-quality-N20-W26-F0 | RUN | 15,5 % | 14,6 % | 1,21 | 1,18 | -17,7 % | 12,5 % | 124,7 % | 4,4 % | 20,00 | 0 | MERGER:7,UNKNOWN:2 |
+| Q-defensive-quality-N20-W26-F1 | RUN | 11,5 % | 14,6 % | 1,05 | 1,18 | -12,6 % | 10,9 % | 248,6 % | 7,6 % | 20,00 | 0 | MERGER:7,UNKNOWN:2 |
+| Q-value-momentum-N10-W13-F0 | RUN | 4,4 % | 14,6 % | 0,40 | 1,18 | -31,1 % | 12,5 % | 182,5 % | 6,0 % | 10,00 | 0 | MERGER:15,UNKNOWN:2 |
+| Q-value-momentum-N10-W13-F1 | RUN | 2,5 % | 14,6 % | 0,27 | 1,18 | -29,5 % | 11,4 % | 248,5 % | 7,4 % | 10,00 | 0 | MERGER:15,UNKNOWN:2 |
+| Q-value-momentum-N10-W26-F0 | RUN | 7,2 % | 14,6 % | 0,61 | 1,18 | -26,3 % | 12,7 % | 102,2 % | 3,5 % | 10,00 | 0 | MERGER:10,UNKNOWN:1 |
+| Q-value-momentum-N10-W26-F1 | RUN | 5,3 % | 14,6 % | 0,50 | 1,18 | -21,7 % | 11,5 % | 182,4 % | 5,9 % | 10,00 | 0 | MERGER:10,UNKNOWN:1 |
+| Q-value-momentum-N15-W13-F0 | RUN | 5,1 % | 14,6 % | 0,41 | 1,18 | -30,8 % | 14,9 % | 217,7 % | 7,5 % | 15,00 | 0 | MERGER:21,UNKNOWN:2 |
+| Q-value-momentum-N15-W13-F1 | RUN | 2,2 % | 14,6 % | 0,23 | 1,18 | -33,5 % | 13,3 % | 307,2 % | 9,2 % | 15,00 | 0 | MERGER:21,UNKNOWN:2 |
+| Q-value-momentum-N15-W26-F0 | RUN | 8,5 % | 14,6 % | 0,63 | 1,18 | -29,6 % | 14,8 % | 129,9 % | 5,0 % | 15,00 | 0 | MERGER:13,UNKNOWN:2 |
+| Q-value-momentum-N15-W26-F1 | RUN | 4,8 % | 14,6 % | 0,41 | 1,18 | -25,0 % | 13,3 % | 231,5 % | 7,6 % | 15,00 | 0 | MERGER:13,UNKNOWN:2 |
+| Q-value-momentum-N20-W13-F0 | RUN | 6,2 % | 14,6 % | 0,46 | 1,18 | -33,0 % | 15,6 % | 240,0 % | 9,1 % | 20,00 | 0 | MERGER:24,UNKNOWN:3 |
+| Q-value-momentum-N20-W13-F1 | RUN | 2,6 % | 14,6 % | 0,26 | 1,18 | -34,0 % | 13,8 % | 345,6 % | 11,2 % | 20,00 | 0 | MERGER:24,UNKNOWN:3 |
+| Q-value-momentum-N20-W26-F0 | RUN | 9,5 % | 14,6 % | 0,66 | 1,18 | -30,9 % | 15,7 % | 146,9 % | 6,2 % | 20,00 | 0 | MERGER:13,UNKNOWN:3 |
+| Q-value-momentum-N20-W26-F1 | RUN | 5,1 % | 14,6 % | 0,43 | 1,18 | -30,0 % | 13,9 % | 263,0 % | 9,3 % | 20,00 | 0 | MERGER:13,UNKNOWN:3 |
 
-2026 ist ein Teiljahr bis 02.10. Frühere Studien haben 2020–2026 bereits verwendet. Die E3-Prüfung wäre eine Replikation mit eingefrorenen Regeln und zeitlich getrennter Auswahl, kein neuer projektweiter Holdout. Ein späterer Vorwärtstest bleibt erforderlich.
+## Prüfung 2020-01-01 bis 2026-10-02 (alle 96 Varianten, Cash-Start)
 
-## Vollständige Variantentabelle
+Gesperrt, bis die Auswahl über alle 96 Entwicklungsergebnisse festgeschrieben ist.
 
-96 Varianten, 192 gemeinsam zu korrigierende Hypothesen. „—“ bedeutet nicht berechnet. Bei einem späteren gültigen Lauf sind zusätzlich die SPY/RSP/IWM-Kennzahlen, Kosten, Turnover und Delisting-Zählungen gemäß Protokoll auszugeben. Es gibt noch keine Entwicklungs-Auswahl.
 
-| Variante | Netto-TR | CAGR | Sharpe | Max. Verlust | Δ SPY/RSP/IWM | Holm p Rendite / Sharpe | Urteil |
-|---|---:|---:|---:|---:|---|---|---|
-| ST-C01-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| ST-C01-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| ST-C02-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| ST-C02-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| ST-C03-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| ST-C03-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| ST-C08-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| ST-C08-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| ST-C12-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| ST-C12-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| ST-TOP5-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| ST-TOP5-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-compounder-N10-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-compounder-N10-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-compounder-N10-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-compounder-N10-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-compounder-N15-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-compounder-N15-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-compounder-N15-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-compounder-N15-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-compounder-N20-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-compounder-N20-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-compounder-N20-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-compounder-N20-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-momentum-leader-N10-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-momentum-leader-N10-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-momentum-leader-N10-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-momentum-leader-N10-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-momentum-leader-N15-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-momentum-leader-N15-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-momentum-leader-N15-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-momentum-leader-N15-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-momentum-leader-N20-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-momentum-leader-N20-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-momentum-leader-N20-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-momentum-leader-N20-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-momentum-N10-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-momentum-N10-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-momentum-N10-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-momentum-N10-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-momentum-N15-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-momentum-N15-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-momentum-N15-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-momentum-N15-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-momentum-N20-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-momentum-N20-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-momentum-N20-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-quality-momentum-N20-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-garp-N10-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-garp-N10-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-garp-N10-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-garp-N10-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-garp-N15-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-garp-N15-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-garp-N15-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-garp-N15-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-garp-N20-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-garp-N20-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-garp-N20-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-garp-N20-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-future-leader-N10-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-future-leader-N10-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-future-leader-N10-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-future-leader-N10-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-future-leader-N15-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-future-leader-N15-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-future-leader-N15-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-future-leader-N15-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-future-leader-N20-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-future-leader-N20-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-future-leader-N20-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-future-leader-N20-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-defensive-quality-N10-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-defensive-quality-N10-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-defensive-quality-N10-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-defensive-quality-N10-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-defensive-quality-N15-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-defensive-quality-N15-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-defensive-quality-N15-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-defensive-quality-N15-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-defensive-quality-N20-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-defensive-quality-N20-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-defensive-quality-N20-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-defensive-quality-N20-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-value-momentum-N10-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-value-momentum-N10-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-value-momentum-N10-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-value-momentum-N10-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-value-momentum-N15-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-value-momentum-N15-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-value-momentum-N15-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-value-momentum-N15-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-value-momentum-N20-W13-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-value-momentum-N20-W13-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-value-momentum-N20-W26-F0 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
-| Q-value-momentum-N20-W26-F1 | — | — | — | — | — / — / — | — / — | nicht bestimmbar (blockiert) |
+## Grenzen
 
-## Empfehlung für die Produktdarstellung
-
-Derzeit keine Methode als S&P-500-Sieger herausstellen. SPY-Gesamtrendite als passive Vergleichsbasis; vorhandene Strategien mit Kosten, Drawdown, Sharpe und Grenzen nebeneinander als „Forschung, nicht zertifiziert“. Für eine konkrete Methodenauswahl fehlt E3-Evidenz. Dieser PR ändert keine Produktdarstellung.
-
-## Konkrete Fortsetzung
-
-1. Bestehende R2-Archive nach dem vorhandenen Runbook hashverifiziert wiederherstellen; Tiingo-Tageshistorien und originale PIT-Bündel bereitstellen. Keine neuen Anbieter nötig.
-2. Forschungsadapter ausschließlich unter scripts/research/edge/ implementieren; Ledger-Parität für Gebühren/Spread/Slippage, Terminal-Cash, Filterverkauf/Wiedereinstieg und Sleeve-Kapital prüfen. Vorhandene Engines nur importieren.
-3. Datenabdeckung und Benchmarkkalender validieren. Dann 2012–2019 rechnen und Gewinner samt Eingabe-/Ergebnishashes unveränderlich festhalten; erst danach 2020–2026 öffnen. Alle 96 Varianten ausweisen, Holm über 192 Hypothesen.
-
-Die Statistikfunktionen in study.cjs sind mit synthetischen Daten getestet. Sie sind kein ausführbarer Strategieadapter und kein Ersatz für diese offenen Schritte. Wiederholung der Vorprüfung: siehe README.md.
+- Das Prüffenster 2020–2026 wurde in früheren Projektstudien verwendet: vorab fixierte Replikation mit zeitlicher Trennung, kein unberührter Holdout. Bestätigung nur mit neuen Vorwärtsdaten.
+- Supertrader-Entwicklung beginnt 2016 (Lieferung Strang B); 2012–2015 fehlt für Supertrader. Der für eine spätere Bestätigung reservierte Holdout 2008–2015 wird in E3 nicht verwendet; die Quant-Entwicklung 2012–2019 ist protokollgemäß und war bereits Teil früherer Quant-Läufe (Musterportfolios #1332/#1383).
+- Lokaler Rauchtest vor dem Lauf (05.11.2026): zwei Quant-Varianten auf einer Teilmenge (Kursrendite, 1.500 heutige Titel) auch im Prüffenster ausgeführt, um Programmfehler auszuschließen. Keine Regel-, Parameter- oder Auswahländerung folgte; die Auswahl erfolgt mechanisch nach Protokoll.
+- Population: heutige Kursdateien plus qualifizierte V13-Ketten, heutiger SIC-Code; keine historische Indexmitgliedschaft.
+- Marktfilter: bewertet am letzten Tagesschluss jeder Entscheidungswoche, ausgeführt zum Schluss der Folgewoche (Engine-Takt); ein Wechsel und Rückwechsel innerhalb derselben Woche löst keinen Handel aus.
+- Monte-Carlo-p-Werte (9.999 Replikate) haben eine Auflösung von 1/10.000; Stichprobe der Prüfung rund 350 Wochen.
+- „schlägt nicht“ heißt bei gültigen Daten: kein robuster Nachweis, nicht bewiesene Gleichheit. Fehlende Daten: „nicht bestimmbar (blockiert)“.
