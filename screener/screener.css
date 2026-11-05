@@ -924,3 +924,5 @@ body.sc .sc-soonbtn .sc-soon{margin:2px 0 0}
 .sc-sentence{line-height:1.55}
 .sc-gap{padding:4px 8px}
 .sc-gap.is-add,.sc-gap.is-empty{display:inline-block;min-width:34px;min-height:34px;line-height:1;padding:0 8px;vertical-align:2px}
+/* S03 (C17): letzte Säule neongrün, wie im Mockup s03-b */
+body.sc .sc-kpi .sc-bars rect:not(.is-neg):last-of-type{fill:var(--vu-lime,#c8f531)}

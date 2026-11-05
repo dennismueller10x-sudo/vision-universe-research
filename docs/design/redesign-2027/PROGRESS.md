@@ -119,7 +119,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | H07 | Hedgefonds · NVIDIA (Perspektive Investoren) | fertig | #1357 | `#/aktie/<T>`, CUSIP leitet um; Urteil ≥ 60 % Käufe „Mehr Käufer“, ≥ 60 % Verkäufe „Mehr Verkäufer“, sonst „Ausgeglichen“ |
 | S01 | Screener · Übersicht | fertig | #1360 | Satz startet leer statt mit Beispielsatz; Ideenzahlen live aus der Engine |
 | S02 | Screener · Filter hinzufügen | fertig | #1360 | Profi: Gruppen UND/ODER bleiben; Kriterium-Sheet mit „Genau einstellen“ |
-| S03 | Screener · Treffer | teilweise | #1360 | Teil: „Aktie öffnen“ bleibt Sheet (Kopf, Leiste, „Treffer k von N“) statt eigener Aktienseite |
+| S03 | Screener · Treffer | fertig | #1360, (dieser PR) | „Aktie öffnen“ nach s03-b: Kopf (C04), Perspektiven-Leiste (C05), „Aus deinem Screen · Treffer k von N“ mit Urteil je Regel, dann der Inhalt der Perspektive der meistgenutzten Filter (Zahlen → Kennzahlen mit Säulen, letzte neongrün; Chart → Chart), Vor/Zurück darunter. Abweichung: bleibt ein Sheet über der Trefferliste statt eigener Seite, weil der Screener eine eigene statische App ist; so bleiben Treffer, Filter und die Screener-Leiste beim Blättern erhalten. „Aktie vollständig öffnen“ führt zur Aktienseite. |
 | S04 | Screener · Gespeichert | fertig | #1360 | Neu/raus aus den zwei letzten Läufen; „Im Konto speichern“ = bald bis Z3 (#1359) gemergt ist |
 | S05 | Screener · Watchlist | fertig | #1360 | `?view=saved&tab=watchlist`; „Als Screen filtern“ bald (Engine filtert keine Symbolliste) |
 | V01 | Vorsorge · Start | fertig | #1362 | Sheet „Erster Besuch“ öffnet in automatisierten Browsern nicht von selbst (`#/?lage=1` erzwingt) |
