@@ -35,7 +35,7 @@ import * as FID from './kk-breakout-fidelity.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.7.0';
+export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.8.0';
 /** Delisting-Erlös als Sensitivität (Prüfung Strang E): echte Neuläufe mit den vorhandenen Abrechnungsszenarien der Engines
  *  (validation/portfolio.mjs SCENARIOS, Wiederanlage inklusive). 100 % = Referenz S0_LAST_PRICE, 70 % = S1_MINUS_30,
  *  S2_DISTRESS_ZERO = 0 % bei Insolvenz-Delisting, sonst 70 %. Ein Szenario „0 % für alle“ hat die Engine nicht (eine neue
@@ -222,12 +222,12 @@ function fidAdapters(ds) {
 /** C08-Treueprüfung: Variante FID-1 (research/kk-breakout-fidelity.mjs) zu Referenz- und Nullkosten, mit R-Verteilung und
  *  goldenen Trades; die Referenz C08 bleibt unverändert. */
 export function kkFidelityRun(ds, { window = L.WINDOW, costLevels = SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF' || c.id === 'COST-0'), log = () => {} } = {}) {
-  const { market, adapters } = fidAdapters(ds), config = FID.KK_FIDELITY_CONFIG;
+  const { market, adapters } = fidAdapters(ds);
   const out = { version: FID.KK_FIDELITY_VERSION, rules: FID.KK_FIDELITY_RULES, marketOnShare: ds.benchmark.length ? market.size / ds.benchmark.length : null, variants: {} };
   for (const variant of Object.keys(FID.KK_FIDELITY_VARIANTS)) {
-    const adapter = adapters[variant], prepared = prepareAll(ds, adapter, config), v = (out.variants[variant] = { definition: FID.KK_FIDELITY_VARIANTS[variant], costs: {} });
+    const config = FID.kkFidelityConfigFor(variant), adapter = adapters[variant], prepared = prepareAll(ds, adapter, config), v = (out.variants[variant] = { definition: FID.KK_FIDELITY_VARIANTS[variant], costs: {} });
     for (const c of costLevels) {
-      const run = runResearchLifecycle(ds, { adapter, config, policy: { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, slippageBps: c.slippageBps, commissionBps: c.commissionBps }, prepared, from: window.from, to: window.to });
+      const run = runResearchLifecycle(ds, { adapter, config, policy: FID.kkFidelityPolicyFor(variant, { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, slippageBps: c.slippageBps, commissionBps: c.commissionBps }), prepared, from: window.from, to: window.to });
       const x = summarizeRun({ run, trades: run.trades, metricTrades: run.trades.filter((t) => t.status === 'CLOSED') }, ds);
       v.costs[c.id] = { ...x, rDistribution: FID.rDistribution(run.trades), ...(c.id === 'REF' ? { goldenTrades: FID.goldenTradeCheck(run.trades, FID.KK_GOLDEN_TRADES), exitCensus: exitCensus({ run }) } : {}) };
       log(`kk-${variant} ${c.id}: ${run.trades.length} trades`);
@@ -239,12 +239,12 @@ export function kkFidelityRun(ds, { window = L.WINDOW, costLevels = SF6_VALIDATI
 /** C08-Diagnose der Ausführung: je Variante ein Lauf zu Referenzkosten; je goldenem Trade im Fenster ±8 Tage die
  *  Orderablehnungen (Grund), die Trades und die Zahl offener Positionen. Keine Renditezahlen (kein PnL, keine Kurve). */
 export function goldenExecution(ds, { leaders, market, golden = FID.KK_GOLDEN_TRADES, window = L.WINDOW } = {}) {
-  const tickerOf = (id) => String(id).split('#')[0].split(':')[2], config = FID.KK_FIDELITY_CONFIG, out = {};
+  const tickerOf = (id) => String(id).split('#')[0].split(':')[2], out = {};
   const ref = SF6_VALIDATION_PROTOCOL.costLevels.find((c) => c.id === 'REF');
   const { adapters } = fidAdapters(ds);
   for (const variant of Object.keys(FID.KK_FIDELITY_VARIANTS)) {
-    const adapter = adapters[variant], prepared = prepareAll(ds, adapter, config);
-    const run = runResearchLifecycle(ds, { adapter, config, policy: { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, slippageBps: ref.slippageBps, commissionBps: ref.commissionBps }, prepared, from: window.from, to: window.to });
+    const config = FID.kkFidelityConfigFor(variant), adapter = adapters[variant], prepared = prepareAll(ds, adapter, config);
+    const run = runResearchLifecycle(ds, { adapter, config, policy: FID.kkFidelityPolicyFor(variant, { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, slippageBps: ref.slippageBps, commissionBps: ref.commissionBps }), prepared, from: window.from, to: window.to });
     const posBy = new Map(run.curve.map((p) => [p.date, p.positions ?? null]));
     for (const g of golden) {
       const lo = new Date(Date.parse(g.date) - 8 * 864e5).toISOString().slice(0, 10), hi = new Date(Date.parse(g.date) + 8 * 864e5).toISOString().slice(0, 10);
@@ -257,11 +257,24 @@ export function goldenExecution(ds, { leaders, market, golden = FID.KK_GOLDEN_TR
         rejections: run.rejections.filter((r) => mine(r.id) && inWin(r.date)).map((r) => ({ date: r.date, reason: r.reason })),
         trades: run.trades.filter((t) => mine(t.id) && inWin(t.entryDate)).map((t) => ({ entryDate: t.entryDate, exitDate: t.exitDate ?? null, exitReason: t.exitReason ?? null })),
         openPositions: Object.fromEntries([...posBy].filter(([d]) => inWin(d))),
-        maxOpenPositions: PLATFORM_RESEARCH_PORTFOLIO_POLICY.maxOpenPositions,
+        maxOpenPositions: FID.kkFidelityPolicyFor(variant, PLATFORM_RESEARCH_PORTFOLIO_POLICY).maxOpenPositions,
       };
     }
   }
   return out;
+}
+
+/** C08-FID4: Urteil nach der vorregistrierten Regel (certification/C08-FID4-PREREGISTRATION.json), Kosten REF. */
+export function fid4Verdict(kkFid, prereg = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/supertrader/source-faithful/certification/C08-FID4-PREREGISTRATION.json'), 'utf8')), windowName = L.WINDOW_NAME) {
+  const c = kkFid?.variants?.['FID-4']?.costs?.[prereg.costLevel];
+  if (!c) return { id: prereg.id, window: windowName, status: 'NOT_COMPUTED' };
+  const m = prereg.criteria.machine, r = c.rDistribution || {};
+  const checks = {
+    cagrAboveSpyCagr: Number.isFinite(c.cagr) && Number.isFinite(c.spyCagr) ? c.cagr > c.spyCagr : false,
+    expectancyRAbove: Number.isFinite(r.expectancyR) ? r.expectancyR > m.expectancyRAbove : false,
+    minClosedTrades: (r.closed ?? 0) >= m.minClosedTrades,
+  };
+  return { id: prereg.id, window: windowName, costLevel: prereg.costLevel, checks, pass: Object.values(checks).every(Boolean) };
 }
 
 export function publicPart(result) {
@@ -328,6 +341,7 @@ async function main() {
   const result = { schema: 'st-hist-top5-result-1.1.0', ...LABEL, window: { name: L.WINDOW_NAME, ...L.WINDOW }, costLevels: SF6_VALIDATION_PROTOCOL.costLevels, quarantine: { A: qa.census }, population: { A: populationCensus(dsA) }, A: runTop5(qa.ds, { log }) };
   // Sensitivität DQ-K5: dieselben Referenzen ohne Quarantäne (Referenzkosten; Audit nur in den Rahmen A und B)
   result.KK_FID1 = kkFidelityRun(qa.ds, { log });
+  result.KK_FID1.fid4Verdict = fid4Verdict(result.KK_FID1);
   result.A_NO_DQK5 = runTop5(dsA, { costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF'), audit: false, log });
   if (arg('--v13-series') && arg('--v13-raw')) {
     const v13 = S.loadV13Additions({ root: ROOT, seriesDir: arg('--v13-series'), rawDir: arg('--v13-raw') });

@@ -119,7 +119,7 @@ test('ST-HIST-9: C08-Treuevariante FID-1 neben der Referenz; R-Verteilung und go
   const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
   const d = ds();
   const f = T.kkFidelityRun(d, { window: WIN });
-  assert.deepEqual(Object.keys(f.variants), ['FID-1', 'FID-2', 'FID-2L', 'FID-3']);
+  assert.deepEqual(Object.keys(f.variants), ['FID-1', 'FID-2', 'FID-2L', 'FID-3', 'FID-4']);
   assert.equal(FID.KK_FIDELITY_VARIANTS['FID-2L'].minAdv20Usd, 2.5e6);
   for (const v of Object.values(f.variants)) {
     assert.deepEqual(Object.keys(v.costs), ['COST-0', 'REF']);
@@ -168,11 +168,11 @@ test('ST-HIST-11: Ausführungsdiagnose der goldenen Trades: Setups, Ablehnungen 
   const d = ds(), leaders = FID.momentumLeaders(d.securities), market = FID.marketOn(d.benchmark);
   const golden = [{ ticker: 'CCC', date: '2016-09-15', source: 'Test' }];
   const x = T.goldenExecution(d, { leaders, market, golden, window: WIN })['CCC|2016-09-15'];
-  assert.deepEqual(Object.keys(x), ['FID-1', 'FID-2', 'FID-2L', 'FID-3']);
-  for (const v of Object.values(x)) {
+  assert.deepEqual(Object.keys(x), ['FID-1', 'FID-2', 'FID-2L', 'FID-3', 'FID-4']);
+  for (const [k, v] of Object.entries(x)) {
     assert.ok(Array.isArray(v.setupDays) && Array.isArray(v.rejections) && Array.isArray(v.trades));
-    assert.equal(v.maxOpenPositions, 20);
-    assert.ok(Object.values(v.openPositions).every((n) => n === null || (n >= 0 && n <= 20)));
+    assert.equal(v.maxOpenPositions, k === 'FID-4' ? 5 : 20);
+    assert.ok(Object.values(v.openPositions).every((n) => n === null || (n >= 0 && n <= v.maxOpenPositions)));
   }
   assert.doesNotMatch(JSON.stringify(x), /pnl|equity|totalReturn|cagr/);
 });
@@ -196,4 +196,29 @@ test('ST-HIST-12: FID-3 = FID-1 plus Tagesauswahl der höchstens 3 stärksten Se
   // FID-3 stellt nur an ausgewählten Tagen Setups bereit
   const ad = FID.createKkFidelityAdapter({ leaders: L1, market, variant: 'FID-3', selection: sel });
   for (const s of d.securities) { const c = ad.prepare(s, FID.KK_FIDELITY_CONFIG); if (c) for (const [, st] of c.setups) assert.ok(sel.get(st.date)?.has(s.id)); }
+});
+
+test('ST-HIST-13: FID-4 genau wie vorregistriert (1 % Risiko, Kappe 25 %, höchstens 5 Positionen) und Urteil nach der festen Regel', async () => {
+  const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
+  const pre = JSON.parse(fs.readFileSync(new URL('../source-faithful/certification/C08-FID4-PREREGISTRATION.json', import.meta.url), 'utf8'));
+  const V = FID.KK_FIDELITY_VARIANTS['FID-4'], V3 = FID.KK_FIDELITY_VARIANTS['FID-3'];
+  assert.equal(pre.variant, 'FID-4');
+  assert.equal(V.riskFraction, pre.rule.riskFraction); assert.equal(V.maxPositionWeight, pre.rule.maxPositionWeight); assert.equal(V.maxOpenPositions, pre.rule.maxOpenPositions);
+  for (const k of Object.keys(V3)) assert.equal(V[k], V3[k], `FID-4 erbt ${k} von FID-3`);
+  assert.deepEqual(pre.criteria.machine, { cagrAboveSpyCagr: true, expectancyRAbove: 0, minClosedTrades: 100 });
+  assert.deepEqual(pre.sequence.map((x) => x.window), ['DEV', 'HOLDOUT']);
+  assert.equal(FID.kkFidelityConfigFor('FID-4').sizing.riskFraction, 0.01);
+  assert.equal(FID.kkFidelityConfigFor('FID-1'), FID.KK_FIDELITY_CONFIG);
+  const pol = FID.kkFidelityPolicyFor('FID-4', { maxPositionWeight: 0.25, maxOpenPositions: 20, x: 1 });
+  assert.deepEqual(pol, { maxPositionWeight: 0.25, maxOpenPositions: 5, x: 1 });
+  // keine weitere Variante nach FID-4 (Entscheidung Steuerung)
+  assert.equal(Object.keys(FID.KK_FIDELITY_VARIANTS).at(-1), 'FID-4');
+  const mk = (cagr, spyCagr, e, n) => ({ variants: { 'FID-4': { costs: { REF: { cagr, spyCagr, rDistribution: { expectancyR: e, closed: n } } } } } });
+  assert.equal(T.fid4Verdict(mk(0.2, 0.15, 0.1, 150), pre, 'DEV').pass, true);
+  assert.equal(T.fid4Verdict(mk(0.1, 0.15, 0.1, 150), pre, 'DEV').pass, false);
+  assert.equal(T.fid4Verdict(mk(0.2, 0.15, 0, 150), pre, 'DEV').pass, false);
+  assert.equal(T.fid4Verdict(mk(0.2, 0.15, 0.1, 99), pre, 'DEV').pass, false);
+  assert.equal(T.fid4Verdict({}, pre, 'DEV').status, 'NOT_COMPUTED');
+  const d = ds(), f = T.kkFidelityRun(d, { window: WIN });
+  assert.ok('FID-4' in f.variants && f.variants['FID-4'].costs.REF);
 });
