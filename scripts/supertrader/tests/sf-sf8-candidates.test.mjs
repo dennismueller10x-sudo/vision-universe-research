@@ -709,7 +709,8 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   assert.ok(draw.length > 200, 'drawChart gefunden');
   // jede Marke des Charts ist genau eine dieser Zeilen; Einstieg und Stop nur im Zweig `if (v.plan)`, aus v.plan
   const pushes = draw.split('\n').filter((l) => /levels\.push\(/.test(l));
-  assert.equal(pushes.length, 2, pushes.join('\n'));
+  // Owner-Linie 05.11.2026: der Planzweig zeichnet seit #1451 nichts mehr und darf entfallen (dann nur die Strukturmarke)
+  assert.ok(pushes.length === 1 || pushes.length === 2, pushes.join('\n'));
   assert.match(pushes[0], /^\s*if \(structOf\(v\.pivot\)\) levels\.push\(\{ id: 'pivot', label: 'Chartstruktur: ' \+ STRUCT_TXT\[v\.pivot\.kind\], value: v\.pivot\.level, color: 'var\(--chart-box-base\)'/);
   // die Beschriftung der Struktur kommt aus einer festen Tabelle ohne Orderwort, nicht in der Farbe des Triggers
   const structTable = ui.slice(ui.indexOf('var STRUCT_TXT = {'), ui.indexOf('function structOf('));
@@ -721,7 +722,7 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   // eine Engine-Marke des modellierten Ablaufs (z. B. RUN_UP_HIGH = Einstieg) wird nie als Chartstruktur gezeigt
   assert.match(ui, /function structOf\(p\) \{ return p && fin\(p\.level\) && STRUCT_TXT\[p\.kind\] \? p : null; \}/);
   assert.doesNotMatch(pushes[0], /chart-trigger|chart-entry|chart-stop/);
-  assert.match(pushes[1], /^\s*if \(v\.plan\) \{ levels\.push\(\{ id: 'entry',[^}]*value: v\.plan\.trigger,[^}]*\}\); levels\.push\(\{ id: 'stop', label: 'Modell-Stop', value: v\.plan\.stop,[^}]*\}\); \}\s*$/);
+  if (pushes[1]) assert.match(pushes[1], /^\s*if \(v\.plan\) \{ levels\.push\(\{ id: 'entry',[^}]*value: v\.plan\.trigger,[^}]*\}\); levels\.push\(\{ id: 'stop', label: 'Modell-Stop', value: v\.plan\.stop,[^}]*\}\); \}\s*$/);
   // keine Orderbeschriftung irgendwo im Chart außer im Planzweig; Beschriftungen nur als Literal (keine Konstante von außen)
   const drawNoPlan = draw.split('\n').filter((l) => !/^\s*if \(v\.plan\) \{/.test(l)).join('\n');
   assert.deepEqual([...drawNoPlan.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]).filter((x) => !/^var\(--[a-z0-9-]+\)$/.test(x) && /Stop|Einstieg|Limit|Order|Kauf|Trigger|Risiko/i.test(x)), []);
@@ -732,7 +733,8 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   assert.doesNotMatch(draw, /features|bars\.low\[|bars\.high\[|Math\.(min|max)\(/);
   // Kästen nur aus levels.box; die Karte außerhalb der Planansicht beschriftet nichts als Einstieg, Stop, Limit oder Order
   for (const l of draw.split('\n').filter((x) => /boxes\.push\(/.test(x))) assert.match(l, /^\s*if \(lv\.box && fin\(lv\.box\.top\)\) boxes\.push\(\{ from: lv\.box\.from, to: null, top: lv\.box\.top, bottom: lv\.box\.bottom,[^}]*label: 'Darvas-Box' \}\);\s*$/, l);
-  const card = ui.slice(ui.indexOf('function card('), ui.indexOf('function planBlock('));
+  const cardEnd = ui.indexOf('function planBlock(') >= 0 ? ui.indexOf('function planBlock(') : ui.indexOf('function pair(');
+  const card = ui.slice(ui.indexOf('function card('), cardEnd);
   assert.ok(card.length > 500, 'card gefunden');
   const literals = [...card.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]);
   assert.deepEqual(literals.filter((x) => /Stop|Einstieg|Limit|Order|Kauf|Trigger|Risiko/i.test(x)), [], 'keine Orderbeschriftung in der Karte');
@@ -741,8 +743,8 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   for (const m of card.matchAll(/(?<!function )pair\(([^,]+),/g)) assert.match(m[1].trim(), /^'[^']*'$/, `Kartenzeile ${m[1]}`);
   // die Planansicht ist nur über v.plan erreichbar
   const planUses = [...ui.matchAll(/planBlock\(/g)].length;
-  assert.equal(planUses, 2, 'Definition und genau ein Aufruf');
-  assert.match(ui, /v\.plan \? planBlock\(v, L\) : null|v\.plan && planBlock\(v, L\)/);
+  assert.ok(planUses === 0 || planUses === 2, 'entfallen oder Definition und genau ein Aufruf');
+  if (planUses) assert.match(ui, /v\.plan \? planBlock\(v, L\) : null|v\.plan && planBlock\(v, L\)/);
 });
 
 test('SF8-NO-ORDER-LEVELS-BELOW-MODEL: unterhalb von MODELED keine Order-, Stop- oder Limitmarke in der Ansicht (Review SF8-R2)', () => {
