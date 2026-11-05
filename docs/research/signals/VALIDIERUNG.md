@@ -20,9 +20,11 @@ Diese Gates wurden ebenfalls gestartet. Sie sind **nicht grün**. Erster Versuch
 | Technical `technical/tests/*.test.mjs` | 112 Tests: 101 bestanden, 7 fehlgeschlagen, 4 übersprungen |
 | Python `scripts/quant/tests/test_*.py` | 590 Tests: 5 Fehlschläge, 1 Fehler, 21 übersprungen |
 | Konten / Workers / Dashboard | 116 Tests: 109 bestanden, 4 fehlgeschlagen, 3 übersprungen |
-| Quant `quant/tests/*.test.mjs` | Lauf beim Anlegen dieses Prüfstands noch aktiv; bereits Fehler außerhalb E4 |
+| Quant `quant/tests/*.test.mjs` | 3386 Tests: 3068 bestanden, 305 fehlgeschlagen, 13 übersprungen; Exit 1 |
 | Discover / Supertrader / Screener | 1808 Tests: 1759 bestanden, 27 fehlgeschlagen, 22 übersprungen |
 
 Beispiele: Kontentests finden `assets/site-navigation.js`, `supabase/seed.sql` und `landing/server/newsletter.mjs` im Sparse-Checkout nicht. Technical findet Academy-/Dokumentationsdateien nicht. Die Python-Gates melden zusätzlich Datenstandsabweichungen (166 statt 167 ausgeschlossene Titel; 6570 statt 6683 verfügbare Charts) und fehlende Fundamental-Artefakte. Quant/Discover melden fehlende importierte oder referenzierte Produktartefakte und Datenverträge. Keine dieser Dateien wird im PR verändert.
+
+Der Quant-Lauf hing in `quant/tests/scale-gate.test.mjs` nach Ausgabe der SG-Tests weiter. Der hängende Kindprozess wurde nach ungefähr zwei Minuten beendet; der erste, durch den anfänglich unvollständigen Checkout überholte Lauf hing dort bereits über zehn Minuten und wurde ebenfalls beendet. Die übrige zweite Quant-Suite lief danach bis zum Ende weiter. Der Prozessabbruch zählt als fehlgeschlagene Prüfung, nicht als Erfolg. Damit sind sämtliche oben gestarteten Gates abgeschlossen; kein breiter grüner CI-Stand wird behauptet.
 
 SQL-/Flow-Prüfungen sind laut CLAUDE.md an `PG_TEST_URL` gebunden; kein konfigurierter Datenbanklauf wurde behauptet. Keine neuen Workflows, kein Datenanbieterabruf, keine Änderung an fachlichen Regeln. Der PR wird nicht als produktionsreifer Signaldienst oder als zertifizierter Backtest behandelt.
