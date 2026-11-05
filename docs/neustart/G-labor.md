@@ -7,8 +7,13 @@ Methodik: [docs/research/labor/README.md](../research/labor/README.md), Regeln: 
 - Protokoll vorregistriert und eingefroren (78 Varianten in 10 Familien, DEV 2016–2023, Prüfung 2024–2026-10, Holdout 2008–2015).
 - Runner, Signale, ETF-Engine, Statistik, Versiegelung, Workflow `research-labor.yml` (Bündel research), Tests.
 
+- **Suche gerechnet** (Lauf 42023060404): 78/78 Varianten, keine erfüllt die Zulassungsregeln. **Urteil: keine Strategie besteht.**
+  Prüfung und Holdout entfallen nach Protokoll; der Holdout 2008–2015 bleibt unberührt. Bericht: [BERICHT.md](../research/labor/BERICHT.md),
+  Zahlen nur im privaten Artifact an den Owner.
+
 ## Offen
-- Lauf dev → Auswahl festschreiben → Lauf test → Holdout nur nach Bestätigung der Steuerung.
+- Datenbefund an Strang C: nicht bereinigte Reverse-Splits kleiner Titel im Quant-Panel (DQ-K5-Quarantäne fehlt dort).
+- Mögliche Folgestudie (neue Registrierung): Qualität + Insider-Käufe, nur auf unberührten Daten.
 
 ## Braucht Owner
 - Nichts. Ergebnisse mit Zahlen kommen als privates Artifact.

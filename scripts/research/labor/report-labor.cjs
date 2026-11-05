@@ -25,7 +25,17 @@ function publicReport() {
   if (sel.blocked.length) L.push(`- Nicht gerechnet (blockiert): ${sel.blocked.map(b => b.id + ' (' + b.reason + ')').join(', ')}.`);
   L.push(`- Walk-forward 2018–2023: Die Auswahlregel selbst ${sel.walkForwardSelectorBeatsSpy ? 'lag vor' : 'lag nicht vor'} SPY.`);
   L.push(`- Kandidaten für die Prüfung (vor dem Prüfteil festgeschrieben, Klartext-Hash \`${sel.devPlaintextSha256.slice(0, 16)}…\`): ${sel.candidates.length ? sel.candidates.map(c => c.id + (c.track === 'LOW_LOSS' ? ' (Weg weniger Verlust)' : '')).join(', ') : 'keine'}.`, '');
-  if (!sel.candidates.length) L.push('**Urteil: keine Strategie besteht.** Keine Variante erfüllte in der Suche die Zulassungsregeln (§7).', '');
+  if (!sel.candidates.length) L.push('**Urteil: keine Strategie besteht.** Keine Variante erfüllte in der Suche die Zulassungsregeln (§7); auch der Weg „weniger Verlust“ blieb leer. Prüfung und Holdout entfallen nach Protokoll (§7: „Bleibt kein Kandidat, endet die Suche“); der Holdout 2008–2015 bleibt unberührt.', '',
+    '## Befunde (ohne Zahlen)', '',
+    '- White\'s Reality Check über alle 78 Varianten: nicht signifikant. Die beste Variante der Suche ist mit Zufall vereinbar.',
+    '- Deflated Sharpe: keine Variante erreicht nach Korrektur für 78 Versuche einen belastbaren Vorsprung.',
+    '- Konzentriertes Momentum (15–25 Titel) zeigt in der Suche sehr große Verluste und eine starke Abhängigkeit von einzelnen Wochen (Meme-Phase 2021).',
+    '- **Datenbefund:** Einzelne Wochenrenditen im Kurspanel sind durch nicht bereinigte Reverse-Splits kleiner Titel um ein Vielfaches überhöht (sichtbar um den Jahreswechsel 2022/23). Das schönt Ergebnisse nach oben. Ohne die auffällige Woche bleibt das Urteil gleich (keine Zulassung); mit ihr erfüllte keine Variante alle Regeln. Das Quant-Panel wendet die Quarantäne DQ-K5 (Supertrader) nicht an; Meldung an Strang C.',
+    '- Hypothese für eine neue, eigens vorregistrierte Studie (keine Aussage): Qualität kombiniert mit Insider-Käufen lag in der Suche roh über SPY, aber nicht in beiden Hälften. Prüfbar nur mit neuer Registrierung auf unberührten Daten (Holdout 2008–2015) oder vorwärts.', '',
+    '## Empfehlung für die Produktdarstellung', '',
+    '- SPY (S&P 500 Gesamtrendite) als passive Vergleichsbasis zeigen; keine Strategie mit Siegeretikett.',
+    '- Methoden als „Forschung, nicht zertifiziert“ mit Kosten, Verlusten und Grenzen nebeneinander, ohne Renditeversprechen.',
+    '- Kein Vorwärts-Papiertrack, weil keine Strategie bestanden hat (§10).', '');
   if (tp) {
     L.push('## Prüfung 2024-01-01 bis 2026-10-02 (einmalig)', '', '| Kandidat | Familie | Weg | über SPY | weniger Verlust | Urteil nach Prüfung |', '|---|---|---|---|---|---|');
     for (const c of tp.candidates) L.push(`| ${c.id} | ${fam[c.id]} | ${c.track === 'BEAT' ? 'schlagen' : 'weniger Verlust'} | ${c.testBeatsSpy ? 'ja' : 'nein'} | ${c.testLowLoss ? 'ja' : 'nein'} | ${c.verdict} |`);
