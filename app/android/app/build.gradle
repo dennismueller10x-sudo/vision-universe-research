@@ -17,8 +17,23 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Signierung nur, wenn die Pipeline den Upload-Keystore bereitstellt (Umgebungsvariablen, nie Werte in dieser Datei).
+    // Ohne diese Variablen entsteht wie bisher ein ungesignetes Bundle (Bauprobe).
+    def uploadKeystore = System.getenv('ANDROID_KEYSTORE_PATH')
+    if (uploadKeystore) {
+        signingConfigs {
+            upload {
+                storeFile file(uploadKeystore)
+                storeType 'pkcs12'
+                storePassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('ANDROID_KEY_ALIAS') ?: 'upload'
+                keyPassword System.getenv('ANDROID_KEYSTORE_PASSWORD')   // PKCS12: Schluessel- und Keystore-Passwort sind gleich
+            }
+        }
+    }
     buildTypes {
         release {
+            if (uploadKeystore) { signingConfig signingConfigs.upload }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
