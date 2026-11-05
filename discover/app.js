@@ -130,7 +130,7 @@
     try {
       // Startseite: Kopf, Maerkte und Themen zeichnen sofort; home.js wartet vor den Karten auf das Intraday-Verzeichnis.
       const index=D.EuropeView.loadIndex(ctx);
-      if(!home){await Promise.all([index,D.Lazy&&D.Lazy.forRoute(parts),parts[0]==='maerkte'&&D.Markets.ensureStyles(),parts[0]==='s'&&ensureCss('dx-snav-css')]);if(!active())return;}
+      if(!home){await Promise.all([index,D.Lazy&&D.Lazy.forRoute(parts),parts[0]==='maerkte'&&D.Markets.ensureStyles(),parts[0]==='s'&&ensureCss('dx-snav-css'),parts[0]==='s'&&ensureCss('dx-vuui-css'),parts[0]==='s'&&ensureCss('dx-overview-css')]);if(!active())return;}
       if(D.EuropeView.handles(parts,ctx)){await D.EuropeView.render(root,{parts,ctx,route,active,message});}
       else if(parts[0]==='s'&&parts[2]){
         const symbol=decodeURIComponent(parts[2]).toUpperCase();

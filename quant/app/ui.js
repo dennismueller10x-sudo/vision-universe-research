@@ -145,7 +145,8 @@
     /* In langen Listen (Screener, Mitglieder einer Strategie) steht die
        Buchstaben-Marke - vierzig Einzelbilder waeren vierzig Anfragen fuer
        ein Erkennungszeichen, das die Zeile ohnehin mit Namen traegt. */
-    if (!L || opts.initialOnly) return el("span", { class: "dx-logo dx-logo--" + (size || "md"), "aria-hidden": "true", text: L && L.initial ? L.initial(name, ticker) : String(name || ticker || "·").charAt(0).toUpperCase() });
+    /* Redesign 2027 (C10): ohne Bild eine schwarze Kachel mit dem Kürzel statt eines Buchstabens. */
+    if (!L || opts.initialOnly) return el("span", { class: "dx-logo dx-logo--" + (size || "md") + (global.VUUI ? " qv3-mono" : ""), "aria-hidden": "true", text: global.VUUI && ticker ? String(ticker).slice(0, 5) : L && L.initial ? L.initial(name, ticker) : String(name || ticker || "·").charAt(0).toUpperCase() });
     return L.mark(ticker, { name: name, size: size || "md", onlyLogo: !!opts.onlyLogo, wide: !!opts.wide });
   }
 

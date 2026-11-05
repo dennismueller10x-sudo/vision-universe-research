@@ -164,7 +164,9 @@ test("auch die Knopf-Beschriftungen in den Quant-Screener nennen Quant", () => {
   /* Auch die Seite selbst nennt sich so (Eyebrow des Screeners, seit der
      Discover-Angleichung Discovers v2-eyebrow). */
   /* Konzept-Design: der Titel steht als h1 im Globus-Hero des Screeners. */
-  assert.match(q, /async function screener\([^)]*\) \{\s*main\.append\(el\("header", \{ class: "q-hero[^"]*" \}, \[[\s\S]{0,200}?el\("h1", \{ class: "qx-h1", text: pro \? "Quant Screener · Profi" : "Quant Screener" \}\)/);
+  /* Redesign 2027 (Q02): Einfach-Modus mit Frage als Titel; die Zeile darueber nennt das Produkt. Profi und ohne VUUI: Globus-Hero wie bisher. */
+  assert.match(q, /async function screener\([^)]*\) \{\s*if \(global\.VUUI && !pro\) \{\s*main\.append\(el\("header", \{ class: "qv3-intro[^"]*" \}, \[el\("p", \{ class: "vu-ltag", text: "Quant Screener" \}\)/);
+  assert.match(q, /\} else main\.append\(el\("header", \{ class: "q-hero[^"]*" \}, \[[\s\S]{0,200}?el\("h1", \{ class: "qx-h1", text: pro \? "Quant Screener · Profi" : "Quant Screener" \}\)/);
 });
 
 test("auch der klassische Quant-Screener traegt den Produktnamen", () => {
@@ -215,10 +217,11 @@ test("die Produkte teilen keinen Speicherschluessel", () => {
     "screener/engine/store.js": readFileSync(join(ROOT, "screener/engine/store.js"), "utf8"),
     "quant/app/*.js": QUANT,
   };
+  /* class="vu-num" im HTML-Text ist eine CSS-Klasse der Bausteine (assets/vu-ui.css), kein Speicherschluessel. */
   const schluessel = {};
   for (const [datei, text] of Object.entries(dateien)) {
     schluessel[datei] = new Set(
-      [...text.matchAll(/['"](vu[-.][a-zA-Z0-9.-]+)['"]/g)].map((m) => m[1])
+      [...text.matchAll(/(?<!class(?:=|: ))['"](vu[-.][a-zA-Z0-9.-]+)['"]/g)].map((m) => m[1])
         .concat([...text.matchAll(/['"](vu2\.[a-zA-Z0-9.-]+)['"]/g)].map((m) => m[1])));
   }
   const a = schluessel["screener/engine/store.js"], b = schluessel["quant/app/*.js"];

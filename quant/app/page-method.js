@@ -79,7 +79,30 @@
     }));
   }
 
+  /* Redesign 2027 (Folie Q05): Frage als Titel, Kapitel-Chips, drei Rollen, sechs Fragen, Stufenleiste Schwarz bis
+     Neongrün, alle Unterkapitel als Liste, Grenzen als Kacheln „Keine Aussage“. Keine Gewichte als feste Zahlen hier –
+     sie stehen je Faktor unter „Gewichtung & Vergleich“ aus den veröffentlichten Artefakten. */
+  var Q6 = [["momentum", "Läuft der Kurs gut?"], ["growth", "Wächst die Firma?"], ["profitability", "Verdient sie gut?"], ["value", "Ist sie günstig?"], ["quality", "Sind die Zahlen solide?"], ["risk", "Wie ruhig ist der Kurs?"]];
+  function startV3(main) {
+    var U = global.VUUI, h = '<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Wie kommt Quant zu seinem Urteil?</h1><p class="vu-lead">Keine Blackbox. Jedes Urteil hat einen Grund, und jeder Grund führt zu den Daten.</p></header>' +
+      '<nav class="vu-chips qv3-mchips" aria-label="Methodik">' + [["#qv3-was", "Überblick"], [X.routes.method("faktoren"), "Eigenschaften"], [X.routes.method("daten"), "Daten"], [X.routes.method("historie"), "Backtests"], [X.routes.method("grenzen"), "Grenzen"]].map(function (c, i) { return '<a class="vu-chip' + (i ? "" : " vu-chip--on") + '" href="' + U.esc(c[0]) + '">' + c[1] + "</a>"; }).join("") + "</nav>" +
+      '<section id="qv3-was">' + U.sect("Was ist was?") + '<div class="vu-stack">' +
+      U.navcard({ icon: "quant", title: "Quant", sub: "Meldet Veränderungen nach festen Regeln und vergleicht mit früher. Quant meldet sich, du musst nicht suchen.", href: X.routes.radar() }) +
+      U.navcard({ glyph: "filter", title: "Quant Screener", sub: "Findet Aktien, die deine Bedingungen heute erfüllen. Du gibst die Frage vor.", href: X.routes.screener() }) +
+      U.navcard({ icon: "discover", title: "Discover", sub: "Themen und Geschichten zum Stöbern. Keine Regeln, keine Backtests.", href: "/discover/" }) + "</div></section>" +
+      U.sect("Die sechs Fragen", { href: X.routes.method("gewichtung"), link: "Gewichtung" }) + '<p class="vu-xs vu-mu" style="margin:-4px 0 8px"><b>Plus eine siebte, für die Daten fehlen.</b></p><div class="vu-box qv3-liste">' +
+      Q6.map(function (q) { return '<a class="qv3-li" href="' + U.esc(X.routes.method("faktoren")) + '"><span><b class="vu-sm">' + q[1] + '</b><span class="vu-xs vu-mu">' + U.esc(VM.FACTORS[q[0]] ? VM.FACTORS[q[0]].name : q[0]) + "</span></span>" + U.glyph("next", 16) + "</a>"; }).join("") +
+      '<div class="qv3-li is-off"><span><b class="vu-sm">Heben Analysten Schätzungen an?</b><span class="vu-xs vu-mu">Erwartungstrend · keine Daten</span></span></div></div>' +
+      U.sect("So liest du eine Zahl") + '<div class="vu-box"><div class="qv3-bands"><span class="b1">Sehr schwach</span><span class="b2">Schwach</span><span class="b3">Mittel</span><span class="b4">Stark</span><span class="b5">Sehr stark</span></div>' +
+      '<div class="qv3-bands-x vu-xs vu-mu"><b>Rang 0 %</b><b>25</b><b>45</b><b>75</b><b>90</b></div><p class="vu-sm" style="margin:10px 0 0"><b>„Sehr stark“</b> heißt: besser als 90 % aller bewerteten US-Aktien, am selben Tag gezählt.</p></div>' +
+      '<div style="margin-top:10px">' + U.help("Die Stufe ist ein Vergleich, kein Gütesiegel. Sie sagt, wo eine Aktie im Feld steht, nicht ob sie für sich gut ist.") + "</div>" +
+      U.sect("Alles im Detail") + '<div class="vu-box qv3-liste">' + TOPICS.filter(function (t) { return t.id !== "grenzen"; }).map(function (t) { return '<a class="qv3-li" href="' + U.esc(X.routes.method(t.id)) + '"><span><b class="vu-sm">' + U.esc(t.title) + '</b><span class="vu-xs vu-mu">' + U.esc(t.text) + "</span></span>" + U.glyph("next", 16) + "</a>"; }).join("") + "</div>" +
+      U.sect("Was Quant bewusst nicht sagt", { href: X.routes.method("grenzen"), link: "Alle Grenzen" }) + '<div class="vu-grid">' + [["Keine Empfehlung", "Kein Kauf, kein Verkauf, kein Kursziel."], ["Fehlende Daten", "Unter 80 % Abdeckung entsteht kein Wert."], ["Junge Aktien", "Zu wenig Historie wird offen genannt."], ["Backtests", "Noch gesperrt, darum keine Trefferquoten."]].map(function (x) { return '<div class="vu-box">' + U.verdict("none", x[0]) + '<p class="vu-xs vu-mu" style="margin:8px 0 0">' + x[1] + "</p></div>"; }).join("") + "</div>" +
+      '<div class="vu-stack" style="margin-top:14px"><a class="vu-btn vu-btn--line vu-btn--block" href="/quant/methodology/">Technische Dokumentation ' + U.pro() + '</a><a class="vu-btn vu-btn--line vu-btn--block" href="/quant/data-inspector/">SEC-Dateninspektor ' + U.pro() + "</a></div>";
+    var box = el("div", { class: "vu-ui qv3" }); box.innerHTML = h; main.append(box);
+  }
   function start(main) {
+    if (global.VUUI) return startV3(main);
     main.append(el("header", { class: "q-hero q-hero--method" }, [X.globe(),
       el("p", { class: "q-kicker", text: "Methodik" }),
       el("h1", { class: "qx-h1", text: "Transparenz schafft Vertrauen." }),
