@@ -85,9 +85,8 @@
     ];
     var dl = el("dl", { class: "cb-sc-dl" });
     function row(k, v) { if (v) dl.append(el("dt", { text: k }), el("dd", { class: "num", text: v === "–" ? v : v + UNIT })); }
-    if (s.entryZone) row(s.kind === "TAIL" ? "Zone" : "Einstiegszone", zoneText(s.entryZone));
-    (s.targets || []).forEach(function (z, q) { row("Zielzone " + (q + 1), zoneText(z)); });
-    if (s.invalidation) row(s.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über", fmt(s.invalidation.price));
+    if (s.entryZone) row(s.kind === "TAIL" ? "Zone" : "Zone laut Methode", zoneText(s.entryZone));
+    if (s.invalidation) row("Ungültig-Marke laut Methode", (s.invalidation.direction === "below" ? "unter " : "über ") + fmt(s.invalidation.price));
     if (s.range) { row("Untergrenze", zoneText(s.range.support)); row("Obergrenze", zoneText(s.range.resistance)); }
     kids.push(dl);
     if (s.confirmation && isNum(s.confirmation.price)) kids.push(el("p", { class: "cb-sc-note", text: "Bestätigt bei Schluss " + (s.direction === "BEARISH" ? "unter " : "über ") + fmt(s.confirmation.price) + UNIT }));
@@ -95,7 +94,6 @@
     if (s.expectedStructure) kids.push(el("p", { class: "cb-sc-note", text: "Erwartete Struktur: " + s.expectedStructure }));
     if (s.elliottAlternative) kids.push(el("p", { class: "cb-sc-note", text: "Alternative Wellenzählung: " + s.elliottAlternative.pattern + ", Welle " + s.elliottAlternative.wave }));
     if (s.note) kids.push(el("p", { class: "cb-sc-note", text: s.note }));
-    if (isNum(s.rewardRiskT1) && s.kind === "PRIMARY") kids.push(el("p", { class: "cb-sc-rr" }, [el("span", { text: "Chance gegen Risiko bis Zielzone 1 " }), el("b", { class: "num", text: "≈ " + s.rewardRiskT1.toFixed(1).replace(".", ",") + " : 1" })]));
     var card = el("button", { type: "button", class: "cb-sc" + (selected ? " is-selected" : ""), "aria-pressed": selected ? "true" : "false" }, kids);
     card.addEventListener("click", function () { onSelect(s); });
     return card;
@@ -475,6 +473,15 @@
   }
 
   /** Overlays aus einem Replay-Schnappschuss (gleicher Datenvertrag wie die Live-Analyse). */
+  /* Owner-Linie L1 (Plan §11): Szenarien ohne Ziele. Zielzonen, Chance/Risiko und der projizierte Pfad
+     (er endet im Zielbereich) werden vor der Anzeige entfernt; Zone und Ungültig-Marke laut Methode bleiben.
+     Historische Auswertungen (Forschung) sind davon nicht betroffen. */
+  function withoutTargets(a) {
+    var c = Object.assign({}, a);
+    c.scenarios = (a.scenarios || []).map(function (s) { var x = Object.assign({}, s, { targets: [] }); delete x.rewardRiskT1; return x; });
+    if (a.overlays) c.overlays = Object.assign({}, a.overlays, { zones: (a.overlays.zones || []).filter(function (z) { return z.kind !== "TARGET"; }), projectedPaths: [] });
+    return c;
+  }
   function overlaysFromStep(st) {
     var z = [], inv = [], sc = st.sc;
     if (sc) {
@@ -547,7 +554,7 @@
         el("div", { class: "qx-actions" }, [X.btn("Zur Aktienanalyse", X.routes.stock(ticker), "secondary")]));
       return;
     }
-    var a = res.analysis;
+    var a = withoutTargets(res.analysis);
     /* Red-Team 2 C1: unveraenderter Schlusskurs ueber mehrere Bars (Uebernahme, Delisting, Aussetzung) – kein Chartbild, kein Kurs im Kopf. */
     if (a.dataQuality && a.dataQuality.stalePriceBars) {
       host.append(el("p", { class: "vu-result cb-none", text: "Für " + ticker + " gibt es kein aktuelles Chartbild" }),
@@ -634,9 +641,7 @@
       if (!s) return;
       if (s.range) { levels.append(levelTile("range", "Untergrenze", zoneText(s.range.support)), levelTile("range", "Obergrenze", zoneText(s.range.resistance))); return; }
       if (s.entryZone) levels.append(levelTile("entry", s.kind === "TAIL" ? "Tiefere Zone" : "Schlüsselzone", zoneText(s.entryZone) + UNIT, statusText(s)));
-      var t = s.targets || [];
-      if (t.length) levels.append(levelTile("target", "Zielbereich", (t.length > 1 ? fmt(t[0].zoneLow) + "–" + fmt(t[t.length > 1 ? 1 : 0].zoneHigh) : zoneText(t[0])) + UNIT, t.length > 1 ? "Zone 1 ab " + fmt(t[0].zoneLow) + UNIT : null));
-      if (s.invalidation) levels.append(levelTile("invalid", s.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über", fmt(s.invalidation.price) + UNIT, "per Schlusskurs"));
+      if (s.invalidation) levels.append(levelTile("invalid", "Ungültig-Marke laut Methode", fmt(s.invalidation.price) + UNIT, (s.invalidation.direction === "below" ? "Schluss darunter" : "Schluss darüber")));
     }
 
     // ---------------------------------------------- Chart
@@ -706,7 +711,7 @@
     ]);
     var chartCard = el("section", { class: "cb-chart-card", "aria-label": "Chart" }, [chartHost, controls,
       pjLegend, motiveNote, exploreNote, candidateNote,
-      el("p", { class: "cb-legend cb-legend-sc" }, [el("span", { class: "cb-key cb-key-entry", text: "Schlüsselzone" }), el("span", { class: "cb-key cb-key-target", text: "Zielbereich" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-key cb-key-path", text: "Szenario-Korridor – keine Zeitangabe" })]),
+      el("p", { class: "cb-legend cb-legend-sc" }, [el("span", { class: "cb-key cb-key-entry", text: "Schlüsselzone" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), ]),
       wavesOn && !abstain && E && E.primary ? el("p", { class: "cb-small cb-dim", text: "Tipp: Eine Wellenmarke antippen erklärt die Welle." }) : null]);
 
     // ---------------------------------------------- Elliott-Bereich (Mission III §41–§47, §57, §98–§100)
@@ -974,7 +979,7 @@
       el("div", { class: "cb-pj-why" }, [el("p", { class: "cb-pj-why-h", text: (t.exploreStatus ? t.exploreStatus.text : "Nicht als reguläre Alternative freigegeben") + ":" }),
         el("ul", { class: "cb-pj-why-l" }, (t.qualityGates ? t.qualityGates.reasons : []).map(function (r) { return el("li", {}, [el("b", { text: r.title }), el("span", { text: " – " + r.text })]); }))]),
       pjLadder(t, null),
-      t.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: t.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: withUnit(t.invalidation.displayText || fmt(t.invalidation.price)) }), el("span", { class: "cb-pj-inv-t", text: t.invalidation.text })]) : null,
+      t.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: "Ungültig-Marke laut Methode" }), el("strong", { class: "num", text: withUnit(t.invalidation.displayText || fmt(t.invalidation.price)) }), el("span", { class: "cb-pj-inv-t", text: t.invalidation.text })]) : null,
       t.confirmation ? el("p", { class: "cb-pj-conf" }, [el("b", { text: t.confirmation.passed ? "Bestätigt: " : "Noch nicht bestätigt – Bestätigung bei Schluss " + (t.direction === "DOWN" ? "unter " : "über ") + fmt(t.confirmation.price) + ": " }), el("span", { text: t.confirmation.statement })]) : null,
       el("div", { class: "qx-actions" }, [b]),
       X.more("Was diese Lesart stärken würde", function () { return el("div", { class: "cb-pj-roads" }, [el("div", {}, [el("p", { class: "cb-pj-road-h", text: "Elliott-Anforderung" }), pjRoad(t.roadmap.elliott)]), el("div", {}, [el("p", { class: "cb-pj-road-h", text: "VU-Bestätigung (unabhängig)" }), pjRoad(t.roadmap.vu)])]); })
@@ -1016,7 +1021,7 @@
       el("p", { class: "cb-pj-sub", text: (m.patternName || "") + " · Richtung " + dirWord(m.direction) + " · Strukturklarheit: " + (m.clarity ? m.clarity.label : "Niedrig") + " · Experimentell" }),
       m.clarity ? el("p", { class: "cb-small", text: m.clarity.text }) : null,
       pjLadder(m, p.close),
-      m.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: m.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: withUnit(m.invalidation.displayText || fmt(m.invalidation.price)) }), el("span", { class: "cb-pj-inv-t", text: m.invalidation.text })]) : null,
+      m.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: "Ungültig-Marke laut Methode" }), el("strong", { class: "num", text: withUnit(m.invalidation.displayText || fmt(m.invalidation.price)) }), el("span", { class: "cb-pj-inv-t", text: m.invalidation.text })]) : null,
       m.revision ? el("p", { class: "cb-small" }, [el("b", { text: "Neubewertung: " }), el("span", { text: "Schluss " + (m.revision.direction === "below" ? "unter " : "über ") + fmt(m.revision.price) + " – dann wäre die Vorwelle noch nicht beendet." })]) : null,
       m.confirmation ? el("p", { class: "cb-pj-conf" }, [el("b", { text: m.confirmation.passed ? "Bestätigt: " : "Bestätigung bei Schluss " + (m.direction === "DOWN" ? "unter " : "über ") + fmt(m.confirmation.price) + ": " }), el("span", { text: m.confirmation.statement })]) : null,
       el("div", { class: "qx-actions" }, [b]),
@@ -1081,7 +1086,7 @@
       el("p", { class: "cb-pj-sub", text: (t.source === "HIGHER_DEGREE" ? "Höherer Grad: " : "") + (t.patternName || "") + " · Richtung " + dirWord(t.direction) + " · Hauptlesart (derzeit bevorzugt, nicht „die richtige Zählung“)" }),
       el("div", { class: "cb-pj-now" }, [el("span", { text: "Aktueller Kurs" }), el("strong", { class: "num", text: fmt(p.close) }), el("small", { text: "Stand " + X.dateDe(p.asOf) })]),
       pjLadder(t, p.close),
-      t.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: t.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über" }), el("strong", { class: "num", text: withUnit(t.invalidation.displayText || fmt(t.invalidation.price)) }), el("span", { class: "cb-pj-inv-t", text: t.invalidation.text })]) : null,
+      t.invalidation ? el("div", { class: "cb-pj-inv" }, [el("span", { class: "cb-pj-inv-k", text: "Ungültig-Marke laut Methode" }), el("strong", { class: "num", text: withUnit(t.invalidation.displayText || fmt(t.invalidation.price)) }), el("span", { class: "cb-pj-inv-t", text: t.invalidation.text })]) : null,
       t.confirmation ? el("p", { class: "cb-pj-conf" }, [el("b", { text: t.confirmation.passed ? "Bestätigt: " : "Bestätigung bei Schluss " + (t.direction === "DOWN" ? "unter " : "über ") + fmt(t.confirmation.price) + ": " }), el("span", { text: t.confirmation.statement })]) : null,
       el("div", { class: "qx-actions" }, [(function () { var b = el("button", { type: "button", class: "cb-pj-btn", text: "Projektion im Chart zeigen" }); b.addEventListener("click", function () { onChart("primary"); }); return b; })()]),
       el("h3", { class: "cb-pj-h3", text: "Was als Nächstes passieren muss" }),
@@ -1293,7 +1298,7 @@
     var res = await TI.getAnalysis(ticker);
     host.replaceChildren();
     if (!res || res.state !== "AVAILABLE") { host.append(html(U.blank(res && res.state === "NOT_AVAILABLE" ? "Für " + ticker + " gibt es kein Chartbild. Es entsteht nur für Aktien mit genug Kursgeschichte." : "Das Chartbild konnte gerade nicht geladen werden."))); return; }
-    var a = res.analysis, sc = a.scenarios || [], P = sc.filter(function (s) { return s.kind === "PRIMARY"; })[0] || sc[0] || null;
+    var a = withoutTargets(res.analysis), sc = a.scenarios || [], P = sc.filter(function (s) { return s.kind === "PRIMARY"; })[0] || sc[0] || null;
     var tf = a.timeframe === "1W" ? "Wochenchart" : "Tageschart";
     var structure = (Ex && Ex.STRUCTURE[a.outlook.structure]) || "";
     var lage = LAGE[a.outlook.structure] || ["none", structure || "Keine Aussage"];
@@ -1301,19 +1306,18 @@
     host.append(html('<div class="qv3-ch-h"><div><p class="vu-ltag">Chartbild · ' + tf + '</p><h2 class="vu-lt">' + U.esc(CH_DIR[a.outlook.label] || "Keine Aussage") + "</h2></div>" + U.verdict(lage[0], lage[1]) + "</div>" +
       '<p class="vu-sm vu-mu qv3-ch-sub"><b>' + U.esc([structure, clarity].filter(Boolean).join(" · ")) + "</b></p>"));
 
-    // Der eine Chart (C06): Linie aus der Analyse, Schlüsselzone neongrün, Zielbereich grau, Ungültig-Linie gestrichelt.
+    // Der eine Chart (C06): Linie aus der Analyse, Schlüsselzone neongrün, Ungültig-Linie gestrichelt (L1: kein Zielbereich).
     var c = a.chart || {}, pts = (c.timestamps || []).map(function (d, i) { return [d, c.close[i]]; }).filter(function (p) { return isNum(p[1]); });
-    var entry = P && P.entryZone, tg = P && P.targets || [], t1 = tg[0], tLast = tg.length > 1 ? tg[1] : tg[0], inv = P && P.invalidation && P.invalidation.price;
+    var entry = P && P.entryZone, inv = P && P.invalidation && P.invalidation.price;
     var zones = [];
     if (entry) zones.push({ lo: entry.zoneLow, hi: entry.zoneHigh, k: "key", label: "Schlüsselzone " + band(entry.zoneLow, entry.zoneHigh) });
-    if (t1) zones.push({ lo: t1.zoneLow, hi: tLast.zoneHigh, k: "target", label: "Zielbereich " + band(t1.zoneLow, tLast.zoneHigh) });
     var chartHost = el("div", { class: "qv3-ch-chart" }); host.append(chartHost);
     if (chartLib && pts.length > 1) {
       var last = pts[pts.length - 1][0], since = function (days) { var lim = new Date(Date.parse(last) - days * 864e5).toISOString().slice(0, 10); return pts.filter(function (p) { return p[0] >= lim; }); };
       var NS = "http://www.w3.org/2000/svg";
       chartLib.mount(chartHost, {
         label: ticker + " " + tf, currency: "USD", height: 200, initial: "1J",
-        levels: isNum(inv) ? [{ value: inv, label: "", tone: "" }] : [], /* gestrichelt, ohne Beschriftung: die Kachel „Ungültig unter“ nennt den Wert */
+        levels: isNum(inv) ? [{ value: inv, label: "", tone: "" }] : [], /* gestrichelt, ohne Beschriftung: die Kachel „Ungültig-Marke laut Methode“ nennt den Wert */
         extent: zones.reduce(function (acc, z) { return acc.concat([z.lo, z.hi]); }, []),
         ranges: [{ id: "1T", disabled: true, reason: "Das Chartbild rechnet mit Tagesschlüssen" }, { id: "1W", points: since(8) }, { id: "1M", points: since(31) }, { id: "1J", points: pts },
           { id: "5J", disabled: true, reason: "Das Chartbild zeigt höchstens ein Jahr" }, { id: "Max", disabled: true, reason: "Das Chartbild zeigt höchstens ein Jahr" }],
@@ -1330,21 +1334,20 @@
       });
     } else chartHost.append(html(U.blank("Für das Chartbild liegen zu wenige Kurse vor.")));
 
-    // Drei Kacheln + Erklärung
+    // Zwei Kacheln + Erklärung (L1: kein Zielbereich)
     if (P) {
-      host.append(html('<div class="vu-grid qv3-ch-tiles" style="--vu-cols:3">' +
+      host.append(html('<div class="vu-grid qv3-ch-tiles" style="--vu-cols:2">' +
         U.tile("Schlüsselzone", entry ? band(entry.zoneLow, entry.zoneHigh) : "–", CH_ZONE_NOW[P.status] || "") +
-        U.tile("Zielbereich", t1 ? band(t1.zoneLow, tLast.zoneHigh) : "–", t1 ? "Ziel 1 ab " + n0(t1.zoneLow) + " $" : "") +
-        U.tile("Ungültig unter", isNum(inv) ? n0(inv) + " $" : "–", P.invalidation && P.invalidation.closeBasis ? "auf Schlusskurs" : "") + "</div>" +
+        U.tile("Ungültig-Marke laut Methode", isNum(inv) ? n0(inv) + " $" : "–", P.invalidation && P.invalidation.closeBasis ? "auf Schlusskurs" : "") + "</div>" +
         '<div class="qv3-ch-help">' + U.help((entry ? "Schlüsselzone: dort hat der Kurs früher oft gedreht. " : "") + (isNum(inv) ? "Fällt er auf Schlusskurs unter " + n0(inv) + " $, gilt dieses Bild nicht mehr." : "")) + "</div>"));
       // Drei Szenarien, Hauptszenario schwarz; Tippen zeigt die Marken des Szenarios.
       host.append(html(U.sect(sc.length === 3 ? "Drei Szenarien" : "Szenarien")));
       var list = el("div", { class: "vu-stack qv3-ch-scen" });
       sc.forEach(function (s) {
-        var main0 = s.kind === "PRIMARY", e = s.entryZone, ts = s.targets || [], iv = s.invalidation && s.invalidation.price;
+        var main0 = s.kind === "PRIMARY", e = s.entryZone, iv = s.invalidation && s.invalidation.price;
         var b = el("button", { type: "button", class: "vu-box qv3-ch-sc" + (main0 ? " vu-box--ink" : ""), "aria-expanded": "false" });
         b.innerHTML = '<span class="qv3-ch-sct"><b class="vu-sm">' + U.esc(chScenarioTitle(s, P)) + '</b><span class="vu-xs">' + U.esc(CH_KIND[s.kind] || "") + "</span></span>" + (main0 ? U.verdict("strong", "Bevorzugt") : U.glyph("next", 16)) +
-          '<span class="qv3-ch-scd vu-xs" hidden>' + U.esc([e ? "Zone " + band(e.zoneLow, e.zoneHigh) : "", ts.length ? "Ziel " + band(ts[0].zoneLow, ts[ts.length - 1].zoneHigh) : "", isNum(iv) ? "ungültig " + (s.invalidation.direction === "above" ? "über " : "unter ") + n0(iv) + " $" : ""].filter(Boolean).join(" · ")) + "</span>";
+          '<span class="qv3-ch-scd vu-xs" hidden>' + U.esc([e ? "Zone " + band(e.zoneLow, e.zoneHigh) : "", isNum(iv) ? "ungültig " + (s.invalidation.direction === "above" ? "über " : "unter ") + n0(iv) + " $" : ""].filter(Boolean).join(" · ")) + "</span>";
         b.addEventListener("click", function () { var d = b.querySelector(".qv3-ch-scd"), open = d.hidden; d.hidden = !open; b.setAttribute("aria-expanded", String(open)); });
         list.append(b);
       });

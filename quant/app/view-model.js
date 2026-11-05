@@ -415,7 +415,9 @@
        als eigene Zeile darunter (unrated / unratedText) mit Grund im Faktor-Kapitel. Der Nenner im Satz bleibt die Zahl
        der gemessenen Eigenschaften. */
     var off = factors.filter(function (f) { return f.state !== "AVAILABLE"; });
-    return { id: id, text: OVERALL[id].text, tone: OVERALL[id].tone, sub: sub,
+    /* Owner-Linie L7 (Plan §11): kein Gesamturteil als Wort. Angezeigt wird die Zaehlung. */
+    var count = u.bewertet ? u.stark + " von " + u.bewertet + " Faktoren stark" : OVERALL.KEINE_DATEN.text;
+    return { id: id, text: OVERALL[id].text, tone: OVERALL[id].tone, sub: sub, count: count,
       unrated: off.map(function (f) { return { id: f.id, name: f.name || (FACTORS[f.id] && FACTORS[f.id].name) || f.id }; }),
       unratedText: unratedNote(factors, rated).trim(),
       rated: u.bewertet, strong: u.stark, weak: u.schwach, middle: u.mittel, total: factors.length,
@@ -507,8 +509,8 @@
   var FIELD_WORD = {
     technicalTrend: "Trend", technicalSetupStatus: "Aufbau des Setups", technicalMomentum: "Kursdynamik",
     technicalVolatility: "Schwankung", technicalVolume: "Handelsvolumen", technicalTrigger: "Auslöser",
-    technicalConfluence: "Übereinstimmung der Signale", technicalOpportunity: "Chance-Risiko-Lage",
-    technicalStructure: "Kursstruktur", technicalRiskReward: "Chance-Risiko-Verhältnis"
+    technicalConfluence: "Übereinstimmung der Signale", technicalOpportunity: "Lage zur Zone laut Methode",
+    technicalStructure: "Kursstruktur", technicalRiskReward: "Abstand der Marken laut Methode"
   };
   var VALUE_WORD = {
     BULLISH: "aufwärts", BEARISH: "abwärts", NEUTRAL: "seitwärts", COMPLETE: "vollständig", PARTIAL: "teilweise",

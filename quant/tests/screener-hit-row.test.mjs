@@ -115,10 +115,11 @@ test("die rechte Spalte wiederholt nicht die Zahl aus derselben Zeile", () => {
   assert.ok(aufruf.length > 50, "die Trefferzeile ist nicht auffindbar");
   assert.doesNotMatch(aufruf, /\bside:/,
     "die Spalte traegt wieder einen Faktorwert - dieselbe Zahl wie in der Begruendung");
-  assert.match(aufruf, /v\.overall\.text/,
-    "die Spalte traegt kein Klartext-Urteil mehr");
-  assert.match(aufruf, /tone: v\.overall\.tone/,
-    "das Urteil wird ohne Tonlage gezeichnet - dann ist es eine Beschriftung, keine Auskunft");
+  /* Owner-Linie L7 (Plan §11): kein Gesamturteil als Wort - die Spalte zaehlt neutral. */
+  assert.match(aufruf, /v\.overall\.count/,
+    "die Spalte traegt nicht mehr die Zaehlung der starken Faktoren");
+  assert.doesNotMatch(aufruf, /v\.overall\.text/,
+    "die Spalte traegt wieder ein Gesamturteil als Wort");
   /* Und die Einordnung ist wirklich ein Wort, keine Zahl. */
   const v = VM.fromScreeningRow({ "quantV2.factorEvidence.quality": 90, "quantV2.factorEvidence.growth": 80,
     "quantV2.factorEvidence.momentum": 50, "quantV2.factorEvidence.value": 20 });

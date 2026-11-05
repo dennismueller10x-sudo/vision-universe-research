@@ -245,8 +245,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
       Spalte zeigt den Wert der gefilterten Eigenschaft - mit ihrem Namen.
       Die Marke stellt "Eigenschaften:" voran - geprueft wird das Urteil. */
    const urteile=(await page.locator('#qx-main a.qx-row .qx-row-verdict .qx-pill').allTextContents()).map(t=>t.trim().replace(/^[▲▼◆●○]\s*/,'').replace(/^(Gesamt|Eigenschaften):\s*/,'').toLowerCase());
-   const erlaubt=['Überwiegend stark','Mehr Stärken als Schwächen','Gemischtes Bild','Mehr Schwächen als Stärken','Überwiegend schwach'].map(t=>t.toLowerCase());
-   const fremdesUrteil=urteile.filter(t=>!erlaubt.includes(t));
+   /* Owner-Linie L7 (Plan §11): kein Gesamturteil als Wort, sondern die Zaehlung „k von n Faktoren stark“. */
+   const fremdesUrteil=urteile.filter(t=>!/^\d+ von \d+ faktoren stark$/.test(t));
    if(!urteile.length)befund(view,width,'keine einzige Trefferzeile traegt ein Urteil');
    if(fremdesUrteil.length)befund(view,width,'Trefferzeile traegt kein Klartext-Urteil: '+JSON.stringify(fremdesUrteil[0]));
    /* Die Methodik der Frage steht dabei: die Schwelle ist ein WERT (70),

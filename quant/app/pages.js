@@ -24,8 +24,8 @@
      Zone", "Higher High"). Die Karte uebersetzt genau diese zwei festen Saetze;
      jeder andere Text bleibt, wie er ist. */
   var PLAIN_TRIGGER = {
-    "Kurs haelt die Entry Zone bzw. das letzte Strukturtief und erzeugt ein neues Higher High.": "der Kurs über der Einstiegszone bzw. dem letzten Tief bleibt und ein neues Hoch bildet.",
-    "Kurs scheitert an der Entry Zone bzw. dem letzten Strukturhoch und erzeugt ein neues Lower Low.": "der Kurs an der Einstiegszone bzw. dem letzten Hoch scheitert und ein neues Tief bildet."
+    "Kurs haelt die Entry Zone bzw. das letzte Strukturtief und erzeugt ein neues Higher High.": "der Kurs über der Zone laut Methode bzw. dem letzten Tief bleibt und ein neues Hoch bildet.",
+    "Kurs scheitert an der Entry Zone bzw. dem letzten Strukturhoch und erzeugt ein neues Lower Low.": "der Kurs an der Zone laut Methode bzw. dem letzten Hoch scheitert und ein neues Tief bildet."
   };
   function plainTrigger(t) { return PLAIN_TRIGGER[t] || t; }
   function nameOf(ctx, t) { var s = ctx.names && ctx.names[t]; return s || ""; }
@@ -75,7 +75,7 @@
     var best = v ? v.factors.filter(function (f) { return f.state === "AVAILABLE"; }).sort(function (a, b) { return (b.position == null ? -1 : b.position) - (a.position == null ? -1 : a.position) || b.score - a.score; })[0] : null;
     return X.poster({ ticker: t, name: nameOf(ctx, t),
       big: best ? String(Math.round(best.score)) : null, bigLabel: best ? best.name : null, tone: best ? best.tone : null,
-      story: opts.story || (v && v.overall.id !== "KEINE_DATEN" ? v.overall.text : null), foot: opts.foot, initialOnly: !!opts.initialOnly });
+      story: opts.story || (v && v.overall.id !== "KEINE_DATEN" ? v.overall.count : null), foot: opts.foot, initialOnly: !!opts.initialOnly });
   }
   function screeningRows(ctx) {
     return ctx.api.getFactorEvidenceScreening().then(function (sc) {
@@ -117,10 +117,10 @@
     var first = c.events[0], t0 = T[first.eventType] || {};
     var rows = [];
     var tr = c.trade && c.trade.state === "AVAILABLE" ? c.trade : null;
-    if (tr && zoneText(tr.entry)) rows.push(["Interessant ab", zoneText(tr.entry)]);
+    if (tr && zoneText(tr.entry)) rows.push(["Zone laut Methode", zoneText(tr.entry)]);
     var inv = tr && typeof tr.invalidation === "number" ? tr.invalidation : c.setup && typeof c.setup.invalidation === "number" ? c.setup.invalidation : null;
-    if (inv !== null && c.setup && c.setup.state !== "NO_SETUP") rows.push(["Ungültig unter", usd(inv)]);
-    if (tr && tr.targets && tr.targets[0]) rows.push(["Zielzone 1", zoneText(tr.targets[0])]);
+    if (inv !== null && c.setup && c.setup.state !== "NO_SETUP") rows.push(["Ungültig-Marke laut Methode", usd(inv)]);
+    /* Owner-Linie L1 (Plan §11): keine Zielzonen. */
     var ev = c.replay && c.replay.sufficient
       ? Math.round(c.replay.positiveShare * 100) + " % der " + c.replay.completed + " ähnlichen Fälle lagen nach 6 Monaten höher (Median " + VM.pct(c.replay.medianReturn, 1, true) + ")"
       : c.replay && c.replay.state === "AVAILABLE" ? "zu wenige ähnliche Fälle (" + c.replay.episodes + ")" : null;
@@ -237,7 +237,7 @@
     main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Quant Radar" }),
       el("h1", { class: "qx-h1", text: "Was ist heute neu?" }),
       el("p", { class: "q-hero-lead v2-lead", text: "Quant prüft jeden Tag alle Aktien nach denselben Regeln und meldet, wo sich etwas verändert hat. Jede Karte sagt: was passiert ist, was als Nächstes fehlt – und wie oft so etwas früher besser lief als der Markt." }),
-      el("p", { class: "q-intro-note", text: "So liest du eine Karte: oben das Ereignis mit Datum, darunter Einstieg, Ungültig-Marke und die nächste Bedingung, unten der historische Vergleich mit dem Markt und wie belastbar er ist. Keine Kaufempfehlung, keine Prognose." })]));
+      el("p", { class: "q-intro-note", text: "So liest du eine Karte: oben das Ereignis mit Datum, darunter Zone und Ungültig-Marke laut Methode und die nächste Bedingung, unten der historische Vergleich mit dem Markt und wie belastbar er ist. Keine Kaufempfehlung, keine Prognose." })]));
     var r = await ctx.api.getQuantRadar();
     if (!r || r.state !== "AVAILABLE") { main.append(X.notice("Radar derzeit nicht verfügbar", "Der aktuelle Radar-Stand konnte nicht geladen werden.")); return; }
     var current = params && params.get("filter") || "alle";
@@ -319,7 +319,7 @@
     var close = closeBy && typeof closeBy[c.ticker] === "number" ? " · Schluss " + usd(closeBy[c.ticker]) : "";
     var frueher = c.replay && c.replay.sufficient ? "in " + Math.round(c.replay.positiveShare * 100) + " % von " + c.replay.completed + " Fällen höher" : c.replay && c.replay.state === "AVAILABLE" ? "zu wenige Fälle für eine Aussage" : null;
     return '<a class="vu-box qv3-setup" href="' + U().esc(X.routes.stock(c.ticker)) + '"><div class="qv3-setup-h">' + U().logo(c.ticker) + '<span class="qv3-setup-n"><b>' + U().esc(nameOf(ctx, c.ticker) || c.ticker) + '</b><span class="vu-xs vu-mu"><b>' + U().esc(c.ticker + close) + "</b></span></span>" + U().verdict("strong", "Bestätigt") + "</div>" +
-      '<div class="qv3-pboxes">' + box("Interessant ab", tr && zoneText(tr.entry)) + box("Ungültig unter", inv != null ? usd(inv) : null) + box("Ziel 1", tr && tr.targets && tr.targets[0] && zoneText(tr.targets[0])) + "</div>" +
+      '<div class="qv3-pboxes">' + box("Zone laut Methode", tr && zoneText(tr.entry)) + box("Ungültig-Marke laut Methode", inv != null ? usd(inv) : null) + "</div>" +
       (frueher ? '<div class="vu-xs qv3-frueher"><b>Früher:</b> <span class="vu-mu">' + U().esc(frueher) + "</span></div>" : "") + "</a>";
   }
   async function home(main, ctx) {
@@ -354,7 +354,7 @@
       U().navcard({ glyph: "target", title: "Nach Anlagestil suchen", sub: "Strategien, täglich geprüft", href: X.routes.strategies() }) +
       U().navcard({ glyph: "line", title: "Technische Lagen", sub: "Charts mit klarer Lage, nach Regel", href: X.routes.chartlagen() }) + "</div>" +
       '<a class="vu-box vu-box--lime qv3-trust" href="' + U().esc(X.routes.method()) + '"><span class="qv3-trust-i">' + U().glyph("book", 18) + '</span><span><b>Warum kann ich dem vertrauen?</b><span class="vu-xs">Methodik, Daten und Grenzen offen erklärt</span></span>' + U().glyph("next", 18) + "</a>" +
-      '<div class="vu-box vu-box--line qv3-note"><b class="vu-sm">Keine Anlageempfehlung</b><p class="vu-xs vu-mu">Quant ordnet ein und vergleicht. Keine Prognose, kein Kursziel. Einstieg, Ungültig-Marke und Ziele sind Szenarien der technischen Analyse. Daten: SEC EDGAR, Tiingo.</p></div>'));
+      '<div class="vu-box vu-box--line qv3-note"><b class="vu-sm">Keine Anlageempfehlung</b><p class="vu-xs vu-mu">Quant ordnet ein und vergleicht. Keine Prognose, kein Kursziel. Zone und Ungültig-Marke laut Methode sind Regel-Ergebnisse der technischen Analyse. Daten: SEC EDGAR, Tiingo.</p></div>'));
 
     var watched = X.watch.list();
     var TI = global.VUTechnicalIntelligence;
@@ -401,13 +401,13 @@
       todayHost.replaceChildren(frag(html));
       var proof = proofCard(radar);
       if (proof) proofHost.append(proof);
-      /* Setup bestätigt: drei Karten mit Interessant ab / Ungültig unter / Ziel 1 und früherer Quote. */
+      /* Setup bestätigt: drei Karten mit Zone und Ungültig-Marke laut Methode und früherer Quote (L1: keine Ziele). */
       var confirmed = (radar.cards || []).filter(function (c) { return c.events && c.events.some(function (e) { return e.eventType === "SETUP_CONFIRMED"; }); });
       var conf = setupIdx && setupIdx.state === "AVAILABLE" ? (setupIdx.states || []).filter(function (st) { return st.state === "CONFIRMED" && typeof st.count === "number"; })[0] : null;
       if (confirmed.length) {
         setupHost.replaceChildren(frag(U().sect("Setup bestätigt", { href: X.routes.screener("frage=setups"), link: conf ? "Alle " + conf.count.toLocaleString("de-DE") : "Alle" }) +
           '<div class="vu-stack">' + confirmed.slice(0, 3).map(function (c) { return setupCardV3(ctx, c, null); }).join("") + "</div>" +
-          '<div style="margin-top:10px">' + U().help("Setup: Der Chart zeigt eine Lage mit klaren Regeln. „Ungültig unter“ heißt: fällt der Kurs darunter, gilt das Setup nicht mehr.") + "</div>"));
+          '<div style="margin-top:10px">' + U().help("Setup: Der Chart erfüllt die Regeln der Methode. „Ungültig-Marke laut Methode“ heißt: Schließt der Kurs darunter, gilt das Setup nicht mehr. Ein Regel-Ergebnis, keine Empfehlung.") + "</div>"));
       }
       var hits = watched.length ? await ctx.api.getRadarCards(watched).catch(function () { return []; }) : [];
       if (watched.length) watchHost.replaceChildren(X.world("Deine beobachteten Aktien", hits.length ? hits.length + " von " + watched.length + " beobachteten Aktien melden eine Veränderung." : "Bei deinen " + watched.length + " beobachteten Aktien hat sich zum letzten Stand nichts geändert.",
@@ -485,7 +485,7 @@
       { kicker: "Kursbild", icon: "setups", title: "Aktuelle Setups", text: "Wo im Kursbild gerade etwas entsteht", href: X.routes.screener("frage=setups") }
     ])], { href: X.routes.backtest(), label: "Backtesting" }));
     page.append(X.actions([X.btn("Warum kann ich dem vertrauen?", X.routes.method(), "secondary")]),
-      el("p", { class: "qx-small", text: "Quant gibt keine Anlageempfehlungen und macht keine Prognosen. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse." }));
+      el("p", { class: "qx-small", text: "Quant gibt keine Anlageempfehlungen und macht keine Prognosen. Zone und Ungültig-Marke laut Methode sind Regel-Ergebnisse der technischen Analyse, keine Ziele." }));
 
     /* Chartbild-Ereignisse der beobachteten Aktien - nur in der App. Ohne
        sauberen Vergleichslauf (Ausgangszustand, Methodikwechsel) bleibt der
@@ -787,7 +787,7 @@
       var v = VM.fromScreeningRow(s.evidence, dist), val = s.evidence && s.evidence[FIELD(factors[0])];
       return X.stockRow({ ticker: s.ticker, name: X.companyName(s), kicker: strat[s.ticker] || null, why: global.VUUI ? shortWhy(s.evidence, factors.length > 1 ? factors : factors.concat(factors[0] === "quality" ? [] : ["quality"])) : screeningWhy(s.evidence, factors, dist), withLogo: !global.VUUI && i < 8,
         score: { label: shortName(factors[0]), value: typeof val === "number" ? Math.round(val) : null, tone: typeof val === "number" && dist ? VM.factorView({ id: factors[0], state: "AVAILABLE", score: val, position: VM.positionIn(dist[factors[0]], val), components: [] }).tone : null },
-        verdict: v && v.overall.id !== "KEINE_DATEN" ? { text: global.VUUI ? (v.overall.tone === "good" ? "▲ " : v.overall.tone === "bad" ? "▼ " : "◆ ") + v.overall.text : "Eigenschaften: " + v.overall.text.charAt(0).toLowerCase() + v.overall.text.slice(1), tone: v.overall.tone } : null });
+        verdict: v && v.overall.id !== "KEINE_DATEN" ? { text: (global.VUUI ? "" : "Eigenschaften: ") + v.overall.count, tone: "neutral" } : null });
     });
     /* Die Zahl der Treffer wird gezaehlt, nicht aus der begrenzten Liste
        abgelesen: dieselben veroeffentlichten Faktorwerte, dieselbe Regel. */
