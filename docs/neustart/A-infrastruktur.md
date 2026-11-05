@@ -59,10 +59,10 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - #1268, #1270, #1273, #1331 und #1340 hatten ihre Stränge vorher selbst erledigt;
   - offen sind danach nur noch die behaltenen PRs und laufende Strang-PRs.
 
-## Roter Stand auf `main` (05.11. mittags)
-- Quant: 30 Fälle Mischstand nach der Universumsänderung (Faktoren/Signale/Pattern noch 6.686) → Materialisierung mit `force` läuft, Nachtlauf 22:30; Restmenge morgen früh.
-- Fremd: Core „Screener-Feld stMethods“ (#1391, Fixture `core/tests/query-engine-universe` nicht nachgezogen); Discover Test 480 (`ask/index.html` ohne Farbschema-Schalter); Technical L1–L3 (`technical-ap8-l1`, Datensatz vs. Materialisierung). An die Steuerung gemeldet.
-- Wartet auf grünes `main`: #1400 (monitor), #1402 (Ausmusterung), #1403 (Vertragstests); CI-Bündel Stufe 1 (12 kleine Prüf-Workflows → `ci.yml`, Auswahl `scripts/ci/select-checks.mjs`, Tests SC-1..6) liegt auf Zweig `claude/bundle-ci-small`.
+## Stand `main` 05.11. ~15:30 UTC
+- Umfangsfolgen vollständig (#1401, #1406, #1414, #1423, #1432); Materialisierung 42040125051 grün; Datenhygiene sauber → Nachtlauf entblockt. Quant rot 30 → 16 (#1438 behebt SMW-3 und S4 aus A-PRs).
+- **Pages rot seit dem Nachmittag** (letzter grüner Lauf 11:21 UTC): Rauchtest scheitert an (a) `/quant/#/aktie/AAAC` – der „belegte ETF“ ist mit dem Nachholen EXCLUDED und hat keine Seite mehr; Tests und Rauchtest schreiben fest, dass belegte Nicht-Aktien im Produkt bleiben und nur die Aktienaussage verlieren. Widerspruch zur freigegebenen Nachholung (131 ETFs raus) → Fachentscheidung A (Regel behalten, Eignungsklasse statt EXCLUDED) oder B (Tests/Rauchtest auf Absage-Seite) bei der Steuerung. (b) Strategien/Screener ohne Treffer und (c) Methodik-Navigation: an D2 (#1410).
+- Wartet: #1400 (monitor), #1402 (Ausmusterung), #1403 (Vertragstests), #1438; CI-Bündel Stufe 1 auf `claude/bundle-ci-small`. Gemergt wird erst bei grünem Pages.
 
 ## Braucht Owner
 - Nichts Neues.
