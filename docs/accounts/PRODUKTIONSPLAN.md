@@ -17,7 +17,7 @@ lokal, in der CI, lesend oder im jeweiligen Dashboard erledigt.
 | Umsatzsteuer | Stripe Tax aktiv (DE-Registrierung), Checkout mit `automatic_tax`; Probe DE/AT/FR 1,00 € brutto mit 0,16 € USt |
 | Zahlungsarten | Karte, Apple/Google Pay, PayPal, SEPA, Klarna, Link – Stripe wählt je Kunde |
 | Webhook / Portal | `we_1UVYNiBNKuXfjJefAQbiwzw0` (alle benötigten Ereignisse), Portal `bpc_1UVYNiBNKuXfjJefiiNAQOrN` (Kündigung zum Periodenende) |
-| Rechtstexte | 7 Seiten unter `konto.visionuniverse.de/rechtliches/`, Fassung `vu-recht-2026-11-02-entwurf-2` (nach dem Merge), Entwurfsbanner |
+| Rechtstexte | 9 Seiten unter `konto.visionuniverse.de/rechtliches/` (neu: Risikohinweise, MAR-Hinweise), Fassung `vu-recht-2026-11-05-entwurf-3`, Entwurfsbanner |
 | Kündigen / Widerrufen | `/kuendigen`, `/widerrufen` öffentlich; Ausführung manuell (`VU_CANCELLATION_AUTO_PROCESS = "false"`) |
 | Brevo | Listen 11/12/13, DOI-Vorlage geprüft (`newsletterTemplate: ok`); Abgleich und Newsletter **aus** |
 | Tarifverwaltung | `/konto/admin/tarife/` live, geschützt; ohne Rolle 401/403 ([TARIFVERWALTUNG.md](TARIFVERWALTUNG.md)) |
