@@ -97,8 +97,9 @@ test('signals-core: closed ist Historie, die Zahl bleibt als closedTotal', () =>
   assert.ok(HISTORY_LISTS.includes('closed'));
   for (const [id, st] of Object.entries(signals.strategies)) {
     assert.equal(core.strategies[id].closed, undefined, id);
-    assert.equal(core.strategies[id].closedTotal, st.closed.length, id + '.closedTotal');
-    if (st.closedTotal !== undefined) assert.equal(st.closedTotal, st.closed.length, id + '.closedTotal (signals.json)');
+    // L3: öffentlich ist closed die sichtbare Teilmenge (Stichtag >= 365 Tage), closedTotal die volle Zahl
+    assert.equal(core.strategies[id].closedTotal, Number.isFinite(st.closedTotal) ? st.closedTotal : st.closed.length, id + '.closedTotal');
+    if (st.closedTotal !== undefined) assert.ok(st.closedTotal >= st.closed.length, id + '.closedTotal (signals.json)');
   }
 });
 
