@@ -77,3 +77,19 @@ test('ST-HIST-5: Sensitivität Delisting-Erlös als echte Neuläufe (S0/S1/S2), 
   const runner = fs.readFileSync(new URL('../source-faithful/research/run-st-hist-top5.mjs', import.meta.url), 'utf8');
   assert.match(runner, /if \(!auditPass\) \{[^}]*process\.exit\(4\)/, 'fail closed');
 });
+
+test('ST-HIST-6: E3-Export je Methode und Fenster ab Cash, kostenfrei, mit Fills, Kurve, Terminalen und ADV20', () => {
+  const W = [{ id: 'W1', from: '2016-01-04', to: '2016-12-30' }, { id: 'W2', from: '2017-01-03', to: '2017-06-30' }];
+  const e = T.edgeExport(ds(), { windows: W });
+  assert.equal(e.schema, 'st-edge-export-1.0.0');
+  assert.ok(e.benchmark.spyClose.length > 0);
+  for (const k of T.TOP5) for (const w of W) {
+    const x = e.methods[k].windows[w.id];
+    assert.deepEqual(x.costs, { slippageBps: 0, commissionBps: 0 });
+    assert.ok(x.curve.every((p) => p.date >= w.from && p.date <= w.to), `${k} ${w.id}: Kurve im Fenster`);
+    assert.ok(x.fills.every((f) => f.date >= w.from && f.date <= w.to), `${k} ${w.id}: keine Position vor dem Fenster`);
+    for (const f of x.fills.filter((f) => f.side === 'BUY')) { assert.ok(f.securityId && f.ticker && f.shares > 0 && f.price > 0); assert.ok(f.adv20Usd === null || f.adv20Usd > 0); }
+    assert.ok(Math.abs(x.curve[0].equity - 100000) < 100000 * 0.2 || x.fills.length === 0, 'Start in Cash');
+  }
+  assert.deepEqual(T.EDGE_WINDOWS.map((w) => [w.from, w.to]), [['2016-01-04', '2019-12-31'], ['2020-01-02', '2026-09-30']]);
+});

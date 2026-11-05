@@ -122,6 +122,41 @@ export function runTop5(ds, { methods = TOP5, costLevels = SF6_VALIDATION_PROTOC
   return out;
 }
 
+/** E3-Fenster (Edge-Studie Strang C, docs/research/edge/PROTOKOLL.md): je Fenster ein eigener Lauf ab Cash. Der Snapshot
+ *  endet am 2026-09-30; die Sitzungen bis zum Protokollende 2026-10-02 fehlen und sind gekennzeichnet. */
+export const EDGE_WINDOWS = Object.freeze([
+  Object.freeze({ id: 'E3_DEV_2016_2019', from: '2016-01-04', to: '2019-12-31', protocolFrom: '2016-01-01', protocolTo: '2019-12-31' }),
+  Object.freeze({ id: 'E3_TEST_2020_2026', from: '2020-01-02', to: '2026-09-30', protocolFrom: '2020-01-01', protocolTo: '2026-10-02', gap: 'SNAPSHOT_ENDS_2026-09-30' }),
+]);
+const tickerOf = (id) => String(id).split('#')[0].split(':')[2] ?? null;
+/** Fills, Kurve und Terminalereignisse eines kostenfreien Laufs (0 bp, Terminal S0) für den Forschungsadapter von Strang C. */
+export function edgeExport(ds, { methods = TOP5, windows = EDGE_WINDOWS, log = () => {} } = {}) {
+  const sec = new Map(ds.securities.map((s) => [s.id, { s, at: new Map(s.bars.map((b, i) => [b.date, i])) }]));
+  const adv20 = (x, i) => { let sum = 0, n = 0; for (let j = Math.max(0, i - 20); j < i; j++) { const b = x.s.bars[j]; const v = (b.rawClose ?? b.close) * (b.rawVolume ?? b.volume); if (Number.isFinite(v)) { sum += v; n++; } } return n ? sum / n : null; };
+  const out = {};
+  for (const key of methods) {
+    const ref = SF6_REFERENCES.find((x) => x.key === key);
+    out[key] = { candidateId: ref.candidateId, windows: {} };
+    for (const w of windows) {
+      const prep = ref.prep(ds, { from: w.from }) || {};
+      const r = ref.run(ds, { from: w.from, to: w.to, costs: { slippageBps: 0, commissionBps: 0 }, ...prep });
+      const fills = r.run.ledger.map((x) => {
+        const s = sec.get(x.id), i = s?.at.get(x.date), b = i !== undefined ? s.s.bars[i] : null;
+        return { date: x.date, securityId: x.id, ticker: tickerOf(x.id), side: x.side, shares: x.shares ?? null, price: x.price ?? null, notional: x.gross ?? null, reason: x.reason ?? null, close: b?.close ?? null, rawClose: b?.rawClose ?? null, volume: b?.volume ?? null, rawVolume: b?.rawVolume ?? null, splitAdj: b?.splitAdj ?? null, adv20Usd: i !== undefined ? adv20(s, i) : null };
+      });
+      const terminals = [...new Set(r.run.ledger.filter((x) => x.side === 'SELL' && (x.reason === 'TERMINAL_DELISTED' || x.reason === 'SECURITY_UNAVAILABLE')).map((x) => `${x.id}|${x.date}|${x.reason}`))].map((k) => {
+        const [id, date, reason] = k.split('|'); const t = sec.get(id)?.s.terminal;
+        return { securityId: id, ticker: tickerOf(id), date, reason, cause: t?.cause ?? null, distress: t?.distress ?? null, delistClass: t?.delistClass ?? null, terminalDate: t?.date ?? null };
+      });
+      out[key].windows[w.id] = { window: w, costs: { slippageBps: 0, commissionBps: 0 }, terminalScenario: 'S0_LAST_PRICE', initialCapital: INITIAL_CAPITAL,
+        curve: r.run.curve.map((p) => ({ date: p.date, equity: p.equity, cash: p.equity * (1 - (p.exposure ?? 0)), exposure: p.exposure ?? 0, positions: p.positions ?? null })),
+        fills, terminals, reconciliation: r.run.reconciliation ? { pass: r.run.reconciliation.pass } : null, fillsSha256: sha(fills) };
+      log(`edge ${key} ${w.id}: ${fills.length} fills`);
+    }
+  }
+  return { schema: 'st-edge-export-1.0.0', ...LABEL, windows, benchmark: { spyClose: ds.benchmark.map((b) => ({ date: b.date, close: b.close })), spyTR: ds.spyTR }, methods: out };
+}
+
 export function publicPart(result) {
   return { schema: 'st-hist-top5-public-1.1.0', ...LABEL, status: result.status ?? null, receipt: result.receipt, population: result.population ?? null, methods: Object.fromEntries(Object.entries(result.A).map(([k, m]) => [k, { candidateId: m.candidateId, tradesRef: m.costs.REF.trades, tradesSha256Ref: m.costs.REF.tradesSha256, auditPass: m.audit ? m.audit.pass : null, auditViolations: m.audit ? m.audit.violations : null, missedStopCheck: m.audit ? m.audit.missedStopCheck : null }])), quarantine: result.quarantine.A, universeB: result.B ? 'COMPUTED' : 'NOT_REQUESTED' };
 }
@@ -152,6 +187,19 @@ async function main() {
   const dsA = datasetFromPit(pit); attachSecPit(dsA, secPit);
   const qa = S.applyQuarantine(dsA, { mode: 'DQ-K5-BOOK' });
   log(`universe A: ${dsA.securities.length} segments, quarantine ${JSON.stringify(qa.census)}`);
+  if (arg('--mode') === 'edge-export') {
+    // E3 (Strang C): kostenfrei, Terminal S0, je Fenster ab Cash, mit DQ-K5-Quarantäne wie die Referenz; Ausgabe nur versiegelt
+    const exp = edgeExport(qa.ds, { log });
+    exp.quarantine = qa.census; exp.receipt = { version: ST_HIST_TOP5_VERSION, mode: 'edge-export', snapshotId, datasetSha256, datasetVerified: v.datasetVerified, codeVersionChanged: !!v.codeVersionChanged, engineCodeSha256: engineCodeSha256(), runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+    if (!reviewerPem) die('REVIEWER_KEY_REQUIRED_FOR_EDGE_EXPORT');
+    fs.mkdirSync(OUT, { recursive: true });
+    const plainE = Buffer.from(JSON.stringify(exp));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.sealed.reviewer.json'), L.encryptForOwner(reviewerPem, plainE));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.sealed.owner.json'), L.encryptForOwner(fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8'), plainE));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.public.json'), JSON.stringify({ schema: 'st-edge-export-public-1.0.0', ...LABEL, receipt: exp.receipt, methods: Object.fromEntries(Object.entries(exp.methods).map(([k, m]) => [k, Object.fromEntries(Object.entries(m.windows).map(([w, x]) => [w, { fills: x.fills.length, fillsSha256: x.fillsSha256 }]))])) }, null, 1) + '\n');
+    log('done (edge-export)');
+    return;
+  }
   const result = { schema: 'st-hist-top5-result-1.1.0', ...LABEL, window: { name: L.WINDOW_NAME, ...L.WINDOW }, costLevels: SF6_VALIDATION_PROTOCOL.costLevels, quarantine: { A: qa.census }, population: { A: populationCensus(dsA) }, A: runTop5(qa.ds, { log }) };
   // Sensitivität DQ-K5: dieselben Referenzen ohne Quarantäne (Referenzkosten; Audit nur in den Rahmen A und B)
   result.A_NO_DQK5 = runTop5(dsA, { costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF'), audit: false, log });
