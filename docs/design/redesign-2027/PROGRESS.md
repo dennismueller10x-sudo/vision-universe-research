@@ -61,7 +61,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | E06 | Konto · Pro-Bestellung | fertig | #1366 | Platzhalter „1,00 €“ entfernt; Pflichttext wortgleich |
 | E07 | Mein Bereich · Konto | fertig | #1366 | eine Seite statt Reiter; Erfahrung bis Z1-Anbindung lokal |
 | E08 | Mein Bereich · Mein Dashboard | fertig | #1366 | Abmelden ins Konto verschoben |
-| E09 | Mein Bereich · Watchlist-Detail | teilweise | #1366 | Teil: aufklappbare Karte mit Chart, Faktorbalken und Sheet fehlt |
+| E09 | Mein Bereich · Watchlist-Detail | fertig | #1366, #1411 | Karten nach Mockup; Benachrichtigungen als Schalter in der Karte statt Sheet (e09-b), Werkzeugleiste (Suche, Sortierung) bleibt unter den Chips |
 | E10 | Einstieg · AI Atlas | fertig | #1366 | Worker vu-ask unverändert; statt Jahresreihe Balken je Kennzahl über die Aktien (Atlas-Engine liefert keine Zeitreihe) |
 | E11 | Einstieg · Erster Start | fertig | #1366 | `/willkommen/start/`, `localStorage vu-start-v1`; Anbindung an `/v1/me` (Z1, #1359) offen: `signale`→`strategien`, `mode`→`experienceLevel`, `onboardedAt:true` |
 | E12 | Einstieg · Checkout-Ablauf Free → Pro | – | #1366 | keine eigene Oberfläche (E03 → E04 → E06) |
@@ -74,12 +74,12 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | D07 | Discover · Märkte | teilweise | #1367 | nur die Übersicht; `#/maerkte/<Symbol>` und Einordnung noch alt |
 | D08 | Discover · Watchlist | teilweise | #1367 | Teil: bleibt `/discover/#/watchlist`; Benachrichtigungen fehlen (Z4); „Liste bearbeiten“ |
 | D09 | Discover · NVIDIA (Aktienseite) | fertig | #1350 | Kurs im Kopf in Anzeigewährung (€) statt $ + ≈ € (Querschnitt Währung offen); Jahresspanne in % statt $; d09-c Merken-Sheet wartet auf Benachrichtigungen (Backend) |
-| Q00 | Quant · So ist die Welt gebaut | offen |  |  |
+| Q00 | Quant · So ist die Welt gebaut | fertig | #1412 | Methodik/Backtest unter „Quant“, Technische Lagen unter „Aktien“ (Leiste und App) |
 | Q01 | Quant · Übersicht | fertig | #1351 | Setup-Karten ohne „Schluss … $“ (Ressourcen-Budget der Startseite) |
-| Q02 | Quant · Screener | teilweise | #1351 | Einfach-Modus nach Mockup; „Eigene Bedingung“ klappt inline auf statt Sheet; Profi-Modus (dunkel, Regler, Tabelle) noch alt |
-| Q03 | Quant · Strategien | teilweise | #1351 | Liste nach Mockup (q03-a); Detail (q03-b) noch alt |
+| Q02 | Quant · Screener | fertig | #1351, #1410 | Einfach nach Mockup; „Eigene Bedingung“ als Sheet (q02-c); Profi dunkel mit Bereichsreglern, Spaltenwahl und Tabelle (q02-b); Quant V1 & Marktdaten bleiben im Regel-Editor (`?daten=v1`) |
+| Q03 | Quant · Strategien | fertig | #1351, #1410 | Detail (q03-b) nach Mockup; Knopf „Im Quant Screener öffnen und anpassen“ (Produktgrenze: Verweise in den Quant-Screener nennen Quant); bekannte Namen nach redaktioneller Bekanntheit (Discover) |
 | Q04 | Quant · Aktien | fertig | #1351 | Aktienzeilen ohne Kurs/Mini-Chart (keine Kursabfrage je Zeile auf dieser Seite) |
-| Q05 | Quant · Methodik | teilweise | #1351 | Startseite der Methodik nach Mockup; Gewichte je Frage nicht als feste Zahl (stehen unter „Gewichtung“), Unterseiten noch alt |
+| Q05 | Quant · Methodik | fertig | #1351, #1410 | Anteil je Frage (PRO) aus factorWeights; Unterkapitel ohne eigene Vorlage (nur q05-a), bleiben im bisherigen Stil |
 | Q06 | Quant · Technische Lagen | offen |  |  |
 | Q07 | Quant · NVIDIA (Aktienseite, Perspektive Faktoren) | fertig | #1351 | Lange Seite mit Schritten 1–6 nach Mockup (Überblick, Fragen, Stärken/Risiken, Veränderungen mit Kacheln, Setup-Karte + Stil-Karten mit Regel-Haken, Rückblick schwarz + Evidenz). Offen: Kopf in $ + ≈ € (Querschnitt Währung), Herz statt „Beobachten“, Quant-Chart → C06, Kursstärke-Verlauf mit Schwelle 70, Ereignis-Zeitleiste, Beleg-Sheet. Rückblick zeigt „ähnliche Situationen dieser Aktie“ (replay), nicht „Setup bestätigt in 552 Wochen“ (setup-replay-v1 lädt die Seite nicht). Alte Inhalte vollständig unter „Einstieg, Stop, Ziele …“ und „Alle Belege …“. |
 | Q08 | Quant · NVIDIA Zahlen (Perspektive Zahlen) | fertig | #1351 | Kopf ohne Kurs (Seite lädt keinen Kurs); Kachel „Wachstum 3 Jahre“ durch „Stand“ ersetzt |
@@ -151,6 +151,12 @@ ohne Hedgefonds; Swipen-Eintrag zeigt auf `#/einzeln/US_REAL`, das Discover auf 
 Nächste Schritte (Steuerung 05.11.): Q02 Profi-Modus, Q03 Detail, D07 Unterseiten, E09 aufklappbare Karte, Q00/N6;
 danach die übrigen `teilweise`-Folien. Vorbestehend rot auf `main` (Daten, nicht Redesign): zusätzlich Quant/Technical
 „L1–L3 Datensatz-Spalte = SMA 150 …“ seit 05.11. morgens.
+
+## Stand 05.11.2026 nachmittags
+
+Gemergt nach der Kette: #1391 (Z5 Methoden im Screener), #1413 (Erster Start, Atlas, Preise ohne eingefügte Navigation; sync-navigation-Ausstieg per Meta), #1411 (E09), #1410 (Q02 Profi und Eigene Bedingung, Q03 Detail, Q05 Anteile; PRO-Marke und Zeitraum-Leiste barrierefrei), #1426 (Momentaufnahme der Abfrage-Engine um die Z5-Felder). Q00 in #1412.
+Rest: N6 (Einsteiger/Profi über alle Seiten, braucht settings.experienceLevel in jeder Welt), D07 Unterseiten (keine Vorlage), D08, W05, ST02, ST03, S03, V04, V05, Q06, Q09, ST-Z; Wortwahl-Befunde aus #1405 (Strang F) als eigener PR; Schritt 6 (Dunkel, Feinschliff, Browser-QA aller Seiten gegen Ü3).
+Datenstand auf `main` (nicht Redesign): Quant Browser-QA „aktie-aaac: ETF ohne Kursverlauf“ (AAAC nicht mehr im Analyseuniversum), Security-Master-Neubau.
 
 ## Gemeinsame Nacharbeit aus den Welt-PRs (ein PR nach allen Berichten)
 
