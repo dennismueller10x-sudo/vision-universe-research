@@ -946,7 +946,7 @@ test('Oeffentliche Seiten: Rechtstexte, Kuendigen und Widerrufen ohne Anmeldung'
 
   await t.test('Rechtstexte: oeffentlich, als Entwurf gekennzeichnet, ohne Skript, keine Shopify-Texte', async () => {
     for (const p of ['/rechtliches/', '/rechtliches/impressum', '/rechtliches/datenschutz', '/rechtliches/agb', '/rechtliches/widerrufsbelehrung',
-      '/rechtliches/widerrufsformular', '/rechtliches/newsletter', '/kuendigen', '/widerrufen']) {
+      '/rechtliches/widerrufsformular', '/rechtliches/newsletter', '/rechtliches/risikohinweise', '/rechtliches/mar-hinweise', '/kuendigen', '/widerrufen']) {
       const res = await page(env, p);
       const html = await res.text();
       assert.equal(res.status, 200, p);

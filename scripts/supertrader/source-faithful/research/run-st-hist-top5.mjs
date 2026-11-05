@@ -31,10 +31,14 @@ import { runResearchLifecycle, prepareAll, PLATFORM_RESEARCH_PORTFOLIO_POLICY } 
 import { SF6_VALIDATION_PROTOCOL } from './run-sf6-validation.mjs';
 import * as S from './st9-v13-delisted-study.mjs';
 import * as X from './st9-hist-execution.mjs';
+import * as FID from './kk-breakout-fidelity.mjs';
+import * as MF from './minervini-fidelity.mjs';
+import * as MX from './minervini-execution.mjs';
+import * as ML from './minervini-lifecycle.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.3.0';
+export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.9.0';
 /** Delisting-Erlös als Sensitivität (Prüfung Strang E): echte Neuläufe mit den vorhandenen Abrechnungsszenarien der Engines
  *  (validation/portfolio.mjs SCENARIOS, Wiederanlage inklusive). 100 % = Referenz S0_LAST_PRICE, 70 % = S1_MINUS_30,
  *  S2_DISTRESS_ZERO = 0 % bei Insolvenz-Delisting, sonst 70 %. Ein Szenario „0 % für alle“ hat die Engine nicht (eine neue
@@ -149,6 +153,8 @@ export function runTop5(ds, { methods = TOP5, costLevels = SF6_VALIDATION_PROTOC
         out[key].delistingProceeds = delistingSensitivity(ref, ds, { window, costs: { slippageBps: c.slippageBps, commissionBps: c.commissionBps }, prep });
         out[key].exitCensus = exitCensus(r);
         out[key].plausibility = plausibility(r, ds);
+        if (r.run.trades && r.run.trades[0]?.initialRiskAmount !== undefined) out[key].rDistribution = FID.rDistribution(r.run.trades);
+        if (key === 'KK_BREAKOUT') out[key].goldenTrades = FID.goldenTradeCheck(r.run.trades, FID.KK_GOLDEN_TRADES);
         const iv = intrabarVariants(key, ds, { window, costs: { slippageBps: c.slippageBps, commissionBps: c.commissionBps } });
         if (iv) out[key].intrabarVariants = iv;
       }
@@ -205,6 +211,91 @@ export function edgeExport(ds, { methods = TOP5, windows = EDGE_WINDOWS, log = (
   return { schema: 'st-edge-export-1.0.0', ...LABEL, windows, benchmark: { spyClose: ds.benchmark.map((b) => ({ date: b.date, close: b.close })), spyTR: ds.spyTR }, methods: out };
 }
 
+/** Adapter je Fidelity-Variante; FID-3 bekommt die Tagesauswahl (dailySelection) aus demselben Querschnitt. */
+function fidAdapters(ds) {
+  const ranks = FID.momentumRanks(ds.securities), leaders = FID.momentumLeaders(ds.securities, { ranks }), market = FID.marketOn(ds.benchmark);
+  const adapters = {};
+  for (const variant of Object.keys(FID.KK_FIDELITY_VARIANTS)) {
+    const selection = FID.KK_FIDELITY_VARIANTS[variant].dailyTop ? FID.dailySelection(ds, { leaders, market, ranks, variant }) : null;
+    adapters[variant] = FID.createKkFidelityAdapter({ leaders, market, variant, selection });
+  }
+  return { leaders, market, adapters };
+}
+
+/** C08-Treueprüfung: Variante FID-1 (research/kk-breakout-fidelity.mjs) zu Referenz- und Nullkosten, mit R-Verteilung und
+ *  goldenen Trades; die Referenz C08 bleibt unverändert. */
+export function kkFidelityRun(ds, { window = L.WINDOW, costLevels = SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF' || c.id === 'COST-0'), log = () => {} } = {}) {
+  const { market, adapters } = fidAdapters(ds);
+  const out = { version: FID.KK_FIDELITY_VERSION, rules: FID.KK_FIDELITY_RULES, marketOnShare: ds.benchmark.length ? market.size / ds.benchmark.length : null, variants: {} };
+  for (const variant of Object.keys(FID.KK_FIDELITY_VARIANTS)) {
+    const config = FID.kkFidelityConfigFor(variant), adapter = adapters[variant], prepared = prepareAll(ds, adapter, config), v = (out.variants[variant] = { definition: FID.KK_FIDELITY_VARIANTS[variant], costs: {} });
+    for (const c of costLevels) {
+      const run = runResearchLifecycle(ds, { adapter, config, policy: FID.kkFidelityPolicyFor(variant, { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, slippageBps: c.slippageBps, commissionBps: c.commissionBps }), prepared, from: window.from, to: window.to });
+      const x = summarizeRun({ run, trades: run.trades, metricTrades: run.trades.filter((t) => t.status === 'CLOSED') }, ds);
+      v.costs[c.id] = { ...x, rDistribution: FID.rDistribution(run.trades), ...(c.id === 'REF' ? { goldenTrades: FID.goldenTradeCheck(run.trades, FID.KK_GOLDEN_TRADES), exitCensus: exitCensus({ run }) } : {}) };
+      log(`kk-${variant} ${c.id}: ${run.trades.length} trades`);
+    }
+  }
+  return out;
+}
+
+/** C08-Diagnose der Ausführung: je Variante ein Lauf zu Referenzkosten; je goldenem Trade im Fenster ±8 Tage die
+ *  Orderablehnungen (Grund), die Trades und die Zahl offener Positionen. Keine Renditezahlen (kein PnL, keine Kurve). */
+export function goldenExecution(ds, { leaders, market, golden = FID.KK_GOLDEN_TRADES, window = L.WINDOW } = {}) {
+  const tickerOf = (id) => String(id).split('#')[0].split(':')[2], out = {};
+  const ref = SF6_VALIDATION_PROTOCOL.costLevels.find((c) => c.id === 'REF');
+  const { adapters } = fidAdapters(ds);
+  for (const variant of Object.keys(FID.KK_FIDELITY_VARIANTS)) {
+    const config = FID.kkFidelityConfigFor(variant), adapter = adapters[variant], prepared = prepareAll(ds, adapter, config);
+    const run = runResearchLifecycle(ds, { adapter, config, policy: FID.kkFidelityPolicyFor(variant, { ...PLATFORM_RESEARCH_PORTFOLIO_POLICY, slippageBps: ref.slippageBps, commissionBps: ref.commissionBps }), prepared, from: window.from, to: window.to });
+    const posBy = new Map(run.curve.map((p) => [p.date, p.positions ?? null]));
+    for (const g of golden) {
+      const lo = new Date(Date.parse(g.date) - 8 * 864e5).toISOString().slice(0, 10), hi = new Date(Date.parse(g.date) + 8 * 864e5).toISOString().slice(0, 10);
+      const inWin = (d) => d >= lo && d <= hi, mine = (id) => tickerOf(id) === g.ticker;
+      const setupDays = [];
+      for (const [id, ctx] of prepared) if (mine(id)) for (const [, st] of ctx.setups) if (inWin(st.date)) setupDays.push({ date: st.date, level: st.level, adr20: st.adr20 });
+      const e = (out[g.ticker + '|' + g.date] ??= {});
+      e[variant] = {
+        setupDays,
+        rejections: run.rejections.filter((r) => mine(r.id) && inWin(r.date)).map((r) => ({ date: r.date, reason: r.reason })),
+        trades: run.trades.filter((t) => mine(t.id) && inWin(t.entryDate)).map((t) => ({ entryDate: t.entryDate, exitDate: t.exitDate ?? null, exitReason: t.exitReason ?? null })),
+        openPositions: Object.fromEntries([...posBy].filter(([d]) => inWin(d))),
+        maxOpenPositions: FID.kkFidelityPolicyFor(variant, PLATFORM_RESEARCH_PORTFOLIO_POLICY).maxOpenPositions,
+      };
+    }
+  }
+  return out;
+}
+
+/** C08-FID4: Urteil nach der vorregistrierten Regel (certification/C08-FID4-PREREGISTRATION.json), Kosten REF. */
+export function fid4Verdict(kkFid, prereg = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/supertrader/source-faithful/certification/C08-FID4-PREREGISTRATION.json'), 'utf8')), windowName = L.WINDOW_NAME) {
+  const c = kkFid?.variants?.['FID-4']?.costs?.[prereg.costLevel];
+  if (!c) return { id: prereg.id, window: windowName, status: 'NOT_COMPUTED' };
+  const m = prereg.criteria.machine, r = c.rDistribution || {};
+  const checks = {
+    cagrAboveSpyCagr: Number.isFinite(c.cagr) && Number.isFinite(c.spyCagr) ? c.cagr > c.spyCagr : false,
+    expectancyRAbove: Number.isFinite(r.expectancyR) ? r.expectancyR > m.expectancyRAbove : false,
+    minClosedTrades: (r.closed ?? 0) >= m.minClosedTrades,
+  };
+  return { id: prereg.id, window: windowName, costLevel: prereg.costLevel, checks, pass: Object.values(checks).every(Boolean) };
+}
+
+/** C06/C07 Referenz auf DEV: Kennzahlen je Kostenstufe (versiegelt), R-Verteilung, Ablehnungsgründe und goldene Trades. */
+export function minerviniGoldenRun(ds, { window = L.WINDOW, costLevels = SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF' || c.id === 'COST-0'), log = () => {} } = {}) {
+  const out = { methods: {} };
+  for (const [cid, strategy] of [['C06', 'SEPA'], ['C07', 'POWER_PLAY']]) {
+    const setupIndex = MX.buildSetupIndex(ds, strategy, { from: null }), m = (out.methods[cid] = { strategy, setupCounts: setupIndex.counts, costs: {} });
+    for (const c of costLevels) {
+      const run = MX.runMinerviniLifecycle(ds, { strategy, setupIndex, config: ML.REFERENCE_CONFIG, policy: { ...MX.EQUITY_RESEARCH_PORTFOLIO_POLICY, slippageBps: c.slippageBps, commissionBps: c.commissionBps }, from: window.from, to: window.to });
+      const x = summarizeRun({ run, trades: run.trades, metricTrades: run.trades.filter((t) => t.status === 'CLOSED') }, ds);
+      const rej = {}; for (const r of run.rejections) rej[r.reason] = (rej[r.reason] || 0) + 1;
+      m.costs[c.id] = { ...x, rDistribution: MF.rDistributionMin(run.trades), rejectionsByReason: rej, ...(c.id === 'REF' ? { golden: MF.minerviniGoldenDiagnose(ds, { strategy, setupIndex, run }) } : {}) };
+      log(`minervini ${cid} ${c.id}: ${run.trades.length} trades`);
+    }
+  }
+  return out;
+}
+
 export function publicPart(result) {
   return { schema: 'st-hist-top5-public-1.1.0', ...LABEL, status: result.status ?? null, receipt: result.receipt, population: result.population ?? null, methods: Object.fromEntries(Object.entries(result.A).map(([k, m]) => [k, { candidateId: m.candidateId, tradesRef: m.costs.REF.trades, tradesSha256Ref: m.costs.REF.tradesSha256, auditPass: m.audit ? m.audit.pass : null, auditViolations: m.audit ? m.audit.violations : null, missedStopCheck: m.audit ? m.audit.missedStopCheck : null }])), quarantine: result.quarantine.A, universeB: result.B ? 'COMPUTED' : 'NOT_REQUESTED' };
 }
@@ -235,6 +326,37 @@ async function main() {
   const dsA = datasetFromPit(pit); attachSecPit(dsA, secPit);
   const qa = S.applyQuarantine(dsA, { mode: 'DQ-K5-BOOK' });
   log(`universe A: ${dsA.securities.length} segments, quarantine ${JSON.stringify(qa.census)}`);
+  if (arg('--mode') === 'minervini-golden') {
+    // C06/C07-Treueprüfung Schritt 1: Referenz (gepinnt, unverändert) auf DEV gegen belegte Minervini-Trades; nur versiegelt.
+    const out = minerviniGoldenRun(qa.ds, { log });
+    const receipt = { version: ST_HIST_TOP5_VERSION, fidelity: MF.MINERVINI_FIDELITY_VERSION, mode: 'minervini-golden', snapshotId, datasetSha256, datasetVerified: v.datasetVerified, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+    if (!reviewerPem) die('REVIEWER_KEY_REQUIRED_FOR_MINERVINI_GOLDEN');
+    fs.mkdirSync(OUT, { recursive: true });
+    const plainM = Buffer.from(JSON.stringify({ schema: 'st-minervini-golden-1.0.0', ...LABEL, receipt, quarantine: qa.census, ...out }));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.sealed.reviewer.json'), L.encryptForOwner(reviewerPem, plainM));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.sealed.owner.json'), L.encryptForOwner(fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8'), plainM));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.public.json'), JSON.stringify({ schema: 'st-minervini-golden-public-1.0.0', ...LABEL, receipt, golden: MF.MINERVINI_GOLDEN_TRADES.length }, null, 1) + '\n');
+    log('done (minervini-golden)');
+    return;
+  }
+  if (arg('--mode') === 'golden-diagnose') {
+    // C08-Treueprüfung: warum die belegten Kullamägi-Trades nicht entstehen (Universum, Quarantäne, Momentum, Markt, Setup-Schritt).
+    // Keine Renditezahlen; trotzdem nur versiegelt, öffentlich nur Zählungen.
+    const leaders = FID.momentumLeaders(qa.ds.securities), market = FID.marketOn(qa.ds.benchmark);
+    const tickerOf = (id) => String(id).split('#')[0].split(':')[2];
+    const diag = FID.goldenDiagnose(qa.ds, { leaders, market }).map((g) => ({ ...g, inRawUniverse: dsA.securities.some((x) => tickerOf(x.id) === g.ticker) }));
+    const exec = goldenExecution(qa.ds, { leaders, market });
+    for (const g of diag) g.execution = exec[g.ticker + '|' + g.date] ?? null;
+    const receipt = { version: ST_HIST_TOP5_VERSION, fidelity: FID.KK_FIDELITY_VERSION, mode: 'golden-diagnose', snapshotId, datasetSha256, datasetVerified: v.datasetVerified, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+    if (!reviewerPem) die('REVIEWER_KEY_REQUIRED_FOR_GOLDEN_DIAGNOSE');
+    fs.mkdirSync(OUT, { recursive: true });
+    const plainG = Buffer.from(JSON.stringify({ schema: 'st-kk-golden-diagnose-1.0.0', ...LABEL, receipt, rules: FID.KK_FIDELITY_RULES, golden: diag }));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.sealed.reviewer.json'), L.encryptForOwner(reviewerPem, plainG));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.sealed.owner.json'), L.encryptForOwner(fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8'), plainG));
+    fs.writeFileSync(path.join(OUT, 'st-hist-top5.public.json'), JSON.stringify({ schema: 'st-kk-golden-diagnose-public-1.0.0', ...LABEL, receipt, golden: diag.length, inUniverse: diag.filter((g) => g.inUniverse).length, inRawUniverse: diag.filter((g) => g.inRawUniverse).length }, null, 1) + '\n');
+    log('done (golden-diagnose)');
+    return;
+  }
   if (arg('--mode') === 'edge-export') {
     // E3 (Strang C): kostenfrei, Terminal S0, je Fenster ab Cash, mit DQ-K5-Quarantäne wie die Referenz; Ausgabe nur versiegelt
     const exp = edgeExport(qa.ds, { log });
@@ -250,6 +372,8 @@ async function main() {
   }
   const result = { schema: 'st-hist-top5-result-1.1.0', ...LABEL, window: { name: L.WINDOW_NAME, ...L.WINDOW }, costLevels: SF6_VALIDATION_PROTOCOL.costLevels, quarantine: { A: qa.census }, population: { A: populationCensus(dsA) }, A: runTop5(qa.ds, { log }) };
   // Sensitivität DQ-K5: dieselben Referenzen ohne Quarantäne (Referenzkosten; Audit nur in den Rahmen A und B)
+  result.KK_FID1 = kkFidelityRun(qa.ds, { log });
+  result.KK_FID1.fid4Verdict = fid4Verdict(result.KK_FID1);
   result.A_NO_DQK5 = runTop5(dsA, { costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF'), audit: false, log });
   if (arg('--v13-series') && arg('--v13-raw')) {
     const v13 = S.loadV13Additions({ root: ROOT, seriesDir: arg('--v13-series'), rawDir: arg('--v13-raw') });

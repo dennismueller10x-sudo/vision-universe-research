@@ -654,7 +654,7 @@
     if (x && typeof x === "object") return Object.keys(x).some(function (k) { return hasNumber(x[k]); });
     return false;
   }
-  var SF8_BUDGET = { totalBytes: 16 * 1024 * 1024, fileBytes: 2 * 1024 * 1024 };
+  var SF8_BUDGET = { totalBytes: 32 * 1024 * 1024, fileBytes: 4 * 1024 * 1024 };
 
   function sf8Present(b) { return !!(b && (b.summary || b.index || (b.files || []).length || b.recordsPresent || (b.unreadable || []).length)); }
   /* Ansichten der Strategiedateien (Bezug fuer Zaehlungen und Vertraege). */
@@ -878,12 +878,12 @@
     return result("DQ-SF8-6", "SF8-Ergebnisvertraege konsistent", "ERROR", checked, fail);
   }
 
-  /** DQ-SF8-7: oeffentliche Teile hoechstens 16 MB, jede Datei hoechstens 2 MB. */
+  /** DQ-SF8-7: oeffentliche Teile hoechstens 32 MB, jede Datei hoechstens 4 MB (seit Security Master 1.3.0 mit 5.098 Titeln; vorher 16/2 MB). */
   function sf8Budget(b) {
     var g = sf8Gate("DQ-SF8-7", "SF8-Datenbudget eingehalten", b); if (g) return g;
     var fail = [], total = 0;
-    (b.files || []).forEach(function (f) { total += f.bytes; if (f.bytes > SF8_BUDGET.fileBytes) fail.push(f.path + ": " + f.bytes + " Bytes ueber 2 MB"); });
-    if (total > SF8_BUDGET.totalBytes) fail.push("zusammen " + total + " Bytes ueber 16 MB");
+    (b.files || []).forEach(function (f) { total += f.bytes; if (f.bytes > SF8_BUDGET.fileBytes) fail.push(f.path + ": " + f.bytes + " Bytes ueber 4 MB"); });
+    if (total > SF8_BUDGET.totalBytes) fail.push("zusammen " + total + " Bytes ueber 32 MB");
     return result("DQ-SF8-7", "SF8-Datenbudget eingehalten", "ERROR", (b.files || []).length, fail, "Oeffentliche Teile " + total + " Bytes.");
   }
 

@@ -53,11 +53,12 @@
     {id: 'quant', label: 'Quant', match: (p, loc) => p.startsWith('/quant/') && !isElliottDetail(p, loc),
       items: [['quant','Quant','/quant/#/','quant'],['screener','Screener','/quant/#/screener','screener','Quant Screener'],['strategien','Strategien','/quant/#/strategien','strategies'],['aktien','Aktien','/quant/#/aktien','stocks']],
       active: loc => {
-        const legacy = {'/quant/screener/': 'screener', '/quant/strategies/': 'strategien', '/quant/strategies/builder/': 'strategien', '/quant/stock/': 'aktien', '/quant/technical/': 'aktien', '/quant/ranking/': 'aktien'}[loc.pathname];
+        const legacy = {'/quant/screener/': 'screener', '/quant/strategies/': 'strategien', '/quant/strategies/builder/': 'strategien', '/quant/stock/': 'aktien', '/quant/technical/': 'aktien', '/quant/ranking/': 'aktien', '/quant/methodology/': 'quant'}[loc.pathname];
         if (legacy) return legacy;
         if (loc.pathname !== '/quant/') return null;
         const k = hashPart(loc, 0);
-        return {'': 'quant', radar: 'quant', screener: 'screener', strategien: 'strategien', aktien: 'aktien', aktie: 'aktien', vergleich: 'aktien'}[k] || null;
+        /* Q00: Methodik und Backtest gehören zum Start „Quant“, Technische Lagen zu „Aktien“. */
+        return {'': 'quant', radar: 'quant', methodik: 'quant', backtest: 'quant', screener: 'screener', strategien: 'strategien', aktien: 'aktien', aktie: 'aktien', vergleich: 'aktien', chartlagen: 'aktien'}[k] || null;
       }},
     /* Fundamental: eigenes Produkt. #/<TICKER> ist die Unternehmensseite (nur Produktkontext); Entdecken und Suche sind
        Ansichten der Startseite, die fundamental/app.js (VUFundamental.Model.parseRoute) liest. */

@@ -909,7 +909,7 @@
       }).join('') + '</div>';
     }
     var sec = h('section', 'dv3-sec');
-    sec.innerHTML = sect('Gewinner und Verlierer' + (m.session ? ' · ' + day(m.session) : '')) + '<div class="vu-grid dv3-movers">' + col('Gewinner', m.gainers, false) + col('Verlierer', m.losers || [], true) + '</div>' +
+    sec.innerHTML = sect('Größte Anstiege und Rückgänge' + (m.session ? ' · ' + day(m.session) : '')) + '<div class="vu-grid dv3-movers">' + col('Anstiege', m.gainers, false) + col('Rückgänge', m.losers || [], true) + '</div>' +
       '<p class="vu-xs vu-mu">' + esc((m.eligible ? num(m.eligible, 0) + ' liquide US-Titel, ' : '') + (m.session ? 'Schluss ' + day(m.session) : '') + (m.previousSession ? ' gegen ' + day(m.previousSession) : '') + (m.complete === false ? ' (Sitzung läuft)' : '')) + '</p>';
     page.appendChild(sec);
   }

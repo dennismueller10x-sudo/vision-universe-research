@@ -41,6 +41,20 @@ if (doc.sensitivity && doc.sensitivity.length) {
   L.push('', '## Sensitivität', '', 'Varianten gegen den Standardlauf: Gleichgewichtung, Umschlag-Puffer (gehaltene Titel bleiben, solange sie unter den besten 50 liegen), Quartalsrhythmus (13 Wochen) und Endwertannahmen.', '', '| Portfolio | Variante | CAGR | Benchmark | Volatilität | Max. Drawdown | Beta | Turnover p. a. |', '|---|---|--:|--:|--:|--:|--:|--:|');
   for (const s of doc.sensitivity) L.push('| ' + (NAMES[s.profileId] || s.profileId) + ' | ' + s.variant + ' | ' + pct(s.cagr) + ' | ' + pct(s.benchmarkCagr) + ' | ' + pct(s.vol) + ' | ' + pct(s.maxDrawdown) + ' | ' + num(s.beta) + ' | ' + pct(s.turnover) + ' |');
 }
+if (doc.dqQuarantine) {
+  const q = doc.dqQuarantine, base = new Map(q.base.map(b => [b.profileId, b]));
+  L.push('', '## Datenqualität: Kurssprünge (DQ-K5, vorher/nachher)', '',
+    'Ein Tag, dessen Gesamtrendite das Fünffache des Vortags erreicht oder auf ein Fünftel davon fällt, deutet oft auf einen nicht bereinigten (Reverse-)Split hin. Er kann aber auch eine echte Bewegung sein.',
+    'Wie bei Supertrader wird ein solcher Titel an dieser Stelle geschnitten, nicht korrigiert. Kein Faktor greift über den Sprung zurück.',
+    'BOOK rechnet eine gehaltene Position mit dem Kurs der Sprungwoche ab, PRIOR mit dem Kurs der Woche davor. Delistete V13-Ketten werden mangels Tagesbalken mit dem Wochenrelativ geprüft.', '');
+  for (const pol of q.policies) L.push('- ' + pol.policy + ': ' + pol.flaggedSecurities + ' Titel mit ' + pol.flags + ' markierten Wochen, ' + pol.pieces + ' Stücke, ' + pol.droppedPieces + ' kurze Stücke entfallen.');
+  L.push('', '| Portfolio | CAGR ohne Filter | größte Wochenrendite | CAGR BOOK | größte Wochenrendite | CAGR PRIOR | größte Wochenrendite | Benchmark |', '|---|--:|--:|--:|--:|--:|--:|--:|');
+  const [B, P] = [q.policies.find(x => x.policy === 'DQ-K5-BOOK'), q.policies.find(x => x.policy === 'DQ-K5-PRIOR')];
+  for (const [id, b] of base) {
+    const rb = B && B.results.find(r => r.profileId === id), rp = P && P.results.find(r => r.profileId === id);
+    L.push('| ' + (NAMES[id] || id) + ' | ' + pct(b.cagr) + ' | ' + pct(b.maxWeeklyReturn) + ' | ' + pct(rb && rb.cagr) + ' | ' + pct(rb && rb.maxWeeklyReturn) + ' | ' + pct(rp && rp.cagr) + ' | ' + pct(rp && rp.maxWeeklyReturn) + ' | ' + pct((rp || rb || {}).benchmarkCagr) + ' |');
+  }
+}
 L.push('', '## Abdeckung je Jahr (Stichtag 30.06.)', '', '| Jahr | Titel mit Kurs | mit frischen Fundamentaldaten | davon später delistet |', '|--:|--:|--:|--:|');
 for (const c of doc.data.coverageByYear) L.push('| ' + c.year + ' | ' + (c.priced ?? '–') + ' | ' + (c.withFreshFundamentals ?? '–') + ' | ' + (c.laterDelisted ?? '–') + ' |');
 L.push('', '## Offene Grenzen', '');

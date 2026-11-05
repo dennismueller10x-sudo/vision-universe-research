@@ -114,3 +114,133 @@ test('ST-HIST-8: Plausibilitätsdiagnose ohne Hebel (Exposure <= 1, Cash >= 0) u
     assert.ok(p.worstDays.every((d, i, arr) => i === 0 || arr[i - 1].ret <= d.ret));
   }
 });
+
+test('ST-HIST-9: C08-Treuevariante FID-1 neben der Referenz; R-Verteilung und goldene Trades; Referenz unverändert', async () => {
+  const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
+  const d = ds();
+  const f = T.kkFidelityRun(d, { window: WIN });
+  assert.deepEqual(Object.keys(f.variants), ['FID-1', 'FID-2', 'FID-2L', 'FID-3', 'FID-4']);
+  assert.equal(FID.KK_FIDELITY_VARIANTS['FID-2L'].minAdv20Usd, 2.5e6);
+  for (const v of Object.values(f.variants)) {
+    assert.deepEqual(Object.keys(v.costs), ['COST-0', 'REF']);
+    assert.ok(v.costs.REF.rDistribution && 'avgWinR' in v.costs.REF.rDistribution && 'shareAbove5R' in v.costs.REF.rDistribution);
+    assert.equal(v.costs.REF.goldenTrades.length, FID.KK_GOLDEN_TRADES.length);
+  }
+  assert.throws(() => FID.createKkFidelityAdapter({ leaders: new Map(), market: new Set(), variant: 'FID-9' }), /UNKNOWN_FID_VARIANT/);
+  assert.ok(f.marketOnShare >= 0 && f.marketOnShare <= 1);
+  // Querschnitt: in drei Titeln sind die besten 2 % genau ein Titel je Datum mit voller Historie
+  const L1 = FID.momentumLeaders(d.securities);
+  assert.ok([...L1.values()].every((s) => s.size <= 3));
+  // Referenz C08 unverändert: die gepinnte Variantenregistrierung bleibt gleich
+  const KK = await import('../source-faithful/research/kk-breakout-lifecycle.mjs');
+  assert.equal(KK.KK_REFERENCE_CONFIG.entryTiming, 'NEXT_OPEN');
+  const a = T.runTop5(d, { window: WIN, costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF') });
+  assert.ok(a.KK_BREAKOUT.rDistribution && Array.isArray(a.KK_BREAKOUT.goldenTrades));
+});
+
+test('ST-HIST-10: Diagnose der goldenen Trades folgt kkFidelitySetupAt Schritt für Schritt und trägt keine Renditezahl', async () => {
+  const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
+  const d = ds();
+  // Gleichheit: Explain meldet OK genau dann, wenn kkFidelitySetupAt ein Setup liefert (alle Varianten, alle Sitzungen)
+  let ok = 0;
+  for (const s of d.securities) for (let i = 0; i < s.bars.length; i++) for (const V of Object.values(FID.KK_FIDELITY_VARIANTS)) {
+    const o = { quality: V.quality, minAdv20Usd: V.minAdv20Usd ?? null }, a = FID.kkFidelitySetupAt(s.bars, i, undefined, o), e = FID.kkFidelitySetupExplain(s.bars, i, undefined, o);
+    assert.equal(e.step === 'OK', a !== null, `${s.id} ${s.bars[i].date} ${e.step}`);
+    if (a) { ok++; assert.equal(e.level, a.level); assert.equal(e.adr20, a.adr20); }
+  }
+  assert.ok(ok > 0, 'die Testreihen erzeugen Setups');
+  const leaders = FID.momentumLeaders(d.securities), market = FID.marketOn(d.benchmark);
+  const golden = [{ ticker: 'AAA', date: '2016-06-15', source: 'Test' }, { ticker: 'ZZZ', date: '2016-06-15', source: 'Test' }];
+  const g = FID.goldenDiagnose(d, { leaders, market, golden });
+  assert.equal(g[1].inUniverse, false);
+  assert.equal(g[0].inUniverse, true);
+  const sess = g[0].securities[0].sessions;
+  assert.ok(sess.length >= 10 && sess.every((x) => 'FID-1' in x && 'FID-2' in x && 'FID-2L' in x && 'leader' in x && 'marketOn' in x && x.momentum && 'bestPercentile' in x.momentum));
+  // Perzentil gleich der Leader-Rechnung
+  for (const x of sess) assert.equal(x.leader, x.momentum.bestPercentile !== null && x.momentum.bestPercentile >= 100 - FID.KK_FIDELITY_RULES.momentumTopPct);
+  assert.doesNotMatch(JSON.stringify(g), /totalReturn|cagr|pnl|equity/);
+  const w = fs.readFileSync(new URL('../../../.github/workflows/supertrader-st-hist-top5.yml', import.meta.url), 'utf8');
+  assert.match(w, /options: \[backtest, edge-export, golden-diagnose, minervini-golden\]/);
+});
+
+test('ST-HIST-11: Ausführungsdiagnose der goldenen Trades: Setups, Ablehnungen mit Grund, offene Positionen, keine Renditezahl', async () => {
+  const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
+  const d = ds(), leaders = FID.momentumLeaders(d.securities), market = FID.marketOn(d.benchmark);
+  const golden = [{ ticker: 'CCC', date: '2016-09-15', source: 'Test' }];
+  const x = T.goldenExecution(d, { leaders, market, golden, window: WIN })['CCC|2016-09-15'];
+  assert.deepEqual(Object.keys(x), ['FID-1', 'FID-2', 'FID-2L', 'FID-3', 'FID-4']);
+  for (const [k, v] of Object.entries(x)) {
+    assert.ok(Array.isArray(v.setupDays) && Array.isArray(v.rejections) && Array.isArray(v.trades));
+    assert.equal(v.maxOpenPositions, k === 'FID-4' ? 5 : 20);
+    assert.ok(Object.values(v.openPositions).every((n) => n === null || (n >= 0 && n <= v.maxOpenPositions)));
+  }
+  assert.doesNotMatch(JSON.stringify(x), /pnl|equity|totalReturn|cagr/);
+});
+
+test('ST-HIST-12: FID-3 = FID-1 plus Tagesauswahl der höchstens 3 stärksten Setups; Leader-Rechnung unverändert', async () => {
+  const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
+  const d = ds();
+  assert.deepEqual(FID.KK_FIDELITY_VARIANTS['FID-3'], { quality: false, adrNorm: 'ENTRY', trail: 'MA10', dailyTop: 3 });
+  const ranks = FID.momentumRanks(d.securities), L1 = FID.momentumLeaders(d.securities), L2 = FID.momentumLeaders(d.securities, { ranks });
+  assert.deepEqual([...L1].map(([k, v]) => [k, [...v].sort()]), [...L2].map(([k, v]) => [k, [...v].sort()]), 'Leader aus ranks gleich der bisherigen Rechnung');
+  const market = FID.marketOn(d.benchmark), sel = FID.dailySelection(d, { leaders: L1, market, ranks, variant: 'FID-3' });
+  for (const [date, set] of sel) {
+    assert.ok(set.size <= 3);
+    for (const id of set) assert.ok(L1.get(date).has(id) && market.has(date));
+  }
+  // mit dailyTop 1 bleibt je Datum der Titel mit dem höchsten Perzentil
+  const one = FID.dailySelection(d, { leaders: new Map([...L1].map(([k]) => [k, new Set(d.securities.map((s) => s.id))])), market: new Set(d.calendar.concat(d.benchmark.map((b) => b.date))), ranks, variant: 'FID-3' });
+  for (const [date, set] of one) { const best = Math.max(...[...set].map((id) => ranks.get(date).get(id) ?? -1)); for (const id of set) assert.ok((ranks.get(date).get(id) ?? -1) <= best); }
+  assert.throws(() => FID.createKkFidelityAdapter({ leaders: L1, market, variant: 'FID-3' }), /SELECTION_REQUIRED/);
+  assert.throws(() => FID.dailySelection(d, { leaders: L1, market, ranks, variant: 'FID-1' }), /NO_DAILY_TOP/);
+  // FID-3 stellt nur an ausgewählten Tagen Setups bereit
+  const ad = FID.createKkFidelityAdapter({ leaders: L1, market, variant: 'FID-3', selection: sel });
+  for (const s of d.securities) { const c = ad.prepare(s, FID.KK_FIDELITY_CONFIG); if (c) for (const [, st] of c.setups) assert.ok(sel.get(st.date)?.has(s.id)); }
+});
+
+test('ST-HIST-13: FID-4 genau wie vorregistriert (1 % Risiko, Kappe 25 %, höchstens 5 Positionen) und Urteil nach der festen Regel', async () => {
+  const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
+  const pre = JSON.parse(fs.readFileSync(new URL('../source-faithful/certification/C08-FID4-PREREGISTRATION.json', import.meta.url), 'utf8'));
+  const V = FID.KK_FIDELITY_VARIANTS['FID-4'], V3 = FID.KK_FIDELITY_VARIANTS['FID-3'];
+  assert.equal(pre.variant, 'FID-4');
+  assert.equal(V.riskFraction, pre.rule.riskFraction); assert.equal(V.maxPositionWeight, pre.rule.maxPositionWeight); assert.equal(V.maxOpenPositions, pre.rule.maxOpenPositions);
+  for (const k of Object.keys(V3)) assert.equal(V[k], V3[k], `FID-4 erbt ${k} von FID-3`);
+  assert.deepEqual(pre.criteria.machine, { cagrAboveSpyCagr: true, expectancyRAbove: 0, minClosedTrades: 100 });
+  assert.deepEqual(pre.sequence.map((x) => x.window), ['DEV', 'HOLDOUT']);
+  assert.equal(FID.kkFidelityConfigFor('FID-4').sizing.riskFraction, 0.01);
+  assert.equal(FID.kkFidelityConfigFor('FID-1'), FID.KK_FIDELITY_CONFIG);
+  const pol = FID.kkFidelityPolicyFor('FID-4', { maxPositionWeight: 0.25, maxOpenPositions: 20, x: 1 });
+  assert.deepEqual(pol, { maxPositionWeight: 0.25, maxOpenPositions: 5, x: 1 });
+  // keine weitere Variante nach FID-4 (Entscheidung Steuerung)
+  assert.equal(Object.keys(FID.KK_FIDELITY_VARIANTS).at(-1), 'FID-4');
+  const mk = (cagr, spyCagr, e, n) => ({ variants: { 'FID-4': { costs: { REF: { cagr, spyCagr, rDistribution: { expectancyR: e, closed: n } } } } } });
+  assert.equal(T.fid4Verdict(mk(0.2, 0.15, 0.1, 150), pre, 'DEV').pass, true);
+  assert.equal(T.fid4Verdict(mk(0.1, 0.15, 0.1, 150), pre, 'DEV').pass, false);
+  assert.equal(T.fid4Verdict(mk(0.2, 0.15, 0, 150), pre, 'DEV').pass, false);
+  assert.equal(T.fid4Verdict(mk(0.2, 0.15, 0.1, 99), pre, 'DEV').pass, false);
+  assert.equal(T.fid4Verdict({}, pre, 'DEV').status, 'NOT_COMPUTED');
+  const d = ds(), f = T.kkFidelityRun(d, { window: WIN });
+  assert.ok('FID-4' in f.variants && f.variants['FID-4'].costs.REF);
+});
+
+test('ST-HIST-14: Minervini-Treueprüfung Schritt 1: Referenz C06/C07 unverändert gegen belegte Trades, Zustand je Sitzung', async () => {
+  const MF = await import('../source-faithful/research/minervini-fidelity.mjs');
+  assert.equal(MF.MINERVINI_GOLDEN_TRADES.length, 13);
+  assert.ok(MF.MINERVINI_GOLDEN_TRADES.every((g) => /^\d{4}-\d{2}-\d{2}$/.test(g.date) && g.date >= '2016-01-04' && g.date <= '2026-09-30' && ['SEPA', 'POWER_PLAY'].includes(g.setup) && /@markminervini \d+/.test(g.source)));
+  const d = ds(), golden = [{ ticker: 'AAA', date: '2016-06-15', setup: 'SEPA', source: 'Test' }, { ticker: 'ZZZ', date: '2016-06-15', setup: 'SEPA', source: 'Test' }, { ticker: 'CCC', date: '2016-06-15', setup: 'POWER_PLAY', source: 'Test' }];
+  const out = T.minerviniGoldenRun(d, { window: WIN });
+  assert.deepEqual(Object.keys(out.methods), ['C06', 'C07']);
+  for (const m of Object.values(out.methods)) { assert.deepEqual(Object.keys(m.costs), ['COST-0', 'REF']); assert.ok('expectancyR' in m.costs.REF.rDistribution && m.costs.REF.rejectionsByReason); assert.ok(Array.isArray(m.costs.REF.golden)); }
+  // Diagnose direkt mit eigener Liste
+  const MX = await import('../source-faithful/research/minervini-execution.mjs'), ML = await import('../source-faithful/research/minervini-lifecycle.mjs');
+  const idx = MX.buildSetupIndex(d, 'SEPA', { from: null }), run = MX.runMinerviniLifecycle(d, { strategy: 'SEPA', setupIndex: idx, config: ML.REFERENCE_CONFIG, from: WIN.from, to: WIN.to });
+  const g = MF.minerviniGoldenDiagnose(d, { strategy: 'SEPA', setupIndex: idx, run, golden });
+  assert.equal(g.length, 2, 'nur goldene Trades derselben Strategie');
+  assert.equal(g[1].inUniverse, false);
+  const sess = g[0].securities[0].sessions;
+  assert.ok(sess.length >= 10 && sess.every((x) => typeof x.state === 'string' && !x.state.includes('|')));
+  // Zustand je Sitzung stimmt mit dem Setup-Index überein
+  const sec = d.securities.find((s) => s.id.includes(':AAA:')), m = idx.index.get(sec.id) || new Map();
+  for (let i = 300; i < sec.bars.length; i += 37) assert.equal(MF.setupStateAt('SEPA', sec, i) === 'SETUP_DETECTED', m.has(i), sec.bars[i].date);
+  assert.doesNotMatch(JSON.stringify(g), /totalReturn|cagr|equity/);
+});

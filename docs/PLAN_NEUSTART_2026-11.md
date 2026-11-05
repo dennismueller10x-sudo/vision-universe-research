@@ -144,3 +144,12 @@ Ziel: Die App meldet konkrete Handelsgelegenheiten (Beispiel des Owners: Kauf an
 | S4 | Rechtliche Einordnung (Signale für alle, keine persönliche Beratung; Pflichtangaben einer Finanzanalyse) | Owner mit Rechtsberatung |
 
 Regel: Kein Setup wird als Signal gezeigt, das S2 nicht bestanden hat. Alle getesteten Setups werden berichtet, auch die schlechten.
+
+## 11. Owner-Linie Recht und Produkt (05.11.2026, verbindlich)
+
+- **Vision Universe ist eine Analyse-Software.** Sie stellt Werkzeuge, Daten und regelbasierte Auswertungen bereit. Keine Anlageberatung, keine Anlageempfehlung, keine konkreten Kauf- oder Verkaufsempfehlungen.
+- **Keine Live-Signale** mit Einstieg, Stopp und Ziel als Empfehlung. Projekt §10 Stufe S3 entfällt. Setups und Kandidaten erscheinen nur als neutrale Regel-Ergebnisse („erfüllt die Regel“, „Zone laut Methode“), nach den Wortwahl-Regeln in `docs/legal/WORTWAHL.md`.
+- **Keine Anzeige bei der BaFin.** Das Produkt wird so gebaut und formuliert, dass sie nicht nötig ist.
+- **Keine Provisionen oder Partnerverträge** (Stand 05.11.2026).
+- **Private Bestände:** neutraler Hinweis, dass Gesellschafter und Mitarbeiter privat in Wertpapieren investiert sein können, die die Software anzeigt; Ergebnisse entstehen regelbasiert ohne Einfluss darauf.
+- **Rechtstexte liegen auf der Webseite.** Die App enthält nur die Pflicht-Verlinkungen (Impressum, Datenschutz, Nutzungsbedingungen, Risikohinweise) und keine eigenen Rechtstexte.
