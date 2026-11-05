@@ -1,4 +1,4 @@
-# Strang A – Infrastruktur (Stand 05.11.2026, 08:15 UTC)
+# Strang A – Infrastruktur (Stand 05.11.2026, Tagesende)
 
 Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/workflows`, `scripts/ci`, `scripts/core`, `core/registry`, dieses Dokument.
 
@@ -38,13 +38,19 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - Befund dabei: Der Erzeuger allein hätte 147 Anleihen und ETNs als Aktie aufgenommen. Der Workflow läuft jetzt die vollständige Kette (Namensschicht DEBT, Börsenverzeichnis).
   - Ab jetzt läuft der Eignungslauf nach jedem Security-Master-Lauf, mit normalen Grenzen. Die Produkte übernehmen den Stand mit dem nächsten Marktdaten-Lauf.
 - **Screener-Spalten Supertrader-Methoden** (#1389, Z5): `stMeth`, `stV1`, `stStage` aus #1377; 1.719 Titel mit Methode, 564 mit V1. Die Oberfläche baut D2.
+- **Insider zusammengeführt, Schritt 1** (#1397): Parität vorab an 60 echten Form-4-Einreichungen, E2 (Python) und Eigentümer-Signale (JS) lesen 60/60 identische Käufe. E2 holt jede Form 4 einmal täglich und legt zusätzlich den Cache-Auszug der Eigentümer-Signale in `data/live` (`insider/data/form4/<Monat>.json`, intern, ≈1,4 MB je Monat). `ownership-signals.yml` sät damit seinen Cache und holt nur noch, was fehlt.
+- **Bündel `monitor`** (#1400): neun Live-Prüfungen in `monitor.yml`, ein Auswahl-Job bildet die alten Auslöser nach (Dispatch-Wahl, Pages-Lauf → technical, Push-Pfade + Commit-Marke). Nebenbei ADR-005: Eingaben in discover-realtime über `env:`.
+- **Ausmusterung** (#1402): neun tote Workflows gelöscht, Liste unter `retired` im Bündel-Verzeichnis. Von den 14 Kandidaten bleiben fünf mit Grund (update-sec-fundamentals aktiv, social-hashtag-capability Reaktivierungspfad, tiingo-scale und social-smoke-publish von Tests gelesen, supertrader-delisting-probe).
+- **Umfangsfolgen nach Universumsänderung** (#1401): Befund nach dem Nachholen: für die 131 ausgeschiedenen ETFs lagen noch Discover-Reihen (131), lange Reihen (74), Intraday-Snapshots und 25 Technical-Signal-Einträge; die Datenhygiene-Prüfung in ~20 Datenläufen wäre rot geworden, auch im Nachtlauf vor seiner Materialisierung. Der Eignungs-Workflow lässt jetzt die Erzeuger selbst bereinigen (`--prune-only`/`--index-only`) und stößt die Materialisierung mit `force` an.
+- **Gates → Vertragstests** (#1403): `core/registry/product-contracts.json` + `core/tests/product-contracts.test.mjs` (PC-1 Produktänderung löst Produkt-CI aus, PC-2 Vertragstests laufen, PC-3 Schnittstellen-Schemata, PC-4 kein Pfadverbot mehr). Supertrader Gate A nur noch Bericht; Discover-Engine-Regel und das Pfadverbot in Company Intelligence `validate` entfernt; CLAUDE.md nachgezogen.
 
 ## Offen
-- **Insider zusammenführen** (Entscheidung der Steuerung vom 05.11.): `ownership-signals.yml` (wöchentlich, `quant/data/product/ownership-signals-v1/`) und E2 (täglich, Point-in-Time, `data/live`) werden zu einem Erzeuger zusammengeführt, bevor ein Konsument liest.
+- **Insider, Schritt 2:** nach dem ersten grünen Wochenlauf der Eigentümer-Signale mit gesätem Cache lesen Verbraucher nur noch eine Quelle; die eigene Abholung der Eigentümer-Signale bleibt Lückenfüller (Form 5, Ausfälle).
 - **Bündelung, nächste Schritte:**
-  - `monitor` (14 Workflows);
-  - dann die 14 Löschkandidaten prüfen;
-  - dann `pipeline-weekly`.
+  - `pipeline-intraday`: der Cloudflare-Wecker startet `intraday-pacemaker.yml` und `discover-im-blick-live.yml` per Dateiname. Reihenfolge: Bündel-Workflow anlegen → Wecker auf den neuen Namen umstellen und ausrollen → alte Dateien löschen.
+  - `pipeline-daily` (17 Workflows, `workflow_run`-Ketten nach Namen): zuerst die Kette als Liste mit Auslösern, dann Stufe für Stufe.
+  - `ci` (26): eine `ci.yml` mit Auswahl-Job wie `monitor`; `product-contracts.json` zeigt dann auf Jobs statt Dateien.
+  - Rest-Kandidaten nach Gate-Umbau: supertrader-delisting-probe; `monitor` noch ohne freshness-monitor, fundamental-sec-freshness, supertrader-live-smoke, company-intelligence-health/-watchdog.
 - **Datenzweig:** Abnahme News am 11.11. (7 Tage nur `IDENTICAL`), danach News auf BRANCH_ONLY.
 - Folgearbeiten an 1.3.0 (Strang C): #1119 (H6), optional H7.
 - **PR-Aufräumen erledigt** (Owner-Bestätigung 05.11.2026 im Chat):
