@@ -133,14 +133,13 @@
 
   /* Sechs Perspektiven – dieselben Blickwinkel wie auf jeder Aktienseite. Die alten Gruppen
      (fields.js GROUPS) bleiben als Unterueberschriften. Zaehlung aus der Filterbibliothek. */
-  var METHOD_IDS = ['chartPattern', 'chartPatternOpen', 'chartPatternConfirmed', 'tiOutlook', 'tiStructure', 'tiElliottApplicable'];
+  var METHOD_IDS = ['stMethods', 'stV1', 'stStage', 'chartPattern', 'chartPatternOpen', 'chartPatternConfirmed', 'tiOutlook', 'tiStructure', 'tiElliottApplicable'];
   var PERSP = [
     { id: 'basis', label: 'Basis', sub: 'Branche, Land, Börse, Größe', glyph: 'globe', groups: ['company', 'size'] },
     { id: 'zahlen', label: 'Zahlen', sub: 'Wachstum, Marge, Bilanz, Bewertung', world: 'fundamental', groups: ['growth', 'quality', 'balance', 'valuation'] },
     { id: 'faktoren', label: 'Faktoren', sub: 'Qualität, Momentum, Risiko je 0–100', world: 'quant', groups: ['vu'] },
     { id: 'chart', label: 'Chart', sub: 'Trend, 200-Tage-Linie, RSI, Kursstärke', world: 'technical', groups: ['momentum', 'technical'] },
-    { id: 'methoden', label: 'Methoden', pro: true, sub: 'Chartformationen, Chartbild, Wellen', world: 'supertrader', ids: METHOD_IDS,
-      soon: [['Supertrader-Methoden', 'Kandidaten der Supertrader-Methoden als Kriterium']] },
+    { id: 'methoden', label: 'Methoden', pro: true, sub: 'Supertrader-Methoden, Chartformationen, Chartbild, Wellen', world: 'supertrader', ids: METHOD_IDS },
     { id: 'investoren', label: 'Investoren', pro: true, sub: 'Analysten, Kursziele, Profi-Käufe', world: 'hedgefonds', groups: ['analysts'],
       soon: [['Profi-Käufe (13F)', 'Käufe großer Fonds laut Quartalsmeldung']] }
   ];
@@ -1084,7 +1083,7 @@
     var editing = opts.filter || null;
     var s = openSheet({ title: 'Kriterium', full: f.kind === 'enum', back: !!opts.fromLibrary, foot: true });
     var meta = h('div', { class: 'sc-meta' }, [h('span', { class: 'sc-pill', text: F.group(f.group).label }), f.timeframe ? h('span', { class: 'sc-pill', text: f.timeframe }) : null,
-      h('span', { class: 'sc-pill', text: { fundamentals: 'SEC-Fundamentaldaten', price: 'Kursdaten', technical: 'Tagesschlusskurse', master: 'Wertpapierstamm', classification: 'SEC SIC', factor: 'Quant V2 Faktorevidenz', estimates: 'Schätzungen', technicalIntelligence: 'Chartbild (Wochenchart, Szenario)', technicalWorld: 'Technical (Tages-OHLCV)' }[f.source] || f.source }),
+      h('span', { class: 'sc-pill', text: { fundamentals: 'SEC-Fundamentaldaten', price: 'Kursdaten', technical: 'Tagesschlusskurse', master: 'Wertpapierstamm', classification: 'SEC SIC', factor: 'Quant V2 Faktorevidenz', estimates: 'Schätzungen', technicalIntelligence: 'Chartbild (Wochenchart, Szenario)', supertrader: 'Supertrader-Kandidaten', technicalWorld: 'Technical (Tages-OHLCV)' }[f.source] || f.source }),
       f.pro ? h('span', { class: 'sc-pill is-accent', text: 'Pro' }) : null]);
     var pp = perspOf(f);
     s.body.append(h('div', { class: 'sc-dhead' }, [perspIcon(pp, 44), h('div', {}, [h('p', { class: 'vu-ltag', text: pp.label + ' · ' + F.group(f.group).label }), h('h3', { text: f.label })])]),
