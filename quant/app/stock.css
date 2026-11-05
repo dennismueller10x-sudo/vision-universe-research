@@ -338,3 +338,5 @@ html[data-theme=light] .qd .qv-stock,html[data-theme=light] body.qd .qv-stock{--
 :root[data-theme=dark] .qd .qv-stock .qv3-replay-big b{color:var(--vu-inv,#000)}
 .qd .qv-stock .qv3-setup-h b,.qd .qv-stock .qv3-rules li{color:var(--vu-ink,#000)}
 .qd .qv-stock .qv3-setup-h .qv3-chip-o{color:var(--vu-ink,#000)}
+/* Ausklapper „weitere“ auf der schwarzen Risiko-Karte: Schrift der Karte statt eigener dunkler Farbe (Kontrast). */
+.qd .qv-stock .qv2-panel.tone-bad .dx-waage-weitere>summary,.qd .qv-stock .qv2-panel.tone-bad .dx-waage-weitere>summary *{color:inherit}
