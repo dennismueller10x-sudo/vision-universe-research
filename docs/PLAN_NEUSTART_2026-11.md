@@ -103,3 +103,12 @@ Die Mockups (`docs/design/redesign-2027/`, README „Backend-Zusätze“) zeigen
 | Z7 | AI Atlas mit Antworten, **visuell** in der App | E10 | D2 | Vorhandenen Worker `workers/vu-ask` übernehmen (Claude Haiku 4.5, Budget- und Tagesgrenzen, Cache): Das Modell übersetzt nur die Frage, gerechnet wird im Browser auf VU-Daten. Neu ist nur die Darstellung nach Mockup E10-b mit den VU-Bausteinen (Aktienzeilen, Urteile, Chart C06, Balken, Erklärung, Rechenweg) statt reinem Text. Modell, Budget und Grenzen bleiben unverändert. Öffentlich ohne Beta-Passwort = Owner-Freigabe (Kosten). |
 
 Reihenfolge: Z2, Z1 und Z7 zusammen mit den Seiten, danach Z3, Z5, Z6, zuletzt Z4.
+
+## 8. Strang E: Codex (ab 04.11.2026)
+
+Codex (ChatGPT) arbeitet mit eigenem Nutzungslimit an Aufgaben, die keinen Claude-Strang berühren. Regeln: `AGENTS.md`.
+
+| # | Aufgabe | Pfade | Ergebnis |
+|---|---|---|---|
+| E1 | Unabhängige Gegenprüfung der historischen Backtests aus B und C (Rechenweg, Look-ahead, Survivorship, Kosten, Benchmark) | nur lesen; Bericht `docs/neustart/E-codex.md` | Liste bestätigter und fraglicher Punkte mit Datei und Zeile; keine Codeänderung an B/C |
+| E2 | Z6 Insider-Käufe: Erzeuger aus SEC Form 4 (frei verfügbar), Point-in-Time mit Einreichungsdatum | `scripts/insider/`, `core/registry/domains.json` (ein Eintrag), Tests | Skript mit `--out` und Tests; Strang A bindet es in die Tagespipeline ein |

@@ -174,6 +174,23 @@ jobs:
         run: npm install --prefix /tmp/vu2-release esbuild@0.25.10
       - name: Build static product delivery
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/site"
+      # Datenzweig (Plan Neustart §3, core/registry/data-branch.json): erzeugte Daten ausserhalb von main.
+      # Fehlt der Zweig, bleibt die Kopie aus main; fehlt ein registrierter Pfad ganz, bricht der Bau ab.
+      - name: Daten aus dem Datenzweig ueber die Auslieferung legen
+        env:
+          DATA_BRANCH: data/live
+          SITE_ROOT: ${{ runner.temp }}/site
+        run: |
+          set -euo pipefail
+          D="$RUNNER_TEMP/data-branch"; mkdir -p "$D"
+          if git ls-remote --exit-code --heads origin "$DATA_BRANCH" >/dev/null; then
+            git fetch --quiet --depth=1 origin "refs/heads/$DATA_BRANCH"
+            git archive FETCH_HEAD | tar -x -C "$D"
+          else
+            echo "Datenzweig $DATA_BRANCH fehlt noch: Auslieferung aus main"
+          fi
+          node scripts/ci/overlay-data-branch.mjs --data "$D" --site "$SITE_ROOT" --out "$RUNNER_TEMP/data-branch-delivery.json"
+          { echo '### Datenzweig'; echo '```'; cat "$RUNNER_TEMP/data-branch-delivery.json"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Controlled Company Intelligence consumer projection
         if: vars.COMPANY_INTELLIGENCE_PUBLIC_PILOT_ENABLED == 'true'
         env:

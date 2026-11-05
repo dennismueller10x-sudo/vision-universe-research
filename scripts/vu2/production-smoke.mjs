@@ -319,6 +319,8 @@ for(const width of [1440,390]){
    const stand=(await page.locator('main#qx-main p.qx-small').allInnerTexts()).join(' ');
    if(!satz)bad.push('SATZ_FEHLT');
    if(/undefined|NaN/.test(satz+' '+stand))bad.push('UNDEFINED_IM_SATZ');
+   /* Redesign 2027 (Q02): zuerst 10 Zeilen, dann „Alle N zeigen“ - gezaehlt wird die ganze Liste. */
+   const alle=page.locator('main#qx-main button.qv3-all');if(await alle.count()){await alle.first().click();await page.waitForTimeout(400);}
    const zeilen=await page.locator('main#qx-main a.qx-row').allInnerTexts();
    if(!zeilen.length)bad.push('KEINE_TREFFER');
    else if(frage!=='setups'){
@@ -357,17 +359,18 @@ for(const width of [1440,390]){
       ihrem Namen da, nicht nur mit dem Kuerzel. */
    /* Konzept-Design: Karten (a.qx-poster) tragen den Namen in .q-card-name,
       das Kuerzel im data-symbol. */
-   const zeilen=await page.locator('main#qx-main a.qx-row .qx-row-title, main#qx-main a.qx-poster').evaluateAll(ns=>ns.map(n=>({t:(n.querySelector('.qx-ticker')||{}).textContent||n.dataset.symbol||'',n:(n.querySelector('.qx-row-name,.q-card-name')||n.querySelector('span')||{}).textContent||''})));
+   /* Redesign 2027 (Q04): Aktienzeilen C10 (a.vu-lrow): Name in .vu-lrow__name b, Kuerzel im Logo-Feld. */
+   const zeilen=await page.locator('main#qx-main a.qx-row .qx-row-title, main#qx-main a.qx-poster, main#qx-main a.vu-lrow').evaluateAll(ns=>ns.map(n=>n.classList.contains('vu-lrow')?{t:(n.getAttribute('href')||'').split('/').pop(),n:(n.querySelector('.vu-lrow__name b')||{}).textContent||''}:({t:(n.querySelector('.qx-ticker')||{}).textContent||n.dataset.symbol||'',n:(n.querySelector('.qx-row-name,.q-card-name')||n.querySelector('span')||{}).textContent||''})));
    if(!zeilen.length)bad.push('KEINE_ZEILEN');
    const mitName=zeilen.filter(x=>x.n&&x.n!==x.t).length;
    if(zeilen.length&&mitName/zeilen.length<0.95)bad.push('NAMEN='+mitName+'/'+zeilen.length);
    console.log('     Aktien: '+zeilen.length+' Zeilen · '+mitName+' mit Namen');
   }
   if(route==='strategien'&&!/strategien\/[a-z]/.test(view)){
-   const karten=await page.locator('main#qx-main a.qx-strat').count();
+   const karten=await page.locator('main#qx-main a.qx-strat, main#qx-main a.qv3-scard').count();
    if(karten<8)bad.push('STRATEGIEN='+karten);
    /* KEINE TREFFERQUOTE: die Seite sagt, dass es keine gibt. */
-   if(!/keine Erfolgs- oder Trefferquote/.test(text))bad.push('TREFFERQUOTE_UNGENANNT');
+   if(!/keine (Erfolgs- oder )?Trefferquote/.test(text))bad.push('TREFFERQUOTE_UNGENANNT');
   }
   if(route==='strategien'&&/strategien\/[a-z]/.test(view)){
    if(!/Welche Bedingungen gelten\?/.test(text))bad.push('BEDINGUNGEN_FEHLEN');
@@ -422,7 +425,8 @@ for(const width of [1440,390]){
     const auskunft=page.locator('.qx-verdict-card');
     if(!await auskunft.count())bad.push('AUSKUNFT_FEHLT');
     else{
-     const kopfsatz=(await auskunft.locator('.qx-verdict-top').innerText().catch(()=>'')).replace(/\n+/g,' ');
+     /* Redesign 2027 (Q07): der Kopfsatz steht in der schwarzen Gesamtkarte (.qv3-ink), sonst wie bisher. */
+     const kopfsatz=(await auskunft.locator('.qx-verdict-top, .qv3-ink').first().innerText().catch(()=>'')).replace(/\n+/g,' ');
      if(kopfsatz.length<40)bad.push('KOPFSATZ_ZU_KURZ='+kopfsatz.length);
      const ganz=await auskunft.innerText();
      /* Kein interner Code und keine Handlungs- oder Prognosesprache - §81
@@ -444,8 +448,9 @@ for(const width of [1440,390]){
     const grenzen=await page.locator('#grenzen').innerText().catch(()=>'');
     /* innerText folgt text-transform (Dachzeilen stehen in Versalien) -
        deshalb ohne Ruecksicht auf Gross-/Kleinschreibung. */
-    if(!/Gibt es ein Setup\?|Wie weit ist die Aktie im Setup\?/i.test(setupText)&&!/Setup:/.test(grenzen))bad.push('SETUPFRAGE_FEHLT');
-    if(setupText&&!/Was würde das Setup ungültig machen\?|Was müsste als Nächstes passieren\?|Kein Setup|keine Beobachtung/i.test(setupText))bad.push('ENDE_UNBEANTWORTET');
+    /* Redesign 2027 (Q07-b): Schritt 5 fragt „Passt die Aktie gerade zu einem Stil?“ und zeigt „Setup im Chart“ mit der naechsten Stufe. */
+    if(!/Gibt es ein Setup\?|Wie weit ist die Aktie im Setup\?|Setup im Chart/i.test(setupText)&&!/Setup:/.test(grenzen))bad.push('SETUPFRAGE_FEHLT');
+    if(setupText&&!/Was würde das Setup ungültig machen\?|Was müsste als Nächstes passieren\?|nächste Stufe|Kein Setup|keine Beobachtung/i.test(setupText))bad.push('ENDE_UNBEANTWORTET');
    }
 
    /* DIE SIEBEN EIGENSCHAFTEN - ZUERST AUFKLAPPEN, DANN ZAEHLEN.
