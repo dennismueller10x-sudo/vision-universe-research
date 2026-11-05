@@ -221,7 +221,7 @@ async function main() {
       privateSha256: sha(plain) };
     writeFileSync(join(a.out, 'public.json'), JSON.stringify(pub, null, 1) + '\n');
     if (a.sealTo) {
-      const L = await import('../supertrader/validation/lib.mjs');
+      const L = await import('../../supertrader/validation/lib.mjs');
       writeFileSync(join(a.out, 'results.sealed.owner.json'), L.encryptForOwner(readFileSync(a.sealTo, 'utf8'), Buffer.from(plain)));
     } else writeFileSync(join(a.out, 'results.private.json'), plain);
     console.log(JSON.stringify({ verdicts: out.families.map(f => [f.family, f.n, f.verdict]), titles: out.titles }));

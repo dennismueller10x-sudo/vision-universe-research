@@ -10,6 +10,11 @@ name: Forschung - E4/S2 Signal-Studie (Stichprobe, 2016-2026)
 # Ausloeser: manuell oder die Marke [signals-s2] in der Commit-Nachricht auf claude/**.
 on:
   workflow_dispatch:
+    inputs:
+      from_run:
+        description: 'Nur zusammenfuehren: Lauf-ID, deren verschluesselte Teilergebnisse (1 Tag aufbewahrt) verwendet werden'
+        required: false
+        default: ''
   push:
     branches:
       - 'claude/**'
@@ -23,7 +28,7 @@ concurrency:
 
 jobs:
   shard:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[signals-s2]')
+    if: (github.event_name == 'workflow_dispatch' && inputs.from_run == '') || contains(github.event.head_commit.message, '[signals-s2]')
     runs-on: ubuntu-latest
     timeout-minutes: 300
     strategy:
@@ -134,10 +139,12 @@ jobs:
 
   aggregate:
     needs: shard
+    if: always() && (needs.shard.result == 'success' || (github.event_name == 'workflow_dispatch' && inputs.from_run != '' && needs.shard.result == 'skipped'))
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
       contents: write
+      actions: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -150,13 +157,18 @@ jobs:
           pattern: s2-shard-*
           path: ${{ runner.temp }}/s2-in
           merge-multiple: true
+          run-id: ${{ inputs.from_run || github.run_id }}
+          github-token: ${{ github.token }}
 
       - name: Entschluesseln, zusammenfuehren, an den Owner versiegeln
         env:
           V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+          FROM_RUN: ${{ inputs.from_run }}
         run: |
           set -euo pipefail
-          key=$(printf 's2-shard:%s:%s' "$GITHUB_RUN_ID" "$V13_ARCHIVE_PRIVATE_KEY" | sha256sum | cut -c1-64)
+          src="${FROM_RUN:-$GITHUB_RUN_ID}"
+          case "$src" in (*[!0-9]*|'') echo "::error::from_run muss eine Lauf-ID sein"; exit 1;; esac
+          key=$(printf 's2-shard:%s:%s' "$src" "$V13_ARCHIVE_PRIVATE_KEY" | sha256sum | cut -c1-64)
           echo "::add-mask::$key"
           dirs=""
           for k in 1 2 3 4 5 6 7 8; do
@@ -171,11 +183,13 @@ jobs:
           test ! -e docs/research/signals/results-s2/results.private.json
 
       - name: Ergebnis auf den aktuellen Zweig committen
+        env:
+          FROM_RUN: ${{ inputs.from_run }}
         run: |
           set -euo pipefail
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
           git add docs/research/signals/results-s2
           if git diff --cached --quiet; then echo "Ergebnis unveraendert."; exit 0; fi
-          git commit -m "E4/S2 Signal-Studie gerechnet (Lauf ${GITHUB_RUN_ID})"
+          git commit -m "E4/S2 Signal-Studie gerechnet (Lauf ${FROM_RUN:-$GITHUB_RUN_ID})"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
