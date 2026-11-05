@@ -37,6 +37,7 @@ on:
       - '.github/workflows/sec-fundamentals-daily.yml'
       - 'scripts/quant/sec/daily.py'
       - 'scripts/quant/cli.py'
+      - 'scripts/insider/**'
   workflow_dispatch:
     inputs:
       since:
