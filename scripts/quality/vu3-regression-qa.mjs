@@ -215,7 +215,7 @@ if (only.has('visual')) await guard('visual', async () => {
         });
         if (dir && dir !== 'BULLISH') {
           if (await page.evaluate(() => document.querySelectorAll('#setup .q-check-count').length)) fail('visual ' + world, 'Abwaertsszenario (' + dir + '), aber Setup-Regelcheckliste in #setup auf ' + route);
-          sel = '#setup .q-levels.is-bear .is-inv'; label = 'Setup-Karte im Abwaertsszenario (' + dir + '): Marke "Ungültig über" statt Regelcheckliste';
+          sel = '#setup .q-levels.is-bear .is-inv'; label = 'Setup-Karte im Abwaertsszenario (' + dir + '): Ungültig-Marke laut Methode (darüber) statt Regelcheckliste';
         }
       }
       const state = await page.evaluate((s) => { const n = document.querySelector(s); if (!n) return 'missing'; const r = n.getBoundingClientRect(); return r.width > 0 && r.height > 0 ? 'visible' : 'hidden'; }, sel);
