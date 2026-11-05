@@ -31,6 +31,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const ROOT = join(import.meta.dirname, "..", "..");
 const Classification = require(join(ROOT, "quant/engines/instrument-classification.js"));
+const Master = require(join(ROOT, "quant/engines/company-master.js"));
 const FactorEvidence = require(join(ROOT, "quant/engines/factor-evidence.js"));
 const Shape = require(join(ROOT, "quant/engines/journey-shape.js"));
 const Brief = require(join(ROOT, "quant/engines/intelligence-brief.js"));
@@ -92,11 +93,17 @@ test("kein Titel mit ausdruecklichem ETF-Namen bleibt eine Aktie", () => {
   const nochAktie = kandidaten.filter((i) => EQUITY.has(i.securityType));
   assert.deepEqual(nochAktie.map((i) => i.symbol + " " + i.companyName).slice(0, 8), [],
     nochAktie.length + " von " + kandidaten.length + " tragen weiter eine Aktiengattung");
-  /* Und sie bleiben im Instrumentenuniversum - die Entscheidung nimmt ihnen
-     die Aktienanalyse, nicht ihre Existenz. */
-  const imUniversum = kandidaten.filter((i) => i.productEligibility && i.productEligibility !== "EXCLUDED");
-  assert.ok(imUniversum.length > kandidaten.length * 0.9,
-    "nur " + imUniversum.length + " von " + kandidaten.length + " sind noch im Instrumentenuniversum");
+  /* Und sie bleiben im Instrumentenverzeichnis - die Entscheidung nimmt ihnen
+     die Aktienanalyse, nicht ihre Existenz. VARIANTE B (Steuerung 05.11.2026): seit der Eignung aus
+     Security Master 1.3.0 verlassen sie das Aktien-Produktuniversum (vorher hier: >90 % nicht EXCLUDED).
+     Ebenso streng jetzt: jeder Kandidat steht im Verzeichnis, und wer ausgeschieden ist, ist es mit belegtem
+     Grund (CONFIRMED_NON_EQUITY) - nicht stillschweigend und nicht als Aktie. */
+  const ohneBeleg = kandidaten.filter((i) => i.productEligibility === "EXCLUDED" &&
+    !/^CONFIRMED_NON_EQUITY:/.test(String(i.productEligibilityReason || "")));
+  assert.deepEqual(ohneBeleg.map((i) => i.symbol + " " + i.productEligibilityReason).slice(0, 8), [],
+    ohneBeleg.length + " von " + kandidaten.length + " sind ohne belegten Nicht-Aktien-Grund ausgeschieden");
+  const imProdukt = kandidaten.filter((i) => Master.inProductUniverse(i));
+  assert.ok(imProdukt.every((i) => !EQUITY.has(i.securityType)), "ein Fonds im Produkt traegt eine Aktiengattung");
 });
 
 test("ein belegtes Nicht-Aktien-Papier bekommt keine einzige Aktienaussage", () => {
