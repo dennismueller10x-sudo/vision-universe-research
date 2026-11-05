@@ -250,12 +250,13 @@ Supertrader-Entwicklung nur 2016–2019 (Lücke 2012–2015, siehe Grenzen); Qua
 
 Prüfhinweis: Schon die kostenfreien Kurven von Strang B zeigen im Prüfteil maximale Verluste von −80 % bis −98 % (Turtle S1 −98,3 %, Turtle S2 −96,8 %, KK Breakout −89,7 %, Buyable Gap Up −79,4 %; Darvas −29,7 %). Das liegt vor dem Overlay und ist für Long-only-Regeln auffällig; Strang B prüft. Bis dahin sind diese Werte nicht belastbar.
 
-C03 Darvas: auf Tagesbalken nicht bestimmbar (Annahme dominiert); die Spannweite PESSIMISTIC/OPTIMISTIC von Strang B wird ergänzt, sobald sie vorliegt.
+C03 Darvas: auf Tagesbalken nicht bestimmbar (Annahme dominiert). Spannweite nach Strang B (Diagnoselauf 42015841514, Entwicklung 2016–2026, Referenzkosten): Referenz −31,7 % p. a., vorregistrierte Gegenvariante ALT-INTRABAR-OPTIMISTIC −10,6 % p. a. (7.526 Trades, Trefferquote 7,3 %), in beiden Lesarten negativ.
 
 ## Grenzen
 
 - Das Prüffenster 2020–2026 wurde in früheren Projektstudien verwendet: vorab fixierte Replikation mit zeitlicher Trennung, kein unberührter Holdout. Bestätigung nur mit neuen Vorwärtsdaten.
 - Supertrader-Prüfung: Der eingefrorene Snapshot von Strang B endet am 2026-09-30; für den Stichtag 2026-10-02 fehlt der Wochenwert. Nach Protokoll wird das Fenster nicht verkürzt: alle zwölf Supertrader-Varianten sind im Prüfteil „nicht bestimmbar (blockiert)“ (Tests mit p = 1 in der Holm-Familie); ihre Kennzahlen bis 2026-09-25 stehen nur beschreibend in der Tabelle.
+- Tiefe kostenfreie Drawdowns der Supertrader-Varianten (−80 bis −98 %) von Strang B geprüft (Diagnoselauf 42015841514): kein Hebel (Exposure ≤ 1,0, Cash ≥ 0), keine Split- oder Datenfehler (schlechteste Einzeltrades sind echte Zusammenbrüche von Kleinstwerten), sondern gleichmäßiger Abfluss über alle Jahre (z. B. Turtle S1: Trefferquote 19,5 %, Profit-Faktor 0,68). Eine Liquiditätsgrenze wäre eine neue Variante und gehört nicht in E3.
 - Supertrader-Kurven: kostenfreie Läufe von Strang B mit unveränderten REF-Regeln; Protokollkosten, Endwerte und SMA200-Filter als anteiliges Positions-Overlay (scripts/research/edge/st-e3.cjs), keine Neurechnung der Strategie. Der Snapshot kennt keine Insolvenz-Delistings (distress überall false).
 - Nachrechnung Supertrader nach Verlängerung des Snapshots bis 2026-10-02 vorgesehen (ohne Protokolländerung). Ändern sich dabei die Entwicklungsergebnisse (z. B. nach Prüfung des Umschlags von C03/C08), wird das hier mit altem und neuem Hash ausgewiesen; die festgeschriebene Auswahl bleibt bestehen.
 - Supertrader-Entwicklung beginnt 2016 (Lieferung Strang B); 2012–2015 fehlt für Supertrader. Der für eine spätere Bestätigung reservierte Holdout 2008–2015 wird in E3 nicht verwendet; die Quant-Entwicklung 2012–2019 ist protokollgemäß und war bereits Teil früherer Quant-Läufe (Musterportfolios #1332/#1383).
