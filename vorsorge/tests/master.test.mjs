@@ -118,3 +118,13 @@ test("Provider Adapter: Huelle, Abdeckung, Rangfolge, nicht angeschlossene Anbie
   assert.equal(merged.fields.name, "B"); assert.equal(merged.fields.ter, 0.0009); assert.equal(merged.provenance.ter.provider, "issuer");
   assert.throws(() => P.record("unknown", "X"));
 });
+
+test("Fehlender Name einer frueheren Zeile wird aus der naechsten belegten uebernommen (ANV, 05.11.2026)", () => {
+  const r = M.buildMaster([
+    { symbol: "ANV", name: null, exchange: "NASDAQ", securityType: "ETF", active: true, source: "tiingo:supported-tickers" },
+    { symbol: "ANV", name: "GraniteShares Autocallable NVDA ETF", exchange: "NASDAQ", securityType: "ETF", active: true, source: "tiingo:etf-ingest" }
+  ]);
+  assert.equal(r.etfs.length, 1);
+  assert.equal(r.etfs[0].name, "GraniteShares Autocallable NVDA ETF");
+  assert.deepEqual(r.etfs[0].sources, ["tiingo:supported-tickers", "tiingo:etf-ingest"]);
+});

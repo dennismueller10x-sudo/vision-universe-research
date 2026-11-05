@@ -70,16 +70,28 @@ function loadRows() {
   for (const r of ingest?.rows || []) ingestBySym[r.symbol] = r;
   // Ticker-Identitaet: der Tiingo-Tagesendpunkt ist tickergebunden. Liegt ein
   // Ticker im Ingest vor, gilt dessen Boerse auch fuer die Repository-Zeilen.
+  // Ohne Ingest-Zeile gilt fuer ein AKTIVES Listing die Boerse der einzigen aktiven ETF-Zeile des Security Masters
+  // (Tiingo-Tickerliste): Company Master und Tickerliste schreiben dieselbe Boerse verschieden ("NYSE" / "NYSE ARCA"),
+  // sonst entstehen aus einem Fonds zwei Listings (CAM, 05.11.2026). Schluessel: die kanonische Identitaet (ADR-001).
+  const sm = tryJson(join(root, "quant/data/market/security-master/us-security-master.json"));
+  const smActive = {};
+  for (const r of sm?.rows || []) {
+    if ((r.instrument_type !== "ETF" && r.asset_type !== "ETF") || r.active_status === "INACTIVE" || !r.exchange) continue;
+    let id; try { id = Identity.securityIdForTicker(r.ticker); } catch { continue; }
+    (smActive[id] = smActive[id] || new Set()).add(r.exchange);
+  }
+  const activeEx = (sym) => { let id; try { id = Identity.securityIdForTicker(sym); } catch { return null; }
+    return smActive[id] && smActive[id].size === 1 ? [...smActive[id]][0] : null; };
   const ex = (sym, exch) => (ingestBySym[sym] && ingestBySym[sym].exchange) || exch;
+  const exActive = (sym, exch, active) => (ingestBySym[sym] && ingestBySym[sym].exchange) || (active !== false && activeEx(sym)) || exch;
   const dir = join(root, "quant/data/universe/instruments");
   for (const f of readdirSync(dir).filter((f) => f.endsWith(".json")).sort()) {
     for (const it of readJson(join(dir, f)).instruments || []) {
-      rows.push({ symbol: it.symbol, name: it.companyName, exchange: ex(it.symbol, it.exchange), currency: it.currency, country: it.country,
+      rows.push({ symbol: it.symbol, name: it.companyName, exchange: exActive(it.symbol, it.exchange, it.active), currency: it.currency, country: it.country,
         securityType: it.securityType, firstTradeDate: it.firstTradeDate, lastTradeDate: it.lastTradeDate || it.delistedAt || null,
         active: it.active, source: "tiingo:company-master" });
     }
   }
-  const sm = tryJson(join(root, "quant/data/market/security-master/us-security-master.json"));
   for (const r of sm?.rows || []) {
     if (r.instrument_type !== "ETF" && r.asset_type !== "ETF") continue;
     rows.push({ symbol: r.ticker, name: r.security_name || null, exchange: ex(r.ticker, r.exchange), currency: r.currency, country: r.country,
