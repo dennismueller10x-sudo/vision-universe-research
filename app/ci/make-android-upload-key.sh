@@ -10,7 +10,8 @@
 # geht er verloren, kann Google ihn zuruecksetzen (Zertifikat vu-android-upload-cert.pem aufbewahren, es ist nicht geheim).
 set -euo pipefail
 # Git Bash (Windows) wandelt Argumente wie "/CN=..." sonst in Dateipfade um ("C:/Program Files/Git/CN=...") und OpenSSL bricht ab.
-export MSYS_NO_PATHCONV=1
+# Nur diese Betreff-Argumente ausnehmen; die Umwandlung echter Dateipfade (/c/Users/... -> C:\Users\...) muss an bleiben, sonst findet OpenSSL die Dateien nicht.
+export MSYS2_ARG_CONV_EXCL="/CN=;/emailAddress="
 mode="${1:-}"; dir="${VU_SIGNING_DIR:-$HOME/vu-android-signing}"; umask 077
 alias_name="upload"
 
