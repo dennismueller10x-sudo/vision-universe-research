@@ -1,4 +1,4 @@
-# Strang B – Supertrader-Backtest (Stand 04.11.2026, abends)
+# Strang B – Supertrader-Backtest (Stand 04.11.2026, spätabends)
 
 Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Produktdokument: [SUPERTRADER_9_HANDOVER.md](../SUPERTRADER_9_HANDOVER.md) §0.1.
 Alle Backtest-Ergebnisse sind **Forschung, nicht zertifiziert**. Keine öffentlichen Renditeaussagen ohne Owner.
@@ -9,15 +9,16 @@ Alle Backtest-Ergebnisse sind **Forschung, nicht zertifiziert**. Keine öffentli
   - Rahmen: DEV-Snapshot 2016-01-04 bis 2026-09-30, DQ-K5-Quarantäne (die 83 ungeklärten Kapitalmaßnahmen sind ausgeschlossen, E1), vier Kostenstufen, SPY-Vergleich, Universum B mit 229 V13-Delisting-Ketten.
   - Je Methode gerechnet: Trades, Trefferquote, Rendite, maximaler Verlust, Abstand zu SPY und Kosten.
   - Das Ergebnis liegt intern beim Owner (verschlüsselt im Lauf-Artefakt).
-- V13-Studie (A gegen A+V13) lief erstmals: 41861419543. Secrets und Archiv 1.2.0 funktionieren. Exit 4 wegen des Audit-Befunds zum Kauf am letzten Handelstag; die Klärung steht in #1334.
+- V13-Studie (A gegen A+V13, Top 5): 41880752043 grün. Audit bestanden, Wiederholungsprüfung mit gleichem Hash. Davor endete 41861419543 mit Exit 4, Klärung in #1334: Ein Kauf am letzten Handelstag wird gezählt, ist aber kein Verstoß.
 - Kandidaten-Tageslauf wieder frisch: Stand 03.11. (Läufe 41862433422 und 41865789914, Commit `4decd3b7`).
-- Papierhandel: #1272 gemergt. R6 41864439485 hat die Referenzgleichheit gezeigt, damit sind R1–R6 vollständig. Protokoll 1.2.0 ist festgeschrieben (`fde5283e…`, PREPARED_NOT_ACTIVE) in #1270, das #1268 enthält.
+- **Papierhandel SF6-PAPER-2027 eingeschaltet** (#1354): Protokoll 1.2.0 ist festgeschrieben (#1270, R1–R6, darunter R6 41864439485), Registry #1272 und #1273, E-P1 `COUNT_ONLY`, E-P2 Kappung 4. Der Wächter ist bis zum 31.12. untätig und zeichnet ab dem 04.01.2027 auf.
+- Security Master 1.3.0 ist produktiv (Strang A, #1347). Damit ist S6 erfüllt, und die Eingangsprüfung stoppt am 11.11. nicht.
 - Überholte Entwürfe geschlossen: #1099, #1142, #1315.
 
 ## Offen
-- #1270 mergen (CI läuft). Danach #1268 als enthalten schließen, #1273 (Core-Registry) mergen, Schalter-PR: E-P1 `COUNT_ONLY`, E-P2 Kappung 4 in `snapshot/contract.mjs`, `activated: true`. Ziel: Merge vor dem 01.12.2026, Frist 31.12.2026.
-- #1334 (Audit-Regel letzter Handelstag) mergen, danach die V13-Studie neu starten.
-- `SF8_AUTO_PUBLISH`: Bis die Variable gesetzt ist, halte ich den Stand mit manuellen Läufen A und B frisch.
+- Dezember: F1–F3 (Forward-Namensraum befüllen) und ein Core-PR, der den Registry-Eintrag `supertrader-paper-2027-log` auf `ACTIVATING` stellt (mit JSONL-Leser), vor dem 04.01.2027.
+- Kandidaten-Tageslauf: täglich die manuellen Läufe A und B, bis `SF8_AUTO_PUBLISH` gesetzt ist.
+- Discovery-Regression NM3 (Firmennamen nach Security Master 1.3.0) und die Quant-Regression sind auf `main` rot. Sie gehören zu Strang A, C bzw. D und sind kein Supertrader-Thema. Supertrader-PRs werden bei sonst grünen Gates gemergt.
 - C09-Entwürfe #1262 und #1263 ruhen, weil C09 in Forschung ist.
 
 ## Braucht Owner
