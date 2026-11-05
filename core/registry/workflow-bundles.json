@@ -132,10 +132,6 @@
   "cloudflare-deploy.yml": {
    "bundle": "deploy"
   },
-  "cloudflare-probe.yml": {
-   "bundle": "maintenance",
-   "retireCandidate": true
-  },
   "cloudflare-proof.yml": {
    "bundle": "monitor"
   },
@@ -189,10 +185,6 @@
   },
   "currency-realtime-proof.yml": {
    "bundle": "pipeline-intraday"
-  },
-  "diagnose-adjustment-steps.yml": {
-   "bundle": "maintenance",
-   "retireCandidate": true
   },
   "discover-ci.yml": {
    "bundle": "ci"
@@ -275,16 +267,8 @@
   "market-data-refresh.yml": {
    "bundle": "pipeline-daily"
   },
-  "market-data.yml": {
-   "bundle": "maintenance",
-   "retireCandidate": true
-  },
   "market-validation-data.yml": {
    "bundle": "pipeline-daily"
-  },
-  "marketstack-diagnostics-once.yml": {
-   "bundle": "maintenance",
-   "retireCandidate": true
   },
   "multi-asset-data.yml": {
    "bundle": "pipeline-daily"
@@ -360,15 +344,7 @@
   },
   "social-hashtag-capability.yml": {
    "bundle": "social",
-   "retireCandidate": true
-  },
-  "social-ig-check.yml": {
-   "bundle": "social",
-   "retireCandidate": true
-  },
-  "social-manual-dispatch-proof.yml": {
-   "bundle": "social",
-   "retireCandidate": true
+   "note": "Reaktivierungspfad INSTAGRAM_PUBLIC_CONTENT (social/engines/source-registry.js) - bleibt bis zur Owner-Entscheidung"
   },
   "social-orchestrator.yml": {
    "bundle": "social"
@@ -445,27 +421,14 @@
    "bundle": "maintenance",
    "retireCandidate": true
   },
-  "tiingo-verify.yml": {
-   "bundle": "maintenance",
-   "retireCandidate": true
-  },
   "tiingo2-universe-refresh.yml": {
    "bundle": "pipeline-weekly"
   },
   "universe-master.yml": {
    "bundle": "pipeline-weekly"
   },
-  "update-dashboard.yml": {
-   "bundle": "content",
-   "retireCandidate": true
-  },
-  "update-fundamentals.yml": {
-   "bundle": "content",
-   "retireCandidate": true
-  },
   "update-sec-fundamentals.yml": {
-   "bundle": "pipeline-weekly",
-   "retireCandidate": true
+   "bundle": "pipeline-weekly"
   },
   "vorsorge-ci.yml": {
    "bundle": "ci"
@@ -494,5 +457,18 @@
   "willkommen-ci.yml": {
    "bundle": "ci"
   }
+ },
+ "retired": {
+  "2026-11-05": [
+   "cloudflare-probe.yml",
+   "diagnose-adjustment-steps.yml",
+   "market-data.yml",
+   "marketstack-diagnostics-once.yml",
+   "social-ig-check.yml",
+   "social-manual-dispatch-proof.yml",
+   "tiingo-verify.yml",
+   "update-dashboard.yml",
+   "update-fundamentals.yml"
+  ]
  }
 }
