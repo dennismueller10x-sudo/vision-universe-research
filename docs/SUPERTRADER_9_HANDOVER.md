@@ -58,6 +58,8 @@ V1 sind C01, C02, C03, C08 und C12; die übrigen acht Methoden stehen im Produkt
 
 - **Audit am letzten Handelstag:** Ein Kauf am letzten Handelstag vor einem Delisting (Order am Vortag scharf, Füllung zur Eröffnung, Abrechnung zum letzten Kurs) ist ausführbar und wird im Audit `st9-hist-execution-1.2.0` gezählt, nicht als Verstoß gewertet; nur ein Kauf danach bleibt ein Verstoß. Die Engines bleiben unverändert (ihr Code ist in SF6-PAPER-2027 gepinnt). Anlass: V13-Studie 41861419543 und Top-5-Lauf 41869479235 mit je 1–5 solchen Käufen je Methode.
 
+- **Screener-Kriterien (Plan §7 Z5):** `scripts/supertrader/source-faithful/product/screener-export.mjs#screenerColumns` formt den veröffentlichten Kandidatenstand (`supertrader/data/sf-candidates/index.json`) je Ticker in Spalten um: Methoden, V1 bzw. in Forschung, höchste Stufe je Ticker und je Methode, Datenstand, Etikett „Research, keine Empfehlung“. Es ist kein neues Artefakt und kein Fachmodell. Den Einbau in `scripts/screener/build-universe.mjs` übernimmt der Screener-Erzeuger (Strang A).
+
 Der Tagesstand des Strangs steht in `docs/neustart/B-supertrader.md`.
 
 ---
