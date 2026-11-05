@@ -137,3 +137,28 @@ test('ST-HIST-9: C08-Treuevariante FID-1 neben der Referenz; R-Verteilung und go
   const a = T.runTop5(d, { window: WIN, costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF') });
   assert.ok(a.KK_BREAKOUT.rDistribution && Array.isArray(a.KK_BREAKOUT.goldenTrades));
 });
+
+test('ST-HIST-10: Diagnose der goldenen Trades folgt kkFidelitySetupAt Schritt für Schritt und trägt keine Renditezahl', async () => {
+  const FID = await import('../source-faithful/research/kk-breakout-fidelity.mjs');
+  const d = ds();
+  // Gleichheit: Explain meldet OK genau dann, wenn kkFidelitySetupAt ein Setup liefert (alle Varianten, alle Sitzungen)
+  let ok = 0;
+  for (const s of d.securities) for (let i = 0; i < s.bars.length; i++) for (const V of Object.values(FID.KK_FIDELITY_VARIANTS)) {
+    const o = { quality: V.quality, minAdv20Usd: V.minAdv20Usd ?? null }, a = FID.kkFidelitySetupAt(s.bars, i, undefined, o), e = FID.kkFidelitySetupExplain(s.bars, i, undefined, o);
+    assert.equal(e.step === 'OK', a !== null, `${s.id} ${s.bars[i].date} ${e.step}`);
+    if (a) { ok++; assert.equal(e.level, a.level); assert.equal(e.adr20, a.adr20); }
+  }
+  assert.ok(ok > 0, 'die Testreihen erzeugen Setups');
+  const leaders = FID.momentumLeaders(d.securities), market = FID.marketOn(d.benchmark);
+  const golden = [{ ticker: 'AAA', date: '2016-06-15', source: 'Test' }, { ticker: 'ZZZ', date: '2016-06-15', source: 'Test' }];
+  const g = FID.goldenDiagnose(d, { leaders, market, golden });
+  assert.equal(g[1].inUniverse, false);
+  assert.equal(g[0].inUniverse, true);
+  const sess = g[0].securities[0].sessions;
+  assert.ok(sess.length >= 10 && sess.every((x) => 'FID-1' in x && 'FID-2' in x && 'FID-2L' in x && 'leader' in x && 'marketOn' in x && x.momentum && 'bestPercentile' in x.momentum));
+  // Perzentil gleich der Leader-Rechnung
+  for (const x of sess) assert.equal(x.leader, x.momentum.bestPercentile !== null && x.momentum.bestPercentile >= 100 - FID.KK_FIDELITY_RULES.momentumTopPct);
+  assert.doesNotMatch(JSON.stringify(g), /totalReturn|cagr|pnl|equity/);
+  const w = fs.readFileSync(new URL('../../../.github/workflows/supertrader-st-hist-top5.yml', import.meta.url), 'utf8');
+  assert.match(w, /options: \[backtest, edge-export, golden-diagnose\]/);
+});
