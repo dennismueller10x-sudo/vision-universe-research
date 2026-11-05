@@ -65,7 +65,7 @@
     document.getElementById("rows").innerHTML = list.map(function (s, i) {
       var v = s && s.points ? s.points.slice(-60).map(function (p) { return p[1]; }) : null;
       var last = v && v[v.length - 1], prev = v && v[v.length - 2];
-      return U.stockRow({ ticker: ROWS[i][0], name: ROWS[i][1], sub: ROWS[i][2], series: v, price: last, currency: s && s.currency, changePct: v ? (last / prev - 1) * 100 : null, href: "/discover/#/s/US_REAL/" + ROWS[i][0] });
+      return U.stockRow({ ticker: ROWS[i][0], name: ROWS[i][1], sub: ROWS[i][2], chart: v ? C.sparkline(v) : "", price: last, currency: s && s.currency, changePct: v ? (last / prev - 1) * 100 : null, href: "/discover/#/s/US_REAL/" + ROWS[i][0] });
     }).join("");
   });
 

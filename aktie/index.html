@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aktie — Vision Universe®</title>
+<meta name="robots" content="noindex">
+<!-- Z2 (Redesign 2027): eine Aktienadresse. /aktie/?t=NVDA&p=zahlen und (über 404.html) /aktie/NVDA?p=zahlen
+     führen auf die Perspektive in ihrer Welt. Ohne p entscheidet die Herkunftswelt, sonst der Überblick. -->
+<script src="/core/identity.js"></script>
+<script src="/core/stock-context.js"></script>
+<script src="/core/stock-address.js"></script>
+<script>
+  (function () {
+    var r = VUCore.StockAddress.resolve(location.pathname, location.search, document.referrer);
+    if (r.state === "OK") location.replace(r.href);
+    else document.documentElement.setAttribute("data-state", r.state);
+  })();
+</script>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<style>
+  body{margin:0;font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#0a0a0a;background:#fff}
+  main{max-width:640px;margin:0 auto;padding:72px 20px 120px}
+  h1{font-size:26px;line-height:1.15;letter-spacing:-.02em;margin:0 0 10px}
+  p{color:#5c5c5c;margin:0 0 20px}
+  a.b{display:inline-block;padding:12px 18px;border-radius:999px;background:#0a0a0a;color:#fff;text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<main>
+  <h1>Welche Aktie willst du sehen?</h1>
+  <p>Diese Adresse nennt kein gültiges Kürzel. Suche die Aktie in Discover.</p>
+  <a class="b" href="/discover/">Aktie suchen</a>
+</main>
+</body>
+</html>

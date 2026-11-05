@@ -162,7 +162,7 @@ if (only.has('theme')) await guard('theme', async () => {
 /* ---------------------------------------------------------------- 3 Visual-First-Bausteine */
 // [Welt, Route, Selektor, Beschreibung]; Inhalte stammen aus den Visual-First-PRs (#759-#783, #794).
 const VISUAL = [
-  ['Quant', '/quant/#/', '.q-rc-chip', 'Radar-Kompaktkarte mit Belegchips'],
+  ['Quant', '/quant/#/radar', '.q-rc-chip', 'Radar-Kompaktkarte mit Belegchips (Redesign Q01: Radar-Karten stehen im Radar, die Startseite zeigt „Heute bei Quant“)'],
   ['Quant', '/quant/#/radar', '.q-radar-stats', 'Radar mit Richtungszeichen und Zaehlungen'],
   ['Quant', '/quant/#/radar', '.q-chip-n', 'Filterzaehlungen'],
   ['Quant', '/quant/#/aktie/NVDA', '.q-check-count', 'Setup-Regelcheckliste', 'setupDirection'],
@@ -171,12 +171,12 @@ const VISUAL = [
   ['Quant', '/quant/#/strategien/quality-compounder', '.qx-cmeters', 'Bedingungs-Balken "Wer passt heute?"'],
   ['Technik', '/quant/#/aktie/NVDA/technik', '.cb-checks', 'Zaehlung "Warum dieses Bild?"'],
   ['Supertrader', '/supertrader/signals/', '.st-risk', 'Risiko der Modellposition als Zahl'],
-  ['Screener', '/screener/?f=roic:gt:0.1', '.sc-share', 'Anteil am Universum'],
+  ['Screener', '/screener/?f=roic:gt:0.1', '.sc-counter', 'Anteil am Universum'],
   ['Vorsorge', '/vorsorge/#/', '.vs-chg', 'Richtungszeichen 1J'],
   ['Vorsorge', '/vorsorge/#/etf/VT', '.vs-bilanz', 'Bilanz der Einordnung'],
   ['Hedgefonds', '/hedgefonds/#/', '.hf-card-val .hf-chg', 'Richtung der Fondsgroesse'],
   ['Hedgefonds', '/hedgefonds/#/aktie/NVDA', '.hf-balance', 'Kaeufer gegen Verkaeufer'],
-  ['Elliott', '/elliott/', '.el-splitrow', 'beschrifteter Richtungsbalken'],
+  ['Elliott', '/elliott/', '.el-split', 'beschrifteter Richtungsbalken'],
   ['Fundamental', '/fundamental/#/PLTR', '.fu-k .fu-chg', 'Kennzahl mit Richtung zum Vorjahr'],
   ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahlen', '.fu-crow .fu-spark i', 'Kennzahlenkatalog mit Mini-Verlauf'],
   ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=revenue', '.fu-cagr', 'Wachstum pro Jahr ueber 3/5/10 Jahre'],

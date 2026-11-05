@@ -47,12 +47,16 @@ const GLOBE = {scope: '.q-hero', minW: 100, minH: 100, minGeom: 5};
 export const SPECS = {
   nvda: {path: '/quant/#/aktie/NVDA', critical: true, h1: '^NVIDIA', price: {selector: '.q-stock-price', re: PRICE}, chart: STOCK_CHART, core: STOCK_CORE, minText: 4000, includes: ['NVDA'], technik: 'NVDA'},
   aapl: {path: '/quant/#/aktie/AAPL', critical: true, h1: '^Apple', price: {selector: '.q-stock-price', re: PRICE}, chart: STOCK_CHART, core: STOCK_CORE, minText: 4000, includes: ['AAPL'], technik: 'AAPL'},
-  start: {path: '/quant/', critical: true, h1: 'Jeden Tag sehen', minText: 3000, chart: GLOBE, includes: ['Quant']},
+  /* Redesign 2027 (Q01): Frage als Titel, Suche, „So arbeitet Quant“, Markt als Balken, „Heute bei Quant“ - kein Globus mehr.
+     Gezeichnet ist der Marktbalken (C17); geprueft wird weiter: Titel, genug Inhalt, Quant genannt. */
+  start: {path: '/quant/', critical: true, h1: 'Was hat sich heute verändert', minText: 2000, includes: ['Quant', 'Heute bei Quant']},
   radar: {path: '/quant/#/radar', h1: 'Was ist heute neu', minText: 8000, chart: GLOBE},
-  strategien: {path: '/quant/#/strategien', h1: 'Welche Art von Unternehmen', minText: 1500, chart: GLOBE},
+  /* Redesign 2027 (Q03): Frage als Titel, Strategie-Karten statt Globus. */
+  strategien: {path: '/quant/#/strategien', h1: 'Welche Art von Firma', minText: 1500, includes: ['Aktien heute']},
   screener: {path: '/quant/screener/', h1: 'Quant Screener', minText: 2000, chart: GLOBE, includes: ['Alle Kennzahlen']},
   // emptyOk: "Zuletzt analysiert" ist beim Erstbesuch ehrlich leer (die Einleitung erklaert, wo Aktien erscheinen) - kein Fehler.
-  technical: {path: '/quant/technical/', h1: 'Welche Aktie', minText: 2500, chart: GLOBE, includes: ['Beobachten'], emptyOk: ['Zuletzt analysiert']},
+  /* Redesign 2027 (Q04): Frage als Titel, Suche, bekannte Namen, ehrlicher Leerzustand „Beobachten“ - kurz und ohne Globus. */
+  technical: {path: '/quant/technical/', h1: 'Welche Aktie', minText: 800, includes: ['Beobachten', 'Bekannte Aktien'], emptyOk: ['Zuletzt analysiert']},
   // Chartbild (Elliott/Kursstruktur): das Bild selbst muss gezeichnet sein; der Kopf (h1) nennt den Trend und ist datenabhaengig.
   chartbild: {path: '/quant/#/elliott/NVDA', h1: '\\S', minText: 1500, includes: ['Warum dieses Bild'], chart: {scope: '.cb-chart-card', minW: 150, minH: 100, minGeom: 5}},
   // Die beiden Nicht-gefunden-Seiten SIND die erwartete Auskunft; Datenabrufe, die ins Leere laufen, gehoeren dazu.
@@ -184,7 +188,8 @@ export function collectFacts(spec) {
   facts.brokenImages = Array.from(main.querySelectorAll('img[src]')).filter(img => visible(img) && img.complete && img.naturalWidth === 0 && !img.closest('[data-logo-fallback]')).map(img => img.getAttribute('src').slice(-60)).slice(0, 3);
   // ---- Technik-Abschnitt (08 / Technik): die Anzeigewerte, gegen die verdict() die Datenerwartung haelt
   const tech = main.querySelector('#technik');
-  facts.technik = {present: !!tech && visible(tech)};
+  /* Redesign 2027 (Q07): der Abschnitt steht vollstaendig unter „Einstieg, Stop, Ziele und alle Bedingungen“ (zugeklappt). */
+  facts.technik = {present: !!tech && (visible(tech) || !!tech.closest('details.qv3-more'))};
   if (facts.technik.present) {
     const shown = {};
     tech.querySelectorAll('.qx-stat').forEach(st => { const b = st.querySelector('b'), l = st.querySelector('span'); if (b && l) shown[l.textContent.trim()] = b.textContent.trim(); });

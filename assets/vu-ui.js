@@ -8,20 +8,20 @@
    erfundenen Zahlen).
 
    C01–C03 (Kopfzeile, Produkt-Leiste, Menü): assets/site-navigation.js
-   C06 (der eine Chart): assets/vu-chart.js; hier nur über VUChart.sparkline.
+   C06 (der eine Chart): assets/vu-chart.js. Diese Datei kennt den Chart nicht: Aktienzeilen bekommen
+   die fertige Kleinform (Chart-Modul .sparkline) als `chart`, damit Seiten ohne Chart-Skript sie nutzen können.
 
    Browser: globalThis.VUUI; Node (Tests): module.exports.
    ========================================================================= */
 (function (root, factory) {
   "use strict";
-  var chart = typeof module === "object" && module.exports ? require("./vu-chart.js") : root.VUChart;
-  var api = factory(root, chart);
+  var api = factory(root);
   if (typeof module === "object" && module.exports) module.exports = api;
   root.VUUI = api;
-})(typeof globalThis !== "undefined" ? globalThis : this, function (root, VUChart) {
+})(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "vu-ui-1.0.0";
+  var VERSION = "vu-ui-1.1.0";
   var SPRITE = "/assets/product-icons.svg#";
   var CUR = { USD: "$", EUR: "€", GBP: "£", CHF: "CHF" };
 
@@ -53,7 +53,17 @@
     next: '<path d="M9 5l7 7-7 7"/>',
     heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
     search: '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>',
-    spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" fill="currentColor" stroke="none"/>'
+    spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" fill="currentColor" stroke="none"/>',
+    filter: '<path d="M4 6h16M7 12h10M10 18h4"/>',
+    target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6" fill="currentColor"/>',
+    line: '<path d="M3 17l5-6 4 3 7-8"/>',
+    book: '<path d="M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h9"/>',
+    check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    x: '<path d="M6 6l12 12M18 6L6 18"/>',
+    bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+    list: '<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>'
   };
   function glyph(name, size) {
     var s = size || 18;
@@ -125,7 +135,7 @@
       case "quant": return "/quant/#/aktie/" + t;
       case "supertrader": return "/supertrader/stock/" + t + "/";
       case "elliott": return "/elliott/#/" + t;
-      case "hedgefonds": return opt.cusip ? "/hedgefonds/#/aktie/" + encodeURIComponent(opt.cusip) : "/hedgefonds/#/aktien";
+      case "hedgefonds": return opt.cusip ? "/hedgefonds/#/aktie/" + encodeURIComponent(opt.cusip) : "/hedgefonds/#/aktie/" + t;
       default: return "#";
     }
   }
@@ -159,14 +169,14 @@
   }
 
   /* ------------------------------------------------------------- C10–C14 */
-  /** C10 Aktienzeile: Logo, Name + Zusatz, Mini-Chart (C06 klein), Kurs + Bewegung. */
+  /** C10 Aktienzeile: Logo, Name + Zusatz, Mini-Chart (C06 klein, als fertiges SVG in r.chart), Kurs + Bewegung. */
   function stockRow(r) {
-    var x = r || {}, spark = x.series && VUChart && VUChart.sparkline ? VUChart.sparkline(x.series) : "";
+    var x = r || {}, spark = x.chart || "";
     var tag = x.href ? "a" : "div";
-    return "<" + tag + ' class="vu-lrow' + (spark ? "" : " vu-lrow--nochart") + '"' + (x.href ? ' href="' + esc(x.href) + '"' : "") + ">" + logo(x.ticker, { src: x.logo }) +
+    return "<" + tag + ' class="vu-lrow' + (spark ? "" : " vu-lrow--nochart") + (x.noPrice ? " vu-lrow--noprice" : "") + '"' + (x.href ? ' href="' + esc(x.href) + '"' : "") + ">" + logo(x.ticker, { src: x.logo }) +
       '<div class="vu-lrow__name"><b>' + esc(x.name || x.ticker) + "</b><span>" + esc(x.sub || x.ticker) + "</span></div>" +
       (spark ? '<div class="vu-lrow__mini">' + spark + "</div>" : "") +
-      '<div class="vu-lrow__price"><span>' + esc(money(x.price, x.currency)) + "</span>" + chg(x.changePct) + "</div></" + tag + ">";
+      (x.noPrice ? "" : '<div class="vu-lrow__price"><span>' + esc(money(x.price, x.currency)) + "</span>" + chg(x.changePct) + "</div>") + "</" + tag + ">";
   }
   /** C11 Kachel */
   function tile(label, value, sub) {
@@ -175,7 +185,8 @@
   /** C12 Navigationskarte. icon: Welt-ID des Sprites. */
   function navcard(o) {
     var x = o || {};
-    return '<a class="vu-navcard" href="' + esc(x.href || "#") + '">' + (x.icon ? hud(x.icon, 42) : "") + '<span class="vu-navcard__text"><b>' + esc(x.title) + "</b>" + (x.sub ? "<span>" + esc(x.sub) + "</span>" : "") + "</span>" +
+    var lead = x.icon ? hud(x.icon, 42) : x.glyph ? '<span class="vu-hud" style="--vu-hud:42px">' + glyph(x.glyph, 21) + "</span>" : "";
+    return '<a class="vu-navcard" href="' + esc(x.href || "#") + '">' + lead + '<span class="vu-navcard__text"><b>' + esc(x.title) + "</b>" + (x.sub ? "<span>" + esc(x.sub) + "</span>" : "") + "</span>" +
       (x.right ? x.right : '<svg class="vu-navcard__go" viewBox="0 0 24 24" aria-hidden="true">' + GLYPH.next + "</svg>") + "</a>";
   }
   /** C13 Abschnittstitel mit optionalem Link rechts. */
@@ -194,7 +205,7 @@
   }
   /** Zeitleiste C06: 1T · 1W · 1M · 1J · 5J · Max (Segment). */
   function ranges(active) {
-    var r = VUChart && VUChart.RANGES ? VUChart.RANGES : ["1T", "1W", "1M", "1J", "5J", "Max"];
+    var r = ["1T", "1W", "1M", "1J", "5J", "Max"]; /* gleich assets/vu-chart.js RANGES (Test core/tests/vu-ui.test.mjs) */
     return seg(r.map(function (x) { return { id: x, label: x }; }), active || "1J", { label: "Zeitraum" });
   }
 

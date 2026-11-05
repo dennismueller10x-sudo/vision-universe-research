@@ -58,6 +58,8 @@ l.onload=l.onerror=function(){ready=true;start()};d.head.appendChild(l);setTimeo
 <template id="dx-markets-css"><link rel="stylesheet" href="/discover/markets.css"></template>
 <!-- Stil des Aktienkopfs und Navigators: erst auf einer Aktienroute (#/s/...) geladen (discover/app.js#ensureCss). -->
 <template id="dx-snav-css"><link rel="stylesheet" href="/assets/stock-navigator.css"></template>
+<template id="dx-vuui-css"><link rel="stylesheet" href="/assets/vu-ui.css"></template>
+<template id="dx-overview-css"><link rel="stylesheet" href="/discover/ui/overview.css"></template>
 <link rel="stylesheet" href="/company-intelligence/ui/stock-section.css">
 </head>
 <body class="dx dv2"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script><script src="/assets/scroll-memory.js"></script>
@@ -160,6 +162,9 @@ l.onload=l.onerror=function(){ready=true;start()};d.head.appendChild(l);setTimeo
 <script src="/assets/stock-navigator.js"></script>
 <!-- Lesezeichen der persoenlichen Watchlist (docs/accounts/WATCHLIST.md): ohne freigeschaltete Konten unsichtbar, keine Konto-Anfrage. -->
 <script src="/assets/watchlist-button.js" defer></script>
+<script src="/assets/vu-chart.js"></script>
+<script src="/assets/vu-ui.js"></script>
+<script src="/discover/ui/overview.js"></script>
 <script src="/discover/ui/stock-head.js"></script>
 <script src="/discover/ui/detail.js"></script>
 <script src="/discover/detail.js"></script>
