@@ -139,7 +139,7 @@
     { id: 'zahlen', label: 'Zahlen', sub: 'Wachstum, Marge, Bilanz, Bewertung', world: 'fundamental', groups: ['growth', 'quality', 'balance', 'valuation'] },
     { id: 'faktoren', label: 'Faktoren', sub: 'Qualität, Momentum, Risiko je 0–100', world: 'quant', groups: ['vu'] },
     { id: 'chart', label: 'Chart', sub: 'Trend, 200-Tage-Linie, RSI, Kursstärke', world: 'technical', groups: ['momentum', 'technical'] },
-    { id: 'methoden', label: 'Methoden', pro: true, sub: 'Supertrader-Methoden, Chartformationen, Chartbild, Wellen', world: 'supertrader', ids: METHOD_IDS },
+    { id: 'methoden', label: 'Methoden', pro: true, sub: 'Chartformationen, Chartbild, Wellen', world: 'supertrader', ids: METHOD_IDS },
     { id: 'investoren', label: 'Investoren', pro: true, sub: 'Analysten, Kursziele, Profi-Käufe', world: 'hedgefonds', groups: ['analysts'],
       soon: [['Profi-Käufe (13F)', 'Käufe großer Fonds laut Quartalsmeldung']] }
   ];
