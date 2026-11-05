@@ -12,12 +12,23 @@ Daten entstehen in GitHub-Actions-Läufen und werden nach `main` committet.
 - **Identität nur über `core/identity.js`** (`securityIdForTicker`, `shardKey`, `matchKey`). Keine eigenen `"ref_" + ticker`-Bildungen (ADR-001).
 - **Eine Preiswahrheit (ADR-002):** Split-Faktoren aus `quant/engines/return-series.js#splitFactors`, veröffentlichte Schlüsse über `quant/engines/published-close.js`. Keine neue Ableitung daneben.
 
-## Gates, die PRs aufteilen
+## Vertragstests statt Pfad-Gates
 
 Pfad-Isolation ist durch **Vertragstests** ersetzt (05.11.2026, [docs/PLAN_NEUSTART_2026-11.md](docs/PLAN_NEUSTART_2026-11.md) §3):
 `core/registry/product-contracts.json` nennt je Produkt Pfade, CI und Vertragstests sowie die Schnittstellen (Artefakt + Schema), die es liest;
 `core/tests/product-contracts.test.mjs` prüft, dass jede Produktänderung die Produkt-CI auslöst und jedes Schnittstellen-Schema stimmt.
 Ein Querschnitts-PR ist erlaubt; er muss die CI jedes berührten Produkts grün bekommen. Ändert ein PR ein Schnittstellen-Schema, zieht er Verbraucher und Registry im selben PR nach.
+
+Geltende Vertragstests (alle in Core-CI, laufen auf jedem PR):
+
+| Test | Vertrag |
+|---|---|
+| `core/tests/product-contracts.test.mjs` (PC) | Produktpfade lösen die Produkt-CI aus; Schnittstellen-Schemata stimmen mit Registry und Verbrauchern |
+| `core/tests/workflow-bundles.test.mjs` (WB) | jede Workflow-Datei hat ein Bündel in `core/registry/workflow-bundles.json`; ein Bündel ersetzt seine Quellen nachweisbar |
+| `core/tests/universe-follow-chain.test.mjs` (UF) | nur `security-master-eligibility.yml` ändert das Produktuniversum, und jede am Produktumfang geprüfte Datenart zieht im selben Lauf nach |
+| `core/tests/data-branch-pilot.test.mjs` (DB) | Datenarten auf dem Datenzweig (`core/registry/data-branch.json`) |
+
+Was von den Pfad-Gates bleibt:
 
 | Gate | Stand |
 |---|---|
