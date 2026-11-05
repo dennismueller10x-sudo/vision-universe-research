@@ -127,9 +127,12 @@ export const COLUMNS = [
   'rsi14', 'macdHist', 'bollB', 'vol252', 'maxDd',
   'fQuality', 'fGrowth', 'fMomentum', 'fValue', 'fProfitability', 'fRevisions', 'fRisk', 'vq',
   'tiOut', 'tiStr', 'tiEw',
-  'twAtr', 'twAdx', 'twSt', 'twPsar', 'twCloud', 'twAroon', 'twWr', 'twCmf', 'twStoch', 'twCci', 'twMfi', 'twSqz', 'twSpike', 'twObv', 'twForm', 'twFormC', 'twEma200', 'twDistEma200', 'twFormO'
+  'twAtr', 'twAdx', 'twSt', 'twPsar', 'twCloud', 'twAroon', 'twWr', 'twCmf', 'twStoch', 'twCci', 'twMfi', 'twSqz', 'twSpike', 'twObv', 'twForm', 'twFormC', 'twEma200', 'twDistEma200', 'twFormO',
+  'stMeth', 'stV1', 'stStage'
 ];
-const TEXT = new Set(['s', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'ipo', 'was', 'vq', 'tiOut', 'tiStr', 'tiEw', 'twForm', 'twFormC', 'twFormO']);
+// Listen-Spalten (je Titel ein Array oder null), wie idx.
+const LIST = new Set(['idx', 'stMeth', 'stV1']);
+const TEXT = new Set(['s', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'ipo', 'was', 'vq', 'tiOut', 'tiStr', 'tiEw', 'twForm', 'twFormC', 'twFormO', 'stStage']);
 
 // CHARTBILD (Technical Intelligence)
 // Nur Zustaende aus dem veroeffentlichten Index, keine eigene Berechnung. Ein
@@ -183,6 +186,18 @@ export function technicalWorldColumns(art, opts = {}) {
   return { byTicker, meta: n ? { schemaVersion: art.schemaVersion || null, asOf: art.asOf || null, versions: art.versions || null, maxAgeDays: TW_MAX_AGE_DAYS, stale } : null };
 }
 const TW_EMPTY = Object.fromEntries(Object.keys(TW_MAP).map((k) => [k, null]));
+
+/* Supertrader-Methoden (Plan §7 Z5): je Kuerzel die Methoden des veroeffentlichten Kandidatenstands
+   (supertrader/data/sf-candidates/index.json) ueber screenerColumns() aus Strang B - keine eigene Berechnung.
+   stMeth: alle Methoden, stV1: davon V1 (C01, C02, C03, C08, C12), stStage: hoechste Stufe. Research, keine Empfehlung.
+   Fail closed: ist der Stand unlesbar oder verletzt er den Vertrag, bleiben die Spalten leer (nie geraten). */
+export function supertraderColumns(index, screenerColumns) {
+  const sf = screenerColumns(index);
+  const byTicker = new Map();
+  for (const [t, x] of sf.byTicker) byTicker.set(t, { stMeth: x.methods.length ? x.methods.slice() : null, stV1: x.v1.length ? x.v1.slice() : null, stStage: x.stage });
+  return { byTicker, meta: sf.meta, criteria: sf.criteria };
+}
+const ST_EMPTY = { stMeth: null, stV1: null, stStage: null };
 
 // VALUATION_POLICY
 // Marktkapitalisierung und alle Kennzahlen, die den Kurs mit einer SEC-Aktienzahl
@@ -244,6 +259,12 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
   let tw = { byTicker: new Map(), meta: null };
   try { tw = technicalWorldColumns(await loadJson(join(root, 'technical/data/screener-v1.json')), { now: new Date().toISOString().slice(0, 10) }); }
   catch (err) { log('Technical-Datensatz fehlt: ' + err.message); }
+  // Supertrader-Methoden
+  let st = { byTicker: new Map(), meta: null, criteria: null };
+  try {
+    const { screenerColumns } = await import('../supertrader/source-faithful/product/screener-export.mjs');
+    st = supertraderColumns(await loadJson(join(root, 'supertrader/data/sf-candidates/index.json')), screenerColumns);
+  } catch (err) { log('Supertrader-Methoden fehlen: ' + err.message); }
   // Redaktionelle Einzeiler
   let recognition = { companies: {}, businessDescriptions: {} };
   try { recognition = await loadJson(join(root, 'discover/config/company-recognition.json')); } catch { /* optional */ }
@@ -346,9 +367,10 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
     row.vq = vq;
     Object.assign(row, ti.byTicker.get(d.symbol) || { tiOut: null, tiStr: null, tiEw: null });
     Object.assign(row, tw.byTicker.get(d.symbol) || TW_EMPTY);
+    Object.assign(row, st.byTicker.get(d.symbol) || ST_EMPTY);
     for (const c of COLUMNS) {
       const v = row[c];
-      cols[c].push(TEXT.has(c) || c === 'idx' ? (v ?? null) : (typeof v === 'number' ? round(v) : null));
+      cols[c].push(TEXT.has(c) || LIST.has(c) ? (v ?? null) : (typeof v === 'number' ? round(v) : null));
     }
   }
   const count = cols.s.length;
@@ -364,10 +386,12 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
       classification: 'SEC SIC-Code (sic-peer-taxonomy-1.0.0) + ' + SIC_SECTOR_VERSION,
       factors: factorMeta ? factorMeta.methodologyVersion : null,
       technicalIntelligence: ti.meta ? ti.meta.schemaVersion + ' (meist Wochenchart; Elliott experimentell, nicht in den Ausblick gewichtet)' : null,
-      technicalWorld: tw.meta ? tw.meta.schemaVersion + ' (Technical-Produktwelt, Tageschart; Stand ' + tw.meta.asOf + ')' : null
+      technicalWorld: tw.meta ? tw.meta.schemaVersion + ' (Technical-Produktwelt, Tageschart; Stand ' + tw.meta.asOf + ')' : null,
+      supertrader: st.meta ? st.meta.version + ' (' + st.meta.label + '; Stand ' + st.meta.asOf + ')' : null
     },
     technicalIntelligence: ti.meta,
     technicalWorld: tw.meta,
+    supertrader: st.meta ? { ...st.meta, criteria: st.criteria } : null,
     factorPublication: factorMeta ? { ...factorMeta.publication, asOf: factorMeta.asOf } : { compositeAllowed: false, rankingAllowed: false, reason: 'SOURCE_MISSING' },
     valuationPolicy: { minTurnover: MIN_TURNOVER, maxTurnover: MAX_TURNOVER, foreignMinTurnover: FOREIGN_MIN_TURNOVER, maxMarketCap: MAX_MARKET_CAP, withheld: SHARE_BASIS_COLUMNS },
     formulas: FORMULAS,
