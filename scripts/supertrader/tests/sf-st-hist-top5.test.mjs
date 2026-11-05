@@ -59,15 +59,16 @@ test('ST-HIST-4: Workflow nur manuell, nur lesend, kein Commit, Eingaben über e
   assert.match(w, /group: supertrader-st-hist-top5-\$\{\{ github\.ref_name \}\}/);
 });
 
-test('ST-HIST-5: Sensitivität Delisting-Erlös 100/70/0 %, Austritts- und Populationszählung, Audit fail closed', () => {
+test('ST-HIST-5: Sensitivität Delisting-Erlös als echte Neuläufe (S0/S1/S2), Austritts- und Populationszählung, Audit fail closed', () => {
   const sec2 = (id, seed, drift, end) => securityFromSegment({ id, raw: bars(seed, drift).filter((b) => b.date <= end), endCause: 'LISTING_INACTIVE', delisted: true, survivor: false });
   const d = ds(); d.securities.push(sec2('tiingo:NASDAQ:DDD:2010-01-04', 11, 0.0025, '2017-03-31'));
   const a = T.runTop5(d, { window: WIN, costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF') });
   for (const k of T.TOP5) {
     const p = a[k].delistingProceeds;
-    assert.deepEqual(Object.keys(p), ['DELIST_100', 'DELIST_70', 'DELIST_0']);
+    assert.deepEqual(Object.keys(p), ['DELIST_100', 'DELIST_70', 'DELIST_DISTRESS_0']);
     assert.ok(Math.abs(p.DELIST_100.totalReturn - a[k].costs.REF.totalReturn) < 1e-12, `${k}: 100 % ist die Referenz`);
-    assert.ok(p.DELIST_100.totalReturn >= p.DELIST_70.totalReturn && p.DELIST_70.totalReturn >= p.DELIST_0.totalReturn, k);
+    assert.equal(p.DELIST_100.scenario, 'S0_LAST_PRICE');
+    for (const v of Object.values(p)) assert.ok(v.maxDrawdown >= -1 && v.maxDrawdown <= 0, `${k}: max. Verlust zwischen 0 und -100 %`);
     assert.deepEqual(Object.keys(a[k].exitCensus), ['TERMINAL_DELISTED', 'SECURITY_UNAVAILABLE', 'OTHER']);
   }
   assert.deepEqual(T.populationCensus(d), { ACTIVE_AT_WINDOW_END: 3, LISTING_INACTIVE: 1 });
