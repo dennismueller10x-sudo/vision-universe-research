@@ -1,0 +1,30 @@
+{
+  "verified": true,
+  "trades": 383,
+  "sourceFiles": 12910,
+  "engines": 221,
+  "signalReconstructions": 15,
+  "checks": [
+    "signal-time scenario reconstruction",
+    "SPY proxy and SMA200 regime",
+    "protocol and all source/engine hashes",
+    "next-open chronology",
+    "canonical split units",
+    "stop/target/time replay",
+    "costs and R",
+    "same-date holding comparison",
+    "exclusion accounting",
+    "no same-family overlap",
+    "all families and regimes",
+    "Holm family size"
+  ],
+  "hashes": {
+    "scripts/research/signals/study.mjs": "c0346f876037e63a9cd8c4544df11a960607e9b244657e50912b83f45228cc6a",
+    "scripts/research/signals/study.test.mjs": "85f77a08537a4c7f579cf832b0fd9fedbad5e73894a109e6836f8222725dd02b",
+    "scripts/research/signals/report.mjs": "f2d489dbc5a7bc14658528a6a6e4fafba5a804240bdbe3fecddb610d1fb9235a",
+    "scripts/research/signals/verify.mjs": "3f7950d2440b11b56ff2d59d0050638033a9b082f2effef76646f39985eeabb2",
+    "/workspace/repo/docs/research/signals/results/manifest.json": "aee0c7976f15ff6da0f38b7b61cb4516d01a187514f38a904d09808b65aaa210",
+    "/workspace/repo/docs/research/signals/results/results.json": "0ae576f507dbe7c55ff1b7e307f0cff3f6141d3440026b05a0eb1207ab553478",
+    "/workspace/repo/docs/research/signals/results/trades.jsonl": "0d7c7ed700c841c51cd6de26eddd7d56ec5a66522178aeb22be5c3aed479b15d"
+  }
+}

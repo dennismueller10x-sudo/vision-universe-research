@@ -55,7 +55,12 @@ test("SMW-3 · Workflow: committet genau die sechs Dateien der beiden registrier
   const sm = reg.find((d) => d.id === "usSecurityMaster"), cn = reg.find((d) => d.id === "companyNames");
   assert.ok(sm && /build-us-security-master\.mjs/.test(sm.producer) && /security-master-weekly\.yml/.test(sm.workflow));
   assert.ok(cn && /build-company-names\.mjs/.test(cn.producer) && /security-master-weekly\.yml/.test(cn.workflow));
-  assert.equal(reg.find((d) => d.id === "securityMaster").workflow, null, "Produkteignung bleibt ohne Workflow (nicht Teil des Laufs)");
+  /* Die Produkteignung ist nicht Teil dieses Laufs: sie hat ihren eigenen Workflow (security-master-eligibility.yml,
+     ausgeloest nach diesem Lauf, mit eigenem Gate), und dieser Lauf schreibt eligibility.json nie (siehe oben). */
+  const elig = reg.find((d) => d.id === "securityMaster");
+  assert.equal(elig.workflow, "security-master-eligibility.yml", "Produkteignung laeuft in ihrem eigenen Workflow");
+  assert.ok(existsSync(join(ROOT, ".github", "workflows", elig.workflow)), "Workflow der Produkteignung fehlt");
+  assert.doesNotMatch(c, /eligibility\.json/, "der Wochenlauf schreibt die Produkteignung nicht");
 });
 
 /* ------------------------------------------------------------------ Gate */
