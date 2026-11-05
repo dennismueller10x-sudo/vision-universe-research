@@ -250,15 +250,14 @@
         hd.querySelector('.sf-r-cap').prepend(v1Tag(s));
         hd.appendChild(limitsLine(s, true));
         host.appendChild(hd);
-        host.appendChild(previewBanner(sum));
         var tl = h('div', { class: 'vu-grid sf-r-tiles' }); tl.style.setProperty('--vu-cols', '3');
-        tl.innerHTML = U0.tile('Treffer heute', num(views.length, 0), 'Originalregel') + U0.tile('Durchgerechnet', num(byS.MODELED_TRADE_PLAN || 0, 0), 'Stufe 3') + U0.tile('Regel bestätigt', num(byS.CONFIRMED_RESEARCH_SETUP || 0, 0), 'Stufe 2');
+        tl.innerHTML = U0.tile('Treffer', num(views.length, 0), 'am ' + dateDe(data.asOf)) + U0.tile('Durchgerechnet', num(byS.MODELED_TRADE_PLAN || 0, 0), 'Stufe 3') + U0.tile('Regel bestätigt', num(byS.CONFIRMED_RESEARCH_SETUP || 0, 0), 'Stufe 2');
         host.appendChild(tl);
       } else {
         host.appendChild(h('header', { class: 'st-hero sm sf-hero' }, [h('div', { class: 'st-kick', text: s.author + ' · quellentreu · Stand ' + dateDe(data.asOf) }), h('h1', { text: s.name }), h('p', { class: 'st-lead', text: s.short }), h('div', { class: 'sf-strat-st' }, [v1Tag(s), h('span', { class: 'sf-cap', text: 'höchstens' }), stageBadge(s.ceiling)]), limitsLine(s, true)]));
-        host.appendChild(previewBanner(sum));
         host.appendChild(kpis([[num(views.length, 0), 'Kandidaten', s.recognises], [num(byS.MODELED_TRADE_PLAN || 0, 0), 'Modelliert'], [num(byS.CONFIRMED_RESEARCH_SETUP || 0, 0), 'Bestätigt']]));
       }
+      host.insertBefore(previewBanner(sum), host.querySelector('.sf-r-tiles, .sf-kpis'));
       var list = h('div', { class: 'sf-cards' });
       var sorts = [['default', 'Methodenreihenfolge']].concat(Object.keys(sum.sortKeys).filter(function (k) { return k !== 'stage' && (k !== 'momentum' || cid === 'C08') && (k !== 'streak' || cid === 'C10') && (k !== 'setupState' || cid === 'C06') && (k !== 'pivot' || views.some(function (v) { return v.sortKeys && v.sortKeys.pivot !== null && v.sortKeys.pivot !== undefined; })); }).map(function (k) { return [k, sum.sortKeys[k].label]; }));
       var sel = h('select', { class: 'sf-select', 'aria-label': 'Sortierung', onchange: function () { state.sort = sel.value; state.limit = 30; draw(); } }, sorts.map(function (o) { return h('option', { value: o[0], text: o[1] }); }));
