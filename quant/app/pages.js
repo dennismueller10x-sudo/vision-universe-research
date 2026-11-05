@@ -117,7 +117,7 @@
     var first = c.events[0], t0 = T[first.eventType] || {};
     var rows = [];
     var tr = c.trade && c.trade.state === "AVAILABLE" ? c.trade : null;
-    if (tr && zoneText(tr.entry)) rows.push(["Interessant ab", zoneText(tr.entry)]);
+    if (tr && zoneText(tr.entry)) rows.push(["Einstiegsmarke der Methode", zoneText(tr.entry)]);
     var inv = tr && typeof tr.invalidation === "number" ? tr.invalidation : c.setup && typeof c.setup.invalidation === "number" ? c.setup.invalidation : null;
     if (inv !== null && c.setup && c.setup.state !== "NO_SETUP") rows.push(["Ungültig unter", usd(inv)]);
     if (tr && tr.targets && tr.targets[0]) rows.push(["Zielzone 1", zoneText(tr.targets[0])]);
@@ -319,7 +319,8 @@
     var close = closeBy && typeof closeBy[c.ticker] === "number" ? " · Schluss " + usd(closeBy[c.ticker]) : "";
     var frueher = c.replay && c.replay.sufficient ? "in " + Math.round(c.replay.positiveShare * 100) + " % von " + c.replay.completed + " Fällen höher" : c.replay && c.replay.state === "AVAILABLE" ? "zu wenige Fälle für eine Aussage" : null;
     return '<a class="vu-box qv3-setup" href="' + U().esc(X.routes.stock(c.ticker)) + '"><div class="qv3-setup-h">' + U().logo(c.ticker) + '<span class="qv3-setup-n"><b>' + U().esc(nameOf(ctx, c.ticker) || c.ticker) + '</b><span class="vu-xs vu-mu"><b>' + U().esc(c.ticker + close) + "</b></span></span>" + U().verdict("strong", "Bestätigt") + "</div>" +
-      '<div class="qv3-pboxes">' + box("Interessant ab", tr && zoneText(tr.entry)) + box("Ungültig unter", inv != null ? usd(inv) : null) + box("Ziel 1", tr && tr.targets && tr.targets[0] && zoneText(tr.targets[0])) + "</div>" +
+      '<div class="qv3-pboxes">' + box("Einstiegsmarke", tr && zoneText(tr.entry)) + box("Stopp-Marke", inv != null ? usd(inv) : null) + box("Zielzone", tr && tr.targets && tr.targets[0] && zoneText(tr.targets[0])) + "</div>" +
+      '<div class="vu-xs vu-mu qv3-pnote">Marken der Methode, keine Empfehlung.</div>' +
       (frueher ? '<div class="vu-xs qv3-frueher"><b>Früher:</b> <span class="vu-mu">' + U().esc(frueher) + "</span></div>" : "") + "</a>";
   }
   async function home(main, ctx) {
