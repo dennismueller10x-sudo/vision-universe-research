@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-05T08:02:55.831Z",
+ "generatedAt": "2026-11-05T15:31:01.352Z",
  "gate": "ELIGIBLE_US_EQUITY",
  "derivedFrom": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
  "derivedFromSha256": "8d4f64c6c750ee44f3d39569047469fcdd66183bc15d846973f71e3a9be69741",
@@ -7,12 +7,12 @@
  "today": "2026-11-05",
  "method": "PRODUCT_ELIGIBILITY_LAYER",
  "provider": "tiingo",
- "actualSize": 6573,
+ "actualSize": 6577,
  "counts": {
-  "ELIGIBLE": 5671,
-  "SEPARATE_CLASS": 807,
-  "REVIEW": 95,
-  "EXCLUDED_NOT_LISTED_HERE": 1230
+  "ELIGIBLE": 5670,
+  "SEPARATE_CLASS": 804,
+  "REVIEW": 103,
+  "EXCLUDED_NOT_LISTED_HERE": 1226
  },
  "note": "Abgeleitet, nicht gepflegt. Die Mitgliedschaft steht in universe-FULL_UNIVERSE.json und bleibt dort vollstaendig. Verdachtsfaelle (REVIEW) sind enthalten und markiert.",
  "securities": [
@@ -7015,6 +7015,26 @@
    "startDate": "1987-08-20",
    "selection": "inheritedFrom:GATE_2000",
    "productEligibility": "ELIGIBLE"
+  },
+  {
+   "securityId": "ref_WR",
+   "ticker": "WR",
+   "company": null,
+   "exchange": "NYSE",
+   "country": "US",
+   "currency": "USD",
+   "assetType": "Stock",
+   "instrumentType": "COMMON_STOCK",
+   "active": true,
+   "providerSymbol": "WR",
+   "provider": "tiingo",
+   "sector": null,
+   "sectorStatus": "SOURCE_MISSING",
+   "industry": null,
+   "industryStatus": "SOURCE_MISSING",
+   "startDate": "1987-08-25",
+   "selection": "inheritedFrom:GATE_2000",
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_HRTX",
@@ -18377,6 +18397,26 @@
    "productEligibility": "ELIGIBLE"
   },
   {
+   "securityId": "ref_NYNY",
+   "ticker": "NYNY",
+   "company": null,
+   "exchange": "NASDAQ",
+   "country": "US",
+   "currency": "USD",
+   "assetType": "Stock",
+   "instrumentType": "COMMON_STOCK",
+   "active": true,
+   "providerSymbol": "NYNY",
+   "provider": "tiingo",
+   "sector": null,
+   "sectorStatus": "SOURCE_MISSING",
+   "industry": null,
+   "industryStatus": "SOURCE_MISSING",
+   "startDate": "1993-11-05",
+   "selection": "inheritedFrom:GATE_2000",
+   "productEligibility": "REVIEW"
+  },
+  {
    "securityId": "ref_ROCK",
    "ticker": "ROCK",
    "company": null,
@@ -21255,6 +21295,26 @@
    "startDate": "1995-08-18",
    "selection": "inheritedFrom:GATE_2000",
    "productEligibility": "ELIGIBLE"
+  },
+  {
+   "securityId": "ref_BREW",
+   "ticker": "BREW",
+   "company": null,
+   "exchange": "NASDAQ",
+   "country": "US",
+   "currency": "USD",
+   "assetType": "Stock",
+   "instrumentType": "COMMON_STOCK",
+   "active": true,
+   "providerSymbol": "BREW",
+   "provider": "tiingo",
+   "sector": null,
+   "sectorStatus": "SOURCE_MISSING",
+   "industry": null,
+   "industryStatus": "SOURCE_MISSING",
+   "startDate": "1995-08-18",
+   "selection": "inheritedFrom:GATE_2000",
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_CLRO",
@@ -38994,7 +39054,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2005-11-30",
    "selection": "inheritedFrom:GATE_2000",
-   "productEligibility": "SEPARATE_CLASS"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_HOVNP",
@@ -42334,7 +42394,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2007-08-15",
    "selection": "ruleBased",
-   "productEligibility": "SEPARATE_CLASS"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_SUZ",
@@ -48137,6 +48197,26 @@
    "productEligibility": "ELIGIBLE"
   },
   {
+   "securityId": "ref_INVN",
+   "ticker": "INVN",
+   "company": null,
+   "exchange": "NYSE",
+   "country": "US",
+   "currency": "USD",
+   "assetType": "Stock",
+   "instrumentType": "COMMON_STOCK",
+   "active": true,
+   "providerSymbol": "INVN",
+   "provider": "tiingo",
+   "sector": null,
+   "sectorStatus": "SOURCE_MISSING",
+   "industry": null,
+   "industryStatus": "SOURCE_MISSING",
+   "startDate": "2011-11-16",
+   "selection": "ruleBased",
+   "productEligibility": "REVIEW"
+  },
+  {
    "securityId": "ref_ANGI",
    "ticker": "ANGI",
    "company": null,
@@ -48334,7 +48414,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2012-02-08",
    "selection": "ruleBased",
-   "productEligibility": "ELIGIBLE"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_EPAM",
@@ -89394,7 +89474,7 @@
    "industryStatus": "SOURCE_MISSING",
    "startDate": "2021-05-07",
    "selection": "ruleBased",
-   "productEligibility": "SEPARATE_CLASS"
+   "productEligibility": "REVIEW"
   },
   {
    "securityId": "ref_PEB_P_G",
