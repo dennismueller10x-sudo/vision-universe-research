@@ -131,3 +131,16 @@ Vorgehen, vor dem ersten Lauf in `docs/research/edge/PROTOKOLL.md` festschreiben
 - Mehrfachtest-Korrektur (Deflated Sharpe oder Holm) über alle getesteten Varianten; alle Varianten berichten, auch die schlechten.
 - Delistete Titel und Kosten wie in C (`quant/engines/portfolio-backtest.cjs`).
 Pfade: `scripts/research/edge/`, `docs/research/edge/`. Keine Produktdateien, keine Fachmodelle, keine Workflows. Ergebnis: Bericht mit Tabelle je Variante, Urteil „schlägt / schlägt nicht / nur risikobereinigt“, und eine Empfehlung für die Produktdarstellung.
+
+## 10. Projekt „Signale mit Nachweis“ (Owner-Ziel 05.11.2026)
+
+Ziel: Die App meldet konkrete Handelsgelegenheiten (Beispiel des Owners: Kauf an einer guten Unterstützungslinie, Take-Two am 04.11.), jeweils mit Einstieg, Stopp und Ziel, und **nur für Setups, die historisch nachweislich besser abschneiden als Kaufen und Halten**. Bausteine sind vorhanden: `quant/engines/technical/support-resistance.js`, `ti/levels.js`, `technical/trade-setup.js`, `setup-engine.js`, `signal-backtest.js`, `pattern-research.js`.
+
+| Stufe | Inhalt | Wer |
+|---|---|---|
+| S1 | Vorregistrierte Signal-Studie auf den Kursreihen im Repo: je Setup Trefferquote, Gewinn/Verlust je Trade in R, Erwartungswert nach Kosten, Vergleich mit Halten der Aktie und mit SPY über dieselbe Haltedauer | Codex (E4) |
+| S2 | Bestätigung der besten Setups mit delisteten Titeln (R2-Archiv) und dem unberührten Holdout 2008–2015 | C (Quant) mit B |
+| S3 | Live-Signale nur für bestätigte Setups: Einstieg, Stopp, Ziel, Begründung, Chart; laufende Bilanz jedes Signals ab Veröffentlichung (vorwärts, nicht nachträglich änderbar) | C + D2 (Darstellung nach Mockups Technical/Supertrader) |
+| S4 | Rechtliche Einordnung (Signale für alle, keine persönliche Beratung; Pflichtangaben einer Finanzanalyse) | Owner mit Rechtsberatung |
+
+Regel: Kein Setup wird als Signal gezeigt, das S2 nicht bestanden hat. Alle getesteten Setups werden berichtet, auch die schlechten.
