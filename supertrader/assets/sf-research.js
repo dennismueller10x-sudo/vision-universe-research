@@ -327,7 +327,6 @@
       nums,
       h('div', { class: 'sf-why' }, [h('h4', { text: 'Warum erkannt' }), h('ul', { class: 'sf-rules' }, (met.length ? met : [h('li', { 'data-k': 'check' }, [icon(IC.check), h('span', { text: 'Chartmuster der Methode am Stichtag' })])]).concat(interpMet))]),
       notMet.length || why.length || pending.length || interpOpen.length ? h('div', { class: 'sf-why' }, [h('h4', { text: 'Warum diese Stufe' }), h('ul', { class: 'sf-rules' }, notMet.concat(interpOpen, pending, why))]) : null,
-      v.plan ? planBlock(v, L) : null,
       openRules.length || blocks.length ? moreBox('Offene Prüfung und gesperrte Stufen', [
         openRules.length ? h('div', { class: 'sf-why' }, [h('h4', { text: 'Offen für die eigene Prüfung' }), h('ul', { class: 'sf-rules' }, openRules)]) : null,
         blocks.length ? h('div', { class: 'sf-why' }, [h('h4', { text: 'Höhere Stufen gesperrt, weil' }), h('ul', { class: 'sf-rules' }, blocks)]) : null,
@@ -350,19 +349,7 @@
     return h('article', { class: 'sf-card', 'data-stage': v.stage }, opts.compact ? [head, nums, lim, moreBox('Warum erkannt, warum diese Stufe', body.slice(1))] : [head, lim].concat(body, [limitsLine(s)].filter(function () { return !lim; })));
   }
   function pair(k, v, sub) { return h('div', null, [h('dt', { text: k }), h('dd', null, [h('strong', { text: v }), sub ? h('small', { text: sub }) : null])]); }
-  function planBlock(v, L) {
-    var p = v.plan, onOpen = /OPEN/.test(p.entryType);
-    return h('div', { class: 'sf-plan' }, [
-      h('h4', null, [icon(IC.open), 'Modellierter Ablauf (hypothetisch)']),
-      h('dl', { class: 'sf-nums' }, [onOpen ? pair('Referenz (Schluss)', usd(p.trigger), 'Einstieg zur Eröffnung ' + dateDe(p.earliestSession)) : pair('Einstiegsmarke', usd(p.trigger), 'ab ' + dateDe(p.earliestSession)), pair('Modell-Stop', usd(p.stop), pct(p.plannedRiskPct, p.plannedRiskPct < 0.01 ? 2 : 1) + ' Abstand'), fin(p.limit) ? pair('Limit', usd(p.limit)) : null]),
-      // Ausführungsfenster der Referenzregel (höchster geplanter Verlust): nur sichtbar machen, nie verändern
-      p.fillWindow ? h('p', { class: 'sf-dq', 'data-fill': p.referenceInFillWindow ? 'in' : 'out' }, [icon(p.referenceInFillWindow ? IC.check : IC.alert), p.referenceInFillWindow
-        ? 'Ausführung laut Modell nur bei einer Eröffnung über dem Stop und höchstens ' + usd(p.fillWindow.upTo) + '.'
-        : 'Zum Schlusskurs nicht ausführbar: Das Modell verlangt eine Eröffnung über dem Stop und höchstens ' + usd(p.fillWindow.upTo) + ', sonst entfällt der Einstieg.']) : null,
-      p.modelAssumptions && p.modelAssumptions.length ? h('div', null, [h('h4', { text: 'Durch Modellannahmen ersetzt' }), h('ul', { class: 'sf-rules' }, p.modelAssumptions.map(function (id) { return h('li', { 'data-k': 'open' }, [icon(IC.open), h('span', { text: ruleText(L, id) })]); }))]) : null,
-      h('p', { class: 'st-hint', text: 'Werte eines Forschungsmodells mit benannten Modellannahmen. Keine Order, keine Empfehlung, keine Aussage zur Handelbarkeit.' }),
-    ]);
-  }
+
 
   /* ================================================ AKTIENSEITE: Analyse */
   function mountStock(main, sym) {
@@ -402,9 +389,8 @@
       var lv = v.levels || {}, levels = [], boxes = [], overlays = [];
       [[10, 'var(--ma10)', ['C08', 'C10', 'C11']], [20, 'var(--ma20)', ['C08', 'C13']], [50, 'var(--ma50)', null], [200, 'var(--ma200)', ['C06']]].forEach(function (m) { overlays.push({ id: 'ma' + m[0], label: m[0] + '-Tage-Linie', color: m[1], values: STChart.sma(bars.close, m[0]), on: m[2] ? m[2].indexOf(v.candidateId) >= 0 : true }); });
       if (weekly) overlays.push({ id: 'ma150', label: '30-Wochen-Linie (≈150 Tage)', color: 'var(--ma30w)', values: STChart.sma(bars.close, 150) });
-      // Einstiegs- und Stop-Marken nur im modellierten Ablauf; sonst nur die Chartstruktur der Methode (Review M2, Owner 28.10.2026)
+      // nur die Chartstruktur der Methode; keine Einstiegs- oder Stop-Marken (Owner-Linie L2, Plan §11)
       if (structOf(v.pivot)) levels.push({ id: 'pivot', label: 'Chartstruktur: ' + STRUCT_TXT[v.pivot.kind], value: v.pivot.level, color: 'var(--chart-box-base)', dash: '6 4' });
-      if (v.plan) { levels.push({ id: 'entry', label: /OPEN/.test(v.plan.entryType) ? 'Referenz (Schluss)' : 'Modell-Einstiegsmarke', value: v.plan.trigger, color: 'var(--chart-entry)', dash: '2 3' }); levels.push({ id: 'stop', label: 'Modell-Stop', value: v.plan.stop, color: 'var(--chart-stop)' }); }
       if (lv.box && fin(lv.box.top)) boxes.push({ from: lv.box.from, to: null, top: lv.box.top, bottom: lv.box.bottom, color: 'var(--chart-box-darvas)', label: 'Darvas-Box' });
       STChart.render(box, { bars: bars, mode: 'candles', window: weekly ? 180 : 120, overlays: overlays, levels: levels, boxes: boxes, markers: [], showVolume: true, title: v.ticker, status: 'Marken der Methode ' + (s ? s.name : '') + '. Kurse bis ' + dateDe(bars.date[bars.date.length - 1]) + '.' });
     }).catch(function () { host.replaceChildren(empty('Chart nicht verfügbar', 'Die Kursdaten für diesen Titel konnten nicht geladen werden. Es wird kein Ersatzchart gezeichnet.')); });
