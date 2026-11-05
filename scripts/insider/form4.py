@@ -183,9 +183,12 @@ def generate(start, as_of, indices, load):
     rows, seen, excluded, filings = [], set(), {}, 0
     for content in indices:
         for meta in index_rows(content):
-            if not start <= date.fromisoformat(meta["filingDate"]) <= as_of.date() or meta["path"] in seen:
+            # EDGAR lists one submission under every involved CIK (issuer and each reporting owner):
+            # same accession, different paths. Deduplicate by accession, or every purchase is counted twice.
+            accession = FILING_PATH.fullmatch(meta["path"])[1]
+            if not start <= date.fromisoformat(meta["filingDate"]) <= as_of.date() or accession in seen:
                 continue
-            seen.add(meta["path"])
+            seen.add(accession)
             purchases, counts = parse_filing(load(meta["path"]), meta)
             filings += 1
             for k, v in counts.items():

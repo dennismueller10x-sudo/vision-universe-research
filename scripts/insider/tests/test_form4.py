@@ -64,6 +64,13 @@ class Form4Tests(unittest.TestCase):
         self.assertEqual(d["records"], 1)
         self.assertEqual(d["filingsProcessed"], 1)
 
+    def test_same_accession_under_issuer_and_owner_cik_counted_once(self):
+        owner_path = PATH.replace("edgar/data/123/", "edgar/data/456/")
+        index = INDEX + "456|Person|4|2026-06-05|" + owner_path + "\n"
+        d = f.generate(date(2026, 6, 1), f.cutoff("2026-06-05T21:30:00Z"), [index], lambda p: submission())
+        self.assertEqual(d["filingsProcessed"], 1)
+        self.assertEqual(d["records"], 1)
+
     def test_no_acceptance_conservative_next_day_dst(self):
         r, _ = f.parse_filing(submission(accepted=None), META)
         self.assertEqual(r[0]["availableAt"], "2026-06-06T04:00:00Z")
