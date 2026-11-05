@@ -4,7 +4,7 @@ name: Quant - Musterportfolios (VU-Portfolio-Standard, historisch, Forschung)
 # (scripts/quant/portfolio/model-portfolios.cjs). Forschung, nicht zertifiziert.
 # Eingaben, die nur im Runner existieren und nie committet werden:
 #   - kanonische Tagesbalken (Tiingo, R2-Historienablage): Gesamtrendite, Rohschluss, Tagesumsatz
-#   - delistete Titel aus dem privaten V13-Archiv (Teil v13-derived, alle Hashes geprueft)
+#   - delistete Titel aus dem privaten V13-Archiv (Teile v13-derived und v13-raw, alle Hashes geprueft)
 #   - SEC-Fundamentaldaten in der Lesart ORIGINAL (wie erstmals eingereicht) aus companyfacts.zip (oeffentlich)
 # Committet wird nur das abgeleitete Ergebnis docs/quant/research/portfolio-v1/ und das Vorschau-Paket
 # workers/vu-account/data/model-portfolios-bundle.json (Kennzahlen, Wertentwicklung, Gewichte; keine Kurse).
@@ -86,11 +86,14 @@ jobs:
           V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
         run: |
           set -euo pipefail
-          node scripts/quant/v13/archive/r2-restore.mjs --mode extract --parts v13-derived \
+          node scripts/quant/v13/archive/r2-restore.mjs --mode extract --parts v13-derived,v13-raw \
             --dest "$RUNNER_TEMP/priv" --manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json --prefix research-snapshots/quant-v13/archive-1.2.0/
           first=$(python3 -I -c 'import json,sys;r=json.load(open(sys.argv[1]));f=r["columns"];rows=r["rows"];i=f.index("chainId");s=f.index("status");print(next(x[i] for x in rows if x[s]=="QUALIFIED"))' docs/quant-recovery/v13/delisted/register-1.0.0.json)
           hit=$(find "$RUNNER_TEMP/priv/v13-derived" -name "$first.json" -print -quit); test -n "$hit"
           echo "DELISTED_DIR=$(dirname "$hit")" >> "$GITHUB_ENV"
+          rawf=$(find "$RUNNER_TEMP/priv/v13-raw" -name 'series.jsonl.gz' -print -quit); test -n "$rawf"
+          echo "DELISTED_RAW_DIR=$RUNNER_TEMP/priv/v13-raw" >> "$GITHUB_ENV"
+          echo "Rohdateien: $(find "$RUNNER_TEMP/priv/v13-raw" -name 'series.jsonl.gz' | wc -l)"
           echo "Reihen: $(find "$(dirname "$hit")" -maxdepth 1 -name '*.json' | wc -l)"
 
       - name: SEC-Fundamentaldaten wie erstmals eingereicht (oeffentlich, companyfacts.zip)
@@ -103,7 +106,7 @@ jobs:
           set -euo pipefail
           mkdir -p docs/quant/research/portfolio-v1
           node --max-old-space-size=12288 scripts/quant/portfolio/model-portfolios.cjs \
-            --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" \
+            --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" --delisted-raw-dir "$DELISTED_RAW_DIR" \
             --fundamentals "$RUNNER_TEMP/pit-fundamentals" --sensitivity \
             --out docs/quant/research/portfolio-v1/model-portfolios.json
           node scripts/quant/portfolio/render-model-portfolios.cjs --in docs/quant/research/portfolio-v1/model-portfolios.json \

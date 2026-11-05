@@ -22,6 +22,11 @@ function canonical(x) {
 const sha = s => crypto.createHash('sha256').update(s).digest('hex');
 const NAMES = { 'quality-compounder': 'Quality Compounder', 'momentum-leader': 'Momentum Leader', garp: 'GARP', 'defensive-quality': 'Defensive Quality', 'value-momentum': 'Value Momentum', 'quality-momentum': 'Quality Momentum', 'future-leader': 'Future Leader' };
 const LIMIT_TEXT = {
+  POPULATION_HEUTIGE_DATEIEN_PLUS_V13_KETTEN: 'Population: heute vorhandene Kursdateien mit heutigem SIC-Code plus qualifizierte V13-Ketten delisteter Titel. Das ist keine vollständige damalige Population; Titel ohne SIC und nicht qualifizierte Delistings fehlen (Zählung in model-portfolios.json, data.counts).',
+  MITGLIEDSCHAFT_AUS_AUSFUEHRBARKEIT: 'Die je Stichtag gespeicherte Mitgliedschaft enthält nur in der Folgewoche ausführbare Titel; nicht ausgeführte Ziele stehen getrennt (unfilledAtExecution) und bleiben Cash.',
+  WALK_FORWARD_OHNE_HOLDOUT_UND_MEHRFACHTEST: 'Walk-forward heißt hier rollierende Schätzung mit festen Regeln. Es gibt keine unberührte OOS-Periode, die Testfenster teilen denselben Pfad, und über die fünf Profile wird nicht für Mehrfachtests korrigiert.',
+  ZEITRAUM_VERKUERZT: 'Der realisierte Zeitraum endet früher als angefragt, weil die Benchmark-Reihe früher endet (siehe Datenbasis).',
+  DELISTETE_TITEL_NUR_QUALIFIZIERTE_KETTEN_MIT_GESAMTRENDITE_UND_ROHBALKEN: 'Delistete Titel nur mit vollständiger Gesamtrendite-Reihe und passenden Tagesbalken (Rohschluss je Datum über splitFactors, Tagesumsatz aus den Balken); andere werden ausgeschlossen und gezählt.',
   KEINE_HISTORISCHE_INDEXMITGLIEDSCHAFT: 'Keine historische Indexmitgliedschaft: Universum sind alle damals handelbaren US-Stammaktien mit Kurs- und Liquiditätsfilter.',
   SIC_HEUTIGER_STAND: 'Branchen aus dem heutigen SIC-Code, nicht historisch.',
   SPREAD_MODELLIERT_NICHT_BEOBACHTET: 'Spread aus Liquiditätsklassen modelliert, keine beobachteten Kurse.',
@@ -58,7 +63,7 @@ function build(root, inFile) {
   }
   return { ...base, state: 'COMPUTED', source: { file: inFile, sha256: sha(bytes), schemaVersion: doc.schemaVersion, engines: doc.engines },
     data: { basis: doc.data.basis, benchmark: doc.data.benchmark, priceSource: doc.data.priceSource, delistedSource: doc.data.delistedSource, fundamentalsSource: doc.data.fundamentalsSource, securities: doc.data.securities },
-    window: doc.window, standardRules: doc.standard, openLimits: doc.openLimits.map(k => LIMIT_TEXT[k] || k), sensitivity: doc.sensitivity, portfolios };
+    window: doc.realizedWindow || doc.window, requestedWindow: doc.requestedWindow || doc.window, windowAlarm: doc.windowAlarm || null, population: doc.population || null, standardRules: doc.standard, openLimits: doc.openLimits.map(k => LIMIT_TEXT[k] || k), sensitivity: doc.sensitivity, portfolios };
 }
 
 function main() {
