@@ -160,11 +160,19 @@ Datenstand auf `main` (nicht Redesign): Quant Browser-QA „aktie-aaac: ETF ohne
 
 ## Stand 05.11.2026 abends
 
-Gemergt: #1444 Wortwahl Quant/Screener/Fundamental/Analysten/Hedgefonds, #1445 Wortwahl Discover, #1446 Supertrader (Wortwahl, ST-Z, ST02, ST03, Backtest-Hinweis), #1450 Q06/Q09, #1453 V04, #1454 V05, #1455 S03, #1456 Pflicht-Hinweise, #1458 Discover dunkel, #1459 N6, #1461 D08, #1463 D07, #1464 Direktlink-QA Screener, #1470 W05.
+Gemergt: #1444 Wortwahl Quant/Screener/Fundamental/Analysten/Hedgefonds, #1445 Wortwahl Discover, #1446 Supertrader (Wortwahl, ST-Z, ST02, ST03, Backtest-Hinweis), #1450 Q06/Q09, #1453 V04, #1454 V05, #1455 S03, #1456 Pflicht-Hinweise, #1458 Discover dunkel, #1459 N6, #1461 D08, #1463 D07, #1464 Direktlink-QA Screener, #1470 W05, #1472 UI-Sperre (Leiste aus #1456 nachgetragen), #1473 Supertrader L2, #1474 Atlas L6, #1477 Quant L1/L7, #1485 Supertrader L3.
 
 Strang F (`docs/legal/WORTWAHL-BEFUNDE.md`): Befunde 1–18 in der Oberfläche umgesetzt. Die Pflicht-Hinweise aus `assets/legal-notices.json` werden von `scripts/legal/sync-legal-notices.mjs` in `assets/vu-ui.js` und `assets/site-navigation.js` gespiegelt (`--check` in CI), sichtbar erst mit `legalApproved: true` (Rechtliche Abnahme A15, Owner-Freigabe Recht).
 
 Schritt 6 (Dunkelmodus und Browser-QA, 36 Seiten × hell/dunkel bei 390×844: Konsolenfehler, Überlauf, axe-Kontrast): sauber bis auf Discover dunkel (Lime-Flächen mit weißer Schrift, behoben in #1458) und Supertrader `/supertrader/stock/NVDA/` (Urteil „keine“ 4,11:1, behoben in #1450). `/elliott/` erreicht in der lokalen Prüfung kein „networkidle“ (Dauerabfrage), mit dem Load-Ereignis fehlerfrei.
+
+Abweichungen „Recht“ (Owner-Linie Plan §11, `docs/legal/EINORDNUNG.md` §0; stehen über dem Mockup):
+- L1 (#1477): Setup- und Szenario-Karten zeigen nur „Zone laut Methode“ und „Ungültig-Marke laut Methode“, ohne Ziele, Chance/Risiko, Stop und projizierten Pfad (Q01, Q03, Q06, Q09, W05-Legende). Historische Forschungsauswertungen („Zielzone 1 erreicht, Prüfzeitraum ab 2019“) bleiben beschriftet.
+- L2 (#1473): Supertrader ohne Marke, Grenze und Stop; Zustände „Regel fast erfüllt“, „Regel erfüllt“, „Ausstiegsregel erfüllt“, „Muster gilt nicht mehr“ (ST03, ST04, ST08).
+- L3 (#1485, Daten Strang B #1479): Musterdepots ohne heutige Bestände; Modellpositionen nur als Zahl, Zusammensetzung erst mit zwölf Monaten Abstand; Protokoll und Zyklen ohne Kurse (ST01, ST03–ST05, ST08). Quant-Musterportfolios sind öffentlich nicht sichtbar (nur Konto-Admin, Strang C #1462).
+- L6 (#1474): Atlas lehnt Kauf-/Verkaufsfragen und Fragen zur persönlichen Lage neutral ab (E10).
+- L7 (#1477): kein Gesamturteil als Wort je Aktie; „k von n Faktoren stark“, die Urteile je Frage bleiben (Q02, Q03, Q07).
+- Offen außerhalb Strang D: L4 Analysten und L5 Reels (Owner), Pflicht-Links in der App (Strang F, #1449), Startseiten-Baustein „Eigenschaften“ in `scripts/home/build-home.mjs` (Neubau der Startseite).
 
 Bleibende Abweichungen: S03 als Sheet über der Trefferliste; D07 Einordnung mit Stufen-Skala; D08 Adresse in Discover; W05 ohne belastbare Lesart nur Marktstruktur; Vorsorge hält ihre Karten im Dunkelmodus dunkel. Alle übrigen Folien sind fertig.
 
