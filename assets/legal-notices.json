@@ -1,85 +1,208 @@
 {
   "schemaVersion": "vu-legal-notices-1",
-  "version": "vu-hinweise-2026-11-05-entwurf-1",
+  "version": "vu-hinweise-2026-11-05-entwurf-2",
   "status": "entwurf",
   "legalApproved": false,
   "updated": "2026-11-05",
-  "about": "Pflicht-Hinweistexte für das Frontend. Entwurf ohne anwaltliche Prüfung (keine Rechtsberatung). Grundlage: docs/legal/EINORDNUNG.md, Regeln: docs/legal/WORTWAHL.md. Texte nur hier ändern, nicht in den Seiten kopieren.",
+  "about": "Pflicht-Hinweistexte für das Frontend. Entwurf ohne anwaltliche Prüfung (keine Rechtsberatung). Owner-Linie: docs/PLAN_NEUSTART_2026-11.md §11 (Analyse-Software ohne Empfehlungen und ohne Signale). Grundlage: docs/legal/EINORDNUNG.md, Regeln: docs/legal/WORTWAHL.md. Texte nur hier ändern, nicht in die Seiten kopieren.",
   "links": {
-    "risikohinweise": "https://konto.visionuniverse.de/rechtliches/risikohinweise",
-    "marHinweise": "https://konto.visionuniverse.de/rechtliches/mar-hinweise",
+    "impressum": "https://konto.visionuniverse.de/rechtliches/impressum",
+    "datenschutz": "https://konto.visionuniverse.de/rechtliches/datenschutz",
     "bedingungen": "https://konto.visionuniverse.de/rechtliches/agb",
-    "impressum": "https://konto.visionuniverse.de/rechtliches/impressum"
+    "risikohinweise": "https://konto.visionuniverse.de/rechtliches/risikohinweise",
+    "methodik": "https://konto.visionuniverse.de/rechtliches/methodik",
+    "kuendigen": "https://konto.visionuniverse.de/kuendigen",
+    "widerrufen": "https://konto.visionuniverse.de/widerrufen"
   },
   "labels": {
     "research": "Forschung, nicht zertifiziert",
     "model": "Rechenmodell, kein echtes Geld",
     "rule": "erfüllt die Regel",
     "thirdParty": "Angabe Dritter",
-    "ai": "mit KI übersetzt – Zahlen aus Vision Universe"
+    "ai": "mit KI übersetzt – Zahlen aus Vision Universe",
+    "zone": "Zone laut Methode"
   },
   "notices": {
     "footer": {
       "where": "Seitenfuß jeder Seite von research.visionuniverse.de",
-      "text": "Vision Universe ist eine Software zur Analyse von Aktien. Die Ergebnisse entstehen automatisch nach beschriebenen Regeln und sind für alle gleich. Keine Anlageberatung, keine persönliche Empfehlung, keine Aufforderung zum Kauf oder Verkauf. Aktien können bis zum Totalverlust fallen. Frühere und simulierte Ergebnisse sind kein verlässlicher Hinweis auf die Zukunft.",
-      "links": ["risikohinweise", "marHinweise", "impressum"]
+      "text": "Vision Universe ist eine Software zur Analyse von Aktien. Die Ergebnisse entstehen automatisch nach beschriebenen Regeln und sind für alle gleich. Keine Anlageberatung, keine Anlageempfehlung, keine Kauf- oder Verkaufsempfehlung. Aktien können bis zum Totalverlust fallen. Frühere und simulierte Ergebnisse sind kein verlässlicher Hinweis auf die Zukunft.",
+      "links": [
+        "impressum",
+        "datenschutz",
+        "bedingungen",
+        "risikohinweise"
+      ]
     },
     "stock": {
       "where": "Aktienseiten (Quant, Fundamental, Discover, Technical, Supertrader-Aktienseite)",
       "text": "Einstufungen und Werte beschreiben, wie diese Aktie nach den Regeln der jeweiligen Methode im Vergleich zu anderen Aktien abschneidet – Datenstand siehe oben. Sie berücksichtigen deine persönliche Situation nicht und sind keine Empfehlung, diese Aktie zu kaufen, zu halten oder zu verkaufen.",
-      "links": ["marHinweise"]
+      "links": [
+        "methodik"
+      ]
     },
     "ranking": {
       "where": "Ranglisten, Screener-Treffer, Kandidatenlisten, Listen „erfüllt heute die Regel“",
       "text": "Diese Liste zeigt Aktien, die die beschriebenen Bedingungen zum Datenstand rechnerisch erfüllen. Die Reihenfolge folgt der Regel, nicht einer Einschätzung, welche Aktie besser für dich ist.",
-      "links": ["marHinweise"]
+      "links": [
+        "methodik"
+      ]
+    },
+    "setup": {
+      "where": "Regel-Ergebnisse von Methoden mit Zonen (Quant-Setup-Karte, Supertrader-Stufen, Technical-Zonen)",
+      "text": "Regel-Ergebnis der Methode, für alle gleich: Die Aktie erfüllt zum Datenstand die beschriebenen Bedingungen. Zonen laut Methode sind Rechenpunkte, kein Kursziel und keine Prognose. Das ist keine Empfehlung, die Aktie zu kaufen oder zu verkaufen.",
+      "required": [
+        "Methode und Regelversion",
+        "Datenstand",
+        "Link zur Methodik"
+      ],
+      "forbidden": [
+        "Einstieg, Stopp und Ziel als Handlungsanweisung",
+        "„Interessant ab“",
+        "„Chance/Risiko“",
+        "„Einstieg bestätigt“",
+        "Live-Signal",
+        "Push-Meldung „Signal“"
+      ],
+      "links": [
+        "risikohinweise",
+        "methodik"
+      ]
     },
     "backtest": {
       "where": "Jede Ansicht mit Backtest-Ergebnissen, historischen Trefferquoten oder Renditekurven",
       "label": "Forschung, nicht zertifiziert",
       "text": "Forschung, nicht zertifiziert: Dieser Backtest rechnet eine Regel rückwirkend auf historische Kurse. Das Ergebnis hängt von Zeitraum, Kosten, Ausführung und Datenumfang ab (Angaben unten). Es ist keine Prognose und kein Renditeversprechen. Frühere und simulierte Wertentwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse.",
-      "required": ["Zeitraum", "Kosten je Trade", "Vergleichsmaßstab (z. B. S&P 500 Gesamtrendite)", "Enthält delistete Titel: ja/nein", "Anzahl getesteter Varianten", "größter Verlust (max. Drawdown)"],
-      "links": ["risikohinweise"]
+      "required": [
+        "Zeitraum",
+        "Kosten je Trade",
+        "Vergleichsmaßstab (z. B. S&P 500 Gesamtrendite)",
+        "Enthält delistete Titel: ja/nein",
+        "Anzahl getesteter Varianten",
+        "größter Verlust (max. Drawdown)"
+      ],
+      "links": [
+        "risikohinweise"
+      ]
     },
     "modelPortfolio": {
       "where": "Musterdepots, Hausstrategie, Modellpositionen",
       "label": "Rechenmodell, kein echtes Geld",
-      "text": "Musterdepot: ein Rechenmodell ohne echtes Geld, das eine Methode streng nach Regel vorwärts rechnet. Es zeigt, was die Methode tut, nicht, was du tun solltest. Reale Ergebnisse weichen durch Kosten, Steuern, Kurslücken und Ausführungszeitpunkt ab.",
-      "links": ["risikohinweise", "marHinweise"]
-    },
-    "signal": {
-      "where": "Signal-Ansichten mit Einstiegsmarke, Stopp-Marke und Zielzone (Quant-Setup-Karte, Supertrader-Stufen, künftige „Signale mit Nachweis“)",
-      "text": "Regelereignis einer Methode, für alle gleich: Einstiegsmarke, Stopp-Marke und Zielzone sind Rechenpunkte der Methode, kein Kursziel und keine Prognose. Eine Stopp-Marke begrenzt Verluste nicht zuverlässig (Kurslücken). Ob und in welchem Umfang du handelst, entscheidest du selbst.",
-      "required": ["Datum und Uhrzeit der Veröffentlichung", "Methode und Regelversion", "Datenstand", "Ergebnis der Methode in Backtest und vorwärts (mit Label „Forschung, nicht zertifiziert“, solange nicht zertifiziert)", "Link zu Ersteller, Methodik und Interessenkonflikten"],
-      "links": ["risikohinweise", "marHinweise"]
+      "text": "Musterdepot: ein Rechenmodell ohne echtes Geld, das eine Methode nach Regel rechnet. Es zeigt, was die Methode tut, nicht, was du tun solltest, und ist keine Empfehlung. Reale Ergebnisse weichen durch Kosten, Steuern, Kurslücken und Ausführungszeitpunkt ab.",
+      "links": [
+        "risikohinweise",
+        "methodik"
+      ]
     },
     "thirdParty": {
       "where": "Analysten-Konsens, Kursziele Dritter, Fonds- und Insidermeldungen",
       "text": "Angabe Dritter: zusammengefasste Einschätzungen externer Analysten bzw. Pflichtmeldungen an die SEC, unverändert mit Quelle und Datum. Nicht von Vision Universe erstellt und keine Einschätzung von Vision Universe.",
-      "links": ["marHinweise"]
+      "links": [
+        "methodik"
+      ]
     },
     "ai": {
       "where": "AI Atlas und andere KI-gestützte Texte",
       "text": "Die KI übersetzt deine Frage in Filter; die Zahlen rechnet Vision Universe aus seinen Daten. KI-Texte können Fehler enthalten. Der Atlas beantwortet keine Fragen zu deiner persönlichen Situation und sagt nicht, was du kaufen oder verkaufen sollst.",
-      "links": ["risikohinweise"]
+      "links": [
+        "risikohinweise"
+      ]
     },
     "editorial": {
       "where": "Magazin, Morning, News und Social-Beiträge zu einzelnen Aktien",
-      "text": "Redaktionelle Einordnung, keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung. Ersteller und Interessenkonflikte: siehe Hinweise nach MAR und WpHG.",
-      "links": ["marHinweise"]
+      "text": "Redaktionelle Einordnung, keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung. Methodik und Interessen: siehe Seite „Methodik, Quellen und Interessen“.",
+      "links": [
+        "methodik"
+      ]
     }
   },
   "wording": [
-    {"avoid": "Kaufempfehlung, Kaufsignal, Verkaufssignal", "use": "erfüllt die Regel, Regelereignis"},
-    {"avoid": "kaufen / verkaufen (als Aufforderung oder Urteil)", "use": "erfüllt die Einstiegsregel / Ausstiegsregel der Methode"},
-    {"avoid": "Empfehlung, wir empfehlen, empfohlen", "use": "Ergebnis der Methode, Treffer"},
-    {"avoid": "Kursziel, Zielkurs, Kurspotenzial (eigene Werte)", "use": "Zielzone der Methode, Abstand zur Zielzone"},
-    {"avoid": "Kaufzone, Einstiegschance, Kaufgelegenheit", "use": "Einstiegsmarke der Methode, Zone der Methode"},
-    {"avoid": "Stop-Loss setzen, Stopp", "use": "Stopp-Marke der Methode, Ungültig-Marke"},
-    {"avoid": "garantiert, sicher, risikolos", "use": "historisch, unter den genannten Annahmen"},
-    {"avoid": "schlägt den Markt, Gewinner-Aktie, Top-Pick, Geheimtipp", "use": "im Backtest (Forschung) über/unter dem Vergleichsmaßstab"},
-    {"avoid": "unterbewertet, Schnäppchen, zu billig", "use": "niedrige Bewertung im Vergleich (Kennzahl nennen)"},
-    {"avoid": "passt zu dir, für dein Depot, geeignet für dich", "use": "passt zu deinem Filter, erfüllt deine eingestellten Bedingungen"},
-    {"avoid": "Signal (allein, ohne Methode)", "use": "Regelereignis der Methode „…“ (Regelversion)"}
-  ]
+    {
+      "avoid": "Kaufempfehlung, Kaufsignal, Verkaufssignal",
+      "use": "erfüllt die Regel, Regelereignis"
+    },
+    {
+      "avoid": "kaufen / verkaufen (als Aufforderung oder Urteil)",
+      "use": "erfüllt die Einstiegsregel / Ausstiegsregel der Methode"
+    },
+    {
+      "avoid": "Empfehlung, wir empfehlen, empfohlen",
+      "use": "Ergebnis der Methode, Treffer"
+    },
+    {
+      "avoid": "Kursziel, Zielkurs, Kurspotenzial (eigene Werte)",
+      "use": "Zielzone der Methode, Abstand zur Zielzone"
+    },
+    {
+      "avoid": "garantiert, sicher, risikolos",
+      "use": "historisch, unter den genannten Annahmen"
+    },
+    {
+      "avoid": "schlägt den Markt, Gewinner-Aktie, Top-Pick, Geheimtipp",
+      "use": "im Backtest (Forschung) über/unter dem Vergleichsmaßstab"
+    },
+    {
+      "avoid": "unterbewertet, Schnäppchen, zu billig",
+      "use": "niedrige Bewertung im Vergleich (Kennzahl nennen)"
+    },
+    {
+      "avoid": "passt zu dir, für dein Depot, geeignet für dich",
+      "use": "passt zu deinem Filter, erfüllt deine eingestellten Bedingungen"
+    },
+    {
+      "avoid": "Kaufzone, Einstiegszone, Einstiegsmarke, Einstiegschance, „Interessant ab“",
+      "use": "Zone laut Methode"
+    },
+    {
+      "avoid": "Stop-Loss, Stopp, Ziel 1/2, Chance/Risiko",
+      "use": "Ungültig-Marke laut Methode; Zone laut Methode (ohne Handlungsanweisung)"
+    },
+    {
+      "avoid": "Signal, Live-Signal, Einstieg bestätigt",
+      "use": "Regel-Ergebnis der Methode „…“ (Regelversion, Stand)"
+    }
+  ],
+  "appLinks": {
+    "about": "Pflicht-Verlinkungen in der App (Web-App und Android/iOS). Die Rechtstexte selbst liegen auf der Webseite; die App verlinkt sie nur.",
+    "always": [
+      {
+        "key": "impressum",
+        "label": "Impressum",
+        "why": "§ 5 DDG: leicht erkennbar, unmittelbar erreichbar, ständig verfügbar – in der App aus jedem Bereich mit höchstens zwei Schritten (z. B. Menü → Rechtliches)."
+      },
+      {
+        "key": "datenschutz",
+        "label": "Datenschutz",
+        "why": "Art. 12, 13 DSGVO; Apple App Store Review Guideline 5.1.1 und Google-Play-Richtlinie „User Data“ verlangen den Link in der App und im Store-Eintrag."
+      },
+      {
+        "key": "bedingungen",
+        "label": "Nutzungsbedingungen",
+        "why": "Einbeziehung bei Registrierung (§ 305 Abs. 2 BGB): Link an der Zustimmung; danach im Menü."
+      },
+      {
+        "key": "risikohinweise",
+        "label": "Risikohinweise",
+        "why": "Owner-Linie §11; im Seitenfuß und im Menü."
+      }
+    ],
+    "ifPurchaseInApp": [
+      {
+        "key": "kuendigen",
+        "label": "Verträge hier kündigen",
+        "why": "§ 312k BGB, sobald ein Abo in der App abgeschlossen werden kann."
+      },
+      {
+        "key": "widerrufen",
+        "label": "Vertrag widerrufen",
+        "why": "§ 356a BGB (elektronische Widerrufsfunktion), sobald ein Abo in der App abgeschlossen werden kann."
+      }
+    ],
+    "store": [
+      "Konto löschen in der App erreichbar, wenn ein Konto in der App angelegt werden kann (Apple 5.1.1(v), Google Play Kontolöschung) – keine Rechtstext-, sondern Store-Pflicht.",
+      "Datenschutz-URL und Impressum/Anbieter auch im Store-Eintrag angeben."
+    ],
+    "optional": [
+      "methodik"
+    ]
+  }
 }

@@ -329,14 +329,14 @@ test('Rechtstexte: sichere Darstellung, keine Shopify-Links, Firmendaten nur aus
   assert.deepEqual([COMPANY.name, COMPANY.register, COMPANY.taxNumber], ['RAM Consulting UG (haftungsbeschränkt)', 'Amtsgericht Stuttgart, HRB 803400', '65204/71409']);
   assert.equal(COMPANY.vatId, null, 'USt-IdNr. nicht erfunden');
   assert.match(plainText('widerrufsbelehrung'), /Vertrag widerrufen \(https:\/\/konto\.visionuniverse\.de\/widerrufen\)/);
-  for (const k of ['impressum', 'agb', 'widerrufsbelehrung', 'widerrufsformular', 'datenschutz', 'newsletter', 'risikohinweise', 'mar-hinweise']) assert.ok(DOCS[k].blocks.length > 2, k);
+  for (const k of ['impressum', 'agb', 'widerrufsbelehrung', 'widerrufsformular', 'datenschutz', 'newsletter', 'risikohinweise', 'methodik']) assert.ok(DOCS[k].blocks.length > 2, k);
   // Eine freigegebene Fassung darf keine offenen Stellen mehr enthalten; ein Entwurf muss als Entwurf erkennbar sein.
   const {LEGAL_STATUS: status, LEGAL_VERSION: version} = await import('../src/legal/texts.mjs');
   if (status === 'freigegeben') assert.ok(!/\[\[(OFFEN|PRÜFEN)/.test(all) && !/entwurf/.test(version), 'Freigabe ohne offene Stellen');
   else assert.equal(status, 'entwurf');
 });
 
-test('Rechtstexte Fassung 3: Analyse-Software, keine Wertpapierdienstleistung, Risikohinweise und MAR-Hinweise', async () => {
+test('Rechtstexte Fassung 4: Analyse-Software ohne Empfehlungen, Risikohinweise, Methodik und Interessen', async () => {
   const {DOCS, LINKS, LEGAL_STATUS: status, plainText} = await import('../src/legal/texts.mjs');
   const agb = plainText('agb');
   assert.match(agb, /Software zur Analyse von Aktien/);
@@ -347,19 +347,23 @@ test('Rechtstexte Fassung 3: Analyse-Software, keine Wertpapierdienstleistung, R
   const nums = DOCS.agb.blocks.filter(b => b.h).map(b => Number(b.h.split('.')[0]));
   assert.deepEqual(nums, nums.map((_, i) => i + 1));
   assert.match(plainText('risikohinweise'), /Totalverlust/);
-  assert.match(plainText('risikohinweise'), /Stopp-Marke begrenzt Verluste nicht zuverlässig/);
-  const mar = plainText('mar-hinweise');
-  for (const re of [/Art\. 20 MAR/, /2016\/958/, /§§ 85, 86 WpHG/, /Ersteller und verantwortlich ist die RAM Consulting UG/, /interessenkonflikte/i, /methodik/i]) assert.match(mar, re);
-  assert.match(mar, /\[\[OFFEN: erstattet am/, 'BaFin-Anzeige wird nicht als erledigt behauptet');
+  assert.match(plainText('risikohinweise'), /begrenzt Verluste nicht/);
+  assert.match(agb, /keine Anlageempfehlungen, keine Kauf- oder Verkaufsempfehlungen und keine Handelssignale/);
+  const m = plainText('methodik');
+  for (const re of [/Betreiber und verantwortlich ist die RAM Consulting UG/, /keine Provisionen/, /Gesellschafter und Mitarbeiter können privat in Wertpapieren investiert sein/,
+    /regelbasiert und unabhängig davon/, /Art\. 20 dieser Verordnung/]) assert.match(m, re);
+  // Owner-Linie Plan §11: keine Anzeige nach § 86 WpHG, keine Signale mit Einstieg/Stopp/Ziel in den eigenen Texten
+  assert.ok(!/§ 86 WpHG|Anzeige bei der BaFin/.test(JSON.stringify(DOCS.methodik).replace(/\[\[PRÜFEN:[^\]]*\]\]/g, "")));
+  for (const w of ['Einstiegsmarke', 'Stopp-Marke', 'Zielzone']) assert.ok(!JSON.stringify([DOCS.agb, DOCS.risikohinweise, DOCS.methodik]).includes(w), w);
   assert.equal(LINKS.risikohinweise, '/rechtliches/risikohinweise');
-  assert.equal(LINKS['mar-hinweise'], '/rechtliches/mar-hinweise');
+  assert.equal(LINKS.methodik, '/rechtliches/methodik');
   // Jeder interne Link in den Texten zeigt auf eine vorhandene Seite
   const known = new Set(Object.values(LINKS));
   for (const [k, d] of Object.entries(DOCS)) for (const m of JSON.stringify(d).matchAll(/\]\((\/[^)#]*)\)/g)) assert.ok(known.has(m[1]), `${k}: ${m[1]}`);
   // Keine Freigabe: Entwurf bleibt Entwurf
   assert.equal(status, 'entwurf');
   // Eigene Texte versprechen nichts und fordern nicht zum Kauf auf (Verneinungen sind erlaubt)
-  const own = JSON.stringify([DOCS.agb, DOCS.risikohinweise, DOCS['mar-hinweise']]);
+  const own = JSON.stringify([DOCS.agb, DOCS.risikohinweise, DOCS.methodik]);
   for (const w of ['garantiert', 'risikolos', 'Kaufempfehlung', 'Kaufsignal', 'jetzt kaufen']) assert.ok(!own.includes(w), w);
 });
 
@@ -370,7 +374,7 @@ test('Hinweisdatei assets/legal-notices.json: Entwurf, Pflichtstellen vorhanden,
   assert.equal(n.schemaVersion, 'vu-legal-notices-1');
   assert.equal(n.status, 'entwurf');
   assert.equal(n.legalApproved, false);
-  for (const k of ['footer', 'stock', 'ranking', 'backtest', 'modelPortfolio', 'signal', 'thirdParty', 'ai', 'editorial']) {
+  for (const k of ['footer', 'stock', 'ranking', 'setup', 'backtest', 'modelPortfolio', 'thirdParty', 'ai', 'editorial']) {
     assert.ok(n.notices[k] && n.notices[k].text.length > 40, k);
     for (const l of n.notices[k].links || []) assert.ok(n.links[l], `${k}: Link ${l}`);
   }
@@ -378,8 +382,14 @@ test('Hinweisdatei assets/legal-notices.json: Entwurf, Pflichtstellen vorhanden,
   assert.match(n.notices.backtest.text, /^Forschung, nicht zertifiziert/);
   assert.match(n.notices.footer.text, /keine Anlageberatung|Keine Anlageberatung/);
   assert.equal(n.links.risikohinweise, LEGAL_BASE + LINKS.risikohinweise);
-  assert.equal(n.links.marHinweise, LEGAL_BASE + LINKS['mar-hinweise']);
+  assert.equal(n.links.methodik, LEGAL_BASE + LINKS.methodik);
   assert.ok(n.wording.length >= 8 && n.wording.every(w => w.avoid && w.use));
+  // Owner-Linie Plan §11: kein Signal-Hinweis mehr; Pflicht-Links der App zeigen auf vorhandene Rechtsseiten
+  assert.equal(n.notices.signal, undefined);
+  assert.deepEqual(n.appLinks.always.map(x => x.key), ['impressum', 'datenschutz', 'bedingungen', 'risikohinweise']);
+  for (const x of [...n.appLinks.always, ...n.appLinks.ifPurchaseInApp]) assert.ok(n.links[x.key] && n.links[x.key].startsWith(LEGAL_BASE + '/'), x.key);
+  const pages = new Set(Object.values(LINKS).map(p => LEGAL_BASE + p));
+  for (const [k, u] of Object.entries(n.links)) assert.ok(pages.has(u), `${k}: ${u}`);
   const texts = Object.values(n.notices).map(x => x.text).join(' ');
   for (const w of ['garantiert', 'risikolos', 'Kaufempfehlung', 'Kursziel der', 'wir empfehlen']) assert.ok(!texts.includes(w), w);
 });

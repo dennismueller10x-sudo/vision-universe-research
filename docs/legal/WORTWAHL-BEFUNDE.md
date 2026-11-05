@@ -19,15 +19,26 @@ Hinweistexte aus `assets/legal-notices.json`.
   - Es bleiben **256 Stellen** (Tabelle unten).
 - **Zeilennummern** beziehen sich auf den genannten Commit.
 
+## Owner-Linie Plan §11 (05.11.2026)
+
+Zusätzlich zur Wortwahl müssen die Umbauten L1–L7 aus [EINORDNUNG.md](EINORDNUNG.md) §0 vor dem öffentlichen Start
+umgesetzt sein, damit die Linie „keine Empfehlungen, keine Anzeige bei der BaFin“ trägt:
+- keine Ziele und kein Chance/Risiko,
+- Musterdepots nicht als heutige Kaufliste,
+- Analysten-Labels entfernen oder die Analysten-Seite abschalten,
+- Reels ohne Meinung zu Einzelaktien,
+- AI Atlas lehnt Kauffragen ab,
+- kein Gesamturteil als Wort.
+
 ## Vorrang: diese Stellen zuerst (D2)
 
 | # | Stelle | Heute | Stattdessen | Grund |
 |---|---|---|---|---|
-| 1 | `quant/app/page-stock.js:699`, `quant/app/pages.js:120`, `:322` | „Interessant ab“ | „Einstiegsmarke der Methode“ | Wertung, wirkt wie direkter Vorschlag |
-| 2 | `quant/app/page-stock.js:706`, `quant/app/page-backtest.js:163` | „Chance/Risiko“ | „Abstand Zielzone : Abstand Stopp-Marke (Methode)“ | „Chance“ wirbt |
-| 3 | `quant/app/page-stock.js` Setup-Karte, `quant/app/pages.js:316-323` | „Ziel 1 / Ziel 2“, „Stop / Ungültig unter“ | „Zielzone 1 der Methode“, „Stopp-Marke der Methode“ + Hinweis `signal` | Marken als Methode kennzeichnen |
+| 1 | `quant/app/page-stock.js:699`, `quant/app/pages.js:120`, `:322` | „Interessant ab“ | „Zone laut Methode“ | Wertung, wirkt wie direkter Vorschlag |
+| 2 | `quant/app/page-stock.js:706`, `quant/app/page-backtest.js:163` | „Chance/Risiko“ | weglassen (Plan §11) | „Chance“ wirbt, Handelsvorschlag |
+| 3 | `quant/app/page-stock.js` Setup-Karte, `quant/app/pages.js:316-323` | „Ziel 1 / Ziel 2“, „Stop / Ungültig unter“ | Ziele weglassen; „Ungültig-Marke laut Methode“ + Hinweis `setup` | Plan §11: keine Signale mit Einstieg, Stopp, Ziel |
 | 4 | `dashboard/app-rebuild.js:197`, `:242`; `dashboard/app.js:20-21` | „Kaufzone (Long)“, „Kauf-/Verkaufszone“, „Einstiegszone“ | „Zone der Methode (Long)“ | Kaufaufforderung |
-| 5 | `supertrader/assets/supertrader.js:60`, `:438`, `:1459` | „Einstieg bestätigt“ | „Einstiegsregel erfüllt (Stand …)“ | Bestätigung an die Nutzerin |
+| 5 | `supertrader/assets/supertrader.js:60`, `:438`, `:1459` | „Einstieg bestätigt“ | „erfüllt die Regel (Stand …)“ | Bestätigung an die Nutzerin |
 | 6 | `supertrader/assets/supertrader.js:656`, `:664`, `:686-700`, `:1548`; `supertrader/assets/st-redesign.js:228`, `:326`, `:413-414`, `:470` | „Kauf …“, „kauft und verkauft“, „Risiko je Kauf“ (Musterdepot) | „Aufnahme / Abgabe (Musterdepot)“, „Risiko je Position (Modell)“ + Hinweis `modelPortfolio` | Protokoll wirkt wie Order |
 | 7 | `analysten/index.html:176-247`, `:396`, `:511` | „Konsens-Ranking“, „Klarer Kauf“, „Kaufen/Verkaufen-Konsens“, „Kursziel-Potenzial“, „Ø Kurspotenzial“ | Label „Angabe Dritter“, Quelle + Datum an jedem Wert, „Übersicht der Analysten-Einstufungen“, „Abstand zum mittleren Analysten-Kursziel“ + Hinweis `thirdParty` | Weitergabe von Empfehlungen Dritter |
 | 8 | `fundamental/app.js:1573-1588`, `fundamental/engine/catalog.js:711` | „Starker Kauf / Kaufen / Verkaufen“, „Kursziel (Mittel)“ | wie 7 | wie 7 |
@@ -38,9 +49,9 @@ Hinweistexte aus `assets/legal-notices.json`.
 | 13 | `hedgefonds/app.js:609` | „Was Profis kaufen“ | „Was große Fonds gemeldet haben (13F)“ | Einladung zum Nachmachen |
 | 14 | `landing/instagram/index.html:135`, `landing/partner/index.html:134` | „Was kaufen Warren Buffett und andere …?“ | „Was melden Warren Buffett und andere große Investoren?“ | wie 13 |
 | 15 | `supertrader/assets/st-redesign.js:546-577` (Backtest Lab, Pilot mit Renditekurve, CAGR) | Renditekurve gegen S&P 500 | Hinweis `backtest`, Pflichtangaben `backtest.required`; öffentliche Renditezahlen nur mit Owner-Freigabe | UWG |
-| 16 | `ask/` (AI Atlas) | KI-Antworten zu Einzelaktien mit Zone und Zielzone | Hinweis `ai`. Die KI ignoriert Angaben zu Alter, Vermögen und Risiko und lehnt „soll ich kaufen?“ als persönliche Frage ab (Worker `vu-ask`, eigener PR) | Anlageberatungsrisiko |
+| 16 | `ask/` (AI Atlas) | KI-Antworten zu Einzelaktien mit Zone und Zielzone (Zielzone streichen) | Hinweis `ai`. Die KI ignoriert Angaben zu Alter, Vermögen und Risiko und lehnt „soll ich kaufen?“ als persönliche Frage ab (Worker `vu-ask`, eigener PR) | Anlageberatungsrisiko |
 | 17 | `etf/index.html:702` | „Empfehlung: 10–15 % Nettoeinkommen“ (Sparrate) | „Faustregel aus der Literatur: …“ oder streichen | Empfehlung an die Person |
-| 18 | alle Seiten | uneinheitliche Fußhinweise | Hinweis `footer` aus `assets/legal-notices.json` mit Links zu Risikohinweisen und MAR-Hinweisen | – |
+| 18 | alle Seiten | uneinheitliche Fußhinweise | Hinweis `footer` aus `assets/legal-notices.json` mit Links zu Impressum, Datenschutz, Nutzungsbedingungen und Risikohinweisen | – |
 
 **Unkritisch, so lassen:**
 - Insider- und 13F-Begriffe: `hedgefonds/app.js`, „Insider-Kauf“, „Verkauft“ für Fondsmeldungen.
