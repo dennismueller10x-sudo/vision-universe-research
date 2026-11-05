@@ -1,0 +1,4742 @@
+{
+ "schema": "vu-eligibility-catchup-1",
+ "id": "eligibility-cleanup-2026-11",
+ "prevSha256": "e8acb273e457279cd1d37118d86235625f6af908dfbdbc96248902f6c8a8370b",
+ "sourceRun": "lokal 05.11.2026 (Kette build-us-eligibility, apply-name-layer-class DEBT, apply-exchange-directory mit ETF) gegen us-security-master-1.3.0",
+ "productUniverseBefore": 6577,
+ "productUniverseAfter": 6308,
+ "counts": {
+  "changes": 275,
+  "leaveProduct": 269,
+  "enterProduct": 0
+ },
+ "leaveReasons": {
+  "CONFIRMED_NON_EQUITY:ETF": 269
+ },
+ "enterReasons": {},
+ "impact": {
+  "discover": {
+   "before": 5969,
+   "removed": 267,
+   "addedWithPage": 0
+  },
+  "elliott": {
+   "before": 5055,
+   "removed": 6,
+   "addedWithPage": 0
+  },
+  "fundamental": {
+   "before": 5047,
+   "removed": 11,
+   "addedWithPage": 0
+  },
+  "hedgefonds": {
+   "before": 4448,
+   "removed": 7,
+   "addedWithPage": 0
+  },
+  "quant": {
+   "before": 6566,
+   "removed": 269,
+   "addedWithPage": 0
+  },
+  "supertrader": {
+   "before": 1501,
+   "removed": 0,
+   "addedWithPage": 0
+  },
+  "technical": {
+   "before": 5664,
+   "removed": 29,
+   "addedWithPage": 0
+  },
+  "technik": {
+   "before": 5055,
+   "removed": 6,
+   "addedWithPage": 0
+  }
+ },
+ "changes": [
+  {
+   "securityId": "ref_FLXI",
+   "ticker": "FLXI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_PCLN",
+   "ticker": "PCLN",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_PTNT",
+   "ticker": "PTNT",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_IND",
+   "ticker": "IND",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_IPB",
+   "ticker": "IPB",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_TRIL",
+   "ticker": "TRIL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ANV",
+   "ticker": "ANV",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CCOM",
+   "ticker": "CCOM",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_GNMX",
+   "ticker": "GNMX",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_GIGL",
+   "ticker": "GIGL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_NMBL",
+   "ticker": "NMBL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ENTL",
+   "ticker": "ENTL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CATG",
+   "ticker": "CATG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_USMD",
+   "ticker": "USMD",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_NEMD",
+   "ticker": "NEMD",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SCA",
+   "ticker": "SCA",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_NGHT",
+   "ticker": "NGHT",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CRCO",
+   "ticker": "CRCO",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_USX",
+   "ticker": "USX",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CPSR",
+   "ticker": "CPSR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BITW",
+   "ticker": "BITW",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CAS",
+   "ticker": "CAS",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:SPAC",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ATC",
+   "ticker": "ATC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_OBTC",
+   "ticker": "OBTC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ACII",
+   "ticker": "ACII",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ZCSH",
+   "ticker": "ZCSH",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CBRG",
+   "ticker": "CBRG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_GLNK",
+   "ticker": "GLNK",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_MCVT",
+   "ticker": "MCVT",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_AAOG",
+   "ticker": "AAOG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ACEI",
+   "ticker": "ACEI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ACGO",
+   "ticker": "ACGO",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ACLO",
+   "ticker": "ACLO",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ACLZ",
+   "ticker": "ACLZ",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ACMM",
+   "ticker": "ACMM",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_AFSC",
+   "ticker": "AFSC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ALDB",
+   "ticker": "ALDB",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_AMAU",
+   "ticker": "AMAU",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_AMPU",
+   "ticker": "AMPU",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_AMZO",
+   "ticker": "AMZO",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_APDB",
+   "ticker": "APDB",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ARLI",
+   "ticker": "ARLI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ASTY",
+   "ticker": "ASTY",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ATCL",
+   "ticker": "ATCL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_AV",
+   "ticker": "AV",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_AVAZ",
+   "ticker": "AVAZ",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_AXTU",
+   "ticker": "AXTU",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_AXTX",
+   "ticker": "AXTX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BAY",
+   "ticker": "BAY",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BBHL",
+   "ticker": "BBHL",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BBHM",
+   "ticker": "BBHM",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BCPL",
+   "ticker": "BCPL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BEZ",
+   "ticker": "BEZ",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BFEW",
+   "ticker": "BFEW",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BFXU",
+   "ticker": "BFXU",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BKFI",
+   "ticker": "BKFI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BKLG",
+   "ticker": "BKLG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BLDX",
+   "ticker": "BLDX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BMNZ",
+   "ticker": "BMNZ",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BPRO",
+   "ticker": "BPRO",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BRIB",
+   "ticker": "BRIB",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BRZX",
+   "ticker": "BRZX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BTCK",
+   "ticker": "BTCK",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_BTCW",
+   "ticker": "BTCW",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CAGE",
+   "ticker": "CAGE",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CAMC",
+   "ticker": "CAMC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CARX",
+   "ticker": "CARX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CBIL",
+   "ticker": "CBIL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CBOT",
+   "ticker": "CBOT",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CCPX",
+   "ticker": "CCPX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CDNG",
+   "ticker": "CDNG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CGOV",
+   "ticker": "CGOV",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CHNL",
+   "ticker": "CHNL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CHNU",
+   "ticker": "CHNU",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CHYG",
+   "ticker": "CHYG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CIEG",
+   "ticker": "CIEG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CIVG",
+   "ticker": "CIVG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CMAG",
+   "ticker": "CMAG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_COHH",
+   "ticker": "COHH",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_COIA",
+   "ticker": "COIA",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CPRY",
+   "ticker": "CPRY",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CQTM",
+   "ticker": "CQTM",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CRCA",
+   "ticker": "CRCA",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CRDD",
+   "ticker": "CRDD",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CRDX",
+   "ticker": "CRDX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CRUC",
+   "ticker": "CRUC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CRY",
+   "ticker": "CRY",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CTWO",
+   "ticker": "CTWO",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_CUST",
+   "ticker": "CUST",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_DACL",
+   "ticker": "DACL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_DFAL",
+   "ticker": "DFAL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_DIPR",
+   "ticker": "DIPR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_DIVE",
+   "ticker": "DIVE",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_DOCK",
+   "ticker": "DOCK",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_DPRE",
+   "ticker": "DPRE",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_DVVY",
+   "ticker": "DVVY",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_EASY",
+   "ticker": "EASY",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_EMFI",
+   "ticker": "EMFI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_EMXX",
+   "ticker": "EMXX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_EUVX",
+   "ticker": "EUVX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_EXEQ",
+   "ticker": "EXEQ",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_EYES",
+   "ticker": "EYES",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_EZBC",
+   "ticker": "EZBC",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_FEMD",
+   "ticker": "FEMD",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_FGRU",
+   "ticker": "FGRU",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_FMKT",
+   "ticker": "FMKT",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_FOMG",
+   "ticker": "FOMG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_FOTO",
+   "ticker": "FOTO",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_FPAA",
+   "ticker": "FPAA",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_FPSX",
+   "ticker": "FPSX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_FRIZ",
+   "ticker": "FRIZ",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_FSOL",
+   "ticker": "FSOL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_FTHB",
+   "ticker": "FTHB",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_GBND",
+   "ticker": "GBND",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_GDT",
+   "ticker": "GDT",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_GLAM",
+   "ticker": "GLAM",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_GSUI",
+   "ticker": "GSUI",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_HALX",
+   "ticker": "HALX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_HBMX",
+   "ticker": "HBMX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_HBR",
+   "ticker": "HBR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_HBRD",
+   "ticker": "HBRD",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_HEFT",
+   "ticker": "HEFT",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_HEMI",
+   "ticker": "HEMI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_HODL",
+   "ticker": "HODL",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_HULL",
+   "ticker": "HULL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_HYGM",
+   "ticker": "HYGM",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_IBFR",
+   "ticker": "IBFR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_IBIM",
+   "ticker": "IBIM",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_IBMU",
+   "ticker": "IBMU",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_IBMV",
+   "ticker": "IBMV",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_IDYN",
+   "ticker": "IDYN",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_IMTG",
+   "ticker": "IMTG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_INFH",
+   "ticker": "INFH",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_INTM",
+   "ticker": "INTM",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_IQMM",
+   "ticker": "IQMM",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_IVEP",
+   "ticker": "IVEP",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_JA",
+   "ticker": "JA",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_JADB",
+   "ticker": "JADB",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_JANI",
+   "ticker": "JANI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_JOUL",
+   "ticker": "JOUL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_JUDB",
+   "ticker": "JUDB",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_KBFR",
+   "ticker": "KBFR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_KCOP",
+   "ticker": "KCOP",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_KEYX",
+   "ticker": "KEYX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_KLMN",
+   "ticker": "KLMN",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_KMCA",
+   "ticker": "KMCA",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_KRWX",
+   "ticker": "KRWX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_KRYP",
+   "ticker": "KRYP",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_KYC",
+   "ticker": "KYC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_LASC",
+   "ticker": "LASC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_LATR",
+   "ticker": "LATR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_LEUX",
+   "ticker": "LEUX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_LITZ",
+   "ticker": "LITZ",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_LOHA",
+   "ticker": "LOHA",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_LQDM",
+   "ticker": "LQDM",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_LRNX",
+   "ticker": "LRNX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_LSCP",
+   "ticker": "LSCP",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_LSTB",
+   "ticker": "LSTB",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_LTCC",
+   "ticker": "LTCC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_MEGX",
+   "ticker": "MEGX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_MEMY",
+   "ticker": "MEMY",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_MHIG",
+   "ticker": "MHIG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_MHIP",
+   "ticker": "MHIP",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_MNSX",
+   "ticker": "MNSX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_MPWX",
+   "ticker": "MPWX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_MSBT",
+   "ticker": "MSBT",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_MSIX",
+   "ticker": "MSIX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_MSR",
+   "ticker": "MSR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_MUSE",
+   "ticker": "MUSE",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_NBFR",
+   "ticker": "NBFR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_NBIE",
+   "ticker": "NBIE",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_NETG",
+   "ticker": "NETG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_NOEQ",
+   "ticker": "NOEQ",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_NPFE",
+   "ticker": "NPFE",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_NXPG",
+   "ticker": "NXPG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_OCDB",
+   "ticker": "OCDB",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ODDZ",
+   "ticker": "ODDZ",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ONTX",
+   "ticker": "ONTX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ONX",
+   "ticker": "ONX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_OSSL",
+   "ticker": "OSSL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_PCEB",
+   "ticker": "PCEB",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_PCHI",
+   "ticker": "PCHI",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_PCLC",
+   "ticker": "PCLC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_PCPP",
+   "ticker": "PCPP",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_PCSG",
+   "ticker": "PCSG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_PLA",
+   "ticker": "PLA",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_PLTA",
+   "ticker": "PLTA",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_PLU",
+   "ticker": "PLU",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_PRXI",
+   "ticker": "PRXI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_QBKF",
+   "ticker": "QBKF",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_QBKV",
+   "ticker": "QBKV",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_QQDN",
+   "ticker": "QQDN",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_QQUP",
+   "ticker": "QQUP",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_QQXL",
+   "ticker": "QQXL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_QUIZ",
+   "ticker": "QUIZ",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_RDWU",
+   "ticker": "RDWU",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_RMBC",
+   "ticker": "RMBC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_RSIT",
+   "ticker": "RSIT",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SCEP",
+   "ticker": "SCEP",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SCMC",
+   "ticker": "SCMC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SCNM",
+   "ticker": "SCNM",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SCOP",
+   "ticker": "SCOP",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SIMX",
+   "ticker": "SIMX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SIOO",
+   "ticker": "SIOO",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SMRF",
+   "ticker": "SMRF",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SOEZ",
+   "ticker": "SOEZ",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SPCI",
+   "ticker": "SPCI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SPCT",
+   "ticker": "SPCT",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SSCP",
+   "ticker": "SSCP",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SSMG",
+   "ticker": "SSMG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SSS",
+   "ticker": "SSS",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_STEN",
+   "ticker": "STEN",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_STLU",
+   "ticker": "STLU",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_STXL",
+   "ticker": "STXL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_STXU",
+   "ticker": "STXU",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_STYL",
+   "ticker": "STYL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_SUIL",
+   "ticker": "SUIL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_TABD",
+   "ticker": "TABD",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_TAJX",
+   "ticker": "TAJX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_TALV",
+   "ticker": "TALV",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_TEMD",
+   "ticker": "TEMD",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_THMR",
+   "ticker": "THMR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_TOAO",
+   "ticker": "TOAO",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_TPFC",
+   "ticker": "TPFC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_TPFG",
+   "ticker": "TPFG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_TPFI",
+   "ticker": "TPFI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_TPLX",
+   "ticker": "TPLX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_TPRY",
+   "ticker": "TPRY",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_TROT",
+   "ticker": "TROT",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_TSIC",
+   "ticker": "TSIC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_UMAL",
+   "ticker": "UMAL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_UMCX",
+   "ticker": "UMCX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_URSP",
+   "ticker": "URSP",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_USGX",
+   "ticker": "USGX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_USLX",
+   "ticker": "USLX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_USMX",
+   "ticker": "USMX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_VAIE",
+   "ticker": "VAIE",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_VEM",
+   "ticker": "VEM",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_WATS",
+   "ticker": "WATS",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_WCAP",
+   "ticker": "WCAP",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_WDAF",
+   "ticker": "WDAF",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_WDGF",
+   "ticker": "WDGF",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_WEBX",
+   "ticker": "WEBX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_WELD",
+   "ticker": "WELD",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_WLDU",
+   "ticker": "WLDU",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_WNDR",
+   "ticker": "WNDR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_WSDB",
+   "ticker": "WSDB",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_WTIB",
+   "ticker": "WTIB",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_WYFL",
+   "ticker": "WYFL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XA",
+   "ticker": "XA",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XAGI",
+   "ticker": "XAGI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XBFR",
+   "ticker": "XBFR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XBIX",
+   "ticker": "XBIX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XEUR",
+   "ticker": "XEUR",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XHOA",
+   "ticker": "XHOA",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XIWC",
+   "ticker": "XIWC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XKRE",
+   "ticker": "XKRE",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XLBX",
+   "ticker": "XLBX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XLEX",
+   "ticker": "XLEX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XLFX",
+   "ticker": "XLFX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XLIX",
+   "ticker": "XLIX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XLKX",
+   "ticker": "XLKX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XLPX",
+   "ticker": "XLPX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XLUX",
+   "ticker": "XLUX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XLVX",
+   "ticker": "XLVX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XLYX",
+   "ticker": "XLYX",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XOVL",
+   "ticker": "XOVL",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XPAV",
+   "ticker": "XPAV",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XRPZ",
+   "ticker": "XRPZ",
+   "from": "SEPARATE_CLASS",
+   "to": "EXCLUDED",
+   "reasonBefore": "CONFIRMED_SEPARATE_CLASS:TRUST",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XSEM",
+   "ticker": "XSEM",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XTAI",
+   "ticker": "XTAI",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_XW",
+   "ticker": "XW",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_YCLO",
+   "ticker": "YCLO",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_YUNG",
+   "ticker": "YUNG",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  },
+  {
+   "securityId": "ref_ZINC",
+   "ticker": "ZINC",
+   "from": "ELIGIBLE",
+   "to": "EXCLUDED",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "CONFIRMED_NON_EQUITY:ETF"
+  }
+ ],
+ "leave": [
+  {
+   "ticker": "FLXI",
+   "securityId": "ref_FLXI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PTNT",
+   "securityId": "ref_PTNT",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "IND",
+   "securityId": "ref_IND",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "IPB",
+   "securityId": "ref_IPB",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ANV",
+   "securityId": "ref_ANV",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CCOM",
+   "securityId": "ref_CCOM",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "GIGL",
+   "securityId": "ref_GIGL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "CATG",
+   "securityId": "ref_CATG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "USMD",
+   "securityId": "ref_USMD",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "NEMD",
+   "securityId": "ref_NEMD",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "SCA",
+   "securityId": "ref_SCA",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "NGHT",
+   "securityId": "ref_NGHT",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CRCO",
+   "securityId": "ref_CRCO",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CPSR",
+   "securityId": "ref_CPSR",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "BITW",
+   "securityId": "ref_BITW",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "elliott",
+    "fundamental",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "CAS",
+   "securityId": "ref_CAS",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ATC",
+   "securityId": "ref_ATC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "OBTC",
+   "securityId": "ref_OBTC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "elliott",
+    "fundamental",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "ACII",
+   "securityId": "ref_ACII",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ZCSH",
+   "securityId": "ref_ZCSH",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "elliott",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "CBRG",
+   "securityId": "ref_CBRG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "GLNK",
+   "securityId": "ref_GLNK",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "elliott",
+    "fundamental",
+    "quant",
+    "technical",
+    "technik"
+   ]
+  },
+  {
+   "ticker": "MCVT",
+   "securityId": "ref_MCVT",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "AAOG",
+   "securityId": "ref_AAOG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ACEI",
+   "securityId": "ref_ACEI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ACGO",
+   "securityId": "ref_ACGO",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ACLO",
+   "securityId": "ref_ACLO",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "hedgefonds",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "ACLZ",
+   "securityId": "ref_ACLZ",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ACMM",
+   "securityId": "ref_ACMM",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "AFSC",
+   "securityId": "ref_AFSC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "ALDB",
+   "securityId": "ref_ALDB",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "AMAU",
+   "securityId": "ref_AMAU",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "AMPU",
+   "securityId": "ref_AMPU",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "AMZO",
+   "securityId": "ref_AMZO",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "APDB",
+   "securityId": "ref_APDB",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ARLI",
+   "securityId": "ref_ARLI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ASTY",
+   "securityId": "ref_ASTY",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ATCL",
+   "securityId": "ref_ATCL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "AV",
+   "securityId": "ref_AV",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "AVAZ",
+   "securityId": "ref_AVAZ",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "AXTU",
+   "securityId": "ref_AXTU",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "AXTX",
+   "securityId": "ref_AXTX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BAY",
+   "securityId": "ref_BAY",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BBHL",
+   "securityId": "ref_BBHL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "hedgefonds",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BBHM",
+   "securityId": "ref_BBHM",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "hedgefonds",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BCPL",
+   "securityId": "ref_BCPL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BEZ",
+   "securityId": "ref_BEZ",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BFEW",
+   "securityId": "ref_BFEW",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BFXU",
+   "securityId": "ref_BFXU",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BKFI",
+   "securityId": "ref_BKFI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BKLG",
+   "securityId": "ref_BKLG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BLDX",
+   "securityId": "ref_BLDX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BMNZ",
+   "securityId": "ref_BMNZ",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BPRO",
+   "securityId": "ref_BPRO",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BRIB",
+   "securityId": "ref_BRIB",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BRZX",
+   "securityId": "ref_BRZX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BTCK",
+   "securityId": "ref_BTCK",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "BTCW",
+   "securityId": "ref_BTCW",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "fundamental",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "CAGE",
+   "securityId": "ref_CAGE",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CAMC",
+   "securityId": "ref_CAMC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CARX",
+   "securityId": "ref_CARX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CBIL",
+   "securityId": "ref_CBIL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CBOT",
+   "securityId": "ref_CBOT",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CCPX",
+   "securityId": "ref_CCPX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CDNG",
+   "securityId": "ref_CDNG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CGOV",
+   "securityId": "ref_CGOV",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CHNL",
+   "securityId": "ref_CHNL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CHNU",
+   "securityId": "ref_CHNU",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CHYG",
+   "securityId": "ref_CHYG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CIEG",
+   "securityId": "ref_CIEG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CIVG",
+   "securityId": "ref_CIVG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CMAG",
+   "securityId": "ref_CMAG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "COHH",
+   "securityId": "ref_COHH",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "COIA",
+   "securityId": "ref_COIA",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CPRY",
+   "securityId": "ref_CPRY",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "CQTM",
+   "securityId": "ref_CQTM",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CRCA",
+   "securityId": "ref_CRCA",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "CRDD",
+   "securityId": "ref_CRDD",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CRDX",
+   "securityId": "ref_CRDX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CRUC",
+   "securityId": "ref_CRUC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CRY",
+   "securityId": "ref_CRY",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "CTWO",
+   "securityId": "ref_CTWO",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "fundamental",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "CUST",
+   "securityId": "ref_CUST",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "DACL",
+   "securityId": "ref_DACL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "DFAL",
+   "securityId": "ref_DFAL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "DIPR",
+   "securityId": "ref_DIPR",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "DIVE",
+   "securityId": "ref_DIVE",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "DOCK",
+   "securityId": "ref_DOCK",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "DPRE",
+   "securityId": "ref_DPRE",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "DVVY",
+   "securityId": "ref_DVVY",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "EASY",
+   "securityId": "ref_EASY",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "EMFI",
+   "securityId": "ref_EMFI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "hedgefonds",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "EMXX",
+   "securityId": "ref_EMXX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "EUVX",
+   "securityId": "ref_EUVX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "EXEQ",
+   "securityId": "ref_EXEQ",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "EYES",
+   "securityId": "ref_EYES",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "EZBC",
+   "securityId": "ref_EZBC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "fundamental",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "FEMD",
+   "securityId": "ref_FEMD",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FGRU",
+   "securityId": "ref_FGRU",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FMKT",
+   "securityId": "ref_FMKT",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "FOMG",
+   "securityId": "ref_FOMG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FOTO",
+   "securityId": "ref_FOTO",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FPAA",
+   "securityId": "ref_FPAA",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FPSX",
+   "securityId": "ref_FPSX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FRIZ",
+   "securityId": "ref_FRIZ",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FSOL",
+   "securityId": "ref_FSOL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "quant"
+   ]
+  },
+  {
+   "ticker": "FTHB",
+   "securityId": "ref_FTHB",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "GBND",
+   "securityId": "ref_GBND",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "GDT",
+   "securityId": "ref_GDT",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "GLAM",
+   "securityId": "ref_GLAM",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "GSUI",
+   "securityId": "ref_GSUI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "fundamental",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HALX",
+   "securityId": "ref_HALX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HBMX",
+   "securityId": "ref_HBMX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HBR",
+   "securityId": "ref_HBR",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HBRD",
+   "securityId": "ref_HBRD",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HEFT",
+   "securityId": "ref_HEFT",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "hedgefonds",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HEMI",
+   "securityId": "ref_HEMI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HODL",
+   "securityId": "ref_HODL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "fundamental",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "HULL",
+   "securityId": "ref_HULL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "HYGM",
+   "securityId": "ref_HYGM",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "IBFR",
+   "securityId": "ref_IBFR",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "IBIM",
+   "securityId": "ref_IBIM",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "IBMU",
+   "securityId": "ref_IBMU",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "IBMV",
+   "securityId": "ref_IBMV",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "IDYN",
+   "securityId": "ref_IDYN",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "IMTG",
+   "securityId": "ref_IMTG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "INFH",
+   "securityId": "ref_INFH",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "INTM",
+   "securityId": "ref_INTM",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "IQMM",
+   "securityId": "ref_IQMM",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "hedgefonds",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "IVEP",
+   "securityId": "ref_IVEP",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "JA",
+   "securityId": "ref_JA",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "JADB",
+   "securityId": "ref_JADB",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "JANI",
+   "securityId": "ref_JANI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "JOUL",
+   "securityId": "ref_JOUL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "JUDB",
+   "securityId": "ref_JUDB",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "KBFR",
+   "securityId": "ref_KBFR",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "KCOP",
+   "securityId": "ref_KCOP",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "KEYX",
+   "securityId": "ref_KEYX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "KLMN",
+   "securityId": "ref_KLMN",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "KMCA",
+   "securityId": "ref_KMCA",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "KRWX",
+   "securityId": "ref_KRWX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "KRYP",
+   "securityId": "ref_KRYP",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "KYC",
+   "securityId": "ref_KYC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LASC",
+   "securityId": "ref_LASC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LATR",
+   "securityId": "ref_LATR",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LEUX",
+   "securityId": "ref_LEUX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LITZ",
+   "securityId": "ref_LITZ",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LOHA",
+   "securityId": "ref_LOHA",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LQDM",
+   "securityId": "ref_LQDM",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LRNX",
+   "securityId": "ref_LRNX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LSCP",
+   "securityId": "ref_LSCP",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LSTB",
+   "securityId": "ref_LSTB",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "LTCC",
+   "securityId": "ref_LTCC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MEGX",
+   "securityId": "ref_MEGX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MEMY",
+   "securityId": "ref_MEMY",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MHIG",
+   "securityId": "ref_MHIG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MHIP",
+   "securityId": "ref_MHIP",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MNSX",
+   "securityId": "ref_MNSX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MPWX",
+   "securityId": "ref_MPWX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MSBT",
+   "securityId": "ref_MSBT",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "fundamental",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MSIX",
+   "securityId": "ref_MSIX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MSR",
+   "securityId": "ref_MSR",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "MUSE",
+   "securityId": "ref_MUSE",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "NBFR",
+   "securityId": "ref_NBFR",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "NBIE",
+   "securityId": "ref_NBIE",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "NETG",
+   "securityId": "ref_NETG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "NOEQ",
+   "securityId": "ref_NOEQ",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "NPFE",
+   "securityId": "ref_NPFE",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "NXPG",
+   "securityId": "ref_NXPG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "OCDB",
+   "securityId": "ref_OCDB",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ODDZ",
+   "securityId": "ref_ODDZ",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ONTX",
+   "securityId": "ref_ONTX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ONX",
+   "securityId": "ref_ONX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "OSSL",
+   "securityId": "ref_OSSL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PCEB",
+   "securityId": "ref_PCEB",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PCHI",
+   "securityId": "ref_PCHI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "PCLC",
+   "securityId": "ref_PCLC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PCPP",
+   "securityId": "ref_PCPP",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PCSG",
+   "securityId": "ref_PCSG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PLA",
+   "securityId": "ref_PLA",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PLTA",
+   "securityId": "ref_PLTA",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PLU",
+   "securityId": "ref_PLU",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "PRXI",
+   "securityId": "ref_PRXI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "QBKF",
+   "securityId": "ref_QBKF",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "QBKV",
+   "securityId": "ref_QBKV",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "QQDN",
+   "securityId": "ref_QQDN",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "QQUP",
+   "securityId": "ref_QQUP",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "QQXL",
+   "securityId": "ref_QQXL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "QUIZ",
+   "securityId": "ref_QUIZ",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant",
+    "technical"
+   ]
+  },
+  {
+   "ticker": "RDWU",
+   "securityId": "ref_RDWU",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "RMBC",
+   "securityId": "ref_RMBC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "RSIT",
+   "securityId": "ref_RSIT",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SCEP",
+   "securityId": "ref_SCEP",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SCMC",
+   "securityId": "ref_SCMC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SCNM",
+   "securityId": "ref_SCNM",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SCOP",
+   "securityId": "ref_SCOP",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SIMX",
+   "securityId": "ref_SIMX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SIOO",
+   "securityId": "ref_SIOO",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SMRF",
+   "securityId": "ref_SMRF",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SOEZ",
+   "securityId": "ref_SOEZ",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "fundamental",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SPCI",
+   "securityId": "ref_SPCI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SPCT",
+   "securityId": "ref_SPCT",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SSCP",
+   "securityId": "ref_SSCP",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SSMG",
+   "securityId": "ref_SSMG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SSS",
+   "securityId": "ref_SSS",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "STEN",
+   "securityId": "ref_STEN",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "STLU",
+   "securityId": "ref_STLU",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "STXL",
+   "securityId": "ref_STXL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "STXU",
+   "securityId": "ref_STXU",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "STYL",
+   "securityId": "ref_STYL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "SUIL",
+   "securityId": "ref_SUIL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TABD",
+   "securityId": "ref_TABD",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TAJX",
+   "securityId": "ref_TAJX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TALV",
+   "securityId": "ref_TALV",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TEMD",
+   "securityId": "ref_TEMD",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "THMR",
+   "securityId": "ref_THMR",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TOAO",
+   "securityId": "ref_TOAO",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TPFC",
+   "securityId": "ref_TPFC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TPFG",
+   "securityId": "ref_TPFG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TPFI",
+   "securityId": "ref_TPFI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TPLX",
+   "securityId": "ref_TPLX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TPRY",
+   "securityId": "ref_TPRY",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TROT",
+   "securityId": "ref_TROT",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "TSIC",
+   "securityId": "ref_TSIC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "UMAL",
+   "securityId": "ref_UMAL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "UMCX",
+   "securityId": "ref_UMCX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "URSP",
+   "securityId": "ref_URSP",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "USGX",
+   "securityId": "ref_USGX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "USLX",
+   "securityId": "ref_USLX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "USMX",
+   "securityId": "ref_USMX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "VAIE",
+   "securityId": "ref_VAIE",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "VEM",
+   "securityId": "ref_VEM",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WATS",
+   "securityId": "ref_WATS",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WCAP",
+   "securityId": "ref_WCAP",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WDAF",
+   "securityId": "ref_WDAF",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WDGF",
+   "securityId": "ref_WDGF",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WEBX",
+   "securityId": "ref_WEBX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WELD",
+   "securityId": "ref_WELD",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "hedgefonds",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WLDU",
+   "securityId": "ref_WLDU",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WNDR",
+   "securityId": "ref_WNDR",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WSDB",
+   "securityId": "ref_WSDB",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WTIB",
+   "securityId": "ref_WTIB",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "WYFL",
+   "securityId": "ref_WYFL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XA",
+   "securityId": "ref_XA",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XAGI",
+   "securityId": "ref_XAGI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XBFR",
+   "securityId": "ref_XBFR",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XBIX",
+   "securityId": "ref_XBIX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XEUR",
+   "securityId": "ref_XEUR",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XHOA",
+   "securityId": "ref_XHOA",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XIWC",
+   "securityId": "ref_XIWC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XKRE",
+   "securityId": "ref_XKRE",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XLBX",
+   "securityId": "ref_XLBX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XLEX",
+   "securityId": "ref_XLEX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XLFX",
+   "securityId": "ref_XLFX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XLIX",
+   "securityId": "ref_XLIX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XLKX",
+   "securityId": "ref_XLKX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XLPX",
+   "securityId": "ref_XLPX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XLUX",
+   "securityId": "ref_XLUX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XLVX",
+   "securityId": "ref_XLVX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XLYX",
+   "securityId": "ref_XLYX",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XOVL",
+   "securityId": "ref_XOVL",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XPAV",
+   "securityId": "ref_XPAV",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XRPZ",
+   "securityId": "ref_XRPZ",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "fundamental",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XSEM",
+   "securityId": "ref_XSEM",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XTAI",
+   "securityId": "ref_XTAI",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "XW",
+   "securityId": "ref_XW",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "YCLO",
+   "securityId": "ref_YCLO",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "YUNG",
+   "securityId": "ref_YUNG",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  },
+  {
+   "ticker": "ZINC",
+   "securityId": "ref_ZINC",
+   "reason": "CONFIRMED_NON_EQUITY:ETF",
+   "products": [
+    "discover",
+    "quant"
+   ]
+  }
+ ],
+ "enter": []
+}
