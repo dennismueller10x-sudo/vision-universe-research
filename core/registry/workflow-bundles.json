@@ -39,8 +39,18 @@
   },
   "monitor": {
    "purpose": "Waechter und Alarme: Freshness, Live-Smoke, Health",
-   "workflow": null,
-   "replaces": []
+   "workflow": "monitor.yml",
+   "replaces": [
+    "cloudflare-proof.yml",
+    "cloudflare-waker-proof.yml",
+    "currency-production-proof.yml",
+    "discover-live-smoke.yml",
+    "discover-realtime-qa.yml",
+    "europe-discover-release-qa.yml",
+    "realtime-production-smoke.yml",
+    "technical-live-qa.yml",
+    "vorsorge-live-smoke.yml"
+   ]
   },
   "account": {
    "purpose": "Konten, Abos, Brevo",
@@ -142,14 +152,8 @@
    "bundle": "maintenance",
    "retireCandidate": true
   },
-  "cloudflare-proof.yml": {
-   "bundle": "monitor"
-  },
   "cloudflare-waker-deploy.yml": {
    "bundle": "deploy"
-  },
-  "cloudflare-waker-proof.yml": {
-   "bundle": "monitor"
   },
   "company-intelligence-health.yml": {
    "bundle": "monitor"
@@ -190,9 +194,6 @@
   "currency-fx-verify.yml": {
    "bundle": "ci"
   },
-  "currency-production-proof.yml": {
-   "bundle": "monitor"
-  },
   "currency-realtime-proof.yml": {
    "bundle": "pipeline-intraday"
   },
@@ -209,12 +210,6 @@
   "discover-im-blick-live.yml": {
    "bundle": "pipeline-intraday"
   },
-  "discover-live-smoke.yml": {
-   "bundle": "monitor"
-  },
-  "discover-realtime-qa.yml": {
-   "bundle": "monitor"
-  },
   "elliott-prospective-registry.yml": {
    "bundle": "research"
   },
@@ -226,9 +221,6 @@
   },
   "europe-discover-refresh.yml": {
    "bundle": "pipeline-daily"
-  },
-  "europe-discover-release-qa.yml": {
-   "bundle": "monitor"
   },
   "freshness-monitor.yml": {
    "bundle": "monitor"
@@ -318,9 +310,6 @@
   },
   "r2-audit.yml": {
    "bundle": "maintenance"
-  },
-  "realtime-production-smoke.yml": {
-   "bundle": "monitor"
   },
   "research-access-ci.yml": {
    "bundle": "ci"
@@ -447,9 +436,6 @@
   "technical-intelligence-build.yml": {
    "bundle": "pipeline-daily"
   },
-  "technical-live-qa.yml": {
-   "bundle": "monitor"
-  },
   "technical-world.yml": {
    "bundle": "pipeline-daily"
   },
@@ -493,9 +479,6 @@
   },
   "vorsorge-legal-sources.yml": {
    "bundle": "research"
-  },
-  "vorsorge-live-smoke.yml": {
-   "bundle": "monitor"
   },
   "vu2-browser-qa.yml": {
    "bundle": "ci"
