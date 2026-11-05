@@ -379,7 +379,7 @@
       "minRecords": 3,
       "role": "Primaerquellen-Meldungen, redaktionell neu formuliert.",
       "producer": "scripts/dashboard/update_news.mjs",
-      "workflow": "update-news.yml",
+      "workflow": "content.yml",
       "schedule": "taeglich 05:17, 11:17, 17:17 UTC",
       "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 168 },
       "consumers": ["/news/"]
@@ -395,7 +395,7 @@
       "records": "symbols",
       "role": "Analystenurteile (Finnhub, FMP) fuer das Dashboard-Universum.",
       "producer": "scripts/dashboard/fetch_analyst_ratings.py",
-      "workflow": "update-analyst-ratings.yml",
+      "workflow": "content.yml",
       "schedule": "So 08:00 UTC",
       "freshness": { "kind": "hours", "warnAfter": 192, "staleAfter": 384 },
       "consumers": ["/analysten/"]

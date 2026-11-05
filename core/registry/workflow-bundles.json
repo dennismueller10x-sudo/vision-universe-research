@@ -29,8 +29,13 @@
   },
   "content": {
    "purpose": "Redaktionelle Daten: News, Ratings, Morning, Hedgefonds, Dashboard",
-   "workflow": null,
-   "replaces": []
+   "workflow": "content.yml",
+   "replaces": [
+    "update-news.yml",
+    "update-analyst-ratings.yml",
+    "update-hedgefonds.yml",
+    "build-morning.yml"
+   ]
   },
   "monitor": {
    "purpose": "Waechter und Alarme: Freshness, Live-Smoke, Health",
@@ -117,9 +122,6 @@
   },
   "brevo-newsletter.yml": {
    "bundle": "account"
-  },
-  "build-morning.yml": {
-   "bundle": "content"
   },
   "ci-config.yml": {
    "bundle": "ci"
@@ -453,9 +455,6 @@
   "universe-master.yml": {
    "bundle": "pipeline-weekly"
   },
-  "update-analyst-ratings.yml": {
-   "bundle": "content"
-  },
   "update-dashboard.yml": {
    "bundle": "content",
    "retireCandidate": true
@@ -464,14 +463,8 @@
    "bundle": "content",
    "retireCandidate": true
   },
-  "update-hedgefonds.yml": {
-   "bundle": "content"
-  },
-  "update-news.yml": {
-   "bundle": "content"
-  },
   "update-sec-fundamentals.yml": {
-   "bundle": "content",
+   "bundle": "pipeline-weekly",
    "retireCandidate": true
   },
   "vorsorge-ci.yml": {
