@@ -2,7 +2,7 @@
  "schemaVersion": "vu-ti-api-3.0.0",
  "resultSchema": "vu-technical-analysis-2.0.0",
  "bundle": "ti-bundle-2.0.0",
- "generatedAt": "2026-11-06T13:36:44.436Z",
+ "generatedAt": "2026-11-06T16:47:10.505Z",
  "methodology": "quant/methodology/technical-intelligence-v2.json",
  "elliott": {
   "engine": "v3",
@@ -12,7 +12,7 @@
  },
  "counts": {
   "daily": 5,
-  "weekly": 5044,
+  "weekly": 5045,
   "skipped": 983,
   "shards": 620,
   "identityQuarantined": 6
@@ -44,20 +44,20 @@
   "projectionTheses": "/quant/data/technical-intelligence/v3/projection-theses.json"
  },
  "migration": "docs/technical-intelligence/API_V3_MIGRATION.md",
- "runtimeSec": 4542,
+ "runtimeSec": 4470,
  "projection": {
   "version": "elliott-projection-1.3.0",
   "store": "vu-elliott-projection-theses-1.0.0",
   "status": {
    "ABSTAIN": 4384,
-   "DATA_INVALID": 455,
-   "NO_PROJECTION": 102,
-   "WITHHELD": 79,
-   "AVAILABLE": 34
+   "DATA_INVALID": 460,
+   "NO_PROJECTION": 103,
+   "WITHHELD": 73,
+   "AVAILABLE": 35
   },
-  "consumerVisible": 34,
+  "consumerVisible": 35,
   "types": {
-   "NEXT_MOVE": 27,
+   "NEXT_MOVE": 28,
    "WAVE_C": 1,
    "REVERSAL": 3,
    "THRUST": 3
@@ -66,106 +66,106 @@
   "weeklyForDaily": 5,
   "explore": {
    "highlights": {
-    "securities": 93,
-    "theses": 96,
+    "securities": 82,
+    "theses": 86,
     "perSecurity": {
-     "1": 90,
-     "2": 3
+     "1": 78,
+     "2": 4
     },
     "direction": {
-     "DOWN": 49,
-     "UP": 47
+     "DOWN": 44,
+     "UP": 42
     },
     "type": {
-     "WAVE_C": 72,
-     "WAVE_3": 24
+     "WAVE_C": 63,
+     "WAVE_3": 23
     },
     "pattern": {
-     "ZIGZAG": 52,
-     "FLAT": 20,
-     "IMPULSE": 24
+     "ZIGZAG": 49,
+     "IMPULSE": 23,
+     "FLAT": 14
     },
     "failedSet": {
-     "G5": 51,
-     "G2": 45
+     "G5": 46,
+     "G2": 40
     },
     "rankPct": {
-     "0-10": 75,
-     "10-25": 21,
+     "0-10": 66,
+     "10-25": 20,
      "25-50": 0,
      "50-100": 0
     },
     "contextAgreement": {
-     "0": 44,
-     "1": 27,
-     "2": 25
+     "0": 37,
+     "1": 28,
+     "2": 21
     },
     "extendedMove": {
-     "UP 250-500%": 16,
+     "UP 250-500%": 12,
      "DOWN 50-100%": 7,
      "DOWN <50%": 11,
-     "UP 100-250%": 18,
-     "UP >1000%": 2,
-     "UP 500-1000%": 3,
-     "UP 50-100%": 3,
-     "UP <50%": 5,
-     "DOWN 500-1000%": 1
+     "UP 100-250%": 13,
+     "UP <50%": 8,
+     "UP 500-1000%": 4,
+     "UP 50-100%": 4,
+     "DOWN 500-1000%": 1,
+     "UP >1000%": 1
     },
     "extremeMove": {
-     "UP 500-1000%": 13,
-     "UP 250-500%": 11,
-     "UP >1000%": 3,
-     "UP 100-250%": 5,
-     "UP 50-100%": 2,
-     "UP <50%": 1,
-     "DOWN 50-100%": 1
+     "UP 500-1000%": 11,
+     "UP 250-500%": 8,
+     "UP 50-100%": 4,
+     "UP <50%": 2,
+     "UP 100-250%": 7,
+     "DOWN 50-100%": 1,
+     "UP >1000%": 1
     }
    },
    "candidates": {
-    "securities": 3698,
-    "entries": 12943,
+    "securities": 3684,
+    "entries": 12783,
     "perSecurity": {
-     "1": 495,
-     "2": 670,
-     "3": 761,
-     "4": 662,
-     "5": 483,
-     "6": 627
+     "1": 520,
+     "2": 661,
+     "3": 763,
+     "4": 653,
+     "5": 482,
+     "6": 605
     },
     "direction": {
-     "DOWN": 6653,
-     "UP": 6290
+     "DOWN": 6641,
+     "UP": 6142
     },
     "type": {
-     "WAVE_C": 9651,
-     "WAVE_3": 2849,
-     "WAVE_5": 443
+     "WAVE_C": 9542,
+     "WAVE_3": 2826,
+     "WAVE_5": 415
     },
     "failedSet": {
-     "G2+G3+G4": 3138,
-     "G2+G3+G4+G5": 1438,
-     "G3+G4+G5": 562,
-     "G2+G3": 1606,
-     "G3": 778,
-     "G3+G5": 412,
-     "G3+G4": 1845,
-     "G2+G4": 603,
-     "G4+G5": 234,
-     "G2+G3+G5": 1003,
-     "G2+G4+G5": 432,
-     "G4": 430,
-     "G2+G5": 176,
-     "G5": 100,
-     "G2": 186
+     "G3+G4": 1847,
+     "G3+G4+G5": 580,
+     "G2+G3+G4": 3079,
+     "G2+G3": 1595,
+     "G3": 774,
+     "G3+G5": 446,
+     "G2+G4": 602,
+     "G4+G5": 223,
+     "G2+G3+G5": 960,
+     "G2+G3+G4+G5": 1358,
+     "G2+G4+G5": 416,
+     "G4": 439,
+     "G5": 113,
+     "G2+G5": 178,
+     "G2": 173
     }
    }
   },
-  "splitResolved": 202,
-  "normalAlternative": 34,
+  "splitResolved": 201,
+  "normalAlternative": 35,
   "motiveAlternative": 24,
-  "motiveDOWN": 19,
-  "motiveUP": 5,
-  "motiveHighUpside": 3,
+  "motiveDOWN": 21,
+  "motiveUP": 3,
+  "motiveHighUpside": 2,
   "freshness": {
    "version": "data-freshness-1.0.0",
    "policy": {
@@ -176,36 +176,35 @@
     "calendar": "US_EQUITY"
    },
    "reference": "2026-11-05",
-   "titles": 5049,
+   "titles": 5050,
    "states": {
-    "FRESH": 4964,
-    "STALE": 34,
+    "FRESH": 4971,
+    "STALE": 28,
     "DELAYED": 6,
     "NON_TRADING": 45
    },
    "reasons": {
     "REFRESH_STOPPED": 34,
-    "SECURITY_INACTIVE": 45,
-    "NO_NEWER_BARS": 6
+    "SECURITY_INACTIVE": 45
    },
    "reasonsKnown": 45,
    "delayedWithNotice": 6,
    "affected": {
-    "titles": 79,
-    "primary": 64,
-    "alternative": 61,
+    "titles": 73,
+    "primary": 62,
+    "alternative": 59,
     "motiveAlternative": 0,
     "exploreHighlights": 1,
-    "exploreCandidates": 68,
+    "exploreCandidates": 62,
     "consumerVisibleProjections": 0
    },
    "ageBuckets": {
-    "0-3": 4966,
+    "0-3": 4973,
     "6-10": 8,
     "4-5": 4,
-    "21-40": 33,
+    "21-40": 28,
     ">40": 28,
-    "11-20": 10
+    "11-20": 9
    },
    "withheldTitles": [
     "ACA",
@@ -216,58 +215,52 @@
     "ATKR",
     "ATAI",
     "AVB",
-    "BZH",
     "BTOG",
+    "BZH",
     "CCO",
-    "CHAI",
-    "CLRCU",
-    "CSAN",
     "CRNX",
-    "DBRG-P-I",
-    "DBRG",
+    "CSAN",
     "DBRG-P-J",
     "DBRG-P-H",
-    "DOO",
+    "DBRG-P-I",
+    "DBRG",
     "DOMO",
     "ELME",
     "FBRX",
-    "FGNX",
     "FGNXP",
+    "FGNX",
     "FSEA",
     "GBTG",
     "GETY",
-    "GREEL",
     "GWH",
     "HLX",
-    "ILLRW",
-    "JUPGF",
-    "IWFL",
     "IWML",
-    "LBRDK",
-    "LBRDP",
-    "LEG",
-    "LESL",
+    "IWFL",
+    "JUPGF",
     "LBRDA",
-    "MDV",
+    "LBRDP",
+    "LBRDK",
+    "LESL",
+    "LEG",
     "MAA-P-I",
+    "MDV",
     "MDV-P-A",
-    "MSSAU",
     "MTUL",
-    "NATH",
     "MSGS",
+    "NATH",
     "NCSM",
     "NLY-P-I",
-    "NVNI",
     "NSTS",
     "NTZ",
-    "PHGE",
+    "NVNI",
     "PERF",
-    "QNCX",
+    "PHGE",
     "PRIF-P-L",
+    "QNCX",
     "QRVO",
     "QULL",
-    "SAT",
     "RMAX",
+    "SAT",
     "SCDL",
     "SNYR",
     "TALK",
@@ -275,26 +268,26 @@
     "TWO-P-B",
     "TWO-P-C",
     "TWO-P-A",
-    "UUU",
     "VTAK",
-    "VRME",
+    "UUU",
     "WBS",
-    "WALD",
-    "WBD",
-    "WBS-P-G",
     "VSME",
     "WBS-P-F",
     "WEAV",
+    "VRME",
+    "WALD",
+    "WBD",
+    "WBS-P-G",
     "WPRT",
     "ZTEK"
    ],
    "systemic": {
-    "share": 0.0156,
+    "share": 0.0145,
     "maxShare": 0.2,
     "systemic": false
    }
   },
-  "lifecycleEvents": 0,
-  "tracked": 442
+  "lifecycleEvents": 146,
+  "tracked": 434
  }
 }
