@@ -74,7 +74,7 @@ Erklärungen wie „KGV: wie viele Jahresgewinne du beim Kauf bezahlst“ und f�
 | `editorial` | Magazin, Morning, News, Social-Beiträge |
 
 Jeder Hinweis nennt in `links` die Rechtsseiten (`risikohinweise`, `methodik`, …). Die Adressen stehen in `links`.
-Status `entwurf`, `legalApproved: false`. Die Texte sind Entwürfe bis zur Prüfung durch einen Anwalt.
+Status `freigegeben`, `legalApproved: true` seit 06.11.2026 (Owner-Freischaltung); die Prüfung durch einen Anwalt ist offen.
 
 ## Pflicht-Verlinkungen in der App
 
