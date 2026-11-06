@@ -17,3 +17,13 @@ test('ST-HOLDOUT-2: die Holdout-Tests der Forschungsseite laufen grün', () => {
   const r = spawnSync(process.execPath, ['--test', new URL('../../research/holdout/holdout.test.cjs', import.meta.url).pathname], { encoding: 'utf8' });
   assert.equal(r.status, 0, r.stdout.slice(-2000));
 });
+
+test('ST-HOLDOUT-3: Workflow-Modus holdout: Fenster HOLDOUT, nur mit Prüfschlüssel, nur versiegelte Ausgabe und öffentlicher Teil ohne Kennzahl', async () => {
+  const fs = await import('node:fs');
+  const w = fs.readFileSync(new URL('../../../.github/workflows/supertrader-st-hist-top5.yml', import.meta.url), 'utf8');
+  assert.match(w, /ST_WINDOW=HOLDOUT node scripts\/supertrader\/source-faithful\/research\/run-st-holdout\.mjs/);
+  assert.match(w, /HOLDOUT_NEEDS_REVIEWER_KEY/);
+  assert.match(w, /st-holdout\.public\.json\) node/);
+  assert.match(w, /st-holdout\.sealed\.\*\.json\) grep/);
+  assert.doesNotMatch(w, /run: .*\$\{\{ inputs\./);
+});
