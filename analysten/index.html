@@ -151,6 +151,22 @@
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(120%); background: var(--black); color: #fff; font-size: 12px; font-weight: 600; padding: 10px 18px; border-radius: 20px; display: flex; align-items: center; gap: 8px; transition: transform 0.25s ease; z-index: 300; }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  .universe-block { margin-top: 18px; }
+  .u-form { display: flex; gap: 8px; margin-bottom: 10px; }
+  .u-input { flex: 1; min-width: 0; font: inherit; font-size: 15px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--gray-light); background: var(--surface); color: inherit; }
+  .u-result { padding: 14px 16px; }
+  .u-result:empty { display: none; }
+  .u-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .u-name { font-weight: 700; font-size: 16px; }
+  .u-meta { font-size: 12px; opacity: .75; }
+  .u-row { display: grid; grid-template-columns: 7.5em 1fr 2.5em; align-items: center; gap: 8px; margin-top: 6px; font-size: 13px; }
+  .u-bar { height: 8px; border-radius: 4px; background: var(--gray-light); overflow: hidden; }
+  .u-bar > span { display: block; height: 100%; background: var(--black); opacity: .55; }
+  .u-num { text-align: right; font-variant-numeric: tabular-nums; }
+  .u-note { margin-top: 10px; font-size: 12px; opacity: .8; }
+  .u-hist { width: 100%; margin-top: 10px; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .u-hist th, .u-hist td { padding: 3px 4px; text-align: right; border-bottom: 1px solid var(--gray-light); }
+  .u-hist th:first-child, .u-hist td:first-child { text-align: left; }
 </style>
 <link rel="stylesheet" href="/assets/site-navigation.css"></head>
 <body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
@@ -171,6 +187,18 @@
   <div class="page-title">Analysten</div>
   <div class="page-sub">Konsens-Rating &amp; Kursziele der Wall-Street-Analysten · wöchentlich aktualisiert über Finnhub &amp; FMP</div>
 
+  <!-- Alle Aktien des Produktuniversums: Einstufungs-Konsens je Titel (Angabe Dritter), Kursziel nur aus freier Quelle.
+       Daten: dashboard/data/analysts (scripts/analysts/fetch-consensus.mjs, rotierend). -->
+  <section class="universe-block" aria-labelledby="uTitle">
+    <div class="section-label" id="uTitle">Alle Aktien: Analysten-Einstufungen (Angabe Dritter)<span class="section-label-note" id="uCoverage"></span></div>
+    <form class="u-form" id="uForm" role="search" onsubmit="ANU.show(event)">
+      <input class="u-input" id="uInput" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="Ticker, z. B. NVDA" aria-label="Ticker eingeben">
+      <button class="btn-refresh" type="submit">Anzeigen</button>
+    </form>
+    <div class="rank-card u-result" id="uResult" aria-live="polite"></div>
+  </section>
+
+  <div class="section-label">Ausgewählte Aktien<span class="section-label-note">Dashboard-Auswahl</span></div>
   <div class="summary-grid" id="summaryGrid"></div>
 
   <div class="section-label">Analystenkonsens (Angabe Dritter)<span class="section-label-note">positiv ↔ negativ</span></div>
@@ -188,7 +216,7 @@
   <div class="rank-card" id="stockList"></div>
 
   <div class="info-note" id="infoNote">
-    Datenquelle: <a href="https://finnhub.io" target="_blank" rel="noopener">Finnhub</a> (Analyst Recommendation Trends) und <a href="https://financialmodelingprep.com" target="_blank" rel="noopener">FMP</a> (Kursziel-Konsens), aggregiert aus veröffentlichten Analystenmeinungen — ohne Zuordnung zu einzelnen Banken oder Analysten. Aktualisierung jeden Sonntag automatisch. Diese Übersicht ist keine Anlageberatung.
+    Datenquelle: <a href="https://finnhub.io" target="_blank" rel="noopener">Finnhub</a> (Analyst Recommendation Trends; für alle Aktien des Produktuniversums, rotierend täglich aktualisiert) und <a href="https://financialmodelingprep.com" target="_blank" rel="noopener">FMP</a> (Kursziel-Konsens), aggregiert aus veröffentlichten Analystenmeinungen — ohne Zuordnung zu einzelnen Banken oder Analysten. Aktualisierung jeden Sonntag automatisch. Diese Übersicht ist keine Anlageberatung.
   </div>
 
 </div>
@@ -577,6 +605,61 @@ window.AN = { reload: reload, openStock: openStock, closeStock: closeStock };
 
 loadData(false);
 
+})();
+</script>
+<script src="/core/identity.js"></script>
+<script>
+/* Alle Aktien: Einstufungs-Konsens je Titel aus dashboard/data/analysts (Angabe Dritter, unveraendert mit Quelle
+   und Stand). Kein eigenes Urteil: gezeigt wird die Zaehlung der Kategorien, kein zusammengefasstes Wort.
+   Kursziel nur, wo eine freie Quelle es liefert; sonst ausdruecklich "keine freie Quelle". */
+(function(){
+  var BASE = "../dashboard/data/analysts/";
+  var LABELS = [["strongBuy","Stark kaufen"],["buy","Kaufen"],["hold","Halten"],["sell","Verkaufen"],["strongSell","Stark verkaufen"]];
+  var cache = {};
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function month(iso){ if(!iso) return "–"; var m=["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"]; var p=String(iso).split("-"); return m[parseInt(p[1],10)-1]+" "+p[0]; }
+  function day(iso){ if(!iso) return "–"; var p=String(iso).split("-"); return p[2]+"."+p[1]+"."+p[0]; }
+  function usd(n){ return n==null||isNaN(n) ? "–" : "$" + Number(n).toFixed(2); }
+  function el(id){ return document.getElementById(id); }
+  function json(url){ return fetch(url,{cache:"default"}).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }); }
+  function shard(t){ var I=(window.VUCore&&window.VUCore.Identity); return I ? I.shardKey(t) : (t.replace(/[^A-Z0-9]/g,"")+"_").slice(0,2); }
+  function idOf(t){ var I=(window.VUCore&&window.VUCore.Identity); return I ? I.securityIdForTicker(t) : "ref_"+t.replace(/[^A-Z0-9]/g,"_"); }
+  function coverage(){
+    json(BASE+"summary.json").then(function(s){
+      var c=s.counts||{};
+      el("uCoverage").textContent = c.universe ? (c.withRatings+" von "+c.universe+" Aktien mit Einstufungen · "+c.withTarget+" mit Kursziel · Stand "+day(s.newestFetch)) : "";
+    }).catch(function(){ el("uCoverage").textContent = "Daten werden aufgebaut"; });
+  }
+  function render(e, t){
+    if(!e){ return '<div class="u-note">Für '+esc(t)+' liegen noch keine Analystendaten vor (Titel nicht im Produktuniversum oder noch nicht abgerufen).</div>'; }
+    var head='<div class="u-head"><span class="u-name">'+esc(e.ticker)+'</span><span class="u-meta">Angabe Dritter · Quelle '+esc(e.source||"Finnhub")+' · Stand '+month(e.asOf)+' · abgerufen '+day(e.fetchedAt)+'</span></div>';
+    if(e.ratingsState!=="AVAILABLE") return head+'<div class="u-note">Keine Analysten-Einstufungen veröffentlicht.</div>';
+    var max=Math.max.apply(null,LABELS.map(function(l){return e.counts[l[0]]||0;}))||1;
+    var rows=LABELS.map(function(l){ var n=e.counts[l[0]]||0; return '<div class="u-row"><span>'+l[1]+'</span><span class="u-bar"><span style="width:'+Math.round(n/max*100)+'%"></span></span><span class="u-num">'+n+'</span></div>'; }).join("");
+    var tgt = e.targetState==="AVAILABLE" && e.target
+      ? '<div class="u-note">Kursziel (Angabe Dritter, Quelle '+esc(e.target.source)+', geprüft '+day(e.targetCheckedAt)+'): Mittel '+usd(e.target.consensus)+' · Spanne '+usd(e.target.low)+' – '+usd(e.target.high)+'</div>'
+      : '<div class="u-note">Kursziel: keine freie Quelle für diesen Titel.</div>';
+    var hist = (e.history||[]).length>1 ? '<table class="u-hist"><thead><tr><th>Monat</th>'+LABELS.map(function(l){return '<th>'+l[1]+'</th>';}).join("")+'</tr></thead><tbody>'+
+      e.history.map(function(h){ return '<tr><td>'+month(h.period)+'</td>'+LABELS.map(function(l){return '<td>'+(h[l[0]]||0)+'</td>';}).join("")+'</tr>'; }).join("")+'</tbody></table>' : "";
+    return head+'<div class="u-meta" style="margin-top:6px">'+e.analysts+' Analysten mit Einstufung</div>'+rows+tgt+hist+
+      '<div class="u-note">Zusammengefasste Einschätzungen externer Analysten, unverändert mit Quelle und Datum. Keine Einschätzung von Vision Universe, keine Anlageberatung.</div>';
+  }
+  function show(ev){
+    if(ev) ev.preventDefault();
+    var t=String(el("uInput").value||"").trim().toUpperCase();
+    if(!t){ el("uResult").innerHTML=""; return; }
+    var k=shard(t), id;
+    try { id=idOf(t); } catch(e){ el("uResult").innerHTML='<div class="u-note">Ungültiger Ticker.</div>'; return; }
+    el("uResult").innerHTML='<div class="u-note">Lädt …</div>';
+    (cache[k] || (cache[k]=json(BASE+"shards/"+k+".json").catch(function(){ return {entries:{}}; }))).then(function(d){
+      el("uResult").innerHTML=render((d.entries||{})[id], t);
+      try { history.replaceState(null,"","#"+encodeURIComponent(t)); } catch(e){}
+    });
+  }
+  window.ANU={ show: show };
+  coverage();
+  var h=decodeURIComponent((location.hash||"").slice(1));
+  if(/^[A-Za-z0-9.\-]{1,12}$/.test(h)){ el("uInput").value=h; show(); }
 })();
 </script>
 </body>
