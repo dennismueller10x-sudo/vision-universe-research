@@ -60,3 +60,19 @@ test('Erkennungstest: Schwellen nach Protokoll', () => {
   assert.equal(leak.failed, true);
   assert.equal(leak.firmHits, 1);
 });
+
+test('KI-Vorwärtsledger: Hash-Kette, Manipulation fällt auf; Antwortprüfung', () => {
+  const K = require('./ki-forward.cjs'), os = require('node:os');
+  const f = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'edge2-')), 'ledger.jsonl');
+  K.append({ type: 'MARK', asOf: '2026-11-10', closes: {} }, f);
+  K.append({ type: 'MARK', asOf: '2026-11-17', closes: {} }, f);
+  assert.equal(K.ledger(f).length, 2);
+  fs.writeFileSync(f, fs.readFileSync(f, 'utf8').replace('2026-11-10', '2026-11-11'));
+  assert.throws(() => K.append({ type: 'MARK', asOf: 'x', closes: {} }, f), /LEDGER_CHAIN_BROKEN/);
+  const pk = { packetId: 'P1', candidates: Array.from({ length: 50 }, (_, i) => ({ label: 'K' + String(i + 1).padStart(2, '0'), group: 'ABCDEFGHIJ'[i % 10] })) };
+  const ok = { packetId: 'P1', picks: pk.candidates.slice(0, 10).map(c => ({ label: c.label })) };
+  assert.equal(K.validAnswer(ok, pk), null);
+  assert.equal(K.validAnswer({ ...ok, picks: ok.picks.slice(0, 9) }, pk), 'NOT_10_VALID_LABELS');
+  const four = { packetId: 'P1', picks: ['K01', 'K11', 'K21', 'K31', 'K02', 'K03', 'K04', 'K05', 'K06', 'K07'].map(label => ({ label })) };
+  assert.equal(K.validAnswer(four, pk), 'MORE_THAN_3_PER_GROUP');
+});

@@ -57,10 +57,10 @@ function universeAt(panel, t) {
   return rows;
 }
 
-function buildPackets(panel, { window, salt, candidates = 50 }) {
+function buildPackets(panel, { window, salt, candidates = 50, forceWeeks = null }) {
   if (typeof salt !== 'string' || salt.length < 32) throw Error('SALT_REQUIRED');
   const seed = salt;
-  const weeks = decisionWeeks(panel, window), cal = panel.calendar, packets = [], keys = [];
+  const weeks = forceWeeks || decisionWeeks(panel, window), cal = panel.calendar, packets = [], keys = [];
   for (const t of weeks) {
     const rows = universeAt(panel, t);
     if (rows.length < candidates * 2) { keys.push({ t, date: cal[t], state: 'TOO_FEW', universe: rows.length }); continue; }
