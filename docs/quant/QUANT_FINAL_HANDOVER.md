@@ -539,3 +539,5 @@ Abgelöste Übergaben und Statusberichte; zur Nachvollziehbarkeit erhalten. Maß
 - [HANDOVER_V13.md](../archiv/2026/quant-recovery/HANDOVER_V13.md)
 - [SESSION_HANDOVER_2026-10-30.md](../archiv/2026/quant-recovery/SESSION_HANDOVER_2026-10-30.md)
 - [BACKTEST_ENGINEERING_HANDOVER_V1.md](../archiv/2026/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md)
+
+Unveränderliche Provenienzmanifeste und gepinnte historische Fachbelege behalten ihre ursprünglichen Quellpfade und Prüfsummen. Die oben verlinkten Archivdateien sind die lesbaren Nachfolger; alte Pfadnamen im historischen Nachweis ändern dessen Zeitpunkt oder Freigabestatus nicht.
