@@ -29,7 +29,8 @@
    "purpose": "Tageskette nach US-Schluss: Kurse, Faktoren, Discover, Technical, Supertrader, SEC-Tagesindex",
    "workflow": "pipeline-daily.yml",
    "replaces": [
-    "fx-ecb-daily.yml"
+    "fx-ecb-daily.yml",
+    "vorsorge-daily-rebuild.yml"
    ]
   },
   "pipeline-intraday": {
@@ -418,9 +419,6 @@
   },
   "update-sec-fundamentals.yml": {
    "bundle": "pipeline-weekly"
-  },
-  "vorsorge-daily-rebuild.yml": {
-   "bundle": "pipeline-daily"
   },
   "vorsorge-etf-sources.yml": {
    "bundle": "research"
