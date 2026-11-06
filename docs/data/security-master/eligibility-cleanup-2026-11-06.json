@@ -1,8 +1,8 @@
 {
  "schema": "vu-eligibility-catchup-1",
- "id": "eligibility-cleanup-2026-11",
+ "id": "eligibility-cleanup-2026-11-06",
  "prevSha256": "e8acb273e457279cd1d37118d86235625f6af908dfbdbc96248902f6c8a8370b",
- "sourceRun": "lokal 05.11.2026 (Kette build-us-eligibility, apply-name-layer-class DEBT, apply-exchange-directory mit ETF) gegen us-security-master-1.3.0",
+ "sourceRun": "lokal 06.11.2026 nach dem Nachtlauf (Kette build-us-eligibility, apply-name-layer-class DEBT, apply-exchange-directory mit ETF) gegen main a7f2a9fcc07",
  "productUniverseBefore": 6577,
  "productUniverseAfter": 6308,
  "counts": {
@@ -16,7 +16,7 @@
  "enterReasons": {},
  "impact": {
   "discover": {
-   "before": 5969,
+   "before": 5970,
    "removed": 267,
    "addedWithPage": 0
   },
@@ -26,7 +26,7 @@
    "addedWithPage": 0
   },
   "fundamental": {
-   "before": 5047,
+   "before": 5044,
    "removed": 11,
    "addedWithPage": 0
   },
@@ -36,18 +36,18 @@
    "addedWithPage": 0
   },
   "quant": {
-   "before": 6566,
+   "before": 6575,
    "removed": 269,
    "addedWithPage": 0
   },
   "supertrader": {
-   "before": 1501,
+   "before": 687,
    "removed": 0,
    "addedWithPage": 0
   },
   "technical": {
-   "before": 5664,
-   "removed": 29,
+   "before": 5659,
+   "removed": 30,
    "addedWithPage": 0
   },
   "technik": {
@@ -4354,7 +4354,8 @@
    "reason": "CONFIRMED_NON_EQUITY:ETF",
    "products": [
     "discover",
-    "quant"
+    "quant",
+    "technical"
    ]
   },
   {

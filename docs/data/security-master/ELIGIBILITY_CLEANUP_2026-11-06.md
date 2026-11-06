@@ -1,6 +1,6 @@
-# Produktuniversum nachholen (eligibility-cleanup-2026-11)
+# Produktuniversum nachholen (eligibility-cleanup-2026-11-06)
 
-Freigabeliste fuer `scripts/core/eligibility-gate.mjs --approved`, erzeugt von `scripts/core/eligibility-catchup.mjs` aus dem Probelauf lokal 05.11.2026 (Kette build-us-eligibility, apply-name-layer-class DEBT, apply-exchange-directory mit ETF) gegen us-security-master-1.3.0. Gebunden an den Vorstand sha256 `e8acb273e457…`.
+Freigabeliste fuer `scripts/core/eligibility-gate.mjs --approved`, erzeugt von `scripts/core/eligibility-catchup.mjs` aus dem Probelauf lokal 06.11.2026 nach dem Nachtlauf (Kette build-us-eligibility, apply-name-layer-class DEBT, apply-exchange-directory mit ETF) gegen main a7f2a9fcc07. Gebunden an den Vorstand sha256 `e8acb273e457…`.
 
 Produktuniversum: **6577 → 6308**. Wechsel gesamt 275, davon 269 aus dem Produkt, 0 ins Produkt.
 
@@ -8,13 +8,13 @@ Produktuniversum: **6577 → 6308**. Wechsel gesamt 275, davon 269 aus dem Produ
 
 | Produkt | Titel heute | verlieren den Titel | neue Titel mit Seite |
 |---|---:|---:|---:|
-| discover | 5969 | 267 | 0 |
+| discover | 5970 | 267 | 0 |
 | elliott | 5055 | 6 | 0 |
-| fundamental | 5047 | 11 | 0 |
+| fundamental | 5044 | 11 | 0 |
 | hedgefonds | 4448 | 7 | 0 |
-| quant | 6566 | 269 | 0 |
-| supertrader | 1501 | 0 | 0 |
-| technical | 5664 | 29 | 0 |
+| quant | 6575 | 269 | 0 |
+| supertrader | 687 | 0 | 0 |
+| technical | 5659 | 30 | 0 |
 | technik | 5055 | 6 | 0 |
 
 Screener liest das Produktuniversum ueber den Discover-Index; neue Titel erscheinen in Discover, Quant und Screener erst nach dem naechsten Marktdaten-Lauf.
@@ -256,7 +256,7 @@ Ins Produkt:
 | TSIC | CONFIRMED_NON_EQUITY:ETF | discover, quant |
 | UMAL | CONFIRMED_NON_EQUITY:ETF | discover, quant |
 | UMCX | CONFIRMED_NON_EQUITY:ETF | discover, quant |
-| URSP | CONFIRMED_NON_EQUITY:ETF | discover, quant |
+| URSP | CONFIRMED_NON_EQUITY:ETF | discover, quant, technical |
 | USGX | CONFIRMED_NON_EQUITY:ETF | discover, quant |
 | USLX | CONFIRMED_NON_EQUITY:ETF | discover, quant |
 | USMX | CONFIRMED_NON_EQUITY:ETF | discover, quant |
