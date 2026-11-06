@@ -167,10 +167,16 @@ jobs:
           git commit -m "Europe Discover: Schlusskurse aktualisiert (${kind} ${GITHUB_RUN_ID})"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
           echo "pushed=true" >> "$GITHUB_OUTPUT"
-      # Commits pushed with GITHUB_TOKEN never trigger push workflows, so the
-      # live release QA is dispatched explicitly (workflow_dispatch is allowed).
+          # push-with-retry pushes HEAD (rebased if needed): this is the data commit on main.
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      # Commits pushed with GITHUB_TOKEN never trigger push workflows. The
+      # release comes from pages-release.yml (workflow_run on this workflow's
+      # completion, see its list); the live release QA is dispatched
+      # explicitly and waits until a verified main release contains exactly
+      # this data commit (runs 41929718926 / 41981113129, 04./05.11.2026).
       - name: Start the live release QA for the new publication
         if: steps.commit.outputs.pushed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run monitor.yml --ref main -f pruefung=europe-discover
+          DATA_COMMIT: ${{ steps.commit.outputs.sha }}
+        run: gh workflow run monitor.yml --ref main -f pruefung=europe-discover -f required_source_sha="$DATA_COMMIT"

@@ -1,6 +1,10 @@
 /** Read-only publication target verification. Pages intentionally publishes a
  * newer main head; test its real SHA only when protected product/data inputs
- * are identical to the reviewed baseline. No deployment, refresh or schedules. */
+ * are identical to the reviewed baseline. No deployment, refresh or schedules.
+ * Anchor: the QA first waits for a verified main release that contains the
+ * required commit (awaitPublishedRelease) and then reviews exactly that
+ * published commit, so protected-code changes merged between the refresh and
+ * the release are part of the reviewed code instead of a false mismatch. */
 import {execFile} from 'node:child_process';import {promisify} from 'node:util';import {mkdir,writeFile,appendFile} from 'node:fs/promises';import {dirname,resolve} from 'node:path';import {pathToFileURL} from 'node:url';
 import {publicTarget} from './europe-public-live-qa.mjs';
 const exec=promisify(execFile),isSha=s=>typeof s==='string'&&/^[a-f0-9]{40}$/.test(s);
@@ -29,13 +33,44 @@ export async function productionBaselineFor({root,reviewed}){
  await verifyPublishedSource({root,baseline,actual:reviewed});
  return {reviewedQaSourceCommit:reviewed,productionBaselineSourceCommit:baseline};
 }
-export async function resolvePublishedTarget({root=process.cwd(),baseline,origin,fetcher=fetch,pause=ms=>new Promise(r=>setTimeout(r,ms)),deadlineMs=20*60*1000}){
- if(!isSha(baseline))throw Error('VALID_BASELINE_SHA_REQUIRED');const reviewed=await productionBaselineFor({root,reviewed:baseline});baseline=reviewed.productionBaselineSourceCommit;const target=publicTarget(origin),deadline=Date.now()+deadlineMs;let attempts=0;
- while(Date.now()<deadline){attempts++;const response=await fetcher(target+'/release-delivery.json?continuity_baseline='+baseline+'&attempt='+attempts,{cache:'no-store',signal:AbortSignal.timeout(20000)});
-  if(response.ok){const metadata=await response.json();if(metadata.status!=='PASS'||!isSha(metadata.sourceCommit))throw Error('INVALID_PUBLISHED_DELIVERY_METADATA');
-   try{return {...reviewed,...await verifyPublishedSource({root,baseline,actual:metadata.sourceCommit}),observedAt:new Date().toISOString(),attempts};}catch(e){if(e.message!=='PUBLISHED_RELEASE_NOT_READY')throw e;}
+/** Shared delivery read: the public release-delivery.json, PASS and a real SHA. */
+async function readDelivery({target,fetcher,attempt,tag}){
+ const response=await fetcher(target+'/release-delivery.json?'+tag+'&attempt='+attempt,{cache:'no-store',signal:AbortSignal.timeout(20000)});
+ if(!response.ok)return null;const metadata=await response.json();
+ if(metadata.status!=='PASS'||!isSha(metadata.sourceCommit))throw Error('INVALID_PUBLISHED_DELIVERY_METADATA');return metadata.sourceCommit;
+}
+async function present(root,sha){try{await git(root,['cat-file','-e',sha+'^{commit}']);}catch{await git(root,['fetch','--quiet','--no-tags','origin',sha]);}}
+/** The published commit must contain the required (e.g. refresh data) commit
+ * and lie on main's history: a release of another branch never counts. */
+export async function verifyPublishedContains({root,required,actual,mainRef,refreshMain=async()=>{}}){
+ if(!isSha(required)||!isSha(actual))throw Error('VALID_REQUIRED_AND_ACTUAL_SHA_REQUIRED');
+ await git(root,['cat-file','-e',required+'^{commit}']);await present(root,actual);
+ try{await git(root,['merge-base','--is-ancestor',required,actual]);}catch{throw Error('PUBLISHED_RELEASE_NOT_READY');}
+ if(mainRef){await refreshMain();try{await git(root,['merge-base','--is-ancestor',actual,mainRef]);}catch{throw Error('PUBLISHED_RELEASE_NOT_ON_MAIN');}}
+ return {requiredSourceCommit:required,publishedSourceCommit:actual,requiredIncluded:true,publishedOnMain:Boolean(mainRef)};
+}
+/** Step 1 of the QA: wait until the site serves a verified main release that
+ * contains the required commit, and report its SHA. The QA then checks out
+ * exactly that commit, so its assertions are the published code's own. */
+export async function awaitPublishedRelease({root=process.cwd(),required,mainRef,origin,fetcher=fetch,pause=ms=>new Promise(r=>setTimeout(r,ms)),deadlineMs=40*60*1000,refreshMain=async()=>{}}){
+ if(!isSha(required))throw Error('VALID_REQUIRED_SHA_REQUIRED');await git(root,['cat-file','-e',required+'^{commit}']);
+ const target=publicTarget(origin),deadline=Date.now()+deadlineMs;let attempts=0;
+ while(Date.now()<deadline){attempts++;const actual=await readDelivery({target,fetcher,attempt:attempts,tag:'required='+required});
+  if(actual){try{return {...await verifyPublishedContains({root,required,actual,mainRef,refreshMain}),observedAt:new Date().toISOString(),attempts};}catch(e){if(e.message!=='PUBLISHED_RELEASE_NOT_READY')throw e;}}
+  await pause(15000);
+ }throw Error('REQUIRED_RELEASE_NOT_PUBLISHED');
+}
+export async function resolvePublishedTarget({root=process.cwd(),baseline,required,mainRef,origin,fetcher=fetch,pause=ms=>new Promise(r=>setTimeout(r,ms)),deadlineMs=20*60*1000,refreshMain=async()=>{}}){
+ if(!isSha(baseline))throw Error('VALID_BASELINE_SHA_REQUIRED');if(required!==undefined&&!isSha(required))throw Error('VALID_REQUIRED_SHA_REQUIRED');
+ const reviewed=await productionBaselineFor({root,reviewed:baseline});baseline=reviewed.productionBaselineSourceCommit;const target=publicTarget(origin),deadline=Date.now()+deadlineMs;let attempts=0;
+ while(Date.now()<deadline){attempts++;const actual=await readDelivery({target,fetcher,attempt:attempts,tag:'continuity_baseline='+baseline});
+  if(actual){try{const source=await verifyPublishedSource({root,baseline,actual});let contained={};if(required)contained=await verifyPublishedContains({root,required,actual,mainRef,refreshMain});
+    return {...reviewed,...source,...contained,observedAt:new Date().toISOString(),attempts};}catch(e){if(e.message!=='PUBLISHED_RELEASE_NOT_READY')throw e;}
   }await pause(5000);
  }throw Error('VERIFIED_PUBLISHED_RELEASE_NOT_OBSERVED');
 }
-export async function run(){const record=await resolvePublishedTarget({baseline:process.env.BASELINE_SOURCE_SHA,origin:process.env.SITE_URL}),path=resolve(process.env.RELEASE_TARGET_OUT||'/tmp/europe-published-target.json');await mkdir(dirname(path),{recursive:true});await writeFile(path,JSON.stringify(record,null,2)+'\n');if(process.env.GITHUB_ENV)await appendFile(process.env.GITHUB_ENV,'EXPECTED_SOURCE_SHA='+record.actualSourceCommit+'\n');console.log(JSON.stringify(record));return record;}
+const fetchMain=(root,mainRef)=>async()=>{await git(root,['fetch','--quiet','--no-tags','origin','+refs/heads/main:'+mainRef]);};
+export async function run(){const root=process.cwd(),required=process.env.REQUIRED_SOURCE_SHA||undefined,mainRef=process.env.MAIN_REF||undefined,refreshMain=mainRef?fetchMain(root,mainRef):async()=>{};
+ if(process.env.AWAIT_ONLY==='1'){const record=await awaitPublishedRelease({root,required,mainRef,origin:process.env.SITE_URL,refreshMain});if(process.env.GITHUB_OUTPUT)await appendFile(process.env.GITHUB_OUTPUT,'published_sha='+record.publishedSourceCommit+'\n');console.log(JSON.stringify(record));return record;}
+ const record=await resolvePublishedTarget({root,baseline:process.env.BASELINE_SOURCE_SHA,required,mainRef,origin:process.env.SITE_URL,refreshMain}),path=resolve(process.env.RELEASE_TARGET_OUT||'/tmp/europe-published-target.json');await mkdir(dirname(path),{recursive:true});await writeFile(path,JSON.stringify(record,null,2)+'\n');if(process.env.GITHUB_ENV)await appendFile(process.env.GITHUB_ENV,'EXPECTED_SOURCE_SHA='+record.actualSourceCommit+'\n');console.log(JSON.stringify(record));return record;}
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){try{await run();}catch(e){console.error(String(e.stack||e));process.exitCode=1;}}

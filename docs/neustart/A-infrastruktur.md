@@ -59,9 +59,11 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
     - **SEC:** `sec-fundamentals-daily.yml` (06:15; von ownership-signals, fundamental-sec-freshness und security-master-eligibility dispatcht), `sec-consumer-fundamentals.yml` (nur Dispatch/Push).
     - **Eigenständig, ohne Namensbezug:** `fx-ecb-daily.yml` (werktags 15:47), `vorsorge-daily-rebuild.yml` (Di–Sa 03:23), `europe-discover-refresh.yml` (werktags 17:47; von einem Test gelesen), `market-validation-data.yml` (16. 06:37), `multi-asset-data.yml` (alle 3 h), `company-intelligence-refresh.yml` (alle 4 h; von drei CI-Workflows dispatcht), `ki-depots-daily.yml` (werktags 23:41).
     - **Reihenfolge der Stufen:** zuerst die Eigenständigen ohne Namens- und Dateibezug (je ein PR, Schritte bytegleich, gleiche Concurrency-Gruppe), dann die von Tests gelesenen mit Testnachzug, zuletzt die Ketten (Auslöser per Name ziehen um, Verbraucher-Listen im selben PR).
-    - **Stufe 1** (#…): `fx-ecb-daily.yml` → `pipeline-daily.yml`, Teil `ezb`.
+    - **Stufe 1** (#1561): `fx-ecb-daily.yml` → `pipeline-daily.yml`, Teil `ezb`.
+    - **Stufe 2** (#…): `vorsorge-daily-rebuild.yml` → Teil `vorsorge`.
   - `ci` Stufe 2: die großen Produkt-CIs (quant, discover, technical, supertrader, core, account) nach einer Woche Betrieb von Stufe 1.
   - Rest-Kandidaten nach Gate-Umbau: supertrader-delisting-probe; `monitor` noch ohne freshness-monitor, fundamental-sec-freshness, supertrader-live-smoke, company-intelligence-health/-watchdog.
+- **Modul-Steckbrief, Pilot** (Plan §3): `analysten/module.json` mit Route, Navigation, Zugang, Status, Erzeuger, Workflow, Zeitplan und Frische; Vertragstest MM-1…6 (`core/tests/module-manifest.test.mjs`) hält ihn gleich zu `domains.json`, Menü und Seite. Nächste Kandidaten: Portfolios, News.
 - **Datenzweig:** Abnahme News am 11.11. (7 Tage nur `IDENTICAL`), danach News auf BRANCH_ONLY.
 - Folgearbeiten an 1.3.0 (Strang C): #1119 (H6), optional H7.
 - **PR-Aufräumen erledigt** (Owner-Bestätigung 05.11.2026 im Chat):
@@ -69,6 +71,11 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - die drei Europa-PRs #1294, #1295 und #1297 zu #1392 zusammengeführt und gemergt;
   - #1268, #1270, #1273, #1331 und #1340 hatten ihre Stränge vorher selbst erledigt;
   - offen sind danach nur noch die behaltenen PRs und laufende Strang-PRs.
+- **Triage der Alt-PRs** (Auftrag der Steuerung 06.11.2026, Nacht):
+  - durch neueren Stand erledigt und geschlossen: #1308 und #1309 (App-Anmeldeschiene kam mit #1525), #1258 (Menü „Mein Dashboard“ und Dashboard-Umbau in der Nutzerführung), #624 (Brevo-Importnachweis durch die Aktualisierung vom 18.10. in `docs/brevo/LIVE-STATUS.md` überholt), #631 (Brevo-Domain laut Audit 39116263425 bereits authentisiert);
+  - übernommen auf den heutigen Stand: #1300 → #1563 (Zeitlimits in `push-with-retry.sh`, Chartbild-Frische `follows`), #1386 → #1566 (Europa-Refresh wird ausgeliefert, Release-QA im `monitor`-Job prüft den veröffentlichten Commit);
+  - behalten, weil Fachmodell mit Vorher/Nachher im eigenen Strang (Strang C): #1259 (Musterstudie in Gesamtrendite, FV-5), #1119 (Security Master `active_status` aus SEC-Delisting-Beleg, H6), #1241 (V13-Archiv Generation 2.0.0);
+  - behalten, weil Rechtstexte (Owner-Freigabe Recht): #630 (Cookie-Banner und Datenschutz der Landing), zusammen mit #1528 zu entscheiden.
 
 ## Stand `main` 06.11. ~10:00 UTC
 - **Grün auf `main`** (lokal, nach Materialisierung aef8d68): Quant 3.942/0, Core 380/0, Technical 114/0, Datenhygiene sauber, Vorsorge reproduzierbar.
