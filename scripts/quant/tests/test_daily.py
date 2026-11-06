@@ -412,6 +412,20 @@ class DownstreamUnterbefehleTests(unittest.TestCase):
         self.assertIsNone(can.quarterly_years)
         self.assertIsNone(can.universe)
 
+    def test_kanonische_buendel_in_teilen_unter_der_speichergrenze(self):
+        from unittest import mock
+        from quant import cli
+        ciks = [f"{i:010d}" for i in range(2 * cli.MAX_DOCUMENTS_IN_MEMORY + 90)]
+        aufrufe = []
+        with mock.patch.object(cli, "cmd_canonical", lambda a: aufrufe.append(a)):
+            cli._canonical_nur_vorhandene(ciks)
+        teile = [a.ciks.split(",") for a in aufrufe]
+        self.assertTrue(all(a.only_existing for a in aufrufe))
+        self.assertTrue(all(len(t) <= cli.MAX_DOCUMENTS_IN_MEMORY for t in teile))
+        self.assertEqual([c for t in teile for c in t], ciks)
+        quelle = __import__("inspect").getsource(cli.cmd_daily_downstream)
+        self.assertIn("_canonical_nur_vorhandene(ciks)", quelle)
+
     def test_kein_handgebauter_namespace_im_downstream(self):
         import inspect
         from quant import cli
