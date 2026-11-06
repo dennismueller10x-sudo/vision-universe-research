@@ -69,6 +69,11 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - die drei Europa-PRs #1294, #1295 und #1297 zu #1392 zusammengeführt und gemergt;
   - #1268, #1270, #1273, #1331 und #1340 hatten ihre Stränge vorher selbst erledigt;
   - offen sind danach nur noch die behaltenen PRs und laufende Strang-PRs.
+- **Triage der Alt-PRs** (Auftrag der Steuerung 06.11.2026, Nacht):
+  - durch neueren Stand erledigt und geschlossen: #1308 und #1309 (App-Anmeldeschiene kam mit #1525), #1258 (Menü „Mein Dashboard“ und Dashboard-Umbau in der Nutzerführung), #624 (Brevo-Importnachweis durch die Aktualisierung vom 18.10. in `docs/brevo/LIVE-STATUS.md` überholt), #631 (Brevo-Domain laut Audit 39116263425 bereits authentisiert);
+  - übernommen auf den heutigen Stand: #1300 → #1563 (Zeitlimits in `push-with-retry.sh`, Chartbild-Frische `follows`), #1386 → #1566 (Europa-Refresh wird ausgeliefert, Release-QA im `monitor`-Job prüft den veröffentlichten Commit);
+  - behalten, weil Fachmodell mit Vorher/Nachher im eigenen Strang (Strang C): #1259 (Musterstudie in Gesamtrendite, FV-5), #1119 (Security Master `active_status` aus SEC-Delisting-Beleg, H6), #1241 (V13-Archiv Generation 2.0.0);
+  - behalten, weil Rechtstexte (Owner-Freigabe Recht): #630 (Cookie-Banner und Datenschutz der Landing), zusammen mit #1528 zu entscheiden.
 
 ## Stand `main` 06.11. ~10:00 UTC
 - **Grün auf `main`** (lokal, nach Materialisierung aef8d68): Quant 3.942/0, Core 380/0, Technical 114/0, Datenhygiene sauber, Vorsorge reproduzierbar.
