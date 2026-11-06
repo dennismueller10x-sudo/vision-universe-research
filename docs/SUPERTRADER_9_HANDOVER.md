@@ -76,6 +76,12 @@ V1 sind C01, C02, C03, C08 und C12; die übrigen acht Methoden stehen im Produkt
 
 - **Plausibilität Darvas (C03), `st-hist-top5-1.3.0`:** Der Einstieg liegt 1 Cent über dem Box-Hoch, der Stopp 1 Cent darunter. Erreicht ein Tagesbalken beides, bucht die Referenz (MA-DAR-INTRABAR-ORDER = PESSIMISTIC) den Stopp am selben Tag. Im Lauf 41984749745 traf das 87 % der Trades, mit etwa 390-fachem Jahresumschlag. Der Lauf rechnet deshalb die vorregistrierte Variante ALT-INTRABAR-OPTIMISTIC als Spannweite mit. C03 gilt bis zu Intraday-Daten als „auf Tagesbalken nicht bestimmbar“. Kein Buchungsfehler: Abgleich und Audit sind bestanden.
 
+- **Historischer Backtest der übrigen 8 Methoden (Strang H, 06.11.2026, `st-hist-top5-1.11.0` Modus `rest8`, Lauf 42170095105):** Die Fenster sind DEV 2016–2026 und Snapshot `sts1-134d4d62…`. Gerechnet wird mit DQ-K5, vier Kostenstufen, SPY-Vergleich, ohne-DQ-K5-Sensitivität und Universum B (V13, 229 delistete Titel). Audit und Abgleich sind bei allen Methoden bestanden. Ergebnis nur versiegelt (Owner und Prüfschlüssel); keine der acht Methoden liegt zu irgendeiner Kostenstufe über SPY. Im Katalog trägt jede Methode `historicalTest` mit Status „getestet“ und dem Label „Forschung, nicht zertifiziert“, ohne Kennzahl. Lesarten (Strang H, je ein Satz):
+  - **C04, C05, C11, C13:** unveränderte SF6-Referenz wie bei den Top 5; Auswahl bei knappem Kapital nach der Engine-Reihenfolge, keine nachträgliche Rangregel.
+  - **C06, C07:** unveränderte SF6-Referenz; FID-1 ist bereits gesondert gemessen (Lauf 42064067482) und wird hier nicht wiederholt.
+  - **C09 (Episodic Pivot):** Chart-EP-Modellstudie auf dem privaten IEX-Minuten-Cache (0 Anfragen) auf dem Tagessatz CLEAN. Daten erst ab 2017, deshalb ab 2017 gerechnet und nicht holdout-fähig.
+  - **C10 (Parabolic Short):** Trade-Studie je Short für beide Überlappungsregeln (INDEPENDENT, ONE_POSITION_PER_TICKER) ohne Leihkosten. Ein SPY-Vergleich ist nicht sinnvoll, auch C10 ist nicht holdout-fähig.
+
 Der Tagesstand des Strangs steht in `docs/neustart/B-supertrader.md`.
 
 ---
