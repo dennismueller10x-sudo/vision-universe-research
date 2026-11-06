@@ -1,5 +1,8 @@
 # Fundamental 2.0
 
+> **Einstieg Fundamental.** Aktuelle Arbeitsregeln: [CLAUDE.md](../CLAUDE.md); datierte Entscheidungen: [Neustart-Plan](PLAN_NEUSTART_2026-11.md). Bei Widersprüchen zu historischen Abschnitten gelten diese Quellen. Weitere Seiten sind Fachbelege, keine parallelen Einstiege. [Landkarte](README.md).
+
+
 Produktwelt `/fundamental/` (Hash-Routen, ohne Abhängigkeiten). Zahlen und Abdeckung: [FUNDAMENTAL_DATA_COVERAGE.md](FUNDAMENTAL_DATA_COVERAGE.md) (erzeugt mit `scripts/fundamental/coverage-report.mjs`).
 
 ## Ansichten
@@ -139,3 +142,50 @@ Der Katalog definiert 60 Kennzahlen; Gewinnrendite und Kurs/Free Cashflow sind a
 ## Tests
 
 `node --test "fundamental/tests/*.test.mjs"` (Modell, Katalog, Projektion, KGV, Quartalsregel, Routen, Datenpfade, Kennzahlenvergleich) · `scripts/quality/vu3-regression-qa.mjs` (Wege, Theme, Visual-Bausteine, Kontrast) · `scripts/quality/shell-browser-qa.mjs` · `scripts/quality/fundamental-compare-qa.mjs` (Kennzahlenvergleich, WebKit iPhone und Chromium).
+
+## Fachbelege und weiterführende Dokumentation
+
+Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.
+
+- [COMPANY_INTELLIGENCE.md](COMPANY_INTELLIGENCE.md)
+- [COMPANY_INTELLIGENCE_ACCEPTED_STATE_RECOVERY.md](COMPANY_INTELLIGENCE_ACCEPTED_STATE_RECOVERY.md)
+- [COMPANY_INTELLIGENCE_PRODUCTION_ACTIVATION.md](COMPANY_INTELLIGENCE_PRODUCTION_ACTIVATION.md)
+- [FUNDAMENTAL_DATA_COVERAGE.md](FUNDAMENTAL_DATA_COVERAGE.md)
+- [FUNDAMENTAL_HISTORY_DEPTH.md](FUNDAMENTAL_HISTORY_DEPTH.md)
+- [FUNDAMENTAL_SEC_GAPS.md](FUNDAMENTAL_SEC_GAPS.md)
+- [SEC_COVERAGE_REPORT.md](SEC_COVERAGE_REPORT.md)
+- [SEC_DATA_ARCHITECTURE.md](SEC_DATA_ARCHITECTURE.md)
+- [SEC_ISSUER_EXTENSIONS.md](SEC_ISSUER_EXTENSIONS.md)
+- [SEC_LIVE_VALIDATION.md](SEC_LIVE_VALIDATION.md)
+- [SEC_NORMALIZATION.md](SEC_NORMALIZATION.md)
+- [SEC_PHASE4_REPORT.md](SEC_PHASE4_REPORT.md)
+- [SEC_PIT_METHODOLOGY.md](SEC_PIT_METHODOLOGY.md)
+- [SEC_RELEASE_AUDIT.md](SEC_RELEASE_AUDIT.md)
+- [VU_FUNDAMENTAL_DATA_CONTRACT.md](VU_FUNDAMENTAL_DATA_CONTRACT.md)
+- [VU_FUNDAMENTAL_DATA_EXPANSION.md](VU_FUNDAMENTAL_DATA_EXPANSION.md)
+- [VU_FUNDAMENTAL_INTELLIGENCE.md](VU_FUNDAMENTAL_INTELLIGENCE.md)
+- [VU_SEC_BACKFILL_ERGEBNIS.md](VU_SEC_BACKFILL_ERGEBNIS.md)
+- [VU_SEC_COVERAGE_MAXIMIERUNG.md](VU_SEC_COVERAGE_MAXIMIERUNG.md)
+- [VU_SEC_DAILY_LIFECYCLE.md](VU_SEC_DAILY_LIFECYCLE.md)
+- [VU_SEC_FINAL_RECOVERY_REPORT.md](VU_SEC_FINAL_RECOVERY_REPORT.md)
+- [VU_SEC_UNIVERSE_SCALE.md](VU_SEC_UNIVERSE_SCALE.md)
+- [company-intelligence/AUTO_REFREEZE.md](company-intelligence/AUTO_REFREEZE.md)
+- [company-intelligence/CONSUMER_V2.md](company-intelligence/CONSUMER_V2.md)
+- [company-intelligence/CONTINUOUS_REFRESH.md](company-intelligence/CONTINUOUS_REFRESH.md)
+- [company-intelligence/FULL_UNIVERSE_ROLLOUT.md](company-intelligence/FULL_UNIVERSE_ROLLOUT.md)
+- [company-intelligence/SOURCE_COVERAGE_AND_SCHEDULER.md](company-intelligence/SOURCE_COVERAGE_AND_SCHEDULER.md)
+- [company-intelligence/UNIVERSE_REFREEZE_WORKFLOW.md](company-intelligence/UNIVERSE_REFREEZE_WORKFLOW.md)
+- [company-intelligence/consumer-v2/screenshots/README.md](company-intelligence/consumer-v2/screenshots/README.md)
+- [company-intelligence/consumer-v2/top46/README.md](company-intelligence/consumer-v2/top46/README.md)
+- [company-intelligence/consumer-v2/top46/self-reviews.md](company-intelligence/consumer-v2/top46/self-reviews.md)
+- [company-intelligence/profiles-sources/GERMAN_PROFILES_AND_FIRST_PARTY_SOURCES.md](company-intelligence/profiles-sources/GERMAN_PROFILES_AND_FIRST_PARTY_SOURCES.md)
+- [europe21/FUNDAMENTALS.md](europe21/FUNDAMENTALS.md)
+- [marketstack-europe/FUNDAMENTALS.md](marketstack-europe/FUNDAMENTALS.md)
+
+### Historische Arbeitsstände
+
+Abgelöste Übergaben und Statusberichte; zur Nachvollziehbarkeit erhalten. Maßgeblich sind der Einstieg und der aktuelle Plan.
+
+- [COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md](archiv/2026/COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md)
+- [FUNDAMENTAL_HANDOFF.md](archiv/2026/FUNDAMENTAL_HANDOFF.md)
+- [VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md](archiv/2026/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md)

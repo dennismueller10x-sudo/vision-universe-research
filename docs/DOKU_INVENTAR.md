@@ -15,7 +15,7 @@ Die Archivierung erfolgt in Folge-PRs je Produkt. Die Pfadspalte wird dabei auf 
 | [docs/COMPANY_INTELLIGENCE.md](COMPANY_INTELLIGENCE.md) | 2026-10-09 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/COMPANY_INTELLIGENCE_ACCEPTED_STATE_RECOVERY.md](COMPANY_INTELLIGENCE_ACCEPTED_STATE_RECOVERY.md) | 2026-10-07 | 3 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/COMPANY_INTELLIGENCE_DISCOVER_BETA.md](COMPANY_INTELLIGENCE_DISCOVER_BETA.md) | 2026-10-07 | 1 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
-| [docs/COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md](COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md) | 2026-10-07 | 2 | überholt | Übergabe/Abnahme eines früheren Bestands; Dokument verweist selbst auf Fundamental bzw. neueren Recovery-/Backfill-Nachweis. |
+| [docs/archiv/2026/COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md](archiv/2026/COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md) | 2026-10-07 | 2 | überholt | Übergabe/Abnahme eines früheren Bestands; Dokument verweist selbst auf Fundamental bzw. neueren Recovery-/Backfill-Nachweis. |
 | [docs/COMPANY_INTELLIGENCE_PRODUCTION_ACTIVATION.md](COMPANY_INTELLIGENCE_PRODUCTION_ACTIVATION.md) | 2026-10-07 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/DISCOVER_FRONTEND_REFACTOR_2026-09.md](DISCOVER_FRONTEND_REFACTOR_2026-09.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/DISCOVER_IM_BLICK.md](DISCOVER_IM_BLICK.md) | 2026-10-13 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
@@ -28,7 +28,7 @@ Die Archivierung erfolgt in Folge-PRs je Produkt. Die Pfadspalte wird dabei auf 
 | [docs/ETF_PRIMARY_SOURCE_MATRIX.md](ETF_PRIMARY_SOURCE_MATRIX.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/FUNDAMENTAL.md](FUNDAMENTAL.md) | 2026-10-25 | 2 | gültig | Verbindlicher Produkteinstieg; gesetzte CLAUDE-Links bleiben erhalten. |
 | [docs/FUNDAMENTAL_DATA_COVERAGE.md](FUNDAMENTAL_DATA_COVERAGE.md) | 2026-10-24 | 2 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
-| [docs/FUNDAMENTAL_HANDOFF.md](FUNDAMENTAL_HANDOFF.md) | 2026-10-25 | 0 | überholt | Übergabe/Abnahme eines früheren Bestands; Dokument verweist selbst auf Fundamental bzw. neueren Recovery-/Backfill-Nachweis. |
+| [docs/archiv/2026/FUNDAMENTAL_HANDOFF.md](archiv/2026/FUNDAMENTAL_HANDOFF.md) | 2026-10-25 | 0 | überholt | Übergabe/Abnahme eines früheren Bestands; Dokument verweist selbst auf Fundamental bzw. neueren Recovery-/Backfill-Nachweis. |
 | [docs/FUNDAMENTAL_HISTORY_DEPTH.md](FUNDAMENTAL_HISTORY_DEPTH.md) | 2026-10-26 | 2 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/FUNDAMENTAL_SEC_GAPS.md](FUNDAMENTAL_SEC_GAPS.md) | 2026-10-25 | 2 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/GAP_CHECK_2026-10-04.md](GAP_CHECK_2026-10-04.md) | 2026-10-06 | 3 | überholt | Abgeschlossener Aufbau-/Missionsstand; Neustart-Plan §3 und aktuelle Architektur ersetzen die damalige Arbeitssteuerung. |
@@ -195,7 +195,7 @@ Die Archivierung erfolgt in Folge-PRs je Produkt. Die Pfadspalte wird dabei auf 
 | [docs/VU_EOD_REJECTION_RECOVERY_2026-09-18.md](VU_EOD_REJECTION_RECOVERY_2026-09-18.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_FINANCIAL_DATA_MODEL.md](VU_FINANCIAL_DATA_MODEL.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_FREE_DATA_SOURCE_MAP.md](VU_FREE_DATA_SOURCE_MAP.md) | 2026-10-06 | 0 | gültig | Erzeugter Fachbeleg; Erzeugerpfad bleibt wirksam, nicht manuell archivieren. |
-| [docs/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md](VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md) | 2026-10-06 | 0 | überholt | Übergabe/Abnahme eines früheren Bestands; Dokument verweist selbst auf Fundamental bzw. neueren Recovery-/Backfill-Nachweis. |
+| [docs/archiv/2026/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md](archiv/2026/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md) | 2026-10-06 | 0 | überholt | Übergabe/Abnahme eines früheren Bestands; Dokument verweist selbst auf Fundamental bzw. neueren Recovery-/Backfill-Nachweis. |
 | [docs/VU_FUNDAMENTAL_DATA_CONTRACT.md](VU_FUNDAMENTAL_DATA_CONTRACT.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_FUNDAMENTAL_DATA_EXPANSION.md](VU_FUNDAMENTAL_DATA_EXPANSION.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_FUNDAMENTAL_INTELLIGENCE.md](VU_FUNDAMENTAL_INTELLIGENCE.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |

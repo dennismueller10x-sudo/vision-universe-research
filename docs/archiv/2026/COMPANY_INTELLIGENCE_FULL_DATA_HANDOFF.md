@@ -1,4 +1,4 @@
-> Aktueller Nachweis vom 7. Oktober: [Accepted-State Recovery](COMPANY_INTELLIGENCE_ACCEPTED_STATE_RECOVERY.md). Der akzeptierte Originalbestand ist inzwischen privat in R2 gesichert und auf unabhängigem Runner exakt wiederhergestellt. Frühere fehlende-Bestandsmeldungen unten sind historische Befunde. Kein Merge und keine öffentliche Aktivierung.
+> Aktueller Nachweis vom 7. Oktober: [Accepted-State Recovery](../../COMPANY_INTELLIGENCE_ACCEPTED_STATE_RECOVERY.md). Der akzeptierte Originalbestand ist inzwischen privat in R2 gesichert und auf unabhängigem Runner exakt wiederhergestellt. Frühere fehlende-Bestandsmeldungen unten sind historische Befunde. Kein Merge und keine öffentliche Aktivierung.
 
 # Company Intelligence — aktueller State Handoff und Full-Data-Preview
 
