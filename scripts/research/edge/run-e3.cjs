@@ -177,4 +177,4 @@ function main() {
   else throw Error('PHASE ' + a.phase);
 }
 if (require.main === module) main();
-module.exports = { evaluate, DEV, TEST };
+module.exports = { evaluate, benchmarks, spyDaily, DEV, TEST };

@@ -78,6 +78,8 @@ V1 sind C01, C02, C03, C08 und C12; die übrigen acht Methoden stehen im Produkt
   - **C09 (Episodic Pivot):** Chart-EP-Modellstudie auf dem privaten IEX-Minuten-Cache (0 Anfragen) auf dem Tagessatz CLEAN. Daten erst ab 2017, deshalb ab 2017 gerechnet und nicht holdout-fähig.
   - **C10 (Parabolic Short):** Trade-Studie je Short für beide Überlappungsregeln (INDEPENDENT, ONE_POSITION_PER_TICKER) ohne Leihkosten. Ein SPY-Vergleich ist nicht sinnvoll, auch C10 ist nicht holdout-fähig.
 
+- **Holdout 2008–2015 verbraucht (Strang H, 06.11.2026):** Der Lauf war einmalig und vorregistriert (Protokoll-SHA `48afb49c…`, Ledger SEALED). Die 11 rechenbaren Supertrader-Methoden und Quant Value Momentum N20 wurden mit Holm über 12 Hypothesen geprüft. Keiner der Kandidaten schlägt SPY. Ergebnisse versiegelt in `docs/research/holdout/results/`, Einschränkungen in `docs/research/holdout/ERGEBNIS-2008-2015.md`. Keine weiteren Läufe auf 2008–2015 und keine Variantensuche mehr; eine Bestätigung ist nur noch mit Vorwärtsdaten (PAPER_2027) möglich.
+
 Der Tagesstand des Strangs steht in `docs/neustart/B-supertrader.md`.
 
 ---
