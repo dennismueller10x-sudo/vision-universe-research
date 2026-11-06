@@ -60,7 +60,8 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
     - **Eigenständig, ohne Namensbezug:** `fx-ecb-daily.yml` (werktags 15:47), `vorsorge-daily-rebuild.yml` (Di–Sa 03:23), `europe-discover-refresh.yml` (werktags 17:47; von einem Test gelesen), `market-validation-data.yml` (16. 06:37), `multi-asset-data.yml` (alle 3 h), `company-intelligence-refresh.yml` (alle 4 h; von drei CI-Workflows dispatcht), `ki-depots-daily.yml` (werktags 23:41).
     - **Reihenfolge der Stufen:** zuerst die Eigenständigen ohne Namens- und Dateibezug (je ein PR, Schritte bytegleich, gleiche Concurrency-Gruppe), dann die von Tests gelesenen mit Testnachzug, zuletzt die Ketten (Auslöser per Name ziehen um, Verbraucher-Listen im selben PR).
     - **Stufe 1** (#1561): `fx-ecb-daily.yml` → `pipeline-daily.yml`, Teil `ezb`.
-    - **Stufe 2** (#…): `vorsorge-daily-rebuild.yml` → Teil `vorsorge`.
+    - **Stufe 2** (#1568): `vorsorge-daily-rebuild.yml` → Teil `vorsorge`.
+    - **Stufe 3** (#…): `supertrader-house-live.yml` → Teil `hausstrategie` (Dispatch-Eingabe `mode`, Probelauf auf `claude/**` per Commit-Marke `[house-live:` wie vorher).
   - `ci` Stufe 2: die großen Produkt-CIs (quant, discover, technical, supertrader, core, account) nach einer Woche Betrieb von Stufe 1.
   - Rest-Kandidaten nach Gate-Umbau: supertrader-delisting-probe; `monitor` noch ohne freshness-monitor, fundamental-sec-freshness, supertrader-live-smoke, company-intelligence-health/-watchdog.
 - **Modul-Steckbrief, Pilot** (Plan §3): `analysten/module.json` mit Route, Navigation, Zugang, Status, Erzeuger, Workflow, Zeitplan und Frische; Vertragstest MM-1…6 (`core/tests/module-manifest.test.mjs`) hält ihn gleich zu `domains.json`, Menü und Seite. Nächste Kandidaten: Portfolios, News.

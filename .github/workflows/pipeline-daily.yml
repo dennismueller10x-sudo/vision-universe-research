@@ -5,9 +5,12 @@ name: Pipeline taeglich (Buendel pipeline-daily)
 # Concurrency-Gruppe wie vorher, damit ein laufender Altlauf nicht ueberholt wird):
 #   ezb    vormals fx-ecb-daily.yml (EZB-Referenzkurse fuer die EUR-Anzeige), werktags 15:47 UTC
 #   vorsorge vormals vorsorge-daily-rebuild.yml (Vorsorge-ETF-Stamm taeglich neu bauen), 23 3 * * 2-6
+#   hausstrategie vormals supertrader-house-live.yml (Beobachtungsdepot HS4-V03), 30 1 * * 2-6 und 15 3 25 * *;
+#                 auf claude/** per Commit-Marke [house-live:dry|sec|start] wie vorher
 # Der Job `auswahl` entscheidet, welcher Teil laeuft:
 #   schedule           der Teil, dem der ausloesende Zeitplan gehoert (github.event.schedule)
 #   workflow_dispatch  genau der gewaehlte Teil (`teil`)
+#   push claude/**     hausstrategie, wenn die Commit-Nachricht [house-live: enthaelt (wie vorher)
 # Kein Teil hat hier einen workflow_run-Ausloeser; Ketten nach Workflow-Namen bleiben vorerst in
 # ihren Dateien (siehe A-Doc: Kette als Liste).
 
@@ -15,6 +18,8 @@ on:
   schedule:
     - cron: '47 15 * * 1-5'   # ezb
     - cron: '23 3 * * 2-6'   # vorsorge
+    - cron: '30 1 * * 2-6'   # hausstrategie
+    - cron: '15 3 25 * *'   # hausstrategie (SEC-Auffrischung am 25.)
   workflow_dispatch:
     inputs:
       teil:
@@ -24,6 +29,16 @@ on:
         options:
           - ezb
           - vorsorge
+          - hausstrategie
+      mode:
+        description: 'hausstrategie: Modus (vormals supertrader-house-live.yml)'
+        type: choice
+        options: [decide, dry, sec, start]
+        default: dry
+  # hausstrategie: Probelaeufe auf claude/** per Commit-Marke (vormals supertrader-house-live.yml)
+  push:
+    branches:
+      - 'claude/**'
 
 permissions:
   contents: read
@@ -36,6 +51,7 @@ jobs:
     outputs:
       ezb: ${{ steps.wahl.outputs.ezb }}
       vorsorge: ${{ steps.wahl.outputs.vorsorge }}
+      hausstrategie: ${{ steps.wahl.outputs.hausstrategie }}
     steps:
       - name: Teil waehlen
         id: wahl
@@ -44,6 +60,8 @@ jobs:
           EVENT: ${{ github.event_name }}
           SCHEDULE: ${{ github.event.schedule }}
           TEIL: ${{ inputs.teil }}
+          REF: ${{ github.ref }}
+          MSG: ${{ github.event.head_commit.message }}
         run: |
           set -euo pipefail
           setze() { echo "$1=$2" >> "$GITHUB_OUTPUT"; echo "$1=$2"; }
@@ -51,14 +69,16 @@ jobs:
             case "$1" in
               '47 15 * * 1-5') echo ezb ;;
               '23 3 * * 2-6') echo vorsorge ;;
+              '30 1 * * 2-6'|'15 3 25 * *') echo hausstrategie ;;
               *) echo '' ;;
             esac; }
           gewaehlt=''
           case "$EVENT" in
             schedule) gewaehlt="$(zeitplan_von "$SCHEDULE")"; [ -n "$gewaehlt" ] || { echo "::error::Unbekannter Zeitplan '$SCHEDULE'"; exit 1; } ;;
             workflow_dispatch) gewaehlt="$TEIL" ;;
+            push) if [[ "$REF" == refs/heads/claude/* && "${MSG:-}" == *"[house-live:"* ]]; then gewaehlt=hausstrategie; fi ;;
           esac
-          for k in ezb vorsorge; do v=false; [ "$k" = "$gewaehlt" ] && v=true; setze "$k" "$v"; done
+          for k in ezb vorsorge hausstrategie; do v=false; [ "$k" = "$gewaehlt" ] && v=true; setze "$k" "$v"; done
 
   # --- ezb: vormals fx-ecb-daily.yml (EZB-Referenzkurse taeglich (EUR-Anzeige))
     # Die EUR-Anzeige rechnet jeden historischen Kurs mit dem EZB-Referenzkurs
@@ -193,3 +213,82 @@ jobs:
           git add -- vorsorge/data vorsorge/etf vorsorge/sitemap.xml
           git commit -q -m "Vorsorge: ETF-Stamm aus aktuellen Kursdaten neu gebaut (Lauf ${GITHUB_RUN_ID})"
           bash scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # --- hausstrategie: vormals supertrader-house-live.yml (Supertrader Hausstrategie live (Beobachtungsdepot HS4-V03))
+  # Vorwaertslauf mit eingefrorenen Regeln (scripts/supertrader/house/LIVE-HS4-V03.json).
+  # Taeglich nach dem Marktdatenlauf: nur am letzten Handelstag eines Monats wird die
+  # Monatsentscheidung gerechnet und VOR der Ausfuehrung zur naechsten Eroeffnung committet
+  # (supertrader/data/ledger/VU_HOUSE_HS4_V03.json; nur Titel und Zielgewichte).
+  # Monatlich am 25. wird die SEC-Datenstufe r13 (Aktienzahl, EPS, Umsatz zum Einreichungsdatum)
+  # aufgefrischt, damit die Entscheidung am Monatsende aktuelle Meldungen kennt.
+  # Auf claude/** per Marke: [house-live:dry] (Ladeprobe, schreibt nichts), [house-live:sec] (SEC-Auffrischung),
+  # [house-live:start] (einmalige Startentscheidung bei leerem Ledger).
+  hausstrategie:
+    needs: auswahl
+    # vormals: if: github.event_name != 'push' || contains(github.event.head_commit.message, '[house-live:') - jetzt in `auswahl`
+    if: needs.auswahl.outputs.hausstrategie == 'true'
+    name: Supertrader Hausstrategie live (HS4-V03)
+    permissions:
+      contents: write
+    concurrency:
+      group: supertrader-house-live-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[house-live:')) && github.run_id || 'main' }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Modus bestimmen
+        id: mode
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+          INPUT: ${{ inputs.mode }}
+          EVENT: ${{ github.event_name }}
+          CRON: ${{ github.event.schedule }}
+        run: |
+          m="$INPUT"
+          if [ "$EVENT" = "schedule" ]; then if [ "$CRON" = "15 3 25 * *" ]; then m=sec; else m=decide; fi; fi
+          case "$MSG" in *"[house-live:start]"*) m=start;; *"[house-live:dry]"*) m=dry;; *"[house-live:sec]"*) m=sec;; esac
+          echo "mode=${m:-dry}" >> "$GITHUB_OUTPUT"
+      - name: Tests der Hausstrategie
+        run: node --test scripts/supertrader/tests/house-hs1.test.mjs
+      - name: SEC-Datenstufe r13 auffrischen
+        if: steps.mode.outputs.mode == 'sec'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: node scripts/supertrader/validation/sec-pit.mjs --r13 --out "$RUNNER_TEMP/val"
+      # Rueckbau L2/L3 (Owner-Entscheidung 06.11.2026, #1522): steht im Repository noch die oeffentliche Ledger-Sicht,
+      # kommt der volle Zustand einmalig aus der History-Ablage zurueck (fail closed, danach ohne Wirkung).
+      - name: Vollen Ledger-Zustand zurueckholen (einmalig nach dem Rueckbau)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/supertrader/restore-full-ledgers.mjs
+      - name: Monatsentscheidung (nur am Monatsende) bzw. Ladeprobe
+        if: steps.mode.outputs.mode == 'decide' || steps.mode.outputs.mode == 'dry' || steps.mode.outputs.mode == 'start'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=12000
+        run: node scripts/supertrader/house/live.mjs ${{ steps.mode.outputs.mode == 'dry' && '--force --dry-run' || (steps.mode.outputs.mode == 'start' && '--start' || '') }}
+      - name: Entscheidung committen
+        if: steps.mode.outputs.mode == 'decide' || steps.mode.outputs.mode == 'start'
+        run: |
+          f=supertrader/data/ledger/VU_HOUSE_HS4_V03.json
+          if [ ! -f "$f" ]; then echo "Noch kein Ledger (keine Entscheidung) - nichts zu committen."; exit 0; fi
+          bash scripts/ci/commit-and-push.sh "Hausstrategie live: Monatsentscheidung VU_HOUSE_HS4_V03" "$f"

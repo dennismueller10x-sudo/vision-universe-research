@@ -30,7 +30,8 @@
    "workflow": "pipeline-daily.yml",
    "replaces": [
     "fx-ecb-daily.yml",
-    "vorsorge-daily-rebuild.yml"
+    "vorsorge-daily-rebuild.yml",
+    "supertrader-house-live.yml"
    ]
   },
   "pipeline-intraday": {
@@ -364,9 +365,6 @@
   "supertrader-delisting-probe.yml": {
    "bundle": "research",
    "retireCandidate": true
-  },
-  "supertrader-house-live.yml": {
-   "bundle": "pipeline-daily"
   },
   "supertrader-house.yml": {
    "bundle": "research"
