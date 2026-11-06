@@ -86,7 +86,7 @@ export async function buildSf5Artifact() {
 const esc = (x) => String(x ?? '–').replace(/\|/g, '\\|');
 export function sf5Markdown(a) {
   let md = '# Supertrader 5.0 – Source-to-Execution-Matrix (Darvas, Kullamägi Breakout, Pocket Pivot, Buyable Gap-Up, Weinstein Investor / Trader, Holy Grail Research-Variante)\n\n';
-  md += 'Generiert mit `node scripts/supertrader/source-faithful/completion/build-sf5-lifecycle.mjs` aus `research/sf5-lifecycle-matrix.mjs`, `research/sf5-lifecycles.mjs`, den Verträgen und dem #709-Extrakt. Nicht von Hand bearbeiten. Bericht: [SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md](archiv/2026/SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md).\n\n';
+  md += 'Generiert mit `node scripts/supertrader/source-faithful/completion/build-sf5-lifecycle.mjs` aus `research/sf5-lifecycle-matrix.mjs`, `research/sf5-lifecycles.mjs`, den Verträgen und dem #709-Extrakt. Nicht von Hand bearbeiten. Bericht: [SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md](SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md).\n\n';
   md += `Validierung: ${a.validation.ok ? 'bestanden' : 'FEHLER ' + a.validation.errors.join(', ')}. Engine \`${a.engineVersion}\`, Varianten-Fingerabdruck \`${a.variantRegistrySha256.slice(0, 12)}…\`. Verbindlicher Registry-Status bleibt der Regelstatus des Vertrags.\n\n`;
   md += 'Grundsätze: ' + a.principles.join('; ') + '.\n\n';
   for (const v of Object.values(a.strategies)) {

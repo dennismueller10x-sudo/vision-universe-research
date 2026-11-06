@@ -55,7 +55,7 @@ export const PATHS = Object.freeze({
   execDoc: 'docs/SUPERTRADER_7_EXECUTION_VALIDATION.md',
   caDocs: ['docs/SUPERTRADER_6_V4D1_CONTAINMENT.md', 'docs/SUPERTRADER_7_EDGAR_CA_CHECK.md', 'docs/SUPERTRADER_7_TIINGO_SPLITS_PROBE.md', 'docs/SUPERTRADER_7_OWNER_DECISIONS_E7.md'],
   dataGaps: 'docs/SUPERTRADER_2_DATA_GAPS.md',
-  activation: 'docs/archiv/2026/SUPERTRADER_8_ACTIVATION_READINESS.md',
+  activation: 'docs/SUPERTRADER_8_ACTIVATION_READINESS.md',
   paper: 'scripts/supertrader/source-faithful/completion/sf6-paper-protocol-2027-v1_2_0.mjs', // current version (1.2.0, 2026-11-04)
   criteria: 'scripts/supertrader/source-faithful/completion/sf6-readiness-criteria.mjs',
   histUniverse: 'scripts/supertrader/source-faithful/research/st9-hist-universe.mjs',
