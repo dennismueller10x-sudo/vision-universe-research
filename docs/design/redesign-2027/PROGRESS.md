@@ -63,7 +63,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | E08 | Mein Bereich · Mein Dashboard | fertig | #1366 | Abmelden ins Konto verschoben |
 | E09 | Mein Bereich · Watchlist-Detail | fertig | #1366, #1411 | Karten nach Mockup; Benachrichtigungen als Schalter in der Karte statt Sheet (e09-b), Werkzeugleiste (Suche, Sortierung) bleibt unter den Chips |
 | E10 | Einstieg · AI Atlas | fertig | #1366 | Worker vu-ask unverändert; statt Jahresreihe Balken je Kennzahl über die Aktien (Atlas-Engine liefert keine Zeitreihe) |
-| E11 | Einstieg · Erster Start | fertig | #1366 | `/willkommen/start/`, `localStorage vu-start-v1`; Anbindung an `/v1/me` (Z1, #1359) offen: `signale`→`strategien`, `mode`→`experienceLevel`, `onboardedAt:true` |
+| E11 | Einstieg · Erster Start | fertig | #1366, D4-Z1 | `/willkommen/start/`, `localStorage vu-start-v1`; an `/v1/me` angebunden (Z1): `signale`→`strategien`, `mode`→`experienceLevel`, `onboardedAt:true`. Ohne Anmeldung lokal; nach der Anmeldung übernehmen Mein Bereich bzw. Konto die Gerätewahl einmal (`VUStart.adopt`, nur solange `onboardedAt` leer ist; Feld `acct` merkt das Konto). Konto · Erfahrung speichert im Konto. |
 | E12 | Einstieg · Checkout-Ablauf Free → Pro | – | #1366 | keine eigene Oberfläche (E03 → E04 → E06) |
 | D01 | Discover · Übersicht | fertig | #1367 | Swipen-Karte ohne „400“ (Feed nicht auf der Startseite geladen); Index/Kurse in Anzeigewährung |
 | D02 | Discover · Welten | fertig | #1367 | große Karte „Zum Einstieg“ statt „Meistgeöffnet“ (keine Nutzungsdaten) |
@@ -215,7 +215,7 @@ Steuerung (Owner, 04.11.2026): Mockups sind verbindlich (Reihenfolge, Abstände,
 
 | # | Zusatz | Baut | Stand | Notiz |
 |---|---|---|---|---|
-| Z1 | Erster Start: Ziel, Erfahrung, erste Aktien; Konto-Einstellung | D (E11) + `workers/vu-account` | fertig (#1359) | `settings.experienceLevel` beginner/advanced/pro, `settings.goal` vorsorge/aktie/ideen/strategien, `settings.onboardedAt` (PATCH `true`, Server setzt Zeit); Produktion bleibt aus |
+| Z1 | Erster Start: Ziel, Erfahrung, erste Aktien; Konto-Einstellung | D (E11) + `workers/vu-account` | fertig (#1359, Seiten-Anbindung D4-Z1) | `settings.experienceLevel` beginner/advanced/pro, `settings.goal` vorsorge/aktie/ideen/strategien, `settings.onboardedAt` (PATCH `true`, Server setzt Zeit); Produktion bleibt aus |
 | Z2 | Eine Aktienadresse `/aktie/<T>` mit Weiterleitungen | D | fertig (#1353) | Herkunftswelt bestimmt Perspektive und Leiste |
 | Z3 | Gespeicherte Suchen im Konto | D (Q02, Screener, T04) + Konto | fertig (#1359, Seiten D4-Z3) | `GET/POST/PATCH /v1/searches`, `POST /v1/searches/remove`; Welt quant/screener/technical/fundamental/discover; 50 je Konto; S04, Q02, T04 angebunden über `konto/saved-searches.js` (im Konto gelöschte Suchen werden auf dem Gerät nur entkoppelt, nicht gelöscht) |
 | Z4 | Benachrichtigungen | Konto + Erzeuger | „bald“ | Versandweg braucht Owner-Freigabe |

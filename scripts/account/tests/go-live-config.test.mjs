@@ -7,7 +7,7 @@ import {join} from 'node:path';
 import {goLiveConfig} from '../go-live-config.mjs';
 
 const repo = new URL('../../../', import.meta.url).pathname;
-function copy({clean = false} = {}) {
+function copy({clean = false, open = false} = {}) {
   const root = mkdtempSync(join(tmpdir(), 'vu-golive-'));
   mkdirSync(join(root, 'workers/vu-account/src/legal'), {recursive: true});
   copyFileSync(join(repo, 'workers/vu-account/wrangler.toml'), join(root, 'workers/vu-account/wrangler.toml'));
@@ -17,13 +17,19 @@ function copy({clean = false} = {}) {
     const at = texts.indexOf('export const DOCS');
     texts = texts.slice(0, at) + texts.slice(at).replace(/(OPEN|CHECK)\((['`])[^'`]*\2\)/g, "'geprueft'");
   }
+  if (open) {
+    // Entwurf simuliert: eine offene Stelle in DOCS und Status zurueck auf Entwurf.
+    const at = texts.indexOf('export const DOCS');
+    texts = texts.slice(0, at).replace(/LEGAL_STATUS = '[^']*'/, "LEGAL_STATUS = 'entwurf'").replace(/LEGAL_VERSION = '[^']*'/, "LEGAL_VERSION = 'vu-recht-2026-11-05-entwurf-4'")
+      + texts.slice(at).replace("title: 'Impressum',", "title: 'Impressum [[OFFEN: Angabe]]',");
+  }
   writeFileSync(join(root, 'workers/vu-account/src/legal/texts.mjs'), texts);
   return root;
 }
 const read = (root, f) => readFileSync(join(root, f), 'utf8');
 
 test('Entwuerfe mit offenen Stellen: keine Freigabe, keine Datei geaendert', () => {
-  const root = copy();
+  const root = copy({open: true});
   const before = read(root, 'workers/vu-account/wrangler.toml');
   assert.throws(() => goLiveConfig({root, legalVersion: 'vu-recht-2026-11-10-1', tax: 'automatic', checkout: 'public'}), /OFFEN/);
   assert.throws(() => goLiveConfig({root, checkout: 'public'}), /Nicht zulaessig/);
@@ -44,7 +50,7 @@ test('nach der Abnahme: Texte freigegeben, Fassung bestaetigt, Steuer, oeffentli
 });
 
 test('Probelauf schreibt nichts; Brevo allein ist ohne Rechtsfreigabe zulaessig', () => {
-  const root = copy();
+  const root = copy({open: true});
   const before = read(root, 'workers/vu-account/wrangler.toml');
   goLiveConfig({root, brevoSync: 'true', dryRun: true});
   assert.equal(read(root, 'workers/vu-account/wrangler.toml'), before);

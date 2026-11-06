@@ -14,11 +14,11 @@ test("die Kopie in vu-ui.js und site-navigation.js entspricht assets/legal-notic
   execFileSync(process.execPath, ["scripts/legal/sync-legal-notices.mjs", "--check"], { stdio: "pipe" });
 });
 
-test("vor der Freigabe liefert VUUI.legal nichts", () => {
+test("freigeschaltet (06.11.2026): VUUI.legal liefert jeden Hinweis mit Text", () => {
   const U = require("../../assets/vu-ui.js");
-  assert.equal(json.legalApproved === true, false, "dieser Test erwartet den Entwurfsstand; nach der Freigabe anpassen");
-  for (const k of Object.keys(json.notices)) assert.equal(U.legal(k), "", k);
-  assert.equal(U.legalNotice("footer"), null);
+  assert.equal(json.legalApproved, true, "Freischaltung 06.11.2026 (RECHTLICHE_ABNAHME A15)");
+  for (const [k, n] of Object.entries(json.notices)) assert.ok(U.legal(k).includes('data-legal="' + k + '"') && U.legalNotice(k).text === n.text, k);
+  assert.ok(U.legalNotice("footer"));
 });
 
 test("nach der Freigabe trägt jeder Hinweis den Text und die Links der JSON-Datei", () => {

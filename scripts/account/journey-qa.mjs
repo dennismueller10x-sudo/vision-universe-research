@@ -408,10 +408,16 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   const {ctx, page} = await context('mobile', 'dark');
   for (const p of ['/rechtliches/', '/rechtliches/agb', '/rechtliches/widerrufsbelehrung', '/rechtliches/datenschutz', '/rechtliches/impressum']) {
     await page.goto(base + p);
-    check((await page.textContent('.draft')).includes('noch nicht rechtlich freigegeben'), `${p}: als Entwurf gekennzeichnet`);
+    // Freigeschaltet am 06.11.2026 (vu-recht-2026-11-06-1): kein Entwurfsbanner, keine offenen Stellen mehr.
+    check(await page.locator('.draft, mark.open').count() === 0, `${p}: freigegeben, ohne Entwurfsbanner und offene Stellen`);
     const r = await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1);
     check(r, `${p}: kein waagrechter Ueberlauf (mobil)`);
   }
+  await page.goto(base + '/kontakt');
+  check((await page.textContent('h1')) === 'Kontakt' && await page.locator('textarea[name=message]').count() === 1, 'Kontaktformular erreichbar');
+  check(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1), '/kontakt: kein waagrechter Ueberlauf (mobil)');
+  check(await page.locator('input[name=website]').evaluate(e => e.getBoundingClientRect().right <= 0), '/kontakt: Honeypot ausserhalb des Bildschirms');
+  await shot(page, 'recht-00-kontakt');
   await page.goto(base + '/widerrufen');
   check((await page.textContent('h1')) === 'Vertrag widerrufen', 'Widerrufsfunktion: Beschriftung „Vertrag widerrufen“');
   await page.fill('input[name=fullName]', 'QA Widerruf');

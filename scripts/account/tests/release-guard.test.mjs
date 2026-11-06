@@ -4,13 +4,14 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {desiredState, liveState, sensitiveChanges} from '../release-guard.mjs';
 import {productionVars} from '../check-public-checkout.mjs';
-import {LEGAL_VERSION} from '../../../workers/vu-account/src/legal/texts.mjs';
+import {LEGAL_VERSION, LEGAL_STATUS} from '../../../workers/vu-account/src/legal/texts.mjs';
 
 const vars = productionVars(readFileSync(new URL('../../../workers/vu-account/wrangler.toml', import.meta.url), 'utf8'));
 // /v1/health eines laufenden Workers, der genau die eingecheckte Konfiguration hat (tax je nach wrangler.toml).
 const TAX = vars.STRIPE_TAX_MODE === 'automatic' ? 'automatic' : 'none';
 const OTHER_TAX = TAX === 'automatic' ? 'none' : 'automatic';
-const healthToday = {state: 'OK', checkout: 'testers', legal: 'entwurf', legalApproved: false, autoProcess: false, newsletter: false, contactSync: false, tax: TAX};
+const LEGAL_OK = LEGAL_STATUS === 'freigegeben' && vars.VU_LEGAL_APPROVED === LEGAL_VERSION;
+const healthToday = {state: 'OK', checkout: 'testers', legal: LEGAL_STATUS, legalApproved: LEGAL_OK, autoProcess: false, newsletter: false, contactSync: false, tax: TAX};
 
 test('heutige Konfiguration gegen den heute laufenden Worker: nichts Zahlungsrelevantes -> automatisch', () => {
   assert.deepEqual(sensitiveChanges(desiredState(vars), liveState(healthToday, {mode: 'live'})), []);
@@ -23,8 +24,17 @@ test('jede zahlungsrelevante Aenderung wird erkannt', () => {
   assert.deepEqual(keys({STRIPE_TAX_MODE: OTHER_TAX}), ['tax']);
   assert.deepEqual(keys({STRIPE_LIVE_MODE_APPROVED: 'false'}), ['liveApproved']);
   assert.deepEqual(keys({VU_CANCELLATION_AUTO_PROCESS: 'true'}), ['autoProcess']);
-  // "public" mit Entwurfstexten bleibt wirksam "testers" - keine Aenderung am laufenden Verhalten.
-  assert.deepEqual(keys({VU_CHECKOUT_ACCESS: 'public', VU_LEGAL_APPROVED: LEGAL_VERSION}), []);
+  // "public" ohne bestaetigte Fassung bleibt wirksam "testers" - keine Aenderung am laufenden Verhalten.
+  assert.deepEqual(keys({VU_CHECKOUT_ACCESS: 'public', VU_LEGAL_APPROVED: ''}), LEGAL_OK ? ['legalApproved'] : []);
+  // Mit freigegebenen Texten wird "public" wirksam und braucht die Owner-Freigabe.
+  if (LEGAL_OK) assert.ok(sensitiveChanges(desiredState({...vars, VU_CHECKOUT_ACCESS: 'public'}), live).some(c => c.key === 'checkout' && c.approval));
+});
+
+test('Freischaltung der Rechtstexte (06.11.2026) gegen den Entwurf-Worker: automatisch, Checkout unveraendert', () => {
+  const live = liveState({...healthToday, legal: 'entwurf', legalApproved: false}, {mode: 'live'});
+  const changes = sensitiveChanges(desiredState(vars), live);
+  assert.deepEqual(changes.map(c => [c.key, c.approval]), LEGAL_OK ? [['legalApproved', false]] : []);
+  assert.equal(desiredState(vars).checkout, 'testers');
 });
 
 test('nicht zahlungsrelevant: Brevo, Newsletter, Listen, Code', () => {

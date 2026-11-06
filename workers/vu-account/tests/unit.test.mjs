@@ -327,7 +327,8 @@ test('Rechtstexte: sichere Darstellung, keine Shopify-Links, Firmendaten nur aus
   const all = JSON.stringify(DOCS);
   assert.ok(!/policies\/(terms-of-service|refund-policy|privacy-policy)|myshopify|Shopify Payments/.test(all), 'keine Shopify-Texte');
   assert.deepEqual([COMPANY.name, COMPANY.register, COMPANY.taxNumber], ['RAM Consulting UG (haftungsbeschränkt)', 'Amtsgericht Stuttgart, HRB 803400', '65204/71409']);
-  assert.equal(COMPANY.vatId, null, 'USt-IdNr. nicht erfunden');
+  assert.equal(COMPANY.vatId, 'DE461100952', 'USt-IdNr. laut Owner 06.11.2026');
+  assert.equal(COMPANY.phone, null, 'keine Telefonnummer erfunden');
   assert.match(plainText('widerrufsbelehrung'), /Vertrag widerrufen \(https:\/\/konto\.visionuniverse\.de\/widerrufen\)/);
   for (const k of ['impressum', 'agb', 'widerrufsbelehrung', 'widerrufsformular', 'datenschutz', 'newsletter', 'risikohinweise', 'methodik']) assert.ok(DOCS[k].blocks.length > 2, k);
   // Eine freigegebene Fassung darf keine offenen Stellen mehr enthalten; ein Entwurf muss als Entwurf erkennbar sein.
@@ -360,20 +361,20 @@ test('Rechtstexte Fassung 4: Analyse-Software ohne Empfehlungen, Risikohinweise,
   // Jeder interne Link in den Texten zeigt auf eine vorhandene Seite
   const known = new Set(Object.values(LINKS));
   for (const [k, d] of Object.entries(DOCS)) for (const m of JSON.stringify(d).matchAll(/\]\((\/[^)#]*)\)/g)) assert.ok(known.has(m[1]), `${k}: ${m[1]}`);
-  // Keine Freigabe: Entwurf bleibt Entwurf
-  assert.equal(status, 'entwurf');
+  // Freigeschaltet am 06.11.2026 (Owner); Anwaltspruefung offen (docs/legal/ANWALTSMAPPE.md)
+  assert.equal(status, 'freigegeben');
   // Eigene Texte versprechen nichts und fordern nicht zum Kauf auf (Verneinungen sind erlaubt)
   const own = JSON.stringify([DOCS.agb, DOCS.risikohinweise, DOCS.methodik]);
   for (const w of ['garantiert', 'risikolos', 'Kaufempfehlung', 'Kaufsignal', 'jetzt kaufen']) assert.ok(!own.includes(w), w);
 });
 
-test('Hinweisdatei assets/legal-notices.json: Entwurf, Pflichtstellen vorhanden, Links auf Rechtsseiten', async () => {
+test('Hinweisdatei assets/legal-notices.json: freigeschaltet, Pflichtstellen vorhanden, Links auf Rechtsseiten', async () => {
   const fs = await import('node:fs');
   const {LINKS, LEGAL_BASE} = await import('../src/legal/texts.mjs');
   const n = JSON.parse(fs.readFileSync(new URL('../../../assets/legal-notices.json', import.meta.url), 'utf8'));
   assert.equal(n.schemaVersion, 'vu-legal-notices-1');
-  assert.equal(n.status, 'entwurf');
-  assert.equal(n.legalApproved, false);
+  assert.equal(n.status, 'freigegeben');
+  assert.equal(n.legalApproved, true);
   for (const k of ['footer', 'stock', 'ranking', 'setup', 'backtest', 'modelPortfolio', 'thirdParty', 'ai', 'editorial']) {
     assert.ok(n.notices[k] && n.notices[k].text.length > 40, k);
     for (const l of n.notices[k].links || []) assert.ok(n.links[l], `${k}: Link ${l}`);
@@ -409,4 +410,56 @@ test('Brevo: DOI-Vorlage wird ueber den Einzelabruf geprueft (doiTemplate fehlt 
   };
   assert.equal(await createBrevo({apiKey: 'k', fetchImpl}).doiTemplateId(), 8);
   assert.ok(calls.includes('/v3/smtp/templates/8'));
+});
+
+test('Kontaktformular (/kontakt): Versand an die Impressumsadresse ueber Brevo, Honeypot, Herkunft, Ratenbegrenzung', async () => {
+  const sent = [];
+  const fetchImpl = async (url, init) => { sent.push({url, body: JSON.parse(init.body)}); return new Response('{}', {status: 201}); };
+  const api = 'https://konto.example';
+  const app = createApp({env: {VU_ACCOUNT_API_ORIGIN: api, BREVO_API_KEY: 'xkeysib-test', VU_MAIL_SENDER: 'konto@example.test'}, fetchImpl, log: () => {}});
+  const post = (fields, {origin = api, ip = '9.9.9.9'} = {}) => app.handle(new Request(api + '/kontakt', {method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded', Origin: origin, 'CF-Connecting-IP': ip}, body: new URLSearchParams(fields).toString()}));
+  const get = await app.handle(new Request(api + '/kontakt'));
+  const html = await get.text();
+  assert.equal(get.status, 200);
+  assert.ok(!/<script/i.test(html));
+  for (const re of [/name="name"/, /name="email"/, /<textarea name="message"/, /name="website"/, /innerhalb von 1–2 Werktagen/]) assert.match(html, re);
+  const ok = await post({name: 'Erika Muster', email: 'Erika@Example.test', message: 'Hallo,\nwie geht das?'});
+  assert.equal(ok.status, 200);
+  assert.match(await ok.text(), /Nachricht gesendet/);
+  assert.equal(sent.length, 1);
+  assert.match(sent[0].url, /\/v3\/smtp\/email$/);
+  assert.deepEqual(sent[0].body.to, [{email: 'info@visionuniverse.de'}]);
+  assert.deepEqual(sent[0].body.replyTo, {email: 'erika@example.test'});
+  assert.match(sent[0].body.textContent, /wie geht das\?/);
+  assert.match(sent[0].body.subject, /^Kontaktformular: Erika Muster$/);
+  const bot = await post({name: 'Bot', email: 'bot@example.test', message: 'x', website: 'http://spam'});
+  assert.equal(bot.status, 200, 'Honeypot: Antwort wie Erfolg');
+  assert.equal(sent.length, 1, 'Honeypot: nichts versendet');
+  assert.equal((await post({name: 'X', email: 'x@example.test', message: 'x'}, {origin: 'https://evil.example'})).status, 403);
+  assert.match(await (await post({name: '', email: 'x@example.test', message: 'x'})).text(), /Bitte gib deinen Namen an/);
+  assert.match(await (await post({name: 'X', email: 'kaputt', message: 'x'})).text(), /gültige E-Mail-Adresse/);
+  assert.match(await (await post({name: 'X', email: 'x@example.test', message: ' '})).text(), /Bitte schreib eine Nachricht/);
+  for (let i = 0; i < 5; i++) await post({name: 'Viel', email: `v${i}@example.test`, message: 'm'}, {ip: '7.7.7.7'});
+  const limited = await post({name: 'Viel', email: 'v9@example.test', message: 'm'}, {ip: '7.7.7.7'});
+  assert.equal(limited.status, 429);
+  assert.match(await limited.text(), /Zu viele Anfragen/);
+  const failing = createApp({env: {VU_ACCOUNT_API_ORIGIN: api, BREVO_API_KEY: 'xkeysib-test', VU_MAIL_SENDER: 'konto@example.test'},
+    fetchImpl: async () => new Response('{}', {status: 500}), log: () => {}});
+  const down = await failing.handle(new Request(api + '/kontakt', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded', Origin: api},
+    body: new URLSearchParams({name: 'X', email: 'x@example.test', message: 'm'}).toString()}));
+  assert.equal(down.status, 503);
+  assert.match(await down.text(), /direkt an info@visionuniverse\.de/, 'bei Fehler: E-Mail-Weg genannt');
+});
+
+test('Impressum: E-Mail und Kontaktformular als schnelle Kontaktwege, USt-IdNr., Datenschutzbeauftragter', async () => {
+  const {plainText, LINKS} = await import('../src/legal/texts.mjs');
+  const imp = plainText('impressum');
+  assert.match(imp, /E-Mail: info@visionuniverse\.de/);
+  assert.match(imp, /Kontaktformular: konto\.visionuniverse\.de\/kontakt/);
+  assert.ok(!/Telefon/.test(imp), 'keine Telefonzeile ohne Nummer');
+  assert.match(imp, /Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: DE461100952/);
+  assert.match(plainText('datenschutz'), /Datenschutzbeauftragter ist nicht benannt, weil weniger als 20 Personen.*§ 38 Abs\. 1 BDSG/);
+  assert.ok(!/Telefon/.test(plainText('widerrufsbelehrung')), 'Telefon nur, sofern vorhanden');
+  assert.equal(LINKS.kontakt, '/kontakt');
 });
