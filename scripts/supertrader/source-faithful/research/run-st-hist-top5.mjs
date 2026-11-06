@@ -35,10 +35,11 @@ import * as FID from './kk-breakout-fidelity.mjs';
 import * as MF from './minervini-fidelity.mjs';
 import * as MX from './minervini-execution.mjs';
 import * as ML from './minervini-lifecycle.mjs';
+import { runKkStHist, loadKkCache, ST_HIST_KK_VERSION } from './st-hist-kk.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.10.0';
+export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.11.0'; // 1.11.0 (Strang H, 06.11.2026): Modus rest8 = übrige Methoden C04–C07, C11, C13 auf demselben Weg
 /** Delisting-Erlös als Sensitivität (Prüfung Strang E): echte Neuläufe mit den vorhandenen Abrechnungsszenarien der Engines
  *  (validation/portfolio.mjs SCENARIOS, Wiederanlage inklusive). 100 % = Referenz S0_LAST_PRICE, 70 % = S1_MINUS_30,
  *  S2_DISTRESS_ZERO = 0 % bei Insolvenz-Delisting, sonst 70 %. Ein Szenario „0 % für alle“ hat die Engine nicht (eine neue
@@ -46,6 +47,10 @@ export const ST_HIST_TOP5_VERSION = 'st-hist-top5-1.10.0';
  *  leerem Konto Verluste über 100 % und ist ersetzt. */
 export const DELISTING_PROCEEDS = Object.freeze([['DELIST_100', 'S0_LAST_PRICE'], ['DELIST_70', 'S1_MINUS_30'], ['DELIST_DISTRESS_0', 'S2_DISTRESS_ZERO']]);
 export const TOP5 = Object.freeze(['TURTLE_S1', 'TURTLE_S2', 'DARVAS', 'KK_BREAKOUT', 'BUYABLE_GAP_UP']);
+/** Strang H (06.11.2026): die übrigen Methoden mit SF6-Referenz (C04, C05, C06, C07, C11, C13), unverändert wie die Top 5
+ *  gerechnet. C09/C10 haben keine Tagesreferenz (IEX-Minuten ab 2017) und laufen über run-kk-intraday.mjs --st-hist. */
+export const REST8_DAILY = Object.freeze(['WEINSTEIN_INVESTOR', 'WEINSTEIN_TRADER', 'MINERVINI_SEPA', 'MINERVINI_POWER_PLAY', 'POCKET_PIVOT', 'HOLY_GRAIL_W_RAS97']);
+export const methodsForMode = (mode) => (mode === 'rest8' ? REST8_DAILY : TOP5);
 export const LABEL = Object.freeze({ evidenceKind: 'HISTORICAL_RESEARCH_BACKTEST', label: 'Forschung, nicht zertifiziert', certification: 'DIAGNOSTIC_NOT_CERTIFIED', productionApproved: false, performanceClaim: 'NONE', publication: 'OWNER_DECISION_REQUIRED' });
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz';
 const INITIAL_CAPITAL = 100000;
@@ -316,7 +321,7 @@ export function minerviniGoldenRun(ds, { window = L.WINDOW, costLevels = SF6_VAL
 }
 
 export function publicPart(result) {
-  return { schema: 'st-hist-top5-public-1.1.0', ...LABEL, status: result.status ?? null, receipt: result.receipt, population: result.population ?? null, methods: Object.fromEntries(Object.entries(result.A).map(([k, m]) => [k, { candidateId: m.candidateId, tradesRef: m.costs.REF.trades, tradesSha256Ref: m.costs.REF.tradesSha256, auditPass: m.audit ? m.audit.pass : null, auditViolations: m.audit ? m.audit.violations : null, missedStopCheck: m.audit ? m.audit.missedStopCheck : null }])), quarantine: result.quarantine.A, universeB: result.B ? 'COMPUTED' : 'NOT_REQUESTED' };
+  return { schema: 'st-hist-top5-public-1.1.0', ...LABEL, status: result.status ?? null, receipt: result.receipt, population: result.population ?? null, methods: Object.fromEntries(Object.entries(result.A).map(([k, m]) => [k, { candidateId: m.candidateId, tradesRef: m.costs.REF.trades, tradesSha256Ref: m.costs.REF.tradesSha256, auditPass: m.audit ? m.audit.pass : null, auditViolations: m.audit ? m.audit.violations : null, missedStopCheck: m.audit ? m.audit.missedStopCheck : null }])), quarantine: result.quarantine.A, universeB: result.B ? 'COMPUTED' : 'NOT_REQUESTED', ...(result.KK_PUBLIC ? { kk: result.KK_PUBLIC } : {}) };
 }
 
 async function main() {
@@ -389,11 +394,22 @@ async function main() {
     log('done (edge-export)');
     return;
   }
-  const result = { schema: 'st-hist-top5-result-1.1.0', ...LABEL, window: { name: L.WINDOW_NAME, ...L.WINDOW }, costLevels: SF6_VALIDATION_PROTOCOL.costLevels, quarantine: { A: qa.census }, population: { A: populationCensus(dsA) }, A: runTop5(qa.ds, { log }) };
+  const mode = arg('--mode') || 'backtest';
+  if (!['backtest', 'rest8'].includes(mode)) die('MODE_INVALID');
+  const methods = methodsForMode(mode);
+  const result = { schema: 'st-hist-top5-result-1.1.0', ...LABEL, mode, methods, window: { name: L.WINDOW_NAME, ...L.WINDOW }, costLevels: SF6_VALIDATION_PROTOCOL.costLevels, quarantine: { A: qa.census }, population: { A: populationCensus(dsA) }, A: runTop5(qa.ds, { methods, log }) };
   // Sensitivität DQ-K5: dieselben Referenzen ohne Quarantäne (Referenzkosten; Audit nur in den Rahmen A und B)
-  result.KK_FID1 = kkFidelityRun(qa.ds, { log });
-  result.KK_FID1.fid4Verdict = fid4Verdict(result.KK_FID1);
-  result.A_NO_DQK5 = runTop5(dsA, { costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF'), audit: false, log });
+  if (mode === 'backtest') { result.KK_FID1 = kkFidelityRun(qa.ds, { log }); result.KK_FID1.fid4Verdict = fid4Verdict(result.KK_FID1); }
+  result.A_NO_DQK5 = runTop5(dsA, { methods, costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF'), audit: false, log });
+  if (mode === 'rest8') {
+    // C09/C10 aus dem privaten IEX-Cache (nur lesen, 0 Anfragen), auf demselben DQ-K5-Datensatz
+    const { createS3DriverFromEnv } = await import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs'));
+    const drv = createS3DriverFromEnv(process.env); // derselbe private Eimer wie run-kk-intraday.mjs, nur lesend
+    const cache = await loadKkCache((k) => drv.get(pit.mine.seriesPrefix + k));
+    if (!Object.keys(cache.minutes).length) die('KK_CACHE_EMPTY', 3);
+    const kk = runKkStHist(qa.ds, { cache, costLevels: SF6_VALIDATION_PROTOCOL.costLevels, log });
+    result.KK = kk.sealed; result.KK_PUBLIC = kk.pub;
+  }
   if (arg('--v13-series') && arg('--v13-raw')) {
     const v13 = S.loadV13Additions({ root: ROOT, seriesDir: arg('--v13-series'), rawDir: arg('--v13-raw') });
     const aCik = new Map(Object.entries(secPit).filter(([, f]) => f && f.cik).map(([k, f]) => [k, String(Number(f.cik))]));
@@ -402,10 +418,11 @@ async function main() {
     const qb = S.applyQuarantine(dsB, { mode: 'DQ-K5-BOOK', addedIds });
     log(`universe B: +${census.added} chains`);
     result.universeB = census; result.quarantine.B = qb.census; result.population.B = populationCensus(dsB);
-    result.B = runTop5(qb.ds, { costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF'), log });
+    result.B = runTop5(qb.ds, { methods, costLevels: SF6_VALIDATION_PROTOCOL.costLevels.filter((c) => c.id === 'REF'), log });
   }
-  result.receipt = { version: ST_HIST_TOP5_VERSION, snapshotId, datasetSha256, datasetVerified: v.datasetVerified, codeVersionChanged: !!v.codeVersionChanged, engineCodeSha256: engineCodeSha256(), runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
-  result.receipt.resultSha256 = sha({ A: result.A, B: result.B ?? null, A_NO_DQK5: result.A_NO_DQK5 });
+  result.receipt = { version: ST_HIST_TOP5_VERSION, mode, snapshotId, datasetSha256, datasetVerified: v.datasetVerified, codeVersionChanged: !!v.codeVersionChanged, engineCodeSha256: engineCodeSha256(), runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
+  result.receipt.resultSha256 = sha({ A: result.A, B: result.B ?? null, A_NO_DQK5: result.A_NO_DQK5, KK: result.KK ?? null });
+  if (result.KK) result.receipt.stHistKk = ST_HIST_KK_VERSION;
   const auditPass = auditPassAll({ A: result.A, ...(result.B ? { B: result.B } : {}) });
   result.status = auditPass ? 'COMPLETE' : 'EXECUTION_AUDIT_FAILED';
   fs.mkdirSync(OUT, { recursive: true });
