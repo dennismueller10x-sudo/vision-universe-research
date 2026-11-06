@@ -272,7 +272,7 @@ Marktdatendeckung. Der Overlap wird erst berechnet, wenn die kanonische
 Quelle eingebunden ist.
 
 Die vollständigen Zahlen stehen in
-`docs/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md` und maschinenlesbar unter
+`docs/archiv/2026/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md` und maschinenlesbar unter
 `quant/data/fundamentals/`.
 
 ---

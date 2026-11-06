@@ -1,0 +1,84 @@
+{
+ "schema": "vu-edge2-public-1.0.0",
+ "label": "Forschung, nicht zertifiziert",
+ "version": "edge2-run-1.0.0",
+ "protocolSha256": "435f50f97306a5c2eb34518bed6210da11d04cd40441b71b69cb2b3dc4c2fb49",
+ "smoke": false,
+ "window": [
+  "2016-01-01",
+  "2026-10-02"
+ ],
+ "states": [
+  [
+   "E2-T1-VM-N20-ZONE",
+   "RUN"
+  ],
+  [
+   "E2-T1-VM-N10-ZONE",
+   "RUN"
+  ],
+  [
+   "E2-T1-ML-N20-ZONE",
+   "RUN"
+  ],
+  [
+   "E2-T1-ML-N10-ZONE",
+   "RUN"
+  ],
+  [
+   "E2-T1-DQ-N20-ZONE",
+   "RUN"
+  ],
+  [
+   "E2-T1-VM-N20-NOW",
+   "RUN"
+  ],
+  [
+   "E2-T1-ML-N20-NOW",
+   "RUN"
+  ],
+  [
+   "E2-T1-DQ-N20-NOW",
+   "RUN"
+  ],
+  [
+   "E2-T2-VM-N20-TREND50",
+   "RUN"
+  ],
+  [
+   "E2-T2-VM-N20-VOL15",
+   "RUN"
+  ],
+  [
+   "E2-T2-VM-N20-TREND50-VOL15",
+   "RUN"
+  ],
+  [
+   "E2-T2-VM-N20-ABSMOM12",
+   "RUN"
+  ]
+ ],
+ "tallyPrimary": {
+  "schlägt nicht": 12,
+  "teil2: nicht bestätigt": 4
+ },
+ "tallyDqK5": {
+  "schlägt nicht": 12,
+  "teil2: nicht bestätigt": 4
+ },
+ "dqK5Flags": 814,
+ "zones": {
+  "analyses": 10596,
+  "hits": 992,
+  "noData": 0,
+  "tooShort": 0
+ },
+ "paper": {
+  "id": "EDGE2-PAPER",
+  "variant": "E2-T1-DQ-N20-ZONE",
+  "rule": "Beste Teil-1-Variante = höchster Netto-Sharpe (primär, ohne DQ) im Fenster, dann Netto-CAGR, dann Varianten-ID. Sie geht unabhängig vom Urteil als Papierdepot vorwärts. Die Auswahl steht im öffentlichen Teil (nur die ID)."
+ },
+ "privateSha256": "570489103bff447612ec102939faa0f5b032a2569f2360eb34625de6fcc372c9",
+ "resultSha256": "a1e788a8f287edeec75ac108ccc2dacf050416d82ff51f59e7acf797d3295787",
+ "runId": "42227928882"
+}

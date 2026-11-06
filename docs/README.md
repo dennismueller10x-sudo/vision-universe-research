@@ -7,3 +7,16 @@ Hier beginnt die Orientierung. Je Produkt gibt es einen Einstieg; ergänzende Fa
 Prüfung: `node scripts/quality/check-doc-links.mjs` oder `node --test core/tests/doc-links.test.mjs`, jeweils vom Repo-Root. Geprüft werden relative Datei-/Verzeichnisziele in versionierten Markdown-Dateien, einschließlich Referenzlinks, Bildern und eingebetteten HTML-Links. Externe URLs und Fragmentinhalte sind nicht Teil dieser Dateiprüfung.
 
 Unveränderliche Quell-Snapshots behalten ihre Originalpfade im Text. Der Prüfer löst sie über das vorhandene Provenienzmanifest auf die erhaltenen Archivdateien auf, sofern alle SHA-256-Prüfsummen stimmen. Das übernimmt keine fachliche Freigabe.
+**Quant:** [QUANT_FINAL_HANDOVER.md](quant/QUANT_FINAL_HANDOVER.md). Produktstand, Backtests, Portfolio-Standard und offene Entscheidungen.
+
+**Supertrader:** [SUPERTRADER_9_HANDOVER.md](SUPERTRADER_9_HANDOVER.md). Methoden, Tagesbetrieb und Nachweise; ältere Sitzungsstände sind im Archiv.
+
+**Technical:** [TECHNICAL_WORLD_PROGRESS.md](technical/TECHNICAL_WORLD_PROGRESS.md). Fortschritt und offene Aufgaben; der gesetzte Completion-Plan bleibt ein verlinkter Fachplan.
+
+**Discover:** [VU_DISCOVER_ARCHITECTURE.md](VU_DISCOVER_ARCHITECTURE.md). Produktarchitektur, Datenquellen und weiterführende Fachbelege zur Entdeckungsschicht.
+
+**Fundamental:** [FUNDAMENTAL.md](FUNDAMENTAL.md). Ansichten, Kennzahlen, SEC-Daten und Datenabdeckung.
+
+**Konten:** [ACCOUNTS_AND_SUBSCRIPTIONS.md](accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md). Architektur und weiterführende Einrichtung, Freigaben, Preise, Nutzerführung und Betrieb.
+
+**Recht:** [EINORDNUNG.md](legal/EINORDNUNG.md). Verbindliche Einordnung mit bestehenden Links auf Wortwahl, Befunde und Anwaltsmappe. Die geschützten Rechtstexte bleiben unverändert.

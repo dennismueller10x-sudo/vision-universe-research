@@ -42,7 +42,7 @@ scripts/discover/verify-discover-data.mjs   Nachrechnung, ~7.600 Pruefungen
 scripts/discover/browser-qa.mjs             21 Browser-Pruefungen (Playwright, ausserhalb CI)
 .github/workflows/discover-ci.yml           Eigener Workflow
 docs/VU_DISCOVER_ARCHITECTURE.md            Architektur
-docs/VU_DISCOVER_DELIVERY_REPORT.md         dieser Bericht
+docs/archiv/2026/VU_DISCOVER_DELIVERY_REPORT.md         dieser Bericht
 ```
 
 ## 3. Welche bestehenden Komponenten/APIs wurden wiederverwendet?
