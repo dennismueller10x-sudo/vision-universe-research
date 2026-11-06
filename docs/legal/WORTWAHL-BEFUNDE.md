@@ -26,7 +26,7 @@ umgesetzt sein, damit die Linie „keine Empfehlungen, keine Anzeige bei der BaF
 - keine Ziele und kein Chance/Risiko,
 - Musterdepots nicht als heutige Kaufliste,
 - Analysten-Labels entfernen oder die Analysten-Seite abschalten,
-- Reels ohne Meinung zu Einzelaktien,
+- Reels bleiben nach Owner-Entscheidung vom 06.11. unverändert,
 - AI Atlas lehnt Kauffragen ab,
 - kein Gesamturteil als Wort.
 

@@ -153,3 +153,4 @@ Regel: Kein Setup wird als Signal gezeigt, das S2 nicht bestanden hat. Alle gete
 - **Keine Provisionen oder Partnerverträge** (Stand 05.11.2026).
 - **Private Bestände:** neutraler Hinweis, dass Gesellschafter und Mitarbeiter privat in Wertpapieren investiert sein können, die die Software anzeigt; Ergebnisse entstehen regelbasiert ohne Einfluss darauf.
 - **Rechtstexte liegen auf der Webseite.** Die App enthält nur die Pflicht-Verlinkungen (Impressum, Datenschutz, Nutzungsbedingungen, Risikohinweise) und keine eigenen Rechtstexte.
+- **Owner-Entscheidung 06.11.: Reels bleiben unverändert** (Social Media, nicht Teil der App; Restrisiko in `docs/legal/EINORDNUNG.md` §0).

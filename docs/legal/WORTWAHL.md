@@ -48,7 +48,7 @@ Maschinenlesbar mit denselben Regeln: `assets/legal-notices.json`, Feld `wording
 | Signal, Live-Signal, Push „Signal“ | Regel-Ergebnis der Methode „…“ (Regelversion, Stand) – keine Push-Meldungen als Signal | Plan §11: keine Signale |
 | Konsens-Ranking (Analysten) | Übersicht der Analysten-Einstufungen (Angabe Dritter) | Bestenliste |
 | „Was Profis kaufen“ | „Was große Fonds gemeldet haben (13F)“ | lädt zum Nachmachen ein |
-| „🐂 oder 🐻?“, Meinung zu einer Einzelaktie (Reels) | über Methoden und die Software sprechen, keine Meinung zu einer bestimmten Aktie | Social Media zählt (ESMA); Plan §11 |
+| „🐂 oder 🐻?“, Meinung zu einer Einzelaktie (Reels) | Owner-Entscheidung 06.11.: Reels bleiben unverändert (Restrisiko: EINORDNUNG.md §0) | Social Media zählt (ESMA) |
 
 **Erlaubt und erwünscht:** „keine Empfehlung“, „keine Anlageberatung“, „kein Kursziel“, „Rechenmodell“, „Musterdepot ohne
 echtes Geld“, „Forschung, nicht zertifiziert“, „Datenstand“, „Regelversion“, „erfüllt die Regel“.

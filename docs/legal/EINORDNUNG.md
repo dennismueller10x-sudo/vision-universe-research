@@ -31,11 +31,17 @@ müssen diese Funktionen umgebaut werden, bevor das Produkt öffentlich startet:
 | L2 | Supertrader: „Einstieg bestätigt“, „Vorbereitet · nahe Trigger“, Trigger- und Stop-Kurse je Aktie | Nur „erfüllt die Regel (Stand …)“. Keine handelbaren Kurse als nächster Schritt, keine Nähe-zum-Trigger-Liste als Hervorhebung. | D2 + Supertrader |
 | L3 | Musterdepots und Hausstrategie: heutige Bestände und das Protokoll „Rein/Raus“ live | Als Forschung mit Abstand zeigen, z. B. Bestände mit Verzögerung oder nur als Verlauf im Backtest, nicht als heutige Kaufliste. | D2 + Quant |
 | L4 | Analysten-Seite und der Analysten-Bereich in Fundamental: Konsens „Kaufen/Verkaufen“, Kursziele Dritter | Auch die Weitergabe fremder Empfehlungen fällt unter Art. 20 MAR und § 86 WpHG. Empfehlung: Labels „Kaufen/Halten/Verkaufen“ und „Kursziel-Potenzial“ entfernen oder die Seite abschalten, bis ein Anwalt das geprüft hat. | Owner-Entscheidung, dann D2 |
-| L5 | Reels zu Einzelaktien („🐂 oder 🐻“) | Über Methoden und die Software sprechen, nicht über eine Meinung zu einer bestimmten Aktie. Kein „Kauf?“, keine Kursziele, und nicht kurz nach einem Reel mit der gezeigten Aktie handeln. | Social |
+| L5 | Reels zu Einzelaktien („🐂 oder 🐻“) | **Entfällt. Owner-Entscheidung 06.11.: Reels bleiben unverändert** (Social Media, nicht Teil der App). | – |
 | L6 | AI Atlas | Fragen „soll ich kaufen?“ oder Fragen mit persönlichen Angaben neutral ablehnen; nur Filter und Daten liefern. | vu-ask |
 | L7 | Gesamturteil je Aktie („Überwiegend stark“) | Neutral zählen („4 von 7 Faktoren im oberen Drittel“). Kein Gesamturteil als Wort. | D2 |
 
 **Was danach an Risiko bleibt:**
+- **Reels (L5 entfällt):** Beiträge in sozialen Medien zu einer bestimmten Aktie, etwa die Frage „🐂 oder 🐻?“, kann die
+  Aufsicht als Anlageempfehlung werten (Art. 3 Abs. 1 Nr. 35 und Art. 20 MAR; ESMA-Hinweis von 2021 zu sozialen Medien),
+  auch wenn sie außerhalb der App erscheinen. Für die Einordnung zählt der Inhalt eines Beitrags, nicht der Kanal. Der
+  Betreiber ist derselbe, und Anzeigepflicht sowie Offenlegung (§ 86 WpHG, private Bestände) hängen am Betreiber.
+  Ohne Umbau bleibt das Risiko bestehen. Der Hinweis „Keine Anlageberatung.“ in den Captions ändert die Einordnung
+  nicht. Das ist eine Frage an den Anwalt.
 - Kandidatenlisten („erfüllt die Regel“) und Einstufungen je Aktie kann die Aufsicht trotzdem als *implizite*
   Empfehlung sehen. Das gilt besonders, wenn Vision Universe als Person gilt, deren Haupttätigkeit Bewertungen sind
   (Art. 3 Abs. 1 Nr. 34 Ziff. i MAR).
@@ -58,7 +64,7 @@ Bei diesen Funktionen ist das wahrscheinlich oder zumindest gut vertretbar der F
 - Supertrader-Stufen wie „Einstieg bestätigt“,
 - Musterdepot-Käufe,
 - Einstufungen wie „Überwiegend stark“ je Aktie,
-- Reels zu Einzelaktien.
+- Reels zu Einzelaktien (Owner-Entscheidung 06.11.: bleiben unverändert, Restrisiko siehe §0).
 
 Das ist **nicht verboten und braucht keine BaFin-Erlaubnis.** Es löst aber Pflichten aus:
 - objektive Darstellung,
