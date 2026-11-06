@@ -11,9 +11,11 @@
 // und Datenstand; occurredAt ist der Veroeffentlichungszeitpunkt der neueren Uebersicht. Zwei Laeufe mit denselben
 // Eingaben ergeben byte-gleiche Ausgaben ohne doppelte Ereignisse.
 //
-// Was diese Datei NICHT tut: keine E-Mail, kein Push, kein Versand, kein Lesen von Nutzerdaten, kein Zeitplan.
-// Die Datenart steht in core/registry/domains.json auf PREPARED_DISABLED; solange das gilt, verweigert der Erzeuger das
-// Schreiben an den kanonischen Ort (Exit 3) und schreibt nur nach --out.
+// Was diese Datei NICHT tut: keine E-Mail, kein Push, kein Versand, kein Lesen von Nutzerdaten, kein Netz.
+// Im Betrieb ruft der Release-Bau (scripts/vu2/build-release.mjs) run() mit der zuletzt veroeffentlichten Uebersicht als
+// --before auf und schreibt in die Auslieferung (Datenart watchlistEvents, ACTIVATING; nie ins Repository). Mit
+// previousEvents traegt er die Ereignisse der vorigen Auslieferung im 48-Stunden-Fenster weiter (mergeWindow).
+// Den kanonischen Ort im Repository verweigert der Erzeuger immer (Exit 3): das Artefakt gehoert nur in die Auslieferung.
 import {readFileSync, writeFileSync, existsSync, statSync, mkdirSync} from 'node:fs';
 import {resolve, dirname, join} from 'node:path';
 import {gunzipSync} from 'node:zlib';
@@ -80,7 +82,7 @@ export function buildEvents(beforeDoc, afterDoc) {
   return {
     schemaVersion: SCHEMA, eventSchema: EVENT_SCHEMA.properties.schemaVersion.const, ruleVersion: W.RULE_VERSION,
     generatedAt: afterDoc.generatedAt || null,
-    delivery: { state: 'NONE', note: 'Vorbereitet, keine Zustellung (WATCHLIST.md §7, FREIGABEN.md). Wer ein Ereignis bekommt, entscheidet eine spaetere, freigabepflichtige Stufe.' },
+    delivery: { state: 'APP_PUSH', note: 'Zustellung nur als App-Push (workers/vu-account/src/push.mjs): hoechstens eine gebuendelte Nachricht am Tag, nur fuer Titel der Watchlist, nur mit eingeschalteter Art im Konto und hinterlegtem FCM-Zugang (WATCHLIST.md §7).' },
     before: { generatedAt: beforeDoc.generatedAt || null, count: beforeDoc.cols.i.length, sources: sourcesOf(beforeDoc) },
     after: { generatedAt: afterDoc.generatedAt || null, count: afterDoc.cols.i.length, sources: sourcesOf(afterDoc) },
     counts: { total: events.length, duplicatesDropped: raw.length - events.length, byType: Object.fromEntries(Object.entries(byType).sort()) },
@@ -92,12 +94,30 @@ function registryEntry(root) {
   try { return (JSON.parse(readFileSync(join(root, 'core/registry/domains.json'), 'utf8')).domains || []).find((d) => d.id === DOMAIN_ID) || null; } catch { return null; }
 }
 
-export function run({before, after, out, root = ROOT}) {
+/** Fenster der Auslieferung: neue Ereignisse plus die der vorigen Auslieferung, die nicht aelter als `hours` vor dem neuen
+    Stand sind (mehrere Releases am Tag, der Push-Versand liest die letzten 24 h). Gleiche eventId: die fruehere bleibt. */
+export function mergeWindow(prevDoc, doc, hours = 48) {
+  const ref = Date.parse(doc.generatedAt || ''), keep = [];
+  if (prevDoc && Array.isArray(prevDoc.events) && isFinite(ref))
+    for (const e of prevDoc.events) { const t = Date.parse(e && e.occurredAt || ''); if (isFinite(t) && t <= ref && t > ref - hours * 3600e3 && !validateEvent(e).length) keep.push(e); }
+  const seen = new Map();
+  for (const e of keep.concat(doc.events)) if (!seen.has(e.eventId)) seen.set(e.eventId, e);
+  const events = [...seen.values()].sort((a, b) => String(a.occurredAt).localeCompare(String(b.occurredAt)) ||
+    String(a.ticker || '').localeCompare(String(b.ticker || '')) || a.type.localeCompare(b.type) || a.eventId.localeCompare(b.eventId));
+  const byType = {};
+  for (const e of events) { const k = e.type + '/' + e.subtype; byType[k] = (byType[k] || 0) + 1; }
+  return {...doc, window: {hours, carried: keep.filter((e) => seen.get(e.eventId) === e).length},
+    counts: {...doc.counts, total: events.length, byType: Object.fromEntries(Object.entries(byType).sort())}, events};
+}
+
+export function run({before, after, out, previousEvents = null, root = ROOT}) {
   if (!out) throw Object.assign(Error('OUT_REQUIRED: --out=<datei> fehlt; es gibt keinen Standard-Ausgabeort.'), {exit: 2});
   const target = resolve(out), d = registryEntry(root);
-  if (d && d.activation && d.activation.state === 'PREPARED_DISABLED' && target === resolve(root, d.artifact.slice(1)))
-    throw Object.assign(Error('NOT_ACTIVATED: ' + DOMAIN_ID + ' ist PREPARED_DISABLED; der kanonische Ort ' + d.artifact + ' bleibt leer.'), {exit: 3});
-  const doc = buildEvents(loadSummary(before), loadSummary(after));
+  /* Das Artefakt liegt nur in der Auslieferung (Release-Bau), nie im Repository - in jedem Aktivierungszustand. */
+  if (d && target === resolve(root, d.artifact.slice(1)))
+    throw Object.assign(Error('RELEASE_ONLY: ' + DOMAIN_ID + ' entsteht nur in der Auslieferung; der Ort ' + d.artifact + ' im Repository bleibt leer.'), {exit: 3});
+  let doc = buildEvents(loadSummary(before), loadSummary(after));
+  if (previousEvents) doc = mergeWindow(existsSync(previousEvents) ? JSON.parse(readFileSync(previousEvents, 'utf8')) : null, doc);
   mkdirSync(dirname(target), {recursive: true});
   writeFileSync(target, JSON.stringify(doc, null, 1) + '\n');
   return {out: target, total: doc.counts.total, byType: doc.counts.byType};
