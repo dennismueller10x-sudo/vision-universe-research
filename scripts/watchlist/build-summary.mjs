@@ -30,6 +30,7 @@ const require=createRequire(import.meta.url);
 const Identity=require('../../core/identity.js');
 const FE=require('../../quant/engines/factor-evidence.js');
 const TS=require('../../quant/engines/realtime/trading-session.js');
+const Close=require('../../quant/engines/published-close.js');
 export const SUMMARY_DIR='core/data/watchlist-summary-v1/';
 export const SHARD_BUDGET=48*1024; /* groesste Scherbe heute ~20 KB roh (AL), ~4,5 KB gzip */
 export const SCHEMA='vu-watchlist-summary-1.0.0';
@@ -92,6 +93,10 @@ export function buildSummary(root,{now=new Date()}={}){
    const hit=listingFor(e.s,sid,e.u);
    if(!hit.row){note(hit.rows,'price',hit.reason);continue;}
    Object.assign(hit.row,{c:e.c,cd:e.d,pu:e.u||null});
+   /* Tagesveraenderung (Watchlist-Ereignis PRICE_MOVE): Verhaeltnis der beiden letzten Punkte DERSELBEN splitbereinigten
+      Tagesreihe ueber published-close.js#dayChange (ADR-002), nur wenn ihr letzter Punkt der Schluss der Liste ist. */
+   const dc=Close.dayChange(readJson(root,'quant/data/market/discover-series/'+sid+'.json'),e.d);
+   if(dc&&dc.date===e.d)Object.assign(hit.row,{d1:dc.change,dp:dc.previousDate});
    if(!sources.price.asOf||e.d>sources.price.asOf)sources.price.asOf=e.d;
   }
  });
@@ -195,7 +200,7 @@ export function buildSummary(root,{now=new Date()}={}){
  if(oldest&&calendar){let d=oldest;for(let k=0;k<40;k++){d=TS.nextTradingDay(d,{calendar});if(!d)break;sessions.push(d);}}
 
  // ---- spaltenweise ausgeben
- const FIELDS=['i','s','n','x','cu','act','del','el','c','cd','pu','q','qdq','qd','mc','td','tf','h52','h52w','h52m','dh','rv','vs','rsi','a200','st','sts','why'];
+ const FIELDS=['i','s','n','x','cu','act','del','el','c','cd','pu','d1','dp','q','qdq','qd','mc','td','tf','h52','h52w','h52m','dh','rv','vs','rsi','a200','st','sts','why'];
  rows.sort((a,b)=>a.s<b.s?-1:a.s>b.s?1:a.i<b.i?-1:1);
  const cols={};for(const f of FIELDS)cols[f]=rows.map(r=>r[f]===undefined?null:r[f]);
  const slices=sources.supertrader&&sources.supertrader.slices;

@@ -69,7 +69,27 @@
     return Number(value.toPrecision(4));
   }
 
-  var api = { SCHEMA: SCHEMA, BASIS: BASIS, lastPoint: lastPoint, roundClose: roundClose };
+  /* TAGESVERAENDERUNG ZWISCHEN DEN BEIDEN LETZTEN VEROEFFENTLICHTEN SCHLUESSEN (Watchlist-Ereignis PRICE_MOVE).
+
+     Gleiche Vertragspruefung wie lastPoint; der Vortag ist der vorletzte Punkt DERSELBEN splitbereinigten Reihe.
+     Beide Punkte stehen auf demselben Bereinigungsstand, das Verhaeltnis ist deshalb splitfest (ein Split am
+     letzten Tag erscheint nicht als Kurssprung). Liegt der Vortag mehr als sieben Kalendertage zurueck (Luecke,
+     Handelsaussetzung), gibt es keine Tagesveraenderung: das waere eine Mehrtagesbewegung unter falschem Namen. */
+  var MAX_GAP_DAYS = 7;
+  function dayChange(series, today) {
+    var last = lastPoint(series, today);
+    if (!last || series.points.length < 2) return null;
+    var p = series.points[series.points.length - 2];
+    var tag = Array.isArray(p) ? p[0] : p && p.date;
+    var kurs = Array.isArray(p) ? p[1] : p && p.close;
+    if (!datum(tag) || !(tag < last.date)) return null;
+    if (typeof kurs !== "number" || !Number.isFinite(kurs) || kurs <= 0) return null;
+    if ((Date.parse(last.date + "T00:00:00Z") - Date.parse(tag + "T00:00:00Z")) / 864e5 > MAX_GAP_DAYS) return null;
+    return { change: Math.round((last.close / kurs - 1) * 1e6) / 1e6, date: last.date, previousDate: tag,
+      close: last.close, previousClose: kurs, currency: last.currency, basis: BASIS };
+  }
+
+  var api = { SCHEMA: SCHEMA, BASIS: BASIS, MAX_GAP_DAYS: MAX_GAP_DAYS, lastPoint: lastPoint, dayChange: dayChange, roundClose: roundClose };
   if (isNode) module.exports = api;
   else global.VUPublishedClose = api;
 })(typeof window !== "undefined" ? window : globalThis);
