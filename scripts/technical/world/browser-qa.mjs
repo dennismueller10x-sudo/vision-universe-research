@@ -259,12 +259,14 @@ async function main() {
       assert(await page.locator(".tc-ptile").count() === 2, "Preis-Kacheln fehlen");
       if (await page.locator(".tc-sigrow").count()) { await page.locator(".tc-sigrow").first().click(); await page.waitForSelector("#tc-signal-sheet:not([hidden])"); await page.keyboard.press("Escape"); }
       /* Kein Rot und kein Gruen auf der Seite (Regel 1): alle sichtbaren Hintergruende und Schriften.
-         Einzige Ausnahme: die Tagesveraenderung im gemeinsamen Aktienkopf (Pilot NVDA #1493, Owner 06.11.2026:
+         Einzige Ausnahme: die Tagesveraenderung im gemeinsamen Aktienkopf (Owner 06.11.2026, #1493/#1520, alle Aktien:
          Minus rot, Plus gruen). Sie ist kein Teil von Chart oder Urteil und traegt Pfeil und Vorzeichen, Farbe ist
          nicht das einzige Signal - das prueft dieser Schritt eigens. */
-      const pills = await page.evaluate(() => [...document.querySelectorAll("#tc-main .vu-shead--tone .vu-shead-change")].map((e) => e.textContent));
-      for (const t of pills) assert(/[\u25b2\u25bc].*[+\u2212-]?\d/.test(t), "Tagesveraenderung ohne Pfeil und Zahl: " + t);
-      const bad = await page.evaluate(() => [...document.querySelectorAll("#tc-main *")].filter((e) => !e.closest(".vu-shead--tone .vu-shead-change")).map((e) => [getComputedStyle(e).color, getComputedStyle(e).backgroundColor, e.getAttribute && e.tagName === "rect" ? getComputedStyle(e).fill : ""]).flat()
+      const pills = await page.evaluate(() => [...document.querySelectorAll("#tc-main .vu-shead .vu-shead-change")]
+        .map((e) => ({ dir: (e.closest("[data-direction]") || {}).dataset?.direction || "", text: e.textContent })));
+      for (const p of pills) if (p.dir === "up" || p.dir === "down")
+        assert((p.dir === "up" ? /\u25b2/ : /\u25bc/).test(p.text) && /\d/.test(p.text), "Tagesveraenderung ohne Pfeil und Zahl: " + p.text);
+      const bad = await page.evaluate(() => [...document.querySelectorAll("#tc-main *")].filter((e) => !e.closest(".vu-shead .vu-shead-change")).map((e) => [getComputedStyle(e).color, getComputedStyle(e).backgroundColor, e.getAttribute && e.tagName === "rect" ? getComputedStyle(e).fill : ""]).flat()
         .filter((c) => { const m = /rgba?\((\d+), (\d+), (\d+)/.exec(c || ""); if (!m) return false; const [r, g, b] = m.slice(1).map(Number); return (r > 150 && g < 90 && b < 90) || (g > 120 && r < 110 && b < 110); }).slice(0, 3));
       assert(!bad.length, "Rot oder Gruen: " + bad.join(" "));
       await clean("Chart einfach");
