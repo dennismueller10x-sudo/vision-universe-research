@@ -11,6 +11,7 @@ test('relative links include references, images, HTML, escaped paths and titles;
  assert.deepEqual(linksIn(text).map(x=>x.target), ['a.md','pic.png','with%20space.md','b.md#part']);
  assert.equal(resolveLink('docs/a.md','../b%20c.md?q=1#part'),'b c.md');
  assert.equal(resolveLink('docs/a.md','/README.md'),'README.md');
+ assert.equal(resolveLink('docs/a.md','../core/'),'core');
  for(const x of ['https://example.org','mailto:a@b.de','#part','//example.org'])assert.equal(resolveLink('a.md',x),null);
 });
 

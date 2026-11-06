@@ -25,7 +25,7 @@ export function resolveLink(source, target) {
   if (!pathname) return null;
   let decoded;
   try { decoded = decodeURIComponent(pathname); } catch { return pathname; }
-  return path.posix.normalize(target.startsWith('/') ? decoded.slice(1) : path.posix.join(path.posix.dirname(source), decoded));
+  return path.posix.normalize(target.startsWith('/') ? decoded.slice(1) : path.posix.join(path.posix.dirname(source), decoded)).replace(/\/$/, '');
 }
 
 export function checkDocLinks(root, files) {
