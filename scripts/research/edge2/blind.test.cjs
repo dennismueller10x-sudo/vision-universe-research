@@ -21,7 +21,11 @@ function panel(T = 520, n = 160) {
 }
 const salt = 'x'.repeat(64);
 
-test('Protokoll und Prompt gepinnt', () => {
+test('Protokoll, Ergänzung 1 und Prompts gepinnt', () => {
+  const am = JSON.parse(fs.readFileSync(path.join(ROOT, PIN.BLIND_AMENDMENT_1_FILE)));
+  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, PIN.BLIND_AMENDMENT_1_FILE))).digest('hex'), PIN.BLIND_AMENDMENT_1_SHA256);
+  assert.equal(am.amends.sha256, PIN.BLIND_PROTOCOL_SHA256);
+  for (const pr of [am.prompt, am.depotB.prompt]) assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, pr.file))).digest('hex'), pr.sha256);
   const b = fs.readFileSync(path.join(ROOT, PIN.BLIND_PROTOCOL_FILE));
   assert.equal(crypto.createHash('sha256').update(b).digest('hex'), PIN.BLIND_PROTOCOL_SHA256);
   const doc = JSON.parse(b);
@@ -46,6 +50,8 @@ test('Auswahlen -> Ziele: gleichgewichtet, Ausführung t+1, ungültige Labels ge
   const p = panel(), r = B.buildPackets(p, { window: ['2016-01-01', '2016-06-30'], salt });
   const k = r.keys[0], labels = Object.keys(k.labels).slice(0, 10);
   const tg = B.targetsFromPicks(p, r.keys, { [k.packetId]: labels.concat(['K99']) });
+  const tw = B.targetsFromPicks(p, r.keys, { [k.packetId]: { [labels[0]]: 0.6, [labels[1]]: 0.4 } });
+  assert.deepEqual(Object.values(tw.targets[0].weights).sort(), [0.4, 0.6]);
   assert.equal(tg.targets[0].executionDate, p.calendar[k.t + 1]);
   assert.equal(Object.keys(tg.targets[0].weights).length, 10);
   assert.ok(tg.problems.some(x => x.problem === 'INVALID_LABELS'));
@@ -70,9 +76,12 @@ test('KI-Vorwärtsledger: Hash-Kette, Manipulation fällt auf; Antwortprüfung',
   fs.writeFileSync(f, fs.readFileSync(f, 'utf8').replace('2026-11-10', '2026-11-11'));
   assert.throws(() => K.append({ type: 'MARK', asOf: 'x', closes: {} }, f), /LEDGER_CHAIN_BROKEN/);
   const pk = { packetId: 'P1', candidates: Array.from({ length: 50 }, (_, i) => ({ label: 'K' + String(i + 1).padStart(2, '0'), group: 'ABCDEFGHIJ'[i % 10] })) };
-  const ok = { packetId: 'P1', picks: pk.candidates.slice(0, 10).map(c => ({ label: c.label })) };
-  assert.equal(K.validAnswer(ok, pk), null);
-  assert.equal(K.validAnswer({ ...ok, picks: ok.picks.slice(0, 9) }, pk), 'NOT_10_VALID_LABELS');
-  const four = { packetId: 'P1', picks: ['K01', 'K11', 'K21', 'K31', 'K02', 'K03', 'K04', 'K05', 'K06', 'K07'].map(label => ({ label })) };
-  assert.equal(K.validAnswer(four, pk), 'MORE_THAN_3_PER_GROUP');
+  const pick = (ls, w) => ({ packetId: 'P1', picks: ls.map((label, i) => ({ label, weight: Array.isArray(w) ? w[i] : w })) });
+  const ok = B.checkAnswer(pick(['K01', 'K02', 'K03', 'K04', 'K05'], 0.2), pk);
+  assert.equal(ok.problem, null); assert.ok(Math.abs(ok.weights.K01 - 0.2) < 1e-12);
+  assert.equal(B.checkAnswer(pick(['K01', 'K02', 'K03'], 1 / 3), pk).problem, 'NOT_4_TO_20_VALID_LABELS');
+  assert.equal(B.checkAnswer(pick(['K01', 'K02', 'K03', 'K04'], [0.4, 0.2, 0.2, 0.2]), pk).problem, 'WEIGHT_OUT_OF_RANGE');
+  assert.equal(B.checkAnswer(pick(['K01', 'K11', 'K02', 'K03', 'K04'], [0.2, 0.2, 0.2, 0.2, 0.2]), pk).problem, 'GROUP_WEIGHT_ABOVE_30');
+  assert.equal(B.checkAnswer(pick(['K01', 'K02', 'K03', 'K04', 'K05'], 0.1), pk).problem, 'WEIGHTS_DO_NOT_SUM_TO_1');
+  assert.equal(B.checkAnswer({ ...pick(['K01', 'K02', 'K03', 'K04', 'K05'], 0.2), packetId: 'P2' }, pk).problem, 'PACKET_ID_MISMATCH');
 });

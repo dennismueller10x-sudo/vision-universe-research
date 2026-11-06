@@ -36,7 +36,13 @@ function protocol() {
   const doc = JSON.parse(bytes);
   const pr = sha(fs.readFileSync(path.join(ROOT, doc.prompt.file)));
   if (pr !== doc.prompt.sha256) throw Error('PROMPT_CHANGED ' + pr);
-  return { doc, sha256: h };
+  // Ergänzung 1 (vor der ersten Entscheidung): Prompt v2, 4–20 Titel mit Gewichten.
+  const PIN = require('./protocol-pin.cjs'), ab = fs.readFileSync(path.join(ROOT, PIN.BLIND_AMENDMENT_1_FILE));
+  if (sha(ab) !== PIN.BLIND_AMENDMENT_1_SHA256) throw Error('AMENDMENT_CHANGED');
+  const amendment = JSON.parse(ab);
+  if (amendment.amends.sha256 !== h) throw Error('AMENDMENT_BASE_MISMATCH');
+  if (sha(fs.readFileSync(path.join(ROOT, amendment.prompt.file))) !== amendment.prompt.sha256) throw Error('PROMPT_V2_CHANGED');
+  return { doc, sha256: h, amendment, amendmentSha256: sha(ab) };
 }
 async function seal(out, name, plain) {
   const L = await import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs'));
@@ -112,7 +118,10 @@ async function resolve(a, p, out) {
   if (keys.packetsSha256 !== packets.packetsSha256) throw Error('KEYS_MISMATCH');
   const { MP, panel } = panelOf(a);
   const E3 = require('../edge/run-e3.cjs'), bm = E3.benchmarks(MP);
-  const picks = Object.fromEntries((picksDoc.decisions || []).map(x => [x.packetId, x.valid ? x.picks.map(y => y.label) : []]));
+  // Gültigkeit wird hier aus den Antworten neu geprüft (Ergänzung 1), nicht aus einer Markierung übernommen.
+  const byPid = new Map(packets.packets.map(x => [x.packetId, x]));
+  const checked = (picksDoc.decisions || []).map(x => ({ packetId: x.packetId, ...B.checkAnswer(x.answer, byPid.get(x.packetId) || { candidates: [] }) }));
+  const picks = Object.fromEntries(checked.map(x => [x.packetId, x.problem ? {} : x.weights]));
   const all50 = Object.fromEntries(packets.packets.map(x => [x.packetId, x.candidates.map(c => c.label)]));
   const cal = panel.calendar, idx = [...cal.keys()].filter(i => cal[i] >= WINDOW[0] && cal[i] <= '2026-10-02' && panel.benchmark.levels[i] > 0);
   const std = C.standardOf({ minPositions: 1, maxPositions: 50, targetPositions: 10, maxPositionWeight: 1 });
@@ -128,7 +137,8 @@ async function resolve(a, p, out) {
   let vsPool = null; try { vsPool = S.pairedTest(ki.weeklyReturns, pool.weeklyReturns); } catch { vsPool = null; }
   const { panel: dqp, census } = MP.applyDq(panel, 'DQ-K5-BOOK');
   const result = { schema: 'vu-edge2-blind-result-1.0.0', label: p.doc.label, version: VERSION, protocolSha256: p.sha256, packetsSha256: packets.packetsSha256, picksSha256: sha(fs.readFileSync(path.join(a.blindDir || DIR, 'picks.json'))),
-    decisions: { total: packets.packets.length, valid: (picksDoc.decisions || []).filter(x => x.valid).length }, recognition: rec ? scoreRecognition(rec.guesses, keys) : null,
+    amendmentSha256: p.amendmentSha256, decisions: { total: packets.packets.length, answered: checked.length, valid: checked.filter(x => !x.problem).length, problems: checked.filter(x => x.problem).map(x => [x.packetId, x.problem]),
+      positions: checked.filter(x => !x.problem).map(x => Object.keys(x.weights).length) }, recognition: rec ? scoreRecognition(rec.guesses, keys) : null,
     primary: { ki, pool50: pool, kiVsPool50: vsPool }, dqK5: { census, ki: runOne(picks, 'KI', dqp) }, runId: process.env.GITHUB_RUN_ID || 'local' };
   fs.mkdirSync(out, { recursive: true });
   const plain = Buffer.from(JSON.stringify(result));

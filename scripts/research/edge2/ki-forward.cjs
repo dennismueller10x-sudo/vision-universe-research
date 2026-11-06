@@ -2,23 +2,25 @@
 'use strict';
 // Edge 2 Teil 3a – KI-Depot vorwärts (docs/research/edge2/ki/BLIND_PROTOKOLL.json "forward", Prompt v1).
 // Forschung, nicht zertifiziert. Die Entscheidung trifft eine Claude-Code-Sitzung im Abo (geplanter Auftrag), nicht die API.
-// Dieselbe Regel wie im blinden Backtest: anonymes Paket (blind.cjs) aus den heutigen committeten Daten, 10 Titel, gleich gewichtet,
-// einmal je Monat. Das Ledger docs/research/edge2/ki/ledger.jsonl ist nur angehängt und hash-verkettet.
+// Depot A: dieselbe Regel wie im blinden Backtest (Ergänzung 1, Prompt v2): anonymes Paket (blind.cjs) aus den heutigen
+// committeten Daten, 4–20 Titel mit Gewichten, einmal je Monat. Depot B (Prompt B v1, nur vorwärts): dasselbe Paket plus Ticker,
+// Analysten-Konsens und Schlagzeilen. Ledger docs/research/edge2/ki/ledger-A.jsonl und ledger-B.jsonl, nur angehängt, hash-verkettet.
 //
-//   node scripts/research/edge2/ki-forward.cjs status                       -> ist diesen Monat eine Entscheidung fällig?
-//   node scripts/research/edge2/ki-forward.cjs packet --out-dir <außerhalb des Repos>   -> packet.json (für die KI), keys.json (nicht zeigen)
-//   node scripts/research/edge2/ki-forward.cjs record --packet P --keys K --answer A    -> Eintrag DECISION
-//   node scripts/research/edge2/ki-forward.cjs mark [--today YYYY-MM-DD]                -> Eintrag MARK (Schlusskurse über published-close.js)
-//   node scripts/research/edge2/ki-forward.cjs evaluate                                 -> Bewertung (nur Konsole, nicht committen)
+//   node scripts/research/edge2/ki-forward.cjs status [--depot A|B]                    -> ist diesen Monat eine Entscheidung fällig?
+//   node scripts/research/edge2/ki-forward.cjs packet --out-dir <außerhalb des Repos>   -> packet-A.json, packet-B.json (für die KI), keys.json (nicht zeigen)
+//   node scripts/research/edge2/ki-forward.cjs record --depot A|B --packet P --keys K --answer A [--attempt 2]
+//   node scripts/research/edge2/ki-forward.cjs mark --depot A|B [--today YYYY-MM-DD]   -> Eintrag MARK (Schlusskurse über published-close.js)
+//   node scripts/research/edge2/ki-forward.cjs evaluate --depot A|B                    -> Bewertung (nur Konsole, nicht committen)
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const ROOT = path.resolve(__dirname, '../../..');
 const B = require('./blind.cjs');
 const Close = require(path.join(ROOT, 'quant/engines/published-close.js'));
-const LEDGER = path.join(ROOT, 'docs/research/edge2/ki/ledger.jsonl');
-const PROTOCOL = 'docs/research/edge2/ki/BLIND_PROTOKOLL.json';
-const DEPOT = 'EDGE2-KI-PAPER';
+const DEPOTS = Object.freeze({ A: { id: 'EDGE2-KI-A-PAPER', ledger: path.join(ROOT, 'docs/research/edge2/ki/ledger-A.jsonl') }, B: { id: 'EDGE2-KI-B-PAPER', ledger: path.join(ROOT, 'docs/research/edge2/ki/ledger-B.jsonl') } });
+const depotOf = d => { const x = DEPOTS[d || 'A']; if (!x) throw Error('DEPOT_UNKNOWN ' + d); return x; };
+const LEDGER = DEPOTS.A.ledger, DEPOT = DEPOTS.A.id;
+const AMENDMENT = 'docs/research/edge2/ki/BLIND_ERGAENZUNG_1.json';
 const sha = x => crypto.createHash('sha256').update(x).digest('hex');
 const today0 = () => new Date().toISOString().slice(0, 10);
 
@@ -39,9 +41,11 @@ function append(entry, file = LEDGER) {
   fs.appendFileSync(file, JSON.stringify(row) + '\n');
   return row;
 }
-function promptInfo() {
-  const p = JSON.parse(fs.readFileSync(path.join(ROOT, PROTOCOL), 'utf8'));
-  return { version: p.prompt.version, file: p.prompt.file, sha256: sha(fs.readFileSync(path.join(ROOT, p.prompt.file))), protocolSha256: sha(fs.readFileSync(path.join(ROOT, PROTOCOL))) };
+function promptInfo(depot) {
+  const am = JSON.parse(fs.readFileSync(path.join(ROOT, AMENDMENT), 'utf8')), pr = depot === 'B' ? am.depotB.prompt : am.prompt;
+  const h = sha(fs.readFileSync(path.join(ROOT, pr.file)));
+  if (h !== pr.sha256) throw Error('PROMPT_CHANGED ' + pr.file);
+  return { version: pr.version, file: pr.file, sha256: h, amendmentSha256: sha(fs.readFileSync(path.join(ROOT, AMENDMENT))) };
 }
 function closeOf(securityId, today) {
   const f = path.join(ROOT, 'quant/data/market/discover-series', securityId + '.json');
@@ -49,10 +53,24 @@ function closeOf(securityId, today) {
   return Close.lastPoint(JSON.parse(fs.readFileSync(f, 'utf8')), today);
 }
 
-function status(today = today0()) {
-  const month = today.slice(0, 7), rows = ledger();
-  const done = rows.some(r => r.type === 'DECISION' && r.decisionDate.slice(0, 7) === month);
-  return { month, decisionDue: !done, entries: rows.length };
+function status(today = today0(), depot = 'A') {
+  const month = today.slice(0, 7), rows = ledger(depotOf(depot).ledger);
+  const done = rows.some(r => r.type === 'DECISION' && r.decisionDate.slice(0, 7) === month && (r.valid || r.attempt >= 2));
+  return { depot, month, decisionDue: !done, entries: rows.length };
+}
+// Kontext für Depot B: Analysten-Konsens (dashboard/data/analysts) und Schlagzeilen (dashboard/data/news_feed.json).
+function contextB(securityId) {
+  const ticker = securityId.replace(/^ref_/, ''), shard = ticker.slice(0, 2).toUpperCase();
+  let analysts = null;
+  const f = path.join(ROOT, 'dashboard/data/analysts/shards', shard + '.json');
+  if (fs.existsSync(f)) {
+    const e = (JSON.parse(fs.readFileSync(f, 'utf8')).entries || {})[securityId];
+    if (e && e.ratingsState === 'AVAILABLE') { const h = e.history || [], old = h[3] || h.at(-1) || null; analysts = { asOf: e.asOf, analysts: e.analysts, now: e.counts, about3MonthsAgo: old ? { period: old.period, strongBuy: old.strongBuy, buy: old.buy, hold: old.hold, sell: old.sell, strongSell: old.strongSell } : null }; }
+  }
+  let news = [];
+  const nf = path.join(ROOT, 'dashboard/data/news_feed.json');
+  if (fs.existsSync(nf)) news = (JSON.parse(fs.readFileSync(nf, 'utf8')).items || []).filter(x => x.symbol === ticker).slice(0, 3).map(x => ({ date: String(x.published_at || '').slice(0, 10), title: x.title }));
+  return { ticker, analysts, news };
 }
 
 function packet(a) {
@@ -73,38 +91,32 @@ function packet(a) {
   if (!r.packets.length) throw Error('NO_PACKET ' + JSON.stringify(r.keys));
   const pk = r.packets[0], key = r.keys.find(k => k.state === 'BUILT');
   fs.mkdirSync(out, { recursive: true });
-  fs.writeFileSync(path.join(out, 'packet.json'), JSON.stringify({ features: r.features, path: r.path, packet: pk }, null, 0) + '\n');
+  fs.writeFileSync(path.join(out, 'packet-A.json'), JSON.stringify({ features: r.features, path: r.path, packet: pk }) + '\n');
+  const pkB = { ...pk, candidates: pk.candidates.map(c => ({ ...c, context: contextB(key.labels[c.label]) })) };
+  fs.writeFileSync(path.join(out, 'packet-B.json'), JSON.stringify({ features: r.features, path: r.path, packet: pkB }) + '\n');
   fs.writeFileSync(path.join(out, 'keys.json'), JSON.stringify({ decisionDate, universe: rows.length, packetId: pk.packetId, packetSha256: key.packetSha256, labels: key.labels, panel: panel.meta }) + '\n');
   console.log(JSON.stringify({ decisionDate, packetId: pk.packetId, universe: rows.length }));
 }
 
-function validAnswer(answer, pk) {
-  const labels = new Set(pk.candidates.map(c => c.label)), group = new Map(pk.candidates.map(c => [c.label, c.group]));
-  const picks = Array.isArray(answer.picks) ? answer.picks : [];
-  const ls = picks.map(p => p && p.label);
-  if (answer.packetId !== pk.packetId) return 'PACKET_ID_MISMATCH';
-  if (ls.length !== 10 || new Set(ls).size !== 10 || !ls.every(l => labels.has(l))) return 'NOT_10_VALID_LABELS';
-  const per = {}; for (const l of ls) per[group.get(l)] = (per[group.get(l)] || 0) + 1;
-  if (Object.values(per).some(n => n > 3)) return 'MORE_THAN_3_PER_GROUP';
-  return null;
-}
-
 function record(a) {
+  const dep = a.depot || 'A', D = depotOf(dep);
   const pkDoc = JSON.parse(fs.readFileSync(a.packet, 'utf8')), keys = JSON.parse(fs.readFileSync(a.keys, 'utf8'));
-  const answer = JSON.parse(fs.readFileSync(a.answer, 'utf8'));
+  const raw = fs.readFileSync(a.answer, 'utf8');
+  let answer = null; try { answer = JSON.parse(raw); } catch { answer = null; }
   const pk = pkDoc.packet;
   if (pk.packetId !== keys.packetId) throw Error('KEYS_MISMATCH');
-  if (!status(keys.decisionDate).decisionDue) throw Error('DECISION_ALREADY_RECORDED_THIS_MONTH');
-  const problem = validAnswer(answer, pk);
-  const picks = problem ? [] : answer.picks.map(p => ({ label: p.label, securityId: keys.labels[p.label], ticker: keys.labels[p.label].replace(/^ref_/, ''), weight: 0.1, reason: String(p.reason || '').slice(0, 300) }));
-  const row = append({ type: 'DECISION', decisionDate: keys.decisionDate, prompt: promptInfo(), packetId: pk.packetId, packetSha256: sha(JSON.stringify(pk)), universe: keys.universe,
-    valid: !problem, problem, attempt: Number(a.attempt || 1), picks, packet: pk,
-    pricing: 'Einstieg zum Schlusskurs des nächsten Handelstags nach decisionDate (quant/data/market/discover-series über published-close.js), gehalten bis zum Einstieg der nächsten Entscheidung' });
-  console.log(JSON.stringify({ seq: row.seq, valid: row.valid, problem, tickers: picks.map(p => p.ticker) }));
+  if (!status(keys.decisionDate, dep).decisionDue) throw Error('DECISION_ALREADY_RECORDED_THIS_MONTH');
+  const chk = B.checkAnswer(answer, pk);
+  const picks = chk.problem ? [] : answer.picks.map(p => ({ label: p.label, securityId: keys.labels[p.label], ticker: keys.labels[p.label].replace(/^ref_/, ''), weight: Math.round(chk.weights[p.label] * 1e6) / 1e6, reason: String(p.reason || '').slice(0, 300) }));
+  const row = append({ type: 'DECISION', decisionDate: keys.decisionDate, prompt: promptInfo(dep), packetId: pk.packetId, packetSha256: sha(JSON.stringify(pk)), universe: keys.universe,
+    valid: !chk.problem, problem: chk.problem, attempt: Number(a.attempt || 1), count: picks.length, countReason: answer && !chk.problem ? String(answer.countReason || '').slice(0, 300) : null, picks,
+    answerSha256: sha(raw), packet: pk,
+    pricing: 'Einstieg zum Schlusskurs des nächsten Handelstags nach decisionDate (quant/data/market/discover-series über published-close.js), gehalten bis zum Einstieg der nächsten Entscheidung' }, D.ledger, D.id);
+  console.log(JSON.stringify({ depot: dep, seq: row.seq, valid: row.valid, problem: chk.problem, count: picks.length, tickers: picks.map(p => p.ticker) }));
 }
 
 function mark(a) {
-  const today = a.today || today0(), rows = ledger();
+  const D = depotOf(a.depot), today = a.today || today0(), rows = ledger(D.ledger);
   const ids = new Set(['ref_SPY']);
   for (const r of rows) if (r.type === 'DECISION') for (const p of r.picks) ids.add(p.securityId);
   const closes = {};
@@ -116,13 +128,13 @@ function mark(a) {
     const since = rows.filter(r => r.type === 'DECISION').map(r => r.decisionDate).sort()[0] || today;
     closes[id] = { last: c, points: doc.points.filter(p => p[0] > since && p[0] <= today) };
   }
-  const row = append({ type: 'MARK', asOf: today, source: 'quant/data/market/discover-series/<securityId>.json via quant/engines/published-close.js#lastPoint', closes });
+  const row = append({ type: 'MARK', asOf: today, source: 'quant/data/market/discover-series/<securityId>.json via quant/engines/published-close.js#lastPoint', closes }, D.ledger, D.id);
   console.log(JSON.stringify({ seq: row.seq, titles: Object.keys(closes).length, missing: Object.values(closes).filter(x => !x).length }));
 }
 
 /** Bewertung aus dem Ledger: monatliche Haltedauer, Einstieg am ersten Schluss nach der Entscheidung (Kursrendite). */
-function evaluate() {
-  const rows = ledger(), decisions = rows.filter(r => r.type === 'DECISION'), marks = rows.filter(r => r.type === 'MARK');
+function evaluate(depot = 'A') {
+  const rows = ledger(depotOf(depot).ledger), decisions = rows.filter(r => r.type === 'DECISION' && r.valid), marks = rows.filter(r => r.type === 'MARK');
   if (!marks.length) return { state: 'NO_MARKS' };
   const m = marks.at(-1).closes;
   const px = (id, date) => { const s = m[id]; if (!s) return null; const p = s.points.find(q => q[0] > date); return p ? p : null; };
@@ -149,12 +161,12 @@ function evaluate() {
 
 function main() {
   const a = args(process.argv);
-  if (a._ === 'status') console.log(JSON.stringify(status(a.today)));
+  if (a._ === 'status') console.log(JSON.stringify(status(a.today, a.depot || 'A')));
   else if (a._ === 'packet') packet(a);
   else if (a._ === 'record') record(a);
   else if (a._ === 'mark') mark(a);
-  else if (a._ === 'evaluate') console.log(JSON.stringify(evaluate(), null, 1));
+  else if (a._ === 'evaluate') console.log(JSON.stringify(evaluate(a.depot || 'A'), null, 1));
   else throw Error('COMMAND ' + a._);
 }
 if (require.main === module) main();
-module.exports = { append, ledger, validAnswer, status, DEPOT };
+module.exports = { append, ledger, status, contextB, DEPOTS };

@@ -97,19 +97,38 @@ function buildPackets(panel, { window, salt, candidates = 50, forceWeeks = null 
   return { version: VERSION, features: FEATURES.map(([k, label]) => ({ key: k, label })), path: { points: PATH_POINTS, stepWeeks: PATH_STEP, basis: 'Gesamtrendite relativ zum gleichgewichteten Universum, Startwert 100 vor 52 Wochen' }, packets, keys, packetsSha256: sha(packets) };
 }
 
+/** Antwortprüfung nach Ergänzung 1: 4–20 Labels, Gewicht je Titel 0,02–0,25, Summe 1 ± 0,02, je Gruppe <= 0,30. */
+function checkAnswer(answer, packet) {
+  const labels = new Set(packet.candidates.map(c => c.label)), group = new Map(packet.candidates.map(c => [c.label, c.group]));
+  const picks = answer && Array.isArray(answer.picks) ? answer.picks : [];
+  if (!answer || answer.packetId !== packet.packetId) return { problem: 'PACKET_ID_MISMATCH' };
+  const ls = picks.map(p => p && p.label);
+  if (ls.length < 4 || ls.length > 20 || new Set(ls).size !== ls.length || !ls.every(l => labels.has(l))) return { problem: 'NOT_4_TO_20_VALID_LABELS' };
+  const w = picks.map(p => Number(p.weight));
+  if (!w.every(x => Number.isFinite(x) && x >= 0.02 - 1e-9 && x <= 0.25 + 1e-9)) return { problem: 'WEIGHT_OUT_OF_RANGE' };
+  const sum = w.reduce((a, b) => a + b, 0);
+  if (Math.abs(sum - 1) > 0.02) return { problem: 'WEIGHTS_DO_NOT_SUM_TO_1' };
+  const weights = Object.fromEntries(ls.map((l, i) => [l, w[i] / sum])), per = {};
+  for (const l of ls) per[group.get(l)] = (per[group.get(l)] || 0) + weights[l];
+  if (Object.values(per).some(x => x > 0.305)) return { problem: 'GROUP_WEIGHT_ABOVE_30' };
+  return { problem: null, weights };
+}
+
 /** Auswahlen -> Ziele für quant-e3.cjs#ledgerFromTargets (gleichgewichtet, Ausführung t+1, bis zur nächsten Entscheidung). */
 function targetsFromPicks(panel, keys, picks, { variant = 'KI' } = {}) {
   const cal = panel.calendar, byId = new Map(panel.securities.map(s => [s.id, s]));
   const targets = [], memberships = [], problems = [];
   for (const k of keys.filter(x => x.state === 'BUILT').sort((a, b) => a.t - b.t)) {
-    const labels = picks[k.packetId];
-    if (!Array.isArray(labels)) { problems.push({ packetId: k.packetId, problem: 'NO_PICKS' }); continue; }
-    const ids = [...new Set(labels)].map(l => k.labels[l]).filter(Boolean);
-    if (ids.length !== labels.length) problems.push({ packetId: k.packetId, problem: 'INVALID_LABELS' });
+    // picks[packetId]: Array von Labels (gleich gewichtet) oder {label: Gewicht}; leer = Cash.
+    let pk = picks[k.packetId];
+    if (pk === undefined || pk === null) { problems.push({ packetId: k.packetId, problem: 'NO_PICKS' }); pk = {}; }
+    if (Array.isArray(pk)) { const u = [...new Set(pk)]; pk = Object.fromEntries(u.map(l => [l, 1 / u.length])); }
+    const valid = Object.entries(pk).filter(([l]) => k.labels[l]);
+    if (valid.length !== Object.keys(pk).length) problems.push({ packetId: k.packetId, problem: 'INVALID_LABELS' });
     const e = k.t + 1, w = {}, hs = {};
-    for (const id of ids) {
-      const s = byId.get(id);
-      if (s.adj[e] > 0 && !(s.terminal && s.terminal.lastIdx < e)) { w[id] = 1 / ids.length; hs[id] = C.halfSpreadBps({ price: s.raw[k.t], dollarVolume: s.dv ? s.dv[k.t] : undefined }).bps; }
+    for (const [l, x] of valid) {
+      const id = k.labels[l], s = byId.get(id);
+      if (s.adj[e] > 0 && !(s.terminal && s.terminal.lastIdx < e)) { w[id] = x; hs[id] = C.halfSpreadBps({ price: s.raw[k.t], dollarVolume: s.dv ? s.dv[k.t] : undefined }).bps; }
     }
     const members = Object.keys(w).sort(), mh = sha({ date: cal[k.t], members, variant });
     memberships.push({ effectiveAt: cal[k.t] + 'T00:00:00Z', availableAt: cal[k.t] + 'T00:00:00Z', sourceHash: mh, members });
@@ -118,4 +137,4 @@ function targetsFromPicks(panel, keys, picks, { variant = 'KI' } = {}) {
   return { targets, memberships, problems };
 }
 
-module.exports = { VERSION, FEATURES, decisionWeeks, universeAt, buildPackets, targetsFromPicks, seedOf };
+module.exports = { VERSION, FEATURES, decisionWeeks, universeAt, buildPackets, checkAnswer, targetsFromPicks, seedOf };
