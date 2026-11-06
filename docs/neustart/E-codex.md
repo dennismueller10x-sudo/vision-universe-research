@@ -103,3 +103,15 @@ Weitere E8-Validierung: Technical 114/114; Konten 115 bestanden, drei
 übersprungen. Python Quant: 584/590, sechs Befunde in unveränderten
 Datenstandsprüfungen (`test_canonical_market`, `test_daily`, u. a.
 5404 gegenüber erwartet 5420 COMPANY_FACTS_AVAILABLE).
+
+Abschluss E8, PR [#1541](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1541):
+Core 392 bestanden, zwei übersprungen; Discover/Supertrader/Screener 1.813
+bestanden, 21 übersprungen. Die 15 E8-Tests bestehen auch unter Node 22.23.4;
+Bestandssuiten liefen unter dem bereitgestellten Node 24.22.1. Allgemeine
+Produktionsisolation: keine Datei verändert, intern gestartete Quant-Suite
+innerhalb 900 Sekunden nicht grün. Separater Quant-Gesamtlauf nach 1.000
+Sekunden lokal beendet, daher kein vollständiges Quant-Ergebnis behauptet.
+PR bleibt wegen dieser offenen Gesamtvalidierung und der sechs oben genannten
+Python-Datenstandsfehler ein Entwurf. Keine betroffenen Bestandsberechnungen
+oder generierten Daten korrigiert. Terminal-Diagnose NVDA/DXF zusätzlich
+über HTTP geprüft; Arbeitsbaum nach den Tests ohne Produktionsänderung.
