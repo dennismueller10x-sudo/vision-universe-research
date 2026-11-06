@@ -56,4 +56,6 @@ test('dynamic paths are disclosed, never converted into deletion approval', () =
   assert.match(result.markdown, /Entfernte Dateien: keine/);
   assert.doesNotMatch(result.markdown, /\| assets\/keep.js/);
   assert.equal(renderReport(input).markdown, result.markdown);
+  const compared = renderReport({...input, beforeSizes: new Map(), comparisonCommit: 'baseline'}).markdown;
+  assert.match(compared, /\| scripts\/ \| 2 \| 0 \| 10 \|/);
 });

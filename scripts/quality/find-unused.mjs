@@ -122,7 +122,7 @@ export function buildGraph(files, sources) {
 
 const cell = s => String(s).replace(/\|/g, '&#124;').replace(/[\r\n]/g, ' ');
 
-export function renderReport({files, sources, sizes, commit, skipped = [], live = null}) {
+export function renderReport({files, sources, sizes, commit, skipped = [], live = null, beforeSizes = sizes, comparisonCommit = commit}) {
   const graph = buildGraph(files, sources);
   const candidates = files.filter(p => p !== REPORT && !protectedReason(p));
   const zero = candidates.filter(p => graph.incoming.get(p).size === 0);
@@ -137,11 +137,13 @@ export function renderReport({files, sources, sizes, commit, skipped = [], live 
     '**Keine automatische Löschfreigabe.** Fehlender Verweis, ein 404 oder Ausschluss vom Pages-Build allein beweist keine Nichtnutzung. Bei Zweifel bleibt die Datei.', '',
     '## Auslieferung und benannte Bereiche', '',
     '`pages-release.yml` baut mit `scripts/vu2/build-release.mjs`: `permitted()` kopiert grundsätzlich alle zugelassenen getrackten Dateien, einschließlich alter Seiten und evidence. scripts/docs/providers, Tests und bestimmte Daten werden ausgeschlossen. Der Build erzeugt `/vu2/` und `/Quant/` zusätzlich als Redirect nach `/quant/`. Ein ausgelieferter Pfad kann direkt aufgerufen werden, auch ohne internen Link.', '',
-    '| Bereich | Dateien | Bytes vorher | Bytes nachher | Entscheidung |', '|---|---:|---:|---:|---|'];
+    `Größenvergleich gegen \`${comparisonCommit}\`; getrackte Dateibytes, ohne Git-Historie. Neue Analysewerkzeuge zählen zur Nachher-Größe von scripts/.`, '',
+    '| Bereich | Dateien nachher | Bytes vorher | Bytes nachher | Entscheidung |', '|---|---:|---:|---:|---|'];
   const decisions = ['Redirect wird im Release erzeugt; behalten.', 'Legacy-Redirect nach /discover/; behalten.', 'Aktive Datenquellen laut domains.json, Seiten laden app-rebuild.js; behalten.', 'Eigenes Cloudflare-Deployment und Workflow-Tests; behalten.', 'CI erwähnt den Review-Pfad; Live-404 genügt nicht; behalten.', 'Audit-/Auslieferungsbelege und grundsätzlich im Pages-Build; behalten.', 'Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher.'];
   AREAS.forEach((area, i) => {
     const paths = files.filter(p => p.startsWith(area)), bytes = paths.reduce((n, p) => n + sizes.get(p), 0);
-    lines.push(`| ${area} | ${paths.length} | ${bytes} | ${bytes} | ${decisions[i]} |`);
+    const before = [...beforeSizes].filter(([p]) => p.startsWith(area)).reduce((n, [, size]) => n + size, 0);
+    lines.push(`| ${area} | ${paths.length} | ${before} | ${bytes} | ${decisions[i]} |`);
   });
   if (live) {
     lines.push('', `Live-Stichprobe: ${cell(live.checkedAt)}, ${cell(live.site)}. Keine vollständige Browser-Netzwerkaufzeichnung.`, '', '| Pfad | HTTP / Fehler | Ziel / Befund |', '|---|---|---|');
@@ -182,7 +184,12 @@ export function main(args = process.argv.slice(2)) {
   }
   const commit = execFileSync('git', ['rev-parse', 'HEAD'], {cwd: root, encoding: 'utf8'}).trim();
   const live = options['--live-evidence'] ? JSON.parse(readFileSync(resolve(options['--live-evidence']), 'utf8')) : null;
-  const result = renderReport({files, sources, sizes, commit, skipped, live});
+  const comparisonCommit = live?.analysisBase || commit;
+  if (!/^[a-f0-9]{40}$/.test(comparisonCommit)) throw Error('INVALID_COMPARISON_COMMIT');
+  const beforeSizes = new Map(execFileSync('git', ['ls-tree', '-r', '-l', '-z', comparisonCommit], {cwd: root, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024}).split('\0').filter(Boolean).map(row => {
+    const tab = row.indexOf('\t'); return [row.slice(tab + 1), Number(row.slice(0, tab).trim().split(/\s+/).at(-1)) || 0];
+  }));
+  const result = renderReport({files, sources, sizes, commit, skipped, live, beforeSizes, comparisonCommit});
   const out = resolve(root, options['--out'] || REPORT);
   mkdirSync(dirname(out), {recursive: true}); writeFileSync(out, result.markdown);
   console.log(`${files.length} nodes; ${result.zero.length} uncertain files; report: ${out}`);
