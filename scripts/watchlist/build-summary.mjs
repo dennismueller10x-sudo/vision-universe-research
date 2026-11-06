@@ -20,7 +20,7 @@
    (z. B. ein ETF) als das Unternehmen, auf das Name, Stamm und securityId zeigen. Solche Zeilen behalten Kennung, Kuerzel,
    Boerse und Status, tragen aber keinen Namen der alten Identitaet und keine Kurs-, Quant-, Technik- oder
    Supertrader-Werte; jeder Abschnitt nennt den Grund IDENTITY_QUARANTINED (why), gezaehlt in withheld. */
-import {readFileSync,existsSync,writeFileSync,mkdirSync} from 'node:fs';
+import {readFileSync,existsSync,writeFileSync,mkdirSync,readdirSync} from 'node:fs';
 import {join,dirname} from 'node:path';
 import {gunzipSync} from 'node:zlib';
 import {createRequire} from 'node:module';
@@ -40,6 +40,7 @@ const BAND_IDS=FE.BANDS.map(b=>b.id);
 
 function readJson(root,rel){const p=join(root,rel);if(!existsSync(p))return null;const b=readFileSync(p);return JSON.parse(rel.endsWith('.gz')?gunzipSync(b):b);}
 const round=(v,d)=>typeof v==='number'&&Number.isFinite(v)?Math.round(v*10**d)/10**d:null;
+const isDay=v=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v);
 const domainRule=(reg,id)=>{const d=(reg&&reg.domains||[]).find(x=>x.id===id);return d?{domain:id,artifact:d.artifact,freshness:d.freshness||null}:{domain:id,artifact:null,freshness:null};};
 
 /** Liefert {doc, report}. doc ist spaltenweise (cols[feld][zeile]), wie technical/data/screener-v1.json. */
@@ -132,6 +133,69 @@ export function buildSummary(root,{now=new Date()}={}){
     explanation:(screening.publication&&screening.publication.explanation)||null},universe:summary&&summary.count||null};
  });
 
+ // ---- Berichte: letzter Quartals- oder Jahresbericht bei der SEC (Watchlist-Ereignis EARNINGS), aus der Consumer-Schicht
+ tryPart('filings',()=>{
+  const dir=join(root,'quant/data/sec/consumer');if(!existsSync(dir))throw Error('SEC_CONSUMER_MISSING');
+  const latest=new Map();let asOf=null,generatedAt=null;
+  for(const f of readdirSync(dir).filter(x=>/^CIK\d{10}\.json$/.test(x)).sort()){
+   const j=readJson(root,'quant/data/sec/consumer/'+f),c=j&&j.coverage||{};
+   const q=c.latestQuarter&&isDay(c.latestQuarter.filed)?{rf:c.latestQuarter.filed,rk:'Q',rp:c.latestQuarter.fy+'-'+(c.latestQuarter.fp||'Q'),re:c.latestQuarter.end||null}:null;
+   const a=c.latestAnnual&&isDay(c.latestAnnual.filed)?{rf:c.latestAnnual.filed,rk:'A',rp:c.latestAnnual.fy+'-FY',re:c.latestAnnual.end||null}:null;
+   const r=q&&a?(a.rf>q.rf?a:q):(q||a);if(!r)continue;
+   if(!asOf||r.rf>asOf)asOf=r.rf;if(j.generatedAtUtc&&(!generatedAt||j.generatedAtUtc>generatedAt))generatedAt=j.generatedAtUtc;
+   /* Identitaet nur ueber core/identity.js (ADR-001): Ticker der Datei -> securityId, und die Datei muss sie selbst nennen. */
+   for(const t of j.tickers||[]){let sid;try{sid=Identity.securityIdForTicker(t);}catch{continue;}if((j.securityIds||[]).includes(sid)&&!latest.has(sid))latest.set(sid,{t,r});}
+  }
+  for(const [sid,{t,r}] of latest){
+   const hit=listingFor(t,sid,null);
+   if(!hit.row){note(hit.rows,'filings',hit.reason);continue;}
+   Object.assign(hit.row,r);
+  }
+  sources.filings={...domainRule(registry,'fundamentalsConsumer'),artifact:'/quant/data/sec/consumer/',asOf,generatedAt};
+ });
+
+ // ---- 13F: neue Positionen grosser Fonds je Titel (Watchlist-Ereignis FUND_13F), aus den veroeffentlichten Hedgefonds-Daten
+ tryPart('funds13f',()=>{
+  const hf=readJson(root,'hedgefonds/data/hedgefonds.json');if(!hf||!hf.latestPeriod)throw Error('HEDGEFONDS_MISSING');
+  const dir=join(root,'hedgefonds/data/stocks');if(!existsSync(dir))throw Error('HEDGEFONDS_STOCKS_MISSING');
+  /* "Grosse Fonds" = die kuratierte Liste der Hedgefonds-Seite (hedgefonds.json#funds), nicht jeder 13F-Melder des Bulk-Satzes. */
+  const curated=new Map((hf.funds||[]).filter(f=>f&&typeof f.slug==='string').map(f=>[f.slug,f.name||f.slug]));
+  for(const f of readdirSync(dir).filter(x=>/^\d+\.json$/.test(x)).sort()){
+   const part=readJson(root,'hedgefonds/data/stocks/'+f)||{};
+   for(const x of Object.values(part)){
+    if(!x||typeof x!=='object'||!x.ticker)continue;
+    let sid;try{sid=Identity.securityIdForTicker(x.ticker);}catch{continue;}
+    const hit=listingFor(x.ticker,sid,null);
+    if(!hit.row){note(hit.rows,'funds13f',hit.reason);continue;}
+    /* Neue Positionen (Status 'new' im juengsten Quartal), sortiert; Zahl der meldenden Fonds */
+    const fresh=[...new Set((x.holders||[]).filter(h=>h&&h.st==='new'&&curated.has(h.s)).map(h=>h.s))].sort();
+    Object.assign(hit.row,{fp:hf.latestPeriod,fc:Number.isInteger(x.fundCount)?x.fundCount:null,fn:fresh});
+   }
+  }
+  sources.funds13f={domain:'hedgefonds13f',artifact:'/hedgefonds/data/stocks/',asOf:hf.latestPeriod,generatedAt:hf.generatedAt||null,freshness:null,
+   funds:Object.fromEntries([...curated].sort((a,b)=>a[0].localeCompare(b[0])))};
+ });
+
+ // ---- Elliott: Hauptlesart je Titel aus dem Chartbild-Produkt (Watchlist-Ereignis ELLIOTT_CHANGE); zurueckgehaltene Titel ohne Lesart
+ tryPart('elliott',()=>{
+  const meta=readJson(root,'quant/data/technical-intelligence/v3/meta.json');if(!meta)throw Error('CHART_PRODUCT_MISSING');
+  const dir=join(root,'quant/data/technical-intelligence/v3/shards');let asOf=null;
+  for(const f of readdirSync(dir).filter(x=>/\.json\.gz$/.test(x)).sort()){
+   const part=readJson(root,'quant/data/technical-intelligence/v3/shards/'+f)||{};
+   for(const [ticker,x] of Object.entries(part.instruments||{})){
+    if(!x||x.withheld)continue;
+    const e=x.pro&&x.pro.elliott,pr=e&&e.primary;if(!pr||!pr.pattern)continue;
+    let sid;try{sid=Identity.securityIdForTicker(ticker);}catch{continue;}
+    const hit=listingFor(ticker,sid,null);
+    if(!hit.row){note(hit.rows,'elliott',hit.reason);continue;}
+    const w=pr.currentWave||{};
+    Object.assign(hit.row,{ew:[e.status||null,pr.pattern,pr.direction||null,pr.complete?1:0,w.label||null,w.status||null],ewd:isDay(x.asOf)?x.asOf:null});
+    if(isDay(x.asOf)&&(!asOf||x.asOf>asOf))asOf=x.asOf;
+   }
+  }
+  sources.elliott={...domainRule(registry,'technicalIntelligenceV3'),artifact:'/quant/data/technical-intelligence/v3/shards/',asOf,generatedAt:meta.generatedAt||null,model:'EXPERIMENTAL'};
+ });
+
  // ---- Technik: 52W-Hoch, Volumen, Trend (Plattformdefinition aus market-factors.js, siehe discover/engines/high52w.js)
  tryPart('technical',()=>{
   const ds=readJson(root,'technical/data/screener-v1.json');if(!ds||!ds.cols||!Array.isArray(ds.cols.s))throw Error('TECHNICAL_SCREENER_MISSING');
@@ -200,7 +264,7 @@ export function buildSummary(root,{now=new Date()}={}){
  if(oldest&&calendar){let d=oldest;for(let k=0;k<40;k++){d=TS.nextTradingDay(d,{calendar});if(!d)break;sessions.push(d);}}
 
  // ---- spaltenweise ausgeben
- const FIELDS=['i','s','n','x','cu','act','del','el','c','cd','pu','d1','dp','q','qdq','qd','mc','td','tf','h52','h52w','h52m','dh','rv','vs','rsi','a200','st','sts','why'];
+ const FIELDS=['i','s','n','x','cu','act','del','el','c','cd','pu','d1','dp','rf','rk','rp','re','fp','fc','fn','ew','ewd','q','qdq','qd','mc','td','tf','h52','h52w','h52m','dh','rv','vs','rsi','a200','st','sts','why'];
  rows.sort((a,b)=>a.s<b.s?-1:a.s>b.s?1:a.i<b.i?-1:1);
  const cols={};for(const f of FIELDS)cols[f]=rows.map(r=>r[f]===undefined?null:r[f]);
  const slices=sources.supertrader&&sources.supertrader.slices;
