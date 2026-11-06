@@ -47,7 +47,7 @@ Weitere Klassen: `card`, `card ink` (schwarz), `card lime`, `card line`, `grid2`
 - Zusätzlich darfst du `slide({ t: 'html', id, title, sub, html: () => '…' })` für Übersichtsfolien nutzen (z. B. Struktur der Welt, Ablauf), sparsam.
 
 ## Gestaltungsregeln (verbindlich)
-1. Farben nur Weiß, Schwarz, Neongrün `#c8f531` (Variable `var(--lime)`), Graustufen nur über die vorhandenen Variablen (`--a-card`, `--a-line`, `--a-mute`). Kein Beige, kein Rot/Grün für Kurse: Plus = neongrüne Pille, Minus = schwarze Pille (`chg`).
+1. Farben nur Weiß, Schwarz, Neongrün `#c8f531` (Variable `var(--lime)`), Graustufen nur über die vorhandenen Variablen (`--a-card`, `--a-line`, `--a-mute`). Kein Beige, kein Rot/Grün für Kurse: Plus = neongrüne Pille, Minus = schwarze Pille (`chg`). Ausnahme (Owner 06.11.2026): Die Tages-/Zeitraumveränderung im Aktienkopf (C04, `vu-shead-change`, Discover `dx-chart-hero-preis`) zeigt Minus als rote Pille `#c4281c` mit weißer Schrift, Pfeil und Zahl; Plus bleibt neongrün.
 2. Ein Chart überall: nur `chart()` (schwarze Linie, neongrüne Fläche). Keine eigenen Chart-Stile, keine Kerzen in Einsteiger-Ansichten. Balken nur über `bars()`.
 3. Ein Urteil überall: `vd()` mit Stark/Mittel/Schwach/Keine Aussage (Wortlaut je Sache passend, Form bleibt).
 4. Jede Kennzahl, die ein Laie nicht kennt, bekommt `help()` mit einem Satz Alltagssprache.

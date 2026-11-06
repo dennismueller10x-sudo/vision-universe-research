@@ -35,5 +35,5 @@ test("OV5 Aktienroute lädt Bausteine, Überblick und Stil; nur Weiß/Schwarz/Ne
   const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
   for (const s of ["/assets/vu-chart.js", "/assets/vu-ui.js", "/discover/ui/overview.js", "/assets/vu-ui.css", "/discover/ui/overview.css"]) assert.ok(html.includes(s), s);
   const css = readFileSync(new URL("../ui/overview.css", import.meta.url), "utf8");
-  for (const c of css.match(/#[0-9a-f]{3,8}\b/gi) || []) assert.ok(["#c8f531", "#000", "#fff", "#f4f4f4", "#e9e9e9", "#6e6e6e"].includes(c.toLowerCase()), c);
+  for (const c of css.match(/#[0-9a-f]{3,8}\b/gi) || []) assert.ok(["#c8f531", "#000", "#fff", "#f4f4f4", "#e9e9e9", "#6e6e6e", "#c4281c"].includes(c.toLowerCase()), c); // #c4281c: Minus-Pille im Aktienkopf (BAUKASTEN Regel 1, Ausnahme Owner 06.11.2026)
 });
