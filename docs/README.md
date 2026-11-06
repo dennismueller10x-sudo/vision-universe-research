@@ -18,3 +18,5 @@ Unveränderliche Quell-Snapshots behalten ihre Originalpfade im Text. Der Prüfe
 **Fundamental:** [FUNDAMENTAL.md](FUNDAMENTAL.md). Ansichten, Kennzahlen, SEC-Daten und Datenabdeckung.
 
 **Konten:** [ACCOUNTS_AND_SUBSCRIPTIONS.md](accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md). Architektur und weiterführende Einrichtung, Freigaben, Preise, Nutzerführung und Betrieb.
+
+**Recht:** [EINORDNUNG.md](legal/EINORDNUNG.md). Verbindliche Einordnung mit bestehenden Links auf Wortwahl, Befunde und Anwaltsmappe. Die geschützten Rechtstexte bleiben unverändert.
