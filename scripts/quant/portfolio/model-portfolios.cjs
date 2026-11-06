@@ -145,7 +145,8 @@ function delistedRawWeekly(doc, rawSeries, weekOf) {
 
 function buildPanel(a) {
   const basis = a.workDir ? 'TOTAL_RETURN' : 'PRICE_RETURN';
-  const bench = loadBenchmark(basis);
+  // a.benchmark: eigener Wochenkalender (Musterdepots vorwärts: SPY-Tagesreihe, weil die Vorsorge-Reihe früher endet).
+  const bench = a.benchmark || loadBenchmark(basis);
   const calendar = bench.points.map(p => p[0]), T = calendar.length;
   const weekIdx = new Map(calendar.map((d, i) => [isoWeek(d), i]));
   const levels = bench.points.map(p => p[1]);

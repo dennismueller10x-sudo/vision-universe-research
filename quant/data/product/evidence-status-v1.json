@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-11-06T05:08:40.564Z",
+ "generatedAt": "2026-11-06T08:49:56.021Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,9 +35,9 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5661,
-    "covered": 5319,
-    "available": 4544,
+    "universe": 5631,
+    "covered": 5310,
+    "available": 4536,
     "sufficient": {
      "m1": 2273,
      "m3": 2221,
@@ -48,8 +48,8 @@
      "m6": 892
     },
     "reasons": {
-     "NOT_COVERED": 342,
-     "NO_PRICE_CONDITION_TODAY": 679,
+     "NOT_COVERED": 321,
+     "NO_PRICE_CONDITION_TODAY": 678,
      "NO_COMPARABLE_CASE": 96
     }
    }
@@ -78,7 +78,7 @@
     }
    },
    "trust": {
-    "sample": 955914,
+    "sample": 955402,
     "period": [
      "1992-01-31",
      "2026-11-04"
@@ -263,8 +263,8 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 89276,
-     "titles": 5090,
+     "n": 89235,
+     "titles": 5082,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -274,8 +274,8 @@
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 89119,
-     "titles": 5105,
+     "n": 89068,
+     "titles": 5094,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -287,8 +287,8 @@
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 86553,
-     "titles": 5071,
+     "n": 86514,
+     "titles": 5062,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -298,8 +298,8 @@
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 86115,
-     "titles": 5070,
+     "n": 86070,
+     "titles": 5058,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -312,8 +312,8 @@
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 56501,
-     "titles": 4854,
+     "n": 56464,
+     "titles": 4843,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -337,9 +337,9 @@
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5661,
-   "covered": 5319,
-   "available": 4544,
+   "universe": 5631,
+   "covered": 5310,
+   "available": 4536,
    "sufficient": {
     "m1": 2273,
     "m3": 2221,
@@ -350,8 +350,8 @@
     "m6": 892
    },
    "reasons": {
-    "NOT_COVERED": 342,
-    "NO_PRICE_CONDITION_TODAY": 679,
+    "NOT_COVERED": 321,
+    "NO_PRICE_CONDITION_TODAY": 678,
     "NO_COMPARABLE_CASE": 96
    }
   }

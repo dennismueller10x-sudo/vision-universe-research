@@ -41,6 +41,7 @@ Manuell, nur bei Bedarf: `supertrader-st-hist-top5.yml` (historische Forschung, 
   - Läufe 41984749745 und Folgeläufe.
   - Die Ergebnisse liegen nur versiegelt im Lauf-Artefakt und privat beim Owner.
   - Keine Methode liegt über SPY.
+- **Historischer Backtest der übrigen 8 Methoden** (Strang H, Lauf 42170095105, gleiche Regeln, C09 auf IEX ab 2017, C10 als Short-Trade-Studie): versiegelt, keine Methode über SPY; Lesarten in SUPERTRADER_9_HANDOVER §0.1. Im Katalog tragen jetzt alle 13 Methoden den Status „getestet“ (Forschung, nicht zertifiziert).
 - **Treueprüfungen:**
   - **C08 Kullamägi:** Bericht `docs/research/supertrader/C08-TREUE.md`, Diagnose der 16 belegten Trades. FID-4 ist vorregistriert (`certification/C08-FID4-PREREGISTRATION.json`) und hat die Regel auf DEV nicht erfüllt. Ergebnis: „Erkennung je Trade, Portfolio nicht bestätigt“.
   - **C06/C07 Minervini:** Referenz und 13 belegte Trades (#1447). FID-1 ist vorregistriert (`certification/C06-C07-FID1-PREREGISTRATION.json`) und hat die Regel auf DEV bei keiner der beiden Methoden erfüllt. Ergebnis: „Erkennung gemessen, Portfolio nicht bestätigt“.

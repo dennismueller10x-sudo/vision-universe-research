@@ -1,9 +1,49 @@
 {
  "schemaVersion": "vu-vorsorge-failed-ingest-1.0.0",
- "count": 6,
+ "count": 11,
  "failed": [
   {
    "symbol": "158081",
+   "endpoint": "prices",
+   "status": 200,
+   "reason": "NO_PRICES",
+   "retryable": false,
+   "attempts": 1
+  },
+  {
+   "symbol": "BBLX",
+   "endpoint": "prices",
+   "status": 200,
+   "reason": "NO_PRICES",
+   "retryable": false,
+   "attempts": 1
+  },
+  {
+   "symbol": "DFIT",
+   "endpoint": "prices",
+   "status": 200,
+   "reason": "NO_PRICES",
+   "retryable": false,
+   "attempts": 1
+  },
+  {
+   "symbol": "DLAY",
+   "endpoint": "prices",
+   "status": 200,
+   "reason": "NO_PRICES",
+   "retryable": false,
+   "attempts": 1
+  },
+  {
+   "symbol": "INJC",
+   "endpoint": "prices",
+   "status": 200,
+   "reason": "NO_PRICES",
+   "retryable": false,
+   "attempts": 1
+  },
+  {
+   "symbol": "IVIDF",
    "endpoint": "prices",
    "status": 200,
    "reason": "NO_PRICES",
