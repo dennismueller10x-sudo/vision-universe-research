@@ -9,7 +9,6 @@ import { STRATEGIES } from '../registry.mjs';
 import { LIVE_ENGINES } from '../build.mjs';
 import donchian from '../engine/strategies/donchian.mjs';
 
-import { fullLedger } from './full-state.mjs';
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../..');
 const read = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, 'supertrader/data', f), 'utf8'));
 
@@ -69,8 +68,7 @@ test('R6-4 Ausgeliefertes registry.json enthält die Einstufung; Protokoll der F
   assert.equal(don.evidence?.presentation, 'RESEARCH');
   assert.equal(don.evidence?.level, 'IN_REVIEW');
   assert.ok(reg.evidenceScale?.noPromise);
-  const ledger = fullLedger('DONCHIAN_TURTLE'); // L3: voller Stand nur privat
-  if (!ledger) return;
+  const ledger = read('ledger/DONCHIAN_TURTLE.json');
   assert.ok(ledger.open.some((s) => s.entry), 'laufende Modellpositionen im Protokoll');
   // Runde 8: 2.0.0 sucht neu; Positionen aus 1.x laufen nach ihrer Version weiter, wartende 1.x-Setups sind abgeloest.
   for (const s of ledger.open) assert.ok(s.version === '2.0.0' || s.version === '2.0.1' || s.version === '2.0.2' || (s.entry && ['1.0.0', '1.1.0'].includes(s.version)), s.id);

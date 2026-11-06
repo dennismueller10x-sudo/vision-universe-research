@@ -49,7 +49,8 @@
     if (primary) host.append(X.section(primary.label, "Szenarien beschreiben Bedingungen – keine gesicherten Vorhersagen.", [el("div", { class: "qx-grid qx-grid-2" }, (data.scenarios || []).map(function (s) {
       return X.card([el("span", { class: "v2-eyebrow", text: s.kind === "PRIMARY" ? "Hauptszenario" : "Alternative" }), el("h3", { class: "qx-h3", text: s.label }),
         el("dl", { class: "qx-kv" }, [el("dt", { text: "Bestätigung" }), el("dd", { style: "text-align:left", text: s.confirmation || "–" }),
-          el("dt", { text: "Ungültig-Marke laut Methode" }), el("dd", { text: price(s.invalidation && s.invalidation.price) })]),
+          el("dt", { text: "Ungültig bei" }), el("dd", { text: price(s.invalidation && s.invalidation.price) }),
+          el("dt", { text: "Zielzonen" }), el("dd", { text: (s.targets || []).map(function (t) { return price(t.zoneLow) + "–" + price(t.zoneHigh); }).join(" · ") || "–" })]),
         X.more("Dafür und dagegen", function () { return (s.support || []).map(function (e) { return el("p", { class: "qx-small", text: "Dafür: " + e.statement }); }).concat((s.conflicts || []).map(function (e) { return el("p", { class: "qx-small", text: "Dagegen: " + e.statement }); })); })]);
     }))], null, "Szenarien"));
     var E = data.elliott;

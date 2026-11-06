@@ -837,24 +837,114 @@
       "scope": "QA „Was ist jetzt wichtig?“: Radar verfügbar = Titel im Radar-Scherben ausgewertet (getRadarCard state), nicht „Karte vorhanden“; ohne Ereignis gilt der Leerhinweis"
     },
     {
+      "id": "UIP-E3-1502-navigation",
+      "date": "2026-11-06",
+      "pr": 1502,
+      "ownerApproval": "Owner-Auftrag 06.11.2026, Strang E3: gemeinsames app-aktives Gestenmodul in assets/ und Integration in Capacitor; keine Inhalte oder Fachmodelle ändern.",
+      "file": "assets/site-navigation.js",
+      "from": "0b4883b3429313226d66e9e807d4c05c6afe1033a58e3ad508838458d8183535",
+      "to": "f82c9dd8c82d555c40b233dfd53b75224b83ebce45092562cf7829a4abdea484",
+      "scope": "Nur app-aktiven Gesten-Loader ergänzen; Browser ohne Flag lädt keine zusätzlichen Assets."
+    },
+    {
       "id": "UIP-R84",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.css",
+      "from": "70efb6492e4e7c466c6cbf3c22a877a113f9d6b267d7a90fcf81c7884b0d4d92",
+      "to": "f455920e0be783c97c9649eb2f5fd8a811f59d51daa3a90b7dfe1216d47b1ee8",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R85",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.js",
+      "from": "51d84be70779ae8572f286e6beac792539dc7d510d177467c67e0e7107afa511",
+      "to": "b2da22eb9137f91622102a2077a79af941edde6a1cd0a4870b5e545c1ba7b491",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R86",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-chartbild.js",
+      "from": "00c6be39116096753a73bf27c5fd20624c9e7cb030134de23df20be136759d69",
+      "to": "5656d3553fa7ba7f10d1f3e4d5ea19d01a4821ea9e4e89855016b40481fd9388",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R87",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-stock.js",
+      "from": "66c2d93045da21929e729625dfd844b11d10a1e6dc28281ab1c76ee09b4d8406",
+      "to": "954222dd0965fd62642f7690fdf44afaf05e38a32a6f725ed345ba5806b72251",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R88",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-tools.js",
+      "from": "1e053993182f5a276b6476782dc4f07f7914847c783d419495840da49a5373e5",
+      "to": "818d9b23114971f6df5f05a6f280626540acb8ccdc69ee56755b52244b771847",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R89",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/pages.js",
+      "from": "da50fe2f0f4f0f5f6ac88371f8521412962d4d8526a8e0d42a4475e006462bfa",
+      "to": "de6c95fbd9f1e41dc0edd1cf67d02994de03b726a1acf0cb6943640ecd6e686c",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R90",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/view-model.js",
+      "from": "65fa7c4b5b35334987217af0b6cf597ff9fa6025396b2f537899209ae25afd97",
+      "to": "3989cc957a0c83941c79b065617590bacf52d85ec4224b4d3449f4107aab8504",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R91",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "a9f3339eb2e2789c1194104b1a986e7ab3e3d59e20c170366b9212bb659061e9",
+      "to": "67978cf8185aa21393acab0afb5b424eb90a4367ef13759a05e793fb62b1c10b",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R92",
       "date": "2026-11-06",
       "pr": 1520,
       "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
       "file": "assets/stock-navigator.css",
       "from": "afd6bc62cf2ebeada14538725ad9d415e0cf4b8bc4717c06c8fd581ce5828da0",
       "to": "546b6ec42b39f44fb9f085c8dacbcf4fadc352176e0b3178e9c7b1239cbc8c82",
-      "scope": "Owner 06.11.2026: Firmenlogos für alle Aktien, Minus rot im Aktienkopf"
+      "scope": "Owner 06.11.2026: Firmenlogos für alle Aktien, Minus im Aktienkopf rot"
     },
     {
-      "id": "UIP-R85",
+      "id": "UIP-R93",
       "date": "2026-11-06",
       "pr": 1520,
       "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
       "file": "assets/stock-navigator.js",
       "from": "55311a7f94d77e64ba7b1f04788b82e9fdfb7429f46548b399594b68dfa301db",
       "to": "f8e3db794f3653a5c217eff0b524aa660bb1bc099d5f8d7813c340687451c473",
-      "scope": "Owner 06.11.2026: Firmenlogos für alle Aktien, Minus rot im Aktienkopf"
+      "scope": "Owner 06.11.2026: Firmenlogos für alle Aktien, Minus im Aktienkopf rot"
     }
   ]
 }

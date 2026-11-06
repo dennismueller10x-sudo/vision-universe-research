@@ -17,7 +17,6 @@
 // Regeln auf den bereits veroeffentlichten Reihen.
 //
 // Aufruf: node scripts/supertrader/build.mjs [--root=.] [--out=supertrader] [--check]
-import { publicSignalsLagged, publicPortfolio, publicTrend52, publicReplay, publicLedger, FULL_LEDGER_SCHEMAS } from './public-signals.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
@@ -278,20 +277,10 @@ function greenblattCoverage() {
 }
 
 /* ------------------------------------------------------- Ledger */
-/* L3 (Owner-Linie 05.11.2026): der volle Zustand der Ledger liegt privat (scripts/supertrader/private-state.mjs holt ihn
-   vor dem Lauf aus der History-Ablage nach SUPERTRADER_LEDGER_DIR und sichert ihn danach). Im Repository steht nur die
-   öffentliche Sicht (public-signals.mjs#publicLedger). In GitHub Actions ohne SUPERTRADER_LEDGER_DIR: Abbruch (fail closed). */
-const LEDGER_DIR = process.env.SUPERTRADER_LEDGER_DIR ? path.resolve(process.env.SUPERTRADER_LEDGER_DIR) : null;
-function ledgerDir() {
-  if (LEDGER_DIR) return LEDGER_DIR;
-  if (process.env.GITHUB_ACTIONS === 'true' && OUT === path.resolve(ROOT, 'supertrader')) throw new Error('SUPERTRADER_LEDGER_DIR fehlt: der private Zustand wird nicht ins Repository geschrieben (L3, fail closed)');
-  return path.join(DATA, 'ledger');
-}
-function ledgerPath(id) { return path.join(ledgerDir(), `${id}.json`); }
-function publicLedgerPath(id) { return path.join(DATA, 'ledger', `${id}.json`); }
+function ledgerPath(id) { return path.join(DATA, 'ledger', `${id}.json`); }
 export function loadLedger(engine) {
   const p = ledgerPath(engine.id);
-  if (exists(p)) { const l = readJson(p); if (!FULL_LEDGER_SCHEMAS.includes(l.schema)) throw new Error(`Ledger ${engine.id}: oeffentliche Sicht statt privatem Zustand (${l.schema}) - fail closed`); return l; }
+  if (exists(p)) return readJson(p);
   return { schema: 'supertrader-ledger-1.0.0', strategyId: engine.id, variant: engine.variant, liveSince: null, lastProcessed: null, open: [], closed: [], invalidated: [] };
 }
 
@@ -573,18 +562,16 @@ export function build() {
     const rsOf = (sym, date) => { const inst = instruments.get(sym); const t = inst?.indexOf.get(date); return t > 0 ? cross.get(sym)?.rs?.[t - 1] ?? null : null; };
     portfolios.strategies[engine.id] = buildModelPortfolio({ engine, signals: [...L.open, ...L.closed], barsOf, marketOk: MARKET_OK, calendar, asOf, rsOf });
   }
-  writeJson(path.join(DATA, 'portfolio.json'), publicPortfolio(portfolios));
+  writeJson(path.join(DATA, 'portfolio.json'), portfolios);
   // Runde 12: VU Trendfolge 52W - Modelldepot mit monatlicher Umschichtung (eigenes Ledger, keine Rueckrechnung).
   {
     const spyPts = readJson(rel('quant/data/market/multi-asset/series/SPY.json')).points.filter(([d]) => String(d).slice(0, 10) <= asOf);
     const spy = { date: spyPts.map(([d]) => String(d).slice(0, 10)), close: spyPts.map(([, v]) => v) };
     const lp = ledgerPath('VU_TREND_52W');
     const prev = exists(lp) ? readJson(lp) : null;
-    if (prev && !FULL_LEDGER_SCHEMAS.includes(prev.schema)) throw new Error(`Ledger VU_TREND_52W: oeffentliche Sicht statt privatem Zustand (${prev.schema}) - fail closed`);
     const { ledger: tl, preview, stocks } = runTrend52Live({ instruments, spy, ledger: prev, asOf });
     writeJson(lp, tl);
-    if (LEDGER_DIR) writeJson(publicLedgerPath('VU_TREND_52W'), publicLedger(tl, asOf));
-    const t52 = publicTrend52(trend52View({ ledger: tl, preview, stocks, spy, asOf }));
+    const t52 = trend52View({ ledger: tl, preview, stocks, spy, asOf });
     writeJson(path.join(DATA, 'trend52.json'), t52);
     TREND52_SYMBOLS = trend52Symbols(t52);
     log(`VU_TREND_52W: Positionen ${tl.state.positions.length}, Entscheidungen ${tl.decisions.length}, Rangliste ${preview?.candidates?.length ?? 0}`);
@@ -606,17 +593,13 @@ export function build() {
   signals.discoverAvailability = discoverAvailability(
     [...Object.keys(signals.bySymbol), ...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)],
     readJson(rel('discover/data/stock-index/US_REAL.json')).symbols || []);
-  // Owner-Linie 05.11.2026 (L2): öffentlich ohne Order-, Stopp- und Ergebnisgrößen; die Ledger behalten den vollen Zustand
-  // voller Stand nur privat (Integritätstests im Nachtlauf lesen ihn; nie im Repository)
-  if (LEDGER_DIR) { fs.mkdirSync(path.join(LEDGER_DIR, 'full'), { recursive: true }); writeJson(path.join(LEDGER_DIR, 'full', 'signals-full.json'), signals); }
-  const pub = publicSignalsLagged(signals);
-  writeJson(path.join(DATA, 'signals.json'), pub);
+  writeJson(path.join(DATA, 'signals.json'), signals);
   /* Ausschnitte (Payload-Audit 03.10.2026: jede der 822 Seiten lud 3,3 MB):
      signals-core.json fuer Start, Strategien, Methodik, Backtests (ohne die
      Historienlisten), stock/<SYM>.json fuer die Aktienseite. signals.json
      bleibt vollstaendig fuer die Signalliste. */
-  writeJson(path.join(DATA, 'signals-core.json'), signalsCore(pub));
-  const slices = signalsBySymbol(pub, [...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)]);
+  writeJson(path.join(DATA, 'signals-core.json'), signalsCore(signals));
+  const slices = signalsBySymbol(signals, [...TREND52_SYMBOLS, ...symbolsIn(signals.partialChecks)]);
   /* Ein Ausschnitt eines Symbols, das heraus faellt, darf nicht stehen
      bleiben - er zeigte sonst alte Signale. Ohne Ausschnitt laedt die Seite
      die vollstaendige Datei. */
@@ -626,9 +609,8 @@ export function build() {
   if (pilot) backtests.pilot = { path: '/supertrader/data/pilot-backtest.json', status: pilot.status, id: pilot.spec.id };
   writeJson(path.join(DATA, 'backtests.json'), backtests);
   if (pilot) writeJson(path.join(DATA, 'pilot-backtest.json'), pilot);
-  if (LEDGER_DIR) writeJson(path.join(LEDGER_DIR, 'full', 'replay-full.json'), replay);
-  writeJson(path.join(DATA, 'replay.json'), publicReplay(replay));
-  for (const [id, l] of Object.entries(ledgers)) { writeJson(ledgerPath(id), l); if (LEDGER_DIR) writeJson(publicLedgerPath(id), publicLedger(l, asOf)); }
+  writeJson(path.join(DATA, 'replay.json'), replay);
+  for (const [id, l] of Object.entries(ledgers)) writeJson(ledgerPath(id), l);
   /* Jede Karte verlinkt auf /supertrader/stock/<SYM>/ (supertrader.js
      stockUrl) - auch die Teilpruefungs-Karten, deren Titel nicht unter den
      Kandidaten stehen. Ohne Seite war das ein 404 (DAR, ROKU, PECO, ...,
@@ -1042,7 +1024,7 @@ export function signalsCore(signals) {
   for (const [id, st] of Object.entries(signals.strategies || {})) {
     const c = { ...st };
     /* Die Zahl kommt aus der Liste selbst: fehlte closedTotal im Signalstand, zeigten Start und Methodik sonst still 0. */
-    if (Array.isArray(st.closed)) c.closedTotal = Number.isFinite(st.closedTotal) ? st.closedTotal : st.closed.length; // L3: öffentlich ist closed die sichtbare Teilmenge
+    if (Array.isArray(st.closed)) c.closedTotal = st.closed.length;
     for (const k of HISTORY_LISTS) delete c[k];
     strategies[id] = c;
   }

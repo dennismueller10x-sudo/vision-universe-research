@@ -1,6 +1,6 @@
 # Mobile Oberfläche: Weg von verschachtelten Rahmen zur App-Navigation
 
-**Stand:** 03.11.2026 (Phase 2) · Zielbild und Etappen. **Nichts davon ist umgesetzt.** Der Prototyp (`app/`) nutzt Rahmen (iframe) und gilt nur bis zum Gerätetest. ADR-004 (Expo als Stufe 3) bleibt langfristig gültig.
+**Stand:** 03.11.2026 (Phase 2) · Zielbild und Etappen. **Etappe B/C bleibt Zielbild; die app-aktive Gesten-Ergänzung E3 ist unten beschrieben.** Der Prototyp (`app/`) nutzt Rahmen (iframe) und gilt nur bis zum Gerätetest. ADR-004 (Expo als Stufe 3) bleibt langfristig gültig.
 
 ## 1. Ausgangslage (aus dem Repository)
 
@@ -53,3 +53,13 @@ Keine Änderung an Produktseiten, an `assets/site-navigation.*` oder an Verträg
 | Chart-Gesten oder Zurück-Wischen kollidieren | Gesten in Seiten lösen (Produkt-PR) oder C1 |
 | WebView wird bei Quant/Technical wegen Speicher neu geladen | Datenpakete verkleinern (PERFORMANCE.md) oder C2 für die Aktienseite |
 | Store-Prüfung nach 4.2 wird für B als zu dünn eingeschätzt | C1/C2 und native Mehrwerte (Push, Widgets, Sperre) vor dem Store-Antrag |
+
+## E3: gemeinsame Gesten-Ergänzung (06.11.2026)
+
+`assets/vu-gestures.js` (UMD, Pointer Events, ohne Bibliothek) ergänzt die bestehenden C16-Sheets und öffnet Detailklappen auf Aktienseiten als ziehbare Sheets. Die bestehende iframe-Hülle bleibt bestehen. Aktivierung, Android-Brücke und Testaufruf: [app/README.md](../../app/README.md#app-gesten-e3). Gestaltung folgt C16 aus Redesign 2027, ohne Änderungen an Texten, Daten oder Fachmodellen.
+
+Rand: 20 px, Richtungsentscheidung ab 8 px, Zurück ab 35 % Breite. Sheet: 70 % Höhe, Vollbild per Aufwärtszug ab 12 % Bildschirmhöhe, Schließen ab 22 % abwärts; Abbruch behält die vorherige Höhe. Reduced Motion entfernt Einflug und Nachlauf. Chart-/Tabellenflächen außerhalb des Randes erhalten keine Pointer-Handler. Original-Detailknoten werden versetzt und beim Schließen zurückgesetzt, nicht kopiert. Beim direkten Einstieg ohne nutzbare Vorgeschichte führt Zurück zum Produkteinstieg; eine je Produkt gespeicherte Historien-Untergrenze verhindert den Rücksprung eines Rahmens nach `about:blank`.
+
+Nachweise und Prüfstand stehen im E3-PR; [Quant hell](e3-gestures/quant-light.gif) und [Supertrader dunkel](e3-gestures/supertrader-dark.gif) zeigen Inline-Ansicht → Sheet → Vollbild → Randgeste. Keine Store-/Pages-Veröffentlichung, keine neuen Workflows oder Schlüssel. Ein echter Gerätetest bleibt erforderlich.
+
+Prüfstand: 76 fokussierte Node-Tests grün (App inklusive Gestenlogik, gemeinsame Navigation, UI-Byte-Sperre). Chromium-Touch-QA auf beiden NVDA-Routen bei 390 × 844, jeweils hell/dunkel: Schwellen, Abbruch, Reduced Motion, Vollbild, Schließen, Methodenseiten und feste Zurück-Taste bestanden; axe-Kontrast jeweils 0 Befunde. Discover: 120.063 Byte / 6 Requests (Budget 180.000 / 12), im Browser ohne Opt-in 0 Gesten-Requests. Ergebnisse: [results.json](e3-gestures/results.json). Herkunftsgeprüfte iframe-Brücke separat mit simuliertem Capacitor-App-Plugin bestanden; kein Gerätetest. Produktionsisolation: keine Datei verändert. Core: 378 bestanden, 3 übersprungen, 1 vorhandener Generatorfehler; die Ausgabe bleibt mit dem ursprünglichen und dem ergänzten VUUI bytegleich. Python: 585 bestanden, 5 vorhandene Bestandsabweichungen im kanonischen Markt. Diese Daten und Fachmodelle sind unverändert.
