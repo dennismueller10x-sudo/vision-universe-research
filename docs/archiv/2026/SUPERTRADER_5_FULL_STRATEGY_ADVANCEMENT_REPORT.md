@@ -7,8 +7,8 @@ Alle historischen Aussagen sind `DIAGNOSTIC_NOT_CERTIFIED`. Keine Strategie ist 
 
 Maschinenlesbar und generiert:
 - `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF5-LIFECYCLE.json`: Matrix, Validierung, Modellannahmen, Varianten und Readiness je Lifecycle.
-- [SUPERTRADER_5_LIFECYCLE_MATRIX.md](SUPERTRADER_5_LIFECYCLE_MATRIX.md): Source-to-Execution-Matrix, alle Zeilen.
-- [SUPERTRADER_3_STRATEGY_READINESS.md](SUPERTRADER_3_STRATEGY_READINESS.md): die abgenommenen sechs Readiness-Dimensionen je Kandidat. Die Messklassen sind unverändert.
+- [SUPERTRADER_5_LIFECYCLE_MATRIX.md](../../SUPERTRADER_5_LIFECYCLE_MATRIX.md): Source-to-Execution-Matrix, alle Zeilen.
+- [SUPERTRADER_3_STRATEGY_READINESS.md](../../SUPERTRADER_3_STRATEGY_READINESS.md): die abgenommenen sechs Readiness-Dimensionen je Kandidat. Die Messklassen sind unverändert.
 
 ## Kurzfassung
 
@@ -298,7 +298,7 @@ Stand: 23. Oktober 2026, nach dem Merge von #849 (`main` @ `91c2fc87c`). Geprüf
 
 ### Neu im Abschluss-PR: Weinstein-Variante `ALT-SIC3-GROUP-PROXY`
 
-- **Grundlage:** Ihre Entscheidung vom 21.10.2026 ([SUPERTRADER_3_WEINSTEIN_INDUSTRY_STRENGTH.md](SUPERTRADER_3_WEINSTEIN_INDUSTRY_STRENGTH.md), Abschnitt 7). `SIC3-EW-MIN5-400D-WIDE` darf als klar gekennzeichnete Research-Referenz verwendet werden.
+- **Grundlage:** Ihre Entscheidung vom 21.10.2026 ([SUPERTRADER_3_WEINSTEIN_INDUSTRY_STRENGTH.md](../../SUPERTRADER_3_WEINSTEIN_INDUSTRY_STRENGTH.md), Abschnitt 7). `SIC3-EW-MIN5-400D-WIDE` darf als klar gekennzeichnete Research-Referenz verwendet werden.
 - **Lücke:** Der 5.0-Lifecycle hat diese Referenz bisher nicht genutzt. Die Komponente aus 3.0 (`research/industry-strength.mjs`) war fertig, aber im Lifecycle nicht angebunden.
 - **Umsetzung:** eine zusätzliche vorregistrierte Variante für Investor und Trader.
   - Ein Buy-Stop entfällt, wenn das SIC3-Gruppenchart in der abgeschlossenen Woche vor der Orderwoche **unter einer fallenden MA30w** schloss. Diese Lesart ähnelt Stage 4 und nutzt dieselbe MA30w wie das Gate der Aktie; es gibt keine neue Schwelle.

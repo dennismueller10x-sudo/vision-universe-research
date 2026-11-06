@@ -1,5 +1,5 @@
 /**
- * Supertrader 7.0 – code coverage of the recorded fingerprints (LOW finding of docs/SUPERTRADER_7_FULL_COMPLETION_REPORT.md
+ * Supertrader 7.0 – code coverage of the recorded fingerprints (LOW finding of docs/archiv/2026/SUPERTRADER_7_FULL_COMPLETION_REPORT.md
  * §6 / SUPERTRADER_7_EXECUTION_AND_STRATEGIES.md §6): the 6.0 runners run-sf6-validation.mjs and run-sf6-integrity.mjs
  * record validationCodeSha256 / integrityCodeSha256 over their own file lists, which do not contain
  * research/lifecycle-engine.mjs and research/minervini-execution.mjs. Changing those lists would move the recorded 6.0

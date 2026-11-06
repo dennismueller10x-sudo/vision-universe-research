@@ -1,7 +1,7 @@
 /**
  * Supertrader 5.0 – Darvas trade lifecycle (C03, contracts/darvas.mjs) on the shared research engine
  * (research/lifecycle-engine.mjs). Built on the unchanged box machine and stop method (methods/darvas.mjs); report
- * docs/SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md.
+ * docs/archiv/2026/SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md.
  *
  * Source-bound mechanics (#709 B06 Q&A, HARD, HIGH, original wording checked):
  *  - a box needs a confirmed top and a confirmed bottom, each by the three-day procedure (DAR-Q1 / DAR-Q2);

@@ -1,6 +1,6 @@
 # Supertrader 3.0 – Strategy Readiness (sechs Dimensionen)
 
-Generiert mit `node scripts/supertrader/source-faithful/completion/build-readiness-sf3.mjs` aus `STRATEGY-COMPLETION-STATUS.json` und den Verträgen. Nicht von Hand bearbeiten. Bericht: [SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md](SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md).
+Generiert mit `node scripts/supertrader/source-faithful/completion/build-readiness-sf3.mjs` aus `STRATEGY-COMPLETION-STATUS.json` und den Verträgen. Nicht von Hand bearbeiten. Bericht: [SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md](archiv/2026/SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md).
 
 Grundsätze: a mechanically complete screening component is not a tradable strategy; a historical model assumption is not a source rule; a diagnostic performance is not a certified performance; a proxy (SIC group, universe breadth, VU RS percentile) never unblocks a DATA_BLOCKED rule.
 

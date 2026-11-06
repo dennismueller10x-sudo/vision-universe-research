@@ -68,7 +68,7 @@ export function buildReadiness() {
 }
 
 export function readinessMarkdown(r) {
-  let md = '# Supertrader 3.0 – Strategy Readiness (sechs Dimensionen)\n\nGeneriert mit `node scripts/supertrader/source-faithful/completion/build-readiness-sf3.mjs` aus `STRATEGY-COMPLETION-STATUS.json` und den Verträgen. Nicht von Hand bearbeiten. Bericht: [SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md](SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md).\n\n';
+  let md = '# Supertrader 3.0 – Strategy Readiness (sechs Dimensionen)\n\nGeneriert mit `node scripts/supertrader/source-faithful/completion/build-readiness-sf3.mjs` aus `STRATEGY-COMPLETION-STATUS.json` und den Verträgen. Nicht von Hand bearbeiten. Bericht: [SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md](archiv/2026/SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md).\n\n';
   md += 'Grundsätze: ' + r.principles.join('; ') + '.\n\n';
   md += '| Kandidat | Strategie | 1 Source Fidelity (exakt/abgel./manuell/Daten/offen) | 2 Mechanik (Engine) | 3 blockierende Daten | 4 Messklasse | 5 manuelle Entscheidungen | 6 Live |\n|---|---|---|---|---|---|---|---|\n';
   for (const c of r.candidates) {

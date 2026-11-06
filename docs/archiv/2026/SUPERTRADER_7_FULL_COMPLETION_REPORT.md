@@ -7,14 +7,14 @@ Stand: 24. Oktober 2026, ergänzt am 25. Oktober 2026 um die Umsetzung der Eigen
 Alle historischen Aussagen sind `DIAGNOSTIC_NOT_CERTIFIED`. Alle 13 Strategien sind `LIVE_NOT_APPROVED`. Es gibt keine Orders, keine Brokeranbindung und keine Performanceaussage. Kennzahlen liegen versiegelt beim Eigentümer; öffentlich sind nur Zählungen und Hashes.
 
 Maschinenlesbar:
-- Abschlussmatrix: [SUPERTRADER_7_COMPLETION_MATRIX.md](SUPERTRADER_7_COMPLETION_MATRIX.md), Artefakt `STRATEGY-SF7-COMPLETION.json`. Der Builder liest die maschinellen Felder aus der 6.0-Readiness (Kriterien 1.2.0, mit den 7.0-Eingaben neu gebaut). Keine Note ist von Hand gesetzt.
+- Abschlussmatrix: [SUPERTRADER_7_COMPLETION_MATRIX.md](../../SUPERTRADER_7_COMPLETION_MATRIX.md), Artefakt `STRATEGY-SF7-COMPLETION.json`. Der Builder liest die maschinellen Felder aus der 6.0-Readiness (Kriterien 1.2.0, mit den 7.0-Eingaben neu gebaut). Keine Note ist von Hand gesetzt.
 - Teilberichte:
-  - [SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md](SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md) (Workstream C);
-  - [SUPERTRADER_7_EXECUTION_AND_STRATEGIES.md](SUPERTRADER_7_EXECUTION_AND_STRATEGIES.md) (B/D/E/F);
-  - [SUPERTRADER_7_V4D1_RESOLUTION.md](SUPERTRADER_7_V4D1_RESOLUTION.md) (A);
-  - [SUPERTRADER_7_MINERVINI_FINDINGS_CLASSIFICATION.md](SUPERTRADER_7_MINERVINI_FINDINGS_CLASSIFICATION.md) (E7-2);
-  - [SUPERTRADER_7_OPTIMISTIC_FIXES.md](SUPERTRADER_7_OPTIMISTIC_FIXES.md) (E7-3, #911);
-  - [SUPERTRADER_7_OWNER_DECISIONS_E7.md](SUPERTRADER_7_OWNER_DECISIONS_E7.md) (Vorlagen E7-1 und E7-4 bis E7-7).
+  - [SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md](../../SUPERTRADER_7_MINERVINI_SOURCE_INVENTORY.md) (Workstream C);
+  - [SUPERTRADER_7_EXECUTION_AND_STRATEGIES.md](../../SUPERTRADER_7_EXECUTION_AND_STRATEGIES.md) (B/D/E/F);
+  - [SUPERTRADER_7_V4D1_RESOLUTION.md](../../SUPERTRADER_7_V4D1_RESOLUTION.md) (A);
+  - [SUPERTRADER_7_MINERVINI_FINDINGS_CLASSIFICATION.md](../../SUPERTRADER_7_MINERVINI_FINDINGS_CLASSIFICATION.md) (E7-2);
+  - [SUPERTRADER_7_OPTIMISTIC_FIXES.md](../../SUPERTRADER_7_OPTIMISTIC_FIXES.md) (E7-3, #911);
+  - [SUPERTRADER_7_OWNER_DECISIONS_E7.md](../../SUPERTRADER_7_OWNER_DECISIONS_E7.md) (Vorlagen E7-1 und E7-4 bis E7-7).
 
 ---
 
@@ -197,7 +197,7 @@ Folge (1.1.0): Die 8 echten Bewegungen der ersten Fassung halten der strengeren 
 - D3 (Turtle) und D4 (Minervini) betrafen die OPTIMISTIC-Alternativen. Nach E7-3 sind sie als neue, versionierte Lesarten behoben (#911). Die alten Lesarten laufen weiter als ersetzt. SF6-PAPER-2027 1.1.0 pinnt die neuen Fingerabdrücke und ist nicht aktiviert.
 - Neu geprüft ohne Fehler (13 Regressionstests in #898): Kostensymmetrie, Positionslimit bei gleichzeitigen Signalen und Unabhängigkeit von der Eingabereihenfolge, Aktienbilanz je Trade, Dividende am Einstiegstag, Gaps, Drawdown.
 - Offen bleiben:
-  - EP-Stops werden nur gegen IEX-Tiefs geprüft (MEDIUM; seit [SUPERTRADER_7_EXECUTION_VALIDATION.md](SUPERTRADER_7_EXECUTION_VALIDATION.md) gezählt: 180 von 222 über Nacht gehaltenen REF-Trades mit konsolidiertem Tagestief unter dem IEX-Stop);
+  - EP-Stops werden nur gegen IEX-Tiefs geprüft (MEDIUM; seit [SUPERTRADER_7_EXECUTION_VALIDATION.md](../../SUPERTRADER_7_EXECUTION_VALIDATION.md) gezählt: 180 von 222 über Nacht gehaltenen REF-Trades mit konsolidiertem Tagestief unter dem IEX-Stop);
   - die 6.0-Code-Fingerabdrücke enthalten `lifecycle-engine.mjs` nicht (LOW; additiv gelöst durch Abdeckungsprüfung und Zusatz-Fingerabdruck, siehe dort §5).
 
 ## 7. Minervini SEPA/VCP
@@ -241,7 +241,7 @@ Kein Regelstatus wird aufgewertet, keine Minervini-Regel ist `SOURCE_EXACT`.
 
 ## 9. Die übrigen elf Strategien
 
-Je Strategie mit den zwölf Fragen in [SUPERTRADER_7_COMPLETION_MATRIX.md](SUPERTRADER_7_COMPLETION_MATRIX.md).
+Je Strategie mit den zwölf Fragen in [SUPERTRADER_7_COMPLETION_MATRIX.md](../../SUPERTRADER_7_COMPLETION_MATRIX.md).
 
 | Strategie | 7.0 |
 |---|---|

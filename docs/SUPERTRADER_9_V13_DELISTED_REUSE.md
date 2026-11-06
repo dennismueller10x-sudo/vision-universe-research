@@ -89,7 +89,7 @@ In dieser Umgebung gibt es weder V13-Dateien noch Archiv-Chiffrate noch Schlüss
 
 ### 1.7 Quarantäne (83 Fälle, CC-5)
 
-- **Herkunft:** V4-D1 ([SUPERTRADER_6_V4D1_CONTAINMENT.md](SUPERTRADER_6_V4D1_CONTAINMENT.md), [SUPERTRADER_7_V4D1_RESOLUTION.md](SUPERTRADER_7_V4D1_RESOLUTION.md)). Die EDGAR-Prüfungen 1.4.0–1.4.3 haben keine der 83 referenzexponierten DQ-K5-Sitzungen belegt. Das Overlay ist leer, die Quarantäne bleibt aktiv, CC-5 bleibt offen ([SUPERTRADER_8_ACTIVATION_READINESS.md](SUPERTRADER_8_ACTIVATION_READINESS.md)).
+- **Herkunft:** V4-D1 ([SUPERTRADER_6_V4D1_CONTAINMENT.md](SUPERTRADER_6_V4D1_CONTAINMENT.md), [SUPERTRADER_7_V4D1_RESOLUTION.md](SUPERTRADER_7_V4D1_RESOLUTION.md)). Die EDGAR-Prüfungen 1.4.0–1.4.3 haben keine der 83 referenzexponierten DQ-K5-Sitzungen belegt. Das Overlay ist leer, die Quarantäne bleibt aktiv, CC-5 bleibt offen ([SUPERTRADER_8_ACTIVATION_READINESS.md](archiv/2026/SUPERTRADER_8_ACTIVATION_READINESS.md)).
 - **Umsetzung im Runner:** Die Quarantäne wird angewandt, **nachdem** B gebaut ist, und zwar für jedes Wertpapier in A und B gleich:
   - **primär `DQ-K5-BOOK`** (`integrity/discontinuity.mjs`): eine Obermenge der 83 Sitzungen;
   - **optional `CA-Q-K5-DATES`**: die versiegelte Sitzungsliste aus `run-sf7-ca-resolution` für A über `quarantineUnresolved`; zugefügte Ketten werden an ihren DQ-K5-Markierungen geschnitten.

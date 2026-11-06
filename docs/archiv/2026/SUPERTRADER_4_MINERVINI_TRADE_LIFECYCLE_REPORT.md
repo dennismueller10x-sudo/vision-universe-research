@@ -6,7 +6,7 @@ Alle historischen Aussagen sind `DIAGNOSTIC_NOT_CERTIFIED`. Keine Methode ist li
 
 Maschinenlesbar:
 - `scripts/supertrader/source-faithful/artifacts/STRATEGY-MINERVINI-LIFECYCLE.json` (Matrix, Validierung, Modellannahmen, Varianten, Readiness je Strategie; generiert);
-- [SUPERTRADER_4_MINERVINI_LIFECYCLE_MATRIX.md](SUPERTRADER_4_MINERVINI_LIFECYCLE_MATRIX.md) (generierte Source-to-Execution-Matrix, alle Zeilen).
+- [SUPERTRADER_4_MINERVINI_LIFECYCLE_MATRIX.md](../../SUPERTRADER_4_MINERVINI_LIFECYCLE_MATRIX.md) (generierte Source-to-Execution-Matrix, alle Zeilen).
 
 ## Kurzfassung
 
@@ -50,7 +50,7 @@ Keine dieser Regeln ist `SOURCE_EXACT`: Der Wortlaut ist nur übersetzt (`REQUIR
 
 Alle neun operativen Phasen sind ausführbar, für SEPA wie für Power Play (`MECHANICAL_LIFECYCLE_UNDER_MODEL_ASSUMPTIONS`).
 
-Matrix (generiert, [SUPERTRADER_4_MINERVINI_LIFECYCLE_MATRIX.md](SUPERTRADER_4_MINERVINI_LIFECYCLE_MATRIX.md)):
+Matrix (generiert, [SUPERTRADER_4_MINERVINI_LIFECYCLE_MATRIX.md](../../SUPERTRADER_4_MINERVINI_LIFECYCLE_MATRIX.md)):
 
 | Klasse | SEPA (44 Zeilen) | Power Play (40 Zeilen) |
 |---|---|---|

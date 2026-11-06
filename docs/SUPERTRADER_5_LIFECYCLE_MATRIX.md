@@ -1,6 +1,6 @@
 # Supertrader 5.0 – Source-to-Execution-Matrix (Darvas, Kullamägi Breakout, Pocket Pivot, Buyable Gap-Up, Weinstein Investor / Trader, Holy Grail Research-Variante)
 
-Generiert mit `node scripts/supertrader/source-faithful/completion/build-sf5-lifecycle.mjs` aus `research/sf5-lifecycle-matrix.mjs`, `research/sf5-lifecycles.mjs`, den Verträgen und dem #709-Extrakt. Nicht von Hand bearbeiten. Bericht: [SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md](SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md).
+Generiert mit `node scripts/supertrader/source-faithful/completion/build-sf5-lifecycle.mjs` aus `research/sf5-lifecycle-matrix.mjs`, `research/sf5-lifecycles.mjs`, den Verträgen und dem #709-Extrakt. Nicht von Hand bearbeiten. Bericht: [SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md](archiv/2026/SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md).
 
 Validierung: bestanden. Engine `sf5-lifecycle-engine-1.0.0`, Varianten-Fingerabdruck `0a1260e9d087…`. Verbindlicher Registry-Status bleibt der Regelstatus des Vertrags.
 

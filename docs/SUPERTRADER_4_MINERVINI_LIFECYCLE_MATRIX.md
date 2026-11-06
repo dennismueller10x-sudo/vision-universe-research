@@ -1,6 +1,6 @@
 # Supertrader 4.0 – Minervini Source-to-Execution-Matrix
 
-Generiert mit `node scripts/supertrader/source-faithful/completion/build-minervini-lifecycle.mjs` aus `research/minervini-lifecycle-matrix.mjs`, den Verträgen und dem #709-Extrakt. Nicht von Hand bearbeiten. Bericht: [SUPERTRADER_4_MINERVINI_TRADE_LIFECYCLE_REPORT.md](SUPERTRADER_4_MINERVINI_TRADE_LIFECYCLE_REPORT.md).
+Generiert mit `node scripts/supertrader/source-faithful/completion/build-minervini-lifecycle.mjs` aus `research/minervini-lifecycle-matrix.mjs`, den Verträgen und dem #709-Extrakt. Nicht von Hand bearbeiten. Bericht: [SUPERTRADER_4_MINERVINI_TRADE_LIFECYCLE_REPORT.md](archiv/2026/SUPERTRADER_4_MINERVINI_TRADE_LIFECYCLE_REPORT.md).
 
 Validierung: bestanden. Klassen: SOURCE_EXACT, SOURCE_BOUNDED, MODEL_ASSUMPTION, MANUAL_REVIEW, DATA_BLOCKED, SOURCE_BLOCKED. Verbindlicher Registry-Status bleibt der Regelstatus des Vertrags.
 
