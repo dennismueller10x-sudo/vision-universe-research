@@ -30,6 +30,7 @@ test('every product dock starts with the product name, never Home or Start, and 
     ['screener', ['Screener','Filter','Treffer','Gespeichert']],
     ['supertrader', ['Supertrader','Methoden','Signale','Backtests']],
     ['hedgefonds', ['Hedgefonds','Investoren','Aktien','Smart Money']],
+    ['portfolios', ['Portfolios','Supertrader','Quant','KI']],
     ['mein', ['Mein Bereich','Watchlist','Gespeichert','Konto']]
   ]);
   for (const p of PRODUCTS) {
@@ -47,7 +48,7 @@ test('dock targets are existing routes of their products', () => {
   const files = { '/elliott/': 'elliott/index.html', '/discover/': 'discover/index.html', '/quant/': 'quant/index.html', '/vorsorge/': 'vorsorge/index.html', '/screener/': 'screener/index.html',
     '/supertrader/': 'supertrader/index.html', '/supertrader/strategies/': 'supertrader/strategies/index.html', '/supertrader/signals/': 'supertrader/signals/index.html',
     '/supertrader/backtests/': 'supertrader/backtests/index.html', '/hedgefonds/': 'hedgefonds/index.html', '/fundamental/': 'fundamental/index.html', '/technical/': 'technical/index.html',
-    '/willkommen/': 'willkommen/index.html', '/mein-dashboard/': 'mein-dashboard/index.html', '/konto/': 'konto/index.html' };
+    '/willkommen/': 'willkommen/index.html', '/mein-dashboard/': 'mein-dashboard/index.html', '/konto/': 'konto/index.html', '/portfolios/': 'portfolios/index.html' };
   for (const p of PRODUCTS) for (const [, , href] of p.items) {
     const path = new URL(href, 'https://x').pathname;
     assert.ok(files[path], `${href}: unbekannte Seite`);
@@ -147,9 +148,9 @@ test('the shell header loads the slim web logo, not the 129 KB master (stock pag
 });
 
 
-test('compact menu preserves every old destination in nine products and one additional group', () => {
-  // Reihenfolge des 3 x 3-Rasters im Menue (Mockup N3)
-  assert.deepEqual(Array.from(groups,g=>g.id), ['discover','quant','technical','fundamental','supertrader','hedgefonds','elliott','screener','vorsorge','more']);
+test('compact menu preserves every old destination in nine products, Portfolios and one additional group', () => {
+  // Reihenfolge des 3 x 3-Rasters im Menue (Mockup N3), darunter die breite Kachel Portfolios (Owner 06.11.2026)
+  assert.deepEqual(Array.from(groups,g=>g.id), ['discover','quant','technical','fundamental','supertrader','hedgefonds','elliott','screener','vorsorge','portfolios','more']);
   for(const g of groups.filter(g=>g.id!=='more')) assert.ok(g.claim, g.id+': Kurzbeschreibung fuer die Kachel');
   const destinations = new Set(groups.flatMap(g=>[g.href,...g.entries.map(e=>e[1])]).filter(Boolean));
   const previous = ['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist','/dashboard/','/macro/','/etf/','/vorsorge/#/','/vorsorge/#/plan','/vorsorge/#/etfs','/vorsorge/#/portfolio','/vorsorge/#/vergleichen','/vorsorge/#/foerderung','/vorsorge/#/monitor','/vorsorge/#/wissen','/screener/','/quant/','/supertrader/','/analysten/','/hedgefonds/','/news/','/morning/','/magazin/','/reports/xpeng/','/academy/','/guide/','/budget/'];
@@ -332,4 +333,20 @@ test('a dock product without its own menu group still gets its sprite icon', () 
   for (const url of ['/konto/anmelden/', '/konto/tarife/', '/konto/registrieren/']) assert.equal(PRODUCTS.filter(p => p.match(loc(url).pathname, loc(url))).length, 0, url);
   assert.match(readFileSync(join(root, 'willkommen/app.js'), 'utf8'), /VUNavigation\.dock\(\{\}\)/);
   assert.match(readFileSync(join(root, 'mein-dashboard/dashboard.js'), 'utf8'), /VUNavigation\.dock\(\{\}\)/);
+});
+
+test('Portfolios: eigener Menueeintrag, Direktzugriff, Leiste mit Gruppen und Depot-Detail', () => {
+  const g = groups.find(x => x.id === 'portfolios');
+  assert.equal(g.href, '/portfolios/');
+  assert.deepEqual(JSON.parse(JSON.stringify(g.entries.map(e => e[1]))), ['/portfolios/', '/portfolios/#/supertrader', '/portfolios/#/quant', '/portfolios/#/ki']);
+  assert.match(source, /<a class="q-extra" href="\/portfolios\/">Portfolios<\/a>/);
+  assert.match(styles(THEMES.light), /\.tile\[data-group=portfolios\]\{grid-column:1\/-1/);
+  const sprite = readFileSync(join(root, 'assets/product-icons.svg'), 'utf8');
+  assert.equal(DOCK_PRODUCT_ICONS.portfolios, sprite.match(/<symbol id="portfolios"[^>]*>([\s\S]*?)<\/symbol>/)[1]);
+  const p = PRODUCTS.find(x => x.id === 'portfolios');
+  assert.equal(p.active(loc('/portfolios/')), 'portfolios');
+  assert.equal(p.active(loc('/portfolios/#/quant')), 'quant');
+  assert.equal(p.active(loc('/portfolios/#/supertrader/minervini-vcp')), 'supertrader');
+  assert.equal(p.active(loc('/portfolios/#/ki/a')), 'ki');
+  assert.equal(menuState(loc('/portfolios/#/quant/momentum-leader')).group, 'portfolios');
 });
