@@ -193,7 +193,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    for(const satz of ['Keine Anlageempfehlung','SEC EDGAR','Tiingo'])if(!fuss.includes(satz))befund(view,width,'Fusszeile ohne '+satz);
    await page.route('**/quant/config/market-calendar.json',route=>{absichtlich++;return route.abort();});
    await page.reload();await bereit(page,'home');
-   if(await page.locator('#qx-main a.vu-navcard').count()!==4)befund(view,width,'Ohne Kalender verliert die Startseite ihre Einstiege');
+   /* Fünf Einstiege unter „Selbst suchen“: Aktie, Screener, Anlagestil, Technische Lagen, Musterdepots (#1497). */
+   if(await page.locator('#qx-main a.vu-navcard').count()!==5||!await page.locator('#qx-main a.vu-navcard[href="/quant/musterdepots/"]').count())befund(view,width,'Ohne Kalender verliert die Startseite ihre Einstiege');
    await page.unroute('**/quant/config/market-calendar.json');
    await frisch(page,hash,'home');
   }
@@ -382,9 +383,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const setupText=await page.locator('#setup').innerText();
    /* Richtung des veroeffentlichten Basisszenarios (Owner-Freigabe 01.11.2026, nur diese Pruefung): unabhaengig von der
       Karte ueber die Produkt-API gelesen, dieselbe Regel wie scripts/quality/vu3-regression-qa.mjs (setupDirection).
-      Aufwaerts: Zone und Abbruch nach unten ("Zone laut Methode", "Ungültig-Marke laut Methode", "Schluss darunter"; Owner-Linie L1).
-      Abwaerts: Abbruch nach oben ("Ungültig-Marke laut Methode" mit "Schluss darüber"), keine Zone, keine Regelcheckliste.
-      Ohne Szenario bleibt die strenge Aufwaerts-Erwartung. */
+      Aufwaerts: Einstieg und Abbruch nach unten ("Einstiegsmarke", "Stopp-Marke" der Methode, Wortwahl Strang F). Abwaerts: Abbruch nach oben
+      ("Ungültig über"), kein Einstieg, keine Regelcheckliste. Ohne Szenario bleibt die strenge Aufwaerts-Erwartung. */
    const setupDir=await page.evaluate(async()=>{const g=globalThis,ticker=location.hash.split('/')[2];
     const api=g.VUProductServices.create({loadJSON:g.QuantShell.loadJSON,displayPolicy:g.VUDisplayPolicy,queryEngine:g.VUQuery});
     const ws=await api.getTechnicalWorkspace(ticker).catch(()=>null);
@@ -392,10 +392,10 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
     const ts=ws.tradeSetup||null,sc=ws.scenarios.find(x=>ts&&x.id===ts.scenarioId)||ws.scenarios.find(x=>x.kind==='PRIMARY')||null;
     return sc&&sc.direction?sc.direction:null;});
    if(setupDir&&setupDir!=='BULLISH'){
-    for(const w of ['Ungültig-Marke laut Methode','Schluss darüber'])if(!setupText.includes(w))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') ohne "'+w+'"');
-    for(const w of ['Zone laut Methode','Einstiegsmarke','Stopp-Marke'])if(setupText.includes(w))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') mit "'+w+'"');
+    if(!setupText.includes('Ungültig über'))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') ohne "Ungültig über"');
+    for(const w of ['Einstiegsmarke','Stopp-Marke'])if(setupText.includes(w))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') mit "'+w+'"');
     if(await page.locator('#setup .q-check-count').count())befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') mit Regelcheckliste');
-   } else for(const w of ['Zone laut Methode','Ungültig-Marke laut Methode'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
+   } else for(const w of ['Einstiegsmarke','Stopp-Marke'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
    /* Evidence Experience: Stufe C nennt den Zertifizierungsstand und je geschlossener Art den gemessenen Grund. */
    /* VU3-Finalisierung: Stufe C steht in "Einzelheiten und Methodik" - zuerst aufklappen, dann lesen (wie die Faktoren). */
    {await page.locator('#historie details').evaluateAll(ds=>ds.forEach(d=>{d.open=true;}));

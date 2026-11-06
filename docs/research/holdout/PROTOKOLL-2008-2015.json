@@ -1,0 +1,65 @@
+{
+  "schema": "vu-holdout-protocol-1.0.0",
+  "id": "H-HOLDOUT-2008-2015",
+  "registeredOn": "2026-11-06",
+  "registeredBy": "Strang H (Claude) nach Owner-Auftrag vom 06.11.2026; Lesarten nach der dokumentierten Empfehlung (CLAUDE.md, Freigaben)",
+  "label": "Forschung, nicht zertifiziert",
+  "question": "Schlägt eine der vorab genannten Methoden den S&P 500 (SPY-Gesamtrendite) auch im Zeitraum 2008–2015, nach Kosten?",
+  "singleUse": "Der Lauf findet genau einmal statt. Danach gibt es auf diesem Zeitraum keine weitere Variante, keine neue Auswahl und keinen Neulauf mit geänderten Regeln. Ein technischer Abbruch vor dem Schreiben der versiegelten Ergebnisse darf mit unverändertem Code wiederholt werden; jeder Versuch steht im Ledger.",
+  "window": { "from": "2008-01-02", "to": "2015-12-31", "warmupFrom": "2007-01-02", "source": "scripts/supertrader/validation/lib.mjs WINDOWS.HOLDOUT (PREREGISTRATION-R14)" },
+  "candidates": {
+    "selectionRule": "Keine Auswahl nach Ergebnis: alle Supertrader-Methoden, die auf Tagesbalken 2008–2015 rechenbar sind (11 von 13, unveränderte SF6-Referenzen, Konfiguration REF), dazu die Quant-Hypothese aus E3. Ein Auswahlschritt nach DEV-Ergebnissen wäre eine zusätzliche Freiheit; mit allen Kandidaten und Holm über alle entfällt sie.",
+    "supertrader": [
+      { "id": "C01", "key": "TURTLE_S1" },
+      { "id": "C02", "key": "TURTLE_S2" },
+      { "id": "C03", "key": "DARVAS" },
+      { "id": "C04", "key": "WEINSTEIN_INVESTOR" },
+      { "id": "C05", "key": "WEINSTEIN_TRADER" },
+      { "id": "C06", "key": "MINERVINI_SEPA" },
+      { "id": "C07", "key": "MINERVINI_POWER_PLAY" },
+      { "id": "C08", "key": "KK_BREAKOUT" },
+      { "id": "C11", "key": "POCKET_PIVOT" },
+      { "id": "C12", "key": "BUYABLE_GAP_UP" },
+      { "id": "C13", "key": "HOLY_GRAIL_W_RAS97" }
+    ],
+    "notTestable": [
+      { "id": "C09", "reason": "Kullamägi Episodic Pivot braucht IEX-Minuten; diese beginnen am 2017-01-03 (R9). Im Zeitraum 2008–2015 nicht rechenbar." },
+      { "id": "C10", "reason": "Kullamägi Parabolic Short braucht IEX-Minuten ab 2017-01-03 und Leihdaten; im Zeitraum 2008–2015 nicht rechenbar." }
+    ],
+    "quant": [
+      { "id": "Q-value-momentum-N20-W13-F0", "source": "docs/research/edge/BERICHT.md (E3): Hypothese, im Prüfteil 2020–2026 roh über SPY, nicht vorab gewählt", "adapter": "scripts/research/edge/quant-e3.cjs (edge-quant-adapter-1.0.0), Variante unverändert aus study.cjs#variants" }
+    ]
+  },
+  "data": {
+    "supertraderSnapshotId": "sts1-85959e4bab0681baa6ed221bee94821e",
+    "ledger": "Einmal-Ledger im privaten Eimer: holdout-h-2008-2015/ledger-supertrader.json und holdout-h-2008-2015/ledger-quant.json; ein Lauf verweigert, sobald ein Eintrag SEALED steht",
+    "supertrader": "Holdout-Snapshot sts1-85959e4bab0681baa6ed221bee94821e (Namensraum tiingo-holdout, Lauf 39998409317, Datensatz EXACT), SEC-PIT r12 des Namensraums, DQ-K5-Quarantäne (DQ-K5-BOOK), Universum A; Universum B zusätzlich mit den V13-Delisting-Ketten (Archiv 1.2.0), soweit sie im Zeitraum liegen",
+    "quant": "R2-Tagesbalken (canonical-history), V13-Ketten (Archiv 1.2.0), SEC-Fundamentaldaten wie erstmals eingereicht (companyfacts), SPY-Gesamtrendite aus vorsorge/data/series/SPY.json; Panel wie E3 (scripts/quant/portfolio/model-portfolios.cjs#buildPanel)",
+    "priceTruth": "Split-Faktoren nur aus quant/engines/return-series.js#splitFactors (ADR-002); Tiingo-Corporate-Actions nur als Abgleich, nie als zweite Ableitung"
+  },
+  "costs": {
+    "primary": "REF (SF6-VALIDATION-PROTOCOL: 10 bp Slippage, 1 bp Kommission) für Supertrader; Quant wie E3 (1 bp + 5 bp im Ledger, halber Spread als Abschlag)",
+    "sensitivity": ["COST-0", "COST-20", "COST-50", "Delisting-Erlös S0/S1/S2", "ohne DQ-K5", "Universum B mit V13-Ketten"]
+  },
+  "benchmark": "SPY-Gesamtrendite (Dividenden wieder angelegt) über dieselben Wochen",
+  "statistics": {
+    "returns": "Wochenrenditen (letzte Sitzung der ISO-Woche) der Strategie und des SPY über dieselben Wochen",
+    "test": "scripts/research/edge/study.cjs#pairedTest: Block-Bootstrap (Block 13 Wochen, 9.999 Ziehungen, Seed 20261105) des mittleren Log-Renditeabstands und des Sharpe-Abstands, einseitig",
+    "multipleTesting": "Holm über alle 12 primären Hypothesen (11 Supertrader + 1 Quant), getrennt für den Log-Abstand und für den Sharpe-Abstand",
+    "verdict": "scripts/research/edge/study.cjs#verdict mit den Holm-korrigierten p-Werten: 'schlägt' = Gesamtrendite über SPY und p_Log(Holm) <= 0,05; 'nur risikobereinigt' = Sharpe über SPY, p_Sharpe(Holm) <= 0,05 und maximaler Verlust nicht tiefer als SPY; sonst 'schlägt nicht'; ohne Kurve 'nicht bestimmbar'",
+    "alpha": 0.05
+  },
+  "limitations": [
+    "Survivorship: Die Tiingo-Tickerliste des Holdout-Snapshots führt nur 813 von 6.427 Listings als zum Stichtag inaktiv (678 delistete Segmente). Delistete Titel sind laut Tiingo erst ab etwa 2014 vollständig; für Delistings 2008–2013 fehlen Titel. Das V13-Archiv ergänzt nur wenige Ketten mit Ende 2005–2009 (44) und 2010–2014 (430). Ergebnisse überschätzen deshalb tendenziell, vor allem für Methoden, die schwache oder kleine Titel kaufen.",
+    "Bereits geöffnet: Der Zeitraum 2008–2015 wurde in R14 für andere Implementierungen und in SF6 (Lauf 40007428374) für die 11 Supertrader-Referenzen einmal gerechnet; diese Ergebnisse lagen nur versiegelt beim Owner und wurden für keine Auswahl genutzt. Für Quant ist der Zeitraum unberührt. Es ist daher ein vorab registrierter Bestätigungslauf, kein nie geöffneter Holdout.",
+    "Fundamentaldaten: SEC-XBRL beginnt 2009 (große Emittenten) bis 2011 (alle); Value-Faktoren fehlen 2008–2010 weitgehend. Value Momentum rechnet dort mit dem, was die Engine an Faktoren findet; der Anteil mit Fundamentaldaten je Jahr wird berichtet.",
+    "Keine historische Indexmitgliedschaft; SIC-Branchen nach heutigem Stand (Quant).",
+    "Darvas (C03): auf Tagesbalken nicht bestimmbar (Reihenfolge innerhalb des Balkens); die Spannweite ALT-INTRABAR-OPTIMISTIC wird mitberichtet.",
+    "Die 83 ungeklärten Kapitalmaßnahmen sind DEV-Sitzungen; im Holdout gilt die DQ-K5-Quarantäne unverändert, ungeklärte Sprünge sind ausgeschlossen."
+  ],
+  "outputs": {
+    "sealed": "Alle Kennzahlen nur versiegelt an scripts/supertrader/validation/results-public-key.pem (Owner); zusätzlich an einen Prüfschlüssel der Steuerung für die Zusammenfassung",
+    "public": "Nur Status, Zählungen und Hashes; keine Renditezahl und kein Urteil je Methode (das Urteil steht im versiegelten Teil und geht in Alltagssprache an die Steuerung)",
+    "product": "Keine öffentliche Renditeaussage (Owner-Freigabe nötig)"
+  }
+}

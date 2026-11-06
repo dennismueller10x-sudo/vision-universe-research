@@ -19,7 +19,10 @@ export function legalData(src) {
   const links = (keys) => (keys || []).filter((k) => d.links[k]).map((k) => [LINK_LABEL[k] || k, d.links[k]]);
   const notices = {};
   for (const [k, n] of Object.entries(d.notices)) notices[k] = { text: n.text, label: n.label || null, required: n.required || null, links: links(n.links) };
-  return { approved: d.legalApproved === true, version: d.version, notices };
+  /* Pflicht-Links der App (appLinks.always): immer sichtbar im Menü, unabhängig von der Freigabe der Hinweistexte –
+     es sind nur Links auf die Rechtstexte der Webseite (Plan §11). */
+  const appLinks = ((d.appLinks && d.appLinks.always) || []).filter((l) => d.links[l.key]).map((l) => [l.label || LINK_LABEL[l.key] || l.key, d.links[l.key]]);
+  return { approved: d.legalApproved === true, version: d.version, notices, appLinks };
 }
 export function block(data, indent) {
   return BEGIN + "\n" + indent + "var LEGAL = " + JSON.stringify(data) + ";\n" + indent + END;

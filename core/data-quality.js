@@ -743,15 +743,12 @@
     return result("DQ-SF8-3", "SF8-Stufensperren eingehalten", "ERROR", checked, fail);
   }
 
-  /** DQ-SF8-4: kein Plan, keine Order-, Stop- oder Limitmarke, keine daraus rueckrechenbare Kennzahl. Bis Stand 04.11.2026 nur
-   *  unterhalb von MODELED_TRADE_PLAN; ab SF8_NO_ORDER_ALL_STAGES_FROM auf allen Stufen (Owner-Linie 05.11.2026, Plan §11,
-   *  EINORDNUNG §0 L2: keine Kauf- oder Verkaufsempfehlungen; Erzeuger seit #1451 ohne oeffentlichen Plan). */
-  var SF8_NO_ORDER_ALL_STAGES_FROM = "2026-11-05";
+  /** DQ-SF8-4: unterhalb von MODELED_TRADE_PLAN kein Plan, keine Order-, Stop- oder Limitmarke, keine daraus rueckrechenbare Kennzahl. */
   function sf8NoOrderBelowModel(b) {
-    var g = sf8Gate("DQ-SF8-4", "SF8 ohne Order-/Stopmarken (ab Stand 05.11.2026 auf allen Stufen)", b); if (g) return g;
-    var fail = [], checked = 0, allStages = !!(b.summary && b.summary.asOf && b.summary.asOf >= SF8_NO_ORDER_ALL_STAGES_FROM);
+    var g = sf8Gate("DQ-SF8-4", "SF8 ohne Order-/Stopmarken unterhalb des modellierten Ablaufs", b); if (g) return g;
+    var fail = [], checked = 0;
     sf8AllViews(b).forEach(function (v) {
-      if (v.stage === "MODELED_TRADE_PLAN" && !allStages) return;
+      if (v.stage === "MODELED_TRADE_PLAN") return;
       checked++;
       var where = v.candidateId + " " + v.ticker + " (" + v.stage + ")", allowed = SF8_STRUCTURE_LEVELS[v.candidateId] || [];
       if (v.plan !== null && v.plan !== undefined) fail.push(where + ": Plan");
@@ -943,7 +940,7 @@
     indexMembersResolve: indexMembersResolve,
     technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields, technicalStaleEvents: technicalStaleEvents, technicalContract: technicalContract, technicalTemplateWickLows: technicalTemplateWickLows,
     secFiscalYearLabels: secFiscalYearLabels, secFuturePeriods: secFuturePeriods, secRefusals: secRefusals,
-    SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_NO_ORDER_ALL_STAGES_FROM: SF8_NO_ORDER_ALL_STAGES_FROM, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_FEATURES_HIDDEN: SF8_FEATURES_HIDDEN, SF8_TREND_HIDDEN: SF8_TREND_HIDDEN, SF8_SUBFIELDS_HIDDEN: SF8_SUBFIELDS_HIDDEN, SF8_PIVOT_LEVEL: SF8_PIVOT_LEVEL, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
+    SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_FEATURES_HIDDEN: SF8_FEATURES_HIDDEN, SF8_TREND_HIDDEN: SF8_TREND_HIDDEN, SF8_SUBFIELDS_HIDDEN: SF8_SUBFIELDS_HIDDEN, SF8_PIVOT_LEVEL: SF8_PIVOT_LEVEL, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
     sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,
     sf8Quarantine: sf8Quarantine, sf8Contracts: sf8Contracts, sf8Budget: sf8Budget, sf8PriceParity: sf8PriceParity, sf8Rules: sf8Rules,
     summarize: summarize

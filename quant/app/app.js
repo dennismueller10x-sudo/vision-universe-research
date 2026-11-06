@@ -266,7 +266,7 @@
     ]) : el("footer", { class: "q-foot qx-foot" }, [
       el("b", { text: "VISION UNIVERSE® QUANT" }),
       /* VU3-Finalisierung: ein Absatz Hinweis statt drei; Quellen und Stichtage stehen je Seite in "Daten & Methodik". */
-      el("p", {}, [el("span", { class: "q-beta", text: "Beta" }), el("span", { text: " Keine Anlageempfehlung, keine Prognose, kein Kursziel. Zone und Ungültig-Marke laut Methode sind Regel-Ergebnisse der technischen Analyse. Daten: SEC EDGAR, Tiingo." })]),
+      el("p", {}, [el("span", { class: "q-beta", text: "Beta" }), el("span", { text: " Keine Anlageempfehlung, keine Prognose, kein Kursziel. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse. Daten: SEC EDGAR, Tiingo." })]),
       el("p", {}, [el("a", { href: "#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), el("span", { text: " · " }), el("a", { href: "#/backtest", text: "Backtesting" }), el("span", { text: " · " }), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" }), el("span", { text: " · " }), el("a", { href: "/discover/", text: "Discover" })])
     ]);
     root.replaceChildren(main, foot);

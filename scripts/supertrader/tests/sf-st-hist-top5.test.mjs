@@ -160,7 +160,7 @@ test('ST-HIST-10: Diagnose der goldenen Trades folgt kkFidelitySetupAt Schritt f
   for (const x of sess) assert.equal(x.leader, x.momentum.bestPercentile !== null && x.momentum.bestPercentile >= 100 - FID.KK_FIDELITY_RULES.momentumTopPct);
   assert.doesNotMatch(JSON.stringify(g), /totalReturn|cagr|pnl|equity/);
   const w = fs.readFileSync(new URL('../../../.github/workflows/supertrader-st-hist-top5.yml', import.meta.url), 'utf8');
-  assert.match(w, /options: \[backtest, rest8, edge-export, golden-diagnose, minervini-golden\]/);
+  assert.match(w, /options: \[backtest, rest8, edge-export, golden-diagnose, minervini-golden, holdout\]/);
 });
 
 test('ST-HIST-11: Ausführungsdiagnose der goldenen Trades: Setups, Ablehnungen mit Grund, offene Positionen, keine Renditezahl', async () => {

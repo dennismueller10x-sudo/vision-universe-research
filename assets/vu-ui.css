@@ -85,7 +85,7 @@
 /* Logo-Kachel und Welt-Symbol */
 .vu-logo-tile{width:42px;height:42px;border-radius:var(--vu-r-logo);background:var(--vu-ink);color:var(--vu-inv);display:grid;place-items:center;flex:none;font-weight:900;font-size:10.5px;letter-spacing:-.02em;overflow:hidden}
 .vu-logo-tile img{width:100%;height:100%;object-fit:contain;background:#fff}
-.vu-logo-tile:has(img){background:#fff;box-shadow:inset 0 0 0 1px var(--vu-line);overflow:hidden}.vu-logo-tile:has(img) img{padding:4px}
+.vu-logo-tile{position:relative}.vu-logo-tile img.vu-logo-wait{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;padding:0}.vu-logo-tile:has(img:not(.vu-logo-wait)){background:#fff;box-shadow:inset 0 0 0 1px var(--vu-line);overflow:hidden}.vu-logo-tile:has(img:not(.vu-logo-wait)) img{padding:4px}.vu-logo-tile--dark:has(img:not(.vu-logo-wait)),.vu-logo-tile--dark:has(img:not(.vu-logo-wait)) img{background:#0e1013}
 .vu-logo-tile--xl{width:54px;height:54px;border-radius:15px;font-size:12.5px}
 .vu-hud{width:var(--vu-hud,44px);height:var(--vu-hud,44px);border-radius:12px;background:#0e1013;color:var(--vu-lime);display:grid;place-items:center;flex:none}
 .vu-hud>svg{width:62%;height:62%}

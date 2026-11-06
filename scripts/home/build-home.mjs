@@ -124,12 +124,15 @@ const NINE = [['discover', 'Discover', 'Aktien entdecken', '/discover/'], ['quan
   .map(([i, n, c, h]) => `<a class="vu-box" href="${h}"><span class="vu-hud" style="--vu-hud:38px">${icon(i)}</span><b>${n}</b><small>${c}</small></a>`).join('');
 
 const asOf = s.asOf || t.bundle?.dataCutoff;
+/* Firmenlogo zur Bauzeit aus discover/logos/index.json (die Startseite lädt vu-ui.js nicht). */
+const logoIndex = (() => { try { return JSON.parse(readFileSync(new URL('discover/logos/index.json', root), 'utf8')).files || {}; } catch { return {}; } })();
+const logoOpt = (t) => logoIndex[t] ? { src: '/discover/logos/' + logoIndex[t] } : { logo: false };
 const values = {
   NVDA: MAIN, NVDA_NAME: esc(cleanName(s.companyName) || 'NVIDIA'), NVDA_WHAT: esc(s.was || ''),
   NVDA_PRICE: usd(s.price.value), NVDA_CHG: chg(s.changePercent.value, true),
   NVDA_DATE: dateDe(asOf), NVDA_DATE_SHORT: shortDe(asOf),
   NVDA_CHART: chartSvg(close), CHART_FROM: shortDe(ts[0]), CHART_TO: shortDe(ts.at(-1)),
-  NVDA_LOGO: VUUI.logo(MAIN), NVDA_VERDICTS: verdictRows, PERSPECTIVES, PERSP_BAR: VUUI.persp(MAIN, { active: 'discover' }),
+  NVDA_LOGO: VUUI.logo(MAIN, logoOpt(MAIN)), NVDA_VERDICTS: verdictRows, PERSPECTIVES, PERSP_BAR: VUUI.persp(MAIN, { active: 'discover' }),
   REVENUE_HELP: VUUI.help('Umsatz ist alles Geld, das die Firma mit ihren Produkten einnimmt, bevor Kosten abgezogen sind.'),
   JOURNEY_SPAN: String(rev.length), JOURNEY_RANGE: `GJ ${rev[0].fy}–${rev.at(-1).fy}`,
   JOURNEY_FROM: bn(rev[0].v), JOURNEY_FROM_YEAR: 'GJ ' + rev[0].fy, JOURNEY_TO: bn(rev.at(-1).v), JOURNEY_TO_YEAR: 'GJ ' + rev.at(-1).fy,

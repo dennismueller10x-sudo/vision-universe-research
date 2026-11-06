@@ -152,6 +152,8 @@ Quelle: `quant/engines/backtest-kinds.cjs`, `scripts/quant/research/backtest-run
 - **Profile** in `scripts/quant/research/research-population.cjs`: `PRODUCT_DEFAULT` (Produktstamm) sowie V10_PRIMARY bis V13B (1.1.0).
 - **Abdeckung je Lauf** steht im Ergebnis: `population`, `dataQuality.coverage`, `inputHashes`.
 
+- **Deckungskennzahlen, Neuabnahme 06.11.2026:** Produkttitel 6.686 → 6.308, darstellbar 6.683 → 6.305, technisch bereit 5.644 → 5.655 (R2-Reihen 7.802 unverändert); jede Abweichung je Titel erklärt (`coverage-delta.mjs`, Lauf 42201411281). Entscheidung Steuerung 06.11. nach dokumentierter Empfehlung: Grenzfälle der 300-Bar-Schwelle zählen über den letzten Datentag der Messung (aus der Messung abgeleitet, hier 06.10.2026), nicht über den Stichtag. Konstanten in `scripts/quant/tests/test_canonical_market.py#ABGENOMMEN`.
+
 ### B5. Forschungsergebnisse V10–V13c (ERLEDIGT, nicht wiederholen)
 
 | Studie | Befund |

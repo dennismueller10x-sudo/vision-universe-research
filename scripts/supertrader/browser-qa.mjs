@@ -204,9 +204,9 @@ async function main() {
         textLen: document.body.innerText.length,
         // Ein vorbereitetes Setup darf nie eine Ausfuehrung zeigen.
         // Ein vorbereitetes Setup darf nie eine Ausfuehrung zeigen.
-        preparedWithEntry: [...document.querySelectorAll('.st-r-sig')].filter((b) => /Muster entsteht|Regel fast erfüllt/.test(b.querySelector('.vu-verdict')?.textContent || '') && /Einstieg /.test(b.querySelector('.st-r-trkl')?.textContent || '')).length,
+        preparedWithEntry: [...document.querySelectorAll('.st-r-sig')].filter((b) => /Muster entsteht|Kurz vor der Marke/.test(b.querySelector('.vu-verdict')?.textContent || '') && /Einstieg /.test(b.querySelector('.st-r-trkl')?.textContent || '')).length,
         plannedUnlabeled: [...document.querySelectorAll('.st-cells .c')].filter((c) => ['Trigger', 'Ungültig'].includes(c.querySelector('.k')?.textContent) && !/geplant/.test(c.querySelector('.d')?.textContent || '')).length,
-        lensPlanBottom: (() => { const n = document.querySelector('.st-r-sig .st-r-shead'); return n ? n.getBoundingClientRect().bottom : null; })(),
+        lensPlanBottom: (() => { const n = document.querySelector('.st-r-sig .st-r-trk'); return n ? n.getBoundingClientRect().bottom : null; })(),
         ruleCard: !!document.querySelector('.st-assess'),
         freshness: !!document.querySelector('.st-fresh, .st-r-asof, .st-r-answer'),
         // Beobachtungsliste (Donchian) nie als „vorbereitet“ beschriftet
@@ -251,7 +251,7 @@ async function main() {
       if (['home', 'signals', 'lens'].includes(name) && !m.freshness) errors.push('Datenstand nicht sichtbar');
       if (m.preparedWithEntry) errors.push(`${m.preparedWithEntry} vorbereitete Setups zeigen einen Modelleinstieg`);
       if (m.plannedUnlabeled) errors.push(`${m.plannedUnlabeled} Schwellen ohne „geplant“/Datenstand`);
-      if ((name === 'lens' || name === 'lens-position' || name === 'lens-prepared') && isMobile && !(m.lensPlanBottom !== null && m.lensPlanBottom <= vp.viewport.height - 64)) errors.push(`Erste Signalkarte nicht ohne Scrollen sichtbar (unten ${Math.round(m.lensPlanBottom)}px, sichtbar bis ${vp.viewport.height - 64}px)`);
+      if ((name === 'lens' || name === 'lens-position' || name === 'lens-prepared') && isMobile && !(m.lensPlanBottom !== null && m.lensPlanBottom <= vp.viewport.height - 64)) errors.push(`Ein-/Ausstiegsblock nicht ohne Scrollen sichtbar (unten ${Math.round(m.lensPlanBottom)}px, sichtbar bis ${vp.viewport.height - 64}px)`);
       if (/^strategy-(momentum|weinstein|darvas|minervini|greenblatt|donchian|can-slim|piotroski)/.test(name) && !m.ruleCard) errors.push('Drei Aussagen (Regel/Quellen/Historie) fehlen');
       // Technischer Zustand: Abschnitt da, Zustand passend zum Datenstand, keine Anfrage ohne genannte Scherbe, keine Codes.
       if (/^tech-/.test(name)) {
