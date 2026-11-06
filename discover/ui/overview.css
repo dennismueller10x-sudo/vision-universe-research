@@ -17,6 +17,7 @@ body.dv2 .dv2-stock .dx-chart-hero-preis>.up,body.dv2 .dv2-stock .dx-chart-hero-
 body.dv2 .dv2-stock .dx-chart-hero-preis>.up{background:#c8f531;color:#000}
 /* Owner 06.11.2026: Minus rot, Plus VU-Grün (wie der Aktienkopf der übrigen Welten) */
 body.dv2 .dv2-stock .dx-chart-hero-preis>.down{background:#c4281c;color:#fff}
+body.dv2 .dv2-stock .dx-chart-hero-preis>.up::before{content:"▲\00a0" / "";font-size:.8em}body.dv2 .dv2-stock .dx-chart-hero-preis>.down::before{content:"▼\00a0" / "";font-size:.8em}
 /* Index-Etiketten: eine ruhige Zeile kleiner Pillen statt eines Stapels unter dem Namen. */
 body.dv2 .dv2-head .dx-index-badges{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0 0 50px}
 body.dv2 .dv2-head .dx-index-badges>*{min-height:0;padding:3px 8px;border:0;border-radius:999px;background:var(--vu-card,#f4f4f4);color:var(--vu-ink,#000);font-size:10.5px;font-weight:800;letter-spacing:.02em}
