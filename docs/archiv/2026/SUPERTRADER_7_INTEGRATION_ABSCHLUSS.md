@@ -34,7 +34,7 @@ Vercel ist kein Pflichtcheck (main hat keinen Branch-Schutz). Bei #939 meldete V
 | Bedingung | Nachweis |
 |---|---|
 | 1. Pflichtprüfungen grün, Änderungen = geprüfter Commit | Jeder Head war der zuletzt geprüfte Stand, ergänzt nur um den Merge von `main` (bzw. bei #940 um Tests und Doku). Merge erfolgte mit `expectedHeadSha`. |
-| 2. #940: 4 MEDIUM und 5 LOW des ersten Reviews | Alle 9 behoben; Beleg je Befund mit Datei, Test und gefangener Mutation (27 Einzelmutationen) in [SUPERTRADER_7_MINERVINI_MECHANICAL_1_4.md §10](SUPERTRADER_7_MINERVINI_MECHANICAL_1_4.md). Die Befunde späterer Reviews sind ebenfalls behoben oder als ungefährliche Grenze begründet. Basiszählung, Top-Volumen, Gap-Abstand und Runner-Tests ohne bekannten fachlichen Fehler. Zwei zuletzt gefundene Testlücken sind vor dem Merge geschlossen: exakter MA200-Fensterbeginn und „Schlüsse statt Tiefs“. |
+| 2. #940: 4 MEDIUM und 5 LOW des ersten Reviews | Alle 9 behoben; Beleg je Befund mit Datei, Test und gefangener Mutation (27 Einzelmutationen) in [SUPERTRADER_7_MINERVINI_MECHANICAL_1_4.md §10](../../SUPERTRADER_7_MINERVINI_MECHANICAL_1_4.md). Die Befunde späterer Reviews sind ebenfalls behoben oder als ungefährliche Grenze begründet. Basiszählung, Top-Volumen, Gap-Abstand und Runner-Tests ohne bekannten fachlichen Fehler. Zwei zuletzt gefundene Testlücken sind vor dem Merge geschlossen: exakter MA200-Fensterbeginn und „Schlüsse statt Tiefs“. |
 | 3. Commits der schreibenden Review-Session | `b7d3a62` und `0cca717` vollständig nachvollzogen, Änderung für Änderung (§10 dort). Ein Fehler in `b7d3a62` war 7 Minuten später in `0cca717` behoben, vor jedem Lauf. Keine weiteren Branches, PRs, Reviews oder Läufe; die Session ist archiviert. |
 | 4. #942: Engine-Hash | `codeSha256()` von `runner/run-research.mjs` ergibt `89fbcf86…` an beiden Lauf-Commits (`f60b3bb`, `694b91c`), am PR-Head und auf `main`. Ein Test bindet den AUTHORITATIVE-Eintrag an den aktuellen Engine-Hash. |
 | 5. Workflow-Konflikt #931 / #939 | Modus-Listen tokenweise vereinigt: 69 Modi, 51 Commit-Marken, keine Duplikate. Alle 37 Schritte beider Seiten sind erhalten, ebenso jede Sperre: `KK_INTRADAY_FETCH_FROZEN`, `TIINGO_SPLITS_FETCH_FROZEN`, Snapshot- und research-v1-Vertrag. `sf-runner.test.mjs` angepasst. |
@@ -110,7 +110,7 @@ Vorher: `main` `7f0e4b5` (vor #937). Nachher: `main` `5da27cd` (nach #939). Beid
 - Heute höchstens `CHART_CANDIDATE`: C04, C05, C06, C09, C10.
 - `VALIDATED_TRADE_SIGNAL` ist für alle 13 gesperrt.
 - Titel mit einer DQ-K5- oder DQ-K3-Sitzung im 400-Tage-Rückblick bleiben bei `CHART_CANDIDATE`.
-- Die späteren Integrationsschritte, je ein eigener PR mit Freigabe, stehen in [SUPERTRADER_7_PRODUCT_INTEGRATION_CONTRACT.md](SUPERTRADER_7_PRODUCT_INTEGRATION_CONTRACT.md).
+- Die späteren Integrationsschritte, je ein eigener PR mit Freigabe, stehen in [SUPERTRADER_7_PRODUCT_INTEGRATION_CONTRACT.md](../../SUPERTRADER_7_PRODUCT_INTEGRATION_CONTRACT.md).
 
 ## 6. Verbleibende Blocker
 
@@ -172,7 +172,7 @@ Bei #940 hat eine Review-Session, die nur lesen sollte, zwei Commits gepusht und
 Der Entwicklungsabschnitt Supertrader 7.0 ist abgeschlossen. Es werden keine weiteren allgemeinen Supertrader-Entwicklungs-PRs eigenständig gestartet.
 
 Offen und gesondert zu behandeln:
-- **Tiingo-Antwort:** Entsperren nur mit schriftlicher Bestätigung von Tiingo, eigener Freigabe und kleinem PR (Ablauf in [SUPERTRADER_7_TIINGO_SPLITS_PROBE.md](SUPERTRADER_7_TIINGO_SPLITS_PROBE.md)).
+- **Tiingo-Antwort:** Entsperren nur mit schriftlicher Bestätigung von Tiingo, eigener Freigabe und kleinem PR (Ablauf in [SUPERTRADER_7_TIINGO_SPLITS_PROBE.md](../../SUPERTRADER_7_TIINGO_SPLITS_PROBE.md)).
 - Antworten der angefragten Anbieter (E7-1).
 - E7-4 (neue Snapshot-Generation).
 - SF6-PAPER-2027 (Aktivierung nur mit eigener Freigabe).

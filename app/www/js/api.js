@@ -24,6 +24,8 @@ export function createApi({config, auth, fetchImpl = (...a) => globalThis.fetch(
     return data;
   }
   return {
+    registerPush: body => call('POST', '/v1/push/devices', body),
+    removePush: body => call('POST', '/v1/push/devices/remove', body),
     me: () => call('GET', '/v1/me'),
     watchlist: () => call('GET', '/v1/watchlist'),
     removeFromWatchlist: ({instrumentId, listId}) => call('POST', '/v1/watchlist/items/remove', {instrumentId, listId}),

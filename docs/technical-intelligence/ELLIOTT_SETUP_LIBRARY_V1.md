@@ -2,7 +2,7 @@
 
 Stand: 07.10.2026 (Mission X). Maschinenlesbar: [`scripts/technical/elliott-setups/ELLIOTT_SETUP_SPEC.json`](../../scripts/technical/elliott-setups/ELLIOTT_SETUP_SPEC.json) (Spec-Version 1.0.0, SHA-256 `b7dd89d5…`).
 
-Implementierung: [`setup-library.mjs`](../../scripts/technical/elliott-setups/setup-library.mjs). Dieselbe Funktion dient der historischen Auswertung und dem prospektiven Register. Freeze vor der Validierung: [MISSION10_SETUP_FREEZE.md](MISSION10_SETUP_FREEZE.md).
+Implementierung: [`setup-library.mjs`](../../scripts/technical/elliott-setups/setup-library.mjs). Dieselbe Funktion dient der historischen Auswertung und dem prospektiven Register. Freeze vor der Validierung: MISSION10_SETUP_FREEZE.md (`MISSION10_SETUP_FREEZE.md`, historischer Beleg im Repository nicht vorhanden).
 
 ## Grundsatz
 
@@ -119,7 +119,7 @@ Die Bestätigungen sind voneinander und von Elliott unabhängig. Elliott beantwo
 
 ## Ergebnisse und Einstufung
 
-Siehe [ELLIOTT_SETUP_EVIDENCE.md](ELLIOTT_SETUP_EVIDENCE.md). Kurzfassung (angezeigte Variante PURE):
+Siehe ELLIOTT_SETUP_EVIDENCE.md (`ELLIOTT_SETUP_EVIDENCE.md`, historischer Beleg im Repository nicht vorhanden). Kurzfassung (angezeigte Variante PURE):
 * S1 und S2: INSUFFICIENT EVIDENCE;
 * S3: STRUCTURAL ONLY;
 * S4: INSUFFICIENT EVIDENCE.

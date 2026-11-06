@@ -183,7 +183,7 @@ durchgelaufen (Lauf 36410445415, `package` und `deploy` beide erfolgreich,
 Barrierefreiheits-Verstöße · Reise-Flächen 12/12 · Abnahmestichprobe 22 Titel PASS · Suite
 1.968/1.968/0.
 
-Der vollständige Bericht: **`docs/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md`**.
+Der vollständige Bericht: **`docs/archiv/2026/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md`**.
 
 ### Der Merge, in beide Richtungen geprüft
 
@@ -242,7 +242,7 @@ Das Ziel ist erreicht. Ab hier nur noch: **P0 Production Bug** oder **POST_LAUNC
 `launch-readiness-1.0.0` · Commit `55e3217841` · 12 von 12 P0-Gates · 2 von 2 P1-Prüfungen ·
 0 offen · 0 rot
 
-Der vollständige Bericht: **`docs/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md`** (zehn Punkte, wie
+Der vollständige Bericht: **`docs/archiv/2026/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md`** (zehn Punkte, wie
 beauftragt). Alle drei Belege stammen vom **gleichen** Commit: Browser-Smoke gegen das gebaute
 Release (34 Ansichten × 2 Breiten, 0 Fehlschläge), Suite (1.968 / 1.968 / 0), Abnahmestichprobe
 (22 Titel, PASS).

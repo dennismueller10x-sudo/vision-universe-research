@@ -104,3 +104,24 @@ test('isZone: nur BULLISH, eine der drei Vorlagen, aktiv, Setup vollständig', (
   assert.equal(E2.isZone(a([{ ...base, entryStatus: 'CONDITIONAL' }]), Trade), null);
   assert.equal(E2.isZone(a([{ ...base, ok: false }]), Trade), null);
 });
+
+test('Papierdepot: neue Entscheidungen angehängt, aufgezeichnete bleiben, Abweichung vermerkt', () => {
+  const PA = require('./paper.cjs');
+  const run = { targets: [{ decisionDate: '2026-11-13', weights: { ref_A: 0.05, ref_B: 0.05 } }, { decisionDate: '2026-11-20', weights: { ref_A: 0.05, ref_C: 0.05 } }], holdings: ['ref_A', 'ref_C'] };
+  const first = PA.entriesFor([], run, { week: '2026-11-20' });
+  assert.deepEqual(first.map(e => e.type), ['DECISION', 'DECISION', 'WEEK']);
+  assert.deepEqual(first[1].buys, ['C']); assert.deepEqual(first[1].sells, ['B']);
+  const rows = [{ type: 'DECISION', decisionDate: '2026-11-13', holdings: ['A', 'X'] }, { type: 'DECISION', decisionDate: '2026-11-20', holdings: ['A', 'C'] }];
+  const next = PA.entriesFor(rows, run, { week: '2026-11-27' });
+  assert.deepEqual(next.map(e => e.type), ['WEEK']);
+  assert.deepEqual(next[0].replayDivergentDecisions, ['2026-11-13']);
+});
+
+test('Ledger-Kette: Manipulation fällt auf', () => {
+  const L = require('./ledger-chain.cjs'), os = require('node:os');
+  const f = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'edge2-')), 'ledger.jsonl');
+  L.append({ type: 'WEEK', week: '2026-11-13' }, f, 'X'); L.append({ type: 'WEEK', week: '2026-11-20' }, f, 'X');
+  assert.equal(L.ledger(f).length, 2);
+  fs.writeFileSync(f, fs.readFileSync(f, 'utf8').replace('2026-11-13', '2026-11-14'));
+  assert.throws(() => L.append({ type: 'WEEK' }, f, 'X'), /LEDGER_CHAIN_BROKEN/);
+});
