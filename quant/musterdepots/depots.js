@@ -72,7 +72,7 @@
       return U.navcard({ glyph: "grid", title: d.name, sub: d.positions.length + " Positionen · umgeschichtet " + dDe(d.lastRebalance) + (c.date ? " · " + c.rein.length + " rein, " + c.raus.length + " raus" : ""), href: "#/" + encodeURIComponent(d.profileId) }) +
         (nc ? '<p class="md-cardperf vu-xs">' + U.chg(nc.pct, { digits: 1 }) + " seit Live-Start</p>" : "");
     }).join("");
-    return head(doc) + '<section class="md-sec">' + U.sect("Die fünf Depots", { level: 2 }) + '<div class="vu-stack">' + cards + "</div></section>" +
+    return head(doc) + '<section class="md-sec">' + U.sect("Die fünf Depots", { level: 2 }) + '<div class="vu-stack">' + cards + "</div></section>" + portfolios() +
       '<section class="md-sec">' + performance(doc, null) + "</section>" + foot(doc);
   }
   function detail(doc, depot) {
@@ -94,8 +94,10 @@
       '<section class="md-sec">' + U.sect("Bestand", { level: 2 }) + '<p class="vu-xs vu-mu md-cap">Gewicht im Modell, Aufnahme mit Datum und veröffentlichtem Schlusskurs' + (pub ? "; rechts der Schluss heute und die Veränderung seit Aufnahme" : "") + ".</p>" +
       '<div class="md-rows">' + rows + "</div>" +
       U.help("Die Gewichte folgen der Regel: höchstens 8 % je Aktie und 25 % je Branche, Risiko gleich verteilt. Ein Musterdepot ist ein Rechenmodell, keine echten Orders.") + "</section>" +
-      '<section class="md-sec">' + U.sect("Umschichtungen", { level: 2 }) + '<div class="vu-stack">' + (log || U.blank("Noch keine Umschichtung.", { verdict: false })) + "</div></section>" + foot(doc);
+      '<section class="md-sec">' + U.sect("Umschichtungen", { level: 2 }) + '<div class="vu-stack">' + (log || U.blank("Noch keine Umschichtung.", { verdict: false })) + "</div></section>" + portfolios(depot.profileId) + foot(doc);
   }
+  /* Alle Musterdepots (Supertrader, Quant, KI) gesammelt unter /portfolios/ (Owner 06.11.2026). */
+  function portfolios(id) { return '<section class="md-sec"><div class="vu-stack">' + U.navcard({ glyph: "grid", title: "Alle Portfolios", sub: id ? "Dieses Depot im Bereich Portfolios, neben Supertrader- und KI-Depots" : "Supertrader-, Quant- und KI-Depots an einer Stelle", href: "/portfolios/" + (id ? "#/quant/" + encodeURIComponent(id) : "#/") }) + "</div></section>"; }
   function foot(doc) {
     return (U.legal("modelPortfolio") || "") +
       '<p class="md-foot">Datenstand ' + dDe(doc.asOf) + ". Regel und Engine: VU-Portfolio-Standard (" + esc(doc.rules && doc.rules.engine) + "), Kurse: veröffentlichte Schlusskurse (Tiingo, split-bereinigt), Kosten " + esc(doc.rules && doc.rules.costsBpsPerSide) + " Basispunkte je Seite. Keine Anlageberatung, keine Empfehlung.</p>";

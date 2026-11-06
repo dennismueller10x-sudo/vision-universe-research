@@ -328,7 +328,8 @@
         var st = sig.strategies[s.strategy_id] || { open: [] }, pos = st.open.filter(function (x) { return x.entry; }).length, e = s.evidence || {};
         return '<a class="st-r-mcard" href="' + esc(X.stratUrl(s)) + '"><div class="st-r-mtop"><div><b>' + esc(s.world_name) + '</b><span>' + esc(s.originator || '') + '</span></div><div class="st-r-mnum"><b class="vu-num">' + n0(pos) + '</b><span>Positionen</span></div></div><p>' + esc(s.tagline) + '</p>' +
           '<div class="st-r-mv">' + U.verdict('mid', 'Läuft live') + ' ' + U.verdict('none', e.levelLabel || 'In Prüfung') + '</div></a>';
-      }).join('') + '<div class="st-r-gap">' + U.help('Musterdepot: ein Rechenmodell mit festen Regeln. Keine echten Orders.') + '</div>';
+      }).join('') + '<div class="st-r-gap">' + U.help('Musterdepot: ein Rechenmodell mit festen Regeln. Keine echten Orders.') + '</div>' +
+      '<div class="st-r-gap16">' + U.navcard({ href: '/portfolios/#/supertrader', glyph: 'grid', title: 'Alle Portfolios', sub: 'Supertrader-, Quant- und KI-Depots an einer Stelle' }) + '</div>';
 
     /* Reiter Weitere */
     var pc = sig.partialChecks || {}, research = other.filter(function (s) { return s.mode === 'RESEARCH'; });
@@ -646,6 +647,7 @@
         '<div class="st-r-hold">' + hs.map(function (x) { var isNew = last.kind !== 'START' && (last.buys || []).indexOf(x.ticker) >= 0; return '<a class="vu-chip' + (isNew ? ' vu-chip--lime' : '') + '" href="' + esc(stockHref(x.ticker)) + '">' + esc(x.ticker) + '</a>'; }).join('') + '</div>' +
         '<div class="st-r-legend"><span><i class="s3"></i>neu am ' + dShort(last.date) + '</span><span class="vu-mu">grau: gehalten</span></div>' +
         '<div class="st-r-gap">' + U.help('Veröffentlicht werden Titel und Gewichte, keine Renditen. Kennzahlen folgen, wenn die Rechte geklärt sind. Umsetzung zur Eröffnung am ' + (last.executeOn ? dDe(last.executeOn) : 'nächsten Handelstag') + '.') + '</div>' +
+        '<div class="st-r-gap16">' + U.navcard({ href: '/portfolios/#/supertrader/hausstrategie', glyph: 'grid', title: 'Im Bereich Portfolios', sub: 'Bestand mit Namen, Gewicht und Protokoll neben allen anderen Depots' }) + '</div>' +
         kick('Protokoll', 'Jede Entscheidung mit Zeitstempel') + L.decisions.slice().reverse().map(function (d) {
           var start = d.kind === 'START' || !(d.sells || []).length && L.decisions.indexOf(d) === 0;
           return '<div class="vu-box st-r-dec"><div class="vu-ltag">' + dDe(d.date) + ' · ' + (start ? 'Start' : 'Monatsende') + '</div><p><b>Rein:</b> ' + esc((d.buys || []).join(', ') || '–') + '</p>' + (start ? '' : '<p><b>Raus:</b> ' + esc((d.sells || []).join(', ') || '–') + '</p>') + '<span class="vu-xs vu-mu">festgeschrieben ' + dDe(d.decidedAt) + '</span></div>';
