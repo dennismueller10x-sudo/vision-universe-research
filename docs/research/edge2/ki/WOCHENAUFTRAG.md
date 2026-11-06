@@ -20,7 +20,7 @@ Zeitplan: dienstags 07:17 UTC (vor der US-Eröffnung). Eingepreist wird zum Schl
    1. `node --max-old-space-size=8000 scripts/research/edge2/ki-forward.cjs packet --out-dir <Scratchpad>/fwd` → `packet-A.json`, `packet-B.json`, `keys.json`. `keys.json` sofort in einen eigenen Ordner verschieben und keinem Subagenten zeigen.
    2. Je Depot einen Subagenten starten, der genau zwei Dateien liest: den Prompttext (Datei aus `ki-forward.cjs prompt --depot X`, ab der Trennlinie `---`) und sein Paket. Keine anderen Dateien, kein Repository. Websuche nur für Depot B (Nachrichten nach Prompt B v3), für A nie. Antwort nur JSON.
    3. Antwort nach `<Scratchpad>/answer-A.json` (bzw. B), dann `node scripts/research/edge2/ki-forward.cjs record --depot A --packet … --keys … --answer …`. Bei `valid: false` einmal neu fragen (`--attempt 2`). Bleibt die Antwort ungültig, bleibt der Eintrag stehen, und das Depot hält Cash.
-4. `node scripts/research/edge2/ki-export.cjs` (öffentlicher Export). Committen (`docs/research/edge2/ki/ledger-*.jsonl`, `quant/data/product/ki-depots-v1.json`), pushen, PR nach `main` mit Titel „KI-Depots EDGE2-KI: Woche <Datum>“, Auto-Merge; grüne CI genügt (CLAUDE.md).
+4. Zur Kontrolle `node scripts/research/edge2/ki-export.cjs --out <Scratchpad>/ki-depots-v1.json` (nicht ins Repository). Committen nur `docs/research/edge2/ki/ledger-*.jsonl`; der öffentliche Export `quant/data/product/ki-depots-v1.json` gehört seinem Erzeuger `ki-depots-daily.yml`, der nach dem Merge der Ledger automatisch läuft. Pushen, PR nach `main` mit Titel „KI-Depots EDGE2-KI: Woche <Datum>“, Auto-Merge; grüne CI genügt (CLAUDE.md).
 5. Kurze Meldung an die Steuerungssitzung (send_message), ohne Renditezahlen.
 
 ## Bewertung
