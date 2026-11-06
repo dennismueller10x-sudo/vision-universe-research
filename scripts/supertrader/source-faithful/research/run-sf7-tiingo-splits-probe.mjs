@@ -80,12 +80,69 @@ export const PROBE_SPEC = Object.freeze({
  * removing the workflow step "Tiingo-Splits-Abruf gesperrt" (docs/SUPERTRADER_7_TIINGO_SPLITS_PROBE.md, Stufe B).
  */
 export const PROBE_GATE = Object.freeze({
-  state: 'FROZEN',
-  since: '2026-10-25',
-  reason: 'HTTP 403 for the corporate-actions splits endpoint (run 40221353332); owner: no further access attempts until Tiingo enables it',
-  unlockedBy: null,
+  state: 'UNLOCKED',
+  since: '2026-11-06',
+  reason: 'Tiingo enabled the corporate-actions endpoints (splits, dividends; beta) for the existing subscription; before: HTTP 403 (run 40221353332)',
+  unlockedBy: 'Owner 06.11.2026 (Strang H, Steuerung session_01DVwZC6RY9XNnnorcurFAdR): Endpunkt freigeschaltet, vorhandener Token, keine Mehrkosten; ein Lauf mit <= 4 + 90 Anfragen',
   unlockRequires: Object.freeze(['written Tiingo confirmation that the endpoint is enabled within the existing subscription at no extra cost', 'owner approval for one stage-B run (<= 4 + 90 requests)', 'plan run with 0 requests showing distinct tickers <= 90']),
+  license: 'raw corporate-action records are never shown to users (Tiingo licence); internal checks and derived counts only',
 });
+/**
+ * E1 acceptance (SUPERTRADER_7_OWNER_DECISIONS_E7.md E7-1 step 4; B-supertrader.md FP-ST-01), pre-registered by Strang H on
+ * 06.11.2026 BEFORE the first stage-B run; its SHA-256 is pinned in test SF7-TIINGO-E1. Outside PROBE_SPEC, so the pinned
+ * probe hash stays 76b70088…. Reading decided by Claude after the documented recommendation (CLAUDE.md, Freigaben): the
+ * EDGAR ground truth of the 83 sessions (rule set 1.4.3, run 40214193643) holds 0 documented splits (33 NO_SPLIT_DOCUMENT_FOUND,
+ * 32 UNCLEAR, 7 AMBIGUOUS, 11 NOT_CHECKED) and therefore no positive and no confirmed negative label. Hit and ratio are
+ * therefore measured on all 83 sessions, each of which is by construction a price jump at a standard split factor
+ * (DQ-K5); a hit against an EDGAR-documented split stays NOT_MEASURABLE (0 positives) and is reported as such.
+ */
+export const E1_ACCEPTANCE = Object.freeze({
+  id: 'E1-TIINGO-SPLITS-1.0.0',
+  registeredOn: '2026-11-06',
+  scope: 'the 83 reference-exposed UNRESOLVED DQ-K5 sessions of rule set 1.3.0 (stage B)',
+  edgarLabels143: Object.freeze({ REVERSE_SPLIT_DOCUMENTED: 0, FORWARD_SPLIT_DOCUMENTED: 0, NO_SPLIT_DOCUMENT_FOUND: 33, UNCLEAR: 32, AMBIGUOUS: 7, NOT_CHECKED: 11 }),
+  definitions: Object.freeze({
+    eventHit: 'class SPLIT_EVENT_IN_WINDOW (an endpoint split record whose exDate lies within +-2 snapshot sessions of the session)',
+    exactRatio: 'event hit AND the endpoint factor snaps (snapFactor, grid of 1.3.0) to the same grid value as BOTH the open and the close relative of the session',
+    falsePositive: 'event hit whose factor matches NEITHER the open NOR the close relative (the endpoint asserts a split the prices contradict), or a hit with splitStatus other than active',
+    coverage: 'session whose ticker the endpoint knows (HTTP 200 with a list), restricted to sessions dated 2008-01-01..2017-12-31; sessions after 2017 are reported separately',
+    edgarPositiveHit: 'event hit among sessions with an EDGAR-documented split: NOT_MEASURABLE while edgarLabels143 has 0 positives',
+  }),
+  thresholds: Object.freeze({ eventHitRateMin: 0.90, exactRatioRateMin: 0.95, falsePositivesMax: 0, coverage2008to2017Min: 0.85 }),
+  coverageWindow: Object.freeze({ from: '2008-01-01', to: '2017-12-31' }),
+  notMeasurable: 'a criterion with an empty denominator is NOT_MEASURABLE and counts as not met (fail closed)',
+  onPass: 'Tiingo becomes a check source (Abgleich) for the DQ-K5 quarantine; the price truth stays return-series.js#splitFactors (ADR-002); no second derivation, no overlay change in this PR',
+  onFail: 'nothing changes: quarantine, overlay, CC-5 and status stay as they are',
+});
+export const e1AcceptanceSha256 = () => crypto.createHash('sha256').update(JSON.stringify(E1_ACCEPTANCE)).digest('hex');
+
+/** E1 verdict over the stage-B rows (pure; counts and rates only). rows: [{ date, found, x: classifySession() }]. */
+export function e1Verdict(rows, spec = E1_ACCEPTANCE) {
+  const rate = (n, d) => (d > 0 ? n / d : null);
+  const hits = rows.filter((r) => r.x.cls === 'SPLIT_EVENT_IN_WINDOW');
+  const exact = hits.filter((r) => r.x.ratioMatchesOpen && r.x.ratioMatchesClose);
+  const fp = hits.filter((r) => (!r.x.ratioMatchesOpen && !r.x.ratioMatchesClose) || (r.x.status && r.x.status !== 'a'));
+  const inCov = rows.filter((r) => r.date >= spec.coverageWindow.from && r.date <= spec.coverageWindow.to), after = rows.filter((r) => r.date > spec.coverageWindow.to);
+  const m = {
+    sessions: rows.length, eventHits: hits.length, eventHitRate: rate(hits.length, rows.length),
+    exactRatio: exact.length, exactRatioRate: rate(exact.length, hits.length), falsePositives: fp.length,
+    coverageSessions2008to2017: inCov.length, covered2008to2017: inCov.filter((r) => r.found).length, coverage2008to2017: rate(inCov.filter((r) => r.found).length, inCov.length),
+    sessionsAfter2017: after.length, coveredAfter2017: after.filter((r) => r.found).length,
+    edgarPositives: (spec.edgarLabels143.REVERSE_SPLIT_DOCUMENTED || 0) + (spec.edgarLabels143.FORWARD_SPLIT_DOCUMENTED || 0),
+  };
+  const t = spec.thresholds, judge = (v, ok) => (v === null ? 'NOT_MEASURABLE' : ok(v) ? 'MET' : 'NOT_MET');
+  const criteria = {
+    eventHitRate: judge(m.eventHitRate, (v) => v >= t.eventHitRateMin),
+    exactRatioRate: judge(m.exactRatioRate, (v) => v >= t.exactRatioRateMin),
+    falsePositives: hits.length ? (m.falsePositives <= t.falsePositivesMax ? 'MET' : 'NOT_MET') : 'NOT_MEASURABLE',
+    coverage2008to2017: judge(m.coverage2008to2017, (v) => v >= t.coverage2008to2017Min),
+    edgarPositiveHit: m.edgarPositives ? 'SEE_SEALED' : 'NOT_MEASURABLE',
+  };
+  const pass = ['eventHitRate', 'exactRatioRate', 'falsePositives', 'coverage2008to2017'].every((k) => criteria[k] === 'MET');
+  return { id: spec.id, specSha256: crypto.createHash('sha256').update(JSON.stringify(spec)).digest('hex'), metrics: m, criteria, pass, role: pass ? 'CHECK_SOURCE_FOR_DQ_K5_QUARANTINE' : 'NOT_ACCEPTED' };
+}
+/** Tiingo ticker form for a listing symbol (review finding 25.10.: BRK.B -> brk-b). */
+export const tiingoTicker = (t) => (t == null ? null : String(t).toLowerCase().replace(/[./]/g, '-'));
 export const probeSpecSha256 = () => crypto.createHash('sha256').update(JSON.stringify(PROBE_SPEC)).digest('hex');
 const tally = (rows, key) => rows.reduce((o, r) => { const k = key(r); if (k != null) o[k] = (o[k] || 0) + 1; return o; }, {});
 const addDays = (d, n) => new Date(Date.parse(`${d}T00:00:00Z`) + n * 864e5).toISOString().slice(0, 10);
@@ -181,7 +238,7 @@ export function stageBRefine({ client = null, expectedCount = null, plan = false
   return async ({ cands, identityOf, segs, baseDs, log = () => {} }) => {
     const inScope = cands.filter((c) => c.result.cls === CLASSES.UNRESOLVED && c.exposedRefs.length && c.level === 'K5');
     if (expectedCount !== null && inScope.length !== expectedCount) throw new Error(`PROBE_SCOPE_COUNT_MISMATCH: ${inScope.length} != ${expectedCount}`);
-    const tickerOf = (c) => String(c.listing).split(':')[2]?.toLowerCase() ?? null;
+    const tickerOf = (c) => tiingoTicker(String(c.listing).split(':')[2] ?? null);
     const byTicker = new Map();
     for (const c of inScope) { const t = tickerOf(c); if (!t) continue; if (!byTicker.has(t)) byTicker.set(t, []); byTicker.get(t).push(c); }
     const tickers = [...byTicker.keys()].sort();
@@ -199,7 +256,7 @@ export function stageBRefine({ client = null, expectedCount = null, plan = false
       const t = tickerOf(c), r = resp.get(t) ?? { found: false, records: [] }, sec = identityOf(c).sec;
       const x = classifySession({ records: r.records, found: r.found, raw: segs[c.j].raw, i: c.i, calendar: baseDs.calendar });
       const perma = [...new Set(r.records.map((y) => y.permaTicker).filter(Boolean))];
-      return { c, t, x, group: groupOf(c.result.reason), noCik: !sec?.cik, permaTickers: perma.length, status: r.status ?? null, refused: !!r.refused };
+      return { c, t, x, date: c.date, found: !!r.found, group: groupOf(c.result.reason), noCik: !sec?.cik, permaTickers: perma.length, status: r.status ?? null, refused: !!r.refused };
     });
     const grp = {};
     for (const g of [...Object.keys(PROBE_SPEC.reasonGroups), 'OTHER']) {
@@ -220,6 +277,7 @@ export function stageBRefine({ client = null, expectedCount = null, plan = false
         endpointOnly: win.filter((r) => !r.x.eodCarriesSameFactor && !r.x.eodCarriesOtherFactor && !r.x.eodSplitNearSession).length,
         eodOnly: rows.filter((r) => r.x.cls !== 'SPLIT_EVENT_IN_WINDOW' && r.x.eodSplitNearSession).length,
       },
+      e1: e1Verdict(rows),
       permaTicker: { sessionsWithPermaTicker: rows.filter((r) => r.permaTickers > 0).length, noCikSessions: rows.filter((r) => r.noCik).length, noCikWithPermaTicker: rows.filter((r) => r.noCik && r.permaTickers > 0).length, tickersWithSeveralPermaTickers: [...new Set(rows.filter((r) => r.permaTickers > 1).map((r) => r.t))].length },
     };
     const sealed = rows.map((r) => ({ segmentId: r.c.segmentId, date: r.c.date, ticker: r.t, reason13: r.c.result.reason, group: r.group, noCik: r.noCik, status: r.status, class: r.x, records: (resp.get(r.t)?.records || []).map((y) => ({ exDate: exDateOf(y), splitFrom: y.splitFrom, splitTo: y.splitTo, splitFactor: y.splitFactor, splitStatus: y.splitStatus, permaTicker: y.permaTicker ?? null, ticker: y.ticker ?? null })) }));
@@ -242,7 +300,9 @@ async function main() {
   fs.mkdirSync(OUT, { recursive: true });
   const pem = fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
   const receipt = { schema: 'supertrader-sf7-tiingo-splits-probe-receipt-1.0.0', certification: FOUNDATION.certification, probe: PROBE_VERSION, probeSpecSha256: probeSpecSha256(), snapshotId, accounting: FOUNDATION.accounting.mode, runId: process.env.GITHUB_RUN_ID || 'local', commit: process.env.GITHUB_SHA || null };
-  receipt.plan = PLAN; receipt.gate = PROBE_GATE.state;
+  receipt.plan = PLAN; receipt.gate = PROBE_GATE.state; receipt.e1AcceptanceSha256 = e1AcceptanceSha256();
+  // fail closed before any request: stage A is only sent when the snapshot store (stage B) is reachable at all
+  if (!PLAN && !['VU_HISTORY_S3_ENDPOINT', 'VU_HISTORY_S3_BUCKET', 'VU_HISTORY_S3_ACCESS_KEY_ID', 'VU_HISTORY_S3_SECRET_ACCESS_KEY'].every((k) => process.env[k])) { console.error('SNAPSHOT_STORE_UNAVAILABLE'); process.exit(3); }
   // ---- Stage A (never in the plan: the plan sends nothing to Tiingo)
   const A = PLAN ? { skipped: 'PLAN_NO_REQUESTS', used: 0, access: null } : await stageA(createTiingoClient({ key: KEY, cap: PROBE_SPEC.stageA.maxRequests }));
   log(`stage A: ${A.used} requests, access ${A.access}`);

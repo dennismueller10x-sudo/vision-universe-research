@@ -9,8 +9,9 @@ import { fileURLToPath } from 'node:url';
 import * as L from '../validation/lib.mjs';
 import { datasetFromPit } from '../source-faithful/runner/snapshot-input.mjs';
 import { caResolutionPart } from '../source-faithful/research/run-sf7-ca-resolution.mjs';
-import { PROBE_SPEC, PROBE_GATE, probeSpecSha256, createTiingoClient, stageA, classifySession, stageBRefine, ProbeDone, groupOf } from '../source-faithful/research/run-sf7-tiingo-splits-probe.mjs';
+import { PROBE_SPEC, PROBE_GATE, probeSpecSha256, createTiingoClient, stageA, classifySession, stageBRefine, ProbeDone, groupOf, E1_ACCEPTANCE, e1AcceptanceSha256, e1Verdict, tiingoTicker } from '../source-faithful/research/run-sf7-tiingo-splits-probe.mjs';
 
+const E1_SHA = 'df6d00026716e1f5080dc7853fb3664722c1b9a6e5446659538243f212ea0e23';
 const HERE = path.dirname(fileURLToPath(import.meta.url)), ROOT = path.resolve(HERE, '..', '..', '..');
 const day = (k) => new Date(Date.UTC(2016, 0, 4) + k * 864e5).toISOString().slice(0, 10);
 const rng = (seed) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 2 ** 32; };
@@ -89,25 +90,50 @@ test('SF7-TIINGO-FAIL-CLOSED: ohne Snapshot, research-v1 oder Schluessel kein La
     const env = { ...process.env }; delete env.TIINGO_API_KEY;
     assert.match(spawnSync(process.execPath, [script, '--accounting', 'research-v1', '--out', out], { encoding: 'utf8', env }).stderr, /SNAPSHOT_REQUIRED/);
     assert.match(spawnSync(process.execPath, [script, '--snapshot', 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d', '--out', out], { encoding: 'utf8', env }).stderr, /RESEARCH_ACCOUNTING_REQUIRED/);
-    const r = spawnSync(process.execPath, [script, '--snapshot', 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d', '--accounting', 'research-v1', '--out', out], { encoding: 'utf8', env: { ...env, TIINGO_API_KEY: 'k3y' } });
-    assert.equal(r.status, 2); assert.match(r.stderr, /PROBE_FROZEN/, 'gesperrt, auch mit Schluessel'); assert.doesNotMatch(r.stderr, /k3y/); assert.deepEqual(fs.readdirSync(out), []);
+    assert.match(spawnSync(process.execPath, [script, '--snapshot', 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d', '--accounting', 'research-v1', '--out', out], { encoding: 'utf8', env }).stderr, /TIINGO_KEY_MISSING/);
+    const noStore = { ...env, TIINGO_API_KEY: 'k3y' }; for (const k of Object.keys(noStore)) if (k.startsWith('VU_HISTORY_S3_')) delete noStore[k];
+    const r = spawnSync(process.execPath, [script, '--snapshot', 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d', '--accounting', 'research-v1', '--out', out], { encoding: 'utf8', env: noStore });
+    assert.equal(r.status, 3); assert.match(r.stderr, /SNAPSHOT_STORE_UNAVAILABLE/, 'ohne Snapshot-Ablage keine Anfrage an Tiingo'); assert.doesNotMatch(r.stderr + r.stdout, /k3y|stage A/); assert.deepEqual(fs.readdirSync(out), []);
   } finally { fs.rmSync(out, { recursive: true, force: true }); }
   const y = fs.readFileSync(path.join(ROOT, '.github/workflows/supertrader-validation.yml'), 'utf8');
   assert.match(y, /run-sf7-tiingo-splits-probe\.mjs --out "\$RUNNER_TEMP\/val" \$SNAP_ARGS/);
   for (const m of y.matchAll(/case "\$MODE" in (sf-research\|[^)]*|methods\|[^)]*)\)/g)) assert.match(m[1], /\|sf7-tiingo-splits-probe\|/);
 });
 
-test('SF7-TIINGO-GATE: nach HTTP 403 gesperrt; Abruf vor Schluessel und Snapshot abgelehnt; Workflow-Sperre vor jedem Schritt mit Schluessel', () => {
-  assert.ok(Object.isFrozen(PROBE_GATE)); assert.equal(PROBE_GATE.state, 'FROZEN'); assert.equal(PROBE_GATE.unlockedBy, null);
-  assert.match(PROBE_GATE.reason, /40221353332/);
-  assert.equal(probeSpecSha256(), '76b70088060119319c8196d36c22589fdd7f22e3182b5ecca07b6b55dc1c6eac', 'die Sperre liegt ausserhalb der vorregistrierten Spezifikation');
+test('SF7-TIINGO-GATE: entsperrt am 06.11.2026 nach der Tiingo-Freischaltung; Spezifikation unveraendert; keine Workflow-Sperre mehr; Plan ohne Schluessel', () => {
+  assert.ok(Object.isFrozen(PROBE_GATE)); assert.equal(PROBE_GATE.state, 'UNLOCKED'); assert.equal(PROBE_GATE.since, '2026-11-06');
+  assert.match(PROBE_GATE.unlockedBy, /Owner 06\.11\.2026/); assert.match(PROBE_GATE.license, /never shown to users/);
+  assert.equal(probeSpecSha256(), '76b70088060119319c8196d36c22589fdd7f22e3182b5ecca07b6b55dc1c6eac', 'die Entsperrung liegt ausserhalb der vorregistrierten Spezifikation');
   const y = fs.readFileSync(path.join(ROOT, '.github/workflows/supertrader-validation.yml'), 'utf8');
-  const freeze = y.indexOf('TIINGO_SPLITS_FETCH_FROZEN'), probeStep = y.indexOf('Supertrader 7.0 Tiingo-Splits-Probe (Corporate'), snapStep = y.indexOf('- name: Snapshot- und Abrechnungsvertrag');
-  assert.ok(freeze > 0 && freeze < snapStep && snapStep < probeStep, 'Sperre vor Snapshot-Vertrag und Abrufschritt');
-  assert.match(y, /case "\$MODE" in sf7-tiingo-splits-probe\) echo "TIINGO_SPLITS_FETCH_FROZEN/);
-  // der Plan-Schritt bekommt keinen Tiingo-Schluessel
+  assert.doesNotMatch(y, /TIINGO_SPLITS_FETCH_FROZEN/);
   const plan = y.slice(y.indexOf('Supertrader 7.0 Tiingo-Splits-Plan'), y.indexOf('- name:', y.indexOf('Supertrader 7.0 Tiingo-Splits-Plan') + 10));
   assert.doesNotMatch(plan, /TIINGO_API_KEY/); assert.match(plan, /run-sf7-tiingo-splits-probe\.mjs --plan --out/);
+});
+
+test('SF7-TIINGO-E1: Abnahme E1 vor dem Lauf festgeschrieben; Urteil nur aus Zaehlungen; leerer Nenner = nicht erfuellt', () => {
+  assert.ok(Object.isFrozen(E1_ACCEPTANCE)); assert.equal(E1_ACCEPTANCE.registeredOn, '2026-11-06');
+  assert.deepEqual(E1_ACCEPTANCE.thresholds, { eventHitRateMin: 0.90, exactRatioRateMin: 0.95, falsePositivesMax: 0, coverage2008to2017Min: 0.85 });
+  assert.equal(E1_ACCEPTANCE.edgarLabels143.REVERSE_SPLIT_DOCUMENTED + E1_ACCEPTANCE.edgarLabels143.FORWARD_SPLIT_DOCUMENTED, 0);
+  assert.equal(Object.values(E1_ACCEPTANCE.edgarLabels143).reduce((a, b) => a + b, 0), 83);
+  assert.equal(e1AcceptanceSha256(), E1_SHA, 'vorregistriert: Aenderung nur mit neuer Fassung');
+  const hit = (o = {}) => ({ cls: 'SPLIT_EVENT_IN_WINDOW', ratioMatchesOpen: true, ratioMatchesClose: true, status: 'a', ...o });
+  const rows = [
+    ...Array.from({ length: 19 }, (_, k) => ({ date: '2017-03-01', found: true, x: hit() })),
+    { date: '2019-01-01', found: true, x: { cls: 'SPLIT_EVENT_ELSEWHERE' } },
+  ];
+  let v = e1Verdict(rows);
+  assert.equal(v.metrics.eventHitRate, 0.95); assert.equal(v.metrics.exactRatioRate, 1); assert.equal(v.metrics.falsePositives, 0); assert.equal(v.metrics.coverage2008to2017, 1);
+  assert.equal(v.pass, true); assert.equal(v.role, 'CHECK_SOURCE_FOR_DQ_K5_QUARANTINE'); assert.equal(v.criteria.edgarPositiveHit, 'NOT_MEASURABLE');
+  // ein Treffer, dessen Verhaeltnis weder Eroeffnung noch Schluss trifft, ist falsch-positiv
+  v = e1Verdict([...rows.slice(1), { date: '2017-03-01', found: true, x: hit({ ratioMatchesOpen: false, ratioMatchesClose: false }) }]);
+  assert.equal(v.metrics.falsePositives, 1); assert.equal(v.criteria.falsePositives, 'NOT_MET'); assert.equal(v.pass, false);
+  // keine Sitzung 2008-2017: Abdeckung nicht messbar, also nicht erfuellt
+  v = e1Verdict(rows.map((r) => ({ ...r, date: '2020-01-01' })));
+  assert.equal(v.criteria.coverage2008to2017, 'NOT_MEASURABLE'); assert.equal(v.pass, false); assert.equal(v.role, 'NOT_ACCEPTED');
+  // keine Treffer: Ratio und Falsch-Positive nicht messbar
+  v = e1Verdict([{ date: '2017-01-01', found: false, x: { cls: 'TICKER_NOT_FOUND' } }]);
+  assert.equal(v.criteria.eventHitRate, 'NOT_MET'); assert.equal(v.criteria.exactRatioRate, 'NOT_MEASURABLE'); assert.equal(v.metrics.coverage2008to2017, 0);
+  assert.equal(tiingoTicker('BRK.B'), 'brk-b'); assert.equal(tiingoTicker('AAPL'), 'aapl');
 });
 
 test('SF7-TIINGO-PLAN: Stufe B als Plan ohne jede Anfrage; Umfang, Ticker, Obergrenze, Reason-Gruppen; nur Zaehlungen', async () => {
@@ -130,7 +156,6 @@ test('SF7-TIINGO-PLAN: Stufe B als Plan ohne jede Anfrage; Umfang, Ticker, Oberg
 });
 
 test('SF7-TIINGO-GATE-CLI: --plan mit gesetztem Schluessel meldet weder PROBE_FROZEN noch Stufe A; echter Client gesperrt', () => {
-  assert.throws(() => createTiingoClient({ key: 'k3y', cap: 4 }), /PROBE_FROZEN/, 'ohne injiziertes fetch kein Netzclient, solange FROZEN');
   const out = fs.mkdtempSync(path.join(os.tmpdir(), 'sf7-tiingo-plan-')), script = path.join(ROOT, 'scripts/supertrader/source-faithful/research/run-sf7-tiingo-splits-probe.mjs');
   try {
     const env = { ...process.env, TIINGO_API_KEY: 'k3y' };
