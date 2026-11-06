@@ -154,6 +154,28 @@ export function buildSummary(root,{now=new Date()}={}){
   sources.filings={...domainRule(registry,'fundamentalsConsumer'),artifact:'/quant/data/sec/consumer/',asOf,generatedAt};
  });
 
+ // ---- 13F: neue Positionen grosser Fonds je Titel (Watchlist-Ereignis FUND_13F), aus den veroeffentlichten Hedgefonds-Daten
+ tryPart('funds13f',()=>{
+  const hf=readJson(root,'hedgefonds/data/hedgefonds.json');if(!hf||!hf.latestPeriod)throw Error('HEDGEFONDS_MISSING');
+  const dir=join(root,'hedgefonds/data/stocks');if(!existsSync(dir))throw Error('HEDGEFONDS_STOCKS_MISSING');
+  /* "Grosse Fonds" = die kuratierte Liste der Hedgefonds-Seite (hedgefonds.json#funds), nicht jeder 13F-Melder des Bulk-Satzes. */
+  const curated=new Map((hf.funds||[]).filter(f=>f&&typeof f.slug==='string').map(f=>[f.slug,f.name||f.slug]));
+  for(const f of readdirSync(dir).filter(x=>/^\d+\.json$/.test(x)).sort()){
+   const part=readJson(root,'hedgefonds/data/stocks/'+f)||{};
+   for(const x of Object.values(part)){
+    if(!x||typeof x!=='object'||!x.ticker)continue;
+    let sid;try{sid=Identity.securityIdForTicker(x.ticker);}catch{continue;}
+    const hit=listingFor(x.ticker,sid,null);
+    if(!hit.row){note(hit.rows,'funds13f',hit.reason);continue;}
+    /* Neue Positionen (Status 'new' im juengsten Quartal), sortiert; Zahl der meldenden Fonds */
+    const fresh=[...new Set((x.holders||[]).filter(h=>h&&h.st==='new'&&curated.has(h.s)).map(h=>h.s))].sort();
+    Object.assign(hit.row,{fp:hf.latestPeriod,fc:Number.isInteger(x.fundCount)?x.fundCount:null,fn:fresh});
+   }
+  }
+  sources.funds13f={domain:'hedgefonds13f',artifact:'/hedgefonds/data/stocks/',asOf:hf.latestPeriod,generatedAt:hf.generatedAt||null,freshness:null,
+   funds:Object.fromEntries([...curated].sort((a,b)=>a[0].localeCompare(b[0])))};
+ });
+
  // ---- Technik: 52W-Hoch, Volumen, Trend (Plattformdefinition aus market-factors.js, siehe discover/engines/high52w.js)
  tryPart('technical',()=>{
   const ds=readJson(root,'technical/data/screener-v1.json');if(!ds||!ds.cols||!Array.isArray(ds.cols.s))throw Error('TECHNICAL_SCREENER_MISSING');
@@ -222,7 +244,7 @@ export function buildSummary(root,{now=new Date()}={}){
  if(oldest&&calendar){let d=oldest;for(let k=0;k<40;k++){d=TS.nextTradingDay(d,{calendar});if(!d)break;sessions.push(d);}}
 
  // ---- spaltenweise ausgeben
- const FIELDS=['i','s','n','x','cu','act','del','el','c','cd','pu','d1','dp','rf','rk','rp','re','q','qdq','qd','mc','td','tf','h52','h52w','h52m','dh','rv','vs','rsi','a200','st','sts','why'];
+ const FIELDS=['i','s','n','x','cu','act','del','el','c','cd','pu','d1','dp','rf','rk','rp','re','fp','fc','fn','q','qdq','qd','mc','td','tf','h52','h52w','h52m','dh','rv','vs','rsi','a200','st','sts','why'];
  rows.sort((a,b)=>a.s<b.s?-1:a.s>b.s?1:a.i<b.i?-1:1);
  const cols={};for(const f of FIELDS)cols[f]=rows.map(r=>r[f]===undefined?null:r[f]);
  const slices=sources.supertrader&&sources.supertrader.slices;

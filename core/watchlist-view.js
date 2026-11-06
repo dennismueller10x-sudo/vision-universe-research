@@ -40,7 +40,7 @@
 
   var VERSION = "watchlist-view-1.0.0";
   var SCHEMA = "vu-watchlist-summary-1.0.0";
-  var RULE_VERSION = "watchlist-events-1.3.0";  /* 1.2.0: PRICE_MOVE (Tagesbewegung ab 5 %); 1.3.0: EARNINGS (neuer SEC-Bericht) */
+  var RULE_VERSION = "watchlist-events-1.4.0";  /* 1.2.0: PRICE_MOVE (Tagesbewegung ab 5 %); 1.3.0: EARNINGS (neuer SEC-Bericht); 1.4.0: FUND_13F (neue Fondsposition) */
   var MOVE_THRESHOLD = 0.05;       /* PRICE_MOVE: Tagesbewegung mindestens 5 % (Betrag), splitbereinigt */
   var NEAR_HIGH = -0.05;           /* Discover nearHigh/watch: hoechstens 5 % unter dem 52W-Hoch */
   var ACTIONABLE = ["SETUP", "ENTRY_READY", "TRIGGERED", "ACTIVE"];
@@ -202,6 +202,11 @@
     if (!src.filings) base.filings = unavailable("SOURCE_MISSING");
     else if (!isDate(r.rf)) base.filings = unavailable(why(r, "filings"));
     else base.filings = { state: "AVAILABLE", filed: r.rf, kind: r.rk === "A" ? "ANNUAL" : "QUARTERLY", period: r.rp || null, periodEnd: r.re || null };
+
+    // 13F: neue Positionen grosser Fonds im juengsten gemeldeten Quartal
+    if (!src.funds13f) base.funds13f = unavailable("SOURCE_MISSING");
+    else if (!isDate(r.fp) || !Array.isArray(r.fn)) base.funds13f = unavailable(why(r, "funds13f"));
+    else base.funds13f = { state: "AVAILABLE", period: r.fp, holders: typeof r.fc === "number" ? r.fc : null, newPositions: r.fn.slice() };
 
     // Quant: sieben Faktoren mit Stufe, Gesamtscore zurueckgehalten
     var qs = src.quant;
@@ -525,6 +530,16 @@
           before: a.filings.filed, after: b.filings.filed, asOf: b.filings.filed,
           evidence: { filed: b.filings.filed, filedBefore: a.filings.filed, period: b.filings.period, periodEnd: b.filings.periodEnd, kind: b.filings.kind, source: "SEC" },
           severity: "NOTABLE" });
+
+      // 13F: ein Fonds meldet eine NEUE Position, die in der vorigen Uebersicht nicht stand; Erstbeobachtung still
+      if (a.funds13f && b.funds13f && a.funds13f.state === "AVAILABLE" && b.funds13f.state === "AVAILABLE") {
+        var known = {}; a.funds13f.newPositions.forEach(function (x) { known[x] = true; });
+        var added = b.funds13f.newPositions.filter(function (x) { return !known[x]; });
+        if (added.length)
+          ev({ type: "FUND_13F", subtype: "NEW_POSITION", v: b, sourceId: "funds13f", subject: b.funds13f.period, before: a.funds13f.newPositions, after: b.funds13f.newPositions,
+            asOf: b.funds13f.period, evidence: { period: b.funds13f.period, funds: added.slice(0, 10), fundNames: added.slice(0, 10).map(function (x) { return (srcB.funds13f && srcB.funds13f.funds || {})[x] || x; }),
+              fundsCount: added.length, holders: b.funds13f.holders, source: "SEC 13F" } });
+      }
 
       // Kurs und Technik
       if (b.high52.signal === "NEW_HIGH" && a.high52.state === "AVAILABLE" && a.high52.signal !== "NEW_HIGH")

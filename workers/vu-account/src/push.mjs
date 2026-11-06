@@ -50,10 +50,10 @@ export function createFcm({secret, fetchImpl = fetch, now = Date.now}) {
     },
   };
 }
-const TYPES = {PRICE_EVENT:['NEW_52W_HIGH','VOLUME_SPIKE'], PRICE_MOVE:['DAILY_UP_5','DAILY_DOWN_5'], EARNINGS:['QUARTERLY_REPORT','ANNUAL_REPORT'], SUPERTRADER_SIGNAL:['VALID_SIGNAL','VALID_SIGNAL_ENDED','STATE_CHANGED'],
+const TYPES = {PRICE_EVENT:['NEW_52W_HIGH','VOLUME_SPIKE'], PRICE_MOVE:['DAILY_UP_5','DAILY_DOWN_5'], EARNINGS:['QUARTERLY_REPORT','ANNUAL_REPORT'], FUND_13F:['NEW_POSITION'], SUPERTRADER_SIGNAL:['VALID_SIGNAL','VALID_SIGNAL_ENDED','STATE_CHANGED'],
   QUANT_CHANGE:['FACTOR_BAND_UP','FACTOR_BAND_DOWN','DATA_QUALITY_CHANGED']};
 export function deliverableEvents(doc, now) {
-  if (doc?.ruleVersion !== 'watchlist-events-1.3.0' || !Array.isArray(doc.events) || doc.events.length>5000) return [];
+  if (doc?.ruleVersion !== 'watchlist-events-1.4.0' || !Array.isArray(doc.events) || doc.events.length>5000) return [];
   return doc.events.filter(e => /^ev_[a-f0-9]{16}$/.test(e.eventId) && /^vu_[a-f0-9]{6,32}$/.test(e.instrumentId) &&
     e.source?.ruleVersion === doc.ruleVersion && TYPES[e.type]?.includes(e.subtype) &&
     Date.parse(e.occurredAt)<=now && Date.parse(e.occurredAt)>now-86400000 && (!e.expiresAt || Date.parse(e.expiresAt)>now));
