@@ -87,6 +87,11 @@ test('V10 identity bindings select the recorded master row on the sourced interv
  for(const rec of V10){
   assert.throws(()=>A.createLoader(root)(rec.securityId),/^Error: AMBIGUOUS_LISTING_IDENTITY$/);
   const o=outcome(()=>L(rec.securityId));
+  // Ein Split nach dem Pruefstand rechnet die split-bereinigte Reihe rueckwirkend um: der Verlaufsschutz schlaegt dann zu Recht fehl (fail closed).
+  // Zugelassen nur, wenn die Live-Reihe einen Split nach historyGuard.checkedTo belegt; jede andere Abweichung bleibt ein Fehler.
+  if(!o.ok&&o.value==='IDENTITY_EVIDENCE_HISTORY_GUARD_MISMATCH'){
+   const splits=JSON.parse(seriesBytes(rec.securityId)).corporateActions?.splits||[];
+   assert.ok(splits.some(s=>s[0]>rec.historyGuard.checkedTo),rec.securityId+': Verlaufsschutz verletzt ohne spaeteren Split');continue;}
   if(!o.ok){assert.match(o.value,/^(INSUFFICIENT_HISTORY|CORPORATE_ACTION_UNRESOLVED|MISSING_WEEKS|INELIGIBLE_EQUITY_LISTING)/,rec.securityId);continue;}
   qualified++;
   const r=L(rec.securityId);
