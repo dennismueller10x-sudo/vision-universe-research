@@ -268,13 +268,13 @@ Die Archivierung erfolgt in Folge-PRs je Produkt. Die Pfadspalte wird dabei auf 
 | [docs/VU_SOCIAL_E2E_NACHWEIS.md](VU_SOCIAL_E2E_NACHWEIS.md) | 2026-10-06 | 1 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_SOCIAL_EIGENE_DOMAIN.md](VU_SOCIAL_EIGENE_DOMAIN.md) | 2026-10-06 | 1 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_SOCIAL_EVIDENCE_REGIME.md](VU_SOCIAL_EVIDENCE_REGIME.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
-| [docs/VU_SOCIAL_HANDOFF.md](VU_SOCIAL_HANDOFF.md) | 2026-10-06 | 0 | überholt | Social-Aufbau-/Übergabestand September; aktuelle Produktion beginnt im Studio-Playbook. |
+| [docs/archiv/2026/VU_SOCIAL_HANDOFF.md](archiv/2026/VU_SOCIAL_HANDOFF.md) | 2026-10-06 | 0 | überholt | Social-Aufbau-/Übergabestand September; aktuelle Produktion beginnt im Studio-Playbook. |
 | [docs/VU_SOCIAL_LINKAGE_DIAGNOSE.md](VU_SOCIAL_LINKAGE_DIAGNOSE.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_SOCIAL_META_CONNECT.md](VU_SOCIAL_META_CONNECT.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_SOCIAL_META_LOGIN_DIAGNOSE.md](VU_SOCIAL_META_LOGIN_DIAGNOSE.md) | 2026-10-06 | 1 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_SOCIAL_NORTH_STAR_GAP.md](VU_SOCIAL_NORTH_STAR_GAP.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_SOCIAL_OWNER_DECISIONS.md](VU_SOCIAL_OWNER_DECISIONS.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
-| [docs/VU_SOCIAL_PHASE_A_AUDIT.md](VU_SOCIAL_PHASE_A_AUDIT.md) | 2026-10-06 | 0 | überholt | Social-Aufbau-/Übergabestand September; aktuelle Produktion beginnt im Studio-Playbook. |
+| [docs/archiv/2026/VU_SOCIAL_PHASE_A_AUDIT.md](archiv/2026/VU_SOCIAL_PHASE_A_AUDIT.md) | 2026-10-06 | 0 | überholt | Social-Aufbau-/Übergabestand September; aktuelle Produktion beginnt im Studio-Playbook. |
 | [docs/VU_SOCIAL_SHADOW_LOOP.md](VU_SOCIAL_SHADOW_LOOP.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_SOCIAL_SMOKE_PUBLISH.md](VU_SOCIAL_SMOKE_PUBLISH.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_SOCIAL_VISUAL_ARCHITECTURE.md](VU_SOCIAL_VISUAL_ARCHITECTURE.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |

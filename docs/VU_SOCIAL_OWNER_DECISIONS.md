@@ -187,7 +187,7 @@ ohne anzuhalten:
 
 - **Kein Cloudflare Worker, kein D1, kein KV.** Es gibt sie im Projekt nicht;
   sie einzufuehren waere eine Parallelarchitektur (§0, §35). Details in
-  `docs/VU_SOCIAL_PHASE_A_AUDIT.md`, Abschnitt 2.1.
+  `docs/archiv/2026/VU_SOCIAL_PHASE_A_AUDIT.md`, Abschnitt 2.1.
 - **Kein zweites Modulformat.** Die Engines folgen dem UMD-Muster aus
   `quant/engines/` und laufen in Browser und Node (MASTER §31.12).
 - **Kein LLM in der Content-Pipeline.** Die Stufen RESEARCH bis DRAFT sind ein
