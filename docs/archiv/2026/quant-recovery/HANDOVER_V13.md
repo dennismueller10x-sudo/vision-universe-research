@@ -3,10 +3,10 @@
 Einstieg für die nächste Entwicklungsrunde.
 
 Ausführliche Berichte:
-- [DATA_QUALITY_V13_FINAL.md](DATA_QUALITY_V13_FINAL.md)
-- [DATA_QUALITY_V12_FINAL.md](DATA_QUALITY_V12_FINAL.md)
-- [ALPHA_DISCOVERY_V11.md](ALPHA_DISCOVERY_V11.md)
-- [BACKTEST_V10_FINAL.md](BACKTEST_V10_FINAL.md)
+- [DATA_QUALITY_V13_FINAL.md](../../../quant-recovery/DATA_QUALITY_V13_FINAL.md)
+- [DATA_QUALITY_V12_FINAL.md](../../../quant-recovery/DATA_QUALITY_V12_FINAL.md)
+- [ALPHA_DISCOVERY_V11.md](../../../quant-recovery/ALPHA_DISCOVERY_V11.md)
+- [BACKTEST_V10_FINAL.md](../../../quant-recovery/BACKTEST_V10_FINAL.md)
 
 Alles Research ist `NOT_CERTIFIED` mit `productionApproved: false`.
 
@@ -149,7 +149,7 @@ Der Container ist flüchtig.
 
 ## 9. Zertifizierungsreife
 
-**Zertifiziert: 0/6.** Verträge und Gates sind unverändert; es gab keinen Statuswechsel. Die Einschätzung aus [BACKTEST_V10_CERTIFICATION_READINESS.md](BACKTEST_V10_CERTIFICATION_READINESS.md) gilt weiter.
+**Zertifiziert: 0/6.** Verträge und Gates sind unverändert; es gab keinen Statuswechsel. Die Einschätzung aus [BACKTEST_V10_CERTIFICATION_READINESS.md](../../../quant-recovery/BACKTEST_V10_CERTIFICATION_READINESS.md) gilt weiter.
 
 | Art | Stand | frühestens |
 |---|---|---|

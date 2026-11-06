@@ -11,7 +11,7 @@ GROUPS = {
     'evidence': ['docs/quant-recovery/v10'],
     'reports': ['docs/quant-recovery/BACKTEST_V10_FINAL.md', 'docs/quant-recovery/BACKTEST_V10_EVIDENCE_MATRIX.md', 'docs/quant-recovery/BACKTEST_V10_DATA_RECOVERY.md',
                 'docs/quant-recovery/BACKTEST_V10_REAL_STUDIES.md', 'docs/quant-recovery/BACKTEST_V10_CERTIFICATION_READINESS.md', 'docs/quant-recovery/BACKTEST_V10_VALIDATION.md',
-                'docs/quant-recovery/BACKTEST_V10_HANDOFF.md'],
+                'docs/archiv/2026/quant-recovery/BACKTEST_V10_HANDOFF.md'],
     'researchEngines': ['quant/engines/research-weekly-loader.cjs', 'quant/engines/research-identity-evidence.cjs', 'quant/engines/research-ca-evidence.cjs',
                         'quant/engines/research-listing-lifecycle.cjs'],
     'unchangedEngines': ['quant/engines/weekly-real-adapter.cjs', 'quant/engines/corporate-action-evidence.js', 'quant/engines/research-studies.cjs',

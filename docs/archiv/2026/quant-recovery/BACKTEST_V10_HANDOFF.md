@@ -15,7 +15,7 @@ Die Abnahmen gelten ausschließlich methodisch und nur im dokumentierten, begren
 
 ## Integrierte Ausgangsbasis
 
-Maschinenlesbare Fassung: [v10/handoff-1.0.0.json](v10/handoff-1.0.0.json), erzeugt mit `python3 scripts/quant/v10/build-handoff.py --out …` aus den V9-Belegen.
+Maschinenlesbare Fassung: [v10/handoff-1.0.0.json](../../../quant-recovery/v10/handoff-1.0.0.json), erzeugt mit `python3 scripts/quant/v10/build-handoff.py --out …` aus den V9-Belegen.
 
 | PR | Inhalt | Merge-Commit auf main |
 |---|---|---|
@@ -40,7 +40,7 @@ Maschinenlesbare Fassung: [v10/handoff-1.0.0.json](v10/handoff-1.0.0.json), erze
 
 ## Die sechs Backtest-Zertifizierungen
 
-Quelle: [Zertifizierungsreife](v9/certification-readiness-1.0.0.json).
+Quelle: [Zertifizierungsreife](../../../quant-recovery/v9/certification-readiness-1.0.0.json).
 
 | Art | Blocker | Klasse | Frühestens |
 |---|---|---|---|
@@ -57,7 +57,7 @@ Historische Rückrechnungen ersetzen keine vorwärts gesammelte veröffentlichte
 
 **Owner 28.10.2026: nicht freigegeben; der Vertrag bleibt unverändert.**
 
-Analyse ([setup-independence-1.0.0.json](v9/setup-independence-1.0.0.json)):
+Analyse ([setup-independence-1.0.0.json](../../../quant-recovery/v9/setup-independence-1.0.0.json)):
 - Die 4.137 Ereignisse entsprechen für den mittleren M6-Ausgang nur **N_eff ≈ 17** (roh) bzw. ≈ 13 (SPY-Überschuss).
 - 20 Wochen × 200 Titel ergäben N_eff ≈ 22.
 - Weder Monats- noch ISO-Wochenzähler messen Unabhängigkeit.

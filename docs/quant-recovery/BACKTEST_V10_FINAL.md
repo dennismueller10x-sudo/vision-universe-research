@@ -2,7 +2,7 @@
 
 **Status: V10_DATA_AND_STUDIES_EXTENDED_NO_CERTIFICATION.** Technisch implementiert 13/13; im definierten Scope methodisch abgenommen 7/13 (7/7 Erweiterungsmethoden, unverändert); **zertifizierte Backtest-Arten 0/6**; `productionApproved=false`; keine Produktaktivierung, kein Merge, kein Frontend, keine Workflowänderung, keine Datei unter `*/data` geändert.
 
-Eingangsübergabe: [BACKTEST_V10_HANDOFF.md](BACKTEST_V10_HANDOFF.md) (unverändert). Basis: main `a1a0dd972a` (V9-Referenz `e21bd8a59d` enthalten). Berichte: [Evidenzmatrix](BACKTEST_V10_EVIDENCE_MATRIX.md) · [Datenrettung](BACKTEST_V10_DATA_RECOVERY.md) · [Realstudien](BACKTEST_V10_REAL_STUDIES.md) · [Zertifizierungsreife](BACKTEST_V10_CERTIFICATION_READINESS.md) · [Validierung](BACKTEST_V10_VALIDATION.md) · [Manifest](v10/artifact-manifest-1.0.0.json).
+Eingangsübergabe: [BACKTEST_V10_HANDOFF.md](../archiv/2026/quant-recovery/BACKTEST_V10_HANDOFF.md) (unverändert). Basis: main `a1a0dd972a` (V9-Referenz `e21bd8a59d` enthalten). Berichte: [Evidenzmatrix](BACKTEST_V10_EVIDENCE_MATRIX.md) · [Datenrettung](BACKTEST_V10_DATA_RECOVERY.md) · [Realstudien](BACKTEST_V10_REAL_STUDIES.md) · [Zertifizierungsreife](BACKTEST_V10_CERTIFICATION_READINESS.md) · [Validierung](BACKTEST_V10_VALIDATION.md) · [Manifest](v10/artifact-manifest-1.0.0.json).
 
 ## Antworten
 

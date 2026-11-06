@@ -24,14 +24,14 @@ PRs anderer Sitzungen, die diese Arbeit berühren: #1136 (Security Master Nachho
 
 ## 2. Erledigt (nicht wiederholen)
 
-- **V10–V13c-Studien:** Signal-, Pattern-, Setup-, Strategie- und Faktorstudien auf der Überlebenden- und der Delisted-Population, mit Large-Cap-Grenzen, F1/F1w/F1d, HIST-Sturzfällen und registrierter V13c-Studie 3.0.0. Befund: kein belastbares Alpha. Einstieg: [HANDOVER_V13.md](HANDOVER_V13.md), Abschnitte 1–10; [v13c/](v13c/).
+- **V10–V13c-Studien:** Signal-, Pattern-, Setup-, Strategie- und Faktorstudien auf der Überlebenden- und der Delisted-Population, mit Large-Cap-Grenzen, F1/F1w/F1d, HIST-Sturzfällen und registrierter V13c-Studie 3.0.0. Befund: kein belastbares Alpha. Einstieg: [HANDOVER_V13.md](HANDOVER_V13.md), Abschnitte 1–10; [v13c/](../../../quant-recovery/v13c).
 - **Delistete Reihen:**
   - Register 1.0.0 mit 1.675 QUALIFIED und 151 nur Kurs;
   - Register 1.1.0 (V13b HIST) mit 1.688 QUALIFIED;
   - hashgebundener Loader `quant/engines/research-delisted-series.cjs`, opt-in.
-- **Backtest-Engineering P2 (#1133):** sechs Arten, Ergebnisvertrag `backtest-result-2.0.0`, Runner, 16 echte Demofälle, unabhängige QA. Einstieg: `docs/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`.
+- **Backtest-Engineering P2 (#1133):** sechs Arten, Ergebnisvertrag `backtest-result-2.0.0`, Runner, 16 echte Demofälle, unabhängige QA. Einstieg: `docs/archiv/2026/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`.
 - **Interne Vorschau (#1138):** Einstieg `docs/quant/BACKTEST_PREVIEW.md`.
-- **Entscheidungsvorlage** Setup-OOS / Strategy / Factor: keine Normänderung, Gates unverändert. Einstieg: [../quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md](../quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md).
+- **Entscheidungsvorlage** Setup-OOS / Strategy / Factor: keine Normänderung, Gates unverändert. Einstieg: [../quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md](../../../quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md).
 - **GitHub-Support-Anfrage** zur Bereinigung alter Commits und Blobs: Text an den Owner übergeben. Den Versand macht der Owner.
 
 ## 3. Sechs Backtest-Arten
@@ -56,7 +56,7 @@ Heute sind **0/6** Arten zertifiziert; `productionApproved=false`.
 
 ### 4.1 Was es ist
 
-Verschlüsseltes Archiv **1.2.0**, Manifest [v13/archive/manifest-1.2.0.json](v13/archive/manifest-1.2.0.json). Anleitung: [v13/archive/README.md](v13/archive/README.md).
+Verschlüsseltes Archiv **1.2.0**, Manifest [v13/archive/manifest-1.2.0.json](../../../quant-recovery/v13/archive/manifest-1.2.0.json). Anleitung: [v13/archive/README.md](../../../quant-recovery/v13/archive/README.md).
 
 | Kennzahl | Wert |
 |---|---|
@@ -197,8 +197,8 @@ Erledigt am 30.10.2026: Der SF8-Kandidatenlauf vom 29.10. (`204a5171bf`) hat DQ-
 
 1. `CLAUDE.md`, dann dieses Dokument.
 2. Archiv: `docs/quant-recovery/v13/archive/README.md`; Werkzeuge `scripts/quant/v13/archive/` (`build-archive.sh`, `restore-archive.sh`, `presign.mjs`, `transfer.sh`, `r2-restore.mjs`); Workflow `.github/workflows/quant-v13-archive.yml` (Marken usage, put, get, verify, keycheck, restore; nur auf `claude/**`).
-3. Backtests: `docs/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`, `BACKTEST_RUNNER.md`, `BACKTEST_RESULT_CONTRACT_V2.md`, `BACKTEST_PREVIEW.md`; Code `scripts/quant/research/backtest-runner.cjs`, `run-backtest.cjs`, `quant/api/backtest-research-adapter.js`, `quant/api/backtest-preview-service.cjs`.
-4. Research-Befunde: `docs/quant-recovery/HANDOVER_V13.md`, `docs/quant-recovery/v13c/`.
+3. Backtests: `docs/archiv/2026/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`, `BACKTEST_RUNNER.md`, `BACKTEST_RESULT_CONTRACT_V2.md`, `BACKTEST_PREVIEW.md`; Code `scripts/quant/research/backtest-runner.cjs`, `run-backtest.cjs`, `quant/api/backtest-research-adapter.js`, `quant/api/backtest-preview-service.cjs`.
+4. Research-Befunde: `docs/archiv/2026/quant-recovery/HANDOVER_V13.md`, `docs/quant-recovery/v13c/`.
 5. Security Master: `scripts/market/security-master-refresh-gate.mjs`, PR #1119, #1143, #1136.
 6. Tests: siehe `CLAUDE.md`, Abschnitt Tests. Gezielt:
    ```bash

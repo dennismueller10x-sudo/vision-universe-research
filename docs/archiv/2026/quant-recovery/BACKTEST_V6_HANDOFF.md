@@ -6,17 +6,17 @@
 **Integrationsbasis:** `05cd43b34bce9cee25564a48db29ff19ba3b1c7b` (25.10.2026).
 **Finaler Main-Snapshot der technischen Abnahme / Merge-Commit #906:** `9cacd5ea6f64dae2dea47e3cf85a2cf149c6fc49` (25.10.2026, 2026-10-25T07:10:43Z).
 
-Der nachgelagerte Dokumentationscommit ergänzt dieses bereits verifizierte Protokoll und ändert keine Laufzeitdatei. Seine genaue versionierte Main-Revision lässt sich mit `git log -1 --first-parent --format=%H -- docs/quant-recovery/BACKTEST_V6_HANDOFF.md` ermitteln; der Snapshot oben bezeichnet den geprüften Backtest-Unterbau.
+Der nachgelagerte Dokumentationscommit ergänzt dieses bereits verifizierte Protokoll und ändert keine Laufzeitdatei. Seine genaue versionierte Main-Revision lässt sich mit `git log -1 --first-parent --format=%H -- docs/archiv/2026/quant-recovery/BACKTEST_V6_HANDOFF.md` ermitteln; der Snapshot oben bezeichnet den geprüften Backtest-Unterbau.
 
 ## A. Repository und Sicherung
 
 Auftrag 1 sichert den bestehenden technischen Unterbau. Er enthält keine neue Backtest-Art, keine Monte-Carlo-Implementierung, keine Frontend-Arbeit und keine Produktfreigabe. Alle realen Einzelaktienrechnungen bleiben **PRICE_RETURN / NOT_CERTIFIED**, `productionApproved=false`.
 
-Die Vorgänger #862, #872, #882, #894, #895, #896 und #897 waren bei Beginn dieses Auftrags offen. Ihre vollständigen Köpfe werden nicht nacheinander gemergt: Sie enthalten kumulative/doppelte technische Patches sowie alte UI- und Preview-Anteile. #906 übernimmt die benötigten Backendteile selektiv. Eine Schließung erfolgt erst nach verifizierter Übernahme und mit nachvollziehbarem Verweis. Originalbranches werden dabei nicht gelöscht. Endgültig sind alle sieben Vorgänger **CLOSED**, technisch ersetzt durch den verifizierten Main-Stand von #906. Sie wurden mit nachvollziehbarem Abschlusskommentar und Referenz geschlossen; ihre Branches wurden nicht gelöscht. [Status-/Zeit-/SHA-Nachweis](v6-securement/closed-predecessors.json).
+Die Vorgänger #862, #872, #882, #894, #895, #896 und #897 waren bei Beginn dieses Auftrags offen. Ihre vollständigen Köpfe werden nicht nacheinander gemergt: Sie enthalten kumulative/doppelte technische Patches sowie alte UI- und Preview-Anteile. #906 übernimmt die benötigten Backendteile selektiv. Eine Schließung erfolgt erst nach verifizierter Übernahme und mit nachvollziehbarem Verweis. Originalbranches werden dabei nicht gelöscht. Endgültig sind alle sieben Vorgänger **CLOSED**, technisch ersetzt durch den verifizierten Main-Stand von #906. Sie wurden mit nachvollziehbarem Abschlusskommentar und Referenz geschlossen; ihre Branches wurden nicht gelöscht. [Status-/Zeit-/SHA-Nachweis](../../../quant-recovery/v6-securement/closed-predecessors.json).
 
 ### Methodikgrundlage für Auftrag 2
 
-Der [Methodikentwurf V1](methodology-v1/README.md) aus #872 wurde ausdrücklich gesichert: Markdown und Maschinenvertrag sind bytegenaue Kopien des Commits `0a57295f5a1ddffb8bf125646428ce29e9ba281e`. [Manifest und SHA256](methodology-v1/manifest.json) belegen Herkunft und Inhalt. Der Entwurf liegt bewusst im Dokumentationsarchiv, nicht im aktiven `quant/methodology/`-Ladepfad. **PRESERVED_PROPOSAL_NOT_APPROVED**: keine automatische Übernahme seiner Schwellen oder Zertifizierungskriterien.
+Der [Methodikentwurf V1](../../../quant-recovery/methodology-v1/README.md) aus #872 wurde ausdrücklich gesichert: Markdown und Maschinenvertrag sind bytegenaue Kopien des Commits `0a57295f5a1ddffb8bf125646428ce29e9ba281e`. [Manifest und SHA256](../../../quant-recovery/methodology-v1/manifest.json) belegen Herkunft und Inhalt. Der Entwurf liegt bewusst im Dokumentationsarchiv, nicht im aktiven `quant/methodology/`-Ladepfad. **PRESERVED_PROPOSAL_NOT_APPROVED**: keine automatische Übernahme seiner Schwellen oder Zertifizierungskriterien.
 
 Auftrag 2 muss insbesondere 99,5 % Outcome-Abdeckung, Regimegrenzen, 0,50 Prozentpunkte Mindestwirkung, die Bedeutung prospektiver Beobachtungszeit und des M6-Nachlaufs fachlich entscheiden. Technische Ausführung, methodische Zertifizierung, statistischer Effekt und wirtschaftlicher Vorteil bleiben getrennte Achsen. Bestehende strengere Gates bleiben bis zur ausdrücklichen Entscheidung unverändert.
 
@@ -40,7 +40,7 @@ Auftrag 2 muss insbesondere 99,5 % Outcome-Abdeckung, Regimegrenzen, 0,50 Prozen
 
 ### Bestehender Quant-Lesedienst
 
-Zentral bleibt `quant/api/product-services.js#create().getRealBacktest(ticker, selection)`. Die private Node-Komposition ist `server/quant-backtest-reader.cjs`; der reine Auswahladapter liegt unter `quant/api/real-backtest-selection.js`. [Ausführbarer Übergabevertrag](BACKTEST_V51_HANDOFF.md) dokumentiert Felder und Beispielaufrufe.
+Zentral bleibt `quant/api/product-services.js#create().getRealBacktest(ticker, selection)`. Die private Node-Komposition ist `server/quant-backtest-reader.cjs`; der reine Auswahladapter liegt unter `quant/api/real-backtest-selection.js`. [Ausführbarer Übergabevertrag](../../../quant-recovery/BACKTEST_V51_HANDOFF.md) dokumentiert Felder und Beispielaufrufe.
 
 - Perioden: `1Y`, `3Y`, `5Y`, `10Y`, `MAX`. Junge Listings liefern tatsächliche Grenzen und `complete=false`; die angeforderte Periode wird nicht still umbenannt.
 - Bereiche: `summary`, `quality`, `equity`, `trades`. Listing, Generation und Ergebnishash werden zwischen den Abrufen gebunden. Bei Generationswechsel Auswahl neu laden.
@@ -52,7 +52,7 @@ Zentral bleibt `quant/api/product-services.js#create().getRealBacktest(ticker, s
 
 ### Daten und Referenzen
 
-Erneut vollständig materialisiert und geprüft am 25.10.2026: 6.190 gespeicherte Serien-/Listingkandidaten, 4.451 Klasse B, 1.739 Klasse C, 22.255 Periodenergebnisse. Diese Population ist kein vollständiges historisches Marktuniversum und keine unabhängige Stichprobe. Der neue Lauf und dessen Hashes stehen unter [v6-securement/validation.json](v6-securement/validation.json): 6.190 Reader-Antworten und alle Details geprüft, **0 Performance-Payloads für blockierte Listings**; alle fünf NVDA-Perioden zweimal exakt und unabhängig mit Python nachgerechnet. Unveränderte Wiederholung: 6.190 Wiederverwendungen, null Neuberechnungen.
+Erneut vollständig materialisiert und geprüft am 25.10.2026: 6.190 gespeicherte Serien-/Listingkandidaten, 4.451 Klasse B, 1.739 Klasse C, 22.255 Periodenergebnisse. Diese Population ist kein vollständiges historisches Marktuniversum und keine unabhängige Stichprobe. Der neue Lauf und dessen Hashes stehen unter [v6-securement/validation.json](../../../quant-recovery/v6-securement/validation.json): 6.190 Reader-Antworten und alle Details geprüft, **0 Performance-Payloads für blockierte Listings**; alle fünf NVDA-Perioden zweimal exakt und unabhängig mit Python nachgerechnet. Unveränderte Wiederholung: 6.190 Wiederverwendungen, null Neuberechnungen.
 
 NVDA-Referenz: reale Wochenhistorie 22.01.1999–23.10.2026, zulässiger Signalbeginn 28.01.2000, erster tatsächlicher Handel 18.02.2000; 21 abgeschlossene Trades und eine offene Position. Zuletzt unabhängig geprüft: Start 100.000 USD, Ende 4.853.701,42 USD, CAGR 15,6284 %, wöchentlicher Drawdown −80,2182 %. Eigene Buy-and-Hold-CAGR rund 34,3992 %, SPY rund 6,6510 % auf gemeinsamer NVDA-Periode. Dies ist keine Behauptung eines unabhängig bestätigten Signalvorteils.
 
@@ -60,7 +60,7 @@ Die ältere kanonische TR-Signalstudie 6.036/6.174 bezeichnet Wertpapier-Kursrei
 
 ## C. Sechs bestehende Backtest-Arten
 
-Alle bestehenden Funktionen bleiben erhalten. Die NEW_52W_HIGH-Einzelaktienrechnung ersetzt keine der anderen fachlichen Studien. [Ausführliche unveränderte Gates](v51/six-kind-matrix.json) und der aktive `backtest-certification-v1.json` bleiben maßgeblich; derzeit **0/6 CERTIFIED**.
+Alle bestehenden Funktionen bleiben erhalten. Die NEW_52W_HIGH-Einzelaktienrechnung ersetzt keine der anderen fachlichen Studien. [Ausführliche unveränderte Gates](../../../quant-recovery/v51/six-kind-matrix.json) und der aktive `backtest-certification-v1.json` bleiben maßgeblich; derzeit **0/6 CERTIFIED**.
 
 | Art | Vorhandene Funktionalität / Engine | Fehlende Funktionalität und historische Daten | Tests / tatsächlicher Status |
 |---|---|---|---|
@@ -71,7 +71,7 @@ Alle bestehenden Funktionen bleiben erhalten. Die NEW_52W_HIGH-Einzelaktienrechn
 | Strategy Backtest | Bestehende `profile-backtest.js`-PIT-Ausführung, streng vergangenheitsbezogene Mitgliedschaft/Faktoren. Legacy `backtest.js` besitzt Portfolio-/Rebalancingmechanik; Mock-Provider bleibt Testwerkzeug. | Historische Universumsmitgliedschaften und ausreichend lange PIT-Faktorreihen; kein Survivor-by-construction-Portfolio aus heutigen Mitgliedern. Die Legacy-Mechanik ist kein Nachweis realer universumsweiter Portfolioausführung. | Profil-/PIT-/Backtest-/Provider-Tests; COLLECTING_HISTORY / NOT_CERTIFIED. |
 | Factor Ranking Backtest | `profile-backtest.js`, `build-factor-evidence.mjs`: vorhandene Faktorbeobachtungen und Forward-Outcomes. | Längere PIT-Faktorhistorie, zeitlich richtige Vergleichspopulation/Membership, vollständig beobachtete Forward-Ausgänge und belastbare Rebalance-/Kostenstudie. Keine heutigen Rankings rückdatieren. | Faktor-/Profil-/Forward-/Zertifizierungstests; COLLECTING_HISTORY / NOT_CERTIFIED. |
 
-Alle 38 erfassten technischen Dateien sind bytegleich zum vor Auftrag 1 berichteten Commit `98d4a5ace`; [Inhaltserhalt](v6-securement/original-implementation-preservation.json) und [Main-Dateiverifikation](v6-securement/main-verification.json) belegen den gesicherten Unterbau.
+Alle 38 erfassten technischen Dateien sind bytegleich zum vor Auftrag 1 berichteten Commit `98d4a5ace`; [Inhaltserhalt](../../../quant-recovery/v6-securement/original-implementation-preservation.json) und [Main-Dateiverifikation](../../../quant-recovery/v6-securement/main-verification.json) belegen den gesicherten Unterbau.
 
 Technisch korrigierte Datenlücken werden nicht mit methodischer Zertifizierung gleichgesetzt. Unbekannte Delisting-Auszahlungen sind weder null noch automatisch Totalverlust. Fehlende historische Daten und notwendige künftige prospektive Beobachtungen sind getrennte Aufgaben. Für vorhandene geeignete Preisgeschichte gibt es keine pauschale Wartepflicht von fünf Jahren.
 
@@ -102,7 +102,7 @@ Auftrag 2 klärt gemeinsame fachliche Regeln, Abnahmen und die Lizenz-/Datenlüc
 
 ## F. Prüf- und Merge-Nachweis
 
-Die erneuten lokalen Prüfungen sind abgeschlossen: Quant **2.874/2.874**, Core **260/260**, gemeinsame Navigation/Theme/Budget **23/23**, Consumer **31**, SEC-/PIT-Python **32**; Browser **96**, Budgets **8/8**, automatisierte Accessibility **84 Seiten / 0 Verstöße**, direkte Zugangs-/Routen-/Cache-/Parallelprüfungen Chromium **12/12** und echtes WebKit **7/7**. Datenqualitäts-, Look-ahead-, As-of-, Runtime-, Rechte-/Identitäts-, Writer-/Rollback- und Generationstests sind Bestandteil der ausgeführten Suite. Die Runtime, Daten-/Qualitätsgeneration und reproduzierbaren Nachweise stehen unter `v6-securement/`. Alle Prüfjobs des tatsächlich gemergten Heads `fe6088c547df6cd530fdba9ee6d8731df5be5f75` waren erfolgreich. Bedingte Produktions-/Secret-Workflows waren regulär SKIPPED und wurden nicht ausgelöst. Es gab keine vorgeschriebenen oder angeforderten Reviews; Branch-Metadaten meldeten Schutz deaktiviert und keine Branch-Regeln. Der reguläre Merge hat den erwarteten Head geprüft; keine Admin-/Auto-Merge-Umgehung. [Check-/Regel-/Merge-Nachweis](v6-securement/merge-acceptance.json). Die Zahlen aus dem V5.1-Bericht sind Referenzen; Auftrag 1 führt neue Läufe aus. Bisherige Nachweise: [V5.1-Bericht](BACKTEST_V51.md), [Servicevertrag](BACKTEST_V51_HANDOFF.md), [Gate-Matrix](v51/six-kind-matrix.json).
+Die erneuten lokalen Prüfungen sind abgeschlossen: Quant **2.874/2.874**, Core **260/260**, gemeinsame Navigation/Theme/Budget **23/23**, Consumer **31**, SEC-/PIT-Python **32**; Browser **96**, Budgets **8/8**, automatisierte Accessibility **84 Seiten / 0 Verstöße**, direkte Zugangs-/Routen-/Cache-/Parallelprüfungen Chromium **12/12** und echtes WebKit **7/7**. Datenqualitäts-, Look-ahead-, As-of-, Runtime-, Rechte-/Identitäts-, Writer-/Rollback- und Generationstests sind Bestandteil der ausgeführten Suite. Die Runtime, Daten-/Qualitätsgeneration und reproduzierbaren Nachweise stehen unter `v6-securement/`. Alle Prüfjobs des tatsächlich gemergten Heads `fe6088c547df6cd530fdba9ee6d8731df5be5f75` waren erfolgreich. Bedingte Produktions-/Secret-Workflows waren regulär SKIPPED und wurden nicht ausgelöst. Es gab keine vorgeschriebenen oder angeforderten Reviews; Branch-Metadaten meldeten Schutz deaktiviert und keine Branch-Regeln. Der reguläre Merge hat den erwarteten Head geprüft; keine Admin-/Auto-Merge-Umgehung. [Check-/Regel-/Merge-Nachweis](../../../quant-recovery/v6-securement/merge-acceptance.json). Die Zahlen aus dem V5.1-Bericht sind Referenzen; Auftrag 1 führt neue Läufe aus. Bisherige Nachweise: [V5.1-Bericht](../../../quant-recovery/BACKTEST_V51.md), [Servicevertrag](../../../quant-recovery/BACKTEST_V51_HANDOFF.md), [Gate-Matrix](../../../quant-recovery/v51/six-kind-matrix.json).
 
 ### Tatsächliche Abschlusswerte
 
