@@ -132,13 +132,20 @@ jobs:
           f="${RUNNER_TEMP}/europe-refresh-report.json"
           if [ ! -f "$f" ]; then echo "no run report"; exit 0; fi
           node -e 'const r=require(process.argv[1]).run||{};const q=r.quota||{};const line="Marketstack: "+r.requests+" Requests, abgerechnet "+r.actualBilledCredits+" Credits, Kontingent "+q.remaining+" / "+q.limit+" (Stand "+q.observedAt+"), ohne Anfrage gesperrt (bekannt ungueltig): "+((r.preExcluded||[]).length);console.log(line);require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY,"### Europe-Refresh\n\n"+line+"\n");' "$f"
+      # Die globale Suche und die globale Startseite projizieren Europa-Katalog und -Manifest (catalogSha256, asOf je
+      # Eintrag). Ohne Neubau passt GLOBAL.json bis zum naechsten Nachtlauf nicht zum neuen Manifest: Europa faellt aus
+      # der Suche ("Allianz" -> US-ETF ARLI) und Core ist rot (05./06.11.2026). Derselbe Erzeuger wie in
+      # build-discover-data.mjs, ohne Kursabruf.
+      - name: Globale Suche und Startseite aus der neuen Veroeffentlichung (Erzeuger)
+        if: steps.refresh.outcome == 'success'
+        run: node scripts/discover/global-search-index.mjs
       - name: Verify the refreshed publication against the wall clock
         if: steps.refresh.outcome == 'success'
         env:
           EUROPE_LIVE_CALENDAR_CHECK: '1'
         run: |
           set -euo pipefail
-          node --test core/tests/europe-discover-refresh.test.mjs core/tests/europe-session-proof.test.mjs core/tests/global-published-contract.test.mjs
+          node --test core/tests/europe-discover-refresh.test.mjs core/tests/europe-session-proof.test.mjs core/tests/global-published-contract.test.mjs core/tests/discover-universe.test.mjs
           node scripts/marketstack/europe-discover-check.mjs
       - name: Upload normalized before/after report
         if: always() && steps.refresh.outcome != 'skipped'
@@ -154,7 +161,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add discover/data/europe
+          git add discover/data/europe discover/data/search/GLOBAL.json discover/data/global/home.json
           if git diff --cached --quiet; then echo "No change"; echo "pushed=false" >> "$GITHUB_OUTPUT"; exit 0; fi
           if [ "$SCHEDULED" = "true" ]; then kind="Zeitplan-Lauf"; else kind="manueller Lauf"; fi
           git commit -m "Europe Discover: Schlusskurse aktualisiert (${kind} ${GITHUB_RUN_ID})"
