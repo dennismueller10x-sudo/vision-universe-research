@@ -85,3 +85,19 @@ test('KI-Vorwärtsledger: Hash-Kette, Manipulation fällt auf; Antwortprüfung',
   assert.equal(B.checkAnswer(pick(['K01', 'K02', 'K03', 'K04', 'K05'], 0.1), pk).problem, 'WEIGHTS_DO_NOT_SUM_TO_1');
   assert.equal(B.checkAnswer({ ...pick(['K01', 'K02', 'K03', 'K04', 'K05'], 0.2), packetId: 'P2' }, pk).problem, 'PACKET_ID_MISMATCH');
 });
+
+test('KI-Export: ausstehende Entscheidung, Einstieg am Folgetag, Wertentwicklung je Position und Depot', () => {
+  const X = require('./ki-export.cjs');
+  const days = ['2026-11-05', '2026-11-06', '2026-11-09', '2026-11-10'];
+  const cache = new Map([['ref_SPY', days.map((d, i) => [d, 500 + i])], ['ref_AAA', days.map((d, i) => [d, 10 + i])], ['ref_BBB', days.map(d => [d, 20])]]);
+  const rows = [{ type: 'DECISION', valid: true, decisionDate: '2026-11-05', count: 2, countReason: 'x', prompt: { version: 'v2' }, picks: [{ securityId: 'ref_AAA', ticker: 'AAA', weight: 0.5, reason: 'r' }, { securityId: 'ref_BBB', ticker: 'BBB', weight: 0.5, reason: 'r' }] }];
+  const pend = X.buildDepot({ key: 'A', id: 'A', name: 'A', method: '' }, rows, '2026-11-05', new Map([...cache].map(([k, v]) => [k, v.slice(0, 1)])));
+  assert.equal(pend.positions.length, 0); assert.equal(pend.pending.positions.length, 2);
+  const d = X.buildDepot({ key: 'A', id: 'A', name: 'A', method: '' }, rows, '2026-11-10', cache);
+  assert.equal(d.pending, null);
+  assert.equal(d.positions.find(p => p.ticker === 'AAA').entryPrice, 11);
+  assert.equal(d.positions.find(p => p.ticker === 'AAA').since, '2026-11-06');
+  assert.equal(d.performance.start, '2026-11-06');
+  assert.ok(d.performance.index[0][1] < 100 && d.performance.index[0][1] > 99.8, 'Kosten am Einstieg');
+  assert.ok(Math.abs(d.positions.find(p => p.ticker === 'AAA').changeSinceEntry - (13 / 11 - 1)) < 1e-4);
+});
