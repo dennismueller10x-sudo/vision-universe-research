@@ -30,3 +30,14 @@ test("nach der Freigabe trägt jeder Hinweis den Text und die Links der JSON-Dat
   }
   assert.deepEqual(d.notices.backtest.required, json.notices.backtest.required);
 });
+
+test("Pflicht-Links der App: jeder Link aus appLinks.always steht im Menü unter „Rechtliches“, unabhängig von der Freigabe", () => {
+  const data = legalData(json), keys = json.appLinks.always.map((l) => l.key);
+  assert.deepEqual(keys.sort(), ["bedingungen", "datenschutz", "impressum", "risikohinweise"]);
+  assert.equal(data.appLinks.length, keys.length);
+  for (const [label, href] of data.appLinks) { assert.ok(label); assert.match(href, /^https:\/\/konto\.visionuniverse\.de\/rechtliches\//); }
+  const nav = readFileSync("assets/site-navigation.js", "utf8");
+  assert.match(nav, /<h2>Rechtliches<\/h2>/);
+  assert.match(nav, /\$\{legalMenu\(\)\}<\/nav>/, "Rechtliches im Menü-Panel (Menü → Rechtliches: zwei Schritte)");
+  assert.doesNotMatch(nav.slice(nav.indexOf("function legalMenu"), nav.indexOf("function legalMenu") + 400), /approved/, "Links hängen nicht an der Freigabe der Hinweistexte");
+});
