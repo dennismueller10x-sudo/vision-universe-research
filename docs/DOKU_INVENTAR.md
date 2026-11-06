@@ -174,9 +174,9 @@ Die Archivierung erfolgt in Folge-PRs je Produkt. Die Pfadspalte wird dabei auf 
 | [docs/VU_DATA_PROVIDER_COST_MODEL.md](VU_DATA_PROVIDER_COST_MODEL.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_DISCOVER_ARCHITECTURE.md](VU_DISCOVER_ARCHITECTURE.md) | 2026-10-06 | 0 | gültig | Verbindlicher Produkteinstieg; gesetzte CLAUDE-Links bleiben erhalten. |
 | [docs/VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md](VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
-| [docs/VU_DISCOVER_CONSOLIDATION.md](VU_DISCOVER_CONSOLIDATION.md) | 2026-10-06 | 0 | überholt | Auslieferungs-/Migrationsprotokoll September; heutige Produktarchitektur ist der Einstieg. |
+| [docs/archiv/2026/VU_DISCOVER_CONSOLIDATION.md](archiv/2026/VU_DISCOVER_CONSOLIDATION.md) | 2026-10-06 | 0 | überholt | Auslieferungs-/Migrationsprotokoll September; heutige Produktarchitektur ist der Einstieg. |
 | [docs/VU_DISCOVER_CONSUMER_LAYER.md](VU_DISCOVER_CONSUMER_LAYER.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
-| [docs/VU_DISCOVER_DELIVERY_REPORT.md](VU_DISCOVER_DELIVERY_REPORT.md) | 2026-10-06 | 0 | überholt | Auslieferungs-/Migrationsprotokoll September; heutige Produktarchitektur ist der Einstieg. |
+| [docs/archiv/2026/VU_DISCOVER_DELIVERY_REPORT.md](archiv/2026/VU_DISCOVER_DELIVERY_REPORT.md) | 2026-10-06 | 0 | überholt | Auslieferungs-/Migrationsprotokoll September; heutige Produktarchitektur ist der Einstieg. |
 | [docs/VU_DISCOVER_EXPERIENCE_REDESIGN.md](VU_DISCOVER_EXPERIENCE_REDESIGN.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_DISCOVER_FULL_UNIVERSE_LIVE.md](VU_DISCOVER_FULL_UNIVERSE_LIVE.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_DISCOVER_MARGIN_UNIT_ROOTCAUSE.md](VU_DISCOVER_MARGIN_UNIT_ROOTCAUSE.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |

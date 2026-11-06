@@ -1,5 +1,8 @@
 # VISION UNIVERSE® DISCOVER — Architektur
 
+> **Einstieg Discover.** Aktuelle Arbeitsregeln: [CLAUDE.md](../CLAUDE.md); datierte Entscheidungen: [Neustart-Plan](PLAN_NEUSTART_2026-11.md). Bei Widersprüchen zu historischen Abschnitten gelten diese Quellen. Weitere Seiten sind Fachbelege, keine parallelen Einstiege. [Landkarte](README.md).
+
+
 > **Aktuelle Architekturdefinition (Stand 24.09.2026, nach der Discover-Konsolidierung):**
 >
 > | | |
@@ -290,3 +293,46 @@ gerechnet von `buildHome` mit `discover/engines/relevance.js`. Karten tragen
 `discover/config/company-recognition.json`. Der rebasierte Renditepfad wird
 nicht mehr gezeichnet; ohne Kursreihe steht die Renditeleiter
 (`discover/ui/microchart.js`). Vollständig in `docs/VU_DISCOVER_V3.md`.
+
+## Fachbelege und weiterführende Dokumentation
+
+Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.
+
+- [COMPANY_INTELLIGENCE_DISCOVER_BETA.md](COMPANY_INTELLIGENCE_DISCOVER_BETA.md)
+- [DISCOVER_FRONTEND_REFACTOR_2026-09.md](DISCOVER_FRONTEND_REFACTOR_2026-09.md)
+- [DISCOVER_IM_BLICK.md](DISCOVER_IM_BLICK.md)
+- [VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md](VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md)
+- [VU_DISCOVER_CONSUMER_LAYER.md](VU_DISCOVER_CONSUMER_LAYER.md)
+- [VU_DISCOVER_EXPERIENCE_REDESIGN.md](VU_DISCOVER_EXPERIENCE_REDESIGN.md)
+- [VU_DISCOVER_FULL_UNIVERSE_LIVE.md](VU_DISCOVER_FULL_UNIVERSE_LIVE.md)
+- [VU_DISCOVER_MARGIN_UNIT_ROOTCAUSE.md](VU_DISCOVER_MARGIN_UNIT_ROOTCAUSE.md)
+- [VU_DISCOVER_NAMESPACE_CLEANUP.md](VU_DISCOVER_NAMESPACE_CLEANUP.md)
+- [VU_DISCOVER_PRICE_COVERAGE.md](VU_DISCOVER_PRICE_COVERAGE.md)
+- [VU_DISCOVER_PRICE_DATA_COMPLETION.md](VU_DISCOVER_PRICE_DATA_COMPLETION.md)
+- [VU_DISCOVER_STOCK_EXPERIENCE.md](VU_DISCOVER_STOCK_EXPERIENCE.md)
+- [VU_DISCOVER_V3.md](VU_DISCOVER_V3.md)
+- [VU_DISCOVER_V3_COLLECTION_AUDIT.md](VU_DISCOVER_V3_COLLECTION_AUDIT.md)
+- [VU_DISCOVER_V3_NETFLIX_BUILD.md](VU_DISCOVER_V3_NETFLIX_BUILD.md)
+- [VU_DISCOVER_V4_1_CONSUMER_MASTER.md](VU_DISCOVER_V4_1_CONSUMER_MASTER.md)
+- [VU_DISCOVER_V4_CONSUMER_EXPERIENCE.md](VU_DISCOVER_V4_CONSUMER_EXPERIENCE.md)
+- [VU_DISCOVER_VISUAL_IDENTITY.md](VU_DISCOVER_VISUAL_IDENTITY.md)
+- [discover-v2/audit-visual-generation.md](discover-v2/audit-visual-generation.md)
+- [discover-v2/orchestrator.md](discover-v2/orchestrator.md)
+- [discover-v2/premium-contract-audit.md](discover-v2/premium-contract-audit.md)
+- [discover-v2/premium-design-qa.md](discover-v2/premium-design-qa.md)
+- [discover-v2/premium-orchestration.md](discover-v2/premium-orchestration.md)
+- [discover-v2/visual-generation.md](discover-v2/visual-generation.md)
+- [discover20/IDENTITY_RECLASSIFICATION.md](discover20/IDENTITY_RECLASSIFICATION.md)
+- [discover20/INTEGRATION_REPORT.md](discover20/INTEGRATION_REPORT.md)
+- [discover20/PRODUCT_INTEGRATION.md](discover20/PRODUCT_INTEGRATION.md)
+- [discover20/PUBLIC_DISPLAY_RELEASE.md](discover20/PUBLIC_DISPLAY_RELEASE.md)
+- [europe-discover20/ESEF_FOLLOW_UP.md](europe-discover20/ESEF_FOLLOW_UP.md)
+- [europe-discover20/SCREENER_LOGOS.md](europe-discover20/SCREENER_LOGOS.md)
+- [europe-discover20/close-chart-quality.md](europe-discover20/close-chart-quality.md)
+
+### Historische Arbeitsstände
+
+Abgelöste Übergaben und Statusberichte; zur Nachvollziehbarkeit erhalten. Maßgeblich sind der Einstieg und der aktuelle Plan.
+
+- [VU_DISCOVER_CONSOLIDATION.md](archiv/2026/VU_DISCOVER_CONSOLIDATION.md)
+- [VU_DISCOVER_DELIVERY_REPORT.md](archiv/2026/VU_DISCOVER_DELIVERY_REPORT.md)
