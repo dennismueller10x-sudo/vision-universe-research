@@ -50,7 +50,7 @@
     backBtn.onclick = function () { closeSheet(el); };
     expand.onclick = function () { full(!state.full); };
     var drag = null;
-    header.addEventListener('pointerdown', function (e) { if (!e.isPrimary || e.button) return; drag = {id: e.pointerId, y: e.clientY, delta: 0}; header.setPointerCapture(e.pointerId); });
+    header.addEventListener('pointerdown', function (e) { if (!e.isPrimary || e.button) return; drag = {id: e.pointerId, y: e.clientY, delta: 0}; e.target.setPointerCapture(e.pointerId); });
     header.addEventListener('pointermove', function (e) { if (!drag || e.pointerId !== drag.id) return; drag.delta = e.clientY - drag.y; panel.style.transition = 'none'; panel.style.transform = 'translateY(' + Math.max(state.full ? 0 : -w.innerHeight * 0.3, drag.delta) + 'px)'; });
     function end(e) {
       if (!drag || e.pointerId !== drag.id) return;
@@ -136,9 +136,10 @@
           backdrop.className = 'vu-sheet-backdrop'; box.className = 'vu-sheet-ui';
           box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', link.textContent.trim());
           // Existing method pages keep their own renderer, listeners and data. Only their shell is hidden.
-          url.searchParams.set('vuGestures', '1'); url.searchParams.set('vuSheet', '1'); frame.src = url.href;
+          url.searchParams.set('vuGestures', '1'); url.searchParams.set('vuSheet', '1');
           frame.title = link.textContent.trim(); frame.className = 'vu-gesture-document';
-          box.append(frame); backdrop.append(box); body.append(backdrop); openSheet(backdrop);
+          box.append(frame); backdrop.append(box); body.append(backdrop);
+          frame.contentWindow.location.replace(url.href); openSheet(backdrop);
           active.restore = function () { backdrop.remove(); }; return;
         }
       }

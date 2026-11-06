@@ -70,10 +70,10 @@ try {
         const capture=await page.context().newCDPSession(page);
         const shot=await capture.send('Page.captureScreenshot',{format:'png'}); await writeFile(out+'/'+name+'-'+theme+'-drag.png',Buffer.from(shot.data,'base64')); await capture.detach();
       });
-      assert.notEqual(page.url(),url,'35% navigates back');
+      await page.waitForURL(u=>u.href!==url,{timeout:5000});
       await page.emulateMedia({reducedMotion:'reduce'});
       await page.evaluate(()=>history.pushState({},'',location.href+'&reduced'));
-      await swipe(page,10,400,160,0); assert(!page.url().endsWith('&reduced'));
+      await swipe(page,10,400,160,0); await page.waitForURL(u=>!u.href.endsWith('&reduced'),{timeout:5000});
       report.push({name,theme,beforeContrast:before,afterContrast:after,sheetContrast,gestures:'pass'});
       await ctx.close();
     }

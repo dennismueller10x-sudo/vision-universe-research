@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-const G = createRequire(import.meta.url)('../vu-gestures.js');
+const G = createRequire(import.meta.url)('../../assets/vu-gestures.js');
 test('edge exclusive to first 20px and primary left pointer', () => {
   for (const x of [0, 10, 20]) assert.equal(G.edgeStart(x, true, 0), true);
   for (const x of [-1, 20.01, 80]) assert.equal(G.edgeStart(x, true, 0), false);

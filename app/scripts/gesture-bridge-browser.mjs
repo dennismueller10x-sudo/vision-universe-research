@@ -21,7 +21,7 @@ try {
   await ctx.route('https://localhost/**',async route=>{
     const path=new URL(route.request().url()).pathname;
     let body='';
-    try {body=await readFile(root+(path.startsWith('/assets/')?path.slice(1):'app/www'+(path==='/'?'/index.html':path)),'utf8');} catch { /* absent generated plugin/config: use injected mock */ }
+    try {body=await readFile(root+'app/www'+(path==='/'?'/index.html':path),'utf8');} catch { /* absent generated plugin/config: use injected mock */ }
     await route.fulfill({body,contentType:path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':'text/html'});
   });
   await ctx.route('https://research.visionuniverse.de/**',async route=>{
@@ -29,9 +29,9 @@ try {
     await route.fulfill({response:await ctx.request.get(base+url.pathname+url.search)});
   });
   const page=await ctx.newPage(); await page.goto('https://localhost/'); await page.waitForFunction(()=>globalThis.__vuReady);
-  const navigation = page.waitForEvent('framenavigated', {predicate:f=>f.url().includes('research.visionuniverse.de/quant/')});
   await page.locator('#tabs [data-view=quant]').evaluate(button=>button.click());
-  const frame=await navigation;
+  const frame=await (await page.locator('#v-quant iframe').elementHandle()).contentFrame();
+  await frame.waitForURL('https://research.visionuniverse.de/quant/**');
   assert(frame); await frame.waitForLoadState(); await frame.evaluate(()=>location.hash='/aktie/NVDA');
   await frame.locator('summary').filter({hasText:'Zone, Ungültig-Marke und alle Bedingungen'}).waitFor();
   // Wrong-origin/source messages must not minimize the shell.

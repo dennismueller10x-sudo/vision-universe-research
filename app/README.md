@@ -21,7 +21,7 @@ Entscheidung: [ADR-007](../docs/architecture/ADR-007-capacitor-prototype.md) · 
 
 ```bash
 cd app && npm ci
-npm test                       # 36 Tests, kein Netz
+npm test                       # 52 Tests, kein Netz
 node scripts/poc-browser.mjs   # Shell + echte Produktseiten im iPhone-Viewport, simulierte Dienste (Playwright nötig)
 node scripts/measure-payload.mjs [--slow]   # gegen den Quelltext; für Produktionswerte --root <gebauter Release>
 ```
@@ -51,7 +51,7 @@ C16-Sheets und Aktien-Detailklappen behalten ihre Originalinhalte und Listener. 
 Prüfung ohne Veröffentlichung:
 
 ```bash
-node --test assets/tests/vu-gestures.test.mjs app/tests/*.test.mjs # vom Repo-Stamm
+node --test app/tests/*.test.mjs # vom Repo-Stamm
 node app/scripts/gesture-browser.mjs --modules=/pfad/zu/node_modules --url=http://127.0.0.1:8765 --out=/tmp/vu-gestures-qa
 node app/scripts/gesture-bridge-browser.mjs --modules=/pfad/zu/node_modules --url=http://127.0.0.1:8765
 ```

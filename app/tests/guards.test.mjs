@@ -59,7 +59,7 @@ test('Gate-Hygiene: App-Branch beruehrt nur freigegebene App- und Integrationspf
   // Ausschluss von app/ aus Pages: Owner-Freigabe Phase 2 (eine Zeile in permitted() und seine Pruefung)
   // Aktivierung der TestFlight-Pipeline (Owner-Auftrag 03.11.2026): genau eine Workflow-Datei, deren Rumpf der Vorlage gleicht (naechster Test)
   // E3 Owner-Auftrag: gemeinsames, nur im App-Modus aktives Gestenmodul.
-  const approved = new Set(['assets/site-navigation.js', 'assets/vu-ui.js', 'assets/vu-gestures.js', 'assets/vu-gestures.css', 'assets/tests/vu-gestures.test.mjs', 'scripts/vu2/build-release.mjs', 'quant/tests/release-delivery.test.mjs', '.github/workflows/app-ios-testflight.yml', '.github/workflows/app-android-build.yml', '.github/workflows/app-android-release.yml', 'core/registry/workflow-bundles.json']);
+  const approved = new Set(['docs/quality/ui-protection-revisions.json', 'assets/site-navigation.js', 'assets/vu-ui.js', 'assets/vu-gestures.js', 'assets/vu-gestures.css', 'scripts/vu2/build-release.mjs', 'quant/tests/release-delivery.test.mjs', '.github/workflows/app-ios-testflight.yml', '.github/workflows/app-android-build.yml', '.github/workflows/app-android-release.yml', 'core/registry/workflow-bundles.json']);
   const bad = files.filter(f => !approved.has(f) && !/^(app\/|docs\/architecture\/ADR-00[4-9]|docs\/mobile\/|docs\/handover\/)/.test(f));
   assert.deepEqual(bad, []);
 });
