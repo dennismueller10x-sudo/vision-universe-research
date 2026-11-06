@@ -16,8 +16,8 @@ const SCHEMA = 'ki-depots-1.0.0';
 const LIVE_START = '2026-11-06';
 const COST_PER_SIDE = 0.0011; // 1 bp Gebühr + 5 bp Slippage + ~5 bp Spread je Seite (wie der Forschungs-Ledger, pauschal)
 const DEPOTS = [
-  { key: 'A', id: 'EDGE2-KI-A-PAPER', name: 'KI-Depot A', method: 'Eine KI wählt monatlich 4 bis 20 Titel aus 50 zufällig gezogenen Kandidaten. Sie sieht nur anonymisierte Kennzahlen (kein Name, kein Ticker, keine Branche im Klartext, kein Datum). Dieselbe Regel wird historisch blind geprüft.' },
-  { key: 'B', id: 'EDGE2-KI-B-PAPER', name: 'KI-Depot B', method: 'Wie Depot A, zusätzlich mit Ticker, Analysten-Konsens und aktuellen Nachrichten. Nur vorwärts, ohne historische Prüfung.' },
+  { key: 'A', id: 'EDGE2-KI-A-PAPER', slug: 'a', name: 'KI-Depot A', rule: 'Monatlich 4–20 Titel aus 50 zufällig gezogenen Kandidaten, Gewichte 2–25 %, höchstens 30 % je Branche; Einstieg zum Schluss des nächsten Handelstags; fester, versionierter Prompt (v2).', method: 'Eine KI wählt monatlich 4 bis 20 Titel aus 50 zufällig gezogenen Kandidaten. Sie sieht nur anonymisierte Kennzahlen (kein Name, kein Ticker, keine Branche im Klartext, kein Datum). Dieselbe Regel wird historisch blind geprüft.' },
+  { key: 'B', id: 'EDGE2-KI-B-PAPER', slug: 'b', name: 'KI-Depot B', rule: 'Monatlich 4–20 Titel aus 25 zufällig gezogenen Kandidaten mit Analysten-Konsens und selbst recherchierten Nachrichten (Quelle und Datum je Fund); Gewichte 2–25 %, höchstens 30 % je Branche; fester, versionierter Prompt (B v3).', method: 'Wie Depot A, zusätzlich mit Ticker, Analysten-Konsens und aktuellen Nachrichten. Nur vorwärts, ohne historische Prüfung.' },
 ];
 const r4 = x => (Number.isFinite(x) ? Math.round(x * 1e4) / 1e4 : null);
 const r6 = x => (Number.isFinite(x) ? Math.round(x * 1e6) / 1e6 : null);
@@ -76,18 +76,23 @@ function buildDepot(def, rows, today, cache) {
   const lastEntered = entries.length && k > 0 ? entries[k - 1].d : null;
   const pendingD = last && last !== lastEntered ? last : null;
   const pending = pendingD ? { decisionDate: pendingD.decisionDate, entry: 'Schluss des nächsten Handelstags nach dem Entscheidungsdatum', count: pendingD.count, countReason: pendingD.countReason,
-    positions: pendingD.picks.map(p => ({ ticker: p.ticker, securityId: p.securityId, targetWeight: r6(p.weight), reason: p.reason, news: newsFor(pendingD, p.securityId) })) } : null;
+    positions: pendingD.picks.map(p => ({ ticker: p.ticker, securityId: p.securityId, name: nameOf(p.securityId), currency: 'USD', targetWeight: r6(p.weight), reason: p.reason, news: newsFor(pendingD, p.securityId) })) } : null;
   return {
-    id: def.id, name: def.name, method: def.method,
+    id: def.id, slug: def.slug, name: def.name, method: def.method, rule: def.rule,
     prompt: last ? last.prompt.version : null, lastDecision: last ? last.decisionDate : null, decisions: decisions.length, invalidDecisions: decisions.filter(r => !r.valid).length,
     count: last ? last.count : 0, countReason: last ? last.countReason : null,
-    positions: held.map(h => ({ ticker: h.ticker, securityId: h.securityId, targetWeight: r6(h.weight), currentWeight: r6(h.units * h.lastPx / value), since: h.since, entryPrice: h.entryPrice, lastPrice: h.lastPx, lastDate: h.lastDate || h.since,
+    positions: held.map(h => ({ ticker: h.ticker, securityId: h.securityId, name: nameOf(h.securityId), currency: 'USD', targetWeight: r6(h.weight), currentWeight: r6(h.units * h.lastPx / value), since: h.since, entryPrice: h.entryPrice, lastPrice: h.lastPx, lastDate: h.lastDate || h.since,
       changeSinceEntry: r4(h.lastPx / h.entryPrice - 1), reason: h.reason, news: newsFor(last, h.securityId) })),
     cashWeight: r6(value > 0 ? cash / value : null), pending,
     performance: { start: valueSeries.length ? valueSeries[0][0] : null, index: valueSeries, changeSinceStart: valueSeries.length ? r4(valueSeries.at(-1)[1] / 100 - 1) : null, costModel: 'pauschal 0,11 % je Seite auf den Umschlag' },
     protocol,
     ledger: { file: 'docs/research/edge2/ki/ledger-' + def.key + '.jsonl', entries: rows.length, lastHash: rows.length ? rows.at(-1).hash : null },
   };
+}
+let NAMES = null;
+function nameOf(securityId) {
+  if (!NAMES) { NAMES = new Map(); const f = path.join(ROOT, 'quant/data/market/security-master/company-names.json'); if (fs.existsSync(f)) for (const r of JSON.parse(fs.readFileSync(f, 'utf8')).rows || []) if (r.displayName) NAMES.set(r.securityId, r.displayName); }
+  return NAMES.get(securityId) || null;
 }
 function newsFor(decision, securityId) {
   const p = decision && decision.picks.find(x => x.securityId === securityId);
@@ -101,7 +106,7 @@ function build(today) {
   const depots = DEPOTS.map(d => buildDepot(d, readLedger(path.join(ROOT, 'docs/research/edge2/ki/ledger-' + d.key + '.jsonl')), today, cache));
   // asOf = letzter veröffentlichter Schluss (SPY-Reihe als Kalender), auch solange eine Entscheidung noch auf ihren Einstieg wartet.
   const asOf = ((series('ref_SPY', today, cache) || []).at(-1) || [null])[0];
-  return { schemaVersion: SCHEMA, label: mp.label, notice: { key: 'modelPortfolio', label: mp.label, text: mp.text, links: mp.links }, research: 'Forschung, nicht zertifiziert. Keine Backtest-Zahlen.',
+  return { schemaVersion: SCHEMA, label: mp.label, recommendation: false, notice: { key: 'modelPortfolio', label: mp.label, text: mp.text, links: mp.links }, research: 'Forschung, nicht zertifiziert. Keine Backtest-Zahlen.',
     liveStart: LIVE_START, asOf, depots };
 }
 function main() {
