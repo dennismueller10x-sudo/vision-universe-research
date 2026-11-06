@@ -1,7 +1,7 @@
 /**
  * Supertrader 4.0 – Minervini trade lifecycle (C06 SEPA / VCP, C07 Power Play): setup state, entry eligibility and the
  * daily-bar order model, built on the unchanged screens (methods/minervini.mjs) and the Supertrader 3.0 components
- * (research/minervini-components.mjs). Contract: contracts/minervini.mjs. Report: docs/archiv/2026/SUPERTRADER_4_MINERVINI_TRADE_LIFECYCLE_REPORT.md.
+ * (research/minervini-components.mjs). Contract: contracts/minervini.mjs. Report: docs/SUPERTRADER_4_MINERVINI_TRADE_LIFECYCLE_REPORT.md.
  *
  * Every Minervini rule in #709 is MEDIUM confidence with unchecked English wording: nothing here is SOURCE_EXACT. What
  * this module adds is the SEQUENCE (setup -> eligibility -> order -> fill) with every choice the sources do not make

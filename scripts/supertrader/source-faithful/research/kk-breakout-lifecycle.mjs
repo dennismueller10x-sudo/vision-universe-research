@@ -1,7 +1,7 @@
 /**
  * Supertrader 5.0 – Kullamaegi Common Breakout trade lifecycle (C08, contracts/kullamagi.mjs), written daily
  * alternative (KK-011) on the shared research engine (research/lifecycle-engine.mjs). Built on the unchanged components
- * of methods/kullamagi.mjs; report docs/archiv/2026/SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md.
+ * of methods/kullamagi.mjs; report docs/SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md.
  *
  * Source-exact mechanics (#709 W-KK3 / W-KKFAQ, HARD, HIGH, original wording checked):
  *  - initial stop = low of the entry day; a stop wider than ADR20 REJECTS the trade, it is never tightened (KK-012). Exact
