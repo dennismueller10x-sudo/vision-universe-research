@@ -304,3 +304,15 @@ test('ST-HIST-17: C09/C10 (Strang H) nur aus dem Cache, vier Kostenstufen für C
   const pub = JSON.stringify(r.pub);
   for (const f of ['totalReturn', 'cagr', 'maxDrawdown', 'hitRate', 'spyDistance']) assert.ok(!pub.includes(`"${f}"`), f);
 });
+
+test('ST-HIST-18: jede der 13 Methoden trägt den Status „getestet“ als Daten, beschriftet, ohne Kennzahl', async () => {
+  const C = await import('../source-faithful/product/catalog.mjs');
+  assert.equal(C.STRATEGY_CATALOG.length, 13);
+  for (const c of C.STRATEGY_CATALOG) {
+    const h = c.historicalTest;
+    assert.equal(h.status, 'TESTED', c.candidateId); assert.equal(h.label, 'Forschung, nicht zertifiziert');
+    assert.equal(h.publicReturns, false); assert.equal(h.results, 'SEALED_OWNER_ONLY');
+    for (const f of ['totalReturn', 'cagr', 'maxDrawdown', 'hitRate', 'spyDistance', 'sharpe']) assert.ok(!(f in h));
+  }
+  assert.equal(C.HISTORICAL_TEST.C10.spyComparison, 'NOT_COMPARABLE');
+});
