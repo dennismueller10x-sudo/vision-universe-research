@@ -70,7 +70,7 @@ test("PF-4 · KI-Depots (Schema ki-depots-1.0.0, Edge 2): ohne Export oder ohne 
   assert.match(P.render(none, "#/ki"), /startet am 06\.11\.2026, erste Werte folgen/);
   const base = { schemaVersion: "ki-depots-1.0.0", label: P.LABEL, recommendation: false, liveStart: "2026-11-06", asOf: "2026-11-06" };
   const waiting = P.fromKi({ ...base, depots: [{ id: "EDGE2-KI-B-PAPER", slug: "b", name: "KI-Depot B", method: "Mit News und Analysten.", rule: "Regel.", positions: [], cashWeight: 1,
-    pending: { decisionDate: "2026-11-05", entry: "Schluss des nächsten Handelstags", positions: [{ ticker: "NVDA", name: "NVIDIA", targetWeight: 0.1, reason: "Umsatz wächst laut letztem Bericht.", news: [{ date: "2026-11-04", title: "Bericht", source: "Reuters", url: "https://example.com/a" }] }] },
+    pending: { decisionDate: "2026-11-05", entry: "Schluss des nächsten Handelstags", positions: [{ ticker: "NVDA", name: "NVIDIA", targetWeight: 0.1, reason: "Umsatz wächst laut letztem Bericht.", reasonNeutralized: true, news: [{ date: "2026-11-04", title: "Bericht", source: "Reuters", url: "https://example.com/a" }] }] },
     performance: { start: null, index: [], changeSinceStart: null }, protocol: [] }] });
   assert.equal(waiting[0].id, "b");
   assert.equal(waiting[0].pending, true);
@@ -79,6 +79,7 @@ test("PF-4 · KI-Depots (Schema ki-depots-1.0.0, Edge 2): ohne Export oder ohne 
   assert.match(w, /Zielgewicht/);
   assert.match(w, /Begründung laut Methode:<\/b> Umsatz wächst laut letztem Bericht\./);
   assert.match(w, /Angabe Dritter/);
+  assert.match(w, /sprachlich neutralisiert/);
   const live = P.fromKi({ ...base, asOf: "2026-11-07", depots: [{ id: "EDGE2-KI-B-PAPER", slug: "b", name: "KI-Depot B", method: "Mit News und Analysten.", pending: null,
     positions: [{ ticker: "NVDA", name: "NVIDIA", targetWeight: 0.1, currentWeight: 0.098, since: "2026-11-06", entryPrice: 100, lastPrice: 95, lastDate: "2026-11-07", changeSinceEntry: -0.05, reason: "Umsatz wächst.", news: [] }],
     performance: { start: "2026-11-06", index: [["2026-11-06", 100], ["2026-11-07", 101.2]], changeSinceStart: 0.012 },

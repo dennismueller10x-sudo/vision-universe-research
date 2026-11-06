@@ -144,9 +144,9 @@
       var perfPct = isNum(pf.changeSinceStart) ? pf.changeSinceStart * 100 : last && isNum(last[1]) && isNum(idx[0][1]) && idx[0][1] > 0 ? (last[1] / idx[0][1] - 1) * 100 : null;
       var positions = (d.positions || []).map(function (p) {
         return { ticker: p.ticker, name: p.name, weight: isNum(p.currentWeight) ? p.currentWeight : p.targetWeight, since: p.since, entryPrice: p.entryPrice, lastPrice: p.lastPrice, lastDate: p.lastDate,
-          currency: p.currency || "USD", stop: null, changePct: isNum(p.changeSinceEntry) ? p.changeSinceEntry * 100 : sinceEntry(p.entryPrice, p.lastPrice), reason: p.reason || "", news: p.news || [] };
+          currency: p.currency || "USD", stop: null, changePct: isNum(p.changeSinceEntry) ? p.changeSinceEntry * 100 : sinceEntry(p.entryPrice, p.lastPrice), reason: p.reason || "", neutralized: p.reasonNeutralized === true, news: p.news || [] };
       });
-      var pend = d.pending && Array.isArray(d.pending.positions) ? { date: d.pending.decisionDate, entry: d.pending.entry, positions: d.pending.positions.map(function (p) { return { ticker: p.ticker, name: p.name, weight: p.targetWeight, reason: p.reason || "", news: p.news || [] }; }) } : null;
+      var pend = d.pending && Array.isArray(d.pending.positions) ? { date: d.pending.decisionDate, entry: d.pending.entry, positions: d.pending.positions.map(function (p) { return { ticker: p.ticker, name: p.name, weight: p.targetWeight, reason: p.reason || "", neutralized: p.reasonNeutralized === true, news: p.news || [] }; }) } : null;
       return { group: "ki", id: slug, key: d.id, name: d.name, method: d.method || "", rule: d.rule, by: "KI",
         liveSince: doc.liveStart || KI_START, asOf: doc.asOf, stops: false, reasons: true, cashPct: d.cashWeight,
         perf: perfPct !== null && positions.length ? { pct: perfPct, since: pf.start || doc.liveStart || KI_START, asOf: last ? last[0] : doc.asOf } : null,
@@ -225,7 +225,7 @@
   function reasonHtml(d, p) {
     if (!d.reasons) return "";
     var news = (p.news || []).slice(0, 3).filter(function (n) { return n && n.title && /^https:\/\//.test(n.url || ""); });
-    return '<p class="pf-reason"><b>Begründung laut Methode:</b> ' + esc(p.reason || "–") + "</p>" +
+    return '<p class="pf-reason"><b>Begründung laut Methode:</b> ' + esc(p.reason || "–") + (p.neutralized ? ' <span class="vu-xs vu-mu">(sprachlich neutralisiert)</span>' : "") + "</p>" +
       (news.length ? '<ul class="pf-news">' + news.map(function (n) { return '<li><a href="' + esc(n.url) + '" rel="noopener nofollow" target="_blank">' + esc(n.title) + '</a> <span class="vu-xs vu-mu">' + esc([n.source, dDe(n.date)].filter(Boolean).join(", ")) + " · Angabe Dritter</span></li>"; }).join("") + "</ul>" : "");
   }
   function decisionHtml(d) {
