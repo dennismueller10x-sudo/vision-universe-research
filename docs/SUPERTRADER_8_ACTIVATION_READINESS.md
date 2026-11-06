@@ -129,7 +129,7 @@ DQ-SF8-1..8, alle ERROR und fail closed über den Aktivierungszustand:
 
 ## V4 – Zentraler Preisabgleich (#1026)
 
-Details: [SUPERTRADER_8_PRICE_PARITY_V4.md](../../SUPERTRADER_8_PRICE_PARITY_V4.md).
+Details: [SUPERTRADER_8_PRICE_PARITY_V4.md](SUPERTRADER_8_PRICE_PARITY_V4.md).
 - Der Abgleich läuft gegen `published-close.js`: Identität, Sitzung und Schluss ohne Toleranz.
 - Legitim ist nur die Rundung split-adjustierter Werte vor einem Split.
 - Ungeklärt am Stichtag → FAIL; ungeklärter Verlauf → CAP CHART.

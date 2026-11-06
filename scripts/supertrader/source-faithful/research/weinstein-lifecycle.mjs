@@ -1,7 +1,7 @@
 /**
  * Supertrader 5.0 – Weinstein Stage 2 Investor (C04) and Trader (C05) trade lifecycles (contracts/weinstein.mjs) on the
  * shared research engine. Built on the unchanged weekly screens of methods/weinstein.mjs; report
- * docs/archiv/2026/SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md.
+ * docs/SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md.
  *
  * WITH DATA EXCEPTION: no long buy in a negative industry group (WEIN-SF-GROUP) and only in a positive market
  * (WEIN-SF-MARKET) are DATA_BLOCKED; they are NOT applied (no proxy unblocks them), so a run is a model study with a

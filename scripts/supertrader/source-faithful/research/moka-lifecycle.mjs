@@ -1,7 +1,7 @@
 /**
  * Supertrader 5.0 – Morales / Kacher Pocket Pivot (C11) and Buyable Gap-Up (C12) trade lifecycles
  * (contracts/morales-kacher.mjs) on the shared research engine (research/lifecycle-engine.mjs). Built on the unchanged
- * screens and the sell-guide evidence of methods/morales-kacher.mjs; report docs/archiv/2026/SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md.
+ * screens and the sell-guide evidence of methods/morales-kacher.mjs; report docs/SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md.
  *
  * Source-exact mechanics (#709 W-MOKAPP / W-MOKA12 / W-MOKAV24, HARD, HIGH, original wording checked):
  *  - Pocket Pivot: volume of an up day greater than the highest down-day volume of the ten prior sessions (MOKAPP-003);
