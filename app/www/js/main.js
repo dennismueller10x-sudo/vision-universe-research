@@ -15,9 +15,11 @@ const api = createApi({config, auth});
 const cap = globalThis.Capacitor;
 const native = Boolean(cap?.isNativePlatform?.());
 let current = null;
+let pendingBack = null;
 
 // ---- Navigation ----------------------------------------------------------
 function show(name) {
+  pendingBack = null;
   current = name;
   document.querySelectorAll('.view').forEach(v => { v.hidden = v.id !== 'v-' + name; });
   document.querySelectorAll('#tabs button').forEach(b => { if (b.dataset.view === name) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
@@ -94,6 +96,22 @@ $('config-missing').hidden = config.configured;
   if (native) {
     const n = globalThis.VUNative || {};
     hideSplash();
+    let backRequest = 0;
+    addEventListener('message', event => {
+      const frame = $('v-' + current)?.querySelector('iframe');
+      if (event.origin !== config.contentOrigin || event.source !== frame?.contentWindow || event.data?.type !== 'vu:back-result' || event.data.request !== pendingBack) return;
+      pendingBack = null;
+      if (!event.data.handled) n.App?.minimizeApp();
+    });
+    n.App?.addListener('backButton', () => {
+      if (pendingBack !== null) return;
+      const frame = $('v-' + current)?.querySelector('iframe');
+      if (!frame?.contentWindow) { show('discover'); return; }
+      const request = ++backRequest; pendingBack = request;
+      frame.contentWindow.postMessage({type: 'vu:back', request}, config.contentOrigin);
+      // Offline/old content cannot answer; keep a usable root fallback.
+      setTimeout(() => { if (pendingBack === request) { pendingBack = null; n.App?.minimizeApp(); } }, 1000);
+    });
     try { n.App?.addListener('resume', () => { auth.accessToken().catch(() => {}); }); } catch { /* optional */ }
     try { n.Network?.addListener('networkStatusChange', st => setOffline(!st.connected)); } catch { /* optional */ }
   }

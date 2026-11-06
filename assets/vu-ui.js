@@ -258,6 +258,7 @@
   /** Sheets öffnen/schließen (Escape, Tippen auf den Hintergrund). */
   function openSheet(el) {
     if (!el) return;
+    if (root.VUGestures && root.document.documentElement.hasAttribute("data-vu-gestures")) return root.VUGestures.openSheet(el);
     el.hidden = false;
     var close = function (e) { if (!e || e.target === el || e.key === "Escape") closeSheet(el); };
     el.__vuClose = close;
@@ -267,6 +268,7 @@
   }
   function closeSheet(el) {
     if (!el) return;
+    if (root.VUGestures && root.document.documentElement.hasAttribute("data-vu-gestures")) root.VUGestures.closeSheet(el);
     el.hidden = true;
     if (el.__vuClose) { el.removeEventListener("click", el.__vuClose); el.ownerDocument.removeEventListener("keydown", el.__vuClose); el.__vuClose = null; }
   }
