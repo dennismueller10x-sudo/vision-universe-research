@@ -283,8 +283,8 @@ Die Archivierung erfolgt in Folge-PRs je Produkt. Die Pfadspalte wird dabei auf 
 | [docs/VU_TECHNICAL_DATA_SEMANTICS.md](VU_TECHNICAL_DATA_SEMANTICS.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md](VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_TECHNICAL_OPPORTUNITY_SCORE.md](VU_TECHNICAL_OPPORTUNITY_SCORE.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
-| [docs/VU_TECHNICAL_PHASE1_REPORT.md](VU_TECHNICAL_PHASE1_REPORT.md) | 2026-10-06 | 0 | überholt | V1-Abnahme vom September; heutige Completion und offene Aufgaben stehen im Technical-Einstieg. |
-| [docs/VU_TECHNICAL_RELEASE_AUDIT.md](VU_TECHNICAL_RELEASE_AUDIT.md) | 2026-10-06 | 0 | überholt | V1-Abnahme vom September; heutige Completion und offene Aufgaben stehen im Technical-Einstieg. |
+| [docs/archiv/2026/VU_TECHNICAL_PHASE1_REPORT.md](archiv/2026/VU_TECHNICAL_PHASE1_REPORT.md) | 2026-10-06 | 0 | überholt | V1-Abnahme vom September; heutige Completion und offene Aufgaben stehen im Technical-Einstieg. |
+| [docs/archiv/2026/VU_TECHNICAL_RELEASE_AUDIT.md](archiv/2026/VU_TECHNICAL_RELEASE_AUDIT.md) | 2026-10-06 | 0 | überholt | V1-Abnahme vom September; heutige Completion und offene Aufgaben stehen im Technical-Einstieg. |
 | [docs/VU_TECHNICAL_SNAPSHOT_SPEC.md](VU_TECHNICAL_SNAPSHOT_SPEC.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_TECHNICAL_VALIDATION.md](VU_TECHNICAL_VALIDATION.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/VU_TIINGO_FIRST_MARKET_TRACKERS.md](VU_TIINGO_FIRST_MARKET_TRACKERS.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
