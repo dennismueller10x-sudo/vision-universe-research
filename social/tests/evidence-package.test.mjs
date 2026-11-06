@@ -36,6 +36,17 @@ const BUNDLE = JSON.parse(
 
 const PAKET = EP.fromTechnicalBundle(BUNDLE, { entity: "XOM", now: "2026-09-17T12:00:00Z" });
 
+/* Eine erfundene Zahl muss erfunden BLEIBEN: Fest "88" war am 06.11. das
+   Volatilitaets-Perzentil von XOM und damit belegt. Gewaehlt wird die erste
+   ganze Zahl ab 88, die in keinem Beleg (Satz oder Wert) des Pakets vorkommt. */
+const ERFUNDEN = (() => {
+  const belegt = new Set(PAKET.evidence.flatMap((e) =>
+    (JSON.stringify([e.statement, e.value]).match(/\d+(?:[.,]\d+)?/g) || [])));
+  let n = 88;
+  while (belegt.has(String(n))) n++;
+  return String(n);
+})();
+
 /* ------------------------------------------------------------------ */
 /* WAS DAS PAKET MITNIMMT                                              */
 /* ------------------------------------------------------------------ */
@@ -194,7 +205,7 @@ test("EP10 · Ein Text aus den Belegen besteht das Claim Binding", () => {
   assert.equal(r.ok, true, r.explanation);
   /* Und die Gegenprobe, damit das nicht zu einem Test wird, der
      alles besteht: eine Zahl, die NICHT im Paket steht, faellt auf. */
-  const erfunden = CB.check(text + " Die relative Staerke liegt bei 88.",
+  const erfunden = CB.check(text + " Die relative Staerke liegt bei " + ERFUNDEN + ".",
     PAKET.evidence, {});
   assert.equal(erfunden.ok, false);
 });
@@ -217,9 +228,9 @@ test("EP12 · Eine erfundene Zahl faellt trotz reicher Evidenz auf", () => {
   /* 76 war der Score von damals; der belegte Teil kommt jetzt aus
      dem Paket, der erfundene bleibt erfunden. */
   const r = CB.check(PAKET.evidence.find((e) => e.id === "score").statement +
-    " Die relative Staerke liegt bei 88.", PAKET.evidence, {});
+    " Die relative Staerke liegt bei " + ERFUNDEN + ".", PAKET.evidence, {});
   assert.equal(r.ok, false);
-  assert.ok(r.unbound.some((u) => u.raw === "88"));
+  assert.ok(r.unbound.some((u) => u.raw === ERFUNDEN));
 });
 
 /* ------------------------------------------------------------------ */

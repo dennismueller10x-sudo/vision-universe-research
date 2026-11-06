@@ -1,0 +1,27 @@
+begin;
+select tests.create_user('push-a@test.invalid') as a \gset
+select tests.create_user('push-b@test.invalid') as b \gset
+select tests.authenticate(:'a');
+select public.push_register('token_aaaaaaaaaaaaaaaaaaaa','ios');
+select public.push_register('token_aaaaaaaaaaaaaaaaaaaa','ios');
+select tests.eq((select count(*)::int from public.push_devices),1,'idempotent');
+select public.watchlist_add('vu_abcdef','TEST');
+update public.watchlist_items set alerts='{"PRICE_EVENT":true}';
+select tests.authenticate(:'b');
+select tests.eq((select count(*)::int from public.push_devices),0,'RLS hides A');
+select public.push_remove('token_aaaaaaaaaaaaaaaaaaaa');
+select tests.throws('insert into public.push_devices(user_id,token,platform) values(''' || :'a' || ''',''token_bbbbbbbbbbbbbbbbbbbb'',''ios'')','row-level security');
+select tests.throws('select public.push_claim_daily(''[]'')','permission denied');
+select tests.anon();
+select tests.throws('select * from public.push_devices','permission denied');
+select tests.service();
+select tests.eq((select count(*)::int from public.push_devices),1,'B cannot delete A');
+select tests.eq(jsonb_array_length(public.push_claim_daily(jsonb_build_array(jsonb_build_object('eventId','ev_0123456789abcdef','instrumentId','vu_abcdef','type','PRICE_EVENT','occurredAt',now())))),1,'one digest');
+select tests.eq(jsonb_array_length(public.push_claim_daily(jsonb_build_array(jsonb_build_object('eventId','ev_0123456789abcdef','instrumentId','vu_abcdef','type','PRICE_EVENT','occurredAt',now())))),0,'same day deduplicated');
+select tests.authenticate(:'a');
+select public.push_remove('token_aaaaaaaaaaaaaaaaaaaa');
+select tests.eq((select count(*)::int from public.push_devices),0,'off removes device');
+reset role;
+delete from auth.users where id=:'a';
+select tests.eq((select count(*)::int from public.push_daily_claims),0,'cascade claims');
+rollback;

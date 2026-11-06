@@ -20,7 +20,7 @@ const Close = require(path.join(ROOT, 'quant/engines/published-close.js'));
 const DEPOTS = Object.freeze({ A: { id: 'EDGE2-KI-A-PAPER', ledger: path.join(ROOT, 'docs/research/edge2/ki/ledger-A.jsonl') }, B: { id: 'EDGE2-KI-B-PAPER', ledger: path.join(ROOT, 'docs/research/edge2/ki/ledger-B.jsonl') } });
 const depotOf = d => { const x = DEPOTS[d || 'A']; if (!x) throw Error('DEPOT_UNKNOWN ' + d); return x; };
 const LEDGER = DEPOTS.A.ledger, DEPOT = DEPOTS.A.id;
-const AMENDMENT = 'docs/research/edge2/ki/BLIND_ERGAENZUNG_1.json';
+const AMENDMENT = 'docs/research/edge2/ki/KI_ERGAENZUNG_2.json'; // gültige Prompts je Depot (Ergänzung 2 nach Ergänzung 1)
 const sha = x => crypto.createHash('sha256').update(x).digest('hex');
 const today0 = () => new Date().toISOString().slice(0, 10);
 
@@ -42,7 +42,7 @@ function append(entry, file = LEDGER) {
   return row;
 }
 function promptInfo(depot) {
-  const am = JSON.parse(fs.readFileSync(path.join(ROOT, AMENDMENT), 'utf8')), pr = depot === 'B' ? am.depotB.prompt : am.prompt;
+  const am = JSON.parse(fs.readFileSync(path.join(ROOT, AMENDMENT), 'utf8')), pr = am.prompts[depot === 'B' ? 'B' : 'A'];
   const h = sha(fs.readFileSync(path.join(ROOT, pr.file)));
   if (h !== pr.sha256) throw Error('PROMPT_CHANGED ' + pr.file);
   return { version: pr.version, file: pr.file, sha256: h, amendmentSha256: sha(fs.readFileSync(path.join(ROOT, AMENDMENT))) };
@@ -92,7 +92,9 @@ function packet(a) {
   const pk = r.packets[0], key = r.keys.find(k => k.state === 'BUILT');
   fs.mkdirSync(out, { recursive: true });
   fs.writeFileSync(path.join(out, 'packet-A.json'), JSON.stringify({ features: r.features, path: r.path, packet: pk }) + '\n');
-  const pkB = { ...pk, candidates: pk.candidates.map(c => ({ ...c, context: contextB(key.labels[c.label]) })) };
+  // Ergänzung 2: Depot B bekommt die ersten 25 Kandidaten (zufällig gezogene Labels) mit Ticker und Analysten; Nachrichten recherchiert die Sitzung.
+  const nB = JSON.parse(fs.readFileSync(path.join(ROOT, AMENDMENT), 'utf8')).prompts.B.candidates || 50;
+  const pkB = { ...pk, candidates: pk.candidates.slice(0, nB).map(c => { const x = contextB(key.labels[c.label]); return { ...c, context: { ticker: x.ticker, analysts: x.analysts } }; }) };
   fs.writeFileSync(path.join(out, 'packet-B.json'), JSON.stringify({ features: r.features, path: r.path, packet: pkB }) + '\n');
   fs.writeFileSync(path.join(out, 'keys.json'), JSON.stringify({ decisionDate, universe: rows.length, packetId: pk.packetId, packetSha256: key.packetSha256, labels: key.labels, panel: panel.meta }) + '\n');
   console.log(JSON.stringify({ decisionDate, packetId: pk.packetId, universe: rows.length }));
@@ -107,10 +109,21 @@ function record(a) {
   if (pk.packetId !== keys.packetId) throw Error('KEYS_MISMATCH');
   if (!status(keys.decisionDate, dep).decisionDue) throw Error('DECISION_ALREADY_RECORDED_THIS_MONTH');
   const chk = B.checkAnswer(answer, pk);
-  const picks = chk.problem ? [] : answer.picks.map(p => ({ label: p.label, securityId: keys.labels[p.label], ticker: keys.labels[p.label].replace(/^ref_/, ''), weight: Math.round(chk.weights[p.label] * 1e6) / 1e6, reason: String(p.reason || '').slice(0, 300) }));
+  // Depot B: recherchierte Nachrichten je Kandidat (Datum, Titel, Quelle, URL), nur wohlgeformte Einträge.
+  const research = new Map();
+  if (dep === 'B' && answer && Array.isArray(answer.research)) for (const r of answer.research) {
+    if (!r || !keys.labels[r.label]) continue;
+    research.set(r.label, (Array.isArray(r.news) ? r.news : []).filter(n => n && /^\d{4}-\d{2}-\d{2}$/.test(String(n.date)) && /^https:\/\//.test(String(n.url))).slice(0, 5)
+      .map(n => ({ date: n.date, title: String(n.title || '').slice(0, 200), source: String(n.source || '').slice(0, 80), url: String(n.url).slice(0, 400) })));
+  }
+  const picks = chk.problem ? [] : answer.picks.map(p => ({ label: p.label, securityId: keys.labels[p.label], ticker: keys.labels[p.label].replace(/^ref_/, ''), weight: Math.round(chk.weights[p.label] * 1e6) / 1e6, reason: String(p.reason || '').slice(0, 300),
+    ...(dep === 'B' ? { news: research.get(p.label) || [] } : {}) }));
   const row = append({ type: 'DECISION', decisionDate: keys.decisionDate, prompt: promptInfo(dep), packetId: pk.packetId, packetSha256: sha(JSON.stringify(pk)), universe: keys.universe,
     valid: !chk.problem, problem: chk.problem, attempt: Number(a.attempt || 1), count: picks.length, countReason: answer && !chk.problem ? String(answer.countReason || '').slice(0, 300) : null, picks,
     answerSha256: sha(raw), packet: pk,
+    // Steuerung 06.11.: dünne News-Abdeckung für Depot B im Ledger vermerken.
+    coverage: dep === 'B' ? { candidates: pk.candidates.length, withAnalysts: pk.candidates.filter(c => c.context && c.context.analysts).length, researched: research.size, withNews: [...research.values()].filter(x => x.length).length } : null,
+    research: dep === 'B' ? Object.fromEntries([...research].map(([l, n]) => [keys.labels[l].replace(/^ref_/, ''), n])) : undefined,
     pricing: 'Einstieg zum Schlusskurs des nächsten Handelstags nach decisionDate (quant/data/market/discover-series über published-close.js), gehalten bis zum Einstieg der nächsten Entscheidung' }, D.ledger, D.id);
   console.log(JSON.stringify({ depot: dep, seq: row.seq, valid: row.valid, problem: chk.problem, count: picks.length, tickers: picks.map(p => p.ticker) }));
 }
@@ -163,6 +176,7 @@ function main() {
   const a = args(process.argv);
   if (a._ === 'status') console.log(JSON.stringify(status(a.today, a.depot || 'A')));
   else if (a._ === 'packet') packet(a);
+  else if (a._ === 'prompt') { const pr = promptInfo(a.depot || 'A'); console.log(JSON.stringify(pr)); }
   else if (a._ === 'record') record(a);
   else if (a._ === 'mark') mark(a);
   else if (a._ === 'evaluate') console.log(JSON.stringify(evaluate(a.depot || 'A'), null, 1));
