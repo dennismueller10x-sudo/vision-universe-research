@@ -27,8 +27,10 @@
   },
   "pipeline-daily": {
    "purpose": "Tageskette nach US-Schluss: Kurse, Faktoren, Discover, Technical, Supertrader, SEC-Tagesindex",
-   "workflow": null,
-   "replaces": []
+   "workflow": "pipeline-daily.yml",
+   "replaces": [
+    "fx-ecb-daily.yml"
+   ]
   },
   "pipeline-intraday": {
    "purpose": "Takt waehrend der Sitzung: Snapshots, Im Blick, Realtime",
@@ -217,9 +219,6 @@
   },
   "fundamental-sec-freshness.yml": {
    "bundle": "monitor"
-  },
-  "fx-ecb-daily.yml": {
-   "bundle": "pipeline-daily"
   },
   "history-store-sync.yml": {
    "bundle": "maintenance"

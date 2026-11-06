@@ -105,7 +105,7 @@
       "records": "daysParsed",
       "role": "EZB-Referenzkurse je Tag fuer die EUR-Anzeige (quant/engines/fx). Stand = letzter Beobachtungstag der EZB.",
       "producer": "scripts/market/build-fx-history-ecb.mjs --publish",
-      "workflow": "fx-ecb-daily.yml, currency-fx-verify.yml",
+      "workflow": "pipeline-daily.yml (Teil ezb), currency-fx-verify.yml",
       "schedule": "werktags 15:47 UTC",
       "freshness": { "kind": "hours", "warnAfter": 96, "staleAfter": 168 },
       "consumers": ["Discover (EUR-Charts, EUR-Kurse)", "Vorsorge", "jede EUR-Anzeige ueber VUFx"],
