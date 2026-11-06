@@ -13,6 +13,6 @@ test('preserved methodology draft is not silently imported into active certifica
  const m=JSON.parse(fs.readFileSync(path.join(archive,'manifest.json')));assert.equal(m.runtimePolicyImported,false);assert.equal(m.state,'PRESERVED_PROPOSAL_NOT_APPROVED');assert.equal(fs.existsSync(path.join(root,'quant/methodology/backtest-certification-methodology-v1.0.0.json')),false);
 });
 test('versioned V6 handoff retains six distinct kinds and all seven future planning items',()=>{
- const s=fs.readFileSync(path.join(root,'docs/archiv/2026/quant-recovery/BACKTEST_V6_HANDOFF.md'),'utf8');
+ const s=fs.readFileSync(path.join(root,'docs/quant-recovery/BACKTEST_V6_HANDOFF.md'),'utf8');
  for(const name of ['Same Stock Replay','Pattern Evidence','Signal Backtest','Setup Backtest','Strategy Backtest','Factor Ranking Backtest','Monte-Carlo-Simulation','Walk-Forward-Analyse','Out-of-Sample-Prüfung','Marktregime-Backtests','Parameter-Sensitivität','Event-Driven Backtests','Portfolio-Rebalancing','NOT_CERTIFIED'])assert.ok(s.includes(name),name);
 });

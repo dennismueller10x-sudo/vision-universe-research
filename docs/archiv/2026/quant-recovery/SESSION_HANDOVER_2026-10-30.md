@@ -24,7 +24,7 @@ PRs anderer Sitzungen, die diese Arbeit berühren: #1136 (Security Master Nachho
 
 ## 2. Erledigt (nicht wiederholen)
 
-- **V10–V13c-Studien:** Signal-, Pattern-, Setup-, Strategie- und Faktorstudien auf der Überlebenden- und der Delisted-Population, mit Large-Cap-Grenzen, F1/F1w/F1d, HIST-Sturzfällen und registrierter V13c-Studie 3.0.0. Befund: kein belastbares Alpha. Einstieg: [HANDOVER_V13.md](HANDOVER_V13.md), Abschnitte 1–10; [v13c/](../../../quant-recovery/v13c).
+- **V10–V13c-Studien:** Signal-, Pattern-, Setup-, Strategie- und Faktorstudien auf der Überlebenden- und der Delisted-Population, mit Large-Cap-Grenzen, F1/F1w/F1d, HIST-Sturzfällen und registrierter V13c-Studie 3.0.0. Befund: kein belastbares Alpha. Einstieg: [HANDOVER_V13.md](../../../quant-recovery/HANDOVER_V13.md), Abschnitte 1–10; [v13c/](../../../quant-recovery/v13c).
 - **Delistete Reihen:**
   - Register 1.0.0 mit 1.675 QUALIFIED und 151 nur Kurs;
   - Register 1.1.0 (V13b HIST) mit 1.688 QUALIFIED;

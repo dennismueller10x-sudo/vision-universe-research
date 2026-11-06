@@ -186,6 +186,6 @@ Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Beri
 
 Abgelöste Übergaben und Statusberichte; zur Nachvollziehbarkeit erhalten. Maßgeblich sind der Einstieg und der aktuelle Plan.
 
-- [COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md](archiv/2026/COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md)
+- [COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md](COMPANY_INTELLIGENCE_FULL_DATA_HANDOFF.md)
 - [FUNDAMENTAL_HANDOFF.md](archiv/2026/FUNDAMENTAL_HANDOFF.md)
 - [VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md](archiv/2026/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md)
