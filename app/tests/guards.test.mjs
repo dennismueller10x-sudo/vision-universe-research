@@ -52,13 +52,14 @@ test('Shell: CSP ohne unsafe-inline/eval, Safe-Area vorbereitet', () => {
   assert.match(read(path.join(app, 'www/app.css')), /safe-area-inset-bottom/);
 });
 
-test('Gate-Hygiene: App-Branch beruehrt nur app/, die Mobile-Dokumente und den freigegebenen Auslieferungsausschluss', () => {
+test('Gate-Hygiene: App-Branch beruehrt nur freigegebene App- und Integrationspfade', () => {
   let base;
   try { base = execFileSync('git', ['merge-base', 'HEAD', 'origin/main'], {cwd: repo, encoding: 'utf8'}).trim(); } catch { return; } // flacher Checkout ohne Basis: nicht pruefbar
   const files = execFileSync('git', ['diff', '--name-only', base], {cwd: repo, encoding: 'utf8'}).split('\n').filter(Boolean);
   // Ausschluss von app/ aus Pages: Owner-Freigabe Phase 2 (eine Zeile in permitted() und seine Pruefung)
   // Aktivierung der TestFlight-Pipeline (Owner-Auftrag 03.11.2026): genau eine Workflow-Datei, deren Rumpf der Vorlage gleicht (naechster Test)
-  const approved = new Set(['scripts/vu2/build-release.mjs', 'quant/tests/release-delivery.test.mjs', '.github/workflows/app-ios-testflight.yml', '.github/workflows/app-android-build.yml', '.github/workflows/app-android-release.yml', 'core/registry/workflow-bundles.json']);
+  // E3 Owner-Auftrag: gemeinsames, nur im App-Modus aktives Gestenmodul.
+  const approved = new Set(['assets/site-navigation.js', 'assets/vu-ui.js', 'assets/vu-gestures.js', 'assets/vu-gestures.css', 'assets/tests/vu-gestures.test.mjs', 'scripts/vu2/build-release.mjs', 'quant/tests/release-delivery.test.mjs', '.github/workflows/app-ios-testflight.yml', '.github/workflows/app-android-build.yml', '.github/workflows/app-android-release.yml', 'core/registry/workflow-bundles.json']);
   const bad = files.filter(f => !approved.has(f) && !/^(app\/|docs\/architecture\/ADR-00[4-9]|docs\/mobile\/|docs\/handover\/)/.test(f));
   assert.deepEqual(bad, []);
 });
