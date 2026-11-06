@@ -3,8 +3,8 @@
    Drei Fragen: Ziel, Erfahrung, erste Aktien. Jede lässt sich überspringen.
    Gespeichert wird auf dem Gerät (willkommen/start/prefs.js, Schlüssel vu-start-v1).
    Mit Konto kommen gewählte Aktien zusätzlich über POST /v1/watchlist/items auf die
-   Watchlist (gleicher Weg wie die Suche in /mein-dashboard/). Ziel und Erfahrung
-   speichert das Konto erst, wenn es settings.goal/settings.mode gibt.
+   Watchlist (gleicher Weg wie die Suche in /mein-dashboard/). Ziel, Erfahrung und „erledigt“
+   gehen mit Anmeldung an PATCH /v1/me (Z1); ohne Anmeldung übernimmt Mein Bereich sie nach der Anmeldung einmal.
    Serverdaten nur per textContent; innerHTML nur mit VUUI-Markup.
    ========================================================================= */
 (function (root) {
@@ -105,6 +105,8 @@
     var h = doc.querySelector('.fs-step[data-step="' + step + '"] h1'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
     root.scrollTo(0, 0);
   }
+  /* Konto hat die Wahl: Gerät merkt sich das Konto, damit adopt() sie nicht noch einmal schickt. */
+  function markAcct(r) { var id = r && r.ok && r.data && r.data.user && r.data.user.id; if (id) state = S.write({ acct: id }); return r; }
   /* Abschluss: lokal merken; mit Konto die gewählten Aktien auf die Watchlist (bestehende Schnittstelle). */
   function finish() {
     state.tickers = picked.slice(); state.done = true; S.write(state);
@@ -112,7 +114,7 @@
     var go = function () { root.location.assign(HOME); };
     if (!signedIn) return go();
     /* Z1: Ziel, Erfahrung und „erster Start erledigt“ ins Konto; scheitert das, bleibt die Wahl auf dem Gerät. */
-    var saved = A.patch('/v1/me', { settings: S.toAccount(state, true) }).catch(function () { return null; });
+    var saved = A.patch('/v1/me', { settings: S.toAccount(state, true) }).then(markAcct, function () { return null; });
     if (!picked.length) return saved.then(go, go);
     saved.then(function () { return ensureNames(); }).then(function (ix) {
       var items = ix ? picked.map(function (t) { var id = ix.resolveTicker(t); return id ? { instrumentId: id, ticker: t } : null; }).filter(Boolean) : [];
@@ -129,7 +131,7 @@
     renderGoals(); renderModes(); renderChips(); bindSearch();
     $('fs-next').addEventListener('click', function () { if (step < 3) show(step + 1); else finish(); });
     $('fs-back').addEventListener('click', function () { if (step > 1) show(step - 1); else root.history.length > 1 ? root.history.back() : root.location.assign(HOME); });
-    $('fs-skip').addEventListener('click', function (e) { e.preventDefault(); state.done = true; S.write(state); if (step < 3) show(step + 1); else (signedIn ? A.patch('/v1/me', { settings: S.toAccount(state, true) }).catch(function () { return null; }) : Promise.resolve()).then(function () { root.location.assign(HOME); }); });
+    $('fs-skip').addEventListener('click', function (e) { e.preventDefault(); state.done = true; S.write(state); if (step < 3) show(step + 1); else (signedIn ? A.patch('/v1/me', { settings: S.toAccount(state, true) }).then(markAcct, function () { return null; }) : Promise.resolve()).then(function () { root.location.assign(HOME); }); });
     if (A && A.available && A.available()) A.get('/v1/session').then(function (r) { signedIn = !!(r.ok && r.data && r.data.authenticated); });
     show(1);
   }

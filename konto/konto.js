@@ -266,8 +266,8 @@
     });
   };
 
-  /* „Deine App“ (E07): Erfahrung und Ziel aus dem ersten Start (willkommen/start/prefs.js, lokal auf dem Gerät;
-     das Konto übernimmt sie, sobald es settings.mode/settings.goal gibt), Darstellung wie im Menü (VUTheme)
+  /* „Deine App“ (E07): Erfahrung und Ziel aus dem ersten Start (willkommen/start/prefs.js; Konto zuerst,
+     Gerätewahl einmal übernommen, Z1: settings.experienceLevel/goal), Darstellung wie im Menü (VUTheme)
      und im Konto (PATCH /v1/me settings.appearance, bestehende Einstellung). */
   function appSettings(me) {
     var S = window.VUStart;
@@ -277,8 +277,9 @@
       paintMode(eff.mode);
       $('ka-mode').addEventListener('click', function (e) {
         var b = e.target.closest('[data-mode]'); if (!b) return;
-        S.write({mode: b.getAttribute('data-mode')}); paintMode(b.getAttribute('data-mode'));
-        notice('Erfahrung gespeichert (auf diesem Gerät).', 'ok');
+        var m = b.getAttribute('data-mode');
+        S.write({mode: m}); paintMode(m);
+        A.patch('/v1/me', {settings: {experienceLevel: m}}).then(function (r) { if (r.ok) notice('Erfahrung im Konto gespeichert.', 'ok'); else fail(r); });
       });
       if (eff.goal) $('ka-goal').textContent = S.GOALS[eff.goal].title;
     } else $('ka-mode').hidden = true;
@@ -331,7 +332,7 @@
         $('ka-currency').textContent = st.displayCurrency === 'EUR' ? '$ / €' : st.displayCurrency || 'Listing';
         var NEWS = {confirmed: 'Du erhältst den Newsletter', pending: 'Bitte Link in der E-Mail bestätigen', requested: 'Bestätigungs-E-Mail unterwegs'};
         $('ka-news-line').textContent = d.newsletter && d.newsletter.available === false ? 'Noch nicht verfügbar' : NEWS[d.newsletter && d.newsletter.status] || 'Freiwillig, Double-Opt-in';
-        appSettings(d);
+        (window.VUStart ? window.VUStart.adopt(A, d) : Promise.resolve(d)).then(appSettings);
         // Offene Pro-Wahl: eindeutig fortsetzen oder verwerfen, keine automatische Umleitung bei jedem Besuch.
         var pending = A.proPending(d, pendingChoice());
         $('ka-pro-pending').hidden = !pending;
