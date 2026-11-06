@@ -43,7 +43,6 @@ Prüfsumme: `sha256sum /tmp/s2-results.json` muss `privateSha256` in `results-s2
 
 ## Offen
 
-- `core/registry/domains.json`, Eintrag `modelDepots`: Feld `activation` nach dem ersten grünen Lauf von `quant-model-depots.yml` entfernen.
 
 - **`test_canonical_market.py`:** Neuabnahme der Deckungskennzahlen über `coverage-metrics.yml`, mit R2 und `coverage-delta` je Titel. Ändern sich die Kennzahlen, Stand 6.686/6.683/5.644 → neues Produktuniversum (6.577), dann die Konstanten in `ABGENOMMEN` mit Begründung nachziehen. Geht erst, wenn die übrigen roten Quant-Tests grün sind, denn der Workflow fährt die ganze Suite.
 - `backtest-runner.cjs#setupOosFromCertificationPath` an A4 angleichen (berührt CODE_FILES → Demo-Neubau, eigener PR). Setup-OOS-Gate frühestens um den 2028-01-08 messbar.
