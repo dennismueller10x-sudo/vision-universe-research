@@ -40,7 +40,7 @@
 
   var VERSION = "watchlist-view-1.0.0";
   var SCHEMA = "vu-watchlist-summary-1.0.0";
-  var RULE_VERSION = "watchlist-events-1.4.0";  /* 1.2.0: PRICE_MOVE (Tagesbewegung ab 5 %); 1.3.0: EARNINGS (neuer SEC-Bericht); 1.4.0: FUND_13F (neue Fondsposition) */
+  var RULE_VERSION = "watchlist-events-1.5.0";  /* 1.2.0: PRICE_MOVE (Tagesbewegung ab 5 %); 1.3.0: EARNINGS (neuer SEC-Bericht); 1.4.0: FUND_13F (neue Fondsposition); 1.5.0: ELLIOTT_CHANGE */
   var MOVE_THRESHOLD = 0.05;       /* PRICE_MOVE: Tagesbewegung mindestens 5 % (Betrag), splitbereinigt */
   var NEAR_HIGH = -0.05;           /* Discover nearHigh/watch: hoechstens 5 % unter dem 52W-Hoch */
   var ACTIONABLE = ["SETUP", "ENTRY_READY", "TRIGGERED", "ACTIVE"];
@@ -207,6 +207,12 @@
     if (!src.funds13f) base.funds13f = unavailable("SOURCE_MISSING");
     else if (!isDate(r.fp) || !Array.isArray(r.fn)) base.funds13f = unavailable(why(r, "funds13f"));
     else base.funds13f = { state: "AVAILABLE", period: r.fp, holders: typeof r.fc === "number" ? r.fc : null, newPositions: r.fn.slice() };
+
+    // Elliott (experimentelles Strukturmodell): Hauptlesart des Chartbild-Produkts
+    if (!src.elliott) base.elliott = unavailable("SOURCE_MISSING");
+    else if (!Array.isArray(r.ew) || !r.ew[1]) base.elliott = unavailable(why(r, "elliott"));
+    else base.elliott = { state: "AVAILABLE", status: r.ew[0], pattern: r.ew[1], direction: r.ew[2], complete: r.ew[3] === 1,
+      wave: r.ew[4], waveStatus: r.ew[5], asOf: isDate(r.ewd) ? r.ewd : null, model: "EXPERIMENTAL" };
 
     // Quant: sieben Faktoren mit Stufe, Gesamtscore zurueckgehalten
     var qs = src.quant;
@@ -539,6 +545,17 @@
           ev({ type: "FUND_13F", subtype: "NEW_POSITION", v: b, sourceId: "funds13f", subject: b.funds13f.period, before: a.funds13f.newPositions, after: b.funds13f.newPositions,
             asOf: b.funds13f.period, evidence: { period: b.funds13f.period, funds: added.slice(0, 10), fundNames: added.slice(0, 10).map(function (x) { return (srcB.funds13f && srcB.funds13f.funds || {})[x] || x; }),
               fundsCount: added.length, holders: b.funds13f.holders, source: "SEC 13F" } });
+      }
+
+      // Elliott: neue Hauptlesart (Muster oder Richtung) bzw. bestaetigte Welle/abgeschlossenes Muster bei gleicher Lesart
+      if (a.elliott && b.elliott && a.elliott.state === "AVAILABLE" && b.elliott.state === "AVAILABLE") {
+        var ea = a.elliott, eb = b.elliott, ekey = function (x) { return x.pattern + "/" + (x.direction || ""); };
+        if (ekey(ea) !== ekey(eb))
+          ev({ type: "ELLIOTT_CHANGE", subtype: "READING_CHANGED", v: b, sourceId: "elliott", before: ekey(ea), after: ekey(eb), asOf: eb.asOf,
+            evidence: { patternBefore: ea.pattern, pattern: eb.pattern, directionBefore: ea.direction, direction: eb.direction, status: eb.status, model: "EXPERIMENTAL" } });
+        else if ((ea.wave === eb.wave && ea.waveStatus !== "CONFIRMED" && eb.waveStatus === "CONFIRMED") || (!ea.complete && eb.complete))
+          ev({ type: "ELLIOTT_CHANGE", subtype: "WAVE_CONFIRMED", v: b, sourceId: "elliott", subject: eb.wave, before: [ea.waveStatus, ea.complete], after: [eb.waveStatus, eb.complete], asOf: eb.asOf,
+            evidence: { pattern: eb.pattern, wave: eb.wave, waveStatusBefore: ea.waveStatus, waveStatus: eb.waveStatus, complete: eb.complete, model: "EXPERIMENTAL" } });
       }
 
       // Kurs und Technik

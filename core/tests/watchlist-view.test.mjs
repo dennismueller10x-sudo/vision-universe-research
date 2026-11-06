@@ -271,6 +271,20 @@ test("Ereignisse: alle Arten der Regel - Quant, Technik, Supertrader-Ende, Daten
   const fk = at(fBefore, "ACME"); fBefore.cols.fn[fk] = null; fBefore.cols.fp[fk] = null;
   assert.deepEqual(W.events(fBefore, fAfter, { now: AFTER_RUN }).filter(e => e.type === "FUND_13F"), []);
 
+  // Elliott (ELLIOTT_CHANGE, 1.5.0): ACME neue Lesart, ACX bestaetigte Welle bei gleicher Lesart
+  const eBefore = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc, eAfter = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc;
+  for (const d of [eBefore, eAfter]) d.sources.elliott = { domain: "technicalIntelligenceV3", artifact: "/quant/data/technical-intelligence/v3/shards/", asOf: "2026-10-23", model: "EXPERIMENTAL" };
+  const setE = (d, tk, ew) => { const k = at(d, tk); d.cols.ew[k] = ew; d.cols.ewd[k] = "2026-10-23"; };
+  setE(eBefore, "ACME", ["OK", "ZIGZAG", "DOWN", 0, "C", "DEVELOPING"]); setE(eAfter, "ACME", ["AMBIGUOUS", "IMPULSE", "UP", 0, "3", "DEVELOPING"]);
+  setE(eBefore, "ACX", ["OK", "WXY", "DOWN", 0, "Y", "DEVELOPING"]); setE(eAfter, "ACX", ["OK", "WXY", "DOWN", 0, "Y", "CONFIRMED"]);
+  const ell = W.events(eBefore, eAfter, { now: AFTER_RUN }).filter(e => e.type === "ELLIOTT_CHANGE");
+  for (const e of ell) covered.add(e.type + ":" + e.subtype);
+  assert.deepEqual(Object.fromEntries(ell.map(e => [e.ticker, e.subtype])), { ACME: "READING_CHANGED", ACX: "WAVE_CONFIRMED" });
+  assert.ok(ell.every(e => e.evidence.model === "EXPERIMENTAL"), "Evidenz kennzeichnet das experimentelle Modell");
+  // Gegenproben: unveraenderte Lesart und Erstbeobachtung bleiben still
+  setE(eBefore, "ACX", ["OK", "WXY", "DOWN", 0, "Y", "CONFIRMED"]); const ek = at(eBefore, "ACME"); eBefore.cols.ew[ek] = null;
+  assert.deepEqual(W.events(eBefore, eAfter, { now: AFTER_RUN }).filter(e => e.type === "ELLIOTT_CHANGE"), []);
+
   const contract = Object.entries(EVENT_SCHEMA.properties.subtype.enumByType).flatMap(([ty, subs]) => subs.map(s => ty + ":" + s));
   assert.deepEqual(contract.filter(c => !covered.has(c)), [], "jede Unterart entsteht in einem Test");
   for (const e of evs) assert.ok(EVENT_SCHEMA.properties.type.enum.includes(e.type) && EVENT_SCHEMA.properties.subtype.enumByType[e.type].includes(e.subtype));

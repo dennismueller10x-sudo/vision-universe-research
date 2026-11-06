@@ -176,6 +176,26 @@ export function buildSummary(root,{now=new Date()}={}){
    funds:Object.fromEntries([...curated].sort((a,b)=>a[0].localeCompare(b[0])))};
  });
 
+ // ---- Elliott: Hauptlesart je Titel aus dem Chartbild-Produkt (Watchlist-Ereignis ELLIOTT_CHANGE); zurueckgehaltene Titel ohne Lesart
+ tryPart('elliott',()=>{
+  const meta=readJson(root,'quant/data/technical-intelligence/v3/meta.json');if(!meta)throw Error('CHART_PRODUCT_MISSING');
+  const dir=join(root,'quant/data/technical-intelligence/v3/shards');let asOf=null;
+  for(const f of readdirSync(dir).filter(x=>/\.json\.gz$/.test(x)).sort()){
+   const part=readJson(root,'quant/data/technical-intelligence/v3/shards/'+f)||{};
+   for(const [ticker,x] of Object.entries(part.instruments||{})){
+    if(!x||x.withheld)continue;
+    const e=x.pro&&x.pro.elliott,pr=e&&e.primary;if(!pr||!pr.pattern)continue;
+    let sid;try{sid=Identity.securityIdForTicker(ticker);}catch{continue;}
+    const hit=listingFor(ticker,sid,null);
+    if(!hit.row){note(hit.rows,'elliott',hit.reason);continue;}
+    const w=pr.currentWave||{};
+    Object.assign(hit.row,{ew:[e.status||null,pr.pattern,pr.direction||null,pr.complete?1:0,w.label||null,w.status||null],ewd:isDay(x.asOf)?x.asOf:null});
+    if(isDay(x.asOf)&&(!asOf||x.asOf>asOf))asOf=x.asOf;
+   }
+  }
+  sources.elliott={...domainRule(registry,'technicalIntelligenceV3'),artifact:'/quant/data/technical-intelligence/v3/shards/',asOf,generatedAt:meta.generatedAt||null,model:'EXPERIMENTAL'};
+ });
+
  // ---- Technik: 52W-Hoch, Volumen, Trend (Plattformdefinition aus market-factors.js, siehe discover/engines/high52w.js)
  tryPart('technical',()=>{
   const ds=readJson(root,'technical/data/screener-v1.json');if(!ds||!ds.cols||!Array.isArray(ds.cols.s))throw Error('TECHNICAL_SCREENER_MISSING');
@@ -244,7 +264,7 @@ export function buildSummary(root,{now=new Date()}={}){
  if(oldest&&calendar){let d=oldest;for(let k=0;k<40;k++){d=TS.nextTradingDay(d,{calendar});if(!d)break;sessions.push(d);}}
 
  // ---- spaltenweise ausgeben
- const FIELDS=['i','s','n','x','cu','act','del','el','c','cd','pu','d1','dp','rf','rk','rp','re','fp','fc','fn','q','qdq','qd','mc','td','tf','h52','h52w','h52m','dh','rv','vs','rsi','a200','st','sts','why'];
+ const FIELDS=['i','s','n','x','cu','act','del','el','c','cd','pu','d1','dp','rf','rk','rp','re','fp','fc','fn','ew','ewd','q','qdq','qd','mc','td','tf','h52','h52w','h52m','dh','rv','vs','rsi','a200','st','sts','why'];
  rows.sort((a,b)=>a.s<b.s?-1:a.s>b.s?1:a.i<b.i?-1:1);
  const cols={};for(const f of FIELDS)cols[f]=rows.map(r=>r[f]===undefined?null:r[f]);
  const slices=sources.supertrader&&sources.supertrader.slices;
