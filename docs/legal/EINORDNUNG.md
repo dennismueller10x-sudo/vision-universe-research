@@ -35,6 +35,25 @@ müssen diese Funktionen umgebaut werden, bevor das Produkt öffentlich startet:
 | L6 | AI Atlas | Fragen „soll ich kaufen?“ oder Fragen mit persönlichen Angaben neutral ablehnen; nur Filter und Daten liefern. | vu-ask |
 | L7 | Gesamturteil je Aktie („Überwiegend stark“) | Neutral zählen („4 von 7 Faktoren im oberen Drittel“). Kein Gesamturteil als Wort. | D2 |
 
+**Owner-Entscheidung 06.11.:** Supertrader-Kursmarken (Einstieg, Ausstieg, Stopp) und Setup-Ziele werden als Analyse
+nach benannter Methode wieder gezeigt, ohne Anzeige nach § 86 WpHG. Die Rechtstexte bleiben unverändert; eine Klärung mit
+einem Anwalt läuft. L1, L2 und L3 entfallen damit.
+
+**Restrisiko dazu, sachlich:**
+- Kursmarken je Aktie wie Einstieg, Stopp und Ziel schlagen direkt eine bestimmte Anlageentscheidung vor. Nach Art. 3
+  Abs. 1 Nr. 34 und 35 MAR sind sie mit hoher Wahrscheinlichkeit Anlageempfehlungen, auch wenn sie regelbasiert und für
+  alle gleich entstehen.
+- Dann gelten Art. 20 MAR und die Delegierte Verordnung (EU) 2016/958 (Offenlegung), und vor Beginn ist eine Anzeige nach
+  § 86 WpHG nötig. Ohne Anzeige droht ein Bußgeld (§ 120 WpHG).
+- Hinzu kommt ein Widerspruch: Die Nutzungsbedingungen sagen „keine Anlageempfehlungen … keine Handelssignale“, die App
+  zeigt aber Kursmarken. Das kann gegenüber Nutzern als irreführend gelten (§ 5 UWG), und die Aufsicht schaut auf den
+  Inhalt der Seiten, nicht auf die Bedingungen.
+- Die Vorsorgeklausel auf der Seite „Methodik, Quellen und Interessen“ deckt die Offenlegung teilweise ab, die Anzeige
+  aber nicht.
+- Die Anlageberatung bleibt weiter ausgeschlossen, solange nichts personalisiert wird.
+
+Das Ergebnis der Anwaltsklärung entscheidet, ob angezeigt oder umgebaut wird.
+
 **Was danach an Risiko bleibt:**
 - **Reels (L5 entfällt):** Beiträge in sozialen Medien zu einer bestimmten Aktie, etwa die Frage „🐂 oder 🐻?“, kann die
   Aufsicht als Anlageempfehlung werten (Art. 3 Abs. 1 Nr. 35 und Art. 20 MAR; ESMA-Hinweis von 2021 zu sozialen Medien),
