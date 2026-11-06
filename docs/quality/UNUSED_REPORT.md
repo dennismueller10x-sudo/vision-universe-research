@@ -1,6 +1,6 @@
 # Ungenutzte Dateien – E7
 
-Analysierter Commit: `96d29093a1b9b087e8bf595d7d07a68fd729c258`.
+Analysierter Commit: `2385e806697a10db49987a32468ab5caf21437f9`.
 
 ## Methode und Grenzen
 
@@ -10,7 +10,7 @@ Alle versionierten Dateien sind Graphknoten. HTML (script/link/fetch und Navigat
 
 Die Einzelliste umfasst alle Dateien außerhalb der geschützten Bereiche, auch Konfiguration, Dokumentation und Evidence. Daten, Assets, App, Account-Worker, Forschung und Recht bleiben geschützt. Konfiguration und Dokumentation liefern zusätzliche Verweise. Dateninhalte und Binärdateien werden nicht als Quelltext gelesen. Dies ist eine Eingangsgrad-Analyse, keine Erreichbarkeitsanalyse: unbenutzte Zyklen werden nicht erkannt. Dynamische Pfade, Shell-Variablen, HTML-base, externe Aufrufe, Bookmarks und andere Deployments sind nicht vollständig beweisbar.
 
-Knoten: 86158; gelesene Textquellen: 10193; Dateien außerhalb Tabu: 17428 (davon 8038 Code/Seiten/Skripte); davon ohne eingehende Verweise: 1; nur breite Verzeichnis-/Glob-Verweise: 1509; geschützte Knoten ohne Verweise: 0 (keine Löschkandidaten).
+Knoten: 86159; gelesene Textquellen: 10193; Dateien außerhalb Tabu: 17402 (davon 8031 Code/Seiten/Skripte); davon ohne eingehende Verweise: 1; nur breite Verzeichnis-/Glob-Verweise: 1505; geschützte Knoten ohne Verweise: 0 (keine Löschkandidaten).
 
 **Keine automatische Löschfreigabe.** Fehlender Verweis, ein 404 oder Ausschluss vom Pages-Build allein beweist keine Nichtnutzung. Bei Zweifel bleibt die Datei.
 
@@ -18,7 +18,9 @@ Knoten: 86158; gelesene Textquellen: 10193; Dateien außerhalb Tabu: 17428 (davo
 
 `pages-release.yml` baut mit `scripts/vu2/build-release.mjs`: `permitted()` kopiert grundsätzlich alle zugelassenen getrackten Dateien, einschließlich alter Seiten und evidence. scripts/docs/providers, Tests und bestimmte Daten werden ausgeschlossen. Der Build erzeugt `/vu2/` und `/Quant/` zusätzlich als Redirect nach `/quant/`. Ein ausgelieferter Pfad kann direkt aufgerufen werden, auch ohne internen Link.
 
-| Bereich | Dateien | Bytes vorher | Bytes nachher | Entscheidung |
+Größenvergleich gegen `bbe59a3ca48e208d2053aa30ab8d96fc9ce059f1`; getrackte Dateibytes, ohne Git-Historie. Neue Analysewerkzeuge zählen zur Nachher-Größe von scripts/.
+
+| Bereich | Dateien nachher | Bytes vorher | Bytes nachher | Entscheidung |
 |---|---:|---:|---:|---|
 | vu2/ | 1 | 401 | 401 | Redirect wird im Release erzeugt; behalten. |
 | discover-v2/ | 1 | 837 | 837 | Legacy-Redirect nach /discover/; behalten. |
@@ -26,7 +28,7 @@ Knoten: 86158; gelesene Textquellen: 10193; Dateien außerhalb Tabu: 17428 (davo
 | worker-waker/ | 4 | 60308 | 60308 | Eigenes Cloudflare-Deployment und Workflow-Tests; behalten. |
 | landing/review/ | 36 | 8360419 | 8360419 | CI erwähnt den Review-Pfad; Live-404 genügt nicht; behalten. |
 | evidence/ | 54 | 1026077 | 1026077 | Audit-/Auslieferungsbelege und grundsätzlich im Pages-Build; behalten. |
-| scripts/ | 1805 | 28035928 | 28035928 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
+| scripts/ | 1805 | 28016242 | 28037098 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
 
 Live-Stichprobe: 2026-11-06T13:19:17.451215+00:00, https://research.visionuniverse.de. Keine vollständige Browser-Netzwerkaufzeichnung.
 
@@ -484,7 +486,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | docs/mobile/PHASE2_REPORT.md | 9366 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/neustart/G-labor.md | 1178 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/operations/BASELINE_TEST_ISOLATION.md | 2482 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quality/unused-live-evidence.json | 2287 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
+| docs/quality/unused-live-evidence.json | 2350 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/BACKTEST_V9_DATA_RECOVERY.md | 5447 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/BACKTEST_V9_EVIDENCE_MATRIX.md | 2999 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/BACKTEST_V9_FINAL.md | 7743 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
@@ -1020,10 +1022,6 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | landing/assets/inter-LICENSE.txt | 4380 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
 | landing/deployment/apex-redirect.json | 384 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
 | landing/deployment/newsletter-api-status.json | 1693 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
-| landing/deployment/privacy-cloudflare.draft.html | 9556 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
-| landing/legal-drafts/agb-app-abos.md | 9099 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
-| landing/legal-drafts/bereitstellung-app-abos.md | 1393 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
-| landing/legal-drafts/newsletter-public-2026-10-16.html | 15958 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
 | landing/newsletter.config.example.json | 105 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
 | landing/package.json | 673 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
 | landing/reference/discover-swipe-source.json | 723 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
@@ -1309,7 +1307,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/marketstack/tests/europe-live-actions-review.test.mjs | 16918 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
 | scripts/marketstack/tests/europe-marketstack-diagnostics-once.test.mjs | 8765 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
 | scripts/marketstack/tests/europe-xpar-identity-offline.test.mjs | 5105 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
-| scripts/quality/tests/find-unused.test.mjs | 4039 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Nutzung unklar; behalten. |
+| scripts/quality/tests/find-unused.test.mjs | 4341 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Nutzung unklar; behalten. |
 | scripts/quant/__init__.py | 0 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/quant/audit-security-type-provenance.mjs | 8649 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/quant/build-sec-mapping-dossier.mjs | 7042 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Workflow-Schutz; Nutzung unklar; behalten. |
@@ -1676,7 +1674,6 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/company_intelligence/observe-production.mjs | .github/workflows/company-intelligence-refresh.yml, .github/workflows/company-intelligence.yml, .github/workflows/pages-release.yml |
 | scripts/company_intelligence/pages-rollback-decision.mjs | .github/workflows/company-intelligence-refresh.yml, .github/workflows/company-intelligence.yml, .github/workflows/pages-release.yml |
 | scripts/company_intelligence/pilot.sh | .github/workflows/company-intelligence.yml, .github/workflows/pages-release.yml |
-| scripts/company_intelligence/privacy.mjs | .github/workflows/company-intelligence-profile-source.yml, .github/workflows/company-intelligence-refresh.yml, .github/workflows/company-intelligence.yml, .github/workflows/pages-release.yml |
 | scripts/company_intelligence/production-approval.mjs | .github/workflows/company-intelligence.yml, .github/workflows/pages-release.yml |
 | scripts/company_intelligence/production-off-qa.mjs | .github/workflows/company-intelligence.yml, .github/workflows/pages-release.yml |
 | scripts/company_intelligence/production-release.mjs | .github/workflows/company-intelligence-profile-source.yml, .github/workflows/company-intelligence-refresh.yml, .github/workflows/company-intelligence.yml, .github/workflows/pages-release.yml |
@@ -1900,7 +1897,6 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/quant/lib/daily-prices.mjs | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/quant/lib/emerging-leaders-inputs.mjs | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/quant/lib/pattern-study.mjs | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
-| scripts/quant/lib/privacy-scan.mjs | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/quant/lib/weekly-total-return.mjs | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/quant/materialization-decision.mjs | .github/workflows/product-intelligence-materialization.yml, .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/quant/materialize-real-backtest-read.cjs | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
