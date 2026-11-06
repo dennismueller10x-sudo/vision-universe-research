@@ -531,12 +531,12 @@ Abgelöste Übergaben und Statusberichte; zur Nachvollziehbarkeit erhalten. Maß
 
 - [VU_QUANT_2_MASTER_REMATCH_REPORT.md](../archiv/2026/VU_QUANT_2_MASTER_REMATCH_REPORT.md)
 - [VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md](../archiv/2026/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md)
-- [BACKTEST_V10_HANDOFF.md](../archiv/2026/quant-recovery/BACKTEST_V10_HANDOFF.md)
-- [BACKTEST_V6_HANDOFF.md](../archiv/2026/quant-recovery/BACKTEST_V6_HANDOFF.md)
-- [BACKTEST_V7_HANDOFF.md](../archiv/2026/quant-recovery/BACKTEST_V7_HANDOFF.md)
-- [BACKTEST_V8_HANDOFF.md](../archiv/2026/quant-recovery/BACKTEST_V8_HANDOFF.md)
-- [BACKTEST_V9_HANDOFF.md](../archiv/2026/quant-recovery/BACKTEST_V9_HANDOFF.md)
-- [HANDOVER_V13.md](../archiv/2026/quant-recovery/HANDOVER_V13.md)
+- [BACKTEST_V10_HANDOFF.md](../quant-recovery/BACKTEST_V10_HANDOFF.md)
+- [BACKTEST_V6_HANDOFF.md](../quant-recovery/BACKTEST_V6_HANDOFF.md)
+- [BACKTEST_V7_HANDOFF.md](../quant-recovery/BACKTEST_V7_HANDOFF.md)
+- [BACKTEST_V8_HANDOFF.md](../quant-recovery/BACKTEST_V8_HANDOFF.md)
+- [BACKTEST_V9_HANDOFF.md](../quant-recovery/BACKTEST_V9_HANDOFF.md)
+- [HANDOVER_V13.md](../quant-recovery/HANDOVER_V13.md)
 - [SESSION_HANDOVER_2026-10-30.md](../archiv/2026/quant-recovery/SESSION_HANDOVER_2026-10-30.md)
 - [BACKTEST_ENGINEERING_HANDOVER_V1.md](../archiv/2026/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md)
 
