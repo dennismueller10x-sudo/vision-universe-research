@@ -401,6 +401,23 @@
       "consumers": ["/analysten/"]
     },
     {
+      "id": "analystConsensus",
+      "label": "Analysten-Konsens",
+      "layer": "CONTENT",
+      "group": "Content",
+      "critical": false,
+      "artifact": "/dashboard/data/analysts/summary.json",
+      "timestamp": ["generatedAt"],
+      "records": "shards",
+      "role": "Einstufungs-Konsens (Finnhub, frei) fuer das Produktuniversum, Kursziele nur aus der freien FMP-Liste; Abdeckung je Titel. Shards nach core/identity.js#shardKey.",
+      "producer": "scripts/analysts/fetch-consensus.mjs",
+      "activation": { "state": "ACTIVATING", "decision": "Neue Datenart 06.11.2026 (Strang A, Auftrag Owner/Steuerung): erster Lauf von content.yml/analysten ausstehend; nach dem ersten gruenen Lauf wird dieses Feld entfernt." },
+      "workflow": "content.yml",
+      "schedule": "taeglich 05:41 UTC, rotierend ~1000 Titel",
+      "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 192 },
+      "consumers": ["/analysten/"]
+    },
+    {
       "id": "companyIntelligence",
       "label": "Company Intelligence",
       "layer": "CONTENT",

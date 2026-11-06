@@ -1,10 +1,10 @@
 {
  "schemaVersion": "journey-coverage-1.1.0",
- "generatedAt": "2026-11-05T16:10:25.000Z",
+ "generatedAt": "2026-11-06T05:09:43.000Z",
  "universe": 6577,
  "sample": 500,
  "sampling": "jeder 13. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
- "evidenceAsOf": "2026-11-04",
+ "evidenceAsOf": "2026-11-05",
  "evidenceMethodologyVersion": "vu-factor-evidence-2.0.0",
  "stations": [
   {
@@ -32,50 +32,50 @@
   {
    "id": "factorStrength",
    "label": "Wie stark ist die Aktie",
-   "answered": 492,
+   "answered": 491,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 8,
-   "share": 0.984,
+   "withheld": 9,
+   "share": 0.982,
    "reasons": {
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 8
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 9
    }
   },
   {
    "id": "change",
    "label": "Was hat sich veraendert",
-   "answered": 489,
+   "answered": 488,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 11,
-   "share": 0.978,
+   "withheld": 12,
+   "share": 0.976,
    "reasons": {
-    "NO_COMPARABLE_OBSERVATION": 11
+    "NO_COMPARABLE_OBSERVATION": 12
    }
   },
   {
    "id": "setup",
    "label": "Baut sich eine Situation auf",
-   "answered": 433,
+   "answered": 434,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 67,
-   "share": 0.866,
+   "withheld": 66,
+   "share": 0.868,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 66,
+    "INSUFFICIENT_HISTORY": 65,
     "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 1
    }
   },
   {
    "id": "setupChange",
    "label": "Was diesen Zustand aendern wuerde",
-   "answered": 433,
+   "answered": 434,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 67,
-   "share": 0.866,
+   "withheld": 66,
+   "share": 0.868,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 66,
+    "INSUFFICIENT_HISTORY": 65,
     "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 1
    }
   },
@@ -83,9 +83,9 @@
    "id": "patterns",
    "label": "Chance und Risiko in aehnlichen Lagen",
    "answered": 412,
-   "findings": 79,
+   "findings": 80,
    "findingReasons": {
-    "NO_PATTERN_HOLDS": 79
+    "NO_PATTERN_HOLDS": 80
    },
    "withheld": 88,
    "share": 0.824,
@@ -96,26 +96,26 @@
   {
    "id": "strategy",
    "label": "Welcher Anlagestil passt",
-   "answered": 432,
-   "findings": 176,
+   "answered": 431,
+   "findings": 173,
    "findingReasons": {
-    "NO_PROFILE_FITS_WELL": 176
+    "NO_PROFILE_FITS_WELL": 173
    },
-   "withheld": 68,
-   "share": 0.864,
+   "withheld": 69,
+   "share": 0.862,
    "reasons": {
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 8,
     "NO_EVIDENCE": 60,
-    "NOT_AN_EQUITY_LISTING": 1,
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 7
+    "NOT_AN_EQUITY_LISTING": 1
    }
   },
   {
    "id": "assignmentChange",
    "label": "Hat sich die Zuordnung geaendert",
    "answered": 500,
-   "findings": 496,
+   "findings": 495,
    "findingReasons": {
-    "NO_ASSIGNMENT_CHANGE": 496
+    "NO_ASSIGNMENT_CHANGE": 495
    },
    "withheld": 0,
    "share": 1,
@@ -124,13 +124,13 @@
   {
    "id": "technical",
    "label": "Kursstruktur",
-   "answered": 434,
+   "answered": 435,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 66,
-   "share": 0.868,
+   "withheld": 65,
+   "share": 0.87,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 66
+    "INSUFFICIENT_HISTORY": 65
    }
   },
   {
@@ -149,36 +149,36 @@
   "4": 3,
   "5": 4,
   "6": 55,
-  "7": 4,
-  "8": 3,
+  "7": 3,
+  "8": 4,
   "9": 2,
-  "10": 19,
-  "11": 409
+  "10": 20,
+  "11": 408
  },
  "shapes": {
   "full": 428,
   "reduced": 71,
   "minimal": 1,
   "noticeBoxesBefore": 468,
-  "noticeBoxesAfter": 194,
+  "noticeBoxesAfter": 195,
   "worstPageNoticeBoxes": 4,
   "dataPoorPages": 72,
-  "dataPoorNoticeBoxesBefore": 449,
+  "dataPoorNoticeBoxesBefore": 448,
   "dataPoorNoticeBoxesAfter": 175,
   "substantiveStationsPerTitle": {
    "1": 1,
    "3": 5,
-   "4": 23,
-   "5": 34,
+   "4": 22,
+   "5": 35,
    "7": 7,
    "8": 2,
-   "10": 19,
-   "11": 409
+   "10": 20,
+   "11": 408
   },
   "causes": {
+   "NO_FIGURES": 69,
    "SHORT_HISTORY": 88,
    "NO_WEEKLY_SERIES": 35,
-   "NO_FIGURES": 68,
    "NOT_AN_EQUITY_LISTING": 1,
    "NO_SERIES": 1,
    "RARELY_TRADED": 1

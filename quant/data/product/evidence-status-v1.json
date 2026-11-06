@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-11-05T16:09:49.731Z",
+ "generatedAt": "2026-11-06T05:08:40.564Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,22 +35,22 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5659,
-    "covered": 5309,
-    "available": 4481,
+    "universe": 5661,
+    "covered": 5319,
+    "available": 4544,
     "sufficient": {
-     "m1": 2208,
-     "m3": 2148,
-     "m6": 2076,
-     "m12": 1988
+     "m1": 2273,
+     "m3": 2221,
+     "m6": 2144,
+     "m12": 2059
     },
     "broad": {
-     "m6": 826
+     "m6": 892
     },
     "reasons": {
-     "NOT_COVERED": 350,
-     "NO_PRICE_CONDITION_TODAY": 757,
-     "NO_COMPARABLE_CASE": 71
+     "NOT_COVERED": 342,
+     "NO_PRICE_CONDITION_TODAY": 679,
+     "NO_COMPARABLE_CASE": 96
     }
    }
   },
@@ -78,10 +78,10 @@
     }
    },
    "trust": {
-    "sample": 955543,
+    "sample": 955914,
     "period": [
      "1992-01-31",
-     "2026-11-03"
+     "2026-11-04"
     ],
     "costs": {
      "roundTripBps": 20,
@@ -116,7 +116,7 @@
      "id": "SURVIVORSHIP",
      "label": "Dekotierte Titel mit Kurshistorie, Überlebenden-Kontrolle",
      "required": "Kontrolle aktiv",
-     "measured": "283 Titel mit Historie, Kontrolle nicht aktiv",
+     "measured": "287 Titel mit Historie, Kontrolle nicht aktiv",
      "state": "FAIL"
     },
     {
@@ -169,7 +169,7 @@
      "id": "PIT",
      "label": "Stände unverändert (contentHash)",
      "required": "bestanden",
-     "measured": "27 von 27 geprüft",
+     "measured": "28 von 28 geprüft",
      "state": "PASS"
     },
     {
@@ -183,14 +183,14 @@
      "id": "HISTORYDATES",
      "label": "veröffentlichte Stichtage",
      "required": "120",
-     "measured": "27",
+     "measured": "28",
      "state": "FAIL"
     },
     {
      "id": "HISTORYSPAN",
      "label": "Spanne der Historie",
      "required": "180 Tage",
-     "measured": "55 Tage",
+     "measured": "56 Tage",
      "state": "FAIL"
     },
     {
@@ -263,8 +263,8 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 89238,
-     "titles": 5080,
+     "n": 89276,
+     "titles": 5090,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -274,8 +274,8 @@
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 89082,
-     "titles": 5094,
+     "n": 89119,
+     "titles": 5105,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -287,8 +287,8 @@
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 86517,
-     "titles": 5061,
+     "n": 86553,
+     "titles": 5071,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -298,8 +298,8 @@
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 86083,
-     "titles": 5060,
+     "n": 86115,
+     "titles": 5070,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -312,8 +312,8 @@
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 56476,
-     "titles": 4844,
+     "n": 56501,
+     "titles": 4854,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -337,22 +337,22 @@
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5659,
-   "covered": 5309,
-   "available": 4481,
+   "universe": 5661,
+   "covered": 5319,
+   "available": 4544,
    "sufficient": {
-    "m1": 2208,
-    "m3": 2148,
-    "m6": 2076,
-    "m12": 1988
+    "m1": 2273,
+    "m3": 2221,
+    "m6": 2144,
+    "m12": 2059
    },
    "broad": {
-    "m6": 826
+    "m6": 892
    },
    "reasons": {
-    "NOT_COVERED": 350,
-    "NO_PRICE_CONDITION_TODAY": 757,
-    "NO_COMPARABLE_CASE": 71
+    "NOT_COVERED": 342,
+    "NO_PRICE_CONDITION_TODAY": 679,
+    "NO_COMPARABLE_CASE": 96
    }
   }
  }
