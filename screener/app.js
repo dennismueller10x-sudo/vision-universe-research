@@ -17,6 +17,11 @@
   function safeStorage() { try { var k = '__sc'; localStorage.setItem(k, '1'); localStorage.removeItem(k); return localStorage; } catch (e) { return null; } }
   var storage = safeStorage();
   var store = St.create(storage);
+  /* Z3: gespeicherte Screens im Konto (konto/saved-searches.js); ohne Anmeldung nur auf dem Gerät. */
+  var SS = window.VUSavedSearches || null, acctState = null, acctSynced = false;
+  var acct = { world: 'screener', list: function () { return store.screens().map(function (s) { return { id: s.id, name: s.name, query: s.query, acct: s.acct || null }; }); },
+    link: store.link, unlink: store.unlink, add: store.addRemote };
+  function acctMirror(sid) { if (SS) SS.saved(acct, sid).then(function (r) { if (r && r.ok === false && r.message) toast(r.message); }); }
   var adapter = A.create({});
 
   // Vision-Universe-Farbschema (dieselbe Einstellung wie Discover)
@@ -1473,6 +1478,7 @@
         store.recordRun(sc.id, { asOf: info().asOf, count: r.total, symbols: r.order.map(function (i) { return ds().symbol(i); }) });
         go({ screenId: sc.id }, { replace: true, keepScroll: true });
         toast('„' + sc.name + '“ gespeichert');
+        acctMirror(sc.id);
       } catch (e) { toast(e.message === 'NAME_REQUIRED' ? 'Bitte einen Namen eingeben' : e.message === 'TOO_MANY_SCREENS' ? 'Höchstens 50 Screens' : 'Speichern nicht möglich'); name.focus(); }
     }
     if (existing) s.foot.append(h('button', { class: 'sc-btn sc-btn-secondary', type: 'button', onclick: function () { save(true); } }, 'Als neu'));
@@ -1503,7 +1509,7 @@
         return h('button', { class: 'vu-navcard sc-ideanav', type: 'button', onclick: function () { go({ query: queryOf(it.fs), view: 'results', screenId: null }); window.scrollTo(0, 0); } }, [it.world ? worldHud(it.world, 42) : glyphHud(it.glyph, 42),
           h('span', { class: 'vu-navcard__text' }, [h('b', { text: it.title }), h('span', {}, [liveN(function () { return countOf(queryOf(it.fs)); }), ' Treffer'])]), icon('next')]);
       })));
-      main.append(h('div', { class: 'sc-gap-m' }, helpLine('Screens liegen auf diesem Gerät. Speichern im Konto folgt.')), h('div', { class: 'sc-gap-s' }, verdictEl('none', 'Im Konto speichern: bald')));
+      main.append(h('div', { class: 'sc-gap-m' }, acctBox()));
     } else {
       var firstNew = null;
       main.append(h('div', { class: 'sc-stack-s' }, list.map(function (s) {
@@ -1527,9 +1533,29 @@
         main.append(sectEl('Neu in „' + firstNew.s.name + '“'));
         main.append(stockList(firstNew.syms.slice(0, 5), function () { return 'neu im Screen'; }));
       }
-      main.append(h('div', { class: 'sc-gap-s' }, verdictEl('none', 'Im Konto speichern: bald')));
+      main.append(h('div', { class: 'sc-gap-s' }, acctBox()));
     }
     if (store.history().length) main.append(recentSection(5));
+  }
+  /** „Im Konto speichern“ (Z3): Stand im Konto, Knopf für Screens, die nur auf dem Gerät liegen. Gleicht beim ersten Öffnen ab. */
+  function acctBox() {
+    var box = h('div', { class: 'sc-stack-s sc-acct' });
+    function paint(st) {
+      box.textContent = '';
+      box.append(helpLine(SS ? SS.line(st) : 'Screens liegen auf diesem Gerät.'));
+      if (st && st.signedIn && st.pending) box.append(h('button', { class: 'vu-btn vu-btn--line vu-btn--block', type: 'button', onclick: function () {
+        this.disabled = true;
+        SS.pushPending(acct).then(function (r) { toast(r.state === 'OK' ? (r.saved === 1 ? '1 Screen im Konto gespeichert' : r.saved + ' Screens im Konto gespeichert') : r.message || 'Speichern im Konto nicht möglich'); acctSynced = false; render(); });
+      } }, [icon('saved'), 'Im Konto speichern']));
+      else if (!st || st.signedIn === false) box.append(h('a', { class: 'vu-btn vu-btn--line vu-btn--block', href: '/konto/anmelden/?next=' + encodeURIComponent(location.pathname + location.search) }, 'Anmelden und im Konto speichern'));
+    }
+    paint(acctState);
+    if (SS && !acctSynced) {
+      acctSynced = true;
+      var before = store.screens().length;
+      SS.sync(acct).then(function (st) { acctState = st; if (store.screens().length !== before) render(); else paint(st); });
+    }
+    return box;
   }
   /** Aktienzeilen (C10) mit Mini-Chart, Kurs und Tagesbewegung. */
   function stockList(syms, subFn) {
@@ -1546,8 +1572,8 @@
   }
   function confirmDelete(s) {
     var sh = openSheet({ title: 'Screen löschen?', foot: true });
-    sh.body.append(h('p', { class: 'sc-field-desc', text: '„' + s.name + '“ und sein Verlauf werden von diesem Gerät entfernt.' }));
-    sh.foot.append(h('button', { class: 'sc-btn sc-btn-secondary', type: 'button', onclick: closeTop }, 'Abbrechen'), h('button', { class: 'sc-btn sc-btn-danger', type: 'button', onclick: function () { store.remove(s.id); go({ screenId: state.screenId === s.id ? null : state.screenId }, { replace: true }); toast('Gelöscht'); } }, 'Löschen'));
+    sh.body.append(h('p', { class: 'sc-field-desc', text: '„' + s.name + '“ und sein Verlauf werden entfernt' + (s.acct ? ', auch aus dem Konto.' : ' (von diesem Gerät).') }));
+    sh.foot.append(h('button', { class: 'sc-btn sc-btn-secondary', type: 'button', onclick: closeTop }, 'Abbrechen'), h('button', { class: 'sc-btn sc-btn-danger', type: 'button', onclick: function () { var gone = store.remove(s.id); if (SS && gone && gone.acct) SS.removed(gone.acct); go({ screenId: state.screenId === s.id ? null : state.screenId }, { replace: true }); toast('Gelöscht'); } }, 'Löschen'));
   }
 
   // ------------------------------------------------------------ CHANGES

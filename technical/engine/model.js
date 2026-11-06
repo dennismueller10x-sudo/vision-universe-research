@@ -295,6 +295,24 @@
     return { field: f.id, op: "gt", value: f.kind === "pct" ? 0 : 50 };
   }
 
+  /* Konto (Z3, konto/saved-searches.js): acct = ID der Suche im Konto; die Abfrage im Konto ist { params }. */
+  function linkScreen(storage, id, acct) {
+    var list = loadScreens(storage), hit = false;
+    list.forEach(function (x) { if (x.id === id) { hit = true; if (acct) x.acct = acct; else delete x.acct; } });
+    if (!hit) return false;
+    try { storage.setItem(STORE_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+  }
+  /** Suche aus dem Konto aufs Gerät; nur bekannte Adressparameter, gleiche Filteradresse nicht doppelt. */
+  function addRemoteScreen(storage, r, now) {
+    var params = r && r.query && typeof r.query.params === "string" ? r.query.params : null;
+    if (params === null || !params.split("&").every(function (kv) { return !kv || PARAM_KEYS.indexOf(kv.split("=")[0]) >= 0; })) return false;
+    params = migrateParams(params).params;
+    var list = loadScreens(storage), t = now || Date.now();
+    if (list.length >= 50 || list.some(function (x) { return x.params === params && !x.acct; })) return false;
+    list.push({ id: "s" + t.toString(36) + "k" + list.length, name: String(r.name || "Suche").slice(0, 60), params: params, acct: r.acct, createdAt: new Date(t).toISOString() });
+    try { storage.setItem(STORE_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+  }
+
   function deleteScreen(storage, id) {
     var list = loadScreens(storage).filter(function (x) { return x.id !== id; });
     try { storage.setItem(STORE_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
@@ -533,7 +551,7 @@
     PATTERN_PILLS: PATTERN_PILLS, STATE_BADGE: STATE_BADGE, TREND_PILLS: TREND_PILLS, trendLabel: trendLabel,
     parseRoute: parseRoute, chartHref: chartHref, technicalShard: technicalShard, technicalPaths: technicalPaths,
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
-    loadScreens: loadScreens, saveScreen: saveScreen, migrateParams: migrateParams, QUERY_TEXT_SEMANTICS: QUERY_TEXT_SEMANTICS, deleteScreen: deleteScreen, updateScreen: updateScreen, exportScreens: exportScreens, importScreens: importScreens,
+    loadScreens: loadScreens, saveScreen: saveScreen, migrateParams: migrateParams, QUERY_TEXT_SEMANTICS: QUERY_TEXT_SEMANTICS, deleteScreen: deleteScreen, updateScreen: updateScreen, linkScreen: linkScreen, addRemoteScreen: addRemoteScreen, exportScreens: exportScreens, importScreens: importScreens,
     builderFromQuery: builderFromQuery, queryFromBuilder: queryFromBuilder, parseFieldInput: parseFieldInput, formatFieldInput: formatFieldInput, defaultRow: defaultRow,
     findings: findings, seriesState: seriesState, relativeStrength: relativeStrength, BENCHMARK_PATH: BENCHMARK_PATH, candleMarks: candleMarks, CHART_LAYERS: CHART_LAYERS, CHART_PANES: CHART_PANES, FIELD_CHART: FIELD_CHART, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
     search: search, dateDe: dateDe, price: price, pct: pct, num: num

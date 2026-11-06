@@ -76,7 +76,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | D09 | Discover · NVIDIA (Aktienseite) | fertig | #1350 | Kurs im Kopf in Anzeigewährung (€) statt $ + ≈ € (Querschnitt Währung offen); Jahresspanne in % statt $; d09-c Merken-Sheet wartet auf Benachrichtigungen (Backend) |
 | Q00 | Quant · So ist die Welt gebaut | fertig | #1412 | Methodik/Backtest unter „Quant“, Technische Lagen unter „Aktien“ (Leiste und App) |
 | Q01 | Quant · Übersicht | fertig | #1351 | Setup-Karten ohne „Schluss … $“ (Ressourcen-Budget der Startseite) |
-| Q02 | Quant · Screener | fertig | #1351, #1410 | Einfach nach Mockup; „Eigene Bedingung“ als Sheet (q02-c); Profi dunkel mit Bereichsreglern, Spaltenwahl und Tabelle (q02-b); Quant V1 & Marktdaten bleiben im Regel-Editor (`?daten=v1`) |
+| Q02 | Quant · Screener | fertig | #1351, #1410, D4-Z3 | Einfach nach Mockup; „Eigene Bedingung“ als Sheet (q02-c); Profi dunkel mit Bereichsreglern, Spaltenwahl und Tabelle (q02-b); „Regeln speichern“ (Z3): Gerät `vu.quant.searches.v1`, angemeldet im Konto (Welt `quant`, Abfrage `{query}`); Quant V1 & Marktdaten bleiben im Regel-Editor (`?daten=v1`) |
 | Q03 | Quant · Strategien | fertig | #1351, #1410 | Detail (q03-b) nach Mockup; Knopf „Im Quant Screener öffnen und anpassen“ (Produktgrenze: Verweise in den Quant-Screener nennen Quant); bekannte Namen nach redaktioneller Bekanntheit (Discover) |
 | Q04 | Quant · Aktien | fertig | #1351 | Aktienzeilen ohne Kurs/Mini-Chart (keine Kursabfrage je Zeile auf dieser Seite) |
 | Q05 | Quant · Methodik | fertig | #1351, #1410 | Anteil je Frage (PRO) aus factorWeights; Unterkapitel ohne eigene Vorlage (nur q05-a), bleiben im bisherigen Stil |
@@ -87,7 +87,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | T01 | Technical · Übersicht | fertig | #1363 | Sheet „Was ist ein Setup?“ ohne Beispielchart; „Heute neu im Chart“ lädt nach dem ersten Bild; Markt heute ≥ 60 % Stark, ≥ 40 % Gemischt, sonst Schwach |
 | T02 | Technical · Screener | fertig | #1363 | „Melden“ ohne Funktion bis Z4 (Owner-Freigabe Versand) |
 | T03 | Technical · Vorlagen | fertig | #1363 | Detail bleibt `#/vorlagen/<id>` (TPL.href in der Engine) |
-| T04 | Technical · Gespeicherte Suchen | fertig | #1363 | Änderung „seit dem letzten Kursstand“ (im Browser) statt „seit gestern“; Glocke bis Z4 gesperrt; Konto-Speicherung über Z3 (#1359, keine Owner-Freigabe nötig) nachziehen |
+| T04 | Technical · Gespeicherte Suchen | fertig | #1363 | Änderung „seit dem letzten Kursstand“ (im Browser) statt „seit gestern“; Glocke bis Z4 gesperrt; Konto-Speicherung über Z3 angebunden (D4-Z3, Welt `technical`, Abfrage `{params}`) |
 | T05 | Technical · Methodik | fertig | #1363 | `#/muster`, `#/methodik` zeigt dieselbe Seite; früherer Inhalt unter „Regeln“ |
 | T06 | Technical · NVIDIA im Chart | fertig | #1363 | Kopf aus dem Navigator ohne Satz zur Firmentätigkeit; 1T gesperrt (nur Tagesschlüsse); Urteil nach SMA 50/200, RSI ab 50 Stark |
 | F01 | Fundamental · Übersicht | fertig | #1355 | Fehlerzustand unter den Ranglisten-Karten, wenn das Universum nicht lädt |
@@ -120,7 +120,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | S01 | Screener · Übersicht | fertig | #1360 | Satz startet leer statt mit Beispielsatz; Ideenzahlen live aus der Engine |
 | S02 | Screener · Filter hinzufügen | fertig | #1360 | Profi: Gruppen UND/ODER bleiben; Kriterium-Sheet mit „Genau einstellen“ |
 | S03 | Screener · Treffer | fertig | #1360, #1455 | „Aktie öffnen“ nach s03-b: Kopf (C04), Perspektiven-Leiste (C05), „Aus deinem Screen · Treffer k von N“ mit Urteil je Regel, dann der Inhalt der Perspektive der meistgenutzten Filter (Zahlen → Kennzahlen mit Säulen, letzte neongrün; Chart → Chart), Vor/Zurück darunter. Abweichung: bleibt ein Sheet über der Trefferliste statt eigener Seite, weil der Screener eine eigene statische App ist; so bleiben Treffer, Filter und die Screener-Leiste beim Blättern erhalten. „Aktie vollständig öffnen“ führt zur Aktienseite. |
-| S04 | Screener · Gespeichert | fertig | #1360 | Neu/raus aus den zwei letzten Läufen; „Im Konto speichern“ = bald bis Z3 (#1359) gemergt ist |
+| S04 | Screener · Gespeichert | fertig | #1360, D4-Z3 | Neu/raus aus den zwei letzten Läufen; „Im Konto speichern“ echt (Z3, `konto/saved-searches.js`, Welt `screener`): ohne Anmeldung lokal, angemeldet Abgleich mit `/v1/searches`, Läufe und Schalter bleiben auf dem Gerät |
 | S05 | Screener · Watchlist | fertig | #1360 | `?view=saved&tab=watchlist`; „Als Screen filtern“ bald (Engine filtert keine Symbolliste) |
 | V01 | Vorsorge · Start | fertig | #1362 | Sheet „Erster Besuch“ öffnet in automatisierten Browsern nicht von selbst (`#/?lage=1` erzwingt) |
 | V02 | Vorsorge · Planer | fertig | #1362 | Monte-Carlo bleibt unter „Profi“ (als Spanne); Plan im Browser bis Konto |
@@ -217,7 +217,7 @@ Steuerung (Owner, 04.11.2026): Mockups sind verbindlich (Reihenfolge, Abstände,
 |---|---|---|---|---|
 | Z1 | Erster Start: Ziel, Erfahrung, erste Aktien; Konto-Einstellung | D (E11) + `workers/vu-account` | fertig (#1359, Seiten-Anbindung D4-Z1) | `settings.experienceLevel` beginner/advanced/pro, `settings.goal` vorsorge/aktie/ideen/strategien, `settings.onboardedAt` (PATCH `true`, Server setzt Zeit); Produktion bleibt aus |
 | Z2 | Eine Aktienadresse `/aktie/<T>` mit Weiterleitungen | D | fertig (#1353) | Herkunftswelt bestimmt Perspektive und Leiste |
-| Z3 | Gespeicherte Suchen im Konto | D (Q02, Screener, T04) + Konto | fertig (#1359) | `GET/POST/PATCH /v1/searches`, `POST /v1/searches/remove`; Welt quant/screener/technical/fundamental/discover; 50 je Konto; Anbindung der Seiten (S04, Q02, T04) nach dem Merge |
+| Z3 | Gespeicherte Suchen im Konto | D (Q02, Screener, T04) + Konto | fertig (#1359, Seiten D4-Z3) | `GET/POST/PATCH /v1/searches`, `POST /v1/searches/remove`; Welt quant/screener/technical/fundamental/discover; 50 je Konto; S04, Q02, T04 angebunden über `konto/saved-searches.js` (im Konto gelöschte Suchen werden auf dem Gerät nur entkoppelt, nicht gelöscht) |
 | Z4 | Benachrichtigungen | Konto + Erzeuger | „bald“ | Versandweg braucht Owner-Freigabe |
 | Z5 | Screener-Kriterien aus 13F und Supertrader | A + B, Oberfläche D | Supertrader-Teil in #1391; 13F „bald“ | |
 | Z6 | Insider-Käufe als Datenquelle | A | „bald“ | |
