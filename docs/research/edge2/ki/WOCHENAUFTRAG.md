@@ -6,6 +6,8 @@ Forschung, nicht zertifiziert, nicht öffentlich. Läuft als geplanter Auftrag (
 - **Depot B** (nur vorwärts, ohne Backtest): dasselbe Paket plus Ticker, Analysten-Konsens und Schlagzeilen, Prompt [PROMPT_B_v1.md](PROMPT_B_v1.md). Ledger `ledger-B.jsonl`. Entscheidung der Steuerung vom 06.11.2026: B läuft getrennt protokolliert neben A, damit sich nach 3–12 Monaten zeigt, ob die Zusatzdaten etwas bringen.
 - Prompts ändern sich nur mit neuer Datei `PROMPT_v<n>.md` bzw. `PROMPT_B_v<n>.md`, mit Begründung und neuer Ergänzung.
 - Start: erste Entscheidung am 06.11.2026 (Daten bis 05.11.), danach eine Entscheidung je Kalendermonat in der ersten Dienstagssitzung des Monats. Jede Woche eine Kursmarke.
+- News-Abdeckung für B ist dünn (Feed mit wenigen Einträgen; bei der ersten Entscheidung 0 von 50 Kandidaten mit Schlagzeile, 27 mit Analysten). Ab der zweiten Entscheidung steht die Abdeckung je Eintrag im Ledger (`coverage`).
+- Ausführung: dauerhafte Sitzung „KI-Depot Wochenlauf“ (session_01DVwZC6yrLFdoNht7hPxsEe), geweckt durch den geplanten Auftrag dienstags 07:17 UTC; sie wird nicht archiviert.
 - Abo-Grenze: je Lauf höchstens zwei Entscheidungen (A und B) und je eine Wiederholung bei ungültiger Antwort.
 
 Zeitplan: dienstags 07:17 UTC (vor der US-Eröffnung). Eingepreist wird zum Schluss des nächsten Handelstags nach dem Entscheidungsdatum.

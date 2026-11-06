@@ -111,6 +111,8 @@ function record(a) {
   const row = append({ type: 'DECISION', decisionDate: keys.decisionDate, prompt: promptInfo(dep), packetId: pk.packetId, packetSha256: sha(JSON.stringify(pk)), universe: keys.universe,
     valid: !chk.problem, problem: chk.problem, attempt: Number(a.attempt || 1), count: picks.length, countReason: answer && !chk.problem ? String(answer.countReason || '').slice(0, 300) : null, picks,
     answerSha256: sha(raw), packet: pk,
+    // Steuerung 06.11.: dünne News-Abdeckung für Depot B im Ledger vermerken.
+    coverage: dep === 'B' ? { candidates: pk.candidates.length, withAnalysts: pk.candidates.filter(c => c.context && c.context.analysts).length, withNews: pk.candidates.filter(c => c.context && c.context.news && c.context.news.length).length } : null,
     pricing: 'Einstieg zum Schlusskurs des nächsten Handelstags nach decisionDate (quant/data/market/discover-series über published-close.js), gehalten bis zum Einstieg der nächsten Entscheidung' }, D.ledger, D.id);
   console.log(JSON.stringify({ depot: dep, seq: row.seq, valid: row.valid, problem: chk.problem, count: picks.length, tickers: picks.map(p => p.ticker) }));
 }
