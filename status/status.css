@@ -37,3 +37,18 @@ h2{font-size:20px;margin:32px 0 12px}
   .st-table td[data-label]::before{content:attr(data-label) ": ";color:var(--st-muted);font-size:12px}
   .st-table td[data-empty]{display:none}
 }
+/* Redesign 2027: neutrale Flächen, Schwarz/Weiß und Neongrün. */
+.st-dq{--dq-bg:#fff;--dq-fg:#111;--dq-muted:#777;--dq-line:#e8e8e8;color:var(--dq-fg)}
+.st-dq-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.st-dq-card{background:var(--dq-bg);border:1px solid var(--dq-line);border-radius:20px;padding:20px;min-width:0}
+.st-dq-card h3{font-size:15px;line-height:1.4;margin:0;min-height:42px;font-weight:600}
+.st-dq-count{font-size:40px;font-weight:750;letter-spacing:-.04em;line-height:1.1;margin:20px 0 12px;font-variant-numeric:tabular-nums}
+.st-dq-trend{display:inline-block;background:#c8f531;color:#111;border-radius:999px;padding:4px 10px;font-size:12px;margin:0 0 12px}
+.st-dq-card small{display:block;color:var(--dq-muted);font-size:12px}
+.st-dq-examples{padding:0;list-style:none;font-size:12px;overflow-wrap:anywhere;margin:12px 0 0}
+.st-dq-examples li{border-top:1px solid var(--dq-line);padding:8px 0}
+.st-dq-examples a{color:inherit;font-weight:700;text-underline-offset:3px}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .st-dq{--dq-bg:#151515;--dq-fg:#fff;--dq-muted:#aaa;--dq-line:#333}}
+:root[data-theme="dark"] .st-dq{--dq-bg:#151515;--dq-fg:#fff;--dq-muted:#aaa;--dq-line:#333}
+@media(max-width:900px){.st-dq-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.st-dq-grid{grid-template-columns:1fr}.st-dq-card h3{min-height:0}}
