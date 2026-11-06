@@ -55,3 +55,5 @@
 }
 .vu-shead .vu-shead-price .vu-shead-change small,.vu-shead-price .vu-shead-change small{color:inherit}
 .vu-snav .vu-snav-chip>svg.vu-snav-glyph{width:15px!important;height:15px!important;max-width:none;flex:none}
+/* Pilot 06.11.2026 (nur NVDA): Minus rot statt schwarz; weiße Schrift auf #c4281c ≥ 5:1 in hell und dunkel */
+.vu-shead--tone .vu-shead-price[data-direction=down] .vu-shead-change{background:#c4281c;color:#fff}

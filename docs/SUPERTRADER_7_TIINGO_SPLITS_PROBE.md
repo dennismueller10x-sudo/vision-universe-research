@@ -112,3 +112,40 @@ Der Eigentümer hat den Endpunkt bis zu einer Antwort von Tiingo gesperrt: keine
 Reason-Gruppen: Dokumentweg 21, erklärter Split in der Nähe 19, echte Bewegung 16, Widerspruch Aktienzahl/Kurs 14, keine CIK 11, ADR 2 – identisch mit dem Stand nach Regelsatz 1.4.3. Ein späterer Abruf bräuchte also höchstens 3 + 72 = 75 Anfragen.
 
 **Review (unabhängig, nur lesend, 25.10.2026):** kein Pfad zu `api.tiingo.com`, PROBE_SPEC-Hash unverändert, Workflow-Regeln eingehalten. Nachgezogen: eine dritte Sperre in `createTiingoClient` (ohne injiziertes `fetch` kein Netzclient, solange `FROZEN`), ein Plan-Test mit werfendem globalem `fetch` und ein CLI-Test für `--plan` mit gesetztem Schlüssel. **Vor einer Entsperrung zu klären:** Zwei Listings mit demselben Symbol (Ticker-Wiederverwendung) fallen zu einer Anfrage zusammen, und Schreibweisen wie `BRK.B` werden nicht auf die Tiingo-Form (`brk-b`) gebracht. Für den Plan ist das unkritisch (er zählt höchstens zu wenig Anfragen; 72 liegen weit unter 90).
+
+## Lauf nach der Freischaltung (06.11.2026, Strang H)
+
+Tiingo hat die Corporate-Actions-Endpunkte (Splits, Dividenden; Beta) für das bestehende Abo freigeschaltet. Lizenz: Rohdaten zu Kapitalmaßnahmen werden nie an Nutzer gezeigt; intern geprüft werden nur abgeleitete Zählungen.
+
+- Entsperrt: `PROBE_GATE.state = 'UNLOCKED'` (Owner 06.11.2026), Workflow-Sperrschritt entfernt. `PROBE_SPEC` und sein Hash `76b70088…` sind unverändert.
+- Nachgezogen aus dem Review vom 25.10.: Ticker in Tiingo-Form (`BRK.B` → `brk-b`); vor Stufe A bricht der Lauf ab, wenn die Snapshot-Ablage fehlt (keine Anfrage ohne Stufe B).
+- **Abnahme E1 vor dem Lauf festgeschrieben** (`E1_ACCEPTANCE`, SHA-256 `df6d0002…`, Test SF7-TIINGO-E1). Lesart (Claude nach der dokumentierten Empfehlung): Die EDGAR-Labels der 83 Sitzungen (Regelsatz 1.4.3) enthalten **0 belegte Splits**. Ein „Event-Treffer gegen EDGAR-Splits“ ist damit nicht messbar. Treffer, exakte Ratio und Falsch-Positive werden deshalb auf allen 83 Sitzungen gemessen; jede ist per Konstruktion ein Kurssprung am Standardfaktor. Die Abdeckung wird für die Sitzungen 2008–2017 gemessen. Ein leerer Nenner gilt als nicht erfüllt.
+
+**Lauf [42169294842](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/42169294842)** (Snapshot `sts1-134d4d62…`, Datensatz EXACT, 3 + 72 Anfragen, 0 EDGAR-Anfragen):
+
+| Stufe A | Ergebnis |
+|---|---|
+| A1 `aapl` | HTTP 200, 4:1 am 2020-08-31 gefunden |
+| A2 `ge` | HTTP 200, 3 Datensätze; der erwartete 1:8 liegt nicht innerhalb ±3 Tage um den 2021-08-02 (Erwartungsdatum der Probe zu eng gewählt; kein Zugangsproblem) |
+| A3 Batch | HTTP 200, `aapl` 4:1 gefunden |
+
+| Stufe B (83 Sitzungen) | Anzahl |
+|---|---:|
+| Ticker bekannt (HTTP 200) | 72 von 72 |
+| Split im Fenster ±2 Sitzungen | 2 |
+| Split nur außerhalb des Fensters | 33 |
+| keine Split-Datensätze | 48 |
+| Fenster-Treffer, deren Verhältnis zu Eröffnung oder Schluss passt | 0 |
+| Fenster-Treffer, die der EOD-`splitFactor` schon trägt (gleiche Quelle) | 2 |
+
+Beide Fenster-Treffer liegen in der Gruppe „erklärter Split in der Nähe“: Tiingo kennt dort den schon im EOD-Feld erklärten Split, nicht den ungeklärten Sprung.
+
+| E1-Kriterium | Wert | Schwelle | Urteil |
+|---|---:|---:|---|
+| Event-Treffer | 2 von 83 (2,4 %) | ≥ 90 % | nicht erfüllt |
+| exakte Ratio | 0 von 2 | ≥ 95 % | nicht erfüllt |
+| Falsch-Positive | 2 | 0 | nicht erfüllt |
+| Abdeckung 2008–2017 | 14 von 14 Sitzungen | ≥ 85 % | erfüllt (nur 2016–2017 im Snapshot) |
+| Treffer gegen EDGAR-belegte Splits | – | – | nicht messbar (0 EDGAR-Positive) |
+
+**Schluss:** E1 nicht bestanden. Tiingo wird **keine** Prüfquelle für die DQ-K5-Quarantäne. Quarantäne, Overlay, CC-5 und Status bleiben unverändert; die Preiswahrheit bleibt `return-series.js#splitFactors` (ADR-002). Als Befund (keine Regeländerung): Für 81 der 83 Sprünge führt Tiingo im Fenster keinen Split. Das spricht eher für echte Kursbewegungen oder Datenfehler als für unerklärte Splits, ist aber kein Beleg, weil der Endpunkt keine unabhängige Quelle neben dem EOD-Feld ist. Die Einzelbefunde liegen versiegelt auf `claude/supertrader-validation-results` (Stempel `20261106T055227Z`).

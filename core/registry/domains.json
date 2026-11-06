@@ -214,6 +214,22 @@
       "consumers": ["Discover", "Supertrader", "Screener"]
     },
     {
+      "id": "modelDepots",
+      "label": "Quant-Musterdepots",
+      "layer": "PRODUCT",
+      "group": "Quant",
+      "critical": false,
+      "artifact": "/quant/data/product/model-depots-v1.json",
+      "timestamp": ["asOf"],
+      "records": "depots",
+      "role": "Fünf Quant-Profile als Rechenmodell vorwärts: Bestand mit Aufnahmedatum und -kurs, Protokoll rein/raus ab Live-Start. Kein echtes Geld, keine Empfehlung.",
+      "producer": "scripts/quant/portfolio/model-depots.cjs",
+      "workflow": "quant-model-depots.yml",
+      "schedule": "samstags 07:23 UTC; Umschichtung im ersten Lauf eines Monats",
+      "freshness": { "kind": "hours", "warnAfter": 240, "staleAfter": 504 },
+      "consumers": ["Quant (/quant/musterdepots/)"]
+    },
+    {
       "id": "technical",
       "label": "Technical Analysis",
       "layer": "INTELLIGENCE",
@@ -413,7 +429,7 @@
       "producer": "scripts/analysts/fetch-consensus.mjs",
       "activation": { "state": "ACTIVATING", "decision": "Neue Datenart 06.11.2026 (Strang A, Auftrag Owner/Steuerung): erster Lauf von content.yml/analysten ausstehend; nach dem ersten gruenen Lauf wird dieses Feld entfernt." },
       "workflow": "content.yml",
-      "schedule": "taeglich 05:41 UTC, rotierend ~1000 Titel",
+      "schedule": "05:41, 13:41, 21:41 UTC, je ~2200 Titel rotierend (ganzes Universum taeglich, Finnhub Free 55/min)",
       "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 192 },
       "consumers": ["/analysten/"]
     },
