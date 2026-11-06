@@ -10,3 +10,5 @@ Unveränderliche Quell-Snapshots behalten ihre Originalpfade im Text. Der Prüfe
 **Quant:** [QUANT_FINAL_HANDOVER.md](quant/QUANT_FINAL_HANDOVER.md). Produktstand, Backtests, Portfolio-Standard und offene Entscheidungen.
 
 **Supertrader:** [SUPERTRADER_9_HANDOVER.md](SUPERTRADER_9_HANDOVER.md). Methoden, Tagesbetrieb und Nachweise; ältere Sitzungsstände sind im Archiv.
+
+**Technical:** [TECHNICAL_WORLD_PROGRESS.md](technical/TECHNICAL_WORLD_PROGRESS.md). Fortschritt und offene Aufgaben; der gesetzte Completion-Plan bleibt ein verlinkter Fachplan.

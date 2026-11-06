@@ -1421,7 +1421,7 @@ Lizenzfrage.** Details: `docs/TIINGO_PHASE4A_REPORT.md`, `docs/TIINGO_INTEGRATIO
 **Status Technical Intelligence V1 (Kern-Engines): IMPLEMENTED.**
 **Status Elliott Wave: IMPLEMENTED — BETA** (Code selbst trägt `elliott-1.0.0-beta`,
 `role: "BETA"`). Gemerged PR #49 (8. September 2026, `252dec5`). Release-Audit-Urteil:
-**„SAFE TO MERGE AS BETA"** (`docs/VU_TECHNICAL_RELEASE_AUDIT.md`).
+**„SAFE TO MERGE AS BETA"** (`docs/archiv/2026/VU_TECHNICAL_RELEASE_AUDIT.md`).
 
 Reale, wenn auch begrenzte Datenbasis: 13 Symbole aus dem bestehenden, bereits
 splitbereinigten Dashboard-Kursbestand — keine zweite Vendor-Anbindung, ein generischer
@@ -1539,7 +1539,7 @@ Dieser Fund-und-Fix-Zyklus steht offen im Release-Audit, nicht verschwiegen.
 - AI-Werkzeuge sind registriert und getestet, aber **noch nicht an die laufende
   `/quant/ai/`-Seite angebunden**.
 
-Details: `docs/VU_TECHNICAL_PHASE1_REPORT.md`, `docs/VU_TECHNICAL_RELEASE_AUDIT.md`,
+Details: `docs/archiv/2026/VU_TECHNICAL_PHASE1_REPORT.md`, `docs/archiv/2026/VU_TECHNICAL_RELEASE_AUDIT.md`,
 `docs/VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md`, `docs/VU_TECHNICAL_OPPORTUNITY_SCORE.md`,
 `docs/VU_TECHNICAL_SNAPSHOT_SPEC.md`, `docs/VU_TECHNICAL_DATA_SEMANTICS.md`,
 `docs/VU_TECHNICAL_VALIDATION.md`.
