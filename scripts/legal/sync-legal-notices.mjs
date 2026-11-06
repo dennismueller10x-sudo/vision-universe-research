@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const LINK_LABEL = { risikohinweise: "Risikohinweise", methodik: "Methodik, Quellen und Interessen", datenschutz: "Datenschutz", impressum: "Impressum", bedingungen: "Nutzungsbedingungen", kuendigen: "Verträge hier kündigen", widerrufen: "Vertrag widerrufen" };
+const LINK_LABEL = { risikohinweise: "Risikohinweise", methodik: "Methodik, Quellen und Interessen", datenschutz: "Datenschutz", impressum: "Impressum", kontakt: "Kontakt", bedingungen: "Nutzungsbedingungen", kuendigen: "Verträge hier kündigen", widerrufen: "Vertrag widerrufen" };
 const BEGIN = "/* VU-LEGAL:BEGIN – erzeugt aus assets/legal-notices.json (scripts/legal/sync-legal-notices.mjs), nicht von Hand ändern */";
 const END = "/* VU-LEGAL:END */";
 
