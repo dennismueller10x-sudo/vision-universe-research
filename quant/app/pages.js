@@ -353,7 +353,8 @@
       U().navcard({ glyph: "search", title: "Eine Aktie verstehen", sub: "Was sagt Quant zu NVIDIA, Apple …?", href: X.routes.stocks() }) +
       U().navcard({ glyph: "filter", title: "Aktien nach Fragen finden", sub: "Screener: „Verdient gut“, „Ist günstig“ …", href: X.routes.screener() }) +
       U().navcard({ glyph: "target", title: "Nach Anlagestil suchen", sub: "Strategien, täglich geprüft", href: X.routes.strategies() }) +
-      U().navcard({ glyph: "line", title: "Technische Lagen", sub: "Charts mit klarer Lage, nach Regel", href: X.routes.chartlagen() }) + "</div>" +
+      U().navcard({ glyph: "line", title: "Technische Lagen", sub: "Charts mit klarer Lage, nach Regel", href: X.routes.chartlagen() }) +
+      U().navcard({ glyph: "grid", title: "Musterdepots", sub: "Fünf Profile nach Regel, Rechenmodell", href: "/quant/musterdepots/" }) + "</div>" +
       '<a class="vu-box vu-box--lime qv3-trust" href="' + U().esc(X.routes.method()) + '"><span class="qv3-trust-i">' + U().glyph("book", 18) + '</span><span><b>Warum kann ich dem vertrauen?</b><span class="vu-xs">Methodik, Daten und Grenzen offen erklärt</span></span>' + U().glyph("next", 18) + "</a>" +
       '<div class="vu-box vu-box--line qv3-note"><b class="vu-sm">Keine Anlageempfehlung</b><p class="vu-xs vu-mu">Quant ordnet ein und vergleicht. Keine Prognose, kein Kursziel. Einstieg, Ungültig-Marke und Ziele sind Szenarien der technischen Analyse. Daten: SEC EDGAR, Tiingo.</p></div>'));
 
