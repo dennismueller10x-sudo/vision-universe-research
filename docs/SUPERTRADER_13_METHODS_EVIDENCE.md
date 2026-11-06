@@ -343,7 +343,7 @@ Quelle der Prüfungen: `docs/SUPERTRADER_9_DAILY_OPERATIONS.md`; Code `scripts/s
 
 ### 6.2 V1-Kriterien S1–S7
 
-Unverändert aus `docs/SUPERTRADER_9_HANDOVER.md` §4 übernommen (Definitionen: `docs/archiv/2026/SUPERTRADER_8_ACTIVATION_READINESS.md`). Nur echte Lauf-IDs zählen; nichts ist vorweggenommen.
+Unverändert aus `docs/SUPERTRADER_9_HANDOVER.md` §4 übernommen (Definitionen: `docs/SUPERTRADER_8_ACTIVATION_READINESS.md`). Nur echte Lauf-IDs zählen; nichts ist vorweggenommen.
 
 |  | Stand 02.11.2026 | Letzte geprüfte Läufe | Nächster Messpunkt |
 |---|---|---|---|
