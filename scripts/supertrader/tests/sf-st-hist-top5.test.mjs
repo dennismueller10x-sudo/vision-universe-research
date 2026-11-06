@@ -160,7 +160,7 @@ test('ST-HIST-10: Diagnose der goldenen Trades folgt kkFidelitySetupAt Schritt f
   for (const x of sess) assert.equal(x.leader, x.momentum.bestPercentile !== null && x.momentum.bestPercentile >= 100 - FID.KK_FIDELITY_RULES.momentumTopPct);
   assert.doesNotMatch(JSON.stringify(g), /totalReturn|cagr|pnl|equity/);
   const w = fs.readFileSync(new URL('../../../.github/workflows/supertrader-st-hist-top5.yml', import.meta.url), 'utf8');
-  assert.match(w, /options: \[backtest, edge-export, golden-diagnose, minervini-golden\]/);
+  assert.match(w, /options: \[backtest, rest8, edge-export, golden-diagnose, minervini-golden\]/);
 });
 
 test('ST-HIST-11: Ausführungsdiagnose der goldenen Trades: Setups, Ablehnungen mit Grund, offene Positionen, keine Renditezahl', async () => {
@@ -270,4 +270,37 @@ test('ST-HIST-15: C06/C07 FID-1 genau wie vorregistriert (RS >= 70, höchstens 3
   assert.equal(T.minerviniFid1Verdict(mk(0.2, 0.15, 0.1, 99), pre, 'DEV').pass, false);
   const out = T.minerviniGoldenRun(d, { window: WIN });
   for (const m of Object.values(out.methods)) { assert.ok(m.fid1 && m.fid1.costs.REF && m.fid1.verdict && 'pass' in m.fid1.verdict || m.fid1.verdict.status === 'NOT_COMPUTED'); assert.ok(Array.isArray(m.fid1.costs.REF.golden)); }
+});
+
+test('ST-HIST-16: Modus rest8 (Strang H) rechnet die übrigen Tagesmethoden C04–C07, C11, C13 auf demselben Weg wie die Top 5', () => {
+  assert.deepEqual([...T.REST8_DAILY], ['WEINSTEIN_INVESTOR', 'WEINSTEIN_TRADER', 'MINERVINI_SEPA', 'MINERVINI_POWER_PLAY', 'POCKET_PIVOT', 'HOLY_GRAIL_W_RAS97']);
+  assert.deepEqual(T.methodsForMode('rest8'), T.REST8_DAILY); assert.deepEqual(T.methodsForMode('backtest'), T.TOP5);
+  for (const k of T.REST8_DAILY) assert.ok(!T.TOP5.includes(k));
+  const a = T.runTop5(ds(), { window: WIN, methods: T.REST8_DAILY });
+  assert.deepEqual(Object.keys(a), [...T.REST8_DAILY]);
+  assert.deepEqual(Object.values(a).map((m) => m.candidateId), ['C04', 'C05', 'C06', 'C07', 'C11', 'C13']);
+  for (const k of T.REST8_DAILY) {
+    assert.deepEqual(Object.keys(a[k].costs), SF6_VALIDATION_PROTOCOL.costLevels.map((c) => c.id));
+    assert.deepEqual(Object.keys(a[k].delistingProceeds), ['DELIST_100', 'DELIST_70', 'DELIST_DISTRESS_0']);
+    assert.ok(a[k].audit && typeof a[k].audit.pass === 'boolean', `${k} Ausführungsaudit`);
+  }
+  const pub = JSON.stringify(T.publicPart({ A: a, quarantine: { A: {} }, receipt: {} }));
+  for (const f of ['totalReturn', 'cagr', 'maxDrawdown', 'hitRate', 'spyDistance']) assert.ok(!pub.includes(`"${f}"`), f);
+  const w = fs.readFileSync(new URL('../../../.github/workflows/supertrader-st-hist-top5.yml', import.meta.url), 'utf8');
+  assert.match(w, /options: \[backtest, rest8,/);
+});
+
+test('ST-HIST-17: C09/C10 (Strang H) nur aus dem Cache, vier Kostenstufen für C09, C10 ohne SPY-Vergleich; öffentlich nur Zählungen', async () => {
+  const K = await import('../source-faithful/research/st-hist-kk.mjs');
+  const zlib = await import('node:zlib');
+  const gets = [];
+  const cache = await K.loadKkCache(async (k) => { gets.push(k); return k.includes('minutes-0') ? zlib.gzipSync(Buffer.from(JSON.stringify({ 'AAA|2017-01-03': null }))) : null; });
+  assert.equal(gets.length, 32, '16 Minuten- und 16 Basis-Teile, nur gelesen'); assert.ok('AAA|2017-01-03' in cache.minutes);
+  const d = ds();
+  const r = K.runKkStHist(d, { cache: { minutes: {}, baseline: {} }, costLevels: SF6_VALIDATION_PROTOCOL.costLevels, window: WIN });
+  assert.deepEqual(Object.keys(r.pub.C09.costs), SF6_VALIDATION_PROTOCOL.costLevels.map((c) => c.id));
+  assert.equal(r.pub.requests, 0); assert.equal(r.pub.C10.spyComparison, 'NOT_COMPARABLE_SHORT_TRADE_STUDY_WITHOUT_BORROW_DATA');
+  assert.ok(r.sealed.C09.costs.REF.metrics.diagnostic);
+  const pub = JSON.stringify(r.pub);
+  for (const f of ['totalReturn', 'cagr', 'maxDrawdown', 'hitRate', 'spyDistance']) assert.ok(!pub.includes(`"${f}"`), f);
 });
