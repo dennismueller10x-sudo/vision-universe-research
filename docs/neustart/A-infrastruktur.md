@@ -63,11 +63,27 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - #1268, #1270, #1273, #1331 und #1340 hatten ihre Stränge vorher selbst erledigt;
   - offen sind danach nur noch die behaltenen PRs und laufende Strang-PRs.
 
-## Stand `main` 05.11. ~20:30 UTC
-- Pages grün seit 16:44 UTC (#1443, Variante B: belegte Nicht-Aktien mit benannter Absage). Gemergt seitdem: #1438, #1403, #1400, #1402, #1457, #1465, #1471, #1467–#1469, #1478.
-- Vorsorge reproduzierbar; Datenhygiene sauber; Nachtlauf 22:30 UTC frei.
-- Rot bekannt: Quant 18 (u. a. Watchlist preserves, DEBT7, L1–L3, backtest-refresh, canonical/survivorship bei C), Technical L1–L3 (nach dem Nachtlauf prüfen), Social CI (SPY/ref_AAAC), sec-fundamentals-ci.
-- **Eignungs-Bereinigung (06.11.):** Probelauf der vollständigen Kette nach dem Nachtlauf (build-us-eligibility → apply-name-layer-class DEBT → apply-exchange-directory mit ETF, #1484) gegen `main` a7f2a9fcc07: 275 Wechsel, 269 belegte ETFs verlassen das Produkt, 0 neu; Produktuniversum 6.577 → 6.308; Gate mit Freigabeliste [`eligibility-cleanup-2026-11-06.json`](../data/security-master/ELIGIBILITY_CLEANUP_2026-11-06.md) COMMIT (275/275 angewandt). Je Produkt: Quant −269, Discover −267, Technical −30, Fundamental −11, Hedgefonds −7, Elliott −6, Supertrader 0. Folgekette lokal: Company Master 683/0 Befunde, Discover-Neubau ohne Abweichung, Hygiene nur noch 30 Technical-Signale (zieht die Materialisierung nach); Pages-Probe (build-release + production-smoke) CLEAN 164/164. Die Liste vom 05.11. ersetzt die neue (gleicher Vorstand, gleiche 275). Übernahme mit `security-master-eligibility.yml` commit=true, approved_catchup=true, freigabe=eligibility-cleanup-2026-11-06.json.
+## Stand `main` 06.11. ~10:00 UTC
+- **Grün auf `main`** (lokal, nach Materialisierung aef8d68): Quant 3.942/0, Core 380/0, Technical 114/0, Datenhygiene sauber, Vorsorge reproduzierbar.
+- **Eignungs-Bereinigung übernommen** (#1508 Freigabeliste, Lauf 42178798946): 269 belegte ETFs aus dem Produkt, Produktuniversum 6.577 → 6.308. Im Probelauf: Quant −269, Discover −267, Technical −30, Fundamental −11, Hedgefonds −7, Elliott −6, Supertrader 0; Pages-Probe CLEAN 164/164.
+- **Folgekette, Befunde dieses Laufs:**
+  - Materialisierung brach in der Reise-Messung mit Speicherüberlauf ab (480/500, 4 GB) → #1514 (6 GB), zweiter Lauf grün.
+  - Der Vorsorge-Ingest lief gleichzeitig mit der Materialisierung und scheiterte an deren Rest in den Technical-Signalen → #1512: nur dieser Rest gilt als Warnung.
+  - Die SF8-Research-Ansichten nannten 6 ausgeschiedene ETFs (DQ-SF8-8) → Kandidatenlauf manuell neu, mit Fingerabdruck veröffentlicht.
+  - **Lehre:** Weitere Verbraucher außerhalb der Hygieneprüfung sind SF8-Kandidaten und die Reise-Messung (Speicher). Die SF8-Neuveröffentlichung ist noch nicht automatisch Teil der Folgekette, weil der Autoweg eine neuere Sitzung verlangt.
+- **Technical/Quant-QA:**
+  - #1509: Rot/Grün-Regel mit Ausnahme für die Tagesveränderung, die Pfeil und Zahl tragen muss; Signalkarten auf 360/390 px; Supertrader-Link nach `build.json`.
+  - #1510: „Radar verfügbar“ kommt aus dem Radar-Zustand, nicht aus der Karte; NVDA steht im Radar, hat aber kein Ereignis.
+- **Analysten** (#1492, #1495, #1496, #1511, aktiv):
+  - Drei Läufe täglich zu je ~2.200 Titeln.
+  - Erster voller Lauf: 0×429 bei 55/min; 3.200 Titel abgefragt, 2.349 mit Einstufung, Median 12 Analysten.
+  - Kursziele noch 0, weil das FMP-Tageskontingent erschöpft ist.
+  - Seite `/analysten/`, Fundamental `?ansicht=analysten`.
+- **Offen – Neuabnahme `test_canonical_market.py`:**
+  - #1516: Bezug aus dem Commit der Messung (26fd422, 6.686).
+  - Im Lauf 42196818498 sind noch 18 Titel unerklärt. Sie hatten am Stichtag 10.10. laut heutiger Reihe 300–302 Bars, galten damals aber als zu kurz (Schwelle 300). Alle Reihen beginnen am 28.–31.07.2025; vermutlich lag der letzte Datentag der Messung vor dem 10.10.
+  - Die Bilanz geht noch nicht auf: Technik 5.644 − 7 = 5.637 gegenüber gemessenen 5.655, Chart 6.683 − 396 = 6.287 gegenüber gemessenen 6.305.
+  - Entscheidung für C-Quant: Grenzfälle über den letzten Datentag der Messung zählen statt über den Stichtag, dann neu abnehmen. Die Klassifikation wird nicht nebenbei geändert.
 
 ## Übernommen von Strang B (05.11.2026, [B-supertrader.md](B-supertrader.md))
 - **Bis 15.12.2026 (Frist 04.01.2027):** Papierhandel F1–F3 (Forward-Namensraum befüllen) und ein Core-PR, der `supertrader-paper-2027-log` in `core/registry/domains.json` mit JSONL-Leser auf `ACTIVATING` stellt. Ohne beides zeichnet `supertrader-paper-2027.yml` ab 04.01. auf, ohne dass Core die Daten kennt.
