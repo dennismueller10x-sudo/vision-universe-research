@@ -222,3 +222,15 @@ Steuerung (Owner, 04.11.2026): Mockups sind verbindlich (Reihenfolge, Abstände,
 | Z5 | Screener-Kriterien aus 13F und Supertrader | A + B, Oberfläche D | Supertrader-Teil in #1391; 13F „bald“ | |
 | Z6 | Insider-Käufe als Datenquelle | A | „bald“ | |
 | Z7 | AI Atlas visuell (E10-b) | D (E10) | fertig (#1366) | vorhandener Worker `workers/vu-ask` unverändert (Modell, Budget, Grenzen, Beta-Passwort); neu nur die Darstellung mit VU-Bausteinen |
+
+**Z4 offen (Stand 06.11.2026, D4):** Zwei Push-Arten bleiben gesperrt („noch keine Daten“), die Schalter sind sichtbar.
+- **Neue Treffer gespeicherter Suchen (`SEARCH_HITS`)**: Dafür braucht es
+  - eine tägliche Auswertung je Nutzer (Suchen aus `/v1/searches` gegen die veröffentlichten Treffer, Welten screener, technical und quant),
+  - eine Tabelle mit dem letzten Trefferstand je Suche (RLS, nur `service_role` schreibt),
+  - die Bündelung in `push_claim_daily`.
+
+  Hürde: Die Abfragen laufen in drei Browser-Engines, und im Worker sind Rechenzeit und Datenmenge begrenzt. Vorschlag: Ein Erzeuger im Datenlauf schreibt je Such-Fingerprint die Trefferliste, der Worker vergleicht nur noch Listen.
+- **Veränderungen bei ETFs (`VORSORGE_CHANGE`)**: Die Steuerung hat entschieden, dass ETFs beobachtbar werden. Es fehlen:
+  - ein Ereignis im Erzeuger `build-watchlist-events` aus `vorsorge/data/changes.json`: nur, was gegenüber dem letzten Lauf neu ist; `instrumentId` über `core/identity.js`; Text neutral wie in changes.json. Die Einträge dort tragen Prospektdaten statt eines Tagesdatums.
+  - „Beobachten“ für ETFs in Vorsorge (V08 und Plan),
+  - `VORSORGE_CHANGE` in `push.mjs`, in den Konto-Schlüsseln und in der Migration.
