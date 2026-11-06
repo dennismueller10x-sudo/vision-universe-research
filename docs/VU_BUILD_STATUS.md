@@ -189,7 +189,7 @@ Klassifikation statt der Produktentscheidung und hätte 457 Optionsscheine
 in den Aktienscreener gelassen.
 
 Berichte: `docs/VU_FUNDAMENTAL_DATA_EXPANSION.md`,
-`docs/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md`. Maschinenlesbar unter
+`docs/archiv/2026/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md`. Maschinenlesbar unter
 `quant/data/fundamentals/` und `quant/data/universe/`.
 
 **279 Python-Tests, 683 Master-Prüfungen, 118 Discover-Tests** — grün.
