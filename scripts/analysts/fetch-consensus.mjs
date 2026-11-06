@@ -63,6 +63,12 @@ export function wantsTarget(entry, today) {
   return (Date.parse(today) - Date.parse(entry.targetCheckedAt)) / 86400000 >= FMP_RETRY_DAYS;
 }
 
+/** Kursziel-Kandidaten: faellig (wantsTarget), meiste Analysten zuerst, bei Gleichstand Ticker. */
+export function targetCandidates(entries, today, limit) {
+  return Object.values(entries).filter((e) => wantsTarget(e, today))
+    .sort((a, b) => (b.analysts || 0) - (a.analysts || 0) || (a.ticker < b.ticker ? -1 : a.ticker > b.ticker ? 1 : 0)).slice(0, limit);
+}
+
 export function summarize(entries, universeSize, today) {
   const list = Object.values(entries);
   const withRatings = list.filter((e) => e.ratingsState === "AVAILABLE");
@@ -133,16 +139,23 @@ async function main(argv) {
     const prev = entries[s.securityId] || {};
     const e = Object.assign({ securityId: s.securityId, ticker: s.ticker, source: "Finnhub", fetchedAt: today },
       fromRecommendation(r.body), { target: prev.target || null, targetState: prev.targetState || "NOT_CHECKED", targetCheckedAt: prev.targetCheckedAt || null });
-    if (FMP && fmpCalls < fmpMax && wantsTarget(e, today)) {
-      fmpCalls++;
-      const t = await get(`https://financialmodelingprep.com/stable/price-target-consensus?symbol=${encodeURIComponent(s.ticker)}&apikey=${encodeURIComponent(FMP)}`, {});
-      if (t.status === 200) { const tg = fromTarget(t.body); e.target = tg; e.targetState = tg ? "AVAILABLE" : "NO_TARGET"; e.targetCheckedAt = today; }
-      else if (t.status === 402 || t.status === 403) { e.target = null; e.targetState = "NO_FREE_SOURCE"; e.targetCheckedAt = today; }
-    }
     entries[s.securityId] = e; done++;
   }
+  /* Kursziele danach und gezielt: die freie FMP-Liste fuehrt grosse Titel, also zuerst die mit den meisten Analysten
+     (ueber alle Eintraege, nicht nur diesen Lauf). Ein 429 beendet FMP fuer diesen Lauf (Tageskontingent 250). */
+  let fmpStop = null;
+  const fmpStatus = {};
+  if (FMP) for (const e of targetCandidates(entries, today, fmpMax)) {
+    if (Date.now() > deadline) { fmpStop = "TIME"; break; }
+    fmpCalls++;
+    const t = await get(`https://financialmodelingprep.com/stable/price-target-consensus?symbol=${encodeURIComponent(e.ticker)}&apikey=${encodeURIComponent(FMP)}`, {});
+    fmpStatus[t.status] = (fmpStatus[t.status] || 0) + 1;
+    if (t.status === 429) { fmpStop = "QUOTA"; break; }
+    if (t.status === 200) { const tg = fromTarget(t.body); e.target = tg; e.targetState = tg ? "AVAILABLE" : "NO_TARGET"; e.targetCheckedAt = today; }
+    else if (t.status === 402 || t.status === 403) { e.target = null; e.targetState = "NO_FREE_SOURCE"; e.targetCheckedAt = today; }
+  }
   const summary = writeAll(dir, entries, universe, today);
-  console.log(scrub(JSON.stringify({ run: { titles: done, calls, fmpCalls, rateLimited, failed }, counts: summary.counts, oldestFetch: summary.oldestFetch }, null, 1)));
+  console.log(scrub(JSON.stringify({ run: { titles: done, calls, fmpCalls, fmpStatus, fmpStop, rateLimited, failed }, counts: summary.counts, oldestFetch: summary.oldestFetch }, null, 1)));
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {

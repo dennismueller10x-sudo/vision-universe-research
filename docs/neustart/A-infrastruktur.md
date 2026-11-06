@@ -69,6 +69,12 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
 - Rot bekannt: Quant 18 (u. a. Watchlist preserves, DEBT7, L1–L3, backtest-refresh, canonical/survivorship bei C), Technical L1–L3 (nach dem Nachtlauf prüfen), Social CI (SPY/ref_AAAC), sec-fundamentals-ci.
 - Offen aus der Eignung: 17 ETFs (BITW, HODL, IBMU, QQUP …) und 308 Vorzugsaktien stehen noch als Aktie im Produktuniversum.
 
+## Übernommen von Strang B (05.11.2026, [B-supertrader.md](B-supertrader.md))
+- **Bis 15.12.2026 (Frist 04.01.2027):** Papierhandel F1–F3 (Forward-Namensraum befüllen) und ein Core-PR, der `supertrader-paper-2027-log` in `core/registry/domains.json` mit JSONL-Leser auf `ACTIVATING` stellt. Ohne beides zeichnet `supertrader-paper-2027.yml` ab 04.01. auf, ohne dass Core die Daten kennt.
+- **Security Master vor ca. 04.01.2027 auffrischen** (SF8-Grenze 60 Tage ab Stand 05.11.): Der Mittwochslauf (`security-master-weekly.yml`, 09:41 UTC) committet nur bei Gate COMMIT. Bis 16.12. prüfen, dass mindestens ein Lauf übernommen wurde; sonst mit Freigabeliste nachholen wie am 05.11.
+- **Erste Nachtläufe beobachten (06./07.11.):** `supertrader-signals.yml`: `private-state pull` meldet erst `MIGRATED_FROM_REPOSITORY`, ab dem zweiten Lauf `PRIVATE`; Kandidatenlauf veröffentlicht Stand 05.11. ohne Pläne; DQ-SF8-4 in der Core-CI grün.
+- **Alt-PRs:** #1262, #1263 (C09-Entwürfe) und #1267 geschlossen (Forschung ruht, Verweis auf B-supertrader.md). #1141 (Inhalts-Fingerabdruck des Security Masters für die Backtest-Freshness) geschlossen; Plan bleibt in `docs/SECURITY_MASTER_CONTENT_HASH.md`, wird vor der Dezember-Auffrischung neu bewertet, weil diese alle Backtest-Snapshots als veraltet markiert. #1156 übernommen: Alarm-Job in `sec-consumer-fundamentals.yml`.
+
 ## Braucht Owner
 - Nichts Neues.
 - Hinweis: Vercel meldet auf PRs „Deployment rate limited“, ein roter Status ohne Bezug zum Code. Empfehlung: die Vercel-Integration für dieses Repo abschalten, weil Pages die Seite ausliefert.
