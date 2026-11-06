@@ -281,7 +281,7 @@ der erste Integrationstest (§10).
 | GitHub Pages: 100 GB/Monat (weiche Grenze) | gemeinsame Übersicht ≈ 22 KB je Watchlist-Aufruf × 3.000 × 2 × 30 | ≈ 4 GB/Monat |
 | Antwortgröße | `GET /v1/watchlist` mit 200 Titeln ≈ 34 KB, typisch (18 Titel) ≈ 3–4 KB | |
 
-## 7. Spätere intelligente Watchlist (vorbereitet, nichts aktiviert)
+## 7. Intelligente Watchlist: Ereignisse (im Release-Bau aktiv seit 06.11.2026)
 
 `core/watchlist-view.js#events(vorher, nachher)` vergleicht zwei veröffentlichte Übersichten, also die Ergebnisse der bestehenden
 Datenläufe. Es arbeitet deterministisch, je Instrument einmal und nicht je Nutzer, im Format `core/contracts/events.schema.json`
@@ -294,6 +294,8 @@ Datenläufe. Es arbeitet deterministisch, je Instrument einmal und nicht je Nutz
 **Neue 13F-Position (`FUND_13F`, seit 1.4.0):** Die Übersicht trägt je Titel aus den veröffentlichten Hedgefonds-Daten (`hedgefonds/data/stocks/`, 13F bei der SEC) das jüngste Quartal `fp`, die Zahl der meldenden Fonds `fc` und die Fonds mit **neuer** Position `fn` – nur die kuratierten großen Fonds der Hedgefonds-Seite (`hedgefonds.json#funds`, Namen in `sources.funds13f.funds`), nicht jeder Melder des Bulk-Satzes. Erscheint ein Fonds mit neuer Position, der in der vorigen Übersicht nicht stand, entsteht `NEW_POSITION` (je Titel ein Ereignis, Evidenz: Quartal, Fonds, Zahl der Halter). Erstbeobachtung still; keine Kauf- oder Verkaufsaussage.
 
 **Elliott-Lesart (`ELLIOTT_CHANGE`, seit 1.5.0):** Die Übersicht trägt je Titel die Hauptlesart des Chartbild-Produkts (`quant/data/technical-intelligence/v3/shards/`, `pro.elliott`; zurückgehaltene Titel ohne Lesart): Status, Muster, Richtung, abgeschlossen, laufende Welle und ihr Status (`ew`, Stand `ewd`). `READING_CHANGED`, wenn Muster oder Richtung wechseln; `WAVE_CONFIRMED`, wenn bei gleicher Lesart die laufende Welle bestätigt oder das Muster abgeschlossen ist. Elliott bleibt ein experimentelles Strukturmodell (`model: EXPERIMENTAL` in der Evidenz), keine Richtungsaussage.
+
+**Betrieb (Datenart `watchlistEvents`, `ACTIVATING`, Steuerung 06.11.2026):** `pages-release.yml` holt vor dem Bau die zuletzt ausgelieferte Übersicht und die veröffentlichten Ereignisse von der Seite (`scripts/watchlist/fetch-published.mjs`, nur lesend); `scripts/vu2/build-release.mjs` vergleicht sie mit der neuen Übersicht und schreibt `/core/data/watchlist-events-v1.json` in die Auslieferung, mit den Ereignissen der vorigen Auslieferung im 48-Stunden-Fenster (`mergeWindow`). Nie im Repository. Fehlt der Vergleichsstand, entstehen keine Ereignisse; ein Fehler hält die Auslieferung nicht an. Zustellung nur als App-Push (`workers/vu-account/src/push.mjs`): höchstens eine gebündelte Nachricht am Tag, nur mit FCM-Zugang und eingeschalteter Art im Konto.
 
 **Erzeuger:** `node scripts/account/build-watchlist-events.mjs --before=<Übersicht> --after=<Übersicht> --out=<Datei>`. Eine Übersicht ist
 das ausgelieferte Verzeichnis `watchlist-summary-v1/` (meta + rows) oder ein ganzes Dokument (`.json`/`.json.gz`). `--out` ist Pflicht;

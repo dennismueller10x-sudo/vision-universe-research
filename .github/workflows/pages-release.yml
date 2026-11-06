@@ -175,7 +175,13 @@ jobs:
           echo "required=$required" >> "$GITHUB_OUTPUT"
       - name: Install pinned release compiler
         run: npm install --prefix /tmp/vu2-release esbuild@0.25.10
+      # Watchlist-Ereignisse: die zuletzt ausgelieferte Uebersicht ist der Vergleichsstand (nur lesend, ohne Schluessel).
+      # Fehlt sie, entstehen in diesem Release keine Ereignisse; die Auslieferung haengt nicht davon ab.
+      - name: Veroeffentlichte Watchlist-Uebersicht als Vergleichsstand holen
+        run: node scripts/watchlist/fetch-published.mjs --site=https://research.visionuniverse.de --out="$RUNNER_TEMP/watchlist-prev" || echo "ohne Vergleichsstand"
       - name: Build static product delivery
+        env:
+          VU_WATCHLIST_PREVIOUS: ${{ runner.temp }}/watchlist-prev
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/site"
       # Datenzweig (Plan Neustart §3, core/registry/data-branch.json): erzeugte Daten ausserhalb von main.
       # Fehlt der Zweig, bleibt die Kopie aus main; fehlt ein registrierter Pfad ganz, bricht der Bau ab.

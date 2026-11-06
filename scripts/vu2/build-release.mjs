@@ -1,6 +1,7 @@
 // Release packaging only. Canonical sources and R2 objects are never modified.
 import {readFile,writeFile,mkdir,copyFile,lstat} from 'node:fs/promises';
-import {resolve,dirname,sep} from 'node:path';
+import {resolve,dirname,sep,join} from 'node:path';
+import {existsSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
@@ -207,6 +208,18 @@ export async function buildRelease({root,output}){
  try{
   const {writeSummary,SUMMARY_DIR}=await import('../watchlist/build-summary.mjs');
   writeSummary({root,out:resolve(output,SUMMARY_DIR)});
+  /* Watchlist-Ereignisse (Datenart watchlistEvents, ACTIVATING): Vergleich mit der zuletzt veroeffentlichten Uebersicht, die
+     pages-release.yml vorher von der Seite holt (scripts/watchlist/fetch-published.mjs -> VU_WATCHLIST_PREVIOUS). Fehlt sie,
+     entstehen keine Ereignisse (Erstbeobachtung); ein Fehler hier haelt die Auslieferung nicht an. */
+  const prev=process.env.VU_WATCHLIST_PREVIOUS;
+  if(prev&&existsSync(join(prev,'summary','meta.json'))){
+   try{
+    const {run:buildWatchlistEvents}=await import('../account/build-watchlist-events.mjs');
+    const r=buildWatchlistEvents({before:join(prev,'summary'),after:resolve(output,SUMMARY_DIR),out:resolve(output,'core/data/watchlist-events-v1.json'),
+     previousEvents:existsSync(join(prev,'events.json'))?join(prev,'events.json'):null});
+    console.log('WATCHLIST_EVENTS',JSON.stringify({total:r.total,byType:r.byType}));
+   }catch(e){console.warn('WATCHLIST_EVENTS_SKIPPED',String(e&&e.message||e).slice(0,200));}
+  }
  }catch(e){console.warn('WATCHLIST_SUMMARY_SKIPPED',String(e&&e.message||e).slice(0,200));}
  if(paths.includes('quant/data/product/universe-list-v1.json.gz')){
   const views=universeListViews(JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/universe-list-v1.json.gz')))));
