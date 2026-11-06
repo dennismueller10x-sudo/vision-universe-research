@@ -10,7 +10,7 @@ on:
       teil:
         description: 'Welcher Teil laufen soll'
         type: choice
-        options: [alle, news, ratings, hedgefonds, morning]
+        options: [alle, news, ratings, hedgefonds, morning, analysten-probe]
         default: alle
   schedule:
     - cron: '17 5,11,17 * * *'      # news
@@ -106,6 +106,35 @@ jobs:
           git commit -m "chore: update analyst ratings data"
           # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # Analysten-Konsens: Abdeckungsmessung der kostenlosen Zugaenge (Finnhub, FMP) an einer festen Stichprobe des
+  # Produktuniversums. Nur Bericht (Artefakt + Zusammenfassung), kein Commit, nur manuell.
+  analysten-probe:
+    if: github.event_name == 'workflow_dispatch' && inputs.teil == 'analysten-probe'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Abdeckung messen (Stichprobe 120 + NVDA/AAPL/MSFT)
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/analysts/probe-consensus.mjs --size 120 --seed 20261106 --per-minute 50 --out "$RUNNER_TEMP/analyst-probe.json" | tee "$RUNNER_TEMP/probe.txt"
+          { echo '### Analysten-Abdeckung (Stichprobe)'; echo '```'; cat "$RUNNER_TEMP/probe.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: analyst-probe-${{ github.run_id }}
+          path: ${{ runner.temp }}/analyst-probe.json
+          retention-days: 14
 
   hedgefonds:
     if: (github.event_name == 'schedule' && (github.event.schedule == '17 6 * * 1' || github.event.schedule == '17 7 10-20 2,5,8,11 *')) || (github.event_name == 'workflow_dispatch' && (inputs.teil == 'alle' || inputs.teil == 'hedgefonds'))
