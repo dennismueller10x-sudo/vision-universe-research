@@ -23,6 +23,13 @@ await rm(temporary,{recursive:true,force:true});await mkdir(temporary,{recursive
 // An explicit immutable, public repository baseline; no live service or secrets.
 const archive=execFileSync('git',['archive',baseline,'landing'],{cwd:resolve(root,'..'),maxBuffer:64*1024*1024});
 execFileSync('tar',['-x','-C',temporary],{input:archive});
+// Freigegebene Rechtstext-Revisionen (review/legal-revisions.json): nur genau diese Dateien mit genau dieser Prüfsumme
+// ersetzen die Basisfassung. Jede weitere Änderung an Rechtstexten fällt weiter gegen die Basis auf.
+for(const revision of JSON.parse(await readFile(resolve(root,'review/legal-revisions.json'),'utf8')).revisions)for(const {file,sha256} of revision.files){
+  const bytes=await readFile(resolve(root,file));
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),sha256,`${revision.id}: ${file} weicht von der freigegebenen Fassung ab`);
+  await mkdir(resolve(temporary,'landing',file,'..'),{recursive:true});await writeFile(resolve(temporary,'landing',file),bytes);
+}
 const previous=await import(pathToFileURL(resolve(temporary,'landing/scripts/build.mjs')));
 const config={mode:'public',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'legal-drafts/newsletter-release-2026-10-14.html'};
 await previous.build({config});
