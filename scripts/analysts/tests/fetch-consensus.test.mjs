@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { fromRecommendation, fromTarget, due, wantsTarget, writeAll, summarize } from "../fetch-consensus.mjs";
+import { fromRecommendation, fromTarget, due, wantsTarget, writeAll, summarize, targetCandidates } from "../fetch-consensus.mjs";
 
 test("AC-1 · Einstufungen: neueste Periode zaehlt, Verlauf bis 6, ohne Analysten NO_COVERAGE", () => {
   const rows = Array.from({ length: 8 }, (_, i) => ({ period: `2026-${String(11 - i).padStart(2, "0")}-01`, strongBuy: 10 + i, buy: 40, hold: 8, sell: 1, strongSell: 0 }));
@@ -46,4 +46,10 @@ test("AC-4 · Ausgabe: Shards nach shardKey, Titel ausserhalb des Universums fal
 
 test("AC-5 · leeres Universum ergibt Anteile 0, kein Teilen durch null", () => {
   assert.equal(summarize({}, 0, "2026-11-06").counts.shareRatings, 0);
+});
+
+test("AC-6 · Kursziel-Kandidaten: faellig, meiste Analysten zuerst", () => {
+  const E = { a: { ticker: "A", ratingsState: "AVAILABLE", analysts: 5 }, b: { ticker: "B", ratingsState: "AVAILABLE", analysts: 60 },
+    c: { ticker: "C", ratingsState: "AVAILABLE", analysts: 60, targetCheckedAt: "2026-11-01" }, d: { ticker: "D", ratingsState: "NO_COVERAGE", analysts: 0 } };
+  assert.deepEqual(targetCandidates(E, "2026-11-06", 5).map((e) => e.ticker), ["B", "A"]);
 });

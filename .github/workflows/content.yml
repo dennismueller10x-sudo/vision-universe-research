@@ -15,7 +15,7 @@ on:
   schedule:
     - cron: '17 5,11,17 * * *'      # news
     - cron: '0 8 * * 0'             # ratings
-    - cron: '41 5 * * *'            # analysten (Konsens, Produktuniversum, rotierend)
+    - cron: '41 5,13,21 * * *'      # analysten (Konsens, Produktuniversum, rotierend: 3 x ~2200 Titel = ganzes Universum je Tag)
     - cron: '17 6 * * 1'            # hedgefonds
     - cron: '17 7 10-20 2,5,8,11 *' # hedgefonds (13F-Fristen)
   push:
@@ -109,11 +109,13 @@ jobs:
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
   # Analysten-Konsens fuer das Produktuniversum: Finnhub-Einstufungen (frei, 55/min), Kursziele nur aus der freien
-  # FMP-Liste. Rotierend ~1000 Titel je Lauf (voller Umlauf ~7 Tage). Schreibt nur dashboard/data/analysts.
+  # FMP-Liste. Rotierend ~2200 Titel je Lauf, drei Laeufe am Tag (ganzes Universum taeglich). Finnhub Free erlaubt
+  # 60 Aufrufe/min: der Erzeuger drosselt auf 55/min, die Concurrency-Gruppe verhindert parallele Laeufe (Owner 06.11.2026).
+  # Schreibt nur dashboard/data/analysts.
   analysten:
-    if: (github.event_name == 'schedule' && github.event.schedule == '41 5 * * *') || (github.event_name == 'workflow_dispatch' && (inputs.teil == 'alle' || inputs.teil == 'analysten'))
+    if: (github.event_name == 'schedule' && github.event.schedule == '41 5,13,21 * * *') || (github.event_name == 'workflow_dispatch' && (inputs.teil == 'alle' || inputs.teil == 'analysten'))
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 55
     concurrency:
       group: content-analysten-${{ github.ref_name }}
       cancel-in-progress: false
@@ -130,7 +132,7 @@ jobs:
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
         run: |
           set -euo pipefail
-          node scripts/analysts/fetch-consensus.mjs --max-titles 1000 --per-minute 55 --fmp-max 200 --max-minutes 40 | tee "$RUNNER_TEMP/analysten.txt"
+          node scripts/analysts/fetch-consensus.mjs --max-titles 2200 --per-minute 55 --fmp-max 200 --max-minutes 42 | tee "$RUNNER_TEMP/analysten.txt"
           { echo '### Analysten-Konsens'; echo '```'; cat "$RUNNER_TEMP/analysten.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Nur eigene Pfade geaendert
         run: |
