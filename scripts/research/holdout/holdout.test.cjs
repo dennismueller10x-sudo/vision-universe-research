@@ -85,3 +85,24 @@ test('HO-6: Ausgaben nur außerhalb des Repositorys; öffentlicher Teil ohne Ren
   assert.match(w, /name: Ergebnis auf den aktuellen Zweig committen\n\s+if: steps\.m\.outputs\.mode != 'holdout-quant'/);
   assert.match(w, /METRIC_IN_PUBLIC_PART/);
 });
+
+test('HO-7: Zusammenführung: 12 Hypothesen, Holm über alle, Urteil nach study.cjs#verdict; falsches Protokoll wird abgelehnt', async () => {
+  const C = await import(path.join(__dirname, 'combine.mjs'));
+  const S = require('../edge/study.cjs');
+  const p = JSON.parse(protocolBytes()), rng = (seed) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 2 ** 32; };
+  const series = (seed, drift) => { const r = rng(seed); return Array.from({ length: 416 }, () => drift + 0.02 * (r() - 0.5)); };
+  const lv = (rets) => rets.reduce((a, x) => (a.push(a.at(-1) * (1 + x)), a), [100]);
+  const dates = Array.from({ length: 417 }, (_, k) => new Date(Date.UTC(2008, 0, 4) + k * 7 * 864e5).toISOString().slice(0, 10));
+  const spyR = series(1, 0.001);
+  const statsOf = (rets) => ({ metrics: S.metrics(lv(rets), dates), spy: S.metrics(lv(spyR), dates), test: S.pairedTest(rets, spyR, { count: 999 }), weeks: 417 });
+  const keys = p.candidates.supertrader.map((x) => x.key);
+  const st = { protocolSha256: PIN.PROTOCOL_SHA256, methods: keys, stats: Object.fromEntries(keys.map((k, i) => [k, { candidateId: p.candidates.supertrader[i].id, ...statsOf(series(10 + i, i === 0 ? 0.004 : 0.0)) }])), receipt: { resultSha256: 'a' } };
+  const qr = series(99, 0.0005);
+  const quant = { protocolSha256: PIN.PROTOCOL_SHA256, variant: 'Q-value-momentum-N20-W13-F0', primary: { weeklyReturns: qr, spyWeeklyReturns: spyR, evaluation: { strategy: S.metrics(lv(qr), dates), SPY: S.metrics(lv(spyR), dates), weeks: 417, dates: [dates[0], dates.at(-1)] } }, receipt: { resultSha256: 'b' } };
+  const sum = C.combine(st, quant);
+  assert.equal(sum.hypotheses.length, 12);
+  assert.ok(sum.hypotheses.every((h) => h.pLogHolm >= h.pLogRaw));
+  assert.deepEqual(sum.beatsSpy, ['C01'], 'nur die klar stärkere Reihe schlägt nach Holm');
+  assert.equal(Object.values(sum.tally).reduce((a, b) => a + b, 0), 12);
+  assert.throws(() => C.combine({ ...st, protocolSha256: 'x' }, quant), /PROTOCOL_MISMATCH/);
+});
