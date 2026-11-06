@@ -238,8 +238,9 @@
       var existing = listings[key];
       if (existing) {
         existing.sources = existing.sources.concat(raw.source || "unknown").filter(function (v, i, a) { return a.indexOf(v) === i; });
-        // Name: der fondsaehnliche gewinnt; Widerspruch wird protokolliert
-        if (raw.name && existing.name && raw.name !== existing.name) {
+        // Name: fehlt er, gilt der naechste belegte; sonst gewinnt der fondsaehnliche, Widerspruch wird protokolliert
+        if (raw.name && !existing.name) { existing.name = raw.name; }
+        else if (raw.name && existing.name && raw.name !== existing.name) {
           if (nameIsFundLike(raw.name) && !nameIsFundLike(existing.name)) { existing.name = raw.name; }
           existing.nameVariants = (existing.nameVariants || [existing.name]).concat(raw.name).filter(function (v, i, a) { return a.indexOf(v) === i; });
         }

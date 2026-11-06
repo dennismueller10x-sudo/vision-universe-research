@@ -8,10 +8,12 @@
   'use strict';
   var DATA = '/supertrader/data/sf-candidates/';
   var STAGES = ['CHART_CANDIDATE', 'CONFIRMED_RESEARCH_SETUP', 'MODELED_TRADE_PLAN'];
+  /* Stufen als Urteil (C08) mit den Alltagsnamen der Folie ST-Z (gleich STAGE_TXT in st-redesign.js). */
+  var VERDICT_OF = { CHART_CANDIDATE: ['none', 'Bild passt'], CONFIRMED_RESEARCH_SETUP: ['mid', 'Regel bestätigt'], MODELED_TRADE_PLAN: ['strong', 'Durchgerechnet'] };
   var STAGE_TXT = {
     CHART_CANDIDATE: ['Chart-Kandidat', 'chart', 'Ein Chartmuster der Methode ist erkannt. Ein vollständiges Setup ist damit nicht bestätigt.', 1],
     CONFIRMED_RESEARCH_SETUP: ['Bestätigtes Research-Setup', 'setup', 'Alle mechanischen Setup-Regeln der Methode sind am Stichtag erfüllt. Ermessensfragen bleiben offen.', 2],
-    MODELED_TRADE_PLAN: ['Modellierter Handelsablauf', 'model', 'Ein Forschungsmodell liefert zusätzlich hypothetische Einstiegs- und Stop-Marken. Keine Order, keine Empfehlung.', 3],
+    MODELED_TRADE_PLAN: ['Modellierter Handelsablauf', 'model', 'Ein Forschungsmodell rechnet die Methode zusätzlich nach. Öffentlich ohne Einstiegs- oder Stop-Marken. Keine Order, keine Empfehlung.', 3],
   };
   var LOCKED = ['Geprüfte Handelsfreigabe', 'Für alle 13 Methoden gesperrt: keine Zertifizierung, keine Freigabe, kein Live-Betrieb.', 4];
   /* Stufennamen kommen aus den Daten (catalog.mjs#STAGE_LABELS, Owner-Entscheidung O-3); die Werte oben sind nur Rückfall */
@@ -239,15 +241,29 @@
       document.title = s.name + ' – quellentreu · Supertrader';
       var L = sum.ruleLabels, views = data.views, state = { stage: null, q: '', sort: 'default', limit: 30 };
       var byS = s.counts.byStage;
-      host.appendChild(h('header', { class: 'st-hero sm sf-hero' }, [h('div', { class: 'st-kick', text: s.author + ' · quellentreu · Stand ' + dateDe(data.asOf) }), h('h1', { text: s.name }), h('p', { class: 'st-lead', text: s.short }), h('div', { class: 'sf-strat-st' }, [v1Tag(s), h('span', { class: 'sf-cap', text: 'höchstens' }), stageBadge(s.ceiling)]), limitsLine(s, true)]));
-      host.appendChild(previewBanner(sum));
-      host.appendChild(kpis([[num(views.length, 0), 'Kandidaten', s.recognises], [num(byS.MODELED_TRADE_PLAN || 0, 0), 'Modelliert'], [num(byS.CONFIRMED_RESEARCH_SETUP || 0, 0), 'Bestätigt']]));
+      if (window.VUUI) {
+        /* ST02 (Redesign 2027): Kopf wie die Methodenseiten (ST03) – Zurück, Kicker, Titel, ein Satz, höchste Stufe als Urteil, drei Kacheln. */
+        var U0 = window.VUUI, cap = VERDICT_OF[s.ceiling] || ['none', s.ceiling];
+        var hd = h('header', { class: 'sf-r-head' });
+        hd.innerHTML = '<a class="sf-r-back" href="/supertrader/strategies/">‹ Methoden</a><p class="vu-ltag">' + U0.esc(s.author + ' · quellentreu · Stand ' + dateDe(data.asOf)) + '</p><h1 class="vu-lt">' + U0.esc(s.name) + '</h1><p class="vu-lead">' + U0.esc(s.short) + '</p>' +
+          '<p class="sf-r-cap"><span class="vu-xs vu-mu"><b>Höchstens</b></span> ' + U0.verdict(cap[0], cap[1]) + '</p>';
+        hd.querySelector('.sf-r-cap').prepend(v1Tag(s));
+        hd.appendChild(limitsLine(s, true));
+        host.appendChild(hd);
+        var tl = h('div', { class: 'vu-grid sf-r-tiles' }); tl.style.setProperty('--vu-cols', '3');
+        tl.innerHTML = U0.tile('Treffer', num(views.length, 0), 'am ' + dateDe(data.asOf)) + U0.tile('Durchgerechnet', num(byS.MODELED_TRADE_PLAN || 0, 0), 'Stufe 3') + U0.tile('Regel bestätigt', num(byS.CONFIRMED_RESEARCH_SETUP || 0, 0), 'Stufe 2');
+        host.appendChild(tl);
+      } else {
+        host.appendChild(h('header', { class: 'st-hero sm sf-hero' }, [h('div', { class: 'st-kick', text: s.author + ' · quellentreu · Stand ' + dateDe(data.asOf) }), h('h1', { text: s.name }), h('p', { class: 'st-lead', text: s.short }), h('div', { class: 'sf-strat-st' }, [v1Tag(s), h('span', { class: 'sf-cap', text: 'höchstens' }), stageBadge(s.ceiling)]), limitsLine(s, true)]));
+        host.appendChild(kpis([[num(views.length, 0), 'Kandidaten', s.recognises], [num(byS.MODELED_TRADE_PLAN || 0, 0), 'Modelliert'], [num(byS.CONFIRMED_RESEARCH_SETUP || 0, 0), 'Bestätigt']]));
+      }
+      host.insertBefore(previewBanner(sum), host.querySelector('.sf-r-tiles, .sf-kpis'));
       var list = h('div', { class: 'sf-cards' });
       var sorts = [['default', 'Methodenreihenfolge']].concat(Object.keys(sum.sortKeys).filter(function (k) { return k !== 'stage' && (k !== 'momentum' || cid === 'C08') && (k !== 'streak' || cid === 'C10') && (k !== 'setupState' || cid === 'C06') && (k !== 'pivot' || views.some(function (v) { return v.sortKeys && v.sortKeys.pivot !== null && v.sortKeys.pivot !== undefined; })); }).map(function (k) { return [k, sum.sortKeys[k].label]; }));
       var sel = h('select', { class: 'sf-select', 'aria-label': 'Sortierung', onchange: function () { state.sort = sel.value; state.limit = 30; draw(); } }, sorts.map(function (o) { return h('option', { value: o[0], text: o[1] }); }));
       var search = h('input', { class: 'sf-search', type: 'search', placeholder: 'Ticker oder Name', 'aria-label': 'Kandidaten durchsuchen', oninput: function () { state.q = search.value.trim().toLowerCase(); state.limit = 30; draw(); } });
       var counts = {}; views.forEach(function (v) { counts[v.stage] = (counts[v.stage] || 0) + 1; });
-      var chips = chipRow([[null, 'Alle', views.length]].concat(STAGES.slice().reverse().filter(function (x) { return counts[x]; }).map(function (x) { return [x, STAGE_TXT[x][0], counts[x]]; })), function (v) { state.stage = v; state.limit = 30; draw(); });
+      var chips = chipRow([[null, 'Alle', views.length]].concat(STAGES.slice().reverse().filter(function (x) { return counts[x]; }).map(function (x) { return [x, window.VUUI && VERDICT_OF[x] ? VERDICT_OF[x][1] : STAGE_TXT[x][0], counts[x]]; })), function (v) { state.stage = v; state.limit = 30; draw(); });
       function keyOf(v, k) { var x = v.sortKeys ? v.sortKeys[k] : null; return x === undefined ? null : x; }
       function draw() {
         var vs = views.filter(function (v) { return (!state.stage || v.stage === state.stage) && (!state.q || v.ticker.toLowerCase().indexOf(state.q) >= 0 || String(v.companyName || '').toLowerCase().indexOf(state.q) >= 0); });
@@ -311,7 +327,6 @@
       nums,
       h('div', { class: 'sf-why' }, [h('h4', { text: 'Warum erkannt' }), h('ul', { class: 'sf-rules' }, (met.length ? met : [h('li', { 'data-k': 'check' }, [icon(IC.check), h('span', { text: 'Chartmuster der Methode am Stichtag' })])]).concat(interpMet))]),
       notMet.length || why.length || pending.length || interpOpen.length ? h('div', { class: 'sf-why' }, [h('h4', { text: 'Warum diese Stufe' }), h('ul', { class: 'sf-rules' }, notMet.concat(interpOpen, pending, why))]) : null,
-      v.plan ? planBlock(v, L) : null,
       openRules.length || blocks.length ? moreBox('Offene Prüfung und gesperrte Stufen', [
         openRules.length ? h('div', { class: 'sf-why' }, [h('h4', { text: 'Offen für die eigene Prüfung' }), h('ul', { class: 'sf-rules' }, openRules)]) : null,
         blocks.length ? h('div', { class: 'sf-why' }, [h('h4', { text: 'Höhere Stufen gesperrt, weil' }), h('ul', { class: 'sf-rules' }, blocks)]) : null,
@@ -320,22 +335,21 @@
     ];
     // in der Kandidatenliste stehen die Grenzen der Methode schon im Kopf der Seite; die Karte wiederholt sie nicht (V5)
     var lim = !opts.compact && s && STRONG_LIMITS[s.candidateId] ? limitsLine(s) : null;
+    /* ST02 (Redesign 2027): in der Kandidatenliste eine kompakte Zeile – Logo, Kürzel, Name, Stufe als Urteil (Namen nach ST-Z),
+       eine Zeile Zahlen; Warum erkannt / warum diese Stufe aufklappbar. Gleiche Daten wie die Karte davor. */
+    if (opts.compact && window.VUUI) {
+      var U = window.VUUI, sv = VERDICT_OF[v.stage] || ['none', (STAGE_TXT[v.stage] || [v.stage])[0]];
+      var top = h('a', { class: 'sf-r-top', href: stockUrl(v.ticker) });
+      top.innerHTML = U.logo(v.ticker);
+      top.appendChild(h('span', { class: 'sf-r-id' }, [h('b', { text: v.ticker }), h('span', { text: v.companyName || '' })]));
+      top.insertAdjacentHTML('beforeend', U.verdict(sv[0], sv[1]));
+      var line = h('p', { class: 'sf-r-line', text: ['Schluss ' + usd(v.close), p ? STRUCT_TXT[p.kind] + ' ' + pct(p.distance, 1, true) : null, 'Trend ' + pct(t.ret63, 0, true) + ' (63 Tage)', fin(t.volumeVs50d) ? 'Volumen ' + times(t.volumeVs50d) : null].filter(Boolean).join(' · ') });
+      return h('article', { class: 'vu-box sf-r', 'data-stage': v.stage }, [top, line, moreBox('Warum erkannt, warum diese Stufe', body.slice(1))]);
+    }
     return h('article', { class: 'sf-card', 'data-stage': v.stage }, opts.compact ? [head, nums, lim, moreBox('Warum erkannt, warum diese Stufe', body.slice(1))] : [head, lim].concat(body, [limitsLine(s)].filter(function () { return !lim; })));
   }
   function pair(k, v, sub) { return h('div', null, [h('dt', { text: k }), h('dd', null, [h('strong', { text: v }), sub ? h('small', { text: sub }) : null])]); }
-  function planBlock(v, L) {
-    var p = v.plan, onOpen = /OPEN/.test(p.entryType);
-    return h('div', { class: 'sf-plan' }, [
-      h('h4', null, [icon(IC.open), 'Modellierter Ablauf (hypothetisch)']),
-      h('dl', { class: 'sf-nums' }, [onOpen ? pair('Referenz (Schluss)', usd(p.trigger), 'Einstieg zur Eröffnung ' + dateDe(p.earliestSession)) : pair('Einstiegsmarke', usd(p.trigger), 'ab ' + dateDe(p.earliestSession)), pair('Modell-Stop', usd(p.stop), pct(p.plannedRiskPct, p.plannedRiskPct < 0.01 ? 2 : 1) + ' Abstand'), fin(p.limit) ? pair('Limit', usd(p.limit)) : null]),
-      // Ausführungsfenster der Referenzregel (höchster geplanter Verlust): nur sichtbar machen, nie verändern
-      p.fillWindow ? h('p', { class: 'sf-dq', 'data-fill': p.referenceInFillWindow ? 'in' : 'out' }, [icon(p.referenceInFillWindow ? IC.check : IC.alert), p.referenceInFillWindow
-        ? 'Ausführung laut Modell nur bei einer Eröffnung über dem Stop und höchstens ' + usd(p.fillWindow.upTo) + '.'
-        : 'Zum Schlusskurs nicht ausführbar: Das Modell verlangt eine Eröffnung über dem Stop und höchstens ' + usd(p.fillWindow.upTo) + ', sonst entfällt der Einstieg.']) : null,
-      p.modelAssumptions && p.modelAssumptions.length ? h('div', null, [h('h4', { text: 'Durch Modellannahmen ersetzt' }), h('ul', { class: 'sf-rules' }, p.modelAssumptions.map(function (id) { return h('li', { 'data-k': 'open' }, [icon(IC.open), h('span', { text: ruleText(L, id) })]); }))]) : null,
-      h('p', { class: 'st-hint', text: 'Werte eines Forschungsmodells mit benannten Modellannahmen. Keine Order, keine Empfehlung, keine Aussage zur Handelbarkeit.' }),
-    ]);
-  }
+
 
   /* ================================================ AKTIENSEITE: Analyse */
   function mountStock(main, sym) {
@@ -375,9 +389,8 @@
       var lv = v.levels || {}, levels = [], boxes = [], overlays = [];
       [[10, 'var(--ma10)', ['C08', 'C10', 'C11']], [20, 'var(--ma20)', ['C08', 'C13']], [50, 'var(--ma50)', null], [200, 'var(--ma200)', ['C06']]].forEach(function (m) { overlays.push({ id: 'ma' + m[0], label: m[0] + '-Tage-Linie', color: m[1], values: STChart.sma(bars.close, m[0]), on: m[2] ? m[2].indexOf(v.candidateId) >= 0 : true }); });
       if (weekly) overlays.push({ id: 'ma150', label: '30-Wochen-Linie (≈150 Tage)', color: 'var(--ma30w)', values: STChart.sma(bars.close, 150) });
-      // Einstiegs- und Stop-Marken nur im modellierten Ablauf; sonst nur die Chartstruktur der Methode (Review M2, Owner 28.10.2026)
+      // nur die Chartstruktur der Methode; keine Einstiegs- oder Stop-Marken (Owner-Linie L2, Plan §11)
       if (structOf(v.pivot)) levels.push({ id: 'pivot', label: 'Chartstruktur: ' + STRUCT_TXT[v.pivot.kind], value: v.pivot.level, color: 'var(--chart-box-base)', dash: '6 4' });
-      if (v.plan) { levels.push({ id: 'entry', label: /OPEN/.test(v.plan.entryType) ? 'Referenz (Schluss)' : 'Modell-Einstiegsmarke', value: v.plan.trigger, color: 'var(--chart-entry)', dash: '2 3' }); levels.push({ id: 'stop', label: 'Modell-Stop', value: v.plan.stop, color: 'var(--chart-stop)' }); }
       if (lv.box && fin(lv.box.top)) boxes.push({ from: lv.box.from, to: null, top: lv.box.top, bottom: lv.box.bottom, color: 'var(--chart-box-darvas)', label: 'Darvas-Box' });
       STChart.render(box, { bars: bars, mode: 'candles', window: weekly ? 180 : 120, overlays: overlays, levels: levels, boxes: boxes, markers: [], showVolume: true, title: v.ticker, status: 'Marken der Methode ' + (s ? s.name : '') + '. Kurse bis ' + dateDe(bars.date[bars.date.length - 1]) + '.' });
     }).catch(function () { host.replaceChildren(empty('Chart nicht verfügbar', 'Die Kursdaten für diesen Titel konnten nicht geladen werden. Es wird kein Ersatzchart gezeichnet.')); });

@@ -73,6 +73,8 @@
 .vu-verdict--mid{background:var(--vu-hair);color:var(--vu-ink)}
 .vu-verdict--weak{background:var(--vu-ink);color:var(--vu-inv)}
 .vu-verdict--none{border:1.5px dashed var(--vu-mute);color:var(--vu-mute);padding:2.5px 8.5px}
+/* Auf Ink-Flächen wäre Grau unter 4,5:1 - dort die Schriftfarbe der Fläche (Welten, die die Fläche in beiden Modi schwarz halten, inklusive). */
+.vu-box--ink .vu-verdict--none{color:inherit;border-color:currentColor;opacity:.85}
 
 /* C09 Erklärung „?“ */
 .vu-help{display:flex;gap:9px;align-items:flex-start;font-size:13px;line-height:1.4;color:var(--vu-mute)}
@@ -172,3 +174,9 @@
 .vu-chip:focus-visible,.vu-seg>:focus-visible,.vu-persp>a:focus-visible,.vu-btn:focus-visible,.vu-navcard:focus-visible,.vu-lrow:focus-visible,.vu-switch:focus-visible,.vu-find:focus-visible,.vu-round:focus-visible,.vu-q:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){.vu-switch:before{transition:none}}
 .vu-lrow--noprice{grid-template-columns:42px minmax(0,1fr)}
+
+/* Pflicht-Hinweise (Strang F, assets/legal-notices.json): sichtbar erst nach Freigabe */
+.vu-legal{margin-top:12px;padding:12px 14px;border-radius:var(--vu-r-card,18px);background:var(--vu-card);color:var(--vu-ink);font-size:12.5px;line-height:1.45}
+.vu-legal p{margin:0}.vu-legal p+p,.vu-legal-facts{margin-top:6px}
+.vu-legal-facts{padding-left:18px}
+.vu-legal a{color:inherit;font-weight:700}

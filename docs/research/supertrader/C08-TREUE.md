@@ -39,8 +39,15 @@ Aus seinen eigenen Materialien belegt sind nur Lehrbeispiele ohne Kurse (TSLA 20
 - Stream-Mitschriften Retail Trader's Repository (10/2019–04/2020) und Trading Resource Hub (2021, 2023): Marktfilter, einzelne Trades.
 - Unabhängige Gegenprüfung: Strang E, PR #1417 (Befunde F05, F06, Trailing, ADR-Normierung, Setup-Qualität).
 
-## 5. Nächste Schritte
+## 5. Ergebnis (05.11.2026, ohne Renditezahlen)
 
-1. Ergebnis Referenz gegen FID-1 und FID-2 (intern an den Owner), mit R-Verteilung und goldenen Trades.
-2. Entscheidung, welche Fassung auf dem HOLDOUT einmalig bestätigt wird.
-3. Dasselbe Vorgehen für C06 und C07 (Minervini).
+1. **Diagnose der 16 belegten Trades** (Läufe 42040595941 und 42043947326). Der erste blockierende Schritt je Trade:
+   - nicht im Universum: 2,
+   - Kurs unter 5 USD (VU-Grenze, bleibt): 4,
+   - Momentum knapp unter den obersten 2 % (Quellregel, bleibt): 5,
+   - Vorlauf fehlt (eher Episodic Pivot): 3,
+   - erkannt und ausgelöst, aber kein Kapital frei: 4 (eine Umsetzungslücke: Die Orders werden in neutraler Reihenfolge gefüllt),
+   - Kurslücke über 1 ADR: 1.
+2. **FID-3** (#1436) wählt je Tag die 3 stärksten Setups nach Momentum-Rang. Damit ist der einzelne Trade vor Kosten erstmals leicht positiv, aber die Variante ist kaum investiert.
+3. **FID-4** (#1442) ist FID-3 mit Kullamägis Positionsgröße. Regel und Erfolgskriterium wurden vor dem Lauf committet (`certification/C08-FID4-PREREGISTRATION.json`). Auf DEV ist das Kriterium nicht erfüllt (Lauf 42060179992). Deshalb gibt es keinen Holdout und keine weitere Variante.
+4. **Abschluss:** C08 gilt als „Erkennung je Trade, Portfolio nicht bestätigt“. Die Zahlen liegen privat beim Owner.

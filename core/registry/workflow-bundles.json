@@ -4,8 +4,21 @@
  "bundles": {
   "ci": {
    "purpose": "Pruef-Workflows (Tests, Gates) als eine Matrix je Produkt",
-   "workflow": null,
-   "replaces": []
+   "workflow": "ci.yml",
+   "replaces": [
+    "ask-ci.yml",
+    "brevo-ci.yml",
+    "ci-config.yml",
+    "creative-job-guard.yml",
+    "etf-dashboard-ci.yml",
+    "fundamental-ci.yml",
+    "hedgefonds-dashboard-ci.yml",
+    "landing-ci.yml",
+    "research-access-ci.yml",
+    "screener-ci.yml",
+    "vorsorge-ci.yml",
+    "willkommen-ci.yml"
+   ]
   },
   "deploy": {
    "purpose": "Auslieferung: Pages, Cloudflare-Worker",
@@ -39,8 +52,18 @@
   },
   "monitor": {
    "purpose": "Waechter und Alarme: Freshness, Live-Smoke, Health",
-   "workflow": null,
-   "replaces": []
+   "workflow": "monitor.yml",
+   "replaces": [
+    "cloudflare-proof.yml",
+    "cloudflare-waker-proof.yml",
+    "currency-production-proof.yml",
+    "discover-live-smoke.yml",
+    "discover-realtime-qa.yml",
+    "europe-discover-release-qa.yml",
+    "realtime-production-smoke.yml",
+    "technical-live-qa.yml",
+    "vorsorge-live-smoke.yml"
+   ]
   },
   "account": {
    "purpose": "Konten, Abos, Brevo",
@@ -108,9 +131,6 @@
   "app-ios-testflight.yml": {
    "bundle": "app"
   },
-  "ask-ci.yml": {
-   "bundle": "ci"
-  },
   "brand-media-higgsfield-images.yml": {
    "bundle": "maintenance"
   },
@@ -120,17 +140,11 @@
   "brevo-admin.yml": {
    "bundle": "account"
   },
-  "brevo-ci.yml": {
-   "bundle": "ci"
-  },
   "brevo-internal-membership.yml": {
    "bundle": "account"
   },
   "brevo-newsletter.yml": {
    "bundle": "account"
-  },
-  "ci-config.yml": {
-   "bundle": "ci"
   },
   "cloudflare-ask-deploy.yml": {
    "bundle": "deploy"
@@ -138,18 +152,8 @@
   "cloudflare-deploy.yml": {
    "bundle": "deploy"
   },
-  "cloudflare-probe.yml": {
-   "bundle": "maintenance",
-   "retireCandidate": true
-  },
-  "cloudflare-proof.yml": {
-   "bundle": "monitor"
-  },
   "cloudflare-waker-deploy.yml": {
    "bundle": "deploy"
-  },
-  "cloudflare-waker-proof.yml": {
-   "bundle": "monitor"
   },
   "company-intelligence-health.yml": {
    "bundle": "monitor"
@@ -184,21 +188,11 @@
   "coverage-metrics.yml": {
    "bundle": "pipeline-weekly"
   },
-  "creative-job-guard.yml": {
-   "bundle": "ci"
-  },
   "currency-fx-verify.yml": {
    "bundle": "ci"
   },
-  "currency-production-proof.yml": {
-   "bundle": "monitor"
-  },
   "currency-realtime-proof.yml": {
    "bundle": "pipeline-intraday"
-  },
-  "diagnose-adjustment-steps.yml": {
-   "bundle": "maintenance",
-   "retireCandidate": true
   },
   "discover-ci.yml": {
    "bundle": "ci"
@@ -209,41 +203,23 @@
   "discover-im-blick-live.yml": {
    "bundle": "pipeline-intraday"
   },
-  "discover-live-smoke.yml": {
-   "bundle": "monitor"
-  },
-  "discover-realtime-qa.yml": {
-   "bundle": "monitor"
-  },
   "elliott-prospective-registry.yml": {
    "bundle": "research"
   },
   "emerging-leaders-study.yml": {
    "bundle": "research"
   },
-  "etf-dashboard-ci.yml": {
-   "bundle": "ci"
-  },
   "europe-discover-refresh.yml": {
    "bundle": "pipeline-daily"
   },
-  "europe-discover-release-qa.yml": {
-   "bundle": "monitor"
-  },
   "freshness-monitor.yml": {
    "bundle": "monitor"
-  },
-  "fundamental-ci.yml": {
-   "bundle": "ci"
   },
   "fundamental-sec-freshness.yml": {
    "bundle": "monitor"
   },
   "fx-ecb-daily.yml": {
    "bundle": "pipeline-daily"
-  },
-  "hedgefonds-dashboard-ci.yml": {
-   "bundle": "ci"
   },
   "history-store-sync.yml": {
    "bundle": "maintenance"
@@ -263,9 +239,6 @@
   "intraday-snapshots.yml": {
    "bundle": "pipeline-intraday"
   },
-  "landing-ci.yml": {
-   "bundle": "ci"
-  },
   "landing-cloudflare-audit.yml": {
    "bundle": "maintenance"
   },
@@ -281,16 +254,8 @@
   "market-data-refresh.yml": {
    "bundle": "pipeline-daily"
   },
-  "market-data.yml": {
-   "bundle": "maintenance",
-   "retireCandidate": true
-  },
   "market-validation-data.yml": {
    "bundle": "pipeline-daily"
-  },
-  "marketstack-diagnostics-once.yml": {
-   "bundle": "maintenance",
-   "retireCandidate": true
   },
   "multi-asset-data.yml": {
    "bundle": "pipeline-daily"
@@ -319,20 +284,11 @@
   "r2-audit.yml": {
    "bundle": "maintenance"
   },
-  "realtime-production-smoke.yml": {
-   "bundle": "monitor"
-  },
-  "research-access-ci.yml": {
-   "bundle": "ci"
-  },
   "research-labor.yml": {
    "bundle": "research"
   },
   "research-signals-s2.yml": {
    "bundle": "research"
-  },
-  "screener-ci.yml": {
-   "bundle": "ci"
   },
   "sec-consumer-fundamentals.yml": {
    "bundle": "pipeline-daily"
@@ -372,15 +328,7 @@
   },
   "social-hashtag-capability.yml": {
    "bundle": "social",
-   "retireCandidate": true
-  },
-  "social-ig-check.yml": {
-   "bundle": "social",
-   "retireCandidate": true
-  },
-  "social-manual-dispatch-proof.yml": {
-   "bundle": "social",
-   "retireCandidate": true
+   "note": "Reaktivierungspfad INSTAGRAM_PUBLIC_CONTENT (social/engines/source-registry.js) - bleibt bis zur Owner-Entscheidung"
   },
   "social-orchestrator.yml": {
    "bundle": "social"
@@ -447,17 +395,10 @@
   "technical-intelligence-build.yml": {
    "bundle": "pipeline-daily"
   },
-  "technical-live-qa.yml": {
-   "bundle": "monitor"
-  },
   "technical-world.yml": {
    "bundle": "pipeline-daily"
   },
   "tiingo-scale.yml": {
-   "bundle": "maintenance",
-   "retireCandidate": true
-  },
-  "tiingo-verify.yml": {
    "bundle": "maintenance",
    "retireCandidate": true
   },
@@ -467,20 +408,8 @@
   "universe-master.yml": {
    "bundle": "pipeline-weekly"
   },
-  "update-dashboard.yml": {
-   "bundle": "content",
-   "retireCandidate": true
-  },
-  "update-fundamentals.yml": {
-   "bundle": "content",
-   "retireCandidate": true
-  },
   "update-sec-fundamentals.yml": {
-   "bundle": "pipeline-weekly",
-   "retireCandidate": true
-  },
-  "vorsorge-ci.yml": {
-   "bundle": "ci"
+   "bundle": "pipeline-weekly"
   },
   "vorsorge-daily-rebuild.yml": {
    "bundle": "pipeline-daily"
@@ -494,17 +423,24 @@
   "vorsorge-legal-sources.yml": {
    "bundle": "research"
   },
-  "vorsorge-live-smoke.yml": {
-   "bundle": "monitor"
-  },
   "vu2-browser-qa.yml": {
    "bundle": "ci"
   },
   "vu2-lifecycle-handoff.yml": {
    "bundle": "ci"
-  },
-  "willkommen-ci.yml": {
-   "bundle": "ci"
   }
+ },
+ "retired": {
+  "2026-11-05": [
+   "cloudflare-probe.yml",
+   "diagnose-adjustment-steps.yml",
+   "market-data.yml",
+   "marketstack-diagnostics-once.yml",
+   "social-ig-check.yml",
+   "social-manual-dispatch-proof.yml",
+   "tiingo-verify.yml",
+   "update-dashboard.yml",
+   "update-fundamentals.yml"
+  ]
  }
 }

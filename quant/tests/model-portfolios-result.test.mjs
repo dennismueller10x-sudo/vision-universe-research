@@ -24,7 +24,12 @@ test('Musterportfolios: Kennzeichnung, Standard, Kennzahlen, keine Kurse', { ski
     if (r.state !== 'RUN') continue;
     for (const k of ['cagr', 'benchmarkCagr', 'annualizedVolatility', 'maxDrawdown', 'beta']) assert.ok(Number.isFinite(r.metrics[k]), r.profileId + ' ' + k);
     assert.ok(r.construction.averagePositions >= 15 && r.construction.averagePositions <= 30);
-    assert.ok(r.lastHoldings.every(h => h.weight <= 0.08 + 1e-9));
+    // Owner-Linie (Plan §11): nur ein verzögerter historischer Bestand, keine heutige Kaufliste.
+    assert.equal('lastHoldings' in r, false, r.profileId + ': aktuelle Ziele im Ergebnis');
+    const h = r.holdingsSnapshot;
+    assert.equal(h.policy, 'DELAYED_HISTORICAL_ONLY'); assert.ok(h.delayDays >= 365);
+    assert.ok(h.asOf && h.asOf <= h.cutoff && Date.parse(h.cutoff) <= Date.parse(r.window[1]) - 365 * 86400000, r.profileId + ': Bestand zu jung');
+    assert.ok(h.positions.length >= 15 && h.positions.every(x => x.weight <= 0.08 + 1e-9));
     // Wertentwicklung: [Datum, Portfoliowert, Benchmarkwert], keine Einzeltitelkurse.
     assert.ok(r.equity.every(e => e.length === 3 && typeof e[0] === 'string'));
   }

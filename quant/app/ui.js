@@ -67,6 +67,8 @@
        Quant-SPA). chartbild bleibt als Name erhalten und zeigt auf dieselbe eine Adresse (alte Links: app.js, canonicalElliott). */
     elliott: function (t, q) { return "/elliott/#/" + encodeURIComponent(String(t || "").toUpperCase()) + (q ? "?" + q : ""); },
     chartbild: function (t) { return "/elliott/#/" + encodeURIComponent(String(t || "").toUpperCase()); },
+    /* Redesign 2027 (Q09): Perspektive „Chart“ in Quant. */
+    chart: function (t) { return "#/aktie/" + encodeURIComponent(String(t || "").toUpperCase()) + "/chart"; },
     chartlagen: function (q) { return "#/chartlagen" + (q ? "?" + q : ""); },
     fundamentals: function (t) { return "#/aktie/" + encodeURIComponent(t) + "/zahlen"; },
     compare: function (list) { return "#/vergleich" + (list && list.length ? "/" + list.map(encodeURIComponent).join(",") : ""); }

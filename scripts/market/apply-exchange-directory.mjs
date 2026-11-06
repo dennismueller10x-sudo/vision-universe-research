@@ -30,7 +30,8 @@
      (Standard: DEBT, ETN, PREFERRED, WARRANT/RIGHT/UNIT; ETF nur mit --classes, s. DEFAULT_CLASSES)
      DEBT       Name weist Schuldverschreibung aus (Notes/Debentures due ...)
      ETN        Name weist Exchange Traded Note aus
-     ETF        Name weist ETF aus UND Verzeichnis-Kennung ETF = Y
+     ETF        Verzeichnis-Kennung ETF = Y, und der Name belegt keine andere
+               Klasse (weist ETF aus, oder bleibt laut Name Stammaktie/Trust)
      PREFERRED  Name weist Vorzug aus UND kein Hinterlegungsschein auf
                 Stamm-/Ordinary-Aktien (ITUB, PBR-A: ADR auf Vorzuege sind
                 die Hauptnotiz der Gesellschaft, keine Vorzugsanleihe)
@@ -61,18 +62,20 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadTickerReuseQuarantine } from "./universe-source.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Master = require(join(root, "quant", "engines", "us-security-master.js"));
+const CompanyMaster = require(join(root, "quant", "engines", "company-master.js"));
 const Identity = require(join(root, "core", "identity.js"));
 
 export const RULE_VERSION = "exchange-directory-class-1.0.0";
 export const SOURCE = "NASDAQ_TRADER_SYMBOL_DIRECTORY";
 export const KNOWN_CLASSES = ["DEBT", "ETN", "ETF", "PREFERRED", "WARRANT", "RIGHT", "UNIT"];
-/* Standard ohne ETF: SPY und andere ETFs stehen heute als Benchmark und mit eigener Seite im Produktuniversum
-   (benchmark-reference, capability-matrix). Ihre Herausnahme ist eine Policy-Migration mit eigenem PR, kein Datenfehler-Fix;
-   --classes ...,ETF wendet sie an, sobald die Abhaengigkeiten geloest sind. Bis dahin zaehlt der Bericht sie. */
+/* Standard ohne ETF (Aufruf ohne --classes). Der Eignungs-Workflow ruft seit dem 05.11.2026 mit ETF auf: belegte ETFs
+   gehoeren nicht ins Aktien-Produktuniversum (Nachholen 05.11.2026, 131 ETFs; Bereinigung 249). SPY und die anderen
+   Benchmarks stehen nicht in der Eignung, sondern im Multi-Asset-Segment, und sind davon nicht betroffen. */
 export const DEFAULT_CLASSES = ["DEBT", "ETN", "PREFERRED", "WARRANT", "RIGHT", "UNIT"];
 const FORM = ["PREFERRED", "WARRANT", "UNIT", "RIGHT"];
 const CONFIRM_ONLY = ["WARRANT", "RIGHT", "UNIT"];
@@ -123,7 +126,14 @@ export function judgeWithDirectory(decision, entry, member, companyName, opts, c
     currency: (member && member.currency) || "USD", startDate: decision.start_date || (member && member.startDate), active });
   const active = decision.active_status === "ACTIVE" ? true : decision.active_status === "INACTIVE" ? false : undefined;
   /* 1. Gattung aus der Wertpapierbezeichnung */
-  const c = Master.classifySecurity(row(entry.securityName, active === false ? true : active), opts);
+  let c = Master.classifySecurity(row(entry.securityName, active === false ? true : active), opts);
+  /* ETF-Kennung der Boerse als eigener Beleg: Fonds, deren Bezeichnung "ETF" nicht nennt ("ProShares Ultra COIN",
+     "VanEck Bitcoin Trust", "Common Shares of Beneficial Interest"), fuehrt das Verzeichnis mit ETF = Y. Gilt nur, wenn
+     der Name keine andere Klasse belegt (bleibt Stammaktie oder Trust laut Name) - ein ETN oder eine Anleihe bleibt das. */
+  if (classes.includes("ETF") && entry.etf === true && (c.instrumentType === "EQUITY_COMMON" || c.instrumentType === "TRUST")) {
+    c = { ...c, instrumentType: "ETF", classificationStatus: "CLASSIFIED", classificationConfidence: "HIGH", policyBucket: undefined,
+      eligibleUsEquity: false, eligibilityReason: "EXCHANGE_DIRECTORY_ETF_FLAG" };
+  }
   const from = decision.instrument_type;
   const typeOk = c.classificationStatus === "CLASSIFIED" && classes.includes(c.instrumentType) && classRuleHolds(c.instrumentType, entry);
   const confirm = typeOk && c.instrumentType === from && decision.product_eligibility === "REVIEW";   // Verdacht → belegt
@@ -198,8 +208,14 @@ async function main() {
   const memberOf = new Map((full.securities || []).map((s) => [s.securityId, s]));
   const opts = { today, listedRoots: Master.collectListedRoots(full.securities || []) };
   const changes = [], before = countDecisions(elig.decisions);
-  let matched = 0;
+  /* Belegte Ticker-Wiederverwendung (quant/config/ticker-reuse-quarantine.json): die Verzeichniszeile beschreibt das HEUTIGE
+     Papier unter dem Kuerzel (oft ein ETF), die securityId die alte Aktie. Kein Umstufen ueber das Verzeichnis - dieselbe
+     Regel wie build-us-eligibility.mjs withName(); die Titel bleiben markiert (identityStatus). */
+  const reuse = loadTickerReuseQuarantine(root);
+  const reuseIds = reuse ? reuse.records : new Map();
+  let matched = 0, skippedReuse = 0;
   elig.decisions = elig.decisions.map((d) => {
+    if (reuseIds.has(d.securityId)) { skippedReuse++; return d; }
     const e = byId.get(d.securityId); if (e) matched++;
     const j = judgeWithDirectory(d, e, memberOf.get(d.securityId), names.get(d.securityId), opts, classes);
     if (!j) return d;
@@ -212,14 +228,14 @@ async function main() {
   const byRule = {};
   for (const c of changes) { const k = c.from.instrumentType + "/" + c.from.productEligibility + " -> " + c.to.instrumentType + "/" + c.to.productEligibility; byRule[k] = (byRule[k] || 0) + 1; }
   console.log(`Verzeichnis: ${rows.length} Zeilen (Stand ${loadDirectory.asOf || "?"}), ${matched} von ${elig.decisions.length} Entscheidungen zugeordnet`);
-  console.log(`Geaendert: ${changes.length}`);
+  console.log(`Geaendert: ${changes.length} (Ticker-Wiederverwendung ausgelassen: ${skippedReuse})`);
   for (const [k, n] of Object.entries(byRule).sort((a, b) => b[1] - a[1])) console.log(`  ${String(n).padStart(4)}  ${k}`);
   console.log("Vorher:", JSON.stringify(before.counts));
   console.log("Nachher:", JSON.stringify(after.counts));
   if (DRY || !changes.length) return;
 
   const at = new Date().toISOString();
-  const applied = { at, ruleVersion: RULE_VERSION, source: SOURCE, directoryAsOf: loadDirectory.asOf || null, classes, changed: changes.length, byTransition: byRule,
+  const applied = { at, ruleVersion: RULE_VERSION, source: SOURCE, directoryAsOf: loadDirectory.asOf || null, classes, changed: changes.length, skippedTickerReuse: skippedReuse, byTransition: byRule,
                     countsBefore: before.counts, script: "scripts/market/apply-exchange-directory.mjs" };
   Object.assign(elig, { counts: after.counts, excludedByClass: after.excludedByClass, separateByClass: after.separateByClass, exchangeDirectoryApplied: applied });
   writeFileSync(ELIG, JSON.stringify(elig, null, 1) + "\n");
@@ -233,7 +249,7 @@ async function main() {
   const product = JSON.parse(readFileSync(PRODUCT, "utf8"));
   const byIdD = new Map(elig.decisions.map((d) => [d.securityId, d]));
   product.securities = product.securities.filter((s) => { const d = byIdD.get(s.securityId); return !d || d.product_eligibility !== "EXCLUDED"; })
-    .map((s) => { const d = byIdD.get(s.securityId); return d ? { ...s, productEligibility: d.product_eligibility } : s; });
+    .map((s) => { const d = byIdD.get(s.securityId); return d ? { ...s, instrumentType: CompanyMaster.SECURITY_CLASS_TO_TYPE[d.instrument_type] || s.instrumentType, productEligibility: d.product_eligibility } : s; });
   product.actualSize = product.securities.length;
   product.counts = { ELIGIBLE: after.counts.ELIGIBLE, SEPARATE_CLASS: after.counts.SEPARATE_CLASS, REVIEW: after.counts.REVIEW, EXCLUDED_NOT_LISTED_HERE: after.counts.EXCLUDED };
   writeFileSync(PRODUCT, JSON.stringify(product, null, 1) + "\n");

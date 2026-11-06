@@ -27,6 +27,14 @@ function assertLiveRules() {
   for (const [file, want] of Object.entries(live.hashes)) if (fileHash(path.join(here, file)) !== want) throw new Error(`oos gesperrt: ${file} seit dem Einfrieren veraendert`);
 }
 
+// Owner-Linie 05.11.2026 (Plan §11, EINORDNUNG §0 L3): Bestaende nur mit Stichtag mindestens 365 Tage vor dem Laufende.
+export const HOLDINGS_LAG_DAYS = 365;
+export function lagCutoff(log) { const end = log.at(-1)?.date; return end ? new Date(Date.parse(end + 'T00:00:00Z') - HOLDINGS_LAG_DAYS * 864e5).toISOString().slice(0, 10) : ''; }
+export function laggedHoldings(log) {
+  const cut = lagCutoff(log), e = [...log].reverse().find((x) => x.date <= cut);
+  return e ? { asOf: e.date, lagDays: HOLDINGS_LAG_DAYS, tickers: e.holdings.slice(0, 30).map((id) => id.split(':')[2]) } : { asOf: null, lagDays: HOLDINGS_LAG_DAYS, tickers: [] };
+}
+
 // Versuchsreihen. HS2 erbt Zeitraeume und Kontrollen von HS1 (PREREGISTRATION-HS2.json "inherits").
 export const SETS = {
   hs1: { prereg: 'PREREGISTRATION-HS1.json', frozen: 'FROZEN-HS1.json', cfg: (t) => ({ factors: t.factors, n: t.n, regime: t.regime }),
@@ -140,8 +148,9 @@ export function runAnalysis(d, { MODE, SET = 'hs1', LIMIT = 0, frozen = null, lo
       const missing = isCtl ? [] : null;
       const r = run(isCtl ? { ...set.cfg(t), diagnose: missing } : set.cfg(t));
       out[t.id] = { def: t, metrics: summary(metrics(r.equity, bench)), turnover: r.turnover, costs: r.costs, meanPositions: r.meanPositions, terminalCount: r.terminalCount,
-        reconcile: Math.abs(r.equity.at(-1).equity - (r.cashEnd + r.openValueEnd)), lastHoldings: r.log.at(-1)?.holdings.slice(0, 30).map((id) => id.split(':')[2]) || [] };
-      if (isCtl) out[t.id].decisions = r.log.filter((x) => x.date.slice(5, 7) === '12' || x === r.log[0]).map((x) => ({ date: x.date, universe: x.universe, top: x.topWeights, missing: missing[r.log.indexOf(x)] || null }));
+        reconcile: Math.abs(r.equity.at(-1).equity - (r.cashEnd + r.openValueEnd)), laggedHoldings: laggedHoldings(r.log) };
+      // Owner-Linie 05.11.2026 (L3): keine aktuellen Bestaende, nur Stichtage mindestens 365 Tage vor dem Laufende
+      if (isCtl) { const cut = lagCutoff(r.log); out[t.id].decisions = r.log.filter((x) => x.date <= cut && (x.date.slice(5, 7) === '12' || x === r.log[0])).map((x) => ({ date: x.date, universe: x.universe, top: x.topWeights, missing: missing[r.log.indexOf(x)] || null })); }
       log(`${t.id} fertig`);
     }
     return out;

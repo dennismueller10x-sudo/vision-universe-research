@@ -224,3 +224,16 @@
 /* Frühere Ansicht unter neuem Kopf (Methoden ohne Musterdepot) */
 .st-r-legacy{margin-top:14px}
 .st-r .vu-verdict{flex:none}
+/* ST02: Kandidatenansicht der 13 quellentreuen Methoden (?sf=Cxx) im Redesign */
+.sf-r-head{margin:4px 0 0}.sf-r-head .vu-lt{margin-top:2px}
+.sf-r-back{display:inline-flex;align-items:center;min-height:36px;margin-bottom:6px;font-weight:800;font-size:14px;color:inherit;text-decoration:none}
+.sf-r-cap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 0}
+.sf-r-tiles{margin-top:12px;gap:6px}.sf-r-tiles .vu-tile{padding:10px;min-width:0}
+.sf-r{display:block;margin-top:8px;padding:12px 14px}
+.sf-r-top{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none}
+.sf-r-id{flex:1;min-width:0}.sf-r-id>*{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sf-r-id>span{font-size:12px;color:var(--vu-mute)}
+.sf-r-line{margin:8px 0 0;font-size:12px;font-weight:700;color:var(--vu-mute)}
+.sf-r .sf-more{margin-top:6px}
+.sf-r-head .sf-limits li,.sf-r-head .sf-limits[data-strong="true"] li{background:var(--vu-card);color:var(--vu-ink);border:1px solid var(--vu-hair);margin-top:6px}
+.sf-r-head .sf-limits li .st-ic{color:var(--vu-ink)}
+.sf-r .sf-more>summary{min-height:36px;font-size:13px}

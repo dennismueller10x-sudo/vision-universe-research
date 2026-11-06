@@ -708,7 +708,8 @@
   }
 
   /* ------------------------------------------------------------------ Analysten (11 Titel, Finnhub + FMP, wie /analysten/) */
-  var CONSENSUS = { strong_buy: 'Starker Kauf', buy: 'Kaufen', hold: 'Halten', sell: 'Verkaufen', strong_sell: 'Starker Verkauf' };
+  /* Angabe Dritter (Strang F, WORTWAHL): Einstufung der Analysten, nicht von Vision Universe. */
+  var CONSENSUS = { strong_buy: 'Analysten: starkes Kaufen', buy: 'Analysten: Kaufen', hold: 'Analysten: Halten', sell: 'Analysten: Verkaufen', strong_sell: 'Analysten: starkes Verkaufen' };
   function analysts(doc, ticker) {
     var s = doc && doc.symbols && doc.symbols[ticker];
     if (!s) return null;

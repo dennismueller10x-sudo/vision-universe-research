@@ -55,13 +55,14 @@
   /* ------------------------------------------- Produktsprache (Kunde) */
   // Phasen: strikt getrennt. „Nahe am Trigger“ ist Vorbereitung, kein Einstieg.
   var PHASE = {
-    DISCOVERED: ['cand', 'Kandidat'], WATCH: ['cand', 'Kandidat'],
-    SETUP: ['prep', 'Vorbereitet'], ENTRY_READY: ['prep', 'Vorbereitet · nahe Trigger'],
-    TRIGGERED: ['conf', 'Einstieg bestätigt'], ACTIVE: ['pos', 'Modellposition aktiv'], WARNING: ['warn', 'Position · Warnung'],
-    EXIT: ['exit', 'Ausstieg ausgelöst'], CLOSED: ['closed', 'Geschlossen'], INVALIDATED: ['inv', 'Ungültig'],
-    PARTIAL: ['partial', 'Teiltreffer'], RETIRED: ['inv', 'Regelwechsel'], REASSESSED: ['inv', 'Regelwechsel'],
+    DISCOVERED: ['cand', 'Entdeckt'], WATCH: ['cand', 'Auf Beobachtung'],
+    SETUP: ['prep', 'Muster entsteht'], ENTRY_READY: ['prep', 'Kurz vor der Marke'],
+    TRIGGERED: ['conf', 'Marke erreicht'], ACTIVE: ['pos', 'Modell ist dabei'], WARNING: ['warn', 'Warnzeichen'],
+    EXIT: ['exit', 'Ausstieg ausgelöst'], CLOSED: ['closed', 'Abgeschlossen'], INVALIDATED: ['inv', 'Muster geplatzt'],
+    PARTIAL: ['partial', 'Teiltreffer'], RETIRED: ['inv', 'Durch neue Regel ersetzt'], REASSESSED: ['inv', 'Nach Regeländerung neu bewertet'],
   };
-  var PHASE_FILTERS = [['', 'Alle aktuellen'], ['prep', 'Vorbereitet'], ['watch', 'Beobachtung'], ['conf', 'Bestätigt'], ['pos', 'Position'], ['exit', 'Ausstieg'], ['obs', 'Forschung'], ['cand', 'Kandidaten'], ['partial', 'Teiltreffer'], ['closed', 'Geschlossen'], ['inv', 'Ungültig']];
+  // Alltagsnamen nach Folie ST-Z (gleich STATE in st-redesign.js); der Code-Zustand bleibt.
+  var PHASE_FILTERS = [['', 'Alle aktuellen'], ['prep', 'Muster entsteht'], ['watch', 'Beobachtung'], ['conf', 'Marke erreicht'], ['pos', 'Modell ist dabei'], ['exit', 'Ausstieg'], ['obs', 'Forschung'], ['cand', 'Entdeckt'], ['partial', 'Teiltreffer'], ['closed', 'Abgeschlossen'], ['inv', 'Muster geplatzt']];
   var PHASE_ORDER = ['conf', 'pos', 'warn', 'exit', 'prep', 'partial', 'watch', 'obs', 'cand', 'closed', 'inv'];
   function phaseOfState(st) { return (PHASE[st] || ['cand'])[0]; }
   function phaseBadge(st) { var p = PHASE[st] || [st, st]; return h('span', { class: 'st-phase', 'data-p': p[0], text: p[1] }); }
@@ -395,7 +396,7 @@
 
     // Laufende Modellpositionen (simuliert, keine Orders)
     if (positions.length) {
-      var posSorted = positions.slice().sort(function (a, b) { return (b.entry.date || '').localeCompare(a.entry.date || '') || a.symbol.localeCompare(b.symbol); });
+      var posSorted = positions.slice().sort(function (a, b) { return ((b.entry && b.entry.date) || '').localeCompare((a.entry && a.entry.date) || '') || a.symbol.localeCompare(b.symbol); });
       main.appendChild(sec('Modellpositionen', [
         h('div', { class: 'st-list' }, posSorted.slice(0, 3).map(function (x) { return stockCard(x, S[x.strategyId]); })),
         moreBox('Wie das Modell einsteigt', [h('p', { text: 'Modelleinstieg nach der Regel der jeweiligen Version: Momentum, Weinstein, Darvas und Turtle per Kauf-Stop am Ausbruchspunkt im Tagesverlauf, Minervini nach einem Schlusskurs über dem Pivot zur nächsten Eröffnung. Das ist die Umsetzung von Vision Universe auf Tageskursen, nicht überall wörtlich die Regel des Traders. Simulation, keine Orders.' })]),
@@ -435,7 +436,7 @@
     // VU3: Ergebnis zuerst - was die Modelle heute protokollieren, dann der Status der Evidenz in einer Zeile.
     main.appendChild(h('section', { class: 'st-sec vu-sec st-today' }, [
       h('div', { class: 'st-sec-h vu-sec-head' }, [h('div', null, [h('div', { class: 'st-kick vu-eyebrow', text: stale ? 'Kurse veraltet – Stand ' + dateDe(sig.asOf) : 'Modellbeobachtung · ' + research.length + ' Methoden' }), h('h2', { class: 'vu-sec-title', text: 'Heute im Protokoll' })]), more(BASE + 'signals/', 'Alle Signale')]),
-      kpiList([[String(sum('prep')), 'In Vorbereitung'], [String(sum('conf')), 'Einstieg bestätigt'], [String(sum('pos')), 'Modellpositionen'], [String(sum('done')), 'Geschlossen']]),
+      kpiList([[String(sum('prep')), 'In Vorbereitung'], [String(sum('conf')), 'Einstiegsregel erfüllt'], [String(sum('pos')), 'Modellpositionen'], [String(sum('done')), 'Geschlossen']]),
       h('div', { class: 'st-evline' }, [vstatus('Alle Methoden in Prüfung', 'warn'), h('span', { text: 'Kein belegter Vorteil – Beobachtung, keine Empfehlung.' })]),
       moreBox('Was heißt „in Prüfung“?', [
         h('p', { text: 'Für keine laufende Regelversion ist bisher ein Vorteil belegt. Alle Methoden laufen deshalb als Modellbeobachtung: Setups, bestätigte Einstiege, Positionen und Ausstiege werden nach festen Regeln protokolliert – als Forschung, nicht als Empfehlung oder Einstiegschance.' }),
@@ -650,7 +651,7 @@
     ])];
     if (!t.portfolio.positions.length) pk.push(h('p', { class: 'st-p', text: 'Noch keine Position. Die erste Monatsentscheidung fällt am ' + dateDe(t.schedule.nextDecision) + ' nach Handelsschluss; gekauft wird zur Eröffnung am ' + dateDe(t.schedule.nextExecution) + '. Bis dahin liegt das Modellkapital (100.000 USD) in Cash.' }));
     else pk.push(h('ul', { class: 'st-mplist' }, t.portfolio.positions.map(function (p) {
-      var hold = p.holdChecks ? (p.holdChecks.perf && p.holdChecks.freshHigh ? 'Halteregeln erfüllt' : 'Verkauf am Monatsende droht: ' + (!p.holdChecks.perf ? 'unter 100 % seit Tief' : 'kein neues Hoch in 65 Tagen')) : '';
+      var hold = p.holdChecks ? (p.holdChecks.perf && p.holdChecks.freshHigh ? 'Halteregeln erfüllt' : 'Abgabe aus dem Musterdepot am Monatsende droht: ' + (!p.holdChecks.perf ? 'unter 100 % seit Tief' : 'kein neues Hoch in 65 Tagen')) : '';
       return h('li', null, [h('a', { href: stockUrl(p.symbol) }, [
         h('div', { class: 'r1' }, [h('strong', { text: p.symbol }), h('span', { class: 'w', text: pct(p.weight, 1) })]),
         h('div', { class: 'r2', text: 'Kauf ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' (Rang ' + (p.rankAtEntry || '–') + ') · ' + pct(p.perfSinceLow, 0) + ' über 52-W-Tief · ' + hold }),
@@ -661,7 +662,7 @@
     // Ausgeloeste Modellorders
     if (t.orders && (t.orders.buys.length || t.orders.sells.length)) main.appendChild(sec('Ausgelöste Modellorders', [
       h('p', { class: 'st-p', text: 'Am ' + dateDe(t.orders.decidedOn) + ' beschlossen, Ausführung zur ' + t.orders.executesAt + '.' }),
-      h('ul', { class: 'st-ul' }, t.orders.sells.map(function (x) { return h('li', { text: 'Verkauf ' + x.symbol + (x.target ? ' auf ' + pct(x.target, 0) : '') + ' · ' + t52Rule(x.ruleId, x) }); }).concat(t.orders.buys.map(function (x) { return h('li', { text: 'Kauf ' + x.symbol + ' · Rang ' + x.rank + ' · 10 %' }); }))),
+      h('ul', { class: 'st-ul' }, t.orders.sells.map(function (x) { return h('li', { text: 'Abgabe (Musterdepot) ' + x.symbol + (x.target ? ' auf ' + pct(x.target, 0) : '') + ' · ' + t52Rule(x.ruleId, x) }); }).concat(t.orders.buys.map(function (x) { return h('li', { text: 'Kauf ' + x.symbol + ' · Rang ' + x.rank + ' · 10 %' }); }))),
     ], { kicker: 'Beschlossen, noch nicht ausgeführt' }));
     // Vorbereitete Einstiege
     var pr = t.prepared || { candidates: [] };
@@ -684,7 +685,7 @@
     if (t.closed && t.closed.length) hist.push(details('Geschlossene Trades (' + t.closed.length + ')', [h('ul', { class: 'st-ul' }, t.closed.map(function (x) { return h('li', { text: x.symbol + ' · ' + dateShort(x.entryDate) + ' → ' + dateShort(x.exitDate) + ' · ' + t52Rule(x.exitRuleId, { text: x.exitText }) + ' · ' + pct(x.returnPct, 1, true) }); }))]));
     if (t.notTaken && t.notTaken.length) hist.push(details('Nicht übernommen (' + t.notTaken.length + ')', [h('ul', { class: 'st-ul' }, t.notTaken.map(function (x) { return h('li', { text: dateShort(x.date) + ' · ' + x.symbol + ' · ' + t52Rule(x.reason, x) }); }))]));
     if (t.executions && t.executions.length) hist.push(details('Ausführungen (' + t.executions.length + ')', [h('ul', { class: 'st-ul' }, t.executions.map(function (x) { return h('li', { text: dateShort(x.date) + ' · ' + (x.side === 'BUY' ? 'Kauf ' : 'Verkauf ') + x.symbol + ' zu ' + num(x.price) + (x.text ? ' · ' + x.text : '') }); }))]));
-    if (t.decisions && t.decisions.length) hist.push(details('Monatsentscheidungen (' + t.decisions.length + ')', [h('ul', { class: 'st-ul' }, t.decisions.map(function (d) { return h('li', { text: dateShort(d.date) + ' · Ampel ' + (d.green ? 'grün' : 'rot') + ' · ' + d.candidates + ' Kandidaten · Kauf: ' + (d.buys.join(', ') || '–') + ' · Verkauf: ' + (d.sells.map(function (x) { return x.symbol; }).join(', ') || '–') }); }))]));
+    if (t.decisions && t.decisions.length) hist.push(details('Monatsentscheidungen (' + t.decisions.length + ')', [h('ul', { class: 'st-ul' }, t.decisions.map(function (d) { return h('li', { text: dateShort(d.date) + ' · Ampel ' + (d.green ? 'grün' : 'rot') + ' · ' + d.candidates + ' Kandidaten · Aufnahme: ' + (d.buys.join(', ') || '–') + ' · Abgabe: ' + (d.sells.map(function (x) { return x.symbol; }).join(', ') || '–') }); }))]));
     if (!hist.length) hist.push(h('p', { class: 'st-hint', text: 'Noch keine Monatsentscheidung im Protokoll — das Ledger beginnt am ' + dateDe(t.liveSince) + ' und rechnet nicht zurück.' }));
     main.appendChild(sec('Protokoll', hist, { kicker: 'Jede Entscheidung mit Regel' }));
   }
@@ -697,7 +698,7 @@
     var n = (t.nearMisses || []).filter(function (x) { return x.symbol === sym; })[0];
     if (n) return ['Knapp nicht aufgenommen', 'mute', 'Fehlt: ' + n.text + '.'];
     var x = (t.closed || []).filter(function (q) { return q.symbol === sym; })[0];
-    if (x) return ['Verkauft', 'mute', dateShort(x.exitDate) + ' · ' + t52Rule(x.exitRuleId, { text: x.exitText })];
+    if (x) return ['Abgegeben (Musterdepot)', 'mute', dateShort(x.exitDate) + ' · ' + t52Rule(x.exitRuleId, { text: x.exitText })];
     return null;
   }
   function portfolioCell(D, s) {
@@ -1342,14 +1343,14 @@
       }
       var asOf = s.plan ? ' · geplant, Stand ' + dateShort(s.plan.trigger.dataAsOf) : ' · geplant';
       if (isFinite(lv.trigger)) levels.push({ id: 'trigger', label: 'Trigger' + asOf, value: lv.trigger, color: 'var(--chart-trigger)' });
-      if (s.entry) levels.push({ id: 'entry', label: 'Modelleinstieg ' + dateShort(s.entry.date), value: s.entry.price, color: 'var(--chart-entry)', dash: '2 3' });
+      if (s.entry && isFinite(s.entry.price)) levels.push({ id: 'entry', label: 'Modelleinstieg ' + dateShort(s.entry.date), value: s.entry.price, color: 'var(--chart-entry)', dash: '2 3' });
       if (isFinite(s.stop)) levels.push({ id: 'stop', label: 'Stop', value: s.stop, color: 'var(--chart-stop)' });
       else if (isFinite(lv.invalidation)) levels.push({ id: 'inv', label: 'Ungültig unter' + asOf, value: lv.invalidation, color: 'var(--chart-stop)' });
       if (s.strategyId === 'DARVAS_BOX' && isFinite(lv.boxBottom)) boxes.push({ from: lv.boxTopDate, to: null, top: lv.boxTop, bottom: lv.boxBottom, color: 'var(--chart-box-darvas)', label: 'Darvas-Box (VU)' });
       if (s.strategyId === 'MOMENTUM_BREAKOUT' && lv.baseStartDate) boxes.push({ from: lv.baseStartDate, to: null, top: lv.baseHigh, bottom: lv.baseLow, color: 'var(--chart-box-base)', label: 'Basis (VU)' });
       if (s.confirmation) markers.push({ date: s.confirmation.date, price: s.confirmation.close, kind: 'confirm' });
-      if (s.entry) markers.push({ date: s.entry.date, price: s.entry.price, kind: 'entry' });
-      (s.exits || []).forEach(function (x, i, arr) { markers.push({ date: x.date, price: x.price, kind: i < arr.length - 1 || x.fraction < 1 ? 'partial' : 'exit' }); });
+      if (s.entry && isFinite(s.entry.price)) markers.push({ date: s.entry.date, price: s.entry.price, kind: 'entry' });
+      (s.exits || []).filter(function (x) { return isFinite(x.price); }).forEach(function (x, i, arr) { markers.push({ date: x.date, price: x.price, kind: i < arr.length - 1 || x.fraction < 1 ? 'partial' : 'exit' }); });
       STChart.render(box, { bars: bars, mode: weekly ? 'line' : 'candles', window: weekly ? 104 : 90, overlays: overlays, levels: levels, boxes: boxes, markers: markers, showVolume: !weekly, title: s.symbol,
         status: (s.entry ? 'Modelleinstieg ▲ zur Eröffnung am ' + dateDe(s.entry.date) + '. ' : 'Noch kein Modelleinstieg — Linien sind geplante Schwellen. ') + 'Kurse bis ' + dateDe(bars.date[bars.date.length - 1]) + '.' });
     }).catch(function () { host.innerHTML = ''; host.appendChild(emptyBox('Chart nicht verfügbar', 'Die Kursdaten für diesen Titel konnten nicht geladen werden. Es wird kein Ersatzchart gezeichnet.')); });
@@ -1456,7 +1457,7 @@
       var ex1 = ex.result.exit, r = ex.result;
       var steps = [
         [first.date, 'Vorbereitet', 'Liquide Aktie nahe dem 20-Tage-Hoch. Geplanter Trigger ' + num(first.trigger || ex.checks.triggerAtConfirmation) + ', ungültig unter ' + num(first.invalidation) + '.'],
-        conf ? [conf.date, 'Einstieg bestätigt', 'Tagesschluss ' + num(ex.checks.confirmationClose) + ' über dem Trigger ' + num(ex.checks.triggerAtConfirmation) + '. Gekauft wird erst am nächsten Morgen.'] : null,
+        conf ? [conf.date, 'Einstiegsregel erfüllt', 'Tagesschluss ' + num(ex.checks.confirmationClose) + ' über dem Trigger ' + num(ex.checks.triggerAtConfirmation) + '. Gekauft wird erst am nächsten Morgen.'] : null,
         ent ? [ent.date, 'Modelleinstieg zur Eröffnung', 'Eröffnung ' + num(ex.checks.entryRawOpen) + ' + ' + num((r.entry.price / ex.checks.entryRawOpen - 1) * 100, 2) + ' % Ausführungsannahme = ' + num(r.entry.price) + '. Stop ' + num(sg.initialStop) + ' (2 × Tagesspanne N darunter).'] : null,
         [ex1.date, KIND_LABEL[ex.kind] || 'Ausstieg', (ex.kind === 'STOP' ? (ex.checks.exitBasis === 'OPEN_BELOW_STOP' ? 'Eröffnung unter dem Stop – Ausstieg zum Eröffnungskurs ' + num(ex1.price) + ' (Gap-Regel).' : 'Stop gerissen – Ausstieg zu ' + num(ex1.price) + '.') : 'Schluss unter dem 10-Tage-Tief → Ausstieg zur nächsten Eröffnung ' + num(ex1.price) + '.')],
       ].filter(Boolean);
@@ -1529,23 +1530,18 @@
     if (!L || !L.decisions || !L.decisions.length) {
       main.appendChild(sec('Modelldepot', [emptyBox('Start steht bevor', 'Die erste Entscheidung wird gerade festgeschrieben. Danach erscheinen hier die 20 Titel des Depots.')], { kicker: 'Vorwärtslauf' }));
     } else {
-      var cur = L.current || {}, last = L.decisions[L.decisions.length - 1];
+      // Owner-Linie 05.11.2026 (L3): kein aktueller Bestand, kein Rein/Raus; Titel erst nach mindestens 365 Tagen
+      var last = L.decisions[L.decisions.length - 1], lag = L.holdingsLagDays || 365;
       var kids = [h('div', { class: 'st-mphead' }, [
-        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Titel' }), h('strong', { text: String((cur.holdings || []).length) })]),
-        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Gewicht je Titel' }), h('strong', { text: cur.holdings && cur.holdings.length ? pct(1 / cur.holdings.length, 0) : '–' })]),
-        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Entschieden am' }), h('strong', { text: dateDe(cur.date) })]),
+        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Titel' }), h('strong', { text: String(last.count || 0) })]),
+        h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Zuletzt entschieden' }), h('strong', { text: dateDe(last.date) })]),
         h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Nächste Entscheidung' }), h('strong', { text: dateDe(L.nextDecision) })]),
       ])];
-      kids.push(h('ul', { class: 'st-mplist st-grid3' }, (cur.holdings || []).map(function (x) {
-        return h('li', null, [h('a', { href: '/quant/#/aktie/' + encodeURIComponent(x.ticker) }, [
-          h('div', { class: 'r1' }, [h('strong', { text: x.ticker }), h('span', { class: 'w', text: pct(x.weight, 1) })]),
-          h('div', { class: 'r2', text: (last.buys || []).indexOf(x.ticker) >= 0 ? 'neu aufgenommen am ' + dateDe(last.date) : 'gehalten' }),
-        ])]);
-      })));
-      kids.push(h('p', { class: 'st-hint', text: 'Umsetzung zur Eröffnung am ' + (last.executeOn ? dateDe(last.executeOn) : 'nächsten Handelstag') + '. Live seit ' + dateDe(L.liveSince) + '. Veröffentlicht werden Titel und Zielgewichte, keine Kurse und keine Renditen.' }));
-      main.appendChild(sec('Modelldepot', kids, { kicker: 'Aktuelle Zusammensetzung' }));
+      kids.push(h('p', { class: 'st-hint', text: 'Live seit ' + dateDe(L.liveSince) + '. Die Zusammensetzung erscheint erst, wenn der Stichtag mindestens ' + lag + ' Tage zurückliegt; bis dahin belegt ein Fingerabdruck (SHA-256), dass die Entscheidung vorher festgeschrieben war. Keine Kurse, keine Renditen, keine Empfehlung.' }));
+      main.appendChild(sec('Modelldepot', kids, { kicker: 'Vorwärtslauf' }));
       main.appendChild(sec('Protokoll', [h('ul', { class: 'st-ul' }, L.decisions.slice().reverse().map(function (d) {
-        return h('li', { text: dateDe(d.date) + (d.kind === 'START' ? ' · Start' : ' · Monatsende') + ' · Kauf: ' + ((d.buys || []).join(', ') || '–') + ' · Verkauf: ' + ((d.sells || []).join(', ') || '–') + ' · festgeschrieben ' + dateDe(d.decidedAt) });
+        var shown = d.holdings && d.holdings.length;
+        return h('li', { text: dateDe(d.date) + (d.kind === 'START' ? ' · Start' : ' · Monatsende') + ' · ' + (d.count || 0) + ' Titel · ' + (shown ? d.holdings.map(function (x) { return x.ticker; }).join(', ') : 'Fingerabdruck ' + String(d.holdingsSha256 || '').slice(0, 12) + '…') + ' · festgeschrieben ' + dateDe(d.decidedAt) });
       }))], { kicker: 'Jede Entscheidung mit Zeitstempel' }));
     }
     main.appendChild(sec('Regeln', [h('ol', { class: 'st-chain' }, ((L && L.rules) || []).map(function (r) { return h('li', null, [h('p', { text: r })]); })),

@@ -83,12 +83,16 @@ if (only.has('journeys')) await guard('journeys', async () => {
     if (errors.length) fail('quant<->elliott', 'Seitenfehler: ' + errors.slice(0, 2).join(' | '));
     await page.close();
   }
-  // Quant NVDA -> Supertrader / Discover; Discover -> Elliott
-  for (const [name, re, expectUrl, expectTitle] of [
-    ['quant->supertrader', /^\/supertrader\/stock\/NVDA\/$/, /\/supertrader\/stock\/NVDA\/$/, /NVDA/],
-    ['quant->discover', /^\/discover\/#\/s\/US_REAL\/NVDA$/, /\/discover\/#\/s\/US_REAL\/NVDA$/, /NVIDIA/i]
+  // Quant -> Supertrader (an einem Titel mit Supertrader-Seite) / Discover; Discover -> Elliott.
+  // Seit L3 (#1479) fuehrt Supertrader nur Titel mit Regel-Ergebnissen; NVDA hatte nur eine Modellposition.
+  // Der Titel kommt deshalb aus supertrader/data/build.json (slices.stock), bevorzugt AAPL.
+  const stSlices = await fetch(base + '/supertrader/data/build.json').then((r) => r.json()).then((j) => (j.slices && j.slices.stock) || []).catch(() => []);
+  const ST = ['AAPL', 'MSFT', 'NVDA'].find((t) => stSlices.includes(t)) || stSlices[0] || 'NVDA';
+  for (const [name, re, expectUrl, expectTitle, from] of [
+    ['quant->supertrader', new RegExp('^/supertrader/stock/' + ST + '/$'), new RegExp('/supertrader/stock/' + ST + '/$'), new RegExp(ST), ST],
+    ['quant->discover', /^\/discover\/#\/s\/US_REAL\/NVDA$/, /\/discover\/#\/s\/US_REAL\/NVDA$/, /NVIDIA/i, 'NVDA']
   ]) {
-    const { page, errors } = await open(ctx, '/quant/#/aktie/NVDA');
+    const { page, errors } = await open(ctx, '/quant/#/aktie/' + from);
     const href = await follow(page, re, name);
     if (!href) fail(name, 'Link fehlt');
     else if (!expectUrl.test(where(page)) || !expectTitle.test(await title(page))) fail(name, 'Ziel falsch: ' + where(page) + ' · ' + await title(page));
@@ -215,7 +219,7 @@ if (only.has('visual')) await guard('visual', async () => {
         });
         if (dir && dir !== 'BULLISH') {
           if (await page.evaluate(() => document.querySelectorAll('#setup .q-check-count').length)) fail('visual ' + world, 'Abwaertsszenario (' + dir + '), aber Setup-Regelcheckliste in #setup auf ' + route);
-          sel = '#setup .q-levels.is-bear .is-inv'; label = 'Setup-Karte im Abwaertsszenario (' + dir + '): Marke "Ungültig über" statt Regelcheckliste';
+          sel = '#setup .q-levels.is-bear .is-inv'; label = 'Setup-Karte im Abwaertsszenario (' + dir + '): Ungültig-Marke laut Methode (darüber) statt Regelcheckliste';
         }
       }
       const state = await page.evaluate((s) => { const n = document.querySelector(s); if (!n) return 'missing'; const r = n.getBoundingClientRect(); return r.width > 0 && r.height > 0 ? 'visible' : 'hidden'; }, sel);

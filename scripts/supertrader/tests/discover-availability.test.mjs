@@ -22,7 +22,7 @@ test('discoverAvailability: genau die Titel ohne Discover-Aktienseite, sortiert 
 test('Build weist den Zustand vor dem Schreiben von signals.json aus und veraendert keine Signale', () => {
   const src = readFileSync(join(ROOT, 'scripts', 'supertrader', 'build.mjs'), 'utf8');
   const i = src.indexOf('signals.discoverAvailability = discoverAvailability(');
-  assert.ok(i > 0 && i < src.indexOf("writeJson(path.join(DATA, 'signals.json'), signals)"));
+  assert.ok(i > 0 && i < src.indexOf("writeJson(path.join(DATA, 'signals.json'), pub)"));
   assert.match(src, /discoverAvailability\(\s*\[\.\.\.Object\.keys\(signals\.bySymbol\), \.\.\.TREND52_SYMBOLS, \.\.\.symbolsIn\(signals\.partialChecks\)\]/);
 });
 

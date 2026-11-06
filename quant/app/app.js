@@ -94,7 +94,7 @@
       case "backtest": r.view = "backtest"; r.id = parts[1] ? String(parts[1]).toUpperCase() : null; break;
       case "aktie":
         r.ticker = String(parts[1] || "").toUpperCase();
-        r.view = !/^[A-Z0-9.-]{1,12}$/.test(r.ticker) ? "notfound" : parts[2] === "technik" ? "technik" : parts[2] === "chartbild" ? "chartbild" : parts[2] === "zahlen" ? "zahlen" : "aktie";
+        r.view = !/^[A-Z0-9.-]{1,12}$/.test(r.ticker) ? "notfound" : parts[2] === "technik" ? "technik" : parts[2] === "chartbild" ? "chartbild" : parts[2] === "chart" ? "chart" : parts[2] === "zahlen" ? "zahlen" : "aktie";
         break;
       case "vergleich": r.view = "vergleich"; r.list = (parts[1] || "").split(",").map(function (x) { return x.trim().toUpperCase(); }).filter(Boolean); break;
       case "methodik": r.view = "methodik"; r.topic = parts[1] || null; break;
@@ -102,8 +102,8 @@
     }
     return r;
   }
-  var SECTION = { home: "home", radar: "home", backtest: "methodik", screener: "screener", strategien: "strategien", aktien: "aktien", aktie: "aktien", technik: "aktien", chartbild: "aktien", elliott: "elliott", chartlagen: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
-  var TITLE = { home: "Quant – Aktien verstehen", radar: "Quant Radar", backtest: "Backtesting", screener: "Quant Screener", strategien: "Strategien", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", chartbild: "Chartbild", elliott: "Elliott", chartlagen: "Technische Lagen", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
+  var SECTION = { home: "home", radar: "home", backtest: "methodik", screener: "screener", strategien: "strategien", aktien: "aktien", aktie: "aktien", technik: "aktien", chartbild: "aktien", chart: "aktien", elliott: "elliott", chartlagen: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
+  var TITLE = { home: "Quant – Aktien verstehen", radar: "Quant Radar", backtest: "Backtesting", screener: "Quant Screener", strategien: "Strategien", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", chartbild: "Chartbild", chart: "Chartbild", elliott: "Elliott", chartlagen: "Technische Lagen", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
 
   /* -------------------------------------------------------- Kontext */
   /* CHARTBILD (Technical Intelligence v3) LAEDT NUR, WO ES GEBRAUCHT WIRD.
@@ -266,7 +266,7 @@
     ]) : el("footer", { class: "q-foot qx-foot" }, [
       el("b", { text: "VISION UNIVERSE® QUANT" }),
       /* VU3-Finalisierung: ein Absatz Hinweis statt drei; Quellen und Stichtage stehen je Seite in "Daten & Methodik". */
-      el("p", {}, [el("span", { class: "q-beta", text: "Beta" }), el("span", { text: " Keine Anlageempfehlung, keine Prognose, kein Kursziel. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse. Daten: SEC EDGAR, Tiingo." })]),
+      el("p", {}, [el("span", { class: "q-beta", text: "Beta" }), el("span", { text: " Keine Anlageempfehlung, keine Prognose, kein Kursziel. Zone und Ungültig-Marke laut Methode sind Regel-Ergebnisse der technischen Analyse. Daten: SEC EDGAR, Tiingo." })]),
       el("p", {}, [el("a", { href: "#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), el("span", { text: " · " }), el("a", { href: "#/backtest", text: "Backtesting" }), el("span", { text: " · " }), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" }), el("span", { text: " · " }), el("a", { href: "/discover/", text: "Discover" })])
     ]);
     root.replaceChildren(main, foot);
@@ -392,6 +392,8 @@
         case "aktie": await Promise.all([ctx.loadBacktestView(), viewPack]); dispose = await global.QXStock.render(main, r.ticker, ctx); break;
         /* Mission IV §55: die V1-Technikseite ist abgeloest — die Route bleibt (Links, Lesezeichen), zeigt aber das Chartbild;
            der alte Elliott-Link oeffnet die Profi-Ansicht. Keine zweite, widerspruechliche Szenario-Darstellung mehr. */
+        /* Redesign 2027 (Q09): Perspektive „Chart“ bleibt in Quant (eigene Adresse; #/aktie/<T>/chartbild fuehrt weiter zu Elliott). */
+        case "chart": await Promise.all([ctx.loadNames(), pack("stock")]); await (await loadChartbild()).chartV3(main, ctx, r.ticker, r.params, global.VUChart); break; /* der Kurschart (C06) liegt im Paket der Aktienseite */
         case "chartlagen": await (await loadChartbild()).overview(main, ctx, r.params); hideEmptyLagen(main, r.params); break;
         case "zahlen": await viewPack; await global.QXTools.fundamentals(main, ctx, r.ticker, r.params); break;
         case "vergleich": await viewPack; await global.QXTools.compare(main, ctx, r.list); break;

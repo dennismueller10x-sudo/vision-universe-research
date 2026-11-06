@@ -1,9 +1,11 @@
 #!/usr/bin/env node
-// Supertrader — Architektur-Gate A.
+// Supertrader — Architektur-Gate A, seit 05.11.2026 nur noch Bericht.
 //
-// Discovery und Quant 2.0 duerfen durch Supertrader NICHT veraendert werden.
-// Dieser Guard vergleicht den Branch mit der Basis und erlaubt ausschliesslich
-// Pfade der Supertrader-Produktwelt. Jede andere Aenderung laesst CI scheitern.
+// Vorher: jede Aenderung ausserhalb der Supertrader-Pfade liess CI scheitern (Pfad-Isolation).
+// Jetzt (Plan Neustart §3, Owner-Entscheidung 04.11.2026): Vertragstests. Wer Discover oder Quant
+// aendert, loest deren CI und Vertragstests aus; Schnittstellen sind in
+// core/registry/product-contracts.json mit Schema gefuehrt (core/tests/product-contracts.test.mjs).
+// Dieses Skript meldet weiter, welche anderen Produkte ein PR beruehrt - es blockiert nicht.
 //
 // Aufruf: node scripts/supertrader/guard-protected-paths.mjs [--base=origin/main]
 import { execFileSync } from 'node:child_process';
@@ -25,8 +27,8 @@ console.log(`Supertrader Gate A: ${changed.length} geaenderte Dateien gegen ${ba
 console.log(`  DISCOVERY_CHANGED=${protectedHits.some((f) => /^(discover|discover-v2|scripts\/discover)\//.test(f))}`);
 console.log(`  QUANT_2_CHANGED=${protectedHits.some((f) => /^(quant|vu2|scripts\/(vu2|quant))\//.test(f))}`);
 if (offenders.length) {
-  console.error('Nicht erlaubte Aenderungen ausserhalb der Supertrader-Welt:');
-  for (const f of offenders) console.error('  ' + f);
-  process.exit(1);
+  console.log('  Aenderungen ausserhalb der Supertrader-Welt (deren CI und Vertragstests laufen):');
+  for (const f of offenders) console.log('    ' + f);
+} else {
+  console.log('  nur Supertrader-Pfade veraendert.');
 }
-console.log('  OK: nur Supertrader-Pfade veraendert.');

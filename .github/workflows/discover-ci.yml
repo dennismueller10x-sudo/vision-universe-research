@@ -62,48 +62,11 @@ jobs:
           grep -q 'site-navigation.css' "$page" || { echo "$page ohne Navigations-Stylesheet"; exit 1; }
           echo "Seite geprueft"
 
-      - name: Gated Company Intelligence Stock-Hooks sind strikt additiv
-        id: intelligence_scope
-        if: github.event_name == 'pull_request'
-        run: |
-          set -euo pipefail
-          git rev-parse --verify --quiet HEAD^2 >/dev/null || { echo "::error::HEAD ist kein PR-Merge-Commit"; exit 1; }
-          scope="quant providers scripts/quant scripts/technical scripts/market dashboard macro academy"
-          nachweise=":(exclude)quant/tests/currency-fx-matrix.test.mjs :(exclude)quant/config/currency-formatting-baseline.json :(exclude)quant/data/market/fx/currency-debt-register.json"
-          geaendert=$(git diff --name-only HEAD^1 HEAD -- $scope $nachweise)
-          if [ -n "$geaendert" ] && [ -f scripts/company_intelligence/check-quant-integration.mjs ]; then
-            unerwartet=$(node scripts/company_intelligence/check-quant-integration.mjs HEAD^1 HEAD $geaendert)
-            if [ -z "$unerwartet" ]; then
-              echo "exact_stock_hooks=true" >> "$GITHUB_OUTPUT"
-            fi
-          fi
-
-      - name: Discover veraendert keine bestehende Engine
-        # Der Kern des Auftrags: EXTEND, DO NOT MODIFY. Was ausserhalb von
-        # discover/ und scripts/discover/ liegt, darf dieser Bereich nicht
-        # anfassen - mit Ausnahme des einen Navigationseintrags.
-        if: github.event_name == 'pull_request' && steps.intelligence_scope.outputs.exact_stock_hooks != 'true'
-        # Ausgenommen sind allein die Currency-Nachweise, die Discover-
-        # Dateipfade namentlich fuehren (Testmatrix, Formatierungs-Grundlinie,
-        # Debt Register): verschiebt Discover eine Datei, muessen sie den
-        # neuen Pfad kennen, sonst waere der Nachweis gruen und unwahr.
-        # Der Currency Core selbst (quant/engines/fx) bleibt geschuetzt.
-        # Bis 10/2026 verglich der Schritt origin/<base>...HEAD in einem
-        # flachen Checkout. Ohne gemeinsame Basis bricht git diff ab, wc -l
-        # zaehlte 0 und das Gate war immer gruen. Jetzt: der Merge-Commit
-        # gegen seinen ersten Elternteil, und ein Git-Fehler bricht ab.
-        run: |
-          set -euo pipefail
-          git rev-parse --verify --quiet HEAD^2 >/dev/null || { echo "::error::HEAD ist kein PR-Merge-Commit"; exit 1; }
-          scope="quant providers scripts/quant scripts/technical scripts/market dashboard macro academy"
-          nachweise=":(exclude)quant/tests/currency-fx-matrix.test.mjs :(exclude)quant/config/currency-formatting-baseline.json :(exclude)quant/data/market/fx/currency-debt-register.json"
-          geaendert=$(git diff --name-only HEAD^1 HEAD -- $scope $nachweise)
-          if [ -n "$geaendert" ]; then
-            echo "Discover veraendert Dateien ausserhalb seines Moduls:"
-            echo "$geaendert"
-            exit 1
-          fi
-          echo "Keine bestehende Engine veraendert."
+      # Bis 05.11.2026 stand hier "Discover veraendert keine bestehende Engine" (Pfadverbot fuer quant,
+      # providers, scripts/quant|technical|market, dashboard, macro, academy). Ersetzt durch Vertragstests:
+      # wer diese Pfade aendert, loest Quant-/Technical-CI aus; Schnittstellen pruefen PC-1..4.
+      - name: Produktvertraege (statt Pfadverbot)
+        run: node --test core/tests/product-contracts.test.mjs
 
       - name: JSON-Dateien sind gueltig
         run: |

@@ -92,6 +92,8 @@ Bestätigungen auf dauerhaftem Datenträger (E-Mail über Brevo, `billing.mail_o
 | A14 | Klarna als Zahlungsart für ein 1-€-Abo (Stripe zeigt nur, was zulässig ist) | dynamische Zahlungsarten | Owner | Entscheidung offen |
 | A15 | Kapitalmarktrecht: Leistung als Analyse-Software, keine Anlageberatung/-vermittlung/Vermögensverwaltung (AGB Ziff. 2–4), Risikohinweise, MAR-Hinweise, § 86 WpHG, Pflicht-Hinweise im Frontend (`assets/legal-notices.json`) | Entwurf mit [[OFFEN]]/[[PRÜFEN]] (Fassung 3, 05.11.2026); Einordnung und Fragen in [../legal/EINORDNUNG.md](../legal/EINORDNUNG.md), [../legal/ANWALTSMAPPE.md](../legal/ANWALTSMAPPE.md) | Owner + Fachanwalt Kapitalmarktrecht | **offen** |
 
+A15 im Frontend: Die Hinweise sind eingebaut (`VUUI.legal(key)` in `assets/vu-ui.js`, einheitlicher Seitenfuß in `assets/site-navigation.js`, Atlas-Hinweis „ai“, Backtest-Hinweis mit Pflichtangaben im Supertrader). Sie bleiben unsichtbar, bis in `assets/legal-notices.json` `legalApproved: true` steht und `node scripts/legal/sync-legal-notices.mjs` gelaufen ist; `core/tests/legal-notices-frontend.test.mjs` prüft, dass die Kopie der JSON-Datei entspricht.
+
 ## Fragebogen für den Owner (R2)
 
 Bitte beantworten; die Antworten ersetzen die `[[OFFEN]]`-Stellen. Es werden keine Angaben erfunden.

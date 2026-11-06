@@ -160,7 +160,7 @@ test('ST-HIST-10: Diagnose der goldenen Trades folgt kkFidelitySetupAt Schritt f
   for (const x of sess) assert.equal(x.leader, x.momentum.bestPercentile !== null && x.momentum.bestPercentile >= 100 - FID.KK_FIDELITY_RULES.momentumTopPct);
   assert.doesNotMatch(JSON.stringify(g), /totalReturn|cagr|pnl|equity/);
   const w = fs.readFileSync(new URL('../../../.github/workflows/supertrader-st-hist-top5.yml', import.meta.url), 'utf8');
-  assert.match(w, /options: \[backtest, edge-export, golden-diagnose\]/);
+  assert.match(w, /options: \[backtest, edge-export, golden-diagnose, minervini-golden\]/);
 });
 
 test('ST-HIST-11: Ausführungsdiagnose der goldenen Trades: Setups, Ablehnungen mit Grund, offene Positionen, keine Renditezahl', async () => {
@@ -221,4 +221,53 @@ test('ST-HIST-13: FID-4 genau wie vorregistriert (1 % Risiko, Kappe 25 %, höchs
   assert.equal(T.fid4Verdict({}, pre, 'DEV').status, 'NOT_COMPUTED');
   const d = ds(), f = T.kkFidelityRun(d, { window: WIN });
   assert.ok('FID-4' in f.variants && f.variants['FID-4'].costs.REF);
+});
+
+test('ST-HIST-14: Minervini-Treueprüfung Schritt 1: Referenz C06/C07 unverändert gegen belegte Trades, Zustand je Sitzung', async () => {
+  const MF = await import('../source-faithful/research/minervini-fidelity.mjs');
+  assert.equal(MF.MINERVINI_GOLDEN_TRADES.length, 13);
+  assert.ok(MF.MINERVINI_GOLDEN_TRADES.every((g) => /^\d{4}-\d{2}-\d{2}$/.test(g.date) && g.date >= '2016-01-04' && g.date <= '2026-09-30' && ['SEPA', 'POWER_PLAY'].includes(g.setup) && /@markminervini \d+/.test(g.source)));
+  const d = ds(), golden = [{ ticker: 'AAA', date: '2016-06-15', setup: 'SEPA', source: 'Test' }, { ticker: 'ZZZ', date: '2016-06-15', setup: 'SEPA', source: 'Test' }, { ticker: 'CCC', date: '2016-06-15', setup: 'POWER_PLAY', source: 'Test' }];
+  const out = T.minerviniGoldenRun(d, { window: WIN });
+  assert.deepEqual(Object.keys(out.methods), ['C06', 'C07']);
+  for (const m of Object.values(out.methods)) { assert.deepEqual(Object.keys(m.costs), ['COST-0', 'REF']); assert.ok('expectancyR' in m.costs.REF.rDistribution && m.costs.REF.rejectionsByReason); assert.ok(Array.isArray(m.costs.REF.golden)); }
+  // Diagnose direkt mit eigener Liste
+  const MX = await import('../source-faithful/research/minervini-execution.mjs'), ML = await import('../source-faithful/research/minervini-lifecycle.mjs');
+  const idx = MX.buildSetupIndex(d, 'SEPA', { from: null }), run = MX.runMinerviniLifecycle(d, { strategy: 'SEPA', setupIndex: idx, config: ML.REFERENCE_CONFIG, from: WIN.from, to: WIN.to });
+  const g = MF.minerviniGoldenDiagnose(d, { strategy: 'SEPA', setupIndex: idx, run, golden });
+  assert.equal(g.length, 2, 'nur goldene Trades derselben Strategie');
+  assert.equal(g[1].inUniverse, false);
+  const sess = g[0].securities[0].sessions;
+  assert.ok(sess.length >= 10 && sess.every((x) => typeof x.state === 'string' && !x.state.includes('|')));
+  // Zustand je Sitzung stimmt mit dem Setup-Index überein
+  const sec = d.securities.find((s) => s.id.includes(':AAA:')), m = idx.index.get(sec.id) || new Map();
+  for (let i = 300; i < sec.bars.length; i += 37) assert.equal(MF.setupStateAt('SEPA', sec, i) === 'SETUP_DETECTED', m.has(i), sec.bars[i].date);
+  assert.doesNotMatch(JSON.stringify(g), /totalReturn|cagr|equity/);
+});
+
+test('ST-HIST-15: C06/C07 FID-1 genau wie vorregistriert (RS >= 70, höchstens 3 je Tag nach RS, FREEROLL_2R), Referenz unverändert', async () => {
+  const MF = await import('../source-faithful/research/minervini-fidelity.mjs');
+  const MX = await import('../source-faithful/research/minervini-execution.mjs'), ML = await import('../source-faithful/research/minervini-lifecycle.mjs');
+  const pre = JSON.parse(fs.readFileSync(new URL('../source-faithful/certification/C06-C07-FID1-PREREGISTRATION.json', import.meta.url), 'utf8'));
+  assert.deepEqual(MF.MINERVINI_FID1, { rsMin: pre.rule.rsGate.min, dailyTop: pre.rule.dailySelection.max, exitPolicy: pre.rule.exitPolicy });
+  assert.ok(ML.EXIT_POLICIES[pre.rule.exitPolicy], 'Ausstieg ist eine vorhandene Politik der gepinnten Engine');
+  assert.deepEqual(pre.criteria.machine, { cagrAboveSpyCagr: true, expectancyRAbove: 0, minClosedTrades: 100 });
+  assert.equal(ML.REFERENCE_CONFIG.exitPolicy, 'STOP_BE3R_MA50', 'Referenz unverändert');
+  const d = ds(), idx = MX.buildSetupIndex(d, 'SEPA', { from: null });
+  const rs = { at: (id, date) => ({ proxy: { vuPercentile: id.includes(':AAA:') ? 95 : id.includes(':BBB:') ? 80 : 50 } }) };
+  const sel = MF.selectSetupIndex(d, idx, { rs });
+  assert.ok(![...sel.index.keys()].some((id) => id.includes(':CCC:')), 'RS 50 < 70 fällt heraus');
+  const perDate = new Map(); for (const [id, m] of sel.index) for (const [i] of m) { const dt = d.securities.find((s) => s.id === id).bars[i].date; perDate.set(dt, (perDate.get(dt) || 0) + 1); assert.ok(idx.index.get(id).has(i), 'nur Setups der Referenz'); }
+  assert.ok([...perDate.values()].every((n) => n <= 3));
+  const one = MF.selectSetupIndex(d, idx, { rs, dailyTop: 1 });
+  const dateOf = (id, i) => d.securities.find((s) => s.id === id).bars[i].date, pct = (id) => rs.at(id).proxy.vuPercentile;
+  const setupsOn = new Map(); for (const [id, m] of idx.index) for (const [i] of m) { const dt = dateOf(id, i); if (pct(id) >= 70) (setupsOn.get(dt) || setupsOn.set(dt, []).get(dt)).push(id); }
+  for (const [id, m] of one.index) for (const [i] of m) { const dt = dateOf(id, i); assert.equal(pct(id), Math.max(...setupsOn.get(dt).map(pct)), `bei einem Platz gewinnt das höhere RS (${dt})`); }
+  const mk = (cagr, spyCagr, e, n) => ({ costs: { REF: { cagr, spyCagr, rDistribution: { expectancyR: e, closed: n } } } });
+  assert.equal(T.minerviniFid1Verdict(mk(0.2, 0.15, 0.1, 150), pre, 'DEV').pass, true);
+  assert.equal(T.minerviniFid1Verdict(mk(0.1, 0.15, 0.1, 150), pre, 'DEV').pass, false);
+  assert.equal(T.minerviniFid1Verdict(mk(0.2, 0.15, -0.01, 150), pre, 'DEV').pass, false);
+  assert.equal(T.minerviniFid1Verdict(mk(0.2, 0.15, 0.1, 99), pre, 'DEV').pass, false);
+  const out = T.minerviniGoldenRun(d, { window: WIN });
+  for (const m of Object.values(out.methods)) { assert.ok(m.fid1 && m.fid1.costs.REF && m.fid1.verdict && 'pass' in m.fid1.verdict || m.fid1.verdict.status === 'NOT_COMPUTED'); assert.ok(Array.isArray(m.fid1.costs.REF.golden)); }
 });

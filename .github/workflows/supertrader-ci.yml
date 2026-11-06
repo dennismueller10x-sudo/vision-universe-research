@@ -71,13 +71,16 @@ jobs:
             exit 1
           fi
           echo "Merge-Basis zu origin/$BASE_REF: $(git rev-parse --short "$mb") (HEAD^1 $(git rev-parse --short HEAD^1))"
-      - name: Gate A — nur Supertrader-Pfade veraendert (Discovery und Quant 2.0 unberuehrt)
+      - name: Gate A (Bericht) — beruehrte Produkte ausserhalb Supertrader
+        # Seit 05.11.2026 Vertragstests statt Pfad-Isolation (core/registry/product-contracts.json).
         if: github.event_name == 'pull_request'
         env:
           BASE_REF: ${{ github.base_ref }}
         run: |
           set -euo pipefail
           node scripts/supertrader/guard-protected-paths.mjs --base="origin/$BASE_REF"
+      - name: Produktvertraege (Pfade loesen die Produkt-CI aus, Schnittstellen-Schemata)
+        run: node --test core/tests/product-contracts.test.mjs
       - name: Gate B/D/E — Engine, Registry, Source Ledger, Artefakte
         run: node --test "scripts/supertrader/tests/*.test.mjs"
       # Nur hier mit SF9_E2E=1: In den Produktionslaeufen (Signalkette, SF8-Tageslauf) ueberspringt sich der Test,
@@ -93,9 +96,14 @@ jobs:
         # Runners (gemessen 27.10.2026: 4144 MB; Bedarf ~2,5 GB, lokal mit
         # 2096 MB Standard Abbruch). Bricht dieser Schritt ab, reicht der
         # Standard nicht mehr. Schreibt nur in RUNNER_TEMP.
+        # L3 (05.11.2026): die Ledger im Repository sind nur noch die oeffentliche Sicht; der private Zustand wird in der
+        # PR-CI nicht geholt. Der Lauf bekommt deshalb ein leeres privates Verzeichnis (frisches Protokoll, voller Datenumfang).
+        env:
+          SUPERTRADER_LEDGER_DIR: ${{ runner.temp }}/st-ledger-ci
         run: |
           set -euo pipefail
           echo "Runner-Standard Heap-Grenze (MB): $(node -p 'Math.round(require("v8").getHeapStatistics().heap_size_limit/1048576)')"
+          mkdir -p "$SUPERTRADER_LEDGER_DIR"
           cp -r supertrader "$RUNNER_TEMP/supertrader-inkrementell"
           node scripts/supertrader/build.mjs --out="$RUNNER_TEMP/supertrader-inkrementell"
       - name: Discovery-Regression (bestehende Tests)
