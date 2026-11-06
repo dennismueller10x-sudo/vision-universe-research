@@ -54,7 +54,7 @@ async function renderAccount() {
   $('biometric-setting').hidden = !biometric;
   $('biometric-enabled').checked = biometric?.enabled() || false;
   $('push-enabled').checked = push.enabled();
-  text('acc-email', s.user.email); text('acc-plan', 'wird geladen'); text('acc-session', biometric?.enabled() ? 'Keychain / Keystore' : 'nur Arbeitsspeicher');
+  text('acc-email', s.user.email); text('acc-plan', 'wird geladen'); text('acc-session', baseStore.kind === 'keychain' ? (biometric?.enabled() ? 'Keychain / Keystore mit Biometrie' : 'Keychain / Keystore') : 'nur Arbeitsspeicher (Entwicklung)');
   try { const me = await api.me(); text('acc-plan', me?.entitlements?.plan_id || 'free'); }
   catch (e) { text('acc-plan', e.code === OFFLINE ? 'offline' : 'nicht verfügbar'); }
 }
@@ -117,7 +117,11 @@ $('config-missing').hidden = config.configured;
 (async () => {
   show('discover');
   hideSplash();
-  try { await auth.restore({forceRefresh: Boolean(biometric)}); } catch { /* ohne gespeicherte Sitzung weiter */ }
+  // Ohne Biometrie wie vor E4: ein haengender Speicher blockiert den Start nicht. Mit Biometrie: Pruefung und Refresh abwarten.
+  try {
+    if (biometric?.enabled()) await auth.restore({forceRefresh: true});
+    else await Promise.race([auth.restore(), new Promise(resolve => setTimeout(resolve, 4000))]);
+  } catch { /* ohne gespeicherte Sitzung weiter */ }
   if (auth.state().signedIn) await push.resume().catch(() => {});
   if (native) {
     const n = globalThis.VUNative || {};

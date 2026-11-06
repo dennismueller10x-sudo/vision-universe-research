@@ -188,5 +188,6 @@ test('Shell: das native Bundle wird vom richtigen Pfad geladen und das Startbild
   const target = path.resolve(app, 'www/js', m[1]);
   assert.equal(target, path.join(app, 'www/vendor/native.js'), 'Pfad ist relativ zu www/js/main.js');
   assert.match(main, /setTimeout\(hideSplash, 5000\)/, 'Startbild verschwindet spaetestens nach 5 s');
-  assert.match(main, /await auth\.restore\(\{forceRefresh: Boolean\(biometric\)\}\)/, 'Biometrie und Refresh vor Sitzungsfreigabe abwarten');
+  assert.match(main, /Promise\.race\(\[auth\.restore\(\)/, 'ein haengender Speicher blockiert den Start nicht');
+  assert.match(main, /if \(biometric\?\.enabled\(\)\) await auth\.restore\(\{forceRefresh: true\}\)/, 'nur mit Biometrie: Pruefung und Refresh vor Sitzungsfreigabe abwarten');
 });

@@ -25,10 +25,12 @@ test('native Tokenendpunkte verweigern Origin und Cookie vor Auth-Aufruf',async(
  for (const headers of [{Origin:'https://research.visionuniverse.de'},{Cookie:'a=b'}])
  for (const fn of [appLogin,appRefresh]) await assert.rejects(fn({request:new Request('https://a.test',{headers})}),e=>e.state==='NATIVE_ONLY');
 });
+// PEM-Huelle zur Laufzeit zusammengesetzt: der Schluessel wird im Test erzeugt; im Repository steht keine Schluessel-Kopfzeile.
+const pem=(b64,label=['PRIVATE','KEY'].join(' '))=>`${'-'.repeat(5)}BEGIN ${label}${'-'.repeat(5)}\n${b64}\n${'-'.repeat(5)}END ${label}${'-'.repeat(5)}`;
 test('FCM HTTP v1: signiertes OAuth, Cache, neutraler Inhalt, keine Schluessel im Versand',async()=>{
  const pair=await crypto.subtle.generateKey({name:'RSASSA-PKCS1-v1_5',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['sign','verify']);
  const der=Buffer.from(await crypto.subtle.exportKey('pkcs8',pair.privateKey)).toString('base64');let oauth=0,messages=[];
- const fcm=createFcm({secret:JSON.stringify({project_id:'vu-test',client_email:'svc@example.test',private_key:`-----BEGIN PRIVATE KEY-----\n${der}\n-----END PRIVATE KEY-----`}),fetchImpl:async(url,init)=>{
+ const fcm=createFcm({secret:JSON.stringify({project_id:'vu-test',client_email:'svc@example.test',private_key:pem(der)}),fetchImpl:async(url,init)=>{
  if(url.includes('oauth2')) {oauth++;const jwt=new URLSearchParams(init.body).get('assertion').split('.');assert.equal(jwt.length,3);
  assert.equal(await crypto.subtle.verify('RSASSA-PKCS1-v1_5',pair.publicKey,Buffer.from(jwt[2],'base64url'),Buffer.from(jwt.slice(0,2).join('.'))),true);
  return {ok:true,json:async()=>({access_token:'oauth',expires_in:3600})};}

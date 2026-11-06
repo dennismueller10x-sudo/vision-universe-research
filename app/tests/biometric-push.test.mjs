@@ -6,16 +6,32 @@ import {createAuth} from '../www/js/auth.js';
 import {createPush} from '../www/js/push.js';
 import {CONFIG, fakeSupabase, clock} from './helpers.mjs';
 const prefs = () => { let v=null; return {get:async()=>v,set:async x=>{v=x;}}; };
-test('Biometrie: Opt-in, Neustart gesperrt, Passwort-Fallback, Abschalten und Loeschen', async()=>{
+test('Biometrie: Opt-in, Neustart gesperrt, Passwort-Fallback, Abschalten loescht nichts', async()=>{
  const disk=memoryStore(), preferences=prefs(); let deny=false,checks=0;
  const plugin={isAvailable:async()=>({isAvailable:true}),verifyIdentity:async()=>{checks++;if(deny)throw Error();}};
  const make=()=>biometricStore({store:disk,preferences,plugin});
  const a=make(); await a.init(); await a.set({refreshToken:'r'});
- assert.equal(await disk.get(),null); await a.choose(true); assert.equal((await disk.get()).refreshToken,'r');
+ assert.equal((await disk.get()).refreshToken,'r'); await a.choose(true); assert.equal(checks,1);
  const b=make(); await b.init(); deny=true; assert.equal(await b.get(),null);
  deny=false; assert.equal((await b.get()).refreshToken,'r'); assert.equal(checks,3);
- await b.choose(false); assert.equal(await disk.get(),null); assert.equal(b.asked(),true);
+ await b.choose(false); assert.equal((await disk.get()).refreshToken,'r'); assert.equal(b.asked(),true);
+ assert.equal((await b.get()).refreshToken,'r'); assert.equal(checks,3);
  await b.clear(); assert.equal(await b.get(),null);
+});
+test('Ohne Biometrie-Opt-in bleibt die Sitzung wie vor E4 ueber einen Neustart erhalten', async()=>{
+ const disk=memoryStore(), preferences=prefs(); let checks=0,cleared=0;
+ const store={kind:'keychain',get:()=>disk.get(),set:v=>disk.set(v),clear:()=>{cleared++;return disk.clear();}};
+ const plugin={isAvailable:async()=>({isAvailable:true}),verifyIdentity:async()=>{checks++;}};
+ const make=()=>biometricStore({store,preferences,plugin});
+ const a=make(); await a.init(); await a.set({refreshToken:'r'});
+ await preferences.set({asked:true,enabled:false});
+ for (let i=0;i<2;i++){ const b=make(); await b.init(); assert.equal(b.enabled(),false); assert.equal((await b.get()).refreshToken,'r'); }
+ assert.equal(checks,0); assert.equal(cleared,0);
+ const f=fakeSupabase(), now=clock();
+ const auth=createAuth({config:CONFIG,store:make(),fetchImpl:f,now}); await auth.signIn('a@b.de','richtig');
+ const restarted=make(); await restarted.init();
+ const after=createAuth({config:CONFIG,store:restarted,fetchImpl:f,now}); await after.restore();
+ assert.equal(after.state().signedIn,true); assert.equal(cleared,0); assert.equal(checks,0);
 });
 test('Biometrischer Start erneuert auch ein noch gueltiges Token und rotiert',async()=>{
  const store=memoryStore(), f=fakeSupabase(), now=clock();

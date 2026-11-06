@@ -1,7 +1,8 @@
 // Persistenz und Biometrie bleiben ausschliesslich in nativen Plugins.
-import {memoryStore} from './token-store.js';
+// Ohne Opt-in verhaelt sich der Speicher wie vor E4: die Sitzung liegt im Keychain/Keystore und bleibt ueber
+// einen Neustart erhalten. Biometrie kommt nur zusaetzlich dazu: mit Opt-in gibt get() die Sitzung erst nach
+// erfolgreicher Identitaetspruefung frei. Abschalten loescht nichts, es entfaellt nur die Abfrage.
 export function biometricStore({store, plugin, preferences}) {
-  const memory = memoryStore();
   let settings = {};
   const save = () => preferences.set(settings);
   const verify = () => plugin.verifyIdentity({reason: 'Bei Vision Universe anmelden', title: 'Anmeldung',
@@ -16,16 +17,14 @@ export function biometricStore({store, plugin, preferences}) {
       if (enabled) await verify();
       settings = {...settings, asked: true, enabled};
       await save();
-      if (enabled) { const s = await memory.get(); if (s) await store.set(s); }
-      else await store.clear();
     },
     async get() {
-      if (!settings.enabled) { await store.clear(); return memory.get(); }
+      if (!settings.enabled) return store.get();
       try { await verify(); return await store.get(); }
       catch { return null; } // Abbruch/Sperre: Passwortmaske, keine Sitzung freigeben
     },
-    async set(s) { await memory.set(s); if (settings.enabled) await store.set(s); },
-    async clear() { await memory.clear(); await store.clear(); },
+    async set(s) { await store.set(s); },
+    async clear() { await store.clear(); },
   };
 }
 export function nativePreferences(native, key) {
