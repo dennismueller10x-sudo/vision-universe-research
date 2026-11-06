@@ -72,7 +72,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | D05 | Discover · Swipen | fertig | #1367 | `#/swipen` (`#/einzeln/<U>` leitet um); Zähler „1 von 400“; Leiste über #1364 |
 | D06 | Discover · Suchen | fertig | #1367 | „Bekannte Namen“ mit 12-Monats-Pille statt „Oft gesucht“ (keine Suchstatistik) |
 | D07 | Discover · Märkte | fertig | #1367, #1463 | Unterseiten `#/maerkte/<Symbol>` in der Palette. Abweichung: die Einordnung behält ihre Stufen-Skala, weil die Stufenfarben die Aussage tragen (keine Vorlage für die Unterseite). |
-| D08 | Discover · Watchlist | fertig | #1367, #1461 | Benachrichtigungen echt (Z4): Schalter ±5 %, Jahreshoch, Quartalszahlen im Konto, zugestellt über die App; ohne Daten gesperrt. Abweichung: Adresse bleibt `/discover/#/watchlist`, weil Konto-Watchlist und Discover denselben Speicher lesen. |
+| D08 | Discover · Watchlist | fertig | #1367, #1461 | Benachrichtigungen echt (Z4): Schalter ±5 %, Jahreshoch, Quartalszahlen im Konto, zugestellt über die App. Abweichung: Adresse bleibt `/discover/#/watchlist`, weil Konto-Watchlist und Discover denselben Speicher lesen. |
 | D09 | Discover · NVIDIA (Aktienseite) | fertig | #1350 | Kurs im Kopf in Anzeigewährung (€) statt $ + ≈ € (Querschnitt Währung offen); Jahresspanne in % statt $; d09-c Merken-Sheet wartet auf Benachrichtigungen (Backend) |
 | Q00 | Quant · So ist die Welt gebaut | fertig | #1412 | Methodik/Backtest unter „Quant“, Technische Lagen unter „Aktien“ (Leiste und App) |
 | Q01 | Quant · Übersicht | fertig | #1351 | Setup-Karten ohne „Schluss … $“ (Ressourcen-Budget der Startseite) |
@@ -99,7 +99,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | W01 | Elliott · Übersicht | fertig | #1356 | Suche als echtes Feld (ohne Atlas-Knopf); „Weitere Reihen“ zeigt alle 8 Reihen |
 | W02 | Elliott · Welle 3 | fertig | #1356 | Karten in Reihenfolge der Reihe, 10 je Seite |
 | W03 | Elliott · Aufwärts | fertig | #1356 | zusätzlicher Filter `rolle=motiv` |
-| W04 | Elliott · Neu und verändert | fertig | #1356 | Schalter „Melden“ im Konto (Z4), über die App; Elliott-Lesarten noch ohne Ereignisart, daher gesperrt mit „noch keine Daten“ |
+| W04 | Elliott · Neu und verändert | fertig | #1356 | Schalter „Melden“ im Konto (Z4), über die App; Elliott-Lesarten der Watchlist-Titel (ELLIOTT_CHANGE, #1575) |
 | W05 | Elliott · NVIDIA in Wellen | fertig | #1356, #1470 | Reihenfolge, Ausblick schwarz mit C08, Profi-Knopf PRO; ohne belastbare Lesart zeigt der Chart die Marktstruktur (Unterstützung neongrün, Widerstand grau, überlappend als eine Zone). Abweichung: Projektionskarte (w05-c) und Profi-Ansicht (w05-b) bleiben ausführlicher als im Mockup, weil sie die Pflichtangaben des experimentellen Elliott-Modells tragen (Status, Lesarten, Regeln, Neuzuordnungs-Risiko). |
 | ST01 | Supertrader · Übersicht | fertig | #1361 | „Neu erkannt heute“ heißt „Heute durchgerechnet“ (Stufe-3-Treffer; kein sauberer Vortagsvergleich in den Daten) |
 | ST02 | Supertrader · Methoden | fertig | #1361, #1446 | Kandidatenansicht `?sf=Cxx` im Redesign-Kopf mit Kacheln und kompakten Zeilen (Stufennamen nach ST-Z). |
@@ -218,7 +218,19 @@ Steuerung (Owner, 04.11.2026): Mockups sind verbindlich (Reihenfolge, Abstände,
 | Z1 | Erster Start: Ziel, Erfahrung, erste Aktien; Konto-Einstellung | D (E11) + `workers/vu-account` | fertig (#1359, Seiten-Anbindung D4-Z1) | `settings.experienceLevel` beginner/advanced/pro, `settings.goal` vorsorge/aktie/ideen/strategien, `settings.onboardedAt` (PATCH `true`, Server setzt Zeit); Produktion bleibt aus |
 | Z2 | Eine Aktienadresse `/aktie/<T>` mit Weiterleitungen | D | fertig (#1353) | Herkunftswelt bestimmt Perspektive und Leiste |
 | Z3 | Gespeicherte Suchen im Konto | D (Q02, Screener, T04) + Konto | fertig (#1359, Seiten D4-Z3) | `GET/POST/PATCH /v1/searches`, `POST /v1/searches/remove`; Welt quant/screener/technical/fundamental/discover; 50 je Konto; S04, Q02, T04 angebunden über `konto/saved-searches.js` (im Konto gelöschte Suchen werden auf dem Gerät nur entkoppelt, nicht gelöscht) |
-| Z4 | Benachrichtigungen | Konto + Erzeuger | fertig (D4-Z4) | Owner 06.11.: Versandweg App-Push freigegeben (#1525), E-Mail bleibt aus. Schalter je Art im Konto (`konto/push-settings.js`, `PATCH /v1/me settings.notifications`). `/v1/me` nennt `push.available/devices`. Versand nur mit Konto-Einstellung und ohne Abschaltung am Eintrag (Migration `20261107000100`). Zustellbar: Jahreshoch, Setups, Quant-Stufen; ±5 %, Quartalszahlen, 13F, Suchtreffer, Elliott und ETF bleiben gesperrt („noch keine Daten“), bis ein Erzeuger sie liefert |
+| Z4 | Benachrichtigungen | Konto + Erzeuger | fertig (D4-Z4) | Owner 06.11.: Versandweg App-Push freigegeben (#1525), E-Mail bleibt aus. Schalter je Art im Konto (`konto/push-settings.js`, `PATCH /v1/me settings.notifications`). `/v1/me` nennt `push.available/devices`. Versand nur mit Konto-Einstellung und ohne Abschaltung am Eintrag (Migration `20261107000100`). Zustellbar: ±5 %, Jahreshoch, Quartalszahlen, Setups, Quant-Stufen, 13F, Elliott (Erzeuger #1572/#1575, Konto-Schlüssel Migration `20261107000200`); Suchtreffer und ETF bleiben gesperrt („noch keine Daten“), bis ein Erzeuger sie liefert |
 | Z5 | Screener-Kriterien aus 13F und Supertrader | A + B, Oberfläche D | Supertrader-Teil in #1391; 13F „bald“ | |
 | Z6 | Insider-Käufe als Datenquelle | A | „bald“ | |
 | Z7 | AI Atlas visuell (E10-b) | D (E10) | fertig (#1366) | vorhandener Worker `workers/vu-ask` unverändert (Modell, Budget, Grenzen, Beta-Passwort); neu nur die Darstellung mit VU-Bausteinen |
+
+**Z4 offen (Stand 06.11.2026, D4):** Zwei Push-Arten bleiben gesperrt („noch keine Daten“), die Schalter sind sichtbar.
+- **Neue Treffer gespeicherter Suchen (`SEARCH_HITS`)**: Dafür braucht es
+  - eine tägliche Auswertung je Nutzer (Suchen aus `/v1/searches` gegen die veröffentlichten Treffer, Welten screener, technical und quant),
+  - eine Tabelle mit dem letzten Trefferstand je Suche (RLS, nur `service_role` schreibt),
+  - die Bündelung in `push_claim_daily`.
+
+  Hürde: Die Abfragen laufen in drei Browser-Engines, und im Worker sind Rechenzeit und Datenmenge begrenzt. Vorschlag: Ein Erzeuger im Datenlauf schreibt je Such-Fingerprint die Trefferliste, der Worker vergleicht nur noch Listen.
+- **Veränderungen bei ETFs (`VORSORGE_CHANGE`)**: Die Steuerung hat entschieden, dass ETFs beobachtbar werden. Es fehlen:
+  - ein Ereignis im Erzeuger `build-watchlist-events` aus `vorsorge/data/changes.json`: nur, was gegenüber dem letzten Lauf neu ist; `instrumentId` über `core/identity.js`; Text neutral wie in changes.json. Die Einträge dort tragen Prospektdaten statt eines Tagesdatums.
+  - „Beobachten“ für ETFs in Vorsorge (V08 und Plan),
+  - `VORSORGE_CHANGE` in `push.mjs`, in den Konto-Schlüsseln und in der Migration.

@@ -6,7 +6,8 @@
    Watchlist-Eintrag sie nicht ausgeschaltet hat (supabase/migrations/20261107000100_push_preferences.sql).
    Keine E-Mail-Benachrichtigungen (eigene Owner-Freigabe).
 
-   Arten ohne Erzeuger (ready:false) bleiben sichtbar, aber gesperrt („noch keine Daten“): nichts
+   Zustellbar (ready:true): alle Arten, die build-watchlist-events erzeugt und push.mjs zustellt (Regel bis 1.5.0).
+   Arten ohne Erzeuger (Suchtreffer, ETF) bleiben sichtbar, aber gesperrt („noch keine Daten“): nichts
    täuscht eine Funktion vor. Ohne Anmeldung, ohne App oder ohne FCM-Zugang sagt ein Satz, warum
    nichts kommt. Texte nach docs/legal/WORTWAHL.md: beschreiben, keine Aufforderung, kein „Signal“.
 
@@ -26,14 +27,14 @@
   /* key = Ereignisart in core/contracts/events.schema.json bzw. user_settings.notification_settings.
      ready = der Erzeuger (scripts/account/build-watchlist-events.mjs) liefert sie, und der Worker stellt sie zu. */
   var TYPES = [
-    { key: 'PRICE_MOVE', title: 'Kursbewegung über ±5 % am Tag', sub: 'Tagesbewegung eines Titels', ready: false },
+    { key: 'PRICE_MOVE', title: 'Kursbewegung über ±5 % am Tag', sub: 'Tagesbewegung eines Titels', ready: true },
     { key: 'PRICE_EVENT', title: 'Neues Jahreshoch', sub: 'Höchster Schlusskurs seit 52 Wochen oder auffälliges Volumen', ready: true },
-    { key: 'EARNINGS', title: 'Neue Quartalszahlen', sub: 'Neuer Bericht bei der SEC', ready: false },
+    { key: 'EARNINGS', title: 'Neue Quartalszahlen', sub: 'Neuer Bericht bei der SEC', ready: true },
     { key: 'SUPERTRADER_SIGNAL', title: 'Setups der Methoden', sub: 'Eine Regel einer Methode ist neu erfüllt oder nicht mehr erfüllt', ready: true },
     { key: 'QUANT_CHANGE', title: 'Quant-Eigenschaften', sub: 'Eine Eigenschaft ändert sich um mindestens zwei Stufen', ready: true },
-    { key: 'FUND_13F', title: 'Neue 13F-Meldungen', sub: 'Ein großer Fonds meldet seine Positionen', ready: false },
+    { key: 'FUND_13F', title: 'Neue 13F-Meldungen', sub: 'Ein großer Fonds meldet seine Positionen', ready: true },
     { key: 'SEARCH_HITS', title: 'Neue Treffer gespeicherter Suchen', sub: 'Eine Aktie kommt in eine Suche oder fällt heraus', ready: false },
-    { key: 'ELLIOTT_CHANGE', title: 'Elliott-Lesarten', sub: 'Neue, bestätigte oder überarbeitete Lesart', ready: false },
+    { key: 'ELLIOTT_CHANGE', title: 'Elliott-Lesarten', sub: 'Neue, bestätigte oder überarbeitete Lesart', ready: true },
     { key: 'VORSORGE_CHANGE', title: 'Veränderungen bei ETFs', sub: 'Kosten oder Bestände eines ETFs ändern sich', ready: false }
   ];
   var BY = {}; TYPES.forEach(function (t) { BY[t.key] = t; });

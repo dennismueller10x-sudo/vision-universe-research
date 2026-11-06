@@ -7,17 +7,20 @@ import {createRequire} from 'node:module';
 const require = createRequire(import.meta.url);
 const P = require('../push-settings.js');
 const read = p => readFileSync(new URL('../../' + p, import.meta.url), 'utf8');
-const SETTINGS = ['WATCHLIST_NEWS', 'EARNINGS', 'PRICE_EVENT', 'SUPERTRADER_SIGNAL', 'QUANT_CHANGE', 'MARKET_REGIME_CHANGE'];
+const SETTINGS = ['WATCHLIST_NEWS', 'EARNINGS', 'PRICE_EVENT', 'SUPERTRADER_SIGNAL', 'QUANT_CHANGE', 'MARKET_REGIME_CHANGE', 'PRICE_MOVE', 'FUND_13F', 'ELLIOTT_CHANGE'];
 
 test('nur Arten mit Erzeuger und Zustellung sind schaltbar; alle anderen sagen „noch keine Daten“', () => {
   const ready = P.TYPES.filter(t => t.ready).map(t => t.key).sort();
-  assert.deepEqual(ready, ['PRICE_EVENT', 'QUANT_CHANGE', 'SUPERTRADER_SIGNAL']);
+  assert.deepEqual(ready, ['EARNINGS', 'ELLIOTT_CHANGE', 'FUND_13F', 'PRICE_EVENT', 'PRICE_MOVE', 'QUANT_CHANGE', 'SUPERTRADER_SIGNAL']);
+  // Konto-Validierung und Eintrag kennen dieselben Schlüssel.
+  const val = read('workers/vu-account/src/validate.mjs'), wl = read('workers/vu-account/src/watchlist.mjs');
+  for (const k of ready) { assert.match(val, new RegExp("'" + k + "'"), k); assert.match(wl, new RegExp("'" + k + "'"), k); }
   // Dieselben Arten stellt der Worker zu (push.mjs#deliverableEvents) und erlaubt das Konto (validate.mjs).
   const push = read('workers/vu-account/src/push.mjs');
   for (const k of ready) { assert.match(push, new RegExp(k + ':\\['), k); assert.ok(SETTINGS.includes(k), k); }
-  for (const k of ['PRICE_MOVE', 'EARNINGS', 'FUND_13F']) assert.equal(P.TYPES.find(t => t.key === k).ready, false, k);
+  for (const k of ['SEARCH_HITS', 'VORSORGE_CHANGE']) assert.equal(P.TYPES.find(t => t.key === k).ready, false, k);
   assert.deepEqual(P.patchFor({PRICE_EVENT: true, EARNINGS: true, PRICE_MOVE: true}),
-    {settings: {notifications: {PRICE_EVENT: true, SUPERTRADER_SIGNAL: false, QUANT_CHANGE: false}}}, 'nur zustellbare Arten gehen ans Konto');
+    {settings: {notifications: {PRICE_MOVE: true, PRICE_EVENT: true, EARNINGS: true, SUPERTRADER_SIGNAL: false, QUANT_CHANGE: false, FUND_13F: false, ELLIOTT_CHANGE: false}}}, 'nur zustellbare Arten gehen ans Konto');
 });
 
 test('Zustand aus /v1/me: abgemeldet, ohne FCM, ohne Gerät, aktiv – jeder Satz sagt „über die App“', () => {
@@ -27,7 +30,7 @@ test('Zustand aus /v1/me: abgemeldet, ohne FCM, ohne Gerät, aktiv – jeder Sat
   for (const l of lines) assert.match(l, /^Benachrichtigungen kommen über die App/);
   assert.match(lines[1], /noch nicht eingerichtet/);
   assert.match(lines[2], /Melde dich in der App an/);
-  assert.deepEqual(P.fromMe(me({available: true, devices: 1}, {PRICE_EVENT: true, EARNINGS: true})).on.EARNINGS, false, 'nicht zustellbare Art gilt nie als an');
+  assert.deepEqual(P.fromMe(me({available: true, devices: 1}, {PRICE_EVENT: true, VORSORGE_CHANGE: true})).on.VORSORGE_CHANGE, false, 'nicht zustellbare Art gilt nie als an');
   assert.equal(P.fromMe(me({available: true, devices: 1}, {PRICE_EVENT: true})).on.PRICE_EVENT, true);
 });
 
