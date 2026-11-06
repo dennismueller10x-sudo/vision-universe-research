@@ -42,7 +42,7 @@ test('self mentions, generated report and external URLs do not create usage; cyc
 });
 
 test('taboo trees stay protected regardless of graph degree', () => {
-  for (const p of ['quant/data/a.js', 'discover/data/a.js', 'supertrader/data/a.js', 'social/data/a.js', 'assets/a.js', 'app/a.js', 'workers/vu-account/a.js', 'docs/research/a.js', 'datenschutz/index.html', 'docs/legal/a.md']) assert.ok(protectedReason(p), p);
+  for (const p of ['quant/data/a.js', 'discover/data/a.js', 'supertrader/data/a.js', 'social/data/a.js', 'assets/a.js', 'app/a.js', 'workers/vu-account/a.js', 'docs/research/a.js', 'datenschutz/index.html', 'docs/legal/a.md', 'landing/legal-source/shopify-impressum.txt', 'landing/legal-drafts/index.html', 'landing/deployment/privacy-cloudflare.draft.html']) assert.ok(protectedReason(p), p);
   assert.equal(protectedReason('scripts/tool.mjs'), null);
 });
 

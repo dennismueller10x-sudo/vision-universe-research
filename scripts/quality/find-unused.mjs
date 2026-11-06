@@ -18,7 +18,7 @@ export function protectedReason(path) {
   if (/^app\//.test(path)) return 'native App (Tabu)';
   if (/^workers\/vu-account\//.test(path)) return 'Account-Worker (Tabu)';
   if (/^docs\/research\//.test(path)) return 'Forschung (Tabu)';
-  if (/(^|\/)(?:legal|recht|impressum|datenschutz|nutzungsbedingungen|risikohinweise|agb)(?:[/.]|$)/i.test(path)) return 'Rechtstext/-unterlagen (Tabu)';
+  if (/(^|\/)(?:legal|recht|impressum|datenschutz|nutzungsbedingungen|risikohinweise?|agb|privacy|terms|disclaimer)(?:[-_/.]|$)/i.test(path)) return 'Rechtstext/-unterlagen (Tabu)';
   return null;
 }
 
