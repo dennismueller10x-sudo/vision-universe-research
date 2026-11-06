@@ -65,7 +65,17 @@
           runs: [], notify: { newMatches: false, removed: false, bigChanges: false, weekly: false, channel: 'push', active: false } };
         d.screens.push(s); write(d); return s;
       },
-      remove: function (sid) { var d = read(); d.screens = d.screens.filter(function (s) { return s.id !== sid; }); write(d); },
+      remove: function (sid) { var d = read(), hit = d.screens.filter(function (s) { return s.id === sid; })[0] || null; d.screens = d.screens.filter(function (s) { return s.id !== sid; }); write(d); return hit; },
+      /* Konto (Z3, konto/saved-searches.js): acct = ID der Suche im Konto; Läufe und Schalter bleiben auf dem Gerät. */
+      link: function (sid, acct) { var d = read(), s = d.screens.filter(function (x) { return x.id === sid; })[0]; if (s) { s.acct = acct; write(d); } },
+      unlink: function (sid) { var d = read(), s = d.screens.filter(function (x) { return x.id === sid; })[0]; if (s) { delete s.acct; write(d); } },
+      addRemote: function (r) {
+        var d = read(), t = now();
+        if (d.screens.length >= MAX_SCREENS || !r || !r.query || typeof r.query !== 'object') return null;
+        var s = { id: id(), name: String(r.name || '').trim().slice(0, 60) || 'Screen', description: '', query: r.query, acct: r.acct, createdAt: t, updatedAt: t,
+          runs: [], notify: { newMatches: false, removed: false, bigChanges: false, weekly: false, channel: 'push', active: false } };
+        d.screens.push(s); write(d); return s;
+      },
       setNotify: function (sid, patch) {
         var d = read(), s = d.screens.filter(function (x) { return x.id === sid; })[0];
         if (!s) return null;

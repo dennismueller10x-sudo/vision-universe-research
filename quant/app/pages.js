@@ -877,10 +877,17 @@
     addBtn.innerHTML = U.glyph("plus", 18) + '<b class="vu-sm">Bedingung hinzufügen</b>';
     var sortChip = el("button", { type: "button", class: "vu-chip" }), shareChip = el("button", { type: "button", class: "vu-chip" });
     shareChip.innerHTML = U.glyph("share", 14) + " Regeln teilen";
+    /* Z3: Regeln speichern. Ohne Anmeldung auf dem Gerät (vu.quant.searches.v1), mit Anmeldung im Konto
+       (konto/saved-searches.js, Welt quant, Abfrage { query: kodierte Regeln }). */
+    var SS = global.VUSavedSearches || null, qStore = SS ? SS.localStore("vu.quant.searches.v1") : null;
+    var qAcct = qStore && { world: "quant", list: qStore.list, link: qStore.link, unlink: qStore.unlink, add: qStore.add };
+    var saveChip = el("button", { type: "button", class: "vu-chip" }), savedHost = el("div", { class: "vu-stack qv3-saved", style: "margin-top:12px;gap:8px", "aria-live": "polite" }), acctSt = null;
+    saveChip.innerHTML = U.glyph("check", 14) + " Regeln speichern";
+    if (!qStore) saveChip.hidden = true;
     var baseChip = el("a", { class: "vu-chip vu-chip--on", href: X.routes.screenerPro("daten=v1"), title: "Andere Datenbasis: Quant V1 & Marktdaten" , text: "Datenbasis: Faktoren" });
     var count = el("b", { class: "qv3-pro-n" }), colsBtn = el("button", { type: "button", class: "qv3-linkbtn" }), table = el("div", { class: "qv3-ptable", role: "table", "aria-label": "Treffer" }), foot = el("p", { class: "vu-xs vu-mu" });
     colsBtn.innerHTML = "Spalten " + U.glyph("gear", 12);
-    page.append(head, condHost, addBtn, el("div", { class: "vu-chips qv3-pro-chips" }, [baseChip, sortChip, shareChip]),
+    page.append(head, condHost, addBtn, el("div", { class: "vu-chips qv3-pro-chips" }, [baseChip, sortChip, shareChip, saveChip]), savedHost,
       el("div", { class: "qv3-pro-bar" }, [count, colsBtn]), table, foot);
     /* Sheets: Bedingung hinzufügen, Spalten */
     function sheet(id, title) {
@@ -944,6 +951,35 @@
       var url = location.origin + location.pathname + X.routes.screenerPro("query=" + encodeURIComponent(W.encode(lastQuery)));
       (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { shareChip.lastChild.textContent = " Link kopiert"; }, function () { prompt("Link zu diesen Regeln", url); });
     });
+    function ruleName() { return conds.map(function (c) { return nameOfF(c.id)[2] + " " + c.lo + "–" + c.hi; }).join(" · ").slice(0, 60) || "Gesamtes Universum"; }
+    function paintSaved(msg) {
+      if (!qStore) return;
+      var list = qStore.list();
+      savedHost.replaceChildren();
+      if (list.length) savedHost.append(el("p", { class: "vu-ltag", text: "Gespeicherte Regeln" }), el("div", { class: "vu-chips" }, list.map(function (s) {
+        var a = el("a", { class: "vu-chip", href: X.routes.screenerPro("query=" + encodeURIComponent(s.query.query)), text: s.name });
+        var x = el("button", { type: "button", class: "qv3-cond-x", "aria-label": s.name + " löschen", text: "×" });
+        x.addEventListener("click", function () { var gone = qStore.remove(s.id); if (gone && gone.acct) SS.removed(gone.acct); paintSaved(); });
+        return el("span", { class: "qv3-saved-item", style: "display:inline-flex;align-items:center;gap:4px" }, [a, x]);
+      })));
+      var line = el("p", { class: "vu-xs vu-mu", text: msg || SS.line(acctSt) });
+      savedHost.append(line);
+      if (acctSt && acctSt.signedIn && acctSt.pending) {
+        var up = el("button", { type: "button", class: "vu-chip", text: "Im Konto speichern" });
+        up.addEventListener("click", function () { up.disabled = true; SS.pushPending(qAcct).then(function (r) { syncSaved(r.state !== "OK" ? r.message : null); }); });
+        savedHost.append(up);
+      } else if (!acctSt || acctSt.signedIn === false) savedHost.append(el("a", { class: "vu-xs", href: "/konto/anmelden/?next=" + encodeURIComponent(location.pathname + location.hash), text: "Anmelden und im Konto speichern" }));
+    }
+    function syncSaved(msg) { if (qAcct) SS.sync(qAcct).then(function (st) { acctSt = st; paintSaved(msg); }); }
+    saveChip.addEventListener("click", function () {
+      if (!lastQuery || !qStore) return;
+      var s = qStore.save(ruleName(), { query: W.encode(lastQuery) });
+      if (!s) { paintSaved("Auf diesem Gerät ist Platz für 50 Regeln."); return; }
+      saveChip.lastChild.textContent = " Gespeichert";
+      paintSaved();
+      SS.saved(qAcct, s.id).then(function (r) { syncSaved(r && r.ok === false ? r.message : null); });
+    });
+    syncSaved();
     function paintTable() {
       var res = lastRes;
       if (!res) return;

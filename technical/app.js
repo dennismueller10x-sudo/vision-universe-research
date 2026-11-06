@@ -651,6 +651,7 @@
         var name = saveName.value.trim() || (preset ? preset.title : textQ || Q.describe(query)).slice(0, 60);
         var r2 = M.saveScreen(store(), name, preset ? "preset=" + preset.id : textQ ? "q=" + encodeURIComponent(textQ) : tplFrom ? TPL.paramsOf(p.vorlage, TPL.blocksFromParam(p.plus)) : M.paramsFromState(st));
         saveMsg.textContent = r2.ok ? "Gespeichert. Zu finden unter „Gespeichert“." : "Speichern nicht möglich (Browser-Speicher gesperrt).";
+        if (r2.ok) acctMirror(r2.id, saveMsg);
       } }, [saveName, el("button", { class: "vu-btn vu-btn--sm", type: "submit", text: "Speichern" })]);
       var actions = el("div", { class: "tc-actions2" }, [
         el("button", { type: "button", class: "vu-btn vu-btn--ink tc-save-btn", onclick: function () { saveForm.hidden = !saveForm.hidden; if (!saveForm.hidden) saveName.focus(); } }, [glyph("save"), "Suche speichern"]),
@@ -703,6 +704,31 @@
   }
   /* Gespeicherte Suchen (T04). Gezaehlt wird heute; die Aenderung seit dem letzten Besuch steht in diesem Browser. */
   var SEEN_KEY = "vu-technical-saved-seen-v1";
+  /* Z3: Suchen im Konto (konto/saved-searches.js), Abfrage { params }; ohne Anmeldung nur in diesem Browser. */
+  var SS = global.VUSavedSearches || null, acctState = null, acctSynced = false, acctMsg = null;
+  var acct = { world: "technical",
+    list: function () { return M.loadScreens(store()).map(function (x) { return { id: x.id, name: x.name, query: { params: x.params }, acct: x.acct || null }; }); },
+    link: function (id, a) { M.linkScreen(store(), id, a); }, unlink: function (id) { M.linkScreen(store(), id, null); },
+    add: function (r) { M.addRemoteScreen(store(), r); } };
+  function acctMirror(id, msg) { if (SS && id) SS.saved(acct, id).then(function (r) { if (msg && r && r.ok === false && r.message) msg.textContent = r.message; }); }
+  function acctBox() {
+    var box = el("div", { class: "vu-stack tc-acct" });
+    function paint(st) {
+      put(box, [h(U.help(acctMsg || (SS ? SS.line(st) : "Ohne Anmeldung bleiben Suchen nur in diesem Browser."))),
+        st && st.signedIn && st.pending ? el("button", { type: "button", class: "vu-btn vu-btn--line vu-btn--block", onclick: function () {
+          this.disabled = true;
+          SS.pushPending(acct).then(function (r) { acctMsg = r.state !== "OK" ? r.message || null : null; acctSynced = false; render(); });
+        } }, [glyph("save"), "Im Konto speichern"])
+        : !st || st.signedIn === false ? h(U.navcard({ href: "/konto/anmelden/?next=" + encodeURIComponent(location.pathname + location.hash), glyph: "grid", title: "Mit Konto auf allen Geräten", sub: "Anmelden, dann liegen deine Suchen im Konto (bis zu 50)." })) : null]);
+    }
+    paint(acctState);
+    if (SS && !acctSynced) {
+      acctSynced = true;
+      var before = M.loadScreens(store()).length;
+      SS.sync(acct).then(function (st) { acctState = st; if (M.loadScreens(store()).length !== before) render(); else paint(st); });
+    }
+    return box;
+  }
   function seenMap() { try { var v = JSON.parse(store().getItem(SEEN_KEY) || "{}"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; } }
   function viewSaved(main) {
     var list = M.loadScreens(store()), status = el("p", { class: "tc-note", role: "status" }), seen = seenMap();
@@ -722,7 +748,7 @@
       var count = el("b", { class: "num", text: "…" }), delta = el("span", { class: "tc-delta" });
       var svHref = svT ? TPL.href(svT.id, svT.blocks) : "#/screener?" + sv.params;
       var nameIn = el("input", { class: "tc-input tc-input-s", value: sv.name, maxlength: "60", "aria-label": "Name ändern" });
-      var edit = el("form", { class: "tc-brow", hidden: true, onsubmit: function (ev) { ev.preventDefault(); M.updateScreen(store(), sv.id, { name: nameIn.value }); render(); } },
+      var edit = el("form", { class: "tc-brow", hidden: true, onsubmit: function (ev) { ev.preventDefault(); M.updateScreen(store(), sv.id, { name: nameIn.value }); if (sv.acct) acctMirror(sv.id); render(); } },
         [nameIn, el("button", { class: "vu-btn vu-btn--sm", type: "submit", text: "Übernehmen" })]);
       loadScreener().then(function (D) {
         var n = svT ? TPL.evaluate(D.ds, svT).full.length : (function () { var r = Q.evaluate(D.ds, Object.assign({}, q, { limit: 1 })); return r.error ? null : r.count; })();
@@ -745,16 +771,17 @@
             var url = location.origin + location.pathname + svHref;
             (global.navigator && navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { status.textContent = "Link kopiert."; }, function () { status.textContent = url; });
           } }),
-          el("button", { type: "button", class: "vu-chip", text: "Löschen", onclick: function () { M.deleteScreen(store(), sv.id); render(); } })]), edit])]);
+          el("button", { type: "button", class: "vu-chip", text: "Löschen", onclick: function () { M.deleteScreen(store(), sv.id); if (SS && sv.acct) SS.removed(sv.acct); render(); } })]), edit])]);
     });
     var body = list.length ? [el("p", { class: "vu-ltag tc-count-h", text: list.length + (list.length === 1 ? " Suche" : " Suchen") }), el("div", { class: "vu-stack tc-list" }, rows),
       h(U.help("Die Glocke meldet neue oder herausgefallene Aktien, sobald Suchen im Konto liegen. Bis dahin zeigt diese Seite die Änderung seit deinem letzten Besuch.")),
+      acctBox(),
       el("a", { class: "vu-btn vu-btn--line vu-btn--block", href: "#/screener" }, [h(U.glyph("plus", 18)), "Neue Suche"])]
       : [el("div", { class: "tc-empty" }, [el("span", { class: "tc-empty-ico", "aria-hidden": "true" }, glyph("save")), el("h2", { class: "vu-mt", text: "Noch nichts gespeichert" }),
           el("p", { class: "vu-lead", text: "Speichere eine Suche, dann siehst du hier jeden Tag, wie viele Aktien sie trifft." })]),
         el("a", { class: "vu-btn vu-btn--block", href: "#/screener", text: "Erste Suche starten" }),
         el("a", { class: "vu-btn vu-btn--line vu-btn--block", href: "#/screener?reiter=vorlagen", text: "Vorlage wählen" }),
-        h(U.navcard({ href: "/konto/", glyph: "grid", title: "Mit Konto auf allen Geräten", sub: "Ohne Konto bleibt die Suche nur in diesem Browser." }))];
+        acctBox()];
     put(main, [head, screenerTabs("saved")].concat(body, [tools, status]));
   }
 
@@ -850,6 +877,7 @@
         ev.preventDefault();
         var r2 = M.saveScreen(store(), saveName.value.trim() || (plainTitle(base) + " (Vorlage)" + (blocks.length ? " + " + blocks.map(function (b) { return TPL.block(b).title; }).join(", ") : "")).slice(0, 60), TPL.paramsOf(base.id, blocks));
         saveMsg.textContent = r2.ok ? "Gespeichert. Zu finden unter „Gespeichert“." : "Speichern nicht möglich (Browser-Speicher gesperrt).";
+        if (r2.ok) acctMirror(r2.id, saveMsg);
       } }, [saveName, el("button", { class: "vu-btn vu-btn--sm", type: "submit", text: "Speichern" })]);
       var tq = TPL.toQuery(t);
       put(body, [tiles, sect("Die " + (n === 1 ? "Regel" : n + " Regeln") + " in Worten"), criteriaCard(t, res),
