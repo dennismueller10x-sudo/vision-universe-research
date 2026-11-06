@@ -427,7 +427,6 @@
       "records": "shards",
       "role": "Einstufungs-Konsens (Finnhub, frei) fuer das Produktuniversum, Kursziele nur aus der freien FMP-Liste; Abdeckung je Titel. Shards nach core/identity.js#shardKey.",
       "producer": "scripts/analysts/fetch-consensus.mjs",
-      "activation": { "state": "ACTIVATING", "decision": "Neue Datenart 06.11.2026 (Strang A, Auftrag Owner/Steuerung): erster Lauf von content.yml/analysten ausstehend; nach dem ersten gruenen Lauf wird dieses Feld entfernt." },
       "workflow": "content.yml",
       "schedule": "05:41, 13:41, 21:41 UTC, je ~2200 Titel rotierend (ganzes Universum taeglich, Finnhub Free 55/min)",
       "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 192 },
