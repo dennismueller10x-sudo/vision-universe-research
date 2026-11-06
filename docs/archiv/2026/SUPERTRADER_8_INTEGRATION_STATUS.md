@@ -1,6 +1,6 @@
 # Supertrader 8.0 – Integrationsstatus
 
-Stand 27.10.2026. Supertrader 8.0 ist technisch vollständig auf `main` integriert, aber **nicht öffentlich aktiviert**. Die Gesamtdokumentation steht in [SUPERTRADER_8_PRODUCT_INTEGRATION.md](SUPERTRADER_8_PRODUCT_INTEGRATION.md).
+Stand 27.10.2026. Supertrader 8.0 ist technisch vollständig auf `main` integriert, aber **nicht öffentlich aktiviert**. Die Gesamtdokumentation steht in [SUPERTRADER_8_PRODUCT_INTEGRATION.md](../../SUPERTRADER_8_PRODUCT_INTEGRATION.md).
 
 ## Merges (Owner-Freigabe vom 26.10.2026)
 

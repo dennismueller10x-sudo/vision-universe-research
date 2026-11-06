@@ -2,7 +2,7 @@
 
 > **Abschlussstand:** Verbindlich ist seit 02.11.2026 [SUPERTRADER_9_HANDOVER.md](SUPERTRADER_9_HANDOVER.md) (`main` @ `659df6c`). Dieses Dokument ist der historische Stand vom 30.10. Aktueller V1-Stand: Übergabe §4.
 
-Grundlage: Kriterien **unverändert** aus `docs/SUPERTRADER_8_ACTIVATION_READINESS.md` (Freigabeschwelle V1, Basis 1527253) und Vorstand `docs/SUPERTRADER_8_V1_STATUS_20261029.md` (Draft #1099, per `git show FETCH_HEAD`).
+Grundlage: Kriterien **unverändert** aus `docs/archiv/2026/SUPERTRADER_8_ACTIVATION_READINESS.md` (Freigabeschwelle V1, Basis 1527253) und Vorstand `docs/SUPERTRADER_8_V1_STATUS_20261029.md` (Draft #1099, per `git show FETCH_HEAD`).
 Belege: nur echte GitHub-Actions-Läufe (gelesen, nichts ausgelöst) und lokale Messung auf `main`-Stand 533f788 (Refresh-Commit vom 30.10., 03:37 UTC). Lokale Berichte (`system-health.mjs`, `data-quality.mjs`, `diagnose.mjs`) wurden nur außerhalb des Repositorys geschrieben.
 
 **Ergebnis: V1 nicht erfüllt.** S3 erfüllt; S1, S2, S4 offen; S5 offen und ohne #1098 am 02.11. sicher rot; S6 und S7 nicht erfüllt. Neu seit 29.10.: S7 ist mit veröffentlichtem SF8-Einmalstand und ohne Tageslauf **strukturell** nicht erfüllbar (DQ-SF8-8, siehe c/d).
