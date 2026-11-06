@@ -105,7 +105,7 @@ const ROUTES = [
   ['POST', '/v1/billing/webhook/google', billing.storeWebhookNotConfigured, {webhook: true, db: false}],
 ];
 
-// Oeffentliche HTML-Seiten (ohne Anmeldung, ohne Passwortmaske): Rechtstexte, Kuendigen, Widerrufen.
+// Oeffentliche HTML-Seiten (ohne Anmeldung, ohne Passwortmaske): Rechtstexte, Kontakt, Kuendigen, Widerrufen.
 const PAGES = [
   ['GET', '/rechtliches/', pages.legalIndex, {db: false}],
   ['GET', '/rechtliches', pages.legalIndex, {db: false}],
@@ -115,6 +115,8 @@ const PAGES = [
   ['GET', '/rechtliches/mar-hinweise', pages.legalPage('methodik'), {db: false}],
   ['GET', '/kuendigen', pages.cancelGet, {db: false}],
   ['POST', '/kuendigen', pages.cancelPost],
+  ['GET', '/kontakt', pages.contactGet, {db: false}],
+  ['POST', '/kontakt', pages.contactPost, {db: false}],
   ['GET', '/widerrufen', pages.withdrawGet, {db: false}],
   ['POST', '/widerrufen', pages.withdrawPost],
 ];

@@ -14,6 +14,8 @@ export const LIMITS = Object.freeze({
   recover: {limit: 5, windowSec: 3600},
   cancellation: {limit: 5, windowSec: 3600},
   cancellationEmail: {limit: 3, windowSec: 86400}, // Bestaetigungen an dieselbe Adresse
+  contact: {limit: 5, windowSec: 3600}, // Kontaktformular je IP
+  contactEmail: {limit: 5, windowSec: 86400}, // Kontaktformular je Absenderadresse
   sensitive: {limit: 10, windowSec: 3600}, // Passwort, Loeschung, Checkout
   watchlist: {limit: 120, windowSec: 60},
   planIntent: {limit: 30, windowSec: 3600}, // Tarifwahl merken/verwerfen je Konto // Merken/Entfernen je Konto (Lesezeichen in den Produktwelten)

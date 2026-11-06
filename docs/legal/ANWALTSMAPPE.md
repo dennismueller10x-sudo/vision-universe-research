@@ -1,7 +1,7 @@
 # Anwaltsmappe: Vision Universe
 
 Unterlage für die Prüfung durch einen Fachanwalt oder eine Fachanwältin für Bank- und Kapitalmarktrecht. Stand
-05.11.2026. Vorbereitet von Claude (KI) im Auftrag des Owners. **Das ist keine Rechtsberatung.** Hier ist zusammengestellt,
+06.11.2026. Vorbereitet von Claude (KI) im Auftrag des Owners. **Das ist keine Rechtsberatung.** Hier ist zusammengestellt,
 was zu prüfen ist. Lesezeit etwa 15 Minuten.
 
 ## 1. Wer und was
@@ -57,7 +57,8 @@ Ausführlich mit Belegen: [EINORDNUNG.md](EINORDNUNG.md) §3.
 
 ## 4. Was bereits vorbereitet ist
 
-- **Entwürfe** (Fassung `vu-recht-2026-11-05-entwurf-4`, `LEGAL_STATUS = 'entwurf'`):
+- **Texte** (Fassung 4, seit 06.11.2026 online freigeschaltet als `vu-recht-2026-11-06-1`, `LEGAL_STATUS = 'freigegeben'`;
+  die offenen Fragen stehen in Abschnitt 7):
   - Nutzungsbedingungen mit Leistung als Analyse-Software,
   - Ausschluss von Anlageberatung, Vermittlung und Vermögensverwaltung,
   - Backtests als Forschung,
@@ -66,7 +67,7 @@ Ausführlich mit Belegen: [EINORDNUNG.md](EINORDNUNG.md) §3.
   - Methodik, Quellen und Interessen (mit Vorsorgeklausel nach Art. 20 MAR, ersetzt „Hinweise nach MAR und WpHG“).
 
   Quelle: `workers/vu-account/src/legal/texts.mjs`. Seiten: `https://konto.visionuniverse.de/rechtliches/agb`,
-  `…/risikohinweise`, `…/methodik`. Offene Stellen sind als `[[OFFEN]]`/`[[PRÜFEN]]` markiert.
+  `…/risikohinweise`, `…/methodik`. Die früheren `[[PRÜFEN]]`-Marken sind aus dem Text entfernt und stehen in Abschnitt 7.
 - **Pflicht-Hinweise** für die Seiten (`assets/legal-notices.json`) und Wortwahl-Regeln ([WORTWAHL.md](WORTWAHL.md)),
   dazu die Befundliste ([WORTWAHL-BEFUNDE.md](WORTWAHL-BEFUNDE.md)).
 - **Verbraucherrecht** (Widerruf, Kündigungsbutton, Button-Lösung, Datenschutz): eigene Liste in
@@ -124,5 +125,39 @@ Beantwortet am 05.11.2026:
 1. Schriftliche Einordnung je Funktion (unkritisch / Pflichten / unzulässig).
 2. Freigabe oder Änderung der Texte: Nutzungsbedingungen, Risikohinweise, Methodik/Quellen/Interessen, Pflicht-Hinweise und Pflicht-Links im Frontend.
 3. Falls die Linie ohne Anzeige nicht trägt: welche Funktionen dann wegfallen müssen. Die Alternative wäre die Anzeige, die der Owner nicht will.
-4. Danach setzt ein eigener PR `LEGAL_STATUS = 'freigegeben'` mit neuer Fassung
-   (`scripts/account/go-live-config.mjs`). Das bleibt eine Owner-Entscheidung.
+4. Die Texte sind seit 06.11.2026 auf Owner-Entscheidung freigeschaltet. Änderungen nach der Prüfung kommen als neue
+   Fassung (`LEGAL_VERSION` hochzählen) in einem eigenen PR; das bleibt eine Owner-Entscheidung.
+
+## 7. Offen nach Freischaltung 06.11.
+
+Der Owner hat die Texte am 06.11.2026 online freigeschaltet (`vu-recht-2026-11-06-1`). Die folgenden Prüffragen standen bis
+dahin als `[[PRÜFEN: …]]` im Text. Sie sind unverändert übernommen; die Textstellen selbst sind inhaltlich unverändert.
+
+| # | Text, Stelle | Frage (wörtlich aus der Prüfmarke) |
+|---|---|---|
+| P1 | Impressum, Verbraucherstreitbeilegung | Erklärung bestätigen (§ 36 VSBG) |
+| P2 | Nutzungsbedingungen 1 (Kundenkreis) | Kundenkreis und Mindestalter bestätigen |
+| P3 | Nutzungsbedingungen 3 (kein Beratungsvertrag) | Ausschluss eines stillschweigenden Auskunfts- oder Beratungsvertrags, Wirksamkeit gegenüber Verbrauchern |
+| P4 | Nutzungsbedingungen 6 (Bestellung Pro) | Beschriftung der letzten Schaltfläche bei Stripe („Abonnieren“) und ergänzender Hinweistext nach § 312j Abs. 3 BGB |
+| P5 | Nutzungsbedingungen 7 (Preis) | Preisangabe über Bestellübersicht und Vertragsbestätigung statt eines festen Betrags in den Bedingungen |
+| P6 | Nutzungsbedingungen 10 (Sperre) | Sanktionsregel verhältnismäßig ausgestalten |
+| P7 | Nutzungsbedingungen 11 (Änderungen) | Änderungsklausel |
+| P8 | Nutzungsbedingungen 12 (Haftung) | Haftungsbegrenzung für Daten Dritter und Anlageverluste im entgeltlichen Pro-Vertrag (§ 307, § 309 Nr. 7 BGB, §§ 327 ff. BGB) |
+| P9 | Widerrufsbelehrung, Einordnung | Einordnung digitale Dienstleistung vs. digitale Inhalte (§ 356 Abs. 4/5 BGB in der seit 19.06.2026 geltenden Fassung) und Übereinstimmung mit der aktuellen Muster-Widerrufsbelehrung (Anlage 1 zu Art. 246a § 1 Abs. 2 EGBGB) |
+| P10 | Datenschutz 3 (Hosting) | Auftragsverarbeitungsverträge, Datenschutzrahmen (EU-US Data Privacy Framework/Standardvertragsklauseln) und Protokollfristen der Anbieter bestätigen |
+| P11 | Datenschutz 6 (Brevo-Kontaktliste) | Rechtsgrundlage Art. 6 Abs. 1 lit. b bzw. f DSGVO für die Kontaktliste |
+| P12 | Datenschutz 9 (Speicherdauer) | Fristen festlegen |
+| P13 | Datenschutz 10 (Drittländer) | Je Anbieter Zertifizierung bzw. Klauseln bestätigen |
+| P14 | Risikohinweise 7 | Risikohinweise und Haftungsausschluss insgesamt; Verhältnis zu den Nutzungsbedingungen |
+| P15 | Methodik 5 (Angaben Dritter) | Darstellung von Analysten-Einstufungen und Kurszielen Dritter (Seite Analysten, Fundamental): Weitergabe von Empfehlungen Dritter; siehe docs/legal/EINORDNUNG.md |
+| P16 | Methodik 6 (Vorsorgeklausel) | Vorsorgeklausel; Haltbarkeit der Linie „keine Anlageempfehlungen, keine Anzeige nach § 86 WpHG“ für die einzelnen Funktionen |
+
+Neu mit der Freischaltung (zur Mitprüfung):
+
+| # | Stelle | Frage |
+|---|---|---|
+| N1 | Impressum, Kontaktweg | Kein Telefon; E-Mail plus Kontaktformular `/kontakt` mit der Zusage „in der Regel innerhalb von 1–2 Werktagen“. Genügt das § 5 Abs. 1 Nr. 2 DDG? Der EuGH (C-298/07) lässt eine elektronische Anfragemaske genügen, wenn sie schnell beantwortet wird (im Urteil: 30–60 Minuten); ob 1–2 Werktage reichen, ist offen. |
+| N2 | Datenschutz 1 | Kein Datenschutzbeauftragter, weil weniger als 20 Personen ständig mit der automatisierten Verarbeitung beschäftigt sind (§ 38 Abs. 1 BDSG). Gibt es eine Pflicht nach Art. 37 DSGVO oder § 38 Abs. 1 Satz 2 BDSG? |
+| N3 | Datenschutz 6 (neuer Absatz) | Kontaktformular: Weiterleitung über Brevo per E-Mail, keine Speicherung im Konto-Dienst; Rechtsgrundlage und Aufbewahrung. |
+| N4 | Widerrufsbelehrung, Verbraucherinformationen (Art. 246a EGBGB) | Telefon nur, sofern vorhanden; derzeit keine Nummer. Eine geschäftliche Telefonnummer muss nachgetragen werden, sobald sie existiert. |
+

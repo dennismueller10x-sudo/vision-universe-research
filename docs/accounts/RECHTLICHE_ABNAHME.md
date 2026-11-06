@@ -1,9 +1,12 @@
 # Rechtliche Abnahme – Free/Pro, Newsletter, Kündigen, Widerrufen
 
-Stand 05.11.2026. **Keine Rechtsberatung, keine Freigabe.** Alle Texte sind Entwürfe der Fassung
-`vu-recht-2026-11-05-entwurf-4` (`workers/vu-account/src/legal/texts.mjs`, `LEGAL_STATUS = 'entwurf'`). Jede Seite trägt ein
-sichtbares Entwurfsbanner. Offene Stellen stehen im Text als **[[OFFEN: …]]** (Angabe fehlt) bzw. **[[PRÜFEN: …]]** (Wertung
-der Rechtsberatung nötig). Der Code nimmt keinen dieser Punkte als gelöst an. Ersetzt die Liste in
+Stand 06.11.2026. **Keine Rechtsberatung.** Die Texte sind seit 06.11.2026 **online freigeschaltet** (Owner-Entscheidung,
+Fassung `vu-recht-2026-11-06-1`, `LEGAL_STATUS = 'freigegeben'`, `VU_LEGAL_APPROVED` gesetzt, kein Entwurfsbanner). Inhalt
+ist Fassung 4 aus #1449, ergänzt um die Owner-Angaben vom 06.11. (USt-IdNr., Kontaktformular statt Telefon, kein
+Datenschutzbeauftragter). Die früheren **[[PRÜFEN: …]]**-Marken stehen nicht mehr im Text; jede Frage steht unverändert in
+[../legal/ANWALTSMAPPE.md](../legal/ANWALTSMAPPE.md), Abschnitt „Offen nach Freischaltung 06.11.“. **Die Anwaltsprüfung ist
+offen.** Die Freischaltung öffnet keine Zahlungen: Der Checkout bleibt `testers`, öffentliches Pro ist eine eigene
+Owner-Freigabe (Geld). Ersetzt die Liste in
 [RECHTLICHE_PRUEFUNG_CHECKOUT.md](RECHTLICHE_PRUEFUNG_CHECKOUT.md).
 
 ## Einordnung der offenen Punkte (Stand 02.11.2026)
@@ -44,6 +47,7 @@ deshalb liefert der Konto-Worker diese Seiten aus, ohne Skript, mit strenger CSP
 | Newsletter-Hinweise (Brevo, DOI, Abmeldung) | `…/rechtliches/newsletter` | `DOCS.newsletter` |
 | Risikohinweise und Haftungsausschluss | `…/rechtliches/risikohinweise` | `DOCS.risikohinweise` |
 | Methodik, Quellen und Interessen (ersetzt „Hinweise nach MAR und WpHG“; alte Adresse leitet hierher) | `…/rechtliches/methodik` | `DOCS.methodik` |
+| Kontaktformular (zweiter schneller Kontaktweg, § 5 Abs. 1 Nr. 2 DDG; Name, E-Mail, Nachricht → Brevo → info@visionuniverse.de, Honeypot, Ratenbegrenzung) | `…/kontakt` | `contactGet/contactPost` |
 | Kündigungsfunktion (§ 312k BGB, „Jetzt kündigen“) | `…/kuendigen` | `cancelGet/cancelPost` |
 | Elektronische Widerrufsfunktion (§ 356a BGB, „Vertrag widerrufen“ → „Widerruf bestätigen“) | `…/widerrufen` | `withdrawGet/withdrawPost` |
 
@@ -68,34 +72,36 @@ Bestätigungen auf dauerhaftem Datenträger (E-Mail über Brevo, `billing.mail_o
 | Register | Amtsgericht Stuttgart, HRB 803400 | `landing/impressum/` |
 | Steuernummer | 65204/71409 | `landing/impressum/` |
 | E-Mail | info@visionuniverse.de | `landing/impressum/` |
-| **USt-IdNr.** | **fehlt** | keine Quelle |
-| **Telefon / weiterer schneller Kontaktweg** | **fehlt** | keine Quelle |
-| **Datenschutzbeauftragter** | **fehlt** (benannt oder nicht erforderlich?) | keine Quelle |
+| USt-IdNr. | DE461100952 | Owner 06.11.2026 |
+| Schneller Kontaktweg | E-Mail und Kontaktformular `konto.visionuniverse.de/kontakt` (Antwort in der Regel innerhalb von 1–2 Werktagen); **keine Telefonnummer** | Owner 06.11.2026 |
+| Datenschutzbeauftragter | nicht benannt, weniger als 20 Personen ständig mit automatisierter Verarbeitung befasst (§ 38 Abs. 1 BDSG; zwei Personen im Unternehmen) | Owner 06.11.2026 |
 
 ## Abnahmeliste
 
 | # | Punkt | Stand im Code | Wer | Status |
 |---|---|---|---|---|
-| A1 | Impressum vollständig (USt-IdNr., Telefon/Kontaktweg, Verbraucherschlichtung § 36 VSBG) | Entwurf mit [[OFFEN]] | Owner | **offen** |
+| A1 | Impressum vollständig (USt-IdNr., Kontaktweg, Verbraucherschlichtung § 36 VSBG) | ergänzt 06.11.2026: USt-IdNr., E-Mail + Kontaktformular `/kontakt` (§ 5 Abs. 1 Nr. 2 DDG, EuGH C-298/07), kein Telefon; Erklärung § 36 VSBG wie im Entwurf. **Sobald eine geschäftliche Telefonnummer existiert, muss sie nachgetragen werden** (`COMPANY.phone` in `texts.mjs`: Impressum und Widerrufsbelehrung/Verbraucherinformationen nach Art. 246a EGBGB zeigen sie dann automatisch) | Owner | freigeschaltet 06.11.2026 (Owner), Anwaltsprüfung offen |
 | A2 | AGB Free/Pro: Leistung, Preis (seit 02.11. ohne festen Betrag: maßgeblich ist der vor der Bestellung angezeigte und in der Vertragsbestätigung genannte Bruttopreis, derzeit 1,00 €/Monat; Preise sind über die Tarifverwaltung änderbar und gelten nur für neue Abschlüsse), monatliche Laufzeit, Verlängerung, Kündigung jederzeit zum Periodenende, Zahlung über Stripe, Änderungsklausel, Sanktionsregel, Kundenkreis/Mindestalter | Entwurf mit [[PRÜFEN]] | Rechtsberatung | **offen** |
 | A3 | Widerrufsbelehrung: Einordnung digitale Dienstleistung vs. digitale Inhalte (§ 356 Abs. 4/5 BGB n. F.), Wertersatz § 357a, Übereinstimmung mit der aktuellen Muster-Belehrung (Anlage 1 Art. 246a EGBGB, Fassung ab 19.06.2026) | Entwurf; Checkout fragt ausdrücklichen Beginn und Kenntnis ab | Rechtsberatung | **offen** |
 | A4 | Elektronische Widerrufsfunktion § 356a BGB: Beschriftung „Vertrag widerrufen“, Bestätigungsseite „Widerruf bestätigen“, nur Name, Vertragskennung, E-Mail, kein Grund, sofortige Eingangsbestätigung | umgesetzt, getestet | Rechtsberatung | umgesetzt, Prüfung offen |
 | A5 | Kündigungsfunktion § 312k BGB ohne Login, „Jetzt kündigen“, Bestätigung | umgesetzt (öffentlich jetzt auch unter `konto.visionuniverse.de/kuendigen`) | Rechtsberatung | umgesetzt, Prüfung offen |
 | A6 | Vertragsbestätigung § 312f BGB | umgesetzt (eigene E-Mail mit Volltexten) | Rechtsberatung | umgesetzt, Prüfung offen |
 | A7 | Button-Lösung § 312j Abs. 3: letzte Schaltfläche bei Stripe heißt „Abonnieren“; ergänzender Text darüber („Mit „Abonnieren“ bestellst du Vision Universe Pro zahlungspflichtig für 1,00 € pro Monat inkl. USt. …“) | `custom_text.submit.message` | Rechtsberatung | **offen** |
-| A8 | Datenschutzhinweise: Rechtsgrundlagen, Speicherfristen, Anbieter (Supabase, Cloudflare, Stripe, PayPal, Klarna, Brevo, GitHub Pages), Drittlandübermittlung (DPF/SCC), AVV je Anbieter | Entwurf mit [[PRÜFEN]] „Fristen festlegen“, „Je Anbieter …“ | Owner + Rechtsberatung | **offen** |
+| A8 | Datenschutzhinweise: Rechtsgrundlagen, Speicherfristen, Anbieter (Supabase, Cloudflare, Stripe, PayPal, Klarna, Brevo, GitHub Pages), Drittlandübermittlung (DPF/SCC), AVV je Anbieter | freigeschaltet 06.11.2026; Datenschutzbeauftragter: nicht benannt (§ 38 Abs. 1 BDSG); Kontaktformular ergänzt (Abschnitt 6); Fragen zu Fristen und Anbietern in der Anwaltsmappe | Owner + Rechtsberatung | freigeschaltet, Prüfung offen |
 | A9 | Google Fonts auf `/analysten/` (Übermittlung an Google ohne Einwilligung) | behoben 30.10.2026: Schriften lokal (`/assets/fonts`); die Website lädt keine Drittinhalte mehr | – | erledigt |
 | A10 | Brevo-Kontaktliste (A) ohne Einwilligung: Rechtsgrundlage Art. 6 Abs. 1 lit. b bzw. f DSGVO, nur Service-Kommunikation | Code trennt A und B; A ausgeschaltet | Rechtsberatung | **offen** |
 | A11 | Newsletter (B): Einwilligungstext, DOI, Nachweis, Abmeldung, Tracking aus | umgesetzt; Text wortgleich mit der Landingpage (`vu-newsletter-v1`) | Rechtsberatung | umgesetzt, Prüfung offen |
 | A12 | Umsatzsteuer: Ausweis, Rechnungsangaben, internationale Kunden (siehe [STEUER.md](STEUER.md)) | Preis inkl. USt (`inclusive`); Stripe Tax aktiv seit 30.10.2026 (`STRIPE_TAX_MODE = "automatic"`, `stripeTax: ok`); öffentlicher Checkout verlangt Stripe Tax | Steuerberatung | technisch umgesetzt, Bestätigung offen |
 | A13 | Stripe öffentliche Angaben: Name in der Abrechnung, Abrechnungsbeschreibung (statement descriptor), Logo, Support-Adresse; keine Privatnamen | Befund 29.10.: Firma und Kontoauszug „VISION UNIVERSE“ korrekt, kein Privatname; Support-E-Mail/-URL leer, kein Logo, keine Steuer-ID für Rechnungen | Owner (Schritte in [STRIPE_BRANDING.md](STRIPE_BRANDING.md)) | **offen** |
 | A14 | Klarna als Zahlungsart für ein 1-€-Abo (Stripe zeigt nur, was zulässig ist) | dynamische Zahlungsarten | Owner | Entscheidung offen |
-| A15 | Kapitalmarktrecht: Leistung als Analyse-Software, keine Anlageberatung/-vermittlung/Vermögensverwaltung (AGB Ziff. 2–4), Risikohinweise, Methodik/Quellen/Interessen, Owner-Linie Plan §11 (keine Empfehlungen, keine Anzeige nach § 86 WpHG, Umbauten L1–L7), Pflicht-Hinweise und App-Pflichtlinks (`assets/legal-notices.json`) | Entwurf mit [[OFFEN]]/[[PRÜFEN]] (Fassung 4, 05.11.2026); Einordnung und Fragen in [../legal/EINORDNUNG.md](../legal/EINORDNUNG.md), [../legal/ANWALTSMAPPE.md](../legal/ANWALTSMAPPE.md) | Owner + Fachanwalt Kapitalmarktrecht | **offen** |
+| A15 | Kapitalmarktrecht: Leistung als Analyse-Software, keine Anlageberatung/-vermittlung/Vermögensverwaltung (AGB Ziff. 2–4), Risikohinweise, Methodik/Quellen/Interessen, Owner-Linie Plan §11 (keine Empfehlungen, keine Anzeige nach § 86 WpHG, Umbauten L1–L7), Pflicht-Hinweise und App-Pflichtlinks (`assets/legal-notices.json`) | Fassung 4 als `vu-recht-2026-11-06-1` online, Pflicht-Hinweise im Frontend sichtbar (`legalApproved: true`); Einordnung und Fragen in [../legal/EINORDNUNG.md](../legal/EINORDNUNG.md), [../legal/ANWALTSMAPPE.md](../legal/ANWALTSMAPPE.md) | Owner + Fachanwalt Kapitalmarktrecht | **freigeschaltet 06.11.2026 (Owner), Anwaltsprüfung offen** |
 | A16 | Datenlizenzen der kostenlosen Analysten-Quellen (Finnhub Free: Einstufungs-Konsens; FMP Free: Kursziele für eine kleine Liste): Anzeige auf einer öffentlichen, später kostenpflichtigen Seite, Quellenangabe, Weitergabe in Shards (`dashboard/data/analysts/`). Gezeigt wird nur der Konsens mit Quelle und Stand, kein eigenes Urteil. | Erzeuger und Daten umgesetzt (06.11.2026, intern sichtbar) | Owner + Rechtsberatung | **offen** (vor öffentlichem Start prüfen) |
 
-A15 im Frontend: Die Hinweise sind eingebaut (`VUUI.legal(key)` in `assets/vu-ui.js`, einheitlicher Seitenfuß in `assets/site-navigation.js`, Atlas-Hinweis „ai“, Backtest-Hinweis mit Pflichtangaben im Supertrader). Sie bleiben unsichtbar, bis in `assets/legal-notices.json` `legalApproved: true` steht und `node scripts/legal/sync-legal-notices.mjs` gelaufen ist; `core/tests/legal-notices-frontend.test.mjs` prüft, dass die Kopie der JSON-Datei entspricht.
+A15 im Frontend: Die Hinweise sind eingebaut (`VUUI.legal(key)` in `assets/vu-ui.js`, einheitlicher Seitenfuß in `assets/site-navigation.js`, Atlas-Hinweis „ai“, Backtest-Hinweis mit Pflichtangaben im Supertrader). Sie sind seit 06.11.2026 sichtbar (`assets/legal-notices.json` `legalApproved: true`, Version `vu-hinweise-2026-11-06-1`, `node scripts/legal/sync-legal-notices.mjs`); `core/tests/legal-notices-frontend.test.mjs` prüft, dass die Kopie der JSON-Datei entspricht.
 
 ## Fragebogen für den Owner (R2)
+
+**Beantwortet am 06.11.2026:** 1. USt-IdNr. DE461100952. 2. Keine Telefonnummer; E-Mail und Kontaktformular (`/kontakt`). 3. Kein Datenschutzbeauftragter (zwei Personen im Unternehmen, § 38 Abs. 1 BDSG). Fragen 4–6 sind mit den Entwurfsformulierungen freigeschaltet und als Anwaltsfragen in der Anwaltsmappe.
 
 Bitte beantworten; die Antworten ersetzen die `[[OFFEN]]`-Stellen. Es werden keine Angaben erfunden.
 

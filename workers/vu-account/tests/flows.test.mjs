@@ -946,7 +946,7 @@ test('Oeffentliche Seiten: Rechtstexte, Kuendigen und Widerrufen ohne Anmeldung'
 
   await t.test('Rechtstexte: oeffentlich, als Entwurf gekennzeichnet, ohne Skript, keine Shopify-Texte', async () => {
     for (const p of ['/rechtliches/', '/rechtliches/impressum', '/rechtliches/datenschutz', '/rechtliches/agb', '/rechtliches/widerrufsbelehrung',
-      '/rechtliches/widerrufsformular', '/rechtliches/newsletter', '/rechtliches/risikohinweise', '/rechtliches/methodik', '/rechtliches/mar-hinweise', '/kuendigen', '/widerrufen']) {
+      '/rechtliches/widerrufsformular', '/rechtliches/newsletter', '/rechtliches/risikohinweise', '/rechtliches/methodik', '/rechtliches/mar-hinweise', '/kontakt', '/kuendigen', '/widerrufen']) {
       const res = await page(env, p);
       const html = await res.text();
       assert.equal(res.status, 200, p);
@@ -963,7 +963,8 @@ test('Oeffentliche Seiten: Rechtstexte, Kuendigen und Widerrufen ohne Anmeldung'
     assert.equal(await head.text(), '', 'HEAD ohne Inhalt');
     const impressum = await (await page(env, '/rechtliches/impressum')).text();
     assert.match(impressum, /HRB 803400/);
-    assert.match(impressum, /\[OFFEN: USt-IdNr\./, 'fehlende Angabe sichtbar markiert, nicht erfunden');
+    assert.match(impressum, /DE461100952/);
+    assert.ok(!/\[(OFFEN|PRÜFEN):/.test(impressum), 'keine offenen Stellen');
   });
 
   await t.test('Kuendigen ohne Anmeldung: Jetzt kuendigen -> gespeichert, Bestaetigung per E-Mail, fremde Herkunft abgewiesen', async () => {
