@@ -112,8 +112,11 @@
   }
 
   /* ------------------------------------------------------------- Logo, C04, C05 */
+  var LOGO_PILOT = { NVDA: 1 };
   function logo(ticker, o) {
     var opt = o || {}, t = String(ticker || "").slice(0, 5);
+    /* Pilot 06.11.2026 (nur NVDA): Firmenlogo aus discover/logos statt Kürzel. */
+    if (!opt.src && LOGO_PILOT[t]) opt = Object.assign({}, opt, { src: "/discover/logos/files/" + t + ".png" });
     var inner = opt.src ? '<img src="' + esc(opt.src) + '" alt="" loading="lazy" decoding="async">' : esc(t);
     return '<span class="vu-logo-tile' + (opt.xl ? " vu-logo-tile--xl" : "") + '" aria-hidden="true">' + inner + "</span>";
   }
