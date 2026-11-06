@@ -120,4 +120,9 @@ test('Musterdepots-Seite: Bestand, Protokoll und Kennzeichnung; keine Rendite oh
   assert.ok(P.render(doc, '#/gibtsnicht').includes('gibt es nicht'));
   const pub = P.render({ ...doc, performance: { state: 'PUBLISHED' }, depots: [{ ...depot, nav: [['2026-11-05', 1], ['2026-12-03', 1.021]]}] }, '#/garp');
   assert.ok(pub.includes('Wertentwicklung ab Live-Start') && pub.includes('+2,1 %'));
+  /* Owner-Freigabe 06.11.2026: mit PUBLISHED auch die Veränderung je Position seit Aufnahme (Schluss heute gegen Aufnahmekurs), immer mit Kennzeichnung. */
+  assert.ok(/\+50,00? %/.test(pub) && pub.includes('Rechenmodell, kein echtes Geld') && pub.includes('Veränderung seit Aufnahme'));
+  assert.equal(/cagr|Backtest-Rendite/i.test(pub), false);
+  /* Volle Namen, sobald die Namensliste da ist; das Kürzel steht klein darunter. */
+  P.NAMES.AAA = 'Alpha Corp'; assert.ok(P.render(doc, '#/garp').includes('Alpha Corp')); delete P.NAMES.AAA;
 });
