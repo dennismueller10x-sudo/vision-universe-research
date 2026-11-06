@@ -1,3 +1,53 @@
+# E5 – Web-Performance, Baseline 06.11.2026
+
+Messung **vor Produktänderungen**, lokaler main-Release `bbe59a3ca48e`, Chromium 156.0.8078.79.
+Build mit `scripts/vu2/build-release.mjs`, danach dieselbe Minifizierung wie
+Pages (esbuild 0.25.10). Kein Overlay von `data/live` oder privaten
+Consumer-Daten; dies ist **keine Produktions-/Gerätemessung**.
+
+390 × 844, DPR 2, Touch; 4G: 1,6 Mbit/s Down, 0,75 Mbit/s Up, 150 ms;
+CPU-Faktor 4. Kalter Kontext je Route, HTTP-Cache aus, SW blockiert. Ein
+Ausgangslauf je Route, 20 s Beobachtung nach Navigation-Commit. Einzelwerte,
+keine statistisch abgesicherten Mediane. LCP und CLS aus PerformanceObserver;
+TBT* ist der Labor-Ersatz aus Long Tasks ab FCP bis Messende, kein Feld-INP
+und kein Lighthouse-TBT. Details und Wiederholung: [Messskript](../../scripts/mobile/README.md).
+Rohdaten mit jeder Ressource und jedem Fehler: [before.json](e5/before.json).
+
+| Route | LCP s | CLS | TBT* ms | Wire KiB | Requests | Erster sichtbarer Aktienkurs s |
+|---|---:|---:|---:|---:|---:|---:|
+| `/` | 2.456 | 0.000 | 0 | 72.2 | 10 | – |
+| `/quant/` | 3.416 | 0.306 | 634 | 543.4 | 25 | – |
+| `/quant/#/aktie/NVDA` | 14.596 | 0.058 | 4050 | 882.4 | 47 | 12.586 |
+| `/technical/#/chart/NVDA` | 12.984 | 0.058 | 5544 | 548.5 | 56 | 12.855 |
+| `/fundamental/#/NVDA` | 7.964 | 0.001 | 3272 | 1313.9 | 28 | 7.841 |
+| `/supertrader/` | 12.416 | 0.662 | 7189 | 594.5 | 24 | – |
+| `/supertrader/stock/NVDA/` | 7.480 | 0.826 | 1410 | 304.9 | 32 | 7.911 |
+| `/discover/` | 2.968 | 0.039 | 3270 | 1078.4 | 131 | – |
+| `/quant/musterdepots/` | 3.556 | 0.000 | 1618 | 170.1 | 12 | – |
+| `/analysten/` | 2.768 | 0.294 | 734 | 86.2 | 10 | – |
+| `/mein-dashboard/` | 1.884 | 0.051 | 46 | 219.4 | 29 | – |
+
+„Erster Kurs“ zählt ausschließlich einen sichtbaren Zahlenwert im gemeinsamen
+Aktienkopf (`.vu-shead-value`), nach einem Animationsframe; Datum und
+Navigationszähler zählen nicht. „–“ bedeutet innerhalb des Fensters nicht
+sichtbar bzw. keine Aktien-Detailroute. Wire enthält HTTP-Header.
+
+Befunde: Startseite und Dashboard erreichen in diesem Ausgangslauf LCP < 2,5 s;
+neun Routen verfehlen es. CLS ist auf Quant-Start, beiden Supertrader-Routen
+und Analysten ≥ 0,1. Quant/Technical/Fundamental warten lange auf den ersten
+sichtbaren Kurs. Discover startet 131 Requests. Keine offenen Requests am
+Messende auf zehn Routen; Dashboard zählt einen fehlgeschlagenen Abruf als
+nicht abgeschlossen. Kein JavaScript-Seitenfehler. Startseite: optionales `favicon.ico`
+404. Dashboard: Konto-Session-Endpunkt mit HTTP 403/CORS (siehe Rohdaten);
+kein authentifizierter Watchlist-Test. Diese Fehler nicht als bestandene
+Funktionsprüfung auslegen.
+
+Paket 1 ändert nur das Messwerkzeug und diese Dokumentation. Produkt-Werte
+vor/nach sind deshalb identisch (keine behauptete Beschleunigung). Noch offen:
+Pakete 2–4 und ihre jeweiligen Nachmessungen, Wiederholungsläufe, echtes Gerät.
+
+---
+
 # Mobile Performance: Messung gegen den gebauten Release, Maßnahmen
 
 **Stand:** 03.11.2026 (Phase 2) · Werkzeug: `app/scripts/measure-payload.mjs [--root <Release>] [--slow]`
