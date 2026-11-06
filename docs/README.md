@@ -16,3 +16,5 @@ Unveränderliche Quell-Snapshots behalten ihre Originalpfade im Text. Der Prüfe
 **Discover:** [VU_DISCOVER_ARCHITECTURE.md](VU_DISCOVER_ARCHITECTURE.md). Produktarchitektur, Datenquellen und weiterführende Fachbelege zur Entdeckungsschicht.
 
 **Fundamental:** [FUNDAMENTAL.md](FUNDAMENTAL.md). Ansichten, Kennzahlen, SEC-Daten und Datenabdeckung.
+
+**Konten:** [ACCOUNTS_AND_SUBSCRIPTIONS.md](accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md). Architektur und weiterführende Einrichtung, Freigaben, Preise, Nutzerführung und Betrieb.
