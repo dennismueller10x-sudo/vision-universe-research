@@ -95,7 +95,13 @@ jobs:
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
-        run: node scripts/diagnose/coverage-delta.mjs
+        run: |
+          set -euo pipefail
+          # Bezug ist der Commit der committeten Messung (coverage-delta.mjs). Der Checkout ist flach: Commits und Baeume
+          # seit der Messung blob-frei nachholen; die zwei Dateien des Bezugs-Commits laedt git show bei Bedarf.
+          since="$(git show HEAD:quant/data/market/history/coverage-metrics.json | node -e 'const d=new Date(JSON.parse(require("fs").readFileSync(0,"utf8")).generatedAt);d.setUTCDate(d.getUTCDate()-2);console.log(d.toISOString().slice(0,10))')"
+          git fetch -q --filter=blob:none --shallow-since="$since" origin "${GITHUB_REF_NAME}"
+          node scripts/diagnose/coverage-delta.mjs
 
       - name: Regressionssuite
         run: |

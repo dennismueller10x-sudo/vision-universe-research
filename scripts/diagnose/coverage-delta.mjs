@@ -171,13 +171,20 @@ async function main() {
   let before;
   try { before = JSON.parse(execFileSync("git", ["show", "HEAD:quant/data/market/history/coverage-metrics.json"], { cwd: root, maxBuffer: 1 << 26 }).toString()); }
   catch { console.error("Bezugsstand (git HEAD) nicht lesbar."); process.exit(2); }
+  /* Eignung und Abgleich "desselben Commits" wie die Messung: der letzte Commit, der coverage-metrics.json
+     geschrieben hat - nicht HEAD. Seit der Messung kann die Eignung mehrfach neu beurteilt worden sein
+     (05./06.11.2026: 6.686 -> 6.577 -> 6.308), dann trifft HEAD den Nenner nicht mehr. In einem flachen Checkout
+     findet git log den Commit nicht und liefert HEAD (der Workflow holt die Historie vorher blob-frei nach). */
+  let ref = "HEAD";
+  try { ref = execFileSync("git", ["log", "-1", "--format=%H", "--", "quant/data/market/history/coverage-metrics.json"], { cwd: root }).toString().trim() || "HEAD"; }
+  catch { ref = "HEAD"; }
 
   const elig = read("quant/data/market/security-master/eligibility.json");
   let eligHead = null;
-  try { eligHead = JSON.parse(execFileSync("git", ["show", "HEAD:quant/data/market/security-master/eligibility.json"], { cwd: root, maxBuffer: 1 << 27 }).toString()); }
+  try { eligHead = JSON.parse(execFileSync("git", ["show", ref + ":quant/data/market/security-master/eligibility.json"], { cwd: root, maxBuffer: 1 << 27 }).toString()); }
   catch { eligHead = null; }
   let reconHead = null;
-  try { reconHead = JSON.parse(execFileSync("git", ["show", "HEAD:quant/data/market/security-master/eligibility-reconciliation.json"], { cwd: root, maxBuffer: 1 << 26 }).toString()); }
+  try { reconHead = JSON.parse(execFileSync("git", ["show", ref + ":quant/data/market/security-master/eligibility-reconciliation.json"], { cwd: root, maxBuffer: 1 << 26 }).toString()); }
   catch { reconHead = null; }
   const tech = read("quant/data/technical/scale/technical-coverage-ELIGIBLE_US_EQUITY.json");
   let b;
