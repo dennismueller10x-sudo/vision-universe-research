@@ -225,6 +225,22 @@ test("Ereignisse: alle Arten der Regel - Quant, Technik, Supertrader-Ende, Daten
   const covered = new Set(kinds(evs.concat(W.events(first, buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc))));
   const k0 = at(first, "ACME"); first.cols.h52[k0] = false; first.cols.vs[k0] = false;
   for (const e of W.events(first, buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc)) covered.add(e.type + ":" + e.subtype);
+  // Kursbewegung ab 5 % (PRICE_MOVE, 1.2.0): ACME +6 %, ACX -7,5 % am neuen Schlusstag
+  const mvBefore = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc, mvAfter = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc;
+  const [ma, mx] = [at(mvAfter, "ACME"), at(mvAfter, "ACX")], day = mvAfter.cols.cd[ma];
+  mvBefore.cols.cd[at(mvBefore, "ACME")] = mvBefore.cols.cd[at(mvBefore, "ACX")] = "2026-10-01";
+  Object.assign(mvAfter.cols.d1, { [ma]: 0.06, [mx]: -0.075 }); Object.assign(mvAfter.cols.dp, { [ma]: "2026-10-01", [mx]: "2026-10-01" });
+  const moves = W.events(mvBefore, mvAfter, { now: AFTER_RUN }).filter(e => e.type === "PRICE_MOVE");
+  for (const e of moves) covered.add(e.type + ":" + e.subtype);
+  assert.deepEqual(moves.map(e => [e.ticker, e.subtype, e.evidence.change, e.evidence.previousDate, e.asOf]),
+    [["ACME", "DAILY_UP_5", 0.06, "2026-10-01", day], ["ACX", "DAILY_DOWN_5", -0.075, "2026-10-01", day]].sort((x, y) => moves.findIndex(m => m.ticker === x[0]) - moves.findIndex(m => m.ticker === y[0])));
+  assert.ok(moves.every(e => e.evidence.threshold === 0.05 && e.severity === "NOTABLE" && e.source.ruleVersion === "watchlist-events-1.2.0"));
+  // Gegenproben: 4,9 % bleibt still; derselbe Schlusstag ergibt kein zweites Ereignis
+  mvAfter.cols.d1[ma] = 0.049;
+  assert.ok(!W.events(mvBefore, mvAfter, { now: AFTER_RUN }).some(e => e.type === "PRICE_MOVE" && e.ticker === "ACME"), "unter 5 % kein Ereignis");
+  mvAfter.cols.d1[ma] = 0.06; mvBefore.cols.cd[at(mvBefore, "ACME")] = day;
+  assert.ok(!W.events(mvBefore, mvAfter, { now: AFTER_RUN }).some(e => e.type === "PRICE_MOVE" && e.ticker === "ACME"), "gleicher Schlusstag: kein neues Ereignis");
+
   const contract = Object.entries(EVENT_SCHEMA.properties.subtype.enumByType).flatMap(([ty, subs]) => subs.map(s => ty + ":" + s));
   assert.deepEqual(contract.filter(c => !covered.has(c)), [], "jede Unterart entsteht in einem Test");
   for (const e of evs) assert.ok(EVENT_SCHEMA.properties.type.enum.includes(e.type) && EVENT_SCHEMA.properties.subtype.enumByType[e.type].includes(e.subtype));

@@ -40,7 +40,8 @@
 
   var VERSION = "watchlist-view-1.0.0";
   var SCHEMA = "vu-watchlist-summary-1.0.0";
-  var RULE_VERSION = "watchlist-events-1.1.0";
+  var RULE_VERSION = "watchlist-events-1.2.0";  /* 1.2.0: PRICE_MOVE (Tagesbewegung ab 5 %) */
+  var MOVE_THRESHOLD = 0.05;       /* PRICE_MOVE: Tagesbewegung mindestens 5 % (Betrag), splitbereinigt */
   var NEAR_HIGH = -0.05;           /* Discover nearHigh/watch: hoechstens 5 % unter dem 52W-Hoch */
   var ACTIONABLE = ["SETUP", "ENTRY_READY", "TRIGGERED", "ACTIVE"];
   var FACTOR_LABEL = { quality: "Qualität", growth: "Wachstum", momentum: "Momentum", value: "Bewertung",
@@ -193,6 +194,8 @@
       var pf = freshness(doc, "price", r.cd, now);
       base.price = { state: pf.state === "STALE" ? "STALE" : "AVAILABLE", close: r.c, currency: r.pu || r.cu, date: r.cd, freshness: pf,
         basis: src.price.basis, kind: "EOD_CLOSE" };
+      /* Tagesveraenderung aus der Uebersicht (published-close.js#dayChange); fehlt sie, bleibt das Feld weg. */
+      if (typeof r.d1 === "number" && isFinite(r.d1) && typeof r.dp === "string") { base.price.change = r.d1; base.price.previousDate = r.dp; }
     }
 
     // Quant: sieben Faktoren mit Stufe, Gesamtscore zurueckgehalten
@@ -503,6 +506,14 @@
           severity: bs.state === "AVAILABLE" ? "INFO" : "NOTABLE" });
       });
 
+      // Kurs: Tagesbewegung ab 5 % (Betrag), einmal je neuem Schlusstag; nur mit verfuegbarem, nicht veraltetem Kurs
+      if (b.price.state === "AVAILABLE" && typeof b.price.change === "number" && Math.abs(b.price.change) >= MOVE_THRESHOLD
+          && a.price.state !== "UNAVAILABLE" && b.price.date && b.price.date !== a.price.date)
+        ev({ type: "PRICE_MOVE", subtype: b.price.change > 0 ? "DAILY_UP_5" : "DAILY_DOWN_5", v: b, sourceId: "price",
+          before: b.price.previousDate, after: b.price.date, asOf: b.price.date,
+          evidence: { change: b.price.change, close: b.price.close, currency: b.price.currency, previousDate: b.price.previousDate, date: b.price.date,
+            threshold: MOVE_THRESHOLD, basis: b.price.basis || null }, severity: "NOTABLE" });
+
       // Kurs und Technik
       if (b.high52.signal === "NEW_HIGH" && a.high52.state === "AVAILABLE" && a.high52.signal !== "NEW_HIGH")
         ev({ type: "PRICE_EVENT", subtype: "NEW_52W_HIGH", v: b, sourceId: "technical", before: a.high52.signal, after: b.high52.signal, asOf: b.high52.asOf,
@@ -561,7 +572,7 @@
     return out;
   }
 
-  return { VERSION: VERSION, SCHEMA: SCHEMA, RULE_VERSION: RULE_VERSION, NEAR_HIGH: NEAR_HIGH, FACTOR_LABEL: FACTOR_LABEL, REASON: REASON,
+  return { VERSION: VERSION, SCHEMA: SCHEMA, RULE_VERSION: RULE_VERSION, NEAR_HIGH: NEAR_HIGH, MOVE_THRESHOLD: MOVE_THRESHOLD, FACTOR_LABEL: FACTOR_LABEL, REASON: REASON,
     PATHS: PATHS, LEGACY_KEYS: LEGACY.map(function (l) { return l.key; }), legacyTickers: legacyTickers, planMerge: planMerge, inEuro: inEuro, load: load, merge: merge, index: index, freshness: freshness, view: view, aggregate: aggregate, sort: sort, filter: filter, group: group, events: events,
     EVENT_SOURCES: EVENT_SOURCES.slice(), eventId: eventIdFor,
     GROUPS: GROUPS.map(function (g) { return { id: g.id, label: g.label }; }) };

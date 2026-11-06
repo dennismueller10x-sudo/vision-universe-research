@@ -4,8 +4,8 @@ import {createFcm,runPush,deliverableEvents,deviceToken} from '../src/push.mjs';
 import {appLogin,appRefresh} from '../src/auth.mjs';
 const now=Date.now();
 const event={eventId:'ev_0123456789abcdef',instrumentId:'vu_abcdef',type:'PRICE_EVENT',subtype:'NEW_52W_HIGH',
- occurredAt:new Date(now-1000).toISOString(),source:{ruleVersion:'watchlist-events-1.1.0'}};
-const doc={ruleVersion:'watchlist-events-1.1.0',events:[event]};
+ occurredAt:new Date(now-1000).toISOString(),source:{ruleVersion:'watchlist-events-1.2.0'}};
+const doc={ruleVersion:'watchlist-events-1.2.0',events:[event]};
 test('ohne Secret keinerlei Netzwerk oder DB',async()=>{
  assert.deepEqual(await runPush({fcm:createFcm({}),service:null,fetchImpl:()=>{throw Error();}}),{skipped:'FCM_NOT_CONFIGURED'});
 });
