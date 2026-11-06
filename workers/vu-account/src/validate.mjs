@@ -41,7 +41,7 @@ const SETTINGS = {
   onboarded_at: v => v === true,
   notification_settings: v => v && typeof v === 'object' && !Array.isArray(v)
     && Object.entries(v).every(([k, b]) => ['WATCHLIST_NEWS', 'EARNINGS', 'PRICE_EVENT', 'SUPERTRADER_SIGNAL',
-      'QUANT_CHANGE', 'MARKET_REGIME_CHANGE'].includes(k) && typeof b === 'boolean'),
+      'QUANT_CHANGE', 'MARKET_REGIME_CHANGE', 'PRICE_MOVE', 'FUND_13F', 'ELLIOTT_CHANGE'].includes(k) && typeof b === 'boolean'),
 };
 
 export function settingsPatch(body) {
