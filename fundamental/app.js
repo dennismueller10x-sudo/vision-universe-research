@@ -82,6 +82,7 @@
   /* ------------------------------------------------------------ Daten */
   function loadUniverse() { return once('universe', function () { return fetchJson(C.UNIVERSE_PATH).then(function (u) { var U = C.universe(u); if (!U) throw new Error('INVALID_UNIVERSE'); return U; }); }); }
   function loadAnalysts() { return once('analysts', function () { return fetchJson(C.ANALYST_PATH); }); }
+  function loadConsensus(t) { var k = ID ? ID.shardKey(t) : null; return k ? once('consensus:' + k, function () { return fetchJson(C.CONSENSUS_SHARD_PATH + k + '.json'); }) : Promise.reject(new Error('NO_IDENTITY')); }
   function loadRow(path) { return state.rows[path] || (state.rows[path] = fetchJson(path).catch(function (e) { delete state.rows[path]; throw e; })); }
   function loadHistory(t) {
     if (!ID) return Promise.resolve({ state: 'NO_IDENTITY', issuer: null });
@@ -1567,17 +1568,20 @@
   }
   function analystBlock(co) {
     var box = el('div', {}, skel(200));
-    loadAnalysts().then(function (doc) {
-      var a = C.analysts(doc, co.t);
-      if (!a) { put(box, notice('Für ' + co.t + ' liegen keine Analystendaten vor.', 'Einstufungen und Kursziele führt Vision Universe derzeit für eine kleine Auswahl großer Titel.'), el('a', { class: 'fu-sec-link', href: '/analysten/' }, ['Zur Analystenübersicht', glyph('chevron', 'fu-glyph-sm')])); return; }
+    loadConsensus(co.t).then(function (d) { var e = d && d.entries && d.entries[ID.securityIdForTicker(co.t)]; return e ? { a: C.consensus(e), e: e } : null; }, function () { return null; })
+    .then(function (r) { return r ? r : loadAnalysts().then(function (doc) { return { a: C.analysts(doc, co.t), e: null }; }); })
+    .then(function (r) {
+      var a = r && r.a;
+      if (!a) { put(box, notice('Für ' + co.t + ' liegen keine Analysten-Einstufungen vor.', r && r.e ? 'Die Quelle meldet für diesen Titel keine veröffentlichten Einstufungen.' : 'Der Titel ist noch nicht abgerufen (rotierend, voller Umlauf etwa eine Woche).'), el('a', { class: 'fu-sec-link', href: '/analysten/' }, ['Zur Analystenübersicht', glyph('chevron', 'fu-glyph-sm')])); return; }
       var L = a.last, keys = [['strongBuy', 'Starker Kauf'], ['buy', 'Kaufen'], ['hold', 'Halten'], ['sell', 'Verkaufen'], ['strongSell', 'Starker Verkauf']];
       var price = co.quote && co.quote.value, tg = a.target;
       var range = tg && isNum(tg.low) && isNum(tg.high) && tg.high > tg.low ? function (v) { return Math.max(0, Math.min(100, (v - tg.low) / (tg.high - tg.low) * 100)); } : null;
       put(box, 
         el('div', { class: 'fu-kgrid' }, [
-          el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Analystenkonsens (Angabe Dritter)' }), el('b', { class: 'fu-k-v', text: a.label || '–' }), el('small', { class: 'fu-k-s', text: a.total ? a.total + ' Einstufungen · ' + monthDe(L.period) : '' })]),
+          el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Analystenkonsens (Angabe Dritter)' }), el('b', { class: 'fu-k-v', text: a.label || (a.total ? a.total + ' Analysten' : '–') }), el('small', { class: 'fu-k-s', text: a.total ? (a.label ? a.total + ' Einstufungen · ' : 'Stand ') + monthDe(L.period) : '' })]),
           tg ? el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Kursziel (Mittel)' }), el('b', { class: 'fu-k-v fu-num', text: C.fmt({ kind: 'perShare' }, tg.mean, 'USD') }),
-            el('small', { class: 'fu-k-s', text: isNum(price) ? (tg.mean >= price ? '+' : '−') + M.pct(Math.abs(tg.mean / price - 1)) + ' zum Kurs' : '' })]) : null
+            el('small', { class: 'fu-k-s', text: isNum(price) ? (tg.mean >= price ? '+' : '−') + M.pct(Math.abs(tg.mean / price - 1)) + ' zum Kurs' : '' })])
+            : a.targetState ? el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Kursziel (Angabe Dritter)' }), el('b', { class: 'fu-k-v', text: '–' }), el('small', { class: 'fu-k-s', text: { NO_FREE_SOURCE: 'keine freie Quelle', NO_TARGET: 'nicht veröffentlicht' }[a.targetState] || 'noch nicht geprüft' })]) : null
         ]),
         L ? el('div', { class: 'fu-card' }, [el('p', { class: 'fu-card-k' }, [el('b', { text: 'Verteilung' }), ' · ' + monthDe(L.period)]),
           el('div', { class: 'fu-dist', 'aria-hidden': 'true' }, keys.map(function (k, i) { return L[k[0]] ? el('i', { class: 'd' + i, style: 'flex:' + L[k[0]] }) : null; })),
