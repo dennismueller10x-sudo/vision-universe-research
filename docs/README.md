@@ -7,3 +7,4 @@ Hier beginnt die Orientierung. Je Produkt gibt es einen Einstieg; ergänzende Fa
 Prüfung: `node scripts/quality/check-doc-links.mjs` oder `node --test core/tests/doc-links.test.mjs`, jeweils vom Repo-Root. Geprüft werden relative Datei-/Verzeichnisziele in versionierten Markdown-Dateien, einschließlich Referenzlinks, Bildern und eingebetteten HTML-Links. Externe URLs und Fragmentinhalte sind nicht Teil dieser Dateiprüfung.
 
 Unveränderliche Quell-Snapshots behalten ihre Originalpfade im Text. Der Prüfer löst sie über das vorhandene Provenienzmanifest auf die erhaltenen Archivdateien auf, sofern alle SHA-256-Prüfsummen stimmen. Das übernimmt keine fachliche Freigabe.
+**Quant:** [QUANT_FINAL_HANDOVER.md](quant/QUANT_FINAL_HANDOVER.md). Produktstand, Backtests, Portfolio-Standard und offene Entscheidungen.
