@@ -655,7 +655,7 @@
       } }, [saveName, el("button", { class: "vu-btn vu-btn--sm", type: "submit", text: "Speichern" })]);
       var actions = el("div", { class: "tc-actions2" }, [
         el("button", { type: "button", class: "vu-btn vu-btn--ink tc-save-btn", onclick: function () { saveForm.hidden = !saveForm.hidden; if (!saveForm.hidden) saveName.focus(); } }, [glyph("save"), "Suche speichern"]),
-        el("button", { type: "button", class: "vu-btn vu-btn--line", onclick: function () { saveMsg.textContent = "Melden braucht ein Konto: Benachrichtigungen kommen mit dem Konto-Speicher. Bis dahin zeigt „Gespeichert“ die Trefferzahl von heute."; } }, [h(U.glyph("bell", 18)), "Melden"])]);
+        el("button", { type: "button", class: "vu-btn vu-btn--line", onclick: function () { openPush(); } }, [h(U.glyph("bell", 18)), "Melden"])]);
       put(results, [el("div", { class: "vu-sect" }, [el("h2", { text: "Treffer" }), sortSel]),
         res.count ? view : stateBox("Keine Treffer", "Keine Aktie erfüllt diese Regeln. Weniger Filter oder „Mindestens eine“ erweitern die Auswahl."),
         table || !res.count ? null : more, res.count > idx.length ? el("p", { class: "tc-note", text: "Gezeigt werden höchstens " + idx.length.toLocaleString("de-DE") + " von " + res.count.toLocaleString("de-DE") + " Treffern." }) : null,
@@ -704,6 +704,13 @@
   }
   /* Gespeicherte Suchen (T04). Gezaehlt wird heute; die Aenderung seit dem letzten Besuch steht in diesem Browser. */
   var SEEN_KEY = "vu-technical-saved-seen-v1";
+  /* Z4: Benachrichtigungen über die App (konto/push-settings.js, erst beim Antippen geladen). Neue Treffer einer
+     Suche gibt es als Ereignisart noch nicht; das Sheet sagt es und zeigt die Arten für Titel der Watchlist. */
+  function openPush() {
+    var p = global.__vuPushP || (global.__vuPushP = global.VUPush ? Promise.resolve() : new Promise(function (done) {
+      var s = doc.createElement("script"); s.src = "/konto/push-settings.js"; s.onload = s.onerror = function () { done(); }; doc.head.appendChild(s); }));
+    p.then(function () { if (global.VUPush) global.VUPush.open({ focus: ["SEARCH_HITS", "SUPERTRADER_SIGNAL", "PRICE_EVENT"] }); });
+  }
   /* Z3: Suchen im Konto (konto/saved-searches.js), Abfrage { params }; ohne Anmeldung nur in diesem Browser. */
   var SS = global.VUSavedSearches || null, acctState = null, acctSynced = false, acctMsg = null;
   var acct = { world: "technical",
@@ -762,7 +769,7 @@
       return el("div", { class: "vu-box tc-saved" }, [
         el("a", { class: "tc-saved-title", href: svHref }, [el("b", { text: sv.name }), el("span", { class: "tc-row-text" }, el("span", { text: desc }))]),
         el("div", { class: "tc-saved-line" }, [el("span", { class: "tc-hit-score" }, [count, el("span", { text: " Treffer" })]), delta,
-          el("label", { class: "tc-bell", title: "Benachrichtigung kommt mit dem Konto" }, [h(U.glyph("bell", 16)), el("input", { type: "checkbox", role: "switch", class: "vu-switch", disabled: true, "aria-label": "Benachrichtigen (kommt mit dem Konto)" })])]),
+          el("button", { type: "button", class: "tc-bell", "aria-label": "Benachrichtigungen zu „" + sv.name + "“", onclick: function () { openPush(); } }, [h(U.glyph("bell", 16))])]),
         el("details", { class: "tc-saved-more" }, [el("summary", { text: "Mehr" }), el("div", { class: "tc-brow tc-saved-actions" }, [
           el("span", { class: "tc-note", text: (sv.updatedAt ? "Geändert am " + M.dateDe(sv.updatedAt.slice(0, 10)) : "Gespeichert am " + M.dateDe(sv.createdAt.slice(0, 10))) +
             (sv.migrated ? " · angepasst: „" + sv.migrated.from + "“ heißt jetzt „" + sv.migrated.to + "“ (gleiche Bedeutung)" : "") }),
@@ -774,7 +781,7 @@
           el("button", { type: "button", class: "vu-chip", text: "Löschen", onclick: function () { M.deleteScreen(store(), sv.id); if (SS && sv.acct) SS.removed(sv.acct); render(); } })]), edit])]);
     });
     var body = list.length ? [el("p", { class: "vu-ltag tc-count-h", text: list.length + (list.length === 1 ? " Suche" : " Suchen") }), el("div", { class: "vu-stack tc-list" }, rows),
-      h(U.help("Die Glocke meldet neue oder herausgefallene Aktien, sobald Suchen im Konto liegen. Bis dahin zeigt diese Seite die Änderung seit deinem letzten Besuch.")),
+      h(U.help("Die Glocke öffnet die Benachrichtigungen der App. Neue oder herausgefallene Aktien einer Suche meldet sie noch nicht; diese Seite zeigt die Änderung seit deinem letzten Besuch.")),
       acctBox(),
       el("a", { class: "vu-btn vu-btn--line vu-btn--block", href: "#/screener" }, [h(U.glyph("plus", 18)), "Neue Suche"])]
       : [el("div", { class: "tc-empty" }, [el("span", { class: "tc-empty-ico", "aria-hidden": "true" }, glyph("save")), el("h2", { class: "vu-mt", text: "Noch nichts gespeichert" }),

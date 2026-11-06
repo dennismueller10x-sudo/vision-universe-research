@@ -72,7 +72,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | D05 | Discover · Swipen | fertig | #1367 | `#/swipen` (`#/einzeln/<U>` leitet um); Zähler „1 von 400“; Leiste über #1364 |
 | D06 | Discover · Suchen | fertig | #1367 | „Bekannte Namen“ mit 12-Monats-Pille statt „Oft gesucht“ (keine Suchstatistik) |
 | D07 | Discover · Märkte | fertig | #1367, #1463 | Unterseiten `#/maerkte/<Symbol>` in der Palette. Abweichung: die Einordnung behält ihre Stufen-Skala, weil die Stufenfarben die Aussage tragen (keine Vorlage für die Unterseite). |
-| D08 | Discover · Watchlist | fertig | #1367, #1461 | Benachrichtigungen als „bald“ (Z4 braucht Owner-Freigabe des Versandwegs). Abweichung: Adresse bleibt `/discover/#/watchlist`, weil Konto-Watchlist und Discover denselben Speicher lesen. |
+| D08 | Discover · Watchlist | fertig | #1367, #1461 | Benachrichtigungen echt (Z4): Schalter ±5 %, Jahreshoch, Quartalszahlen im Konto, zugestellt über die App; ohne Daten gesperrt. Abweichung: Adresse bleibt `/discover/#/watchlist`, weil Konto-Watchlist und Discover denselben Speicher lesen. |
 | D09 | Discover · NVIDIA (Aktienseite) | fertig | #1350 | Kurs im Kopf in Anzeigewährung (€) statt $ + ≈ € (Querschnitt Währung offen); Jahresspanne in % statt $; d09-c Merken-Sheet wartet auf Benachrichtigungen (Backend) |
 | Q00 | Quant · So ist die Welt gebaut | fertig | #1412 | Methodik/Backtest unter „Quant“, Technische Lagen unter „Aktien“ (Leiste und App) |
 | Q01 | Quant · Übersicht | fertig | #1351 | Setup-Karten ohne „Schluss … $“ (Ressourcen-Budget der Startseite) |
@@ -85,9 +85,9 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | Q08 | Quant · NVIDIA Zahlen (Perspektive Zahlen) | fertig | #1351 | Kopf ohne Kurs (Seite lädt keinen Kurs); Kachel „Wachstum 3 Jahre“ durch „Stand“ ersetzt |
 | Q09 | Quant · NVIDIA Chartbild (Perspektive Chart) | fertig | #1450 | Perspektive „Chart“ bleibt in Quant (Kopf mit Leiste, Quant-Dock): Urteil + Lage, der eine Chart (C06) mit Schlüsselzone (neongrün), Zielbereich (grau), Ungültig-Linie gestrichelt, drei Kacheln, Szenarien (Haupt schwarz, Tippen zeigt Marken), „Warum dieses Bild?“ mit dafür/dagegen/neutral und „Alle n“, Querverweise Wellen und Chart Studio (PRO), Historie gegen Zufall, Prüfweg, frühere Fälle, Zeitreise-Regler. Abweichung: eigene Adresse `#/aktie/<T>/chart` statt `#/aktie/<T>/chartbild`, weil die alte Adresse laut Mission IV und ihren Tests zu Elliott führt (Lesezeichen bleiben gültig); Quant-Links (Radar, Aktienseite, Q06) zeigen auf die neue Adresse. Zeitleiste: 1W/1M/1J aktiv, 1T/5J/Max abgeschaltet mit Grund (das Chartbild rechnet mit Tagesschlüssen über ein Jahr). Historie in beiden Farbmodi schwarz (Lesbarkeit der neongrünen Zahl). |
 | T01 | Technical · Übersicht | fertig | #1363 | Sheet „Was ist ein Setup?“ ohne Beispielchart; „Heute neu im Chart“ lädt nach dem ersten Bild; Markt heute ≥ 60 % Stark, ≥ 40 % Gemischt, sonst Schwach |
-| T02 | Technical · Screener | fertig | #1363 | „Melden“ ohne Funktion bis Z4 (Owner-Freigabe Versand) |
+| T02 | Technical · Screener | fertig | #1363 | „Melden“ öffnet die Benachrichtigungen der App (Z4); neue Suchtreffer sind noch keine Ereignisart und stehen gesperrt im Sheet |
 | T03 | Technical · Vorlagen | fertig | #1363 | Detail bleibt `#/vorlagen/<id>` (TPL.href in der Engine) |
-| T04 | Technical · Gespeicherte Suchen | fertig | #1363 | Änderung „seit dem letzten Kursstand“ (im Browser) statt „seit gestern“; Glocke bis Z4 gesperrt; Konto-Speicherung über Z3 angebunden (D4-Z3, Welt `technical`, Abfrage `{params}`) |
+| T04 | Technical · Gespeicherte Suchen | fertig | #1363 | Änderung „seit dem letzten Kursstand“ (im Browser) statt „seit gestern“; Glocke öffnet die Benachrichtigungen der App (Z4); Konto-Speicherung über Z3 angebunden (D4-Z3, Welt `technical`, Abfrage `{params}`) |
 | T05 | Technical · Methodik | fertig | #1363 | `#/muster`, `#/methodik` zeigt dieselbe Seite; früherer Inhalt unter „Regeln“ |
 | T06 | Technical · NVIDIA im Chart | fertig | #1363 | Kopf aus dem Navigator ohne Satz zur Firmentätigkeit; 1T gesperrt (nur Tagesschlüsse); Urteil nach SMA 50/200, RSI ab 50 Stark |
 | F01 | Fundamental · Übersicht | fertig | #1355 | Fehlerzustand unter den Ranglisten-Karten, wenn das Universum nicht lädt |
@@ -99,7 +99,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | W01 | Elliott · Übersicht | fertig | #1356 | Suche als echtes Feld (ohne Atlas-Knopf); „Weitere Reihen“ zeigt alle 8 Reihen |
 | W02 | Elliott · Welle 3 | fertig | #1356 | Karten in Reihenfolge der Reihe, 10 je Seite |
 | W03 | Elliott · Aufwärts | fertig | #1356 | zusätzlicher Filter `rolle=motiv` |
-| W04 | Elliott · Neu und verändert | fertig | #1356 | Schalter „Melden“ sichtbar, aus: kommt mit Z4 (Owner-Freigabe) |
+| W04 | Elliott · Neu und verändert | fertig | #1356 | Schalter „Melden“ im Konto (Z4), über die App; Elliott-Lesarten noch ohne Ereignisart, daher gesperrt mit „noch keine Daten“ |
 | W05 | Elliott · NVIDIA in Wellen | fertig | #1356, #1470 | Reihenfolge, Ausblick schwarz mit C08, Profi-Knopf PRO; ohne belastbare Lesart zeigt der Chart die Marktstruktur (Unterstützung neongrün, Widerstand grau, überlappend als eine Zone). Abweichung: Projektionskarte (w05-c) und Profi-Ansicht (w05-b) bleiben ausführlicher als im Mockup, weil sie die Pflichtangaben des experimentellen Elliott-Modells tragen (Status, Lesarten, Regeln, Neuzuordnungs-Risiko). |
 | ST01 | Supertrader · Übersicht | fertig | #1361 | „Neu erkannt heute“ heißt „Heute durchgerechnet“ (Stufe-3-Treffer; kein sauberer Vortagsvergleich in den Daten) |
 | ST02 | Supertrader · Methoden | fertig | #1361, #1446 | Kandidatenansicht `?sf=Cxx` im Redesign-Kopf mit Kacheln und kompakten Zeilen (Stufennamen nach ST-Z). |
@@ -129,7 +129,7 @@ Status: `offen` · `in Arbeit` · `fertig` (gemergt nach `main`) · `teilweise` 
 | V05 | Vorsorge · Portfolio | fertig | #1362, #1454 | X-Ray nach v05-a in einer Spalte: deine ETFs mit Gewicht und „ETF hinzufügen“, der eine Chart (C06, Start = 100), drei Kacheln, „Was du wirklich besitzt“ schwarz, größte Firmen und Länder effektiv als Gewichtsbalken, „Auf einen Blick“ mit Urteilen, Knopf zu den Mischungen; Fachdaten (Assetklassen, Regionen, Währung, Wirtschaftszweige, Bestandsänderungen mit Urteil, Prüfweg) und Szenario-Lab unter „Mehr“. Mischungen nach v05-b: Karte je Modell mit Gewichtsbalken statt Kreis, eigenes Portfolio schwarz mit „dein Portfolio“, Antippen übernimmt; Hinweis bei fehlender 10-Jahres-Historie. Schwellen der Urteile (Claude-Entscheidung nach Mockup): Kosten ≤ 0,30 % günstig, ≤ 0,60 % mittel; Gleichlauf < 0,5 gering, < 0,85 mittel; Überschneidung < 0,5 % keine, < 5 % gering, < 25 % mittel; Handelswährung > 50 % nicht Euro = Währung. Abweichung: Planspiel je Mischung entfällt (Mockup: Karte antippen). |
 | V06 | Vorsorge · Vergleichen | fertig | #1362 | Standard URTH gegen SPY; Kosten unter `#/vergleichen/kosten` |
 | V07 | Vorsorge · Förderung | fertig | #1362 | Beispielfälle unter `#/foerderung/faelle` |
-| V08 | Vorsorge · Veränderungen | fertig | #1362 | „Benachrichtigen“ nur lokal (Z4) |
+| V08 | Vorsorge · Veränderungen | fertig | #1362 | „Benachrichtigen“ im Konto über die App (Z4); ETF-Änderungen noch ohne Ereignisart, daher gesperrt mit „noch keine Daten“ |
 | V09 | Vorsorge · Wissen | fertig | #1362 | Datenbeispiel nur für Schwankung und größten Rückgang (URTH) |
 | V10 | Vorsorge · Der 10-Euro-Sparplan (Ablauf) | fertig | #1362 | `#/start` in sechs Schritten ohne Kopf/Leiste; Plan im Browser |
 | V10 | Vorsorge · Der 10-Euro-Sparplan | fertig | #1362 | `#/start` in sechs Schritten ohne Kopf/Leiste; Plan im Browser |
@@ -211,14 +211,14 @@ Entscheidungen: Plus/Minus je Position in Grün/Rot mit Pfeil (Owner-Vorgabe, Ab
 
 ## Backend-Zusätze (Projekt Z1–Z7, `docs/PLAN_NEUSTART_2026-11.md` §7)
 
-Steuerung (Owner, 04.11.2026): Mockups sind verbindlich (Reihenfolge, Abstände, Schriftgrößen, Bausteine, Wortwahl; Abnahme nach Ü3). Strang D baut Z1, Z2, Z3 und Z7 jeweils mit ihren Seiten; Z4 (Owner-Freigabe Versandweg), Z5, Z6 (Stränge A/B) zeigen die Seiten als „bald“ oder blenden sie aus.
+Steuerung (Owner, 04.11.2026): Mockups sind verbindlich (Reihenfolge, Abstände, Schriftgrößen, Bausteine, Wortwahl; Abnahme nach Ü3). Strang D baut Z1, Z2, Z3 und Z7 jeweils mit ihren Seiten; Z4 (Versandweg App-Push am 06.11. freigegeben, gebaut von D4), Z5, Z6 (Stränge A/B) zeigen die Seiten als „bald“ oder blenden sie aus.
 
 | # | Zusatz | Baut | Stand | Notiz |
 |---|---|---|---|---|
 | Z1 | Erster Start: Ziel, Erfahrung, erste Aktien; Konto-Einstellung | D (E11) + `workers/vu-account` | fertig (#1359, Seiten-Anbindung D4-Z1) | `settings.experienceLevel` beginner/advanced/pro, `settings.goal` vorsorge/aktie/ideen/strategien, `settings.onboardedAt` (PATCH `true`, Server setzt Zeit); Produktion bleibt aus |
 | Z2 | Eine Aktienadresse `/aktie/<T>` mit Weiterleitungen | D | fertig (#1353) | Herkunftswelt bestimmt Perspektive und Leiste |
 | Z3 | Gespeicherte Suchen im Konto | D (Q02, Screener, T04) + Konto | fertig (#1359, Seiten D4-Z3) | `GET/POST/PATCH /v1/searches`, `POST /v1/searches/remove`; Welt quant/screener/technical/fundamental/discover; 50 je Konto; S04, Q02, T04 angebunden über `konto/saved-searches.js` (im Konto gelöschte Suchen werden auf dem Gerät nur entkoppelt, nicht gelöscht) |
-| Z4 | Benachrichtigungen | Konto + Erzeuger | „bald“ | Versandweg braucht Owner-Freigabe |
+| Z4 | Benachrichtigungen | Konto + Erzeuger | fertig (D4-Z4) | Owner 06.11.: Versandweg App-Push freigegeben (#1525), E-Mail bleibt aus. Schalter je Art im Konto (`konto/push-settings.js`, `PATCH /v1/me settings.notifications`). `/v1/me` nennt `push.available/devices`. Versand nur mit Konto-Einstellung und ohne Abschaltung am Eintrag (Migration `20261107000100`). Zustellbar: Jahreshoch, Setups, Quant-Stufen; ±5 %, Quartalszahlen, 13F, Suchtreffer, Elliott und ETF bleiben gesperrt („noch keine Daten“), bis ein Erzeuger sie liefert |
 | Z5 | Screener-Kriterien aus 13F und Supertrader | A + B, Oberfläche D | Supertrader-Teil in #1391; 13F „bald“ | |
 | Z6 | Insider-Käufe als Datenquelle | A | „bald“ | |
 | Z7 | AI Atlas visuell (E10-b) | D (E10) | fertig (#1366) | vorhandener Worker `workers/vu-ask` unverändert (Modell, Budget, Grenzen, Beta-Passwort); neu nur die Darstellung mit VU-Bausteinen |

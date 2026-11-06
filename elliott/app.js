@@ -408,9 +408,13 @@
       host.append(el("section", { class: "el-row", dataset: { row: "chg-" + g[0] } }, [sect(KIND[g[0]][0] + " · " + M.dateDe(g[1]).slice(0, 6), !art && all > 3 ? hrefArt(g[0]) : null, "Alle " + all), list(g[2], false, "el-grid")]));
     });
     host.append(frag(U.help("Zone erreicht: Der Kurs ist in den Bereich gelaufen, den die Lesart beschrieben hat. Danach kann sie enden.")));
-    var bell = el("div", { class: "vu-box vu-box--lime el-bell" }, [frag(U.glyph("bell", 20)), el("span", {}, [el("b", { text: "Bei Änderungen an meinen Aktien melden" }), el("small", { text: "Kommt mit den Benachrichtigungen im Konto." })]), frag(U.toggle(false))]);
-    bell.querySelector("input").disabled = true;
+    /* Z4: echte Schalter im Konto, zugestellt nur über die App (konto/push-settings.js, erst hier geladen).
+       Elliott-Lesarten sind noch keine Ereignisart: der Schalter bleibt gesperrt und sagt es. */
+    var bell = el("div", { class: "vu-box vu-box--lime", style: "margin-top:12px" }, [el("b", { text: "Bei Änderungen an meinen Aktien melden" }), el("p", { class: "vu-xs", text: "Benachrichtigungen kommen über die App." })]);
     host.append(bell);
+    var pp = global.__vuPushP || (global.__vuPushP = global.VUPush ? Promise.resolve() : new Promise(function (done) {
+      var s = document.createElement("script"); s.src = "/konto/push-settings.js"; s.onload = s.onerror = function () { done(); }; document.head.appendChild(s); }));
+    pp.then(function () { if (global.VUPush) global.VUPush.mount(bell, { keys: ["ELLIOTT_CHANGE"], more: true }); });
   }
 
   function content(s) {

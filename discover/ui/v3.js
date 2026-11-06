@@ -20,6 +20,12 @@
   var BASE = '/discover/data/';
   function S() { return global.QuantShell; }
   function U() { return global.VUUI; }
+  /* Z4: konto/push-settings.js erst laden, wenn eine Ansicht Benachrichtigungen zeigt. */
+  function withPush(fn) {
+    var p = global.__vuPushP || (global.__vuPushP = global.VUPush ? Promise.resolve() : new Promise(function (done) {
+      var s = document.createElement('script'); s.src = '/konto/push-settings.js'; s.onload = s.onerror = function () { done(); }; document.head.appendChild(s); }));
+    p.then(function () { if (global.VUPush) fn(global.VUPush); });
+  }
   function esc(s) { return U().esc(s); }
   function isNum(v) { return typeof v === 'number' && isFinite(v); }
   function val(f) { return f && typeof f === 'object' ? f.value : (isNum(f) ? f : null); }
@@ -769,9 +775,12 @@
     }
     page.querySelector('.vu-seg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) draw(b.dataset.id); });
     draw('heute');
-    /* D08: Benachrichtigungen wie im Mockup d08-a; der Dienst (Z4) kommt später, deshalb ehrlich „bald“ statt wirkungsloser Schalter. */
-    page.insertAdjacentHTML('beforeend', sect('Benachrichtigungen') + '<div class="vu-box dv3-alerts">' + ['Bewegung über ±5 % am Tag', 'Neues Jahreshoch', 'Neue Quartalszahlen (SEC)'].map(function (t) {
-      return '<div class="dv3-alert"><b>' + esc(t) + '</b>' + U().verdict('none', 'bald') + '</div>'; }).join('') + '</div>');
+    /* D08: Benachrichtigungen wie im Mockup d08-a (Z4): echte Schalter im Konto, zugestellt nur über die App
+       (konto/push-settings.js, erst hier geladen). Arten ohne Daten bleiben gesperrt („noch keine Daten“). */
+    page.insertAdjacentHTML('beforeend', sect('Benachrichtigungen') + '<div class="vu-box dv3-alerts">' + ['Kursbewegung über ±5 % am Tag', 'Neues Jahreshoch', 'Neue Quartalszahlen'].map(function (t) {
+      return '<div class="dv3-alert"><b>' + esc(t) + '</b></div>'; }).join('') + '<p class="vu-xs vu-mu">Benachrichtigungen kommen über die App.</p></div>');
+    var alertsBox = [].slice.call(page.querySelectorAll('.dv3-alerts')).pop();
+    withPush(function (P) { P.mount(alertsBox, { keys: ['PRICE_MOVE', 'PRICE_EVENT', 'EARNINGS'], more: true }); });
     var first = known[0], sim = first && first.discoverNext && first.discoverNext.similar && (first.discoverNext.similar.cards || []).filter(function (c) { return symbols.indexOf(c.symbol) < 0; }).slice(0, 2);
     if (sim && sim.length) {
       page.insertAdjacentHTML('beforeend', sect('Passt zu deiner Liste'));

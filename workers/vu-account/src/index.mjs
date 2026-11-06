@@ -153,7 +153,7 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
     const htmlRoute = PAGES.find(([m, p]) => p === url.pathname && m === (head ? 'GET' : request.method));
     if (htmlRoute) {
       const [, , handler, opts = {}] = htmlRoute;
-      const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, ip: clientIp(request),
+      const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, fcm, ip: clientIp(request),
         cookies: parseCookies(request), outCookies: []};
       try {
         if (opts.db !== false && !supabaseReady(cfg)) throw new Error('ACCOUNTS_NOT_CONFIGURED');
@@ -170,7 +170,7 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
       return json(request, cfg, known ? 405 : 404, {state: known ? 'METHOD_NOT_ALLOWED' : 'NOT_FOUND'});
     }
     const [, , handler, opts = {}] = route;
-    const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, ip: clientIp(request),
+    const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, fcm, ip: clientIp(request),
       cookies: parseCookies(request), outCookies: [], backtestBundle};
     try {
       if (opts.db !== false && !supabaseReady(cfg)) throw new HttpError(503, 'ACCOUNTS_NOT_CONFIGURED');
