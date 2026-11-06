@@ -19,7 +19,7 @@ Vision-Universe-Architektur — nicht als zweites System (§0, §48).
 - Vier Provider-Interfaces mit Registry, Capability-Matrix und Vendor-Leakage-Guard.
 - Orchestrierung ueber Node-Skripte in GitHub Actions; Zustand in JSON-Artefakten.
 - Vollstaendige Beschreibung: `docs/VU_SOCIAL_ARCHITECTURE.md`.
-- Audit des Bestands, auf dem gebaut wurde: `docs/VU_SOCIAL_PHASE_A_AUDIT.md`.
+- Audit des Bestands, auf dem gebaut wurde: `docs/archiv/2026/VU_SOCIAL_PHASE_A_AUDIT.md`.
 
 **Drei Annahmen des Auftrags trafen im Repository nicht zu** und wurden korrigiert
 statt uebernommen (Details im Audit, Abschnitt 2):

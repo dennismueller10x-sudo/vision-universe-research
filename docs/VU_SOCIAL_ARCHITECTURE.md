@@ -32,7 +32,7 @@ laufen in Browser **und** Node, Tests mit `node --test`.
 
 Social ist eine **neue Faehigkeit innerhalb** des bestehenden Systems (§48) und
 keine zweite Architektur. Was wiederverwendet wird, steht in
-`docs/VU_SOCIAL_PHASE_A_AUDIT.md`, Abschnitt 3.
+`docs/archiv/2026/VU_SOCIAL_PHASE_A_AUDIT.md`, Abschnitt 3.
 
 ## Die eine Ausnahme: der Cloudflare Worker
 

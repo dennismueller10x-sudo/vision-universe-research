@@ -322,7 +322,7 @@ jobs:
           if ! git diff --quiet -- quant/data; then
             echo "::warning::Der Quant-Testlauf hat committete Artefakte unter quant/data veraendert."
             git diff --stat -- quant/data
-            echo "Siehe docs/VU_SOCIAL_HANDOFF.md, Abschnitt 'Befund am Rande'."
+            echo "Siehe docs/archiv/2026/VU_SOCIAL_HANDOFF.md, Abschnitt 'Befund am Rande'."
             git checkout -- quant/data
           else
             echo "Keine Veraenderung an quant/data."
