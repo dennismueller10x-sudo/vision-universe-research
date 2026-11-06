@@ -193,7 +193,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    for(const satz of ['Keine Anlageempfehlung','SEC EDGAR','Tiingo'])if(!fuss.includes(satz))befund(view,width,'Fusszeile ohne '+satz);
    await page.route('**/quant/config/market-calendar.json',route=>{absichtlich++;return route.abort();});
    await page.reload();await bereit(page,'home');
-   if(await page.locator('#qx-main a.vu-navcard').count()!==4)befund(view,width,'Ohne Kalender verliert die Startseite ihre Einstiege');
+   /* Fünf Einstiege unter „Selbst suchen“: Aktie, Screener, Anlagestil, Technische Lagen, Musterdepots (#1497). */
+   if(await page.locator('#qx-main a.vu-navcard').count()!==5||!await page.locator('#qx-main a.vu-navcard[href="/quant/musterdepots/"]').count())befund(view,width,'Ohne Kalender verliert die Startseite ihre Einstiege');
    await page.unroute('**/quant/config/market-calendar.json');
    await frisch(page,hash,'home');
   }
