@@ -45,7 +45,7 @@ Manuell, nur bei Bedarf: `supertrader-st-hist-top5.yml` (historische Forschung, 
 - **Treueprüfungen:**
   - **C08 Kullamägi:** Bericht `docs/research/supertrader/C08-TREUE.md`, Diagnose der 16 belegten Trades. FID-4 ist vorregistriert (`certification/C08-FID4-PREREGISTRATION.json`) und hat die Regel auf DEV nicht erfüllt. Ergebnis: „Erkennung je Trade, Portfolio nicht bestätigt“.
   - **C06/C07 Minervini:** Referenz und 13 belegte Trades (#1447). FID-1 ist vorregistriert (`certification/C06-C07-FID1-PREREGISTRATION.json`) und hat die Regel auf DEV bei keiner der beiden Methoden erfüllt. Ergebnis: „Erkennung gemessen, Portfolio nicht bestätigt“.
-  - **Holdout:** Der Holdout 2008–2015 ist unverbraucht.
+  - **Holdout:** Der Holdout 2008–2015 ist verbraucht (Strang H, 06.11.2026, Läufe 42184335142 und 42184359288). Die Ergebnisse liegen versiegelt vor, keiner der 12 vorregistrierten Kandidaten schlägt SPY; Details in `docs/research/holdout/ERGEBNIS-2008-2015.md`.
 - **Weitere Lieferungen:**
   - Plausibilitätsprüfung (#1408): Darvas hängt an der Annahme über die Reihenfolge innerhalb eines Balkens.
   - E3-Export für Strang C (#1395).

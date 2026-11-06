@@ -46,7 +46,7 @@ Prüfsumme: `sha256sum /tmp/s2-results.json` muss `privateSha256` in `results-s2
 
 - **`test_canonical_market.py`:** Neuabnahme der Deckungskennzahlen über `coverage-metrics.yml`, mit R2 und `coverage-delta` je Titel. Ändern sich die Kennzahlen, Stand 6.686/6.683/5.644 → neues Produktuniversum (6.577), dann die Konstanten in `ABGENOMMEN` mit Begründung nachziehen. Geht erst, wenn die übrigen roten Quant-Tests grün sind, denn der Workflow fährt die ganze Suite.
 - `backtest-runner.cjs#setupOosFromCertificationPath` an A4 angleichen (berührt CODE_FILES → Demo-Neubau, eigener PR). Setup-OOS-Gate frühestens um den 2028-01-08 messbar.
-- Bestätigung von S2 und E3 nur auf unberührten Jahren (2008–2015) oder neuen Vorwärtsdaten. Eine weitere Variantensuche ist bis dahin unzulässig. Value Momentum N20 steht nur als Hypothese für eine spätere Holdout-Studie.
+- Bestätigung von S2 und E3 nur auf unberührten Jahren (2008–2015) oder neuen Vorwärtsdaten. Eine weitere Variantensuche ist bis dahin unzulässig. Value Momentum N20 steht nur als Hypothese für eine spätere Holdout-Studie. Der Holdout 2008–2015 ist gelaufen (Strang H, 06.11.2026, Lauf 42184359288): N20 schlägt SPY dort nicht; Ergebnis versiegelt, Einschränkung: keine frischen Fundamentaldaten 2008–2009 (`docs/research/holdout/ERGEBNIS-2008-2015.md`).
 - Eine Liquiditätsgrenze für Supertrader-Varianten wäre eine neue, vorab registrierte Variante (nicht E3).
 
 ## Braucht Owner
