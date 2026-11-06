@@ -12,8 +12,22 @@ name: Quant - Musterportfolios (VU-Portfolio-Standard, historisch, Forschung)
 # Ausloeser: manuell oder die Marke [quant-portfolio-research] in der Commit-Nachricht auf claude/**.
 # E3-Edge-Studie (docs/research/edge/PROTOKOLL.md): Marke [edge-e3:dev-quant] bzw. [edge-e3:test-quant]; gleiche Eingaben,
 # statt der Musterportfolios rechnet scripts/research/edge/run-e3.cjs die Phase und committet docs/research/edge/.
+# Holdout 2008-2015 (Strang H, docs/research/holdout/PROTOKOLL-2008-2015.json): nur manuell, Modus holdout-quant mit
+# Pruefschluessel; einmalig (Ledger im privaten Eimer), Ergebnis nur versiegelt im Artefakt, kein Commit.
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'portfolios (Musterportfolios) oder holdout-quant (Holdout 2008-2015, einmalig, nur versiegelt)'
+        required: false
+        default: 'portfolios'
+        type: choice
+        options: [portfolios, holdout-quant]
+      reviewer_public_key_b64:
+        description: 'Nur holdout-quant: oeffentlicher RSA-Schluessel (PEM, base64 in einer Zeile) der Steuerung'
+        required: false
+        default: ''
+        type: string
   push:
     branches:
       - 'claude/**'
@@ -45,8 +59,18 @@ jobs:
         id: m
         env:
           MSG: ${{ github.event.head_commit.message }}
+          IN_MODE: ${{ inputs.mode }}
+          REVIEWER_B64: ${{ inputs.reviewer_public_key_b64 }}
         run: |
+          set -euo pipefail
           m=$(printf '%s' "$MSG" | grep -oE '\[edge-e3:(dev-quant|test-quant)\]' | head -1 | sed -E 's/\[edge-e3:([a-z-]+)\]/\1/' || true)
+          if [ "${IN_MODE:-}" = "holdout-quant" ]; then
+            m=holdout-quant
+            [[ "$REVIEWER_B64" =~ ^[A-Za-z0-9+/=]+$ ]] || { echo "REVIEWER_KEY_REQUIRED"; exit 2; }
+            mkdir -p "$RUNNER_TEMP/holdout/upload"
+            printf '%s' "$REVIEWER_B64" | base64 -d > "$RUNNER_TEMP/holdout/reviewer.pem"
+            openssl pkey -pubin -in "$RUNNER_TEMP/holdout/reviewer.pem" -noout || { echo "REVIEWER_KEY_NOT_A_PUBLIC_KEY"; exit 2; }
+          fi
           echo "mode=${m:-portfolios}" >> "$GITHUB_OUTPUT"
           echo "Modus: ${m:-portfolios}"
 
@@ -126,8 +150,38 @@ jobs:
           node scripts/quant/portfolio/export-model-portfolios-bundle.cjs
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
+      - name: Holdout 2008-2015 Quant (einmalig, Protokoll gepinnt, nur versiegelt)
+        if: steps.m.outputs.mode == 'holdout-quant'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          H="$RUNNER_TEMP/holdout"
+          node --test scripts/research/holdout/holdout.test.cjs
+          node --max-old-space-size=12288 scripts/research/holdout/quant-holdout.cjs \
+            --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" --delisted-raw-dir "$DELISTED_RAW_DIR" \
+            --fundamentals "$RUNNER_TEMP/pit-fundamentals" --out "$H/out" --reviewer-key "$H/reviewer.pem" > "$H/run.log" 2>&1 || { tail -n 20 "$H/run.log" | grep -vE '[0-9]\.[0-9]{3,}' || true; exit 1; }
+          cp "$H/out/quant-holdout.public.json" "$H/out"/quant-holdout.sealed.*.json "$H/upload/"
+          grep -q '"schema":"supertrader-sealed-1.0.0"' "$H/upload/quant-holdout.sealed.owner.json"
+          node -e 'const p=require(process.argv[1]); for (const k of ["totalReturn","cagr","maxDrawdown","sharpe"]) if (JSON.stringify(p).includes("\""+k+"\"")) { console.log("METRIC_IN_PUBLIC_PART"); process.exit(1); }' "$H/upload/quant-holdout.public.json"
+          cat "$H/upload/quant-holdout.public.json"
+          find "$H/out" -type f -exec shred -u {} +
+          rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
+      - uses: actions/upload-artifact@v4
+        if: steps.m.outputs.mode == 'holdout-quant'
+        with:
+          name: holdout-quant-${{ github.run_id }}
+          path: ${{ runner.temp }}/holdout/upload
+          retention-days: 7
+          if-no-files-found: error
+
       - name: E3-Phase rechnen (Protokoll eingefroren, Hash geprueft)
-        if: steps.m.outputs.mode != 'portfolios'
+        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant'
         env:
           PHASE: ${{ steps.m.outputs.mode }}
         run: |
@@ -152,6 +206,7 @@ jobs:
           fi
 
       - name: Ergebnis auf den aktuellen Zweig committen
+        if: steps.m.outputs.mode != 'holdout-quant'
         env:
           MODE: ${{ steps.m.outputs.mode }}
         run: |
