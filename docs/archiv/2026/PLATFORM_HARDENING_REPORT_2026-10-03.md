@@ -2,7 +2,7 @@
 
 **Datum:** 03.10.2026 · **Branch:** `claude/platform-hardening` (PR #386) · **Basis:** `main` @ `ea0ca6578b`, zuletzt mit `main` zusammengeführt am 03.10.2026
 **Folge-PRs:** #387 (Supertrader), #388 (Core Consolidation 1), #389 (Company Intelligence). Aufteilung siehe [§ Merge-Readiness](#merge-readiness-pr-386).
-**Einstieg für alle weiteren Arbeiten:** [docs/VISION_UNIVERSE_ARCHITECTURE.md](VISION_UNIVERSE_ARCHITECTURE.md)
+**Einstieg für alle weiteren Arbeiten:** [docs/VISION_UNIVERSE_ARCHITECTURE.md](../../VISION_UNIVERSE_ARCHITECTURE.md)
 
 ---
 
@@ -59,11 +59,11 @@ CI             core-ci.yml: Tests auf jedem PR; täglich streng gegen main und d
 ```
 
 ADRs:
-- [001 Identität](architecture/ADR-001-canonical-security-id.md)
-- [002 Preiswahrheit](architecture/ADR-002-market-data-source-of-truth.md)
-- [003 Core/Produkt](architecture/ADR-003-core-product-separation.md)
-- [004 Mobile](architecture/ADR-004-mobile-architecture.md)
-- [005 Commit-Protokoll](architecture/ADR-005-pipeline-commit-protocol.md)
+- [001 Identität](../../architecture/ADR-001-canonical-security-id.md)
+- [002 Preiswahrheit](../../architecture/ADR-002-market-data-source-of-truth.md)
+- [003 Core/Produkt](../../architecture/ADR-003-core-product-separation.md)
+- [004 Mobile](../../architecture/ADR-004-mobile-architecture.md)
+- [005 Commit-Protokoll](../../architecture/ADR-005-pipeline-commit-protocol.md)
 
 ---
 
@@ -169,7 +169,7 @@ Systemzustand (Repository, 03.10.2026 12:16 UTC):
 Behoben: Scroll-Sprünge (Start, FX, Währung), Kennzeichnung veralteter Stände (Karten, Intraday, News), Penny-Darstellung, tote Links, leere Fehlerseite, Chart-Guards, URL-Schemata.
 Offen: Scroll-Position bei Zurück. Der Fix (+1.115 Byte) passt nicht in das Discover-View-Budget (180.000 Byte, auf `main` 117 Byte frei). Er gehört in ein gemeinsames Navigationsmodul außerhalb des Budgets.
 Browser-Smoke auf 16 Kernseiten bei 390 px und 1.280 px: keine JS-Fehler, kein horizontales Überlaufen.
-Komponentenvereinheitlichung bewusst nur dort, wo ein inhaltlicher Fehler entstand; Begründung in [FRONTEND.md](frontend/FRONTEND.md).
+Komponentenvereinheitlichung bewusst nur dort, wo ein inhaltlicher Fehler entstand; Begründung in [FRONTEND.md](../../frontend/FRONTEND.md).
 
 ## Performance
 
@@ -178,11 +178,11 @@ Gemessen, nicht verändert, weil jede Änderung Produktlogik oder parallel aktiv
 - Quant-Screener: 18,8 MB + 1,2 MB.
 - Discover-Start: ca. 820 KB, nach Scrollen ca. 2 MB.
 
-Konkrete Maßnahmen mit erwarteter Wirkung stehen in [FRONTEND.md](frontend/FRONTEND.md#empfohlene-performance-arbeiten-gemessen-nicht-umgesetzt).
+Konkrete Maßnahmen mit erwarteter Wirkung stehen in [FRONTEND.md](../../frontend/FRONTEND.md#empfohlene-performance-arbeiten-gemessen-nicht-umgesetzt).
 
 ## App Readiness
 
-- **Analyse und Empfehlung:** PWA → `/v1/` (Verträge aus `core/client.js`) → Expo/React Native. Siehe [APP_READINESS.md](architecture/APP_READINESS.md) und ADR-004.
+- **Analyse und Empfehlung:** PWA → `/v1/` (Verträge aus `core/client.js`) → Expo/React Native. Siehe [APP_READINESS.md](../../architecture/APP_READINESS.md) und ADR-004.
 - **Vorbereitet:**
   - User-Data-Schema mit einer Watchlist statt heute zwei und Referenz über `instrumentId`.
   - Ereignisschema für Notifications.

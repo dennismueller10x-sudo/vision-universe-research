@@ -333,6 +333,6 @@ Keines dieser Themen blockiert einen DoD-Punkt.
 - `main` ist fachlich und technisch stabil.
 - Alle 15 DoD-Punkte sind erfüllt.
 - Keine innerhalb dieses Auftrags umsetzbare P0-, P1- oder P2-Arbeit ist mehr offen. Was bleibt, ist entweder eine Owner- oder Produktentscheidung (Abschnitt 14) oder P3 (Abschnitt 15).
-- Core-Adoption und verbleibende Parallelwelten sind gemessen und dokumentiert (Abschnitt 5, [CORE_ADOPTION.md](architecture/CORE_ADOPTION.md)).
+- Core-Adoption und verbleibende Parallelwelten sind gemessen und dokumentiert (Abschnitt 5, [CORE_ADOPTION.md](../../architecture/CORE_ADOPTION.md)).
 - Es gibt keinen offenen PR dieser Mission.
 - Der finale Red-Team-Durchgang ist abgeschlossen (Abschnitt 16).

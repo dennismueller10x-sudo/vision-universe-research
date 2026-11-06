@@ -22,7 +22,7 @@ Nicht nach Dateien, sondern nach vier Fragen: Wo entstehen falsche Zahlen? Wo
 wird etwas als belastbar dargestellt, das es nicht ist? Wo bricht das System,
 sobald echte Daten einlaufen? Wo koennte ein Zugangsdatum entkommen?
 
-→ `docs/VU_PHASE2_PRODUCTION_AUDIT.md`
+→ `docs/archiv/2026/VU_PHASE2_PRODUCTION_AUDIT.md`
 
 ### 2. Welche Fehler wurden gefunden und behoben?
 

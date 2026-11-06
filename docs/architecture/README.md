@@ -18,7 +18,7 @@ Die Datenflüsse je Datenart stehen in [../data/DATA_FLOWS.md](../data/DATA_FLOW
 
 ## 2. Befunde (Kurzfassung)
 
-Die vollständigen Befunde mit Belegen und Severity stehen im [Abschlussbericht](../PLATFORM_HARDENING_REPORT_2026-10-03.md#gefundene-bugs).
+Die vollständigen Befunde mit Belegen und Severity stehen im [Abschlussbericht](../archiv/2026/PLATFORM_HARDENING_REPORT_2026-10-03.md#gefundene-bugs).
 
 ### Identität
 - Sieben Arten, die `securityId` aus dem Ticker zu bilden. BRK-B lief unter zwei Identitäten (behoben, ADR-001).

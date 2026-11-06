@@ -7,6 +7,7 @@ Hier beginnt die Orientierung. Je Produkt gibt es einen Einstieg; ergänzende Fa
 Prüfung: `node scripts/quality/check-doc-links.mjs` oder `node --test core/tests/doc-links.test.mjs`, jeweils vom Repo-Root. Geprüft werden relative Datei-/Verzeichnisziele in versionierten Markdown-Dateien, einschließlich Referenzlinks, Bildern und eingebetteten HTML-Links. Externe URLs und Fragmentinhalte sind nicht Teil dieser Dateiprüfung.
 
 Unveränderliche Quell-Snapshots behalten ihre Originalpfade im Text. Der Prüfer löst sie über das vorhandene Provenienzmanifest auf die erhaltenen Archivdateien auf, sofern alle SHA-256-Prüfsummen stimmen. Das übernimmt keine fachliche Freigabe.
+
 **Quant:** [QUANT_FINAL_HANDOVER.md](quant/QUANT_FINAL_HANDOVER.md). Produktstand, Backtests, Portfolio-Standard und offene Entscheidungen.
 
 **Supertrader:** [SUPERTRADER_9_HANDOVER.md](SUPERTRADER_9_HANDOVER.md). Methoden, Tagesbetrieb und Nachweise; ältere Sitzungsstände sind im Archiv.
@@ -22,3 +23,5 @@ Unveränderliche Quell-Snapshots behalten ihre Originalpfade im Text. Der Prüfe
 **Recht:** [EINORDNUNG.md](legal/EINORDNUNG.md). Verbindliche Einordnung mit bestehenden Links auf Wortwahl, Befunde und Anwaltsmappe. Die geschützten Rechtstexte bleiben unverändert.
 
 **Studio:** [README.md](studio/README.md). Reel-Produktion, Playbook, Stimme und Produktionsablauf.
+
+**Infrastruktur:** [VISION_UNIVERSE_ARCHITECTURE.md](VISION_UNIVERSE_ARCHITECTURE.md). Architektur und Querschnittsthemen; das gesetzte Runbook ist dort als Betriebsreferenz verlinkt.
