@@ -63,6 +63,7 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
     - **Stufe 2** (#…): `vorsorge-daily-rebuild.yml` → Teil `vorsorge`.
   - `ci` Stufe 2: die großen Produkt-CIs (quant, discover, technical, supertrader, core, account) nach einer Woche Betrieb von Stufe 1.
   - Rest-Kandidaten nach Gate-Umbau: supertrader-delisting-probe; `monitor` noch ohne freshness-monitor, fundamental-sec-freshness, supertrader-live-smoke, company-intelligence-health/-watchdog.
+- **Modul-Steckbrief, Pilot** (Plan §3): `analysten/module.json` mit Route, Navigation, Zugang, Status, Erzeuger, Workflow, Zeitplan und Frische; Vertragstest MM-1…6 (`core/tests/module-manifest.test.mjs`) hält ihn gleich zu `domains.json`, Menü und Seite. Nächste Kandidaten: Portfolios, News.
 - **Datenzweig:** Abnahme News am 11.11. (7 Tage nur `IDENTICAL`), danach News auf BRANCH_ONLY.
 - Folgearbeiten an 1.3.0 (Strang C): #1119 (H6), optional H7.
 - **PR-Aufräumen erledigt** (Owner-Bestätigung 05.11.2026 im Chat):
