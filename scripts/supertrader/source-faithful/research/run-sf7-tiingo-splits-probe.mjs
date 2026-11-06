@@ -322,7 +322,9 @@ async function main() {
     const opened = await openSnapshot({ store: createSnapshotStore({ driver: live, smoke: false }), snapshotId, requireRestoreReceipt: true });
     pit = await loadPitData({ LIMIT: opened.manifest.capture.limit || 0, ...CANONICAL_LOAD, io: opened.io, log });
     const v = verifyAgainstManifest(opened.manifest, pit, { replay: false });
-    if (v.codeVersionChanged) K.fail(K.REASON.INPUT_INTEGRITY_FAILURE, 'CODE_VERSION_CHANGED');
+    // wie run-st-hist-top5: nach SF6-PAPER-2027 1.2.0 nur mit --allow-code-version-change und exakt verifiziertem Datensatz
+    if (v.codeVersionChanged && !(argv.includes('--allow-code-version-change') && v.datasetVerified === 'EXACT')) K.fail(K.REASON.INPUT_INTEGRITY_FAILURE, 'CODE_VERSION_CHANGED');
+    receipt.datasetVerified = v.datasetVerified; receipt.codeVersionChanged = !!v.codeVersionChanged;
     datasetSha256 = K.sha256(K.canonicalJson(v.dataset));
     const driver = await opened.io.createDriver();
     const buf = await driver.get(pit.mine.seriesPrefix + '_validation/sec-pit-r12.json.gz');
