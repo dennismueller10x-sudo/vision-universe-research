@@ -133,6 +133,7 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 - Keine neuen Anbieter, Dienste oder Modellaufrufe. Die Passwortsperre ist unverändert.
 - Gates wurden nicht abgeschwächt. Die Isolationsgates von Discover, Supertrader und Company Intelligence werden von diesem PR nicht ausgelöst (keine Pfade unter `discover/**`, `supertrader/**`, `scripts/supertrader/**`).
 - Der Ausbruch über Widerstand verlangt eine Zone mit mindestens zwei Swing-Kontakten. Ohne diese Regel meldeten 18 % des Universums einen „Ausbruch“, mit ihr 9 % (Stichtag 23.10.2026).
+- Elliott-Registry-Produktsicht (M11, Entscheidung 06.11.2026): Liegt das Chartbild-Produkt genau einen Wochenpunkt hinter der Langreihe (Fenster zwischen „Lange Kursreihen“ und dem direkt angehängten Chartbild-Lauf, 60–100 min), gelten die Identitätstests als STALE (Alarm, übersprungen) statt rot; jeder andere Identitätsfehler und ein Abstand ab zwei Wochen bleiben hart.
 
 ## 10. Verlauf
 
