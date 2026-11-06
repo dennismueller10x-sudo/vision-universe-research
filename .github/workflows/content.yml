@@ -10,11 +10,12 @@ on:
       teil:
         description: 'Welcher Teil laufen soll'
         type: choice
-        options: [alle, news, ratings, hedgefonds, morning, analysten-probe]
+        options: [alle, news, ratings, hedgefonds, morning, analysten, analysten-probe]
         default: alle
   schedule:
     - cron: '17 5,11,17 * * *'      # news
     - cron: '0 8 * * 0'             # ratings
+    - cron: '41 5 * * *'            # analysten (Konsens, Produktuniversum, rotierend)
     - cron: '17 6 * * 1'            # hedgefonds
     - cron: '17 7 10-20 2,5,8,11 *' # hedgefonds (13F-Fristen)
   push:
@@ -105,6 +106,46 @@ jobs:
           git add dashboard/data/analyst_ratings.json
           git commit -m "chore: update analyst ratings data"
           # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # Analysten-Konsens fuer das Produktuniversum: Finnhub-Einstufungen (frei, 55/min), Kursziele nur aus der freien
+  # FMP-Liste. Rotierend ~1000 Titel je Lauf (voller Umlauf ~7 Tage). Schreibt nur dashboard/data/analysts.
+  analysten:
+    if: (github.event_name == 'schedule' && github.event.schedule == '41 5 * * *') || (github.event_name == 'workflow_dispatch' && (inputs.teil == 'alle' || inputs.teil == 'analysten'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    concurrency:
+      group: content-analysten-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Konsens abrufen (rotierend)
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/analysts/fetch-consensus.mjs --max-titles 1000 --per-minute 55 --fmp-max 200 --max-minutes 40 | tee "$RUNNER_TEMP/analysten.txt"
+          { echo '### Analysten-Konsens'; echo '```'; cat "$RUNNER_TEMP/analysten.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Nur eigene Pfade geaendert
+        run: |
+          set -euo pipefail
+          unexpected="$(git status --porcelain | awk '{print $2}' | grep -vE '^dashboard/data/analysts/' || true)"
+          if [ -n "$unexpected" ]; then echo "::error::unerwartete Aenderungen:"; echo "$unexpected"; exit 1; fi
+      - name: Commit
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dashboard/data/analysts
+          if git diff --cached --quiet; then echo "keine Aenderung"; exit 0; fi
+          git commit -q -m "Analysten-Konsens aktualisiert (automatischer Lauf)"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
   # Analysten-Konsens: Abdeckungsmessung der kostenlosen Zugaenge (Finnhub, FMP) an einer festen Stichprobe des
