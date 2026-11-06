@@ -4,7 +4,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { classify, balance, bezug } from "../../scripts/diagnose/coverage-delta.mjs";
+import { classify, balance, bezug, lastDataDayOfMeasurement, LAST_DATA_DAY_WINDOW_DAYS } from "../../scripts/diagnose/coverage-delta.mjs";
 
 const basis = (o) => Object.assign({
   productNow: new Set(["A", "B", "C", "D", "E"]),
@@ -136,4 +136,30 @@ test("Bezug NAMED nach Neubeurteilung des Wertpapierstamms: spaetere Aenderungen
   /* Gegenprobe: trifft die Ruecknahme den Nenner nicht, bleibt der Bezug unbestimmbar */
   assert.throws(() => bezug({ before: { ...before, CHART_AVAILABILITY: { denominator: 6 } }, eligNow: kopf, eligHead: kopf, scale: {}, reconciliation }), /passt nicht/);
   assert.throws(() => bezug({ before, eligNow: kopf, eligHead: kopf, scale: {} }), /passt nicht/);
+});
+
+/* Entscheidung Steuerung 06.11.2026 (Lauf 42196818498): 18 Titel galten am 10.10. als zu kurz, hatten laut heutiger
+   Reihe am Stichtag aber 300-302 Bars - der letzte Datentag der Messung lag vor dem Stichtag. */
+const tage = (start, n) => Array.from({ length: n }, (_, i) => new Date(Date.parse(start) + i * 86400000).toISOString().slice(0, 10));
+test("letzter Datentag der Messung: aus den damals zu kurzen Titeln, eng begrenzt", () => {
+  const reihe = { C: tage("2025-12-15", 330) };                    // 300. Bar am 2026-10-10 -> Datentag 2026-10-09
+  assert.equal(lastDataDayOfMeasurement(["C"], (t) => reihe[t], "2026-10-12", 300), "2026-10-09");
+  assert.equal(lastDataDayOfMeasurement(["C"], (t) => reihe[t], "2026-10-10", 300), null, "erreicht erst am Stichtag");
+  const alt = { C: tage("2025-11-01", 330) };                       // 300. Bar weit vor dem Stichtag
+  assert.equal(lastDataDayOfMeasurement(["C"], (t) => alt[t], "2026-10-12", 300), null, "ausserhalb von " + LAST_DATA_DAY_WINDOW_DAYS + " Tagen");
+});
+test("Grenzfall ueber den letzten Datentag: AGED_PAST_THRESHOLD, ohne Datentag weiter UNEXPLAINED", () => {
+  const bars = (t, date) => (t === "C" ? (date > "2026-09-10" ? 301 : 298) : t === "E" ? 0 : null);
+  assert.equal(classify(basis({ barsBefore: bars })).technical.find((x) => x.ticker === "C").cls, "UNEXPLAINED");
+  const r = classify(basis({ barsBefore: bars, techLastDataDay: "2026-09-09" }));
+  assert.equal(r.technical.find((x) => x.ticker === "C").cls, "AGED_PAST_THRESHOLD");
+  // Gegenprobe: auch am Datentag schon >= 300 -> bleibt UNEXPLAINED
+  const r2 = classify(basis({ barsBefore: () => 301, techLastDataDay: "2026-09-09" }));
+  assert.equal(r2.technical.find((x) => x.ticker === "C").cls, "UNEXPLAINED");
+});
+test("Bilanz: neues Produktmitglied zaehlt als Zugang (vorher OUT)", () => {
+  const r = classify(basis({ productNow: new Set(["A", "B", "C", "D", "E", "N"]) }));
+  const n = r.chart.find((x) => x.ticker === "N");
+  assert.equal(n.cls, "NEW_PRODUCT_MEMBER"); assert.equal(n.before, "OUT"); assert.equal(n.now, "OK");
+  assert.equal(r.technical.find((x) => x.ticker === "N").before, "OUT");
 });
