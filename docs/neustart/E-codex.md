@@ -75,3 +75,31 @@ Separater Branch `codex/e2-sec-form4`, PR [#1369](https://github.com/dennismuell
 - `node scripts/quality/check-test-isolation.mjs`: keine Produktionsdatei verändert; die intern gestartete Quant-Suite erreichte das vorhandene 900.000-ms-Zeitlimit (Log 20:01:57–20:16:58 UTC), daher Hinweis Exit 1. Separater Quant-Lauf vollständig: 3.929 bestanden, 26 übersprungen, 1 Fehler unter Node 24 (`quant/tests/research-portfolio-exit-rules.test.mjs:19`, Golden-Hash). Genau dieser Test besteht unter Node 22.23.4; keine Änderung am Ledger oder an den Golden-Fixtures.
 - SQL-Flows nur mit PG_TEST_URL; diese Umgebung hat keine solche Konfiguration.
 - Laufzeit: bereitgestelltes Node 24.22.1 für die Bestandssuiten; E2-Core/Registry und die Gegenproben des Discover-Namensfehlers bzw. Quant-Golden-Tests zusätzlich unter Node 22.23.4.
+
+## E8 – Datenqualität je Aktie
+
+Branch `codex/e8-data-quality`: sechs meldende WARN-Regeln im DQ-Runner,
+gemeinsamer Adapter für Terminal-Diagnose und eine Artefaktansicht
+„Datenqualität heute“ auf `/status/` (Redesign 2027, Beispiele verlinken
+`/status/#/TICKER`). Vollständige Befunde bleiben unabhängig vom 25er-Sample
+für jede Aktie verfügbar. Datenvertrag und Quellen: `docs/data/DATA_QUALITY.md`.
+Kein Fachmodell, erzeugtes Artefakt, Workflow oder ausgeschlossener Pfad geändert.
+
+A entscheidet über die tägliche Veröffentlichung nach `/status/data-quality.json`
+und das Vorhalten des echten UTC-Vortags (`--previous`); der bestehende
+Core-Prüfworkflow ruft den erweiterten Runner bereits auf. Ohne Bericht oder
+Vortag zeigt die Seite keine erfundenen Zähler bzw. Trends.
+
+Repository-Probe am 06.11.: 1.572 Sprungbefunde im veröffentlichten Jahresfenster,
+acht Namensbefunde, 225 alte Analysten-Einstufungen, kein fehlender aktueller
+Kurs bei 125 Depotpositionen und kein fehlender Stopp bei 21 Supertrader-Positionen.
+Logo-Regel: 19 fehlende Logos bei 644 prüfbaren Aktien über 10 Mrd. USD;
+fehlende Payload-Börsenwerte kommen aus den vorhandenen Faktorartefakten,
+mit passender securityId und ohne neue Berechnung.
+15 gezielte Regel-/UI-/CLI-Tests und ihre Produktionsisolation bestehen.
+Chromium: sechs Karten, keine JS-Fehler, bei 390 px kein horizontaler Überlauf.
+
+Weitere E8-Validierung: Technical 114/114; Konten 115 bestanden, drei
+übersprungen. Python Quant: 584/590, sechs Befunde in unveränderten
+Datenstandsprüfungen (`test_canonical_market`, `test_daily`, u. a.
+5404 gegenüber erwartet 5420 COMPANY_FACTS_AVAILABLE).

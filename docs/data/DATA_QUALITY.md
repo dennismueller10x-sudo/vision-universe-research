@@ -75,3 +75,57 @@ Von Hand: `long-series.yml` → *Run workflow* mit `mode = repair` (findet die T
 2. Laden der Eingaben in `scripts/core/data-quality.mjs`.
 3. Test in `core/tests/data-quality.test.mjs`: der Fehler, für den die Regel geschrieben ist, und eine Gegenprobe.
 4. Zeile in dieser Tabelle.
+
+## E8 – Datenqualität je Aktie
+
+`scripts/core/data-quality.mjs` ergänzt sechs ausschließlich meldende WARN-Regeln
+(DQ-E8-1 bis DQ-E8-6): Tagesbewegung strikt über ±50 % ohne Splitbeleg,
+Logo fehlt bei Marktkapitalisierung strikt über 10 Mrd. USD, fehlender oder
+Ticker-identischer Firmenname, Analysten-Einstufung älter als 45 Kalendertage,
+Musterdepot-Position ohne veröffentlichten Schluss zur letzten abgeschlossenen
+Sitzung und offene Supertrader-Position ohne positiven endlichen Stopp.
+Die Regeln ändern keine Scores, Modelle, Positionen oder PR-Sperren.
+
+Quellen: Discover-US-Index und Aktienpayloads (`marketCap.value` in USD),
+`discover/logos/index.json`; bei fehlender Marktkapitalisierung im Payload
+der bereits berechnete USD-Wert aus `factor-evidence-v1/*.json.gz#securities`
+(nur mit passender securityId, ohne neue Berechnung). Tagesreihen und Splitbelege aus
+`discover-series-long/*.json#corporateActions.splits` (Anbieter-splitFactor,
+inklusive im Publisher angewandter Ergänzungen). Die Split-Erkennung nutzt
+`return-series.js#splitFactors`; es entsteht keine neue Preisbereinigung.
+Die Regel prüft benachbarte veröffentlichte Tagesschlüsse im vorhandenen
+Einjahresfenster. Splitbelege am Sprungtag unterdrücken die Verdachtsmeldung.
+Analysten: neue Scherben `dashboard/data/analysts/shards` haben Vorrang,
+sonst `analyst_ratings.json#symbols`; maßgeblich ist `asOf` bzw. neueste
+`trend_history.period`, nie das Abrufdatum. Keine Analystenabdeckung wird
+nicht als veraltete Einstufung gezählt; vorhandene Einstufung ohne Datum
+wird als Hinweis gemeldet. Depotquellen sind `model-depots-v1.json#depots`
+und `supertrader/data/portfolio.json#strategies` (nur `positions`). Kurse werden
+über `published-close.js#lastPoint` gelesen, alte Fallback-Kurse gelten nicht
+als aktuell. Null geprüfte Datensätze und fehlende Quellen bedeuten keine
+Entwarnung; `missingEquityArtifacts` nennt nicht ladbare Quellen.
+
+### Veröffentlichung durch Strang A
+
+Es gibt keinen neuen Workflow und keinen neuen Zeitplan. Der bestehende
+Core-Prüfworkflow ruft den DQ-Runner bereits auf; damit laufen auch diese Regeln.
+A entscheidet über die dauerhafte tägliche Veröffentlichung des Berichts:
+
+```bash
+node scripts/core/data-quality.mjs --out="$RUNNER_TEMP/data-quality.json" --previous=/pfad/zum/gestrigen-bericht.json
+```
+
+`--previous` ist optional. `delta` ist nur bei einem Bericht vom unmittelbar
+vorherigen UTC-Kalendertag und positiver Prüfmenge beider Tage eine Zahl;
+sonst `null`. Gezählt werden Befunde (eine Aktie kann mehrere haben).
+Jede E8-Regel enthält vollständige strukturierte `findings` und maximal
+25 Textbeispiele in `samples`, damit Einzeldiagnosen nie durch Sampling fehlen.
+
+`/status/` liest ausschließlich den fertig erzeugten Bericht unter
+`/status/data-quality.json`; sie führt die neuen Regeln nicht im Browser aus.
+Dieser Pfad ist der Übergabevertrag für A, kein von Hand angelegtes Artefakt.
+Fehlt der Bericht, steht dort „nicht verfügbar“. Ältere Berichte tragen ihr
+Datum; ihr Trend wird nicht als heutiger Vergleich ausgegeben. Die Links
+führen nach `/status/#/TICKER` und zeigen die gespeicherten Befunde.
+`node scripts/core/diagnose.mjs TICKER` prüft dieselben Regeln direkt auf den
+vorhandenen Artefakten (auch mit `--site`), unabhängig von der Veröffentlichung.
