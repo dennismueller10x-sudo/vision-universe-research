@@ -28,3 +28,21 @@ test('all repository Markdown file links resolve', () => {
  const root=fileURLToPath(new URL('../../',import.meta.url));
  assert.deepEqual(checkDocLinks(root),[]);
 });
+
+test('immutable snapshots resolve original paths via hash-verified provenance, never via unchecked exceptions', async () => {
+ const {createHash}=await import('node:crypto');
+ const root=mkdtempSync(path.join(tmpdir(),'doc-snapshot-'));
+ try {
+  mkdirSync(path.join(root,'docs/snapshot'),{recursive:true});
+  const content='[source](../quant/policy.json)';
+  writeFileSync(path.join(root,'docs/snapshot/source.md'),content);
+  writeFileSync(path.join(root,'docs/snapshot/policy.json'),'{}');
+  const files=[{sourcePath:'docs/source.md',archivePath:'docs/snapshot/source.md',sha256:createHash('sha256').update(content).digest('hex')},{sourcePath:'quant/policy.json',archivePath:'docs/snapshot/policy.json',sha256:createHash('sha256').update('{}').digest('hex')}];
+  const manifest={state:'PRESERVED_PROPOSAL_NOT_APPROVED',files};
+  const tracked=['docs/snapshot/source.md','docs/snapshot/policy.json','docs/snapshot/manifest.json'];
+  writeFileSync(path.join(root,tracked[2]),JSON.stringify(manifest));
+  assert.deepEqual(checkDocLinks(root,tracked),[]);
+  writeFileSync(path.join(root,tracked[1]),'{"changed":true}');
+  assert.equal(checkDocLinks(root,tracked).length,1);
+ } finally {rmSync(root,{recursive:true,force:true});}
+});

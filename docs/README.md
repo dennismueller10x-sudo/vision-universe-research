@@ -5,3 +5,5 @@ Hier beginnt die Orientierung. Je Produkt gibt es einen Einstieg; ergänzende Fa
 [Inventar aller Bestandsdokumente](DOKU_INVENTAR.md) mit Änderungsdatum, eingehenden Links und begründeter Einordnung. Historische Stände bleiben unter `archiv/<jahr>/` erhalten. Fachseiten, Quellenverträge und Forschung bleiben referenzierbar; ihre historischen Zahlen werden nicht neu bewertet.
 
 Prüfung: `node scripts/quality/check-doc-links.mjs` oder `node --test core/tests/doc-links.test.mjs`, jeweils vom Repo-Root. Geprüft werden relative Datei-/Verzeichnisziele in versionierten Markdown-Dateien, einschließlich Referenzlinks, Bildern und eingebetteten HTML-Links. Externe URLs und Fragmentinhalte sind nicht Teil dieser Dateiprüfung.
+
+Unveränderliche Quell-Snapshots behalten ihre Originalpfade im Text. Der Prüfer löst sie über das vorhandene Provenienzmanifest auf die erhaltenen Archivdateien auf, sofern alle SHA-256-Prüfsummen stimmen. Das übernimmt keine fachliche Freigabe.

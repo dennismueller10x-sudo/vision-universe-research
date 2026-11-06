@@ -4,7 +4,7 @@
 **Version:** `quant-backtest-certification-methodology-1.0.0`
 **Gültig ab:** nach ausdrücklicher Owner-Freigabe und Implementierung
 **Bezug:** Main `eddcde8e8880cc2ae6f8c47b936ffacfc5015b49` (23.10.2026); PR #862 ist offen und nicht Bestandteil dieser Arbeit.
-**Maschinenlesbare Fassung:** `quant/methodology/backtest-certification-methodology-v1.0.0.json` (historischer Entwurfsbeleg im Repository nicht vorhanden; aktueller separater Vertrag: [backtest-certification-v1.json](../../../quant/methodology/backtest-certification-v1.json))
+**Maschinenlesbare Fassung:** [`quant/methodology/backtest-certification-methodology-v1.0.0.json`](../quant/methodology/backtest-certification-methodology-v1.0.0.json)
 
 Diese Spezifikation legt gemeinsame Eingangsdaten, Studienentwurf, Auswertung und Freigabekriterien für alle sechs bestehenden Backtest-Arten fest. Sie ändert keine Engine, keinen bestehenden Gate-Vertrag, kein Ergebnis und keinen Zertifizierungsstatus. Die Schwellen unten sind ein vorgeschlagener V1-Vertrag. Sie gelten erst nach fachlicher Freigabe; bestehende strengere Gates bleiben zusätzlich wirksam.
 

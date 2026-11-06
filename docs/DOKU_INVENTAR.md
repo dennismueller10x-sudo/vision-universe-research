@@ -1,6 +1,6 @@
 # Dokumentationsinventar
 
-Erhebung: 06.11.2026, Basis `bbe59a3ca48e208d2053aa30ab8d96fc9ce059f1`. 668 Markdown-Dateien unter `docs/` und direkt im Root. Letzte Änderung: `git log` (Commitdatum, vor E6). Eingehende Links: explizite Markdown-/HTML-Links aus allen versionierten Markdown-Dateien, ohne Selbstlinks, Codebeispiele und dieses Inventar; gezählt werden Vorkommen, keine bloßen Dateinamen in Code.
+Erhebung: 06.11.2026, Basis `bbe59a3ca48e208d2053aa30ab8d96fc9ce059f1`. 668 Bestandsdateien plus zwei neue E6-Markdown-Dateien unter `docs/` und direkt im Root. Letzte Änderung: `git log` (Commitdatum, vor E6). Eingehende Links: explizite Markdown-/HTML-Links aus allen versionierten Markdown-Dateien, ohne Selbstlinks, Codebeispiele und dieses Inventar; gezählt werden Vorkommen, keine bloßen Dateinamen in Code.
 
 „Gültig“ umfasst Einstiege und weiterhin benötigte Fachbelege, Verträge und Forschung; es bedeutet keine erneute fachliche Freigabe historischer Aussagen. „Überholt“ betrifft die Rolle als Arbeitsstand, nicht den Beweiswert. Nur belegbar abgelöste Stände wandern ins Archiv; keine Datei wird gelöscht. Keine bytegleichen Duplikate im Erhebungsbestand.
 
@@ -676,3 +676,5 @@ Die Archivierung erfolgt in Folge-PRs je Produkt. Die Pfadspalte wird dabei auf 
 | [docs/vu2/release/POST_RELEASE_SCOPE_CORRECTION.md](vu2/release/POST_RELEASE_SCOPE_CORRECTION.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/vu2/release/QUANT2_RELEASE.md](vu2/release/QUANT2_RELEASE.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/werbetrailer/WERBETRAILER_ARRIVAL_2.md](werbetrailer/WERBETRAILER_ARRIVAL_2.md) | 2026-10-21 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
+| [docs/README.md](README.md) | 2026-11-06 | 0 | gültig | Neue E6-Landkarte mit einem Einstieg je Produkt. |
+| [docs/DOKU_INVENTAR.md](DOKU_INVENTAR.md) | 2026-11-06 | 1 | gültig | Neues E6-Inventar; Linkzahlen des Bestands wurden vor seiner Erstellung gemessen. |

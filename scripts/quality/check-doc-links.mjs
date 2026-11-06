@@ -2,6 +2,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 export function linksIn(text) {
@@ -32,11 +33,30 @@ export function checkDocLinks(root, files) {
   const tracked = new Set(files);
   const directories = new Set();
   for (const file of files) for (let dir = path.posix.dirname(file); dir !== '.'; dir = path.posix.dirname(dir)) directories.add(dir);
+  // Immutable source snapshots retain original relative links. Their manifest maps
+  // original source paths to preserved files, so links resolve in that source context.
+  const snapshots = new Map();
+  for (const file of files.filter(f => f.endsWith('/manifest.json') && f.startsWith('docs/'))) {
+    if (!existsSync(path.join(root, file))) continue;
+    let manifest;
+    try { manifest = JSON.parse(readFileSync(path.join(root, file), 'utf8')); } catch { continue; }
+    if (manifest.state !== 'PRESERVED_PROPOSAL_NOT_APPROVED' || !Array.isArray(manifest.files)) continue;
+    const valid = manifest.files.every(f => typeof f.archivePath === 'string' && typeof f.sourcePath === 'string'
+      && existsSync(path.join(root, f.archivePath))
+      && createHash('sha256').update(readFileSync(path.join(root, f.archivePath))).digest('hex') === f.sha256);
+    if (valid) for (const f of manifest.files) snapshots.set(f.archivePath, {file: f, files: manifest.files});
+  }
   const errors = [];
   for (const source of files.filter(f => /\.md$/i.test(f))) {
-    if (!existsSync(path.join(root, source))) continue; // sparse checkout
-    for (const {target, line} of linksIn(readFileSync(path.join(root, source), 'utf8'))) {
-      const resolved = resolveLink(source, target);
+    const content = existsSync(path.join(root, source)) ? readFileSync(path.join(root, source), 'utf8')
+      : execFileSync('git', ['show', `:${source}`], {cwd: root, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024});
+    for (const {target, line} of linksIn(content)) {
+      let resolved = resolveLink(source, target);
+      const snapshot = snapshots.get(source);
+      if (snapshot && resolved !== null) {
+        const originalTarget = resolveLink(snapshot.file.sourcePath, target);
+        resolved = snapshot.files.find(f => f.sourcePath === originalTarget)?.archivePath ?? resolved;
+      }
       if (resolved !== null && resolved !== '.' && !tracked.has(resolved) && !directories.has(resolved) && !existsSync(path.join(root, resolved))) errors.push({source, line, target, resolved});
     }
   }
