@@ -71,6 +71,8 @@ jobs:
           if printf '%s' "$MSG" | grep -qF '[edge2:dev]'; then m=edge2; fi
           if printf '%s' "$MSG" | grep -qF '[edge2:blind-build]'; then m=edge2-blind-build; fi
           if printf '%s' "$MSG" | grep -qF '[edge2:blind-resolve]'; then m=edge2-blind-resolve; fi
+          if printf '%s' "$MSG" | grep -qF '[edge2:dna-learn]'; then m=edge2-dna-learn; fi
+          if printf '%s' "$MSG" | grep -qF '[edge2:dna-test]'; then m=edge2-dna-test; fi
           if [ "${IN_MODE:-}" = "holdout-quant" ]; then
             m=holdout-quant
             [[ "$REVIEWER_B64" =~ ^[A-Za-z0-9+/=]+$ ]] || { echo "REVIEWER_KEY_REQUIRED"; exit 2; }
@@ -231,8 +233,26 @@ jobs:
           find "$X" -type f -exec shred -u {} +
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
+      - name: Edge 2 Gewinner-DNA (Formel lernen oder pruefen)
+        if: steps.m.outputs.mode == 'edge2-dna-learn' || steps.m.outputs.mode == 'edge2-dna-test'
+        env:
+          MODE: ${{ steps.m.outputs.mode }}
+        run: |
+          set -euo pipefail
+          umask 077
+          X="$RUNNER_TEMP/edge2-dna"
+          mkdir -p "$X" docs/research/edge2/dna
+          phase=learn; [ "$MODE" = "edge2-dna-test" ] && phase=test
+          node --max-old-space-size=12288 scripts/research/edge2/run-dna.cjs --phase "$phase" \
+            --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" --delisted-raw-dir "$DELISTED_RAW_DIR" \
+            --fundamentals "$RUNNER_TEMP/pit-fundamentals" --out "$X/out" > "$X/run.log" 2>&1 || { tail -n 30 "$X/run.log" | grep -vE '[0-9]\.[0-9]{3,}' || true; exit 1; }
+          tail -n 3 "$X/run.log" | grep -vE '"(cagr|sharpe|totalReturn)"' || true
+          for f in "$X/out"/*; do case "$(basename "$f")" in RULE_FIXED.json|dna.public.json|dna.sealed.owner.json|dna.sealed.reviewer.json) cp "$f" docs/research/edge2/dna/ ;; esac; done
+          find "$X" -type f -exec shred -u {} +
+          rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
+
       - name: E3-Phase rechnen (Protokoll eingefroren, Hash geprueft)
-        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && steps.m.outputs.mode != 'edge2' && steps.m.outputs.mode != 'edge2-blind-build' && steps.m.outputs.mode != 'edge2-blind-resolve'
+        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'edge2')
         env:
           PHASE: ${{ steps.m.outputs.mode }}
         run: |
@@ -266,6 +286,7 @@ jobs:
           git add docs/quant/research/portfolio-v1 workers/vu-account/data/model-portfolios-bundle.json docs/research/edge
           if [ -d docs/research/edge2/results ]; then git add docs/research/edge2/results; fi
           if [ -d docs/research/edge2/ki/blind ]; then git add docs/research/edge2/ki/blind; fi
+          if [ -d docs/research/edge2/dna ]; then git add docs/research/edge2/dna; fi
           if git diff --cached --quiet; then echo "Ergebnis unveraendert."; exit 0; fi
           git commit -m "Quant-Forschungslauf ${MODE} (Lauf ${GITHUB_RUN_ID})"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
