@@ -185,7 +185,7 @@
 <div class="wrapper">
 
   <div class="page-title">Analysten</div>
-  <div class="page-sub">Konsens-Rating &amp; Kursziele der Wall-Street-Analysten · wöchentlich aktualisiert über Finnhub &amp; FMP</div>
+  <div class="page-sub">Einstufungen der Wall-Street-Analysten für alle Aktien (Angabe Dritter) · Kursziele, wo eine freie Quelle sie liefert · Finnhub &amp; FMP</div>
 
   <!-- Alle Aktien des Produktuniversums: Einstufungs-Konsens je Titel (Angabe Dritter), Kursziel nur aus freier Quelle.
        Daten: dashboard/data/analysts (scripts/analysts/fetch-consensus.mjs, rotierend). -->
@@ -638,7 +638,7 @@ loadData(false);
     var rows=LABELS.map(function(l){ var n=e.counts[l[0]]||0; return '<div class="u-row"><span>'+l[1]+'</span><span class="u-bar"><span style="width:'+Math.round(n/max*100)+'%"></span></span><span class="u-num">'+n+'</span></div>'; }).join("");
     var tgt = e.targetState==="AVAILABLE" && e.target
       ? '<div class="u-note">Kursziel (Angabe Dritter, Quelle '+esc(e.target.source)+', geprüft '+day(e.targetCheckedAt)+'): Mittel '+usd(e.target.consensus)+' · Spanne '+usd(e.target.low)+' – '+usd(e.target.high)+'</div>'
-      : '<div class="u-note">Kursziel: keine freie Quelle für diesen Titel.</div>';
+      : '<div class="u-note">Kursziel: '+({NO_FREE_SOURCE:"keine freie Quelle für diesen Titel",NO_TARGET:"von der Quelle kein Kursziel veröffentlicht"}[e.targetState]||"noch nicht geprüft (rotierend)")+'.</div>';
     var hist = (e.history||[]).length>1 ? '<table class="u-hist"><thead><tr><th>Monat</th>'+LABELS.map(function(l){return '<th>'+l[1]+'</th>';}).join("")+'</tr></thead><tbody>'+
       e.history.map(function(h){ return '<tr><td>'+month(h.period)+'</td>'+LABELS.map(function(l){return '<td>'+(h[l[0]]||0)+'</td>';}).join("")+'</tr>'; }).join("")+'</tbody></table>' : "";
     return head+'<div class="u-meta" style="margin-top:6px">'+e.analysts+' Analysten mit Einstufung</div>'+rows+tgt+hist+

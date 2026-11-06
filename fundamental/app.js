@@ -1578,10 +1578,10 @@
       var range = tg && isNum(tg.low) && isNum(tg.high) && tg.high > tg.low ? function (v) { return Math.max(0, Math.min(100, (v - tg.low) / (tg.high - tg.low) * 100)); } : null;
       put(box, 
         el('div', { class: 'fu-kgrid' }, [
-          el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Analystenkonsens (Angabe Dritter)' }), el('b', { class: 'fu-k-v', text: a.label || (a.total ? a.total + ' Analysten' : '–') }), el('small', { class: 'fu-k-s', text: a.total ? a.total + ' Einstufungen · ' + monthDe(L.period) : '' })]),
+          el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Analystenkonsens (Angabe Dritter)' }), el('b', { class: 'fu-k-v', text: a.label || (a.total ? a.total + ' Analysten' : '–') }), el('small', { class: 'fu-k-s', text: a.total ? (a.label ? a.total + ' Einstufungen · ' : 'Stand ') + monthDe(L.period) : '' })]),
           tg ? el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Kursziel (Mittel)' }), el('b', { class: 'fu-k-v fu-num', text: C.fmt({ kind: 'perShare' }, tg.mean, 'USD') }),
             el('small', { class: 'fu-k-s', text: isNum(price) ? (tg.mean >= price ? '+' : '−') + M.pct(Math.abs(tg.mean / price - 1)) + ' zum Kurs' : '' })])
-            : a.targetState ? el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Kursziel (Angabe Dritter)' }), el('b', { class: 'fu-k-v', text: '–' }), el('small', { class: 'fu-k-s', text: 'keine freie Quelle' })]) : null
+            : a.targetState ? el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Kursziel (Angabe Dritter)' }), el('b', { class: 'fu-k-v', text: '–' }), el('small', { class: 'fu-k-s', text: { NO_FREE_SOURCE: 'keine freie Quelle', NO_TARGET: 'nicht veröffentlicht' }[a.targetState] || 'noch nicht geprüft' })]) : null
         ]),
         L ? el('div', { class: 'fu-card' }, [el('p', { class: 'fu-card-k' }, [el('b', { text: 'Verteilung' }), ' · ' + monthDe(L.period)]),
           el('div', { class: 'fu-dist', 'aria-hidden': 'true' }, keys.map(function (k, i) { return L[k[0]] ? el('i', { class: 'd' + i, style: 'flex:' + L[k[0]] }) : null; })),
