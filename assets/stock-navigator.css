@@ -40,7 +40,8 @@
 .vu-shead-change{display:inline-flex;align-items:center;gap:3px;padding:5px 11px;border-radius:999px;background:var(--vu-hair,var(--vu-line));color:var(--vu-ink,var(--vu-text));font-size:15px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
 .vu-shead-change small{font-size:12px;font-weight:650}
 .vu-shead-price[data-direction=up] .vu-shead-change{background:var(--vu-lime,#c8f531);color:#000}
-.vu-shead-price[data-direction=down] .vu-shead-change{background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
+/* Owner 06.11.2026: Minus rot (weiße Schrift auf #c4281c ≥ 5:1, hell und dunkel), Plus VU-Grün. */
+.vu-shead-price[data-direction=down] .vu-shead-change{background:#c4281c;color:#fff}
 .vu-shead-when{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--vu-mute,var(--vu-muted));text-align:right}
 .vu-shead-live{width:7px;height:7px;border-radius:50%;background:var(--vu-lime,#c8f531);box-shadow:0 0 0 2px var(--vu-ink,#000)}
 .vu-shead-nav{margin-top:4px}
@@ -55,5 +56,3 @@
 }
 .vu-shead .vu-shead-price .vu-shead-change small,.vu-shead-price .vu-shead-change small{color:inherit}
 .vu-snav .vu-snav-chip>svg.vu-snav-glyph{width:15px!important;height:15px!important;max-width:none;flex:none}
-/* Pilot 06.11.2026 (nur NVDA): Minus rot statt schwarz; weiße Schrift auf #c4281c ≥ 5:1 in hell und dunkel */
-.vu-shead--tone .vu-shead-price[data-direction=down] .vu-shead-change{background:#c4281c;color:#fff}
