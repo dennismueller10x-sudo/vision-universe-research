@@ -1,6 +1,6 @@
 # Rechtliche Einordnung: Ist Vision Universe „nur Software“?
 
-Stand 05.11.2026, Strang F. **Das hier ist keine Rechtsberatung.** Geschrieben hat es Claude, ohne Anwalt. Es ist
+Stand 05.11.2026 (Fassung 2, nach der Owner-Linie Plan §11), Strang F. **Das hier ist keine Rechtsberatung.** Geschrieben hat es Claude, ohne Anwalt. Es ist
 eine sorgfältige Vorarbeit für eine Prüfung durch einen Fachanwalt für Bank- und Kapitalmarktrecht
 ([ANWALTSMAPPE.md](ANWALTSMAPPE.md)). Gesetzesstellen sind nach bestem Wissen zitiert; den geltenden Wortlaut muss der
 Anwalt am Original prüfen (gesetze-im-internet.de, EUR-Lex).
@@ -8,7 +8,68 @@ Anwalt am Original prüfen (gesetze-im-internet.de, EUR-Lex).
 Owner-Ziel: keine Anlageempfehlung, damit wir mit der BaFin keine Probleme bekommen. Wir stellen nur eine Software zur
 Analyse von Aktien bereit.
 
-## 1. Ergebnis in einem Absatz
+## 0. Owner-Linie vom 05.11.2026 und was sie voraussetzt
+
+Der Owner hat entschieden ([PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md) §11):
+- Vision Universe ist eine Analyse-Software ohne Anlageempfehlungen.
+- Es gibt keine Signale mit Einstieg, Stopp und Ziel; Stufe S3 entfällt.
+- Es gibt keine Anzeige bei der BaFin nach § 86 WpHG.
+- Es gibt keine Provisionen und keine Partnerverträge.
+- Zu privaten Beständen steht ein neutraler Satz auf der Seite „Methodik, Quellen und Interessen“.
+
+Diese Fassung der Einordnung richtet sich danach. Die Seite „Hinweise nach MAR und WpHG“ ist durch „Methodik, Quellen
+und Interessen“ ersetzt (`/rechtliches/methodik`). Sie enthält eine kurze Vorsorgeklausel nach Art. 20 MAR, die nichts
+kostet und hilft, falls die Aufsicht ein Ergebnis anders einordnet.
+
+**Ehrlich gesagt trägt die Linie „keine Anzeige“ nur, wenn das Produkt wirklich keine Empfehlungen enthält.** Ein Satz
+in den Bedingungen reicht dafür nicht (siehe §4); entscheidend ist, was auf den Seiten steht. Damit die Linie hält,
+müssen diese Funktionen umgebaut werden, bevor das Produkt öffentlich startet:
+
+| # | Funktion heute | Was sich ändern muss | Wer |
+|---|---|---|---|
+| L1 | Quant-Setup-Karte: „Interessant ab“, „Ziel 1/2“, „Chance/Risiko“, „Stop“ | Nur noch „Zone laut Methode“ und „Ungültig-Marke laut Methode“. Kein Ziel, kein Chance/Risiko-Verhältnis, keine Handlungssprache. | D2 |
+| L2 | Supertrader: „Einstieg bestätigt“, „Vorbereitet · nahe Trigger“, Trigger- und Stop-Kurse je Aktie | Nur „erfüllt die Regel (Stand …)“. Keine handelbaren Kurse als nächster Schritt, keine Nähe-zum-Trigger-Liste als Hervorhebung. | D2 + Supertrader |
+| L3 | Musterdepots und Hausstrategie: heutige Bestände und das Protokoll „Rein/Raus“ live | Als Forschung mit Abstand zeigen, z. B. Bestände mit Verzögerung oder nur als Verlauf im Backtest, nicht als heutige Kaufliste. | D2 + Quant |
+| L4 | Analysten-Seite und der Analysten-Bereich in Fundamental: Konsens „Kaufen/Verkaufen“, Kursziele Dritter | Auch die Weitergabe fremder Empfehlungen fällt unter Art. 20 MAR und § 86 WpHG. Empfehlung: Labels „Kaufen/Halten/Verkaufen“ und „Kursziel-Potenzial“ entfernen oder die Seite abschalten, bis ein Anwalt das geprüft hat. | Owner-Entscheidung, dann D2 |
+| L5 | Reels zu Einzelaktien („🐂 oder 🐻“) | **Entfällt. Owner-Entscheidung 06.11.: Reels bleiben unverändert** (Social Media, nicht Teil der App). | – |
+| L6 | AI Atlas | Fragen „soll ich kaufen?“ oder Fragen mit persönlichen Angaben neutral ablehnen; nur Filter und Daten liefern. | vu-ask |
+| L7 | Gesamturteil je Aktie („Überwiegend stark“) | Neutral zählen („4 von 7 Faktoren im oberen Drittel“). Kein Gesamturteil als Wort. | D2 |
+
+**Owner-Entscheidung 06.11.:** Supertrader-Kursmarken (Einstieg, Ausstieg, Stopp) und Setup-Ziele werden als Analyse
+nach benannter Methode wieder gezeigt, ohne Anzeige nach § 86 WpHG. Die Rechtstexte bleiben unverändert; eine Klärung mit
+einem Anwalt läuft. L1, L2 und L3 entfallen damit.
+
+**Restrisiko dazu, sachlich:**
+- Kursmarken je Aktie wie Einstieg, Stopp und Ziel schlagen direkt eine bestimmte Anlageentscheidung vor. Nach Art. 3
+  Abs. 1 Nr. 34 und 35 MAR sind sie mit hoher Wahrscheinlichkeit Anlageempfehlungen, auch wenn sie regelbasiert und für
+  alle gleich entstehen.
+- Dann gelten Art. 20 MAR und die Delegierte Verordnung (EU) 2016/958 (Offenlegung), und vor Beginn ist eine Anzeige nach
+  § 86 WpHG nötig. Ohne Anzeige droht ein Bußgeld (§ 120 WpHG).
+- Hinzu kommt ein Widerspruch: Die Nutzungsbedingungen sagen „keine Anlageempfehlungen … keine Handelssignale“, die App
+  zeigt aber Kursmarken. Das kann gegenüber Nutzern als irreführend gelten (§ 5 UWG), und die Aufsicht schaut auf den
+  Inhalt der Seiten, nicht auf die Bedingungen.
+- Die Vorsorgeklausel auf der Seite „Methodik, Quellen und Interessen“ deckt die Offenlegung teilweise ab, die Anzeige
+  aber nicht.
+- Die Anlageberatung bleibt weiter ausgeschlossen, solange nichts personalisiert wird.
+
+Das Ergebnis der Anwaltsklärung entscheidet, ob angezeigt oder umgebaut wird.
+
+**Was danach an Risiko bleibt:**
+- **Reels (L5 entfällt):** Beiträge in sozialen Medien zu einer bestimmten Aktie, etwa die Frage „🐂 oder 🐻?“, kann die
+  Aufsicht als Anlageempfehlung werten (Art. 3 Abs. 1 Nr. 35 und Art. 20 MAR; ESMA-Hinweis von 2021 zu sozialen Medien),
+  auch wenn sie außerhalb der App erscheinen. Für die Einordnung zählt der Inhalt eines Beitrags, nicht der Kanal. Der
+  Betreiber ist derselbe, und Anzeigepflicht sowie Offenlegung (§ 86 WpHG, private Bestände) hängen am Betreiber.
+  Ohne Umbau bleibt das Risiko bestehen. Der Hinweis „Keine Anlageberatung.“ in den Captions ändert die Einordnung
+  nicht. Das ist eine Frage an den Anwalt.
+- Kandidatenlisten („erfüllt die Regel“) und Einstufungen je Aktie kann die Aufsicht trotzdem als *implizite*
+  Empfehlung sehen. Das gilt besonders, wenn Vision Universe als Person gilt, deren Haupttätigkeit Bewertungen sind
+  (Art. 3 Abs. 1 Nr. 34 Ziff. i MAR).
+- Neutrale Wortwahl, keine Ziele oder Stopps und eine offene Methodik senken das Risiko deutlich, schließen es aber
+  nicht aus.
+- Ob die Linie hält, ist die erste Frage an den Anwalt ([ANWALTSMAPPE.md](ANWALTSMAPPE.md), Frage 4).
+- Bußgeldrisiko bei Fehleinschätzung: § 120 WpHG.
+
+## 1. Ergebnis in einem Absatz (Stand vor der Owner-Linie, als Begründung)
 
 Die **erlaubnispflichtige Anlageberatung** lässt sich mit der heutigen Bauweise sicher vermeiden. Ergebnisse sind für alle
 gleich, es gibt keine Fragen zu Vermögen, Zielen oder Risikoneigung, und nichts wird als „für dich geeignet“ dargestellt.
@@ -22,7 +83,7 @@ Bei diesen Funktionen ist das wahrscheinlich oder zumindest gut vertretbar der F
 - Supertrader-Stufen wie „Einstieg bestätigt“,
 - Musterdepot-Käufe,
 - Einstufungen wie „Überwiegend stark“ je Aktie,
-- Reels zu Einzelaktien.
+- Reels zu Einzelaktien (Owner-Entscheidung 06.11.: bleiben unverändert, Restrisiko siehe §0).
 
 Das ist **nicht verboten und braucht keine BaFin-Erlaubnis.** Es löst aber Pflichten aus:
 - objektive Darstellung,
@@ -241,7 +302,9 @@ Zu vermeiden:
 - Renditezahlen in Werbung oder Reels ohne diese Angaben,
 - „schlägt den Markt“ als Schlagzeile.
 
-### Geplante Signale mit Einstieg, Stopp und Ziel (Plan §10, S3) – kritisch (hoch)
+### Geplante Signale mit Einstieg, Stopp und Ziel (Plan §10, S3) – entfällt nach Owner-Linie §11
+
+Bewertung zur Erinnerung, falls die Idee zurückkommt:
 
 Was es ist:
 - Eindeutig eine Anlageempfehlung (direkter Vorschlag einer Anlageentscheidung).
@@ -377,22 +440,26 @@ Pflichten: Nur nach Anwaltsprüfung.
 5. **Die Passwortmaske ändert nichts.** Wer sie hat, kann die Seite nutzen; die Daten sind faktisch öffentlich. Für die
    MAR ist ein zahlender Abonnentenkreis ebenfalls ein Verbreitungskanal.
 
-## 5. Was daraus folgt (Empfehlung an den Owner, ohne Anwalt)
+## 5. Was daraus folgt (nach der Owner-Linie, ohne Anwalt)
 
 1. **Anlageberatung vermeiden:**
    - keine Fragen zu persönlichen Umständen,
    - keine „passt zu dir“-Texte,
    - AI Atlas und Vorsorge entsprechend absichern.
 
-   Das ist erledigt bzw. in den Bedingungen festgeschrieben und in [WORTWAHL.md](WORTWAHL.md) geregelt.
-2. **MAR-Pflichten erfüllen statt bestreiten:**
-   - die neue Seite „Hinweise nach MAR und WpHG“ verlinken,
-   - Datum und Methode an jedem Ergebnis zeigen (gibt es weitgehend),
-   - Interessenkonflikt-Regel beschließen (Fragen in der Anwaltsmappe).
-3. **§ 86 WpHG:** Vor dem Start der Signale (S3), spätestens vor dem öffentlichen Start, mit dem Anwalt klären, ob die
-   Anzeige nötig ist. Wenn ja: anzeigen. Die Anzeige ist ein Formular, keine Erlaubnis.
+   Das ist in den Bedingungen festgeschrieben und in [WORTWAHL.md](WORTWAHL.md) geregelt.
+2. **Keine Empfehlungen:** die Umbauten L1–L7 aus §0 vor dem öffentlichen Start. Erst dann ist die Linie „keine Anzeige
+   nach § 86 WpHG“ vertretbar.
+3. **Offenlegung trotzdem:** Die Seite „Methodik, Quellen und Interessen“ wird aus jeder Ergebnisansicht verlinkt
+   (`assets/legal-notices.json`). Sie nennt Methode, Datenstand und Regelversion an jedem Ergebnis; das gibt es
+   weitgehend schon.
 4. **Wortwahl umsetzen** (Befunde in [WORTWAHL-BEFUNDE.md](WORTWAHL-BEFUNDE.md), Umsetzung durch Strang D2).
-5. **Renditen** nur mit dem Backtest-Standard und Owner-Freigabe.
+5. **Renditen** nur mit dem Backtest-Standard (2.3) und Owner-Freigabe.
+6. **Pflicht-Links in der App:**
+   - immer: Impressum, Datenschutz, Nutzungsbedingungen, Risikohinweise;
+   - sobald in der App gekauft werden kann: zusätzlich „Verträge hier kündigen“ und „Vertrag widerrufen“.
+
+   Liste mit Begründung: `assets/legal-notices.json` → `appLinks`, erklärt in [WORTWAHL.md](WORTWAHL.md).
 
 ## Quellen
 
