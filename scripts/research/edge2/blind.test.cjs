@@ -110,3 +110,17 @@ test('KI-Export Wortwahl: Handlungsbegriffe neutralisiert, sachliche Begründung
   assert.equal(b.changed, false); assert.equal(b.text, 'Starkes Momentum, hohe Margen.');
   assert.ok(!/Empfehlung/.test(X.neutral('klare Kaufempfehlung').text));
 });
+
+test('Blind v2: quartalsweise, nur die größten Titel nach Marktwert, Protokoll gepinnt', () => {
+  const b = fs.readFileSync(path.join(ROOT, PIN.BLIND_V2_PROTOCOL_FILE));
+  assert.equal(crypto.createHash('sha256').update(b).digest('hex'), PIN.BLIND_V2_PROTOCOL_SHA256);
+  const doc = JSON.parse(b);
+  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, doc.prompt.file))).digest('hex'), doc.prompt.sha256);
+  const p = panel(), w = ['2016-01-01', '2023-12-31'];
+  const q = B.decisionWeeks(p, w, 'QUARTERLY');
+  assert.ok(q.every(t => ['01', '04', '07', '10'].includes(p.calendar[t].slice(5, 7))));
+  for (const s of p.securities) s.bundle = null;
+  // Ohne Marktwert gibt es kein Großwerte-Universum (fail closed: Paket TOO_FEW).
+  const r = B.buildPackets(p, { window: w, salt, cadence: 'QUARTERLY', topByMarketCap: 500 });
+  assert.equal(r.packets.length, 0); assert.ok(r.keys.every(k => k.state === 'TOO_FEW'));
+});

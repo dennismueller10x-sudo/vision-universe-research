@@ -71,6 +71,8 @@ jobs:
           if printf '%s' "$MSG" | grep -qF '[edge2:dev]'; then m=edge2; fi
           if printf '%s' "$MSG" | grep -qF '[edge2:blind-build]'; then m=edge2-blind-build; fi
           if printf '%s' "$MSG" | grep -qF '[edge2:blind-resolve]'; then m=edge2-blind-resolve; fi
+          if printf '%s' "$MSG" | grep -qF '[edge2:blind2-build]'; then m=edge2-blind2-build; fi
+          if printf '%s' "$MSG" | grep -qF '[edge2:blind2-resolve]'; then m=edge2-blind2-resolve; fi
           if [ "${IN_MODE:-}" = "holdout-quant" ]; then
             m=holdout-quant
             [[ "$REVIEWER_B64" =~ ^[A-Za-z0-9+/=]+$ ]] || { echo "REVIEWER_KEY_REQUIRED"; exit 2; }
@@ -207,7 +209,7 @@ jobs:
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
       - name: Edge 2 blinder KI-Backtest (Pakete bauen oder Auswahlen aufloesen)
-        if: steps.m.outputs.mode == 'edge2-blind-build' || steps.m.outputs.mode == 'edge2-blind-resolve'
+        if: startsWith(steps.m.outputs.mode, 'edge2-blind')
         env:
           MODE: ${{ steps.m.outputs.mode }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -219,15 +221,17 @@ jobs:
           set -euo pipefail
           umask 077
           X="$RUNNER_TEMP/edge2-blind"
-          mkdir -p "$X" docs/research/edge2/ki/blind
+          study=v1; dir=docs/research/edge2/ki/blind
+          case "$MODE" in edge2-blind2-*) study=v2; dir=docs/research/edge2/ki/blind-v2 ;; esac
+          mkdir -p "$X" "$dir"
           node --test scripts/research/edge2/blind.test.cjs
-          phase=build; [ "$MODE" = "edge2-blind-resolve" ] && phase=resolve
-          node --max-old-space-size=12288 scripts/research/edge2/run-blind.cjs --phase "$phase" \
+          phase=build; case "$MODE" in *-resolve) phase=resolve ;; esac
+          node --max-old-space-size=12288 scripts/research/edge2/run-blind.cjs --phase "$phase" --study "$study" \
             --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" --delisted-raw-dir "$DELISTED_RAW_DIR" \
             --fundamentals "$RUNNER_TEMP/pit-fundamentals" --out "$X/out" > "$X/run.log" 2>&1 || { tail -n 30 "$X/run.log" | grep -vE '[0-9]\.[0-9]{3,}' || true; exit 1; }
           cat "$X/run.log" | grep -vE '[0-9]\.[0-9]{3,}' | tail -n 5 || true
           test ! -e "$X/out/keys.plain.json"
-          for f in "$X/out"/*; do case "$(basename "$f")" in packets.json|*.sealed.owner.json|*.sealed.reviewer.json|blind-result.public.json) cp "$f" docs/research/edge2/ki/blind/ ;; esac; done
+          for f in "$X/out"/*; do case "$(basename "$f")" in packets.json|*.sealed.owner.json|*.sealed.reviewer.json|blind-result.public.json) cp "$f" "$dir/" ;; esac; done
           find "$X" -type f -exec shred -u {} +
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
@@ -266,6 +270,7 @@ jobs:
           git add docs/quant/research/portfolio-v1 workers/vu-account/data/model-portfolios-bundle.json docs/research/edge
           if [ -d docs/research/edge2/results ]; then git add docs/research/edge2/results; fi
           if [ -d docs/research/edge2/ki/blind ]; then git add docs/research/edge2/ki/blind; fi
+          if [ -d docs/research/edge2/ki/blind-v2 ]; then git add docs/research/edge2/ki/blind-v2; fi
           if git diff --cached --quiet; then echo "Ergebnis unveraendert."; exit 0; fi
           git commit -m "Quant-Forschungslauf ${MODE} (Lauf ${GITHUB_RUN_ID})"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
