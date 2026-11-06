@@ -101,3 +101,12 @@ test('KI-Export: ausstehende Entscheidung, Einstieg am Folgetag, Wertentwicklung
   assert.ok(d.performance.index[0][1] < 100 && d.performance.index[0][1] > 99.8, 'Kosten am Einstieg');
   assert.ok(Math.abs(d.positions.find(p => p.ticker === 'AAA').changeSinceEntry - (13 / 11 - 1)) < 1e-4);
 });
+
+test('KI-Export Wortwahl: Handlungsbegriffe neutralisiert, sachliche Begründung unverändert', () => {
+  const X = require('./ki-export.cjs');
+  const a = X.neutral('Spitzenqualität, zuletzt gefallen und damit günstigerer Einstieg.');
+  assert.equal(a.changed, true); assert.ok(!/Einstieg/.test(a.text));
+  const b = X.neutral('Starkes Momentum, hohe Margen.');
+  assert.equal(b.changed, false); assert.equal(b.text, 'Starkes Momentum, hohe Margen.');
+  assert.ok(!/Empfehlung/.test(X.neutral('klare Kaufempfehlung').text));
+});

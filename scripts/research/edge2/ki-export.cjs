@@ -76,19 +76,37 @@ function buildDepot(def, rows, today, cache) {
   const lastEntered = entries.length && k > 0 ? entries[k - 1].d : null;
   const pendingD = last && last !== lastEntered ? last : null;
   const pending = pendingD ? { decisionDate: pendingD.decisionDate, entry: 'Schluss des nächsten Handelstags nach dem Entscheidungsdatum', count: pendingD.count, countReason: pendingD.countReason,
-    positions: pendingD.picks.map(p => ({ ticker: p.ticker, securityId: p.securityId, name: nameOf(p.securityId), currency: 'USD', targetWeight: r6(p.weight), reason: p.reason, news: newsFor(pendingD, p.securityId) })) } : null;
+    positions: pendingD.picks.map(p => ({ ticker: p.ticker, securityId: p.securityId, name: nameOf(p.securityId), currency: 'USD', targetWeight: r6(p.weight), ...reasonOf(p.reason), news: newsFor(pendingD, p.securityId) })) } : null;
   return {
     id: def.id, slug: def.slug, name: def.name, method: def.method, rule: def.rule,
     prompt: last ? last.prompt.version : null, lastDecision: last ? last.decisionDate : null, decisions: decisions.length, invalidDecisions: decisions.filter(r => !r.valid).length,
     count: last ? last.count : 0, countReason: last ? last.countReason : null,
     positions: held.map(h => ({ ticker: h.ticker, securityId: h.securityId, name: nameOf(h.securityId), currency: 'USD', targetWeight: r6(h.weight), currentWeight: r6(h.units * h.lastPx / value), since: h.since, entryPrice: h.entryPrice, lastPrice: h.lastPx, lastDate: h.lastDate || h.since,
-      changeSinceEntry: r4(h.lastPx / h.entryPrice - 1), reason: h.reason, news: newsFor(last, h.securityId) })),
+      changeSinceEntry: r4(h.lastPx / h.entryPrice - 1), ...reasonOf(h.reason), news: newsFor(last, h.securityId) })),
     cashWeight: r6(value > 0 ? cash / value : null), pending,
     performance: { start: valueSeries.length ? valueSeries[0][0] : null, index: valueSeries, changeSinceStart: valueSeries.length ? r4(valueSeries.at(-1)[1] / 100 - 1) : null, costModel: 'pauschal 0,11 % je Seite auf den Umschlag' },
     protocol,
     ledger: { file: 'docs/research/edge2/ki/ledger-' + def.key + '.jsonl', entries: rows.length, lastHash: rows.length ? rows.at(-1).hash : null },
   };
 }
+// Wortwahl (docs/legal/WORTWAHL.md): Die KI-Begründung bleibt im Ledger unverändert. Im öffentlichen Export werden
+// Handlungs- und Empfehlungsbegriffe neutral ersetzt oder gestrichen; reasonNeutralized zeigt das an.
+const WORDING = [
+  [/[,;]?\s*(der|ein|einen)?\s*(jüngste[rn]?\s+)?(Rücksetzer|Rückgang)?\s*(bietet|und damit|damit)\s+(einen\s+)?günstigere[nr]?\s+Einstieg[^.;,]*/gi, ''],
+  [/\b(Kauf|Einstiegs)(zone|chance|gelegenheit|marke|signal)\b/gi, 'Zone laut Methode'],
+  [/\bgünstige[nr]?\s+Einstieg\b/gi, 'niedrigere Bewertung'],
+  [/\b(Kaufempfehlung|Verkaufssignal|Kaufsignal|empfohlen|empfehlen|Empfehlung)\b/gi, 'Ergebnis der Methode'],
+  [/\b(kaufen|verkaufen)\b/gi, 'aufnehmen'],
+  [/\bChancen?\b/gi, ''],
+];
+function neutral(text) {
+  let t = String(text || '');
+  for (const [re, rep] of WORDING) t = t.replace(re, rep);
+  t = t.replace(/\s{2,}/g, ' ').replace(/\s+([.,;])/g, '$1').replace(/^[\s,;]+|[\s,;]+$/g, '');
+  if (t && !/[.!?]$/.test(t)) t += '.';
+  return { text: t, changed: t !== String(text || '').trim() && t + '' !== String(text || '').trim() + '.' };
+}
+const reasonOf = r => { const n = neutral(r); return { reason: n.text, reasonNeutralized: n.changed }; };
 let NAMES = null;
 function nameOf(securityId) {
   if (!NAMES) { NAMES = new Map(); const f = path.join(ROOT, 'quant/data/market/security-master/company-names.json'); if (fs.existsSync(f)) for (const r of JSON.parse(fs.readFileSync(f, 'utf8')).rows || []) if (r.displayName) NAMES.set(r.securityId, r.displayName); }
@@ -121,4 +139,4 @@ function main() {
   console.log(JSON.stringify({ state: 'WRITTEN', asOf: doc.asOf, depots: doc.depots.map(d => [d.id, d.positions.length]) }));
 }
 if (require.main === module) main();
-module.exports = { SCHEMA, LIVE_START, build, buildDepot };
+module.exports = { SCHEMA, LIVE_START, build, buildDepot, neutral };

@@ -32,3 +32,5 @@ Rechenmodell, kein echtes Geld. Erzeuger: `scripts/research/edge2/ki-export.cjs`
 ```
 
 Wortwahl nach `docs/legal/WORTWAHL.md`: „Bestand laut Methode“, „aufgenommen am“, nicht „Kaufempfehlung“.
+
+`reason` ist die Begründung der KI nach dem Wortwahl-Filter in `ki-export.cjs#neutral`. Handlungs- und Empfehlungsbegriffe werden ersetzt oder gestrichen, `reasonNeutralized: true` zeigt das an. Der Originaltext steht unverändert im Ledger.
