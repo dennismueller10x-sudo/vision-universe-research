@@ -19,7 +19,7 @@ konto.visionuniverse.de.
 
 **Owner-Ziel:** „Wir machen keine Anlageempfehlung und wollen mit der BaFin keine Probleme. Wir stellen nur eine Software
 zur Analyse von Aktien zur Verfügung.“ Dazu kommt das Ziel, eine Methode zu finden, die den S&P 500 ehrlich schlägt, und
-„Signale mit Nachweis“ zu zeigen.
+„Signale mit Nachweis“ zu zeigen. **Owner-Linie seit 05.11.2026 (Plan §11):** Analyse-Software ohne Anlageempfehlungen, ohne Signale, ohne Anzeige bei der BaFin, ohne Provisionen und Partnerverträge. Gesellschafter und Mitarbeiter können privat Aktien halten, die die Software zeigt (neutral offengelegt).
 
 ## 2. Wie Ergebnisse entstehen
 
@@ -48,7 +48,7 @@ Ausführlich mit Belegen: [EINORDNUNG.md](EINORDNUNG.md) §3.
 | Supertrader | 13 Trader-Methoden; Stufen „Kandidat“, „Vorbereitet · nahe Trigger“, „Einstieg bestätigt“, „Modellposition aktiv“; rund 3.400 Kandidaten täglich | wahrscheinlich Anlageempfehlung |
 | Musterdepots / Hausstrategie | „Musterdepot heute: 20 Aktien, je 5 %“, Protokoll Rein/Raus, live | implizite Empfehlungen; keine Verwaltung fremden Vermögens |
 | Backtests | „Forschung, nicht zertifiziert“; Pilot mit Renditekurve gegen S&P 500 | Werbung mit Wertentwicklung (UWG) |
-| Geplant: Signale (Plan §10) | Einstieg, Stopp, Ziel, Begründung, laufende Bilanz, für alle | eindeutig Anlageempfehlung |
+| ~~Geplant: Signale (Plan §10)~~ | entfällt nach Plan §11 | – |
 | Analysten | Konsens „Kaufen/Halten/Verkaufen“, Kursziele Dritter, „Konsens-Ranking“ | Weitergabe von Empfehlungen Dritter |
 | Hedgefonds / Insider | 13F-Bestände, Form-4-Käufe, „Gruppen-Kauf“ | Wiedergabe gesetzlicher Meldungen |
 | Vorsorge | Rechner mit Alter, Sparrate, Bestandsvertrag; „Riester: behalten oder neu ausrichten?“ (ohne Wechsel-Empfehlung) | persönliche Eingaben; Grenze zu § 34d/§ 34f GewO |
@@ -57,16 +57,16 @@ Ausführlich mit Belegen: [EINORDNUNG.md](EINORDNUNG.md) §3.
 
 ## 4. Was bereits vorbereitet ist
 
-- **Entwürfe** (Fassung `vu-recht-2026-11-05-entwurf-3`, `LEGAL_STATUS = 'entwurf'`):
+- **Entwürfe** (Fassung `vu-recht-2026-11-05-entwurf-4`, `LEGAL_STATUS = 'entwurf'`):
   - Nutzungsbedingungen mit Leistung als Analyse-Software,
   - Ausschluss von Anlageberatung, Vermittlung und Vermögensverwaltung,
   - Backtests als Forschung,
   - Haftung,
   - Risikohinweise und Haftungsausschluss,
-  - Hinweise nach MAR und WpHG.
+  - Methodik, Quellen und Interessen (mit Vorsorgeklausel nach Art. 20 MAR, ersetzt „Hinweise nach MAR und WpHG“).
 
   Quelle: `workers/vu-account/src/legal/texts.mjs`. Seiten: `https://konto.visionuniverse.de/rechtliches/agb`,
-  `…/risikohinweise`, `…/mar-hinweise`. Offene Stellen sind als `[[OFFEN]]`/`[[PRÜFEN]]` markiert.
+  `…/risikohinweise`, `…/methodik`. Offene Stellen sind als `[[OFFEN]]`/`[[PRÜFEN]]` markiert.
 - **Pflicht-Hinweise** für die Seiten (`assets/legal-notices.json`) und Wortwahl-Regeln ([WORTWAHL.md](WORTWAHL.md)),
   dazu die Befundliste ([WORTWAHL-BEFUNDE.md](WORTWAHL-BEFUNDE.md)).
 - **Verbraucherrecht** (Widerruf, Kündigungsbutton, Button-Lösung, Datenschutz): eigene Liste in
@@ -84,9 +84,10 @@ Ausführlich mit Belegen: [EINORDNUNG.md](EINORDNUNG.md) §3.
    Ziff. i), oder „Sachverständiger“ nach der Delegierten VO (EU) 2016/958? Welche Angaben aus Art. 4 bis 6 sind dann
    je Ergebnis Pflicht, z. B. die Übersicht der Empfehlungen der letzten zwölf Monate bei rund 3.400 täglichen
    Kandidaten?
-4. Ist eine **Anzeige nach § 86 WpHG** nötig, und wann (vor dem Start der Signale oder schon heute)? Was gehört zu den
-   „Verbreitungswegen“ (Web-App, E-Mail, Instagram, TikTok)?
-5. Genügt die Seite „Hinweise nach MAR und WpHG“ als zentrale Offenlegung mit Link je Ergebnis, oder müssen Angaben an
+4. **Kernfrage:** Der Owner will keine Anzeige nach § 86 WpHG. Trägt die Linie „Analyse-Software ohne Empfehlungen“,
+   wenn die Umbauten L1–L7 ([EINORDNUNG.md](EINORDNUNG.md) §0) umgesetzt sind? Welche Funktionen müssten zusätzlich
+   wegfallen oder sich ändern (Kandidatenlisten, Einstufungen je Aktie, Analysten-Konsens, Reels)?
+5. Genügt die Seite „Methodik, Quellen und Interessen“ mit ihrer Vorsorgeklausel als zentrale Offenlegung mit Link je Ergebnis, oder müssen Angaben an
    jedem Ergebnis selbst stehen?
 6. Analysten-Konsens: Ist die Darstellung eine Weitergabe von Empfehlungen Dritter (Kapitel III DelVO)? Was ist zu tun,
    und ist ein „Konsens-Ranking“ zulässig?
@@ -111,15 +112,17 @@ Ausführlich mit Belegen: [EINORDNUNG.md](EINORDNUNG.md) §3.
 14. Gibt es aus Sicht der KI-Verordnung (Art. 50) weitere Pflichten für den AI Atlas?
 
 **Owner-Angaben, die vor der Freigabe fehlen** (nicht erfinden):
-- Positionen von Gesellschafter, Geschäftsführung und Mitwirkenden,
-- Partner-, Werbe- oder Affiliate-Verträge,
-- Ergebnis zu § 86 WpHG,
 - die Punkte A1 und A8 aus der Rechtlichen Abnahme.
+
+Beantwortet am 05.11.2026:
+- Die Gesellschaft hält keine Beteiligungen; Gesellschafter halten privat Aktien (neutraler Hinweis auf der Seite Methodik).
+- Keine Provisionen, keine Partnerverträge.
+- Keine Anzeige nach § 86 WpHG gewollt (Frage 4).
 
 ## 6. Was wir vom Anwalt brauchen
 
 1. Schriftliche Einordnung je Funktion (unkritisch / Pflichten / unzulässig).
-2. Freigabe oder Änderung der Texte: Nutzungsbedingungen, Risikohinweise, MAR-Hinweise und Pflicht-Hinweise im Frontend.
-3. Bei Bedarf Entwurf der Anzeige nach § 86 WpHG.
+2. Freigabe oder Änderung der Texte: Nutzungsbedingungen, Risikohinweise, Methodik/Quellen/Interessen, Pflicht-Hinweise und Pflicht-Links im Frontend.
+3. Falls die Linie ohne Anzeige nicht trägt: welche Funktionen dann wegfallen müssen. Die Alternative wäre die Anzeige, die der Owner nicht will.
 4. Danach setzt ein eigener PR `LEGAL_STATUS = 'freigegeben'` mit neuer Fassung
    (`scripts/account/go-live-config.mjs`). Das bleibt eine Owner-Entscheidung.

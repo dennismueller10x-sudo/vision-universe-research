@@ -109,8 +109,10 @@ const ROUTES = [
 const PAGES = [
   ['GET', '/rechtliches/', pages.legalIndex, {db: false}],
   ['GET', '/rechtliches', pages.legalIndex, {db: false}],
-  ...['impressum', 'datenschutz', 'agb', 'widerrufsbelehrung', 'widerrufsformular', 'newsletter', 'risikohinweise', 'mar-hinweise']
+  ...['impressum', 'datenschutz', 'agb', 'widerrufsbelehrung', 'widerrufsformular', 'newsletter', 'risikohinweise', 'methodik']
     .map(k => ['GET', `/rechtliches/${k}`, pages.legalPage(k), {db: false}]),
+  // Fassung 3 hiess die Seite „Hinweise nach MAR und WpHG“; alte Links fuehren auf die Nachfolgeseite.
+  ['GET', '/rechtliches/mar-hinweise', pages.legalPage('methodik'), {db: false}],
   ['GET', '/kuendigen', pages.cancelGet, {db: false}],
   ['POST', '/kuendigen', pages.cancelPost],
   ['GET', '/widerrufen', pages.withdrawGet, {db: false}],

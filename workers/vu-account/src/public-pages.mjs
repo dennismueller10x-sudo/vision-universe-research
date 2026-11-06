@@ -71,7 +71,7 @@ export function legalPage(key) {
 export function legalIndex() {
   const items = [['impressum', 'Impressum'], ['agb', 'Nutzungs- und Vertragsbedingungen (Free und Pro)'], ['widerrufsbelehrung', 'Widerrufsbelehrung'],
     ['widerrufsformular', 'Muster-Widerrufsformular'], ['datenschutz', 'Datenschutzerklärung'], ['newsletter', 'Newsletter: Datenschutz und Einwilligung'],
-    ['risikohinweise', 'Risikohinweise und Haftungsausschluss'], ['mar-hinweise', 'Hinweise nach MAR und WpHG (Ersteller, Methodik, Interessenkonflikte)']];
+    ['risikohinweise', 'Risikohinweise und Haftungsausschluss'], ['methodik', 'Methodik, Quellen und Interessen']];
   return page('Rechtliches', `<ul>${items.map(([k, t]) => `<li><a href="${LINKS[k]}">${esc(t)}</a></li>`).join('')}</ul>
 <p><a href="${LINKS.kuendigen}">Verträge hier kündigen</a> · <a href="${LINKS.widerrufen}">Vertrag widerrufen</a></p>
 <p class="muted">Anbieter: ${esc(COMPANY.name)}, ${esc(COMPANY.street)}, ${esc(COMPANY.city)}.</p>`);

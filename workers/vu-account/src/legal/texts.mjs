@@ -10,6 +10,8 @@
 // Fassung 2 (02.11.2026): Preis ohne festen Betrag (Tarifverwaltung), Umsatzsteuer ueber Stripe Tax.
 // Fassung 3 (05.11.2026): Leistung als Analyse-Software, keine Anlageberatung/-vermittlung/Vermoegensverwaltung,
 // Backtests als Forschung, neue Texte „Risikohinweise und Haftungsausschluss“ und „Hinweise nach MAR und WpHG“.
+// Fassung 4 (05.11.2026, Owner-Linie Plan §11): keine Anlageempfehlungen, keine Signale, keine BaFin-Anzeige;
+// „Hinweise nach MAR und WpHG“ ersetzt durch „Methodik, Quellen und Interessen“ (mit Vorsorgeklausel).
 // Grundlage: docs/legal/EINORDNUNG.md (keine Rechtsberatung; Pruefung durch Fachanwalt offen, docs/legal/ANWALTSMAPPE.md).
 //
 // Freigabe: LEGAL_STATUS auf 'freigegeben' und LEGAL_VERSION hochzaehlen (eigener PR mit
@@ -18,7 +20,7 @@
 //
 // Mini-Auszeichnung: Bloecke {h}, {p}, {ul}, {note}; im Text **fett** und [Text](/pfad|https://…).
 
-export const LEGAL_VERSION = 'vu-recht-2026-11-05-entwurf-3';
+export const LEGAL_VERSION = 'vu-recht-2026-11-05-entwurf-4';
 export const LEGAL_STATUS = 'entwurf'; // 'entwurf' | 'freigegeben'
 export const LEGAL_BASE = 'https://konto.visionuniverse.de';
 
@@ -44,7 +46,7 @@ const CHECK = what => `[[PRÜFEN: ${what}]]`;
 export const LINKS = Object.freeze({
   index: '/rechtliches/', impressum: '/rechtliches/impressum', datenschutz: '/rechtliches/datenschutz',
   agb: '/rechtliches/agb', widerrufsbelehrung: '/rechtliches/widerrufsbelehrung', widerrufsformular: '/rechtliches/widerrufsformular',
-  newsletter: '/rechtliches/newsletter', risikohinweise: '/rechtliches/risikohinweise', 'mar-hinweise': '/rechtliches/mar-hinweise',
+  newsletter: '/rechtliches/newsletter', risikohinweise: '/rechtliches/risikohinweise', methodik: '/rechtliches/methodik',
   kuendigen: '/kuendigen', widerrufen: '/widerrufen',
 });
 
@@ -65,7 +67,7 @@ export const DOCS = {
       {h: 'Angebot'},
       {p: 'Vision Universe ist eine Software zur Analyse von Aktien (Web-App unter research.visionuniverse.de). Konten, Abonnements und Zahlungen werden über konto.visionuniverse.de abgewickelt. Vertragspartner und Zahlungsempfänger ist die oben genannte RAM Consulting UG (haftungsbeschränkt).'},
       {h: 'Hinweis zu Finanzinformationen'},
-      {p: 'Vision Universe ist eine Software zur Analyse von Aktien. Die Inhalte dienen der allgemeinen Information. Sie sind keine Anlage-, Steuer- oder Rechtsberatung, keine persönliche Empfehlung und keine Aufforderung zum Kauf oder Verkauf von Wertpapieren. Kapitalanlagen können bis zum Totalverlust führen; vergangene und simulierte Wertentwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse. Einzelheiten: [Risikohinweise und Haftungsausschluss](/rechtliches/risikohinweise) und [Hinweise nach MAR und WpHG](/rechtliches/mar-hinweise).'},
+      {p: 'Vision Universe ist eine Software zur Analyse von Aktien. Die Inhalte dienen der allgemeinen Information. Sie sind keine Anlage-, Steuer- oder Rechtsberatung, keine persönliche Empfehlung und keine Aufforderung zum Kauf oder Verkauf von Wertpapieren. Kapitalanlagen können bis zum Totalverlust führen; vergangene und simulierte Wertentwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse. Einzelheiten: [Risikohinweise und Haftungsausschluss](/rechtliches/risikohinweise) und [Methodik, Quellen und Interessen](/rechtliches/methodik).'},
       {h: 'Verbraucherstreitbeilegung'},
       {p: `Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen. ${CHECK('Erklärung bestätigen (§ 36 VSBG)')}`},
     ],
@@ -81,10 +83,10 @@ export const DOCS = {
       {h: '2. Leistung: Software zur Analyse von Aktien'},
       {p: 'Vision Universe ist eine Software zur Analyse von Aktien, Fonds und Märkten. Über die Web-App research.visionuniverse.de stellen wir Werkzeuge bereit (u. a. die Produktwelten Discover, Quant, Fundamental, Technical, Screener, Supertrader), die öffentlich verfügbare und lizenzierte Daten nach festen, in der App beschriebenen Regeln aufbereiten, berechnen, filtern, vergleichen und darstellen, dazu ein persönliches Dashboard mit Watchlist. Welche Funktionen ein Tarif umfasst, zeigt die Tarifübersicht vor Vertragsschluss.'},
       {p: '**Free und Pro haben derzeit denselben Funktionsumfang.** Pro ist ein freiwilliges, kostenpflichtiges Abonnement, mit dem du Vision Universe unterstützt. Funktionen, die noch nicht freigegeben sind (z. B. ein Quant-Gesamtscore oder unveröffentlichte Supertrader-Signale), sind in keinem Tarif enthalten.'},
-      {p: 'Die Ergebnisse der Software – etwa Kennzahlen, Faktorwerte, Einstufungen wie „Stark“, „Mittel“ oder „Schwach“, Ranglisten, Filtertreffer, technische Marken (z. B. Unterstützung, Einstiegsmarke, Stopp-Marke, Zielzone) und Musterdepots – entstehen automatisch nach den beschriebenen Regeln. Sie sind für alle Nutzerinnen und Nutzer gleich und berücksichtigen weder deine finanziellen Verhältnisse noch deine Anlageziele, Kenntnisse, Erfahrungen oder Risikobereitschaft. Wir fragen diese Umstände nicht ab.'},
+      {p: 'Die Ergebnisse der Software – etwa Kennzahlen, Faktorwerte, Einstufungen wie „Stark“, „Mittel“ oder „Schwach“, Ranglisten, Filtertreffer, Zonen laut Methode (z. B. Unterstützung, Widerstand) und Musterdepots – entstehen automatisch nach den beschriebenen Regeln. Sie sind für alle Nutzerinnen und Nutzer gleich und berücksichtigen weder deine finanziellen Verhältnisse noch deine Anlageziele, Kenntnisse, Erfahrungen oder Risikobereitschaft. Wir fragen diese Umstände nicht ab.'},
       {p: 'Wir bemühen uns um eine hohe Verfügbarkeit; eine bestimmte Verfügbarkeit ist nicht vereinbart. Daten aus öffentlichen und lizenzierten Quellen können verzögert, unvollständig, fehlerhaft oder vorübergehend nicht verfügbar sein; die Seiten weisen den jeweiligen Datenstand aus.'},
       {h: '3. Keine Anlageberatung, keine Vermittlung, keine Vermögensverwaltung'},
-      {p: 'Vision Universe erbringt keine Wertpapierdienstleistungen. Insbesondere gilt:'},
+      {p: 'Vision Universe erbringt keine Wertpapierdienstleistungen und veröffentlicht keine Anlageempfehlungen, keine Kauf- oder Verkaufsempfehlungen und keine Handelssignale. Insbesondere gilt:'},
       {ul: [
         '**Keine Anlageberatung und keine persönliche Empfehlung:** Wir prüfen deine persönlichen Umstände nicht und stellen kein Ergebnis als für dich geeignet dar.',
         '**Keine Anlage- oder Abschlussvermittlung:** Wir nehmen keine Aufträge entgegen, leiten keine Orders weiter und vermitteln keine Geschäfte über Finanzinstrumente.',
@@ -97,7 +99,7 @@ export const DOCS = {
       {h: '4. Backtests, Musterdepots und frühere Wertentwicklung'},
       {p: 'Backtests sind Forschung. Sie wenden eine Regel rückwirkend auf historische Kurse an und sind als **„Forschung, nicht zertifiziert“** gekennzeichnet. Sie zeigen, wie die Regel unter den angegebenen Annahmen (u. a. Zeitraum, Kosten, Ausführung, Umfang der Daten) abgeschnitten hätte – nicht, wie sie künftig abschneiden wird. Sie sind keine Prognose und kein Versprechen einer Rendite.'},
       {p: 'Musterdepots rechnen eine Methode ohne echtes Geld nach festen Regeln vorwärts. Frühere und simulierte Wertentwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse. Reale Ergebnisse können durch Kosten, Steuern, Kurslücken, Ausführungszeitpunkt und Positionsgröße erheblich abweichen.'},
-      {p: 'Mehr dazu in den [Risikohinweisen und dem Haftungsausschluss](/rechtliches/risikohinweise) und in den [Hinweisen nach MAR und WpHG](/rechtliches/mar-hinweise) (Ersteller, Methodik, Quellen, Interessenkonflikte).'},
+      {p: 'Mehr dazu in den [Risikohinweisen und dem Haftungsausschluss](/rechtliches/risikohinweise) und unter [Methodik, Quellen und Interessen](/rechtliches/methodik) (Ersteller, Methodik, Quellen, Interessenkonflikte).'},
       {h: '5. Konto und Vertragsschluss Free'},
       {p: 'Mit dem Absenden der Registrierung gibst du ein Angebot auf Abschluss eines unentgeltlichen Nutzungsvertrags ab. Der Vertrag kommt zustande, wenn du deine E-Mail-Adresse über den zugesandten Link bestätigst. Halte deine Zugangsdaten geheim; ein Konto ist persönlich und nicht übertragbar.'},
       {p: 'Free ist kostenlos und ohne Zahlungsdaten nutzbar. Ein Free-Konto wird nie ohne deine ausdrückliche Bestellung kostenpflichtig.'},
@@ -210,7 +212,7 @@ export const DOCS = {
     blocks: [
       {note: '**Kurz:** Vision Universe ist eine Software zur Analyse von Aktien. Sie gibt keine Anlageberatung und keine persönlichen Empfehlungen. Alle Ergebnisse entstehen automatisch nach beschriebenen Regeln und sind für alle gleich. Aktien können stark schwanken; ein Totalverlust ist möglich. Frühere und simulierte Ergebnisse sagen nichts Verlässliches über die Zukunft. Du entscheidest selbst.'},
       {h: '1. Was die Software ist – und was nicht'},
-      {p: 'Die Software bereitet Daten auf, berechnet Kennzahlen und prüft, ob Aktien die Bedingungen bestimmter, offen beschriebener Methoden erfüllen. Sie kennt weder dein Vermögen noch deine Ziele, Erfahrungen oder Risikobereitschaft und prüft nicht, ob eine Aktie zu dir passt. Kein Ergebnis ist eine Aufforderung, ein Wertpapier zu kaufen, zu halten oder zu verkaufen. Wir erbringen keine Anlageberatung, keine Anlage- oder Abschlussvermittlung und keine Finanzportfolioverwaltung und haben dafür keine Erlaubnis der Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin).'},
+      {p: 'Die Software bereitet Daten auf, berechnet Kennzahlen und prüft, ob Aktien die Bedingungen bestimmter, offen beschriebener Methoden erfüllen. Sie kennt weder dein Vermögen noch deine Ziele, Erfahrungen oder Risikobereitschaft und prüft nicht, ob eine Aktie zu dir passt. Die Software gibt keine Kauf- oder Verkaufsempfehlungen und keine Handelssignale; kein Ergebnis ist eine Aufforderung, ein Wertpapier zu kaufen, zu halten oder zu verkaufen. Wir erbringen keine Anlageberatung, keine Anlage- oder Abschlussvermittlung und keine Finanzportfolioverwaltung und haben dafür keine Erlaubnis der Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin).'},
       {h: '2. Risiken von Aktien und Fonds'},
       {ul: [
         '**Kursrisiko:** Kurse können stark und schnell fallen. Ein Verlust des eingesetzten Kapitals bis zum Totalverlust ist möglich.',
@@ -224,7 +226,7 @@ export const DOCS = {
       {ul: [
         'Alle Methoden beruhen auf Daten der Vergangenheit. Märkte ändern sich; eine Regel, die früher funktioniert hat, kann künftig versagen.',
         'Einstufungen wie „Stark“, „Mittel“ oder „Schwach“ und Ranglisten beschreiben die rechnerische Lage einer Aktie im Vergleich zu anderen nach einer bestimmten Regel. Sie sind keine Prognose.',
-        'Technische Marken (Unterstützung, Widerstand, Einstiegsmarke, Stopp-Marke, Zielzone der Methode) sind Rechenpunkte einer Methode, keine Kursprognose und kein Kursziel. Eine Stopp-Marke begrenzt Verluste nicht zuverlässig: Bei Kurslücken kann der Kurs weit darunter liegen.',
+        'Zonen laut Methode (z. B. Unterstützung, Widerstand, Ungültig-Marke) sind Rechenpunkte einer Methode, keine Kursprognose und kein Kursziel. Eine Marke, unter der eine Methode ungültig wird, begrenzt Verluste nicht: Bei Kurslücken kann der Kurs weit darunter liegen.',
         'Texte, die mit künstlicher Intelligenz erzeugt, übersetzt oder zusammengefasst werden (z. B. im AI Atlas), können Fehler enthalten. Prüfe wichtige Angaben an der Quelle.',
       ]},
       {h: '4. Backtests und Musterdepots'},
@@ -235,31 +237,28 @@ export const DOCS = {
       {p: 'Einige Seiten zeigen zusammengefasste Einstufungen und Kursziele von Analysten Dritter oder Meldungen von Fonds und Insidern an die SEC. Diese Angaben stammen nicht von uns. Wir geben sie mit Quelle und Datum wieder und machen sie uns nicht zu eigen.'},
       {h: '7. Haftungsausschluss'},
       {p: 'Wir haften nicht für Verluste aus Anlageentscheidungen, die du auf Grundlage der Inhalte triffst. Unberührt bleibt die Haftung bei Vorsatz und grober Fahrlässigkeit, bei Verletzung von Leben, Körper oder Gesundheit, nach dem Produkthaftungsgesetz, im Umfang einer Garantie und bei der Verletzung wesentlicher Vertragspflichten nach Maßgabe der [Nutzungsbedingungen](/rechtliches/agb) (Abschnitt Haftung).'},
-      {p: `Ersteller, Methodik, Quellen und Interessenkonflikte beschreiben die [Hinweise nach MAR und WpHG](/rechtliches/mar-hinweise). ${CHECK('Risikohinweise und Haftungsausschluss insgesamt; Verhältnis zu den Nutzungsbedingungen')}`},
+      {p: `Ersteller, Methodik, Quellen und Interessenkonflikte beschreiben die [Methodik, Quellen und Interessen](/rechtliches/methodik). ${CHECK('Risikohinweise und Haftungsausschluss insgesamt; Verhältnis zu den Nutzungsbedingungen')}`},
     ],
   },
 
-  'mar-hinweise': {
-    title: 'Hinweise nach MAR und WpHG: Ersteller, Methodik, Interessenkonflikte',
+  methodik: {
+    title: 'Methodik, Quellen und Interessen',
     blocks: [
-      {note: `Diese Hinweise gelten vorsorglich für Inhalte, die als Anlageempfehlung oder als Information mit Empfehlungen oder Vorschlägen zu Anlagestrategien im Sinne von Art. 3 Abs. 1 Nr. 34 und 35 der Verordnung (EU) Nr. 596/2014 (Marktmissbrauchsverordnung, MAR) verstanden werden könnten – z. B. Einstufungen, Ranglisten, Kandidaten einer Methode, technische Marken, Musterdepots sowie redaktionelle Beiträge und Beiträge in sozialen Medien zu einzelnen Aktien. Sie dienen Art. 20 MAR, der Delegierten Verordnung (EU) 2016/958 und §§ 85, 86 WpHG. ${CHECK('Einordnung der einzelnen Funktionen; Anzeige nach § 86 WpHG; Umfang der Pflichten nach Art. 4 Delegierte Verordnung (EU) 2016/958')}`},
-      {h: '1. Ersteller und Verantwortliche'},
-      {p: `Ersteller und verantwortlich ist die ${ADDRESS}, vertreten durch ${C.representative}, E-Mail ${C.email}. Die Gesellschaft ist kein beaufsichtigtes Kredit- oder Wertpapierinstitut und erbringt keine Wertpapierdienstleistungen.`},
-      {p: 'Rechnerische Ergebnisse (Kennzahlen, Faktorwerte, Einstufungen, Ranglisten, Kandidaten, technische Marken, Musterdepots, Backtests) erzeugt die Software automatisch nach festen, beschriebenen Regeln. Einzelne Aktien werden dafür nicht von Hand ausgewählt, bewertet oder bevorzugt. Redaktionelle Beiträge (z. B. Magazin, Morning, News) sind als redaktionell gekennzeichnet.'},
-      {p: `Anzeige bei der BaFin nach § 86 WpHG: ${OPEN('erstattet am … oder Ergebnis der Prüfung, dass keine Anzeige erforderlich ist')}`},
-      {h: '2. Methodik, Bewertungsgrundlagen und Quellen'},
-      {p: 'Jede Funktion beschreibt in der App ihre Methode: welche Daten sie nutzt, welche Bedingungen sie prüft, welche Regelversion gilt und welchen Datenstand das Ergebnis hat. Tatsachen (z. B. Kurse, berichtete Kennzahlen) und Rechenergebnisse werden getrennt dargestellt. Einstufungen sind relativ: Sie vergleichen eine Aktie mit anderen Aktien desselben Universums. Zielzonen technischer Methoden sind rechnerische Marken, keine Kursprognosen; Kursprognosen erstellen wir nicht.'},
-      {p: 'Quellen sind u. a. Unternehmensmeldungen der US-Börsenaufsicht SEC (EDGAR, z. B. Formulare 10-K, 10-Q, 13F und Form 4) sowie Kurs- und Stammdaten von Marktdatenanbietern. Auf der jeweiligen Seite stehen Quelle und Datenstand. Die Daten prüfen wir mit automatischen Datenqualitätsregeln; Lücken und veraltete Daten werden angezeigt.'},
-      {h: '3. Zeitpunkt, Aktualisierung und frühere Ergebnisse'},
-      {p: `Ergebnisse werden automatisch aktualisiert, in der Regel an jedem Handelstag. Sie gelten nur zum angegebenen Datenstand und können sich mit neuen Daten ohne gesonderte Mitteilung ändern. Änderungen einer Methode werden mit neuer Regelversion dokumentiert. ${CHECK('Ob und in welcher Form eine Übersicht früherer Ergebnisse je Finanzinstrument (z. B. der letzten zwölf Monate) bereitzustellen ist')}`},
-      {h: '4. Interessen und Interessenkonflikte'},
-      {p: `Vision Universe finanziert sich über das freiwillige Pro-Abonnement. Wir erhalten keine Zahlungen von Unternehmen, deren Aktien in der App vorkommen, keine Provisionen von Banken, Brokern oder Fondsgesellschaften und erbringen keine Leistungen für Emittenten. ${OPEN('Bestätigung des Owners; Liste etwaiger Partner-, Werbe- oder Affiliate-Verträge')}`},
-      {p: `Beteiligungen: ${OPEN('Halten Gesellschafter, Geschäftsführung oder Mitwirkende Aktien, die in der App oder in Beiträgen vorkommen? Regel festlegen: Offenlegung wesentlicher Positionen je Aktie und Handelssperre rund um eigene Veröffentlichungen, z. B. Reels')}`},
-      {p: 'Die automatischen Ergebnisse entstehen für alle Aktien nach denselben Regeln; ein einzelnes Ergebnis lässt sich nicht gezielt verändern, ohne dass dies als neue Regelversion dokumentiert wird.'},
+      {note: 'Vision Universe ist eine Software zur Analyse von Aktien. Sie veröffentlicht keine Anlageempfehlungen, keine Kauf- oder Verkaufsempfehlungen und keine Handelssignale. Diese Seite beschreibt, wer die Software betreibt, wie ihre Ergebnisse entstehen, woher die Daten kommen und welche Interessen bestehen.'},
+      {h: '1. Betreiber'},
+      {p: `Betreiber und verantwortlich ist die ${ADDRESS}, vertreten durch ${C.representative}, E-Mail ${C.email}. Die Gesellschaft ist kein Kredit- oder Wertpapierinstitut und erbringt keine Wertpapierdienstleistungen.`},
+      {h: '2. Wie Ergebnisse entstehen'},
+      {p: 'Kennzahlen, Faktorwerte, Einstufungen, Filtertreffer, Regel-Ergebnisse von Methoden, Zonen laut Methode und Backtests berechnet die Software automatisch nach festen, in der App beschriebenen Regeln. Einzelne Aktien werden dafür nicht von Hand ausgewählt, bewertet oder bevorzugt. Für alle Aktien gelten dieselben Regeln; jede Änderung einer Regel wird als neue Regelversion dokumentiert.'},
+      {p: 'Jede Funktion nennt in der App ihre Methode, die geprüften Bedingungen, die Regelversion und den Datenstand. Tatsachen (z. B. Kurse, berichtete Kennzahlen) und Rechenergebnisse werden getrennt dargestellt. Einstufungen sind relativ: Sie vergleichen eine Aktie mit anderen Aktien desselben Universums. „Erfüllt die Regel“ heißt nur, dass die beschriebenen Bedingungen zum Datenstand rechnerisch erfüllt sind. Kursprognosen und Kursziele erstellt die Software nicht.'},
+      {h: '3. Quellen und Aktualität'},
+      {p: 'Quellen sind u. a. Unternehmensmeldungen der US-Börsenaufsicht SEC (EDGAR, z. B. Formulare 10-K, 10-Q, 13F und Form 4) sowie Kurs- und Stammdaten von Marktdatenanbietern. Auf jeder Seite stehen Quelle und Datenstand. Die Daten prüfen wir mit automatischen Datenqualitätsregeln; Lücken und veraltete Daten werden angezeigt. Ergebnisse werden in der Regel an jedem Handelstag neu berechnet und gelten nur zum angegebenen Datenstand.'},
+      {h: '4. Interessen'},
+      {p: 'Vision Universe finanziert sich über das freiwillige Pro-Abonnement. Wir erhalten keine Provisionen von Banken, Brokern oder Fondsgesellschaften, haben keine Partner- oder Werbeverträge mit Unternehmen, deren Wertpapiere die Software anzeigt, und erbringen keine Leistungen für Emittenten. Die Gesellschaft selbst hält keine Beteiligungen an diesen Unternehmen.'},
+      {p: 'Gesellschafter und Mitarbeiter können privat in Wertpapieren investiert sein, die die Software anzeigt. Die Ergebnisse entstehen regelbasiert und unabhängig davon; einzelne Ergebnisse lassen sich nicht gezielt verändern, ohne dass dies als neue Regelversion dokumentiert wird.'},
       {h: '5. Angaben Dritter'},
-      {p: `Zusammengefasste Einstufungen und Kursziele von Analysten Dritter (Seite Analysten, Bereich Analysten in Fundamental) stammen von externen Datenanbietern, die sie aus veröffentlichten Analystenmeinungen zusammenfassen. Sie sind keine Ergebnisse von Vision Universe. Wir geben sie unverändert mit Anbieter und Datenstand wieder. ${CHECK('Pflichten bei der Weitergabe von Empfehlungen Dritter (Kapitel III Delegierte Verordnung (EU) 2016/958)')}`},
-      {h: '6. Zuständige Aufsicht'},
-      {p: 'Zuständig für die Überwachung der Pflichten nach Art. 20 MAR ist die Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin), Marie-Curie-Straße 24–28, 60439 Frankfurt am Main. Die Gesellschaft untersteht keiner laufenden Aufsicht der BaFin als Institut.'},
+      {p: `Angaben Dritter (z. B. Pflichtmeldungen von Fonds und Insidern an die SEC) geben wir unverändert mit Quelle und Datum wieder. Sie sind keine Ergebnisse von Vision Universe. ${CHECK('Darstellung von Analysten-Einstufungen und Kurszielen Dritter (Seite Analysten, Fundamental): Weitergabe von Empfehlungen Dritter; siehe docs/legal/EINORDNUNG.md')}`},
+      {h: '6. Vorsorglicher Hinweis'},
+      {p: `Sollte ein Inhalt dennoch als Information mit einer Empfehlung zu einem Finanzinstrument verstanden werden (Art. 3 Abs. 1 Nr. 34, 35 der Verordnung (EU) Nr. 596/2014), gelten die Angaben dieser Seite zu Betreiber, Methodik, Quellen, Datenstand und Interessen als Angaben nach Art. 20 dieser Verordnung. ${CHECK('Vorsorgeklausel; Haltbarkeit der Linie „keine Anlageempfehlungen, keine Anzeige nach § 86 WpHG“ für die einzelnen Funktionen')}`},
     ],
   },
 };
