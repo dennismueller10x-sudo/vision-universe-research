@@ -1259,6 +1259,13 @@ test('E4: native Anmeldung, Rotation und Push-RLS durch Worker und PostgreSQL', 
   assert.equal(refreshed.res.status,200);assert.notEqual(refreshed.data.refreshToken,login.data.refreshToken);
   const token=refreshed.data.accessToken,device='test_token_aaaaaaaaaaaaaaaaaaaaaaaa';
   assert.equal((await request('/v1/push/devices',{token:device,platform:'ios'},token)).res.status,200);
+  // Z4: /v1/me nennt den Push-Stand (ohne FCM-Zugang nicht verfuegbar, ein Geraet); Arten werden im Konto gespeichert.
+  const call=async(method,path,body)=>{const res=await env.app.handle(new Request(env.api+path,{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:body===undefined?undefined:JSON.stringify(body)}));return {res,data:await res.json()};};
+  const meA=await call('GET','/v1/me');
+  assert.deepEqual(meA.data.push,{available:false,devices:1,maxPerDay:1,channel:'app'});
+  const patched=await call('PATCH','/v1/me',{settings:{notifications:{PRICE_EVENT:true,SUPERTRADER_SIGNAL:false}}});
+  assert.equal(patched.res.status,200);assert.deepEqual(patched.data.settings.notifications,{PRICE_EVENT:true,SUPERTRADER_SIGNAL:false});
+  assert.equal((await call('PATCH','/v1/me',{settings:{notifications:{EMAIL:true}}})).data.state,'SETTING_INVALID');
   const other=await request('/v1/auth/app/login',{email:'mobile-b@example.test',password:PASSWORD});
   assert.equal((await request('/v1/push/devices/remove',{token:device},other.data.accessToken)).res.status,200);
   const count=await env.pg.json('select count(*)::int from public.push_devices');

@@ -331,10 +331,14 @@
       (done ? '<section id="vs-mon-portfolio">' + VS.sect("Dein Portfolio", "#/portfolio", "X-Ray") + '<div class="vs-loading">…</div></section>' : "") +
       '<section id="vs-mon-holdings">' + VS.sect(done ? "In deinen ETFs" : "Bis dahin: Änderungen bei Kern-ETFs") + '<div class="vs-loading">…</div></section>' +
       '<section id="vs-mon-changes">' + VS.sect("Kosten von Produkten") + '<div class="vs-loading">…</div></section>' +
-      '<div class="vs-kv" style="margin-top:14px;border-top:1px solid var(--line)"><span class="vu-sm"><b>Bei Änderungen benachrichtigen</b><small class="vu-mu" style="display:block">Merkt sich die Wahl in diesem Browser; Nachrichten folgen mit dem Konto.</small></span>' + U.toggle(!!VS.state.notify, "", "notify") + '</div>' +
+      VS.sect("Bei Änderungen benachrichtigen") + '<div class="vu-box" id="vs-mon-push"><p class="vu-sm vu-mu">Benachrichtigungen kommen über die App.</p></div>' +
       '<details class="vu-more" id="vs-mon-plan"><summary>Was hat sich bei dir verändert?</summary><div class="vu-more-body"><div class="vs-loading">…</div></div></details>' +
       '<details class="vu-more" id="vs-mon-more"><summary>Datenmeldungen und was nicht überwacht wird</summary><div class="vu-more-body"></div></details>');
-    root.querySelector('input[name="notify"]').addEventListener("change", function () { VS.state.notify = this.checked; VS.save(); });
+    /* Z4: Schalter im Konto, zugestellt nur über die App (konto/push-settings.js, erst hier geladen). ETF-Änderungen
+       sind noch keine Ereignisart: der Schalter bleibt gesperrt und sagt es; die Änderungen stehen auf dieser Seite. */
+    var pp = global.__vuPushP || (global.__vuPushP = global.VUPush ? Promise.resolve() : new Promise(function (done) {
+      var s = document.createElement("script"); s.src = "/konto/push-settings.js"; s.onload = s.onerror = function () { done(); }; document.head.appendChild(s); }));
+    pp.then(function () { if (global.VUPush) global.VUPush.mount(root.querySelector("#vs-mon-push"), { keys: ["VORSORGE_CHANGE"], more: true }); });
     function evRow(e) { return '<div class="vs-kv"><span class="vu-sm">' + esc(e.text) + '</span></div>'; }
     VS.snapshotContext().then(function (ctx) {
       var d = snap ? V.Monitor.diffPlan(snap, V.Monitor.snapshotPlan(p, VS.state.portfolio, null, ctx)) : [];

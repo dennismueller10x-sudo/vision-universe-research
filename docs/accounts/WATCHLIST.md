@@ -101,7 +101,7 @@ Migration `supabase/migrations/20261028000100_watchlist_personal.sql`. Sie baut 
 | Tariflogik | dieselbe Funktion `enforce_watchlist_limits` (nur um eine Transaktionssperre erweitert); Grenzen aus `plan_features` |
 | Herabstufung (Plus → Free) | nichts wird gelöscht; alles bleibt lesbar und entfernbar; neu hinzu kommt erst unter der Grenze (SQL-Test) |
 | Kontolöschung, Export | unverändert über #926: Cascade bzw. `exportData` enthält Listen und Einträge (mit `alerts`) |
-| Benachrichtigungen | `alerts` je Titel ergänzt `user_settings.notification_settings`; versendet wird später nur, wenn **beide** zustimmen |
+| Benachrichtigungen | `alerts` je Titel ergänzt `user_settings.notification_settings`; versendet wird nur, wenn **beide** zustimmen. Lesart (Z4, 06.11.2026): Das Konto muss die Art einschalten; der Eintrag stimmt zu, solange er sie nicht ausdrücklich ausschaltet (fehlender Schlüssel = Konto gilt). Versand nur als App-Push (`20261107000100_push_preferences.sql`), keine E-Mail |
 | Datenvertrag | `core/contracts/user-data.schema.json` um `alerts` ergänzt |
 | Migrationsreihenfolge | `20261028000100` nach allen Migrationen aus #926; `apply-migrations.mjs` spielt sie mit ein |
 
@@ -323,6 +323,7 @@ Erstbeobachtung, Delisting und gesperrte Identität erzeugen kein Ereignis.
 
 Zustellung später: Ereignisse × `watchlist_items.alerts` × Tarif, über den Index `watchlist_items_instrument`. Es werden keine E-Mails
 oder Pushes versendet, und kein kostenpflichtiger Dienst ist aktiviert. In der Oberfläche steht: „Gespeichert, aber noch nicht aktiv“.
+Nachtrag Z4 (06.11.2026, Owner-Auftrag Push über #1525): Der Versandweg App-Push ist freigegeben. Die Seiten D08, T02, T04, W04 und V08 stellen die Arten im Konto ein (`konto/push-settings.js`). Ohne FCM-Zugang, App oder Anmeldung sagt jede Seite „Benachrichtigungen kommen über die App“ und warum nichts kommt. Arten ohne Erzeuger (±5 %, Quartalszahlen, 13F, Suchtreffer, Elliott, ETF-Änderungen) bleiben gesperrt mit „noch keine Daten“.
 Aktivierung nur in eigenen PRs mit Owner-Freigabe (FREIGABEN.md): erst Erzeugung im Release-Bau (`ACTIVATING`), getrennt davon jede Zustellung.
 
 ## 8. Tests

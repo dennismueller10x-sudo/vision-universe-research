@@ -29,13 +29,15 @@ export function planIntentOf(authUser, entitlements, now) {
 export async function me(ctx) {
   const user = await requireUser(ctx);
   const t = user.accessToken;
-  const [profile, settings, roles, entitlements, authUser] = await Promise.all([
+  const [profile, settings, roles, entitlements, authUser, devices] = await Promise.all([
     ctx.sb.user.select(t, 'profiles', {user_id: `eq.${user.id}`}).then(one),
     ctx.sb.user.select(t, 'user_settings', {user_id: `eq.${user.id}`}).then(one),
     ctx.sb.user.select(t, 'user_roles', {user_id: `eq.${user.id}`}),
     ctx.sb.user.rpc(t, 'my_entitlements'),
     // Fehlt die Auskunft, gibt es eben keinen Hinweis - die Kontoseite bleibt nutzbar.
     ctx.sb.auth.getUser({accessToken: t, ip: ctx.ip}).catch(() => null),
+    // Z4: Geraete mit der App (nur die Zahl; Tokens verlassen die Datenbank nicht).
+    ctx.sb.user.select(t, 'push_devices', {user_id: `eq.${user.id}`, select: 'platform'}).catch(() => null),
   ]);
   const newsletter = await ctx.store.newsletterStatus(user.id).catch(() => null);
   return json(ctx.request, ctx.cfg, 200, {
@@ -50,6 +52,9 @@ export async function me(ctx) {
     // Newsletter: Stand der eigenen Einwilligung (none | requested | pending | confirmed | withdrawn | expired | failed).
     newsletter: {available: newsletterAvailable(ctx), status: newsletter?.status || 'none', since: newsletter?.confirmedAt || newsletter?.requestedAt || null},
     legal: {version: LEGAL_VERSION, status: LEGAL_STATUS},
+    // Z4: App-Push. available = FCM-Zugang im Worker hinterlegt; devices = angemeldete Geraete mit der App.
+    // E-Mail-Benachrichtigungen gibt es nicht (eigene Owner-Freigabe).
+    push: {available: Boolean(ctx.fcm?.configured), devices: Array.isArray(devices) ? devices.length : 0, maxPerDay: 1, channel: 'app'},
     billingAvailable: !billingBlocker(ctx.cfg),
     checkoutAllowed: !billingBlocker(ctx.cfg) && await checkoutAllowed(ctx, user),
   }, {cookies: ctx.outCookies});
