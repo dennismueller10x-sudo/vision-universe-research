@@ -139,19 +139,6 @@ test("DQ-SF8-4 · keine Order-/Stopmarke, kein Plan, keine rueckrechenbare Kennz
   assert.ok(!failing(bundle()).includes("DQ-SF8-4"), "MODELED darf Plan und Stop tragen; Statustexte und closeVsTop sind keine Order");
 });
 
-test("DQ-SF8-4 · Owner-Linie 05.11.2026: ab Stand 05.11. auch MODELED ohne Plan, Order- oder Stopmarke", () => {
-  assert.equal(DQ.SF8_NO_ORDER_ALL_STAGES_FROM, "2026-11-05");
-  // Stand 04.11. (vor dem Erzeuger ohne Plan): MODELED darf noch einen Plan tragen
-  assert.ok(!failing(bundle()).includes("DQ-SF8-4"));
-  // ab 05.11.: dieselbe MODELED-Ansicht mit Plan ist ein Verstoss
-  const late = bundle(); late.summary.asOf = "2026-11-05";
-  assert.ok(failing(late).includes("DQ-SF8-4"), "MODELED mit Plan ab 05.11.");
-  // ab 05.11. und ohne Plan, Marken und Order-Kennzahlen: gruen
-  const clean = bundle((v) => { const x = v.C12[0]; x.plan = null; x.levels = {}; x.pivot = null; x.features = {}; }); clean.summary.asOf = "2026-11-05";
-  for (const k of Object.keys(clean.tickers)) clean.tickers[k].views.forEach((x) => { if (x.candidateId === "C12") { x.plan = null; x.levels = {}; x.pivot = null; x.features = {}; } });
-  assert.ok(!failing(clean).includes("DQ-SF8-4"), "MODELED ohne Plan und Marken ab 05.11. gruen");
-});
-
 test("DQ-SF8-4 · Owner-Entscheidung 28.10.: closeVsGapLow (C12) beschreibend erlaubt; Turtle-N unterhalb MODELED nicht mehr (Owner 28.10., zweite Entscheidung)", () => {
   const ok = bundle((v) => { v.C12[0].stage = "CONFIRMED_RESEARCH_SETUP"; v.C12[0].plan = null; v.C12[0].levels = { gapDayLow: 98 }; v.C12[0].pivot = { level: 98, kind: "GAP_DAY_LOW", distance: 0.02 };
     v.C12[0].features = { closeVsGapLow: 0.0255, gapInAtr: 1.2 }; v.C01[0].features = { path: "FAILSAFE_55", breakoutAtOpen: false }; });

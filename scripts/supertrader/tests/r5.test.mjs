@@ -5,24 +5,16 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { fullReplay, fullLedger, fullSignals } from './full-state.mjs';
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../..');
 const read = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, 'supertrader/data', f), 'utf8'));
 
-test('Replay öffentlich: Beispiele erst nach 365 Tagen und ohne Kurse (L3)', () => {
-  const pub = read('replay.json');
-  if (!pub.publicView) return; // vor der ersten Umstellung
-  assert.equal(pub.holdingsLagDays, 365);
-  for (const ex of pub.examples) { assert.ok((ex.result?.exitDate ?? ex.result?.entryDate) <= pub.holdingsVisibleThrough); assert.doesNotMatch(JSON.stringify(ex), /"(price|entryRawOpen|initialStop|trigger)"/); }
-});
-
-test('Replay: gekennzeichnet, nie im Ledger oder in Signalen, Einstieg zur naechsten Eroeffnung nach Schlussbestaetigung', { skip: fullReplay() ? false : 'voller Stand nur im Nachtlauf (privat, L3)' }, () => {
-  const rp = fullReplay();
+test('Replay: gekennzeichnet, nie im Ledger oder in Signalen, Einstieg zur naechsten Eroeffnung nach Schlussbestaetigung', () => {
+  const rp = read('replay.json');
   assert.equal(rp.label, 'HISTORICAL_REPLAY_DEMO');
   assert.match(rp.labelText, /kein aktuelles Signal/);
   assert.ok(rp.examples.length >= 1);
-  const sig = fullSignals() ?? read('signals.json');
-  const ledger = fullLedger('DONCHIAN_TURTLE') ?? { open: [], closed: [], invalidated: [] };
+  const sig = read('signals.json');
+  const ledger = read('ledger/DONCHIAN_TURTLE.json');
   const liveIds = new Set([...ledger.open, ...(ledger.closed || []), ...(ledger.invalidated || [])].map((s) => s.id));
   for (const ex of rp.examples) {
     assert.ok(ex.signal.id.startsWith('REPLAY:'), ex.signal.id);

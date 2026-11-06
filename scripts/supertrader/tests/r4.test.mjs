@@ -10,7 +10,6 @@ import { DEFAULT_EXECUTION } from '../engine/execution.mjs';
 import donchian from '../engine/strategies/donchian.mjs';
 import * as cs from '../engine/partial/canslim.mjs';
 import * as pio from '../engine/partial/piotroski.mjs';
-import { fullSignals } from './full-state.mjs';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../..');
 const read = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, 'supertrader/data', f), 'utf8'));
@@ -116,7 +115,7 @@ test('Piotroski: Teil-Score 0-8, Liquiditaet nie pruefbar, Split gilt als nicht 
 });
 
 test('Artefakte: Modus je Methode und keine Teilpruefung als Signal', () => {
-  const reg = read('registry.json'), full = fullSignals(), sig = full ?? read('signals.json');
+  const reg = read('registry.json'), sig = read('signals.json');
   const mode = Object.fromEntries(reg.strategies.map((s) => [s.strategy_id, s.mode]));
   assert.equal(mode.DONCHIAN_TURTLE, 'LIVE');
   assert.equal(mode.CANSLIM, 'PARTIAL_CHECK');
@@ -137,8 +136,7 @@ test('Artefakte: Modus je Methode und keine Teilpruefung als Signal', () => {
   const liveV = sig.strategies.DONCHIAN_TURTLE.version;
   // Runde 12: 2.0.1 fuehrt signalgleiche 2.0.0-Setups unter ihrer Version weiter (signalCompatible).
   const compat = [liveV, '2.0.0'];
-  // L3: Positionen und Plan nur im vollen (privaten) Stand
-  if (full) assert.ok(sig.strategies.DONCHIAN_TURTLE.open.every((s) => (compat.some((v) => s.id.endsWith(`:v${v}`)) || (s.entry && ['1.0.0', donchian.version].includes(s.version))) && s.plan && s.plan.trigger.kind === 'PLANNED_THRESHOLD'));
+  assert.ok(sig.strategies.DONCHIAN_TURTLE.open.every((s) => (compat.some((v) => s.id.endsWith(`:v${v}`)) || (s.entry && ['1.0.0', donchian.version].includes(s.version))) && s.plan && s.plan.trigger.kind === 'PLANNED_THRESHOLD'));
 });
 
 test('Artefakte: Pilot-Backtest ist explorativ und traegt Universum, Zeitraum, Kosten, Verzerrungen', () => {
