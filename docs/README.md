@@ -22,3 +22,5 @@ Unveränderliche Quell-Snapshots behalten ihre Originalpfade im Text. Der Prüfe
 **Recht:** [EINORDNUNG.md](legal/EINORDNUNG.md). Verbindliche Einordnung mit bestehenden Links auf Wortwahl, Befunde und Anwaltsmappe. Die geschützten Rechtstexte bleiben unverändert.
 
 **Studio:** [README.md](studio/README.md). Reel-Produktion, Playbook, Stimme und Produktionsablauf.
+
+**Infrastruktur:** [VISION_UNIVERSE_ARCHITECTURE.md](VISION_UNIVERSE_ARCHITECTURE.md). Architektur und Querschnittsthemen; das gesetzte Runbook ist dort als Betriebsreferenz verlinkt.

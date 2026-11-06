@@ -6,7 +6,7 @@ Bereinigungssemantik.**
 > **Phase 3** (September 2026) hat den offenen Auditbefund MEDIUM-7 behoben
 > und ein Verfahren gebaut, das Datenanbieter auf ihre Eignung fuer
 > historische Auswertungen prueft. Bericht:
-> `docs/VU_PHASE3_IMPLEMENTATION_REPORT.md`, Ergebnis:
+> `docs/archiv/2026/VU_PHASE3_IMPLEMENTATION_REPORT.md`, Ergebnis:
 > `docs/VU_PROVIDER_DECISION_MATRIX.md`.
 > **232 Tests gruen** (177 aus Phase 2, 55 neu).
 >
@@ -15,8 +15,8 @@ Bereinigungssemantik.**
 > und das ist die ehrliche Bilanz, nicht ein Zwischenstand.
 >
 > **Phase 2** hatte zuvor die Providerschicht fuer echte Marktdaten gebaut.
-> Bericht: `docs/VU_PHASE2_IMPLEMENTATION_REPORT.md`, Befunde:
-> `docs/VU_PHASE2_PRODUCTION_AUDIT.md`.
+> Bericht: `docs/archiv/2026/VU_PHASE2_IMPLEMENTATION_REPORT.md`, Befunde:
+> `docs/archiv/2026/VU_PHASE2_PRODUCTION_AUDIT.md`.
 > Das System laeuft weiterhin vollstaendig ohne Anbieterzugang.
 
 ## Discover (Zweig `claude/vision-universe-discover-h93fmv`, nicht in `main`)
@@ -201,7 +201,7 @@ Fundamentalhistorie.
 ## Completed
 
 Alle zehn Phasen sind umgesetzt. Der vollstaendige Bericht steht in
-`docs/VU_IMPLEMENTATION_REPORT.md`.
+`docs/archiv/2026/VU_IMPLEMENTATION_REPORT.md`.
 
 | Phase | Inhalt | Status |
 |---|---|---|
@@ -369,4 +369,4 @@ Nach Nutzen sortiert, nicht nach Aufwand:
 **Weiterhin offen aus Phase 2:** die drei Veroeffentlichungsfragen der
 Lizenzcheckliste, LOW-2 und LOW-3 (Barrierefreiheit der Tabellen).
 
-Details in `docs/VU_PHASE3_IMPLEMENTATION_REPORT.md`.
+Details in `docs/archiv/2026/VU_PHASE3_IMPLEMENTATION_REPORT.md`.

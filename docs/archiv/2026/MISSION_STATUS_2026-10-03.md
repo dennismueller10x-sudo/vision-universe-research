@@ -50,7 +50,7 @@ Jedes Thema ist ein eigener PR. Gestapelte PRs nennen ihre Basis. Kein PR ist ge
 
 ## Core-Adoption nach Merge aller PRs (projiziert)
 
-Gemessen ist der Stand in [CORE_ADOPTION.md](architecture/CORE_ADOPTION.md). Die Spalte „nach PRs“ zeigt, was die offenen PRs ändern; Grundlage sind die Code-Änderungen in diesen PRs, nicht eine Absicht.
+Gemessen ist der Stand in [CORE_ADOPTION.md](../../architecture/CORE_ADOPTION.md). Die Spalte „nach PRs“ zeigt, was die offenen PRs ändern; Grundlage sind die Code-Änderungen in diesen PRs, nicht eine Absicht.
 
 | Bereich | Identity | Prices | Fundamentals | Corporate Actions | Health/DQ | Core Client |
 |---|---|---|---|---|---|---|
