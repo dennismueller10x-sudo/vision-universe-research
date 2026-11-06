@@ -4,11 +4,13 @@
    Ziel, Erfahrung, erste Aktien. Gespeichert wird lokal auf dem Gerät.
 
    Schnittstelle (Gerät; Konto über toAccount → PATCH /v1/me settings.goal / experienceLevel / onboardedAt):
-     localStorage "vu-start-v1" = {"v":1,"goal":GOAL|null,"mode":MODE|null,"tickers":[…],"at":ISO,"done":bool}
+     localStorage "vu-start-v1" = {"v":1,"goal":GOAL|null,"mode":MODE|null,"tickers":[…],"at":ISO,"done":bool,"acct":USER_ID|null}
+       acct: Konto, in das die Gerätewahl schon übernommen wurde (adopt, einmal je Konto).
        GOAL: "vorsorge" | "aktie" | "ideen" | "signale"
        MODE: "beginner" (Einsteiger) | "advanced" (Fortgeschritten) | "pro" (Profi)
      localStorage "vu-start-path" (Startseite, nur Vorauswahl): "anfaenger" | "verstehen" | "profi"
-   Liest zuerst das Konto (me.settings.goal / me.settings.mode, sobald es sie gibt), sonst das Gerät.
+   Ohne Anmeldung bleibt die Wahl auf dem Gerät; nach der Anmeldung übernimmt adopt() sie einmal ins Konto,
+   solange das Konto den ersten Start noch nicht kennt (settings.onboardedAt leer). Danach gilt das Konto.
    UMD: Browser globalThis.VUStart, Node module.exports (Tests).
    ========================================================================= */
 (function (root, factory) {
@@ -47,7 +49,8 @@
     var o = x && typeof x === 'object' ? x : {};
     return { v: 1, goal: GOALS[o.goal] ? o.goal : null, mode: MODES[o.mode] ? o.mode : null,
       tickers: Array.isArray(o.tickers) ? o.tickers.filter(function (t) { return typeof t === 'string' && /^[A-Z0-9.\-]{1,12}$/.test(t); }).slice(0, 20) : [],
-      at: typeof o.at === 'string' ? o.at : null, done: o.done === true };
+      at: typeof o.at === 'string' ? o.at : null, done: o.done === true,
+      acct: typeof o.acct === 'string' && /^[A-Za-z0-9-]{1,64}$/.test(o.acct) ? o.acct : null };
   }
   function read(ls) {
     var s = store(ls), raw = null, path = null;
@@ -74,13 +77,33 @@
     if (finished) out.onboardedAt = true;
     return out;
   }
-  /** Konto zuerst (settings.goal / settings.experienceLevel), sonst Gerät. */
+  /** Konto zuerst (settings.goal / settings.experienceLevel), sonst Gerät. Die Erfahrung des Kontos zählt erst,
+      wenn der erste Start im Konto erledigt ist (sonst steht dort nur der Vorgabewert). */
   function effective(me, ls) {
     var local = read(ls), st = (me && me.settings) || {};
     var goal = GOAL_FROM_ACCOUNT[st.goal] || null, mode = MODES[st.experienceLevel] ? st.experienceLevel : null;
+    if (!st.onboardedAt && local.mode) mode = null;
     return { goal: goal || local.goal, mode: mode || local.mode, done: local.done || !!st.onboardedAt, tickers: local.tickers, preset: !!local.preset };
+  }
+  /** Patch für die einmalige Übernahme nach der Anmeldung, sonst null: nur wenn das Konto den ersten Start
+      noch nicht kennt, auf dem Gerät etwas gewählt ist und dieses Gerät das Konto noch nicht übernommen hat. */
+  function adoptPatch(me, ls) {
+    var local = read(ls), st = me && me.settings, id = me && me.user && me.user.id;
+    if (!st || !id || st.onboardedAt || local.acct === id || local.preset) return null;
+    var patch = toAccount(local, local.done);
+    return Object.keys(patch).length ? patch : null;
+  }
+  /** Gerätewahl einmal ins Konto (PATCH /v1/me). A = VUAccount. Liefert das neue me oder das alte. */
+  function adopt(A, me, ls) {
+    var patch = adoptPatch(me, ls), id = me && me.user && me.user.id;
+    if (!patch || !A || !A.patch) return Promise.resolve(me);
+    return A.patch('/v1/me', { settings: patch }).then(function (r) {
+      if (!r || !r.ok) return me;
+      write({ acct: id }, ls);
+      return r.data || me;
+    }, function () { return me; });
   }
   function goalCard(goal) { return GOALS[goal] || NO_GOAL; }
   return Object.freeze({ KEY: KEY, PATH_KEY: PATH_KEY, GOALS: GOALS, GOAL_ORDER: GOAL_ORDER, MODES: MODES, MODE_ORDER: MODE_ORDER, FROM_PATH: FROM_PATH,
-    POPULAR: POPULAR, NO_GOAL: NO_GOAL, read: read, write: write, effective: effective, toAccount: toAccount, goalCard: goalCard });
+    POPULAR: POPULAR, NO_GOAL: NO_GOAL, read: read, write: write, effective: effective, toAccount: toAccount, adoptPatch: adoptPatch, adopt: adopt, goalCard: goalCard });
 });

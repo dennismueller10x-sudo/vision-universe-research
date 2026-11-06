@@ -12,10 +12,10 @@ function mem(init = {}) { const m = {...init}; return {getItem: k => (k in m ? m
 
 test('vu-start-v1: lesen, schreiben, nur bekannte Werte', () => {
   const ls = mem();
-  assert.deepEqual(S.read(ls), {v: 1, goal: null, mode: null, tickers: [], at: null, done: false});
+  assert.deepEqual(S.read(ls), {v: 1, goal: null, mode: null, tickers: [], at: null, done: false, acct: null});
   const w = S.write({goal: 'aktie', mode: 'pro', tickers: ['NVDA', 'nvda', '<x>'], done: true}, ls);
   assert.equal(w.goal, 'aktie'); assert.equal(w.mode, 'pro'); assert.deepEqual(w.tickers, ['NVDA']); assert.equal(w.done, true);
-  assert.deepEqual(Object.keys(JSON.parse(ls.m['vu-start-v1'])).sort(), ['at', 'done', 'goal', 'mode', 'tickers', 'v']);
+  assert.deepEqual(Object.keys(JSON.parse(ls.m['vu-start-v1'])).sort(), ['acct', 'at', 'done', 'goal', 'mode', 'tickers', 'v']);
   S.write({goal: 'unbekannt', mode: 'x'}, ls);
   assert.equal(S.read(ls).goal, null); assert.equal(S.read(ls).mode, null);
 });
@@ -58,4 +58,34 @@ test("Z1 · Konto: Ziel und Erfahrung gehen als settings.goal/experienceLevel/on
   assert.equal(eff.goal, "signale");
   assert.equal(eff.mode, "advanced");
   assert.equal(eff.done, true);
+});
+
+test('Z1 · nach der Anmeldung übernimmt adopt() die Gerätewahl einmal ins Konto', async () => {
+  const ls = mem();
+  S.write({goal: 'signale', mode: 'advanced', done: true}, ls);
+  const me = {user: {id: 'u-1'}, settings: {experienceLevel: 'beginner', goal: null, onboardedAt: null}};
+  assert.equal(S.effective(me, ls).mode, 'advanced', 'Vorgabewert des Kontos verdrängt die Gerätewahl nicht');
+  assert.deepEqual(S.adoptPatch(me, ls), {goal: 'strategien', experienceLevel: 'advanced', onboardedAt: true});
+  const calls = [];
+  const after = {user: {id: 'u-1'}, settings: {experienceLevel: 'advanced', goal: 'strategien', onboardedAt: '2026-11-06T22:00:00Z'}};
+  const A = {patch: (p, b) => { calls.push([p, b]); return Promise.resolve({ok: true, data: after}); }};
+  assert.equal(await S.adopt(A, me, ls), after);
+  assert.deepEqual(calls, [['/v1/me', {settings: {goal: 'strategien', experienceLevel: 'advanced', onboardedAt: true}}]]);
+  assert.equal(S.read(ls).acct, 'u-1');
+  await S.adopt(A, me, ls);
+  assert.equal(calls.length, 1, 'kein zweites Mal für dasselbe Konto');
+  assert.equal(S.adoptPatch(after, mem({'vu-start-v1': JSON.stringify({goal: 'aktie'})})), null, 'Konto kennt den ersten Start: Konto gilt');
+  assert.equal(S.adoptPatch(me, mem({'vu-start-path': 'profi'})), null, 'nur Vorauswahl der Startseite: nichts übernehmen');
+  assert.equal(S.adoptPatch(me, mem()), null, 'nichts gewählt: nichts übernehmen');
+  const failed = mem(); S.write({mode: 'pro'}, failed);
+  assert.equal(await S.adopt({patch: () => Promise.resolve({ok: false})}, me, failed), me);
+  assert.equal(S.read(failed).acct, null, 'gescheitert: beim nächsten Besuch wieder versuchen');
+});
+
+test('Z1 · Mein Bereich und Konto rufen adopt() nach GET /v1/me; Konto speichert die Erfahrung im Konto', () => {
+  assert.match(read('willkommen/app.js'), /VUStart\.adopt\(A, m\.data\)/);
+  const k = read('konto/konto.js');
+  assert.match(k, /VUStart\.adopt\(A, d\)/);
+  assert.match(k, /settings: \{experienceLevel: m\}/);
+  assert.doesNotMatch(k, /auf diesem Gerät\)/);
 });

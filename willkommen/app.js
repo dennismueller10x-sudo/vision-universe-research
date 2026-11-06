@@ -467,7 +467,13 @@
     if (A && A.available && A.available() && title) A.get('/v1/session').then(function (r) {
       if (!(r.ok && r.data && r.data.authenticated)) return null;
       renderWatch(A);
-      return A.get('/v1/me').then(function (m) { var n = m.ok && m.data && m.data.profile && m.data.profile.displayName; if (n) title.textContent = greeting(now.getHours()) + ', ' + n; if (m.ok) paintGoal(m.data); });
+      return A.get('/v1/me').then(function (m) {
+        if (!m.ok) return null;
+        // Z1: Wahl aus dem ersten Start ohne Anmeldung einmal ins Konto übernehmen (willkommen/start/prefs.js#adopt).
+        return (global.VUStart ? global.VUStart.adopt(A, m.data) : Promise.resolve(m.data)).then(function (me) {
+          var n = me && me.profile && me.profile.displayName; if (n) title.textContent = greeting(now.getHours()) + ', ' + n; paintGoal(me);
+        });
+      });
     }).catch(function () {});
     // Produkt-Leiste „Mein Bereich“ (Platz 0).
     if (global.VUNavigation) global.VUNavigation.dock({});
