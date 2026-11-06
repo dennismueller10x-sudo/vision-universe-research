@@ -112,13 +112,38 @@
   }
 
   /* ------------------------------------------------------------- Logo, C04, C05 */
-  var LOGO_PILOT = { NVDA: 1 };
+  /* Firmenlogo (Owner 06.11.2026, alle Aktien): Kachel trägt das Kürzel; sobald die Logo-Liste
+     (/discover/logos/index.json, derselbe Cache wie discover/ui/logos.js) geladen ist, ersetzt das Logo
+     das Kürzel. Ohne Logo bleibt das Kürzel auf der schwarzen Kachel. Kein Bild ohne Eintrag, also keine 404. */
+  var LOGO_BASE = "/discover/logos/", logoFiles = null, logoDark = {}, logoStarted = false;
+  function logoFill(tile) {
+    var t = tile.getAttribute("data-t"), f = logoFiles && logoFiles[t];
+    tile.removeAttribute("data-t");
+    if (!f) return;
+    var img = document.createElement("img");
+    /* Das Bild hängt sofort (unsichtbar) in der Kachel – ein lazy Bild außerhalb des Dokuments lädt der Browser nie. */
+    img.alt = ""; img.loading = "lazy"; img.decoding = "async"; img.className = "vu-logo-wait";
+    img.addEventListener("load", function () { Array.prototype.slice.call(tile.childNodes).forEach(function (c) { if (c !== img) tile.removeChild(c); }); img.className = ""; if (logoDark[t]) tile.classList.add("vu-logo-tile--dark"); });
+    img.addEventListener("error", function () { if (img.parentNode) img.parentNode.removeChild(img); });
+    img.src = LOGO_BASE + f;
+    tile.appendChild(img);
+  }
+  function logoScan(root) { if (logoFiles) Array.prototype.forEach.call((root || document).querySelectorAll(".vu-logo-tile[data-t]"), logoFill); }
+  function logoStart() {
+    if (logoStarted || typeof document === "undefined" || typeof fetch !== "function") return;
+    logoStarted = true;
+    fetch(LOGO_BASE + "index.json", { cache: "default" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }).then(function (d) {
+      logoFiles = (d && d.files) || {};
+      ((d && d.dark) || []).forEach(function (s) { logoDark[s] = true; });
+      logoScan(document);
+      if (typeof MutationObserver === "function") new MutationObserver(function (ms) { ms.forEach(function (m) { Array.prototype.forEach.call(m.addedNodes, function (n) { if (n.nodeType !== 1) return; if (n.matches && n.matches(".vu-logo-tile[data-t]")) logoFill(n); else if (n.querySelectorAll) logoScan(n); }); }); }).observe(document.documentElement, { childList: true, subtree: true });
+    });
+  }
   function logo(ticker, o) {
-    var opt = o || {}, t = String(ticker || "").slice(0, 5);
-    /* Pilot 06.11.2026 (nur NVDA): Firmenlogo aus discover/logos statt Kürzel. */
-    if (!opt.src && LOGO_PILOT[t]) opt = Object.assign({}, opt, { src: "/discover/logos/files/" + t + ".png" });
+    var opt = o || {}, full = String(ticker || ""), t = full.slice(0, 5);
     var inner = opt.src ? '<img src="' + esc(opt.src) + '" alt="" loading="lazy" decoding="async">' : esc(t);
-    return '<span class="vu-logo-tile' + (opt.xl ? " vu-logo-tile--xl" : "") + '" aria-hidden="true">' + inner + "</span>";
+    if (!opt.src && opt.logo !== false && /^[A-Z][A-Z0-9.\-]{0,9}$/.test(full)) logoStart();
+    return '<span class="vu-logo-tile' + (opt.xl ? " vu-logo-tile--xl" : "") + '"' + (!opt.src && opt.logo !== false && full ? ' data-t="' + esc(full) + '"' : "") + ' aria-hidden="true">' + inner + "</span>";
   }
   /* N5: jede Perspektive gehört zu genau einer Welt. */
   var PERSPECTIVES = [
@@ -258,6 +283,7 @@
   /** Sheets öffnen/schließen (Escape, Tippen auf den Hintergrund). */
   function openSheet(el) {
     if (!el) return;
+    if (root.VUGestures && root.document.documentElement.hasAttribute("data-vu-gestures")) return root.VUGestures.openSheet(el);
     el.hidden = false;
     var close = function (e) { if (!e || e.target === el || e.key === "Escape") closeSheet(el); };
     el.__vuClose = close;
@@ -267,6 +293,7 @@
   }
   function closeSheet(el) {
     if (!el) return;
+    if (root.VUGestures && root.document.documentElement.hasAttribute("data-vu-gestures")) root.VUGestures.closeSheet(el);
     el.hidden = true;
     if (el.__vuClose) { el.removeEventListener("click", el.__vuClose); el.ownerDocument.removeEventListener("keydown", el.__vuClose); el.__vuClose = null; }
   }

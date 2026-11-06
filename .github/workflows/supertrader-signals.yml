@@ -70,39 +70,16 @@ jobs:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           SUPERTRADER_INTRADAY_CACHE: ${{ runner.temp }}/supertrader-intraday.json
         run: node scripts/supertrader/intraday-prefetch.mjs
-      # L3 (Owner-Linie 05.11.2026): der volle Zustand der Ledger liegt privat in der History-Ablage, nie im Repository.
-      # Erst holen (einmalige Uebernahme aus den vollen Repository-Ledgern; fehlt er, obwohl dort schon die oeffentliche
-      # Sicht steht: Abbruch), nach Lauf und Tests sichern, erst dann committen (nur die oeffentliche Sicht).
-      - name: Privaten Zustand holen (fail closed)
-        env:
-          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
-          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
-          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
-          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
-          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
-        run: node scripts/supertrader/private-state.mjs pull --dir "$RUNNER_TEMP/st-ledger"
       - name: Strategie-Lauf (deterministisch, append-only Signalprotokoll)
         if: env.MODE == 'build'
         env:
           SUPERTRADER_INTRADAY_CACHE: ${{ runner.temp }}/supertrader-intraday.json
-          SUPERTRADER_LEDGER_DIR: ${{ runner.temp }}/st-ledger
         run: node scripts/supertrader/build.mjs
       - name: Entfallene Titel ausweisen (fail closed, keine Marktdaten)
         if: env.MODE == 'prune-dead-refs'
         run: node scripts/supertrader/prune-dead-refs.mjs
       - name: Integritaet vor dem Commit (Lifecycle, Gates, Historie)
-        env:
-          SUPERTRADER_LEDGER_DIR: ${{ runner.temp }}/st-ledger
         run: node --test "scripts/supertrader/tests/*.test.mjs"
-      - name: Privaten Zustand sichern (vor dem Commit)
-        if: env.MODE == 'build'
-        env:
-          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
-          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
-          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
-          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
-          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
-        run: node scripts/supertrader/private-state.mjs push --dir "$RUNNER_TEMP/st-ledger"
       - name: Commit
         run: |
           stand=$(node -e 'console.log(require("./supertrader/data/signals.json").asOf)')

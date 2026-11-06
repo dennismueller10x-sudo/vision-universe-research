@@ -69,11 +69,27 @@ ABGENOMMEN_0410 = {
 # Die uebrigen 30 der 167 waren am Bezug schon technisch zu kurz (kein Abgang aus
 # der Zahl). Die 85 neu zugelassenen Titel standen als REVIEW schon im
 # Produktuniversum: Nenner und Zaehler aendern sich durch sie nicht.
-ABGENOMMEN = {
+ABGENOMMEN_1010 = {
     "PRODUCT_TITLES": 6686,
     "R2_SERIES_AVAILABLE": 7802,
     "HISTORICAL_CHART_AVAILABLE": 6683,
     "TECHNICAL_HISTORY_ELIGIBLE": 5644,
+}
+# Neuabnahme 06.11.2026 (coverage-metrics.yml gegen das Produktuniversum nach der
+# Eignungs-Bereinigung, #1508/#1414). Gegen den Stand vom 10.10.2026 ist jede
+# Abweichung je Titel erklaert (coverage-delta.mjs, "GEHT AUF", Lauf 42201411281;
+# Entscheidung Steuerung 06.11. nach dokumentierter Empfehlung: Grenzfaelle ueber
+# den letzten Datentag der Messung, hier 06.10.2026):
+#   Titel   6686 -396 belegte ETFs (CONFIRMED_NON_EQUITY:ETF) +18 neu zugelassen = 6308
+#   Charts  6683 -396 (alle darstellbar)                         +18 darstellbar = 6305
+#   Technik 5644  -42 (technisch bereite ETFs) +53 gealtert ueber 300 Bars       = 5655
+#           (die 18 neuen waren am Stichtag nicht technisch bereit)
+ETF_RAUS_0611, NEU_0611, ETF_TECHNISCH_BEREIT_0611, GEALTERT_0611 = 396, 18, 42, 53
+ABGENOMMEN = {
+    "PRODUCT_TITLES": 6308,
+    "R2_SERIES_AVAILABLE": 7802,
+    "HISTORICAL_CHART_AVAILABLE": 6305,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5655,
 }
 # Stand der Mitgliedschaft nach dem Gattungsbeleg aus dem Boersenverzeichnis
 # (scripts/market/apply-exchange-directory.mjs, 09.10.2026): 167 Titel belegt
@@ -85,12 +101,23 @@ ABGENOMMEN = {
 #                                tooShortSymbols der abgenommenen Messung; +1 TBHC
 #                                altert mit 301 Bars ueber die Schwelle - Messung
 #                                10.10.2026, kein Teil der Korrektur)
-AKTUELLER_POLICY_STAND = {
+POLICY_STAND_1010 = {
     "PRODUCT_TITLES": 6686,
     "HISTORICAL_CHART_AVAILABLE": 6683,
     "TECHNICAL_HISTORY_ELIGIBLE": 5644,
 }
+AKTUELLER_POLICY_STAND = {
+    "PRODUCT_TITLES": 6308,
+    "HISTORICAL_CHART_AVAILABLE": 6305,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5655,
+}
 VERZEICHNIS_AUSGESCHLOSSEN = 167
+# Verzeichnisbelege im Abgleich heute (06.11.2026, jede Eignung rechnet den Abgleich
+# vollstaendig neu): 167 vom 10.10. - 2 wieder Stammaktie (GREEL, SWKHL) + 269 ETFs
+# der Bereinigung (eligibility-cleanup-2026-11-06) + 1 Optionsschein (BNCWW) = 435.
+VERZEICHNIS_WIEDER_STAMMAKTIE = {"GREEL", "SWKHL"}
+VERZEICHNIS_ETF_0611, VERZEICHNIS_WARRANT_0611 = 269, {"BNCWW"}
+VERZEICHNIS_AUSGESCHLOSSEN_0611 = 435
 ENTFERNTE_DEBT_TITEL = {
     "ADAMH", "BNH", "CICB", "CIMN", "CTGG", "CTHH", "DCOMG", "MFAN",
     "MFICL", "MHNC", "PRHIZ", "RWTN", "SAX", "SRJN", "SSSSL", "TMUSI",
@@ -205,7 +232,15 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
         raus = {c["ticker"] for c in abgleich["changes"]
                 if c.get("source") == "NASDAQ_TRADER_SYMBOL_DIRECTORY" and c["to"]["productEligibility"] == "EXCLUDED"
                 and c["from"]["productEligibility"] != "EXCLUDED"}
-        self.assertEqual(len(raus), VERZEICHNIS_AUSGESCHLOSSEN)
+        self.assertEqual(len(raus), VERZEICHNIS_AUSGESCHLOSSEN_0611)
+        self.assertEqual(VERZEICHNIS_AUSGESCHLOSSEN - len(VERZEICHNIS_WIEDER_STAMMAKTIE) + VERZEICHNIS_ETF_0611
+                         + len(VERZEICHNIS_WARRANT_0611), VERZEICHNIS_AUSGESCHLOSSEN_0611)
+        self.assertFalse(VERZEICHNIS_WIEDER_STAMMAKTIE & raus)
+        self.assertTrue(VERZEICHNIS_WARRANT_0611 <= raus)
+        bereinigung = lade(ROOT / "docs/data/security-master/eligibility-cleanup-2026-11-06.json")
+        etf = {x["ticker"] for x in bereinigung["leave"]}
+        self.assertEqual(len(etf), VERZEICHNIS_ETF_0611)
+        self.assertTrue(etf <= raus, "ETF der Bereinigung ohne Verzeichnisbeleg im Abgleich")
         for c in abgleich["changes"]:
             if c.get("source") == "NASDAQ_TRADER_SYMBOL_DIRECTORY":
                 self.assertTrue(c.get("securityName") and c.get("rule"), c["ticker"] + " ohne Beleg")
@@ -216,10 +251,22 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
         self.assertNotIn("TBHC", m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"])
         technisch_bereit_raus, gealtert = 137, 1
         self.assertEqual(VERZEICHNIS_AUSGESCHLOSSEN - technisch_bereit_raus, 30)  # schon am Bezug zu kurz
-        self.assertEqual(ABGENOMMEN_0410["PRODUCT_TITLES"] - len(raus), AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
-        self.assertEqual(ABGENOMMEN_0410["HISTORICAL_CHART_AVAILABLE"] - len(raus), AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
+        # Uebergang 04.10. -> 10.10. (167 Verzeichnisbelege), unveraendert als Rechnung festgehalten
+        self.assertEqual(ABGENOMMEN_0410["PRODUCT_TITLES"] - VERZEICHNIS_AUSGESCHLOSSEN, POLICY_STAND_1010["PRODUCT_TITLES"])
+        self.assertEqual(ABGENOMMEN_0410["HISTORICAL_CHART_AVAILABLE"] - VERZEICHNIS_AUSGESCHLOSSEN, POLICY_STAND_1010["HISTORICAL_CHART_AVAILABLE"])
         self.assertEqual(ABGENOMMEN_0410["TECHNICAL_HISTORY_ELIGIBLE"] - technisch_bereit_raus + gealtert,
+                         POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"])
+        self.assertEqual(POLICY_STAND_1010, {k: ABGENOMMEN_1010[k] for k in POLICY_STAND_1010})
+        # Uebergang 10.10. -> 06.11. (Eignungs-Bereinigung, Deltabericht Lauf 42201411281)
+        self.assertEqual(POLICY_STAND_1010["PRODUCT_TITLES"] - ETF_RAUS_0611 + NEU_0611, AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
+        self.assertEqual(POLICY_STAND_1010["HISTORICAL_CHART_AVAILABLE"] - ETF_RAUS_0611 + NEU_0611,
+                         AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
+        self.assertEqual(POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"] - ETF_TECHNISCH_BEREIT_0611 + GEALTERT_0611,
                          AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
+        eignung = lade(ROOT / "quant/data/market/security-master/eligibility.json")
+        etf_raus = [d for d in eignung["decisions"] if d["product_eligibility"] == "EXCLUDED"
+                    and d.get("product_eligibility_reason") == "CONFIRMED_NON_EQUITY:ETF"]
+        self.assertGreaterEqual(len(etf_raus), ETF_RAUS_0611)
         self.assertEqual(AKTUELLER_POLICY_STAND, {k: ABGENOMMEN[k] for k in AKTUELLER_POLICY_STAND})
 
     def test_der_bericht_erklaert_selbst_dass_er_nur_befunde_fuehrt(self):

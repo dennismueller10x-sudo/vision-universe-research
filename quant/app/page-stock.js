@@ -645,6 +645,7 @@
     EXTENDED: "Kurs ist weit über die Zone gelaufen", BELOW_ZONE: "Kurs liegt unter der Zone", AWAITING_TRIGGER: "wartet auf Bestätigung" };
   function usd(n) { return typeof n === "number" && isFinite(n) ? n.toLocaleString("de-DE", { maximumFractionDigits: 2 }) + " $" : "–"; }
   function zone(z) { return z ? (z.zoneLow === z.zoneHigh ? usd(z.zoneLow) : usd(z.zoneLow).replace(" $", "") + "–" + usd(z.zoneHigh)) : null; }
+  function ratio(a, b) { function f(n) { return n.toLocaleString("de-DE", { maximumFractionDigits: 2 }); } return typeof a === "number" ? (typeof b === "number" && b !== a ? f(a) + "–" + f(b) : f(a)) : null; }
   /* Die vier Stufen eines Setups als Leiste (Owner-Mockup): erreicht, aktuell, offen. Spaete Stufen (Trend laeuft,
      Risiko steigt ...) liegen hinter "bestaetigt" - die Leiste steht dann ganz erreicht, der Status nennt die Stufe. */
   function setupStepper(st) {
@@ -664,6 +665,7 @@
     function cell(cls, label, value, note) {
       return el("div", { class: cls + (value ? "" : " is-missing") }, [el("span", { text: label }), el("b", { class: "num", text: value || "nicht berechnet" }), note ? el("small", { text: note }) : null]);
     }
+    var targets = sc && sc.targets ? sc.targets.slice(0, 2) : [];
     var on = st.state === "CONFIRMED", status = st.state === "UNAVAILABLE" ? "Kein Setup beobachtet" : st.label;
     /* Ein Abwaertsszenario hat seine Invalidierung UEBER dem Kurs. "Ungueltig
        unter" und "Interessant ab" waeren dort falsch - die Karte sagt dann,
@@ -675,10 +677,10 @@
           el("span", { class: "q-status " + (on ? "is-on" : st.state === "UNAVAILABLE" ? "" : "is-wait"), text: status })]),
         lifecycleNote || null,
         el("div", { class: "q-levels is-bear", role: "group", "aria-label": "Szenario-Marken" }, [
-          cell("is-entry", "Basisszenario", sc.direction === "BEARISH" ? "Abwärts" : "Ohne klare Richtung", "keine Zone ausgewiesen"),
-          cell("is-inv", "Ungültig-Marke laut Methode", typeof invPrice === "number" ? usd(invPrice) : null, typeof invPrice === "number" ? "Schluss darüber: Abwärtsszenario ungültig" : null),
-          ]),
-        el("p", { class: "q-scenario-note", text: "Das technische Basisszenario vom " + X.dateDe(ws.asOf) + " zeigt " + (sc.direction === "BEARISH" ? "abwärts" : "keine klare Richtung") + ". Quant weist dafür keine Zone aus – ein Setup ist hier eine Aufwärts-Situation. Keine Empfehlung." })]));
+          cell("is-entry", "Basisszenario", sc.direction === "BEARISH" ? "Abwärts" : "Ohne klare Richtung", "kein Einstieg ausgewiesen"),
+          cell("is-inv", "Ungültig über", typeof invPrice === "number" ? usd(invPrice) : null, typeof invPrice === "number" ? "Schluss darüber: Abwärtsszenario ungültig" : null),
+          cell("is-target is-down", "Zielzonen abwärts", targets.length ? targets.map(zone).join(" · ") : null, targets.length ? targets.map(function (t, i) { return "Ziel " + (i + 1); }).join(" · ") : null)]),
+        el("p", { class: "q-scenario-note", text: "Das technische Basisszenario vom " + X.dateDe(ws.asOf) + " zeigt " + (sc.direction === "BEARISH" ? "abwärts" : "keine klare Richtung") + ". Quant weist dafür keinen Einstieg aus – ein Setup ist hier eine Aufwärts-Situation. Keine Empfehlung." })]));
       return;
     }
     /* UI-Konzept 23.10.2026 - Ansicht 5: Stufenleiste (Kein Setup bis Setup bestaetigt), Status mit Zaehlung der
@@ -693,11 +695,19 @@
       el("div", { class: "qv2-status tone-" + (on ? "good" : st.state === "UNAVAILABLE" ? "unknown" : "neutral") }, [
         el("span", { class: "qv2-status-ico", "aria-hidden": "true" }, [ico(on ? "check" : st.state === "UNAVAILABLE" ? "flat" : "clock")]),
         el("span", {}, [el("b", { text: status }), el("small", { text: statusSub })])]),
-      /* Owner-Linie L1 (Plan §11): nur Zone und Ungültig-Marke laut Methode; kein Stop, keine Ziele, kein Chance/Risiko. */
-      el("div", { class: "q-levels qv2-levels", role: "group", "aria-label": "Marken der Methode" }, [
-        cell("is-entry", "Zone laut Methode", sc && sc.entry ? zone(sc.entry) : null, sc && sc.entry ? ENTRY_WORDS[sc.entryStatus] || "Zone laut Szenario" : null),
-        cell("is-inv", "Ungültig-Marke laut Methode", typeof invPrice === "number" ? usd(invPrice) : null, typeof invPrice === "number" ? "Schluss darunter: Szenario ungültig" : null)])];
+      el("div", { class: "q-levels qv2-levels", role: "group", "aria-label": "Szenario-Marken" }, [
+        cell("is-entry", "Einstiegsmarke der Methode", sc && sc.entry ? zone(sc.entry) : null, sc && sc.entry ? ENTRY_WORDS[sc.entryStatus] || "Zone laut Szenario" : null),
+      ].concat(sc && sc.stop && sc.stop.price === invPrice
+        /* Stop und Invalidation auf derselben Marke: eine Zeile statt zwei gleicher Zahlen. */
+        ? [cell("is-stop is-inv", "Stopp-Marke der Methode", usd(invPrice), "Schluss darunter: Szenario ungültig")]
+        : [cell("is-stop", "Stop / Risiko", sc && sc.stop ? usd(sc.stop.price) : null, sc && sc.stop ? "technischer Stop" : null),
+          cell("is-inv", "Stopp-Marke der Methode", typeof invPrice === "number" ? usd(invPrice) : null, typeof invPrice === "number" ? "Schluss darunter: Szenario ungültig" : null)]).concat(targets.length ? targets.map(function (t, i) { return cell("is-target", "Zielzone " + (i + 1) + " der Methode", zone(t), i ? null : "technisches Szenario, keine Empfehlung"); })
+        : [cell("is-target", "Zielzonen", null, null)]).concat(ts && ts.riskReward && typeof ts.riskReward.low === "number" ? [
+        el("div", { class: "is-rr q-rr" }, [el("span", { text: "Abstand Zielzone : Stopp-Marke (Methode)" }),
+          el("b", { class: "num", text: "bis Ziel 1: " + ratio(ts.riskReward.low, ts.riskReward.high) }),
+          typeof ts.riskReward.target2Low === "number" ? el("b", { class: "num", text: "bis Ziel 2: " + ratio(ts.riskReward.target2Low, ts.riskReward.target2High) }) : null])] : []))];
     var deep = [];
+    if (ts && ts.status === "COMPLETE_LOW_RR") deep.push(el("p", { class: "q-scenario-note", text: "Bis Ziel 1 liegt das Chance-Risiko-Verhältnis zum Teil unter der Mindestschwelle der Methodik." }));
     /* "Bestaetigt wenn": der Ausloeser des Szenarios (Satz der Szenario-
        Engine) und die offenen Bedingungen der naechsten Setup-Stufe. Dazu,
        was den Zustand verbessert und was ihn verschlechtert - beides aus
@@ -712,9 +722,9 @@
       trigger ? el("p", { text: trigger }) : null, nx && nx.text ? el("p", { class: "qx-small", text: nx.text }) : null]));
     if (lifecycleNote) deep.push(lifecycleNote);
     deep.push(el("p", { class: "qx-small", text: sc
-      ? "Szenario der technischen Auswertung vom " + X.dateDe(ws.asOf) + " (" + sc.label + ", " + sc.status + "). Die Marken zeigen, wo die Methode ihre Zone sieht und wo das Szenario ungültig wird – ein Regel-Ergebnis, keine Empfehlung, keine Order."
+      ? "Szenario der technischen Auswertung vom " + X.dateDe(ws.asOf) + " (" + sc.label + ", " + sc.status + "). Die Marken zeigen, wo das Szenario rechnerisch ansetzt, ungültig wird und auf Widerstand trifft – keine Empfehlung, keine Order."
       : technical && technical.state === "AVAILABLE" && technical.fullWorkspace && !ws ? "Die Szenario-Marken werden geladen …"
-      : "Zone und Ungültig-Marke laut Methode rechnet Quant nur für Titel mit vollständiger technischer Auswertung – für diesen Titel liegt sie nicht vor. " + (typeof invPrice === "number" ? "Die Invalidation stammt aus der Setup-Beobachtung." : "Quant setzt keine Ersatzwerte.") }));
+      : "Einstieg, Stop-Loss und Ziele rechnet Quant nur für Titel mit vollständiger technischer Auswertung – für diesen Titel liegt sie nicht vor. " + (typeof invPrice === "number" ? "Die Invalidation stammt aus der Setup-Beobachtung." : "Quant setzt keine Ersatzwerte.") }));
     /* "Chartbild öffnen" steht einmal - in der Kursstruktur (#technik) direkt darunter. */
     kids.push(el("details", { class: "vu-more q-setup-more" }, [el("summary", { text: conds.length ? "Alle " + conds.length + " Bedingungen und wie die Marken entstehen" : "Bedingungen und wie die Marken entstehen" }), el("div", { class: "vu-more-body q-setup-body" }, deep)]));
     host.replaceChildren(el("div", { class: "q-setup" }, kids));
@@ -1137,7 +1147,7 @@
     });
     var setupSec = card(X.section("Wie weit ist die Aktie im Setup?", null,
       [setupCard].concat(vm.setup.state !== "UNAVAILABLE" ? [X.more("Die Setup-Stufen im Detail", function () { return [setupEvidence].concat(setupSection(vm)); })] : [setupEvidence]), null, global.VUUI ? null : "Setup & Strategie", global.VUUI ? null : "setup"));
-    if (global.VUUI) grid.append(card(X.section("Passt die Aktie gerade zu einem Stil?", null, styleV3(vm).concat([keepBelow("Zone, Ungültig-Marke und alle Bedingungen", setupSec)]), null, "Setup & Strategie", "setup")));
+    if (global.VUUI) grid.append(card(X.section("Passt die Aktie gerade zu einem Stil?", null, styleV3(vm).concat([keepBelow("Einstieg, Stop, Ziele und alle Bedingungen", setupSec)]), null, "Setup & Strategie", "setup")));
     else grid.append(setupSec);
     var setupKids = [sub(X.section("Welche Strategie passt?", null, strategySection(vm, assignment), { href: X.routes.strategies(), label: "Alle Strategien" }, null, "strategie"))];
     /* Absagen stehen EINMAL, gesammelt unter "Daten & Methodik" - nicht als

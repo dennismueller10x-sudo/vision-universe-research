@@ -1,5 +1,10 @@
 // Central navigation for every page. Add new menu entries only here.
 (() => {
+  // No gesture payload in the normal browser (including Discover's budget).
+  if (typeof document !== 'undefined' && !document.querySelector('[data-vu-gestures-loader]') && (globalThis.Capacitor?.isNativePlatform?.() || /VUApp\/1/.test(navigator.userAgent) || new URLSearchParams(location.search).get('vuGestures') === '1')) {
+    const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = '/assets/vu-gestures.css'; document.head.append(css);
+    const js = document.createElement('script'); js.setAttribute('data-vu-gestures-loader', ''); js.src = '/assets/vu-gestures.js'; document.head.append(js);
+  }
   // Idempotent: im Gastbetrieb (/elliott/#/<T>) laedt das Quant-Buendel des Release die Shell ein zweites Mal mit.
   if (customElements.get && customElements.get('vu-navigation')) return;
   // Product links navigate directly; their separate disclosure opens existing routes.
