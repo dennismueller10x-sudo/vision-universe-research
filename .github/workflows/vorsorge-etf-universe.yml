@@ -131,7 +131,20 @@ jobs:
         run: |
           node --test "vorsorge/tests/*.test.mjs"
           node scripts/vorsorge/assert-vorsorge-data.mjs
-          node scripts/market/assert-public-data-hygiene.mjs
+          # Hygiene ueber alle oeffentlichen Daten. Nach einer Universumsaenderung startet security-master-eligibility.yml
+          # diesen Lauf und die Technical-Materialisierung gleichzeitig; bis die Materialisierung fertig ist, stehen dort
+          # noch ausgeschiedene Titel (06.11.2026: 30 ETFs). Diese Datei gehoert nicht Vorsorge und wird hier nicht
+          # committet - wie im Eignungs-Schritt darf nur dieser Rest bleiben, alles andere bleibt rot.
+          set +e
+          node scripts/market/assert-public-data-hygiene.mjs > "$RUNNER_TEMP/hygiene.txt" 2>&1
+          rc=$?
+          set -e
+          cat "$RUNNER_TEMP/hygiene.txt"
+          if [ "$rc" != 0 ]; then
+            rest="$(grep -E '^ *- ' "$RUNNER_TEMP/hygiene.txt" | grep -v 'quant/data/product/technical-signals-v1/' || true)"
+            if [ -n "$rest" ] || ! grep -qE '^ *- ' "$RUNNER_TEMP/hygiene.txt"; then echo "::error::Hygiene-Befunde ausserhalb der laufenden Materialisierung"; exit 1; fi
+            echo "::warning::Hygiene: nur Technical-Signale ausserhalb des Umfangs (Materialisierung zieht nach)"
+          fi
 
       - name: Kein Schluessel in Daten oder Berichten
         env:
