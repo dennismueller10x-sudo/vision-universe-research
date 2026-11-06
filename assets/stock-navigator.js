@@ -147,6 +147,7 @@
   /** Kurs als Text: 197,61 $ (Waehrungszeichen wie in Discover nachgestellt). */
   function money(v, cur) { var c = CUR[cur] || cur || ""; return num(v, Math.abs(v) >= 1000 ? 0 : 2) + (c ? "\u00a0" + c : ""); }
   /** Kursblock: Wert, Veraenderung, Art und Zeitbezug. Ohne Wert kein Block (keine erfundene Zahl). */
+  var TONE_PILOT = { NVDA: 1 };
   function priceHtml(p) {
     if (!p || typeof p.value !== "number" || !isFinite(p.value)) return "";
     var ch = typeof p.changePct === "number" && isFinite(p.changePct) ? p.changePct : null;
@@ -175,7 +176,8 @@
   function head(host, o) {
     if (!host || !o || !o.ctx) return { setPrice: function () {}, dispose: function () {}, el: null };
     var doc = host.ownerDocument, wrap = doc.createElement("header");
-    wrap.className = "vu-shead" + (o.compact ? " vu-shead--compact" : "");
+    /* Pilot 06.11.2026 (nur NVDA, Owner sieht es zuerst an): Tagesveränderung farbig, Plus VU-Grün, Minus Rot. */
+    wrap.className = "vu-shead" + (o.compact ? " vu-shead--compact" : "") + (TONE_PILOT[o.ctx.ticker] ? " vu-shead--tone" : "");
     var meta = [o.ctx.displaySymbol, o.exchange].filter(Boolean).map(esc).join(" · ");
     wrap.innerHTML = (o.back ? '<a class="vu-shead-back" href="' + esc(o.back.href) + '" aria-label="' + esc(o.back.label) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="vu-shead-backtext">' + esc(o.back.label) + "</span></a>" : "") +
       '<div class="vu-shead-id">' + logoHtml(o) + '<div class="vu-shead-names"><h1 class="vu-shead-name">' + esc(o.name || o.ctx.displaySymbol) + "</h1>" +

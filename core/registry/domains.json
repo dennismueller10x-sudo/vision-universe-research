@@ -214,6 +214,23 @@
       "consumers": ["Discover", "Supertrader", "Screener"]
     },
     {
+      "id": "modelDepots",
+      "label": "Quant-Musterdepots",
+      "layer": "PRODUCT",
+      "group": "Quant",
+      "critical": false,
+      "artifact": "/quant/data/product/model-depots-v1.json",
+      "timestamp": ["asOf"],
+      "records": "depots",
+      "role": "Fünf Quant-Profile als Rechenmodell vorwärts: Bestand mit Aufnahmedatum und -kurs, Protokoll rein/raus ab Live-Start. Kein echtes Geld, keine Empfehlung.",
+      "producer": "scripts/quant/portfolio/model-depots.cjs",
+      "activation": { "state": "ACTIVATING", "decision": "Neue Datenart 06.11.2026 (Strang C, Auftrag Owner/Steuerung): erster Lauf von quant-model-depots.yml nach dem Merge; nach dem ersten gruenen Lauf wird dieses Feld entfernt." },
+      "workflow": "quant-model-depots.yml",
+      "schedule": "samstags 07:23 UTC; Umschichtung im ersten Lauf eines Monats",
+      "freshness": { "kind": "hours", "warnAfter": 240, "staleAfter": 504 },
+      "consumers": ["Quant (/quant/musterdepots/)"]
+    },
+    {
       "id": "technical",
       "label": "Technical Analysis",
       "layer": "INTELLIGENCE",

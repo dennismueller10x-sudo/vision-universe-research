@@ -6,7 +6,7 @@ Alles hier ist **Forschung, nicht zertifiziert**. Öffentlich wird keine Rendite
 
 ## Was automatisch läuft
 
-**Nichts von Strang C läuft nach Zeitplan.** Beide Rechen-Workflows starten nur manuell oder über eine Marke in der Commit-Nachricht auf `claude/**`. Sie rechnen auf R2-Tagesbalken und dem privaten V13-Archiv, die nur im Runner liegen:
+**Nach Zeitplan läuft nur `quant-model-depots.yml`** (samstags 07:23 UTC). Er rechnet die öffentlichen Musterdepots vorwärts und committet genau `quant/data/product/model-depots-v1.json`. Die beiden Forschungs-Workflows starten nur manuell oder über eine Marke in der Commit-Nachricht auf `claude/**`. Sie rechnen auf R2-Tagesbalken und dem privaten V13-Archiv, die nur im Runner liegen:
 
 | Workflow | Auslöser | rechnet | schreibt |
 |---|---|---|---|
@@ -19,12 +19,13 @@ Die interne Vorschau `/konto/admin/backtests/` ist mit Sitzung und Rolle `backte
 
 | Ergebnis | Urteil | Dateien |
 |---|---|---|
+| **Quant-Musterdepots (öffentlich, ab 05.11.2026 vorwärts)** | Rechenmodell, kein echtes Geld: Bestand mit Aufnahmedatum und -kurs, Protokoll rein/raus, monatliche Umschichtung. Die Wertentwicklung wird erst nach Owner-Freigabe gezeigt. | `/quant/musterdepots/`, `quant/data/product/model-depots-v1.json`, [PORTFOLIO_STANDARD.md](../quant/PORTFOLIO_STANDARD.md) „Musterdepots“ |
 | Musterportfolios (5 Profile, 2012-01 bis 2026-10, Gesamtrendite inkl. delisteter Titel) | Keines schlägt SPY TR (14,9 % p. a.): Defensive Quality 13,4 %, Momentum Leader 12,9 %, Value Momentum 12,6 %, Quality Compounder 10,9 %, GARP 6,0 %. Mit DQ-K5 höchstens −0,1 Prozentpunkte. | [MODEL_PORTFOLIOS.md](../quant/research/portfolio-v1/MODEL_PORTFOLIOS.md), `docs/quant/research/portfolio-v1/model-portfolios.json` |
 | E3 Edge-Studie (96 Varianten, eingefrorenes Protokoll) | Vorab gewählt: Momentum Leader N20/13 W, im Prüfteil 2020–2026 9,3 % gegen SPY 15,4 %. 84 Varianten „schlägt nicht“, 12 Supertrader-Varianten blockiert. | [BERICHT.md](../research/edge/BERICHT.md), `docs/research/edge/runs/*.json` |
 | E4/S1 Signal-Studie (5 Titel) | eingeschränkt, siehe Bericht | [ERGEBNISSE.md](../research/signals/ERGEBNISSE.md) |
 | E4/S2 Signal-Studie (1.000 Titel, 2016–2026, exakter SPY) | Keine Familie besser als Halten, mit und ohne DQ-K5 | [S2_ERGEBNIS.md](../research/signals/S2_ERGEBNIS.md), [S2_REGISTRIERUNG.md](../research/signals/S2_REGISTRIERUNG.md) |
 
-**Bestände:** Ergebnis und Paket führen nur den Bestand der letzten Umschichtung, die mindestens 12 Monate vor dem Ende liegt (derzeit 05.09.2025, `holdingsSnapshot`). Eine heutige Kaufliste und ein Rein/Raus-Protokoll gibt es nicht (Owner-Linie Plan §11, #1462).
+**Bestände:** Das Backtest-Ergebnis und sein Paket führen nur den Bestand der letzten Umschichtung, die mindestens 12 Monate vor dem Ende liegt (`holdingsSnapshot`, #1462). Heutige Bestände zeigen nur die öffentlichen Musterdepots (Owner-Entscheidung 06.11., Plan §11).
 
 ## Versiegelte Dateien öffnen (nur Owner)
 
@@ -42,12 +43,16 @@ Prüfsumme: `sha256sum /tmp/s2-results.json` muss `privateSha256` in `results-s2
 
 ## Offen
 
+- `core/registry/domains.json`, Eintrag `modelDepots`: Feld `activation` nach dem ersten grünen Lauf von `quant-model-depots.yml` entfernen.
+
 - **`test_canonical_market.py`:** Neuabnahme der Deckungskennzahlen über `coverage-metrics.yml`, mit R2 und `coverage-delta` je Titel. Ändern sich die Kennzahlen, Stand 6.686/6.683/5.644 → neues Produktuniversum (6.577), dann die Konstanten in `ABGENOMMEN` mit Begründung nachziehen. Geht erst, wenn die übrigen roten Quant-Tests grün sind, denn der Workflow fährt die ganze Suite.
 - `backtest-runner.cjs#setupOosFromCertificationPath` an A4 angleichen (berührt CODE_FILES → Demo-Neubau, eigener PR). Setup-OOS-Gate frühestens um den 2028-01-08 messbar.
 - Bestätigung von S2 und E3 nur auf unberührten Jahren (2008–2015) oder neuen Vorwärtsdaten. Eine weitere Variantensuche ist bis dahin unzulässig. Value Momentum N20 steht nur als Hypothese für eine spätere Holdout-Studie.
 - Eine Liquiditätsgrenze für Supertrader-Varianten wäre eine neue, vorab registrierte Variante (nicht E3).
 
 ## Braucht Owner
+
+- **Wertentwicklung der Musterdepots öffentlich zeigen:** Das ist eine öffentliche Renditeaussage. Freigabe durch den Satz „Freigabe Musterdepot-Wertentwicklung“ als Owner-Entscheidung in Plan §11. Der nächste Lauf von `quant-model-depots.yml` veröffentlicht sie dann, die Seite zeigt sie ohne weitere Änderung.
 
 - **Geschäftskonto für die Vorschau:** registrieren (eigene E-Mail, nicht das Konto mit `pricing_admin`) und die Rolle `backtest_reviewer` per SQL vergeben. Anleitung: [BACKTEST_VORSCHAU_AKTIVIERUNG.md](../accounts/BACKTEST_VORSCHAU_AKTIVIERUNG.md), Abschnitt 2.
 - **Öffentliche Darstellung von Renditen:** eigene Freigabe (öffentliche Renditeaussage) mit Rechtsberatung. Nach Owner-Linie nur für eine Methode, die den S&P 500 in einem vorab registrierten Test schlägt. Das tut derzeit keine.

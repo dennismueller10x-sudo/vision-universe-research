@@ -89,10 +89,27 @@ Die Musterportfolios werden deshalb zusätzlich mit der DQ-K5-Quarantäne von Su
 
 Entscheidung (05.11.2026): Ein Urteil wie „schlägt den Index“ oder „schlägt ihn nicht“ gilt nur, wenn es ohne Filter, mit BOOK und mit PRIOR gleich ausfällt. Weicht eine Fassung ab, zählt die vorsichtigere.
 
-## Bestände: nur verzögert und historisch
+## Bestände im Backtest-Ergebnis: nur verzögert und historisch
 
 Owner-Linie (Plan §11): Musterportfolios zeigen den Forschungsverlauf. Sie zeigen keine heutige Kaufliste und kein Protokoll, was rein- oder rausgeht.
 
 Ergebnisdatei und Vorschau-Paket enthalten deshalb nur den Bestand der letzten Umschichtung, die mindestens 365 Tage vor dem Ende des Zeitraums liegt (`holdingsSnapshot`, `portfolio-backtest.cjs#delayedHoldings`). Die Ziele der letzten Umschichtung werden nicht mehr ausgegeben. Der Worker lehnt ein Paket mit aktuellen oder zu jungen Beständen ab.
 
 Entscheidung (05.11.2026): Die Verzögerung beträgt 12 Monate.
+
+## Musterdepots (öffentlich, vorwärts)
+
+Owner-Entscheidung 06.11.2026 (über die Steuerung; `docs/legal/EINORDNUNG.md` §0: L3 entfällt): Die fünf Profile laufen als öffentliche Musterdepots mit heutigem Bestand und Protokoll rein/raus. Die Verzögerung oben gilt weiter für das Backtest-Ergebnis, nicht für die Musterdepots.
+
+- **Erzeuger:** `scripts/quant/portfolio/model-depots.cjs`. Workflow `quant-model-depots.yml` (samstags), Export `quant/data/product/model-depots-v1.json`, Seite `/quant/musterdepots/`.
+- **Regel:**
+  - Dieselbe Entscheidung wie in der Forschung (`portfolio-backtest.cjs#decide`): Risikoparität, 15–30 Titel, 8 %/25 %, Liquidität.
+  - Grundgesamtheit: heutiges Produktuniversum, nur ELIGIBLE, ohne belegte Kürzel-Wiederverwendung.
+  - Kurse aus den veröffentlichten Wochenreihen, SEC-Zahlen in der heute bekannten Fassung.
+- **Takt:** Umschichtung im ersten Lauf eines Kalendermonats, sonst nur Bewertung. Live-Start ist der erste Lauf (Datenstand 05.11.2026). Entscheidung 06.11.2026: sofort starten statt bis Dezember warten, damit Bestand und Protokoll ab heute nachvollziehbar sind.
+- **Aufnahmekurs:** veröffentlichter Schluss zum Entscheidungslauf (`published-close.js#lastPoint`), Kosten 6 Basispunkte je Seite.
+- **Protokoll:** wird nur fortgeschrieben. Der Erzeuger bricht ab, wenn ein früherer Eintrag sich ändern würde.
+- **Nicht öffentlich:**
+  - Backtest-Renditen 2012–2026.
+  - Veränderung je Position.
+  - Die Wertentwicklung ab Live-Start: Sie ist eine öffentliche Renditeaussage und erscheint erst, wenn der Satz „Freigabe Musterdepot-Wertentwicklung“ als Owner-Entscheidung im Plan steht. Bis dahin speichert der Export keine Reihe.
