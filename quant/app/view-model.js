@@ -509,8 +509,8 @@
   var FIELD_WORD = {
     technicalTrend: "Trend", technicalSetupStatus: "Aufbau des Setups", technicalMomentum: "Kursdynamik",
     technicalVolatility: "Schwankung", technicalVolume: "Handelsvolumen", technicalTrigger: "Auslöser",
-    technicalConfluence: "Übereinstimmung der Signale", technicalOpportunity: "Lage zur Zone laut Methode",
-    technicalStructure: "Kursstruktur", technicalRiskReward: "Abstand der Marken laut Methode"
+    technicalConfluence: "Übereinstimmung der Signale", technicalOpportunity: "Chance-Risiko-Lage",
+    technicalStructure: "Kursstruktur", technicalRiskReward: "Chance-Risiko-Verhältnis"
   };
   var VALUE_WORD = {
     BULLISH: "aufwärts", BEARISH: "abwärts", NEUTRAL: "seitwärts", COMPLETE: "vollständig", PARTIAL: "teilweise",
