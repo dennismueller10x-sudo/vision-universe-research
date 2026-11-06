@@ -1,21 +1,21 @@
 {
  "schemaVersion": "vu-vorsorge-ucits-coverage-1.0.0",
- "asOf": "2026-11-03",
+ "asOf": "2026-11-05",
  "measuredOn": "TIINGO_ETF_INGEST",
  "catalogEtfRowsOnEuropeanExchanges": 0,
  "catalogExchanges": {
-  "SHE": 403,
-  "SHG": 420,
-  "NYSE": 2996,
-  "BATS": 1785,
-  "NASDAQ": 1620,
+  "SHE": 425,
+  "SHG": 424,
+  "NYSE": 2946,
+  "BATS": 1809,
+  "NASDAQ": 1632,
   "NYSE MKT": 24,
-  "NYSE ARCA": 1526,
-  "PINK": 586,
+  "NYSE ARCA": 1594,
+  "PINK": 585,
   "AMEX": 50,
+  "OTCMKTS": 88,
   "OTCQB": 8,
   "OTCGREY": 112,
-  "OTCMKTS": 78,
   "NMFQS": 14,
   "OTCBB": 9,
   "EXPM": 23,
@@ -23,7 +23,7 @@
   "OTCCE": 1
  },
  "listingsOnEuropeanExchanges": 0,
- "listingsNamedUcits": 427,
+ "listingsNamedUcits": 435,
  "listingsInEurGbpChf": 0,
  "isinAvailable": 0,
  "examples": [
@@ -40,9 +40,21 @@
    "currency": "USD"
   },
   {
+   "symbol": "AINVF",
+   "name": "iShares AI Innovation Active UCITS ETF USD",
+   "exchange": "OTCMKTS",
+   "currency": "USD"
+  },
+  {
    "symbol": "AISFF",
    "name": "Amundi USD Floating Rate Corporate Bond ESG UCITS ETF Acc",
    "exchange": "PINK",
+   "currency": "USD"
+  },
+  {
+   "symbol": "AMCBF",
+   "name": "Amundi Core USD Corporate Bond UCITS ETF Acc",
+   "exchange": "OTCMKTS",
    "currency": "USD"
   },
   {
@@ -134,27 +146,15 @@
    "name": "BlackRock iShares Core S&P 500 UCITS ETF USD (Acc)",
    "exchange": "PINK",
    "currency": "USD"
-  },
-  {
-   "symbol": "CYBXF",
-   "name": "Global X ETF ICAV Global X Cybersecurity UCITS ETF USD Acc",
-   "exchange": "PINK",
-   "currency": "USD"
-  },
-  {
-   "symbol": "DAXXF",
-   "name": "iSharesCore DAX UCITS ETF (DE) EUR (Acc)",
-   "exchange": "PINK",
-   "currency": "USD"
   }
  ],
- "conclusion": "Im US-Kursdatenbestand (Tiingo) erscheinen 427 Zeilen mit „UCITS“ im Namen nur als US-Freiverkehrszeilen (OTC, in USD) – das sind keine europäischen Börsenlistings und sie werden nicht als solche gezeigt. Europäische Anteilklassen mit ISIN und Handelsplätzen kommen aus dem amtlichen ESMA-Register (Bereich Europa).",
+ "conclusion": "Im US-Kursdatenbestand (Tiingo) erscheinen 435 Zeilen mit „UCITS“ im Namen nur als US-Freiverkehrszeilen (OTC, in USD) – das sind keine europäischen Börsenlistings und sie werden nicht als solche gezeigt. Europäische Anteilklassen mit ISIN und Handelsplätzen kommen aus dem amtlichen ESMA-Register (Bereich Europa).",
  "ucitsByExchange": {
-  "PINK": 343,
+  "PINK": 344,
+  "OTCMKTS": 68,
   "OTCQB": 3,
-  "OTCMKTS": 62,
   "OTCD": 2,
   "EXPM": 3,
-  "OTCGREY": 14
+  "OTCGREY": 15
  }
 }

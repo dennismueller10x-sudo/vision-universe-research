@@ -17,7 +17,7 @@ const P = require('./research-portfolio.cjs');
 const M = require('./backtest-metrics.cjs');
 const F = require('./portfolio-pit-factors.cjs');
 const C = require('./portfolio-construction.cjs');
-const VERSION = 'portfolio-backtest-1.0.0';
+const VERSION = 'portfolio-backtest-1.1.0'; // 1.1.0: verzögerter Bestand (holdingsSnapshot) statt letzter Ziele
 
 const DEFAULTS = Object.freeze({ rebalanceWeeks: 4, riskWindowWeeks: 104, candidatePool: 90, initialCapital: 1e6, foldYears: 3,
   // Endwert delisteter Titel je Klasse (Anteil des letzten Schlusses), vorregistrierte Annahme; Sensitivität im Bericht.
@@ -25,6 +25,16 @@ const DEFAULTS = Object.freeze({ rebalanceWeeks: 4, riskWindowWeeks: 104, candid
 
 const isNum = x => typeof x === 'number' && Number.isFinite(x);
 const sha = x => crypto.createHash('sha256').update(typeof x === 'string' ? x : P.canonical(x)).digest('hex');
+// Owner-Linie (Plan §11): Musterportfolios sind Forschungsverlauf, keine heutige Kaufliste. Ausgegeben wird nur der
+// Bestand der letzten Umschichtung, die mindestens HOLDINGS_DELAY_DAYS vor dem Ende des Zeitraums liegt.
+const HOLDINGS_DELAY_DAYS = 365;
+function delayedHoldings(targets, endDate, delayDays) {
+  const cutoff = new Date(Date.parse(endDate) - delayDays * 86400000).toISOString().slice(0, 10);
+  const t = targets.filter(x => x.executionDate <= cutoff).at(-1);
+  return { policy: 'DELAYED_HISTORICAL_ONLY', delayDays, cutoff, asOf: t ? t.executionDate : null,
+    positions: t ? Object.entries(t.weights).sort((a, b) => b[1] - a[1]).map(([id, w]) => ({ id, weight: w })) : [] };
+}
+
 function fail(code, detail) { const e = new Error(code + (detail ? ': ' + detail : '')); e.code = code; throw e; }
 const at = d => d + 'T23:59:59.999Z';
 
@@ -242,7 +252,7 @@ function runModelPortfolio(panel, config) {
     costs: { feeBps: std.feeBps, slippageBps: std.slippageBps, spreadModel: 'HALF_SPREAD_BY_LIQUIDITY_BUCKET', spreadTotal: [...spreadByDate.values()].reduce((s, x) => s + x, 0), feesAndSlippage: result.metrics.fees + result.metrics.slippage },
     ledger: { schemaVersion: result.schemaVersion, resultHash: result.resultHash, inputHash: result.inputHash, metricsResultHash: metrics.resultHash },
     equity: rows.map(r => [r.date, r.value, r.benchmark]),
-    lastHoldings: Object.entries(targets.at(-1).weights).sort((a, b) => b[1] - a[1]).map(([id, w]) => ({ id, weight: w })),
+    holdingsSnapshot: delayedHoldings(targets, cal[last], HOLDINGS_DELAY_DAYS),
     limitations: [...new Set([...result.limitations, 'PIT_RECONSTRUCTION_NOT_LIVE_FACTOR_EVIDENCE', 'CURRENT_SIC_CLASSIFICATION_NOT_HISTORICAL', 'NO_HISTORICAL_INDEX_MEMBERSHIP_UNIVERSE_IS_ALL_LISTED_US_COMMON',
       'SPREAD_IS_MODELLED_BY_LIQUIDITY_BUCKET_NOT_OBSERVED_QUOTES', 'SPREAD_PROPORTIONAL_EQUITY_HAIRCUT_AT_TRADE_SESSION', 'TERMINAL_VALUE_ASSUMPTION_BY_DELISTING_CLASS',
       'RULES_PREREGISTERED_NOT_FITTED_WALK_FORWARD_IS_ROLLING_ESTIMATION', 'NO_UNTOUCHED_HOLDOUT_NO_MULTIPLE_TESTING_CORRECTION_ACROSS_PROFILES',
@@ -251,4 +261,4 @@ function runModelPortfolio(panel, config) {
   };
 }
 
-module.exports = { VERSION, DEFAULTS, runModelPortfolio, decide };
+module.exports = { HOLDINGS_DELAY_DAYS, delayedHoldings, VERSION, DEFAULTS, runModelPortfolio, decide };

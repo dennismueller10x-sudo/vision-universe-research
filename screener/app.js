@@ -1330,7 +1330,7 @@
     var s = openSheet({ title: 'Aktie', full: true, foot: true, onClose: function () { if (state.stock) { state.stock = null; } } });
     s.stock = true;
     if (i < 0) { s.body.append(h('div', { class: 'sc-state' }, [h('h3', { text: 'Nicht im Screener-Universum' }), h('p', { text: sym + ' gehört nicht zum aktuellen Universum (z. B. ETF oder separate Aktiengattung).' })])); s.foot.append(h('a', { class: 'sc-btn sc-btn-primary', href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym) }, 'In Discover öffnen')); return; }
-    var chg = d.value('perf1d', i), r0 = Q.count(state.query) ? result() : null, pos = r0 ? r0.order.indexOf(i) : -1;
+    var chg = d.value('perf1d', i), r0 = Q.count(state.query) ? result() : null, pos = r0 ? r0.order.indexOf(i) : -1, navEl = null;
     s.body.append(h('div', { class: 'sc-qr-head vu-stockhead' }, [h('div', { class: 'vu-stockhead__top' }, [vuLogo(sym),
       h('div', { class: 'vu-stockhead__name' }, [h('b', { text: d.name(i) }), h('span', { text: sym + ' · ' + subLine(i) })]), watchBtn(sym)]),
       h('div', { class: 'vu-stockhead__price' }, [h('b', { text: F.format('price', d.value('price', i)) }), chgEl(chg, true), h('span', { class: 'vu-stockhead__meta', text: 'Schluss ' + dateDe(info().asOf) })])]));
@@ -1347,12 +1347,15 @@
           return h('div', { class: 'sc-kvrow' }, [h('b', { text: shortField(x.field.id) + ' ' + x.shown }), x.pass === true ? verdictEl('strong', condText(x.filter)) : x.pass === false ? verdictEl('weak', 'passt nicht') : verdictEl('none', 'ohne Angabe')]);
         }))]));
       var prev = pos > 0 ? d.symbol(r0.order[pos - 1]) : null, next = pos < r0.order.length - 1 ? d.symbol(r0.order[pos + 1]) : null;
-      s.body.append(h('div', { class: 'sc-qr-nav' }, [
+      /* S03 (s03-b): Vor/Zurück durch die Treffer steht unter dem Inhalt der Perspektive. */
+      navEl = (h('div', { class: 'sc-qr-nav' }, [
         h('button', { class: 'vu-btn vu-btn--line vu-btn--sm', type: 'button', disabled: prev ? null : true, onclick: function () { closeTop().then(function () { openQuick(prev); }); } }, [icon('back'), prev ? shortName(d.name(r0.order[pos - 1])) : 'Treffer']),
         h('button', { class: 'vu-btn vu-btn--ink vu-btn--sm', type: 'button', disabled: next ? null : true, onclick: function () { closeTop().then(function () { openQuick(next); }); } }, [next ? shortName(d.name(r0.order[pos + 1])) : 'Ende', icon('next')])]));
     }
     var tabs = [['overview', 'Übersicht'], ['numbers', 'Kennzahlen'], ['chart', 'Chart']];
-    var cur = 'overview', panel = h('div', { role: 'tabpanel' });
+    /* C05: der erste Reiter folgt der Perspektive der meistgenutzten Filter (Zahlen → Kennzahlen, Chart → Chart). */
+    var tw = r0 ? topWorld() : 'discover';
+    var cur = tw === 'fundamental' ? 'numbers' : tw === 'technical' ? 'chart' : 'overview', panel = h('div', { role: 'tabpanel' });
     var tabEl = h('div', { class: 'sc-tabs', role: 'tablist' });
     function paintTabs() {
       tabEl.replaceChildren.apply(tabEl, tabs.map(function (t) { return h('button', { type: 'button', role: 'tab', 'aria-selected': String(cur === t[0]), onclick: function () { cur = t[0]; paintTabs(); paintPanel(); } }, t[1]); }));
@@ -1366,6 +1369,7 @@
     }
     paintTabs(); paintPanel();
     s.body.append(tabEl, panel);
+    if (navEl) s.body.append(navEl);
     adapter.research(sym).then(function (r) { research = r; paintPanel(); }).catch(function () { failed = true; paintPanel(); });
     adapter.series(sym).then(function (p) { series = p || []; if (cur === 'chart') paintPanel(); });
     s.foot.append(state.select ? null : h('button', { class: 'sc-btn sc-btn-secondary', type: 'button', onclick: function () { var c = state.cmp.indexOf(sym) >= 0 ? state.cmp : state.cmp.concat([sym]).slice(-3); go({ view: 'compare', cmp: c }); } }, [icon('compare'), 'Vergleich']),
@@ -1420,10 +1424,10 @@
     function last(arr, n) { return (arr || []).filter(function (p) { return p && p.v !== null && isFinite(p.v); }).slice(-(n || 5)); }
     var items = [
       ['Umsatz', last(t.revenue), 'usd', 'var(--sc-accent)'],
-      ['Bruttomarge', last(t.margins && t.margins.gross), 'margin', '#14a37f'],
+      ['Bruttomarge', last(t.margins && t.margins.gross), 'margin', 'var(--sc-accent)'],
       ['Free Cashflow', last(t.free_cash_flow), 'usd', 'var(--sc-accent)'],
-      ['EPS (verwässert)', last(t.eps_diluted), 'eps', '#7d5bd6'],
-      ['Nettomarge', last(t.margins && t.margins.net), 'margin', '#14a37f'],
+      ['EPS (verwässert)', last(t.eps_diluted), 'eps', 'var(--sc-accent)'],
+      ['Nettomarge', last(t.margins && t.margins.net), 'margin', 'var(--sc-accent)'],
       ['Jahresüberschuss', last(t.net_income), 'usd', 'var(--sc-accent)']];
     var grid = h('div', { class: 'sc-kpis' });
     items.forEach(function (it) {

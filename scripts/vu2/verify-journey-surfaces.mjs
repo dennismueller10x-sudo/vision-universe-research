@@ -9,11 +9,12 @@
 
      NVDA   Bildunterschrift des Charts: splitbereinigt, nicht roh
      APGE   was das Setup beenden wuerde, ist da
-     AAAP   der Musternenner nennt, wovon er zaehlt; ohne Wochenreihe
+     AAON   der Musternenner nennt, wovon er zaehlt; ohne Wochenreihe
             erscheint stattdessen der belegte Nichtverfuegbarkeitsgrund
+            (bis 05.11.2026 AAAP; AAAP ist laut Wertpapierstamm ein ETF)
      AACB   Setup-Bedingungen zaehlen messbare
-     AAAC   ein belegter ETF: keine Unternehmensanalyse - eine Luecke mit
-            Grund, kein Nichtpassen
+     AAAC   ein belegter ETF: keine Aktienaussage - eine benannte Absage
+            mit Grund (#1443), kein Nichtpassen
      A      die Stil-Zuordnung nennt den Abstand zwischen zwei Staenden
 
    Seit dem 30.09.2026 ist das die Aktienseite der Hash-App
@@ -41,12 +42,13 @@ const argOf = (name, fallback) => {
   return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
 };
 const root = resolve(argOf("site", process.cwd()));
-/* AAAP has no published weekly series. Keep the historical denominator
+/* The pattern title may lose its published weekly series. Keep the historical denominator
    assertion for measured patterns, but accept the precise unavailable copy
    only when the shipped typed pattern payload confirms that state. */
 const aaPatterns = JSON.parse(gunzipSync(await readFile(resolve(root,"quant/data/product/pattern-match-v1/AA.json.gz"))));
-const aaapNoWeeklySeries = aaPatterns.unavailable?.AAAP?.reason === "NO_WEEKLY_SERIES"
-  && !Object.hasOwn(aaPatterns.instruments || {}, "AAAP");
+const PATTERN_TICKER = "AAON";
+const aaapNoWeeklySeries = aaPatterns.unavailable?.[PATTERN_TICKER]?.reason === "NO_WEEKLY_SERIES"
+  && !Object.hasOwn(aaPatterns.instruments || {}, PATTERN_TICKER);
 const mime = { ".html":"text/html", ".js":"text/javascript", ".css":"text/css", ".json":"application/json" };
 const server = createServer(async (req,res)=>{try{
  let p=decodeURIComponent(new URL(req.url,"http://l").pathname);
@@ -65,11 +67,11 @@ const checks=[
     dort die Quelle des Tagesverlaufs. Deshalb zuerst 1J. */
  ["NVDA","section.qc-chart .qc-note",/(^|[^t] )splitbereinigt/,"1J"],
  ["APGE","#setup",/Was würde das Setup ungültig machen\?/i],
- ["AAAP","#historie",/\d+ von \d+ Mustern|nicht prüfbar/],
+ [PATTERN_TICKER,"#historie",/\d+ von \d+ Mustern|nicht prüfbar/],
  ["AACB","#setup","messbaren Bedingungen"],
- /* AAAC IST SEIT DER OWNER-ENTSCHEIDUNG 1 KEIN AKTIENFALL MEHR: Kurs und
-    Kursverlauf bleiben, die Aktienanalyse entfaellt - mit Grund. */
- ["AAAC","#qx-main","Die Unternehmensanalyse gilt nur für Aktien"],
+ /* AAAC IST SEIT DER OWNER-ENTSCHEIDUNG 1 KEIN AKTIENFALL MEHR: die Seite
+    sagt mit Grund ab (Variante B, #1443) - keine Aktienaussage. */
+ ["AAAC","#qx-main",/ist ein ETF, keine Aktie.*keine Aktienaussage/],
  /* Der Satz ueber die zwei veroeffentlichten Staende steht im Abschnitt
     der Anlagestile: "An der Zuordnung ... hat sich zwischen den
     veröffentlichten Ständen vom ... und ... nichts geändert." */
@@ -90,11 +92,11 @@ for(const width of [1440,390]){
   /* textContent statt innerText: innerText folgt text-transform, und die
      Fragen im Setup-Abschnitt stehen in Versalien. */
   const text=(await page.locator(sel).first().textContent().catch(()=>"")||"").replace(/\s+/g," ");
-  const unavailablePatternCopy = ticker === "AAAP" && aaapNoWeeklySeries
+  const unavailablePatternCopy = ticker === PATTERN_TICKER && aaapNoWeeklySeries
     && text.includes("Für diesen Titel ist keine Wochenreihe veröffentlicht, gegen die Muster geprüft werden könnten.")
     && !/\d+ von \d+ Mustern/.test(text);
   const expectedCopy = typeof expect==="string"?text.includes(expect):expect.test(text);
-  const ok = ticker === "AAAP" && aaapNoWeeklySeries ? unavailablePatternCopy : expectedCopy;
+  const ok = ticker === PATTERN_TICKER && aaapNoWeeklySeries ? unavailablePatternCopy : expectedCopy;
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
   if(!ok||overflow||fehler.length)bad++;
   console.log((ok?"OK  ":"FEHLT ")+width+" "+ticker+" "+sel+" · overflow "+overflow+" · Fehler "+(fehler.join(";")||"keine")+(ok?"":" · erwartet: "+expect));

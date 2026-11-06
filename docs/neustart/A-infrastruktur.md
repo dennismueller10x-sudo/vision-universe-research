@@ -1,4 +1,4 @@
-# Strang A – Infrastruktur (Stand 05.11.2026, Tagesende)
+# Strang A – Infrastruktur (Stand 05.11.2026, ~20:30 UTC)
 
 Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/workflows`, `scripts/ci`, `scripts/core`, `core/registry`, dieses Dokument.
 
@@ -44,12 +44,16 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
 - **Umfangsfolgen nach Universumsänderung** (#1401, #1406, #1414): Befund nach dem Nachholen: für die 131 ausgeschiedenen ETFs lagen noch Discover-Reihen (131), lange Reihen (74), Intraday-Snapshots, Discover-Daten (6.686 statt 6.573 Titel) und 25 Technical-Signal-Einträge; die Datenhygiene-Prüfung in ~20 Datenläufen wäre rot geworden, auch im Nachtlauf vor seiner Materialisierung, ohne sich selbst zu heilen. Ursache für die Technical-Signale: die Materialisierung liest `market-capability.json` aus dem Company Master, den sonst erst der SEC-Tageslauf am nächsten Morgen nachzieht. Der Eignungs-Workflow zieht jetzt nach jeder Universumsänderung mit den Erzeugern nach: Company Master + Universums-Indizes, `--prune-only`/`--index-only` für Reihen und Intraday, Discover-Neubau mit Nachprüfung, dann Materialisierung mit `force`. Drei Läufe heute; `main`: Hygiene bis auf die Materialisierung sauber, Discover 594/1 (Rest: `ask/index.html`, anderer Strang). Danach scheiterte die Materialisierung noch an Vertragstests, die COOL (ausgeschiedener ETF) fest als Beispiel nutzten: #1423 wählt den Titel aus den Daten. **Lehre:** Eine Universumsänderung ist erst fertig mit ihrer ganzen Folgekette (Company Master → Reihen → Discover → Materialisierung → Tests mit festen Beispieltiteln); das Nachholen hätte erst mit dieser Kette gemergt werden dürfen. Die Kette läuft jetzt automatisch.
 - **Gates → Vertragstests** (#1403): `core/registry/product-contracts.json` + `core/tests/product-contracts.test.mjs` (PC-1 Produktänderung löst Produkt-CI aus, PC-2 Vertragstests laufen, PC-3 Schnittstellen-Schemata, PC-4 kein Pfadverbot mehr). Supertrader Gate A nur noch Bericht; Discover-Engine-Regel und das Pfadverbot in Company Intelligence `validate` entfernt; CLAUDE.md nachgezogen.
 
+- **Bündel `ci`, Stufe 1** (#1465, #1471): zwölf kleine Prüfungen (ask, brevo, ci-config, creative-job-guard, etf-dashboard, fundamental, hedgefonds-dashboard, landing, research-access, screener, vorsorge, willkommen) als Jobs von `ci.yml`; Auswahl über `scripts/ci/select-checks.mjs` + `scripts/ci/ci-checks.json` (PR: Dateiliste der API; Push: Compare-API `before...after`; ohne vollständige Liste alle in Frage kommenden). #1471 behob, dass die Push-Auswahl auf `main` an fehlenden Commit-Feldern scheiterte. Screener-Vertrag zeigt auf `ci.yml`. Workflow-Dateien heute 138 → 114.
+- **Vertragstest Folgekette** (#1457, UF-1..4): nur `security-master-eligibility.yml` schreibt `eligibility.json`; jedes Verzeichnis, das die Hygieneprüfung am Produktumfang misst, gehört dem Umfangsfolgen-Schritt oder wird über die Materialisierung nachgezogen. CLAUDE.md nennt die geltenden Vertragstests (PC, WB, UF, DB).
+- **Vorsorge nach den Umfangsfolgen** (#1467, #1468, #1469, #1478): 121 ETFs, die Tiingo nicht als ETF listet, hatten ihre Vorsorge-Reihe aus den Discover-Reihen und wären im Nachtlauf verschwunden (Vorsorge-CI seit ~17 Uhr rot). Der Vorsorge-Ingest fragt sie jetzt selbst ab (Zusatz-ETFs `CONFIRMED_NON_EQUITY:ETF`), Teillauf `nur_zusatz` holt alles noch nicht Aufgenommene, `universe.json` schrumpft nicht mehr. Läufe 42095775542 (120/121) und 42101119919 (+97 neu gelistete, CAM). Namensregel in `etf-master.js` (ANV, DINE, LMNX, LQ, PTNT) und ein Listing je aktivem ETF (CAM). Sichtbar 6.072 → 6.133; PCL ohne Tiingo-Kurse „keine Kursreihe“. Vorsorge-Neubau auf `main` reproduzierbar. **Lehre:** die Folgekette braucht auch Verbraucher außerhalb der Hygieneprüfung (Vorsorge las Discover-Reihen für ETFs).
+
 ## Offen
 - **Insider, Schritt 2:** nach dem ersten grünen Wochenlauf der Eigentümer-Signale mit gesätem Cache lesen Verbraucher nur noch eine Quelle; die eigene Abholung der Eigentümer-Signale bleibt Lückenfüller (Form 5, Ausfälle).
 - **Bündelung, nächste Schritte:**
   - `pipeline-intraday` zusammen mit Plan §3 „ein Cloudflare-Takt statt GitHub-Crons“: Der Wecker startet heute `intraday-pacemaker.yml` und `discover-im-blick-live.yml` per Dateiname und prüft je Datei, ob ein Lauf aktiv ist (`laeuftSchon`). In einem gemeinsamen Workflow hielte ein laufender Watchdog- oder Taktgeber-Lauf die anderen Teile an. Umbau in einem Schritt: `pipeline-intraday.yml` mit Eingabe `teil` und `run-name` je Teil, ohne eigene Zeitpläne; der Wecker startet jeden Teil zu seiner Zeit und filtert Läufe nach `display_title` (Tests in `worker-waker/tests`); `pages-release.yml` lauscht auf den neuen Namen und filtert nach Teil; Ausrollen über `cloudflare-waker-deploy.yml` außerhalb der Sitzung (vor 13 UTC); danach die fünf Dateien löschen.
   - `pipeline-daily` (17 Workflows, `workflow_run`-Ketten nach Namen): zuerst die Kette als Liste mit Auslösern, dann Stufe für Stufe.
-  - `ci` (26): eine `ci.yml` mit Auswahl-Job wie `monitor`; `product-contracts.json` zeigt dann auf Jobs statt Dateien.
+  - `ci` Stufe 2: die großen Produkt-CIs (quant, discover, technical, supertrader, core, account) nach einer Woche Betrieb von Stufe 1.
   - Rest-Kandidaten nach Gate-Umbau: supertrader-delisting-probe; `monitor` noch ohne freshness-monitor, fundamental-sec-freshness, supertrader-live-smoke, company-intelligence-health/-watchdog.
 - **Datenzweig:** Abnahme News am 11.11. (7 Tage nur `IDENTICAL`), danach News auf BRANCH_ONLY.
 - Folgearbeiten an 1.3.0 (Strang C): #1119 (H6), optional H7.
@@ -59,10 +63,11 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - #1268, #1270, #1273, #1331 und #1340 hatten ihre Stränge vorher selbst erledigt;
   - offen sind danach nur noch die behaltenen PRs und laufende Strang-PRs.
 
-## Stand `main` 05.11. ~15:30 UTC
-- Umfangsfolgen vollständig (#1401, #1406, #1414, #1423, #1432); Materialisierung 42040125051 grün; Datenhygiene sauber → Nachtlauf entblockt. Quant rot 30 → 16 (#1438 behebt SMW-3 und S4 aus A-PRs).
-- **Pages rot seit dem Nachmittag** (letzter grüner Lauf 11:21 UTC): Rauchtest scheitert an (a) `/quant/#/aktie/AAAC` – der „belegte ETF“ ist mit dem Nachholen EXCLUDED und hat keine Seite mehr; Tests und Rauchtest schreiben fest, dass belegte Nicht-Aktien im Produkt bleiben und nur die Aktienaussage verlieren. Widerspruch zur freigegebenen Nachholung (131 ETFs raus) → Fachentscheidung A (Regel behalten, Eignungsklasse statt EXCLUDED) oder B (Tests/Rauchtest auf Absage-Seite) bei der Steuerung. (b) Strategien/Screener ohne Treffer und (c) Methodik-Navigation: an D2 (#1410).
-- Wartet: #1400 (monitor), #1402 (Ausmusterung), #1403 (Vertragstests), #1438; CI-Bündel Stufe 1 auf `claude/bundle-ci-small`. Gemergt wird erst bei grünem Pages.
+## Stand `main` 05.11. ~20:30 UTC
+- Pages grün seit 16:44 UTC (#1443, Variante B: belegte Nicht-Aktien mit benannter Absage). Gemergt seitdem: #1438, #1403, #1400, #1402, #1457, #1465, #1471, #1467–#1469, #1478.
+- Vorsorge reproduzierbar; Datenhygiene sauber; Nachtlauf 22:30 UTC frei.
+- Rot bekannt: Quant 18 (u. a. Watchlist preserves, DEBT7, L1–L3, backtest-refresh, canonical/survivorship bei C), Technical L1–L3 (nach dem Nachtlauf prüfen), Social CI (SPY/ref_AAAC), sec-fundamentals-ci.
+- Offen aus der Eignung: 17 ETFs (BITW, HODL, IBMU, QQUP …) und 308 Vorzugsaktien stehen noch als Aktie im Produktuniversum.
 
 ## Braucht Owner
 - Nichts Neues.

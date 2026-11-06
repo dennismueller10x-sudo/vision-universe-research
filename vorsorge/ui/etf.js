@@ -469,7 +469,7 @@
         cagr: useM ? useM.annualized : null, vol: mt && mt.volatility ? mt.volatility.value : null, since: useM && useM.from ? useM.from.slice(0, 4) : "", years: mt ? mt.historyYears : 0,
         basis: useM === trM ? "Tiingo, Gesamtrendite mit Ausschüttungen" : "Tiingo, nur Kurs – Ausschüttungen nicht enthalten" };
       VS.openPlanspiel = function () {
-        var sh = VS.sheet("vs-play-s", "Planspiel", '<div class="vs-row-sb">' + VS.bsp() + '</div><p class="vu-sm vu-mu" style="margin-top:6px">Was wäre, wenn sich ' + esc(e.index || e.symbol) + ' so entwickelt wie bisher? Rechnet mit der Vergangenheit; die Zukunft kann deutlich schlechter ausfallen.</p><div id="vs-play" style="margin-top:10px"></div>');
+        var sh = VS.sheet("vs-play-s", "Planspiel", '<div class="vs-row-sb">' + VS.bsp() + '</div><p class="vu-sm vu-mu" style="margin-top:6px">Was wäre, wenn sich ' + esc(e.index || e.symbol) + ' so entwickelt wie bisher?</p><div id="vs-play" style="margin-top:10px"></div>');
         if (sh) VS.renderPlanspiel(sh.querySelector("#vs-play"), playCtx);
       };
       el.querySelector("#vs-goplay").onclick = VS.openPlanspiel;

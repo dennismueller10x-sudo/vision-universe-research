@@ -73,12 +73,16 @@ test('SF8-GOLDEN: erkannte Strategien und Stufen je Titel (eingefrorene echte Re
   assert.deepEqual(got, GOLDEN);
 });
 
-test('SF8-GOLDEN-LEVELS: modellierte Pläne mit den Marken der Research-Lifecycles (Folgesitzung, Stop unter Einstieg)', () => {
-  const sln = find('SLN', 'C07'), bolt = find('BOLT', 'C12'), slab = find('SLAB', 'C03');
-  assert.equal(sln.plan.entryType, 'BUY_STOP_LIMIT_NEXT_SESSION'); assert.ok(sln.plan.limit >= sln.plan.trigger); assert.equal(sln.plan.riskFraction, 0.0125);
-  assert.equal(sln.plan.earliestSession, '2026-10-26');
-  assert.equal(bolt.plan.stop, F.securities.find((s) => s.ticker === 'BOLT').cols.l.at(-1), 'BGU-Stop = Gap-Tag-Tief (MA-MOKA-BGU-STOP)');
-  for (const v of views().filter((x) => x.plan)) { assert.ok(v.plan.stop < v.plan.trigger, v.ticker); assert.ok(v.plan.earliestSession > v.asOf); assert.equal(v.plan.hypothetical, true); }
+test('SF8-GOLDEN-LEVELS: modellierte Pläne mit den Marken der Research-Lifecycles (Folgesitzung, Stop unter Einstieg), nur im Vertragsdatensatz', () => {
+  // Owner-Linie 05.11.2026: die öffentliche Ansicht trägt keinen Plan; geprüft wird der Plan im (nicht veröffentlichten) Vertragsdatensatz
+  const rec = (t, c) => records().find((r) => r.security.ticker === t && r.candidateId === c);
+  const sln = rec('SLN', 'C07'), bolt = rec('BOLT', 'C12'), slab = find('SLAB', 'C03');
+  assert.equal(find('SLN', 'C07').stage, 'MODELED_TRADE_PLAN'); assert.equal(find('SLN', 'C07').plan, null);
+  assert.equal(sln.plan.entry.type, 'BUY_STOP_LIMIT_NEXT_SESSION'); assert.equal(sln.plan.sizing.riskFraction, 0.0125);
+  assert.equal(sln.plan.entry.earliestSession, '2026-10-26');
+  assert.equal(bolt.plan.stop.initial, F.securities.find((s) => s.ticker === 'BOLT').cols.l.at(-1), 'BGU-Stop = Gap-Tag-Tief (MA-MOKA-BGU-STOP)');
+  for (const r of records().filter((x) => x.plan)) { assert.ok(r.plan.stop.initial < r.plan.entry.trigger, r.security.ticker); assert.ok(r.plan.entry.earliestSession > r.asOf); assert.equal(r.plan.hypothetical, true); }
+  for (const v of views()) assert.equal(v.plan, null, `${v.candidateId} ${v.ticker}: kein öffentlicher Plan`);
   // Darvas: Allzeithoch nur mit Tageshochs über die ganze Listing-Historie belegbar (Review M4) -> sonst CHART
   assert.equal(slab.stage, 'CHART_CANDIDATE'); assert.equal(slab.features.allTimeHighStatus, 'NOT_VERIFIABLE_WITHOUT_LONG_DAILY_HIGHS');
   assert.ok(slab.notMet.includes('DAR-SF-ATH'));
@@ -121,9 +125,10 @@ test('SF8-STAGES: jeder Datensatz besteht den Produktvertrag; keine Stufe über 
 });
 
 test('SF8-NO-FICTITIOUS-PLAN: Pläne nur in MODELED; Turtle (O-1), EP, PS, Pocket Pivot, Holy Grail, Weinstein, SEPA nie mit Plan', () => {
-  for (const v of views()) {
-    if (v.stage !== 'MODELED_TRADE_PLAN') assert.equal(v.plan, null, `${v.candidateId} ${v.ticker}`);
-    else assert.ok(v.plan.modelAssumptions.length > 0);
+  for (const v of views()) assert.equal(v.plan, null, `${v.candidateId} ${v.ticker}`); // Owner-Linie 05.11.2026: nie ein öffentlicher Plan
+  for (const r of records()) {
+    if (r.stage !== 'MODELED_TRADE_PLAN') assert.ok(!r.plan, `${r.candidateId} ${r.security.ticker}`);
+    else assert.ok(r.plan.modelAssumptions.length > 0);
   }
   for (const v of views().filter((x) => ['C01', 'C02', 'C04', 'C05', 'C06', 'C09', 'C10', 'C11', 'C13'].includes(x.candidateId))) assert.equal(v.plan, null);
   const ps = views().filter((v) => v.candidateId === 'C10');
@@ -144,7 +149,7 @@ const GOLDEN_STRUCTURE_SHOWN = {
 
 test('SF8-DESCRIPTIVE-NOT-ORDER: closeVsGapLow nur beschreibend; Turtle-N unterhalb von MODELED nicht mehr veröffentlicht (Owner 28.10.)', () => {
   const ORDERISH = /trigger|stop|limit|entry|plannedloss|risk/i;
-  const below = views().filter((v) => v.stage !== 'MODELED_TRADE_PLAN');
+  const below = views(); // Owner-Linie 05.11.2026: dieselben Regeln auf allen Stufen, auch MODELED
   const c12 = below.filter((v) => v.candidateId === 'C12'), turtle = below.filter((v) => ['C01', 'C02'].includes(v.candidateId));
   assert.ok(c12.length > 0 && turtle.length > 0, 'Golden Cases decken C12 und Turtle unterhalb von MODELED ab');
   for (const v of [...c12, ...turtle]) {
@@ -171,9 +176,12 @@ test('SF8-DESCRIPTIVE-NOT-ORDER: closeVsGapLow nur beschreibend; Turtle-N unterh
   }
   // C01/C02 bilden nach O-1 nie einen Plan: N kann nirgends zu einem Stop (Einstieg - 2N) werden
   assert.ok(views().filter((v) => ['C01', 'C02'].includes(v.candidateId)).every((v) => v.stage !== 'MODELED_TRADE_PLAN' && v.plan === null));
-  // erst im modellierten Ablauf ist der Stop ein Orderparameter – und dort steht er im Plan, nicht in den Kennzahlen
+  // erst im modellierten Ablauf ist der Stop ein Orderparameter – er steht im (nicht veröffentlichten) Vertragsdatensatz,
+  // weder in der öffentlichen Ansicht noch in den Kennzahlen (Owner-Linie 05.11.2026)
   for (const v of views().filter((x) => x.candidateId === 'C12' && x.stage === 'MODELED_TRADE_PLAN')) {
-    assert.ok(v.plan && Number.isFinite(v.plan.stop?.initial ?? v.plan.stop), `${v.ticker}: Stop im Plan`);
+    const r = records().find((x) => x.recordId === v.recordId);
+    assert.ok(r.plan && Number.isFinite(r.plan.stop.initial), `${v.ticker}: Stop im Vertragsdatensatz`);
+    assert.equal(v.plan, null); assert.ok(!('stopReference' in v.levels), `${v.ticker}: keine Risikoreferenz öffentlich`);
   }
   // direkt an der Ansichtsbildung, unabhängig vom Schlüssel der Strukturtabelle (SF_… bzw. Cxx): eine Risikoreferenz oder
   // ein Trigger gelangt unterhalb von MODELED nie in die Marken; die beschreibende Kennzahl bleibt eine Kennzahl
@@ -680,9 +688,9 @@ test('SF8-STRUCTURE-MARKS: unterhalb von MODELED Chartstruktur je Methode (Box, 
     const hidden = ['C06', 'C07', 'C13'].includes(v.candidateId);
     for (const k of ['high252', 'belowHigh252']) assert.equal(k in v.trend, !hidden, `${v.candidateId} ${v.ticker} trend.${k}`);
   }
-  // in MODELED und bei allen anderen Methoden bleibt die allgemeine Trendübersicht vollständig
+  // Owner-Linie 05.11.2026: auch in MODELED gilt die Sperre; bei allen anderen Methoden bleibt die Trendübersicht vollständig
   const full = { close: 10, high252: 12, belowHigh252: 0.1667, ret63: 0.1 };
-  assert.deepEqual(publicTrend({ strategyId: 'SF_MINERVINI_SEPA_VCP' }, 'MODELED_TRADE_PLAN', full), full);
+  assert.deepEqual(publicTrend({ strategyId: 'SF_MINERVINI_SEPA_VCP' }, 'MODELED_TRADE_PLAN', full), { close: 10, ret63: 0.1 });
   assert.deepEqual(publicTrend({ strategyId: 'SF_DARVAS_BOX' }, 'CHART_CANDIDATE', full), full);
   assert.deepEqual(publicTrend({ strategyId: 'SF_RASCHKE_HOLY_GRAIL' }, 'CONFIRMED_RESEARCH_SETUP', full), { close: 10, ret63: 0.1 });
   // Katalog: das Gap-Tief ist Chartstruktur, kein bestätigter Stop; die Risikoreferenz gehört nur zum modellierten Ablauf
@@ -701,7 +709,8 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   assert.ok(draw.length > 200, 'drawChart gefunden');
   // jede Marke des Charts ist genau eine dieser Zeilen; Einstieg und Stop nur im Zweig `if (v.plan)`, aus v.plan
   const pushes = draw.split('\n').filter((l) => /levels\.push\(/.test(l));
-  assert.equal(pushes.length, 2, pushes.join('\n'));
+  // Owner-Linie 05.11.2026: der Planzweig zeichnet seit #1451 nichts mehr und darf entfallen (dann nur die Strukturmarke)
+  assert.ok(pushes.length === 1 || pushes.length === 2, pushes.join('\n'));
   assert.match(pushes[0], /^\s*if \(structOf\(v\.pivot\)\) levels\.push\(\{ id: 'pivot', label: 'Chartstruktur: ' \+ STRUCT_TXT\[v\.pivot\.kind\], value: v\.pivot\.level, color: 'var\(--chart-box-base\)'/);
   // die Beschriftung der Struktur kommt aus einer festen Tabelle ohne Orderwort, nicht in der Farbe des Triggers
   const structTable = ui.slice(ui.indexOf('var STRUCT_TXT = {'), ui.indexOf('function structOf('));
@@ -713,7 +722,7 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   // eine Engine-Marke des modellierten Ablaufs (z. B. RUN_UP_HIGH = Einstieg) wird nie als Chartstruktur gezeigt
   assert.match(ui, /function structOf\(p\) \{ return p && fin\(p\.level\) && STRUCT_TXT\[p\.kind\] \? p : null; \}/);
   assert.doesNotMatch(pushes[0], /chart-trigger|chart-entry|chart-stop/);
-  assert.match(pushes[1], /^\s*if \(v\.plan\) \{ levels\.push\(\{ id: 'entry',[^}]*value: v\.plan\.trigger,[^}]*\}\); levels\.push\(\{ id: 'stop', label: 'Modell-Stop', value: v\.plan\.stop,[^}]*\}\); \}\s*$/);
+  if (pushes[1]) assert.match(pushes[1], /^\s*if \(v\.plan\) \{ levels\.push\(\{ id: 'entry',[^}]*value: v\.plan\.trigger,[^}]*\}\); levels\.push\(\{ id: 'stop', label: 'Modell-Stop', value: v\.plan\.stop,[^}]*\}\); \}\s*$/);
   // keine Orderbeschriftung irgendwo im Chart außer im Planzweig; Beschriftungen nur als Literal (keine Konstante von außen)
   const drawNoPlan = draw.split('\n').filter((l) => !/^\s*if \(v\.plan\) \{/.test(l)).join('\n');
   assert.deepEqual([...drawNoPlan.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]).filter((x) => !/^var\(--[a-z0-9-]+\)$/.test(x) && /Stop|Einstieg|Limit|Order|Kauf|Trigger|Risiko/i.test(x)), []);
@@ -724,7 +733,8 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   assert.doesNotMatch(draw, /features|bars\.low\[|bars\.high\[|Math\.(min|max)\(/);
   // Kästen nur aus levels.box; die Karte außerhalb der Planansicht beschriftet nichts als Einstieg, Stop, Limit oder Order
   for (const l of draw.split('\n').filter((x) => /boxes\.push\(/.test(x))) assert.match(l, /^\s*if \(lv\.box && fin\(lv\.box\.top\)\) boxes\.push\(\{ from: lv\.box\.from, to: null, top: lv\.box\.top, bottom: lv\.box\.bottom,[^}]*label: 'Darvas-Box' \}\);\s*$/, l);
-  const card = ui.slice(ui.indexOf('function card('), ui.indexOf('function planBlock('));
+  const cardEnd = ui.indexOf('function planBlock(') >= 0 ? ui.indexOf('function planBlock(') : ui.indexOf('function pair(');
+  const card = ui.slice(ui.indexOf('function card('), cardEnd);
   assert.ok(card.length > 500, 'card gefunden');
   const literals = [...card.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]);
   assert.deepEqual(literals.filter((x) => /Stop|Einstieg|Limit|Order|Kauf|Trigger|Risiko/i.test(x)), [], 'keine Orderbeschriftung in der Karte');
@@ -733,8 +743,8 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   for (const m of card.matchAll(/(?<!function )pair\(([^,]+),/g)) assert.match(m[1].trim(), /^'[^']*'$/, `Kartenzeile ${m[1]}`);
   // die Planansicht ist nur über v.plan erreichbar
   const planUses = [...ui.matchAll(/planBlock\(/g)].length;
-  assert.equal(planUses, 2, 'Definition und genau ein Aufruf');
-  assert.match(ui, /v\.plan \? planBlock\(v, L\) : null|v\.plan && planBlock\(v, L\)/);
+  assert.ok(planUses === 0 || planUses === 2, 'entfallen oder Definition und genau ein Aufruf');
+  if (planUses) assert.match(ui, /v\.plan \? planBlock\(v, L\) : null|v\.plan && planBlock\(v, L\)/);
 });
 
 test('SF8-NO-ORDER-LEVELS-BELOW-MODEL: unterhalb von MODELED keine Order-, Stop- oder Limitmarke in der Ansicht (Review SF8-R2)', () => {
@@ -892,4 +902,20 @@ test('SF8-REFERENCE-PROTECTION: die Pipeline verändert keine Research-Artefakte
   const snap = () => Object.fromEntries(fs.readdirSync(dir).sort().map((f) => [f, crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, f))).digest('hex')]));
   const before = snap(); run(); assert.deepEqual(snap(), before);
   assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, 'STRATEGY-SF6-READINESS.json'))).digest('hex').slice(0, 8), '9658445d'); // 4f9808aa… -> 9658445d… (2026-11-04): only paperProtocol 1.1.0 -> 1.2.0 (SF6-PAPER-2027 V5), no grade changed
+});
+
+test('SF8-NO-ORDER-MARKS-MODELED: Owner-Linie 05.11.2026 – auch MODELED öffentlich ohne Plan, Einstiegs-, Stop- oder Limitmarke', () => {
+  const ORDERISH = /trigger|stop|limit|entry|plannedloss|risk/i;
+  const modeled = views().filter((v) => v.stage === 'MODELED_TRADE_PLAN');
+  assert.ok(modeled.length > 0, 'Golden Cases decken MODELED ab');
+  for (const v of modeled) {
+    const where = `${v.candidateId} ${v.ticker}`;
+    assert.equal(v.plan, null, where);
+    assert.ok(!Object.keys(v.levels).some((k) => ORDERISH.test(k)), `${where}: ${Object.keys(v.levels)}`);
+    assert.ok(!Object.keys(v.features).some((k) => ORDERISH.test(k)), `${where}: ${Object.keys(v.features)}`);
+    if (v.pivot) assert.doesNotMatch(v.pivot.kind, ORDERISH, where);
+    assert.doesNotMatch(JSON.stringify(v), /"trigger"|"stopReference"|"fillWindow"|"earliestSession"/, where);
+    // der vollständige Plan bleibt im Vertragsdatensatz (records/, nicht veröffentlicht)
+    assert.ok(records().find((r) => r.recordId === v.recordId).plan, `${where}: Plan im Vertragsdatensatz`);
+  }
 });

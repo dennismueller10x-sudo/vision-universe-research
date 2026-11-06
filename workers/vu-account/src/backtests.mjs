@@ -185,7 +185,7 @@ export async function lookupGet(ctx) {
 // ---------------------------------------------------------------- Musterportfolios (VU-Portfolio-Standard, Forschung)
 // Paket workers/vu-account/data/model-portfolios-bundle.json (scripts/quant/portfolio/export-model-portfolios-bundle.cjs).
 // Gleiche Zugangsregeln wie die Vorschau. Nur vorgerechnete Ergebnisse; nie zertifiziert, nie öffentlich.
-const PORTFOLIO_SCHEMA = 'model-portfolios-bundle-1.0.0';
+const PORTFOLIO_SCHEMA = 'model-portfolios-bundle-1.1.0';
 const verifiedPortfolios = new WeakMap();
 export async function portfolioBundleViolations(b) {
   const errors = [];
@@ -194,6 +194,16 @@ export async function portfolioBundleViolations(b) {
   if (b.productionApproved !== false || b.publiclyActivated !== false || b.certification !== 'NOT_CERTIFIED' || b.claim !== 'NO_ALPHA_OR_CERTIFICATION_CLAIM') errors.push('PORTFOLIO_BUNDLE_FLAGS_INVALID');
   if (b.label !== 'Forschung, nicht zertifiziert') errors.push('PORTFOLIO_BUNDLE_LABEL_MISSING');
   if (!['COMPUTED', 'NOT_YET_COMPUTED'].includes(b.state) || !Array.isArray(b.portfolios)) errors.push('PORTFOLIO_BUNDLE_INCOMPLETE');
+  // Owner-Linie (Plan §11): keine heutige Kaufliste. Bestand nur verzögert (mindestens 365 Tage vor dem Ende), kein lastHoldings.
+  const end = Array.isArray(b.window) ? Date.parse(b.window[1]) : NaN;
+  for (const p of Array.isArray(b.portfolios) ? b.portfolios : []) {
+    if (p && 'lastHoldings' in p) errors.push('PORTFOLIO_CURRENT_HOLDINGS');
+    if (p && p.state === 'RUN') {
+      const h = p.holdings;
+      if (!h || !(h.delayDays >= 365) || !Array.isArray(h.positions)) errors.push('PORTFOLIO_HOLDINGS_NOT_DELAYED');
+      else if (h.asOf && !(Date.parse(h.asOf) <= end - 365 * 86400000)) errors.push('PORTFOLIO_HOLDINGS_TOO_RECENT');
+    }
+  }
   try {
     const {bundleHash, ...body} = b;
     if (await hashOf(body) !== bundleHash) errors.push('PORTFOLIO_BUNDLE_HASH_MISMATCH');

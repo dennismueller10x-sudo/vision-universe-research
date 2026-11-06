@@ -80,6 +80,7 @@ const ROUTES=[
  /* Native Elliott-Route: dieselbe Seite, ohne /quant/ in der Adresse. */
  ['elliott-nativ','/elliott/#/NVDA?ansicht=profi'],
  ['chartbild','#/aktie/NVDA/chartbild'],
+ ['chart','#/aktie/NVDA/chart'],
  ['chartlagen','#/chartlagen'],
  ['zahlen','#/aktie/NVDA/zahlen'],
  ['vergleich','#/vergleich/NVDA,MSFT'],
@@ -244,8 +245,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
       Spalte zeigt den Wert der gefilterten Eigenschaft - mit ihrem Namen.
       Die Marke stellt "Eigenschaften:" voran - geprueft wird das Urteil. */
    const urteile=(await page.locator('#qx-main a.qx-row .qx-row-verdict .qx-pill').allTextContents()).map(t=>t.trim().replace(/^[▲▼◆●○]\s*/,'').replace(/^(Gesamt|Eigenschaften):\s*/,'').toLowerCase());
-   const erlaubt=['Überwiegend stark','Mehr Stärken als Schwächen','Gemischtes Bild','Mehr Schwächen als Stärken','Überwiegend schwach'].map(t=>t.toLowerCase());
-   const fremdesUrteil=urteile.filter(t=>!erlaubt.includes(t));
+   /* Owner-Linie L7 (Plan §11): kein Gesamturteil als Wort, sondern die Zaehlung „k von n Faktoren stark“. */
+   const fremdesUrteil=urteile.filter(t=>!/^\d+ von \d+ faktoren stark$/.test(t));
    if(!urteile.length)befund(view,width,'keine einzige Trefferzeile traegt ein Urteil');
    if(fremdesUrteil.length)befund(view,width,'Trefferzeile traegt kein Klartext-Urteil: '+JSON.stringify(fremdesUrteil[0]));
    /* Die Methodik der Frage steht dabei: die Schwelle ist ein WERT (70),
@@ -379,8 +380,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const setupText=await page.locator('#setup').innerText();
    /* Richtung des veroeffentlichten Basisszenarios (Owner-Freigabe 01.11.2026, nur diese Pruefung): unabhaengig von der
       Karte ueber die Produkt-API gelesen, dieselbe Regel wie scripts/quality/vu3-regression-qa.mjs (setupDirection).
-      Aufwaerts: Einstieg und Abbruch nach unten ("Interessant ab", "Ungültig unter"). Abwaerts: Abbruch nach oben
-      ("Ungültig über"), kein Einstieg, keine Regelcheckliste. Ohne Szenario bleibt die strenge Aufwaerts-Erwartung. */
+      Aufwaerts: Zone und Abbruch nach unten ("Zone laut Methode", "Ungültig-Marke laut Methode", "Schluss darunter"; Owner-Linie L1).
+      Abwaerts: Abbruch nach oben ("Ungültig-Marke laut Methode" mit "Schluss darüber"), keine Zone, keine Regelcheckliste.
+      Ohne Szenario bleibt die strenge Aufwaerts-Erwartung. */
    const setupDir=await page.evaluate(async()=>{const g=globalThis,ticker=location.hash.split('/')[2];
     const api=g.VUProductServices.create({loadJSON:g.QuantShell.loadJSON,displayPolicy:g.VUDisplayPolicy,queryEngine:g.VUQuery});
     const ws=await api.getTechnicalWorkspace(ticker).catch(()=>null);
@@ -388,10 +390,10 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
     const ts=ws.tradeSetup||null,sc=ws.scenarios.find(x=>ts&&x.id===ts.scenarioId)||ws.scenarios.find(x=>x.kind==='PRIMARY')||null;
     return sc&&sc.direction?sc.direction:null;});
    if(setupDir&&setupDir!=='BULLISH'){
-    if(!setupText.includes('Ungültig über'))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') ohne "Ungültig über"');
-    for(const w of ['Interessant ab','Ungültig unter'])if(setupText.includes(w))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') mit "'+w+'"');
+    for(const w of ['Ungültig-Marke laut Methode','Schluss darüber'])if(!setupText.includes(w))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') ohne "'+w+'"');
+    for(const w of ['Zone laut Methode','Einstiegsmarke','Stopp-Marke'])if(setupText.includes(w))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') mit "'+w+'"');
     if(await page.locator('#setup .q-check-count').count())befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') mit Regelcheckliste');
-   } else for(const w of ['Interessant ab','Ungültig unter'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
+   } else for(const w of ['Zone laut Methode','Ungültig-Marke laut Methode'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
    /* Evidence Experience: Stufe C nennt den Zertifizierungsstand und je geschlossener Art den gemessenen Grund. */
    /* VU3-Finalisierung: Stufe C steht in "Einzelheiten und Methodik" - zuerst aufklappen, dann lesen (wie die Faktoren). */
    {await page.locator('#historie details').evaluateAll(ds=>ds.forEach(d=>{d.open=true;}));
@@ -517,8 +519,26 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
     if(!/Elliott/i.test(await page.locator('#qx-main section.cb-pro').innerText()))befund(view,width,'Profi-Ansicht ohne Elliott');
    }
   }
+  if(view==='chart'&&v3){
+   /* Redesign 2027 (Q09): Perspektive Chart bleibt in Quant - Urteil, Chart mit Zonen, Szenarien, Historie gegen Zufall, Zeitreise. */
+   await page.locator('#qx-main .qv3-ch-h').waitFor();
+   if(!await page.locator('#qx-main .qv3-ch-chart svg .qv3-ch-zone').count())befund(view,width,'Chart ohne Zonen');
+   if(!/Szenari/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Szenarien fehlen');
+   if(!/Zufall/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Historie ohne Zufallsvergleich');
+   if(!await page.locator('#qx-main input.qv3-ch-range').count())befund(view,width,'Zeitreise fehlt');
+   if(!/^#\/aktie\/NVDA\/chart/.test(await page.evaluate(()=>location.hash)))befund(view,width,'Chart verlaesst Quant');
+  }
   if(view==='chartlagen'){
    if(!/Chart|Lage/i.test(await page.locator('#qx-main').innerText()))befund(view,width,'Chartlagen leer');
+   /* Redesign 2027 (Q06): Lage als Urteil, Regel der Reihe, Eigene Auswahl als Sheet mit Ergebnis erst nach dem Filtern. */
+   if(v3){
+    await page.locator('#qx-main .qv3-lage').first().waitFor();
+    if(!await page.locator('#qx-main .qv3-lage .vu-verdict').count())befund(view,width,'Lage ohne Urteil');
+    if(!/Die Regel/.test(await page.locator('#qx-main .qv3-lrule').innerText()))befund(view,width,'Regel der Reihe fehlt');
+    await page.locator('#qx-main .qv3-lown').click();
+    await page.locator('#qv3-lagen-sheet [data-go]').click();
+    await page.locator('#qx-main .qv3-lownout .qv3-lage, #qx-main .qv3-lownout .vu-blank').first().waitFor({timeout:10000}).catch(()=>befund(view,width,'Eigene Auswahl ohne Ergebnis'));
+   }
   }
   if(view==='zahlen'&&v3){
    /* Redesign 2027 (Q08): Berichtsart als Segment, Kennzahl als Chips - dieselben Zusagen: 12 Monate gezeigt oder begruendet,

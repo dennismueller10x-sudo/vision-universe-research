@@ -1,0 +1,1107 @@
+name: Monitor (Live-Pruefungen gegen die veroeffentlichte Seite)
+
+# Buendel `monitor` (core/registry/workflow-bundles.json, Plan Neustart §3).
+# Fasst neun Live-Pruefungen zusammen; jede ist ein eigener Job mit unveraendertem Inhalt:
+#   cloudflare         vormals cloudflare-proof.yml
+#   cloudflare-wecker  vormals cloudflare-waker-proof.yml
+#   currency           vormals currency-production-proof.yml
+#   discover           vormals discover-live-smoke.yml
+#   discover-realtime  vormals discover-realtime-qa.yml
+#   europe-discover    vormals europe-discover-release-qa.yml
+#   realtime           vormals realtime-production-smoke.yml
+#   technical          vormals technical-live-qa.yml
+#   vorsorge           vormals vorsorge-live-smoke.yml
+# Der Job `auswahl` entscheidet, welche Pruefung laeuft:
+#   workflow_dispatch  genau die gewaehlte (`pruefung`)
+#   workflow_run       technical nach erfolgreichem 'Quant 2.0 Production Pages'
+#   push main          europe-discover, wenn ihre Pfade beruehrt sind
+#   push claude/**     cloudflare/discover-realtime/technical/vorsorge, wenn ihre Pfade beruehrt
+#                      sind UND die Marke im Commit steht ([cf-proof], [rt-qa],
+#                      [technical-live-qa], [vorsorge-live-smoke]) - wie vorher.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pruefung:
+        description: 'Welche Live-Pruefung'
+        type: choice
+        required: true
+        options:
+          - cloudflare
+          - cloudflare-wecker
+          - currency
+          - discover
+          - discover-realtime
+          - europe-discover
+          - realtime
+          - technical
+          - vorsorge
+      site:
+        description: 'Basis-URL der veroeffentlichten Seite'
+        type: string
+        default: 'https://research.visionuniverse.de'
+      symbols:
+        description: 'Realtime: Titel, mit Komma getrennt'
+        type: string
+        default: 'AAPL,NVDA,MSFT,PANW,VLO'
+      watchSeconds:
+        description: 'Realtime: Beobachtungsdauer je Titel in Sekunden'
+        type: string
+        default: '60'
+      minuten:
+        description: 'Cloudflare-Wecker: wie lange zuhoeren (Minuten). 17 faengt drei Takte.'
+        type: string
+        default: '17'
+  workflow_run:
+    workflows: ['Quant 2.0 Production Pages']
+    types: [completed]
+  push:
+    branches:
+      - main
+      - 'claude/**'
+    paths:
+      - '.github/workflows/monitor.yml'
+      - 'discover/data/europe/manifest.json'
+      - 'scripts/discover/browser-qa-realtime.mjs'
+      - 'scripts/discover/europe-continuity-live-qa.mjs'
+      - 'scripts/discover/europe-public-live-qa.mjs'
+      - 'scripts/discover/global-live-qa.mjs'
+      - 'scripts/discover/resolve-europe-live-release.mjs'
+      - 'scripts/discover/serve-https.mjs'
+      - 'scripts/market/smoke-vu-live.mjs'
+      - 'scripts/technical/world/live-qa.mjs'
+      - 'scripts/vorsorge/live-smoke.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  auswahl:
+    name: Auswahl der Pruefungen
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      cloudflare: ${{ steps.wahl.outputs.cloudflare }}
+      cloudflare_wecker: ${{ steps.wahl.outputs.cloudflare_wecker }}
+      currency: ${{ steps.wahl.outputs.currency }}
+      discover: ${{ steps.wahl.outputs.discover }}
+      discover_realtime: ${{ steps.wahl.outputs.discover_realtime }}
+      europe_discover: ${{ steps.wahl.outputs.europe_discover }}
+      realtime: ${{ steps.wahl.outputs.realtime }}
+      technical: ${{ steps.wahl.outputs.technical }}
+      vorsorge: ${{ steps.wahl.outputs.vorsorge }}
+    steps:
+      - name: Pruefungen waehlen
+        id: wahl
+        env:
+          # Eingaben und Ereignisdaten nur ueber env: (ADR-005)
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          PRUEFUNG: ${{ inputs.pruefung }}
+          WR_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          MSG: ${{ github.event.head_commit.message }}
+          COMMITS: ${{ toJSON(github.event.commits) }}
+        run: |
+          set -euo pipefail
+          files="$(printf '%s' "${COMMITS:-[]}" | jq -r '(. // [])[] | (.added + .modified + .removed)[]' 2>/dev/null | sort -u || true)"
+          touched() { local p; for p in "$@"; do
+              if [[ "$p" == *'**' ]]; then grep -q "^${p%\*\*}" <<<"$files" && return 0
+              else grep -qxF "$p" <<<"$files" && return 0; fi
+            done; return 1; }
+          marke() { [[ "${MSG:-}" == *"$1"* ]]; }
+          claude() { [[ "$REF" == refs/heads/claude/* ]]; }
+          setze() { echo "$1=$2" >> "$GITHUB_OUTPUT"; echo "$1=$2"; }
+          for k in cloudflare cloudflare_wecker currency discover discover_realtime europe_discover realtime technical vorsorge; do
+            v=false
+            case "$EVENT" in
+              workflow_dispatch) [ "$PRUEFUNG" = "${k//_/-}" ] && v=true ;;
+              workflow_run) [ "$k" = technical ] && [ "$WR_CONCLUSION" = success ] && v=true ;;
+              push)
+                case "$k" in
+                  europe_discover) [ "$REF" = refs/heads/main ] && touched 'discover/data/europe/manifest.json' 'scripts/discover/europe-public-live-qa.mjs' 'scripts/discover/global-live-qa.mjs' 'scripts/discover/europe-continuity-live-qa.mjs' 'scripts/discover/resolve-europe-live-release.mjs' '.github/workflows/monitor.yml' && v=true ;;
+                  cloudflare) claude && marke '[cf-proof]' && touched '.github/workflows/monitor.yml' 'scripts/market/smoke-vu-live.mjs' && v=true ;;
+                  discover_realtime) claude && marke '[rt-qa]' && touched '.github/workflows/monitor.yml' 'scripts/discover/browser-qa-realtime.mjs' 'scripts/discover/serve-https.mjs' && v=true ;;
+                  technical) claude && marke '[technical-live-qa]' && touched '.github/workflows/monitor.yml' 'scripts/technical/world/live-qa.mjs' && v=true ;;
+                  vorsorge) claude && marke '[vorsorge-live-smoke]' && touched '.github/workflows/monitor.yml' 'scripts/vorsorge/live-smoke.mjs' && v=true ;;
+                esac ;;
+            esac
+            setze "$k" "$v"
+          done
+
+  # --- cloudflare: vormals cloudflare-proof.yml (Cloudflare — vu-live nachweisen (nur messen))
+  cloudflare:
+    needs: auswahl
+    if: needs.auswahl.outputs.cloudflare == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: monitor-cloudflare-${{ github.ref_name }}
+      cancel-in-progress: false
+    name: Beide Endpunkte messen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Handelszeit einordnen
+        run: |
+          echo "Jetzt (UTC): $(date -u '+%H:%M')"
+          node -e '
+            const MH = require("./quant/engines/realtime/market-hours.js");
+            const cal = JSON.parse(require("fs").readFileSync("./quant/config/market-calendar.json", "utf8"));
+            const s = MH.sessionAt(Date.now(), { calendar: cal, exchange: "XNYS" });
+            console.log("Sitzung: " + s.phase + " (" + s.localTime + " New York)");
+            if (s.phase !== "REGULAR") {
+              console.log("Ausserhalb der regulaeren Sitzung gibt es keine Kurse zu messen.");
+            }
+          '
+
+      - name: Endpunkt live.visionuniverse.de
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node scripts/market/smoke-vu-live.mjs \
+            --url "https://live.visionuniverse.de" --seconds 60 \
+            --report-name vu-live-proof-domain.json
+
+      - name: Endpunkt workers.dev
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: |
+          set -e
+          ACC=$(node -e '
+            const m = /^https:\/\/([0-9a-f]{32})\./i.exec(process.env.VU_HISTORY_S3_ENDPOINT || "");
+            if (!m) { console.error("Account-ID nicht ableitbar."); process.exit(1); }
+            console.log("::add-mask::" + m[1]); console.log(m[1]);
+          ' | tail -1)
+          echo "::add-mask::$ACC"
+          export CLOUDFLARE_ACCOUNT_ID="$ACC"
+          SUB=$(cd worker && npx --yes wrangler@4.147.0 subdomain get 2>/dev/null | grep -oE '[a-z0-9-]+\.workers\.dev' | head -1)
+          if [ -z "$SUB" ]; then echo "Keine workers.dev-Adresse ermittelbar."; exit 0; fi
+          node scripts/market/smoke-vu-live.mjs \
+            --url "https://vu-live.$SUB" --seconds 45 \
+            --report-name vu-live-proof-workersdev.json
+
+      - name: Kein Schluessel in den Berichten
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: node scripts/market/assert-no-secrets.mjs --all --record
+
+      - name: Berichte committen
+        if: always()
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/commercial
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+          else
+            git commit -m "vu-live: Production-Proof aus Lauf ${{ github.run_id }}"
+            # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### vu-live — Production-Proof'
+            echo ''
+            for F in vu-live-proof-domain vu-live-proof-workersdev; do
+              if [ -f "quant/data/market/commercial/$F.json" ]; then
+                node -e '
+                  const name = process.argv[1];
+                  const r = require("./quant/data/market/commercial/" + name + ".json");
+                  console.log("#### `" + (r.endpoint || "—") + "`");
+                  console.log("");
+                  console.log("Sitzung: **" + (r.session ? r.session.phase : "?") + "** · Ergebnis: **" +
+                              r.result + "**" + (r.reason ? " (" + r.reason + ")" : ""));
+                  console.log("");
+                  console.log("| Prüfung | Ergebnis |");
+                  console.log("|---|---|");
+                  for (const c of r.checks) console.log("| " + c.question + " | " + (c.ok ? "ok" : "**FEHLT**") + " |");
+                  if (r.latency && r.latency.firstTickMs) {
+                    console.log("");
+                    console.log("| Titel | erster Kurs (ms) |");
+                    console.log("|---|---|");
+                    for (const k of Object.keys(r.latency.firstTickMs)) {
+                      const v = r.latency.firstTickMs[k];
+                      console.log("| " + k + " | " + (v === null ? "keiner" : v) + " |");
+                    }
+                    console.log("");
+                    console.log("Median **" + r.latency.median + " ms**, längster **" + r.latency.max + " ms**.");
+                    console.log("");
+                    console.log("_" + r.latency.note + "_");
+                  }
+                  if (r.healthAfter && r.healthAfter.budget) {
+                    const b = r.healthAfter.budget;
+                    console.log("");
+                    console.log("Kontingent: **" + b.verdict + "** · " + b.used.requests +
+                                " Anfragen · " + b.used.providerMessages + " Anbieternachrichten · " +
+                                b.used.peakSymbols + " Titel gleichzeitig.");
+                  }
+                  console.log("");
+                ' "$F"
+              fi
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # --- cloudflare-wecker: vormals cloudflare-waker-proof.yml (Cloudflare — Intraday-Wecker: Produktionsnachweis)
+  cloudflare-wecker:
+    needs: auswahl
+    if: needs.auswahl.outputs.cloudflare_wecker == 'true'
+    concurrency:
+      group: vu-intraday-waker-proof-${{ github.ref_name }}
+      cancel-in-progress: false
+    name: Dem Wecker zuhoeren
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 1. Liegt der Schluessel wirklich bei Cloudflare?
+      #    `secret list` nennt Namen und Typen, nie Werte.
+      - name: Der Schluessel liegt bei Cloudflare
+        id: secret
+        working-directory: worker-waker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if npx --yes wrangler@4.147.0 secret list 2>/dev/null | grep -q 'GITHUB_APP_PRIVATE_KEY'; then
+            echo "GITHUB_APP_PRIVATE_KEY ist hinterlegt."
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "GITHUB_APP_PRIVATE_KEY fehlt - ohne ihn ist jeder weitere Nachweis sinnlos."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      # 2. Und sagt der Wecker selbst dasselbe? Der Zustandspunkt ist
+      #    oeffentlich und nennt nur, OB etwas hinterlegt ist.
+      - name: Der Wecker sagt dasselbe
+        id: status
+        run: |
+          ANTWORT=$(curl -sS --max-time 20 https://vu-intraday-waker.little-credit-15d3.workers.dev/status)
+          echo "$ANTWORT" | tee /tmp/status.json
+          echo ''
+          node -e '
+            const s = JSON.parse(require("fs").readFileSync("/tmp/status.json","utf8"));
+            const fehler = [];
+            if (s.ausweis !== "github-app") fehler.push("ausweis ist " + s.ausweis);
+            if (s.schluesselHinterlegt !== true) fehler.push("schluesselHinterlegt ist " + s.schluesselHinterlegt);
+            if (s.appIdHinterlegt !== true) fehler.push("appIdHinterlegt ist " + s.appIdHinterlegt);
+            if (/PRIVATE KEY|ghs_|ghp_/.test(JSON.stringify(s))) fehler.push("der Zustandspunkt verraet Schluesselmaterial");
+            if (fehler.length) { console.error("NICHT BESTANDEN: " + fehler.join("; ")); process.exit(1); }
+            console.log("Zustandspunkt in Ordnung: github-app, App ID und Schluessel hinterlegt, nichts verraten.");
+          '
+
+      # 3. Zuhoeren. Jeder Cron-Takt schreibt genau ein Ereignis.
+      #    `timeout` beendet den Strom kontrolliert; 124 ist dabei der
+      #    Erfolgsfall, kein Fehler.
+      #
+      #    ERSTER ANLAUF, ERSTER FEHLER: hier stand `--format=json`, und
+      #    ausgegeben wurde trotzdem das Klartextformat. Der Parser sah
+      #    108 Zeilen und verstand keine - gemeldet wurde nur die Zahl
+      #    108. Eine Zahl ohne Probe ist kein Befund. Deshalb wird jetzt
+      #    immer ein Ausschnitt gedruckt, und gelesen wird formatfrei:
+      #    gesucht werden die Ereignisnamen, die der Wecker selbst
+      #    schreibt - die stehen in beiden Formaten drin.
+      - name: Drei Takte mithoeren
+        working-directory: worker-waker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+          IN_MINUTEN: ${{ inputs.minuten }}
+        run: |
+          case "$IN_MINUTEN" in ''|*[!0-9]*) echo "::error::minuten muss eine Zahl sein"; exit 1;; esac
+          echo "Zuhoeren ab $(date -u '+%H:%M:%S') UTC fuer ${IN_MINUTEN} Minuten."
+          set +e
+          timeout "${IN_MINUTEN}m" npx --yes wrangler@4.147.0 tail --format json \
+            > /tmp/tail-roh.txt 2>/tmp/tail-fehler.txt
+          CODE=$?
+          set -e
+          if [ "$CODE" != "124" ] && [ "$CODE" != "0" ]; then
+            echo "wrangler tail endete mit $CODE:"
+            sed -E 's/[A-Za-z0-9_-]{30,}/<maskiert>/g' /tmp/tail-fehler.txt | tail -20
+          fi
+          # Maskieren, bevor irgendetwas gedruckt wird.
+          sed -E 's/gh[pousr]_[A-Za-z0-9]+/<maskiert>/g; s/[A-Za-z0-9+\/=]{60,}/<maskiert>/g' \
+            /tmp/tail-roh.txt > /tmp/tail.txt
+          echo "Roh-Zeilen: $(wc -l < /tmp/tail.txt)"
+          echo ''
+          echo '--- Probe der ersten 25 Zeilen (maskiert) ---'
+          head -25 /tmp/tail.txt | cut -c1-240
+          echo '--- Ende der Probe ---'
+
+      - name: Was der Wecker gesagt hat
+        id: urteil
+        run: |
+          set -o pipefail   # sonst gewinnt tee, und die Pruefung kann nicht durchfallen
+          node -e '
+            const fs = require("node:fs");
+            const roh = fs.readFileSync("/tmp/tail.txt", "utf8");
+
+            /* Formatfrei lesen. Der Wecker schreibt je Takt eine Zeile
+               JSON mit dem Feld "ereignis" - egal ob wrangler sie als
+               JSON-Ereignis verpackt oder im Klartext durchreicht,
+               dieser Bestandteil steht drin. */
+            const NAMEN = ["geweckt","bereitsWach","lageUnbekannt","installationErmittelt",
+                           "ausgeliefert","auslieferungLaeuft","auslieferungLageUnbekannt"];
+            const FEHLER = ["keinSchluessel","keineAppId","keinRepo","schluesselUnlesbar",
+                            "signaturFehlgeschlagen","keineInstallation","keinZugangstoken",
+                            "weckenFehlgeschlagen","auslieferungFehlgeschlagen"];
+
+            /* Im JSON-Format steckt die Zeile des Weckers als
+               escapter String IN einem JSON-Feld: \"ereignis\". Erst
+               entschaerfen, dann suchen - sonst findet die Suche nur
+               das Klartextformat und meldet beim anderen null Treffer,
+               ohne dass jemand merkt warum. */
+            const flach = roh.replace(/\\"/g, "\"");
+            const gefunden = [];
+            const re = /"ereignis"\s*:\s*"([A-Za-z]+)"/g;
+            let m;
+            while ((m = re.exec(flach)) !== null) gefunden.push(m[1]);
+
+            /* Takte zaehlen: jede Zeile, die einen Cron-Ausloeser nennt.
+               Beide Formate nennen ihn - als "cron" im JSON oder als
+               "scheduled at" im Klartext. */
+            const taktZeilen = roh.split("\n").filter((z) =>
+              /"cron"\s*:/.test(z) || /scheduled at/i.test(z) || /\bTrigger\b.*cron/i.test(z));
+
+            console.log("Ereignisse des Weckers: " + (gefunden.length ? gefunden.join(", ") : "keine"));
+            console.log("Zeilen mit Cron-Ausloeser: " + taktZeilen.length);
+            for (const z of taktZeilen.slice(0, 10)) console.log("  " + z.slice(0, 200));
+
+            const schlecht = gefunden.filter((e) => FEHLER.includes(e));
+            const gut = gefunden.filter((e) => NAMEN.includes(e));
+            const takte = Math.max(taktZeilen.length,
+                                   gefunden.filter((e) => e === "geweckt" || e === "bereitsWach").length);
+
+            console.log("");
+            console.log("Takte:            " + takte);
+            console.log("in Ordnung:       " + gut.length + "  (" + gut.join(", ") + ")");
+            console.log("Fehlerereignisse: " + schlecht.length +
+                        (schlecht.length ? "  -> " + schlecht.join(", ") : ""));
+
+            if (/PRIVATE KEY/.test(roh)) {
+              console.error("NICHT BESTANDEN: Schluesselmaterial im Protokoll."); process.exit(1);
+            }
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "takte=" + takte + "\n");
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "fehler=" + schlecht.length + "\n");
+            if (schlecht.length) { console.error("NICHT BESTANDEN: der Wecker meldet Fehler."); process.exit(1); }
+            if (takte < 3) { console.error("NICHT BESTANDEN: weniger als drei Cron-Takte gehoert."); process.exit(1); }
+            console.log("BESTANDEN");
+          ' | tee /tmp/urteil.txt
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Wecker-Nachweis'
+            echo ''
+            echo '```'
+            cat /tmp/status.json 2>/dev/null || echo 'kein Zustandspunkt'
+            echo '```'
+            echo ''
+            cat /tmp/urteil.txt 2>/dev/null || echo 'kein Urteil'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # --- currency: vormals currency-production-proof.yml (Currency Layer - Nachweis am ausgelieferten Stand)
+  currency:
+    needs: auswahl
+    if: needs.auswahl.outputs.currency == 'true'
+    concurrency:
+      group: monitor-currency-${{ github.ref_name }}
+      cancel-in-progress: false
+    env:
+      IN_SITE: ${{ inputs.site }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # In den Projektbaum, nicht in ein Praefix: der ESM-Aufloeser von
+      # Node liest NODE_PATH nicht.
+      - name: Playwright (Chromium)
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      # Kommt der Vertrag ueberhaupt aus main beim Nutzer an? Das ist die
+      # erste Frage und die billigste: ohne die Module rechnet der Browser
+      # nichts um, und jeder weitere Nachweis waere Theater.
+      - name: Der Vertrag wird ausgeliefert
+        id: delivered
+        run: |
+          set -o pipefail
+          SITE="$IN_SITE"
+          fehlt=0
+          # /discover-v2/ ist seit der Discover-Konsolidierung nur noch ein
+          # Weiterleitungs-Alias ohne eigene Skripte; gezaehlt wird die eine
+          # kanonische Seite.
+          for seite in /discover/; do
+            n=$(curl -sf --max-time 30 "$SITE$seite" | grep -o 'quant/engines/fx/[a-z-]*\.js' | sort -u | wc -l)
+            echo "$seite laedt $n Kernmodule"
+            [ "$n" -ge 11 ] || { echo "ABBRUCH: $seite laedt nur $n von 11"; fehlt=1; }
+          done
+          # Die EZB-Reihe selbst muss abrufbar sein, sonst faellt jede
+          # Umrechnung still auf den nativen Wert zurueck.
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$SITE/quant/data/market/fx/ecb/EURUSD.json")
+          echo "EURUSD.json: HTTP $code"
+          [ "$code" = "200" ] || { echo "ABBRUCH: EZB-Reihe nicht ausgeliefert"; fehlt=1; }
+          exit $fehlt
+
+      # Die neun Nachweistitel des Owners. Jeder deckt einen anderen Pfad
+      # ab: USD->EUR, die Identitaet bei SAP/ASML (EUR ist schon EUR, es
+      # darf NICHTS passieren), und vier Kreuzkurse ueber eine dritte
+      # Waehrung.
+      - name: UI1-UI8 fuer die neun Nachweistitel
+        id: titles
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          fehl=""
+          for t in AAPL NVDA MSFT SAP ASML NVO TM BABA GSK; do
+            echo "::group::$t"
+            if node scripts/quality/verify-currency-ui.mjs --url "$IN_SITE" --ticker "$t" 2>&1 | tee "proof-$t.txt"; then
+              grep -q 'CURRENCY_UI_PROOF = FAIL' "proof-$t.txt" && fehl="$fehl $t"
+            else
+              fehl="$fehl $t"
+            fi
+            echo "::endgroup::"
+          done
+          if [ -n "$fehl" ]; then echo "FEHLGESCHLAGEN:$fehl"; exit 1; fi
+          echo "Alle neun Nachweistitel bestanden."
+
+      - name: Protokolle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: currency-production-proof
+          path: proof-*.txt
+          if-no-files-found: ignore
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo "## Currency Layer am ausgelieferten Stand"
+            echo ""
+            echo "- Seite: $IN_SITE"
+            echo "- Vertrag ausgeliefert: ${{ steps.delivered.outcome }}"
+            echo "- Neun Nachweistitel: ${{ steps.titles.outcome }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+          test '${{ steps.delivered.outcome }}' = 'success'
+          test '${{ steps.titles.outcome }}' = 'success'
+
+  # --- discover: vormals discover-live-smoke.yml (Discover Live-Rauchtest (Browser-QA gegen die veroeffentlichte Seite))
+  discover:
+    needs: auswahl
+    if: needs.auswahl.outputs.discover == 'true'
+    concurrency:
+      group: monitor-discover-${{ github.ref_name }}
+      cancel-in-progress: false
+    env:
+      IN_SITE: ${{ inputs.site }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright (Chromium)
+        run: |
+          npm init -y > /dev/null
+          npm install --no-save --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
+          npx playwright install --with-deps chromium webkit
+
+      - name: Freshness der veroeffentlichten Seite (streng)
+        id: freshness
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          node scripts/market/check-freshness.mjs --strict --site="$IN_SITE" | tee smoke-freshness.txt
+
+      - name: Browser-QA Discover (Start, Welten, Suche, Feed, Aktienseite, Barrierefreiheit)
+        id: qa
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          node scripts/discover/browser-qa.mjs --url "$IN_SITE" --out smoke-shots/discover | tee smoke-qa.txt
+
+      - name: Browser-QA Live (Tagesverlauf, Frische, Zeitraeume, Verbraucher-Chart)
+        id: qalive
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          node scripts/discover/browser-qa-live.mjs "$IN_SITE" smoke-shots/live | tee smoke-qalive.txt
+
+      - name: Browser-QA Maerkte (Uebersicht, Markt jetzt, Pulse, Details; Chromium + WebKit)
+        id: qamaerkte
+        continue-on-error: true
+        run: |
+          # Beide Engines laufen immer - ein roter Chromium-Lauf darf den
+          # WebKit-Befund nicht verdecken. Rot, wenn eine der beiden rot ist.
+          set -o pipefail
+          chromium=0; webkit=0
+          node scripts/discover/browser-qa-maerkte.mjs --url "$IN_SITE" --out smoke-shots/maerkte --realtime | tee smoke-qamaerkte.txt || chromium=$?
+          node scripts/discover/browser-qa-maerkte.mjs --url "$IN_SITE" --out smoke-shots/maerkte --engine webkit | tee -a smoke-qamaerkte.txt || webkit=$?
+          test "$chromium" -eq 0 && test "$webkit" -eq 0
+
+      - name: Screenshots und Protokolle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: discover-live-smoke
+          path: |
+            smoke-shots
+            smoke-*.txt
+          if-no-files-found: ignore
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo "### Discover Live-Rauchtest gegen $IN_SITE"
+            echo ''
+            echo "| Pruefung | Ergebnis |"; echo "|---|---|"
+            echo "| Freshness (streng) | ${{ steps.freshness.outcome }} |"
+            echo "| Browser-QA Discover | ${{ steps.qa.outcome }} |"
+            echo "| Browser-QA Live | ${{ steps.qalive.outcome }} |"
+            echo "| Browser-QA Maerkte | ${{ steps.qamaerkte.outcome }} |"
+            for f in smoke-freshness.txt smoke-qa.txt smoke-qalive.txt smoke-qamaerkte.txt; do
+              echo ''; echo "#### $f"; echo '```'; tail -40 "$f" 2>/dev/null || echo "kein Ergebnis"; echo '```'
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Ergebnis
+        if: steps.freshness.outcome == 'failure' || steps.qa.outcome == 'failure' || steps.qalive.outcome == 'failure' || steps.qamaerkte.outcome == 'failure'
+        run: |
+          echo "::error::Live-Rauchtest nicht bestanden (siehe Zusammenfassung)."
+          exit 1
+
+  # --- discover-realtime: vormals discover-realtime-qa.yml (Discover — Realtime im echten Browser (§19/§20))
+  discover-realtime:
+    needs: auswahl
+    if: needs.auswahl.outputs.discover_realtime == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: monitor-discover-realtime-${{ github.ref_name }}
+      cancel-in-progress: false
+    name: Aktienseite mit echtem Strom
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Handelszeit einordnen
+        run: |
+          node -e '
+            const MH = require("./quant/engines/realtime/market-hours.js");
+            const cal = JSON.parse(require("fs").readFileSync("./quant/config/market-calendar.json", "utf8"));
+            const s = MH.sessionAt(Date.now(), { calendar: cal, exchange: "XNYS" });
+            console.log("Sitzung: " + s.phase + " (" + s.localTime + " New York)");
+            if (s.phase !== "REGULAR") {
+              console.log("Ausserhalb der regulaeren Sitzung sind die Kursnachweise nicht aussagekraeftig.");
+            }
+          '
+
+      - name: Playwright (Chromium)
+        run: |
+          npm init -y > /dev/null
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      - name: Zertifikat fuer den echten Namen
+        run: |
+          mkdir -p /tmp/vu-tls
+          openssl req -x509 -newkey rsa:2048 -nodes -days 2 \
+            -keyout /tmp/vu-tls/key.pem -out /tmp/vu-tls/cert.pem \
+            -subj "/CN=research.visionuniverse.de" \
+            -addext "subjectAltName=DNS:research.visionuniverse.de" 2>/dev/null
+          echo "Zertifikat erzeugt (selbstsigniert, nur fuer diesen Lauf)."
+
+      - name: Arbeitsbaum ueber TLS ausliefern
+        run: |
+          node scripts/discover/serve-https.mjs --port 8443 > /tmp/tls.log 2>&1 &
+          sleep 3
+          cat /tmp/tls.log
+          curl -sk https://127.0.0.1:8443/discover/data/meta.json | head -c 120 && echo ""
+
+      - name: Der Schalter steht auf an
+        run: |
+          node -e '
+            const m = require("./discover/data/meta.json");
+            const s = m.realtime.stream;
+            console.log("stream.available =", s.available, "| url =", s.url);
+            if (!s.available || !s.url) {
+              console.error("Der Strom ist in der Auslieferung nicht eingeschaltet - dieser Nachweis waere leer.");
+              process.exit(1);
+            }
+          '
+
+      - name: Aktienseiten beobachten, Abriss und Wiederanlauf
+        id: qa
+        env:
+          # Eingaben nur ueber env: (ADR-005); ohne Dispatch die bisherigen Vorgaben
+          IN_SYMBOLS: ${{ github.event_name == 'workflow_dispatch' && inputs.symbols || 'AAPL,NVDA,MSFT,VLO,PANW' }}
+          IN_WATCH_SECONDS: ${{ github.event_name == 'workflow_dispatch' && inputs.watchSeconds || '60' }}
+        run: |
+          node scripts/discover/browser-qa-realtime.mjs \
+            --symbols "$IN_SYMBOLS" \
+            --watch-seconds "$IN_WATCH_SECONDS" \
+            --shots docs/screenshots/discover-v41-realtime
+
+      - name: Aufnahmen sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: realtime-shots
+          path: docs/screenshots/discover-v41-realtime
+          if-no-files-found: warn
+
+      - name: Kein Schluessel im Bericht
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: node scripts/market/assert-no-secrets.mjs --all --record
+
+      - name: Bericht committen
+        if: always()
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/commercial docs/screenshots/discover-v41-realtime
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+          else
+            git commit -m "Realtime-Browser-QA aus Lauf ${{ github.run_id }}"
+            # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Realtime auf der Aktienseite — echter Browser, echter Strom'
+            echo ''
+            if [ -f quant/data/market/commercial/vu-realtime-browser-qa.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/vu-realtime-browser-qa.json");
+                console.log("Ursprung: `" + r.origin + "` · Sitzung: **" + r.session.phase + "**");
+                console.log("");
+                console.log("| Titel | Strom | Ticks | erster Kurs | Anbieter→Cloudflare | Cloudflare→Browser | E2E | Chart |");
+                console.log("|---|---|---|---|---|---|---|---|");
+                for (const s of r.symbols) {
+                  const l = s.latencyMs;
+                  console.log("| " + s.symbol + " | " + s.verdict + " | " + s.ticks + " | " +
+                    (s.firstTickMs === null ? "—" : s.firstTickMs + " ms") + " | " +
+                    (l ? l.providerToCloudflare + " ms" : "—") + " | " +
+                    (l ? l.cloudflareToClient + " ms" : "—") + " | " +
+                    (l ? "**" + l.endToEnd + " ms**" : "—") + " | " + s.chartUpdatesAfterLoad + "× |");
+                }
+                console.log("");
+                console.log("_" + r.honesty + "_");
+                console.log("");
+                if (r.reconnect) {
+                  console.log("**Abriss und Wiederanlauf**");
+                  console.log("");
+                  console.log("| Zeitpunkt | Zustand | verbunden | Etikett |");
+                  console.log("|---|---|---|---|");
+                  for (const k of ["vorher", "nachAbriss", "nachWiederanlauf"]) {
+                    const x = r.reconnect[k];
+                    if (x) console.log("| " + k + " | " + x.state + " | " + x.connected + " | " + (x.label || "—") + " |");
+                  }
+                  console.log("");
+                }
+                console.log("| Prüfung | Ergebnis |");
+                console.log("|---|---|");
+                for (const c of r.checks) console.log("| " + c.question + " | " + (c.ok ? "ok" : "**FEHLT**") + " |");
+                console.log("");
+                console.log("**" + r.result + "**" + (r.reason ? " (" + r.reason + ")" : ""));
+              '
+            else
+              echo 'Kein Bericht entstanden.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # --- europe-discover: vormals europe-discover-release-qa.yml (Europe Discover published release QA)
+  europe-discover:
+    needs: auswahl
+    if: needs.auswahl.outputs.europe_discover == 'true'
+    concurrency:
+      group: europe-discover-live-qa-${{ github.ref_name }}-${{ github.sha }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      # No full clone: fetch-depth 0 pulled every branch, tag and blob (.git
+      # about 16 GB). On 03.11.2026 run 41674582295 spent 43.5 of its 45
+      # minutes in checkout (attempt 1) and hung there until the timeout
+      # (attempt 2); the browser checks never got to run.
+      # The QA only executes scripts/discover and scripts/access-gate; the
+      # publication binding (resolve-europe-live-release.mjs) needs commit
+      # and tree history, never file contents of other commits. So: a
+      # blobless, sparse, shallow checkout, then a targeted deepening.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 50
+          filter: blob:none
+          sparse-checkout: |
+            scripts/discover
+            scripts/access-gate
+      # The resolver binds the reviewed commit to the latest first-parent
+      # commit that touched the protected Europe code or data scope. In a
+      # shallow history the boundary commit looks as if it touched every
+      # path, so the found baseline must not be a shallow boundary commit.
+      # Deepen (commits and trees only, no blobs) until it is not; if it
+      # never is, fail loudly instead of binding to a wrong baseline.
+      - name: First-parent history for the publication binding (blobless, deepened until the baseline is real)
+        env:
+          REVIEWED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          code='core discover scripts/discover scripts/marketstack quant/ui quant/engines'
+          data='discover/data/europe discover/data/search/GLOBAL.json discover/data/search/US_REAL.json discover/data/global/home.json'
+          boundary_hit() {
+            local c d
+            c="$(git log --first-parent -1 --format=%H "$REVIEWED_SHA" -- $code)"
+            d="$(git log --first-parent -1 --format=%H "$REVIEWED_SHA" -- $data)"
+            test -n "$c" && test -n "$d" || return 0
+            if [ -f "$(git rev-parse --git-dir)/shallow" ] && grep -qxF -e "$c" -e "$d" "$(git rev-parse --git-dir)/shallow"; then return 0; fi
+            echo "code baseline candidate: $c"; echo "data baseline candidate: $d"
+            return 1
+          }
+          ok=""
+          for deepen in 0 200 1000 5000; do
+            if [ "$deepen" != 0 ]; then
+              echo "baseline candidate is a shallow boundary - deepening by $deepen"
+              git fetch --no-tags --filter=blob:none --deepen="$deepen" origin "$REVIEWED_SHA"
+            fi
+            if ! boundary_hit; then ok=1; break; fi
+          done
+          if [ -z "$ok" ]; then echo "::error::no real production baseline within the fetched history"; exit 1; fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned browser tools
+        run: |
+          npm install --prefix /tmp/europe-qa --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
+          /tmp/europe-qa/node_modules/.bin/playwright install --with-deps chromium webkit
+      - name: Resolve verified actual publication for europe-live-target.json
+        id: resolve_europe
+        if: ${{ !cancelled() }}
+        env:
+          BASELINE_SOURCE_SHA: ${{ github.sha }}
+          SITE_URL: https://research.visionuniverse.de
+          RELEASE_TARGET_OUT: ${{ runner.temp }}/europe-live-target.json
+        run: node scripts/discover/resolve-europe-live-release.mjs
+      - name: Verify exact published release on desktop and iPhone WebKit
+        if: ${{ !cancelled() && steps.resolve_europe.outcome == 'success' }}
+        env:
+          NODE_PATH: /tmp/europe-qa/node_modules
+          SITE_URL: https://research.visionuniverse.de
+          QA_OUT: ${{ runner.temp }}/europe-live-qa
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/discover/europe-public-live-qa.mjs
+      - name: Upload public screenshots and validation receipts
+        # Both browser suites retain evidence even when either reports a failure.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: europe-discover-live-${{ github.sha }}
+          path: ${{ runner.temp }}/europe-live-qa/
+          if-no-files-found: error
+      - name: Resolve verified actual publication for global-live-target.json
+        id: resolve_global
+        if: ${{ !cancelled() }}
+        env:
+          BASELINE_SOURCE_SHA: ${{ github.sha }}
+          SITE_URL: https://research.visionuniverse.de
+          RELEASE_TARGET_OUT: ${{ runner.temp }}/global-live-target.json
+        run: node scripts/discover/resolve-europe-live-release.mjs
+      - name: Verify global search, full chart ranges and saved watchlists
+        if: ${{ !cancelled() && steps.resolve_global.outcome == 'success' }}
+        env:
+          NODE_PATH: /tmp/europe-qa/node_modules
+          SITE_URL: https://research.visionuniverse.de
+          QA_OUT: ${{ runner.temp }}/global-discover-live-qa
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/discover/global-live-qa.mjs
+      - name: Upload global browser validation receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: global-discover-live-${{ github.sha }}
+          path: ${{ runner.temp }}/global-discover-live-qa/
+          if-no-files-found: error
+      - name: Resolve verified actual publication for continuity-live-target.json
+        id: resolve_continuity
+        if: ${{ !cancelled() }}
+        env:
+          BASELINE_SOURCE_SHA: ${{ github.sha }}
+          SITE_URL: https://research.visionuniverse.de
+          RELEASE_TARGET_OUT: ${{ runner.temp }}/continuity-live-target.json
+        run: node scripts/discover/resolve-europe-live-release.mjs
+      - name: Verify all 449 full histories and available ranges on desktop and iPhone WebKit
+        if: ${{ !cancelled() && steps.resolve_continuity.outcome == 'success' }}
+        env:
+          NODE_PATH: /tmp/europe-qa/node_modules
+          SITE_URL: https://research.visionuniverse.de
+          QA_OUT: ${{ runner.temp }}/europe-continuity-live-qa
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/discover/europe-continuity-live-qa.mjs
+      - name: Upload all-449 continuity receipts and MIC screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: europe-continuity-449-live-${{ github.sha }}
+          path: ${{ runner.temp }}/europe-continuity-live-qa/
+          if-no-files-found: error
+
+  # --- realtime: vormals realtime-production-smoke.yml (Realtime Production Smoke (veroeffentlichte Seite))
+  realtime:
+    needs: auswahl
+    if: needs.auswahl.outputs.realtime == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: monitor-realtime-${{ github.ref_name }}
+      cancel-in-progress: false
+    name: Aktienseite in Produktion, mit echtem Strom
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Handelszeit einordnen
+        run: |
+          node -e '
+            const MH = require("./quant/engines/realtime/market-hours.js");
+            const kal = require("./quant/config/market-calendar.json");
+            const s = MH.sessionAt(Date.now(), { calendar: kal, exchange: "XNYS" });
+            console.log("Sitzung: " + s.phase + " " + s.localTime + " New York, offen: " + s.isOpen);
+          '
+
+      - name: Playwright (Chromium)
+        run: |
+          npm init -y > /dev/null
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      - name: Aktienseiten in Produktion beobachten
+        id: smoke
+        env:
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+          IN_SYMBOLS: ${{ inputs.symbols }}
+          IN_WATCH_SECONDS: ${{ inputs.watchSeconds }}
+        run: |
+          set -o pipefail
+          node scripts/discover/browser-qa-realtime.mjs --live \
+            --symbols "$IN_SYMBOLS" \
+            --watch-seconds "$IN_WATCH_SECONDS" \
+            --shots production-shots | tee production-smoke.txt
+
+      - name: Cloudflare-Zustand nach dem Lauf (Budget-Waechter, keine Schluessel)
+        if: always()
+        run: |
+          echo "### live.visionuniverse.de"
+          curl -sS --max-time 20 https://live.visionuniverse.de/version || true
+          echo ""
+          curl -sS --max-time 20 https://live.visionuniverse.de/health || true
+          echo ""
+
+      - name: Zero-Cost und Consumer-Scans auf dem ausgelieferten Stand
+        if: always()
+        run: |
+          node scripts/market/assert-zero-cost-mode.mjs
+          node scripts/discover/assert-consumer-clean.mjs
+          node scripts/market/assert-no-secrets.mjs --all
+
+      # Owner-Auftrag vom 19.09.2026, Punkt 8: kein titelabhaengiger
+      # stiller Rueckfall. Geprueft an NBIS, den fuenf Smoke-Titeln, einem
+      # bewusst unvollstaendigen Titel und zehn zufaelligen.
+      - name: Quellzustand-Deckung (Nebius + Smoke + Stichprobe)
+        if: always()
+        run: node scripts/discover/assert-source-state-coverage.mjs
+
+      - name: Aufnahmen und Protokoll
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: realtime-production-smoke
+          path: |
+            production-shots
+            production-smoke.txt
+          if-no-files-found: ignore
+
+      - name: Kein Schluessel im Bericht
+        if: always()
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Bericht committen
+        if: always()
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          for pfad in quant/data/market/commercial/vu-realtime-production-smoke.json \
+                      quant/data/market/commercial/source-state-coverage.json; do
+            [ -e "$pfad" ] && git add "$pfad"
+          done
+          git diff --cached --quiet || git commit -m "Realtime Production Smoke aus Lauf ${{ github.run_id }}"
+          # Vorher: `|| true` auf Pull UND Push - der Schritt war immer gruen,
+          # auch wenn nichts ankam. Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh main
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Realtime Production Smoke'
+            echo ''
+            echo '```'; tail -40 production-smoke.txt 2>/dev/null || echo "kein Ergebnis"; echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # --- technical: vormals technical-live-qa.yml (Technical Live-QA)
+  technical:
+    needs: auswahl
+    if: needs.auswahl.outputs.technical == 'true'
+    concurrency:
+      group: technical-live-qa-${{ github.ref_name }}
+      cancel-in-progress: true
+    env:
+      IN_SITE: ${{ inputs.site || 'https://research.visionuniverse.de' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/technical/world/live-qa.mjs
+            scripts/technical/world/academy-browser-qa.mjs
+            scripts/technical/world/academy-audit-contract.cjs
+            technical/academy/content.json
+            scripts/access-gate
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Playwright (Chromium)
+        run: |
+          npm install --prefix /tmp/pw --no-save --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
+          /tmp/pw/node_modules/.bin/playwright install --with-deps chromium
+      - name: Live-QA (390 px, CPU x4, 150 ms, 1,6 Mbit/s)
+        env:
+          PLAYWRIGHT_PATH: /tmp/pw/node_modules/playwright
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/technical/world/live-qa.mjs "$IN_SITE" technical-live-qa
+      # A queued pre-Academy Pages release must not test a feature it did not publish.
+      # Inspect the triggering production ref as data; execute only the trusted checkout.
+      - name: Academy im veroeffentlichten Produktionsstand vorhanden
+        id: academy_release
+        if: >-
+          github.event_name == 'workflow_dispatch' ||
+          (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.event != 'pull_request')
+        env:
+          IN_RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$IN_RELEASE_SHA" =~ ^[a-f0-9]{40}$ ]] || exit 1
+          git fetch --filter=blob:none --no-tags --depth=1 origin "$IN_RELEASE_SHA"
+          path=$(git ls-tree -r --name-only "$IN_RELEASE_SHA" -- technical/academy/content.json)
+          enabled=false
+          if [ -n "$path" ]; then
+            test -f technical/academy/content.json
+            enabled=true
+          fi
+          echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
+      - name: Strategie-Akademie live (32 Lektionen, 18 vollstaendige Nutzerwege)
+        if: steps.academy_release.outputs.enabled == 'true'
+        env:
+          NODE_PATH: /tmp/pw/node_modules
+          PLAYWRIGHT_PATH: /tmp/pw/node_modules/playwright
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/technical/world/academy-browser-qa.mjs --site "$IN_SITE" --out technical-live-qa/academy
+      - name: Bericht in die Zusammenfassung
+        if: always()
+        run: test -f technical-live-qa/report.md && cat technical-live-qa/report.md >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Bericht und Screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: technical-live-qa
+          path: technical-live-qa
+          retention-days: 14
+
+  # --- vorsorge: vormals vorsorge-live-smoke.yml (Vorsorge Live-Rauchtest)
+  vorsorge:
+    needs: auswahl
+    if: needs.auswahl.outputs.vorsorge == 'true'
+    concurrency:
+      group: monitor-vorsorge-${{ github.ref_name }}
+      cancel-in-progress: false
+    env:
+      IN_SITE: ${{ inputs.site || 'https://research.visionuniverse.de' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/vorsorge/live-smoke.mjs
+            scripts/access-gate
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Playwright (Chromium)
+        run: |
+          npm install --prefix /tmp/pw --no-save --no-audit --no-fund playwright@1.63.0
+          /tmp/pw/node_modules/.bin/playwright install --with-deps chromium
+      - name: Live-Smoke
+        env:
+          PLAYWRIGHT_PATH: /tmp/pw/node_modules/playwright
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: node scripts/vorsorge/live-smoke.mjs "$IN_SITE" vorsorge-live-shots
+      - name: Bericht in die Zusammenfassung
+        if: always()
+        run: test -f vorsorge-live-shots/report.md && cat vorsorge-live-shots/report.md >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vorsorge-live-smoke
+          path: vorsorge-live-shots

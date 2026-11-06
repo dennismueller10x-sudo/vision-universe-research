@@ -606,7 +606,7 @@
     var d = S.data, inv = investors(), dl = nextDeadline(), n = hfCount();
     var featured = FEATURED.map(function (s) { return S.bySlug[s]; }).filter(Boolean);
     document.title = "Hedgefonds — Vision Universe®";
-    root.innerHTML = intro("Was Profis kaufen", "Große Investoren müssen ihre US-Aktien alle drei Monate der Börsenaufsicht melden. Wir zeigen, was sie kaufen und verkaufen.") +
+    root.innerHTML = intro("Was große Fonds gemeldet haben (13F)", "Große Investoren müssen ihre US-Aktien alle drei Monate der Börsenaufsicht melden. Wir zeigen, was sie kaufen und verkaufen.") +
       '<p class="hf-stand"><i aria-hidden="true"></i>Meldungen für ' + esc(d.latestPeriodLabel || "–") + " · geprüft am " + dateDE(d.generatedAt) + "</p>" +
       searchBox("hf-q", "hf-qres", "Investor, Fonds oder Aktie …") +
       '<div class="vu-chips hf-quick">' + POPULAR.map(function (p) { return '<a class="vu-chip" href="#/' + p[1] + "/" + p[2] + '">' + esc(p[0]) + "</a>"; }).join("") + "</div>" +

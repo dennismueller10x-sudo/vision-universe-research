@@ -25,9 +25,12 @@ on:
         type: boolean
         default: false
       approved_catchup:
-        description: 'Freigabeliste docs/data/security-master/eligibility-catchup-2026-11.json anwenden (Nachholen, PR mit Vorher/Nachher)'
+        description: 'Freigabeliste anwenden (Nachholen/Bereinigung, PR mit Vorher/Nachher)'
         type: boolean
         default: false
+      freigabe:
+        description: 'Freigabeliste unter docs/data/security-master/ (Dateiname)'
+        default: 'eligibility-catchup-2026-11.json'
       umfangsfolgen:
         description: 'Nur die Umfangsfolgen nachziehen (Reihen ausserhalb des Umfangs entfernen, Materialisierung anstossen)'
         type: boolean
@@ -71,16 +74,23 @@ jobs:
             --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json" \
             --names "$N/company-names.json"
           mkdir -p "$E/exchange-directory"
-          node scripts/market/apply-exchange-directory.mjs --dir "$E/exchange-directory" --eligibility "$E/out/eligibility.json" \
+          # ETF seit 05.11.2026 (Bereinigung): belegte ETFs gehoeren nicht ins Aktien-Produktuniversum; SPY & Co. stehen
+          # nicht in der Eignung (Multi-Asset-Segment).
+          node scripts/market/apply-exchange-directory.mjs --classes DEBT,ETN,PREFERRED,WARRANT,RIGHT,UNIT,ETF \
+            --dir "$E/exchange-directory" --eligibility "$E/out/eligibility.json" \
             --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json"
 
       - name: Gate (fail closed)
         id: gate
         env:
           IN_APPROVED: ${{ inputs.approved_catchup }}
+          IN_FREIGABE: ${{ inputs.freigabe }}
         run: |
           extra=()
-          if [ "$IN_APPROVED" = "true" ]; then extra=(--approved docs/data/security-master/eligibility-catchup-2026-11.json); fi
+          if [ "$IN_APPROVED" = "true" ]; then
+            case "${IN_FREIGABE:-}" in ''|*/*|*..*) echo "::error::freigabe: nur ein Dateiname"; exit 2;; esac
+            extra=(--approved "docs/data/security-master/$IN_FREIGABE")
+          fi
           set +e
           node scripts/core/eligibility-gate.mjs "${extra[@]}" --prev quant/data/market/security-master/eligibility.json \
             --next "$RUNNER_TEMP/elig/out/eligibility.json" \
@@ -178,6 +188,14 @@ jobs:
             --jq '[.[] | select(.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="pending")] | length')"
           if [ "$offen" != "0" ]; then echo "Materialisierung laeuft schon ($offen) - kein zweiter Anstoss"; exit 0; fi
           gh workflow run product-intelligence-materialization.yml --ref main -f force=true
+
+      - name: Umfangsfolgen - Vorsorge-Ingest anstossen (ausgeschiedene ETFs)
+        # Vorsorge las Reihen ausgeschiedener ETFs aus den Discover-Reihen (05.11.2026, 121 ETFs). Der Ingest holt
+        # alles, was noch nicht im Vorsorge-Universum steht (Zusatz-ETFs aus dem Company Master), und baut neu.
+        if: steps.folgen.outcome == 'success' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run vorsorge-etf-universe.yml --ref main -f nur_zusatz=true
 
       - name: Ergebnis
         if: steps.gate.outputs.decision != 'COMMIT'
