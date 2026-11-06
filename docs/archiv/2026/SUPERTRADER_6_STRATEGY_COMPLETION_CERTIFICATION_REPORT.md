@@ -10,9 +10,9 @@ Stand: 24. Oktober 2026 (Eigentümerentscheidungen E1–E6 eingearbeitet).
 Alle historischen Aussagen sind `DIAGNOSTIC_NOT_CERTIFIED`. Keine Strategie ist live, zertifiziert oder handelbar; alle sind `LIVE_NOT_APPROVED`. Es gibt keine Orders, keine Brokeranbindung und keine Performanceaussage. Die Kennzahlen jedes Laufs liegen versiegelt beim Eigentümer. Öffentlich sind nur Zählungen und Hashes.
 
 Maschinenlesbar und generiert:
-- [SUPERTRADER_6_READINESS_MATRIX.md](SUPERTRADER_6_READINESS_MATRIX.md) und `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`. Sie enthalten 13 Strategien × 15 Dimensionen mit Evidenz je Zelle und werden vom Builder aus Artefakten und Lauf-Belegen erzeugt. Keine Note ist von Hand gesetzt.
+- [SUPERTRADER_6_READINESS_MATRIX.md](../../SUPERTRADER_6_READINESS_MATRIX.md) und `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF6-READINESS.json`. Sie enthalten 13 Strategien × 15 Dimensionen mit Evidenz je Zelle und werden vom Builder aus Artefakten und Lauf-Belegen erzeugt. Keine Note ist von Hand gesetzt.
 - Die Kriterien stehen in `completion/sf6-readiness-criteria.mjs`. Version 1.1.0 wurde festgeschrieben, bevor ein 6.0-Ergebnis gelesen war. Version 1.2.0 setzt die Eigentümerentscheidungen E1–E6 um und macht dabei jedes Kriterium nur strenger.
-- Das prospektive Paper-Protokoll steht in `completion/sf6-paper-protocol-2027.mjs`, erläutert in [SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md](SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md).
+- Das prospektive Paper-Protokoll steht in `completion/sf6-paper-protocol-2027.mjs`, erläutert in [SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md](../../SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md).
 - Die Laufdaten stehen in `completion/sf6-run-facts.mjs`.
 
 ---
@@ -71,7 +71,7 @@ Maschinenlesbar und generiert:
   - **Turtle S1**: zusätzlich eine mehrdeutige Quellenregel.
 
 **Was nach der Integration offen bleibt** (keine 7.0-Phase; jeder Punkt braucht eine eigene Freigabe)
-1. **V4-D1 gezielt prüfen (E1):** ≤ ~260 Kandidaten hinter Referenz-Trades. Quellen in dieser Reihenfolge: vorhandene Tiingo-Felder, Marketstack im bestehenden Zugang, SEC-8-K/10-Q. Keine Massenabrufe, keine neuen Kosten. Plan in [SUPERTRADER_6_V4D1_CONTAINMENT.md](SUPERTRADER_6_V4D1_CONTAINMENT.md), nicht ausgeführt.
+1. **V4-D1 gezielt prüfen (E1):** ≤ ~260 Kandidaten hinter Referenz-Trades. Quellen in dieser Reihenfolge: vorhandene Tiingo-Felder, Marketstack im bestehenden Zugang, SEC-8-K/10-Q. Keine Massenabrufe, keine neuen Kosten. Plan in [SUPERTRADER_6_V4D1_CONTAINMENT.md](../../SUPERTRADER_6_V4D1_CONTAINMENT.md), nicht ausgeführt.
 2. **SF6-PAPER-2027 aktivieren (E2):** erst nach Ihrer Freigabe eines eigenen PRs mit Aufzeichnung und Aufbewahrung. Bis dahin ist das Protokoll nur festgeschrieben.
 3. **Die versiegelten Kennzahlen** von BASE, DQ und Holdout prüfen, auf Ebene von Kennzahlen und Verteilungen (E6).
 4. **EP/PS-Stichprobe (E5):** Nur der priorisierte Plan im Rahmen des bestehenden Budgets ist dokumentiert. Es gibt keine Abrufe.
@@ -82,7 +82,7 @@ Maschinenlesbar und generiert:
 
 | Workstream | Zweig | Inhalt | Maßgeblicher Lauf |
 |---|---|---|---|
-| A – Datenintegrität (#878) | `claude/supertrader-6-data-integrity` | `integrity/discontinuity.mjs` (kausaler Sprung-Detektor, Quarantäne 1.1.0 mit BOOK/PRIOR), `research/run-sf6-integrity.mjs`, Modus `sf6-integrity`, [SUPERTRADER_6_V4D1_CONTAINMENT.md](SUPERTRADER_6_V4D1_CONTAINMENT.md) | [40001276389](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001276389) |
+| A – Datenintegrität (#878) | `claude/supertrader-6-data-integrity` | `integrity/discontinuity.mjs` (kausaler Sprung-Detektor, Quarantäne 1.1.0 mit BOOK/PRIOR), `research/run-sf6-integrity.mjs`, Modus `sf6-integrity`, [SUPERTRADER_6_V4D1_CONTAINMENT.md](../../SUPERTRADER_6_V4D1_CONTAINMENT.md) | [40001276389](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001276389) |
 | B/C/D – Validierung, Modellvarianten (#879) | `claude/supertrader-6-validation` | `research/sf6-references.mjs`, `research/run-sf6-validation.mjs` (Protokoll 1.1.0), `research/sf6-model-variants.mjs` (PP-Stop, HG-Trailing, Darvas-Allzeithoch belegt), `research/minervini-fundamentals-sf6.mjs`, Holdout-Snapshot-Modi, Modi `sf6-validation(-holdout)` | DEV [40001421221](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001421221), Holdout-Capture [39998409317](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/39998409317), Holdout [40007428374](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40007428374) |
 | E – EP/PS-Stichprobe (#880) | `claude/supertrader-6-ep-ps-sample` | `research/kk-sample.mjs` (saubere Präfixe, Schichtung), Cache-only-Modus `kk-intraday-cache`, PS offene Trades und Überlappung, Median-Fix | [40001460163](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/40001460163) (0 Anfragen) |
 | F – Readiness (#881) | `claude/supertrader-6-readiness` | Kriterien 1.2.0 (E1–E6), Paper-Protokoll SF6-PAPER-2027 (nicht aktiviert), Matrix-Builder mit E6-Aufteilung, Laufdaten mit Hash-Abgleich, dieser Bericht | – |
@@ -104,7 +104,7 @@ In der eigenen 6.0-Arbeit fanden zwei unabhängige Reviews vor jedem Ergebnis 4 
 
 ## 3. V4-D1: gelöst oder eingegrenzt?
 
-**Eingegrenzt, nicht gelöst.** Einzelheiten stehen in [SUPERTRADER_6_V4D1_CONTAINMENT.md](SUPERTRADER_6_V4D1_CONTAINMENT.md).
+**Eingegrenzt, nicht gelöst.** Einzelheiten stehen in [SUPERTRADER_6_V4D1_CONTAINMENT.md](../../SUPERTRADER_6_V4D1_CONTAINMENT.md).
 - **Markierung und Schwellen:**
   - Markiert wird eine Obermenge: jede Sitzung mit einem Gesamtrendite-Relativ ≥ 5 bzw. ≤ 1/5 (DQ-K5) oder ≥ 3 bzw. ≤ 1/3 (DQ-K3).
   - k = 5 stammt aus #722 und wurde dort nach einem Datenaudit nachträglich gesetzt.
@@ -325,7 +325,7 @@ Die Konflikte löse ich vor jedem Merge auf dem jeweiligen Zweig mit einem Merge
 | E3 | PP-Stop und HG-Trailing bleiben Forschungsvarianten; keine Aufwertung der Messklassen | Referenzen bei 8/9 Phasen; Varianten zählen nie für CC-2; Messklassen unverändert (#879) |
 | E4 | SIC-Korrelationsgruppen bleiben Research-Proxys | CC-4 schließt sie ausdrücklich aus; die Turtle-Referenzen laufen ohne Korrelationslimits |
 | E5 | keine zusätzlichen EP/PS-Intraday-Abrufe; nur ein priorisierter Plan | Plan in #880 (insgesamt ≈ 2.760 Anfragen im bestehenden Budget), nicht ausgeführt; 0 Abrufe in 6.0 |
-| E6 | Bewertung über Kennzahlen und Verteilungen; Sensitivität sichtbar; Reproduzierbarkeit, Trade-Stabilität und Robustheit getrennt | Matrix-Zeile „E6“ je Strategie; Tabelle in [SUPERTRADER_6_VALIDATION_AND_HOLDOUT.md](SUPERTRADER_6_VALIDATION_AND_HOLDOUT.md) Abschnitt 5; Management Summary |
+| E6 | Bewertung über Kennzahlen und Verteilungen; Sensitivität sichtbar; Reproduzierbarkeit, Trade-Stabilität und Robustheit getrennt | Matrix-Zeile „E6“ je Strategie; Tabelle in [SUPERTRADER_6_VALIDATION_AND_HOLDOUT.md](../../SUPERTRADER_6_VALIDATION_AND_HOLDOUT.md) Abschnitt 5; Management Summary |
 
 ## 15. Prüfungen vor der Merge-Freigabe
 

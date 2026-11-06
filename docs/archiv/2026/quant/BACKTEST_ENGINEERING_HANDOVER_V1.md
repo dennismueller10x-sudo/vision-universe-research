@@ -9,11 +9,11 @@ Rahmen:
 - Die negativen V10–V13-Befunde gelten unverändert.
 
 Einzeldokumente:
-- [BACKTEST_RESULT_CONTRACT_V2.md](BACKTEST_RESULT_CONTRACT_V2.md)
-- [RESEARCH_POPULATION_AND_PORTFOLIO.md](RESEARCH_POPULATION_AND_PORTFOLIO.md)
-- [SETUP_OOS_EVALUATION.md](SETUP_OOS_EVALUATION.md)
-- [BACKTEST_RUNNER.md](BACKTEST_RUNNER.md)
-- Demonstrationsfälle: [backtest-demos/](backtest-demos/)
+- [BACKTEST_RESULT_CONTRACT_V2.md](../../../quant/BACKTEST_RESULT_CONTRACT_V2.md)
+- [RESEARCH_POPULATION_AND_PORTFOLIO.md](../../../quant/RESEARCH_POPULATION_AND_PORTFOLIO.md)
+- [SETUP_OOS_EVALUATION.md](../../../quant/SETUP_OOS_EVALUATION.md)
+- [BACKTEST_RUNNER.md](../../../quant/BACKTEST_RUNNER.md)
+- Demonstrationsfälle: [backtest-demos/](../../../quant/backtest-demos)
 
 ## 1. Ausführbarer Research-Pfad je Art
 
@@ -49,7 +49,7 @@ Heute trifft das auf keine Art zu. A wird nie automatisch zu C.
   - Deterministisch, mit Cache.
 - `research-portfolio.cjs` (opt-in): Stop auf Wochenschluss und maximale Haltedauer. Ohne Optionen byte-identisch, per Golden-Hashes geprüft.
 
-## 3. Reproduzierbare echte Beispiele ([backtest-demos/](backtest-demos/), 16 Fälle)
+## 3. Reproduzierbare echte Beispiele ([backtest-demos/](../../../quant/backtest-demos), 16 Fälle)
 
 Basis: asOf 2025-12-31, wöchentlich, 5 + 5 bp je Seite.
 

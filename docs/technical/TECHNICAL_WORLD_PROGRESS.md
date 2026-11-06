@@ -1,5 +1,8 @@
 # Vision Universe Technical – Fortschrittsbericht und Aufgabenliste
 
+> **Einstieg Technical.** Aktuelle Arbeitsregeln: [CLAUDE.md](../../CLAUDE.md); datierte Entscheidungen: [Neustart-Plan](../PLAN_NEUSTART_2026-11.md). Bei Widersprüchen zu historischen Abschnitten gelten diese Quellen. Weitere Seiten sind Fachbelege, keine parallelen Einstiege. [Landkarte](../README.md).
+
+
 **Stand:** 27.10.2026 · Bibliothek L1–L8 auf `main` (160 Funktionen: 78 Indikatoren, 58 Kerzenmuster, 24 Formationen; Stand je Funktion in [TECHNICAL_LIBRARY.md](TECHNICAL_LIBRARY.md)) · Versionen `indicators` 1.5.0, `candlesticks` 1.1.0, `formations` 1.2.3, `screen-row` 1.8.0, `technical-mtf` 1.1.0 · Auftrag seit 26.10.2026: Bibliothek mit mathematischer und historischer Validierung und Screener-Anbindung.
 Ältere Stände: V1 (PR #919), V2 (PR #923), Menügruppe (PR #925), V3 (PR #929).
 Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst Abschnitt 6 (offene Aufgaben) und Abschnitt 5 (Teststatus).
@@ -241,3 +244,85 @@ Vor PR #918 (Quant-Code in Pakete je Ansicht) riss PR #919 die Grenze der Quant-
 Nach dem Merge von #918 misst die VU2-Browser-QA mit allen Technical-Änderungen **1.606.572 Bytes bei 23 Anfragen**
 (lokal, gebautes Release, 390 und 1440 px, 8/8 Budgets, 96 Prüfungen ohne Befund). Die Anhebung wurde deshalb
 **nicht** umgesetzt; die Grenze bleibt 1.820.000.
+
+## Fachbelege und weiterführende Dokumentation
+
+Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.
+
+- [ELLIOTT_PRODUCT_ARCHITECTURE.md](../ELLIOTT_PRODUCT_ARCHITECTURE.md)
+- [VU_ELLIOTT_ENGINE.md](../VU_ELLIOTT_ENGINE.md)
+- [VU_ELLIOTT_RENDERING.md](../VU_ELLIOTT_RENDERING.md)
+- [VU_TECHNICAL_DATA_SEMANTICS.md](../VU_TECHNICAL_DATA_SEMANTICS.md)
+- [VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md](../VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md)
+- [VU_TECHNICAL_OPPORTUNITY_SCORE.md](../VU_TECHNICAL_OPPORTUNITY_SCORE.md)
+- [VU_TECHNICAL_SNAPSHOT_SPEC.md](../VU_TECHNICAL_SNAPSHOT_SPEC.md)
+- [VU_TECHNICAL_VALIDATION.md](../VU_TECHNICAL_VALIDATION.md)
+- [technical-intelligence/API_V3_MIGRATION.md](../technical-intelligence/API_V3_MIGRATION.md)
+- [technical-intelligence/DATA_FRESHNESS_POLICY.md](../technical-intelligence/DATA_FRESHNESS_POLICY.md)
+- [technical-intelligence/ELLIOTT_ENGINE32_REPORT.md](../technical-intelligence/ELLIOTT_ENGINE32_REPORT.md)
+- [technical-intelligence/ELLIOTT_PROJECTION_ENGINE.md](../technical-intelligence/ELLIOTT_PROJECTION_ENGINE.md)
+- [technical-intelligence/ELLIOTT_PROSPECTIVE_REGISTRY.md](../technical-intelligence/ELLIOTT_PROSPECTIVE_REGISTRY.md)
+- [technical-intelligence/ELLIOTT_SETUP_LIBRARY_V1.md](../technical-intelligence/ELLIOTT_SETUP_LIBRARY_V1.md)
+- [technical-intelligence/ELLIOTT_VALIDATION_REPORT.md](../technical-intelligence/ELLIOTT_VALIDATION_REPORT.md)
+- [technical-intelligence/EXPLORE_HIGHLIGHT_CURATION.md](../technical-intelligence/EXPLORE_HIGHLIGHT_CURATION.md)
+- [technical-intelligence/METHOD_RESEARCH.md](../technical-intelligence/METHOD_RESEARCH.md)
+- [technical-intelligence/PREREGISTRATION.md](../technical-intelligence/PREREGISTRATION.md)
+- [technical-intelligence/PRODUCT_MIGRATION_MANIFEST.md](../technical-intelligence/PRODUCT_MIGRATION_MANIFEST.md)
+- [technical-intelligence/TECHNICAL_INTELLIGENCE_ARCHITECTURE.md](../technical-intelligence/TECHNICAL_INTELLIGENCE_ARCHITECTURE.md)
+- [technical/AI_SEARCH_EVAL.md](AI_SEARCH_EVAL.md)
+- [technical/BACKEND_AUDIT.md](BACKEND_AUDIT.md)
+- [technical/CANDLESTICKS.md](CANDLESTICKS.md)
+- [technical/CANDLESTICK_EVIDENCE.md](CANDLESTICK_EVIDENCE.md)
+- [technical/DATA_CONTRACT.md](DATA_CONTRACT.md)
+- [technical/DQ_TOP20_ESTABLISHED_UPTREND.md](DQ_TOP20_ESTABLISHED_UPTREND.md)
+- [technical/EMA200_MATERIALIZATION.md](EMA200_MATERIALIZATION.md)
+- [technical/EMA_SCREENER_RELEASE.md](EMA_SCREENER_RELEASE.md)
+- [technical/EVENT_FILTERS.md](EVENT_FILTERS.md)
+- [technical/FORMATIONS_LIFECYCLE.md](FORMATIONS_LIFECYCLE.md)
+- [technical/FORMATION_VALIDATION.md](FORMATION_VALIDATION.md)
+- [technical/INDICATORS_CATALOG.md](INDICATORS_CATALOG.md)
+- [technical/INDICATORS_EXTERNAL_REFERENCE.md](INDICATORS_EXTERNAL_REFERENCE.md)
+- [technical/INDICATOR_EVIDENCE.md](INDICATOR_EVIDENCE.md)
+- [technical/MULTI_TIMEFRAME.md](MULTI_TIMEFRAME.md)
+- [technical/S4_TEMPLATE_STUDY.md](S4_TEMPLATE_STUDY.md)
+- [technical/SCREENER_FIELDS_AP4.md](SCREENER_FIELDS_AP4.md)
+- [technical/SCREENER_FIELDS_AP8_L1.md](SCREENER_FIELDS_AP8_L1.md)
+- [technical/SCREENER_FIELDS_AP8_L2.md](SCREENER_FIELDS_AP8_L2.md)
+- [technical/SCREENER_FIELDS_AP8_L3.md](SCREENER_FIELDS_AP8_L3.md)
+- [technical/SCREENER_FIELDS_AP8_L4.md](SCREENER_FIELDS_AP8_L4.md)
+- [technical/SCREENER_FIELDS_AP8_L5.md](SCREENER_FIELDS_AP8_L5.md)
+- [technical/SCREENER_FIELDS_L6.md](SCREENER_FIELDS_L6.md)
+- [technical/SCREENER_FIELDS_L7.md](SCREENER_FIELDS_L7.md)
+- [technical/SCREENER_FIELDS_L9.md](SCREENER_FIELDS_L9.md)
+- [technical/SCREENER_FRESHNESS.md](SCREENER_FRESHNESS.md)
+- [technical/SIGNAL_EVIDENCE.md](SIGNAL_EVIDENCE.md)
+- [technical/STOCK_SUMMARY.md](STOCK_SUMMARY.md)
+- [technical/STRATEGY_ACADEMY.md](STRATEGY_ACADEMY.md)
+- [technical/STRATEGY_ACADEMY_ABNAHME.md](STRATEGY_ACADEMY_ABNAHME.md)
+- [technical/STRATEGY_ACADEMY_AUDIT_002.md](STRATEGY_ACADEMY_AUDIT_002.md)
+- [technical/STRATEGY_ACADEMY_FINAL.md](STRATEGY_ACADEMY_FINAL.md)
+- [technical/STRATEGY_ACADEMY_VISUAL_ABNAHME.md](STRATEGY_ACADEMY_VISUAL_ABNAHME.md)
+- [technical/STRATEGY_ACADEMY_VISUAL_PILOTS.md](STRATEGY_ACADEMY_VISUAL_PILOTS.md)
+- [technical/STRATEGY_ACADEMY_VISUAL_ROLLOUT.md](STRATEGY_ACADEMY_VISUAL_ROLLOUT.md)
+- [technical/STRATEGY_TEMPLATES_PLAN.md](STRATEGY_TEMPLATES_PLAN.md)
+- [technical/STRATEGY_TEMPLATE_S3.md](STRATEGY_TEMPLATE_S3.md)
+- [technical/TECHNICAL_ASSISTANT.md](TECHNICAL_ASSISTANT.md)
+- [technical/TECHNICAL_ASSISTANT_ABNAHME.md](TECHNICAL_ASSISTANT_ABNAHME.md)
+- [technical/TECHNICAL_COMPLETION_2_0.md](TECHNICAL_COMPLETION_2_0.md)
+- [technical/TECHNICAL_COMPLETION_PLAN.md](TECHNICAL_COMPLETION_PLAN.md)
+- [technical/TECHNICAL_LIBRARY.md](TECHNICAL_LIBRARY.md)
+- [technical/TECHNICAL_READINESS_REPORT.md](TECHNICAL_READINESS_REPORT.md)
+- [technical/TECHNICAL_SCHEDULE.md](TECHNICAL_SCHEDULE.md)
+- [technical/WEEKLY_EVIDENCE.md](WEEKLY_EVIDENCE.md)
+- [technical/WEEKLY_FORMATIONS.md](WEEKLY_FORMATIONS.md)
+- [technical/academy-rollout-qa/SCREENSHOTS.md](academy-rollout-qa/SCREENSHOTS.md)
+- [vu2/phases/05-technical-workspaces.md](../vu2/phases/05-technical-workspaces.md)
+- [vu2/phases/34-technical-elliott-rule-integration.md](../vu2/phases/34-technical-elliott-rule-integration.md)
+- [vu2/phases/35-technical-scanner-rule-parity.md](../vu2/phases/35-technical-scanner-rule-parity.md)
+
+### Historische Arbeitsstände
+
+Abgelöste Übergaben und Statusberichte; zur Nachvollziehbarkeit erhalten. Maßgeblich sind der Einstieg und der aktuelle Plan.
+
+- [VU_TECHNICAL_PHASE1_REPORT.md](../archiv/2026/VU_TECHNICAL_PHASE1_REPORT.md)
+- [VU_TECHNICAL_RELEASE_AUDIT.md](../archiv/2026/VU_TECHNICAL_RELEASE_AUDIT.md)

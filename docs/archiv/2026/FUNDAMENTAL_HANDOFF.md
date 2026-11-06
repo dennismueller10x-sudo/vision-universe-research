@@ -3,9 +3,9 @@
 Stand: 25.10.2026. Der Abschnitt „Fundamental – Backend & SEC“ ist abgeschlossen. Dieses Dokument beschreibt nur den aktuellen Stand; es führt nichts Neues ein.
 
 **Vor jeder Änderung lesen:**
-- [CLAUDE.md](../CLAUDE.md): Arbeitsregeln, Gates, Workflows
-- [FUNDAMENTAL.md](FUNDAMENTAL.md): Ansichten, Fachregeln, Methodik
-- [FUNDAMENTAL_SEC_GAPS.md](FUNDAMENTAL_SEC_GAPS.md): offene SEC-Lücken
+- [CLAUDE.md](../../../CLAUDE.md): Arbeitsregeln, Gates, Workflows
+- [FUNDAMENTAL.md](../../FUNDAMENTAL.md): Ansichten, Fachregeln, Methodik
+- [FUNDAMENTAL_SEC_GAPS.md](../../FUNDAMENTAL_SEC_GAPS.md): offene SEC-Lücken
 
 ## 1. Produktionsstand
 
@@ -153,7 +153,7 @@ node scripts/core/data-quality.mjs
 ## 7. Feststehende Designvorgaben
 
 - **Design ist abgenommen.** Keine neue Designrunde, keine Änderungen an Navigation, Charts, Farben oder Icons ohne ausdrückliche Freigabe.
-- **Grundlage** ist die gemeinsame Shell und das Design-System ([PREMIUM_DESIGN_SYSTEM_2.md](PREMIUM_DESIGN_SYSTEM_2.md), [design/VU3_UI_SYSTEM.md](design/VU3_UI_SYSTEM.md)).
+- **Grundlage** ist die gemeinsame Shell und das Design-System ([PREMIUM_DESIGN_SYSTEM_2.md](../../PREMIUM_DESIGN_SYSTEM_2.md), [design/VU3_UI_SYSTEM.md](../../design/VU3_UI_SYSTEM.md)).
   - Fundamental nutzt die `--vu-*`-Tokens. Eigene Tokens stehen in `fundamental/app.css` (`--fu-*`): Akzent Lime `#9ccf1a` hell / `#c8f531` dunkel, Akzenttext `--vu-accent-text`.
   - Richtung (auf/ab) läuft über `--vu-up` / `--vu-down`.
 - **Theme:** Hell und Dunkel, dieselbe gemerkte Wahl wie die ganze Plattform (`localStorage` `vu-discover-theme-v1`). Ohne Wahl startet die Seite hell; der Kommentar in `index.html` („ohne Wahl dunkel“) ist veraltet, maßgeblich ist der Code.

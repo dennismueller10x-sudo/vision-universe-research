@@ -115,7 +115,7 @@ der veröffentlichte Schluss (DQ-SF8-8). DQ-TW-3 ist auf `main` grün.
 - Die lokale Prüfung vom 29.10.2026 gilt als Lauf A (Option B) für die erste Veröffentlichung. Hat sich der Stand
   geändert, gilt der neue Fingerabdruck des Laufs, solange alle Pflichtprüfungen bestehen.
 - Ein täglicher Zeitplan ist grundsätzlich freigegeben. Er wird umgesetzt, sobald die technischen Voraussetzungen
-  erfüllt sind (V1 S1–S7, docs/SUPERTRADER_8_ACTIVATION_READINESS.md), und zwar ohne zusätzliche manuelle Freigabe
+  erfüllt sind (V1 S1–S7, docs/archiv/2026/SUPERTRADER_8_ACTIVATION_READINESS.md), und zwar ohne zusätzliche manuelle Freigabe
   je Datenstand.
 
 ## Freigabevorlage (erste Veröffentlichung, Stand vor den Owner-Entscheidungen)
