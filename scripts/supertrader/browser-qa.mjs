@@ -78,8 +78,9 @@ async function main() {
   const sfCid = SF ? (SF.strategies.find((x) => x.counts.byStage.MODELED_TRADE_PLAN) || SF.strategies[0]).candidateId : 'C03';
   // Regulär (Owner-Freigabe 29.10.2026): die Ansichten sind ohne Schalter da; ohne veroeffentlichten Datenlauf zeigt jede
   // den gekennzeichneten Leerzustand (geprueft auf denselben Routen), nie erfundene Kandidaten
-  routes.push(['sf-strategy', `/supertrader/strategies/?sf=${sfCid}`, SF ? '#sf .sf-card' : '#sf .sf-empty']);
-  routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-empty' : '#sf .sf-empty']);
+  // ST02 (#1446): in der Kandidatenliste steht je Kandidat eine kompakte Zeile .sf-r (Stufe als Urteil, gleiche Daten wie die Karte).
+  routes.push(['sf-strategy', `/supertrader/strategies/?sf=${sfCid}`, SF ? '#sf .sf-card, #sf .sf-r' : '#sf .sf-empty']);
+  routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-r, #sf .sf-empty' : '#sf .sf-empty']);
   routes.push(['sf-stock', `/supertrader/stock/?s=${encodeURIComponent(sfModel ? sfModel.t : 'AAPL')}#sf`, '.st-r-answer']);
   routes.push(['sf-stock-none', '/supertrader/stock/?s=ZZZZ', '.st-r-answer']);
   const SF_ROUTE_SELECTOR = SF ? { home: '.st-r-hero .st-r-ladder', strategies: '[data-tab=methoden] .st-r-mcard' } : { home: '.st-r .vu-blank', strategies: '[data-tab=methoden] .vu-blank' };
@@ -180,9 +181,12 @@ async function main() {
       page.on('requestfailed', (r) => { if (r.url().includes('/supertrader/')) errors.push('requestfailed: ' + r.url()); });
       const t0 = Date.now();
       await page.goto(base + url, { waitUntil: 'networkidle' });
+      // ST03 (#1446): die bisherigen Angaben der Methode (u. a. Modelldepot-Kopf) stehen im Aufklapper „Weitere Angaben dieser Methode“.
+      // Die Pruefung klappt ihn auf, wie ein Leser, und verlangt den Kopf danach sichtbar.
+      if (name === 'strategy-trend52-model') { try { await page.waitForSelector('details.st-r-legacy-acc > summary', { timeout: 15000 }); await page.click('details.st-r-legacy-acc > summary'); } catch { errors.push('Aufklapper „Weitere Angaben dieser Methode“ fehlt'); } }
       try { await page.waitForSelector(selector, { timeout: 15000 }); } catch { errors.push(`selector ${selector} fehlt`); }
       if (SF_ROUTE_SELECTOR[name]) { try { await page.waitForSelector(SF_ROUTE_SELECTOR[name], { timeout: 15000 }); } catch { errors.push(`Research-Kandidaten ${SF_ROUTE_SELECTOR[name]} fehlen`); } }
-      if (/^sf-|^lens$/.test(name)) { try { await page.waitForSelector('.st-r-answer, #sf .sf-card, #sf .sf-empty', { timeout: 15000 }); } catch { /* Routen-Selektor meldet */ } }
+      if (/^sf-|^lens$/.test(name)) { try { await page.waitForSelector('.st-r-answer, #sf .sf-card, #sf .sf-r, #sf .sf-empty', { timeout: 15000 }); } catch { /* Routen-Selektor meldet */ } }
       // Lens (VU3): Kursverlauf ueber den gemeinsamen Kurschart (assets/vu-chart.js); das Chartbild der Methode liegt dort hinter einer Aufklappzeile.
       if (name === 'replay') { try { await page.waitForSelector('.st-chart svg path', { timeout: 20000 }); } catch { errors.push('Chart nicht gezeichnet'); } }
       if (name === 'home') { try { await page.waitForSelector('.st-r-chart svg path.vu-chart-line', { timeout: 20000 }); } catch { errors.push('Chart nicht gezeichnet'); } }
@@ -217,12 +221,14 @@ async function main() {
         replayBanner: /kein aktuelles Signal/.test(document.body.innerText),
         partialAsSignal: /CAN-SLIM-Signal(?! )/.test(document.body.innerText.replace(/kein(em)? CAN-SLIM-Signal/gi, '')),
         // quellentreue Research-Kandidaten: Stufe sichtbar, Plan nur im modellierten Ablauf, keine Signal-/Freigabesprache
-        sfCardsWithoutStage: [...document.querySelectorAll('.sf-card, .sf-row')].filter((c) => !c.querySelector('.sf-stage')).length,
-        sfPlanOutsideModel: document.querySelectorAll('.sf-card:not([data-stage="MODELED_TRADE_PLAN"]) .sf-plan').length,
+        // kompakte Zeile .sf-r (ST02): Stufe als data-stage und sichtbares Urteil (.vu-verdict)
+        sfCardsWithoutStage: [...document.querySelectorAll('.sf-card, .sf-row')].filter((c) => !c.querySelector('.sf-stage')).length
+          + [...document.querySelectorAll('.sf-r')].filter((c) => !c.dataset.stage || !c.querySelector('.vu-verdict')).length,
+        sfPlanOutsideModel: document.querySelectorAll('.sf-card:not([data-stage="MODELED_TRADE_PLAN"]) .sf-plan, .sf-r:not([data-stage="MODELED_TRADE_PLAN"]) .sf-plan').length,
         sfWording: [...document.querySelectorAll('.sf-host')].map((x) => x.innerText.replace(/keine kauf- oder verkaufsempfehlung/ig, '')).join(' ').match(/\bsignal\w*|validiert\w*|jetzt kaufen|kaufsignal/i)?.[0] ?? null,
         sfEmptyState: !!document.querySelector('.sf-empty'),
         sfPresent: !!document.querySelector('.sf-host'),
-        sfCandidates: document.querySelectorAll('.sf-card, .sf-row').length,
+        sfCandidates: document.querySelectorAll('.sf-card, .sf-row, .sf-r').length,
         // auch in zugeklappten Details (textContent): keine internen Regel- oder Datencodes
         sfCodes: ([...document.querySelectorAll('.sf-host')].map((x) => x.textContent).join(' ').match(/\b(?:DON|KK|DAR|MIN|WEI|WEIN|LC|PILOT|TUR|MOKA|RAS)-[A-Z0-9-]+\b|DATA_BLOCKED|[A-Z]{3,}_[A-Z_]{3,}/g) || []).slice(0, 3),
       }));

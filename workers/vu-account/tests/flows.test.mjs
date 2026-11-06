@@ -1244,3 +1244,25 @@ test('Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich', {skip}, async t => 
     } finally { await off.close(); }
   });
 });
+
+test('E4: native Anmeldung, Rotation und Push-RLS durch Worker und PostgreSQL', {skip}, async t => {
+  const env = await createEnvironment(); t.after(() => env.close());
+  await signedIn(env,'mobile-a@example.test'); await signedIn(env,'mobile-b@example.test');
+  const request = async(path,body,token) => {
+    const res = await env.app.handle(new Request(env.api+path,{method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body)}));
+    return {res,data:await res.json()};
+  };
+  const login=await request('/v1/auth/app/login',{email:'mobile-a@example.test',password:PASSWORD});
+  assert.equal(login.res.status,200);assert.match(login.res.headers.get('Cache-Control'),/no-store/);
+  assert.equal(login.res.headers.get('Set-Cookie'),null);
+  const refreshed=await request('/v1/auth/app/refresh',{refreshToken:login.data.refreshToken});
+  assert.equal(refreshed.res.status,200);assert.notEqual(refreshed.data.refreshToken,login.data.refreshToken);
+  const token=refreshed.data.accessToken,device='test_token_aaaaaaaaaaaaaaaaaaaaaaaa';
+  assert.equal((await request('/v1/push/devices',{token:device,platform:'ios'},token)).res.status,200);
+  const other=await request('/v1/auth/app/login',{email:'mobile-b@example.test',password:PASSWORD});
+  assert.equal((await request('/v1/push/devices/remove',{token:device},other.data.accessToken)).res.status,200);
+  const count=await env.pg.json('select count(*)::int from public.push_devices');
+  assert.equal(count,1);
+  assert.equal((await request('/v1/push/devices/remove',{token:device},token)).res.status,200);
+  assert.equal((await request('/v1/auth/app/logout',{},token)).res.status,200);
+});

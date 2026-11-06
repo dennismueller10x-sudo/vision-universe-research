@@ -1,5 +1,8 @@
 # Konten und Abonnements – Architektur
 
+> **Einstieg Konten.** Aktuelle Arbeitsregeln: [CLAUDE.md](../../CLAUDE.md); datierte Entscheidungen: [Neustart-Plan](../PLAN_NEUSTART_2026-11.md). Bei Widersprüchen zu historischen Abschnitten gelten diese Quellen. Weitere Seiten sind Fachbelege, keine parallelen Einstiege. [Landkarte](../README.md).
+
+
 **Stand:** 25.10.2026 · Branch `claude/vision-universe-auth-subscriptions-j5ewxe` · Entscheidung: [ADR-006](../architecture/ADR-006-accounts-and-billing.md)
 Einrichtung: [SETUP.md](SETUP.md) · Live-Freigabe: [LIVE_RELEASE.md](LIVE_RELEASE.md)
 
@@ -280,3 +283,31 @@ Ein PostgreSQL genügt: `docker run --rm -e POSTGRES_PASSWORD=postgres -p 5432:5
 - **Backups:** Supabase Pro täglich (7 Tage); zusätzlich vor jeder Migration `supabase db dump` (verschlüsselt ablegen). Point-in-Time-Recovery als Zusatzoption ab Wachstum.
 - **Wiederherstellung der Abozustände:** Stripe ist führend. `scripts/account/reconcile-stripe.mjs` spielt alle Abos über dieselbe Datenbankfunktion neu ein (Test: Datenverlust simuliert, Zustand vollständig wiederhergestellt, manipulierte/fremde Abos bleiben draußen).
 - **Keine Finanz- oder Marktdaten in Supabase** (Auftragsgrenze): Kurse, Fundamentaldaten und Modelle bleiben in der bestehenden Pipeline.
+
+## Fachbelege und weiterführende Dokumentation
+
+Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.
+
+- [accounts/BREVO.md](BREVO.md)
+- [accounts/DEV_ENVIRONMENT.md](DEV_ENVIRONMENT.md)
+- [accounts/FREIGABEN.md](FREIGABEN.md)
+- [accounts/LIVE_RELEASE.md](LIVE_RELEASE.md)
+- [accounts/NUTZERFUEHRUNG.md](NUTZERFUEHRUNG.md)
+- [accounts/PRODUCTION.md](PRODUCTION.md)
+- [accounts/PRODUKTIONSPLAN.md](PRODUKTIONSPLAN.md)
+- [accounts/RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md)
+- [accounts/RECHTLICHE_PRUEFUNG_CHECKOUT.md](RECHTLICHE_PRUEFUNG_CHECKOUT.md)
+- [accounts/SETUP.md](SETUP.md)
+- [accounts/STEUER.md](STEUER.md)
+- [accounts/STRIPE_BRANDING.md](STRIPE_BRANDING.md)
+- [accounts/TARIFE.md](TARIFE.md)
+- [accounts/TARIFVERWALTUNG.md](TARIFVERWALTUNG.md)
+- [accounts/WATCHLIST.md](WATCHLIST.md)
+- [accounts/ZAHLUNGSPRUEFUNG.md](ZAHLUNGSPRUEFUNG.md)
+- [brevo/API-EXECUTION.md](../brevo/API-EXECUTION.md)
+- [brevo/APP-NEWSLETTER.md](../brevo/APP-NEWSLETTER.md)
+- [brevo/APPROVAL.md](../brevo/APPROVAL.md)
+- [brevo/INTERNAL-MEMBERSHIP.md](../brevo/INTERNAL-MEMBERSHIP.md)
+- [brevo/LIVE-STATUS.md](../brevo/LIVE-STATUS.md)
+- [brevo/MERGE-REVIEW.md](../brevo/MERGE-REVIEW.md)
+- [brevo/README.md](../brevo/README.md)

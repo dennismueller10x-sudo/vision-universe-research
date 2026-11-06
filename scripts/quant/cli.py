@@ -804,6 +804,21 @@ def _unterbefehl(*argv):
     return build_parser().parse_args(list(argv))
 
 
+def _canonical_nur_vorhandene(ciks):
+    """Kanonische Buendel der aktualisierten Emittenten in Teilen von hoechstens
+    MAX_DOCUMENTS_IN_MEMORY auffrischen.
+
+    Nach einem Ausfall oder einer Universumsbereinigung meldet ein Tageslauf
+    mehr als 250 aktualisierte Emittenten (Lauf 42231797884: 590). In einem
+    Aufruf bricht _documents dann zu Recht ab (Speicherschutz). Mit
+    --only-existing schreibt canonical nur Buendel je Emittent, ohne Index und
+    ohne Bereinigung; Teilaufrufe ergeben deshalb denselben Bestand.
+    """
+    schritt = MAX_DOCUMENTS_IN_MEMORY
+    for i in range(0, len(ciks), schritt):
+        cmd_canonical(_unterbefehl("canonical", "--ciks", ",".join(ciks[i:i + schritt]), "--only-existing"))
+
+
 def cmd_daily_downstream(args):
     """Nach Persistenz und Reload: abhaengige Artefakte nur fuer die aktualisierten Emittenten.
 
@@ -836,7 +851,7 @@ def cmd_daily_downstream(args):
         cmd_reconcile(_unterbefehl("reconcile"))
         # 3. Kanonische Buendel: nur Emittenten mit neuem Filing UND vorhandenem Buendel.
         if ciks:
-            cmd_canonical(_unterbefehl("canonical", "--ciks", ",".join(ciks), "--only-existing"))
+            _canonical_nur_vorhandene(ciks)
 
     # 4. Persistenz- und Reload-Zahlen dieses Laufs in den Bericht.
     persistence = {}

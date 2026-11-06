@@ -92,4 +92,4 @@ raw-response reviews now establish scoped account/website parity and freshness.
 Frozen one-shot Actions leases total 3,500 reserved credits; the final signed
 marker only authorizes a child of the exact reviewed source and cannot replay.
 No schedule or production registration is added. See
-[the audit report](../../docs/marketstack-audit/ROOT_CAUSE_REPORT.md).
+the audit report (`../../docs/marketstack-audit/ROOT_CAUSE_REPORT.md`, historischer Beleg im Repository nicht vorhanden).

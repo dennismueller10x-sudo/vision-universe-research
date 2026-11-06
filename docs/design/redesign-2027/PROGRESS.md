@@ -174,6 +174,11 @@ Abweichungen „Recht“ (Owner-Linie Plan §11, `docs/legal/EINORDNUNG.md` §0;
 
 Bleibende Abweichungen: S03 als Sheet über der Trefferliste; D07 Einordnung mit Stufen-Skala; D08 Adresse in Discover; W05 ohne belastbare Lesart nur Marktstruktur; Vorsorge hält ihre Karten im Dunkelmodus dunkel. Alle übrigen Folien sind fertig.
 
+## Stand 06.11.2026: Bereich Portfolios (Strang D3)
+
+Neuer Bereich `/portfolios/` (Owner 06.11.2026): eigener Menüeintrag (breite Kachel unter dem 3 × 3-Raster, Direktzugriff im Kopf ab 1025 px, Leiste Portfolios · Supertrader · Quant · KI). Übersicht mit Kacheln aller Depots (Supertrader-Methoden, VU Trendfolge 52W, Hausstrategie, fünf Quant-Profile, KI-Depot A und B), einheitliche Detailseite `#/<gruppe>/<id>` mit Logo, vollem Namen, Gewicht, Aufnahme, Aufnahme- bzw. Einstiegskurs, Stopp laut Methode (Supertrader-Methoden), Veränderung seit Aufnahme, Begründung je Titel (KI) und Protokoll rein/raus. Nur Darstellung (`portfolios/portfolios.js`), Tests `core/tests/portfolios.test.mjs`.
+Entscheidungen: Plus/Minus je Position in Grün/Rot mit Pfeil (Owner-Vorgabe, Abweichung von Regel 1 nur auf diesem Bereich, Kontrast hell/dunkel geprüft); Depot-Wertentwicklung nur, wenn der Export sie führt (Quant `nav` mit `PUBLISHED`, KI `nav`), Supertrader und Hausstrategie zeigen „noch nicht veröffentlicht“; Methodensätze neutral nach WORTWAHL („Aufnahme/Abgabe“), die Registry-Taglines bleiben in Supertrader; KI-Depots lesen `quant/data/product/ki-depots-v1.json` (Erzeuger Strang Edge 2, Schema `docs/research/edge2/ki/EXPORT_SCHEMA.md`); solange der erste Einstiegskurs fehlt, zeigt die Kachel „startet am 06.11.2026, erste Werte folgen“ und die Detailseite die Entscheidung mit Zielgewicht und „Begründung laut Methode“, bei B mit Nachrichten als Angabe Dritter.
+
 ## Gemeinsame Nacharbeit aus den Welt-PRs (ein PR nach allen Berichten)
 
 - `assets/site-navigation.js` Leisten: Fundamental „Ranglisten · Branchen · Methodik“ (`#/ranglisten`, `#/branchen`) samt `core/tests/shell-navigation.test.mjs` und `scripts/quality/shell-browser-qa.mjs`; Technical „Muster“, Elliott „Methodik“, Discover „Swipen“ → `#/swipen`.

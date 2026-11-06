@@ -1,0 +1,21 @@
+{
+  "schema": "vu-edge2-dna-protocol-1.0.0",
+  "id": "EDGE2-GEWINNER-DNA-2016-2026",
+  "registeredOn": "2026-11-06",
+  "registeredBy": "Strang Edge 2 (Claude) nach Owner-Auftrag vom 06.11.2026 (über die Steuerung)",
+  "label": "Forschung, nicht zertifiziert",
+  "question": "Lassen sich aus den Merkmalen, die starke Gewinner VOR ihrem Anstieg hatten, feste Regeln ableiten, die auf späteren Jahren den S&P 500 (SPY-Gesamtrendite) nach Kosten schlagen?",
+  "honesty": "2021–2026 ist kein unberührter Zeitraum: E3 und S2 haben Quant- und Technik-Ergebnisse dieser Jahre geöffnet. Das Lernverfahren unten ist vor jedem Blick auf die Gewinner festgelegt; die gelernte Formel wird vor der Prüfung gepinnt. Bestätigung nur vorwärts (GEWINNER-DNA-PAPER).",
+  "data": "Gesamtrendite-Panel wie Edge 2 Teil 1/2 (R2-Tagesbalken, delistete V13-Ketten, SEC wie erstmals eingereicht); Universum je Stichtag wie im blinden KI-Test (scripts/research/edge2/blind.cjs#universeAt: Kurs, Branche, 104 Wochen Historie, Liquidität VU-Standard).",
+  "winner": "Gewinner an Stichtag t: Gesamtrendite von t+1 bis t+53 (52 Wochen, Ausführung wie im Ledger) unter den obersten 5 % des Universums an t; delistete Titel mit letztem Kurs × Endwertquote (MERGER 1, UNKNOWN 0,7, DISTRESS 0, SERIES_END 1).",
+  "features": "16 Merkmale am Stichtag, nur aus Daten bis t: momentum12_1, volatility52, marketCap, earningsYield, fcfYield, bookToPrice, grossMargin, netMargin, fcfMargin, revenueGrowthYoy, revenueCagr3y, equityToAssets (wie blind.cjs), momentum1 (4 Wochen), momentum6 (26 Wochen), distance52High (Kurs / 52-Wochen-Hoch), trend40 (Kurs / 40-Wochen-Mittel). Nicht verfügbar und deshalb nicht dabei: Gewinnrevisionen und Analystenschätzungen (keine Historie), Technical-Zonen (S2 ohne Vorteil, rechenaufwendig).",
+  "learning": "scripts/research/edge2/dna.cjs#learn: Dezil je Merkmal im Universum (fehlend = eigene Klasse); Chi²-Unabhängigkeitstest Gewinner × Klasse, Merkmal nur aufgenommen bei p < 0,01/16; Log-Lift je Klasse mit Laplace-Glättung; Score = Summe der Log-Lifts. Kein Feintuning, keine Auswahl nach Prüfergebnis. Lernstichtage alle 13 Wochen ab dem ersten Wochenstichtag 2016; ein Stichtag zählt nur, wenn sein 52-Wochen-Ende vor dem ersten Handelsstichtag der Prüfung liegt.",
+  "portfolio": "Alle 13 Wochen ab dem ersten Wochenstichtag 2021: die 20 Titel mit dem höchsten Score, höchstens 5 je Branche, gleich gewichtet (Liquiditätsgrenze), Ausführung t+1; Ledger, Kosten, TERMINAL_CASH exakt wie E3/H (quant-e3.cjs#ledgerFromTargets).",
+  "variants": [
+    { "id": "DNA-G1-FIXED", "rule": "einmal gelernt aus 2016–2020 (Labels enden vor 2021), Formel docs/research/edge2/dna/RULE_FIXED.json, SHA-256 gepinnt vor der Prüfphase; Prüfung 2021-01 bis 2026-10-02" },
+    { "id": "DNA-G2-ROLLING", "rule": "für jedes Handelsjahr Y (2021–2026) neu gelernt mit demselben Verfahren aus allen Lernstichtagen ab 2016, deren Label vor dem ersten Stichtag von Y endet; gehandelt im Jahr Y" }
+  ],
+  "statistics": "study.cjs#pairedTest gegen SPY-Gesamtrendite, Holm über beide Varianten (getrennt pLog und pSharpe), Urteil study.cjs#verdict. DQ-K5-BOOK als Sensitivität. Beschreibend: Gewinnerquote je Klasse der aufgenommenen Merkmale.",
+  "phases": "dna-learn (Runner): Formel G1 lernen und als RULE_FIXED.json committen (öffentlich: nur Lifts und Zählungen, keine Rendite). Danach Pin in scripts/research/edge2/protocol-pin.cjs. dna-test (Runner): prüft den Pin, rechnet G1 und G2, Ergebnis versiegelt an Owner und Strang.",
+  "paper": "Schlägt eine Variante SPY nach dem Urteil oben, läuft genau sie als GEWINNER-DNA-PAPER vorwärts (G2: Formel jedes Jahr nach demselben Verfahren neu, G1: unverändert). Hält keine, wird das berichtet und kein Papierdepot gestartet."
+}

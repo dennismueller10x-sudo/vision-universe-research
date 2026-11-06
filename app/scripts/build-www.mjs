@@ -10,6 +10,7 @@ await build({entryPoints: [path.join(app, 'src/native.js')], outfile: path.join(
 import fs from 'node:fs';
 const env = process.env;
 const cfg = {supabaseUrl: env.VU_SUPABASE_URL || '', supabasePublishableKey: env.VU_SUPABASE_PUBLISHABLE_KEY || ''};
+if (env.VU_AUTH_TRANSPORT) cfg.authTransport = env.VU_AUTH_TRANSPORT;
 if (env.VU_ACCOUNT_API) cfg.accountApi = env.VU_ACCOUNT_API;
 if (/(sb_secret_|service_role|sk_live|sk_test|rk_live|rk_test)/i.test(JSON.stringify(cfg))) throw new Error('GEHEIMNIS_IN_APP_KONFIGURATION');
 fs.writeFileSync(path.join(app, 'www/js/runtime-config.js'), `globalThis.VU_APP_CONFIG=${JSON.stringify(cfg)};\n`);
