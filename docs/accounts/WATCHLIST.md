@@ -285,9 +285,11 @@ der erste Integrationstest (§10).
 
 `core/watchlist-view.js#events(vorher, nachher)` vergleicht zwei veröffentlichte Übersichten, also die Ergebnisse der bestehenden
 Datenläufe. Es arbeitet deterministisch, je Instrument einmal und nicht je Nutzer, im Format `core/contracts/events.schema.json`
-(Regelversion `watchlist-events-1.2.0`). Jede Seite wird zu ihrem eigenen `generatedAt` bewertet.
+(Regelversion `watchlist-events-1.3.0`). Jede Seite wird zu ihrem eigenen `generatedAt` bewertet.
 
 **Kursbewegung ab 5 % (`PRICE_MOVE`, seit 1.2.0):** Die Übersicht trägt je Titel die Tagesveränderung `d1` und den Vortag `dp`, berechnet über `quant/engines/published-close.js#dayChange` aus den beiden letzten Punkten derselben splitbereinigten Tagesreihe (ADR-002; ein Split erscheint nicht als Sprung; Lücken über sieben Tage ergeben keinen Wert). Ein Ereignis `DAILY_UP_5` bzw. `DAILY_DOWN_5` entsteht einmal je neuem Schlusstag, wenn der Betrag mindestens 5 % ist und der Kurs verfügbar (nicht veraltet) ist. Die Evidenz nennt Veränderung, Schluss, Vortag und Schwelle, keine Bewertung.
+
+**Neuer Bericht bei der SEC (`EARNINGS`, seit 1.3.0):** Die Übersicht trägt je Titel den letzten Quartals- oder Jahresbericht aus der SEC-Consumer-Schicht (`quant/data/sec/consumer/`, `coverage.latestQuarter`/`latestAnnual`: Einreichungsdatum `rf`, Art `rk`, Periode `rp`, Periodenende `re`; der jüngere von beiden). Ist das Einreichungsdatum neuer als in der vorigen Übersicht, entsteht `QUARTERLY_REPORT` bzw. `ANNUAL_REPORT`; die Erstbeobachtung erzeugt nichts. Die Evidenz nennt Periode, Periodenende und Einreichungsdatum, keine Kennzahl und keine Bewertung.
 
 **Erzeuger:** `node scripts/account/build-watchlist-events.mjs --before=<Übersicht> --after=<Übersicht> --out=<Datei>`. Eine Übersicht ist
 das ausgelieferte Verzeichnis `watchlist-summary-v1/` (meta + rows) oder ein ganzes Dokument (`.json`/`.json.gz`). `--out` ist Pflicht;

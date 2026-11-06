@@ -234,12 +234,27 @@ test("Ereignisse: alle Arten der Regel - Quant, Technik, Supertrader-Ende, Daten
   for (const e of moves) covered.add(e.type + ":" + e.subtype);
   assert.deepEqual(moves.map(e => [e.ticker, e.subtype, e.evidence.change, e.evidence.previousDate, e.asOf]),
     [["ACME", "DAILY_UP_5", 0.06, "2026-10-01", day], ["ACX", "DAILY_DOWN_5", -0.075, "2026-10-01", day]].sort((x, y) => moves.findIndex(m => m.ticker === x[0]) - moves.findIndex(m => m.ticker === y[0])));
-  assert.ok(moves.every(e => e.evidence.threshold === 0.05 && e.severity === "NOTABLE" && e.source.ruleVersion === "watchlist-events-1.2.0"));
+  assert.ok(moves.every(e => e.evidence.threshold === 0.05 && e.severity === "NOTABLE" && e.source.ruleVersion === W.RULE_VERSION));
   // Gegenproben: 4,9 % bleibt still; derselbe Schlusstag ergibt kein zweites Ereignis
   mvAfter.cols.d1[ma] = 0.049;
   assert.ok(!W.events(mvBefore, mvAfter, { now: AFTER_RUN }).some(e => e.type === "PRICE_MOVE" && e.ticker === "ACME"), "unter 5 % kein Ereignis");
   mvAfter.cols.d1[ma] = 0.06; mvBefore.cols.cd[at(mvBefore, "ACME")] = day;
   assert.ok(!W.events(mvBefore, mvAfter, { now: AFTER_RUN }).some(e => e.type === "PRICE_MOVE" && e.ticker === "ACME"), "gleicher Schlusstag: kein neues Ereignis");
+
+  // Neuer SEC-Bericht (EARNINGS, 1.3.0): ACME neues Quartal, ACX neuer Jahresbericht; Einreichungsdatum entscheidet
+  const erBefore = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc, erAfter = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc;
+  for (const d of [erBefore, erAfter]) d.sources.filings = { domain: "fundamentalsConsumer", artifact: "/quant/data/sec/consumer/", asOf: "2026-10-20" };
+  const setF = (d, tk, rf, rk, rp, re) => { const k = at(d, tk); Object.assign(d.cols.rf, { [k]: rf }); Object.assign(d.cols.rk, { [k]: rk }); Object.assign(d.cols.rp, { [k]: rp }); Object.assign(d.cols.re, { [k]: re }); };
+  setF(erBefore, "ACME", "2026-07-30", "Q", "2026-Q2", "2026-06-30"); setF(erAfter, "ACME", "2026-10-20", "Q", "2026-Q3", "2026-09-30");
+  setF(erBefore, "ACX", "2026-08-01", "Q", "2026-Q3", "2026-06-30"); setF(erAfter, "ACX", "2026-10-15", "A", "2026-FY", "2026-08-31");
+  const reports = W.events(erBefore, erAfter, { now: AFTER_RUN }).filter(e => e.type === "EARNINGS");
+  for (const e of reports) covered.add(e.type + ":" + e.subtype);
+  const byT = Object.fromEntries(reports.map(e => [e.ticker, [e.subtype, e.asOf, e.evidence.period, e.evidence.periodEnd, e.evidence.filedBefore]]));
+  assert.deepEqual(byT, { ACME: ["QUARTERLY_REPORT", "2026-10-20", "2026-Q3", "2026-09-30", "2026-07-30"], ACX: ["ANNUAL_REPORT", "2026-10-15", "2026-FY", "2026-08-31", "2026-08-01"] });
+  assert.ok(reports.every(e => e.severity === "NOTABLE" && e.evidence.source === "SEC" && !("v" in e.evidence)), "keine Kennzahl in der Evidenz");
+  // Gegenproben: gleiches Einreichungsdatum und Erstbeobachtung (vorher ohne Bericht) bleiben still
+  setF(erBefore, "ACME", "2026-10-20", "Q", "2026-Q3", "2026-09-30"); setF(erBefore, "ACX", null, null, null, null);
+  assert.deepEqual(W.events(erBefore, erAfter, { now: AFTER_RUN }).filter(e => e.type === "EARNINGS"), []);
 
   const contract = Object.entries(EVENT_SCHEMA.properties.subtype.enumByType).flatMap(([ty, subs]) => subs.map(s => ty + ":" + s));
   assert.deepEqual(contract.filter(c => !covered.has(c)), [], "jede Unterart entsteht in einem Test");

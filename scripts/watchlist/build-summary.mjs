@@ -20,7 +20,7 @@
    (z. B. ein ETF) als das Unternehmen, auf das Name, Stamm und securityId zeigen. Solche Zeilen behalten Kennung, Kuerzel,
    Boerse und Status, tragen aber keinen Namen der alten Identitaet und keine Kurs-, Quant-, Technik- oder
    Supertrader-Werte; jeder Abschnitt nennt den Grund IDENTITY_QUARANTINED (why), gezaehlt in withheld. */
-import {readFileSync,existsSync,writeFileSync,mkdirSync} from 'node:fs';
+import {readFileSync,existsSync,writeFileSync,mkdirSync,readdirSync} from 'node:fs';
 import {join,dirname} from 'node:path';
 import {gunzipSync} from 'node:zlib';
 import {createRequire} from 'node:module';
@@ -40,6 +40,7 @@ const BAND_IDS=FE.BANDS.map(b=>b.id);
 
 function readJson(root,rel){const p=join(root,rel);if(!existsSync(p))return null;const b=readFileSync(p);return JSON.parse(rel.endsWith('.gz')?gunzipSync(b):b);}
 const round=(v,d)=>typeof v==='number'&&Number.isFinite(v)?Math.round(v*10**d)/10**d:null;
+const isDay=v=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v);
 const domainRule=(reg,id)=>{const d=(reg&&reg.domains||[]).find(x=>x.id===id);return d?{domain:id,artifact:d.artifact,freshness:d.freshness||null}:{domain:id,artifact:null,freshness:null};};
 
 /** Liefert {doc, report}. doc ist spaltenweise (cols[feld][zeile]), wie technical/data/screener-v1.json. */
@@ -132,6 +133,27 @@ export function buildSummary(root,{now=new Date()}={}){
     explanation:(screening.publication&&screening.publication.explanation)||null},universe:summary&&summary.count||null};
  });
 
+ // ---- Berichte: letzter Quartals- oder Jahresbericht bei der SEC (Watchlist-Ereignis EARNINGS), aus der Consumer-Schicht
+ tryPart('filings',()=>{
+  const dir=join(root,'quant/data/sec/consumer');if(!existsSync(dir))throw Error('SEC_CONSUMER_MISSING');
+  const latest=new Map();let asOf=null,generatedAt=null;
+  for(const f of readdirSync(dir).filter(x=>/^CIK\d{10}\.json$/.test(x)).sort()){
+   const j=readJson(root,'quant/data/sec/consumer/'+f),c=j&&j.coverage||{};
+   const q=c.latestQuarter&&isDay(c.latestQuarter.filed)?{rf:c.latestQuarter.filed,rk:'Q',rp:c.latestQuarter.fy+'-'+(c.latestQuarter.fp||'Q'),re:c.latestQuarter.end||null}:null;
+   const a=c.latestAnnual&&isDay(c.latestAnnual.filed)?{rf:c.latestAnnual.filed,rk:'A',rp:c.latestAnnual.fy+'-FY',re:c.latestAnnual.end||null}:null;
+   const r=q&&a?(a.rf>q.rf?a:q):(q||a);if(!r)continue;
+   if(!asOf||r.rf>asOf)asOf=r.rf;if(j.generatedAtUtc&&(!generatedAt||j.generatedAtUtc>generatedAt))generatedAt=j.generatedAtUtc;
+   /* Identitaet nur ueber core/identity.js (ADR-001): Ticker der Datei -> securityId, und die Datei muss sie selbst nennen. */
+   for(const t of j.tickers||[]){let sid;try{sid=Identity.securityIdForTicker(t);}catch{continue;}if((j.securityIds||[]).includes(sid)&&!latest.has(sid))latest.set(sid,{t,r});}
+  }
+  for(const [sid,{t,r}] of latest){
+   const hit=listingFor(t,sid,null);
+   if(!hit.row){note(hit.rows,'filings',hit.reason);continue;}
+   Object.assign(hit.row,r);
+  }
+  sources.filings={...domainRule(registry,'fundamentalsConsumer'),artifact:'/quant/data/sec/consumer/',asOf,generatedAt};
+ });
+
  // ---- Technik: 52W-Hoch, Volumen, Trend (Plattformdefinition aus market-factors.js, siehe discover/engines/high52w.js)
  tryPart('technical',()=>{
   const ds=readJson(root,'technical/data/screener-v1.json');if(!ds||!ds.cols||!Array.isArray(ds.cols.s))throw Error('TECHNICAL_SCREENER_MISSING');
@@ -200,7 +222,7 @@ export function buildSummary(root,{now=new Date()}={}){
  if(oldest&&calendar){let d=oldest;for(let k=0;k<40;k++){d=TS.nextTradingDay(d,{calendar});if(!d)break;sessions.push(d);}}
 
  // ---- spaltenweise ausgeben
- const FIELDS=['i','s','n','x','cu','act','del','el','c','cd','pu','d1','dp','q','qdq','qd','mc','td','tf','h52','h52w','h52m','dh','rv','vs','rsi','a200','st','sts','why'];
+ const FIELDS=['i','s','n','x','cu','act','del','el','c','cd','pu','d1','dp','rf','rk','rp','re','q','qdq','qd','mc','td','tf','h52','h52w','h52m','dh','rv','vs','rsi','a200','st','sts','why'];
  rows.sort((a,b)=>a.s<b.s?-1:a.s>b.s?1:a.i<b.i?-1:1);
  const cols={};for(const f of FIELDS)cols[f]=rows.map(r=>r[f]===undefined?null:r[f]);
  const slices=sources.supertrader&&sources.supertrader.slices;

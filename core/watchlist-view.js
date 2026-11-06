@@ -40,7 +40,7 @@
 
   var VERSION = "watchlist-view-1.0.0";
   var SCHEMA = "vu-watchlist-summary-1.0.0";
-  var RULE_VERSION = "watchlist-events-1.2.0";  /* 1.2.0: PRICE_MOVE (Tagesbewegung ab 5 %) */
+  var RULE_VERSION = "watchlist-events-1.3.0";  /* 1.2.0: PRICE_MOVE (Tagesbewegung ab 5 %); 1.3.0: EARNINGS (neuer SEC-Bericht) */
   var MOVE_THRESHOLD = 0.05;       /* PRICE_MOVE: Tagesbewegung mindestens 5 % (Betrag), splitbereinigt */
   var NEAR_HIGH = -0.05;           /* Discover nearHigh/watch: hoechstens 5 % unter dem 52W-Hoch */
   var ACTIONABLE = ["SETUP", "ENTRY_READY", "TRIGGERED", "ACTIVE"];
@@ -197,6 +197,11 @@
       /* Tagesveraenderung aus der Uebersicht (published-close.js#dayChange); fehlt sie, bleibt das Feld weg. */
       if (typeof r.d1 === "number" && isFinite(r.d1) && typeof r.dp === "string") { base.price.change = r.d1; base.price.previousDate = r.dp; }
     }
+
+    // Letzter Bericht bei der SEC (Consumer-Schicht): Quartal oder Geschaeftsjahr mit Einreichungsdatum
+    if (!src.filings) base.filings = unavailable("SOURCE_MISSING");
+    else if (!isDate(r.rf)) base.filings = unavailable(why(r, "filings"));
+    else base.filings = { state: "AVAILABLE", filed: r.rf, kind: r.rk === "A" ? "ANNUAL" : "QUARTERLY", period: r.rp || null, periodEnd: r.re || null };
 
     // Quant: sieben Faktoren mit Stufe, Gesamtscore zurueckgehalten
     var qs = src.quant;
@@ -513,6 +518,13 @@
           before: b.price.previousDate, after: b.price.date, asOf: b.price.date,
           evidence: { change: b.price.change, close: b.price.close, currency: b.price.currency, previousDate: b.price.previousDate, date: b.price.date,
             threshold: MOVE_THRESHOLD, basis: b.price.basis || null }, severity: "NOTABLE" });
+
+      // Bericht: ein neuer Quartals- oder Jahresbericht ist eingereicht (Einreichungsdatum neuer als vorher); Erstbeobachtung still
+      if (a.filings && b.filings && a.filings.state === "AVAILABLE" && b.filings.state === "AVAILABLE" && b.filings.filed > a.filings.filed)
+        ev({ type: "EARNINGS", subtype: b.filings.kind === "ANNUAL" ? "ANNUAL_REPORT" : "QUARTERLY_REPORT", v: b, sourceId: "filings",
+          before: a.filings.filed, after: b.filings.filed, asOf: b.filings.filed,
+          evidence: { filed: b.filings.filed, filedBefore: a.filings.filed, period: b.filings.period, periodEnd: b.filings.periodEnd, kind: b.filings.kind, source: "SEC" },
+          severity: "NOTABLE" });
 
       // Kurs und Technik
       if (b.high52.signal === "NEW_HIGH" && a.high52.state === "AVAILABLE" && a.high52.signal !== "NEW_HIGH")
