@@ -1,0 +1,43 @@
+{
+  "schema": "vu-edge2-blind-protocol-1.0.0",
+  "id": "EDGE2-KI-BLIND-V2-LARGECAP-2016-2026",
+  "registeredOn": "2026-11-06",
+  "registeredBy": "Strang Edge 2 (Claude) nach Entscheidung der Steuerung vom 06.11.2026 (Forschungs-Lesart nach Empfehlung des Strangs)",
+  "label": "Forschung, nicht zertifiziert",
+  "question": "Schlägt ein Sprachmodell, das nur anonymisierte Daten sieht und quartalsweise 4–20 Titel aus 50 zufällig gezogenen Großwerten wählt, den S&P 500 (SPY-Gesamtrendite) nach Kosten?",
+  "motivation": "Blind v1 (monatlich, ganzes liquides Universum) schlug SPY nicht. Ursachen laut Bericht: Kleinwerte im Universum und Kosten durch monatliche Umschichtung. v2 ändert genau diese zwei Punkte, sonst nichts.",
+  "honesty": "v2 wird in Kenntnis des v1-Ergebnisses registriert. Ein positives Ergebnis ist deshalb höchstens eine Hypothese. Bestätigung nur vorwärts als Depot A2.",
+  "execution": "Im Claude-Abo des Owners (Subagenten), nicht über die API.",
+  "prompt": { "file": "docs/research/edge2/ki/PROMPT_A2_v1.md", "version": "A2 v1", "sha256": "f27b334e2526bf1f4743547794a155586e8fa5c18b7ee6dc2cbe2c9083a8836f" },
+  "packets": {
+    "builder": "scripts/research/edge2/blind.cjs#buildPackets mit cadence QUARTERLY und topByMarketCap 500",
+    "panel": "wie v1 (R2-Tagesbalken, delistete V13-Ketten, SEC wie erstmals eingereicht)",
+    "decisions": "erste Panelwoche von Januar, April, Juli und Oktober, 2016-01 bis 2026-09; Ausführung zum Schluss der Folgewoche, gehalten bis zur nächsten Ausführung",
+    "universe": "Universum wie v1 (Kurs an t und t+1, Branche, 104 Wochen Historie, Liquidität), davon die 500 größten nach point-in-time-Marktwert (Aktienzahl aus SEC wie eingereicht × Rohschluss an t). Kein heutiger Größenrang, also kein Survivorship-Vorteil durch heutige Größe.",
+    "draw": "50 Kandidaten gleichverteilt aus den 500, mit geheimem Salz",
+    "anonymization": "wie v1; Dezile und Marktpfad werden innerhalb der 500 gerechnet",
+    "omitted": "wie v1",
+    "keys": "nur im privaten Eimer (edge2-blind-v2/keys-<packetsSha256>.json) und versiegelt an Owner und Strang"
+  },
+  "recognitionTest": {
+    "when": "vor den Entscheidungen, mit eigenen Subagenten",
+    "sample": "20 Pakete (die ersten 20 nach Paket-ID)",
+    "task": "je Paket das Jahr schätzen und für Kandidaten Firmen (Ticker) nennen",
+    "failIf": "unverändert gegenüber v1: Jahr exakt in mehr als 25 % der Pakete ODER mittlerer Jahresfehler unter 2,0 Jahren ODER mehr als 2 % aller Kandidaten korrekt als Firma benannt",
+    "onFail": "Der Backtest gilt als wertlos und wird so berichtet; keine Entscheidungen, kein Depot A2."
+  },
+  "decisions": {
+    "rule": "4–20 Labels, Gewichte je 0,02–0,25, Summe 1, höchstens 0,30 je Gruppe (blind.cjs#checkAnswer); ungültig: einmal neu fragen, danach Cash bis zur nächsten Entscheidung",
+    "agents": "Subagenten im Abo, je höchstens 11 Pakete, Prompt A2 v1 wörtlich, nur Prompt- und Paketdatei lesen, keine Websuche"
+  },
+  "evaluation": {
+    "ledger": "wie v1 (quant-e3.cjs#ledgerFromTargets, Kosten, Spread, TERMINAL_CASH)",
+    "primary": "KI-Depot gegen SPY-Gesamtrendite: study.cjs#pairedTest und #verdict (eine Hypothese)",
+    "secondary": "gegen das gleichgewichtete Depot aller 50 Kandidaten desselben Quartals (Zufallsbasis)",
+    "dq": "DQ-K5-BOOK als Sensitivität",
+    "sealed": "versiegelt an Owner und Strang; öffentlich nur Zählungen und Hashes"
+  },
+  "forward": {
+    "rule": "Hält v2 (Urteil 'schlägt' oder 'nur risikobereinigt'), läuft dieselbe Regel unverändert als Depot A2 in der Wochenlauf-Sitzung, Entscheidung nur in der ersten Woche eines Quartals. Hält v2 nicht, wird A2 nicht gestartet und das berichtet. Depot A (v1) läuft unabhängig davon weiter."
+  }
+}

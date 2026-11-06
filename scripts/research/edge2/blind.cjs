@@ -35,15 +35,20 @@ function seedOf(...parts) { return parseInt(sha(parts.join('|')).slice(0, 8), 16
 function shuffle(arr, r) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function decile(p) { return isNum(p) ? Math.min(10, Math.max(1, Math.ceil(p * 10))) : null; }
 
-/** Entscheidungswochen: erste Panelwoche jedes Kalendermonats im Fenster (Ausführung t+1). */
-function decisionWeeks(panel, window) {
+/** Entscheidungswochen: erste Panelwoche jedes Kalendermonats (MONTHLY) bzw. jedes Quartals (QUARTERLY) im Fenster. */
+function decisionWeeks(panel, window, cadence = 'MONTHLY') {
   const cal = panel.calendar, out = [];
-  for (let t = 1; t < cal.length - 1; t++) if (cal[t] >= window[0] && cal[t] <= window[1] && cal[t].slice(0, 7) !== cal[t - 1].slice(0, 7)) out.push(t);
+  for (let t = 1; t < cal.length - 1; t++) {
+    if (!(cal[t] >= window[0] && cal[t] <= window[1]) || cal[t].slice(0, 7) === cal[t - 1].slice(0, 7)) continue;
+    if (cadence === 'QUARTERLY' && !['01', '04', '07', '10'].includes(cal[t].slice(5, 7))) continue;
+    out.push(t);
+  }
   return out;
 }
 
 /** Zulässiges Universum an t: Kurs, Branche, 104 Wochen Historie, Liquidität wie VU-Standard, kein Ende vor t+1. */
-function universeAt(panel, t) {
+// topByMarketCap (Blind v2): nur die N größten Titel nach point-in-time-Marktwert an t (Aktien × Rohschluss, SEC wie eingereicht).
+function universeAt(panel, t, { topByMarketCap = null } = {}) {
   const std = C.standardOf({}), rows = [];
   for (const s of panel.securities) {
     if (!(s.adj[t] > 0) || !(s.adj[t + 1] > 0) || !s.sector) continue;
@@ -54,15 +59,16 @@ function universeAt(panel, t) {
     if (!C.liquidity(c, std).eligible) continue;
     rows.push({ s, f: { ...pf, ...ff, volatility52: isNum(pf.negVol52) ? -pf.negVol52 : null } });
   }
+  if (topByMarketCap) return rows.filter(r => isNum(r.f.marketCap)).sort((a, b) => b.f.marketCap - a.f.marketCap || (a.s.id < b.s.id ? -1 : 1)).slice(0, topByMarketCap);
   return rows;
 }
 
-function buildPackets(panel, { window, salt, candidates = 50, forceWeeks = null }) {
+function buildPackets(panel, { window, salt, candidates = 50, forceWeeks = null, cadence = 'MONTHLY', topByMarketCap = null }) {
   if (typeof salt !== 'string' || salt.length < 32) throw Error('SALT_REQUIRED');
   const seed = salt;
-  const weeks = forceWeeks || decisionWeeks(panel, window), cal = panel.calendar, packets = [], keys = [];
+  const weeks = forceWeeks || decisionWeeks(panel, window, cadence), cal = panel.calendar, packets = [], keys = [];
   for (const t of weeks) {
-    const rows = universeAt(panel, t);
+    const rows = universeAt(panel, t, { topByMarketCap });
     if (rows.length < candidates * 2) { keys.push({ t, date: cal[t], state: 'TOO_FEW', universe: rows.length }); continue; }
     const pct = Object.fromEntries(FEATURES.map(([k]) => [k, F.percentiles(rows.map(r => r.f[k]))]));
     // Gleichgewichtetes Universum (Gesamtrendite) als Marktpfad; Kandidatenpfad relativ dazu.
