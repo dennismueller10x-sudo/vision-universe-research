@@ -19,7 +19,7 @@ const src = () => ({
   stHouse: read("supertrader/data/ledger/VU_HOUSE_HS4_V03.json"),
   stRegistry: read("supertrader/data/registry-core.json"),
   quant: read("quant/data/product/model-depots-v1.json"),
-  ki: existsSync(join(root, "portfolios/data/ki-depots-v1.json")) ? read("portfolios/data/ki-depots-v1.json") : null
+  ki: existsSync(join(root, "quant/data/product/ki-depots-v1.json")) ? read("quant/data/product/ki-depots-v1.json") : null
 });
 
 test("PF-1 · Alle Depots: Supertrader je Methode, Trendfolge, Hausstrategie, fünf Quant-Profile, KI A und B", () => {
@@ -64,23 +64,34 @@ test("PF-3 · Depot-Wertentwicklung nur, wenn der Export sie führt (Quant: PUBL
   assert.deepEqual(P.fromQuant({ schemaVersion: "x" }), []);
 });
 
-test("PF-4 · KI-Depots: ohne Export die Startkachel, mit Export Bestand, Begründung und Vorwärtswert", () => {
-  const pending = P.fromKi(null);
-  assert.ok(pending.every((d) => d.pending && d.liveSince === "2026-11-06" && d.positions.length === 0));
-  const html = P.render(pending.concat(P.fromQuant(read("quant/data/product/model-depots-v1.json"))), "#/ki");
-  assert.match(html, /startet am 06\.11\.2026, erste Werte folgen/);
-  const doc = { schemaVersion: "ki-depots-1.0.0", label: P.LABEL, recommendation: false, liveStart: "2026-11-06", asOf: "2026-11-07",
-    depots: [{ id: "b", name: "KI-Depot B", method: "Mit News und Analysten.", nav: [["2026-11-06", 1], ["2026-11-07", 1.012]],
-      positions: [{ ticker: "NVDA", weight: 0.1, since: "2026-11-06", entryPrice: 100, lastPrice: 95, reason: "Umsatz wächst laut letztem Bericht." }],
-      protocol: [{ date: "2026-11-06", action: "REIN", ticker: "NVDA", weight: 0.1, price: 100 }] }] };
-  const [b] = P.fromKi(doc);
+test("PF-4 · KI-Depots (Schema ki-depots-1.0.0, Edge 2): ohne Export oder ohne Einstiegskurs die Startkachel, sonst Bestand, Begründung und Vorwärtswert", () => {
+  const none = P.fromKi(null);
+  assert.ok(none.every((d) => d.pending && d.liveSince === "2026-11-06" && d.positions.length === 0));
+  assert.match(P.render(none, "#/ki"), /startet am 06\.11\.2026, erste Werte folgen/);
+  const base = { schemaVersion: "ki-depots-1.0.0", label: P.LABEL, recommendation: false, liveStart: "2026-11-06", asOf: "2026-11-06" };
+  const waiting = P.fromKi({ ...base, depots: [{ id: "EDGE2-KI-B-PAPER", slug: "b", name: "KI-Depot B", method: "Mit News und Analysten.", rule: "Regel.", positions: [], cashWeight: 1,
+    pending: { decisionDate: "2026-11-05", entry: "Schluss des nächsten Handelstags", positions: [{ ticker: "NVDA", name: "NVIDIA", targetWeight: 0.1, reason: "Umsatz wächst laut letztem Bericht.", news: [{ date: "2026-11-04", title: "Bericht", source: "Reuters", url: "https://example.com/a" }] }] },
+    performance: { start: null, index: [], changeSinceStart: null }, protocol: [] }] });
+  assert.equal(waiting[0].id, "b");
+  assert.equal(waiting[0].pending, true);
+  const w = P.render(waiting, "#/ki/b");
+  assert.match(w, /startet am 06\.11\.2026/);
+  assert.match(w, /Zielgewicht/);
+  assert.match(w, /Begründung laut Methode:<\/b> Umsatz wächst laut letztem Bericht\./);
+  assert.match(w, /Angabe Dritter/);
+  const live = P.fromKi({ ...base, asOf: "2026-11-07", depots: [{ id: "EDGE2-KI-B-PAPER", slug: "b", name: "KI-Depot B", method: "Mit News und Analysten.", pending: null,
+    positions: [{ ticker: "NVDA", name: "NVIDIA", targetWeight: 0.1, currentWeight: 0.098, since: "2026-11-06", entryPrice: 100, lastPrice: 95, lastDate: "2026-11-07", changeSinceEntry: -0.05, reason: "Umsatz wächst.", news: [] }],
+    performance: { start: "2026-11-06", index: [["2026-11-06", 100], ["2026-11-07", 101.2]], changeSinceStart: 0.012 },
+    protocol: [{ date: "2026-11-06", action: "REIN", ticker: "NVDA", weight: 0.1, price: 100 }, { date: "2026-11-06", action: "OHNE_KURS", ticker: "XYZ", weight: 0.05, price: null }] }] });
+  const [b] = live;
   assert.equal(b.pending, false);
   assert.ok(Math.abs(b.perf.pct - 1.2) < 1e-9);
+  assert.equal(b.positions[0].weight, 0.098);
   assert.ok(Math.abs(b.positions[0].changePct + 5) < 1e-9);
-  const d = P.render([b], "#/ki/b");
-  assert.match(d, /Begründung des Modells:<\/b> Umsatz wächst laut letztem Bericht\./);
+  const d = P.render(live, "#/ki/b");
   assert.match(d, /vu-chg--down/);
-  assert.equal(P.validKi({ ...doc, recommendation: true }), false);
+  assert.match(d, /ohne Einstiegskurs/);
+  assert.equal(P.validKi({ ...base, depots: [], recommendation: true }), false);
 });
 
 test("PF-5 · Jede Ansicht trägt Label und Hinweis-Baustein, keine Backtest-Rendite, keine Kauf- oder Verkaufsaufforderung", () => {

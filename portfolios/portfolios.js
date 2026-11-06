@@ -17,7 +17,8 @@
    Quellen (Erzeuger siehe core/registry/domains.json):
      supertrader/data/portfolio.json, trend52.json, ledger/VU_HOUSE_HS4_V03.json, registry-core.json
      quant/data/product/model-depots-v1.json (Modell aus quant/musterdepots/depots.js)
-     portfolios/data/ki-depots-v1.json (Strang Edge 2; fehlt er, zeigt die Kachel den Start)
+     quant/data/product/ki-depots-v1.json (Strang Edge 2, Schema docs/research/edge2/ki/EXPORT_SCHEMA.md;
+       fehlt er oder fehlt der erste Einstiegskurs, zeigt die Kachel den Start)
    Bausteine aus assets/vu-ui.js (VUUI, Redesign 2027).
    ========================================================================= */
 (function (root, factory) {
@@ -36,7 +37,7 @@
     stHouse: "/supertrader/data/ledger/VU_HOUSE_HS4_V03.json",
     stRegistry: "/supertrader/data/registry-core.json",
     quant: "/quant/data/product/model-depots-v1.json",
-    ki: "/portfolios/data/ki-depots-v1.json",
+    ki: "/quant/data/product/ki-depots-v1.json",
     names: "/quant/data/product/universe-list-v1.json.gz"
   };
   var GROUPS = [
@@ -133,16 +134,25 @@
     });
   }
   function validKi(doc) { return !!(doc && /^ki-depots-1\./.test(doc.schemaVersion || "") && doc.label === LABEL && doc.recommendation === false && Array.isArray(doc.depots)); }
+  /* Schema ki-depots-1.0.0 (Edge 2): slug für die Adresse, performance.index (Start 100) mit changeSinceStart (Anteil),
+     Positionen mit currentWeight/targetWeight und changeSinceEntry (Anteil), pending = Entscheidung ohne Einstiegskurs. */
   function fromKi(doc) {
     if (!validKi(doc)) return KI_PENDING.map(function (k) { return { group: "ki", id: k.id, key: "KI_" + k.id.toUpperCase(), name: k.name, method: k.method, by: "KI", liveSince: KI_START, asOf: null, positions: [], protocol: [], perf: null, stops: false, reasons: true, pending: true }; });
     return doc.depots.map(function (d) {
-      var n = Array.isArray(d.nav) && d.nav.length ? d.nav[d.nav.length - 1] : null;
-      return { group: "ki", id: String(d.id), key: "KI_" + String(d.id).toUpperCase(), name: d.name, method: d.method || d.rule || "", rule: d.rule, by: "KI",
-        liveSince: doc.liveStart || KI_START, asOf: doc.asOf, stops: (d.positions || []).some(function (p) { return isNum(p.stop); }), reasons: true,
-        perf: n && isNum(n[1]) ? { pct: (n[1] - 1) * 100, since: doc.liveStart || KI_START, asOf: n[0] } : null,
-        positions: (d.positions || []).map(function (p) { return { ticker: p.ticker, name: p.name, weight: p.weight, since: p.since, entryPrice: p.entryPrice, lastPrice: p.lastPrice, lastDate: p.lastDate, currency: p.currency || "USD", stop: isNum(p.stop) ? p.stop : null, changePct: sinceEntry(p.entryPrice, p.lastPrice), reason: p.reason || "" }; }),
-        protocol: (d.protocol || []).map(function (e) { return { date: e.date, action: e.action, ticker: e.ticker, weight: e.weight, price: e.price, reason: e.reason || "" }; }),
-        pending: false };
+      var slug = String(d.slug || d.id).toLowerCase(), pf = d.performance || {}, idx = Array.isArray(pf.index) && pf.index.length ? pf.index : null;
+      var last = idx ? idx[idx.length - 1] : null;
+      var perfPct = isNum(pf.changeSinceStart) ? pf.changeSinceStart * 100 : last && isNum(last[1]) && isNum(idx[0][1]) && idx[0][1] > 0 ? (last[1] / idx[0][1] - 1) * 100 : null;
+      var positions = (d.positions || []).map(function (p) {
+        return { ticker: p.ticker, name: p.name, weight: isNum(p.currentWeight) ? p.currentWeight : p.targetWeight, since: p.since, entryPrice: p.entryPrice, lastPrice: p.lastPrice, lastDate: p.lastDate,
+          currency: p.currency || "USD", stop: null, changePct: isNum(p.changeSinceEntry) ? p.changeSinceEntry * 100 : sinceEntry(p.entryPrice, p.lastPrice), reason: p.reason || "", news: p.news || [] };
+      });
+      var pend = d.pending && Array.isArray(d.pending.positions) ? { date: d.pending.decisionDate, entry: d.pending.entry, positions: d.pending.positions.map(function (p) { return { ticker: p.ticker, name: p.name, weight: p.targetWeight, reason: p.reason || "", news: p.news || [] }; }) } : null;
+      return { group: "ki", id: slug, key: d.id, name: d.name, method: d.method || "", rule: d.rule, by: "KI",
+        liveSince: doc.liveStart || KI_START, asOf: doc.asOf, stops: false, reasons: true, cashPct: d.cashWeight,
+        perf: perfPct !== null && positions.length ? { pct: perfPct, since: pf.start || doc.liveStart || KI_START, asOf: last ? last[0] : doc.asOf } : null,
+        positions: positions, decision: pend,
+        protocol: (d.protocol || []).map(function (e) { return { date: e.date, action: e.action, ticker: e.ticker, weight: e.weight, price: e.price }; }),
+        pending: !positions.length };
     });
   }
   /** Alle Depots in fester Reihenfolge: Supertrader (Methoden nach Positionen, dann Trendfolge, Hausstrategie), Quant, KI. */
@@ -156,7 +166,7 @@
     (depot.protocol || []).forEach(function (e) {
       if (!e.date) return;
       if (!by[e.date]) { by[e.date] = { date: e.date, rein: [], raus: [] }; order.push(e.date); }
-      by[e.date][e.action === "RAUS" ? "raus" : "rein"].push(e);
+      by[e.date][e.action === "RAUS" ? "raus" : "rein"].push(e);  // OHNE_KURS: Aufnahme ohne Einstiegskurs, steht bei „rein“
     });
     return order.sort().reverse().map(function (d) { return by[d]; });
   }
@@ -210,13 +220,26 @@
       '<span class="pf-pos__name"><b>' + esc(nameOf(p)) + "</b><span>" + esc(p.ticker) + "</span></span>" +
       '<span class="pf-pos__chg"><span class="vu-xs vu-mu">seit Aufnahme</span>' + U.chg(p.changePct, { digits: 1 }) + "</span></a>" +
       '<dl class="pf-facts">' + facts.map(function (f) { return "<div><dt>" + esc(f[0]) + '</dt><dd class="vu-num">' + esc(f[1]) + "</dd></div>"; }).join("") + "</dl>" +
-      (d.reasons ? '<p class="pf-reason"><b>Begründung des Modells:</b> ' + esc(p.reason || "–") + "</p>" : "") + "</li>";
+      reasonHtml(d, p) + "</li>";
+  }
+  function reasonHtml(d, p) {
+    if (!d.reasons) return "";
+    var news = (p.news || []).slice(0, 3).filter(function (n) { return n && n.title && /^https:\/\//.test(n.url || ""); });
+    return '<p class="pf-reason"><b>Begründung laut Methode:</b> ' + esc(p.reason || "–") + "</p>" +
+      (news.length ? '<ul class="pf-news">' + news.map(function (n) { return '<li><a href="' + esc(n.url) + '" rel="noopener nofollow" target="_blank">' + esc(n.title) + '</a> <span class="vu-xs vu-mu">' + esc([n.source, dDe(n.date)].filter(Boolean).join(", ")) + " · Angabe Dritter</span></li>"; }).join("") + "</ul>" : "");
+  }
+  function decisionHtml(d) {
+    var x = d.decision;
+    return '<div class="vu-box pf-decision"><p class="vu-sm"><b>Entscheidung vom ' + dDe(x.date) + '</b>, Aufnahme zum ' + esc(x.entry || "Schluss des nächsten Handelstags") + ". Bis dahin stehen hier Zielgewicht und Begründung, Kurse folgen.</p>" +
+      '<ul class="pf-list">' + x.positions.slice().sort(function (a, b) { return (b.weight || 0) - (a.weight || 0); }).map(function (p) {
+        return '<li class="pf-pos"><a class="pf-pos__head pf-pos__head--plain" href="' + esc(stockHref(p.ticker)) + '">' + U.logo(p.ticker) + '<span class="pf-pos__name"><b>' + esc(nameOf(p)) + "</b><span>" + esc(p.ticker) + '</span></span><span class="pf-pos__chg"><span class="vu-xs vu-mu">Zielgewicht</span><b class="vu-num">' + pctW(p.weight) + "</b></span></a>" + reasonHtml(d, p) + "</li>";
+      }).join("") + "</ul></div>";
   }
   function logEntry(e, kind) {
     var extra = kind === "rein" ? (isNum(e.price) ? " zu " + U.money(e.price, "USD") : "") + (isNum(e.weight) ? " · " + pctW(e.weight) : "") : "";
     return '<li class="pf-log__e pf-log__e--' + kind + '"><span class="pf-log__mark" aria-hidden="true">' + (kind === "rein" ? "+" : "−") + "</span>" +
       '<a href="' + esc(stockHref(e.ticker)) + '"><b>' + esc(nameOf({ ticker: e.ticker })) + "</b> <span class=\"vu-mu\">" + esc(e.ticker) + "</span></a>" +
-      '<span class="pf-log__x vu-xs vu-mu">' + (kind === "rein" ? "rein" : "raus") + esc(extra) + "</span>" +
+      '<span class="pf-log__x vu-xs vu-mu">' + (e.action === "OHNE_KURS" ? "ohne Einstiegskurs" : kind === "rein" ? "rein" : "raus") + esc(extra) + "</span>" +
       (kind === "raus" && isNum(e.returnPct) ? U.chg(e.returnPct, { digits: 1 }) : "") +
       (e.reason ? '<span class="pf-log__why vu-xs">' + esc(e.reason) + "</span>" : "") + "</li>";
   }
@@ -227,7 +250,7 @@
     tiles.push(d.perf ? '<div class="vu-tile"><div class="vu-tile__label">Seit Start</div><div class="vu-tile__value">' + U.chg(d.perf.pct, { big: true, digits: 1 }) + '</div><div class="vu-tile__sub">Stand ' + esc(dDe(d.perf.asOf)) + ", nach Kosten</div></div>"
       : U.tile("Seit Start", "–", d.pending ? "erste Werte folgen" : "nicht veröffentlicht"));
     var rows = d.positions.slice().sort(function (a, b) { return (b.weight || 0) - (a.weight || 0) || a.ticker.localeCompare(b.ticker); });
-    var body = d.pending ? U.blank("Das Depot startet am " + dDe(d.liveSince) + ". Die ersten Positionen und Werte folgen mit dem ersten Lauf.", { verdict: false })
+    var body = d.pending ? U.blank("Das Depot startet am " + dDe(d.liveSince) + ". Die ersten Positionen und Werte folgen mit dem ersten Einstiegskurs.", { verdict: false }) + (d.decision && d.decision.positions.length ? decisionHtml(d) : "")
       : rows.length ? '<ul class="pf-list">' + rows.map(function (p) { return posRow(d, p); }).join("") + "</ul>"
         : U.blank("Das Depot hält heute keine Aktie" + (isNum(d.cashPct) ? " (" + U.num(d.cashPct * 100, 0) + " % Bargeld im Modell)" : "") + ". Die Methode wartet auf ihr nächstes Muster.", { verdict: false });
     return '<a class="pf-back" href="#/' + d.group + '">' + U.glyph("back", 16) + "<span>" + esc(g.title) + "</span></a>" +
@@ -235,7 +258,7 @@
       (d.by ? '<p class="vu-sm vu-mu">' + esc(d.by) + "</p>" : "") + '<p class="vu-lead">' + esc(d.method) + "</p>" + label() + "</header>" +
       '<div class="vu-grid pf-tiles">' + tiles.join("") + "</div>" +
       '<section class="pf-sec">' + U.sect("Bestand", { level: 2 }) +
-      '<p class="vu-xs vu-mu pf-cap">Gewicht im Modell, Aufnahme mit Datum und Kurs' + (d.stops ? ", Stopp laut Methode" : "") + "; rechts die Veränderung seit Aufnahme." + (d.reasons ? " Je Titel die Begründung des Modells." : "") + "</p>" + body + "</section>" +
+      '<p class="vu-xs vu-mu pf-cap">Gewicht im Modell, Aufnahme mit Datum und Kurs' + (d.stops ? ", Stopp laut Methode" : "") + "; rechts die Veränderung seit Aufnahme." + (d.reasons ? " Je Titel die Begründung laut Methode." : "") + "</p>" + body + "</section>" +
       (d.rule && d.rule !== d.method ? '<section class="pf-sec">' + U.sect("Regel", { level: 2 }) + '<p class="vu-sm">' + esc(d.rule) + "</p></section>" : "") +
       '<section class="pf-sec">' + U.sect("Protokoll rein/raus", { level: 2 }) +
       (log.length ? '<div class="vu-stack">' + log.map(function (x) {
