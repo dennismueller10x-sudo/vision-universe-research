@@ -6,7 +6,7 @@
  "recommendation": false,
  "liveStart": "2026-11-05",
  "asOf": "2026-11-05",
- "universeAsOf": "2026-11-05",
+ "universeAsOf": "2026-11-06",
  "rules": {
   "engine": "portfolio-backtest-1.1.0",
   "construction": "portfolio-construction-1.0.0",
@@ -38,8 +38,9 @@
   "fundamentals": "COMMITTED_SEC_CONSUMER_LATEST_FILING"
  },
  "performance": {
-  "state": "AWAITING_OWNER_APPROVAL",
-  "note": "Die Wertentwicklung ab Live-Start wird gerechnet, aber erst nach Owner-Freigabe gezeigt."
+  "state": "PUBLISHED",
+  "basis": "MODEL_NAV_SINCE_LIVE_START",
+  "note": "Wertentwicklung des Rechenmodells ab Live-Start, nach Kosten, ohne Steuern."
  },
  "benchmark": {
   "file": "quant/data/market/multi-asset/series/SPY.json",
@@ -559,15 +560,17 @@
    ],
    "lastRebalance": "2026-11-05",
    "decision": {
-    "due": true,
-    "state": "CONSTRUCTED",
-    "universe": 4448,
-    "scored": 3392,
-    "liquid": 1894,
-    "changes": 25
+    "due": false,
+    "state": "NOT_DUE"
    },
    "invested": 1,
-   "nextRebalance": "2026-12-01"
+   "nextRebalance": "2026-12-01",
+   "nav": [
+    [
+     "2026-11-05",
+     0.9994
+    ]
+   ]
   },
   {
    "profileId": "momentum-leader",
@@ -1082,15 +1085,17 @@
    ],
    "lastRebalance": "2026-11-05",
    "decision": {
-    "due": true,
-    "state": "CONSTRUCTED",
-    "universe": 4448,
-    "scored": 3561,
-    "liquid": 1992,
-    "changes": 25
+    "due": false,
+    "state": "NOT_DUE"
    },
    "invested": 1,
-   "nextRebalance": "2026-12-01"
+   "nextRebalance": "2026-12-01",
+   "nav": [
+    [
+     "2026-11-05",
+     0.9994
+    ]
+   ]
   },
   {
    "profileId": "garp",
@@ -1605,15 +1610,17 @@
    ],
    "lastRebalance": "2026-11-05",
    "decision": {
-    "due": true,
-    "state": "CONSTRUCTED",
-    "universe": 4448,
-    "scored": 2842,
-    "liquid": 1894,
-    "changes": 25
+    "due": false,
+    "state": "NOT_DUE"
    },
    "invested": 1,
-   "nextRebalance": "2026-12-01"
+   "nextRebalance": "2026-12-01",
+   "nav": [
+    [
+     "2026-11-05",
+     0.9994
+    ]
+   ]
   },
   {
    "profileId": "defensive-quality",
@@ -2128,15 +2135,17 @@
    ],
    "lastRebalance": "2026-11-05",
    "decision": {
-    "due": true,
-    "state": "CONSTRUCTED",
-    "universe": 4448,
-    "scored": 3418,
-    "liquid": 1895,
-    "changes": 25
+    "due": false,
+    "state": "NOT_DUE"
    },
    "invested": 1,
-   "nextRebalance": "2026-12-01"
+   "nextRebalance": "2026-12-01",
+   "nav": [
+    [
+     "2026-11-05",
+     0.9994
+    ]
+   ]
   },
   {
    "profileId": "value-momentum",
@@ -2651,15 +2660,17 @@
    ],
    "lastRebalance": "2026-11-05",
    "decision": {
-    "due": true,
-    "state": "CONSTRUCTED",
-    "universe": 4448,
-    "scored": 2865,
-    "liquid": 1895,
-    "changes": 25
+    "due": false,
+    "state": "NOT_DUE"
    },
    "invested": 1,
-   "nextRebalance": "2026-12-01"
+   "nextRebalance": "2026-12-01",
+   "nav": [
+    [
+     "2026-11-05",
+     0.9994
+    ]
+   ]
   }
  ]
 }

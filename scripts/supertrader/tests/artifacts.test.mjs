@@ -4,11 +4,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { assertTransition, STATES } from '../engine/lifecycle.mjs';
-import { fullSignals, fullLedger, SKIP_FULL } from './full-state.mjs';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../..');
 const read = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, 'supertrader/data', f), 'utf8'));
-const signals = fullSignals() ?? read('signals.json'); // L3: Integrität auf dem vollen Stand
+const signals = read('signals.json');
 const backtests = read('backtests.json');
 const coverage = read('coverage.json');
 const registry = read('registry.json');
@@ -64,9 +63,9 @@ test('Gate D: jede Regel-ID in Signalen existiert in der Registry', () => {
   }
 });
 
-test('Historie wird nicht geloescht: Ledger-Eintraege bleiben erhalten', { skip: SKIP_FULL }, () => {
+test('Historie wird nicht geloescht: Ledger-Eintraege bleiben erhalten', () => {
   for (const [id, st] of Object.entries(signals.strategies)) {
-    const ledger = fullLedger(id);
+    const ledger = JSON.parse(fs.readFileSync(path.join(ROOT, 'supertrader/data/ledger', `${id}.json`), 'utf8'));
     assert.equal(ledger.closed.length, st.closed.length);
     assert.equal(ledger.invalidated.length, st.invalidatedTotal + st.retiredTotal, "ungueltige + abgeloeste = alle Ledger-Eintraege");
     assert.equal(st.retired.length, st.retiredTotal, "alle abgeloesten Setups ausgeliefert");
@@ -92,7 +91,7 @@ test('Kein Kaufaufforderungs-Ton in Artefakten und Oberflaeche', () => {
   for (const t of texts) assert.doesNotMatch(t, /jetzt kaufen|buy now|kaufen sie|strong buy|garantiert/i);
 });
 
-test('Darvas: jedes offene Setup traegt eine Qualitaetsstufe mit allen Kriterien', { skip: SKIP_FULL }, () => {
+test('Darvas: jedes offene Setup traegt eine Qualitaetsstufe mit allen Kriterien', () => {
   const d = signals.strategies.DARVAS_BOX;
   const reg = registry.strategies.find((s) => s.strategy_id === 'DARVAS_BOX');
   for (const s of d.open) {
@@ -137,7 +136,7 @@ test('Regelkarten: jede Live-Variante hat eine vollstaendige Karte mit existiere
   assert.ok(gb.sections.some((x) => x.id === 'rebalance'));
 });
 
-test('Plan je Signal: geplante Schwellen mit Datenstand; Einstieg nur als echte Modellausfuehrung', { skip: SKIP_FULL }, () => {
+test('Plan je Signal: geplante Schwellen mit Datenstand; Einstieg nur als echte Modellausfuehrung', () => {
   for (const st of Object.values(signals.strategies)) for (const s of st.open) {
     assert.ok(s.plan, s.id);
     assert.equal(s.plan.trigger.kind, 'PLANNED_THRESHOLD');
@@ -154,7 +153,7 @@ test('Plan je Signal: geplante Schwellen mit Datenstand; Einstieg nur als echte 
   }
 });
 
-test('Darvas: B-Aufschluesselung ist konsistent und Regime-Sperre als VU markiert', { skip: SKIP_FULL }, () => {
+test('Darvas: B-Aufschluesselung ist konsistent und Regime-Sperre als VU markiert', () => {
   const q = signals.strategies.DARVAS_BOX.quality;
   assert.equal(q.bBreakdown.total, q.B);
   assert.equal(q.bBreakdown.blockedOnlyByRegime + q.bBreakdown.failOtherCriteria, q.B);
@@ -169,18 +168,18 @@ test('Darvas: B-Aufschluesselung ist konsistent und Regime-Sperre als VU markier
   }
 });
 
-test('Versionswechsel: abgeloeste Signale bleiben im Ledger, neue tragen die Version in der ID', { skip: SKIP_FULL }, () => {
+test('Versionswechsel: abgeloeste Signale bleiben im Ledger, neue tragen die Version in der ID', () => {
   for (const [id, st] of Object.entries(signals.strategies)) {
-    const ledger = fullLedger(id);
+    const ledger = JSON.parse(fs.readFileSync(path.join(ROOT, 'supertrader/data/ledger', `${id}.json`), 'utf8'));
     for (const s of ledger.open) assert.ok(s.id.endsWith(`:v${s.version}`), s.id);
     for (const s of ledger.invalidated.filter((x) => x.transitions.at(-1).ruleId === 'LC-VERSION-RETIRED')) assert.notEqual(s.version, st.version);
   }
 });
 
-test('Regelwechsel ist kein Marktereignis: Neubewertungen verweisen auf Vorgaenger und Kursstand', { skip: SKIP_FULL }, () => {
+test('Regelwechsel ist kein Marktereignis: Neubewertungen verweisen auf Vorgaenger und Kursstand', () => {
   let retired = 0, reassessed = 0;
   for (const [id, st] of Object.entries(signals.strategies)) {
-    const ledger = fullLedger(id);
+    const ledger = JSON.parse(fs.readFileSync(path.join(ROOT, 'supertrader/data/ledger', `${id}.json`), 'utf8'));
     const all = new Map([...ledger.open, ...ledger.closed, ...ledger.invalidated].map((s) => [s.id, s]));
     for (const r of ledger.invalidated.filter((x) => x.transitions.at(-1).ruleId === 'LC-VERSION-RETIRED')) {
       retired++;
@@ -204,6 +203,6 @@ test('Regelwechsel ist kein Marktereignis: Neubewertungen verweisen auf Vorgaeng
   assert.equal(signals.counts.RETIRED_BY_RULE_VERSION, retired);
   assert.equal(signals.counts.REASSESSED_AFTER_RULE_CHANGE, reassessed);
   const allOpen = Object.values(signals.strategies).flatMap((st) => st.open);
-  assert.equal(signals.counts.NEW_SINCE_PREVIOUS_DATA, allOpen.filter((x) => x.discovery?.kind !== 'RULE_VERSION_REASSESSMENT' && x.createdAt > (fullLedger(x.strategyId).previousDataAsOf || '')).length, 'Neubewertungen zaehlen nicht als neue Setups');
+  assert.equal(signals.counts.NEW_SINCE_PREVIOUS_DATA, allOpen.filter((x) => x.discovery?.kind !== 'RULE_VERSION_REASSESSMENT' && x.createdAt > (JSON.parse(fs.readFileSync(path.join(ROOT, 'supertrader/data/ledger', `${x.strategyId}.json`), 'utf8')).previousDataAsOf || '')).length, 'Neubewertungen zaehlen nicht als neue Setups');
   for (const x of allOpen) assert.ok(x.createdAt <= signals.asOf, `${x.id}: Entdeckung nach dem Datenstand`);
 });

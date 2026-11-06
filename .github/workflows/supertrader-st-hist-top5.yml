@@ -20,11 +20,11 @@ on:
         default: ''
         type: string
       mode:
-        description: 'backtest (Kennzahlen Top 5) oder rest8 (Strang H: C04-C07, C11, C13 wie die Top 5, dazu C09/C10 aus dem privaten IEX-Cache, 0 Anfragen) oder edge-export (Kurven, Fills, Terminale fuer die E3-Studie, kostenfrei, nur mit Pruefschluessel) oder golden-diagnose (C08: warum belegte Trades fehlen) oder minervini-golden (C06/C07 Referenz gegen belegte Trades); beide nur mit Pruefschluessel'
+        description: 'backtest (Kennzahlen Top 5) oder rest8 (Strang H: C04-C07, C11, C13 wie die Top 5, dazu C09/C10 aus dem privaten IEX-Cache, 0 Anfragen) oder edge-export (Kurven, Fills, Terminale fuer die E3-Studie, kostenfrei, nur mit Pruefschluessel) oder golden-diagnose (C08: warum belegte Trades fehlen) oder minervini-golden (C06/C07 Referenz gegen belegte Trades); beide nur mit Pruefschluessel; holdout (Strang H: einmaliger vorregistrierter Holdout 2008-2015, Snapshot laut Protokoll, nur mit Pruefschluessel, Einmal-Ledger)'
         required: false
         default: 'backtest'
         type: choice
-        options: [backtest, rest8, edge-export, golden-diagnose, minervini-golden]
+        options: [backtest, rest8, edge-export, golden-diagnose, minervini-golden, holdout]
       with_v13:
         description: 'Universum B mit V13-Delisting-Ketten zusaetzlich rechnen (Archiv 1.2.0)'
         required: false
@@ -116,11 +116,16 @@ jobs:
           W="$RUNNER_TEMP/sth"; OUT="$W/out"; mkdir -p "$OUT"
           args=(--snapshot "$SNAPSHOT_ID" --out "$OUT" --allow-code-version-change)
           [ -f "$W/reviewer.pem" ] && args+=(--reviewer-key "$W/reviewer.pem")
-          [[ "$MODE" == "backtest" || "$MODE" == "rest8" || "$MODE" == "edge-export" || "$MODE" == "golden-diagnose" || "$MODE" == "minervini-golden" ]] || { echo "MODE_INVALID"; exit 2; }
-          args+=(--mode "$MODE")
-          [ "$WITH_V13" = "true" ] && { [ "$MODE" = "backtest" ] || [ "$MODE" = "rest8" ]; } && args+=(--v13-series "$W/v13/v13-derived/series" --v13-raw "$W/v13/v13-raw/raw")
+          [[ "$MODE" == "backtest" || "$MODE" == "rest8" || "$MODE" == "edge-export" || "$MODE" == "golden-diagnose" || "$MODE" == "minervini-golden" || "$MODE" == "holdout" ]] || { echo "MODE_INVALID"; exit 2; }
+          [ "$WITH_V13" = "true" ] && { [ "$MODE" = "backtest" ] || [ "$MODE" = "rest8" ] || [ "$MODE" = "holdout" ]; } && args+=(--v13-series "$W/v13/v13-derived/series" --v13-raw "$W/v13/v13-raw/raw")
           set +e
-          node scripts/supertrader/source-faithful/research/run-st-hist-top5.mjs "${args[@]}" > "$OUT/run.log" 2>&1
+          if [ "$MODE" = "holdout" ]; then
+            # einmaliger Holdout 2008-2015: Fenster HOLDOUT, Snapshot und Kandidaten laut gepinntem Protokoll, Ledger im privaten Speicher
+            [ -f "$W/reviewer.pem" ] || { echo "HOLDOUT_NEEDS_REVIEWER_KEY"; exit 2; }
+            ST_WINDOW=HOLDOUT node scripts/supertrader/source-faithful/research/run-st-holdout.mjs "${args[@]}" > "$OUT/run.log" 2>&1
+          else
+            node scripts/supertrader/source-faithful/research/run-st-hist-top5.mjs "${args[@]}" --mode "$MODE" > "$OUT/run.log" 2>&1
+          fi
           rc=$?
           set -e
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
@@ -136,7 +141,8 @@ jobs:
           rm -rf "$W/v13" "$W/enc"
           if [ -d "$W/out" ]; then
             [ -f "$W/out/st-hist-top5.public.json" ] && cp "$W/out/st-hist-top5.public.json" "$W/upload/"
-            for f in "$W"/out/st-hist-top5.sealed.*.json; do [ -f "$f" ] && cp "$f" "$W/upload/"; done
+            [ -f "$W/out/st-holdout.public.json" ] && cp "$W/out/st-holdout.public.json" "$W/upload/"
+            for f in "$W"/out/st-hist-top5.sealed.*.json "$W"/out/st-holdout.sealed.*.json; do [ -f "$f" ] && cp "$f" "$W/upload/"; done
             find "$W/out" -type f -exec shred -u {} +
             rm -rf "$W/out"
           fi
@@ -147,7 +153,7 @@ jobs:
           set -euo pipefail
           W="$RUNNER_TEMP/sth"
           test ! -e "$W/out" && test ! -e "$W/v13" || { echo "PLAINTEXT_LEFT"; exit 1; }
-          for f in "$W"/upload/*; do case "$(basename "$f")" in st-hist-top5.public.json) node -e 'const p=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")); for (const k of ["totalReturn","cagr","maxDrawdown","hitRate","spyDistance"]) if (JSON.stringify(p).includes("\""+k+"\"")) { console.log("METRIC_IN_PUBLIC_PART"); process.exit(1); }' "$f";; st-hist-top5.sealed.*.json) grep -q '"schema":"supertrader-sealed-1.0.0"' "$f" || { echo "NOT_SEALED"; exit 1; };; *) echo "UNEXPECTED_UPLOAD_CONTENT"; exit 1;; esac; done
+          for f in "$W"/upload/*; do case "$(basename "$f")" in st-hist-top5.public.json|st-holdout.public.json) node -e 'const p=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")); for (const k of ["totalReturn","cagr","maxDrawdown","hitRate","spyDistance"]) if (JSON.stringify(p).includes("\""+k+"\"")) { console.log("METRIC_IN_PUBLIC_PART"); process.exit(1); }' "$f";; st-hist-top5.sealed.*.json|st-holdout.sealed.*.json) grep -q '"schema":"supertrader-sealed-1.0.0"' "$f" || { echo "NOT_SEALED"; exit 1; };; *) echo "UNEXPECTED_UPLOAD_CONTENT"; exit 1;; esac; done
       - uses: actions/upload-artifact@v4
         if: always()
         with:
