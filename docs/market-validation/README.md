@@ -168,7 +168,7 @@ Prof. French wurde bewusst nicht gestellt (Entscheidung des Eigentümers).
 Quant- und Macro-Module sind unverändert. Neu sind nur
 `scripts/market/lib/market-validation.mjs`, `scripts/market/validate-market-pulse.mjs`,
 `scripts/market/build-validation-sources.mjs`, der Workflow
-`.github/workflows/market-validation-data.yml` und die Tests
+`.github/workflows/pipeline-daily.yml` (Teil `marktvalidierung`, vormals `market-validation-data.yml`) und die Tests
 `discover/tests/market-validation.test.mjs`.
 
 ## Methode

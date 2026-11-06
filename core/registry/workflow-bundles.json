@@ -31,7 +31,8 @@
    "replaces": [
     "fx-ecb-daily.yml",
     "vorsorge-daily-rebuild.yml",
-    "supertrader-house-live.yml"
+    "supertrader-house-live.yml",
+    "market-validation-data.yml"
    ]
   },
   "pipeline-intraday": {
@@ -253,9 +254,6 @@
    "bundle": "pipeline-weekly"
   },
   "market-data-refresh.yml": {
-   "bundle": "pipeline-daily"
-  },
-  "market-validation-data.yml": {
    "bundle": "pipeline-daily"
   },
   "multi-asset-data.yml": {
