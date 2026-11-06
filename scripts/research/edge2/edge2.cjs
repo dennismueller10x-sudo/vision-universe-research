@@ -20,10 +20,10 @@ function fail(code, detail) { const e = new Error(code + (detail ? ': ' + detail
 
 function standardFor(n) { return { minPositions: n, maxPositions: n, targetPositions: n, maxPositionWeight: Math.max(.08, 1 / n) }; }
 
-function windowIndex(panel, window) {
+function windowIndex(panel, window, minWeeks = 60) {
   const cal = panel.calendar, bench = panel.benchmark.levels;
   const idx = [...cal.keys()].filter(i => cal[i] >= window[0] && cal[i] <= window[1] && bench[i] > 0);
-  if (idx.length < 60) fail('WINDOW_TOO_SHORT');
+  if (idx.length < minWeeks) fail('WINDOW_TOO_SHORT');
   for (let k = 1; k < idx.length; k++) if (idx[k] !== idx[k - 1] + 1) fail('BENCHMARK_GAP_IN_WINDOW', cal[idx[k]]);
   return idx;
 }
@@ -51,9 +51,10 @@ function isZone(analysis, Trade) {
 }
 
 // ------------------------------------------------------------ Teil 1
-function runTeil1(panel, selector, v, { window, anchorDate, zoneAt }) {
+// decisionsOnly (Papierdepot vorwärts): nur Entscheidungen und Bestand, kein Ledger; erlaubt kurze Fenster.
+function runTeil1(panel, selector, v, { window, anchorDate, zoneAt, decisionsOnly = false }) {
   if (!['ZONE', 'NOW'].includes(v.entry)) fail('ENTRY_UNKNOWN', v.entry);
-  const cal = panel.calendar, idx = windowIndex(panel, window), first = idx[0], last = idx.at(-1);
+  const cal = panel.calendar, idx = windowIndex(panel, window, decisionsOnly ? 1 : 60), first = idx[0], last = idx.at(-1);
   const anchor = cal.indexOf(anchorDate);
   if (anchor < 0 || anchor > first) fail('ANCHOR_INVALID', anchorDate);
   const W = 13, n = v.n, standard = standardFor(n), std = C.standardOf(standard);
@@ -120,6 +121,7 @@ function runTeil1(panel, selector, v, { window, anchorDate, zoneAt }) {
     memberships.push({ effectiveAt: cal[t] + 'T00:00:00Z', availableAt: cal[t] + 'T00:00:00Z', sourceHash: mh, members });
     targets.push({ decisionDate: cal[t], executionDate: cal[e], availableAt: at(cal[t]), membershipHash: mh, weights, hs: Object.fromEntries(members.map(id => [id, hs.get(id)])) });
   }
+  if (decisionsOnly) return { variantId: v.id, targets, holdings: [...units.keys()].sort(), construction: stats };
   // Mitgliedschaften gelten bis zur nächsten Aktion; die Frist umfasst deshalb das ganze Fenster.
   const ledger = Q.ledgerFromTargets(panel, { initialCapital: 1e6, terminalRecovery: BT.DEFAULTS.terminalRecovery }, std, idx, targets, memberships, idx.length);
   return { variantId: v.id, window: [cal[first], cal[last]], ...ledger, construction: { ...stats, targetsEmitted: targets.length, averageSlotsFilled: stats.slotWeeks ? stats.filledSlotWeeks / stats.slotWeeks : null } };
