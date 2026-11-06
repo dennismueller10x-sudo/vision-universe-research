@@ -236,7 +236,7 @@ jobs:
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
       - name: E3-Phase rechnen (Protokoll eingefroren, Hash geprueft)
-        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && steps.m.outputs.mode != 'edge2' && steps.m.outputs.mode != 'edge2-blind-build' && steps.m.outputs.mode != 'edge2-blind-resolve'
+        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'edge2')
         env:
           PHASE: ${{ steps.m.outputs.mode }}
         run: |
