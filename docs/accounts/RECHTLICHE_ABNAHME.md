@@ -6,7 +6,7 @@ ist Fassung 4 aus #1449, ergänzt um die Owner-Angaben vom 06.11. (USt-IdNr., Ko
 Datenschutzbeauftragter). Die früheren **[[PRÜFEN: …]]**-Marken stehen nicht mehr im Text; jede Frage steht unverändert in
 [../legal/ANWALTSMAPPE.md](../legal/ANWALTSMAPPE.md), Abschnitt „Offen nach Freischaltung 06.11.“. **Die Anwaltsprüfung ist
 offen.** Die Freischaltung öffnet keine Zahlungen: Der Checkout bleibt `testers`, öffentliches Pro ist eine eigene
-Owner-Freigabe (Geld). Das Kontaktformular ist zusätzlich im Seitenfuß von research.visionuniverse.de (`legal-notices.json` → `footer`) und von visionuniverse.de (Startseite, Impressum, Datenschutz) verlinkt; das Impressum der Landingpage nennt dazu Kontaktformular und USt-IdNr. Ersetzt die Liste in
+Owner-Freigabe (Geld). Das Kontaktformular ist zusätzlich im Seitenfuß von research.visionuniverse.de (`legal-notices.json` → `footer`) und im Fuß der Startseite von visionuniverse.de verlinkt. **Offen:** Impressum und Datenschutz der Landingpage (`landing/impressum/`, `landing/datenschutz/`) sind durch die Designprüfung (`landing/scripts/compare-research.mjs`, eingefrorene Basis) gesperrt und nennen USt-IdNr. und Kontaktformular noch nicht; das braucht einen eigenen PR, der die Basis bewusst fortschreibt. Ersetzt die Liste in
 [RECHTLICHE_PRUEFUNG_CHECKOUT.md](RECHTLICHE_PRUEFUNG_CHECKOUT.md).
 
 ## Einordnung der offenen Punkte (Stand 02.11.2026)
