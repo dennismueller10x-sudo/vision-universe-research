@@ -67,6 +67,12 @@ on:
       - "Startseite: Werte der Produktabbildungen"
       # Chartbild (Technical Intelligence v3): neu gebaute Produktdaten, ebenfalls per GITHUB_TOKEN gepusht.
       - "Chartbild-Produktdaten (Technical Intelligence v3)"
+      # Europa-Schlusskurse (werktags nach Handelsschluss, pusht per
+      # GITHUB_TOKEN). Der erste Zeitplan-Lauf (04.11.2026, Lauf 41929023243)
+      # startete um 22:52 UTC, ausserhalb der Bruecke: ohne diesen Eintrag
+      # kam sein Commit erst mit dem naechsten fremden Release auf die Seite,
+      # und die Release-QA wartete vergeblich.
+      - "Europe Discover Close refresh"
     types: [completed]
     branches: [main]
 
