@@ -88,7 +88,8 @@ function createSelector(panel, { riskWindowWeeks = 104, candidatePool = 90 } = {
     const built = C.construct({ candidates: p.pool, returnsById: p.returnsById, weighting, standard });
     return { t, date: panel.calendar[t], universe: p.universe, scored: p.scored, liquid: p.liquid, pool: p.pool.length, built };
   }
-  return { select, rowsAt };
+  // poolAt zusätzlich exportiert (Edge 2: Merkliste aus demselben Pool); Verhalten unverändert.
+  return { select, rowsAt, poolAt };
 }
 
 // ------------------------------------------------------------ Ein Lauf (ein Fenster, Cash-Start)

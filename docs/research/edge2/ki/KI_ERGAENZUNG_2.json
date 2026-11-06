@@ -1,0 +1,13 @@
+{
+  "schema": "vu-edge2-ki-amendment-1.0.0",
+  "id": "EDGE2-KI/ERGAENZUNG-2",
+  "registeredOn": "2026-11-06",
+  "label": "Forschung, nicht zertifiziert",
+  "amends": { "file": "docs/research/edge2/ki/BLIND_ERGAENZUNG_1.json", "sha256": "022e4835250bd5f052ae462461c47146c0038c605a7f360b975e2d8eb4b22d01" },
+  "decision": "Owner-Entscheidung vom 06.11.2026 (über die Steuerung): Depot B recherchiert ab der zweiten Entscheidung aktuelle Nachrichten der letzten 7–30 Tage selbst (WebSearch/WebFetch in der Wochenlauf-Sitzung, höchstens 3 Suchen je Titel, nur seriöse Quellen, Datum und URL ins Ledger). Abo-Grenze: Depot B bekommt nur die ersten 25 Kandidaten des Pakets (K01–K25; die Labels sind zufällig gezogen). Depot A bleibt unverändert blind.",
+  "prompts": {
+    "A": { "file": "docs/research/edge2/ki/PROMPT_v2.md", "version": "v2", "sha256": "a43667bd036bdf51211c72f5e7157c6060278c219d92c5532953d6c6df59390b" },
+    "B": { "file": "docs/research/edge2/ki/PROMPT_B_v3.md", "version": "B v3", "sha256": "0297f97761e630dd4be8e2c232237c9e3730ab390581a3d2ccd343cdd9ce1b3e", "candidates": 25 }
+  },
+  "history": "B v1 galt für die erste Entscheidung am 06.11.2026 (50 Kandidaten, Feed-Nachrichten)."
+}
