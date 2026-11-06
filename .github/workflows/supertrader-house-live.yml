@@ -61,6 +61,16 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=14000
         run: node scripts/supertrader/validation/sec-pit.mjs --r13 --out "$RUNNER_TEMP/val"
+      # Rueckbau L2/L3 (Owner-Entscheidung 06.11.2026, #1522): steht im Repository noch die oeffentliche Ledger-Sicht,
+      # kommt der volle Zustand einmalig aus der History-Ablage zurueck (fail closed, danach ohne Wirkung).
+      - name: Vollen Ledger-Zustand zurueckholen (einmalig nach dem Rueckbau)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/supertrader/restore-full-ledgers.mjs
       - name: Monatsentscheidung (nur am Monatsende) bzw. Ladeprobe
         if: steps.mode.outputs.mode == 'decide' || steps.mode.outputs.mode == 'dry' || steps.mode.outputs.mode == 'start'
         env:
