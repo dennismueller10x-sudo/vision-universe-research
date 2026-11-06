@@ -7,6 +7,14 @@ name: KI-Depots - taeglicher Kursstand (Rechenmodell, kein echtes Geld)
 on:
   schedule:
     - cron: '41 23 * * 1-5'
+  # Der Wochenauftrag (WOCHENAUFTRAG.md) bringt nur die Ledger; der Export gehoert diesem Erzeuger und
+  # folgt direkt nach dem Merge (kein generiertes Artefakt im PR, CLAUDE.md).
+  push:
+    branches: [main]
+    paths:
+      - 'docs/research/edge2/ki/ledger-A.jsonl'
+      - 'docs/research/edge2/ki/ledger-B.jsonl'
+      - 'scripts/research/edge2/ki-export.cjs'
   workflow_dispatch:
     inputs:
       today:
