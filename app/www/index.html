@@ -35,6 +35,11 @@
     </form>
     <div id="account-info" hidden>
       <dl class="kv"><dt>E-Mail</dt><dd id="acc-email"></dd><dt>Tarif</dt><dd id="acc-plan"></dd><dt>Sitzung</dt><dd id="acc-session"></dd></dl>
+      <fieldset><legend>Einstellungen</legend>
+      <label id="biometric-setting" hidden><input id="biometric-enabled" type="checkbox"> Mit Face ID / Touch ID / Fingerabdruck anmelden</label>
+      <label><input id="push-enabled" type="checkbox"> Benachrichtigungen</label>
+      <p class="muted small">Höchstens eine tägliche Zusammenfassung zur persönlichen Watchlist.</p>
+      <p id="settings-state" role="status"></p></fieldset>
       <button id="logout" type="button" class="secondary">Abmelden</button>
     </div>
   </section>
