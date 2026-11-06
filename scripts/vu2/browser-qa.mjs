@@ -365,7 +365,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
      const api=g.VUProductServices.create({loadJSON:g.QuantShell.loadJSON,displayPolicy:g.VUDisplayPolicy,queryEngine:g.VUQuery});
      const r=await api.getRadarCard(ticker).catch(()=>null);
      const card=r&&r.state==='AVAILABLE'?r.card:null;
-     return {available:Boolean(card),events:card&&Array.isArray(card.events)?card.events.map(e=>({explanation:e.explanation})):[],
+     /* Verfuegbar heisst: der Radar hat diesen Titel ausgewertet (Zeile im Scherben). Eine Karte entsteht im Erzeuger
+        (scripts/quant/build-quant-radar.mjs) nur fuer Titel mit Ereignissen; ohne Karte gilt "keine neue Veraenderung". */
+     return {available:Boolean(r&&r.state==='AVAILABLE'),events:card&&Array.isArray(card.events)?card.events.map(e=>({explanation:e.explanation})):[],
       nextOpen:card&&card.next&&Array.isArray(card.next.open)?card.next.open.length:0};});
     const nowDom=await page.evaluate(()=>{const n=document.querySelector('#veraenderung .q-now');if(!n)return null;
      const t=e=>((e&&e.textContent)||'').trim();

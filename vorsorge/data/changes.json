@@ -76,10 +76,19 @@
   {
    "type": "NEW_LISTING",
    "symbol": null,
-   "count": 91,
-   "text": "91 ETF-Listings neu im Verzeichnis (Aufnahme des Tiingo-ETF-Universums).",
+   "count": 250,
+   "text": "250 ETF-Listings neu im Verzeichnis (Aufnahme des Tiingo-ETF-Universums).",
    "asOf": "2026-11-05",
    "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "DATA_REVIEW",
+   "symbol": null,
+   "count": 2,
+   "relevance": "LOW",
+   "asOf": "2026-11-05",
+   "text": "2 Listings wegen unvollständiger Daten zurück in Prüfung (z. B. GLNK, ZCSH).",
+   "category": "DATA_UPDATE"
   }
  ],
  "unmonitored": [
@@ -109,10 +118,28 @@
  },
  "rawEvents": [
   {
+   "type": "STATUS_CHANGE",
+   "symbol": "GLNK",
+   "from": "ACTIVE",
+   "to": "REVIEW",
+   "text": "Status von GLNK: ACTIVE → REVIEW.",
+   "asOf": "2026-11-05",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "STATUS_CHANGE",
+   "symbol": "ZCSH",
+   "from": "ACTIVE",
+   "to": "REVIEW",
+   "text": "Status von ZCSH: ACTIVE → REVIEW.",
+   "asOf": "2026-11-05",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
    "type": "NEW_LISTING",
    "symbol": null,
-   "count": 91,
-   "text": "91 ETF-Listings neu im Verzeichnis (Aufnahme des Tiingo-ETF-Universums).",
+   "count": 250,
+   "text": "250 ETF-Listings neu im Verzeichnis (Aufnahme des Tiingo-ETF-Universums).",
    "asOf": "2026-11-05",
    "category": "PRODUCT_CHANGE"
   }

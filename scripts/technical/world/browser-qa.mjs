@@ -258,8 +258,13 @@ async function main() {
       assert(await page.locator(".tc-sent [data-verdict]").count() === 3, "drei Saetze mit Urteil fehlen");
       assert(await page.locator(".tc-ptile").count() === 2, "Preis-Kacheln fehlen");
       if (await page.locator(".tc-sigrow").count()) { await page.locator(".tc-sigrow").first().click(); await page.waitForSelector("#tc-signal-sheet:not([hidden])"); await page.keyboard.press("Escape"); }
-      /* Kein Rot und kein Gruen auf der Seite (Regel 1): alle sichtbaren Hintergruende und Schriften. */
-      const bad = await page.evaluate(() => [...document.querySelectorAll("#tc-main *")].map((e) => [getComputedStyle(e).color, getComputedStyle(e).backgroundColor, e.getAttribute && e.tagName === "rect" ? getComputedStyle(e).fill : ""]).flat()
+      /* Kein Rot und kein Gruen auf der Seite (Regel 1): alle sichtbaren Hintergruende und Schriften.
+         Einzige Ausnahme: die Tagesveraenderung im gemeinsamen Aktienkopf (Pilot NVDA #1493, Owner 06.11.2026:
+         Minus rot, Plus gruen). Sie ist kein Teil von Chart oder Urteil und traegt Pfeil und Vorzeichen, Farbe ist
+         nicht das einzige Signal - das prueft dieser Schritt eigens. */
+      const pills = await page.evaluate(() => [...document.querySelectorAll("#tc-main .vu-shead--tone .vu-shead-change")].map((e) => e.textContent));
+      for (const t of pills) assert(/[\u25b2\u25bc].*[+\u2212-]?\d/.test(t), "Tagesveraenderung ohne Pfeil und Zahl: " + t);
+      const bad = await page.evaluate(() => [...document.querySelectorAll("#tc-main *")].filter((e) => !e.closest(".vu-shead--tone .vu-shead-change")).map((e) => [getComputedStyle(e).color, getComputedStyle(e).backgroundColor, e.getAttribute && e.tagName === "rect" ? getComputedStyle(e).fill : ""]).flat()
         .filter((c) => { const m = /rgba?\((\d+), (\d+), (\d+)/.exec(c || ""); if (!m) return false; const [r, g, b] = m.slice(1).map(Number); return (r > 150 && g < 90 && b < 90) || (g > 120 && r < 110 && b < 110); }).slice(0, 3));
       assert(!bad.length, "Rot oder Gruen: " + bad.join(" "));
       await clean("Chart einfach");
@@ -312,8 +317,16 @@ async function main() {
       });
       assert(w.n === 1, "Abschnitt Quant/Supertrader " + w.n + "-mal");
       assert(w.chips >= 1 && w.lead.length > 20 && !w.digits, "Quant-Stufen fehlen oder zeigen Zahlen: " + JSON.stringify(w));
-      assert(w.qHref === "/quant/#/aktie/NVDA" && w.sHref === "/supertrader/stock/NVDA/", "Links: " + w.qHref + " " + w.sHref);
-      assert(/Modellsignale/.test(w.sText) && /Research, keine Empfehlung/.test(w.sText) && /nicht zertifiziert/.test(w.sText), "Supertrader-Status fehlt: " + w.sText.slice(0, 200));
+      /* Ob NVDA eine Supertrader-Aktienseite hat, steht in supertrader/data/build.json (seit #1479 nur noch ein Teil
+         der Titel, 06.11.2026 ohne NVDA). Mit Seite: Modellsignale und Link dorthin; ohne Seite: der ehrliche Hinweis und
+         der Link auf die Research-Treffer, wenn es welche gibt (sonst keiner). */
+      const stBuild = JSON.parse(await readFile(join(root, "supertrader/data/build.json"), "utf8"));
+      const stCovered = Array.isArray(stBuild.slices && stBuild.slices.stock) && stBuild.slices.stock.includes("NVDA");
+      const hasViews = /Quellentreue Methoden/.test(w.sText) && !/erkennt keine quellentreue Methode/.test(w.sText);
+      const sWant = stCovered ? "/supertrader/stock/NVDA/" : hasViews ? "/supertrader/stock/?s=NVDA#sf" : null;
+      assert(w.qHref === "/quant/#/aktie/NVDA" && w.sHref === sWant, "Links: " + w.qHref + " " + w.sHref + " (erwartet " + sWant + ")");
+      assert(stCovered ? /Modellsignale/.test(w.sText) : /Keine Supertrader-Aktienseite f\u00fcr diesen Titel/.test(w.sText), "Supertrader-Zustand fehlt: " + w.sText.slice(0, 200));
+      if (/Quellentreue Methoden/.test(w.sText)) assert(/Research, keine Empfehlung/.test(w.sText) && /nicht zertifiziert/.test(w.sText), "Research-Status fehlt: " + w.sText.slice(0, 200));
       await clean("Chart Studio");
     });
 

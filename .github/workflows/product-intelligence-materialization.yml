@@ -389,7 +389,9 @@ jobs:
 
       - name: Measure the Stock Intelligence journey
         if: steps.noetig.outputs.noop != 'true'
-        run: node scripts/vu2/measure-journey.mjs --sample 500
+        # 6 GB wie die anderen grossen Schritte: ohne Release-Ausschnitte (technical-signals-v1/by-ticker) haelt der Dienst je
+        # Titel einen ganzen Scherben; Lauf 42179530149 (06.11.2026) brach bei 480 von 500 mit 4 GB ab.
+        run: node --max-old-space-size=6144 scripts/vu2/measure-journey.mjs --sample 500
 
       - name: Contract and regression tests
         if: steps.noetig.outputs.noop != 'true'
