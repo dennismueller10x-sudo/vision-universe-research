@@ -133,3 +133,4 @@ Lehren: Öffentliche ElevenLabs-Stimmen sind im Workspace gesperrt („requires 
 - **Fakten vor Gefühl:** „Schlimmster Crash der Geschichte“ und „3 Billionen“ ließen sich nicht belegen (belegt: Nasdaq −5,5 %, schlimmster Tag seit April 2025; Magnificent 7 über 1 Billion $, CNBC). Bewertungsaussagen selbst rechnen (Nvidia-KGV 23 aus SEC-EPS), statt Sekundärquellen zu übernehmen.
 - **Kommentar-Reel + Liste:** Zonen-Liste unter `/instagram/zonen/` (PR #1517); ManyChat-Stichwort AKTIE verlinkt dorthin.
 - **Live-Kurse:** Am 06.11. fehlten bis 16 Uhr Intraday-Daten auf main; für das Abend-Reel ersatzweise Yahoo Finance mit Quellenangabe.
+- **Ticker als Wort:** HeyGen/ElevenLabs buchstabiert Großschreibung („IREN“ → „I-R-E-N“). Für IREN im Sprechtext „Eiren“ schreiben (vom Owner bestätigt; „Iren“ und „Airen“ klangen falsch). Bei jedem neuen Ticker, der als Wort gesprochen wird, vor dem Rendern eine Hörprobe mit mehreren Schreibweisen, jeweils als ganze Aufnahme.
