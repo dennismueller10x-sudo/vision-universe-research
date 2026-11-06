@@ -52,14 +52,17 @@ test('Shell: CSP ohne unsafe-inline/eval, Safe-Area vorbereitet', () => {
   assert.match(read(path.join(app, 'www/app.css')), /safe-area-inset-bottom/);
 });
 
-test('Gate-Hygiene: App-Branch beruehrt nur freigegebene App- und Integrationspfade', () => {
+test('Gate-Hygiene: nur App-Pfade und ausdruecklich freigegebene Integrationen', () => {
   let base;
   try { base = execFileSync('git', ['merge-base', 'HEAD', 'origin/main'], {cwd: repo, encoding: 'utf8'}).trim(); } catch { return; } // flacher Checkout ohne Basis: nicht pruefbar
   const files = execFileSync('git', ['diff', '--name-only', base], {cwd: repo, encoding: 'utf8'}).split('\n').filter(Boolean);
   // Ausschluss von app/ aus Pages: Owner-Freigabe Phase 2 (eine Zeile in permitted() und seine Pruefung)
   // Aktivierung der TestFlight-Pipeline (Owner-Auftrag 03.11.2026): genau eine Workflow-Datei, deren Rumpf der Vorlage gleicht (naechster Test)
-  // E3 Owner-Auftrag: gemeinsames, nur im App-Modus aktives Gestenmodul.
-  const approved = new Set(['docs/quality/ui-protection-revisions.json', 'assets/site-navigation.js', 'assets/vu-ui.js', 'assets/vu-gestures.js', 'assets/vu-gestures.css', 'scripts/vu2/build-release.mjs', 'quant/tests/release-delivery.test.mjs', '.github/workflows/app-ios-testflight.yml', '.github/workflows/app-android-build.yml', '.github/workflows/app-android-release.yml', 'core/registry/workflow-bundles.json']);
+  const approved = new Set(['docs/quality/ui-protection-revisions.json', 'assets/site-navigation.js', 'assets/vu-ui.js', 'assets/vu-gestures.js', 'assets/vu-gestures.css', 'scripts/vu2/build-release.mjs', 'quant/tests/release-delivery.test.mjs', '.github/workflows/app-ios-testflight.yml', '.github/workflows/app-android-build.yml', '.github/workflows/app-android-release.yml', 'core/registry/workflow-bundles.json',
+    // Owner-Auftrag Strang E4: Konto-API, FCM-Versand und zugehoerige SQL/RLS-Tests.
+    'workers/vu-account/src/auth.mjs', 'workers/vu-account/src/index.mjs', 'workers/vu-account/src/push.mjs',
+    'workers/vu-account/tests/push.test.mjs', 'workers/vu-account/tests/flows.test.mjs',
+    'supabase/migrations/20261106000400_mobile_push.sql', 'supabase/tests/15_mobile_push.sql']);
   const bad = files.filter(f => !approved.has(f) && !/^(app\/|docs\/architecture\/ADR-00[4-9]|docs\/mobile\/|docs\/handover\/)/.test(f));
   assert.deepEqual(bad, []);
 });
@@ -185,5 +188,5 @@ test('Shell: das native Bundle wird vom richtigen Pfad geladen und das Startbild
   const target = path.resolve(app, 'www/js', m[1]);
   assert.equal(target, path.join(app, 'www/vendor/native.js'), 'Pfad ist relativ zu www/js/main.js');
   assert.match(main, /setTimeout\(hideSplash, 5000\)/, 'Startbild verschwindet spaetestens nach 5 s');
-  assert.match(main, /Promise\.race\(\[auth\.restore\(\)/, 'ein haengender Speicher blockiert den Start nicht');
+  assert.match(main, /await auth\.restore\(\{forceRefresh: Boolean\(biometric\)\}\)/, 'Biometrie und Refresh vor Sitzungsfreigabe abwarten');
 });

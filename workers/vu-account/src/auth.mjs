@@ -205,3 +205,42 @@ export async function reauthenticate(ctx, user, currentPassword) {
 }
 
 export {clearSession};
+
+// Native HTTP; kein zweiter Browser-Tokenweg.
+function assertNative(ctx) {
+  if (ctx.request.headers.has('Origin') || ctx.request.headers.has('Cookie')) throw new HttpError(403, 'NATIVE_ONLY');
+}
+const appTokens = d => ({accessToken:d.access_token,refreshToken:d.refresh_token,expiresIn:d.expires_in,
+  user:{id:d.user?.id,email:d.user?.email}});
+export async function appLogin(ctx) {
+  assertNative(ctx);
+  const b = await readJson(ctx.request), email = v.email(b.email);
+  await ctx.limit('login', ctx.ip || email); await ctx.limit('loginAccount',email);
+  if (typeof b.password !== 'string' || !b.password || b.password.length>200) throw new HttpError(400,'PASSWORD_REQUIRED');
+  try {
+    const d = await ctx.sb.auth.signInWithPassword({email,password:b.password,ip:ctx.ip});
+    return json(ctx.request,ctx.cfg,200,appTokens(d),{headers:{'Cache-Control':'no-store'}});
+  } catch(e) {
+    if (e instanceof SupabaseError && e.status<500) throw new HttpError(e.status===429?429:e.code==='email_not_confirmed'?403:401,
+      e.status===429?'RATE_LIMITED':e.code==='email_not_confirmed'?'EMAIL_NOT_CONFIRMED':'INVALID_CREDENTIALS');
+    throw e;
+  }
+}
+export async function appRefresh(ctx) {
+  assertNative(ctx); await ctx.limit('sensitive',ctx.ip || 'native');
+  const b = await readJson(ctx.request);
+  if (typeof b.refreshToken !== 'string' || !b.refreshToken || b.refreshToken.length>4096) throw new HttpError(401,'TOKEN_INVALID');
+  try {
+    const d = await ctx.sb.auth.refresh({refreshToken:b.refreshToken,ip:ctx.ip});
+    return json(ctx.request,ctx.cfg,200,appTokens(d),{headers:{'Cache-Control':'no-store'}});
+  } catch(e) {
+    if (e instanceof SupabaseError && e.status<500) throw new HttpError(e.status===429?429:401,e.status===429?'RATE_LIMITED':'TOKEN_INVALID');
+    throw e;
+  }
+}
+export async function appLogout(ctx) {
+  assertNative(ctx);
+  const user = await requireUser(ctx);
+  await ctx.sb.auth.logout({accessToken:user.accessToken,ip:ctx.ip}).catch(()=>{});
+  return json(ctx.request,ctx.cfg,200,{authenticated:false},{headers:{'Cache-Control':'no-store'}});
+}

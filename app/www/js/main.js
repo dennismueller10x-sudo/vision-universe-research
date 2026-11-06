@@ -2,6 +2,8 @@ import {readConfig} from './config.js';
 import {pickStore} from './token-store.js';
 import {createAuth, OFFLINE} from './auth.js';
 import {createApi} from './api.js';
+import {biometricStore, nativePreferences} from './biometric.js';
+import {createPush} from './push.js';
 
 const $ = id => document.getElementById(id);
 // Startbild: wird nach dem Start ausgeblendet; zusaetzlich nach spaetestens 5 s, damit ein Fehler nie ein weisses Startbild stehen laesst.
@@ -10,10 +12,16 @@ if (globalThis.Capacitor?.isNativePlatform?.()) setTimeout(hideSplash, 5000);
 // Der Pfad gilt von js/main.js aus: das Bundle liegt in www/vendor/ (nicht in www/js/vendor/).
 if (globalThis.Capacitor?.isNativePlatform?.()) { try { await import('../vendor/native.js'); } catch { /* ohne Bundle: Arbeitsspeicher, Anmeldung bleibt nutzbar */ } }
 const config = readConfig();
-const auth = createAuth({config, store: pickStore()});
+const n = globalThis.VUNative;
+const baseStore = pickStore();
+const biometric = n && baseStore.kind === 'keychain' ? biometricStore({store: baseStore, plugin: n.NativeBiometric, preferences: nativePreferences(n, 'vu.biometric.v1')}) : null;
+await biometric?.init();
+const auth = createAuth({config, store: biometric || baseStore});
 const api = createApi({config, auth});
 const cap = globalThis.Capacitor;
 const native = Boolean(cap?.isNativePlatform?.());
+const push = createPush({plugin: n?.PushNotifications, api, platform: cap?.getPlatform?.(), preferences: n ? nativePreferences(n, 'vu.push.v1') : {get: async () => null, set: async () => {}}});
+await push.init();
 let current = null;
 let pendingBack = null;
 
@@ -43,14 +51,22 @@ async function renderAccount() {
   const s = auth.state();
   $('login').hidden = s.signedIn; $('account-info').hidden = !s.signedIn;
   if (!s.signedIn) return;
-  text('acc-email', s.user.email); text('acc-plan', 'wird geladen'); text('acc-session', native ? 'Keychain' : 'nur Arbeitsspeicher (Entwicklung)');
+  $('biometric-setting').hidden = !biometric;
+  $('biometric-enabled').checked = biometric?.enabled() || false;
+  $('push-enabled').checked = push.enabled();
+  text('acc-email', s.user.email); text('acc-plan', 'wird geladen'); text('acc-session', biometric?.enabled() ? 'Keychain / Keystore' : 'nur Arbeitsspeicher');
   try { const me = await api.me(); text('acc-plan', me?.entitlements?.plan_id || 'free'); }
   catch (e) { text('acc-plan', e.code === OFFLINE ? 'offline' : 'nicht verfügbar'); }
 }
 $('login').addEventListener('submit', async ev => {
   ev.preventDefault();
   const err = $('login-error'); err.hidden = true;
-  try { await auth.signIn($('email').value, $('password').value); $('password').value = ''; renderAccount(); }
+  try { await auth.signIn($('email').value, $('password').value); $('password').value = '';
+    if (biometric && !biometric.asked() && await biometric.available()) {
+      const enabled = confirm('Künftig mit Face ID / Touch ID / Fingerabdruck anmelden?');
+      await biometric.choose(enabled).catch(() => { text('settings-state', 'Biometrie konnte nicht aktiviert werden.'); });
+    }
+    await push.resume().catch(() => { text('settings-state', 'Benachrichtigungen konnten nicht synchronisiert werden.'); }); renderAccount(); }
   catch (e) {
     err.textContent = {INVALID_CREDENTIALS: 'E-Mail oder Passwort stimmt nicht.', invalid_credentials: 'E-Mail oder Passwort stimmt nicht.',
       email_not_confirmed: 'Bitte zuerst die E-Mail-Adresse bestätigen.', [OFFLINE]: 'Keine Verbindung. Bitte später erneut versuchen.',
@@ -58,7 +74,15 @@ $('login').addEventListener('submit', async ev => {
     err.hidden = false;
   }
 });
-$('logout').addEventListener('click', async () => { await auth.signOut(); renderAccount(); renderWatchlist(null); });
+$('logout').addEventListener('click', async () => { try { await push.disable(); } catch { /* Serverbereinigung beim naechsten Anmelden wiederholen. */ }
+  await auth.signOut(); renderAccount(); renderWatchlist(null); });
+$('biometric-enabled').addEventListener('change', async ev => {
+  try { await biometric.choose(ev.target.checked); } catch { ev.target.checked = biometric.enabled(); }
+});
+$('push-enabled').addEventListener('change', async ev => {
+  try { if (ev.target.checked) await push.enable(); else await push.disable(); text('settings-state', 'Einstellung gespeichert.'); }
+  catch { ev.target.checked = push.enabled(); text('settings-state', 'Benachrichtigungen konnten nicht geändert werden. Bitte Berechtigung und Verbindung prüfen.'); }
+});
 auth.onChange(() => { if (current === 'account') renderAccount(); });
 
 // ---- Watchlist -----------------------------------------------------------
@@ -91,8 +115,10 @@ async function loadWatchlist() {
 // ---- Start ---------------------------------------------------------------
 $('config-missing').hidden = config.configured;
 (async () => {
-  try { await Promise.race([auth.restore(), new Promise(resolve => setTimeout(resolve, 4000))]); } catch { /* ohne gespeicherte Sitzung weiter */ }
   show('discover');
+  hideSplash();
+  try { await auth.restore({forceRefresh: Boolean(biometric)}); } catch { /* ohne gespeicherte Sitzung weiter */ }
+  if (auth.state().signedIn) await push.resume().catch(() => {});
   if (native) {
     const n = globalThis.VUNative || {};
     hideSplash();
