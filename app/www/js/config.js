@@ -9,7 +9,7 @@ export const DEFAULT_CONFIG = Object.freeze({
   contentOrigin: 'https://research.visionuniverse.de',
   // 'supabase': direkt bei Supabase Auth (Stand heute, braucht den Publishable Key in der App).
   // 'worker':   ueber die Konto-API (/v1/auth/app/*): gleiches Tempolimit wie im Web, kein Supabase-Schluessel in der App.
-  //             Der Worker-Teil ist ein VORSCHLAG (docs/mobile/SECURITY_LOGIN.md), noch nicht vorhanden.
+  //             Worker-Endpunkte werden in Strang E4 implementiert.
   authTransport: 'supabase',
   refreshMarginSeconds: 60,
 });

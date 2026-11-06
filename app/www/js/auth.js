@@ -65,11 +65,12 @@ export function createAuth({config, store, fetchImpl = (...a) => globalThis.fetc
   return {
     state: publicState,
     onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
-    async restore() {
+    async restore({forceRefresh = false} = {}) {
       const saved = await store.get();
       if (!saved) return publicState();
-      session = saved; emit();
-      if (saved.expiresAt - now() < config.refreshMarginSeconds * 1000) await refresh().catch(() => {});
+      session = saved;
+      if (!forceRefresh) emit();
+      if (forceRefresh || saved.expiresAt - now() < config.refreshMarginSeconds * 1000) await refresh().catch(async () => { if (forceRefresh) { session = null; emit(); } });
       return publicState();
     },
     async signIn(email, password) {

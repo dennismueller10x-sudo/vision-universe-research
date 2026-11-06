@@ -21,6 +21,7 @@ import * as billing from './billing.mjs';
 import * as pricing from './pricing.mjs';
 import * as backtests from './backtests.mjs';
 import * as watchlist from './watchlist.mjs';
+import * as push from './push.mjs';
 import * as searches from './searches.mjs';
 import {runScheduled, needsAttention} from './cancellation.mjs';
 import {createBrevo, runBrevo} from './brevo.mjs';
@@ -64,6 +65,9 @@ export const resetHealthCache = () => { cancellationState = {at: 0, value: 'unkn
 const ROUTES = [
   ['GET', '/v1/health', health, {db: false}],
   ['GET', '/v1/session', auth.session],
+  ['POST', '/v1/auth/app/login', auth.appLogin],
+  ['POST', '/v1/auth/app/refresh', auth.appRefresh],
+  ['POST', '/v1/auth/app/logout', auth.appLogout],
   ['POST', '/v1/auth/login', auth.login, {csrf: true}],
   ['POST', '/v1/auth/logout', auth.logout, {csrf: true}],
   ['POST', '/v1/auth/signup', auth.signup, {csrf: true}],
@@ -77,6 +81,8 @@ const ROUTES = [
   ['GET', '/v1/me/billing', account.billingOverview],
   ['GET', '/v1/me/export', account.exportData],
   ['POST', '/v1/me/delete', account.deleteAccount, {csrf: true}],
+  ['POST', '/v1/push/devices', push.register, {csrf: true}],
+  ['POST', '/v1/push/devices/remove', push.remove, {csrf: true}],
   ['GET', '/v1/watchlist', watchlist.list],
   ['POST', '/v1/watchlist/items', watchlist.add, {csrf: true}],
   ['PATCH', '/v1/watchlist/items', watchlist.update, {csrf: true}],
@@ -130,6 +136,7 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
   const sb = createSupabase({url: cfg.supabase.url, publishableKey: cfg.supabase.publishableKey,
     secretKey: cfg.supabase.secretKey, fetchImpl, forwardClientIp: cfg.supabase.forwardClientIp});
   const store = createBillingStore(sb.service);
+  const fcm = push.createFcm({secret: env.FCM_SERVICE_ACCOUNT, fetchImpl, now});
   const stripe = createStripeClient({secretKey: cfg.stripe.secretKey, apiBase: cfg.stripe.apiBase,
     apiVersion: cfg.stripe.apiVersion, fetchImpl});
   const limit = createLimiter({binding: env.VU_ACCOUNT_LIMITER, now});
@@ -184,7 +191,10 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
     let brevoResult = null;
     try { brevoResult = await runBrevo({store, brevo, cfg, log, now}); }
     catch (e) { log('error', 'BREVO_RUN_FAILED', {code: String(e.code || e.message).slice(0, 120)}); }
-    return {...result, brevo: brevoResult};
+    let pushResult;
+    try { pushResult = await push.runPush({fcm, service: sb.service, fetchImpl, now}); }
+    catch { pushResult = {failed: true}; log('error', 'PUSH_RUN_FAILED', {}); }
+    return {...result, brevo: brevoResult, push: pushResult};
   }
   return {handle, scheduled, cfg, deps: {store, stripe, mailer, brevo, cfg, log, now}};
 }
