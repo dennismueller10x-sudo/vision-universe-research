@@ -70,11 +70,16 @@ test('the build writes each pack, keeps it out of the bundle and ties the bundle
   const warm=[...page.matchAll(/<script>([\s\S]*?)<\/script>/g)].find(m=>m[1].includes('l.rel="preload"'))[1];
   const bundleId=page.match(/release-bundle\.js\?v=([a-f0-9]+)/)[1];
   for(const hash of ['#/aktie/NVDA','#/aktien'])for(const id of [null,'abcdef1234567890','invalid']){
-   const links=[],document={querySelector:()=>id?{getAttribute:k=>k==='content'?id:'quant'}:null,createElement:()=>({}),head:{appendChild:l=>links.push(l)}};
+   const css={media:'not all'},links=[],document={querySelector:sel=>sel.includes('vu-stock-style')?css:(id?{getAttribute:k=>k==='content'?id:'quant'}:null),createElement:()=>({}),head:{appendChild:l=>links.push(l)}};
    runInNewContext(warm,{location:{hash},document});
-   if(hash==='#/aktien'){assert.equal(links.length,0);continue;}
-   const valid=id==='abcdef1234567890';assert.deepEqual(links.map(l=>[l.rel,l.as,l.href]),[['preload','script','/quant/app/pack-stock.js?v='+(valid?id:bundleId)],['preload','style','/quant/app/stock.css'+(valid?'?v='+id:'')]]);
+   if(hash==='#/aktien'){assert.equal(links.length,0);assert.equal(css.media,'not all');continue;}
+   assert.equal(css.media,'all');const valid=id==='abcdef1234567890';assert.deepEqual(links.map(l=>[l.rel,l.as,l.href]),[['preload','script','/quant/app/pack-stock.js?v='+(valid?id:bundleId)]]);
   }
+
+  await writeFile(join(out,'quant/app/stock.css'),'/* final delivered CSS */');
+  const {stampAssets}=await import('../../scripts/vu2/release-id.mjs');
+  const stamped=await stampAssets(page,out);
+  assert.match(stamped, /href="\/quant\/app\/stock\.css\?v=[0-9a-f]{16}" media="not all" data-vu-stock-style/);
 
   for(const f of packed)assert.ok(!bundle.includes('void "'+f+'";'),f+' is not in the bundle');
   for(const f of ['quant/app/ui.js','quant/app/pages.js','quant/app/app.js'])assert.ok(bundle.includes('void "'+f+'";'),f+' stays in the bundle');

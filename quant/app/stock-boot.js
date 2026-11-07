@@ -25,7 +25,8 @@
   function style(){
     var meta=doc.querySelector('meta[name="vu-release"]'),id=meta&&meta.getAttribute('content'),product=meta&&meta.getAttribute('data-product');
     if(!/^[0-9a-f]{8,64}$/.test(id||'')||!/^[a-z0-9-]{1,32}$/.test(product||''))id=null;
-    var href='/quant/app/stock.css'+(id?'?v='+id:'');
+    var preload=doc.querySelector('link[data-vu-stock-style]');
+    var href=preload?preload.href:'/quant/app/stock.css'+(id?'?v='+id:'');
     return new Promise(function(resolve){var link=doc.createElement('link');link.rel='stylesheet';link.href=href;link.onload=function(){resolve(true);};link.onerror=function(){resolve(false);};doc.head.appendChild(link);});
   }
   var api={ticker:ticker,styleReady:style(),get:function(t,main){return live&&t===ticker&&view&&!view.authoritative&&view.main===main&&view.article.isConnected?view:null;},takeMain:function(root){return live&&view&&view.main.parentNode===root?view.main:null;}};

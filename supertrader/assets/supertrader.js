@@ -1646,7 +1646,7 @@
   }
   function homePageData() {
     return UI.then(function () {
-      if (!(window.STRedesign && window.STRedesign.render.home)) return fullPageData();
+      if (!(window.STRedesign && window.STRedesign.render.home) || !document.querySelector('meta[name="vu-st-home-view"]')) return fullPageData();
       // ST01 consumes the existing header/count fields, never per-signal rows.
       // Old/raw releases retain their canonical full-data fallback.
       return Promise.all([getJSON('home-view.json').then(function (view) {

@@ -131,7 +131,7 @@
   global.QXLoadStockCss = function () {
     if (!stCss && global.VUQuantBoot && global.VUQuantBoot.styleReady) stCss = global.VUQuantBoot.styleReady.then(function (ok) { if (!ok) stCss = null; return ok; });
     if (!stCss) stCss = new Promise(function (ok) {
-      var own = global.VUReleaseGuard && global.VUReleaseGuard.identity(), l = document.createElement("link"); l.rel = "stylesheet"; l.href = STOCK_CSS + (own ? "?v=" + own.id : "");
+      var own = global.VUReleaseGuard && global.VUReleaseGuard.identity(), l = document.createElement("link"); l.rel = "stylesheet"; l.href = (document.querySelector("link[data-vu-stock-style]") || {}).href || STOCK_CSS + (own ? "?v=" + own.id : "");
       l.onload = function () { ok(true); }; l.onerror = function () { stCss = null; ok(false); };
       document.head.appendChild(l);
     });
