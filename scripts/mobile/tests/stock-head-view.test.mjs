@@ -31,6 +31,9 @@ test('delivery writer uses final overlaid data, versions content and omits unava
   const manifest=JSON.parse(await readFile(join(site,'quant/data/product/stock-head-v1/index.json')));assert.equal(manifest.version,second.version);
   await writeFile(join(site,'fixture.json'),JSON.stringify({...stock,price:{value:106,reason:'DISPLAY_NOT_PERMITTED'}}));
   const third=await writeStockHeadViews({source,site,tickers:['FIX']});assert.equal(third.records,0);assert.deepEqual(third.rejected,['FIX']);assert.notEqual(third.version,second.version);
+  await assert.rejects(read(),{code:'ENOENT'},'a now-withheld shard must not survive the final overlay');
+  const missing=await writeStockHeadViews({source,site});assert.equal(missing.state,'NOT_AVAILABLE');
+  await assert.rejects(readFile(join(site,'quant/data/product/stock-head-v1/index.json')),{code:'ENOENT'},'missing canonical universe removes the old delivery view');
   await assert.rejects(writeStockHeadViews({source,site:source,tickers:[]}),/OUTPUT_MUST_BE_OUTSIDE_SOURCE/);
  }finally{await rm(dir,{recursive:true,force:true});}
 });

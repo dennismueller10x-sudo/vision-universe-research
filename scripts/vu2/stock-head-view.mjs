@@ -1,6 +1,6 @@
 // Delivery projection of the public service's validated stock, not a new quote
 // reader. The normal page remains authoritative and keeps its full data path.
-import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {readFile,writeFile,mkdir,readdir,rm} from 'node:fs/promises';
 import {resolve,join,sep} from 'node:path';
 import {createRequire} from 'node:module';
 import {createHash} from 'node:crypto';
@@ -27,7 +27,7 @@ export async function writeStockHeadViews({source,site,tickers,log=()=>{}}){
  const Service=require('./quant/api/product-services.js'),Policy=require('./quant/engines/display-policy.js'),Query=require('./quant/engines/query.js'),Identity=require('./core/identity.js'),VM=require('./quant/app/view-model.js');
  const cache=new Map();
  const loadJSON=path=>{if(!cache.has(path))cache.set(path,readFile(resolve(site,'.'+path)).then(bytes=>JSON.parse(path.endsWith('.gz')?gunzipSync(bytes):bytes)).catch(error=>{cache.delete(path);throw error;}));return cache.get(path);};
- if(!tickers){const list=await loadJSON('/quant/data/product/universe-list-v1.json.gz').catch(()=>null);if(!list?.entries)return {state:'NOT_AVAILABLE',records:0,files:[]};tickers=list.entries.map(e=>e.s).filter(Boolean);}
+ if(!tickers){const list=await loadJSON('/quant/data/product/universe-list-v1.json.gz').catch(()=>null);if(!list?.entries){await rm(join(site,'quant/data/product/stock-head-v1'),{recursive:true,force:true});await rm(join(site,'quant/stock-head-delivery.json'),{force:true});return {state:'NOT_AVAILABLE',records:0,files:[]};}tickers=list.entries.map(e=>e.s).filter(Boolean);}
  tickers=[...new Set(tickers)];
  const api=Service.create({loadJSON,loadCompressedJSON:loadJSON,displayPolicy:Policy,queryEngine:Query}),groups={},rejected=[];
  let cursor=0,done=0;
@@ -44,6 +44,9 @@ export async function writeStockHeadViews({source,site,tickers,log=()=>{}}){
  const version=createHash('sha256').update(JSON.stringify(records)).digest('hex').slice(0,16),files=[];
  const dir=join(site,'quant/data/product/stock-head-v1');await mkdir(dir,{recursive:true});
  for(const [shard,entries] of Object.entries(records)){const path='quant/data/product/stock-head-v1/'+shard+'.json',bytes=Buffer.from(JSON.stringify({schema:SCHEMA,version,shard,entries}));if(bytes.length>HEAD_SHARD_BUDGET)throw Error('STOCK_HEAD_SHARD_BUDGET_EXCEEDED:'+shard);await writeFile(join(site,path),bytes);files.push({path,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});}
+ // The final data overlay may withhold every record in a previously built shard.
+ const current=new Set(files.map(file=>file.path.split('/').at(-1)));
+ for(const old of await readdir(dir))if(old.endsWith('.json')&&old!=='index.json'&&!current.has(old))await rm(join(dir,old));
  await writeFile(join(dir,'index.json'),JSON.stringify({schema:SCHEMA,version})+'\n');
  const report={schema:SCHEMA,state:'AVAILABLE',version,requested:tickers.length,records:tickers.length-rejected.length,rejected,files};
  await writeFile(join(site,'quant/stock-head-delivery.json'),JSON.stringify(report,null,2)+'\n');return report;
