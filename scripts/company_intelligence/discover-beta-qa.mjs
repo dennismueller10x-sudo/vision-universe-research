@@ -16,7 +16,7 @@ await mkdir(out,{recursive:true});
 const browser=await chromium.launch({headless:true,args:['--no-sandbox'],executablePath:process.env.CHROMIUM_PATH||undefined});
 const cases=[],route=(product,ticker,preview=true)=>product==='quant'?`/quant/${preview&&!production?'?company-intelligence=preview':''}#/aktie/${ticker}`:`/discover/${preview&&!production?'?company-intelligence=preview':''}#/s/US_REAL/${ticker}`;
 async function pageFor(product,ticker,width=390,preview=true){
- const page=await browser.newPage({viewport:{width,height:860}}),errors=[],requests=[];
+ const page=await browser.newPage({serviceWorkers:'block',viewport:{width,height:860}}),errors=[],requests=[];
  if(process.env.RESEARCH_ACCESS_PASSWORD){const {accessStateFor,STORAGE_KEY}=await import('../access-gate/build.mjs');await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state:accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD)});}
  if(phase==='dark')await page.addInitScript(()=>localStorage.setItem('vu-discover-theme-v1','dark'));
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push(r.url())});
@@ -67,7 +67,7 @@ try{
  }
  const attacks=['TRANSIENT_503_RECOVERY','PERMANENT_503_FAIL_CLOSED','INDEX_MISSING','LOOKUP_MISMATCH','COMPANY_TIMESTAMP_MISMATCH','NO_PROFILE','STALE_FINANCIALS','DUPLICATES_AND_OLD_NEWS','CANCELLED_AND_PAST_EVENTS','DATE_ONLY_AND_SEPARATE_CALL','ESTIMATE_ONLY','BERLIN_DST','WEBCAST_AND_LETTER','UNSAFE_LINK','AMBIGUOUS_IDENTITY','ANNUAL_WHAT_CHANGED','UNKNOWN_COMPARISON','CANCELLED_CALL','SHARES_REQUIRE_CONTEXT','ANNUAL_REPORT_LABEL','UNDATED_NEWS_NO_TRUNCATION'];
  for(const product of (phase==='actual'||phase==='dark'?[]:['discover','quant']))for(const attack of attacks){
-  const page=await browser.newPage({viewport:{width:390,height:860}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const page=await browser.newPage({serviceWorkers:'block',viewport:{width:390,height:860}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
   const cid='iss_cik_0000320193',future='2026-10-24';
   let transientAttempts=0;
   if(attack==='TRANSIENT_503_RECOVERY'||attack==='PERMANENT_503_FAIL_CLOSED')await page.route('**/company-intelligence/data/**/'+cid+'.json',async r=>{transientAttempts++;if(attack==='PERMANENT_503_FAIL_CLOSED'||transientAttempts===1)await r.fulfill({status:503,body:'Temporary upstream failure'});else await r.continue();});
