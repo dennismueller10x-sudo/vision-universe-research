@@ -1,4 +1,70 @@
-# E5 – Web-Performance, Baseline 06.11.2026
+# Mobile Performance – E5 Abschlussmessung (07.11.2026)
+
+Die Tabellen unten verwenden **genau das unveränderte Messskript aus Paket 1**,
+`main:scripts/mobile/measure.mjs` (SHA-256
+`75f66055c528d878e85603aedd1e0819c043d401f83481955a900ac919ac6c0a`).
+Node 22.23.4, Chromium 156.0.8078.79, esbuild 0.25.10; 390 × 844,
+DPR 2, Touch, Download 1,6 Mbit/s, Upload 0,75 Mbit/s, Latenz 150 ms,
+CPU ×4, kalter Browser-Kontext pro Lauf, HTTP-Cache aus, Service Worker blockiert.
+Drei Läufe je Route, jeweils 20 Sekunden ab Navigation-Commit; keine
+CPU-Profile, feste Browser-Uhr oder konkurrierenden lokalen Rechentests/Builds.
+
+Kontrollierter Vergleich: main-Code `9e2012b6f339` gegen die drei E5-Pakete,
+alle auf **demselben gebauten Daten-Snapshot `bbe59a3ca48e`**. Keine Live-/privaten
+Consumer-Overlays. Das ist ein lokales Chromium-Labor, keine Messung der aktuellen
+Produktion und kein iPhone-/Screenreader-Nachweis. Die Abschluss-Rebase auf main
+`6464e4920` übernimmt weitere Daten-/Betriebsupdates; gegenüber `3891bf5bef8d`
+ändert sie keine ausgelieferte Browser-JS-/CSS-/HTML-Datei außerhalb der
+ausgeschlossenen App. Der Watchlist-Vertragstest wurde an `releaseOnly` angepasst. Daten/Logos bleiben für
+diesen Vergleich bewusst im festen Snapshot. Code-Referenzen und Zeitpunkte:
+[provenance.json](e5/final/provenance.json). Die `commit`-Felder der ursprünglichen
+Messberichte bezeichnen den ausführenden Arbeitsbaum; die tatsächlich
+kompilierten Referenzen stehen im Provenienzbericht. Rohdaten bleiben unverändert.
+
+LCP und CLS kommen aus PerformanceObserver. **TBT*** summiert blockierende
+Long-Task-Anteile ab FCP bis zum Messende; es ist weder Feld-INP noch
+Lighthouse-TBT. „Erster Kurs“ zählt ausschließlich einen sichtbaren Zahlenwert
+in `.vu-shead-value` nach einem Animationsframe. `null`/„–“ heißt kein sichtbarer
+Aktienkurs im Beobachtungsfenster bzw. keine Aktienroute, niemals 0 Sekunden.
+Wire enthält HTTP-Header und das Hauptdokument. Der separate Quant-Ressourcengrenzwert zählt PerformanceResourceTiming-Einträge ohne Hauptdokument; seine 46 Ressourcen sind daher nicht dieselbe Zählung wie CDP-Requests. Mediane ersetzen keine Einzelwertprüfung. Ein früher LCP-Wert
+kann bereits Shell-/Footertext messen, obwohl der Kurs erst später erscheint;
+deshalb Kurszeit und Layout-Stabilität separat bewerten.
+
+## Paket 2 – Ladezeit (#1559): vorher / nachher
+
+Mediane aus jeweils drei kalten Läufen. Vergleich `baseline` → `loading`; alle Einzelwerte, Ressourcen und Fehler: [baseline.json](e5/final/baseline.json), [loading.json](e5/final/loading.json).
+
+| Route | LCP s vorher / nachher | CLS vorher / nachher | TBT* ms vorher / nachher | Wire KiB vorher / nachher | Requests vorher / nachher | Erster Kurs s vorher / nachher |
+|---|---:|---:|---:|---:|---:|---:|
+| `/` | 1.288 / 1.176 | 0.000 / 0.000 | 149 / 0 | 72.1 / 72.1 | 9 / 9 | – / – |
+| `/quant/` | 2.932 / 2.976 | 0.306 / 0.306 | 351 / 367 | 546.2 / 514.6 | 25 / 24 | – / – |
+| `/quant/#/aktie/NVDA` | 6.740 / 7.048 | 0.062 / 0.062 | 1061 / 1129 | 885.2 / 885.2 | 47 / 47 | 5.837 / 6.167 |
+| `/technical/#/chart/NVDA` | 2.148 / 2.316 | 0.742 / 0.742 | 865 / 823 | 551.8 / 551.9 | 57 / 57 | 5.771 / 3.953 |
+| `/fundamental/#/NVDA` | 1.768 / 1.616 | 0.361 / 0.361 | 1088 / 988 | 1314.2 / 1314.3 | 28 / 28 | 2.689 / 2.434 |
+| `/supertrader/` | 1.112 / 1.040 | 1.026 / 1.026 | 705 / 846 | 594.8 / 595.1 | 24 / 24 | – / – |
+| `/supertrader/stock/NVDA/` | 1.108 / 1.044 | 0.764 / 1.175 | 125 / 153 | 305.4 / 305.7 | 32 / 32 | 2.914 / 3.131 |
+| `/discover/` | 1.328 / 1.460 | 0.087 / 0.087 | 566 / 269 | 1078.9 / 996.2 | 131 / 56 | – / – |
+| `/quant/musterdepots/` | 0.956 / 3.832 | 0.340 / 0.361 | 161 / 1503 | 170.5 / 170.5 | 12 / 12 | – / – |
+| `/analysten/` | 0.944 / 1.204 | 0.018 / 0.018 | 135 / 114 | 86.5 / 86.5 | 10 / 10 | – / – |
+| `/mein-dashboard/` | 0.756 / 0.752 | 0.000 / 0.000 | 21 / 47 | 221.2 / 221.3 | 29 / 29 | – / – |
+
+Zielprüfung der vier Aktienseiten (kein Bestehen nur aus einem günstigen Einzellauf ableiten):
+
+| Aktienroute | Erster Kurs: Median / Spanne s | Läufe < 3 s | CLS: Median / Maximum | Läufe CLS < 0,1 |
+|---|---:|---:|---:|---:|
+| `/quant/#/aktie/NVDA` | 6.167 / 5.808–6.708 | 0/3 | 0.062 / 0.062 | 3/3 |
+| `/technical/#/chart/NVDA` | 3.953 / 3.812–3.960 | 0/3 | 0.742 / 0.742 | 0/3 |
+| `/fundamental/#/NVDA` | 2.434 / 2.421–2.532 | 3/3 | 0.361 / 0.361 | 0/3 |
+| `/supertrader/stock/NVDA/` | 3.131 / 3.025–3.515 | 0/3 | 1.175 / 1.175 | 0/3 |
+
+LCP < 2,5 s: 8/11 Routen im Median; CLS < 0,1: 5/11 im Median.
+
+HTTP-/Netzfehler bleiben in den Rohdaten enthalten: /: http://127.0.0.1:42149/favicon.ico (404); /mein-dashboard/: https://konto.visionuniverse.de/v1/session (403), https://konto.visionuniverse.de/v1/session (net::ERR_FAILED).
+
+Paket 2 allein erreicht das Aktienziel nicht: Quant 6,167 s, Technical 3,953 s und Supertrader 3,131 s im Median. Fundamental liegt bei 2,434 s, springt jedoch im Layout. Discover sinkt von 131 auf 56 Requests. Die frühen Köpfe und reservierten Flächen folgen in Paket 3; aus schwankenden Zeiten unveränderter Ladepfade wird keine kausale Beschleunigung behauptet.
+
+## Historische Messung aus Paket 1 (06.11.; andere Ausgangsrevision)
+
 
 Messung **vor Produktänderungen**, lokaler main-Release `bbe59a3ca48e`, Chromium 156.0.8078.79.
 Build mit `scripts/vu2/build-release.mjs`, danach dieselbe Minifizierung wie
@@ -42,11 +108,16 @@ nicht abgeschlossen. Kein JavaScript-Seitenfehler. Startseite: optionales `favic
 kein authentifizierter Watchlist-Test. Diese Fehler nicht als bestandene
 Funktionsprüfung auslegen.
 
-Paket 1 ändert nur das Messwerkzeug und diese Dokumentation. Produkt-Werte
-vor/nach sind deshalb identisch (keine behauptete Beschleunigung). Noch offen:
-Pakete 2–4 und ihre jeweiligen Nachmessungen, Wiederholungsläufe, echtes Gerät.
+Paket 1 änderte nur Messwerkzeug und Dokumentation. Dieser historische Einzelstand
+ist nicht die Vergleichsbasis der Abschlussmessung oben; ein echter Gerätetest bleibt offen.
+
+
+Frühere Paket-2-Diagnose mit zeitweiser Git-CPU-Last: [baseline-repeat.json](e5/baseline-repeat.json), [loading-repeat.json](e5/loading-repeat.json). Keine Zielabnahme; maßgeblich ist die kontrollierte Abschlussmessung oben.
 
 ---
+
+## Historischer Befund vom 03.11.2026
+
 
 # Mobile Performance: Messung gegen den gebauten Release, Maßnahmen
 

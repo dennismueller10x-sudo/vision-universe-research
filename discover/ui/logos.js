@@ -21,10 +21,10 @@
 
   function laden() {
     if (!global.fetch) { files = {}; return; }
-    global.fetch(BASE + "index.json", { cache: "default", priority: "low" })
+    var pending = global.__vuLogoIndex || (global.__vuLogoIndex = global.fetch(BASE + "index.json", { cache: "default", priority: "low" })
       .then(function (r) { return r.ok ? r.json() : { files: {} }; })
-      .catch(function () { return { files: {} }; })
-      .then(function (data) {
+      .catch(function () { return { files: {} }; }));
+    pending.then(function (data) {
         files = (data && data.files) || {};
         ((data && data.dark) || []).forEach(function (s) { dunkel[s] = true; });
         breit = (data && data.wide) || {};
