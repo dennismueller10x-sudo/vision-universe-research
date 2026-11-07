@@ -172,14 +172,14 @@
     var arrow = dir === "up" ? "▲" : dir === "down" ? "▼" : "";
     var when = [KIND[p.kind] || p.kind || "", p.at || ""].filter(Boolean).join(" · ");
     return '<div class="vu-shead-price" data-direction="' + dir + '"><b class="vu-shead-value">' + esc(money(p.value, p.currency)) + "</b>" +
-      (ch == null ? "" : '<span class="vu-shead-change">' + arrow + "\u00a0" + esc((ch > 0 ? "+" : "") + num(ch, 2).replace("-", "−")) + "\u00a0%" +
+      (ch == null ? "" : '<span role="img" aria-label="' + esc((ch > 0 ? 'Plus ' : ch < 0 ? 'Minus ' : 'Unverändert ') + num(Math.abs(ch), 2) + ' Prozent' + (p.changeLabel ? ' ' + p.changeLabel : '')) + '" class="vu-shead-change">' + arrow + "\u00a0" + esc((ch > 0 ? "+" : "") + num(ch, 2).replace("-", "−")) + "\u00a0%" +
         (p.changeLabel ? '<small> ' + esc(p.changeLabel) + "</small>" : "") + "</span>") +
       (when ? '<span class="vu-shead-when">' + (p.kind === "live" ? '<i class="vu-shead-live" aria-hidden="true"></i>' : "") + esc(when) + "</span>" : "") + "</div>";
   }
   function logoHtml(o) {
     var t = esc(o.ctx.displaySymbol), mono = esc((o.name || o.ctx.displaySymbol || "?").replace(/[^A-Za-z0-9ÄÖÜäöü]/g, "").slice(0, 1).toUpperCase());
     var src = o.logo === false ? null : o.logo || (o.ctx.region === "US" ? "/discover/logos/files/" + encodeURIComponent(o.ctx.ticker) + ".png" : null);
-    return '<span class="vu-shead-logo" data-mono="' + mono + '">' + (src ? '<img src="' + esc(src) + '" alt="" loading="lazy" decoding="async">' : "") + "</span>";
+    return '<span class="vu-shead-logo" data-mono="' + mono + '">' + (src ? '<img src="' + esc(src) + '" alt="" width="42" height="42" loading="lazy" decoding="async">' : "") + "</span>";
   }
   /** Anzeigename aus dem Manifest-Ausschnitt. Der Ausschnitt fuehrt US-Namen unter dem Kuerzel (wie seine Modullisten),
    *  nicht unter dem Kontext-Schluessel (US:ref_<T>); Europa traegt noch keine Namen. */

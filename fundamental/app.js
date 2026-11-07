@@ -537,7 +537,7 @@
     return el('a', { class: 'vu-navcard' + (cls ? ' ' + cls : ''), href: to }, [icon, el('span', { class: 'vu-navcard__text' }, [el('b', { text: title }), sub ? el('span', { text: sub }) : null]), glyph('chevron', 'vu-navcard__go')]);
   }
   /* Plus = neongruene Pille, Minus = schwarze Pille (Regel 3). */
-  function signPill(text, v) { return el('span', { class: 'vu-chg' + (v < 0 ? ' vu-chg--down' : v === 0 ? ' vu-chg--flat' : '') }, [el('span', { 'aria-hidden': 'true', text: v < 0 ? '▼' : v > 0 ? '▲' : '◆' }), ' ' + text]); }
+  function signPill(text, v) { return el('span', { role: 'img', 'aria-label': UI.movementLabel ? UI.movementLabel(text) : text, class: 'vu-chg' + (v < 0 ? ' vu-chg--down' : v === 0 ? ' vu-chg--flat' : '') }, [el('span', { 'aria-hidden': 'true', text: v < 0 ? '▼' : v > 0 ? '▲' : '◆' }), ' ' + text]); }
   /* C18 Leerer Zustand mit Urteil „Keine Aussage“ und naechstem Schritt. */
   function emptyState(o) {
     return el('div', { class: 'vu-box fu-empty', 'data-fu-empty': o.id || '' }, [el('div', {}, verdictEl('none', o.verdict || 'Keine Aussage')),

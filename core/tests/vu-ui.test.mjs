@@ -70,3 +70,11 @@ test("UI8 Bausteine C04–C20 liegen nicht in der Navigationsdatei", () => {
   assert.doesNotMatch(nav, /\.vu-verdict|\.vu-stockhead|\.vu-lrow|\.vu-navcard/);
   for (const k of ["vu-stockhead", "vu-persp", "vu-chg", "vu-verdict", "vu-help", "vu-lrow", "vu-tile", "vu-navcard", "vu-sect", "vu-seg", "vu-switch", "vu-sheet-ui", "vu-meter", "vu-bars", "vu-blank", "vu-pro", "vu-find"]) assert.ok(css.includes("." + k), k);
 });
+
+test('E5 screenreader labels preserve integer counts, percentages and percentage points',()=>{
+ assert.equal(U.movementLabel('+15'),'Plus 15');
+ assert.equal(U.movementLabel('−29'),'Minus 29');
+ assert.equal(U.movementLabel('▲ +45,7 % p. a.'),'Plus 45,7 Prozent pro Jahr');
+ assert.equal(U.movementLabel('▼ −1,2 Pp.'),'Minus 1,2 Prozentpunkte');
+ assert.equal(U.movementLabel('–'),'Keine Angabe');
+});

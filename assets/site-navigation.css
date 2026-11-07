@@ -207,6 +207,13 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 .vu-legal-foot p{margin:0}.vu-legal-foot-links{margin-top:6px!important}
 .vu-legal-foot a{color:inherit;font-weight:700}
 
+/* E5: disable double-tap zoom while retaining pan and pinch zoom. */
+html{touch-action:manipulation}
+/* Shared product controls, including Quant's qx-main which has no vu-ui root. */
+html body :is(.vu-ui,.qx-main,#fu-main,#tc-main,#st-main,#v2-main) :is(button,select,input:not([type=checkbox]):not([type=radio]),summary,a[role=button]){min-width:44px;min-height:44px;touch-action:manipulation}
+
+html body .qx-main .q-alert-list label{min-height:44px;box-sizing:border-box}
+
 /* Keep the final document height while app data loads. The footer follows
    the product content from the first paint, without jumping through it. */
 html body :is(main.vu-ui,.qx-main,#fu-main,#tc-main,#st-main,#v2-main){min-height:calc(100vh - var(--vu-navigation-height));min-height:calc(100svh - var(--vu-navigation-height))}
@@ -217,3 +224,20 @@ html body #fu-main .fu-mc-mode button.fu-seg-b{min-height:38px}
 /* Preserve 44px chart ranges in a horizontal row on narrow phones. */
 html body #tc-main .tc-ranges{overflow-x:auto;scrollbar-width:none}
 html body #tc-main .tc-ranges::-webkit-scrollbar{display:none}
+
+/* K2 (Owner 07.11.2026, App-Gefuehl): Dokumentwechsel gleiten wie native Bildschirme; Leiste und Kopf bleiben stehen.
+   Vorwaerts: neue Seite gleitet von rechts herein; zurueck/neu laden ueberspringt site-navigation.js (pageswap). Reduzierte Bewegung: keine. */
+@media (prefers-reduced-motion:no-preference){
+  @view-transition{navigation:auto}
+  #vu-dock{view-transition-name:vu-dock}
+  vu-navigation{view-transition-name:vu-nav}
+  ::view-transition-group(vu-dock),::view-transition-group(vu-nav){animation:none}
+  ::view-transition-old(vu-dock),::view-transition-new(vu-dock),::view-transition-old(vu-nav),::view-transition-new(vu-nav){animation:none}
+  ::view-transition-new(vu-dock),::view-transition-new(vu-nav){mix-blend-mode:normal}
+  ::view-transition-old(vu-dock),::view-transition-old(vu-nav){display:none}
+  html::view-transition-old(root){animation:.24s cubic-bezier(.2,.8,.2,1) both vu-vt-out-left}
+  html::view-transition-new(root){animation:.24s cubic-bezier(.2,.8,.2,1) both vu-vt-in-right}
+}
+@keyframes vu-vt-out-left{to{transform:translateX(-30%);opacity:.6}}
+@keyframes vu-vt-in-right{from{transform:translateX(100%)}}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}

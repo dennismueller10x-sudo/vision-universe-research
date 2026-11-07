@@ -98,6 +98,71 @@ Paket 3 erreicht den ersten Kurs unter drei Sekunden in allen Quant- und Fundame
 
 Der Kopf-Erzeuger kopiert nur die kanonisch verfügbaren, erlaubten Werte. Der abschließende Daten-Overlay darf alte Kopfscherben nicht zurücklassen: ein zuvor verfügbarer, danach zurückgehaltener Wert ist durch einen echten Regressionstest abgedeckt. Die Tests laufen über die bestehenden Quant-/Supertrader-Suiten; kein Workflow wird ergänzt.
 
+## Paket 4 – Barrierefreiheit und Dark Mode (#1565): vorher / nachher
+
+Mediane aus jeweils drei kalten Läufen. Vergleich `app-feel` → `accessibility`; alle Einzelwerte, Ressourcen und Fehler: [app-feel.json](e5/final/app-feel.json), [accessibility.json](e5/final/accessibility.json).
+
+| Route | LCP s vorher / nachher | CLS vorher / nachher | TBT* ms vorher / nachher | Wire KiB vorher / nachher | Requests vorher / nachher | Erster Kurs s vorher / nachher |
+|---|---:|---:|---:|---:|---:|---:|
+| `/` | 1.244 / 1.044 | 0.000 / 0.000 | 142 / 120 | 72.5 / 72.7 | 9 / 9 | – / – |
+| `/quant/` | 2.252 / 1.488 | 0.006 / 0.006 | 598 / 240 | 530.8 / 531.2 | 23 / 23 | – / – |
+| `/quant/#/aktie/NVDA` | 2.772 / 7.616 | 0.055 / 0.055 | 1674 / 1096 | 903.0 / 903.5 | 47 / 47 | 1.630 / 1.524 |
+| `/technical/#/chart/NVDA` | 3.576 / 3.272 | 0.052 / 0.052 | 677 / 500 | 553.6 / 553.9 | 57 / 57 | 3.562 / 3.259 |
+| `/fundamental/#/NVDA` | 2.600 / 2.452 | 0.000 / 0.000 | 1046 / 970 | 1315.8 / 1316.2 | 28 / 28 | 2.521 / 2.408 |
+| `/supertrader/` | 2.252 / 2.248 | 0.013 / 0.013 | 84 / 68 | 219.7 / 219.9 | 19 / 19 | – / – |
+| `/supertrader/stock/NVDA/` | 2.912 / 2.820 | 0.085 / 0.085 | 127 / 100 | 307.8 / 308.2 | 32 / 32 | 3.049 / 2.947 |
+| `/discover/` | 1.520 / 1.428 | 0.086 / 0.088 | 332 / 369 | 997.7 / 998.1 | 56 / 56 | – / – |
+| `/quant/musterdepots/` | 1.508 / 1.516 | 0.000 / 0.000 | 61 / 64 | 171.6 / 171.9 | 12 / 12 | – / – |
+| `/analysten/` | 1.128 / 1.076 | 0.018 / 0.000 | 88 / 59 | 86.6 / 88.1 | 10 / 10 | – / – |
+| `/mein-dashboard/` | 1.216 / 0.844 | 0.000 / 0.000 | 36 / 35 | 222.7 / 223.1 | 29 / 29 | – / – |
+
+Zielprüfung der vier Aktienseiten (kein Bestehen nur aus einem günstigen Einzellauf ableiten):
+
+| Aktienroute | Erster Kurs: Median / Spanne s | Läufe < 3 s | CLS: Median / Maximum | Läufe CLS < 0,1 |
+|---|---:|---:|---:|---:|
+| `/quant/#/aktie/NVDA` | 1.524 / 1.464–1.573 | 3/3 | 0.055 / 0.055 | 3/3 |
+| `/technical/#/chart/NVDA` | 3.259 / 3.255–3.270 | 0/3 | 0.052 / 0.052 | 3/3 |
+| `/fundamental/#/NVDA` | 2.408 / 2.366–2.422 | 3/3 | 0.000 / 0.001 | 3/3 |
+| `/supertrader/stock/NVDA/` | 2.947 / 2.928–3.559 | 2/3 | 0.085 / 0.085 | 3/3 |
+
+LCP < 2,5 s: 8/11 Routen im Median; CLS < 0,1: 11/11 im Median.
+
+HTTP-/Netzfehler bleiben in den Rohdaten enthalten: /: http://127.0.0.1:45681/favicon.ico (404); /mein-dashboard/: https://konto.visionuniverse.de/v1/session (403), https://konto.visionuniverse.de/v1/session (net::ERR_FAILED).
+
+## Gesamtergebnis: kontrollierter main-Ausgangscode / Paket 4
+
+Derselbe Datenstand und dasselbe Paket-1-Labor. Jede Zelle zeigt **vorher / nachher**, jeweils drei kalte Läufe im Median.
+
+| Route | LCP s vorher / nachher | CLS vorher / nachher | TBT* ms vorher / nachher | Wire KiB vorher / nachher | Requests vorher / nachher | Erster Kurs s vorher / nachher |
+|---|---:|---:|---:|---:|---:|---:|
+| `/` | 1.288 / 1.044 | 0.000 / 0.000 | 149 / 120 | 72.1 / 72.7 | 9 / 9 | – / – |
+| `/quant/` | 2.932 / 1.488 | 0.306 / 0.006 | 351 / 240 | 546.2 / 531.2 | 25 / 23 | – / – |
+| `/quant/#/aktie/NVDA` | 6.740 / 7.616 | 0.062 / 0.055 | 1061 / 1096 | 885.2 / 903.5 | 47 / 47 | 5.837 / 1.524 |
+| `/technical/#/chart/NVDA` | 2.148 / 3.272 | 0.742 / 0.052 | 865 / 500 | 551.8 / 553.9 | 57 / 57 | 5.771 / 3.259 |
+| `/fundamental/#/NVDA` | 1.768 / 2.452 | 0.361 / 0.000 | 1088 / 970 | 1314.2 / 1316.2 | 28 / 28 | 2.689 / 2.408 |
+| `/supertrader/` | 1.112 / 2.248 | 1.026 / 0.013 | 705 / 68 | 594.8 / 219.9 | 24 / 19 | – / – |
+| `/supertrader/stock/NVDA/` | 1.108 / 2.820 | 0.764 / 0.085 | 125 / 100 | 305.4 / 308.2 | 32 / 32 | 2.914 / 2.947 |
+| `/discover/` | 1.328 / 1.428 | 0.087 / 0.088 | 566 / 369 | 1078.9 / 998.1 | 131 / 56 | – / – |
+| `/quant/musterdepots/` | 0.956 / 1.516 | 0.340 / 0.000 | 161 / 64 | 170.5 / 171.9 | 12 / 12 | – / – |
+| `/analysten/` | 0.944 / 1.076 | 0.018 / 0.000 | 135 / 59 | 86.5 / 88.1 | 10 / 10 | – / – |
+| `/mein-dashboard/` | 0.756 / 0.844 | 0.000 / 0.000 | 21 / 35 | 221.2 / 223.1 | 29 / 29 | – / – |
+
+
+**Kursziel:** Quant (1,524 s) und Fundamental (2,408 s) bleiben in allen drei Läufen unter 3 s. Technical verfehlt die Grenze in allen drei Läufen (Median 3,259 s, Spanne 3,255–3,270 s). Supertrader erreicht 2,947 s im Median, aber nur zwei von drei Läufen unter 3 s; der Ausreißer liegt bei 3,559 s. Deshalb keine vollständige Kurszeit-Abnahme aller vier Aktienseiten. **CLS < 0,1 ist in allen 33 Abschlussläufen erreicht.**
+
+LCP < 2,5 s erreichen acht von elf Routen im Median. Nicht erreicht: Quant NVDA 7,616 s, Technical NVDA 3,272 s und Supertrader NVDA 2,820 s. Ein früher Kurs bedeutet keine vollständig geladene Analyse.
+
+Was noch fehlt:
+
+- **Technical:** Instrument-/Namensdaten und parallel geladene Engine-Skripte bleiben Teil des Starts. Die Kursdaten brauchen Vorrang vor Downloads/Parsing der Engines (z. B. Engines erst nach dem ersten Kurs-Paint) oder eine kleinere, ausschließlich kanonisch projizierte Kopfantwort. Die Fachrechnungen bleiben unverändert.
+- **Supertrader:** Der Kopf wartet auf den restlichen Seitenstart. Eine getrennte frühe Anzeige aus dem bestehenden kanonischen Stock-Shard braucht mehr Abstand zur 3-s-Grenze; der jetzige Median reicht wegen des Ausreißers nicht als stabile Abnahme.
+- **Quant/LCP:** Der frühe Kopf entkoppelt den ersten Kurs, die vollständige Initialisierung mit Bundle, Stock-Paket, Daten und Renderarbeit bleibt groß. Weitere Aufteilung bzw. Arbeit nach dem ersten Viewport ist nötig. Inlining verschiebt Code ins HTML und spart Roundtrips; die gesamten Wire-Bytes einschließlich HTML stehen oben. Kein großer Gesamt-Bytegewinn wird behauptet.
+
+**Qualität:** 24 Hell-/Dunkel-Ansichten einschließlich Analysten-Dialoge: 0 axe-Kontrastverstöße, 0 beanstandete geprüfte Tippflächen, 0 JavaScript-Seitenfehler; Fokusfalle/Escape/Rückgabe und feste Kopfposition bestanden. Axe-`incomplete` bleibt im Bericht und ersetzt keine manuelle Kontrast-/Screenreader-Abnahme. Discover: 129.698 decoded Bytes / 7 Budget-Ressourcen. Quant: 46 Ressourcen ohne Hauptdokument / 3.061.032 decoded Bytes; das ist eine andere Zählung als die CDP-Requestspalte. Beide unveränderten Budgets eingehalten. Offline-Hinweis, Logo-Cache und verweigerter neuer Datenabruf bestanden.
+
+[QA-Rohdaten](e5/final/quality.json), [Zusammenfassung](e5/final/quality-summary.json), [früher Kopf bei blockiertem Router/Engines](e5/final/early-head.json), [Quant-Smoke](e5/final/quant-smoke.json). Die Browser-Asset-Hashes der letzten Messung und der Abschluss-QA sind identisch. Danach ändern sich nur Dokumentation, Testeinbindung und Akademie-Test-Synchronisation; die abschließende main-Rebase bringt keinen anderen ausgelieferten Browsercode außerhalb der App. Aktuelle CI-Ergebnisse stehen in den PRs. Strang A prüft und mergt.
+
+
 ## Historische Messung aus Paket 1 (06.11.; andere Ausgangsrevision)
 
 
@@ -219,3 +284,21 @@ Die `factors-FULL_UNIVERSE.json` selbst bleibt als Quelle der Shards unveränder
 3. **Listen mit Index, Detail mit Shard:** Muster ist bereits vorhanden (Faktoren, Technical je Ticker, Supertrader `stock/`). Übertragen auf Supertrader-Start und Discover-Nachweise.
 4. **HTTP-Cache für die App:** GitHub Pages sendet `cache-control: max-age=600`. Für die App reicht das nicht als Offline-Ersatz. Ein Cache für **Marktdaten** wäre fachlich falsch (veraltete Kurse), siehe `sw.js`. Offline bleibt deshalb ein Hinweis, kein Datenstand.
 5. **Prefetch nur im WLAN** (Network-Plugin liefert Verbindungsart), nie für Marktdaten.
+
+## K3: Hauptseiten nach E5 + K2 (07.11.2026, Strang K)
+
+Werkzeug `scripts/mobile/measure.mjs` (E5-Labor: Chromium 390×844, DPR 2, Touch, 1,6 Mbit/s, 150 ms, CPU×4, kalt, SW blockiert, 3 Läufe, Median), lokaler Release aus `claude/k2-page-transitions` (E5-Stapel + K2). Kein echtes iOS-WebKit verfügbar (nur Chromium installiert); Laborwerte, keine Produktions- oder Gerätemessung.
+
+| Route | LCP s | erster Kurs s | CLS | Requests |
+|---|---:|---:|---:|---:|
+| `/mein-dashboard/` | 0,72 | – | 0,000 | 33 |
+| `/quant/musterdepots/` | 1,10 | – | 0,000 | 16 |
+| `/quant/#/aktie/NVDA` | 1,42 | 1,40 | 0,055 | 51 |
+| `/supertrader/stock/NVDA/` | 1,88 | 2,59 | 0,054 | 36 |
+| `/supertrader/` | 2,05 | – | 0,013 | 23 |
+| `/technical/#/chart/NVDA` vorher | 3,08 | 3,08 | 0,052 | 61 |
+| `/technical/#/chart/NVDA` nach K3 | **2,43** | **2,42** | 0,055 | 61 |
+
+Größte Bremse war der Technical-Kurs: das Instrument (`technical-signals-v1/by-ticker/<T>.json.gz`) wurde erst nach 18 Seitenskripten angefragt. K3 fordert es per Preload im `<head>` an (Adresse geprüft gegen `technicalPaths()[0]`, `technical/tests/early-instrument.test.mjs`).
+
+Offen: Supertrader-Aktie (Kurs 2,59 s). Ihr Kurs kommt aus `discover-series/<securityId>.json`; ein Preload müsste die Kennung im Seitengenerator über `core/identity.js` bilden (ADR-001), nicht im HTML. Ziel „Erstaufruf < 2 s“ erreichen damit 4 der 6 Hauptseiten (LCP); Technical und Supertrader-Start liegen knapp darüber. Produktwechsel mit vorgeladenem Ziel (K2, TTFB ≈ 2 ms): erster Inhalt Quant → Supertrader 0,12 s, Discover → Quant 1,17 s (Quant lädt viele eigene Skripte). Untertabs innerhalb eines Produkts sind SPA-Routen ohne Dokumentwechsel.
