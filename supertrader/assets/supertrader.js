@@ -26,7 +26,16 @@
     (kids || []).forEach(function (c) { if (c === null || c === undefined || c === false) return; e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
     return e;
   }
-  function getJSON(name) { return fetch(DATA + name, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(name + ' HTTP ' + r.status); return r.json(); }); }
+  var JSON_P = {}, JSON_AT = {};
+  function getJSON(name) {
+    if (JSON_P[name] && (JSON_AT[name] === undefined || Date.now() - JSON_AT[name] < 30000)) return JSON_P[name];
+    delete JSON_AT[name];
+    var pending = fetch(DATA + name, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(name + ' HTTP ' + r.status); return r.json(); }).then(function (value) {
+      if (JSON_P[name] === pending) JSON_AT[name] = Date.now();
+      return value;
+    }).catch(function (e) { if (JSON_P[name] === pending) { delete JSON_P[name]; delete JSON_AT[name]; } throw e; });
+    return JSON_P[name] = pending;
+  }
   function num(v, d) { if (v === null || v === undefined || !isFinite(v)) return '–'; return Number(v).toLocaleString('de-DE', { minimumFractionDigits: d === undefined ? 2 : d, maximumFractionDigits: d === undefined ? 2 : d }); }
   /* Kursmarke des Plans (Trigger, Stop, Einstieg, Schluss) mit Waehrung: Signale rechnen in USD; angezeigt wird
      wie im Kurschart in der gewaehlten Waehrung (Chartstandard, Vorgabe EUR) mit dem juengsten EZB-Kurs.
@@ -954,15 +963,25 @@
     if (!SCRIPT_P[src]) SCRIPT_P[src] = new Promise(function (ok, no) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = function () { no(new Error(src)); }; document.head.appendChild(s); });
     return SCRIPT_P[src];
   }
-  function loadCss(href) { if (document.querySelector('link[href="' + href + '"]')) return; document.head.appendChild(h('link', { rel: 'stylesheet', href: href })); }
+  var CSS_P = {};
+  function loadCss(href) {
+    return CSS_P[href] || (CSS_P[href] = new Promise(function (ok, no) {
+      var link = document.querySelector('link[href="' + href + '"]');
+      if (link && link.sheet) { ok(); return; }
+      var fresh = !link; if (fresh) link = h('link', { rel: 'stylesheet', href: href });
+      link.addEventListener('load', ok, { once: true });
+      link.addEventListener('error', function () { delete CSS_P[href]; no(new Error(href)); }, { once: true });
+      if (fresh) document.head.appendChild(link);
+    }));
+  }
   function stockKit() {
-    loadCss('/assets/stock-navigator.css');
+    var style = loadCss('/assets/stock-navigator.css');
     var core = window.VUStockNavigator ? Promise.resolve() : loadScript('/core/identity.js').then(function () { return loadScript('/core/stock-context.js'); }).then(function () { return loadScript('/assets/stock-navigator.js'); });
     /* Lesezeichen der persoenlichen Watchlist (docs/accounts/WATCHLIST.md): haengt sich selbst an den Aktienkopf; ohne
        freigeschaltete Konten zeigt es nichts und fragt die Konto-API nicht an. Blockiert den Kopf nicht. */
     core.then(function () { if (!window.VUWatchButton) loadScript('/assets/watchlist-button.js').catch(function () {}); });
     var chart = window.VUChart ? Promise.resolve() : loadScript('/assets/vu-chart.js');
-    return Promise.all([core, chart]);
+    return Promise.all([core, chart, style]);
   }
   /* Chartstandard (core/chart-standard.js, docs/charts/CHART_STANDARD.md): Zeitraeume, Start 1T,
      Intraday-Aufloesung und Anzeige in der gewaehlten Waehrung (Vorgabe EUR) ueber die vorhandene
@@ -1570,7 +1589,7 @@
      Modul einen gekennzeichneten Leerzustand. */
   function mountResearch() {
     if (['home', 'strategies', 'stock'].indexOf(page) < 0) return;
-    loadCss(BASE + 'assets/sf-research.css');
+    loadCss(BASE + 'assets/sf-research.css').catch(function () {});
     (window.STResearch ? Promise.resolve() : loadScript(BASE + 'assets/sf-research.js')).then(function () {
       if (window.STResearch) window.STResearch.mount(page, main, { symbol: SYM });
     }).catch(function () {});
@@ -1607,8 +1626,7 @@
   }
   /* Redesign 2027: gemeinsame Bausteine (assets/vu-ui.*, assets/vu-chart.js) und das Seitenmodul st-redesign.js.
      Laedt parallel zu den Daten; ein Fehler laesst die bisherige Oberflaeche stehen. */
-  var UI = page === 'replay' ? Promise.resolve() : Promise.all([loadScript('/assets/vu-ui.js'), loadScript('/assets/vu-chart.js')]).then(function () {
-    loadCss('/assets/vu-ui.css'); loadCss(BASE + 'assets/st-redesign.css');
+  var UI = page === 'replay' ? Promise.resolve() : Promise.all([loadCss('/assets/vu-ui.css'), loadCss(BASE + 'assets/st-redesign.css'), loadScript('/assets/vu-ui.js'), loadScript('/assets/vu-chart.js')]).then(function () {
     return loadScript(BASE + 'assets/st-redesign.js');
   }).catch(function () { return null; });
   /* Helfer der bisherigen Oberflaeche fuer das Redesign-Modul. legacy(host, D) zeichnet die bisherige Ansicht der Seite in host. */

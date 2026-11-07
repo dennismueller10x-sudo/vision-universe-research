@@ -1,4 +1,5 @@
-// PWA Stufe 1: Manifest gueltig, Icons vorhanden, Service Worker cached nur die Offline-Seite.
+// PWA E5: Offline-Precache, private/live Endpunkte ausgenommen; begrenzte oeffentliche Caches.
+import "../../scripts/mobile/tests/sw.test.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync, existsSync} from 'node:fs';
@@ -26,7 +27,8 @@ test('manifest: Pflichtfelder, Start in Discover, Icons existieren als PNG passe
 function loadWorker() {
   const handlers = {}, cached = [], responded = [];
   const ctx = {
-    self: {addEventListener: (t, f) => { handlers[t] = f; }, skipWaiting: () => Promise.resolve(), clients: {claim: () => Promise.resolve()}},
+    URL,
+    self: {location: {origin: 'https://example.test'}, addEventListener: (t, f) => { handlers[t] = f; }, skipWaiting: () => Promise.resolve(), clients: {claim: () => Promise.resolve()}},
     caches: {open: async () => ({addAll: async l => { cached.push(...l); }}), keys: async () => [], match: async () => 'OFFLINE'},
     fetch: () => Promise.reject(new Error('offline')),
     Response: {error: () => 'ERR'},
@@ -42,13 +44,13 @@ test('service worker: precached nur Offline-Seite und Icon, keine Daten oder Skr
   assert.ok(!cached.some(u => /\/data\/|\.js$|\.json$/.test(u)));
 });
 
-test('service worker: greift nur bei Seitennavigation ein, Daten- und Skriptanfragen bleiben unberuehrt', async () => {
+test('service worker: private, Live- und fremde Abrufe bleiben unberuehrt; Offline-Navigation bleibt ehrlich', async () => {
   const {handlers} = loadWorker();
   const fire = req => { let r = null; handlers.fetch({request: req, respondWith: x => { r = x; }}); return r; };
-  for (const url of ['/quant/data/x.json', '/discover/app.js', '/api/history'])
-    assert.equal(fire({mode: 'cors', method: 'GET', url}), null, url);
-  assert.equal(fire({mode: 'navigate', method: 'POST', url: '/'}), null);
-  assert.equal(await fire({mode: 'navigate', method: 'GET', url: '/discover/'}), 'OFFLINE');
+  for (const url of ['/api/history', '/v1/me', '/discover/live/im-blick-US_REAL.json?t=12', '/assets/a.js?token=private', 'https://other.test/assets/a.js'])
+    assert.equal(fire({mode: 'cors', method: 'GET', url: new URL(url, 'https://example.test').href}), null, url);
+  assert.equal(fire({mode: 'navigate', method: 'POST', url: 'https://example.test/'}), null);
+  assert.equal(await fire({mode: 'navigate', method: 'GET', url: 'https://example.test/discover/'}), 'OFFLINE');
 });
 
 test('Discover und Startseite verlinken Manifest und Registrierung', () => {
@@ -58,3 +60,6 @@ test('Discover und Startseite verlinken Manifest und Registrierung', () => {
     assert.match(s, /<script src="\/assets\/pwa\.js" defer><\/script>/, p);
   }
 });
+
+import '../../scripts/mobile/tests/bundle-discover.test.mjs';
+import '../../scripts/mobile/tests/logo-index.test.mjs';
