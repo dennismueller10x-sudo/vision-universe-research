@@ -92,8 +92,10 @@
   },
   "maintenance": {
    "purpose": "manuelle Betriebswerkzeuge, Diagnosen, Einmal-Laeufe",
-   "workflow": null,
-   "replaces": []
+   "workflow": "maintenance.yml",
+   "replaces": [
+    "r2-audit.yml"
+   ]
   }
  },
  "workflows": {
@@ -285,9 +287,6 @@
   },
   "quant-v13-archive.yml": {
    "bundle": "research"
-  },
-  "r2-audit.yml": {
-   "bundle": "maintenance"
   },
   "research-edge2-paper.yml": {
    "bundle": "research"
