@@ -191,3 +191,14 @@ test('Shell: das native Bundle wird vom richtigen Pfad geladen und das Startbild
   assert.match(main, /Promise\.race\(\[auth\.restore\(\)/, 'ein haengender Speicher blockiert den Start nicht');
   assert.match(main, /if \(biometric\?\.enabled\(\)\) await auth\.restore\(\{forceRefresh: true\}\)/, 'nur mit Biometrie: Pruefung und Refresh vor Sitzungsfreigabe abwarten');
 });
+
+test('iOS: Mindestversion mindestens 15.0 (Apple verlangt ab April 2027 iOS 15, Warnung ITMS-90068)', () => {
+  const pbx = read(path.join(app, 'ios/App/App.xcodeproj/project.pbxproj'));
+  const targets = [...pbx.matchAll(/IPHONEOS_DEPLOYMENT_TARGET = ([\d.]+);/g)].map(m => Number(m[1]));
+  assert.ok(targets.length >= 2 && targets.every(v => v >= 15), 'IPHONEOS_DEPLOYMENT_TARGET ' + targets);
+  assert.match(read(path.join(app, 'ios/App/Podfile')), /platform :ios, '15\.0'/);
+});
+
+test('iOS: Exportkonformitaet vorab erklaert (nur Betriebssystem-Verschluesselung), keine Rueckfrage je Build', () => {
+  assert.match(read(path.join(app, 'ios/App/App/Info.plist')), /<key>ITSAppUsesNonExemptEncryption<\/key>\s*<false\/>/);
+});
