@@ -1,6 +1,6 @@
 # Ungenutzte Dateien – E7
 
-Analysierter Commit: `2385e806697a10db49987a32468ab5caf21437f9`.
+Analysierter Commit: `24552891ea135dcefa9a84cef5c48a227f447750`.
 
 ## Methode und Grenzen
 
@@ -10,7 +10,7 @@ Alle versionierten Dateien sind Graphknoten. HTML (script/link/fetch und Navigat
 
 Die Einzelliste umfasst alle Dateien außerhalb der geschützten Bereiche, auch Konfiguration, Dokumentation und Evidence. Daten, Assets, App, Account-Worker, Forschung und Recht bleiben geschützt. Konfiguration und Dokumentation liefern zusätzliche Verweise. Dateninhalte und Binärdateien werden nicht als Quelltext gelesen. Dies ist eine Eingangsgrad-Analyse, keine Erreichbarkeitsanalyse: unbenutzte Zyklen werden nicht erkannt. Dynamische Pfade, Shell-Variablen, HTML-base, externe Aufrufe, Bookmarks und andere Deployments sind nicht vollständig beweisbar.
 
-Knoten: 86159; gelesene Textquellen: 10193; Dateien außerhalb Tabu: 17402 (davon 8031 Code/Seiten/Skripte); davon ohne eingehende Verweise: 1; nur breite Verzeichnis-/Glob-Verweise: 1505; geschützte Knoten ohne Verweise: 0 (keine Löschkandidaten).
+Knoten: 86632; gelesene Textquellen: 10293; Dateien außerhalb Tabu: 17462 (davon 8082 Code/Seiten/Skripte); davon ohne eingehende Verweise: 1; nur breite Verzeichnis-/Glob-Verweise: 1284; geschützte Knoten ohne Verweise: 0 (keine Löschkandidaten).
 
 **Keine automatische Löschfreigabe.** Fehlender Verweis, ein 404 oder Ausschluss vom Pages-Build allein beweist keine Nichtnutzung. Bei Zweifel bleibt die Datei.
 
@@ -18,17 +18,17 @@ Knoten: 86159; gelesene Textquellen: 10193; Dateien außerhalb Tabu: 17402 (davo
 
 `pages-release.yml` baut mit `scripts/vu2/build-release.mjs`: `permitted()` kopiert grundsätzlich alle zugelassenen getrackten Dateien, einschließlich alter Seiten und evidence. scripts/docs/providers, Tests und bestimmte Daten werden ausgeschlossen. Der Build erzeugt `/vu2/` und `/Quant/` zusätzlich als Redirect nach `/quant/`. Ein ausgelieferter Pfad kann direkt aufgerufen werden, auch ohne internen Link.
 
-Größenvergleich gegen `bbe59a3ca48e208d2053aa30ab8d96fc9ce059f1`; getrackte Dateibytes, ohne Git-Historie. Neue Analysewerkzeuge zählen zur Nachher-Größe von scripts/.
+Größenvergleich gegen `9e2012b6f339fd6aef80ef5df7e6eb211f1ff683`; getrackte Dateibytes, ohne Git-Historie. Neue Analysewerkzeuge zählen zur Nachher-Größe von scripts/.
 
 | Bereich | Dateien nachher | Bytes vorher | Bytes nachher | Entscheidung |
 |---|---:|---:|---:|---|
 | vu2/ | 1 | 401 | 401 | Redirect wird im Release erzeugt; behalten. |
 | discover-v2/ | 1 | 837 | 837 | Legacy-Redirect nach /discover/; behalten. |
-| dashboard/ | 274 | 2177665 | 2177665 | Aktive Datenquellen laut domains.json, Seiten laden app-rebuild.js; behalten. |
+| dashboard/ | 664 | 3878094 | 3878094 | Aktive Datenquellen laut domains.json, Seiten laden app-rebuild.js; behalten. |
 | worker-waker/ | 4 | 60308 | 60308 | Eigenes Cloudflare-Deployment und Workflow-Tests; behalten. |
-| landing/review/ | 36 | 8360419 | 8360419 | CI erwähnt den Review-Pfad; Live-404 genügt nicht; behalten. |
+| landing/review/ | 37 | 8361739 | 8361739 | CI erwähnt den Review-Pfad; Live-404 genügt nicht; behalten. |
 | evidence/ | 54 | 1026077 | 1026077 | Audit-/Auslieferungsbelege und grundsätzlich im Pages-Build; behalten. |
-| scripts/ | 1805 | 28016242 | 28037098 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
+| scripts/ | 1824 | 28180314 | 28201170 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
 
 Live-Stichprobe: 2026-11-06T13:19:17.451215+00:00, https://research.visionuniverse.de. Keine vollständige Browser-Netzwerkaufzeichnung.
 
@@ -151,7 +151,6 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | content/morning/2026-09-09.md | 4342 | Nur breite Kanten, z. B. .github/workflows/content.yml; Nutzung unklar; behalten. |
 | content/morning/2026-10-06.md | 4555 | Nur breite Kanten, z. B. .github/workflows/content.yml; Nutzung unklar; behalten. |
 | content/morning/README.md | 1564 | Nur breite Kanten, z. B. .github/workflows/content.yml; Nutzung unklar; behalten. |
-| core/tests/analysten-summary.test.mjs | 3779 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
 | core/tests/chart-parity.test.mjs | 2257 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
 | core/tests/chart-standard.test.mjs | 7042 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
 | core/tests/client.test.mjs | 5414 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
@@ -176,92 +175,8 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | core/tests/stock-navigator.test.mjs | 6210 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
 | core/tests/technical-chain.test.mjs | 3725 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
 | core/tests/vu-chart.test.mjs | 3494 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
-| docs/COMPANY_INTELLIGENCE_ACCEPTED_STATE_RECOVERY.md | 22254 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/COMPANY_INTELLIGENCE_DISCOVER_BETA.md | 24377 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/COMPANY_INTELLIGENCE_PRODUCTION_ACTIVATION.md | 12515 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/DISCOVER_FRONTEND_REFACTOR_2026-09.md | 3396 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/ELLIOTT_PRODUCT_ARCHITECTURE.md | 12574 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/EMERGING_LEADERS.md | 11125 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/ETF_EU_DATA_ARCHITECTURE.md | 3743 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/ETF_EU_FREE_SOURCE_SCORECARD.md | 5155 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/FUNDAMENTAL.md | 19414 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/FUNDAMENTAL_HANDOFF.md | 14837 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/GAP_CHECK_2026-10-04.md | 8378 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/GAP_CHECK_2026-10-05.md | 4882 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/HERO_VISUAL_FIDELITY_REPORT.md | 14429 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/MASTER_COMPLETION_3_0.md | 20612 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/MISSION_FINAL_REPORT_2026-10-04.md | 13566 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/MISSION_FINAL_REPORT_2026-10-05.md | 22150 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/MISSION_STATUS_2026-10-03.md | 9692 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/PREMIUM_DESIGN_SYSTEM_2_REPORT.md | 17944 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/SECURITY_MASTER_EXCHANGE_DIRECTORY.md | 9315 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_3_MINERVINI_COMPLETION.md | 5786 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_3_MOMENTUM_AND_DATA_FRONTIER.md | 4270 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_3_TURTLE_CORRELATION_RESEARCH.md | 6963 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_4_MINERVINI_TRADE_LIFECYCLE_REPORT.md | 19083 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_4_POWER_PLAY_MISSING_LOW_FIX.md | 4577 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md | 35724 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_6_STRATEGY_COMPLETION_CERTIFICATION_REPORT.md | 31224 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_7_INTEGRATION_ABSCHLUSS.md | 13510 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_8_INTEGRATION_STATUS.md | 7622 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_9_CERTIFICATION_PREP_ALL13.md | 24060 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_9_V1_STATUS_20261030.md | 20174 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_ARCHITECTURE.md | 11045 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_BACKTEST_FOUNDATION_REPAIR.md | 10977 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_EUROPE_READINESS.md | 1859 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_HOUSE_STRATEGY.md | 7549 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_SF_DARVAS.md | 4043 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_SF_HOLY_GRAIL.md | 1642 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_SF_KULLAMAGI.md | 3030 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_SF_MINERVINI.md | 3529 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_SF_POCKET_PIVOT_BGU.md | 2587 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_SF_TURTLE.md | 5958 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_SF_WEINSTEIN.md | 3810 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_SOURCE_FAITHFUL_CONTRACTS.md | 6181 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/SUPERTRADER_TECHNICAL_STAND.md | 4859 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Nutzung unklar; behalten. |
-| docs/VISION_UNIVERSE_3_MILESTONE.md | 5500 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_CURRENCY_FX_LAYER.md | 75964 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_DISCOVER_MARGIN_UNIT_ROOTCAUSE.md | 3499 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_ELLIOTT_ENGINE.md | 6709 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_ELLIOTT_RENDERING.md | 2973 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_MARKETS_2_MARKET_INTELLIGENCE.md | 17998 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_MARKETS_PREMIUM_ART_DIRECTION.md | 13001 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_MARKET_DATA_FRESHNESS_P0_ROOT_CAUSE_REPORT.md | 22834 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_MARKET_STRUCTURE_METHODOLOGY.md | 3166 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_MULTI_ASSET_FINAL_REPORT.md | 18188 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_PIVOT_METHODOLOGY.md | 3268 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_QUANT_2_FACTOR_EVIDENCE.md | 19492 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_QUANT_2_LOST_WORK_REGISTER.md | 12180 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_QUANT_2_MASTER_REMATCH_REPORT.md | 22931 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_QUANT_2_PATTERN_RESEARCH.md | 18917 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_QUANT_2_PRODUCT_CONSTITUTION.md | 22127 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_QUANT_2_SETUP_OBSERVATION.md | 19539 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_QUANT_2_ZERO_FACTOR_CLASSIFICATION.md | 15780 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_QUANT_BACKTEST_SIGNAL_INTELLIGENCE.md | 5317 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_QUANT_BAND_SEMANTICS.md | 4618 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_QUANT_DAILY_USEFULNESS.md | 8450 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_QUANT_FINAL_PRODUCT_READINESS.md | 12933 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_QUANT_SHARE_COUNT_AUDIT.md | 4743 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_REPAINTING_POLICY.md | 2436 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_SCENARIO_ENGINE.md | 4688 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_SCREENER.md | 9027 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_SEC_COVERAGE_MAXIMIERUNG.md | 8595 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_SOCIAL_AGENT_GRAPH.md | 88043 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_SOCIAL_EVIDENCE_REGIME.md | 4366 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_SOCIAL_LINKAGE_DIAGNOSE.md | 9634 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_SOCIAL_NORTH_STAR_GAP.md | 5169 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_SOCIAL_SHADOW_LOOP.md | 10198 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_SOCIAL_SMOKE_PUBLISH.md | 7474 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_SOCIAL_VISUAL_ARCHITECTURE.md | 5520 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_TIINGO_FIRST_MARKET_TRACKERS.md | 17701 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_UNIVERSE_EXPANSION_ABSCHLUSSBERICHT.md | 12423 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/VU_VORSORGE.md | 26198 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/accounts/RECHTLICHE_PRUEFUNG_CHECKOUT.md | 4733 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/accounts/STRIPE_BRANDING.md | 3532 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/accounts/TARIFE.md | 5165 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/accounts/ZAHLUNGSPRUEFUNG.md | 2852 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/audits/VU3_FINALISIERUNG_2026-10-22.md | 14500 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/audits/VU3_UI_REFRESH_ABSCHLUSS_2026-10-21.md | 10244 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
+| core/tests/watchlist-fetch-published.test.mjs | 2722 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
+| docs/DOKU_INVENTAR.md | 139655 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/audits/vu3-ui-refresh-abschluss-2026-10-21/pltr-drei-welten-desktop__nachher-hell.jpg | 79852 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/audits/vu3-visuelle-bestandsaufnahme-2026-10-21/dashboard-start-desktop.jpg | 46069 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/audits/vu3-visuelle-bestandsaufnahme-2026-10-21/dashboard-start-iphone.jpg | 31319 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
@@ -294,14 +209,6 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | docs/audits/vu3-visuelle-bestandsaufnahme-2026-10-21/technik-start-iphone.jpg | 35751 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/audits/vu3-visuelle-bestandsaufnahme-2026-10-21/vorsorge-start-desktop.jpg | 59078 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/audits/vu3-visuelle-bestandsaufnahme-2026-10-21/vorsorge-start-iphone.jpg | 31821 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/brevo/API-EXECUTION.md | 6475 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
-| docs/brevo/APP-NEWSLETTER.md | 5429 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
-| docs/brevo/APPROVAL.md | 12446 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
-| docs/brevo/INTERNAL-MEMBERSHIP.md | 3803 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
-| docs/brevo/LIVE-STATUS.md | 10968 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
-| docs/brevo/MERGE-REVIEW.md | 11707 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
-| docs/company-intelligence/AUTO_REFREEZE.md | 9380 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/company-intelligence/SOURCE_COVERAGE_AND_SCHEDULER.md | 18081 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/company-intelligence/accepted-final-status.json | 1284 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/company-intelligence/consumer-v2/candidate-adversarial-round2.json | 3723 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/company-intelligence/consumer-v2/candidate-discover-quant-final.json | 34899 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
@@ -395,7 +302,6 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | docs/company-intelligence/consumer-v2/screenshots/before-XPEV-430-dark-chapter.png | 126170 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/company-intelligence/consumer-v2/screenshots/before-XPEV-430-dark-viewport.png | 90513 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/company-intelligence/consumer-v2/source-links.json | 17436 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/company-intelligence/consumer-v2/top46/README.md | 2843 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/company-intelligence/consumer-v2/top46/baseline-fresh-r2-restore.json | 5477 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/company-intelligence/consumer-v2/top46/baseline-production-approval.json | 586 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/company-intelligence/consumer-v2/top46/baseline-release-candidate.json | 16812 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
@@ -407,7 +313,6 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | docs/company-intelligence/consumer-v2/top46/material-event-review.json | 16964 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/company-intelligence/consumer-v2/top46/pre-existing-regression-review.json | 730 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/company-intelligence/consumer-v2/top46/reviewed-link-check.json | 27771 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/company-intelligence/consumer-v2/top46/self-reviews.md | 3625 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/company-intelligence/evidence/full-universe-20261010/acceptance.json | 7260 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/company-intelligence/evidence/full-universe-20261010/core-baseline.json | 452 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/company-intelligence/evidence/full-universe-20261010/scaling.json | 1492 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
@@ -449,51 +354,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | docs/design/redesign-2027/now/crop-dock-tech-home-0.jpg | 4089 | Nur breite Kanten, z. B. AGENTS.md; Nutzung unklar; behalten. |
 | docs/design/redesign-2027/now/crop-dock-vs-home-0.jpg | 3446 | Nur breite Kanten, z. B. AGENTS.md; Nutzung unklar; behalten. |
 | docs/design/redesign-2027/tools/series.js | 910 | Nur breite Kanten, z. B. AGENTS.md; Nutzung unklar; behalten. |
-| docs/discover-v2/audit-visual-generation.md | 6070 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/discover-v2/orchestrator.md | 6168 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/discover-v2/premium-contract-audit.md | 7204 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/discover-v2/premium-design-qa.md | 5931 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/discover-v2/premium-orchestration.md | 6801 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/discover-v2/visual-generation.md | 5129 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/discover20/IDENTITY_RECLASSIFICATION.md | 5650 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/discover20/INTEGRATION_REPORT.md | 10395 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/discover20/PRODUCT_INTEGRATION.md | 13784 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/discover20/PUBLIC_DISPLAY_RELEASE.md | 5182 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe-discover20/ESEF_FOLLOW_UP.md | 5626 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe-discover20/SCREENER_LOGOS.md | 3825 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe-discover20/close-chart-quality.md | 3273 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe21/FUNDAMENTALS.md | 4121 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe21/LOGOS.md | 3869 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe21/PRODUCTS.md | 12503 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe21/REGRESSION_VALIDATION.md | 9763 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe21/german-regional-primary-policy.md | 1454 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe21/review-a-classification.md | 3496 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe21/review-b-identity.md | 4466 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe21/review-c-quality.md | 1690 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe21/review-f-products.md | 3240 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe21/review-g-credits.md | 6266 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe21/review-price-overlay.md | 3377 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/europe21/review-resolution-contract.md | 3675 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/handover/MASTERUEBERGABE_MOBILE_APP.md | 7165 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/market-validation/.gitignore | 9 | Nur breite Kanten, z. B. .github/workflows/market-validation-data.yml; Workflow-Schutz; Nutzung unklar; behalten. |
-| docs/market-validation/README.md | 14592 | Nur breite Kanten, z. B. .github/workflows/market-validation-data.yml; Workflow-Schutz; Nutzung unklar; behalten. |
-| docs/marketstack-europe/BENCHMARKS.md | 2748 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/marketstack-europe/FUNDAMENTALS.md | 6214 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/marketstack-europe/QUANT_POPULATION.md | 4339 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/marketstack-europe21/corporate-actions.md | 4381 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/marketstack-europe21/price-quality.md | 9637 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/mobile/ANDROID_STEP_BY_STEP.md | 4215 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/mobile/PHASE2_REPORT.md | 9366 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/neustart/G-labor.md | 1178 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/operations/BASELINE_TEST_ISOLATION.md | 2482 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quality/unused-live-evidence.json | 2350 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant-recovery/BACKTEST_V9_DATA_RECOVERY.md | 5447 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant-recovery/BACKTEST_V9_EVIDENCE_MATRIX.md | 2999 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant-recovery/BACKTEST_V9_FINAL.md | 7743 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant-recovery/BACKTEST_V9_METHOD_VALIDATION.md | 5214 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant-recovery/BACKTEST_V9_REAL_STUDIES.md | 2035 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant-recovery/BACKTEST_V9_VALIDATION.md | 2372 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant-recovery/DATA_QUALITY_V12_PLAN.md | 4044 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
+| docs/market-validation/.gitignore | 9 | Nur breite Kanten, z. B. .github/workflows/pipeline-daily.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | docs/quant-recovery/v11/discovery/oracle-validation-1.0.0.json | 74367 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v12/indexpop/price-plausibility-1.1.0.json | 2002 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v12/indexpop/quarter-prices-1.1.0.json.gz | 540932 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
@@ -505,9 +366,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | docs/quant-recovery/v12/spxpop/validation-1.0.1.json | 50890 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v13/delisted/protocol-amendment-1.0.2.sha256 | 65 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v13/delisted/study-registration-1.0.0.sha256 | 65 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant-recovery/v13b/f1w/README.md | 8854 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v13b/f1w/study-registration-2.0.0.sha256 | 96 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant-recovery/v13b/hist/README.md | 10757 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v13b/hist/spx-terminal-rules-1.0.0.sha256 | 96 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v13b/hist/spx-terminal-rules-1.0.1.sha256 | 96 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v13c/study-amendment-3.0.2.sha256 | 93 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
@@ -523,13 +382,9 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | docs/quant-recovery/v6-securement/reader.json | 3100 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v6-securement/resume.json | 1089 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v6-securement/technical-manifest.json | 5984 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant-recovery/v9-followups/ca-registry/README.md | 7431 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant-recovery/v9-followups/identity/README.md | 4426 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v9-followups/ledger/before-after.json | 33224 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v9-followups/pzza-split/independent_check.py | 4405 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v9-followups/sec-pipeline/quarantine-detection.json | 9001 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant/BACKTEST_P2_DEFIZITE.md | 22617 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant/backtest-catalog/README.md | 3849 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant/backtest-catalog/results/10b1a254f1be090d2ae11cbb043f3e37678ee4075ac20a7bc30ebddad49d6154.json | 55822 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant/backtest-catalog/results/120c403d8a68f87656135519105ca1d3f9a59c4dcfd5709a06ad83974b660bfe.json | 46862 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant/backtest-catalog/results/33d18202da7d00b7ec678635721bcfabb5305ea8b3e55b2e3059eea78acd6e11.json | 48622 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
@@ -551,8 +406,6 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | docs/quant/backtest-catalog/results/c55f9486f38754e8312447c555ea946c8a831c5c8c9cb9b95ae6623cad82aea1.json | 26086 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant/backtest-catalog/results/d247094dae1902e7adf90a5fc2281e5bddd7a8dcf6ac11a049c7bdc380a32f9e.json | 49847 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant/backtest-catalog/results/e3802e4557f095b1603fd5dee0b58613b21c5b79f899d5ef3e8d5a754003ae14.json | 45533 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant/backtest-demos/REBUILD_2026-10-30.md | 28731 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/quant/backtest-demos/REBUILD_2026-10-31.md | 1474 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant/backtest-demos/results/acquisition-agn.json | 21203 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant/backtest-demos/results/delisted-xco-bankruptcy.json | 22178 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant/backtest-demos/results/factor-momentum-v10-panel.json | 21164 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
@@ -577,11 +430,6 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | docs/reports/discover-quality-20261012/discover_card_layout_diff.json | 1978 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/reports/discover-quality-20261012/discover_home_selection_diff.json | 620 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/reports/discover-quality-20261012/discover_quality_regression.json | 1770 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/reports/europe-continuity-449-20261012/README.md | 5516 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/reports/europe-historical-provider-review-20261103/README.md | 24085 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/reports/europe-live-revalidation-449-20261013/README.md | 5991 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/reports/europe-marketstack-support-report-20261103/README.md | 18405 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/reports/europe-marketstack-support-report-20261103/SUPPORT_REQUEST.md | 7774 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/screenshots/discover-v3-netflix/desktop-01-hero.png | 500162 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/screenshots/discover-v3-netflix/desktop-05-story.png | 332545 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/screenshots/discover-v3-netflix/desktop-s01-hero.png | 260873 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
@@ -702,30 +550,6 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | docs/screenshots/discover-v41-realtime/mobil-hell-09-positiv-gruen-vlo.png | 395198 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/screenshots/discover-v41-realtime/mobil-hell-10-chancen-und-risiken.png | 180887 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/screenshots/discover-v41-realtime/mobil-hell-11-analyse-hinter-der-grenze.png | 179838 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/studio/AUTOMATISIERUNG.md | 2510 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/studio/FAKTEN_ALTERSVORSORGE_RIESTER.md | 3910 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical-intelligence/DATA_FRESHNESS_POLICY.md | 7068 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical-intelligence/ELLIOTT_PROJECTION_ENGINE.md | 28652 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical-intelligence/ELLIOTT_SETUP_LIBRARY_V1.md | 8143 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical-intelligence/PRODUCT_MIGRATION_MANIFEST.md | 16910 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical-intelligence/TECHNICAL_INTELLIGENCE_ARCHITECTURE.md | 11046 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/AI_SEARCH_EVAL.md | 6576 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/DQ_TOP20_ESTABLISHED_UPTREND.md | 5771 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/EMA_SCREENER_RELEASE.md | 3326 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/EVENT_FILTERS.md | 7030 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/INDICATORS_CATALOG.md | 16292 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/SCREENER_FIELDS_L6.md | 5568 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/STRATEGY_ACADEMY.md | 11432 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/STRATEGY_ACADEMY_ABNAHME.md | 2864 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/STRATEGY_ACADEMY_AUDIT_002.md | 15205 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/STRATEGY_ACADEMY_FINAL.md | 7472 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/STRATEGY_ACADEMY_VISUAL_ABNAHME.md | 2778 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/STRATEGY_ACADEMY_VISUAL_PILOTS.md | 6752 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/STRATEGY_ACADEMY_VISUAL_ROLLOUT.md | 7950 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/STRATEGY_TEMPLATE_S3.md | 5433 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/TECHNICAL_ASSISTANT_ABNAHME.md | 6905 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/TECHNICAL_COMPLETION_2_0.md | 11183 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/technical/TECHNICAL_READINESS_REPORT.md | 14873 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/technical/academy-audit-qa/1280-dark-katalog.png | 204707 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/technical/academy-audit-qa/1280-dark-lektion.png | 260185 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/technical/academy-audit-qa/1280-light-katalog.png | 202379 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
@@ -912,61 +736,12 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | docs/technical/academy-visual-qa/390-light-momentum-2-pilot-3.png | 239827 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/technical/academy-visual-qa/390-light-trend-1-pilot-3.png | 242760 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/technical/academy-visual-qa/existing-browser-report.json | 5003 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/tiingo2-finalization/README.md | 6480 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/tiingo2-finalization/tiingo2_current_staging_20261003.json | 7627 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/tiingo2-finalization/tiingo2_foundation_independent_review.json | 8821 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/tiingo2-finalization/tiingo2_premerge_qa.json | 4141 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/tiingo2-finalization/tiingo2_production_baseline.json | 7569 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/tiingo2-finalization/tiingo2_staged_baseline_cas.json | 363320 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/tiingo2/tiingo2_execution_manifest.json | 3109 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/ARCHITECTURE_DELTA.md | 3266 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/BUILD_STATUS.md | 6635 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/CURRENT_STATE.md | 6636 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/EXECUTION_LEDGER.md | 82141 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/FEATURE_PARITY_GATE.md | 3529 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/OWNER_DECISION_FULL_PIT_DELIVERY.md | 4116 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/PHASE_LIVE_RELAY_INTEGRATION.md | 2369 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/PHASE_QUARTERLY_ARTIFACT_INTEGRATION.md | 2958 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/TRACEABILITY.md | 5085 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/01a-lifecycle.md | 1228 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/01b-contracts.md | 1570 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/01c-strict-incremental.md | 3440 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/02-experience.md | 2325 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/03-research-workspaces.md | 3012 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/04-screener-workspace.md | 1474 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/05-technical-workspaces.md | 1813 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/06-quant-workspace.md | 1635 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/07-strategy-workspace.md | 1577 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/08-portfolio-workspace.md | 1305 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/09-market-signals.md | 1839 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/10-metric-catalog.md | 2086 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/11-watchlist-workspace.md | 1908 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/12-home-integration.md | 2179 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/13-atlas-evidence.md | 2488 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/14-journey-gate.md | 1167 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/15-compare-workspace.md | 1683 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/17-stock-evidence.md | 2002 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/18-recovery-navigation.md | 1169 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/19-history-navigation.md | 1356 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/20-lifecycle-integration.md | 1660 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/21-market-freshness.md | 2248 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/22-main-drift-integration.md | 1919 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/23-accessibility-validation.md | 1833 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/24-resource-budget-validation.md | 1856 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/26-durable-history-handoff.md | 3199 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/28-usage-state-contract.md | 3504 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/29-operating-handoff.md | 2925 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/30-current-canonical-convergence.md | 5166 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/31-canonical-product-integration.md | 6729 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/32-canonical-rule-contract.md | 3395 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/33-backtest-readiness-evidence.md | 3345 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/34-technical-elliott-rule-integration.md | 3753 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/35-backtest-rule-eligibility-preflight.md | 2634 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/35-setup-state-contract.md | 1073 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/phases/35-technical-scanner-rule-parity.md | 2948 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/release/POST_RELEASE_SCOPE_CORRECTION.md | 2282 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/vu2/release/QUANT2_RELEASE.md | 6502 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
-| docs/werbetrailer/WERBETRAILER_ARRIVAL_2.md | 6906 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | evidence/company-intelligence-continuous-refresh-20261009/full-cohort-report.json | 31119 | Nur breite Kanten, z. B. docs/company-intelligence/CONTINUOUS_REFRESH.md; Nutzung unklar; behalten. |
 | evidence/company-intelligence-continuous-refresh-20261009/full-dark-report.json | 1402 | Nur breite Kanten, z. B. docs/company-intelligence/CONTINUOUS_REFRESH.md; Nutzung unklar; behalten. |
 | evidence/company-intelligence-continuous-refresh-20261009/full-fast-report.json | 7361 | Nur breite Kanten, z. B. docs/company-intelligence/CONTINUOUS_REFRESH.md; Nutzung unklar; behalten. |
@@ -1016,6 +791,8 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | evidence/company-intelligence-full-universe-20261010/public-consumer-cache-measured.json | 276 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
 | evidence/company-intelligence-full-universe-20261010/wide-release-hosting-recovery-failure.json | 1815 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
 | konto/passwort-neu/index.html | 3213 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
+| konto/tests/push-settings.test.mjs | 4641 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
+| konto/tests/saved-searches.test.mjs | 5609 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | landing/.gitignore | 72 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
 | landing/NEWSLETTER.md | 53119 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
 | landing/README.md | 12432 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
@@ -1097,9 +874,9 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | screener/tests/first-paint.test.mjs | 13391 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
 | screener/tests/universe.test.mjs | 10157 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
 | scripts/account/tests/brevo-setup.test.mjs | 3424 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
-| scripts/account/tests/build-watchlist-events.test.mjs | 7550 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
+| scripts/account/tests/build-watchlist-events.test.mjs | 9635 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | scripts/account/tests/dev-tools.test.mjs | 15515 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
-| scripts/account/tests/go-live-config.test.mjs | 3315 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
+| scripts/account/tests/go-live-config.test.mjs | 3783 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | scripts/account/tests/stripe-live-check.test.mjs | 6714 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | scripts/account/tests/stripe-live-setup.test.mjs | 12669 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | scripts/account/tests/supabase-push-plan.test.mjs | 2985 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
@@ -1307,6 +1084,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/marketstack/tests/europe-live-actions-review.test.mjs | 16918 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
 | scripts/marketstack/tests/europe-marketstack-diagnostics-once.test.mjs | 8765 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
 | scripts/marketstack/tests/europe-xpar-identity-offline.test.mjs | 5105 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
+| scripts/mobile/tests/server.test.mjs | 1220 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
 | scripts/quality/tests/find-unused.test.mjs | 4341 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Nutzung unklar; behalten. |
 | scripts/quant/__init__.py | 0 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/quant/audit-security-type-provenance.mjs | 8649 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Workflow-Schutz; Nutzung unklar; behalten. |
@@ -1534,6 +1312,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | supabase/migrations/20261027000100_cancellation_processing.sql | 17834 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | supabase/migrations/20261027000200_registration_gate.sql | 3482 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | supabase/migrations/20261030000100_pricing_admin.sql | 8372 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
+| supabase/migrations/20261107000200_push_types_extended.sql | 1405 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | supabase/tests/02_plans_catalog.sql | 1929 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | supabase/tests/05_cancellation.sql | 2306 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | supabase/tests/06_cancellation_processing.sql | 7496 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
@@ -1541,7 +1320,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | supabase/tests/09_free_pro.sql | 1820 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | supabase/tests/10_produktivstart.sql | 6994 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | supabase/tests/13_redesign_settings_searches.sql | 8559 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
-| willkommen/tests/start.test.mjs | 4078 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
+| willkommen/tests/start.test.mjs | 6170 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
 | workers/vision-universe-social/README.md | 7691 | Nur breite Kanten, z. B. .github/workflows/social-ci.yml; Nutzung unklar; behalten. |
 | workers/vision-universe-social/tests/approval-adversarial.test.mjs | 21965 | Nur breite Kanten, z. B. .github/workflows/social-ci.yml; Nutzung unklar; behalten. |
 | workers/vision-universe-social/tests/approval-asset-gate.test.mjs | 24051 | Nur breite Kanten, z. B. .github/workflows/social-ci.yml; Nutzung unklar; behalten. |
@@ -1639,13 +1418,13 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/brevo/internal_membership.py | .github/workflows/brevo-internal-membership.yml, .github/workflows/ci.yml |
 | scripts/brevo/newsletter_actions.py | .github/workflows/brevo-newsletter.yml, .github/workflows/ci.yml |
 | scripts/ci/ci-checks.json | .github/workflows/ci.yml |
-| scripts/ci/commit-and-push.sh | .github/workflows/ci.yml, .github/workflows/currency-fx-verify.yml, .github/workflows/currency-realtime-proof.yml, .github/workflows/market-validation-data.yml, .github/workflows/multi-asset-data.yml, .github/workflows/sec-fundamentals-daily.yml, .github/workflows/sec-fundamentals-universe.yml, .github/workflows/supertrader-house-live.yml, .github/workflows/supertrader-signals.yml |
+| scripts/ci/commit-and-push.sh | .github/workflows/ci.yml, .github/workflows/currency-fx-verify.yml, .github/workflows/currency-realtime-proof.yml, .github/workflows/multi-asset-data.yml, .github/workflows/pipeline-daily.yml, .github/workflows/sec-fundamentals-daily.yml, .github/workflows/sec-fundamentals-universe.yml, .github/workflows/supertrader-signals.yml |
 | scripts/ci/overlay-data-branch.mjs | .github/workflows/ci.yml, .github/workflows/pages-release.yml |
 | scripts/ci/pipeline-alarm.mjs | .github/workflows/ci.yml, .github/workflows/freshness-monitor.yml, .github/workflows/market-data-refresh.yml, .github/workflows/sec-consumer-fundamentals.yml, .github/workflows/security-master-weekly.yml, .github/workflows/supertrader-sf8-candidates.yml, .github/workflows/technical-world.yml |
 | scripts/ci/pruefe-datengroesse.sh | .github/workflows/ci.yml, .github/workflows/sec-fundamentals-daily.yml, .github/workflows/sec-fundamentals-universe.yml |
 | scripts/ci/pruefe-json.sh | .github/workflows/ci.yml, .github/workflows/ownership-signals.yml, .github/workflows/sec-fundamentals-daily.yml, .github/workflows/sec-fundamentals-universe.yml |
 | scripts/ci/push-data-branch.sh | .github/workflows/ci.yml, .github/workflows/content.yml, .github/workflows/sec-fundamentals-daily.yml |
-| scripts/ci/push-with-retry.sh | .github/workflows/ci.yml, .github/workflows/cloudflare-deploy.yml, .github/workflows/company-logos.yml, .github/workflows/company-names.yml, .github/workflows/content.yml, .github/workflows/coverage-metrics.yml, .github/workflows/discover-im-blick-live.yml, .github/workflows/elliott-prospective-registry.yml, .github/workflows/emerging-leaders-study.yml, .github/workflows/europe-discover-refresh.yml, .github/workflows/fx-ecb-daily.yml, .github/workflows/home-refresh.yml, .github/workflows/index-membership.yml, .github/workflows/intraday-snapshots.yml, .github/workflows/landing-pages-publish.yml, .github/workflows/long-series.yml, .github/workflows/market-data-refresh.yml, .github/workflows/monitor.yml, .github/workflows/ownership-signals.yml, .github/workflows/pages-release.yml, .github/workflows/pattern-research-volume.yml, .github/workflows/product-intelligence-materialization.yml, .github/workflows/quant-model-depots.yml, .github/workflows/quant-portfolio-research.yml, .github/workflows/research-labor.yml, .github/workflows/research-signals-s2.yml, .github/workflows/sec-consumer-fundamentals.yml, .github/workflows/sec-sic-history.yml, .github/workflows/security-master-eligibility.yml, .github/workflows/security-master-weekly.yml, .github/workflows/supertrader-paper-2027.yml, .github/workflows/supertrader-research-snapshot.yml, .github/workflows/supertrader-sf8-candidates.yml, .github/workflows/sync-navigation.yml, .github/workflows/technical-intelligence-build.yml, .github/workflows/technical-world.yml, .github/workflows/tiingo-scale.yml, .github/workflows/universe-master.yml, .github/workflows/update-sec-fundamentals.yml, .github/workflows/vorsorge-daily-rebuild.yml, .github/workflows/vorsorge-etf-sources.yml, .github/workflows/vorsorge-etf-universe.yml, .github/workflows/vorsorge-legal-sources.yml |
+| scripts/ci/push-with-retry.sh | .github/workflows/ci.yml, .github/workflows/cloudflare-deploy.yml, .github/workflows/company-logos.yml, .github/workflows/company-names.yml, .github/workflows/content.yml, .github/workflows/coverage-metrics.yml, .github/workflows/discover-im-blick-live.yml, .github/workflows/elliott-prospective-registry.yml, .github/workflows/emerging-leaders-study.yml, .github/workflows/europe-discover-refresh.yml, .github/workflows/home-refresh.yml, .github/workflows/index-membership.yml, .github/workflows/intraday-snapshots.yml, .github/workflows/ki-depots-daily.yml, .github/workflows/landing-pages-publish.yml, .github/workflows/long-series.yml, .github/workflows/market-data-refresh.yml, .github/workflows/monitor.yml, .github/workflows/ownership-signals.yml, .github/workflows/pages-release.yml, .github/workflows/pattern-research-volume.yml, .github/workflows/pipeline-daily.yml, .github/workflows/product-intelligence-materialization.yml, .github/workflows/quant-model-depots.yml, .github/workflows/quant-portfolio-research.yml, .github/workflows/research-edge2-paper.yml, .github/workflows/research-labor.yml, .github/workflows/research-signals-s2.yml, .github/workflows/sec-consumer-fundamentals.yml, .github/workflows/sec-sic-history.yml, .github/workflows/security-master-eligibility.yml, .github/workflows/security-master-weekly.yml, .github/workflows/supertrader-paper-2027.yml, .github/workflows/supertrader-research-snapshot.yml, .github/workflows/supertrader-sf8-candidates.yml, .github/workflows/sync-navigation.yml, .github/workflows/technical-intelligence-build.yml, .github/workflows/technical-world.yml, .github/workflows/tiingo-scale.yml, .github/workflows/universe-master.yml, .github/workflows/update-sec-fundamentals.yml, .github/workflows/vorsorge-etf-sources.yml, .github/workflows/vorsorge-etf-universe.yml, .github/workflows/vorsorge-legal-sources.yml |
 | scripts/ci/select-checks.mjs | .github/workflows/ci.yml |
 | scripts/ci/state-gate.mjs | .github/workflows/ci.yml, .github/workflows/core-ci.yml |
 | scripts/ci/static-server.mjs | .github/workflows/ci.yml, .github/workflows/shell-ci.yml |
@@ -1775,7 +1554,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/market/assert-deploy-preconditions.mjs | .github/workflows/cloudflare-deploy.yml, .github/workflows/quant-ci.yml |
 | scripts/market/assert-intraday-delivery.mjs | .github/workflows/intraday-delivery-watchdog.yml, .github/workflows/quant-ci.yml |
 | scripts/market/assert-no-secrets.mjs | .github/workflows/cloudflare-deploy.yml, .github/workflows/cloudflare-waker-deploy.yml, .github/workflows/company-names.yml, .github/workflows/currency-fx-verify.yml, .github/workflows/intraday-delivery-watchdog.yml, .github/workflows/intraday-pacemaker.yml, .github/workflows/intraday-snapshots.yml, .github/workflows/market-data-refresh.yml, .github/workflows/monitor.yml, .github/workflows/quant-ci.yml, .github/workflows/sec-consumer-fundamentals.yml, .github/workflows/tiingo-scale.yml, .github/workflows/tiingo2-universe-refresh.yml, .github/workflows/universe-master.yml |
-| scripts/market/assert-public-data-hygiene.mjs | .github/workflows/ci.yml, .github/workflows/company-names.yml, .github/workflows/emerging-leaders-study.yml, .github/workflows/index-membership.yml, .github/workflows/intraday-pacemaker.yml, .github/workflows/intraday-snapshots.yml, .github/workflows/long-series.yml, .github/workflows/market-data-refresh.yml, .github/workflows/ownership-signals.yml, .github/workflows/pattern-research-volume.yml, .github/workflows/product-intelligence-materialization.yml, .github/workflows/quant-ci.yml, .github/workflows/quant-portfolio-research.yml, .github/workflows/sec-consumer-fundamentals.yml, .github/workflows/security-master-eligibility.yml, .github/workflows/security-master-weekly.yml, .github/workflows/technical-intelligence-build.yml, .github/workflows/technical-world.yml, .github/workflows/tiingo-scale.yml, .github/workflows/vorsorge-daily-rebuild.yml, .github/workflows/vorsorge-etf-sources.yml, .github/workflows/vorsorge-etf-universe.yml |
+| scripts/market/assert-public-data-hygiene.mjs | .github/workflows/ci.yml, .github/workflows/company-names.yml, .github/workflows/emerging-leaders-study.yml, .github/workflows/index-membership.yml, .github/workflows/intraday-pacemaker.yml, .github/workflows/intraday-snapshots.yml, .github/workflows/ki-depots-daily.yml, .github/workflows/long-series.yml, .github/workflows/market-data-refresh.yml, .github/workflows/ownership-signals.yml, .github/workflows/pattern-research-volume.yml, .github/workflows/pipeline-daily.yml, .github/workflows/product-intelligence-materialization.yml, .github/workflows/quant-ci.yml, .github/workflows/quant-portfolio-research.yml, .github/workflows/sec-consumer-fundamentals.yml, .github/workflows/security-master-eligibility.yml, .github/workflows/security-master-weekly.yml, .github/workflows/technical-intelligence-build.yml, .github/workflows/technical-world.yml, .github/workflows/tiingo-scale.yml, .github/workflows/vorsorge-etf-sources.yml, .github/workflows/vorsorge-etf-universe.yml |
 | scripts/market/assert-universe-quality.mjs | .github/workflows/quant-ci.yml, .github/workflows/tiingo-scale.yml |
 | scripts/market/assert-zero-cost-mode.mjs | .github/workflows/cloudflare-deploy.yml, .github/workflows/monitor.yml, .github/workflows/quant-ci.yml |
 | scripts/market/attach-live-domain.mjs | .github/workflows/cloudflare-deploy.yml, .github/workflows/quant-ci.yml |
@@ -1784,7 +1563,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/market/build-company-names.mjs | .github/workflows/company-names.yml, .github/workflows/quant-ci.yml, .github/workflows/security-master-eligibility.yml, .github/workflows/security-master-weekly.yml |
 | scripts/market/build-coverage-metrics.mjs | .github/workflows/coverage-metrics.yml, .github/workflows/quant-ci.yml |
 | scripts/market/build-currency-coverage.mjs | .github/workflows/currency-fx-verify.yml, .github/workflows/quant-ci.yml |
-| scripts/market/build-fx-history-ecb.mjs | .github/workflows/currency-fx-verify.yml, .github/workflows/fx-ecb-daily.yml, .github/workflows/quant-ci.yml |
+| scripts/market/build-fx-history-ecb.mjs | .github/workflows/currency-fx-verify.yml, .github/workflows/pipeline-daily.yml, .github/workflows/quant-ci.yml |
 | scripts/market/build-fx-history.mjs | .github/workflows/currency-fx-verify.yml, .github/workflows/quant-ci.yml |
 | scripts/market/build-fx-pair-requirements.mjs | .github/workflows/currency-fx-verify.yml, .github/workflows/quant-ci.yml |
 | scripts/market/build-health-report.mjs | .github/workflows/quant-ci.yml, .github/workflows/tiingo-scale.yml |
@@ -1795,7 +1574,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/market/build-ownership-signals.mjs | .github/workflows/ownership-signals.yml, .github/workflows/quant-ci.yml |
 | scripts/market/build-us-eligibility.mjs | .github/workflows/quant-ci.yml, .github/workflows/security-master-eligibility.yml |
 | scripts/market/build-us-security-master.mjs | .github/workflows/quant-ci.yml, .github/workflows/security-master-weekly.yml |
-| scripts/market/build-validation-sources.mjs | .github/workflows/market-validation-data.yml, .github/workflows/quant-ci.yml |
+| scripts/market/build-validation-sources.mjs | .github/workflows/pipeline-daily.yml, .github/workflows/quant-ci.yml |
 | scripts/market/check-freshness.mjs | .github/workflows/freshness-monitor.yml, .github/workflows/intraday-snapshots.yml, .github/workflows/market-data-refresh.yml, .github/workflows/monitor.yml, .github/workflows/quant-ci.yml |
 | scripts/market/classify-rejections.mjs | .github/workflows/market-data-refresh.yml, .github/workflows/quant-ci.yml |
 | scripts/market/eia-xls-to-csv.py | .github/workflows/multi-asset-data.yml, .github/workflows/quant-ci.yml |
@@ -1806,9 +1585,9 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/market/ingest-intraday.mjs | .github/workflows/intraday-pacemaker.yml, .github/workflows/intraday-snapshots.yml, .github/workflows/quant-ci.yml, .github/workflows/security-master-eligibility.yml |
 | scripts/market/ingest-multi-asset.mjs | .github/workflows/multi-asset-data.yml, .github/workflows/quant-ci.yml |
 | scripts/market/ingest-tiingo.mjs | .github/workflows/market-data-refresh.yml, .github/workflows/quant-ci.yml |
-| scripts/market/lib/market-validation.mjs | .github/workflows/market-validation-data.yml, .github/workflows/quant-ci.yml |
+| scripts/market/lib/market-validation.mjs | .github/workflows/pipeline-daily.yml, .github/workflows/quant-ci.yml |
 | scripts/market/long-series-repair-plan.mjs | .github/workflows/long-series.yml, .github/workflows/quant-ci.yml |
-| scripts/market/preflight-zero-cost.mjs | .github/workflows/emerging-leaders-study.yml, .github/workflows/history-store-sync.yml, .github/workflows/market-data-refresh.yml, .github/workflows/pattern-research-volume.yml, .github/workflows/product-intelligence-materialization.yml, .github/workflows/quant-ci.yml, .github/workflows/quant-portfolio-research.yml, .github/workflows/research-labor.yml, .github/workflows/research-signals-s2.yml, .github/workflows/vu2-lifecycle-handoff.yml |
+| scripts/market/preflight-zero-cost.mjs | .github/workflows/emerging-leaders-study.yml, .github/workflows/history-store-sync.yml, .github/workflows/market-data-refresh.yml, .github/workflows/pattern-research-volume.yml, .github/workflows/product-intelligence-materialization.yml, .github/workflows/quant-ci.yml, .github/workflows/quant-portfolio-research.yml, .github/workflows/research-edge2-paper.yml, .github/workflows/research-labor.yml, .github/workflows/research-signals-s2.yml, .github/workflows/vu2-lifecycle-handoff.yml |
 | scripts/market/probe-free-sources.mjs | .github/workflows/multi-asset-data.yml, .github/workflows/quant-ci.yml |
 | scripts/market/probe-index-sources.mjs | .github/workflows/multi-asset-data.yml, .github/workflows/quant-ci.yml |
 | scripts/market/probe-multi-asset.mjs | .github/workflows/multi-asset-data.yml, .github/workflows/quant-ci.yml |
@@ -1828,12 +1607,12 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/market/smoke-vu-live.mjs | .github/workflows/cloudflare-deploy.yml, .github/workflows/monitor.yml, .github/workflows/quant-ci.yml |
 | scripts/market/storage/s3-driver.mjs | .github/workflows/cloudflare-deploy.yml, .github/workflows/company-intelligence.yml, .github/workflows/pages-release.yml, .github/workflows/quant-ci.yml |
 | scripts/market/study-return-basis-universe.mjs | .github/workflows/product-intelligence-materialization.yml, .github/workflows/quant-ci.yml |
-| scripts/market/sync-history-store.mjs | .github/workflows/emerging-leaders-study.yml, .github/workflows/history-store-sync.yml, .github/workflows/market-data-refresh.yml, .github/workflows/pattern-research-volume.yml, .github/workflows/product-intelligence-materialization.yml, .github/workflows/quant-ci.yml, .github/workflows/quant-portfolio-research.yml, .github/workflows/research-labor.yml, .github/workflows/research-signals-s2.yml, .github/workflows/vu2-lifecycle-handoff.yml |
+| scripts/market/sync-history-store.mjs | .github/workflows/emerging-leaders-study.yml, .github/workflows/history-store-sync.yml, .github/workflows/market-data-refresh.yml, .github/workflows/pattern-research-volume.yml, .github/workflows/product-intelligence-materialization.yml, .github/workflows/quant-ci.yml, .github/workflows/quant-portfolio-research.yml, .github/workflows/research-edge2-paper.yml, .github/workflows/research-labor.yml, .github/workflows/research-signals-s2.yml, .github/workflows/vu2-lifecycle-handoff.yml |
 | scripts/market/tiingo2-cache.mjs | .github/workflows/quant-ci.yml, .github/workflows/tiingo2-universe-refresh.yml |
 | scripts/market/tiingo2-export.mjs | .github/workflows/quant-ci.yml, .github/workflows/tiingo2-universe-refresh.yml |
 | scripts/market/tiingo2-refresh.mjs | .github/workflows/quant-ci.yml, .github/workflows/tiingo2-universe-refresh.yml |
 | scripts/market/universe-source.mjs | .github/workflows/company-names.yml, .github/workflows/history-store-sync.yml, .github/workflows/market-data-refresh.yml, .github/workflows/quant-ci.yml, .github/workflows/sec-consumer-fundamentals.yml, .github/workflows/security-master-weekly.yml |
-| scripts/market/validate-market-pulse.mjs | .github/workflows/market-validation-data.yml, .github/workflows/quant-ci.yml |
+| scripts/market/validate-market-pulse.mjs | .github/workflows/pipeline-daily.yml, .github/workflows/quant-ci.yml |
 | scripts/market/verify-dynamic-subscribe.mjs | .github/workflows/quant-ci.yml, .github/workflows/tiingo-scale.yml |
 | scripts/market/verify-live-candle.mjs | .github/workflows/quant-ci.yml, .github/workflows/tiingo-scale.yml |
 | scripts/market/verify-request-limits.mjs | .github/workflows/pages-release.yml, .github/workflows/quant-ci.yml, .github/workflows/tiingo-scale.yml, .github/workflows/vorsorge-etf-universe.yml |
@@ -1843,7 +1622,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/marketstack/europe-discover-check.mjs | .github/workflows/europe-discover-refresh.yml |
 | scripts/marketstack/europe-discover-publication.mjs | .github/workflows/europe-discover-refresh.yml |
 | scripts/morning/build-morning.mjs | .github/workflows/content.yml |
-| scripts/quality/assert-no-local-fx.mjs | .github/workflows/currency-fx-verify.yml, .github/workflows/fx-ecb-daily.yml, .github/workflows/multi-asset-data.yml, .github/workflows/quant-ci.yml |
+| scripts/quality/assert-no-local-fx.mjs | .github/workflows/currency-fx-verify.yml, .github/workflows/multi-asset-data.yml, .github/workflows/pipeline-daily.yml, .github/workflows/quant-ci.yml |
 | scripts/quality/audit-fx-provider-seam.mjs | .github/workflows/currency-fx-verify.yml, .github/workflows/quant-ci.yml |
 | scripts/quality/build-currency-debt-register.mjs | .github/workflows/currency-fx-verify.yml, .github/workflows/quant-ci.yml |
 | scripts/quality/chart-parity.mjs | .github/workflows/core-ci.yml, .github/workflows/quant-ci.yml |
@@ -1913,7 +1692,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/quant/measure-weekly-loader.cjs | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/quant/methodology-fingerprint.mjs | .github/workflows/product-intelligence-materialization.yml, .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/quant/pin-security-master-generation.cjs | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
-| scripts/quant/portfolio/build_pit_fundamentals.py | .github/workflows/quant-ci.yml, .github/workflows/quant-portfolio-research.yml, .github/workflows/research-labor.yml, .github/workflows/sec-fundamentals-ci.yml |
+| scripts/quant/portfolio/build_pit_fundamentals.py | .github/workflows/quant-ci.yml, .github/workflows/quant-portfolio-research.yml, .github/workflows/research-edge2-paper.yml, .github/workflows/research-labor.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/quant/portfolio/export-model-portfolios-bundle.cjs | .github/workflows/quant-ci.yml, .github/workflows/quant-portfolio-research.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/quant/portfolio/export-public-model-portfolios.cjs | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/quant/portfolio/model-depots.cjs | .github/workflows/quant-ci.yml, .github/workflows/quant-model-depots.yml, .github/workflows/sec-fundamentals-ci.yml |
@@ -2295,6 +2074,13 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/research/edge/edge-quant.test.cjs | .github/workflows/quant-portfolio-research.yml |
 | scripts/research/edge/run-e3.cjs | .github/workflows/quant-portfolio-research.yml |
 | scripts/research/edge/study.test.cjs | .github/workflows/quant-portfolio-research.yml |
+| scripts/research/edge2/blind.test.cjs | .github/workflows/ki-depots-daily.yml, .github/workflows/quant-portfolio-research.yml |
+| scripts/research/edge2/edge2.test.cjs | .github/workflows/quant-portfolio-research.yml, .github/workflows/research-edge2-paper.yml |
+| scripts/research/edge2/ki-export.cjs | .github/workflows/ki-depots-daily.yml |
+| scripts/research/edge2/paper.cjs | .github/workflows/research-edge2-paper.yml |
+| scripts/research/edge2/run-blind.cjs | .github/workflows/quant-portfolio-research.yml |
+| scripts/research/edge2/run-dna.cjs | .github/workflows/quant-portfolio-research.yml |
+| scripts/research/edge2/run-edge2.cjs | .github/workflows/quant-portfolio-research.yml |
 | scripts/research/holdout/holdout.test.cjs | .github/workflows/quant-portfolio-research.yml |
 | scripts/research/holdout/quant-holdout.cjs | .github/workflows/quant-portfolio-research.yml |
 | scripts/research/labor/build-insider.mjs | .github/workflows/research-labor.yml |
@@ -2461,7 +2247,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/supertrader/house/DECISION-HS4-OOS2008.json | .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/house/DECISION-HS4.json | .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/house/FROZEN-HS3-D3.json | .github/workflows/supertrader-ci.yml |
-| scripts/supertrader/house/LIVE-HS4-V03.json | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-house-live.yml |
+| scripts/supertrader/house/LIVE-HS4-V03.json | .github/workflows/pipeline-daily.yml, .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/house/PREREGISTRATION-HS1.json | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-house.yml |
 | scripts/supertrader/house/PREREGISTRATION-HS2.json | .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/house/PREREGISTRATION-HS3-D1.json | .github/workflows/supertrader-ci.yml |
@@ -2472,7 +2258,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/supertrader/house/PREREGISTRATION-HS4.json | .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/house/analyze.mjs | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-house.yml |
 | scripts/supertrader/house/engine.mjs | .github/workflows/supertrader-ci.yml |
-| scripts/supertrader/house/live.mjs | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-house-live.yml |
+| scripts/supertrader/house/live.mjs | .github/workflows/pipeline-daily.yml, .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/house/seal.mjs | .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/house/session-public-key.pem | .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/house/stats.mjs | .github/workflows/supertrader-ci.yml |
@@ -2493,7 +2279,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/supertrader/registry-r8.mjs | .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/registry.mjs | .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/replay.mjs | .github/workflows/supertrader-ci.yml |
-| scripts/supertrader/restore-full-ledgers.mjs | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-house-live.yml, .github/workflows/supertrader-signals.yml |
+| scripts/supertrader/restore-full-ledgers.mjs | .github/workflows/pipeline-daily.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-signals.yml |
 | scripts/supertrader/sf8-visual-qa.mjs | .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/snapshot/SNAPSHOT-POINTER-HOLDOUT.json | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-research-snapshot.yml |
 | scripts/supertrader/snapshot/SNAPSHOT-POINTER-SMOKE.json | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-research-snapshot.yml |
@@ -2689,7 +2475,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/supertrader/tests/fixtures/sf8-price-parity-golden.json | .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/tests/fixtures/technical-stock-sample.json | .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/tests/foundation-accounting.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-signals.yml |
-| scripts/supertrader/tests/house-hs1.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-house-live.yml, .github/workflows/supertrader-house.yml, .github/workflows/supertrader-signals.yml |
+| scripts/supertrader/tests/house-hs1.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/pipeline-daily.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-house.yml, .github/workflows/supertrader-signals.yml |
 | scripts/supertrader/tests/identity-links.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-signals.yml |
 | scripts/supertrader/tests/kk-intraday-probe.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-signals.yml |
 | scripts/supertrader/tests/lens-mobile-layout.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-signals.yml |
@@ -2837,7 +2623,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/supertrader/validation/lib.mjs | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-paper-2027.yml, .github/workflows/supertrader-validation.yml |
 | scripts/supertrader/validation/portfolio.mjs | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-validation.yml |
 | scripts/supertrader/validation/results-public-key.pem | .github/workflows/research-signals-s2.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-validation.yml |
-| scripts/supertrader/validation/sec-pit.mjs | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-house-live.yml, .github/workflows/supertrader-house.yml, .github/workflows/supertrader-paper-2027.yml, .github/workflows/supertrader-validation.yml |
+| scripts/supertrader/validation/sec-pit.mjs | .github/workflows/pipeline-daily.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-house.yml, .github/workflows/supertrader-paper-2027.yml, .github/workflows/supertrader-validation.yml |
 | scripts/supertrader/validation/sources-r10-minervini.json | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-validation.yml |
 | scripts/supertrader/validation/sources-r12-traderfox.json | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-validation.yml |
 | scripts/supertrader/validation/sources-r8.json | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-validation.yml |
@@ -2867,8 +2653,8 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/universe/build-universe-indexes.mjs | .github/workflows/coverage-metrics.yml, .github/workflows/sec-fundamentals-daily.yml, .github/workflows/sec-fundamentals-universe.yml, .github/workflows/security-master-eligibility.yml, .github/workflows/universe-master.yml |
 | scripts/universe/scale-test.mjs | .github/workflows/universe-master.yml |
 | scripts/universe/verify-company-master.mjs | .github/workflows/coverage-metrics.yml, .github/workflows/security-master-eligibility.yml, .github/workflows/universe-master.yml |
-| scripts/vorsorge/assert-vorsorge-data.mjs | .github/workflows/ci.yml, .github/workflows/vorsorge-daily-rebuild.yml, .github/workflows/vorsorge-etf-sources.yml, .github/workflows/vorsorge-etf-universe.yml |
-| scripts/vorsorge/build-etf-data.mjs | .github/workflows/ci.yml, .github/workflows/vorsorge-daily-rebuild.yml, .github/workflows/vorsorge-etf-sources.yml, .github/workflows/vorsorge-etf-universe.yml |
+| scripts/vorsorge/assert-vorsorge-data.mjs | .github/workflows/ci.yml, .github/workflows/pipeline-daily.yml, .github/workflows/vorsorge-etf-sources.yml, .github/workflows/vorsorge-etf-universe.yml |
+| scripts/vorsorge/build-etf-data.mjs | .github/workflows/ci.yml, .github/workflows/pipeline-daily.yml, .github/workflows/vorsorge-etf-sources.yml, .github/workflows/vorsorge-etf-universe.yml |
 | scripts/vorsorge/build-etf-intelligence.mjs | .github/workflows/ci.yml, .github/workflows/vorsorge-etf-sources.yml, .github/workflows/vorsorge-etf-universe.yml |
 | scripts/vorsorge/fetch-legal-sources.sh | .github/workflows/ci.yml, .github/workflows/vorsorge-etf-sources.yml, .github/workflows/vorsorge-etf-universe.yml, .github/workflows/vorsorge-legal-sources.yml |
 | scripts/vorsorge/fetch-sec-sic.mjs | .github/workflows/ci.yml, .github/workflows/vorsorge-etf-sources.yml, .github/workflows/vorsorge-etf-universe.yml |
@@ -2883,7 +2669,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/vorsorge/probe-eu-etf-sources.mjs | .github/workflows/ci.yml, .github/workflows/vorsorge-etf-sources.yml, .github/workflows/vorsorge-etf-universe.yml |
 | scripts/vu2/browser-qa-direct.mjs | .github/workflows/pages-release.yml, .github/workflows/quant-ci.yml, .github/workflows/vu2-browser-qa.yml |
 | scripts/vu2/build-product-capabilities.mjs | .github/workflows/intraday-snapshots.yml, .github/workflows/market-data-refresh.yml, .github/workflows/pages-release.yml, .github/workflows/quant-ci.yml, .github/workflows/sec-consumer-fundamentals.yml, .github/workflows/security-master-eligibility.yml, .github/workflows/vu2-browser-qa.yml |
-| scripts/vu2/build-release.mjs | .github/workflows/ci.yml, .github/workflows/company-intelligence.yml, .github/workflows/discover-frontend-ci.yml, .github/workflows/market-validation-data.yml, .github/workflows/pages-release.yml, .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml, .github/workflows/shell-ci.yml, .github/workflows/supertrader-ci.yml, .github/workflows/vu2-browser-qa.yml |
+| scripts/vu2/build-release.mjs | .github/workflows/ci.yml, .github/workflows/company-intelligence.yml, .github/workflows/discover-frontend-ci.yml, .github/workflows/pages-release.yml, .github/workflows/pipeline-daily.yml, .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml, .github/workflows/shell-ci.yml, .github/workflows/supertrader-ci.yml, .github/workflows/vu2-browser-qa.yml |
 | scripts/vu2/deploy-switch-lib.mjs | .github/workflows/discover-frontend-ci.yml, .github/workflows/pages-release.yml, .github/workflows/quant-ci.yml, .github/workflows/vu2-browser-qa.yml |
 | scripts/vu2/deploy-switch-qa.mjs | .github/workflows/pages-release.yml, .github/workflows/quant-ci.yml, .github/workflows/vu2-browser-qa.yml |
 | scripts/vu2/measure-consumer-breadth.mjs | .github/workflows/pages-release.yml, .github/workflows/product-intelligence-materialization.yml, .github/workflows/quant-ci.yml, .github/workflows/vu2-browser-qa.yml |
@@ -2894,12 +2680,13 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/vu2/resource-budget.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/pages-release.yml, .github/workflows/quant-ci.yml, .github/workflows/vu2-browser-qa.yml |
 | scripts/vu2/verify-history-handoff.mjs | .github/workflows/pages-release.yml, .github/workflows/quant-ci.yml, .github/workflows/vu2-browser-qa.yml, .github/workflows/vu2-lifecycle-handoff.yml |
 | scripts/vu2/verify-journey-surfaces.mjs | .github/workflows/pages-release.yml, .github/workflows/quant-ci.yml, .github/workflows/vu2-browser-qa.yml |
+| scripts/watchlist/fetch-published.mjs | .github/workflows/account-ci.yml, .github/workflows/pages-release.yml |
 | worker-waker/src/index.mjs | .github/workflows/cloudflare-waker-deploy.yml |
 | worker-waker/tests/waker.test.mjs | .github/workflows/cloudflare-waker-deploy.yml |
 
 ## Dynamik und ungelesene Quellen
 
-2038 dynamische/zusammengesetzte import/require/fetch-Ausdrücke gefunden; diese verhindern einen vollständigen statischen Nichtnutzungsbeweis.
+2076 dynamische/zusammengesetzte import/require/fetch-Ausdrücke gefunden; diese verhindern einen vollständigen statischen Nichtnutzungsbeweis.
 
 | Quelle | Ausdruck |
 |---|---|
@@ -2964,6 +2751,8 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | core/tests/identity-adoption.test.mjs | require(join(ROOT, "quant", "engines", "company-master.js")) |
 | core/tests/identity.test.mjs | require(join(ROOT, "core", "identity.js")) |
 | core/tests/identity.test.mjs | require(join(ROOT, "quant", "engines", "company-master.js")) |
+| core/tests/portfolios.test.mjs | require(join(root, "assets/vu-ui.js")) |
+| core/tests/portfolios.test.mjs | require(join(root, "portfolios/portfolios.js")) |
 | core/tests/sf8-data-quality.test.mjs | require(join(ROOT, "core", "data-quality.js")) |
 | core/tests/sf8-data-quality.test.mjs | require(join(ROOT, "core", "identity.js")) |
 | core/tests/sf8-data-quality.test.mjs | require(join(ROOT, "quant", "engines", "published-close.js")) |
@@ -3057,6 +2846,8 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | macro/app.js | fetch(path).then(function (r) { if (!r.ok) throw new Error(path + " " + r.status) |
 | mein-dashboard/dashboard.js | fetch(path, {cache: 'default', credentials: 'omit'}).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status) |
 | news/news.js | fetch(path, { cache: 'no-store' }) |
+| portfolios/portfolios.js | fetch(path, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(String(r.status)) |
+| portfolios/portfolios.js | fetch(path, { cache: "no-cache" }).then(function (r) { if (!r.ok &#124;&#124; typeof root.DecompressionStream !== "function") throw new Error("GZ") |
 | providers/sec/adapter.js | require(path.join(ENGINES, "capabilities.js")) |
 | providers/sec/adapter.js | require(path.join(ENGINES, "provider.js")) |
 | providers/sec/adapter.js | require(path.join(ENGINES, "schema.js")) |
@@ -3360,6 +3151,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/analysts/fetch-consensus.mjs | fetch(url, { headers, signal: AbortSignal.timeout(30000) }) |
 | scripts/analysts/probe-consensus.mjs | fetch(url, { headers, signal: AbortSignal.timeout(30000) }) |
 | scripts/ci/pipeline-alarm.mjs | fetch(base + pfad, { |
+| scripts/ci/push-with-retry.sh | fetch                  (Standard 3) |
 | scripts/ci/supertrader-chain.mjs | fetch(base + "/repos/" + repo + path, Object.assign({}, init, { headers, signal: AbortSignal.timeout(20000) })) |
 | scripts/company_intelligence/browser-qa.mjs | fetch() |
 | scripts/company_intelligence/browser-qa.mjs | fetch(), body=await response.json() |
@@ -3706,6 +3498,10 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/market/verify-vu-live-e2e.mjs | import(join(root, "worker", "src", "vu-live.mjs")) |
 | scripts/market/verify-vu-live-e2e.mjs | fetch(anfrage("https://vu-live/live", { Upgrade: "websocket" })) |
 | scripts/marketstack/europe-marketstack-diagnostics-once.mjs | fetch (sharedBudget.reserve). |
+| scripts/mobile/tests/server.test.mjs | fetch(base+'/') |
+| scripts/mobile/tests/server.test.mjs | fetch(base+'/NV.json.gz') |
+| scripts/mobile/tests/server.test.mjs | fetch(base+'/absent.json')).status,404) |
+| scripts/mobile/tests/server.test.mjs | fetch(base+'/%2e%2e%2foutside')).status,404) |
 | scripts/quality/audit-fx-provider-seam.mjs | require(join(FXDIR, "fx-rates.js")) |
 | scripts/quality/audit-fx-provider-seam.mjs | require(join(FXDIR, "fx-provider-registry.js")) |
 | scripts/quality/chart-parity.mjs | require(join(REPO_ROOT, "core", "identity.js")) |
@@ -4051,6 +3847,35 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/research/edge/run-e3.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')) |
 | scripts/research/edge/run-e3.cjs | require(path.join(ROOT, 'vorsorge/engines/series-codec.js')) |
 | scripts/research/edge/st-e3.cjs | require(path.resolve(__dirname, '../../../quant/engines/portfolio-construction.cjs')) |
+| scripts/research/edge2/blind.cjs | require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) |
+| scripts/research/edge2/blind.cjs | require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) |
+| scripts/research/edge2/blind.cjs | require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) |
+| scripts/research/edge2/dna.cjs | require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) |
+| scripts/research/edge2/dna.cjs | require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) |
+| scripts/research/edge2/dna.cjs | require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) |
+| scripts/research/edge2/dna.cjs | require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) |
+| scripts/research/edge2/edge2.cjs | require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) |
+| scripts/research/edge2/edge2.cjs | require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) |
+| scripts/research/edge2/edge2.cjs | require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) |
+| scripts/research/edge2/ki-export.cjs | require(path.join(ROOT, 'quant/engines/published-close.js')) |
+| scripts/research/edge2/ki-forward.cjs | require(path.join(ROOT, 'quant/engines/published-close.js')) |
+| scripts/research/edge2/ki-forward.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), MD = require(path.join(ROOT, 'scripts/quant/portfolio/model-depots.cjs')) |
+| scripts/research/edge2/paper.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), MD = require(path.join(ROOT, 'scripts/quant/portfolio/model-depots.cjs')) |
+| scripts/research/edge2/paper.cjs | import(path.join(ROOT, 'scripts/research/signals/study.mjs')).then(S1 => { |
+| scripts/research/edge2/paper.cjs | require(path.join(ROOT, 'quant/engines/technical/trade-setup.js')) }) |
+| scripts/research/edge2/run-blind.cjs | require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) |
+| scripts/research/edge2/run-blind.cjs | require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) |
+| scripts/research/edge2/run-blind.cjs | import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) |
+| scripts/research/edge2/run-blind.cjs | import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs')) |
+| scripts/research/edge2/run-blind.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')) |
+| scripts/research/edge2/run-dna.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), E3 = require('../edge/run-e3.cjs') |
+| scripts/research/edge2/run-dna.cjs | import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) |
+| scripts/research/edge2/run-edge2.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')) |
+| scripts/research/edge2/run-edge2.cjs | require(path.join(ROOT, 'quant/engines/research-delisted-series.cjs')) |
+| scripts/research/edge2/run-edge2.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), E3 = require('../edge/run-e3.cjs') |
+| scripts/research/edge2/run-edge2.cjs | import(path.join(ROOT, 'scripts/research/signals/study.mjs')) |
+| scripts/research/edge2/run-edge2.cjs | require(path.join(ROOT, 'quant/engines/technical/trade-setup.js')) |
+| scripts/research/edge2/run-edge2.cjs | import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) |
 | scripts/research/holdout/combine.mjs | import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) |
 | scripts/research/holdout/holdout.test.cjs | import(path.join(ROOT, 'scripts/supertrader/source-faithful/research/run-st-holdout.mjs')) |
 | scripts/research/holdout/holdout.test.cjs | import(path.join(__dirname, 'ledger.mjs')) |
