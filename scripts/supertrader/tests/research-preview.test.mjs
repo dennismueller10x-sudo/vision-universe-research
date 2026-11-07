@@ -15,7 +15,7 @@ test('SF8-BETA-MOUNT: mountResearch lädt das Modul ohne Schalter, nur auf Start
   const run = (page, search) => {
     const loaded = [];
     const ctx = { location: { search }, URLSearchParams, page, BASE: '/supertrader/', main: {}, SYM: '', window: {}, Promise,
-      loadCss: (x) => loaded.push(x), loadScript: (x) => { loaded.push(x); return Promise.resolve(); } };
+      loadCss: (x) => { loaded.push(x); return Promise.resolve(); }, loadScript: (x) => { loaded.push(x); return Promise.resolve(); } };
     vm.runInNewContext(fn + '\nmountResearch();', ctx);
     return loaded;
   };
@@ -41,3 +41,5 @@ test('SF8-PREVIEW-ISOLATION: Modul liest nur Datendateien, keinen Vertrag, keine
   const strings = (SF.match(/'(?:[^'\\]|\\.)*'/g) || []).join(' ').replace(/keine Kauf- oder Verkaufsempfehlung/g, '');
   assert.doesNotMatch(strings, /\bsignal|validiert|kaufen|kaufsignal/i);
 });
+
+import '../../mobile/tests/stock-json.test.mjs';
