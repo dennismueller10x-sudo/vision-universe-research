@@ -120,3 +120,51 @@ test('private output inside the repository is refused before any request', async
   assert.equal(p.calls.length, 0);
   assert.equal(existsSync(join(ROOT, 'tmp-private')), false);
 });
+
+// ---------------- E9 symbol probe ----------------
+import { runE9SymbolProbe, e9Plan, E9_LIMITS } from '../europe-marketstack-diagnostics-once.mjs';
+
+/** Fake provider for the E9 probe: SAP.XETRA serves stored control closes plus
+ * a target row; its metadata proves ISIN, XETR and EUR. Bare symbols answer
+ * with a target row but have no metadata; everything else is 422. */
+function e9Provider() {
+  const calls = [];
+  const fetchImpl = async url => {
+    const u = new URL(url); calls.push(u.pathname + u.search.replace(/access_key=[^&]*/, ''));
+    const path = u.pathname.replace(/^\/v2/, ''), q = Object.fromEntries(u.searchParams);
+    if (path === '/eod') {
+      const ok = q.symbols === 'SAP.XETRA' || q.symbols === 'OR';
+      if (!ok) return json(422, { error: { code: 'no_valid_symbols_provided' } }, { 'x-quota-remaining': String(1000 - calls.length) });
+      const own = q.symbols === 'SAP.XETRA' ? 'SAP.DE' : 'OR.PA', mic = q.symbols === 'OR' ? 'XPAR' : 'XETR';
+      const rows = [...storedBars(own, q.date_from, q.date_to).map(b => ({ ...b, symbol: q.symbols })), bar(q.symbols, mic, q.date_to, 100)];
+      return json(200, { pagination: { offset: 0, count: rows.length, total: rows.length }, data: rows }, { 'x-quota-remaining': String(1000 - calls.length) });
+    }
+    if (path === '/tickers/SAP.XETRA') return json(200, { data: { symbol: 'SAP.XETRA', isin: stored.bySymbol.get('SAP.DE').isin, price_currency: 'EUR', stock_exchange: { mic: 'XETR' } } });
+    return json(404, { error: { code: 'not_found_error' } });
+  };
+  return { fetchImpl, calls };
+}
+
+test('E9 probe: plan is fixed, one symbol per request, at most 64 requests', () => {
+  const plan = e9Plan(stored);
+  assert.ok(plan.length <= E9_LIMITS.E9_EOD);
+  assert.ok(plan.every(p => !p.params.symbols.includes(',')), 'one symbol per request');
+  assert.ok(plan.every(p => !['SAP.DE', 'OR.PA'].includes(p.params.symbols)), 'old unchanged symbols are not repeated');
+  assert.equal(E9_LIMITS.total, 64);
+});
+
+test('E9 probe: counts only, proven candidate needs control, ISIN, MIC and EUR', async () => {
+  const d = dirs(), p = e9Provider();
+  try {
+    const s = await runE9SymbolProbe({ out: d.out, publicOut: d.publicOut, apiKey: KEY, fetchImpl: p.fetchImpl, root: ROOT, sleep: async () => {}, minIntervalMs: 0 });
+    assert.equal(s.providerRequests.total, p.calls.length);
+    assert.ok(p.calls.length <= 64);
+    assert.equal(new Set(p.calls).size, p.calls.length, 'no request repeated');
+    assert.equal(s.recoveredCandidateSessions, 2, 'SAP on both gap days');
+    assert.ok(s.verdicts.ROW_BUT_ISIN_UNPROVEN >= 1, 'bare symbols never count');
+    assert.equal(s.credits.requestsSent, p.calls.length);
+    const pub = readFileSync(d.publicOut, 'utf8');
+    assert.equal(pub.includes(KEY), false);
+    assert.equal(/"(open|high|low|close|adj_close|rawText|_private)"/.test(pub), false, 'no prices in public output');
+  } finally { rmSync(d.root, { recursive: true, force: true }); }
+});
