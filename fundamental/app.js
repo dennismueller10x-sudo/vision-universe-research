@@ -96,13 +96,12 @@
   }
   /* Ein Unternehmen: Discover-Aktiendatei (Pflicht) + SEC-Historie (wenn ausgeliefert). */
   function loadCompany(t) {
-    return state.cache[t] || (state.cache[t] = fetchJson(M.stockPath(t)).then(function (raw) {
-      return loadHistory(t).then(function (h) {
+    return state.cache[t] || (state.cache[t] = Promise.all([fetchJson(M.stockPath(t)), loadHistory(t)]).then(function (parts) {
+      var raw = parts[0], h = parts[1];
         var hb = C.fromHistory(h.issuer, raw), book = hb || C.fromDiscover(raw);
         // historyState: OK = volle SEC-Historie; NOT_IN_SHARD = fuer dieses Unternehmen keine SEC-Reihen (kein Fehler);
         // alles andere = die Auslieferung fehlt oder ist nicht lesbar -> sichtbarer Hinweis, Discover-Auszug.
         return { t: t, raw: raw, f: M.fromStock(raw), book: book, historyState: hb ? 'OK' : h.issuer ? 'IDENTITY_MISMATCH' : h.state, name: raw.companyName || raw.legalName || t, quote: quoteFrom(raw), exchange: raw.exchange || null };
-      });
     }).catch(function (e) { delete state.cache[t]; throw e; }));
   }
   function quoteFrom(raw) {

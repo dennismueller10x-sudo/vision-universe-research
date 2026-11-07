@@ -340,6 +340,8 @@ export async function buildRelease({root,output}){
  let screener;
  try{const {writeUniverse}=await import('../screener/build-universe.mjs');screener=await writeUniverse({root,out:resolve(output,'screener/data'),log:()=>{}});}
  catch(e){screener={state:'UNAVAILABLE',reason:String(e&&e.message||e).slice(0,200)};await mkdir(resolve(output,'screener/data'),{recursive:true});await writeFile(resolve(output,'screener/data/status.json'),JSON.stringify(screener));}
+ // Keep inert Discover templates and budgeted view files, concatenate only their dependency runs.
+ if(paths.includes('discover/index.html')){const {bundleDiscover}=await import('../mobile/bundle-discover.mjs');await bundleDiscover({root,output});}
  const bytes=emitted.reduce((n,f)=>n+f.bytes,0);
  if(bytes>SEC_BUDGET||emitted.some(f=>f.bytes>2*1024*1024))throw Error('SEC_DELIVERY_BUDGET_EXCEEDED');
  const report={schemaVersion:1,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),storage:'EXISTING_R2_UNCHANGED',secBudget:SEC_BUDGET,secBytes:bytes,files:emitted,excluded:['quant/data/sec/consumer','quant/data/sec/canonical','quant/data/fundamentals'],screener,quantBundle,status:'PASS'};

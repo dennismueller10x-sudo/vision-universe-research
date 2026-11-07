@@ -32,10 +32,11 @@ function changed() {
   return d;
 }
 
-test("Registry: watchlistEvents ist ACTIVATING im Release-Bau, Artefakt nur in der Auslieferung, nicht kritisch", () => {
+test("Registry: watchlistEvents ist aktiv und releaseOnly, Artefakt nur in der Auslieferung, nicht kritisch", () => {
   const d = registry.domains.find((x) => x.id === DOMAIN_ID);
   assert.ok(d, "Eintrag vorhanden");
-  assert.equal(d.activation.state, "ACTIVATING");
+  assert.equal(d.releaseOnly, true);
+  assert.equal(d.activation, undefined, "aktive Datenart hat keinen Aktivierungszustand");
   assert.equal(d.critical, false);
   assert.match(d.workflow, /^pages-release\.yml /, "Schritt des Release-Baus");
   const wf = readFileSync(join(ROOT, ".github/workflows/pages-release.yml"), "utf8");

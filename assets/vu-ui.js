@@ -132,7 +132,8 @@
   function logoStart() {
     if (logoStarted || typeof document === "undefined" || typeof fetch !== "function") return;
     logoStarted = true;
-    fetch(LOGO_BASE + "index.json", { cache: "default" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }).then(function (d) {
+    var pending = root.__vuLogoIndex || (root.__vuLogoIndex = fetch(LOGO_BASE + "index.json", { cache: "default", priority: "low" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }));
+    pending.then(function (d) {
       logoFiles = (d && d.files) || {};
       ((d && d.dark) || []).forEach(function (s) { logoDark[s] = true; });
       logoScan(document);
