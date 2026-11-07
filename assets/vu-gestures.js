@@ -232,16 +232,18 @@
       var links = Array.from(root.querySelectorAll('nav a[href]'));
       return neighbour(links, root.querySelector('nav a[aria-current=page]'), step);
     }
-    w.document.addEventListener('pointerdown', function (e) {
+    // Touch-Ereignisse statt Pointer: beim Wischen uebernimmt der Browser das Scrollen und meldet pointercancel.
+    w.document.addEventListener('touchstart', function (e) {
       swipe = null;
-      if (e.pointerType !== 'touch' || !e.isPrimary || active || e.clientX < 24 || e.clientX > w.innerWidth - 24 || blocked(e.target)) return;
-      swipe = {x: e.clientX, y: e.clientY, t: Date.now(), el: e.target};
+      var t = e.touches[0];
+      if (e.touches.length !== 1 || active || t.clientX < 24 || t.clientX > w.innerWidth - 24 || blocked(e.target)) return;
+      swipe = {x: t.clientX, y: t.clientY, t: Date.now(), el: e.target};
     }, {passive: true});
-    w.document.addEventListener('pointercancel', function () { swipe = null; }, {passive: true});
-    w.document.addEventListener('pointerup', function (e) {
-      var s0 = swipe; swipe = null;
-      if (!s0 || active) return;
-      var step = swipeTab(e.clientX - s0.x, e.clientY - s0.y, Date.now() - s0.t);
+    w.document.addEventListener('touchcancel', function () { swipe = null; }, {passive: true});
+    w.document.addEventListener('touchend', function (e) {
+      var s0 = swipe, t = e.changedTouches[0]; swipe = null;
+      if (!s0 || !t || active || e.touches.length) return;
+      var step = swipeTab(t.clientX - s0.x, t.clientY - s0.y, Date.now() - s0.t);
       if (!step || (w.getSelection && String(w.getSelection()).length)) return;
       var target = tabTarget(s0.el, step);
       if (!target) return;
