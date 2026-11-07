@@ -83,3 +83,15 @@ test("Datenquellen & Methodik: /infos/ nennt die Anbieter, die Produktseiten nic
   for (const [f, re] of [["quant/app/page-stock.js", /"Tiingo|SEC EDGAR, bis/], ["quant/app/app.js", /Daten: SEC EDGAR, Tiingo/], ["quant/app/pages.js", /Daten: SEC EDGAR, Tiingo/], ["portfolios/portfolios.js", /\(Tiingo, split/], ["supertrader/assets/supertrader.js", /Dateninfrastruktur \(Tiingo/]])
     assert.doesNotMatch(readFileSync(f, "utf8"), re, f);
 });
+
+test("Folgeauftrag 07.11.: Fundamental-Kapitel, Quant „Zahlen“, Vorsorge-ETF-Texte ohne Anbieternamen; Darvas mit einem Hinweissatz", () => {
+  const fu = readFileSync("fundamental/app.js", "utf8"), cut = fu.indexOf("F05 Methodik */"), page = fu.slice(0, cut);
+  assert.match(page, /'Meldungen & Downloads', 'Meldungen je Jahr, Daten als CSV'/, "Downloads bleiben, Titel ohne Anbieter");
+  assert.match(page, /Jahreswerte als CSV herunterladen/);
+  for (const re of [/Quellen & Downloads/, /SEC-Meldungen je Jahr/, /öffnet sec\.gov/, /Alle Meldungen bei der SEC/, /'SEC EDGAR Companyfacts'/, /Branche \(SEC\)/, /SEC-Branchencode/]) assert.doesNotMatch(page, re, String(re));
+  const tools = readFileSync("quant/app/page-tools.js", "utf8");
+  assert.doesNotMatch(tools, /SEC EDGAR|SEC-Daten im Dateninspektor|aus den SEC-Berichten/);
+  for (const f of ["vorsorge/ui/etf.js", "vorsorge/ui/plan.js", "vorsorge/ui/portfolio.js"]) assert.doesNotMatch(readFileSync(f, "utf8").replace(/^\s*(\/\/|\/\*|\*).*$/gm, ""), /SEC-Daten|SEC N-PORT|Tiingo/, f);
+  const st = readFileSync("supertrader/assets/st-redesign.js", "utf8");
+  assert.doesNotMatch(st, /note\('Modellsignale einer regelbasierten Nachbildung/, "nur foot() trägt den Hinweissatz");
+});

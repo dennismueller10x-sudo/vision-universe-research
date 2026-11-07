@@ -559,7 +559,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.waitForFunction(k=>location.hash.includes('kennzahl='+k),kennzahl,{timeout:10000}).catch(()=>{});
    await page.reload();await bereit(page,'zahlen');await page.locator('#qx-main .qv3-mchips').waitFor();
    if(await page.locator('#qx-main .qv3-mchips button[aria-pressed="true"]').getAttribute('data-id')!==kennzahl)befund(view,width,'history link lost state');
-   if(!/SEC EDGAR/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Zahlen ohne Quelle');
+   {const z=await page.locator('#qx-main').innerText();/* Owner-Entscheidung 07.11.2026: Anbieter auf /infos/#quellen, hier Stand und Herkunft ohne Anbieternamen. */if(/SEC EDGAR/.test(z))befund(view,width,'Zahlen nennen Anbieter SEC EDGAR');if(!/Rückblickende Ansicht|Aufbereitung vom/.test(z))befund(view,width,'Zahlen ohne Stand/Herkunft');}
   }
   if(view==='zahlen'&&!v3){
    await page.locator('#qx-main svg').first().waitFor();
@@ -574,7 +574,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Die Auswahl steht in der Adresse und kommt nach einem Neuladen wieder. */
    await page.reload();await bereit(page,'zahlen');
    if(await page.getByRole('combobox',{name:'Kennzahl',exact:true}).inputValue()!==kennzahl)befund(view,width,'history link lost state');
-   if(!/SEC EDGAR/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Zahlen ohne Quelle');
+   {const z=await page.locator('#qx-main').innerText();/* Owner-Entscheidung 07.11.2026: Anbieter auf /infos/#quellen, hier Stand und Herkunft ohne Anbieternamen. */if(/SEC EDGAR/.test(z))befund(view,width,'Zahlen nennen Anbieter SEC EDGAR');if(!/Rückblickende Ansicht|Aufbereitung vom/.test(z))befund(view,width,'Zahlen ohne Stand/Herkunft');}
   }
   if(view==='vergleich'){
    if(await page.locator('#qx-main table thead th').count()!==3)befund(view,width,'Vergleich ohne zwei Spalten');
