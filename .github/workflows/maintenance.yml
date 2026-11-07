@@ -3,6 +3,7 @@
 # unveraendertem Inhalt (Schritte bytegleich, gleiche Concurrency-Gruppe wie vorher); gestartet
 # wird genau der gewaehlte Teil (`teil`).
 #   r2-audit   vormals r2-audit.yml (R2-Audit, nur lesen)
+#   cloudflare-audit  vormals landing-cloudflare-audit.yml (Coming-soon: Cloudflare-Zugang und DNS, nur lesen; nur main)
 #
 # r2-audit (vormals eigene Datei):
 # R2-Audit (nur lesen): misst den Speicher der produktiven Ablage und vergleicht ihn mit der eigenen
@@ -22,6 +23,7 @@ on:
         required: true
         options:
           - r2-audit
+          - cloudflare-audit
 
 permissions:
   contents: read
@@ -54,3 +56,38 @@ jobs:
           # Die Konto-ID steckt im Endpunkt und ist selbst kein Secret-Wert: vor jeder Ausgabe maskieren.
           if [[ "${VU_HISTORY_S3_ENDPOINT:-}" =~ ^https://([0-9a-f]{32})\. ]]; then echo "::add-mask::${BASH_REMATCH[1]}"; fi
           node scripts/core/r2-audit.mjs
+
+  cloudflare-audit:
+    name: Coming-soon | Cloudflare-Zugang und DNS (nur lesen)
+    if: inputs.teil == 'cloudflare-audit' && github.ref == 'refs/heads/main'
+    concurrency:
+      group: landing-cloudflare-audit-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: landing
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Bestehenden Zugang prüfen, nur GET
+        env:
+          LANDING_CLOUDFLARE_API_TOKEN: ${{ secrets.LANDING_CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          LANDING_AUDIT_OUTPUT: ${{ runner.temp }}/landing-cloudflare-audit
+        run: node landing/scripts/cloudflare-audit.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: landing-cloudflare-access-and-dns
+          path: ${{ runner.temp }}/landing-cloudflare-audit/
+          retention-days: 3
