@@ -7,4 +7,12 @@ export async function waitForHydratedConsumer(page,{companyId,generatedAt,timeou
   const chapter=document.querySelector('.ci-company-intelligence');
   return document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false'&&chapter?.dataset.state==='AVAILABLE'&&chapter.dataset.companyId===companyId&&chapter.dataset.generatedAt===generatedAt&&chapter.getAttribute('aria-busy')==='false';
  },{companyId,generatedAt},{timeout});
+ // Seit Discover D09 (04.11.2026) steht das Kapitel in der zugeklappten Profi-Ansicht
+ // „Alle Kennzahlen“ (details.dv3-profi). Wie ein Nutzer wird sie geoeffnet, damit sichtbarer
+ // Text (innerText, :visible) geprueft wird und nicht nur vorhandene Knoten.
+ await openEnclosingDetails(page);
+}
+export async function openEnclosingDetails(page){
+ const closed=page.locator('details:not([open]):has(.ci-company-intelligence) > summary');
+ for(let n=await closed.count();n>0;n=await closed.count())await closed.first().click();
 }
