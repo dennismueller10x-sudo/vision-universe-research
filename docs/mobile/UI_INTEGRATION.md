@@ -63,3 +63,48 @@ Rand: 20 px, Richtungsentscheidung ab 8 px, Zurück ab 35 % Breite. Sheet: 70 % 
 Nachweise und Prüfstand stehen im E3-PR; [Quant hell](e3-gestures/quant-light.gif) und [Supertrader dunkel](e3-gestures/supertrader-dark.gif) zeigen Inline-Ansicht → Sheet → Vollbild → Randgeste. Keine Store-/Pages-Veröffentlichung, keine neuen Workflows oder Schlüssel. Ein echter Gerätetest bleibt erforderlich.
 
 Prüfstand: 76 fokussierte Node-Tests grün (App inklusive Gestenlogik, gemeinsame Navigation, UI-Byte-Sperre). Chromium-Touch-QA auf beiden NVDA-Routen bei 390 × 844, jeweils hell/dunkel: Schwellen, Abbruch, Reduced Motion, Vollbild, Schließen, Methodenseiten und feste Zurück-Taste bestanden; axe-Kontrast jeweils 0 Befunde. Discover: 120.063 Byte / 6 Requests (Budget 180.000 / 12), im Browser ohne Opt-in 0 Gesten-Requests. Ergebnisse: [results.json](e3-gestures/results.json). Herkunftsgeprüfte iframe-Brücke separat mit simuliertem Capacitor-App-Plugin bestanden; kein Gerätetest. Produktionsisolation: keine Datei verändert. Core: 378 bestanden, 3 übersprungen, 1 vorhandener Generatorfehler; die Ausgabe bleibt mit dem ursprünglichen und dem ergänzten VUUI bytegleich. Python: 585 bestanden, 5 vorhandene Bestandsabweichungen im kanonischen Markt. Diese Daten und Fachmodelle sind unverändert.
+
+## E5: Performance und Qualität der Web-Seiten (07.11.2026)
+
+Die Web-Seiten nutzen die vorhandenen Redesign-2027-Bausteine auch während des
+Ladens: reservierter Aktienkopf, formgleiche Skeletons und stabile Inhaltsflächen.
+Intent-Vorladen lädt wenige bestehende Daten-Shards bei Pointerdown/Fokus bzw.
+verzögertem Hover; Save-Data schaltet es ab. Ausstehende Anfragen werden geteilt,
+ein späterer echter Detailaufruf prüft seine Daten neu. View Transitions fassen
+den tatsächlichen Ansichtswechsel ein; Reduced Motion unterdrückt die Bewegung.
+
+Im Quant-Release erscheint der kanonisch projizierte Kopf vor dem großen Router.
+Der Router übernimmt dieselben Kopf-/Frageknoten; die vollständige Seite bleibt
+maßgeblich. Der Erzeuger liest die bestehenden Service-/VM-/Identitätsregeln,
+verwirft nicht verfügbare/nicht erlaubte Werte und erzeugt kleine Release-Shards.
+Keine zweite Kurswahrheit. Technical zeigt den vorhandenen Instrument-Schluss
+vor dem Laden der Analyse-Engines. Supertrader-Start liest eine kleine Projektion
+der unveränderten Kopf-/Zählerfelder statt die ganze Signals-Datei zu parsen.
+
+Gemeinsame Bedienelemente haben mindestens 44 × 44 px; `touch-action:
+manipulation` verhindert Doppeltipp-Zoom und erhält Pinch-Zoom. Vorzeichen-Pillen
+tragen Pfeil, Zahl und ausgesprochene Plus-/Minus-Beschriftungen mit Einheit.
+Natürliche Link-/Tab-Namen enthalten den sichtbaren Text; ergänzende Erklärungen
+bleiben für Screenreader verfügbar. Die Perspektivenleiste aktualisiert ihre
+Attribute, ohne fokussierte Links oder geladene SVG-Knoten zu ersetzen.
+
+Abschluss-QA: elf Routen hell/dunkel plus Analysten-Dialoge, 24 Ansichten bei
+390 × 844: null axe-Kontrastverstöße, null beanstandete geprüfte Tippflächen,
+keine Seitenfehler/Überbreite, feste Kopfposition, sichtbare Tab-Stopps und
+Dialog-Fokusfalle/Escape/Fokusrückgabe bestanden. Axe meldet zusätzlich
+`incomplete` bei Symbolen, Bildern, Pseudoinhalt und teils überdeckten Elementen;
+diese bleiben im Bericht und sind keine vollständige manuelle Kontrast- oder
+Screenreader-Abnahme. Discover: 129.698 decoded Bytes / sieben Budget-Requests
+(maximal 180.000 / zwölf). Separat bestandener Quant-Smoke: 46 Ressourcen (ohne Hauptdokument) /
+3.061.032 decoded Bytes auf NVDA, innerhalb des unveränderten Budgets.
+
+Ein echter Service Worker bestätigt Offline-Hinweis, gecachtes NVDA-Logo und
+verweigerte neue Marktdatenabrufe. Kalte LCP-Messungen blockieren den SW bewusst
+und behaupten deshalb keinen Warm-Cache-Gewinn. Früher Kopf bei blockiertem
+Router, Knotenübernahme, erneute Navigation sowie Technical-Kurs bei blockierten
+Engines wurden separat im Browser geprüft. Messwerte, Zielabweichungen und
+Rohdaten: [PERFORMANCE.md](PERFORMANCE.md), [QA](e5/final/quality.json),
+[früher Kopf](e5/final/early-head.json), [Quant-Smoke](e5/final/quant-smoke.json).
+Kein Gerätetest; keine Änderung an der App-Hülle oder am Account-Worker.
+
+Zusätzliche Produkt-QA: Technical 72/72, Discover 212/212, Supertrader 62 Seitenaufrufe ohne Fehler, Fundamental-Vergleich (Chromium) 124 Prüfungen ohne Befund. Der Vergleich behält seine bestehenden 38 px hohen Schalter und deren 46 px große Tippflächen.
