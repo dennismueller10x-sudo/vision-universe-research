@@ -5,6 +5,7 @@ import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 const require=createRequire(import.meta.url), {chromium}=require('playwright');
+import {openCompanyIntelligence} from './hydrated-consumer-review.mjs';
 const arg=(k,f)=>{const i=process.argv.indexOf('--'+k);return i<0?f:process.argv[i+1]};
 const base=arg('url','http://127.0.0.1:8783').replace(/\/$/,''), out=arg('out','/tmp/intelligence-browser-qa');
 await mkdir(out,{recursive:true});
@@ -18,7 +19,7 @@ try{
    // Exercise the real Clorox prepared-remarks archive without expanding the
    // production pilot cohort. The isolated package includes this issuer.
    if(ticker==='CLX')for(const path of ['**/company-intelligence/config/rollout.js*','**/quant/release-bundle.js*'])await page.route(path,async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('const cohort = [',"const cohort = ['CLX',")})});
-   await page.goto(base+route(product,ticker));await page.waitForFunction(()=>document.querySelector('.ci-company-intelligence')?.textContent.includes('Auf einen Blick'));
+   await page.goto(base+route(product,ticker));await page.waitForFunction(()=>document.querySelector('.ci-company-intelligence')?.textContent.includes('Auf einen Blick'));await openCompanyIntelligence(page);
    const chapter=page.locator('.ci-company-intelligence');
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.equal(await chapter.evaluate(e=>e.scrollWidth>e.clientWidth),false);assert.deepEqual(errors,[]);
    if(ticker==='CLX'){await chapter.locator('details.ci-documents > summary').click();assert((await chapter.innerText()).includes('Vorbereitete Management-Aussagen'));assert((await chapter.innerText()).includes('Veröffentlichungsdatum nicht angegeben'))}
@@ -36,7 +37,7 @@ try{
    if(attack==='WEBCAST_IS_NOT_REPLAY')await p.route('**/company-intelligence/data/**/iss_cik_0000320193.json',async r=>{const response=await r.fetch(),body=await response.json();body.calls=[{companyId:body.companyId,eventId:'historical-webcast',eventType:'EARNINGS_CALL',date:new Date(Date.now()-86400000).toISOString().slice(0,10),headline:'Historical call with unknown replay availability',webcastUrl:'https://www.apple.com/',sourceUrl:'https://www.apple.com/'}];await r.fulfill({response,json:body})});
    if(attack==='BERLIN_DATE_BOUNDARY')await p.route('**/company-intelligence/data/**/iss_cik_0000320193.json',async r=>{const response=await r.fetch(),body=await response.json();body.events=[{companyId:body.companyId,eventId:'overnight-call',eventType:'EARNINGS_CALL',confirmationStatus:'CONFIRMED',date:'2026-10-24',time:'23:30:00',timezone:'UTC',startsAt:'2026-10-24T23:30:00Z',headline:'Gespräch an der Datumsgrenze',sourceUrl:'https://www.apple.com/'}];body.calls=[];await r.fulfill({response,json:body})});
    if(attack==='XSS_AND_UNSAFE_LINK')await p.route('**/company-intelligence/data/**/iss_cik_0000320193.json',async r=>{const response=await r.fetch(),body=await response.json();body.news=[{companyId:body.companyId,newsId:'attack',headline:'<img src=x onerror="window.__intelligenceXss=true">',canonicalUrl:'javascript:window.__intelligenceXss=true',publishedAt:body.generatedAt,importance:'CRITICAL'}];body.materialEvents=[];await r.fulfill({response,json:body})});
-   await p.goto(base+route(product,'AAPL'));await p.waitForFunction(()=>document.querySelector('.ci-company-intelligence h2'));
+   await p.goto(base+route(product,'AAPL'));await p.waitForFunction(()=>document.querySelector('.ci-company-intelligence h2'));await openCompanyIntelligence(p);
    if(attack==='LOW_PRIORITY_AND_OLD_AMENDMENT'){const text=await p.locator('.ci-block').filter({has:p.getByRole('heading',{name:'Aktuelles',exact:true})}).innerText();assert(text.includes('Geschäftsjahr 2026'));assert(!text.includes('Geschäftsjahr 2021'));assert(!text.includes('Management'))}
    else if(attack==='PAST_TIMED_CALL'){const next=p.locator('.ci-block').filter({has:p.getByRole('heading',{name:'Als Nächstes'})});assert.equal(await next.count(),0);assert(!(await p.locator('.ci-company-intelligence').innerText()).includes('Vergangenes Gespräch'));}
    else if(attack==='WEBCAST_IS_NOT_REPLAY'){const docs=p.locator('details.ci-documents');assert.equal(await docs.getAttribute('open'),null);await docs.locator(':scope > summary').click();assert.equal(await docs.getByRole('link',{name:'Webcast',exact:true}).count(),1);assert.equal(await docs.getByRole('link',{name:'Aufzeichnung',exact:true}).count(),0);}

@@ -3,6 +3,7 @@ import {createRequire} from 'node:module';
 import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import {runtimeCandidate} from './runtime-candidate.mjs';
+import {openCompanyIntelligence} from './hydrated-consumer-review.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const arg=(k,f)=>{const i=process.argv.indexOf('--'+k);return i<0?f:process.argv[i+1]};
 const base=arg('url','http://127.0.0.1:8783').replace(/\/$/,''),out=arg('out','/tmp/discover-beta-qa');
@@ -20,7 +21,7 @@ async function pageFor(product,ticker,width=390,preview=true){
  if(phase==='dark')await page.addInitScript(()=>localStorage.setItem('vu-discover-theme-v1','dark'));
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push(r.url())});
  await page.goto(base+route(product,ticker,preview),{waitUntil:'domcontentloaded'});
- if(preview)await page.waitForSelector('.ci-company-intelligence h2');else await page.waitForTimeout(1000);
+ if(preview){await openCompanyIntelligence(page);await page.waitForSelector('.ci-company-intelligence h2');}else await page.waitForTimeout(1000);
  return {page,errors,requests};
 }
 async function mutate(page,change){await page.route('**/company-intelligence/data/**/iss_cik_0000320193.json',async r=>{const response=await r.fetch(),body=await response.json();change(body);await r.fulfill({response,json:body});});}
@@ -91,7 +92,7 @@ try{
    if(attack==='UNDATED_NEWS_NO_TRUNCATION'){body.news=Array.from({length:20},(_,i)=>({companyId:cid,newsId:'unknown-'+i,eventType:'NEWS',headline:'Belegte undatierte Meldung '+i,publishedAt:null,observedAt:body.generatedAt,canonicalUrl:'https://www.apple.com/undated/'+i}));body.earnings=[];body.materialEvents=[];}
    if(attack==='CANCELLED_CALL')body.calls=[{companyId:cid,eventId:'cancelled',date:'2026-09-01',status:'CANCELLED',webcastUrl:'https://www.apple.com/cancelled/'}];
   });
-  await page.goto(base+route(product,'AAPL'));await page.waitForSelector('.ci-company-intelligence h2');const chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();
+  await page.goto(base+route(product,'AAPL'));await openCompanyIntelligence(page);await page.waitForSelector('.ci-company-intelligence h2');const chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();
   if(['INDEX_MISSING','LOOKUP_MISMATCH','COMPANY_TIMESTAMP_MISMATCH','AMBIGUOUS_IDENTITY'].includes(attack))assert(text.includes('derzeit nicht verfügbar'));
   if(attack==='TRANSIENT_503_RECOVERY'){assert(!text.includes('derzeit nicht verfügbar'));assert.equal(transientAttempts,2);assert.equal(await chapter.getByRole('heading',{name:'Geschäftszahlen',exact:true}).count(),1);}
   if(attack==='PERMANENT_503_FAIL_CLOSED'){assert(text.includes('derzeit nicht verfügbar'));assert.equal(transientAttempts,3);assert.equal(await chapter.locator('.ci-kpi').count(),0);}

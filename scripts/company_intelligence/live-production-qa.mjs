@@ -9,6 +9,7 @@ import {runtimeCandidate} from './runtime-candidate.mjs';
 import {assertConsumerResponses} from './browser-delivery-proof.mjs';
 import {verifyPropagation,evaluateRelease,PropagationError,CAUSE,DEFAULTS,referenceDataSha256} from './propagation-proof.mjs';
 import {attachDiagnostics,collectFailure,bounded,redactor} from './browser-diagnostics.mjs';
+import {openCompanyIntelligence} from './hydrated-consumer-review.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const {fetchWithRetry}=require('../../company-intelligence/api/contract.js');
 const args=process.argv.slice(2),arg=(k,f)=>args.includes(k)?args[args.indexOf(k)+1]:f;
@@ -50,7 +51,7 @@ try{
   activePage=page;active={ticker,errors,responses,diagnostics};
   await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});
   page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))responses.push({url:r.url(),status:r.status()});});
-  await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await page.waitForSelector('.ci-company-intelligence h2');
+  await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});await openCompanyIntelligence(page);await page.waitForSelector('.ci-company-intelligence h2');
   const chapter=page.locator('.ci-company-intelligence');assert(!(await chapter.innerText()).includes('derzeit nicht verfügbar'),ticker);assert.deepEqual(errors,[]);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   assertConsumerResponses(responses,ticker);
   assert.equal(await page.locator('vu-navigation').count(),1);assert(await chapter.locator('a').count()>0);await chapter.scrollIntoViewIfNeeded();await page.screenshot({path:out+'/'+ticker+'-390.png'});

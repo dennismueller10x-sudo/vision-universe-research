@@ -12,6 +12,12 @@ export async function waitForHydratedConsumer(page,{companyId,generatedAt,timeou
  // Text (innerText, :visible) geprueft wird und nicht nur vorhandene Knoten.
  await openEnclosingDetails(page);
 }
+// Fuer QAs, die nicht ueber waitForHydratedConsumer laufen: Kapitel abwarten (im DOM, auch
+// zugeklappt), dann die umschliessende Profi-Ansicht wie ein Nutzer oeffnen (Discover D09).
+export async function openCompanyIntelligence(page,{timeout=30000}={}){
+ await page.waitForSelector('.ci-company-intelligence',{state:'attached',timeout});
+ await openEnclosingDetails(page);
+}
 export async function openEnclosingDetails(page){
  const closed=page.locator('details:not([open]):has(.ci-company-intelligence) > summary');
  for(let n=await closed.count();n>0;n=await closed.count())await closed.first().click();
