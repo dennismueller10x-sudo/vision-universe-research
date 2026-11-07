@@ -1179,25 +1179,45 @@
     {
       "id": "UIP-R118",
       "date": "2026-11-07",
-      "pr": 1605,
-      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
-      "file": "assets/site-navigation.css",
-      "from": "fe6dd67f69d4e4b5f09d89c94e00c72aceabc06797260360290f6622bc3c8c24",
-      "to": "b5f536f6f232562f701aea6f03a9c1c20b8c7d058e86d5473dd78c3201efbf41",
-      "scope": "L1: Rechts-Seitenfuß ohne zweiten Dock-Abstand (Body trägt ihn schon)"
+      "pr": 1601,
+      "ownerApproval": "Owner 07.11.2026 nach erstem iPhone-Test: „App-Feeling wie Trade Republic … Hin- und herwischen, vor und zurück ist sehr schwerfällig“; Auftrag Strang K (K2)",
+      "file": "assets/site-navigation.js",
+      "from": "8f2a112024e397d5a1c28214d35547663e4d895784e1e0c4c7b82055304004e0",
+      "to": "cdbc436199df7e1a3b158fa6ebe9b5b0cefa2e45371427b369641bb7ff22cace",
+      "scope": "K2: Dokument-Übergänge nur vorwärts (pageswap überspringt Zurück/Neuladen, auch nach nativer App-Geste) und begrenztes Vorladen von höchstens 4 Produktzielen nach Ruhe (Speculation Rules bzw. HTTP-Cache); Menü, Leiste, Links und Texte unverändert"
     },
     {
       "id": "UIP-R119",
       "date": "2026-11-07",
-      "pr": 1605,
-      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
-      "file": "assets/site-navigation.js",
-      "from": "8f2a112024e397d5a1c28214d35547663e4d895784e1e0c4c7b82055304004e0",
-      "to": "2ec373591a7b3731e6eca30c3caa4ee6fdb407da3832ab0a793ed6fe59c0302d",
-      "scope": "L1: Menü „Rechtliches & Infos“ (Pflicht-Links, Kontakt, Software-/Risikosatz, Datenquellen & Methodik); Rechts-Seitenfuß entfällt nur in der App (VUApp/1, Capacitor); erzeugter Block VU-LEGAL vu-hinweise-2026-11-07-1; Fundamental-Kachel „Zahlen aus Geschäftsberichten“"
+      "pr": 1601,
+      "ownerApproval": "Owner 07.11.2026 nach erstem iPhone-Test: „App-Feeling wie Trade Republic … Hin- und herwischen, vor und zurück ist sehr schwerfällig“; Auftrag Strang K (K2)",
+      "file": "assets/site-navigation.css",
+      "from": "fe6dd67f69d4e4b5f09d89c94e00c72aceabc06797260360290f6622bc3c8c24",
+      "to": "744db0487d1b57df489f23dcd5fc7efeaf7be084ac5d61f5f0e7c8bb4805e679",
+      "scope": "K2: View Transitions zwischen Dokumenten nur ohne reduzierte Bewegung, neue Seite gleitet in 240 ms von rechts herein, Leiste und Kopf stehen; alle bestehenden Regeln unverändert"
     },
     {
       "id": "UIP-R120",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "assets/site-navigation.css",
+      "from": "744db0487d1b57df489f23dcd5fc7efeaf7be084ac5d61f5f0e7c8bb4805e679",
+      "to": "279ed5daee47405657a8e664336250f537ca4b3f5f44799265b90b29412fe4e5",
+      "scope": "L1: Rechts-Seitenfuß ohne zweiten Dock-Abstand (Body trägt ihn schon)"
+    },
+    {
+      "id": "UIP-R121",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "assets/site-navigation.js",
+      "from": "cdbc436199df7e1a3b158fa6ebe9b5b0cefa2e45371427b369641bb7ff22cace",
+      "to": "27b871e501434b297226f07e6fc814a6252e4e0c4102a98ed52b75c9f64e9fea",
+      "scope": "L1: Menü „Rechtliches & Infos“ (Pflicht-Links, Kontakt, Software-/Risikosatz, Datenquellen & Methodik); Rechts-Seitenfuß entfällt nur in der App (VUApp/1, Capacitor); erzeugter Block VU-LEGAL vu-hinweise-2026-11-07-1; Fundamental-Kachel „Zahlen aus Geschäftsberichten“"
+    },
+    {
+      "id": "UIP-R122",
       "date": "2026-11-07",
       "pr": 1605,
       "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
@@ -1207,7 +1227,7 @@
       "scope": "L1: Anbieternamen aus dem Quant-Fuß entfernt („Daten: SEC EDGAR, Tiingo“, „SEC-Dateninspektor“ → „Dateninspektor“)"
     },
     {
-      "id": "UIP-R121",
+      "id": "UIP-R123",
       "date": "2026-11-07",
       "pr": 1605,
       "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
@@ -1217,7 +1237,7 @@
       "scope": "L1: Knopf „SEC-Dateninspektor“ → „Dateninspektor“"
     },
     {
-      "id": "UIP-R122",
+      "id": "UIP-R124",
       "date": "2026-11-07",
       "pr": 1605,
       "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
@@ -1227,7 +1247,7 @@
       "scope": "L1: „Daten & Methodik“ der Aktie ohne Anbieternamen (Tiingo, SEC EDGAR); Daten unverändert"
     },
     {
-      "id": "UIP-R123",
+      "id": "UIP-R125",
       "date": "2026-11-07",
       "pr": 1605,
       "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
@@ -1237,7 +1257,7 @@
       "scope": "L1: Hinweisboxen ohne „Daten: SEC EDGAR, Tiingo.“"
     },
     {
-      "id": "UIP-R124",
+      "id": "UIP-R126",
       "date": "2026-11-07",
       "pr": 1605,
       "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",

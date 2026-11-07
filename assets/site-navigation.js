@@ -5,6 +5,44 @@
     const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = '/assets/vu-gestures.css'; document.head.append(css);
     const js = document.createElement('script'); js.setAttribute('data-vu-gestures-loader', ''); js.src = '/assets/vu-gestures.js'; document.head.append(js);
   }
+  // K2 (Owner 07.11.2026, App-Gefuehl): Seitenwechsel gleiten vor/zurueck (View Transitions zwischen Dokumenten,
+  // CSS in site-navigation.css), die Produkt-Leiste bleibt stehen, Produktziele sind beim Tippen schon geladen.
+  if (typeof document !== 'undefined' && !globalThis.__vuMotion) {
+    globalThis.__vuMotion = true;
+    // Entscheidung im alten Dokument (pageswap): dort ist dieses Skript sicher geladen; im neuen Dokument laeuft es oft
+    // erst nach pagereveal. Vorwaerts gleitet die neue Seite von rechts herein (CSS). Zurueck und Neuladen ohne zweite
+    // Animation: zurueck schiebt in der App schon die native Randgeste, im Browser die Geste des Browsers.
+    const wanted = activation => !!(activation && activation.navigationType !== 'traverse' && activation.navigationType !== 'reload');
+    const flag = value => { try { if (value) sessionStorage.setItem('vu-vt-skip', '1'); else { const v = sessionStorage.getItem('vu-vt-skip'); sessionStorage.removeItem('vu-vt-skip'); return v === '1'; } } catch (_) { /* ohne Speicher */ } return false; };
+    addEventListener('pageswap', e => { if (e.viewTransition && !wanted(e.activation)) { e.viewTransition.skipTransition(); flag(true); } });
+    // Ein aus dem bfcache wiederhergestelltes Dokument startet seinen Uebergang selbst; das Merkzeichen des alten haelt es an.
+    addEventListener('pagereveal', e => { if (flag(false) && e.viewTransition) e.viewTransition.skipTransition(); });
+    // Vorladen: Einstiege der Produkte und Leistenziele, einmal je Seite nach Ruhe, nie bei Datensparen/2G.
+    const warm = () => {
+      const c = navigator.connection;
+      if (c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || ''))) return;
+      const here = location.pathname, seen = new Set([here]);
+      const dock = document.getElementById('vu-dock');
+      const hrefs = ['/discover/', '/quant/', '/technical/', '/fundamental/', '/supertrader/']
+        .concat(Array.from((dock && dock.shadowRoot || document).querySelectorAll('a[href]')).map(a => a.getAttribute('href')));
+      const urls = [];
+      hrefs.forEach(h => { try { const u = new URL(h, location.href); if (u.origin === location.origin && !/^\/konto\//.test(u.pathname) && !seen.has(u.pathname)) { seen.add(u.pathname); urls.push(u.pathname); } } catch (_) { /* ungueltig */ } });
+      const list = urls.slice(0, 4);
+      if (!list.length) return;
+      if (globalThis.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {
+        const rules = document.createElement('script'); rules.type = 'speculationrules';
+        rules.textContent = JSON.stringify({prefetch: [{urls: list, eagerness: 'immediate'}],
+          prerender: [{where: {and: [{href_matches: '/*'}, {not: {href_matches: '/konto/*'}}]}, eagerness: 'moderate'}]});
+        document.head.append(rules);
+      } else {
+        // WebKit ohne Speculation Rules: HTTP-Cache mit dem HTML der Ziele fuellen (nacheinander, niedrige Prioritaet).
+        list.reduce((p, u) => p.then(() => fetch(u, {credentials: 'same-origin', priority: 'low'}).then(r => r.ok && r.arrayBuffer()).catch(() => {})), Promise.resolve());
+      }
+    };
+    const idle = globalThis.requestIdleCallback || (fn => setTimeout(fn, 1));
+    const later = () => setTimeout(() => idle(warm, {timeout: 4000}), 3000);
+    if (document.readyState === 'complete') later(); else addEventListener('load', later, {once: true});
+  }
   // Idempotent: im Gastbetrieb (/elliott/#/<T>) laedt das Quant-Buendel des Release die Shell ein zweites Mal mit.
   if (customElements.get && customElements.get('vu-navigation')) return;
   // Product links navigate directly; their separate disclosure opens existing routes.

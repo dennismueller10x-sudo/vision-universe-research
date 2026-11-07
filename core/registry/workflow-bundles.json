@@ -92,8 +92,11 @@
   },
   "maintenance": {
    "purpose": "manuelle Betriebswerkzeuge, Diagnosen, Einmal-Laeufe",
-   "workflow": null,
-   "replaces": []
+   "workflow": "maintenance.yml",
+   "replaces": [
+    "r2-audit.yml",
+    "landing-cloudflare-audit.yml"
+   ]
   }
  },
  "workflows": {
@@ -241,9 +244,6 @@
   "intraday-snapshots.yml": {
    "bundle": "pipeline-intraday"
   },
-  "landing-cloudflare-audit.yml": {
-   "bundle": "maintenance"
-  },
   "landing-cloudflare-prepare.yml": {
    "bundle": "maintenance"
   },
@@ -285,9 +285,6 @@
   },
   "quant-v13-archive.yml": {
    "bundle": "research"
-  },
-  "r2-audit.yml": {
-   "bundle": "maintenance"
   },
   "research-edge2-paper.yml": {
    "bundle": "research"
