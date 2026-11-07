@@ -6,10 +6,10 @@
       "cik": "0000798783",
       "name": "UNIVERSAL HEALTH REALTY INCOME TRUST",
       "sic": "6798",
-      "rawFacts": 14684,
-      "mappedFacts": 5440,
-      "unmappedFacts": 9527,
-      "calendarYears": 19,
+      "rawFacts": 14907,
+      "mappedFacts": 5516,
+      "unmappedFacts": 9787,
+      "calendarYears": 18,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
@@ -28,28 +28,28 @@
         },
         "real_estate_accumulated_depreciation": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "real_estate_gross": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 47,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "real_estate_net": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "secured_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -61,9 +61,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -75,7 +75,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -102,21 +102,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -130,14 +130,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -160,48 +160,48 @@
         }
       },
       "quality": {
-        "HIGH": 544,
-        "MEDIUM": 3
+        "HIGH": 554,
+        "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 547,
-        "resolvedValues": 547
+        "datableValues": 555,
+        "resolvedValues": 555
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 9696,
+        "rules_version": "1.1.0",
+        "total": 9924,
         "by_severity": {
-          "INFO": 9527,
-          "WARNING": 169
+          "INFO": 9787,
+          "WARNING": 137
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 111,
-          "FISCAL_PERIOD_CONFLICT": 10,
+          "CONCEPT_DISAGREEMENT": 100,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 46,
+          "RESTATEMENT_CONFLICT": 35,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 9527
+          "UNKNOWN_CONCEPT": 9787
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-340281",
-        "filing_date": "2026-08-07",
+        "accession": "0001193125-26-451858",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 125
+        "periodic_filings": 126,
+        "acceptance_datetime": "2026-11-06T21:15:37.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "f30e70c5abbc47f6b0e484221d5e449d8fafcdd503b0ed64c8b5e90c17c5039e",
+      "sourceDigest": "8c8d97c4b006c06a92f2b047bb437c4a474923406f9d5b174c1c6ee8cb898bf1",
       "issuerId": "iss_cik_0000798783"
     },
     {

@@ -326,9 +326,9 @@
       "cik": "0001398805",
       "name": "Beam Global",
       "sic": "3690",
-      "rawFacts": 14615,
-      "mappedFacts": 5050,
-      "unmappedFacts": 10023,
+      "rawFacts": 14617,
+      "mappedFacts": 5049,
+      "unmappedFacts": 10146,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -446,39 +446,41 @@
         "resolvedValues": 523
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 10259,
+        "rules_version": "1.1.0",
+        "total": 10383,
         "by_severity": {
           "ERROR": 2,
-          "INFO": 10023,
-          "WARNING": 234
+          "INFO": 10146,
+          "WARNING": 235
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 148,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 84,
+          "FUTURE_PERIOD_END": 2,
+          "RESTATEMENT_CONFLICT": 83,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 10023
+          "UNKNOWN_CONCEPT": 10146
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-028530",
-        "filing_date": "2026-08-19",
-        "form": "10-Q",
-        "periodic_filings": 79
+        "accession": "0001437749-26-035561",
+        "filing_date": "2026-11-06",
+        "form": "10-K/A",
+        "periodic_filings": 80,
+        "acceptance_datetime": "2026-11-06T21:03:53.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "b866de33eb9b95c85d59261a54f18c128d37de60852450bc576718ce3c5360e2",
+      "sourceDigest": "8334e946d1e2966a233838d03a5a47c79735a471d7478dcc4de13faac4bb9a8a",
       "issuerId": "iss_cik_0001398805"
     },
     {

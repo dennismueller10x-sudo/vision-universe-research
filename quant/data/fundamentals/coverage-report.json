@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-11-06T15:38:44+00:00",
+  "generatedAtUtc": "2026-11-07T13:21:44+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.14.0",
@@ -34,8 +34,8 @@
   },
   "metrics": {
     "revenue": {
-      "COUNT": 4400,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 69.7527
+      "COUNT": 4401,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 69.7685
     },
     "net_income": {
       "COUNT": 5022,
@@ -50,35 +50,35 @@
       "PERCENT_OF_PRODUCT_UNIVERSE": 79.4071
     },
     "capital_expenditures": {
-      "COUNT": 4522,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 71.6867
+      "COUNT": 4523,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 71.7026
     },
     "free_cash_flow": {
-      "COUNT": 4512,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 71.5282
+      "COUNT": 4513,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 71.5441
     },
     "total_assets": {
-      "COUNT": 5240,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 83.0691
+      "COUNT": 5242,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 83.1008
     },
     "total_debt": {
-      "COUNT": 2846,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 45.1173
+      "COUNT": 2848,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 45.149
     },
     "stockholders_equity": {
-      "COUNT": 5211,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 82.6094
+      "COUNT": 5212,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 82.6252
     }
   },
   "pointInTime": {
     "note": "Ein Wert ist zeitpunktgenau abfragbar, wenn er ein Veroeffentlichungsdatum UND eine Einreichung traegt. PIT_READY verlangt das fuer ALLE aufgeloesten Werte eines Emittenten - bei einem Prozent undatierbarer Werte ist ein Backtest nicht mehr vertrauenswuerdig, und man weiss nicht, welcher Wert es war.",
     "denominator": "PRODUCT_TITLES",
-    "PIT_READY_SECURITIES": 5433,
+    "PIT_READY_SECURITIES": 5434,
     "PIT_PARTIAL_SECURITIES": 0,
-    "PIT_UNAVAILABLE_SECURITIES": 875,
+    "PIT_UNAVAILABLE_SECURITIES": 874,
     "BY_ISSUER": {
-      "PIT_READY": 5344,
-      "PIT_UNAVAILABLE": 135
+      "PIT_READY": 5345,
+      "PIT_UNAVAILABLE": 134
     },
     "SURVIVORSHIP_FREE_UNIVERSE": false,
     "survivorshipNote": "SEC/EDGAR fuehrt kein Wertpapierstamm- und kein Delisting-Ereignisfeed. Ein ueberlebensfreies Universum laesst sich daraus nicht bauen; ein PASS waere eine Falschaussage ueber die Quelle."

@@ -162,9 +162,9 @@
       "cik": "0001552797",
       "name": "Delek Logistics Partners, LP",
       "sic": "4610",
-      "rawFacts": 15343,
-      "mappedFacts": 4327,
-      "unmappedFacts": 11235,
+      "rawFacts": 15630,
+      "mappedFacts": 4398,
+      "unmappedFacts": 11449,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -174,14 +174,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 63,
+      "quarterlyPeriods": 64,
       "firstPeriodEnd": "2010-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -195,7 +195,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0,
@@ -208,28 +208,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "net_income": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "revenue": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -250,7 +250,7 @@
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -273,46 +273,47 @@
         }
       },
       "quality": {
-        "HIGH": 397,
+        "HIGH": 403,
         "MEDIUM": 24
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 421,
-        "resolvedValues": 421
+        "datableValues": 427,
+        "resolvedValues": 427
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 11608,
+        "rules_version": "1.1.0",
+        "total": 11826,
         "by_severity": {
-          "INFO": 11235,
-          "WARNING": 373
+          "INFO": 11449,
+          "WARNING": 377
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 227,
+          "CONCEPT_DISAGREEMENT": 231,
           "RESTATEMENT_CONFLICT": 128,
           "UNEXPECTED_DURATION": 18,
-          "UNKNOWN_CONCEPT": 11235
+          "UNKNOWN_CONCEPT": 11449
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-053097",
-        "filing_date": "2026-08-05",
+        "accession": "0001628280-26-071520",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 60
+        "periodic_filings": 61,
+        "acceptance_datetime": "2026-11-06T18:37:27.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "e85be364d0950aeae455b9df578d2e3988d36e156f3720d3f730ee3d95635a5b",
+      "sourceDigest": "1b91dbffff6f64a9b4b1bb5064298b59dc45e896c7a298f78874d2e3aad75577",
       "issuerId": "iss_cik_0001552797"
     },
     {

@@ -6,9 +6,9 @@
       "cik": "0001818844",
       "name": "Dogwood Therapeutics, Inc.",
       "sic": "2834",
-      "rawFacts": 3959,
-      "mappedFacts": 1586,
-      "unmappedFacts": 2420,
+      "rawFacts": 4258,
+      "mappedFacts": 1679,
+      "unmappedFacts": 2682,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -18,9 +18,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 27,
+      "quarterlyPeriods": 28,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
@@ -32,7 +32,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -59,21 +59,21 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "revenue": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -117,46 +117,47 @@
         }
       },
       "quality": {
-        "HIGH": 148,
+        "HIGH": 154,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 152,
-        "resolvedValues": 152
+        "datableValues": 158,
+        "resolvedValues": 158
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2502,
+        "rules_version": "1.1.0",
+        "total": 2743,
         "by_severity": {
-          "INFO": 2420,
-          "WARNING": 82
+          "INFO": 2682,
+          "WARNING": 61
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 44,
+          "CONCEPT_DISAGREEMENT": 23,
           "PERIOD_MISMATCH": 7,
           "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 2420
+          "UNKNOWN_CONCEPT": 2682
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-096719",
-        "filing_date": "2026-08-14",
+        "accession": "0001104659-26-123635",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 24
+        "periodic_filings": 25,
+        "acceptance_datetime": "2026-11-06T14:18:57.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "2dff1e93689f4c982ff702a36d420875b6d16424cad8266d263e7ce300edec67",
+      "sourceDigest": "0a229f6dfced5f4c35ac7f507ab75bc5fb69e6cbfca039981f37d6e15c94fef2",
       "issuerId": "iss_cik_0001818844"
     },
     {

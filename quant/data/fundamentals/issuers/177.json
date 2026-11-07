@@ -2092,9 +2092,9 @@
       "cik": "0002104177",
       "name": "Long Table Growth Corp.",
       "sic": "6770",
-      "rawFacts": 79,
-      "mappedFacts": 32,
-      "unmappedFacts": 50,
+      "rawFacts": 152,
+      "mappedFacts": 64,
+      "unmappedFacts": 94,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -2106,9 +2106,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 3,
+      "quarterlyPeriods": 4,
       "firstPeriodEnd": "2025-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -2147,14 +2147,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 1,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -2175,14 +2175,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -2205,41 +2205,42 @@
         }
       },
       "quality": {
-        "HIGH": 8
+        "HIGH": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 8,
-        "resolvedValues": 8
+        "datableValues": 12,
+        "resolvedValues": 12
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 50,
+        "rules_version": "1.1.0",
+        "total": 94,
         "by_severity": {
-          "INFO": 50
+          "INFO": 94
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 50
+          "UNKNOWN_CONCEPT": 94
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-088367",
-        "filing_date": "2026-08-12",
+        "accession": "0001213900-26-116886",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 1
+        "periodic_filings": 2,
+        "acceptance_datetime": "2026-11-06T21:15:29.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "c0c44e4e7ad44eb7fc6cf233a4fc3abaedf2f184396f2baf24bc84676b632e78",
+      "sourceDigest": "e4d8a1d6ee469abfbd82096f4e3b6f86518dcd8a69f5c70b904ba8d89de478cf",
       "issuerId": "iss_cik_0002104177"
     }
   ]

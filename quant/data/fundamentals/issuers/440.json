@@ -322,9 +322,9 @@
       "cik": "0001396440",
       "name": "Main Street Capital CORP",
       "sic": null,
-      "rawFacts": 4404,
-      "mappedFacts": 1195,
-      "unmappedFacts": 3245,
+      "rawFacts": 4678,
+      "mappedFacts": 1266,
+      "unmappedFacts": 3482,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -334,9 +334,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 13,
-      "quarterlyPeriods": 30,
+      "quarterlyPeriods": 31,
       "firstPeriodEnd": "2013-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 12.0,
       "metrics": {
         "capital_expenditures": {
@@ -368,21 +368,21 @@
         },
         "long_term_debt": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -403,14 +403,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -433,44 +433,45 @@
         }
       },
       "quality": {
-        "HIGH": 165
+        "HIGH": 170
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 165,
-        "resolvedValues": 165
+        "datableValues": 170,
+        "resolvedValues": 170
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3266,
+        "rules_version": "1.1.0",
+        "total": 3503,
         "by_severity": {
-          "INFO": 3245,
+          "INFO": 3482,
           "WARNING": 21
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 10,
           "RESTATEMENT_CONFLICT": 11,
-          "UNKNOWN_CONCEPT": 3245
+          "UNKNOWN_CONCEPT": 3482
         }
       },
       "latestFiling": {
-        "accession": "0001396440-26-000094",
-        "filing_date": "2026-08-07",
+        "accession": "0001396440-26-000159",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 76
+        "periodic_filings": 77,
+        "acceptance_datetime": "2026-11-06T16:46:40.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "307a31c02113feabe642612ef54977164b2a8e1a83249a96db7ca2876921f57d",
+      "sourceDigest": "748d417cbbb9074eff6955257a78446df6530ae75f2b9e9b8b23bde464aabb50",
       "issuerId": "iss_cik_0001396440"
     },
     {

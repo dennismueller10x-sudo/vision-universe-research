@@ -166,9 +166,9 @@
       "cik": "0001187953",
       "name": "CREATIVE MEDICAL TECHNOLOGY HOLDINGS, INC.",
       "sic": "2836",
-      "rawFacts": 9320,
-      "mappedFacts": 4166,
-      "unmappedFacts": 5441,
+      "rawFacts": 9504,
+      "mappedFacts": 4253,
+      "unmappedFacts": 5661,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -178,9 +178,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 65,
+      "quarterlyPeriods": 66,
       "firstPeriodEnd": "2010-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
@@ -192,7 +192,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -219,21 +219,21 @@
         },
         "net_income": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "revenue": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -247,14 +247,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -277,48 +277,51 @@
         }
       },
       "quality": {
-        "HIGH": 437,
+        "HIGH": 443,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 440,
-        "resolvedValues": 440
+        "datableValues": 446,
+        "resolvedValues": 446
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 5605,
+        "rules_version": "1.1.0",
+        "total": 5814,
         "by_severity": {
           "ERROR": 11,
-          "INFO": 5441,
-          "WARNING": 153
+          "INFO": 5661,
+          "WARNING": 142
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 71,
+          "CONCEPT_DISAGREEMENT": 49,
           "FUTURE_DATA_LEAK": 11,
+          "FUTURE_PERIOD_END": 7,
           "RESTATEMENT_CONFLICT": 61,
           "UNEXPECTED_DURATION": 21,
-          "UNKNOWN_CONCEPT": 5441
+          "UNKNOWN_CONCEPT": 5661,
+          "UNPLACEABLE_PERIOD": 4
         }
       },
       "latestFiling": {
-        "accession": "0001477932-26-004779",
-        "filing_date": "2026-08-07",
+        "accession": "0001477932-26-006758",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 85
+        "periodic_filings": 86,
+        "acceptance_datetime": "2026-11-06T21:45:48.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "064b51716911d86ea69a12457a067e87ae512054df9e7352517934ec0d60bce9",
+      "sourceDigest": "1a1451956f00ce468c01d590125293c26eee636653c8e988913ca202606345f5",
       "issuerId": "iss_cik_0001187953"
     },
     {
@@ -486,8 +489,8 @@
       "cik": "0001737953",
       "name": "Replimune Group, Inc.",
       "sic": "2836",
-      "rawFacts": 9835,
-      "mappedFacts": 2752,
+      "rawFacts": 9836,
+      "mappedFacts": 2753,
       "unmappedFacts": 7142,
       "calendarYears": 10,
       "industry": null,
@@ -619,11 +622,11 @@
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-067722",
-        "filing_date": "2026-10-28",
-        "form": "10-Q",
-        "periodic_filings": 35,
-        "acceptance_datetime": "2026-10-28T11:25:33.000Z"
+        "accession": "0001104659-26-123850",
+        "filing_date": "2026-11-06",
+        "form": "10-Q/A",
+        "periodic_filings": 36,
+        "acceptance_datetime": "2026-11-06T21:05:20.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
@@ -636,7 +639,7 @@
           "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "d6a46e56f2cfb9eab427699fcd0be651b6343833ae370547e8171375866bfe02",
+      "sourceDigest": "ef52e3d19d7b9749dc807c8093cc312f0f23edd25ddab1021732bd532a834394",
       "issuerId": "iss_cik_0001737953"
     },
     {

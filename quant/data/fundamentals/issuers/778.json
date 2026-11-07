@@ -162,9 +162,9 @@
       "cik": "0001535778",
       "name": "MSC INCOME FUND, INC.",
       "sic": null,
-      "rawFacts": 4275,
-      "mappedFacts": 1104,
-      "unmappedFacts": 3229,
+      "rawFacts": 4544,
+      "mappedFacts": 1173,
+      "unmappedFacts": 3463,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -174,9 +174,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 11,
-      "quarterlyPeriods": 25,
+      "quarterlyPeriods": 26,
       "firstPeriodEnd": "2015-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
@@ -208,21 +208,21 @@
         },
         "long_term_debt": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "net_income": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "operating_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -243,14 +243,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -273,44 +273,45 @@
         }
       },
       "quality": {
-        "HIGH": 142
+        "HIGH": 147
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 142,
-        "resolvedValues": 142
+        "datableValues": 147,
+        "resolvedValues": 147
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3276,
+        "rules_version": "1.1.0",
+        "total": 3510,
         "by_severity": {
-          "INFO": 3229,
+          "INFO": 3463,
           "WARNING": 47
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 8,
           "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 3229
+          "UNKNOWN_CONCEPT": 3463
         }
       },
       "latestFiling": {
-        "accession": "0001535778-26-000085",
-        "filing_date": "2026-08-07",
+        "accession": "0001535778-26-000109",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 59
+        "periodic_filings": 60,
+        "acceptance_datetime": "2026-11-06T17:22:19.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "89f56c122eeaf0ebc1eccf96a6755250d3d85e181a1923242cd022ddbdab4def",
+      "sourceDigest": "d0dcc6cf5ef5e0d537603188ff3ef8907f28bfa6dd1491ca348722ae6d3277c8",
       "issuerId": "iss_cik_0001535778"
     },
     {

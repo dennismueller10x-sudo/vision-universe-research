@@ -6,9 +6,9 @@
       "cik": "0001156041",
       "name": "ABUNDIA GLOBAL IMPACT GROUP, INC.",
       "sic": "1311",
-      "rawFacts": 13757,
-      "mappedFacts": 4667,
-      "unmappedFacts": 9350,
+      "rawFacts": 14113,
+      "mappedFacts": 4761,
+      "unmappedFacts": 9715,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 69,
+      "quarterlyPeriods": 70,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "free_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -52,28 +52,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 44,
+          "quarterlyPeriods": 45,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -117,50 +117,52 @@
         }
       },
       "quality": {
-        "HIGH": 456,
-        "MEDIUM": 13
+        "HIGH": 467,
+        "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 469,
-        "resolvedValues": 469
+        "datableValues": 478,
+        "resolvedValues": 478
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 9621,
+        "rules_version": "1.1.0",
+        "total": 9990,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 9350,
-          "WARNING": 270
+          "INFO": 9715,
+          "WARNING": 274
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 109,
+          "CONCEPT_DISAGREEMENT": 105,
           "FISCAL_PERIOD_CONFLICT": 1,
           "FUTURE_DATA_LEAK": 1,
+          "FUTURE_PERIOD_END": 1,
           "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 155,
+          "RESTATEMENT_CONFLICT": 162,
           "UNIT_MISMATCH": 2,
-          "UNKNOWN_CONCEPT": 9350
+          "UNKNOWN_CONCEPT": 9715
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-036491",
-        "filing_date": "2026-08-07",
+        "accession": "0001493152-26-050354",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 88
+        "periodic_filings": 89,
+        "acceptance_datetime": "2026-11-06T12:32:16.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "09971e47f16fa3f135681366ee8ba745735054c47b1b2adccc82906cb50a07e3",
+      "sourceDigest": "cb26bd54e117c4c7dda8abd52a1449e984cd85d3d3542b28ac37982f019679b6",
       "issuerId": "iss_cik_0001156041"
     },
     {

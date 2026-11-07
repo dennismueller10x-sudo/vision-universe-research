@@ -1247,22 +1247,23 @@
       "cik": "0001920406",
       "name": "Strive, Inc.",
       "sic": "6199",
-      "rawFacts": 2569,
-      "mappedFacts": 1047,
-      "unmappedFacts": 1543,
+      "rawFacts": 2935,
+      "mappedFacts": 1128,
+      "unmappedFacts": 1797,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "ASST",
+        "SATS",
         "SATA"
       ],
       "status": "INGESTED",
       "annualPeriods": 6,
-      "quarterlyPeriods": 21,
+      "quarterlyPeriods": 22,
       "firstPeriodEnd": "2020-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
@@ -1274,7 +1275,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2024-12-31",
           "historyYears": 3.0
@@ -1301,21 +1302,21 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2024-12-31",
           "historyYears": 3.0
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2024-12-31",
           "historyYears": 3.0
         },
         "revenue": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2024-12-31",
           "historyYears": 3.0
@@ -1329,14 +1330,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -1359,46 +1360,47 @@
         }
       },
       "quality": {
-        "HIGH": 139,
-        "MEDIUM": 1
+        "HIGH": 144,
+        "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 140,
-        "resolvedValues": 140
+        "datableValues": 146,
+        "resolvedValues": 146
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1728,
+        "rules_version": "1.1.0",
+        "total": 2016,
         "by_severity": {
-          "INFO": 1543,
-          "WARNING": 185
+          "INFO": 1797,
+          "WARNING": 219
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 9,
+          "CONCEPT_DISAGREEMENT": 13,
           "RESTATEMENT_CONFLICT": 128,
-          "UNEXPECTED_DURATION": 48,
-          "UNKNOWN_CONCEPT": 1543
+          "UNEXPECTED_DURATION": 78,
+          "UNKNOWN_CONCEPT": 1797
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-054985",
-        "filing_date": "2026-08-10",
+        "accession": "0001628280-26-071332",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 15
+        "periodic_filings": 16,
+        "acceptance_datetime": "2026-11-06T13:01:28.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "fe2de3f3e59db6f8086b52dd1135f59e09a1767a6e3933af99ae17f5641afb56",
+      "sourceDigest": "c64804aee3bb3b93c9e14067f7cfb03f2ec18af2e4fc63026550931b117a05cb",
       "issuerId": "iss_cik_0001920406"
     }
   ]
