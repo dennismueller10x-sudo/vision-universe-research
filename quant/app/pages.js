@@ -329,7 +329,7 @@
     var page = early ? early.page : el("div", { class: "q-home vu-ui qv3" });
     if (early) page.replaceChildren(early.intro); else main.append(page);
     if (!early) page.append(frag('<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Was hat sich heute verändert?</h1><p class="vu-lead">Quant prüft jeden Tag über 6.000 US-Aktien nach festen Regeln und meldet dir, was sich bewegt.</p></header>'));
-    var search = el("button", { type: "button", class: "vu-find qv3-search q-searchbar", "aria-label": "Aktie suchen und analysieren", onclick: ctx.openSearch });
+    var search = el("button", { type: "button", class: "vu-find qv3-search q-searchbar", "aria-label": "Aktie suchen, z. B. NVDA … und analysieren", onclick: ctx.openSearch });
     search.innerHTML = U().glyph("search", 18) + "<span>Aktie suchen, z. B. NVDA …</span><i aria-hidden=\"true\">" + U().glyph("spark", 18) + "</i>";
     page.append(search);
     /* So arbeitet Quant: drei Schritte, tippen öffnet das Sheet (C16) mit Erklärung, Versprechen und dem Beleg aus dem Radar. */
@@ -432,7 +432,7 @@
         var names = ctx.commonFirst(t.entered || []).slice(0, 2).map(function (tk) { return nameOf(ctx, tk) || tk; });
         var label = (labels[t.profileId] || t.profileId).split(" · ")[0];
         return '<a class="qv3-strat" href="' + U().esc(X.routes.strategy(t.profileId)) + '"><span class="qv3-strat-t"><b class="vu-sm">' + U().esc(label) + '</b><span class="vu-xs vu-mu">' + U().esc([plains[t.profileId], names.length ? names.join(", ") + " …" : ""].filter(Boolean).join(" · ")) + "</span></span>" +
-          ((t.entered || []).length ? '<span class="vu-chg">+' + t.entered.length + "</span>" : "") + ((t.exited || []).length ? '<span class="vu-chg vu-chg--down">−' + t.exited.length + "</span>" : "") + "</a>";
+          ((t.entered || []).length ? '<span role="img" aria-label="Plus ' + t.entered.length + '" class="vu-chg"><span aria-hidden="true">▲</span> +' + t.entered.length + "</span>" : "") + ((t.exited || []).length ? '<span role="img" aria-label="Minus ' + t.exited.length + '" class="vu-chg vu-chg--down"><span aria-hidden="true">▼</span> −' + t.exited.length + "</span>" : "") + "</a>";
       }).join("") + "</div>"));
     }
   }
@@ -456,7 +456,7 @@
       el("p", { class: "q-product-name vu-hero-name", text: "Quant" }),
       el("h1", { class: "q-claim vu-product-title vu-hero-headline", text: HERO_TITLE }),
       el("p", { class: "q-hero-lead qx-lead vu-product-lead vu-hero-description", text: CLAIM }),
-      el("button", { type: "button", class: "q-searchbar qx-searchbox", onclick: ctx.openSearch, "aria-label": "Aktie suchen und analysieren" }, [
+      el("button", { type: "button", class: "q-searchbar qx-searchbox", onclick: ctx.openSearch, "aria-label": "Aktie suchen, z. B. NVDA … und analysieren" }, [
         X.icon("search"), el("span", { text: "Aktie suchen, z. B. Apple oder NVDA …" }), el("i", { "aria-hidden": "true", text: "→" })]),
       el("p", { class: "q-intro-note", text: CLAIM_LEAD }),
       /* VU3: die vier Versprechen sind Erklaerung - sie stehen hinter "Mehr", die Ergebnisse darunter zuerst. */

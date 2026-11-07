@@ -97,7 +97,7 @@
     var z = c && c.plain && c.plain.zahl;
     if (!z || !z.wert) return '';
     var down = isNum(z.roh) ? z.roh < 0 : /^[−-]/.test(z.wert);
-    return '<span class="vu-chg' + (down ? ' vu-chg--down' : '') + (big ? ' dv3-chg--hero' : '') + '"><span aria-hidden="true">' + (down ? '▼' : '▲') + '</span> ' + esc(String(z.wert).replace(/^[+−-]\s?/, down ? '−' : '+')) + '</span>';
+    return '<span role="img" aria-label="' + esc(U().movementLabel ? U().movementLabel(String(z.wert).replace(/^[+−-]\s?/, down ? '−' : '+')) : String(z.wert)) + '" class="vu-chg' + (down ? ' vu-chg--down' : '') + (big ? ' dv3-chg--hero' : '') + '"><span aria-hidden="true">' + (down ? '▼' : '▲') + '</span> ' + esc(String(z.wert).replace(/^[+−-]\s?/, down ? '−' : '+')) + '</span>';
   }
   function zahlLabel(c) {
     var z = c && c.plain && c.plain.zahl;
@@ -843,7 +843,7 @@
       items.slice(0, 4).forEach(function (it) {
         var dir = it.direction, cls = dir === 'down' ? ' vu-chg--down' : dir === 'up' ? '' : ' vu-chg--flat', mark = dir === 'down' ? '▼' : dir === 'up' ? '▲' : '◆';
         var box = h('a', 'vu-box dv3-odd'); box.href = '#/maerkte/' + encodeURIComponent(it.symbol);
-        box.innerHTML = '<div class="dv3-odd__head"><b>' + esc(it.title) + '</b><span class="vu-chg' + cls + '"><span aria-hidden="true">' + mark + '</span> ' + esc(String(it.value || '').replace(/^[+−-]/, dir === 'down' ? '−' : dir === 'up' ? '+' : '$&')) + '</span></div>' +
+        box.innerHTML = '<div class="dv3-odd__head"><b>' + esc(it.title) + '</b><span role="img" aria-label="' + esc(U().movementLabel ? U().movementLabel(String(it.value || '').replace(/^[+−-]/, dir === 'down' ? '−' : dir === 'up' ? '+' : '$&')) : String(it.value || '')) + '" class="vu-chg' + cls + '"><span aria-hidden="true">' + mark + '</span> ' + esc(String(it.value || '').replace(/^[+−-]/, dir === 'down' ? '−' : dir === 'up' ? '+' : '$&')) + '</span></div>' +
           '<p>' + esc(it.evidence || '') + '</p>' + (it.notable ? U().verdict('weak', 'Ungewöhnlich') : U().verdict('mid', 'Im üblichen Rahmen'));
         sec.appendChild(box);
       });
@@ -866,7 +866,7 @@
     var sub = typ ? (k.klasse.replace(/^Tracker · /, 'Fonds ')) : (c.tracker ? 'Fonds ' + c.instrument.symbol : k.klasse);
     var stand = q.asOf ? M.standText(String(q.asOf).slice(0, 10)) : '';
     var pill = '';
-    if (ch && bp && isNum(ch.basisPoints)) pill = '<span class="vu-chg vu-chg--flat">' + esc(M.veraenderungText(c)) + '</span>';
+    if (ch && bp && isNum(ch.basisPoints)) pill = '<span role="img" aria-label="' + esc(U().movementLabel ? U().movementLabel(M.veraenderungText(c)) : M.veraenderungText(c)) + '" class="vu-chg vu-chg--flat">' + esc(M.veraenderungText(c)) + '</span>';
     else if (ch && isNum(ch.percent)) pill = U().chg(ch.percent);
     a.innerHTML = '<div class="vu-lrow__name"><b>' + esc(k.titel) + '</b><span>' + esc(sub + (stand ? ' · ' + stand.slice(0, 6) : '')) + '</span></div><div class="vu-lrow__mini"></div><div class="vu-lrow__price"><span>' + esc(wert || '–') + '</span>' + pill + '</div>';
     a.classList.add('dv3-mrow--nologo');
