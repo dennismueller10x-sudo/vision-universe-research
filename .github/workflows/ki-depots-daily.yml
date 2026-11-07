@@ -15,6 +15,13 @@ on:
       - 'docs/research/edge2/ki/ledger-A.jsonl'
       - 'docs/research/edge2/ki/ledger-B.jsonl'
       - 'scripts/research/edge2/ki-export.cjs'
+  # Der Zeitplan kommt bei Andrang Stunden zu spaet (07.11.: 23:41 lief um 03:11, vor dem Marktdaten-Refresh,
+  # Ergebnis „Unveraendert.“). Deshalb zusaetzlich direkt nach jedem erfolgreichen Marktdaten-Refresh auf main.
+  workflow_run:
+    workflows:
+      - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       today:
@@ -31,7 +38,7 @@ concurrency:
 
 jobs:
   export:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
