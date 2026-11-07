@@ -225,7 +225,7 @@
     append(top, intro('Methoden der Profis', 'Wir legen jeden Tag die Regeln von 13 berühmten Tradern auf alle US-Aktien. Du siehst, welche Aktie zu welchem Muster passt.') +
       '<p class="st-r-asof">' + U.glyph('check', 14) + '<span>Schlusskurse vom ' + dDe(sig.asOf) + ' · Beobachtung, keine Empfehlung</span></p>');
     var sfHost = document.createElement('div'); main.appendChild(sfHost);
-    sfHost.innerHTML = U.blank('Die Treffer der 13 Methoden werden geladen …', { verdict: false });
+    sfHost.className = 'st-r-pending-home'; sfHost.setAttribute('aria-busy', 'true'); sfHost.innerHTML = '<span class="vu-visually-hidden">Die Treffer der 13 Methoden werden geladen …</span>' + U.skeleton('card') + U.skeleton('rows');
     var rest = document.createElement('div'); main.appendChild(rest);
 
     var prep = (c.SETUP || 0) + (c.ENTRY_READY || 0), held = (c.ACTIVE || 0) + (c.WARNING || 0) + (c.EXIT || 0);
@@ -249,7 +249,7 @@
     X.getJSON('sf-candidates/summary.json').then(function (sum) {
       var by = sum.counts.byStage || {}, list = sum.strategies.slice().sort(function (a, b) { return b.counts.published - a.counts.published; });
       var mx = Math.max.apply(null, list.map(function (s) { return s.counts.published; }));
-      sfHost.innerHTML = '';
+      sfHost.innerHTML = ''; sfHost.classList.remove('st-r-pending-home'); sfHost.setAttribute('aria-busy', 'false');
       append(sfHost, '<div class="vu-box vu-box--ink st-r-hero"><div class="vu-ltag">Heute erkannt</div><div class="st-r-big"><b class="vu-num">' + n0(sum.counts.candidates) + '</b><span>Treffer in ' + sum.strategies.length + ' Methoden</span></div>' + ladder(by) +
         '<p>Je weiter rechts, desto genauer passt die Aktie zur Originalregel. Stand ' + dDe(sum.asOf) + '.</p></div>' +
         '<div class="st-r-gap">' + U.help(STAGE_HELP) + '</div>' +
@@ -673,7 +673,7 @@
   var JOIN = { TRIGGERED: 'ACTIVE', EXIT: 'CLOSED' };
   function stock(D, X) {
     var sig = D.signals, reg = D.registry, S = X.stratMap(reg), sym = X.SYM, main = page(X.main, X);
-    var headHost = document.createElement('div'); headHost.className = 'st-r-head'; main.appendChild(headHost);
+    var headHost = document.createElement('div'); headHost.className = 'st-r-head st-r-pending-head'; main.appendChild(headHost);
     var entries = [];
     Object.keys(sig.strategies || {}).forEach(function (id) { allOf(sig.strategies[id]).forEach(function (x) { if (x.symbol === sym) entries.push({ s: x, id: id }); }); });
     var open = entries.filter(function (e) { return (sig.strategies[e.id].open || []).indexOf(e.s) >= 0; });
@@ -681,7 +681,7 @@
     headHost.innerHTML = '<header class="vu-shead"><h1 class="vu-shead-name">' + esc(name || sym || '–') + '</h1><p class="vu-shead-meta">' + esc(sym) + '</p></header>';
     if (!sym) { append(main, '<div class="st-emptybox">' + U.blank('Keine Aktie gewählt.') + '</div>'); foot(main, X, sig); return; }
     var kit = X.stockKit();
-    var headApi = kit.then(function () { var ctx = window.VUCore.StockContext.fromUs(sym); return window.VUStockNavigator.head(headHost, { ctx: ctx, current: 'supertrader', name: name || sym, back: { href: '/supertrader/signals/', label: 'Signale' } }); }).catch(function () { return null; });
+    var headApi = kit.then(function () { var ctx = window.VUCore.StockContext.fromUs(sym); return window.VUStockNavigator.head(headHost, { ctx: ctx, current: 'supertrader', name: name || sym, pendingPrice: true, back: { href: '/supertrader/signals/', label: 'Signale' } }); }).catch(function () { return null; });
     /* Kurse nur für Aktien, die eine Methode führt oder erkennt (keine vergebliche Anfrage für unbekannte Kürzel) */
     var serP = null, ser = function () { return serP || (serP = kit.catch(function () {}).then(function () { return identity(X); }).then(function () { return series(sym); })); };
     var priced = function () { setPrice(); };
@@ -689,15 +689,16 @@
     function setPrice() {
     /* C04: veröffentlichter Schluss (ADR-002) */
     Promise.all([ser(), X.loadScript('/quant/engines/published-close.js').catch(function () {}), headApi]).then(function (r) {
-      var PC = window.VUPublishedClose, s = r[0], hd = r[2]; if (!hd || !PC) return;
-      var lp = PC.lastPoint(s, new Date().toISOString().slice(0, 10)); if (!lp) return;
+      var PC = window.VUPublishedClose, s = r[0], hd = r[2]; if (!hd) return; if (!PC) { hd.setPrice(null); headHost.classList.remove('st-r-pending-head'); return; }
+      var lp = PC.lastPoint(s, new Date().toISOString().slice(0, 10)); if (!lp) { hd.setPrice(null); headHost.classList.remove('st-r-pending-head'); return; }
       var pts = s.points, prev = pts.length > 1 ? pts[pts.length - 2][1] : null;
+      headHost.classList.remove('st-r-pending-head');
       hd.setPrice({ value: lp.close, currency: lp.currency, changePct: isNum(prev) && prev > 0 ? (lp.close / prev - 1) * 100 : null, changeLabel: 'zum Vortag', kind: 'close', at: dShort(lp.date) });
-    }).catch(function () {});
+    }).catch(function () { headApi.then(function (h) { if (h) h.setPrice(null); headHost.classList.remove('st-r-pending-head'); }); });
     }
 
-    var answer = document.createElement('div'); main.appendChild(answer);
-    answer.innerHTML = U.blank('Die 13 Methoden werden geprüft …', { verdict: false });
+    var answer = document.createElement('div'); answer.className = 'st-r-answer-slot st-r-pending-answer'; answer.setAttribute('aria-busy', 'true'); main.appendChild(answer);
+    answer.innerHTML = '<span class="vu-visually-hidden">Die 13 Methoden werden geprüft …</span>' + U.skeleton('card');
     var sfP = identity(X).then(function () { return X.getJSON('sf-candidates/summary.json'); }).then(function (sum) {
       var shard = window.VUCore.Identity.shardKey(sym);
       return ((sum.tickerShards || []).indexOf(shard) >= 0 ? X.getJSON('sf-candidates/ticker/' + shard + '.json') : Promise.resolve({ views: [] })).then(function (t) { return { sum: sum, views: (t.views || []).filter(function (v) { return v.ticker === sym; }) }; });
@@ -756,6 +757,7 @@
     foot(rest, X, sig);
 
     sfP.then(function (r) {
+      answer.classList.remove('st-r-pending-answer'); answer.setAttribute('aria-busy', 'false');
       var sum = r.sum, vs = r.views, hit = {};
       vs.forEach(function (v) { if (!hit[v.candidateId] || STAGES.indexOf(v.stage) > STAGES.indexOf(hit[v.candidateId])) hit[v.candidateId] = v.stage; });
       var nHit = Object.keys(hit).length, list = sum.strategies.slice().sort(function (a, b) { return (hit[b.candidateId] ? 1 : 0) - (hit[a.candidateId] ? 1 : 0) || b.counts.published - a.counts.published; });
@@ -764,12 +766,13 @@
         '<h2 class="vu-mt">' + esc(nHit ? (nHit === 1 ? '1 Methode erkennt ' : nHit + ' Methoden erkennen ') + label + '.' : 'Keine Methode erkennt ' + label + ' gerade.') + '</h2>' +
         '<p>' + esc(nHit ? 'Höchste Stufe: ' + STAGE_TXT[STAGES.filter(function (k) { return vs.some(function (v) { return v.stage === k; }); }).pop()] + '. Forschung, nicht zertifiziert – keine Empfehlung.' : 'Das ist ein gültiges Ergebnis: Die Aktie passt zu keinem der 13 Muster.') + '</p></div>';
       if (nHit && !entries.length) priced();
+      if (!nHit && !entries.length && !t52) headApi.then(function (h) { if (h) h.setPrice(null); headHost.classList.remove('st-r-pending-head'); });
       groupHost.innerHTML = '<div class="vu-grid st-r-g3 st-r-gap">' + GROUPS.map(function (g) { return U.tile(g[0], g[1].filter(function (c) { return hit[c]; }).length + ' von ' + g[1].length, ''); }).join('') + '</div>';
       var row = function (s) { var m = methodMeta(s), h = hit[s.candidateId]; return '<a class="st-r-wrow" href="/supertrader/strategies/?sf=' + esc(s.candidateId) + '"><div><b>' + esc(cleanName(s.name)) + '</b><span>' + esc(m.plain) + '</span></div>' + (h ? U.verdict(h === 'MODELED_TRADE_PLAN' ? 'strong' : 'mid', 'Stufe ' + (STAGES.indexOf(h) + 1) + ' · ' + STAGE_TXT[h]) : U.verdict('none', 'Nein')) + '</a>'; };
       var shown = Math.max(5, nHit);
       allHost.innerHTML = U.sect('Alle 13 Methoden') + list.slice(0, shown).map(row).join('') + (list.length > shown ? '<div class="st-r-accs">' + acc('+ ' + (list.length - shown) + ' weitere' + (nHit ? '' : ', alle ohne Treffer'), list.slice(shown).map(row).join('')) + '</div>' : '') +
         note('Signale auf Schlusskursen vom ' + dDe(sum.asOf) + '. Keine Anlageberatung.');
-    }).catch(function () { answer.innerHTML = U.blank('Die 13 Methoden sind für ' + sym + ' gerade nicht erreichbar.'); });
+    }).catch(function () { answer.classList.remove('st-r-pending-answer'); answer.setAttribute('aria-busy', 'false'); headHost.classList.remove('st-r-pending-head'); answer.innerHTML = U.blank('Die 13 Methoden sind für ' + sym + ' gerade nicht erreichbar.'); });
   }
 
   window.STRedesign = { version: 'st-redesign-1.0.0', STATE: STATE, render: { home: home, strategies: strategies, strategy: strategy, signals: signals, backtests: backtests, sources: sources, house: house, stock: stock } };

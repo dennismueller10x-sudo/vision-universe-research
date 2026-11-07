@@ -3,6 +3,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie die Plattform-Navigation, Quant startet dunkel -->
@@ -10,7 +11,15 @@
 <!-- Fruehstart: das Woerterbuch wartet jede Ansicht ab (app.js, route). Es wird deshalb schon waehrend des Buendels
      geladen und nicht erst nach seiner Ausfuehrung; quant/ui/shell.js#loadJSON uebernimmt diesen Abruf (gleiche Anfrage,
      gleiche Wiederholungen bei einem Fehler). -->
-<script>(function(){try{var p="/quant/methodology/product-language-v1.json",f=fetch(p,{cache:"no-cache"});f.catch(function(){});(window.__vuEarly=window.__vuEarly||{})[p]=f;}catch(e){}})();</script>
+<script>(function(){try{
+ function early(p,priority){var map=window.__vuEarly=window.__vuEarly||{};if(map[p])return;var f=fetch(p,{cache:"no-cache",priority:priority||"low"});f.catch(function(){});map[p]=f;setTimeout(function(){if(map[p]===f)delete map[p]},30000)}
+ early("/quant/methodology/product-language-v1.json");
+ if((!location.hash||/^#\/?$/.test(location.hash))&&!/[?&]view=/.test(location.search))early("/quant/data/product/market-regime-v1.json");
+ if(/^#\/aktie\/[A-Z0-9.-]{1,12}(?:$|\?)/i.test(location.hash))[
+  "/quant/config/development-preview.json","/quant/config/feature-gates.json",
+  "/quant/data/sec/quant-factor-inputs.json","/quant/config/market-calendar.json"
+ ].forEach(function(p){early(p)});
+}catch(e){}})();</script>
 <title>Quant – Aktien verstehen · Vision Universe®</title>
 <meta name="description" content="Vision Universe® Quant: Aktien nach festen Daten und Regeln verstehen – was dafür spricht, was dagegen, was sich verändert und was früher in ähnlichen Situationen geschah. Nachvollziehbar bis zu den Rohdaten.">
 <link rel="canonical" href="/quant/">
@@ -30,7 +39,7 @@
 <body class="dx qd qx">
 <a class="qx-skip" href="#qx-main">Zum Inhalt</a>
 <vu-navigation theme="dark" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script><script src="/assets/site-navigation.js"></script>
-<div id="qx-app"><main class="qx-main"><p class="qx-loading">Quant wird geladen …</p></main></div>
+<div id="qx-app"><main class="qx-main"><div class="qx-loading" role="status">Quant wird geladen …<div class="vu-skeleton vu-skeleton--head" aria-hidden="true"><i></i><i></i><i></i></div><div class="vu-skeleton" aria-hidden="true"><i></i><i></i><i></i></div></div></main></div>
 <noscript><p style="padding:24px">Quant benötigt JavaScript.</p></noscript>
 <script src="/quant/ui/release-guard.js"></script>
 <script src="/quant/ui/shell.js"></script>
@@ -109,6 +118,7 @@
 <script src="/company-intelligence/ui/stock-section.js"></script>
 <script src="/core/stock-context.js"></script>
 <script src="/assets/stock-navigator.js"></script>
+<script src="/quant/app/stock-boot.js"></script>
 <script src="/konto/config.js"></script>
 <script src="/assets/watchlist-button.js"></script>
 <script src="/quant/app/page-stock.js"></script>

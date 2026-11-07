@@ -1737,6 +1737,7 @@
     if (r.focus === 'suche') { var q = document.getElementById('fu-q'); if (q) q.focus({ preventScroll: true }); }
     if (global.VUNavigation) global.VUNavigation.dock({});
   }
-  window.addEventListener('hashchange', render);
+  window.addEventListener('hashchange', function () { return global.VUUI.transition ? global.VUUI.transition(render) : render(); });
+  if (global.VUUI.bindIntent) global.VUUI.bindIntent(function (url) { if (url.origin !== location.origin || url.pathname !== '/fundamental/') return null; var r = M.parseRoute(url.hash); return r.view === 'company' ? r.ticker : null; }, loadCompany);
   render();
 })(typeof globalThis !== 'undefined' ? globalThis : this);

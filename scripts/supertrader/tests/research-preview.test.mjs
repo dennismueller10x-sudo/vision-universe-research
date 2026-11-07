@@ -43,3 +43,5 @@ test('SF8-PREVIEW-ISOLATION: Modul liest nur Datendateien, keinen Vertrag, keine
 });
 
 import '../../mobile/tests/stock-json.test.mjs';
+
+import '../../mobile/tests/supertrader-home-view.test.mjs';

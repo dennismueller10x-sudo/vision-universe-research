@@ -216,13 +216,13 @@
         el("small", { class: "qv2-key-w qx-pill " + (f.tone === "good" ? "up" : f.tone === "bad" ? "down" : "warm"), "aria-hidden": "true", text: TONE_GLYPH[f.tone] + " " + capitalWord(f.word || STRIP_WORD[f.tone]) })])]);
     })) : null;
   }
-  function verdictCard(vm, factorsReason, missingNote) {
+  function verdictCard(vm, factorsReason, missingNote, earlyQuestion) {
     var o = vm.overall;
     /* qx-verdict-card nur, wo es eine Aussage gibt - ein ETF oder ein Titel
        ohne Faktorzeile traegt keine. */
     var node = el("section", { class: "qx-glance qv-glance qv2-glance" + (vm.factorState === "AVAILABLE" ? " qx-verdict-card" : " qx-verdict-none"), id: "einordnung-kurz" });
     if (vm.factorState === "AVAILABLE" && o.rated >= 3) {
-      node.append(el("p", { class: "qv3-step-k" }, [el("span", { text: "Überblick" })]), el("h2", { class: "qv3-step-q", text: "Was sagt Quant insgesamt?" }), overallInk(vm), keyTiles(vm) || el("span"));
+      node.append(el("p", { class: "qv3-step-k" }, [el("span", { text: "Überblick" })]), (earlyQuestion && earlyQuestion.className === "qv3-step-q" ? earlyQuestion : el("h2", { class: "qv3-step-q", text: "Was sagt Quant insgesamt?" })), overallInk(vm), keyTiles(vm) || el("span"));
     } else if (vm.factorState === "AVAILABLE") {
       node.append(el("div", { class: "qx-verdict-top qv2-result", dataset: { tone: o.tone } }, [
         el("span", { class: "qv2-result-ico", "aria-hidden": "true" }, [ico(o.tone === "good" ? "up" : o.tone === "bad" ? "down" : "flat")]),
@@ -828,21 +828,24 @@
     var api = ctx.api, disposers = [];
     /* Stile der Aktienseite laden parallel zu den Daten (app.js#QXLoadStockCss); gezeichnet wird erst mit ihnen. */
     var cssReady = global.QXLoadStockCss ? global.QXLoadStockCss() : Promise.resolve(true);
-    var page = el("article", { class: "qx-stock q-stock qv-stock" });
-    main.append(page);
-    var heroHost = el("div", { class: "qx-hero-host" }), bodyHost = el("div", { class: "qx-body-host" }, [X.loading("Analyse wird geladen …")]);
-    page.append(heroHost, bodyHost);
+    var early = global.VUQuantBoot && global.VUQuantBoot.get(ticker, main);
+    var page = early ? early.article : el("article", { class: "qx-stock q-stock qv-stock" });
+    if (!early) main.append(page);
+    var heroHost = early ? early.heroHost : el("div", { class: "qx-hero-host" }), bodyHost = early ? early.bodyHost : el("div", { class: "qx-body-host" }, [X.loading("Analyse wird geladen …")]);
+    if (!early) { heroHost.setAttribute("aria-busy", "true"); if (global.VUUI && global.VUUI.skeleton) heroHost.innerHTML = global.VUUI.skeleton("head"); page.append(heroHost, bodyHost); }
 
-    var brief = await (ctx.takePrefetched && ctx.takePrefetched(ticker) || api.getIntelligenceBrief(ticker).catch(function () { return null; }));
-    var src = (brief && brief.sources) || {};
-    var s = src.stock || await api.getStockIntelligence(ticker).catch(function () { return null; });
-    if (!s) { X.recent.add(ticker); bodyHost.replaceChildren(X.notice("Daten derzeit nicht verfügbar", "Die Daten dieses Titels konnten gerade nicht geladen werden. Bitte versuche es später erneut.")); return function () {}; }
+    var entryP = api.getUniverseEntry(ticker).catch(function () { return null; });
+    var s = await Promise.resolve(ctx.takePrefetched && ctx.takePrefetched(ticker)).catch(function () { return null; });
+    if (!s) s = await api.getStockIntelligence(ticker).catch(function () { return null; });
+    if (early) early.authoritative = true;
+    if (!s) { heroHost.replaceChildren(); heroHost.setAttribute("aria-busy", "false"); X.recent.add(ticker); bodyHost.replaceChildren(X.notice("Daten derzeit nicht verfügbar", "Die Daten dieses Titels konnten gerade nicht geladen werden. Bitte versuche es später erneut.")); return function () {}; }
     /* Variante B (05.11.2026): ein belegtes Nicht-Aktien-Papier (ETF, Fonds, Anleihe) ist im Verzeichnis, aber nicht
        im Aktien-Produktuniversum. Absage mit Name und Papierart statt "nicht gefunden" - keine Kurse, keine Aktienaussage. */
     if (s.reason === "OUTSIDE_EQUITY_UNIVERSE" && s.instrument) {
       var inst = s.instrument, ART = { ETF: "ETF", ETN: "ETN", FUND: "Fonds", CEF: "geschlossener Fonds", DEBT: "Anleihe", WARRANT: "Optionsschein", RIGHT: "Bezugsrecht", UNIT: "Unit", PREFERRED: "Vorzugsaktie" };
       var art = ART[inst.securityClass] || "keine Stammaktie";
       document.title = (inst.name ? inst.name + " (" + ticker + ")" : ticker) + " – keine Aktie · Vision Universe®";
+      heroHost.replaceChildren(); heroHost.setAttribute("aria-busy", "false");
       heroHost.append(el("section", { class: "v2-message" }, [
         el("h1", { class: "qx-h1", text: inst.name || ticker }),
         el("p", { class: "qx-sub", text: ticker + (inst.exchange ? " · " + inst.exchange : "") }),
@@ -854,6 +857,7 @@
       return function () {};
     }
     if (s.identityState === "UNAVAILABLE" || (s.state !== "AVAILABLE" && s.reason === "INVALID_IDENTITY")) {
+      heroHost.replaceChildren(); heroHost.setAttribute("aria-busy", "false");
       heroHost.append(el("section", { class: "v2-message" }, [el("h1", { class: "qx-h1", text: "Aktie nicht gefunden" })]));
       bodyHost.replaceChildren(X.notice("„" + ticker + "“ ist nicht im Analyseuniversum", "Quant analysiert US-Aktien mit belegten Kurs- und SEC-Daten. Fonds und ETFs wie SPY oder QQQ gehören nicht dazu – ihre Kurse findest du in Discover. Prüfe sonst das Kürzel oder suche nach dem Namen."),
         X.actions([X.btn("Aktie suchen", X.routes.stocks())]));
@@ -889,17 +893,19 @@
       el("small", { text: priceAllowed ? "Für diesen Titel liegt kein veröffentlichter Kurs vor." : VM.reasonText("DISPLAY_NOT_PERMITTED") })];
     /* Art und Gattungszahl aus dem Eintrag DIESES Titels (Ausschnitt der Liste, bereits fuer den Dienst geladen) -
        nicht aus der ganzen Liste (126 KB), die diese Seite sonst nur dafuer lud. */
-    var entry = (await api.getUniverseEntry(ticker)) || {};
+    var entry = (await entryP) || {};
+    await cssReady;
     var kind = s.securityType || entry.t || null;
     var KIND = { ETF: "ETF", PREFERRED: "Vorzugsaktie", ADR: "ADR (Hinterlegungsschein)" };
     var tags = [kind && kind !== "COMMON_STOCK" ? el("span", { class: "dx-index-badge qx-tag", text: KIND[kind] || "keine Stammaktie" }) : null,
       entry.il > 1 ? el("span", { class: "dx-index-badge qx-tag", text: "eine von " + entry.il + " Aktiengattungen" }) : null].filter(Boolean);
     var idLine = [el("b", { text: ticker }), s.industry ? el("span", { text: s.industry }) : null].concat(tags).filter(Boolean);
-    var hero = el("div", { class: "qx-stock-hero qv-head" });
-    heroHost.append(hero);
+    var hero = early ? early.hero : el("div", { class: "qx-stock-hero qv-head" });
+    if (!early) heroHost.replaceChildren(hero); heroHost.setAttribute("aria-busy", "false");
     var SN = global.VUStockNavigator, SCX = global.VUCore && global.VUCore.StockContext, headApi = null, quote = null;
     try {
-      if (SN && SN.head && SCX) headApi = SN.head(hero, { ctx: SCX.fromUs(ticker, { name: s.name }), current: "quant", name: displayName || "Aktienanalyse",
+      if (early && early.headApi) { headApi = early.headApi; headApi.setPrice(closePrice); headApi.el.querySelector(".vu-shead-actions").replaceChildren(watchBtn); }
+      else if (SN && SN.head && SCX) headApi = SN.head(hero, { ctx: SCX.fromUs(ticker, { name: s.name }), current: "quant", name: displayName || "Aktienanalyse",
         price: closePrice, back: { href: X.routes.stocks(), label: "Aktien" }, actions: watchBtn });
     } catch (e) { headApi = null; /* Kuerzel ausserhalb des Kontexts: Kopf ohne Navigator */ }
     if (headApi && headApi.el) {
@@ -942,6 +948,9 @@
     if (idn) heroHost.append(el("div", { class: "vu-alert qx-notice qv-alert", role: "note", dataset: { conflict: idn.kind || "" } }, [
       el("div", {}, [el("b", { text: idn.title }), el("p", { text: idn.shown }), el("p", { class: "qx-small", text: idn.why })])]));
 
+    /* Paint the already validated head while the independent evidence is loading. */
+    if (typeof global.requestAnimationFrame === "function") await new Promise(function (resolve) { global.requestAnimationFrame(function () { setTimeout(resolve, 0); }); });
+    var brief = await api.getIntelligenceBrief(ticker).catch(function () { return null; }), src = (brief && brief.sources) || {};
     /* ---------------------------------------------------------- Daten */
     var results = await Promise.all([
       src.factors || api.getFactorEvidence(ticker).catch(function () { return null; }),
@@ -1039,7 +1048,7 @@
     var layout = el("div", { class: "qx-stock-layout" });
     layout.id = "ueberblick"; layout.classList.add("qv2-overview");
     layout.append(chart.node);
-    layout.append(verdictCard(vm, factors && factors.reason, "Quant bildet keine Ersatzwerte. Was vorhanden ist, steht weiter unten; was fehlt, steht unter „Daten & Methodik“."));
+    layout.append(verdictCard(vm, factors && factors.reason, "Quant bildet keine Ersatzwerte. Was vorhanden ist, steht weiter unten; was fehlt, steht unter „Daten & Methodik“.", early && early.question));
     /* Die Pillen stehen ueber dem Chart und kleben beim Scrollen oben: die sechs Ansichten sind jederzeit sichtbar. */
     bodyHost.append(tabs, layout);
     var grid = el("div", { class: "qv2-grid" });

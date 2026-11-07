@@ -129,8 +129,9 @@
   /* Stile der Aktienseite (UI-Konzept 23.10.2026) - nur dort gebraucht, deshalb nicht im Buendel jeder Ansicht. */
   var STOCK_CSS = "/quant/app/stock.css", stCss = null;
   global.QXLoadStockCss = function () {
+    if (!stCss && global.VUQuantBoot && global.VUQuantBoot.styleReady) stCss = global.VUQuantBoot.styleReady.then(function (ok) { if (!ok) stCss = null; return ok; });
     if (!stCss) stCss = new Promise(function (ok) {
-      var own = global.VUReleaseGuard && global.VUReleaseGuard.identity(), l = document.createElement("link"); l.rel = "stylesheet"; l.href = STOCK_CSS + (own ? "?v=" + own.id : "");
+      var own = global.VUReleaseGuard && global.VUReleaseGuard.identity(), l = document.createElement("link"); l.rel = "stylesheet"; l.href = (document.querySelector("link[data-vu-stock-style]") || {}).href || STOCK_CSS + (own ? "?v=" + own.id : "");
       l.onload = function () { ok(true); }; l.onerror = function () { stCss = null; ok(false); };
       document.head.appendChild(l);
     });
@@ -182,15 +183,20 @@
     /* Stammaktien zuerst - Vorzugsaktien und Anleihen bleiben gezaehlt, stehen aber hinten. */
     commonFirst: function (list) { return (list || []).slice().sort(function (a, b) { return (ctx.types[a] === "COMMON_STOCK" ? 0 : 1) - (ctx.types[b] === "COMMON_STOCK" ? 0 : 1); }); },
     openSearch: function () { search.open(); },
-    /* Aktienseite: die Daten des Titels starten, sobald die Route feststeht - parallel zu Sprache und
-       Evidenz-Skript, nicht erst danach. Derselbe Aufruf wie bisher; page-stock.js uebernimmt das
-       Versprechen (takePrefetched) statt ihn zu wiederholen. Verteilung, Musterworte und Echtzeit-Hub
-       sind ohnehin geteilte, einmal geladene Versprechen. */
+    /* Warm only the canonical stock and its critical styles. Evidence,
+       distributions and the live hub start after the visible head. */
     prefetchStock: function (ticker) {
-      ctx.prefetched = { ticker: ticker, brief: api.getIntelligenceBrief(ticker).catch(function () { return null; }) };
-      ctx.distribution().catch(function () { return null; }); ctx.patternWords().catch(function () { return {}; }); ctx.hubReady().catch(function () { return false; });
+      if (ctx.prefetched && ctx.prefetched.ticker === ticker && Date.now() - ctx.prefetched.at < 30000) return;
+      global.QXLoadStockCss();
+      var pending = { ticker: ticker, at: Date.now(), stock: null };
+      pending.stock = api.getStockIntelligence(ticker).catch(function () { return null; }).finally(function () { if (ctx.prefetched === pending) ctx.prefetched = null; });
+      ctx.prefetched = pending;
     },
-    takePrefetched: function (ticker) { var p = ctx.prefetched; ctx.prefetched = null; return p && p.ticker === ticker ? p.brief : null; },
+    // A request owned by this actual navigation may settle before its lazy
+    // page module arrives. Consume it once; never reuse it across navigations.
+    startStock: function (ticker) { global.QXLoadStockCss(); ctx.routeStock = { ticker: ticker, stock: api.getStockIntelligence(ticker).catch(function () { return null; }) }; },
+    takePrefetched: function (ticker) { var p = ctx.routeStock || ctx.prefetched; ctx.routeStock = null; ctx.prefetched = null; return p && p.ticker === ticker ? p.stock : null; },
+    routeStock: null,
     prefetched: null,
     /* Im Release liegt neben der Liste eine Namensansicht (s, n, t, il; 78 statt 126 KB gzip, scripts/vu2/build-release.mjs,
        universeListViews) - dieselben Namen und Arten. Lokal und in aelteren Staenden: die volle Liste. ctx.entries traegt aus
@@ -258,7 +264,8 @@
   var main;
   function buildShell(rootEl) {
     var root = rootEl || document.getElementById("qx-app");
-    main = el("main", { class: "qx-main", id: "qx-main", tabindex: "-1" });
+    var earlyMain = !HOSTED && global.VUQuantBoot && global.VUQuantBoot.takeMain(root);
+    main = earlyMain || el("main", { class: "qx-main", id: "qx-main", tabindex: "-1" });
     var foot = HOSTED ? el("footer", { class: "q-foot qx-foot" }, [
       el("b", { text: "VISION UNIVERSE® ELLIOTT" }),
       el("p", {}, [el("span", { class: "q-beta", text: "Experimentell" }), el("span", { text: " Elliott ist ein experimentelles Strukturmodell. Projektion ≠ Wahrscheinlichkeit: Szenarien beschreiben Bedingungen, keine Vorhersage, kein Kursziel, keine Anlageempfehlung." })]),
@@ -269,7 +276,7 @@
       el("p", {}, [el("span", { class: "q-beta", text: "Beta" }), el("span", { text: " Keine Anlageempfehlung, keine Prognose, kein Kursziel. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse. Daten: SEC EDGAR, Tiingo." })]),
       el("p", {}, [el("a", { href: "#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), el("span", { text: " · " }), el("a", { href: "#/backtest", text: "Backtesting" }), el("span", { text: " · " }), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" }), el("span", { text: " · " }), el("a", { href: "/discover/", text: "Discover" })])
     ]);
-    root.replaceChildren(main, foot);
+    if (earlyMain) root.appendChild(foot); else root.replaceChildren(main, foot);
     var skip = document.querySelector(".qx-skip");
     if (skip) skip.addEventListener("click", function (e) { e.preventDefault(); main.focus(); main.scrollIntoView(); });
   }
@@ -347,6 +354,24 @@
     return { open: open, close: close, node: dialog };
   })();
 
+  var intentTimer = null, intentWindow = 0, intentCount = 0;
+  function intent(event) {
+    if (global.navigator.connection && global.navigator.connection.saveData) return;
+    var a = event.target.closest && event.target.closest('a[href]'); if (!a) return;
+    var url; try { url = new URL(a.href, location.href); } catch (_) { return; }
+    if (url.origin !== location.origin || url.pathname !== '/quant/') return;
+    var r = parse(url.hash); if (r.view !== 'aktie' || !/^[A-Z0-9.-]{1,12}$/.test(r.ticker)) return;
+    if (Date.now() - intentWindow > 30000) { intentWindow = Date.now(); intentCount = 0; }
+    if (intentCount >= 3 || ctx.prefetched && ctx.prefetched.ticker === r.ticker) return;
+    clearTimeout(intentTimer);
+    function warm() { intentCount++; ctx.prefetchStock(r.ticker); }
+    if (event.type === 'pointerover') intentTimer = setTimeout(warm, 100); else warm();
+  }
+  document.addEventListener('pointerover', intent, { passive: true });
+  document.addEventListener('pointerdown', intent, { passive: true });
+  document.addEventListener('focusin', intent);
+  document.addEventListener('pointerout', function () { clearTimeout(intentTimer); }, { passive: true });
+
   /* --------------------------------------------------------- Router */
   var dispose = null, generation = 0;
   async function route() {
@@ -359,8 +384,11 @@
     search.close();
     markNav(SECTION[r.view] || null);
     document.title = (TITLE[r.view] || "Quant") + " · Vision Universe®";
-    main.replaceChildren();
-    main.setAttribute("aria-busy", "true");
+    ctx.routeStock = null;
+    var preserveHead = (r.view === "aktie" || r.view === "home") && global.VUQuantBoot && global.VUQuantBoot.get(r.view === "home" ? "home" : r.ticker, main);
+    var bootLoading = preserveHead ? null : X.loading();
+    if (bootLoading) main.replaceChildren(bootLoading);
+    main.setAttribute("aria-busy", preserveHead ? "false" : "true");
     main.dataset.ready = "false";
     main.dataset.view = r.view;
     /* Die Aktienseite traegt dieselbe Klasse wie in Discover (dx-detail). */
@@ -374,7 +402,7 @@
       else {
         if (/^(radar|screener|strategien|aktien)$/.test(r.view)) ctx.loadNames(r.view === "screener");
         if (r.view === "radar" || r.view === "aktie") ctx.loadBacktestView();
-        if (r.view === "aktie" && /^[A-Z0-9.-]{1,12}$/.test(r.ticker)) ctx.prefetchStock(r.ticker);
+        if (r.view === "aktie" && /^[A-Z0-9.-]{1,12}$/.test(r.ticker)) ctx.startStock(r.ticker);
       }
       /* Das Paket der Ansicht startet mit den uebrigen Voraussetzungen; ein Fehler zeigt sich dort, wo die Ansicht es braucht. */
       var viewPack = r.view === "aktie" ? pack("stock") : r.view === "methodik" ? pack("method") : r.view === "zahlen" || r.view === "vergleich" ? pack("tools") : null;
@@ -382,6 +410,7 @@
       await ctx.language();
       if (gen !== generation) return;
       if (/^(screener|strategien|aktien)$/.test(r.view)) await ctx.loadNames();
+      if (bootLoading) bootLoading.remove();
       switch (r.view) {
         case "home": await global.QXPages.home(main, ctx); break;
         case "radar": await Promise.all([ctx.loadNames(), ctx.loadBacktestView()]); await global.QXPages.radar(main, ctx, r.params); break;
@@ -436,7 +465,7 @@
     if (legacy && legacy.charAt(0) === "/") { global.location.replace(legacy); return; }
     if (legacy) history.replaceState(null, "", location.pathname + legacy);
     else if (!location.hash) history.replaceState(null, "", location.pathname + "#/");
-    global.addEventListener("hashchange", route);
+    global.addEventListener("hashchange", function () { return global.VUUI && global.VUUI.transition ? global.VUUI.transition(route) : route(); });
     route();
   }
   /* ------------------------------------------------- Gast im Elliott-Produkt
