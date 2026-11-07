@@ -3,7 +3,7 @@
 Node + extern installiertes Playwright, keine Root-Abhängigkeiten. Beispiel:
 
 ```sh
-npm install --prefix /tmp/e5-tools playwright esbuild@0.25.10
+npm install --prefix /tmp/e5-tools playwright@1.65.0 esbuild@0.25.10
 node scripts/vu2/build-release.mjs --output=/tmp/e5-release
 /tmp/e5-tools/node_modules/.bin/esbuild /tmp/e5-release/quant/release-bundle.js --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile=/tmp/e5-release/quant/release-bundle.js
 ESBUILD_PATH=/tmp/e5-tools/node_modules/esbuild node scripts/vu2/minify-release.mjs /tmp/e5-release
@@ -38,3 +38,36 @@ Medians dienen der Übersicht, Einzelwerte bleiben im JSON.
 Das Skript verändert keine Produktionsdateien. `--out` schreibt ausschließlich
 den angegebenen Bericht (Standard `/tmp/e5-measurement.json`). Kalte Messungen
 prüfen keinen SW-Cache-Gewinn; Offline/Warm-Cache separat testen.
+
+## Abschlussmessung exakt mit dem Paket-1-Werkzeug
+
+Für die Abschlussmessung vom 07.11. wurde das ursprüngliche Skript unverändert
+wiederverwendet. Die späteren Diagnoseoptionen in `measure.mjs` wurden dabei
+nicht genutzt. Reproduktion aus dem Repository-Arbeitsverzeichnis:
+
+```sh
+mkdir -p /tmp/e5-p1-lab
+git show 9e2012b6f339fd6aef80ef5df7e6eb211f1ff683:scripts/mobile/measure.mjs > /tmp/e5-p1-lab/measure.mjs
+git show 9e2012b6f339fd6aef80ef5df7e6eb211f1ff683:scripts/mobile/server.mjs > /tmp/e5-p1-lab/server.mjs
+sha256sum /tmp/e5-p1-lab/measure.mjs
+ESBUILD_PATH=/tmp/e5-tools/node_modules/esbuild node scripts/mobile/refresh-code.mjs --root /tmp/e5-release --ref CODE_COMMIT
+NODE_PATH=/tmp/e5-tools/node_modules node /tmp/e5-p1-lab/measure.mjs --root /tmp/e5-release --browser /usr/bin/chromium --runs 3 --out /tmp/e5-measurement.json
+```
+
+Erwarteter SHA-256: `75f66055c528d878e85603aedd1e0819c043d401f83481955a900ac919ac6c0a`.
+Vor allen Code-Vergleichen denselben Release-Datenstand bauen und festhalten;
+keine Git-Komprimierung, Tests oder weiteren Browserprüfungen parallel zu den
+Zeitmessungen. Die Abschluss-Rohdaten und die tatsächlichen Code-Referenzen
+stehen in `docs/mobile/e5/final/`. Ein späterer Dokumentationscommit ändert
+keine gemessenen Assets. Der Kontrolllauf nutzt main-Code `9e2012b6f339`;
+die abschließende Rebase auf `3891bf5bef8d` betrifft beim E5-Ladecode nur den
+Watchlist-Vertragstest. Der feste Daten-/Logo-Snapshot bleibt in allen Läufen
+identisch. Diese Werte sind keine Produktions- oder Gerätemessung.
+
+Früher Kopf und spätere Knotenübernahme lassen sich mit blockiertem Router bzw. blockierten Technical-Engines separat prüfen:
+
+```sh
+NODE_PATH=/tmp/e5-tools/node_modules node scripts/mobile/early-head-qa.mjs --root /tmp/e5-release --out /tmp/e5-early-head.json
+```
+
+Das ist Funktions-QA ohne Drosselung; die Zeitabnahme verwendet weiterhin ausschließlich das unveränderte Paket-1-Skript.

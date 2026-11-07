@@ -116,7 +116,7 @@
     if (opts.open) { d.open = true; fill(); }
     return d;
   }
-  function loading(text) { return el("div", { class: "qx-loading", role: "status" }, [el("span", { text: text || "Wird geladen …" })]); }
+  function loading(text) { var n = el("div", { class: "qx-loading", role: "status" }, [el("span", { class: "qx-loading-label", text: text || "Wird geladen …" })]); if (global.VUUI && global.VUUI.skeleton) n.insertAdjacentHTML("beforeend", global.VUUI.skeleton("card")); return n; }
   function dateDe(iso) {
     if (!iso) return "–";
     var p = String(iso).slice(0, 10).split("-");

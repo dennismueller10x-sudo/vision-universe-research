@@ -325,9 +325,10 @@
   }
   async function home(main, ctx) {
     if (!U()) return homeLegacy(main, ctx);
-    var page = el("div", { class: "q-home vu-ui qv3" });
-    main.append(page);
-    page.append(frag('<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Was hat sich heute verändert?</h1><p class="vu-lead">Quant prüft jeden Tag über 6.000 US-Aktien nach festen Regeln und meldet dir, was sich bewegt.</p></header>'));
+    var early = global.VUQuantBoot && global.VUQuantBoot.get("home", main);
+    var page = early ? early.page : el("div", { class: "q-home vu-ui qv3" });
+    if (early) page.replaceChildren(early.intro); else main.append(page);
+    if (!early) page.append(frag('<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Was hat sich heute verändert?</h1><p class="vu-lead">Quant prüft jeden Tag über 6.000 US-Aktien nach festen Regeln und meldet dir, was sich bewegt.</p></header>'));
     var search = el("button", { type: "button", class: "vu-find qv3-search q-searchbar", "aria-label": "Aktie suchen und analysieren", onclick: ctx.openSearch });
     search.innerHTML = U().glyph("search", 18) + "<span>Aktie suchen, z. B. NVDA …</span><i aria-hidden=\"true\">" + U().glyph("spark", 18) + "</i>";
     page.append(search);
@@ -345,7 +346,8 @@
     var off = function () { if (sheet.parentNode) sheet.remove(); global.removeEventListener("hashchange", off); };
     global.addEventListener("hashchange", off);
 
-    var regimeHost = el("div"), todayHost = el("div", { class: "qv3-today" }, [X.loading("Aktuelle Stände werden geladen …")]), setupHost = el("div"), stratHost = el("div"), watchHost = el("div"), tiAlertHost = el("div");
+    var regimeHost = el("div", { class: "qv3-regime-host" }), todayHost = el("div", { class: "qv3-today" }, [X.loading("Aktuelle Stände werden geladen …")]), setupHost = el("div"), stratHost = el("div"), watchHost = el("div"), tiAlertHost = el("div");
+    regimeHost.setAttribute("aria-busy", "true"); regimeHost.innerHTML = U().skeleton("card");
     page.append(regimeHost);
     page.append(frag(U().sect("Heute bei Quant", { href: X.routes.radar(), link: "Radar" })));
     page.append(todayHost, watchHost, tiAlertHost, setupHost, stratHost);
@@ -370,13 +372,10 @@
         }))]));
     });
 
-    var dataP = Promise.all([ctx.api.getSetupScreenIndex().catch(function () { return null; }), ctx.api.getStrategyIndex().catch(function () { return null; }),
-      ctx.api.getMarketRegime().catch(function () { return null; }), ctx.api.getStrategyProfiles().catch(function () { return null; }),
-      ctx.api.getQuantRadarHome().catch(function () { return null; })]);
-    await Promise.all([ctx.loadNames(), ctx.loadBacktestView()]);
-    var r = await dataP;
-    var setupIdx = r[0], stratIdx = r[1], regime = r[2], profiles = r[3], radar = r[4];
-
+    var regimeP = ctx.api.getMarketRegime().catch(function () { return null; });
+    regimeP.then(function (regime) {
+      if (!regimeHost.isConnected) return;
+    regimeHost.replaceChildren(); regimeHost.setAttribute("aria-busy", "false");
     /* Marktlage als schwarze Karte: Urteil + Anteil über der 200-Tage-Linie + Balken + „?“ */
     if (regime && regime.state === "AVAILABLE") {
       var m = {}; (regime.measures || []).forEach(function (x) { m[x.id] = x; });
@@ -388,6 +387,14 @@
         '<p class="vu-xs">' + U().esc(share + (trend != null ? " " + Math.round(trend * 100) + " % mit Aufwärtstrend." : "")) + " Stand " + U().esc(X.dateDe(regime.asOf)) + ".</p></div>" +
         '<div style="margin-top:8px">' + U().help("200-Tage-Linie: der Durchschnittskurs der letzten 200 Handelstage. Darüber heißt: langfristig eher aufwärts.") + "</div>"));
     }
+    });
+    var dataP = Promise.all([ctx.api.getSetupScreenIndex().catch(function () { return null; }), ctx.api.getStrategyIndex().catch(function () { return null; }),
+      regimeP, ctx.api.getStrategyProfiles().catch(function () { return null; }),
+      ctx.api.getQuantRadarHome().catch(function () { return null; })]);
+    await Promise.all([ctx.loadNames(), ctx.loadBacktestView()]);
+    var r = await dataP;
+    var setupIdx = r[0], stratIdx = r[1], profiles = r[3], radar = r[4];
+
     /* Heute bei Quant: sechs Tageszahlen mit Richtung, dann der PRO-Vergleich. Ohne Radar der ehrliche Satz statt Leere. */
     if (!radar || radar.state !== "AVAILABLE") todayHost.replaceChildren(frag('<p class="vu-xs vu-mu">Gerade keine Veränderungen abrufbar. Die Tageszahlen erscheinen, sobald der Radar-Lauf veröffentlicht ist.</p>'));
     if (radar && radar.state === "AVAILABLE") {

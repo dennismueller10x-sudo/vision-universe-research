@@ -181,3 +181,22 @@
 .vu-legal p{margin:0}.vu-legal p+p,.vu-legal-facts{margin-top:6px}
 .vu-legal-facts{padding-left:18px}
 .vu-legal a{color:inherit;font-weight:700}
+
+/* E5: placeholders share the final card rhythm; no invented data or motion. */
+.vu-skeleton{display:grid;gap:12px;padding:16px;border-radius:20px;background:var(--vu-card);overflow:hidden}
+.vu-skeleton>i{display:block;height:16px;border-radius:8px;background:var(--vu-hair);width:78%}
+.vu-skeleton>i:first-child{height:32px;width:56%}
+.vu-skeleton>i:last-child{height:56px;width:100%}
+.vu-skeleton--head{min-height:174px;background:transparent;padding:8px 0}
+.vu-skeleton--head>i:last-child{height:44px}
+.vu-skeleton--rows>i{width:100%;height:44px}
+.vu-skeleton--rows>i:first-child{width:52%;height:24px}
+.vu-skeleton--rows>i:last-child{height:44px}
+.vu-ui :is(button,a[role=button],.vu-chip,.vu-persp>a,.vu-round){min-width:44px;min-height:44px;touch-action:manipulation}
+@media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}::view-transition-old(root),::view-transition-new(root){animation-duration:.14s;animation-timing-function:ease-out}}
+@media(prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none}}
+
+.vu-visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+
+/* The comparison mode already has a 46px pseudo-element hit area. */
+html body #fu-main .fu-mc-mode button.fu-seg-b{min-height:38px}

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {navigate} from '../../quality/browser-navigation.mjs';
 /* =========================================================================
    VISION UNIVERSE TECHNICAL — browser-qa.mjs
    BROWSER-PRUEFUNG DER PRODUKTWELT /technical/ (Chromium, 360, 390 und 1280 px,
@@ -73,7 +74,7 @@ function serve(dir) {
 async function main() {
   const { chromium } = require("playwright");
   const server = await serve(root), base = "http://127.0.0.1:" + server.address().port + "/technical/";
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({executablePath: process.env.CHROMIUM_PATH || undefined});
   const results = [];
   async function check(name, fn) {
     const t0 = Date.now();
@@ -99,7 +100,7 @@ async function main() {
     }
 
     await check(key + " Start", async () => {
-      await page.goto(base + "#/");
+      await navigate(page,base + "#/");
       await page.waitForSelector(".tc-tcard", { timeout: 30000 });
       assert(/Was zeigt der Chart/.test(await page.locator("h1").innerText()), "Titel als Frage fehlt");
       assert(await page.locator(".tc-tcard").count() === 3, "drei fertige Suchen fehlen");
@@ -113,9 +114,9 @@ async function main() {
     });
 
     await check(key + " Screener", async () => {
-      await page.goto(base + "#/screener?preset=breakout");
+      await navigate(page,base + "#/screener?preset=breakout");
       await page.waitForSelector(".tc-hit .tc-befund", { timeout: 30000 });
-      await page.goto(base + "#/screener?trend=sma200");
+      await navigate(page,base + "#/screener?trend=sma200");
       await page.waitForSelector(".tc-countcard");
       const before = await page.locator(".tc-countcard b").innerText();
       await page.locator(".tc-filter-btn").click();
@@ -127,19 +128,19 @@ async function main() {
       await page.waitForFunction(() => /muster=dreieck/.test(location.hash));
       await page.waitForFunction((b) => document.querySelector(".tc-countcard b") && document.querySelector(".tc-countcard b").innerText !== b, before);
       assert(await page.locator(".tc-funnel li").count() >= 2, "Trichter ohne Filterschritt");
-      await page.goto(base + "#/screener?trend=sma200&muster=dreieck&ansicht=tabelle");
+      await navigate(page,base + "#/screener?trend=sma200&muster=dreieck&ansicht=tabelle");
       await page.waitForSelector(".tc-ptable tbody tr", { timeout: 30000 });
       await clean("Screener");
     });
 
     await check(key + " Vorlagen", async () => {
-      await page.goto(base + "#/screener?reiter=vorlagen");
+      await navigate(page,base + "#/screener?reiter=vorlagen");
       await page.waitForSelector(".tc-tpl-group .tc-row", { timeout: 30000 });
       assert(await page.locator(".tc-tpl-group .tc-row").count() >= 12, "Vorlagen fehlen");
       const counts = await page.locator(".tc-tpl-group .tc-row-count").allTextContents();
       assert(counts.every((t) => /\d/.test(t)), "Vorlage ohne Trefferzahl: " + counts.join(","));
       await clean("Vorlagen-Auswahl");
-      await page.goto(base + "#/vorlagen/uptrendBasic");
+      await navigate(page,base + "#/vorlagen/uptrendBasic");
       await page.waitForSelector(".tc-hit .tc-ticks", { timeout: 30000 });
       assert(await page.locator(".tc-hit").first().locator(".tc-ticks li").count() === 5, "Checkliste ohne 5 Kriterien");
       assert(await page.locator(".tc-tpl-seg a", { hasText: "Fast erfüllt" }).count() === 1, "Fast erfüllt fehlt");
@@ -159,7 +160,7 @@ async function main() {
     });
 
     await check(key + " Assistent", async () => {
-      await page.goto(base + "#/assistent");
+      await navigate(page,base + "#/assistent");
       await page.waitForSelector(".tc-goal", { timeout: 30000 });
       assert(await page.locator(".tc-goals .tc-goal").count() === 8, "Analyseziele fehlen");
       await clean("Assistent-Auswahl");
@@ -199,17 +200,17 @@ async function main() {
       assert(/Trendfolge/.test(await page.locator(".tc-tpl-panel summary").innerText()), "Pruefleiste ohne Analyseziel");
       await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
       await clean("Analyseziel und Chart");
-      await page.goto(base + "#/assistent/ausbruch?k=");
+      await navigate(page,base + "#/assistent/ausbruch?k=");
       await page.waitForSelector(".tc-state", { timeout: 15000 });
       assert(/Kein Kriterium/.test(await page.locator(".tc-state").innerText()), "leere Auswahl ohne Zustand");
-      await page.goto(base + "#/assistent/gibtsnicht");
+      await navigate(page,base + "#/assistent/gibtsnicht");
       await page.waitForSelector(".tc-title");
       assert(/nicht gefunden/.test(await page.locator(".tc-title").innerText()), "unbekanntes Ziel ohne Zustand");
       await clean("Assistent-Zustaende");
     });
 
     await check(key + " Suche in Worten", async () => {
-      await page.goto(base + "#/screener");
+      await navigate(page,base + "#/screener");
       await page.waitForSelector("#tc-ts-input", { timeout: 30000 });
       await page.fill("#tc-ts-input", "Dreieck über der SMA 200 mit Mondphase");
       await page.waitForSelector(".tc-ts-preview .tc-mini.is-warn");
@@ -225,7 +226,7 @@ async function main() {
     });
 
     await check(key + " Baukasten und Gespeichert", async () => {
-      await page.goto(base + "#/screener");
+      await navigate(page,base + "#/screener");
       await page.waitForSelector(".tc-filter-btn", { timeout: 30000 });
       await page.locator(".tc-filter-btn").click();
       await page.waitForSelector(".tc-builder summary", { timeout: 30000 });
@@ -242,7 +243,7 @@ async function main() {
       await page.locator(".tc-save-btn").click();
       await page.fill(".tc-save-form input", "QA Baukasten");
       await page.locator(".tc-save-form button[type=submit]").click();
-      await page.goto(base + "#/screener?reiter=gespeichert");
+      await navigate(page,base + "#/screener?reiter=gespeichert");
       await page.waitForSelector(".tc-saved");
       await page.waitForFunction(() => /\d/.test(document.querySelector(".tc-saved .tc-hit-score b").textContent));
       assert(/RSI 14/.test(await page.locator(".tc-saved .tc-row-text span").first().innerText()), "Beschreibung fehlt");
@@ -250,7 +251,7 @@ async function main() {
     });
 
     await check(key + " Chart einfach", async () => {
-      await page.goto(base + "#/chart/NVDA");
+      await navigate(page,base + "#/chart/NVDA");
       await page.waitForSelector(".tc-saycard [data-verdict]", { timeout: 45000 });
       await page.waitForSelector(".tc-chart svg .tc-price-line");
       assert(await page.locator(".tc-chart .tc-up rect, .tc-chart .tc-down rect").count() === 0, "Kerzen in der Einsteigeransicht");
@@ -273,7 +274,7 @@ async function main() {
     });
 
     await check(key + " Chart Studio", async () => {
-      await page.goto(base + "#/chart/NVDA/studio");
+      await navigate(page,base + "#/chart/NVDA/studio");
       await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
       const candles = () => page.locator(".tc-chart .tc-up rect, .tc-chart .tc-down rect").count();
       const year = await candles();
@@ -333,12 +334,12 @@ async function main() {
     });
 
     await check(key + " Formationsfokus", async () => {
-      await page.goto(base + "#/chart/AAPL/studio");
+      await navigate(page,base + "#/chart/AAPL/studio");
       await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
       assert(await page.locator(".tc-signals .tc-detail dt", { hasText: "Historisch" }).count() >= 1, "Evidenzzeile in der Befundkarte fehlt");
       const href = await page.locator(".tc-signals a[href*='?f=']").first().getAttribute("href");
       assert(href, "kein Fokus-Link in den Befundkarten");
-      await page.goto(base + href);
+      await navigate(page,base + href);
       await page.waitForSelector(".tc-focus b", { timeout: 45000 });
       await page.waitForSelector(".tc-chart svg");
       /* Das Fenster beginnt am ersten Formationspunkt, also liegt der Erkennungstag darin. */
@@ -352,7 +353,7 @@ async function main() {
     });
 
     await check(key + " Signale", async () => {
-      await page.goto(base + "#/chart/AAPL/signale");
+      await navigate(page,base + "#/chart/AAPL/signale");
       await page.waitForSelector(".tc-history", { timeout: 45000 });
       assert(await page.locator(".tc-signal").count() >= 1, "keine Befunde");
       await page.waitForSelector(".tc-worlds .tc-world-card[data-world=quant]", { timeout: 30000 });
@@ -361,7 +362,7 @@ async function main() {
     });
 
     await check(key + " Menue", async () => {
-      await page.goto(base + "#/chart/NVDA");
+      await navigate(page,base + "#/chart/NVDA");
       await page.waitForFunction(() => !!document.getElementById("vu-dock"), null, { timeout: 10000 });
       await page.locator("#vu-dock button.menu").click();
       await page.waitForFunction(() => { const p = document.querySelector("vu-navigation").shadowRoot.querySelector(".panel"); return getComputedStyle(p).visibility === "visible"; }, null, { timeout: 3000 });
@@ -393,12 +394,12 @@ async function main() {
     });
 
     await check(key + " Muster", async () => {
-      await page.goto(base + "#/muster");
+      await navigate(page,base + "#/muster");
       await page.waitForSelector(".tc-plist .tc-prow", { timeout: 30000 });
       assert(await page.locator(".tc-plist .tc-prow").count() === 9, "Heute im Markt: 9 Muster erwartet");
       await page.waitForSelector(".tc-evbig, .tc-evrow", { timeout: 15000 });
       await clean("Muster");
-      await page.goto(base + "#/methodik?reiter=regeln");
+      await navigate(page,base + "#/methodik?reiter=regeln");
       await page.waitForSelector(".tc-defs dt", { timeout: 30000, state: "attached" });
       assert(await page.locator(".tc-defs dt").count() >= 18, "Indikatorkatalog unvollstaendig");
       await page.waitForSelector(".tc-table tbody tr", { timeout: 15000, state: "attached" });
