@@ -1,94 +1,84 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-11-06T03:52:06.582Z",
+  "checkedAt": "2026-11-07T02:07:48.067Z",
   "target": "repository",
   "market": {
     "state": "CLOSED",
-    "localDate": "2026-11-05",
-    "localTime": "22:52:06",
-    "lastCompletedSession": "2026-11-05",
-    "currentSession": "2026-11-05",
-    "expectedIntradaySession": "2026-11-05"
+    "localDate": "2026-11-06",
+    "localTime": "21:07:48",
+    "lastCompletedSession": "2026-11-06",
+    "currentSession": "2026-11-06",
+    "expectedIntradaySession": "2026-11-06"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-11-05T21:00:26.293Z",
+    "indexGeneratedAt": "2026-11-07T02:07:33.523Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
-      "sessionDate": "2026-11-05",
+      "sessionDate": "2026-11-06",
       "kind": "current",
-      "isRunning": true,
-      "isComplete": false
+      "isRunning": false,
+      "isComplete": true
     },
     "dataSession": {
-      "sessionDate": "2026-11-05",
-      "asOf": "2026-11-05T20:55:00.000Z",
-      "asOfLocal": "15:55",
+      "sessionDate": "2026-11-06",
+      "asOf": "2026-11-06T21:55:00.000Z",
+      "asOfLocal": "16:55",
       "regularComplete": false,
-      "snapshots": 1406,
-      "fetchedAfterClose": false,
-      "afterCloseSnapshots": 0,
-      "finalSlotSnapshots": 0,
-      "universe": false
+      "snapshots": 4742,
+      "fetchedAfterClose": true,
+      "afterCloseSnapshots": 4741,
+      "finalSlotSnapshots": 4302,
+      "universe": true
     },
-    "dataState": "STALE",
-    "dataReason": "closeMissing",
-    "dataLabel": "Heute · Stand 15:55 · nicht aktuell",
-    "entries": 1416,
+    "dataState": "LAST_SESSION",
+    "dataReason": "sessionCompleteNoLateTrades",
+    "dataLabel": "Heute · Schluss · letzter Kurs 16:55",
+    "entries": 1389,
     "byState": {
       "LIVE": 0,
-      "LAST_SESSION": 0,
-      "STALE": 1416,
+      "LAST_SESSION": 1377,
+      "STALE": 12,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "closeMissing": 1406,
-      "lastSessionMissing": 10
+      "lastCompletedSession": 1354,
+      "sessionCompleteNoLateTrades": 23,
+      "lastSessionMissing": 11,
+      "closeMissing": 1
     },
     "staleSample": [
-      "A",
-      "AAMI",
-      "AAOI",
-      "AAON",
-      "AAPL",
-      "ABBV",
-      "ABCL",
-      "ABG",
-      "ABLV",
-      "ABNB",
-      "ABSI",
-      "ABT",
-      "ABTC",
-      "ABX",
-      "ACB",
-      "ACCO",
-      "ACEL",
-      "ACGL",
-      "ACHC",
-      "ACHR",
-      "ACIC",
-      "ACM",
-      "ACMR",
-      "ACN",
-      "ACTG"
+      "AIFA",
+      "BWMN",
+      "CPHC",
+      "FEDU",
+      "ICG",
+      "PDC",
+      "RDI",
+      "ROLR",
+      "SLND",
+      "STEM",
+      "TVC",
+      "VIOT"
     ],
     "universeSessions": [
-      "2026-11-04"
+      "2026-11-05",
+      "2026-11-06"
     ],
-    "universeCoversLastSession": false,
-    "state": "STALE"
+    "universeCoversLastSession": true,
+    "state": "OK"
   },
   "daily": {
     "universeAsOf": "2026-11-05",
-    "generatedAt": "2026-11-06T03:52:00.593Z",
+    "generatedAt": "2026-11-06T15:30:18.926Z",
     "state": "LAST_SESSION",
     "basis": "series",
     "summaryState": "LAST_SESSION",
-    "reason": "lastCompletedSession",
-    "label": "Schluss Heute",
+    "reason": "closePendingWithinGrace",
+    "label": "Schluss Do., 05.11. · Freitag folgt",
     "seriesState": "LAST_SESSION",
     "summaryContradictsSeries": false,
-    "expectedSession": "2026-11-05",
+    "expectedSession": "2026-11-06",
     "sample": {
       "sample": 40,
       "byState": {
@@ -98,16 +88,13 @@
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "lastCompletedSession": 40
+        "closePendingWithinGrace": 40
       },
       "staleSample": [],
-      "seriesIndexCount": 6567
+      "seriesIndexCount": 6298
     }
   },
-  "overall": "STALE",
-  "findings": [
-    "Intraday STALE: Datenstand 2026-11-05, erwartet 2026-11-05 (closeMissing)",
-    "Universumslauf fehlt: Sitzung 2026-11-05 liegt nur fuer den Discover-Umfang vor (6.9 h nach Schluss)"
-  ],
+  "overall": "OK",
+  "findings": [],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
