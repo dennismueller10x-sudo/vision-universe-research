@@ -284,3 +284,21 @@ Die `factors-FULL_UNIVERSE.json` selbst bleibt als Quelle der Shards unveränder
 3. **Listen mit Index, Detail mit Shard:** Muster ist bereits vorhanden (Faktoren, Technical je Ticker, Supertrader `stock/`). Übertragen auf Supertrader-Start und Discover-Nachweise.
 4. **HTTP-Cache für die App:** GitHub Pages sendet `cache-control: max-age=600`. Für die App reicht das nicht als Offline-Ersatz. Ein Cache für **Marktdaten** wäre fachlich falsch (veraltete Kurse), siehe `sw.js`. Offline bleibt deshalb ein Hinweis, kein Datenstand.
 5. **Prefetch nur im WLAN** (Network-Plugin liefert Verbindungsart), nie für Marktdaten.
+
+## K3: Hauptseiten nach E5 + K2 (07.11.2026, Strang K)
+
+Werkzeug `scripts/mobile/measure.mjs` (E5-Labor: Chromium 390×844, DPR 2, Touch, 1,6 Mbit/s, 150 ms, CPU×4, kalt, SW blockiert, 3 Läufe, Median), lokaler Release aus `claude/k2-page-transitions` (E5-Stapel + K2). Kein echtes iOS-WebKit verfügbar (nur Chromium installiert); Laborwerte, keine Produktions- oder Gerätemessung.
+
+| Route | LCP s | erster Kurs s | CLS | Requests |
+|---|---:|---:|---:|---:|
+| `/mein-dashboard/` | 0,72 | – | 0,000 | 33 |
+| `/quant/musterdepots/` | 1,10 | – | 0,000 | 16 |
+| `/quant/#/aktie/NVDA` | 1,42 | 1,40 | 0,055 | 51 |
+| `/supertrader/stock/NVDA/` | 1,88 | 2,59 | 0,054 | 36 |
+| `/supertrader/` | 2,05 | – | 0,013 | 23 |
+| `/technical/#/chart/NVDA` vorher | 3,08 | 3,08 | 0,052 | 61 |
+| `/technical/#/chart/NVDA` nach K3 | **2,43** | **2,42** | 0,055 | 61 |
+
+Größte Bremse war der Technical-Kurs: das Instrument (`technical-signals-v1/by-ticker/<T>.json.gz`) wurde erst nach 18 Seitenskripten angefragt. K3 fordert es per Preload im `<head>` an (Adresse geprüft gegen `technicalPaths()[0]`, `technical/tests/early-instrument.test.mjs`).
+
+Offen: Supertrader-Aktie (Kurs 2,59 s). Ihr Kurs kommt aus `discover-series/<securityId>.json`; ein Preload müsste die Kennung im Seitengenerator über `core/identity.js` bilden (ADR-001), nicht im HTML. Ziel „Erstaufruf < 2 s“ erreichen damit 4 der 6 Hauptseiten (LCP); Technical und Supertrader-Start liegen knapp darüber. Tabwechsel sind durch K2 (Vorladen, TTFB ≈ 2 ms) und die SPA-Routen deutlich unter 300 ms bis zum ersten Inhalt bei vorgeladenen Zielen.
