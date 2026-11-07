@@ -54,7 +54,7 @@
        "lazy" Bild ausserhalb des Dokuments womoeglich nie zu) und wird erst
        sichtbar, wenn es geladen ist - bis dahin bleibt der Buchstabe. */
     var img = global.document.createElement("img");
-    img.alt = "";
+    img.alt = ""; img.width = 56; img.height = 56;
     /* Ein ausgeblendetes Logo (onlyLogo) laedt der Browser "lazy" nie. */
     img.loading = sofort ? "eager" : "lazy";
     img.decoding = "async";
