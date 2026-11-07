@@ -466,15 +466,15 @@ export async function runE9SymbolProbe({ out, publicOut, apiKey = process.env.MA
       const row = (m.rows ?? [])[0] ?? null;
       const mics = row ? [row.stock_exchange?.mic, ...(row.stock_exchanges ?? []).map(e => e.mic ?? e.exchange_mic)].filter(Boolean) : [];
       const currency = row?.price_currency ?? row?.currency ?? row?.stock_exchange?.currency?.code ?? row?.stock_exchange?.currency ?? null;
-      meta.set(x.params.symbols, { sent: true, http: m.status, isin: row?.isin ?? null, mics, currency: typeof currency === 'string' ? currency : null });
+      meta.set(x.params.symbols, { sent: true, http: m.status, row: !!row, isin: row?.isin ?? null, mics, currency: typeof currency === 'string' ? currency : null });
     }
     for (const x of results) {
       const m = x.exchange ? null : meta.get(x.params.symbols) ?? null;
-      x.metadata = m ? { http: m.http ?? null, isinMatches: m.isin === x.isin, micMatches: (m.mics ?? []).includes(x.mic), currency: m.currency ?? null } : null;
+      x.metadata = m ? { http: m.http ?? null, rowParsed: !!m.row, isinReported: !!m.isin, isinMatches: m.isin === x.isin, micMatches: (m.mics ?? []).includes(x.mic), currency: m.currency ?? null } : null;
       const currency = x.rowCurrency ?? m?.currency ?? null;
       x.verdict = x.targetState !== 'ROW_RETURNED' ? (x.targetState === 'EMPTY' ? 'STILL_MISSING' : 'NOT_DETERMINED_' + x.targetState)
         : !x.controlOk ? 'ROW_BUT_CONTROL_NOT_CONFIRMED' : !x.ohlcPlausible ? 'ROW_BUT_OHLC_IMPLAUSIBLE' : x.actions.unresolved ? 'ROW_BUT_CORPORATE_ACTION_UNRESOLVED'
-          : !m ? 'ROW_BUT_ISIN_UNPROVEN' : !x.metadata.isinMatches ? 'ROW_BUT_ISIN_MISMATCH' : !x.metadata.micMatches ? 'ROW_BUT_MIC_UNPROVEN'
+          : !m ? 'ROW_BUT_ISIN_UNPROVEN' : !m.row ? 'ROW_BUT_METADATA_EMPTY_ISIN_UNPROVEN' : !m.isin ? 'ROW_BUT_ISIN_NOT_REPORTED' : !x.metadata.isinMatches ? 'ROW_BUT_ISIN_MISMATCH' : !x.metadata.micMatches ? 'ROW_BUT_MIC_UNPROVEN'
             : currency === null ? 'ROW_BUT_CURRENCY_UNPROVEN' : currency !== 'EUR' ? 'ROW_BUT_CURRENCY_MISMATCH' : 'RECOVERED_CANDIDATE';
     }
     const used = ledger.used();

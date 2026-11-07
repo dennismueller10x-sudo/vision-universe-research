@@ -162,6 +162,7 @@ test('E9 probe: counts only, proven candidate needs control, ISIN, MIC and EUR',
     assert.equal(new Set(p.calls).size, p.calls.length, 'no request repeated');
     assert.equal(s.recoveredCandidateSessions, 2, 'SAP on both gap days');
     assert.ok(s.verdicts.ROW_BUT_ISIN_UNPROVEN >= 1, 'bare symbols never count');
+    assert.equal(s.verdicts.ROW_BUT_ISIN_MISMATCH, undefined, 'an empty metadata answer is never called a mismatch');
     assert.equal(s.credits.requestsSent, p.calls.length);
     const pub = readFileSync(d.publicOut, 'utf8');
     assert.equal(pub.includes(KEY), false);
