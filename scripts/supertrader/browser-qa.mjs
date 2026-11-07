@@ -140,17 +140,21 @@ async function main() {
     // dem oeffentlichen Pruefwert gebauten Browserzustand -, dann wird ueber das
     // Formular mit dem Passwort aus RESEARCH_ACCESS_PASSWORD eingeloggt (nie geloggt).
     if (args['access-login']) {
+      // Sichtbares Produkt: die neu gestaltete Startseite (.st-r-intro, ST01) oder ein
+      // klassischer Kopf (.st-hero). Seit dem Redesign (#1361) hat die Startseite kein .st-hero
+      // mehr; das Warten darauf liess den Login scheitern und die Schutzproben leer laufen.
+      const PRODUCT = '.st-r-intro, .st-hero';
       const pass = process.env.RESEARCH_ACCESS_PASSWORD || '';
       const p = await ctx.newPage();
       await p.goto(base + '/supertrader/', { waitUntil: 'domcontentloaded' });
       await p.locator('#research-access-gate').waitFor({ timeout: 30000 });
       await p.waitForTimeout(1500);
-      if (await p.locator('.st-hero').count()) failures.push(`${vpName} Zugangsmaske: Produkt ohne Login sichtbar`);
+      if (await p.locator(PRODUCT).count()) failures.push(`${vpName} Zugangsmaske: Produkt ohne Login sichtbar`);
       const cfg = JSON.parse(await p.locator('#research-access-settings').textContent());
       await p.evaluate((c) => localStorage.setItem(c.storageKey, JSON.stringify({ version: c.version, verifier: c.verifier, key: c.verifier, expiresAt: Date.now() + c.durationMs })), cfg);
       await p.reload({ waitUntil: 'domcontentloaded' });
       await p.waitForTimeout(2500);
-      if (await p.locator('.st-hero').count()) failures.push(`${vpName} Zugangsmaske: oeffentlicher Pruefwert oeffnet das Produkt`);
+      if (await p.locator(PRODUCT).count()) failures.push(`${vpName} Zugangsmaske: oeffentlicher Pruefwert oeffnet das Produkt`);
       // Gefaelschten Zustand entfernen, damit der Login wirklich ueber das Formular geht.
       await p.evaluate((c) => localStorage.removeItem(c.storageKey), cfg);
       await p.reload({ waitUntil: 'domcontentloaded' });
@@ -159,7 +163,7 @@ async function main() {
       else {
         await p.locator('#research-password').fill(pass);
         await p.locator('#research-access-form button').click();
-        try { await p.locator('.st-hero').waitFor({ timeout: 60000 }); } catch { failures.push(`${vpName} Login ueber die Zugangsmaske fehlgeschlagen`); }
+        try { await p.locator(PRODUCT).first().waitFor({ timeout: 60000 }); } catch { failures.push(`${vpName} Login ueber die Zugangsmaske fehlgeschlagen`); }
       }
       await p.close();
     }
