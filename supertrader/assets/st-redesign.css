@@ -237,3 +237,7 @@
 .sf-r-head .sf-limits li,.sf-r-head .sf-limits[data-strong="true"] li{background:var(--vu-card);color:var(--vu-ink);border:1px solid var(--vu-hair);margin-top:6px}
 .sf-r-head .sf-limits li .st-ic{color:var(--vu-ink)}
 .sf-r .sf-more>summary{min-height:36px;font-size:13px}
+
+/* Trade-Entwicklung (Einstieg → Schluss bzw. Ausstieg): Plus neongrün (vu-chg), Minus rot statt schwarz – Owner-Wunsch 07.11.2026 */
+.st-r-res .vu-chg--down{background:#d6303c;color:#fff}
+.st-r-none{display:flex;flex-wrap:wrap;align-items:center;gap:8px}

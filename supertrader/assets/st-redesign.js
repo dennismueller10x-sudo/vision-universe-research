@@ -32,6 +32,7 @@
     REASSESSED_AFTER_RULE_CHANGE: ['Nach Regeländerung neu bewertet', 'Nach einer Regeländerung erneut geprüft.', 'none']
   };
   var LIFE = ['SETUP', 'ENTRY_READY', 'TRIGGERED', 'ACTIVE', 'WARNING', 'EXIT', 'CLOSED', 'INVALIDATED'];
+  function lifeIx(st) { return LIFE.indexOf(st === 'ACTIVE_AGAIN' ? 'ACTIVE' : st); }
   function stateName(st) { return (STATE[st] || [st])[0]; }
   function stateVerdict(st, text) { var x = STATE[st] || [st, '', 'none']; return U.verdict(x[2], text || x[0]); }
 
@@ -156,7 +157,7 @@
       var stop = stopOf(s), luft = isNum(stop) && isNum(close) && close > 0 ? (close - stop) / close : null, since = isNum(close) ? close / s.entry.price - 1 : null;
       return '<a class="st-r-sig" href="' + esc(stockHref(s.symbol)) + '">' + head + trackPos(stop, s.entry.price, close) +
         '<div class="st-r-trkl vu-num"><span>Stop ' + usd(stop) + '</span><span class="vu-mu">Einstieg ' + usd(s.entry.price) + '</span><span>Schluss ' + usd(close) + '</span></div>' +
-        '<div class="st-r-sfoot"><span><b class="vu-num">' + (isNum(luft) ? U.num(luft * 100, 1) + ' %' : '–') + '</b> Luft bis zum Stop</span>' + U.chg(isNum(since) ? since * 100 : null) + '</div></a>';
+        '<div class="st-r-sfoot"><span><b class="vu-num">' + (isNum(luft) ? U.num(luft * 100, 1) + ' %' : '–') + '</b> Luft bis zum Stop</span>' + '<span class="st-r-res">' + U.chg(isNum(since) ? since * 100 : null) + '</span></div></a>';
     }
     var dist = isNum(lv.trigger) && isNum(close) && close > 0 ? lv.trigger / close - 1 : null;
     return '<a class="st-r-sig" href="' + esc(stockHref(s.symbol)) + '">' + head + trackPrep(lv.invalidation, close, lv.trigger) +
@@ -207,6 +208,13 @@
     var tr = s.transitions || [], inn = null, out = null;
     tr.forEach(function (t) { if (!inn && t.state === 'ACTIVE') inn = t; if (!out && (t.state === 'EXIT' || t.state === 'CLOSED')) out = t; });
     return inn ? { inn: inn, out: out } : null;
+  }
+  /* Realisierte Entwicklung einer abgeschlossenen Modellposition: Einstiegs- zu Ausstiegskurs (CLOSED), ohne Nachrechnen eines Zustands */
+  function tradeRes(s) {
+    var inn = s.entry && s.entry.price, tr = s.transitions || [], out = null;
+    for (var i = tr.length - 1; i >= 0 && out == null; i--) if (tr[i].state === 'CLOSED' || tr[i].state === 'EXIT') out = tr[i].price;
+    if (s.exit && isNum(s.exit.price)) out = s.exit.price;
+    return isNum(inn) && inn > 0 && isNum(out) ? out / inn - 1 : null;
   }
   function allOf(st) { return [].concat(st.open || [], st.closed || [], st.invalidated || [], st.retired || []); }
 
@@ -698,6 +706,11 @@
 
     /* Musterdepot: offene Einträge (Ein-/Ausstieg im ersten Bildschirm) */
     if (open.length) append(rest, U.sect('Heute im Musterdepot') + open.map(function (e) { return sigCard(e.s, S[e.id] ? S[e.id].world_name : e.id); }).join(''));
+    else {
+      /* Keine offene Modellposition: sagen, warum der Balken fehlt, statt ihn wortlos wegzulassen */
+      var lastOut = null; entries.forEach(function (e) { (e.s.transitions || []).forEach(function (t) { if (t.state === 'CLOSED' && (!lastOut || t.date > lastOut)) lastOut = t.date; }); });
+      if (lastOut) append(rest, U.sect('Heute im Musterdepot') + '<div class="vu-box st-r-gap st-r-none">' + U.verdict('none', 'Keine offene Position') + ' <span class="vu-sm">Das Musterdepot hält ' + esc(sym) + ' gerade nicht. Zuletzt abgeschlossen am ' + dShort(lastOut) + ', Ergebnis im Protokoll.</span></div>');
+    }
     var groupHost = document.createElement('div'); rest.appendChild(groupHost);
     /* Zyklus im Chart + Protokoll als Zeitleiste */
     var cyc = null, cycIds = [];
@@ -705,23 +718,31 @@
     if (cyc) entries.forEach(function (e) { var c = cycle(e.s); if (c && c.inn.date === cyc.inn.date) { cycIds.push(S[e.id] ? S[e.id].world_name : e.id); if (c.out && (!cyc.out || c.out.date > cyc.out.date)) cyc.out = c.out; } });
     var chartHost = null;
     if (cyc) {
-      append(rest, U.sect(cyc.out ? 'Zuletzt im Musterdepot' : 'Im Musterdepot seit ' + dShort(cyc.inn.date)) + '<div class="vu-box st-r-chartbox"><div data-chart></div><div class="st-r-marks"><span>① ' + dShort(cyc.inn.date) + ' Einstieg ' + esc(cycIds.join(' und ')) + ' · ' + usd(cyc.inn.price) + '</span>' + (cyc.out ? '<span>② ' + dShort(cyc.out.date) + ' Ausstieg · ' + usd(cyc.out.price) + '</span>' : '') + '</div></div>');
+      append(rest, U.sect(cyc.out ? 'Zuletzt im Musterdepot' : 'Im Musterdepot seit ' + dShort(cyc.inn.date)) + '<div class="vu-box st-r-chartbox"><div data-chart></div><div class="st-r-marks"><span>① ' + dShort(cyc.inn.date) + ' Einstieg ' + esc(cycIds.join(' und ')) + ' · ' + usd(cyc.inn.price) + '</span>' + (cyc.out ? '<span>② ' + dShort(cyc.out.date) + ' Ausstieg · ' + usd(cyc.out.price) + (isNum(cyc.inn.price) && cyc.inn.price > 0 && isNum(cyc.out.price) ? ' <span class="st-r-res">' + U.chg((cyc.out.price / cyc.inn.price - 1) * 100) + '</span>' : '') + '</span>' : '') + '</div></div>');
       chartHost = rest.querySelector('[data-chart]');
       ser().then(function (s) { drawChart(chartHost, lastMonths(s.points, 3), { marks: [[cyc.inn.date, '1']].concat(cyc.out ? [[cyc.out.date, '2']] : []), label: sym, height: 150 }); }).catch(function () { chartHost.innerHTML = U.blank('Für ' + sym + ' liegen keine veröffentlichten Tageskurse vor.'); });
     }
     var ev = {};
     entries.forEach(function (e) {
-      (e.s.transitions || []).forEach(function (t) {
+      var tr = e.s.transitions || [], entered = false;
+      tr.forEach(function (t, i) {
         if (t.state === 'INVALIDATED' && t.ruleId === 'LC-VERSION-RETIRED') return;
-        var st = JOIN[t.state] || t.state, k = t.date + '|' + st, m = S[e.id] ? S[e.id].world_name : e.id;
-        var x = ev[k] || (ev[k] = { date: t.date, st: st, methods: [], price: null });
+        /* ACTIVE nach einem Warnzeichen ist kein neuer Einstieg, sondern die Rückkehr in den Normalzustand */
+        var st = JOIN[t.state] || t.state;
+        if (t.state === 'ACTIVE') { if (entered) st = 'ACTIVE_AGAIN'; entered = true; }
+        var k = t.date + '|' + st, m = S[e.id] ? S[e.id].world_name : e.id;
+        var x = ev[k] || (ev[k] = { date: t.date, st: st, methods: [], price: null, res: [] });
         if (x.methods.indexOf(m) < 0) x.methods.push(m);
         if (isNum(t.price)) x.price = t.price;
+        /* Abgeschlossen: Entwicklung Einstieg → Ausstieg der Modellposition (gleiche Basis wie die Karte oben) */
+        if (t.state === 'CLOSED' && i === tr.length - 1) { var r = tradeRes(e.s); if (isNum(r)) { x.res.push(r); x.inn = e.s.entry.price; } }
       });
     });
-    var evs = Object.keys(ev).map(function (k) { return ev[k]; }).sort(function (a, b) { return b.date.localeCompare(a.date) || LIFE.indexOf(b.st) - LIFE.indexOf(a.st); });
+    var evs = Object.keys(ev).map(function (k) { return ev[k]; }).sort(function (a, b) { return b.date.localeCompare(a.date) || lifeIx(b.st) - lifeIx(a.st); });
     if (evs.length) {
-      var tl = function (list) { return '<ol class="st-r-tl">' + list.map(function (x) { var label = x.st === 'ACTIVE' ? 'Modell steigt ein' : stateName(x.st); return '<li data-st="' + esc(x.st) + '"><i></i><div><div class="st-r-tlh"><b class="vu-num">' + dShort(x.date) + '</b>' + stateVerdict(x.st, label) + '</div><span>' + esc(x.methods.join(' und ') + (isNum(x.price) ? ' · Kurs ' + usd(x.price) : '')) + '</span></div></li>'; }).join('') + '</ol>'; };
+      var tl = function (list) { return '<ol class="st-r-tl">' + list.map(function (x) {
+        var again = x.st === 'ACTIVE_AGAIN', label = x.st === 'ACTIVE' ? 'Modell steigt ein' : again ? 'Warnzeichen vorbei' : stateName(x.st);
+        return '<li data-st="' + esc(again ? 'ACTIVE' : x.st) + '"><i></i><div><div class="st-r-tlh"><b class="vu-num">' + dShort(x.date) + '</b>' + stateVerdict(again ? 'ACTIVE' : x.st, label) + x.res.map(function (r) { return '<span class="st-r-res">' + U.chg(r * 100) + '</span>'; }).join('') + '</div><span>' + esc(x.methods.join(' und ') + (isNum(x.price) ? ' · Kurs ' + usd(x.price) : '') + (x.res.length === 1 ? ' · Einstieg ' + usd(x.inn) : '')) + '</span></div></li>'; }).join('') + '</ol>'; };
       append(rest, U.sect('Protokoll') + tl(evs.slice(0, 5)) + (evs.length > 5 ? '<div class="st-r-accs">' + acc('Ältere (' + (evs.length - 5) + ')', tl(evs.slice(5))) + '</div>' : '') +
         '<div class="st-r-gap">' + U.help('Das Musterdepot ist ein Rechenmodell. Es zeigt, was die Regel getan hätte, nicht was du tun solltest.') + '</div>');
     }
