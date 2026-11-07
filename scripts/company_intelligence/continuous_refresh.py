@@ -395,9 +395,13 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
                 for cid in selected:
                     cp=json.loads((consumer/f'snapshots/{manifest["generation"]}/{cid}.json').read_text()).get('companyProfile') or {}
                     if cp.get('language')!='de':
+                        st=store.state('companyProfile:'+cid,{}) or {}; rp=store.state('profileReviewPending:'+cid,{}) or {}
                         missing.append({'companyId':cid,'profile':bool(cp),'language':cp.get('language'),'editorialStatus':cp.get('editorialStatus'),
-                                        'sourceTypes':sorted({s.get('type') for s in cp.get('sources',[])})})
-                print(json.dumps({'germanProfiles':profiles,'expected':45,'missing':missing},sort_keys=True),file=sys.stderr)
+                                        'sourceTypes':sorted({s.get('type') for s in cp.get('sources',[])}),
+                                        'stateLanguage':st.get('language'),'stateEditorialStatus':st.get('editorialStatus'),'stateProfileVersion':st.get('profileVersion'),
+                                        'reviewPending':{'status':rp.get('status'),'reasons':rp.get('reasons')},
+                                        'refreshPending':store.state('profileRefreshPending:'+cid) is not None,'reviewSource':store.state('profileReviewSource:'+cid) is not None})
+                print(json.dumps({'germanProfiles':profiles,'expected':45,'missing':missing,'profileImport':profile_import},sort_keys=True,default=str),file=sys.stderr)
                 raise ValueError('GERMAN_PROFILE_REGRESSION')
         # Erst jetzt (Export, Consumer-Kandidat, Inventar und Profile konsistent) den globalen Stempel setzen.
         health=commit_refresh_stamp(store,health,now,complete)
