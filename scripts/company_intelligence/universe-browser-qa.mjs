@@ -1,5 +1,6 @@
 /* Real existing Discover pages. Candidate overlays are explicitly labelled;
    live acceptance has no interception. Bounded representative browser sample. */
+import {routeDeliveryBundles} from './bundle-routes.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
@@ -33,12 +34,13 @@ const work=[...tickers.map(ticker=>({ticker,width:390,theme:'dark'})),...matrice
 let failure=null;
 async function routes(page){
  if(live)return;
+ await routeDeliveryBundles(page,{'company-intelligence/config/rollout.js':rollout,'company-intelligence/ui/stock-section.js':ui,'company-intelligence/api/contract.js':contract,'discover/ui/detail.js':detail},origin);
  await page.route('**/company-intelligence/data/**',route=>{const path=new URL(route.request().url()).pathname.split('/company-intelligence/data/')[1];return route.fulfill({status:payloads.has(path)?200:404,contentType:'application/json',body:payloads.get(path)||'{}'});});
  for(const [path,body] of [['config/rollout.js',rollout],['ui/stock-section.js',ui],['api/contract.js',contract]])await page.route('**/company-intelligence/'+path+'*',route=>route.fulfill({status:200,contentType:'application/javascript',body}));
  await page.route('**/discover/ui/detail.js*',route=>route.fulfill({status:200,contentType:'application/javascript',body:detail}));
 }
 try{
- const locked=await browser.newPage({serviceWorkers:'block',serviceWorkers:'block'});let protectedRequests=0;locked.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))protectedRequests++;});
+ const locked=await browser.newPage({serviceWorkers:'block'});let protectedRequests=0;locked.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))protectedRequests++;});
  await locked.goto(origin+'/discover/#/s/US_REAL/AAPL');await locked.waitForSelector('#research-access-gate');assert.equal(protectedRequests,0);await locked.close();
  await objectPool(work,async ({ticker,width,theme})=>{
   const cid=Object.keys(m.eligibility).find(c=>m.eligibility[c].tickers.includes(ticker));assert(cid,ticker);
