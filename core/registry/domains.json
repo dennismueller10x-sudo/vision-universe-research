@@ -569,6 +569,7 @@
       "group": "Products",
       "critical": false,
       "artifact": "/core/data/watchlist-events-v1.json",
+      "releaseOnly": true,
       "timestamp": [
         "generatedAt"
       ],
@@ -576,16 +577,12 @@
         "after.sources.price"
       ],
       "records": "counts.total",
-      "role": "Ereignisse je Instrument (nicht je Nutzer) aus dem Vergleich zweier veroeffentlichter Watchlist-Uebersichten ueber core/watchlist-view.js#events: Kurs (neues 52W-Hoch, Volumen), Technik (Trendstruktur, SMA200), Supertrader (gueltige Eignung, Zustandswechsel, Forschung gekennzeichnet), Quant (Faktorstufe um zwei Stufen, Datenqualitaet), Datenstand (Quelle aktualisiert, Frische, Abschnitt). Idempotente eventId, Format core/contracts/events.schema.json. Keine E-Mail, kein Push, keine Zustellung an Nutzer.",
+      "role": "Ereignisse je Instrument (nicht je Nutzer) aus dem Vergleich zweier veroeffentlichter Watchlist-Uebersichten ueber core/watchlist-view.js#events: Kurs (neues 52W-Hoch, Volumen), Technik (Trendstruktur, SMA200), Supertrader (gueltige Eignung, Zustandswechsel, Forschung gekennzeichnet), Quant (Faktorstufe um zwei Stufen, Datenqualitaet), Datenstand (Quelle aktualisiert, Frische, Abschnitt), Kursbewegung ab 5 %, Quartals-/Jahresbericht (SEC), neue 13F-Position kuratierter Fonds, Elliott-Lesart. Idempotente eventId, Format core/contracts/events.schema.json. Erzeugt im Release-Bau (48-Stunden-Fenster), nur in der Auslieferung, nie im Repository. Zustellung nur als App-Push (hoechstens eine gebuendelte Nachricht am Tag, nur mit eingeschalteter Art im Konto); keine E-Mail. Aktiv seit dem ersten Release mit Vorstand am 07.11.2026 (2.532 Ereignisse).",
       "producer": "scripts/account/build-watchlist-events.mjs --before=<Uebersicht> --after=<Uebersicht> --out=<Datei>",
       "workflow": "pages-release.yml (Schritt des Release-Baus, scripts/vu2/build-release.mjs)",
       "schedule": "mit jeder Auslieferung der Seite; Vergleich mit der zuletzt veroeffentlichten Uebersicht",
       "freshness": {
         "kind": "none"
-      },
-      "activation": {
-        "state": "ACTIVATING",
-        "decision": "Freigegeben durch die Steuerung am 06.11.2026 (Owner-Regel 04.11.: weder Geld noch Recht noch Renditeaussage noch Loeschen; FREIGABEN.md Stand 30.10. nennt keine Freigabe dafuer). Erzeugung als Schritt des Release-Baus: Vergleich mit der zuletzt veroeffentlichten Uebersicht, 48-Stunden-Fenster. Das Artefakt liegt nur in der Auslieferung, nie im Repository. Zustellung nur als App-Push (workers/vu-account/src/push.mjs), hoechstens eine gebuendelte Nachricht am Tag und nur mit FCM-Zugang und eingeschalteter Art im Konto."
       },
       "consumers": [
         "workers/vu-account/src/push.mjs (App-Push, hoechstens einmal am Tag)"
