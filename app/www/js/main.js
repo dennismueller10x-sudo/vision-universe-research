@@ -20,6 +20,8 @@ const auth = createAuth({config, store: biometric || baseStore});
 const api = createApi({config, auth});
 const cap = globalThis.Capacitor;
 const native = Boolean(cap?.isNativePlatform?.());
+if (native) document.documentElement.classList.add('native');
+let gate = false;   // Anmelde-Bildschirm beim Start (nur nativ, nur ohne Sitzung)
 const push = createPush({plugin: n?.PushNotifications, api, platform: cap?.getPlatform?.(), preferences: n ? nativePreferences(n, 'vu.push.v1') : {get: async () => null, set: async () => {}}});
 await push.init();
 let current = null;
@@ -37,7 +39,8 @@ function show(name) {
   if (name === 'watchlist') loadWatchlist();
   if (name === 'account') renderAccount();
 }
-document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
+document.querySelectorAll('#tabs button, .back').forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
+$('skip-login').addEventListener('click', () => { gate = false; show('discover'); });
 
 // ---- Verbindung ----------------------------------------------------------
 function setOffline(off) { $('offline').hidden = !off; }
@@ -66,7 +69,8 @@ $('login').addEventListener('submit', async ev => {
       const enabled = confirm('Künftig mit Face ID / Touch ID / Fingerabdruck anmelden?');
       await biometric.choose(enabled).catch(() => { text('settings-state', 'Biometrie konnte nicht aktiviert werden.'); });
     }
-    await push.resume().catch(() => { text('settings-state', 'Benachrichtigungen konnten nicht synchronisiert werden.'); }); renderAccount(); }
+    await push.resume().catch(() => { text('settings-state', 'Benachrichtigungen konnten nicht synchronisiert werden.'); }); renderAccount();
+    if (gate) { gate = false; show('discover'); } }
   catch (e) {
     err.textContent = {INVALID_CREDENTIALS: 'E-Mail oder Passwort stimmt nicht.', invalid_credentials: 'E-Mail oder Passwort stimmt nicht.',
       email_not_confirmed: 'Bitte zuerst die E-Mail-Adresse bestätigen.', [OFFLINE]: 'Keine Verbindung. Bitte später erneut versuchen.',
@@ -123,10 +127,18 @@ $('config-missing').hidden = config.configured;
     else await Promise.race([auth.restore(), new Promise(resolve => setTimeout(resolve, 4000))]);
   } catch { /* ohne gespeicherte Sitzung weiter */ }
   if (auth.state().signedIn) await push.resume().catch(() => {});
+  // Ohne Sitzung zuerst die Anmeldung anbieten (die App hat keine eigene Leiste mehr); "Spaeter anmelden" fuehrt in die App.
+  if (native && !auth.state().signedIn && current === 'discover') { gate = true; $('skip-login').hidden = false; show('account'); }
   if (native) {
     const n = globalThis.VUNative || {};
     hideSplash();
     let backRequest = 0;
+    // Die Webseite darf Konto oder Watchlist der App oeffnen (z. B. aus ihrem Menue): {type:'vu:open', view:'account'|'watchlist'}
+    addEventListener('message', event => {
+      const frame = $('v-' + current)?.querySelector('iframe');
+      if (event.origin !== config.contentOrigin || event.source !== frame?.contentWindow || event.data?.type !== 'vu:open') return;
+      if (event.data.view === 'account' || event.data.view === 'watchlist') show(event.data.view);
+    });
     addEventListener('message', event => {
       const frame = $('v-' + current)?.querySelector('iframe');
       if (event.origin !== config.contentOrigin || event.source !== frame?.contentWindow || event.data?.type !== 'vu:back-result' || event.data.request !== pendingBack) return;

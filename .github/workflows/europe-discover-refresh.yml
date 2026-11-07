@@ -62,6 +62,13 @@ on:
         description: 'Also request the known-invalid symbols (HTTP 422 in the last refresh) again'
         type: boolean
         default: false
+      mode:
+        description: 'refresh (default) or e9-symbol-probe (E9 research probe, at most 64 requests, never on main, no data change)'
+        type: choice
+        options:
+          - refresh
+          - e9-symbol-probe
+        default: refresh
   # ACTIVATION SWITCH 1 of 2 (switch 2 is the repository variable, see header).
   schedule:
     - cron: '47 17 * * 1-5'
@@ -78,7 +85,7 @@ jobs:
     # and only as the first attempt.
     if: >-
       github.repository == 'dennismueller10x-sudo/vision-universe-research' &&
-      (github.event_name == 'workflow_dispatch' ||
+      ((github.event_name == 'workflow_dispatch' && inputs.mode != 'e9-symbol-probe') ||
        (github.event_name == 'schedule' && vars.EUROPE_REFRESH_SCHEDULE_ENABLED == 'true' &&
         github.ref == 'refs/heads/main' && github.run_attempt == 1))
     runs-on: ubuntu-latest
@@ -180,3 +187,55 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           DATA_COMMIT: ${{ steps.commit.outputs.sha }}
         run: gh workflow run monitor.yml --ref main -f pruefung=europe-discover -f required_source_sha="$DATA_COMMIT"
+
+  # E9 research probe (docs/reports/europe-gap-solutions-20261107, ways 1/2):
+  # new symbol formats on known gap days, hard cap 64 requests in code, one
+  # symbol per request, no retry. Raw answers stay in RUNNER_TEMP and are
+  # deleted; only the count summary (no prices) is committed, and never on main.
+  e9-symbol-probe:
+    if: >-
+      github.repository == 'dennismueller10x-sudo/vision-universe-research' &&
+      github.event_name == 'workflow_dispatch' && inputs.mode == 'e9-symbol-probe' &&
+      github.ref != 'refs/heads/main' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Probe regressions (fake provider)
+        run: node --test scripts/marketstack/tests/europe-marketstack-diagnostics-once.test.mjs
+      - name: Authenticated E9 symbol probe (<= 64 requests)
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${MARKETSTACK_API_KEY:-}" ]; then echo "::error::MARKETSTACK_API_KEY secret is not configured"; exit 1; fi
+          node scripts/marketstack/europe-marketstack-diagnostics-once.mjs --mode=e9-symbol-probe \
+            --out="${RUNNER_TEMP}/vu-e9-probe-private" \
+            --publicOut=docs/reports/europe-gap-solutions-20261107/marketstack_symbol_probe.json
+      - name: Remove private provider responses
+        if: always()
+        run: rm -rf -- "${RUNNER_TEMP}/vu-e9-probe-private"
+      - name: No prices in the public summary
+        if: always()
+        run: |
+          set -euo pipefail
+          f=docs/reports/europe-gap-solutions-20261107/marketstack_symbol_probe.json
+          [ -f "$f" ] || exit 0
+          if grep -qE '"(open|high|low|close|adj_close|rawText|_private)"' "$f"; then echo "::error::price field in public summary"; exit 1; fi
+      - name: Commit the count summary to the branch
+        if: always()
+        run: |
+          set -euo pipefail
+          f=docs/reports/europe-gap-solutions-20261107/marketstack_symbol_probe.json
+          [ -f "$f" ] || { echo "no summary"; exit 0; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$f"
+          if git diff --cached --quiet; then echo "No change"; exit 0; fi
+          git commit -m "E9: Marketstack-Symbolprobe, nur Zählungen (Lauf ${GITHUB_RUN_ID})"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

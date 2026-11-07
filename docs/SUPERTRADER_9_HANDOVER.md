@@ -83,6 +83,8 @@ V1 sind C01, C02, C03, C08 und C12; die übrigen acht Methoden stehen im Produkt
 
 - **Holdout 2008–2015 verbraucht (Strang H, 06.11.2026):** Der Lauf war einmalig und vorregistriert (Protokoll-SHA `48afb49c…`, Ledger SEALED). Die 11 rechenbaren Supertrader-Methoden und Quant Value Momentum N20 wurden mit Holm über 12 Hypothesen geprüft. Keiner der Kandidaten schlägt SPY. Ergebnisse versiegelt in `docs/research/holdout/results/`, Einschränkungen in `docs/research/holdout/ERGEBNIS-2008-2015.md`. Keine weiteren Läufe auf 2008–2015 und keine Variantensuche mehr; eine Bestätigung ist nur noch mit Vorwärtsdaten (PAPER_2027) möglich.
 
+- **Aktienseite, Trade-Entwicklung (Owner-Wunsch 07.11.2026):** Offene Modellpositionen zeigen weiter die Karte mit Balken Stop – Einstieg – Schluss, „Luft bis zum Stop“ und %-Pille; abgeschlossene Einträge im Protokoll und der Ausstieg im Chart tragen jetzt die realisierte Entwicklung Einstieg → Ausstieg (Plus neongrün, Minus rot). Hält das Musterdepot die Aktie nicht, sagt die Seite das ausdrücklich. Eine Rückkehr nach einem Warnzeichen heißt im Protokoll „Warnzeichen vorbei“ statt fälschlich „Modell steigt ein“. Anlass: Der Owner-Screenshot ohne Balken zeigte ABBV (Donchian 07.10. 269,66 $ → 06.11. 280,94 $, keine offene Position), nicht ADP; ADP (Donchian offen seit 15.10. zu 288,29 $, Stop 282,73 $) zeigte die Karte durchgehend, die Daten sind konsistent.
+
 Der Tagesstand des Strangs steht in `docs/neustart/B-supertrader.md`.
 
 ---
