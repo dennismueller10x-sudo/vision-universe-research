@@ -46,6 +46,56 @@ Paket 1 ändert nur das Messwerkzeug und diese Dokumentation. Produkt-Werte
 vor/nach sind deshalb identisch (keine behauptete Beschleunigung). Noch offen:
 Pakete 2–4 und ihre jeweiligen Nachmessungen, Wiederholungsläufe, echtes Gerät.
 
+## E5 Paket 2 – Wiederholungen und Ladepfade
+
+Drei Läufe je Route, derselbe Daten-Snapshot und Compiler. Die unveränderte
+Quant-Bundle-SHA ist in beiden Berichten gleich. Nur öffentliche geänderte
+Code-Dateien wurden wie im Release kompiliert; Discover-Templates wurden mit
+dem neuen Release-Schreiber gebündelt. Referenzen und jede Ressource:
+[Vorher](e5/baseline-repeat.json), [Paket 2](e5/loading-repeat.json).
+
+Die Zeitwerte streuen auch auf unveränderten Routen deutlich. Während dieser
+Diagnoserunde liefen zeitweise Git-Operationen im selben Cloud-Container;
+daher **keine kausale Beschleunigungsbehauptung aus diesen LCP-Werten**.
+Die folgenden Werte sind Mediane zur Diagnose, keine Zielabnahme. Requests,
+Wire und deterministische Layout-Sprünge zeigen die konkreten Unterschiede.
+
+| Route | LCP vorher/nachher s | CLS vorher/nachher | Wire vorher/nachher KiB | Requests vorher/nachher |
+|---|---:|---:|---:|---:|
+| `/` | 2.472 / 2.144 | 0.000 / 0.000 | 72.1 / 72.1 | 9 / 9 |
+| `/quant/` | 4.716 / 6.148 | 0.306 / 0.306 | 543.4 / 543.4 | 25 / 25 |
+| `/quant/#/aktie/NVDA` | 8.440 / 7.396 | 0.058 / 0.058 | 882.4 / 882.4 | 47 / 47 |
+| `/technical/#/chart/NVDA` | 8.880 / 11.760 | 0.058 / 0.058 | 548.5 / 548.5 | 56 / 56 |
+| `/fundamental/#/NVDA` | 2.836 / 2.592 | 0.001 / 0.000 | 1313.9 / 1314.0 | 28 / 28 |
+| `/supertrader/` | 6.536 / 6.696 | 0.662 / 0.662 | 594.5 / 594.6 | 24 / 24 |
+| `/supertrader/stock/NVDA/` | 4.128 / 8.160 | 0.848 / 0.826 | 304.9 / 305.0 | 32 / 32 |
+| `/discover/` | 1.780 / 2.728 | 0.048 / 0.087 | 1078.4 / 1024.8 | 131 / 54 |
+| `/quant/musterdepots/` | 2.292 / 2.280 | 0.000 / 0.000 | 170.1 / 170.1 | 12 / 12 |
+| `/analysten/` | 1.048 / 1.632 | 0.396 / 0.018 | 86.2 / 86.3 | 10 / 10 |
+| `/mein-dashboard/` | 1.388 / 1.132 | 0.051 / 0.000 | 219.4 / 219.5 | 29 / 29 |
+
+Discover: 131 → 54 Requests, rund 55 KiB weniger Übertragung. Die separat
+gezählten `app/home/detail/themes`-Dateien bleiben unverändert außerhalb der
+Abhängigkeits-Bundles. Nach dieser Diagnose sind die Abhängigkeits-Gruppen
+zusätzlich auf etwa 256 KiB Quelltext pro Chunk begrenzt, damit ein großes
+Skript den ersten Paint nicht unnötig blockiert; die finale Prüfung folgt mit
+Paket 3/4. Die 54 Requests sind deshalb der dokumentierte Zwischenstand.
+
+Fundamental lädt Aktie und SEC-Shard parallel. Supertrader teilt JSON-Promises
+und wartet beim Zeichnen auf kritische Stile. Öffentliche Assets/Logos nutzen
+SWR, öffentliche EOD-Daten maximal 30 s Frische; `no-cache`, `reload` und
+`no-store` bleiben wirksam. Private/API-, Fremdhost- und Live-Antworten mit
+Zeitparameter werden nicht gespeichert. Offline-Navigation zeigt den Hinweis;
+neue Datenabrufe im Offline-Zustand liefern keinen Cache-Ersatz. Offline-Seite
+und Icon werden vorgehalten, alte fremde App-Caches nicht gelöscht.
+
+Validierung: Core 379 bestanden / 3 übersprungen; Fundamental und fokussierte
+UI 90 bestanden. Cache-/Offline-/Frische- und Bundle-Reihenfolge-Tests vorhanden.
+Die bisherigen SW-Ban-Tests werden entsprechend dem expliziten E5-Auftrag durch
+Verhaltenstests für Live-Ausnahme, Frische und privaten Zugriff ergänzt; kein
+Workflow geändert. Vollständige Produkt-CI und finale Browser-Prüfung stehen
+in der abschließenden E5-Auswertung.
+
 ---
 
 # Mobile Performance: Messung gegen den gebauten Release, Maßnahmen

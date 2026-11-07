@@ -167,15 +167,14 @@
   var enginesReady = null;
   function loadEngines() {
     if (enginesReady) return enginesReady;
-    enginesReady = ENGINE_SCRIPTS.reduce(function (p, src) {
-      return p.then(function () {
-        return new Promise(function (ok, fail) {
-          var s = doc.createElement("script"); s.src = src; s.async = false;
-          s.onload = ok; s.onerror = function () { fail(new Error("ENGINE_LOAD:" + src)); };
-          doc.head.appendChild(s);
-        });
+    // Ordered classic scripts download together and execute in insertion order.
+    enginesReady = Promise.all(ENGINE_SCRIPTS.map(function (src) {
+      return new Promise(function (ok, fail) {
+        var s = doc.createElement("script"); s.src = src; s.async = false;
+        s.onload = ok; s.onerror = function () { fail(new Error("ENGINE_LOAD:" + src)); };
+        doc.head.appendChild(s);
       });
-    }, Promise.resolve());
+    })).catch(function (error) { enginesReady = null; throw error; });
     return enginesReady;
   }
 
