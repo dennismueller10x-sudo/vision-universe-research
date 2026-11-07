@@ -65,6 +65,10 @@ Ablauf: `assets/vu-gestures.js` meldet `vu:nav-state` (Navigation-API-Schlüssel
 
 Haptik: Tippen auf Leiste/Untertabs der Website meldet `vu:haptic`; iOS über den eigenen Handler, Android über `@capacitor/haptics` (7.x, MIT). Android-Zurück bleibt `backButton` → `vu:back`. Neuer App-Build nötig (`cap sync`, TestFlight-Workflow).
 
+## K4: Tipp-Gefühl
+
+Nur in der App (`[data-vu-gestures]`, `assets/vu-gestures.css`): sofortiges Druck-Feedback (`:active` 62 % Deckkraft), `touch-action: manipulation` (kein Warten auf Doppeltipp), kein grauer Tipp-Schleier, Bedienelemente nicht markierbar (Fließtext und Eingaben bleiben es), kein seitliches Gummiband beim Wischen. Langes Drücken auf Bedienelemente meldet einen Haptik-Impuls. Pull-to-refresh nativ entfällt bewusst: die Seite scrollt im Iframe, nicht in der Scroll-Ansicht der WebView.
+
 ## E4: Biometrie und kostenlose Push-Zustellung einrichten
 
 `@capgo/capacitor-native-biometric` ist auf **7.5.1 (MIT)** festgesetzt. Es prüft die Biometrie; die Sitzung bleibt im vorhandenen nativen SecureStorage (Keychain/Keystore). Erst nach Passwortanmeldung wird einmal gefragt. Ohne Opt-in bleibt die Sitzung im Arbeitsspeicher. Einstellungen → Biometrie aus entfernt die persistierte Sitzung; Abmelden löscht sie ebenfalls. Beim nächsten Start werden Biometrie und ein Refresh abgewartet. Abbruch oder fehlgeschlagener Refresh zeigt die Passwortanmeldung.
