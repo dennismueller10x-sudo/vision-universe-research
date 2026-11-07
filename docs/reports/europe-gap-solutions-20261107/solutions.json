@@ -1,0 +1,3691 @@
+{
+  "schema": "vu.europe-gap-solutions.v1",
+  "date": "2026-11-07",
+  "status": "DRAFT_PARTIAL_LIVE_AND_HISTORICAL_EVIDENCE_BLOCKED",
+  "repository_commit": "375a1f7b4d070d27c6de349bba3be13341453051",
+  "baseline": {
+    "snapshot": "2026-11-03 impact report; not recalculated from current production data",
+    "europe": 449,
+    "germany": 319,
+    "missing_sessions": 46946,
+    "identity_hold": 18098,
+    "quarantine": 13119,
+    "provider_no_data": 11983,
+    "calendar_suspected": 3538,
+    "symbol_change_suspected": 208
+  },
+  "scope": {
+    "production_changes": 0,
+    "new_provider_accounts": 0,
+    "provider_contacts": 0,
+    "licensed_prices_committed": false,
+    "marketstack_calls_actual": 0,
+    "marketstack_call_budget": 2000,
+    "live_blocker": "No Marketstack secret binding in managed runtime; local MARKETSTACK variables absent. Repository Actions secrets list denied HTTP 403. No new workflow and no secret extraction attempted."
+  },
+  "routes": [
+    {
+      "id": 1,
+      "name": "Marketstack-Symbolformate",
+      "status": "LIVE_PROBE_DONE_NO_CONFIRMED_RECOVERY",
+      "recovered_sessions_confirmed": 0,
+      "recovered_sessions_estimate": null,
+      "potential_upper_bound_sessions": 12191,
+      "costs": {
+        "additional_eur": 0,
+        "marketstack_calls_actual": 40,
+        "marketstack_credits_actual": 39
+      },
+      "licence": "Bestehender Marketstack-Zugang; neue Speicher-/Weiterverbreitungsrechte nicht geprüft oder eingeräumt. Keine Kursdaten im PR.",
+      "effort_person_days_estimate": "1–2",
+      "recommendation": "Live-Stichprobe bei verfügbarer Secret-Bindung; kein Nachweis aus leerem Katalog.",
+      "catalogue": {
+        "rows": 120406,
+        "sha256": "dfc878fddfa2164af9b3050a4042f38c89b05ad1f48a2a9523fefaef1ce446d6",
+        "by_mic": [
+          {
+            "mic": "XAMS",
+            "securities": 20,
+            "catalogue_exchange_rows_exact_mic": 0,
+            "symbol_form_matches": {
+              "original": 0,
+              "mic_suffix": 0
+            }
+          },
+          {
+            "mic": "XBRU",
+            "securities": 6,
+            "catalogue_exchange_rows_exact_mic": 0,
+            "symbol_form_matches": {
+              "original": 0,
+              "mic_suffix": 0
+            }
+          },
+          {
+            "mic": "XCSE",
+            "securities": 17,
+            "catalogue_exchange_rows_exact_mic": 0,
+            "symbol_form_matches": {
+              "original": 0,
+              "mic_suffix": 0
+            }
+          },
+          {
+            "mic": "XETR",
+            "securities": 319,
+            "catalogue_exchange_rows_exact_mic": 0,
+            "symbol_form_matches": {
+              "original": 0,
+              "mic_suffix": 0,
+              "xetra_suffix": 0
+            }
+          },
+          {
+            "mic": "XMAD",
+            "securities": 10,
+            "catalogue_exchange_rows_exact_mic": 0,
+            "symbol_form_matches": {
+              "original": 0,
+              "mic_suffix": 0
+            }
+          },
+          {
+            "mic": "XMIL",
+            "securities": 10,
+            "catalogue_exchange_rows_exact_mic": 0,
+            "symbol_form_matches": {
+              "original": 0,
+              "mic_suffix": 0
+            }
+          },
+          {
+            "mic": "XPAR",
+            "securities": 39,
+            "catalogue_exchange_rows_exact_mic": 0,
+            "symbol_form_matches": {
+              "original": 0,
+              "mic_suffix": 0
+            }
+          },
+          {
+            "mic": "XSTO",
+            "securities": 2,
+            "catalogue_exchange_rows_exact_mic": 0,
+            "symbol_form_matches": {
+              "original": 0,
+              "mic_suffix": 0
+            }
+          },
+          {
+            "mic": "XSWX",
+            "securities": 14,
+            "catalogue_exchange_rows_exact_mic": 0,
+            "symbol_form_matches": {
+              "original": 0,
+              "mic_suffix": 0
+            }
+          },
+          {
+            "mic": "XWBO",
+            "securities": 12,
+            "catalogue_exchange_rows_exact_mic": 0,
+            "symbol_form_matches": {
+              "original": 0,
+              "mic_suffix": 0
+            }
+          }
+        ]
+      },
+      "live_gap_sessions_tested": 0
+    },
+    {
+      "id": 2,
+      "name": "Andere Börse, gleiche ISIN",
+      "status": "LIVE_BLOCKED",
+      "recovered_sessions_confirmed": 0,
+      "recovered_sessions_estimate": null,
+      "potential_upper_bound_sessions": 11983,
+      "costs": {
+        "additional_eur": 0,
+        "marketstack_calls_actual": 0,
+        "marketstack_credits_actual": 0
+      },
+      "licence": "Wie Marketstack; zusätzlich Herkunft und Nutzungsrechte je Ausweichbörse ungeklärt. Kein Preisexport.",
+      "effort_person_days_estimate": "2–4",
+      "recommendation": "Nur getrennte Forschungsreihe; kein stiller Ersatz eines Xetra-Schlusses.",
+      "overlap_days_tested": 0,
+      "overlap_tolerance_relative": 0.005,
+      "tolerance_sensitivity_relative": [
+        0.001,
+        0.005,
+        0.01
+      ],
+      "isin_verified_marketstack_alternative_listings": 0
+    },
+    {
+      "id": 3,
+      "name": "Intraday zu Tageswerten",
+      "status": "EXCLUDED_BY_EXISTING_COVERAGE",
+      "recovered_sessions_confirmed": 0,
+      "recovered_sessions_estimate": null,
+      "potential_upper_bound_sessions": 0,
+      "costs": {
+        "additional_eur": 0,
+        "marketstack_calls_actual": 0,
+        "marketstack_credits_actual": 0
+      },
+      "licence": "Keine neue Nutzung, da EU-Abdeckung ausgeschlossen.",
+      "effort_person_days_estimate": "0",
+      "recommendation": "Nicht neu abfragen: dokumentierte Abdeckung IEX/USA; bereits untersucht."
+    },
+    {
+      "id": 4,
+      "name": "Offizielle historische Identität",
+      "status": "PARTIAL_OFFICIAL_EVIDENCE",
+      "recovered_sessions_confirmed": 0,
+      "recovered_sessions_estimate": null,
+      "potential_upper_bound_sessions": 18098,
+      "costs": {
+        "additional_eur": 0,
+        "marketstack_calls_actual": 0,
+        "marketstack_credits_actual": 0
+      },
+      "licence": "Öffentliche offizielle Dokumente nur gelesen und referenziert; keine pauschale Dokumentlizenz angenommen. OpenFIGI ohne Konto verfügbar; veröffentlicht nur Trefferzahl/Hash.",
+      "effort_person_days_estimate": "3–8",
+      "recommendation": "28 Holds priorisieren; vollständige historische Börsenbindung fehlt.",
+      "hold_securities": 28,
+      "priority_top12_sessions": 16457,
+      "openfigi": {
+        "requests_actual": 1,
+        "jobs": 10,
+        "matched_jobs": 10,
+        "historical_intervals_proven": 0,
+        "sha256": "f034a88022f8fcfa5af6112b3fb0aaf7c64fb46d7496b56402579664ed486be7"
+      },
+      "priority": [
+        {
+          "symbol": "DGR.DE",
+          "sessions": 2250,
+          "company": "Deutsche Grundstücksauktionen AG vormals Berliner Grundstücksauktionen"
+        },
+        {
+          "symbol": "KA8.DE",
+          "sessions": 2058,
+          "company": "Klassik Radio AG"
+        },
+        {
+          "symbol": "RCMN.DE",
+          "sessions": 1799,
+          "company": "RCM Beteiligungs Aktiengesellschaft"
+        },
+        {
+          "symbol": "IUR.DE",
+          "sessions": 1778,
+          "company": "KAP AG"
+        },
+        {
+          "symbol": "MSAG.DE",
+          "sessions": 1727,
+          "company": "MS Industrie AG"
+        },
+        {
+          "symbol": "SLSA.DE",
+          "sessions": 1563,
+          "company": "Solutiance AG"
+        },
+        {
+          "symbol": "HP3A.DE",
+          "sessions": 1220,
+          "company": "Ringmetall SE"
+        },
+        {
+          "symbol": "93M1.DE",
+          "sessions": 997,
+          "company": "MPH Health Care AG"
+        },
+        {
+          "symbol": "ISHA.DE",
+          "sessions": 843,
+          "company": "INTERSHOP Communications Aktiengesellschaft"
+        },
+        {
+          "symbol": "CEK.DE",
+          "sessions": 757,
+          "company": "CEOTRONICS AG"
+        },
+        {
+          "symbol": "M3V.DE",
+          "sessions": 743,
+          "company": "MeVis Medical Solutions AG"
+        },
+        {
+          "symbol": "EMH.DE",
+          "sessions": 722,
+          "company": "pferdewetten.de AG"
+        },
+        {
+          "symbol": "B7E.DE",
+          "sessions": 126,
+          "company": "Blue Cap AG"
+        },
+        {
+          "symbol": "2GB.DE",
+          "sessions": 101,
+          "company": "2G Energy AG"
+        },
+        {
+          "symbol": "4DS.DE",
+          "sessions": 101,
+          "company": "Daldrup & Söhne Aktiengesellschaft"
+        },
+        {
+          "symbol": "A6T.DE",
+          "sessions": 101,
+          "company": "artec technologies AG"
+        },
+        {
+          "symbol": "CFC.DE",
+          "sessions": 101,
+          "company": "aconnic AG"
+        },
+        {
+          "symbol": "DAR.DE",
+          "sessions": 101,
+          "company": "DATRON AG"
+        },
+        {
+          "symbol": "DLX.DE",
+          "sessions": 101,
+          "company": "Delignit AG"
+        },
+        {
+          "symbol": "ECF.DE",
+          "sessions": 101,
+          "company": "Mountain Alliance AG"
+        },
+        {
+          "symbol": "LQAG.DE",
+          "sessions": 101,
+          "company": "LAIQON AG"
+        },
+        {
+          "symbol": "MBQ.DE",
+          "sessions": 101,
+          "company": "MOBOTIX AG"
+        },
+        {
+          "symbol": "NBG6.DE",
+          "sessions": 101,
+          "company": "NÜRNBERGER Beteiligungs-AG"
+        },
+        {
+          "symbol": "NN6.DE",
+          "sessions": 101,
+          "company": "NanoRepro AG"
+        },
+        {
+          "symbol": "PZS.DE",
+          "sessions": 101,
+          "company": "Scherzer & Co. Aktiengesellschaft"
+        },
+        {
+          "symbol": "QB7.DE",
+          "sessions": 101,
+          "company": "Quirin Privatbank AG"
+        },
+        {
+          "symbol": "SVE.DE",
+          "sessions": 101,
+          "company": "Shareholder Value Beteiligungen AG"
+        },
+        {
+          "symbol": "T3T1.DE",
+          "sessions": 101,
+          "company": "SEVEN PRINCIPLES AG"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Offizielle Kalender",
+      "status": "PARTIAL_MEASUREMENT",
+      "recovered_sessions_confirmed": 0,
+      "recovered_sessions_estimate": null,
+      "potential_upper_bound_sessions": 2630,
+      "costs": {
+        "additional_eur": 0,
+        "marketstack_calls_actual": 0,
+        "marketstack_credits_actual": 0
+      },
+      "licence": "Öffentliche Kalender als Tatsachenquelle; nur Datumsentscheidungen und Zählungen veröffentlicht, keine PDF-Kopie.",
+      "effort_person_days_estimate": "2–4",
+      "recommendation": "908 Sessions sind laut offiziellem Kalender Handelstage; 2630 weiter prüfen.",
+      "calendar": {
+        "candidates": [
+          {
+            "mic": "XAMS",
+            "date": "2010-12-31",
+            "sessions": 11,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XAMS",
+            "date": "2015-12-31",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XAMS",
+            "date": "2024-06-11",
+            "sessions": 20,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XAMS",
+            "date": "2026-01-06",
+            "sessions": 20,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XAMS",
+            "date": "2026-09-07",
+            "sessions": 20,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XAMS",
+            "date": "2026-09-17",
+            "sessions": 20,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2010-12-31",
+            "sessions": 5,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2012-03-29",
+            "sessions": 5,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2012-12-31",
+            "sessions": 5,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2015-12-31",
+            "sessions": 6,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2023-06-13",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2023-06-27",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2023-06-29",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2023-07-11",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2023-07-31",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2023-08-03",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2023-08-10",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2024-06-11",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-05-09",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-05-12",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-05-13",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-05-14",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-05-15",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-06-09",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-06-10",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-06-11",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-06-12",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-06-13",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-06-17",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-06-23",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-06-24",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-06-25",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-06-26",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-06-27",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-06-30",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-01",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-02",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-03",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-04",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-07",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-08",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-09",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-10",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-11",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-14",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-15",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-16",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-17",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-18",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-21",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-22",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-23",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-24",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-07-25",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-08-14",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-08-18",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2025-08-28",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2026-01-06",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2026-09-07",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XBRU",
+            "date": "2026-09-17",
+            "sessions": 6,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2010-04-21",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2014-06-30",
+            "sessions": 16,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2023-06-13",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2023-06-29",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2023-08-03",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2023-08-10",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2024-06-11",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-05-09",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-05-12",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-05-13",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-05-14",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-05-15",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-05-27",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-06-10",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-06-11",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-06-12",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-06-13",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-06-17",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-06-23",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-06-24",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-06-25",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-06-26",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-06-27",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-06-30",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-01",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-02",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-03",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-04",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-07",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-08",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-09",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-10",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-11",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-14",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-15",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-16",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-17",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-18",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-21",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-22",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-23",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-24",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-07-25",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-08-14",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2025-08-18",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2026-01-06",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2026-09-07",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XCSE",
+            "date": "2026-09-17",
+            "sessions": 17,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2018-09-20",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2023-06-13",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2023-06-27",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2023-06-29",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2023-07-11",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2023-07-31",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2023-08-03",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2023-08-10",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2024-06-11",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-05-09",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-05-12",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-05-13",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-05-14",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-05-15",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-06-09",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-06-10",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-06-11",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-06-12",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-06-13",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-06-17",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-06-23",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-06-24",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-06-25",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-06-26",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-06-27",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-06-30",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-01",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-02",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-03",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-04",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-07",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-08",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-09",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-10",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-11",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-14",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-15",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-16",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-17",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-18",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-21",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-22",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-23",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-24",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-07-25",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-08-14",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-08-18",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2025-08-28",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2026-01-06",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMAD",
+            "date": "2026-09-17",
+            "sessions": 10,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2023-06-13",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2023-06-28",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2023-06-29",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2023-08-10",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2024-06-11",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-05-09",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-05-12",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-05-13",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-05-14",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-05-15",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-06-09",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-06-10",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-06-11",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-06-12",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-06-13",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-06-17",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-06-23",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-06-24",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-06-25",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-06-26",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-06-27",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-06-30",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-01",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-02",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-03",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-04",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-07",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-08",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-09",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-10",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-11",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-14",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-15",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-16",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-17",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-18",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-21",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-22",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-23",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-24",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-07-25",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2025-08-18",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2026-01-06",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2026-09-07",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XMIL",
+            "date": "2026-09-17",
+            "sessions": 10,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XPAR",
+            "date": "2026-09-07",
+            "sessions": 39,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XPAR",
+            "date": "2026-09-17",
+            "sessions": 39,
+            "official_check": "OPEN"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2024-06-11",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-05-09",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-05-12",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-05-13",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-05-14",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-05-15",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-06-10",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-06-11",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-06-12",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-06-23",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-06-24",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-06-25",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-06-26",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-06-27",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-06-30",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-01",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-02",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-03",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-04",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-07",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-08",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-09",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-10",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-11",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-14",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-15",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-16",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-17",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-18",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-21",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-22",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-23",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-24",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-07-25",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-08-14",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2025-08-18",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XSWX",
+            "date": "2026-01-06",
+            "sessions": 14,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2016-12-30",
+            "sessions": 11,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2017-02-27",
+            "sessions": 11,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2018-02-19",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2018-04-06",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2018-04-09",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2018-05-28",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2019-02-11",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2019-03-11",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2019-03-25",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2019-04-26",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2019-04-29",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2019-06-17",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2019-08-15",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2023-06-13",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2023-06-27",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2023-06-29",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2023-07-11",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2023-07-31",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2023-08-03",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2023-08-10",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2024-06-11",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-05-09",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-05-12",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-05-13",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-05-14",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-05-15",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-06-09",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-06-10",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-06-11",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-06-12",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-06-13",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-06-17",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-06-23",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-06-24",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-06-25",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-06-26",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-06-27",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-06-30",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-01",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-02",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-03",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-04",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-07",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-08",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-09",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-10",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-11",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-14",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-15",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-16",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-17",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-18",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-21",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-22",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-23",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-24",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-07-25",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-08-14",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-08-18",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2025-08-28",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2026-01-06",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2026-09-07",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          },
+          {
+            "mic": "XWBO",
+            "date": "2026-09-17",
+            "sessions": 12,
+            "official_check": "UNRESOLVED"
+          }
+        ],
+        "totals": {
+          "OPEN": {
+            "mic_dates": 101,
+            "sessions": 908
+          },
+          "CLOSED": {
+            "mic_dates": 0,
+            "sessions": 0
+          },
+          "UNRESOLVED": {
+            "mic_dates": 204,
+            "sessions": 2630
+          }
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "Backtest mit fehlenden Beobachtungen",
+      "status": "PILOT_RAN_RESULTS_SEALED",
+      "recovered_sessions_confirmed": 0,
+      "recovered_sessions_estimate": null,
+      "potential_upper_bound_sessions": 0,
+      "costs": {
+        "additional_eur": 0,
+        "marketstack_calls_actual": 0,
+        "marketstack_credits_actual": 0
+      },
+      "licence": "Nur Abdeckungszählungen aus bestehenden Repo-Ledgern; keine neuen Kursdaten, kein Renditeergebnis. Produkt-/Displayrechte nicht erweitert.",
+      "effort_person_days_estimate": "2–5",
+      "recommendation": "98 % als Forschungsfilter mit Sensitivität; ungeklärte Positionen zensieren, keine Lücke füllen.",
+      "coverage": {
+        "annual": [
+          {
+            "year": 2011,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 329,
+              "europe_identity_verified": 205,
+              "germany": 216,
+              "germany_identity_verified": 114
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 58831,
+              "europe_identity_verified": 34147,
+              "germany": 40977,
+              "germany_identity_verified": 21822
+            }
+          },
+          {
+            "year": 2011,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 329,
+              "europe_identity_verified": 205,
+              "germany": 216,
+              "germany_identity_verified": 114
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 58831,
+              "europe_identity_verified": 34147,
+              "germany": 40977,
+              "germany_identity_verified": 21822
+            }
+          },
+          {
+            "year": 2011,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 329,
+              "europe_identity_verified": 205,
+              "germany": 216,
+              "germany_identity_verified": 114
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 58831,
+              "europe_identity_verified": 34147,
+              "germany": 40977,
+              "germany_identity_verified": 21822
+            }
+          },
+          {
+            "year": 2011,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 328,
+              "europe_identity_verified": 205,
+              "germany": 215,
+              "germany_identity_verified": 114
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 58831,
+              "europe_identity_verified": 34147,
+              "germany": 40977,
+              "germany_identity_verified": 21822
+            }
+          },
+          {
+            "year": 2011,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 113,
+              "europe_identity_verified": 91
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 17854,
+              "europe_identity_verified": 12325
+            }
+          },
+          {
+            "year": 2012,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 335,
+              "europe_identity_verified": 209,
+              "germany": 221,
+              "germany_identity_verified": 117
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 40251,
+              "europe_identity_verified": 28793,
+              "germany": 12597,
+              "germany_identity_verified": 6669
+            }
+          },
+          {
+            "year": 2012,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 335,
+              "europe_identity_verified": 209,
+              "germany": 221,
+              "germany_identity_verified": 117
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 40251,
+              "europe_identity_verified": 28793,
+              "germany": 12597,
+              "germany_identity_verified": 6669
+            }
+          },
+          {
+            "year": 2012,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 335,
+              "europe_identity_verified": 209,
+              "germany": 221,
+              "germany_identity_verified": 117
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 40251,
+              "europe_identity_verified": 28793,
+              "germany": 12597,
+              "germany_identity_verified": 6669
+            }
+          },
+          {
+            "year": 2012,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 335,
+              "europe_identity_verified": 209,
+              "germany": 221,
+              "germany_identity_verified": 117
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 40251,
+              "europe_identity_verified": 28793,
+              "germany": 12597,
+              "germany_identity_verified": 6669
+            }
+          },
+          {
+            "year": 2012,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 72,
+              "europe_identity_verified": 50
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 18015,
+              "europe_identity_verified": 12485
+            }
+          },
+          {
+            "year": 2013,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 340,
+              "europe_identity_verified": 211,
+              "germany": 226,
+              "germany_identity_verified": 119
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 31789,
+              "europe_identity_verified": 20704,
+              "germany": 11743,
+              "germany_identity_verified": 6188
+            }
+          },
+          {
+            "year": 2013,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 340,
+              "europe_identity_verified": 211,
+              "germany": 226,
+              "germany_identity_verified": 119
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 31789,
+              "europe_identity_verified": 20704,
+              "germany": 11743,
+              "germany_identity_verified": 6188
+            }
+          },
+          {
+            "year": 2013,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 340,
+              "europe_identity_verified": 211,
+              "germany": 226,
+              "germany_identity_verified": 119
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 31789,
+              "europe_identity_verified": 20704,
+              "germany": 11743,
+              "germany_identity_verified": 6188
+            }
+          },
+          {
+            "year": 2013,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 340,
+              "europe_identity_verified": 211,
+              "germany": 226,
+              "germany_identity_verified": 119
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 31789,
+              "europe_identity_verified": 20704,
+              "germany": 11743,
+              "germany_identity_verified": 6188
+            }
+          },
+          {
+            "year": 2013,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 112,
+              "europe_identity_verified": 90
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 19870,
+              "europe_identity_verified": 14340
+            }
+          },
+          {
+            "year": 2014,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 345,
+              "europe_identity_verified": 215,
+              "germany": 231,
+              "germany_identity_verified": 123
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 52383,
+              "europe_identity_verified": 34878,
+              "germany": 25639,
+              "germany_identity_verified": 13653
+            }
+          },
+          {
+            "year": 2014,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 345,
+              "europe_identity_verified": 215,
+              "germany": 231,
+              "germany_identity_verified": 123
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 52383,
+              "europe_identity_verified": 34878,
+              "germany": 25639,
+              "germany_identity_verified": 13653
+            }
+          },
+          {
+            "year": 2014,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 345,
+              "europe_identity_verified": 215,
+              "germany": 231,
+              "germany_identity_verified": 123
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 52383,
+              "europe_identity_verified": 34878,
+              "germany": 25639,
+              "germany_identity_verified": 13653
+            }
+          },
+          {
+            "year": 2014,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 345,
+              "europe_identity_verified": 215,
+              "germany": 231,
+              "germany_identity_verified": 123
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 52383,
+              "europe_identity_verified": 34878,
+              "germany": 25639,
+              "germany_identity_verified": 13653
+            }
+          },
+          {
+            "year": 2014,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 330,
+              "europe_identity_verified": 200,
+              "germany": 231,
+              "germany_identity_verified": 123
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 50598,
+              "europe_identity_verified": 33093,
+              "germany": 25639,
+              "germany_identity_verified": 13653
+            }
+          },
+          {
+            "year": 2015,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 353,
+              "europe_identity_verified": 222,
+              "germany": 234,
+              "germany_identity_verified": 125
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 87263,
+              "europe_identity_verified": 54326,
+              "germany": 58714,
+              "germany_identity_verified": 31319
+            }
+          },
+          {
+            "year": 2015,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 353,
+              "europe_identity_verified": 222,
+              "germany": 234,
+              "germany_identity_verified": 125
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 87263,
+              "europe_identity_verified": 54326,
+              "germany": 58714,
+              "germany_identity_verified": 31319
+            }
+          },
+          {
+            "year": 2015,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 353,
+              "europe_identity_verified": 222,
+              "germany": 234,
+              "germany_identity_verified": 125
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 87263,
+              "europe_identity_verified": 54326,
+              "germany": 58714,
+              "germany_identity_verified": 31319
+            }
+          },
+          {
+            "year": 2015,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 353,
+              "europe_identity_verified": 222,
+              "germany": 234,
+              "germany_identity_verified": 125
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 87263,
+              "europe_identity_verified": 54326,
+              "germany": 58714,
+              "germany_identity_verified": 31319
+            }
+          },
+          {
+            "year": 2015,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 296,
+              "europe_identity_verified": 165,
+              "germany": 234,
+              "germany_identity_verified": 125
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 73139,
+              "europe_identity_verified": 40202,
+              "germany": 58714,
+              "germany_identity_verified": 31319
+            }
+          },
+          {
+            "year": 2016,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 333,
+              "europe_identity_verified": 225,
+              "germany": 213,
+              "germany_identity_verified": 127
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 72386,
+              "europe_identity_verified": 45083,
+              "germany": 53695,
+              "germany_identity_verified": 31946
+            }
+          },
+          {
+            "year": 2016,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 333,
+              "europe_identity_verified": 225,
+              "germany": 213,
+              "germany_identity_verified": 127
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 72386,
+              "europe_identity_verified": 45083,
+              "germany": 53695,
+              "germany_identity_verified": 31946
+            }
+          },
+          {
+            "year": 2016,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 333,
+              "europe_identity_verified": 225,
+              "germany": 213,
+              "germany_identity_verified": 127
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 72386,
+              "europe_identity_verified": 45083,
+              "germany": 53695,
+              "germany_identity_verified": 31946
+            }
+          },
+          {
+            "year": 2016,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 332,
+              "europe_identity_verified": 224,
+              "germany": 213,
+              "germany_identity_verified": 127
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 72172,
+              "europe_identity_verified": 44869,
+              "germany": 53695,
+              "germany_identity_verified": 31946
+            }
+          },
+          {
+            "year": 2016,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 309,
+              "europe_identity_verified": 216,
+              "germany": 209,
+              "germany_identity_verified": 127
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 66773,
+              "europe_identity_verified": 43110,
+              "germany": 52783,
+              "germany_identity_verified": 31946
+            }
+          },
+          {
+            "year": 2017,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 338,
+              "europe_identity_verified": 229,
+              "germany": 216,
+              "germany_identity_verified": 129
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 78326,
+              "europe_identity_verified": 54952,
+              "germany": 52634,
+              "germany_identity_verified": 32141
+            }
+          },
+          {
+            "year": 2017,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 338,
+              "europe_identity_verified": 229,
+              "germany": 216,
+              "germany_identity_verified": 129
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 78326,
+              "europe_identity_verified": 54952,
+              "germany": 52634,
+              "germany_identity_verified": 32141
+            }
+          },
+          {
+            "year": 2017,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 338,
+              "europe_identity_verified": 229,
+              "germany": 216,
+              "germany_identity_verified": 129
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 78326,
+              "europe_identity_verified": 54952,
+              "germany": 52634,
+              "germany_identity_verified": 32141
+            }
+          },
+          {
+            "year": 2017,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 338,
+              "europe_identity_verified": 229,
+              "germany": 216,
+              "germany_identity_verified": 129
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 78326,
+              "europe_identity_verified": 54952,
+              "germany": 52634,
+              "germany_identity_verified": 32141
+            }
+          },
+          {
+            "year": 2017,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 312,
+              "europe_identity_verified": 219,
+              "germany": 211,
+              "germany_identity_verified": 129
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 77659,
+              "europe_identity_verified": 54724,
+              "germany": 52272,
+              "germany_identity_verified": 32141
+            }
+          },
+          {
+            "year": 2018,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 363,
+              "europe_identity_verified": 233,
+              "germany": 240,
+              "germany_identity_verified": 133
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 85351,
+              "europe_identity_verified": 56893,
+              "germany": 59027,
+              "germany_identity_verified": 33035
+            }
+          },
+          {
+            "year": 2018,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 363,
+              "europe_identity_verified": 233,
+              "germany": 240,
+              "germany_identity_verified": 133
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 85351,
+              "europe_identity_verified": 56893,
+              "germany": 59027,
+              "germany_identity_verified": 33035
+            }
+          },
+          {
+            "year": 2018,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 363,
+              "europe_identity_verified": 233,
+              "germany": 240,
+              "germany_identity_verified": 133
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 85351,
+              "europe_identity_verified": 56893,
+              "germany": 59027,
+              "germany_identity_verified": 33035
+            }
+          },
+          {
+            "year": 2018,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 351,
+              "europe_identity_verified": 233,
+              "germany": 240,
+              "germany_identity_verified": 133
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 84977,
+              "europe_identity_verified": 56893,
+              "germany": 59027,
+              "germany_identity_verified": 33035
+            }
+          },
+          {
+            "year": 2018,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 336,
+              "europe_identity_verified": 229,
+              "germany": 239,
+              "germany_identity_verified": 133
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 82908,
+              "europe_identity_verified": 56669,
+              "germany": 59022,
+              "germany_identity_verified": 33035
+            }
+          },
+          {
+            "year": 2019,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 372,
+              "europe_identity_verified": 238,
+              "germany": 248,
+              "germany_identity_verified": 137
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 87856,
+              "europe_identity_verified": 59182,
+              "germany": 61363,
+              "germany_identity_verified": 34191
+            }
+          },
+          {
+            "year": 2019,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 372,
+              "europe_identity_verified": 238,
+              "germany": 248,
+              "germany_identity_verified": 137
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 87856,
+              "europe_identity_verified": 59182,
+              "germany": 61363,
+              "germany_identity_verified": 34191
+            }
+          },
+          {
+            "year": 2019,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 360,
+              "europe_identity_verified": 238,
+              "germany": 248,
+              "germany_identity_verified": 137
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 87856,
+              "europe_identity_verified": 59182,
+              "germany": 61363,
+              "germany_identity_verified": 34191
+            }
+          },
+          {
+            "year": 2019,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 358,
+              "europe_identity_verified": 236,
+              "germany": 248,
+              "germany_identity_verified": 137
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 87640,
+              "europe_identity_verified": 58966,
+              "germany": 61363,
+              "germany_identity_verified": 34191
+            }
+          },
+          {
+            "year": 2019,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 357,
+              "europe_identity_verified": 236,
+              "germany": 247,
+              "germany_identity_verified": 137
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 87640,
+              "europe_identity_verified": 58966,
+              "germany": 61363,
+              "germany_identity_verified": 34191
+            }
+          },
+          {
+            "year": 2020,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 379,
+              "europe_identity_verified": 240,
+              "germany": 255,
+              "germany_identity_verified": 139
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 93891,
+              "europe_identity_verified": 60414,
+              "germany": 63977,
+              "germany_identity_verified": 35089
+            }
+          },
+          {
+            "year": 2020,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 379,
+              "europe_identity_verified": 240,
+              "germany": 255,
+              "germany_identity_verified": 139
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 93891,
+              "europe_identity_verified": 60414,
+              "germany": 63977,
+              "germany_identity_verified": 35089
+            }
+          },
+          {
+            "year": 2020,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 379,
+              "europe_identity_verified": 240,
+              "germany": 255,
+              "germany_identity_verified": 139
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 93891,
+              "europe_identity_verified": 60414,
+              "germany": 63977,
+              "germany_identity_verified": 35089
+            }
+          },
+          {
+            "year": 2020,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 379,
+              "europe_identity_verified": 240,
+              "germany": 255,
+              "germany_identity_verified": 139
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 93891,
+              "europe_identity_verified": 60414,
+              "germany": 63977,
+              "germany_identity_verified": 35089
+            }
+          },
+          {
+            "year": 2020,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 377,
+              "europe_identity_verified": 239,
+              "germany": 254,
+              "germany_identity_verified": 139
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 93840,
+              "europe_identity_verified": 60363,
+              "germany": 63977,
+              "germany_identity_verified": 35089
+            }
+          },
+          {
+            "year": 2021,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 392,
+              "europe_identity_verified": 242,
+              "germany": 268,
+              "germany_identity_verified": 141
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 98575,
+              "europe_identity_verified": 61542,
+              "germany": 66856,
+              "germany_identity_verified": 35687
+            }
+          },
+          {
+            "year": 2021,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 392,
+              "europe_identity_verified": 242,
+              "germany": 268,
+              "germany_identity_verified": 141
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 98575,
+              "europe_identity_verified": 61542,
+              "germany": 66856,
+              "germany_identity_verified": 35687
+            }
+          },
+          {
+            "year": 2021,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 392,
+              "europe_identity_verified": 242,
+              "germany": 268,
+              "germany_identity_verified": 141
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 98575,
+              "europe_identity_verified": 61542,
+              "germany": 66856,
+              "germany_identity_verified": 35687
+            }
+          },
+          {
+            "year": 2021,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 392,
+              "europe_identity_verified": 242,
+              "germany": 268,
+              "germany_identity_verified": 141
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 98575,
+              "europe_identity_verified": 61542,
+              "germany": 66856,
+              "germany_identity_verified": 35687
+            }
+          },
+          {
+            "year": 2021,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 392,
+              "europe_identity_verified": 242,
+              "germany": 268,
+              "germany_identity_verified": 141
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 98575,
+              "europe_identity_verified": 61542,
+              "germany": 66856,
+              "germany_identity_verified": 35687
+            }
+          },
+          {
+            "year": 2022,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 405,
+              "europe_identity_verified": 247,
+              "germany": 279,
+              "germany_identity_verified": 144
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 102139,
+              "europe_identity_verified": 62501,
+              "germany": 70570,
+              "germany_identity_verified": 36818
+            }
+          },
+          {
+            "year": 2022,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 405,
+              "europe_identity_verified": 247,
+              "germany": 279,
+              "germany_identity_verified": 144
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 102139,
+              "europe_identity_verified": 62501,
+              "germany": 70570,
+              "germany_identity_verified": 36818
+            }
+          },
+          {
+            "year": 2022,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 404,
+              "europe_identity_verified": 247,
+              "germany": 278,
+              "germany_identity_verified": 144
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 102139,
+              "europe_identity_verified": 62501,
+              "germany": 70570,
+              "germany_identity_verified": 36818
+            }
+          },
+          {
+            "year": 2022,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 404,
+              "europe_identity_verified": 247,
+              "germany": 278,
+              "germany_identity_verified": 144
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 102139,
+              "europe_identity_verified": 62501,
+              "germany": 70570,
+              "germany_identity_verified": 36818
+            }
+          },
+          {
+            "year": 2022,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 400,
+              "europe_identity_verified": 244,
+              "germany": 277,
+              "germany_identity_verified": 144
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 101811,
+              "europe_identity_verified": 62256,
+              "germany": 70487,
+              "germany_identity_verified": 36818
+            }
+          },
+          {
+            "year": 2023,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 414,
+              "europe_identity_verified": 250,
+              "germany": 287,
+              "germany_identity_verified": 146
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 32983,
+              "europe_identity_verified": 21145,
+              "germany": 19185,
+              "germany_identity_verified": 9946
+            }
+          },
+          {
+            "year": 2023,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 153,
+              "europe_identity_verified": 112,
+              "germany": 27,
+              "germany_identity_verified": 9
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 15206,
+              "europe_identity_verified": 11648,
+              "germany": 1511,
+              "germany_identity_verified": 552
+            }
+          },
+          {
+            "year": 2023,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 21,
+              "europe_identity_verified": 18,
+              "germany": 3
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 2108,
+              "europe_identity_verified": 2046,
+              "germany": 62
+            }
+          },
+          {
+            "year": 2023,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 9,
+              "germany": 1,
+              "europe_identity_verified": 8
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 1097,
+              "germany": 52,
+              "europe_identity_verified": 1045
+            }
+          },
+          {
+            "year": 2023,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 1,
+              "europe_identity_verified": 1
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 251,
+              "europe_identity_verified": 251
+            }
+          },
+          {
+            "year": 2024,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 428,
+              "europe_identity_verified": 255,
+              "germany": 299,
+              "germany_identity_verified": 149
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 1864,
+              "europe_identity_verified": 1348,
+              "germany": 336,
+              "germany_identity_verified": 60
+            }
+          },
+          {
+            "year": 2024,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 428,
+              "europe_identity_verified": 255,
+              "germany": 299,
+              "germany_identity_verified": 149
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 1864,
+              "europe_identity_verified": 1348,
+              "germany": 336,
+              "germany_identity_verified": 60
+            }
+          },
+          {
+            "year": 2024,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 428,
+              "europe_identity_verified": 255,
+              "germany": 299,
+              "germany_identity_verified": 149
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 1864,
+              "europe_identity_verified": 1348,
+              "germany": 336,
+              "germany_identity_verified": 60
+            }
+          },
+          {
+            "year": 2024,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 416,
+              "europe_identity_verified": 253,
+              "germany": 287,
+              "germany_identity_verified": 147
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 1864,
+              "europe_identity_verified": 1348,
+              "germany": 336,
+              "germany_identity_verified": 60
+            }
+          },
+          {
+            "year": 2024,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 1,
+              "germany": 1
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 216,
+              "germany": 216
+            }
+          },
+          {
+            "year": 2025,
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 309,
+              "europe_identity_verified": 153,
+              "germany": 307,
+              "germany_identity_verified": 151
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 53021,
+              "europe_identity_verified": 26713,
+              "germany": 52625,
+              "germany_identity_verified": 26317
+            }
+          },
+          {
+            "year": 2025,
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 309,
+              "europe_identity_verified": 153,
+              "germany": 307,
+              "germany_identity_verified": 151
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 53021,
+              "europe_identity_verified": 26713,
+              "germany": 52625,
+              "germany_identity_verified": 26317
+            }
+          },
+          {
+            "year": 2025,
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 304,
+              "europe_identity_verified": 151,
+              "germany": 302,
+              "germany_identity_verified": 149
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 52651,
+              "europe_identity_verified": 26475,
+              "germany": 52255,
+              "germany_identity_verified": 26079
+            }
+          },
+          {
+            "year": 2025,
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 298,
+              "europe_identity_verified": 148,
+              "germany": 296,
+              "germany_identity_verified": 146
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 52102,
+              "europe_identity_verified": 26226,
+              "germany": 51706,
+              "germany_identity_verified": 25830
+            }
+          },
+          {
+            "year": 2025,
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 208,
+              "europe_identity_verified": 105,
+              "germany": 206,
+              "germany_identity_verified": 103
+            },
+            "signal_dates_with_200_preceding_consecutive_sessions": {
+              "europe": 39747,
+              "europe_identity_verified": 20378,
+              "germany": 39351,
+              "germany_identity_verified": 19982
+            }
+          }
+        ],
+        "totals": [
+          {
+            "minimum_coverage": 0.9,
+            "security_years": {
+              "europe": 5435,
+              "germany": 3740,
+              "europe_identity_verified": 3374,
+              "germany_identity_verified": 1994
+            },
+            "unique_securities": {
+              "europe": 437,
+              "germany": 308,
+              "europe_identity_verified": 257,
+              "germany_identity_verified": 151
+            }
+          },
+          {
+            "minimum_coverage": 0.95,
+            "security_years": {
+              "europe": 5174,
+              "germany": 3480,
+              "europe_identity_verified": 3236,
+              "germany_identity_verified": 1857
+            },
+            "unique_securities": {
+              "europe": 437,
+              "germany": 308,
+              "europe_identity_verified": 257,
+              "germany_identity_verified": 151
+            }
+          },
+          {
+            "minimum_coverage": 0.98,
+            "security_years": {
+              "europe": 5024,
+              "germany": 3450,
+              "europe_identity_verified": 3140,
+              "germany_identity_verified": 1846
+            },
+            "unique_securities": {
+              "europe": 435,
+              "germany": 306,
+              "europe_identity_verified": 255,
+              "germany_identity_verified": 149
+            }
+          },
+          {
+            "minimum_coverage": 0.99,
+            "security_years": {
+              "europe": 4978,
+              "germany": 3429,
+              "europe_identity_verified": 3122,
+              "germany_identity_verified": 1841
+            },
+            "unique_securities": {
+              "europe": 434,
+              "germany": 305,
+              "europe_identity_verified": 255,
+              "germany_identity_verified": 149
+            }
+          },
+          {
+            "minimum_coverage": 1.0,
+            "security_years": {
+              "europe": 3616,
+              "germany": 2377,
+              "europe_identity_verified": 2327,
+              "germany_identity_verified": 1301
+            },
+            "unique_securities": {
+              "europe": 421,
+              "germany": 295,
+              "europe_identity_verified": 249,
+              "germany_identity_verified": 146
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "name": "Weitere Wege",
+      "status": "RESEARCH_ONLY",
+      "recovered_sessions_confirmed": 0,
+      "recovered_sessions_estimate": null,
+      "potential_upper_bound_sessions": null,
+      "costs": {
+        "additional_eur": 0,
+        "marketstack_calls_actual": 0,
+        "marketstack_credits_actual": 0
+      },
+      "licence": "Je Quelle offen; kostenpflichtige Rechte oder Anbieteranfragen bleiben Owner-Entscheidung.",
+      "effort_person_days_estimate": "1–3",
+      "recommendation": "Offizielle Kapitalmaßnahmen und archivierte Börsenmeldungen; keine Schätzung ohne Datumsbeleg.",
+      "owner_decisions": [
+        "Kostenpflichtige Historien/Lizenzverträge",
+        "Anfragen an neue Datenanbieter",
+        "SIX-Bestätigungsschreiben/Feed-Vertrag; keine Anfrage gestellt"
+      ]
+    }
+  ],
+  "totals": {
+    "confirmed_recovered_unique_sessions": 0,
+    "calendar_sessions_reclassified_as_officially_scheduled_open": 908,
+    "calendar_sessions_removed_as_officially_closed": 0,
+    "potential_upper_bounds_additive": false,
+    "backtest_counts_are_coverage_candidates_not_certified_strategy_years": true
+  },
+  "public_source_receipts": [
+    {
+      "id": "dgr",
+      "url": "https://www.dga-ag.de/unternehmen/wir-ueber-uns.html",
+      "final_url": "https://www.dga-ag.de/unternehmen/wir-ueber-uns.html",
+      "http": 200,
+      "bytes": 103052,
+      "sha256": "56ab6c2afee2e4fdefa7955a5e399f6c0c2ce1e217d68f79a4bc02fe31766306"
+    },
+    {
+      "id": "kap2016",
+      "url": "https://www.kap.de/fileadmin/user_upload/kap.de/Dateien/Pdf/Finanzberichte/2016/KAP_GB2016_DE.pdf",
+      "final_url": "https://www.kap.de/fileadmin/user_upload/kap.de/Dateien/Pdf/Finanzberichte/2016/KAP_GB2016_DE.pdf",
+      "http": 200,
+      "bytes": 6963436,
+      "sha256": "e84c440006494a890b2cc748827ae96b2bc538d10c6b6a80e0a40218ba94bf28"
+    },
+    {
+      "id": "vienna2025",
+      "url": "https://www.wienerborse.at/uploads/u/cms/files/trading/stock-exchange-holidays-2025-en.pdf",
+      "final_url": "https://www.wienerborse.at/en/trading/trading-information/trading-calendar/",
+      "http": 200,
+      "bytes": 103086,
+      "sha256": "6a28d75415a317850935fa6befc8ee34619179aa4f62219b71039a9f6765d1bb"
+    },
+    {
+      "id": "six2026",
+      "url": "https://www.six-group.com/dam/download/the-swiss-stock-exchange/trading/trading-provisions/regulation/trading-guides/trading-calendar-2026.pdf",
+      "final_url": "https://www.six-group.com/dam/download/the-swiss-stock-exchange/trading/trading-provisions/regulation/trading-guides/trading-calendar-2026.pdf",
+      "http": 200,
+      "bytes": 78312,
+      "sha256": "70d1b87db3e65d487159f660e9daec2fc68c6cb53385483c0af7bf99591c9390"
+    },
+    {
+      "id": "xetra",
+      "url": "https://www.xetra.com/dbcm-en/Trading-calendar-and-trading-hours-22048",
+      "final_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/",
+      "http": 200,
+      "bytes": 160360,
+      "sha256": "ced562c26c1d21dfd67b241c7c01fc9be659aec1245b942e5c6f0a2ac9b2e15d"
+    },
+    {
+      "id": "esma",
+      "url": "https://www.esma.europa.eu/publications-data/questions-answers/1678",
+      "final_url": "https://www.esma.europa.eu/publications-data/questions-answers/1678",
+      "http": 200,
+      "bytes": 52634,
+      "sha256": "927dd139656bf46c1d5debca88f19c0bb2a8b72e944732dd48772e1a4704a52e"
+    }
+  ],
+  "sources": [
+    {
+      "path": "docs/reports/europe-continuity-449-20261012/europe_449_gap_inventory.json",
+      "sha256": "06b533cd6e885649c2535310c54a23838cfde3e74acd36aea3445995ca5e9ba5"
+    },
+    {
+      "path": "docs/reports/europe-continuity-449-20261012/europe_449_calendar_audit.json",
+      "sha256": "ee77617e0e46e27447052bc0e065516bc0fb1adfa41e34bd44add58a8b431c54"
+    },
+    {
+      "path": "docs/reports/europe-marketstack-support-report-20261103/europe_gap_impact_report.json",
+      "sha256": "6a9ad6eea571a1c28dc193a478da7efabfc7b4ec8a973683659e1e608b85c6c1"
+    },
+    {
+      "path": "docs/reports/europe-historical-provider-review-20261103/provider_comparison.json",
+      "sha256": "824395eb26384656da056f3f4c54567ab6dab0f1bf427bf5cd74d94023d98151"
+    },
+    {
+      "path": "discover/data/europe/catalog.json",
+      "sha256": "aaf3200a57c4feb88c9b64e3ca9c311b0678cb67680026b0fbf297a8d9468632"
+    },
+    {
+      "path": ".market-cache/e9/measure.py",
+      "sha256": "3c93e050281d8dbfadfe29194eb7ad944187c2bf28a103464afa0da4a2a85068"
+    },
+    {
+      "path": ".market-cache/e9/euronext.html",
+      "sha256": "b9402304ac7df82c98ffc7cf10a80778ee85dafa00c85eb05e11be1f5ee01796"
+    }
+  ],
+  "validation": {
+    "json_invariants": "PASS: baseline, calendar, holds, annual totals, no raw price fields",
+    "identity_catalogue_core_check": "449/449 PASS",
+    "focused_existing_tests": {
+      "passed": 10,
+      "failed": 0,
+      "node": "24.22.1",
+      "command": "node --test core/tests/identity.test.mjs scripts/marketstack/tests/europe-gap-impact-report.test.mjs"
+    },
+    "initial_core_suite": {
+      "passed": 108,
+      "failed": 58,
+      "reason": "Sparse checkout missing referenced source/data paths; not a clean full-suite validation"
+    },
+    "new_product_tests_written": 0
+  },
+  "follow_up_20261107": {
+    "live_symbol_probe": {
+      "run": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/42388695522",
+      "artifact": "marketstack_symbol_probe.json",
+      "requests": 40,
+      "budget": 64,
+      "credits_quota_header_delta": 39,
+      "http": {
+        "200": 16,
+        "422": 24
+      },
+      "by_variant": {
+        "XETR:XETRA_SUFFIX": {
+          "requests": 6,
+          "http200": 0,
+          "targetRows": 0,
+          "controlRowsMatching": 0,
+          "recoveredCandidates": 0
+        },
+        "XETR:MIC_SUFFIX": {
+          "requests": 6,
+          "http200": 0,
+          "targetRows": 0,
+          "controlRowsMatching": 0,
+          "recoveredCandidates": 0
+        },
+        "XETR:BARE_WITH_EXCHANGE": {
+          "requests": 6,
+          "http200": 2,
+          "targetRows": 0,
+          "controlRowsMatching": 0,
+          "recoveredCandidates": 0
+        },
+        "XPAR:MIC_SUFFIX": {
+          "requests": 10,
+          "http200": 4,
+          "targetRows": 4,
+          "controlRowsMatching": 4,
+          "recoveredCandidates": 0
+        },
+        "XPAR:BARE_WITH_EXCHANGE": {
+          "requests": 10,
+          "http200": 8,
+          "targetRows": 0,
+          "controlRowsMatching": 0,
+          "recoveredCandidates": 0
+        }
+      },
+      "target_sessions_probed": 16,
+      "recovered_sessions_confirmed": 0,
+      "leads_row_and_exact_control_identity_unproven": 4,
+      "lead_sessions": [
+        "ref_AC_PA_XPAR@2023-06-13",
+        "ref_AC_PA_XPAR@2026-09-17",
+        "ref_MC_PA_XPAR@2023-06-13",
+        "ref_MC_PA_XPAR@2026-09-17"
+      ],
+      "label_correction": "ROW_BUT_ISIN_MISMATCH im Laufartefakt bedeutet hier: Metadatenantwort HTTP 200 ohne lesbare Tickerzeile (rows 0). Kein nachgewiesener ISIN-Widerspruch; Code seither als ROW_BUT_METADATA_EMPTY_ISIN_UNPROVEN eingestuft, ohne erneuten Abruf."
+    },
+    "gap_aware_backtest_pilot": {
+      "protocol": "docs/research/europe-gap-aware/PROTOKOLL.md",
+      "public": "docs/research/europe-gap-aware/runs/pilot-public.json",
+      "sealed": "docs/research/europe-gap-aware/runs/pilot.sealed.json",
+      "ran": true,
+      "label": "Forschung, nicht zertifiziert",
+      "t1_closed_trades": 6414,
+      "t1_censored_episodes": 153,
+      "t1_censored_by_reason": {
+        "GAP": 117,
+        "STUDY_END": 36
+      },
+      "q1_episodes": {
+        "CLOSED": 3041,
+        "CENSORED_GAP": 82,
+        "CENSORED_STUDY_END": 0,
+        "NOT_EXECUTED": 0
+      },
+      "benchmark": "EQUAL_WEIGHT_UNIVERSE",
+      "returns": "nur versiegelt"
+    }
+  }
+}

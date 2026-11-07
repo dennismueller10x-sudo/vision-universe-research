@@ -50,7 +50,8 @@ const HEADER_PATTERN = /(limit|quota|remaining|usage|credit|count|retry|request|
  * the client's sharedBudget hook consumes exactly one gate token per send, so
  * no hidden pagination, retry or extra request can pass. */
 export function createLedger({ limits = LIMITS, journal = () => {} } = {}) {
-  const used = { PARIS: 0, ROUTES: 0, RESERVE: 0 };
+  // Sections are the keys of `limits` (besides total); default PARIS/ROUTES/RESERVE.
+  const used = Object.fromEntries(Object.keys(limits).filter(k => k !== 'total').map(k => [k, 0]));
   let total = 0, token = null;
   return {
     gate(section) {
@@ -351,10 +352,174 @@ export async function runDiagnostics({ out, publicOut, apiKey = process.env.MARK
   }
 }
 
+// ======================================================================
+// E9 symbol probe (07.11.2026, docs/reports/europe-gap-solutions-20261107,
+// ways 1/2). Hard cap 64 provider requests, one symbol per request, no retry,
+// no pagination. New symbol formats only (the unchanged old symbols were
+// already tested): {X}.XETRA, {X}.XETR and bare {X} with exchange=XETR for
+// Xetra; {X}.XPAR and bare {X} with exchange=XPAR for Paris. Each request
+// covers [stored control session .. gap day]; the control close must match
+// the stored close. A gap session only counts as a recovered CANDIDATE with
+// a target row of the right date and MIC, a matching control, plausible
+// OHLC, no unresolved action field, and authenticated metadata proving the
+// stored ISIN and the MIC plus a reported EUR currency. Nothing is written to
+// production data; prices stay in the private --out directory.
+// ======================================================================
+export const E9_VERSION = 'vu-europe-e9-symbol-probe-1';
+export const E9_LIMITS = Object.freeze({ total: 64, E9_EOD: 40, E9_META: 24 });
+export const E9_GAP_DATES = Object.freeze(['2023-06-13', '2026-09-17']);
+export const E9_SYMBOLS = Object.freeze(['SAP.DE', 'SIE.DE', 'DGR.DE', 'OR.PA', 'BNP.PA', 'TTE.PA', 'AC.PA', 'MC.PA']);
+const CONTROL_MAX_CALENDAR_DAYS = 7;
+
+export function e9Variants(symbol, mic) {
+  const stem = symbol.slice(0, symbol.lastIndexOf('.'));
+  if (mic === 'XETR') return [{ variant: 'XETRA_SUFFIX', symbol: stem + '.XETRA' }, { variant: 'MIC_SUFFIX', symbol: stem + '.XETR' }, { variant: 'BARE_WITH_EXCHANGE', symbol: stem, exchange: 'XETR' }];
+  if (mic === 'XPAR') return [{ variant: 'MIC_SUFFIX', symbol: stem + '.XPAR' }, { variant: 'BARE_WITH_EXCHANGE', symbol: stem, exchange: 'XPAR' }];
+  throw new Error('E9_MIC_UNSUPPORTED');
+}
+
+/** The fixed request plan, derived only from committed stored dates. */
+export function e9Plan(stored) {
+  const plan = [];
+  for (const symbol of E9_SYMBOLS) {
+    const id = stored.bySymbol.get(symbol);
+    check(id && id.securityId, 'E9_SYMBOL_NOT_IN_CATALOG');
+    const closes = stored.closes(id.securityId);
+    for (const gapDate of E9_GAP_DATES) {
+      check(!closes.has(gapDate), 'E9_TARGET_ALREADY_STORED');
+      const prev = [...closes.keys()].filter(d => d < gapDate).at(-1) ?? null;
+      const near = prev && (Date.parse(gapDate) - Date.parse(prev)) / 864e5 <= CONTROL_MAX_CALENDAR_DAYS;
+      const controlDate = near ? prev : null;
+      for (const v of e9Variants(symbol, id.mic)) {
+        const params = { symbols: v.symbol, date_from: controlDate ?? gapDate, date_to: gapDate, limit: 10 };
+        if (v.exchange) params.exchange = v.exchange;
+        plan.push({ symbol, securityId: id.securityId, mic: id.mic, isin: id.isin, gapDate, controlDate, ...v, params });
+      }
+    }
+  }
+  check(plan.length <= E9_LIMITS.E9_EOD, 'E9_PLAN_TOO_LARGE');
+  return plan;
+}
+
+export async function runE9SymbolProbe({ out, publicOut, apiKey = process.env.MARKETSTACK_API_KEY, fetchImpl = globalThis.fetch,
+  root = ROOT, now = Date.now, sleep, minIntervalMs = 400 } = {}) {
+  const privateDir = privateReplayRoot(out);
+  check(!existsSync(privateDir), 'PRIVATE_OUTPUT_REENTRY_REFUSED');
+  if (!apiKey) throw new Error('MARKETSTACK_API_KEY_NOT_CONFIGURED');
+  mkdirSync(privateDir, { recursive: true, mode: 0o700 });
+  const stored = loadStored(root);
+  const plan = e9Plan(stored);
+  const journalPath = join(privateDir, 'journal.jsonl'), bodiesPath = join(privateDir, 'responses.jsonl');
+  const ledger = createLedger({ limits: E9_LIMITS, journal: entry => appendFileSync(journalPath, JSON.stringify({ phase: 'RESERVED', ...entry }) + '\n', { mode: 0o600 }) });
+  const publicLedger = [];
+  let pendingHeaders = null, lastResponse = null;
+  const wrappedFetch = async (url, init) => {
+    pendingHeaders = null;
+    const response = await fetchImpl(url, init);
+    const h = {};
+    if (response.headers && typeof response.headers.forEach === 'function') response.headers.forEach((v, k) => { if (HEADER_PATTERN.test(k)) h[k.toLowerCase()] = String(v); });
+    pendingHeaders = h;
+    return response;
+  };
+  const client = createMarketstackClient({ apiKey, fetchImpl: wrappedFetch, now, sleep, maxRequests: E9_LIMITS.total, maxCredits: 1000,
+    maxRetries: 0, cacheTtlMs: 0, minIntervalMs, timeoutMs: 45000, sharedBudget: { reserve: () => ledger.reserve() },
+    onResponse: r => { lastResponse = r; } });
+  const redact = s => String(s).split(apiKey).join('[REDACTED]');
+  async function call(section, endpoint, params, purpose) {
+    if (!ledger.gate(section)) return { sent: false };
+    lastResponse = null; pendingHeaders = null;
+    let res;
+    try { res = await client.request(endpoint, params, { cacheTtlMs: 0 }); } finally { ledger.close(); }
+    const raw = lastResponse?.rawText ?? null, body = lastResponse?.body ?? null;
+    const status = lastResponse?.status ?? res.status ?? null;
+    const rows = rowsOf(body);
+    const headers = Object.fromEntries(Object.entries(pendingHeaders ?? {}).map(([k, v]) => [k, redact(v)]));
+    const entry = { seq: ledger.used().total, section, purpose, endpoint, params: { ...params }, httpStatus: status, ok: res.ok === true,
+      providerErrorCode: body?.error?.code ?? null, rows: rows.length, bodySha256: raw === null ? null : sha(raw), rateAndCreditHeaders: headers };
+    publicLedger.push(entry);
+    appendFileSync(bodiesPath, JSON.stringify({ ...entry, rawText: raw === null ? null : redact(raw) }) + '\n', { mode: 0o600 });
+    return { sent: true, rows, ok: res.ok === true, status, entry };
+  }
+  try {
+    const results = [];
+    for (const p of plan) {
+      const r = await call('E9_EOD', '/eod', p.params, 'E9_' + p.variant);
+      const closes = stored.closes(p.securityId);
+      const own = (r.rows ?? []).filter(x => [p.symbol, p.params.symbols, undefined, null].includes(x.symbol ?? x.ticker ?? null));
+      const venue = x => micOfRow(x) ?? p.exchange ?? null;
+      const tgt = own.filter(x => day(x) === p.gapDate && venue(x) === p.mic);
+      const ctl = p.controlDate ? own.filter(x => day(x) === p.controlDate && venue(x) === p.mic) : [];
+      const controlState = !p.controlDate ? 'NO_STORED_CONTROL_WITHIN_7_DAYS' : !r.sent ? 'NOT_SENT' : !r.ok ? 'HTTP_' + r.status
+        : ctl.length !== 1 ? (ctl.length ? 'AMBIGUOUS' : 'EMPTY') : compareClose(ctl[0], closes.get(p.controlDate));
+      const targetState = !r.sent ? 'NOT_SENT' : !r.ok ? 'HTTP_' + r.status : tgt.length > 1 ? 'AMBIGUOUS' : tgt.length ? 'ROW_RETURNED' : 'EMPTY';
+      results.push({ ...p, http: r.status ?? null, sent: r.sent, rowsReturned: (r.rows ?? []).length, targetState, controlState,
+        controlOk: controlState === 'CLOSE_EXACT' || controlState === 'CLOSE_AT_STORED_PRECISION',
+        ohlcPlausible: tgt[0] ? ohlcPlausible(tgt[0]) : null, actions: tgt[0] ? actionFields(tgt[0]) : null,
+        rowCurrency: tgt[0]?.price_currency ?? tgt[0]?.currency ?? null, _private: { target: tgt[0] ?? null, control: ctl[0] ?? null } });
+    }
+    // Metadata once per suffix variant symbol that returned a target row (bare symbols are not unique).
+    const meta = new Map();
+    for (const x of results) {
+      if (x.targetState !== 'ROW_RETURNED' || x.exchange || meta.has(x.params.symbols)) continue;
+      const m = await call('E9_META', '/tickers/' + x.params.symbols, {}, 'E9_METADATA');
+      if (!m.sent) { meta.set(x.params.symbols, { sent: false }); continue; }
+      const row = (m.rows ?? [])[0] ?? null;
+      const mics = row ? [row.stock_exchange?.mic, ...(row.stock_exchanges ?? []).map(e => e.mic ?? e.exchange_mic)].filter(Boolean) : [];
+      const currency = row?.price_currency ?? row?.currency ?? row?.stock_exchange?.currency?.code ?? row?.stock_exchange?.currency ?? null;
+      meta.set(x.params.symbols, { sent: true, http: m.status, row: !!row, isin: row?.isin ?? null, mics, currency: typeof currency === 'string' ? currency : null });
+    }
+    for (const x of results) {
+      const m = x.exchange ? null : meta.get(x.params.symbols) ?? null;
+      x.metadata = m ? { http: m.http ?? null, rowParsed: !!m.row, isinReported: !!m.isin, isinMatches: m.isin === x.isin, micMatches: (m.mics ?? []).includes(x.mic), currency: m.currency ?? null } : null;
+      const currency = x.rowCurrency ?? m?.currency ?? null;
+      x.verdict = x.targetState !== 'ROW_RETURNED' ? (x.targetState === 'EMPTY' ? 'STILL_MISSING' : 'NOT_DETERMINED_' + x.targetState)
+        : !x.controlOk ? 'ROW_BUT_CONTROL_NOT_CONFIRMED' : !x.ohlcPlausible ? 'ROW_BUT_OHLC_IMPLAUSIBLE' : x.actions.unresolved ? 'ROW_BUT_CORPORATE_ACTION_UNRESOLVED'
+          : !m ? 'ROW_BUT_ISIN_UNPROVEN' : !m.row ? 'ROW_BUT_METADATA_EMPTY_ISIN_UNPROVEN' : !m.isin ? 'ROW_BUT_ISIN_NOT_REPORTED' : !x.metadata.isinMatches ? 'ROW_BUT_ISIN_MISMATCH' : !x.metadata.micMatches ? 'ROW_BUT_MIC_UNPROVEN'
+            : currency === null ? 'ROW_BUT_CURRENCY_UNPROVEN' : currency !== 'EUR' ? 'ROW_BUT_CURRENCY_MISMATCH' : 'RECOVERED_CANDIDATE';
+    }
+    const used = ledger.used();
+    check(used.total <= E9_LIMITS.total, 'HARD_LIMIT_BREACHED');
+    const strip = x => JSON.parse(JSON.stringify(x, (k, v) => (k === '_private' || k === 'rowCurrency') ? undefined : v));
+    const tally = (xs, f) => xs.reduce((a, x) => (a[f(x)] = (a[f(x)] || 0) + 1, a), {});
+    const quota = publicLedger.map(e => Number(e.rateAndCreditHeaders['x-quota-remaining'])).filter(Number.isFinite);
+    const byVariant = {};
+    for (const x of results) {
+      const k = x.mic + ':' + x.variant, b = (byVariant[k] ||= { requests: 0, http200: 0, targetRows: 0, controlRowsMatching: 0, recoveredCandidates: 0 });
+      b.requests += x.sent ? 1 : 0; b.http200 += x.http === 200 ? 1 : 0; b.targetRows += x.targetState === 'ROW_RETURNED' ? 1 : 0;
+      b.controlRowsMatching += x.controlOk ? 1 : 0; b.recoveredCandidates += x.verdict === 'RECOVERED_CANDIDATE' ? 1 : 0;
+    }
+    const recovered = new Set(results.filter(x => x.verdict === 'RECOVERED_CANDIDATE').map(x => x.securityId + '@' + x.gapDate));
+    const summary = { schema: E9_VERSION, limits: E9_LIMITS, providerRequests: used, catalogSha256: stored.catalogSha256,
+      symbols: E9_SYMBOLS, gapDates: E9_GAP_DATES, plannedEodRequests: plan.length,
+      httpStatusCounts: tally(publicLedger, e => e.httpStatus ?? 'NONE'), byVariant, verdicts: tally(results, x => x.verdict),
+      targetSessionsProbed: new Set(results.map(x => x.securityId + '@' + x.gapDate)).size, recoveredCandidateSessions: recovered.size,
+      credits: { requestsSent: used.total, quotaRemainingFirst: quota[0] ?? null, quotaRemainingLast: quota.at(-1) ?? null,
+        quotaDelta: quota.length >= 2 ? quota[0] - quota.at(-1) : null, note: 'Marketstack bills per request; quotaDelta spans first to last response header.' },
+      observedRateAndCreditHeaderNames: [...new Set(publicLedger.flatMap(e => Object.keys(e.rateAndCreditHeaders)))].sort(),
+      results: strip(results), requests: publicLedger.map(e => ({ ...e, rateAndCreditHeaders: undefined })),
+      productionDataChanged: false, pricesInterpolated: 0, pricesPublished: 0 };
+    writeFileSync(join(privateDir, 'evaluation-private.json'), JSON.stringify({ summary, results }, null, 1) + '\n', { mode: 0o600 });
+    if (publicOut) { mkdirSync(dirname(resolve(publicOut)), { recursive: true }); writeFileSync(resolve(publicOut), JSON.stringify(summary, null, 1) + '\n'); }
+    return summary;
+  } catch (error) {
+    const partial = { schema: E9_VERSION, failed: true, error: redact(String(error?.message ?? error)).slice(0, 300), providerRequests: ledger.used(), limits: E9_LIMITS,
+      requests: publicLedger.map(e => ({ ...e, rateAndCreditHeaders: undefined })) };
+    if (publicOut) { mkdirSync(dirname(resolve(publicOut)), { recursive: true }); writeFileSync(resolve(publicOut), JSON.stringify(partial, null, 1) + '\n'); }
+    throw error;
+  }
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = Object.fromEntries(process.argv.slice(2).map(a => a.replace(/^--/, '').split(/=(.*)/s).slice(0, 2)));
-  check(args.out && args.publicOut, 'USAGE: --out=<absolute private dir outside repo> --publicOut=<file>');
-  const s = await runDiagnostics({ out: args.out, publicOut: args.publicOut });
-  console.log(JSON.stringify({ providerRequests: s.providerRequests, httpStatusCounts: s.httpStatusCounts, headers: s.observedRateAndCreditHeaderNames,
-    routes: s.routes.totals, paris: s.paris.outcomes, provenMappings: s.paris.provenMappings.length }, null, 1));
+  check(args.out && args.publicOut, 'USAGE: [--mode=e9-symbol-probe] --out=<absolute private dir outside repo> --publicOut=<file>');
+  if (args.mode === 'e9-symbol-probe') {
+    const s = await runE9SymbolProbe({ out: args.out, publicOut: args.publicOut });
+    console.log(JSON.stringify({ providerRequests: s.providerRequests, httpStatusCounts: s.httpStatusCounts, byVariant: s.byVariant, verdicts: s.verdicts,
+      recoveredCandidateSessions: s.recoveredCandidateSessions, credits: s.credits }, null, 1));
+  } else {
+    check(!args.mode, 'UNKNOWN_MODE');
+    const s = await runDiagnostics({ out: args.out, publicOut: args.publicOut });
+    console.log(JSON.stringify({ providerRequests: s.providerRequests, httpStatusCounts: s.httpStatusCounts, headers: s.observedRateAndCreditHeaderNames,
+      routes: s.routes.totals, paris: s.paris.outcomes, provenMappings: s.paris.provenMappings.length }, null, 1));
+  }
 }
