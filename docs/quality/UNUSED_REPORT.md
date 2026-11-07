@@ -1,6 +1,6 @@
 # Ungenutzte Dateien – E7
 
-Analysierter Commit: `9ca0027e900c6bfeb37a60079919474e0f0134ff`.
+Analysierter Commit: `a5dd55cf86db673d132a16d3e85acfe2175d20e2`.
 
 ## Methode und Grenzen
 
@@ -10,7 +10,7 @@ Alle versionierten Dateien sind Graphknoten. HTML (script/link/fetch und Navigat
 
 Die Einzelliste umfasst alle Dateien außerhalb der geschützten Bereiche, auch Konfiguration, Dokumentation und Evidence. Daten, Assets, App, Account-Worker, Forschung und Recht bleiben geschützt. Konfiguration und Dokumentation liefern zusätzliche Verweise. Dateninhalte und Binärdateien werden nicht als Quelltext gelesen. Dies ist eine Eingangsgrad-Analyse, keine Erreichbarkeitsanalyse: unbenutzte Zyklen werden nicht erkannt. Dynamische Pfade, Shell-Variablen, HTML-base, externe Aufrufe, Bookmarks und andere Deployments sind nicht vollständig beweisbar.
 
-Knoten: 86639; gelesene Textquellen: 10296; Dateien außerhalb Tabu: 17466 (davon 8082 Code/Seiten/Skripte); davon ohne eingehende Verweise: 1; nur breite Verzeichnis-/Glob-Verweise: 1286; geschützte Knoten ohne Verweise: 0 (keine Löschkandidaten).
+Knoten: 86704; gelesene Textquellen: 10346; Dateien außerhalb Tabu: 17513 (davon 8106 Code/Seiten/Skripte); davon ohne eingehende Verweise: 1; nur breite Verzeichnis-/Glob-Verweise: 1295; geschützte Knoten ohne Verweise: 0 (keine Löschkandidaten).
 
 **Keine automatische Löschfreigabe.** Fehlender Verweis, ein 404 oder Ausschluss vom Pages-Build allein beweist keine Nichtnutzung. Bei Zweifel bleibt die Datei.
 
@@ -18,7 +18,7 @@ Knoten: 86639; gelesene Textquellen: 10296; Dateien außerhalb Tabu: 17466 (davo
 
 `pages-release.yml` baut mit `scripts/vu2/build-release.mjs`: `permitted()` kopiert grundsätzlich alle zugelassenen getrackten Dateien, einschließlich alter Seiten und evidence. scripts/docs/providers, Tests und bestimmte Daten werden ausgeschlossen. Der Build erzeugt `/vu2/` und `/Quant/` zusätzlich als Redirect nach `/quant/`. Ein ausgelieferter Pfad kann direkt aufgerufen werden, auch ohne internen Link.
 
-Größenvergleich gegen `6464e49203c9e3f708a526379f1dc8e51928a905`; getrackte Dateibytes, ohne Git-Historie. Neue Analysewerkzeuge zählen zur Nachher-Größe von scripts/.
+Größenvergleich gegen `e3e43e723a59ad53507989f7c61e7b03177b24c3`; getrackte Dateibytes, ohne Git-Historie. Neue Analysewerkzeuge zählen zur Nachher-Größe von scripts/.
 
 | Bereich | Dateien nachher | Bytes vorher | Bytes nachher | Entscheidung |
 |---|---:|---:|---:|---|
@@ -28,7 +28,7 @@ Größenvergleich gegen `6464e49203c9e3f708a526379f1dc8e51928a905`; getrackte Da
 | worker-waker/ | 4 | 60308 | 60308 | Eigenes Cloudflare-Deployment und Workflow-Tests; behalten. |
 | landing/review/ | 37 | 8361739 | 8361739 | CI erwähnt den Review-Pfad; Live-404 genügt nicht; behalten. |
 | evidence/ | 54 | 1026077 | 1026077 | Audit-/Auslieferungsbelege und grundsätzlich im Pages-Build; behalten. |
-| scripts/ | 1824 | 28186440 | 28207976 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
+| scripts/ | 1844 | 28285874 | 28307410 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
 
 Live-Stichprobe: 2026-11-06T13:19:17.451215+00:00, https://research.visionuniverse.de. Keine vollständige Browser-Netzwerkaufzeichnung.
 
@@ -358,6 +358,15 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | docs/design/redesign-2027/now/crop-dock-vs-home-0.jpg | 3446 | Nur breite Kanten, z. B. AGENTS.md; Nutzung unklar; behalten. |
 | docs/design/redesign-2027/tools/series.js | 910 | Nur breite Kanten, z. B. AGENTS.md; Nutzung unklar; behalten. |
 | docs/market-validation/.gitignore | 9 | Nur breite Kanten, z. B. .github/workflows/pipeline-daily.yml; Workflow-Schutz; Nutzung unklar; behalten. |
+| docs/mobile/e5/final/accessibility-code-overlay.json | 10374 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
+| docs/mobile/e5/final/accessibility-head-delivery.json | 113958 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
+| docs/mobile/e5/final/app-feel-code-overlay.json | 10374 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
+| docs/mobile/e5/final/app-feel-head-delivery.json | 113958 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
+| docs/mobile/e5/final/baseline-code-overlay.json | 8879 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
+| docs/mobile/e5/final/discover-browser.json | 130483 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
+| docs/mobile/e5/final/fundamental-compare.json | 14741 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
+| docs/mobile/e5/final/loading-code-overlay.json | 9955 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
+| docs/mobile/e5/final/supertrader-browser.json | 8085 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v11/discovery/oracle-validation-1.0.0.json | 74367 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v12/indexpop/price-plausibility-1.1.0.json | 2002 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/quant-recovery/v12/indexpop/quarter-prices-1.1.0.json.gz | 540932 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
@@ -877,7 +886,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | screener/tests/first-paint.test.mjs | 13391 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
 | screener/tests/universe.test.mjs | 10157 | Nur breite Kanten, z. B. .github/workflows/ci.yml; Nutzung unklar; behalten. |
 | scripts/account/tests/brevo-setup.test.mjs | 3424 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
-| scripts/account/tests/build-watchlist-events.test.mjs | 9635 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
+| scripts/account/tests/build-watchlist-events.test.mjs | 9709 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | scripts/account/tests/dev-tools.test.mjs | 15515 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | scripts/account/tests/go-live-config.test.mjs | 3783 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | scripts/account/tests/stripe-live-check.test.mjs | 6714 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
@@ -1084,9 +1093,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/marketstack/europe-discover-history.mjs | 11765 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
 | scripts/marketstack/europe-discover-outputs.mjs | 15592 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
 | scripts/marketstack/tests/europe-live-actions-review.test.mjs | 16918 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
-| scripts/marketstack/tests/europe-marketstack-diagnostics-once.test.mjs | 8765 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
 | scripts/marketstack/tests/europe-xpar-identity-offline.test.mjs | 5105 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
-| scripts/mobile/tests/server.test.mjs | 1220 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
 | scripts/quality/tests/find-unused.test.mjs | 4817 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Nutzung unklar; behalten. |
 | scripts/quant/__init__.py | 0 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/quant/audit-security-type-provenance.mjs | 8649 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Workflow-Schutz; Nutzung unklar; behalten. |
@@ -1159,6 +1166,8 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/supertrader/snapshot/build-contract-artifact.mjs | 3474 | Nur breite Kanten, z. B. .github/workflows/supertrader-ci.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/supertrader/tests/chart-by-ticker.test.mjs | 2405 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/supertrader/tests/discover-availability.test.mjs | 3369 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
+| scripts/supertrader/tests/e5-home-view.test.mjs | 134 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
+| scripts/supertrader/tests/europe-gap-aware-pilot.test.mjs | 2916 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/supertrader/tests/europe-readiness.test.mjs | 13965 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/supertrader/tests/identity-links.test.mjs | 1170 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/supertrader/tests/kk-intraday-probe.test.mjs | 2817 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
@@ -1181,7 +1190,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/supertrader/tests/r8-kk.test.mjs | 5362 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/supertrader/tests/r8-turtle.test.mjs | 4550 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/supertrader/tests/r9-intraday.test.mjs | 13114 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
-| scripts/supertrader/tests/research-preview.test.mjs | 3293 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
+| scripts/supertrader/tests/research-preview.test.mjs | 3435 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/supertrader/tests/restore-full-ledgers.test.mjs | 2360 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/supertrader/tests/sf-kk-sf6-sample.test.mjs | 20226 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/supertrader/tests/sf-screener-export.test.mjs | 2767 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Workflow-Schutz; Nutzung unklar; behalten. |
@@ -1623,6 +1632,8 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/market/verify-vu-live-e2e.mjs | .github/workflows/quant-ci.yml, .github/workflows/tiingo-scale.yml |
 | scripts/marketstack/europe-discover-check.mjs | .github/workflows/europe-discover-refresh.yml |
 | scripts/marketstack/europe-discover-publication.mjs | .github/workflows/europe-discover-refresh.yml |
+| scripts/marketstack/europe-marketstack-diagnostics-once.mjs | .github/workflows/europe-discover-refresh.yml |
+| scripts/marketstack/tests/europe-marketstack-diagnostics-once.test.mjs | .github/workflows/europe-discover-refresh.yml |
 | scripts/morning/build-morning.mjs | .github/workflows/content.yml |
 | scripts/quality/assert-no-local-fx.mjs | .github/workflows/currency-fx-verify.yml, .github/workflows/multi-asset-data.yml, .github/workflows/pipeline-daily.yml, .github/workflows/quant-ci.yml |
 | scripts/quality/audit-fx-provider-seam.mjs | .github/workflows/currency-fx-verify.yml, .github/workflows/quant-ci.yml |
@@ -2467,7 +2478,9 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/supertrader/tests/atr-wilder.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-signals.yml |
 | scripts/supertrader/tests/chart-by-ticker.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-signals.yml |
 | scripts/supertrader/tests/discover-availability.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-signals.yml |
+| scripts/supertrader/tests/e5-home-view.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-signals.yml |
 | scripts/supertrader/tests/engine.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-signals.yml |
+| scripts/supertrader/tests/europe-gap-aware-pilot.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-signals.yml |
 | scripts/supertrader/tests/europe-readiness.test.mjs | .github/workflows/company-intelligence.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-signals.yml |
 | scripts/supertrader/tests/fixtures/delist-cases-r15.json | .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/tests/fixtures/foundation-legacy-golden.json | .github/workflows/supertrader-ci.yml |
@@ -2688,7 +2701,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 
 ## Dynamik und ungelesene Quellen
 
-2077 dynamische/zusammengesetzte import/require/fetch-Ausdrücke gefunden; diese verhindern einen vollständigen statischen Nichtnutzungsbeweis.
+2080 dynamische/zusammengesetzte import/require/fetch-Ausdrücke gefunden; diese verhindern einen vollständigen statischen Nichtnutzungsbeweis.
 
 | Quelle | Ausdruck |
 |---|---|
@@ -2740,7 +2753,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | ask/app.js | ` fetch(ENDPOINT + '/v1/quota?client=' + encodeURIComponent(clientId()), { headers: authHeaders() }) ` |
 | ask/app.js | ` fetch(ENDPOINT + '/v1/ask', { method: 'POST', headers: authHeaders({ 'content-type': 'application/json' }), ` |
 | ask/app.js | ` fetch(path, { cache: 'default' }).then(function (r) { if (!r.ok) throw Error('HTTP ' + r.status) ` |
-| assets/vu-ui.js | ` fetch(LOGO_BASE + "index.json", { cache: "default" }).then(function (r) { return r.ok ? r.json() : {} ` |
+| assets/vu-ui.js | ` fetch(LOGO_BASE + "index.json", { cache: "default", priority: "low" }).then(function (r) { return r.ok ? r.json() : {} ` |
 | core/tests/client.test.mjs | ` require(join(ROOT, "core", "client.js")) ` |
 | core/tests/europe-discover-known-invalid.test.mjs | ` import(join(root,'scripts/marketstack/europe-discover-refresh.mjs')) ` |
 | core/tests/europe-discover-refresh.test.mjs | ` import(join(root,'scripts/marketstack/europe-discover-refresh.mjs')) ` |
@@ -2793,6 +2806,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | discover/tests/im-blick-nachtlauf.test.mjs | ` import(join(ROOT, "scripts", "ci", "pipeline-alarm.mjs")) ` |
 | discover/tests/im-blick-refresh.test.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
 | discover/tests/im-blick-refresh.test.mjs | ` require(join(ROOT, "discover", "engines", "refresh-plan.js")) ` |
+| discover/tests/im-blick-refresh.test.mjs | ` fetch({ request: { method: "GET", mode: "cors", url: "https://example.test" + abrufe[0].url, cache: "no-cache" }, respondWith: () => { intercepted = true ` |
 | discover/tests/im-blick-refresh.test.mjs | ` fetch() {} }) ` |
 | discover/tests/im-blick-refresh.test.mjs | ` fetch() {} }) ` |
 | discover/tests/indicators.test.mjs | ` require(join(root, "discover", "engines", "indicators.js")) ` |
@@ -2863,6 +2877,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | providers/twelve-data/adapter.js | ` require(path.join(ENGINES, "schema.js")) ` |
 | quant/api/product-services.js | ` fetch(path,{credentials:'omit'}) ` |
 | quant/api/technical-intelligence-workspace.js | ` fetch(path, { credentials: "omit" }).then(function (res) { ` |
+| quant/app/stock-boot.js | ` fetch('/quant/data/product/stock-head-v1/'+key+'.json',{cache:'no-cache',credentials:'omit',priority:'high'}).then(function(r){if(!r.ok)throw Error('HEAD_UNAVAILABLE' ` |
 | quant/app/view-model.js | ` require() - die Tests pruefen jede Aussage gegen echte ` |
 | quant/engines/fx/bootstrap.js | ` fetch(url, { credentials: "same-origin" }).then(function (res) { ` |
 | quant/engines/instrument-directory.js | ` fetch(path).then(function (res) { ` |
@@ -2871,7 +2886,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | quant/engines/technical/technical-analysis.js | ` require(name) : global.VUTechnical[key] ` |
 | quant/engines/technical/technical-analysis.js | ` require(path) ` |
 | quant/engines/technical/ti/engine.js | ` require(path) : global.VUTechnical[key] ` |
-| quant/index.html | ` fetch(p,{cache:"no-cache"}) ` |
+| quant/index.html | ` fetch(p,{cache:"no-cache",priority:priority&#124;&#124;"low"}) ` |
 | quant/musterdepots/depots.js | ` fetch(DATA, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status) ` |
 | quant/tests/analysis-lag.test.mjs | ` require() AUSGEFUEHRT statt als Quelltextausschnitt gelesen ` |
 | quant/tests/analysis-lag.test.mjs | ` require(join(root, "quant/api/product-services.js")) ` |
@@ -4421,7 +4436,8 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | supertrader/assets/st-technical.js | ` fetch(url, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(url + ' HTTP ' + r.status) ` |
 | supertrader/assets/supertrader.js | ` fetch(DATA + name, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(name + ' HTTP ' + r.status) ` |
 | supertrader/assets/supertrader.js | ` fetch(e.path, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0 ` |
-| sw.js | ` fetch(req).catch(function () { ` |
+| sw.js | ` fetch(req).catch(function () { return caches.match('/offline.html').then(function (r) { return r &#124;&#124; Response.error() ` |
+| sw.js | ` fetch(req, publicData ? {cache: req.cache === 'reload' ? 'reload' : 'no-cache'} : undefined) ` |
 | technical/app.js | ` fetch(path, { credentials: "same-origin" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status) ` |
 | technical/app.js | ` fetch(path, { credentials: "same-origin" }).then(function (r) { ` |
 | technical/engine/stock-summary.js | ` require(path) : name() ` |
