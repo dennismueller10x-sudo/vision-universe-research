@@ -1,0 +1,75 @@
+{
+ "schema": "vu-europe-gap-aware-pilot-1",
+ "label": "Forschung, nicht zertifiziert",
+ "protocol": {
+  "path": "docs/research/europe-gap-aware/PROTOKOLL.md",
+  "sha256": "f4651e39da24138f1cdd3abda517d30eb11712c8ed102506d33c56a3a0dc2e04",
+  "commit": "687cd949ff1393edc703117ce12638d494cc14c6"
+ },
+ "inputs": [
+  {
+   "path": "docs/reports/europe-continuity-449-20261012/europe_449_gap_inventory.json",
+   "sha256": "06b533cd6e885649c2535310c54a23838cfde3e74acd36aea3445995ca5e9ba5"
+  },
+  {
+   "path": "docs/reports/europe-continuity-449-20261012/europe_449_calendar_audit.json",
+   "sha256": "ee77617e0e46e27447052bc0e065516bc0fb1adfa41e34bd44add58a8b431c54"
+  },
+  {
+   "path": "docs/reports/europe-marketstack-support-report-20261103/europe_gap_impact_report.json",
+   "sha256": "6a9ad6eea571a1c28dc193a478da7efabfc7b4ec8a973683659e1e608b85c6c1"
+  }
+ ],
+ "seriesSha256Combined": "8496384dac39774c71f40a54eb0c63cda4daef978cc70689e150c78890580fc3",
+ "universe": {
+  "candidates": 149,
+  "observedCountsMatchInventory": 149,
+  "selectionBias": "Kandidatenkreis aus heutigem Bestand, heutiger Identitaet und Jahresabdeckung"
+ },
+ "window": {
+  "from": "2011-01-01",
+  "to": "2025-12-31"
+ },
+ "t1": {
+  "strategy": "DONCHIAN_TURTLE@1.1.0",
+  "segmentsRun": 647,
+  "admittedTitleDays": 353724,
+  "closedTrades": 6414,
+  "portfolioTakenTrades": 1312,
+  "portfolioSkipped": 5102,
+  "censoredEpisodes": 153,
+  "censoredByReason": {
+   "GAP": 117,
+   "STUDY_END": 36
+  },
+  "censoredWithPendingExitOrder": 6,
+  "entryOrdersNotExecutedAtGap": 10,
+  "closedTradesSpanningJumpOver60pct": 0
+ },
+ "q1": {
+  "rule": "momentum12m1m top quintile, monthly",
+  "periods": 179,
+  "periodsWithClosedEpisodes": 114,
+  "episodes": {
+   "CLOSED": 3041,
+   "CENSORED_GAP": 82,
+   "CENSORED_STUDY_END": 0,
+   "NOT_EXECUTED": 0
+  }
+ },
+ "benchmark": {
+  "kind": "EQUAL_WEIGHT_UNIVERSE",
+  "reason": "kein DAX-Index oder DAX-ETF in vorhandenen Daten",
+  "periods": 179,
+  "episodes": {
+   "CLOSED": 14951,
+   "CENSORED_GAP": 413,
+   "CENSORED_STUDY_END": 0,
+   "NOT_EXECUTED": 1
+  }
+ },
+ "providerRequests": 0,
+ "pricesInterpolated": 0,
+ "pricesPublished": 0,
+ "productionDataChanged": false
+}

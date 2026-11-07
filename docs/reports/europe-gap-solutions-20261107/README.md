@@ -1,6 +1,6 @@
 # E9: Neue Wege für Europas Kurslücken – Forschungsbericht, 07.11.2026
 
-**Draft mit offenen Messungen.** Bisher sind **0 Sessions nachweislich zurückgewonnen**. Ein enger Forschungs-Backtest ist trotzdem prüfbar: Bei mindestens 98 % Jahresabdeckung ergeben sich **1.846 deutsche Titeljahre aus 149 Titeln** mit bestätigter Katalogidentität. Das ist eine Abdeckungsmessung, noch kein bestandener Strategie-Backtest.
+**Stand mit Live-Stichprobe und Pilotlauf (Abschnitt „Live-Stichprobe und Pilot“).** Weiterhin **0 Sessions nachweislich zurückgewonnen**. Die Live-Stichprobe (40 von höchstens 64 Requests) fand aber eine konkrete Spur: `AC.XPAR` und `MC.XPAR` – zwei der 13 Paris-Titel, deren Originalsymbol mit HTTP 422 abgewiesen wird – liefern Zeilen für beide geprüften Lückentage mit exakt passendem Kontrollschluss; die Identität (ISIN/MIC/Währung) ist noch nicht belegt. Der lückenbewusste Pilot-Backtest Deutschland lief technisch durch (Ergebnisse nur versiegelt). Ein enger Forschungs-Backtest ist trotzdem prüfbar: Bei mindestens 98 % Jahresabdeckung ergeben sich **1.846 deutsche Titeljahre aus 149 Titeln** mit bestätigter Katalogidentität. Das ist eine Abdeckungsmessung, noch kein bestandener Strategie-Backtest.
 
 Der wichtigste neue Kalenderbefund: **101 der 305 verdächtigen MIC-Tage mit 908 Sessions sind laut offiziellem Euronext-Kalender reguläre Handelstage.** Diese 908 Lücken bleiben bestehen. Für 204 MIC-Tage mit 2.630 Sessions fehlt noch die passende offizielle Jahresquelle. Kein Schließtag wurde neu bestätigt.
 
@@ -8,13 +8,13 @@ Alle Zahlen je Weg stehen in [solutions.json](solutions.json). `null` bedeutet u
 
 ## Auftrag, Grenzen und Arbeitsstand
 
-Zuerst gelesen: `CLAUDE.md`, beide Berichte vom 03.11. samt `provider_comparison.json`, dann `AGENTS.md` und Neustart-Plan §9. Kein vorhandener E9-Branch oder E9-PR gefunden; weitergearbeitet vom im JSON gebundenen main-Commit. Die Benutzeranweisung beschränkt das Ergebnis auf diesen Draft-PR; kein Merge.
+Zuerst gelesen: `CLAUDE.md`, beide Berichte vom 03.11. samt `provider_comparison.json`, dann `AGENTS.md` und Neustart-Plan §9. Kein vorhandener E9-Branch oder E9-PR gefunden; weitergearbeitet vom im JSON gebundenen main-Commit. Die ursprüngliche Anweisung beschränkte das Ergebnis auf diesen Draft-PR; Strang J (07.11.2026) hat Live-Stichprobe und Pilot ergänzt und den PR zum Merge freigegeben (grüne CI genügt, CLAUDE.md).
 
 Ausgangslage unverändert: 449 Titel, davon 319 XETR; 46.946 fehlende Sessions: 18.098 Identität, 13.119 Quarantäne, 11.983 Provider, 3.538 Kalenderverdacht, 208 möglicher Paris-Symbolwechsel.
 
-**Blocker für die Live-Teile:** Im gestarteten Arbeitsbereich ist kein Marketstack-Secret eingebunden. Die Umgebung meldet keine Secret-Bindungen; auch lokal gibt es keine Marketstack-Variable. Die GitHub-Abfrage der Actions-Secret-Namen wurde mit HTTP 403 abgewiesen. Der Bericht benötigt weder den Schlüssel im Chat noch einen neuen Anbieterzugang. Die bestehende Secret-Bindung müsste in der Ausführungsumgebung verfügbar sein. Neue Workflows sind laut `AGENTS.md` verboten; es wurde keiner angelegt und kein bestehender Produktionslauf gestartet.
+**Blocker für die Live-Teile (beim ersten Stand; inzwischen über den bestehenden Workflow gelöst, siehe „Live-Stichprobe und Pilot“):** Im gestarteten Arbeitsbereich ist kein Marketstack-Secret eingebunden. Die Umgebung meldet keine Secret-Bindungen; auch lokal gibt es keine Marketstack-Variable. Die GitHub-Abfrage der Actions-Secret-Namen wurde mit HTTP 403 abgewiesen. Der Bericht benötigt weder den Schlüssel im Chat noch einen neuen Anbieterzugang. Die bestehende Secret-Bindung müsste in der Ausführungsumgebung verfügbar sein. Neue Workflows sind laut `AGENTS.md` verboten; es wurde keiner angelegt und kein bestehender Produktionslauf gestartet.
 
-Verbrauch: **0 Marketstack-Calls, 0 Credits**, Budget 2.000 unverbraucht. Zusätzlich ein kostenloser OpenFIGI-Aufruf mit zehn ISIN-Jobs, ein kostenloser Symbolkatalog-Download und öffentliche Dokumente. Keine Käufe, Anmeldungen, Verträge oder Kontaktaufnahme. Keine Kurswerte, Rohantworten oder PDFs in diesem PR. Keine produktiven Regeln oder Daten geändert.
+Verbrauch im ersten Stand: **0 Marketstack-Calls, 0 Credits**; danach Live-Stichprobe mit **40 Requests** (Budget 64). Zusätzlich ein kostenloser OpenFIGI-Aufruf mit zehn ISIN-Jobs, ein kostenloser Symbolkatalog-Download und öffentliche Dokumente. Keine Käufe, Anmeldungen, Verträge oder Kontaktaufnahme. Keine Kurswerte, Rohantworten oder PDFs in diesem PR. Keine produktiven Regeln oder Daten geändert.
 
 Die alten Datumsrouten, drei alten `/eod`-Varianten, europäische Split-/Dividendenrouten, andere Anbieter-Demos und ausgeschlossene Datenquellen wurden nicht erneut getestet. Eine frühere Aussage im Anbieterbericht, HTTP 422 beweise das vollständige Fehlen eines Börsentags, ist zu stark: Der Supportbericht bezeichnet die Bedeutung dieses Fehlers korrekt als undokumentiert.
 
@@ -22,12 +22,12 @@ Die alten Datumsrouten, drei alten `/eod`-Varianten, europäische Split-/Dividen
 
 | Weg | Messung | Neue, sicher nutzbare Sessions | Empfehlung |
 |---|---|---:|---|
-| 1 Symbolformate | 120.406 Katalogzeilen; 0/449 Originalsymbole, 0/449 MIC-Suffixe, 0/319 `.XETRA`-Formate gefunden | 0; Live-Effekt unbekannt | kleiner Live-Test, sobald Secret verfügbar |
-| 2 Anderes Listing | keine Marketstack-ISIN-/Kurs-Stichprobe möglich | 0; Effekt unbekannt | getrennte Forschungsreihe, Überlappung prüfen |
+| 1 Symbolformate | Katalog: 0 Treffer. Live (40 Requests): Xetra `.XETRA`/`.XETR` 12/12 HTTP 422; Paris `.XPAR` 4/10 mit Zeile am Lückentag und exaktem Kontrollschluss (AC, MC) | 0 bestätigt; 4 Spur-Sessions, Identität offen | `.XPAR` für die 13 Paris-422-Titel mit Identitätsbeleg prüfen |
+| 2 Anderes Listing | Live: Basissymbol mit `exchange=XETR/XPAR` 10/16 HTTP 200, aber 0 Zeilen am Lückentag oder Kontrolltag | 0 | über diese Route nicht weiter verfolgen |
 | 3 Intraday | vorhandener Abdeckungsvertrag: USA/IEX | 0 | keine weiteren Credits einsetzen |
 | 4 Identität | 28 Titel, 18.098 Holds; zehn aktuelle FIGI-Zuordnungen; zwei offizielle Dokumente genauer gelesen | 0 regelkonform belegbar | zwölf größte Holds zuerst: 16.457 Sessions Potenzial |
 | 5 Kalender | 101 MIC-Tage / 908 Sessions offiziell offen; 204 / 2.630 offen in der Recherche | 0 entfernt, 0 neue Kurse | restliche Jahresquellen beschaffen |
-| 6 Lückenbewusster Backtest | 1.846 deutsche Titeljahre / 149 Titel bei 98 % und bestätigter Katalogidentität | 0 neue Kurse | begrenzte Forschungsstudie vorbereiten |
+| 6 Lückenbewusster Backtest | Pilot gelaufen: 149 Titel, Turtle 6.414 abgeschlossene Trades / 153 zensierte Episoden; Momentum 3.041 Episoden / 82 zensiert | 0 neue Kurse | Ergebnis versiegelt beim Owner; Forschung, nicht zertifiziert |
 | 7 Weitere Wege | offizielle Kapitalmaßnahmen und Börsenmeldungen | noch unbekannt | nur nach Datum und Sicherheitsprüfung zählen |
 
 Potenziale der Wege sind **nicht addierbar**. 12.191 bei Weg 1 ist nur die Summe aus 11.983 Provider- und 208 Symbolverdachts-Sessions. Das ist keine Prognose. Weg 2 überschneidet sich damit; Quarantänen werden nicht automatisch freigegeben. Kalenderkorrekturen würden nur den Nenner ändern, keine Kurse liefern.
@@ -129,6 +129,49 @@ Das JSON enthält auch die Zahl von Signaltagen mit 200 unmittelbar vorhergehend
 3. **Getrennte Forschungsfenster:** Eine einjährige volle Reihe kann bereits untersucht werden, auch wenn MAX lückenhaft ist. Das liefert den unmittelbar nutzbaren Forschungsfortschritt, ohne eine Session zu erfinden. Keine erfolgsabhängige Auswahl der Jahre.
 
 **Owner-Entscheidung, nicht ausgeführt:** kostenpflichtige historische Daten oder Lizenzverträge; Anfragen an andere Anbieter; SIX-Bestätigungsschreiben/Feed-Vertrag. Die alte Anbieterempfehlung, Twelve Data oder EODHD anzuschreiben, ist durch Plan §9 überholt. Öffentliche Börsen-Webkurse werden ohne passende Nutzungsrechte nicht automatisiert als Ersatzdatenbank gesammelt.
+
+## Live-Stichprobe und Pilot (Strang J, 07.11.2026)
+
+### Wege 1/2: Marketstack-Live-Stichprobe
+
+Ausgeführt über den **bestehenden** Workflow `europe-discover-refresh.yml` (neuer Eingabemodus `e9-symbol-probe`, eigener Job, läuft nie auf `main`, ändert keine Daten) mit dem vorhandenen Secret: [Lauf 42388695522](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/42388695522). Code: `scripts/marketstack/europe-marketstack-diagnostics-once.mjs#runE9SymbolProbe` (fester Plan, harte Grenze 64 Requests im Code, ein Symbol je Request, keine Wiederholung, keine Pagination). Rohantworten nur im Runner-Temp, danach gelöscht. Zählungen: [marketstack_symbol_probe.json](marketstack_symbol_probe.json).
+
+Plan: SAP, SIE, DGR (Xetra) und OR, BNP, TTE, AC, MC (Paris) auf den Lückentagen 13.06.2023 und 17.09.2026; je Request das Fenster vom letzten gespeicherten Kontrolltag (höchstens 7 Tage vorher) bis zum Lückentag. Varianten: Xetra `{X}.XETRA`, `{X}.XETR`, `{X}` mit `exchange=XETR`; Paris `{X}.XPAR`, `{X}` mit `exchange=XPAR`. Das alte unveränderte Symbol wurde nicht wiederholt.
+
+| Variante | Requests | HTTP 200 | Zeile am Lückentag | Kontrollschluss exakt | bestätigt zurückgewonnen |
+|---|---:|---:|---:|---:|---:|
+| XETR `{X}.XETRA` | 6 | 0 | 0 | 0 | 0 |
+| XETR `{X}.XETR` | 6 | 0 | 0 | 0 | 0 |
+| XETR `{X}` + `exchange=XETR` | 6 | 2 | 0 | 0 | 0 |
+| XPAR `{X}.XPAR` | 10 | 4 | 4 | 4 | 0 |
+| XPAR `{X}` + `exchange=XPAR` | 10 | 8 | 0 | 0 | 0 |
+| Metadaten `/tickers/{X}.XPAR` | 2 | 2 | – | – | – |
+| **Summe** | **40** | **16** | **4** | **4** | **0** |
+
+Verbrauch: **40 Requests**; der Kontingent-Header `x-quota-remaining` fiel von 97.240 (erste Antwort) auf 97.201 (letzte Antwort), also **39 Credits zwischen erster und letzter Antwort** – vereinbar mit einem Credit je Request (40 insgesamt). Budget 64 nicht ausgeschöpft, keine Wiederholung.
+
+Ergebnis: **16 Lücken-Sessions geprüft, 0 bestätigt zurückgewonnen.** Die vier Zeilen betreffen `AC.XPAR` und `MC.XPAR` an beiden Tagen: richtiges Datum, exakt gleicher Kontrollschluss am Vortag, plausibles OHLC, keine Split-/Dividendenfelder. Sie zählen trotzdem nicht, weil die Metadatenantwort (HTTP 200) keine lesbare Tickerzeile enthielt und damit ISIN, MIC und Währung unbelegt sind. Im Laufartefakt steht dafür noch `ROW_BUT_ISIN_MISMATCH`; das war eine zu starke Einstufung (kein nachgewiesener Widerspruch). Der Code stuft diesen Fall seither als `ROW_BUT_METADATA_EMPTY_ISIN_UNPROVEN` ein; nicht erneut abgefragt. Für OR, BNP, TTE ist `.XPAR` 422. Xetra: alle Suffixformate 422, das Basissymbol mit Börsenparameter liefert keine Zeilen.
+
+Nächster Schritt (Empfehlung, keine Produktionsänderung): `.XPAR` für die 13 Paris-Titel mit 422 als möglichen Symbolwechsel behandeln und die Identität über einen unabhängigen Beleg (ISIN-Kette, Euronext) nachweisen; erst dann Überlappung über ≥ 20 Tage und Freigabe nach den bestehenden Regeln.
+
+### Weg 6: Lückenbewusster Pilot-Backtest Deutschland
+
+Vorab-Protokoll [docs/research/europe-gap-aware/PROTOKOLL.md](../../research/europe-gap-aware/PROTOKOLL.md), SHA-256 `f4651e39…dc2e04`, eingefroren in Commit `687cd949f` vor dem Lauf; das Skript `scripts/research/europe-gap-aware/pilot.mjs` verweigert den Lauf bei anderem Hash. Regeln wie in §6: keine Interpolation, Lücke = keine Ausführung, offene Positionen an einer Lücke zensiert, Zulassung je Tag nur aus bis dahin bekannten Daten (200 zusammenhängende Vorsessions, ≥ 98 % der letzten 252), Indikatoren je zusammenhängendem Abschnitt neu. Strategien unverändert: Supertrader Donchian/Turtle 1.1.0 über den bestehenden Simulator und Quant-12-1-Momentum (oberes Quintil, monatlich) nach der Definition in `quant/engines/factors.js`. Nur Schlusskurse liegen vor; Eröffnung/Hoch/Tief werden gleich dem Schluss gesetzt, Volumen-/Spannen-Liquiditätsfilter sind nicht auswertbar – beides im Protokoll festgelegt. Benchmark: kein DAX-Index oder -ETF in den vorhandenen Daten, daher gleichgewichtetes Universum mit derselben Episodenlogik.
+
+| Zählung (öffentlich) | Wert |
+|---|---:|
+| Kandidatentitel (XETR, Identität bestätigt, ≥ 98 %) | 149 |
+| davon Beobachtungszahl = Inventar | 149 |
+| Turtle: Abschnitte gerechnet | 647 |
+| Turtle: abgeschlossene Trades | 6.414 |
+| Turtle: davon im Standard-Portfolio genommen | 1.312 |
+| Turtle: zensierte Episoden (Lücke / Studienende) | 153 (117 / 36) |
+| Turtle: an Lücke nicht ausgeführte Einstiege | 10 |
+| Momentum: Monatstermine / mit abgeschlossenen Episoden | 179 / 114 |
+| Momentum: Episoden abgeschlossen / zensiert | 3.041 / 82 |
+| Benchmark gleichgewichtet: Episoden abgeschlossen / zensiert / nicht ausgeführt | 14.951 / 413 / 1 |
+
+Der Pilot lief technisch durch. Rendite, Kennzahlen und Benchmarkvergleich stehen nur versiegelt in [runs/pilot.sealed.json](../../research/europe-gap-aware/runs/pilot.sealed.json) (öffentlicher Schlüssel `scripts/supertrader/validation/results-public-key.pem`); [runs/pilot-public.json](../../research/europe-gap-aware/runs/pilot-public.json) enthält nur Zählungen und Hashes. **Forschung, nicht zertifiziert.** Bekannte Verzerrungen: Kandidatenkreis aus heutigem Bestand (Survivorship) und heutiger Identität, unbereinigte Rohkurse, zensierte Episoden fehlen in der Portfolio- und Periodenrechnung. 65 Monatstermine haben keine abgeschlossene Momentum-Episode: an 62 davon erfüllte kein Titel die Regel von 253 zusammenhängend beobachteten Sessions (2011: 3, 2012: 11, 2013: 12, 2014: 10, 2023: 8, 2024: 12, 2025: 6), weil marktweite Xetra-Lückentage die Kette regelmäßig unterbrechen; an 3 Terminen endeten alle Episoden zensiert. Das ist der wichtigste methodische Befund des Piloten: Strenge Zusammenhangsregeln und marktweite Providerlücken schließen ganze Jahre aus, ohne dass ein Kurs falsch ist.
 
 ## Nachvollziehbarkeit und Prüfung
 

@@ -27,14 +27,14 @@
     {
       "id": 1,
       "name": "Marketstack-Symbolformate",
-      "status": "CATALOGUE_MEASURED_LIVE_BLOCKED",
+      "status": "LIVE_PROBE_DONE_NO_CONFIRMED_RECOVERY",
       "recovered_sessions_confirmed": 0,
       "recovered_sessions_estimate": null,
       "potential_upper_bound_sessions": 12191,
       "costs": {
         "additional_eur": 0,
-        "marketstack_calls_actual": 0,
-        "marketstack_credits_actual": 0
+        "marketstack_calls_actual": 40,
+        "marketstack_credits_actual": 39
       },
       "licence": "Bestehender Marketstack-Zugang; neue Speicher-/Weiterverbreitungsrechte nicht geprüft oder eingeräumt. Keine Kursdaten im PR.",
       "effort_person_days_estimate": "1–2",
@@ -2212,7 +2212,7 @@
     {
       "id": 6,
       "name": "Backtest mit fehlenden Beobachtungen",
-      "status": "COVERAGE_MEASURED_NO_STRATEGY_RUN",
+      "status": "PILOT_RAN_RESULTS_SEALED",
       "recovered_sessions_confirmed": 0,
       "recovered_sessions_estimate": null,
       "potential_upper_bound_sessions": 0,
@@ -3606,5 +3606,86 @@
       "reason": "Sparse checkout missing referenced source/data paths; not a clean full-suite validation"
     },
     "new_product_tests_written": 0
+  },
+  "follow_up_20261107": {
+    "live_symbol_probe": {
+      "run": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/42388695522",
+      "artifact": "marketstack_symbol_probe.json",
+      "requests": 40,
+      "budget": 64,
+      "credits_quota_header_delta": 39,
+      "http": {
+        "200": 16,
+        "422": 24
+      },
+      "by_variant": {
+        "XETR:XETRA_SUFFIX": {
+          "requests": 6,
+          "http200": 0,
+          "targetRows": 0,
+          "controlRowsMatching": 0,
+          "recoveredCandidates": 0
+        },
+        "XETR:MIC_SUFFIX": {
+          "requests": 6,
+          "http200": 0,
+          "targetRows": 0,
+          "controlRowsMatching": 0,
+          "recoveredCandidates": 0
+        },
+        "XETR:BARE_WITH_EXCHANGE": {
+          "requests": 6,
+          "http200": 2,
+          "targetRows": 0,
+          "controlRowsMatching": 0,
+          "recoveredCandidates": 0
+        },
+        "XPAR:MIC_SUFFIX": {
+          "requests": 10,
+          "http200": 4,
+          "targetRows": 4,
+          "controlRowsMatching": 4,
+          "recoveredCandidates": 0
+        },
+        "XPAR:BARE_WITH_EXCHANGE": {
+          "requests": 10,
+          "http200": 8,
+          "targetRows": 0,
+          "controlRowsMatching": 0,
+          "recoveredCandidates": 0
+        }
+      },
+      "target_sessions_probed": 16,
+      "recovered_sessions_confirmed": 0,
+      "leads_row_and_exact_control_identity_unproven": 4,
+      "lead_sessions": [
+        "ref_AC_PA_XPAR@2023-06-13",
+        "ref_AC_PA_XPAR@2026-09-17",
+        "ref_MC_PA_XPAR@2023-06-13",
+        "ref_MC_PA_XPAR@2026-09-17"
+      ],
+      "label_correction": "ROW_BUT_ISIN_MISMATCH im Laufartefakt bedeutet hier: Metadatenantwort HTTP 200 ohne lesbare Tickerzeile (rows 0). Kein nachgewiesener ISIN-Widerspruch; Code seither als ROW_BUT_METADATA_EMPTY_ISIN_UNPROVEN eingestuft, ohne erneuten Abruf."
+    },
+    "gap_aware_backtest_pilot": {
+      "protocol": "docs/research/europe-gap-aware/PROTOKOLL.md",
+      "public": "docs/research/europe-gap-aware/runs/pilot-public.json",
+      "sealed": "docs/research/europe-gap-aware/runs/pilot.sealed.json",
+      "ran": true,
+      "label": "Forschung, nicht zertifiziert",
+      "t1_closed_trades": 6414,
+      "t1_censored_episodes": 153,
+      "t1_censored_by_reason": {
+        "GAP": 117,
+        "STUDY_END": 36
+      },
+      "q1_episodes": {
+        "CLOSED": 3041,
+        "CENSORED_GAP": 82,
+        "CENSORED_STUDY_END": 0,
+        "NOT_EXECUTED": 0
+      },
+      "benchmark": "EQUAL_WEIGHT_UNIVERSE",
+      "returns": "nur versiegelt"
+    }
   }
 }
