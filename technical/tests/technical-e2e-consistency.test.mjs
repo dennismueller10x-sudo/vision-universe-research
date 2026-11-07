@@ -29,6 +29,7 @@ const SH = join(root, "quant/data/product/technical-signals-v1");
    die Wilder-Glaettung (Screener aus der Vollhistorie, Chart aus 270 Bars; gemessen bei 5.424 Titeln: RSI max. 0,023,
    ADX max. 0,066, ATR % max. 0,00011 bei WOK). */
 const num = (x) => (Number.isFinite(x) ? x : null), dir = (x) => (Number.isFinite(x) ? x > 0 : null);
+const FEATURE_STEP = 1e-5; // Rundungsstufe von featuresAtCutoff (5 Nachkommastellen)
 /* EMA-Linie wie technical/app.js (renderStudio): X.cs.emaP || X.ind.emaP. Die 270-Bar-EMA haengt bei stark gefallenen
    Titeln noch vom Startwert ab (KXIN 04.11.2026: 2,2578 statt 2,2491 bei Schluss 2,25). chartSeries ist auf 1e-4
    gerundet (product-materialization.js#nz); liegt der Schluss innerhalb dieser Rundung auf der Linie, kann das Bild
@@ -49,7 +50,12 @@ const CHART = {
   aroonOsc: [(S, t) => num(I.compute(S, "aroon").values.oscillator[t]), 0],
   atrPct: [(S, t) => num(I.compute(S, "atr").values[t] / S.close[t]), 0.0005],
   bbPctB: [(S, t) => num(I.compute(S, "bollinger").values.percentB[t]), 0.0006],
-  macdPositive: [(S, t) => dir(I.compute(S, "macd").values.histogram[t]), 0],
+  // Der Screener liest das MACD-Histogramm aus featuresAtCutoff, das auf 5 Nachkommastellen
+  // gerundet veroeffentlicht wird. Liegt |Histogramm| unter der halben Rundungsstufe, ist das
+  // veroeffentlichte Histogramm 0 und das Vorzeichen daraus nicht bestimmbar (MNDO 06.11.2026:
+  // Chart 6.9e-8, Feature 0). Nur dieser Rundungsbereich wird nicht verglichen; jede Abweichung
+  // ausserhalb bleibt ein Fehler.
+  macdPositive: [(S, t) => { const h = I.compute(S, "macd").values.histogram[t]; return Number.isFinite(h) && Math.abs(h) < FEATURE_STEP / 2 ? undefined : dir(h); }, 0],
   supertrendUp: [(S, t) => dir(I.compute(S, "supertrend").values.direction[t]), 0],
   psarUp: [(S, t) => dir(I.compute(S, "psar").values.direction[t]), 0],
   aboveEma20: [(S, t, cs) => aboveLine(S, t, cs, 20), 0],

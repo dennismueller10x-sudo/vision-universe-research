@@ -134,6 +134,7 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 - Gates wurden nicht abgeschwächt. Die Isolationsgates von Discover, Supertrader und Company Intelligence werden von diesem PR nicht ausgelöst (keine Pfade unter `discover/**`, `supertrader/**`, `scripts/supertrader/**`).
 - Der Ausbruch über Widerstand verlangt eine Zone mit mindestens zwei Swing-Kontakten. Ohne diese Regel meldeten 18 % des Universums einen „Ausbruch“, mit ihr 9 % (Stichtag 23.10.2026).
 - Elliott-Registry-Produktsicht (M11, Entscheidung 06.11.2026): Liegt das Chartbild-Produkt genau einen Wochenpunkt hinter der Langreihe (Fenster zwischen „Lange Kursreihen“ und dem direkt angehängten Chartbild-Lauf, 60–100 min), gelten die Identitätstests als STALE (Alarm, übersprungen) statt rot; jeder andere Identitätsfehler und ein Abstand ab zwei Wochen bleiben hart.
+- MACD-Vorzeichen im Abgleich Screener = Chart Studio (Entscheidung 07.11.2026): Der Screener liest das Histogramm aus `featuresAtCutoff`, das auf 5 Nachkommastellen gerundet veröffentlicht wird (06.11.: 144 von 5.632 Titeln mit Histogramm 0). Liegt |Histogramm| unter 0,5·10⁻⁵, wird `macdPositive` nicht verglichen, weil das Vorzeichen aus dem gerundeten Wert nicht bestimmbar ist (Anlass MNDO, Chart 6,9·10⁻⁸). Jede Abweichung außerhalb dieses Bereichs bleibt ein Fehler; der Erzeuger und die Rundung bleiben unverändert.
 
 ## 10. Verlauf
 
