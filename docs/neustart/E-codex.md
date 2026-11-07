@@ -76,42 +76,12 @@ Separater Branch `codex/e2-sec-form4`, PR [#1369](https://github.com/dennismuell
 - SQL-Flows nur mit PG_TEST_URL; diese Umgebung hat keine solche Konfiguration.
 - Laufzeit: bereitgestelltes Node 24.22.1 für die Bestandssuiten; E2-Core/Registry und die Gegenproben des Discover-Namensfehlers bzw. Quant-Golden-Tests zusätzlich unter Node 22.23.4.
 
-## E8 – Datenqualität je Aktie
+## E8 – Datenqualität je Aktie (Abschluss 07.11.2026)
 
-Branch `codex/e8-data-quality`: sechs meldende WARN-Regeln im DQ-Runner,
-gemeinsamer Adapter für Terminal-Diagnose und eine Artefaktansicht
-„Datenqualität heute“ auf `/status/` (Redesign 2027, Beispiele verlinken
-`/status/#/TICKER`). Vollständige Befunde bleiben unabhängig vom 25er-Sample
-für jede Aktie verfügbar. Datenvertrag und Quellen: `docs/data/DATA_QUALITY.md`.
-Kein Fachmodell, erzeugtes Artefakt, Workflow oder ausgeschlossener Pfad geändert.
+PR [#1541](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1541), Branch `codex/e8-data-quality`, auf `main` (`9e2012b6f`) rebasiert. Sechs zusätzliche WARN-Regeln prüfen Tagesbewegungen ohne Splitbeleg, fehlende Logos großer Unternehmen, fehlende Firmennamen, alte Analysten-Einstufungen, Depotpositionen ohne aktuellen veröffentlichten Schluss und Supertrader-Positionen ohne positiven Stopp. Vorhandene ERROR-Regeln und Fachmodelle bleiben unverändert; WARN blockiert auch `--strict` nicht.
 
-A entscheidet über die tägliche Veröffentlichung nach `/status/data-quality.json`
-und das Vorhalten des echten UTC-Vortags (`--previous`); der bestehende
-Core-Prüfworkflow ruft den erweiterten Runner bereits auf. Ohne Bericht oder
-Vortag zeigt die Seite keine erfundenen Zähler bzw. Trends.
+`/status/` und `diagnose.mjs TICKER` lesen denselben Vertrag. Die Übersicht zeigt sechs Karten, den echten UTC-Vortagstrend und Beispiele mit Direktlink. Fehlende oder alte Berichte sowie nicht prüfbare Quellen werden ausdrücklich benannt. Keine Produktionsdatei wurde von Hand erzeugt oder angepasst.
 
-Repository-Probe am 06.11.: 1.572 Sprungbefunde im veröffentlichten Jahresfenster,
-acht Namensbefunde, 225 alte Analysten-Einstufungen, kein fehlender aktueller
-Kurs bei 125 Depotpositionen und kein fehlender Stopp bei 21 Supertrader-Positionen.
-Logo-Regel: 19 fehlende Logos bei 644 prüfbaren Aktien über 10 Mrd. USD;
-fehlende Payload-Börsenwerte kommen aus den vorhandenen Faktorartefakten,
-mit passender securityId und ohne neue Berechnung.
-15 gezielte Regel-/UI-/CLI-Tests und ihre Produktionsisolation bestehen.
-Chromium: sechs Karten, keine JS-Fehler, bei 390 px kein horizontaler Überlauf.
+15 Regel-, Adapter-, CLI- und UI-Vertragstests bestehen nach dem Rebase unter Node 22.23.4. Der aktuelle vollständige CI-Status und die Freigabe stehen im PR; Strang A prüft und mergt. Datenstandsfehler alter Läufe werden nicht durch geänderte Daten oder Erwartungen übergangen.
 
-Weitere E8-Validierung: Technical 114/114; Konten 115 bestanden, drei
-übersprungen. Python Quant: 584/590, sechs Befunde in unveränderten
-Datenstandsprüfungen (`test_canonical_market`, `test_daily`, u. a.
-5404 gegenüber erwartet 5420 COMPANY_FACTS_AVAILABLE).
-
-Abschluss E8, PR [#1541](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1541):
-Core 392 bestanden, zwei übersprungen; Discover/Supertrader/Screener 1.813
-bestanden, 21 übersprungen. Die 15 E8-Tests bestehen auch unter Node 22.23.4;
-Bestandssuiten liefen unter dem bereitgestellten Node 24.22.1. Allgemeine
-Produktionsisolation: keine Datei verändert, intern gestartete Quant-Suite
-innerhalb 900 Sekunden nicht grün. Separater Quant-Gesamtlauf nach 1.000
-Sekunden lokal beendet, daher kein vollständiges Quant-Ergebnis behauptet.
-PR bleibt wegen dieser offenen Gesamtvalidierung und der sechs oben genannten
-Python-Datenstandsfehler ein Entwurf. Keine betroffenen Bestandsberechnungen
-oder generierten Daten korrigiert. Terminal-Diagnose NVDA/DXF zusätzlich
-über HTTP geprüft; Arbeitsbaum nach den Tests ohne Produktionsänderung.
+Die tägliche Veröffentlichung und das Vorhalten des echten Vortags bleiben Aufgabe von A: `node scripts/core/data-quality.mjs --out=PFAD --previous=GESTERN.json`. Kein neuer Workflow und kein neuer Zeitplan. Ohne veröffentlichten Bericht erscheint die Übersicht als nicht verfügbar. Vertrag: [DATA_QUALITY.md](../data/DATA_QUALITY.md).
