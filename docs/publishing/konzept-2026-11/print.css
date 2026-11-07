@@ -1,0 +1,65 @@
+/* Vision Universe Print-System: A4, Weiß/Schwarz/Neongrün, Inter. Konzept 07.11.2026 */
+@font-face{font-family:Inter;src:url(../../../assets/fonts/inter-latin.woff2) format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:Inter;src:url(../../../assets/fonts/inter-latin-ext.woff2) format("woff2");font-weight:100 900;font-display:block;unicode-range:U+0100-024F,U+1E00-1EFF,U+20A0-20AB,U+20AD-20CF}
+:root{--lime:#c8f531;--ink:#000;--paper:#fff;--g1:#f4f4f4;--g2:#e6e6e6;--g3:#8c8c8c;--g4:#5c5c5c;--red:#c4281c}
+@page{size:A4;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#d9d9d9}
+body{font-family:Inter,system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;font-feature-settings:"tnum" 1,"ss01" 1}
+.page{width:210mm;height:297mm;background:var(--paper);position:relative;overflow:hidden;margin:10mm auto;break-after:page;page-break-after:always}
+@media print{html,body{background:#fff}.page{margin:0}}
+.pad{position:absolute;inset:14mm 14mm 16mm}
+.dark{background:var(--ink);color:#fff}
+/* Kopf- und Fußzeile */
+.run{position:absolute;left:14mm;right:14mm;top:7mm;display:flex;justify-content:space-between;align-items:center;font-size:7.5pt;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.run .wm{display:flex;gap:6px;align-items:center}
+.run .dot{width:7px;height:7px;border-radius:50%;background:var(--lime)}
+.foot{position:absolute;left:14mm;right:14mm;bottom:6mm;display:flex;justify-content:space-between;font-size:6.5pt;color:var(--g3);letter-spacing:.02em}
+.dark .foot{color:#777}
+.foot b{color:var(--ink)} .dark .foot b{color:#fff}
+/* Typo */
+.kick{font-size:8pt;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.kick.l{color:var(--ink);background:var(--lime);display:inline-block;padding:3px 7px;border-radius:3px}
+.h1{font-size:54pt;font-weight:900;letter-spacing:-.045em;line-height:.88}
+.h2{font-size:30pt;font-weight:900;letter-spacing:-.04em;line-height:.95}
+.h3{font-size:14pt;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.lead{font-size:12pt;line-height:1.38;font-weight:500;letter-spacing:-.005em}
+.body{font-size:9.2pt;line-height:1.5;color:#111}
+.body p+p{margin-top:2.4mm}
+.body p:first-child::first-letter{font-size:30pt;font-weight:900;float:left;line-height:.8;margin:1.2mm 1.6mm 0 0}
+.nodrop p:first-child::first-letter{all:unset}
+.cols2{column-count:2;column-gap:7mm}
+.mu{color:var(--g4)} .dark .mu{color:#9a9a9a}
+.sm{font-size:7.5pt;line-height:1.4}
+.xs{font-size:6.5pt;line-height:1.35}
+.b{font-weight:800}
+.num{font-variant-numeric:tabular-nums}
+hl{background:var(--lime);padding:0 2px}
+.rule{height:2px;background:var(--ink)} .dark .rule{background:#fff}
+.hair{height:1px;background:var(--g2)}
+.pill{display:inline-flex;align-items:center;gap:3px;border-radius:999px;padding:2px 8px;font-weight:800;font-size:8pt;white-space:nowrap}
+.pill.up{background:var(--lime);color:#000}.pill.dn{background:#000;color:#fff}.dark .pill.dn{background:#fff;color:#000}
+.pill.red{background:var(--red);color:#fff}
+.card{background:var(--g1);border-radius:10px;padding:5mm}
+.card.ink{background:#000;color:#fff}.card.lime{background:var(--lime)}
+.card.line{background:transparent;border:1.5px solid var(--ink)}
+.stat .v{font-size:30pt;font-weight:900;letter-spacing:-.04em;line-height:.95}
+.stat .l{font-size:7.5pt;font-weight:700;margin-top:1.5mm;line-height:1.3}
+.grid{display:grid;gap:5mm}
+.quote{font-size:15pt;font-weight:800;letter-spacing:-.02em;line-height:1.18}
+.quote{border-left:4px solid var(--lime);padding-left:4mm}
+.card.lime .quote{border-color:#000}
+.src{font-size:6.3pt;color:var(--g3);line-height:1.35}
+.tag{display:inline-block;font-size:6.5pt;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border:1px solid currentColor;border-radius:3px;padding:1px 5px}
+.img{position:absolute;background-size:cover;background-position:center}
+.vd{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:8pt}
+.vd i{display:inline-flex;gap:2px}.vd i b{width:9px;height:9px;border-radius:2px;background:var(--g2)}.vd i b.on{background:#000}
+.dark .vd i b{background:#333}.dark .vd i b.on{background:var(--lime)}
+table.t{width:100%;border-collapse:collapse;font-size:8pt}
+table.t td,table.t th{padding:1.6mm 0;border-bottom:1px solid var(--g2);text-align:left}
+table.t th{font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase;color:var(--g4);font-weight:800}
+table.t td.r,table.t th.r{text-align:right}
+.dark table.t td,.dark table.t th{border-color:#222}
+.note{position:absolute;right:0;top:0;transform:translateY(-130%);font-size:6pt;color:var(--g3)}
+.imgnote{position:absolute;font-size:5.5pt;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:700}
+.card.ink .pill.dn{background:#fff;color:#000}

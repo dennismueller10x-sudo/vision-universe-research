@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>VU Aktienreport · AMD · Konzept</title>
+<link rel="stylesheet" href="print.css">
+<script src="data.js"></script>
+<script src="charts.js"></script>
+<style>
+.big-t{font-size:118pt;font-weight:900;letter-spacing:-.07em;line-height:.8}
+.kpi{border-top:2px solid var(--lime);padding-top:3mm}
+.kpi .v{font-size:22pt;font-weight:900;letter-spacing:-.04em;line-height:1}
+.kpi .l{font-size:7pt;font-weight:700;color:#9a9a9a;margin-top:1.5mm;line-height:1.35}
+.seg{display:grid;grid-template-columns:30mm 1fr 18mm 16mm;gap:3mm;align-items:center;padding:2.3mm 0;border-bottom:1px solid var(--g2)}
+.seg .n{font-size:9pt;font-weight:800}.seg .n small{display:block;font-weight:500;color:var(--g4);font-size:7pt}
+.seg .bar{height:9px;border-radius:5px;background:var(--g2);position:relative}.seg .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:#000}
+.seg .bar i.l{background:var(--lime)}
+.seg .v{font-size:10pt;font-weight:900;text-align:right}
+.hl-row{display:grid;grid-template-columns:28mm 1fr auto;gap:3mm;padding:2.4mm 0;border-bottom:1px solid var(--g2);align-items:center;font-size:8.3pt}
+.hl-row .k{font-weight:800}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+.pc ul{list-style:none;font-size:8.6pt;line-height:1.42}
+.pc li{padding:2mm 0 2mm 5mm;border-bottom:1px solid var(--g2);position:relative}
+.pc li::before{content:"";position:absolute;left:0;top:3.4mm;width:2.4mm;height:2.4mm;border-radius:1px;background:var(--lime)}
+.pc .neg li::before{background:#000}
+.tl{display:grid;grid-template-columns:15mm 1fr auto;gap:3mm;padding:2mm 0;border-bottom:1px solid #262626;font-size:8.3pt;align-items:center}
+</style>
+</head>
+<body>
+
+<!-- ============ SEITE 1 · COVER ============ -->
+<section class="page dark">
+  <div class="img" style="left:0;right:0;top:58mm;height:118mm;background-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 60%,#000 100%),url(../../../assets/themen/02-halbleiter-chips.webp);background-position:62% 50%;background-size:auto 100%;background-repeat:no-repeat"></div>
+  <div class="imgnote" style="right:14mm;top:62mm">Bild: VU-Themenbild „Halbleiter“ · Serie: eigenes Higgsfield-Motiv je Report</div>
+  <div class="pad">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span class="kick" style="display:flex;gap:6px;align-items:center"><i style="width:8px;height:8px;border-radius:50%;background:var(--lime);display:inline-block"></i>Vision Universe · Aktienreport</span>
+      <span class="kick" style="color:#9a9a9a">Nr. 01 · 07.11.2026</span>
+    </div>
+    <div style="position:absolute;left:0;top:22mm">
+      <div class="big-t">AMD</div>
+      <div style="margin-top:4mm;font-size:9pt;font-weight:700;color:#9a9a9a;letter-spacing:.04em">Advanced Micro Devices · NASDAQ: AMD · S&amp;P&nbsp;500 · Nasdaq-100</div>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:150mm">
+      <span class="kick l">Titelthema</span>
+      <div class="h1" style="font-size:42pt;margin-top:4mm">Rekord im Rechenzentrum.<br><span style="color:var(--lime)">Absturz an der Börse.</span></div>
+      <div class="lead" style="margin-top:5mm;max-width:160mm;color:#d6d6d6">Am Dienstag meldet AMD das beste Quartal seiner Geschichte. Zwei Tage später fällt die Aktie um 17&nbsp;% und am Freitag steigt sie wieder um 11&nbsp;%. Was hinter den Zahlen steckt, was der Chart zeigt und wie hoch die Bewertung ist.</div>
+    </div>
+    <div class="grid" style="position:absolute;left:0;right:0;bottom:4mm;grid-template-columns:repeat(4,1fr);gap:5mm">
+      <div class="kpi"><div class="v" data-k="price"></div><div class="l">Schlusskurs 06.11.2026 <span data-k="chg"></span></div></div>
+      <div class="kpi"><div class="v">13,4 Mrd.&nbsp;$</div><div class="l">Umsatz 3. Quartal, +45&nbsp;% zum Vorjahr</div></div>
+      <div class="kpi"><div class="v" style="color:var(--lime)">+97&nbsp;%</div><div class="l">Rechenzentren, 8,5&nbsp;Mrd.&nbsp;$ im Quartal</div></div>
+      <div class="kpi"><div class="v">≈&nbsp;17 Mrd.&nbsp;$</div><div class="l">eigener Umsatz-Ausblick 4. Quartal (±3&nbsp;%)</div></div>
+    </div>
+  </div>
+  <div class="foot"><span><b>Vision Universe</b> · Datendossier, kein Kursziel, keine Anlageempfehlung</span><span>Konzept · Muster-Report · nicht veröffentlicht</span></div>
+</section>
+
+<!-- ============ SEITE 2 · DAS UNTERNEHMEN ============ -->
+<section class="page">
+  <div class="run"><span class="wm"><i class="dot"></i>Aktienreport · AMD</span><span>01 · Das Unternehmen</span></div>
+  <div class="pad" style="top:16mm">
+    <span class="kick">Das Unternehmen</span>
+    <div class="h2" style="margin-top:3mm">Vom Herausforderer<br>zum KI-Lieferanten.</div>
+    <div style="display:grid;grid-template-columns:1fr 74mm;gap:8mm;margin-top:6mm">
+      <div class="body">
+        <p>AMD entwickelt Prozessoren und Grafikchips, baut sie aber nicht selbst. Gefertigt wird vor allem bei TSMC in Taiwan. Das Geschäft hat vier Teile: Server-Prozessoren (EPYC) und KI-Beschleuniger (Instinct) für Rechenzentren, Prozessoren für PCs und Laptops (Ryzen), Grafikkarten und Konsolenchips für Spiele sowie programmierbare Chips für Industrie, Autos und Raumfahrt, die mit der Übernahme von Xilinx 2022 dazukamen.</p>
+        <p>Lange war AMD die Nummer zwei hinter Intel bei Prozessoren und hinter Nvidia bei Grafikchips. Heute treibt ein Bereich das ganze Unternehmen: <b>Rechenzentren</b>. Im dritten Quartal 2026 kam fast zwei Drittel des Umsatzes von dort, ein Jahr zuvor war es knapp die Hälfte.</p>
+        <p>Der Grund heißt <b>Helios</b>: ein ganzes Server-Gestell (Rack) aus AMD-Chips, mit Instinct-MI450-Beschleunigern und EPYC-Prozessoren der sechsten Generation. Laut AMD laufen darauf bereits Modelle und Anwendungen von Anthropic, Meta, Microsoft, OpenAI und Oracle Cloud. Für das vierte Quartal kündigt AMD an, die Produktion von Helios und der neuen Server-Prozessoren „Venice“ hochzufahren.</p>
+      </div>
+      <div>
+        <div class="card ink">
+          <div class="kick" style="color:var(--lime)">Erste Helios-Kunden laut AMD</div>
+          <div style="margin-top:3mm;font-size:12pt;font-weight:900;line-height:1.45;letter-spacing:-.01em">Anthropic<br>Meta<br>Microsoft<br>OpenAI<br>Oracle Cloud</div>
+          <div class="xs" style="color:#9a9a9a;margin-top:3mm">Außerdem angekündigt: Systeme mit HPE und Vultr, Supercomputer LUMI-AI (EuroHPC), Übernahmen von World Labs und Taalas (noch nicht abgeschlossen).</div>
+        </div>
+        <div class="card lime" style="margin-top:5mm"><div class="quote" style="font-size:11.5pt">Wir erwarten, dass sich das Wachstum im vierten Quartal weiter beschleunigt.</div><div class="xs" style="margin-top:2.5mm"><b>Lisa Su</b>, Chefin von AMD, 03.11.2026 (übersetzt)</div></div>
+      </div>
+    </div>
+    <div style="margin-top:7mm">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="h3">Umsatz nach Bereichen · 3. Quartal 2026</div><div class="sm mu">Mio. $ · Veränderung zum Vorjahresquartal</div></div>
+      <div style="margin-top:2mm" data-k="segs"></div>
+      <div class="xs mu" style="margin-top:2mm">Quelle: AMD-Pressemitteilung vom 03.11.2026 (SEC Form 8-K). Summe 13.377 Mio. $.</div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:6mm;margin-top:6mm">
+      <div class="card ink">
+        <div class="kick" style="color:var(--lime)">Anteil Rechenzentren am Umsatz</div>
+        <div data-k="dcShare" style="margin-top:3mm"></div>
+        <div class="xs" style="color:#9a9a9a;margin-top:2mm">Eigene Rechnung aus den Quartalszahlen und den Wachstumsraten in der AMD-Mitteilung.</div>
+      </div>
+      <div class="card">
+        <div class="kick">AMD in den VU-Themenlisten</div>
+        <div data-k="themes" style="margin-top:2mm"></div>
+        <div class="xs mu" style="margin-top:2mm">Rang nach Discover-Regel innerhalb der Liste, Stand 06.11.2026.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>02</b> · Aktienreport AMD</span><span>Redaktionelle Einordnung, keine Anlageberatung</span></div>
+</section>
+
+<!-- ============ SEITE 3 · DIE ZAHLEN ============ -->
+<section class="page">
+  <div class="run"><span class="wm"><i class="dot"></i>Aktienreport · AMD</span><span>02 · Die Zahlen</span></div>
+  <div class="pad" style="top:16mm">
+    <span class="kick">Die Zahlen</span>
+    <div class="h2" style="margin-top:3mm;font-size:26pt">Neunmal so viel Umsatz wie 2015.</div>
+    <div class="lead" style="margin-top:3mm;max-width:165mm">Der Umsatz wuchs von <b data-k="rev15"></b> im Jahr 2015 auf <b data-k="rev25"></b> im Jahr 2025. Aus einem Verlust wurde ein Gewinn. Den Preis zahlten die Aktionäre mit mehr Aktien.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:8mm;margin-top:6mm">
+      <div><div class="h3" style="font-size:11pt">Umsatz je Geschäftsjahr</div><div class="sm mu" style="margin-bottom:2mm">Mrd. $ · SEC-Daten</div><div data-k="revBars"></div></div>
+      <div><div class="h3" style="font-size:11pt">Freier Cashflow je Geschäftsjahr</div><div class="sm mu" style="margin-bottom:2mm">Mrd. $ · Geld, das nach Investitionen übrig bleibt</div><div data-k="fcfBars"></div></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 78mm;gap:8mm;margin-top:7mm">
+      <div>
+        <div class="h3" style="font-size:11pt">Gesundheits-Check · 10 Jahre</div>
+        <div class="sm mu" style="margin-bottom:2mm">Vision-Universe-Regeln über die SEC-Daten, Geschäftsjahr 2025</div>
+        <div data-k="health"></div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="kick">3. Quartal 2026 auf einen Blick</div>
+          <table class="t" style="margin-top:2mm">
+            <tr><td>Umsatz</td><td class="r b">13,38 Mrd. $</td><td class="r"><span class="pill up">+45 %</span></td></tr>
+            <tr><td>Bruttomarge</td><td class="r b">54 %</td><td class="r mu">+2 Pkt.</td></tr>
+            <tr><td>Operativer Gewinn</td><td class="r b">2,83 Mrd. $</td><td class="r"><span class="pill up">+123 %</span></td></tr>
+            <tr><td>Gewinn je Aktie</td><td class="r b">1,46 $</td><td class="r"><span class="pill up">+95 %</span></td></tr>
+            <tr><td>bereinigt (Non-GAAP)</td><td class="r b">2,09 $</td><td class="r"><span class="pill up">+74 %</span></td></tr>
+            <tr><td>Freier Cashflow</td><td class="r b">0,55 Mrd. $</td><td class="r"><span class="pill dn">−64 %</span></td></tr>
+          </table>
+          <div class="xs mu" style="margin-top:2.5mm">Quelle: AMD, 03.11.2026, GAAP sofern nicht anders genannt. Freier Cashflow: 554 Mio. $ nach 1.530 Mio. $ im Vorjahresquartal (eigene Rechnung der Veränderung).</div>
+        </div>
+        <div class="card ink" style="margin-top:4mm"><div class="kick" style="color:var(--lime)">Ausblick 4. Quartal</div><div style="font-size:16pt;font-weight:900;margin-top:2mm;letter-spacing:-.02em">≈ 17 Mrd. $ ± 3 %</div><div class="sm" style="color:#bdbdbd;margin-top:1mm">Umsatz laut AMD, rund +66 % zum Vorjahr; bereinigte Bruttomarge ca. 55 %.</div></div>
+      </div>
+    </div>
+    <div class="grid" style="position:absolute;left:0;right:0;bottom:0;grid-template-columns:1fr 1fr;gap:8mm">
+      <div><div class="h3" style="font-size:11pt">Gewinn je Geschäftsjahr</div><div class="sm mu" style="margin-bottom:2mm">Mrd. $ · Nettogewinn nach Steuern</div><div data-k="niBars"></div></div>
+      <div><div class="h3" style="font-size:11pt">Bruttomarge je Geschäftsjahr</div><div class="sm mu" style="margin-bottom:2mm">% vom Umsatz, der nach Herstellkosten bleibt</div><div data-k="gmBars"></div></div>
+    </div>
+  </div>
+  <div class="foot"><span><b>03</b> · Aktienreport AMD</span><span>Jahreszahlen: SEC EDGAR, Datenstand <span data-k="secAsOf"></span></span></div>
+</section>
+
+<!-- ============ SEITE 4 · CHART & TECHNIK ============ -->
+<section class="page">
+  <div class="run"><span class="wm"><i class="dot"></i>Aktienreport · AMD</span><span>03 · Chart &amp; Technik</span></div>
+  <div class="pad" style="top:16mm">
+    <span class="kick">Chart &amp; Technik</span>
+    <div class="h2" style="margin-top:3mm">Ein Jahr Achterbahn.</div>
+    <div class="lead" style="margin-top:3mm;max-width:165mm">Vom Tief im März bis zum Hoch im Oktober hat sich der Kurs mehr als verdreifacht. Seitdem hat er rund ein Drittel verloren und liegt wieder dort, wo er im Sommer stand.</div>
+    <div class="card" style="margin-top:5mm;padding:5mm 5mm 3mm">
+      <div class="h3" style="font-size:11pt">AMD · 1 Jahr · Schlusskurse in US-Dollar</div><div class="sm mu">gestrichelt: 50- und 200-Tage-Linie</div>
+      <div style="margin-top:3mm" data-k="chart"></div>
+    </div>
+    <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:4mm;margin-top:5mm">
+      <div class="card stat" style="padding:4mm"><div class="v" style="font-size:20pt" data-k="dHi"></div><div class="l">Abstand zum 52-Wochen-Hoch</div></div>
+      <div class="card stat" style="padding:4mm"><div class="v" style="font-size:20pt" data-k="d200"></div><div class="l">über der 200-Tage-Linie</div></div>
+      <div class="card stat" style="padding:4mm"><div class="v" style="font-size:20pt" data-k="d50"></div><div class="l">unter der 50-Tage-Linie</div></div>
+      <div class="card ink stat" style="padding:4mm"><div class="v" style="font-size:20pt" data-k="beta"></div><div class="l">Beta: schwankt etwa so viel stärker als der Markt</div></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:8mm;margin-top:6mm">
+      <div>
+        <div class="h3" style="font-size:11pt">Was die Technik-Engine sieht</div>
+        <div style="margin-top:2mm">
+          <div class="hl-row"><span class="k">Struktur</span><span>Kursbild nach unten gerichtet (Tiefs und Hochs sinken)</span><span class="vd"><i><b class="on"></b><b></b><b></b></i>Schwach</span></div>
+          <div class="hl-row"><span class="k">Formation</span><span data-k="formation"></span><span class="tag">Beobachten</span></div>
+          <div class="hl-row"><span class="k">Trendvorlage</span><span data-k="tpl"></span><span class="vd"><i><b class="on"></b><b class="on"></b><b></b></i>Mittel</span></div>
+          <div class="hl-row"><span class="k">Schwankung</span><span data-k="vol"></span><span class="vd"><i><b class="on"></b><b class="on"></b><b class="on"></b></i>Hoch</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="h3" style="font-size:11pt">Rang im Universum</div>
+        <div class="sm mu" style="margin-bottom:2mm">Perzentil unter <span data-k="uni"></span> US-Aktien (100 = stärkste)</div>
+        <div data-k="ranks"></div>
+        <div class="xs mu" style="margin-top:2mm">Relative Stärke, Momentum und Leadership sind Kennzahlen aus Vision Universe Discover. Sie beschreiben das Kursverhalten der Vergangenheit, keine Prognose.</div>
+      </div>
+    </div>
+    <div class="card ink" style="position:absolute;left:0;right:0;bottom:0">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="kick" style="color:var(--lime)">Die Woche der Aktie</div><div class="xs" style="color:#9a9a9a">Schlusskurse in $ · Veränderung zum Vortag</div></div>
+      <div data-k="wk" style="display:grid;grid-template-columns:repeat(6,1fr);gap:3mm;margin-top:3mm"></div>
+    </div>
+  </div>
+  <div class="foot"><span><b>04</b> · Aktienreport AMD</span><span>Kursdaten: Tiingo, split-bereinigt, Stand <span data-k="asOf"></span></span></div>
+</section>
+
+<!-- ============ SEITE 5 · BEWERTUNG ============ -->
+<section class="page">
+  <div class="run"><span class="wm"><i class="dot"></i>Aktienreport · AMD</span><span>04 · Bewertung &amp; Einordnung</span></div>
+  <div class="pad" style="top:16mm">
+    <span class="kick">Bewertung &amp; Einordnung</span>
+    <div class="h2" style="margin-top:3mm">Viel Zukunft im Preis.</div>
+    <div class="lead" style="margin-top:3mm;max-width:165mm">Auch nach dem Rückgang zahlt die Börse für AMD ein Vielfaches des Gewinns, den die Firma heute erzielt. Der Vergleich mit dem breiten Markt zeigt, wie viel Wachstum im Kurs steckt.</div>
+    <div class="grid" style="grid-template-columns:1.2fr 1fr 1fr;gap:4mm;margin-top:6mm">
+      <div class="card ink stat"><div class="v" data-k="pe"></div><div class="l" style="color:#bdbdbd">KGV: wie viele Jahresgewinne du mit dem Kurs bezahlst. Mittlere US-Aktie: <b style="color:var(--lime)" data-k="peMed"></b></div></div>
+      <div class="card stat"><div class="v" data-k="ps"></div><div class="l">KUV: Börsenwert geteilt durch den Jahresumsatz</div></div>
+      <div class="card stat"><div class="v" data-k="fcfy"></div><div class="l">Free-Cashflow-Rendite: Cashflow im Verhältnis zum Börsenwert</div></div>
+    </div>
+    <div class="card line" style="margin-top:4mm;padding:4mm 5mm">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="kick">KGV im Vergleich</div><div class="xs mu">Basis: letzte vier Quartale bis Q2 2026 (SEC). Q3 ist noch nicht im Jahresvergleich der SEC-Daten.</div></div>
+      <div style="margin-top:3mm" data-k="peBars"></div>
+    </div>
+    <div class="pc" style="margin-top:6mm">
+      <div><div class="h3" style="font-size:11pt">Stärken laut Kennzahlen</div><ul style="margin-top:1.5mm">
+        <li>Umsatz <b>+24&nbsp;% pro Jahr</b> über zehn Jahre, zuletzt +45&nbsp;% im Quartal.</li>
+        <li>Rechenzentren fast verdoppelt, große KI-Firmen als Helios-Kunden.</li>
+        <li>Eigener Ausblick auf ein weiter steigendes viertes Quartal.</li>
+        <li>Mehr Kasse als Schulden (Nettokasse) zum Geschäftsjahresende 2025.</li>
+      </ul></div>
+      <div class="neg"><div class="h3" style="font-size:11pt">Schwächen laut Kennzahlen</div><ul style="margin-top:1.5mm">
+        <li>KGV rund <b data-k="peX"></b> so hoch wie bei der mittleren US-Aktie.</li>
+        <li>Freier Cashflow im Quartal auf 554 Mio. $ gefallen (4&nbsp;% Marge).</li>
+        <li>Aktienzahl <b>+109&nbsp;%</b> in zehn Jahren, vor allem durch die Xilinx-Übernahme.</li>
+        <li>Starke Schwankung: max. <b data-k="dd"></b> Rückgang im letzten Jahr.</li>
+      </ul></div>
+    </div>
+    <div class="card" style="margin-top:6mm;display:grid;grid-template-columns:38mm 1fr;gap:5mm">
+      <div><div class="kick">Was als Nächstes zählt</div><div class="xs mu" style="margin-top:1.5mm">Beobachtungspunkte, keine Handlungsempfehlung</div></div>
+      <div class="sm" style="line-height:1.55"><b>Zahlen zum 4. Quartal:</b> trifft AMD die selbst genannten ≈&nbsp;17&nbsp;Mrd.&nbsp;$? · <b>Helios und Venice:</b> Hochlauf der Produktion · <b>Washington:</b> Regeln der neuen Kongressmehrheit für KI und Rechenzentren · <b>Übernahmen:</b> Abschluss World Labs und Taalas.</div>
+    </div>
+    <div class="card ink" style="margin-top:5mm"><div class="kick" style="color:var(--lime)">Einordnung in drei Sätzen</div><div style="font-size:11pt;font-weight:600;line-height:1.45;margin-top:2mm">Das Geschäft mit Rechenzentren wächst so schnell wie nie, und AMD selbst rechnet für das vierte Quartal mit noch mehr Umsatz. Die Aktie ist im Vergleich zum Markt hoch bewertet und schwankt stark, deshalb trifft sie jede Stimmungsänderung doppelt. Ob die neue Politik in Washington den Ausbau von Rechenzentren bremst, ist die offene Frage hinter dem Kurssturz.</div></div>
+    <div class="src" style="position:absolute;left:0;right:0;bottom:0"><b style="color:#000">Quellen und Methodik:</b> AMD-Pressemitteilung „AMD Reports Third Quarter 2026 Financial Results“ vom 03.11.2026 (SEC Form 8-K); Jahres- und Quartalszahlen SEC EDGAR companyfacts (CIK 0000002488), Datenstand <span data-k="secAsOf2"></span>; Kurse Tiingo, split-bereinigt; Kennzahlen, Ränge und Gesundheits-Check: Vision Universe (Discover, Fundamental, Technical). KGV-Vergleich: Median über <span data-k="peN"></span> US-Aktien mit positivem Gewinn. Tagesbewegungen 05./06.11.: VU-Daten, bestätigt durch CBS News und Fox Business. <b style="color:#000">Redaktionelle Einordnung, keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung. Kein Kursziel.</b> Methodik und Interessen: research.visionuniverse.de/rechtliches/methodik</div>
+  </div>
+  <div class="foot"><span><b>05</b> · Aktienreport AMD</span><span>Muster-Report · Konzept 07.11.2026</span></div>
+</section>
+
+<script>
+const D=VU_DATA.amd,{de,sg}=VUC,F=D.fundamentals;
+const dt=s=>s.split('-').reverse().join('.');
+const bn=v=>de(v/1e9,1)+'&nbsp;Mrd.&nbsp;$';
+const S=D.series,idx=d=>S.findIndex(p=>p[0]===d);
+const segs=[['Rechenzentren','EPYC, Instinct, Helios',8546,97,1],['PC-Prozessoren','Ryzen (Client)',2949,7],['Embedded','Industrie, Auto, Raumfahrt',1109,29],['Gaming','Grafikkarten, Konsolen',773,-40]];
+const hc={'Sehr stark':3,'Stark':2,'Solide':2,'Sehr solide':3,'Hoch':1,'Flach':1,'Knapp':1};
+const dcNow=8546/13377,dcPrev=(8546/1.97)/(13377/1.45);
+const shareBar=(l,v)=>`<div style="display:grid;grid-template-columns:20mm 1fr 14mm;gap:3mm;align-items:center;padding:1.6mm 0"><span class="sm b">${l}</span>${VUC.meter(v,{dark:1,w:200})}<span class="b" style="text-align:right;font-size:12pt">${de(v*100,0)}&nbsp;%</span></div>`;
+const M={
+  dcShare: shareBar('Q3 2025',dcPrev)+shareBar('Q3 2026',dcNow),
+  themes: D.memberships.filter(m=>m.rowId.startsWith('thema-')||m.rowId==='ndx-staerkste').map(m=>`<div class="hl-row" style="grid-template-columns:1fr auto;padding:1.6mm 0"><span>${m.title.charAt(0)+m.title.slice(1).toLowerCase().replace('nasdaq','Nasdaq').replace('künstliche intelligenz','Künstliche Intelligenz').replace('halbleiter & chips','Halbleiter & Chips').replace('rechenzentren & cloud','Rechenzentren & Cloud').replace('stärkste aktien im Nasdaq-100','Stärkste Aktien im Nasdaq-100')}</span><span class="b">${m.rank} von ${m.of}</span></div>`).join(''),
+  price: de(D.price,2)+'&nbsp;$', chg: '· '+sg(D.change)+'&nbsp;% am Tag',
+  segs: segs.map(s=>`<div class="seg"><div class="n">${s[0]}<small>${s[1]}</small></div><div class="bar"><i class="${s[4]?'l':''}" style="width:${s[2]/8546*100}%"></i></div><div class="v">${s[2].toLocaleString('de-DE')}</div><div style="text-align:right"><span class="pill ${s[3]>=0?'up':'dn'}">${sg(s[3],0)} %</span></div></div>`).join(''),
+  niBars: VUC.vbars(F.netIncome.map(r=>[String(r[0]).slice(2),r[1]/1e9]),{w:330,h:105,fmt:v=>de(v,1)}),
+  gmBars: VUC.vbars(F.grossMargin.map(r=>[String(r[0]).slice(2),r[1]*100]),{w:330,h:105,fmt:v=>de(v,0)}),
+  rev15: bn(F.revenue[0][1]), rev25: bn(F.revenue[F.revenue.length-1][1]),
+  revBars: VUC.vbars(F.revenue.map(r=>[String(r[0]).slice(2),r[1]/1e9]),{w:330,h:130,fmt:v=>de(v,1)}),
+  fcfBars: VUC.vbars(F.fcf.map(r=>[String(r[0]).slice(2),r[1]/1e9]),{w:330,h:130,fmt:v=>de(v,1)}),
+  health: F.health.map(c=>{const n=hc[c.grade]??2;const lbl=c.label.replace('Profitabilitaet','Profitabilität');return `<div class="hl-row"><span class="k">${lbl}</span><span>${c.detail.replace('Geschaeftsjahr','Geschäftsjahr').replace('Geschaeftsjahresende','Geschäftsjahresende')}</span><span class="vd"><i>${[1,2,3].map(k=>`<b class="${k<=n?'on':''}"></b>`).join('')}</i>${c.grade}</span></div>`}).join(''),
+  secAsOf: dt(F.asOf), secAsOf2: dt(F.asOf), asOf: dt(D.asOf),
+  chart: VUC.line(S,{w:640,h:235,pr:40,tick:100,mstep:2,lines:[{v:D.sma50,name:'',c:'#5c5c5c'},{v:D.sma200,name:'',c:'#8c8c8c'}],marks:[
+    {i:idx(D.lo[0]),t:'Tief '+de(D.lo[1],2)+' · '+dt(D.lo[0]),s:'',up:true,anchor:'middle'},
+    {i:idx(D.hi[0]),t:'Hoch '+de(D.hi[1],2),s:dt(D.hi[0]),anchor:'end',dx:-4},
+    {i:idx('2026-11-05'),t:'−17,3 % am 05.11.',s:'',up:false,anchor:'end',dx:-8}]}),
+  wk: (()=>{const ev={'2026-10-30':'Vorwoche','2026-11-02':'vor der Wahl','2026-11-03':'Q3-Zahlen','2026-11-04':'Wahl','2026-11-05':'Ausverkauf','2026-11-06':'Erholung'};const i0=idx('2026-10-30');return S.slice(i0).map((p,k)=>{const ch=k?(p[1]/S[i0+k-1][1]-1)*100:null;return `<div style="border-top:1px solid #333;padding-top:2mm"><div class="xs" style="color:#9a9a9a;font-weight:700">${dt(p[0]).slice(0,6)} · ${ev[p[0]]||''}</div><div style="font-size:13pt;font-weight:900;margin:1mm 0">${de(p[1],2)}</div>${ch==null?'<span class="xs" style="color:#777">Ausgang</span>':`<span class="pill ${ch>=0?'up':'dn'}">${sg(ch)} %</span>`}</div>`}).join('')})(),
+  dHi: sg(D.dist.hi*100,0)+'<small style="font-size:12pt"> %</small>',
+  d200: sg(D.dist.sma200*100,1)+'<small style="font-size:12pt"> %</small>',
+  d50: sg(D.dist.sma50*100,1)+'<small style="font-size:12pt"> %</small>',
+  beta: de(D.risk.beta,1)+'<small style="font-size:12pt">×</small>',
+  formation: 'Kurslücke nach unten, erkannt am 05.11.2026',
+  tpl: (()=>{const t=D.tech.templates.find(x=>x.id==='trend');return `Trend-Kriterien: ${t.pass} von ${t.total} erfüllt`})(),
+  vol: 'Schwankung '+de(D.risk.vol*100,0)+'&nbsp;% pro Jahr (annualisiert)',
+  uni: D.pct.universe.toLocaleString('de-DE'),
+  ranks: [['Relative Stärke',D.pct.rs],['Momentum',D.pct.momentum],['Leadership',D.pct.leadership]].map(r=>`<div class="hl-row" style="grid-template-columns:28mm 1fr 12mm"><span class="k">${r[0]}</span><span>${VUC.meter(r[1]/100,{w:200})}</span><span class="b" style="text-align:right">${de(r[1],0)}</span></div>`).join(''),
+  pe: de(F.valuation.pe,0), peMed: de(F.valuation.peMedian,1),
+  ps: de(F.valuation.ps,1), fcfy: de(F.valuation.fcfYield*100,1)+'<small style="font-size:15pt"> %</small>',
+  peX: de(F.valuation.pe/F.valuation.peMedian,1)+'-mal',
+  peBars: (()=>{const rows=[['AMD',F.valuation.pe,1],['Mittlere US-Aktie',F.valuation.peMedian,0]];return rows.map(r=>`<div class="hl-row" style="grid-template-columns:34mm 1fr 14mm;border:0;padding:1.4mm 0"><span class="k">${r[0]}</span><span style="height:12px;border-radius:6px;background:var(--g2);position:relative;display:block"><i style="position:absolute;left:0;top:0;bottom:0;border-radius:6px;width:${r[1]/F.valuation.pe*100}%;background:${r[2]?'#000':'#c8f531'}"></i></span><span class="b" style="text-align:right">${de(r[1],1)}</span></div>`).join('')})(),
+  peN: F.valuation.peUniverse.toLocaleString('de-DE'),
+  dd: sg(D.risk.dd*100,0)+'&nbsp;%',
+};
+fill(M);
+document.documentElement.dataset.ready='1';
+</script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>VU Weekly · Ausgabe KW 45 · Konzept</title>
+<link rel="stylesheet" href="print.css">
+<script src="data.js"></script>
+<script src="charts.js"></script>
+<style>
+.mast{font-size:92pt;font-weight:900;letter-spacing:-.065em;line-height:.8}
+.mast span{color:var(--lime)}
+.cover-h{font-size:47pt;font-weight:900;letter-spacing:-.05em;line-height:.9}
+.cover-h em{font-style:normal;background:var(--lime);color:#000;padding:0 6px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.cl{border-top:1px solid #333;padding-top:3mm}
+.cl .k{font-size:7pt;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--lime)}
+.cl .t{font-size:11.5pt;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin-top:1.2mm}
+.day{display:grid;grid-template-columns:16mm 1fr 20mm;gap:3mm;padding:2.6mm 0;border-bottom:1px solid var(--g2);align-items:start}
+.day .d{font-size:7.5pt;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.day .d small{display:block;color:var(--g3);font-weight:600;letter-spacing:0}
+.day .e{font-size:8.6pt;line-height:1.4}
+.day .e b{font-weight:800}
+.toc div{display:grid;grid-template-columns:8mm 1fr;padding:1.6mm 0;border-bottom:1px solid #222;font-size:8.3pt;font-weight:700}
+.toc div span{color:var(--lime);font-weight:900}
+.mlist div{display:grid;grid-template-columns:13mm 1fr auto;gap:2mm;align-items:center;padding:1.4mm 0;border-bottom:1px solid var(--g2);font-size:8pt}
+.mlist div b{font-weight:900}
+.meas{display:grid;grid-template-columns:1fr 46mm 13mm;gap:3mm;align-items:center;padding:2.2mm 0;border-bottom:1px solid #222}
+.meas .l{font-size:8.6pt;font-weight:700}
+.meas .v{font-size:11pt;font-weight:900;text-align:right}
+.p2 .stat .v{font-size:22pt}.p2 .stat .v small{font-size:12pt!important}.p2 .card{padding:4mm}
+</style>
+</head>
+<body>
+
+<!-- ============ SEITE 1 · COVER ============ -->
+<section class="page dark">
+  <div class="img" style="left:0;right:0;top:0;height:178mm;background-image:linear-gradient(180deg,rgba(0,0,0,.15) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,.55) 72%,#000 100%),url(../../../assets/themen/03-rechenzentren-cloud.webp);background-position:50% 40%"></div>
+  <div class="imgnote" style="right:14mm;top:33mm">Bild: VU-Themenbild · Serie: Higgsfield-Auftrag je Ausgabe</div>
+  <div class="pad">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div class="mast">VU<span>.</span><br>WEEKLY</div>
+      <div style="text-align:right;font-size:7.5pt;font-weight:800;letter-spacing:.12em;text-transform:uppercase;line-height:1.6">
+        Ausgabe KW 45<br><span style="color:var(--lime)">07.11.2026</span><br><span class="mu">Datenstand 06.11.</span>
+      </div>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:118mm">
+      <span class="kick l">Titel · Börse &amp; Politik</span>
+      <div class="cover-h" style="margin-top:4mm">Die Wahl,<br>die die <em>KI bremst</em></div>
+      <div class="lead" style="margin-top:5mm;max-width:150mm;color:#d6d6d6">Am Mittwoch feiert die Wall Street den Machtwechsel im Kongress. Am Donnerstag verliert der S&amp;P 500 rund drei Billionen Dollar an Börsenwert. Was zwischen den beiden Tagen passiert ist und warum nur ein Teil des Markts gefallen ist.</div>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:206mm;display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:2px solid var(--lime)">
+      <div style="padding:3mm 3mm 0 0"><div style="font-size:24pt;font-weight:900;letter-spacing:-.04em">−5,5&nbsp;%</div><div class="xs" style="color:#9a9a9a;font-weight:700">Nasdaq am Donnerstag</div></div>
+      <div style="padding:3mm 3mm 0 0"><div style="font-size:24pt;font-weight:900;letter-spacing:-.04em">−12&nbsp;%</div><div class="xs" style="color:#9a9a9a;font-weight:700">Chip-Index SOX, schwächster Tag seit 2020</div></div>
+      <div style="padding:3mm 3mm 0 0"><div style="font-size:24pt;font-weight:900;letter-spacing:-.04em;color:var(--lime)">3&nbsp;Bio.&nbsp;$</div><div class="xs" style="color:#9a9a9a;font-weight:700">Börsenwert weg an einem Tag</div></div>
+      <div style="padding:3mm 0 0 0"><div style="font-size:24pt;font-weight:900;letter-spacing:-.04em">40 / 41</div><div class="xs" style="color:#9a9a9a;font-weight:700">Abstimmungen gegen neue Rechenzentren</div></div>
+    </div>
+    <div class="grid" style="position:absolute;left:0;right:0;bottom:4mm;grid-template-columns:repeat(3,1fr);gap:6mm">
+      <div class="cl"><div class="k">Aktienreport</div><div class="t">AMD: Rekordquartal und an einem Tag <span style="color:var(--lime)">−17&nbsp;%</span></div></div>
+      <div class="cl"><div class="k">Marktbreite</div><div class="t"><span data-k="upShare"></span> der S&amp;P-500-Aktien stiegen in der Crash-Woche</div></div>
+      <div class="cl"><div class="k">Konjunktur</div><div class="t">165.000 neue Jobs statt 70.000 und eine Zinsfrage</div></div>
+    </div>
+  </div>
+  <div class="foot"><span><b>Vision Universe</b> · research.visionuniverse.de</span><span>Konzept · Muster-Ausgabe · nicht veröffentlicht</span></div>
+</section>
+
+<!-- ============ SEITE 2 · DIE WOCHE ============ -->
+<section class="page p2">
+  <div class="run"><span class="wm"><i class="dot"></i>VU Weekly · KW 45</span><span>Die Woche</span></div>
+  <div class="pad" style="top:16mm">
+    <div style="display:grid;grid-template-columns:1fr 70mm;gap:7mm">
+      <div>
+        <span class="kick">Die Woche in fünf Tagen</span>
+        <div class="h2" style="margin-top:3mm">Erst Party,<br>dann Kater.</div>
+        <div style="margin-top:6mm">
+          <div class="day"><div class="d">Mo<small>02.11.</small></div><div class="e">Vor der Wahl: Chipwerte geben weiter nach. AMD schließt bei <b data-k="amd0211"></b> Dollar, rund 28&nbsp;% unter dem Hoch vom 6. Oktober.</div><div data-k="spy0211"></div></div>
+          <div class="day"><div class="d">Di<small>03.11.</small></div><div class="e"><b>Wahltag.</b> Nach Börsenschluss legt AMD Rekordzahlen vor: 13,4&nbsp;Mrd. Dollar Umsatz, Rechenzentren +97&nbsp;%.</div><div data-k="spy0311"></div></div>
+          <div class="day"><div class="d">Mi<small>04.11.</small></div><div class="e"><b>Die Demokraten gewinnen den Kongress.</b> Der Dow steigt um rund 3&nbsp;%, das größte Tagesplus des Jahres. Die Börse hofft auf eine Patt-Lage in Washington.</div><div data-k="spy0411"></div></div>
+          <div class="day"><div class="d">Do<small>05.11.</small></div><div class="e"><b>Der KI-Ausverkauf.</b> Nasdaq −5,5&nbsp;%, S&amp;P&nbsp;500 −4,4&nbsp;%, Halbleiter-Index SOX −12&nbsp;%, der schwächste Tag seit März 2020. Die Nasdaq liegt jetzt mehr als 10&nbsp;% unter ihrem Hoch, also in einer Korrektur.</div><div data-k="spy0511"></div></div>
+          <div class="day" style="border:0"><div class="d">Fr<small>06.11.</small></div><div class="e"><b>Gegenbewegung bei Chips.</b> Arbeitsmarkt mit +165.000 Stellen deutlich stärker als erwartet. Nasdaq +1,1&nbsp;%, AMD +11&nbsp;%. Der S&amp;P&nbsp;500 schließt seine schwächste Woche seit Juni.</div><div data-k="spy0611"></div></div>
+        </div>
+        <div class="xs mu" style="margin-top:2mm">Rechts: Tagesveränderung des S&amp;P-500-ETF SPY (Schlusskurse, VU-Daten). Text: CNBC, CBS News, Yahoo Finance, Fox Business, AMD.</div>
+      </div>
+      <div>
+        <div class="card ink" style="padding:5mm">
+          <div class="kick" style="color:var(--lime)">In dieser Ausgabe</div>
+          <div class="toc" style="margin-top:3mm">
+            <div><span>02</span>Die Woche</div>
+            <div><span>03</span>Titel: Die Wahl, die die KI bremst</div>
+            <div><span>04</span>Was die Daten sagen: kein Crash für alle</div>
+            <div><span>05</span>Markt-Radar und Termine</div>
+            <div style="border:0"><span>R</span>Beilage: Aktienreport AMD</div>
+          </div>
+        </div>
+        <div class="grid" style="margin-top:5mm;grid-template-columns:1fr 1fr;gap:4mm">
+          <div class="card stat"><div class="v">−5,5<small style="font-size:15pt">%</small></div><div class="l">Nasdaq am Donnerstag</div></div>
+          <div class="card stat"><div class="v">−12<small style="font-size:15pt">%</small></div><div class="l">Halbleiter-Index SOX am Donnerstag</div></div>
+          <div class="card stat lime"><div class="v">3<small style="font-size:15pt"> Bio $</small></div><div class="l">Börsenwert, den der S&amp;P&nbsp;500 an einem Tag verlor</div></div>
+          <div class="card stat"><div class="v">165<small style="font-size:15pt">k</small></div><div class="l">neue Stellen im Oktober, erwartet waren rund 70.000</div></div>
+        </div>
+        <div class="card line" style="margin-top:5mm">
+          <div class="kick">S&amp;P-500-ETF · Woche</div>
+          <div style="display:flex;align-items:baseline;gap:3mm;margin-top:2mm"><span class="stat"><span class="v" data-k="spyWeek"></span></span></div>
+          <div class="sm mu" style="margin-top:1.5mm">30.10. bis 06.11., Schlusskurse SPY</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid" style="position:absolute;left:0;right:0;bottom:0;grid-template-columns:1fr 1fr;gap:5mm">
+      <div class="card ink"><div class="quote" style="font-size:12.5pt">Der Markt kann manchmal ein bisschen kurzsichtig sein.</div><div class="sm" style="margin-top:3mm;color:#bdbdbd"><b style="color:#fff">Lisa Su</b>, Chefin von AMD, am Tag des Ausverkaufs (laut Yahoo Finance, übersetzt)</div></div>
+      <div class="card lime"><div class="quote" style="font-size:12.5pt">Die Anerkennung des Ergebnisses half den Märkten.</div><div class="sm" style="margin-top:3mm"><b>Thomas Hempell</b>, Generali, zur Rally am Mittwoch (laut CNBC, übersetzt und gekürzt)</div></div>
+    </div>
+  </div>
+  <div class="foot"><span><b>02</b> · VU Weekly KW 45</span><span>Quellen auf Seite 05</span></div>
+</section>
+
+<!-- ============ SEITE 3 · TITELGESCHICHTE ============ -->
+<section class="page">
+  <div class="run"><span class="wm"><i class="dot"></i>VU Weekly · KW 45</span><span>Titel</span></div>
+  <div class="img" style="left:0;right:0;top:0;height:80mm;background-image:linear-gradient(0deg,rgba(0,0,0,.6),rgba(0,0,0,0) 55%),url(../../../assets/themen/15-stromnetze-elektrifizierung.webp);background-position:50% 55%"></div>
+  <div class="imgnote" style="right:14mm;top:73mm">Bild: VU-Themenbild „Stromnetze“</div>
+  <div style="position:absolute;left:14mm;top:62mm;color:#fff"><span class="kick l">Titelgeschichte</span></div>
+  <div class="pad" style="top:88mm">
+    <div class="h1" style="font-size:40pt">Die Wahl, die die KI bremst</div>
+    <div class="lead" style="margin-top:4mm">Der Machtwechsel in Washington war für die Börse erst eine gute Nachricht. Einen Tag später wurde er zum Problem für genau die Aktien, die den Markt zwei Jahre lang getragen haben.</div>
+    <div class="rule" style="margin:5mm 0 4mm"></div>
+    <div class="body cols2">
+      <p>Am Mittwochmorgen stand fest: Die Demokraten übernehmen den Kongress. Die Wall Street reagierte erleichtert. Der Dow Jones legte rund drei Prozent zu, so viel wie an keinem anderen Tag in diesem Jahr. Präsident Trump erkannte das Ergebnis an und kündigte an, mit den Demokraten zu arbeiten. Ein Patt zwischen Weißem Haus und Kongress gilt an der Börse traditionell als gutes Zeichen: Große Steuer- und Ausgabengesetze werden unwahrscheinlicher.</p>
+      <p>Am Donnerstag drehte die Stimmung. Nicht der breite Markt brach ein, sondern die KI-Aktien. Die Nasdaq verlor 5,5 Prozent, der Halbleiter-Index SOX zwölf Prozent. Nvidia fiel um 9,2 Prozent, AMD sogar um 17,3 Prozent, zwei Tage nach dem besten Quartal der Firmengeschichte.</p>
+      <p>Der Auslöser lag in Washington und in den Gemeinden. Kandidaten beider Parteien hatten im Wahlkampf gegen neue Rechenzentren mobil gemacht. In 41 lokalen Abstimmungen in zehn Bundesstaaten ging es um Rechenzentren, und in 40 davon stimmten die Wählerinnen und Wähler dagegen. Die Analysten von Capital Economics sehen darin den Kern: Die Sorge, Demokraten im Kongress und in den Ländern könnten die KI-Branche regulieren und den Bau von Rechenzentren bremsen.</p>
+      <p>Dazu kam ein zweiter Effekt. Viele große Fonds lagen mit KI-Aktien im Jahr 2026 weit vorn und sicherten Gewinne, bevor das Jahr endet. Nomura-Stratege Charlie McElligott brachte es auf eine Formel: Verkauft werden die Generäle, also die größten und erfolgreichsten Titel.</p>
+      <p>Wie ernst ist die Bremse? Rechenzentren brauchen Strom, Fläche und Genehmigungen. Die Nachfrage der großen Cloud-Anbieter ist bis jetzt nicht gesunken. AMD meldet für das vierte Quartal einen weiter steigenden Umsatz. Ob die neue Politik den Ausbau verlangsamt, zeigt sich erst in den nächsten Quartalen, in Bauanträgen und in den Investitionsplänen der Cloud-Konzerne. Die Woche zeigt aber, wie empfindlich die Kurse auf jede Nachricht aus Washington reagieren.</p>
+    </div>
+    <div class="card ink" style="position:absolute;left:0;right:0;bottom:0;padding:4.5mm 5mm;display:grid;grid-template-columns:1fr 52mm;gap:6mm;align-items:center">
+      <div class="quote" style="font-size:13pt">Der Auslöser scheint die Sorge zu sein, dass die Demokraten die KI-Branche regulieren und den Bau von Rechenzentren einschränken.</div>
+      <div class="sm" style="color:#bdbdbd"><b style="color:#fff">Joe Maher</b><br>Capital Economics, laut CBS News, übersetzt und gekürzt</div>
+    </div>
+  </div>
+  <div class="foot"><span><b>03</b> · VU Weekly KW 45</span><span>Redaktionelle Einordnung, keine Anlageberatung</span></div>
+</section>
+
+<!-- ============ SEITE 4 · WAS DIE DATEN SAGEN ============ -->
+<section class="page">
+  <div class="run"><span class="wm"><i class="dot"></i>VU Weekly · KW 45</span><span>Was die Daten sagen</span></div>
+  <div class="pad" style="top:16mm">
+    <span class="kick">Was die Daten sagen</span>
+    <div class="h2" style="margin-top:3mm">Ein KI-Crash.<br>Kein Crash für alle.</div>
+    <div class="lead" style="margin-top:4mm;max-width:160mm">Der S&amp;P-500-ETF verlor in der Woche <b data-k="spyWeekTxt"></b>. Die mittlere Aktie im Index lag dagegen bei <b data-k="medianTxt"></b>. <b data-k="upTxt"></b> von <span data-k="countTxt"></span> Aktien schlossen die Woche im Plus. Getroffen hat es vor allem eine Branche.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:8mm;margin-top:7mm">
+      <div>
+        <div class="h3">Die KI-Kette in der Woche</div>
+        <div class="sm mu" style="margin:1mm 0 3mm">Kursveränderung 30.10. bis 06.11., Schlusskurse</div>
+        <div data-k="kiBars"></div>
+        <div class="card ink" style="margin-top:5mm;padding:4mm 5mm"><div class="sm" style="color:#d6d6d6">Alle neun Werte der KI-Kette schlossen die Woche im Minus. Am stärksten traf es <b style="color:var(--lime)">Speicher und Infrastruktur</b>: Micron und Vertiv (Strom und Kühlung für Rechenzentren) verloren mehr als ein Fünftel.</div></div>
+      </div>
+      <div>
+        <div class="h3">Daneben: der Rest des Index</div>
+        <div class="sm mu" style="margin:1mm 0 3mm">S&amp;P-500-Mitglieder nach Wochenveränderung</div>
+        <div class="card" style="padding:4mm 5mm">
+          <div class="kick" style="font-size:6.5pt">Größte Anstiege der Woche</div>
+          <div class="mlist" data-k="top" style="margin-top:1.5mm"></div>
+          <div class="kick" style="font-size:6.5pt;margin-top:4mm">Größte Rückgänge der Woche</div>
+          <div class="mlist" data-k="flop" style="margin-top:1.5mm"></div>
+        </div>
+      </div>
+    </div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:5mm;margin-top:9mm">
+      <div class="card lime stat"><div class="v" data-k="upBig"></div><div class="l">S&amp;P-500-Aktien mit Plus in der Woche</div></div>
+      <div class="card stat"><div class="v" data-k="medBig"></div><div class="l">Wochenveränderung der mittleren Aktie (Median)</div></div>
+      <div class="card ink stat"><div class="v" data-k="spyBig"></div><div class="l">S&amp;P-500-ETF (SPY): die großen Tech-Werte wiegen schwer</div></div>
+      <div class="xs mu" style="grid-column:1/-1">Warum der Unterschied? Der S&amp;P&nbsp;500 gewichtet nach Börsenwert. Die großen Chip- und Cloud-Konzerne bewegen den Index stärker als hunderte kleinere Firmen. Daten: VU-Kursreihen (Tiingo, split-bereinigt), Indexmitgliedschaft laut ETF-Bestand, <span data-k="countTxt2"></span> Aktien mit vollständigen Kursen. Rückgänge zeigen den Kurs, keine Bewertung der Firma.</div>
+    </div>
+  </div>
+  <div class="foot"><span><b>04</b> · VU Weekly KW 45</span><span>Datenstand 06.11.2026 · Quelle: Vision Universe</span></div>
+</section>
+
+<!-- ============ SEITE 5 · MARKT-RADAR ============ -->
+<section class="page dark">
+  <div class="run"><span class="wm"><i class="dot"></i>VU Weekly · KW 45</span><span>Markt-Radar</span></div>
+  <div class="pad" style="top:16mm">
+    <div style="display:grid;grid-template-columns:1fr 64mm;gap:9mm">
+      <div>
+        <span class="kick" style="color:var(--lime)">Markt-Radar · Breite des US-Markts</span>
+        <div class="h2" style="margin-top:3mm">Schwache Breite.</div>
+        <div class="lead" style="margin-top:3mm;color:#cfcfcf">Unser Marktregime misst jeden Abend über alle <span data-k="obs"></span> US-Aktien, wie viele in einem Aufwärtstrend stehen. Stand Freitag:</div>
+        <div style="margin-top:3mm;display:flex;gap:3mm;align-items:center"><span class="vd"><i><b class="on"></b><b></b><b></b></i>Schwach</span><span class="sm" style="color:#9a9a9a" data-k="regPlain"></span></div>
+        <div style="margin-top:4mm" data-k="meas"></div>
+        <div class="xs" style="color:#777;margin-top:2mm">Strich in der Mitte: 50&nbsp;%. Quelle: VU-Marktregime, Regel „breite Schwäche“, Stand <span data-k="regAsOf"></span>.</div>
+      </div>
+      <div>
+        <div class="card" style="background:#111;border:1px solid #262626">
+          <div class="kick" style="color:var(--lime)">Arbeitsmarkt Oktober</div>
+          <div class="stat" style="margin-top:3mm"><div class="v">+165.000</div><div class="l" style="color:#bdbdbd">Stellen, erwartet ca. 70.000</div></div>
+          <table class="t" style="margin-top:3mm;color:#fff">
+            <tr><td>Arbeitslosenquote</td><td class="r b">4,1 %</td></tr>
+            <tr><td>Löhne zum Vormonat</td><td class="r b">+0,4 %</td></tr>
+            <tr><td>Löhne zum Vorjahr</td><td class="r b">+3,1 %</td></tr>
+            <tr><td>September (korrigiert)</td><td class="r b">60.000</td></tr>
+          </table>
+          <div class="sm" style="margin-top:3mm;color:#bdbdbd">Laut CME FedWatch lag die Wahrscheinlichkeit einer <b style="color:#fff">Zinserhöhung</b> am 9. Dezember danach bei 77&nbsp;%.</div>
+        </div>
+        <div class="card lime" style="margin-top:5mm;color:#000">
+          <div class="kick">Diese Woche im Blick</div>
+          <div class="sm" style="margin-top:2mm;line-height:1.5">
+            <b>Washington:</b> erste Vorhaben der neuen Mehrheit zu KI und Rechenzentren.<br>
+            <b>Börsengang Anthropic:</b> laut Yahoo Finance erwarten Anleger eher 1 bis 1,3 Bio. $ Bewertung statt der zuvor genannten 2 Bio. $.<br>
+            <b>Öl:</b> Brent fiel am Freitag unter 100&nbsp;$ je Barrel.<br>
+            <b>Fed:</b> Zinsentscheid am 9.&nbsp;Dezember.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:8mm">
+      <span class="kick" style="color:var(--lime)">Sektoren der Woche</span>
+      <div class="h3" style="margin-top:2mm">Energie und Technologie fielen, Immobilien und Konsum stiegen.</div>
+      <div class="sm" style="color:#9a9a9a;margin:1mm 0 3mm">Mittlere Wochenveränderung (Median) der S&amp;P-500-Aktien mit Sektorzuordnung in Vision Universe, ab 8 Titeln je Sektor</div>
+      <div data-k="sectors"></div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:0">
+      <div class="card" style="background:#111;border:1px solid #262626;display:grid;grid-template-columns:28mm 1fr;gap:6mm;align-items:center">
+        <div style="font-size:30pt;font-weight:900;letter-spacing:-.05em;color:var(--lime)">AMD</div>
+        <div><div class="kick" style="color:#9a9a9a">Beilage · Aktienreport</div><div class="h3" style="margin-top:1mm">Rekord im Rechenzentrum, Absturz an der Börse. Fünf Seiten zu Geschäft, Zahlen, Chart und Bewertung.</div></div>
+      </div>
+      <div class="src" style="color:#777;margin-top:4mm"><b style="color:#bdbdbd">Quellen dieser Ausgabe:</b> CNBC (04.11., Wahlergebnis, Hempell-Zitat), CBS News (06.11., Schlusskurse Donnerstag, Capital Economics, E*Trade), Yahoo Finance (05./06.11., SOX, 3&nbsp;Bio.&nbsp;$, McElligott, Arbeitsmarkt, FedWatch, Anthropic, Öl), Fox Business (06.11., Schlusskurse Freitag), CNBC/Ballotpedia (Abstimmungen über Rechenzentren), AMD-Pressemitteilung vom 03.11.2026 (SEC 8-K). Kurs-, Breiten- und Regimedaten: Vision Universe (Tiingo, eigene Berechnung). <b style="color:#bdbdbd">Redaktionelle Einordnung, keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung.</b> Methodik und Interessen: research.visionuniverse.de/rechtliches/methodik</div>
+    </div>
+  </div>
+  <div class="foot"><span><b>05</b> · VU Weekly KW 45</span><span>Muster-Ausgabe · Konzept 07.11.2026</span></div>
+</section>
+
+<script>
+const D=VU_DATA,{de,sg}=VUC,W=D.week;
+const pc=(v,d=1)=>sg(v,d)+'&nbsp;%';
+const spy=Object.fromEntries(W.spy.rows.map(r=>[r.d,r]));
+const pill=v=>`<span class="pill ${v>=0?'up':'dn'}">${sg(v)} %</span>`;
+const amd=Object.fromEntries(D.amd.series);
+const SEK={'Real Estate':'Immobilien','Consumer Staples':'Basiskonsum','Consumer Discretionary':'Zyklischer Konsum','Financials':'Finanzen','Industrials':'Industrie','Health Care':'Gesundheit','Technology':'Technologie','Energy':'Energie','Utilities':'Versorger','Materials':'Rohstoffe','Communication Services':'Kommunikation'};
+const M={
+  upShare: Math.round(W.sp500.up/W.sp500.count*100)+'&nbsp;%',
+  amd0211: de(amd['2026-11-02'],2),
+  spy0211:pill(spy['2026-11-02'].ch),spy0311:pill(spy['2026-11-03'].ch),spy0411:pill(spy['2026-11-04'].ch),spy0511:pill(spy['2026-11-05'].ch),spy0611:pill(spy['2026-11-06'].ch),
+  spyWeek: sg(W.spy.week)+'<small style="font-size:15pt"> %</small>',
+  spyWeekTxt: pc(W.spy.week), medianTxt: pc(W.sp500.median), upTxt: W.sp500.up, countTxt: W.sp500.count, countTxt2: W.sp500.count,
+  kiBars: VUC.hbars(W.ki.rows.map(r=>({l:r.t,s:r.n,v:r.w})),{w:330,rh:31,lw:112,vw:46,sx:42}),
+  top: W.sp500.top.map(r=>`<div><b>${r.t}</b><span class="mu">${r.n.replace(/ (Class A|Holdings|Technology Holdings|Laboratories)$/,'')}</span>${pill(r.w)}</div>`).join(''),
+  flop: W.sp500.flop.map(r=>`<div><b>${r.t}</b><span class="mu">${r.n.replace(/ (Class A|Holdings|Technology Holdings|Laboratories)$/,'')}</span>${pill(r.w)}</div>`).join(''),
+  upBig: W.sp500.up+'<small style="font-size:14pt"> / '+W.sp500.count+'</small>',
+  medBig: sg(W.sp500.median)+'<small style="font-size:15pt"> %</small>',
+  spyBig: sg(W.spy.week)+'<small style="font-size:15pt"> %</small>',
+  sectors: VUC.hbars(W.sp500.sectors.map(r=>({l:SEK[r.sector]||r.sector,s:r.n+' Titel',v:r.median})),{w:620,rh:21,lw:150,vw:50,sx:112,dark:1}),
+  obs: D.regime.measures[0].observed.toLocaleString('de-DE'),
+  regPlain: D.regime.plain, regAsOf: D.regime.asOf.split('-').reverse().join('.'),
+  meas: D.regime.measures.map(m=>`<div class="meas"><div class="l">${m.label}</div><div>${VUC.meter(m.share,{dark:1,c:m.id==='trendBearish'||m.id==='volatilityHigh'?'#fff':'#c8f531'})}</div><div class="v">${de(m.share*100,0)}&nbsp;%</div></div>`).join(''),
+};
+fill(M);
+document.documentElement.dataset.ready='1';
+</script>
+</body>
+</html>
