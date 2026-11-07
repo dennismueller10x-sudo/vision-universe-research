@@ -615,7 +615,7 @@
 
   /* ------------------------------------------------ 07 Unternehmenszahlen */
   function figuresSection(s, ticker) {
-    if (!s.quant || s.quant.state !== "AVAILABLE") return [X.notice("Keine Unternehmenszahlen", "Für diesen Titel liegen keine auswertbaren Geschäftszahlen aus SEC-Meldungen vor.")];
+    if (!s.quant || s.quant.state !== "AVAILABLE") return [X.notice("Keine Unternehmenszahlen", "Für diesen Titel liegen keine auswertbaren Geschäftszahlen aus Pflichtmeldungen vor.")];
     var wanted = { quality: ["operatingMargin", "fcfMargin", "netMargin"], growth: ["revenueGrowth", "epsGrowth"], value: ["priceEarnings", "priceSales", "earningsYield", "priceToFcf", "fcfYield"], risk: ["volatility", "maxDrawdown"] };
     var stats = [], withheld = {};
     s.quant.families.forEach(function (fam) {
@@ -853,7 +853,7 @@
         el("p", { class: "qx-sub", text: ticker + (inst.exchange ? " · " + inst.exchange : "") }),
         el("span", { class: "dx-index-badge qx-tag", text: art })]));
       bodyHost.replaceChildren(X.notice("„" + ticker + "“ ist ein " + art + ", keine Aktie",
-        "Vision Universe analysiert in Quant US-Aktien mit belegten Kurs- und SEC-Daten. " + (inst.name || ticker) + " ist laut Wertpapierstamm ein " + art +
+        "Vision Universe analysiert in Quant US-Aktien mit belegten Kurs- und Geschäftszahlen. " + (inst.name || ticker) + " ist laut Wertpapierstamm ein " + art +
         " und gehört deshalb nicht zum Analyseuniversum: keine Faktoren, keine Kennzahlen und keine Aktienaussage. Das Papier bleibt in der Suche auffindbar, damit klar ist, warum es hier fehlt."),
         X.actions([X.btn("Aktie suchen", X.routes.stocks())]));
       return function () {};
@@ -861,7 +861,7 @@
     if (s.identityState === "UNAVAILABLE" || (s.state !== "AVAILABLE" && s.reason === "INVALID_IDENTITY")) {
       heroHost.replaceChildren(); heroHost.setAttribute("aria-busy", "false");
       heroHost.append(el("section", { class: "v2-message" }, [el("h1", { class: "qx-h1", text: "Aktie nicht gefunden" })]));
-      bodyHost.replaceChildren(X.notice("„" + ticker + "“ ist nicht im Analyseuniversum", "Quant analysiert US-Aktien mit belegten Kurs- und SEC-Daten. Fonds und ETFs wie SPY oder QQQ gehören nicht dazu – ihre Kurse findest du in Discover. Prüfe sonst das Kürzel oder suche nach dem Namen."),
+      bodyHost.replaceChildren(X.notice("„" + ticker + "“ ist nicht im Analyseuniversum", "Quant analysiert US-Aktien mit belegten Kurs- und Geschäftszahlen. Fonds und ETFs wie SPY oder QQQ gehören nicht dazu – ihre Kurse findest du in Discover. Prüfe sonst das Kürzel oder suche nach dem Namen."),
         X.actions([X.btn("Aktie suchen", X.routes.stocks())]));
       return function () {};
     }

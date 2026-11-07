@@ -85,8 +85,8 @@
   }
   function sourceLine(f) {
     return (f.rejectedNewer ? '<div class="vs-warnbox" style="margin-top:10px">Ein neuerer Bericht (Bestand zum ' + F.date(f.rejectedNewer.asOf) + ') hat unsere Qualitätsprüfung nicht bestanden (' + esc(f.rejectedNewer.reasons.join(", ")) + ') und wird deshalb nicht gezeigt.</div>' : "") +
-      '<p class="vs-fine" style="margin-top:10px">Quelle: ' + esc(f.sourceLabel) + ' · Bestand zum ' + F.date(f.asOf) + ' · veröffentlicht ' + F.date(f.publishedAt) + ' · Gewichte = ' + esc(f.weightBasis) +
-      '. Die SEC veröffentlicht Bestände quartalsweise mit rund 60 Tagen Verzögerung.' + VS.stale(f.asOf, 200) + '</p>';
+      '<p class="vs-fine" style="margin-top:10px">Bestand zum ' + F.date(f.asOf) + ' · veröffentlicht ' + F.date(f.publishedAt) + ' · Gewichte = ' + esc(f.weightBasis) +
+      '. Fonds melden ihre Bestände quartalsweise mit rund 60 Tagen Verzögerung.' + VS.stale(f.asOf, 200) + '</p>';
   }
 
   /* ---------------------------------------------- Bestandteile */
@@ -121,7 +121,7 @@
           '<div class="vu-grid">' + U.tile("Top 10 Anteil", wpct(conc.top10), prev ? "vorher " + wpct(prev.top10) : "ein Bericht") +
           U.tile("Effektiv", Number.isFinite(eff) ? eff.toLocaleString("de-DE", { maximumFractionDigits: 1 }) : "–", "gleich große Firmen") + '</div>' +
           (Number.isFinite(eff) ? '<div style="margin-top:8px">' + U.help("„Effektiv " + eff.toLocaleString("de-DE", { maximumFractionDigits: 1 }) + "“: So breit gestreut wie " + Math.floor(eff).toLocaleString("de-DE") + " gleich große Firmen.") + '</div>' : "") +
-          U.sect((n === 10 ? "Top 10" : "Top " + Math.min(n, f.rows.length)) + " · SEC N-PORT " + F.date(f.asOf)) +
+          U.sect((n === 10 ? "Top 10" : "Top " + Math.min(n, f.rows.length)) + " · Stand " + F.date(f.asOf)) +
           '<div class="vu-box vs-kvbox">' + rows.map(function (r) {
             var href = VS.stockHref(r), nm = esc(VS.displayName ? VS.displayName(r.name || r.ticker || "") : (r.name || r.ticker || ""));
             return '<' + (href ? 'a href="' + href + '"' : "div") + ' class="vs-kv"><span class="vu-sm"><b>' + nm + '</b>' + (r.ticker ? ' <span class="vu-mu">' + esc(r.ticker) + '</span>' : "") +
@@ -132,7 +132,7 @@
           (evs.length ? U.sect("Seit dem letzten Bericht") + '<div class="vu-box vs-kvbox">' + evs.map(function (ev) {
             return '<div class="vs-kv"><span class="vu-sm">' + esc(String(ev.explanation || ev.entityName || "").replace(/\s*\([^)]*\)\.?$/, "").replace(/\.$/, "").replace(/: /, " ")) + '</span>' + evVerdict(ev) + '</div>';
           }).join("") + '</div><p class="vu-xs vu-mu" style="margin-top:6px">Bericht ' + F.date(f.changes.from) + ' → ' + F.date(f.changes.to) + '.</p>' : "") +
-          '<p class="vu-xs vu-mu" style="margin-top:10px">Tippen auf eine Firma öffnet die Aktie in Discover. Wirtschaftszweig nach SEC-SIC (nicht GICS).</p>' + sourceLine(f) + '</section>';
+          '<p class="vu-xs vu-mu" style="margin-top:10px">Tippen auf eine Firma öffnet die Aktie in Discover. Wirtschaftszweig nach SIC (nicht GICS).</p>' + sourceLine(f) + '</section>';
         var more = el.querySelector("[data-more]");
         if (more) more.onclick = function () { n = n === 10 ? 25 : n < f.rows.length ? f.rows.length : 10; draw(); };
       }
@@ -166,7 +166,7 @@
         [["Größte Position", wpct(c.top1)], ["Top 5", wpct(c.top5)], ["Top 10", wpct(c.top10)], ["Top 20", wpct(c.top20)]].map(function (k) { return '<div class="vs-card"><p class="vs-label">' + k[0] + '</p><p class="vs-kpi small">' + k[1] + '</p></div>'; }).join("") +
         '</div><p class="vs-fine" style="margin-top:8px">Effektive Anzahl Positionen (Kehrwert des Herfindahl-Index): ' + (c.effectiveNumber !== null ? c.effectiveNumber.toLocaleString("de-DE") : "–") + ' bei ' + c.positions.toLocaleString("de-DE") + ' Positionen – je näher beide Zahlen beieinander liegen, desto gleichmäßiger ist das Gewicht verteilt.</p></section>' +
         '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">Länder (Sitz der Emittenten)</p>' + bars(x.countries.filter(function (k) { return k.key !== "CASH"; }), VS.countryName, 10) + '</div>' +
-        '<div class="vs-card"><p class="vs-label">Wirtschaftszweige (SEC-SIC)</p>' + (x.sectorCoverage > 0.05 ? bars(x.sectors, VS.sectorName, 11) + '<p class="vs-fine" style="margin-top:8px">Zugeordnet: ' + wpct(x.sectorCoverage) + ' des Fondsvermögens. SIC ist eine US-Behördenklassifikation, nicht GICS.</p>'
+        '<div class="vs-card"><p class="vs-label">Wirtschaftszweige (SIC)</p>' + (x.sectorCoverage > 0.05 ? bars(x.sectors, VS.sectorName, 11) + '<p class="vs-fine" style="margin-top:8px">Zugeordnet: ' + wpct(x.sectorCoverage) + ' des Fondsvermögens. SIC ist eine US-Behördenklassifikation, nicht GICS.</p>'
           : VS.pending("Keine Sektorzuordnung", eq < 0.5 ? "Überwiegend Anleihen oder andere Anlagen – Wirtschaftszweige gelten für Aktien." : "Für diese Positionen liegen keine SIC-Codes vor.")) + '</div></div></section>' +
         '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">Anlagearten</p>' + bars(x.assetTypes, VS.assetName, 8) +
         '<div class="vs-row" style="margin-top:8px"><span>Liquidität</span><span class="num">' + wpct(x.cashWeight) + '</span></div><div class="vs-row"><span>Derivate</span><span class="num">' + x.derivativeCount + (x.derivativeCount === 1 ? ' Position' : ' Positionen') + (x.derivativeCount ? " · " + wpct(x.derivativeGrossWeight) + " brutto" : "") + '</span></div></div>' +
@@ -198,7 +198,7 @@
     var ch = c.changes || [];
     return '<section class="vs-section"><div class="vs-card"><p class="vs-label">Kosten laut Prospekt</p>' +
       (ch.length ? ch.map(function (x) { return '<div class="vs-row"><span>' + esc(x.label) + '</span><span class="num">' + VS.costPct(x.oldValue) + ' → ' + VS.costPct(x.newValue) + '</span></div>'; }).join("") +
-        '<p class="vs-fine" style="margin-top:6px">Prospekt ' + F.date(c.previousFiling) + ' → ' + F.date(ch[0].to) + ' (SEC Risk/Return-Daten).</p>'
+        '<p class="vs-fine" style="margin-top:6px">Prospekt ' + F.date(c.previousFiling) + ' → ' + F.date(ch[0].to) + ' (Prospekt).</p>'
         : '<p class="vs-sub" style="margin-top:6px">Keine Änderung der Kostenquote seit dem Prospekt vom ' + F.date(c.previousFiling) + '.</p>') + '</div></section>';
   }
   VS.renderChanges = function (el, e, d) {
@@ -210,7 +210,7 @@
         var list = showAll ? evs : evs.filter(function (x) { return x.importance !== "LOW"; });
         el.innerHTML = '<section class="vs-section"><div class="vs-card app"><p class="vs-label">Seit dem letzten Holdings-Update</p>' +
           (ch.status === "BASELINE" ? '<p style="margin-top:8px;color:var(--app-ink)">Erster erfasster Bestand – es gibt noch keinen Vergleich.</p>'
-            : '<p style="margin-top:8px;color:var(--app-ink)">' + esc((ch.sentence || "Keine wesentlichen Änderungen.").replace(/^Seit dem letzten Holdings-Update: /, "")) + '</p><p class="vs-fine" style="margin-top:6px;color:var(--app-sub)">Vergleich der Bestände zum ' + F.date(ch.from) + ' und ' + F.date(ch.to) + ' (SEC N-PORT). ' + ch.eventCount + ' Änderungen erkannt. Gewichtsänderungen unter 0,25 Prozentpunkten werden nicht gezeigt; bei unveränderter Stückzahl ist eine Änderung als Kursbewegung gekennzeichnet.</p>') + '</div></section>' +
+            : '<p style="margin-top:8px;color:var(--app-ink)">' + esc((ch.sentence || "Keine wesentlichen Änderungen.").replace(/^Seit dem letzten Holdings-Update: /, "")) + '</p><p class="vs-fine" style="margin-top:6px;color:var(--app-sub)">Vergleich der Bestände zum ' + F.date(ch.from) + ' und ' + F.date(ch.to) + ' (Quartalsmeldungen). ' + ch.eventCount + ' Änderungen erkannt. Gewichtsänderungen unter 0,25 Prozentpunkten werden nicht gezeigt; bei unveränderter Stückzahl ist eine Änderung als Kursbewegung gekennzeichnet.</p>') + '</div></section>' +
           (evs.length ? '<section class="vs-section"><div class="vs-card"><div class="vs-section-head"><p class="vs-label">Änderungen</p><label class="vs-fine"><input type="checkbox" id="vs-ch-all"' + (showAll ? " checked" : "") + '> auch kleine Änderungen</label></div>' +
             list.slice(0, 40).map(function (x) { return '<div class="vs-row"><span><span class="vs-badge' + (x.importance === "HIGH" ? " complex" : "") + '">' + esc(TYPE_DE[x.eventType] || x.eventType) + '</span> ' + esc(evText(x)) + '</span><span class="vs-fine">' + esc({ HIGH: "hoch", MEDIUM: "mittel", LOW: "gering" }[x.importance] || "") + '</span></div>'; }).join("") +
             (list.length > 40 ? '<p class="vs-fine">… und ' + (list.length - 40) + ' weitere.</p>' : "") + '</div></section>' : "") +
@@ -247,7 +247,7 @@
       '<details class="vu-more vs-pl-more"><summary>Mehr Angaben</summary><div class="vu-more-body">' +
       '<label class="vs-toggle"><span>Staatliche Zulage (Altersvorsorgedepot ab 2027)</span><input id="pl-z" type="checkbox" checked></label>' +
       '<div id="pl-zx">' + slider("pl-k", "Kinder mit Kindergeld", "", 0, 4, 1, 0) + '<label class="vs-toggle"><span>Unter 25, erster Vertrag (Einsteigerbonus)</span><input id="pl-s" type="checkbox"></label></div>' +
-      '<p class="vu-xs vu-mu" style="margin-top:10px">Basis: bisherige Gesamtrendite pro Jahr nach Fondskosten (' + esc(ctx.basis || "Tiingo") + '). „Schwächer“ ist das untere Ende der Bandbreite (10 %), aus der Schwankung über die Laufzeit. ' +
+      '<p class="vu-xs vu-mu" style="margin-top:10px">Basis: bisherige Gesamtrendite pro Jahr nach Fondskosten (' + esc(ctx.basis || "Kursdaten") + '). „Schwächer“ ist das untere Ende der Bandbreite (10 %), aus der Schwankung über die Laufzeit. ' +
       (ctx.us ? 'In US-Dollar gemessen, Wechselkurs nicht berücksichtigt. US-ETFs selbst sind im Altersvorsorgedepot nicht zulässig; die Rechnung zeigt, was die bisherige Entwicklung dieses Index bedeutet hätte, etwa über einen UCITS-ETF. ' : '') +
       'Zulagen nach den Regeln ab 2027 (Grundzulage 50 % auf die ersten 360 €, 25 % bis 1.800 € Eigenbeitrag im Jahr; Kinderzulage bis 300 € je Kind). Steuern und Inflation sind nicht berücksichtigt. <a href="#/foerderung">So funktioniert die Zulage</a></p></div></details>' +
       '<button class="vu-btn vu-btn--ink vu-btn--block" id="pl-apply" type="button" style="margin-top:12px">In meinen Plan übernehmen</button>' +
@@ -291,7 +291,7 @@
     var c = d.costs || {};
     var f = function (k) { var x = c[k] || (d.fundamentals || {})[k]; return x && typeof x === "object" ? x : null; };
     el.innerHTML = '<section class="vs-section"><div class="vs-grid g2"><div class="vs-card"><p class="vs-label">Laufende Kosten</p>' +
-      (c.status === "AVAILABLE" ? '<p class="vs-kpi">' + VS.costPct(c.value) + '</p><p class="vs-fine">' + ({ NET_EXPENSE_RATIO: "Netto-Kostenquote nach Gebührenverzicht (Net Expense Ratio)", EXPENSE_RATIO: "Gesamtkostenquote (Expense Ratio)", MANAGEMENT_FEE_ONLY: "Nur die Verwaltungsgebühr ist gemeldet – eine Gesamtkostenquote steht nicht im Prospektdatensatz" }[c.basis] || "Kostenquote") + ' laut Prospekt-Gebührentabelle (SEC Risk/Return-Daten)' + (c.value === 0 ? '. 0,00 % ist der im Prospekt gemeldete Wert (z. B. gebührenfreier ETF oder vollständiger Gebührenverzicht).' : '') + '</p>' +
+      (c.status === "AVAILABLE" ? '<p class="vs-kpi">' + VS.costPct(c.value) + '</p><p class="vs-fine">' + ({ NET_EXPENSE_RATIO: "Netto-Kostenquote nach Gebührenverzicht (Net Expense Ratio)", EXPENSE_RATIO: "Gesamtkostenquote (Expense Ratio)", MANAGEMENT_FEE_ONLY: "Nur die Verwaltungsgebühr ist gemeldet – eine Gesamtkostenquote steht nicht im Prospektdatensatz" }[c.basis] || "Kostenquote") + ' laut Prospekt-Gebührentabelle' + (c.value === 0 ? '. 0,00 % ist der im Prospekt gemeldete Wert (z. B. gebührenfreier ETF oder vollständiger Gebührenverzicht).' : '') + '</p>' +
         (f("expenseRatio") ? '<div class="vs-row" style="margin-top:10px"><span>Gesamtkostenquote, brutto (Expense Ratio)</span><span class="num">' + VS.costPct(f("expenseRatio").value) + '</span></div>' : "") +
         (f("netExpenseRatio") ? '<div class="vs-row"><span>Nach Gebührenverzicht, netto (Net Expense Ratio)</span><span class="num">' + VS.costPct(f("netExpenseRatio").value) + '</span></div>' : "") +
         (f("managementFee") ? '<div class="vs-row"><span>Verwaltungsgebühr (Management Fee)</span><span class="num">' + VS.costPct(f("managementFee").value) + '</span></div>' : "") +

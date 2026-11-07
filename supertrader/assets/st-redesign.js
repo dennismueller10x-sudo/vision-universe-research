@@ -439,7 +439,7 @@
       fidHtml);
 
     deepDive(after, s, c, D, X);
-    append(after, note('Modellsignale einer regelbasierten Nachbildung. Keine Anlageberatung.'));
+    /* Owner-Feedback 07.11.2026: ein Hinweissatz am Seitenende genügt – foot() trägt ihn (Daten & Methodik + st-legal). */
     foot(after, X, sig);
   }
   /* ST03: Methodentreue als ein Balken (für jede Methode, auch ohne Live-Musterdepot). */
@@ -504,8 +504,7 @@
       '<p class="st-r-count vu-num"></p><div class="st-r-list"></div>' +
       '<button type="button" class="vu-btn vu-btn--line vu-btn--block st-r-more">Mehr anzeigen</button>' +
       '<div class="st-r-gap">' + U.help('Luft bis zum Stop: So weit darf der Kurs fallen, bevor die Regel das Musterdepot verkauft.') + '</div>' +
-      '<div class="st-r-accs">' + acc('Was bedeuten die Phasen?', LIFE.map(function (k) { return '<p>' + stateVerdict(k) + ' ' + esc(STATE[k][1]) + '</p>'; }).join('')) + '</div>' +
-      note('Modellsignale einer regelbasierten Nachbildung. Keine Kauf- oder Verkaufsempfehlung.'));
+      '<div class="st-r-accs">' + acc('Was bedeuten die Phasen?', LIFE.map(function (k) { return '<p>' + stateVerdict(k) + ' ' + esc(STATE[k][1]) + '</p>'; }).join('')) + '</div>');
     var phaseRow = main.querySelector('[data-row=phase]'), methodRow = main.querySelector('[data-row=method]'), list = main.querySelector('.st-r-list'), count = main.querySelector('.st-r-count'), more = main.querySelector('.st-r-more');
     var limit = 30, shown = [];
     function base(ignore) {

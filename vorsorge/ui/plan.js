@@ -134,7 +134,7 @@
       var list = (own.length ? own : feed).slice(0, 3);
       root.querySelector("#vs-home-changes").innerHTML = VS.sect("Was hat sich geändert?", "#/monitor", "Alle") + (list.length ? '<div class="vu-box vs-kvbox">' + list.map(function (f) {
         return '<a class="vs-kv" href="#/etf/' + encodeURIComponent(f.symbol) + '?tab=aenderungen"><span class="vu-sm"><b>' + esc(f.symbol) + '</b> ' + esc(String(f.text || "").replace(/\s*\([^)]*Prozentpunkte\)\.?$/, "")) + '</span>' + VS.glyph("next", 15) + '</a>'; }).join("") + '</div>' : U.blank("Keine Änderungen seit dem letzten Datenstand."));
-      VS.dm([["Veränderungen", "Bestände: SEC N-PORT, Stand " + esc((hi.quarters || []).join(", "))]]);
+      VS.dm([["Veränderungen", "Bestände: Quartalsmeldungen, Stand " + esc((hi.quarters || []).join(", "))]]);
     }).catch(function () { root.querySelector("#vs-home-changes").innerHTML = VS.sect("Was hat sich geändert?") + U.blank("Die Änderungsliste konnte nicht geladen werden."); });
   };
 
@@ -362,7 +362,7 @@
       var list = (hi.feed || []).filter(function (f) { return mine[f.symbol]; });
       root.querySelector("#vs-mon-holdings").innerHTML = VS.sect(done ? "In deinen ETFs" : "Bis dahin: Änderungen bei Kern-ETFs") +
         (list.length ? '<div class="vs-chrows">' + list.slice(0, 8).map(function (f) { return changeRow(f, ["mid", "gestiegen"], ["mid", "gesunken"]); }).join("") + '</div>' : U.blank("Keine relevanten Bestandsänderungen bei diesen ETFs.")) +
-        '<p class="vu-xs vu-mu" style="margin-top:6px">Bestände laut SEC N-PORT, Quartale ' + esc((hi.quarters || []).join(", ")) + '</p>';
+        '<p class="vu-xs vu-mu" style="margin-top:6px">Bestände laut Quartalsmeldungen, Quartale ' + esc((hi.quarters || []).join(", ")) + '</p>';
     }).catch(function () { root.querySelector("#vs-mon-holdings").innerHTML = VS.sect("In deinen ETFs") + U.blank("Die Bestandsänderungen konnten nicht geladen werden."); });
     if (done) Promise.all([VS.master(), VS.seriesFor(VS.state.portfolio.map(function (x) { return x.symbol; }))]).then(function (res) {
       var m = res[0], x = V.XRay.portfolioXRay(VS.state.portfolio, m._bySymbol, res[1].series, { regionLabels: VS.REGION });
