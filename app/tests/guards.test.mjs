@@ -198,3 +198,7 @@ test('iOS: Mindestversion mindestens 15.0 (Apple verlangt ab April 2027 iOS 15, 
   assert.ok(targets.length >= 2 && targets.every(v => v >= 15), 'IPHONEOS_DEPLOYMENT_TARGET ' + targets);
   assert.match(read(path.join(app, 'ios/App/Podfile')), /platform :ios, '15\.0'/);
 });
+
+test('iOS: Exportkonformitaet vorab erklaert (nur Betriebssystem-Verschluesselung), keine Rueckfrage je Build', () => {
+  assert.match(read(path.join(app, 'ios/App/App/Info.plist')), /<key>ITSAppUsesNonExemptEncryption<\/key>\s*<false\/>/);
+});
