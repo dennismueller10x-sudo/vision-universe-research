@@ -207,6 +207,13 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 .vu-legal-foot p{margin:0}.vu-legal-foot-links{margin-top:6px!important}
 .vu-legal-foot a{color:inherit;font-weight:700}
 
+/* E5: disable double-tap zoom while retaining pan and pinch zoom. */
+html{touch-action:manipulation}
+/* Shared product controls, including Quant's qx-main which has no vu-ui root. */
+html body :is(.vu-ui,.qx-main,#fu-main,#tc-main,#st-main,#v2-main) :is(button,select,input:not([type=checkbox]):not([type=radio]),summary,a[role=button]){min-width:44px;min-height:44px;touch-action:manipulation}
+
+html body .qx-main .q-alert-list label{min-height:44px;box-sizing:border-box}
+
 /* Keep the final document height while app data loads. The footer follows
    the product content from the first paint, without jumping through it. */
 html body :is(main.vu-ui,.qx-main,#fu-main,#tc-main,#st-main,#v2-main){min-height:calc(100vh - var(--vu-navigation-height));min-height:calc(100svh - var(--vu-navigation-height))}

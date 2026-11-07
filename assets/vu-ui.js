@@ -21,7 +21,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "vu-ui-1.2.0";
+  var VERSION = "vu-ui-1.3.0";
   var SPRITE = "/assets/product-icons.svg#";
   var CUR = { USD: "$", EUR: "€", GBP: "£", CHF: "CHF" };
 
@@ -84,12 +84,19 @@
 
   /* ------------------------------------------------------------- C07, C08, C09 */
   /** C07 Kursbewegung: Plus neongrüne Pille ▲, Minus schwarze Pille ▼. */
+  // Preserve each renderer's existing value/unit; only spell its visible sign.
+  function movementLabel(text) {
+    var value = String(text == null ? "" : text).replace(/[▲▼◆]/g, "").trim();
+    if (!/\d/.test(value)) return "Keine Angabe";
+    return value.replace(/^\+\s*/, "Plus ").replace(/^[−-]\s*/, "Minus ")
+      .replace(/%/g, " Prozent").replace(/\bPp\./g, "Prozentpunkte").replace(/\bp\.\s*a\./gi, "pro Jahr").replace(/\s+/g, " ").trim();
+  }
   function chg(v, o) {
     var opt = o || {};
-    if (!isNum(v)) return '<span class="vu-chg vu-chg--flat' + (opt.big ? " vu-chg--big" : "") + '">–</span>';
+    if (!isNum(v)) return '<span role="img" aria-label="Keine Angabe" class="vu-chg vu-chg--flat' + (opt.big ? " vu-chg--big" : "") + '">–</span>';
     var dir = v > 0 ? "" : v < 0 ? " vu-chg--down" : " vu-chg--flat";
     var arrow = v > 0 ? "▲" : v < 0 ? "▼" : "◆";
-    return '<span class="vu-chg' + dir + (opt.big ? " vu-chg--big" : "") + '"><span aria-hidden="true">' + arrow + "</span> " + esc(pct(v, opt.digits)) + "</span>";
+    return '<span role="img" aria-label="' + esc((v > 0 ? 'Plus ' : v < 0 ? 'Minus ' : 'Unverändert ') + num(Math.abs(v), opt.digits) + ' Prozent') + '" class="vu-chg' + dir + (opt.big ? " vu-chg--big" : "") + '"><span aria-hidden="true">' + arrow + "</span> " + esc(pct(v, opt.digits)) + "</span>";
   }
   var VERDICT = {
     strong: { mark: "▲", text: "Stark" },
@@ -122,7 +129,7 @@
     if (!f) return;
     var img = document.createElement("img");
     /* Das Bild hängt sofort (unsichtbar) in der Kachel – ein lazy Bild außerhalb des Dokuments lädt der Browser nie. */
-    img.alt = ""; img.loading = "lazy"; img.decoding = "async"; img.className = "vu-logo-wait";
+    img.alt = ""; img.width = 42; img.height = 42; img.loading = "lazy"; img.decoding = "async"; img.className = "vu-logo-wait";
     img.addEventListener("load", function () { Array.prototype.slice.call(tile.childNodes).forEach(function (c) { if (c !== img) tile.removeChild(c); }); img.className = ""; if (logoDark[t]) tile.classList.add("vu-logo-tile--dark"); });
     img.addEventListener("error", function () { if (img.parentNode) img.parentNode.removeChild(img); });
     img.src = LOGO_BASE + f;
@@ -142,7 +149,7 @@
   }
   function logo(ticker, o) {
     var opt = o || {}, full = String(ticker || ""), t = full.slice(0, 5);
-    var inner = opt.src ? '<img src="' + esc(opt.src) + '" alt="" loading="lazy" decoding="async">' : esc(t);
+    var inner = opt.src ? '<img src="' + esc(opt.src) + '" alt="" width="42" height="42" loading="lazy" decoding="async">' : esc(t);
     if (!opt.src && opt.logo !== false && /^[A-Z][A-Z0-9.\-]{0,9}$/.test(full)) logoStart();
     return '<span class="vu-logo-tile' + (opt.xl ? " vu-logo-tile--xl" : "") + '"' + (!opt.src && opt.logo !== false && full ? ' data-t="' + esc(full) + '"' : "") + ' aria-hidden="true">' + inner + "</span>";
   }
@@ -369,7 +376,7 @@
   return Object.freeze({
     VERSION: VERSION, skeleton: skeleton, bindIntent: bindIntent, transition: transition, legal: legal, legalNotice: legalNotice, PERSPECTIVES: PERSPECTIVES, esc: esc, num: num, pct: pct, money: money,
     glyph: glyph, worldIcon: worldIcon, hud: hud, logo: logo,
-    chg: chg, verdict: verdict, help: help, q: q,
+    chg: chg, movementLabel: movementLabel, verdict: verdict, help: help, q: q,
     stockHead: stockHead, persp: persp, perspectiveHref: perspectiveHref,
     stockRow: stockRow, tile: tile, navcard: navcard, sect: sect, seg: seg, ranges: ranges,
     toggle: toggle, sheet: sheet, meter: meter, bars: bars, blank: blank, pro: pro, research: research, search: search,

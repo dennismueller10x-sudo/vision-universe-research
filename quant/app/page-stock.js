@@ -210,10 +210,12 @@
   function keyTiles(vm) {
     var list = keyFactors(vm);
     return list.length ? el("ul", { class: "qv2-keys", "aria-label": "Wichtigste Kennzahlen, Wert 0 bis 100" }, list.map(function (f) {
-      return el("li", { class: "tone-" + f.tone }, [el("a", { href: "#faktor-" + f.id, "aria-label": f.name + ": " + Math.round(f.score) + " von 100, " + (f.word || STRIP_WORD[f.tone]) }, [
-        el("span", { class: "qv2-key-n", "aria-hidden": "true", text: KEY_SHORT[f.id] || f.name }),
-        el("b", { class: "qv2-key-v num", "aria-hidden": "true", text: String(Math.round(f.score)) }),
-        el("small", { class: "qv2-key-w qx-pill " + (f.tone === "good" ? "up" : f.tone === "bad" ? "down" : "warm"), "aria-hidden": "true", text: TONE_GLYPH[f.tone] + " " + capitalWord(f.word || STRIP_WORD[f.tone]) })])]);
+      var description = "qv2-key-description-" + f.id;
+      return el("li", { class: "tone-" + f.tone }, [el("a", { href: "#faktor-" + f.id, "aria-describedby": description }, [
+        el("span", { class: "qv2-key-n", text: KEY_SHORT[f.id] || f.name }),
+        el("b", { class: "qv2-key-v num", text: String(Math.round(f.score)) }),
+        el("small", { class: "qv2-key-w qx-pill " + (f.tone === "good" ? "up" : f.tone === "bad" ? "down" : "warm"), text: TONE_GLYPH[f.tone] + " " + capitalWord(f.word || STRIP_WORD[f.tone]) })]),
+        el("span", { class: "qx-sr", id: description, text: f.name + ". Skala von 0 bis 100." })]);
     })) : null;
   }
   function verdictCard(vm, factorsReason, missingNote, earlyQuestion) {

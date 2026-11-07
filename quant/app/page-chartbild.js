@@ -611,8 +611,9 @@
     }
     kinds.forEach(function (k) {
       var sk = scenarioOf(k);
-      var b = el("button", { type: "button", role: "tab", class: "cb-switch-btn", dataset: { kind: k }, "aria-label": sk ? scenarioTitle(sk, scenarioOf("PRIMARY")) + " – " + (KIND[k] || k) + ", " + dirWord(sk.direction) : null }, [el("span", { class: "cb-switch-t", text: scenarioTitle(sk, scenarioOf("PRIMARY")) }),
+      var b = el("button", { type: "button", role: "tab", class: "cb-switch-btn", dataset: { kind: k }, "aria-label": null }, [el("span", { class: "cb-switch-t", text: scenarioTitle(sk, scenarioOf("PRIMARY")) }),
         el("small", { class: "cb-switch-k" }, sk ? scenarioRole(sk) : [KIND[k] || k])]);
+      if (sk) b.append(el("span", { class: "cb-sr", text: ", " + dirWord(sk.direction) }));
       b.addEventListener("click", function () { selectKind(k); });
       b.addEventListener("keydown", function (e) {
         var i = kinds.indexOf(kind), n = kinds.length, j = e.key === "ArrowRight" ? (i + 1) % n : e.key === "ArrowLeft" ? (i - 1 + n) % n : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
