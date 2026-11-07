@@ -57,6 +57,14 @@ node app/scripts/gesture-bridge-browser.mjs --modules=/pfad/zu/node_modules --ur
 ```
 
 Browser-QA benötigt Playwright, axe-core und Chromium, verändert keine Produktionsdaten. Native Plugin-Aufrufe werden simuliert; echte iOS-/Android-Gerätegesten und Safe Areas bleiben im privaten Gerätetest zu prüfen. Der UA-Zusatz wird erst beim nächsten lokalen `cap sync` ins native Projekt übernommen; dieser PR veröffentlicht nichts.
+## K1: natives Rand-Wischen vor/zurück (iOS) und Haptik
+
+`ios/App/App/VUBridgeViewController.swift` ersetzt im `Main.storyboard` den `CAPBridgeViewController`. Wischen vom linken Rand = zurück, vom rechten Rand = vor; die aktuelle Seite folgt dem Finger, darunter liegt die zuletzt gesehene Ansicht der Zielseite (Momentaufnahme je Verlaufseintrag, höchstens 8), Haptik an der 35-%-Schwelle, schneller Wisch ab 10 %. Entscheidung: kein `allowsBackForwardNavigationGestures`, weil die Website im Iframe der Shell läuft und WKWebView dann die gemeinsame Historie aller Rahmen und Momentaufnahmen des Hauptdokuments nutzen würde.
+
+Ablauf: `assets/vu-gestures.js` meldet `vu:nav-state` (Navigation-API-Schlüssel, zurück/vor möglich, Sheet offen) an die Shell; `www/js/main.js` prüft Herkunft und Fenster und reicht an `webkit.messageHandlers.vuNav` weiter (Handler nimmt nur Nachrichten des Hauptrahmens an). Beim Loslassen ruft der Controller `VUAppNav.go('back'|'forward')`; die Shell schickt `vu:back`/`vu:forward` an den Iframe. Zurück ist mit Navigation API echter Rahmenverlauf (auch Start → Quant → Aktie), ohne API bleibt die E3-Regel. Die App hängt `VUEdge/1` an den User-Agent; dann baut die Website ihr JS-Randwischen nicht auf (alte Builds behalten es). Nur die äußersten Randpunkte gehören der Geste; Karussells und Charts behalten jedes andere Wischen.
+
+Haptik: Tippen auf Leiste/Untertabs der Website meldet `vu:haptic`; iOS über den eigenen Handler, Android über `@capacitor/haptics` (7.x, MIT). Android-Zurück bleibt `backButton` → `vu:back`. Neuer App-Build nötig (`cap sync`, TestFlight-Workflow).
+
 ## E4: Biometrie und kostenlose Push-Zustellung einrichten
 
 `@capgo/capacitor-native-biometric` ist auf **7.5.1 (MIT)** festgesetzt. Es prüft die Biometrie; die Sitzung bleibt im vorhandenen nativen SecureStorage (Keychain/Keystore). Erst nach Passwortanmeldung wird einmal gefragt. Ohne Opt-in bleibt die Sitzung im Arbeitsspeicher. Einstellungen → Biometrie aus entfernt die persistierte Sitzung; Abmelden löscht sie ebenfalls. Beim nächsten Start werden Biometrie und ein Refresh abgewartet. Abbruch oder fehlgeschlagener Refresh zeigt die Passwortanmeldung.
