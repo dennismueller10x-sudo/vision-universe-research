@@ -194,6 +194,12 @@
       var origins = w.location.ancestorOrigins, origin = parentOrigin || (origins && origins.length ? origins[0] : null);
       if (PARENTS.indexOf(origin) >= 0) try { w.parent.postMessage({type: 'vu:haptic', style: 'selection'}, origin); } catch (_) { /* optional */ }
     }, true);
+    // Langes Druecken auf Bedienelemente: kurzer Impuls wie in nativen Apps (Kontextmenue/Vorschau bleiben iOS ueberlassen).
+    w.document.addEventListener('contextmenu', function (e) {
+      if (w.parent === w || !(e.target.closest && e.target.closest('a,button,[role=tab],summary'))) return;
+      var origins = w.location.ancestorOrigins, origin = parentOrigin || (origins && origins.length ? origins[0] : null);
+      if (PARENTS.indexOf(origin) >= 0) try { w.parent.postMessage({type: 'vu:haptic', style: 'impact'}, origin); } catch (_) { /* optional */ }
+    }, true);
     changed();
     w.addEventListener('message', function (e) {
       if (e.source !== w.parent || PARENTS.indexOf(e.origin) < 0) return;

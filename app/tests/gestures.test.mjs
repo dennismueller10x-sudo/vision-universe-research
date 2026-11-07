@@ -42,3 +42,11 @@ test('K1: nav state for the native gesture (Navigation API keys, home, sheet)', 
   const old = G.navState(undefined, {href: 'https://research.visionuniverse.de/quant/#/aktie/NVDA'}, false, false);
   assert.equal(old.key, 'https://research.visionuniverse.de/quant/#/aktie/NVDA'); assert.equal(old.forward, false); assert.equal(old.backKey, null);
 });
+test('K4: Tipp-Gefuehl nur in der App; Fliesstext bleibt markierbar', async () => {
+  const css = (await import('node:fs')).readFileSync(new URL('../../assets/vu-gestures.css', import.meta.url), 'utf8');
+  const k4 = css.slice(css.indexOf('/* K4'));
+  for (const line of k4.split('\n').filter(l => /^\[data|^@media/.test(l))) assert.match(line, /\[data-vu-gestures\]/);
+  assert.match(k4, /touch-action:manipulation/);
+  assert.match(k4, /:active\{opacity:\.62;transition:opacity 0s\}/);
+  assert.doesNotMatch(k4, /(^|[,{\s])p[,{\s]|body\{[^}]*user-select:none/);
+});
