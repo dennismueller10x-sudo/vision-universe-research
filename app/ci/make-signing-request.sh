@@ -39,7 +39,7 @@ case "$mode" in
     read -r -s -p "Neues Passwort fuer die .p12-Datei (mindestens 16 Zeichen, im Passwortmanager speichern): " pw; echo
     [ "${#pw}" -ge 16 ] || { echo "Passwort zu kurz."; exit 1; }
     openssl x509 -inform DER -in "$cer" -out "$dir/vu-dist.pem"
-    openssl pkcs12 -export -inkey "$dir/vu-dist.key" -in "$dir/vu-dist.pem" -out "$dir/vu-dist.p12" -passout "pass:$pw"
+    openssl pkcs12 -export -inkey "$dir/vu-dist.key" -in "$dir/vu-dist.pem" -out "$dir/vu-dist.p12" -keypbe PBE-SHA1-3DES -certpbe PBE-SHA1-3DES -macalg sha1 -passout "pass:$pw"   # kompatibel mit macOS
     echo "Fertig: $dir/vu-dist.p12"
     echo "Pruefsumme des Zertifikats (SHA-1, zum Abgleich spaeter, kein Geheimnis):"
     openssl x509 -in "$dir/vu-dist.pem" -noout -fingerprint -sha1
