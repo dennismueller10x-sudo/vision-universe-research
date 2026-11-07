@@ -6,20 +6,17 @@
     ],
     [
       "loading",
-      "cda8528512547e919bcba267a0b50f7fea6da480"
+      "144f23f09d2d65dd16f914a3cedadf47673c5079"
     ]
   ],
   "baselineStartedAt": "2026-11-07T06:56:20.550434+00:00",
-  "remainingStartedAt": "2026-11-07T08:04:08.014175+00:00",
+  "remainingStartedAt": "2026-11-07T13:25:55.199024+00:00",
   "runs": 3,
   "harness": "exact main/P1 scripts/mobile/measure.mjs",
+  "isolationNote": "Final package runs start after QA and all filesystem/Git materialization. Earlier P2 and interrupted P3 outputs remain local diagnostics, not final comparisons. Baseline complete before these operations.",
+  "laterRebaseMain": "3891bf5bef8dda39f90360b7795f0156e1a48cae",
   "harnessSHA256": "75f66055c528d878e85603aedd1e0819c043d401f83481955a900ac919ac6c0a",
   "fixedDataCommit": "bbe59a3ca48e208d2053aa30ab8d96fc9ce059f1",
-  "laterRebaseMain": "3891bf5bef8dda39f90360b7795f0156e1a48cae",
-  "laterRebasedHeads": {
-    "loading": "3ff545ec950fa506da267d8939a8ff8eab3d79f6",
-    "app-feel": "fd9013a6e663bed2f553fc31d14ebae0616d859d",
-    "accessibility": "e70cc4a95fb5040ab6f5c9865c9f994a923c1b36"
-  },
-  "rebaseNote": "Fixed data/logo snapshot and measured E5 loading sources unchanged; active releaseOnly watchlist test updated. Unchanged original P1 reports keep the executing-worktree commit field."
+  "finalRebaseMain": "6464e4920",
+  "browserCodeMainDelta": []
 }

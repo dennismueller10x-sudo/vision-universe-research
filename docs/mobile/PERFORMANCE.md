@@ -12,9 +12,10 @@ CPU-Profile, feste Browser-Uhr oder konkurrierenden lokalen Rechentests/Builds.
 Kontrollierter Vergleich: main-Code `9e2012b6f339` gegen die drei E5-Pakete,
 alle auf **demselben gebauten Daten-Snapshot `bbe59a3ca48e`**. Keine Live-/privaten
 Consumer-Overlays. Das ist ein lokales Chromium-Labor, keine Messung der aktuellen
-Produktion und kein iPhone-/Screenreader-Nachweis. Die spätere Rebase auf main
-`3891bf5bef8d` bringt keine Änderung am gemessenen E5-Ladecode; der bestehende
-Watchlist-Vertragstest wurde an `releaseOnly` angepasst. Daten/Logos bleiben für
+Produktion und kein iPhone-/Screenreader-Nachweis. Die Abschluss-Rebase auf main
+`6464e4920` übernimmt weitere Daten-/Betriebsupdates; gegenüber `3891bf5bef8d`
+ändert sie keine ausgelieferte Browser-JS-/CSS-/HTML-Datei außerhalb der
+ausgeschlossenen App. Der Watchlist-Vertragstest wurde an `releaseOnly` angepasst. Daten/Logos bleiben für
 diesen Vergleich bewusst im festen Snapshot. Code-Referenzen und Zeitpunkte:
 [provenance.json](e5/final/provenance.json). Die `commit`-Felder der ursprünglichen
 Messberichte bezeichnen den ausführenden Arbeitsbaum; die tatsächlich
@@ -25,7 +26,7 @@ Long-Task-Anteile ab FCP bis zum Messende; es ist weder Feld-INP noch
 Lighthouse-TBT. „Erster Kurs“ zählt ausschließlich einen sichtbaren Zahlenwert
 in `.vu-shead-value` nach einem Animationsframe. `null`/„–“ heißt kein sichtbarer
 Aktienkurs im Beobachtungsfenster bzw. keine Aktienroute, niemals 0 Sekunden.
-Wire enthält HTTP-Header. Mediane ersetzen keine Einzelwertprüfung. Ein früher LCP-Wert
+Wire enthält HTTP-Header und das Hauptdokument. Der separate Quant-Ressourcengrenzwert zählt PerformanceResourceTiming-Einträge ohne Hauptdokument; seine 46 Ressourcen sind daher nicht dieselbe Zählung wie CDP-Requests. Mediane ersetzen keine Einzelwertprüfung. Ein früher LCP-Wert
 kann bereits Shell-/Footertext messen, obwohl der Kurs erst später erscheint;
 deshalb Kurszeit und Layout-Stabilität separat bewerten.
 
@@ -35,32 +36,32 @@ Mediane aus jeweils drei kalten Läufen. Vergleich `baseline` → `loading`; all
 
 | Route | LCP s vorher / nachher | CLS vorher / nachher | TBT* ms vorher / nachher | Wire KiB vorher / nachher | Requests vorher / nachher | Erster Kurs s vorher / nachher |
 |---|---:|---:|---:|---:|---:|---:|
-| `/` | 1.288 / 1.200 | 0.000 / 0.000 | 149 / 128 | 72.1 / 72.1 | 9 / 9 | – / – |
-| `/quant/` | 2.932 / 3.044 | 0.306 / 0.306 | 351 / 410 | 546.2 / 514.6 | 25 / 24 | – / – |
-| `/quant/#/aktie/NVDA` | 6.740 / 7.852 | 0.062 / 0.058 | 1061 / 1840 | 885.2 / 885.2 | 47 / 47 | 5.837 / 6.216 |
-| `/technical/#/chart/NVDA` | 2.148 / 2.312 | 0.742 / 0.742 | 865 / 1032 | 551.8 / 551.9 | 57 / 57 | 5.771 / 4.182 |
-| `/fundamental/#/NVDA` | 1.768 / 1.740 | 0.361 / 0.361 | 1088 / 1124 | 1314.2 / 1314.3 | 28 / 28 | 2.689 / 2.578 |
-| `/supertrader/` | 1.112 / 1.136 | 1.026 / 1.026 | 705 / 673 | 594.8 / 595.1 | 24 / 24 | – / – |
-| `/supertrader/stock/NVDA/` | 1.108 / 1.132 | 0.764 / 0.764 | 125 / 163 | 305.4 / 305.7 | 32 / 32 | 2.914 / 3.122 |
-| `/discover/` | 1.328 / 1.644 | 0.087 / 0.048 | 566 / 809 | 1078.9 / 996.2 | 131 / 56 | – / – |
-| `/quant/musterdepots/` | 0.956 / 1.304 | 0.340 / 0.000 | 161 / 89 | 170.5 / 170.5 | 12 / 12 | – / – |
-| `/analysten/` | 0.944 / 1.112 | 0.018 / 0.018 | 135 / 85 | 86.5 / 86.5 | 10 / 10 | – / – |
-| `/mein-dashboard/` | 0.756 / 0.768 | 0.000 / 0.000 | 21 / 67 | 221.2 / 221.3 | 29 / 29 | – / – |
+| `/` | 1.288 / 1.176 | 0.000 / 0.000 | 149 / 0 | 72.1 / 72.1 | 9 / 9 | – / – |
+| `/quant/` | 2.932 / 2.976 | 0.306 / 0.306 | 351 / 367 | 546.2 / 514.6 | 25 / 24 | – / – |
+| `/quant/#/aktie/NVDA` | 6.740 / 7.048 | 0.062 / 0.062 | 1061 / 1129 | 885.2 / 885.2 | 47 / 47 | 5.837 / 6.167 |
+| `/technical/#/chart/NVDA` | 2.148 / 2.316 | 0.742 / 0.742 | 865 / 823 | 551.8 / 551.9 | 57 / 57 | 5.771 / 3.953 |
+| `/fundamental/#/NVDA` | 1.768 / 1.616 | 0.361 / 0.361 | 1088 / 988 | 1314.2 / 1314.3 | 28 / 28 | 2.689 / 2.434 |
+| `/supertrader/` | 1.112 / 1.040 | 1.026 / 1.026 | 705 / 846 | 594.8 / 595.1 | 24 / 24 | – / – |
+| `/supertrader/stock/NVDA/` | 1.108 / 1.044 | 0.764 / 1.175 | 125 / 153 | 305.4 / 305.7 | 32 / 32 | 2.914 / 3.131 |
+| `/discover/` | 1.328 / 1.460 | 0.087 / 0.087 | 566 / 269 | 1078.9 / 996.2 | 131 / 56 | – / – |
+| `/quant/musterdepots/` | 0.956 / 3.832 | 0.340 / 0.361 | 161 / 1503 | 170.5 / 170.5 | 12 / 12 | – / – |
+| `/analysten/` | 0.944 / 1.204 | 0.018 / 0.018 | 135 / 114 | 86.5 / 86.5 | 10 / 10 | – / – |
+| `/mein-dashboard/` | 0.756 / 0.752 | 0.000 / 0.000 | 21 / 47 | 221.2 / 221.3 | 29 / 29 | – / – |
 
 Zielprüfung der vier Aktienseiten (kein Bestehen nur aus einem günstigen Einzellauf ableiten):
 
 | Aktienroute | Erster Kurs: Median / Spanne s | Läufe < 3 s | CLS: Median / Maximum | Läufe CLS < 0,1 |
 |---|---:|---:|---:|---:|
-| `/quant/#/aktie/NVDA` | 6.216 / 5.729–6.759 | 0/3 | 0.058 / 0.062 | 3/3 |
-| `/technical/#/chart/NVDA` | 4.182 / 3.802–4.242 | 0/3 | 0.742 / 0.742 | 0/3 |
-| `/fundamental/#/NVDA` | 2.578 / 2.466–2.722 | 3/3 | 0.361 / 0.361 | 0/3 |
-| `/supertrader/stock/NVDA/` | 3.122 / 3.085–3.152 | 0/3 | 0.764 / 1.175 | 0/3 |
+| `/quant/#/aktie/NVDA` | 6.167 / 5.808–6.708 | 0/3 | 0.062 / 0.062 | 3/3 |
+| `/technical/#/chart/NVDA` | 3.953 / 3.812–3.960 | 0/3 | 0.742 / 0.742 | 0/3 |
+| `/fundamental/#/NVDA` | 2.434 / 2.421–2.532 | 3/3 | 0.361 / 0.361 | 0/3 |
+| `/supertrader/stock/NVDA/` | 3.131 / 3.025–3.515 | 0/3 | 1.175 / 1.175 | 0/3 |
 
-LCP < 2,5 s: 9/11 Routen im Median; CLS < 0,1: 6/11 im Median.
+LCP < 2,5 s: 8/11 Routen im Median; CLS < 0,1: 5/11 im Median.
 
-HTTP-/Netzfehler bleiben in den Rohdaten enthalten: /: http://127.0.0.1:43079/favicon.ico (404); /mein-dashboard/: https://konto.visionuniverse.de/v1/session (403), https://konto.visionuniverse.de/v1/session (net::ERR_FAILED).
+HTTP-/Netzfehler bleiben in den Rohdaten enthalten: /: http://127.0.0.1:42149/favicon.ico (404); /mein-dashboard/: https://konto.visionuniverse.de/v1/session (403), https://konto.visionuniverse.de/v1/session (net::ERR_FAILED).
 
-Paket 2 allein erreicht das Aktienziel nicht: Quant 6,216 s, Technical 4,182 s und Supertrader 3,122 s im Median. Fundamental erreicht 2,578 s, springt aber im Layout. Die reservierten Ladeflächen und der frühe Kopf folgen in Paket 3. Discover sinkt von 131 auf 56 Requests; die Verzögerung des ersten Kurses auf der unverändert großen Quant-Route wird nicht als Verbesserung ausgegeben.
+Paket 2 allein erreicht das Aktienziel nicht: Quant 6,167 s, Technical 3,953 s und Supertrader 3,131 s im Median. Fundamental liegt bei 2,434 s, springt jedoch im Layout. Discover sinkt von 131 auf 56 Requests. Die frühen Köpfe und reservierten Flächen folgen in Paket 3; aus schwankenden Zeiten unveränderter Ladepfade wird keine kausale Beschleunigung behauptet.
 
 ## Historische Messung aus Paket 1 (06.11.; andere Ausgangsrevision)
 
