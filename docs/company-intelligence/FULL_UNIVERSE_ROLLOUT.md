@@ -211,3 +211,15 @@ Nicht verändert: Provider-, Quant-, Ranking- und Datenqualitäts-Gates, `refres
   2. **Produktionsschritt `activate`.** `company-intelligence-universe-release.yml` mit `mode=activate`, `scaling_run=<Run-ID aus 1>`. Danach folgen Audit, Browser-Suite, Pages-Release, Wartezeit und Live-QA. Im Fehlerfall greift „Fail closed to immutable 46 scope“ (`restore46`).
   3. **Nachlauf.** Health-Lauf und SLO prüfen. Ab dann sichert der Auto-Re-Freeze den Rollback.
 - Produktionsschritte (2) startet die Steuerung mit Owner-Auftrag.
+
+## Stand 07.11.2026 22:30: activate scheitert an der Vorbedingung „46er live“
+
+- **Isolierter Universe-Refresh** 42413619537: SUCCESS, `freshRestoreVerified`, `privateCompanies` 5.126, Kandidaten-QA bestanden. Vorher waren zwei QA-Fehler zu beheben, beide Folgen von E5: Service Worker (#1609) und gebündelte Consumer-Module (#1610).
+- **Live-Ausfall 19:55 und Behebung.** Seit E5 standen `rollout.js`, `contract.js`, `stock-section.js` und `detail.js` in den minifizierten Discover-Bündeln. `stageProduction` erreichte sie dort nicht. Die Folge war ein Generationsfehler im Live-Rollout („derzeit nicht verfügbar“, fail-closed schloss das Gate), danach ein wirkungsloser Kill-Switch. #1611 hält diese Module wieder als eigene Skripte. OFF-Release 42417705186 grün; live geprüft: `stage:0, productionOff`.
+- **`activate` (Run 42418672753):** Abbruch vor jeder Änderung (`activationWritten: false`, `privateStateModified: false`). Davor grün: Kandidat `1460f829…`, 4.934 geeignete Emittenten / 5.091 Titel, 5.560 Assets bytegleich, Browser-Abnahme PASS.
+- **Vorbedingung von `activate`** (`universe-release.mjs`, `known` und `delivery`): Live muss `company-intelligence-delivery.json` das aktuelle 46er-Legacy-GOOD ausliefern, mit derselben Generation, 46 Titeln und 45 Emittenten. Bei geschlossenem Gate kommt 404, und `activate` bricht ab.
+- **Reihenfolge, damit die Vorbedingung erfüllt ist:**
+  1. Gate mit dem aktiven Legacy-GOOD öffnen (`company-intelligence.yml`, `production_release=enable`, voller Hash-Readback).
+  2. Pages-Release mit grüner Live-Abnahme; `delivery.json` PASS, 46/45.
+  3. `activate` erneut mit demselben `scaling_run`.
+- Produktionsschritte startet die Steuerung mit Owner-Auftrag.
