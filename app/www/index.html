@@ -18,6 +18,7 @@
   <section id="v-supertrader" class="view frame-view" data-path="/supertrader/" hidden><iframe title="Supertrader" loading="lazy"></iframe></section>
 
   <section id="v-watchlist" class="view panel" hidden>
+    <button type="button" class="secondary back" data-view="discover">← Zurück zur App</button>
     <h1>Watchlist</h1>
     <p id="wl-state" class="muted"></p>
     <ul id="wl-list" class="rows"></ul>
@@ -25,11 +26,13 @@
   </section>
 
   <section id="v-account" class="view panel" hidden>
+    <button type="button" class="secondary back" data-view="discover">← Zurück zur App</button>
     <h1>Konto</h1>
     <form id="login" autocomplete="on" novalidate>
       <label>E-Mail<input id="email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" required></label>
       <label>Passwort<input id="password" name="password" type="password" autocomplete="current-password" required></label>
       <button type="submit">Anmelden</button>
+      <button id="skip-login" type="button" class="secondary" hidden>Später anmelden</button>
       <p id="login-error" class="error" role="alert" hidden></p>
       <p class="muted small">Registrierung und Abonnement laufen weiterhin im Web. Diese Testversion verkauft nichts.</p>
     </form>
