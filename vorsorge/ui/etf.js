@@ -303,7 +303,7 @@
         var more = host.querySelector("#vs-more"); if (more) more.onclick = function () { st.limit += PAGE; draw(); };
       }
       draw();
-      VS.dm([["Quelle", "Kurse Tiingo · Kosten, Fondsvermögen und Holdings SEC (N-PORT, Prospekt) · <a href=\"#/daten\">Datenabdeckung</a>"]], m.asOf);
+      VS.dm([["Herkunft", "Kosten, Fondsvermögen und Holdings aus Prospekt und Pflichtmeldungen · <a href=\"#/daten\">Datenabdeckung</a>"]], m.asOf);
       VS.lastRenderMs = ((global.performance && performance.now()) || 0) - t0;
     }).catch(function (e) { root.querySelector("#vs-screener").innerHTML = VS.pending("ETF-Verzeichnis nicht erreichbar", String(e.message || e)); });
   };
@@ -398,7 +398,7 @@
         '<div class="vs-etf-sticky"><div class="vu-seg" role="tablist" aria-label="Bereiche">' + mainTabs.map(function (t) { return '<button type="button" role="tab" data-tab="' + t[0] + '" aria-pressed="' + (t[0] === tab) + '">' + MAIN[t[0]] + '</button>'; }).join("") + '</div>' +
         (moreTabs.length ? '<div class="vs-moretabs"><span class="vu-xs vu-mu">Mehr:</span>' + moreTabs.map(function (t) { return '<button type="button" class="vu-chip" data-tab="' + t[0] + '" aria-pressed="' + (t[0] === tab) + '">' + t[1] + '</button>'; }).join("") + '</div>' : "") + '</div>' +
         (missingTab ? '<p class="vs-note" style="margin-top:12px">Für ' + esc(e.symbol) + ' gibt es diesen Bereich nicht: ' + esc({ performance: "keine Kursreihe", risiko: "keine Kursreihe", bestandteile: "keine Holdings (SEC N-PORT)", xray: "keine Holdings (SEC N-PORT)", aenderungen: "keine Holdings- oder Kostenhistorie", kosten: "keine Kostenquote aus dem Prospekt" }[missingTab] || "keine Daten") + '. Du siehst die Übersicht.</p>' : "") +
-        '<div id="vs-etf-body"></div>' + VS.footer({ asOf: mt && mt.asOf, dm: [["Quelle", "Kurse Tiingo · Kosten, Fondsvermögen und Holdings SEC (Prospekt, N-PORT) · Region, Index und Thema aus dem Fondsnamen abgeleitet"]] });
+        '<div id="vs-etf-body"></div>' + VS.footer({ asOf: mt && mt.asOf, dm: [["Herkunft", "Kosten, Fondsvermögen und Holdings aus Prospekt und Pflichtmeldungen · Region, Index und Thema aus dem Fondsnamen abgeleitet"]] });
       root.querySelector("[data-vu-watch]").onclick = function () { var on = watchToggle(sym); this.setAttribute("aria-pressed", String(on)); };
       root.querySelectorAll("[data-tab]").forEach(function (b) { b.onclick = function () { tab = b.dataset.tab; root.querySelectorAll("[data-tab]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); body(); }; });
       function body() {
@@ -410,7 +410,7 @@
       }
       body();
     }).catch(function () {
-      VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF Intelligence</p><h1>' + esc(sym) + ' nicht gefunden.</h1><p class="vs-lead">Dieser Ticker ist nicht im ETF-Verzeichnis. Vielleicht ist er bei Tiingo als Aktie geführt oder (noch) nicht im aufgenommenen Universum.</p><div class="vs-tabs"><a class="vs-pill primary" href="#/etfs?q=' + encodeURIComponent(sym) + '">Im Screener suchen</a></div></section>');
+      VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF Intelligence</p><h1>' + esc(sym) + ' nicht gefunden.</h1><p class="vs-lead">Dieser Ticker ist nicht im ETF-Verzeichnis. Vielleicht ist er als Aktie geführt oder (noch) nicht im aufgenommenen Universum.</p><div class="vs-tabs"><a class="vs-pill primary" href="#/etfs?q=' + encodeURIComponent(sym) + '">Im Screener suchen</a></div></section>');
     });
   };
 
@@ -458,7 +458,7 @@
         '<div class="vs-row"><span>Index / Strategie</span><span>' + esc(e.index || (d.structure === "ACTIVE" ? "Aktiv gemanagt" : "nicht im Namen genannt")) + '</span></div>' +
         '<div class="vs-row"><span>Assetklasse</span><span>' + esc(VS.ASSET[e.assetClass] || "nicht zugeordnet") + '</span></div><div class="vs-row"><span>Region</span><span>' + esc(VS.REGION[e.region] || "nicht im Namen genannt") + '</span></div>' +
         '<div class="vs-row"><span>Thema</span><span>' + esc(e.theme || "–") + '</span></div><div class="vs-row"><span>Listings dieses Fonds</span><span>' + (d.listingsOfFund || 1) + '</span></div>' +
-        (d.description ? '<p class="vu-ltag" style="margin-top:12px">Beschreibung des Anbieters (Tiingo, Originalsprache)</p><p class="vs-fine" style="margin-top:6px">' + esc(d.description) + '</p>' : "") + '</div></details>' +
+        (d.description ? '<p class="vu-ltag" style="margin-top:12px">Beschreibung des Datenanbieters (Originalsprache)</p><p class="vs-fine" style="margin-top:6px">' + esc(d.description) + '</p>' : "") + '</div></details>' +
         '<details class="vu-more"><summary>ETF-DNA</summary><div class="vu-more-body">' + Object.keys(dna).map(function (k) {
           var x = dna[k];
           return x.value === null ? '<div class="vs-kv"><span class="vu-sm"><b>' + esc(x.label) + '</b></span><span class="vu-xs vu-mu">' + esc(VS.STATUS_TEXT[x.status] || "Noch nicht verfügbar") + '</span></div>' : VS.wbar(x.label, x.value + "/100", x.value);
@@ -467,7 +467,7 @@
       /* Planspiel als Sheet (C16), klar als Beispielrechnung markiert. */
       var playCtx = { symbol: e.symbol, slug: e.slug, name: d.name, complex: e.complex, us: isUS,
         cagr: useM ? useM.annualized : null, vol: mt && mt.volatility ? mt.volatility.value : null, since: useM && useM.from ? useM.from.slice(0, 4) : "", years: mt ? mt.historyYears : 0,
-        basis: useM === trM ? "Tiingo, Gesamtrendite mit Ausschüttungen" : "Tiingo, nur Kurs – Ausschüttungen nicht enthalten" };
+        basis: useM === trM ? "Gesamtrendite mit Ausschüttungen" : "nur Kurs – Ausschüttungen nicht enthalten" };
       VS.openPlanspiel = function () {
         var sh = VS.sheet("vs-play-s", "Planspiel", '<div class="vs-row-sb">' + VS.bsp() + '</div><p class="vu-sm vu-mu" style="margin-top:6px">Was wäre, wenn sich ' + esc(e.index || e.symbol) + ' so entwickelt wie bisher?</p><div id="vs-play" style="margin-top:10px"></div>');
         if (sh) VS.renderPlanspiel(sh.querySelector("#vs-play"), playCtx);

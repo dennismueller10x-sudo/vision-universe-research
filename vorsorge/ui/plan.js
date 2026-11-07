@@ -125,7 +125,7 @@
       world.innerHTML = VS.sect("Kern-ETFs", "#/etfs", "Alle " + m.counts.publicAnalysis.toLocaleString("de-DE")) + '<div class="vs-erows">' + core.map(function (e) { return VS.etfRow(e, { title: CORE_TITLE[e.symbol], sub: e.index || "" }); }).join("") + '</div>' +
         VS.help("Ein ETF ist ein Korb mit vielen Aktien. „1 Jahr“ zeigt, wie sich der Kurs in 12 Monaten bewegt hat.");
       VS.fillSparks(world);
-      VS.dm([["ETF-Daten", "Kurse Tiingo · Holdings SEC N-PORT · Kategorien aus dem Fondsnamen"]], m.asOf);
+      VS.dm([["ETF-Daten", "Kurse · Holdings aus den Pflichtmeldungen der Fonds · Kategorien aus dem Fondsnamen"]], m.asOf);
     }).catch(function () { root.querySelector("#vs-home-world").innerHTML = VS.sect("Kern-ETFs") + U.blank("Das ETF-Verzeichnis ist nicht erreichbar. Planer und Rechner funktionieren weiter."); });
 
     VS.holdingsFeed().then(function (hi) {

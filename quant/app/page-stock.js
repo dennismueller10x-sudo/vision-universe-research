@@ -1265,17 +1265,17 @@
     if (entry.v === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") gapNodes.push(el("li", { class: "nein" }, [el("b", { text: "Börsenwert" }), el("span", { text: " – " + VM.reasonText("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") + (entry.il > 1 ? " Das Unternehmen hat " + entry.il + " börsennotierte Aktiengattungen." : "") })]));
     var creditHost = el("div", { class: "qx-logo-credit" });
     var dm = el("details", { class: "vu-dm qv-dm" }, [
-      el("summary", {}, [document.createTextNode("Daten & Methodik"), el("small", { text: "Tiingo · SEC EDGAR" + (last ? " · Kurs bis " + X.dateDe(last[0]) : "") })]),
+      el("summary", {}, [document.createTextNode("Daten & Methodik"), el("small", { text: last ? "Kurs bis " + X.dateDe(last[0]) : "" })]),
       el("dl", {}, [
-        el("dt", { text: "Kurs" }), el("dd", { text: last ? "Tiingo, Tagesschluss bis " + X.dateDe(last[0]) + "; Tagesverlauf aus veröffentlichten 5-Minuten-Kursen" : "keine veröffentlichte Tagesreihe" }),
-        el("dt", { text: "Geschäftszahlen" }), el("dd", { text: vm.asOf && vm.asOf.fundamentals ? "SEC EDGAR, bis " + X.dateDe(vm.asOf.fundamentals) + (vm.asOf.fundamentalsKnown ? " (bekannt seit " + X.dateDe(vm.asOf.fundamentalsKnown) + ")" : "") : "keine" }),
+        el("dt", { text: "Kurs" }), el("dd", { text: last ? "Tagesschluss bis " + X.dateDe(last[0]) + "; Tagesverlauf aus veröffentlichten 5-Minuten-Kursen" : "keine veröffentlichte Tagesreihe" }),
+        el("dt", { text: "Geschäftszahlen" }), el("dd", { text: vm.asOf && vm.asOf.fundamentals ? "Geschäftsberichte bis " + X.dateDe(vm.asOf.fundamentals) + (vm.asOf.fundamentalsKnown ? " (bekannt seit " + X.dateDe(vm.asOf.fundamentalsKnown) + ")" : "") : "keine" }),
         el("dt", { text: "Kennzahlen" }), el("dd", { text: s.quant && s.quant.asOf ? "marktbezogen bis " + X.dateDe(s.quant.asOf) : "–" }),
         el("dt", { text: "Faktoren" }), el("dd", { text: vm.asOf ? "Stand " + X.dateDe(vm.asOf.factors) : "keine" }),
         el("dt", { text: "Setup" }), el("dd", { text: vm.setup.asOf ? "Stand " + X.dateDe(vm.setup.asOf) + " (technische Auswertung, nicht der tägliche Kursstand)" : "keins" }),
         el("dt", { text: "Nachrichten" }), el("dd", {}, [el("span", { text: "in Quant nicht angebunden – " }), X.link("Vision Universe News", "/news/")])
       ]),
       el("p", { text: vm.isNot }),
-      el("p", { class: "qv-dm-links" }, [X.link("Methodik", X.routes.method()), el("span", { text: " · " }), X.link("SEC-Daten prüfen", "/quant/data-inspector/"), el("span", { text: " · " }),
+      el("p", { class: "qv-dm-links" }, [X.link("Methodik", X.routes.method()), el("span", { text: " · " }), X.link("Daten prüfen", "/quant/data-inspector/"), el("span", { text: " · " }),
         X.link("Vergleichen", X.routes.compare([ticker])), el("span", { text: " · " }), X.link("In Discover ansehen", "/discover/#/s/US_REAL/" + encodeURIComponent(ticker))]),
       creditHost]);
     bodyHost.append(limitsSection([

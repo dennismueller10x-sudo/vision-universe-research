@@ -270,7 +270,7 @@
   }
   function foot(d) {
     return (U.legal("modelPortfolio") || "") +
-      '<p class="pf-foot">' + (d ? "Datenstand " + dDe(d.asOf) + ". " : "") + "Kurse: veröffentlichte Schlusskurse (Tiingo, split-bereinigt). Musterdepots sind Rechenmodelle ohne echtes Geld. Keine Anlageberatung, keine Empfehlung.</p>";
+      '<p class="pf-foot">' + (d ? "Datenstand " + dDe(d.asOf) + ". " : "") + "Kurse: veröffentlichte Schlusskurse, split-bereinigt. Musterdepots sind Rechenmodelle ohne echtes Geld. Keine Anlageberatung, keine Empfehlung.</p>";
   }
   function render(all, hash) {
     var r = parseRoute(hash);
