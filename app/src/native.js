@@ -7,4 +7,5 @@ import {Network} from '@capacitor/network';
 import {StatusBar} from '@capacitor/status-bar';
 import {NativeBiometric} from '@capgo/capacitor-native-biometric';
 import {PushNotifications} from '@capacitor/push-notifications';
-globalThis.VUNative = {SecureStorage, KeychainAccess, SplashScreen, App, Network, StatusBar, NativeBiometric, PushNotifications};
+import {Haptics} from '@capacitor/haptics';
+globalThis.VUNative = {SecureStorage, KeychainAccess, SplashScreen, App, Network, StatusBar, NativeBiometric, PushNotifications, Haptics};
