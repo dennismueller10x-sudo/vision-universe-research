@@ -223,3 +223,4 @@ Nicht verändert: Provider-, Quant-, Ranking- und Datenqualitäts-Gates, `refres
   2. Pages-Release mit grüner Live-Abnahme; `delivery.json` PASS, 46/45.
   3. `activate` erneut mit demselben `scaling_run`.
 - Produktionsschritte startet die Steuerung mit Owner-Auftrag.
+- **Abgelaufener Vorgänger (Entscheidung Steuerung 07.11., activate 42421918068 mit `CONSUMER_EXPIRED`).** `download-public.mjs` lässt ein abgelaufenes `previous.json` weg (`expiredPreviousOmitted`), statt den Download abzubrechen. Der Vorgänger ist nur Verlauf für Clients mitten im Wechsel und wird nie wiederhergestellt; ein abgelaufener aktueller Stand scheitert weiter mit `CONSUMER_EXPIRED`.
