@@ -960,13 +960,13 @@
      und Chart werden deshalb hier zur Laufzeit nachgeladen statt in jede Seite geschrieben. */
   var SCRIPT_P = {};
   function loadScript(src) {
-    if (!SCRIPT_P[src]) SCRIPT_P[src] = new Promise(function (ok, no) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = function () { no(new Error(src)); }; document.head.appendChild(s); });
+    if (!SCRIPT_P[src]) SCRIPT_P[src] = new Promise(function (ok, no) { var s = document.createElement('script'), pre = document.querySelector('link[rel="preload"][as="script"][href="' + src + '"]') || document.querySelector('link[rel="preload"][as="script"][href^="' + src.split('?')[0] + '?"]'); s.src = pre ? pre.href : src; s.onload = ok; s.onerror = function () { no(new Error(src)); }; document.head.appendChild(s); });
     return SCRIPT_P[src];
   }
   var CSS_P = {};
   function loadCss(href) {
     return CSS_P[href] || (CSS_P[href] = new Promise(function (ok, no) {
-      var link = document.querySelector('link[href="' + href + '"]');
+      var link = document.querySelector('link[href="' + href + '"]') || document.querySelector('link[rel="stylesheet"][href^="' + href.split('?')[0] + '?"]');
       if (link && link.sheet) { ok(); return; }
       var fresh = !link; if (fresh) link = h('link', { rel: 'stylesheet', href: href });
       link.addEventListener('load', ok, { once: true });
@@ -1626,7 +1626,8 @@
   }
   /* Redesign 2027: gemeinsame Bausteine (assets/vu-ui.*, assets/vu-chart.js) und das Seitenmodul st-redesign.js.
      Laedt parallel zu den Daten; ein Fehler laesst die bisherige Oberflaeche stehen. */
-  var UI = page === 'replay' ? Promise.resolve() : Promise.all([loadCss('/assets/vu-ui.css'), loadCss(BASE + 'assets/st-redesign.css'), loadScript('/assets/vu-ui.js'), loadScript('/assets/vu-chart.js')]).then(function () {
+  var UI = page === 'replay' ? Promise.resolve() : Promise.all([loadCss('/assets/vu-ui.css?v=vu-ui-1.2.0'), loadCss(BASE + 'assets/st-redesign.css'), loadScript('/assets/vu-ui.js?v=vu-ui-1.2.0'), loadScript('/assets/vu-chart.js')]).then(function () {
+    if (window.VUUI && window.VUUI.bindIntent) window.VUUI.bindIntent(function (url) { if (url.origin !== location.origin) return null; var m = /^\/supertrader\/stock\/([A-Z0-9.-]{1,12})\/$/.exec(url.pathname); return m && m[1]; }, function (ticker) { return build().then(function (b) { return b && b.slices && (b.slices.stock || []).indexOf(ticker) >= 0 ? getJSON('stock/' + ticker + '.json') : null; }); });
     return loadScript(BASE + 'assets/st-redesign.js');
   }).catch(function () { return null; });
   /* Helfer der bisherigen Oberflaeche fuer das Redesign-Modul. legacy(host, D) zeichnet die bisherige Ansicht der Seite in host. */
@@ -1640,8 +1641,24 @@
         try { PROVLAB = (D.registry && D.registry.provenanceClasses) || {}; ({ strategy: renderStrategy }[page] || renderHome)(D); } finally { main = keep; }
       } };
   }
-  Promise.all(need.map(function (k) { return load(k).catch(function (e) { if (k === 'pilot' || k === 'replay' || k === 'portfolio' || k === 'trend52' || k === 'house') return null; throw e; }); })).then(function (res) {
-    var D = {}; need.forEach(function (k, i) { D[k] = res[i]; });
+  function fullPageData() {
+    return Promise.all(need.map(function (k) { return load(k).catch(function (e) { if (k === 'pilot' || k === 'replay' || k === 'portfolio' || k === 'trend52' || k === 'house') return null; throw e; }); }));
+  }
+  function homePageData() {
+    return UI.then(function () {
+      if (!(window.STRedesign && window.STRedesign.render.home)) return fullPageData();
+      // ST01 consumes the existing header/count fields, never per-signal rows.
+      // Old/raw releases retain their canonical full-data fallback.
+      return Promise.all([getJSON('home-view.json').then(function (view) {
+        if (!view || view.deliveryView !== 'st-home-view-1' || !view.counts) throw new Error('HOME_VIEW_CONTRACT');
+        return view;
+      }).catch(function () { return load('signals'); }), load('market')]).then(function (values) {
+        return {compact: {signals: values[0], market: values[1]}};
+      });
+    });
+  }
+  (page === 'home' ? homePageData() : fullPageData()).then(function (res) {
+    var D = res.compact || {}; if (!res.compact) need.forEach(function (k, i) { D[k] = res[i]; });
     D.srcMap = D.sources ? byId(D.sources.sources, 'source_id') : {};
     if (D.registry) D.registry.strategies.forEach(function (x) { if (x.pending_semantics === 'WATCHLIST' && !isResearchS(x)) WATCH[x.strategy_id] = x.watchlist_label || 'Beobachtung'; if (isResearchS(x)) RESEARCH[x.strategy_id] = true; }); if (D.registry) HAS_CURRENT = D.registry.strategies.some(function (x) { return x.mode === 'LIVE' && !isResearchS(x); });
     APP = D;

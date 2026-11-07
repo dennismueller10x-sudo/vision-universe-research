@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#000000":"#ffffff");})();</script>
@@ -9,6 +10,11 @@
 <meta name="description" content="Bewährte Strategien, transparente Regeln, ehrliche Backtests und laufende Modell-Signale.">
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <link rel="stylesheet" href="/supertrader/assets/supertrader.css">
+<link rel="stylesheet" href="/assets/vu-ui.css?v=vu-ui-1.2.0">
+<link rel="stylesheet" href="/supertrader/assets/st-redesign.css">
+<link rel="preload" href="/assets/vu-ui.js?v=vu-ui-1.2.0" as="script">
+<link rel="preload" href="/assets/vu-chart.js" as="script">
+<link rel="preload" href="/supertrader/assets/st-redesign.js" as="script">
 </head>
 <body class="st" data-page="home">
 <vu-navigation theme="dark" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script>

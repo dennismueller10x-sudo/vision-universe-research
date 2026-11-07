@@ -237,3 +237,8 @@
 .sf-r-head .sf-limits li,.sf-r-head .sf-limits[data-strong="true"] li{background:var(--vu-card);color:var(--vu-ink);border:1px solid var(--vu-hair);margin-top:6px}
 .sf-r-head .sf-limits li .st-ic{color:var(--vu-ink)}
 .sf-r .sf-more>summary{min-height:36px;font-size:13px}
+
+/* E5: keep following content below the loading card/head, as in ST01/ST08. */
+.st-r-pending-home{min-height:100svh;display:grid;align-content:start;gap:20px}
+.st-r-head,.st-r-pending-head{display:flow-root;min-height:194px}
+.st-r-answer-slot,.st-r-pending-answer{display:flow-root;min-height:166px}

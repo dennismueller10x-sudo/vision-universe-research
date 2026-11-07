@@ -131,7 +131,25 @@
     nav.setAttribute("aria-label", "Perspektiven für " + ctx.displaySymbol);
     nav.setAttribute("data-key", SC.key(ctx));
     function draw(manifest) {
-      nav.innerHTML = html(ctx, SC.availability(ctx, manifest), current, panelId);
+      var markup = html(ctx, SC.availability(ctx, manifest), current, panelId);
+      if (nav.firstChild) {
+        // Availability changes attributes and explanatory text, not the seven
+        // product icons. Keep their connected nodes, focus and loaded sprite.
+        var next = host.ownerDocument.createElement("div");
+        next.innerHTML = markup.replace(/<svg[\s\S]*?<\/svg>/g, "");
+        var oldLinks = nav.querySelectorAll("[data-module]"), newLinks = next.querySelectorAll("[data-module]");
+        if (oldLinks.length === newLinks.length && Array.prototype.every.call(oldLinks, function (link, i) { return link.getAttribute("data-module") === newLinks[i].getAttribute("data-module"); })) {
+          Array.prototype.forEach.call(oldLinks, function (link, i) {
+            var fresh = newLinks[i];
+            Array.prototype.slice.call(link.attributes).forEach(function (a) { if (!fresh.hasAttribute(a.name)) link.removeAttribute(a.name); });
+            Array.prototype.forEach.call(fresh.attributes, function (a) { link.setAttribute(a.name, a.value); });
+            var oldText = link.querySelectorAll(".vu-snav-sr"), newText = fresh.querySelectorAll(".vu-snav-sr");
+            Array.prototype.forEach.call(oldText, function (node, j) { if (newText[j]) node.textContent = newText[j].textContent; });
+          });
+          return;
+        }
+      }
+      nav.innerHTML = markup;
       bind(nav);
     }
     draw(null);
@@ -180,7 +198,7 @@
     wrap.innerHTML = (o.back ? '<a class="vu-shead-back" href="' + esc(o.back.href) + '" aria-label="' + esc(o.back.label) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="vu-shead-backtext">' + esc(o.back.label) + "</span></a>" : "") +
       '<div class="vu-shead-id">' + logoHtml(o) + '<div class="vu-shead-names"><h1 class="vu-shead-name">' + esc(o.name || o.ctx.displaySymbol) + "</h1>" +
       '<p class="vu-shead-meta">' + meta + "</p></div>" + '<div class="vu-shead-actions"></div></div>' +
-      '<div class="vu-shead-pricebox">' + priceHtml(o.price) + "</div>" + '<div class="vu-shead-nav"></div>';
+      '<div class="vu-shead-pricebox"' + (o.pendingPrice ? ' data-price-pending="true" aria-busy="true"' : '') + '>' + priceHtml(o.price) + "</div>" + '<div class="vu-shead-nav"></div>';
     var img = wrap.querySelector(".vu-shead-logo img");
     if (img) img.addEventListener("error", function () { img.remove(); });
     if (o.actions) wrap.querySelector(".vu-shead-actions").appendChild(o.actions);
@@ -194,7 +212,7 @@
     });
     return {
       el: wrap,
-      setPrice: function (p) { wrap.querySelector(".vu-shead-pricebox").innerHTML = priceHtml(p); },
+      setPrice: function (p) { var box = wrap.querySelector(".vu-shead-pricebox"); box.removeAttribute("data-price-pending"); box.setAttribute("aria-busy", "false"); box.innerHTML = priceHtml(p); },
       dispose: function () { alive = false; dispose(); if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
     };
   }

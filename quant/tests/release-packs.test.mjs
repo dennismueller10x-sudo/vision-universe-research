@@ -66,6 +66,16 @@ test('the build writes each pack, keeps it out of the bundle and ties the bundle
   const out=join(tmp,'site');await buildRelease({root:src,output:out});
   const bundle=await readFile(join(out,'quant/release-bundle.js'),'utf8'),page=await readFile(join(out,'quant/index.html'),'utf8');
   assert.equal((page.match(/<script src=/g)||[]).length,1,'only the bundle is linked');
+  const {runInNewContext}=await import('node:vm');
+  const warm=[...page.matchAll(/<script>([\s\S]*?)<\/script>/g)].find(m=>m[1].includes('l.rel="preload"'))[1];
+  const bundleId=page.match(/release-bundle\.js\?v=([a-f0-9]+)/)[1];
+  for(const hash of ['#/aktie/NVDA','#/aktien'])for(const id of [null,'abcdef1234567890','invalid']){
+   const links=[],document={querySelector:()=>id?{getAttribute:k=>k==='content'?id:'quant'}:null,createElement:()=>({}),head:{appendChild:l=>links.push(l)}};
+   runInNewContext(warm,{location:{hash},document});
+   if(hash==='#/aktien'){assert.equal(links.length,0);continue;}
+   const valid=id==='abcdef1234567890';assert.deepEqual(links.map(l=>[l.rel,l.as,l.href]),[['preload','script','/quant/app/pack-stock.js?v='+(valid?id:bundleId)],['preload','style','/quant/app/stock.css'+(valid?'?v='+id:'')]]);
+  }
+
   for(const f of packed)assert.ok(!bundle.includes('void "'+f+'";'),f+' is not in the bundle');
   for(const f of ['quant/app/ui.js','quant/app/pages.js','quant/app/app.js'])assert.ok(bundle.includes('void "'+f+'";'),f+' stays in the bundle');
   const packs=JSON.parse(bundle.match(/globalThis\.VUQuantPacks=(\{.*?\});/)[1]);
@@ -81,4 +91,23 @@ test('the build writes each pack, keeps it out of the bundle and ties the bundle
   const out2=join(tmp,'site2');await buildRelease({root:src,output:out2});
   assert.notEqual(page.match(/\?v=([a-f0-9]+)/)[1],(await readFile(join(out2,'quant/index.html'),'utf8')).match(/\?v=([a-f0-9]+)/)[1]);
  }finally{await rm(tmp,{recursive:true,force:true});}
+});
+
+test('the thin stock head and site navigation keep document order without duplicate code',async()=>{
+ const {writeQuantCode,QUANT_HEAD}=await import('../../scripts/vu2/build-release.mjs');
+ const {mkdtemp,mkdir,writeFile,readFile,rm}=await import('node:fs/promises'),{tmpdir}=await import('node:os'),{join,dirname}=await import('node:path');
+ const dir=await mkdtemp(join(tmpdir(),'e5-head-code-')),root=join(dir,'source'),output=join(dir,'site');
+ try{
+  const files=['assets/site-navigation.js',QUANT_HEAD[0],'quant/app/ui.js',...QUANT_HEAD.slice(1),'quant/app/app.js'];
+  for(const p of files){await mkdir(dirname(join(root,p)),{recursive:true});await writeFile(join(root,p),'void "'+p+'";');}
+  await writeFile(join(root,'quant/index.html'),'<head></head><body>'+files.map(p=>'<script src="/'+p+'"></script>').join('')+'</body>');await mkdir(join(output,'quant'),{recursive:true});
+  await writeQuantCode({root,output,paths:files.concat('quant/index.html')});
+  const head=await readFile(join(output,'quant/head-bundle.js'),'utf8'),main=await readFile(join(output,'quant/release-bundle.js'),'utf8'),html=await readFile(join(output,'quant/index.html'),'utf8');
+  for(const p of QUANT_HEAD){assert(head.includes('void "'+p+'";'));assert(!main.includes('void "'+p+'";'));}
+  assert(!head.includes('void "assets/site-navigation.js";'));assert(!main.includes('void "assets/site-navigation.js";'));
+  assert.deepEqual(QUANT_HEAD.map(p=>head.indexOf('void "'+p+'";')),QUANT_HEAD.map(p=>head.indexOf('void "'+p+'";')).sort((a,b)=>a-b));
+  assert.match(html,/<head>[\s\S]*rel="preload" as="script"[\s\S]*void "assets\/site-navigation.js"[\s\S]*VUQuantHeadDeliveryEnabled[\s\S]*<\/head>/);
+  assert.doesNotMatch(html,/<script src="\/(?:quant\/head-bundle|assets\/site-navigation)\.js/);
+  assert.match(main,/void "quant\/app\/ui.js"/);assert.match(main,/void "quant\/app\/app.js"/);
+ }finally{await rm(dir,{recursive:true,force:true});}
 });

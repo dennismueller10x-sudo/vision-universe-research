@@ -21,7 +21,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "vu-ui-1.1.0";
+  var VERSION = "vu-ui-1.2.0";
   var SPRITE = "/assets/product-icons.svg#";
   var CUR = { USD: "$", EUR: "€", GBP: "£", CHF: "CHF" };
 
@@ -328,8 +328,46 @@
       (n.links.length ? '<p class="vu-legal-links">' + n.links.map(function (l) { return '<a href="' + esc(l[1]) + '">' + esc(l[0]) + "</a>"; }).join(" · ") + "</p>" : "") + "</aside>";
   }
 
+  /** Static shapes use the same card/row rhythm as the final redesign. */
+  function skeleton(kind) {
+    var k = /^(head|card|rows)$/.test(kind) ? kind : 'card';
+    return '<div class="vu-skeleton vu-skeleton--' + k + '" aria-hidden="true"><i></i><i></i><i></i>' + (k === 'rows' ? '<i></i><i></i><i></i>' : '') + '</div>';
+  }
+  /** Bound speculation on actual link intent; the product supplies its canonical loader. */
+  function bindIntent(resolveKey, load, root) {
+    var doc = root || document, timer, count = 0, since = 0, seen = new Map();
+    function intent(e) {
+      if (globalThis.navigator && globalThis.navigator.connection && globalThis.navigator.connection.saveData) return;
+      var a = e.target.closest && e.target.closest('a[href]'); if (!a) return;
+      var key; try { key = resolveKey(new URL(a.href, location.href)); } catch (_) { return; }
+      if (!key) return;
+      if (Date.now() - since > 30000) { since = Date.now(); count = 0; seen.clear(); }
+      if (count >= 3 || seen.has(key)) return;
+      clearTimeout(timer);
+      function warm() { if (seen.has(key)) return; seen.set(key, true); count++; Promise.resolve().then(function () { return load(key); }).catch(function () { seen.delete(key); }); }
+      if (e.type === 'pointerover') timer = setTimeout(warm, 100); else warm();
+    }
+    function cancel() { clearTimeout(timer); }
+    ['pointerover', 'pointerdown', 'focusin'].forEach(function (name) { doc.addEventListener(name, intent, { passive: true }); });
+    doc.addEventListener('pointerout', cancel, { passive: true });
+    return function () { cancel(); ['pointerover', 'pointerdown', 'focusin'].forEach(function (name) { doc.removeEventListener(name, intent); }); doc.removeEventListener('pointerout', cancel); };
+  }
+
+  /** Snapshot only the synchronous route start; slow data never holds a transition open. */
+  function transition(update) {
+    var doc = typeof document !== 'undefined' ? document : null;
+    if (!doc || !doc.startViewTransition || doc.visibilityState === 'hidden' || (globalThis.matchMedia && globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches)) return update();
+    var result, called = false;
+    try {
+      var view = doc.startViewTransition(function () { called = true; result = update(); if (result && result.catch) result.catch(function () {}); });
+      if (view.ready && view.ready.catch) view.ready.catch(function () {});
+      view.finished.catch(function () {});
+      return view.updateCallbackDone.then(function () { return result; }, function () { return called ? result : update(); });
+    } catch (e) { return called ? result : update(); }
+  }
+
   return Object.freeze({
-    VERSION: VERSION, legal: legal, legalNotice: legalNotice, PERSPECTIVES: PERSPECTIVES, esc: esc, num: num, pct: pct, money: money,
+    VERSION: VERSION, skeleton: skeleton, bindIntent: bindIntent, transition: transition, legal: legal, legalNotice: legalNotice, PERSPECTIVES: PERSPECTIVES, esc: esc, num: num, pct: pct, money: money,
     glyph: glyph, worldIcon: worldIcon, hud: hud, logo: logo,
     chg: chg, verdict: verdict, help: help, q: q,
     stockHead: stockHead, persp: persp, perspectiveHref: perspectiveHref,

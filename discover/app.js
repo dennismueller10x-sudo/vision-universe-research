@@ -184,7 +184,8 @@
       theme=D.Theme.create({storage,document});D.theme=theme;D.memory=D.Memory.create();
       theme.onChange(state=>{syncThemeChrome(state);document.dispatchEvent(new Event('vu-theme-change'));});syncThemeChrome({resolved:theme.resolved()});
       document.querySelector('vu-navigation')?.renderSettings();
-      setupSearch();global.addEventListener('hashchange',route);
+      setupSearch();global.addEventListener('hashchange',function(){return global.VUUI.transition(route);});
+      global.VUUI.bindIntent(function(url){if(url.origin!==location.origin||url.pathname!=='/discover/')return null;const p=url.hash.replace(/^#\/?/,'').split('/');return p[0]==='s'&&p[1]===ctx.universeId&&/^[A-Z0-9.-]{1,24}$/.test(p[2]||'')?p[2]:null;},function(t){return S.loadJSON(BASE+'stocks/'+ctx.universeId+'/'+t+'.json');});
       if('scrollRestoration' in history)history.scrollRestoration='manual';
       document.addEventListener('vu-currency-change',()=>route(1));
       document.addEventListener('vu-fx-ready',()=>route(1));

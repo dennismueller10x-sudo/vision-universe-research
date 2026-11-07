@@ -10,7 +10,10 @@
 // Aufruf: node minify-release.mjs <Release-Ordner>
 // esbuild wird aus ESBUILD_PATH geladen (Workflow: /tmp/vu2-release/node_modules/esbuild).
 import {readdir,readFile,writeFile} from 'node:fs/promises';
-import {join,extname} from 'node:path';
+import {join,extname,resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {writeSupertraderHomeView} from './supertrader-home-view.mjs';
+import {writeStockHeadViews} from './stock-head-view.mjs';
 import {createRequire} from 'node:module';
 
 const SKIP=/(^|\/)(release-bundle\.js|sw\.js)$|\.min\.(js|css)$/;
@@ -26,6 +29,13 @@ async function* walk(dir,rel=''){
   }
 }
 
+// Runs after data/live and approved consumer overlays, before asset hashing.
+// Only compiled deliveries with the thin head use this optional projection.
+if(await readFile(join(root,'quant/head-bundle.js')).then(()=>true).catch(()=>false)){
+ const head=await writeStockHeadViews({source:resolve(fileURLToPath(new URL('../..',import.meta.url))),site:root});
+ console.log(JSON.stringify({stockHead:{state:head.state,records:head.records,version:head.version}}));
+}
+console.log(JSON.stringify({supertraderHome:await writeSupertraderHomeView({site:root})}));
 let files=0,before=0,after=0,kept=0;
 for await(const rel of walk(root)){
   const ext=extname(rel);
