@@ -212,7 +212,7 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 html body :is(main.vu-ui,.qx-main,#fu-main,#tc-main,#st-main,#v2-main){min-height:calc(100vh - var(--vu-navigation-height));min-height:calc(100svh - var(--vu-navigation-height))}
 
 /* The comparison mode already has a 46px pseudo-element hit area. */
-html body #fu-main .fu-mc-mode .fu-seg-b{min-height:38px}
+html body #fu-main .fu-mc-mode button.fu-seg-b{min-height:38px}
 
 /* Preserve 44px chart ranges in a horizontal row on narrow phones. */
 html body #tc-main .tc-ranges{overflow-x:auto;scrollbar-width:none}
