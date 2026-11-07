@@ -16,15 +16,31 @@
     return full ? 'full' : 'half';
   }
   function duration(reduced) { return reduced ? 0 : 240; }
-  var active = null, ready = false, parentOrigin = null, baseLength = 1;
+  var active = null, ready = false, parentOrigin = null, baseLength = 1, api;
+  var PARENTS = ['capacitor://localhost', 'https://localhost', 'http://localhost'];
+  // iOS-App ab K1 fuehrt das Randwischen nativ (VUBridgeViewController); dann kein zweites JS-Randwischen.
+  function nativeEdge(ua) { return /VUEdge\/1/.test(ua || ''); }
+  /** Navigationszustand fuer die native Geste. Schluessel aus der Navigation API (WebKit 26+), sonst die Adresse. */
+  function navState(nav, loc, sheetOpen, home) {
+    var entry = nav && nav.currentEntry, list = entry && nav.entries ? nav.entries() : [], i = entry ? entry.index : -1;
+    var key = entry ? entry.key : (loc ? loc.href : null);
+    return {type: 'vu:nav-state', back: !!sheetOpen || !home || !!(nav && nav.canGoBack), forward: !sheetOpen && !!(nav && nav.canGoForward),
+      key: sheetOpen ? key + '#sheet' : key, backKey: sheetOpen ? key : (i > 0 && list[i - 1] ? list[i - 1].key : null),
+      forwardKey: !sheetOpen && i >= 0 && list[i + 1] ? list[i + 1].key : null};
+  }
   function enabled() {
     return !!(w.Capacitor && w.Capacitor.isNativePlatform && w.Capacitor.isNativePlatform()) || /VUApp\/1/.test(w.navigator.userAgent) || new URLSearchParams(w.location.search).get('vuGestures') === '1';
   }
   function isHome() { return /^\/(discover|quant|technical|supertrader)\/$/.test(w.location.pathname) && (!w.location.hash || /^#\/?$/.test(w.location.hash)); }
+  // Navigation API (WebKit 26+, Chromium): der Iframe kennt seine eigenen Eintraege; zurueck ist dann immer echter Verlauf,
+  // auch ueber Produktgrenzen (Start -> Quant -> Aktie). Der erste Eintrag des Rahmens ist die Grenze (kein about:blank).
+  function canBack() { var nav = w.navigation; return nav && typeof nav.canGoBack === 'boolean' ? nav.canGoBack : null; }
   function back() {
     if (active) { closeSheet(active.el); return true; }
+    var can = canBack();
+    if (can === true) { w.history.back(); return true; }
     if (isHome()) return false;
-    if (w.history.length > baseLength) w.history.back();
+    if (can === null && w.history.length > baseLength) w.history.back();
     else w.location.href = '/' + w.location.pathname.split('/')[1] + '/' + (new URLSearchParams(w.location.search).get('vuGestures') === '1' ? '?vuGestures=1' : '');
     return true;
   }
@@ -72,6 +88,7 @@
     state.click = function (e) { if (e.target === el) closeSheet(el); };
     el.addEventListener('click', state.click);
     backBtn.focus();
+    api.report();
     if (!w.matchMedia('(prefers-reduced-motion: reduce)').matches) panel.animate([{transform: 'translateY(100%)'}, {transform: 'translateY(0)'}], {duration: duration(false), easing: 'ease-out'});
   }
   function closeSheet(el) {
@@ -83,6 +100,7 @@
     s.inert.forEach(function (entry) { entry[0].inert = entry[1]; });
     if (s.restore) s.restore();
     if (s.focus && s.focus.isConnected) s.focus.focus();
+    api.report();
   }
   function init() {
     if (ready || !enabled()) return;
@@ -97,8 +115,9 @@
     if (new URLSearchParams(w.location.search).get('vuSheet') === '1') {
       w.document.documentElement.setAttribute('data-vu-gesture-document', ''); return;
     }
-    var edge = w.document.createElement('div'); edge.className = 'vu-gesture-edge'; edge.setAttribute('aria-hidden', 'true'); w.document.body.append(edge);
-    var drag = null, timer = null, body = w.document.body;
+    var native = nativeEdge(w.navigator.userAgent), body = w.document.body;
+    var edge = w.document.createElement('div'); edge.className = 'vu-gesture-edge'; edge.setAttribute('aria-hidden', 'true'); if (!native) body.append(edge);
+    var drag = null, timer = null;
     function reset() { drag = null; clearTimeout(timer); body.style.transform = ''; body.style.transition = ''; body.classList.remove('vu-gesture-drag'); }
     edge.addEventListener('pointerdown', function (e) {
       if (!edgeStart(e.clientX, e.isPrimary, e.button) || isHome() || active || w.history.length < 2) return;
@@ -152,12 +171,46 @@
       panel.append(details); el.append(panel); body.append(el); openSheet(el);
       active.restore = function () { marker.replaceWith(details); details.open = false; el.remove(); };
     });
+    // Zustand an die App-Shell melden: sofort bei jedem Seiten-/Routenwechsel, "settled" nach Ruhe (Vorschaubild).
+    var settleTimer = null;
+    function report(settled) {
+      if (w.parent === w) return;
+      var origins = w.location.ancestorOrigins, origin = parentOrigin || (origins && origins.length ? origins[0] : null);
+      if (PARENTS.indexOf(origin) < 0) return;
+      var msg = navState(w.navigation, w.location, !!active, isHome()); msg.settled = !!settled;
+      try { w.parent.postMessage(msg, origin); } catch (_) { /* Shell nicht erreichbar */ }
+    }
+    function changed() { report(false); clearTimeout(settleTimer); settleTimer = w.setTimeout(function () { report(true); }, 450); }
+    ['hashchange', 'popstate', 'pageshow'].forEach(function (n) { w.addEventListener(n, changed); });
+    w.addEventListener('scroll', function () { clearTimeout(settleTimer); settleTimer = w.setTimeout(function () { report(true); }, 250); }, {passive: true});
+    if (w.navigation && w.navigation.addEventListener) w.navigation.addEventListener('currententrychange', changed);
+    api.report = changed;
+    // Haptik: Wechsel ueber Leiste oder Untertabs fuehlt sich an wie ein nativer Tab (nur App, Shell entscheidet).
+    w.document.addEventListener('click', function (e) {
+      // composedPath: die Leiste rendert in einem Shadow Root.
+      var path = e.composedPath ? e.composedPath() : [e.target], control = false, bar = false;
+      path.forEach(function (n) { if (!n || !n.tagName) return; if (/^(A|BUTTON)$/.test(n.tagName) || n.getAttribute('role') === 'tab') control = true; if (n.id === 'vu-dock' || n.tagName === 'VU-NAVIGATION' || n.getAttribute('role') === 'tablist') bar = true; });
+      if (!control || !bar || w.parent === w) return;
+      var origins = w.location.ancestorOrigins, origin = parentOrigin || (origins && origins.length ? origins[0] : null);
+      if (PARENTS.indexOf(origin) >= 0) try { w.parent.postMessage({type: 'vu:haptic', style: 'selection'}, origin); } catch (_) { /* optional */ }
+    }, true);
+    // Langes Druecken auf Bedienelemente: kurzer Impuls wie in nativen Apps (Kontextmenue/Vorschau bleiben iOS ueberlassen).
+    w.document.addEventListener('contextmenu', function (e) {
+      if (w.parent === w || !(e.target.closest && e.target.closest('a,button,[role=tab],summary'))) return;
+      var origins = w.location.ancestorOrigins, origin = parentOrigin || (origins && origins.length ? origins[0] : null);
+      if (PARENTS.indexOf(origin) >= 0) try { w.parent.postMessage({type: 'vu:haptic', style: 'impact'}, origin); } catch (_) { /* optional */ }
+    }, true);
+    changed();
     w.addEventListener('message', function (e) {
-      if (e.source !== w.parent || !['capacitor://localhost', 'https://localhost', 'http://localhost'].includes(e.origin)) return;
-      if (e.data && e.data.type === 'vu:back') { parentOrigin = e.origin; w.parent.postMessage({type: 'vu:back-result', handled: back(), request: e.data.request}, parentOrigin); }
+      if (e.source !== w.parent || PARENTS.indexOf(e.origin) < 0) return;
+      var type = e.data && e.data.type;
+      if (type === 'vu:back') { parentOrigin = e.origin; w.parent.postMessage({type: 'vu:back-result', handled: back(), request: e.data.request}, parentOrigin); changed(); }
+      if (type === 'vu:forward') { parentOrigin = e.origin; if (!active) w.history.forward(); }
+      if (type === 'vu:nav-query') { parentOrigin = e.origin; report(false); }
     });
     var plugin = w.Capacitor && w.Capacitor.Plugins && w.Capacitor.Plugins.App;
     if (w.parent === w && plugin) plugin.addListener('backButton', function () { if (!back()) plugin.minimizeApp(); });
   }
-  return {edgeStart: edgeStart, intent: intent, release: release, sheetTarget: sheetTarget, duration: duration, init: init, openSheet: openSheet, closeSheet: closeSheet, back: back};
+  api = {edgeStart: edgeStart, intent: intent, release: release, sheetTarget: sheetTarget, duration: duration, init: init, openSheet: openSheet, closeSheet: closeSheet, back: back, nativeEdge: nativeEdge, navState: navState, report: function () {}};
+  return api;
 });

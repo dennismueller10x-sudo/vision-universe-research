@@ -26,3 +26,27 @@ test('reduced motion removes settling animation without changing thresholds', ()
   assert.equal(G.duration(true), 0); assert.equal(G.duration(false), 240);
   assert.equal(G.release(140, 390, false), true);
 });
+test('K1: native edge flag only from the iOS app user agent', () => {
+  assert.equal(G.nativeEdge('Mozilla/5.0 (iPhone) VUApp/1 VUEdge/1'), true);
+  assert.equal(G.nativeEdge('Mozilla/5.0 (Linux; Android) VUApp/1'), false);
+  assert.equal(G.nativeEdge(''), false);
+});
+test('K1: nav state for the native gesture (Navigation API keys, home, sheet)', () => {
+  const entries = [{key: 'a', index: 0}, {key: 'b', index: 1}, {key: 'c', index: 2}];
+  const nav = {currentEntry: entries[1], entries: () => entries, canGoForward: true};
+  assert.deepEqual(G.navState(nav, null, false, false), {type: 'vu:nav-state', back: true, forward: true, key: 'b', backKey: 'a', forwardKey: 'c'});
+  const home = G.navState({currentEntry: entries[0], entries: () => entries, canGoForward: false, canGoBack: false}, null, false, true);
+  assert.equal(home.back, false); assert.equal(home.backKey, null);
+  const sheet = G.navState(nav, null, true, true);
+  assert.equal(sheet.back, true); assert.equal(sheet.forward, false); assert.equal(sheet.key, 'b#sheet'); assert.equal(sheet.backKey, 'b');
+  const old = G.navState(undefined, {href: 'https://research.visionuniverse.de/quant/#/aktie/NVDA'}, false, false);
+  assert.equal(old.key, 'https://research.visionuniverse.de/quant/#/aktie/NVDA'); assert.equal(old.forward, false); assert.equal(old.backKey, null);
+});
+test('K4: Tipp-Gefuehl nur in der App; Fliesstext bleibt markierbar', async () => {
+  const css = (await import('node:fs')).readFileSync(new URL('../../assets/vu-gestures.css', import.meta.url), 'utf8');
+  const k4 = css.slice(css.indexOf('/* K4'));
+  for (const line of k4.split('\n').filter(l => /^\[data|^@media/.test(l))) assert.match(line, /\[data-vu-gestures\]/);
+  assert.match(k4, /touch-action:manipulation/);
+  assert.match(k4, /:active\{opacity:\.62;transition:opacity 0s\}/);
+  assert.doesNotMatch(k4, /(^|[,{\s])p[,{\s]|body\{[^}]*user-select:none/);
+});

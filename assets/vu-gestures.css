@@ -18,3 +18,13 @@
 
 [data-vu-gestures] .vu-gesture-document{display:block;width:100%;height:calc(100% - 76px);border:0;background:inherit;color:inherit}
 [data-vu-gesture-document] vu-navigation,[data-vu-gesture-document] #vu-dock{display:none!important}
+
+/* K4 (Owner 07.11.2026, App-Gefühl): sofortiges Tipp-Feedback, kein Doppeltipp-Zoom-Warten, kein Markieren beim Wischen.
+   Nur in der App (data-vu-gestures); Texte bleiben markier- und kopierbar, nur Bedienelemente nicht. */
+[data-vu-gestures]{-webkit-tap-highlight-color:transparent;overscroll-behavior-x:none}
+[data-vu-gestures] :is(a,button,summary,label,[role=tab],[role=button],input[type=checkbox],input[type=radio],select){touch-action:manipulation}
+[data-vu-gestures] :is(button,summary,[role=tab],[role=button],nav a,#vu-dock,vu-navigation){-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+[data-vu-gestures] :is(a,button,summary,[role=tab],[role=button]):active{opacity:.62;transition:opacity 0s}
+[data-vu-gestures] :is(a,button,summary,[role=tab],[role=button]){transition:opacity .18s ease-out}
+[data-vu-gestures] :is(input,textarea,[contenteditable=true]){-webkit-user-select:text;user-select:text}
+@media(prefers-reduced-motion:reduce){[data-vu-gestures] :is(a,button,summary,[role=tab],[role=button]){transition:none}}

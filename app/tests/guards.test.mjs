@@ -212,3 +212,15 @@ test('App-Shell: in der App keine eigene Leiste, Inhalt bis unten, Anmeldung err
   const open = main.slice(main.indexOf("'vu:open'") - 400, main.indexOf("'vu:open'") + 400);
   assert.match(open, /event\.origin !== config\.contentOrigin/); assert.match(open, /event\.source !== frame\?\.contentWindow/, 'nur die eigene Seite darf Konto oeffnen');
 });
+
+test('K1: iOS nutzt den eigenen Bridge-Controller mit nativer Randgeste (Datei im Xcode-Ziel, Storyboard umgestellt)', () => {
+  const ios = path.join(app, 'ios/App');
+  assert.match(read(path.join(ios, 'App/Base.lproj/Main.storyboard')), /customClass="VUBridgeViewController" customModule="App"/);
+  const pbx = read(path.join(ios, 'App.xcodeproj/project.pbxproj'));
+  assert.match(pbx, /VUBridgeViewController\.swift in Sources \*\/,/);
+  const swift = read(path.join(ios, 'App/VUBridgeViewController.swift'));
+  assert.match(swift, /class VUBridgeViewController: CAPBridgeViewController/);
+  assert.match(swift, /UIScreenEdgePanGestureRecognizer/);
+  assert.match(swift, /isMainFrame/, 'nur das App-Bundle steuert die Geste, nie der Iframe');
+  assert.match(read(path.join(app, 'www/js/main.js')), /event\.origin !== config\.contentOrigin \|\| event\.source !== frame\?\.contentWindow\) return;\n  const d = event\.data/);
+});

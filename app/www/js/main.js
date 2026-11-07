@@ -26,6 +26,39 @@ const push = createPush({plugin: n?.PushNotifications, api, platform: cap?.getPl
 await push.init();
 let current = null;
 let pendingBack = null;
+let lastFrame = 'discover';
+
+// ---- Native Randgeste (iOS, VUBridgeViewController) ------------------------
+// Die Shell reicht nur Navigationszustand und Haptik-Wuensche weiter; die Website im Iframe kann native Funktionen nie direkt rufen.
+const nativeNav = globalThis.webkit?.messageHandlers?.vuNav;
+const toNative = msg => { try { nativeNav?.postMessage(msg); } catch { /* aeltere App ohne Handler */ } };
+const isFrameView = name => Boolean($('v-' + name)?.querySelector('iframe'));
+// Haptik: iOS ueber den eigenen Handler (kein Plugin noetig), Android ueber @capacitor/haptics, falls im Bundle.
+function haptic(style) {
+  if (nativeNav) { toNative({type: 'haptic', style}); return; }
+  const h = globalThis.VUNative?.Haptics;
+  try { if (style === 'impact') h?.impact?.({style: 'LIGHT'}); else h?.selectionChanged?.(); } catch { /* optional */ }
+}
+function currentFrame() { return $('v-' + current)?.querySelector('iframe'); }
+function panelState(name) { toNative({type: 'state', back: true, forward: false, key: 'panel:' + name, backKey: null, forwardKey: null, settled: true}); }
+globalThis.VUAppNav = {
+  go(direction) {
+    if (!isFrameView(current)) { if (direction === 'back') show(lastFrame); return; }
+    const frame = currentFrame();
+    if (!frame?.contentWindow) return;
+    frame.contentWindow.postMessage(direction === 'forward' ? {type: 'vu:forward'} : {type: 'vu:back', request: 0}, config.contentOrigin);
+  },
+};
+// Zustand des sichtbaren Iframes (Herkunft und Fenster geprueft) an die native Geste; ab Start, nicht erst nach der Anmeldung.
+addEventListener('message', event => {
+  const frame = currentFrame();
+  if (event.origin !== config.contentOrigin || event.source !== frame?.contentWindow) return;
+  const d = event.data || {};
+  if (d.type === 'vu:nav-state') toNative({type: 'state', back: Boolean(d.back), forward: Boolean(d.forward), settled: Boolean(d.settled),
+    key: typeof d.key === 'string' ? d.key.slice(0, 200) : null, backKey: typeof d.backKey === 'string' ? d.backKey.slice(0, 200) : null,
+    forwardKey: typeof d.forwardKey === 'string' ? d.forwardKey.slice(0, 200) : null});
+  if (d.type === 'vu:haptic') haptic(d.style === 'impact' ? 'impact' : 'selection');
+});
 
 // ---- Navigation ----------------------------------------------------------
 function show(name) {
@@ -38,6 +71,8 @@ function show(name) {
   if (frame && !frame.src) frame.src = config.contentOrigin + view.dataset.path;   // erst beim ersten Besuch laden
   if (name === 'watchlist') loadWatchlist();
   if (name === 'account') renderAccount();
+  if (frame) { lastFrame = name; try { frame.contentWindow?.postMessage({type: 'vu:nav-query'}, config.contentOrigin); } catch { /* noch nicht geladen */ } }
+  else panelState(name);
 }
 document.querySelectorAll('#tabs button, .back').forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
 $('skip-login').addEventListener('click', () => { gate = false; show('discover'); });
@@ -134,6 +169,11 @@ $('config-missing').hidden = config.configured;
     hideSplash();
     let backRequest = 0;
     // Die Webseite darf Konto oder Watchlist der App oeffnen (z. B. aus ihrem Menue): {type:'vu:open', view:'account'|'watchlist'}
+    addEventListener('message', event => {
+      const frame = $('v-' + current)?.querySelector('iframe');
+      if (event.origin !== config.contentOrigin || event.source !== frame?.contentWindow || event.data?.type !== 'vu:open') return;
+      if (event.data.view === 'account' || event.data.view === 'watchlist') show(event.data.view);
+    });
     addEventListener('message', event => {
       const frame = $('v-' + current)?.querySelector('iframe');
       if (event.origin !== config.contentOrigin || event.source !== frame?.contentWindow || event.data?.type !== 'vu:open') return;
