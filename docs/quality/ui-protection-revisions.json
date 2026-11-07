@@ -1175,6 +1175,66 @@
       "from": "5656d3553fa7ba7f10d1f3e4d5ea19d01a4821ea9e4e89855016b40481fd9388",
       "to": "d7ad7992aceee3c9f3a16c82d280afe0108b05ac549c06f5bc65412a5f1b8f2c",
       "scope": "E5 Paket 4: zugänglicher Name enthält die unveränderte sichtbare Beschriftung"
+    },
+    {
+      "id": "UIP-R118",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "assets/site-navigation.css",
+      "from": "fe6dd67f69d4e4b5f09d89c94e00c72aceabc06797260360290f6622bc3c8c24",
+      "to": "b5f536f6f232562f701aea6f03a9c1c20b8c7d058e86d5473dd78c3201efbf41",
+      "scope": "L1: Rechts-Seitenfuß ohne zweiten Dock-Abstand (Body trägt ihn schon)"
+    },
+    {
+      "id": "UIP-R119",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "assets/site-navigation.js",
+      "from": "8f2a112024e397d5a1c28214d35547663e4d895784e1e0c4c7b82055304004e0",
+      "to": "2ec373591a7b3731e6eca30c3caa4ee6fdb407da3832ab0a793ed6fe59c0302d",
+      "scope": "L1: Menü „Rechtliches & Infos“ (Pflicht-Links, Kontakt, Software-/Risikosatz, Datenquellen & Methodik); Rechts-Seitenfuß entfällt nur in der App (VUApp/1, Capacitor); erzeugter Block VU-LEGAL vu-hinweise-2026-11-07-1; Fundamental-Kachel „Zahlen aus Geschäftsberichten“"
+    },
+    {
+      "id": "UIP-R120",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/app.js",
+      "from": "22ebd677b4c3414201a315a7607e9d1d7b3f12170475726a0743f2252d3fb0c2",
+      "to": "b4c850b3a78ecec8ec504d9888fbe5cd9ae40bffd394637cef4ca0f3ab666a4b",
+      "scope": "L1: Anbieternamen aus dem Quant-Fuß entfernt („Daten: SEC EDGAR, Tiingo“, „SEC-Dateninspektor“ → „Dateninspektor“)"
+    },
+    {
+      "id": "UIP-R121",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/page-method.js",
+      "from": "d8bc62832084d02419bec699f4d039f4cf7575d2c29e2a43afd6d339953f8b74",
+      "to": "fa0d082af375ca5009e9ab8ee99597c30112d69a89d52dba0e8d9521fff18a4d",
+      "scope": "L1: Knopf „SEC-Dateninspektor“ → „Dateninspektor“"
+    },
+    {
+      "id": "UIP-R122",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/page-stock.js",
+      "from": "ccfda213da39b4b03ac1e0033ef5a1fad56a76f025f5abd06136cd2066147aaa",
+      "to": "7ee0453824e620022dc393a878df2618536173bf41ae875587752c22f64797ee",
+      "scope": "L1: „Daten & Methodik“ der Aktie ohne Anbieternamen (Tiingo, SEC EDGAR); Daten unverändert"
+    },
+    {
+      "id": "UIP-R123",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/pages.js",
+      "from": "3fd3347de494bfa02d2457537860c6b05e98060e38dc759d19b56064a1ff9da2",
+      "to": "36fe10b72251c1a17fac56116349820ce4425bc8cfc0e4d5ab852e80427dfea1",
+      "scope": "L1: Hinweisboxen ohne „Daten: SEC EDGAR, Tiingo.“"
     }
   ]
 }
