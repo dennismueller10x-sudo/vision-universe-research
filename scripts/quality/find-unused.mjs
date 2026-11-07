@@ -122,6 +122,11 @@ export function buildGraph(files, sources) {
 
 const cell = s => String(s).replace(/\|/g, '&#124;').replace(/[\r\n]/g, ' ');
 
+const codeCell = value => {
+  const text = cell(value), runs = text.match(/`+/g) || [], ticks = '`'.repeat(Math.max(0, ...runs.map(x => x.length)) + 1);
+  return ticks + ' ' + text + ' ' + ticks;
+};
+
 export function renderReport({files, sources, sizes, commit, skipped = [], live = null, beforeSizes = sizes, comparisonCommit = commit}) {
   const graph = buildGraph(files, sources);
   const candidates = files.filter(p => p !== REPORT && !protectedReason(p));
@@ -162,7 +167,7 @@ export function renderReport({files, sources, sizes, commit, skipped = [], live 
     lines.push(`| ${cell(p)} | ${cell(refs.join(', '))} |`);
   }
   lines.push('', '## Dynamik und ungelesene Quellen', '', `${graph.dynamic.length} dynamische/zusammengesetzte import/require/fetch-Ausdrücke gefunden; diese verhindern einen vollständigen statischen Nichtnutzungsbeweis.`, '', '| Quelle | Ausdruck |', '|---|---|');
-  for (const r of graph.dynamic) lines.push(`| ${cell(r.source)} | ${cell(r.expression)} |`);
+  for (const r of graph.dynamic) lines.push(`| ${cell(r.source)} | ${codeCell(r.expression)} |`);
   lines.push('', 'Textquellen über 4 MiB oder Symlinks werden nicht gelesen und hier offengelegt; Datenverzeichnisse und der erzeugte Bericht werden grundsätzlich nicht als Quellen gelesen.', '', ...skipped.map(p => `- ${p}`), '');
   return {markdown: lines.join('\n'), graph, zero};
 }

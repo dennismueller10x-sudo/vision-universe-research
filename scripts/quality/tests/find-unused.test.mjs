@@ -59,3 +59,11 @@ test('dynamic paths are disclosed, never converted into deletion approval', () =
   const compared = renderReport({...input, beforeSizes: new Map(), comparisonCommit: 'baseline'}).markdown;
   assert.match(compared, /\| scripts\/ \| 2 \| 0 \| 10 \|/);
 });
+
+test('dynamic HTML/code excerpts are code spans, never fake Markdown or HTML links',async()=>{
+ const {linksIn}=await import('../check-doc-links.mjs');
+ const files=['dynamic.js'],sources=new Map([['dynamic.js',`fetch(path + '<a href="/not-a-real-artifact.json">')`]]),sizes=new Map([['dynamic.js',100]]);
+ const {markdown}=renderReport({files,sources,sizes,commit:'a'.repeat(40)});
+ assert.match(markdown,/not-a-real-artifact/);
+ assert.deepEqual(linksIn(markdown),[]);
+});
