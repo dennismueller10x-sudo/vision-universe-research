@@ -1,4 +1,69 @@
-# E5 – Web-Performance, Baseline 06.11.2026
+# Mobile Performance – E5 Abschlussmessung (07.11.2026)
+
+Die Tabellen unten verwenden **genau das unveränderte Messskript aus Paket 1**,
+`main:scripts/mobile/measure.mjs` (SHA-256
+`75f66055c528d878e85603aedd1e0819c043d401f83481955a900ac919ac6c0a`).
+Node 22.23.4, Chromium 156.0.8078.79, esbuild 0.25.10; 390 × 844,
+DPR 2, Touch, Download 1,6 Mbit/s, Upload 0,75 Mbit/s, Latenz 150 ms,
+CPU ×4, kalter Browser-Kontext pro Lauf, HTTP-Cache aus, Service Worker blockiert.
+Drei Läufe je Route, jeweils 20 Sekunden ab Navigation-Commit; keine
+CPU-Profile, feste Browser-Uhr oder konkurrierenden lokalen Rechentests/Builds.
+
+Kontrollierter Vergleich: main-Code `9e2012b6f339` gegen die drei E5-Pakete,
+alle auf **demselben gebauten Daten-Snapshot `bbe59a3ca48e`**. Keine Live-/privaten
+Consumer-Overlays. Das ist ein lokales Chromium-Labor, keine Messung der aktuellen
+Produktion und kein iPhone-/Screenreader-Nachweis. Die spätere Rebase auf main
+`3891bf5bef8d` bringt keine Änderung am gemessenen E5-Ladecode; der bestehende
+Watchlist-Vertragstest wurde an `releaseOnly` angepasst. Daten/Logos bleiben für
+diesen Vergleich bewusst im festen Snapshot. Code-Referenzen und Zeitpunkte:
+[provenance.json](e5/final/provenance.json). Die `commit`-Felder der ursprünglichen
+Messberichte bezeichnen den ausführenden Arbeitsbaum; die tatsächlich
+kompilierten Referenzen stehen im Provenienzbericht. Rohdaten bleiben unverändert.
+
+LCP und CLS kommen aus PerformanceObserver. **TBT*** summiert blockierende
+Long-Task-Anteile ab FCP bis zum Messende; es ist weder Feld-INP noch
+Lighthouse-TBT. „Erster Kurs“ zählt ausschließlich einen sichtbaren Zahlenwert
+in `.vu-shead-value` nach einem Animationsframe. `null`/„–“ heißt kein sichtbarer
+Aktienkurs im Beobachtungsfenster bzw. keine Aktienroute, niemals 0 Sekunden.
+Wire enthält HTTP-Header. Mediane ersetzen keine Einzelwertprüfung. Ein früher LCP-Wert
+kann bereits Shell-/Footertext messen, obwohl der Kurs erst später erscheint;
+deshalb Kurszeit und Layout-Stabilität separat bewerten.
+
+## Paket 2 – Ladezeit (#1559): vorher / nachher
+
+Mediane aus jeweils drei kalten Läufen. Vergleich `baseline` → `loading`; alle Einzelwerte, Ressourcen und Fehler: [baseline.json](e5/final/baseline.json), [loading.json](e5/final/loading.json).
+
+| Route | LCP s vorher / nachher | CLS vorher / nachher | TBT* ms vorher / nachher | Wire KiB vorher / nachher | Requests vorher / nachher | Erster Kurs s vorher / nachher |
+|---|---:|---:|---:|---:|---:|---:|
+| `/` | 1.288 / 1.200 | 0.000 / 0.000 | 149 / 128 | 72.1 / 72.1 | 9 / 9 | – / – |
+| `/quant/` | 2.932 / 3.044 | 0.306 / 0.306 | 351 / 410 | 546.2 / 514.6 | 25 / 24 | – / – |
+| `/quant/#/aktie/NVDA` | 6.740 / 7.852 | 0.062 / 0.058 | 1061 / 1840 | 885.2 / 885.2 | 47 / 47 | 5.837 / 6.216 |
+| `/technical/#/chart/NVDA` | 2.148 / 2.312 | 0.742 / 0.742 | 865 / 1032 | 551.8 / 551.9 | 57 / 57 | 5.771 / 4.182 |
+| `/fundamental/#/NVDA` | 1.768 / 1.740 | 0.361 / 0.361 | 1088 / 1124 | 1314.2 / 1314.3 | 28 / 28 | 2.689 / 2.578 |
+| `/supertrader/` | 1.112 / 1.136 | 1.026 / 1.026 | 705 / 673 | 594.8 / 595.1 | 24 / 24 | – / – |
+| `/supertrader/stock/NVDA/` | 1.108 / 1.132 | 0.764 / 0.764 | 125 / 163 | 305.4 / 305.7 | 32 / 32 | 2.914 / 3.122 |
+| `/discover/` | 1.328 / 1.644 | 0.087 / 0.048 | 566 / 809 | 1078.9 / 996.2 | 131 / 56 | – / – |
+| `/quant/musterdepots/` | 0.956 / 1.304 | 0.340 / 0.000 | 161 / 89 | 170.5 / 170.5 | 12 / 12 | – / – |
+| `/analysten/` | 0.944 / 1.112 | 0.018 / 0.018 | 135 / 85 | 86.5 / 86.5 | 10 / 10 | – / – |
+| `/mein-dashboard/` | 0.756 / 0.768 | 0.000 / 0.000 | 21 / 67 | 221.2 / 221.3 | 29 / 29 | – / – |
+
+Zielprüfung der vier Aktienseiten (kein Bestehen nur aus einem günstigen Einzellauf ableiten):
+
+| Aktienroute | Erster Kurs: Median / Spanne s | Läufe < 3 s | CLS: Median / Maximum | Läufe CLS < 0,1 |
+|---|---:|---:|---:|---:|
+| `/quant/#/aktie/NVDA` | 6.216 / 5.729–6.759 | 0/3 | 0.058 / 0.062 | 3/3 |
+| `/technical/#/chart/NVDA` | 4.182 / 3.802–4.242 | 0/3 | 0.742 / 0.742 | 0/3 |
+| `/fundamental/#/NVDA` | 2.578 / 2.466–2.722 | 3/3 | 0.361 / 0.361 | 0/3 |
+| `/supertrader/stock/NVDA/` | 3.122 / 3.085–3.152 | 0/3 | 0.764 / 1.175 | 0/3 |
+
+LCP < 2,5 s: 9/11 Routen im Median; CLS < 0,1: 6/11 im Median.
+
+HTTP-/Netzfehler bleiben in den Rohdaten enthalten: /: http://127.0.0.1:43079/favicon.ico (404); /mein-dashboard/: https://konto.visionuniverse.de/v1/session (403), https://konto.visionuniverse.de/v1/session (net::ERR_FAILED).
+
+Paket 2 allein erreicht das Aktienziel nicht: Quant 6,216 s, Technical 4,182 s und Supertrader 3,122 s im Median. Fundamental erreicht 2,578 s, springt aber im Layout. Die reservierten Ladeflächen und der frühe Kopf folgen in Paket 3. Discover sinkt von 131 auf 56 Requests; die Verzögerung des ersten Kurses auf der unverändert großen Quant-Route wird nicht als Verbesserung ausgegeben.
+
+## Historische Messung aus Paket 1 (06.11.; andere Ausgangsrevision)
+
 
 Messung **vor Produktänderungen**, lokaler main-Release `bbe59a3ca48e`, Chromium 156.0.8078.79.
 Build mit `scripts/vu2/build-release.mjs`, danach dieselbe Minifizierung wie
@@ -42,61 +107,16 @@ nicht abgeschlossen. Kein JavaScript-Seitenfehler. Startseite: optionales `favic
 kein authentifizierter Watchlist-Test. Diese Fehler nicht als bestandene
 Funktionsprüfung auslegen.
 
-Paket 1 ändert nur das Messwerkzeug und diese Dokumentation. Produkt-Werte
-vor/nach sind deshalb identisch (keine behauptete Beschleunigung). Noch offen:
-Pakete 2–4 und ihre jeweiligen Nachmessungen, Wiederholungsläufe, echtes Gerät.
+Paket 1 änderte nur Messwerkzeug und Dokumentation. Dieser historische Einzelstand
+ist nicht die Vergleichsbasis der Abschlussmessung oben; ein echter Gerätetest bleibt offen.
 
-## E5 Paket 2 – Wiederholungen und Ladepfade
 
-Drei Läufe je Route, derselbe Daten-Snapshot und Compiler. Die unveränderte
-Quant-Bundle-SHA ist in beiden Berichten gleich. Nur öffentliche geänderte
-Code-Dateien wurden wie im Release kompiliert; Discover-Templates wurden mit
-dem neuen Release-Schreiber gebündelt. Referenzen und jede Ressource:
-[Vorher](e5/baseline-repeat.json), [Paket 2](e5/loading-repeat.json).
-
-Die Zeitwerte streuen auch auf unveränderten Routen deutlich. Während dieser
-Diagnoserunde liefen zeitweise Git-Operationen im selben Cloud-Container;
-daher **keine kausale Beschleunigungsbehauptung aus diesen LCP-Werten**.
-Die folgenden Werte sind Mediane zur Diagnose, keine Zielabnahme. Requests,
-Wire und deterministische Layout-Sprünge zeigen die konkreten Unterschiede.
-
-| Route | LCP vorher/nachher s | CLS vorher/nachher | Wire vorher/nachher KiB | Requests vorher/nachher |
-|---|---:|---:|---:|---:|
-| `/` | 2.472 / 2.144 | 0.000 / 0.000 | 72.1 / 72.1 | 9 / 9 |
-| `/quant/` | 4.716 / 6.148 | 0.306 / 0.306 | 543.4 / 543.4 | 25 / 25 |
-| `/quant/#/aktie/NVDA` | 8.440 / 7.396 | 0.058 / 0.058 | 882.4 / 882.4 | 47 / 47 |
-| `/technical/#/chart/NVDA` | 8.880 / 11.760 | 0.058 / 0.058 | 548.5 / 548.5 | 56 / 56 |
-| `/fundamental/#/NVDA` | 2.836 / 2.592 | 0.001 / 0.000 | 1313.9 / 1314.0 | 28 / 28 |
-| `/supertrader/` | 6.536 / 6.696 | 0.662 / 0.662 | 594.5 / 594.6 | 24 / 24 |
-| `/supertrader/stock/NVDA/` | 4.128 / 8.160 | 0.848 / 0.826 | 304.9 / 305.0 | 32 / 32 |
-| `/discover/` | 1.780 / 2.728 | 0.048 / 0.087 | 1078.4 / 1024.8 | 131 / 54 |
-| `/quant/musterdepots/` | 2.292 / 2.280 | 0.000 / 0.000 | 170.1 / 170.1 | 12 / 12 |
-| `/analysten/` | 1.048 / 1.632 | 0.396 / 0.018 | 86.2 / 86.3 | 10 / 10 |
-| `/mein-dashboard/` | 1.388 / 1.132 | 0.051 / 0.000 | 219.4 / 219.5 | 29 / 29 |
-
-Discover: 131 → 54 Requests, rund 55 KiB weniger Übertragung. Die separat
-gezählten `app/home/detail/themes`-Dateien bleiben unverändert außerhalb der
-Abhängigkeits-Bundles. Nach dieser Diagnose sind die Abhängigkeits-Gruppen
-zusätzlich auf etwa 256 KiB Quelltext pro Chunk begrenzt, damit ein großes
-Skript den ersten Paint nicht unnötig blockiert; die finale Prüfung folgt mit
-Paket 3/4. Die 54 Requests sind deshalb der dokumentierte Zwischenstand.
-
-Fundamental lädt Aktie und SEC-Shard parallel. Supertrader teilt JSON-Promises
-und wartet beim Zeichnen auf kritische Stile. Öffentliche Assets/Logos nutzen
-SWR, öffentliche EOD-Daten maximal 30 s Frische; `no-cache`, `reload` und
-`no-store` bleiben wirksam. Private/API-, Fremdhost- und Live-Antworten mit
-Zeitparameter werden nicht gespeichert. Offline-Navigation zeigt den Hinweis;
-neue Datenabrufe im Offline-Zustand liefern keinen Cache-Ersatz. Offline-Seite
-und Icon werden vorgehalten, alte fremde App-Caches nicht gelöscht.
-
-Validierung: Core 379 bestanden / 3 übersprungen; Fundamental und fokussierte
-UI 90 bestanden. Cache-/Offline-/Frische- und Bundle-Reihenfolge-Tests vorhanden.
-Die bisherigen SW-Ban-Tests werden entsprechend dem expliziten E5-Auftrag durch
-Verhaltenstests für Live-Ausnahme, Frische und privaten Zugriff ergänzt; kein
-Workflow geändert. Vollständige Produkt-CI und finale Browser-Prüfung stehen
-in der abschließenden E5-Auswertung.
+Frühere Paket-2-Diagnose mit zeitweiser Git-CPU-Last: [baseline-repeat.json](e5/baseline-repeat.json), [loading-repeat.json](e5/loading-repeat.json). Keine Zielabnahme; maßgeblich ist die kontrollierte Abschlussmessung oben.
 
 ---
+
+## Historischer Befund vom 03.11.2026
+
 
 # Mobile Performance: Messung gegen den gebauten Release, Maßnahmen
 
