@@ -10,15 +10,14 @@ test('K2 · View Transitions nur ohne reduzierte Bewegung; Leiste und Kopf stehe
   assert.match(block, /@view-transition\{navigation:auto\}/);
   assert.match(block, /#vu-dock\{view-transition-name:vu-dock\}/);
   assert.match(block, /::view-transition-group\(vu-dock\),::view-transition-group\(vu-nav\)\{animation:none\}/);
-  assert.match(block, /active-view-transition-type\(vu-back\)::view-transition-old\(root\)\{z-index:1;/);
+  assert.match(block, /html::view-transition-new\(root\)\{animation:\.24s [^}]*vu-vt-in-right\}/);
   assert.match(css, /@media \(prefers-reduced-motion:reduce\)\{::view-transition-group\(\*\),::view-transition-old\(\*\),::view-transition-new\(\*\)\{animation:none!important\}\}/);
 });
 
-test('K2 · Richtung aus der Navigation API, kein zweiter Slide nach nativer App-Geste', () => {
-  assert.match(js, /addEventListener\('pageswap'/);
-  assert.match(js, /addEventListener\('pagereveal'/);
-  assert.match(js, /activation\.entry\.index < activation\.from\.index \? 'vu-back' : 'vu-forward'/);
-  assert.match(js, /nativeEdge && activation\.navigationType === 'traverse'\)\) \{ transition\.skipTransition\(\)/);
+test('K2 · nur vorwaerts gleiten; zurueck (auch nach nativer App-Geste) und Neuladen ohne zweite Animation', () => {
+  assert.match(js, /activation\.navigationType !== 'traverse' && activation\.navigationType !== 'reload'/);
+  assert.match(js, /e\.viewTransition\.skipTransition\(\); flag\(true\)/);
+  assert.match(js, /addEventListener\('pagereveal', e => \{ if \(flag\(false\) && e\.viewTransition\) e\.viewTransition\.skipTransition\(\); \}\)/);
 });
 
 test('K2 · Vorladen begrenzt: hoechstens 4 Ziele, nie Konto, nie bei Datensparen/2G, erst nach Ruhe', () => {

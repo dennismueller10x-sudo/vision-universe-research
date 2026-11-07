@@ -226,7 +226,7 @@ html body #tc-main .tc-ranges{overflow-x:auto;scrollbar-width:none}
 html body #tc-main .tc-ranges::-webkit-scrollbar{display:none}
 
 /* K2 (Owner 07.11.2026, App-Gefuehl): Dokumentwechsel gleiten wie native Bildschirme; Leiste und Kopf bleiben stehen.
-   Richtung setzt site-navigation.js (pageswap/pagereveal). Ohne Typ: kurze Ueberblendung; reduzierte Bewegung: keine. */
+   Vorwaerts: neue Seite gleitet von rechts herein; zurueck/neu laden ueberspringt site-navigation.js (pageswap). Reduzierte Bewegung: keine. */
 @media (prefers-reduced-motion:no-preference){
   @view-transition{navigation:auto}
   #vu-dock{view-transition-name:vu-dock}
@@ -235,13 +235,9 @@ html body #tc-main .tc-ranges::-webkit-scrollbar{display:none}
   ::view-transition-old(vu-dock),::view-transition-new(vu-dock),::view-transition-old(vu-nav),::view-transition-new(vu-nav){animation:none}
   ::view-transition-new(vu-dock),::view-transition-new(vu-nav){mix-blend-mode:normal}
   ::view-transition-old(vu-dock),::view-transition-old(vu-nav){display:none}
-  html:active-view-transition-type(vu-forward)::view-transition-old(root){animation:.24s cubic-bezier(.2,.8,.2,1) both vu-vt-out-left}
-  html:active-view-transition-type(vu-forward)::view-transition-new(root){animation:.24s cubic-bezier(.2,.8,.2,1) both vu-vt-in-right}
-  html:active-view-transition-type(vu-back)::view-transition-old(root){z-index:1;animation:.24s cubic-bezier(.2,.8,.2,1) both vu-vt-out-right}
-  html:active-view-transition-type(vu-back)::view-transition-new(root){animation:.24s cubic-bezier(.2,.8,.2,1) both vu-vt-in-left}
+  html::view-transition-old(root){animation:.24s cubic-bezier(.2,.8,.2,1) both vu-vt-out-left}
+  html::view-transition-new(root){animation:.24s cubic-bezier(.2,.8,.2,1) both vu-vt-in-right}
 }
 @keyframes vu-vt-out-left{to{transform:translateX(-30%);opacity:.6}}
 @keyframes vu-vt-in-right{from{transform:translateX(100%)}}
-@keyframes vu-vt-out-right{to{transform:translateX(100%)}}
-@keyframes vu-vt-in-left{from{transform:translateX(-30%);opacity:.6}}
 @media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}

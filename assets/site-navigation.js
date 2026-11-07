@@ -9,23 +9,14 @@
   // CSS in site-navigation.css), die Produkt-Leiste bleibt stehen, Produktziele sind beim Tippen schon geladen.
   if (typeof document !== 'undefined' && !globalThis.__vuMotion) {
     globalThis.__vuMotion = true;
-    const nativeEdge = /VUEdge\/1/.test(navigator.userAgent);
-    const direction = activation => {
-      if (!activation || !activation.entry) return null;
-      const type = activation.navigationType;
-      if (type === 'reload') return null;
-      if (type === 'traverse' && activation.from) return activation.entry.index < activation.from.index ? 'vu-back' : 'vu-forward';
-      return 'vu-forward';
-    };
-    const tag = (transition, activation) => {
-      if (!transition) return;
-      const dir = direction(activation);
-      // Die native Randgeste der App hat die Seite schon geschoben: kein zweiter Slide.
-      if (!dir || (nativeEdge && activation.navigationType === 'traverse')) { transition.skipTransition(); return; }
-      try { transition.types && transition.types.add(dir); } catch (_) { /* Typen nicht unterstuetzt: Ueberblendung */ }
-    };
-    addEventListener('pageswap', e => tag(e.viewTransition, e.activation));
-    addEventListener('pagereveal', e => tag(e.viewTransition, globalThis.navigation && navigation.activation));
+    // Entscheidung im alten Dokument (pageswap): dort ist dieses Skript sicher geladen; im neuen Dokument laeuft es oft
+    // erst nach pagereveal. Vorwaerts gleitet die neue Seite von rechts herein (CSS). Zurueck und Neuladen ohne zweite
+    // Animation: zurueck schiebt in der App schon die native Randgeste, im Browser die Geste des Browsers.
+    const wanted = activation => !!(activation && activation.navigationType !== 'traverse' && activation.navigationType !== 'reload');
+    const flag = value => { try { if (value) sessionStorage.setItem('vu-vt-skip', '1'); else { const v = sessionStorage.getItem('vu-vt-skip'); sessionStorage.removeItem('vu-vt-skip'); return v === '1'; } } catch (_) { /* ohne Speicher */ } return false; };
+    addEventListener('pageswap', e => { if (e.viewTransition && !wanted(e.activation)) { e.viewTransition.skipTransition(); flag(true); } });
+    // Ein aus dem bfcache wiederhergestelltes Dokument startet seinen Uebergang selbst; das Merkzeichen des alten haelt es an.
+    addEventListener('pagereveal', e => { if (flag(false) && e.viewTransition) e.viewTransition.skipTransition(); });
     // Vorladen: Einstiege der Produkte und Leistenziele, einmal je Seite nach Ruhe, nie bei Datensparen/2G.
     const warm = () => {
       const c = navigator.connection;
