@@ -1,6 +1,6 @@
 # Ungenutzte Dateien – E7
 
-Analysierter Commit: `a9eb89b609ba26dbf44ece5639ba9e5404ec0b45`.
+Analysierter Commit: `70b77eb7167c7cc09bf475e5ec746ebfcd9886af`.
 
 ## Methode und Grenzen
 
@@ -10,7 +10,7 @@ Alle versionierten Dateien sind Graphknoten. HTML (script/link/fetch und Navigat
 
 Die Einzelliste umfasst alle Dateien außerhalb der geschützten Bereiche, auch Konfiguration, Dokumentation und Evidence. Daten, Assets, App, Account-Worker, Forschung und Recht bleiben geschützt. Konfiguration und Dokumentation liefern zusätzliche Verweise. Dateninhalte und Binärdateien werden nicht als Quelltext gelesen. Dies ist eine Eingangsgrad-Analyse, keine Erreichbarkeitsanalyse: unbenutzte Zyklen werden nicht erkannt. Dynamische Pfade, Shell-Variablen, HTML-base, externe Aufrufe, Bookmarks und andere Deployments sind nicht vollständig beweisbar.
 
-Knoten: 86632; gelesene Textquellen: 10293; Dateien außerhalb Tabu: 17462 (davon 8082 Code/Seiten/Skripte); davon ohne eingehende Verweise: 1; nur breite Verzeichnis-/Glob-Verweise: 1284; geschützte Knoten ohne Verweise: 0 (keine Löschkandidaten).
+Knoten: 86580; gelesene Textquellen: 10296; Dateien außerhalb Tabu: 17410 (davon 8082 Code/Seiten/Skripte); davon ohne eingehende Verweise: 1; nur breite Verzeichnis-/Glob-Verweise: 1287; geschützte Knoten ohne Verweise: 0 (keine Löschkandidaten).
 
 **Keine automatische Löschfreigabe.** Fehlender Verweis, ein 404 oder Ausschluss vom Pages-Build allein beweist keine Nichtnutzung. Bei Zweifel bleibt die Datei.
 
@@ -18,7 +18,7 @@ Knoten: 86632; gelesene Textquellen: 10293; Dateien außerhalb Tabu: 17462 (davo
 
 `pages-release.yml` baut mit `scripts/vu2/build-release.mjs`: `permitted()` kopiert grundsätzlich alle zugelassenen getrackten Dateien, einschließlich alter Seiten und evidence. scripts/docs/providers, Tests und bestimmte Daten werden ausgeschlossen. Der Build erzeugt `/vu2/` und `/Quant/` zusätzlich als Redirect nach `/quant/`. Ein ausgelieferter Pfad kann direkt aufgerufen werden, auch ohne internen Link.
 
-Größenvergleich gegen `9e2012b6f339fd6aef80ef5df7e6eb211f1ff683`; getrackte Dateibytes, ohne Git-Historie. Neue Analysewerkzeuge zählen zur Nachher-Größe von scripts/.
+Größenvergleich gegen `3891bf5bef8dda39f90360b7795f0156e1a48cae`; getrackte Dateibytes, ohne Git-Historie. Neue Analysewerkzeuge zählen zur Nachher-Größe von scripts/.
 
 | Bereich | Dateien nachher | Bytes vorher | Bytes nachher | Entscheidung |
 |---|---:|---:|---:|---|
@@ -28,7 +28,7 @@ Größenvergleich gegen `9e2012b6f339fd6aef80ef5df7e6eb211f1ff683`; getrackte Da
 | worker-waker/ | 4 | 60308 | 60308 | Eigenes Cloudflare-Deployment und Workflow-Tests; behalten. |
 | landing/review/ | 37 | 8361739 | 8361739 | CI erwähnt den Review-Pfad; Live-404 genügt nicht; behalten. |
 | evidence/ | 54 | 1026077 | 1026077 | Audit-/Auslieferungsbelege und grundsätzlich im Pages-Build; behalten. |
-| scripts/ | 1824 | 28180314 | 28201850 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
+| scripts/ | 1824 | 28182515 | 28204051 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
 
 Live-Stichprobe: 2026-11-06T13:19:17.451215+00:00, https://research.visionuniverse.de. Keine vollständige Browser-Netzwerkaufzeichnung.
 
@@ -144,6 +144,9 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | brand-media/kanal-2/reels/2026-11-06-dialog-ki-crash/caption-tiktok.txt | 314 | Nur breite Kanten, z. B. brand-media/higgsfield/README.md; Nutzung unklar; behalten. |
 | brand-media/kanal-2/reels/2026-11-06-dialog-ki-crash/cover.jpg | 388592 | Nur breite Kanten, z. B. brand-media/higgsfield/README.md; Nutzung unklar; behalten. |
 | brand-media/kanal-2/vorlagen/cover/README.md | 1236 | Nur breite Kanten, z. B. brand-media/higgsfield/README.md; Nutzung unklar; behalten. |
+| brand-media/vu-reels/README.md | 472 | Nur breite Kanten, z. B. brand-media/higgsfield/README.md; Nutzung unklar; behalten. |
+| brand-media/vu-reels/image-jobs/bildvorrat-1.json | 7052 | Nur breite Kanten, z. B. brand-media/higgsfield/README.md; Nutzung unklar; behalten. |
+| brand-media/vu-reels/image-jobs/bildvorrat-2.json | 6912 | Nur breite Kanten, z. B. brand-media/higgsfield/README.md; Nutzung unklar; behalten. |
 | brand-media/werbetrailer/keyframes/README.md | 1093 | Nur breite Kanten, z. B. brand-media/higgsfield/README.md; Nutzung unklar; behalten. |
 | content/morning/2026-09-04.md | 2817 | Nur breite Kanten, z. B. .github/workflows/content.yml; Nutzung unklar; behalten. |
 | content/morning/2026-09-05.md | 3766 | Nur breite Kanten, z. B. .github/workflows/content.yml; Nutzung unklar; behalten. |
