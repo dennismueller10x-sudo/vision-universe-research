@@ -1265,6 +1265,46 @@
       "from": "f0c82a227475a4f3122f4c16bfbb0f021e8944526fad0a4a4ba0aba3d0959e0d",
       "to": "76f33785aae4f73834798a84f0ba9b8fdf1e0c6ee005e20dbb8c97ef15275ed4",
       "scope": "L1: Quant-Browser-QA prüft Fuß und „Daten & Methodik“ ohne Anbieternamen (Tiingo, SEC EDGAR); „Keine Anlageempfehlung“ und Stand bleiben Pflicht"
+    },
+    {
+      "id": "UIP-R127",
+      "date": "2026-11-07",
+      "pr": 1612,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L, Folgeauftrag): Quellangaben zentral statt in den Seiten (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/page-stock.js",
+      "from": "7ee0453824e620022dc393a878df2618536173bf41ae875587752c22f64797ee",
+      "to": "cb7f686ce448444c19e7dffbbff42dc30f9d97dca8ff7178458e9489db288ab7",
+      "scope": "L2: Hinweistexte ohne „SEC“ (Geschäftszahlen aus Pflichtmeldungen); Daten unverändert"
+    },
+    {
+      "id": "UIP-R128",
+      "date": "2026-11-07",
+      "pr": 1612,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L, Folgeauftrag): Quellangaben zentral statt in den Seiten (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/page-tools.js",
+      "from": "818d9b23114971f6df5f05a6f280626540acb8ccdc69ee56755b52244b771847",
+      "to": "3297e3534433955be2b332ae2870a3bede82aa3dbaf44f7633d45a886268f97b",
+      "scope": "L2: Ansicht „Zahlen“ ohne „SEC EDGAR“ (Hinweis, Kachel, Fußzeile), Knopf „Daten im Dateninspektor“; Stand bleibt"
+    },
+    {
+      "id": "UIP-R129",
+      "date": "2026-11-07",
+      "pr": 1612,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L, Folgeauftrag): Quellangaben zentral statt in den Seiten (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/view-model.js",
+      "from": "3989cc957a0c83941c79b065617590bacf52d85ec4224b4d3449f4107aab8504",
+      "to": "4eeed3e98f1f0aab77ff119d3e6f8feae16cfd6f92e4f89cd12d60450fc6fbc0",
+      "scope": "L2: Lückentexte „Geschäftszahlen aus Pflichtmeldungen“ statt „SEC-Meldungen“"
+    },
+    {
+      "id": "UIP-R130",
+      "date": "2026-11-07",
+      "pr": 1612,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L, Folgeauftrag): Quellangaben zentral statt in den Seiten (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "76f33785aae4f73834798a84f0ba9b8fdf1e0c6ee005e20dbb8c97ef15275ed4",
+      "to": "011eccec37dde14a35afbd0d6e89b917cec5fdc86cbd1be9b4e8a1eb4c4f3cda",
+      "scope": "L2: QA der Ansicht „Zahlen“ prüft Stand/Herkunft ohne Anbieternamen"
     }
   ]
 }
