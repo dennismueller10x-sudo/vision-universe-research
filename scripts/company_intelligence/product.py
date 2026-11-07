@@ -47,7 +47,7 @@ def project(payload):
     from .profiles import public_profile
     profile = public_profile(payload.get('companyProfile'), payload['companyId'], payload['generatedAt'])
     from .editorial import german_profile
-    profile = german_profile(profile)
+    profile = german_profile(profile, as_of=payload['generatedAt'])
     if profile:
         value['companyProfile'] = profile
     news_cutoff = (now - timedelta(days=180)).date().isoformat()
