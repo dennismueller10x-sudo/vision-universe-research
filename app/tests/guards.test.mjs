@@ -202,3 +202,13 @@ test('iOS: Mindestversion mindestens 15.0 (Apple verlangt ab April 2027 iOS 15, 
 test('iOS: Exportkonformitaet vorab erklaert (nur Betriebssystem-Verschluesselung), keine Rueckfrage je Build', () => {
   assert.match(read(path.join(app, 'ios/App/App/Info.plist')), /<key>ITSAppUsesNonExemptEncryption<\/key>\s*<false\/>/);
 });
+
+test('App-Shell: in der App keine eigene Leiste, Inhalt bis unten, Anmeldung erreichbar', () => {
+  const css = read(path.join(app, 'www/app.css')), main = read(path.join(app, 'www/js/main.js')), html = read(path.join(app, 'www/index.html'));
+  assert.match(css, /\.native #tabs\{display:none\}/, 'Leiste nur in der App ausgeblendet (Browser-Test behaelt sie)');
+  assert.match(main, /classList\.add\('native'\)/);
+  assert.match(main, /gate = true;[^\n]*show\('account'\)/, 'ohne Sitzung zuerst die Anmeldung');
+  assert.match(html, /id="skip-login"/); assert.equal((html.match(/class="secondary back"/g) || []).length, 2, 'Rueckweg aus Konto und Watchlist');
+  const open = main.slice(main.indexOf("'vu:open'") - 400, main.indexOf("'vu:open'") + 400);
+  assert.match(open, /event\.origin !== config\.contentOrigin/); assert.match(open, /event\.source !== frame\?\.contentWindow/, 'nur die eigene Seite darf Konto oeffnen');
+});
