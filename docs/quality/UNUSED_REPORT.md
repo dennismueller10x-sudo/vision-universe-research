@@ -1,6 +1,6 @@
 # Ungenutzte Dateien – E7
 
-Analysierter Commit: `70b77eb7167c7cc09bf475e5ec746ebfcd9886af`.
+Analysierter Commit: `9ca0027e900c6bfeb37a60079919474e0f0134ff`.
 
 ## Methode und Grenzen
 
@@ -10,7 +10,7 @@ Alle versionierten Dateien sind Graphknoten. HTML (script/link/fetch und Navigat
 
 Die Einzelliste umfasst alle Dateien außerhalb der geschützten Bereiche, auch Konfiguration, Dokumentation und Evidence. Daten, Assets, App, Account-Worker, Forschung und Recht bleiben geschützt. Konfiguration und Dokumentation liefern zusätzliche Verweise. Dateninhalte und Binärdateien werden nicht als Quelltext gelesen. Dies ist eine Eingangsgrad-Analyse, keine Erreichbarkeitsanalyse: unbenutzte Zyklen werden nicht erkannt. Dynamische Pfade, Shell-Variablen, HTML-base, externe Aufrufe, Bookmarks und andere Deployments sind nicht vollständig beweisbar.
 
-Knoten: 86580; gelesene Textquellen: 10296; Dateien außerhalb Tabu: 17410 (davon 8082 Code/Seiten/Skripte); davon ohne eingehende Verweise: 1; nur breite Verzeichnis-/Glob-Verweise: 1287; geschützte Knoten ohne Verweise: 0 (keine Löschkandidaten).
+Knoten: 86639; gelesene Textquellen: 10296; Dateien außerhalb Tabu: 17466 (davon 8082 Code/Seiten/Skripte); davon ohne eingehende Verweise: 1; nur breite Verzeichnis-/Glob-Verweise: 1286; geschützte Knoten ohne Verweise: 0 (keine Löschkandidaten).
 
 **Keine automatische Löschfreigabe.** Fehlender Verweis, ein 404 oder Ausschluss vom Pages-Build allein beweist keine Nichtnutzung. Bei Zweifel bleibt die Datei.
 
@@ -18,17 +18,17 @@ Knoten: 86580; gelesene Textquellen: 10296; Dateien außerhalb Tabu: 17410 (davo
 
 `pages-release.yml` baut mit `scripts/vu2/build-release.mjs`: `permitted()` kopiert grundsätzlich alle zugelassenen getrackten Dateien, einschließlich alter Seiten und evidence. scripts/docs/providers, Tests und bestimmte Daten werden ausgeschlossen. Der Build erzeugt `/vu2/` und `/Quant/` zusätzlich als Redirect nach `/quant/`. Ein ausgelieferter Pfad kann direkt aufgerufen werden, auch ohne internen Link.
 
-Größenvergleich gegen `3891bf5bef8dda39f90360b7795f0156e1a48cae`; getrackte Dateibytes, ohne Git-Historie. Neue Analysewerkzeuge zählen zur Nachher-Größe von scripts/.
+Größenvergleich gegen `6464e49203c9e3f708a526379f1dc8e51928a905`; getrackte Dateibytes, ohne Git-Historie. Neue Analysewerkzeuge zählen zur Nachher-Größe von scripts/.
 
 | Bereich | Dateien nachher | Bytes vorher | Bytes nachher | Entscheidung |
 |---|---:|---:|---:|---|
 | vu2/ | 1 | 401 | 401 | Redirect wird im Release erzeugt; behalten. |
 | discover-v2/ | 1 | 837 | 837 | Legacy-Redirect nach /discover/; behalten. |
-| dashboard/ | 664 | 3878094 | 3878094 | Aktive Datenquellen laut domains.json, Seiten laden app-rebuild.js; behalten. |
+| dashboard/ | 664 | 3878941 | 3878941 | Aktive Datenquellen laut domains.json, Seiten laden app-rebuild.js; behalten. |
 | worker-waker/ | 4 | 60308 | 60308 | Eigenes Cloudflare-Deployment und Workflow-Tests; behalten. |
 | landing/review/ | 37 | 8361739 | 8361739 | CI erwähnt den Review-Pfad; Live-404 genügt nicht; behalten. |
 | evidence/ | 54 | 1026077 | 1026077 | Audit-/Auslieferungsbelege und grundsätzlich im Pages-Build; behalten. |
-| scripts/ | 1824 | 28182515 | 28204051 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
+| scripts/ | 1824 | 28186440 | 28207976 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
 
 Live-Stichprobe: 2026-11-06T13:19:17.451215+00:00, https://research.visionuniverse.de. Keine vollständige Browser-Netzwerkaufzeichnung.
 
@@ -917,7 +917,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/company_intelligence/discovery.py | 34485 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/discovery_circuit.py | 3989 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/earnings.py | 26942 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
-| scripts/company_intelligence/editorial.py | 1787 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
+| scripts/company_intelligence/editorial.py | 2915 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/enrichment.py | 4077 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/event_backfill.py | 5172 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/feeds.py | 32244 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
@@ -935,7 +935,6 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/company_intelligence/q4_events.py | 8033 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/q4_news.py | 1750 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/q4_presentations.py | 7914 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
-| scripts/company_intelligence/reviewed_profiles.py | 13385 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/reviewed_source_urls.py | 5005 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/root_aliases.py | 3017 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/sec_documents.py | 9958 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
@@ -1005,7 +1004,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/company_intelligence/tests/test_discovery_batch.py | 17415 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/test_distributor_archive.py | 10761 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/test_dns_circuit.py | 3784 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
-| scripts/company_intelligence/tests/test_editorial.py | 2092 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
+| scripts/company_intelligence/tests/test_editorial.py | 4086 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/test_engine.py | 46324 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/test_event_backfill.py | 13020 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/test_external_news_quality.py | 7192 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
