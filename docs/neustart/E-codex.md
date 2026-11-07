@@ -78,7 +78,7 @@ Separater Branch `codex/e2-sec-form4`, PR [#1369](https://github.com/dennismuell
 
 ## E8 – Datenqualität je Aktie (Abschluss 07.11.2026)
 
-PR [#1541](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1541), Branch `codex/e8-data-quality`, auf `main` (`9e2012b6f`) rebasiert. Sechs zusätzliche WARN-Regeln prüfen Tagesbewegungen ohne Splitbeleg, fehlende Logos großer Unternehmen, fehlende Firmennamen, alte Analysten-Einstufungen, Depotpositionen ohne aktuellen veröffentlichten Schluss und Supertrader-Positionen ohne positiven Stopp. Vorhandene ERROR-Regeln und Fachmodelle bleiben unverändert; WARN blockiert auch `--strict` nicht.
+PR [#1541](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1541), Branch `codex/e8-data-quality`, auf `main` (`e3e43e723`) rebasiert. Sechs zusätzliche WARN-Regeln prüfen Tagesbewegungen ohne Splitbeleg, fehlende Logos großer Unternehmen, fehlende Firmennamen, alte Analysten-Einstufungen, Depotpositionen ohne aktuellen veröffentlichten Schluss und Supertrader-Positionen ohne positiven Stopp. Vorhandene ERROR-Regeln und Fachmodelle bleiben unverändert; WARN blockiert auch `--strict` nicht.
 
 `/status/` und `diagnose.mjs TICKER` lesen denselben Vertrag. Die Übersicht zeigt sechs Karten, den echten UTC-Vortagstrend und Beispiele mit Direktlink. Fehlende oder alte Berichte sowie nicht prüfbare Quellen werden ausdrücklich benannt. Keine Produktionsdatei wurde von Hand erzeugt oder angepasst.
 
