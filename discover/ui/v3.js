@@ -60,7 +60,7 @@
       rows: ['im-blick', 'new-52-week-highs', 'breakout-watch', 'bekannte-namen', 'ueberraschungen', 'comeback'] },
     { id: 'staerke', chip: 'Stärke', title: 'Stärke über Monate', sub: 'Kurs läuft besser als der Markt', icon: 'target',
       rows: ['market-leaders', 'sp500-staerkste', 'ndx-staerkste', 'djia-staerkste', 'momentum-leaders', 'relative-strength', 'trend-quality'] },
-    { id: 'geschaeft', chip: 'Geschäft', title: 'Das Geschäft wächst', sub: 'Zahlen aus SEC-Berichten', icon: 'book',
+    { id: 'geschaeft', chip: 'Geschäft', title: 'Das Geschäft wächst', sub: 'Zahlen aus Geschäftsberichten', icon: 'book',
       rows: ['umsatz-waechst-stark', 'gewinne-beschleunigen', 'margen-werden-staerker', 'cashflow-maschinen', 'profitables-wachstum', 'fundamentale-turnarounds'] },
     { id: 'qualitaet', chip: 'Qualität', title: 'Qualität', sub: 'Gute Firma, solide Basis', icon: 'check',
       rows: ['qualitaet-wachstum', 'langfristige-compounder', 'qualitaet-zum-preis', 'starke-bilanz-wachstum'] }

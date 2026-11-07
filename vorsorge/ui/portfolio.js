@@ -22,7 +22,7 @@
       '<section class="vs-section vs-section--first vs-pf"' + (sub === "modelle" ? " hidden" : "") + '><div class="vu-box vs-pf-list" id="vs-editor"></div><div id="vs-pf-out"><div class="vs-loading">Berechne …</div></div>' +
       (sub === "szenarien" ? '<a class="vu-chip vs-pf-back" href="#/portfolio">‹ Zurück zum X-Ray</a>' : "") + '</section>' +
       '<section class="vs-section vs-section--first vs-mods"' + (sub === "modelle" ? "" : " hidden") + '><div class="vu-stack" id="vs-models"><div class="vs-loading">…</div></div><a class="vu-chip vs-pf-back" href="#/portfolio">‹ Zurück zu deinem Portfolio</a></section>', { dm: [
-        ["Portfolio-Kennzahlen", "Kurse Tiingo (Wochenwerte, gemeinsame Historie), Bestände SEC N-PORT, Kostenquoten laut US-Prospekt (SEC). Vergangene Entwicklung, keine Prognose."]] });
+        ["Portfolio-Kennzahlen", "Kurse als Wochenwerte (gemeinsame Historie), Bestände aus den Pflichtmeldungen der Fonds, Kostenquoten laut US-Prospekt. Vergangene Entwicklung, keine Prognose."]] });
     Promise.all([VS.master(), VS.getJSON("/vorsorge/data/model-portfolios.json")]).then(function (res) {
       var m = res[0], models = res[1];
       function modelCost(p) {

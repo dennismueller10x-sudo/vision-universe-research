@@ -459,8 +459,9 @@
       (c ? '<button type="button" class="st-r-acc st-r-accbtn" data-sheet="st-rulecard"><b>Regelkarte, ' + c.sections.length + ' Abschnitte</b>' + U.pro() + U.glyph('next', 16) + '</button>' : '') +
       '<div data-slot="assess"></div><div data-slot="rules"></div><div data-slot="fid"></div>' +
       (c && c.edge_cases && c.edge_cases.length || (s.fidelity && s.fidelity.missing && s.fidelity.missing.length) ? '<div data-slot="gaps"></div>' : '') +
-      (s.prohibited_interpretations && s.prohibited_interpretations.length ? acc('Was diese Methode nicht ist', '<ul class="st-r-ul">' + s.prohibited_interpretations.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>') : '') +
-      acc('Quellen (' + srcs.length + ')', srcs.map(srcCard).join('') + '<a class="st-r-link" href="/supertrader/sources/">Alle Quellen ' + U.glyph('next', 14) + '</a>') + '</div>');
+      (s.prohibited_interpretations && s.prohibited_interpretations.length ? acc('Was diese Methode nicht ist', '<ul class="st-r-ul">' + s.prohibited_interpretations.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>') : '') + '</div>');
+    /* Owner-Entscheidung 07.11.2026: Quellenliste nicht mehr je Methode, sondern zentral (/supertrader/sources/, verlinkt aus
+       Menü → Rechtliches & Infos → Datenquellen & Methodik und aus „Daten & Methodik“ dieser Seite). */
     var slot = function (k, title, node, right) { var h = after.querySelector('[data-slot="' + k + '"]'); if (!h || !node) return; h.replaceWith(frag(acc(title, '', right))); var d = after.querySelectorAll('.st-r-acc'); var last = null; [].forEach.call(d, function (x) { if (x.querySelector('summary b') && x.querySelector('summary b').textContent === title) last = x; }); if (last) last.querySelector('.st-r-accb').appendChild(node); };
     if (c && X.assessments) slot('assess', 'Was ist belegt? Regel, Quellen, Daten, Evidenz', X.assessments(s, c, D));
     slot('rules', 'Alle Regeln der Version ' + s.strategy_version, X.rulesBlock(s, D), U.pro());

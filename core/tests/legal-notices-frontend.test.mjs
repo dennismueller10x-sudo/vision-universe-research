@@ -31,13 +31,55 @@ test("nach der Freigabe trägt jeder Hinweis den Text und die Links der JSON-Dat
   assert.deepEqual(d.notices.backtest.required, json.notices.backtest.required);
 });
 
-test("Pflicht-Links der App: jeder Link aus appLinks.always steht im Menü unter „Rechtliches“, unabhängig von der Freigabe", () => {
+/* Owner-Entscheidung 07.11.2026 (PLAN §11): In der App kein Seitenfuß, alles im Menü „Rechtliches & Infos“. Der Fuß darf in
+   der App nur fehlen, weil jeder seiner Links und sein Satz im Menü stehen – das prüfen die folgenden Tests. */
+const NAV = readFileSync("assets/site-navigation.js", "utf8");
+function navMenu(approved) {
+  const legal = NAV.match(/var LEGAL = (\{.*\});\n/)[1];
+  const fn = NAV.slice(NAV.indexOf("function legalMenu"), NAV.indexOf("function legalFooter"));
+  const L = JSON.parse(legal); L.approved = approved;
+  return new Function("LEGAL", fn + "; return legalMenu();")(L);
+}
+
+test("Pflicht-Links der App: jeder Link aus appLinks.always steht im Menü unter „Rechtliches & Infos“, unabhängig von der Freigabe", () => {
   const data = legalData(json), keys = json.appLinks.always.map((l) => l.key);
-  assert.deepEqual(keys.sort(), ["bedingungen", "datenschutz", "impressum", "risikohinweise"]);
+  assert.deepEqual([...keys].sort(), ["bedingungen", "datenschutz", "impressum", "kontakt", "quellen", "risikohinweise"]);
+  assert.equal(json.appLinks.menuTitle, "Rechtliches & Infos");
   assert.equal(data.appLinks.length, keys.length);
-  for (const [label, href] of data.appLinks) { assert.ok(label); assert.match(href, /^https:\/\/konto\.visionuniverse\.de\/rechtliches\//); }
-  const nav = readFileSync("assets/site-navigation.js", "utf8");
-  assert.match(nav, /<h2>Rechtliches<\/h2>/);
-  assert.match(nav, /\$\{legalMenu\(\)\}<\/nav>/, "Rechtliches im Menü-Panel (Menü → Rechtliches: zwei Schritte)");
-  assert.doesNotMatch(nav.slice(nav.indexOf("function legalMenu"), nav.indexOf("function legalMenu") + 400), /approved/, "Links hängen nicht an der Freigabe der Hinweistexte");
+  for (const [label, href] of data.appLinks) { assert.ok(label); assert.match(href, /^https:\/\/(konto|research)\.visionuniverse\.de\//); }
+  assert.match(NAV, /\$\{legalMenu\(\)\}<\/nav>/, "Rechtliches im Menü-Panel (Menü → Rechtliches & Infos: zwei Schritte)");
+  for (const approved of [false, true]) {
+    const html = navMenu(approved);
+    assert.match(html, /<h2[^>]*>Rechtliches &amp; Infos<\/h2>/);
+    for (const [label, href] of data.appLinks) assert.ok(html.includes('href="' + href + '"') && html.includes(label.replace(/&/g, "&amp;")), label + " fehlt im Menü (Freigabe " + approved + ")");
+  }
+});
+
+test("App ohne Seitenfuß nur, wenn das Menü jeden Fuß-Link und den Fuß-Satz trägt (§ 5 DDG, Plan §11)", () => {
+  const d = legalData(json), foot = d.notices.footer;
+  assert.equal(json.notices.footer.app, "menu");
+  assert.equal(d.footerInApp, false);
+  const menu = navMenu(true);
+  for (const [label, href] of foot.links) assert.ok(menu.includes('href="' + href + '"'), "Fuß-Link " + label + " fehlt im Menü");
+  assert.ok(menu.includes(foot.text), "Software-/Risikosatz fehlt im Menü");
+  const fn = NAV.slice(NAV.indexOf("function legalFooter"), NAV.indexOf("const dockBus"));
+  assert.match(fn, /LEGAL\.footerInApp === false && inApp\(\)/, "Fuß entfällt nur in der App");
+  assert.match(NAV, /function inApp\(\)[\s\S]{0,200}isNativePlatform[\s\S]{0,120}VUApp\\\/1/, "App-Erkennung: Capacitor oder User-Agent VUApp/1");
+  /* Im Browser bleibt der Fuß: das JSON beschreibt ihn weiter für research.visionuniverse.de. */
+  assert.match(json.notices.footer.where, /Browser/);
+});
+
+test("Datenquellen & Methodik: /infos/ nennt die Anbieter, die Produktseiten nicht mehr", () => {
+  const page = readFileSync("infos/index.html", "utf8");
+  assert.ok(json.links.quellen.endsWith("/infos/#quellen"));
+  assert.match(page, /id="quellen"/);
+  for (const name of ["Tiingo", "IEX", "SEC", "Marketstack", "FRED", "Europäische Zentralbank", "ESMA", "TraderFox", "/supertrader/sources/"]) assert.ok(page.includes(name), name);
+  for (const k of ["impressum", "kontakt", "datenschutz", "bedingungen", "risikohinweise"]) assert.ok(page.includes(json.links[k]), k);
+  const U = require("../../assets/vu-ui.js");
+  assert.equal(U.neutralSourceText("Fremdregel: TraderFox / Sekundärrekonstruktion"), "Fremdregel: Sekundärrekonstruktion");
+  assert.equal(U.neutralSourceText("Marktampel SPY > GD 200 stammt aus einer TraderFox-Variante, nicht von Darvas."), "Marktampel SPY > GD 200 stammt aus einer Drittvariante, nicht von Darvas.");
+  const reg = JSON.parse(readFileSync("supertrader/data/registry.json", "utf8"));
+  assert.doesNotMatch(JSON.stringify(U.neutralSources(reg)), /traderfox/i, "Supertrader-Seiten zeigen keinen Anbieternamen");
+  for (const [f, re] of [["quant/app/page-stock.js", /"Tiingo|SEC EDGAR, bis/], ["quant/app/app.js", /Daten: SEC EDGAR, Tiingo/], ["quant/app/pages.js", /Daten: SEC EDGAR, Tiingo/], ["portfolios/portfolios.js", /\(Tiingo, split/], ["supertrader/assets/supertrader.js", /Dateninfrastruktur \(Tiingo/]])
+    assert.doesNotMatch(readFileSync(f, "utf8"), re, f);
 });

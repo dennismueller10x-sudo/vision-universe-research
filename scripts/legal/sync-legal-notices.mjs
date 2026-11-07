@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const LINK_LABEL = { risikohinweise: "Risikohinweise", methodik: "Methodik, Quellen und Interessen", datenschutz: "Datenschutz", impressum: "Impressum", kontakt: "Kontakt", bedingungen: "Nutzungsbedingungen", kuendigen: "Verträge hier kündigen", widerrufen: "Vertrag widerrufen" };
+const LINK_LABEL = { risikohinweise: "Risikohinweise", methodik: "Methodik, Quellen und Interessen", datenschutz: "Datenschutz", impressum: "Impressum", kontakt: "Kontakt", bedingungen: "Nutzungsbedingungen", kuendigen: "Verträge hier kündigen", widerrufen: "Vertrag widerrufen", quellen: "Datenquellen & Methodik" };
 const BEGIN = "/* VU-LEGAL:BEGIN – erzeugt aus assets/legal-notices.json (scripts/legal/sync-legal-notices.mjs), nicht von Hand ändern */";
 const END = "/* VU-LEGAL:END */";
 
@@ -22,7 +22,10 @@ export function legalData(src) {
   /* Pflicht-Links der App (appLinks.always): immer sichtbar im Menü, unabhängig von der Freigabe der Hinweistexte –
      es sind nur Links auf die Rechtstexte der Webseite (Plan §11). */
   const appLinks = ((d.appLinks && d.appLinks.always) || []).filter((l) => d.links[l.key]).map((l) => [l.label || LINK_LABEL[l.key] || l.key, d.links[l.key]]);
-  return { approved: d.legalApproved === true, version: d.version, notices, appLinks };
+  /* Owner-Entscheidung 07.11.2026: In der App ersetzt das Menü „Rechtliches & Infos“ den Seitenfuß (notices.footer.app = "menu"). */
+  const menuTitle = (d.appLinks && d.appLinks.menuTitle) || "Rechtliches";
+  const footerInApp = !(d.notices.footer && d.notices.footer.app === "menu");
+  return { approved: d.legalApproved === true, version: d.version, notices, appLinks, menuTitle, footerInApp };
 }
 export function block(data, indent) {
   return BEGIN + "\n" + indent + "var LEGAL = " + JSON.stringify(data) + ";\n" + indent + END;
