@@ -12,6 +12,7 @@ import {frozenInventory,refreshConfig} from './refresh-approval.mjs';
 import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
 import {runtimeCandidate} from './runtime-candidate.mjs';
 import {candidateRollout} from './candidate-rollout.mjs';
+import {routeDeliveryBundles} from './bundle-routes.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],live=args.includes('--live');
 const origin='https://research.visionuniverse.de',out=arg('--out'),directory=arg('--consumer');mkdirSync(dirname(out),{recursive:true});
@@ -51,6 +52,7 @@ try{
   active={ticker,cid,width,errors,requests};activePage=page;
   if(!live){
    await page.route('**/company-intelligence/data/**',route=>{const p=new URL(route.request().url()).pathname.split('/company-intelligence/data/')[1];if(!payloads.has(p)){active.unknownAssets=[...(active.unknownAssets||[]),p];return route.fulfill({status:404,body:'UNKNOWN_CANDIDATE_ASSET'});}return route.fulfill({status:200,contentType:'application/json',body:payloads.get(p)});});
+   await routeDeliveryBundles(page,{'company-intelligence/config/rollout.js':text=>candidateRollout(text,manifest.generation)},origin);
    await page.route('**/company-intelligence/config/rollout.js*',async route=>{const response=await route.fetch();const text=await response.text();await route.fulfill({response,body:candidateRollout(text,manifest.generation)});});
   }
   await page.addInitScript(({key,state})=>{localStorage.setItem(key,JSON.stringify(state));localStorage.setItem('vu-discover-theme-v1','dark');},{key:STORAGE_KEY,state});
