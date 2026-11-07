@@ -75,3 +75,11 @@ Separater Branch `codex/e2-sec-form4`, PR [#1369](https://github.com/dennismuell
 - `node scripts/quality/check-test-isolation.mjs`: keine Produktionsdatei verändert; die intern gestartete Quant-Suite erreichte das vorhandene 900.000-ms-Zeitlimit (Log 20:01:57–20:16:58 UTC), daher Hinweis Exit 1. Separater Quant-Lauf vollständig: 3.929 bestanden, 26 übersprungen, 1 Fehler unter Node 24 (`quant/tests/research-portfolio-exit-rules.test.mjs:19`, Golden-Hash). Genau dieser Test besteht unter Node 22.23.4; keine Änderung am Ledger oder an den Golden-Fixtures.
 - SQL-Flows nur mit PG_TEST_URL; diese Umgebung hat keine solche Konfiguration.
 - Laufzeit: bereitgestelltes Node 24.22.1 für die Bestandssuiten; E2-Core/Registry und die Gegenproben des Discover-Namensfehlers bzw. Quant-Golden-Tests zusätzlich unter Node 22.23.4.
+
+## E7 – konservative Codebereinigung (Abschluss 07.11.2026)
+
+PR [#1542](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1542), Branch `codex/e7-unused-analysis`, auf `main` (`6464e4920`) rebasiert. Der [Bericht](../quality/UNUSED_REPORT.md) wird mit dem unveränderten Analyzer auf diesem Stand neu erzeugt; sein Kopf nennt den tatsächlich analysierten Commit. Die Größen vergleichen den aktuellen main-Stand mit dem Analyse-Branch. Die Live-Stichprobe bleibt ausdrücklich vom 06.11.; eine Zugangssperre oder ein nicht eingesehenes Pages-Artefakt beweist keine Nichtnutzung.
+
+**Keine Löschung, 0 eingesparte Bytes.** Statische Verweise, dynamische Aufrufe, direkte URLs und mögliche andere Deployments lassen keine belastbare Löschfreigabe zu. Die Analyse verändert keine Produktdateien, Daten, Workflows, Registries oder Bestands-Tests. Nur nachweislich sicher ungenutzte Dateien dürften später entfernt werden.
+
+Reproduzieren: `node scripts/quality/find-unused.mjs --live-evidence docs/quality/unused-live-evidence.json`. Sechs Analyzer-Vertragstests bestehen unter Node 22.23.4. Der aktuelle vollständige CI-Status und die Freigabe stehen im PR; Strang A prüft und mergt.
