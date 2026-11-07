@@ -78,7 +78,7 @@ Separater Branch `codex/e2-sec-form4`, PR [#1369](https://github.com/dennismuell
 
 ## E7 – konservative Codebereinigung (Abschluss 07.11.2026)
 
-PR [#1542](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1542), Branch `codex/e7-unused-analysis`, auf `main` (`6464e4920`) rebasiert. Der [Bericht](../quality/UNUSED_REPORT.md) wird mit dem unveränderten Analyzer auf diesem Stand neu erzeugt; sein Kopf nennt den tatsächlich analysierten Commit. Die Größen vergleichen den aktuellen main-Stand mit dem Analyse-Branch. Die Live-Stichprobe bleibt ausdrücklich vom 06.11.; eine Zugangssperre oder ein nicht eingesehenes Pages-Artefakt beweist keine Nichtnutzung.
+PR [#1542](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1542), Branch `codex/e7-unused-analysis`, auf `main` (`e3e43e723`) rebasiert. Der [Bericht](../quality/UNUSED_REPORT.md) wird mit dem unveränderten Analyzer auf diesem Stand neu erzeugt; sein Kopf nennt den tatsächlich analysierten Commit. Die Größen vergleichen den aktuellen main-Stand mit dem Analyse-Branch. Die Live-Stichprobe bleibt ausdrücklich vom 06.11.; eine Zugangssperre oder ein nicht eingesehenes Pages-Artefakt beweist keine Nichtnutzung.
 
 **Keine Löschung, 0 eingesparte Bytes.** Statische Verweise, dynamische Aufrufe, direkte URLs und mögliche andere Deployments lassen keine belastbare Löschfreigabe zu. Die Analyse verändert keine Produktdateien, Daten, Workflows, Registries oder Bestands-Tests. Nur nachweislich sicher ungenutzte Dateien dürften später entfernt werden.
 
