@@ -15,6 +15,8 @@
                oder freigegeben, erster Lauf ausstehend - ACTIVATING)
      NOT_DELIVERED  gegen die Seite gemessen, Artefakt wird bewusst nicht
                ausgeliefert (repositoryOnly)
+     RELEASE_ONLY  gegen das Repository gemessen, Artefakt entsteht erst im
+               Release-Bau und liegt nur in der Auslieferung (releaseOnly)
      UNKNOWN   kein Zeitstempel - Frische nicht messbar
 
    Jede Zeile traegt: letzter Lauf, erwarteter und tatsaechlicher Stand,
@@ -39,7 +41,7 @@
   "use strict";
 
   var VERSION = "core-health-1.0.0";
-  var RANK = { OK: 0, DISABLED: 0, NOT_DELIVERED: 0, UNKNOWN: 1, DEGRADED: 2, STALE: 3, FAILED: 4 };
+  var RANK = { OK: 0, DISABLED: 0, NOT_DELIVERED: 0, RELEASE_ONLY: 0, UNKNOWN: 1, DEGRADED: 2, STALE: 3, FAILED: 4 };
   var HOUR = 3600000;
 
   /** Wert unter einem Punktpfad ("a.b.0.c"); null, wenn nicht vorhanden. */
@@ -118,6 +120,11 @@
     if (domain.repositoryOnly && ctx.target === "site") {
       out.status = "NOT_DELIVERED"; out.reason = "REPOSITORY_ONLY";
       out.warnings.push("Wird nicht ausgeliefert; nur gegen das Repository messbar.");
+      return out;
+    }
+    if (domain.releaseOnly && ctx.target !== "site") {
+      out.status = "RELEASE_ONLY"; out.reason = "RELEASE_ONLY";
+      out.warnings.push("Entsteht im Release-Bau und liegt nur in der Auslieferung; gegen die Seite messbar.");
       return out;
     }
     /* Vorbereitet, nicht freigegeben (domains.json, Kopf "activation"): das
@@ -345,7 +352,7 @@
       if (d.ageHours !== null && d.ageHours !== undefined) extra.push(d.ageHours + " h alt");
       if (d.records !== null && d.records !== undefined) extra.push(d.records + (d.expectedRecords ? "/" + d.expectedRecords : "") + " Datensaetze");
       lines.push(pad(d.label, 30) + pad(d.status, 10) + pad(stand, 18) + extra.join(" · "));
-      if (d.status !== "OK" && d.status !== "DISABLED" && d.status !== "NOT_DELIVERED") {
+      if (d.status !== "OK" && d.status !== "DISABLED" && d.status !== "NOT_DELIVERED" && d.status !== "RELEASE_ONLY") {
         if (d.reason) lines.push("    Grund: " + d.reason + (d.workflow ? " · Erzeuger: " + d.workflow : ""));
         d.warnings.forEach(function (w) { lines.push("    - " + w); });
       }

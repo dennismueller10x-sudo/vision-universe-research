@@ -37,6 +37,7 @@ test("Register · jedes kanonische Artefakt liegt im Repository (vorbereitete Da
   for (const d of registry.domains) {
     if (prepared(d)) assert.ok(!existsSync(join(ROOT, d.artifact.slice(1))), d.id + ": Artefakt ohne Freigabe veroeffentlicht " + d.artifact);
     else if (activating(d)) continue; /* freigegeben, erster Lauf ausstehend: mit oder ohne Artefakt */
+    else if (d.releaseOnly) assert.ok(!existsSync(join(ROOT, d.artifact.slice(1))), d.id + ": Release-Artefakt liegt im Repository " + d.artifact);
     else assert.ok(existsSync(join(ROOT, d.artifact.slice(1))), d.id + ": " + d.artifact);
   }
 });
@@ -67,7 +68,7 @@ test("Register · jeder genannte Workflow und jedes Erzeugerskript existiert", (
 test("Register · das Register liest seine Felder wirklich aus den Artefakten", () => {
   /* Ein Tippfehler im Pfad ergaebe still UNKNOWN statt eines Urteils. */
   for (const d of registry.domains) {
-    if (prepared(d) || (activating(d) && !existsSync(join(ROOT, d.artifact.slice(1))))) continue; /* Artefakt existiert (noch) nicht */
+    if (prepared(d) || d.releaseOnly || (activating(d) && !existsSync(join(ROOT, d.artifact.slice(1))))) continue; /* Artefakt existiert (noch) nicht oder nur in der Auslieferung */
     const data = JSON.parse(readFileSync(join(ROOT, d.artifact.slice(1)), "utf8"));
     if (d.disabledWhen && Health.at(data, d.disabledWhen.path) === d.disabledWhen.equals) continue;
     if ((d.timestamp || []).length) assert.ok(d.timestamp.some((p) => Health.at(data, p)), d.id + ": kein Zeitstempel unter " + d.timestamp);
@@ -183,6 +184,23 @@ test("Gegen die Seite: bewusst nicht ausgelieferte Artefakte sind NOT_DELIVERED,
   assert.equal(site.overall, "OK");
   const repo = Health.evaluate({ domains: [d] }, { "/x.json": { ok: false, error: "fehlt" } }, ctx(SAT));
   assert.equal(repo.domains[0].status, "FAILED");
+});
+
+test("Gegen das Repository: Release-Artefakte sind RELEASE_ONLY, gegen die Seite normal bewertet", () => {
+  const d = dom({ releaseOnly: true });
+  const repo = Health.evaluate({ domains: [d] }, { "/x.json": { ok: false, error: "fehlt: /x.json" } }, ctx(SAT));
+  assert.equal(repo.domains[0].status, "RELEASE_ONLY");
+  assert.equal(repo.overall, "OK");
+  const site = Health.evaluate({ domains: [d] }, { "/x.json": { ok: false, error: "HTTP 404" } }, Object.assign(ctx(SAT), { target: "site" }));
+  assert.equal(site.domains[0].status, "FAILED");
+});
+
+test("Register · releaseOnly und repositoryOnly schliessen sich aus, releaseOnly nie mit Aktivierungszustand", () => {
+  for (const d of registry.domains) {
+    if (!d.releaseOnly) continue;
+    assert.ok(!d.repositoryOnly, d.id + ": releaseOnly und repositoryOnly");
+    assert.equal(d.activation, undefined, d.id + ": releaseOnly ist eine aktive Datenart");
+  }
 });
 
 test("Register · repositoryOnly stimmt mit der Release-Regel ueberein", async () => {
