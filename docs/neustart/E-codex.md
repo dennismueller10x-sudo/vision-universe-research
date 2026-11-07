@@ -75,3 +75,13 @@ Separater Branch `codex/e2-sec-form4`, PR [#1369](https://github.com/dennismuell
 - `node scripts/quality/check-test-isolation.mjs`: keine Produktionsdatei verändert; die intern gestartete Quant-Suite erreichte das vorhandene 900.000-ms-Zeitlimit (Log 20:01:57–20:16:58 UTC), daher Hinweis Exit 1. Separater Quant-Lauf vollständig: 3.929 bestanden, 26 übersprungen, 1 Fehler unter Node 24 (`quant/tests/research-portfolio-exit-rules.test.mjs:19`, Golden-Hash). Genau dieser Test besteht unter Node 22.23.4; keine Änderung am Ledger oder an den Golden-Fixtures.
 - SQL-Flows nur mit PG_TEST_URL; diese Umgebung hat keine solche Konfiguration.
 - Laufzeit: bereitgestelltes Node 24.22.1 für die Bestandssuiten; E2-Core/Registry und die Gegenproben des Discover-Namensfehlers bzw. Quant-Golden-Tests zusätzlich unter Node 22.23.4.
+
+## E8 – Datenqualität je Aktie (Abschluss 07.11.2026)
+
+PR [#1541](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1541), Branch `codex/e8-data-quality`, auf `main` (`9e2012b6f`) rebasiert. Sechs zusätzliche WARN-Regeln prüfen Tagesbewegungen ohne Splitbeleg, fehlende Logos großer Unternehmen, fehlende Firmennamen, alte Analysten-Einstufungen, Depotpositionen ohne aktuellen veröffentlichten Schluss und Supertrader-Positionen ohne positiven Stopp. Vorhandene ERROR-Regeln und Fachmodelle bleiben unverändert; WARN blockiert auch `--strict` nicht.
+
+`/status/` und `diagnose.mjs TICKER` lesen denselben Vertrag. Die Übersicht zeigt sechs Karten, den echten UTC-Vortagstrend und Beispiele mit Direktlink. Fehlende oder alte Berichte sowie nicht prüfbare Quellen werden ausdrücklich benannt. Keine Produktionsdatei wurde von Hand erzeugt oder angepasst.
+
+15 Regel-, Adapter-, CLI- und UI-Vertragstests bestehen nach dem Rebase unter Node 22.23.4. Der aktuelle vollständige CI-Status und die Freigabe stehen im PR; Strang A prüft und mergt. Datenstandsfehler alter Läufe werden nicht durch geänderte Daten oder Erwartungen übergangen.
+
+Die tägliche Veröffentlichung und das Vorhalten des echten Vortags bleiben Aufgabe von A: `node scripts/core/data-quality.mjs --out=PFAD --previous=GESTERN.json`. Kein neuer Workflow und kein neuer Zeitplan. Ohne veröffentlichten Bericht erscheint die Übersicht als nicht verfügbar. Vertrag: [DATA_QUALITY.md](../data/DATA_QUALITY.md).
