@@ -28,6 +28,15 @@
       key: sheetOpen ? key + '#sheet' : key, backKey: sheetOpen ? key : (i > 0 && list[i - 1] ? list[i - 1].key : null),
       forwardKey: !sheetOpen && i >= 0 && list[i + 1] ? list[i + 1].key : null};
   }
+  /** K5: horizontaler Wisch auf dem Inhalt wechselt zum Nachbar-Tab. Nur deutliche, schnelle, waagrechte Wische. */
+  function swipeTab(dx, dy, ms) {
+    if (ms > 700 || Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 2.2) return 0;
+    return dx < 0 ? 1 : -1;   // nach links wischen = naechster Tab
+  }
+  function neighbour(items, current, step) {
+    var i = items.indexOf(current), j = i + step;
+    return i < 0 || j < 0 || j >= items.length ? null : items[j];
+  }
   function enabled() {
     return !!(w.Capacitor && w.Capacitor.isNativePlatform && w.Capacitor.isNativePlatform()) || /VUApp\/1/.test(w.navigator.userAgent) || new URLSearchParams(w.location.search).get('vuGestures') === '1';
   }
@@ -200,6 +209,47 @@
       var origins = w.location.ancestorOrigins, origin = parentOrigin || (origins && origins.length ? origins[0] : null);
       if (PARENTS.indexOf(origin) >= 0) try { w.parent.postMessage({type: 'vu:haptic', style: 'impact'}, origin); } catch (_) { /* optional */ }
     }, true);
+    // K5: zwischen Untertabs wischen. Zuerst ein ARIA-Tabsatz um den Startpunkt, sonst die Produkt-Leiste.
+    // Nie auf Karussells, Charts, Eingaben, Sheets oder Elementen mit data-vu-no-swipe; vertikales Scrollen bleibt frei.
+    var swipe = null, swipePrev = false;
+    function blocked(el) {
+      for (var n = el; n && n !== w.document.body; n = n.parentElement) {
+        if (n.matches && n.matches('svg,canvas,input,textarea,select,[contenteditable=true],[data-vu-no-swipe],.vu-sheet-ui,[role=slider]')) return true;
+        if (n.scrollWidth > n.clientWidth + 4) { var ox = w.getComputedStyle(n).overflowX; if (ox === 'auto' || ox === 'scroll') return true; }
+      }
+      return false;
+    }
+    function tabTarget(start, step) {
+      var panel = start.closest && start.closest('[role=tabpanel]');
+      var list = panel && panel.id && w.document.querySelector('[role=tablist] [aria-controls="' + panel.id + '"]');
+      list = list && list.closest('[role=tablist]');
+      if (list) {
+        var tabs = Array.from(list.querySelectorAll('[role=tab]'));
+        return neighbour(tabs, list.querySelector('[role=tab][aria-selected=true]'), step);
+      }
+      var dock = w.document.getElementById('vu-dock'), root = dock && dock.shadowRoot;
+      if (!root) return null;
+      var links = Array.from(root.querySelectorAll('nav a[href]'));
+      return neighbour(links, root.querySelector('nav a[aria-current=page]'), step);
+    }
+    w.document.addEventListener('pointerdown', function (e) {
+      swipe = null;
+      if (e.pointerType !== 'touch' || !e.isPrimary || active || e.clientX < 24 || e.clientX > w.innerWidth - 24 || blocked(e.target)) return;
+      swipe = {x: e.clientX, y: e.clientY, t: Date.now(), el: e.target};
+    }, {passive: true});
+    w.document.addEventListener('pointercancel', function () { swipe = null; }, {passive: true});
+    w.document.addEventListener('pointerup', function (e) {
+      var s0 = swipe; swipe = null;
+      if (!s0 || active) return;
+      var step = swipeTab(e.clientX - s0.x, e.clientY - s0.y, Date.now() - s0.t);
+      if (!step || (w.getSelection && String(w.getSelection()).length)) return;
+      var target = tabTarget(s0.el, step);
+      if (!target) return;
+      swipePrev = step < 0;
+      target.click();
+    }, {passive: true});
+    // Rueckwaerts gewischt: keine Vorwaerts-Gleitanimation (K2) zum vorherigen Tab.
+    w.addEventListener('pageswap', function (e) { if (swipePrev && e.viewTransition) e.viewTransition.skipTransition(); swipePrev = false; });
     changed();
     w.addEventListener('message', function (e) {
       if (e.source !== w.parent || PARENTS.indexOf(e.origin) < 0) return;
@@ -211,6 +261,6 @@
     var plugin = w.Capacitor && w.Capacitor.Plugins && w.Capacitor.Plugins.App;
     if (w.parent === w && plugin) plugin.addListener('backButton', function () { if (!back()) plugin.minimizeApp(); });
   }
-  api = {edgeStart: edgeStart, intent: intent, release: release, sheetTarget: sheetTarget, duration: duration, init: init, openSheet: openSheet, closeSheet: closeSheet, back: back, nativeEdge: nativeEdge, navState: navState, report: function () {}};
+  api = {edgeStart: edgeStart, intent: intent, release: release, sheetTarget: sheetTarget, duration: duration, init: init, openSheet: openSheet, closeSheet: closeSheet, back: back, nativeEdge: nativeEdge, navState: navState, swipeTab: swipeTab, neighbour: neighbour, report: function () {}};
   return api;
 });

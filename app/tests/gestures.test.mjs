@@ -50,3 +50,10 @@ test('K4: Tipp-Gefuehl nur in der App; Fliesstext bleibt markierbar', async () =
   assert.match(k4, /:active\{opacity:\.62;transition:opacity 0s\}/);
   assert.doesNotMatch(k4, /(^|[,{\s])p[,{\s]|body\{[^}]*user-select:none/);
 });
+test('K5: nur deutliche, schnelle, waagrechte Wische wechseln den Tab', () => {
+  assert.equal(G.swipeTab(-80, 10, 300), 1); assert.equal(G.swipeTab(90, -20, 300), -1);
+  assert.equal(G.swipeTab(-60, 0, 300), 0, 'zu kurz');
+  assert.equal(G.swipeTab(-100, 50, 300), 0, 'zu schraeg (Scrollen)');
+  assert.equal(G.swipeTab(-200, 0, 900), 0, 'zu langsam (Ziehen/Lesen)');
+  assert.equal(G.neighbour(['a', 'b', 'c'], 'b', 1), 'c'); assert.equal(G.neighbour(['a', 'b'], 'a', -1), null); assert.equal(G.neighbour(['a'], 'x', 1), null);
+});
