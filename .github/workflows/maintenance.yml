@@ -1,23 +1,38 @@
+# Buendel `maintenance` (core/registry/workflow-bundles.json, Plan Neustart §3, A-Doc):
+# manuelle Betriebswerkzeuge, Diagnosen, Einmal-Laeufe. Jeder Teil ist ein eigener Job mit
+# unveraendertem Inhalt (Schritte bytegleich, gleiche Concurrency-Gruppe wie vorher); gestartet
+# wird genau der gewaehlte Teil (`teil`).
+#   r2-audit   vormals r2-audit.yml (R2-Audit, nur lesen)
+#
+# r2-audit (vormals eigene Datei):
 # R2-Audit (nur lesen): misst den Speicher der produktiven Ablage und vergleicht ihn mit der eigenen
 # Decke (zero-cost-guard.js, 8 GB) und dem kostenlosen Kontingent (10 GB, 1 Mio Class A, 10 Mio Class B).
 #
 # Aendert nichts: kein PUT/DELETE, kein Bucket, keine Domain, keine Regel. Der S3-Treiber erlaubt nur
 # GET/HEAD/LIST, die Cloudflare-API wird nur gelesen. Die Secrets kommen ueber env: und werden nie ausgegeben;
 # das Ergebnis steht nur in der Job-Zusammenfassung (kein Commit, kein Artefakt).
-name: R2 Audit (nur lesen)
+name: Wartung (Buendel maintenance)
 
 on:
   workflow_dispatch:
+    inputs:
+      teil:
+        description: 'Welcher Teil'
+        type: choice
+        required: true
+        options:
+          - r2-audit
 
 permissions:
   contents: read
 
-concurrency:
-  group: r2-audit-${{ github.ref_name }}
-  cancel-in-progress: false
-
 jobs:
-  audit:
+  r2-audit:
+    name: R2 Audit (nur lesen)
+    if: inputs.teil == 'r2-audit'
+    concurrency:
+      group: r2-audit-${{ github.ref_name }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
