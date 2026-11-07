@@ -388,7 +388,17 @@ def refresh(state,identity_root,consumer,evidence,now=None,network=True,financia
                 german=value.get('companyProfile',{}).get('language')=='de'; profiles+=german
                 inventory[cid]={'tickers':json.loads((ROOT/'docs/company-intelligence/full-data-release-candidate.json').read_text())['inventory'][cid]['tickers'],
                                 'germanProfile':german,'financials':value['latestFinancials']['state'],'staleFinancials':value['latestFinancials'].get('stale',False),'news':len(value['news'])}
-            if profiles!=45: raise ValueError('GERMAN_PROFILE_REGRESSION')
+            if profiles!=45:
+                # Benennt die Emittenten ohne deutsches Profil (nur IDs, Sprache, Status, Quellenart),
+                # damit die Ursache ohne Zugriff auf den privaten Stand sichtbar ist.
+                missing=[]
+                for cid in selected:
+                    cp=json.loads((consumer/f'snapshots/{manifest["generation"]}/{cid}.json').read_text()).get('companyProfile') or {}
+                    if cp.get('language')!='de':
+                        missing.append({'companyId':cid,'profile':bool(cp),'language':cp.get('language'),'editorialStatus':cp.get('editorialStatus'),
+                                        'sourceTypes':sorted({s.get('type') for s in cp.get('sources',[])})})
+                print(json.dumps({'germanProfiles':profiles,'expected':45,'missing':missing},sort_keys=True),file=sys.stderr)
+                raise ValueError('GERMAN_PROFILE_REGRESSION')
         # Erst jetzt (Export, Consumer-Kandidat, Inventar und Profile konsistent) den globalen Stempel setzen.
         health=commit_refresh_stamp(store,health,now,complete)
         proof={name:database_proof(state/name) for name in ('state.sqlite','archive.sqlite') if (state/name).exists()}
