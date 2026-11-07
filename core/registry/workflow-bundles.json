@@ -94,7 +94,8 @@
    "purpose": "manuelle Betriebswerkzeuge, Diagnosen, Einmal-Laeufe",
    "workflow": "maintenance.yml",
    "replaces": [
-    "r2-audit.yml"
+    "r2-audit.yml",
+    "landing-cloudflare-audit.yml"
    ]
   }
  },
@@ -242,9 +243,6 @@
   },
   "intraday-snapshots.yml": {
    "bundle": "pipeline-intraday"
-  },
-  "landing-cloudflare-audit.yml": {
-   "bundle": "maintenance"
   },
   "landing-cloudflare-prepare.yml": {
    "bundle": "maintenance"
