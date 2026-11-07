@@ -1,3 +1,4 @@
+import {navigate} from '../../quality/browser-navigation.mjs';
 /* Local, read-only browser gate. Output must be outside production data. */
 import {createServer} from 'node:http';
 import {readFile, mkdir, writeFile} from 'node:fs/promises';
@@ -24,7 +25,7 @@ const content=JSON.parse(await readFile(root+'technical/academy/content.json','u
 const types={'.js':'text/javascript','.css':'text/css','.html':'text/html','.json':'application/json','.svg':'image/svg+xml','.gz':'application/gzip','.woff2':'font/woff2'};
 const server=createServer(async(req,res)=>{try{let p=decodeURIComponent(new URL(req.url,'http://x').pathname);if(p.endsWith('/'))p+='index.html';const f=resolve(root,'.'+p);if(!f.startsWith(root))throw Error('path');res.setHeader('content-type',types[extname(f)]||'application/octet-stream');res.end(await readFile(f));}catch{res.writeHead(404).end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));await mkdir(out,{recursive:true});
-const base=site ? site+'/technical/' : 'http://127.0.0.1:'+server.address().port+'/technical/',browser=await chromium.launch(),results=[],journeys=[],performanceChecks=[],visualCoverage=[];
+const base=site ? site+'/technical/' : 'http://127.0.0.1:'+server.address().port+'/technical/',browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||undefined}),results=[],journeys=[],performanceChecks=[],visualCoverage=[];
 async function createContext(options){
  const context=await browser.newContext(options);
  if(gate)await context.addInitScript(([key,value,origin])=>{if(location.origin===origin){try{localStorage.setItem(key,value);}catch(_){}}},[gate.key,gate.value,new URL(site).origin]);
@@ -42,7 +43,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
  const prefix=width+'-'+theme;
  async function overflow(){assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'horizontal overflow');}
  await check(prefix+' central Academy single strategy entry',async()=>{
-  await page.goto(base.replace('/technical/','/academy/'));await page.locator('.vu-a-world-card').first().waitFor();
+  await navigate(page,base.replace('/technical/','/academy/'));await page.locator('.vu-a-world-card').first().waitFor();
   assert(await page.locator('.vu-a-world-card').count()===11,'11 existing worlds');
   assert(await page.evaluate(()=>document.documentElement.dataset.theme)===theme,'entry theme follows preference');
   const entry=page.locator('a.vu-a-world-card[href="/technical/#/akademie"]');assert(await entry.count()===1,'single strategy world link');
@@ -55,14 +56,14 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
   await page.screenshot({path:out+'/'+prefix+'-central-academy.png',fullPage:true});
   await page.locator('#questions-mount a',{hasText:'Wie lese ich einen Chart'}).click();await page.locator('.ta-paths section').first().waitFor();
  });
- await check(prefix+' catalog/navigation',async()=>{await page.goto(base+'#/akademie');await page.getByRole('heading',{name:'Strategie-Akademie',exact:true}).waitFor();assert(await page.locator('.ta-paths section').count()===8,'8 paths');assert(await page.locator('.ta-paths li').count()===32,'32 lessons');await overflow();await page.screenshot({path:out+'/'+prefix+'-katalog.png',fullPage:true});});
+ await check(prefix+' catalog/navigation',async()=>{await navigate(page,base+'#/akademie');await page.getByRole('heading',{name:'Strategie-Akademie',exact:true}).waitFor();assert(await page.locator('.ta-paths section').count()===8,'8 paths');assert(await page.locator('.ta-paths li').count()===32,'32 lessons');await overflow();await page.screenshot({path:out+'/'+prefix+'-katalog.png',fullPage:true});});
  await check(prefix+' all 32 lessons',async()=>{
-  for(const l of content.lessons){await page.goto(base+'#/akademie/'+l.id);await page.getByRole('heading',{name:l.title,exact:true}).waitFor();assert(await page.locator('.ta h2').count()===8,'complete sections '+l.id);assert(await page.locator('figure').count()===1,'visual');assert(await page.locator('input[type=radio]').count()===2,'answers');await overflow();}
+  for(const l of content.lessons){await navigate(page,base+'#/akademie/'+l.id);await page.getByRole('heading',{name:l.title,exact:true}).waitFor();assert(await page.locator('.ta h2').count()===8,'complete sections '+l.id);assert(await page.locator('figure').count()===1,'visual');assert(await page.locator('input[type=radio]').count()===2,'answers');await overflow();}
  });
  await check(prefix+' all 32 visual lessons: scenes, keyboard, accessibility, quiz and progress',async()=>{
   for(const id of content.lessons.map(l=>l.id)){
    const l=content.lessons.find(x=>x.id===id);
-   await page.goto(base+'#/akademie/'+id);await page.locator('.ta-pilot').waitFor();
+   await navigate(page,base+'#/akademie/'+id);await page.locator('.ta-pilot').waitFor();
    const buttons=page.getByRole('group',{name:'Chart-Beispiele'}).getByRole('button');assert(await buttons.count()===3,'three scenes '+id);
    await page.addScriptTag({path:require.resolve('axe-core/axe.min.js')});
    for(let i=0;i<3;i++){
@@ -105,7 +106,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
  });
  await check(prefix+' all 32 lessons: touch targets and doubled text',async()=>{
   for(const id of content.lessons.map(l=>l.id)){
-   await page.goto(base+'#/akademie/'+id);await page.locator('.ta-pilot').waitFor();
+   await navigate(page,base+'#/akademie/'+id);await page.locator('.ta-pilot').waitFor();
    const targets=await page.locator('.ta-scenes button, .ta-primary').evaluateAll(ns=>ns.map(n=>({w:n.getBoundingClientRect().width,h:n.getBoundingClientRect().height})));
    assert(targets.every(t=>t.w>=44&&t.h>=44),'44px touch targets '+id);
    await page.addStyleTag({content:'.ta-pilot h1,.ta-pilot h2,.ta-pilot h3,.ta-pilot p,.ta-pilot li,.ta-pilot summary,.ta-pilot button,.ta-pilot label,.ta-pilot a {font-size:200% !important}'});
@@ -116,7 +117,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
   }
  });
  await check(prefix+' quiz/progress/keyboard/practice',async()=>{
-  await page.goto(base+'#/akademie/struktur-1');await page.locator('fieldset').waitFor();await page.locator('input[value=b]').check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Noch nicht richtig'}).waitFor();
+  await navigate(page,base+'#/akademie/struktur-1');await page.locator('fieldset').waitFor();await page.locator('input[value=b]').check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Noch nicht richtig'}).waitFor();
   await page.locator('input[value=a]').check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
   await page.locator('input[value=b]').check();await page.getByRole('status').filter({hasText:'Antwort geändert'}).waitFor();await page.locator('input[value=a]').check();await page.getByRole('button',{name:'Antwort prüfen'}).click();
   const mark=page.getByRole('button',{name:'Lektion als abgeschlossen markieren'});await mark.focus();await page.keyboard.press('Enter');assert(await page.getByRole('button',{name:'Abschluss aufheben'}).getAttribute('aria-pressed')==='true','keyboard mark');
@@ -126,12 +127,12 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
   await page.locator('fieldset').waitFor();assert(await page.locator('input[value=a]').isChecked(),'answer restored');await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
   await page.waitForFunction(()=>scrollY>0,{},{timeout:5000});
   await page.locator('a[data-practice]').click();await page.reload();await page.getByRole('link',{name:'← Zur Lektion: Aufbau einer Kurskerze',exact:true}).click();await page.locator('fieldset').waitFor();assert(await page.locator('input[value=a]').isChecked(),'answer restored after practice reload');
-  await page.goto(base+'#/akademie/trend-4');await page.getByRole('link',{name:'Etablierte Trendvorlage öffnen'}).click();await page.getByRole('heading',{name:'Steigt seit Monaten',exact:true}).waitFor();/* Redesign T03: Alltagstitel als Ueberschrift, Fachname im Satz darunter */await page.getByText('Etablierter Aufwärtstrend.',{exact:false}).first().waitFor();
-  await page.goto(base+'#/akademie/routine-1');await page.getByRole('link',{name:'Analyseziel im Assistenten wählen'}).click();await page.getByRole('heading',{name:'Analyse-Assistent',exact:true}).waitFor();
+  await navigate(page,base+'#/akademie/trend-4');await page.getByRole('link',{name:'Etablierte Trendvorlage öffnen'}).click();await page.getByRole('heading',{name:'Steigt seit Monaten',exact:true}).waitFor();/* Redesign T03: Alltagstitel als Ueberschrift, Fachname im Satz darunter */await page.getByText('Etablierter Aufwärtstrend.',{exact:false}).first().waitFor();
+  await navigate(page,base+'#/akademie/routine-1');await page.getByRole('link',{name:'Analyseziel im Assistenten wählen'}).click();await page.getByRole('heading',{name:'Analyse-Assistent',exact:true}).waitFor();
  });
  await check(prefix+' 32 semantic practice routes and return',async()=>{
   for(const l of content.lessons){
-   await page.goto(base+'#/akademie/'+l.id);await page.locator('a[data-practice]').waitFor();
+   await navigate(page,base+'#/akademie/'+l.id);await page.locator('a[data-practice]').waitFor();
    const group=['struktur','trend','breakout','momentum','risiko','wechsel','zeitrahmen','routine'].indexOf(l.pathId);
    const expected=auditContract.targetGroups[group][Number(l.id.split('-')[1])-1];
    assert(await page.locator('a[data-practice]').getAttribute('href')===auditContract.targets[expected],'semantic href '+l.id);
@@ -148,7 +149,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
  });
  await check(prefix+' axe accessibility on shared lesson types',async()=>{
   for(const id of ['', '/struktur-1', '/momentum-3', '/risiko-2', '/risiko-4']){
-   await page.goto(base+'#/akademie'+id);await page.locator('.ta h1').waitFor();
+   await navigate(page,base+'#/akademie'+id);await page.locator('.ta h1').waitFor();
    await page.addScriptTag({path:require.resolve('axe-core/axe.min.js')});
    if(width===390 && ['/momentum-3','/risiko-2','/risiko-4'].includes(id))await page.screenshot({path:out+'/'+prefix+id.replace('/','-')+'.png',fullPage:true});
    const report=await page.evaluate(()=>axe.run(document.querySelector('.ta'),{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}}));
@@ -156,19 +157,19 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
   }
  });
  await check(prefix+' glossary/not-found/errors',async()=>{
-  await page.goto(base+'#/akademie/glossar');await page.getByRole('heading',{name:'Glossar',exact:true}).waitFor();assert(await page.locator('.ta section').count()===content.glossary.length,'glossary');await overflow();
-  await page.goto(base+'#/akademie/missing');await page.getByRole('heading',{name:'Lektion nicht gefunden'}).waitFor();assert(!errors.length,errors.join('\n').slice(0,600));
+  await navigate(page,base+'#/akademie/glossar');await page.getByRole('heading',{name:'Glossar',exact:true}).waitFor();assert(await page.locator('.ta section').count()===content.glossary.length,'glossary');await overflow();
+  await navigate(page,base+'#/akademie/missing');await page.getByRole('heading',{name:'Lektion nicht gefunden'}).waitFor();assert(!errors.length,errors.join('\n').slice(0,600));
  });
  await check(prefix+' keyboard/empty answer/next previous/glossary/reset',async()=>{
-  await page.goto(base+'#/akademie/risiko-2');await page.locator('fieldset').waitFor();await page.getByRole('button',{name:'Antwort prüfen'}).click();assert(await page.locator('input:invalid').count()>0,'empty answer prevented');
+  await navigate(page,base+'#/akademie/risiko-2');await page.locator('fieldset').waitFor();await page.getByRole('button',{name:'Antwort prüfen'}).click();assert(await page.locator('input:invalid').count()>0,'empty answer prevented');
   await page.locator('input[type=radio]').first().focus();await page.keyboard.press('Space');assert(await page.locator('input:checked').count()===1,'keyboard radio');
   await page.locator('.ta-basics > details > summary').click();const term=page.locator('.ta-terms summary').first();await term.focus();await page.keyboard.press('Enter');assert(await term.evaluate(n=>n.parentElement.open),'keyboard glossary');
   await page.getByRole('link',{name:'Nächste Lektion →',exact:true}).click();await page.getByRole('heading',{name:'Bollinger-Bänder',exact:true}).waitFor();await page.getByRole('link',{name:'← Vorherige Lektion',exact:true}).click();await page.getByRole('heading',{name:'ATR',exact:true}).waitFor();
-  await page.goto(base+'#/akademie');await page.getByRole('heading',{name:'Strategie-Akademie',exact:true}).waitFor();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Lokalen Fortschritt zurücksetzen'}).click();await page.getByRole('status').filter({hasText:'0 von 32'}).waitFor();assert(await page.getByRole('button',{name:'Lokalen Fortschritt zurücksetzen'}).evaluate(n=>n===document.activeElement),'reset retains focus');
+  await navigate(page,base+'#/akademie');await page.getByRole('heading',{name:'Strategie-Akademie',exact:true}).waitFor();page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Lokalen Fortschritt zurücksetzen'}).click();await page.getByRole('status').filter({hasText:'0 von 32'}).waitFor();assert(await page.getByRole('button',{name:'Lokalen Fortschritt zurücksetzen'}).evaluate(n=>n===document.activeElement),'reset retains focus');
  });
  for(const id of ['trend-1','momentum-1','zeitrahmen-1'])await check(prefix+' complete user journey '+id,async()=>{
   const l=content.lessons.find(x=>x.id===id),path=content.paths.find(p=>p.id===l.pathId);
-  await page.goto(base.replace('/technical/','/academy/'));await page.locator('a.vu-a-world-card[href="/technical/#/akademie"]').click();
+  await navigate(page,base.replace('/technical/','/academy/'));await page.locator('a.vu-a-world-card[href="/technical/#/akademie"]').click();
   await page.locator('.ta-paths section').filter({has:page.getByRole('heading',{name:path.title,exact:true})}).getByRole('link',{name:l.title,exact:true}).click();
   await page.locator('fieldset').waitFor();const expected=Object.entries(auditContract.answers).find(([key])=>key===id)[1];await page.getByLabel(expected,{exact:true}).check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
   await page.locator('a[data-practice]').click();await page.locator('.tc-hit .tc-ticks').first().waitFor();
@@ -187,7 +188,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
 }
 if(!site)await check('central Academy registry failure and retry',async()=>{
  const context=await createContext(),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.route('**/academy/data/experiences.json',r=>r.abort());await page.goto(base.replace('/technical/','/academy/'));await page.locator('.vu-a-error').waitFor();
+ await page.route('**/academy/data/experiences.json',r=>r.abort());await navigate(page,base.replace('/technical/','/academy/'));await page.locator('.vu-a-error').waitFor();
  await page.unroute('**/academy/data/experiences.json');await page.route('**/academy/data/experiences.json',r=>r.fulfill({json:{}}));await page.getByRole('button',{name:'Neu laden',exact:true}).click();await page.locator('.vu-a-error').waitFor();
  await page.unroute('**/academy/data/experiences.json');await page.getByRole('button',{name:'Neu laden',exact:true}).click();await page.locator('a.vu-a-world-card[href="/technical/#/akademie"]').waitFor();assert(!errors.length,errors.join(';'));await context.close();
 });
@@ -195,23 +196,23 @@ if(!site)await check('cold Academy loading with mobile network and CPU profile',
  for(const route of ['/academy/','/technical/#/akademie','/technical/#/akademie/trend-1']){
   const context=await createContext({viewport:{width:390,height:844}}),page=await context.newPage(),cdp=await context.newCDPSession(page);
   await cdp.send('Network.enable');await cdp.send('Network.setCacheDisabled',{cacheDisabled:true});await cdp.send('Network.emulateNetworkConditions',{offline:false,latency:150,downloadThroughput:200000,uploadThroughput:90000});await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
-  let contentRequests=0;page.on('request',r=>{if(r.url().endsWith('/technical/academy/content.json'))contentRequests++;});const start=Date.now();await page.goto(base.replace('/technical/','')+route,{waitUntil:'domcontentloaded'});
+  let contentRequests=0;page.on('request',r=>{if(r.url().endsWith('/technical/academy/content.json'))contentRequests++;});const start=Date.now();await navigate(page,base.replace('/technical/','')+route,{waitUntil:'domcontentloaded'});
   if(route==='/academy/')await page.locator('a.vu-a-world-card[href="/technical/#/akademie"]').waitFor();else if(route.endsWith('trend-1'))await page.locator('fieldset').waitFor();else await page.locator('.ta-paths section').first().waitFor();
   const ms=Date.now()-start;assert(ms<15000,'cold load exceeds 15s failure ceiling');assert(contentRequests<2,'duplicate lesson payload');performanceChecks.push({route,ms,contentRequests,profile:'390px, CPU x4, 150ms latency, 1.6Mbit/s, empty cache',ceilingMs:15000});await context.close();
  }
 });
 await check('real chart analysis and screener handoff retain academy return',async()=>{
  const context=await createContext({viewport:{width:390,height:844}}),page=await context.newPage();
- await page.goto(base+'#/akademie/momentum-2');await page.locator('a[data-practice]').click();await page.getByRole('heading',{name:'Chart Studio',exact:true}).waitFor();
+ await navigate(page,base+'#/akademie/momentum-2');await page.locator('a[data-practice]').click();await page.getByRole('heading',{name:'Chart Studio',exact:true}).waitFor();
  await page.evaluate(()=>location.hash='#/chart/NVDA/studio');/* Redesign T06: Unterfenster im Chart Studio */const rsi=page.getByRole('button',{name:'RSI',exact:true});await rsi.waitFor();if(await rsi.getAttribute('aria-pressed')!=='true')await rsi.click();assert(await rsi.getAttribute('aria-pressed')==='true','RSI enabled');
  await page.getByRole('link',{name:'← Zur Lektion: RSI',exact:true}).click();await page.getByRole('heading',{name:'RSI',exact:true}).waitFor();
  await page.evaluate(()=>{dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}));dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));});await page.locator('input[value=a]').check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
- await page.goto(base+'#/akademie/routine-2');await page.locator('a[data-practice]').click();await page.getByRole('heading',{name:'Kriterien kombinieren',exact:true}).waitFor();
+ await navigate(page,base+'#/akademie/routine-2');await page.locator('a[data-practice]').click();await page.getByRole('heading',{name:'Kriterien kombinieren',exact:true}).waitFor();
  await page.locator('a',{hasText:'Im Screener bearbeiten'}).click();await page.locator('.tc-builder').waitFor();await page.getByRole('link',{name:'← Zur Lektion: Filter kombinieren',exact:true}).click();await page.getByRole('heading',{name:'Filter kombinieren',exact:true}).waitFor();await context.close();
 });
 if(!site)await check('blocked storage / safe text / load retry',async()=>{
  const context=await createContext();await context.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw Error('blocked');}});});const page=await context.newPage();
- await page.route('**/technical/academy/content.json',r=>r.abort());await page.goto(base+'#/akademie/struktur-1');await page.getByRole('button',{name:'Erneut versuchen'}).waitFor();
+ await page.route('**/technical/academy/content.json',r=>r.abort());await navigate(page,base+'#/akademie/struktur-1');await page.getByRole('button',{name:'Erneut versuchen'}).waitFor();
  await page.unroute('**/technical/academy/content.json');await page.route('**/technical/academy/content.json',r=>r.fulfill({json:{paths:[],lessons:[],glossary:[]}}));await page.getByRole('button',{name:'Erneut versuchen'}).click();await page.getByRole('button',{name:'Erneut versuchen'}).waitFor();await page.unroute('**/technical/academy/content.json');await page.route('**/technical/academy/content.json',r=>{const c=structuredClone(content);c.lessons[0].foundations[0]='<img src=x onerror="window.academyInjection=true">';return r.fulfill({json:c});});await page.getByRole('button',{name:'Erneut versuchen'}).click();await page.getByRole('button',{name:'Lektion als abgeschlossen markieren'}).click();await page.getByRole('status').filter({hasText:'Speichern ist gesperrt'}).waitFor();assert(await page.locator('.ta img').count()===0,'injected image');assert(await page.evaluate(()=>!window.academyInjection),'injected execution');await context.close();
 });
 if(!site)await check('presentation failures fall back and graphic/text payloads never execute',async()=>{
@@ -223,11 +224,11 @@ if(!site)await check('presentation failures fall back and graphic/text payloads 
    else if(mode==='wrong-topic')p.topic='zeitrahmen-1';
    else{p.intro='<img src=x onerror="window.pilotInjection=true">';p.scenes[0].graphic[0].text=p.intro;}
    return r.fulfill({json:c});});
-  await page.goto(base+'#/akademie/struktur-1');await page.locator('fieldset').waitFor();
+  await navigate(page,base+'#/akademie/struktur-1');await page.locator('fieldset').waitFor();
   assert(await page.locator('.ta-pilot').count()===(mode==='literal-text'?1:0),'invalid optional presentation fallback '+mode);
   assert(await page.locator('.ta img, .ta image').count()===0,'no markup inserted');assert(await page.evaluate(()=>!window.pilotInjection),'no content execution');
   if(mode==='literal-text')assert(await page.locator('.ta-basics').textContent().then(t=>t.includes('<img')),'untrusted text remains literal');
-  await page.unroute('**/technical/academy/content.json');await page.goto('about:blank');
+  await page.unroute('**/technical/academy/content.json');await navigate(page,'about:blank');
  }
  await context.close();
 });
