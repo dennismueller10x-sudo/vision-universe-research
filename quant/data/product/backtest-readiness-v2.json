@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-11-06T08:49:37.670Z",
+ "generatedAt": "2026-11-07T04:16:25.727Z",
  "signalStudy": {
   "asOf": "2026-11-06",
-  "generatedAt": "2026-11-06T08:47:41.352Z",
+  "generatedAt": "2026-11-07T04:13:53.059Z",
   "returnType": "TOTAL_RETURN",
   "studySchemaVersion": "signal-backtest-study-2.0.0",
   "studyEngineVersion": "signal-backtest-2.0.0",
@@ -17,8 +17,8 @@
    "contract": "canonical-total-return-1.0.0",
    "coverage": {
     "unit": "SECURITY_PRICE_SERIES",
-    "titles": 6038,
-    "withTotalReturn": 5902,
+    "titles": 6039,
+    "withTotalReturn": 5903,
     "share": 0.977,
     "minimumShare": 0.95
    }
@@ -49,10 +49,10 @@
   {
    "id": "setupObservations",
    "label": "Setup-Beobachtungen und Wechsel",
-   "count": 28,
+   "count": 29,
    "from": "2026-09-10",
-   "to": "2026-11-05",
-   "spanDays": 56,
+   "to": "2026-11-06",
+   "spanDays": 57,
    "replay": {
     "titles": 160,
     "observations": 127284,
@@ -62,17 +62,17 @@
   {
    "id": "factorSnapshots",
    "label": "Faktor-Snapshots",
-   "count": 28,
+   "count": 29,
    "from": "2026-09-23",
-   "to": "2026-11-05",
-   "spanDays": 43
+   "to": "2026-11-06",
+   "spanDays": 44
   },
   {
    "id": "strategyAssignments",
    "label": "Strategie-Zuordnungen und Wechsel",
-   "count": 28,
-   "from": "2026-11-04",
-   "to": "2026-11-05",
+   "count": 29,
+   "from": "2026-11-05",
+   "to": "2026-11-06",
    "spanDays": 1
   },
   {
@@ -90,7 +90,7 @@
    "id": "priceSplitAdjusted",
    "label": "Kurshistorie splitbereinigt",
    "weekly": {
-    "titles": 6038,
+    "titles": 6039,
     "from": "1990-01-05",
     "grain": "WEEKLY",
     "endedBeforeMarch2026": 0
@@ -105,14 +105,14 @@
    "label": "Kurshistorie Gesamtrendite",
    "weekly": {
     "unit": "SECURITY_PRICE_SERIES",
-    "titles": 5902,
-    "eligibleTitles": 6038,
+    "titles": 5903,
+    "eligibleTitles": 6039,
     "share": 0.977,
     "state": "AVAILABLE",
     "reason": null,
     "contract": "canonical-total-return-1.0.0",
     "asOf": "2026-11-06",
-    "generatedAt": "2026-11-06T08:47:41.352Z"
+    "generatedAt": "2026-11-07T04:13:53.059Z"
    },
    "daily": {
     "titles": 5,
@@ -128,7 +128,7 @@
   {
    "id": "regimeHistory",
    "label": "Marktphasen-Historie",
-   "count": 28,
+   "count": 29,
    "from": "2026-09-10",
    "derivable": {
     "from": "1995-01-03",
@@ -154,7 +154,7 @@
   {
    "id": "levels",
    "label": "Einstieg, Invalidierung, Ziele",
-   "publishedSnapshots": 28,
+   "publishedSnapshots": 29,
    "reconstructible": {
     "titles": 5
    }
@@ -186,8 +186,8 @@
   {
    "id": "pitFundamentals",
    "label": "Fundamentaldaten point-in-time",
-   "ready": 4998,
-   "of": 6573
+   "ready": 5026,
+   "of": 6308
   },
   {
    "id": "survivorship",
@@ -210,7 +210,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6038 Titel seit 1990-01-05",
+     "value": "6039 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -242,7 +242,7 @@
      "id": "pit",
      "label": "Point-in-Time-Wiederholung",
      "state": "PASS",
-     "value": "4238 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "value": "4388 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
      "reason": null
     },
     {
@@ -317,14 +317,14 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6038 Titel seit 1990-01-05",
+     "value": "6039 Titel seit 1990-01-05",
      "reason": null
     },
     {
      "id": "totalReturn",
      "label": "Gesamtrendite",
      "state": "PASS",
-     "value": "5902 von 6038 Wertpapier-Zeitreihen (97.7 %), canonical-total-return-1.0.0",
+     "value": "5903 von 6039 Wertpapier-Zeitreihen (97.7 %), canonical-total-return-1.0.0",
      "reason": null
     },
     {
@@ -414,7 +414,7 @@
      "id": "pitFactors",
      "label": "Faktorhistorie point-in-time",
      "state": "PASS",
-     "value": "28 Faktor-Snapshots seit 2026-09-23",
+     "value": "29 Faktor-Snapshots seit 2026-09-23",
      "reason": null
     },
     {
@@ -456,14 +456,14 @@
      "id": "factorHistory",
      "label": "Faktorhistorie",
      "state": "PASS",
-     "value": "28 Snapshots über 43 Tage",
+     "value": "29 Snapshots über 44 Tage",
      "reason": null
     },
     {
      "id": "pitFundamentals",
      "label": "Fundamentaldaten datierbar",
      "state": "PASS",
-     "value": "4998 von 6573 Titeln",
+     "value": "5026 von 6308 Titeln",
      "reason": null
     },
     {

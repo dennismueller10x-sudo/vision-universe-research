@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-11-06T08:34:46.000Z",
- "asOf": "2026-11-05",
+ "generatedAt": "2026-11-07T03:57:42.000Z",
+ "asOf": "2026-11-06",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,25 +323,25 @@
    "predicateHash": null
   }
  ],
- "universe": 5631,
- "observed": 5631,
+ "universe": 5632,
+ "observed": 5632,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4556,
-  "WATCH": 644,
-  "SETUP_FORMING": 392,
-  "CONFIRMED": 39,
+  "NO_SETUP": 4568,
+  "WATCH": 639,
+  "SETUP_FORMING": 397,
+  "CONFIRMED": 28,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 392,
-  "setup.none.fallback": 4556,
-  "setup.watch.bullish-trend": 419,
-  "setup.watch.confirmed-structure-near-high": 225,
-  "setup.confirmed.structure-trend-volume": 39
+  "setup.forming.complete-setup-awaiting-trigger": 397,
+  "setup.none.fallback": 4568,
+  "setup.watch.bullish-trend": 429,
+  "setup.confirmed.structure-trend-volume": 28,
+  "setup.watch.confirmed-structure-near-high": 210
  },
  "pathTier": {
   "states": [
@@ -387,14 +387,15 @@
    "2026-11-02",
    "2026-11-03",
    "2026-11-04",
-   "2026-11-05"
+   "2026-11-05",
+   "2026-11-06"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5631
+   "instruments": 5632
   }
  },
  "shards": [
@@ -1031,21 +1032,10 @@
   "ZZ",
   "Z_"
  ],
- "observationDrift": {
-  "asOf": "2026-11-05",
-  "publishedHash": "adc5dfb1716fc9c8155ed601a04349da",
-  "recomputedHash": "fab8ceb27297f3a63a0bc07e48598d0f",
-  "rowsPublished": 5565,
-  "rowsToday": 5535,
-  "rowsAdded": 0,
-  "rowsChanged": 30,
-  "addedOnly": false,
-  "columnsDiffer": false,
-  "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch eine, die nur Zeilen hinzufuegen wuerde."
- },
+ "observationDrift": null,
  "staleBundles": {
   "count": 96,
-  "cutoff": "2026-11-05",
+  "cutoff": "2026-11-06",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
    "2026-10-23": 6,
