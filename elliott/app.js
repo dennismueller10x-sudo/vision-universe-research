@@ -72,6 +72,15 @@
           loads.push(new Promise(function (ok) { link.onload = link.onerror = function () { ok(); }; }));
           document.head.append(link);
         });
+        // Reuse the critical C04/C05 styles and code from compiled Quant.
+        // Classic source releases keep their external-script path below.
+        doc.querySelectorAll('style[data-vu-quant-head]').forEach(function (source) {
+          var style = el("style", { media: "not all", dataset: { qxHost: "1" } });
+          style.textContent = source.textContent; stackLinks.push(style); document.head.append(style);
+        });
+        doc.querySelectorAll('script[data-vu-quant-head]').forEach(function (source) {
+          var script = document.createElement("script"); script.textContent = source.textContent; document.head.append(script);
+        });
         doc.querySelectorAll("script[src]").forEach(function (sc) {
           var src = sc.getAttribute("src");
           if (!src || /site-navigation\.js/.test(src)) return;

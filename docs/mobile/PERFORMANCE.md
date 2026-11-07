@@ -63,6 +63,41 @@ HTTP-/Netzfehler bleiben in den Rohdaten enthalten: /: http://127.0.0.1:42149/fa
 
 Paket 2 allein erreicht das Aktienziel nicht: Quant 6,167 s, Technical 3,953 s und Supertrader 3,131 s im Median. Fundamental liegt bei 2,434 s, springt jedoch im Layout. Discover sinkt von 131 auf 56 Requests. Die frühen Köpfe und reservierten Flächen folgen in Paket 3; aus schwankenden Zeiten unveränderter Ladepfade wird keine kausale Beschleunigung behauptet.
 
+## Paket 3 – App-Verhalten (#1562): vorher / nachher
+
+Mediane aus jeweils drei kalten Läufen. Vergleich `loading` → `app-feel`; alle Einzelwerte, Ressourcen und Fehler: [loading.json](e5/final/loading.json), [app-feel.json](e5/final/app-feel.json).
+
+| Route | LCP s vorher / nachher | CLS vorher / nachher | TBT* ms vorher / nachher | Wire KiB vorher / nachher | Requests vorher / nachher | Erster Kurs s vorher / nachher |
+|---|---:|---:|---:|---:|---:|---:|
+| `/` | 1.176 / 1.244 | 0.000 / 0.000 | 0 / 142 | 72.1 / 72.5 | 9 / 9 | – / – |
+| `/quant/` | 2.976 / 2.252 | 0.306 / 0.006 | 367 / 598 | 514.6 / 530.8 | 24 / 23 | – / – |
+| `/quant/#/aktie/NVDA` | 7.048 / 2.772 | 0.062 / 0.055 | 1129 / 1674 | 885.2 / 903.0 | 47 / 47 | 6.167 / 1.630 |
+| `/technical/#/chart/NVDA` | 2.316 / 3.576 | 0.742 / 0.052 | 823 / 677 | 551.9 / 553.6 | 57 / 57 | 3.953 / 3.562 |
+| `/fundamental/#/NVDA` | 1.616 / 2.600 | 0.361 / 0.000 | 988 / 1046 | 1314.3 / 1315.8 | 28 / 28 | 2.434 / 2.521 |
+| `/supertrader/` | 1.040 / 2.252 | 1.026 / 0.013 | 846 / 84 | 595.1 / 219.7 | 24 / 19 | – / – |
+| `/supertrader/stock/NVDA/` | 1.044 / 2.912 | 1.175 / 0.085 | 153 / 127 | 305.7 / 307.8 | 32 / 32 | 3.131 / 3.049 |
+| `/discover/` | 1.460 / 1.520 | 0.087 / 0.086 | 269 / 332 | 996.2 / 997.7 | 56 / 56 | – / – |
+| `/quant/musterdepots/` | 3.832 / 1.508 | 0.361 / 0.000 | 1503 / 61 | 170.5 / 171.6 | 12 / 12 | – / – |
+| `/analysten/` | 1.204 / 1.128 | 0.018 / 0.018 | 114 / 88 | 86.5 / 86.6 | 10 / 10 | – / – |
+| `/mein-dashboard/` | 0.752 / 1.216 | 0.000 / 0.000 | 47 / 36 | 221.3 / 222.7 | 29 / 29 | – / – |
+
+Zielprüfung der vier Aktienseiten (kein Bestehen nur aus einem günstigen Einzellauf ableiten):
+
+| Aktienroute | Erster Kurs: Median / Spanne s | Läufe < 3 s | CLS: Median / Maximum | Läufe CLS < 0,1 |
+|---|---:|---:|---:|---:|
+| `/quant/#/aktie/NVDA` | 1.630 / 1.592–2.725 | 3/3 | 0.055 / 0.073 | 3/3 |
+| `/technical/#/chart/NVDA` | 3.562 / 3.178–6.933 | 0/3 | 0.052 / 0.052 | 3/3 |
+| `/fundamental/#/NVDA` | 2.521 / 2.498–2.598 | 3/3 | 0.000 / 0.001 | 3/3 |
+| `/supertrader/stock/NVDA/` | 3.049 / 2.975–3.058 | 1/3 | 0.085 / 0.085 | 3/3 |
+
+LCP < 2,5 s: 7/11 Routen im Median; CLS < 0,1: 11/11 im Median.
+
+HTTP-/Netzfehler bleiben in den Rohdaten enthalten: /: http://127.0.0.1:45827/favicon.ico (404); /mein-dashboard/: https://konto.visionuniverse.de/v1/session (403), https://konto.visionuniverse.de/v1/session (net::ERR_FAILED).
+
+Paket 3 erreicht den ersten Kurs unter drei Sekunden in allen Quant- und Fundamental-Läufen. Technical (3,562 s Median) und Supertrader (3,049 s Median, zwei Läufe ≥ 3 s) verfehlen das Ziel. CLS bleibt auf allen elf Routen im Median unter 0,1; die abschließende Einzelwertprüfung folgt in Paket 4.
+
+Der Kopf-Erzeuger kopiert nur die kanonisch verfügbaren, erlaubten Werte. Der abschließende Daten-Overlay darf alte Kopfscherben nicht zurücklassen: ein zuvor verfügbarer, danach zurückgehaltener Wert ist durch einen echten Regressionstest abgedeckt. Die Tests laufen über die bestehenden Quant-/Supertrader-Suiten; kein Workflow wird ergänzt.
+
 ## Historische Messung aus Paket 1 (06.11.; andere Ausgangsrevision)
 
 

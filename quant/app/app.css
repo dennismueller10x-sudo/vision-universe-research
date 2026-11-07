@@ -1647,3 +1647,9 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 .qv3-ch-tdates{display:flex;justify-content:space-between}
 .qv3-ch-tcard{margin-top:10px;padding:12px 14px}.qv3-ch-tcard p{margin:3px 0 0}
 .qv3-ch-foot{margin-top:12px}.qv3-ch-foot a{color:inherit}
+
+/* E5: reserve the market card before asynchronous home data arrives. */
+.qv3-regime-host[aria-busy=true]{min-height:238px}
+.qx-loading .qx-loading-label{display:block;margin-bottom:10px}
+
+.qx-hero-host[aria-busy=true]{min-height:212px}

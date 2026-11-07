@@ -56,3 +56,7 @@
 }
 .vu-shead .vu-shead-price .vu-shead-change small,.vu-shead-price .vu-shead-change small{color:inherit}
 .vu-snav .vu-snav-chip>svg.vu-snav-glyph{width:15px!important;height:15px!important;max-width:none;flex:none}
+
+/* E5: keep C05 in place while C04 awaits its published price. */
+.vu-shead-pricebox[data-price-pending=true]{display:block;min-height:65px;padding-top:10px;box-sizing:border-box}
+.vu-shead-pricebox[data-price-pending=true]:before{content:"";display:block;width:128px;height:34px;border-radius:8px;background:var(--vu-hair,var(--vu-line))}

@@ -1113,7 +1113,7 @@
   var simple = { range: "1J", zones: true, trend: false, avg: false };
   function stockHeadMount(host, T, name) {
     var SN = global.VUStockNavigator, SCX = global.VUCore && global.VUCore.StockContext, api = null;
-    try { if (SN && SCX) api = SN.head(host, { ctx: SCX.fromUs(T, name ? { name: name } : undefined), current: "technical", name: name || null, back: { href: "#/", label: "Technical" } }); } catch (e) { api = null; }
+    try { if (SN && SCX) api = SN.head(host, { ctx: SCX.fromUs(T, name ? { name: name } : undefined), current: "technical", name: name || null, pendingPrice: true, back: { href: "#/", label: "Technical" } }); } catch (e) { api = null; }
     if (!api || !api.el) { put(host, h(U.stockHead({ ticker: T, name: name || T, backHref: "#/" }, { active: "technical" }))); api = { setPrice: function () {}, el: host.firstChild }; }
     return api;
   }
@@ -1127,22 +1127,31 @@
     if (tplPanel && route.tab === "studio") templateLayers(route.params);
     put(main, [headHost, tplPanel, body]);
 
-    Promise.all([loadInstrument(T), loadEngines(), loadIndex().catch(function () { return null; }), loadEvidence()]).then(function (r) {
+    var instrumentP = loadInstrument(T);
+    // The validated instrument already carries the exact close displayed here.
+    // Paint it before chart engines/history and preserve the shared head node.
+    var headP = instrumentP.then(function (r) {
+      if (!headHost.isConnected) return;
+      var b = r.inst.bars, t = b.close.length - 1, chg = b.close[t] / b.close[t - 1] - 1;
+      head.setPrice({ value: b.close[t], currency: "USD", changePct: isNum(chg) ? chg * 100 : null, kind: "close", at: M.dateDe(b.timestamps[t]) });
+      if (typeof global.requestAnimationFrame === "function") return new Promise(function (done) { global.requestAnimationFrame(function () { global.requestAnimationFrame(done); }); });
+    });
+    Promise.all([instrumentP, loadEngines(), loadIndex().catch(function () { return null; }), loadEvidence(), headP]).then(function (r) {
       var inst = r[0].inst, D = r[2], name = D ? D.name(T) : null;
-      if (name) { head = stockHeadMount(headHost, T, shortName(name) || name); }
+      var headName = head.el && head.el.querySelector(".vu-shead-name");
+      if (name && headName && headName.textContent === T) headName.textContent = shortName(name) || name;
       doc.title = T + " · " + (route.tab === "studio" ? "Chart Studio" : "Chart") + " · Technical · Vision Universe®";
       var VT = global.VUTechnical, b = inst.bars, bundle = inst.bundle || {};
       var series = VT.CanonicalBars.fromRows(b.timestamps.map(function (d, i) { return { date: d, open: b.open[i], high: b.high[i], low: b.low[i], close: b.close[i], volume: b.volume[i] }; }),
         { instrumentId: T, exchange: "US", currency: "USD", timeframe: "1D", priceSeriesType: "SPLIT_ADJUSTED", source: "tiingo", sourceRevision: "technical-signals-v1" });
       var prep = VT.TIContext.prepare(series), t = series.length - 1;
       var analysis = VT.Formations.analyzeAt(prep, t), ctx = VT.TIContext.at(prep, t), levels = VT.TILevels.supportResistance(ctx);
-      var fromIdx = Math.max(0, series.length - 252), hist = VT.Formations.history(prep, fromIdx, t);
+      /* The simple chart never consumes formation history; keep the same calculation on its two consumers. */
+      var fromIdx = Math.max(0, series.length - 252), hist = route.tab === "signals" || route.tab === "studio" ? VT.Formations.history(prep, fromIdx, t) : [];
       var S = { dates: b.timestamps, open: b.open, high: b.high, low: b.low, close: b.close, volume: b.volume };
       var cs = bundle.chartSeries || {}, F = bundle.featuresAtCutoff || {};
       var st = M.seriesState(b.timestamps, b.close, D && (D.meta && D.meta.asOf || D.index.asOf), global.VUCore && global.VUCore.ListingStaleness);
       if (st.frozenSince) { analysis = { formations: [] }; levels = { supports: [], resistances: [] }; hist = []; F = {}; }
-      var chg = b.close[t] / b.close[t - 1] - 1;
-      head.setPrice({ value: b.close[t], currency: "USD", changePct: isNum(chg) ? chg * 100 : null, kind: "close", at: M.dateDe(b.timestamps[t]) });
       body.removeAttribute("aria-busy");
       var worlds = worldsSection(T, b.timestamps[t]);
       if (route.tab === "signals") return renderSignals(body, analysis, F, b.close[t], levels, hist, inst, D, st, worlds);
@@ -1160,6 +1169,7 @@
       ind.candles = VT.Candlesticks ? VT.Candlesticks.detect({ open: b.open, high: b.high, low: b.low, close: b.close }, { only: Object.keys(Q.CANDLE_TYPES) }).patterns : null;
       renderStudio(body, { T: T, S: S, cs: cs, ind: ind, analysis: analysis, levels: levels, F: F, inst: inst, hist: hist, D: D, st: st, worlds: worlds, focus: route.params && route.params.f || null });
     }).catch(function (e) {
+      head.setPrice(null);
       body.removeAttribute("aria-busy");
       put(body, stateBox("Kein technisches Chartbild für " + T, e && e.message === "NOT_AVAILABLE"
         ? "Für dieses Kürzel liegt keine ausreichend lange, geprüfte Tagesreihe vor (mindestens etwa ein Jahr Handel, gültiger Kalender)."
@@ -1907,7 +1917,8 @@
     if (key !== lastView) global.scrollTo(0, 0);
     lastView = key;
   }
-  global.addEventListener("hashchange", onHash);
+  if (global.VUUI.bindIntent) global.VUUI.bindIntent(function (url) { if (url.origin !== location.origin || url.pathname !== "/technical/") return null; var r = M.parseRoute(url.hash); return r.view === "chart" ? r.ticker : null; }, loadInstrument);
+  global.addEventListener("hashchange", function () { return global.VUUI.transition ? global.VUUI.transition(onHash) : onHash(); });
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", onHash); else onHash();
   global.VUTechnicalApp = { render: render };
 })(window);

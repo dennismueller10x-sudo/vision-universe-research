@@ -17,6 +17,7 @@ const server = await startServer(root);
 const base = arg('--base-url', `http://127.0.0.1:${server.address().port}`);
 const browser = await chromium.launch({executablePath:arg('--browser', undefined)});
 const samples = [];
+const overlay = await readFile(resolve(root, 'mobile-code-overlay.json'), 'utf8').then(JSON.parse).catch(() => null);
 const delivery = await readFile(resolve(root, 'release-delivery.json'), 'utf8').then(JSON.parse).catch(() => null);
 try {
  for (const route of routes.filter(p => !arg('--route') || p === arg('--route'))) for (let run = 1; run <= runs; run++) {
@@ -55,16 +56,16 @@ try {
   await page.waitForTimeout(windowMs);
   const metrics=await page.evaluate(() => {
    const m=window.__e5, fcp=performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? null;
-   return {...m,tasks:undefined,fcp,tbt:m.tasks.reduce((s,t)=>s+(fcp===null?0:Math.max(0,t.start+t.duration-Math.max(t.start+50,fcp))),0)};
+   return {...m,cls:fcp===null?null:m.cls,tasks:undefined,fcp,tbt:fcp===null?null:m.tasks.reduce((s,t)=>s+(fcp===null?0:Math.max(0,t.start+t.duration-Math.max(t.start+50,fcp))),0)};
   });
   const sample={route,run,...metrics,requests:requests.length,bytes:requests.reduce((s,r)=>s+r.bytes,0),unfinished:requests.filter(r=>!r.finished&&!r.error).length,failures:requests.filter(r=>r.status>=400||r.error),errors,resources:requests};
   samples.push(sample);
   console.log(JSON.stringify({...sample,resources:undefined}));
   await context.close();
  }
- const median = a => {a=a.filter(x=>x!==null).sort((a,b)=>a-b);return a.length ? a[Math.floor(a.length/2)] : null;};
- const rows=[...new Set(samples.map(s=>s.route))].map(route=> {const ss=samples.filter(s=>s.route===route);return {route,...Object.fromEntries(['lcp','cls','tbt','bytes','requests','firstNumber'].map(k=>[k,median(ss.map(s=>s[k]))])),failedRuns:ss.filter(s=>s.failures.length||s.errors.length).length};});
- const result={schema:1,sourceCommit:delivery?.sourceCommit ?? null,commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),browser:browser.version(),measuredAt:new Date().toISOString(),profile:{viewport:'390x844',downloadBps:1600000,uploadBps:750000,latencyMs:150,cpu:4,windowMs,runs,cache:'cold, SW blocked',root,base},note:'TBT lab proxy: long-task blocking after FCP until fixed observation end; not INP or Lighthouse TBT. Null firstNumber = no visible stock-head price within window. Bytes = CDP wire including headers; unfinished responses counted partially.',rows,samples};
+ const median = a => {a=a.map(x=>x===null?Infinity:x).sort((a,b)=>a-b);const value=a[Math.floor(a.length/2)];return Number.isFinite(value)?value:null;};
+ const rows=[...new Set(samples.map(s=>s.route))].map(route=> {const ss=samples.filter(s=>s.route===route);return {route,...Object.fromEntries(['lcp','cls','tbt','bytes','requests','firstNumber'].map(k=>[k,median(ss.map(s=>s[k]))])),incompleteRuns:ss.filter(s=>s.unfinished>0||s.lcp===null).length,failedRuns:ss.filter(s=>s.failures.length||s.errors.length).length};});
+ const result={schema:1,deliveryOverlay:overlay,sourceCommit:delivery?.sourceCommit ?? null,commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),browser:browser.version(),measuredAt:new Date().toISOString(),profile:{viewport:'390x844',downloadBps:1600000,uploadBps:750000,latencyMs:150,cpu:4,windowMs,runs,cache:'cold, SW blocked',root,base},note:'TBT lab proxy: long-task blocking after FCP until fixed observation end; not INP or Lighthouse TBT. Null firstNumber = no visible stock-head price within window. Bytes = CDP wire including headers; unfinished responses counted partially.',rows,samples};
  await writeFile(resolve(arg('--out','/tmp/e5-measurement.json')),JSON.stringify(result,null,2)+'\n');
  console.table(rows);
 } finally {await browser.close();await new Promise(r=>server.close(r));}
