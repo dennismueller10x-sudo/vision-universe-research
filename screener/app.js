@@ -434,7 +434,7 @@
       pro ? null : h('p', { class: 'vu-lead', text: 'Sag in einem Satz, was dir wichtig ist. Wir zeigen, welche der ' + nf(i.count) + ' US-Aktien passen.' })]));
     main.append(modeSeg(true));
     /* Europa (Strang M, 08.11.2026): eigene Seite mit einfachen Kursspalten, nicht Teil dieses US-Universums. */
-    main.append(h('p', { class: 'sc-sub', 'data-europe-link': '' }, [h('a', { href: '/screener/europa/', text: 'Europäische Aktien: Kursveränderung, 52-Wochen-Hoch, 50-Tage-Linie →' })]));
+    main.append(h('p', { class: 'sc-sub', 'data-europe-link': '' }, [h('a', { href: '/screener/europa/', style: { display: 'inline-flex', alignItems: 'center', minHeight: '44px' }, text: 'Europäische Aktien: Kursveränderung, 52-Wochen-Hoch, 50-Tage-Linie →' })]));
     if (!pro) {
       main.append(sentenceCard());
       main.append(sectEl('Fertige Ideen'), ideasGrid(IDEAS), h('div', { class: 'sc-gap-s' }, helpLine('200-Tage-Linie: der Durchschnittskurs der letzten 200 Handelstage. Liegt der Kurs darüber, läuft der Trend eher nach oben.')));
