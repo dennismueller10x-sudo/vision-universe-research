@@ -43,9 +43,9 @@ lokal, in der CI, lesend oder im jeweiligen Dashboard erledigt.
 | R1 | Rechtliche Abnahme A1–A14 ([RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md)) | Rechtsberatung | Entwürfe online lesen, Änderungen mitteilen | offen |
 | R2 | Fehlende Angaben: USt-IdNr. (falls erteilt), Telefon oder anderer schneller Kontaktweg, Datenschutzbeauftragter ja/nein, Teilnahme an Verbraucherschlichtung ja/nein | Owner | mitteilen (Fragebogen in [RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md)) | erledigt 06.11.2026 (USt-IdNr., Kontaktformular, kein DSB; Schlichtung wie im Entwurf) |
 | S1 | Umsatzsteuer: Stripe Tax läuft; Länderfrage, Steuerkategorie und Rechnungsangaben bestätigt der Steuerberater | Steuerberatung | [STEUER.md](STEUER.md) | technisch erledigt, Bestätigung offen |
-| S2 | Stripe-Branding (Symbol, Logo, Farben) und öffentliche Angaben (Support-E-Mail/-URL, Steuernummer auf Rechnungen, Beleg-E-Mails) | Owner | Stripe-Dashboard, Schritt für Schritt in [STRIPE_BRANDING.md](STRIPE_BRANDING.md); über die API für das eigene Konto nicht setzbar. Prüfbar erst mit `VU_ACCOUNT_STRIPE_READ_KEY` (täglicher Lesecheck meldet Logo, Symbol, Farbe, Akzent) | offen (letzter Befund 30.10.: kein Logo, kein Symbol, keine Support-Angaben) |
+| S2 | Stripe-Branding (Symbol, Logo, Farben) und öffentliche Angaben (Support-E-Mail/-URL, Steuernummer auf Rechnungen, Beleg-E-Mails) | Owner | Stripe-Dashboard, Schritt für Schritt in [STRIPE_BRANDING.md](../archiv/accounts/STRIPE_BRANDING.md); über die API für das eigene Konto nicht setzbar. Prüfbar erst mit `VU_ACCOUNT_STRIPE_READ_KEY` (täglicher Lesecheck meldet Logo, Symbol, Farbe, Akzent) | offen (letzter Befund 30.10.: kein Logo, kein Symbol, keine Support-Angaben) |
 | S3 | Klarna für ein 1-€-Abo behalten? | Owner | Stripe-Dashboard → Zahlungsmethoden (optional) | offen |
-| Z1 | Abschließende Zahlungsprüfung: echter Testkauf mit dem Testkonto, Beleg, Kündigung, Erstattung | Owner, Claude prüft lesend | [ZAHLUNGSPRUEFUNG.md](ZAHLUNGSPRUEFUNG.md) – jetzt schon möglich (Checkout `testers`) | offen |
+| Z1 | Abschließende Zahlungsprüfung: echter Testkauf mit dem Testkonto, Beleg, Kündigung, Erstattung | Owner, Claude prüft lesend | [ZAHLUNGSPRUEFUNG.md](../archiv/accounts/ZAHLUNGSPRUEFUNG.md) – jetzt schon möglich (Checkout `testers`) | offen |
 | B1 | Rechtsgrundlage Brevo-Kontaktliste (A10) | Rechtsberatung | mit R1 | offen |
 | B2 | DOI-Vorlage | – | `/v1/health` → `newsletterTemplate: ok` | erledigt |
 
@@ -73,7 +73,7 @@ Das Projekt gilt als abgeschlossen, wenn alle Punkte erfüllt sind:
 
 - [ ] R1, R2, B1: Texte freigegeben, keine `[[OFFEN]]`/`[[PRÜFEN]]`, `legalApproved: true`
 - [ ] S1: Steuerberater bestätigt; S2: Branding und Rechnungsangaben in Stripe gesetzt
-- [ ] Z1: Testkauf, Kündigung und Erstattung protokolliert ([ZAHLUNGSPRUEFUNG.md](ZAHLUNGSPRUEFUNG.md))
+- [ ] Z1: Testkauf, Kündigung und Erstattung protokolliert ([ZAHLUNGSPRUEFUNG.md](../archiv/accounts/ZAHLUNGSPRUEFUNG.md))
 - [ ] Checkout `public`, Kontrolle nach Abschnitt 3.6 erfüllt
 - [ ] Brevo-Abgleich an (`contactSync: true`), Newsletter nach Entscheidung
 - [ ] Optional: Lese-Schlüssel `VU_ACCOUNT_STRIPE_READ_KEY` in `account-auto` (tägliche Stripe-Prüfung ohne Freigabe, [FREIGABEN.md](FREIGABEN.md))

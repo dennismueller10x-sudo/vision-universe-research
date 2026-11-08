@@ -22,8 +22,13 @@
   },
   "deploy": {
    "purpose": "Auslieferung: Pages, Cloudflare-Worker",
-   "workflow": null,
-   "replaces": []
+   "workflow": "deploy.yml",
+   "replaces": [
+    "cloudflare-ask-deploy.yml",
+    "cloudflare-deploy.yml",
+    "landing-pages-publish.yml",
+    "sync-navigation.yml"
+   ]
   },
   "pipeline-daily": {
    "purpose": "Tageskette nach US-Schluss: Kurse, Faktoren, Discover, Technical, Supertrader, SEC-Tagesindex",
@@ -189,12 +194,6 @@
   "brevo-newsletter.yml": {
    "bundle": "account"
   },
-  "cloudflare-ask-deploy.yml": {
-   "bundle": "deploy"
-  },
-  "cloudflare-deploy.yml": {
-   "bundle": "deploy"
-  },
   "cloudflare-waker-deploy.yml": {
    "bundle": "deploy"
   },
@@ -260,9 +259,6 @@
   },
   "landing-cloudflare-prepare.yml": {
    "bundle": "maintenance"
-  },
-  "landing-pages-publish.yml": {
-   "bundle": "deploy"
   },
   "long-series.yml": {
    "bundle": "pipeline-weekly"
@@ -341,9 +337,6 @@
   },
   "supertrader-validation.yml": {
    "bundle": "research"
-  },
-  "sync-navigation.yml": {
-   "bundle": "deploy"
   },
   "technical-ci.yml": {
    "bundle": "ci"

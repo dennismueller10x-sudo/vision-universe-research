@@ -376,7 +376,7 @@ function build(src = sources()) {
   /* I */
   P('## I. Research-Nachweise P2 (Master Completion 3.1, nicht zertifizierend)');
   P('');
-  P('Erzeugt mit den Skripten unten, jeweils `--out` unter `docs/quant/research/`. Kein Bericht speist ein Gate, keine Zahl erscheint im Produkt (`gateInput: false`, `productionApproved: false`). Zustände in Abschnitt C kommen weiterhin aus dem Zertifizierungsartefakt. Ablauf der Freigabeläufe und Bewertung: [BACKTEST_P2_DEFIZITE.md](BACKTEST_P2_DEFIZITE.md).');
+  P('Erzeugt mit den Skripten unten, jeweils `--out` unter `docs/quant/research/`. Kein Bericht speist ein Gate, keine Zahl erscheint im Produkt (`gateInput: false`, `productionApproved: false`). Zustände in Abschnitt C kommen weiterhin aus dem Zertifizierungsartefakt. Ablauf der Freigabeläufe und Bewertung: [BACKTEST_P2_DEFIZITE.md](../archiv/quant/BACKTEST_P2_DEFIZITE.md).');
   P('');
   const META = { P31: ['P3.1 Survivorship-Sensitivität Pattern/Signal', 'scripts/quant/research/survivorship-sensitivity.cjs'], P41: ['P4.1 Gesamtrendite Pattern', 'scripts/quant/research/pattern-total-return.mjs'],
     P41P: ['P4.1 Gesamtrendite, öffentliche Population und Intervall', 'scripts/quant/research/pattern-total-return-population.mjs'], P31P: ['P3.1 Survivorship im öffentlichen Rahmen', 'scripts/quant/research/survivorship-public-frame.mjs'],

@@ -69,7 +69,7 @@ Ausführlich mit Belegen: [EINORDNUNG.md](EINORDNUNG.md) §3.
   Quelle: `workers/vu-account/src/legal/texts.mjs`. Seiten: `https://konto.visionuniverse.de/rechtliches/agb`,
   `…/risikohinweise`, `…/methodik`. Die früheren `[[PRÜFEN]]`-Marken sind aus dem Text entfernt und stehen in Abschnitt 7.
 - **Pflicht-Hinweise** für die Seiten (`assets/legal-notices.json`) und Wortwahl-Regeln ([WORTWAHL.md](WORTWAHL.md)),
-  dazu die Befundliste ([WORTWAHL-BEFUNDE.md](WORTWAHL-BEFUNDE.md)).
+  dazu die Befundliste ([WORTWAHL-BEFUNDE.md](../archiv/legal/WORTWAHL-BEFUNDE.md)).
 - **Verbraucherrecht** (Widerruf, Kündigungsbutton, Button-Lösung, Datenschutz): eigene Liste in
   [../accounts/RECHTLICHE_ABNAHME.md](../accounts/RECHTLICHE_ABNAHME.md) (A1–A14).
 

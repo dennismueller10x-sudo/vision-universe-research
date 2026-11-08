@@ -74,6 +74,17 @@ Weitere Lesarten, die beim Bauen auftauchen, entscheidet Claude nach der Präsen
 - „Alle N“ führt bis PR 2 auf die bestehende Seite der Reihe (`#/strategien/{reihe}`), Themenreihen in ihre Themenwelt.
 - Reihen laden ihre Datei erst 700 px vor dem sichtbaren Bereich; die Mini-Charts erst, wenn das Poster sichtbar wird.
 
+**PR 2 · Reihe, Vorschau, Alle Reihen**
+- Der Index Aktie → Reihen liegt unter `discover/data/membership/US_REAL.json` statt `rows/US_REAL/_membership.json`, weil mehrere Prüfungen jede Datei im Reihen-Ordner als Reihe lesen; er enthält alle Treffer mit Platz, nicht nur die ausgelieferten Karten (daher „Steht heute in 11 Reihen“ statt der 5 im Mockup).
+- `#/strategien/{reihe}` leitet auf die Seite der Reihe `#/c/US_REAL/{reihe}`; nur „Die stärksten je Branche“ behält ihre Sektor-Ansicht.
+- „Reihe merken“ merkt die Reihe auf dem Gerät (`memory.js`), gemerkte Reihen rücken auf der Startseite nach oben; die Glocke bleibt verborgen, solange das Konto keine Benachrichtigung je Reihe zustellt (`SEARCH_HITS` ist noch nicht bereit).
+- Die Regel in Klartext steht je Reihe als `explain` (ein bis zwei Sätze) in `discover/methodology/discover-v1.json` und kommt über `meta.rowConfigs` auf die Seite.
+- Reiter Sortierung: erste Spalte ist die Sortierung der Reihe (z. B. „3 Monate“ bei Comeback?), dann „12 Monate“ bzw. „Umsatz“ bei Geschäftszahlen-Reihen, dann „Name“.
+- „Reihe swipen“ zählt die ausgelieferten Karten der Reihe („3 von 30“), nicht die Trefferzahl, weil nur diese Karten geladen sind; der Platz wird je Reihe auf dem Gerät gemerkt.
+- Vorschau öffnet sich mit Halten (500 ms), Rechtsklick oder der Taste „?“ auf einem Poster; ein kurzer Tipp öffnet weiter die Aktie.
+- „Ähnliche Reihen“: für Fallen Angels wie im Mockup, sonst die Reihen desselben Genres.
+- „Alle Reihen“ ist eine eigene Seite `#/reihen` in Schwarz, erreichbar über ▦ und die Karte über der Swipen-Karte.
+
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
 ```

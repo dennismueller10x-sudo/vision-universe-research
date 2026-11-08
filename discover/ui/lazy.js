@@ -267,8 +267,8 @@
   if (doc() && doc().addEventListener) doc().addEventListener('vu-home-drawn', function () { homeDrawn = true; if (afterDrawn) afterDrawn(); });
   /** Ist die Startseite die aktuelle Route? (dieselbe Unterscheidung wie app.js und index.html) */
   function onHome() {
-    var first = String((root.location && root.location.hash) || '').replace(/^#\/?/, '').split('/')[0];
-    return !/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|maerkte|daten)$/.test(first);
+    var first = String((root.location && root.location.hash) || '').replace(/^#\/?/, '').split(/[/?]/)[0];
+    return !/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|swipen|maerkte|daten|reihen)$/.test(first);
   }
   /**
    * Aufgeloest, wenn die Seite geladen ist, der Browser Leerlauf hat und - auf der Startseite - die ersten Karten

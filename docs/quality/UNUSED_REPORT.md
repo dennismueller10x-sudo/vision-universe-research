@@ -180,7 +180,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | core/tests/technical-chain.test.mjs | 3725 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
 | core/tests/vu-chart.test.mjs | 3494 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
 | core/tests/watchlist-fetch-published.test.mjs | 2722 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
-| docs/DOKU_INVENTAR.md | 139655 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
+| docs/archiv/DOKU_INVENTAR.md | 139655 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/audits/vu3-ui-refresh-abschluss-2026-10-21/pltr-drei-welten-desktop__nachher-hell.jpg | 79852 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/audits/vu3-visuelle-bestandsaufnahme-2026-10-21/dashboard-start-desktop.jpg | 46069 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
 | docs/audits/vu3-visuelle-bestandsaufnahme-2026-10-21/dashboard-start-iphone.jpg | 31319 | Nur breite Kanten, z. B. VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md; Nutzung unklar; behalten. |
@@ -773,36 +773,36 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | evidence/company-intelligence-continuous-refresh-20261009/recovery-full-health.json | 6103 | Nur breite Kanten, z. B. docs/company-intelligence/CONTINUOUS_REFRESH.md; Nutzung unklar; behalten. |
 | evidence/company-intelligence-continuous-refresh-20261009/recovery-full-live-qa.json | 3165 | Nur breite Kanten, z. B. docs/company-intelligence/CONTINUOUS_REFRESH.md; Nutzung unklar; behalten. |
 | evidence/company-intelligence-continuous-refresh-20261009/recovery-mismatch-slo.json | 462 | Nur breite Kanten, z. B. docs/company-intelligence/CONTINUOUS_REFRESH.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/accepted-health-reconciliation.json | 319 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/accepted-health-state.json | 482 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/actual-46-rollback-browser.json | 3165 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/actual-46-rollback.json | 148 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/actual-cold-warm-pages-runtime.json | 923 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/actual-frozen-rollback-latest.json | 3165 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/actual-reconciled-browser-smoke.json | 1559 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/actual-reconciled-consumer-delivery.json | 438 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/actual-reconciled-health-delivery.json | 318 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/actual-scheduled-source-38059718852.json | 9682 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/actual-wide-pages-package.json | 209 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/actual-widened-package.json | 210 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/cancelled-release-accepted-r2.json | 1426 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/candidate-audit.json | 4186 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/candidate-browser.json | 32322 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/candidate-sample.json | 22901 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/final-accepted-release.json | 1656 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/final-actual-production-browser.json | 80148 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/final-authoritative-audit.json | 4956 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/final-fixed-rollback-browser.json | 3165 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/final-fixed-rollback.json | 148 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/final-sample.json | 22901 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/fresh-current-universe-audit.json | 4127 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/health-warning-before-reconciliation.json | 482 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/isolated-full-source-scale.json | 2266 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/navigation-blocked-auto-rollback.json | 1654 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/post-cancel-actual-rollback-browser.json | 3165 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/post-cancel-actual-rollback.json | 148 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/public-consumer-cache-measured.json | 276 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
-| evidence/company-intelligence-full-universe-20261010/wide-release-hosting-recovery-failure.json | 1815 | Nur breite Kanten, z. B. docs/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/accepted-health-reconciliation.json | 319 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/accepted-health-state.json | 482 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/actual-46-rollback-browser.json | 3165 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/actual-46-rollback.json | 148 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/actual-cold-warm-pages-runtime.json | 923 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/actual-frozen-rollback-latest.json | 3165 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/actual-reconciled-browser-smoke.json | 1559 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/actual-reconciled-consumer-delivery.json | 438 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/actual-reconciled-health-delivery.json | 318 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/actual-scheduled-source-38059718852.json | 9682 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/actual-wide-pages-package.json | 209 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/actual-widened-package.json | 210 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/cancelled-release-accepted-r2.json | 1426 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/candidate-audit.json | 4186 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/candidate-browser.json | 32322 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/candidate-sample.json | 22901 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/final-accepted-release.json | 1656 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/final-actual-production-browser.json | 80148 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/final-authoritative-audit.json | 4956 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/final-fixed-rollback-browser.json | 3165 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/final-fixed-rollback.json | 148 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/final-sample.json | 22901 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/fresh-current-universe-audit.json | 4127 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/health-warning-before-reconciliation.json | 482 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/isolated-full-source-scale.json | 2266 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/navigation-blocked-auto-rollback.json | 1654 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/post-cancel-actual-rollback-browser.json | 3165 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/post-cancel-actual-rollback.json | 148 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/public-consumer-cache-measured.json | 276 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
+| evidence/company-intelligence-full-universe-20261010/wide-release-hosting-recovery-failure.json | 1815 | Nur breite Kanten, z. B. docs/archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md; Nutzung unklar; behalten. |
 | konto/passwort-neu/index.html | 3213 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | konto/tests/push-settings.test.mjs | 4641 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
 | konto/tests/saved-searches.test.mjs | 5609 | Nur breite Kanten, z. B. .github/workflows/account-ci.yml; Nutzung unklar; behalten. |
@@ -2833,9 +2833,9 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | discover/ui/logos.js | ` fetch(BASE + "index.json", { cache: "default", priority: "low" }) ` |
 | discover/ui/logos.js | ` fetch(BASE + "credits.json", { cache: "default" }) ` |
 | discover/ui/series-loader.js | ` fetch(path, { cache: "default" }).then(function (r) { ` |
-| docs/VU_MARKETS_3_CONSUMER_INTELLIGENCE.md | `` fetch(` und Providernamen in `market-intelligence.js`. `` |
-| docs/VU_QUANT_2_FRONTEND_TRANSFORMATION.md | `` fetch()` `` |
-| docs/VU_TWELVE_DATA_ADAPTER.md | ` fetch(url, init) ` |
+| docs/archiv/VU_MARKETS_3_CONSUMER_INTELLIGENCE.md | `` fetch(` und Providernamen in `market-intelligence.js`. `` |
+| docs/archiv/VU_QUANT_2_FRONTEND_TRANSFORMATION.md | `` fetch()` `` |
+| docs/archiv/VU_TWELVE_DATA_ADAPTER.md | ` fetch(url, init) ` |
 | docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md | ` fetch(credentials:"include", X-VU-Client: web) – hält KEIN Token ` |
 | docs/charts/CHART_STANDARD.md | ` fetch(path, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0 ` |
 | docs/design/VU3_UI_SYSTEM.md | ` fetch(…).then(…), base: previousClose } ` |
