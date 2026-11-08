@@ -1,0 +1,20 @@
+<section class="page">
+  <div data-run="Das war die Woche"></div>
+  <div class="pad" style="top:15mm">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="mega" style="font-size:52pt">Das war&nbsp;…</div><div class="byline" style="text-align:right">02.–07. November 2026<br>die Woche in acht Meldungen</div></div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:5mm;margin-top:5mm" data-k="war"></div>
+  </div>
+  <div data-foot="Quellen: CNBC, CBS News, NBC News, Yahoo Finance, Marvell IR, Berkshire Hathaway 10-Q, BLS"></div>
+</section>
+<script>
+VUM.k('war',()=>[
+ ['img/hf-capitol-sturm.jpg','Mittwoch','Die Demokraten holen den Kongress','Trump erkennt das Ergebnis an, der Dow steigt um rund 3 %, so stark wie an keinem Tag in diesem Jahr. Die Börse hofft auf eine Patt-Lage in Washington.',1],
+ ['img/bv-bildschirme-rot.jpg','Donnerstag','Der Chip-Crash','Halbleiter-Index −12,3 %, der schwächste Tag seit März 2020. Bernie Sanders fordert noch am selben Tag einen landesweiten Baustopp für Rechenzentren.',1],
+ ['img/hf-glasfaser-laser.jpg','Montag','Marvell kauft Lumentum','Ein Aktientausch mit 115 Mrd. $ Unternehmenswert: 4,5 Marvell-Aktien je Lumentum-Aktie. Ziel ist die Führung bei Licht-Verbindungen in KI-Rechenzentren.',0],
+ ['img/hf-gpu-cluster-luft.jpg','Montag','Oracle braucht 20 Mrd. $','Die Hälfte über neue Aktien, die Hälfte über Anleihen. Am Freitag meldet Bloomberg, dass Microsoft einen KI-Mietvertrag mit Oracle auslaufen lässt.',0],
+ ['img/hf-mobile-games-werbung.jpg','Donnerstag','AppLovin: +31 % gegen den Trend','Am schwärzesten Tag der Woche springt die Werbeplattform nach starken Zahlen um ein Drittel nach oben. Auf fünf Tage: +71 %.',0],
+ ['img/bv-tresor-offen.jpg','Samstag','Berkshire kauft sich selbst','9,6 Mrd. $ für eigene Aktien im dritten Quartal, mehr als doppelt so viel wie im Vorquartal. Gleichzeitig mehr Aktien verkauft als gekauft.',0],
+ ['img/hf-lagerhalle-arbeit.jpg','Freitag','165.000 neue Jobs','Erwartet waren rund 70.000. Die Arbeitslosenquote sinkt auf 4,1 %. Der Markt rechnet laut CME FedWatch mehrheitlich mit einer Zinserhöhung im Dezember.',0],
+ ['img/hf-boersenglocke.jpg','Freitag','Anthropic: eine Billion weniger?','Für den geplanten Börsengang reden Investoren laut Bloomberg und WSJ jetzt über 1,0 bis 1,3 Bio. $ Bewertung, statt rund 2 Bio. $ vor einem Monat.',0],
+].map(r=>`<div style="display:grid;grid-template-columns:${r[4]?'1fr':'34mm 1fr'};gap:3mm;${r[4]?'':'align-items:start'}"><div class="ph" style="height:${r[4]?'48mm':'28mm'};background-image:url(${r[0]})"><span class="ki">KI-Bild</span></div><div><div style="font-size:6.8pt;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#000;background:var(--lime);display:inline-block;padding:1px 5px;border-radius:2px">${r[1]}</div><div style="font-size:${r[4]?'14pt':'11pt'};font-weight:900;letter-spacing:-.02em;line-height:1.08;margin-top:1.5mm">${r[2]}</div><div class="body" style="margin-top:1.2mm;font-size:8.2pt">${r[3]}</div></div></div>`).join(''));
+</script>

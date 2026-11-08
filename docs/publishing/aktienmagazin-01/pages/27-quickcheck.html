@@ -1,0 +1,18 @@
+<section class="page">
+  <div data-run="Quick-Check"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Quick-Check</span>
+    <div class="hx" style="margin-top:3mm">22 bekannte US-Aktien auf einen Blick</div>
+    <div class="sub" style="margin-top:2mm;color:var(--g4)">Kurs, Woche, zwölf Monate, Bewertung, Trend: alles aus unseren Daten, Stand Freitag, 06.11.2026.</div>
+    <table class="t" style="margin-top:5mm;font-size:8.2pt">
+      <thead><tr><th></th><th>Aktie</th><th class="r">Kurs $</th><th class="r">Woche</th><th class="r">12 Monate</th><th class="r">Abstand Hoch</th><th class="r">KGV</th><th class="r">Über 200-T.</th><th class="r">Rel. Stärke</th></tr></thead>
+      <tbody data-k="qc"></tbody>
+    </table>
+    <div class="xs mu" style="margin-top:3mm">KGV: Kurs geteilt durch den Gewinn je Aktie der letzten vier Quartale (SEC). „Über 200-T.“: Schlusskurs über dem Durchschnitt der letzten 200 Handelstage. Relative Stärke: Perzentil im Universum von <span data-k="qc-u"></span> US-Aktien, 100 = stärkste. Werte beschreiben die Vergangenheit, keine Empfehlung.</div>
+  </div>
+  <div data-foot="Daten: Vision Universe (Tiingo, SEC EDGAR)."></div>
+</section>
+<script>
+VUM.k('qc',()=>VUM.D.quick.map(q=>`<tr><td style="width:10mm"><img src="../../../discover/logos/files/${q.t}.png" style="height:4.5mm;max-width:9mm;object-fit:contain" onerror="this.remove()"></td><td><b>${q.t}</b> <span class="mu">${q.n.replace(/ (Inc|Corporation|Class [AB]|Com)$/,'').slice(0,22)}</span></td><td class="r b">${VUM.de(q.price,2)}</td><td class="r">${VUM.pill(q.week)}</td><td class="r">${VUM.pc(q.r12m*100,0)}</td><td class="r">${VUM.pc(q.hi*100,0)}</td><td class="r">${VUM.kgv(q.pe)}</td><td class="r">${q.above200?'<span class="pill up">ja</span>':'<span class="pill dn">nein</span>'}</td><td class="r b">${q.rs==null?'–':VUM.de(q.rs,0)}</td></tr>`).join(''));
+VUM.k('qc-u',()=>VUM.D.universe.toLocaleString('de-DE'));
+</script>

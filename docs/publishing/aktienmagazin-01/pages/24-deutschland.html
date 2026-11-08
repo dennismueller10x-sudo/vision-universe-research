@@ -1,0 +1,26 @@
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:70mm;background-image:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,0) 65%),url(img/hf-frankfurt-skyline.jpg)"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div data-run="Deutschland"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:40mm;color:#fff"><span class="ressort" style="background:var(--lime);color:#000">Deutschland &amp; Europa</span><div class="hx" style="margin-top:2.5mm">DAX: Rekord am Donnerstag, Rheinmetall im Keller</div></div>
+  <div class="pad" style="top:76mm">
+    <div class="sub">Der DAX erreichte am Donnerstag ein Rekordhoch, schloss die Woche aber etwa unverändert. Der Verlierer der Woche heißt erneut Rheinmetall.</div>
+    <div style="display:grid;grid-template-columns:1fr 66mm;gap:6mm;margin-top:4mm">
+      <div class="body cols2" style="column-gap:5mm">
+        <p>Die deutsche Börse reagierte auf die US-Wahl zunächst mit Erleichterung: +2,2&nbsp;% am Mittwoch, angeführt von Heidelberg Materials (+9,8&nbsp;% nach starken Zahlen). Am Donnerstag erreichte der DAX im Handel knapp 26.693 Punkte, ein Rekord. Danach ging es abwärts, am Freitag fiel der Index um rund 2&nbsp;% auf 25.820 Punkte.</p>
+        <p><b>Rheinmetall</b> hat seine Prognose für 2026 erneut gesenkt, Analysten zählen die fünfte Warnung in elf Monaten. Der Umsatz soll nur noch rund 13,2&nbsp;Mrd.&nbsp;€ erreichen statt 13,7 bis 14,2&nbsp;Mrd., weil ein großer Boxer-Auftrag der Bundeswehr ins Jahr 2027 rutscht. Die Aktie verlor in der Woche 21,7&nbsp;% auf 812,70&nbsp;€. Vor rund 13 Monaten stand sie über 2.000&nbsp;€.</p>
+        <p>Außerdem schwach: Zalando (Kritik an der Bruttomarge), TeamViewer (−27&nbsp;% nach gesenkter Prognose), Munich Re und Hannover Re nach Herabstufungen durch JPMorgan. Stark: Bayer (Pharmageschäft), Lufthansa (+4,3&nbsp;% nach Zahlen) und Hochtief auf Übernahmegerüchte.</p>
+        <p>Die Europäische Zentralbank hält den Einlagenzins bei 2,50&nbsp;%, nachdem sie ihn im September wegen der Energiepreise erhöht hatte. Die Industrieproduktion stieg im September um 0,7&nbsp;%, mehr als erwartet.</p>
+      </div>
+      <div style="display:grid;gap:3mm;align-content:start">
+        <div class="card ink"><div class="kick" style="color:var(--lime)">DAX in der Woche</div><div style="margin-top:2mm" data-k="dax"></div><div class="xs" style="color:#9a9a9a;margin-top:2mm">Schlussstände laut onvista/dpa-AFX. Freitag laut Trading Economics 25.778.</div></div>
+        <div class="card lime"><div class="kick">Diese Woche in Deutschland</div><div class="sm" style="margin-top:2mm;line-height:1.55"><b>Di</b> Infineon, Henkel, Porsche SE<br><b>Mi</b> Siemens Energy, E.ON, RWE<br><b>Do</b> Siemens, Allianz, Munich Re, Merck<br><b>Fr</b> Bechtle</div></div>
+      </div>
+    </div>
+    <div class="ph" style="position:absolute;left:0;right:0;bottom:0;height:34mm;background-image:url(img/hf-bronze-bulle-baer.jpg);background-position:50% 55%"><span class="ki">KI-Bild</span><div class="cap">DAX: Rekord am Donnerstag, −1,9 % am Freitag</div></div>
+  </div>
+  <div data-foot="Quellen: onvista/dpa-AFX 02.–06.11., ariva 05.11. und ad-hoc-news 07.11. (Rheinmetall), Trading Economics 06.11., Deutsche Wirtschafts Nachrichten 29.10. (EZB), finanzen.net Wochenvorschau."></div>
+</section>
+<script>
+VUM.k('dax',()=>[['Mo 02.11.',25981,0.63],['Di 03.11.',25864,-0.45],['Mi 04.11.',26438,2.22],['Do 05.11.',26325,-0.43],['Fr 06.11.',25820,-1.92]].map(r=>`<div class="fact" style="color:#fff"><span>${r[0]}</span><b>${r[1].toLocaleString('de-DE')} ${VUM.pill(r[2],2)}</b></div>`).join(''));
+</script>
