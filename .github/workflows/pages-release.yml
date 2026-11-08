@@ -43,7 +43,10 @@ on:
       - "Multi-Asset Data Core — Faehigkeiten und Daten"
       # Neue Titel bekommen ihr Logo nach dem Marktdaten-Refresh; der
       # Logo-Lauf pusht mit dem GITHUB_TOKEN und loest sonst nichts aus.
-      - "Firmenlogos (Wikimedia Commons und Firmen-Websites fuer Discover)"
+      # Seit dem Buendel pipeline-weekly (08.11.2026) laufen Logos, Company-Namen,
+      # Deckungskennzahlen und Index-Mitgliedschaft dort als Teile; jeder Buendellauf
+      # fuehrt genau einen Teil aus, also wie vorher je Datenlauf ein Release.
+      - "Pipeline woechentlich (Buendel pipeline-weekly)"
       # Plattform-Audit 03.10.2026: diese Datenlaeufe pushen ebenfalls mit
       # dem GITHUB_TOKEN und kamen bisher erst mit der naechsten Bruecke
       # (Mo-Fr 13-21 UTC) auf die Seite - Samstagslaeufe (Supertrader-
@@ -55,11 +58,8 @@ on:
       # Lauf oder der Bruecke (Mo-Fr ab 13 UTC) auf die Seite.
       - "Supertrader 8 Research-Kandidaten (Tageslauf)"
       - "SEC Fundamentals — Daily Incremental"
-      - "Index-Mitgliedschaft (S&P 500, NASDAQ-100, Dow Jones aus Fondsbestaenden)"
       - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"
       - "Company Master — Universum, Suchindex, CIK"
-      - "Company-Namen (kanonische Namensschicht zum Company Master)"
-      - "Kanonische Deckungskennzahlen (R2-Index, Company Master, Abgleich)"
       - "Quant 2.0 Product Intelligence Materialization"
       - "Content (News, Analystenbewertungen, Hedgefonds 13F, Morning)"
       # Die Startseite setzt nach den Datenlaeufen ihre Abbildungswerte neu ein
