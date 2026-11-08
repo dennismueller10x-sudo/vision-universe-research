@@ -62,9 +62,11 @@ on:
 permissions:
   contents: write
 
+# PR-Laeufe: ueberholte Laeufe desselben PR werden abgebrochen (Runner-Warteschlange, Steuerung 08.11.2026).
+# Push und Dispatch behalten ihre Gruppe <name>-<ref> ohne Abbruch (ADR-005).
 concurrency:
-  group: sec-fundamentals-universe-${{ github.ref }}
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('sec-fundamentals-universe-pr-{0}', github.event.pull_request.number) || format('sec-fundamentals-universe-{0}', github.ref) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   pruefen:

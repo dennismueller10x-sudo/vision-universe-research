@@ -22,8 +22,13 @@
   },
   "deploy": {
    "purpose": "Auslieferung: Pages, Cloudflare-Worker",
-   "workflow": null,
-   "replaces": []
+   "workflow": "deploy.yml",
+   "replaces": [
+    "cloudflare-ask-deploy.yml",
+    "cloudflare-deploy.yml",
+    "landing-pages-publish.yml",
+    "sync-navigation.yml"
+   ]
   },
   "pipeline-daily": {
    "purpose": "Tageskette nach US-Schluss: Kurse, Faktoren, Discover, Technical, Supertrader, SEC-Tagesindex",
@@ -38,8 +43,11 @@
   },
   "pipeline-intraday": {
    "purpose": "Takt waehrend der Sitzung: Snapshots, Im Blick, Realtime",
-   "workflow": null,
-   "replaces": []
+   "workflow": "pipeline-intraday.yml",
+   "replaces": [
+    "currency-realtime-proof.yml",
+    "intraday-delivery-watchdog.yml"
+   ]
   },
   "pipeline-weekly": {
    "purpose": "Wochenlaeufe: Security Master, Universum, lange Reihen, Index, Eigentuemer-Signale",
@@ -116,8 +124,12 @@
     "pattern-research-volume.yml",
     "quant-pattern-total-return-check.yml",
     "quant-portfolio-research.yml",
+    "quant-v13-archive.yml",
     "research-labor.yml",
+    "supertrader-delisting-probe.yml",
+    "supertrader-house.yml",
     "vorsorge-etf-sources.yml",
+    "vorsorge-etf-universe.yml",
     "vorsorge-legal-sources.yml"
    ]
   },
@@ -186,12 +198,6 @@
   "brevo-newsletter.yml": {
    "bundle": "account"
   },
-  "cloudflare-ask-deploy.yml": {
-   "bundle": "deploy"
-  },
-  "cloudflare-deploy.yml": {
-   "bundle": "deploy"
-  },
   "cloudflare-waker-deploy.yml": {
    "bundle": "deploy"
   },
@@ -222,9 +228,6 @@
   "currency-fx-verify.yml": {
    "bundle": "ci"
   },
-  "currency-realtime-proof.yml": {
-   "bundle": "pipeline-intraday"
-  },
   "discover-ci.yml": {
    "bundle": "ci"
   },
@@ -246,9 +249,6 @@
   "home-refresh.yml": {
    "bundle": "pipeline-daily"
   },
-  "intraday-delivery-watchdog.yml": {
-   "bundle": "pipeline-intraday"
-  },
   "intraday-pacemaker.yml": {
    "bundle": "pipeline-intraday"
   },
@@ -257,9 +257,6 @@
   },
   "landing-cloudflare-prepare.yml": {
    "bundle": "maintenance"
-  },
-  "landing-pages-publish.yml": {
-   "bundle": "deploy"
   },
   "long-series.yml": {
    "bundle": "pipeline-weekly"
@@ -281,9 +278,6 @@
   },
   "quant-ci.yml": {
    "bundle": "ci"
-  },
-  "quant-v13-archive.yml": {
-   "bundle": "research"
   },
   "research-edge2-paper.yml": {
    "bundle": "research"
@@ -321,13 +315,6 @@
   "supertrader-ci.yml": {
    "bundle": "ci"
   },
-  "supertrader-delisting-probe.yml": {
-   "bundle": "research",
-   "retireCandidate": true
-  },
-  "supertrader-house.yml": {
-   "bundle": "research"
-  },
   "supertrader-paper-2027.yml": {
    "bundle": "pipeline-daily"
   },
@@ -349,9 +336,6 @@
   "supertrader-validation.yml": {
    "bundle": "research"
   },
-  "sync-navigation.yml": {
-   "bundle": "deploy"
-  },
   "technical-ci.yml": {
    "bundle": "ci"
   },
@@ -363,9 +347,6 @@
   },
   "universe-master.yml": {
    "bundle": "pipeline-weekly"
-  },
-  "vorsorge-etf-universe.yml": {
-   "bundle": "research"
   },
   "vu2-browser-qa.yml": {
    "bundle": "ci"

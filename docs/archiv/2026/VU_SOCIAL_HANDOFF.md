@@ -5,7 +5,7 @@ Pflichtdokument nach §56.
 
 > **AKTUALISIERT nach Owner-Information zum Cloudflare Worker.**
 > Der OAuth-Flow laeuft jetzt produktionsreif im Worker `vision-universe-social`.
-> Die Anleitung zum Verbinden: **`docs/VU_SOCIAL_META_CONNECT.md`**.
+> Die Anleitung zum Verbinden: **`docs/archiv/VU_SOCIAL_META_CONNECT.md`**.
 
 ---
 
@@ -18,7 +18,7 @@ Vision-Universe-Architektur — nicht als zweites System (§0, §48).
 - 24 Engines im UMD-Muster von `quant/engines/`, lauffaehig in Browser und Node.
 - Vier Provider-Interfaces mit Registry, Capability-Matrix und Vendor-Leakage-Guard.
 - Orchestrierung ueber Node-Skripte in GitHub Actions; Zustand in JSON-Artefakten.
-- Vollstaendige Beschreibung: `docs/VU_SOCIAL_ARCHITECTURE.md`.
+- Vollstaendige Beschreibung: `docs/archiv/VU_SOCIAL_ARCHITECTURE.md`.
 - Audit des Bestands, auf dem gebaut wurde: `docs/archiv/2026/VU_SOCIAL_PHASE_A_AUDIT.md`.
 
 **Drei Annahmen des Auftrags trafen im Repository nicht zu** und wurden korrigiert
@@ -83,7 +83,7 @@ statt uebernommen (Details im Audit, Abschnitt 2):
 | Webhook-Abonnement | `MANUAL_REQUIRED` (App-Dashboard) |
 
 **Nicht erfolgt:** Deployment und die persoenliche Meta-Autorisierung. Beides sind
-Owner-Handlungen; die Anleitung steht in `docs/VU_SOCIAL_META_CONNECT.md`.
+Owner-Handlungen; die Anleitung steht in `docs/archiv/VU_SOCIAL_META_CONNECT.md`.
 
 **`verifiedAt: null`** — die Capability-Deklaration im Repository stammt weiterhin
 aus der Dokumentation der Graph API. Der Worker leitet daneben die Faehigkeiten
@@ -241,7 +241,7 @@ Pages als Auslieferung, R2 als S3-kompatible Ablage. Es wurde nichts migriert.
 ## 13. Offene externe Voraussetzungen
 
 1. **Worker deployen und autorisieren** — blockiert den gesamten produktiven Pfad.
-   Anleitung: `docs/VU_SOCIAL_META_CONNECT.md`. Offen sind: KV-Namespace,
+   Anleitung: `docs/archiv/VU_SOCIAL_META_CONNECT.md`. Offen sind: KV-Namespace,
    `VU_SOCIAL_ADMIN_KEY`, `PUBLIC_BASE_URL`, Redirect-URI in der Meta-App,
    Preflight mit Zugang, Deployment, persoenliche Autorisierung.
 2. **Externe Trendquelle** (Owner-Entscheidung 3) — blockiert §5 in voller Tiefe.
@@ -270,7 +270,7 @@ durch und haelt jedes Paket in `READY`, mit Begruendung.
 
 ## 15. Naechste dependency-correcte Schritte
 
-1. **`docs/VU_SOCIAL_META_CONNECT.md` abarbeiten** (Schritte 1–9).
+1. **`docs/archiv/VU_SOCIAL_META_CONNECT.md` abarbeiten** (Schritte 1–9).
    → alles Weitere haengt daran. Endet bei META_CONNECTED.
 2. Bei `verdict: VERIFIED` das Datum in `metaCapabilities({ verifiedAt: ... })`
    eintragen — von Hand, in einem eigenen Commit. Eine Verifikation, die sich
@@ -408,7 +408,7 @@ Verifikationslauf auf ein temporaeres Verzeichnis richten — dasselbe Muster, d
 | Preflight gegen Ueberschreiben des vorhandenen Workers | implementiert |
 | Verbindungszustand als Repository-Artefakt | implementiert |
 | Command Center zeigt die Meta-Verbindung | implementiert |
-| Owner-Anleitung | `docs/VU_SOCIAL_META_CONNECT.md` |
+| Owner-Anleitung | `docs/archiv/VU_SOCIAL_META_CONNECT.md` |
 | **Deployment** | **offen — Owner** |
 | **Persoenliche Meta-Autorisierung** | **offen — Owner Gate** |
 

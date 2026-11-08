@@ -106,12 +106,13 @@
     if(homeDispose){homeDispose();homeDispose=null;}
     if(marketDispose){marketDispose();marketDispose=null;}
     if(V.Detail&&V.Detail.dispose)V.Detail.dispose();
-    const parts=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
+    const [path,query]=location.hash.replace(/^#\/?/,'').split('?'),parts=path.split('/').filter(Boolean),q=new URLSearchParams(query||'');// Herkunft im Adress-Zusatz (?reihe=…, ?genre=…)
     // Redesign D05/D08: alte Adressen leiten weiter (#/einzeln/<U> -> #/swipen, #/c/<U>/<Auswahl> -> Thema bzw. Strategie).
     if(parts[0]==='einzeln'){location.replace('#/swipen');return;}
-    if(parts[0]==='c'&&parts[1]==='US_REAL'&&parts[2]){const t=V.Themes.byRow(parts[2]);location.replace(t?V.Themes.href(t):'#/strategien/'+parts[2]);return;}
+    if(parts[0]==='c'&&parts[1]==='US_REAL'&&parts[2]){const t=V.Themes.byRow(parts[2]);if(t){location.replace(V.Themes.href(t));return;}}
+    if(parts[0]==='strategien'&&parts[1]){location.replace('#/c/'+ctx.universeId+'/'+parts[1]);return;}// Seite einer Reihe (Konzept „Reihe für Reihe“, n-row)
     if(D.EuropeView.bindRoute(parts,ctx))return;
-    const home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|swipen|maerkte|daten)$/.test(parts[0]||''),intro=keepIntro=home?document.querySelector('#v2-shell .v2-home>.dv3-intro'):null,root=shell();root.setAttribute('aria-busy','true');root.classList.toggle('dv3-main',home||/^(welten|strategien|thema|swipen|watchlist|suche)$/.test(parts[0])||(parts[0]==='maerkte'&&!parts[1]));
+    const home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|swipen|maerkte|daten|reihen)$/.test(parts[0]||''),intro=keepIntro=home?document.querySelector('#v2-shell .v2-home>.dv3-intro'):null,root=shell();root.setAttribute('aria-busy','true');root.classList.toggle('dv3-main',home||/^(welten|strategien|thema|swipen|watchlist|suche|reihen|c)$/.test(parts[0])||(parts[0]==='maerkte'&&!parts[1]));
     document.title='Discover — Vision Universe®';if(!y)global.scrollTo(0,0);
     try {
       // Startseite: Kopf, Maerkte und Themen zeichnen sofort; home.js wartet vor den Karten auf das Intraday-Verzeichnis.
@@ -127,7 +128,7 @@
           root.classList.add('dx-detail');V.Detail.render(root,detail,ctx);
           watchButton(root,symbol);
           document.title=(detail.companyName||symbol)+' — Discover';
-          if(D.memory)D.memory.recordView(symbol,{universeId:ctx.universeId,companyName:detail.companyName,sector:detail.sector,world:detail.world});
+          if(D.memory)D.memory.recordView(symbol,{universeId:ctx.universeId,companyName:detail.companyName,sector:detail.sector,world:detail.world,themes:(detail.themes||[]).map(t=>t&&t.rowId).filter(Boolean)});
         }else await instrument(root,symbol,active);
       } else if(parts[0]==='settings'){
         settings(root);
@@ -140,13 +141,14 @@
         await D.V3.watchlist(root,ctx,watchlist(),active);if(!active())return;
         await D.GlobalView.watchlist(root,{active,route});
       } else if(parts[0]==='welten'){D.V3.welten(root,ctx);
-      } else if(parts[0]==='strategien'&&parts[1]){await D.V3.strategie(root,ctx,decodeURIComponent(parts[1]),active);
       } else if(parts[0]==='strategien'){D.V3.strategien(root,ctx);
       } else if(parts[0]==='thema'&&parts[1]){
         const theme=V.Themes.bySlug(parts[1]);
         if(!theme){message(root,'Themenwelt nicht gefunden','Diese Themenwelt gibt es nicht. Alle Welten findest du in der Übersicht.');return;}
         await D.V3.thema(root,ctx,theme,active);
-      } else if(parts[0]==='c'&&parts[2]){await D.V3.strategie(root,ctx,parts[2],active);
+      } else if(parts[0]==='c'&&parts[2]){await D.ReihenUI.rowPage(root,ctx,decodeURIComponent(parts[2]),active);
+      } else if(parts[0]==='reihen'){D.ReihenUI.allRows(root,ctx);
+      } else if(parts[0]==='swipen'&&q.get('reihe')){await D.ReihenUI.rowSwipe(root,ctx,q.get('reihe'),active);
       } else if(parts[0]==='swipen'){await D.V3.swipen(root,ctx,active);
       } else if(parts[0]==='maerkte'&&parts[1]==='einordnung'){
         await D.Markets.renderEinordnung(root,{calendar,isActive:active,teil:parts[2]});

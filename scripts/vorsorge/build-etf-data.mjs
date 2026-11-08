@@ -403,7 +403,7 @@ export function build() {
   const index = { schemaVersion: "vu-vorsorge-etf-index-2.0.0", build: VERSION, taxonomy: Tax.VERSION, analytics: A.VERSION, generatedAt: asOf, asOf, provider: "tiingo",
     scope: ingest ? "TIINGO_ETF_INGEST" : "REPOSITORY_DELIVERED_EXTRACT",
     scopeNote: ingest ? "Aktive ETF-Ticker der Tiingo-Tickerliste mit Stammdaten und Kursreihen (Ingest " + (ingest.ingest || "") + ") plus bisheriger Repository-Auszug."
-      : "Repository-Auszug. Der volle Tiingo-Ingest läuft über .github/workflows/vorsorge-etf-universe.yml.",
+      : "Repository-Auszug. Der volle Tiingo-Ingest läuft über .github/workflows/research.yml (Teil etf-universum).",
     providerUniverseEtfRows: tryJson(join(OUT, "data/ingest/catalog-stats.json"))?.etfRows ?? tryJson(join(root, "quant/data/market/universe/summary.json"))?.totals?.byInstrumentType?.ETF ?? null,
     counts, fields: INDEX_FIELDS, rows: entries.map(row) };
   // Auslieferung in zwei Teilen: der Browser laedt zuerst nur Public + Komplex;

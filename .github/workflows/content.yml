@@ -4,20 +4,20 @@ name: Content (News, Analystenbewertungen, Hedgefonds 13F, Morning)
 # update-analyst-ratings.yml, update-hedgefonds.yml und build-morning.yml. Jeder Teil ist ein eigener Job
 # mit seinem bisherigen Zeitplan und seinen bisherigen Schritten (unveraendert uebernommen); ein Fehler in
 # einem Teil haelt die anderen nicht auf. Manuell: Eingabe "teil".
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       teil:
         description: 'Welcher Teil laufen soll'
         type: choice
         options: [alle, news, ratings, hedgefonds, morning, analysten, analysten-probe]
         default: alle
-  schedule:
-    - cron: '17 5,11,17 * * *'      # news
-    - cron: '0 8 * * 0'             # ratings
-    - cron: '41 5,13,21 * * *'      # analysten (Konsens, Produktuniversum, rotierend: 3 x ~2200 Titel = ganzes Universum je Tag)
-    - cron: '17 6 * * 1'            # hedgefonds
-    - cron: '17 7 10-20 2,5,8,11 *' # hedgefonds (13F-Fristen)
   push:
     branches: [main]
     paths:
@@ -30,7 +30,7 @@ permissions:
 
 jobs:
   news:
-    if: (github.event_name == 'schedule' && github.event.schedule == '17 5,11,17 * * *') || (github.event_name == 'workflow_dispatch' && (inputs.teil == 'alle' || inputs.teil == 'news'))
+    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '17 5,11,17 * * *') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'news'))
     runs-on: ubuntu-latest
     concurrency:
       group: content-news-${{ github.ref_name }}
@@ -64,7 +64,7 @@ jobs:
         run: scripts/ci/push-data-branch.sh data/live dashboard/data/news_feed.json
 
   ratings:
-    if: (github.event_name == 'schedule' && github.event.schedule == '0 8 * * 0') || (github.event_name == 'workflow_dispatch' && (inputs.teil == 'alle' || inputs.teil == 'ratings'))
+    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '0 8 * * 0') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'ratings'))
     runs-on: ubuntu-latest
     concurrency:
       group: content-ratings-${{ github.ref_name }}
@@ -95,25 +95,18 @@ jobs:
             exit 1
           fi
 
-      - name: Commit generated data
-        shell: bash
-        run: |
-          if git diff --quiet -- dashboard/data/analyst_ratings.json; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dashboard/data/analyst_ratings.json
-          git commit -m "chore: update analyst ratings data"
-          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
-          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+      # Datenzweig (Plan Neustart §3, core/registry/data-branch.json, Phase BRANCH_ONLY): nur noch data/live,
+      # nicht mehr main. Die Kopie in main ist eingefroren (Rueckfall); Pages liefert den Datenzweig aus.
+      - name: In den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live dashboard/data/analyst_ratings.json
 
   # Analysten-Konsens fuer das Produktuniversum: Finnhub-Einstufungen (frei, 55/min), Kursziele nur aus der freien
   # FMP-Liste. Rotierend ~2200 Titel je Lauf, drei Laeufe am Tag (ganzes Universum taeglich). Finnhub Free erlaubt
   # 60 Aufrufe/min: der Erzeuger drosselt auf 55/min, die Concurrency-Gruppe verhindert parallele Laeufe (Owner 06.11.2026).
-  # Schreibt nur dashboard/data/analysts.
+  # Schreibt nur dashboard/data/analysts, und zwar nur in den Datenzweig data/live.
   analysten:
-    if: (github.event_name == 'schedule' && github.event.schedule == '41 5,13,21 * * *') || (github.event_name == 'workflow_dispatch' && (inputs.teil == 'alle' || inputs.teil == 'analysten'))
+    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '41 5,13,21 * * *') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'analysten'))
     runs-on: ubuntu-latest
     timeout-minutes: 55
     concurrency:
@@ -126,6 +119,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Rotation baut auf dem bisherigen Stand auf: der liegt im Datenzweig (BRANCH_ONLY), nicht in main.
+      - name: Bisheriger Stand aus dem Datenzweig
+        run: scripts/ci/seed-data-branch.sh analystConsensus
       - name: Konsens abrufen (rotierend)
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
@@ -139,21 +135,15 @@ jobs:
           set -euo pipefail
           unexpected="$(git status --porcelain | awk '{print $2}' | grep -vE '^dashboard/data/analysts/' || true)"
           if [ -n "$unexpected" ]; then echo "::error::unerwartete Aenderungen:"; echo "$unexpected"; exit 1; fi
-      - name: Commit
+      # Datenzweig (core/registry/data-branch.json, BRANCH_ONLY): nur noch data/live; die Kopie in main ist eingefroren.
+      - name: In den Datenzweig (nur main)
         if: github.ref == 'refs/heads/main'
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dashboard/data/analysts
-          if git diff --cached --quiet; then echo "keine Aenderung"; exit 0; fi
-          git commit -q -m "Analysten-Konsens aktualisiert (automatischer Lauf)"
-          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+        run: scripts/ci/push-data-branch.sh data/live dashboard/data/analysts/summary.json dashboard/data/analysts/shards
 
   # Analysten-Konsens: Abdeckungsmessung der kostenlosen Zugaenge (Finnhub, FMP) an einer festen Stichprobe des
   # Produktuniversums. Nur Bericht (Artefakt + Zusammenfassung), kein Commit, nur manuell.
   analysten-probe:
-    if: github.event_name == 'workflow_dispatch' && inputs.teil == 'analysten-probe'
+    if: (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.teil == 'analysten-probe'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -180,7 +170,7 @@ jobs:
           retention-days: 14
 
   hedgefonds:
-    if: (github.event_name == 'schedule' && (github.event.schedule == '17 6 * * 1' || github.event.schedule == '17 7 10-20 2,5,8,11 *')) || (github.event_name == 'workflow_dispatch' && (inputs.teil == 'alle' || inputs.teil == 'hedgefonds'))
+    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && ((github.event.schedule || inputs.zeitplan) == '17 6 * * 1' || (github.event.schedule || inputs.zeitplan) == '17 7 10-20 2,5,8,11 *')) || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'hedgefonds'))
     runs-on: ubuntu-latest
     timeout-minutes: 150
     concurrency:
@@ -244,7 +234,7 @@ jobs:
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
   morning:
-    if: (github.event_name == 'push') || (github.event_name == 'workflow_dispatch' && (inputs.teil == 'alle' || inputs.teil == 'morning'))
+    if: (github.event_name == 'push') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'morning'))
     runs-on: ubuntu-latest
     concurrency:
       group: content-morning-${{ github.ref_name }}

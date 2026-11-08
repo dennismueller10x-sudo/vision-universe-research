@@ -74,6 +74,28 @@ Weitere Lesarten, die beim Bauen auftauchen, entscheidet Claude nach der Präsen
 - „Alle N“ führt bis PR 2 auf die bestehende Seite der Reihe (`#/strategien/{reihe}`), Themenreihen in ihre Themenwelt.
 - Reihen laden ihre Datei erst 700 px vor dem sichtbaren Bereich; die Mini-Charts erst, wenn das Poster sichtbar wird.
 
+**PR 2 · Reihe, Vorschau, Alle Reihen**
+- Der Index Aktie → Reihen liegt unter `discover/data/membership/US_REAL.json` statt `rows/US_REAL/_membership.json`, weil mehrere Prüfungen jede Datei im Reihen-Ordner als Reihe lesen; er enthält alle Treffer mit Platz, nicht nur die ausgelieferten Karten (daher „Steht heute in 11 Reihen“ statt der 5 im Mockup).
+- `#/strategien/{reihe}` leitet auf die Seite der Reihe `#/c/US_REAL/{reihe}`; nur „Die stärksten je Branche“ behält ihre Sektor-Ansicht.
+- „Reihe merken“ merkt die Reihe auf dem Gerät (`memory.js`), gemerkte Reihen rücken auf der Startseite nach oben; die Glocke bleibt verborgen, solange das Konto keine Benachrichtigung je Reihe zustellt (`SEARCH_HITS` ist noch nicht bereit).
+- Die Regel in Klartext steht je Reihe als `explain` (ein bis zwei Sätze) in `discover/methodology/discover-v1.json` und kommt über `meta.rowConfigs` auf die Seite.
+- Reiter Sortierung: erste Spalte ist die Sortierung der Reihe (z. B. „3 Monate“ bei Comeback?), dann „12 Monate“ bzw. „Umsatz“ bei Geschäftszahlen-Reihen, dann „Name“.
+- „Reihe swipen“ zählt die ausgelieferten Karten der Reihe („3 von 30“), nicht die Trefferzahl, weil nur diese Karten geladen sind; der Platz wird je Reihe auf dem Gerät gemerkt.
+- Vorschau öffnet sich mit Halten (500 ms), Rechtsklick oder der Taste „?“ auf einem Poster; ein kurzer Tipp öffnet weiter die Aktie.
+- „Ähnliche Reihen“: für Fallen Angels wie im Mockup, sonst die Reihen desselben Genres.
+- „Alle Reihen“ ist eine eigene Seite `#/reihen` in Schwarz, erreichbar über ▦ und die Karte über der Swipen-Karte.
+
+**PR 3 · Persönliche Reihen**
+- `firstSeen` steht auf jeder Karte jeder Reihe; der Erzeuger liest dafür die eingecheckte Fassung (Karten und Index Aktie → Reihen) vor dem Leeren des Datenordners. Ohne frühere Fassung oder beim ersten Lauf ist `firstSeen` `null` (nicht neu), damit am Umstellungstag nicht alles NEU heißt.
+- Regel 3 nutzt `meta.rows[].neu` (Karten mit `firstSeen` = Datenstand); gemerkte Reihen rücken zuerst nach oben, danach Reihen mit neuen Treffern, beide nur zwischen den Reihen-Plätzen.
+- „Mehr aus {Thema}“ wählt das Thema, das unter den zuletzt angesehenen Aktien am häufigsten vorkommt (bei Gleichstand das jüngste), und lässt schon angesehene Aktien aus.
+- „Zuletzt angesehen“ zeigt die Tagesbewegung aus der Aktiendatei (erst, wenn die Schiene in die Nähe kommt) und „Heute/Gestern/Di. angesehen“; einen Link „Alle“ gibt es nicht, weil es keine Seite dafür gibt.
+
+**PR 4 · Fallen Angels**
+- Regel wie Entscheidung 1 über alle Treffer der drei Reihen (nicht nur deren 30 ausgelieferte Karten wie im Regel-Entwurf der Präsentation, dort zusätzlich ohne Werte unter −75 %): heute 225 statt 33 Treffer; die Schwelle bleibt −30 %, weil die Startseite über die Schaufenster-Regel ohnehin nur Karten über −60 % in 12 Monaten zeigt und die Reihe nach Zahl der Quell-Reihen sortiert.
+- Erzeuger: allgemeines Feld `memberOf` (Mitgliedschaft in anderen Reihen, je Universum einmal gerechnet) und `maxDistanceToHigh`; Sortierung erst nach Zahl der Quell-Reihen, dann `distanceTo52wHigh` aufsteigend; `verify-discover-data.mjs` prüft diese Reihenfolge mit dem Index Aktie → Reihen.
+- Reiter der Reihe: „Abstand · Umsatz · Name“ wie im Mockup (Reihen mit SEC-Regel sortieren zweitens nach Umsatz).
+
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
 ```

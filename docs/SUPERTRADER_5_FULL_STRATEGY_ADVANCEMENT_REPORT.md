@@ -8,7 +8,7 @@ Alle historischen Aussagen sind `DIAGNOSTIC_NOT_CERTIFIED`. Keine Strategie ist 
 Maschinenlesbar und generiert:
 - `scripts/supertrader/source-faithful/artifacts/STRATEGY-SF5-LIFECYCLE.json`: Matrix, Validierung, Modellannahmen, Varianten und Readiness je Lifecycle.
 - [SUPERTRADER_5_LIFECYCLE_MATRIX.md](SUPERTRADER_5_LIFECYCLE_MATRIX.md): Source-to-Execution-Matrix, alle Zeilen.
-- [SUPERTRADER_3_STRATEGY_READINESS.md](SUPERTRADER_3_STRATEGY_READINESS.md): die abgenommenen sechs Readiness-Dimensionen je Kandidat. Die Messklassen sind unverändert.
+- [SUPERTRADER_3_STRATEGY_READINESS.md](archiv/SUPERTRADER_3_STRATEGY_READINESS.md): die abgenommenen sechs Readiness-Dimensionen je Kandidat. Die Messklassen sind unverändert.
 
 ## Kurzfassung
 

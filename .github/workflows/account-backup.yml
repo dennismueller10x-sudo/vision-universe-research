@@ -11,10 +11,15 @@ name: Konten — Datenbank-Sicherung (verschluesselt)
 #     automatischen Migrationen; kein Datenbank-Zugang mehr als Repository-Secret
 #   Repository-Variable VU_ACCOUNT_BACKUP_AGE_RECIPIENT age1… (oeffentlich)
 # Keine Umgebung mit Pflicht-Review: ein naechtlicher Lauf kann nicht warten.
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '17 2 * * *'
   workflow_dispatch:
+    inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
 permissions:
   contents: read
   actions: read

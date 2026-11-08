@@ -42,7 +42,9 @@ test("SZ-2 · Wecker-Eintraege: kein Cron im Workflow, Eingang zeitplan, Marke i
     for (const m of ohne.matchAll(/github\.event\.schedule(?! \|\| inputs\.zeitplan)/g)) assert.fail(f + ": github.event.schedule ohne inputs.zeitplan @" + m.index);
     for (const m of ohne.matchAll(/github\.event_name == 'schedule'(?! \|\| inputs\.zeitplan)/g)) assert.fail(f + ": Zeitplan-Weiche ohne inputs.zeitplan @" + m.index);
     for (const m of ohne.matchAll(/github\.event_name == 'workflow_dispatch'(?! && !inputs\.zeitplan)/g)) assert.fail(f + ": manuelle Weiche greift auch beim Takt @" + m.index);
-    for (const m of ohne.matchAll(/github\.event_name != /g)) assert.fail(f + ": != auf event_name ist beim Takt mehrdeutig @" + m.index);
+    for (const m of ohne.matchAll(/github\.event_name != '(schedule|workflow_dispatch)'/g)) assert.fail(f + ": != auf schedule/workflow_dispatch ist beim Takt mehrdeutig @" + m.index);
+    for (const l of ohne.split("\n")) if (/\$\{\{[^}]*inputs\.zeitplan/.test(l) && !/^\s*-?\s*[A-Za-z_][A-Za-z0-9_-]*:\s*\$\{\{/.test(l)) assert.fail(f + ": inputs.zeitplan im Shell-Text (ADR-005: ueber env): " + l.trim());
+    for (const m of ohne.matchAll(/GITHUB_EVENT_NAME/g)) assert.fail(f + ": GITHUB_EVENT_NAME heisst beim Takt workflow_dispatch, erwartet VU_EVENT @" + m.index);
     for (const m of ohne.matchAll(/\$\{\{\s*github\.event_name\s*\}\}/g)) assert.fail(f + ": nacktes github.event_name, erwartet inputs.zeitplan && 'schedule' || github.event_name @" + m.index);
   }
 });
@@ -143,4 +145,13 @@ test("SZ-8 · ohne faelligen Termin fragt der Wecker GitHub nicht einmal nach ei
   console.log = () => {};
   try { assert.equal((await zeitgeber(ENV, T("2026-11-09T10:17:00Z"))).grund, "registerHttp404"); }
   finally { m.zurueck(); console.log = log; }
+});
+
+test("SZ-9 · direkt im Wecker getaktete Workflows stehen im Wecker und haben keinen eigenen Zeitplan im Register", () => {
+  const src = readFileSync(join(ROOT, "worker-waker/src/index.mjs"), "utf8");
+  for (const d of REG.direktImWecker || []) {
+    assert.ok(existsSync(join(ROOT, ".github/workflows", d.workflow)), d.workflow);
+    assert.ok(src.includes('"' + d.workflow + '"'), d.workflow + " fehlt im Wecker");
+    if (d.workflow !== "pages-release.yml") assert.deepEqual(workflowCrons(wf(d.workflow)), [], d.workflow + ": kein GitHub-Cron neben dem Wecker");
+  }
 });

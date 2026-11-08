@@ -91,4 +91,4 @@ Standard (Einstellungen → Steuern) bzw. am Produkt `vu_pro` hinterlegt ist; di
 | Support-E-Mail und -Website | Einstellungen → Unternehmensdetails → Öffentliche Angaben | info@visionuniverse.de, https://research.visionuniverse.de |
 | Belegversand | Einstellungen → Kunden-E-Mails | „Erfolgreiche Zahlungen“ und „Rechnungen“ einschalten |
 | Rechnungsfußzeile | Einstellungen → Rechnungen | RAM Consulting UG (haftungsbeschränkt), Bahnhofplatz 15, 74189 Weinsberg, AG Stuttgart HRB 803400 |
-| Branding | Einstellungen → Branding | [STRIPE_BRANDING.md](STRIPE_BRANDING.md) |
+| Branding | Einstellungen → Branding | [STRIPE_BRANDING.md](../archiv/accounts/STRIPE_BRANDING.md) |

@@ -40,7 +40,7 @@ der Zeitpunkt der Verfuegbarkeit muessen sauber auf `periodEnd`, `filedAt` und
 ## Offene Lizenz-Pruefpunkte
 
 Ein API-Key ist keine Erlaubnis zur Anzeige. Vor Vertragsabschluss zu beantworten
-(vollstaendige Matrix in `docs/VU_API_INTEGRATION_GUIDE.md`):
+(vollstaendige Matrix in `docs/archiv/VU_API_INTEGRATION_GUIDE.md`):
 
 - [ ] Internal Use — duerfen die Daten intern verarbeitet werden?
 - [ ] Display — duerfen Rohwerte Endkunden gezeigt werden?
@@ -68,7 +68,7 @@ datiertes Vertragsdokument, nicht in ein Repository.
 - [ ] Gibt es Bulk-Zugriff fuer `getPricePanel` / `getFactPanel`?
 
 Verifikation mit den drei Mock-Faellen an echten Daten: `MOCK_RESTATEMENT`,
-`MOCK_DELISTED`, `MOCK_FUTURE_DATA_LEAK` (siehe `docs/VU_MOCK_DATA.md`).
+`MOCK_DELISTED`, `MOCK_FUTURE_DATA_LEAK` (siehe `docs/archiv/VU_MOCK_DATA.md`).
 
 ## Bekannte Einschraenkungen
 

@@ -3,7 +3,7 @@
 Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/workflows`, `scripts/ci`, `scripts/core`, `core/registry`, dieses Dokument.
 
 ## Fertig
-- **Security Master 1.3.0 produktiv** ([Freigabevorlage](../data/security-master/SECURITY_MASTER_1_3_0_FREIGABE.md) §4):
+- **Security Master 1.3.0 produktiv** ([Freigabevorlage](../archiv/data/security-master/SECURITY_MASTER_1_3_0_FREIGABE.md) §4):
   - P1 41877792353: mit der alten Liste BLOCKED (G7 27/25);
   - Liste mit dem Erzeuger neu gebaut und gemergt (#1341), canonical_id 25/25;
   - P2 41884873986 erfüllt;
@@ -30,7 +30,7 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
 - **Erstes Bündel `content`** (#1385): News, Analystenbewertungen, Hedgefonds 13F und Morning in einem Workflow, Schritte bytegleich übernommen. 141 → 138 Workflows.
 - **Bündel-Verzeichnis** (#1379) mit Vertragstest. Jeder neue Workflow braucht ein Ziel-Bündel.
 - **Produktuniversum nachgeholt** (#1388, Commit `c5357718cb` vom Erzeuger):
-  - Freigabeliste der 228 Wechsel mit Vorher/Nachher je Produkt (`docs/data/security-master/ELIGIBILITY_CATCHUP_2026-11.md`);
+  - Freigabeliste der 228 Wechsel mit Vorher/Nachher je Produkt (`docs/archiv/data/security-master/ELIGIBILITY_CATCHUP_2026-11.md`);
   - 131 ETFs verlassen das Produkt; sie standen bis dahin als Aktie in Discover (123) und Quant (131);
   - 18 Titel kommen dazu;
   - Produktuniversum 6.686 → 6.573;
@@ -51,7 +51,7 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
 ## Offen
 - **Insider, Schritt 2:** nach dem ersten grünen Wochenlauf der Eigentümer-Signale mit gesätem Cache lesen Verbraucher nur noch eine Quelle; die eigene Abholung der Eigentümer-Signale bleibt Lückenfüller (Form 5, Ausfälle).
 - **Bündelung, nächste Schritte:**
-  - `pipeline-intraday` zusammen mit Plan §3 „ein Cloudflare-Takt statt GitHub-Crons“: Der Wecker startet heute `intraday-pacemaker.yml` und `discover-im-blick-live.yml` per Dateiname und prüft je Datei, ob ein Lauf aktiv ist (`laeuftSchon`). In einem gemeinsamen Workflow hielte ein laufender Watchdog- oder Taktgeber-Lauf die anderen Teile an. Umbau in einem Schritt: `pipeline-intraday.yml` mit Eingabe `teil` und `run-name` je Teil, ohne eigene Zeitpläne; der Wecker startet jeden Teil zu seiner Zeit und filtert Läufe nach `display_title` (Tests in `worker-waker/tests`); `pages-release.yml` lauscht auf den neuen Namen und filtert nach Teil; Ausrollen über `cloudflare-waker-deploy.yml` außerhalb der Sitzung (vor 13 UTC); danach die fünf Dateien löschen.
+  - `pipeline-intraday`, Stufe 1 (08.11.2026): `pipeline-intraday.yml` mit den Teilen `realtime-eur` (vormals currency-realtime-proof) und `waechter` (vormals intraday-delivery-watchdog); beide werden weder vom Wecker gestartet noch von `pages-release.yml` gehoert. Taktgeber, Snapshots und Im Blick folgen in Stufe 2 zusammen mit Plan §3 „ein Cloudflare-Takt statt GitHub-Crons“: Der Wecker startet heute `intraday-pacemaker.yml` und `discover-im-blick-live.yml` per Dateiname und prüft je Datei, ob ein Lauf aktiv ist (`laeuftSchon`). In einem gemeinsamen Workflow hielte ein laufender Watchdog- oder Taktgeber-Lauf die anderen Teile an. Umbau in einem Schritt: `pipeline-intraday.yml` mit Eingabe `teil` und `run-name` je Teil, ohne eigene Zeitpläne; der Wecker startet jeden Teil zu seiner Zeit und filtert Läufe nach `display_title` (Tests in `worker-waker/tests`); `pages-release.yml` lauscht auf den neuen Namen und filtert nach Teil; Ausrollen über `cloudflare-waker-deploy.yml` außerhalb der Sitzung (vor 13 UTC); danach die fünf Dateien löschen.
   - `pipeline-daily` (18 Workflows, `workflow_run`-Ketten nach Namen): Kette als Liste mit Auslösern (Stand 06.11.2026, UTC):
     - **Kette 1 (Kurse):** `market-data-refresh.yml` (werktags 22:30) → per Name `product-intelligence-materialization.yml` → per Name `technical-world.yml` (auch 05:10 und nach „Lange Kursreihen“) und `home-refresh.yml` (auch nach „Supertrader Signale“); seit 07.11. auch `ki-depots-daily.yml` per Name (seit #1639 Teil `ki-depots` in `pipeline-daily.yml`) (neben seinem Zeitplan 23:41, der bei Andrang vor dem Refresh lief); dazu dispatcht `market-data-refresh` Materialisierung, `supertrader-signals` und `technical-world` per Datei.
     - **Kette 2 (lange Reihen):** „Lange Kursreihen“ (`long-series.yml`, Bündel pipeline-weekly) → per Name `technical-intelligence-build.yml` (auch 05:35) und `technical-world.yml`.
@@ -83,7 +83,7 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - #1268, #1270, #1273, #1331 und #1340 hatten ihre Stränge vorher selbst erledigt;
   - offen sind danach nur noch die behaltenen PRs und laufende Strang-PRs.
 - **Triage der Alt-PRs** (Auftrag der Steuerung 06.11.2026, Nacht):
-  - durch neueren Stand erledigt und geschlossen: #1308 und #1309 (App-Anmeldeschiene kam mit #1525), #1258 (Menü „Mein Dashboard“ und Dashboard-Umbau in der Nutzerführung), #624 (Brevo-Importnachweis durch die Aktualisierung vom 18.10. in `docs/brevo/LIVE-STATUS.md` überholt), #631 (Brevo-Domain laut Audit 39116263425 bereits authentisiert);
+  - durch neueren Stand erledigt und geschlossen: #1308 und #1309 (App-Anmeldeschiene kam mit #1525), #1258 (Menü „Mein Dashboard“ und Dashboard-Umbau in der Nutzerführung), #624 (Brevo-Importnachweis durch die Aktualisierung vom 18.10. in `docs/archiv/brevo/LIVE-STATUS.md` überholt), #631 (Brevo-Domain laut Audit 39116263425 bereits authentisiert);
   - übernommen auf den heutigen Stand: #1300 → #1563 (Zeitlimits in `push-with-retry.sh`, Chartbild-Frische `follows`), #1386 → #1566 (Europa-Refresh wird ausgeliefert, Release-QA im `monitor`-Job prüft den veröffentlichten Commit);
   - behalten, weil Fachmodell mit Vorher/Nachher im eigenen Strang (Strang C): #1259 (Musterstudie in Gesamtrendite, FV-5), #1119 (Security Master `active_status` aus SEC-Delisting-Beleg, H6), #1241 (V13-Archiv Generation 2.0.0);
   - behalten, weil Rechtstexte (Owner-Freigabe Recht): #630 (Cookie-Banner und Datenschutz der Landing), zusammen mit #1528 zu entscheiden.
@@ -110,11 +110,11 @@ Plan: [PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md). Pfade: `.github/w
   - Die Bilanz geht noch nicht auf: Technik 5.644 − 7 = 5.637 gegenüber gemessenen 5.655, Chart 6.683 − 396 = 6.287 gegenüber gemessenen 6.305.
   - Entscheidung für C-Quant: Grenzfälle über den letzten Datentag der Messung zählen statt über den Stichtag, dann neu abnehmen. Die Klassifikation wird nicht nebenbei geändert.
 
-## Übernommen von Strang B (05.11.2026, [B-supertrader.md](B-supertrader.md))
+## Übernommen von Strang B (05.11.2026, [B-supertrader.md](../archiv/neustart/B-supertrader.md))
 - **Bis 15.12.2026 (Frist 04.01.2027):** Papierhandel F1–F3 (Forward-Namensraum befüllen) und ein Core-PR, der `supertrader-paper-2027-log` in `core/registry/domains.json` mit JSONL-Leser auf `ACTIVATING` stellt. Ohne beides zeichnet `supertrader-paper-2027.yml` ab 04.01. auf, ohne dass Core die Daten kennt.
 - **Security Master vor ca. 04.01.2027 auffrischen** (SF8-Grenze 60 Tage ab Stand 05.11.): Der Mittwochslauf (`security-master-weekly.yml`, 09:41 UTC) committet nur bei Gate COMMIT. Bis 16.12. prüfen, dass mindestens ein Lauf übernommen wurde; sonst mit Freigabeliste nachholen wie am 05.11.
 - **Erste Nachtläufe beobachten (06./07.11.):** `supertrader-signals.yml`: `private-state pull` meldet erst `MIGRATED_FROM_REPOSITORY`, ab dem zweiten Lauf `PRIVATE`; Kandidatenlauf veröffentlicht Stand 05.11. ohne Pläne; DQ-SF8-4 in der Core-CI grün.
-- **Alt-PRs:** #1262, #1263 (C09-Entwürfe) und #1267 geschlossen (Forschung ruht, Verweis auf B-supertrader.md). #1141 (Inhalts-Fingerabdruck des Security Masters für die Backtest-Freshness) geschlossen; Plan bleibt in `docs/SECURITY_MASTER_CONTENT_HASH.md`, wird vor der Dezember-Auffrischung neu bewertet, weil diese alle Backtest-Snapshots als veraltet markiert. #1156 übernommen: Alarm-Job in `sec-consumer-fundamentals.yml`.
+- **Alt-PRs:** #1262, #1263 (C09-Entwürfe) und #1267 geschlossen (Forschung ruht, Verweis auf B-supertrader.md). #1141 (Inhalts-Fingerabdruck des Security Masters für die Backtest-Freshness) geschlossen; Plan bleibt in `docs/archiv/SECURITY_MASTER_CONTENT_HASH.md`, wird vor der Dezember-Auffrischung neu bewertet, weil diese alle Backtest-Snapshots als veraltet markiert. #1156 übernommen: Alarm-Job in `sec-consumer-fundamentals.yml`.
 
 ## Braucht Owner
 - Nichts Neues.

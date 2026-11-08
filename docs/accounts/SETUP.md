@@ -111,7 +111,7 @@ Brevo ist bereits im Haus (Newsletter, `docs/brevo/`). Für Konten kommen **Tran
 300 E-Mails pro Tag; kein Upgrade nötig.
 
 **B1 – Domain authentifizieren.** Brevo → Senders, Domains & Dedicated IPs → Domains → `visionuniverse.de`: die angezeigten DNS-Einträge
-(Brevo-Code, DKIM, DMARC) in der DNS-Zone eintragen und „Authenticate“ (laut `docs/brevo/README.md` ist die Domain registriert, aber noch
+(Brevo-Code, DKIM, DMARC) in der DNS-Zone eintragen und „Authenticate“ (laut `docs/archiv/brevo/README.md` ist die Domain registriert, aber noch
 nicht authentifiziert). Ohne Authentifizierung landen E-Mails im Spam oder werden abgelehnt.
 
 **B2 – Absender.** Senders → Add sender `konto@visionuniverse.de`, Name „Vision Universe“. Postfach muss Antworten empfangen können
