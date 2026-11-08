@@ -11,7 +11,7 @@
 /* Kopf: Frage in zwei Zeilen, Genre-Chips kleben beim Scrollen oben */
 .dv3-intro .vu-lt{margin-top:4px}
 .dv3-intro .dr-genre-lead{margin-top:8px;font-size:15px}
-.dr-genres{position:sticky;top:var(--vu-navigation-height,64px);z-index:6;margin:12px -16px 0;padding:6px 16px;background:var(--vu-bg,#fff)}
+.dr-genres{position:sticky;top:var(--vu-navigation-height,64px);z-index:6;margin:6px -16px 0;padding:6px 16px;background:var(--vu-bg,#fff)}
 .dr-genres .vu-chip{min-height:44px;font-size:13.5px;font-weight:700;padding:0 14px}
 .dr-genres .vu-chip svg{width:16px;height:16px}
 .dr-genres .vu-chip[aria-pressed=false]{background:var(--vu-card);color:var(--vu-ink)}
@@ -70,7 +70,7 @@
 .dr-bb__id .vu-logo-tile{width:52px;height:52px;border-radius:15px}
 .dr-bb__id>div{min-width:0}
 .dr-bb__id b{display:block;font-size:21px;font-weight:800;letter-spacing:-.03em;line-height:1.1;overflow:hidden;text-overflow:ellipsis}
-.dr-bb__id span{display:block;margin-top:2px;font-size:11.5px;font-weight:700;color:#9b9b9b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dr-bb__id>div>span{display:block;margin-top:2px;font-size:11.5px;font-weight:700;color:#9b9b9b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dr-bb__big{display:flex;align-items:center;gap:10px;margin-top:14px}
 .dr-bb__big .vu-chg{gap:6px;padding:6px 16px 6px 12px;font-size:30px;font-weight:900;letter-spacing:-.045em;line-height:1}
 .dr-bb__big>span:last-child{font-size:13px;font-weight:700;color:#9b9b9b}
@@ -80,10 +80,11 @@
 .dr-bb__chart .dv3-spark svg path:not([fill^=url]){stroke:#fff}
 .dr-bb__dates{display:flex;justify-content:space-between;margin-top:6px;font-size:11.5px;font-weight:600;color:#9b9b9b;min-height:16px}
 .dr-bb__chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.dr-bb__chips .vu-chip{min-height:30px;height:30px;padding:0 14px;font-size:12.5px;cursor:default;background:#1d1d1d;color:#fff}
-.dr-bb__chips .vu-chip--lime{background:var(--vu-lime);color:#000}
+.dr-bb .dr-bb__chips .vu-chip{min-height:30px;height:30px;padding:0 14px;font-size:12.5px;cursor:default;background:#1d1d1d;color:#fff}
+.dr-bb .dr-bb__chips .vu-chip--lime{background:var(--vu-lime);color:#000}
 .dr-bb__act{display:grid;grid-template-columns:1fr 1fr 46px;gap:8px;margin-top:14px}
 .dr-bb__act .vu-btn{min-height:46px;padding:0 10px;font-size:14.5px}
+.dr-bb .dr-bb__act a.vu-btn{background:var(--vu-lime);color:#000}
 .dr-bb__act .vu-btn--line{border-color:#333;color:#fff}
 .dr-bb__act .vu-btn--line[aria-pressed=true]{background:var(--vu-lime);border-color:var(--vu-lime);color:#000}
 .dr-bb__act .vu-btn svg{width:18px;height:18px}

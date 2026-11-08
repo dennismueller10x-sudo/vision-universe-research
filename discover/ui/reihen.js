@@ -249,13 +249,15 @@
   /* ------------------------------------------------------------ Genre-Chips */
   function bindGenres(page, ctx, draw) {
     var nav = page.querySelector('.dr-genres');
-    if (!nav || nav.dataset.bound) return nav;
+    if (!nav) return nav;
+    nav.__drDraw = draw; /* der Kopf bleibt beim Neuzeichnen stehen: der Klick gilt immer der aktuellen Startseite */
+    if (nav.dataset.bound) return nav;
     nav.dataset.bound = '1';
     nav.addEventListener('click', function (e) {
       var b = e.target.closest && e.target.closest('button[data-genre]'); if (!b) return;
       var g = b.dataset.genre === 'alle' ? null : b.dataset.genre;
       try { global.history.replaceState(global.history.state, '', g ? '#/?genre=' + g : '#/'); } catch (err) {}
-      draw(g);
+      nav.__drDraw(g);
       var top = nav.getBoundingClientRect().top;
       if (top < 0 || top > global.innerHeight) nav.scrollIntoView({ block: 'start' });
     });
