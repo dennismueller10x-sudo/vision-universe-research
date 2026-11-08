@@ -243,7 +243,7 @@
                      DAS ist unbekannt, und unbekannt haelt an.
 
        Der Unterschied laesst sich hier nicht erraten - er ist nur dort
-       bekannt, wo die Datei gelesen wird. scripts/social/run-orchestrator.mjs
+       bekannt, wo die Datei gelesen wird. products/social/producer/run-orchestrator.mjs
        setzt deshalb ausdruecklich `null`, wenn das Register da ist und
        sich nicht lesen laesst, und die Zahl, wenn es sich lesen laesst.
        ----------------------------------------------------------------- */

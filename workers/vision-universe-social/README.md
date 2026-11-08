@@ -150,7 +150,7 @@ dort liegenden Code **vollstaendig und ohne Rueckfrage**.
 ```bash
 export CLOUDFLARE_API_TOKEN=...      # Werte nie ins Repository
 export CLOUDFLARE_ACCOUNT_ID=...
-node scripts/social/preflight-worker.mjs
+node products/social/producer/preflight-worker.mjs
 ```
 
 Das Skript liest den aktuellen Stand und meldet Groesse, Fingerabdruck, Bindungen und

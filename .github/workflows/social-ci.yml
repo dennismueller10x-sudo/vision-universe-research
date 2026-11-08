@@ -14,7 +14,7 @@ name: Social CI
 # vier Interfaces und kann jede Fehlerlage aus §44 ausloesen.
 #
 # Ein Lauf gegen Meta ist ausdruecklich NICHT Teil dieser CI. Er laeuft
-# von Hand (scripts/social/verify-meta-capabilities.mjs), sobald der Owner
+# von Hand (products/social/producer/verify-meta-capabilities.mjs), sobald der Owner
 # Zugangsdaten hinterlegt hat.
 
 on:
@@ -22,13 +22,13 @@ on:
     branches: [main]
     paths:
       - 'social/**'
-      - 'scripts/social/**'
+      - 'products/social/producer/**'
       - 'workers/**'
       - '.github/workflows/social-ci.yml'
   pull_request:
     paths:
       - 'social/**'
-      - 'scripts/social/**'
+      - 'products/social/producer/**'
       - 'workers/**'
       - '.github/workflows/social-ci.yml'
   workflow_dispatch:
@@ -74,12 +74,12 @@ jobs:
       # festschreibt.
       # =====================================================================
       - name: Creative-Ergebnisse von offenen Request-PRs holen
-        run: node scripts/social/ingest-open-creative-jobs.mjs --write
+        run: node products/social/producer/ingest-open-creative-jobs.mjs --write
 
       - name: Creative Jobs gegen die Evidenz abgleichen
         env:
           GH_TOKEN: ${{ github.token }}
-        run: node scripts/social/reconcile-creative-jobs.mjs --write
+        run: node products/social/producer/reconcile-creative-jobs.mjs --write
 
       # =====================================================================
       # DIE SUITEN UND DIE ISOLATION — EINMAL, UND MIT STAND
@@ -96,7 +96,7 @@ jobs:
       # harter Fehler der CI und wird nicht erst im Bericht sichtbar.
       # =====================================================================
       - name: Suiten und Test-/Produktionsisolation messen
-        run: node scripts/social/verify-suites.mjs
+        run: node products/social/producer/verify-suites.mjs
 
       - name: Was gemessen wurde
         if: always()
@@ -106,7 +106,7 @@ jobs:
       # gelesen: der Publish-Pfad wird zweimal aufgerufen und muss
       # zweimal mit SEINEM eigenen Grund ablehnen.
       - name: Die fuenf harten Invarianten
-        run: node scripts/social/check-hard-invariants.mjs
+        run: node products/social/producer/check-hard-invariants.mjs
 
       # Der Reifezustand des Approval Centers, gemessen am Repository.
       # Er schaltet nichts frei; er stellt fest - und was er von hier aus
@@ -117,7 +117,7 @@ jobs:
       # Commit gebunden). Die Fahne war eine Behauptung des Workflows
       # ueber die Arbeit, die dieser Bericht bewerten soll.
       - name: APPROVAL_CENTER_PRODUCTION_READY
-        run: node scripts/social/approval-center-readiness.mjs
+        run: node products/social/producer/approval-center-readiness.mjs
 
       # =====================================================================
       # §26/§27 — DIE GEMESSENEN ZUSTAENDE DES ASSET-/HASHTAG-AUFTRAGS
@@ -142,7 +142,7 @@ jobs:
         if: always()
         run: |
           set -uo pipefail
-          node scripts/social/asset-hashtag-done.mjs | tee /tmp/asset-hashtag.log || true
+          node products/social/producer/asset-hashtag-done.mjs | tee /tmp/asset-hashtag.log || true
           {
             echo "## ASSET + HASHTAG"
             echo '```'
@@ -155,11 +155,11 @@ jobs:
         # Syntaxfehler erst nach dem Start auffiele — und dann mit
         # Cloudflare-Zugang im Ruecken.
         run: |
-          for file in scripts/social/provision-cloudflare.mjs scripts/social/verify-worker.mjs; do
+          for file in products/social/producer/provision-cloudflare.mjs products/social/producer/verify-worker.mjs; do
             node --check "$file" 2>/dev/null || node -e "import('./$file')" >/dev/null 2>&1 || true
           done
           # provision bricht ohne Zugangsdaten ab — mit einer Meldung, nicht mit einem Stacktrace.
-          if node scripts/social/provision-cloudflare.mjs --ensure-kv 2>&1 | grep -q "ABBRUCH"; then
+          if node products/social/producer/provision-cloudflare.mjs --ensure-kv 2>&1 | grep -q "ABBRUCH"; then
             echo "provision-cloudflare.mjs meldet fehlenden Zugang sauber."
           else
             echo "::error::provision-cloudflare.mjs verhaelt sich ohne Zugang unerwartet."
@@ -181,7 +181,7 @@ jobs:
           # Stacktrace. Ob der Worker gerade erreichbar ist, ist eine
           # Frage an die Infrastruktur und nicht an diesen Code — ein
           # roter Lauf deswegen saegte an der falschen Stelle.
-          ausgabe="$(node scripts/social/verify-worker.mjs 2>&1 || true)"
+          ausgabe="$(node products/social/producer/verify-worker.mjs 2>&1 || true)"
           echo "$ausgabe" | tail -6
           if echo "$ausgabe" | grep -q "^Abgebrochen:"; then
             echo "::error::verify-worker.mjs ist mit einem Stacktrace abgebrochen."
@@ -197,7 +197,7 @@ jobs:
       - name: Worker-Preflight (lokale Pruefungen)
         # Ohne Cloudflare-Zugang prueft er die Konfiguration: Zielname,
         # Platzhalter, und vor allem — keine Secret-Werte in wrangler.toml.
-        run: node scripts/social/preflight-worker.mjs
+        run: node products/social/producer/preflight-worker.mjs
 
       - name: Konfigurations- und Methodikdateien sind gueltiges JSON
         run: |
@@ -259,10 +259,10 @@ jobs:
         # Die Pruefung bestand also darauf, dass das Artefakt die falsche
         # Aussage wieder macht. Sie prueft jetzt die richtige.
         run: |
-          node scripts/social/fetch-meta-status.mjs
+          node products/social/producer/fetch-meta-status.mjs
           node -e '
             const { execSync } = require("child_process");
-            execSync("node scripts/social/fetch-meta-status.mjs --out /tmp/social-meta");
+            execSync("node products/social/producer/fetch-meta-status.mjs --out /tmp/social-meta");
             const report = require("/tmp/social-meta/meta-connection.json");
             if (report.state !== "credentials_missing_here") {
               throw new Error("Ohne Zugang muss der Zustand credentials_missing_here sein, war: " + report.state);
@@ -280,20 +280,20 @@ jobs:
         # Dieselbe Eigenschaft wie beim Marktdatenabruf in quant-ci.yml:
         # ein fehlender Zugang ist eine Konfigurationsfrage, kein Baufehler.
         run: |
-          node scripts/social/collect-vu-signals.mjs
+          node products/social/producer/collect-vu-signals.mjs
 
       - name: Der vollstaendige Zyklus laeuft gegen den Mock durch
         # Der Nachweis aus §53: der Kreislauf traegt, und ein Provider kann
         # ihn durchlaufen. Veroeffentlicht wird dabei nichts — der globale
         # Schalter ist aus, und der Mock verlaesst den Prozess ohnehin nie.
         run: |
-          node scripts/social/collect-vu-signals.mjs --out /tmp/social-ci
+          node products/social/producer/collect-vu-signals.mjs --out /tmp/social-ci
           cp /tmp/social-ci/signals.json social/data/signals.json
-          node scripts/social/run-social-cycle.mjs --provider mock
+          node products/social/producer/run-social-cycle.mjs --provider mock
           git checkout -- social/data/signals.json 2>/dev/null || true
 
       - name: Keine Zugangsdaten und keine Anbieterbindung in ausgelieferten Pfaden
-        run: node scripts/social/assert-no-secrets.mjs
+        run: node products/social/producer/assert-no-secrets.mjs
 
       - name: Die Seiten des Command Center binden Shell und Navigation ein
         run: |

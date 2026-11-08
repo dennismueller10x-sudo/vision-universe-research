@@ -80,7 +80,7 @@ const SECRET_NAMES = {
  * Zugangsdaten noetig waeren, die es im Repository nicht gibt. Die Werte
  * stammen aus der Dokumentation der Graph API — das ist eine begruendete
  * Erwartung, kein Nachweis. Der Verifikationslauf
- * (scripts/social/verify-meta-capabilities.mjs) traegt das Datum ein,
+ * (products/social/producer/verify-meta-capabilities.mjs) traegt das Datum ein,
  * sobald er einmal mit Zugang gelaufen ist.
  */
 function metaCapabilities(spec) {

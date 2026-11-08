@@ -420,7 +420,7 @@ test("AC18 · Die Kennung, die der Router erwartet, ist die, die erzeugt wird", 
   const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 
   const erzeuger = readFileSync(
-    join(ROOT, "scripts/social/make-publish-candidate.mjs"), "utf8");
+    join(ROOT, "products/social/producer/make-publish-candidate.mjs"), "utf8");
   const zeile = erzeuger.match(/const candidateId = "([a-z_]+)"/);
   assert.ok(zeile, "Das Kennungsschema steht nicht mehr, wo es stand.");
 

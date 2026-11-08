@@ -117,9 +117,9 @@ on:
     paths:
       - '.github/workflows/social.yml'
       - 'authoring/requests/**/authoring-result.json'
-      - 'scripts/social/preflight-worker.mjs'
-      - 'scripts/social/provision-cloudflare.mjs'
-      - 'scripts/social/verify-worker.mjs'
+      - 'products/social/producer/preflight-worker.mjs'
+      - 'products/social/producer/provision-cloudflare.mjs'
+      - 'products/social/producer/verify-worker.mjs'
       - 'workers/vision-universe-social/**'
 
 permissions:
@@ -157,7 +157,7 @@ jobs:
         run: |
           python3 - <<'PY'
           import fnmatch, json, os, re
-          SPEC = json.loads(r"""{"cloudflare": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/social.yml", "scripts/social/preflight-worker.mjs", "scripts/social/provision-cloudflare.mjs", "scripts/social/verify-worker.mjs", "workers/vision-universe-social/**"]}, "required": ["action"]}, "extern-beobachten": {"crons": [], "dispatch": true, "required": []}, "extern-recherche": {"crons": [], "dispatch": true, "required": []}, "hashtag-probe": {"crons": [], "dispatch": true, "required": []}, "kandidat": {"crons": [], "dispatch": true, "required": ["aktion"]}, "lieferung": {"crons": [], "dispatch": false, "push": {"branches": ["authoring/request/**"], "paths": ["authoring/requests/**/authoring-result.json"]}, "required": []}, "reel": {"crons": [], "dispatch": true, "required": ["content_id"]}, "smoke-publish": {"crons": [], "dispatch": true, "required": ["smoke_publish_bestaetigung"]}, "web-fortsetzen": {"crons": [], "dispatch": true, "required": []}}""")
+          SPEC = json.loads(r"""{"cloudflare": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/social.yml", "products/social/producer/preflight-worker.mjs", "products/social/producer/provision-cloudflare.mjs", "products/social/producer/verify-worker.mjs", "workers/vision-universe-social/**"]}, "required": ["action"]}, "extern-beobachten": {"crons": [], "dispatch": true, "required": []}, "extern-recherche": {"crons": [], "dispatch": true, "required": []}, "hashtag-probe": {"crons": [], "dispatch": true, "required": []}, "kandidat": {"crons": [], "dispatch": true, "required": ["aktion"]}, "lieferung": {"crons": [], "dispatch": false, "push": {"branches": ["authoring/request/**"], "paths": ["authoring/requests/**/authoring-result.json"]}, "required": []}, "reel": {"crons": [], "dispatch": true, "required": ["content_id"]}, "smoke-publish": {"crons": [], "dispatch": true, "required": ["smoke_publish_bestaetigung"]}, "web-fortsetzen": {"crons": [], "dispatch": true, "required": []}}""")
           ev, ref = os.environ.get("EVENT", ""), os.environ.get("REF", "")
           def glob_re(p):
               # GitHub-Filtermuster: ** beliebig, * ohne '/', ? ein Zeichen, [..] Klasse; Praefix '!' = Ausschluss
@@ -352,7 +352,7 @@ jobs:
       - name: Preflight gegen die reale Infrastruktur
         id: preflight
         run: |
-          node scripts/social/preflight-worker.mjs \
+          node products/social/producer/preflight-worker.mjs \
             --out /tmp/cf-preflight --backup tmp/cf-backup | tee /tmp/preflight.log
           verdict=$(node -e '
             const r = require("/tmp/cf-preflight/worker-preflight.json");
@@ -375,7 +375,7 @@ jobs:
         #
         # Nur lesend. Zonennamen stehen im oeffentlichen DNS.
         continue-on-error: true
-        run: node scripts/social/provision-cloudflare.mjs --list-zones social.visionuniverse.de
+        run: node products/social/producer/provision-cloudflare.mjs --list-zones social.visionuniverse.de
 
       - name: Preflight-Bericht sichern
         uses: actions/upload-artifact@v4
@@ -465,13 +465,13 @@ jobs:
         # zu vergleichen — "wrangler erhaelt Secrets normalerweise" ist
         # keine Zusicherung, auf die man ein App-Secret setzt.
         run: |
-          node scripts/social/provision-cloudflare.mjs \
+          node products/social/producer/provision-cloudflare.mjs \
             --check-secrets vorher --out-json /tmp/secrets-before.json
 
       - name: Minimale Infrastruktur sicherstellen (KV, oeffentliche URL)
         if: steps.mode.outputs.deploy == 'true'
         id: provision
-        run: node scripts/social/provision-cloudflare.mjs --ensure-kv --resolve-url
+        run: node products/social/producer/provision-cloudflare.mjs --ensure-kv --resolve-url
 
       - name: Worker deployen
         if: steps.mode.outputs.deploy == 'true'
@@ -534,7 +534,7 @@ jobs:
             const m = s.match(/^\s*PUBLIC_BASE_URL\s*=\s*"([^"]*)"/m);
             console.log(m ? m[1] : "");
           ')
-          node scripts/social/provision-cloudflare.mjs --url "${{ steps.deploy.outputs.deployed_url }}"
+          node products/social/producer/provision-cloudflare.mjs --url "${{ steps.deploy.outputs.deployed_url }}"
           after=$(node -e '
             const fs = require("fs");
             const s = fs.readFileSync("workers/vision-universe-social/wrangler.toml", "utf8");
@@ -555,7 +555,7 @@ jobs:
 
       - name: Secrets NACH dem Deployment vergleichen
         if: steps.mode.outputs.deploy == 'true'
-        run: node scripts/social/provision-cloudflare.mjs --compare-secrets /tmp/secrets-before.json
+        run: node products/social/producer/provision-cloudflare.mjs --compare-secrets /tmp/secrets-before.json
 
       - name: Konfiguration committen
         if: steps.mode.outputs.deploy == 'true'
@@ -582,7 +582,7 @@ jobs:
       - name: Zustand pruefen
         if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
         run: |
-          node scripts/social/verify-worker.mjs --out /tmp/cf-verify | tee /tmp/verify.log
+          node products/social/producer/verify-worker.mjs --out /tmp/cf-verify | tee /tmp/verify.log
           {
             echo "## Worker-Zustand"
             echo '```'
@@ -612,7 +612,7 @@ jobs:
           VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
         run: |
           set -euo pipefail
-          node scripts/social/verify-approval-center.mjs | tee /tmp/approval.log
+          node products/social/producer/verify-approval-center.mjs | tee /tmp/approval.log
           {
             echo "## Approval Center"
             echo '```'
@@ -641,8 +641,8 @@ jobs:
         continue-on-error: true
         run: |
           set -uo pipefail
-          node scripts/social/verify-suites.mjs > /tmp/suites.log 2>&1 || true
-          node scripts/social/order-d-done.mjs | tee /tmp/order-d.log || true
+          node products/social/producer/verify-suites.mjs > /tmp/suites.log 2>&1 || true
+          node products/social/producer/order-d-done.mjs | tee /tmp/order-d.log || true
           {
             echo "## ORDER_D_DONE"
             echo '```'
@@ -673,7 +673,7 @@ jobs:
           # Was diese Umgebung sieht, sieht sonst niemand — sie ist die
           # einzige, die den Worker erreicht. Steht die Antwort nur im
           # Protokoll, verfaellt sie mit dem Lauf.
-          node scripts/social/asset-hashtag-done.mjs \
+          node products/social/producer/asset-hashtag-done.mjs \
             --out social/data/asset-hashtag-status.json \
             | tee /tmp/asset-hashtag.log || true
           {
@@ -893,7 +893,7 @@ jobs:
               "https://social.visionuniverse.de/social/meta/insights?media=$SMOKE_MEDIA" || echo 000)
             # KORREKTUR: hier stand einmal die Behauptung, `[ ... ] && break`
             # toete den Schritt unter `bash -e`. Das ist FALSCH und wurde
-            # durch einen Test widerlegt (social/tests/shell-semantics.test.mjs,
+            # durch einen Test widerlegt (products/social/tests/shell-semantics.test.mjs,
             # SE1/SE2): `set -e` greift nicht beim linken Operanden von &&.
             #
             # Die Ursache war eine einzige und stand weiter unten:
@@ -994,7 +994,7 @@ jobs:
               ", ausdruecklich: " + (((einzeln || {}).posts || []).length) + ")");
           '
 
-          node scripts/social/ingest-performance.mjs \
+          node products/social/producer/ingest-performance.mjs \
             --in tmp/social/insights-alle.json --out social/data | tee tmp/social/ingest.txt
 
           {
@@ -1145,7 +1145,7 @@ jobs:
           if [ -n "$IN_SEARCHES" ]; then
             ARGS="--searches ${IN_SEARCHES}"
           fi
-          node scripts/social/discover-creators.mjs $ARGS | tee tmp-plan.txt
+          node products/social/producer/discover-creators.mjs $ARGS | tee tmp-plan.txt
 
       - name: Suchen und Watch Universe fortschreiben
         if: steps.key.outputs.vorhanden == 'ja'
@@ -1160,7 +1160,7 @@ jobs:
           if [ -n "$IN_SEARCHES" ]; then
             ARGS="--searches ${IN_SEARCHES}"
           fi
-          node scripts/social/discover-creators.mjs $ARGS --discover
+          node products/social/producer/discover-creators.mjs $ARGS --discover
 
       - name: Oeffentliche Zahlen anreichern (kostet keinen Suchaufruf)
         if: steps.key.outputs.vorhanden == 'ja'
@@ -1168,7 +1168,7 @@ jobs:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |
           set -euo pipefail
-          node scripts/social/enrich-youtube-metrics.mjs --run
+          node products/social/producer/enrich-youtube-metrics.mjs --run
 
       - name: Opportunity Engine — extern als eigene Dimension
         if: steps.quelle.outputs.aktiv == 'ja'
@@ -1176,7 +1176,7 @@ jobs:
           set -euo pipefail
           # Laeuft IMMER, auch ohne Schluessel: dann steht dort null
           # externe Beobachtungen, und das ist eine ehrliche Zahl.
-          node scripts/social/rank-social-opportunities.mjs --top 3 \
+          node products/social/producer/rank-social-opportunities.mjs --top 3 \
             --out social/data | tee tmp-rank.txt
 
       - name: Zusammenfassen
@@ -1274,7 +1274,7 @@ jobs:
         id: plan
         run: |
           set -euo pipefail
-          node scripts/social/plan-hashtag-observation.mjs \
+          node products/social/producer/plan-hashtag-observation.mjs \
             --max-new "${{ inputs.max_new || '8' }}" --out tmp/observe
           echo "tags=$(cat tmp/observe/tags.txt)" >> "$GITHUB_OUTPUT"
 
@@ -1327,7 +1327,7 @@ jobs:
           set -euo pipefail
           # Hier werden fremde Inhalte NICHT gespeichert. Die Rohantwort
           # wird in Muster uebersetzt und danach verworfen.
-          node scripts/social/ingest-external-observation.mjs \
+          node products/social/producer/ingest-external-observation.mjs \
             --raw tmp/observe/raw.json --write
 
       - name: Beobachtung festschreiben
@@ -1381,7 +1381,7 @@ jobs:
           VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
         run: |
           set -euo pipefail
-          node scripts/social/verify-hashtag-access.mjs | tee /tmp/probe.txt
+          node products/social/producer/verify-hashtag-access.mjs | tee /tmp/probe.txt
 
       - name: Befund als Zusammenfassung
         if: always()
@@ -1424,7 +1424,7 @@ jobs:
         run: |
           # Ein Lauf, der einen oeffentlichen Beitrag vorbereiten oder
           # ausloesen kann, laeuft nicht gegen ungepruefte Engines.
-          node --test "social/tests/*.test.mjs" 2>&1 | tail -8
+          node --test "products/social/tests/*.test.mjs" 2>&1 | tail -8
           node --test "workers/vision-universe-social/tests/*.test.mjs" 2>&1 | tail -8
 
       # ------------------------------------------------------ VORBEREITEN
@@ -1495,7 +1495,7 @@ jobs:
             exit 1
           fi
 
-          node scripts/social/decide-candidate.mjs \
+          node products/social/producer/decide-candidate.mjs \
             --candidate "$IN_CANDIDATEID" \
             --reject --reason "$IN_GRUND" --by owner
 
@@ -1563,7 +1563,7 @@ jobs:
           IN_CANDIDATEID: ${{ inputs.candidateId }}
         run: |
           set -e
-          node scripts/social/decide-candidate.mjs \
+          node products/social/producer/decide-candidate.mjs \
             --candidate "$IN_CANDIDATEID" --approve --by owner
 
       - name: Veroeffentlichen
@@ -1612,7 +1612,7 @@ jobs:
           IN_CANDIDATEID: ${{ inputs.candidateId }}
         run: |
           set -e
-          node scripts/social/record-publication.mjs \
+          node products/social/producer/record-publication.mjs \
             --candidate "$IN_CANDIDATEID" \
             --response tmp/publish.json --data social/data --write
 
@@ -1657,9 +1657,9 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$ACTION" = "prepare" ]; then
-            node scripts/social/ig-reel.mjs prepare --content-id "$CONTENT_ID" --video-url "$VIDEO_URL" --caption "$CAPTION"
+            node products/social/producer/ig-reel.mjs prepare --content-id "$CONTENT_ID" --video-url "$VIDEO_URL" --caption "$CAPTION"
           else
-            node scripts/social/ig-reel.mjs status --content-id "$CONTENT_ID"
+            node products/social/producer/ig-reel.mjs status --content-id "$CONTENT_ID"
           fi
 
   # --- web-fortsetzen: vormals social-resume-verified-web.yml
@@ -1684,15 +1684,15 @@ jobs:
           node-version: '22'
 
       - name: Creative-Ergebnisse von offenen Request-PRs holen
-        run: node scripts/social/ingest-open-creative-jobs.mjs --write
+        run: node products/social/producer/ingest-open-creative-jobs.mjs --write
 
       - name: Creative Jobs gegen die Evidenz abgleichen
         env:
           GH_TOKEN: ${{ github.token }}
-        run: node scripts/social/reconcile-creative-jobs.mjs --write
+        run: node products/social/producer/reconcile-creative-jobs.mjs --write
 
       - name: Tests und Isolation, bevor irgendetwas geschieht
-        run: node scripts/social/verify-suites.mjs
+        run: node products/social/producer/verify-suites.mjs
 
       - name: Die Entscheidungen des Owners abholen
         continue-on-error: true
@@ -1704,14 +1704,14 @@ jobs:
             echo "Kein Admin-Schluessel: es wird nichts abgeholt."
             exit 0
           fi
-          node scripts/social/ingest-owner-decisions.mjs --data social/data --write \
+          node products/social/producer/ingest-owner-decisions.mjs --data social/data --write \
             | tee /tmp/entscheidungen.txt || [ "$?" = "4" ]
 
       - name: Kandidat aus der bestehenden Web-Story-Auswahl
         run: |
           set -uo pipefail
           rc=0
-          node scripts/social/manual-now-web-candidate.mjs --data social/data --write || rc=$?
+          node products/social/producer/manual-now-web-candidate.mjs --data social/data --write || rc=$?
           if [ "$rc" -eq 4 ]; then
             echo "::notice::Kein Kandidat (begruendete Verweigerung, z.B. noch nicht " \
               "VERIFIED oder das Hard Final Creative Gate)."
@@ -1731,10 +1731,10 @@ jobs:
           set -euo pipefail
           if [ -z "${VU_SOCIAL_ADMIN_KEY:-}" ]; then
             echo "Kein Admin-Schluessel: die Schlange bleibt, wo sie ist."
-            node scripts/social/publish-approval-queue.mjs --check-assets | tee /tmp/queue.txt
+            node products/social/producer/publish-approval-queue.mjs --check-assets | tee /tmp/queue.txt
             exit 0
           fi
-          node scripts/social/publish-approval-queue.mjs --write --check-assets \
+          node products/social/producer/publish-approval-queue.mjs --write --check-assets \
             | tee /tmp/queue.txt || [ "$?" = "4" ]
 
       - name: Festschreiben

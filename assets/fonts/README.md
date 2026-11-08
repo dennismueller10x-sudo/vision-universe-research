@@ -13,7 +13,7 @@
 
 ### Warum die Datei hier liegt und nicht geladen wird
 
-`scripts/social/render-asset.mjs` zeichnet Beitragsbilder. Würde die
+`products/social/producer/render-asset.mjs` zeichnet Beitragsbilder. Würde die
 Schrift bei jedem Lauf aus dem Netz geholt, hinge das Aussehen eines
 Beitrags an der Erreichbarkeit eines fremden Dienstes — und dasselbe
 Paket ergäbe mal ein Bild mit Inter, mal eines mit der systemeigenen
@@ -23,7 +23,7 @@ Das wäre kein Rückfall, sondern **zwei verschiedene Bilder unter einer
 Kennung**. Der Renderer bricht deshalb ab, wenn diese Datei fehlt,
 statt anders zu zeichnen.
 
-`scripts/social/make-test-asset.mjs` lädt weiterhin aus dem Netz. Das
+`products/social/producer/make-test-asset.mjs` lädt weiterhin aus dem Netz. Das
 Skript erzeugt genau ein Bild und sagt ausdrücklich an, wenn es
 zurückgefallen ist; dort ist der Kompromiss vertretbar.
 
