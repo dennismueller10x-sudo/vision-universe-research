@@ -10,7 +10,7 @@ Alles hier ist **Forschung, nicht zertifiziert**. Öffentlich wird keine Rendite
 
 | Workflow | Auslöser | rechnet | schreibt |
 |---|---|---|---|
-| `quant-portfolio-research.yml` | manuell, `[quant-portfolio-research]`, `[edge-e3:dev-quant\|test-quant]` | Musterportfolios mit Sensitivitäten und DQ-K5 Vorher/Nachher, oder eine E3-Phase | `docs/quant/research/portfolio-v1/`, `workers/vu-account/data/model-portfolios-bundle.json`, `docs/research/edge/` |
+| `research.yml`, Teil `portfolio` (vormals `quant-portfolio-research.yml`) | manuell, `[quant-portfolio-research]`, `[edge-e3:dev-quant\|test-quant]` | Musterportfolios mit Sensitivitäten und DQ-K5 Vorher/Nachher, oder eine E3-Phase | `docs/quant/research/portfolio-v1/`, `workers/vu-account/data/model-portfolios-bundle.json`, `docs/research/edge/` |
 | `research-signals-s2.yml` | manuell, `[signals-s2]`; Eingabe `from_run` führt nur zusammen | S2 in 8 Teilen, Teilergebnisse verschlüsselt | `docs/research/signals/results-s2/` |
 
 Die interne Vorschau `/konto/admin/backtests/` ist mit Sitzung und Rolle `backtest_reviewer` zugänglich und liest das Paket über die Worker-Route `/v1/admin/backtests/portfolios`. Der Worker lehnt Pakete mit falschen Kennzeichen, falschem Hash oder zu jungen Beständen ab.
@@ -58,6 +58,6 @@ Prüfsumme: `sha256sum /tmp/s2-results.json` muss `privateSha256` in `results-s2
 
 ## Übergaben
 
-- **A:** `quant-portfolio-research.yml` und `research-signals-s2.yml` sind im Bündel `research` (`core/registry/workflow-bundles.json`).
+- **A:** `quant-portfolio-research.yml` (jetzt Teil `portfolio` in `research.yml`) und `research-signals-s2.yml` sind im Bündel `research` (`core/registry/workflow-bundles.json`).
 - **D2:** Musterportfolio-Anzeige. Datenform `portfolios[].holdings = {asOf, delayDays, positions[{ticker, weight}]}`, Kurve in `chart`, nur historisch.
 - **B und G:** `lastHoldings` in `scripts/supertrader/house/analyze.mjs` und `scripts/research/labor/` unterliegen derselben Owner-Linie (§11).

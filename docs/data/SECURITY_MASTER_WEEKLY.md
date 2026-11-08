@@ -229,7 +229,7 @@ Werkzeug: `scripts/quant/backtest-generation-freeze.cjs` mit Test `quant/tests/s
    - Am Fixture mit echten Reihen (NVDA, MSFT, XOM, ACGLO) geprüft (SMF-5): ACGLO wird `NEWLY_BLOCKED`, die drei anderen haben gleiche Kennzahlen, der alte Zeiger bleibt bytegleich.
    - Erst danach und nur mit Owner-Freigabe wird der Leser auf `<privat-1.3.0>` gestellt. Zurück geht es, indem der Leser wieder auf `<privat-1.1.0>` zeigt; diese Wurzel ist unverändert, `verify` belegt das.
 4. **Survivorship-Kontrolle:** eigener PR, `build-survivorship-control.mjs` neu, 191 → 180, Test angepasst, mit Liste der 11 IDs.
-5. **Emerging Leaders:** eigener PR über `emerging-leaders-study.yml`, mit Vorher/Nachher der Aktienmenge und der Ergebnisse.
+5. **Emerging Leaders:** eigener PR über `research.yml`, Teil `emerging-leaders` (vormals `emerging-leaders-study.yml`), mit Vorher/Nachher der Aktienmenge und der Ergebnisse.
 6. `docs/quant-recovery/**` und archivierte Generationen werden nie neu geschrieben.
 
 ## Freigabevorlage

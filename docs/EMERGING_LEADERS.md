@@ -36,7 +36,7 @@ sind (26 Validierungs-Stichtage, geringe Teststärke):
   Gruppen A–E, Modelle M1–M4, Baselines, sechs objektive Zustände, Statistik.
 - `scripts/quant/lib/emerging-leaders-inputs.mjs`: gemeinsame Aufbereitung für Studie und Tageslauf
   (Splitfaktoren nur aus `return-series.js`, PIT-Fundamentaldaten, Leadership-Nachbildung).
-- `scripts/quant/build-emerging-leaders-study.mjs` + `.github/workflows/emerging-leaders-study.yml`: Studie auf der
+- `scripts/quant/build-emerging-leaders-study.mjs` + `research.yml`, Teil `emerging-leaders` (vormals `emerging-leaders-study.yml`): Studie auf der
   kanonischen Historie (R2), nur Aggregate im Repository.
 - Discover-Bereich `#/leader` und Tageslauf liegen in einem eigenen PR und sind **nicht** freigeschaltet (siehe 8).
 
