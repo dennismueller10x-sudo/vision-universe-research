@@ -26,6 +26,7 @@ import { createRequire } from 'node:module';
 // Vorher bildete der Build `ref_${symbol}` roh - Wochencharts fuer BRK-A, MOG-A,
 // PBR-A und BF-B zeigten auf Dateien, die es nicht gibt (Plattform-Audit 03.10.2026).
 const CompanyMaster = createRequire(import.meta.url)('../../quant/engines/company-master.js');
+const Identity = createRequire(import.meta.url)('../../core/identity.js');
 export const weeklySeriesId = (symbol) => CompanyMaster.legacySecurityId(symbol);
 import { computeIndicators, percentileRanks, isoWeekKey, sma } from './engine/indicators.mjs';
 import { buildWeekly } from './engine/weekly.mjs';
@@ -936,7 +937,21 @@ function mapVariant(v) {
 // <head> uebernimmt vor dem ersten Zeichnen die gespeicherte Wahl des
 // plattformweiten Hell/Dunkel-Schalters (localStorage "vu-discover-theme-v1"),
 // damit nichts aufblitzt; die Navigation zeigt den Schalter (theme-switch).
-function pageShell({ title, description, page, depth, attrs = '' }) {
+/* Aktienseite: der Kurs im Kopf wartete auf eine Kette aus Nachlade-Skripten (st-redesign.js, dann identity.js ->
+   stock-context.js -> stock-navigator.js nacheinander) und erst danach auf die Kursreihe (Messung 07.11.2026: Kurs
+   nach 2,6 s, docs/mobile/PERFORMANCE.md). Die Seite kuendigt beides im <head> an: die Skripte (loadScript in
+   supertrader.js nimmt einen passenden Preload samt Release-Stempel ?v=) und die Kursreihe, deren Adresse die
+   Identitaet aus core/identity.js bildet (ADR-001) - dieselbe Adresse wie st-redesign.js#series(). */
+export const STOCK_PRELOAD_SCRIPTS = ['/supertrader/assets/st-redesign.js', '/core/identity.js', '/core/stock-context.js', '/assets/stock-navigator.js', '/quant/engines/published-close.js'];
+export function stockSeriesHref(sym) { return '/quant/data/market/discover-series/' + encodeURIComponent(Identity.securityIdForTicker(sym)) + '.json'; }
+/* Bewusst NICHT vorgeladen: registry-core.json und stock/<SYM>.json. Bei 1,6 Mbit/s teilen sie sich die Leitung mit den
+   Skripten; gemessen kam der Kurs damit spaeter (2,35 s statt 2,28 s, docs/mobile/PERFORMANCE.md). */
+export function stockPreloads(sym) {
+  return STOCK_PRELOAD_SCRIPTS.map((href) => `<link rel="preload" as="script" href="${href}">`).join('\n') +
+    `\n<link rel="preload" as="fetch" crossorigin="anonymous" href="${stockSeriesHref(sym)}">`;
+}
+
+function pageShell({ title, description, page, depth, attrs = '', head = '' }) {
   const up = '../'.repeat(depth);
   return `<!DOCTYPE html>
 <html lang="de">
@@ -948,7 +963,7 @@ function pageShell({ title, description, page, depth, attrs = '' }) {
 <title>${title}</title>
 <meta name="description" content="${description}">
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<link rel="stylesheet" href="/supertrader/assets/supertrader.css">
+<link rel="stylesheet" href="/supertrader/assets/supertrader.css">${head ? '\n' + head : ''}
 </head>
 <body class="st" data-page="${page}"${attrs}>
 <vu-navigation theme="dark" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script>
@@ -1063,7 +1078,7 @@ export function signalsBySymbol(signals, extra = []) {
 function writeStockPages(signals, extra = []) {
   for (const sym of new Set([...Object.keys(signals.bySymbol), ...extra])) {
     if (!/^[A-Z0-9.\-]+$/.test(sym)) continue;
-    writeIfChanged(path.join(OUT, 'stock', sym, 'index.html'), pageShell({ title: `${sym} — Strategy Lens — Supertrader — Vision Universe®`, description: `Welche Supertrader-Modelle ${sym} erkennen — Status, Trigger, Risiko und Historie.`, page: 'stock', depth: 3, attrs: ` data-symbol="${sym}"` }));
+    writeIfChanged(path.join(OUT, 'stock', sym, 'index.html'), pageShell({ title: `${sym} — Strategy Lens — Supertrader — Vision Universe®`, description: `Welche Supertrader-Modelle ${sym} erkennen — Status, Trigger, Risiko und Historie.`, page: 'stock', depth: 3, attrs: ` data-symbol="${sym}"`, head: stockPreloads(sym) }));
   }
 }
 

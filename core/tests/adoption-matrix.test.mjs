@@ -34,8 +34,11 @@ test("Kein Produkt bekommt eine neue eigene Split-Bereinigung - und die Liste sc
   assert.deepEqual(veraltet, [], "Eintrag nicht mehr noetig - aus der Liste entfernen");
 });
 
-test("Supertrader bildet die ID ueber die gemeinsame Engine (company-master.js)", () => {
-  assert.equal(rows.Supertrader.identity.state, "SHARED");
+/* Seit L3 (08.11.2026) bildet der Supertrader-Seitengenerator die Adresse der Kursreihe fuer den Preload ueber
+   core/identity.js (scripts/supertrader/build.mjs#stockSeriesHref); vorher nur ueber company-master.js (SHARED). */
+test("Supertrader bildet die ID ueber die Core-Identitaet (core/identity.js)", () => {
+  assert.equal(rows.Supertrader.identity.state, "CORE");
+  assert.ok(rows.Supertrader.identity.evidence.includes("core/identity.js"));
 });
 
 test("Messung: createRequire-Importe zaehlen, Kommentare nicht", () => {
