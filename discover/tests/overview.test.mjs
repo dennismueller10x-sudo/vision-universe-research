@@ -61,7 +61,7 @@ test("OV7 sieben Kapitel in der Reihenfolge der Präsentation, „Stärken und S
   const ks = OV.kapitelListe(NVDA, "US_REAL");
   assert.deepEqual(ks.map((k) => k[0]), ["kurs", "firma", "geschaeft", "gesund", "teuer", "waage", "indizes"]);
   assert.equal(ks[5][1], "Stärken und Schwächen laut Kennzahlen");
-  assert.match(ks[2][2], /^Umsatz 215,94 Mrd\. \$ im GJ 2026$/);
+  assert.match(ks[2][2], /^Umsatz .+ im GJ 2026$/, "Betrag über den zentralen Formatter (quant/engines/fx/money-format.js)");
   const alles = ks.map((k) => k[1] + k[2] + k[4]).join("");
   assert.doesNotMatch(alles, /Was dafür spricht|was dagegen|aria-label="dafür"|Günstiger bewertet/);
 });

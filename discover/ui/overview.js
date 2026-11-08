@@ -322,7 +322,6 @@
   function thumbPe(d) { var v = d.fundamentals && d.fundamentals.valuation, pe = v && v.pe && v.pe.value, med = v && v.relative && v.relative.peMedian, mx = Math.max(pe || 0, med || 0) || 1; return '<span class="dv3-thumb dv3-thumb--pe"><i style="width:' + Math.round((pe || 0) / mx * 100) + '%"></i><i style="width:' + Math.round((med || 0) / mx * 100) + '%"></i></span>'; }
   function thumbMarks(z) { var plus = z ? z.rows.filter(function (r) { return r[0] === "+"; }).length : 0, minus = z ? z.rows.length - plus : 0; return '<span class="dv3-thumb dv3-thumb--marks"><b>' + new Array(plus + 1).join("+ ").trim() + "</b><b>" + new Array(minus + 1).join("− ").trim() + "</b></span>"; }
   function thumbIndex(d) { var ix = (d.indexMemberships || []).slice(0, 3), mx = Math.max.apply(null, ix.map(function (x) { return isNum(x.weight) ? x.weight : 0; }).concat([1])); return '<span class="dv3-thumb dv3-thumb--idx">' + ix.map(function (x, i) { return '<i style="width:' + (isNum(x.weight) ? Math.max(20, Math.round(x.weight / mx * 90)) : 60) + "%" + (i % 2 ? "" : ";background:#c8f531") + '"></i>'; }).join("") + "</span>"; }
-  function mrd(v) { return isNum(v) ? num(v / 1e9, 2) + " Mrd. $" : "–"; }
   function kapitelListe(d, universe) {
     var name = d.companyName || d.symbol, z = d.zeitachse || [], y = z.filter(function (x) { return x.key === "return12M"; })[0], j = d.jahresspanne;
     var r = revenue(d), last = r[r.length - 1], hc = healthCount(d), v = d.fundamentals && d.fundamentals.valuation, wz = waageZeilen(d);
@@ -331,7 +330,7 @@
     return [
       ["kurs", "Kurs: Zeitachse und Jahresspanne", [y ? y.wert + " in 12 Monaten" : null, j && j.zumHoch ? j.zumHoch.replace(/^[−-]/, "") + " unter dem Hoch" : null].filter(Boolean).join(" · "), thumbSpanne(d), zeitachse(d) + spanne(d)],
       ["firma", "Was macht " + name + "?", [d.was, (d.themes || []).length ? d.themes.length + " Themen" : null].filter(Boolean).join(" · "), thumbThema(d), firma(d, universe)],
-      ["geschaeft", "Wie sich das Geschäft entwickelt hat", last ? "Umsatz " + mrd(last.v) + " im GJ " + last.fy : "", thumbBars(d), geschaeft(d)],
+      ["geschaeft", "Wie sich das Geschäft entwickelt hat", last ? "Umsatz " + usd(last.v) + " im GJ " + last.fy : "", thumbBars(d), geschaeft(d)],
       ["gesund", "Wie gesund ist die Firma?", hc[1] ? hc[0] + " von " + hc[1] + " sehr stark" : "", thumbDots(d), gesundheit(d)],
       ["teuer", "Ist " + name + " teuer?", v && v.pe && isNum(v.pe.value) ? "KGV " + num(v.pe.value, 1) + (v.relative && isNum(v.relative.peMedian) ? " · Markt " + num(v.relative.peMedian, 1) : "") : "", thumbPe(d), teuer(d)],
       ["waage", "Stärken und Schwächen laut Kennzahlen", wz && wz.rows.length ? plus + (plus === 1 ? " Stärke" : " Stärken") + " · " + minus + (minus === 1 ? " Schwäche" : " Schwächen") : "", thumbMarks(wz), waage(d)],
