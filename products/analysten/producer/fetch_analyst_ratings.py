@@ -15,7 +15,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 UNIVERSE = ROOT / "dashboard" / "config" / "universe.json"
 OUTPUT = ROOT / "dashboard" / "data" / "analyst_ratings.json"
 FINNHUB_BASE_URL = "https://finnhub.io/api/v1"

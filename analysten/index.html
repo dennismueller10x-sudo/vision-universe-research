@@ -277,7 +277,7 @@
 
    Architektur: Finnhub wird NICHT bei jedem Seitenaufruf live im
    Browser abgerufen. Ein Python-Skript
-   (scripts/dashboard/fetch_analyst_ratings.py) holt die Daten
+   (products/analysten/producer/fetch_analyst_ratings.py) holt die Daten
    server-seitig über einen wöchentlichen GitHub-Actions-Workflow
    (.github/workflows/update-analyst-ratings.yml, sonntags) und
    schreibt sie als statisches JSON nach

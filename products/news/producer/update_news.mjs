@@ -1,5 +1,5 @@
 import { readFile, writeFile } from 'node:fs/promises';
-const root = new URL('../../', import.meta.url), output = new URL('dashboard/data/news_feed.json', root);
+const root = new URL('../../../', import.meta.url), output = new URL('dashboard/data/news_feed.json', root);
 const universe = JSON.parse(await readFile(new URL('dashboard/config/universe.json', root), 'utf8'));
 const maxAgeMs = 72 * 3600000, cutoff = Date.now() - maxAgeMs;
 const clean = (v = '') => String(v).replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&uuml;/g, 'ü').replace(/&auml;/g, 'ä').replace(/&ouml;/g, 'ö').replace(/&szlig;/g, 'ß').replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim();

@@ -44,7 +44,7 @@ jobs:
         with:
           node-version: "22"
       - name: Fetch primary-source news
-        run: node scripts/dashboard/update_news.mjs
+        run: node products/news/producer/update_news.mjs
       - name: Commit fresh news data
         shell: bash
         run: |
@@ -83,7 +83,7 @@ jobs:
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
-        run: python scripts/dashboard/fetch_analyst_ratings.py
+        run: python products/analysten/producer/fetch_analyst_ratings.py
 
       - name: Verify generated-file-only scope
         shell: bash

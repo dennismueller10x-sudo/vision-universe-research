@@ -17,10 +17,7 @@
   "analystRatings"
  ],
  "reads": [],
- "producers": [
-  "products/analysten/producer/fetch-consensus.mjs",
-  "products/analysten/producer/probe-consensus.mjs"
- ],
+ "producers": ["products/analysten/producer/fetch-consensus.mjs", "products/analysten/producer/fetch_analyst_ratings.py", "products/analysten/producer/probe-consensus.mjs"],
  "tests": [
   "products/analysten/tests/*.test.mjs"
  ]

@@ -42,6 +42,7 @@
    "reads": [],
    "producers": [
     "products/analysten/producer/fetch-consensus.mjs",
+    "products/analysten/producer/fetch_analyst_ratings.py",
     "products/analysten/producer/probe-consensus.mjs"
    ],
    "tests": [
@@ -467,6 +468,9 @@
     "news"
    ],
    "reads": [],
+   "producers": [
+    "products/news/producer/update_news.mjs"
+   ],
    "tests": []
   },
   {

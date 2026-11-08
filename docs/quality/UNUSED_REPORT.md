@@ -1517,12 +1517,12 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/dashboard/backtest_technicals.py | .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/calculate_scenarios.py | .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/calculate_technicals.py | .github/workflows/sec-fundamentals-ci.yml |
-| scripts/dashboard/fetch_analyst_ratings.py | .github/workflows/content.yml, .github/workflows/sec-fundamentals-ci.yml |
+| products/analysten/producer/fetch_analyst_ratings.py | .github/workflows/content.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/fetch_fundamentals.py | .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/fetch_market_data.py | .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/migrate_adjustment_semantics.py | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/price_semantics.py | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
-| scripts/dashboard/update_news.mjs | .github/workflows/content.yml, .github/workflows/sec-fundamentals-ci.yml |
+| products/news/producer/update_news.mjs | .github/workflows/content.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/verify_adjustment_gate.py | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/design/sync-product-hero.mjs | .github/workflows/technical-ci.yml |
 | scripts/diagnose/coverage-delta.mjs | .github/workflows/coverage-metrics.yml |
@@ -3229,7 +3229,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/core/lib.mjs | ` require(join(root, "core", "identity.js")), ` |
 | scripts/core/lib.mjs | ` require(join(root, "quant", "engines", "realtime", "trading-session.js")), ` |
 | scripts/core/r2-audit.mjs | ` fetch("https://api.cloudflare.com/client/v4" + path, { ` |
-| scripts/dashboard/update_news.mjs | ` fetch(url, options) ` |
+| products/news/producer/update_news.mjs | ` fetch(url, options) ` |
 | scripts/diagnose/adjustment-steps.mjs | ` require(join(root, "quant", "engines", "history-store.js")) ` |
 | scripts/diagnose/adjustment-steps.mjs | ` require(join(root, "quant", "engines", "zero-cost-guard.js")) ` |
 | scripts/diagnose/adjustment-steps.mjs | ` require(join(root, "quant", "engines", "market-quality.js")) ` |
