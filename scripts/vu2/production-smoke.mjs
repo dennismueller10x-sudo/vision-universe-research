@@ -227,9 +227,11 @@ for(const width of [1440,390]){
  page.on('request',r=>offen.set(r,Date.now()));
  page.on('requestfinished',r=>offen.delete(r));
  page.on('requestfailed',r=>offen.delete(r));
- page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremdFehlgeschlagen=true;else if(LEGACY[currentView]&&/ERR_ABORTED/.test((r.failure()||{}).errorText||''))return;else errors.push('requestfailed: '+r.url().replace(origin,''));});
+ page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremdFehlgeschlagen=true;else if(LEGACY[currentView]&&/ERR_ABORTED/.test((r.failure()||{}).errorText||''))return;else errors.push('requestfailed: '+r.url().replace(origin,'')+' ('+((r.failure()||{}).errorText||'?')+')');});
  page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('favicon')||t.includes('404'))return;if(fremdFehlgeschlagen&&/^Failed to load resource: net::ERR_/.test(t))return;if(fremdeLiveAbsage(t))return;errors.push('console: '+t.split('\n')[0]);});
- for(const view of VIEWS.filter(v=>!ONLY||v.includes(ONLY))){
+ const ansichten=VIEWS.filter(v=>!ONLY||v.includes(ONLY));
+ for(let i=0,wiederholt=null;i<ansichten.length;i++){
+  const view=ansichten[i];
   currentView=view;
   await page.goto('about:blank');
   await page.goto(origin+view);
@@ -627,6 +629,14 @@ for(const width of [1440,390]){
      if(z.range!==id||z.pressed.join('|')!==id)bad.push('ZEITRAUM_KLICK_'+label+':'+z.range);
     }
    }
+  }
+  /* Einzelne gescheiterte Anfrage an das Release, sonst alles in Ordnung
+     (08.11.2026: /quant/config/market-calendar.json auf einer Screener-Seite,
+     die im selben Lauf bei 1440 px bestand): die Ansicht wird genau einmal
+     neu geprueft. Scheitert sie wieder, zaehlt der Fehler. */
+  if(errors.length&&!bad.length&&wiederholt!==view&&errors.every(e=>e.startsWith('requestfailed: '))){
+   console.log('     fluechtig '+view+'@'+width+': '+errors.slice(0,3).join(' / ')+' -> einmal neu');
+   wiederholt=view;errors.length=0;fremdFehlgeschlagen=false;i--;continue;
   }
   if(errors.length)bad.push('ERRORS:'+errors.slice(0,2).join(' / '));
   console.log((bad.length?'FAIL ':'ok   ')+view+'@'+width+(bad.length?'  '+bad.join('  '):''));
