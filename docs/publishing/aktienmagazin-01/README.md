@@ -11,12 +11,12 @@ Vorgänger und Konzept: [`../konzept-2026-11/`](../konzept-2026-11/README.md).
 | 02 | Editorial, Inhalt | |
 | 03–04 | Das war die Woche, Zahlen der Woche | acht Meldungen mit Bild, zwölf Zahlen |
 | 05–13 | Titelthema (9 Seiten) | Opener, was passiert ist, was die Daten sagen, sechs Aktien im Stresstest (Nvidia, Micron, Vertiv/Lumentum, Oracle/CoreWeave, AMD), Stimmen und Termine |
+| 14 | Anzeige: App (bald verfügbar) |
 | 15–16 | Analysen | AppLovin, Palantir |
 | 17–18 | Berichtssaison | Gewinner (Airbnb, Idexx, Fiserv, Mosaic), Verlierer (Axon, FIS, DraftKings, Atlassian) |
 | 19–20 | Hedgefonds-Radar | Oktober der Fonds, Berkshire, Burry, Insider, 13F aus unseren Daten |
 | 21–23 | Aus den App-Welten | Chart der Woche (Technical), Screening der Woche (Screener), Markt-Radar (Regime, Sektoren) |
 | 24–26 | Konjunktur, Deutschland, Termine | |
-| 14 | Anzeige: App (bald verfügbar) |
 | 27–30 | Aus der App, Quick-Check (22 Aktien) mit Newsletter-Kasten, Impressum mit Hinweisen und Quellenverzeichnis, Rückseite als App-Anzeige |
 
 ## Dateien
@@ -37,7 +37,7 @@ node docs/publishing/aktienmagazin-01/render.mjs --out /tmp/heft --scale 2
 ## Redaktionsregeln
 
 - Tagesaktuell: jede Geschichte hat einen Anlass aus der Woche. Keine reinen Firmenporträts.
-- Zwei Quellen für Zahlen: Vision-Universe-Daten (automatisch, mit Stand) und recherchierte Fakten (Quelle in der Fußzeile der Seite). Widersprechen sich Quellen, steht die Spanne oder die Zahl entfällt.
+- Zwei Quellen für Zahlen: Vision-Universe-Daten (automatisch, mit Stand) und recherchierte Fakten (Quelle im Quellenverzeichnis, bei Zitaten direkt am Zitat). Widersprechen sich Quellen, steht die Spanne oder die Zahl entfällt.
 - Wortwahl nach `docs/legal/WORTWAHL.md`: keine Empfehlungen, kein Kursziel, „Stärken/Schwächen laut Kennzahlen“, Pflicht-Hinweis `editorial`. Zitate übersetzt und gekennzeichnet; Angaben Dritter als solche benannt.
 - Bilder: KI-Bilder tragen den Vermerk „KI-Bild“; keine echten Personen, keine fremden Logos im Bild. Charts nur aus Daten.
 
