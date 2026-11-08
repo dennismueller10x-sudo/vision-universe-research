@@ -159,7 +159,7 @@ ${G.map(([g, ids]) => `<div class="st">${g}<a>${ids.length}</a></div><div class=
 /* ======================================================================
    Folien
    ====================================================================== */
-slide({ t: 'html', anchor: 'cover', dark: 1, html: () => `<div class="covergrid"><div><img src="${src('img/vision-universe-logo-web.png')}" alt="Vision Universe" style="height:20px;filter:invert(1);margin-bottom:36px"><div style="font-size:clamp(46px,7vw,104px);font-weight:900;letter-spacing:-.06em;line-height:.9">Discover.<br><span style="color:var(--lime)">Reihe für Reihe.</span></div><p style="margin-top:22px;color:#a6a6a6;font-size:clamp(16px,1.5vw,20px);font-weight:500;max-width:42ch">Konzept für die Discover-Startseite als „Netflix der Aktienwelt“: statt Themenkanälen Aktien-Reihen, die man durchwischt. Im CI des Redesigns 2027, mit echten Daten vom 06.11.2026.</p><div class="toc" id="toc" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:28px"></div></div><div class="coverphones"><div data-frame="n-home-1"></div><div data-frame="n-home-dk"></div></div></div>` });
+slide({ t: 'html', anchor: 'cover', dark: 1, html: () => `<div class="covergrid"><div><img src="${src('img/vision-universe-logo-web.png')}" alt="Vision Universe" style="height:20px;filter:invert(1);margin-bottom:36px"><div style="font-size:clamp(46px,7vw,104px);font-weight:900;letter-spacing:-.06em;line-height:.9">Discover.<br><span style="color:var(--lime)">Reihe für Reihe.</span></div><p style="margin-top:22px;color:#a6a6a6;font-size:clamp(16px,1.5vw,20px);font-weight:500;max-width:42ch">Konzept für Discover als „Netflix der Aktienwelt“: eine Startseite aus Aktien-Reihen zum Durchwischen und eine Aktienseite wie eine Titelseite, mit Story, Kapiteln und der nächsten Aktie. Im CI des Redesigns 2027, mit echten Daten vom 06.11.2026.</p><div class="toc" id="toc" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:28px"></div></div><div class="coverphones"><div data-frame="n-home-1"></div><div data-frame="n-home-dk"></div></div></div>` });
 
 slide({ t: 'html', id: 'K1', title: 'Die Idee: Netflix, nur mit Aktien', sub: 'Jedes bekannte Element von Netflix hat in Discover schon eine Entsprechung, meist sogar fertige Daten. Sie liegen nur nicht auf der Startseite.', html: () => `<div class="xscroll"><table class="tbl map"><thead><tr><th>Bei Netflix</th><th>In Discover</th><th>Heute</th></tr></thead><tbody>${[
   ['Billboard oben (großes Bild, „Abspielen“, „Meine Liste“, „Info“)', 'Heute im Blick: große dunkle Karte, Aktie ansehen · Merken · „?“', 'vorhanden, hell, in der Mitte der Seite'],
@@ -272,7 +272,8 @@ slide({ t: 'html', id: 'U4', title: 'Fahrplan und Entscheidungen', html: () => `
   ['PR 1', 'Startseite mit Reihen', 'Schienen, Poster, Top 10, Billboard, Markt-Zeile, Genre-Chips, Schaufenster-Regel. Nur vorhandene Daten.'],
   ['PR 2', 'Reihe, Vorschau, Alle Reihen', 'Reihen-Seite mit Regel und „Reihe swipen“, Vorschau-Sheet, Vollbild „Alle Reihen“.'],
   ['PR 3', 'Persönliche Reihen', 'Zuletzt angesehen, Mehr aus …, NEU-Badge. Alles auf dem Gerät, ohne Konto.'],
-  ['PR 4', 'Neue Reihe Fallen Angels', 'Regel im Datenlauf, Vorher/Nachher, Methodik-Text. Danach erscheint sie auf der Startseite.']].map(([a, b, c]) => `<div><span class="tag neu">${a}</span><b>${b}</b><p>${c}</p></div>`).join('')}</div>
+  ['PR 4', 'Neue Reihe Fallen Angels', 'Regel im Datenlauf, Vorher/Nachher, Methodik-Text. Danach erscheint sie auf der Startseite.'],
+  ['PR 5', 'Aktienseite „Überblick“', 'Story, Kapitel, Reihen der Aktie, Mehr wie …, Nächste in der Reihe. Nur Oberfläche, Daten sind da.']].map(([a, b, c]) => `<div><span class="tag neu">${a}</span><b>${b}</b><p>${c}</p></div>`).join('')}</div>
 <h3 style="margin-top:36px;font-size:22px;letter-spacing:-.02em">Von dir zu entscheiden</h3>
 <ol class="dec">${[
   ['Name „Fallen Angels“ oder deutsch „Gefallene Engel“?', 'Empfehlung: „Fallen Angels“, der Untertitel erklärt es.'],
@@ -280,4 +281,6 @@ slide({ t: 'html', id: 'U4', title: 'Fahrplan und Entscheidungen', html: () => `
   ['Billboard dunkel auch im hellen Modus?', 'Empfehlung: ja, als einziger dunkler Block oben. Er trennt „heute“ von „stöbern“.'],
   ['Weitere Reihen-Ideen für später', '„Größte Rückgänge heute“, „Dividende seit 10 Jahren“, „Kurz vor dem Jahreshoch“, „Neu an der Börse“. Brauchen eigene Regeln.']].map(([q, a]) => `<li><b>${q}</b><span>${a}</span></li>`).join('')}</ol>` });
 
+/* Bausteine für deck-aktie.js */
+VU.DXH = { logo, spark, poster, railHead, rail, pillv, p0, p1, nm, n, tt, src, r12, day, heart, T, ASOF };
 })();

@@ -74,6 +74,39 @@ rows['fallen-angels'] = {'title': 'FALLEN ANGELS', 'sub': 'Starke Zahlen, aber d
 need = set(EXTRA)
 for v in picks.values():
     need.update(v)
+
+# Aktienseite (Konzept Teil 2): eine Aktie mit allem, was die heutige Seite zeigt
+STOCK = 'NVDA'
+sd = json.load(open('discover/data/stocks/US_REAL/%s.json' % STOCK))
+fu = sd['fundamentals']
+nxt = sd['discoverNext']
+stock = {
+    't': STOCK, 'n': sd['companyName'], 'was': sd.get('was'), 'sector': sd.get('sector'), 'price': sd['price']['value'],
+    'd': sd['changePercent']['value'], 'asOf': sd.get('asOf'), 'zeitachse': sd['zeitachse'], 'spanne': sd['jahresspanne'],
+    'memberships': sd['memberships'], 'themes': [t['title'] for t in sd['themes']], 'index': sd['indexMemberships'],
+    'sectorRank': sd['ranks'].get('sector'), 'story': [s['text'] for s in fu['story']['statements']],
+    'health': [{k: c.get(k) for k in ['id', 'label', 'grade', 'detail']} for c in fu['health']['categories']],
+    'revenue': [[r['fy'], r['v']] for r in fu['journey']['tracks']['revenue']],
+    'netIncome': [[r['fy'], r['v']] for r in fu['journey']['tracks']['net_income']],
+    'pe': sd['geschaeftszahlen'].get('kgv'), 'peMedian': fu['valuation']['context']['peMedian'],
+    'ps': fu['valuation']['ps']['value'], 'psMedian': fu['valuation']['context']['psMedian'],
+    'mcap': fu['valuation']['marketCap']['value'], 'margins': fu['latest']['derived'],
+    'next': {k: {'title': nxt[k]['title'], 'rule': nxt[k].get('rule'), 'cards': [c['symbol'] for c in nxt[k]['cards']][:8]} for k in nxt['basis']},
+}
+for k in nxt['basis']:
+    for c in nxt[k]['cards'][:8]:
+        t = c['symbol']
+        if t not in cards:
+            p = 'discover/data/stocks/US_REAL/%s.json' % t
+            full = json.load(open(p)) if os.path.exists(p) else c
+            m = full.get('metrics') or {}
+            cards[t] = {'t': t, 'n': full.get('companyName'), 'd': (full.get('changePercent') or {}).get('value'),
+                        'r12': m.get('return12M'), 'r3': m.get('return3M'), 'dh': m.get('distanceTo52wHigh'),
+                        'hook': (full.get('hook') or {}).get('text'), 'path': '/quant/data/market/discover-series/ref_%s.json' % t, 'rows': []}
+        cards[t]['was'] = c.get('was')
+        need.add(t)
+need.update(['PAGS', 'TKR', STOCK])
+
 C, X = {}, {}
 os.makedirs(OUT + '/img/logos', exist_ok=True)
 for t in sorted(need):
@@ -83,7 +116,7 @@ for t in sorted(need):
     s = series(c.get('path'))
     if s:
         X[t] = s
-    C[t] = {k: c[k] for k in ['t', 'n', 'd', 'r12', 'r3', 'dh', 'hook', 'rows']}
+    C[t] = {k: c.get(k) for k in ['t', 'n', 'd', 'r12', 'r3', 'dh', 'hook', 'rows', 'was']}
     logo = 'discover/logos/files/%s.png' % t
     if os.path.exists(logo):
         shutil.copy(logo, '%s/img/logos/%s.png' % (OUT, t))
@@ -92,7 +125,7 @@ os.makedirs(OUT + '/img/themen', exist_ok=True)
 for f in glob.glob('assets/themen/480/*.webp'):
     shutil.copy(f, OUT + '/img/themen/')
 
-data = {'rows': rows, 'picks': picks, 'dropped': dropped, 'cards': C, 'series': X,
+data = {'stock': stock, 'rows': rows, 'picks': picks, 'dropped': dropped, 'cards': C, 'series': X,
         'themes': sum(1 for r in rows if r.startswith('thema-')),
         'reihen': sum(1 for r, v in rows.items() if not r.startswith('thema-') and v.get('n') and not v.get('draft'))}
 with open(OUT + '/data-discover.js', 'w') as fh:

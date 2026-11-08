@@ -6,7 +6,7 @@ html = open(os.path.join(D, 'index.html')).read()
 deck = open(os.path.join(D, 'deck.js')).read()
 imgs = {}
 used = set(re.findall(r"'(\d\d-[a-z-]+)'", re.findall(r"TIMG = \{(.*?)\}", deck)[0]))
-files = glob.glob(D + '/img/logos/*.png') + [D + '/img/themen/%s.webp' % k for k in used] + [D + '/img/vision-universe-logo-web.png', D + '/now/D01.jpg']
+files = glob.glob(D + '/img/logos/*.png') + [D + '/img/themen/%s.webp' % k for k in used] + [D + '/img/vision-universe-logo-web.png'] + glob.glob(D + '/now/*.jpg')
 mime = {'.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg'}
 for f in files:
     rel = os.path.relpath(f, D)

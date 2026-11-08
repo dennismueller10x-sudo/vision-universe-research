@@ -438,12 +438,39 @@ figure{margin:0}
 .fmt-b .rail{margin:0}
 @media (max-width:900px){.facts,.formats{grid-template-columns:1fr}}
 .note{margin-top:24px;background:var(--g1);border-radius:20px;padding:18px 20px;font-size:15px;line-height:1.5;max-width:90ch}
-.plan{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.plan{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
 .plan>div{border:1px solid var(--g2);border-radius:20px;padding:20px;display:grid;gap:8px;align-content:start;justify-items:start}
 .plan b{font-size:19px;letter-spacing:-.02em}.plan p{color:var(--g4);font-size:14.5px}
 @media (max-width:900px){.plan{grid-template-columns:1fr 1fr}}
 .dec{margin:14px 0 0;padding-left:22px;display:grid;gap:12px;font-size:16px}
 .dec b{display:block}.dec span{color:var(--g4)}
+/* Aktienseite */
+.story{background:#000;color:#fff;border-radius:22px;padding:14px 14px 6px;--a-line:#262626;--a-ink:#fff;--a-inv:#000;--a-mute:#9b9b9b}
+.story-r{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #262626}
+.story-r:first-of-type{border-top:0}
+.story-r p{font-size:14px;font-weight:700;line-height:1.3;margin-top:1px}
+.story-r .vd{font-size:11px;padding:4px 8px;white-space:nowrap}
+.eps{display:grid;gap:8px}
+.ep{display:grid;grid-template-columns:18px 76px 1fr 22px;gap:10px;align-items:center;background:var(--a-card);border-radius:18px;padding:8px 10px 8px 12px}
+.ep-n{font-size:15px;color:var(--a-mute)}
+.thumb{width:76px;height:52px;border-radius:12px;background:#000;display:flex;align-items:center;justify-content:center}
+.ep-t b{display:block;font-size:14px;letter-spacing:-.01em;line-height:1.2}
+.ep-t span{display:block;font-size:12px;color:var(--a-mute);margin-top:2px;line-height:1.3}
+.ep-c{color:var(--a-mute)}
+.open-box{display:block;background:var(--a-card);border-radius:18px;padding:0 12px 14px}
+.open-box .ep{padding:8px 0;background:none}
+.rk2{flex:none;width:150px;background:var(--a-card);border-radius:18px;padding:12px;display:grid;gap:4px;align-content:start}
+.rk2 .num{font-size:30px;font-weight:900;letter-spacing:-.05em;line-height:1}
+.rk2 b{font-size:13.5px;line-height:1.2;letter-spacing:-.01em}
+.nextbar{display:flex;align-items:center;gap:10px;background:#000;color:#fff;border-radius:20px;padding:10px 10px 10px 12px;box-shadow:0 0 0 1px #262626,0 14px 30px -12px rgb(0 0 0/.5)}
+.nextbar b{display:block;font-size:15px;letter-spacing:-.02em;margin-top:1px}
+.nb-go{width:38px;height:38px;border-radius:50%;background:var(--lime);color:#000;display:grid;place-items:center;flex:none}
+.rowctx{display:grid;grid-template-columns:28px auto 1fr 28px;gap:8px;align-items:center;background:#000;color:#fff;border-radius:999px;padding:6px;font-size:13px}
+.rowctx>span:first-child,.rowctx>span:last-child{width:28px;height:28px;border-radius:50%;background:#1d1d1d;display:grid;place-items:center}
+.rowctx .mu{color:#9b9b9b;font-weight:700}
+.endcard{margin-top:14px;background:#000;color:#fff;border-radius:24px;padding:16px}
+.endcard .pc{background:#151515;color:#fff;--a-ink:#fff;--a-mute:#9b9b9b;--a-line:#262626;--a-bg:#000;--a-inv:#000}
+.pro{display:inline-block;background:#000;color:var(--lime);font-size:10px;font-weight:900;letter-spacing:.06em;border-radius:6px;padding:2px 6px;margin-left:6px;vertical-align:2px}
 </style>
 <main id="deck"></main>
 <div class="pager" role="navigation" aria-label="Folien"><button type="button" id="prev" aria-label="Vorherige Folie">‹</button><span id="pg">1 / 1</span><button type="button" id="next" aria-label="Nächste Folie">›</button></div>
@@ -451,6 +478,7 @@ figure{margin:0}
 <script src="lib/lib.js" charset="utf-8"></script>
 <script src="data-discover.js" charset="utf-8"></script>
 <script src="deck.js" charset="utf-8"></script>
+<script src="deck-aktie.js" charset="utf-8"></script>
 <script src="render.js" charset="utf-8"></script>
 </body>
 </html>
