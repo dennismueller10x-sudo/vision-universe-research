@@ -8,6 +8,7 @@
 #   build-archive.sh <scratchpad> <out-dir> <archive-pub.pem> <manifest.json>
 set -euo pipefail
 SP=$1; OUT=$2; PUB=$3; MANIFEST=$4
+HERE=$(cd "$(dirname "$0")" && pwd)
 mkdir -p "$OUT"
 # Teil-Name | Basisverzeichnis | Pfade relativ zur Basis (Schlüsselverzeichnisse sind nie enthalten)
 PARTS=(
@@ -32,17 +33,16 @@ for spec in "${PARTS[@]}"; do
     rm -f ./_inventory.tsv )
   files=$(wc -l < "$OUT/$name.inventory.tsv")
   plain_sha=$(sha256sum "$tmp" | cut -c1-64); plain_size=$(stat -c %s "$tmp")
-  # Passphrase als Hex-Zeile: -pass file: liest nur bis zum ersten \n bzw. NUL; Binaerbytes kuerzten sie (Befund 01.11.2026).
-  openssl rand -hex 32 > "$OUT/$name.key"
-  openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass file:"$OUT/$name.key" -in "$tmp" -out "$OUT/$name.tar.enc"
-  wrapped=$(openssl pkeyutl -encrypt -pubin -inkey "$PUB" -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -in "$OUT/$name.key" | base64 -w0)
-  shred -u "$OUT/$name.key"; rm -f "$tmp"
+  # Passphrase als Hex-Zeile (64 Zeichen + LF): -pass file: liest nur bis zum ersten \n bzw. NUL; Binaerbytes kuerzten sie
+  # (Befund 01.11.2026). Verschluesselung, Formatpruefung und Rundlauf nur in seal-part.sh.
+  wrapped=$(TMPDIR="$OUT" bash "$HERE/seal-part.sh" "$tmp" "$OUT/$name.tar.enc" "$PUB")
+  rm -f "$tmp"
   enc_sha=$(sha256sum "$OUT/$name.tar.enc" | cut -c1-64); enc_size=$(stat -c %s "$OUT/$name.tar.enc")
   inv_sha=$(sha256sum "$OUT/$name.inventory.tsv" | cut -c1-64)
   entries+=("{\"part\":\"$name\",\"object\":\"$name.tar.enc\",\"files\":$files,\"plainSha256\":\"$plain_sha\",\"plainBytes\":$plain_size,\"cipherSha256\":\"$enc_sha\",\"cipherBytes\":$enc_size,\"inventorySha256\":\"$inv_sha\",\"wrappedKeyB64\":\"$wrapped\"}")
   echo "$name: $files Dateien, $plain_size B klar, $enc_size B verschlüsselt"
 done
 pubfp=$(openssl pkey -pubin -in "$PUB" -outform DER | sha256sum | cut -c1-64)
-{ printf '{"schemaVersion":"v13-research-archive-manifest-1.2.0","createdAt":"%s","cipher":"openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt (key file 32 B)","keyWrap":"RSA-4096 OAEP SHA-256","archivePublicKeySha256Der":"%s","parts":[' "$(date -u +%FT%TZ)" "$pubfp"
+{ printf '{"schemaVersion":"v13-research-archive-manifest-2.0.0","createdAt":"%s","cipher":"openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass file:<key>","keyFormat":"hex64-lf","keyWrap":"RSA-4096 OAEP SHA-256","archivePublicKeySha256Der":"%s","parts":[' "$(date -u +%FT%TZ)" "$pubfp"
   (IFS=,; printf '%s' "${entries[*]}")
   printf ']}\n'; } > "$MANIFEST"
