@@ -330,11 +330,29 @@
       '<a class="vu-btn vu-btn--ink vu-btn--block" href="' + esc(stockHref(ctx, c.symbol)) + '" data-dv3-close>Aktie ansehen</a>';
     sheet('Warum steht diese Aktie hier?', body);
   }
+  /* Themenfotos: Original 1672 px (~120 KB). Die Kacheln brauchen weniger; der Browser waehlt per srcset die kleinste
+     Stufe, die die Kachel bei der Pixeldichte voll deckt (object-fit:cover auf 16:9, daher Hoehe x 16/9). Werte gemessen
+     07.11.2026, Inhalt max. 608 px breit; Stufen aus scripts/discover/build-theme-variants.py. Original bleibt groesste Stufe. */
+  var SIZES = {
+    rail: '(min-width:700px) 422px, 342px',
+    grid: '(min-width:700px) 348px, calc((100vw - 42px) * .89)',
+    big: '(min-width:700px) 675px, calc((100vw - 32px) * 1.11)',
+    head: '(min-width:700px) 837px, calc((100vw - 32px) * 1.38)',
+    thumb: '100px'
+  };
+  function themeSrcset(photo) {
+    var m = /^\/assets\/themen\/([^/]+\.webp)$/.exec(photo || '');
+    return m ? [480, 720, 1080].map(function (w) { return '/assets/themen/' + w + '/' + m[1] + ' ' + w + 'w'; }).concat(photo + ' 1672w').join(', ') : '';
+  }
+  function themeImg(t, sizes, extra) {
+    var set = themeSrcset(t.photo);
+    return '<img src="' + esc(t.photo) + '"' + (set ? ' srcset="' + esc(set) + '" sizes="' + esc(sizes) + '"' : '') + ' alt=""' + (extra || '') + ' decoding="async" width="1672" height="941">';
+  }
   function themeCard(t, ctx, o) {
     o = o || {};
     var count = D.Views.Themes.count(t, ctx.meta, uid(ctx));
     var a = h('a', 'dv3-theme' + (o.big ? ' dv3-theme--big' : '')); a.href = D.Views.Themes.href(t); a.dataset.theme = t.slug; a.dataset.group = t.group;
-    a.innerHTML = (t.photo ? '<img src="' + esc(t.photo) + '" alt="" loading="lazy" decoding="async" width="1672" height="941">' : '') +
+    a.innerHTML = (t.photo ? themeImg(t, o.big ? SIZES.big : o.grid ? SIZES.grid : SIZES.rail, ' loading="lazy"') : '') +
       '<span class="dv3-theme__copy"><b>' + esc(t.title) + '</b><span>' + esc(t.line + (count ? ' · ' + count + ' Aktien' : '')) + '</span></span>';
     var img = a.querySelector('img'); if (img) img.addEventListener('error', function () { img.remove(); });
     return a;
@@ -402,7 +420,7 @@
     function row(t, thumb) {
       var count = T.count(t, ctx.meta, uid(ctx));
       var a = h('a', 'dv3-trow' + (thumb ? ' dv3-trow--thumb' : '')); a.href = T.href(t); a.dataset.theme = t.slug; a.dataset.group = t.group;
-      a.innerHTML = (thumb ? (t.photo ? '<img src="' + esc(t.photo) + '" alt="" loading="lazy" decoding="async" width="56" height="56">' : U().hud('discover', 56)) : '') +
+      a.innerHTML = (thumb ? (t.photo ? themeImg(t, SIZES.thumb, ' loading="lazy"').replace('width="1672" height="941"', 'width="56" height="56"') : U().hud('discover', 56)) : '') +
         '<span class="dv3-trow__t"><b>' + esc(t.title) + '</b>' + (thumb ? '<span>' + esc(t.short + ' · ' + t.line) + '</span>' : '') + '</span><span class="dv3-trow__n">' + (count ? count + ' Aktien' : 'In Vorbereitung') + '</span>' + U().glyph('next', 16);
       return a;
     }
@@ -428,7 +446,7 @@
         var sec = h('section', 'dv3-sec'); sec.id = 'v2-group-' + g[0];
         sec.innerHTML = sect(g[2], all.filter(function (t) { return t.group === g[0]; }).length + ' Themen');
         var grid = h('div', 'vu-grid dv3-tgrid'), rest = h('div', 'vu-box dv3-tlist dv3-tlist--plain');
-        themes.forEach(function (t, i) { if (i < 4 && t.photo) grid.appendChild(themeCard(t, ctx)); else rest.appendChild(row(t, false)); });
+        themes.forEach(function (t, i) { if (i < 4 && t.photo) grid.appendChild(themeCard(t, ctx, { grid: true })); else rest.appendChild(row(t, false)); });
         sec.appendChild(grid); if (rest.children.length) sec.appendChild(rest);
         out.appendChild(sec);
       });
@@ -451,7 +469,7 @@
     var page = h('div', 'dv3 vu-ui dv3-thema');
     var lead = row && row.subtitle ? shortLine(row.subtitle) : theme.short + ' · ' + theme.line;
     page.innerHTML = '<a class="v2-back dv3-back" href="#/welten">' + U().glyph('back', 16) + ' Themenwelten</a>' +
-      '<header class="dv3-themehead">' + (theme.photo ? '<img src="' + esc(theme.photo) + '" alt="" decoding="async" width="1672" height="941">' : '') +
+      '<header class="dv3-themehead">' + (theme.photo ? themeImg(theme, SIZES.head) : '') +
       '<div><p class="vu-ltag">Themenwelt · ' + esc(b[1]) + '</p><h1>' + esc(theme.title) + '</h1><p>' + esc(lead) + '</p></div></header>';
     root.appendChild(page);
     if (!n) {
