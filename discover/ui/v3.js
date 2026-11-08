@@ -190,50 +190,12 @@
     paint();
   }
 
-  /* ============================================================ D01 Start */
-  var HOME_THEMES = ['kuenstliche-intelligenz', 'halbleiter-chips', 'erneuerbare-energien', 'biotechnologie', 'robotik-automation', 'cybersecurity', 'raumfahrt', 'kernenergie-uran'];
-  var TOP_TABS = [['top-10', 'Alle'], ['top-sp500', 'S&P 500'], ['top-ndx', 'Nasdaq 100'], ['top-djia', 'Dow']];
-  var TEASER_ROWS = ['umsatz-waechst-stark', 'qualitaet-wachstum', 'cashflow-maschinen'];
-
+  /* ============================================================ D01 Start
+     Seit dem Konzept „Reihe für Reihe“ (docs/design/discover-netflix-2026-11) zeichnet discover/ui/reihen.js
+     die Startseite; hier bleibt nur der Einstieg, den home.js aufruft. */
   function home(page, ctx) {
     bindHelp();
-    var asof = page.querySelector('.dv3-asof');
-    if (asof && ctx.asOf) asof.textContent = 'Discover · ' + closeLabel(ctx.asOf);
-    var body = h('div', 'v2-journey dv3-home'); page.appendChild(body);
-    var slot = {};
-    ['markt', 'blick', 'themen', 'top', 'hochs', 'strat', 'namen', 'swipe'].forEach(function (k) { slot[k] = h('section', 'dv3-sec dv3-sec--' + k); body.appendChild(slot[k]); });
-    marketToday(slot.markt, ctx);
-    themesRail(slot.themen, ctx, 'Themenwelten', HOME_THEMES.map(function (s) { return D.Views.Themes.bySlug(s); }).filter(Boolean), true);
-    strategyTeaser(slot.strat, ctx);
-    slot.swipe.innerHTML = '<a class="dv3-swipecard" href="#/swipen">' + U().hud('discover', 46) + '<span><b>Aktien swipen, eine nach der anderen</b><span>Wische nach rechts zum Merken.</span></span>' + U().glyph('next', 22) + '</a>' +
-      U().help((ctx.meta && ctx.meta.disclaimer) || 'Informationen zur eigenen Recherche, keine Anlageempfehlung.');
-    var entry = ((ctx.meta && ctx.meta.home) || []).filter(function (x) { return x.universeId === uid(ctx); })[0];
-    if (!entry || !entry.chunks || !entry.chunks.length) { slot.blick.innerHTML = U().blank('Die Aktien der Startseite sind gerade nicht verfügbar. Die Suche bleibt erreichbar.'); return function () {}; }
-    slot.blick.innerHTML = sect('Heute im Blick') + '<p class="v2-load-state" role="status">Aktien werden geladen …</p>';
-    var wait = new Promise(function (r) { setTimeout(r, 2500); });
-    Promise.all([load(entry.chunks[0]), ctx.liveIndex, Promise.race([ctx.fxReady, wait])]).then(function (r) {
-      if (!body.isConnected) return;
-      var surfaces = r[0].surfaces || [], by = {};
-      surfaces.forEach(function (s) { by[s.id] = s; });
-      var hero = surfaces.filter(function (s) { return s.type === 'hero'; })[0];
-      if (hero && (hero.cards || []).length) {
-        var view = D.Featured && D.Featured.live ? D.Featured.live(hero, ctx, blickSection) : blickSection(hero, ctx);
-        slot.blick.replaceWith(view); slot.blick = view;
-      } else slot.blick.innerHTML = sect('Heute im Blick') + U().blank('Heute steht keine Aktie im Blick.');
-      topList(slot.top, by, ctx);
-      knownNames(slot.namen, by['bekannte-namen'], ctx);
-      document.dispatchEvent(new Event('vu-home-drawn'));
-      var next = entry.chunks[1];
-      if (next) (D.Lazy ? D.Lazy.settled() : Promise.resolve()).then(function () { return body.isConnected ? load(next) : null; }).then(function (c) {
-        if (c && body.isConnected) highs(slot.hochs, (c.surfaces || []).filter(function (s) { return s.id === 'new-52-week-highs'; })[0], ctx);
-      }).catch(function () {});
-    }).catch(function () {
-      if (!body.isConnected) return;
-      slot.blick.innerHTML = sect('Heute im Blick') + U().blank('Die Aktien konnten nicht geladen werden.');
-      var retry = h('button', 'vu-btn vu-btn--line vu-btn--sm v2-load-more', 'Erneut versuchen'); retry.type = 'button';
-      retry.onclick = function () { body.remove(); home(page, ctx); }; slot.blick.appendChild(retry);
-    });
-    return function () {};
+    return D.ReihenUI.home(page, ctx);
   }
 
   /** Stufen-Skala 5 (Discover-Muster). */
@@ -248,72 +210,6 @@
     var n = (env.scale || []).length || 5;
     return '<p class="vu-ltag">Marktbarometer · US-Aktien</p><div class="dv3-baro__head"><b class="dv3-baro__word">' + esc(env.label) + '</b><span>Stufe ' + (env.level + 1) + ' von ' + n + '</span></div>' +
       (o.scaleFirst ? scale5(env, true) + '<p class="dv3-baro__text">' + esc(env.statement || '') + '</p>' : '<p class="dv3-baro__text">' + esc(env.statement || '') + '</p>' + scale5(env, true));
-  }
-  function marketToday(sec, ctx) {
-    sec.innerHTML = sect('Der Markt heute', 'Märkte', '#/maerkte') + '<a class="vu-box vu-box--ink dv3-baro" href="#/maerkte" aria-label="Marktbarometer, Märkte ansehen"><p class="vu-ltag">Marktbarometer · US-Aktien</p><p class="dv3-baro__text">Wird geladen …</p></a>' +
-      '<div class="vu-grid dv3-idx" style="--vu-cols:3"></div>' + U().help('Gemessen an den Fonds QQQ, SPY und DIA, die den Index nachbilden. Nicht der offizielle Indexstand.');
-    var baro = sec.querySelector('.dv3-baro'), grid = sec.querySelector('.dv3-idx');
-    load('/quant/data/market/intelligence/market-pulse.json').then(function (p) {
-      var env = p && p.environment;
-      if (!sec.isConnected) return;
-      if (!env || !isNum(env.level)) { baro.innerHTML = '<p class="vu-ltag">Marktbarometer · US-Aktien</p><p class="dv3-baro__text">Heute keine Einordnung möglich.</p>'; return; }
-      baro.innerHTML = barometerCard(env);
-    }).catch(function () { if (sec.isConnected) baro.querySelector('.dv3-baro__text').textContent = 'Das Marktbarometer ist gerade nicht verfügbar.'; });
-    Promise.all([load('/quant/data/market/multi-asset/snapshot.json'), load('/quant/config/multi-asset.json').catch(function () { return null; })]).then(function (r) {
-      if (!sec.isConnected) return;
-      var MA = global.VUMultiAssetContract, HM = D.HomeMarket, NAMES = { QQQ: 'Nasdaq 100', SPY: 'S&P 500', DIA: 'Dow Jones' };
-      ['QQQ', 'SPY', 'DIA'].forEach(function (symbol) {
-        var raw = (r[0].instruments || []).filter(function (c) { return c.instrument && c.instrument.symbol === symbol; })[0]; if (!raw) return;
-        var c = MA && MA.refresh ? MA.refresh(raw, { now: new Date(), calendar: ctx.calendar, config: r[1] || {} }) : raw;
-        var ch = c.quote && c.quote.state === 'AVAILABLE' && c.quote.change ? c.quote.change.percent : null;
-        var a = h('a', 'vu-tile dv3-idx__tile'); a.href = '#/maerkte/' + symbol;
-        a.innerHTML = '<span class="vu-tile__label">' + esc(NAMES[symbol]) + '</span><span class="dv3-idx__spark"></span>' + U().chg(ch);
-        grid.appendChild(a);
-        var src = HM && HM.sparkSource ? HM.sparkSource(raw) : null;
-        function draw(points) { if (a.isConnected && global.VUChart) a.querySelector('.dv3-idx__spark').innerHTML = global.VUChart.sparkline(thin((points || []).slice(-30)), { width: 90, height: 28 }); }
-        if (src && src.points) draw(src.points); else if (src && src.path) load(src.path).then(function (s) { draw(s.points); }).catch(function () {});
-      });
-      if (!grid.children.length) grid.outerHTML = U().blank('Marktstände sind gerade nicht verfügbar.');
-    }).catch(function () { if (grid.isConnected) grid.outerHTML = U().blank('Marktstände sind gerade nicht verfügbar.'); });
-  }
-
-  /* Heute im Blick: eine grosse Karte je Aktie, seitlich wischbar, Punkte 1 von N. */
-  function blickSection(surface, ctx) {
-    var cards = (surface.cards || []).slice(0, 5);
-    var sec = h('section', 'dv3-sec dv3-sec--blick v2-spotlight');
-    sec.innerHTML = sect('Heute im Blick', '1 von ' + cards.length);
-    var track = h('div', 'v2-hero-track dv3-snap'); track.setAttribute('role', 'list'); track.setAttribute('aria-label', 'Heute im Blick');
-    cards.forEach(function (c, i) { track.appendChild(blickCard(c, ctx, i, surface)); });
-    var dots = h('div', 'dv3-dots', cards.map(function (_, i) { return '<i' + (i ? '' : ' class="on"') + '></i>'; }).join(''));
-    dots.setAttribute('aria-hidden', 'true');
-    var note = sec.querySelector('.dv3-sect-note'), raf = 0;
-    track.addEventListener('scroll', function () {
-      if (raf) return;
-      raf = global.requestAnimationFrame(function () {
-        raf = 0; var first = track.firstElementChild; if (!first) return;
-        var i = Math.max(0, Math.min(cards.length - 1, Math.round(track.scrollLeft / (first.offsetWidth + 12))));
-        if (note) note.textContent = (i + 1) + ' von ' + cards.length;
-        Array.prototype.forEach.call(dots.children, function (d, k) { d.className = k === i ? 'on' : ''; });
-      });
-    }, { passive: true });
-    sec.append(track, dots);
-    return sec;
-  }
-  function blickCard(c, ctx, i, surface) {
-    var art = h('article', 'vu-box dv3-blick'); art.dataset.symbol = c.symbol; art.setAttribute('role', 'listitem');
-    var reasons = ((c.imBlick && c.imBlick.reasons) || c.reasons || []).slice(0, 3);
-    art.innerHTML = '<div class="dv3-blick__head">' + U().logo(c.symbol, { xl: true }) + '<div class="dv3-blick__id"><b>' + esc(name(c)) + '</b><span>' + esc([c.symbol, what(c)].filter(Boolean).join(' · ')) + '</span></div>' +
-      '<button type="button" class="vu-round dv3-heart">' + U().glyph('heart') + '</button></div>' +
-      '<div class="dv3-klar">' + zahlPill(c, true) + '<span>' + esc(c.plain && c.plain.zahl ? c.plain.zahl.label : '') + '</span></div>' +
-      '<h3 class="dv3-story">' + esc(story(c)) + '</h3><div class="dv3-chart"></div><div class="dv3-dates"><span></span><span></span></div>' +
-      (reasons.length ? '<p class="vu-ltag dv3-why-t">Warum heute?</p><div class="dv3-reasons">' + reasons.map(function (r, k) { return '<span class="vu-chip' + (k ? '' : ' vu-chip--lime') + '">' + esc(r.label + ': ' + r.value) + '</span>'; }).join('') + '</div>' : '') +
-      '<button type="button" class="vu-help dv3-helpbtn dv3-why"><i aria-hidden="true">?</i><span>Warum steht diese Aktie hier?</span></button>' +
-      '<div class="dv3-actions"><a class="vu-btn vu-btn--ink dv3-open" href="' + esc(stockHref(ctx, c.symbol)) + '">Aktie ansehen</a><a class="vu-btn" href="#/swipen">Swipen</a></div>';
-    var dates = art.querySelectorAll('.dv3-dates span');
-    art.querySelector('.dv3-chart').appendChild(spark(c, { big: true, width: 320, height: 110, onDates: function (a, b) { dates[0].textContent = dayYear(a); dates[1].textContent = dayYear(b); } }));
-    heart(art.querySelector('.dv3-heart'), ctx, c.symbol, name(c));
-    art.querySelector('.dv3-why').addEventListener('click', function () { whySheet(c, ctx, surface); });
-    return art;
   }
   /** Sheet „Warum steht diese Aktie hier?“ (d01-b): die Gruende mit ihren Werten, wie geliefert. */
   function whySheet(c, ctx, surface) {
@@ -364,43 +260,6 @@
     themes.forEach(function (t) { var c = themeCard(t, ctx); c.setAttribute('role', 'listitem'); track.appendChild(c); });
     sec.appendChild(track);
   }
-  function topList(sec, by, ctx) {
-    var tabs = TOP_TABS.filter(function (t) { return by[t[0]] && (by[t[0]].cards || []).length; });
-    if (!tabs.length) { sec.remove(); return; }
-    sec.innerHTML = sect('Die stärksten Aktien', 'Alle', '#/strategien/' + (by[tabs[0][0]].rowId || 'market-leaders')) + U().seg(tabs.map(function (t) { return { id: t[0], label: t[1] }; }), tabs[0][0], { tabs: true, label: 'Rangliste' }) +
-      '<div class="dv3-list dv3-top" role="tabpanel"></div>' + U().help('„Stark“ heißt hier: Der Kurs lief über Monate besser als der Rest. Das sagt nichts über die Zukunft.');
-    var list = sec.querySelector('.dv3-top'), more = sec.querySelector('.vu-sect a');
-    function show(id) {
-      var s = by[id]; list.replaceChildren();
-      (s.cards || []).slice(0, 4).forEach(function (c, i) { list.appendChild(rankRow(c, i, ctx)); });
-      more.setAttribute('href', '#/strategien/' + (s.rowId || id));
-      Array.prototype.forEach.call(sec.querySelectorAll('.vu-seg button'), function (b) { b.setAttribute('aria-selected', String(b.dataset.id === id)); b.tabIndex = b.dataset.id === id ? 0 : -1; });
-    }
-    sec.querySelector('.vu-seg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) show(b.dataset.id); });
-    show(tabs[0][0]);
-  }
-  function highs(sec, s, ctx) {
-    if (!s || !(s.cards || []).length) return;
-    var m = metaRow(ctx, 'new-52-week-highs');
-    sec.innerHTML = '<div class="vu-sect"><h2>Neue Jahreshochs</h2><a href="#/strategien/new-52-week-highs">' + (m && m.matched ? esc(num(m.matched, 0)) + ' Treffer' : 'Alle') + '</a></div><div class="vu-box dv3-list"></div>';
-    var list = sec.querySelector('.dv3-list');
-    s.cards.slice(0, 3).forEach(function (c, i) { list.appendChild(rankRow(c, i, ctx)); });
-  }
-  function strategyTeaser(sec, ctx) {
-    var rows = TEASER_ROWS.map(function (id) { return metaRow(ctx, id); }).filter(Boolean);
-    if (!rows.length) { sec.remove(); return; }
-    sec.innerHTML = sect('Strategien', 'Alle ' + strategyRows(ctx).length, '#/strategien') + '<div class="vu-stack">' + rows.map(function (r) {
-      var g = groupOf(r.rowId);
-      return U().navcard({ href: '#/strategien/' + r.rowId, glyph: g ? g.icon : 'list', title: rowTitle(r), sub: (r.matched ? num(r.matched, 0) + ' Aktien · ' : '') + shortLine(r.subtitle) });
-    }).join('') + '</div>';
-  }
-  function knownNames(sec, s, ctx) {
-    if (!s || !(s.cards || []).length) { sec.remove(); return; }
-    sec.innerHTML = sect('Bekannte Namen in Bewegung', 'Alle', '#/strategien/bekannte-namen');
-    var list = h('div', 'dv3-list'); sec.appendChild(list);
-    s.cards.slice(0, 3).forEach(function (c) { list.appendChild(stockRow(c, ctx)); });
-  }
-
   /* ============================================================ D02 Welten */
   var BEREICHE = [['t', 'Technologie', 'Technologie & Vernetzung'], ['h', 'Gesundheit', 'Gesundheit'], ['e', 'Energie & Rohstoffe', 'Energie & Rohstoffe'],
     ['i', 'Industrie', 'Industrie & Infrastruktur'], ['f', 'Finanzen', 'Finanzen & Immobilien'], ['c', 'Konsum', 'Konsum & Mobilität']];
@@ -945,6 +804,10 @@
   }
 
   var api = { home: home, welten: welten, thema: thema, strategien: strategien, strategie: strategie, swipen: swipen, watchlist: watchlist, maerkte: maerkte,
-    rowTitle: rowTitle, closeLabel: closeLabel, stockRow: stockRow, rankRow: rankRow, spark: spark, GROUPS: GROUPS };
+    rowTitle: rowTitle, closeLabel: closeLabel, stockRow: stockRow, rankRow: rankRow, spark: spark, GROUPS: GROUPS,
+    /* Bausteine fuer discover/ui/reihen.js (Startseite, Reihen-Seite, Vorschau) */
+    kit: { load: load, esc: esc, h: h, uid: uid, stockHref: stockHref, name: name, story: story, what: what, zahlPill: zahlPill,
+      dayYear: dayYear, closeLabel: closeLabel, spark: spark, thin: thin, sheet: sheet, heart: heart, store: store, whySheet: whySheet,
+      themeCard: themeCard, metaRow: metaRow, metaRows: metaRows, scale5: scale5, isNum: isNum, val: val, bindHelp: bindHelp } };
   D.V3 = api;
 })(window);

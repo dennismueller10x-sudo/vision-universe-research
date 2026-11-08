@@ -9,7 +9,11 @@
 
    Aufruf:
      node scripts/core/schedule-registry.mjs            Inventar: Register gegen Workflows, Abweichungen
-     node scripts/core/schedule-registry.mjs --json     Inventar als JSON (alle Crons aus .github/workflows) */
+     node scripts/core/schedule-registry.mjs --json     Inventar als JSON (alle Crons aus .github/workflows)
+     node scripts/core/schedule-registry.mjs --sync     Register nachziehen: neue Crons als timer github eintragen,
+                                                        verschwundene github-Eintraege streichen. waker-Eintraege
+                                                        bleiben unberuehrt (ihr Cron steht absichtlich nicht im Workflow). */
+import { writeFileSync } from "node:fs";
 import { readFileSync, readdirSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -62,8 +66,34 @@ export function drift(reg, inv) {
   return fehler;
 }
 
+export function sync(reg, inv) {
+  const key = (w, c) => w + " | " + c;
+  const invKeys = new Set(inv.map((r) => key(r.workflow, r.cron)));
+  const entries = reg.entries.filter((e) => e.timer !== "github" || invKeys.has(key(e.workflow, e.cron)));
+  const have = new Set(entries.map((e) => key(e.workflow, e.cron)));
+  const ids = new Set(entries.map((e) => e.id));
+  for (const r of inv) {
+    if (have.has(key(r.workflow, r.cron))) continue;
+    const base = r.workflow.replace(/\.ya?ml$/, "");
+    const label = (r.comment.split(/[ (]/)[0] || "").toLowerCase().replace(/[^a-z0-9-]/g, "");
+    let id = base + (label ? "-" + label : ""), n = 1;
+    while (ids.has(id)) id = base + (label ? "-" + label : "") + "-" + (++n);
+    ids.add(id);
+    const e = { id, workflow: r.workflow, cron: r.cron, timer: "github" };
+    if (r.comment) e.note = r.comment;
+    if (/^company-intelligence/.test(r.workflow)) e.ausnahme = "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)";
+    entries.push(e);
+  }
+  return { ...reg, entries };
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const inv = inventory();
+  if (process.argv.includes("--sync")) {
+    const next = sync(loadRegistry(), inv);
+    writeFileSync(join(ROOT, "core/registry/schedule.json"), JSON.stringify(next, null, 1) + "\n");
+    console.log("Register nachgezogen: " + next.entries.length + " Eintraege");
+  }
   if (process.argv.includes("--json")) { console.log(JSON.stringify(inv, null, 1)); process.exit(0); }
   const reg = loadRegistry();
   const n = (t) => reg.entries.filter((e) => e.timer === t).length;
