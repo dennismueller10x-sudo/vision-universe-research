@@ -946,8 +946,11 @@ export const STOCK_PRELOAD_SCRIPTS = ['/supertrader/assets/st-redesign.js', '/co
 export function stockSeriesHref(sym) { return '/quant/data/market/discover-series/' + encodeURIComponent(Identity.securityIdForTicker(sym)) + '.json'; }
 /* Bewusst NICHT vorgeladen: registry-core.json und stock/<SYM>.json. Bei 1,6 Mbit/s teilen sie sich die Leitung mit den
    Skripten; gemessen kam der Kurs damit spaeter (2,35 s statt 2,28 s, docs/mobile/PERFORMANCE.md). */
+/* stockKit() wartet auf das Stylesheet des Aktienkopfs; ein Preload reicht nicht (loadCss fande den Preload-Link und
+   wartete auf ihn, ohne dass er angewendet wird). Als echtes Stylesheet im <head> ist es beim Zeichnen schon da. */
+export const STOCK_STYLESHEETS = ['/assets/stock-navigator.css'];
 export function stockPreloads(sym) {
-  return STOCK_PRELOAD_SCRIPTS.map((href) => `<link rel="preload" as="script" href="${href}">`).join('\n') +
+  return STOCK_STYLESHEETS.map((href) => `<link rel="stylesheet" href="${href}">\n`).join('') + STOCK_PRELOAD_SCRIPTS.map((href) => `<link rel="preload" as="script" href="${href}">`).join('\n') +
     `\n<link rel="preload" as="fetch" crossorigin="anonymous" href="${stockSeriesHref(sym)}">`;
 }
 

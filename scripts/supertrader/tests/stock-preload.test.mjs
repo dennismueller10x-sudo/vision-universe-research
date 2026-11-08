@@ -41,3 +41,19 @@ test('Erzeugte Aktienseite: Preloads im <head>, Kursreihe als fetch mit crossori
   assert.doesNotMatch(home, /rel="preload"/);
   assert.match(SRC('scripts/supertrader/build.mjs'), /attrs: ` data-symbol="\$\{sym\}"`, head: stockPreloads\(sym\)/, 'writeStockPages setzt die Preloads');
 });
+
+test('Aktienseite wartet nicht auf portfolio.json; nur die bisherige Ansicht laedt es nach', () => {
+  const st = SRC('supertrader/assets/supertrader.js');
+  assert.match(st, /stock: \['registry', 'signals', 'market', 'trend52'\]/);
+  assert.match(st, /page === 'stock' && !\('portfolio' in D\) \? load\('portfolio'\)/, 'Rueckfallansicht (lensBlock/portfolioCell) bekommt es weiter');
+  /* Die neue Ansicht liest D.portfolio nicht. */
+  const red = SRC('supertrader/assets/st-redesign.js'), stock = red.slice(red.indexOf('function stock(D, X)'), red.indexOf('function stock(D, X)') + 30000);
+  assert.doesNotMatch(stock, /D\.portfolio/);
+});
+
+test('Stylesheet des Aktienkopfs steht als Stylesheet (nicht als Preload) im <head>', () => {
+  const html = stockPreloads('NVDA');
+  assert.ok(html.startsWith('<link rel="stylesheet" href="/assets/stock-navigator.css">'));
+  assert.doesNotMatch(html, /as="style"/, 'loadCss wuerde auf einen Preload-Link warten, ohne ihn anzuwenden');
+  assert.match(SRC('supertrader/assets/supertrader.js'), /loadCss\('\/assets\/stock-navigator\.css'\)/);
+});
