@@ -317,6 +317,24 @@
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', legalFooter); else legalFooter();
   }
+  /* App (Owner 08.11.2026: „Rechtliches & Infos“ ließ sich nicht antippen): Die App zeigt diese Seite in einem Rahmen,
+     und die App-Hülle lässt im Rahmen nur research.visionuniverse.de zu (CSP frame-src in app/www/index.html). Ein Link auf
+     eine andere Herkunft, z. B. die Rechtstexte auf konto.visionuniverse.de, wurde dort still verworfen. Solche Links
+     öffnen in der App deshalb als neues Fenster; Capacitor gibt das an den System-Browser (iOS decidePolicyFor mit
+     targetFrame == nil, Android launchIntent). Im Web bleibt alles wie bisher. */
+  function appExternalLink(a) {
+    if (!a || !a.href || a.hasAttribute('download') || (a.target && a.target !== '_self')) return false;
+    var u; try { u = new URL(a.href, location.href); } catch (_) { return false; }
+    if (!/^https?:$/.test(u.protocol) || u.origin === location.origin) return false;
+    a.target = '_blank'; a.rel = 'noopener';
+    return true;
+  }
+  if (typeof document !== 'undefined' && inApp()) {
+    document.addEventListener('click', function (ev) {
+      var path = ev.composedPath ? ev.composedPath() : [ev.target];
+      for (var i = 0; i < path.length; i++) if (path[i] && path[i].tagName === 'A') { appExternalLink(path[i]); return; }
+    }, true);
+  }
   const dockBus = {state: {}, listeners: []};
   if (typeof window !== 'undefined') {
     window.VUNavigation = {
