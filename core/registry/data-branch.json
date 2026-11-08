@@ -38,6 +38,18 @@
       "workflow": "content.yml",
       "paths": ["dashboard/data/analysts/summary.json"],
       "prefixes": ["dashboard/data/analysts/shards/"]
+    },
+    {
+      "id": "marketPulse",
+      "phase": "BRANCH_ONLY",
+      "workflow": "multi-asset-data.yml",
+      "paths": [
+        "quant/data/market/multi-asset/snapshot.json",
+        "quant/data/market/intelligence/market-pulse.json",
+        "quant/data/market/intelligence/market-pulse-history.json"
+      ],
+      "prefixes": ["quant/data/market/multi-asset/"],
+      "note": "Vertrag: snapshot.json (domains.json marketPulse). Market Pulse ist ein Bericht desselben Laufs ohne eigenen Vertrag; das Verzeichnis folgt nur dem Snapshot. Verbraucher spielen den Zweig per seed-data-branch.sh alle ein (Pages vor dem Bau, Supertrader, Materialisierung, pipeline-daily, research)."
     }
   ],
   "internal": [
@@ -54,7 +66,6 @@
   "plan": {
     "purpose": "Jede Datenart aus core/registry/domains.json steht entweder unter domains (im Datenzweig) oder hier mit Status und Grund (DB-14). NEXT = als Naechstes, LATER = nach dem Buendel/der Kette, LAST = Quant/Supertrader/Discover zuletzt (Plan §3), EXEMPT = begruendet ausgenommen.",
     "entries": {
-      "marketPulse": {"status": "NEXT", "grund": "PR #1678; Verbraucher lesen den Zweig (#1673, #1675, pipeline-daily #1677, research)"},
       "news": {"status": "NEXT", "grund": "Pilot DUAL_WRITE; BRANCH_ONLY nach der Abnahme am 11.11.2026"},
       "companyNames": {"status": "LATER", "grund": "drei Erzeuger; mit Security Master"},
       "discoverImBlickLive": {"status": "LATER", "grund": "zwei Erzeuger (discover-im-blick-live, market-data-refresh); mit Discover"},
