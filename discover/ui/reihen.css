@@ -244,3 +244,12 @@
 .dr-all__r:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
 .dr-all__themes .dv3-theme{flex:0 0 120px;aspect-ratio:1/1}
 :root[data-theme=dark] .dr-all{background:#000}
+
+/* ===== PR 3 · Persönliche Reihen: Zuletzt angesehen (.cw) ===== */
+.dr-cw{flex:none;width:200px;display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px;border-radius:16px;background:var(--vu-card);color:var(--vu-ink);text-decoration:none;scroll-snap-align:start}
+.dr-cw:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
+.dr-cw .vu-logo-tile{width:30px;height:30px;border-radius:9px;font-size:7.5px}
+.dr-cw__t{min-width:0}
+.dr-cw__t b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dr-cw__t span{display:block;font-size:11px;font-weight:600;color:var(--vu-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dr-cw__p .vu-chg{font-size:11px;padding:2px 6px}

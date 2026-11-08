@@ -190,19 +190,19 @@
 
   /* ------------------------------------------------------------ Schienen */
   function railSection(slot, ctx, avail) {
-    var id = slot.row, title = R().homeTitle(id), sec = h('section', 'dr-sec'); sec.dataset.row = id;
+    var id = slot.row, title = slot.title || R().homeTitle(id), sec = h('section', 'dr-sec' + (slot.kind === 'more' ? ' dr-sec--more' : '')); sec.dataset.row = id;
     var n = avail[id];
-    sec.innerHTML = railHead({ title: title, tag: slot.tag, sub: '', more: n ? 'Alle ' + fmtInt(n) : 'Alle', href: rowHref(id), label: 'Alle ' + fmtInt(n) + ' Aktien: ' + title });
+    sec.innerHTML = railHead({ title: title, tag: slot.tag, sub: '', more: slot.kind === 'more' ? 'Alle' : n ? 'Alle ' + fmtInt(n) : 'Alle', href: rowHref(id), label: 'Alle ' + fmtInt(n) + ' Aktien: ' + title });
     var track = rail(title); track.innerHTML = skeleton(3); sec.appendChild(track);
     whenNear(sec, function () {
       loadRow(ctx, id).then(function (row) {
         if (!sec.isConnected) return;
-        var sub = R().homeSub(id, row.subtitle);
+        var sub = slot.sub != null ? slot.sub : R().homeSub(id, row.subtitle);
         if (sub) sec.querySelector('.dr-head').insertAdjacentHTML('beforeend', '<p>' + esc(sub) + '</p>');
-        var cards = R().showcaseCards(row.cards, 10);
+        var cards = R().showcaseCards((row.cards || []).filter(function (c) { return !slot.exclude || slot.exclude.indexOf(c.symbol) < 0; }), 10);
         if (!cards.length) { sec.remove(); return; }
         track.replaceChildren();
-        cards.forEach(function (c) { track.appendChild(poster(c, ctx, { pill: slot.pill, row: id, badge: slot.badge && slot.badge(c) })); });
+        cards.forEach(function (c) { track.appendChild(poster(c, ctx, { pill: slot.pill, row: id, badge: R().isNew(c, row.asOf) ? 'NEU' : null })); });
       }).catch(function () { if (sec.isConnected) sec.remove(); });
     });
     return sec;
@@ -242,6 +242,30 @@
     });
     return sec;
   }
+  /** „Zuletzt angesehen“ (K1 „Weiterschauen“): nur auf dem Gerät gespeichert, ohne Konto. */
+  var WD = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
+  function seenLabel(at) {
+    var d = new Date(at); if (isNaN(d)) return 'angesehen';
+    var now = new Date(), day = 864e5, diff = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / day);
+    return diff <= 0 ? 'Heute angesehen' : diff === 1 ? 'Gestern angesehen' : diff < 7 ? WD[d.getDay()] + ' angesehen' : ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth() + 1)).slice(-2) + '. angesehen';
+  }
+  function recentSection(ctx, recent) {
+    var sec = h('section', 'dr-sec dr-sec--recent');
+    sec.innerHTML = railHead({ title: 'Zuletzt angesehen', sub: 'Nur auf diesem Gerät gespeichert, ohne Konto.' });
+    var track = rail('Zuletzt angesehen'); sec.appendChild(track);
+    recent.slice(0, 8).forEach(function (e) {
+      var a = h('a', 'dr-cw'); a.href = K().stockHref(ctx, e.symbol); a.setAttribute('role', 'listitem'); a.dataset.symbol = e.symbol;
+      a.innerHTML = U().logo(e.symbol) + '<span class="dr-cw__t"><b>' + esc(shortName({ companyName: e.companyName, symbol: e.symbol })) + '</b><span>' + esc(seenLabel(e.at)) + '</span></span><span class="dr-cw__p">' + U().chg(null) + '</span>';
+      track.appendChild(a);
+    });
+    whenNear(sec, function () {
+      Array.prototype.forEach.call(track.children, function (a) {
+        K().load('/discover/data/stocks/' + uid(ctx) + '/' + encodeURIComponent(a.dataset.symbol) + '.json').then(function (d) { if (a.isConnected) a.querySelector('.dr-cw__p').innerHTML = pillDay(d); }).catch(function () {});
+      });
+    });
+    return sec;
+  }
+
   function endSection(ctx, avail) {
     var sec = h('section', 'dr-sec dr-sec--end');
     var n = R().ALL_GROUPS.reduce(function (k, g) { return k + g.rows.filter(function (r) { return avail && avail[r]; }).length; }, 0);
@@ -307,11 +331,18 @@
       var bb = h('section', 'dr-sec dr-bb dr-bb--wait', '<p class="v2-load-state" role="status">Aktien werden geladen …</p>'); body.appendChild(bb);
       var ms = h('section', 'dr-sec dr-sec--markt'); body.appendChild(ms); marketStrip(ms, ctx);
       var topSlot = h('div', 'dr-slot'); body.appendChild(topSlot);
-      var followed = D.memory && D.memory.followedRows ? D.memory.followedRows() : [];
-      R().homePlan(avail, { fresh: followed }).forEach(function (slot) {
+      var mem = D.memory, followed = mem && mem.followedRows ? mem.followedRows() : [];
+      var recent = mem && mem.recent ? mem.recent(uid(ctx)) : [], more = R().moreFrom(recent, avail);
+      var fresh = followed.concat(R().freshRows(ctx.meta, uid(ctx)).filter(function (r) { return followed.indexOf(r) < 0; }));
+      R().homePlan(avail, { fresh: fresh, personal: { recent: recent.length > 0, more: !!more } }).forEach(function (slot) {
         var node = null;
         if (slot.kind === 'top10') return;
         if (slot.kind === 'rail') node = railSection(slot, ctx, avail);
+        else if (slot.kind === 'recent') node = recentSection(ctx, recent);
+        else if (slot.kind === 'more') {
+          var T = D.Views.Themes.byRow(more.row);
+          node = railSection({ kind: 'more', row: more.row, title: 'Mehr aus ' + (T ? T.title : R().title(more.row)), sub: R().moreLine(more.names.map(function (n) { return shortName({ companyName: n }); })), exclude: more.exclude }, ctx, avail);
+        }
         else if (slot.kind === 'themes') node = themesSection(ctx, false);
         else if (slot.kind === 'strategies') node = strategiesSection(slot, ctx, avail);
         if (node) body.appendChild(node);
