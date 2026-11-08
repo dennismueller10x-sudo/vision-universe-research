@@ -329,8 +329,11 @@ test("PR20 · Kein Skript schreibt die Schalterdateien", () => {
 test("PR21 · Die Kadenz steht im Workflow und ist zweimal taeglich", () => {
   /* Als technischer Startwert - ausdruecklich keine Posting-Quote.
      Scheduler-Frequenz ist nicht Publishing-Frequenz. */
+  /* Seit Plan Neustart §3 steht der Takt im Zeitplan-Register (Cloudflare-Wecker), nicht mehr als Cron im Workflow. */
+  const reg = JSON.parse(readFileSync("core/registry/schedule.json", "utf8"));
   const w = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
-  const crons = [...w.matchAll(/cron:\s*'([^']+)'/g)].map((m) => m[1]);
+  const crons = [...w.matchAll(/cron:\s*'([^']+)'/g)].map((m) => m[1])
+    .concat(reg.entries.filter((e) => e.workflow === "social-orchestrator.yml").map((e) => e.cron));
   assert.equal(crons.length, 2);
   assert.equal(R.kadenz({ runsPerDay: crons.length }).publishingFrequency, null);
 });

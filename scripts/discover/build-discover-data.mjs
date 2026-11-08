@@ -2009,10 +2009,12 @@ function firstSeen(universe, rowId, symbol) {
   if (row.first.has(symbol)) return row.first.get(symbol);
   return row.members.has(symbol) ? null : universe.asOf;
 }
+const FOREIGN_DIRS = new Set(["europe", "europe-esef"]);
 if (existsSync(OUT)) {
   for (const entry of readdirSync(OUT, { withFileTypes: true })) {
-    // The registered Marketstack publication producer owns this directory.
-    if (entry.name === "europe" && entry.isDirectory()) continue;
+    // Fremde Erzeuger (core/registry/domains.json): europe = Marketstack-Veroeffentlichung,
+    // europe-esef = scripts/official-filings/de-esef-facts.mjs. Ihre Bytes bleiben unberuehrt.
+    if (FOREIGN_DIRS.has(entry.name) && entry.isDirectory()) continue;
     rmSync(join(OUT, entry.name), { recursive: true, force: true });
   }
 }

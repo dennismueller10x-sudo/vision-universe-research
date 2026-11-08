@@ -367,6 +367,8 @@
       // Kennzahl-Detail: weitere Kennzahlen im selben Verlauf (&plus=a.b.c) und Darstellung (&d=achsen|index|getrennt)
       else if (k === 'plus' && /^[a-z0-9_]{2,40}(\.[a-z0-9_]{2,40}){0,5}$/.test(v)) out.plus = v.split('.');
       else if (k === 'd' && /^(achsen|index|getrennt)$/.test(v)) out.dmode = v;
+      // Kennzahl-Detail: weitere Firmen im selben Verlauf (&mit=AMD.AVGO, bis 3 neben der eigenen)
+      else if (k === 'mit' && /^[A-Za-z0-9.-]{1,12}(~[A-Za-z0-9.-]{1,12}){0,2}$/.test(v)) out.firms = v.split('~').map(normTicker).filter(validTicker);
     });
     return out;
   }
