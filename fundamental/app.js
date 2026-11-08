@@ -632,9 +632,11 @@
     var eyebrow = el('p', { class: 'vu-ltag', text: 'Fundamental' }), footer = el('div');
     var ranks = el('div', { class: 'fu-rail' }, homeRanks().slice(0, 3).map(function (d) { return rankCard(d, null); })), rankState = el('div', { class: 'fu-rank-state' });
     var learn = el('div', { class: 'fu-rail' }, learnCards(null));
+    var ckRail = CK ? el('div', { class: 'fu-rail' }, CK.CHECKLISTS.map(function (l) { return ckCard(l, null); })) : null;
     put(main, el('header', { class: 'fu-intro' }, [eyebrow, el('h1', { class: 'vu-lt', text: 'Wie gut ist das Geschäft?' }), lead]),
       el('div', { class: 'fu-searchwrap' }, searchBox({ placeholder: 'Firma oder Kürzel, z. B. NVIDIA' })),
       el('div', { class: 'fu-qchips', role: 'list', 'aria-label': 'Schnellwahl' }, QUICK.map(function (t) { return el('a', { class: 'fu-qchip', role: 'listitem', href: '#/' + t }, [frag(UI.logo(t)), t]); })),
+      CK ? railHead('Checklisten', '/screener/', 'Alle ' + CK.CHECKLISTS.length, 'Mehrere Bedingungen auf einmal, jede mit Haken. Wie eine Prüfliste.', 'Neu') : null, ckRail,
       railHead('Ranglisten', '#/ranglisten', 'Alle ' + C.RANKINGS.length, 'Eine Kennzahl, sortiert. Größe wählbar.'), ranks, rankState,
       railHead('Zahlen lesen in 30 Sekunden'), learn,
       el('div', { class: 'vu-stack fu-gap' }, [navEl('#/branchen', hudGlyph('company'), 'Branchen im Vergleich', 'Nettomarge, Wachstum und Bewertung je Branche'),
@@ -654,6 +656,7 @@
       loadUniverse().then(function (U) {
         if (main.getAttribute('data-view') !== 'home') return;
         put(ranks, homeRanks().map(function (d) { return rankCard(d, U); }));
+        if (ckRail) put(ckRail, CK.CHECKLISTS.map(function (l) { return ckCard(l, U); }));
         put(lead, 'Umsatz, Gewinn und Cashflow von ' + U.n.toLocaleString('de-DE') + ' US-Firmen, aus den Pflichtmeldungen an die US-Börsenaufsicht.');
       }).catch(function () { if (main.getAttribute('data-view') === 'home') put(rankState, rankDown(probe)); });
     }
@@ -1083,6 +1086,53 @@
       .then(function (a) { var L = a && a.last; if (!L || !a.total) return; put(subs.analysten, ((L.strongBuy || 0) + (L.buy || 0)) + ' von ' + a.total + ' positiv · Angabe Dritter'); }).catch(function () {});
     return list;
   }
+  /* ------------------------------------------------------------ Checklisten (Konzept PR 5, Folie FX07)
+   * Drei Screener-Vorlagen (screener/engine/checklists.js) auf den Spalten des Screener-Universums; gezaehlt wird im
+   * Browser. Wortwahl: „N von M Punkten erfüllt“, keine Gesamtnote, kein Urteil über den Kurs. */
+  var CK = global.VUChecklists || null;
+  function ckHits(U, list) {
+    var c = U.raw.cols, out = [];
+    for (var i = 0; i < U.n; i++) if (CK.evaluate(list, function (col) { return c[col] ? c[col][i] : null; }).all) out.push(i);
+    out.sort(function (a, b) { return (c.mcap[b] || 0) - (c.mcap[a] || 0); });
+    return out.map(function (i) { return c.s[i]; });
+  }
+  function ckBadge(r, big) { return el('span', { class: 'fu-ckr-r' + (r.all ? ' on' : '') + (big ? ' is-big' : '') }, [el('b', { class: 'fu-num', text: String(r.met) }), '/' + r.of]); }
+  function ckSheet(co, U, list) {
+    var row = U.get(co.t), r = CK.evaluate(list, function (col) { return row ? row[col] : null; }), hits = ckHits(U, list);
+    var body = el('div', { class: 'fu-ck' }, [
+      el('div', { class: 'fu-ck-h' }, [el('div', {}, [el('p', { class: 'vu-ltag', text: 'Checkliste · ' + co.name }), el('h3', { text: list.name })]), ckBadge(r, true)]),
+      el('ul', { class: 'fu-ck-list' }, r.rows.map(function (x) {
+        return el('li', { class: x.pass === true ? 'is-ok' : '' }, [el('span', { class: 'fu-ck-i', 'aria-label': x.pass === true ? 'erfüllt' : x.pass === false ? 'nicht erfüllt' : 'ohne Angabe' }, glyph(x.pass === true ? 'check' : 'close', 'fu-glyph-sm')),
+          el('span', { class: 'fu-ck-l', text: x.item.label }), el('b', { class: 'fu-num', text: CK.formatValue(x.item, x.value) })]);
+      })),
+      el('div', { class: 'fu-ck-uni' }, [el('div', {}, [el('b', { text: hits.length.toLocaleString('de-DE') + ' von ' + U.n.toLocaleString('de-DE') + ' Aktien' }), el('small', { text: 'erfüllen heute alle ' + r.of + ' Punkte' })]),
+        el('a', { class: 'vu-btn vu-btn--ink vu-btn--sm', href: CK.screenerHref(list) }, 'Im Screener')]),
+      el('div', { class: 'fu-gap-s' }, helpEl('Eine Checkliste beschreibt, welche Bedingungen erfüllt sind. Sie sagt nichts über den künftigen Kurs. Schwellen: Methodik.'))]);
+    sheet('Checkliste ' + list.name, body, 'fu-sheet-ck');
+  }
+  function checklistRows(co) {
+    var box = el('div', { class: 'fu-ckbox' }, CK ? CK.CHECKLISTS.map(function () { return el('div', { class: 'fu-ckr is-wait' }, skel(40)); }) : []);
+    if (!CK) return null;
+    function paint(U) {
+      var row = U && U.get(co.t);
+      if (!row) { put(box, el('p', { class: 'fu-note', text: 'Für ' + co.name + ' liegen die Vergleichsdaten gerade nicht vor.' })); return; }
+      put(box, CK.CHECKLISTS.map(function (list) {
+        var r = CK.evaluate(list, function (col) { return row[col]; });
+        return el('button', { type: 'button', class: 'fu-ckr', 'data-ck': list.id, onclick: function () { ckSheet(co, U, list); } }, [ckBadge(r),
+          el('span', { class: 'fu-ckr-t' }, [el('b', { text: list.name }), el('small', { text: r.all ? 'Alle Punkte erfüllt' : r.met + ' von ' + r.of + ' Punkten erfüllt' })]),
+          el('span', { class: 'fu-ckr-d', 'aria-hidden': 'true' }, r.rows.map(function (x) { return el('i', { class: x.pass === true ? 'on' : '' }); })), glyph('chevron', 'fu-glyph-sm')]);
+      }));
+    }
+    if (co.U) paint(co.U); else main.addEventListener('fu-universe', function h(e) { main.removeEventListener('fu-universe', h); paint(e.detail); });
+    return box;
+  }
+  function ckCard(list, U) {
+    var hits = U ? ckHits(U, list) : null;
+    return el('a', { class: 'fu-ckc', href: CK.screenerHref(list) }, [
+      el('div', { class: 'fu-ckc-h' }, [el('div', {}, [el('span', { class: 'vu-ltag', text: 'Checkliste' }), el('b', { text: list.name })]), el('span', { class: 'fu-ckn' }, [el('b', { class: 'fu-num', text: String(list.items.length) }), el('small', { text: 'Punkte' })])]),
+      el('p', { class: 'fu-ckc-p', text: list.items.slice(0, 3).map(function (i) { return i.label; }).join(' · ') + ' …' }),
+      el('div', { class: 'fu-ckc-f' }, hits ? hits.slice(0, 5).map(function (t) { return frag(UI.logo(t)); }).concat([el('span', { class: 'fu-ckc-n', text: hits.length.toLocaleString('de-DE') + ' erfüllen alle' })]) : [skel(24, '60%')])]);
+  }
   function overview(co, r, ctx) {
     var f = co.f, t = co.t;
     var stripHost = el('div', {}, strip(co, ctx));
@@ -1091,6 +1141,8 @@
       storyCard(co, ctx),
       f.stale && f.stale.stale ? el('p', { class: 'fu-note', role: 'note', text: 'Die Geschäftszahlen sind veraltet: letztes gemeldetes Geschäftsjahr ' + f.latestFiscalYear + '.' }) : null,
       stripHost, finCard(co),
+      CK ? el('div', { class: 'fu-rh' }, [el('div', { class: 'fu-rh-t' }, [el('h2', { text: 'Checklisten' }), el('span', { class: 'fu-rh-tag', text: 'Neu' })]), el('p', { text: 'Tipp zeigt jede Bedingung mit Wert.' })]) : null,
+      checklistRows(co),
       sectEl('Kapitel', href(t, 'mehr'), 'Alle'), chapters(co, ctx),
       el('a', { class: 'fu-sec-link fu-quant-link', href: '/quant/#/aktie/' + encodeURIComponent(t) + '/zahlen' }, ['Zahlen in Quant', glyph('chevron', 'fu-glyph-sm')]),
       foot(co.raw && co.raw.fundamentals && co.raw.fundamentals.asOf), dataMethod(co)];
@@ -1811,6 +1863,9 @@
       el('div', { class: 'fu-gap-s' }, helpEl('Splitbereinigt: Teilt eine Firma ihre Aktien (z. B. 1 wird 10), rechnen wir alte Kurse um, damit nichts springt.')),
       sectEl('Vergleich mit der Branche'),
       el('p', { class: 'vu-sm fu-p', text: 'Wettbewerber = Firmen derselben SEC-Branche (mindestens 5). Wir zeigen die Lage („höher als 80 % der Gruppe“), keine Wertung. Ranglisten sortieren eine Kennzahl mit sichtbarer Regel.' }),
+      sectEl('Checklisten'),
+      el('p', { class: 'vu-sm fu-p', text: 'Eine Checkliste prüft mehrere Bedingungen auf einmal und zeigt, wie viele erfüllt sind („N von M Punkten erfüllt“). Es gibt keine Gesamtnote und kein Urteil über den künftigen Kurs. Fehlt ein Wert, gilt der Punkt als nicht erfüllt; Vielfache (KGV, Börsenwert/Free Cashflow, PEG, EV/EBITDA) zählen nur bei positivem Wert. Dieselben Regeln stehen im Screener als fertige Ideen.' }),
+      CK ? el('div', { class: 'vu-stack fu-ckm' }, CK.CHECKLISTS.map(function (l) { return el('div', { class: 'vu-box' }, [el('b', { text: l.name + ' · ' + l.items.length + ' Punkte' }), el('ul', {}, l.items.map(function (i) { return el('li', { text: i.label }); }))]); })) : null,
       sectEl('Lücken und Grenzen'),
       el('div', { class: 'vu-stack' }, ['Fehlt ein Wert, bleibt das Jahr leer. Nichts wird geschätzt.', 'Margen über 150 % gelten als nicht plausibel und werden nicht gezeigt.', 'Korrigiert eine Firma später, zeigen wir den korrigierten Wert.'].map(function (t) { return el('div', { class: 'vu-box fu-limit' }, [glyph('check', 'fu-glyph'), el('span', { class: 'vu-sm', text: t })]); })),
       el('div', { class: 'fu-gap' }, full), foot(null));
