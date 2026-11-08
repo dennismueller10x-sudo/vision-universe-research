@@ -1,0 +1,33 @@
+{
+ "schema": "vu-module-2",
+ "id": "vorsorge",
+ "label": "Vorsorge",
+ "status": "LIVE",
+ "route": "/vorsorge/",
+ "access": "free",
+ "navigation": {
+  "group": "products",
+  "order": 9,
+  "label": "Vorsorge",
+  "href": "/vorsorge/#/",
+  "icon": "vorsorge",
+  "claim": "Sparplan und Rente",
+  "entries": [
+   ["Vorsorge Home", "/vorsorge/#/", "☂"],
+   ["Planer", "/vorsorge/#/plan", "◬"],
+   ["ETFs", "/vorsorge/#/etfs", "◫"],
+   ["Portfolio", "/vorsorge/#/portfolio", "◎"],
+   ["Vergleichen", "/vorsorge/#/vergleichen", "⧩"],
+   ["Förderung", "/vorsorge/#/foerderung", "✧"],
+   ["Veränderungen", "/vorsorge/#/monitor", "≋"],
+   ["Wissen", "/vorsorge/#/wissen", "▤"]
+  ]
+ },
+ "data": [],
+ "reads": [
+  "fxReference"
+ ],
+ "tests": [
+  "vorsorge/tests/*.test.mjs"
+ ]
+}
