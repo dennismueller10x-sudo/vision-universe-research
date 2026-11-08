@@ -166,7 +166,7 @@ V13 verbessert die Datengrundlage (Delistings ab 2010, Large Caps, Korrekturen).
 ### 10.1 Integration
 
 - **#1129** gemergt als `0e28622a35`. Vor dem Merge geprüft: main-Stand, CI grün (8 erfolgreich, 37 übersprungen), sauberer Diff (einzige Bestandsdatei `research-weekly-loader.cjs`, opt-in), Registrierungen vor den Auswertungen (sha256 stimmt).
-- **Folge-PR mit diesem Nachtrag:** V13c-Studie, Archiv-Werkzeuge, Workflow `research.yml (Teil v13-archiv, vormals quant-v13-archive.yml)`.
+- **Folge-PR mit diesem Nachtrag:** V13c-Studie, Archiv-Werkzeuge, Workflow `quant-v13-archive.yml`.
 
 ### 10.2 Security Master (Option A): Schritt 1 blockiert
 
