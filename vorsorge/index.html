@@ -11,13 +11,14 @@
 <!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie Discover -->
 <script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#0b0d10":"#ffffff");})();</script>
 <link rel="stylesheet" href="/assets/site-navigation.css">
+<link rel="stylesheet" href="/assets/vu-ui.css">
 <link rel="stylesheet" href="/vorsorge/app.css">
 </head>
 <body class="vs"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <a class="vs-skip" href="#vs-root">Zum Inhalt</a>
 <!-- VISION UNIVERSE® VORSORGE: Analyse-, Planungs- und Vergleichsschicht.
      Kein Broker, kein Depotanbieter, keine Vermittlung. -->
-<main class="vs-main vs-wrap" id="vs-root" tabindex="-1"><div class="vs-loading">Vorsorge wird geladen …</div></main>
+<main class="vs-main vs-wrap vu-ui" id="vs-root" tabindex="-1"><div class="vs-loading">Vorsorge wird geladen …</div></main>
 <!-- Weitere Vorsorge-Bereiche: die Produkt-Leiste der Shell traegt Vorsorge, Plan, ETFs und Portfolio; alles Weitere steht hier am Ende jeder Ansicht und im globalen Menue. -->
 <nav class="vs-more vs-wrap" id="vs-more" aria-label="Weitere Vorsorge-Bereiche"></nav>
 <script src="/vorsorge/engines/vorsorge-math.js"></script>
@@ -34,6 +35,7 @@
 <script src="/vorsorge/engines/monitor.js"></script>
 <script src="/vorsorge/engines/rechner.js"></script>
 <script src="/assets/vu-chart.js"></script>
+<script src="/assets/vu-ui.js"></script>
 <script src="/vorsorge/app.js"></script>
 <script src="/vorsorge/ui/plan.js"></script>
 <script src="/vorsorge/ui/rechner.js"></script>
@@ -42,6 +44,7 @@
   <script src="/vorsorge/ui/europa.js"></script>
 <script src="/vorsorge/ui/portfolio.js"></script>
 <script src="/vorsorge/ui/foerderung.js"></script>
+<script src="/vorsorge/ui/start.js"></script>
 <script>VS.start();</script>
 </body>
 </html>

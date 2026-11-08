@@ -15,7 +15,7 @@ import {consumerCacheDriver,saveConsumerCache} from './consumer-release-cache.mj
 import {prepareFrozenRollback} from './frozen-rollback.mjs';
 import {releaseHealth,updateAcceptedHealth} from './release-health.mjs';
 import {sync,prefixFor as privatePrefix} from './sync-state.mjs';
-import {ensureRollbackFreeze,refreezeRollback,fetchLiveDelivery} from './frozen-refreeze.mjs';
+import {ensureRollbackFreeze,refreezeRollback,refreezeFromUniverse,fetchLiveDelivery} from './frozen-refreeze.mjs';
 import {restoreLegacyGood} from './legacy-restore.mjs';
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],read=p=>JSON.parse(readFileSync(p));
 const driver=createS3DriverFromEnv(),temporary=resolve(arg('--temporary'));mkdirSync(temporary,{recursive:true});
@@ -44,6 +44,8 @@ async function restore46(){
  return {generation:frozen.generation,stockCount:46,issuerCount:45};
 }
 let activationWritten=false;
+// Diagnose (07.11.2026): welcher Schritt von activate scheiterte; nur Schrittname, keine Daten.
+let stage='START';
 try{
  assert.equal(process.env.GITHUB_REF,'refs/heads/main');assert.equal(process.env.GITHUB_REPOSITORY,'dennismueller10x-sudo/vision-universe-research');
  if(args[0]==='health'){
@@ -62,8 +64,11 @@ try{
   save({status:'HEALTH_RECONCILED',...result,lastSuccessfulPrivateRefresh:health.lastSuccessfulRefresh,lastSuccessfulConsumerBuild:health.lastSuccessfulConsumerBuild,privateStateModified:false,consumerAssetsModified:false});
  }else if(args[0]==='refreeze'){
   // Explicit re-freeze of the immutable 46 rollback onto the currently served legacy GOOD; never touches activation, gate or the universe GOOD.
-  const result=await refreezeRollback(driver,{temporary,fetchDelivery:()=>fetchLiveDelivery(),expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null});
-  save(result);console.log(JSON.stringify({status:result.status,generation:result.generation,previousGeneration:result.previousGeneration}));
+  // --from-universe: bei aktivem Universum die 46er-Projektion des live ausgelieferten Universe-GOOD einfrieren
+  // (frozen-refreeze.mjs#refreezeFromUniverse); --expect-generation nennt dann die Universe-Generation.
+  const options={temporary,fetchDelivery:()=>fetchLiveDelivery(),expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null};
+  const result=args.includes('--from-universe')?await refreezeFromUniverse(driver,{...options,codeSha:process.env.GITHUB_SHA||'local'}):await refreezeRollback(driver,options);
+  save(result);console.log(JSON.stringify({status:result.status,generation:result.generation,previousGeneration:result.previousGeneration,...(result.projectedFrom?{projectedFrom:result.projectedFrom}:{})}));
  }else if(args[0]==='restore-legacy'){
   // Setzt den Legacy-good.json-Zeiger (LEGACY_FALLBACK/fehlt) aus dem verifizierten eingefrorenen Rollback neu; oeffnet das Gate nie, fasst Aktivierung, Universe-GOOD und privaten Stand nicht an.
   const result=await restoreLegacyGood(driver,{temporary,expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null});
@@ -79,24 +84,24 @@ try{
   assert(scaling.verification&&scaling.status==='SUCCESS'&&scaling.cohortIssuers>45&&scaling.freshRestoreVerified&&scaling.published&&scaling.candidateQA?.status==='PASS','FULL_UNIVERSE_SCALE_ACCEPTANCE_REQUIRED');
   assert(scaling.privateCompanies>=universeConfig.minimumPrivatePayloads);
   const directory=join(temporary,'first/consumer'),m=read(join(directory,'manifest.json'));
-  const known=await goodState(driver,refreshConfig.consumerNamespace);assert(known&&known.manifest.tickers.length===46,'LATEST_GOOD_46_REQUIRED');
-  const delivery=await(await fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?freeze='+Date.now())).json();assert.equal(delivery.generation,known.generation);assert.equal(delivery.cohortStocks,46);assert.equal(delivery.issuers,45);
+  stage='LEGACY_GOOD_STATE';const known=await goodState(driver,refreshConfig.consumerNamespace);assert(known&&known.manifest.tickers.length===46,'LATEST_GOOD_46_REQUIRED');
+  stage='LIVE_DELIVERY_46';const delivery=await(await fetch('https://research.visionuniverse.de/company-intelligence-delivery.json?freeze='+Date.now())).json();assert.equal(delivery.generation,known.generation);assert.equal(delivery.cohortStocks,46);assert.equal(delivery.issuers,45);
   const release=await(await fetch('https://research.visionuniverse.de/release-delivery.json?freeze='+Date.now())).json();
-  const old=join(temporary,'known-good-46');await downloadGood(driver,{namespace:refreshConfig.consumerNamespace,output:old});
+  stage='LEGACY_GOOD_DOWNLOAD';const old=join(temporary,'known-good-46');await downloadGood(driver,{namespace:refreshConfig.consumerNamespace,output:old});
   writeFileSync(join(old,'manifest.json'),JSON.stringify(known.manifest)+'\n');
   // Strict generation equality, or a certified `refreeze` of the identical 46/45 scope (see frozen-refreeze.mjs).
-  const {rollback}=await ensureRollbackFreeze(driver,{known,directory:old,temporary});
-  const changes=universeChanges(directory,old);const structural=await universeContracts(directory);
+  stage='ROLLBACK_FREEZE';const {rollback}=await ensureRollbackFreeze(driver,{known,directory:old,temporary});
+  stage='UNIVERSE_CONTRACTS';const changes=universeChanges(directory,old);const structural=await universeContracts(directory);
   m.productionApproval=universeConfig.approvalId;m.releaseState='APPROVED_CONTROLLED_PRODUCTION';
   m.refreshValidation={status:'PASS',structural:'PASS',privateCompanies:audit.privatePayloadCount,checkpointSha256:audit.r2CheckpointSha256,codeSha:process.env.GITHUB_SHA};assert(universeApproved(m));
   writeFileSync(join(directory,'manifest.json'),JSON.stringify(m)+'\n');preflight(directory,m);
-  const previous=await goodState(driver,universeConfig.consumerNamespace);
+  stage='UNIVERSE_CANDIDATE_PUBLISH';const previous=await goodState(driver,universeConfig.consumerNamespace);
   const candidate=await prepareCandidate(driver,{namespace:universeConfig.consumerNamespace,directory,good:previous});
   const source=read(join(temporary,'first-state','latest-run.json'));
   const health=releaseHealth(source,{privateGeneration:audit.authoritativeStateGeneration,checkpointSha256:audit.r2CheckpointSha256,expectedCheckpointSha256:m.refreshValidation.checkpointSha256,generatedAt:m.generatedAt,builtAt:new Date().toISOString()});
   const inventory=Object.fromEntries(Object.entries(m.eligibility).map(([cid,r])=>[cid,{tickers:r.tickers,status:r.status,modules:r.modules}]));
-  await commitGood(driver,{namespace:universeConfig.consumerNamespace,payloadNamespace:candidate.payloadNamespace,manifest:candidate.manifest,health,inventory,expectedGood:previous});
-  const restored=await downloadGood(driver,{namespace:universeConfig.consumerNamespace,output:join(temporary,'fresh-public')});assert.equal(restored.generation,m.generation);
+  stage='UNIVERSE_GOOD_COMMIT';await commitGood(driver,{namespace:universeConfig.consumerNamespace,payloadNamespace:candidate.payloadNamespace,manifest:candidate.manifest,health,inventory,expectedGood:previous});
+  stage='UNIVERSE_FRESH_READBACK';const restored=await downloadGood(driver,{namespace:universeConfig.consumerNamespace,output:join(temporary,'fresh-public')});assert.equal(restored.generation,m.generation);
   // Public downloads intentionally exclude the private validation certificate.
   // Reattach the independently verified GOOD manifest in the private runner only.
   writeFileSync(join(temporary,'fresh-public','manifest.json'),JSON.stringify(restored.good.manifest)+'\n');
@@ -118,6 +123,7 @@ try{
  }
 }catch(error){
  if(activationWritten)await restore46();
- save({status:'FAIL',activationWritten,privateStateModified:false,code:error.code||'RELEASE_ACCEPTANCE_FAILED',message:String(error.message).slice(0,300)});
+ save({status:'FAIL',activationWritten,privateStateModified:false,code:error.code||'RELEASE_ACCEPTANCE_FAILED',message:String(error.message).slice(0,300),stage});
+ console.error('UNIVERSE_RELEASE_STAGE '+stage);
  console.error('UNIVERSE_RELEASE_ACCEPTANCE_FAILED');process.exitCode=1;
 }

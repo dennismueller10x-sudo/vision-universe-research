@@ -36,7 +36,7 @@ import { PLATFORM_RESEARCH_PORTFOLIO_POLICY } from './lifecycle-engine.mjs';
 import { EQUITY_RESEARCH_PORTFOLIO_POLICY } from './minervini-execution.mjs';
 import { requirementsOf } from './st9-hist-universe.mjs';
 
-export const ST9_HIST_EXECUTION_VERSION = 'st9-hist-execution-1.1.0';
+export const ST9_HIST_EXECUTION_VERSION = 'st9-hist-execution-1.2.0';
 export const SEEDS = 'NONE_USED';
 const EPS = 1e-9;
 const near = (a, b) => Math.abs(a - b) <= EPS * Math.max(1, Math.abs(a), Math.abs(b));
@@ -80,7 +80,11 @@ export function classifyExits(ds, run, { slippageBps, trades = [] }) {
   for (const r of run.ledger) {
     const x = idx.get(r.id);
     if (r.side === 'BUY') {
-      if (x?.s.terminal && r.date >= x.s.terminal.date) bad('ENTRY_ON_OR_AFTER_TERMINAL', r);
+      // Kauf am letzten Handelstag (Order am Vortag scharf, Füllung zur Eröffnung) ist ausführbar und wird zum letzten
+      // Kurs abgerechnet: gezählt, kein Verstoß (Entscheidung 04.11.2026, SUPERTRADER_9_HANDOVER.md §0.1). Ein Kauf NACH
+      // dem letzten Handelstag oder ohne Balken an dem Tag bleibt ein Verstoß.
+      if (x?.s.terminal && r.date > x.s.terminal.date) bad('ENTRY_AFTER_TERMINAL', r);
+      else if (x?.s.terminal && r.date === x.s.terminal.date) { if (x.at.get(r.date) === undefined) bad('ENTRY_WITHOUT_BAR_ON_TERMINAL', r); else inc(classes, 'ENTRY_ON_LAST_TRADED_DAY'); }
       continue;
     }
     if (r.side !== 'SELL') continue;

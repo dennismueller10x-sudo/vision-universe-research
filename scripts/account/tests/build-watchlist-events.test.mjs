@@ -11,7 +11,7 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { buildSummary, writeSummary } from "../../watchlist/build-summary.mjs";
-import { buildEvents, loadSummary, validateEvent, run, SCHEMA, DOMAIN_ID } from "../build-watchlist-events.mjs";
+import { buildEvents, mergeWindow, loadSummary, validateEvent, run, SCHEMA, DOMAIN_ID } from "../build-watchlist-events.mjs";
 
 const require = createRequire(import.meta.url);
 const Ident = require("../../../core/identity.js");
@@ -32,12 +32,16 @@ function changed() {
   return d;
 }
 
-test("Registry: watchlistEvents ist PREPARED_DISABLED, ohne Workflow, Artefakt fehlt, nicht kritisch", () => {
+test("Registry: watchlistEvents ist aktiv und releaseOnly, Artefakt nur in der Auslieferung, nicht kritisch", () => {
   const d = registry.domains.find((x) => x.id === DOMAIN_ID);
   assert.ok(d, "Eintrag vorhanden");
-  assert.equal(d.activation.state, "PREPARED_DISABLED");
+  assert.equal(d.releaseOnly, true);
+  assert.equal(d.activation, undefined, "aktive Datenart hat keinen Aktivierungszustand");
   assert.equal(d.critical, false);
-  assert.equal(d.workflow, undefined, "kein Workflow, kein Zeitplan");
+  assert.match(d.workflow, /^pages-release\.yml /, "Schritt des Release-Baus");
+  const wf = readFileSync(join(ROOT, ".github/workflows/pages-release.yml"), "utf8");
+  assert.match(wf, /fetch-published\.mjs --site=https:\/\/research\.visionuniverse\.de --out="\$RUNNER_TEMP\/watchlist-prev"/);
+  assert.match(wf, /VU_WATCHLIST_PREVIOUS: \$\{\{ runner\.temp \}\}\/watchlist-prev\n\s+run: node scripts\/vu2\/build-release\.mjs/);
   assert.match(d.producer, /^scripts\/account\/build-watchlist-events\.mjs /);
   assert.ok(!existsSync(join(ROOT, d.artifact.slice(1))), "kein veroeffentlichtes Ereignisartefakt");
   /* Keine Zustellung: der Erzeuger kennt weder Mail-, Push- noch Nutzerdaten. */
@@ -54,7 +58,7 @@ test("Idempotenz: zwei Laeufe ergeben byte-gleiche Dateien, eindeutige eventId, 
   assert.equal(readFileSync(one.out, "utf8"), readFileSync(two.out, "utf8"), "byte-gleich");
   const doc = JSON.parse(readFileSync(one.out, "utf8"));
   assert.equal(doc.schemaVersion, SCHEMA);
-  assert.equal(doc.delivery.state, "NONE");
+  assert.equal(doc.delivery.state, "APP_PUSH");
   assert.equal(new Set(doc.events.map((e) => e.eventId)).size, doc.events.length, "keine Duplikate");
   assert.deepEqual(doc.events.flatMap((e) => validateEvent(e)), []);
   const nvda = doc.events.filter((e) => e.ticker === "NVDA").map((e) => e.type + ":" + e.subtype).sort();
@@ -99,7 +103,7 @@ test("Fehlende Welt: ohne Supertrader-Quelle ein Quellereignis, keine Supertrade
   assert.equal(doc.after.sources.supertrader, null);
 });
 
-test("CLI: --out ist Pflicht, der kanonische Ort bleibt gesperrt, fehlende Eingabe bricht ab", (t) => {
+test("CLI: --out ist Pflicht, der Ort im Repository bleibt gesperrt (nur Auslieferung), fehlende Eingabe bricht ab", (t) => {
   const dir = tmp(t);
   writeSummary({ root: ROOT, out: join(dir, "s"), now: NOW });
   const cli = (...a) => spawnSync(process.execPath, [SCRIPT, ...a], { encoding: "utf8" });
@@ -107,7 +111,7 @@ test("CLI: --out ist Pflicht, der kanonische Ort bleibt gesperrt, fehlende Einga
   const d = registry.domains.find((x) => x.id === DOMAIN_ID), canonical = join(ROOT, d.artifact.slice(1));
   const r = cli("--before=" + join(dir, "s"), "--after=" + join(dir, "s"), "--out=" + canonical);
   assert.equal(r.status, 3);
-  assert.match(r.stderr, /NOT_ACTIVATED/);
+  assert.match(r.stderr, /RELEASE_ONLY/);
   assert.ok(!existsSync(canonical));
   const miss = cli("--before=" + join(dir, "fehlt"), "--after=" + join(dir, "s"), "--out=" + join(dir, "e.json"));
   assert.equal(miss.status, 1);
@@ -115,4 +119,25 @@ test("CLI: --out ist Pflicht, der kanonische Ort bleibt gesperrt, fehlende Einga
   const ok = cli("--before=" + join(dir, "s"), "--after=" + join(dir, "s"), "--out=" + join(dir, "e.json"));
   assert.equal(ok.status, 0, ok.stderr);
   assert.equal(JSON.parse(ok.stdout).total, 0);
+});
+
+test("mergeWindow: Ereignisse der vorigen Auslieferung bleiben 48 h, gleiche eventId einmal, aeltere fallen weg", (t) => {
+  const dir = tmp(t);
+  writeSummary({ root: ROOT, out: join(dir, "before"), now: NOW });
+  writeFileSync(join(dir, "after.json.gz"), gzipSync(JSON.stringify(changed())));
+  const fresh = JSON.parse(readFileSync(run({ before: join(dir, "before"), after: join(dir, "after.json.gz"), out: join(dir, "n.json") }).out, "utf8"));
+  assert.ok(fresh.events.length > 0);
+  const ref = Date.parse(fresh.generatedAt), old = (h, id) => ({ ...fresh.events[0], eventId: id, occurredAt: new Date(ref - h * 3600e3).toISOString() });
+  const prev = { events: [old(30, "ev_00000000000000a1"), old(49, "ev_00000000000000a2"), fresh.events[0], { broken: true }] };
+  const m = mergeWindow(prev, fresh);
+  const ids = m.events.map((e) => e.eventId);
+  assert.ok(ids.includes("ev_00000000000000a1"), "30 h alt: bleibt");
+  assert.ok(!ids.includes("ev_00000000000000a2"), "49 h alt: faellt weg");
+  assert.equal(ids.filter((x) => x === fresh.events[0].eventId).length, 1, "gleiche eventId nur einmal");
+  assert.equal(m.counts.total, m.events.length); assert.equal(m.window.hours, 48); assert.equal(m.window.carried, 2);
+  assert.deepEqual(m.events.flatMap((e) => validateEvent(e)), [], "nur gueltige Ereignisse");
+  /* Ueber run(): previousEvents als Datei */
+  writeFileSync(join(dir, "prev.json"), JSON.stringify(prev));
+  const viaRun = JSON.parse(readFileSync(run({ before: join(dir, "before"), after: join(dir, "after.json.gz"), out: join(dir, "w.json"), previousEvents: join(dir, "prev.json") }).out, "utf8"));
+  assert.deepEqual(viaRun.events.map((e) => e.eventId), ids);
 });

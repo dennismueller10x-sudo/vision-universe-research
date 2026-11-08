@@ -1,6 +1,6 @@
 # Vision Universe Research – Arbeitsregeln
 
-Einstieg: [docs/VISION_UNIVERSE_ARCHITECTURE.md](docs/VISION_UNIVERSE_ARCHITECTURE.md). Betrieb: [docs/operations/RUNBOOK.md](docs/operations/RUNBOOK.md). Reels (Studio, Hook-Formel, HeyGen-Stimme, Ablauf): [docs/studio/README.md](docs/studio/README.md). Quant (Abschlussübergabe, Backtests, Security-Master-Generationen, offene Entscheidungen): [docs/quant/QUANT_FINAL_HANDOVER.md](docs/quant/QUANT_FINAL_HANDOVER.md). Supertrader (Abschlussübergabe, 13 Methoden, Kandidaten-Tageslauf, V1 S1–S7, Zertifizierungsvorbereitung, offene PRs): [docs/SUPERTRADER_9_HANDOVER.md](docs/SUPERTRADER_9_HANDOVER.md). Technical (Stand, offene Aufgaben): [docs/technical/TECHNICAL_WORLD_PROGRESS.md](docs/technical/TECHNICAL_WORLD_PROGRESS.md); Projektplan bis zur Produktreife mit Completion-Matrix, Abnahmekriterien und Wiederaufnahmepunkt: [docs/technical/TECHNICAL_COMPLETION_PLAN.md](docs/technical/TECHNICAL_COMPLETION_PLAN.md). Konten und Abos (Supabase, Stripe, ausgeschaltet bis zur Freigabe): [docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md](docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md), persönliche Watchlist: [docs/accounts/WATCHLIST.md](docs/accounts/WATCHLIST.md). Nutzerführung (Willkommensseite, `/mein-dashboard/`, Konto, Free/Pro-Ablauf): [docs/accounts/NUTZERFUEHRUNG.md](docs/accounts/NUTZERFUEHRUNG.md); Produktionsplan bis zum öffentlichen Start: [docs/accounts/PRODUKTIONSPLAN.md](docs/accounts/PRODUKTIONSPLAN.md); was automatisch ausrollt und was eine Owner-Freigabe braucht: [docs/accounts/FREIGABEN.md](docs/accounts/FREIGABEN.md); Preise ändern ohne Deployment (`/konto/admin/tarife/`): [docs/accounts/TARIFVERWALTUNG.md](docs/accounts/TARIFVERWALTUNG.md); Rechtstexte und Umschalten auf öffentliches Pro: [docs/accounts/RECHTLICHE_ABNAHME.md](docs/accounts/RECHTLICHE_ABNAHME.md), Brevo/Newsletter: [docs/accounts/BREVO.md](docs/accounts/BREVO.md), Umsatzsteuer: [docs/accounts/STEUER.md](docs/accounts/STEUER.md).
+Einstieg: [docs/VISION_UNIVERSE_ARCHITECTURE.md](docs/VISION_UNIVERSE_ARCHITECTURE.md). Betrieb: [docs/operations/RUNBOOK.md](docs/operations/RUNBOOK.md). Reels (Studio, Hook-Formel, HeyGen-Stimme, Ablauf): [docs/studio/README.md](docs/studio/README.md). Quant (Abschlussübergabe, Backtests, Security-Master-Generationen, offene Entscheidungen): [docs/quant/QUANT_FINAL_HANDOVER.md](docs/quant/QUANT_FINAL_HANDOVER.md). Supertrader (Abschlussübergabe, 13 Methoden, Kandidaten-Tageslauf, V1 S1–S7, Zertifizierungsvorbereitung, offene PRs): [docs/SUPERTRADER_9_HANDOVER.md](docs/SUPERTRADER_9_HANDOVER.md). Technical (Stand, offene Aufgaben): [docs/technical/TECHNICAL_WORLD_PROGRESS.md](docs/technical/TECHNICAL_WORLD_PROGRESS.md); Projektplan bis zur Produktreife mit Completion-Matrix, Abnahmekriterien und Wiederaufnahmepunkt: [docs/technical/TECHNICAL_COMPLETION_PLAN.md](docs/technical/TECHNICAL_COMPLETION_PLAN.md). Konten und Abos (Supabase, Stripe, ausgeschaltet bis zur Freigabe): [docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md](docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md), persönliche Watchlist: [docs/accounts/WATCHLIST.md](docs/accounts/WATCHLIST.md). Nutzerführung (Willkommensseite, `/mein-dashboard/`, Konto, Free/Pro-Ablauf): [docs/accounts/NUTZERFUEHRUNG.md](docs/accounts/NUTZERFUEHRUNG.md); Produktionsplan bis zum öffentlichen Start: [docs/accounts/PRODUKTIONSPLAN.md](docs/accounts/PRODUKTIONSPLAN.md); was automatisch ausrollt und was eine Owner-Freigabe braucht: [docs/accounts/FREIGABEN.md](docs/accounts/FREIGABEN.md); Preise ändern ohne Deployment (`/konto/admin/tarife/`): [docs/accounts/TARIFVERWALTUNG.md](docs/accounts/TARIFVERWALTUNG.md); Rechtstexte und Umschalten auf öffentliches Pro: [docs/accounts/RECHTLICHE_ABNAHME.md](docs/accounts/RECHTLICHE_ABNAHME.md), Brevo/Newsletter: [docs/accounts/BREVO.md](docs/accounts/BREVO.md), Umsatzsteuer: [docs/accounts/STEUER.md](docs/accounts/STEUER.md). Kapitalmarktrecht (Analyse-Software ohne Empfehlungen, Plan §11; Wortwahl, App-Pflichtlinks, Anwaltsmappe): [docs/legal/EINORDNUNG.md](docs/legal/EINORDNUNG.md), Wortwahl [docs/legal/WORTWAHL.md](docs/legal/WORTWAHL.md), Pflicht-Hinweise `assets/legal-notices.json`.
 
 Statische Seite (GitHub Pages, `research.visionuniverse.de`), Node 22 ohne Abhängigkeiten, UMD-Engines (`globalThis` + `module.exports`), Python für SEC.
 Daten entstehen in GitHub-Actions-Läufen und werden nach `main` committet.
@@ -12,18 +12,41 @@ Daten entstehen in GitHub-Actions-Läufen und werden nach `main` committet.
 - **Identität nur über `core/identity.js`** (`securityIdForTicker`, `shardKey`, `matchKey`). Keine eigenen `"ref_" + ticker`-Bildungen (ADR-001).
 - **Eine Preiswahrheit (ADR-002):** Split-Faktoren aus `quant/engines/return-series.js#splitFactors`, veröffentlichte Schlüsse über `quant/engines/published-close.js`. Keine neue Ableitung daneben.
 
-## Gates, die PRs aufteilen
+## Vertragstests statt Pfad-Gates
 
-Mehrere Produkte haben Isolations-Gates. Ein PR, der ihre Pfade berührt, darf nur ihre Welt ändern:
+Pfad-Isolation ist durch **Vertragstests** ersetzt (05.11.2026, [docs/PLAN_NEUSTART_2026-11.md](docs/PLAN_NEUSTART_2026-11.md) §3):
+`core/registry/product-contracts.json` nennt je Produkt Pfade, CI und Vertragstests sowie die Schnittstellen (Artefakt + Schema), die es liest;
+`core/tests/product-contracts.test.mjs` prüft, dass jede Produktänderung die Produkt-CI auslöst und jedes Schnittstellen-Schema stimmt.
+Ein Querschnitts-PR ist erlaubt; er muss die CI jedes berührten Produkts grün bekommen. Ändert ein PR ein Schnittstellen-Schema, zieht er Verbraucher und Registry im selben PR nach.
 
-| Gate | Auslöser | Regel |
-|---|---|---|
-| Supertrader Gate A (`scripts/supertrader/guard-protected-paths.mjs`) | `supertrader/**`, `scripts/supertrader/**`, `docs/SUPERTRADER_*.md`, `.github/workflows/supertrader-*.yml` | nur diese Pfade im PR |
-| Company Intelligence `validate` | `company-intelligence/**`, `scripts/company_intelligence/**`, ihr Workflow | keine Quant-, Discover-, Market-, API-Pfade |
-| Discover „verändert keine bestehende Engine“ | `discover/**`, `scripts/discover/**` | kein `quant`, `scripts/market`, `scripts/technical` … |
-| Discover Frontend Budget (`scripts/discover/browser-qa.mjs`) | Discover-Views | `discover/(app|home|detail|themes).(js|css)` ≤ 180.000 Byte decoded, ≤ 12 Requests |
+Geltende Vertragstests (alle in Core-CI, laufen auf jedem PR):
 
-Gates werden nicht abgeschwächt. Eine Querschnittsänderung wird in produkteigene PRs aufgeteilt.
+| Test | Vertrag |
+|---|---|
+| `core/tests/product-contracts.test.mjs` (PC) | Produktpfade lösen die Produkt-CI aus; Schnittstellen-Schemata stimmen mit Registry und Verbrauchern |
+| `core/tests/workflow-bundles.test.mjs` (WB) | jede Workflow-Datei hat ein Bündel in `core/registry/workflow-bundles.json`; ein Bündel ersetzt seine Quellen nachweisbar |
+| `core/tests/universe-follow-chain.test.mjs` (UF) | nur `security-master-eligibility.yml` ändert das Produktuniversum, und jede am Produktumfang geprüfte Datenart zieht im selben Lauf nach |
+| `core/tests/data-branch-pilot.test.mjs` (DB) | Datenarten auf dem Datenzweig (`core/registry/data-branch.json`) |
+| `core/tests/module-manifest.test.mjs` (MM) | Modul-Steckbrief `<produkt>/module.json` (Pilot: `analysten`): Route, Menüeintrag, Zugang, Status; Erzeuger, Workflow, Zeitplan und Frische gleich `domains.json` |
+
+Was von den Pfad-Gates bleibt:
+
+| Gate | Stand |
+|---|---|
+| Supertrader Gate A (`scripts/supertrader/guard-protected-paths.mjs`) | nur noch Bericht, blockiert nicht |
+| Company Intelligence `validate` (Pfadverbot) | entfernt; Currency-Befunde-Prüfung bleibt |
+| Discover „verändert keine bestehende Engine“ | entfernt |
+| Discover Frontend Budget (`scripts/discover/browser-qa.mjs`) | bleibt: `discover/(app|home|detail|themes).(js|css)` ≤ 180.000 Byte decoded, ≤ 12 Requests |
+
+Veraltete Daten lösen einen Alarm aus und blockieren keinen Code-PR.
+
+## Freigaben und Merge (Owner-Entscheidung 04.11.2026)
+
+- **Ein PR pro Ergebnis**, nicht pro Zwischenschritt. Keine neuen „Sitzungsübergabe x.0.0“-, „Nachtrag“- oder Versions-Dokumente; der Stand steht im Plan und im jeweiligen Produktdokument.
+- **Grüne CI genügt.** Code, Doku, interne Daten, Design und Umbauten werden ohne Owner-Freigabe gemergt.
+- **Owner-Freigabe nur für vier Dinge:** Geld (Zahlungen, Checkout öffentlich, Käufe), Recht (Rechtstexte), öffentliche Aussagen über Rendite oder Performance, endgültiges Löschen von Daten.
+- **Entscheidungen, die bisher „Owner-Lesart“ hießen** (Regel-Lesarten, Varianten, Schwellen), trifft Claude nach der dokumentierten Empfehlung, schreibt sie in einen Satz ins Produktdokument und macht weiter.
+- **Backtests sind Forschung:** historische Läufe dürfen jetzt laufen und intern gezeigt werden, beschriftet „Forschung, nicht zertifiziert“. Zertifizierung ist ein späteres Etikett, keine Voraussetzung.
 
 ## Tests
 

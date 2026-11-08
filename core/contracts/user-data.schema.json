@@ -21,7 +21,9 @@
       "properties": {
         "displayCurrency": { "type": "string", "pattern": "^[A-Z]{3}$", "default": "EUR", "description": "heute: vu-currency-preference-v1" },
         "appearance": { "enum": ["light", "dark", "system"], "default": "system", "description": "heute: vu-discover-theme-v1" },
-        "experienceLevel": { "enum": ["beginner", "advanced"], "default": "beginner" }
+        "experienceLevel": { "enum": ["beginner", "advanced", "pro"], "default": "beginner" },
+        "goal": { "enum": ["vorsorge", "aktie", "ideen", "strategien", null], "default": null, "description": "Ziel aus dem ersten Start (Folie E11)" },
+        "onboardedAt": { "type": ["string", "null"], "format": "date-time", "description": "erster Start abgeschlossen oder uebersprungen; setzt der Server" }
       }
     },
     "watchlists": {
@@ -47,7 +49,7 @@
                   "type": "object",
                   "description": "Opt-in je Ereignisart fuer diesen Titel (supabase/migrations/20261028000100_watchlist_personal.sql). Versendet wird nur, wenn auch notificationSettings die Art erlaubt.",
                   "additionalProperties": { "type": "boolean" },
-                  "propertyNames": { "enum": ["PRICE_EVENT", "SUPERTRADER_SIGNAL", "QUANT_CHANGE", "WATCHLIST_NEWS", "EARNINGS"] }
+                  "propertyNames": { "enum": ["PRICE_EVENT", "SUPERTRADER_SIGNAL", "QUANT_CHANGE", "WATCHLIST_NEWS", "EARNINGS", "PRICE_MOVE", "FUND_13F", "ELLIOTT_CHANGE"] }
                 }
               }
             }
@@ -84,7 +86,7 @@
       "type": "object",
       "description": "Opt-in je Ereignisart (core/contracts/events.schema.json). Standard: alles aus.",
       "additionalProperties": { "type": "boolean" },
-      "propertyNames": { "enum": ["WATCHLIST_NEWS", "EARNINGS", "PRICE_EVENT", "SUPERTRADER_SIGNAL", "QUANT_CHANGE", "MARKET_REGIME_CHANGE"] }
+      "propertyNames": { "enum": ["WATCHLIST_NEWS", "EARNINGS", "PRICE_EVENT", "SUPERTRADER_SIGNAL", "QUANT_CHANGE", "MARKET_REGIME_CHANGE", "PRICE_MOVE", "FUND_13F", "ELLIOTT_CHANGE"] }
     },
     "devices": {
       "type": "array",

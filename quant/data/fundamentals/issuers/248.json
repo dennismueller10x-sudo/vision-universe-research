@@ -835,9 +835,9 @@
       "cik": "0002049248",
       "name": "Lakeshore Acquisition III Corp.",
       "sic": "6770",
-      "rawFacts": 567,
-      "mappedFacts": 297,
-      "unmappedFacts": 277,
+      "rawFacts": 712,
+      "mappedFacts": 361,
+      "unmappedFacts": 375,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -849,9 +849,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 8,
+      "quarterlyPeriods": 9,
       "firstPeriodEnd": "2024-10-21",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
@@ -863,7 +863,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -890,14 +890,14 @@
         },
         "net_income": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -918,14 +918,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -948,45 +948,46 @@
         }
       },
       "quality": {
-        "HIGH": 40
+        "HIGH": 45
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 40,
-        "resolvedValues": 40
+        "datableValues": 45,
+        "resolvedValues": 45
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 303,
+        "rules_version": "1.1.0",
+        "total": 408,
         "by_severity": {
-          "INFO": 277,
-          "WARNING": 26
+          "INFO": 375,
+          "WARNING": 33
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 7,
-          "RESTATEMENT_CONFLICT": 6,
+          "CONCEPT_DISAGREEMENT": 8,
+          "RESTATEMENT_CONFLICT": 12,
           "UNEXPECTED_DURATION": 13,
-          "UNKNOWN_CONCEPT": 277
+          "UNKNOWN_CONCEPT": 375
         }
       },
       "latestFiling": {
-        "accession": "0001929980-26-000419",
-        "filing_date": "2026-08-06",
+        "accession": "0001929980-26-000585",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 6
+        "periodic_filings": 7,
+        "acceptance_datetime": "2026-11-06T21:16:03.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "ac8d422c6a7cbe50d00161f306e65c335646002ee05554329fcb336d7ec810f8",
+      "sourceDigest": "7d4af30996fe2ba79530dce3c5505801a63ba2a8b6c46dcb9cb48ac231aef163",
       "issuerId": "iss_cik_0002049248"
     }
   ]

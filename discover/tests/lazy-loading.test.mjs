@@ -195,28 +195,26 @@ test('Lazy.image setzt die Adresse erst nach settled', async () => {
 
 test('vorgerenderter Kopf stimmt mit home.js ueberein (Texte, Ziele, Klassen)', () => {
   const home = read('discover/home.js');
-  const header = html.match(/<header class="v2-intro[\s\S]*?<\/header>/)[0];
-  for (const text of ['Sieh den Markt mit anderen Augen.', 'Entdecke Unternehmen, Trends und Themenwelten weltweit.', 'Jetzt entdecken →', 'Themenwelten', 'Märkte', 'Unternehmen oder Symbol suchen']) {
+  const header = html.match(/<header class="dv3-intro[\s\S]*?<\/header>/)[0];
+  // Redesign D01: Datum, Frage-Ueberschrift, Suche mit Atlas, Schnellzugriffe (Welten, Strategien, Swipen, Maerkte).
+  for (const text of ['Was bewegt die Börse heute?', 'Aktien finden, verstehen, merken. Ohne Fachwissen.', 'Welten', 'Strategien', 'Swipen', 'Märkte', 'Aktie, Thema oder Frage …']) {
     assert.ok(header.includes(text), 'statischer Kopf ohne: ' + text);
     assert.ok(home.includes(text), 'home.js ohne: ' + text);
   }
-  for (const href of ['#/aktien', '#/welten', '#/maerkte', '/assets/product-icons.svg#discover']) {
+  for (const href of ['#/welten', '#/strategien', '#/swipen', '#/maerkte']) {
     assert.ok(header.includes(href) && home.includes(href), href);
   }
-  for (const cls of ['v2-intro vu-product-hero vu-hero-fidelity', 'vu-hero-scene', 'v2-intro-copy vu-product-hero__copy', 'vu-product-icon vu-product-icon--hero',
-    'vu-hero-name', 'vu-product-title vu-hero-headline', 'v2-intro-lead vu-product-lead vu-hero-description', 'v2-search-prompt', 'v2-search-arrow',
-    'v2-intro-actions', 'v2-pill v2-pill-dark v2-intro-cta', 'v2-pill v2-pill-ghost']) {
+  for (const cls of ['dv3-intro', 'vu-ltag dv3-asof', 'vu-lt', 'vu-lead', 'v2-search-prompt', 'v2-search-arrow', 'dv3-quick vu-chips', 'vu-chip']) {
     assert.ok(header.includes('class="' + cls + '"') && home.includes("'" + cls + "'"), cls);
   }
   assert.match(header, /data-product="discover"/);
-  assert.match(header, /aria-label="Unternehmen oder Symbol suchen"/);
+  assert.match(header, /aria-label="Aktie, Thema oder Frage suchen"/);
   assert.equal((header.match(/<h1\b/g) || []).length, 1);
 });
 
-test('Kopfbild wird vorgeladen und passt zum Stil des Kopfes', () => {
-  assert.match(html, /l\.href="\/assets\/hero-visuals\/discover\.webp"/);
-  assert.match(html, /fetchpriority/);
-  assert.match(read('discover/home.css'), /\.vu-hero-scene\{background-image:url\('\/assets\/hero-visuals\/discover\.webp'\)\}/);
+test('Redesign D01: kein Kopfbild mehr - nichts wird vorgeladen, die Skripte warten auf kein Bild', () => {
+  assert.doesNotMatch(html, /hero-visuals\/discover\.webp/);
+  assert.doesNotMatch(html, /STAGE_MS=/);
 });
 
 test('Lazy.watch: wer eine Aktienkarte oder einen Maerkte-Link beruehrt, bekommt die Gruppe sofort (ohne auf Ruhe zu warten)', async () => {
@@ -269,15 +267,13 @@ function runLoader(hash, { metaBody } = {}) {
 }
 const tick = () => new Promise(resolve => setImmediate(resolve));
 
-test('Startseite: meta.json und Kalender sofort, das Kopfbild wird vorgeladen, Skripte und Daten warten darauf', async () => {
+test('Startseite: meta.json und Kalender sofort, Skripte und Daten starten, sobald das Dokument gelesen ist', async () => {
   const { calls, appended, timers, window } = runLoader('');
   assert.deepEqual(calls, [['/discover/data/meta.json', 'no-cache'], ['/quant/config/market-calendar.json', 'no-cache']]);
-  const preload = appended.find(n => n.tag === 'link');
-  assert.equal(preload.rel, 'preload'); assert.equal(preload.as, 'image'); assert.equal(preload.fetchpriority, 'high');
-  assert.equal(timers.length, 1); assert.equal(timers[0][1], 2500);
-  window.__vuParsed();
-  assert.equal(appended.filter(n => n.tag === 'script').length, 0, 'vor dem Kopfbild startet nichts');
-  preload.onload(); await tick(); await tick();
+  assert.equal(appended.filter(n => n.tag === 'link').length, 0, 'kein Kopfbild');
+  assert.equal(timers.length, 0);
+  assert.equal(appended.filter(n => n.tag === 'script').length, 0, 'vor dem Lesen startet nichts');
+  window.__vuParsed(); await tick(); await tick();
   assert.deepEqual(appended.filter(n => n.tag === 'script').map(n => [n.src, n.async]), [['/a.js', false], ['/b.js', false]]);
   const urls = calls.map(c => c[0]);
   for (const url of ['/discover/data/home/US_REAL.json', '/quant/data/market/intraday/index.json', '/discover/live/im-blick-US_REAL.json', '/quant/data/market/multi-asset/snapshot.json',
@@ -300,19 +296,11 @@ test('Startseite: der spaetere fetch() derselben Adresse bekommt die vorgeholte 
   assert.equal(calls.length, before + 1, 'die zweite Anfrage geht normal ins Netz');
   await window.fetch('/other.json');
   assert.equal(calls.at(-1)[0], '/other.json');
-  assert.ok(appended.length >= 1);
-});
-
-test('Spaeter Start (Kopfbild fehlt): nach 2,5 s starten Skripte und Daten trotzdem', async () => {
-  const { appended, timers, window } = runLoader('');
-  window.__vuParsed();
-  assert.equal(appended.filter(n => n.tag === 'script').length, 0);
-  timers[0][0](); await tick();
-  assert.equal(appended.filter(n => n.tag === 'script').length, 2);
+  assert.equal(appended.length, 0, 'kein Kopfbild');
 });
 
 test('andere Routen: kein Kopfbild, keine vorgeholten Daten, fetch bleibt unveraendert, Skripte starten nach dem Lesen', async () => {
-  for (const hash of ['#/s/US_REAL/NVDA', '#/maerkte', '#/s/EUROPE/ref_ALV_DE_XETR', '#/daten', '#/einzeln/US_REAL', '#/watchlist', '#/settings', '#/thema/ki']) {
+  for (const hash of ['#/s/US_REAL/NVDA', '#/maerkte', '#/s/EUROPE/ref_ALV_DE_XETR', '#/daten', '#/einzeln/US_REAL', '#/swipen', '#/watchlist', '#/settings', '#/thema/ki']) {
     const { calls, appended, window, original } = runLoader(hash);
     assert.deepEqual(calls, [], hash);
     assert.equal(window.fetch, original, hash + ': fetch darf nicht ersetzt werden');
@@ -325,10 +313,10 @@ test('andere Routen: kein Kopfbild, keine vorgeholten Daten, fetch bleibt unvera
 
 test('Meta ohne Intraday-Freigabe: kein Verzeichnis-Abruf; fehlerhafte Meta bricht den Start nicht', async () => {
   const noRealtime = runLoader('', { metaBody: { home: [{ universeId: 'US_REAL', chunks: ['/discover/data/home/US_REAL.json'] }], realtime: { available: false } } });
-  noRealtime.window.__vuParsed(); noRealtime.appended.find(n => n.tag === 'link').onload(); await tick(); await tick();
+  noRealtime.window.__vuParsed(); await tick(); await tick();
   assert.ok(!noRealtime.calls.some(c => /intraday\/index/.test(c[0])));
   const broken = runLoader('', { metaBody: {} });
-  broken.window.__vuParsed(); broken.appended.find(n => n.tag === 'link').onerror(); await tick(); await tick();
+  broken.window.__vuParsed(); await tick(); await tick();
   assert.equal(broken.appended.filter(n => n.tag === 'script').length, 2);
 });
 

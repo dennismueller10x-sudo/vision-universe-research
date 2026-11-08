@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { classify, blockingRules, tally } from '../validation/case-report.mjs';
@@ -76,5 +77,15 @@ test('R10-U2 Live-Universum enthält keine ETNs/Fonds mehr (Stammdaten-Fehlklass
   const u = m.loadUniverse();
   for (const s of ['NRGU', 'FNGU', 'BULZ', 'ZCSH', 'VOLT']) assert.ok(!u.has(s), s);
   assert.ok(u.has('SMCI'));
-  assert.ok(m.UNIVERSE_EXCLUDED.length > 100 && m.UNIVERSE_EXCLUDED.length < 600);
+  /* Seit der Eignungs-Bereinigung (06.11.2026, 6.577 -> 6.308) nimmt schon die Eignung belegte ETFs und ETNs
+     aus dem Produktuniversum, also aus dem Discover-Index: kein ausgeschlossener Titel steht noch im Index. Der
+     Namensfilter dieser Runde faengt nur noch den Rest (06.11.: 37 statt vorher > 100). Die Absicherung gegen die
+     Stammdaten-Fehlklassifikation zaehlt deshalb beide Stufen zusammen. */
+  const elig = JSON.parse(fs.readFileSync(new URL('../../../quant/data/market/security-master/eligibility.json', import.meta.url), 'utf8'));
+  const idx = JSON.parse(fs.readFileSync(new URL('../../../discover/data/stock-index/US_REAL.json', import.meta.url), 'utf8'));
+  const raus = new Set(elig.decisions.filter((d) => d.product_eligibility === 'EXCLUDED').map((d) => d.ticker));
+  assert.deepEqual(idx.symbols.filter((s) => raus.has(s)), [], 'ausgeschlossener Titel im Discover-Index');
+  const belegtRaus = elig.decisions.filter((d) => d.product_eligibility === 'EXCLUDED' && /^CONFIRMED_NON_EQUITY:(ETF|ETN)$/.test(d.product_eligibility_reason || '')).length;
+  assert.ok(belegtRaus + m.UNIVERSE_EXCLUDED.length > 100, `ETF/ETN abgefangen: Eignung ${belegtRaus} + Namensfilter ${m.UNIVERSE_EXCLUDED.length}`);
+  assert.ok(m.UNIVERSE_EXCLUDED.length < 600);
 });

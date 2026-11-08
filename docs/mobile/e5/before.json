@@ -1,0 +1,2763 @@
+{
+  "schema": 1,
+  "sourceCommit": "bbe59a3ca48e208d2053aa30ab8d96fc9ce059f1",
+  "commit": "bbe59a3ca48e208d2053aa30ab8d96fc9ce059f1",
+  "browser": "156.0.8078.79",
+  "measuredAt": "2026-11-06T13:33:04.690Z",
+  "profile": {
+    "viewport": "390x844",
+    "downloadBps": 1600000,
+    "uploadBps": 750000,
+    "latencyMs": 150,
+    "cpu": 4,
+    "windowMs": 20000,
+    "runs": 1,
+    "cache": "cold, SW blocked",
+    "root": "/tmp/e5-release",
+    "base": "http://127.0.0.1:37771"
+  },
+  "note": "TBT lab proxy: long-task blocking after FCP until fixed observation end; not INP or Lighthouse TBT. Null firstNumber = no visible stock-head price within window. Bytes = CDP wire including headers; unfinished responses counted partially.",
+  "rows": [
+    {
+      "route": "/",
+      "lcp": 2456,
+      "cls": 0,
+      "tbt": 0,
+      "bytes": 73954,
+      "requests": 10,
+      "firstNumber": null,
+      "failedRuns": 1
+    },
+    {
+      "route": "/quant/",
+      "lcp": 3416,
+      "cls": 0.30574796451573705,
+      "tbt": 634,
+      "bytes": 556481,
+      "requests": 25,
+      "firstNumber": null,
+      "failedRuns": 0
+    },
+    {
+      "route": "/quant/#/aktie/NVDA",
+      "lcp": 14596,
+      "cls": 0.057512261301782684,
+      "tbt": 4050,
+      "bytes": 903561,
+      "requests": 47,
+      "firstNumber": 12585.70000000007,
+      "failedRuns": 0
+    },
+    {
+      "route": "/technical/#/chart/NVDA",
+      "lcp": 12984,
+      "cls": 0.05791415362758802,
+      "tbt": 5544,
+      "bytes": 561629,
+      "requests": 56,
+      "firstNumber": 12854.899999999907,
+      "failedRuns": 0
+    },
+    {
+      "route": "/fundamental/#/NVDA",
+      "lcp": 7964,
+      "cls": 0.001238539692303085,
+      "tbt": 3272,
+      "bytes": 1345446,
+      "requests": 28,
+      "firstNumber": 7841.5,
+      "failedRuns": 0
+    },
+    {
+      "route": "/supertrader/",
+      "lcp": 12416,
+      "cls": 0.6619940378359334,
+      "tbt": 7189,
+      "bytes": 608729,
+      "requests": 24,
+      "firstNumber": null,
+      "failedRuns": 0
+    },
+    {
+      "route": "/supertrader/stock/NVDA/",
+      "lcp": 7480,
+      "cls": 0.8257027476751825,
+      "tbt": 1410,
+      "bytes": 312167,
+      "requests": 32,
+      "firstNumber": 7911.100000000093,
+      "failedRuns": 0
+    },
+    {
+      "route": "/discover/",
+      "lcp": 2968,
+      "cls": 0.03911412681799831,
+      "tbt": 3269.899999999907,
+      "bytes": 1104324,
+      "requests": 131,
+      "firstNumber": null,
+      "failedRuns": 0
+    },
+    {
+      "route": "/quant/musterdepots/",
+      "lcp": 3556,
+      "cls": 0,
+      "tbt": 1618,
+      "bytes": 174171,
+      "requests": 12,
+      "firstNumber": null,
+      "failedRuns": 0
+    },
+    {
+      "route": "/analysten/",
+      "lcp": 2768,
+      "cls": 0.29390895336628814,
+      "tbt": 734,
+      "bytes": 88294,
+      "requests": 10,
+      "firstNumber": null,
+      "failedRuns": 0
+    },
+    {
+      "route": "/mein-dashboard/",
+      "lcp": 1884,
+      "cls": 0.05118838959747605,
+      "tbt": 46,
+      "bytes": 224709,
+      "requests": 29,
+      "firstNumber": null,
+      "failedRuns": 1
+    }
+  ],
+  "samples": [
+    {
+      "route": "/",
+      "run": 1,
+      "lcp": 2456,
+      "cls": 0,
+      "firstNumber": null,
+      "numberText": null,
+      "fcp": 2456,
+      "tbt": 0,
+      "requests": 10,
+      "bytes": 73954,
+      "unfinished": 0,
+      "failures": [
+        {
+          "url": "http://127.0.0.1:37771/favicon.ico",
+          "bytes": 157,
+          "status": 404,
+          "finished": true
+        }
+      ],
+      "errors": [],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:37771/",
+          "bytes": 7481,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/fonts/inter-latin.woff2",
+          "bytes": 48462,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.css",
+          "bytes": 4578,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.css",
+          "bytes": 3257,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/home/home.css",
+          "bytes": 3042,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/pwa.js",
+          "bytes": 420,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vision-universe-logo-web.png",
+          "bytes": 3618,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/product-icons.svg",
+          "bytes": 1511,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/files/NVDA.png",
+          "bytes": 1428,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/favicon.ico",
+          "bytes": 157,
+          "status": 404,
+          "finished": true
+        }
+      ]
+    },
+    {
+      "route": "/quant/",
+      "run": 1,
+      "lcp": 3416,
+      "cls": 0.30574796451573705,
+      "firstNumber": null,
+      "numberText": null,
+      "fcp": 1276,
+      "tbt": 634,
+      "requests": 25,
+      "bytes": 556481,
+      "unfinished": 0,
+      "failures": [],
+      "errors": [],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:37771/quant/",
+          "bytes": 1669,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/ui/quant.css",
+          "bytes": 6711,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/discover.css",
+          "bytes": 19079,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.css",
+          "bytes": 4578,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/ui/technical-chart.css",
+          "bytes": 1369,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/app/app.css",
+          "bytes": 23749,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/company-intelligence/ui/stock-section.css",
+          "bytes": 2001,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/stock-navigator.css",
+          "bytes": 1728,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.css",
+          "bytes": 3257,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/release-bundle.js?v=633fc9b6e8a00556",
+          "bytes": 245839,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/methodology/product-language-v1.json",
+          "bytes": 17154,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/fonts/inter-latin.woff2",
+          "bytes": 48462,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/index.json",
+          "bytes": 32461,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vision-universe-logo-web.png",
+          "bytes": 3618,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/universe-names-v1.json.gz",
+          "bytes": 73693,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/app/page-evidence.js?v=633fc9b6e8a00556",
+          "bytes": 9017,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/setup-observations-v1/screen-index.json.gz",
+          "bytes": 5251,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/strategy-index-v1.json.gz",
+          "bytes": 4462,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/market-regime-v1.json",
+          "bytes": 2534,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/methodology/strategy-profiles-v1.json",
+          "bytes": 3540,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/radar-home-v1.json.gz",
+          "bytes": 4562,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/index.json",
+          "bytes": 32461,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/files/CI.png",
+          "bytes": 2757,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/files/MSI.png",
+          "bytes": 4978,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/files/CPAY.png",
+          "bytes": 1551,
+          "status": 200,
+          "finished": true
+        }
+      ]
+    },
+    {
+      "route": "/quant/#/aktie/NVDA",
+      "run": 1,
+      "lcp": 14596,
+      "cls": 0.057512261301782684,
+      "firstNumber": 12585.70000000007,
+      "numberText": "181,60 $",
+      "fcp": 3796,
+      "tbt": 4050,
+      "requests": 47,
+      "bytes": 903561,
+      "unfinished": 0,
+      "failures": [],
+      "errors": [],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:37771/quant/",
+          "bytes": 1669,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/ui/quant.css",
+          "bytes": 6711,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/discover.css",
+          "bytes": 19079,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.css",
+          "bytes": 4578,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/ui/technical-chart.css",
+          "bytes": 1369,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/app/app.css",
+          "bytes": 23749,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/company-intelligence/ui/stock-section.css",
+          "bytes": 2001,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/stock-navigator.css",
+          "bytes": 1728,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.css",
+          "bytes": 3257,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/release-bundle.js?v=633fc9b6e8a00556",
+          "bytes": 245839,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/methodology/product-language-v1.json",
+          "bytes": 17154,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/fonts/inter-latin.woff2",
+          "bytes": 48462,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/index.json",
+          "bytes": 32461,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vision-universe-logo-web.png",
+          "bytes": 3618,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/config/development-preview.json",
+          "bytes": 3496,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/config/feature-gates.json",
+          "bytes": 1125,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/sec/quant-factor-inputs.json",
+          "bytes": 4744,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/universe/search/manifest.json",
+          "bytes": 5993,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/setup-observations-v1/NV.json.gz",
+          "bytes": 4069,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/pattern-match-v1/NV.json.gz",
+          "bytes": 20273,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/methodology/strategy-profiles-v1.json",
+          "bytes": 3540,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/factor-evidence-v1/screening.json.gz",
+          "bytes": 96545,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/methodology/pattern-research-v1.json",
+          "bytes": 6243,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/data/meta.json",
+          "bytes": 14457,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/config/market-calendar.json",
+          "bytes": 2723,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/app/page-evidence.js?v=633fc9b6e8a00556",
+          "bytes": 9017,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/app/pack-stock.js?v=633fc9b6e8a00556",
+          "bytes": 110164,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/market/factors/product-shards/NV.json",
+          "bytes": 2360,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/universe/instruments/NV.json",
+          "bytes": 2265,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/factor-evidence-v1/NV.json.gz",
+          "bytes": 18044,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/universe/capability-shards/NV.json",
+          "bytes": 1888,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/technical-signals-v1/by-ticker/NVDA.json.gz",
+          "bytes": 75376,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/data/stocks/US_REAL/NVDA.json",
+          "bytes": 14115,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/market/golden-preview/daily/ref_NVDA.chart.json",
+          "bytes": 20334,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/universe-list-shards/NV.json",
+          "bytes": 1406,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/app/stock.css",
+          "bytes": 5795,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/market/discover-series/ref_NVDA.json",
+          "bytes": 2420,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/product-icons.svg",
+          "bytes": 1511,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/data/stock-availability/NV.json",
+          "bytes": 635,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/strategy-index-v1.json.gz",
+          "bytes": 4462,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/market/discover-series-long/ref_NVDA.json",
+          "bytes": 9219,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/files/NVDA.png",
+          "bytes": 1428,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/radar-ticker-v1/NV.json.gz",
+          "bytes": 3094,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/evidence-status-v1.json",
+          "bytes": 3480,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/market/intraday/index.json",
+          "bytes": 39715,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/company-intelligence/data/index.json",
+          "bytes": 336,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/market/intraday/2026-11-05/ref_NVDA.json",
+          "bytes": 1614,
+          "status": 200,
+          "finished": true
+        }
+      ]
+    },
+    {
+      "route": "/technical/#/chart/NVDA",
+      "run": 1,
+      "lcp": 12984,
+      "cls": 0.05791415362758802,
+      "firstNumber": 12854.899999999907,
+      "numberText": "181,60 $",
+      "fcp": 2188,
+      "tbt": 5544,
+      "requests": 56,
+      "bytes": 561629,
+      "unfinished": 0,
+      "failures": [],
+      "errors": [],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:37771/technical/",
+          "bytes": 1434,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.css",
+          "bytes": 4578,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/stock-navigator.css",
+          "bytes": 1728,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.css",
+          "bytes": 3257,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/technical.css",
+          "bytes": 11071,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/data/index-v1.json",
+          "bytes": 58802,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/academy/academy.css",
+          "bytes": 2241,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.js",
+          "bytes": 15950,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/identity.js",
+          "bytes": 813,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/stock-context.js",
+          "bytes": 3026,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/stock-navigator.js",
+          "bytes": 4094,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.js",
+          "bytes": 7500,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-chart.js",
+          "bytes": 4228,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/query-engine.js",
+          "bytes": 2078,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/technical-query.js",
+          "bytes": 7388,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/price-jumps.js",
+          "bytes": 1608,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/query-text.js",
+          "bytes": 7780,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/engine/templates.js",
+          "bytes": 5255,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/engine/assistant.js",
+          "bytes": 8359,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/engine/model.js",
+          "bytes": 9719,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/engine/world-context.js",
+          "bytes": 2536,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/ui/chart.js",
+          "bytes": 4814,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/academy/model.js",
+          "bytes": 1123,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/academy/visuals.js",
+          "bytes": 3536,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/academy/view.js",
+          "bytes": 5115,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/app.js",
+          "bytes": 46424,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vision-universe-logo-web.png",
+          "bytes": 3618,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/fonts/inter-latin.woff2",
+          "bytes": 48462,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/product-icons.svg",
+          "bytes": 1511,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/data/stock-availability/NV.json",
+          "bytes": 635,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/technical-signals-v1/by-ticker/NVDA.json.gz",
+          "bytes": 75376,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/data/meta.json",
+          "bytes": 2820,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/technical/data/formation-evidence.json",
+          "bytes": 2582,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/hash.js",
+          "bytes": 975,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/files/NVDA.png",
+          "bytes": 1428,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/feature-store.js",
+          "bytes": 3994,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/pivot-engine.js",
+          "bytes": 2266,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/elliott/patterns.js",
+          "bytes": 7206,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/elliott/elliott-v2.js",
+          "bytes": 11432,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/canonical-bars.js",
+          "bytes": 3331,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/ti/context.js",
+          "bytes": 1566,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/ti/chart-patterns.js",
+          "bytes": 4266,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/ti/levels.js",
+          "bytes": 2422,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/indicators.js",
+          "bytes": 15244,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/formations.js",
+          "bytes": 8602,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/candlesticks.js",
+          "bytes": 9022,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/timeframe.js",
+          "bytes": 2591,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/technical/multi-timeframe.js",
+          "bytes": 2750,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/listing-staleness.js",
+          "bytes": 1946,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/factor-evidence-v1/NV.json.gz",
+          "bytes": 18044,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/factor-evidence.js",
+          "bytes": 6659,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/build.json",
+          "bytes": 4207,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/sf-candidates/summary.json",
+          "bytes": 37705,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/stock/NVDA.json",
+          "bytes": 8572,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/registry-core.json",
+          "bytes": 45373,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/sf-candidates/ticker/NV.json",
+          "bytes": 2567,
+          "status": 200,
+          "finished": true
+        }
+      ]
+    },
+    {
+      "route": "/fundamental/#/NVDA",
+      "run": 1,
+      "lcp": 7964,
+      "cls": 0.001238539692303085,
+      "firstNumber": 7841.5,
+      "numberText": "181,60 $",
+      "fcp": 3576,
+      "tbt": 3272,
+      "requests": 28,
+      "bytes": 1345446,
+      "unfinished": 0,
+      "failures": [],
+      "errors": [],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:37771/fundamental/",
+          "bytes": 1344,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.css",
+          "bytes": 4578,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/stock-navigator.css",
+          "bytes": 1728,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.css",
+          "bytes": 3257,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/fundamental/app.css",
+          "bytes": 10583,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.js",
+          "bytes": 15950,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/identity.js",
+          "bytes": 813,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/stock-context.js",
+          "bytes": 3026,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/stock-navigator.js",
+          "bytes": 4094,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/watchlist-button.js",
+          "bytes": 3881,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-chart.js",
+          "bytes": 4228,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.js",
+          "bytes": 7500,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/fx/currency-registry.js",
+          "bytes": 2039,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/fx/money-format.js",
+          "bytes": 1742,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/fundamental/engine/model.js",
+          "bytes": 6556,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/fundamental/engine/catalog.js",
+          "bytes": 16229,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/fundamental/engine/compare.js",
+          "bytes": 2440,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/fundamental/app.js",
+          "bytes": 44461,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vision-universe-logo-web.png",
+          "bytes": 3618,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/fonts/inter-latin.woff2",
+          "bytes": 48462,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/data/stocks/US_REAL/NVDA.json",
+          "bytes": 14115,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/konto/config.js",
+          "bytes": 328,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/fundamental/data/history/NV.json.gz",
+          "bytes": 31140,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/product-icons.svg",
+          "bytes": 1511,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/data/stock-availability/NV.json",
+          "bytes": 635,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/screener/data/universe-US_REAL.json",
+          "bytes": 1086203,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/fundamental/data/history/peers.json",
+          "bytes": 23557,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/files/NVDA.png",
+          "bytes": 1428,
+          "status": 200,
+          "finished": true
+        }
+      ]
+    },
+    {
+      "route": "/supertrader/",
+      "run": 1,
+      "lcp": 12416,
+      "cls": 0.6619940378359334,
+      "firstNumber": null,
+      "numberText": null,
+      "fcp": 2480,
+      "tbt": 7189,
+      "requests": 24,
+      "bytes": 608729,
+      "unfinished": 0,
+      "failures": [],
+      "errors": [],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:37771/supertrader/",
+          "bytes": 1007,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.css",
+          "bytes": 4578,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/assets/supertrader.css",
+          "bytes": 11962,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.js",
+          "bytes": 15950,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/assets/st-chart.js",
+          "bytes": 4717,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/assets/supertrader.js",
+          "bytes": 40765,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vision-universe-logo-web.png",
+          "bytes": 3618,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/fonts/inter-latin.woff2",
+          "bytes": 48462,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.js",
+          "bytes": 7500,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-chart.js",
+          "bytes": 4228,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/build.json",
+          "bytes": 4207,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/market.json",
+          "bytes": 1031,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/pilot-backtest.json",
+          "bytes": 10397,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/replay.json",
+          "bytes": 2761,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/trend52.json",
+          "bytes": 2388,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/registry-core.json",
+          "bytes": 45373,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/signals-core.json",
+          "bytes": 322065,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.css",
+          "bytes": 3257,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/assets/st-redesign.css",
+          "bytes": 3012,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/assets/st-redesign.js",
+          "bytes": 21941,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/sf-candidates/summary.json",
+          "bytes": 37705,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/stock/NVDA.json",
+          "bytes": 8572,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/identity.js",
+          "bytes": 813,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/market/discover-series/ref_NVDA.json",
+          "bytes": 2420,
+          "status": 200,
+          "finished": true
+        }
+      ]
+    },
+    {
+      "route": "/supertrader/stock/NVDA/",
+      "run": 1,
+      "lcp": 7480,
+      "cls": 0.8257027476751825,
+      "firstNumber": 7911.100000000093,
+      "numberText": "181,60 $",
+      "fcp": 2824,
+      "tbt": 1410,
+      "requests": 32,
+      "bytes": 312167,
+      "unfinished": 0,
+      "failures": [],
+      "errors": [],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:37771/supertrader/stock/NVDA/",
+          "bytes": 1021,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.css",
+          "bytes": 4578,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/assets/supertrader.css",
+          "bytes": 11962,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.js",
+          "bytes": 15950,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/assets/st-chart.js",
+          "bytes": 4717,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/assets/supertrader.js",
+          "bytes": 40765,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vision-universe-logo-web.png",
+          "bytes": 3618,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/fonts/inter-latin.woff2",
+          "bytes": 48462,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.js",
+          "bytes": 7500,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-chart.js",
+          "bytes": 4228,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/build.json",
+          "bytes": 4207,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/market.json",
+          "bytes": 1031,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/portfolio.json",
+          "bytes": 18596,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/trend52.json",
+          "bytes": 2388,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.css",
+          "bytes": 3257,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/assets/st-redesign.css",
+          "bytes": 3012,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/assets/st-redesign.js",
+          "bytes": 21941,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/registry-core.json",
+          "bytes": 45373,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/stock/NVDA.json",
+          "bytes": 8572,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/stock-navigator.css",
+          "bytes": 1728,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/identity.js",
+          "bytes": 813,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/published-close.js",
+          "bytes": 853,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/stock-context.js",
+          "bytes": 3026,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/sf-candidates/summary.json",
+          "bytes": 37705,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/stock-navigator.js",
+          "bytes": 4094,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/supertrader/data/sf-candidates/ticker/NV.json",
+          "bytes": 2567,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/watchlist-button.js",
+          "bytes": 3881,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/product-icons.svg",
+          "bytes": 1511,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/data/stock-availability/NV.json",
+          "bytes": 635,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/market/discover-series/ref_NVDA.json",
+          "bytes": 2420,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/files/NVDA.png",
+          "bytes": 1428,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/konto/config.js",
+          "bytes": 328,
+          "status": 200,
+          "finished": true
+        }
+      ]
+    },
+    {
+      "route": "/discover/",
+      "run": 1,
+      "lcp": 2968,
+      "cls": 0.03911412681799831,
+      "firstNumber": null,
+      "numberText": null,
+      "fcp": 1684,
+      "tbt": 3269.899999999907,
+      "requests": 131,
+      "bytes": 1104324,
+      "unfinished": 0,
+      "failures": [],
+      "errors": [],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:37771/discover/",
+          "bytes": 5021,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/pwa.js",
+          "bytes": 420,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/ui/quant.css",
+          "bytes": 6711,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/discover.css",
+          "bytes": 19079,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.css",
+          "bytes": 4578,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/app.css",
+          "bytes": 4756,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/home.css",
+          "bytes": 8368,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/featured.css",
+          "bytes": 2371,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/detail.css",
+          "bytes": 5319,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.css",
+          "bytes": 3257,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/v3.css",
+          "bytes": 5534,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/company-intelligence/ui/stock-section.css",
+          "bytes": 2001,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.js",
+          "bytes": 15950,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/scroll-memory.js",
+          "bytes": 1114,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/data/meta.json",
+          "bytes": 14457,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/config/market-calendar.json",
+          "bytes": 2723,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vision-universe-logo-web.png",
+          "bytes": 3618,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/fonts/inter-latin.woff2",
+          "bytes": 48462,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/live/im-blick-US_REAL.json",
+          "bytes": 794,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/market/multi-asset/snapshot.json",
+          "bytes": 33329,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/config/multi-asset.json",
+          "bytes": 7476,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/config/fx-license.json",
+          "bytes": 3562,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/market/fx/ecb/index.json",
+          "bytes": 939,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/ui/release-guard.js",
+          "bytes": 3507,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/ui/shell.js",
+          "bytes": 4464,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/realtime/market-hours.js",
+          "bytes": 1867,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/realtime/trading-session.js",
+          "bytes": 2847,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/realtime/intraday-snapshot.js",
+          "bytes": 2761,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/realtime/freshness.js",
+          "bytes": 2958,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/realtime/source-state.js",
+          "bytes": 1611,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/fx/fx-provider-registry.js",
+          "bytes": 2123,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/fx/fx-rates.js",
+          "bytes": 5685,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/fx/fx-freshness.js",
+          "bytes": 2435,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/fx/currency-registry.js",
+          "bytes": 2039,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/fx/currency-class.js",
+          "bytes": 2386,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/fx/currency-engine.js",
+          "bytes": 4922,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/fx/money-format.js",
+          "bytes": 1742,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/fx/currency-preference.js",
+          "bytes": 1471,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/fx/currency-contract.js",
+          "bytes": 2023,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/fx/currency-switch.js",
+          "bytes": 1532,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/fx/bootstrap.js",
+          "bytes": 1799,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/multi-asset/asset-taxonomy.js",
+          "bytes": 2708,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/realtime/session-profiles.js",
+          "bytes": 3032,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/realtime/asset-freshness.js",
+          "bytes": 2510,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/api/multi-asset-contract.js",
+          "bytes": 4358,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/contract.js",
+          "bytes": 2883,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/europe-product.js",
+          "bytes": 5122,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/klartext.js",
+          "bytes": 4857,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/fundamentals.js",
+          "bytes": 8351,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/analytics.js",
+          "bytes": 875,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/memory.js",
+          "bytes": 1199,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/theme.js",
+          "bytes": 970,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/lazy.js",
+          "bytes": 3203,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/swipe.js",
+          "bytes": 2346,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/series-loader.js",
+          "bytes": 944,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/live-hub.js",
+          "bytes": 5674,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/microchart.js",
+          "bytes": 5760,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/artwork.js",
+          "bytes": 2767,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/logos.js",
+          "bytes": 1671,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/cards.js",
+          "bytes": 7137,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/surfaces.js",
+          "bytes": 4925,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/identity.js",
+          "bytes": 813,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/client.js",
+          "bytes": 2998,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/discover-universe.js",
+          "bytes": 2261,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/global-universe.js",
+          "bytes": 976,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/global.js",
+          "bytes": 1449,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/search.js",
+          "bytes": 3725,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/markets.js",
+          "bytes": 8647,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/themes.js",
+          "bytes": 3259,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/home-market.js",
+          "bytes": 2317,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/home.js",
+          "bytes": 2250,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/featured.js",
+          "bytes": 3963,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-chart.js",
+          "bytes": 4228,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.js",
+          "bytes": 7500,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/v3.js",
+          "bytes": 20737,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/europe.js",
+          "bytes": 3153,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/app.js",
+          "bytes": 4850,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/europe-bootstrap.js",
+          "bytes": 3124,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/data/home/US_REAL.json",
+          "bytes": 39028,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/market/intraday/index.json",
+          "bytes": 39715,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/market/fx/ecb/EURUSD.json",
+          "bytes": 33776,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/index.json",
+          "bytes": 32461,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/market/intelligence/market-pulse.json",
+          "bytes": 10289,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/product-icons.svg",
+          "bytes": 1511,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/themen/01-kuenstliche-intelligenz.webp",
+          "bytes": 107569,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/themen/02-halbleiter-chips.webp",
+          "bytes": 88427,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/themen/12-erneuerbare-energien.webp",
+          "bytes": 103655,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/index.json",
+          "bytes": 32461,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/live/im-blick-US_REAL.json?t=5979906",
+          "bytes": 794,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/files/PTLO.png",
+          "bytes": 2266,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/files/HZO.png",
+          "bytes": 1068,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/files/AMN.png",
+          "bytes": 3172,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/logos/files/CON.png",
+          "bytes": 609,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/data/home/US_REAL.2.json",
+          "bytes": 31715,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/ui/charts.js",
+          "bytes": 3290,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/ui/technical-chart.js",
+          "bytes": 3968,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/chart-ranges.js",
+          "bytes": 1672,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/hash.js",
+          "bytes": 975,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/instrument-classification.js",
+          "bytes": 3736,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/company-master.js",
+          "bytes": 5578,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/instrument-directory.js",
+          "bytes": 3189,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/series-sampling.js",
+          "bytes": 1406,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/chart-history.js",
+          "bytes": 819,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/chart-standard.js",
+          "bytes": 3248,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/high52w.js",
+          "bytes": 2009,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/scoring.js",
+          "bytes": 1705,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/indicators.js",
+          "bytes": 1887,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/unternehmen.js",
+          "bytes": 2457,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/einordnung.js",
+          "bytes": 3040,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/narrative.js",
+          "bytes": 2169,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/technical-intelligence.js",
+          "bytes": 1698,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/realtime-source.js",
+          "bytes": 2316,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/engines/recommendation.js",
+          "bytes": 1317,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/detail-fundamentals.js",
+          "bytes": 10634,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/company-intelligence/api/contract.js",
+          "bytes": 3347,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/company-intelligence/config/rollout.js",
+          "bytes": 1000,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/company-intelligence/ui/stock-section.js",
+          "bytes": 8067,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/stock-context.js",
+          "bytes": 3026,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/stock-navigator.js",
+          "bytes": 4094,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/watchlist-button.js",
+          "bytes": 3881,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/overview.js",
+          "bytes": 6377,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/stock-head.js",
+          "bytes": 3019,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/detail.js",
+          "bytes": 19896,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/detail.js",
+          "bytes": 6301,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/konto/config.js",
+          "bytes": 328,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/engines/multi-asset/market-pulse.js",
+          "bytes": 15662,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/market-intelligence.js",
+          "bytes": 20680,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/market-barometer.js",
+          "bytes": 11054,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/market-detail.js",
+          "bytes": 9456,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/daten.js",
+          "bytes": 3856,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/discover/ui/feed.js",
+          "bytes": 3098,
+          "status": 200,
+          "finished": true
+        }
+      ]
+    },
+    {
+      "route": "/quant/musterdepots/",
+      "run": 1,
+      "lcp": 3556,
+      "cls": 0,
+      "firstNumber": null,
+      "numberText": null,
+      "fcp": 1884,
+      "tbt": 1618,
+      "requests": 12,
+      "bytes": 174171,
+      "unfinished": 0,
+      "failures": [],
+      "errors": [],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:37771/quant/musterdepots/",
+          "bytes": 1048,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.css",
+          "bytes": 4578,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.css",
+          "bytes": 3257,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/musterdepots/depots.css",
+          "bytes": 872,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.js",
+          "bytes": 15950,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/ui/shell.js",
+          "bytes": 4464,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.js",
+          "bytes": 7500,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/musterdepots/depots.js",
+          "bytes": 3658,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vision-universe-logo-web.png",
+          "bytes": 3618,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/fonts/inter-latin.woff2",
+          "bytes": 48462,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/model-depots-v1.json",
+          "bytes": 7071,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/quant/data/product/universe-names-v1.json.gz",
+          "bytes": 73693,
+          "status": 200,
+          "finished": true
+        }
+      ]
+    },
+    {
+      "route": "/analysten/",
+      "run": 1,
+      "lcp": 2768,
+      "cls": 0.29390895336628814,
+      "firstNumber": null,
+      "numberText": null,
+      "fcp": 1824,
+      "tbt": 734,
+      "requests": 10,
+      "bytes": 88294,
+      "unfinished": 0,
+      "failures": [],
+      "errors": [],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:37771/analysten/",
+          "bytes": 11464,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.css",
+          "bytes": 4578,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.js",
+          "bytes": 15950,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/identity.js",
+          "bytes": 813,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vision-universe-logo-web.png",
+          "bytes": 3618,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/fonts/inter-latin.woff2",
+          "bytes": 48462,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/dashboard/config/universe.json",
+          "bytes": 535,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/dashboard/data/analyst_ratings.json",
+          "bytes": 1292,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/dashboard/data/market_data.json",
+          "bytes": 621,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/dashboard/data/analysts/summary.json",
+          "bytes": 961,
+          "status": 200,
+          "finished": true
+        }
+      ]
+    },
+    {
+      "route": "/mein-dashboard/",
+      "run": 1,
+      "lcp": 1884,
+      "cls": 0.05118838959747605,
+      "firstNumber": null,
+      "numberText": null,
+      "fcp": 1652,
+      "tbt": 46,
+      "requests": 29,
+      "bytes": 224709,
+      "unfinished": 1,
+      "failures": [
+        {
+          "url": "https://konto.visionuniverse.de/v1/session",
+          "bytes": 0,
+          "status": 403,
+          "finished": true
+        },
+        {
+          "url": "https://konto.visionuniverse.de/v1/session",
+          "bytes": 0,
+          "error": "net::ERR_FAILED"
+        }
+      ],
+      "errors": [],
+      "resources": [
+        {
+          "url": "http://127.0.0.1:37771/mein-dashboard/",
+          "bytes": 2658,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.css",
+          "bytes": 4578,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.css",
+          "bytes": 3257,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/konto/konto.css",
+          "bytes": 7196,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/mein-dashboard/dashboard.css",
+          "bytes": 1850,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.js",
+          "bytes": 15950,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/konto/config.js",
+          "bytes": 328,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/konto/account-api.js",
+          "bytes": 4624,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/identity.js",
+          "bytes": 813,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/stock-context.js",
+          "bytes": 3026,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/core/watchlist-view.js",
+          "bytes": 8340,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.js",
+          "bytes": 7500,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-chart.js",
+          "bytes": 4228,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/mein-dashboard/today.js",
+          "bytes": 1113,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/mein-dashboard/dashboard.js",
+          "bytes": 6561,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vision-universe-logo-web.png",
+          "bytes": 3618,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/fonts/inter-latin.woff2",
+          "bytes": 48462,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "https://konto.visionuniverse.de/v1/session",
+          "bytes": 0,
+          "status": 403,
+          "finished": true
+        },
+        {
+          "url": "https://konto.visionuniverse.de/v1/session",
+          "bytes": 0,
+          "error": "net::ERR_FAILED"
+        },
+        {
+          "url": "http://127.0.0.1:37771/konto/anmelden/?next=%2Fmein-dashboard%2F",
+          "bytes": 1934,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.css",
+          "bytes": 4578,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vu-ui.css",
+          "bytes": 3257,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/konto/konto.css",
+          "bytes": 7196,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/site-navigation.js",
+          "bytes": 15950,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/konto/config.js",
+          "bytes": 328,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/konto/account-api.js",
+          "bytes": 4624,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/konto/konto.js",
+          "bytes": 10660,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/vision-universe-logo-web.png",
+          "bytes": 3618,
+          "status": 200,
+          "finished": true
+        },
+        {
+          "url": "http://127.0.0.1:37771/assets/fonts/inter-latin.woff2",
+          "bytes": 48462,
+          "status": 200,
+          "finished": true
+        }
+      ]
+    }
+  ]
+}

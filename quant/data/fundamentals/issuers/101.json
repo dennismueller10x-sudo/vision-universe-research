@@ -371,9 +371,9 @@
       "cik": "0001005101",
       "name": "Marygold Companies, Inc.",
       "sic": "6199",
-      "rawFacts": 16511,
-      "mappedFacts": 5378,
-      "unmappedFacts": 11289,
+      "rawFacts": 16749,
+      "mappedFacts": 5448,
+      "unmappedFacts": 11579,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -383,9 +383,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 64,
+      "quarterlyPeriods": 65,
       "firstPeriodEnd": "2010-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
@@ -397,7 +397,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 45,
+          "quarterlyPeriods": 46,
           "firstAvailablePeriod": "2012-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 14.0
@@ -424,21 +424,21 @@
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2012-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 14.0
         },
         "operating_cash_flow": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2013-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 13.0
         },
         "revenue": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
@@ -452,14 +452,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2010-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
@@ -482,47 +482,47 @@
         }
       },
       "quality": {
-        "HIGH": 431,
-        "MEDIUM": 30
+        "HIGH": 435,
+        "MEDIUM": 32
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 461,
-        "resolvedValues": 461
+        "datableValues": 467,
+        "resolvedValues": 467
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 11833,
+        "rules_version": "1.1.0",
+        "total": 12132,
         "by_severity": {
-          "INFO": 11289,
-          "WARNING": 544
+          "INFO": 11579,
+          "WARNING": 553
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 306,
+          "CONCEPT_DISAGREEMENT": 308,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 236,
-          "UNKNOWN_CONCEPT": 11289
+          "RESTATEMENT_CONFLICT": 243,
+          "UNKNOWN_CONCEPT": 11579
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-043341",
-        "filing_date": "2026-09-18",
-        "form": "10-K",
-        "periodic_filings": 81,
-        "acceptance_datetime": "2026-09-18T20:06:13.000Z"
+        "accession": "0001493152-26-050461",
+        "filing_date": "2026-11-06",
+        "form": "10-Q",
+        "periodic_filings": 82,
+        "acceptance_datetime": "2026-11-06T21:05:49.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.10.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "c393ae336a784df2edc181489b376d91975d2cc150135025b7780a70651a10e3",
+      "sourceDigest": "de69c70b8ad3e87175e0f8b234149b86b41d953f5bd6780a70d5a628e27cfa38",
       "issuerId": "iss_cik_0001005101"
     },
     {

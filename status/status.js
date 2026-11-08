@@ -6,7 +6,7 @@
   var Core = globalThis.VUCore || {};
   var TS = globalThis.VURealtime && globalThis.VURealtime.TradingSession;
   var LABEL = { OK: "OK", DEGRADED: "EINGESCHRÄNKT", STALE: "VERALTET", FAILED: "AUSFALL", DISABLED: "AUS",
-    UNKNOWN: "UNBEKANNT", NOT_DELIVERED: "NICHT AUSGELIEFERT", WARN: "HINWEIS", SKIPPED: "–" };
+    UNKNOWN: "UNBEKANNT", NOT_DELIVERED: "NICHT AUSGELIEFERT", RELEASE_ONLY: "NUR IN DER AUSLIEFERUNG", WARN: "HINWEIS", SKIPPED: "–" };
 
   function el(tag, props, kids) {
     var n = document.createElement(tag);

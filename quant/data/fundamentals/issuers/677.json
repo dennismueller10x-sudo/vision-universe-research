@@ -164,9 +164,9 @@
       "cik": "0000098677",
       "name": "TOOTSIE ROLL INDUSTRIES INC",
       "sic": "2060",
-      "rawFacts": 22009,
-      "mappedFacts": 6177,
-      "unmappedFacts": 15984,
+      "rawFacts": 22365,
+      "mappedFacts": 6275,
+      "unmappedFacts": 16241,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -177,14 +177,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 69,
+      "quarterlyPeriods": 70,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -198,7 +198,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0,
@@ -218,21 +218,21 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -246,14 +246,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -276,46 +276,47 @@
         }
       },
       "quality": {
-        "HIGH": 492,
+        "HIGH": 498,
         "MEDIUM": 26
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 518,
-        "resolvedValues": 518
+        "datableValues": 524,
+        "resolvedValues": 524
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 16146,
+        "rules_version": "1.1.0",
+        "total": 16405,
         "by_severity": {
-          "INFO": 15984,
-          "WARNING": 162
+          "INFO": 16241,
+          "WARNING": 164
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 150,
+          "CONCEPT_DISAGREEMENT": 152,
           "FISCAL_PERIOD_CONFLICT": 10,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 15984
+          "UNKNOWN_CONCEPT": 16241
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-092633",
-        "filing_date": "2026-08-07",
+        "accession": "0001104659-26-123807",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 130
+        "periodic_filings": 131,
+        "acceptance_datetime": "2026-11-06T20:00:40.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "a2aae54da54d8b17978ddcfddfcfb165968154ee444680289d7441f3ddddf580",
+      "sourceDigest": "be65678cd95397527014f57c57ff6ceb1c267b0ffdd0000374ae2683612ac6af",
       "issuerId": "iss_cik_0000098677"
     },
     {

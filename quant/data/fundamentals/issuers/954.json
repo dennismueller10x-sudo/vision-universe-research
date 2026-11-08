@@ -945,9 +945,9 @@
       "cik": "0002030954",
       "name": "TEN Holdings, Inc.",
       "sic": "7389",
-      "rawFacts": 1583,
-      "mappedFacts": 612,
-      "unmappedFacts": 957,
+      "rawFacts": 1822,
+      "mappedFacts": 700,
+      "unmappedFacts": 1131,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -957,9 +957,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 12,
+      "quarterlyPeriods": 13,
       "firstPeriodEnd": "2022-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
@@ -971,7 +971,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -998,21 +998,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -1026,14 +1026,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -1056,45 +1056,46 @@
         }
       },
       "quality": {
-        "HIGH": 88,
+        "HIGH": 94,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 90,
-        "resolvedValues": 90
+        "datableValues": 96,
+        "resolvedValues": 96
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 993,
+        "rules_version": "1.1.0",
+        "total": 1179,
         "by_severity": {
-          "INFO": 957,
-          "WARNING": 36
+          "INFO": 1131,
+          "WARNING": 48
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 18,
-          "RESTATEMENT_CONFLICT": 18,
-          "UNKNOWN_CONCEPT": 957
+          "CONCEPT_DISAGREEMENT": 22,
+          "RESTATEMENT_CONFLICT": 26,
+          "UNKNOWN_CONCEPT": 1131
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-042173",
-        "filing_date": "2026-09-10",
-        "form": "10-K/A",
-        "periodic_filings": 8
+        "accession": "0001493152-26-050545",
+        "filing_date": "2026-11-06",
+        "form": "10-Q",
+        "periodic_filings": 9,
+        "acceptance_datetime": "2026-11-06T22:29:45.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "bc135fecbeca1dd47aa8bcfa5b18e7edc3345f179278f1a4afd0cae158bce32a",
+      "sourceDigest": "f8f31dd981a59b8a12320a7b1ba92f8f078f0630042e590a3d9fc15750c4dd26",
       "issuerId": "iss_cik_0002030954"
     },
     {

@@ -114,8 +114,16 @@
       /* Kurs */
       if (line) {
         var p = "";
-        for (var li2 = from; li2 < n; li2++) if (isNum(d.close[li2])) p += (p ? "L" : "M") + X(li2).toFixed(1) + " " + Y(d.close[li2]).toFixed(1);
+        var firstX = null, lastX = null, lastY = null;
+        for (var li2 = from; li2 < n; li2++) if (isNum(d.close[li2])) { p += (p ? "L" : "M") + X(li2).toFixed(1) + " " + Y(d.close[li2]).toFixed(1); if (firstX === null) firstX = X(li2); lastX = X(li2); lastY = Y(d.close[li2]); }
+        /* Redesign 2027 (C06): neongruene Flaeche unter der Linie und Punkt am letzten Kurs (cfg.area). */
+        if (c.area && p) {
+          var lg = node("linearGradient", { id: clip + "-a", x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+          node("stop", { offset: 0, "stop-color": "#c8f531", "stop-opacity": ".55" }, lg); node("stop", { offset: 1, "stop-color": "#c8f531", "stop-opacity": "0" }, lg);
+          node("path", { d: p + "L" + lastX.toFixed(1) + " " + y1 + "L" + firstX.toFixed(1) + " " + y1 + "Z", fill: "url(#" + clip + "-a)", class: "tc-price-area" }, main);
+        }
         node("path", { d: p, class: "tc-price-line" }, main);
+        if (c.area && p) node("circle", { cx: lastX, cy: lastY, r: 5, class: "tc-price-dot" }, svg);
       } else {
         var up = node("g", { class: "tc-up" }, main), dn = node("g", { class: "tc-down" }, main);
         for (var k2 = from; k2 < n; k2++) {

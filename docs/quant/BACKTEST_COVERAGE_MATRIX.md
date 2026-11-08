@@ -2,7 +2,7 @@
 
 > Erzeugt von `scripts/quant/research/backtest-coverage-matrix.cjs` (`backtest-coverage-matrix-1.0.0`). **Nicht von Hand ändern.** Neubau: `node scripts/quant/research/backtest-coverage-matrix.cjs --out docs/quant/BACKTEST_COVERAGE_MATRIX.md`; Prüfung: `--check docs/quant/BACKTEST_COVERAGE_MATRIX.md` (Test `quant/tests/backtest-coverage-matrix.test.mjs`).
 
-**Quellen (nur gelesen):** `quant/engines/backtest-kinds.cjs` (backtest-kinds-1.0.0), `METHOD_FIT`/`ENGINE_KEYS` aus `scripts/quant/research/backtest-runner.cjs` (backtest-runner-1.0.0), `quant/data/product/backtest-certification-v1.json` (backtest-certification-1.0.0), Schwellen aus `quant/methodology/backtest-certification-v1.json` (backtest-certification-1.0.0), Katalog `docs/quant/backtest-catalog/` (`catalogHash` `7ea6383e7260a5fb…`), Populationsprofile aus `research-population.cjs` (research-population-1.0.0), Kostenvorgaben aus `backtest-spec-builder.cjs`, PIT-Historien über `scripts/quant/research/pit-snapshot-integrity.cjs`.
+**Quellen (nur gelesen):** `quant/engines/backtest-kinds.cjs` (backtest-kinds-1.0.0), `METHOD_FIT`/`ENGINE_KEYS` aus `scripts/quant/research/backtest-runner.cjs` (backtest-runner-1.0.0), `quant/data/product/backtest-certification-v1.json` (backtest-certification-1.0.0), Schwellen aus `quant/methodology/backtest-certification-v1.json` (backtest-certification-1.1.0), Katalog `docs/quant/backtest-catalog/` (`catalogHash` `7ea6383e7260a5fb…`), Populationsprofile aus `research-population.cjs` (research-population-1.0.0), Kostenvorgaben aus `backtest-spec-builder.cjs`, PIT-Historien über `scripts/quant/research/pit-snapshot-integrity.cjs`.
 
 **Stabilität:** Aus dem täglich neu gebauten Zertifizierungsartefakt gehen nur Status, Gate-Zustände, Gründe, Kategorien und Schwellen ein, keine Tageszählerstände. Zählerstände und Prognosen stehen in Abschnitt F zum festen Stichtag **2026-10-31**; den aktuellen Stand liefert `node scripts/quant/research/pit-snapshot-integrity.cjs --out <datei>`. Kippt ein Gate oder ein Grund, weicht das Dokument ab und der Test schlägt fehl: Dann hat sich die Abdeckung geändert, und das Dokument wird im selben PR mit dem Erzeuger neu gebaut.
 
@@ -134,7 +134,7 @@ Status **COLLECTING_HISTORY**, Stufe TESTED, Vertrauen NOT_READY, Bereitschaft N
 | returnBasis | STRUCTURAL | FAIL | TOTAL_RETURN_NOT_IN_THIS_RUN | – | heute technisch | das Setup-Ergebnisartefakt wurde mit Kursrendite gebaut (öffentliche Jahresreihe ohne Gesamtrendite); mit der kanonischen Historie (--work-dir, Pipeline) rechnet build-setup-outcomes.mjs Gesamtrendite. Lösung im Erzeuger-Lauf, kein Handeingriff in quant/data. | – |
 | survivorship | STRUCTURAL | PASS | – | – | – | – | – |
 | entryVariant | QUALITY | FAIL | VARIANTS_NOT_MEASURABLE_YET | Δ Median ≤ 1 Pp | nur durch Zeit/Daten | messbar erst mit abgeschlossenen Ergebnissen; ob die Varianten übereinstimmen, ist offen (bei Abweichung über 1 Pp: Owner-Entscheidung). | – |
-| oos | QUALITY | FAIL | OOS_NOT_MEASURABLE_YET | – | nur mit Owner-Entscheidung | braucht die Segmentdefinition A1–A6 (SETUP_OOS_DECISION_A1_A6.md, spätestens vor etwa 2027-03-26) und danach 30 effektive Fälle je Segment (Zeit). | – |
+| oos | QUALITY | FAIL | OOS_NOT_MEASURABLE_YET | – | nur durch Zeit/Daten | Segmentierung A1–A6 entschieden 04.11.2026 (SETUP_OOS_DECISION_A1_A6.md): Schnitt 2027-05-31, Embargo 183 Tage, je Ereignisart 30 effektive Ereignistage je Segment; messbar frühestens um 2028-01-08. | – |
 | ownerApproval | OWNER | OFFEN | REQUIRED | – | nur mit Owner-Entscheidung | der Methodikvertrag (setup-state-v1.json requirements.backtestCertification) verlangt eine ausdrückliche Freigabe, auch wenn alle Gates bestehen. | – |
 
 ### STRATEGY_BACKTEST · Strategie-Backtest
@@ -171,7 +171,7 @@ Status **COLLECTING_HISTORY**, Stufe TESTED, Vertrauen NOT_READY, Bereitschaft N
 | SAME_STOCK_REPLAY | LIMITED | 2 | 0 | 2 | 0 | 0 |
 | PATTERN_EVIDENCE | LIMITED | 3 | 0 | 3 | 0 | 0 |
 | SIGNAL_BACKTEST | LIMITED | 2 | 0 | 0 | 1 | 1 |
-| SETUP_BACKTEST | COLLECTING_HISTORY | 9 | 1 | 2 | 6 | 0 |
+| SETUP_BACKTEST | COLLECTING_HISTORY | 9 | 1 | 1 | 7 | 0 |
 | STRATEGY_BACKTEST | COLLECTING_HISTORY | 2 | 0 | 0 | 2 | 0 |
 | FACTOR_RANKING_BACKTEST | COLLECTING_HISTORY | 3 | 0 | 0 | 3 | 0 |
 
@@ -235,7 +235,7 @@ Fehlende Monate seit dem ersten Stand: keine.
 | SETUP_BACKTEST | titles | Titel SETUP_CONFIRMED 130, SETUP_NEW 1114 | 20 | nein | 2027-03-26 (Untergrenze) | erstes abgeschlossenes 6-Monats-Ergebnis einer Art mit mindestens 20 Titeln (Builder zählt dann alle Titel der Art) |
 | SETUP_BACKTEST | independence | 2 | 20 | nein | 2028-04 | Ereignisse in jedem Folgemonat (der Builder zählt Monate mit Ereignissen) |
 | SETUP_BACKTEST | entryVariant | – | – | nein | 2027-03-26 (Untergrenze) | erst mit abgeschlossenen Ergebnissen messbar; ob es besteht, ist offen |
-| SETUP_BACKTEST | oos | – | 30 | nein | nicht prognostizierbar | nicht prognostizierbar: braucht die Owner-Entscheidung A1–A6 (Segmentdefinition) und 30 effektive Fälle je Segment |
+| SETUP_BACKTEST | oos | – | 30 | nein | nicht prognostizierbar | nicht aus Stichtagen prognostizierbar: Segmentierung A1–A6 entschieden 04.11.2026 (Schnitt 2027-05-31, Embargo 183 Tage); je Ereignisart 30 effektive Ereignistage je Segment, laut Vorlage frühestens um 2028-01-08 |
 
 | Art | offene zeitabhängige Gates | frühestens alle | nicht prognostizierbar | zusätzlich nötig (nicht zeitabhängig) |
 |---|---|---|---|---|
@@ -278,9 +278,9 @@ Replay, Pattern und Signal haben keine zeitabhängigen Gates: Ihre Blocker sind 
 - Hinweis: Stand: P3.1-Code und P4.1-Research erledigt (Abschnitt I); Reihenfolge H1, (1)–(2), dann (3).
 
 **FV-6 · Setup-OOS A1–A6**
-- Lage: Ohne Segmentdefinition bleibt das Setup-Gate oos FAIL.
-- Zur Entscheidung: Entscheidung laut SETUP_OOS_DECISION_A1_A6.md.
-- Hinweis: spätestens vor etwa 2027-03-26.
+- Lage: Entschieden 04.11.2026 (Neustart-Freigabe): kinds.SETUP_BACKTEST.oosSegmentation in backtest-certification-1.1.0, Auswertung je Ereignisart, Zeilenexport im Runner.
+- Zur Entscheidung: erledigt, keine weitere Freigabe nötig.
+- Hinweis: Gate messbar frühestens um 2028-01-08.
 
 **FV-7 · Kennzeichnung der strukturell beschreibenden Arten (Replay, Pattern)**
 - Lage: SAME_STOCK_REPLAY und PATTERN_EVIDENCE erreichen unter der geltenden Norm nie CERTIFIED (P3.4).

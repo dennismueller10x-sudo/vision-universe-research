@@ -749,9 +749,9 @@
       "cik": "0001176948",
       "name": "Ares Management Corp",
       "sic": "6282",
-      "rawFacts": 9213,
-      "mappedFacts": 2901,
-      "unmappedFacts": 6151,
+      "rawFacts": 9387,
+      "mappedFacts": 2966,
+      "unmappedFacts": 6253,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -762,9 +762,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 14,
-      "quarterlyPeriods": 55,
+      "quarterlyPeriods": 56,
       "firstPeriodEnd": "2012-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
@@ -803,21 +803,21 @@
         },
         "net_income": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 52,
+          "quarterlyPeriods": 53,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "operating_cash_flow": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "revenue": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 54,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -831,14 +831,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "total_assets": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -861,47 +861,48 @@
         }
       },
       "quality": {
-        "HIGH": 243,
-        "MEDIUM": 105
+        "HIGH": 246,
+        "MEDIUM": 107
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 348,
-        "resolvedValues": 348
+        "datableValues": 353,
+        "resolvedValues": 353
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 6742,
+        "rules_version": "1.1.0",
+        "total": 6837,
         "by_severity": {
-          "INFO": 6151,
-          "WARNING": 591
+          "INFO": 6253,
+          "WARNING": 584
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 420,
+          "CONCEPT_DISAGREEMENT": 413,
           "PERIOD_MISMATCH": 39,
           "RESTATEMENT_CONFLICT": 112,
           "UNEXPECTED_DURATION": 20,
-          "UNKNOWN_CONCEPT": 6151
+          "UNKNOWN_CONCEPT": 6253
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-054538",
-        "filing_date": "2026-08-07",
+        "accession": "0001628280-26-071628",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 50
+        "periodic_filings": 51,
+        "acceptance_datetime": "2026-11-06T20:52:04.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "f30ddbd01a66127d385b7c37011c3c998acc7e5488d4abbfccb0f09aca106d99",
+      "sourceDigest": "aac1ae250c16586e48b424e8cca5800314be5a82a05229cf6a2e325bc6b6d812",
       "issuerId": "iss_cik_0001176948"
     },
     {

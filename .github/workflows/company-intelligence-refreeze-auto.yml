@@ -3,6 +3,8 @@ name: Company Intelligence Auto Refreeze
 # Alle zwei Tage (Tag 1,3,5,...,31 des Monats, 05:23 UTC): maximal 2 Tage Abstand.
 # Vorabpruefung rein lesend und fail-closed; einzige schreibende Aktion ist
 # `universe-release.mjs refreeze`. Gate, Aktivierung, Pages und Produktion bleiben unberuehrt.
+# Quelle (Preflight-Ausgabe `source`): legacy = ausgeliefertes Legacy-GOOD; universe = bei aktivem Universum
+# die 46er-Projektion des ausgelieferten Universe-GOOD (`--from-universe`, Entscheidung Steuerung 08.11.2026).
 on:
   schedule:
     - cron: '23 5 */2 * *'
@@ -35,15 +37,22 @@ jobs:
       - name: Preflight, read-only and fail-closed
         id: guard
         run: node scripts/company_intelligence/refreeze-auto-guard.mjs preflight --out "$RUNNER_TEMP/refreeze-auto/preflight.json"
-      - name: Re-freeze immutable 46 rollback onto the verified legacy GOOD
+      - name: Re-freeze immutable 46 rollback onto the verified source GOOD (legacy, or 46 projection of the universe)
         id: refreeze
         if: steps.guard.outputs.decision == 'REFREEZE'
         env:
           EXPECT_GENERATION: ${{ steps.guard.outputs.generation }}
+          SOURCE: ${{ steps.guard.outputs.source }}
         run: |
           set -euo pipefail
           [[ "$EXPECT_GENERATION" =~ ^[0-9a-f]{24}$ ]] || { echo "::error::checked generation must be 24 lowercase hex characters"; exit 1; }
-          node scripts/company_intelligence/universe-release.mjs refreeze --temporary "$RUNNER_TEMP/universe-release" --expect-generation "$EXPECT_GENERATION"
+          args=()
+          case "$SOURCE" in
+            legacy) ;;
+            universe) args+=(--from-universe) ;;
+            *) echo "::error::unknown refreeze source '$SOURCE'"; exit 1 ;;
+          esac
+          node scripts/company_intelligence/universe-release.mjs refreeze --temporary "$RUNNER_TEMP/universe-release" --expect-generation "$EXPECT_GENERATION" "${args[@]}"
       - name: Postcheck result, protected flags, archive and new freeze validity
         id: postcheck
         if: always() && steps.refreeze.outcome != 'skipped' && steps.guard.outputs.decision == 'REFREEZE'

@@ -1,0 +1,247 @@
+/* Vision Universe® — Supertrader nach dem Redesign 2027 (ST01–ST08).
+   Nur Weiß, Schwarz, Neongrün #c8f531 und drei Graustufen aus assets/vu-ui.css. Kein Rot, kein Grün, kein Orange.
+   Supertrader-Muster: Stufen-Leiter, Stufen-Balken, Signal-Leiste, Prüfstand, Zeitleiste, nummerierte Schritte. */
+.st-r{max-width:640px;margin:0 auto;padding:6px 0 24px}
+.st-r a{color:inherit}
+.st-r-intro{margin-top:4px}
+.st-r-intro .vu-lt{margin-top:2px}
+.st-r-asof{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:10px 0 0;font-size:11.5px;font-weight:700;color:var(--vu-mute)}
+.st-r-asof svg{flex:none}
+.st-r-asof>span{flex:1;min-width:0}
+.st-r-gap{margin-top:10px}.st-r-gap8{margin-top:8px}.st-r-gap16{margin-top:16px}
+.st-r-kick{margin-top:24px}
+.st-r-kick0{margin-top:14px}
+.st-r-kt{margin:3px 0 10px}
+.st-r-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;text-decoration:none;min-height:36px}
+.st-r-leadx{margin:8px 0 0;font-size:15.5px;line-height:1.45}
+.st-r-note{margin:18px 0 0;font-size:11.5px;color:var(--vu-mute)}
+.st-r-link{display:inline-flex;align-items:center;gap:4px;margin-top:10px;padding:0;border:0;background:none;color:var(--vu-ink);font:700 13.5px/1.3 var(--vu-font);text-decoration:none;cursor:pointer;min-height:32px}
+.st-r .vu-grid{--vu-cols:2}
+.st-r .st-r-g3{--vu-cols:3}
+.st-r-g3 .vu-tile__value{font-size:17px;white-space:nowrap}
+
+/* Schwarze Karte „Heute erkannt“ / Antwort */
+.st-r-hero{margin-top:16px;padding:16px}
+.st-r-hero .vu-ltag{color:#9b9b9b}
+.st-r-hero p{margin:10px 0 0;font-size:11.5px;opacity:.72}
+.st-r-big{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin-top:2px}
+.st-r-big>b{font-size:44px;font-weight:900;letter-spacing:-.05em;color:var(--vu-lime);line-height:1.05}
+.st-r-big>span{font-weight:700}
+:root[data-theme=dark] .st-r-hero{background:var(--vu-card);color:var(--vu-ink)}
+:root[data-theme=dark] .st-r-big>b{color:var(--vu-lime)}
+.st-r-answer h2{margin-top:8px;color:inherit}
+.st-r-bh{display:flex;justify-content:space-between;align-items:center;gap:10px}
+
+/* Stufen-Leiter */
+.st-r-ladder{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:12px}
+.st-r-step{border-radius:14px;padding:10px 9px;background:#1c1c1c;color:#fff;min-width:0}
+.st-r-step span{display:block;font-size:11.5px;font-weight:700;opacity:.75}
+.st-r-step b{display:block;font-size:22px;font-weight:900;margin-top:2px}
+.st-r-step.is-lime{background:var(--vu-lime);color:#000}
+:root[data-theme=dark] .st-r-step:not(.is-lime){background:#000}
+
+/* Ehrlichkeits-Karte */
+.st-r-honest{margin-top:16px;display:flex;gap:12px;align-items:center}
+.st-r-belast{margin-top:14px}
+.st-r-belast p{margin:6px 0 0}
+
+/* Methoden-Karte mit Stufen-Balken */
+.st-r-mcard{display:block;padding:12px 0;border-top:1px solid var(--vu-hair);text-decoration:none;color:inherit}
+.st-r-mcard[hidden]{display:none}
+.st-r-mtop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.st-r-mtop>div:first-child{min-width:0}
+.st-r-mtop b{display:block;font-weight:800}
+.st-r-mtop>div>span{display:block;font-size:11.5px;font-weight:700;color:var(--vu-mute)}
+.st-r-mnum{text-align:right;flex:none}
+.st-r-mnum b{font-size:20px;font-weight:900}
+.st-r-mnum span{font-weight:500}
+.st-r-mcard p{margin:5px 0 0;font-size:13px}
+.st-r-mv{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.st-r-sbar{display:flex;height:8px;border-radius:9px;overflow:hidden;background:var(--vu-hair);margin-top:8px}
+.st-r-sbar i,.st-r-legend i{display:block}
+.st-r-sbar .s1,.st-r-legend .s1{background:var(--vu-ink)}
+.st-r-sbar .s2,.st-r-legend .s2{background:var(--vu-mute)}
+.st-r-sbar .s3,.st-r-legend .s3{background:var(--vu-lime)}
+.st-r-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 4px;font-size:11.5px;font-weight:700}
+.st-r-legend span{display:flex;align-items:center;gap:5px}
+.st-r-legend i{width:10px;height:10px;border-radius:3px}
+.st-r-chips{margin-top:12px}
+.st-r-chips .vu-chip{min-height:34px;font-size:13px}
+.st-r-chips .vu-chip span{opacity:.7}
+.st-r-none{font-size:13px;color:var(--vu-mute)}
+
+/* Kacheln als Knopf */
+.st-r-tiles{margin-top:0}
+.st-r-tilebtn{display:block;padding:0;border:0;background:none;text-align:left;font:inherit;color:inherit;cursor:pointer;text-decoration:none}
+.st-r-tilebtn .vu-tile{height:100%}
+
+/* Zeilen */
+.st-r-row,.st-r-shead{display:flex;align-items:center;gap:10px}
+.st-r-row{padding:10px 0;border-top:1px solid var(--vu-hair);text-decoration:none}
+.st-r-tk{flex:none;display:grid;place-items:center;min-width:42px;height:42px;padding:0 5px;border-radius:12px;background:var(--vu-ink);color:var(--vu-inv);font-size:10px;font-weight:900;letter-spacing:-.02em}
+.st-r-sname{flex:1;min-width:0}
+.st-r-sname b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-r-sname>span{display:block;font-size:11.5px;font-weight:700;color:var(--vu-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-r-rv{text-align:right;flex:none}
+.st-r-rv b{display:block;font-size:13.5px}
+.st-r-rv>span{display:block;font-size:11.5px;color:var(--vu-mute)}
+.st-r-wrow{display:flex;align-items:center;gap:10px;width:100%;padding:11px 0;border:0;border-top:1px solid var(--vu-hair);background:none;color:inherit;font:inherit;text-align:left;text-decoration:none;cursor:pointer}
+.st-r-wrow>div{flex:1;min-width:0}
+.st-r-wrow b{display:block;font-size:13.5px}
+.st-r-wrow>div>span,.st-r-wdet summary>div>span{display:block;font-size:11.5px;color:var(--vu-mute)}
+.st-r-wrow>svg{flex:none}
+.st-r-wdet{display:block}
+.st-r-wdet summary{display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer}
+.st-r-wdet summary::-webkit-details-marker{display:none}
+.st-r-wdet summary>div{flex:1;min-width:0}
+.st-r-wsub{display:flex;justify-content:space-between;align-items:center;padding:8px 0 0 12px;font-size:13px;font-weight:700;text-decoration:none}
+
+/* Signal-Karte mit Leiste */
+.st-r-sig{display:block;padding:13px 0;border-top:1px solid var(--vu-hair);text-decoration:none;color:inherit}
+.st-r-trk{display:block;width:100%;height:auto;margin-top:8px;overflow:visible}
+.st-r-trk .b{stroke:var(--vu-hair);stroke-width:6;stroke-linecap:round}
+.st-r-trk .r{stroke:var(--vu-lime);stroke-width:6;stroke-linecap:round}
+.st-r-trk .k{fill:var(--vu-ink)}
+.st-r-trk .c{fill:var(--vu-lime);stroke:var(--vu-ink);stroke-width:2.4}
+.st-r-trk .o{fill:var(--vu-white);stroke:var(--vu-ink);stroke-width:2.4}
+:root[data-theme=dark] .st-r-trk .o{fill:#000}
+.st-r-trkl{display:flex;justify-content:space-between;gap:6px;font-size:11.5px;font-weight:700}
+.st-r-sfoot{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px}
+.st-r-sfoot .vu-chg{margin-left:auto}
+.st-r-read{margin-top:14px;padding:12px;display:flex;gap:10px;align-items:center;font-size:13px}
+.st-r-read svg{flex:none}
+.st-r-count{margin:12px 0 0;font-size:11.5px;font-weight:700;color:var(--vu-mute)}
+.st-r-more{margin-top:14px}
+.st-r-more[hidden]{display:none}
+
+/* Suche */
+.st-r-search{display:flex;align-items:center;gap:10px;min-height:48px;margin-top:12px;padding:0 16px;border-radius:999px;background:var(--vu-card);color:var(--vu-mute)}
+.st-r-search svg{flex:none}
+.st-r-search input{flex:1;min-width:0;border:0;background:transparent;color:var(--vu-ink);font:600 15px/1.2 var(--vu-font);outline:none}
+
+/* Aufklappzeilen */
+.st-r-accs{margin-top:6px}
+.st-r-acc{border-top:1px solid var(--vu-hair)}
+.st-r-acc>summary,.st-r-accbtn{display:flex;align-items:center;gap:10px;padding:13px 0;list-style:none;cursor:pointer}
+.st-r-acc>summary::-webkit-details-marker{display:none}
+.st-r-acc>summary b,.st-r-accbtn b{flex:1;font-size:13.5px}
+.st-r-acc>summary>svg{transition:transform .15s}
+.st-r-acc[open]>summary>svg{transform:rotate(90deg)}
+.st-r-accbtn{width:100%;border:0;border-top:1px solid var(--vu-hair);background:none;color:inherit;font:inherit;text-align:left}
+.st-r-accb{padding:0 0 12px;font-size:13.5px}
+.st-r-accb p{margin:0 0 8px}
+.st-r-cnt{font-size:13px;font-weight:700;color:var(--vu-mute)}
+.st-r-ol,.st-r-ul{margin:6px 0 0;padding-left:20px;font-size:13.5px}
+.st-r-ol li,.st-r-ul li{margin:0 0 6px}
+
+/* Chart C06 */
+.st-r-chartbox{padding:12px}
+.st-r-chart{margin:0}
+.st-r-marks{display:grid;gap:4px;margin-top:8px;font-size:11.5px;font-weight:700}
+.st-r-mark circle{fill:var(--vu-ink)}
+.st-r-mark text{fill:var(--vu-inv);font:900 11px/1 var(--vu-font)}
+.st-r .vu-chart-level[data-tone=lime] line{stroke:var(--vu-lime);stroke-width:5;stroke-dasharray:none;opacity:1}
+.st-r .vu-chart-level[data-tone=grey] line{stroke:var(--vu-mute);stroke-width:3;stroke-dasharray:none;opacity:.6}
+.st-r .vu-chart-level text{fill:var(--vu-ink)}
+.st-r-cmp{fill:none;stroke:var(--vu-mute);stroke-width:1.6;stroke-dasharray:5 4}
+.st-r-leg2{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-size:11.5px;font-weight:700}
+.st-r-leg2 span{display:flex;align-items:center;gap:6px}
+.st-r-leg2 .ln{width:16px;height:3px;background:var(--vu-ink)}
+.st-r-leg2 .dash{width:16px;border-top:2px dashed var(--vu-mute)}
+
+/* kv-Liste */
+.st-r-kv>div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--vu-hair);font-size:13.5px}
+.st-r-kv>div:first-child{border-top:0}
+.st-r-kv span{font-weight:700}
+.st-r-kvs{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid var(--vu-hair);font-size:13.5px;font-weight:700}
+
+/* Methodentreue-Balken */
+.st-r-fid{display:flex;height:12px;border-radius:9px;overflow:hidden;gap:2px}
+.st-r-fid i{display:block}
+.st-r-fid .l{background:var(--vu-lime)}
+.st-r-fid .k{background:var(--vu-ink)}
+.st-r-fid .m{background:var(--vu-mute)}
+.st-r-fid .h{background:var(--vu-hair)}
+.st-r-fidl{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:9px;font-size:11.5px;font-weight:700}
+
+/* Prüfstand */
+.st-r-gates{padding:4px 14px}
+.st-r-gate{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--vu-hair)}
+.st-r-gates .st-r-gate:first-child{border-top:0}
+.st-r-gate b{display:block;font-size:13px}
+.st-r-gate>div>span{display:block;font-size:11.5px;color:var(--vu-mute);line-height:1.35}
+.st-r-gi{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--vu-ink);color:var(--vu-inv)}
+.st-r-gi.ok{background:var(--vu-lime);color:#000}
+
+/* Quellen-Karte */
+.st-r-src{display:flex;gap:10px;align-items:center;margin-top:8px;padding:11px 12px;border-radius:16px;background:var(--vu-card)}
+.st-r-src>svg{flex:none}
+.st-r-src>div{flex:1;min-width:0}
+.st-r-src b{display:block;font-size:13px}
+.st-r-src>div>span{display:block;font-size:11.5px;color:var(--vu-mute)}
+.st-r-src small{flex:none;max-width:96px;text-align:right;font-size:11px;font-weight:700;color:var(--vu-mute)}
+
+/* Hausstrategie */
+.st-r-hold{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.st-r-hold .vu-chip{min-height:32px;font-size:13px;padding:0 12px}
+.st-r-dec{margin-top:8px}
+.st-r-dec p{margin:6px 0 0;font-size:13.5px}
+.st-r-stp{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--vu-hair)}
+.st-r-stp b{display:block;font-size:13.5px}
+.st-r-stp>div>span{display:block;margin-top:2px;font-size:11.5px;color:var(--vu-mute);line-height:1.4}
+.st-r-num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--vu-ink);color:var(--vu-inv);display:grid;place-items:center;font-weight:900;font-size:12px}
+.st-r-num.is-lime{background:var(--vu-lime);color:#000}
+
+/* Lebenslauf (Sheet) */
+.st-r-life{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--vu-hair)}
+.st-r-life>div{flex:1;min-width:0}
+.st-r-life b{font-size:13.5px}
+.st-r-life>div>span{display:block;font-size:11.5px;color:var(--vu-mute)}
+.st-r-life small{display:block;font-size:10px;color:var(--vu-mute);letter-spacing:.03em}
+.st-r-close{margin-top:14px}
+.st-r-wrap{display:flex;flex-wrap:wrap;gap:7px}
+.st-r-rc{display:flex;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--vu-hair)}
+.st-r-rc>div{flex:1;min-width:0}
+.st-r-rc b{display:block;font-size:13px}
+.st-r-rc>div>span{display:block;font-size:11.5px;color:var(--vu-mute)}
+
+/* Zeitleiste (Protokoll) */
+.st-r-tl{list-style:none;margin:0;padding:0}
+.st-r-tl li{display:flex;gap:12px}
+.st-r-tl li>i{flex:none;width:12px;display:flex;flex-direction:column;align-items:center}
+.st-r-tl li>i:before{content:"";width:12px;height:12px;border-radius:50%;background:var(--vu-ink);border:2px solid var(--vu-ink);margin-top:4px;box-sizing:border-box}
+.st-r-tl li>i:after{content:"";flex:1;width:2px;background:var(--vu-hair)}
+.st-r-tl li:last-child>i:after{display:none}
+.st-r-tl li[data-st=ACTIVE]>i:before{background:var(--vu-lime)}
+.st-r-tl li>div{flex:1;padding-bottom:12px;min-width:0}
+.st-r-tlh{display:flex;align-items:center;gap:8px}
+.st-r-tl li>div>span{display:block;margin-top:4px;font-size:11.5px;font-weight:700;color:var(--vu-mute)}
+.st-r-t52{display:grid;gap:6px;margin-top:14px;text-decoration:none}
+
+/* Aktienkopf: Abstand */
+.st-r-head{margin-bottom:6px}
+
+/* Frühere Ansicht unter neuem Kopf (Methoden ohne Musterdepot) */
+.st-r-legacy{margin-top:14px}
+.st-r .vu-verdict{flex:none}
+/* ST02: Kandidatenansicht der 13 quellentreuen Methoden (?sf=Cxx) im Redesign */
+.sf-r-head{margin:4px 0 0}.sf-r-head .vu-lt{margin-top:2px}
+.sf-r-back{display:inline-flex;align-items:center;min-height:36px;margin-bottom:6px;font-weight:800;font-size:14px;color:inherit;text-decoration:none}
+.sf-r-cap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 0}
+.sf-r-tiles{margin-top:12px;gap:6px}.sf-r-tiles .vu-tile{padding:10px;min-width:0}
+.sf-r{display:block;margin-top:8px;padding:12px 14px}
+.sf-r-top{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none}
+.sf-r-id{flex:1;min-width:0}.sf-r-id>*{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sf-r-id>span{font-size:12px;color:var(--vu-mute)}
+.sf-r-line{margin:8px 0 0;font-size:12px;font-weight:700;color:var(--vu-mute)}
+.sf-r .sf-more{margin-top:6px}
+.sf-r-head .sf-limits li,.sf-r-head .sf-limits[data-strong="true"] li{background:var(--vu-card);color:var(--vu-ink);border:1px solid var(--vu-hair);margin-top:6px}
+.sf-r-head .sf-limits li .st-ic{color:var(--vu-ink)}
+.sf-r .sf-more>summary{min-height:36px;font-size:13px}
+
+/* E5: keep following content below the loading card/head, as in ST01/ST08. */
+.st-r-pending-home{min-height:100svh;display:grid;align-content:start;gap:20px}
+.st-r-head,.st-r-pending-head{display:flow-root;min-height:194px}
+.st-r-answer-slot,.st-r-pending-answer{display:flow-root;min-height:166px}
+/* Trade-Entwicklung (Einstieg → Schluss bzw. Ausstieg): Plus neongrün (vu-chg), Minus rot statt schwarz – Owner-Wunsch 07.11.2026 */
+.st-r-res .vu-chg--down{background:#d6303c;color:#fff}
+.st-r-none{display:flex;flex-wrap:wrap;align-items:center;gap:8px}

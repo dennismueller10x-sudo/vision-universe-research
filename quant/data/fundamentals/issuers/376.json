@@ -165,9 +165,9 @@
       "cik": "0001692376",
       "name": "Velocity Financial, Inc.",
       "sic": "6199",
-      "rawFacts": 9667,
-      "mappedFacts": 2375,
-      "unmappedFacts": 7228,
+      "rawFacts": 10067,
+      "mappedFacts": 2465,
+      "unmappedFacts": 7582,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -177,28 +177,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 9,
-      "quarterlyPeriods": 32,
+      "quarterlyPeriods": 33,
       "firstPeriodEnd": "2017-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 8.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "free_cash_flow": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0,
@@ -218,14 +218,14 @@
         },
         "net_income": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "operating_cash_flow": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
@@ -246,14 +246,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 30,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -276,45 +276,46 @@
         }
       },
       "quality": {
-        "HIGH": 202,
-        "MEDIUM": 16
+        "HIGH": 210,
+        "MEDIUM": 14
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 218,
-        "resolvedValues": 218
+        "datableValues": 224,
+        "resolvedValues": 224
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 7375,
+        "rules_version": "1.1.0",
+        "total": 7712,
         "by_severity": {
-          "INFO": 7228,
-          "WARNING": 147
+          "INFO": 7582,
+          "WARNING": 130
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 143,
+          "CONCEPT_DISAGREEMENT": 126,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 7228
+          "UNKNOWN_CONCEPT": 7582
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-335807",
-        "filing_date": "2026-08-06",
+        "accession": "0001193125-26-450404",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 27
+        "periodic_filings": 28,
+        "acceptance_datetime": "2026-11-06T00:58:13.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "179e72191e495b869681281996b7e62efe239d5792e80300c56e1d97651b61ec",
+      "sourceDigest": "c7e89449f627a6d7f8af92cc3610e8021a6c5833934d874d7a23d98c5d79bb59",
       "issuerId": "iss_cik_0001692376"
     },
     {

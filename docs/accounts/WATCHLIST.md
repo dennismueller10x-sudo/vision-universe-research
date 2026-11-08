@@ -101,7 +101,7 @@ Migration `supabase/migrations/20261028000100_watchlist_personal.sql`. Sie baut 
 | Tariflogik | dieselbe Funktion `enforce_watchlist_limits` (nur um eine Transaktionssperre erweitert); Grenzen aus `plan_features` |
 | Herabstufung (Plus → Free) | nichts wird gelöscht; alles bleibt lesbar und entfernbar; neu hinzu kommt erst unter der Grenze (SQL-Test) |
 | Kontolöschung, Export | unverändert über #926: Cascade bzw. `exportData` enthält Listen und Einträge (mit `alerts`) |
-| Benachrichtigungen | `alerts` je Titel ergänzt `user_settings.notification_settings`; versendet wird später nur, wenn **beide** zustimmen |
+| Benachrichtigungen | `alerts` je Titel ergänzt `user_settings.notification_settings`; versendet wird nur, wenn **beide** zustimmen. Lesart (Z4, 06.11.2026): Das Konto muss die Art einschalten; der Eintrag stimmt zu, solange er sie nicht ausdrücklich ausschaltet (fehlender Schlüssel = Konto gilt). Versand nur als App-Push (`20261107000100_push_preferences.sql`), keine E-Mail |
 | Datenvertrag | `core/contracts/user-data.schema.json` um `alerts` ergänzt |
 | Migrationsreihenfolge | `20261028000100` nach allen Migrationen aus #926; `apply-migrations.mjs` spielt sie mit ein |
 
@@ -281,11 +281,21 @@ der erste Integrationstest (§10).
 | GitHub Pages: 100 GB/Monat (weiche Grenze) | gemeinsame Übersicht ≈ 22 KB je Watchlist-Aufruf × 3.000 × 2 × 30 | ≈ 4 GB/Monat |
 | Antwortgröße | `GET /v1/watchlist` mit 200 Titeln ≈ 34 KB, typisch (18 Titel) ≈ 3–4 KB | |
 
-## 7. Spätere intelligente Watchlist (vorbereitet, nichts aktiviert)
+## 7. Intelligente Watchlist: Ereignisse (im Release-Bau aktiv seit 06.11.2026)
 
 `core/watchlist-view.js#events(vorher, nachher)` vergleicht zwei veröffentlichte Übersichten, also die Ergebnisse der bestehenden
 Datenläufe. Es arbeitet deterministisch, je Instrument einmal und nicht je Nutzer, im Format `core/contracts/events.schema.json`
-(Regelversion `watchlist-events-1.1.0`). Jede Seite wird zu ihrem eigenen `generatedAt` bewertet.
+(Regelversion `watchlist-events-1.5.0`). Jede Seite wird zu ihrem eigenen `generatedAt` bewertet.
+
+**Kursbewegung ab 5 % (`PRICE_MOVE`, seit 1.2.0):** Die Übersicht trägt je Titel die Tagesveränderung `d1` und den Vortag `dp`, berechnet über `quant/engines/published-close.js#dayChange` aus den beiden letzten Punkten derselben splitbereinigten Tagesreihe (ADR-002; ein Split erscheint nicht als Sprung; Lücken über sieben Tage ergeben keinen Wert). Ein Ereignis `DAILY_UP_5` bzw. `DAILY_DOWN_5` entsteht einmal je neuem Schlusstag, wenn der Betrag mindestens 5 % ist und der Kurs verfügbar (nicht veraltet) ist. Die Evidenz nennt Veränderung, Schluss, Vortag und Schwelle, keine Bewertung.
+
+**Neuer Bericht bei der SEC (`EARNINGS`, seit 1.3.0):** Die Übersicht trägt je Titel den letzten Quartals- oder Jahresbericht aus der SEC-Consumer-Schicht (`quant/data/sec/consumer/`, `coverage.latestQuarter`/`latestAnnual`: Einreichungsdatum `rf`, Art `rk`, Periode `rp`, Periodenende `re`; der jüngere von beiden). Ist das Einreichungsdatum neuer als in der vorigen Übersicht, entsteht `QUARTERLY_REPORT` bzw. `ANNUAL_REPORT`; die Erstbeobachtung erzeugt nichts. Die Evidenz nennt Periode, Periodenende und Einreichungsdatum, keine Kennzahl und keine Bewertung.
+
+**Neue 13F-Position (`FUND_13F`, seit 1.4.0):** Die Übersicht trägt je Titel aus den veröffentlichten Hedgefonds-Daten (`hedgefonds/data/stocks/`, 13F bei der SEC) das jüngste Quartal `fp`, die Zahl der meldenden Fonds `fc` und die Fonds mit **neuer** Position `fn` – nur die kuratierten großen Fonds der Hedgefonds-Seite (`hedgefonds.json#funds`, Namen in `sources.funds13f.funds`), nicht jeder Melder des Bulk-Satzes. Erscheint ein Fonds mit neuer Position, der in der vorigen Übersicht nicht stand, entsteht `NEW_POSITION` (je Titel ein Ereignis, Evidenz: Quartal, Fonds, Zahl der Halter). Erstbeobachtung still; keine Kauf- oder Verkaufsaussage.
+
+**Elliott-Lesart (`ELLIOTT_CHANGE`, seit 1.5.0):** Die Übersicht trägt je Titel die Hauptlesart des Chartbild-Produkts (`quant/data/technical-intelligence/v3/shards/`, `pro.elliott`; zurückgehaltene Titel ohne Lesart): Status, Muster, Richtung, abgeschlossen, laufende Welle und ihr Status (`ew`, Stand `ewd`). `READING_CHANGED`, wenn Muster oder Richtung wechseln; `WAVE_CONFIRMED`, wenn bei gleicher Lesart die laufende Welle bestätigt oder das Muster abgeschlossen ist. Elliott bleibt ein experimentelles Strukturmodell (`model: EXPERIMENTAL` in der Evidenz), keine Richtungsaussage.
+
+**Betrieb (Datenart `watchlistEvents`, aktiv seit 07.11.2026, `releaseOnly`):** Der erste Release mit Vorstand (07.11., Kurse 05.11. → 06.11.) erzeugte 2.532 Ereignisse, davon 1.223 `PRICE_MOVE`; die Tagesveränderungen stimmen mit der veröffentlichten Reihe überein. Im Register steht das Artefakt als `releaseOnly`: gegen das Repository `RELEASE_ONLY`, gegen die Seite normal bewertet. `pages-release.yml` holt vor dem Bau die zuletzt ausgelieferte Übersicht und die veröffentlichten Ereignisse von der Seite (`scripts/watchlist/fetch-published.mjs`, nur lesend); `scripts/vu2/build-release.mjs` vergleicht sie mit der neuen Übersicht und schreibt `/core/data/watchlist-events-v1.json` in die Auslieferung, mit den Ereignissen der vorigen Auslieferung im 48-Stunden-Fenster (`mergeWindow`). Nie im Repository. Fehlt der Vergleichsstand, entstehen keine Ereignisse; ein Fehler hält die Auslieferung nicht an. Zustellung nur als App-Push (`workers/vu-account/src/push.mjs`): höchstens eine gebündelte Nachricht am Tag, nur mit FCM-Zugang und eingeschalteter Art im Konto.
 
 **Erzeuger:** `node scripts/account/build-watchlist-events.mjs --before=<Übersicht> --after=<Übersicht> --out=<Datei>`. Eine Übersicht ist
 das ausgelieferte Verzeichnis `watchlist-summary-v1/` (meta + rows) oder ein ganzes Dokument (`.json`/`.json.gz`). `--out` ist Pflicht;
@@ -315,6 +325,7 @@ Erstbeobachtung, Delisting und gesperrte Identität erzeugen kein Ereignis.
 
 Zustellung später: Ereignisse × `watchlist_items.alerts` × Tarif, über den Index `watchlist_items_instrument`. Es werden keine E-Mails
 oder Pushes versendet, und kein kostenpflichtiger Dienst ist aktiviert. In der Oberfläche steht: „Gespeichert, aber noch nicht aktiv“.
+Nachtrag Z4 (06.11.2026, Owner-Auftrag Push über #1525): Der Versandweg App-Push ist freigegeben. Die Seiten D08, T02, T04, W04 und V08 stellen die Arten im Konto ein (`konto/push-settings.js`). Ohne FCM-Zugang, App oder Anmeldung sagt jede Seite „Benachrichtigungen kommen über die App“ und warum nichts kommt. Arten ohne Erzeuger (±5 %, Quartalszahlen, 13F, Suchtreffer, Elliott, ETF-Änderungen) bleiben gesperrt mit „noch keine Daten“.
 Aktivierung nur in eigenen PRs mit Owner-Freigabe (FREIGABEN.md): erst Erzeugung im Release-Bau (`ACTIVATING`), getrennt davon jede Zustellung.
 
 ## 8. Tests

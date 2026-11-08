@@ -26,7 +26,16 @@
     (kids || []).forEach(function (c) { if (c === null || c === undefined || c === false) return; e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
     return e;
   }
-  function getJSON(name) { return fetch(DATA + name, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(name + ' HTTP ' + r.status); return r.json(); }); }
+  var JSON_P = {}, JSON_AT = {};
+  function getJSON(name) {
+    if (JSON_P[name] && (JSON_AT[name] === undefined || Date.now() - JSON_AT[name] < 30000)) return JSON_P[name];
+    delete JSON_AT[name];
+    var pending = fetch(DATA + name, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(name + ' HTTP ' + r.status); return r.json(); }).then(function (value) {
+      if (JSON_P[name] === pending) JSON_AT[name] = Date.now();
+      return value;
+    }).catch(function (e) { if (JSON_P[name] === pending) { delete JSON_P[name]; delete JSON_AT[name]; } throw e; });
+    return JSON_P[name] = pending;
+  }
   function num(v, d) { if (v === null || v === undefined || !isFinite(v)) return '–'; return Number(v).toLocaleString('de-DE', { minimumFractionDigits: d === undefined ? 2 : d, maximumFractionDigits: d === undefined ? 2 : d }); }
   /* Kursmarke des Plans (Trigger, Stop, Einstieg, Schluss) mit Waehrung: Signale rechnen in USD; angezeigt wird
      wie im Kurschart in der gewaehlten Waehrung (Chartstandard, Vorgabe EUR) mit dem juengsten EZB-Kurs.
@@ -55,13 +64,14 @@
   /* ------------------------------------------- Produktsprache (Kunde) */
   // Phasen: strikt getrennt. „Nahe am Trigger“ ist Vorbereitung, kein Einstieg.
   var PHASE = {
-    DISCOVERED: ['cand', 'Kandidat'], WATCH: ['cand', 'Kandidat'],
-    SETUP: ['prep', 'Vorbereitet'], ENTRY_READY: ['prep', 'Vorbereitet · nahe Trigger'],
-    TRIGGERED: ['conf', 'Einstieg bestätigt'], ACTIVE: ['pos', 'Modellposition aktiv'], WARNING: ['warn', 'Position · Warnung'],
-    EXIT: ['exit', 'Ausstieg ausgelöst'], CLOSED: ['closed', 'Geschlossen'], INVALIDATED: ['inv', 'Ungültig'],
-    PARTIAL: ['partial', 'Teiltreffer'], RETIRED: ['inv', 'Regelwechsel'], REASSESSED: ['inv', 'Regelwechsel'],
+    DISCOVERED: ['cand', 'Entdeckt'], WATCH: ['cand', 'Auf Beobachtung'],
+    SETUP: ['prep', 'Muster entsteht'], ENTRY_READY: ['prep', 'Kurz vor der Marke'],
+    TRIGGERED: ['conf', 'Marke erreicht'], ACTIVE: ['pos', 'Modell ist dabei'], WARNING: ['warn', 'Warnzeichen'],
+    EXIT: ['exit', 'Ausstieg ausgelöst'], CLOSED: ['closed', 'Abgeschlossen'], INVALIDATED: ['inv', 'Muster geplatzt'],
+    PARTIAL: ['partial', 'Teiltreffer'], RETIRED: ['inv', 'Durch neue Regel ersetzt'], REASSESSED: ['inv', 'Nach Regeländerung neu bewertet'],
   };
-  var PHASE_FILTERS = [['', 'Alle aktuellen'], ['prep', 'Vorbereitet'], ['watch', 'Beobachtung'], ['conf', 'Bestätigt'], ['pos', 'Position'], ['exit', 'Ausstieg'], ['obs', 'Forschung'], ['cand', 'Kandidaten'], ['partial', 'Teiltreffer'], ['closed', 'Geschlossen'], ['inv', 'Ungültig']];
+  // Alltagsnamen nach Folie ST-Z (gleich STATE in st-redesign.js); der Code-Zustand bleibt.
+  var PHASE_FILTERS = [['', 'Alle aktuellen'], ['prep', 'Muster entsteht'], ['watch', 'Beobachtung'], ['conf', 'Marke erreicht'], ['pos', 'Modell ist dabei'], ['exit', 'Ausstieg'], ['obs', 'Forschung'], ['cand', 'Entdeckt'], ['partial', 'Teiltreffer'], ['closed', 'Abgeschlossen'], ['inv', 'Muster geplatzt']];
   var PHASE_ORDER = ['conf', 'pos', 'warn', 'exit', 'prep', 'partial', 'watch', 'obs', 'cand', 'closed', 'inv'];
   function phaseOfState(st) { return (PHASE[st] || ['cand'])[0]; }
   function phaseBadge(st) { var p = PHASE[st] || [st, st]; return h('span', { class: 'st-phase', 'data-p': p[0], text: p[1] }); }
@@ -298,7 +308,7 @@
     var rows = [['Datenstand', 'Signale auf Tagesschlusskursen vom ' + dateDe(asOf) + (last && last !== asOf ? ' · letzter abgeschlossener Handelstag ' + dateDe(last) : '') + '.']]
       .concat(DM)
       .concat([
-        ['Kursdaten', 'Tageskurse aus der Discover-Dateninfrastruktur (Tiingo, split-adjustiert).'],
+        ['Kursdaten', 'Tagesschlusskurse, split-bereinigt (Anbieter: Datenquellen & Methodik im Menü).'],
         ['Modellpositionen', 'Simulationen nach festen Regeln – keine realen Orders.'],
         ['Methodik', h('a', { href: BASE + 'sources/', text: 'Quellen der Regeln' })],
       ]);
@@ -435,7 +445,7 @@
     // VU3: Ergebnis zuerst - was die Modelle heute protokollieren, dann der Status der Evidenz in einer Zeile.
     main.appendChild(h('section', { class: 'st-sec vu-sec st-today' }, [
       h('div', { class: 'st-sec-h vu-sec-head' }, [h('div', null, [h('div', { class: 'st-kick vu-eyebrow', text: stale ? 'Kurse veraltet – Stand ' + dateDe(sig.asOf) : 'Modellbeobachtung · ' + research.length + ' Methoden' }), h('h2', { class: 'vu-sec-title', text: 'Heute im Protokoll' })]), more(BASE + 'signals/', 'Alle Signale')]),
-      kpiList([[String(sum('prep')), 'In Vorbereitung'], [String(sum('conf')), 'Einstieg bestätigt'], [String(sum('pos')), 'Modellpositionen'], [String(sum('done')), 'Geschlossen']]),
+      kpiList([[String(sum('prep')), 'In Vorbereitung'], [String(sum('conf')), 'Einstiegsregel erfüllt'], [String(sum('pos')), 'Modellpositionen'], [String(sum('done')), 'Geschlossen']]),
       h('div', { class: 'st-evline' }, [vstatus('Alle Methoden in Prüfung', 'warn'), h('span', { text: 'Kein belegter Vorteil – Beobachtung, keine Empfehlung.' })]),
       moreBox('Was heißt „in Prüfung“?', [
         h('p', { text: 'Für keine laufende Regelversion ist bisher ein Vorteil belegt. Alle Methoden laufen deshalb als Modellbeobachtung: Setups, bestätigte Einstiege, Positionen und Ausstiege werden nach festen Regeln protokolliert – als Forschung, nicht als Empfehlung oder Einstiegschance.' }),
@@ -650,7 +660,7 @@
     ])];
     if (!t.portfolio.positions.length) pk.push(h('p', { class: 'st-p', text: 'Noch keine Position. Die erste Monatsentscheidung fällt am ' + dateDe(t.schedule.nextDecision) + ' nach Handelsschluss; gekauft wird zur Eröffnung am ' + dateDe(t.schedule.nextExecution) + '. Bis dahin liegt das Modellkapital (100.000 USD) in Cash.' }));
     else pk.push(h('ul', { class: 'st-mplist' }, t.portfolio.positions.map(function (p) {
-      var hold = p.holdChecks ? (p.holdChecks.perf && p.holdChecks.freshHigh ? 'Halteregeln erfüllt' : 'Verkauf am Monatsende droht: ' + (!p.holdChecks.perf ? 'unter 100 % seit Tief' : 'kein neues Hoch in 65 Tagen')) : '';
+      var hold = p.holdChecks ? (p.holdChecks.perf && p.holdChecks.freshHigh ? 'Halteregeln erfüllt' : 'Abgabe aus dem Musterdepot am Monatsende droht: ' + (!p.holdChecks.perf ? 'unter 100 % seit Tief' : 'kein neues Hoch in 65 Tagen')) : '';
       return h('li', null, [h('a', { href: stockUrl(p.symbol) }, [
         h('div', { class: 'r1' }, [h('strong', { text: p.symbol }), h('span', { class: 'w', text: pct(p.weight, 1) })]),
         h('div', { class: 'r2', text: 'Kauf ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' (Rang ' + (p.rankAtEntry || '–') + ') · ' + pct(p.perfSinceLow, 0) + ' über 52-W-Tief · ' + hold }),
@@ -661,7 +671,7 @@
     // Ausgeloeste Modellorders
     if (t.orders && (t.orders.buys.length || t.orders.sells.length)) main.appendChild(sec('Ausgelöste Modellorders', [
       h('p', { class: 'st-p', text: 'Am ' + dateDe(t.orders.decidedOn) + ' beschlossen, Ausführung zur ' + t.orders.executesAt + '.' }),
-      h('ul', { class: 'st-ul' }, t.orders.sells.map(function (x) { return h('li', { text: 'Verkauf ' + x.symbol + (x.target ? ' auf ' + pct(x.target, 0) : '') + ' · ' + t52Rule(x.ruleId, x) }); }).concat(t.orders.buys.map(function (x) { return h('li', { text: 'Kauf ' + x.symbol + ' · Rang ' + x.rank + ' · 10 %' }); }))),
+      h('ul', { class: 'st-ul' }, t.orders.sells.map(function (x) { return h('li', { text: 'Abgabe (Musterdepot) ' + x.symbol + (x.target ? ' auf ' + pct(x.target, 0) : '') + ' · ' + t52Rule(x.ruleId, x) }); }).concat(t.orders.buys.map(function (x) { return h('li', { text: 'Kauf ' + x.symbol + ' · Rang ' + x.rank + ' · 10 %' }); }))),
     ], { kicker: 'Beschlossen, noch nicht ausgeführt' }));
     // Vorbereitete Einstiege
     var pr = t.prepared || { candidates: [] };
@@ -684,7 +694,7 @@
     if (t.closed && t.closed.length) hist.push(details('Geschlossene Trades (' + t.closed.length + ')', [h('ul', { class: 'st-ul' }, t.closed.map(function (x) { return h('li', { text: x.symbol + ' · ' + dateShort(x.entryDate) + ' → ' + dateShort(x.exitDate) + ' · ' + t52Rule(x.exitRuleId, { text: x.exitText }) + ' · ' + pct(x.returnPct, 1, true) }); }))]));
     if (t.notTaken && t.notTaken.length) hist.push(details('Nicht übernommen (' + t.notTaken.length + ')', [h('ul', { class: 'st-ul' }, t.notTaken.map(function (x) { return h('li', { text: dateShort(x.date) + ' · ' + x.symbol + ' · ' + t52Rule(x.reason, x) }); }))]));
     if (t.executions && t.executions.length) hist.push(details('Ausführungen (' + t.executions.length + ')', [h('ul', { class: 'st-ul' }, t.executions.map(function (x) { return h('li', { text: dateShort(x.date) + ' · ' + (x.side === 'BUY' ? 'Kauf ' : 'Verkauf ') + x.symbol + ' zu ' + num(x.price) + (x.text ? ' · ' + x.text : '') }); }))]));
-    if (t.decisions && t.decisions.length) hist.push(details('Monatsentscheidungen (' + t.decisions.length + ')', [h('ul', { class: 'st-ul' }, t.decisions.map(function (d) { return h('li', { text: dateShort(d.date) + ' · Ampel ' + (d.green ? 'grün' : 'rot') + ' · ' + d.candidates + ' Kandidaten · Kauf: ' + (d.buys.join(', ') || '–') + ' · Verkauf: ' + (d.sells.map(function (x) { return x.symbol; }).join(', ') || '–') }); }))]));
+    if (t.decisions && t.decisions.length) hist.push(details('Monatsentscheidungen (' + t.decisions.length + ')', [h('ul', { class: 'st-ul' }, t.decisions.map(function (d) { return h('li', { text: dateShort(d.date) + ' · Ampel ' + (d.green ? 'grün' : 'rot') + ' · ' + d.candidates + ' Kandidaten · Aufnahme: ' + (d.buys.join(', ') || '–') + ' · Abgabe: ' + (d.sells.map(function (x) { return x.symbol; }).join(', ') || '–') }); }))]));
     if (!hist.length) hist.push(h('p', { class: 'st-hint', text: 'Noch keine Monatsentscheidung im Protokoll — das Ledger beginnt am ' + dateDe(t.liveSince) + ' und rechnet nicht zurück.' }));
     main.appendChild(sec('Protokoll', hist, { kicker: 'Jede Entscheidung mit Regel' }));
   }
@@ -697,7 +707,7 @@
     var n = (t.nearMisses || []).filter(function (x) { return x.symbol === sym; })[0];
     if (n) return ['Knapp nicht aufgenommen', 'mute', 'Fehlt: ' + n.text + '.'];
     var x = (t.closed || []).filter(function (q) { return q.symbol === sym; })[0];
-    if (x) return ['Verkauft', 'mute', dateShort(x.exitDate) + ' · ' + t52Rule(x.exitRuleId, { text: x.exitText })];
+    if (x) return ['Abgegeben (Musterdepot)', 'mute', dateShort(x.exitDate) + ' · ' + t52Rule(x.exitRuleId, { text: x.exitText })];
     return null;
   }
   function portfolioCell(D, s) {
@@ -950,18 +960,28 @@
      und Chart werden deshalb hier zur Laufzeit nachgeladen statt in jede Seite geschrieben. */
   var SCRIPT_P = {};
   function loadScript(src) {
-    if (!SCRIPT_P[src]) SCRIPT_P[src] = new Promise(function (ok, no) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = function () { no(new Error(src)); }; document.head.appendChild(s); });
+    if (!SCRIPT_P[src]) SCRIPT_P[src] = new Promise(function (ok, no) { var s = document.createElement('script'), pre = document.querySelector('link[rel="preload"][as="script"][href="' + src + '"]') || document.querySelector('link[rel="preload"][as="script"][href^="' + src.split('?')[0] + '?"]'); s.src = pre ? pre.href : src; s.onload = ok; s.onerror = function () { no(new Error(src)); }; document.head.appendChild(s); });
     return SCRIPT_P[src];
   }
-  function loadCss(href) { if (document.querySelector('link[href="' + href + '"]')) return; document.head.appendChild(h('link', { rel: 'stylesheet', href: href })); }
+  var CSS_P = {};
+  function loadCss(href) {
+    return CSS_P[href] || (CSS_P[href] = new Promise(function (ok, no) {
+      var link = document.querySelector('link[href="' + href + '"]') || document.querySelector('link[rel="stylesheet"][href^="' + href.split('?')[0] + '?"]');
+      if (link && link.sheet) { ok(); return; }
+      var fresh = !link; if (fresh) link = h('link', { rel: 'stylesheet', href: href });
+      link.addEventListener('load', ok, { once: true });
+      link.addEventListener('error', function () { delete CSS_P[href]; no(new Error(href)); }, { once: true });
+      if (fresh) document.head.appendChild(link);
+    }));
+  }
   function stockKit() {
-    loadCss('/assets/stock-navigator.css');
+    var style = loadCss('/assets/stock-navigator.css');
     var core = window.VUStockNavigator ? Promise.resolve() : loadScript('/core/identity.js').then(function () { return loadScript('/core/stock-context.js'); }).then(function () { return loadScript('/assets/stock-navigator.js'); });
     /* Lesezeichen der persoenlichen Watchlist (docs/accounts/WATCHLIST.md): haengt sich selbst an den Aktienkopf; ohne
        freigeschaltete Konten zeigt es nichts und fragt die Konto-API nicht an. Blockiert den Kopf nicht. */
     core.then(function () { if (!window.VUWatchButton) loadScript('/assets/watchlist-button.js').catch(function () {}); });
     var chart = window.VUChart ? Promise.resolve() : loadScript('/assets/vu-chart.js');
-    return Promise.all([core, chart]);
+    return Promise.all([core, chart, style]);
   }
   /* Chartstandard (core/chart-standard.js, docs/charts/CHART_STANDARD.md): Zeitraeume, Start 1T,
      Intraday-Aufloesung und Anzeige in der gewaehlten Waehrung (Vorgabe EUR) ueber die vorhandene
@@ -1456,7 +1476,7 @@
       var ex1 = ex.result.exit, r = ex.result;
       var steps = [
         [first.date, 'Vorbereitet', 'Liquide Aktie nahe dem 20-Tage-Hoch. Geplanter Trigger ' + num(first.trigger || ex.checks.triggerAtConfirmation) + ', ungültig unter ' + num(first.invalidation) + '.'],
-        conf ? [conf.date, 'Einstieg bestätigt', 'Tagesschluss ' + num(ex.checks.confirmationClose) + ' über dem Trigger ' + num(ex.checks.triggerAtConfirmation) + '. Gekauft wird erst am nächsten Morgen.'] : null,
+        conf ? [conf.date, 'Einstiegsregel erfüllt', 'Tagesschluss ' + num(ex.checks.confirmationClose) + ' über dem Trigger ' + num(ex.checks.triggerAtConfirmation) + '. Gekauft wird erst am nächsten Morgen.'] : null,
         ent ? [ent.date, 'Modelleinstieg zur Eröffnung', 'Eröffnung ' + num(ex.checks.entryRawOpen) + ' + ' + num((r.entry.price / ex.checks.entryRawOpen - 1) * 100, 2) + ' % Ausführungsannahme = ' + num(r.entry.price) + '. Stop ' + num(sg.initialStop) + ' (2 × Tagesspanne N darunter).'] : null,
         [ex1.date, KIND_LABEL[ex.kind] || 'Ausstieg', (ex.kind === 'STOP' ? (ex.checks.exitBasis === 'OPEN_BELOW_STOP' ? 'Eröffnung unter dem Stop – Ausstieg zum Eröffnungskurs ' + num(ex1.price) + ' (Gap-Regel).' : 'Stop gerissen – Ausstieg zu ' + num(ex1.price) + '.') : 'Schluss unter dem 10-Tage-Tief → Ausstieg zur nächsten Eröffnung ' + num(ex1.price) + '.')],
       ].filter(Boolean);
@@ -1569,7 +1589,7 @@
      Modul einen gekennzeichneten Leerzustand. */
   function mountResearch() {
     if (['home', 'strategies', 'stock'].indexOf(page) < 0) return;
-    loadCss(BASE + 'assets/sf-research.css');
+    loadCss(BASE + 'assets/sf-research.css').catch(function () {});
     (window.STResearch ? Promise.resolve() : loadScript(BASE + 'assets/sf-research.js')).then(function () {
       if (window.STResearch) window.STResearch.mount(page, main, { symbol: SYM });
     }).catch(function () {});
@@ -1604,15 +1624,60 @@
       }).catch(function () { return getJSON(FILE.signals); });
     });
   }
-  Promise.all(need.map(function (k) { return load(k).catch(function (e) { if (k === 'pilot' || k === 'replay' || k === 'portfolio' || k === 'trend52' || k === 'house') return null; throw e; }); })).then(function (res) {
-    var D = {}; need.forEach(function (k, i) { D[k] = res[i]; });
+  /* Redesign 2027: gemeinsame Bausteine (assets/vu-ui.*, assets/vu-chart.js) und das Seitenmodul st-redesign.js.
+     Laedt parallel zu den Daten; ein Fehler laesst die bisherige Oberflaeche stehen. */
+  var UI = page === 'replay' ? Promise.resolve() : Promise.all([loadCss('/assets/vu-ui.css?v=vu-ui-1.3.0'), loadCss(BASE + 'assets/st-redesign.css'), loadScript('/assets/vu-ui.js?v=vu-ui-1.3.0'), loadScript('/assets/vu-chart.js')]).then(function () {
+    if (window.VUUI && window.VUUI.bindIntent) window.VUUI.bindIntent(function (url) { if (url.origin !== location.origin) return null; var m = /^\/supertrader\/stock\/([A-Z0-9.-]{1,12})\/$/.exec(url.pathname); return m && m[1]; }, function (ticker) { return build().then(function (b) { return b && b.slices && (b.slices.stock || []).indexOf(ticker) >= 0 ? getJSON('stock/' + ticker + '.json') : null; }); });
+    return loadScript(BASE + 'assets/st-redesign.js');
+  }).catch(function () { return null; });
+  /* Helfer der bisherigen Oberflaeche fuer das Redesign-Modul. legacy(host, D) zeichnet die bisherige Ansicht der Seite in host. */
+  function redesignContext() {
+    PROVLAB = (APP && APP.registry && APP.registry.provenanceClasses) || {};
+    return { main: main, page: page, SYM: SYM, BASE: BASE, getJSON: getJSON, loadScript: loadScript, loadCss: loadCss, disclaimer: disclaimer, dmAdd: dmAdd,
+      ruleText: ruleText, closedCount: closedCount, stratMap: stratMap, rulesBlock: rulesBlock, fidelityList: fidelityList, assessments: assessments, ruleCardList: ruleCardList,
+      trend52For: trend52For, noRun: noRun, dist: dist, sortSignals: sortSignals, shortWhy: shortWhy, stockKit: stockKit, stratUrl: stratUrl, HOUSE_HISTORY: HOUSE_HISTORY,
+      legacy: function (host, D) {
+        var keep = main; main = host;
+        try { PROVLAB = (D.registry && D.registry.provenanceClasses) || {}; ({ strategy: renderStrategy }[page] || renderHome)(D); } finally { main = keep; }
+      } };
+  }
+  function fullPageData() {
+    return Promise.all(need.map(function (k) { return load(k).catch(function (e) { if (k === 'pilot' || k === 'replay' || k === 'portfolio' || k === 'trend52' || k === 'house') return null; throw e; }); }));
+  }
+  function homePageData() {
+    return UI.then(function () {
+      if (!(window.STRedesign && window.STRedesign.render.home) || !document.querySelector('meta[name="vu-st-home-view"]')) return fullPageData();
+      // ST01 consumes the existing header/count fields, never per-signal rows.
+      // Old/raw releases retain their canonical full-data fallback.
+      return Promise.all([getJSON('home-view.json').then(function (view) {
+        if (!view || view.deliveryView !== 'st-home-view-1' || !view.counts) throw new Error('HOME_VIEW_CONTRACT');
+        return view;
+      }).catch(function () { return load('signals'); }), load('market')]).then(function (values) {
+        return {compact: {signals: values[0], market: values[1]}};
+      });
+    });
+  }
+  (page === 'home' ? homePageData() : fullPageData()).then(function (res) {
+    var D = res.compact || {}; if (!res.compact) need.forEach(function (k, i) { D[k] = res[i]; });
     D.srcMap = D.sources ? byId(D.sources.sources, 'source_id') : {};
     if (D.registry) D.registry.strategies.forEach(function (x) { if (x.pending_semantics === 'WATCHLIST' && !isResearchS(x)) WATCH[x.strategy_id] = x.watchlist_label || 'Beobachtung'; if (isResearchS(x)) RESEARCH[x.strategy_id] = true; }); if (D.registry) HAS_CURRENT = D.registry.strategies.some(function (x) { return x.mode === 'LIVE' && !isResearchS(x); });
-    main.innerHTML = '';
     APP = D;
-    chrome();
-    ({ home: renderHome, strategies: renderStrategies, strategy: renderStrategy, signals: renderSignals, stock: renderStock, backtests: renderBacktests, replay: renderReplay, sources: renderSources, house: renderHouse }[page] || renderHome)(D);
-    mountResearch();
+    return UI.then(function () {
+      /* Owner-Entscheidung 07.11.2026: Anbieternamen (z. B. TraderFox) nur auf der Quellenseite; sonst neutral dargestellt. */
+      if (page !== 'sources' && window.VUUI && window.VUUI.neutralSources) { Object.keys(D).forEach(function (k) { D[k] = window.VUUI.neutralSources(D[k]); }); D.srcMap = D.sources ? byId(D.sources.sources, 'source_id') : {}; }
+      main.innerHTML = '';
+      /* Redesign 2027 (ST01–ST08): neue Oberflaeche, sofern ihr Modul geladen ist. Die Methodenansicht der quellentreuen
+         Kandidaten (?sf=) und das historische Beispiel bleiben bei der bisherigen Oberflaeche. */
+      var R = window.STRedesign && window.STRedesign.render[page];
+      if (R && !(page === 'strategies' && new URLSearchParams(location.search).get('sf'))) {
+        if (window.VUNavigation) window.VUNavigation.dock(page === 'stock' ? { active: null } : {});
+        R(D, redesignContext());
+        return;
+      }
+      chrome();
+      ({ home: renderHome, strategies: renderStrategies, strategy: renderStrategy, signals: renderSignals, stock: renderStock, backtests: renderBacktests, replay: renderReplay, sources: renderSources, house: renderHouse }[page] || renderHome)(D);
+      mountResearch();
+    });
   }).catch(function (e) {
     main.innerHTML = '';
     main.appendChild(emptyBox('Supertrader konnte nicht geladen werden', 'Die Daten sind gerade nicht erreichbar (' + (e && e.message) + '). Bitte später erneut versuchen.'));

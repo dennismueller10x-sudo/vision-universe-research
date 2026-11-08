@@ -1,21 +1,21 @@
 {
  "schemaVersion": "pattern-match-1.0.0",
- "generatedAt": "2026-11-04T04:46:34.000Z",
- "asOf": "2026-11-02",
+ "generatedAt": "2026-11-07T04:04:27.000Z",
+ "asOf": "2026-11-05",
  "horizon": "H24",
  "horizonMonths": 24,
  "winnerThreshold": "W100",
  "winnerMinReturn": 1,
  "lossThreshold": -0.5,
- "baseRate": 0.108335,
+ "baseRate": 0.108332,
  "studies": {
   "price": {
    "methodologyVersion": "pattern-research-1.1.0",
-   "contentHash": "d6424b5da4e432b6"
+   "contentHash": "73fb61994462fdf3"
   },
   "fundamental": {
    "methodologyVersion": "pattern-research-fundamentals-1.0.0",
-   "contentHash": "4a838ce7c348fcc1"
+   "contentHash": "2c174b09ae0da6e8"
   }
  },
  "caveats": {
@@ -42,8 +42,8 @@
   }
  },
  "withheldNote": "Nur Muster mit dem Urteil ROBUST werden neben einem Titel gezeigt. Was zurueckgehalten wurde, steht hier gezaehlt statt zu verschwinden.",
- "instruments": 5310,
- "withoutFundamentals": 1252,
+ "instruments": 5311,
+ "withoutFundamentals": 1253,
  "shards": [
   "AA",
   "AB",
@@ -220,7 +220,6 @@
   "GN",
   "GO",
   "GP",
-  "GQ",
   "GR",
   "GS",
   "GT",
@@ -239,7 +238,6 @@
   "HG",
   "HH",
   "HI",
-  "HJ",
   "HK",
   "HL",
   "HM",
@@ -465,12 +463,10 @@
   "QF",
   "QG",
   "QH",
-  "QJ",
   "QL",
   "QM",
   "QN",
   "QO",
-  "QQ",
   "QR",
   "QS",
   "QT",
@@ -584,7 +580,6 @@
   "VA",
   "VB",
   "VC",
-  "VD",
   "VE",
   "VF",
   "VG",
@@ -637,7 +632,6 @@
   "XG",
   "XH",
   "XI",
-  "XK",
   "XL",
   "XM",
   "XN",
@@ -695,11 +689,11 @@
  "candidates": 33,
  "unavailableSchemaVersion": "pattern-unavailable-1.0.0",
  "unavailable": {
-  "total": 1376,
+  "total": 997,
   "requiredWeeks": 104,
   "reasons": {
-   "INSUFFICIENT_WEEKLY_HISTORY": 915,
-   "NO_WEEKLY_SERIES": 461
+   "INSUFFICIENT_WEEKLY_HISTORY": 728,
+   "NO_WEEKLY_SERIES": 269
   },
   "note": "Je Titel im eigenen Shard nachlesbar. Die Luecke ist eine Datengrenze der Studie (104 Wochen vorregistriert) und kein Fehlschlag des Titels."
  },

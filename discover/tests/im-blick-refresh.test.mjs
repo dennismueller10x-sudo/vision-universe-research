@@ -328,7 +328,7 @@ test("RF10 · eine aeltere Veroeffentlichung ersetzt nie eine neuere", () => {
 });
 
 /* ---------------------------------------------------------------- RF11 */
-test("RF11 · Browser-Cache und Service Worker: eigener fetch mit no-cache und Fuenf-Minuten-Parameter; Gueltigkeit aus der Datei; kein Datencache im Service Worker", async () => {
+test("RF11 · Browser-Cache und Service Worker: eigener fetch mit no-cache und Fuenf-Minuten-Parameter; Gueltigkeit aus der Datei; Live-Antwort bleibt ausserhalb des E5-Caches", async () => {
   const D = {}; const abrufe = [];
   const live = { status: "LIVE", eodAsOf: VORTAG, generatedAt: new Date().toISOString(), validUntil: new Date(Date.now() + 3600000).toISOString(), stocks: [{ symbol: "A" }, { symbol: "B" }, { symbol: "C" }] };
   const fetch = (url, opts) => { abrufe.push({ url, opts }); return Promise.resolve({ ok: true, json: () => Promise.resolve(live) }); };
@@ -351,11 +351,12 @@ test("RF11 · Browser-Cache und Service Worker: eigener fetch mit no-cache und F
   assert.equal(U(Object.assign({}, basis, { validUntil: undefined, generatedAt: TAG + "T15:00:00.000Z" }), VORTAG, jetzt), false, "alte Datei ohne validUntil: drei Stunden");
   for (const st of ["INTRADAY_STALE", "NO_INTRADAY", "EOD_CURRENT", "EOD_STALE", "NO_EVENTS"]) assert.equal(U(Object.assign({}, basis, { status: st }), VORTAG, jetzt), false, st + " wird nie gezeigt");
   assert.equal(U(basis, "2026-10-12", jetzt), false, "andere Basis");
-  /* Der Service Worker cached keine Daten. */
-  const sw = readFileSync(join(ROOT, "sw.js"), "utf8");
-  assert.doesNotMatch(sw, /cache\.put|\.put\(/, "kein Schreiben von Antworten");
-  assert.match(sw, /Bewusst minimal: Er cached KEINE Daten/);
-  assert.match(sw, /PRECACHE = \['\/offline\.html'/);
+  /* Owner E5 erlaubt kurze Frische fuer oeffentliche EOD-Dateien; der
+     zeitgebundene Live-Endpunkt muss weiterhin unveraendert ans Netz. */
+  const handlers = {}; let intercepted = false;
+  vm.runInNewContext(readFileSync(join(ROOT, "sw.js"), "utf8"), { self: { location: { origin: "https://example.test" }, addEventListener: (name, fn) => { handlers[name] = fn; } }, URL });
+  handlers.fetch({ request: { method: "GET", mode: "cors", url: "https://example.test" + abrufe[0].url, cache: "no-cache" }, respondWith: () => { intercepted = true; } });
+  assert.equal(intercepted, false, "Live-Frische wird nie vom SW ersetzt");
 });
 
 /* ---------------------------------------------------------------- RF12 */

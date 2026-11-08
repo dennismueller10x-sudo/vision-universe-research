@@ -7,8 +7,15 @@
    Re-Freeze-Befehl selbst (`universe-release.mjs refreeze`), den der Workflow nur
    aufruft, wenn `preflight` die Entscheidung REFREEZE liefert.
 
+   Zwei Quellen (Feld `source`):
+   legacy    Universum nicht aktiv (activation fehlt oder ROLLBACK_46): Re-Freeze auf das ausgelieferte Legacy-GOOD.
+   universe  Universum aktiv (activation AVAILABLE, Entscheidung Steuerung 08.11.2026): das Legacy-GOOD rueckt dann
+             nicht vor; eingefroren wird die 46er-Projektion des ausgelieferten Universe-GOOD
+             (`universe-release.mjs refreeze --from-universe`, universe-projection.mjs). Alle Pruefungen laufen
+             dann gegen das Universe-GOOD (Gate, Frische, Health, eine Generation, Artefakte).
+
    Entscheidungen von `preflight`:
-   REFREEZE  alle Voraussetzungen erfuellt und ein neuerer Legacy-GOOD vorhanden
+   REFREEZE  alle Voraussetzungen erfuellt und ein neuerer Quell-GOOD vorhanden
    SKIP      alle Voraussetzungen erfuellt, aber nichts Neueres einzufrieren (kein Fehler)
    BLOCKED   mindestens eine Voraussetzung fehlt: kein Re-Freeze, Exit 1
    Exit-Codes: 0 = REFREEZE/SKIP, 1 = BLOCKED bzw. Nachpruefung fehlgeschlagen, 2 = Absturz. */
@@ -26,8 +33,9 @@ import {parseRollout} from './propagation-proof.mjs';
 import {assertLegacyScope,refreezeArchiveKey,refreezeArchiveBytes} from './frozen-refreeze.mjs';
 
 export const HOUR=3600000;
-/* Der eingefrorene Rollback verfaellt sieben Tage nach manifest.generatedAt (CONSUMER_EXPIRED). */
-export const FREEZE_LIFETIME_MS=7*24*HOUR;
+/* Der eingefrorene Rollback verfaellt sieben Tage nach manifest.generatedAt (CONSUMER_EXPIRED); eine Quelle: freeze-expiry.mjs. */
+import {FREEZE_LIFETIME_MS} from './freeze-expiry.mjs';
+export {FREEZE_LIFETIME_MS};
 /* Takt des Zeitplans (hoechstens 2 Tage Abstand). Der Scheduler laesst Slots aus und ein verdraengter Lauf bleibt
    ohne Alarm; die Eskalationsschwelle ist deshalb Takt + 1 Tag Reserve (= 3 Tage), nicht mehr 48 h. */
 export const CADENCE_MS=48*HOUR;
@@ -59,20 +67,25 @@ async function protectedHashes(driver){
 }
 const check=(id,title,failures,detail)=>({id,title,status:failures.length?'FAIL':'PASS',code:failures.length?failures[0].split(':')[0]:null,detail:failures.length?failures.join('; '):detail});
 
-/* Gemeinsamer Lesezustand: jedes Objekt genau einmal, Ladefehler werden pro Pruefung sichtbar. */
+/* Gemeinsamer Lesezustand: jedes Objekt genau einmal, Ladefehler werden pro Pruefung sichtbar.
+   `s.legacy` ist der Quell-GOOD der Quelle `s.source`: Legacy-GOOD (46/45) oder, bei aktivem Universum, Universe-GOOD. */
 async function load(driver,fetchImpl,now){
- const legacyNs=refreshConfig.consumerNamespace,rollbackNs=universeConfig.rollbackNamespace;
+ const rollbackNs=universeConfig.rollbackNamespace;
  const gate={read:()=>driver.get(prefixFor(approval.namespace)+'gate.json'),approvalId:approval.approvalId,generation:approval.consumerGeneration};
  const s={};
- s.legacy=await attempt(async()=>{const g=await goodState(driver,legacyNs);if(!g)throw Error('LEGACY_GOOD_MISSING');return assertLegacyScope(g,'LEGACY_GOOD_SCOPE_INVALID');});
+ s.activation=await attempt(async()=>{
+  const raw=await driver.get(activationKey());if(!raw)return null;
+  const p=JSON.parse(raw);if(p.schema!==1||p.approvalId!==universeConfig.approvalId)throw Error('ACTIVATION_INVALID');return p;
+ });
+ s.source=s.activation.ok&&s.activation.value?.state==='AVAILABLE'?'universe':'legacy';
+ const legacyNs=s.source==='universe'?universeConfig.consumerNamespace:refreshConfig.consumerNamespace;
+ s.legacy=s.source==='universe'
+  ?await attempt(async()=>{const g=await goodState(driver,legacyNs);if(!g)throw Error('UNIVERSE_GOOD_MISSING');if(g.manifest.scope!=='PER_ISSUER_ELIGIBILITY')throw Error('UNIVERSE_GOOD_SCOPE_INVALID');return g;})
+  :await attempt(async()=>{const g=await goodState(driver,legacyNs);if(!g)throw Error('LEGACY_GOOD_MISSING');return assertLegacyScope(g,'LEGACY_GOOD_SCOPE_INVALID');});
  s.frozen=await attempt(async()=>{
   const bytes=await driver.get(goodKey(rollbackNs));if(!bytes)throw Error('ROLLBACK_POINTER_MISSING');
   const g=await goodState(driver,rollbackNs);if(!g)throw Error('ROLLBACK_POINTER_INVALID');
   assertLegacyScope(g,'ROLLBACK_FREEZE_SCOPE_INVALID');return {good:g,bytes:Buffer.from(bytes)};
- });
- s.activation=await attempt(async()=>{
-  const raw=await driver.get(activationKey());if(!raw)return null;
-  const p=JSON.parse(raw);if(p.schema!==1||p.approvalId!==universeConfig.approvalId)throw Error('ACTIVATION_INVALID');return p;
  });
  s.gate=await attempt(()=>readGateState(gate));
  s.observed=await attempt(async()=>{const raw=await driver.get(prefixFor(legacyNs)+'observed.json');return raw?JSON.parse(raw):null;});
@@ -86,10 +99,15 @@ async function load(driver,fetchImpl,now){
 }
 
 /* (1) CI verfuegbar und Gate offen. Alles live; das Gate zusaetzlich lesend aus R2. */
+/* Erwarteter Umfang der Auslieferung je Quelle (wie productionObservation). */
+function scopeOf(s){
+ const m=s.source==='universe'&&s.legacy.ok?s.legacy.value.manifest:null;
+ return m?{stocks:m.tickers.length,issuers:Object.keys(m.eligibility).length}:{stocks:46,issuers:45};
+}
 function checkGateOpen(s){
- const f=[],d=s.delivery.json;
+ const f=[],d=s.delivery.json,scope=scopeOf(s);
  if(s.delivery.status!==200)f.push('DELIVERY_HTTP_'+(s.delivery.status??s.delivery.error));
- else if(!d||d.status!=='PASS'||!hex24.test(d.generation||'')||d.cohortStocks!==46||d.issuers!==45)f.push('DELIVERY_NOT_PASS_46_45');
+ else if(!d||d.status!=='PASS'||!hex24.test(d.generation||'')||d.cohortStocks!==scope.stocks||d.issuers!==scope.issuers)f.push(s.source==='universe'?'DELIVERY_NOT_PASS_UNIVERSE_SCOPE':'DELIVERY_NOT_PASS_46_45');
  const i=s.index.json;
  if(s.index.status!==200||!i)f.push('INDEX_UNAVAILABLE');
  else if(i.state==='DISABLED')f.push('INDEX_STATE_DISABLED');
@@ -104,7 +122,7 @@ function checkGateOpen(s){
 function checkRefreshFresh(s,now){
  const f=[];let age=null;
  // Auch LEGACY_FALLBACK (goodState liefert null, z. B. nach Doppel-Rollback) endet hier mit klarer Ursache.
- if(!s.legacy.ok)f.push(s.legacy.error==='LEGACY_GOOD_MISSING'?'LEGACY_GOOD_MISSING':'LEGACY_GOOD_UNUSABLE:'+s.legacy.error);
+ if(!s.legacy.ok)f.push(['LEGACY_GOOD_MISSING','UNIVERSE_GOOD_MISSING'].includes(s.legacy.error)?s.legacy.error:(s.source==='universe'?'UNIVERSE_GOOD_UNUSABLE:':'LEGACY_GOOD_UNUSABLE:')+s.legacy.error);
  else{
   const last=s.legacy.value.health?.lastSuccessfulRefresh,t=Date.parse(last);
   if(!Number.isFinite(t))f.push('LAST_REFRESH_MISSING');
@@ -141,7 +159,7 @@ function checkGeneration(s){
  if(missing.length)f.push('GENERATION_UNKNOWN:'+missing.join(','));
  const mixed=Object.entries(seen).filter(([,v])=>hex24.test(v||'')&&v!==target).map(([k,v])=>k+'='+v);
  if(mixed.length)f.push('GENERATION_MIXED:'+mixed.join(','));
- return check('generation-unanimous','Produktionsgeneration eindeutig',f,'delivery = index = served = rollout = refresh = observed = Legacy-GOOD = '+target);
+ return check('generation-unanimous','Produktionsgeneration eindeutig',f,'delivery = index = served = rollout = refresh = observed = '+(s.source==='universe'?'Universe-GOOD':'Legacy-GOOD')+' = '+target);
 }
 /* (5) Artefakte vorhanden und konsistent. */
 function checkArtifacts(s){
@@ -170,12 +188,17 @@ function checkArchivable(s){
   if(!Number.isFinite(expiry))f.push('ROLLBACK_GENERATED_AT_INVALID');
  }
  if(!s.activation.ok)f.push('ACTIVATION_UNREADABLE:'+s.activation.error);
- else if(s.activation.value&&s.activation.value.state!=='ROLLBACK_46')f.push('UNIVERSE_ACTIVE:'+s.activation.value.state);
- return {c:check('rollback-archivable','Alter Rollback-Stand sicher archivierbar',f,'Rollback-Namespace lesbar, Universum nicht aktiv'),expiry};
+ else if(s.source==='legacy'&&s.activation.value&&s.activation.value.state!=='ROLLBACK_46')f.push('ACTIVATION_STATE_INVALID:'+s.activation.value.state);
+ return {c:check('rollback-archivable','Alter Rollback-Stand sicher archivierbar',f,'Rollback-Namespace lesbar, Quelle '+s.source+(s.source==='universe'?' (Universum aktiv, 46er-Projektion)':' (Universum nicht aktiv)')),expiry};
 }
-async function checkArchiveKey(s,driver,legacyGeneration){
+/* Ist der Freeze schon auf dem Stand der Quelle? Legacy: gleiche Generation. Universe: Projektion aus genau diesem GOOD. */
+export function freezeCurrent(source,frozen,good){
+ if(!frozen||!good)return false;
+ return source==='universe'?frozen.refreeze?.projection?.sourceGeneration===good.generation:frozen.generation===good.generation;
+}
+async function checkArchiveKey(s,driver){
  // Archiv-Schluessel frei oder byte-identisch (idempotent); nur relevant, wenn wirklich neu eingefroren wird.
- if(!s.frozen.ok||!s.legacy.ok||s.frozen.value.good.generation===legacyGeneration)return [];
+ if(!s.frozen.ok||!s.legacy.ok||freezeCurrent(s.source,s.frozen.value.good,s.legacy.value))return [];
  const {good,bytes}=s.frozen.value,existing=await attempt(()=>driver.get(refreezeArchiveKey(good.generation)));
  if(!existing.ok)return ['ARCHIVE_KEY_UNREADABLE:'+existing.error];
  if(existing.value&&!Buffer.from(existing.value).equals(refreezeArchiveBytes(good,bytes)))return ['ARCHIVE_COLLISION'];
@@ -187,7 +210,7 @@ export async function evaluatePreflight({driver,fetchImpl=fetch,now=Date.now()})
  const ro=readOnly(driver),s=await load(ro,fetchImpl,now);
  const checks=[checkGateOpen(s),checkRefreshFresh(s,now),checkHealth(s),checkGeneration(s),checkArtifacts(s)];
  const arch=checkArchivable(s);
- const keyFailures=await checkArchiveKey(s,ro,s.legacy.ok?s.legacy.value.generation:null);
+ const keyFailures=await checkArchiveKey(s,ro);
  if(keyFailures.length)Object.assign(arch.c,check(arch.c.id,arch.c.title,keyFailures,''));
  checks.push(arch.c);
  const frozen=s.frozen.ok?s.frozen.value.good:null,legacy=s.legacy.ok?s.legacy.value:null;
@@ -197,9 +220,9 @@ export async function evaluatePreflight({driver,fetchImpl=fetch,now=Date.now()})
  let decision,reason;
  const failed=checks.filter(c=>c.status==='FAIL');
  if(failed.length){decision='BLOCKED';reason='PREREQUISITE_FAILED';}
- else if(frozen.generation===legacy.generation){decision='SKIP';reason='FREEZE_ALREADY_CURRENT_GENERATION';}
- else if(!(Date.parse(legacy.manifest.generatedAt)>Date.parse(frozen.manifest.generatedAt))){decision='SKIP';reason='NO_NEWER_LEGACY_GOOD';}
- else{decision='REFREEZE';reason='NEWER_VERIFIED_LEGACY_GOOD';}
+ else if(freezeCurrent(s.source,frozen,legacy)){decision='SKIP';reason='FREEZE_ALREADY_CURRENT_GENERATION';}
+ else if(!(Date.parse(legacy.manifest.generatedAt)>Date.parse(frozen.manifest.generatedAt))){decision='SKIP';reason=s.source==='universe'?'NO_NEWER_UNIVERSE_GOOD':'NO_NEWER_LEGACY_GOOD';}
+ else{decision='REFREEZE';reason=s.source==='universe'?'NEWER_VERIFIED_UNIVERSE_GOOD':'NEWER_VERIFIED_LEGACY_GOOD';}
  if(decision==='SKIP'&&urgent){
   // Nichts Neueres zum Einfrieren und der Freeze laeuft bald ab: nicht heilbar, laut melden.
   checks.push({id:'freeze-needed',title:'Freeze-Verfall heilbar',status:'FAIL',code:'FREEZE_EXPIRING_NOT_HEALABLE',detail:'FREEZE_EXPIRING_NOT_HEALABLE: '+reason+', Restlaufzeit '+hours(remaining)+' h'});
@@ -207,10 +230,10 @@ export async function evaluatePreflight({driver,fetchImpl=fetch,now=Date.now()})
  }
  const protectedState=await protectedHashes(ro);
  return {schema:1,kind:'REFREEZE_AUTO_VERDICT',phase:'preflight',decision,reason,protectedState,causes:[...new Set(checks.filter(c=>c.status==='FAIL').flatMap(c=>c.detail.split('; ').map(x=>x.split(':')[0])))],urgent:decision==='BLOCKED'&&urgent,checkedAt:iso(now),
-  generation:legacy?.generation||null,writes:'NONE',
+  generation:legacy?.generation||null,source:s.source,writes:'NONE',
   legacy:legacy&&{generation:legacy.generation,generatedAt:legacy.manifest.generatedAt,goodDataAgeHours:hours(now-Date.parse(legacy.health?.lastSuccessfulRefresh))},
   freeze:frozen&&{generation:frozen.generation,generatedAt:frozen.manifest.generatedAt,pointerSha256:sha(s.frozen.value.bytes),expiresAt:iso(expiresMs),hoursToExpiry:hours(remaining),expired:remaining<=0,
-   note:'ALREADY_CURRENT verlaengert den Verfall nicht; nur ein Re-Freeze auf einen neueren Legacy-GOOD tut das'},
+   note:'ALREADY_CURRENT verlaengert den Verfall nicht; nur ein Re-Freeze auf einen neueren Quell-GOOD tut das'},
   checks};
 }
 
@@ -234,13 +257,17 @@ export async function evaluatePostcheck({driver,release,expectGeneration,preflig
   add('result','Ergebnis des Re-Freeze',[],release.status);
   const bad=['privateStateModified','activationModified','gateModified','universeGoodModified'].filter(k=>release[k]!==false);
   add('flags','Vier Schutz-Flags false',bad.map(k=>'FLAG_NOT_FALSE:'+k),'privateState/activation/gate/universeGood unveraendert');
-  add('generation','Generation wie gepruefte',release.generation===expectGeneration&&hex24.test(expectGeneration||'')?[]:['GENERATION_MISMATCH:'+release.generation+'!='+expectGeneration],expectGeneration);
+  // Projektion (Quelle universe): geprueft wurde die Universe-Generation; der Freeze traegt die eigene Projektionsgeneration.
+  const projected=Boolean(release.projectedFrom),target=projected?release.generation:expectGeneration;
+  const genOk=hex24.test(expectGeneration||'')&&(projected?release.projectedFrom.generation===expectGeneration&&hex24.test(release.generation||''):release.generation===expectGeneration);
+  add('generation','Generation wie gepruefte',genOk?[]:['GENERATION_MISMATCH:'+(projected?release.projectedFrom.generation:release.generation)+'!='+expectGeneration],projected?expectGeneration+' -> Projektion '+release.generation:expectGeneration);
   const f=[];let g=null;
   if(!frozen.ok)f.push('ROLLBACK_POINTER_UNREADABLE:'+frozen.error);
   else{
    g=frozen.value.good;
-   if(g.generation!==expectGeneration)f.push('FREEZE_GENERATION_MISMATCH:'+g.generation);
-   if(release.status==='REFROZEN'&&g.refreeze?.sourceGeneration!==expectGeneration)f.push('REFREEZE_MARKER_MISSING');
+   if(g.generation!==target)f.push('FREEZE_GENERATION_MISMATCH:'+g.generation);
+   if(projected){if(g.refreeze?.projection?.sourceGeneration!==expectGeneration||g.refreeze?.sourceGeneration!==g.generation||g.manifest.projection?.sourceGeneration!==expectGeneration)f.push('PROJECTION_MARKER_MISSING');}
+   else if(release.status==='REFROZEN'&&g.refreeze?.sourceGeneration!==expectGeneration)f.push('REFREEZE_MARKER_MISSING');
    if(Date.parse(g.manifest.generatedAt)+FREEZE_LIFETIME_MS<=now)f.push('NEW_FREEZE_ALREADY_EXPIRED');
   }
   add('new-freeze','Neuer Freeze gueltig',f,g?'generatedAt '+g.manifest.generatedAt+', gueltig bis '+iso(Date.parse(g.manifest.generatedAt)+FREEZE_LIFETIME_MS):'');
@@ -312,7 +339,7 @@ async function main(argv,env=process.env){
  if(out){mkdirSync(dirname(out),{recursive:true});writeFileSync(out,JSON.stringify(verdict,null,2)+'\n');}
  for(const line of annotations(verdict))console.log(line);
  if(env.GITHUB_STEP_SUMMARY)appendFileSync(env.GITHUB_STEP_SUMMARY,renderSummary(verdict));
- if(env.GITHUB_OUTPUT&&mode==='preflight')appendFileSync(env.GITHUB_OUTPUT,`decision=${verdict.decision}\ngeneration=${verdict.decision==='REFREEZE'?verdict.generation:''}\nurgent=${verdict.urgent}\n`);
+ if(env.GITHUB_OUTPUT&&mode==='preflight')appendFileSync(env.GITHUB_OUTPUT,`decision=${verdict.decision}\ngeneration=${verdict.decision==='REFREEZE'?verdict.generation:''}\nsource=${verdict.decision==='REFREEZE'?verdict.source:''}\nurgent=${verdict.urgent}\n`);
  console.log(JSON.stringify({phase:verdict.phase,decision:verdict.decision,reason:verdict.reason,generation:verdict.generation}));
  return verdict.decision==='CRASHED'?2:exitCodeOf(verdict);
 }

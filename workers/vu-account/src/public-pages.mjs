@@ -1,6 +1,7 @@
 // Oeffentliche Seiten auf konto.visionuniverse.de – ohne Research-Passwortmaske und ohne Anmeldung:
 //   /rechtliches/…  Impressum, Datenschutz, Bedingungen, Widerrufsbelehrung, Muster-Formular, Newsletter
 //   /kuendigen      Kuendigungsfunktion (§ 312k BGB): „Jetzt kündigen“ -> Eingangsbestaetigung
+//   /kontakt        Kontaktformular (zweiter schneller Kontaktweg neben der E-Mail, § 5 Abs. 1 Nr. 2 DDG)
 //   /widerrufen     Widerrufsfunktion (§ 356a BGB): „Vertrag widerrufen“ -> Angaben ->
 //                   „Widerruf bestätigen“ -> Eingangsbestaetigung (Seite und E-Mail)
 // Reines HTML ohne Skript (CSP: kein Skript, nur eigene Formularziele). Formulare pruefen die Herkunft
@@ -11,6 +12,7 @@ import {HttpError, readText} from './http.mjs';
 import {DOCS, LINKS, LEGAL_STATUS, LEGAL_VERSION, COMPANY} from './legal/texts.mjs';
 import {receivePublicCancellation, receivePublicWithdrawal} from './cancellation.mjs';
 import * as v from './validate.mjs';
+import {contactMessage} from './mail.mjs';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 
@@ -56,7 +58,7 @@ function page(title, body, {status = 200, robots = 'index'} = {}) {
   const html = `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="${robots === 'index' ? 'index,follow' : 'noindex,nofollow'}"><title>${esc(title)} · Vision Universe</title><style>${CSS}</style></head>
 <body><main><header><a href="${LINKS.index}">VISION UNIVERSE</a></header><h1>${esc(title)}</h1>${draft}${body}
-<footer><a href="${LINKS.kuendigen}">Verträge hier kündigen</a><a href="${LINKS.widerrufen}">Vertrag widerrufen</a><a href="${LINKS.agb}">Bedingungen</a><a href="${LINKS.datenschutz}">Datenschutz</a><a href="${LINKS.impressum}">Impressum</a></footer>
+<footer><a href="${LINKS.kontakt}">Kontakt</a><a href="${LINKS.kuendigen}">Verträge hier kündigen</a><a href="${LINKS.widerrufen}">Vertrag widerrufen</a><a href="${LINKS.agb}">Bedingungen</a><a href="${LINKS.risikohinweise}">Risikohinweise</a><a href="${LINKS.datenschutz}">Datenschutz</a><a href="${LINKS.impressum}">Impressum</a></footer>
 </main></body></html>`;
   return new Response(html, {status, headers: HEADERS});
 }
@@ -70,7 +72,8 @@ export function legalPage(key) {
 
 export function legalIndex() {
   const items = [['impressum', 'Impressum'], ['agb', 'Nutzungs- und Vertragsbedingungen (Free und Pro)'], ['widerrufsbelehrung', 'Widerrufsbelehrung'],
-    ['widerrufsformular', 'Muster-Widerrufsformular'], ['datenschutz', 'Datenschutzerklärung'], ['newsletter', 'Newsletter: Datenschutz und Einwilligung']];
+    ['widerrufsformular', 'Muster-Widerrufsformular'], ['datenschutz', 'Datenschutzerklärung'], ['newsletter', 'Newsletter: Datenschutz und Einwilligung'],
+    ['risikohinweise', 'Risikohinweise und Haftungsausschluss'], ['methodik', 'Methodik, Quellen und Interessen']];
   return page('Rechtliches', `<ul>${items.map(([k, t]) => `<li><a href="${LINKS[k]}">${esc(t)}</a></li>`).join('')}</ul>
 <p><a href="${LINKS.kuendigen}">Verträge hier kündigen</a> · <a href="${LINKS.widerrufen}">Vertrag widerrufen</a></p>
 <p class="muted">Anbieter: ${esc(COMPANY.name)}, ${esc(COMPANY.street)}, ${esc(COMPANY.city)}.</p>`);
@@ -83,9 +86,9 @@ function assertSameOrigin(ctx) {
   const referer = ctx.request.headers.get('Referer') || '';
   if (origin ? origin !== own : !referer.startsWith(own + '/')) throw new HttpError(403, 'ORIGIN_NOT_ALLOWED');
 }
-async function readForm(ctx) {
+async function readForm(ctx, max = 8192) {
   if (!/^application\/x-www-form-urlencoded\b/i.test(ctx.request.headers.get('Content-Type') || '')) throw new HttpError(415, 'FORM_REQUIRED');
-  return new URLSearchParams(await readText(ctx.request, 8192));
+  return new URLSearchParams(await readText(ctx.request, max));
 }
 const field = (name, label, value, attrs = '') =>
   `<label>${esc(label)}<input name="${name}" value="${esc(value || '')}" ${attrs}></label>`;
@@ -165,6 +168,51 @@ export async function withdrawPost(ctx) {
   const r = await receivePublicWithdrawal(ctx, {email, fullName, reference});
   return receipt('Dein Widerruf ist eingegangen', `Wir haben deinen Widerruf vom ${new Date(r.receivedAt).toLocaleDateString('de-DE', {timeZone: 'Europe/Berlin'})} erhalten und bestätigen den Eingang per E-Mail. Wir beenden Pro und erstatten Zahlungen nach der Widerrufsbelehrung.`, r);
 }
+// ---------------------------------------------------------------- Kontakt (§ 5 Abs. 1 Nr. 2 DDG)
+// Name, E-Mail, Nachricht. Versand ueber den vorhandenen Brevo-Weg an die Impressumsadresse, Reply-To = Absender.
+// Keine Speicherung im Konto-Dienst, keine Bestaetigungsmail an die eingetragene Adresse (sonst Versand an Fremde).
+// Schutz: gleiche Herkunft, Honeypot-Feld „website“ (fuer Menschen unsichtbar), Ratenbegrenzung je IP und je Adresse.
+export const CONTACT_MAX = 3000;
+const CONTACT_PROMISE = 'Wir antworten in der Regel innerhalb von 1–2 Werktagen.';
+function contactPage(values = {}, error = null, status = 200) {
+  return page('Kontakt', `<p>Schreib uns über dieses Formular oder per E-Mail an <a href="mailto:${esc(COMPANY.email)}">${esc(COMPANY.email)}</a>. ${CONTACT_PROMISE}</p>
+<p class="muted">Kündigen und widerrufen geht schneller und mit Eingangsbestätigung über <a href="${LINKS.kuendigen}">Verträge hier kündigen</a> und <a href="${LINKS.widerrufen}">Vertrag widerrufen</a>.</p>
+${errorBox(error)}<form method="post" action="${LINKS.kontakt}">
+${field('name', 'Name', values.name, 'required maxlength="120" autocomplete="name"')}
+${field('email', 'E-Mail-Adresse (für die Antwort)', values.email, 'type="email" required maxlength="254" autocomplete="email"')}
+<label>Nachricht<textarea name="message" required maxlength="${CONTACT_MAX}" rows="7">${esc(values.message || '')}</textarea></label>
+<label style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden" aria-hidden="true">Bitte leer lassen<input name="website" tabindex="-1" autocomplete="off"></label>
+<button type="submit">Nachricht senden</button></form>
+<p class="muted">Wie wir deine Angaben verarbeiten, steht in der <a href="${LINKS.datenschutz}">Datenschutzerklärung</a> (Abschnitt 6).</p>`, {status});
+}
+const contactSent = () => page('Nachricht gesendet', `<p>Danke, deine Nachricht ist bei uns angekommen. ${CONTACT_PROMISE}</p>
+<p><a href="${LINKS.index}">Zu den Rechtstexten</a></p>`, {robots: 'noindex'});
+export const contactGet = () => contactPage();
+export async function contactPost(ctx) {
+  assertSameOrigin(ctx);
+  const f = await readForm(ctx, 32768);
+  const values = {name: f.get('name') || '', email: f.get('email') || '', message: f.get('message') || ''};
+  // Honeypot: Bots fuellen jedes Feld. Antwort wie bei Erfolg, damit sie nichts lernen; es wird nichts versendet.
+  if ((f.get('website') || '').trim()) return contactSent();
+  let email;
+  try { email = v.email(values.email); } catch { return contactPage(values, MESSAGES.EMAIL_INVALID); }
+  const name = values.name.replace(/[\u0000-\u001f\u007f]/g, ' ').trim();
+  if (!name) return contactPage(values, MESSAGES.NAME_REQUIRED);
+  if (name.length > 120) return contactPage(values, 'Der Name ist zu lang (höchstens 120 Zeichen).');
+  const message = values.message.replace(/\r\n?/g, '\n').trim();
+  if (!message) return contactPage(values, 'Bitte schreib eine Nachricht.');
+  if (message.length > CONTACT_MAX) return contactPage(values, `Die Nachricht ist zu lang (höchstens ${CONTACT_MAX} Zeichen).`);
+  try { await ctx.limit('contact', ctx.ip || email); await ctx.limit('contactEmail', email); }
+  catch { return contactPage(values, MESSAGES.RATE_LIMITED, 429); }
+  const result = await ctx.mailer.send({to: COMPANY.email, replyTo: email,
+    ...contactMessage({name, email, message, receivedAt: new Date(ctx.now()).toISOString()})});
+  if (result !== 'sent') {
+    ctx.log('error', 'CONTACT_NOT_SENT', {status: result});
+    return contactPage(values, `Die Nachricht konnte gerade nicht gesendet werden. Bitte schreib uns direkt an ${COMPANY.email}.`, 503);
+  }
+  return contactSent();
+}
+
 export function htmlError(e) {
   if (e instanceof HttpError && e.status === 403) return page('Anfrage nicht möglich', '<p>Bitte nutze das Formular auf dieser Seite.</p>', {status: 403, robots: 'noindex'});
   if (e instanceof HttpError && e.status === 415) return page('Anfrage nicht möglich', '<p>Bitte nutze das Formular auf dieser Seite.</p>', {status: 415, robots: 'noindex'});

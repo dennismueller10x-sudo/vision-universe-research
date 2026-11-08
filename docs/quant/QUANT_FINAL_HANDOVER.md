@@ -1,5 +1,8 @@
 # Quant: Abschlussübergabe an die zentrale Entwicklung (Version 1.0.0, Stand 02.11.2026)
 
+> **Einstieg Quant.** Aktuelle Arbeitsregeln: [CLAUDE.md](../../CLAUDE.md); datierte Entscheidungen: [Neustart-Plan](../PLAN_NEUSTART_2026-11.md). Bei Widersprüchen zu historischen Abschnitten gelten diese Quellen. Weitere Seiten sind Fachbelege, keine parallelen Einstiege. [Landkarte](../README.md).
+
+
 Diese Übergabe beschließt den produktspezifischen Quant-Chat. Ab jetzt steuert ein zentraler Claude-Code-Chat die Entwicklung aller Produktwelten.
 - Sie ist ohne Chatverlauf verständlich.
 - Die maschinenlesbare Fassung steht in [`quant-handover.json`](quant-handover.json).
@@ -87,7 +90,7 @@ Quelle: `quant/engines/backtest-kinds.cjs`, `scripts/quant/research/backtest-run
 | SAME_STOCK_REPLAY | feste Regel auf einer Aktie oder echter Wochen-Ledger | ja (Katalog A) | LIMITED | genau ein Listing; Ledger ohne delistete Titel |
 | PATTERN_EVIDENCE | Musterereignisse gegen Kontrollen vom selben Datum | ja (A) | LIMITED | keine zertifizierte Renditebasis |
 | SIGNAL_BACKTEST | fünf Signalregeln je Ereignis, optional finanziert | ja (A) | LIMITED | finanziert: im Fenster delistete Titel fallen heraus |
-| SETUP_BACKTEST | auf rekonstruierten Setup-Ständen | ja (A, Nachweisart Rekonstruktion) | COLLECTING_HISTORY | Setup-OOS nicht messbar (A1–A6 offen); keine delisteten Titel |
+| SETUP_BACKTEST | auf rekonstruierten Setup-Ständen | ja (A, Nachweisart Rekonstruktion) | COLLECTING_HISTORY | Setup-OOS nicht messbar (A1–A6 entschieden 04.11.2026, messbar frühestens um 2028-01-08); keine delisteten Titel |
 | STRATEGY_BACKTEST | Portfolio mit festen Gewichten oder Dividenden-TR | ja (A); Profil-Variante B | COLLECTING_HISTORY | Profil braucht PIT-Faktor-Snapshots |
 | FACTOR_RANKING_BACKTEST | Faktorstudie auf dem privaten V10-PIT-Panel | ja (A, nur mit privatem Panel) | COLLECTING_HISTORY | nur `ref_`-Listings; frühestens 2028 zertifizierbar |
 
@@ -151,6 +154,8 @@ Quelle: `quant/engines/backtest-kinds.cjs`, `scripts/quant/research/backtest-run
 
 - **Profile** in `scripts/quant/research/research-population.cjs`: `PRODUCT_DEFAULT` (Produktstamm) sowie V10_PRIMARY bis V13B (1.1.0).
 - **Abdeckung je Lauf** steht im Ergebnis: `population`, `dataQuality.coverage`, `inputHashes`.
+
+- **Deckungskennzahlen, Neuabnahme 06.11.2026:** Produkttitel 6.686 → 6.308, darstellbar 6.683 → 6.305, technisch bereit 5.644 → 5.655 (R2-Reihen 7.802 unverändert); jede Abweichung je Titel erklärt (`coverage-delta.mjs`, Lauf 42201411281). Entscheidung Steuerung 06.11. nach dokumentierter Empfehlung: Grenzfälle der 300-Bar-Schwelle zählen über den letzten Datentag der Messung (aus der Messung abgeleitet, hier 06.10.2026), nicht über den Stichtag. Konstanten in `scripts/quant/tests/test_canonical_market.py#ABGENOMMEN`.
 
 ### B5. Forschungsergebnisse V10–V13c (ERLEDIGT, nicht wiederholen)
 
@@ -239,7 +244,7 @@ Liste mit Abhängigkeiten in `quant-handover.json` (`openPullRequests`). Wichtig
 2. **Die interne Vorschau** ist der Probelauf dieser Integration; dieselben Daten und dieselbe Darstellung der Nachweisart.
 
 **Noch Daten oder Entwicklung nötig:**
-- Zertifizierung je Art (Gates in `backtest-certification.js`): Setup-OOS-Segmentierung A1–A6 (Owner), Faktor-Historie bis frühestens 2028.
+- Zertifizierung je Art (Gates in `backtest-certification.js`): Setup-OOS-Segmentierung A1–A6 entschieden 04.11.2026 (Zeit bis etwa 2028-01), Faktor-Historie bis frühestens 2028.
 - Delistete Titel in finanzierten Signal- und Strategie-Läufen (D4, D5) sowie im Faktorpanel (D7).
 - Rechnen auf Abruf: heute nicht vorhanden. Alles nicht Vorgerechnete heißt „nicht vorgerechnet“.
 
@@ -260,7 +265,7 @@ Liste mit Abhängigkeiten in `quant-handover.json` (`openPullRequests`). Wichtig
 | V13-Archivgeneration 2.0.0 übernehmen (#1241), Leser umstellen, danach Löschung von 1.2.0 | BLOCKIERT, Freigabe nötig | F |
 | Interne Aktivierung der Vorschau | BLOCKIERT, Freigabe nötig | #1227, Abschnitt G |
 | Öffentliche Backtesting-Integration | LANGFRISTIG, nach Praxistest | D |
-| Setup-OOS A1–A6 | BLOCKIERT, spätestens vor etwa 2027-03-26 | `docs/quant/SETUP_OOS_DECISION_A1_A6.md`, `SETUP_OOS_EVALUATION.md` |
+| Setup-OOS A1–A6 | ENTSCHIEDEN 04.11.2026, umgesetzt (methodology 1.1.0) | `docs/quant/SETUP_OOS_DECISION_A1_A6.md`, `SETUP_OOS_EVALUATION.md` |
 | #1119 (132 SEC-Statuskorrekturen) | zurückgestellt bis nach 1.3.0 | – |
 | #1236 merge, #1242 merge | Freigabe nötig | geprüft |
 | SF8-Tageslauf einschalten | Supertrader-Welt | – |
@@ -352,7 +357,7 @@ Eine zweite Engine oder Anwendung gibt es nicht. Die Seite liest nur den hashgeb
 | H2 | Interne Aktivierung und Praxistest | Owner-Freigabe | ja, G |
 | H3 | Archivgeneration 2.0.0: #1241 mergen, Leser umstellen, dann Löschentscheidung 1.2.0 | Owner-Freigabe | ja, F |
 | H4 | Öffentliche Backtest-Integration in `#/backtest` | Praxistest, Owner-Freigabe, UI-Revision | Planung |
-| H5 | Setup-OOS A1–A6 umsetzen | Owner-Entscheidung | |
+| H5 | Setup-OOS A1–A6 umsetzen | erledigt 04.11.2026 | |
 | H6 | #1119 nach 1.3.0 | H1 | |
 | H7 | Katalog-Generation 2 gegen 1.3.0 (neues Verzeichnis) | H1 | optional |
 
@@ -398,3 +403,141 @@ Bericht, Freigabe-Runbooks und FV-1-Analyse: [BACKTEST_P2_DEFIZITE.md](BACKTEST_
 - **FV-1:** `setup-independence-readings.cjs`. Unter Lesart A (Monate) ist Setup frühestens 2028-04 möglich, unter B (ISO-Wochen) 2027-03-26. Empfehlung: A beibehalten und das Feld umbenennen, Unabhängigkeit über N_eff als eigene Entscheidung, B nicht.
 - **FV-8:** `pit-snapshot-integrity.cjs --fail-on-missing-month --alarm-detail`. Offen ist nur der Workflow-Schritt.
 - **Coverage-Matrix** neu gebaut, mit Abschnitt I (Research-Nachweise) und einer Spalte „Research-Nachweis“. Befund unverändert 0/6. Pattern hat jetzt 0 „heute technisch“ und 3 Owner-Blocker.
+
+## Fachbelege und weiterführende Dokumentation
+
+Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.
+
+- [VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md](../../VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md)
+- [VU_BACKTEST_EVIDENCE_PROVIDER_SPEC.md](../VU_BACKTEST_EVIDENCE_PROVIDER_SPEC.md)
+- [VU_BACKTEST_METHODOLOGY.md](../VU_BACKTEST_METHODOLOGY.md)
+- [VU_BACKTEST_TRUST_SCORE.md](../VU_BACKTEST_TRUST_SCORE.md)
+- [VU_QUANT_2_FACTOR_EVIDENCE.md](../VU_QUANT_2_FACTOR_EVIDENCE.md)
+- [VU_QUANT_2_FRONTEND_TRANSFORMATION.md](../VU_QUANT_2_FRONTEND_TRANSFORMATION.md)
+- [VU_QUANT_2_LOST_WORK_REGISTER.md](../VU_QUANT_2_LOST_WORK_REGISTER.md)
+- [VU_QUANT_2_METHODOLOGY.md](../VU_QUANT_2_METHODOLOGY.md)
+- [VU_QUANT_2_METHODOLOGY_NAMESPACES.md](../VU_QUANT_2_METHODOLOGY_NAMESPACES.md)
+- [VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md](../VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md)
+- [VU_QUANT_2_ORCHESTRATOR_STATE.md](../VU_QUANT_2_ORCHESTRATOR_STATE.md)
+- [VU_QUANT_2_PATTERN_RESEARCH.md](../VU_QUANT_2_PATTERN_RESEARCH.md)
+- [VU_QUANT_2_PRODUCT_CONSTITUTION.md](../VU_QUANT_2_PRODUCT_CONSTITUTION.md)
+- [VU_QUANT_2_PRODUCT_LANGUAGE.md](../VU_QUANT_2_PRODUCT_LANGUAGE.md)
+- [VU_QUANT_2_SETUP_OBSERVATION.md](../VU_QUANT_2_SETUP_OBSERVATION.md)
+- [VU_QUANT_2_TOTAL_DEBT_CENSUS.md](../VU_QUANT_2_TOTAL_DEBT_CENSUS.md)
+- [VU_QUANT_2_ZERO_FACTOR_CLASSIFICATION.md](../VU_QUANT_2_ZERO_FACTOR_CLASSIFICATION.md)
+- [VU_QUANT_BACKTEST_CERTIFICATION.md](../VU_QUANT_BACKTEST_CERTIFICATION.md)
+- [VU_QUANT_BACKTEST_SIGNAL_INTELLIGENCE.md](../VU_QUANT_BACKTEST_SIGNAL_INTELLIGENCE.md)
+- [VU_QUANT_BAND_SEMANTICS.md](../VU_QUANT_BAND_SEMANTICS.md)
+- [VU_QUANT_DAILY_USEFULNESS.md](../VU_QUANT_DAILY_USEFULNESS.md)
+- [VU_QUANT_FINAL_PRODUCT_READINESS.md](../VU_QUANT_FINAL_PRODUCT_READINESS.md)
+- [VU_QUANT_FRONTEND_REBUILD.md](../VU_QUANT_FRONTEND_REBUILD.md)
+- [VU_QUANT_METHODOLOGY.md](../VU_QUANT_METHODOLOGY.md)
+- [VU_QUANT_PRODUCT_POSITIONING.md](../VU_QUANT_PRODUCT_POSITIONING.md)
+- [VU_QUANT_SHARE_COUNT_AUDIT.md](../VU_QUANT_SHARE_COUNT_AUDIT.md)
+- [accounts/BACKTEST_VORSCHAU_AKTIVIERUNG.md](../accounts/BACKTEST_VORSCHAU_AKTIVIERUNG.md)
+- [marketstack-europe/QUANT_POPULATION.md](../marketstack-europe/QUANT_POPULATION.md)
+- [neustart/C-quant.md](../neustart/C-quant.md)
+- [quant-recovery/ALPHA_DISCOVERY_V11.md](../quant-recovery/ALPHA_DISCOVERY_V11.md)
+- [quant-recovery/BACKTEST_V10_CERTIFICATION_READINESS.md](../quant-recovery/BACKTEST_V10_CERTIFICATION_READINESS.md)
+- [quant-recovery/BACKTEST_V10_DATA_RECOVERY.md](../quant-recovery/BACKTEST_V10_DATA_RECOVERY.md)
+- [quant-recovery/BACKTEST_V10_EVIDENCE_MATRIX.md](../quant-recovery/BACKTEST_V10_EVIDENCE_MATRIX.md)
+- [quant-recovery/BACKTEST_V10_FINAL.md](../quant-recovery/BACKTEST_V10_FINAL.md)
+- [quant-recovery/BACKTEST_V10_REAL_STUDIES.md](../quant-recovery/BACKTEST_V10_REAL_STUDIES.md)
+- [quant-recovery/BACKTEST_V10_VALIDATION.md](../quant-recovery/BACKTEST_V10_VALIDATION.md)
+- [quant-recovery/BACKTEST_V51.md](../quant-recovery/BACKTEST_V51.md)
+- [quant-recovery/BACKTEST_V51_HANDOFF.md](../quant-recovery/BACKTEST_V51_HANDOFF.md)
+- [quant-recovery/BACKTEST_V6_CERTIFICATION_MATRIX.md](../quant-recovery/BACKTEST_V6_CERTIFICATION_MATRIX.md)
+- [quant-recovery/BACKTEST_V6_DATA_GAPS.md](../quant-recovery/BACKTEST_V6_DATA_GAPS.md)
+- [quant-recovery/BACKTEST_V6_FINAL.md](../quant-recovery/BACKTEST_V6_FINAL.md)
+- [quant-recovery/BACKTEST_V6_MONTE_CARLO.md](../quant-recovery/BACKTEST_V6_MONTE_CARLO.md)
+- [quant-recovery/BACKTEST_V6_VALIDATION.md](../quant-recovery/BACKTEST_V6_VALIDATION.md)
+- [quant-recovery/BACKTEST_V7_DATA_RECOVERY.md](../quant-recovery/BACKTEST_V7_DATA_RECOVERY.md)
+- [quant-recovery/BACKTEST_V7_EVIDENCE_MATRIX.md](../quant-recovery/BACKTEST_V7_EVIDENCE_MATRIX.md)
+- [quant-recovery/BACKTEST_V7_FINAL.md](../quant-recovery/BACKTEST_V7_FINAL.md)
+- [quant-recovery/BACKTEST_V7_METHODOLOGY_DECISIONS.md](../quant-recovery/BACKTEST_V7_METHODOLOGY_DECISIONS.md)
+- [quant-recovery/BACKTEST_V7_REAL_STUDIES.md](../quant-recovery/BACKTEST_V7_REAL_STUDIES.md)
+- [quant-recovery/BACKTEST_V7_VALIDATION.md](../quant-recovery/BACKTEST_V7_VALIDATION.md)
+- [quant-recovery/BACKTEST_V7_WORKLOG.md](../quant-recovery/BACKTEST_V7_WORKLOG.md)
+- [quant-recovery/BACKTEST_V8_DATA_RECOVERY.md](../quant-recovery/BACKTEST_V8_DATA_RECOVERY.md)
+- [quant-recovery/BACKTEST_V8_EVIDENCE_MATRIX.md](../quant-recovery/BACKTEST_V8_EVIDENCE_MATRIX.md)
+- [quant-recovery/BACKTEST_V8_FINAL.md](../quant-recovery/BACKTEST_V8_FINAL.md)
+- [quant-recovery/BACKTEST_V8_METHOD_VALIDATION.md](../quant-recovery/BACKTEST_V8_METHOD_VALIDATION.md)
+- [quant-recovery/BACKTEST_V8_REAL_STUDIES.md](../quant-recovery/BACKTEST_V8_REAL_STUDIES.md)
+- [quant-recovery/BACKTEST_V8_VALIDATION.md](../quant-recovery/BACKTEST_V8_VALIDATION.md)
+- [quant-recovery/BACKTEST_V9_DATA_RECOVERY.md](../quant-recovery/BACKTEST_V9_DATA_RECOVERY.md)
+- [quant-recovery/BACKTEST_V9_EVIDENCE_MATRIX.md](../quant-recovery/BACKTEST_V9_EVIDENCE_MATRIX.md)
+- [quant-recovery/BACKTEST_V9_FINAL.md](../quant-recovery/BACKTEST_V9_FINAL.md)
+- [quant-recovery/BACKTEST_V9_METHOD_VALIDATION.md](../quant-recovery/BACKTEST_V9_METHOD_VALIDATION.md)
+- [quant-recovery/BACKTEST_V9_REAL_STUDIES.md](../quant-recovery/BACKTEST_V9_REAL_STUDIES.md)
+- [quant-recovery/BACKTEST_V9_VALIDATION.md](../quant-recovery/BACKTEST_V9_VALIDATION.md)
+- [quant-recovery/DATA_QUALITY_V12_FINAL.md](../quant-recovery/DATA_QUALITY_V12_FINAL.md)
+- [quant-recovery/DATA_QUALITY_V12_PLAN.md](../quant-recovery/DATA_QUALITY_V12_PLAN.md)
+- [quant-recovery/DATA_QUALITY_V13_FINAL.md](../quant-recovery/DATA_QUALITY_V13_FINAL.md)
+- [quant-recovery/methodology-v1/QUANT_BACKTEST_CERTIFICATION_METHODOLOGY_V1.md](../quant-recovery/methodology-v1/QUANT_BACKTEST_CERTIFICATION_METHODOLOGY_V1.md)
+- [quant-recovery/methodology-v1/README.md](../quant-recovery/methodology-v1/README.md)
+- [quant-recovery/v10/corporate-actions/README.md](../quant-recovery/v10/corporate-actions/README.md)
+- [quant-recovery/v10/engine-fixes/README.md](../quant-recovery/v10/engine-fixes/README.md)
+- [quant-recovery/v10/factor/README.md](../quant-recovery/v10/factor/README.md)
+- [quant-recovery/v10/population/README.md](../quant-recovery/v10/population/README.md)
+- [quant-recovery/v10/setup/README.md](../quant-recovery/v10/setup/README.md)
+- [quant-recovery/v10/studies/README.md](../quant-recovery/v10/studies/README.md)
+- [quant-recovery/v11/decomposition/README.md](../quant-recovery/v11/decomposition/README.md)
+- [quant-recovery/v11/discovery/README.md](../quant-recovery/v11/discovery/README.md)
+- [quant-recovery/v11/winners/README.md](../quant-recovery/v11/winners/README.md)
+- [quant-recovery/v12/indexpop/README.md](../quant-recovery/v12/indexpop/README.md)
+- [quant-recovery/v12/largecap/README.md](../quant-recovery/v12/largecap/README.md)
+- [quant-recovery/v12/listref/README.md](../quant-recovery/v12/listref/README.md)
+- [quant-recovery/v12/mcap/README.md](../quant-recovery/v12/mcap/README.md)
+- [quant-recovery/v12/requal/README.md](../quant-recovery/v12/requal/README.md)
+- [quant-recovery/v12/spxpop/README.md](../quant-recovery/v12/spxpop/README.md)
+- [quant-recovery/v13/archive/README.md](../quant-recovery/v13/archive/README.md)
+- [quant-recovery/v13/largecap/README.md](../quant-recovery/v13/largecap/README.md)
+- [quant-recovery/v13/studies/README.md](../quant-recovery/v13/studies/README.md)
+- [quant-recovery/v13b/f1w/README.md](../quant-recovery/v13b/f1w/README.md)
+- [quant-recovery/v13b/hist/README.md](../quant-recovery/v13b/hist/README.md)
+- [quant-recovery/v13b/largecap-strict/README.md](../quant-recovery/v13b/largecap-strict/README.md)
+- [quant-recovery/v13c/README.md](../quant-recovery/v13c/README.md)
+- [quant-recovery/v6/portfolio.md](../quant-recovery/v6/portfolio.md)
+- [quant-recovery/v6/studies.md](../quant-recovery/v6/studies.md)
+- [quant-recovery/v6/validation-methods.md](../quant-recovery/v6/validation-methods.md)
+- [quant-recovery/v9-followups/ca-registry/README.md](../quant-recovery/v9-followups/ca-registry/README.md)
+- [quant-recovery/v9-followups/identity/README.md](../quant-recovery/v9-followups/identity/README.md)
+- [quant-recovery/v9/events/README.md](../quant-recovery/v9/events/README.md)
+- [quant-recovery/v9/identity/README.md](../quant-recovery/v9/identity/README.md)
+- [quant/BACKTEST_COVERAGE_MATRIX.md](BACKTEST_COVERAGE_MATRIX.md)
+- [quant/BACKTEST_DELISTED_INTEGRATION.md](BACKTEST_DELISTED_INTEGRATION.md)
+- [quant/BACKTEST_P2_DEFIZITE.md](BACKTEST_P2_DEFIZITE.md)
+- [quant/BACKTEST_PREVIEW.md](BACKTEST_PREVIEW.md)
+- [quant/BACKTEST_PRODUCT_READINESS_PLAN.md](BACKTEST_PRODUCT_READINESS_PLAN.md)
+- [quant/BACKTEST_RESULT_CONTRACT_V2.md](BACKTEST_RESULT_CONTRACT_V2.md)
+- [quant/BACKTEST_RUNNER.md](BACKTEST_RUNNER.md)
+- [quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md](DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md)
+- [quant/PORTFOLIO_STANDARD.md](PORTFOLIO_STANDARD.md)
+- [quant/RESEARCH_POPULATION_AND_PORTFOLIO.md](RESEARCH_POPULATION_AND_PORTFOLIO.md)
+- [quant/SETUP_OOS_DECISION_A1_A6.md](SETUP_OOS_DECISION_A1_A6.md)
+- [quant/SETUP_OOS_EVALUATION.md](SETUP_OOS_EVALUATION.md)
+- [quant/backtest-catalog/README.md](backtest-catalog/README.md)
+- [quant/backtest-demos/REBUILD_2026-10-30.md](backtest-demos/REBUILD_2026-10-30.md)
+- [quant/backtest-demos/REBUILD_2026-10-31.md](backtest-demos/REBUILD_2026-10-31.md)
+- [quant/research/portfolio-v1/MODEL_PORTFOLIOS.md](research/portfolio-v1/MODEL_PORTFOLIOS.md)
+- [vu2/phases/06-quant-workspace.md](../vu2/phases/06-quant-workspace.md)
+- [vu2/phases/33-backtest-readiness-evidence.md](../vu2/phases/33-backtest-readiness-evidence.md)
+- [vu2/phases/35-backtest-rule-eligibility-preflight.md](../vu2/phases/35-backtest-rule-eligibility-preflight.md)
+- [vu2/release/QUANT2_RELEASE.md](../vu2/release/QUANT2_RELEASE.md)
+
+### Historische Arbeitsstände
+
+Abgelöste Übergaben und Statusberichte; zur Nachvollziehbarkeit erhalten. Maßgeblich sind der Einstieg und der aktuelle Plan.
+
+- [VU_QUANT_2_MASTER_REMATCH_REPORT.md](../archiv/2026/VU_QUANT_2_MASTER_REMATCH_REPORT.md)
+- [VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md](../archiv/2026/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md)
+- [BACKTEST_V10_HANDOFF.md](../quant-recovery/BACKTEST_V10_HANDOFF.md)
+- [BACKTEST_V6_HANDOFF.md](../quant-recovery/BACKTEST_V6_HANDOFF.md)
+- [BACKTEST_V7_HANDOFF.md](../quant-recovery/BACKTEST_V7_HANDOFF.md)
+- [BACKTEST_V8_HANDOFF.md](../quant-recovery/BACKTEST_V8_HANDOFF.md)
+- [BACKTEST_V9_HANDOFF.md](../quant-recovery/BACKTEST_V9_HANDOFF.md)
+- [HANDOVER_V13.md](../quant-recovery/HANDOVER_V13.md)
+- [SESSION_HANDOVER_2026-10-30.md](../archiv/2026/quant-recovery/SESSION_HANDOVER_2026-10-30.md)
+- [BACKTEST_ENGINEERING_HANDOVER_V1.md](../archiv/2026/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md)
+
+Unveränderliche Provenienzmanifeste und gepinnte historische Fachbelege behalten ihre ursprünglichen Quellpfade und Prüfsummen. Die oben verlinkten Archivdateien sind die lesbaren Nachfolger; alte Pfadnamen im historischen Nachweis ändern dessen Zeitpunkt oder Freigabestatus nicht.

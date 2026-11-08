@@ -1,5 +1,8 @@
 # Konten und Abonnements – Architektur
 
+> **Einstieg Konten.** Aktuelle Arbeitsregeln: [CLAUDE.md](../../CLAUDE.md); datierte Entscheidungen: [Neustart-Plan](../PLAN_NEUSTART_2026-11.md). Bei Widersprüchen zu historischen Abschnitten gelten diese Quellen. Weitere Seiten sind Fachbelege, keine parallelen Einstiege. [Landkarte](../README.md).
+
+
 **Stand:** 25.10.2026 · Branch `claude/vision-universe-auth-subscriptions-j5ewxe` · Entscheidung: [ADR-006](../architecture/ADR-006-accounts-and-billing.md)
 Einrichtung: [SETUP.md](SETUP.md) · Live-Freigabe: [LIVE_RELEASE.md](LIVE_RELEASE.md)
 
@@ -67,19 +70,20 @@ werden von Safari/Firefox blockiert. `account.visionuniverse.de` ist dieselbe Si
 | Fehlgeschlagene Zahlung | Stripe `past_due` → Zugang bleibt bis Periodenende + 7 Tage (Stripe versucht erneut), `unpaid` → kein Zugang; Seite zeigt Hinweis „Zahlungsmethode aktualisieren“. |
 | Rechnungen | `invoice.*`-Webhooks → `public.invoices` (nur https-Links von Stripe), Anzeige unter `/konto/abo/`. |
 | Datenexport | `GET /v1/me/export` (Art. 15/20 DSGVO), JSON-Download. |
-| Kontolöschung | Passwort + „LÖSCHEN“ → laufende Stripe-Abos **sofort** beenden → Löschnachweis (nur Hash) → Supabase-Admin-Löschung → Cascade: Profil, Einstellungen, Rollen, Watchlists; Abos/Rechnungen bleiben **pseudonym** (§ 147 AO, § 257 HGB). |
+| Kontolöschung | Passwort + „LÖSCHEN“ → laufende Stripe-Abos **sofort** beenden → Löschnachweis (nur Hash) → Supabase-Admin-Löschung → Cascade: Profil, Einstellungen, Rollen, Watchlists, gespeicherte Suchen; Abos/Rechnungen bleiben **pseudonym** (§ 147 AO, § 257 HGB). |
 
 ## 3. Datenmodell (Supabase, `supabase/migrations/`)
 
 | Tabelle | Inhalt | Browser darf | Schutz |
 |---|---|---|---|
 | `public.profiles` | Anzeigename, Sprache | eigene Zeile lesen; `display_name`, `locale` ändern | RLS + Spaltenrechte |
-| `public.user_settings` | Währung, Darstellung, Erfahrung, Benachrichtigungen (Standard aus), Marketing-Einwilligung (Standard aus) | eigene lesen/ändern (Positivliste der Spalten) | RLS + CHECK auf erlaubte Ereignisarten |
+| `public.user_settings` | Währung, Darstellung, Erfahrung (`beginner`/`advanced`/`pro`), Ziel, erster Start (`onboarded_at`), Benachrichtigungen (Standard aus), Marketing-Einwilligung (Standard aus) | eigene lesen/ändern (Positivliste der Spalten) | RLS + CHECK auf erlaubte Ereignisarten |
 | `public.user_roles` | `user`, `admin` | eigene lesen | Schreiben nur Server; `is_admin()` als `security definer` |
 | `public.plans`, `features`, `plan_features`, `plan_prices` | Tarifkatalog, Funktionen mit Grenzen, Preise je Anbieter | lesen (auch anonym) | kein Schreibrecht |
 | `public.subscriptions` | anbieterunabhängiger Abozustand | eigene lesen | Schreiben nur über `billing_apply_subscription` |
 | `public.invoices` | Rechnungen | eigene lesen | Schreiben nur über `billing_apply_invoice` |
 | `public.watchlists`, `watchlist_items` | vorbereitet; `instrument_id ~ '^vu_[a-f0-9]+$'` (ADR-001) | eigene CRUD | Tarifgrenzen per Trigger **in der Datenbank** |
+| `public.saved_searches` | gespeicherte Suchen je Produktwelt (Name, Filter als JSON-Objekt ≤ 4 KB) | eigene lesen/anlegen/ändern/löschen | RLS; Grenze 50 je Konto per Trigger in der Datenbank |
 | `billing.customers` | Anbieter-Kunde ↔ Nutzer (1:1 je Anbieter) | – | Schema nicht freigegeben |
 | `billing.payment_events` | Idempotenz, ohne Nutzlast | – | |
 | `billing.entitlement_overrides` | manuelle Freigaben (Presse, Kulanz) | – | |
@@ -87,6 +91,27 @@ werden von Safari/Firefox blockiert. `account.visionuniverse.de` ist dieselbe Si
 
 Supabase vergibt im Schema `public` zunächst **alle** Rechte an `anon` und `authenticated`; die Migrationen nehmen sie zurück und vergeben nur
 die Spaltenrechte oben. Die Tests laufen gegen genau diese Standardrechte (`supabase/local/platform-stub.sql`).
+
+**Erster Start (Z1, Folie E11):** Einstellungen über `PATCH /v1/me` (`settings`), wie `appearance`. `experienceLevel`
+`beginner` | `advanced` | `pro` (Einsteiger/Fortgeschritten/Profi), `goal` `vorsorge` | `aktie` | `ideen` | `strategien` | `null`
+(10 € im Monat → Vorsorge, eine Aktie verstehen, Ideen finden → Discover, Strategien und Signale → Supertrader), `onboardedAt: true`
+meldet „erster Start abgeschlossen oder übersprungen“ – den Zeitpunkt setzt die Datenbank (Trigger, `now()`); er bleibt danach für den
+Nutzer fest. `GET /v1/me` liefert `settings.goal` und `settings.onboardedAt` (ISO-Zeit oder `null`). Erste Aktien laufen über die Watchlist.
+Migration: `20261104000100_redesign_settings_searches.sql`.
+
+**Gespeicherte Suchen (Z3):** `public.saved_searches` (`world` ∈ quant, screener, technical, fundamental, discover; `name` 1–80 Zeichen;
+`query` JSON-Objekt ≤ 4 KB, Inhalt legt die Welt fest). Fest **50 je Konto** (Trigger, Fehler `SAVED_SEARCHES_LIMIT_REACHED`, keine
+Tarifstaffel). Endpunkte (Worker `src/searches.mjs`, JWT des Nutzers, Ratenstufe `searches` 60/min):
+
+| Methode und Pfad | Eingabe | Antwort |
+|---|---|---|
+| `GET /v1/searches[?world=quant]` | – | `{searches: [{id, world, name, query, createdAt, updatedAt}], limit: 50}`, neueste Änderung zuerst |
+| `POST /v1/searches` (CSRF) | `{world, name, query}` | 201 `{state: "CREATED", search}` · 409 `SAVED_SEARCHES_LIMIT_REACHED` |
+| `PATCH /v1/searches` (CSRF) | `{id, name?, query?}` | `{state: "UPDATED", search}` · 404 `SAVED_SEARCH_NOT_FOUND` (auch fremde) |
+| `POST /v1/searches/remove` (CSRF) | `{id}` | `{state: "REMOVED" \| "NOT_PRESENT", removed}` |
+
+Eingabefehler: `WORLD_INVALID`, `NAME_INVALID`, `QUERY_INVALID`, `QUERY_TOO_LARGE`, `SEARCH_ID_INVALID`, `NOTHING_TO_UPDATE` (400).
+Datenexport (`savedSearches`) und Kontolöschung (Cascade) schließen sie ein.
 
 **Watchlist:** persönliche Auswahl (`instrumentId`, Notiz, Benachrichtigungen) in `watchlists`/`watchlist_items`; Kennzahlen kommen aus der gemeinsamen Release-Übersicht, nie aus Supabase. Details, RLS-Nachweise, Speicher und Kosten: [WATCHLIST.md](WATCHLIST.md).
 
@@ -258,3 +283,31 @@ Ein PostgreSQL genügt: `docker run --rm -e POSTGRES_PASSWORD=postgres -p 5432:5
 - **Backups:** Supabase Pro täglich (7 Tage); zusätzlich vor jeder Migration `supabase db dump` (verschlüsselt ablegen). Point-in-Time-Recovery als Zusatzoption ab Wachstum.
 - **Wiederherstellung der Abozustände:** Stripe ist führend. `scripts/account/reconcile-stripe.mjs` spielt alle Abos über dieselbe Datenbankfunktion neu ein (Test: Datenverlust simuliert, Zustand vollständig wiederhergestellt, manipulierte/fremde Abos bleiben draußen).
 - **Keine Finanz- oder Marktdaten in Supabase** (Auftragsgrenze): Kurse, Fundamentaldaten und Modelle bleiben in der bestehenden Pipeline.
+
+## Fachbelege und weiterführende Dokumentation
+
+Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.
+
+- [accounts/BREVO.md](BREVO.md)
+- [accounts/DEV_ENVIRONMENT.md](DEV_ENVIRONMENT.md)
+- [accounts/FREIGABEN.md](FREIGABEN.md)
+- [accounts/LIVE_RELEASE.md](LIVE_RELEASE.md)
+- [accounts/NUTZERFUEHRUNG.md](NUTZERFUEHRUNG.md)
+- [accounts/PRODUCTION.md](PRODUCTION.md)
+- [accounts/PRODUKTIONSPLAN.md](PRODUKTIONSPLAN.md)
+- [accounts/RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md)
+- [accounts/RECHTLICHE_PRUEFUNG_CHECKOUT.md](RECHTLICHE_PRUEFUNG_CHECKOUT.md)
+- [accounts/SETUP.md](SETUP.md)
+- [accounts/STEUER.md](STEUER.md)
+- [accounts/STRIPE_BRANDING.md](STRIPE_BRANDING.md)
+- [accounts/TARIFE.md](TARIFE.md)
+- [accounts/TARIFVERWALTUNG.md](TARIFVERWALTUNG.md)
+- [accounts/WATCHLIST.md](WATCHLIST.md)
+- [accounts/ZAHLUNGSPRUEFUNG.md](ZAHLUNGSPRUEFUNG.md)
+- [brevo/API-EXECUTION.md](../brevo/API-EXECUTION.md)
+- [brevo/APP-NEWSLETTER.md](../brevo/APP-NEWSLETTER.md)
+- [brevo/APPROVAL.md](../brevo/APPROVAL.md)
+- [brevo/INTERNAL-MEMBERSHIP.md](../brevo/INTERNAL-MEMBERSHIP.md)
+- [brevo/LIVE-STATUS.md](../brevo/LIVE-STATUS.md)
+- [brevo/MERGE-REVIEW.md](../brevo/MERGE-REVIEW.md)
+- [brevo/README.md](../brevo/README.md)

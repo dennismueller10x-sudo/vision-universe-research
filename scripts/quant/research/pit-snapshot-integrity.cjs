@@ -169,7 +169,7 @@ function forecast(series, req, asOf, cal, root = ROOT) {
     out.push(gate('SETUP_BACKTEST', 'independence', evMonths.length, ureq.eventCalendarMonths ?? ureq.independentWeeks, 'EVENT_MONTHS', monthForecast(evMonths.length, ureq.eventCalendarMonths ?? ureq.independentWeeks, evMonths.length ? evMonths.at(-1) + '-01' : null, asOf, 'Ereignisse in jedem Folgemonat (der Builder zählt Monate mit Ereignissen)')));
     const firstM6 = minDate(types.map(t => nth(t, 1)));
     out.push({ kind: 'SETUP_BACKTEST', gate: 'entryVariant', unit: null, have: null, required: null, met: false, earliestDate: firstM6, lowerBound: true, rule: 'erst mit abgeschlossenen Ergebnissen messbar; ob es besteht, ist offen' });
-    out.push({ kind: 'SETUP_BACKTEST', gate: 'oos', unit: null, have: null, required: ureq.oosMinPerSegment, met: false, earliestDate: null, rule: 'nicht prognostizierbar: braucht die Owner-Entscheidung A1–A6 (Segmentdefinition) und ' + ureq.oosMinPerSegment + ' effektive Fälle je Segment' });
+    out.push({ kind: 'SETUP_BACKTEST', gate: 'oos', unit: null, have: null, required: ureq.oosMinPerSegment, met: false, earliestDate: null, rule: 'nicht aus Stichtagen prognostizierbar: Segmentierung A1–A6 entschieden 04.11.2026 (Schnitt 2027-05-31, Embargo 183 Tage); je Ereignisart ' + ureq.oosMinPerSegment + ' effektive Ereignistage je Segment, laut Vorlage frühestens um 2028-01-08' });
   }
   return out;
 }

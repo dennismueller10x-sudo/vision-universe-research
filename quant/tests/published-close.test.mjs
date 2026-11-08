@@ -117,3 +117,22 @@ test("der Faktorlauf bildet Boersenwerte aus dieser Reihe und sagt es", () => {
     }
   }
 });
+
+test("dayChange: Verhaeltnis der beiden letzten Punkte derselben Reihe, mit derselben Vertragspruefung", () => {
+  const d = Close.dayChange(reihe({ points: [["2026-09-24", 100], ["2026-09-25", 105.5]] }), HEUTE);
+  assert.deepEqual(d, { change: 0.055, date: "2026-09-25", previousDate: "2026-09-24", close: 105.5, previousClose: 100, currency: "USD", basis: "SPLIT_ADJUSTED" });
+  /* Vertrag gilt weiter: eine Reihe, die lastPoint ablehnt, hat auch keine Tagesveraenderung. */
+  assert.equal(Close.dayChange(reihe({ priceSeriesType: "RAW" }), HEUTE), null);
+  assert.equal(Close.dayChange(reihe({ points: [["2026-09-25", 101.25]] }), HEUTE), null, "ohne Vortag keine Veraenderung");
+  assert.equal(Close.dayChange(reihe({ points: [["2026-09-24", 0], ["2026-09-25", 101.25]] }), HEUTE), null, "Vortag ohne Kurs");
+  assert.equal(Close.dayChange(reihe({ points: [["2026-09-25", 100], ["2026-09-25", 101.25]] }), HEUTE), null, "gleicher Tag ist kein Vortag");
+  /* Luecke von mehr als sieben Tagen: keine Tagesveraenderung unter falschem Namen. */
+  assert.equal(Close.dayChange(reihe({ points: [["2026-09-17", 100], ["2026-09-25", 120]] }), HEUTE), null);
+  assert.ok(Close.dayChange(reihe({ points: [["2026-09-18", 100], ["2026-09-25", 120]] }), HEUTE));
+});
+
+test("dayChange ist splitfest: ein Split am letzten Tag erscheint in der bereinigten Reihe nicht als Sprung", () => {
+  /* 4:1 am 25.09.: roh 400 -> 101; bereinigt steht der Vortag schon auf 100. */
+  const d = Close.dayChange(reihe({ points: [["2026-09-24", 100], ["2026-09-25", 101]] }), HEUTE);
+  assert.equal(d.change, 0.01);
+});

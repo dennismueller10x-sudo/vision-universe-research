@@ -992,9 +992,9 @@
       "cik": "0001561894",
       "name": "HA Sustainable Infrastructure Capital, Inc.",
       "sic": "6799",
-      "rawFacts": 17702,
-      "mappedFacts": 4924,
-      "unmappedFacts": 12548,
+      "rawFacts": 18037,
+      "mappedFacts": 5009,
+      "unmappedFacts": 12895,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -1004,9 +1004,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 61,
+      "quarterlyPeriods": 62,
       "firstPeriodEnd": "2010-09-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.25,
       "metrics": {
         "capital_expenditures": {
@@ -1018,7 +1018,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 54,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -1045,21 +1045,21 @@
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.25
         },
         "operating_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2011-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.25
         },
         "revenue": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.25
@@ -1073,14 +1073,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2010-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.25
         },
         "total_assets": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "2012-09-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.25
@@ -1103,50 +1103,51 @@
         }
       },
       "quality": {
-        "HIGH": 424,
-        "MEDIUM": 59
+        "HIGH": 429,
+        "MEDIUM": 60
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 483,
-        "resolvedValues": 483
+        "datableValues": 489,
+        "resolvedValues": 489
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 13321,
+        "rules_version": "1.1.0",
+        "total": 13677,
         "by_severity": {
-          "INFO": 12548,
-          "WARNING": 773
+          "INFO": 12895,
+          "WARNING": 782
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 540,
+          "CONCEPT_DISAGREEMENT": 549,
           "EXTREME_VALUE": 2,
           "FISCAL_PERIOD_CONFLICT": 11,
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
           "PERIOD_MISMATCH": 127,
           "RESTATEMENT_CONFLICT": 87,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 12548
+          "UNKNOWN_CONCEPT": 12895
         }
       },
       "latestFiling": {
-        "accession": "0001561894-26-000136",
-        "filing_date": "2026-08-07",
+        "accession": "0001561894-26-000143",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 65
+        "periodic_filings": 66,
+        "acceptance_datetime": "2026-11-06T11:37:10.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "35bec509a861560ff65aa744998d67ad459cde938c543b62bf55b3a4ea5f5944",
+      "sourceDigest": "d9b8eaeafe832f3774e2ecae8cb35d46a9398df832f9043b01a2e3e504fe47b8",
       "issuerId": "iss_cik_0001561894"
     },
     {

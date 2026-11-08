@@ -135,7 +135,7 @@ const LEGACY={
    dafuer wird genau diese Auskunft verlangt. */
 const ABSAGE={'/quant/#/aktie/ZZZZZ':'Aktie nicht gefunden','/quant/#/gibtsnicht':'Diese Seite gibt es nicht'};
 const DATENREICH=['NVDA','AAPL','MSFT','JPM','O','T','SO','GOOG','GOOGL'];
-const DATENARM=['ACAA','EDVA','ABTC','AAAC'];
+const DATENARM=['ACAA','EDVA','ABTC'];
 const BRANCHENVORLAGE=['JPM','O','WSBCO','ABCB'];
 /* ZURUECKHALTUNG AUS DEN DATEN (04.10.2026).
    Ob ein Boersenwert zurueckgehalten wird, entscheidet die Materialisierung
@@ -156,10 +156,25 @@ for(const t of ZURUECKHALTUNG_KANDIDATEN){
  else if(ZURUECKHALTUNG_PFLICHT.includes(t)){console.log('FAIL Zurueckhaltung '+t+': Daten halten den Boersenwert nicht mehr zurueck ('+grund+')');vorabFehler++;}
  else console.log('     Zurueckhaltung '+t+': laut Daten nicht zurueckgehalten ('+grund+')');
 }
-const NICHT_STAMMAKTIE=['AHT-P-D','ALL-P-B','ABR-P-D','AAAC'];
+const NICHT_STAMMAKTIE=['AHT-P-D','ALL-P-B','ABR-P-D'];
+/* AUSGESCHIEDENE NICHT-AKTIE (Variante B, Steuerung 05.11.2026).
+   Seit der Eignung aus Security Master 1.3.0 gehoeren belegte Nicht-Aktien (ETF, Fonds, Anleihen) nicht mehr zum
+   Aktien-Produktuniversum. AAAC (ein ETF) war hier der "belegte ETF mit Kurs ohne Aktienaussage"; jetzt ist er der Fall
+   "im Verzeichnis auffindbar, im Produkt eine benannte Absage". Ebenso streng: der Name im Kopf muss der des
+   Verzeichnisses sein, die Papierart steht als Marke, der Grund nennt "keine Aktie", ein Weg zurueck, KEIN Chart,
+   KEINE Aktienaussage. Ist AAAC im Verzeichnis nicht mehr als belegte Nicht-Aktie gefuehrt, scheitert der Lauf vorab -
+   dann muss ein anderer belegter Fall hierher. */
+const AUSGESCHIEDEN={};
+for(const t of ['AAAC']){
+ let inst=null;
+ try{const shard=JSON.parse(await readFile(resolve(root,'quant/data/universe/instruments/'+(t+'_').slice(0,2)+'.json'),'utf8'));inst=(shard.instruments||[]).find(i=>i.symbol===t)||null;}catch(e){inst=null;}
+ if(!inst||inst.productEligibility!=='EXCLUDED'||!/^CONFIRMED_NON_EQUITY:/.test(String(inst.productEligibilityReason||''))||!inst.companyName){
+  console.log('FAIL Ausgeschiedene Nicht-Aktie '+t+': nicht als belegte Nicht-Aktie im Verzeichnis ('+(inst?inst.productEligibility+' '+inst.productEligibilityReason:'fehlt')+')');vorabFehler++;continue;}
+ AUSGESCHIEDEN['/quant/#/aktie/'+t]={ticker:t,name:inst.companyName,art:{ETF:'ETF',ETN:'ETN',FUND:'Fonds',CEF:'geschlossener Fonds',DEBT:'Anleihe',WARRANT:'Optionsschein',RIGHT:'Bezugsrecht',UNIT:'Unit',PREFERRED:'Vorzugsaktie'}[inst.securityClass]||'keine Stammaktie'};
+}
 /* Markierter Eintrag der gemeinsamen Produkt-Leiste je Ansicht; Methodik
    ist sekundaer und markiert keinen der vier Eintraege (leer). */
-const SECTION={home:'Quant',screener:'Screener',strategien:'Strategien',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:''};
+const SECTION={home:'Quant',screener:'Screener',strategien:'Strategien',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:'Quant'}; /* Q00 (#1412): Methodik gehoert zum Start „Quant“ */
 
 /* Bereit ist eine Route, wenn die App sie fertig gemeldet hat, kein
    Ladeplatzhalter mehr steht und der Chart (falls es einen gibt) einen
@@ -168,6 +183,12 @@ async function bereit(page,view){
  await page.waitForFunction(()=>{const m=document.querySelector('main#qx-main');return !!m&&m.dataset.ready==='true'&&m.getAttribute('aria-busy')==='false'&&!m.querySelector('.qx-loading');},null,{timeout:45000});
  await page.waitForFunction(()=>{const c=document.querySelector('section.qc-chart');return !c||!!c.dataset.range||!/Chart wird geladen/.test(c.textContent);},null,{timeout:10000}).catch(()=>{});
  await page.waitForTimeout(150);
+}
+async function befund(page,offen){
+ const m=await page.evaluate(()=>{const m=document.querySelector('main#qx-main');return m?{view:m.dataset.view||'',ready:m.dataset.ready||'',busy:m.getAttribute('aria-busy'),loading:m.querySelectorAll('.qx-loading').length}:null;}).catch(e=>({fehler:String(e).slice(0,80)}));
+ const jetzt=Date.now();
+ const haengt=[...offen].filter(([,t])=>jetzt-t>5000).map(([r,t])=>r.url().replace(origin,'')+' '+Math.round((jetzt-t)/1000)+'s').slice(0,8);
+ return JSON.stringify({main:m,offen:haengt});
 }
 async function allesAufklappen(page){
  /* Nach jedem Oeffnen neu suchen: ein geoeffneter Aufklapper legt
@@ -201,20 +222,39 @@ for(const width of [1440,390]){
     in einer abgeschotteten Umgebung scheitern. Eine gescheiterte Anfrage an
     das Release selbst ist ein Fehler. 404 bleibt ausgenommen: der
     Produktdienst probiert fuer duenne Titel bewusst mehrere Quellen. */
- page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremdFehlgeschlagen=true;else if(LEGACY[currentView]&&/ERR_ABORTED/.test((r.failure()||{}).errorText||''))return;else errors.push('requestfailed: '+r.url().replace(origin,''));});
+ /* Offene Anfragen an das Release, fuer den Befund bei NICHT_BEREIT. */
+ const offen=new Map();
+ page.on('request',r=>offen.set(r,Date.now()));
+ page.on('requestfinished',r=>offen.delete(r));
+ page.on('requestfailed',r=>offen.delete(r));
+ page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremdFehlgeschlagen=true;else if(LEGACY[currentView]&&/ERR_ABORTED/.test((r.failure()||{}).errorText||''))return;else errors.push('requestfailed: '+r.url().replace(origin,'')+' ('+((r.failure()||{}).errorText||'?')+')');});
  page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('favicon')||t.includes('404'))return;if(fremdFehlgeschlagen&&/^Failed to load resource: net::ERR_/.test(t))return;if(fremdeLiveAbsage(t))return;errors.push('console: '+t.split('\n')[0]);});
- for(const view of VIEWS.filter(v=>!ONLY||v.includes(ONLY))){
+ const ansichten=VIEWS.filter(v=>!ONLY||v.includes(ONLY));
+ for(let i=0,wiederholt=null;i<ansichten.length;i++){
+  const view=ansichten[i];
   currentView=view;
   await page.goto('about:blank');
   await page.goto(origin+view);
   const app=!view.startsWith('/quant/methodology/');
   const bad=[];
-  if(app){await bereit(page).catch(()=>bad.push('NICHT_BEREIT'));}
+  if(app){
+   /* Ein einzelner Seitenaufbau, der binnen 45 s nicht fertig meldet, hat
+      zweimal ganze Releases blockiert (07.11.2026: /quant/#/aktie/ACAA@390,
+      /vu2/@1440), jedes Mal eine andere Seite. Deshalb: Befund ausgeben,
+      einmal neu laden. Bleibt die Seite auch dann unfertig, ist es ein Fehler. */
+   const ok=await bereit(page).then(()=>true,()=>false);
+   if(!ok){
+    console.log('     Befund NICHT_BEREIT '+view+'@'+width+': '+await befund(page,offen));
+    await page.goto('about:blank');await page.goto(origin+view);
+    if(await bereit(page).then(()=>true,()=>false))console.log('     bereit nach einer Wiederholung: '+view+'@'+width);
+    else{bad.push('NICHT_BEREIT');console.log('     Befund nach Wiederholung: '+await befund(page,offen));}
+   }
+  }
   else await page.waitForLoadState('load').then(()=>page.waitForTimeout(1200));
   const ort=await page.evaluate(()=>location.pathname+location.search+location.hash);
   const route=app?await page.evaluate(()=>(document.querySelector('main#qx-main')||{dataset:{}}).dataset.view||''):'';
   const text=await page.locator(app?'main#qx-main':'main').first().innerText().catch(()=>'');
-  const absage=ABSAGE[view]||null;
+  const absage=ABSAGE[view]||null,ausgeschieden=AUSGESCHIEDEN[view]||null;
   const recovered=text.includes('Gerade nicht erreichbar')||text.includes('Daten derzeit nicht verfügbar')
    ||(!absage&&(text.includes('Diese Seite gibt es nicht')||text.includes('Aktie nicht gefunden')));
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);
@@ -233,7 +273,19 @@ for(const width of [1440,390]){
      fangen also den Fall "nichts gerendert", ohne einen Inhaltsstand
      einzufrieren - gemessen werden soll ein Rueckschritt, nicht der
      Tagesstand. */
-  if(!absage&&text.length<400)bad.push('ZU_WENIG_INHALT='+text.length);
+  if(!absage&&!ausgeschieden&&text.length<400)bad.push('ZU_WENIG_INHALT='+text.length);
+  if(ausgeschieden){
+   const kopf=(await page.locator('main#qx-main h1').first().innerText().catch(()=>'')).trim();
+   if(kopf!==ausgeschieden.name)bad.push('NAME_FALSCH:'+kopf);
+   if(!text.includes(ausgeschieden.ticker))bad.push('TICKER_FEHLT');
+   const marke=(await page.locator('main#qx-main [class*=tag]').allTextContents()).join('|');
+   if(!marke.split('|').map(x=>x.trim()).includes(ausgeschieden.art))bad.push('PAPIERART_UNGENANNT:'+marke);
+   if(!await page.locator('main#qx-main .qx-notice').count()||!/keine Aktie/.test(text)||!/analysiert/.test(text))bad.push('ABSAGE_OHNE_GRUND');
+   if(!await page.locator('main#qx-main a[href^="#/"]').count())bad.push('ABSAGE_OHNE_WEG');
+   if(await page.locator('section.qc-chart').count())bad.push('CHART_BEI_NICHT_AKTIE');
+   if(await page.locator('.qx-verdict-card').count()||await page.locator('details.qx-factor').count())bad.push('AKTIENAUSSAGE_BEI_NICHT_AKTIE');
+   if(text.length<100)bad.push('ABSAGE_OHNE_INHALT='+text.length);
+  }
   if(absage){
    const kopf=(await page.locator('main#qx-main h1').first().innerText().catch(()=>'')).trim();
    if(kopf!==absage)bad.push('ABSAGE_FALSCH:'+kopf);
@@ -319,6 +371,8 @@ for(const width of [1440,390]){
    const stand=(await page.locator('main#qx-main p.qx-small').allInnerTexts()).join(' ');
    if(!satz)bad.push('SATZ_FEHLT');
    if(/undefined|NaN/.test(satz+' '+stand))bad.push('UNDEFINED_IM_SATZ');
+   /* Redesign 2027 (Q02): zuerst 10 Zeilen, dann „Alle N zeigen“ - gezaehlt wird die ganze Liste. */
+   const alle=page.locator('main#qx-main button.qv3-all');if(await alle.count()){await alle.first().click();await page.waitForTimeout(400);}
    const zeilen=await page.locator('main#qx-main a.qx-row').allInnerTexts();
    if(!zeilen.length)bad.push('KEINE_TREFFER');
    else if(frage!=='setups'){
@@ -346,9 +400,12 @@ for(const width of [1440,390]){
    }
   }
   if(route==='screener'&&view.includes('/profi')){
-   const regeln=await page.locator('main#qx-main .qx-rules .qx-rule').count();
+   /* Redesign 2027 (Q02, #1410): dunkle Profi-Flaeche mit Bereichsreglern (.qv3-cond) und Treffertabelle (a.qv3-prow);
+      der Regel-Editor (.qx-rule, a.qx-row) bleibt fuer ?daten=v1. Geprueft wird dasselbe: eine Regel und Treffer sichtbar. */
+   await page.waitForFunction(()=>document.querySelectorAll('main#qx-main a.qx-row, main#qx-main a.qv3-prow').length>0,null,{timeout:20000}).catch(()=>{});
+   const regeln=await page.locator('main#qx-main .qx-rules .qx-rule, main#qx-main .qv3-cond').count();
    if(!regeln)bad.push('KEINE_REGEL');
-   const zeilen=await page.locator('main#qx-main a.qx-row').count();
+   const zeilen=await page.locator('main#qx-main a.qx-row, main#qx-main a.qv3-prow').count();
    if(!zeilen)bad.push('KEINE_TREFFER');
   }
   if(route==='aktien'){
@@ -357,26 +414,35 @@ for(const width of [1440,390]){
       ihrem Namen da, nicht nur mit dem Kuerzel. */
    /* Konzept-Design: Karten (a.qx-poster) tragen den Namen in .q-card-name,
       das Kuerzel im data-symbol. */
-   const zeilen=await page.locator('main#qx-main a.qx-row .qx-row-title, main#qx-main a.qx-poster').evaluateAll(ns=>ns.map(n=>({t:(n.querySelector('.qx-ticker')||{}).textContent||n.dataset.symbol||'',n:(n.querySelector('.qx-row-name,.q-card-name')||n.querySelector('span')||{}).textContent||''})));
+   /* Redesign 2027 (Q04): Aktienzeilen C10 (a.vu-lrow): Name in .vu-lrow__name b, Kuerzel im Logo-Feld. */
+   const zeilen=await page.locator('main#qx-main a.qx-row .qx-row-title, main#qx-main a.qx-poster, main#qx-main a.vu-lrow').evaluateAll(ns=>ns.map(n=>n.classList.contains('vu-lrow')?{t:(n.getAttribute('href')||'').split('/').pop(),n:(n.querySelector('.vu-lrow__name b')||{}).textContent||''}:({t:(n.querySelector('.qx-ticker')||{}).textContent||n.dataset.symbol||'',n:(n.querySelector('.qx-row-name,.q-card-name')||n.querySelector('span')||{}).textContent||''})));
    if(!zeilen.length)bad.push('KEINE_ZEILEN');
    const mitName=zeilen.filter(x=>x.n&&x.n!==x.t).length;
    if(zeilen.length&&mitName/zeilen.length<0.95)bad.push('NAMEN='+mitName+'/'+zeilen.length);
    console.log('     Aktien: '+zeilen.length+' Zeilen · '+mitName+' mit Namen');
   }
   if(route==='strategien'&&!/strategien\/[a-z]/.test(view)){
-   const karten=await page.locator('main#qx-main a.qx-strat').count();
+   const karten=await page.locator('main#qx-main a.qx-strat, main#qx-main a.qv3-scard').count();
    if(karten<8)bad.push('STRATEGIEN='+karten);
    /* KEINE TREFFERQUOTE: die Seite sagt, dass es keine gibt. */
-   if(!/keine Erfolgs- oder Trefferquote/.test(text))bad.push('TREFFERQUOTE_UNGENANNT');
+   if(!/keine (Erfolgs- oder )?Trefferquote/.test(text))bad.push('TREFFERQUOTE_UNGENANNT');
   }
   if(route==='strategien'&&/strategien\/[a-z]/.test(view)){
-   if(!/Welche Bedingungen gelten\?/.test(text))bad.push('BEDINGUNGEN_FEHLEN');
-   if(!/Wer passt heute\?/.test(text))bad.push('TREFFER_FEHLEN');
+   /* Redesign 2027 (Q03, #1410): „Die Regeln“ als Fragen mit Schwelle und „Erfüllen heute“ mit Trefferzahl; die bisherige
+      Auswertung steht unter „Mehr zu dieser Strategie“. Geprueft wird dasselbe: Bedingungen und heutige Treffer sichtbar. */
+   const v3s=await page.locator('main#qx-main .qv3-sdetail').count();
+   if(v3s){
+    if(!/Die Regeln/.test(text)||!await page.locator('main#qx-main .qv3-sdetail .qv3-liste .qv3-li').count())bad.push('BEDINGUNGEN_FEHLEN');
+    if(!/Erfüllen heute\s*(\d[\d.]*\s+Aktien|nicht prüfbar)/.test(text))bad.push('TREFFER_FEHLEN');
+   }else{
+    if(!/Welche Bedingungen gelten\?/.test(text))bad.push('BEDINGUNGEN_FEHLEN');
+    if(!/Wer passt heute\?/.test(text))bad.push('TREFFER_FEHLEN');
+   }
   }
 
   /* DIE AKTIENSEITE. */
   const stock=(view.match(/#\/aktie\/([A-Z0-9.-]+)$/)||[])[1]||(LEGACY[view]&&(LEGACY[view].match(/#\/aktie\/([A-Z0-9.-]+)$/)||[])[1])||null;
-  if(stock&&!absage){
+  if(stock&&!absage&&!ausgeschieden){
    const idTicker=(await page.locator('.qx-stock-hero .qx-stock-id b').first().innerText().catch(()=>'')).trim();
    if(idTicker!==stock)bad.push('TICKER_FALSCH:'+idTicker);
    const kopf=(await page.locator('.qx-stock-hero h1').first().innerText().catch(()=>'')).trim();
@@ -422,7 +488,8 @@ for(const width of [1440,390]){
     const auskunft=page.locator('.qx-verdict-card');
     if(!await auskunft.count())bad.push('AUSKUNFT_FEHLT');
     else{
-     const kopfsatz=(await auskunft.locator('.qx-verdict-top').innerText().catch(()=>'')).replace(/\n+/g,' ');
+     /* Redesign 2027 (Q07): der Kopfsatz steht in der schwarzen Gesamtkarte (.qv3-ink), sonst wie bisher. */
+     const kopfsatz=(await auskunft.locator('.qx-verdict-top, .qv3-ink').first().innerText().catch(()=>'')).replace(/\n+/g,' ');
      if(kopfsatz.length<40)bad.push('KOPFSATZ_ZU_KURZ='+kopfsatz.length);
      const ganz=await auskunft.innerText();
      /* Kein interner Code und keine Handlungs- oder Prognosesprache - §81
@@ -444,8 +511,9 @@ for(const width of [1440,390]){
     const grenzen=await page.locator('#grenzen').innerText().catch(()=>'');
     /* innerText folgt text-transform (Dachzeilen stehen in Versalien) -
        deshalb ohne Ruecksicht auf Gross-/Kleinschreibung. */
-    if(!/Gibt es ein Setup\?|Wie weit ist die Aktie im Setup\?/i.test(setupText)&&!/Setup:/.test(grenzen))bad.push('SETUPFRAGE_FEHLT');
-    if(setupText&&!/Was würde das Setup ungültig machen\?|Was müsste als Nächstes passieren\?|Kein Setup|keine Beobachtung/i.test(setupText))bad.push('ENDE_UNBEANTWORTET');
+    /* Redesign 2027 (Q07-b): Schritt 5 fragt „Passt die Aktie gerade zu einem Stil?“ und zeigt „Setup im Chart“ mit der naechsten Stufe. */
+    if(!/Gibt es ein Setup\?|Wie weit ist die Aktie im Setup\?|Setup im Chart/i.test(setupText)&&!/Setup:/.test(grenzen))bad.push('SETUPFRAGE_FEHLT');
+    if(setupText&&!/Was würde das Setup ungültig machen\?|Was müsste als Nächstes passieren\?|nächste Stufe|Kein Setup|keine Beobachtung/i.test(setupText))bad.push('ENDE_UNBEANTWORTET');
    }
 
    /* DIE SIEBEN EIGENSCHAFTEN - ZUERST AUFKLAPPEN, DANN ZAEHLEN.
@@ -561,6 +629,14 @@ for(const width of [1440,390]){
      if(z.range!==id||z.pressed.join('|')!==id)bad.push('ZEITRAUM_KLICK_'+label+':'+z.range);
     }
    }
+  }
+  /* Einzelne gescheiterte Anfrage an das Release, sonst alles in Ordnung
+     (08.11.2026: /quant/config/market-calendar.json auf einer Screener-Seite,
+     die im selben Lauf bei 1440 px bestand): die Ansicht wird genau einmal
+     neu geprueft. Scheitert sie wieder, zaehlt der Fehler. */
+  if(errors.length&&!bad.length&&wiederholt!==view&&errors.every(e=>e.startsWith('requestfailed: '))){
+   console.log('     fluechtig '+view+'@'+width+': '+errors.slice(0,3).join(' / ')+' -> einmal neu');
+   wiederholt=view;errors.length=0;fremdFehlgeschlagen=false;i--;continue;
   }
   if(errors.length)bad.push('ERRORS:'+errors.slice(0,2).join(' / '));
   console.log((bad.length?'FAIL ':'ok   ')+view+'@'+width+(bad.length?'  '+bad.join('  '):''));

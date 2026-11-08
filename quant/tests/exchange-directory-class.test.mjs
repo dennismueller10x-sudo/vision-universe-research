@@ -20,6 +20,8 @@ const OTHER = [
   "ITUB|Itau Unibanco Banco Holding SA American Depositary Shares (Each repstg 1 Preferred Share)|N|ITUB|N|100|N|ITUB",
   "BNS|Bank Nova Scotia Halifax Pfd 3 Ordinary Shares|N|BNS|N|100|N|BNS",
   "SPY|SPDR S&P 500 ETF Trust|P|SPY|Y|100|N|SPY",
+  "COIA|ProShares Ultra COIN|P|COIA|Y|100|N|COIA",
+  "HODL|VanEck Bitcoin Trust |Z|HODL|Y|100|N|HODL",
   "CBX|CBX (Listing Market NYSE Networks AE) Common Stock|N|CBX|N|100|Y|CBX",
   "File Creation Time: 1008202614:20||||||| "
 ].join("\n");
@@ -113,4 +115,17 @@ test("ED8 · ausgelieferter Stand: jede Verzeichnis-Umstufung traegt Bezeichnung
   for (const t of ["KMPB", "OXLCZ", "AFGC"]) assert.equal(byId.get("ref_" + t).product_eligibility, "EXCLUDED", t);
   /* G6 der Elliott-Produktschicht liest genau diese Datei: falsche Gattungen kommen nicht durch */
   for (const t of ["KMPB", "OXLCZ"]) assert.notEqual(byId.get("ref_" + t).instrument_type, "EQUITY_COMMON", t);
+});
+
+test("ED9 · ETF-Kennung der Boerse genuegt, wenn der Name keine andere Klasse belegt (ProShares Ultra COIN, VanEck Bitcoin Trust)", () => {
+  const ALL = ["DEBT", "ETN", "PREFERRED", "WARRANT", "RIGHT", "UNIT", "ETF"];
+  const coia = judge(dec("COIA", { exchange: "NYSE ARCA" }), null, ALL);
+  assert.equal(coia.next.instrument_type, "ETF");
+  assert.equal(coia.next.product_eligibility, "EXCLUDED");
+  assert.equal(coia.next.product_eligibility_reason, "CONFIRMED_NON_EQUITY:ETF");
+  const hodl = judge(dec("HODL", { exchange: "BATS", instrument_type: "TRUST", product_eligibility: "SEPARATE_CLASS", product_eligibility_reason: "CONFIRMED_SEPARATE_CLASS:TRUST" }), null, ALL);
+  assert.equal(hodl.next.instrument_type, "ETF");
+  assert.equal(hodl.next.product_eligibility, "EXCLUDED");
+  assert.equal(judge(dec("COIA", { exchange: "NYSE ARCA" })), null, "ohne Klasse ETF unveraendert");
+  assert.equal(judge(dec("FNGU", { exchange: "NASDAQ" }), null, ALL).next.instrument_type, "ETN", "ETN bleibt ETN");
 });

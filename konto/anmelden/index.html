@@ -8,21 +8,26 @@
 <meta name="theme-color" content="#ffffff">
 <title>Anmelden · Vision Universe</title>
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/vu-ui.css">
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/konto/konto.css">
 </head>
-<body class="ka-body" data-view="login"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
-<main class="ka ka--narrow" id="main">
-<p class="ka-eyebrow">Konto</p>
-<h1 class="ka-title">Anmelden</h1>
-<p class="ka-lead">Mit deinem Vision-Universe-Konto.</p>
+<body class="ka-body vu-ui" data-view="login"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<main class="ka ka--narrow ka-auth" id="main">
+<!-- Anmelden (Mockup E05): Grund bei Deep Link, Fehler direkt am Formular, Ziel nach der Anmeldung. -->
+<div class="vu-box vu-box--ink ka-reason" id="ka-reason" hidden><span class="vu-hud ka-reason-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span><span><b id="ka-reason-title"></b><small>Danach geht es direkt dorthin.</small></span></div>
+<h1 class="ka-title" id="ka-login-title">Willkommen zurück.</h1>
+<p class="ka-lead" id="ka-login-lead">Melde dich mit deinem Vision-Universe-Konto an.</p>
+<form class="ka-form" id="ka-login" novalidate>
+<div class="ka-field"><label for="email">E-Mail-Adresse</label><input class="ka-input" id="email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required maxlength="254" placeholder="name@beispiel.de"></div>
+<div class="ka-field"><label for="password">Passwort</label><div class="ka-pw"><input class="ka-input" id="password" name="password" type="password" autocomplete="current-password" required maxlength="200"><button type="button" data-toggle-password="password" aria-controls="password" aria-pressed="false">Anzeigen</button></div><a class="ka-link ka-forgot" id="ka-forgot-link" href="/konto/passwort/">Passwort vergessen?</a></div>
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
-<form class="ka-card ka-form" id="ka-login" novalidate>
-<div class="ka-field"><label for="email">E-Mail-Adresse</label><input class="ka-input" id="email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required maxlength="254"></div>
-<div class="ka-field"><label for="password">Passwort</label><div class="ka-pw"><input class="ka-input" id="password" name="password" type="password" autocomplete="current-password" required maxlength="200"><button type="button" data-toggle-password="password" aria-controls="password" aria-pressed="false">Anzeigen</button></div></div>
 <button class="ka-btn ka-btn--block" type="submit">Anmelden</button>
+<a class="ka-btn ka-btn--secondary ka-btn--block" id="ka-reset" href="/konto/passwort/" hidden>Passwort zurücksetzen</a>
 </form>
-<nav class="ka-links" aria-label="Weitere Möglichkeiten"><a class="ka-link" href="/konto/passwort/">Passwort vergessen?</a><a class="ka-link" href="/konto/registrieren/">Konto erstellen</a></nav>
+<a class="vu-navcard ka-after" id="ka-after" href="/willkommen/"><span class="vu-hud ka-hud" aria-hidden="true"><svg viewBox="0 0 24 24" class="ka-ico"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span><span class="vu-navcard__text"><b>Danach geht es weiter zu</b><span id="ka-after-text">Mein Bereich, mit deiner Watchlist</span></span></a>
+<p class="ka-divider"><span>Neu hier?</span></p>
+<a class="ka-btn ka-btn--secondary ka-btn--block" href="/konto/registrieren/?plan=free">Kostenlos Konto erstellen</a>
 <nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/agb">Bedingungen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></nav>
 </main>
 <script src="/konto/config.js"></script>

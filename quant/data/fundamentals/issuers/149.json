@@ -164,10 +164,10 @@
       "cik": "0001580149",
       "name": "BIOVIE INC.",
       "sic": "2834",
-      "rawFacts": 8203,
-      "mappedFacts": 3381,
-      "unmappedFacts": 4992,
-      "calendarYears": 20,
+      "rawFacts": 8339,
+      "mappedFacts": 3468,
+      "unmappedFacts": 5187,
+      "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0630",
@@ -177,9 +177,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 14,
-      "quarterlyPeriods": 51,
+      "quarterlyPeriods": 54,
       "firstPeriodEnd": "2013-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
@@ -191,7 +191,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2019-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 7.0
@@ -218,14 +218,14 @@
         },
         "net_income": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2013-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 13.0
         },
         "operating_cash_flow": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 43,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2013-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 13.0
@@ -246,14 +246,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 45,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2013-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 45,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2013-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 13.0
@@ -276,48 +276,51 @@
         }
       },
       "quality": {
-        "HIGH": 281
+        "HIGH": 306
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 281,
-        "resolvedValues": 281
+        "datableValues": 306,
+        "resolvedValues": 306
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 5373,
+        "rules_version": "1.1.0",
+        "total": 5443,
         "by_severity": {
-          "INFO": 4992,
+          "INFO": 5187,
           "ERROR": 39,
-          "WARNING": 342
+          "WARNING": 217
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 148,
-          "FISCAL_PERIOD_CONFLICT": 18,
+          "CONCEPT_DISAGREEMENT": 70,
+          "FISCAL_PERIOD_CONFLICT": 10,
           "FUTURE_DATA_LEAK": 39,
-          "RESTATEMENT_CONFLICT": 174,
+          "FUTURE_PERIOD_END": 6,
+          "RESTATEMENT_CONFLICT": 123,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 4992
+          "UNKNOWN_CONCEPT": 5187,
+          "UNPLACEABLE_PERIOD": 6
         }
       },
       "latestFiling": {
-        "accession": "0001520138-26-000332",
-        "filing_date": "2026-08-13",
-        "form": "10-K",
-        "periodic_filings": 54
+        "accession": "0001520138-26-000461",
+        "filing_date": "2026-11-06",
+        "form": "10-Q",
+        "periodic_filings": 55,
+        "acceptance_datetime": "2026-11-06T22:15:59.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "1f262ade6600d1446b09b74db22dda3fcfcd9fa23a7af8b83a000d6a4d671bec",
+      "sourceDigest": "896af46c543d22aba12ae8bd33fad2472a4c014c10104835d16b74d098aee1c6",
       "issuerId": "iss_cik_0001580149"
     },
     {

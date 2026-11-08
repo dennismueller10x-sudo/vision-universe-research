@@ -119,7 +119,7 @@ Keine Art wird vor dem Erfüllen ihrer bestehenden Gates zertifiziert. Ein negat
 
 ## 5. Wiederaufnahmepunkt
 
-- Einstieg: dieses Dokument, dann [BACKTEST_COVERAGE_MATRIX.md](BACKTEST_COVERAGE_MATRIX.md) (erzeugt, Stand der Abdeckung und Freigabevorlagen FV-1 bis FV-8), dann `docs/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`.
+- Einstieg: dieses Dokument, dann [BACKTEST_COVERAGE_MATRIX.md](BACKTEST_COVERAGE_MATRIX.md) (erzeugt, Stand der Abdeckung und Freigabevorlagen FV-1 bis FV-8), dann `docs/archiv/2026/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`.
 - **Stand 02.11.2026 (Master Completion 3.0):** P0.5 erledigt, P0.7 als Hilfsfunktion erledigt, P2.1/P2.2 als Skript erledigt, Coverage-Matrix als Erzeuger (`scripts/quant/research/backtest-coverage-matrix.cjs`, Test erzwingt `--check`). Gegenrechnung lokal: 16 öffentliche Katalogfälle neu gerechnet, Python 16.451 Prüfungen/0 Abweichungen, Kennzahlen-Hash 16/16 gleich zum CI-Bau vom 31.10.
 - **Stand 02.11.2026 (Master Completion 3.1, P2):** P3.1 als Code mit Tests (Lauf braucht das Archiv), P4.1 als Research, FV-4 Erwartung und Auswertung, FV-1-Analyse mit Empfehlung, FV-8-Befund; Bericht [BACKTEST_P2_DEFIZITE.md](BACKTEST_P2_DEFIZITE.md), Matrix Abschnitt I.
 - Nächste autonome Pakete: P0.6 (Opt-in-CI-Job, braucht FV-3), P1.3 (FACTOR_RANKING in die Evidenz-Taxonomie), P1.4 (V10_LIFECYCLE-Listingdrift erklären).

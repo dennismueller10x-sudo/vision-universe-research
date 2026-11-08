@@ -23,9 +23,11 @@ test('public: alle vier Bedingungen', () => {
   assert.equal(publicCheckoutProblems({...ready, STRIPE_TAX_MODE: 'none'}, approved).length, 1);
 });
 
-test('heutiger Stand: Produktion zulaessig (testers), public waere mit den Entwuerfen abgelehnt', () => {
+test('heutiger Stand: Rechtstexte freigeschaltet (06.11.2026), Checkout bleibt testers', () => {
   const vars = productionVars(readFileSync(new URL('../../../workers/vu-account/wrangler.toml', import.meta.url), 'utf8'));
-  assert.equal(vars.VU_CHECKOUT_ACCESS, 'testers');
+  assert.equal(vars.VU_CHECKOUT_ACCESS, 'testers', 'oeffentliche Zahlungen sind eine eigene Owner-Freigabe');
   assert.deepEqual(publicCheckoutProblems(vars), []);
-  assert.ok(publicCheckoutProblems({...vars, VU_CHECKOUT_ACCESS: 'public'}).length >= 3);
+  // Mit freigegebenen Texten waere public technisch zulaessig; ausgerollt wird es nur ueber den Job zahlungsfreigabe.
+  assert.deepEqual(publicCheckoutProblems({...vars, VU_CHECKOUT_ACCESS: 'public'}), []);
+  assert.ok(publicCheckoutProblems({...vars, VU_CHECKOUT_ACCESS: 'public', VU_LEGAL_APPROVED: ''}).length >= 1, 'ohne bestaetigte Fassung abgelehnt');
 });

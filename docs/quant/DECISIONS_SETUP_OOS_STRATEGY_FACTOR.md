@@ -6,6 +6,8 @@ Jede Entscheidung unten wird erst wirksam, wenn der Owner sie ausdrücklich frei
 
 ## A. Setup-OOS
 
+**Entschieden 04.11.2026:** A1–A6 nach den Empfehlungen in [SETUP_OOS_DECISION_A1_A6.md](SETUP_OOS_DECISION_A1_A6.md) (Abschnitt 5 und 6; Schnitt 2027-05-31 statt des unten noch genannten 2027-03-31).
+
 Vertrag: `oosMinPerSegment = 30` je Segment. Was fehlt, ist die Definition der Segmente. Datenlage: 22 veröffentlichte Stichtage über 48 Tage, 0 abgeschlossene M6-Ergebnisse. Die ersten M6-Ergebnisse sind etwa Ende März 2027 fällig.
 
 | Nr. | Frage | Optionen | Empfehlung |

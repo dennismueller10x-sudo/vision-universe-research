@@ -116,8 +116,8 @@
     INSUFFICIENT_HISTORY: "Die Kurshistorie ist noch zu kurz für diese Messung.",
     INSUFFICIENT_PRICE_HISTORY: "Die Kurshistorie ist noch zu kurz für diese Messung.",
     INSUFFICIENT_SNAPSHOT_HISTORY: "Dafür werden mehrere gespeicherte Stände über Wochen benötigt; die Aufzeichnung läuft noch.",
-    NO_FUNDAMENTALS: "Für diesen Titel liegen keine Geschäftszahlen aus SEC-Meldungen vor.",
-    FUNDAMENTALS_UNAVAILABLE: "Für diesen Titel liegen keine Geschäftszahlen aus SEC-Meldungen vor.",
+    NO_FUNDAMENTALS: "Für diesen Titel liegen keine Geschäftszahlen aus Pflichtmeldungen vor.",
+    FUNDAMENTALS_UNAVAILABLE: "Für diesen Titel liegen keine Geschäftszahlen aus Pflichtmeldungen vor.",
     MARKET_CAP_UNAVAILABLE: "Der Börsenwert ist nicht belegt; Bewertungskennzahlen lassen sich deshalb nicht bilden.",
     SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Diese Kennzahl braucht den Börsenwert genau dieser Notierung. Das Unternehmen hat mehrere börsennotierte Wertpapiere, und die veröffentlichte Aktienzahl gilt für das Unternehmen als Ganzes – welcher Anteil auf dieses Papier entfällt, steht nicht in den Unterlagen. Die Kennzahl wird deshalb bewusst nicht genannt, statt sie zu schätzen.",
     SHARE_COUNT_NOT_OUTSTANDING: "Diese Kennzahl braucht den Börsenwert. Gemeldet ist nur die Zahl ausgegebener Aktien einschließlich der Aktien, die das Unternehmen selbst hält – ein Börsenwert daraus wäre zu hoch. Die Kennzahl wird deshalb bewusst nicht genannt.",
@@ -415,7 +415,9 @@
        als eigene Zeile darunter (unrated / unratedText) mit Grund im Faktor-Kapitel. Der Nenner im Satz bleibt die Zahl
        der gemessenen Eigenschaften. */
     var off = factors.filter(function (f) { return f.state !== "AVAILABLE"; });
-    return { id: id, text: OVERALL[id].text, tone: OVERALL[id].tone, sub: sub,
+    /* Owner-Linie L7 (Plan §11): kein Gesamturteil als Wort. Angezeigt wird die Zaehlung. */
+    var count = u.bewertet ? u.stark + " von " + u.bewertet + " Faktoren stark" : OVERALL.KEINE_DATEN.text;
+    return { id: id, text: OVERALL[id].text, tone: OVERALL[id].tone, sub: sub, count: count,
       unrated: off.map(function (f) { return { id: f.id, name: f.name || (FACTORS[f.id] && FACTORS[f.id].name) || f.id }; }),
       unratedText: unratedNote(factors, rated).trim(),
       rated: u.bewertet, strong: u.stark, weak: u.schwach, middle: u.mittel, total: factors.length,

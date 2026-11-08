@@ -218,3 +218,30 @@ jobs:
               node -e 'const c=require("./quant/data/sec/consumer_coverage.json"); console.log("| Kennzahl | Wert |"); console.log("|---|---|"); for (const k of ["productUniverse","cikMapped","withoutCik","secAvailable","notInCompanyFacts","annualHistory","quarterlyHistory","ttmPossible","latestFundamentals","history3y","history5y","history10y"]) console.log("| "+k+" | "+c[k]+" |"); console.log(""); console.log("| Kennzahl | annual | quarterly | ttm |"); console.log("|---|---|---|---|"); for (const [m,v] of Object.entries(c.perMetric)) console.log("| "+m+" | "+v.annual+" | "+v.quarterly+" | "+v.ttm+" |"); console.log(""); console.log("Fehler: "+c.failures.length);'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # Alarm bei rotem Lauf auf main (uebernommen aus #1156, V1-Befund 30.10.2026: drei rote Consumer-Laeufe ohne Alarm,
+  # die Health-Anzeige misst nur das Alter). Derselbe Bote wie market-data-refresh; ein gruener Lauf schliesst das Issue.
+  alarm:
+    needs: [consumer]
+    if: always() && github.ref == 'refs/heads/main' && github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Alarm oeffnen, ergaenzen oder schliessen
+        # Der Bote darf den Befund nicht veraendern: ein Zustellfehler macht den Lauf nicht rot.
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALARM_SOURCE: sec-consumer-fundamentals
+          ALARM_TITLE: SEC-Consumer-Lauf fehlgeschlagen
+          RESULT_CONSUMER: ${{ needs.consumer.result }}
+        run: node scripts/ci/pipeline-alarm.mjs

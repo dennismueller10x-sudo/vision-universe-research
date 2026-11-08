@@ -207,7 +207,7 @@ const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url, origin);
     // Oeffentliche Seiten des Workers (in der Produktion auf konto.visionuniverse.de).
-    if (url.pathname.startsWith('/v1/') || url.pathname.startsWith('/rechtliches') || url.pathname === '/kuendigen' || url.pathname === '/widerrufen') {
+    if (url.pathname.startsWith('/v1/') || url.pathname.startsWith('/rechtliches') || url.pathname === '/kuendigen' || url.pathname === '/widerrufen' || url.pathname === '/kontakt') {
       return await send(res, await toWorker(req, url));
     }
     if (url.pathname === '/__dev' || url.pathname.startsWith('/__dev/')) return await devRoute(req, res, url);

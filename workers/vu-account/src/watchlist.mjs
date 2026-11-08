@@ -10,7 +10,7 @@ import {SupabaseError} from './supabase.mjs';
 import * as v from './validate.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-const ALERT_TYPES = ['PRICE_EVENT', 'SUPERTRADER_SIGNAL', 'QUANT_CHANGE', 'WATCHLIST_NEWS', 'EARNINGS'];
+const ALERT_TYPES = ['PRICE_EVENT', 'SUPERTRADER_SIGNAL', 'QUANT_CHANGE', 'WATCHLIST_NEWS', 'EARNINGS', 'PRICE_MOVE', 'FUND_13F', 'ELLIOTT_CHANGE'];
 
 export function instrumentId(value) {
   const s = String(value || '');

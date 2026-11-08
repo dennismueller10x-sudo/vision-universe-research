@@ -426,9 +426,9 @@
       "cik": "0001739104",
       "name": "Elanco Animal Health Inc",
       "sic": "2834",
-      "rawFacts": 10352,
-      "mappedFacts": 3574,
-      "unmappedFacts": 6994,
+      "rawFacts": 10618,
+      "mappedFacts": 3689,
+      "unmappedFacts": 7214,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -438,28 +438,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 11,
-      "quarterlyPeriods": 40,
+      "quarterlyPeriods": 41,
       "firstPeriodEnd": "2015-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "eps_diluted": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "free_cash_flow": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0,
@@ -472,28 +472,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "net_income": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "operating_cash_flow": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 35,
+          "quarterlyPeriods": 36,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -507,14 +507,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -537,45 +537,46 @@
         }
       },
       "quality": {
-        "HIGH": 366,
+        "HIGH": 374,
         "MEDIUM": 30
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 396,
-        "resolvedValues": 396
+        "datableValues": 404,
+        "resolvedValues": 404
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 7316,
+        "rules_version": "1.1.0",
+        "total": 7541,
         "by_severity": {
-          "INFO": 6994,
-          "WARNING": 322
+          "INFO": 7214,
+          "WARNING": 327
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 299,
+          "CONCEPT_DISAGREEMENT": 304,
           "RESTATEMENT_CONFLICT": 23,
-          "UNKNOWN_CONCEPT": 6994
+          "UNKNOWN_CONCEPT": 7214
         }
       },
       "latestFiling": {
-        "accession": "0001739104-26-000043",
-        "filing_date": "2026-08-05",
+        "accession": "0001739104-26-000057",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 32
+        "periodic_filings": 33,
+        "acceptance_datetime": "2026-11-06T14:10:32.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "b1eaf338ea14fd28260ed7f5e94412c76be1205ead81c5d893018fb7f098ecf9",
+      "sourceDigest": "67e714cc79eea3bc448cc60404f6219756f489539a3e85d53939eda2afe8de5a",
       "issuerId": "iss_cik_0001739104"
     },
     {

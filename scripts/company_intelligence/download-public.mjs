@@ -20,9 +20,14 @@ export async function download(driver,{namespace,output,now=Date.now()}){
  // the entire issuer/asset inventory per object makes a full download quadratic.
  // Keep the single-asset API unchanged; batch reads use only this pinned view.
  // Verify the entire retained view before writing the release, including the current index.
+ // Die 7-Tage-Regel gilt fuer den aktuellen Stand, den die Seite ausliefert. Der behaltene
+ // Vorgaenger (previous.json) ist nur Verlauf fuer Clients mitten im Wechsel; ist er abgelaufen,
+ // wird er weggelassen statt den aktuellen Stand zu blockieren (Steuerung 07.11.2026: das
+ // abgelaufene Universe-GOOD 39cac68a blieb als Vorgaenger und liess activate scheitern).
+ let expiredPreviousOmitted=false;
  for(const [i,m] of manifests.entries()){
  const timestamp=Date.parse(m.generatedAt);
- if(timestamp>now+300000||now-timestamp>7*86400000)throw Error('CONSUMER_EXPIRED');
+ if(timestamp>now+300000||now-timestamp>7*86400000){if(i>0){expiredPreviousOmitted=true;continue;}throw Error('CONSUMER_EXPIRED');}
  await objectPool(Object.entries(m.assets),async ([asset,meta])=>{
   if(i>0&&asset==='index.json')return;
   const key=prefix+`slot-${m.slot||0}/`+(asset==='index.json'?asset:asset.split('/').slice(2).join('/'));
@@ -40,6 +45,6 @@ export async function download(driver,{namespace,output,now=Date.now()}){
   for(const [asset,bytes] of files){if(asset==='index.json')continue;const p=resolve(output,asset);await mkdir(dirname(p),{recursive:true});await writeFile(p,bytes);}
   await mkdir(output,{recursive:true});const pointer=resolve(output,'index.json.tmp');await writeFile(pointer,files.get('index.json'));await rename(pointer,resolve(output,'index.json'));
  }finally{await rm(stage,{recursive:true,force:true});}
- return {status:'PASS',generation:current.generation,files:files.size,bytes:total,retainedGenerations:manifests.length,privateObjectsRead:0};
+ return {status:'PASS',generation:current.generation,files:files.size,bytes:total,retainedGenerations:manifests.length-(expiredPreviousOmitted?1:0),...(expiredPreviousOmitted?{expiredPreviousOmitted:true}:{}),privateObjectsRead:0};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];try{if(!args.includes('--namespace')||!args.includes('--out'))throw Error('MISSING_ARGUMENT');const driver=args.includes('--local-root')?createFsDriver(arg('--local-root')):createS3DriverFromEnv();console.log(JSON.stringify(await download(driver,{namespace:arg('--namespace'),output:arg('--out')})));}catch{console.error('CONSUMER_RELEASE_DOWNLOAD_FAILED');process.exitCode=1;}}

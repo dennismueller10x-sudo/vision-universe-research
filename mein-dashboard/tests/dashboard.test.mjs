@@ -14,7 +14,7 @@ const code = js.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
 test('Seite: gemeinsame Shell, Theme, noindex, nur eigene Skripte, keine Inline-Handler', () => {
   for (const must of ['<vu-navigation theme="light" theme-switch no-preview>', '/assets/site-navigation.js', '/assets/site-navigation.css',
     'vu-discover-theme-v1', '<meta name="robots" content="noindex,nofollow">', '<meta name="referrer" content="no-referrer">',
-    'viewport-fit=cover', '/konto/config.js', '/konto/account-api.js', '/konto/konto.css', '/core/watchlist-view.js', '/mein-dashboard/dashboard.js']) {
+    'viewport-fit=cover', '/konto/config.js', '/konto/account-api.js', '/konto/konto.css', '/core/watchlist-view.js', '/assets/vu-ui.css', '/assets/vu-ui.js', '/assets/vu-chart.js', '/mein-dashboard/today.js', '/mein-dashboard/dashboard.js']) {
     assert.ok(html.includes(must), must);
   }
   assert.ok(!/<script[^>]+src="https?:/.test(html), 'keine externen Skripte');
@@ -26,11 +26,16 @@ test('Seite: gemeinsame Shell, Theme, noindex, nur eigene Skripte, keine Inline-
 test('nur nach Anmeldung, nur bestehende Schnittstellen, keine eigene Datenhaltung', () => {
   assert.match(code, /A\.get\('\/v1\/session'\)[^]*authenticated[^]*go\('\/konto\/anmelden\/\?next='/, 'ohne Sitzung zur Anmeldung');
   const calls = [...code.matchAll(/A\.(get|post|patch)\('([^']+)'/g)].map(m => m[2]).sort();
-  assert.deepEqual([...new Set(calls)], ['/v1/auth/logout', '/v1/me', '/v1/session', '/v1/watchlist', '/v1/watchlist/import',
+  // Abmelden liegt seit dem Redesign im Konto (E07, Platz 3 der Leiste), nicht mehr in einer Link-Zeile hier.
+  assert.deepEqual([...new Set(calls)], ['/v1/me', '/v1/session', '/v1/watchlist', '/v1/watchlist/import',
     '/v1/watchlist/items', '/v1/watchlist/items/remove'], 'nur die vorhandenen Konto- und Watchlist-Aufrufe');
   assert.ok(!/localStorage\.setItem/.test(code), 'schreibt nichts in den Browser-Speicher (liest nur die lokalen Listen)');
   assert.match(code, /W\.legacyTickers/, 'lokale Listen ueber dieselbe Leseregel wie /konto/watchlist/');
-  assert.ok(!/innerHTML|insertAdjacentHTML|document\.write|outerHTML/.test(code), 'keine Serverdaten per innerHTML');
+  assert.ok(!/insertAdjacentHTML|document\.write|outerHTML/.test(code), 'kein freies HTML');
+  // innerHTML nur an einer Stelle (markup) und nur mit Ausgabe der Bausteine (VUUI maskiert jede Eingabe; VUChart.sparkline nur Zahlen).
+  assert.equal((code.match(/innerHTML/g) || []).length, 1, 'innerHTML nur in markup()');
+  for (const line of code.split('\n').filter(l => /markup\(/.test(l) && !/function markup/.test(l))) assert.match(line, /markup\(el\([^)]*\), (U\.[a-z]+\(|html\))/i, 'markup nur mit VUUI: ' + line.trim());
+  assert.match(code, /var html = U\.stockRow\(/, 'Aktienzeile aus VUUI.stockRow');
 });
 
 test('keine nicht freigegebenen Inhalte: kein Quant-Gesamtscore, keine Supertrader-Signale', () => {

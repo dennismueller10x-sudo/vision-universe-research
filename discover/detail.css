@@ -337,7 +337,7 @@ body.dv2 .dv2-stock .dv2-foot{margin:var(--vu3-gap) 0 0;padding:0;border:0}
 body.dv2 .dv2-dm{margin-top:0}
 body.dv2 .dv2-dm dd>p,body.dv2 .dv2-dm dd>div{margin:0;padding:0;font-size:12.5px;line-height:1.5;color:var(--discover-muted)}
 @media(max-width:860px){
-  body.dv2 .dv2-stock{--vu3-gap:28px;padding:0 var(--vu-gutter,16px) 108px}
+  body.dv2 .dv2-stock{--vu3-gap:28px;padding:0 var(--vu-gutter,16px) 24px}
   body.dv2 .dv2-stock .dx-chart-hero-preis>b{font-size:42px}
   body.dv2 .dv2-stock .dx-chapter--chart{min-height:0;padding-top:12px}
   body.dv2 .dv2-stock .dx-range-chart,body.dv2 .dv2-stock .dx-intraday-chart{height:clamp(210px,30svh,340px)}
@@ -355,3 +355,4 @@ body.dv2 .dv2-dm dd>p,body.dv2 .dv2-dm dd>div{margin:0;padding:0;font-size:12.5p
 }
 /* Dieselbe Aktie in ... (ui/stock-head.js#worlds): nur belegte Welten. */
 body.dv2 .dv2-worlds{margin:0 0 24px}body.dv2 .dv2-worlds ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}body.dv2 .dv2-worlds a{display:flex;flex-direction:column;gap:2px;min-height:44px;padding:12px 14px;border:1px solid var(--discover-line);border-radius:12px;color:var(--discover-text);text-decoration:none}body.dv2 .dv2-worlds a span{font-size:13px;color:var(--discover-muted)}
+

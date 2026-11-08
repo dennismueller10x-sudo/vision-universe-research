@@ -7,7 +7,7 @@
   "count": 15
  },
  "family": "PIT_FUNDAMENTAL_OVERLAY",
- "generatedAt": "2026-11-04T04:46:32.000Z",
+ "generatedAt": "2026-11-07T04:04:24.000Z",
  "backtest": "NOT_CERTIFIED",
  "publication": {
   "predictionAllowed": false,
@@ -31,17 +31,17 @@
   "consequence": "Das Beobachtungsfenster dieser Familie ist kuerzer als das der Kursstudie und umfasst wenige Marktphasen. Die Walk-Forward-Bloecke sind entsprechend kurz; das steht im Artefakt und ist kein Detail."
  },
  "population": {
-  "seriesConsidered": 6225,
-  "seriesWithFundamentals": 4203,
-  "observations": 328953,
+  "seriesConsidered": 6039,
+  "seriesWithFundamentals": 4200,
+  "observations": 328957,
   "dropped": {
-   "noFundamentals": 50908,
+   "noFundamentals": 50787,
    "beforeCoverage": 484949,
    "noFeatures": 0
   },
   "restriction": "Nur Beobachtungen, zu deren Stichtag mindestens eine Bilanz eingereicht war. Die Basisquote gilt fuer genau diese Grundgesamtheit.",
   "firstDate": "2018-01-24",
-  "lastDate": "2026-11-02",
+  "lastDate": "2026-11-05",
   "priceSeriesType": "SPLIT_ADJUSTED",
   "totalReturn": false,
   "totalReturnNote": "Split-, nicht dividendenbereinigt. Ein Titel mit hoher Ausschuettung ist hier systematisch schwaecher als seine Gesamtrendite. Das betrifft Gewinner und Nicht-Gewinner gleichermassen und wird nicht durch einen Schaetzwert ersetzt."
@@ -73,9 +73,9 @@
   "horizonMonths": 24,
   "winnerThreshold": "W100",
   "winnerMinReturn": 1,
-  "observations": 328953,
+  "observations": 328957,
   "usableObservations": 233355,
-  "outcomeUnavailable": 95598,
+  "outcomeUnavailable": 95602,
   "winners": 27093,
   "baseRate": 0.116102,
   "folds": [
@@ -167,7 +167,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "profitable",
@@ -240,7 +240,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "shrinking-revenue",
@@ -248,7 +248,7 @@
       "support": 40144
      }
     },
-    "incremental": 1.1437,
+    "incremental": 1.1438,
     "addsOverBetterHalf": true
    },
    {
@@ -313,7 +313,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "positive-free-cash-flow",
@@ -1116,7 +1116,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "no-dilution",
@@ -1362,27 +1362,27 @@
       "value": 0.2
      }
     ],
-    "support": 9045,
+    "support": 9046,
     "winners": 1700,
     "population": 154779,
     "notMeasurable": 78576,
     "outcomeUnavailableInPattern": 0,
     "baseRate": 0.124558,
-    "conditionalRate": 0.187949,
-    "lift": 1.5089,
+    "conditionalRate": 0.187928,
+    "lift": 1.5088,
     "wilsonInterval": [
-     0.180031,
-     0.196132
+     0.180011,
+     0.196111
     ],
     "pValue": 0,
     "significantAfterCorrection": true,
     "lossThreshold": -0.5,
-    "losses": 3391,
+    "losses": 3392,
     "baseLossRate": 0.167497,
-    "conditionalLossRate": 0.374903,
-    "lossLift": 2.2383,
-    "asymmetry": 0.6741,
-    "medianForwardReturn": -0.2241,
+    "conditionalLossRate": 0.374972,
+    "lossLift": 2.2387,
+    "asymmetry": 0.6739,
+    "medianForwardReturn": -0.2242,
     "medianForwardReturnNetOfFrictions": -0.2265,
     "medianForwardReturnPopulation": 0.0328,
     "medianMaxDrawdownWithinHorizon": -0.7266,
@@ -1392,13 +1392,13 @@
      "winners": 1433
     },
     "outOfSample": {
-     "lift": 1.4696,
-     "support": 7324,
+     "lift": 1.4694,
+     "support": 7325,
      "winners": 1212
     },
     "parameterStability": {
      "state": "MEASURED",
-     "medianLift": 1.5089,
+     "medianLift": 1.5088,
      "minLift": 1.4728,
      "maxLift": 1.5493,
      "relativeSpread": 0.0507
@@ -1408,7 +1408,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "low-gross-margin",
@@ -1416,7 +1416,7 @@
       "support": 31540
      }
     },
-    "incremental": 0.9797,
+    "incremental": 0.9796,
     "addsOverBetterHalf": false
    },
    {
@@ -1481,7 +1481,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "thin-equity-base",
@@ -2430,7 +2430,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "capex-heavy",
@@ -2589,25 +2589,25 @@
       "value": 0.2
      }
     ],
-    "support": 14692,
+    "support": 14693,
     "winners": 2465,
     "population": 158273,
     "notMeasurable": 75082,
     "outcomeUnavailableInPattern": 0,
     "baseRate": 0.115092,
-    "conditionalRate": 0.167778,
-    "lift": 1.4578,
+    "conditionalRate": 0.167767,
+    "lift": 1.4577,
     "wilsonInterval": [
-     0.161823,
-     0.173907
+     0.161812,
+     0.173896
     ],
     "pValue": 0,
     "significantAfterCorrection": true,
     "lossThreshold": -0.5,
-    "losses": 5858,
+    "losses": 5859,
     "baseLossRate": 0.1534,
-    "conditionalLossRate": 0.39872,
-    "lossLift": 2.5992,
+    "conditionalLossRate": 0.398761,
+    "lossLift": 2.5995,
     "asymmetry": 0.5608,
     "medianForwardReturn": -0.3,
     "medianForwardReturnNetOfFrictions": -0.3021,
@@ -2619,23 +2619,23 @@
      "winners": 1458
     },
     "outOfSample": {
-     "lift": 1.4351,
-     "support": 12950,
+     "lift": 1.435,
+     "support": 12951,
      "winners": 1955
     },
     "parameterStability": {
      "state": "MEASURED",
-     "medianLift": 1.4578,
+     "medianLift": 1.4577,
      "minLift": 1.3995,
      "maxLift": 1.4667,
-     "relativeSpread": 0.0461
+     "relativeSpread": 0.0462
     },
     "verdict": "ROBUST",
     "halves": {
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "heavy-dilution",
@@ -2643,7 +2643,7 @@
       "support": 39284
      }
     },
-    "incremental": 0.9465,
+    "incremental": 0.9464,
     "addsOverBetterHalf": false
    },
    {
@@ -3305,26 +3305,26 @@
       "value": 0.5
      }
     ],
-    "support": 17556,
+    "support": 17557,
     "winners": 2914,
     "population": 227403,
     "notMeasurable": 5952,
     "outcomeUnavailableInPattern": 0,
     "baseRate": 0.117087,
-    "conditionalRate": 0.165983,
-    "lift": 1.4176,
+    "conditionalRate": 0.165974,
+    "lift": 1.4175,
     "wilsonInterval": [
-     0.160553,
-     0.17156
+     0.160543,
+     0.17155
     ],
     "pValue": 0,
     "significantAfterCorrection": true,
     "lossThreshold": -0.5,
-    "losses": 6199,
+    "losses": 6200,
     "baseLossRate": 0.163582,
-    "conditionalLossRate": 0.353099,
-    "lossLift": 2.1585,
-    "asymmetry": 0.6567,
+    "conditionalLossRate": 0.353136,
+    "lossLift": 2.1588,
+    "asymmetry": 0.6566,
     "medianForwardReturn": -0.2027,
     "medianForwardReturnNetOfFrictions": -0.2051,
     "medianForwardReturnPopulation": 0.0328,
@@ -3335,8 +3335,8 @@
      "winners": 2382
     },
     "outOfSample": {
-     "lift": 1.3481,
-     "support": 13689,
+     "lift": 1.348,
+     "support": 13690,
      "winners": 2019
     },
     "parameterStability": {
@@ -3351,7 +3351,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "strong-equity-base",
@@ -3359,7 +3359,7 @@
       "support": 65408
      }
     },
-    "incremental": 0.9204,
+    "incremental": 0.9203,
     "addsOverBetterHalf": false
    },
    {
@@ -3451,25 +3451,25 @@
       "value": false
      }
     ],
-    "support": 34645,
+    "support": 34646,
     "winners": 5683,
     "population": 233215,
     "notMeasurable": 140,
     "outcomeUnavailableInPattern": 0,
     "baseRate": 0.116146,
-    "conditionalRate": 0.164035,
+    "conditionalRate": 0.16403,
     "lift": 1.4123,
     "wilsonInterval": [
-     0.160173,
-     0.167972
+     0.160168,
+     0.167967
     ],
     "pValue": 0,
     "significantAfterCorrection": true,
     "lossThreshold": -0.5,
-    "losses": 14303,
+    "losses": 14304,
     "baseLossRate": 0.162914,
-    "conditionalLossRate": 0.412845,
-    "lossLift": 2.5341,
+    "conditionalLossRate": 0.412862,
+    "lossLift": 2.5342,
     "asymmetry": 0.5573,
     "medianForwardReturn": -0.3325,
     "medianForwardReturnNetOfFrictions": -0.3345,
@@ -3481,8 +3481,8 @@
      "winners": 3985
     },
     "outOfSample": {
-     "lift": 1.3209,
-     "support": 28589,
+     "lift": 1.3208,
+     "support": 28590,
      "winners": 4135
     },
     "parameterStability": {
@@ -3497,7 +3497,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "loss-making",
@@ -3505,7 +3505,7 @@
       "support": 83182
      }
     },
-    "incremental": 0.9169,
+    "incremental": 0.917,
     "addsOverBetterHalf": false
    },
    {
@@ -4372,27 +4372,27 @@
       "value": 0.2
      }
     ],
-    "support": 10108,
+    "support": 10109,
     "winners": 1557,
     "population": 145214,
     "notMeasurable": 88141,
     "outcomeUnavailableInPattern": 0,
     "baseRate": 0.111835,
-    "conditionalRate": 0.154036,
-    "lift": 1.3774,
+    "conditionalRate": 0.154021,
+    "lift": 1.3772,
     "wilsonInterval": [
-     0.147131,
-     0.161205
+     0.147116,
+     0.161189
     ],
     "pValue": 0,
     "significantAfterCorrection": true,
     "lossThreshold": -0.5,
-    "losses": 3934,
+    "losses": 3935,
     "baseLossRate": 0.147741,
-    "conditionalLossRate": 0.389197,
-    "lossLift": 2.6343,
-    "asymmetry": 0.5228,
-    "medianForwardReturn": -0.291,
+    "conditionalLossRate": 0.389257,
+    "lossLift": 2.6347,
+    "asymmetry": 0.5227,
+    "medianForwardReturn": -0.2911,
     "medianForwardReturnNetOfFrictions": -0.2932,
     "medianForwardReturnPopulation": 0.0328,
     "medianMaxDrawdownWithinHorizon": -0.7118,
@@ -4402,8 +4402,8 @@
      "winners": 542
     },
     "outOfSample": {
-     "lift": 1.3835,
-     "support": 9507,
+     "lift": 1.3834,
+     "support": 9508,
      "winners": 1392
     },
     "parameterStability": {
@@ -4418,7 +4418,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "high-revenue-growth",
@@ -4426,7 +4426,7 @@
       "support": 29225
      }
     },
-    "incremental": 0.8943,
+    "incremental": 0.8942,
     "addsOverBetterHalf": false
    },
    {
@@ -4577,38 +4577,38 @@
       "value": 0.4
      }
     ],
-    "support": 5842,
+    "support": 5843,
     "winners": 894,
     "population": 145214,
     "notMeasurable": 88141,
     "outcomeUnavailableInPattern": 0,
     "baseRate": 0.111835,
-    "conditionalRate": 0.15303,
-    "lift": 1.3684,
+    "conditionalRate": 0.153004,
+    "lift": 1.3681,
     "wilsonInterval": [
-     0.144026,
-     0.16249
+     0.144001,
+     0.162462
     ],
     "pValue": 0,
     "significantAfterCorrection": true,
     "lossThreshold": -0.5,
-    "losses": 2494,
+    "losses": 2495,
     "baseLossRate": 0.147741,
-    "conditionalLossRate": 0.426909,
-    "lossLift": 2.8896,
-    "asymmetry": 0.4735,
-    "medianForwardReturn": -0.3564,
-    "medianForwardReturnNetOfFrictions": -0.3583,
+    "conditionalLossRate": 0.427007,
+    "lossLift": 2.8902,
+    "asymmetry": 0.4734,
+    "medianForwardReturn": -0.3567,
+    "medianForwardReturnNetOfFrictions": -0.3587,
     "medianForwardReturnPopulation": 0.0328,
-    "medianMaxDrawdownWithinHorizon": -0.7485,
+    "medianMaxDrawdownWithinHorizon": -0.7486,
     "inSample": {
      "lift": 1.2649,
      "support": 1355,
      "winners": 256
     },
     "outOfSample": {
-     "lift": 1.3957,
-     "support": 5484,
+     "lift": 1.3954,
+     "support": 5485,
      "winners": 810
     },
     "parameterStability": {
@@ -4623,7 +4623,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "very-high-revenue-growth",
@@ -4631,7 +4631,7 @@
       "support": 13546
      }
     },
-    "incremental": 0.8884,
+    "incremental": 0.8883,
     "addsOverBetterHalf": false
    },
    {
@@ -6214,28 +6214,28 @@
       "value": -0.1
      }
     ],
-    "support": 22070,
+    "support": 22071,
     "winners": 3428,
     "population": 213789,
     "notMeasurable": 19566,
     "outcomeUnavailableInPattern": 0,
     "baseRate": 0.11821,
-    "conditionalRate": 0.155324,
-    "lift": 1.314,
+    "conditionalRate": 0.155317,
+    "lift": 1.3139,
     "wilsonInterval": [
-     0.150605,
-     0.160163
+     0.150598,
+     0.160155
     ],
     "pValue": 0,
     "significantAfterCorrection": true,
     "lossThreshold": -0.5,
-    "losses": 10071,
+    "losses": 10072,
     "baseLossRate": 0.158811,
-    "conditionalLossRate": 0.456321,
-    "lossLift": 2.8734,
-    "asymmetry": 0.4573,
+    "conditionalLossRate": 0.456345,
+    "lossLift": 2.8735,
+    "asymmetry": 0.4572,
     "medianForwardReturn": -0.4145,
-    "medianForwardReturnNetOfFrictions": -0.4162,
+    "medianForwardReturnNetOfFrictions": -0.4163,
     "medianForwardReturnPopulation": 0.0328,
     "medianMaxDrawdownWithinHorizon": -0.7802,
     "inSample": {
@@ -6245,7 +6245,7 @@
     },
     "outOfSample": {
      "lift": 1.2479,
-     "support": 18662,
+     "support": 18663,
      "winners": 2581
     },
     "parameterStability": {
@@ -6260,7 +6260,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "burning-cash",
@@ -6392,7 +6392,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "high-gross-margin",
@@ -12132,7 +12132,7 @@
      "price": {
       "id": "far-below-52w-high",
       "lift": 1.5402,
-      "support": 54238
+      "support": 54239
      },
      "fundamental": {
       "id": "cash-rich",
@@ -23100,7 +23100,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "profitable",
@@ -23173,7 +23173,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "shrinking-revenue",
@@ -23181,7 +23181,7 @@
      "support": 40144
     }
    },
-   "incremental": 1.1437,
+   "incremental": 1.1438,
    "addsOverBetterHalf": true
   },
   {
@@ -23246,7 +23246,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "positive-free-cash-flow",
@@ -24049,7 +24049,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "no-dilution",
@@ -24295,27 +24295,27 @@
      "value": 0.2
     }
    ],
-   "support": 9045,
+   "support": 9046,
    "winners": 1700,
    "population": 154779,
    "notMeasurable": 78576,
    "outcomeUnavailableInPattern": 0,
    "baseRate": 0.124558,
-   "conditionalRate": 0.187949,
-   "lift": 1.5089,
+   "conditionalRate": 0.187928,
+   "lift": 1.5088,
    "wilsonInterval": [
-    0.180031,
-    0.196132
+    0.180011,
+    0.196111
    ],
    "pValue": 0,
    "significantAfterCorrection": true,
    "lossThreshold": -0.5,
-   "losses": 3391,
+   "losses": 3392,
    "baseLossRate": 0.167497,
-   "conditionalLossRate": 0.374903,
-   "lossLift": 2.2383,
-   "asymmetry": 0.6741,
-   "medianForwardReturn": -0.2241,
+   "conditionalLossRate": 0.374972,
+   "lossLift": 2.2387,
+   "asymmetry": 0.6739,
+   "medianForwardReturn": -0.2242,
    "medianForwardReturnNetOfFrictions": -0.2265,
    "medianForwardReturnPopulation": 0.0328,
    "medianMaxDrawdownWithinHorizon": -0.7266,
@@ -24325,13 +24325,13 @@
     "winners": 1433
    },
    "outOfSample": {
-    "lift": 1.4696,
-    "support": 7324,
+    "lift": 1.4694,
+    "support": 7325,
     "winners": 1212
    },
    "parameterStability": {
     "state": "MEASURED",
-    "medianLift": 1.5089,
+    "medianLift": 1.5088,
     "minLift": 1.4728,
     "maxLift": 1.5493,
     "relativeSpread": 0.0507
@@ -24341,7 +24341,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "low-gross-margin",
@@ -24349,7 +24349,7 @@
      "support": 31540
     }
    },
-   "incremental": 0.9797,
+   "incremental": 0.9796,
    "addsOverBetterHalf": false
   },
   {
@@ -24414,7 +24414,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "thin-equity-base",
@@ -25363,7 +25363,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "capex-heavy",
@@ -25522,25 +25522,25 @@
      "value": 0.2
     }
    ],
-   "support": 14692,
+   "support": 14693,
    "winners": 2465,
    "population": 158273,
    "notMeasurable": 75082,
    "outcomeUnavailableInPattern": 0,
    "baseRate": 0.115092,
-   "conditionalRate": 0.167778,
-   "lift": 1.4578,
+   "conditionalRate": 0.167767,
+   "lift": 1.4577,
    "wilsonInterval": [
-    0.161823,
-    0.173907
+    0.161812,
+    0.173896
    ],
    "pValue": 0,
    "significantAfterCorrection": true,
    "lossThreshold": -0.5,
-   "losses": 5858,
+   "losses": 5859,
    "baseLossRate": 0.1534,
-   "conditionalLossRate": 0.39872,
-   "lossLift": 2.5992,
+   "conditionalLossRate": 0.398761,
+   "lossLift": 2.5995,
    "asymmetry": 0.5608,
    "medianForwardReturn": -0.3,
    "medianForwardReturnNetOfFrictions": -0.3021,
@@ -25552,23 +25552,23 @@
     "winners": 1458
    },
    "outOfSample": {
-    "lift": 1.4351,
-    "support": 12950,
+    "lift": 1.435,
+    "support": 12951,
     "winners": 1955
    },
    "parameterStability": {
     "state": "MEASURED",
-    "medianLift": 1.4578,
+    "medianLift": 1.4577,
     "minLift": 1.3995,
     "maxLift": 1.4667,
-    "relativeSpread": 0.0461
+    "relativeSpread": 0.0462
    },
    "verdict": "ROBUST",
    "halves": {
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "heavy-dilution",
@@ -25576,7 +25576,7 @@
      "support": 39284
     }
    },
-   "incremental": 0.9465,
+   "incremental": 0.9464,
    "addsOverBetterHalf": false
   },
   {
@@ -26238,26 +26238,26 @@
      "value": 0.5
     }
    ],
-   "support": 17556,
+   "support": 17557,
    "winners": 2914,
    "population": 227403,
    "notMeasurable": 5952,
    "outcomeUnavailableInPattern": 0,
    "baseRate": 0.117087,
-   "conditionalRate": 0.165983,
-   "lift": 1.4176,
+   "conditionalRate": 0.165974,
+   "lift": 1.4175,
    "wilsonInterval": [
-    0.160553,
-    0.17156
+    0.160543,
+    0.17155
    ],
    "pValue": 0,
    "significantAfterCorrection": true,
    "lossThreshold": -0.5,
-   "losses": 6199,
+   "losses": 6200,
    "baseLossRate": 0.163582,
-   "conditionalLossRate": 0.353099,
-   "lossLift": 2.1585,
-   "asymmetry": 0.6567,
+   "conditionalLossRate": 0.353136,
+   "lossLift": 2.1588,
+   "asymmetry": 0.6566,
    "medianForwardReturn": -0.2027,
    "medianForwardReturnNetOfFrictions": -0.2051,
    "medianForwardReturnPopulation": 0.0328,
@@ -26268,8 +26268,8 @@
     "winners": 2382
    },
    "outOfSample": {
-    "lift": 1.3481,
-    "support": 13689,
+    "lift": 1.348,
+    "support": 13690,
     "winners": 2019
    },
    "parameterStability": {
@@ -26284,7 +26284,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "strong-equity-base",
@@ -26292,7 +26292,7 @@
      "support": 65408
     }
    },
-   "incremental": 0.9204,
+   "incremental": 0.9203,
    "addsOverBetterHalf": false
   },
   {
@@ -26384,25 +26384,25 @@
      "value": false
     }
    ],
-   "support": 34645,
+   "support": 34646,
    "winners": 5683,
    "population": 233215,
    "notMeasurable": 140,
    "outcomeUnavailableInPattern": 0,
    "baseRate": 0.116146,
-   "conditionalRate": 0.164035,
+   "conditionalRate": 0.16403,
    "lift": 1.4123,
    "wilsonInterval": [
-    0.160173,
-    0.167972
+    0.160168,
+    0.167967
    ],
    "pValue": 0,
    "significantAfterCorrection": true,
    "lossThreshold": -0.5,
-   "losses": 14303,
+   "losses": 14304,
    "baseLossRate": 0.162914,
-   "conditionalLossRate": 0.412845,
-   "lossLift": 2.5341,
+   "conditionalLossRate": 0.412862,
+   "lossLift": 2.5342,
    "asymmetry": 0.5573,
    "medianForwardReturn": -0.3325,
    "medianForwardReturnNetOfFrictions": -0.3345,
@@ -26414,8 +26414,8 @@
     "winners": 3985
    },
    "outOfSample": {
-    "lift": 1.3209,
-    "support": 28589,
+    "lift": 1.3208,
+    "support": 28590,
     "winners": 4135
    },
    "parameterStability": {
@@ -26430,7 +26430,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "loss-making",
@@ -26438,7 +26438,7 @@
      "support": 83182
     }
    },
-   "incremental": 0.9169,
+   "incremental": 0.917,
    "addsOverBetterHalf": false
   },
   {
@@ -27305,27 +27305,27 @@
      "value": 0.2
     }
    ],
-   "support": 10108,
+   "support": 10109,
    "winners": 1557,
    "population": 145214,
    "notMeasurable": 88141,
    "outcomeUnavailableInPattern": 0,
    "baseRate": 0.111835,
-   "conditionalRate": 0.154036,
-   "lift": 1.3774,
+   "conditionalRate": 0.154021,
+   "lift": 1.3772,
    "wilsonInterval": [
-    0.147131,
-    0.161205
+    0.147116,
+    0.161189
    ],
    "pValue": 0,
    "significantAfterCorrection": true,
    "lossThreshold": -0.5,
-   "losses": 3934,
+   "losses": 3935,
    "baseLossRate": 0.147741,
-   "conditionalLossRate": 0.389197,
-   "lossLift": 2.6343,
-   "asymmetry": 0.5228,
-   "medianForwardReturn": -0.291,
+   "conditionalLossRate": 0.389257,
+   "lossLift": 2.6347,
+   "asymmetry": 0.5227,
+   "medianForwardReturn": -0.2911,
    "medianForwardReturnNetOfFrictions": -0.2932,
    "medianForwardReturnPopulation": 0.0328,
    "medianMaxDrawdownWithinHorizon": -0.7118,
@@ -27335,8 +27335,8 @@
     "winners": 542
    },
    "outOfSample": {
-    "lift": 1.3835,
-    "support": 9507,
+    "lift": 1.3834,
+    "support": 9508,
     "winners": 1392
    },
    "parameterStability": {
@@ -27351,7 +27351,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "high-revenue-growth",
@@ -27359,7 +27359,7 @@
      "support": 29225
     }
    },
-   "incremental": 0.8943,
+   "incremental": 0.8942,
    "addsOverBetterHalf": false
   },
   {
@@ -27510,38 +27510,38 @@
      "value": 0.4
     }
    ],
-   "support": 5842,
+   "support": 5843,
    "winners": 894,
    "population": 145214,
    "notMeasurable": 88141,
    "outcomeUnavailableInPattern": 0,
    "baseRate": 0.111835,
-   "conditionalRate": 0.15303,
-   "lift": 1.3684,
+   "conditionalRate": 0.153004,
+   "lift": 1.3681,
    "wilsonInterval": [
-    0.144026,
-    0.16249
+    0.144001,
+    0.162462
    ],
    "pValue": 0,
    "significantAfterCorrection": true,
    "lossThreshold": -0.5,
-   "losses": 2494,
+   "losses": 2495,
    "baseLossRate": 0.147741,
-   "conditionalLossRate": 0.426909,
-   "lossLift": 2.8896,
-   "asymmetry": 0.4735,
-   "medianForwardReturn": -0.3564,
-   "medianForwardReturnNetOfFrictions": -0.3583,
+   "conditionalLossRate": 0.427007,
+   "lossLift": 2.8902,
+   "asymmetry": 0.4734,
+   "medianForwardReturn": -0.3567,
+   "medianForwardReturnNetOfFrictions": -0.3587,
    "medianForwardReturnPopulation": 0.0328,
-   "medianMaxDrawdownWithinHorizon": -0.7485,
+   "medianMaxDrawdownWithinHorizon": -0.7486,
    "inSample": {
     "lift": 1.2649,
     "support": 1355,
     "winners": 256
    },
    "outOfSample": {
-    "lift": 1.3957,
-    "support": 5484,
+    "lift": 1.3954,
+    "support": 5485,
     "winners": 810
    },
    "parameterStability": {
@@ -27556,7 +27556,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "very-high-revenue-growth",
@@ -27564,7 +27564,7 @@
      "support": 13546
     }
    },
-   "incremental": 0.8884,
+   "incremental": 0.8883,
    "addsOverBetterHalf": false
   },
   {
@@ -29147,28 +29147,28 @@
      "value": -0.1
     }
    ],
-   "support": 22070,
+   "support": 22071,
    "winners": 3428,
    "population": 213789,
    "notMeasurable": 19566,
    "outcomeUnavailableInPattern": 0,
    "baseRate": 0.11821,
-   "conditionalRate": 0.155324,
-   "lift": 1.314,
+   "conditionalRate": 0.155317,
+   "lift": 1.3139,
    "wilsonInterval": [
-    0.150605,
-    0.160163
+    0.150598,
+    0.160155
    ],
    "pValue": 0,
    "significantAfterCorrection": true,
    "lossThreshold": -0.5,
-   "losses": 10071,
+   "losses": 10072,
    "baseLossRate": 0.158811,
-   "conditionalLossRate": 0.456321,
-   "lossLift": 2.8734,
-   "asymmetry": 0.4573,
+   "conditionalLossRate": 0.456345,
+   "lossLift": 2.8735,
+   "asymmetry": 0.4572,
    "medianForwardReturn": -0.4145,
-   "medianForwardReturnNetOfFrictions": -0.4162,
+   "medianForwardReturnNetOfFrictions": -0.4163,
    "medianForwardReturnPopulation": 0.0328,
    "medianMaxDrawdownWithinHorizon": -0.7802,
    "inSample": {
@@ -29178,7 +29178,7 @@
    },
    "outOfSample": {
     "lift": 1.2479,
-    "support": 18662,
+    "support": 18663,
     "winners": 2581
    },
    "parameterStability": {
@@ -29193,7 +29193,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "burning-cash",
@@ -29325,7 +29325,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "high-gross-margin",
@@ -35065,7 +35065,7 @@
     "price": {
      "id": "far-below-52w-high",
      "lift": 1.5402,
-     "support": 54238
+     "support": 54239
     },
     "fundamental": {
      "id": "cash-rich",
@@ -45969,6 +45969,6 @@
    "addsOverBetterHalf": false
   }
  ],
- "runtimeMs": 51669,
- "contentHash": "4a838ce7c348fcc1"
+ "runtimeMs": 41982,
+ "contentHash": "2c174b09ae0da6e8"
 }

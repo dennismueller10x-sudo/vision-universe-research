@@ -45,9 +45,11 @@ import * as X from './st9-hist-execution.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..', '..');
-export const REGISTRATION_FILE = 'scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.0.json';
+export const REGISTRATION_FILE = 'scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.1.json'; // 1.0.1 (2026-11-04): amendment of 1.0.0, only the hashes of validation/lib.mjs and analyze-methods.mjs (SF6-PAPER-2027 1.2.0)
 /** Pinned before any V13 chain entered a Supertrader run (tests hold it). */
-export const REGISTRATION_SHA256 = '548b8079fc9b6e0c80df236fb184fefac257d6d74b18fb42a832b1d7862136bc';
+/** 1.0.0 548b8079… was pinned before any V13 chain entered a Supertrader run; 1.0.1 amends only two file hashes (tests hold both). */
+export const REGISTRATION_SHA256 = '336b8cb78b43755ab19ea7cfd460e36b71d1c74d5fd9d39a0ac30afd72ceda10';
+export const REGISTRATION_1_0_0_SHA256 = '548b8079fc9b6e0c80df236fb184fefac257d6d74b18fb42a832b1d7862136bc';
 const SEC_PIT_KEY = '_validation/sec-pit-r12.json.gz'; // same input construction as run-sf6-integrity.mjs
 const sha = (b) => crypto.createHash('sha256').update(b).digest('hex');
 export const REPEAT_CHECK_SCOPE = 'SAME_PROCESS_SAME_DATASETS_RUNSTUDY_ONLY';

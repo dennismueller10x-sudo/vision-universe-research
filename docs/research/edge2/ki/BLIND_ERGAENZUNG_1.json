@@ -1,0 +1,15 @@
+{
+  "schema": "vu-edge2-blind-amendment-1.0.0",
+  "id": "EDGE2-KI-BLIND-2016-2026/ERGAENZUNG-1",
+  "registeredOn": "2026-11-06",
+  "label": "Forschung, nicht zertifiziert",
+  "amends": { "file": "docs/research/edge2/ki/BLIND_PROTOKOLL.json", "sha256": "b031533d17d508477fbd298091f88d234ddb399e0f5755211afef930055debfe" },
+  "timing": "Festgeschrieben, nachdem die Pakete gebaut wurden und bevor eine einzige Entscheidung getroffen oder ein Ergebnis gesehen wurde. Die Pakete selbst bleiben unverändert.",
+  "decision": "Owner-Präzisierung vom 06.11.2026 (über die Steuerung): Positionszahl flexibel 4 bis 20 mit Gewichten, Zahl und Begründung je Entscheidung im Ledger; gilt für den blinden Backtest und unverändert für Depot A vorwärts.",
+  "prompt": { "file": "docs/research/edge2/ki/PROMPT_v2.md", "version": "v2", "sha256": "a43667bd036bdf51211c72f5e7157c6060278c219d92c5532953d6c6df59390b", "replaces": "v1 (nie verwendet)" },
+  "validity": "4 bis 20 verschiedene Labels aus dem Paket, Gewichte je Titel 0,02 bis 0,25, Summe 1 ± 0,02 (wird auf 1 normiert), höchstens 0,30 je Gruppe (+0,005 Toleranz). Ungültig: einmal mit demselben Prompt neu fragen, danach Cash bis zur nächsten Entscheidung.",
+  "ledgerWeights": "Ledger mit den Gewichten der Antwort (normiert), sonst unverändert (Kosten, Ausführung t+1, TERMINAL_CASH).",
+  "secondaryBaseline": "Die Zufallsbasis bleibt das gleichgewichtete Depot aller 50 Kandidaten.",
+  "depotB": { "id": "EDGE2-KI-B-PAPER", "prompt": { "file": "docs/research/edge2/ki/PROMPT_B_v1.md", "version": "B v1", "sha256": "16f8f42abb19e74f2dc324a3c0e84706461ba27cae2247b2681349702cb1b534" }, "rule": "gleiches Paket wie Depot A in derselben Woche, zusätzlich Ticker, Analysten-Konsens (dashboard/data/analysts) und Schlagzeilen (dashboard/data/news_feed.json); eigener Ledger; nur vorwärts, ohne Backtest" },
+  "positionsLimit": "Je Wochenlauf höchstens zwei Entscheidungen (A und B) und je eine Wiederholung bei ungültiger Antwort, damit das Abo-Limit des Owners nicht leidet."
+}

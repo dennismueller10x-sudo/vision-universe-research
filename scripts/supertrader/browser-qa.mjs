@@ -57,19 +57,19 @@ async function main() {
   let lensSymbol = null;
   for (const st of Object.values(signals.strategies)) { if (st.open[0]) { lensSymbol = st.open[0].symbol; break; } }
   const routes = [
-    ['home', '/supertrader/', '.st-hero h1'],
-    ['signals', '/supertrader/signals/', '.st-chips button'],
-    ['signals-canslim', '/supertrader/signals/?method=CANSLIM', '.st-card2.partial, .st-emptybox'],
-    ['strategies', '/supertrader/strategies/', '.st-cmp'],
+    ['home', '/supertrader/', '.st-r-intro h1'],
+    ['signals', '/supertrader/signals/', '.st-r-chips button'],
+    ['signals-canslim', '/supertrader/signals/?method=CANSLIM', '.st-r-row[data-partial], .st-r .vu-blank'],
+    ['strategies', '/supertrader/strategies/', '.st-r-mcard'],
     ['backtests', '/supertrader/backtests/', '.st-btrow'],
-    ['sources', '/supertrader/sources/', '.st-det'],
-    ...registry.strategies.map((s) => [`strategy-${s.slug}`, `/supertrader/strategies/${s.slug}/`, '.st-hero h1']),
+    ['sources', '/supertrader/sources/', '.st-r-acc'],
+    ...registry.strategies.map((s) => [`strategy-${s.slug}`, `/supertrader/strategies/${s.slug}/`, '.st-r h1.vu-lt']),
   ];
-  if (lensSymbol) routes.push(['lens', `/supertrader/stock/${lensSymbol}/`, '.st-lensblock .st-next']);
+  if (lensSymbol) routes.push(['lens', `/supertrader/stock/${lensSymbol}/`, '.st-r-sig']);
   const csSym = signals.partialChecks?.CANSLIM?.candidates?.[0]?.symbol;
   // Teilpruefung steht hinter vollstaendigen Modellen; sichtbar als eigener Tab.
-  if (csSym) routes.push(['lens-partial', `/supertrader/stock/${csSym}/`, '.st-critlist, .st-chips.lens button']);
-  routes.push(['lens-empty', '/supertrader/stock/?s=ZZZZ', '.st-emptybox']);
+  if (csSym) routes.push(['lens-partial', `/supertrader/stock/${csSym}/`, '.st-critlist']);
+  routes.push(['lens-empty', '/supertrader/stock/?s=ZZZZ', '.st-r-answer']);
   // Supertrader 8.0: quellentreue Research-Kandidaten (Start, Methoden, Strategie- und Aktienansicht)
   const sfSummaryFile = SF_DIR ? path.join(SF_DIR, 'summary.json') : path.join(SITE, 'supertrader/data/sf-candidates/summary.json');
   const SF = fs.existsSync(sfSummaryFile) ? JSON.parse(fs.readFileSync(sfSummaryFile, 'utf8')) : null;
@@ -78,11 +78,12 @@ async function main() {
   const sfCid = SF ? (SF.strategies.find((x) => x.counts.byStage.MODELED_TRADE_PLAN) || SF.strategies[0]).candidateId : 'C03';
   // Regulär (Owner-Freigabe 29.10.2026): die Ansichten sind ohne Schalter da; ohne veroeffentlichten Datenlauf zeigt jede
   // den gekennzeichneten Leerzustand (geprueft auf denselben Routen), nie erfundene Kandidaten
-  routes.push(['sf-strategy', `/supertrader/strategies/?sf=${sfCid}`, SF ? '#sf .sf-card' : '#sf .sf-empty']);
-  routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-empty' : '#sf .sf-empty']);
-  routes.push(['sf-stock', `/supertrader/stock/?s=${encodeURIComponent(sfModel ? sfModel.t : 'AAPL')}#sf`, SF ? '#sf-stock' : '#sf-stock .sf-empty']);
-  routes.push(['sf-stock-none', '/supertrader/stock/?s=ZZZZ', SF ? '#sf-stock' : '#sf-stock .sf-empty']);
-  const SF_ROUTE_SELECTOR = SF ? { home: '#sf-home', strategies: '#sf' } : { home: '#sf-home .sf-empty', strategies: '#sf .sf-empty' };
+  // ST02 (#1446): in der Kandidatenliste steht je Kandidat eine kompakte Zeile .sf-r (Stufe als Urteil, gleiche Daten wie die Karte).
+  routes.push(['sf-strategy', `/supertrader/strategies/?sf=${sfCid}`, SF ? '#sf .sf-card, #sf .sf-r' : '#sf .sf-empty']);
+  routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-r, #sf .sf-empty' : '#sf .sf-empty']);
+  routes.push(['sf-stock', `/supertrader/stock/?s=${encodeURIComponent(sfModel ? sfModel.t : 'AAPL')}#sf`, '.st-r-answer']);
+  routes.push(['sf-stock-none', '/supertrader/stock/?s=ZZZZ', '.st-r-answer']);
+  const SF_ROUTE_SELECTOR = SF ? { home: '.st-r-hero .st-r-ladder', strategies: '[data-tab=methoden] .st-r-mcard' } : { home: '.st-r .vu-blank', strategies: '[data-tab=methoden] .vu-blank' };
   // Runde 12: Modelldepot VU Trendfolge 52W - Methode mit Marktampel/Rangliste, Einzelwert mit Status
   const t52file = path.join(SITE, 'supertrader/data/trend52.json');
   if (fs.existsSync(t52file)) {
@@ -93,16 +94,16 @@ async function main() {
   }
   if (fs.existsSync(path.join(SITE, 'supertrader/data/replay.json'))) routes.push(['replay', '/supertrader/beispiel/', '.st-demo-banner']);
   const watchSym = (signals.strategies.DONCHIAN_TURTLE?.open || []).find((x) => !x.entry)?.symbol;
-  if (watchSym) routes.push(['lens-watch', `/supertrader/stock/${watchSym}/`, '.st-lensblock']);
+  if (watchSym) routes.push(['lens-watch', `/supertrader/stock/${watchSym}/`, '.st-r-sig']);
   const posSym = Object.values(signals.strategies).flatMap((st) => st.open).find((x) => x.entry)?.symbol;
-  if (posSym) routes.push(['lens-position', `/supertrader/stock/${posSym}/`, '.st-lensblock .st-next']);
+  if (posSym) routes.push(['lens-position', `/supertrader/stock/${posSym}/`, '.st-r-sig']);
   // Vorbereitetes Setup (Plan, noch kein Modelleinstieg) unabhaengig davon, welcher Zustand in 'lens' zuerst steht:
   // beide Zustaende des Ein-/Ausstiegsblocks werden immer geprueft (ILMN 22.10.2026 lag nur zufaellig in 'lens').
   const openAll = Object.values(signals.strategies).flatMap((st) => st.open);
   const prepSym = openAll.find((x) => !x.entry && x.plan && x.plan.trigger && openAll.every((y) => y.symbol !== x.symbol || !y.entry))?.symbol;
-  if (prepSym) routes.push(['lens-prepared', `/supertrader/stock/${prepSym}/`, '.st-lensblock .st-next']);
+  if (prepSym) routes.push(['lens-prepared', `/supertrader/stock/${prepSym}/`, '.st-r-sig']);
   const reSym = (() => { for (const id of Object.keys(signals.strategies)) { try { const l = JSON.parse(fs.readFileSync(path.join(SITE, 'supertrader/data/ledger', id + '.json'), 'utf8')); const s = [...l.open, ...l.closed].find((x) => x.discovery?.kind === 'RULE_VERSION_REASSESSMENT'); if (s) return s.symbol; } catch { /* kein Ledger */ } } return null; })();
-  if (reSym) routes.push(['lens-reassessed', `/supertrader/stock/${reSym}/`, '.st-tl']);
+  if (reSym) routes.push(['lens-reassessed', `/supertrader/stock/${reSym}/`, '.st-r-tl']);
 
   // Technischer Zustand derselben Aktie (assets/st-technical.js): mit Modell, ohne Modell, eingefroren, Kurssprung; Hell und Dunkel.
   const twMetaFile = TW_DIR ? path.join(TW_DIR, 'meta.json') : path.join(SITE, 'technical/data/meta.json');
@@ -122,7 +123,8 @@ async function main() {
     if (many) techRoutes.push(['tech-nomodel', `/supertrader/stock/?s=${encodeURIComponent(many.s)}`, many.s]);
   }
   techRoutes.slice().forEach((r) => techRoutes.push([r[0] + '-dark', r[1], r[2], 'dark']));
-  for (const [name, url, sym, theme] of techRoutes) routes.push([name, url, '#st-technical', theme || null, sym]);
+  /* Redesign 2027 (ST08): das Chartbild steht in Technical, Perspektive „Chart“ (C05); die Aktienseite zeigt keinen eigenen Technical-Abschnitt mehr. */
+  void techRoutes;
 
   const browser = await chromium.launch({ executablePath: args.chromium || undefined });
   const pw = loadPlaywright();
@@ -138,17 +140,21 @@ async function main() {
     // dem oeffentlichen Pruefwert gebauten Browserzustand -, dann wird ueber das
     // Formular mit dem Passwort aus RESEARCH_ACCESS_PASSWORD eingeloggt (nie geloggt).
     if (args['access-login']) {
+      // Sichtbares Produkt: die neu gestaltete Startseite (.st-r-intro, ST01) oder ein
+      // klassischer Kopf (.st-hero). Seit dem Redesign (#1361) hat die Startseite kein .st-hero
+      // mehr; das Warten darauf liess den Login scheitern und die Schutzproben leer laufen.
+      const PRODUCT = '.st-r-intro, .st-hero';
       const pass = process.env.RESEARCH_ACCESS_PASSWORD || '';
       const p = await ctx.newPage();
       await p.goto(base + '/supertrader/', { waitUntil: 'domcontentloaded' });
       await p.locator('#research-access-gate').waitFor({ timeout: 30000 });
       await p.waitForTimeout(1500);
-      if (await p.locator('.st-hero').count()) failures.push(`${vpName} Zugangsmaske: Produkt ohne Login sichtbar`);
+      if (await p.locator(PRODUCT).count()) failures.push(`${vpName} Zugangsmaske: Produkt ohne Login sichtbar`);
       const cfg = JSON.parse(await p.locator('#research-access-settings').textContent());
       await p.evaluate((c) => localStorage.setItem(c.storageKey, JSON.stringify({ version: c.version, verifier: c.verifier, key: c.verifier, expiresAt: Date.now() + c.durationMs })), cfg);
       await p.reload({ waitUntil: 'domcontentloaded' });
       await p.waitForTimeout(2500);
-      if (await p.locator('.st-hero').count()) failures.push(`${vpName} Zugangsmaske: oeffentlicher Pruefwert oeffnet das Produkt`);
+      if (await p.locator(PRODUCT).count()) failures.push(`${vpName} Zugangsmaske: oeffentlicher Pruefwert oeffnet das Produkt`);
       // Gefaelschten Zustand entfernen, damit der Login wirklich ueber das Formular geht.
       await p.evaluate((c) => localStorage.removeItem(c.storageKey), cfg);
       await p.reload({ waitUntil: 'domcontentloaded' });
@@ -157,7 +163,7 @@ async function main() {
       else {
         await p.locator('#research-password').fill(pass);
         await p.locator('#research-access-form button').click();
-        try { await p.locator('.st-hero').waitFor({ timeout: 60000 }); } catch { failures.push(`${vpName} Login ueber die Zugangsmaske fehlgeschlagen`); }
+        try { await p.locator(PRODUCT).first().waitFor({ timeout: 60000 }); } catch { failures.push(`${vpName} Login ueber die Zugangsmaske fehlgeschlagen`); }
       }
       await p.close();
     }
@@ -179,50 +185,54 @@ async function main() {
       page.on('requestfailed', (r) => { if (r.url().includes('/supertrader/')) errors.push('requestfailed: ' + r.url()); });
       const t0 = Date.now();
       await page.goto(base + url, { waitUntil: 'networkidle' });
+      // ST03 (#1446): die bisherigen Angaben der Methode (u. a. Modelldepot-Kopf) stehen im Aufklapper „Weitere Angaben dieser Methode“.
+      // Die Pruefung klappt ihn auf, wie ein Leser, und verlangt den Kopf danach sichtbar.
+      if (name === 'strategy-trend52-model') { try { await page.waitForSelector('details.st-r-legacy-acc > summary', { timeout: 15000 }); await page.click('details.st-r-legacy-acc > summary'); } catch { errors.push('Aufklapper „Weitere Angaben dieser Methode“ fehlt'); } }
       try { await page.waitForSelector(selector, { timeout: 15000 }); } catch { errors.push(`selector ${selector} fehlt`); }
       if (SF_ROUTE_SELECTOR[name]) { try { await page.waitForSelector(SF_ROUTE_SELECTOR[name], { timeout: 15000 }); } catch { errors.push(`Research-Kandidaten ${SF_ROUTE_SELECTOR[name]} fehlen`); } }
-      if (/^sf-|^lens$/.test(name)) { try { await page.waitForSelector('#sf-stock, #sf .sf-card, #sf .sf-empty, #sf-home', { timeout: 15000 }); } catch { /* Routen-Selektor meldet */ } }
-      if (name === 'sf-stock' && SF) { try { await page.waitForSelector('#sf-stock .st-chart svg path', { timeout: 20000 }); } catch { errors.push('Research-Chart nicht gezeichnet'); } }
+      if (/^sf-|^lens$/.test(name)) { try { await page.waitForSelector('.st-r-answer, #sf .sf-card, #sf .sf-r, #sf .sf-empty', { timeout: 15000 }); } catch { /* Routen-Selektor meldet */ } }
       // Lens (VU3): Kursverlauf ueber den gemeinsamen Kurschart (assets/vu-chart.js); das Chartbild der Methode liegt dort hinter einer Aufklappzeile.
-      if (name === 'lens' || name === 'replay') { try { await page.waitForSelector(name === 'lens' ? '.vu-chart svg path.vu-chart-line' : '.st-chart svg path', { timeout: 20000 }); } catch { errors.push('Chart nicht gezeichnet'); } }
-      if (name === 'lens') { const lv = await page.locator('.vu-chart svg .st-lvl').count(); if (!lv) errors.push('Kursmarken des Setups fehlen im Kurschart'); }
+      if (name === 'replay') { try { await page.waitForSelector('.st-chart svg path', { timeout: 20000 }); } catch { errors.push('Chart nicht gezeichnet'); } }
+      if (name === 'home') { try { await page.waitForSelector('.st-r-chart svg path.vu-chart-line', { timeout: 20000 }); } catch { errors.push('Chart nicht gezeichnet'); } }
       const m = await page.evaluate(() => ({
         overflow: document.documentElement.scrollWidth - window.innerWidth,
         failedLoad: /konnte nicht geladen werden/.test(document.body.innerText),
         // Gemeinsame Produkt-Leiste der Vision-Universe-Shell (#vu-dock, Shadow DOM): bei jeder Breite unten, mit ☰ fuer das globale Menue.
         bottomNav: (() => { const n = document.querySelector('#vu-dock')?.shadowRoot?.querySelector('nav'); if (!n) return false; const r = n.getBoundingClientRect(); return r.height > 0 && r.bottom <= innerHeight + 1 && r.bottom >= innerHeight - 40 && n.querySelectorAll('a').length === 4 && !!n.querySelector('button.menu') && n.querySelector('a').textContent.trim() === 'Supertrader'; })(),
         homeB: location.pathname === '/supertrader/' ? [...document.querySelectorAll('.st-q[data-q="B"]')].filter((e) => e.textContent.trim() === 'B-Setup').length : 0,
-        researchSection: !!document.querySelector('.st-research'),
+        researchSection: !!document.querySelector('.st-research, .vu-research') || /Forschung, nicht zertifiziert/.test(document.body.innerText),
         researchInNear: [...document.querySelectorAll('.st-sec')].filter((x) => /Am nächsten am Einstieg/.test(x.querySelector('h2')?.textContent || '')).some((x) => x.querySelector('.st-note-tag.research')),
-        evBanner: !!document.querySelector('.st-evbanner'),
-        fidBanner: !!document.querySelector('.st-fidban'),
-        portfolioSec: [...document.querySelectorAll('.st-sec h2')].some((x) => x.textContent === 'Modellportfolio'),
+        evBanner: !!document.querySelector('.st-r-belast'),
+        fidBanner: !!document.querySelector('.st-r-fid, .st-fidban, .st-fid'),
+        portfolioSec: [...document.querySelectorAll('h2')].some((x) => x.textContent === 'Modellportfolio' || x.textContent === 'Laufend nach Regel'),
         // Regelwechsel darf im Protokoll nicht wie ein zweites Marktereignis aussehen.
-        tlDuplicates: (() => { const seen = new Set(); let d = 0; for (const li of document.querySelectorAll('.st-tl li')) { if (li.dataset.kind === 'reassessed') continue; const k = li.textContent.trim(); if (seen.has(k)) d++; seen.add(k); } return d; })(),
-        cardsWithoutPhase: [...document.querySelectorAll('.st-card2')].filter((c) => !c.querySelector('.st-phase')).length,
+        tlDuplicates: (() => { const seen = new Set(); let d = 0; for (const li of document.querySelectorAll('.st-tl li, .st-r-tl li')) { if (li.dataset.kind === 'reassessed') continue; const k = li.textContent.trim(); if (seen.has(k)) d++; seen.add(k); } return d; })(),
+        cardsWithoutPhase: [...document.querySelectorAll('.st-card2, .st-r-sig')].filter((c) => !c.querySelector('.st-phase, .vu-verdict')).length,
         buyTone: /jetzt kaufen|buy now|kaufempfehlung(?! |,)|kaufen sie/i.test(document.body.innerText.replace(/keine kauf- oder verkaufsempfehlung/ig, '')),
         textLen: document.body.innerText.length,
         // Ein vorbereitetes Setup darf nie eine Ausfuehrung zeigen.
         // Ein vorbereitetes Setup darf nie eine Ausfuehrung zeigen.
-        preparedWithEntry: [...document.querySelectorAll('.st-lensblock')].filter((b) => b.querySelector('.st-phase[data-p="prep"]') && [...b.querySelectorAll('.st-cells .c')].some((c) => c.querySelector('.k')?.textContent === 'Modelleinstieg' && c.querySelector('strong')?.textContent !== 'keiner')).length,
+        preparedWithEntry: [...document.querySelectorAll('.st-r-sig')].filter((b) => /Muster entsteht|Kurz vor der Marke/.test(b.querySelector('.vu-verdict')?.textContent || '') && /Einstieg /.test(b.querySelector('.st-r-trkl')?.textContent || '')).length,
         plannedUnlabeled: [...document.querySelectorAll('.st-cells .c')].filter((c) => ['Trigger', 'Ungültig'].includes(c.querySelector('.k')?.textContent) && !/geplant/.test(c.querySelector('.d')?.textContent || '')).length,
-        lensPlanBottom: (() => { const n = document.querySelector('.st-lensblock .st-next'); return n ? n.getBoundingClientRect().bottom : null; })(),
+        lensPlanBottom: (() => { const n = document.querySelector('.st-r-sig .st-r-trk'); return n ? n.getBoundingClientRect().bottom : null; })(),
         ruleCard: !!document.querySelector('.st-assess'),
-        freshness: !!document.querySelector('.st-fresh'),
+        freshness: !!document.querySelector('.st-fresh, .st-r-asof, .st-r-answer'),
         // Beobachtungsliste (Donchian) nie als „vorbereitet“ beschriftet
-        watchAsPrepared: [...document.querySelectorAll('.st-card2, .st-lensblock')].filter((c) => /Donchian/.test(c.textContent) && c.querySelector('.st-phase[data-p="prep"]')).length,
+        watchAsPrepared: [...document.querySelectorAll('.st-card2, .st-lensblock, .st-r-sig')].filter((c) => /Donchian/.test(c.textContent) && (c.querySelector('.st-phase[data-p="prep"]') || /Vorbereitet/.test(c.querySelector('.vu-verdict')?.textContent || ''))).length,
         watchTile: !!document.querySelector('.st-kpi[data-p="watch"]'),
         // interne Regel-/Gate-Codes nicht im sichtbaren Text
         codes: (document.body.innerText.match(/\b(?:DON|KK|DAR|MIN|WEI|LC|PILOT)-[A-Z0-9-]+\b/g) || []).slice(0, 3),
         replayBanner: /kein aktuelles Signal/.test(document.body.innerText),
         partialAsSignal: /CAN-SLIM-Signal(?! )/.test(document.body.innerText.replace(/kein(em)? CAN-SLIM-Signal/gi, '')),
         // quellentreue Research-Kandidaten: Stufe sichtbar, Plan nur im modellierten Ablauf, keine Signal-/Freigabesprache
-        sfCardsWithoutStage: [...document.querySelectorAll('.sf-card, .sf-row')].filter((c) => !c.querySelector('.sf-stage')).length,
-        sfPlanOutsideModel: document.querySelectorAll('.sf-card:not([data-stage="MODELED_TRADE_PLAN"]) .sf-plan').length,
+        // kompakte Zeile .sf-r (ST02): Stufe als data-stage und sichtbares Urteil (.vu-verdict)
+        sfCardsWithoutStage: [...document.querySelectorAll('.sf-card, .sf-row')].filter((c) => !c.querySelector('.sf-stage')).length
+          + [...document.querySelectorAll('.sf-r')].filter((c) => !c.dataset.stage || !c.querySelector('.vu-verdict')).length,
+        sfPlanOutsideModel: document.querySelectorAll('.sf-card:not([data-stage="MODELED_TRADE_PLAN"]) .sf-plan, .sf-r:not([data-stage="MODELED_TRADE_PLAN"]) .sf-plan').length,
         sfWording: [...document.querySelectorAll('.sf-host')].map((x) => x.innerText.replace(/keine kauf- oder verkaufsempfehlung/ig, '')).join(' ').match(/\bsignal\w*|validiert\w*|jetzt kaufen|kaufsignal/i)?.[0] ?? null,
         sfEmptyState: !!document.querySelector('.sf-empty'),
         sfPresent: !!document.querySelector('.sf-host'),
-        sfCandidates: document.querySelectorAll('.sf-card, .sf-row').length,
+        sfCandidates: document.querySelectorAll('.sf-card, .sf-row, .sf-r').length,
         // auch in zugeklappten Details (textContent): keine internen Regel- oder Datencodes
         sfCodes: ([...document.querySelectorAll('.sf-host')].map((x) => x.textContent).join(' ').match(/\b(?:DON|KK|DAR|MIN|WEI|WEIN|LC|PILOT|TUR|MOKA|RAS)-[A-Z0-9-]+\b|DATA_BLOCKED|[A-Z]{3,}_[A-Z_]{3,}/g) || []).slice(0, 3),
       }));
@@ -254,7 +264,7 @@ async function main() {
       if ((name === 'lens' || name === 'lens-position' || name === 'lens-prepared') && isMobile && !(m.lensPlanBottom !== null && m.lensPlanBottom <= vp.viewport.height - 64)) errors.push(`Ein-/Ausstiegsblock nicht ohne Scrollen sichtbar (unten ${Math.round(m.lensPlanBottom)}px, sichtbar bis ${vp.viewport.height - 64}px)`);
       if (/^strategy-(momentum|weinstein|darvas|minervini|greenblatt|donchian|can-slim|piotroski)/.test(name) && !m.ruleCard) errors.push('Drei Aussagen (Regel/Quellen/Historie) fehlen');
       // Technischer Zustand: Abschnitt da, Zustand passend zum Datenstand, keine Anfrage ohne genannte Scherbe, keine Codes.
-      if (/^tech-/.test(name) || name === 'lens' || name === 'lens-empty') {
+      if (/^tech-/.test(name)) {
         try { await page.waitForSelector('#st-technical', { timeout: 15000 }); } catch { if (/^tech-/.test(name) || name === 'lens') errors.push('Technischer Zustand fehlt'); }
         const t = await page.evaluate(() => { const n = document.querySelector('#st-technical'); return n ? { state: n.dataset.state, text: n.innerText, all: n.textContent, links: [...n.querySelectorAll('a')].map((a) => a.getAttribute('href')), theme: document.documentElement.getAttribute('data-theme'), fits: n.querySelectorAll('.st-tech-fits li').length, kick: n.querySelector('.vu-eyebrow')?.textContent || '' } : null; });
         if (t) {

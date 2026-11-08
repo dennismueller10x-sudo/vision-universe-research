@@ -1,0 +1,66 @@
+{
+  "schema": "supertrader-reading-decisions-1.0.0",
+  "id": "ST-READINGS-V1-TOP5",
+  "decidedOn": "2026-11-04",
+  "decidedBy": "Claude nach der dokumentierten Empfehlung (Owner-Regel vom 04.11.2026, CLAUDE.md: Regel-Lesarten entscheidet Claude)",
+  "scope": "V1 = Top 5: C01, C02, C03, C08, C12. Die übrigen acht Methoden sind im Produkt „in Forschung“.",
+  "principle": "Referenz bleibt die bereits gerechnete, in SF6-PAPER-2027 gepinnte Lesart; jede Alternative bleibt als vorregistrierte Variante gerechnet und berichtet. Kein Code, kein Parameter, keine Registrierung und kein gepinnter Plan ändert sich; kein CC-Kriterium wird damit als erfüllt erklärt.",
+  "v1Methods": ["C01", "C02", "C03", "C08", "C12"],
+  "researchMethods": ["C04", "C05", "C06", "C07", "C09", "C10", "C11", "C13"],
+  "decisions": [
+    {
+      "id": "PS-C01-READINGS",
+      "method": "C01",
+      "rules": ["TUR-SF-S1-OPEN-BREAKOUT", "TUR-SF-FAILSAFE-EXIT"],
+      "reference": { "TUR-SF-S1-OPEN-BREAKOUT": "SKIP", "TUR-SF-FAILSAFE-EXIT": "10D" },
+      "alternativesKept": ["S1_OPEN_BREAKOUT_TAKEN", "FAILSAFE_EXIT_20D"],
+      "source": "W-TUR, gedruckt S. 19 (TUR-S1SKIP, TUR-FAILSAFE)",
+      "sentence": "C01: Referenz ist SKIP (ein offener hypothetischer Ausbruch zählt als nicht verloren) und der 10-Tage-Ausstieg für Failsafe-Positionen, weil beides der gepinnte Turtle-Code (89fbcf86…) rechnet; TAKE und 20D bleiben als Szenarien berichtet."
+    },
+    {
+      "id": "PS-C03-BOTTOM-START",
+      "method": "C03",
+      "rules": ["DAR-SF-BOTTOM-START", "DAR-SF-STOP-INIT (F-DAR-Q7-READING)"],
+      "reference": { "DAR-SF-BOTTOM-START": "AFTER_TOP_DAY", "DAR-Q7": "NOT_IN_NEW_BOX" },
+      "alternativesKept": ["ALT-BOTTOM-AFTER-TOP-CONFIRMED"],
+      "source": "B06 (DAR-Q2, DAR-Q5, DAR-Q7), #709 VU-DAR",
+      "sentence": "C03: Referenz ist AFTER_TOP_DAY (bereits gehandelte Tiefs nach dem Hochtag zählen, der Boden liegt nie innerhalb gehandelter Kurse) und DAR-Q7 wird als „nicht in der neuen Box“ gelesen; AFTER_TOP_CONFIRMED bleibt als Variante berichtet."
+    },
+    {
+      "id": "PS-C08-SETUP-PROXY",
+      "method": "C08",
+      "rules": ["KK-SF-BO-SETUP (MA-KK-SETUP-PROXY)", "C08-MOMENTUM-SPLIT"],
+      "reference": { "setupProxy": "CONSOLIDATION_10", "historicalReferenceSelection": "RESEARCH_WITHOUT_MOMENTUM_SELECTION" },
+      "alternativesKept": ["ALT-SETUP-CONSOLIDATION-20", "ALT-SETUP-NO-MA"],
+      "source": "KK-006 bis KK-009 (PREFERENCE-Spannen), festgeschriebene Proxy-Grenzen im TOP5-Plan",
+      "sentence": "C08: Der Setup-Proxy CONSOLIDATION_10 ist für die Forschung tragfähig und bleibt Referenz, CONSOLIDATION_20 und NO_MA_CONDITION werden berichtet; CC-3 bleibt offen, weil ein Proxy die Ermessensentscheidung der Quelle nicht ersetzt, und der historische Backtest misst die Forschungsreferenz ohne Momentum-Auswahl."
+    },
+    {
+      "id": "PS-C12-READINGS",
+      "method": "C12",
+      "rules": ["MOKA-SF-BGU-VOLWINDOW", "MOKA-SF-EXIT-VIOLATION"],
+      "reference": { "volumeWindowSessions": 50, "violationReading": "LATER_DAYS" },
+      "alternativesKept": ["ALT-VIOLATION-NEXT-DAY"],
+      "source": "MOKA24-VOL (Fenster nicht belegt, Konvention D-BGU-VOLWINDOW vom 23.10.2026), MOKASTOP-002 (FAQ) gegen MOKA12-009 (Folie 2012)",
+      "sentence": "C12: Referenz ist das 50-Sitzungen-Volumenfenster (deklarierte Konvention, Registry gepinnt) und die Verletzungslesart LATER_DAYS aus der eigenen Verkaufsquelle (FAQ); NEXT_DAY bleibt als Variante berichtet."
+    },
+    {
+      "id": "FP-ST-03",
+      "method": "C01,C02",
+      "rules": ["CC-4 Korrelationslimit (E7-5)"],
+      "reference": { "option": "A", "groups": "PIT-SIC aus EDGAR-Kopfdaten, Fama-French-49, Identität über core/identity.js" },
+      "alternativesKept": ["Referenz ohne Gruppen, ledger-hash-identisch"],
+      "source": "Evidenzdokument Abschnitt 10.2, FP-ST-03",
+      "sentence": "FP-ST-03: Option A – PIT-SIC-Gruppen aus EDGAR (kostenfrei, Revision von E4) als begrenzte Forschungsstudie PS-C02-CC4-GROUPS; die Referenz ohne Gruppen bleibt hashgleich."
+    },
+    {
+      "id": "FP-ST-05",
+      "method": "C06,C07",
+      "rules": ["CC-1 Originalquelle", "CC-3 Ermessensfragen"],
+      "reference": { "option": "A", "c06Additionally": "C" },
+      "alternativesKept": [],
+      "source": "Evidenzdokument Abschnitt 10.2, FP-ST-05",
+      "sentence": "FP-ST-05: Option A – Fundstellen gegen die englische Originalausgabe prüfen, C06 zusätzlich als manuelle Methode ohne Zertifizierungsziel (Option C); die Buchbeschaffung ist eine Ausgabe und wartet auf die Owner-Freigabe, C06/C07 bleiben bis dahin „in Forschung“."
+    }
+  ]
+}

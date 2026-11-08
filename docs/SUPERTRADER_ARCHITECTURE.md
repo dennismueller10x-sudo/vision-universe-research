@@ -128,13 +128,13 @@ welche früheren Versionen sie als Position weiterführen dürfen.
 | D Strategy Integrity | gültige Übergänge, Regel-IDs existieren, Kausalität, Determinismus | `tests/engine.test.mjs`, `tests/artifacts.test.mjs` |
 | E Backtesting | `metrics = null` und kein Trust Score ohne Gates; ORH = `DATA_COVERAGE_PENDING` | `tests/artifacts.test.mjs` |
 | F Product | 390/1280 px, kein Überlauf, keine Fehler, kein Kaufton, Chart zeichnet | `browser-qa.mjs` |
-| G CI/Deploy | alles oben + Regression + Release-Artefakt + Production Smoke | `supertrader-ci.yml`, `supertrader-live-smoke.yml` |
+| G CI/Deploy | alles oben + Regression + Release-Artefakt + Production Smoke | `supertrader-ci.yml`, `monitor.yml` Teil `supertrader` |
 
 ## 6. Betrieb
 
 - `supertrader-signals.yml` — Di–Sa 06:17 UTC, idempotent, committet nur `supertrader/`.
 - Die bestehende Pages-Auslieferung nimmt den Stand im nächsten Release-Fenster mit.
-- `supertrader-live-smoke.yml` — nach jeder Pages-Auslieferung und werktags 13:43 UTC.
+- `monitor.yml`, Prüfung `supertrader` (vormals `supertrader-live-smoke.yml`) — nach jeder Pages-Auslieferung und werktags 13:43 UTC.
 
 ## 7. Offene echte Owner-Entscheidungen
 

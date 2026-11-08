@@ -46,14 +46,14 @@ export const SPECS = {
     chart: {scope: '.dx-chapter--chart', minW: 150, minH: 100, minGeom: 2}, core: '.dx-dhero, .dx-chapter--chart', minText: 1500},
   rheinmetall: {path: '/discover/#/s/EUROPE/ref_RHM_DE_XETR', critical: true, h1: 'Rheinmetall', price: {selector: '.dx-price, .dx-chart-hero-preis', re: PRICE_EUR},
     chart: {scope: '.dx-chapter--chart', minW: 150, minH: 100, minGeom: 2}, core: '.dx-dhero, .dx-chapter--chart', minText: 800},
-  einzeln: {path: '/discover/#/einzeln/NVDA', critical: true, feed: true, minText: 1000,
+  einzeln: {path: '/discover/#/einzeln/NVDA', critical: true, feed: true, minText: 250, // Redesign D05: leitet auf #/swipen, eine Karte
     chart: {scope: '.dx-feed-screen', minW: 150, minH: 100, minGeom: 2}},
   daten: {path: '/discover/#/daten', h1: '^Daten & Quellen', minText: 3000, includes: ['Marktdaten']},
-  maerkte: {path: '/discover/#/maerkte', h1: '^Märkte', minText: 4000, includes: ['Marktbarometer'], textRe: '[−+-]\\d+,\\d+\\s*%',
-    chart: {scope: 'main', minW: 100, minH: 20, minGeom: 2}},
+  maerkte: {path: '/discover/#/maerkte', h1: '^Märkte', minText: 3000, includes: ['Marktbarometer'], textRe: '[−+-]\\d+,\\d+\\s*%',
+    chart: {scope: 'main', minW: 60, minH: 20, minGeom: 2}}, // D07: je Markt eine Verlaufslinie (74×32) statt eines großen Charts
   strategien: {path: '/discover/#/strategien', h1: '^Strategien$', minText: 1500, list: {selector: '#v2-main a[href*="#/"]', min: 5}},
   aktien: {path: '/discover/#/aktien', h1: 'Alle Aktien', minText: 800, list: {selector: '#v2-main a[href*="/s/"]', min: 30}},
-  start: {path: '/discover/', h1: 'Sieh den Markt', minText: 2000, list: {selector: '#v2-main a[href*="/s/"]', min: 4}},
+  start: {path: '/discover/', h1: '^Was bewegt die Börse', minText: 2000, list: {selector: '#v2-main a[href*="/s/"]', min: 4}},
   // Die Nicht-gefunden-Seite IST die erwartete Auskunft; der Abruf der Aktiendatei, der ins Leere laeuft, gehoert dazu.
   unknownStock: {path: '/discover/#/s/XX/UNKNOWN', h1: 'Aktie nicht gefunden', minText: 40, expectNotFound: true, allow404Data: true}
 };
