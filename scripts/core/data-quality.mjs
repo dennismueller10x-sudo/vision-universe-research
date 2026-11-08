@@ -126,7 +126,7 @@ const ixIndex = maybe("quant/data/market/index-membership/index.json");
 const indexes = ixIndex ? ixIndex.indexes.map((i) => maybe("quant/data/market/index-membership/" + i.indexId + ".json")).filter(Boolean) : [];
 rules.push(DQ.indexMembersResolve(indexes, Object.fromEntries(decisions.map((d) => [d.securityId, d]))));
 
-/* Technical (technical/data, Erzeuger technical-world.yml) */
+/* Technical (technical/data, Erzeuger pipeline-daily.yml, Teil technical-world) */
 const twMeta = maybe("technical/data/meta.json");
 const twArt = maybe("technical/data/screener-v1.json");
 const twSummary = maybe("quant/data/product/technical-signals-v1/summary.json");
