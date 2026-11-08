@@ -1,0 +1,32 @@
+{
+ "schema": "vu-module-2",
+ "id": "portfolios",
+ "label": "Portfolios",
+ "status": "LIVE",
+ "route": "/portfolios/",
+ "access": "free",
+ "navigation": {
+  "group": "products",
+  "order": 10,
+  "label": "Portfolios",
+  "href": "/portfolios/",
+  "icon": "portfolios",
+  "claim": "Alle Musterdepots: Supertrader, Quant, KI",
+  "entries": [
+   ["Übersicht", "/portfolios/", "⌂"],
+   ["Supertrader", "/portfolios/#/supertrader", "⚑"],
+   ["Quant", "/portfolios/#/quant", "⧩"],
+   ["KI-Depots", "/portfolios/#/ki", "✧"]
+  ]
+ },
+ "data": [
+  "kiDepots"
+ ],
+ "reads": [
+  "modelDepots",
+  "supertrader"
+ ],
+ "tests": [
+  "core/tests/portfolios.test.mjs"
+ ]
+}

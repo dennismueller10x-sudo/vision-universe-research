@@ -1,0 +1,26 @@
+{
+ "schema": "vu-module-2",
+ "id": "hedgefonds",
+ "label": "Hedgefonds",
+ "status": "LIVE",
+ "route": "/hedgefonds/",
+ "access": "free",
+ "navigation": {
+  "group": "products",
+  "order": 6,
+  "label": "Hedgefonds",
+  "href": "/hedgefonds/",
+  "icon": "hedgefonds",
+  "claim": "Was Investoren halten",
+  "entries": [
+   ["Übersicht", "/hedgefonds/", "⌂"],
+   ["Investoren", "/hedgefonds/#/investoren", "♙"],
+   ["Datenbank", "/hedgefonds/#/datenbank", "▧"],
+   ["Aktien", "/hedgefonds/#/aktien", "⌁"],
+   ["Smart Money", "/hedgefonds/#/smart-money", "◬"]
+  ]
+ },
+ "data": [],
+ "reads": [],
+ "tests": []
+}
