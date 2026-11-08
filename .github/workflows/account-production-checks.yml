@@ -6,10 +6,15 @@ name: Konten — Produktion lesend pruefen (Stripe, Brevo, Worker)
 #            VU_ACCOUNT_STRIPE_READ_KEY (Umgebung account-auto, nur main). Fehlt er: Stripe wird uebersprungen.
 #   Brevo    Listen, Merkmal, DOI-Vorlage (scripts/account/brevo-setup.mjs ohne --apply), Repository-Secret BREVO_API_KEY
 # Ausgabe nur IDs, Zustaende und Zaehler; keine Adressen, keine Schluessel.
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '41 5 * * *'
   workflow_dispatch:
+    inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
 permissions:
   contents: read
   actions: read

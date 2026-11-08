@@ -13,7 +13,7 @@
    "id": "account-backup",
    "workflow": "account-backup.yml",
    "cron": "17 2 * * *",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "account-monitor",
@@ -25,7 +25,7 @@
    "id": "account-production-checks",
    "workflow": "account-production-checks.yml",
    "cron": "41 5 * * *",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "company-intelligence-health",
