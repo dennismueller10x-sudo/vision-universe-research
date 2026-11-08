@@ -5,7 +5,7 @@ Methodik: [docs/research/labor/README.md](../research/labor/README.md), Regeln: 
 
 ## Fertig
 - Protokoll vorregistriert und eingefroren (78 Varianten in 10 Familien, DEV 2016–2023, Prüfung 2024–2026-10, Holdout 2008–2015).
-- Runner, Signale, ETF-Engine, Statistik, Versiegelung, Workflow `research-labor.yml` (Bündel research), Tests.
+- Runner, Signale, ETF-Engine, Statistik, Versiegelung, Workflow `research.yml`, Teil `labor` (vormals `research-labor.yml`), Tests.
 
 - **Suche gerechnet** (Lauf 42023060404): 78/78 Varianten, keine erfüllt die Zulassungsregeln. **Urteil: keine Strategie besteht.**
   Prüfung und Holdout entfallen nach Protokoll; der Holdout 2008–2015 bleibt unberührt. Bericht: [BERICHT.md](../research/labor/BERICHT.md),
