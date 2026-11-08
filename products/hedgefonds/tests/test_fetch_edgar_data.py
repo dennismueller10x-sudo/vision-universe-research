@@ -7,7 +7,7 @@ import unittest
 from datetime import date
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "producer"))
 import fetch_edgar_data as m  # noqa: E402
 from fund_meta import FUND_META  # noqa: E402
 

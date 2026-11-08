@@ -22,5 +22,10 @@
  },
  "data": [],
  "reads": [],
- "tests": []
+ "producers": [
+  "products/hedgefonds/producer/fetch_edgar_data.py"
+ ],
+ "tests": [
+  "products/hedgefonds/tests/test_fetch_edgar_data.py"
+ ]
 }

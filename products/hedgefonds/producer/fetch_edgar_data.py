@@ -57,7 +57,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fund_meta import FUND_META  # noqa: E402
 
 USER_AGENT = "VisionUniverseResearch info@visionuniverse.de"
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 HF_DIR = ROOT / "hedgefonds"
 DATA_DIR = HF_DIR / "data"
 OUTPUT_PATH = DATA_DIR / "hedgefonds.json"

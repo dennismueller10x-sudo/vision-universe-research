@@ -203,7 +203,7 @@ jobs:
       - name: Fetch SEC EDGAR 13F data
         env:
           OPENFIGI_API_KEY: ${{ secrets.OPENFIGI_API_KEY }}
-        run: python scripts/hedgefonds/fetch_edgar_data.py
+        run: python products/hedgefonds/producer/fetch_edgar_data.py
 
       - name: Verify generated-file-only scope
         shell: bash
