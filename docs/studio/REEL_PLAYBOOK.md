@@ -96,7 +96,7 @@ Ablauf und Befehle in [`studio/reels/README.md`](../../studio/reels/README.md).
 5. Effekte selbst synthetisieren (`synth_sfx.py`), Musik aus Dropbox-Track mit Ducking, Normalisierung auf −14,2 LUFS.
 6. FFmpeg zusammensetzen, Video prüfen (Kontaktbogen).
 7. Hosting: HeyGen-Asset-Upload (stabile öffentliche Adresse mit Range-Unterstützung).
-8. Karte im Approval Center: Workflow **Social Reel vorbereiten** (`social-reel.yml`). Es wird nichts veröffentlicht.
+8. Karte im Approval Center: Workflow **Social Reel vorbereiten** (`social.yml, Teil reel (vormals social-reel.yml)`). Es wird nichts veröffentlicht.
 
 Kosten pro Reel (Stand Oktober 2026): Stimme 0,1 bis 0,15 USD, HeyGen-Clip 768p etwa 0,10 USD je 5 Sekunden, Apify-Läufe wenige Cent.
 

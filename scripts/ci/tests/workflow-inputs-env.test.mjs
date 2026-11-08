@@ -2,6 +2,7 @@
    Shell-Text eines run:-Schritts. Dort werden sie VOR der Shell eingesetzt;
    ein Wert mit ' oder $( ) wird zu Code (Script Injection). Ueber env: bleibt
    er ein Wert. Lauf: node --test "scripts/ci/tests/*.test.mjs" */
+import { workflowPart } from "../lib/workflow-part.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
@@ -68,6 +69,6 @@ test("Jeder Workflow deklariert seine Token-Rechte (permissions) ausdruecklich",
 });
 
 test("social-publish-candidate prueft candidateId, bevor sie in einen Pfad geht", () => {
-  const t = readFileSync(join(DIR, "social-publish-candidate.yml"), "utf8");
+  const t = workflowPart(join(DIR, "..", ".."), "social.yml", "kandidat"); /* seit Buendel social (vormals social-publish-candidate.yml) */
   assert.equal((t.match(/case "\$IN_CANDIDATEID" in \*\[!A-Za-z0-9\._-\]\*\|\*\.\.\*\)/g) || []).length, 2);
 });
