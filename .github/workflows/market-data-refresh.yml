@@ -19,16 +19,19 @@ name: Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)
 # Ausloeser - ohne Pfadfilter: die Marke ist das Tor, nicht die Datei.
 # Ohne Marke laeuft nichts.
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       initial:
         description: 'Erstimport (volle Historie ab initialFrom/historyFrom statt inkrementell)'
         type: boolean
         default: false
-  schedule:
-    # Taeglich nach dem US-Handelsschluss (16:00 New York = 20:00/21:00 UTC), um 22:30 UTC.
-    - cron: '30 22 * * 1-5'
   push:
     branches:
       - 'claude/**'
@@ -48,8 +51,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 300
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) ||
+      (github.event_name == 'schedule' || inputs.zeitplan != '') ||
       contains(github.event.head_commit.message, '[market-data-refresh]')
     steps:
       - uses: actions/checkout@v4
@@ -113,8 +116,10 @@ jobs:
       - name: Tageskurse fuer das Produktuniversum (inkrementell) + kompakte Discover-Reihen
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          # Eingaben nur ueber env: (ADR-005); --initial nur manuell, nie beim Takt.
+          INITIAL_ARG: ${{ ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.initial) && '--initial' || '' }}
         run: |
-          node scripts/market/ingest-tiingo.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.initial) && '--initial' || '' }} \
+          node scripts/market/ingest-tiingo.mjs $INITIAL_ARG \
             --scope-from-preview --publish-preview --commercial --request-budget=7500 --concurrency=4
 
       # SPY als BENCHMARK_REFERENCE (Owner-Entscheid 02.10.2026): die ganze

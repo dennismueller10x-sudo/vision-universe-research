@@ -176,19 +176,19 @@
    "id": "long-series",
    "workflow": "long-series.yml",
    "cron": "40 7 1-7 * 6",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "long-series-2",
    "workflow": "long-series.yml",
    "cron": "20 4 * * 2-6",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "market-data-refresh",
    "workflow": "market-data-refresh.yml",
    "cron": "30 22 * * 1-5",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "monitor",
@@ -228,7 +228,7 @@
    "id": "ownership-signals",
    "workflow": "ownership-signals.yml",
    "cron": "23 5 * * 2",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "pages-release",
@@ -472,19 +472,19 @@
    "id": "sec-consumer-fundamentals",
    "workflow": "sec-consumer-fundamentals.yml",
    "cron": "30 7 * * 1",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "sec-fundamentals-daily",
    "workflow": "sec-fundamentals-daily.yml",
    "cron": "15 6 * * *",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "security-master-weekly",
    "workflow": "security-master-weekly.yml",
    "cron": "41 9 * * 3",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "social-orchestrator",
@@ -502,25 +502,25 @@
    "id": "supertrader-paper-2027",
    "workflow": "supertrader-paper-2027.yml",
    "cron": "37 2 * * 2-6",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "supertrader-paper-2027-2",
    "workflow": "supertrader-paper-2027.yml",
    "cron": "41 9 * * 2-6",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "supertrader-sf8-candidates",
    "workflow": "supertrader-sf8-candidates.yml",
    "cron": "43 11 * * 2-6",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "supertrader-signals",
    "workflow": "supertrader-signals.yml",
    "cron": "17 6 * * 2-6",
-   "timer": "github"
+   "timer": "waker"
   }
  ]
 }
