@@ -49,7 +49,7 @@ import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
-import { takteVon } from "../core/schedule-registry.mjs";
+import { takteVon } from "../../../scripts/core/schedule-registry.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
