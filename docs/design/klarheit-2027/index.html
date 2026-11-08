@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Vision Universe – Klarheit 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<style>
+/* Klarheit 2027 – Usability-Prüfung und Umbauvorlage. Gleiche Tokens wie docs/design/redesign-2027: Weiß, Schwarz, Neongrün, drei Graustufen. */
+:root{--a-bg:#fff;--a-ink:#000;--a-card:#f4f4f4;--a-line:#e9e9e9;--a-mute:#6e6e6e;--a-inv:#fff;--white:#fff;--black:#000;--lime:#c8f531;--g1:#f4f4f4;--g2:#e6e6e6;--g3:#8c8c8c;--g4:#5c5c5c;
+  --f:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--white);color:var(--black);font-family:var(--f);-webkit-font-smoothing:antialiased;margin:0;line-height:1.45}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+.slide{padding:clamp(48px,7vw,96px) max(16px,env(safe-area-inset-right,0px)) clamp(48px,7vw,96px) max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--g2)}
+.slide.dark{background:var(--black);color:var(--white);border-color:#1a1a1a}
+.slide.soft{background:var(--g1)}
+.inner{max-width:1360px;margin:0 auto}
+.sh{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:clamp(24px,4vw,44px)}
+.sh .no{font-weight:800;font-size:14px;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:var(--g3)}
+.sh h2{font-size:clamp(28px,4.2vw,52px);font-weight:900;letter-spacing:-.045em;line-height:1}
+.sh .sub{width:100%;font-size:clamp(15px,1.4vw,18px);color:var(--g4);font-weight:500;max-width:72ch}
+.dark .sh .sub{color:#a6a6a6}
+.kicker{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--g3)}
+.lime-txt{color:var(--lime)}
+mark{background:var(--lime);color:#000;padding:0 .18em;border-radius:.18em}
+
+/* Cover */
+.cover{background:var(--black);color:var(--white);min-height:min(100vh,900px);display:flex;align-items:center}
+.cover .inner{width:100%;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:48px;align-items:center}
+.cover .brand{font-weight:900;letter-spacing:.14em;font-size:14px;margin-bottom:40px}
+.cover .brand sup{font-size:9px}
+.cover h1{font-size:clamp(52px,8vw,120px);font-weight:900;letter-spacing:-.065em;line-height:.88}
+.cover h1 span{color:var(--lime)}
+.cover p.lead{margin-top:28px;color:#b5b5b5;font-size:clamp(17px,1.6vw,21px);font-weight:500;max-width:40ch}
+.cover .meta{margin-top:28px;font-size:13px;color:#8c8c8c;font-weight:600}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:32px}
+.toc a{color:var(--white);text-decoration:none;border:1px solid #2a2a2a;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600}
+.toc a:hover,.toc a:focus-visible{background:var(--lime);color:#000;border-color:var(--lime)}
+.cover .phones{display:flex;gap:18px;justify-content:center;align-items:flex-start}
+.cover .phones .ph:nth-child(2){margin-top:60px}
+@media (max-width:900px){.cover .inner{grid-template-columns:1fr}.cover .phones .ph:nth-child(2){display:none}}
+
+/* Kapiteltrenner */
+.chapter{min-height:min(80vh,720px);display:flex;align-items:center}
+.chapter .inner{width:100%;display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,4vw,56px);align-items:center}
+.chapter .big{font-size:clamp(88px,16vw,220px);font-weight:900;letter-spacing:-.07em;line-height:.8;color:var(--lime);font-variant-numeric:tabular-nums}
+.chapter h2{font-size:clamp(40px,7vw,96px);font-weight:900;letter-spacing:-.055em;line-height:.95}
+.chapter .was{margin-top:16px;font-size:clamp(16px,1.6vw,21px);color:#a6a6a6;font-weight:500;max-width:56ch}
+.chapter .was b{color:var(--white)}
+@media (max-width:700px){.chapter .inner{grid-template-columns:1fr}}
+
+/* Raster und Karten */
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:1000px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:1fr 1fr}}
+.g5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+@media (max-width:1100px){.g5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:680px){.g2,.g3,.g4,.g5{grid-template-columns:1fr}}
+.box{border:1px solid var(--g2);border-radius:24px;padding:22px;min-width:0;background:var(--white)}
+.dark .box{background:#0d0d0d;border-color:#262626}
+.box.ink{background:#000;color:#fff;border-color:#000}
+.box.lime{background:var(--lime);border-color:var(--lime);color:#000}
+.box.gray{background:var(--g1);border-color:var(--g1)}
+.box h3{font-size:20px;font-weight:850;letter-spacing:-.025em;line-height:1.15;margin-bottom:8px}
+.box h4{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--g3);margin-bottom:10px}
+.box p{color:var(--g4);font-size:15px}
+.dark .box p,.box.ink p{color:#a6a6a6}
+.box.lime p{color:#1b1b1b}
+.box ul{margin:8px 0 0;padding-left:18px;font-size:15px;color:var(--g4)}
+.dark .box ul,.box.ink ul{color:#b5b5b5}
+.box li{margin:4px 0}
+.box li b{color:var(--black)}
+.dark .box li b,.box.ink li b{color:#fff}
+.big-num{font-size:clamp(48px,6vw,84px);font-weight:900;letter-spacing:-.06em;line-height:.9;font-variant-numeric:tabular-nums}
+.sev{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 10px;font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.sev.hi{background:#000;color:var(--lime)}
+.sev.mid{background:var(--g2);color:#000}
+.sev.lo{border:1.5px dashed var(--g3);color:var(--g4)}
+.sev.ok{background:var(--lime);color:#000}
+.dark .sev.mid{background:#262626;color:#fff}
+.tag{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:800;font-size:11px;letter-spacing:.08em}
+.tag.now{background:var(--g1);color:var(--g4);border:1px solid var(--g2)}
+.tag.neu{background:var(--lime);color:#000}
+.dark .tag.now{background:#141414;color:#a6a6a6;border-color:#262626}
+.quote{font-size:clamp(24px,3.2vw,44px);font-weight:900;letter-spacing:-.04em;line-height:1.08;max-width:24ch}
+.quote span{background:var(--lime);color:#000;padding:0 8px;border-radius:8px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.lead2{font-size:clamp(17px,1.6vw,20px);color:var(--g4);font-weight:500;max-width:62ch;margin-top:18px}
+.dark .lead2{color:#a6a6a6}
+
+/* Tabellen */
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.tbl th{text-align:left;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--g3);padding:10px 12px;border-bottom:2px solid #000}
+.dark .tbl th{border-color:#fff}
+.tbl td{padding:12px;border-bottom:1px solid var(--g2);vertical-align:top}
+.dark .tbl td{border-color:#262626}
+.tbl td b{font-weight:800}
+.tbl .num{font-variant-numeric:tabular-nums;font-weight:800}
+.tbl-wrap{overflow-x:auto;border-radius:20px;border:1px solid var(--g2);padding:6px 10px}
+.dark .tbl-wrap{border-color:#262626}
+.arrow{color:var(--g3);font-weight:800}
+
+/* Matrix Aufgaben × Produkte */
+.matrix{border-collapse:separate;border-spacing:4px;font-size:13px;min-width:860px}
+.matrix th{font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--g4);padding:6px;text-align:center;writing-mode:initial}
+.matrix th.rowh{text-align:left;font-size:13.5px;color:#000;letter-spacing:0;white-space:nowrap;padding-right:14px}
+.matrix td{width:62px;height:34px;border-radius:9px;background:var(--g1);text-align:center;font-weight:900}
+.matrix td.on{background:#000;color:var(--lime)}
+.matrix td.cnt{background:transparent;font-size:15px;font-weight:900;width:auto;padding-left:10px;text-align:left;white-space:nowrap}
+.matrix td.cnt span{background:var(--lime);border-radius:999px;padding:3px 10px}
+
+/* Geräte */
+.devs{display:flex;flex-wrap:wrap;gap:clamp(14px,2vw,30px);align-items:flex-start}
+.devs.center{justify-content:center}
+.dev{display:flex;flex-direction:column;gap:12px;width:var(--w,300px)}
+.dev figcaption{font-size:13.5px;font-weight:600;color:var(--g4);line-height:1.4}
+.dark .dev figcaption{color:#a6a6a6}
+.dev figcaption b{color:#000}
+.dark .dev figcaption b{color:#fff}
+figure{margin:0}
+.shot{border-radius:26px;overflow:hidden;border:6px solid var(--g2);aspect-ratio:390/844;background:#fff;position:relative}
+.dark .shot{border-color:#262626}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.pin{position:absolute;width:30px;height:30px;border-radius:50%;background:#000;color:var(--lime);font-weight:900;font-size:14px;display:grid;place-items:center;box-shadow:0 0 0 3px var(--lime)}
+.pins{counter-reset:p;margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.pins li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;font-size:14.5px;color:var(--g4)}
+.pins li i{font-style:normal;width:26px;height:26px;border-radius:50%;background:#000;color:var(--lime);display:grid;place-items:center;font-weight:900;font-size:12.5px}
+.pins li b{color:#000}
+.dark .pins li{color:#b5b5b5}.dark .pins li b{color:#fff}.dark .pins li i{background:var(--lime);color:#000}
+
+/* Telefon-Mockup 390 × 844, skaliert */
+.ph{--s:.74;width:calc(390px * var(--s) + 14px);flex:none}
+.ph .fr{width:calc(390px * var(--s) + 14px);height:calc(844px * var(--s) + 14px);border-radius:calc(54px * var(--s) + 7px);background:#000;padding:7px;box-shadow:0 30px 60px -30px rgba(0,0,0,.45),0 0 0 1px #2a2a2a}
+.dark .ph .fr{box-shadow:0 0 0 1px #333,0 30px 80px -30px rgba(200,245,49,.15)}
+.ph .vp{width:calc(390px * var(--s));height:calc(844px * var(--s));border-radius:calc(48px * var(--s));overflow:hidden;position:relative}
+.scr{width:390px;height:844px;transform:scale(var(--s));transform-origin:0 0;position:relative;overflow:hidden;font-size:15px;line-height:1.38;
+  --a-bg:#fff;--a-ink:#000;--a-card:#f4f4f4;--a-line:#e9e9e9;--a-mute:#6e6e6e;--a-inv:#fff;background:var(--a-bg);color:var(--a-ink);text-align:left}
+.scr.dk{--a-bg:#000;--a-ink:#fff;--a-card:#151515;--a-line:#262626;--a-mute:#9b9b9b;--a-inv:#000}
+.scr *{box-sizing:border-box}
+.sb{height:48px;display:flex;justify-content:space-between;align-items:flex-end;padding:0 30px 6px;font-weight:700;font-size:15px}
+.sb i{font-style:normal;font-size:11px;letter-spacing:1px}
+.bd{padding:4px 18px 120px}
+.hdr{display:flex;align-items:center;gap:8px;height:46px;margin-bottom:6px}
+.hdr .w{display:flex;align-items:center;gap:9px;font-weight:900;font-size:19px;letter-spacing:-.03em;flex:1;min-width:0}
+.hdr .w .hud{width:32px;height:32px;border-radius:10px;background:#000;color:var(--lime);display:grid;place-items:center}
+.scr.dk .hdr .w .hud{background:#1a1a1a}
+.hdr .w .hud svg{width:18px;height:18px}
+.hdr .ic{width:38px;height:38px;border-radius:50%;background:var(--a-card);display:grid;place-items:center}
+.hdr .ic svg{width:18px;height:18px}
+.hdr .at{height:38px;border-radius:999px;background:var(--a-ink);color:var(--a-inv);display:flex;align-items:center;gap:6px;padding:0 13px;font-weight:800;font-size:14px}
+.hdr .at svg{width:14px;height:14px;color:var(--lime)}
+.hdr .me{width:38px;height:38px;border-radius:50%;background:#000;color:var(--lime);display:grid;place-items:center}
+.hdr .me svg{width:18px;height:18px}
+.ey{font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--a-mute);margin:6px 0 6px}
+.lt{font-size:33px;font-weight:900;letter-spacing:-.05em;line-height:1.02}
+.mt{font-size:21px;font-weight:850;letter-spacing:-.03em;line-height:1.1}
+.st{font-size:17px;font-weight:850;letter-spacing:-.02em;display:flex;justify-content:space-between;align-items:baseline;margin:20px 0 10px}
+.st a{font-size:13.5px;font-weight:600;color:var(--a-mute);text-decoration:none}
+.mu{color:var(--a-mute)}
+.sm{font-size:13px}.xs{font-size:11.5px}.b{font-weight:700}.bb{font-weight:850}
+.num{font-variant-numeric:tabular-nums}
+.card{background:var(--a-card);border-radius:20px;padding:14px}
+.card.ink{background:var(--a-ink);color:var(--a-inv)}
+.card.lime{background:var(--lime);color:#000}
+.card.line{background:transparent;border:1.5px solid var(--a-line)}
+.scr .g2{gap:9px}.scr .g3{gap:8px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.scr .g2{grid-template-columns:1fr 1fr}
+.stk{display:grid;gap:9px}
+.chg{display:inline-flex;align-items:center;gap:3px;border-radius:999px;padding:3px 9px;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chg.up{background:var(--lime);color:#000}.chg.dn{background:var(--a-ink);color:var(--a-inv)}
+.vd{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 10px;font-weight:800;font-size:12px;white-space:nowrap}
+.vd.s{background:var(--lime);color:#000}.vd.m{background:var(--a-line);color:var(--a-ink)}.vd.w{background:var(--a-ink);color:var(--a-inv)}.vd.o{border:1.5px dashed var(--a-mute);color:var(--a-mute)}
+.lg{width:42px;height:42px;border-radius:12px;background:var(--a-ink);color:var(--a-inv);display:grid;place-items:center;font-weight:900;font-size:10.5px;flex:none}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;height:52px;border-radius:999px;background:#000;color:#fff;font-weight:800;font-size:16px}
+.btn.lime{background:var(--lime);color:#000}.btn.line{background:transparent;border:1.5px solid var(--a-line);color:var(--a-ink)}
+.scr.dk .btn{background:var(--lime);color:#000}
+.btn.sm2{height:40px;font-size:14px}
+.help{display:grid;grid-template-columns:22px 1fr;gap:9px;font-size:12.5px;color:var(--a-mute);margin-top:9px}
+.help i{font-style:normal;width:20px;height:20px;border-radius:50%;background:var(--a-ink);color:var(--a-inv);display:grid;place-items:center;font-weight:900;font-size:11px}
+.rowi{display:grid;grid-template-columns:40px 1fr auto;gap:11px;align-items:center;padding:10px 0;border-top:1px solid var(--a-line)}
+.rowi:first-child{border-top:0}
+.rowi .ico{width:40px;height:40px;border-radius:12px;background:#000;color:var(--lime);display:grid;place-items:center}
+.rowi .ico svg{width:20px;height:20px}
+.rowi b{display:block;font-size:15px;letter-spacing:-.01em}
+.rowi span.s{display:block;font-size:12.5px;color:var(--a-mute)}
+.chev{width:16px;height:16px;color:var(--a-mute)}
+.dock{position:absolute;left:12px;right:12px;bottom:18px;height:70px;border-radius:26px;background:#000;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.scr.dk .dock{background:#141414;box-shadow:0 0 0 1px #262626}
+.dock a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#9b9b9b;font-size:10.5px;font-weight:700;height:58px;border-radius:20px;text-decoration:none}
+.dock a svg{width:20px;height:20px}
+.dock a.on{background:var(--lime);color:#000;font-weight:850}
+.home-ind{position:absolute;left:50%;bottom:6px;width:134px;height:5px;border-radius:9px;background:#000;transform:translateX(-50%)}
+.scr.dk .home-ind{background:#fff}
+.bar{height:8px;border-radius:9px;background:var(--a-line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--lime);border-radius:9px}
+.card.ink .bar{background:#333}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 12px;font-weight:700;font-size:13px;background:var(--a-card);white-space:nowrap}
+.pill.on{background:#000;color:#fff}
+.scr.dk .pill.on{background:var(--lime);color:#000}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.check{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--a-line);font-size:14px}
+.check:first-child{border-top:0}
+.check .ck{width:22px;height:22px;border-radius:50%;background:var(--lime);display:grid;place-items:center;color:#000;font-weight:900;font-size:12px}
+.check .ck.no{background:transparent;border:1.5px solid var(--a-line);color:var(--a-mute)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--a-bg);border-radius:28px 28px 0 0;padding:12px 20px 34px;box-shadow:0 -20px 50px rgba(0,0,0,.25)}
+.sheet .grab{width:42px;height:5px;border-radius:9px;background:var(--a-line);margin:0 auto 14px}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.seg{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--a-card);border-radius:999px;padding:4px;gap:4px}
+.seg span{height:34px;border-radius:999px;display:grid;place-items:center;font-weight:800;font-size:13px;color:var(--a-mute)}
+.seg span.on{background:#000;color:#fff}
+.spark{display:block;width:100%}
+.cover-a4{aspect-ratio:210/297;border-radius:6px;overflow:hidden;position:relative;box-shadow:0 24px 50px -24px rgba(0,0,0,.5),0 0 0 1px var(--g2)}
+
+/* Desktop-Mockup */
+.desk{border-radius:18px;overflow-x:auto;overflow-y:hidden;box-shadow:0 30px 70px -30px rgba(0,0,0,.45),0 0 0 1px var(--g2);background:#fff}
+.desk .chrome{height:34px;background:var(--g1);display:flex;align-items:center;gap:7px;padding:0 14px;border-bottom:1px solid var(--g2)}
+.desk .chrome i{width:11px;height:11px;border-radius:50%;background:var(--g2)}
+.desk .chrome span{margin-left:14px;background:#fff;border-radius:7px;padding:3px 12px;font-size:11.5px;color:var(--g4);font-weight:600}
+
+/* Fluss-Diagramm */
+.flow{display:grid;grid-template-columns:1fr auto 1.6fr auto 1fr;gap:14px;align-items:stretch}
+.flow .node{border-radius:26px;padding:24px;display:flex;flex-direction:column;gap:8px;justify-content:center}
+.flow .arr{align-self:center;font-size:34px;font-weight:900;color:var(--lime)}
+@media (max-width:900px){.flow{grid-template-columns:1fr}.flow .arr{transform:rotate(90deg);justify-self:center}}
+
+.pager{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;gap:6px;align-items:center;background:#000;color:#fff;border-radius:999px;padding:5px;box-shadow:0 0 0 1px #2a2a2a}
+.pager button{all:unset;cursor:pointer;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:18px;font-weight:800}
+.pager button:hover,.pager button:focus-visible{background:var(--lime);color:#000}
+.pager span{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;min-width:58px;text-align:center}
+.fn{font-size:12.5px;color:var(--g3);margin-top:18px;max-width:100ch}
+.dark .fn{color:#7a7a7a}
+@media print{.pager{display:none}.slide{break-after:page}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5c.6 4.6 2.7 7.3 7.5 8-4.8.7-6.9 3.4-7.5 8-.6-4.6-2.7-7.3-7.5-8 4.8-.7 6.9-3.4 7.5-8z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-5 3 3 5-7"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></symbol>
+  <symbol id="i-umb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 18 0z"/><path d="M12 12v7a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4z"/><path d="M20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 20s-7-4.4-9-9a4.8 4.8 0 0 1 9-3 4.8 4.8 0 0 1 9 3c-2 4.6-9 9-9 9z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4h11l-2 4 2 4H5"/></symbol>
+  <symbol id="i-sigma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M15 8H9l3 4-3 4h6"/></symbol>
+  <symbol id="i-pie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/></symbol>
+  <symbol id="i-people" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c.8-3 3.2-5 6-5s5.2 2 6 5M15 14.5c2.6 0 4.6 1.6 5.4 4.5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+</svg>
+
+<!-- ================= COVER ================= -->
+<section class="cover slide" id="s-cover">
+  <div class="inner">
+    <div>
+      <div class="brand">VISION UNIVERSE<sup>®</sup></div>
+      <h1>Klarheit<br><span>2027.</span></h1>
+      <p class="lead">Usability-Prüfung der ganzen App und Umbauvorlage: Was ein neuer Kunde heute nicht versteht, wie Vision Universe in einem Satz erklärbar wird, und wie die App aussieht, wenn sie nur noch vier Fragen beantwortet.</p>
+      <p class="meta">Stand 08.11.2026 · geprüft auf 390 × 844 und Desktop · alle „Heute“-Bilder sind echte Aufnahmen der App · Mockup-Werte für NVIDIA sind echte Werte vom 06.11.2026</p>
+      <nav class="toc" aria-label="Inhalt">
+        <a href="#s-satz">Der eine Satz</a><a href="#k1">01 Befund</a><a href="#k2">02 Prinzip</a><a href="#k3">03 Mockups</a><a href="#k4">04 Magazin, Guides, Reports</a><a href="#k5">05 Was fehlt</a><a href="#k6">06 Umbauplan</a>
+      </nav>
+    </div>
+    <div class="phones" aria-hidden="true">
+      <div class="ph" style="--s:.62">
+        <div class="fr"><div class="vp"><div class="scr">
+          <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+          <div class="bd">
+            <div class="hdr"><div class="w"><span class="hud"><svg><use href="#i-sun"/></svg></span>Heute</div><span class="ic"><svg><use href="#i-search"/></svg></span><span class="me"><svg><use href="#i-user"/></svg></span></div>
+            <div class="ey">Sonntag, 8. November</div>
+            <div class="lt">Guten Morgen.<br>Das ist heute wichtig.</div>
+            <div class="card ink" style="margin-top:14px"><div class="xs bb" style="color:var(--lime);letter-spacing:.08em">DEIN MARKT IN EINEM SATZ</div><div class="mt" style="margin-top:6px;color:#fff">Breite Schwäche: nur 35 % der US-Aktien im langfristigen Aufwärtstrend.</div></div>
+            <div class="st">Deine Watchlist <a>3 Änderungen</a></div>
+            <div class="card stk">
+              <div class="rowi"><span class="lg">NVDA</span><span><b>NVIDIA</b><span class="s">Kurs 23 % unter dem Jahreshoch</span></span><span class="chg up">+2,78 %</span></div>
+              <div class="rowi"><span class="lg">AAPL</span><span><b>Apple</b><span class="s">Nahe am Jahreshoch</span></span><span class="chg up">+0,4 %</span></div>
+            </div>
+          </div>
+          <div class="dock"><a class="on"><svg><use href="#i-sun"/></svg>Heute</a><a><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+          <div class="home-ind"></div>
+        </div></div></div>
+      </div>
+      <div class="ph" style="--s:.62">
+        <div class="fr"><div class="vp"><div class="scr dk">
+          <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+          <div class="bd">
+            <div class="hdr"><div class="w"><span class="hud"><svg><use href="#i-chart"/></svg></span>Aktien</div><span class="ic"><svg><use href="#i-search"/></svg></span></div>
+            <div style="display:flex;gap:10px;align-items:center;margin-top:6px"><span class="lg" style="background:#fff;color:#000">NVDA</span><div><div class="mt">NVIDIA</div><div class="sm mu">Chips für KI und Grafik</div></div></div>
+            <div class="card lime" style="margin-top:14px"><div class="xs bb" style="letter-spacing:.08em">DAS WICHTIGSTE IN 3 SÄTZEN</div>
+              <div class="sm" style="margin-top:6px;font-weight:600">Das Geschäft wächst stark: Umsatz +83 % in 12 Monaten. Die Bewertung liegt mit KGV 23,6 nahe am Markt (20,6). Der Kurs liegt 23 % unter dem Jahreshoch.</div></div>
+            <div class="st">5 Checks</div>
+            <div class="card stk">
+              <div class="check"><span class="ck">✓</span><span>Geschäft</span><span class="vd s">Sehr stark</span></div>
+              <div class="check"><span class="ck">✓</span><span>Gesundheit</span><span class="vd s">Sehr solide</span></div>
+              <div class="check"><span class="ck no">–</span><span>Bewertung</span><span class="vd m">Wie der Markt</span></div>
+            </div>
+          </div>
+          <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a class="on"><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+          <div class="home-ind"></div>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DER EINE SATZ ================= -->
+<section class="slide" id="s-satz">
+  <div class="inner">
+    <div class="sh"><span class="no">A</span><h2>Der eine Satz, mit dem du die App erklärst</h2>
+      <p class="sub">Heute erklärt sich Vision Universe über seine Produkte (Quant, Supertrader, Elliott …). Kunden denken aber in Fragen. Der Satz muss die Frage beantworten, warum man die App öffnet.</p></div>
+    <p class="quote">Vision Universe ist deine Börsen-Zentrale: <span>Wir prüfen jeden Tag jede Aktie und jeden ETF</span> und sagen dir in klaren Worten, was du wissen musst, bevor du bei deinem Broker entscheidest.</p>
+    <div class="g3" style="margin-top:40px">
+      <div class="box"><h4>30-Sekunden-Version (gesprochen)</h4><p style="color:#000;font-size:17px;font-weight:600;line-height:1.5">„Du kennst das: Du hörst von einer Aktie und weißt nicht, ob die Firma wirklich gut ist. Bei Vision Universe gibst du den Namen ein und siehst auf einer Seite: Wächst das Geschäft? Ist sie teuer? Was machen die Profis damit? Alles aus echten Pflichtberichten, ohne Verkaufsinteresse. Und wenn du erst anfängst: Wir rechnen dir deinen Sparplan und die Rente durch.“</p></div>
+      <div class="box ink"><h4 style="color:var(--lime)">Die vier Fragen, die die App beantwortet</h4>
+        <ul style="list-style:none;padding:0;margin:0;display:grid;gap:12px">
+          <li><b style="font-size:18px">Was ist heute wichtig?</b><br>→ Heute</li>
+          <li><b style="font-size:18px">Ist diese Aktie gut?</b><br>→ Aktien</li>
+          <li><b style="font-size:18px">Was gibt es Interessantes?</b><br>→ Ideen</li>
+          <li><b style="font-size:18px">Wie baue ich Vermögen auf?</b><br>→ Vermögen</li>
+        </ul>
+        <p style="margin-top:14px">Plus <b style="color:#fff">Wissen</b>: Magazin, Reports, Guides, Academy.</p></div>
+      <div class="box lime"><h4 style="color:#000">Was wir nicht sind (gehört in jede Erklärung)</h4>
+        <ul style="color:#1b1b1b">
+          <li><b>Kein Broker.</b> Gekauft wird bei deiner Bank oder deinem Broker.</li>
+          <li><b>Keine Anlageberatung.</b> Wir beschreiben, was die Zahlen und Regeln zeigen, für alle gleich.</li>
+          <li><b>Kein Verkäufer.</b> Wir verdienen nichts an einer Aktie oder einem ETF.</li>
+        </ul>
+        <p style="margin-top:12px">Diese drei Sätze schaffen Vertrauen und erfüllen gleichzeitig die Linie aus <code>docs/legal/WORTWAHL.md</code>.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KAPITEL 01 ================= -->
+<section class="slide dark chapter" id="k1">
+  <div class="inner"><div class="big">01</div><div><h2>Befund</h2><p class="was">Design: <b>stark und schlüssig</b>. Verständnis: <b>der Kunde muss die Organisation der Firma lernen, bevor er die App nutzen kann.</b> Neun Welten, 23 Türen, vier Stellen für „Signale“ und Zahlen, die sich widersprechen.</p></div></div>
+</section>
+
+<section class="slide" id="s-5sek">
+  <div class="inner">
+    <div class="sh"><span class="no">1.1</span><h2>Der 5-Sekunden-Test</h2>
+      <p class="sub">Was versteht jemand, der die App zum ersten Mal öffnet? Drei echte Aufnahmen vom 08.11.2026.</p></div>
+    <div class="devs">
+      <figure class="dev" style="--w:250px"><div class="shot"><img src="now/home.jpg" alt="Startseite heute"><span class="pin" style="left:12px;top:44%">1</span></div><figcaption><b>Startseite.</b> Starker Satz „Aktien verstehen. In klaren Worten.“ Danach aber „9 Welten“, „Sieben Blickwinkel“, „Swipen“: Produktkatalog statt Nutzen.</figcaption></figure>
+      <figure class="dev" style="--w:250px"><div class="shot"><img src="now/welcome.jpg" alt="Willkommen heute"><span class="pin" style="left:12px;top:30%">2</span></div><figcaption><b>Nach der Anmeldung.</b> Zehn 30-Sekunden-Videos, je eins pro Produkt. Der Kunde soll zehn Produkte lernen, bevor er eine Antwort bekommt.</figcaption></figure>
+      <figure class="dev" style="--w:250px"><div class="shot"><img src="now/menu.jpg" alt="Menü heute"><span class="pin" style="left:12px;top:22%">3</span></div><figcaption><b>Menü.</b> Zehn Produktkacheln mit Fachnamen (Quant, Technical, Elliott, Screener …), darunter elf „Weitere Produkte“.</figcaption></figure>
+      <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:16px">
+        <ol class="pins">
+          <li><i>1</i><span><b>Das Versprechen stimmt, der Weg nicht.</b> „In klaren Worten“ ist richtig. Aber direkt danach erklärt die Seite, wie die App gebaut ist, nicht was man damit erreicht.</span></li>
+          <li><i>2</i><span><b>Onboarding = Produkttour.</b> Die Ziel-Frage „Was möchtest du als Erstes?“ existiert (<code>/willkommen/start/</code>), führt aber in ein Produkt und nicht zu einem ersten Ergebnis.</span></li>
+          <li><i>3</i><span><b>Fachnamen als Navigation.</b> „Quant“, „Technical“, „Fundamental“, „Elliott“ sind Methoden. Einsteiger wissen nicht, welche Tür ihre Frage beantwortet. Profis brauchen die Namen, Einsteiger nicht.</span></li>
+        </ol>
+        <div class="box lime"><h3>Kern des Problems</h3><p>Die App ist nach <b>Herstellung</b> sortiert (wer rechnet was), nicht nach <b>Kundenfrage</b> (was will ich wissen). Jede einzelne Seite ist gut erklärt. Unklar ist, wohin man gehen soll.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide soft" id="s-tueren">
+  <div class="inner">
+    <div class="sh"><span class="no">1.2</span><h2>23 Türen, vier Stellen für dieselbe Sache</h2>
+      <p class="sub">Menü heute: 10 Produkte, 11 „Weitere Produkte“, AI Atlas, Mein Bereich. Die Matrix zeigt, welche Kundenaufgabe in welchem Produkt angeboten wird. Schwarze Felder: Hier gibt es das.</p></div>
+    <div class="tbl-wrap" style="background:#fff">
+      <table class="matrix">
+        <thead><tr><th></th><th>Discover</th><th>Quant</th><th>Technical</th><th>Fundam.</th><th>Supertr.</th><th>Hedgef.</th><th>Elliott</th><th>Screener</th><th>Vorsorge</th><th>Portfolios</th><th>Weitere</th><th></th></tr></thead>
+        <tbody>
+          <tr><th class="rowh">Aktie nachschlagen</th><td class="on">●</td><td class="on">●</td><td class="on">●</td><td class="on">●</td><td class="on">●</td><td class="on">●</td><td class="on">●</td><td></td><td></td><td></td><td class="on">●</td><td class="cnt"><span>8 Wege</span></td></tr>
+          <tr><th class="rowh">Liste filtern / Screener</th><td class="on">●</td><td class="on">●</td><td class="on">●</td><td class="on">●</td><td></td><td class="on">●</td><td class="on">●</td><td class="on">●</td><td class="on">●</td><td></td><td class="on">●</td><td class="cnt"><span>9 Wege</span></td></tr>
+          <tr><th class="rowh">Chart-Regel / „Setup“ / Signal</th><td></td><td class="on">●</td><td class="on">●</td><td></td><td class="on">●</td><td></td><td class="on">●</td><td></td><td></td><td></td><td></td><td class="cnt"><span>4 Wege</span></td></tr>
+          <tr><th class="rowh">Strategien / Methoden</th><td class="on">●</td><td class="on">●</td><td></td><td></td><td class="on">●</td><td></td><td></td><td></td><td></td><td class="on">●</td><td></td><td class="cnt"><span>4 Wege</span></td></tr>
+          <tr><th class="rowh">Musterdepots</th><td></td><td class="on">●</td><td></td><td></td><td class="on">●</td><td></td><td></td><td></td><td></td><td class="on">●</td><td></td><td class="cnt"><span>3 Wege</span></td></tr>
+          <tr><th class="rowh">Lernen / Erklärung</th><td></td><td class="on">●</td><td></td><td class="on">●</td><td class="on">●</td><td></td><td></td><td></td><td class="on">●</td><td></td><td class="on">●</td><td class="cnt"><span>Academy, Guide, Wissen, Videos</span></td></tr>
+          <tr><th class="rowh">Mein Überblick / Dashboard</th><td class="on">●</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="on">●</td><td class="cnt"><span>Willkommen, Mein Dashboard, Dashboard (alt)</span></td></tr>
+          <tr><th class="rowh">ETFs</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="on">●</td><td></td><td class="on">●</td><td class="cnt"><span>Vorsorge-ETFs und ETF-Dashboard</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="g3" style="margin-top:20px">
+      <div class="box"><h3>Doppelt heißt: keiner ist zuständig</h3><p>Ein Kunde, der „Aktien mit Ausbruch“ sucht, kann in Quant (Technische Lagen), Technical (Screener), Supertrader (Methoden) und Elliott landen und bekommt vier verschiedene Zählweisen.</p></div>
+      <div class="box"><h3>Drei Dashboards</h3><p><code>/willkommen/</code>, <code>/mein-dashboard/</code> und <code>/dashboard/</code> („Älterer Bereich“, fester Aktienkreis mit Beta-Score) sind alle im Menü erreichbar.</p></div>
+      <div class="box"><h3>Baustellen im Menü</h3><p>„Budget“ führt auf „In Aufbau“. „Guide“ ist ein altes Werkzeug mit eigenen Zahlen. „Morning“ zeigt als neueste Ausgabe den 06.10.2026.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s-zahlen">
+  <div class="inner">
+    <div class="sh"><span class="no">1.3</span><h2>Zahlen, die sich widersprechen</h2>
+      <p class="sub">Vertrauen ist euer wichtigstes Versprechen („jede Zahl mit Datum“). Diese Stellen widersprechen sich heute auf Seiten, die ein Kunde nacheinander sieht.</p></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Wo</th><th>Seite A</th><th>Seite B</th><th>Was der Kunde denkt</th><th>Schwere</th></tr></thead>
+        <tbody>
+          <tr><td><b>Quant: Anzahl Eigenschaften</b></td><td>Quant-Start: „Sechs Eigenschaften je Aktie“</td><td>Willkommensvideo: „7 Eigenschaften“, Methodik: „Sieben Eigenschaften“, Aktienseite „3/6“</td><td>Sechs oder sieben?</td><td><span class="sev hi">hoch</span></td></tr>
+          <tr><td><b>NVIDIA-Kurs</b></td><td>Startseite: 186,64 $ · +2,78 %</td><td>Aktienseite: 167,17 € · −1,59 % „in einem Jahr“ in Rot, darunter „−4,4 % in 12 Monaten“</td><td>Welcher Wert stimmt? (Euro vs. Dollar, nicht erklärt)</td><td><span class="sev hi">hoch</span></td></tr>
+          <tr><td><b>NVIDIA-Marge</b></td><td>„Nettomarge 55,6 %“</td><td>„64 % des Umsatzes bleiben als Gewinn“ (gleiche Seite)</td><td>Zwei Gewinnbegriffe ohne Namen</td><td><span class="sev mid">mittel</span></td></tr>
+          <tr><td><b>NVIDIA-Bewertung</b></td><td>Discover: KGV 23,6, Börsenwert 4,54 Bio. $</td><td>Guide: KGV 28,98, Marktkap. 5,58 Bio. USD (Stand 05.09.2026, andere Quelle)</td><td>Zwei Wahrheiten in einer App (ADR-002 verletzt)</td><td><span class="sev hi">hoch</span></td></tr>
+          <tr><td><b>ETF-Anzahl</b></td><td>Startseite: „7.000+ ETFs“</td><td>Vorsorge: „Alle 4.065“ · ETF-Dashboard: „91 kuratierte ETFs“</td><td>Was ist die echte Auswahl?</td><td><span class="sev mid">mittel</span></td></tr>
+          <tr><td><b>„Treffer“ und „Setups“</b></td><td>Supertrader: 3.312 Treffer</td><td>Technical: 1.261 „im Fokus“ · Quant: 67 neue Setups, 28 bestätigt</td><td>Drei Zählweisen für ähnliche Dinge</td><td><span class="sev mid">mittel</span></td></tr>
+          <tr><td><b>Welten</b></td><td>Startseite: „9 Welten“</td><td>Menü: 10 Produkte + 11 weitere · Startseite: „Sieben Blickwinkel“</td><td>Was gehört dazu?</td><td><span class="sev lo">gering</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fn">Geprüft am 08.11.2026 im lokalen Abzug von <code>main</code>. Screener und Elliott luden lokal keine Daten (Datenzweig); sie sind deshalb nicht bewertet. Die Perspektiven-Leiste liest Screenreadern auf jeder Aktie „Abdeckung nicht bestätigt“ vor (<code>assets/stock-navigator.js:80</code>), sichtbar ist das nicht.</p>
+  </div>
+</section>
+
+<section class="slide dark" id="s-regeln">
+  <div class="inner">
+    <div class="sh"><span class="no">1.4</span><h2>Wo die App ihre eigenen Regeln bricht</h2>
+      <p class="sub">Drei Live-Stellen widersprechen <code>docs/legal/WORTWAHL.md</code> (Fassung 2) oder dem Design-Grundsatz „kein Rot/Grün“. Das sind keine Geschmacksfragen: sie gehören in die Sofort-Liste.</p></div>
+    <div class="devs">
+      <figure class="dev" style="--w:250px"><div class="shot"><img src="now/quant-setup.jpg" alt="Quant Setup-Karte heute"></div><figcaption><b>Quant „Setup bestätigt“:</b> „Einstiegsmarke“, „Stopp-Marke“, „Zielzone“. WORTWAHL verbietet alle drei; erlaubt: „Zone laut Methode“, „Ungültig-Marke laut Methode“, kein Ziel. Quelle: <code>quant/app/pages.js</code>.</figcaption></figure>
+      <figure class="dev" style="--w:250px"><div class="shot"><img src="now/stock-pro.jpg" alt="Was dafür spricht heute"></div><figcaption><b>Aktienseite „Was dafür spricht, was dagegen“:</b> laut WORTWAHL „Stärken / Schwächen laut Kennzahlen“. Quelle: <code>discover/ui/detail.js</code>.</figcaption></figure>
+      <figure class="dev" style="--w:250px"><div class="shot"><img src="now/stock.jpg" alt="Aktienseite heute"></div><figcaption><b>Aktienseite Kopf:</b> rote Minus-Pille (Design-Regel: Minus = schwarze Pille), Kursbeschriftung überlappt die Achse, Euro-Kurs ohne Hinweis auf Dollar-Notierung.</figcaption></figure>
+      <figure class="dev" style="--w:250px"><div class="shot"><img src="now/guide.jpg" alt="Guide heute"></div><figcaption><b>Guide:</b> Entwickler-Status für Kunden sichtbar („MODE HYBRID · MARKET DATA UNAVAILABLE · FORM PRECOMPUTED“), eigene Zahlenquelle. Gehört aus dem Menü.</figcaption></figure>
+    </div>
+    <div class="g3" style="margin-top:28px">
+      <div class="box"><h3>Weitere Begriffe</h3><ul><li>Supertrader-Leiste: „<b>Signale</b>“, Liste „Alle Signale“ (WORTWAHL: kein „Signal“)</li><li>Startseite: „Methoden, <b>Signale</b>, Backtests“</li><li>Analysten: „Ø <b>Kurspotenzial</b>“, Konsens als Bestenliste</li></ul></div>
+      <div class="box"><h3>Entwicklersprache</h3><ul><li>Macro: „zentral konfigurierbar in <b>data/config.json</b>“</li><li>Academy: „<b>Concept Registry</b>“, „<b>Phase 1</b> verbindet die Academy noch nicht live …“</li><li>ETF-Dashboard: „+88.5%“ mit Punkt statt Komma</li></ul></div>
+      <div class="box"><h3>Ehrlich, aber entmutigend</h3><ul><li>Supertrader: „<b>Keine Methode ist geprüft genug für echtes Geld</b>“ als zweite Botschaft der Seite</li><li>Preise: „Free und Pro schalten heute <b>dieselben Funktionen</b> frei“, kein Grund für Pro</li><li>Atlas: „Noch gesperrt“, aber im Kopf jeder Seite</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s-produkte">
+  <div class="inner">
+    <div class="sh"><span class="no">1.5</span><h2>Befund je Produkt</h2>
+      <p class="sub">Was funktioniert, was den Kunden verliert und der eine Satz, der fehlt.</p></div>
+    <div class="g3">
+      <div class="box">
+        <div style="display:flex;justify-content:space-between;align-items:center"><h3>Quant</h3><span class="sev hi">verliert Kunden</span></div>
+        <p><b style="color:#000">Heute:</b> „Was hat sich heute verändert?“ Radar mit sechs Zählern (67 neue Setups, 557 verbessern sich …), Marktbreite, Setup-Karten, Strategien.</p>
+        <ul><li>Der Start zeigt Veränderungen, bevor klar ist, <b>was Quant überhaupt misst</b>.</li><li>Die sieben Eigenschaften werden auf der Startseite nicht genannt.</li><li>Setups gehören zu Charts, nicht zu Faktoren: Überschneidung mit Technical und Supertrader.</li></ul>
+        <p style="margin-top:10px"><b style="color:#000">Fehlender Satz:</b> „Quant misst sieben Eigenschaften jeder Aktie und zeigt, wo sie im Vergleich zu allen US-Aktien steht.“</p>
+      </div>
+      <div class="box">
+        <div style="display:flex;justify-content:space-between;align-items:center"><h3>Supertrader</h3><span class="sev hi">verliert Kunden</span></div>
+        <p><b style="color:#000">Heute:</b> „Methoden der Profis“, 3.312 Treffer in drei Stufen, dann „Nicht belegt“, 13 Methoden als Liste, Musterdepot-Lebenslauf.</p>
+        <ul><li>3.312 Treffer sind keine Hilfe, sondern Lärm.</li><li>Die Methoden sind Namen (Weinstein, Minervini, Pocket Pivot), keine Typen. Wer bin ich, welche passt zu meinem Stil?</li><li>„Bild passt · Regel bestätigt · Durchgerechnet“ ist Werkstattsprache.</li></ul>
+        <p style="margin-top:10px"><b style="color:#000">Fehlender Satz:</b> „13 berühmte Trader haben ihre Regeln aufgeschrieben. Wir zeigen, welche Aktien sie heute erfüllen und was das Musterdepot der Methode damit macht.“</p>
+      </div>
+      <div class="box">
+        <div style="display:flex;justify-content:space-between;align-items:center"><h3>Vorsorge</h3><span class="sev ok">bestes Produkt</span></div>
+        <p><b style="color:#000">Heute:</b> „Was wird aus deiner Rente?“, 10-€-Start, „Wo stehst du?“ mit drei Lagen, Beispielrechnung, Zulagen 2027.</p>
+        <ul><li><b>Vorbild für alle anderen Welten:</b> Frage, Lage, Ergebnis.</li><li>„Kern-ETFs“ zeigen US-Fonds (URTH, SPY, QQQ), die deutsche Privatanleger meist nicht kaufen können. Es fehlen die UCITS-Gegenstücke mit ISIN.</li><li>Der letzte Schritt fehlt: „Wie richte ich das beim Broker ein?“</li></ul>
+      </div>
+      <div class="box">
+        <div style="display:flex;justify-content:space-between;align-items:center"><h3>Aktienseite</h3><span class="sev mid">stark, zu lang</span></div>
+        <p><b style="color:#000">Heute:</b> Kurs, Perspektiven-Leiste, „In einem Satz“, „Auf einen Blick“ (3 Urteile), Gesundheit, Bewertung, Stärken/Schwächen, Ranglisten, Ähnliche.</p>
+        <ul><li>Inhaltlich das Herz der App, aber das Urteil kommt erst nach Chart und Zeitachse.</li><li>Sieben Perspektiven-Tabs mit Fachnamen. Was sagen sie zusammen?</li><li>Kein Anschluss an den nächsten Schritt: kein ISIN, kein Report, kein Alarm.</li></ul>
+      </div>
+      <div class="box">
+        <div style="display:flex;justify-content:space-between;align-items:center"><h3>Technical, Elliott, Fundamental, Hedgefonds</h3><span class="sev mid">gut, aber Inseln</span></div>
+        <ul><li>Jede Welt erklärt sich selbst gut (Technical: „Was zeigt der Chart?“, Hedgefonds: 13F-Erklärung mit Frist).</li><li>Für Einsteiger sind es vier Türen mehr. Ihre Antwort zur einzelnen Aktie gehört als Check auf die Aktienseite, ihre Listen unter „Ideen“.</li><li>Elliott ist komplett PRO, die Seite sagt aber nicht, was man ohne PRO sieht.</li></ul>
+      </div>
+      <div class="box">
+        <div style="display:flex;justify-content:space-between;align-items:center"><h3>Inhalte</h3><span class="sev hi">zerstreut</span></div>
+        <ul><li>Magazin (3 Ausgaben, Swipe), Report XPeng (32 HTML-Seiten, vom Owner zum Verwerfen freigegeben), Morning (zuletzt 06.10.), News (Agenturmeldungen), Academy (meist „Bald verfügbar“), Guide (alt).</li><li>Das neue Druckformat existiert schon als Muster (<code>docs/publishing/konzept-2026-11</code>: Weekly KW 45, Report AMD als PDF), ist aber nicht in der App.</li><li>Kein Ort, an dem alles Lesbare zusammenkommt.</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide soft" id="s-gut">
+  <div class="inner">
+    <div class="sh"><span class="no">1.6</span><h2>Was bleibt, weil es schon richtig ist</h2>
+      <p class="sub">Der Umbau ist ein Umsortieren, kein Neubau. Diese Teile tragen schon heute und werden überall übernommen.</p></div>
+    <div class="g4">
+      <div class="box"><h3>Das Design</h3><p>Weiß, Schwarz, Neongrün, Inter, ein Chart, eine Urteilsform. Konsistent über alle Welten. Wird 1:1 weiterverwendet.</p></div>
+      <div class="box"><h3>Das „?“ an jeder Zahl</h3><p>„KGV 23,6: Du zahlst 23,60 $ für 1 $ Jahresgewinn.“ Das ist exakt der richtige Ton. Er muss nur früher kommen.</p></div>
+      <div class="box"><h3>„Wo stehst du?“</h3><p>Vorsorge und Startseite fragen nach der Lage. Das wird das Muster für jede Welt und für den ersten Start.</p></div>
+      <div class="box"><h3>Ehrlichkeit</h3><p>„Fehlt etwas, sagt die App es.“ „Nicht bewertbar“ statt Ersatzwert. Das ist euer Unterschied zu Finfluencern und bleibt.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KAPITEL 02 ================= -->
+<section class="slide dark chapter" id="k2">
+  <div class="inner"><div class="big">02</div><div><h2>Das Prinzip</h2><p class="was"><b>Fragen statt Produkte.</b> Die Methoden (Quant, Supertrader, Technical …) bleiben als Marken erhalten, aber als <b>Prüfsiegel</b> in den Antworten, nicht als Türen im Menü.</p></div></div>
+</section>
+
+<section class="slide" id="s-position">
+  <div class="inner">
+    <div class="sh"><span class="no">2.1</span><h2>Zwischen Kunde und Broker</h2>
+      <p class="sub">Eure Vision: Der Kunde braucht nur Vision Universe und dahinter einen Broker. Damit das trägt, muss die App den ganzen Weg bis zur Entscheidung abdecken und den Übergang zum Broker sauber machen, ohne selbst zu beraten.</p></div>
+    <div class="flow">
+      <div class="node box gray"><span class="kicker">Kunde</span><h3 style="font-size:24px">„Ich will mein Geld anlegen, aber verstehe die Börse nicht.“</h3></div>
+      <div class="arr">→</div>
+      <div class="node box ink"><span class="kicker" style="color:var(--lime)">Vision Universe</span>
+        <div class="g2" style="gap:10px;margin-top:6px">
+          <div class="box" style="padding:14px"><b style="color:#fff">Heute</b><p style="font-size:13.5px">Was ist für mich heute wichtig?</p></div>
+          <div class="box" style="padding:14px"><b style="color:#fff">Aktien</b><p style="font-size:13.5px">Ist diese Aktie gut? 5 Checks, 1 Seite.</p></div>
+          <div class="box" style="padding:14px"><b style="color:#fff">Ideen</b><p style="font-size:13.5px">Was erfüllt meine Kriterien?</p></div>
+          <div class="box" style="padding:14px"><b style="color:#fff">Vermögen</b><p style="font-size:13.5px">Sparplan, Rente, Depot-Check.</p></div>
+        </div>
+        <p style="font-size:13.5px;margin-top:8px">Wissen (Magazin, Reports, Guides, Academy) begleitet jeden Schritt.</p>
+      </div>
+      <div class="arr">→</div>
+      <div class="node box lime"><span class="kicker" style="color:#000">Broker</span><h3 style="font-size:24px">Ausführen: kaufen, Sparplan, Depot.</h3><p>Übergabe heute: ISIN kopieren, Checkliste. Später: Depot-Import und Broker-Verknüpfung.</p></div>
+    </div>
+    <div class="g3" style="margin-top:24px">
+      <div class="box"><h4>Was das für jede Seite heißt</h4><p>Jede Seite endet mit einem nächsten Schritt: merken, Alarm setzen, Report lesen, ISIN kopieren, Plan speichern. Heute enden viele Seiten mit Methodik-Links.</p></div>
+      <div class="box"><h4>Was das für die Sprache heißt</h4><p>Beschreiben statt auffordern (WORTWAHL). Die Brücke zum Broker ist Information („ISIN“, „Was kostet ein Sparplan bei Brokern?“), kein Kaufknopf.</p></div>
+      <div class="box"><h4>Was das rechtlich heißt</h4><p>Broker-Links mit Provision wären ein Interessenkonflikt und gehören in die Anwaltsmappe (<code>docs/legal/EINORDNUNG.md</code>). Bis dahin: neutrale Liste ohne Vergütung.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide soft" id="s-ia">
+  <div class="inner">
+    <div class="sh"><span class="no">2.2</span><h2>Von 23 Türen zu 5 Bereichen</h2>
+      <p class="sub">Die untere Leiste hat heute je Welt fünf Plätze. Neu: dieselben fünf Plätze überall. Der Kunde wechselt nie mehr die „Welt“, nur die Frage.</p></div>
+    <div class="g5">
+      <div class="box ink"><svg width="30" height="30" style="color:var(--lime)"><use href="#i-sun"/></svg><h3 style="margin-top:12px">Heute</h3><p>Was ist heute wichtig?</p><ul style="font-size:13.5px"><li>Markt in 1 Satz</li><li>Watchlist-Änderungen</li><li>Termine (Quartalszahlen)</li><li>Morning, News</li><li>Startplan / nächste Schritte</li></ul><p style="font-size:12.5px;margin-top:10px">ersetzt: Willkommen, Mein Dashboard, Dashboard (alt), Morning, News</p></div>
+      <div class="box ink"><svg width="30" height="30" style="color:var(--lime)"><use href="#i-chart"/></svg><h3 style="margin-top:12px">Aktien</h3><p>Ist diese Aktie gut?</p><ul style="font-size:13.5px"><li>Suche</li><li>Aktienseite mit Kurzfazit</li><li>5 Checks</li><li>Tiefe je Check (Zahlen, Chart, Faktoren, Methoden, Fonds, Wellen, Analysten)</li></ul><p style="font-size:12.5px;margin-top:10px">ersetzt die Aktienseiten von Discover, Quant, Fundamental, Technical, Elliott, Hedgefonds, Analysten</p></div>
+      <div class="box ink"><svg width="30" height="30" style="color:var(--lime)"><use href="#i-bulb"/></svg><h3 style="margin-top:12px">Ideen</h3><p>Was gibt es Interessantes?</p><ul style="font-size:13.5px"><li>Themen (KI, Raumfahrt …)</li><li>Fertige Listen nach Frage</li><li>Profi-Methoden</li><li>Was große Fonds melden</li><li>Eigener Filter</li><li>Swipen</li></ul><p style="font-size:12.5px;margin-top:10px">ersetzt: Discover-Start, Screener, Quant-Strategien, Technical-Screener, Supertrader, Hedgefonds-Listen, Portfolios</p></div>
+      <div class="box ink"><svg width="30" height="30" style="color:var(--lime)"><use href="#i-umb"/></svg><h3 style="margin-top:12px">Vermögen</h3><p>Wie baue ich Vermögen auf?</p><ul style="font-size:13.5px"><li>Sparplan in 6 Schritten</li><li>Renten-Planer, Förderung</li><li>ETFs (UCITS, mit ISIN)</li><li>Depot-Check</li><li>später: Budget</li></ul><p style="font-size:12.5px;margin-top:10px">ersetzt: Vorsorge, ETF-Dashboard, Budget</p></div>
+      <div class="box lime"><svg width="30" height="30"><use href="#i-book"/></svg><h3 style="margin-top:12px">Wissen</h3><p>Verstehen und lesen.</p><ul style="font-size:13.5px;color:#1b1b1b"><li>Weekly-Magazin (PDF)</li><li>Aktienreports (PDF)</li><li>Guides (PDF)</li><li>Academy-Lernpfade</li><li>Methodik und Quellen</li></ul><p style="font-size:12.5px;margin-top:10px">ersetzt: Magazin, Reports, Academy, Guide, Erklärvideos, Methodik-Seiten</p></div>
+    </div>
+    <div class="box" style="margin-top:16px;display:flex;gap:20px;align-items:center;flex-wrap:wrap"><span class="tag neu">IMMER OBEN</span><p style="color:#000;font-weight:600;flex:1;min-width:260px">Kopfzeile: Suche (Aktie, ETF oder Frage) · Atlas · Profil. Die Suche ist der Hauptweg in „Aktien“; Atlas beantwortet Fragen in Worten, sobald er freigeschaltet ist.</p></div>
+  </div>
+</section>
+
+<section class="slide" id="s-siegel">
+  <div class="inner">
+    <div class="sh"><span class="no">2.3</span><h2>Die Produkte werden Prüfsiegel</h2>
+      <p class="sub">Die Marken verschwinden nicht, sie bekommen eine klare Rolle: Jede beantwortet auf der Aktienseite genau eine Frage und hat unter „Ideen“ ihre Listen. Profis finden ihre Werkzeuge über „Alle Werkzeuge“ im Menü wie gewohnt.</p></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Marke</th><th>Frage auf der Aktienseite</th><th>Urteil (eine Zeile)</th><th>Unter „Ideen“</th><th>Für wen zuerst</th></tr></thead>
+        <tbody>
+          <tr><td><b>Fundamental</b> · Zahlen-Check</td><td>Verdient die Firma wirklich Geld?</td><td>Geschäft: Sehr stark · Umsatz +83 %</td><td>Ranglisten, Branchen</td><td>alle</td></tr>
+          <tr><td><b>Quant</b> · Eigenschaften-Check</td><td>Wo steht die Aktie bei sieben Eigenschaften im Vergleich zu allen US-Aktien?</td><td>3 stark · 2 Mittelfeld · 1 schwach · 1 nicht messbar</td><td>Strategien (Value Momentum, GARP …)</td><td>Fortgeschrittene</td></tr>
+          <tr><td><b>Technical</b> · Chart-Check</td><td>Was zeigt der Chart in Worten?</td><td>Kurs unter Jahreshoch, Trend …</td><td>Fertige Chart-Suchen</td><td>Fortgeschrittene</td></tr>
+          <tr><td><b>Supertrader</b> · Methoden-Check</td><td>Welche Profi-Regeln erfüllt die Aktie heute?</td><td>Erfüllt 2 von 13 Methoden</td><td>Methoden mit Musterdepot</td><td>Aktive, Profis</td></tr>
+          <tr><td><b>Hedgefonds</b> · Fonds-Check</td><td>Was haben große Fonds gemeldet (13F)?</td><td>In 41 gemeldeten Depots · Stand Q2</td><td>Investoren, Veränderungen</td><td>alle</td></tr>
+          <tr><td><b>Elliott</b> · Wellen-Check (PRO)</td><td>Welche Wellen-Lesart gilt und ab wann nicht mehr?</td><td>Lesart + Ungültig-Marke laut Methode</td><td>Wellen-Listen</td><td>Profis</td></tr>
+          <tr><td><b>Analysten</b> · Angabe Dritter</td><td>Wie stufen externe Analysten ein?</td><td>Übersicht der Einstufungen, Quelle, Datum</td><td>–</td><td>alle</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fn">Beispielwerte für NVIDIA aus der App vom 06.11.2026. „In 41 gemeldeten Depots“ und „Erfüllt 2 von 13“ sind Platzhalter für die Form, die Zahl kommt aus den 13F- bzw. Supertrader-Artefakten.</p>
+  </div>
+</section>
+
+<section class="slide soft" id="s-erklaer">
+  <div class="inner">
+    <div class="sh"><span class="no">2.4</span><h2>Das Erklär-System: drei Ebenen, ein Schalter</h2>
+      <p class="sub">Jede Zahl, jedes Urteil und jede Liste gibt es in drei Tiefen. Die erste ist immer sichtbar, die zweite einen Tipp entfernt, die dritte führt zur Methodik.</p></div>
+    <div class="g3">
+      <div class="box ink"><span class="tag neu">EBENE 1 · IMMER SICHTBAR</span><h3 style="margin-top:12px;font-size:26px">Ein Satz.</h3><p>„Das Geschäft wächst stark: Umsatz +83 % in 12 Monaten.“</p><p style="margin-top:10px">Regel: höchstens 15 Wörter, eine Zahl, ein Urteil aus Stark · Mittel · Schwach · Keine Aussage.</p></div>
+      <div class="box"><span class="tag now">EBENE 2 · „?“ ANTIPPEN</span><h3 style="margin-top:12px;font-size:26px">So liest du es.</h3><p>Erklär-Blatt von unten: Was die Zahl bedeutet, ein Alltagsvergleich, was „gut“ ist, wie sie im Vergleich liegt.</p></div>
+      <div class="box"><span class="tag now">EBENE 3 · „WIE GERECHNET?“</span><h3 style="margin-top:12px;font-size:26px">Methode und Quelle.</h3><p>Formel, Datenquelle (SEC 10-K, Tiingo …), Datenstand, Regelversion. Für Profis und für Vertrauen.</p></div>
+    </div>
+    <div class="g2" style="margin-top:16px">
+      <div class="box"><h3>Erfahrungs-Schalter im Profil</h3><div style="max-width:420px;margin-top:10px"><div class="seg" style="--a-card:#f4f4f4"><span class="on" style="background:#000;color:#fff">Einsteiger</span><span>Fortgeschritten</span><span>Profi</span></div></div>
+        <p style="margin-top:12px">Steuert nur, <b style="color:#000">wie viel</b> sichtbar ist, nie, welche Daten es gibt. Einsteiger: 5 Checks, Fachbegriffe immer erklärt, Methoden-Check eingeklappt. Profi: alle Checks offen, Kennzahlen-Tabellen, Kerzen-Chart. Im Redesign-Handover bereits als Backend-Zusatz vorgesehen.</p></div>
+      <div class="box"><h3>Ein Wörterbuch, an einer Stelle</h3><p>Die Academy hat bereits die Idee „jedes Konzept lebt genau einmal“. Daraus wird die Quelle für alle „?“-Texte: ein <code>concepts.json</code> mit Ebene-1-Satz, Ebene-2-Text und Methodik-Link. Die Seiten lesen von dort, statt eigene Texte zu schreiben. Damit verschwinden auch Widersprüche wie „6 oder 7 Eigenschaften“.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s-woerter">
+  <div class="inner">
+    <div class="sh"><span class="no">2.5</span><h2>Wörterbuch: alt → neu</h2>
+      <p class="sub">Alle neuen Begriffe sind mit <code>docs/legal/WORTWAHL.md</code> abgeglichen: beschreiben statt auffordern, kein „Signal“, kein Ziel.</p></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Heute</th><th></th><th>Neu</th><th>Warum</th></tr></thead>
+        <tbody>
+          <tr><td>Discover · Quant · Technical · … (als Menü)</td><td class="arrow">→</td><td><b>Heute · Aktien · Ideen · Vermögen · Wissen</b></td><td>Fragen statt Abteilungen</td></tr>
+          <tr><td>Welten, Perspektiven, Blickwinkel</td><td class="arrow">→</td><td><b>Checks</b> (auf der Aktie), <b>Bereiche</b> (Navigation)</td><td>ein Wort je Sache</td></tr>
+          <tr><td>Radar</td><td class="arrow">→</td><td><b>Seit gestern geändert</b></td><td>sagt, was es ist</td></tr>
+          <tr><td>Setup bestätigt · Einstiegsmarke · Stopp-Marke · Zielzone</td><td class="arrow">→</td><td><b>Regel erfüllt</b> · Zone laut Methode · Ungültig-Marke laut Methode · (entfällt)</td><td>WORTWAHL Zeilen 9–11</td></tr>
+          <tr><td>Bild passt · Regel bestätigt · Durchgerechnet</td><td class="arrow">→</td><td><b>Ähnlich · Alle Regeln erfüllt · Mit Plan im Musterdepot</b></td><td>Kundensprache</td></tr>
+          <tr><td>Signale (Supertrader-Leiste)</td><td class="arrow">→</td><td><b>Heute erfüllt</b></td><td>WORTWAHL: kein „Signal“</td></tr>
+          <tr><td>Was dafür spricht, was dagegen</td><td class="arrow">→</td><td><b>Stärken und Schwächen laut Kennzahlen</b></td><td>WORTWAHL</td></tr>
+          <tr><td>Faktoren · Faktor-Score</td><td class="arrow">→</td><td><b>Eigenschaften</b> (0–100, „besser als 97 % der Aktien“)</td><td>schon so in Quant-Detail, überall gleich</td></tr>
+          <tr><td>Treffer in 13 Methoden: 3.312</td><td class="arrow">→</td><td><b>Heute erfüllen 34 Aktien alle Regeln einer Methode</b></td><td>die kleine Zahl zuerst</td></tr>
+          <tr><td>Portfolios · Musterdepots · KI-Depots</td><td class="arrow">→</td><td><b>Musterdepots</b> (Rechenmodell, kein echtes Geld)</td><td>ein Name</td></tr>
+          <tr><td>Magazin · Reports · Morning · Academy · Guide</td><td class="arrow">→</td><td><b>Wissen</b> mit Weekly, Reports, Guides, Lernpfade</td><td>ein Ort zum Lesen</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KAPITEL 03 ================= -->
+<section class="slide dark chapter" id="k3">
+  <div class="inner"><div class="big">03</div><div><h2>Mockups</h2><p class="was">Zwölf Screens auf 390 × 844 im bestehenden Design. Werte für NVIDIA, Markt, Vorsorge und Supertrader sind <b>echte Werte vom 06.11.2026</b>; wo eine Zahl nur die Form zeigt, steht es darunter.</p></div></div>
+</section>
+
+<!-- M01 Startseite -->
+<section class="slide" id="m01">
+  <div class="inner">
+    <div class="sh"><span class="no">M01</span><h2>Startseite: Nutzen vor Produkten</h2>
+      <p class="sub">Oben der eine Satz, darunter „So funktioniert's“ in drei Schritten bis zum Broker, dann die vier Fragen. Produktnamen tauchen erst als Prüfsiegel auf.</p></div>
+    <div class="devs">
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="hdr"><div class="w" style="font-size:14px;letter-spacing:.12em">VISION UNIVERSE<sup style="font-size:8px">®</sup></div><span class="ic"><svg><use href="#i-search"/></svg></span><span class="pill on" style="height:38px">Anmelden</span></div>
+          <div class="ey" style="margin-top:14px">Deine Börsen-Zentrale</div>
+          <div class="lt" style="font-size:36px">Erst verstehen.<br><span style="background:var(--lime);padding:0 6px;border-radius:6px">Dann entscheiden.</span></div>
+          <p class="mu" style="margin-top:10px;font-size:15.5px">Wir prüfen jeden Tag 6.000 US-Aktien und Tausende ETFs und sagen dir in klaren Worten, was du vor dem Kauf wissen musst.</p>
+          <div class="btn" style="margin-top:16px">Kostenlos starten</div>
+          <p class="xs mu" style="text-align:center;margin-top:6px">0 € · ohne Zahlungsdaten · kein Broker, keine Beratung</p>
+          <div class="st">So funktioniert's</div>
+          <div class="stk">
+            <div class="card" style="display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center"><span style="width:28px;height:28px;border-radius:50%;background:#000;color:var(--lime);display:grid;place-items:center;font-weight:900">1</span><span><b>Aktie oder Ziel eingeben</b><br><span class="sm mu">„NVIDIA“ oder „Ich will 100 € im Monat sparen“</span></span></div>
+            <div class="card" style="display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center"><span style="width:28px;height:28px;border-radius:50%;background:#000;color:var(--lime);display:grid;place-items:center;font-weight:900">2</span><span><b>Klare Antwort lesen</b><br><span class="sm mu">5 Checks, jede Zahl erklärt, mit Quelle</span></span></div>
+            <div class="card lime" style="display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center"><span style="width:28px;height:28px;border-radius:50%;background:#000;color:var(--lime);display:grid;place-items:center;font-weight:900">3</span><span><b>Bei deinem Broker umsetzen</b><br><span class="sm">mit ISIN und Checkliste, ohne Verkaufsinteresse</span></span></div>
+          </div>
+        </div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr" style="transform:scale(var(--s)) translateY(0)">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="ey">Was willst du wissen?</div>
+          <div class="mt">Vier Fragen. Eine App.</div>
+          <div class="stk" style="margin-top:12px">
+            <div class="card"><div class="rowi" style="padding:0"><span class="ico"><svg><use href="#i-chart"/></svg></span><span><b>Ist diese Aktie gut?</b><span class="s">Eine Seite, 5 Checks, ein Satz pro Check</span></span><svg class="chev"><use href="#i-chev"/></svg></div></div>
+            <div class="card"><div class="rowi" style="padding:0"><span class="ico"><svg><use href="#i-bulb"/></svg></span><span><b>Was gibt es Interessantes?</b><span class="s">Themen, Listen, Methoden berühmter Trader</span></span><svg class="chev"><use href="#i-chev"/></svg></div></div>
+            <div class="card"><div class="rowi" style="padding:0"><span class="ico"><svg><use href="#i-umb"/></svg></span><span><b>Wie baue ich Vermögen auf?</b><span class="s">Sparplan ab 10 €, Rente, Förderung 2027</span></span><svg class="chev"><use href="#i-chev"/></svg></div></div>
+            <div class="card"><div class="rowi" style="padding:0"><span class="ico"><svg><use href="#i-sun"/></svg></span><span><b>Was ist heute wichtig?</b><span class="s">Markt in einem Satz, deine Watchlist</span></span><svg class="chev"><use href="#i-chev"/></svg></div></div>
+          </div>
+          <div class="st">Geprüft mit</div>
+          <div class="chips"><span class="pill">Zahlen aus SEC-Berichten</span><span class="pill">7 Eigenschaften</span><span class="pill">13 Profi-Methoden</span><span class="pill">788 Fonds (13F)</span><span class="pill">Chart-Regeln</span></div>
+          <div class="card ink" style="margin-top:16px"><div class="xs bb" style="color:var(--lime);letter-spacing:.08em">DARAUF KANNST DU DICH VERLASSEN</div><div class="sm" style="margin-top:6px;color:#ddd">Echte Daten mit Datum · für alle gleich · wir verdienen an keiner Aktie · fehlt etwas, sagen wir es.</div></div>
+        </div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div style="flex:1;min-width:280px">
+        <ol class="pins">
+          <li><i>1</i><span><b>„Erst verstehen. Dann entscheiden.“</b> Ordnet die App vor dem Broker ein und ist rechtlich sauber: Die App entscheidet nicht.</span></li>
+          <li><i>2</i><span><b>Drei Schritte bis zum Broker.</b> Zeigt in zehn Sekunden den ganzen Weg und beantwortet „Kann ich hier kaufen?“ ehrlich.</span></li>
+          <li><i>3</i><span><b>Vier Fragen statt neun Welten.</b> Jede Karte führt in einen Bereich. „Sieben Blickwinkel“ und „Swipen“ wandern in die Bereiche.</span></li>
+          <li><i>4</i><span><b>„Geprüft mit“</b> zeigt die Tiefe (SEC, 13F, 13 Methoden) als Vertrauensbeweis statt als Menü.</span></li>
+        </ol>
+        <p class="fn">„788 Fonds“: Zahl der Hedgefonds-Seite vom 08.11.2026. „6.000 US-Aktien“ wie heute auf Quant.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- M01b Desktop -->
+<section class="slide soft" id="m01d">
+  <div class="inner">
+    <div class="sh"><span class="no">M01·D</span><h2>Startseite am Desktop</h2><p class="sub">Gleiche Reihenfolge, zwei Spalten. Rechts die echte Aktienkarte mit Kurzfazit statt drei loser Urteile.</p></div>
+    <div class="desk">
+      <div class="chrome" style="min-width:1100px"><i></i><i></i><i></i><span>research.visionuniverse.de</span></div>
+      <div style="padding:28px 48px 40px;min-width:1100px">
+        <div style="display:flex;align-items:center;gap:28px;font-weight:700;font-size:14px"><span style="font-weight:900;letter-spacing:.14em">VISION UNIVERSE<sup style="font-size:8px">®</sup></span><span>Heute</span><span>Aktien</span><span>Ideen</span><span>Vermögen</span><span>Wissen</span><span style="flex:1"></span><span style="background:#f4f4f4;border-radius:999px;padding:9px 16px;color:#6e6e6e;min-width:260px">⌕ Aktie, ETF oder Frage …</span><span style="background:#000;color:#fff;border-radius:999px;padding:9px 16px">Anmelden</span></div>
+        <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:48px;margin-top:44px;align-items:center">
+          <div>
+            <div class="kicker">Deine Börsen-Zentrale</div>
+            <div style="font-size:64px;font-weight:900;letter-spacing:-.06em;line-height:.95;margin-top:10px">Erst verstehen.<br><mark style="padding:0 8px;border-radius:8px">Dann entscheiden.</mark></div>
+            <p style="font-size:19px;color:#5c5c5c;margin-top:18px;max-width:34ch">Wir prüfen jeden Tag 6.000 US-Aktien und Tausende ETFs und sagen dir in klaren Worten, was du vor dem Kauf bei deinem Broker wissen musst.</p>
+            <div style="display:flex;gap:10px;margin-top:24px"><span class="btn" style="padding:0 26px">Kostenlos starten</span><span class="btn line" style="padding:0 26px;color:#000;border-color:#e6e6e6">NVIDIA als Beispiel ansehen</span></div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:30px">
+              <div class="box gray" style="padding:16px"><b style="font-size:24px;letter-spacing:-.04em">1</b><p style="font-size:14px;margin-top:4px"><b style="color:#000">Eingeben</b><br>Aktie oder Ziel</p></div>
+              <div class="box gray" style="padding:16px"><b style="font-size:24px;letter-spacing:-.04em">2</b><p style="font-size:14px;margin-top:4px"><b style="color:#000">Verstehen</b><br>5 Checks, jede Zahl erklärt</p></div>
+              <div class="box lime" style="padding:16px"><b style="font-size:24px;letter-spacing:-.04em">3</b><p style="font-size:14px;margin-top:4px"><b>Umsetzen</b><br>bei deinem Broker</p></div>
+            </div>
+          </div>
+          <div class="box" style="border-radius:28px;padding:24px;box-shadow:0 30px 60px -30px rgba(0,0,0,.3)">
+            <div style="display:flex;gap:12px;align-items:center"><span class="lg" style="width:48px;height:48px">NVDA</span><div><b style="font-size:22px;letter-spacing:-.03em">NVIDIA</b><div style="color:#6e6e6e;font-size:14px">Chips für KI und Grafik</div></div><span style="flex:1"></span><b style="font-size:24px;font-variant-numeric:tabular-nums">186,64 $</b><span class="chg up">▲ +2,78 %</span></div>
+            <svg viewBox="0 0 400 110" class="spark" style="margin-top:14px" aria-hidden="true"><defs><linearGradient id="gd1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".6"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs><path d="M0 80 L30 84 L60 78 L90 86 L120 74 L150 52 L180 60 L210 48 L240 58 L270 40 L300 30 L320 12 L340 34 L360 46 L380 62 L400 58 L400 110 L0 110Z" fill="url(#gd1)"/><path d="M0 80 L30 84 L60 78 L90 86 L120 74 L150 52 L180 60 L210 48 L240 58 L270 40 L300 30 L320 12 L340 34 L360 46 L380 62 L400 58" fill="none" stroke="#000" stroke-width="2.5"/></svg>
+            <div style="background:var(--lime);border-radius:18px;padding:14px 16px;margin-top:10px"><div style="font-size:11px;font-weight:800;letter-spacing:.08em">DAS WICHTIGSTE IN 3 SÄTZEN</div><p style="font-size:14.5px;font-weight:600;margin-top:4px;color:#000">Das Geschäft wächst stark (Umsatz +83 %). Die Bewertung liegt nahe am Markt (KGV 23,6 zu 20,6). Der Kurs liegt 23 % unter dem Jahreshoch.</p></div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px;font-size:12px;font-weight:700;text-align:center">
+              <div class="box gray" style="padding:10px 6px">Geschäft<br><span class="vd s" style="margin-top:6px">Sehr stark</span></div>
+              <div class="box gray" style="padding:10px 6px">Gesundheit<br><span class="vd s" style="margin-top:6px">Solide</span></div>
+              <div class="box gray" style="padding:10px 6px">Bewertung<br><span class="vd m" style="margin-top:6px">Mittel</span></div>
+              <div class="box gray" style="padding:10px 6px">Kurs<br><span class="vd w" style="margin-top:6px">Schwächer</span></div>
+              <div class="box gray" style="padding:10px 6px">Profis<br><span class="vd o" style="margin-top:6px">ansehen</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- M02 Erster Start -->
+<section class="slide" id="m02">
+  <div class="inner">
+    <div class="sh"><span class="no">M02</span><h2>Erster Start: drei Fragen, ein Startplan</h2>
+      <p class="sub">Heute führt die Ziel-Frage in ein Produkt. Neu: drei kurze Fragen und am Ende ein Startplan mit drei Aufgaben, die in „Heute“ als Fortschritt sichtbar bleiben. Kein Video-Katalog.</p></div>
+    <div class="devs">
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="bar" style="margin-top:8px"><i style="width:33%"></i></div>
+          <div class="ey" style="margin-top:16px">Frage 1 von 3</div>
+          <div class="lt">Was hast du vor?</div>
+          <p class="mu" style="margin-top:8px">Wir richten danach ein, was du zuerst siehst. Alles bleibt erreichbar.</p>
+          <div class="stk" style="margin-top:16px">
+            <div class="card line" style="border-color:#000;border-width:2px"><b>Regelmäßig sparen</b><div class="sm mu">Sparplan, ETF, Rente</div></div>
+            <div class="card line"><b>Einzelne Aktien verstehen</b><div class="sm mu">Bevor ich eine Aktie kaufe</div></div>
+            <div class="card line"><b>Neue Ideen finden</b><div class="sm mu">Themen, Listen, was große Fonds melden</div></div>
+            <div class="card line"><b>Aktiv nach Regeln handeln</b><div class="sm mu">Chart-Regeln, Methoden berühmter Trader</div></div>
+          </div>
+          <div class="btn" style="margin-top:18px">Weiter</div>
+        </div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="bar" style="margin-top:8px"><i style="width:66%"></i></div>
+          <div class="ey" style="margin-top:16px">Frage 2 und 3 von 3</div>
+          <div class="mt">Wie viel Erfahrung hast du?</div>
+          <div class="seg" style="margin-top:12px"><span class="on">Neu</span><span>Etwas</span><span>Viel</span></div>
+          <p class="xs mu" style="margin-top:6px">Steuert nur, wie viel wir auf einmal zeigen.</p>
+          <div class="mt" style="margin-top:22px">Hast du schon ein Depot?</div>
+          <div class="stk" style="margin-top:12px">
+            <div class="card line"><b>Ja, bei einem Broker</b><div class="sm mu">Später: Depot hochladen und prüfen</div></div>
+            <div class="card line" style="border-color:#000;border-width:2px"><b>Noch nicht</b><div class="sm mu">Wir zeigen, worauf es beim Broker ankommt</div></div>
+          </div>
+          <div class="btn" style="margin-top:18px">Startplan zeigen</div>
+        </div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr dk">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="ey" style="margin-top:8px;color:var(--lime)">Dein Startplan</div>
+          <div class="lt">Drei Schritte zum ersten Sparplan.</div>
+          <p class="mu" style="margin-top:8px">Dauert zusammen etwa 10 Minuten. Du kannst jederzeit pausieren.</p>
+          <div class="stk" style="margin-top:16px">
+            <div class="card" style="display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center"><span style="width:32px;height:32px;border-radius:50%;background:var(--lime);color:#000;display:grid;place-items:center;font-weight:900">1</span><span><b>Was ist ein ETF?</b><br><span class="sm mu">Guide, 3 Min. lesen</span></span><svg class="chev"><use href="#i-chev"/></svg></div>
+            <div class="card" style="display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center"><span style="width:32px;height:32px;border-radius:50%;border:1.5px solid #444;display:grid;place-items:center;font-weight:900">2</span><span><b>Sparrate ausrechnen</b><br><span class="sm mu">Planer, 2 Min.</span></span><svg class="chev"><use href="#i-chev"/></svg></div>
+            <div class="card" style="display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center"><span style="width:32px;height:32px;border-radius:50%;border:1.5px solid #444;display:grid;place-items:center;font-weight:900">3</span><span><b>Beim Broker einrichten</b><br><span class="sm mu">Checkliste mit ISIN</span></span><svg class="chev"><use href="#i-chev"/></svg></div>
+          </div>
+          <div class="btn" style="margin-top:18px">Los geht's</div>
+          <p class="xs mu" style="text-align:center;margin-top:8px">Der Plan bleibt in „Heute“, bis alles erledigt ist.</p>
+        </div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div style="flex:1;min-width:260px">
+        <ol class="pins">
+          <li><i>1</i><span><b>Ziel statt Produkt.</b> Die vier Antworten entsprechen den vier Bereichen.</span></li>
+          <li><i>2</i><span><b>Erfahrung</b> setzt den Erklär-Schalter (2.4). Depot-Frage bereitet Depot-Check und Broker-Brücke vor.</span></li>
+          <li><i>3</i><span><b>Startplan</b> je Ziel aus drei Bausteinen (Guide, Werkzeug, Broker-Schritt). Für „Aktien verstehen“: Aktie suchen → 5 Checks lesen → auf die Watchlist.</span></li>
+        </ol>
+        <p class="fn">Gespeichert als Konto-Einstellung (im Redesign-Handover als Backend-Zusatz vorgesehen). Ohne Konto: lokal im Browser.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- M03 Heute -->
+<section class="slide soft" id="m03">
+  <div class="inner">
+    <div class="sh"><span class="no">M03</span><h2>Heute: ein Ort für jeden Morgen</h2>
+      <p class="sub">Ersetzt Willkommen, Mein Dashboard, das alte Dashboard, Morning und News. Alles in Sätzen, jede Karte führt weiter.</p></div>
+    <div class="devs">
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="hdr"><div class="w"><span class="hud"><svg><use href="#i-sun"/></svg></span>Heute</div><span class="ic"><svg><use href="#i-search"/></svg></span><span class="at"><svg><use href="#i-spark"/></svg>Atlas</span><span class="me"><svg><use href="#i-user"/></svg></span></div>
+          <div class="ey">Sonntag, 8. November</div>
+          <div class="lt">Guten Morgen.</div>
+          <div class="card ink" style="margin-top:12px"><div class="xs bb" style="color:var(--lime);letter-spacing:.08em">DER MARKT IN EINEM SATZ</div><div class="mt" style="margin-top:6px;font-size:19px">Breite Schwäche: 35 % der US-Aktien liegen über ihrer 200-Tage-Linie.</div><div class="bar" style="margin-top:12px"><i style="width:35%"></i></div><div class="xs" style="color:#9b9b9b;margin-top:6px">Stand 06.11.2026 · „?“ 200-Tage-Linie erklärt</div></div>
+          <div class="card lime" style="margin-top:9px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px"><span><span class="xs bb" style="letter-spacing:.08em">DEIN STARTPLAN · 1 VON 3</span><br><b>Sparrate ausrechnen</b> <span class="sm">· 2 Min.</span></span><svg class="chev" style="color:#000"><use href="#i-chev"/></svg></div>
+          <div class="st">Deine Watchlist <a>Alle 6</a></div>
+          <div class="card" style="padding:4px 14px">
+            <div class="rowi"><span class="lg">NVDA</span><span><b>NVIDIA</b><span class="s">Quartalszahlen in 11 Tagen</span></span><span class="chg up">+2,78 %</span></div>
+            <div class="rowi"><span class="lg">AAPL</span><span><b>Apple</b><span class="s">Nahe am Jahreshoch</span></span><span class="chg up">+0,4 %</span></div>
+            <div class="rowi"><span class="lg">MSFT</span><span><b>Microsoft</b><span class="s">Keine Änderung</span></span><span class="chg dn">−0,99 %</span></div>
+          </div>
+        </div>
+        <div class="dock"><a class="on"><svg><use href="#i-sun"/></svg>Heute</a><a><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="st" style="margin-top:6px">Termine dieser Woche</div>
+          <div class="card" style="padding:4px 14px">
+            <div class="check"><span class="ck" style="background:#000;color:var(--lime);font-size:10px">DI</span><span><b>Quartalszahlen</b> · 2 deiner Aktien</span><span class="sm mu">10.11.</span></div>
+            <div class="check"><span class="ck" style="background:#000;color:var(--lime);font-size:10px">FR</span><span><b>13F-Frist</b> · neue Fondsdaten</span><span class="sm mu">14.11.</span></div>
+          </div>
+          <div class="st">Seit gestern geändert <a>Alle</a></div>
+          <div class="g2">
+            <div class="card"><div class="mt num">123</div><div class="sm b">neue Jahreshochs</div><div class="xs mu">höchster Kurs seit 52 Wochen</div></div>
+            <div class="card"><div class="mt num">34</div><div class="sm b">erfüllen alle Regeln einer Profi-Methode</div></div>
+          </div>
+          <div class="st">Zum Lesen</div>
+          <div class="card ink" style="display:grid;grid-template-columns:70px 1fr;gap:12px;align-items:center">
+            <div style="aspect-ratio:210/297;border-radius:4px;background:var(--lime);color:#000;padding:6px;font-size:7px;font-weight:900;line-height:1.1">VU WEEKLY<br><span style="font-size:13px;letter-spacing:-.04em">KW 45</span></div>
+            <span><span class="xs bb" style="color:var(--lime);letter-spacing:.08em">WEEKLY · PDF · 5 SEITEN</span><br><b>Die Woche in 5 Minuten</b><br><span class="sm" style="color:#9b9b9b">Wahl, Zahlen, KI-Kette</span></span>
+          </div>
+          <div class="card" style="margin-top:9px"><span class="xs bb mu" style="letter-spacing:.08em">MORNING · 2 MIN</span><br><b>Was vor Börsenstart wichtig ist</b></div>
+        </div>
+        <div class="dock"><a class="on"><svg><use href="#i-sun"/></svg>Heute</a><a><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div style="flex:1;min-width:260px">
+        <ol class="pins">
+          <li><i>1</i><span><b>Markt in einem Satz</b> mit der Marktbreite, die Quant und Technical schon rechnen (heute zwei leicht unterschiedliche Werte: 35 % und 34 %; neu eine Quelle).</span></li>
+          <li><i>2</i><span><b>Startplan</b> bleibt sichtbar, bis er erledigt ist. Danach rückt die Watchlist nach oben.</span></li>
+          <li><i>3</i><span><b>Watchlist in Sätzen</b>, nicht nur in Prozent: „Quartalszahlen in 11 Tagen“, „Nahe am Jahreshoch“.</span></li>
+          <li><i>4</i><span><b>Zum Lesen:</b> Weekly-PDF und Morning hier statt in eigenen Menüpunkten.</span></li>
+        </ol>
+        <p class="fn">Termine und „Quartalszahlen in 11 Tagen“ zeigen die Form; der Termin-Kalender ist eine fehlende Datenquelle (Kapitel 05).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- M04 Aktienseite -->
+<section class="slide" id="m04">
+  <div class="inner">
+    <div class="sh"><span class="no">M04</span><h2>Aktienseite: Antwort zuerst, Tiefe danach</h2>
+      <p class="sub">Heute steht das Urteil nach Chart, Perspektiven-Leiste und Zeitachse. Neu: Kopf, „Das Wichtigste in 3 Sätzen“, fünf Checks, dann Chart und Tiefe. Unten der nächste Schritt.</p></div>
+    <div class="devs">
+      <figure class="dev" style="--w:230px"><span class="tag now" style="align-self:flex-start">HEUTE</span><div class="shot"><img src="now/stock.jpg" alt="Aktienseite heute"></div><figcaption>Erst Kurs in Euro mit roter Pille, dann sieben Fach-Tabs, dann Chart.</figcaption></figure>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="hdr"><div class="w"><span class="hud"><svg><use href="#i-chart"/></svg></span>Aktien</div><span class="ic"><svg><use href="#i-heart"/></svg></span><span class="ic"><svg><use href="#i-bell"/></svg></span></div>
+          <div style="display:flex;gap:11px;align-items:center"><span class="lg" style="width:50px;height:50px">NVDA</span><div style="flex:1"><div class="mt">NVIDIA</div><div class="sm mu">Chips für KI und Grafik · US-Aktie</div></div></div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-top:10px"><span style="font-size:34px;font-weight:900;letter-spacing:-.05em" class="num">186,64 $</span><span class="chg up">▲ +2,78 %</span><span class="xs mu">heute · ≈ 167,17 €</span></div>
+          <div class="card lime" style="margin-top:12px"><div class="xs bb" style="letter-spacing:.08em">DAS WICHTIGSTE IN 3 SÄTZEN</div>
+            <ol style="margin:6px 0 0;padding-left:18px;font-weight:600;font-size:14px;display:grid;gap:4px"><li>Das Geschäft wächst stark: Umsatz +83 % in 12 Monaten.</li><li>Die Bewertung liegt nahe am Markt: KGV 23,6 zu 20,6.</li><li>Der Kurs liegt 23 % unter dem Jahreshoch.</li></ol></div>
+          <div class="st">5 Checks <a>Wie gerechnet?</a></div>
+          <div class="card" style="padding:4px 14px">
+            <div class="check"><span class="ck">✓</span><span><b>Geschäft</b> <span class="mu sm">· wächst es?</span></span><span class="vd s">Sehr stark</span></div>
+            <div class="check"><span class="ck">✓</span><span><b>Gesundheit</b> <span class="mu sm">· Nettokasse</span></span><span class="vd s">Sehr solide</span></div>
+            <div class="check"><span class="ck no">◆</span><span><b>Bewertung</b> <span class="mu sm">· teuer?</span></span><span class="vd m">Wie der Markt</span></div>
+            <div class="check"><span class="ck no">▼</span><span><b>Kurs</b> <span class="mu sm">· 1 Monat −19 %</span></span><span class="vd w">Schwächer</span></div>
+            <div class="check"><span class="ck no">?</span><span><b>Eigenschaften</b> <span class="mu sm">· Quant</span></span><span class="vd m">3 von 6 stark</span></div>
+          </div>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a class="on"><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="st" style="margin-top:4px">Was andere Checks sagen</div>
+          <div class="card" style="padding:4px 14px">
+            <div class="rowi"><span class="ico"><svg><use href="#i-flag"/></svg></span><span><b>Profi-Methoden</b><span class="s">Supertrader · welche Regeln heute erfüllt sind</span></span><svg class="chev"><use href="#i-chev"/></svg></div>
+            <div class="rowi"><span class="ico"><svg><use href="#i-people"/></svg></span><span><b>Große Fonds (13F)</b><span class="s">Hedgefonds · wer hält, wer hat verkauft</span></span><svg class="chev"><use href="#i-chev"/></svg></div>
+            <div class="rowi"><span class="ico"><svg><use href="#i-chart"/></svg></span><span><b>Chart in Worten</b><span class="s">Technical · Elliott (PRO)</span></span><svg class="chev"><use href="#i-chev"/></svg></div>
+            <div class="rowi"><span class="ico"><svg><use href="#i-sigma"/></svg></span><span><b>7 Eigenschaften</b><span class="s">Quant · Wachstum 86, Profitabilität 99 …</span></span><svg class="chev"><use href="#i-chev"/></svg></div>
+          </div>
+          <div class="st">Stärken und Schwächen laut Kennzahlen</div>
+          <div class="card" style="font-size:13.5px"><b>+</b> Umsatz +83 % zum Vorjahr<br><b>+</b> Nettomarge 55,6 %<br><b>−</b> Kurs 23 % unter dem Jahreshoch</div>
+          <div class="st">Nächster Schritt</div>
+          <div class="g2"><div class="btn sm2 line">♡ Merken</div><div class="btn sm2 line">🔔 Alarm</div></div>
+          <div class="card ink" style="margin-top:9px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center"><span><span class="xs bb" style="color:var(--lime);letter-spacing:.08em">BEI DEINEM BROKER</span><br><b class="num">ISIN US67066G1040</b><br><span class="xs" style="color:#9b9b9b">kopieren · Checkliste vor dem Kauf</span></span><span class="pill" style="background:var(--lime);color:#000">Kopieren</span></div>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a class="on"><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div style="flex:1;min-width:240px">
+        <ol class="pins">
+          <li><i>1</i><span><b>Dollar zuerst</b>, Euro als Umrechnung daneben, Tagesbewegung als Pille. Die Jahresbewegung gehört an den Chart.</span></li>
+          <li><i>2</i><span><b>Drei Sätze</b> aus vorhandenen Werten (Urteile von „Auf einen Blick“ plus Jahresspanne). Kein KI-Text nötig.</span></li>
+          <li><i>3</i><span><b>Fünf Checks</b> statt sieben Tabs. Fach-Perspektiven als „Was andere Checks sagen“, jede mit Markenname als Siegel.</span></li>
+          <li><i>4</i><span><b>Nächster Schritt:</b> Merken, Alarm, ISIN kopieren. Das ist die Brücke zum Broker, ohne Kaufknopf.</span></li>
+        </ol>
+        <p class="fn">Alle NVIDIA-Werte aus der App, Stand 06.11.2026. ISIN der NVIDIA-Stammaktie; im Betrieb aus dem Security Master. Alarm ist ein fehlender Baustein (Kapitel 05).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- M05 Erklär-Blatt -->
+<section class="slide soft" id="m05">
+  <div class="inner">
+    <div class="sh"><span class="no">M05</span><h2>Erklär-Blatt: das „?“ wird ein Lehrer</h2>
+      <p class="sub">Ebene 2 des Erklär-Systems. Ein Tipp auf „Bewertung“ öffnet ein Blatt von unten: Satz, Alltagsvergleich, Skala, Vergleich, weiterführender Guide.</p></div>
+    <div class="devs">
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd" style="opacity:.6">
+          <div class="mt" style="margin-top:20px">NVIDIA</div>
+          <div class="card lime" style="margin-top:12px;height:120px"></div>
+          <div class="card" style="margin-top:12px;height:220px"></div>
+        </div>
+        <div class="dim"></div>
+        <div class="sheet" style="top:150px">
+          <div class="grab"></div>
+          <div class="ey">Bewertung · erklärt</div>
+          <div class="mt">Ist NVIDIA teuer?</div>
+          <p style="margin-top:8px;font-size:15px;font-weight:600">Etwa so teuer wie der Markt. Du zahlst 23,60 $ für 1 $ Jahresgewinn, im Schnitt aller Aktien sind es 20,60 $.</p>
+          <div class="card" style="margin-top:12px">
+            <div class="xs bb mu" style="letter-spacing:.08em">WIE EIN HAUSKAUF</div>
+            <p class="sm" style="margin-top:4px">Ein Haus für 236.000 €, das 10.000 € Miete im Jahr bringt, hat ein „KGV“ von 23,6. Höher heißt: Im Preis steckt mehr Hoffnung auf künftiges Wachstum.</p>
+          </div>
+          <div style="margin-top:14px">
+            <div style="display:flex;justify-content:space-between" class="xs mu b"><span>günstig</span><span>wie der Markt</span><span>teuer</span></div>
+            <div style="position:relative;height:12px;border-radius:9px;background:linear-gradient(90deg,#e9e9e9,#e9e9e9);margin-top:6px"><span style="position:absolute;left:47%;top:-4px;width:20px;height:20px;border-radius:50%;background:#000;border:3px solid var(--lime)"></span><span style="position:absolute;left:41%;top:-2px;width:3px;height:16px;background:#8c8c8c"></span></div>
+            <div class="xs mu" style="margin-top:6px">● NVIDIA 23,6 · | Markt 20,6</div>
+          </div>
+          <div class="g2" style="margin-top:14px">
+            <div class="card"><div class="xs mu b">Wächst schnell, darum</div><div class="sm b">ein höheres KGV ist üblich</div></div>
+            <div class="card"><div class="xs mu b">Gegenstück</div><div class="sm b">Free-Cashflow-Rendite 2,8 %</div></div>
+          </div>
+          <div class="btn line sm2" style="margin-top:14px">Guide: Bewertung in 5 Minuten verstehen</div>
+          <p class="xs mu" style="text-align:center;margin-top:8px">Wie gerechnet? Kurs ÷ Gewinn je Aktie (12 Monate, SEC 10-Q)</p>
+        </div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div style="flex:1;min-width:280px;display:grid;gap:14px">
+        <div class="box"><h3>Bauregel für jedes Erklär-Blatt</h3><ul><li><b>Satz:</b> Antwort auf die Frage im Titel, mit Zahl.</li><li><b>Alltagsvergleich:</b> Haus, Miete, Gehalt, Supermarkt. Eine Szene pro Begriff, an einer Stelle gepflegt.</li><li><b>Skala:</b> wo liegt die Aktie zwischen günstig und teuer, ohne Farbe Rot/Grün.</li><li><b>Einordnung:</b> wann der Wert normal ist (Wachstum rechtfertigt höheres KGV).</li><li><b>Weiter:</b> ein Guide oder Lernpfad, dann Methodik in einer Zeile.</li></ul></div>
+        <div class="box lime"><h3>Warum das der größte Hebel ist</h3><p>Ihr habt die „?“-Texte schon überall. Wenn sie zu Blättern mit Vergleich und Skala werden, lernt der Kunde die Börse beim Benutzen der App. Das ist die eigentliche Demokratisierung: nicht mehr Daten, sondern verstandene Daten.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- M06 Ideen -->
+<section class="slide" id="m06">
+  <div class="inner">
+    <div class="sh"><span class="no">M06</span><h2>Ideen: Fragen statt Screener</h2>
+      <p class="sub">Ein Bereich für alles, was heute in Discover, Screener, Quant-Strategien, Technical-Suchen, Supertrader und Hedgefonds-Listen steckt. Einstieg über Fragen, die Methode steht als Siegel darunter.</p></div>
+    <div class="devs">
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="hdr"><div class="w"><span class="hud"><svg><use href="#i-bulb"/></svg></span>Ideen</div><span class="ic"><svg><use href="#i-search"/></svg></span><span class="at"><svg><use href="#i-spark"/></svg>Atlas</span></div>
+          <div class="lt">Wonach suchst du?</div>
+          <div class="chips" style="margin-top:12px"><span class="pill on">Alle</span><span class="pill">Langfristig</span><span class="pill">Aktiv</span><span class="pill">Themen</span></div>
+          <div class="stk" style="margin-top:14px">
+            <div class="card"><b>Firmen, die stark wachsen und gut verdienen</b><div class="sm mu" style="margin-top:2px">Wachstum und Profitabilität stark</div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="xs bb" style="background:#000;color:var(--lime);padding:3px 8px;border-radius:999px">QUANT · Quality Momentum</span><span class="sm b">Liste ›</span></div></div>
+            <div class="card"><b>Solide Firmen mit niedriger Bewertung</b><div class="sm mu" style="margin-top:2px">KGV unter Markt, Bilanz solide</div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="xs bb" style="background:#000;color:var(--lime);padding:3px 8px;border-radius:999px">QUANT · GARP</span><span class="sm b">Liste ›</span></div></div>
+            <div class="card"><b>Was große Fonds gerade gemeldet haben</b><div class="sm mu" style="margin-top:2px">Neue Positionen im letzten Quartal (13F)</div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="xs bb" style="background:#000;color:var(--lime);padding:3px 8px;border-radius:999px">HEDGEFONDS · Q2 2026</span><span class="sm b">Liste ›</span></div></div>
+            <div class="card"><b>Neue Jahreshochs</b><div class="sm mu" style="margin-top:2px">123 Aktien seit gestern</div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="xs bb" style="background:#000;color:var(--lime);padding:3px 8px;border-radius:999px">TECHNICAL</span><span class="sm b">Liste ›</span></div></div>
+          </div>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a><svg><use href="#i-chart"/></svg>Aktien</a><a class="on"><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="st" style="margin-top:4px">Themen <a>Alle 54</a></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <div style="aspect-ratio:3/4;border-radius:16px;background:linear-gradient(160deg,#1b1b1b,#000);color:#fff;padding:10px;display:flex;align-items:flex-end;font-weight:800;font-size:13px">Künstliche Intelligenz</div>
+            <div style="aspect-ratio:3/4;border-radius:16px;background:linear-gradient(160deg,#c8f531,#9fc41f);padding:10px;display:flex;align-items:flex-end;font-weight:800;font-size:13px">Raumfahrt</div>
+            <div style="aspect-ratio:3/4;border-radius:16px;background:#e9e9e9;padding:10px;display:flex;align-items:flex-end;font-weight:800;font-size:13px">Robotik</div>
+          </div>
+          <div class="st">Methoden berühmter Trader <a>Alle 13</a></div>
+          <div class="card ink"><div style="display:flex;justify-content:space-between;align-items:center"><span><b>Heute erfüllen 34 Aktien</b><br><span class="sm" style="color:#9b9b9b">alle Regeln einer Methode, mit Plan im Musterdepot</span></span><span style="font-size:34px;font-weight:900;color:var(--lime)" class="num">34</span></div></div>
+          <div class="st">Selbst filtern</div>
+          <div class="card" style="display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center"><span class="ico" style="width:40px;height:40px;border-radius:12px;background:#000;color:var(--lime);display:grid;place-items:center"><svg width="20" height="20"><use href="#i-search"/></svg></span><span><b>Eigener Filter</b><br><span class="sm mu">„KGV unter 20 und Umsatz +10 %“</span></span><svg class="chev"><use href="#i-chev"/></svg></div>
+          <div class="card" style="margin-top:9px;display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center"><span class="ico" style="width:40px;height:40px;border-radius:12px;background:#000;color:var(--lime);display:grid;place-items:center"><svg width="20" height="20"><use href="#i-heart"/></svg></span><span><b>Swipen</b><br><span class="sm mu">Eine Aktie nach der anderen</span></span><svg class="chev"><use href="#i-chev"/></svg></div>
+          <div class="card" style="margin-top:9px;display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center"><span class="ico" style="width:40px;height:40px;border-radius:12px;background:#000;color:var(--lime);display:grid;place-items:center"><svg width="20" height="20"><use href="#i-pie"/></svg></span><span><b>Musterdepots</b><br><span class="sm mu">14 Rechenmodelle, kein echtes Geld</span></span><svg class="chev"><use href="#i-chev"/></svg></div>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a><svg><use href="#i-chart"/></svg>Aktien</a><a class="on"><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div style="flex:1;min-width:260px">
+        <ol class="pins">
+          <li><i>1</i><span><b>Die Frage ist der Titel</b>, die Strategie der Untertitel. „Quality Momentum“ bleibt für Profis sichtbar, Einsteiger lesen „wachsen stark und verdienen gut“.</span></li>
+          <li><i>2</i><span><b>„Langfristig · Aktiv“</b> trennt Anlagestile. Supertrader-Methoden und Chart-Listen erscheinen unter „Aktiv“, Fondsdaten und Qualitätslisten unter „Langfristig“.</span></li>
+          <li><i>3</i><span><b>Der Screener</b> bleibt, aber als „Eigener Filter“ am Ende, nicht als eigene Welt mit eigener Leiste.</span></li>
+        </ol>
+        <p class="fn">Strategienamen, 54 Themen, 34 Aktien „durchgerechnet“, 123 Jahreshochs und 14 Musterdepots: echte Werte vom 06.11.2026. Titel nach WORTWAHL („Was große Fonds gemeldet haben“, nicht „Was Profis kaufen“).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- M07 Quant -->
+<section class="slide soft" id="m07">
+  <div class="inner">
+    <div class="sh"><span class="no">M07</span><h2>Quant: erst erklären, was gemessen wird</h2>
+      <p class="sub">Heute beginnt Quant mit „Was hat sich heute verändert?“ und sechs Zählern. Neu beginnt es mit den sieben Eigenschaften als Fragen, dann die eigene Aktie, dann Veränderungen.</p></div>
+    <div class="devs">
+      <figure class="dev" style="--w:230px"><span class="tag now" style="align-self:flex-start">HEUTE</span><div class="shot"><img src="now/quant.jpg" alt="Quant heute"></div><figcaption>„Sechs Eigenschaften“ ohne Namen, danach Marktbreite und Radar.</figcaption></figure>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="hdr"><div class="w"><span class="hud"><svg><use href="#i-sigma"/></svg></span>Quant</div><span class="ic"><svg><use href="#i-search"/></svg></span></div>
+          <div class="lt">Sieben Fragen an jede Aktie.</div>
+          <p class="mu" style="margin-top:8px">Quant beantwortet sie jeden Tag für über 6.000 US-Aktien, jede von 0 bis 100 im Vergleich zu allen anderen.</p>
+          <div class="card" style="margin-top:14px;padding:6px 14px">
+            <div class="check"><span class="ck" style="background:#000;color:var(--lime)">1</span><span><b>Wächst die Firma?</b></span><span class="sm mu">Wachstum</span></div>
+            <div class="check"><span class="ck" style="background:#000;color:var(--lime)">2</span><span><b>Verdient sie gut?</b></span><span class="sm mu">Profitabilität</span></div>
+            <div class="check"><span class="ck" style="background:#000;color:var(--lime)">3</span><span><b>Sind die Zahlen solide?</b></span><span class="sm mu">Qualität</span></div>
+            <div class="check"><span class="ck" style="background:#000;color:var(--lime)">4</span><span><b>Ist sie günstig?</b></span><span class="sm mu">Bewertung</span></div>
+            <div class="check"><span class="ck" style="background:#000;color:var(--lime)">5</span><span><b>Läuft der Kurs gut?</b></span><span class="sm mu">Kursstärke</span></div>
+            <div class="check"><span class="ck" style="background:#000;color:var(--lime)">6</span><span><b>Ist der Kurs ruhig?</b></span><span class="sm mu">Risiko</span></div>
+            <div class="check"><span class="ck no">7</span><span><b>Heben Analysten an?</b></span><span class="sm mu">noch nicht messbar</span></div>
+          </div>
+          <div class="card ink" style="margin-top:10px;display:flex;justify-content:space-between;align-items:center"><span><b>Probier es mit einer Aktie</b><br><span class="sm" style="color:#9b9b9b">z. B. NVIDIA</span></span><span class="pill" style="background:var(--lime);color:#000">Suchen</span></div>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a class="on"><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div style="display:flex;gap:10px;align-items:center;margin-top:6px"><span class="lg">NVDA</span><div><div class="mt">NVIDIA · Eigenschaften</div><div class="sm mu">Quant · Stand 06.11.2026</div></div></div>
+          <div class="card lime" style="margin-top:12px"><b>3 stark · 2 Mittelfeld · 1 schwach</b><div class="sm" style="margin-top:2px">1 Eigenschaft ist derzeit für keine Aktie messbar.</div></div>
+          <div class="stk" style="margin-top:10px">
+            <div class="card" style="padding:10px 14px"><div style="display:flex;justify-content:space-between"><b>Verdient sie gut?</b><span class="num bb">99</span></div><div class="bar" style="margin-top:6px"><i style="width:99%"></i></div><div class="xs mu" style="margin-top:4px">unter den besten 1 %</div></div>
+            <div class="card" style="padding:10px 14px"><div style="display:flex;justify-content:space-between"><b>Wächst die Firma?</b><span class="num bb">86</span></div><div class="bar" style="margin-top:6px"><i style="width:86%"></i></div><div class="xs mu" style="margin-top:4px">besser als 97 % der Aktien</div></div>
+            <div class="card" style="padding:10px 14px"><div style="display:flex;justify-content:space-between"><b>Ist der Kurs ruhig?</b><span class="num bb">84</span></div><div class="bar" style="margin-top:6px"><i style="width:84%"></i></div><div class="xs mu" style="margin-top:4px">niedriges Risiko</div></div>
+            <div class="card" style="padding:10px 14px"><div style="display:flex;justify-content:space-between"><b>Läuft der Kurs gut?</b><span class="num bb">62</span></div><div class="bar" style="margin-top:6px"><i style="width:62%;background:#8c8c8c"></i></div></div>
+            <div class="card" style="padding:10px 14px"><div style="display:flex;justify-content:space-between"><b>Ist sie günstig?</b><span class="num bb">59</span></div><div class="bar" style="margin-top:6px"><i style="width:59%;background:#8c8c8c"></i></div></div>
+            <div class="card" style="padding:10px 14px"><div style="display:flex;justify-content:space-between"><b>Sind die Zahlen solide?</b><span class="num bb">43</span></div><div class="bar" style="margin-top:6px"><i style="width:43%;background:#000"></i></div><div class="xs mu" style="margin-top:4px">besser als 28 % der Aktien</div></div>
+          </div>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a class="on"><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div style="flex:1;min-width:240px">
+        <ol class="pins">
+          <li><i>1</i><span><b>Sieben Fragen, nicht „sechs Eigenschaften“.</b> Die Fragen gibt es schon im Quant-Detail. Sie gehören auf die erste Seite.</span></li>
+          <li><i>2</i><span><b>Ehrlich bei Nr. 7:</b> „noch nicht messbar“ sichtbar statt verschwiegen. So entsteht kein „6 oder 7?“.</span></li>
+          <li><i>3</i><span><b>Sortiert nach Stärke</b>, Balken in Neongrün / Grau / Schwarz nach Urteil. Der Radar („Seit gestern geändert“) wandert nach „Heute“, Setups nach „Ideen · Aktiv“.</span></li>
+        </ol>
+        <p class="fn">NVIDIA-Werte aus <code>/quant/#/aktie/NVDA</code>, Stand 06.11.2026.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- M08 Supertrader -->
+<section class="slide dark" id="m08">
+  <div class="inner">
+    <div class="sh"><span class="no">M08</span><h2>Supertrader: Methoden als Steckbriefe</h2>
+      <p class="sub">Heute: 3.312 Treffer, drei Stufen, 13 Namen. Neu: Steckbriefe in Kundensprache (Was sucht er? Wie lange hält er? Für wen?), dann die kleine Zahl der Aktien, die heute alle Regeln erfüllen.</p></div>
+    <div class="devs">
+      <figure class="dev" style="--w:230px"><span class="tag now" style="align-self:flex-start">HEUTE</span><div class="shot"><img src="now/supertrader.jpg" alt="Supertrader heute"></div><figcaption>Große Zahl zuerst, danach „Nicht belegt“.</figcaption></figure>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr dk">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="hdr"><div class="w"><span class="hud"><svg><use href="#i-flag"/></svg></span>Profi-Methoden</div><span class="ic"><svg><use href="#i-search"/></svg></span></div>
+          <div class="lt">Wie handeln berühmte Trader?</div>
+          <p class="mu" style="margin-top:8px">13 berühmte Trader haben ihre Regeln aufgeschrieben. Wir prüfen sie jeden Tag an allen US-Aktien.</p>
+          <div class="chips" style="margin-top:12px"><span class="pill on">Alle</span><span class="pill">Tage</span><span class="pill">Wochen</span><span class="pill">Monate</span></div>
+          <div class="stk" style="margin-top:12px">
+            <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><span><b style="font-size:16px">Stan Weinstein</b><br><span class="sm mu">Sucht Aktien, die eine lange Seitwärtsphase nach oben verlassen.</span></span></div><div class="chips" style="margin-top:8px"><span class="pill" style="font-size:11.5px;padding:5px 9px">⏱ Monate</span><span class="pill" style="font-size:11.5px;padding:5px 9px">Trend</span><span class="pill" style="font-size:11.5px;padding:5px 9px;background:var(--lime);color:#000">Einsteiger-tauglich</span></div></div>
+            <div class="card"><div><b style="font-size:16px">Mark Minervini</b><br><span class="sm mu">Wartet, bis die Schwankungen kleiner werden, dann auf den Ausbruch.</span></div><div class="chips" style="margin-top:8px"><span class="pill" style="font-size:11.5px;padding:5px 9px">⏱ Wochen</span><span class="pill" style="font-size:11.5px;padding:5px 9px">Ausbruch</span></div></div>
+            <div class="card"><div><b style="font-size:16px">Turtle Traders</b><br><span class="sm mu">Folgt jedem neuen 20-Tage-Hoch, steigt aus, wenn der Trend bricht.</span></div><div class="chips" style="margin-top:8px"><span class="pill" style="font-size:11.5px;padding:5px 9px">⏱ Wochen</span><span class="pill" style="font-size:11.5px;padding:5px 9px">Trend</span></div></div>
+          </div>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a><svg><use href="#i-chart"/></svg>Aktien</a><a class="on"><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr dk">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="ey" style="margin-top:6px">Methode · Stan Weinstein</div>
+          <div class="mt">Weinstein Investor</div>
+          <div class="card" style="margin-top:12px"><div class="xs bb mu" style="letter-spacing:.08em">IN EINEM SATZ</div><div class="sm" style="margin-top:4px;color:#ddd">Jede Aktie durchläuft vier Phasen. Die Methode hält nur Aktien in Phase 2, dem Aufwärtstrend.</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:10px;font-size:10.5px;font-weight:800;text-align:center"><span style="background:#262626;border-radius:8px;padding:6px 2px">1 Boden</span><span style="background:var(--lime);color:#000;border-radius:8px;padding:6px 2px">2 Aufwärts</span><span style="background:#262626;border-radius:8px;padding:6px 2px">3 Gipfel</span><span style="background:#262626;border-radius:8px;padding:6px 2px">4 Abwärts</span></div></div>
+          <div class="st">Heute</div>
+          <div class="g3">
+            <div class="card" style="padding:10px"><div class="mt num">622</div><div class="xs mu">ähnlich</div></div>
+            <div class="card" style="padding:10px"><div class="mt num" style="color:#fff">–</div><div class="xs mu">alle Regeln erfüllt</div></div>
+            <div class="card" style="padding:10px;background:var(--lime);color:#000"><div class="mt num">10</div><div class="xs">im Musterdepot</div></div>
+          </div>
+          <div class="st">Wie belastbar?</div>
+          <div class="card"><span class="vd o">Forschung, nicht zertifiziert</span><div class="sm" style="margin-top:8px;color:#ddd">Backtest seit 2004 mit Kosten und Vergleich S&amp;P 500. Noch keine Methode ist für echtes Geld geprüft.</div></div>
+          <div class="btn" style="margin-top:12px">Musterdepot ansehen</div>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a><svg><use href="#i-chart"/></svg>Aktien</a><a class="on"><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div style="flex:1;min-width:240px">
+        <ol class="pins">
+          <li><i>1</i><span><b>Person vor Prozess.</b> Ein Name mit einem Satz und der Haltedauer ist sofort verständlich. „Einsteiger-tauglich“ beschreibt die Methode, nicht den Kunden (WORTWAHL-konform).</span></li>
+          <li><i>2</i><span><b>Stufen in Kundensprache:</b> ähnlich · alle Regeln erfüllt · im Musterdepot.</span></li>
+          <li><i>3</i><span><b>„Nicht belegt“ wandert an die Methode</b> als Etikett „Forschung, nicht zertifiziert“ mit Pflichtangaben, statt als zweite Botschaft der Startseite.</span></li>
+        </ol>
+        <p class="fn">Weinstein Investor 622 „am Stichtag“, 10 Positionen im Musterdepot: echte Werte vom 06.11.2026. „Alle Regeln erfüllt“ je Methode zeigt die Form; Backtest-Zeitraum „seit 2004“ ist ein Platzhalter.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- M09 Vermögen -->
+<section class="slide" id="m09">
+  <div class="inner">
+    <div class="sh"><span class="no">M09</span><h2>Vermögen: vom Plan bis zum Broker</h2>
+      <p class="sub">Vorsorge ist heute das klarste Produkt. Es fehlen zwei Dinge: ETFs, die man in Deutschland kaufen kann (UCITS mit ISIN), und der letzte Schritt beim Broker.</p></div>
+    <div class="devs">
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="hdr"><div class="w"><span class="hud"><svg><use href="#i-umb"/></svg></span>Vermögen</div><span class="ic"><svg><use href="#i-search"/></svg></span></div>
+          <div class="ey">Dein Plan</div>
+          <div class="lt">250 € im Monat bis 67.</div>
+          <div class="card ink" style="margin-top:12px"><div class="xs bb" style="color:var(--lime);letter-spacing:.08em">BEISPIELRECHNUNG · HEUTIGE KAUFKRAFT</div><div style="font-size:40px;font-weight:900;letter-spacing:-.05em;margin-top:4px" class="num">127 Tsd. €</div><div class="sm" style="color:#9b9b9b">bei 5 % pro Jahr · vorsichtig 86 Tsd. · gut 191 Tsd.</div></div>
+          <div class="card lime" style="margin-top:9px"><b>+ 540 € Zulage pro Jahr</b><div class="sm">mit dem Altersvorsorgedepot ab 01.01.2027</div></div>
+          <div class="st">Womit? Ein Welt-ETF reicht für den Anfang</div>
+          <div class="card" style="padding:4px 14px">
+            <div class="rowi"><span class="lg" style="font-size:9px">WELT</span><span><b>MSCI World</b><span class="s">ca. 1.400 Firmen · 23 Länder</span></span><span class="chg up">+13,6 %</span></div>
+            <div class="rowi"><span class="lg" style="font-size:9px">ALLE</span><span><b>MSCI ACWI</b><span class="s">mit Schwellenländern</span></span><span class="vd m">1 J.</span></div>
+          </div>
+          <p class="xs mu" style="margin-top:6px">Index-Rendite 1 Jahr. Jeder Index hat mehrere UCITS-ETFs mit eigener ISIN, Kosten und Größe.</p>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a class="on"><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="ey" style="margin-top:6px">Schritt 6 von 6</div>
+          <div class="lt">Beim Broker einrichten.</div>
+          <p class="mu" style="margin-top:8px">Das machst du bei deiner Bank oder deinem Broker. Diese Angaben brauchst du:</p>
+          <div class="card" style="margin-top:12px;padding:4px 14px">
+            <div class="check"><span class="ck">✓</span><span>Index gewählt</span><span class="sm b">MSCI World</span></div>
+            <div class="check"><span class="ck">✓</span><span>Sparrate</span><span class="sm b">250 € / Monat</span></div>
+            <div class="check"><span class="ck no">3</span><span>ETF im Broker suchen</span><span class="sm mu">ISIN oder Index</span></div>
+            <div class="check"><span class="ck no">4</span><span>Kosten vergleichen</span><span class="sm mu">TER, Sparplan-Gebühr</span></div>
+            <div class="check"><span class="ck no">5</span><span>Freistellungsauftrag</span><span class="sm mu">1.000 € pro Person</span></div>
+          </div>
+          <div class="card ink" style="margin-top:10px"><div class="xs bb" style="color:var(--lime);letter-spacing:.08em">WORAUF ACHTEN?</div><div class="sm" style="margin-top:4px;color:#ddd">Sparplan kostenlos? Ab welcher Rate? Welche ETFs sind sparplanfähig? Neutraler Guide, ohne Provision.</div></div>
+          <div class="btn" style="margin-top:12px">Checkliste als PDF</div>
+          <div class="btn line sm2" style="margin-top:8px">Erinnerung: in 3 Monaten prüfen</div>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a class="on"><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div style="flex:1;min-width:260px">
+        <ol class="pins">
+          <li><i>1</i><span><b>Index zuerst, Produkt danach.</b> „MSCI World“ verstehen Kunden; die konkreten UCITS-ETFs mit ISIN, TER und Größe kommen als Liste darunter. Heute zeigt die Seite US-Fonds (URTH, SPY), die deutsche Privatanleger meist nicht kaufen können.</span></li>
+          <li><i>2</i><span><b>Schritt 6 „Beim Broker einrichten“</b> schließt den Kreis. Neutral: keine Broker-Empfehlung, sondern Kriterien.</span></li>
+          <li><i>3</i><span><b>Freistellungsauftrag</b> und Steuer als Teil der Checkliste: das fragt jeder Einsteiger und niemand erklärt es einfach.</span></li>
+        </ol>
+        <p class="fn">250 € / 127 Tsd. € / 86 / 191 Tsd. €, 540 € Zulage, MSCI World +13,6 %: echte Werte der Vorsorge-Seite vom 05.11.2026. Die EU-ETF-Datenlage steht in <code>docs/ETF_EU_DATA_ARCHITECTURE.md</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- M10 Depot-Check -->
+<section class="slide soft" id="m10">
+  <div class="inner">
+    <div class="sh"><span class="no">M10</span><h2>Depot-Check: das fehlende Stück zur Vision</h2>
+      <p class="sub">„Der Kunde braucht nur uns und seinen Broker“ funktioniert erst, wenn die App sein echtes Depot kennt. Phase 1: CSV-Export des Brokers hochladen, ohne Konto-Verknüpfung. Phase 2: Schnittstelle.</p></div>
+    <div class="devs">
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="hdr"><div class="w"><span class="hud"><svg><use href="#i-pie"/></svg></span>Depot-Check</div></div>
+          <div class="lt">Was steckt wirklich in deinem Depot?</div>
+          <p class="mu" style="margin-top:8px">Lade den Depot-Export deines Brokers hoch. Die Datei bleibt auf deinem Gerät.</p>
+          <div class="card line" style="margin-top:14px;border-style:dashed;text-align:center;padding:26px 14px"><svg width="34" height="34"><use href="#i-down"/></svg><div class="b" style="margin-top:8px">CSV oder PDF ablegen</div><div class="xs mu">Trade Republic, Scalable, comdirect, ING …</div></div>
+          <div class="st">Oder von Hand</div>
+          <div class="card" style="display:flex;justify-content:space-between;align-items:center"><span><b>Positionen eintippen</b><br><span class="sm mu">ISIN oder Name, Stückzahl</span></span><svg class="chev"><use href="#i-chev"/></svg></div>
+          <div class="help"><i>?</i><span>Wir speichern keine Zugangsdaten zu deinem Broker. Ohne Konto bleibt alles lokal im Browser.</span></div>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a class="on"><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="ey" style="margin-top:6px">Ergebnis · 8 Positionen</div>
+          <div class="mt">Dein Depot in 4 Sätzen</div>
+          <div class="card lime" style="margin-top:10px;font-size:14px;font-weight:600"><ol style="margin:0;padding-left:18px;display:grid;gap:4px"><li>62 % deines Geldes liegen in US-Firmen.</li><li>NVIDIA steckt zweimal drin: direkt und im MSCI World.</li><li>Technologie macht 41 % aus.</li><li>Laufende Kosten: 0,21 % pro Jahr.</li></ol></div>
+          <div class="st">Verteilung</div>
+          <div class="card">
+            <div style="display:flex;height:16px;border-radius:9px;overflow:hidden"><span style="width:62%;background:#000"></span><span style="width:21%;background:var(--lime)"></span><span style="width:11%;background:#8c8c8c"></span><span style="width:6%;background:#e0e0e0"></span></div>
+            <div class="xs mu b" style="display:flex;justify-content:space-between;margin-top:6px"><span>USA 62 %</span><span>Europa 21 %</span><span>Asien 11 %</span><span>Rest</span></div>
+          </div>
+          <div class="st">Je Position</div>
+          <div class="card" style="padding:4px 14px">
+            <div class="rowi"><span class="lg">NVDA</span><span><b>NVIDIA</b><span class="s">Geschäft sehr stark · Bewertung wie Markt</span></span><svg class="chev"><use href="#i-chev"/></svg></div>
+            <div class="rowi"><span class="lg" style="font-size:9px">WELT</span><span><b>MSCI World ETF</b><span class="s">1.400 Firmen · 0,20 % Kosten</span></span><svg class="chev"><use href="#i-chev"/></svg></div>
+          </div>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a class="on"><svg><use href="#i-umb"/></svg>Vermögen</a><a><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div style="flex:1;min-width:260px">
+        <ol class="pins">
+          <li><i>1</i><span><b>Beschreiben, nicht bewerten.</b> „62 % in US-Firmen“, „NVIDIA steckt zweimal drin“ sind Fakten über das eigene Depot. Kein „zu riskant“, kein „du solltest“ (WORTWAHL: nichts als passend für die Person).</span></li>
+          <li><i>2</i><span><b>Lokal zuerst:</b> Parsen im Browser, kein Upload. Datenschutz einfach, kein Bankzugang nötig.</span></li>
+          <li><i>3</i><span><b>Bindung:</b> Wer sein Depot einmal geladen hat, öffnet „Heute“ jeden Tag, weil die Watchlist dann sein Depot ist.</span></li>
+        </ol>
+        <p class="fn">Alle Depotwerte in diesem Mockup sind Beispielwerte zur Form. Rechtliche Einordnung (Depot-Analyse vs. Beratung) gehört in die Anwaltsmappe.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- M11 Wissen -->
+<section class="slide" id="m11">
+  <div class="inner">
+    <div class="sh"><span class="no">M11</span><h2>Wissen: eine Bibliothek für alles Lesbare</h2>
+      <p class="sub">Weekly, Aktienreports und Guides als PDF, dazu Academy-Lernpfade. Filter nach Format und Erfahrung. Jedes Stück ist auch dort verlinkt, wo es gebraucht wird: Report auf der Aktienseite, Guide im Erklär-Blatt, Weekly in „Heute“.</p></div>
+    <div class="devs">
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="hdr"><div class="w"><span class="hud"><svg><use href="#i-book"/></svg></span>Wissen</div><span class="ic"><svg><use href="#i-search"/></svg></span></div>
+          <div class="lt">Lesen, lernen, verstehen.</div>
+          <div class="chips" style="margin-top:12px"><span class="pill on">Alle</span><span class="pill">Weekly</span><span class="pill">Reports</span><span class="pill">Guides</span><span class="pill">Lernpfade</span></div>
+          <div class="card ink" style="margin-top:14px;display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center">
+            <div style="aspect-ratio:210/297;border-radius:5px;background:#000;border:1px solid #333;padding:8px;color:#fff;display:flex;flex-direction:column;justify-content:space-between"><span style="font-size:7px;font-weight:900;letter-spacing:.1em">VU WEEKLY</span><span style="font-size:15px;font-weight:900;line-height:.95;letter-spacing:-.04em">Die Woche der <span style="color:var(--lime)">KI-Kette</span></span><span style="font-size:6.5px;color:#9b9b9b">KW 45 · 2026</span></div>
+            <span><span class="xs bb" style="color:var(--lime);letter-spacing:.08em">NEU · WEEKLY KW 45</span><br><b style="font-size:16px">Die Woche in 5 Minuten</b><br><span class="sm" style="color:#9b9b9b">5 Seiten · PDF · 2,1 MB</span><div class="pill" style="margin-top:8px;background:var(--lime);color:#000;display:inline-flex">↓ PDF laden</div></span>
+          </div>
+          <div class="st">Guides für den Anfang</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <div><div style="aspect-ratio:210/297;border-radius:5px;background:var(--lime);padding:7px;display:flex;flex-direction:column;justify-content:space-between"><span style="font-size:6px;font-weight:900;letter-spacing:.1em">GUIDE 01</span><span style="font-size:11px;font-weight:900;line-height:1;letter-spacing:-.03em">Dein erster ETF-Sparplan</span></div><div class="xs b" style="margin-top:5px">8 Seiten</div></div>
+            <div><div style="aspect-ratio:210/297;border-radius:5px;background:#000;color:#fff;padding:7px;display:flex;flex-direction:column;justify-content:space-between"><span style="font-size:6px;font-weight:900;letter-spacing:.1em;color:var(--lime)">GUIDE 02</span><span style="font-size:11px;font-weight:900;line-height:1;letter-spacing:-.03em">Eine Aktie in 10 Minuten prüfen</span></div><div class="xs b" style="margin-top:5px">10 Seiten</div></div>
+            <div><div style="aspect-ratio:210/297;border-radius:5px;background:#f4f4f4;border:1px solid #e6e6e6;padding:7px;display:flex;flex-direction:column;justify-content:space-between"><span style="font-size:6px;font-weight:900;letter-spacing:.1em">GUIDE 03</span><span style="font-size:11px;font-weight:900;line-height:1;letter-spacing:-.03em">Broker wählen ohne Fehler</span></div><div class="xs b" style="margin-top:5px">6 Seiten</div></div>
+          </div>
+          <div class="st">Aktienreports <a>Alle</a></div>
+          <div class="card" style="display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center"><span class="lg">AMD</span><span><b>Report Nr. 01 · AMD</b><br><span class="sm mu">5 Seiten · Zahlen, Chart, Bewertung</span></span><span class="pill on">PDF</span></div>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a class="on"><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="st" style="margin-top:4px">Lernpfade</div>
+          <div class="card" style="padding:14px"><div style="display:flex;justify-content:space-between;align-items:center"><b>Börse in 7 Tagen</b><span class="vd s">Einsteiger</span></div><div class="sm mu" style="margin-top:2px">Jeden Tag 5 Minuten, mit echten Aktien aus der App</div><div class="bar" style="margin-top:10px"><i style="width:43%"></i></div><div class="xs mu" style="margin-top:4px">Tag 3 von 7 · Was ist ein KGV?</div></div>
+          <div class="card" style="padding:14px;margin-top:9px"><div style="display:flex;justify-content:space-between;align-items:center"><b>Follow the Money</b><span class="vd m">Fortgeschritten</span></div><div class="sm mu" style="margin-top:2px">Warum Gewinn nicht gleich Cash ist</div></div>
+          <div class="card" style="padding:14px;margin-top:9px"><div style="display:flex;justify-content:space-between;align-items:center"><b>Charts lesen</b><span class="vd m">Fortgeschritten</span></div><div class="sm mu" style="margin-top:2px">Acht Lernpfade zur technischen Analyse</div></div>
+          <div class="st">Begriffe von A bis Z</div>
+          <div class="chips"><span class="pill">KGV</span><span class="pill">ETF</span><span class="pill">200-Tage-Linie</span><span class="pill">Free Cashflow</span><span class="pill">13F</span><span class="pill">Nettomarge</span><span class="pill">TER</span><span class="pill">Drawdown</span></div>
+          <div class="card ink" style="margin-top:14px"><div class="xs bb" style="color:var(--lime);letter-spacing:.08em">METHODIK & QUELLEN</div><div class="sm" style="margin-top:4px;color:#ddd">Wie Vision Universe rechnet, woher jede Zahl kommt und wo die Grenzen sind.</div></div>
+        </div>
+        <div class="dock"><a><svg><use href="#i-sun"/></svg>Heute</a><a><svg><use href="#i-chart"/></svg>Aktien</a><a><svg><use href="#i-bulb"/></svg>Ideen</a><a><svg><use href="#i-umb"/></svg>Vermögen</a><a class="on"><svg><use href="#i-book"/></svg>Wissen</a></div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div style="flex:1;min-width:260px">
+        <ol class="pins">
+          <li><i>1</i><span><b>Ein Regal.</b> Alles Lesbare an einem Ort, nach Format und Erfahrung filterbar. „Bald verfügbar“-Kacheln der Academy verschwinden, bis sie fertig sind.</span></li>
+          <li><i>2</i><span><b>„Börse in 7 Tagen“</b> als erster Lernpfad: der Einstieg, der heute fehlt. Jede Lektion endet in der App („Öffne NVIDIA und finde das KGV“).</span></li>
+          <li><i>3</i><span><b>Begriffe von A bis Z</b> kommen aus derselben Begriffs-Quelle wie die Erklär-Blätter (2.4).</span></li>
+        </ol>
+        <p class="fn">Weekly KW 45 und Report Nr. 01 AMD existieren als Muster in <code>docs/publishing/konzept-2026-11/pdf/</code>. Guides 01–03 und „Börse in 7 Tagen“ sind neu. PDF-Größe ist ein Platzhalter.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- M12 Menü -->
+<section class="slide dark" id="m12">
+  <div class="inner">
+    <div class="sh"><span class="no">M12</span><h2>Menü: vier Fragen, dann alle Werkzeuge</h2>
+      <p class="sub">Das Vollbild-Menü behält Suche und Einstellungen. Oben die Bereiche, darunter „Alle Werkzeuge“ für Profis, die direkt in Chart Studio, Screener oder Elliott wollen.</p></div>
+    <div class="devs">
+      <figure class="dev" style="--w:230px"><span class="tag now" style="align-self:flex-start">HEUTE</span><div class="shot"><img src="now/menu.jpg" alt="Menü heute"></div><figcaption>Zehn Produktkacheln, darunter Produktunterseiten und elf weitere.</figcaption></figure>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr dk">
+        <div class="sb"><span>9:41</span><i>●●● ▮</i></div>
+        <div class="bd">
+          <div class="hdr"><div class="w" style="font-size:14px;letter-spacing:.12em">VISION UNIVERSE<sup style="font-size:8px">®</sup></div><span class="ic" style="box-shadow:0 0 0 2px var(--lime)">✕</span></div>
+          <div class="card" style="display:flex;align-items:center;gap:10px;height:50px;border-radius:999px;margin-top:6px"><svg width="18" height="18"><use href="#i-search"/></svg><span class="mu">Aktie, ETF oder Frage …</span></div>
+          <div class="stk" style="margin-top:14px">
+            <div class="card" style="display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center"><span style="width:40px;height:40px;border-radius:12px;background:#000;color:var(--lime);display:grid;place-items:center;box-shadow:0 0 0 1px #333"><svg width="20" height="20"><use href="#i-sun"/></svg></span><span><b>Heute</b><br><span class="sm mu">Was ist heute wichtig?</span></span></div>
+            <div class="card" style="display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center;background:var(--lime);color:#000"><span style="width:40px;height:40px;border-radius:12px;background:#000;color:var(--lime);display:grid;place-items:center"><svg width="20" height="20"><use href="#i-chart"/></svg></span><span><b>Aktien</b><br><span class="sm">Ist diese Aktie gut?</span></span></div>
+            <div class="card" style="display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center"><span style="width:40px;height:40px;border-radius:12px;background:#000;color:var(--lime);display:grid;place-items:center;box-shadow:0 0 0 1px #333"><svg width="20" height="20"><use href="#i-bulb"/></svg></span><span><b>Ideen</b><br><span class="sm mu">Was gibt es Interessantes?</span></span></div>
+            <div class="card" style="display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center"><span style="width:40px;height:40px;border-radius:12px;background:#000;color:var(--lime);display:grid;place-items:center;box-shadow:0 0 0 1px #333"><svg width="20" height="20"><use href="#i-umb"/></svg></span><span><b>Vermögen</b><br><span class="sm mu">Sparplan, Rente, Depot</span></span></div>
+            <div class="card" style="display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center"><span style="width:40px;height:40px;border-radius:12px;background:#000;color:var(--lime);display:grid;place-items:center;box-shadow:0 0 0 1px #333"><svg width="20" height="20"><use href="#i-book"/></svg></span><span><b>Wissen</b><br><span class="sm mu">Weekly, Reports, Guides</span></span></div>
+          </div>
+          <div class="st" style="color:#9b9b9b;font-size:12px;letter-spacing:.08em">ALLE WERKZEUGE</div>
+          <div class="chips"><span class="pill">Quant</span><span class="pill">Supertrader</span><span class="pill">Chart Studio</span><span class="pill">Elliott</span><span class="pill">Screener</span><span class="pill">Fundamental</span><span class="pill">Hedgefonds</span><span class="pill">Macro</span><span class="pill">Analysten</span></div>
+        </div>
+        <div class="home-ind"></div>
+      </div></div></div></div>
+      <div style="flex:1;min-width:260px">
+        <ol class="pins">
+          <li><i>1</i><span><b>Fünf Bereiche = fünf Plätze in der unteren Leiste.</b> Menü und Leiste sagen dasselbe.</span></li>
+          <li><i>2</i><span><b>Werkzeuge als Chips:</b> Die Marken bleiben für Profis direkt erreichbar, ohne Einsteiger zu überfordern.</span></li>
+          <li><i>3</i><span><b>Raus aus dem Menü:</b> Dashboard (alt), Guide, Budget (bis fertig), Morning und News (nach „Heute“), Magazin, Reports, Academy (nach „Wissen“), Portfolios (nach „Ideen“).</span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KAPITEL 04 ================= -->
+<section class="slide dark chapter" id="k4">
+  <div class="inner"><div class="big">04</div><div><h2>Magazin, Guides, Reports</h2><p class="was">Drei Formate, ein Druckdesign, eine Produktionsstraße. Das Muster steht schon (<b>Weekly KW 45, Report AMD</b>). Es fehlen der Platz in der App, die Guides und ein fester Takt.</p></div></div>
+</section>
+
+<section class="slide" id="s-formate">
+  <div class="inner">
+    <div class="sh"><span class="no">4.1</span><h2>Die Formatfamilie</h2>
+      <p class="sub">Jedes Format beantwortet eine andere Frage und hat einen festen Ort in der App. Alle im Druckdesign aus <code>docs/publishing/konzept-2026-11</code> (Weiß, Schwarz, Neongrün, Inter, Charts nur aus Daten).</p></div>
+    <div class="g4">
+      <div>
+        <div class="cover-a4" style="background:#000;color:#fff;padding:18px;display:flex;flex-direction:column;justify-content:space-between">
+          <div style="display:flex;justify-content:space-between;font-size:9px;font-weight:900;letter-spacing:.12em"><span>VU WEEKLY</span><span style="color:var(--lime)">KW 45 · 2026</span></div>
+          <div><div style="font-size:11px;font-weight:800;color:var(--lime);letter-spacing:.08em">TITELGESCHICHTE</div><div style="font-size:30px;font-weight:900;letter-spacing:-.05em;line-height:.92;margin-top:6px">Die Woche der KI-Kette.</div><div style="font-size:11px;color:#9b9b9b;margin-top:8px">Wahl, Quartalszahlen, Arbeitsmarkt: was die Daten sagen.</div></div>
+          <svg viewBox="0 0 200 50" style="width:100%"><path d="M0 40 L20 36 L40 38 L60 28 L80 30 L100 20 L120 24 L140 14 L160 18 L180 8 L200 12" fill="none" stroke="#c8f531" stroke-width="3"/></svg>
+        </div>
+        <div class="box" style="margin-top:12px"><h3>Weekly</h3><p><b style="color:#000">Frage:</b> Was war diese Woche wichtig?<br><b style="color:#000">Takt:</b> jeden Samstag · 5 Seiten<br><b style="color:#000">Ort:</b> Heute, Wissen<br><b style="color:#000">Zugang:</b> Free (Reichweite, Newsletter über Brevo)</p></div>
+      </div>
+      <div>
+        <div class="cover-a4" style="background:#fff;padding:18px;display:flex;flex-direction:column;justify-content:space-between">
+          <div style="display:flex;justify-content:space-between;font-size:9px;font-weight:900;letter-spacing:.12em"><span>VU AKTIENREPORT</span><span>NR. 01</span></div>
+          <div><div style="width:46px;height:46px;border-radius:12px;background:#000;color:#fff;display:grid;place-items:center;font-weight:900;font-size:12px">AMD</div><div style="font-size:30px;font-weight:900;letter-spacing:-.05em;line-height:.92;margin-top:10px">AMD im <span style="background:var(--lime);padding:0 4px">Daten-Check.</span></div><div style="font-size:11px;color:#5c5c5c;margin-top:8px">Unternehmen, Zahlen aus der SEC, Chart, Bewertung, Einordnung.</div></div>
+          <div style="display:flex;gap:4px;align-items:flex-end;height:44px"><i style="flex:1;height:30%;background:#e6e6e6"></i><i style="flex:1;height:42%;background:#e6e6e6"></i><i style="flex:1;height:50%;background:#e6e6e6"></i><i style="flex:1;height:64%;background:#000"></i><i style="flex:1;height:100%;background:#c8f531"></i></div>
+        </div>
+        <div class="box" style="margin-top:12px"><h3>Aktienreport</h3><p><b style="color:#000">Frage:</b> Was muss ich über diese Firma wissen?<br><b style="color:#000">Takt:</b> 2 pro Woche, nach Quartalszahlen · 5–8 Seiten<br><b style="color:#000">Ort:</b> Aktienseite, Wissen<br><b style="color:#000">Zugang:</b> Pro-Kandidat</p></div>
+      </div>
+      <div>
+        <div class="cover-a4" style="background:var(--lime);padding:18px;display:flex;flex-direction:column;justify-content:space-between">
+          <div style="display:flex;justify-content:space-between;font-size:9px;font-weight:900;letter-spacing:.12em"><span>VU GUIDE</span><span>01</span></div>
+          <div><div style="font-size:32px;font-weight:900;letter-spacing:-.05em;line-height:.92">Dein erster ETF-Sparplan.</div><div style="font-size:11px;margin-top:8px">In 6 Schritten von 0 auf Sparplan. Mit Checkliste für deinen Broker.</div></div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px"><i style="aspect-ratio:1;border-radius:50%;background:#000"></i><i style="aspect-ratio:1;border-radius:50%;background:#000"></i><i style="aspect-ratio:1;border-radius:50%;background:#000"></i><i style="aspect-ratio:1;border-radius:50%;border:2px solid #000"></i><i style="aspect-ratio:1;border-radius:50%;border:2px solid #000"></i><i style="aspect-ratio:1;border-radius:50%;border:2px solid #000"></i></div>
+        </div>
+        <div class="box" style="margin-top:12px"><h3>Guide</h3><p><b style="color:#000">Frage:</b> Wie mache ich das?<br><b style="color:#000">Takt:</b> Evergreen, jährlich geprüft · 6–12 Seiten<br><b style="color:#000">Ort:</b> Erklär-Blätter, Startplan, Vermögen, Wissen<br><b style="color:#000">Zugang:</b> Free (Einstieg, SEO)</p></div>
+      </div>
+      <div>
+        <div class="cover-a4" style="background:#f4f4f4;padding:18px;display:flex;flex-direction:column;justify-content:space-between">
+          <div style="display:flex;justify-content:space-between;font-size:9px;font-weight:900;letter-spacing:.12em"><span>VU QUARTALSREPORT</span><span>Q3 2026</span></div>
+          <div><div style="font-size:28px;font-weight:900;letter-spacing:-.05em;line-height:.92">Was große Fonds gemeldet haben.</div><div style="font-size:11px;color:#5c5c5c;margin-top:8px">13F-Meldungen von 788 Fonds: neue Positionen, Abgaben, Branchen.</div></div>
+          <div style="display:grid;gap:4px"><i style="height:8px;width:90%;background:#000;border-radius:9px"></i><i style="height:8px;width:70%;background:#c8f531;border-radius:9px"></i><i style="height:8px;width:52%;background:#8c8c8c;border-radius:9px"></i><i style="height:8px;width:38%;background:#e0e0e0;border-radius:9px"></i></div>
+        </div>
+        <div class="box" style="margin-top:12px"><h3>Quartalsreport</h3><p><b style="color:#000">Frage:</b> Was machen die großen Fonds?<br><b style="color:#000">Takt:</b> 4× im Jahr nach der 13F-Frist (nächste 14.11.) · 10 Seiten<br><b style="color:#000">Ort:</b> Ideen, Wissen<br><b style="color:#000">Zugang:</b> Pro-Kandidat</p></div>
+      </div>
+    </div>
+    <p class="fn">Zugang Free/Pro ist eine Geld-Entscheidung des Owners. Presseprivileg (Art. 21 MAR) für Weekly und Reports ist als Anwaltsfrage offen (<code>docs/legal/EINORDNUNG.md</code> §2.2). Pflicht-Hinweis <code>editorial</code> auf jeder letzten Seite.</p>
+  </div>
+</section>
+
+<section class="slide soft" id="s-guides">
+  <div class="inner">
+    <div class="sh"><span class="no">4.2</span><h2>Das Guide-Programm: zwölf Guides, die die App erklären</h2>
+      <p class="sub">Guides sind das Werkzeug gegen „verloren in Quant“: Jeder Guide erklärt eine Kundenfrage und endet mit einem Link in die App. Reihenfolge nach Nachfrage von Einsteigern.</p></div>
+    <div class="tbl-wrap" style="background:#fff">
+      <table class="tbl">
+        <thead><tr><th>Nr.</th><th>Guide</th><th>Für</th><th>Endet in</th><th>Seiten</th></tr></thead>
+        <tbody>
+          <tr><td class="num">01</td><td><b>Dein erster ETF-Sparplan</b></td><td>Einsteiger</td><td>Vermögen · Sparplan in 6 Schritten</td><td class="num">8</td></tr>
+          <tr><td class="num">02</td><td><b>Eine Aktie in 10 Minuten prüfen</b> (die 5 Checks erklärt)</td><td>Einsteiger</td><td>Aktienseite</td><td class="num">10</td></tr>
+          <tr><td class="num">03</td><td><b>Broker wählen ohne Fehler</b> (Kriterien, keine Empfehlung)</td><td>Einsteiger</td><td>Vermögen · Schritt 6</td><td class="num">6</td></tr>
+          <tr><td class="num">04</td><td><b>Steuern auf Aktien und ETFs</b> (Abgeltungsteuer, Freistellungsauftrag, Vorabpauschale)</td><td>alle</td><td>Vermögen · Checkliste</td><td class="num">8</td></tr>
+          <tr><td class="num">05</td><td><b>Altersvorsorgedepot 2027</b> (Zulagen, Ablauf)</td><td>alle</td><td>Vermögen · Förderung</td><td class="num">8</td></tr>
+          <tr><td class="num">06</td><td><b>Bilanz lesen ohne BWL</b></td><td>Fortgeschrittene</td><td>Aktienseite · Zahlen-Check</td><td class="num">12</td></tr>
+          <tr><td class="num">07</td><td><b>Ist eine Aktie teuer?</b> (KGV, KUV, FCF-Rendite)</td><td>Fortgeschrittene</td><td>Erklär-Blatt Bewertung</td><td class="num">8</td></tr>
+          <tr><td class="num">08</td><td><b>Die sieben Eigenschaften von Quant</b></td><td>Fortgeschrittene</td><td>Quant</td><td class="num">10</td></tr>
+          <tr><td class="num">09</td><td><b>13 Profi-Methoden im Überblick</b></td><td>Aktive</td><td>Profi-Methoden</td><td class="num">12</td></tr>
+          <tr><td class="num">10</td><td><b>Charts lesen: Trend, 200-Tage-Linie, Ausbruch</b></td><td>Aktive</td><td>Chart-Check</td><td class="num">10</td></tr>
+          <tr><td class="num">11</td><td><b>13F verstehen: was Fondsmeldungen zeigen und was nicht</b></td><td>alle</td><td>Fonds-Check</td><td class="num">6</td></tr>
+          <tr><td class="num">12</td><td><b>Risiko verstehen: Drawdown, Streuung, Klumpen</b></td><td>alle</td><td>Depot-Check</td><td class="num">8</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="g3" style="margin-top:16px">
+      <div class="box"><h3>Produktionsstraße</h3><p>Steht im Konzept: Datenzug → Entwurf → Faktencheck jeder Zahl gegen Artefakt oder Quelle → Bild → Rendern → Karte im Approval Center. Fehlt: als Workflow mit eigenem Bündel in <code>workflow-bundles.json</code>.</p></div>
+      <div class="box"><h3>Wiederverwendung</h3><p>Jeder Guide liefert die Texte für die Erklär-Blätter und die Begriffe A–Z. Eine Quelle, drei Ausgaben: PDF, App-Blatt, Lernpfad-Lektion.</p></div>
+      <div class="box"><h3>Aufräumen</h3><p>Alte <code>/magazin/</code> und <code>/reports/xpeng/</code> sind zum Verwerfen freigegeben. Sie fallen weg, sobald Wissen mit Weekly KW 45 und Report AMD live ist.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KAPITEL 05 ================= -->
+<section class="slide dark chapter" id="k5">
+  <div class="inner"><div class="big">05</div><div><h2>Was noch fehlt</h2><p class="was">Gemessen an der Vision „<b>nur Vision Universe und ein Broker</b>“. Sortiert nach Wirkung auf den Kunden.</p></div></div>
+</section>
+
+<section class="slide" id="s-luecken">
+  <div class="inner">
+    <div class="sh"><span class="no">5.1</span><h2>Die Lücken zur Vision</h2>
+      <p class="sub">Was ein Kunde, der nur noch euch und seinen Broker nutzen soll, heute woanders suchen muss.</p></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Lücke</th><th>Warum der Kunde es braucht</th><th>Größe</th><th>Braucht</th></tr></thead>
+        <tbody>
+          <tr><td><b>Deutsche und europäische Aktien</b> auf der Aktienseite</td><td>„Börsenwelt in Deutschland“ ohne SAP, Allianz, Siemens überzeugt keinen deutschen Kunden. Heute ist der Kern US.</td><td><span class="sev hi">groß</span></td><td>Datenquelle EU (Arbeiten in <code>docs/europe21</code>), keine Freigabe</td></tr>
+          <tr><td><b>UCITS-ETFs mit ISIN</b> in Vermögen</td><td>Ohne kaufbare ETFs endet der Sparplan-Weg vor dem Broker.</td><td><span class="sev hi">groß</span></td><td>EU-ETF-Daten (<code>docs/ETF_EU_DATA_ARCHITECTURE.md</code>)</td></tr>
+          <tr><td><b>Depot-Check</b> (CSV-Import, lokal)</td><td>Erst mit dem echten Depot wird die App täglicher Begleiter.</td><td><span class="sev hi">groß</span></td><td>Parser je Broker; Anwaltsfrage Depot-Analyse</td></tr>
+          <tr><td><b>Alarme</b> (Kursgrenze, Quartalszahlen, Regel einer Methode erfüllt)</td><td>Grund, wiederzukommen. Ohne Alarm muss der Kunde selbst nachsehen.</td><td><span class="sev mid">mittel</span></td><td>Konto, Push/E-Mail; WORTWAHL: kein „Signal“-Push</td></tr>
+          <tr><td><b>Termin-Kalender</b> (Quartalszahlen, Dividenden, Hauptversammlung)</td><td>„Was ist diese Woche wichtig für meine Aktien?“</td><td><span class="sev mid">mittel</span></td><td>Datenquelle Termine</td></tr>
+          <tr><td><b>Broker-Brücke</b> (ISIN kopieren, Checkliste, später Deep-Link)</td><td>Der Übergang zum Kauf ist heute ein Bruch.</td><td><span class="sev mid">mittel</span></td><td>ISIN aus Security Master; Links mit Vergütung = Owner + Anwalt</td></tr>
+          <tr><td><b>Steuer-Erklärung</b></td><td>Erste Frage nach dem ersten Gewinn.</td><td><span class="sev mid">mittel</span></td><td>Guide 04, Redaktion</td></tr>
+          <tr><td><b>Klarer Pro-Wert</b></td><td>Heute schalten Free und Pro dasselbe frei. Ohne sichtbaren Mehrwert keine Zahlung.</td><td><span class="sev mid">mittel</span></td><td>Owner (Geld): z. B. Reports, Quartalsreport, Alarme, Depot-Check mehrfach</td></tr>
+          <tr><td><b>Atlas freischalten</b></td><td>Fragen in eigenen Worten sind der natürlichste Einstieg; heute „Noch gesperrt“ im Kopf jeder Seite.</td><td><span class="sev lo">klein</span></td><td>Kosten/Limit (Owner, Geld)</td></tr>
+          <tr><td><b>Gemeinsame Aktienadresse</b> <code>/aktie/NVDA</code></td><td>Ein Link pro Aktie zum Teilen, egal aus welcher Welt.</td><td><span class="sev lo">klein</span></td><td>im Redesign-Handover vorgesehen</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KAPITEL 06 ================= -->
+<section class="slide dark chapter" id="k6">
+  <div class="inner"><div class="big">06</div><div><h2>Umbauplan</h2><p class="was">Erst <b>aufräumen und richtigstellen</b> (keine Freigabe nötig), dann <b>umsortieren</b>, dann <b>neue Bausteine</b>. Ein PR pro Ergebnis.</p></div></div>
+</section>
+
+<section class="slide" id="s-plan">
+  <div class="inner">
+    <div class="sh"><span class="no">6.1</span><h2>Vier Schritte</h2>
+      <p class="sub">Reihenfolge nach Wirkung pro Aufwand. Schritt 1 und 2 brauchen keine Owner-Freigabe (Code, Doku, Design). Schritt 3 und 4 berühren in Teilen Geld oder Recht.</p></div>
+    <div class="g4">
+      <div class="box lime"><span class="kicker" style="color:#000">Schritt 1 · Sofort</span><h3 style="margin-top:8px">Richtigstellen</h3><ul style="color:#1b1b1b">
+        <li>WORTWAHL-Verstöße: Quant-Setup-Karte, „Was dafür spricht“, „Signale“, „Kurspotenzial“</li>
+        <li>„Sechs Eigenschaften“ → sieben, eine davon nicht messbar</li>
+        <li>Aktienseite: rote Pille → schwarz, Dollar zuerst, Achsen-Überlappung</li>
+        <li>Guide, Dashboard (alt), Budget aus dem Menü</li>
+        <li>Entwicklertexte entfernen (Macro, Academy, Guide)</li>
+        <li>Zahlenformat „88.5%“ → „88,5 %“</li></ul></div>
+      <div class="box ink"><span class="kicker" style="color:var(--lime)">Schritt 2</span><h3 style="margin-top:8px;color:#fff">Erklären</h3><ul>
+        <li>Startseite neu (M01), Wörterbuch (2.5)</li>
+        <li>Aktienseite: Kurzfazit + 5 Checks (M04)</li>
+        <li>Erklär-Blätter aus einer Begriffs-Quelle (M05)</li>
+        <li>Quant-Start mit sieben Fragen (M07)</li>
+        <li>Supertrader-Steckbriefe (M08)</li>
+        <li>Erster Start mit Startplan (M02)</li></ul></div>
+      <div class="box ink"><span class="kicker" style="color:var(--lime)">Schritt 3</span><h3 style="margin-top:8px;color:#fff">Umsortieren</h3><ul>
+        <li>Fünf Bereiche in Leiste und Menü (M12)</li>
+        <li>Heute (M03) ersetzt Willkommen, Dashboards, Morning, News</li>
+        <li>Ideen (M06) bündelt Listen und Methoden</li>
+        <li>Wissen (M11) mit Weekly, Report AMD, Guides 01–03</li>
+        <li>Alte Adressen leiten weiter</li></ul></div>
+      <div class="box"><span class="kicker">Schritt 4</span><h3 style="margin-top:8px">Ausbauen</h3><ul>
+        <li>UCITS-ETFs und Broker-Checkliste (M09)</li>
+        <li>Depot-Check lokal (M10)</li>
+        <li>Alarme und Termin-Kalender</li>
+        <li>EU-Aktien auf der Aktienseite</li>
+        <li>Pro-Wert festlegen <span class="sev hi" style="font-size:9.5px">Owner</span></li>
+        <li>Broker-Links mit Vergütung <span class="sev hi" style="font-size:9.5px">Owner + Anwalt</span></li></ul></div>
+    </div>
+    <div class="box gray" style="margin-top:16px"><h3>Regeln für jeden Schritt</h3><p>Keine Fachmodelle ändern (Scores, Rankings, Strategien bleiben). Keine generierten Daten von Hand ändern. Jede neue Zahl aus bestehenden Artefakten; fehlt sie, zeigt die Seite „bald“ statt eines Ersatzwerts. Supertrader-Änderungen nur mit Supertrader-Pfaden. Discover-Budget ≤ 180.000 Byte / ≤ 12 Requests bleibt.</p></div>
+  </div>
+</section>
+
+<section class="slide soft" id="s-messen">
+  <div class="inner">
+    <div class="sh"><span class="no">6.2</span><h2>Woran wir merken, dass es wirkt</h2>
+      <p class="sub">Verständlichkeit lässt sich testen. Vor Schritt 2 einmal messen, nach jedem Schritt wieder.</p></div>
+    <div class="g4">
+      <div class="box"><div class="big-num">5 s</div><h3 style="margin-top:10px">5-Sekunden-Test</h3><p>Fünf Personen sehen die Startseite fünf Sekunden. Ziel: vier von fünf sagen sinngemäß „prüft Aktien und erklärt sie, bevor ich kaufe“.</p></div>
+      <div class="box"><div class="big-num">90 s</div><h3 style="margin-top:10px">Bis zur ersten Antwort</h3><p>Zeit vom ersten Öffnen bis zu einem gelesenen Urteil auf einer Aktienseite oder einer Sparplan-Zahl.</p></div>
+      <div class="box"><div class="big-num">60 %</div><h3 style="margin-top:10px">Startplan begonnen</h3><p>Anteil neuer Konten, die Schritt 1 des Startplans erledigen. Heute gibt es keinen Startplan.</p></div>
+      <div class="box"><div class="big-num">3 Aufg.</div><h3 style="margin-top:10px">Aufgaben-Test</h3><p>„Finde heraus, ob NVIDIA teuer ist.“ „Rechne deinen Sparplan.“ „Was hat Bill Ackman gemeldet?“ Ohne Hilfe, mit Zeitmessung.</p></div>
+    </div>
+    <p class="fn">Zielwerte sind Vorschläge zum Start, kein Messergebnis. Messung ohne Tracking-Werkzeug möglich: fünf moderierte Tests pro Schritt reichen für die großen Probleme.</p>
+  </div>
+</section>
+
+<section class="slide dark" id="s-demo">
+  <div class="inner">
+    <div class="sh"><span class="no">6.3</span><h2>Die 60-Sekunden-Vorführung</h2>
+      <p class="sub">Für das Problem „Ich tue mich schwer, jemandem die App zu erklären“: diese Route funktioniert schon heute fast vollständig, nach Schritt 2 vollständig.</p></div>
+    <div class="g5">
+      <div class="box"><div class="big-num lime-txt" style="font-size:56px">0:00</div><h3 style="margin-top:8px;color:#fff">Der Satz</h3><p>„Wir prüfen jeden Tag jede Aktie und sagen dir in klaren Worten, was du vor dem Kauf wissen musst.“</p></div>
+      <div class="box"><div class="big-num lime-txt" style="font-size:56px">0:10</div><h3 style="margin-top:8px;color:#fff">Suche: NVIDIA</h3><p>„Eine Aktie, die jeder kennt. Drei Sätze, fünf Checks.“</p></div>
+      <div class="box"><div class="big-num lime-txt" style="font-size:56px">0:25</div><h3 style="margin-top:8px;color:#fff">„?“ an Bewertung</h3><p>„Du verstehst jede Zahl, wie beim Hauskauf.“</p></div>
+      <div class="box"><div class="big-num lime-txt" style="font-size:56px">0:40</div><h3 style="margin-top:8px;color:#fff">Profi-Methoden</h3><p>„Erfüllt die Aktie die Regeln von Stan Weinstein? Hier steht es, mit Musterdepot als Rechenmodell.“</p></div>
+      <div class="box"><div class="big-num lime-txt" style="font-size:56px">0:50</div><h3 style="margin-top:8px;color:#fff">Vermögen</h3><p>„Und wenn du erst anfängst: 250 € im Monat, das kommt raus, so richtest du es beim Broker ein.“</p></div>
+    </div>
+    <p class="quote" style="margin-top:44px;color:#fff">Nicht: „Wir haben neun Welten.“<br>Sondern: <span>„Frag mich nach einer Aktie.“</span></p>
+  </div>
+</section>
+
+<section class="slide" id="s-ende">
+  <div class="inner">
+    <div class="sh"><span class="no">6.4</span><h2>Entscheidungen und Ablage</h2></div>
+    <div class="g2">
+      <div class="box"><h3>Trifft Claude nach dieser Vorlage (Regel 04.11.2026)</h3><ul>
+        <li>Fünf Bereiche Heute · Aktien · Ideen · Vermögen · Wissen und das Wörterbuch 2.5</li>
+        <li>Reihenfolge der Aktienseite (Kurzfazit vor Chart)</li>
+        <li>Menübereinigung (Guide, Dashboard alt, Budget)</li>
+        <li>Erklär-Blätter und Begriffs-Quelle</li>
+        <li>Alle Sofort-Korrekturen aus Schritt 1</li></ul></div>
+      <div class="box ink"><h3 style="color:#fff">Braucht den Owner (Geld, Recht)</h3><ul>
+        <li><b>Pro-Wert:</b> was Pro zusätzlich bekommt (Reports, Quartalsreport, Alarme, Depot-Check)</li>
+        <li><b>Broker-Links</b> mit oder ohne Vergütung</li>
+        <li><b>Presseprivileg</b> für Weekly und Reports (Anwalt)</li>
+        <li><b>Depot-Check</b> rechtlich als Analyse-Software einordnen (Anwalt)</li>
+        <li><b>Atlas</b> freischalten (Kosten)</li></ul></div>
+    </div>
+    <p class="fn" style="margin-top:24px">Ablage: <code>docs/design/klarheit-2027/</code> (diese Präsentation, <code>README.md</code> mit Befundliste, <code>now/</code> echte Aufnahmen vom 08.11.2026). Baut auf <code>docs/design/redesign-2027/</code> (Design, Bausteine) und <code>docs/publishing/konzept-2026-11/</code> (Druckformate) auf und ersetzt keine der beiden.</p>
+  </div>
+</section>
+
+<div class="pager" role="navigation" aria-label="Folien"><button type="button" id="pp" aria-label="Vorige Folie">‹</button><span id="pc">1 / 1</span><button type="button" id="pn" aria-label="Nächste Folie">›</button></div>
+<script>
+(function(){
+  var s=[].slice.call(document.querySelectorAll('.slide')),pc=document.getElementById('pc');
+  function cur(){var y=window.scrollY+window.innerHeight*0.35,i=0;s.forEach(function(e,k){if(e.offsetTop<=y)i=k;});return i;}
+  function upd(){pc.textContent=(cur()+1)+' / '+s.length;}
+  function go(d){var i=Math.max(0,Math.min(s.length-1,cur()+d));s[i].scrollIntoView({behavior:'smooth'});}
+  document.getElementById('pp').onclick=function(){go(-1);};
+  document.getElementById('pn').onclick=function(){go(1);};
+  document.addEventListener('keydown',function(e){if(e.target.closest('input,textarea'))return;if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(1);}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(-1);}});
+  window.addEventListener('scroll',upd,{passive:true});upd();
+})();
+</script>
+</body>
+</html>
