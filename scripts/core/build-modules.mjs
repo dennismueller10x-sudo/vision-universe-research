@@ -24,7 +24,8 @@ export const PAGES = [
   { dir: "mein-dashboard", reason: "Mein Bereich (persoenliche Startseite), kein Produkt" },
   { dir: "landing", reason: "Kampagnenseiten" },
   { dir: "preise", reason: "Preisseite des Kontos" },
-  { dir: "willkommen", reason: "Willkommensseite der Nutzerfuehrung" }
+  { dir: "willkommen", reason: "Willkommensseite der Nutzerfuehrung" },
+  { dir: "company-intelligence", reason: "Steckbrief folgt im eigenen PR: die Company-Intelligence-CI klassifiziert Regressionen nur bei unveraenderten Quant/Discover/Supertrader-Pfaden" }
 ];
 
 const SKIP = new Set(["node_modules", ".git", "docs", "products"]);

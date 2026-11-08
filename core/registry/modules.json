@@ -81,22 +81,6 @@
   },
   {
    "schema": "vu-module-2",
-   "id": "company-intelligence",
-   "label": "Company Intelligence",
-   "status": "BETA",
-   "route": "/company-intelligence/",
-   "access": "intern",
-   "navigation": null,
-   "data": [
-    "companyIntelligence"
-   ],
-   "reads": [
-    "companyMaster"
-   ],
-   "tests": []
-  },
-  {
-   "schema": "vu-module-2",
    "id": "dashboard",
    "label": "Dashboard",
    "status": "LIVE",
@@ -878,6 +862,10 @@
   {
    "dir": "willkommen",
    "reason": "Willkommensseite der Nutzerfuehrung"
+  },
+  {
+   "dir": "company-intelligence",
+   "reason": "Steckbrief folgt im eigenen PR: die Company-Intelligence-CI klassifiziert Regressionen nur bei unveraenderten Quant/Discover/Supertrader-Pfaden"
   }
  ]
 }

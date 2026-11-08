@@ -30,9 +30,14 @@ test("Bestand · Manifest aus den veroeffentlichten Artefakten, nur in --out, im
     assert.equal(nvda.discover, "available");
     assert.equal(nvda.quant, "available");
     assert.equal(nvda.fundamental, "available");
-    /* Fundamental nur mit SEC-Zahlen in der Discover-Datei: ACU hat eine Discover-Seite, aber keine Fundamentaldaten. */
-    const acu = state(SC.fromUs("ACU"));
+    /* Fundamental nur mit SEC-Zahlen in der Discover-Datei. Das Beispiel kommt aus den Daten selbst (frueher fest ACU;
+       seit dem SEC-Consumer-Lauf 08.11.2026 hat ACU Zahlen): ein Titel mit Discover-Seite ohne Fundamentaldaten. */
+    const ev = collectEvidence(ROOT).evidence, fu = new Set(ev.fundamental.US);
+    const ohneZahlen = ev.discover.US.find((t) => !fu.has(t));
+    assert.ok(ohneZahlen, "kein Titel mit Seite und ohne Fundamentaldaten");
+    const acu = state(SC.fromUs(ohneZahlen));
     assert.deepEqual([acu.discover, acu.fundamental], ["available", "unavailable"]);
+    assert.equal(state(SC.fromUs(ev.fundamental.US[0])).fundamental, "available");
     const sapDe = state(SC.parse("/discover/#/s/EUROPE/ref_SAP_DE_XETR").ctx);
     assert.equal(sapDe.discover, "available");
     assert.equal(sapDe.quant, "unavailable");
