@@ -43,8 +43,17 @@
   },
   "pipeline-weekly": {
    "purpose": "Wochenlaeufe: Security Master, Universum, lange Reihen, Index, Eigentuemer-Signale",
-   "workflow": null,
-   "replaces": []
+   "workflow": "pipeline-weekly.yml",
+   "replaces": [
+    "company-logos.yml",
+    "company-names.yml",
+    "coverage-metrics.yml",
+    "index-membership.yml",
+    "quant-model-depots.yml",
+    "sec-sic-history.yml",
+    "tiingo2-universe-refresh.yml",
+    "update-sec-fundamentals.yml"
+   ]
   },
   "content": {
    "purpose": "Redaktionelle Daten: News, Ratings, Morning, Hedgefonds, Dashboard",
@@ -210,17 +219,8 @@
   "company-intelligence.yml": {
    "bundle": "ci"
   },
-  "company-logos.yml": {
-   "bundle": "pipeline-weekly"
-  },
-  "company-names.yml": {
-   "bundle": "pipeline-weekly"
-  },
   "core-ci.yml": {
    "bundle": "ci"
-  },
-  "coverage-metrics.yml": {
-   "bundle": "pipeline-weekly"
   },
   "currency-fx-verify.yml": {
    "bundle": "ci"
@@ -248,9 +248,6 @@
   },
   "home-refresh.yml": {
    "bundle": "pipeline-daily"
-  },
-  "index-membership.yml": {
-   "bundle": "pipeline-weekly"
   },
   "intraday-delivery-watchdog.yml": {
    "bundle": "pipeline-intraday"
@@ -288,9 +285,6 @@
   "quant-ci.yml": {
    "bundle": "ci"
   },
-  "quant-model-depots.yml": {
-   "bundle": "pipeline-weekly"
-  },
   "research-edge2-paper.yml": {
    "bundle": "research"
   },
@@ -308,9 +302,6 @@
   },
   "sec-fundamentals-universe.yml": {
    "bundle": "research"
-  },
-  "sec-sic-history.yml": {
-   "bundle": "pipeline-weekly"
   },
   "security-master-eligibility.yml": {
    "bundle": "pipeline-weekly"
@@ -367,13 +358,7 @@
    "bundle": "maintenance",
    "retireCandidate": true
   },
-  "tiingo2-universe-refresh.yml": {
-   "bundle": "pipeline-weekly"
-  },
   "universe-master.yml": {
-   "bundle": "pipeline-weekly"
-  },
-  "update-sec-fundamentals.yml": {
    "bundle": "pipeline-weekly"
   },
   "vu2-browser-qa.yml": {

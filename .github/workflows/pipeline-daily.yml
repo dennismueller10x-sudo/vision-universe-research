@@ -485,6 +485,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Daten, die nur noch im Datenzweig wachsen, wie ausgeliefert pruefen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Vorigen Bericht aus dem Datenzweig holen
         run: |
           set -euo pipefail
