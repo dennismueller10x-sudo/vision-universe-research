@@ -1,0 +1,91 @@
+name: ZZ Probe dispatch input limit
+on:
+  workflow_dispatch:
+    inputs:
+      p1:
+        description: 'p1'
+        default: ''
+      p2:
+        description: 'p2'
+        default: ''
+      p3:
+        description: 'p3'
+        default: ''
+      p4:
+        description: 'p4'
+        default: ''
+      p5:
+        description: 'p5'
+        default: ''
+      p6:
+        description: 'p6'
+        default: ''
+      p7:
+        description: 'p7'
+        default: ''
+      p8:
+        description: 'p8'
+        default: ''
+      p9:
+        description: 'p9'
+        default: ''
+      p10:
+        description: 'p10'
+        default: ''
+      p11:
+        description: 'p11'
+        default: ''
+      p12:
+        description: 'p12'
+        default: ''
+      p13:
+        description: 'p13'
+        default: ''
+      p14:
+        description: 'p14'
+        default: ''
+      p15:
+        description: 'p15'
+        default: ''
+      p16:
+        description: 'p16'
+        default: ''
+      p17:
+        description: 'p17'
+        default: ''
+      p18:
+        description: 'p18'
+        default: ''
+      p19:
+        description: 'p19'
+        default: ''
+      p20:
+        description: 'p20'
+        default: ''
+      p21:
+        description: 'p21'
+        default: ''
+      p22:
+        description: 'p22'
+        default: ''
+      p23:
+        description: 'p23'
+        default: ''
+      p24:
+        description: 'p24'
+        default: ''
+      p25:
+        description: 'p25'
+        default: ''
+      p26:
+        description: 'p26'
+        default: ''
+  push:
+    branches: ['claude/probe-dispatch-input-limit']
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ok
