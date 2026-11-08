@@ -680,7 +680,7 @@
   /* ------------------------------------------------------------------ Ranglisten der Startseite
    * Offene Regeln statt stiller Korrektur: Groessenuntergrenze und Plausibilitaetsgrenzen stehen an jeder Liste. */
   var RANKINGS = [
-    { id: 'bewertung', title: 'Interessante Bewertungen', sub: 'Niedrigstes KGV', col: 'pe', dir: 'asc', kind: 'multiple', rule: 'KGV zwischen 5 und 60, Nettomarge positiv, Free-Cashflow-Rendite bis 25 %', filter: function (r) { return r.pe >= 5 && r.pe <= 60 && r.netMargin > 0 && (r.fcfYield == null || r.fcfYield <= 0.25); }, also: ['netMargin', 'revCagr3'] },
+    { id: 'bewertung', title: 'Niedrigste Bewertung (KGV)', sub: 'KGV aufsteigend', col: 'pe', dir: 'asc', kind: 'multiple', rule: 'KGV zwischen 5 und 60, Nettomarge positiv, Free-Cashflow-Rendite bis 25 %', filter: function (r) { return r.pe >= 5 && r.pe <= 60 && r.netMargin > 0 && (r.fcfYield == null || r.fcfYield <= 0.25); }, also: ['netMargin', 'revCagr3'] },
     { id: 'profitabel', title: 'Profitable Unternehmen', sub: 'Höchste Kapitalrendite (ROIC)', col: 'roic', dir: 'desc', kind: 'ratio', rule: 'ROIC bis 200 % (darüber ist die Kapitalbasis zu klein für einen aussagekräftigen Wert), Nettomarge positiv', filter: function (r) { return r.roic <= 2 && r.netMargin > 0 && r.netMargin <= 1; }, also: ['netMargin', 'pe'] },
     { id: 'wachstum', title: 'Wachstumsführer', sub: 'Umsatz pro Jahr über 3 Jahre', col: 'revCagr3', dir: 'desc', kind: 'growth', rule: 'Umsatz mindestens 250 Mio. $, Wachstum bis 300 % pro Jahr', filter: function (r) { return r.revCagr3 <= 3 && r.revenue >= 2.5e8; }, also: ['revGrowth', 'netMargin'] },
     { id: 'cashflow', title: 'Cashflow-Stärke', sub: 'Höchste Free-Cashflow-Rendite', col: 'fcfYield', dir: 'desc', kind: 'ratio', rule: 'Free-Cashflow-Rendite bis 25 %, Free-Cashflow-Marge bis 100 %, KGV ab 5 (falls vorhanden)', filter: function (r) { return r.fcfYield > 0 && r.fcfYield <= 0.25 && (r.fcfMargin == null || r.fcfMargin <= 1) && (r.pe == null || r.pe >= 5); }, also: ['fcfMargin', 'pe'] },
@@ -729,7 +729,7 @@
     if (!entry || entry.ratingsState !== 'AVAILABLE') return null;
     var hist = (entry.history || []).filter(function (h) { return h && /^\d{4}-\d{2}/.test(h.period || ''); }).slice().sort(function (a, b) { return a.period < b.period ? -1 : 1; });
     var t = entry.targetState === 'AVAILABLE' && entry.target && isNum(entry.target.consensus) ? entry.target : null;
-    return { generatedAt: entry.fetchedAt || null, provider: t ? 'Finnhub · Kursziel ' + (t.source || 'FMP') : 'Finnhub', label: null, score: null,
+    return { generatedAt: entry.fetchedAt || null, provider: 'Finnhub', label: null, score: null,
       history: hist, last: hist[hist.length - 1] || null, total: entry.analysts || 0, targetState: entry.targetState || 'NOT_CHECKED',
       target: t ? { low: t.low, high: t.high, mean: t.consensus, median: t.median, provider: t.source || 'FMP' } : null };
   }

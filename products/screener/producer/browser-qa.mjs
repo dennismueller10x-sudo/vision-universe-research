@@ -205,10 +205,10 @@ for (const theme of ['light', 'dark']) {
 
       // 6 Why Match + Quick Research
       if (cards.length) {
-        /* „Warum passt …?“ für den ersten Treffer: je Regel ein Urteil (C08). */
+        /* „Erfüllt deinen Filter“ für den ersten Treffer: je Regel ein Urteil (C08). */
         await page.waitForSelector('.sc-whybox .sc-kvrow');
         const verdicts = await page.$$eval('.sc-whybox .sc-kvrow [data-verdict]', (x) => x.map((v) => v.dataset.verdict));
-        if (verdicts.length !== 4 || verdicts.some((v) => v !== 'strong')) fail(vp, 'Warum passt unvollständig (' + verdicts.join(',') + ')'); else ok('Warum passt: 4 Regeln erfüllt');
+        if (verdicts.length !== 4 || verdicts.some((v) => v !== 'strong')) fail(vp, 'Erfüllt deinen Filter unvollständig (' + verdicts.join(',') + ')'); else ok('Erfüllt deinen Filter: 4 Regeln erfüllt');
         const chgBg = await page.$$eval('.sc-rc .vu-chg', (x) => [...new Set(x.map((v) => getComputedStyle(v).backgroundColor))]);
         if (chgBg.some((c) => !/rgb\((200, 245, 49|0, 0, 0|255, 255, 255|233, 233, 233|38, 38, 38)\)/.test(c))) fail(vp, 'Kursbewegung nicht neongrün/schwarz: ' + chgBg.join(', ')); else ok('Kursbewegung als C07-Pille');
         await page.click('.sc-rc >> nth=0');
