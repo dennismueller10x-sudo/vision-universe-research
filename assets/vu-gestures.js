@@ -40,7 +40,8 @@
   function enabled() {
     return !!(w.Capacitor && w.Capacitor.isNativePlatform && w.Capacitor.isNativePlatform()) || /VUApp\/1/.test(w.navigator.userAgent) || new URLSearchParams(w.location.search).get('vuGestures') === '1';
   }
-  function isHome() { return /^\/(discover|quant|technical|supertrader)\/$/.test(w.location.pathname) && (!w.location.hash || /^#\/?$/.test(w.location.hash)); }
+  // Einstieg je Rahmen: /willkommen/ ist der App-Start (Owner 08.11.2026), die Produktstarts bleiben Wurzeln.
+  function isHome() { return /^\/(willkommen|discover|quant|technical|supertrader)\/$/.test(w.location.pathname) && (!w.location.hash || /^#\/?$/.test(w.location.hash)); }
   // Navigation API (WebKit 26+, Chromium): der Iframe kennt seine eigenen Eintraege; zurueck ist dann immer echter Verlauf,
   // auch ueber Produktgrenzen (Start -> Quant -> Aktie). Der erste Eintrag des Rahmens ist die Grenze (kein about:blank).
   function canBack() { var nav = w.navigation; return nav && typeof nav.canGoBack === 'boolean' ? nav.canGoBack : null; }

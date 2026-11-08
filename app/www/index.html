@@ -12,13 +12,15 @@
 <div id="offline" class="banner" role="status" hidden>Keine Internetverbindung. Kurse und Auswertungen werden erst nach der Wiederverbindung geladen.</div>
 
 <main id="views">
-  <section id="v-discover" class="view frame-view" data-path="/discover/" hidden><iframe title="Discover" loading="lazy"></iframe></section>
+  <!-- Owner 08.11.2026: Die App beginnt mit der Willkommensseite (Video, Story-Videos, Produktwelten; docs/accounts/NUTZERFUEHRUNG.md).
+       Discover und alle anderen Bereiche erreicht man von dort über Dock und Menü der Website im selben Rahmen. -->
+  <section id="v-start" class="view frame-view" data-path="/willkommen/" hidden><iframe title="Start" loading="lazy"></iframe></section>
   <section id="v-quant" class="view frame-view" data-path="/quant/" hidden><iframe title="Quant" loading="lazy"></iframe></section>
   <section id="v-technical" class="view frame-view" data-path="/technical/" hidden><iframe title="Technical" loading="lazy"></iframe></section>
   <section id="v-supertrader" class="view frame-view" data-path="/supertrader/" hidden><iframe title="Supertrader" loading="lazy"></iframe></section>
 
   <section id="v-watchlist" class="view panel" hidden>
-    <button type="button" class="secondary back" data-view="discover">← Zurück zur App</button>
+    <button type="button" class="secondary back" data-view="start">← Zurück zur App</button>
     <h1>Watchlist</h1>
     <p id="wl-state" class="muted"></p>
     <ul id="wl-list" class="rows"></ul>
@@ -26,7 +28,7 @@
   </section>
 
   <section id="v-account" class="view panel" hidden>
-    <button type="button" class="secondary back" data-view="discover">← Zurück zur App</button>
+    <button type="button" class="secondary back" data-view="start">← Zurück zur App</button>
     <h1>Konto</h1>
     <form id="login" autocomplete="on" novalidate>
       <label>E-Mail<input id="email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" required></label>
@@ -49,7 +51,7 @@
 </main>
 
 <nav id="tabs" aria-label="Bereiche">
-  <button data-view="discover" aria-label="Start">Start</button>
+  <button data-view="start">Start</button>
   <button data-view="quant">Quant</button>
   <button data-view="technical">Technical</button>
   <button data-view="supertrader">Supertrader</button>

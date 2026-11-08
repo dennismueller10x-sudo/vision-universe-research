@@ -26,7 +26,7 @@ const push = createPush({plugin: n?.PushNotifications, api, platform: cap?.getPl
 await push.init();
 let current = null;
 let pendingBack = null;
-let lastFrame = 'discover';
+let lastFrame = 'start';
 
 // ---- Native Randgeste (iOS, VUBridgeViewController) ------------------------
 // Die Shell reicht nur Navigationszustand und Haptik-Wuensche weiter; die Website im Iframe kann native Funktionen nie direkt rufen.
@@ -75,7 +75,7 @@ function show(name) {
   else panelState(name);
 }
 document.querySelectorAll('#tabs button, .back').forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
-$('skip-login').addEventListener('click', () => { gate = false; show('discover'); });
+$('skip-login').addEventListener('click', () => { gate = false; show('start'); });
 
 // ---- Verbindung ----------------------------------------------------------
 function setOffline(off) { $('offline').hidden = !off; }
@@ -105,7 +105,7 @@ $('login').addEventListener('submit', async ev => {
       await biometric.choose(enabled).catch(() => { text('settings-state', 'Biometrie konnte nicht aktiviert werden.'); });
     }
     await push.resume().catch(() => { text('settings-state', 'Benachrichtigungen konnten nicht synchronisiert werden.'); }); renderAccount();
-    if (gate) { gate = false; show('discover'); } }
+    if (gate) { gate = false; show('start'); } }
   catch (e) {
     err.textContent = {INVALID_CREDENTIALS: 'E-Mail oder Passwort stimmt nicht.', invalid_credentials: 'E-Mail oder Passwort stimmt nicht.',
       email_not_confirmed: 'Bitte zuerst die E-Mail-Adresse bestätigen.', [OFFLINE]: 'Keine Verbindung. Bitte später erneut versuchen.',
@@ -154,7 +154,7 @@ async function loadWatchlist() {
 // ---- Start ---------------------------------------------------------------
 $('config-missing').hidden = config.configured;
 (async () => {
-  show('discover');
+  show('start');
   hideSplash();
   // Ohne Biometrie wie vor E4: ein haengender Speicher blockiert den Start nicht. Mit Biometrie: Pruefung und Refresh abwarten.
   try {
@@ -163,7 +163,7 @@ $('config-missing').hidden = config.configured;
   } catch { /* ohne gespeicherte Sitzung weiter */ }
   if (auth.state().signedIn) await push.resume().catch(() => {});
   // Ohne Sitzung zuerst die Anmeldung anbieten (die App hat keine eigene Leiste mehr); "Spaeter anmelden" fuehrt in die App.
-  if (native && !auth.state().signedIn && current === 'discover') { gate = true; $('skip-login').hidden = false; show('account'); }
+  if (native && !auth.state().signedIn && current === 'start') { gate = true; $('skip-login').hidden = false; show('account'); }
   if (native) {
     const n = globalThis.VUNative || {};
     hideSplash();
@@ -188,7 +188,7 @@ $('config-missing').hidden = config.configured;
     n.App?.addListener('backButton', () => {
       if (pendingBack !== null) return;
       const frame = $('v-' + current)?.querySelector('iframe');
-      if (!frame?.contentWindow) { show('discover'); return; }
+      if (!frame?.contentWindow) { show('start'); return; }
       const request = ++backRequest; pendingBack = request;
       frame.contentWindow.postMessage({type: 'vu:back', request}, config.contentOrigin);
       // Offline/old content cannot answer; keep a usable root fallback.

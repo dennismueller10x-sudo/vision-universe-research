@@ -85,7 +85,8 @@ const ctx = await browser.newContext({viewport: {width: 390, height: 844}, devic
 // CSP-Inline-Skript der Testkonfiguration braucht script-src; nur fuer den Test erlauben
 const page = await ctx.newPage();
 await page.route('**/index.html', async r => r.continue()); 
-const errors = []; page.on('pageerror', e => errors.push(e.message)); page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|ERR_/.test(m.text())) errors.push(m.text()); });
+const errors = []; page.on('pageerror', e => errors.push(e.message)); page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|ERR_/.test(m.text()) && !/konto\.visionuniverse\.de\/v1\/.*CORS/.test(m.text())) errors.push(m.text()); });
+// Die Willkommensseite im Rahmen fragt die echte Konto-API ab; von 127.0.0.1 aus verweigert sie CORS (nur im Test).
 await page.goto(`http://127.0.0.1:${port(shell)}/`);
 await page.waitForFunction(() => globalThis.__vuReady === true, null, {timeout: 15000}).catch(() => {});
 check('Shell startet (CSP erlaubt Modul-Skript)', await page.evaluate(() => globalThis.__vuReady === true), errors[0] || '');
@@ -95,11 +96,11 @@ const tabs = await page.$$eval('#tabs button', b => b.map(x => ({t: x.textConten
 check('6 Tabs, jedes mindestens 44 px hoch', tabs.length === 6 && tabs.every(t => t.h >= 44), JSON.stringify(tabs.map(t => Math.round(t.h))));
 check('kein seitliches Scrollen', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
 check('Safe-Area-Regeln aktiv (padding-bottom aus env())', await page.evaluate(() => /safe-area-inset-bottom/.test([...document.styleSheets].flatMap(s => [...s.cssRules]).map(r => r.cssText).join(''))));
-for (const [v, label] of [['discover', 'Start/Discover'], ['quant', 'Quant'], ['technical', 'Technical'], ['supertrader', 'Supertrader']]) {
+for (const [v, label] of [['start', 'Start (Willkommensseite)'], ['quant', 'Quant'], ['technical', 'Technical'], ['supertrader', 'Supertrader']]) {
   await page.click(`#tabs button[data-view="${v}"]`);
   const fr = page.frameLocator(`#v-${v} iframe`);
   await fr.locator('body *').first().waitFor({timeout: 20000}).catch(() => {});
-  const want = `http://127.0.0.1:${port(content)}/${v === 'discover' ? 'discover' : v}/`;
+  const want = `http://127.0.0.1:${port(content)}/${v === 'start' ? 'willkommen' : v}/`;
   let title = '', src = '';
   for (let i = 0; i < 60 && title.length < 4; i++) {          // bis 30 s: Discover laedt ueber 100 Dateien
     const f = page.frames().find(x => x.url().startsWith(want));
