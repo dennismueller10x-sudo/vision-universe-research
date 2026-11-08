@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { fromRecommendation, fromTarget, due, wantsTarget, writeAll, summarize, targetCandidates } from "../fetch-consensus.mjs";
+import { fromRecommendation, fromTarget, due, wantsTarget, writeAll, summarize, targetCandidates } from "../producer/fetch-consensus.mjs";
 
 test("AC-1 · Einstufungen: neueste Periode zaehlt, Verlauf bis 6, ohne Analysten NO_COVERAGE", () => {
   const rows = Array.from({ length: 8 }, (_, i) => ({ period: `2026-${String(11 - i).padStart(2, "0")}-01`, strongBuy: 10 + i, buy: 40, hold: 8, sell: 1, strongSell: 0 }));

@@ -52,7 +52,7 @@ Veraltete Daten lösen einen Alarm aus und blockieren keinen Code-PR.
 ## Tests
 
 ```bash
-node --test "core/tests/*.test.mjs"           # ~5 s
+node --test "core/tests/*.test.mjs" "products/*/tests/*.test.mjs"   # Core und Produkt-Tests unter products/
 node --test "quant/tests/*.test.mjs"
 node --test "discover/tests/*.test.mjs" "scripts/supertrader/tests/*.test.mjs" "screener/tests/*.test.mjs"
 node --test "technical/tests/*.test.mjs"

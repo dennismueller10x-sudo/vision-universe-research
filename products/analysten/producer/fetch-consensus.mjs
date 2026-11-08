@@ -13,17 +13,17 @@
      shards/<shardKey>.json   Eintraege je Titel (core/identity.js#shardKey), Schluessel securityId
      summary.json             Abdeckung: Titel, mit Einstufung, mit Kursziel, Median Analysten, aeltester Abruf
 
-   Aufruf: node scripts/analysts/fetch-consensus.mjs [--out <dir>] [--max-titles 1000] [--per-minute 55]
+   Aufruf: node products/analysten/producer/fetch-consensus.mjs [--out <dir>] [--max-titles 1000] [--per-minute 55]
            [--fmp-max 200] [--max-minutes 40] [--today YYYY-MM-DD]
    Schluessel: FINNHUB_API_KEY (Kopf X-Finnhub-Token), FMP_API_KEY (optional; Abfrageparameter, nie ausgegeben). */
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
-import { resolveProductUniverse } from "../market/universe-source.mjs";
+import { resolveProductUniverse } from "../../../scripts/market/universe-source.mjs";
 
 const require = createRequire(import.meta.url);
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const Identity = require(join(ROOT, "core", "identity.js"));
 export const SCHEMA = "vu-analyst-consensus-1";
 export const HISTORY = 6;

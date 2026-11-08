@@ -15,7 +15,7 @@
   var HISTORY_BASE = '/fundamental/data/history/';
   var UNIVERSE_PATH = '/screener/data/universe-US_REAL.json';
   var ANALYST_PATH = '/dashboard/data/analyst_ratings.json';
-  /* Konsens je Titel fuer das Produktuniversum (scripts/analysts/fetch-consensus.mjs): shards/<shardKey>.json, Schluessel securityId. */
+  /* Konsens je Titel fuer das Produktuniversum (products/analysten/producer/fetch-consensus.mjs): shards/<shardKey>.json, Schluessel securityId. */
   var CONSENSUS_SHARD_PATH = '/dashboard/data/analysts/shards/';
   var SERIES_BASE = '/quant/data/market/discover-series/';
 

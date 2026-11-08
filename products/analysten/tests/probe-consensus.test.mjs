@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { sample, readout, summarize } from "../probe-consensus.mjs";
+import { sample, readout, summarize } from "../producer/probe-consensus.mjs";
 
 test("AP-1 · Stichprobe deterministisch, Anker zuerst, keine Doppelung", () => {
   const t = ["AAPL", "MSFT", "NVDA", "A", "B", "C", "D", "E"];

@@ -16,7 +16,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 
-const html = readFileSync(new URL("../../analysten/index.html", import.meta.url), "utf8");
+const html = readFileSync(new URL("../../../analysten/index.html", import.meta.url), "utf8");
 const start = html.indexOf("<script>", html.indexOf('src="/assets/site-navigation.js"'));
 const script = html.slice(start + "<script>".length, html.indexOf("</script>", start));
 

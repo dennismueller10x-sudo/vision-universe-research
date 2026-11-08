@@ -132,7 +132,7 @@ jobs:
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
         run: |
           set -euo pipefail
-          node scripts/analysts/fetch-consensus.mjs --max-titles 2200 --per-minute 55 --fmp-max 200 --max-minutes 42 | tee "$RUNNER_TEMP/analysten.txt"
+          node products/analysten/producer/fetch-consensus.mjs --max-titles 2200 --per-minute 55 --fmp-max 200 --max-minutes 42 | tee "$RUNNER_TEMP/analysten.txt"
           { echo '### Analysten-Konsens'; echo '```'; cat "$RUNNER_TEMP/analysten.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Nur eigene Pfade geaendert
         run: |
@@ -171,7 +171,7 @@ jobs:
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
         run: |
           set -euo pipefail
-          node scripts/analysts/probe-consensus.mjs --size 120 --seed 20261106 --per-minute 50 --out "$RUNNER_TEMP/analyst-probe.json" | tee "$RUNNER_TEMP/probe.txt"
+          node products/analysten/producer/probe-consensus.mjs --size 120 --seed 20261106 --per-minute 50 --out "$RUNNER_TEMP/analyst-probe.json" | tee "$RUNNER_TEMP/probe.txt"
           { echo '### Analysten-Abdeckung (Stichprobe)'; echo '```'; cat "$RUNNER_TEMP/probe.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:

@@ -10,14 +10,14 @@
      fmp:grades-consensus        /stable/grades-consensus         Einstufungs-Zaehlung
    Schluessel: FINNHUB_API_KEY (Kopf X-Finnhub-Token), FMP_API_KEY (Abfrageparameter, wird nie ausgegeben).
 
-   Aufruf: node scripts/analysts/probe-consensus.mjs --size 60 --seed 20261106 --out bericht.json
+   Aufruf: node products/analysten/producer/probe-consensus.mjs --size 60 --seed 20261106 --out bericht.json
            [--sources finnhub,fmp] [--per-minute 50] */
 import { writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { resolveProductUniverse } from "../market/universe-source.mjs";
+import { resolveProductUniverse } from "../../../scripts/market/universe-source.mjs";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const ANCHORS = ["NVDA", "AAPL", "MSFT"];
 
 /** Deterministische Stichprobe (mulberry32), Anker immer dabei. */
