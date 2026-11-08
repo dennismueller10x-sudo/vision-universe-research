@@ -96,6 +96,14 @@ Weitere Lesarten, die beim Bauen auftauchen, entscheidet Claude nach der Präsen
 - Erzeuger: allgemeines Feld `memberOf` (Mitgliedschaft in anderen Reihen, je Universum einmal gerechnet) und `maxDistanceToHigh`; Sortierung erst nach Zahl der Quell-Reihen, dann `distanceTo52wHigh` aufsteigend; `verify-discover-data.mjs` prüft diese Reihenfolge mit dem Index Aktie → Reihen.
 - Reiter der Reihe: „Abstand · Umsatz · Name“ wie im Mockup (Reihen mit SEC-Regel sortieren zweitens nach Umsatz).
 
+**PR 5 · Aktienseite „Überblick“**
+- Der Kopf nennt den Kurs und die Veränderung des gewählten Zeitraums in Dollar (Vorgabe 1J), der Euro-Wert steht klein darunter; die Pille ist neongrün oder schwarz. Statt der Tagesbewegung des Mockups bleibt die Zeitraum-Veränderung, weil die Zeitleiste des Charts sie benennen muss (Browser-QA „chart range updates“); sie ist in Dollar derselbe Jahreswert wie in Story und Kapitel 1.
+- Story „Kurs“: Urteil aus dem Abstand zum Jahreshoch (ab −20 % „Schwächer“, bis −5 % „Nah am Hoch“, sonst „Dazwischen“); „Bewertung“ aus der gelieferten Stufe gegen den Marktmedian.
+- Kapitel sind native `<details>` (Tastatur, Bildschirmleser); der Inhalt ist der bisherige Abschnitt ohne seine eigene Überschrift, offene Kapitel merkt sich das Gerät (`vu-discover-chapters-v1`).
+- Mini-Charts der Schienen „Mehr wie …“ kommen über `core/identity.js#securityIdForTicker` aus der kanonischen Kursreihe; die Karten von `discoverNext` tragen selbst keinen Verweis.
+- Aus einer Reihe: Reihen-Leiste über dem Aktienkopf (klebt oben) und die Endkarte „Nächste in der Reihe“; die zusätzliche schwebende Leiste „Weiter in …“ aus `a-full` entfällt, weil sie über dem Inhalt läge und dieselbe Aktie wie die Endkarte nennt. Posters aus Schienen der Startseite und das allgemeine Swipen setzen `?reihe=`.
+- Europäische Aktien behalten den bisherigen Überblick, weil ihnen Reihen, Story-Sätze und `discoverNext` fehlen.
+
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
 ```
