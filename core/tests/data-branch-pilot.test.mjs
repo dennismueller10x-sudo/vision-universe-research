@@ -28,7 +28,8 @@ test("DB-1 · Steckbrief: jede Datenart ist registriert, ihr Pfad gehoert genau 
     assert.ok(Object.keys(MANIFEST.phases).includes(d.phase), d.id);
     const reg = DOMAINS.domains.find((x) => x.id === d.id); assert.ok(reg, d.id + " fehlt in domains.json");
     for (const p of d.paths) {
-      assert.equal(contractFor(DOMAINS, p)?.id, d.id, p);
+      // Jede Datei gehoert hoechstens dieser Datenart; mindestens eine Datei der Datenart traegt ihren Vertrag (DB-1b).
+      const c = contractFor(DOMAINS, p); assert.ok(!c || c.id === d.id, p + " gehoert " + (c && c.id));
       if (d.phase === "DUAL_WRITE") {
         assert.ok(existsSync(join(ROOT, p)), p + " liegt als Rueckfall in main");
         // Rueckfall muss lesbar sein; die Mindestzahl prueft die Frische-Ueberwachung, nicht dieser Test.
@@ -41,6 +42,7 @@ test("DB-1 · Steckbrief: jede Datenart ist registriert, ihr Pfad gehoert genau 
       assert.ok(d.paths.length > 0, d.id + ": ein Verzeichnis braucht eine Schluesseldatei, der es folgt");
       if (d.phase === "DUAL_WRITE") assert.ok(existsSync(join(ROOT, p)), p + " liegt als Rueckfall in main");
     }
+    assert.ok(d.paths.some((p) => contractFor(DOMAINS, p)?.id === d.id), d.id + ": eine Datei traegt den Vertrag aus domains.json");
     assert.match(readFileSync(join(ROOT, ".github/workflows", d.workflow), "utf8"), /scripts\/ci\/push-data-branch\.sh/, d.workflow);
   }
 });
@@ -193,4 +195,15 @@ test("DB-12 · eingespielte Datenzweig-Dateien sind fuer Git unsichtbar: git add
   put(work, "code.js", "y");
   git("add", "-A");
   assert.deepEqual(git("diff", "--cached", "--name-only").trim().split("\n"), ["code.js"], "nur die eigene Aenderung wird committet");
+});
+
+test("DB-13 · Begleitdateien ohne Vertrag entscheiden nicht ueber das Verzeichnis", () => {
+  const w = dirWorld({ main: feed("2026-11-04T10:00:00Z"), branch: feed("2026-11-04T16:00:00Z"), site: feed("2026-11-04T10:00:00Z"),
+    mainShards: { "A.json": "1" }, branchShards: { "A.json": "2" } });
+  put(w.root, "begleit/bericht.json", "{\"a\":1}"); put(w.siteDir, "begleit/bericht.json", "{\"a\":1}");
+  w.manifest.domains[0].paths.push("begleit/bericht.json");
+  const r = overlay(w);
+  assert.equal(r.rows.find((x) => x.path === "begleit/bericht.json").status, "KEPT_MAIN", "Begleitdatei fehlt im Zweig");
+  assert.equal(r.rows.find((x) => x.kind === "prefix").status, "OVERLAID", "das Verzeichnis folgt der Vertragsdatei");
+  assert.equal(r.complete, true);
 });

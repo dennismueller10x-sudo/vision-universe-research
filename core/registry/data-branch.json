@@ -38,6 +38,18 @@
       "workflow": "content.yml",
       "paths": ["dashboard/data/analysts/summary.json"],
       "prefixes": ["dashboard/data/analysts/shards/"]
+    },
+    {
+      "id": "marketPulse",
+      "phase": "BRANCH_ONLY",
+      "workflow": "multi-asset-data.yml",
+      "paths": [
+        "quant/data/market/multi-asset/snapshot.json",
+        "quant/data/market/intelligence/market-pulse.json",
+        "quant/data/market/intelligence/market-pulse-history.json"
+      ],
+      "prefixes": ["quant/data/market/multi-asset/"],
+      "note": "Vertrag: snapshot.json (domains.json marketPulse). Market Pulse ist ein Bericht desselben Laufs ohne eigenen Vertrag; das Verzeichnis folgt nur dem Snapshot. Verbraucher spielen den Zweig per seed-data-branch.sh alle ein (Pages vor dem Bau, Supertrader, Materialisierung, pipeline-daily, research)."
     }
   ],
   "internal": [

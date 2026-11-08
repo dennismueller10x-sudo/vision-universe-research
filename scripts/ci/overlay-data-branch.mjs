@@ -70,7 +70,10 @@ function copyDir(src, dst, mirror) {
    (alle Schluesselpfade IDENTICAL/OVERLAID), kommen auch ihre Verzeichnisse aus dem Datenzweig - nie ein Mischstand. */
 function overlayPrefixes(d, keyRows, { root, dataDir, siteDir, mirror }) {
   const rows = [];
-  const fromBranch = keyRows.length > 0 && keyRows.every((r) => r.status === "IDENTICAL" || r.status === "OVERLAID");
+  /* Massgeblich sind die Schluesseldateien mit Vertrag (domains.json); Begleitdateien ohne Vertrag
+     (z. B. ein abgeleiteter Bericht desselben Laufs) entscheiden nicht ueber das Verzeichnis. */
+  const keys = keyRows.some((r) => r.key) ? keyRows.filter((r) => r.key) : keyRows;
+  const fromBranch = keys.length > 0 && keys.every((r) => r.status === "IDENTICAL" || r.status === "OVERLAID");
   for (const p of d.prefixes || []) {
     const row = { domain: d.id, phase: d.phase, path: p, kind: "prefix" };
     const br = join(dataDir, p), main = join(root, p), site = join(siteDir, p);
@@ -98,7 +101,7 @@ export function overlay({ root, dataDir, siteDir, manifest, domains, only, mirro
     for (const p of d.paths) {
       const site = join(siteDir, p), main = join(root, p), branch = join(dataDir, p);
       const contract = contractFor(domains, p);
-      const row = { domain: d.id, phase: d.phase, path: p };
+      const row = { domain: d.id, phase: d.phase, path: p, key: !!contract };
       const mainBytes = existsSync(main) ? readFileSync(main) : null;
       const brBytes = existsSync(branch) ? readFileSync(branch) : null;
       const mainInfo = mainBytes ? inspect(mainBytes, contract) : null;
