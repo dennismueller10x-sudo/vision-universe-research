@@ -41,6 +41,8 @@ TestFlight-Lauf 6 vom 07.11.2026 auf Commit `d871426`. Alles bleibt auf `main` g
 | #1629 | Rechtstexte aus dem Menü öffnen im System-Browser (vorher still verworfen) |
 | #1630 (Website-Teil) | `/willkommen/` zählt als Einstieg für Zurück (`assets/vu-gestures.js`); im alten Build ohne Wirkung |
 
+**Build-Weg** (wirkt beim nächsten Build mit, ändert die App nicht): #1633 `npm ci --ignore-scripts` (kein libvips-Download), Gradle-Wrapper aus dem Actions-Cache mit Wiederholung und 60 s Netz-Zeitgrenze – nach dem Ausfall von GitHub Releases am 08.11.2026.
+
 Vor dem Build: Bauprobe Android (`app-android-build.yml`, läuft auf jedem App-PR) und für iOS die Prüfungen ohne Mac
 (`npm test`, `npm run poc`, Swift-Syntax und `project.pbxproj` gegen den letzten erfolgreichen TestFlight-Lauf).
 
