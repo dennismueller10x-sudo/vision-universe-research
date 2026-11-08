@@ -186,6 +186,10 @@ const returnGate = (doc) => patternKind(doc).gates.find((g) => g.id === "returnB
    zwischen zwei Materialisierungen fortschreiben, ohne das Zertifikat neu zu
    bauen. Nur dort darf ein Unterschied liegen; PATTERN_EVIDENCE nie. */
 const HISTORY_PATH = /^\/kinds\/(STRATEGY_BACKTEST|FACTOR_RANKING_BACKTEST)\//;
+/* Haengt an einer Eingabedatei, die der Test nicht hat: die Materialisierung uebergibt
+   --oos-rows (build-setup-outcomes.mjs --oos-rows-out, nicht unter quant/data); ohne sie
+   meldet der Erzeuger rowsExported false. Kein Bezug zur Musterstudie. */
+const INPUT_PATH = /^\/kinds\/SETUP_BACKTEST\/oos\/rowsExported$/;
 function diffPaths(a, b, path = "", out = []) {
   if (JSON.stringify(a) === JSON.stringify(b)) return out;
   if (a && b && typeof a === "object" && typeof b === "object" && Array.isArray(a) === Array.isArray(b)) {
@@ -208,7 +212,7 @@ test("Zertifizierung: die committete Kursrendite-Studie ergibt das committete Ar
     /* Bytegleich, solange die Historien seit der Materialisierung stehen; sonst
        nur in den Historien-Pfaden verschieden. */
     const paths = diffPaths(committedCert, doc).filter((p) => p !== "/generatedAt");
-    assert.deepEqual(paths.filter((p) => !HISTORY_PATH.test(p)), [], "Unterschiede ausserhalb der Historien: " + paths.join(", "));
+    assert.deepEqual(paths.filter((p) => !HISTORY_PATH.test(p) && !INPUT_PATH.test(p)), [], "Unterschiede ausserhalb der Historien: " + paths.join(", "));
   }
   assert.equal(JSON.stringify(patternKind(doc)), JSON.stringify(patternKind(committedCert)), "PATTERN_EVIDENCE bytegleich");
   if (committedStudy.returnType !== "TOTAL_RETURN") {
