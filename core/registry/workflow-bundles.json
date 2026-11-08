@@ -148,8 +148,9 @@
    "purpose": "manuelle Betriebswerkzeuge, Diagnosen, Einmal-Laeufe",
    "workflow": "maintenance.yml",
    "replaces": [
+    "landing-cloudflare-audit.yml",
     "r2-audit.yml",
-    "landing-cloudflare-audit.yml"
+    "tiingo-scale.yml"
    ]
   }
  },
@@ -324,10 +325,6 @@
   },
   "technical-ci.yml": {
    "bundle": "ci"
-  },
-  "tiingo-scale.yml": {
-   "bundle": "maintenance",
-   "retireCandidate": true
   },
   "universe-master.yml": {
    "bundle": "pipeline-weekly"
