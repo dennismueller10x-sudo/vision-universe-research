@@ -20,14 +20,14 @@ Generierte Berichte:
 - [Backtest-Readiness](SUPERTRADER_STRATEGY_BACKTEST_READINESS.md)
 
 Methodenberichte:
-- [Verträge](SUPERTRADER_SOURCE_FAITHFUL_CONTRACTS.md)
-- [Turtle](SUPERTRADER_SF_TURTLE.md)
-- [Darvas](SUPERTRADER_SF_DARVAS.md)
-- [Weinstein](SUPERTRADER_SF_WEINSTEIN.md)
-- [Pocket Pivot/BGU](SUPERTRADER_SF_POCKET_PIVOT_BGU.md)
-- [Minervini](SUPERTRADER_SF_MINERVINI.md)
-- [Kullamägi](SUPERTRADER_SF_KULLAMAGI.md)
-- [Holy Grail](SUPERTRADER_SF_HOLY_GRAIL.md)
+- [Verträge](archiv/SUPERTRADER_SOURCE_FAITHFUL_CONTRACTS.md)
+- [Turtle](archiv/SUPERTRADER_SF_TURTLE.md)
+- [Darvas](archiv/SUPERTRADER_SF_DARVAS.md)
+- [Weinstein](archiv/SUPERTRADER_SF_WEINSTEIN.md)
+- [Pocket Pivot/BGU](archiv/SUPERTRADER_SF_POCKET_PIVOT_BGU.md)
+- [Minervini](archiv/SUPERTRADER_SF_MINERVINI.md)
+- [Kullamägi](archiv/SUPERTRADER_SF_KULLAMAGI.md)
+- [Holy Grail](archiv/SUPERTRADER_SF_HOLY_GRAIL.md)
 
 ## Architektur in einem Absatz
 

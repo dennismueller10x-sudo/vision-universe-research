@@ -71,7 +71,7 @@ Zeichen: ✔ ja · ◐ teilweise · ✘ nein · – nicht zutreffend.
 
 ## 2. P0 – Security Master 1.3.0
 
-Freigabepaket: [data/security-master/SECURITY_MASTER_1_3_0_FREIGABE.md](../../data/security-master/SECURITY_MASTER_1_3_0_FREIGABE.md) (#1240).
+Freigabepaket: [data/security-master/SECURITY_MASTER_1_3_0_FREIGABE.md](../data/security-master/SECURITY_MASTER_1_3_0_FREIGABE.md) (#1240).
 
 | Prüfpunkt | Befund |
 |---|---|

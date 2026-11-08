@@ -1,0 +1,42 @@
+{
+ "schema": "vu-module-2",
+ "id": "discover",
+ "label": "Discover",
+ "status": "LIVE",
+ "route": "/discover/",
+ "access": "free",
+ "navigation": {
+  "group": "products",
+  "order": 1,
+  "label": "Discover",
+  "href": "/discover/#/",
+  "icon": "discover",
+  "claim": "Aktien entdecken",
+  "entries": [
+   ["Übersicht", "/discover/#/", "⌂"],
+   ["Welten", "/discover/#/welten", "◎"],
+   ["Strategien", "/discover/#/strategien", "◬"],
+   ["Entdecken", "/discover/#/einzeln/US_REAL", "◇"],
+   ["Suchen", "/discover/#/suche", "⌕"],
+   ["Märkte", "/discover/#/maerkte", "≋"],
+   ["Watchlist", "/discover/#/watchlist", "♡"]
+  ]
+ },
+ "data": [
+  "discover",
+  "discoverImBlickLive",
+  "europeDiscoverDisplay",
+  "globalDiscoverUniverse"
+ ],
+ "reads": [
+  "eodPrices",
+  "longSeries",
+  "intraday",
+  "fxReference",
+  "indexMembership",
+  "companyNames",
+  "marketPulse",
+  "fundamentalsConsumer"
+ ],
+ "tests": ["discover/tests/*.test.mjs", "scripts/discover/tests/*.test.mjs", "core/tests/discover-universe.test.mjs"]
+}

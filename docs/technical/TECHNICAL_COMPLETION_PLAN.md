@@ -196,7 +196,7 @@ Wer die Arbeit fortsetzt, beginnt hier:
   - Die Verspätung des Zeitplans ist eine Workflow-Frage (Vorschlag im Readiness-Bericht §4).
 
 **Stand 29.10.2026, 13 Uhr UTC:**
-- Readiness-Bericht: [TECHNICAL_READINESS_REPORT.md](TECHNICAL_READINESS_REPORT.md). Offen sind nur A1 (P0) und E3 (P1); beide werden am 30.10. um 06:40 UTC geprüft, danach wird der Bericht ergänzt.
+- Readiness-Bericht: [TECHNICAL_READINESS_REPORT.md](../archiv/technical/TECHNICAL_READINESS_REPORT.md). Offen sind nur A1 (P0) und E3 (P1); beide werden am 30.10. um 06:40 UTC geprüft, danach wird der Bericht ergänzt.
 - #1109 (H4) gemergt und live. E4/D5, F5 und A4 sind vom Owner zurückgestellt (⏸).
 - Nächstes Produktpaket AP8 (Strategie-Vorlagen) ist geplant und wartet auf die Owner-Entscheidungen in STRATEGY_TEMPLATES_PLAN.md §7.
 

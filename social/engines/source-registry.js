@@ -94,8 +94,8 @@
         "scripts/social/plan-hashtag-observation.mjs",
         "scripts/social/ingest-external-observation.mjs",
         "scripts/social/verify-hashtag-access.mjs",
-        ".github/workflows/social-external-observe.yml",
-        ".github/workflows/social-hashtag-capability.yml"
+        ".github/workflows/social.yml",
+        ".github/workflows/social.yml"
       ],
       reactivation: "Owner-Entscheidung, dann docs/VU_OWNER_STEP_A_META_REAUTH.md"
     },
@@ -109,7 +109,7 @@
         "social/engines/creator-universe.js",
         "scripts/social/discover-creators.mjs",
         "scripts/social/enrich-youtube-metrics.mjs",
-        ".github/workflows/social-external-intelligence.yml"
+        ".github/workflows/social.yml"
       ],
       reactivation: "Owner-Entscheidung, dann docs/VU_OWNER_STEP_B_YOUTUBE.md"
     }

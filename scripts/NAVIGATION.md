@@ -6,7 +6,7 @@ Neue Hauptmenüs nur in der Liste `items` ergänzen; alle Seiten laden dieselbe 
 die Vollbildansichten von ETF und Magazin.
 
 Neue HTML-Seiten mit `node scripts/sync-navigation.mjs` integrieren. Der Workflow
-`sync-navigation.yml` erledigt dies auch bei neuen HTML-Dateien auf main automatisch.
+`deploy.yml (Teil navigation, vormals sync-navigation.yml)` erledigt dies auch bei neuen HTML-Dateien auf main automatisch.
 Keine zusätzliche Kopie des Hauptheaders in neuen Seiten anlegen.
 Der Morning-Generator bindet die Komponente direkt bei jeder neuen Ausgabe ein.
 Bereichsinterne Navigation und Datenaktualisierung bleiben unabhängig davon erhalten.

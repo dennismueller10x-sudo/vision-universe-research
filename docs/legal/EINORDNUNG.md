@@ -453,7 +453,7 @@ Pflichten: Nur nach Anwaltsprüfung.
 3. **Offenlegung trotzdem:** Die Seite „Methodik, Quellen und Interessen“ wird aus jeder Ergebnisansicht verlinkt
    (`assets/legal-notices.json`). Sie nennt Methode, Datenstand und Regelversion an jedem Ergebnis; das gibt es
    weitgehend schon.
-4. **Wortwahl umsetzen** (Befunde in [WORTWAHL-BEFUNDE.md](WORTWAHL-BEFUNDE.md), Umsetzung durch Strang D2).
+4. **Wortwahl umsetzen** (Befunde in [WORTWAHL-BEFUNDE.md](../archiv/legal/WORTWAHL-BEFUNDE.md), Umsetzung durch Strang D2).
 5. **Renditen** nur mit dem Backtest-Standard (2.3) und Owner-Freigabe.
 6. **Pflicht-Links in der App:**
    - immer: Impressum, Datenschutz, Nutzungsbedingungen, Risikohinweise;

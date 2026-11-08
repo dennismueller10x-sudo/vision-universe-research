@@ -116,7 +116,7 @@ Den Workflow, der Snapshot und entschlüsseltes Archiv gleichzeitig sieht (O4 in
 ## 4. Abhängigkeit vom Security Master 1.1.0 → 1.3.0
 
 - **Keine harte Abhängigkeit.** Universum A stammt aus dem eingefrorenen Snapshot. Die securityId kommt aus `core/identity.js`, nicht aus dem Stamm.
-- **Weiche Abhängigkeit:** Die Identitätssperre gibt es erst, wenn Stamm 1.3.0 committet und die Liste daraus erzeugt ist (Schritt 1 in [SECURITY_MASTER_IDENTITY_BLOCKLIST.md](data/SECURITY_MASTER_IDENTITY_BLOCKLIST.md)). Bis dahin läuft die Studie ohne sie (`identityBlocklistMode: NOT_SUPPLIED`). Danach wird sie nur gelesen und gezählt.
+- **Weiche Abhängigkeit:** Die Identitätssperre gibt es erst, wenn Stamm 1.3.0 committet und die Liste daraus erzeugt ist (Schritt 1 in [SECURITY_MASTER_IDENTITY_BLOCKLIST.md](archiv/data/SECURITY_MASTER_IDENTITY_BLOCKLIST.md)). Bis dahin läuft die Studie ohne sie (`identityBlocklistMode: NOT_SUPPLIED`). Danach wird sie nur gelesen und gezählt.
 - Ändert der Erzeuger Schema oder Version, folgt die Prüfung automatisch, weil die Konstanten importiert werden. Eine Liste der alten Version wird dann abgelehnt.
 - Ändert sich `core/identity.js`, stimmt der in der Registrierung festgeschriebene Hash nicht mehr. Das erfordert eine neue Registrierung.
 - An Stamm, Gate, Freigabeliste und Sperrlogik ändert diese Arbeit nichts.
