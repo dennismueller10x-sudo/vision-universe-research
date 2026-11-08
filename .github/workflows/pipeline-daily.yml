@@ -268,6 +268,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Vorsorge-Stamm neu bauen (ohne Netz)
         run: node scripts/vorsorge/build-etf-data.mjs --quiet
       - name: Nur erwartete Pfade veraendert
@@ -439,6 +442,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Tests der Validierung
         run: node --test discover/tests/market-validation.test.mjs
       - name: Rohdaten laden (French, FRED)
