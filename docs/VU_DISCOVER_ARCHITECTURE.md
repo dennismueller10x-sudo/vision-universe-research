@@ -89,6 +89,13 @@ Ranglisten, Perzentile und Scores werden **ausschliesslich innerhalb eines
 Universums** gerechnet. Ein "Top 3 %" aus einem halb erfundenen Universum
 waere eine Falschaussage.
 
+## 3a. Europa (Stand 08.11.2026)
+
+449 europäische Aktien (319 aus Deutschland) aus `discover/data/europe/` (Erzeuger `scripts/marketstack/europe-discover-publication.mjs`, Tagesschlusskurse unbereinigt, Lücken bleiben offen). Quant, Technical und Supertrader bleiben für Europa gesperrt, bis die Kurse lückenlos sind.
+
+- **Discover:** Suche, Aktienseite (`#/s/EUROPE/<securityId>`) und Watchlist. Befund 08.11.: ohne Suche gab es keinen Einstieg (`#/c/EUROPE/all` war unverlinkt).
+- **Screener Europa** (`/screener/europa/`): eigene einfache Kursspalten neben dem US-Screener, kein Fachmodell. Daten bei der Veröffentlichung aus den Europa-Reihen (`scripts/screener/build-europe.mjs`), Regel in `screener/europe-close-metrics.js`. **Regel:** Kursveränderung 1M/3M/6M/1J (21/63/126/252 Börsentage des exakten Handelsplatzes), Abstand zum 52-Wochen-Hoch und zur 50-Tage-Linie stehen nur, wenn mindestens 90 % der Börsentage im Fenster einen veröffentlichten Schluss haben (Kursveränderung zusätzlich am ersten und letzten Tag) und kein Sprung über 40 % zwischen zwei Schlüssen liegt (unbereinigt, möglicher Split); sonst bleibt das Feld leer. Abdeckung 06.11.: 435 Aktien, 1M 433, 3M 427, 6M 152, 1J 147, 52W 149, SMA50 429. Wie Discover blendet die Seite Aktien mit mehr als drei abgeschlossenen Börsentagen Rückstand aus.
+
 ## 4. Datenfluss
 
 ```
