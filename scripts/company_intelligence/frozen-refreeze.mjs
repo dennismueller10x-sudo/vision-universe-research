@@ -14,6 +14,7 @@ import {refreshConfig,frozenTickers,frozenInventory,refreshApproved} from './ref
 import {universeConfig} from './universe-approval.mjs';
 import {approval} from './production-approval.mjs';
 import {objectPool} from './bounded-objects.mjs';
+import {projectUniverseCohort} from './universe-projection.mjs';
 /* The frozen rollback may trail the live legacy GOOD by at most this much when
    activation accepts a certified re-freeze; the legacy GOOD moves on between the
    two separate dispatches (and during the long activation audit). */
@@ -130,6 +131,70 @@ export async function refreezeRollback(driver,{temporary,fetchDelivery,expectGen
   throw error;
  }
  return {status:'REFROZEN',generation:current.generation,previousGeneration:old.generation,archiveKey,stockCount:46,issuerCount:45,privateStateModified:false,activationModified:false,gateModified:false,universeGoodModified:false};
+}
+/* Re-Freeze bei AKTIVEM Universum (Entscheidung Steuerung 08.11.2026): das Legacy-GOOD rueckt dann nicht vor.
+   Quelle ist das live ausgelieferte, live abgenommene Universe-GOOD; daraus entsteht die 46er-Projektion
+   (universe-projection.mjs: Emittenten-Dateien bytegleich, Index und Lookup auf die Kohorte eingeschraenkt).
+   Dieselben Sicherungen wie `refreezeRollback`: Schutzzustand vorher/nachher, Archiv des alten Zeigers,
+   Kandidat im inaktiven Slot, Compare-and-Swap, Readback aus leerem Verzeichnis, sonst Wiederherstellung.
+   Schreibt nur im Rollback-Namensraum; Legacy-GOOD, Universe-GOOD, Aktivierung und Gate bleiben byte-gleich. */
+export async function refreezeFromUniverse(driver,{temporary,fetchDelivery,expectGeneration=null,now=Date.now,codeSha='local'}){
+ const namespace=universeConfig.rollbackNamespace,source=universeConfig.consumerNamespace;
+ const before=await snapshot(driver);
+ // 1. Nur bei aktivem Universum (sonst gilt der Legacy-Weg `refreezeRollback`).
+ const activation=await bytesOf(driver,activationKey());
+ assert(activation,'PROJECTION_REQUIRES_ACTIVE_UNIVERSE');
+ {const p=JSON.parse(activation);assert(p.schema===1&&p.approvalId===universeConfig.approvalId&&p.state==='AVAILABLE','PROJECTION_REQUIRES_ACTIVE_UNIVERSE');}
+ // 2. Aktuelles Universe-GOOD.
+ const universeBytes=await bytesOf(driver,goodKey(source));
+ const universe=await goodState(driver,source);
+ assert(universe&&universe.manifest.scope==='PER_ISSUER_ELIGIBILITY','PROJECTION_UNIVERSE_GOOD_REQUIRED');
+ if(expectGeneration)assert.equal(universe.generation,expectGeneration,'REFREEZE_EXPECTED_GENERATION_MISMATCH');
+ // 3. Produktion liefert genau dieses GOOD aus (live abgenommener Stand).
+ const live=await fetchDelivery();
+ assert(live?.status==='PASS'&&live.generation===universe.generation&&live.issuers===Object.keys(universe.manifest.eligibility).length&&live.cohortStocks===universe.manifest.tickers.length,'PROJECTION_LIVE_NOT_UNIVERSE_GOOD');
+ // 4. Bestehender Freeze: nur er darf ersetzt werden, nur per CAS.
+ const oldBytes=await bytesOf(driver,goodKey(namespace));
+ const old=await goodState(driver,namespace);
+ assert(old,'REFREEZE_NO_EXISTING_FREEZE');
+ assertLegacyScope(old,'REFREEZE_EXISTING_FREEZE_SCOPE_INVALID');
+ const flags={privateStateModified:false,activationModified:false,gateModified:false,universeGoodModified:false};
+ if(old.refreeze?.projection?.sourceGeneration===universe.generation){
+  await verifyRollbackReadback(driver,{expected:old,directory:join(temporary,'refreeze-readback')});
+  return {status:'ALREADY_CURRENT',generation:old.generation,previousGeneration:null,projectedFrom:{namespace:source,generation:universe.generation},stockCount:46,issuerCount:45,...flags};
+ }
+ assert(Date.parse(universe.manifest.generatedAt)>Date.parse(old.manifest.generatedAt),'REFREEZE_NOT_NEWER_THAN_EXISTING_FREEZE');
+ // 5. Projektion in ein leeres Verzeichnis (jede uebernommene Datei hash-geprueft).
+ const directory=join(temporary,'refreeze-projection');
+ const projected=await projectUniverseCohort(driver,{universe,output:directory,codeSha});
+ const current={generation:projected.manifest.generation,manifest:projected.manifest};
+ // 6. Alten Zeiger unveraenderlich archivieren.
+ const archiveKey=refreezeArchiveKey(old.generation),archive=refreezeArchiveBytes(old,oldBytes);
+ const existingArchive=await bytesOf(driver,archiveKey);
+ assert(!existingArchive||existingArchive.equals(archive),'REFREEZE_ARCHIVE_COLLISION');
+ if(!existingArchive){await driver.put(archiveKey,archive);const back=await bytesOf(driver,archiveKey);assert(back&&back.equals(archive),'REFREEZE_ARCHIVE_READBACK_FAILED');}
+ // 7. Kandidat in den inaktiven Slot.
+ const candidate=await prepareCandidate(driver,{namespace,directory,good:old});
+ assert.equal(candidate.manifest.generation,current.generation);
+ // Das Universe-GOOD darf sich waehrend des Kopierens nicht bewegt haben.
+ const universeAgain=await bytesOf(driver,goodKey(source));
+ assert(universeBytes&&universeAgain&&universeAgain.equals(universeBytes),'REFREEZE_CURRENT_CHANGED');
+ const lineage=[...(old.refreeze?.lineage||[]),old.generation];
+ const marker={schema:1,sourceNamespace:source,sourceGeneration:current.generation,previousGeneration:old.generation,previousPointerSha256:sha(oldBytes),
+  sourceAssetsSha256:sha(JSON.stringify(current.manifest.assets)),archiveKey,lineage,certifiedAt:new Date(now()).toISOString(),
+  projection:{kind:projected.manifest.projection.kind,sourceGeneration:universe.generation,sourceGoodPointerSha256:sha(universeBytes)}};
+ const next={schema:1,state:'GOOD',generation:candidate.manifest.generation,payloadNamespace:candidate.payloadNamespace,manifest:candidate.manifest,health:projected.health,inventory:projected.inventory,previous:null,refreeze:marker};
+ const newBytes=await commitRefreeze(driver,{namespace,candidate,oldBytes,next});
+ // 8. Readback aus leerem Verzeichnis und unveraenderter Schutzzustand; sonst zurueck.
+ try{
+  await verifyRollbackReadback(driver,{expected:current,directory:join(temporary,'refreeze-readback')});
+  assert.deepEqual(await snapshot(driver),before,'REFREEZE_PROTECTED_STATE_CHANGED');
+ }catch(error){
+  const now_=await bytesOf(driver,goodKey(namespace));
+  if(now_&&now_.equals(newBytes))await restorePointer(driver,goodKey(namespace),oldBytes);
+  throw error;
+ }
+ return {status:'REFROZEN',generation:current.generation,previousGeneration:old.generation,archiveKey,projectedFrom:{namespace:source,generation:universe.generation},stockCount:46,issuerCount:45,...flags};
 }
 /* Activation's freeze rule. Strict equality stays the default. A re-freeze made by
    `refreeze` (marker + archive anchored to the superseded pointer) is accepted

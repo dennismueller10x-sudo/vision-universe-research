@@ -15,7 +15,7 @@ import {consumerCacheDriver,saveConsumerCache} from './consumer-release-cache.mj
 import {prepareFrozenRollback} from './frozen-rollback.mjs';
 import {releaseHealth,updateAcceptedHealth} from './release-health.mjs';
 import {sync,prefixFor as privatePrefix} from './sync-state.mjs';
-import {ensureRollbackFreeze,refreezeRollback,fetchLiveDelivery} from './frozen-refreeze.mjs';
+import {ensureRollbackFreeze,refreezeRollback,refreezeFromUniverse,fetchLiveDelivery} from './frozen-refreeze.mjs';
 import {restoreLegacyGood} from './legacy-restore.mjs';
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],read=p=>JSON.parse(readFileSync(p));
 const driver=createS3DriverFromEnv(),temporary=resolve(arg('--temporary'));mkdirSync(temporary,{recursive:true});
@@ -64,8 +64,11 @@ try{
   save({status:'HEALTH_RECONCILED',...result,lastSuccessfulPrivateRefresh:health.lastSuccessfulRefresh,lastSuccessfulConsumerBuild:health.lastSuccessfulConsumerBuild,privateStateModified:false,consumerAssetsModified:false});
  }else if(args[0]==='refreeze'){
   // Explicit re-freeze of the immutable 46 rollback onto the currently served legacy GOOD; never touches activation, gate or the universe GOOD.
-  const result=await refreezeRollback(driver,{temporary,fetchDelivery:()=>fetchLiveDelivery(),expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null});
-  save(result);console.log(JSON.stringify({status:result.status,generation:result.generation,previousGeneration:result.previousGeneration}));
+  // --from-universe: bei aktivem Universum die 46er-Projektion des live ausgelieferten Universe-GOOD einfrieren
+  // (frozen-refreeze.mjs#refreezeFromUniverse); --expect-generation nennt dann die Universe-Generation.
+  const options={temporary,fetchDelivery:()=>fetchLiveDelivery(),expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null};
+  const result=args.includes('--from-universe')?await refreezeFromUniverse(driver,{...options,codeSha:process.env.GITHUB_SHA||'local'}):await refreezeRollback(driver,options);
+  save(result);console.log(JSON.stringify({status:result.status,generation:result.generation,previousGeneration:result.previousGeneration,...(result.projectedFrom?{projectedFrom:result.projectedFrom}:{})}));
  }else if(args[0]==='restore-legacy'){
   // Setzt den Legacy-good.json-Zeiger (LEGACY_FALLBACK/fehlt) aus dem verifizierten eingefrorenen Rollback neu; oeffnet das Gate nie, fasst Aktivierung, Universe-GOOD und privaten Stand nicht an.
   const result=await restoreLegacyGood(driver,{temporary,expectGeneration:args.includes('--expect-generation')?arg('--expect-generation'):null});
