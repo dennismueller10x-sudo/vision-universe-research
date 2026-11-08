@@ -201,6 +201,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -462,6 +465,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Existing R2 credentials are available
         env:
@@ -566,6 +572,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -727,6 +736,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref_name }}
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Werkzeug
         run: sudo apt-get install -y -qq poppler-utils > /dev/null
       - name: Primaerquellen laden
@@ -758,6 +770,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Existing R2 credentials are available
         env:
@@ -894,6 +909,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Register vor dem Lauf pruefen
         run: node scripts/technical/elliott-registry/verify.mjs --registry "$REG"
@@ -1006,6 +1024,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Quellen pruefen
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
@@ -1036,6 +1057,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: EU-Quellen pruefen (Form, Kopfzeilen, Nutzungsbedingungen)
         run: node scripts/vorsorge/probe-eu-etf-sources.mjs
       - name: Veroeffentlichen
@@ -1064,6 +1088,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: SEC N-PORT (vier Quartale) aufnehmen
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
@@ -1112,6 +1139,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: SEC Risk/Return (Kostenquoten aus Prospekten)
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
@@ -1157,6 +1187,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Engine and study contract tests (before any data is read)
         run: node --test quant/tests/emerging-leaders.test.mjs quant/tests/emerging-leaders-study.test.mjs
@@ -1262,6 +1295,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Modus aus der Commit-Nachricht
         id: m
         env:
@@ -1457,6 +1493,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Ist ein Zugang hinterlegt?
         env:
@@ -1569,6 +1608,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Probeabruf (Anzahlen, keine Kurse)
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
@@ -1590,6 +1632,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Modus bestimmen
         id: mode
         env:
