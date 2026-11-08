@@ -18,7 +18,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const OUT = join(root, "vorsorge/data/sources/etf-eu-source-probe.json");
 const UA = "VisionUniverse-Research/1.0 (+https://research.visionuniverse.de)";
 const NOW = new Date();
@@ -119,7 +119,7 @@ for (const core of ["esma_registers_funds_cbdif", "esma_registers_cbdif", "esma_
     const x = await get("https://www.cashmarket.deutsche-boerse.com" + row.files[0], { binary: true, timeout: 120000 });
     row.sample = { status: x.status, bytes: x.bytes, contentType: x.contentType };
     if (x.buf && /\.xlsx/i.test(row.files[0])) {
-      try { const { readXlsx } = await import(join(root, "scripts/vorsorge/adapters/xlsx.mjs")); const wb = readXlsx(x.buf); const rows = wb.rows || []; const hi = rows.findIndex((r) => r.some((c) => /ISIN/i.test(String(c)))); row.sample.sheetNames = wb.sheetNames; row.sample.header = rows[hi] || null; row.sample.rows = rows.length - hi - 1; } catch (e) { row.sample.xlsxError = String(e.message).slice(0, 120); }
+      try { const { readXlsx } = await import(join(root, "products/vorsorge/producer/adapters/xlsx.mjs")); const wb = readXlsx(x.buf); const rows = wb.rows || []; const hi = rows.findIndex((r) => r.some((c) => /ISIN/i.test(String(c)))); row.sample.sheetNames = wb.sheetNames; row.sample.header = rows[hi] || null; row.sample.rows = rows.length - hi - 1; } catch (e) { row.sample.xlsxError = String(e.message).slice(0, 120); }
     }
   }
   row.summary = row.files.length + " Dateien";
@@ -177,7 +177,7 @@ for (const [id, url] of [
       const tmp = join(root, ".market-cache/master-datasheet.xls"); mkdirSync(dirname(tmp), { recursive: true }); writeFileSync(tmp, x.buf);
       if (row.magic.startsWith("504b")) {
         try {
-          const { readXlsx } = await import(join(root, "scripts/vorsorge/adapters/xlsx.mjs"));
+          const { readXlsx } = await import(join(root, "products/vorsorge/producer/adapters/xlsx.mjs"));
           const wb = readXlsx(x.buf); const rows = wb.rows || [];
           const hi = rows.findIndex((r) => r.some((c) => /ISIN/i.test(String(c))));
           const head = hi >= 0 ? rows[hi].map(String) : [];

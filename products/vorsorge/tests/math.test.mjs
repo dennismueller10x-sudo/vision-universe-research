@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-const M = createRequire(import.meta.url)("../engines/vorsorge-math.js");
+const M = createRequire(import.meta.url)("../../../vorsorge/engines/vorsorge-math.js");
 const close = (a, b, eps = 0.01) => assert.ok(Math.abs(a - b) <= eps, `${a} != ${b}`);
 
 test("futureValue: Sparplan mit 0 % Rendite = Summe der Einzahlungen", () => {

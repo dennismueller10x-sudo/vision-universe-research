@@ -24,7 +24,7 @@ import { fileURLToPath } from "node:url";
 import { readXlsx } from "./xlsx.mjs";
 
 const require = createRequire(import.meta.url);
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
 const H = require(join(root, "vorsorge/engines/etf-holdings.js"));
 const F = require(join(root, "vorsorge/engines/etf-fundamentals.js"));
 

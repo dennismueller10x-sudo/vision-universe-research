@@ -37,7 +37,9 @@ test("SZ-2 · Wecker-Eintraege: kein Cron im Workflow, Eingang zeitplan, Marke i
       assert.ok(!workflowCrons(text).some((c) => c.cron === e.cron), f + ": Cron " + e.cron + " steht noch im Workflow (Doppelstart)");
     }
     assert.match(text, /workflow_dispatch:\s*\n\s+inputs:[\s\S]*?\n\s{6}zeitplan:\s*\n/, f + ": Eingang zeitplan fehlt");
-    assert.match(text, /^run-name: \$\{\{ inputs\.zeitplan && format\('\{0\} · Takt \{1\}', github\.workflow, inputs\.zeitplan\) \|\| '' \}\}$/m, f + ": run-name mit Marke fehlt");
+    /* Der Wecker erkennt seinen Lauf am Ende des Titels: "… · Takt <cron>" (worker-waker/src/zeitplan.mjs#marke).
+       Davor darf ein Buendel eigene Marken setzen (z. B. den Teil); ohne zeitplan gilt sein eigener Titel. */
+    assert.match(text, /^run-name: \$\{\{ inputs\.zeitplan && format\('[^']*· Takt \{(\d)\}', [^)]*inputs\.zeitplan\) \|\| .+ \}\}$/m, f + ": run-name mit Marke '· Takt {n}' am Ende fehlt");
     const ohne = text.replace(/^\s*#.*$/gm, "");
     for (const m of ohne.matchAll(/github\.event\.schedule(?! \|\| inputs\.zeitplan)/g)) assert.fail(f + ": github.event.schedule ohne inputs.zeitplan @" + m.index);
     for (const m of ohne.matchAll(/github\.event_name == 'schedule'(?! \|\| inputs\.zeitplan)/g)) assert.fail(f + ": Zeitplan-Weiche ohne inputs.zeitplan @" + m.index);

@@ -45,7 +45,7 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const TR = require(join(root, "quant/engines/canonical-total-return.js"));
 const Codec = require(join(root, "vorsorge/engines/series-codec.js"));
 const A = require(join(root, "vorsorge/engines/etf-analytics.js"));
