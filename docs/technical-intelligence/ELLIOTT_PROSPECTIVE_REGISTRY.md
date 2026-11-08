@@ -4,7 +4,7 @@ Stand: 07.10.2026 (Mission X; Registry 1.1.0).
 
 * Code: `scripts/technical/elliott-registry/` (`register.mjs`, `product-view.mjs`, `ledger.mjs`, `verify.mjs`, `evaluate-registry.mjs`).
 * Daten: `quant/data/technical-intelligence/elliott-registry/`.
-* Workflow: `.github/workflows/elliott-prospective-registry.yml`.
+* Workflow: `.github/workflows/research.yml`, Teil `elliott-register` (vormals `elliott-prospective-registry.yml`; Zeitpläne unverändert, Dispatch `teil=elliott-register`, Eingabe `max_weeks`).
 
 ## Zweck
 
