@@ -8,7 +8,7 @@
      1. alle Crons des Workflows raus (der Block schedule: verschwindet, wenn er leer ist)
      2. workflow_dispatch bekommt den Eingang zeitplan, oben steht der run-name mit Marke
      3. die Weiche: github.event.schedule -> (github.event.schedule || inputs.zeitplan),
-        github.event_name == 'schedule' -> (… || inputs.zeitplan),
+        github.event_name == 'schedule' -> (… || inputs.zeitplan != '')  (bleibt ein Wahrheitswert),
         github.event_name == 'workflow_dispatch' -> (… && !inputs.zeitplan),
         ${{ github.event_name }} und $GITHUB_EVENT_NAME -> Ereignis, das beim Takt "schedule" heisst (VU_EVENT)
      4. im Register: timer waker fuer alle Eintraege des Workflows (selber Commit, kein Doppelstart) */
@@ -53,9 +53,9 @@ export function cutover(text) {
   // 3. Weiche
   out = out.replace(/github\.event\.schedule(?! \|\| inputs\.zeitplan)/g, "(github.event.schedule || inputs.zeitplan)")
     .replace(/\$\{\{ \(github\.event\.schedule \|\| inputs\.zeitplan\) \}\}/g, "${{ github.event.schedule || inputs.zeitplan }}")
-    .replace(/github\.event_name != 'schedule'/g, "!(github.event_name == 'schedule' || inputs.zeitplan)")
+    .replace(/github\.event_name != 'schedule'/g, "!(github.event_name == 'schedule' || inputs.zeitplan != '')")
     .replace(/github\.event_name != 'workflow_dispatch'/g, "!(github.event_name == 'workflow_dispatch' && !inputs.zeitplan)")
-    .replace(/github\.event_name == 'schedule'(?! \|\| inputs\.zeitplan)/g, "(github.event_name == 'schedule' || inputs.zeitplan)")
+    .replace(/github\.event_name == 'schedule'(?! \|\| inputs\.zeitplan)/g, "(github.event_name == 'schedule' || inputs.zeitplan != '')")
     .replace(/github\.event_name == 'workflow_dispatch'(?! && !inputs\.zeitplan)/g, "(github.event_name == 'workflow_dispatch' && !inputs.zeitplan)")
     .replace(/\$\{\{\s*github\.event_name\s*\}\}/g, "${{ " + EVENT + " }}");
   // Doppelte Klammern aus "(github.event_name == 'schedule')" vermeiden ist kosmetisch; YAML/Ausdruck bleiben gueltig.
