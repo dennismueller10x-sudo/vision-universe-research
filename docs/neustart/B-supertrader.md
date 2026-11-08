@@ -12,7 +12,7 @@ Strang B ist abgeschlossen (Owner-Entscheidung 05.11.2026). Neue Forschung gibt 
 | `supertrader-sf8-candidates.yml` | Di–Sa 11:43 und nach dem Signallauf | Research-Kandidaten (SF8), automatisch veröffentlicht, solange der Vertrag C1–C7 erfüllt ist (`SF8_AUTO_PUBLISH=true` seit 05.11.). Öffentlich ohne Plan und ohne Order- oder Stoppmarke; DQ-SF8-4 prüft das ab Stand 05.11. auf allen Stufen. | roter Lauf; Alarm-Issue; `BLOCKED` im Schritt-Bericht |
 | `pipeline-daily.yml`, Teil `hausstrategie` (vormals `supertrader-house-live.yml`) | Di–Sa 01:30, am 25. 03:15 (SEC) | Hausstrategie HS4-V03: Monatsentscheidung am letzten Handelstag. Der volle Ledger liegt privat; öffentlich stehen nur Zahl der Titel und Fingerabdruck, Bestände erst nach 365 Tagen. | roter Lauf; Abweichung privat/öffentlich bricht ab |
 | `supertrader-paper-2027.yml` | Di–Sa 02:37 und 09:41 | Papierhandel SF6-PAPER-2027: Bis 31.12.2026 tut er nichts, ab 04.01.2027 zeichnet er auf. | roter Lauf |
-| `supertrader-live-smoke.yml` | Mo–Fr 13:43 | Rauchtest der ausgelieferten Seiten | roter Lauf |
+| `monitor.yml`, Prüfung `supertrader` (vormals `supertrader-live-smoke.yml`) | Mo–Fr 13:43 | Rauchtest der ausgelieferten Seiten | roter Lauf |
 
 Manuell, nur bei Bedarf: `supertrader-st-hist-top5.yml` (historische Forschung, nur versiegelt, Holdout gesperrt), `supertrader-house.yml`, `supertrader-validation.yml`, `supertrader-research-snapshot.yml`.
 
