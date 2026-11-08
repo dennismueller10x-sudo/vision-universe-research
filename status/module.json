@@ -1,0 +1,16 @@
+{
+ "schema": "vu-module-2",
+ "id": "status",
+ "label": "Systemzustand",
+ "status": "LIVE",
+ "route": "/status/",
+ "access": "intern",
+ "navigation": null,
+ "data": [
+  "dataQualityReport"
+ ],
+ "reads": [],
+ "tests": [
+  "core/tests/status-equity-quality.test.mjs"
+ ]
+}
