@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<title>Vision Universe Aktienmagazin · Nr. 01 · 09.11.2026</title>
+<link rel="stylesheet" href="mag.css">
+<script src="data.js"></script><script src="charts.js"></script><script src="lib.js"></script>
+</head><body>
+<!-- 01-cover.html -->
+<section class="page dark">
+  <div class="bleed" style="background-image:url(img/hf-cover-chip-capitol.jpg);background-position:50% 35%"></div>
+  <div class="bleed" style="background:linear-gradient(180deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.15) 26%,rgba(0,0,0,0) 45%,rgba(0,0,0,.7) 66%,#000 88%)"></div>
+  <div class="pad" style="inset:9mm 11mm 10mm">
+    <div class="mast-row">
+      <div>
+        <img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:6.2mm;filter:invert(1)" alt="Vision Universe">
+        <div style="font-size:47pt;font-weight:900;letter-spacing:-.055em;line-height:.85;margin-top:2mm">AKTIEN<span style="color:var(--lime)">MAGAZIN</span></div>
+      </div>
+      <div style="text-align:right;font-size:7.2pt;font-weight:800;letter-spacing:.1em;text-transform:uppercase;line-height:1.55">Nr. 01 · KW 46<br><span style="color:var(--lime)">09.11.2026</span><br><span style="color:#9a9a9a">Daten bis 06.11.</span></div>
+    </div>
+    <div style="position:absolute;left:0;top:38mm;display:flex;gap:2mm;flex-wrap:wrap;max-width:118mm">
+      <span class="pill dn" style="background:#fff">NVIDIA −8,8 %</span><span class="pill dn" style="background:#fff">MICRON −22 %</span><span class="pill dn" style="background:#fff">VERTIV −21 %</span><span class="pill up">APPLOVIN +71 %</span>
+    </div>
+    <div style="position:absolute;right:0;top:52mm;text-align:center">
+      <div class="stamp" style="font-size:9pt">3&nbsp;BIO.&nbsp;$<br><span style="font-size:7pt;font-weight:800">an einem Tag weg</span></div>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:122mm">
+      <span class="ressort" style="background:var(--lime);color:#000">Titelthema · 9 Seiten</span>
+      <div style="font-size:66pt;font-weight:900;letter-spacing:-.065em;line-height:.82;margin-top:3mm">DIE KI-<br><span style="color:var(--lime)">BREMSE</span></div>
+      <div class="sub" style="margin-top:4mm;max-width:150mm;font-size:12pt;color:#e6e6e6">Washington wählt, die Chips stürzen ab. Was hinter dem schwersten Chip-Tag seit 2020 steckt und welche sechs KI-Aktien jetzt im Stresstest stehen.</div>
+    </div>
+    <div class="grid" style="position:absolute;left:0;right:0;bottom:6mm;grid-template-columns:1fr 1fr 1fr 1fr;gap:4mm">
+      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-schach-trading.jpg)"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">HEDGEFONDS</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">Burry wettet gegen Chips, Berkshire kauft eigene Aktien</div></div></div>
+      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-mobile-games-werbung.jpg)"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">ANALYSE</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">AppLovin: +71&nbsp;% in fünf Tagen. Was dahintersteckt</div></div></div>
+      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-gpu-rack.jpg);background-position:50% 30%"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">CHART DER WOCHE</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">Nvidia: Doppeltop im Wochenchart bestätigt</div></div></div>
+      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-lupe-tabellen.jpg)"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">SCREENING</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">19 Aktien, die im Ausverkauf stiegen</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 02-editorial.html -->
+<section class="page">
+  <div data-run="Editorial"></div>
+  <div class="pad" style="top:15mm">
+    <div style="display:grid;grid-template-columns:1fr 78mm;gap:8mm;height:100%">
+      <div>
+        <span class="ressort">Editorial</span>
+        <div class="hx" style="margin-top:3mm">Die Woche, in der Washington die KI einholte</div>
+        <div class="body nodrop" style="margin-top:5mm;font-size:9.4pt">
+          <p>Liebe Leserin, lieber Leser,</p>
+          <p>am Mittwoch feierte die Wall Street noch. Die Demokraten hatten den Kongress gewonnen, Donald Trump erkannte das Ergebnis an, und der Dow Jones legte so viel zu wie an keinem anderen Tag in diesem Jahr. Am Donnerstag kam die Rechnung. Der Halbleiter-Index verlor zwölf Prozent, der S&amp;P&nbsp;500 rund drei Billionen Dollar Börsenwert. Getroffen hat es genau die Aktien, die den Markt zwei Jahre lang getragen haben.</p>
+          <p>Wir haben uns nicht mit der Schlagzeile begnügt. Unsere Daten zeigen etwas, das in den meisten Berichten fehlt: <b>Mehr als die Hälfte der S&amp;P-500-Aktien hat diese Woche im Plus beendet.</b> Es war ein Crash der KI-Kette, nicht des ganzen Markts. Und nach dem Absturz ist manche KI-Aktie, gemessen am Gewinn, niedriger bewertet als ein Supermarkt-Konzern.</p>
+          <p>Im Titelthema nehmen wir sechs KI-Werte auseinander, von Nvidia bis CoreWeave. Wir zeigen, was die großen Hedgefonds im Oktober getan haben, warum Michael Burry gegen Chip-Aktien wettet und warum Berkshire so viele eigene Aktien kauft wie lange nicht. Dazu kommen die Gewinner und Verlierer der Berichtssaison, unser Screening der Woche und die Termine, die jetzt zählen, allen voran die Nvidia-Zahlen am 17. November.</p>
+          <p>Eines bleibt bei uns anders: Wir sagen Ihnen nicht, was Sie kaufen sollen. Wir zeigen Ihnen, was die Zahlen sagen. Entscheiden müssen Sie selbst.</p>
+          <p style="margin-top:4mm"><b>Ihre Redaktion von Vision Universe</b></p>
+        </div>
+        <div class="ph" style="height:62mm;margin-top:7mm;background-image:url(img/hf-redaktion-nacht.jpg)"><span class="ki">KI-Bild</span><div class="cap">Redaktionsschluss Sonntag, 08.11.2026. Kurse und Kennzahlen: Stand Freitag, 06.11., Börsenschluss New York.</div></div>
+      </div>
+      <div class="dark" style="margin:-15mm -14mm -16mm 0;padding:15mm 14mm 16mm 7mm;background:#000">
+        <div style="font-size:30pt;font-weight:900;letter-spacing:-.05em;color:#fff">Inhalt</div>
+        <div style="margin-top:4mm;display:grid;gap:3.2mm" data-k="toc"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+VUM.k('toc',()=>[
+ ['05','Titel','Die KI-Bremse','img/hf-capitol-sturm.jpg'],
+ ['08','Titel','Nvidia, Micron, Vertiv, Oracle, AMD im Stresstest','img/hf-gpu-rack.jpg'],
+ ['14','Analyse','AppLovin: der Sieger der Woche','img/hf-mobile-games-werbung.jpg'],
+ ['15','Analyse','Palantir: zu gut ist nicht gut genug','img/bv-serverraum-blau.jpg'],
+ ['18','Hedgefonds','Der Oktober der Profis','img/hf-schach-trading.jpg'],
+ ['20','Chart der Woche','Nvidias Doppeltop','img/bv-bildschirme-rot.jpg'],
+ ['21','Screening','Standhaft im Ausverkauf','img/hf-lupe-tabellen.jpg'],
+ ['23','Konjunktur','Jobs-Wunder und Zinsangst','img/hf-fed-gebaeude.jpg'],
+ ['25','Termine','Das wird die Woche','img/hf-boersenglocke.jpg'],
+].map(r=>`<div style="display:grid;grid-template-columns:22mm 1fr;gap:3mm;align-items:center"><div class="ph" style="height:15mm;border-radius:4px;background-image:url(${r[3]})"></div><div><div style="font-size:6.5pt;font-weight:900;letter-spacing:.12em;color:var(--lime);text-transform:uppercase">${r[0]} · ${r[1]}</div><div style="font-size:9pt;font-weight:800;line-height:1.15;margin-top:.6mm">${r[2]}</div></div></div>`).join('')+
+ `<div style="margin-top:2mm;border-top:1px solid #262626;padding-top:3mm;font-size:7.5pt;color:#9a9a9a;line-height:1.5"><b style="color:#fff">Außerdem:</b> Das war die Woche 03 · Zahlen der Woche 04 · Gewinner und Verlierer der Berichtssaison 16 · Berkshire, Ackman, 13F 19 · Markt-Radar 22 · Deutschland 24 · Aus der App 26 · Quick-Check 27</div>`);
+</script>
+
+<!-- 03-das-war.html -->
+<section class="page">
+  <div data-run="Das war die Woche"></div>
+  <div class="pad" style="top:15mm">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="mega" style="font-size:52pt">Das war&nbsp;…</div><div class="byline" style="text-align:right">02.–07. November 2026<br>die Woche in acht Meldungen</div></div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:5mm;margin-top:5mm" data-k="war"></div>
+  </div>
+  <div data-foot="Quellen: CNBC, CBS News, NBC News, Yahoo Finance, Marvell IR, Berkshire Hathaway 10-Q, BLS"></div>
+</section>
+<script>
+VUM.k('war',()=>[
+ ['img/hf-capitol-sturm.jpg','Mittwoch','Die Demokraten holen den Kongress','Trump erkennt das Ergebnis an, der Dow steigt um rund 3 %, so stark wie an keinem Tag in diesem Jahr. Die Börse hofft auf eine Patt-Lage in Washington.',1],
+ ['img/bv-bildschirme-rot.jpg','Donnerstag','Der Chip-Crash','Halbleiter-Index −12,3 %, der schwächste Tag seit März 2020. Bernie Sanders fordert noch am selben Tag einen landesweiten Baustopp für Rechenzentren.',1],
+ ['img/hf-glasfaser-laser.jpg','Montag','Marvell kauft Lumentum','Ein Aktientausch mit 115 Mrd. $ Unternehmenswert: 4,5 Marvell-Aktien je Lumentum-Aktie. Ziel ist die Führung bei Licht-Verbindungen in KI-Rechenzentren.',0],
+ ['img/hf-gpu-cluster-luft.jpg','Montag','Oracle braucht 20 Mrd. $','Die Hälfte über neue Aktien, die Hälfte über Anleihen. Am Freitag meldet Bloomberg, dass Microsoft einen KI-Mietvertrag mit Oracle auslaufen lässt.',0],
+ ['img/hf-mobile-games-werbung.jpg','Donnerstag','AppLovin: +31 % gegen den Trend','Am schwärzesten Tag der Woche springt die Werbeplattform nach starken Zahlen um ein Drittel nach oben. Auf fünf Tage: +71 %.',0],
+ ['img/bv-tresor-offen.jpg','Samstag','Berkshire kauft sich selbst','9,6 Mrd. $ für eigene Aktien im dritten Quartal, mehr als doppelt so viel wie im Vorquartal. Gleichzeitig mehr Aktien verkauft als gekauft.',0],
+ ['img/hf-lagerhalle-arbeit.jpg','Freitag','165.000 neue Jobs','Erwartet waren rund 70.000. Die Arbeitslosenquote sinkt auf 4,1 %. Der Markt rechnet laut CME FedWatch mehrheitlich mit einer Zinserhöhung im Dezember.',0],
+ ['img/hf-boersenglocke.jpg','Freitag','Anthropic: eine Billion weniger?','Für den geplanten Börsengang reden Investoren laut Bloomberg und WSJ jetzt über 1,0 bis 1,3 Bio. $ Bewertung, statt rund 2 Bio. $ vor einem Monat.',0],
+].map(r=>`<div style="display:grid;grid-template-columns:${r[4]?'1fr':'34mm 1fr'};gap:3mm;${r[4]?'':'align-items:start'}"><div class="ph" style="height:${r[4]?'48mm':'28mm'};background-image:url(${r[0]})"><span class="ki">KI-Bild</span></div><div><div style="font-size:6.8pt;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#000;background:var(--lime);display:inline-block;padding:1px 5px;border-radius:2px">${r[1]}</div><div style="font-size:${r[4]?'14pt':'11pt'};font-weight:900;letter-spacing:-.02em;line-height:1.08;margin-top:1.5mm">${r[2]}</div><div class="body" style="margin-top:1.2mm;font-size:8.2pt">${r[3]}</div></div></div>`).join(''));
+</script>
+
+<!-- 04-zahlen.html -->
+<section class="page dark">
+  <div data-run="Zahlen der Woche"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Zahlen der Woche</span>
+    <div class="hx" style="margin-top:3mm">Zwölf Zahlen, die diese Woche erklären</div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:6mm" data-k="zahlen"></div>
+    <div class="xs" style="color:#777;margin-top:4mm">Quellen: NBC News (SOX, 05.11.), Yahoo Finance (Börsenwert, Arbeitsmarkt, CME FedWatch), CNBC (Wählerumfrage, 05.11.), Berkshire Hathaway 10-Q, Marvell IR, Goldman Sachs Prime Brokerage via Hedgeweek. Mit <span style="color:var(--lime)">●</span> markiert: eigene Berechnung aus Vision-Universe-Daten.</div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('zahlen',()=>{const D=VUM.D,c=VUM.C;return [
+ ['−12,3 %','Halbleiter-Index SOX am Donnerstag: schwächster Tag seit März 2020',0,0],
+ ['3 Bio. $','Börsenwert, den der S&amp;P 500 an einem Tag verlor',1,0],
+ [D.sp500.up+' / '+D.sp500.count,'S&amp;P-500-Aktien schlossen die Crash-Woche im Plus',0,1],
+ [VUM.sg(c('MU').week,0)+' %','Micron in der Woche, die größte KI-Aktie mit dem stärksten Minus',0,1],
+ [''+VUM.de(c('MU').pe,1),'KGV von Micron. Walmart: '+VUM.de(D.quick.find(q=>q.t==='WMT').pe,0)+', Costco: '+VUM.de(D.quick.find(q=>q.t==='COST').pe,0),1,1],
+ ['+'+VUM.de(c('APP').week,0)+' %','AppLovin in fünf Tagen, nach Quartalszahlen',0,1],
+ ['165.000','neue Stellen im Oktober, erwartet waren rund 70.000',0,0],
+ ['3,7 %','US-Inflation im September. Deshalb denkt die Fed über eine Zinserhöhung im Dezember nach',0,0],
+ ['56 %','der Wähler nannten KI und Rechenzentren wichtig für ihre Wahl',0,0],
+ ['9,6 Mrd. $','Rückkäufe eigener Aktien bei Berkshire im 3. Quartal',0,0],
+ ['115 Mrd. $','Unternehmenswert der Lumentum-Übernahme durch Marvell',0,0],
+ ['26,1 %','Anteil von KI-Aktien am Netto-Engagement der Hedgefonds, nach 31,7 % im Juni',0,0],
+].map(r=>`<div style="background:${r[2]?'var(--lime)':'#111'};color:${r[2]?'#000':'#fff'};border:1px solid ${r[2]?'var(--lime)':'#262626'};border-radius:8px;padding:4mm;min-height:44mm;display:flex;flex-direction:column;justify-content:space-between"><div style="font-size:${r[0].length>8?'24pt':'30pt'};font-weight:900;letter-spacing:-.05em;line-height:.95">${r[0]}</div><div style="font-size:7.8pt;font-weight:700;line-height:1.35;color:${r[2]?'#000':'#bdbdbd'}">${r[3]?'<span style="color:'+(r[2]?'#000':'var(--lime)')+'">● </span>':''}${r[1]}</div></div>`).join('')});
+</script>
+
+<!-- 05-titel-opener.html -->
+<section class="page dark">
+  <div class="bleed" style="background-image:url(img/hf-cover-bulle-baer.jpg);background-position:50% 40%"></div>
+  <div class="bleed" style="background:linear-gradient(180deg,rgba(0,0,0,.7) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,0) 48%,rgba(0,0,0,.85) 70%,#000 90%)"></div>
+  <span class="ki" style="top:16mm;right:14mm">KI-Bild</span>
+  <div data-run="Titelthema"></div>
+  <div class="pad">
+    <div style="position:absolute;left:0;right:0;bottom:4mm">
+      <span class="ressort">Titelthema · Teil 1 von 9</span>
+      <div style="font-size:78pt;font-weight:900;letter-spacing:-.07em;line-height:.8;margin-top:3mm">DIE KI-<br><span style="color:var(--lime)">BREMSE</span></div>
+      <div class="sub" style="margin-top:5mm;font-size:13pt;max-width:165mm;color:#e6e6e6">Zwei Jahre lang kannte die KI-Kette an der Börse nur eine Richtung. Dann gewann eine Partei die Wahl, deren Kandidaten Rechenzentren stoppen wollen. Eine Woche, die alles verändert hat, und sechs Aktien, die jetzt im Stresstest stehen.</div>
+      <div style="display:flex;gap:6mm;margin-top:6mm;border-top:1px solid #333;padding-top:4mm" data-k="opener"></div>
+    </div>
+  </div>
+</section>
+<script>
+VUM.k('opener',()=>['NVDA','MU','VRT','ORCL','CRWV','AMD'].map(t=>{const c=VUM.C(t);return `<div style="flex:1"><div style="font-size:7pt;font-weight:900;letter-spacing:.1em;color:#9a9a9a">${t}</div><div style="font-size:15pt;font-weight:900;letter-spacing:-.03em;margin-top:.5mm">${VUM.sg(c.week,1)} %</div><div style="font-size:6.5pt;color:#777;font-weight:700">Woche</div></div>`}).join(''));
+</script>
+
+<!-- 06-titel-story.html -->
+<section class="page">
+  <div data-run="Titelthema"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Titelthema · Was passiert ist</span>
+    <div class="hx" style="margin-top:3mm">„Nationaler Baustopp für Rechenzentren. Jetzt.“</div>
+    <div class="sub" style="margin-top:3mm;color:var(--g4)">So schrieb es Bernie Sanders am Tag nach der Wahl. Für die Börse war das der Satz der Woche, und er stand nicht allein.</div>
+    <div style="display:grid;grid-template-columns:1fr 64mm;gap:6mm;margin-top:5mm">
+      <div class="body cols2" style="column-gap:5mm">
+        <p>Die Demokraten haben den Kongress gewonnen, und mit ihnen viele Kandidaten, die im Wahlkampf gegen neue Rechenzentren angetreten sind. Sherrod Brown, der in Ohio seinen Senatssitz zurückholte, sagte: „Ich arbeite nicht für Rechenzentren.“ Gina Hinojosa, neue Gouverneurin von Texas, hatte im Oktober ein Moratorium für alle Genehmigungen versprochen. In 41 lokalen Abstimmungen in zehn Bundesstaaten ging es um Rechenzentren, in 40 stimmten die Menschen dagegen. 56&nbsp;% der Wähler nannten KI und Rechenzentren in einer Umfrage einen wichtigen Grund für ihre Wahl.</p>
+        <p>Für die Börse ist das mehr als Lokalpolitik. Allein Alphabet, Microsoft und Meta haben im dritten Quartal zusammen mehr als 130 Mrd.&nbsp;$ investiert, vor allem in Rechenzentren. Dieses Geld fließt zu Nvidia, AMD, Micron, Broadcom und den Lieferanten für Strom und Kühlung. Wird der Bau gebremst, trifft es die ganze Kette. Die Strategen der UBS schätzen, dass rund 30&nbsp;% der für 2028 geplanten Rechenzentren gefährdet sein könnten.</p>
+        <p>Dazu kam ein Markt, der schon nervös war. Hedgefonds hatten laut Goldman Sachs bereits Mitte Oktober in fünf Handelstagen alle KI-Käufe seit Anfang 2025 wieder verkauft. Am Donnerstag kamen enttäuschende Ausblicke von Qualcomm und Arm dazu. Qualcomm erwartet für 2027 keine wachsenden Smartphone-Stückzahlen, Arm verdiente weniger an Lizenzgebühren als erhofft.</p>
+        <p>Nicht alle sehen das Ende des Booms. „Ich glaube nicht, dass hier eine KI-Blase platzt“, sagte Ed Yardeni. Jefferies nennt den Ausverkauf „eine Reaktion, keinen grundlegenden Neustart“. Und Donald Trump stellte sich am Freitag ausdrücklich hinter den KI-Ausbau. Die Frage ist, wie viel er gegen einen Kongress durchsetzen kann, der ab Januar anders aussieht.</p>
+      </div>
+      <div>
+        <div class="ph" style="height:62mm;background-image:url(img/hf-rz-baustelle.jpg)"><span class="ki">KI-Bild</span><div class="cap">Rechenzentren brauchen Fläche, Strom und Genehmigungen, und genau dort setzt die neue Politik an.</div></div>
+        <div class="card ink" style="margin-top:4mm">
+          <div class="kick" style="color:var(--lime)">Investitionen im 3. Quartal</div>
+          <div style="margin-top:2mm" data-k="capex"></div>
+          <div class="xs" style="color:#9a9a9a;margin-top:2mm">Mrd. $, laut Quartalsberichten Ende Oktober (24/7 Wall St., FourWeekMBA). Amazon: Wert ungeprüft, daher nicht gezeigt.</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:4mm;position:absolute;left:0;right:0;bottom:0">
+      <div class="card"><div class="bigq" style="font-size:12pt">„Ich arbeite nicht für Rechenzentren.“</div><div class="xs mu" style="margin-top:2mm"><b style="color:#000">Sherrod Brown</b>, Senator (Ohio), laut CNBC</div></div>
+      <div class="card lime"><div class="bigq" style="font-size:12pt">„Der Markt sieht im Sieg der Demokraten eine erzwungene Kontrolle der Investitionen.“</div><div class="xs" style="margin-top:2mm"><b>Steve Weiss</b>, CNBC</div></div>
+      <div class="card ink"><div class="bigq" style="font-size:12pt">„Ich glaube nicht, dass hier eine KI-Blase platzt.“</div><div class="xs" style="margin-top:2mm;color:#9a9a9a"><b style="color:#fff">Ed Yardeni</b>, Yardeni Research, laut NBC</div></div>
+    </div>
+  </div>
+  <div data-foot="Zitate übersetzt. Quellen: CNBC 05.11., NBC 05.11., StockTitan 05./06.11., Hedgeweek 02.11."></div>
+</section>
+<script>
+VUM.k('capex',()=>VUC.hbars([{l:'Alphabet',v:51.3},{l:'Microsoft',v:45.2},{l:'Meta',v:34.9}],{w:200,rh:22,lw:62,vw:10,dark:1}).replace(/\+([\d,]+) %/g,'$1'));
+</script>
+
+<!-- 07-titel-daten.html -->
+<section class="page">
+  <div data-run="Titelthema"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Titelthema · Was die Daten sagen</span>
+    <div class="hx" style="margin-top:3mm">Micron hat jetzt ein niedrigeres KGV als Walmart</div>
+    <div class="sub" style="margin-top:3mm;color:var(--g4)">Drei Erkenntnisse aus unseren Daten, die in den Schlagzeilen fehlen.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:6mm">
+      <div>
+        <div class="h3"><span style="color:var(--lime);-webkit-text-stroke:.5px #000">1</span> Ein Crash der KI-Kette, nicht des Markts</div>
+        <div class="body nodrop" style="margin-top:1.5mm"><p>Der S&amp;P-500-ETF verlor in der Woche <b data-k="spyW"></b>, die mittlere Aktie im Index lag aber bei <b data-k="medW"></b>. Verloren haben vor allem Speicher, Optik und Strom-Infrastruktur.</p></div>
+        <div style="margin-top:3mm" data-k="kette"></div>
+        <div class="xs mu" style="margin-top:1.5mm">Wochenveränderung 30.10. bis 06.11., Schlusskurse, VU-Daten</div>
+      </div>
+      <div>
+        <div class="h3"><span style="color:var(--lime);-webkit-text-stroke:.5px #000">2</span> Gemessen am Gewinn: KI teils niedriger bewertet als Konsum</div>
+        <div class="body nodrop" style="margin-top:1.5mm"><p>Das Kurs-Gewinn-Verhältnis (KGV) sagt, wie viele Jahresgewinne du mit dem Kurs bezahlst. Nach dem Absturz liegen Micron, Oracle und Nvidia darunter, wo Walmart oder Costco stehen. Das sagt nichts darüber, ob die Gewinne halten.</p></div>
+        <div style="margin-top:3mm" data-k="kgv"></div>
+        <div class="xs mu" style="margin-top:1.5mm">KGV auf Basis der letzten vier Quartale (SEC), Kurs 06.11. Schwarz: KI-Werte, grün: Konsum und Pharma zum Vergleich.</div>
+      </div>
+    </div>
+    <div class="card ink" style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:7mm">
+      <div>
+        <div class="h3" style="color:#fff"><span style="color:var(--lime)">3</span> Vorher wollten alle rein</div>
+        <div class="sm" style="color:#cfcfcf;margin-top:2mm;line-height:1.5">Im zweiten Quartal kamen bei Intel, Micron und AMD jeweils fast 1.000 neue Fonds als Aktionäre dazu, so viele wie bei keiner anderen Aktie. Ab Mitte Oktober kehrte sich das um: Laut Goldman Sachs verkauften Hedgefonds in fünf Tagen alle KI-Käufe seit Anfang 2025.</div>
+      </div>
+      <div data-k="neu13f"></div>
+    </div>
+  </div>
+  <div data-foot="Daten: Vision Universe (Kurse Tiingo, Fundamentaldaten SEC, 13F-Daten SEC Q2 2026). Goldman Sachs via Hedgeweek 02.11."></div>
+</section>
+<script>
+VUM.k('spyW',()=>VUM.pc(VUM.D.etfs.find(e=>e.t==='SPY').week));
+VUM.k('medW',()=>VUM.pc(VUM.D.sp500.median));
+VUM.k('kette',()=>VUC.hbars(['LITE','MRVL','MU','VRT','CRWV','ORCL','AMD','AVGO','NVDA','TSM'].map(t=>({l:t,s:VUM.C(t).n.split(' ')[0].replace(',',''),v:VUM.C(t).week})).sort((a,b)=>a.v-b.v),{w:330,rh:22,lw:104,vw:44,sx:36}));
+VUM.k('kgv',()=>{const q=Object.fromEntries(VUM.D.quick.map(x=>[x.t,x]));const rows=[['Micron',VUM.C('MU').pe,1],['Oracle',VUM.C('ORCL').pe,1],['Nvidia',VUM.C('NVDA').pe,1],['Broadcom',VUM.C('AVGO').pe,1],['Apple',q.AAPL.pe,0],['Eli Lilly',q.LLY.pe,0],['Walmart',q.WMT.pe,0],['Costco',q.COST.pe,0]];const mx=Math.max(...rows.map(r=>r[1]));return rows.map(r=>`<div style="display:grid;grid-template-columns:22mm 1fr 11mm;gap:2mm;align-items:center;padding:1.1mm 0"><span class="sm b">${r[0]}</span><span style="height:11px;background:var(--g2);border-radius:5px;position:relative;display:block"><i style="position:absolute;left:0;top:0;bottom:0;width:${r[1]/mx*100}%;border-radius:5px;background:${r[2]?'#000':'#c8f531'}"></i></span><span class="b sm" style="text-align:right">${VUM.de(r[1],1)}</span></div>`).join('')});
+VUM.k('neu13f',()=>`<div class="kick" style="color:var(--lime)">Neue 13F-Halter im 2. Quartal</div>`+VUM.D.ownership.mostNew.slice(0,5).map(x=>[x.name.replace(' Technology',''),x.newPositions]).map(r=>`<div style="display:grid;grid-template-columns:30mm 1fr 12mm;gap:2mm;align-items:center;padding:1.2mm 0"><span class="sm b">${r[0]}</span>${VUC.meter(r[1]/1100,{dark:1,w:150})}<span class="b sm" style="text-align:right">${r[1].toLocaleString('de-DE')}</span></div>`).join('')+`<div class="xs" style="color:#777;margin-top:1mm">Fonds, die die Aktie neu meldeten. Quelle: VU-Eigentümerdaten (SEC 13F), Stand `+VUM.D.ownership.asOf.split('-').reverse().join('.')+`</div>`);
+</script>
+
+<!-- 08-nvidia.html -->
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:86mm;background-image:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,0) 60%),url(img/hf-gpu-rack.jpg)"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div data-run="Titelthema"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:55mm;color:#fff">
+    <span class="ressort" style="background:var(--lime);color:#000">Titelthema · Aktie 1 von 6</span>
+    <div class="hx" style="margin-top:2.5mm;font-size:30pt;max-width:175mm">Nvidia: Vor den Zahlen kommt der Kongress</div>
+  </div>
+  <div class="pad" style="top:92mm">
+    <div class="sub" style="max-width:180mm">Am 17. November legt Nvidia Zahlen vor. Davor muss Jensen Huang Fragen aus Washington beantworten, und der Wochenchart zeigt ein Muster, das Techniker nervös macht.</div>
+    <div style="display:grid;grid-template-columns:1fr 66mm;gap:6mm;margin-top:4mm">
+      <div>
+        <div class="body cols2" style="column-gap:5mm"><p>Am Donnerstag fiel Nvidia um 9,3&nbsp;% auf 181,60&nbsp;$ und rutschte im Handel kurz unter den Schlusskurs vom Jahresende. Laut Forbes verlor Jensen Huang an einem Tag rund 12 Mrd.&nbsp;$ Vermögen. Am Freitag holte die Aktie 2,8&nbsp;% zurück und schloss bei <b data-k="nv-p"></b> wieder knapp über dem Stand vom Jahresanfang.</p><p>Neben der Wahl drückt ein Brief: Drei republikanische Ausschussvorsitzende im Repräsentantenhaus baten Huang zu einem vertraulichen Gespräch über Kontakte zu einem Manager der Firma Megaspeed. Antwort bis 11. November, Termin am 18. November. Einen Vorwurf erhebt der Brief nicht, Nvidia weist den zugrunde liegenden Zeitungsbericht zurück.</p><p>Was in den Schlagzeilen fehlt: Gemessen am Gewinn der letzten vier Quartale ist Nvidia mit einem KGV von <b data-k="nv-pe"></b> die am niedrigsten bewertete der großen KI-Aktien, weit unter AMD oder Broadcom. Zugleich haben Insider in 90 Tagen Aktien für <b data-k="nv-ins"></b> verkauft, Käufe gab es keine. Unsere Technik-Engine meldet im Wochenchart ein bestätigtes Doppeltop (Seite 20).</p><p>Die Zahlen am 17. November nach US-Börsenschluss sind der wichtigste Termin für die ganze KI-Kette. Das Quartal endete am 25. Oktober, also vor der Wahl. Wichtiger als die Zahlen dürfte deshalb der Ausblick sein: was Nvidia über die Bestellungen der Cloud-Konzerne sagt.</p></div>
+      </div>
+      <div><div data-k="box-NVDA"></div></div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:5mm">
+      <div class="card lime"><div class="bigq" style="font-size:12.5pt">„Ich glaube nicht, dass hier eine KI-Blase platzt.“</div><div class="xs" style="margin-top:2mm"><b>Ed Yardeni</b>, Yardeni Research, am Tag des Ausverkaufs (NBC, übersetzt)</div></div>
+      <div class="card ink"><div class="kick" style="color:var(--lime)">Termine</div><div class="sm" style="margin-top:2mm;line-height:1.6"><b>11.11.</b> Antwortfrist an den Kongress<br><b>17.11.</b> Zahlen 3. Quartal, 23 Uhr MEZ<br><b>18.11.</b> vorgeschlagenes Gespräch im Kongress</div></div>
+    </div>
+  </div>
+  <div data-foot="Quellen: StockTitan 05./06.11., Forbes 05.11., Yahoo/GuruFocus 06.11., Nvidia IR 28.10. Insider: VU-Daten (SEC Form 4) bis 03.11."></div>
+</section>
+<script>VUM.k('box-NVDA',()=>VUM.box('NVDA',{h:74}));</script>
+
+<!-- 09-micron.html -->
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:86mm;background-image:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,0) 60%),url(img/hf-speicherchips.jpg)"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div data-run="Titelthema"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:55mm;color:#fff">
+    <span class="ressort" style="background:var(--lime);color:#000">Titelthema · Aktie 2 von 6</span>
+    <div class="hx" style="margin-top:2.5mm;font-size:30pt;max-width:175mm">Micron: Der Speicher-Boom bekommt Risse</div>
+  </div>
+  <div class="pad" style="top:92mm">
+    <div class="sub" style="max-width:180mm">Kein großer KI-Wert fiel stärker. Dabei ist die Bewertung so niedrig wie bei kaum einem anderen Chip-Konzern.</div>
+    <div style="display:grid;grid-template-columns:1fr 66mm;gap:6mm;margin-top:4mm">
+      <div>
+        <div class="body cols2" style="column-gap:5mm"><p>Micron verlor am Donnerstag 17,5&nbsp;% auf 656,39&nbsp;$, auf die Woche gerechnet <b data-k="mu-w"></b>. Vom 52-Wochen-Hoch bei 1.255&nbsp;$ ist die Aktie damit <b data-k="mu-hi"></b> entfernt. Vor einem Jahr stand sie noch unter 200&nbsp;$. Kaum eine Aktie zeigt so deutlich, wie hoch die Erwartungen an Speicherchips für KI-Rechenzentren gestiegen waren.</p><p>Die Sorge: Wenn der Bau von Rechenzentren langsamer wird, kommt das Angebot an Speicher schneller hinterher als die Nachfrage. Die Citigroup erwartet für 2027 ein Produktionsplus der Speicherhersteller von 22&nbsp;% bei einem Nachfrageplus von 26&nbsp;%. Noch wäre der Markt also knapp. Aus Asien gibt es bisher keine Anzeichen für sinkende Bestellungen, „zumindest noch nicht“, sagt Analyst KC Rajkumar.</p><p>Unsere Daten zeigen zwei Seiten: Mit einem KGV von <b data-k="mu-pe"></b> ist Micron niedriger bewertet als Walmart oder Costco. Gleichzeitig waren die Profis voll dabei. Im zweiten Quartal kamen 981 neue Fonds als Aktionäre dazu, und der KI-Fonds Situational Awareness hatte Micron mit rund 27&nbsp;% gewichtet. David Tepper dagegen hatte seine Position schon im zweiten Quartal um rund 41&nbsp;% verkleinert.</p><p>Speicher ist ein Geschäft mit Zyklen. Ein niedriges KGV kann bedeuten, dass der Markt sinkende Gewinne schon einpreist. Die nächsten Zahlen werden für Mitte Dezember erwartet, einen bestätigten Termin gibt es noch nicht.</p></div>
+      </div>
+      <div><div data-k="box-MU"></div></div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:5mm">
+      <div class="card lime"><div class="bigq" style="font-size:12.5pt">„Zumindest noch nicht.“</div><div class="xs" style="margin-top:2mm"><b>KC Rajkumar</b>, LYNX, zu sinkenden Speicher-Bestellungen nach der Wahl (Motley Fool, übersetzt)</div></div>
+      <div class="card ink"><div class="kick" style="color:var(--lime)">Wer hielt Micron (13F, Q2)</div><div class="sm" style="margin-top:2mm;line-height:1.6"><b>Situational Awareness</b> ≈ 27,5 % des Fonds<br><b>Appaloosa (Tepper)</b> −41 % verkauft<br><b>Citadel</b> aufgestockt</div></div>
+    </div>
+  </div>
+  <div data-foot="Quellen: Motley Fool 06.11., Citigroup via Motley Fool. 13F: VU-Hedgefonds-Daten (SEC, Q2 2026). Kurse: VU-Daten."></div>
+</section>
+<script>VUM.k('box-MU',()=>VUM.box('MU',{h:74}));</script>
+
+<!-- 10-vertiv.html -->
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:86mm;background-image:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,0) 60%),url(img/hf-fluessigkuehlung.jpg)"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div data-run="Titelthema"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:55mm;color:#fff">
+    <span class="ressort" style="background:var(--lime);color:#000">Titelthema · Aktie 3 und 4 von 6</span>
+    <div class="hx" style="margin-top:2.5mm;font-size:30pt;max-width:175mm">Strom, Kühlung, Licht: die Lieferanten im Sturz</div>
+  </div>
+  <div class="pad" style="top:92mm">
+    <div class="sub" style="max-width:180mm">Vertiv kühlt Rechenzentren, Lumentum verbindet sie mit Licht. Beide fielen um mehr als ein Fünftel, und das trotz Rekordzahlen und einer Milliarden-Übernahme.</div>
+    <div style="display:grid;grid-template-columns:1fr 66mm;gap:6mm;margin-top:4mm">
+      <div>
+        <div class="body cols2" style="column-gap:5mm"><p>Vertiv hatte am 28. Oktober ein Rekordquartal gemeldet: Umsatz 4,3&nbsp;Mrd.&nbsp;$, +61&nbsp;%, die Aufträge mehr als verdoppelt, die Prognose für 2026 angehoben. Die Aktie stieg an dem Tag um 16,5&nbsp;%. Eine Woche später war alles wieder weg: −12,9&nbsp;% am Mittwoch, als in Texas über Rechenzentren abgestimmt wurde, und noch einmal 14 bis 16&nbsp;% am Donnerstag.</p><p>Ein Detail beunruhigt manche Beobachter: Vertiv will künftig keine Auftragszahlen mehr veröffentlichen. Gemessen am erwarteten Gewinn ist die Aktie laut TIKR von rund 55 im Mai auf etwa 22 gefallen.</p><p>Noch heftiger traf es <b>Lumentum</b>. Am 2. November kündigte Marvell an, den Spezialisten für optische Verbindungen per Aktientausch zu übernehmen: 4,5 Marvell-Aktien je Lumentum-Aktie, Unternehmenswert 115&nbsp;Mrd.&nbsp;$. Weil der Preis in Marvell-Aktien bezahlt wird, fällt er mit dem Marvell-Kurs. Lumentum verlor in fünf Tagen fast 45&nbsp;%, Marvell <b data-k="mrvl-w"></b> in der Woche.</p><p>Rechnen wir nach: Zum Marvell-Schlusskurs vom Donnerstag war das Angebot nur noch rund 600&nbsp;$ je Lumentum-Aktie wert, bei Ankündigung rund 1.130&nbsp;$. Der Abschluss ist erst für das erste Halbjahr 2028 geplant.</p></div>
+      </div>
+      <div><div data-k="box-VRT"></div></div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:5mm">
+      <div class="card lime"><div class="bigq" style="font-size:12.5pt">„Der Markt sieht im Sieg der Demokraten eine erzwungene Kontrolle der Investitionen.“</div><div class="xs" style="margin-top:2mm"><b>Steve Weiss</b>, CNBC (via TIKR, übersetzt)</div></div>
+      <div class="card ink"><div class="kick" style="color:var(--lime)">Marvell + Lumentum</div><div class="sm" style="margin-top:2mm;line-height:1.55">4,5 Marvell je Lumentum · 115 Mrd. $ Unternehmenswert · über 1 Mrd. $ Einsparungen geplant · Abschluss H1 2028 · Lumentum <b style="color:var(--lime)" data-k="lite-w"></b> in der Woche</div></div>
+    </div>
+  </div>
+  <div data-foot="Quellen: Vertiv IR 28.10., StockTitan 04.11., TIKR 05.11., Marvell IR 02.11., Trefis 06.11. Rechnung zum Angebotswert: eigene."></div>
+</section>
+<script>VUM.k('box-VRT',()=>VUM.box('VRT',{h:74}));</script>
+
+<!-- 11-oracle.html -->
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:86mm;background-image:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,0) 60%),url(img/hf-gpu-cluster-luft.jpg)"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div data-run="Titelthema"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:55mm;color:#fff">
+    <span class="ressort" style="background:var(--lime);color:#000">Titelthema · Aktie 5 von 6</span>
+    <div class="hx" style="margin-top:2.5mm;font-size:30pt;max-width:175mm">Oracle und CoreWeave: KI auf Pump</div>
+  </div>
+  <div class="pad" style="top:92mm">
+    <div class="sub" style="max-width:180mm">Wer Rechenzentren auf Kredit baut, spürt jede Zinserhöhung und jede neue Regel doppelt. Diese Woche zeigte, wie schnell sich das Blatt wendet.</div>
+    <div style="display:grid;grid-template-columns:1fr 66mm;gap:6mm;margin-top:4mm">
+      <div>
+        <div class="body cols2" style="column-gap:5mm"><p>Oracle startete schwach in die Woche: Am Montag kündigte der Konzern an, 20&nbsp;Mrd.&nbsp;$ einzusammeln, je zur Hälfte über neue Aktien und Anleihen. Die Aktie fiel um 8,8&nbsp;%. Am Freitag meldete Bloomberg, dass Microsoft einen Vertrag von 2023 über gemietete KI-Rechenleistung bei Oracle auslaufen lässt. Oracle betont, die Nachfrage sei „weiter stark“. Im Handel fiel die Aktie auf ein Jahrestief von 109,21&nbsp;$.</p><p>Die Schulden sind das Thema: Je nach Rechnung stehen 125 bis 167&nbsp;Mrd.&nbsp;$ in den Büchern. Michael Burry hält laut Berichten langlaufende Put-Optionen auf Oracle, also eine Wette auf fallende Kurse.</p><p><b>CoreWeave</b> vermietet Grafikchips an KI-Firmen und hat seinen Kurs in einem Monat fast halbiert: −49,9&nbsp;% vom 6. Oktober bis 6. November. Am Dienstag, 10. November, legt das Unternehmen Zahlen vor. Der eigene Ausblick: 3,45 bis 3,6&nbsp;Mrd.&nbsp;$ Umsatz im Quartal, aber 11,5 bis 13,5&nbsp;Mrd.&nbsp;$ Investitionen. Ende Juni lagen Aufträge über 104&nbsp;Mrd.&nbsp;$ in den Büchern.</p><p>Das Problem fasst Goldman-Stratege Rich Privorotsky zusammen: Die Nachfrage nach Rechenleistung kann exponentiell wachsen, das Kapital für ihre Finanzierung nicht.</p></div>
+      </div>
+      <div><div data-k="box-ORCL"></div></div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:5mm">
+      <div class="card ink"><div class="bigq" style="font-size:12.5pt">„Die Nachfrage nach Rechenleistung kann exponentiell wachsen, das Kapital, das sie finanzieren kann, nicht.“</div><div class="xs" style="margin-top:2mm"><b>Rich Privorotsky</b>, Goldman Sachs (übersetzt)</div></div>
+      <div class="card ink"><div style="display:flex;justify-content:space-between;align-items:center"><div class="kick" style="color:var(--lime)">CoreWeave · CRWV</div><span class="app-badge"><i></i>VU-Daten</span></div><div class="sm" style="margin-top:2mm;line-height:1.55">Kurs 06.11.: <b data-k="crwv-p"></b> · Woche <b data-k="crwv-w"></b> · Abstand Hoch <b data-k="crwv-hi"></b><br><b style="color:var(--lime)">Zahlen: Di 10.11. nach Börsenschluss</b></div></div>
+    </div>
+  </div>
+  <div data-foot="Quellen: TechStartups 03.11., 24/7 Wall St. 06.11., Bloomberg via 24/7 Wall St., Hedgeweek 02.11. Kurse: VU-Daten."></div>
+</section>
+<script>VUM.k('box-ORCL',()=>VUM.box('ORCL',{h:74}));</script>
+
+<!-- 12-amd.html -->
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:86mm;background-image:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,0) 60%),url(img/bv-chip-makro.jpg)"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div data-run="Titelthema"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:55mm;color:#fff">
+    <span class="ressort" style="background:var(--lime);color:#000">Titelthema · Aktie 6 von 6</span>
+    <div class="hx" style="margin-top:2.5mm;font-size:30pt;max-width:175mm">AMD: Das beste Quartal, der schlechteste Tag</div>
+  </div>
+  <div class="pad" style="top:92mm">
+    <div class="sub" style="max-width:180mm">Am Dienstag meldet AMD Rekordzahlen. Am Donnerstag fällt die Aktie um 17&nbsp;%. Was dazwischen passiert ist, erklärt viel über diesen Markt.</div>
+    <div style="display:grid;grid-template-columns:1fr 66mm;gap:6mm;margin-top:4mm">
+      <div>
+        <div class="body cols2" style="column-gap:5mm"><p>Die Zahlen waren stark: 13,4&nbsp;Mrd.&nbsp;$ Umsatz, +45&nbsp;%, das Geschäft mit Rechenzentren fast verdoppelt auf 8,5&nbsp;Mrd.&nbsp;$. Für das vierte Quartal erwartet AMD rund 17&nbsp;Mrd.&nbsp;$, das wären etwa 66&nbsp;% mehr als vor einem Jahr. Treiber ist Helios, ein komplettes KI-Server-Gestell. Laut AMD laufen darauf schon Modelle von Anthropic, Meta, Microsoft, OpenAI und Oracle.</p><p>Trotzdem fiel die Aktie am Donnerstag um 17,3&nbsp;%, stärker als Nvidia. Ein Grund steht in unseren Daten: Mit einem KGV von <b data-k="amd-pe"></b> ist AMD unter den großen KI-Aktien die am höchsten bewertete. Und die Aktie schwankt etwa dreimal so stark wie der Markt. Am Freitag kam die Gegenbewegung: +11&nbsp;%.</p><p>Interessant für die Profis: Cathie Woods ARK hatte AMD schon im zweiten Quartal um 48&nbsp;% reduziert. Sechs Insider haben in 90 Tagen für <b data-k="amd-ins"></b> verkauft. Der freie Cashflow fiel im Quartal auf 554&nbsp;Mio.&nbsp;$, weil AMD viel Geld in Vorräte für den Hochlauf steckt.</p><p>Unseren ausführlichen Aktienreport zu AMD mit zehn Jahren Geschäftszahlen findest du in der App.</p></div>
+      </div>
+      <div><div data-k="box-AMD"></div></div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:5mm">
+      <div class="card lime"><div class="bigq" style="font-size:12.5pt">„Der Markt kann manchmal ein bisschen kurzsichtig sein.“</div><div class="xs" style="margin-top:2mm"><b>Lisa Su</b>, Chefin von AMD, am Tag des Ausverkaufs (Yahoo Finance, übersetzt)</div></div>
+      <div class="card ink"><div class="kick" style="color:var(--lime)">AMD · 3. Quartal 2026</div><div class="sm" style="margin-top:2mm;line-height:1.55">Umsatz 13,4 Mrd. $ (+45 %) · Rechenzentren 8,5 Mrd. $ (+97 %) · Gaming −40 % · Ausblick Q4 ≈ 17 Mrd. $ ± 3 %</div></div>
+    </div>
+  </div>
+  <div data-foot="Quellen: AMD-Pressemitteilung 03.11. (SEC 8-K), CBS News 06.11., Yahoo Finance 05.11. 13F/Insider: VU-Daten."></div>
+</section>
+<script>VUM.k('box-AMD',()=>VUM.box('AMD',{h:74}));</script>
+<script>
+const _i=t=>{const v=-VUM.D.ownership.insider[t].nbv90;return v>=1e9?VUM.de(v/1e9,2)+'&nbsp;Mrd.&nbsp;$':VUM.de(v/1e6,0)+'&nbsp;Mio.&nbsp;$'};
+VUM.k('nv-p',()=>VUM.usd(VUM.C('NVDA').price));VUM.k('nv-pe',()=>VUM.de(VUM.C('NVDA').pe,1));VUM.k('nv-ins',()=>_i('NVDA'));
+VUM.k('mu-w',()=>VUM.pc(VUM.C('MU').week));VUM.k('mu-hi',()=>VUM.de(-VUM.C('MU').hi*100,0)+'&nbsp;%');VUM.k('mu-pe',()=>VUM.de(VUM.C('MU').pe,1));
+VUM.k('mrvl-w',()=>VUM.pc(VUM.C('MRVL').week));VUM.k('lite-w',()=>VUM.pc(VUM.C('LITE').week));
+VUM.k('crwv-p',()=>VUM.usd(VUM.C('CRWV').price));VUM.k('crwv-w',()=>VUM.pc(VUM.C('CRWV').week));VUM.k('crwv-hi',()=>VUM.pc(VUM.C('CRWV').hi*100,0));
+VUM.k('amd-pe',()=>VUM.de(VUM.C('AMD').pe,0));VUM.k('amd-ins',()=>_i('AMD'));
+</script>
+
+<!-- 13-titel-fazit.html -->
+<section class="page dark">
+  <div data-run="Titelthema"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Titelthema · Einordnung</span>
+    <div class="hx" style="margin-top:3mm">Blase oder Delle? Was die großen Stimmen sagen</div>
+    <div class="sub" style="margin-top:3mm;color:#cfcfcf;max-width:175mm">Die Profis sind gespalten. Manche sehen 2000 wiederkommen, andere eine Panik ohne Grund. Hier die wichtigsten Stimmen, und die Termine, die entscheiden.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:6mm;margin-top:6mm">
+      <div>
+        <div class="kick" style="color:#9a9a9a">Die Skeptiker</div>
+        <div style="margin-top:3mm;display:grid;gap:4mm">
+          <div style="border-left:4px solid #fff;padding-left:4mm"><div style="font-size:11.5pt;font-weight:800;line-height:1.25">„Der 6. Oktober 2026 steht Kopf an Kopf mit dem März 2000 als die zwei dünnsten, schwächsten neuen Hochs.“</div><div class="xs" style="color:#9a9a9a;margin-top:1.5mm"><b style="color:#fff">Michael Burry</b>, Substack „Cassandra Unchained“. Er hält laut 24/7 Wall St. Put-Optionen auf den Nasdaq-100 und einen Chip-ETF.</div></div>
+          <div style="border-left:4px solid #fff;padding-left:4mm"><div style="font-size:11.5pt;font-weight:800;line-height:1.25">KI zeige die Merkmale einer „klassischen Blase“.</div><div class="xs" style="color:#9a9a9a;margin-top:1.5mm"><b style="color:#fff">Ray Dalio</b>, Forbes Global CEO Conference, 07.10. Laut seiner Zählung wurden im ersten Halbjahr 2026 über 220 Mrd. $ KI-Anleihen ausgegeben, im ganzen Jahr 2025 rund 108 Mrd.</div></div>
+          <div style="border-left:4px solid #fff;padding-left:4mm"><div style="font-size:11.5pt;font-weight:800;line-height:1.25">„Im Rückblick war der schmerzhafte Trade: KI kaufen, Anleihen verkaufen.“</div><div class="xs" style="color:#9a9a9a;margin-top:1.5mm"><b style="color:#fff">Rich Privorotsky</b>, Goldman Sachs</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="kick" style="color:var(--lime)">Die Gelassenen</div>
+        <div style="margin-top:3mm;display:grid;gap:4mm">
+          <div style="border-left:4px solid var(--lime);padding-left:4mm"><div style="font-size:11.5pt;font-weight:800;line-height:1.25">„Wir sehen den Ausverkauf vom Donnerstag als Reaktion, nicht als grundlegenden Neustart.“</div><div class="xs" style="color:#9a9a9a;margin-top:1.5mm"><b style="color:#fff">Jane Gibbons</b>, Jefferies, via Reuters</div></div>
+          <div style="border-left:4px solid var(--lime);padding-left:4mm"><div style="font-size:11.5pt;font-weight:800;line-height:1.25">„Jeder Dollar Investition kann über die Zeit mehr Umsatz und höhere Renditen tragen.“</div><div class="xs" style="color:#9a9a9a;margin-top:1.5mm"><b style="color:#fff">Amy Hood</b>, Finanzchefin Microsoft, zu den KI-Investitionen</div></div>
+          <div style="border-left:4px solid var(--lime);padding-left:4mm"><div style="font-size:11.5pt;font-weight:800;line-height:1.25">„Bremsschwellen, keine Straßensperren.“</div><div class="xs" style="color:#9a9a9a;margin-top:1.5mm"><b style="color:#fff">Yardeni Research</b> zu den Folgen der Wahl, sinngemäß laut Yahoo Finance</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:0">
+      <div class="kick" style="color:var(--lime)">Die Termine, die über die KI-Kette entscheiden</div>
+      <div class="grid" style="grid-template-columns:repeat(6,1fr);gap:3mm;margin-top:3mm" data-k="kal"></div>
+      <div class="xs" style="color:#777;margin-top:3mm">Zitate übersetzt. Quellen: Burry-Substack-Notiz, 24/7 Wall St. 14.10., Forbes/TheStreet 04.11., Goldman Sachs via Hedgeweek, StockTitan 06.11., Microsoft Q1 FY27, Yahoo Finance 06.11., Nvidia IR, StockTitan Termine 06.11., CREFC (Haushalt).</div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('kal',()=>[['Di 10.11.','CoreWeave','Zahlen und Investitionspläne'],['Di 10.11.','US-Inflation','Oktober, 14:30 Uhr'],['Do 12.11.','Cisco, Applied Materials','Netzwerk und Chip-Maschinen'],['Mo 16.11.','13F-Frist','Was die Fonds im 3. Quartal hielten'],['Di 17.11.','Nvidia','Zahlen 3. Quartal'],['9.12.','Fed','Zinsentscheid']].map(r=>`<div style="background:#111;border:1px solid #262626;border-radius:6px;padding:3mm"><div style="font-size:7pt;font-weight:900;color:var(--lime)">${r[0]}</div><div style="font-size:9.5pt;font-weight:900;margin-top:1mm;line-height:1.1">${r[1]}</div><div class="xs" style="color:#9a9a9a;margin-top:1mm">${r[2]}</div></div>`).join(''));
+</script>
+
+<!-- 14-applovin.html -->
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:86mm;background-image:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,0) 60%),url(img/hf-mobile-games-werbung.jpg)"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div data-run="Analyse"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:55mm;color:#fff">
+    <span class="ressort" style="background:var(--lime);color:#000">Analyse</span>
+    <div class="hx" style="margin-top:2.5mm;font-size:30pt;max-width:175mm">AppLovin: +71&nbsp;% in fünf Tagen</div>
+  </div>
+  <div class="pad" style="top:92mm">
+    <div class="sub" style="max-width:180mm">Während die KI-Kette abstürzte, legte eine Werbeplattform den besten Wochenlauf im S&amp;P&nbsp;500 hin. Die Zahlen erklären einen Teil, die Vorgeschichte den Rest.</div>
+    <div style="display:grid;grid-template-columns:1fr 66mm;gap:6mm;margin-top:4mm">
+      <div>
+        <div class="body cols2" style="column-gap:5mm"><p>AppLovin vermittelt Werbung in Handy-Spielen und zunehmend auch für andere Händler. Am 4. November nach Börsenschluss kamen die Zahlen zum dritten Quartal: Umsatz 2,18&nbsp;Mrd.&nbsp;$, +55&nbsp;%, erwartet waren rund 2,07&nbsp;Mrd. Vom Umsatz bleiben als bereinigtes Ergebnis vor Zinsen, Steuern und Abschreibungen 84&nbsp;% übrig, eine Marge, die selbst unter Software-Konzernen selten ist. Der Gewinn je Aktie lag bei 4,30&nbsp;$ statt der erwarteten rund 4,04&nbsp;$.</p><p>Am Donnerstag, dem schwärzesten Tag der Woche, stieg die Aktie um 31&nbsp;%, am Freitag noch einmal um fast 10&nbsp;%. Auf fünf Tage <b data-k="app-w"></b>, rund 54&nbsp;Mrd.&nbsp;$ zusätzlicher Börsenwert.</p><p>Die Einsicht hinter dem Sprung: Die Aktie war vorher stark gefallen, unseren Daten zufolge liegt sie trotz der Rally noch <b data-k="app-hi"></b> unter ihrem Hoch. Das Management nutzte das: Im Quartal flossen 1,4&nbsp;Mrd.&nbsp;$ in eigene Aktien, fast dreimal so viel wie im Vorquartal. Finanzchef Matt Stumpf sagte offen, man habe gekauft, „weil wir diese Verwerfung im Aktienkurs gesehen haben“. Der Rahmen für Rückkäufe wurde auf 3,6&nbsp;Mrd.&nbsp;$ erhöht.</p><p>Spannend für die nächsten Quartale: Werbekunden außerhalb der Spielebranche wuchsen laut Finanzchef zweistellig gegenüber dem Vorquartal. Für das vierte Quartal plant AppLovin 2,37 bis 2,40&nbsp;Mrd.&nbsp;$ Umsatz.</p></div>
+      </div>
+      <div><div data-k="box-APP"></div></div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:5mm">
+      <div class="card lime"><div class="bigq" style="font-size:12.5pt">„Das war ein teilweiser Start. Der Umbau liegt noch vor uns.“</div><div class="xs" style="margin-top:2mm"><b>Adam Foroughi</b>, Chef von AppLovin, zu den neuen Werbemodellen (übersetzt)</div></div>
+      <div class="card ink"><div class="kick" style="color:var(--lime)">3. Quartal 2026</div><div class="sm" style="margin-top:2mm;line-height:1.55">Umsatz 2,18 Mrd. $ (+55 %) · Gewinn 1,44 Mrd. $ (+72 %) · Marge (bereinigtes EBITDA) 84 % · freier Cashflow 1,42 Mrd. $ · Rückkäufe 1,4 Mrd. $</div></div>
+    </div>
+  </div>
+  <div data-foot="Quellen: AppLovin Q3 via stockanalysis.com 05.11., Trefis 07.11. Kurse und Kennzahlen: VU-Daten."></div>
+</section>
+<script>VUM.k('box-APP',()=>VUM.box('APP',{h:74}));</script>
+
+<!-- 15-palantir.html -->
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:86mm;background-image:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,0) 60%),url(img/bv-serverraum-blau.jpg)"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div data-run="Analyse"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:55mm;color:#fff">
+    <span class="ressort" style="background:var(--lime);color:#000">Analyse</span>
+    <div class="hx" style="margin-top:2.5mm;font-size:30pt;max-width:175mm">Palantir: Wenn sehr gut nicht reicht</div>
+  </div>
+  <div class="pad" style="top:92mm">
+    <div class="sub" style="max-width:180mm">Fast doppelter Umsatz, zum ersten Mal mehr Geschäft mit Firmen als mit dem Staat. Und trotzdem fiel die Aktie. Der Grund steht in einer einzigen Zeile des Berichts.</div>
+    <div style="display:grid;grid-template-columns:1fr 66mm;gap:6mm;margin-top:4mm">
+      <div>
+        <div class="body cols2" style="column-gap:5mm"><p>Die Zahlen vom 2. November lesen sich wie aus einem Lehrbuch für Wachstum: Umsatz 2,31&nbsp;Mrd.&nbsp;$, +96&nbsp;%. Das US-Geschäft mit Unternehmen wuchs um 148&nbsp;% auf 984&nbsp;Mio.&nbsp;$ und war damit erstmals größer als das mit der US-Regierung. Für 2026 erwartet Palantir jetzt rund 8,53&nbsp;Mrd.&nbsp;$ Umsatz.</p><p>Die Zeile, die Anleger störte: Der Gesamtwert neu abgeschlossener Verträge wuchs nur noch um 6&nbsp;%, nach 49&nbsp;% im Vorquartal. Bei US-Unternehmen sank das Wachstum von 153&nbsp;% auf 11&nbsp;%. Neue Verträge sind der Umsatz von morgen.</p><p>Dazu kommt die Bewertung. Mit einem KGV von <b data-k="pltr-pe"></b> zahlt die Börse ein Vielfaches dessen, was sie für Nvidia oder Microsoft zahlt. Bei solchen Bewertungen reicht ein schwächeres Zeichen, um die Stimmung zu drehen. In der Woche verlor die Aktie <b data-k="pltr-w"></b>, ein großer Teil davon im allgemeinen KI-Ausverkauf am Donnerstag.</p><p>Was die Profis tun: Sieben Insider haben laut unseren Daten in 90 Tagen für rund <b data-k="pltr-ins"></b> verkauft, gekauft hat keiner. Und Michael Burry hält laut Berichten langlaufende Put-Optionen auf Palantir.</p></div>
+      </div>
+      <div><div data-k="box-PLTR"></div></div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:5mm">
+      <div class="card ink"><div class="bigq" style="font-size:12.5pt">„Unser US-Geschäft mit Unternehmen hat zum ersten Mal in unserer Geschichte das US-Regierungsgeschäft übertroffen.“</div><div class="xs" style="margin-top:2mm"><b>Alex Karp</b>, Chef von Palantir (übersetzt)</div></div>
+      <div class="card ink"><div class="kick" style="color:var(--lime)">Die eine Zeile</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:3mm;margin-top:2mm"><div><div style="font-size:20pt;font-weight:900">+49 %</div><div class="xs" style="color:#9a9a9a">Vertragswert Q2</div></div><div><div style="font-size:20pt;font-weight:900;color:var(--lime)">+6 %</div><div class="xs" style="color:#9a9a9a">Vertragswert Q3</div></div></div></div>
+    </div>
+  </div>
+  <div data-foot="Quellen: Palantir 8-K 02.11., tradingpedia 03.11., 24/7 Wall St. (Burry) 14.10. Insider: VU-Daten (SEC Form 4) bis 03.11."></div>
+</section>
+<script>VUM.k('box-PLTR',()=>VUM.box('PLTR',{h:74}));</script>
+<script>
+VUM.k('app-w',()=>VUM.pc(VUM.C('APP').week,0));VUM.k('app-hi',()=>VUM.de(-VUM.C('APP').hi*100,0)+'&nbsp;%');
+VUM.k('pltr-pe',()=>VUM.de(VUM.C('PLTR').pe,0));VUM.k('pltr-w',()=>VUM.pc(VUM.C('PLTR').week));VUM.k('pltr-ins',()=>VUM.de(-VUM.D.ownership.insider.PLTR.nbv90/1e6,0)+'&nbsp;Mio.&nbsp;$');
+</script>
+
+<!-- 16-gewinner.html -->
+<section class="page">
+  <div data-run="Berichtssaison"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Berichtssaison · Die Gewinner</span>
+    <div class="hx" style="margin-top:3mm">Vier Comebacks gegen den Trend</div>
+    <div class="sub" style="margin-top:2mm;color:var(--g4)">Reisen, Tiermedizin, Bezahlen, Dünger: Die stärksten Zahlen der Woche kamen aus Branchen, über die gerade niemand spricht.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:5mm;margin-top:5mm" data-k="gew"></div>
+  </div>
+  <div data-foot="Quellen: Airbnb 8-K 05.11., Idexx 8-K 02.11., Stocktwits 03.11. (Fiserv), Investing.com 04.11. (Mosaic). Kurse: VU-Daten."></div>
+</section>
+<script>
+VUM.k('gew',()=>[
+ ['ABNB','hf-ferienhaus-nacht.jpg','Airbnb bucht wieder schneller','Übernachtungen +16 %, nach +10 % im Vorquartal. Umsatz 4,87 Mrd. $ (+19 %), Prognose für das Jahr angehoben. Dazu ein neues Rückkaufprogramm über bis zu 12 Mrd. $.','Der KI-Assistent löst schon rund 40 % der Kundenanfragen ohne Mitarbeiter. Die Servicekosten je Buchung sanken um über 17 %.'],
+ ['IDXX',null,'Idexx: Tierarzt-Labore boomen','Umsatz 1,21 Mrd. $ (+10 %), Gewinn je Aktie +18 %. Prognose für Umsatz und Gewinn 2026 erneut angehoben. Die Aktie sprang am Tag der Zahlen um rund 20 %.','Über 1.900 neue Analysegeräte in einem Quartal aufgestellt. Schnelltests wuchsen dagegen nur durch höhere Preise, die Testzahlen sanken.'],
+ ['FISV','bv-muenzstrudel.jpg','Fiserv: Sparen statt wachsen','Umsatz 5,2 Mrd. $ (−1 %), dazu eine Abschreibung von 6,45 Mrd. $. Trotzdem +12,5 % am Tag: Das Sparziel wurde auf 1 Mrd. $ verdoppelt, Rückkäufe starten früher als geplant.','Die Rally beruht auf Kosten und Rückkäufen, nicht auf Wachstum. Die bereinigte Marge fiel um 5,8 Prozentpunkte.'],
+ ['MOS',null,'Mosaic: „Das ist der Tiefpunkt“','Das Quartal war schwach, ein Verlust von 72 Mio. $. Die Aktie stieg trotzdem: Das Management nennt das vierte Quartal den Tiefpunkt im Phosphatgeschäft und senkt die Investitionen.','Das Kaliwerk Esterhazy stellte im Oktober zwei Produktionsrekorde auf und soll 2027 über 5 Mio. Tonnen liefern.'],
+].map(r=>{const c=VUM.C(r[0]);return `<div class="card" style="padding:0;overflow:hidden">${r[1]?`<div class="ph" style="height:30mm;border-radius:0;background-image:url(img/${r[1]})"><span class="ki">KI-Bild</span></div>`:`<div style="height:30mm;background:#000;display:flex;align-items:center;justify-content:center"><div style="filter:invert(1) grayscale(1) brightness(1.5)">${VUM.logo(r[0],12)}</div></div>`}<div style="padding:4mm"><div style="display:flex;justify-content:space-between;align-items:center">${VUM.logo(r[0],5.5)}${VUM.pill(c.week)}</div><div style="font-size:12pt;font-weight:900;letter-spacing:-.02em;margin-top:2mm;line-height:1.1">${r[2]}</div><div class="body" style="margin-top:1.5mm;font-size:8pt">${r[3]}</div><div style="margin-top:2mm;background:var(--lime);border-radius:4px;padding:2mm 2.5mm;font-size:7.6pt;line-height:1.4"><b>Das wussten die wenigsten:</b> ${r[4]}</div></div></div>`}).join(''));
+</script>
+
+<!-- 17-verlierer.html -->
+<section class="page dark">
+  <div data-run="Berichtssaison"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Berichtssaison · Die Verlierer</span>
+    <div class="hx" style="margin-top:3mm">Wenn der Ausblick die Zahlen schlägt</div>
+    <div class="sub" style="margin-top:2mm;color:#cfcfcf">Vier Firmen mit soliden Quartalen, die trotzdem ein Viertel ihres Werts verloren. Der Grund war jedes Mal der Blick nach vorn.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:5mm;margin-top:5mm" data-k="ver"></div>
+  </div>
+  <div data-foot="Quellen: StockStory/Yahoo 05.11. (Axon), FIS 8-K 04.11., finchannel 05.11., DraftKings 8-K 05.11., TIKR 06.11., SiliconANGLE 05.11. (Atlassian). Kurse: VU-Daten."></div>
+</section>
+<script>
+VUM.k('ver',()=>[
+ ['AXON','hf-bodycam.jpg','Axon: Drohnen-Abwehr verschoben','Umsatz +28 %, aber unter den Erwartungen. Die Jahresprognose sinkt: Drei große Aufträge des Bundes für Drohnen-Abwehr rutschen aus 2026, rund 130 Mio. $ Umsatz.','Das Abo-Geschäft läuft stark: wiederkehrender Umsatz +40 %, Kunden geben 26 % mehr aus als im Vorjahr. KI-Produkte erreichen über 100 Mio. $ im Jahr.'],
+ ['FIS','bv-geldscheine.jpg','FIS: Ausblick und Finanzchef weg','Ein schwacher erster Ausblick auf 2027 (Umsatz −0,5 bis +1 %) und der Abgang des Finanzchefs. −23 % an einem Tag, drei Herabstufungen von Analysten.','Das ausgewiesene Plus von 27 % stammt fast ganz aus einem Zukauf. Ohne ihn wuchs FIS um 3,7 %. Rückkäufe ruhen, bis die Schulden sinken.'],
+ ['DKNG',null,'DraftKings: Teure Wette auf Wetten','Der Gewinnausblick für 2026 schrumpft von 700–900 Mio. $ auf 175–275 Mio. $. Das Geld fließt in „Predictions“, ein neues Geschäft mit Vorhersagemärkten.','Das Kerngeschäft allein soll 875–925 Mio. $ operativen Gewinn bringen. Die Zahl der zahlenden Kunden stieg um 13 %.'],
+ ['TEAM',null,'Atlassian: Wachstum mit Bremse','Starke Zahlen (Umsatz +24 %), aber das Abo-Wachstum soll bis Jahresende auf rund 18,5 % sinken. −17 % nachbörslich, nach fast einer Verdopplung seit August.','Im Quartal kaufte Atlassian für 581 Mio. $ eigene Aktien, mehr als der freie Cashflow von 463 Mio. $.'],
+].map(r=>{const c=VUM.C(r[0]);return `<div style="background:#111;border:1px solid #262626;border-radius:8px;overflow:hidden">${r[1]?`<div class="ph" style="height:30mm;border-radius:0;background-image:url(img/${r[1]})"><span class="ki">KI-Bild</span></div>`:`<div style="height:30mm;background:#1a1a1a;display:flex;align-items:center;justify-content:center"><div style="filter:invert(1) grayscale(1) brightness(1.5)">${VUM.logo(r[0],12)}</div></div>`}<div style="padding:4mm"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:10pt">${c.n.replace(' Inc','').replace(' Holdings','')}</b>${VUM.pill(c.week)}</div><div style="font-size:12pt;font-weight:900;letter-spacing:-.02em;margin-top:2mm;line-height:1.1">${r[2]}</div><div class="body" style="margin-top:1.5mm;font-size:8pt;color:#d6d6d6">${r[3]}</div><div style="margin-top:2mm;border:1px solid var(--lime);border-radius:4px;padding:2mm 2.5mm;font-size:7.6pt;line-height:1.4;color:#e6e6e6"><b style="color:var(--lime)">Das wussten die wenigsten:</b> ${r[4]}</div></div></div>`}).join(''));
+</script>
+
+<!-- 18-hedgefonds.html -->
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:78mm;background-image:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,0) 65%),url(img/hf-schach-trading.jpg);background-position:50% 40%"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div data-run="Hedgefonds"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:46mm;color:#fff"><span class="ressort" style="background:var(--lime);color:#000">Hedgefonds-Radar</span><div class="hx" style="margin-top:2.5mm">Der Oktober, den die Profis vergessen wollen</div></div>
+  <div class="pad" style="top:84mm">
+    <div class="sub">Nicht nur Privatanleger haben gelitten. Viele der bekanntesten Hedgefonds hatten ihren schlechtesten Monat seit Jahren, und sie haben schon verkauft, bevor die Wahl kam.</div>
+    <div style="display:grid;grid-template-columns:1fr 70mm;gap:6mm;margin-top:4mm">
+      <div class="body cols2" style="column-gap:5mm">
+        <p>Bei Goldman Sachs sieht man, was die großen Fonds tun, denn dort laufen ihre Geschäfte über das Prime Brokerage. Die Zahlen sind deutlich: In nur fünf Handelstagen Mitte Oktober verkauften Hedgefonds alle KI-Aktien, die sie seit Anfang 2025 netto gekauft hatten. In zwei Wochen gingen rund 20&nbsp;Mrd.&nbsp;$ Tech-Aktien raus. Der Anteil von KI-Werten am Netto-Engagement sank von 31,7&nbsp;% im Juni auf 26,1&nbsp;%.</p>
+        <p>Die Folgen zeigen sich in den Monatszahlen. Marshall Wace verlor im Oktober 5,4&nbsp;%, Walleye Capital 5,9&nbsp;%, der schlechteste Monat seit März 2020. Walleye baut sein Aktiengeschäft ab und zahlt rund 2&nbsp;Mrd.&nbsp;$ an Anleger zurück. Am Wahl-Donnerstag verloren auf Tech spezialisierte Long-Short-Fonds laut Goldman noch einmal über 4&nbsp;% an einem Tag.</p>
+        <p>Die Ausnahmen sind lehrreich. Citadel lag im Oktober mit 1,7&nbsp;% im Plus, Quantedge sogar mit 7,2&nbsp;%. Und Bill Ackman schreibt in seinem Brief vom 2. November, die Begeisterung für KI-„Schaufeln“ lasse Anleger viele andere Firmen übersehen, die ebenfalls stark laufen. Sein Fonds Pershing Square hält Microsoft, Uber, Meta und Amazon, aber keinen einzigen Chiphersteller.</p>
+        <p>Die nächste Gelegenheit, den Profis in die Karten zu schauen, kommt bald: Bis Montag, 16. November, müssen große US-Investoren ihre Bestände zum 30. September melden (Formular 13F). Wir werten die Meldungen in der nächsten Ausgabe aus.</p>
+      </div>
+      <div>
+        <div class="card ink"><div class="kick" style="color:var(--lime)">Oktober 2026</div><div style="margin-top:2mm" data-k="hf-okt"></div><div class="xs" style="color:#9a9a9a;margin-top:2mm">Monatsergebnis laut Bloomberg via Hedgeweek, Seoul Economic Daily und Krypton Research. Angaben der Fonds, nicht geprüft.</div></div>
+      </div>
+    </div>
+    <div class="card lime" style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 60mm;gap:5mm;align-items:center"><div class="bigq" style="font-size:13pt">„Der Oktober war ein Monat, den die meisten Hedgefonds wohl lieber vergessen würden.“</div><div class="xs"><b>JPMorgan</b>, Team für Positionierungsanalyse (sinngemäß übersetzt)</div></div>
+  </div>
+  <div data-foot="Quellen: Goldman Sachs Prime Brokerage via Hedgeweek 02.11. und iTiger 16.10., Hedgeweek 04.11., Seoul Economic Daily 05.11., Krypton Research 07.11., Pershing-Square-Brief 02.11."></div>
+</section>
+<script>
+VUM.k('hf-okt',()=>[['Quantedge',7.2],['Citadel Wellington',1.7],['Dymon',-1.8],['Point72',-2.0],['Millennium',-2.3],['ExodusPoint',-2.4],['Schonfeld',-2.7],['Balyasny',-3.4],['Marshall Wace Eureka',-5.4],['Walleye',-5.9]].map(r=>`<div class="fact" style="color:#fff"><span>${r[0]}</span><b>${VUM.pill(r[1])}</b></div>`).join(''));
+</script>
+
+<!-- 19-profis.html -->
+<section class="page dark">
+  <div data-run="Hedgefonds"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Hedgefonds-Radar · Die Namen</span>
+    <div class="hx" style="margin-top:3mm">Abel kauft, Burry wettet, Huang verkauft nicht</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:4mm;margin-top:5mm">
+      <div style="background:#111;border:1px solid #262626;border-radius:8px;overflow:hidden"><div class="ph" style="height:30mm;border-radius:0;background-image:url(img/bv-tresor-offen.jpg)"><span class="ki">KI-Bild</span></div><div style="padding:3.5mm"><div class="kick" style="color:var(--lime)">Berkshire Hathaway</div><div style="font-size:11.5pt;font-weight:900;line-height:1.12;margin-top:1.5mm">9,6 Mrd. $ für eigene Aktien</div><div class="body" style="font-size:7.9pt;color:#d6d6d6;margin-top:1.5mm">Im dritten Quartal unter Greg Abel mehr als doppelt so viel wie im Vorquartal. Bei anderen Aktien war Berkshire leicht Verkäufer (2,4 Mrd. gekauft, 2,8 Mrd. verkauft). Barreserve: 377 Mrd. $ laut CNBC. Operativer Gewinn −5,8 %.</div></div></div>
+      <div style="background:#111;border:1px solid #262626;border-radius:8px;overflow:hidden"><div class="ph" style="height:30mm;border-radius:0;background-image:url(img/bv-bildschirme-rot.jpg)"><span class="ki">KI-Bild</span></div><div style="padding:3.5mm"><div class="kick" style="color:var(--lime)">Michael Burry</div><div style="font-size:11.5pt;font-weight:900;line-height:1.12;margin-top:1.5mm">Zwei große Wetten gegen Tech</div><div class="body" style="font-size:7.9pt;color:#d6d6d6;margin-top:1.5mm">Laut 24/7 Wall St. hat er seine Short-Positionen gebündelt: Puts auf den Nasdaq-100 (April 2027) und auf einen Chip-ETF (Juni 2027), dazu Puts auf Palantir und Oracle. Seine Nvidia-Puts für Dezember hat er geschlossen.</div></div></div>
+      <div style="background:#111;border:1px solid #262626;border-radius:8px;overflow:hidden"><div class="ph" style="height:30mm;border-radius:0;background-image:url(img/hf-gpu-rack.jpg)"><span class="ki">KI-Bild</span></div><div style="padding:3.5mm"><div class="kick" style="color:var(--lime)">Insider</div><div style="font-size:11.5pt;font-weight:900;line-height:1.12;margin-top:1.5mm">Intel-Chef kauft für 9,7 Mio. $</div><div class="body" style="font-size:7.9pt;color:#d6d6d6;margin-top:1.5mm">Lip-Bu Tan kaufte am 2. November 150.000 Intel-Aktien zu je 64,73 $ über die Börse (Form 4). Bei Nvidia hat Jensen Huang 2026 laut Meldungen bisher keine Aktien über die Börse verkauft.</div></div></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:6mm;margin-top:6mm">
+      <div>
+        <div class="h3" style="color:#fff">Insider der KI-Kette: nur Verkäufe</div>
+        <div class="sm" style="color:#9a9a9a;margin:1mm 0 3mm">Netto verkaufter Wert in 90 Tagen, Mio. $. Kein einziger Kauf bei diesen Werten.</div>
+        <div data-k="ins"></div>
+        <div class="xs" style="color:#777;margin-top:2mm">VU-Eigentümerdaten aus SEC Form 4, Stand <span data-k="ins-asof"></span>. Verkäufe können geplant sein (Pläne nach Regel 10b5-1) und sagen allein wenig.</div>
+      </div>
+      <div>
+        <div class="h3" style="color:#fff">Was die Fonds im 2. Quartal hielten</div>
+        <div class="sm" style="color:#9a9a9a;margin:1mm 0 3mm">Auszug aus unseren 13F-Daten (Stand 30.06.)</div>
+        <div style="font-size:8pt;line-height:1.5">
+          <div class="fact"><span><b style="text-align:left">Berkshire</b> · 299 Mrd. $</span><b>Apple 22 % · Alphabet aufgestockt +45 %</b></div>
+          <div class="fact"><span><b>Bridgewater</b> · 24 Mrd. $</span><b>Nvidia −18 % · Broadcom −28 %</b></div>
+          <div class="fact"><span><b>Appaloosa</b> · 7,7 Mrd. $</span><b>Micron −41 % · TSMC +24 %</b></div>
+          <div class="fact"><span><b>ARK</b> · 15 Mrd. $</span><b>AMD −48 % · neu: SpaceX</b></div>
+          <div class="fact"><span><b>Situational Awareness</b> · 20 Mrd. $</span><b>Sandisk 28 % · Micron 27,5 %</b></div>
+          <div class="fact"><span><b>Pershing (Ackman)</b> · 30.09.</span><b>Microsoft 15 % · Uber 14 % · Meta 11 %</b></div>
+        </div>
+        <div class="xs" style="color:#777;margin-top:2mm">Quellen: VU-Hedgefonds-Daten (SEC 13F), Pershing-Brief 02.11. In der App: alle 119 Fonds mit Käufen und Verkäufen.</div>
+      </div>
+    </div>
+  </div>
+  <div data-foot="Quellen: CNBC und Stock Titan 07.11. (Berkshire), 24/7 Wall St. 14.10. (Burry), Stock Titan Form 4 04.11. (Intel)."></div>
+</section>
+<script>
+VUM.k('ins',()=>{const I=VUM.D.ownership.insider;const rows=['NVDA','AVGO','AMD','PLTR','META','MU','MSFT'].filter(t=>I[t]).map(t=>({l:t,s:I[t].is90+' Pers.',v:I[t].nbv90/1e6}));return VUC.hbars(rows,{w:320,rh:21,lw:90,vw:44,sx:38,dark:1}).replace(/−([\d.,]+) %/g,'−$1 Mio. $')});
+VUM.k('ins-asof',()=>VUM.D.ownership.asOf.split('-').reverse().join('.'));
+</script>
+
+<!-- 20-chart.html -->
+<section class="page">
+  <div data-run="Chart der Woche"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Chart der Woche</span>
+    <div class="hx" style="margin-top:3mm">Nvidia: zwei Gipfel, ein Bruch</div>
+    <div class="sub" style="margin-top:2mm;color:var(--g4);max-width:175mm">Unsere Technik-Engine meldet im Wochenchart von Nvidia ein bestätigtes Doppeltop. Was das Muster bedeutet und was es nicht bedeutet.</div>
+    <div class="card" style="margin-top:5mm;padding:5mm 5mm 3mm">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="h3" style="font-size:11pt">NVIDIA · Wochenschlusskurse · 2 Jahre · US-Dollar</div><span class="app-badge"><i></i>VU Technical</span></div>
+      <div class="sm mu">gestrichelt: Tief zwischen den beiden Gipfeln (218,29 $, Woche zum 11.09.)</div>
+      <div style="margin-top:3mm" data-k="nv-chart"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 70mm;gap:6mm;margin-top:5mm">
+      <div class="body cols2" style="column-gap:5mm">
+        <p>Ein <b>Doppeltop</b> entsteht, wenn ein Kurs zweimal an fast dieselbe Höhe stößt und danach unter das Tief zwischen beiden Gipfeln fällt. Bei Nvidia lagen die Gipfel Anfang September (230,36&nbsp;$) und Anfang Oktober (233,95&nbsp;$, Wochenschluss). Das Tief dazwischen: 218,29&nbsp;$. Seit Mitte Oktober schließt die Aktie darunter, am Freitag bei <b data-k="nv-close"></b>.</p>
+        <p>Viele Chartanalysten lesen das als Zeichen, dass die Käufer müde werden. Unsere Engine zeigt zusätzlich: Im Tageschart bildete sich am 5. November eine <b>Kurslücke nach unten</b>, und der Kurs liegt <b data-k="nv-200"></b> unter der 200-Tage-Linie.</p>
+        <p>Was das Muster nicht ist: eine Prognose. Doppeltops scheitern regelmäßig, besonders vor großen Ereignissen. Und das nächste große Ereignis steht fest: die Quartalszahlen am 17. November. Die Bewertung ist mit einem KGV von <b data-k="nv-pe2"></b> zudem so niedrig wie bei keinem anderen großen KI-Wert.</p>
+      </div>
+      <div>
+        <div class="card ink">
+          <div class="kick" style="color:var(--lime)">Was die Engine meldet</div>
+          <div style="margin-top:2mm">
+            <div class="fact"><span>Struktur</span><b>abwärts</b></div>
+            <div class="fact"><span>Wochenchart</span><b>Doppeltop bestätigt</b></div>
+            <div class="fact"><span>Tageschart</span><b>Kurslücke 05.11.</b></div>
+            <div class="fact"><span>Rel. Stärke (Rang)</span><b data-k="nv-rs"></b></div>
+            <div class="fact"><span>Abstand 52W-Hoch</span><b data-k="nv-hi"></b></div>
+          </div>
+          <div class="xs" style="color:#9a9a9a;margin-top:2mm">Regelbasierte Mustererkennung, Stand 06.11. Keine Handlungsempfehlung, kein Kursziel.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-foot="Daten: Vision Universe Technical (Tiingo, split-bereinigt). Muster laut Regelwerk der Engine."></div>
+</section>
+<script>
+VUM.k('nv-chart',()=>{const w=VUM.D.charts.NVDA.weekly;const ix=d=>w.findIndex(p=>p[0]===d);return VUC.line(w,{w:640,h:215,pr:40,tick:50,mstep:3,lines:[{v:w.map(()=>218.29),name:'',c:'#000',dash:'4 3'}],marks:[{i:ix('2026-09-04'),t:'Gipfel 1',s:'230,36',anchor:'end',dx:-4},{i:ix('2026-10-02'),t:'Gipfel 2',s:'233,95',anchor:'start',dx:4},{i:w.length-1,t:'186,64',s:'06.11.',up:false,anchor:'end',dx:-6}]})});
+VUM.k('nv-close',()=>VUM.usd(VUM.C('NVDA').price));VUM.k('nv-200',()=>VUM.de(-VUM.C('NVDA').sma200*100,1)+'&nbsp;%');VUM.k('nv-pe2',()=>VUM.de(VUM.C('NVDA').pe,1));
+VUM.k('nv-rs',()=>VUM.de(VUM.C('NVDA').tech.rs,0)+' von 100');VUM.k('nv-hi',()=>VUM.pc(VUM.C('NVDA').hi*100,0));
+</script>
+
+<!-- 21-screening.html -->
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:62mm;background-image:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,.1) 70%),url(img/hf-lupe-tabellen.jpg)"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div data-run="Screening der Woche"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:32mm;color:#fff"><span class="ressort" style="background:var(--lime);color:#000">Screening der Woche</span><div class="hx" style="margin-top:2.5mm"><span data-k="sc-n"></span> Aktien, die im Ausverkauf stiegen</div></div>
+  <div class="pad" style="top:68mm">
+    <div class="sub">Wir haben alle <span data-k="sc-base"></span> liquiden US-Aktien durchsucht: Welche stiegen in der Crash-Woche, stehen im Aufwärtstrend und wachsen profitabel?</div>
+    <div class="card" style="margin-top:3mm;padding:3mm 4mm;display:flex;gap:3mm;align-items:center"><span class="app-badge"><i></i>VU Screener</span><span class="xs" data-k="sc-rule"></span></div>
+    <table class="t" style="margin-top:3mm">
+      <thead><tr><th></th><th>Aktie</th><th class="r">Woche</th><th class="r">Rel. Stärke</th><th class="r">Umsatz­wachstum</th><th class="r">Netto­marge</th><th class="r">KGV</th></tr></thead>
+      <tbody data-k="sc-rows"></tbody>
+    </table>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:5mm;position:absolute;left:0;right:0;bottom:0">
+      <div class="card ink"><div class="kick" style="color:var(--lime)">Was auffällt</div><div class="sm" style="margin-top:2mm;color:#d6d6d6;line-height:1.5">Kein einziger Chipwert unter den 19 Treffern. Dafür vier Goldwerte (Newmont, Royal Gold, Franco-Nevada, Wheaton), Bezahldienste (Mastercard, Corpay, Global Payments), Gesundheit (Becton Dickinson, Medpace) und Immobilien. Der Ausverkauf war eine Umschichtung, keine Flucht aus Aktien.</div></div>
+      <div class="card lime"><div class="kick">So liest du die Liste</div><div class="sm" style="margin-top:2mm;line-height:1.5">Ein Treffer heißt nur: Die Aktie erfüllt alle sechs Bedingungen am 06.11. Das ist keine Empfehlung. In der App kannst du die Regel ändern und siehst sofort, wer dazukommt.</div></div>
+    </div>
+  </div>
+  <div data-foot="Daten: Vision Universe Discover und Fundamental (Tiingo, SEC), Stand 06.11.2026."></div>
+</section>
+<script>
+VUM.k('sc-n',()=>VUM.D.screen.hits);VUM.k('sc-base',()=>VUM.D.screen.base.toLocaleString('de-DE'));VUM.k('sc-rule',()=>'Regel: '+VUM.D.screen.rule);
+VUM.k('sc-rows',()=>VUM.D.screen.rows.slice(0,12).map(r=>`<tr><td style="width:12mm">${r.logo?`<img src="../../../discover/logos/files/${r.t}.png" style="height:5mm;max-width:11mm;object-fit:contain">`:''}</td><td><b>${r.t}</b> <span class="mu">${r.n.replace(/ (Inc|Holdings|Class A|& Company)$/,'')}</span></td><td class="r">${VUM.pill(r.week)}</td><td class="r b">${VUM.de(r.rs,0)}</td><td class="r">${VUM.pc(r.growth*100,0)}</td><td class="r">${VUM.de(r.margin*100,0)}&nbsp;%</td><td class="r">${VUM.kgv(r.pe)}</td></tr>`).join(''));
+</script>
+
+<!-- 22-radar.html -->
+<section class="page dark">
+  <div data-run="Markt-Radar"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Markt-Radar</span>
+    <div class="hx" style="margin-top:3mm">Die Breite des Markts: schwach</div>
+    <div class="sub" style="margin-top:2mm;color:#cfcfcf">Unser Marktregime misst jeden Abend über alle <span data-k="rg-n"></span> US-Aktien, wie viele im Aufwärtstrend stehen.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8mm;margin-top:6mm">
+      <div>
+        <div style="display:flex;gap:3mm;align-items:center"><span class="vd"><i><b class="on"></b><b></b><b></b></i>Schwach</span><span class="xs" style="color:#9a9a9a" data-k="rg-plain"></span></div>
+        <div style="margin-top:3mm" data-k="rg-meas"></div>
+        <div class="xs" style="color:#777;margin-top:2mm">Strich: 50 %. Regel „breite Schwäche“, Stand <span data-k="rg-asof"></span>.</div>
+      </div>
+      <div>
+        <div class="h3" style="color:#fff">Sektoren der Woche</div>
+        <div class="xs" style="color:#9a9a9a;margin:1mm 0 3mm">Median der Wochenveränderung, S&amp;P-500-Aktien mit Sektorzuordnung in Vision Universe</div>
+        <div data-k="rg-sek"></div>
+        <div class="sm" style="color:#cfcfcf;margin-top:4mm;line-height:1.5">Energie fiel noch stärker als Technologie: Der Ölpreis (Brent) verlor in der Woche über 12&nbsp;%, der stärkste Wochenrückgang seit März 2020, weil im Iran-Konflikt auf eine Verhandlungslösung gehofft wird.</div>
+      </div>
+    </div>
+    <div class="card" style="background:#111;border:1px solid #262626;position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4mm">
+      <div><div class="kick" style="color:#9a9a9a">S&amp;P 500</div><div style="font-size:18pt;font-weight:900">7.376,86</div><div class="xs" style="color:#9a9a9a">Fr 06.11. · Woche <span data-k="rg-spy"></span> (ETF)</div></div>
+      <div><div class="kick" style="color:#9a9a9a">Nasdaq Composite</div><div style="font-size:18pt;font-weight:900">24.579,42</div><div class="xs" style="color:#9a9a9a">Fr 06.11. · Woche −3,4 %</div></div>
+      <div><div class="kick" style="color:#9a9a9a">Dow Jones</div><div style="font-size:18pt;font-weight:900">51.285,73</div><div class="xs" style="color:#9a9a9a">Fr 06.11.</div></div>
+      <div><div class="kick" style="color:#9a9a9a">DAX</div><div style="font-size:18pt;font-weight:900">25.820</div><div class="xs" style="color:#9a9a9a">Fr 06.11. · Woche etwa unverändert</div></div>
+    </div>
+  </div>
+  <div data-foot="Quellen: VU-Marktregime und Sektordaten; Indexstände Fox Business 06.11., StockTitan 06.11. (Nasdaq-Woche), onvista/dpa-AFX 06.11. (DAX), Trading Economics (Brent)."></div>
+</section>
+<script>
+const SEK={'Real Estate':'Immobilien','Consumer Staples':'Basiskonsum','Consumer Discretionary':'Zykl. Konsum','Financials':'Finanzen','Industrials':'Industrie','Health Care':'Gesundheit','Technology':'Technologie','Energy':'Energie','Utilities':'Versorger','Materials':'Rohstoffe','Communication Services':'Kommunikation'};
+VUM.k('rg-n',()=>VUM.D.regime.measures[0].observed.toLocaleString('de-DE'));VUM.k('rg-plain',()=>VUM.D.regime.plain);VUM.k('rg-asof',()=>VUM.D.regime.asOf.split('-').reverse().join('.'));
+VUM.k('rg-meas',()=>VUM.D.regime.measures.map(m=>`<div style="display:grid;grid-template-columns:1fr 40mm 11mm;gap:3mm;align-items:center;padding:2mm 0;border-bottom:1px solid #222"><span class="sm b">${m.label}</span>${VUC.meter(m.share,{dark:1,c:m.id==='trendBearish'||m.id==='volatilityHigh'?'#fff':'#c8f531'})}<span class="b" style="text-align:right">${VUM.de(m.share*100,0)}&nbsp;%</span></div>`).join(''));
+VUM.k('rg-sek',()=>VUC.hbars(VUM.D.sp500.sectors.map(r=>({l:SEK[r.sector]||r.sector,s:r.n+' Titel',v:r.median})),{w:320,rh:21,lw:118,vw:44,sx:80,dark:1}));
+VUM.k('rg-spy',()=>VUM.pc(VUM.D.etfs.find(e=>e.t==='SPY').week));
+</script>
+
+<!-- 23-konjunktur.html -->
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:70mm;background-image:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,0) 65%),url(img/hf-fed-gebaeude.jpg)"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div data-run="Konjunktur und Zinsen"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:40mm;color:#fff"><span class="ressort" style="background:var(--lime);color:#000">Konjunktur &amp; Zinsen</span><div class="hx" style="margin-top:2.5mm">Zu gute Nachrichten für die Börse?</div></div>
+  <div class="pad" style="top:76mm">
+    <div class="sub">165.000 neue Jobs, Inflation bei 3,7&nbsp;%, ein Fed-Chef, der zuletzt die Zinsen erhöht hat: Warum ein starker Arbeitsmarkt diesmal Sorgen macht.</div>
+    <div style="display:grid;grid-template-columns:1fr 66mm;gap:6mm;margin-top:4mm">
+      <div class="body cols2" style="column-gap:5mm">
+        <p>Normalerweise freut sich die Börse über einen starken Arbeitsmarkt. Diesmal ist es komplizierter. Im Oktober entstanden in den USA 165.000 neue Stellen, Ökonomen hatten etwa 65.000 bis 70.000 erwartet. Die Arbeitslosenquote sank auf 4,1&nbsp;%, die Löhne stiegen stärker als gedacht.</p>
+        <p>Das Problem heißt Inflation. Im September lagen die Verbraucherpreise 3,7&nbsp;% über dem Vorjahr, getrieben vor allem von Energie: Der Krieg mit dem Iran hatte den Ölpreis Ende Oktober auf 116&nbsp;$ je Barrel getrieben. Die Fed unter Kevin Warsh hat die Zinsen im September zum ersten Mal seit 2023 erhöht, auf 3,75 bis 4,00&nbsp;%. Im Oktober stimmten zwei Mitglieder bereits für eine weitere Erhöhung.</p>
+        <p>Der Markt rechnet laut CME FedWatch mehrheitlich mit einem weiteren Schritt am 9. Dezember, die Angaben schwankten nach dem Arbeitsmarktbericht zwischen rund 68 und 77&nbsp;%. Die Rendite zehnjähriger US-Anleihen stieg auf 4,87&nbsp;%. Höhere Zinsen treffen genau die Firmen, die ihre Rechenzentren auf Kredit bauen.</p>
+        <p>Die Gegenbewegung kam vom Öl: Brent fiel in der Woche um mehr als 12&nbsp;% auf rund 98&nbsp;$, weil Iran über Katar einen Vorschlag zum Atomprogramm übermittelte. Fällt Öl weiter, sinkt der Inflationsdruck. Am Dienstag, 10. November, kommen die Oktober-Preise.</p>
+      </div>
+      <div style="display:grid;gap:3mm;align-content:start">
+        <div class="card ink"><div class="kick" style="color:var(--lime)">Arbeitsmarkt Oktober</div><div style="font-size:26pt;font-weight:900;margin-top:1mm">+165.000</div>
+          <div class="fact"><span>Arbeitslosenquote</span><b>4,1 %</b></div><div class="fact"><span>Löhne zum Vormonat</span><b>+0,4 %</b></div><div class="fact"><span>September korrigiert</span><b>60.000</b></div></div>
+        <div class="card"><div class="kick">Märkte am 06.11.</div>
+          <div class="fact"><span>Gold je Unze</span><b>≈ 4.065 $ · Woche +4 %</b></div>
+          <div class="fact"><span>Öl Brent</span><b>98,32 $ · Woche −12,5 %</b></div>
+          <div class="fact"><span>Bitcoin</span><b>≈ 75.800 $ · Woche −2 %</b></div>
+          <div class="fact"><span>US-Rendite 10 J.</span><b>4,87 %</b></div>
+          <div class="fact"><span>Euro in Dollar</span><b>1,1147</b></div></div>
+      </div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:4mm;position:absolute;left:0;right:0;bottom:0">
+      <div class="ph" style="height:30mm;background-image:url(img/hf-oeltanker.jpg)"><span class="ki">KI-Bild</span><div class="cap">Öl: stärkster Wochenrückgang seit März 2020</div></div>
+      <div class="ph" style="height:30mm;background-image:url(img/bv-goldbarren.jpg)"><span class="ki">KI-Bild</span><div class="cap">Gold: wieder über 4.000 $</div></div>
+      <div class="ph" style="height:30mm;background-image:url(img/hf-bitcoin-muenze.jpg)"><span class="ki">KI-Bild</span><div class="cap">Bitcoin: im KI-Sog unter 76.000 $</div></div>
+    </div>
+  </div>
+  <div data-foot="Quellen: Yahoo Finance und Trading Economics 06.11. (Arbeitsmarkt, FedWatch, Rendite, Öl, Gold), NBC 16.10. und FXStreet 29.10. (Fed), Trading Economics (Inflation, 14.10.), CoinGecko, onvista (Euro)."></div>
+</section>
+
+<!-- 24-deutschland.html -->
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:70mm;background-image:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,0) 65%),url(img/hf-frankfurt-skyline.jpg)"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div data-run="Deutschland"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:40mm;color:#fff"><span class="ressort" style="background:var(--lime);color:#000">Deutschland &amp; Europa</span><div class="hx" style="margin-top:2.5mm">DAX: Rekord am Donnerstag, Rheinmetall im Keller</div></div>
+  <div class="pad" style="top:76mm">
+    <div class="sub">Der DAX erreichte am Donnerstag ein Rekordhoch, schloss die Woche aber etwa unverändert. Der Verlierer der Woche heißt erneut Rheinmetall.</div>
+    <div style="display:grid;grid-template-columns:1fr 66mm;gap:6mm;margin-top:4mm">
+      <div class="body cols2" style="column-gap:5mm">
+        <p>Die deutsche Börse reagierte auf die US-Wahl zunächst mit Erleichterung: +2,2&nbsp;% am Mittwoch, angeführt von Heidelberg Materials (+9,8&nbsp;% nach starken Zahlen). Am Donnerstag erreichte der DAX im Handel knapp 26.693 Punkte, ein Rekord. Danach ging es abwärts, am Freitag fiel der Index um rund 2&nbsp;% auf 25.820 Punkte.</p>
+        <p><b>Rheinmetall</b> hat seine Prognose für 2026 erneut gesenkt, Analysten zählen die fünfte Warnung in elf Monaten. Der Umsatz soll nur noch rund 13,2&nbsp;Mrd.&nbsp;€ erreichen statt 13,7 bis 14,2&nbsp;Mrd., weil ein großer Boxer-Auftrag der Bundeswehr ins Jahr 2027 rutscht. Die Aktie verlor in der Woche 21,7&nbsp;% auf 812,70&nbsp;€. Vor rund 13 Monaten stand sie über 2.000&nbsp;€.</p>
+        <p>Außerdem schwach: Zalando (Kritik an der Bruttomarge), TeamViewer (−27&nbsp;% nach gesenkter Prognose), Munich Re und Hannover Re nach Herabstufungen durch JPMorgan. Stark: Bayer (Pharmageschäft), Lufthansa (+4,3&nbsp;% nach Zahlen) und Hochtief auf Übernahmegerüchte.</p>
+        <p>Die Europäische Zentralbank hält den Einlagenzins bei 2,50&nbsp;%, nachdem sie ihn im September wegen der Energiepreise erhöht hatte. Die Industrieproduktion stieg im September um 0,7&nbsp;%, mehr als erwartet.</p>
+      </div>
+      <div style="display:grid;gap:3mm;align-content:start">
+        <div class="card ink"><div class="kick" style="color:var(--lime)">DAX in der Woche</div><div style="margin-top:2mm" data-k="dax"></div><div class="xs" style="color:#9a9a9a;margin-top:2mm">Schlussstände laut onvista/dpa-AFX. Freitag laut Trading Economics 25.778.</div></div>
+        <div class="card lime"><div class="kick">Diese Woche in Deutschland</div><div class="sm" style="margin-top:2mm;line-height:1.55"><b>Di</b> Infineon, Henkel, Porsche SE<br><b>Mi</b> Siemens Energy, E.ON, RWE<br><b>Do</b> Siemens, Allianz, Munich Re, Merck<br><b>Fr</b> Bechtle</div></div>
+      </div>
+    </div>
+    <div class="ph" style="position:absolute;left:0;right:0;bottom:0;height:34mm;background-image:url(img/hf-bronze-bulle-baer.jpg);background-position:50% 55%"><span class="ki">KI-Bild</span><div class="cap">DAX: Rekord am Donnerstag, −1,9 % am Freitag</div></div>
+  </div>
+  <div data-foot="Quellen: onvista/dpa-AFX 02.–06.11., ariva 05.11. und ad-hoc-news 07.11. (Rheinmetall), Trading Economics 06.11., Deutsche Wirtschafts Nachrichten 29.10. (EZB), finanzen.net Wochenvorschau."></div>
+</section>
+<script>
+VUM.k('dax',()=>[['Mo 02.11.',25981,0.63],['Di 03.11.',25864,-0.45],['Mi 04.11.',26438,2.22],['Do 05.11.',26325,-0.43],['Fr 06.11.',25820,-1.92]].map(r=>`<div class="fact" style="color:#fff"><span>${r[0]}</span><b>${r[1].toLocaleString('de-DE')} ${VUM.pill(r[2],2)}</b></div>`).join(''));
+</script>
+
+<!-- 25-das-wird.html -->
+<section class="page">
+  <div data-run="Das wird die Woche"></div>
+  <div class="pad" style="top:15mm">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end"><div class="mega" style="font-size:52pt">Das wird&nbsp;…</div><div class="byline" style="text-align:right">09.–13. November 2026<br>Termine, die bewegen können</div></div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3mm;margin-top:6mm" data-k="woche"></div>
+    <div class="grid" style="grid-template-columns:1.3fr 1fr;gap:5mm;position:absolute;left:0;right:0;bottom:0">
+      <div class="ph" style="height:62mm;background-image:url(img/hf-boersenglocke.jpg)"><span class="ki">KI-Bild</span><div class="cap" style="font-size:8.5pt"><b style="color:var(--lime)">Ausblick:</b> Nvidia am 17.11., 13F-Meldungen bis 16.11. Und der Börsengang von Anthropic: laut Prognosemärkten nur noch etwa 50 % Wahrscheinlichkeit für einen Start vor dem 1. Dezember.</div></div>
+      <div class="card ink"><div class="kick" style="color:var(--lime)">Politik</div><div class="sm" style="margin-top:2mm;line-height:1.55;color:#d6d6d6">Der aktuelle US-Haushalt läuft bis <b style="color:#fff">11. Dezember</b>. Bis dahin muss der alte Kongress handeln, der neue beginnt im Januar 2027. Am 13.11. treffen sich die EU-Staats- und Regierungschefs informell in Irland.</div><div class="xs" style="color:#777;margin-top:3mm">Quellen: finanzen.net/dpa-AFX Wochenvorschau, StockTitan Termine 06.11., Trading Economics, Nvidia IR, Yahoo Finance 06.11. (Anthropic), CREFC (Haushalt). Termine ohne Gewähr.</div></div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('woche',()=>[
+ ['Mo','09.11.',[['US','KKR, Constellation Energy, Barrick'],['US nachb.','Take-Two, The Trade Desk, Occidental, Rocket Lab'],['DE','Hannover Re, GEA, Hypoport'],['EU','UniCredit'],['Makro','Exporte Deutschland, Sentix'],['Fed','Reden: Bowman, Goolsbee, Barkin'],['Politik','G7-Außenminister in Marseille']]],
+ ['Di','10.11.',[['14:30','US-Inflation Oktober',1],['US nachb.','CoreWeave',1],['DE','Infineon, Henkel, Porsche SE, K+S, Uniper, Jenoptik'],['US','Sea Ltd, TransDigm, On Holding'],['EU','Vodafone'],['Asien','SoftBank'],['Fed','Rede: Waller']]],
+ ['Mi','11.11.',[['DE','Siemens Energy, E.ON, RWE',1],['DE','Brenntag, Bilfinger, Freenet'],['EU','Vestas, Swiss Life'],['Makro','Inflation Deutschland (final)'],['US','Veterans Day, Anleihemarkt geschlossen']]],
+ ['Do','12.11.',[['DE','Siemens, Allianz, Munich Re, Merck',1],['US nachb.','Cisco, Applied Materials, Cerebras',1],['DE','Talanx, Delivery Hero, Hapag-Lloyd, Salzgitter, Sixt'],['EU','Rolls-Royce, Burberry, Telefónica'],['US','Nebius, Brookfield'],['Makro','BIP Großbritannien, US-Erstanträge']]],
+ ['Fr','13.11.',[['EU','BIP Eurozone (2. Schätzung)'],['US','Erzeugerpreise Oktober'],['EU','Richemont, Generali, ams Osram'],['DE','Bechtle'],['Japan','MUFG, SMFG, Mizuho'],['Öl','Monatsbericht der IEA'],['Politik','EU-Gipfel in Irland (informell)']]],
+].map(d=>`<div><div style="background:#000;color:#fff;border-radius:6px 6px 0 0;padding:2.5mm 3mm;display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:16pt;letter-spacing:-.03em">${d[0]}</b><span class="xs" style="color:var(--lime);font-weight:800">${d[1]}</span></div><div style="background:var(--g1);border-radius:0 0 6px 6px;padding:2mm 3mm;min-height:146mm">${d[2].map(e=>`<div style="padding:2mm 0;border-bottom:1px solid var(--g2)"><div style="font-size:6.3pt;font-weight:900;letter-spacing:.08em;color:var(--g4);text-transform:uppercase">${e[0]}</div><div style="font-size:8.6pt;font-weight:${e[2]?900:600};line-height:1.25;margin-top:.6mm">${e[2]?'<span style="background:var(--lime);padding:0 2px">'+e[1]+'</span>':e[1]}</div></div>`).join('')}</div></div>`).join(''));
+</script>
+
+<!-- 26-app.html -->
+<section class="page dark">
+  <div class="bleed" style="background-image:url(img/hf-smartphone-chart.jpg);background-position:50% 50%;opacity:.55"></div>
+  <div class="bleed" style="background:linear-gradient(90deg,#000 0%,rgba(0,0,0,.85) 45%,rgba(0,0,0,.2) 100%)"></div>
+  <div data-run="Aus der App"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Aus der App</span>
+    <div class="mega" style="font-size:50pt;margin-top:4mm">Alles aus diesem Heft.<br><span style="color:var(--lime)">Täglich neu.</span></div>
+    <div class="sub" style="margin-top:5mm;max-width:120mm;color:#d6d6d6;font-size:12pt">Jede Zahl in diesem Magazin stammt aus Vision Universe. In der App siehst du sie für über 5.600 US-Aktien, jeden Abend aktualisiert.</div>
+    <div style="display:grid;gap:4mm;margin-top:8mm;max-width:118mm" data-k="app"></div>
+    <div style="position:absolute;left:0;bottom:0;max-width:120mm">
+      <div style="font-size:9pt;font-weight:800;color:#9a9a9a">research.visionuniverse.de</div>
+      <div style="font-size:20pt;font-weight:900;letter-spacing:-.03em;margin-top:1mm">Analyse-Software ohne Empfehlungen.</div>
+    </div>
+  </div>
+  <div data-foot="Die gezeigten Funktionen beschreiben Rechenmodelle. Keine Anlageberatung, keine Kauf- oder Verkaufssignale."></div>
+</section>
+<script>
+VUM.k('app',()=>[
+ ['Discover','Swipe dich durch Aktien und Themen, mit Klartext-Geschichte zu jedem Wert.','Seite 07: Wochenbilanz von 495 S&amp;P-Aktien'],
+ ['Screener','Eigene Regeln bauen, wie unser Screening der Woche, und sofort Treffer sehen.','Seite 21: '+VUM.D.screen.hits+' Aktien, die im Ausverkauf stiegen'],
+ ['Technical','Muster, Trends und Kurslücken, erkannt nach festen Regeln.','Seite 20: Nvidias Doppeltop'],
+ ['Hedgefonds','Was 119 bekannte Fonds kaufen und verkaufen, aus den 13F-Meldungen.','Seiten 18–19: Burry, Berkshire, Ackman'],
+ ['Supertrader','Die Methoden berühmter Trader als Regelwerk. Heute erfüllen '+VUM.D.supertrader.find(s=>s.id==='DARVAS_BOX').watch+' Aktien die Beobachtungsregel nach Darvas.','Forschung, nicht zertifiziert'],
+].map(r=>`<div style="display:grid;grid-template-columns:30mm 1fr;gap:4mm;border-top:1px solid #333;padding-top:3mm"><div style="font-size:12pt;font-weight:900;color:var(--lime)">${r[0]}</div><div><div class="sm" style="color:#fff;font-weight:600;line-height:1.4">${r[1]}</div><div class="xs" style="color:#9a9a9a;margin-top:1mm">${r[2]}</div></div></div>`).join(''));
+</script>
+
+<!-- 27-quickcheck.html -->
+<section class="page">
+  <div data-run="Quick-Check"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Quick-Check</span>
+    <div class="hx" style="margin-top:3mm">22 bekannte US-Aktien auf einen Blick</div>
+    <div class="sub" style="margin-top:2mm;color:var(--g4)">Kurs, Woche, zwölf Monate, Bewertung, Trend: alles aus unseren Daten, Stand Freitag, 06.11.2026.</div>
+    <table class="t" style="margin-top:5mm;font-size:8.2pt">
+      <thead><tr><th></th><th>Aktie</th><th class="r">Kurs $</th><th class="r">Woche</th><th class="r">12 Monate</th><th class="r">Abstand Hoch</th><th class="r">KGV</th><th class="r">Über 200-T.</th><th class="r">Rel. Stärke</th></tr></thead>
+      <tbody data-k="qc"></tbody>
+    </table>
+    <div class="xs mu" style="margin-top:3mm">KGV: Kurs geteilt durch den Gewinn je Aktie der letzten vier Quartale (SEC). „Über 200-T.“: Schlusskurs über dem Durchschnitt der letzten 200 Handelstage. Relative Stärke: Perzentil im Universum von <span data-k="qc-u"></span> US-Aktien, 100 = stärkste. Werte beschreiben die Vergangenheit, keine Empfehlung.</div>
+  </div>
+  <div data-foot="Daten: Vision Universe (Tiingo, SEC EDGAR)."></div>
+</section>
+<script>
+VUM.k('qc',()=>VUM.D.quick.map(q=>`<tr><td style="width:10mm"><img src="../../../discover/logos/files/${q.t}.png" style="height:4.5mm;max-width:9mm;object-fit:contain" onerror="this.remove()"></td><td><b>${q.t}</b> <span class="mu">${q.n.replace(/ (Inc|Corporation|Class [AB]|Com)$/,'').slice(0,22)}</span></td><td class="r b">${VUM.de(q.price,2)}</td><td class="r">${VUM.pill(q.week)}</td><td class="r">${VUM.pc(q.r12m*100,0)}</td><td class="r">${VUM.pc(q.hi*100,0)}</td><td class="r">${VUM.kgv(q.pe)}</td><td class="r">${q.above200?'<span class="pill up">ja</span>':'<span class="pill dn">nein</span>'}</td><td class="r b">${q.rs==null?'–':VUM.de(q.rs,0)}</td></tr>`).join(''));
+VUM.k('qc-u',()=>VUM.D.universe.toLocaleString('de-DE'));
+</script>
+
+<!-- 28-rueckseite.html -->
+<section class="page dark">
+  <div class="bleed" style="background-image:url(img/hf-wahlurne-rechenzentrum.jpg);background-position:50% 50%;opacity:.35"></div>
+  <div class="bleed" style="background:linear-gradient(180deg,#000 0%,rgba(0,0,0,.6) 40%,#000 100%)"></div>
+  <div class="pad" style="inset:14mm">
+    <img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:6mm;filter:invert(1)" alt="Vision Universe">
+    <div style="font-size:30pt;font-weight:900;letter-spacing:-.05em;margin-top:2mm">AKTIEN<span style="color:var(--lime)">MAGAZIN</span></div>
+    <div class="card" style="background:var(--lime);color:#000;margin-top:10mm;max-width:120mm"><div class="kick">Nächste Ausgabe · 16.11.2026</div><div style="font-size:16pt;font-weight:900;line-height:1.1;margin-top:2mm">Die 13F-Meldungen sind da: Was Berkshire, Burry und Co. im dritten Quartal gekauft haben. Plus: Nvidia vor den Zahlen.</div></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:8mm;font-size:6.6pt;line-height:1.5;color:#9a9a9a">
+      <div><b style="color:#fff">Wichtige Hinweise.</b> Redaktionelle Einordnung, keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung. Kein Kursziel. Vergangene Kursentwicklungen sagen nichts über künftige aus. Kennzahlen, Ränge, Screening und Muster sind Rechenmodelle von Vision Universe nach festen Regeln. Zitate Dritter sind übersetzt und als solche gekennzeichnet. Bilder mit dem Vermerk „KI-Bild“ sind mit künstlicher Intelligenz erzeugt (Higgsfield) und zeigen keine realen Szenen. Methodik und Interessen: research.visionuniverse.de/rechtliches/methodik</div>
+      <div><b style="color:#fff">Daten und Quellen.</b> Kurse: Tiingo (split-bereinigt, Schlusskurse). Fundamentaldaten, Insider und 13F: SEC EDGAR. Redaktionelle Fakten laut Pressemitteilungen und SEC-Meldungen der Unternehmen sowie CNBC, CBS News, NBC News, Yahoo Finance, Fox Business, StockTitan, Hedgeweek, Trading Economics, onvista/dpa-AFX und weiteren, jeweils auf der Seite genannt. Redaktionsschluss: 08.11.2026. <br><br><b style="color:#fff">Vision Universe</b> · research.visionuniverse.de · Muster-Ausgabe Nr. 01, nicht veröffentlicht.</div>
+    </div>
+  </div>
+</section>
+
+<script>VUM.finish();</script>
+</body></html>
