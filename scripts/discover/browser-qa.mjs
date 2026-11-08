@@ -207,11 +207,28 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
     const first=await strategies.first().boundingBox();assert(first&&first.width<=page.viewportSize().width,'Strategy row overflows mobile viewport');
     await screenshot(page,key+'-strategies');
     const href=await strategies.first().getAttribute('href');
+    /* Konzept „Reihe für Reihe“ (n-row): #/strategien/<reihe> fuehrt auf die Seite der Reihe #/c/US_REAL/<reihe>. */
     await navigate(page,base+'/discover/'+href,{waitUntil:'networkidle'});
-    assert.equal(await page.locator('.v2-back').getAttribute('href'),'#/strategien');
-    assert(await page.locator('.dv3-rule').count()===1,'Strategy detail shows its rule verbatim');
-    const stock=page.locator('.dv3-hits a[href*="/s/"]').first();await stock.waitFor({state:'visible'});
+    await page.waitForURL(url=>/^#\/c\/US_REAL\/[a-z0-9-]+$/.test(new URL(url).hash));
+    await page.locator('.dr-rowhero h1').waitFor({state:'visible'});
+    assert.equal(await page.locator('.dr-rowhero').evaluate(n=>getComputedStyle(n).backgroundColor),'rgb(0, 0, 0)','Row head is dark');
+    assert(await page.locator('.dr-rule .dr-rule__i').count()>=1,'Row page explains its rule');
+    assert.equal(await page.locator('.dr-rowhero a[href^="#/swipen?reihe="]').count(),1,'Row swipe entry');
+    const stock=page.locator('.dr-rks a[href*="/s/"]').first();await stock.waitFor({state:'visible'});
+    assert(await page.locator('.dr-rks .dr-rk').count()>=5,'Row ranking');
     await screenshot(page,key+'-strategy-stocks');
+    /* n-row-swipe: Swipen nur mit den Aktien dieser Reihe, Fortschritt „1 von N“. */
+    await navigate(page,base+'/discover/'+(await page.locator('.dr-rowhero a[href^="#/swipen?reihe="]').getAttribute('href')),{waitUntil:'networkidle'});
+    await page.locator('.dr-rsw__card[data-symbol]').waitFor({state:'visible'});
+    const pos=await page.locator('.dr-rsw__pos').innerText();assert(/^\d+ von \d+$/.test(pos),'Row swipe progress: '+pos);
+    const firstSwipe=await page.locator('.dr-rsw__card').getAttribute('data-symbol');await page.locator('.dr-rsw__b[data-a="skip"]').click();
+    await page.waitForFunction(s=>document.querySelector('.dr-rsw__card')?.dataset.symbol!==s,firstSwipe);
+    await screenshot(page,key+'-row-swipe');
+    /* n-all: alle Reihen nach Genre, mit Trefferzahl. */
+    await navigate(page,base+'/discover/#/reihen',{waitUntil:'networkidle'});
+    assert(await page.locator('.dr-all .dr-all__r').count()>=19,'All rows listed');
+    assert.deepEqual((await page.locator('.dr-all__g h2').allTextContents()).slice(0,4),['Kursbewegung','Unternehmen','Indizes','Entdecken']);
+    await screenshot(page,key+'-all-rows');
     /* Alte Sammlungsadresse leitet weiter (Thema bzw. Strategie). */
     await navigate(page,base+'/discover/#/c/US_REAL/thema-ki',{waitUntil:'networkidle'});
     await page.waitForURL(url=>new URL(url).hash==='#/thema/kuenstliche-intelligenz');
@@ -312,6 +329,12 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   await page.locator('.dr-sec--strat').scrollIntoViewIfNeeded();assert(await page.locator('.dr-sec--strat .dr-sk').count()>=3,'Strategy cards');
   await page.locator('.dr-sec[data-row="bekannte-namen"]').scrollIntoViewIfNeeded();await page.locator('.dr-sec[data-row="bekannte-namen"] .dr-poster').first().waitFor({timeout:15000});
   assert.equal(await page.locator('.dv3-swipecard[href="#/swipen"]').count(),1,'Swipe teaser');
+  /* n-preview: Halten oder Rechtsklick auf ein Poster zeigt die Vorschau mit den Reihen der Aktie, ohne die Seite zu verlassen. */
+  const pvPoster=page.locator('.dr-sec[data-row="new-52-week-highs"] .dr-poster').first();await pvPoster.scrollIntoViewIfNeeded();await pvPoster.waitFor();
+  const pvUrl=page.url();await pvPoster.click({button:'right'});await page.locator('.dr-pvsheet:not([hidden])').waitFor();
+  await page.waitForFunction(()=>/^Steht heute in \d+ Reihen?$|keiner/.test(document.querySelector('.dr-pv__in')?.textContent||''));
+  assert.equal(page.url(),pvUrl,'Preview keeps the page');await screenshot(page,key+'-preview');await page.keyboard.press('Escape');
+  assert.equal(await page.locator('.dr-allrows[href="#/reihen"]').count(),1,'All rows entry on the home page');
   for(const sel of ['.dr-bb','.dr-sec--themes','.dr-sec[data-row="new-52-week-highs"]','.dr-sec[data-row="bekannte-namen"]']){await page.locator(sel).first().scrollIntoViewIfNeeded();await screenshot(page,key+'-world'+sel.replace(/[^a-z0-9]+/g,'-'));}
   const before=page.url();await page.evaluate(()=>scrollTo(0,0));await page.locator('.dr-genres button[data-genre="unternehmen"]').click();
   await page.locator('.dr-sec[data-row="umsatz-waechst-stark"]').waitFor();assert.equal(await page.locator('.dr-bb').count(),0,'Genre view without billboard');
