@@ -241,7 +241,7 @@
       "records": "depots",
       "role": "Zwei KI-Depots als Rechenmodell vorwärts ab 06.11.2026: Bestand, Gewichte, Begründung je Titel, Aufnahmedatum und -kurs, Wertentwicklung ab Start. Kein echtes Geld, keine Empfehlung, keine Backtest-Zahlen.",
       "producer": "scripts/research/edge2/ki-export.cjs",
-      "workflow": "ki-depots-daily.yml (Kursstand werktags) + Wochenlauf KI-Depots (Entscheidung monatlich)",
+      "workflow": "pipeline-daily.yml (Teil ki-depots, vormals ki-depots-daily: Kursstand werktags) + Wochenlauf KI-Depots (Entscheidung monatlich)",
       "schedule": "werktags 23:41 UTC",
       "freshness": { "kind": "hours", "warnAfter": 96, "staleAfter": 240 },
       "consumers": ["Frontend D3 (KI-Depots)"]

@@ -387,9 +387,14 @@ test('Hinweisdatei assets/legal-notices.json: freigeschaltet, Pflichtstellen vor
   assert.ok(n.wording.length >= 8 && n.wording.every(w => w.avoid && w.use));
   // Owner-Linie Plan §11: kein Signal-Hinweis mehr; Pflicht-Links der App zeigen auf vorhandene Rechtsseiten
   assert.equal(n.notices.signal, undefined);
-  assert.deepEqual(n.appLinks.always.map(x => x.key), ['impressum', 'datenschutz', 'bedingungen', 'risikohinweise']);
-  for (const x of [...n.appLinks.always, ...n.appLinks.ifPurchaseInApp]) assert.ok(n.links[x.key] && n.links[x.key].startsWith(LEGAL_BASE + '/'), x.key);
-  const pages = new Set(Object.values(LINKS).map(p => LEGAL_BASE + p));
+  // Seit L1 (66f8dab615): Kontakt und Quellen stehen mit im Menü der App.
+  assert.deepEqual(n.appLinks.always.map(x => x.key), ['impressum', 'kontakt', 'datenschutz', 'bedingungen', 'risikohinweise', 'quellen']);
+  // Einzige Ausnahme (L1, Owner 07.11.2026): „Datenquellen & Methodik“ liegt zentral auf der Research-Seite /infos/.
+  const QUELLEN = 'https://research.visionuniverse.de/infos/#quellen';
+  assert.equal(n.links.quellen, QUELLEN);
+  assert.ok(fs.existsSync(new URL('../../../infos/index.html', import.meta.url)), '/infos/ fehlt');
+  for (const x of [...n.appLinks.always, ...n.appLinks.ifPurchaseInApp]) assert.ok(n.links[x.key] && (n.links[x.key].startsWith(LEGAL_BASE + '/') || n.links[x.key] === QUELLEN), x.key);
+  const pages = new Set(Object.values(LINKS).map(p => LEGAL_BASE + p).concat(QUELLEN));
   for (const [k, u] of Object.entries(n.links)) assert.ok(pages.has(u), `${k}: ${u}`);
   const texts = Object.values(n.notices).map(x => x.text).join(' ');
   for (const w of ['garantiert', 'risikolos', 'Kaufempfehlung', 'Kursziel der', 'wir empfehlen']) assert.ok(!texts.includes(w), w);
