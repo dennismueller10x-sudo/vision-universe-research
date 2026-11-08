@@ -3,7 +3,7 @@
 // veröffentlichten Europa-Schlusskursen (discover/data/europe). Gebaut bei der Veröffentlichung
 // wie universe-US_REAL.json (scripts/vu2/build-release.mjs); nichts davon wird committet.
 // Rechenregel und Schwellen: screener/europe-close-metrics.js. Kein Anbieterabruf, kein Fachmodell.
-// Aufruf: node scripts/screener/build-europe.mjs [--root=.] [--out=screener/data]
+// Aufruf: node products/screener/producer/build-europe.mjs [--root=.] [--out=screener/data]
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -11,8 +11,8 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const Calendar = require('../../core/europe-exchange-calendar.js');
-const Metrics = require('../../screener/europe-close-metrics.js');
+const Calendar = require('../../../core/europe-exchange-calendar.js');
+const Metrics = require('../../../screener/europe-close-metrics.js');
 
 export const SCHEMA = 'vu-screener-europe-1';
 const FIELDS = ['price', 'r1m', 'r3m', 'r6m', 'r1y', 'fromHigh52w', 'vsSma50', 'coverage1y'];
