@@ -41,7 +41,7 @@ scripts/discover/build-discover-data.mjs    Aggregation (der "Server" dieses Rep
 scripts/discover/verify-discover-data.mjs   Nachrechnung, ~7.600 Pruefungen
 scripts/discover/browser-qa.mjs             21 Browser-Pruefungen (Playwright, ausserhalb CI)
 .github/workflows/discover-ci.yml           Eigener Workflow
-docs/archiv/VU_DISCOVER_ARCHITECTURE.md            Architektur
+docs/VU_DISCOVER_ARCHITECTURE.md            Architektur
 docs/archiv/2026/VU_DISCOVER_DELIVERY_REPORT.md         dieser Bericht
 ```
 

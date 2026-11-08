@@ -172,7 +172,7 @@ Die Archivierung erfolgt in Folge-PRs je Produkt. Die Pfadspalte wird dabei auf 
 | [docs/archiv/VU_CREATIVE_TRIGGER_PRODUCTION_READINESS.md](VU_CREATIVE_TRIGGER_PRODUCTION_READINESS.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/archiv/VU_CURRENCY_FX_LAYER.md](VU_CURRENCY_FX_LAYER.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/archiv/VU_DATA_PROVIDER_COST_MODEL.md](VU_DATA_PROVIDER_COST_MODEL.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
-| [docs/archiv/VU_DISCOVER_ARCHITECTURE.md](VU_DISCOVER_ARCHITECTURE.md) | 2026-10-06 | 0 | gültig | Verbindlicher Produkteinstieg; gesetzte CLAUDE-Links bleiben erhalten. |
+| [docs/VU_DISCOVER_ARCHITECTURE.md](../VU_DISCOVER_ARCHITECTURE.md) | 2026-10-06 | 0 | gültig | Verbindlicher Produkteinstieg; gesetzte CLAUDE-Links bleiben erhalten. |
 | [docs/archiv/VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md](VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |
 | [docs/archiv/2026/VU_DISCOVER_CONSOLIDATION.md](2026/VU_DISCOVER_CONSOLIDATION.md) | 2026-10-06 | 0 | überholt | Auslieferungs-/Migrationsprotokoll September; heutige Produktarchitektur ist der Einstieg. |
 | [docs/archiv/VU_DISCOVER_CONSUMER_LAYER.md](VU_DISCOVER_CONSUMER_LAYER.md) | 2026-10-06 | 0 | gültig | Fach-/Referenzdokument; keine eindeutige Ablösung belegt. Über Produkteinstieg erschlossen. |

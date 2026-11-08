@@ -85,7 +85,7 @@ versionsfrei. Geändert ist nur der Kopfkommentar von `verify-currency-ui.mjs`
 | `discover/app.css`, `discover/detail.css` | veraltete Versionskommentare (4 Kommentarzeilen) |
 | `scripts/quality/verify-currency-ui.mjs` | veralteter Kopfkommentar zu UI8 |
 | `scripts/discover/visual-parity.mjs` | Parity-Routen um Suche, Fundamentals und eine farbige Themenwelt erweitert (Anforderung §14) |
-| `docs/archiv/VU_DISCOVER_ARCHITECTURE.md` | aktuelle Architekturdefinition vorangestellt |
+| `docs/VU_DISCOVER_ARCHITECTURE.md` | aktuelle Architekturdefinition vorangestellt |
 | `docs/archiv/VU_DISCOVER_NAMESPACE_CLEANUP.md` | dieser Bericht |
 
 ## 9. Bewusst nicht geändert

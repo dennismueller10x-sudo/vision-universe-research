@@ -111,7 +111,7 @@ Eigener Designfall ab 860 px, nicht verkleinerter Desktop:
 `scripts/discover/build-discover-data.mjs` (Renditepfad, Featured,
 Zugehörigkeiten, Nachbarn), `scripts/discover/verify-discover-data.mjs`
 (kennt die schlanke Verweiskachel), `scripts/discover/browser-qa.mjs`
-(33 statt 21 Prüfungen), `docs/archiv/VU_DISCOVER_ARCHITECTURE.md`
+(33 statt 21 Prüfungen), `docs/VU_DISCOVER_ARCHITECTURE.md`
 
 ## 8. Welche Tests wurden ausgeführt?
 

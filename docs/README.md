@@ -14,7 +14,7 @@ Unveränderliche Quell-Snapshots behalten ihre Originalpfade im Text. Der Prüfe
 
 **Technical:** [TECHNICAL_WORLD_PROGRESS.md](technical/TECHNICAL_WORLD_PROGRESS.md). Fortschritt und offene Aufgaben; der gesetzte Completion-Plan bleibt ein verlinkter Fachplan.
 
-**Discover:** [VU_DISCOVER_ARCHITECTURE.md](archiv/VU_DISCOVER_ARCHITECTURE.md). Produktarchitektur, Datenquellen und weiterführende Fachbelege zur Entdeckungsschicht.
+**Discover:** [VU_DISCOVER_ARCHITECTURE.md](VU_DISCOVER_ARCHITECTURE.md). Produktarchitektur, Datenquellen und weiterführende Fachbelege zur Entdeckungsschicht.
 
 **Fundamental:** [FUNDAMENTAL.md](FUNDAMENTAL.md). Ansichten, Kennzahlen, SEC-Daten und Datenabdeckung.
 
