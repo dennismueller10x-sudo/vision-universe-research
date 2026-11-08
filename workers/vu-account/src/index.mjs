@@ -28,7 +28,7 @@ import {createBrevo, runBrevo} from './brevo.mjs';
 import * as pages from './public-pages.mjs';
 
 // Gesundheit, oeffentlich und ohne Zahlen: Kuendigungen "ok" | "attention" | "unknown"
-// (fuer die Ueberwachung ohne Schluessel, .github/workflows/account-monitor.yml). 60 s zwischengespeichert.
+// (fuer die Ueberwachung ohne Schluessel, account.yml (Teil ueberwachung)). 60 s zwischengespeichert.
 let cancellationState = {at: 0, value: 'unknown'};
 async function health(ctx) {
   let cancellations = 'unknown';

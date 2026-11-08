@@ -15,7 +15,7 @@ und D gelten weiter.
 | Abrechnung | Stripe Live, Restricted Key `rk_live_` | Live angebunden; Checkout nur für Konten mit Rolle `billing_tester` (`VU_CHECKOUT_ACCESS = "testers"`), siehe [TARIFE.md](../archiv/accounts/TARIFE.md) |
 | E-Mail | Brevo, Domain `visionuniverse.de` verifiziert und authentifiziert | Auth-Mails über Brevo-SMTP; Vertrags-, Kündigungs- und Widerrufsbestätigungen über die Brevo-API; Kontaktabgleich und Newsletter aus ([BREVO.md](BREVO.md)) |
 | Rechtstexte, Kündigen, Widerrufen | `https://konto.visionuniverse.de/rechtliches/`, `/kuendigen`, `/widerrufen` (ohne Passwortmaske) | Entwürfe, [RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md) |
-| Sicherung | `account-backup.yml`, täglich, age-verschlüsselt | Free-Plan hat keine herunterladbaren Backups |
+| Sicherung | `account.yml` (Teil `sicherung`), täglich, age-verschlüsselt | Free-Plan hat keine herunterladbaren Backups |
 
 ## Zugangsdaten (GitHub)
 
@@ -36,14 +36,14 @@ für die Betriebsläufe). Jeder Job prüft die Freigabe zusätzlich selbst (fail
 Ausrollen und nicht destruktive Migrationen laufen nach dem Merge automatisch; was eine Freigabe braucht, steht in
 [FREIGABEN.md](FREIGABEN.md). Die Workflows unten sind die freigabepflichtigen Wege.
 
-1. **Ausrollen** – Actions → „Konten — vu-account ausrollen (Produktion)“ → Run workflow (zwei Freigaben). Danach meldet
+1. **Ausrollen** – Actions → „Konten (Buendel account)“, Teil `ausrollen` → Run workflow (zwei Freigaben). Danach meldet
    `https://konto.visionuniverse.de/v1/health` `accounts: true`, `autoProcess: false`.
-2. **Auth einstellen** – „Konten — Supabase Auth einstellen (Produktion)“ (erst Probelauf;
+2. **Auth einstellen** – „Konten (Buendel account)“, Teil `auth` (erst Probelauf;
    `supabase-auth-config.mjs --production`, nur die feste Ref, ohne Projektabfrage). Setzt Site-URL, Redirect
    `https://konto.visionuniverse.de/v1/auth/callback**`, E-Mail-Bestätigung, Passwort ≥ 10 mit Groß/Klein/Ziffer, Hook
    „Before User Created“, deutsche Vorlagen (Registrierung, Passwort, E-Mail-Änderung) und – mit
    `VU_ACCOUNT_BREVO_SMTP_LOGIN`/`…_SMTP_KEY` in `account-dev` – SMTP über Brevo.
-3. **Stripe** – „Konten — Stripe Live einrichten (Produktion)“ (erst Probelauf, dann zwei Freigaben): legt Produkt
+3. **Stripe** – „Konten (Buendel account)“, Teil `stripe` (erst Probelauf, dann zwei Freigaben): legt Produkt
    `vu_pro` „Vision Universe Pro“, den Monatspreis 1,00 EUR (Katalog im Code, `LIVE_CATALOG`), Kundenportal und Webhook an;
    Webhook-Geheimnis und Portal-ID gehen direkt in den Worker, `pro_month_live` in `plan_prices`.
 4. **Öffentliche Registrierung** (Owner-Entscheidung 27.10.2026: jede gültige Adresse, **keine Positivliste**):
