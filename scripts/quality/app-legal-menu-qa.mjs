@@ -95,7 +95,11 @@ for (const [label, href] of LEGAL.appLinks) {
     if (p) await p.close();
   } else {
     let ok = false, at = '';
-    for (let i = 0; i < 40 && !ok; i++) { const f = contentFrame(page); at = f ? f.url() : ''; ok = at === href && await f.locator('#quellen').isVisible().catch(() => false); if (!ok) await page.waitForTimeout(250); }
+    // Erst die Adresse des Rahmens, dann der Abschnitt im Dokument (CI-Chromium braucht für /infos/ teils länger als 10 s).
+    let f = null;
+    for (let i = 0; i < 80 && at !== href; i++) { f = contentFrame(page); at = f ? f.url() : ''; if (at !== href) await page.waitForTimeout(250); }
+    if (at === href) ok = await f.waitForSelector('#quellen', {state: 'attached', timeout: 20000}).then(() => true).catch(() => false);
+    if (at === href && !ok) at += ' (Abschnitt #quellen fehlt)';
     check(`App: „${label}“ öffnet im Rahmen`, ok, at.replace(SITE, ''));
     // zurück zum Start für den nächsten Eintrag
     await page.evaluate(([site, p]) => { document.querySelector('.view:not([hidden]) iframe').src = site + p; }, [SITE, homePath]);
