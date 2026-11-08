@@ -91,6 +91,11 @@ Weitere Lesarten, die beim Bauen auftauchen, entscheidet Claude nach der Präsen
 - „Mehr aus {Thema}“ wählt das Thema, das unter den zuletzt angesehenen Aktien am häufigsten vorkommt (bei Gleichstand das jüngste), und lässt schon angesehene Aktien aus.
 - „Zuletzt angesehen“ zeigt die Tagesbewegung aus der Aktiendatei (erst, wenn die Schiene in die Nähe kommt) und „Heute/Gestern/Di. angesehen“; einen Link „Alle“ gibt es nicht, weil es keine Seite dafür gibt.
 
+**PR 4 · Fallen Angels**
+- Regel wie Entscheidung 1 über alle Treffer der drei Reihen (nicht nur deren 30 ausgelieferte Karten wie im Regel-Entwurf der Präsentation, dort zusätzlich ohne Werte unter −75 %): heute 225 statt 33 Treffer; die Schwelle bleibt −30 %, weil die Startseite über die Schaufenster-Regel ohnehin nur Karten über −60 % in 12 Monaten zeigt und die Reihe nach Zahl der Quell-Reihen sortiert.
+- Erzeuger: allgemeines Feld `memberOf` (Mitgliedschaft in anderen Reihen, je Universum einmal gerechnet) und `maxDistanceToHigh`; Sortierung erst nach Zahl der Quell-Reihen, dann `distanceTo52wHigh` aufsteigend; `verify-discover-data.mjs` prüft diese Reihenfolge mit dem Index Aktie → Reihen.
+- Reiter der Reihe: „Abstand · Umsatz · Name“ wie im Mockup (Reihen mit SEC-Regel sortieren zweitens nach Umsatz).
+
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
 ```
