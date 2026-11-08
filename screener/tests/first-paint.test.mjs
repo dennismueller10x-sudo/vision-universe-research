@@ -145,7 +145,7 @@ test('Startansicht: sofort aus der Kopfdatei, volles Universum laedt parallel, T
   await tick();
   assert.equal(skeleton(ref.root), false);
   const expected = text(ref.root);
-  assert.match(expected, /Aktien im Universum/);
+  assert.match(expected, /Screener · 3 US-Aktien · Stand Fr\. 09\.10\./, 'Universum und Stand im Kopf (Konzept „Verstehen. Finden.“, FX04)');
   assert.match(expected, /Universum: 3 US-Aktien · Kurse Stand 09\.10\.2026 · Fundamentaldaten SEC EDGAR bis 30\.09\.2026/);
 
   const full = deferred();
