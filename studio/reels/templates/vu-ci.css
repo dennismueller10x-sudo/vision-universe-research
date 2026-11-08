@@ -13,5 +13,7 @@
   --loss:#ff6b5e;      /* nur für Minus-Zahlen, sparsam */
 }
 html,body{background:var(--bg);color:var(--ink);font-family:Inter,sans-serif}
+/* Hintergrund: nur Fläche + optional ein weicher Lime-Schein. Kein Raster, keine Kacheln (Owner 08.11.). */
+.glow{position:absolute;inset:0;background:radial-gradient(circle at 80% 10%,rgba(200,245,49,.18),transparent 42%)}
 .hl{background:var(--lime);color:var(--on-lime);padding:0 16px;border-radius:16px;display:inline-block;line-height:1.02}
 .card{background:var(--card);border:1px solid var(--line);border-radius:28px}
