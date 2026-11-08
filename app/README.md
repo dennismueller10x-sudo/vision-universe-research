@@ -17,6 +17,33 @@ Entscheidung: [ADR-007](../docs/architecture/ADR-007-capacitor-prototype.md) · 
 | `ci/`, `ios/App/ci_scripts/` | **inaktive** Vorlagen für TestFlight (GitHub Actions bzw. Xcode Cloud), siehe `docs/mobile/TESTFLIGHT_PLAN.md` |
 | `tests/` | Node-Tests für Anmeldung, API-Client, Token-Speicher und Grenzen aus ADR-007 |
 
+## Nächster Build (0.2.0)
+
+Sammelliste bis zum nächsten TestFlight-/Android-Build (Owner baut in 2–3 Tagen). **Stand des letzten Builds:**
+TestFlight-Lauf 6 vom 07.11.2026 auf Commit `d871426`. Alles bleibt auf `main` gemergt; der Build vom aktuellen
+`main` enthält es automatisch. Jeder App-PR trägt sich hier ein.
+
+**Wirkt erst mit dem neuen Build** (liegt im App-Bundle `www/` oder im nativen Teil):
+
+| PR | Änderung | Teil im Build |
+|---|---|---|
+| #1600 (K1) | natives Rand-Wischen vor/zurück auf iOS mit Vorschau und Haptik | `ios/App/App/VUBridgeViewController.swift`, `Main.storyboard`, `www/js/main.js` (Brücke `vuNav`, Haptik) |
+| #1602 (K4, Teil) | kurzer Haptik-Impuls bei langem Drücken | Empfang in `www/js/main.js` aus K1; die Website sendet schon |
+| #1630 | App startet mit der Willkommensseite `/willkommen/` statt mit Discover; Zurück endet dort | `www/index.html`, `www/js/main.js` |
+
+**Wirkt schon ohne Build** (Website, live nach dem Pages-Deploy; die App lädt sie im Rahmen):
+
+| PR | Änderung |
+|---|---|
+| #1602 (K4) | Druck-Feedback, kein Doppeltipp-Warten, kein Markieren beim Wischen (`assets/vu-gestures.css/js`) |
+| #1604 (K5) | zwischen Untertabs wischen (`assets/vu-gestures.js`) |
+| #1605 | Menü „Rechtliches & Infos“ statt Seitenfuß in der App |
+| #1629 | Rechtstexte aus dem Menü öffnen im System-Browser (vorher still verworfen) |
+| #1630 (Website-Teil) | `/willkommen/` zählt als Einstieg für Zurück (`assets/vu-gestures.js`); im alten Build ohne Wirkung |
+
+Vor dem Build: Bauprobe Android (`app-android-build.yml`, läuft auf jedem App-PR) und für iOS die Prüfungen ohne Mac
+(`npm test`, `npm run poc`, Swift-Syntax und `project.pbxproj` gegen den letzten erfolgreichen TestFlight-Lauf).
+
 ## Lokal prüfen (Linux oder macOS)
 
 ```bash
