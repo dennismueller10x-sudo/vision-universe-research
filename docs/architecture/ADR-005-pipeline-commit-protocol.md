@@ -37,7 +37,7 @@ Generierte Daten werden von GitHub Actions nach `main` committet. Gemessen am 03
 
 ## Bewusst offen
 
-- Die Social-Workflows (eigener Workstream) nutzen weiter nackte Pushes und direkte Eingabeinterpolation. Siehe `docs/pipelines/PIPELINES.md`.
+- Die Social-Workflows (eigener Workstream) nutzen weiter nackte Pushes und direkte Eingabeinterpolation. Siehe `docs/archiv/pipelines/PIPELINES.md`.
 - `discover/data/` wird von sechs Workflows in fünf Concurrency-Gruppen geschrieben, und `build-discover-data.mjs` baut das Verzeichnis komplett neu.
   Konflikte enden dort laut statt still. Die strukturelle Lösung ist ein einziger Discover-Build am Ende jeder Kette.
 - Generierte JSON-Dateien werden fast überall ohne Temp-und-Rename geschrieben. Der Commit-Schritt sieht nur fertige Dateien, außer in Schritten mit `if: always()`.

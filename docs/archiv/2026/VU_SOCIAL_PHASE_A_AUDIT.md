@@ -84,7 +84,7 @@ nicht. Der Code-Austausch (`code` → `access_token`) benoetigt zusaetzlich das
 
 Das ist die eine fundamentale Architekturentscheidung mit mehreren gleichwertigen
 Alternativen, die §55 ausdruecklich dem Owner vorbehaelt. Die Optionen stehen in
-`docs/VU_SOCIAL_OWNER_DECISIONS.md`. Bis zur Entscheidung ist der Meta-Adapter so
+`docs/archiv/VU_SOCIAL_OWNER_DECISIONS.md`. Bis zur Entscheidung ist der Meta-Adapter so
 gebaut, dass er **beide** Wege bedient: die Token-Beschaffung ist eine austauschbare
 Funktion, alles danach (Refresh, Ablauf, Publishing, Insights) laeuft unveraendert
 serverseitig im Workflow.

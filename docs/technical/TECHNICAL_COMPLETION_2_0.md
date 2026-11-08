@@ -105,7 +105,7 @@ Siehe [WEEKLY_FORMATIONS.md](WEEKLY_FORMATIONS.md) (#1183):
 
 ## E. KI-Suche
 
-Siehe [AI_SEARCH_EVAL.md](AI_SEARCH_EVAL.md) (#1182):
+Siehe [AI_SEARCH_EVAL.md](../archiv/technical/AI_SEARCH_EVAL.md) (#1182):
 - Vorbereitet, getestet mit Mock-Antworten, **standardmäßig aus**.
 - Für die Freischaltung braucht es eine Owner-Entscheidung zu Anbieter (naheliegend der bestehende Worker `vu-ask` mit Budget-Kaskade), Kosten, Budget und Datenschutz.
 

@@ -169,7 +169,7 @@ Systemzustand (Repository, 03.10.2026 12:16 UTC):
 Behoben: Scroll-Sprünge (Start, FX, Währung), Kennzeichnung veralteter Stände (Karten, Intraday, News), Penny-Darstellung, tote Links, leere Fehlerseite, Chart-Guards, URL-Schemata.
 Offen: Scroll-Position bei Zurück. Der Fix (+1.115 Byte) passt nicht in das Discover-View-Budget (180.000 Byte, auf `main` 117 Byte frei). Er gehört in ein gemeinsames Navigationsmodul außerhalb des Budgets.
 Browser-Smoke auf 16 Kernseiten bei 390 px und 1.280 px: keine JS-Fehler, kein horizontales Überlaufen.
-Komponentenvereinheitlichung bewusst nur dort, wo ein inhaltlicher Fehler entstand; Begründung in [FRONTEND.md](../../frontend/FRONTEND.md).
+Komponentenvereinheitlichung bewusst nur dort, wo ein inhaltlicher Fehler entstand; Begründung in [FRONTEND.md](../frontend/FRONTEND.md).
 
 ## Performance
 
@@ -178,7 +178,7 @@ Gemessen, nicht verändert, weil jede Änderung Produktlogik oder parallel aktiv
 - Quant-Screener: 18,8 MB + 1,2 MB.
 - Discover-Start: ca. 820 KB, nach Scrollen ca. 2 MB.
 
-Konkrete Maßnahmen mit erwarteter Wirkung stehen in [FRONTEND.md](../../frontend/FRONTEND.md#empfohlene-performance-arbeiten-gemessen-nicht-umgesetzt).
+Konkrete Maßnahmen mit erwarteter Wirkung stehen in [FRONTEND.md](../frontend/FRONTEND.md#empfohlene-performance-arbeiten-gemessen-nicht-umgesetzt).
 
 ## App Readiness
 

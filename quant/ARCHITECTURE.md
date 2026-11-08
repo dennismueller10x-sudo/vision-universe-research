@@ -5,7 +5,7 @@ wie `macro/` und `academy/`: statisches HTML/CSS/JS, keine Build-Pipeline, keine
 Frameworks, Auslieferung ueber GitHub Pages. `/assets/site-navigation.js` und `.css`
 werden unveraendert weiterverwendet (`Quant` wurde dort als Menuepunkt ergaenzt).
 
-Die ausfuehrliche Architekturbeschreibung steht in `docs/VU_ARCHITECTURE.md`; die
+Die ausfuehrliche Architekturbeschreibung steht in `docs/archiv/VU_ARCHITECTURE.md`; die
 Begruendung der Technologieentscheidungen in
 `docs/VU_INVESTMENT_INTELLIGENCE_IMPLEMENTATION_PLAN.md`.
 
@@ -46,7 +46,7 @@ data.sec.gov -> scripts/quant/sec/**  ->  quant/data/sec/*.json
   Grenze existiert kein SEC-Feld.
 - Die Point-in-Time-Regel bleibt `availableAt <= decisionTime` aus `engines/schema.js`
   (`latestKnownFact`). Der SEC-Adapter bringt keine eigene PIT-Semantik mit.
-- Details: `docs/SEC_DATA_ARCHITECTURE.md`, `docs/SEC_NORMALIZATION.md`,
+- Details: `docs/archiv/SEC_DATA_ARCHITECTURE.md`, `docs/SEC_NORMALIZATION.md`,
   `docs/SEC_PIT_METHODOLOGY.md`, `docs/SEC_COVERAGE_REPORT.md`.
 
 `quant/data/sec/raw/` und `quant/data/sec/facts/` sind gitignored (SEC-Rohdaten,
@@ -156,7 +156,7 @@ Positionierung in `assets/site-navigation.css`.
 Broker-Integration, Orderausfuehrung, autonomes AI-Trading, native Apps, Realtime,
 Optionen, Krypto, Intraday-Backtesting, Portfolio-Optimierer, historische
 Analystenrevisionen ohne lizenzierte Daten. Die Architektur ist so geschnitten, dass all
-das spaeter moeglich bleibt — siehe „Erweiterungspunkte“ in `docs/VU_ARCHITECTURE.md`.
+das spaeter moeglich bleibt — siehe „Erweiterungspunkte“ in `docs/archiv/VU_ARCHITECTURE.md`.
 
 ## Technical Intelligence (Workstream `claude/technical-intelligence-v1`)
 
@@ -173,5 +173,5 @@ node scripts/technical/build-technical-data.mjs     # ~60 s, reale Referenztitel
 node scripts/technical/verify-technical-data.mjs    # Drift-Pruefung
 ```
 
-Detail: `docs/VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md` und die dort verlinkten
+Detail: `docs/archiv/VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md` und die dort verlinkten
 Methodikdokumente.

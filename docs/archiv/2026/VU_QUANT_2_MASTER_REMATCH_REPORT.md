@@ -39,10 +39,10 @@ Primäre historische Quellen:
 - vollständiger Deep-Research-Masterplan „Vision Universe® Quant & AI — Market Research, Quant Architecture & Product Masterplan“ aus den vorhandenen Work-Artefakten;
 - `VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md`;
 - `docs/VU_INVESTMENT_INTELLIGENCE_IMPLEMENTATION_PLAN.md`;
-- `docs/VU_QUANT_METHODOLOGY.md`;
-- `docs/VU_STRATEGY_SCHEMA.md`;
-- `docs/VU_BACKTEST_METHODOLOGY.md` und `docs/VU_BACKTEST_TRUST_SCORE.md`;
-- `docs/VU_AI_TOOL_ARCHITECTURE.md` und `docs/VU_VUQL_SPEC.md`;
+- `docs/archiv/VU_QUANT_METHODOLOGY.md`;
+- `docs/archiv/VU_STRATEGY_SCHEMA.md`;
+- `docs/archiv/VU_BACKTEST_METHODOLOGY.md` und `docs/archiv/VU_BACKTEST_TRUST_SCORE.md`;
+- `docs/archiv/VU_AI_TOOL_ARCHITECTURE.md` und `docs/archiv/VU_VUQL_SPEC.md`;
 - aktuelle VU2-Phasen-/Ledger-Dokumente und PRs #121–#125.
 
 Der historische North Star „FROM INVESTMENT IDEA TO EVIDENCE TO MONITORING“ und die heutige Form „Decision Layer Before the Broker“ sind konsistent. Wiedergefunden wurden insbesondere:

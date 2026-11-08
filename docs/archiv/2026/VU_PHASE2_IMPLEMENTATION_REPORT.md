@@ -59,7 +59,7 @@ Kurse koennen echt sein, waehrend Fundamentaldaten synthetisch bleiben. Faellt
 ein Abruf aus, steht die Datenklasse in `degraded[]` und traegt eine Meldung —
 Mock-Daten ersetzen echte nie stillschweigend.
 
-→ `docs/VU_HYBRID_DATA_MODE.md`
+→ `docs/archiv/VU_HYBRID_DATA_MODE.md`
 
 ### 4. Welche Teile sind echt, welche Mock?
 
@@ -91,7 +91,7 @@ Die Providerschicht ist anbieterneutral: der Adapter ist eine Implementierung
 davon, keine Annahme darin. Ein zweiter Anbieter braucht eine neue Datei unter
 `providers/`, sonst nichts.
 
-→ `docs/VU_TWELVE_DATA_ADAPTER.md`
+→ `docs/archiv/VU_TWELVE_DATA_ADAPTER.md`
 
 ### 6. Welche Zugangsdaten fehlen?
 

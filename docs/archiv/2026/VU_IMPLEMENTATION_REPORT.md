@@ -298,7 +298,7 @@ Ein API-Key ist keine Erlaubnis zur Anzeige. Besonders **Derived Data** ist zu k
 der VU Quant Score kann ein eigener Daten-Moat werden — aber nur, wenn Berechnung,
 Speicherung und kommerzielle Darstellung abgeleiteter Kennzahlen vertraglich
 ausdruecklich erlaubt sind. Die vollstaendige Checkliste steht in
-`docs/VU_API_INTEGRATION_GUIDE.md`.
+`docs/archiv/VU_API_INTEGRATION_GUIDE.md`.
 
 ### Was nicht als Naechstes kommen sollte
 
