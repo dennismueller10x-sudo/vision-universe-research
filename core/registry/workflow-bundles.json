@@ -92,8 +92,17 @@
   },
   "account": {
    "purpose": "Konten, Abos, Brevo",
-   "workflow": null,
-   "replaces": []
+   "workflow": "account.yml",
+   "replaces": [
+    "account-backup.yml",
+    "account-cancellations.yml",
+    "account-db-approved.yml",
+    "account-monitor.yml",
+    "account-production-auth.yml",
+    "account-production-checks.yml",
+    "account-production-deploy.yml",
+    "account-production-stripe.yml"
+   ]
   },
   "social": {
    "purpose": "Social und Reels",
@@ -143,34 +152,10 @@
   }
  },
  "workflows": {
-  "account-backup.yml": {
-   "bundle": "account"
-  },
-  "account-cancellations.yml": {
-   "bundle": "account"
-  },
   "account-ci.yml": {
    "bundle": "ci"
   },
-  "account-db-approved.yml": {
-   "bundle": "account"
-  },
-  "account-monitor.yml": {
-   "bundle": "account"
-  },
-  "account-production-auth.yml": {
-   "bundle": "account"
-  },
   "account-production-auto.yml": {
-   "bundle": "account"
-  },
-  "account-production-checks.yml": {
-   "bundle": "account"
-  },
-  "account-production-deploy.yml": {
-   "bundle": "account"
-  },
-  "account-production-stripe.yml": {
    "bundle": "account"
   },
   "app-android-build.yml": {

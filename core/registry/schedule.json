@@ -11,21 +11,30 @@
  "entries": [
   {
    "id": "account-backup",
-   "workflow": "account-backup.yml",
+   "workflow": "account.yml",
    "cron": "17 2 * * *",
-   "timer": "waker"
+   "timer": "waker",
+   "inputs": {
+    "teil": "sicherung"
+   }
   },
   {
    "id": "account-monitor",
-   "workflow": "account-monitor.yml",
+   "workflow": "account.yml",
    "cron": "17 * * * *",
-   "timer": "waker"
+   "timer": "waker",
+   "inputs": {
+    "teil": "ueberwachung"
+   }
   },
   {
    "id": "account-production-checks",
-   "workflow": "account-production-checks.yml",
+   "workflow": "account.yml",
    "cron": "41 5 * * *",
-   "timer": "waker"
+   "timer": "waker",
+   "inputs": {
+    "teil": "pruefen"
+   }
   },
   {
    "id": "company-intelligence-health",
