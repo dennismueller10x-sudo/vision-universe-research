@@ -1,6 +1,6 @@
 # Fundamental + Screener · Konzept „Verstehen. Finden.“
 
-Konzept vom 08.11.2026 für /fundamental/ und /screener/, gleicher Ansatz wie [Discover](../discover-netflix-2026-11/README.md) und [Quant](../quant-2026-11/README.md); Maßstab: Funktionsumfang großer Analyse- und Screening-Seiten, Bedienung so leicht wie eine Neo-Broker-App. Noch nicht freigegeben, noch nicht umgesetzt.
+Konzept vom 08.11.2026 für /fundamental/ und /screener/, gleicher Ansatz wie [Discover](../discover-netflix-2026-11/README.md) und [Quant](../quant-2026-11/README.md); Maßstab: Funktionsumfang großer Analyse- und Screening-Seiten, Bedienung so leicht wie eine Neo-Broker-App. **Vom Owner freigegeben am 08.11.2026.** Bauplan und Master-Prompt: [HANDOVER.md](HANDOVER.md).
 Präsentation online (privat): https://claude.ai/artifact/1Vq5qbDWt1415UeUWd7cyD
 
 | Datei | Zweck |
