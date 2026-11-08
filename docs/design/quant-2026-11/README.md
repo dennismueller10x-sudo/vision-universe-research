@@ -1,6 +1,6 @@
 # Quant · Konzept „Ein Profil je Aktie“
 
-Konzept vom 08.11.2026, damit Quant verständlicher wird; gleicher Ansatz wie [Discover „Reihe für Reihe“](../discover-netflix-2026-11/README.md). Noch nicht freigegeben, noch nicht umgesetzt.
+Konzept vom 08.11.2026, damit Quant verständlicher wird; gleicher Ansatz wie [Discover „Reihe für Reihe“](../discover-netflix-2026-11/README.md). **Vom Owner freigegeben am 08.11.2026.** Bauplan und Master-Prompt für die Umsetzung: [HANDOVER.md](HANDOVER.md).
 Präsentation online (privat): https://claude.ai/artifact/YbbeGBt8qboxcusnmp9NUj
 
 | Datei | Zweck |
