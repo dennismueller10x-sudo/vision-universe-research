@@ -63,18 +63,6 @@
    "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
   },
   {
-   "id": "company-logos",
-   "workflow": "company-logos.yml",
-   "cron": "17 4 * * 1",
-   "timer": "github"
-  },
-  {
-   "id": "company-logos-2",
-   "workflow": "company-logos.yml",
-   "cron": "47 3 * * 2-6",
-   "timer": "github"
-  },
-  {
    "id": "content-news",
    "workflow": "content.yml",
    "cron": "17 5,11,17 * * *",
@@ -113,12 +101,6 @@
    "id": "core-ci",
    "workflow": "core-ci.yml",
    "cron": "47 7 * * *",
-   "timer": "github"
-  },
-  {
-   "id": "coverage-metrics",
-   "workflow": "coverage-metrics.yml",
-   "cron": "0 6 * * 0",
    "timer": "github"
   },
   {
@@ -179,12 +161,6 @@
    "id": "freshness-monitor-6",
    "workflow": "freshness-monitor.yml",
    "cron": "55 22 * * 1-5",
-   "timer": "github"
-  },
-  {
-   "id": "index-membership",
-   "workflow": "index-membership.yml",
-   "cron": "20 7 * * 6",
    "timer": "github"
   },
   {
@@ -302,12 +278,6 @@
    "note": "datenqualitaet"
   },
   {
-   "id": "quant-model-depots",
-   "workflow": "quant-model-depots.yml",
-   "cron": "23 7 * * 6",
-   "timer": "github"
-  },
-  {
    "id": "research-edge2-paper",
    "workflow": "research-edge2-paper.yml",
    "cron": "47 8 * * 6",
@@ -404,23 +374,60 @@
    "timer": "github"
   },
   {
-   "id": "tiingo2-universe-refresh",
-   "workflow": "tiingo2-universe-refresh.yml",
-   "cron": "20 8 * * 1-5",
-   "timer": "github"
-  },
-  {
-   "id": "update-sec-fundamentals",
-   "workflow": "update-sec-fundamentals.yml",
-   "cron": "0 6 * * 1",
-   "timer": "github"
-  },
-  {
    "id": "pipeline-daily-ki-depots",
    "workflow": "pipeline-daily.yml",
    "cron": "41 23 * * 1-5",
    "timer": "github",
    "note": "ki-depots"
+  },
+  {
+   "id": "pipeline-weekly-logos",
+   "workflow": "pipeline-weekly.yml",
+   "cron": "17 4 * * 1",
+   "timer": "github",
+   "note": "logos"
+  },
+  {
+   "id": "pipeline-weekly-logos-2",
+   "workflow": "pipeline-weekly.yml",
+   "cron": "47 3 * * 2-6",
+   "timer": "github",
+   "note": "logos"
+  },
+  {
+   "id": "pipeline-weekly-deckung",
+   "workflow": "pipeline-weekly.yml",
+   "cron": "0 6 * * 0",
+   "timer": "github",
+   "note": "deckung"
+  },
+  {
+   "id": "pipeline-weekly-index",
+   "workflow": "pipeline-weekly.yml",
+   "cron": "20 7 * * 6",
+   "timer": "github",
+   "note": "index"
+  },
+  {
+   "id": "pipeline-weekly-musterdepots",
+   "workflow": "pipeline-weekly.yml",
+   "cron": "23 7 * * 6",
+   "timer": "github",
+   "note": "musterdepots"
+  },
+  {
+   "id": "pipeline-weekly-tiingo2-universum",
+   "workflow": "pipeline-weekly.yml",
+   "cron": "20 8 * * 1-5",
+   "timer": "github",
+   "note": "tiingo2-universum"
+  },
+  {
+   "id": "pipeline-weekly-sec-fundamentals",
+   "workflow": "pipeline-weekly.yml",
+   "cron": "0 6 * * 1",
+   "timer": "github",
+   "note": "sec-fundamentals"
   }
  ]
 }
