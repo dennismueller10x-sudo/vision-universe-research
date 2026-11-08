@@ -5,15 +5,10 @@ name: Konten — Kuendigungen ueberwachen
 # dann per E-Mail. Ergaenzt den Cron-Alarm des Workers (VU_OPS_ALERT_EMAIL),
 # falls Brevo selbst ausfaellt. Ohne VU_ACCOUNT_API_ORIGIN: nichts zu pruefen.
 # Liest nur, kein Schluessel noetig.
-# Zeitplan: core/registry/schedule.json (17 * * * *), Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
-run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
+  schedule:
+    - cron: '17 * * * *'
   workflow_dispatch:
-    inputs:
-      zeitplan:
-        description: 'Vom Wecker gesetzt (Cron des Termins); manuell leer lassen'
-        type: string
-        default: ''
 permissions:
   contents: read
 concurrency:
