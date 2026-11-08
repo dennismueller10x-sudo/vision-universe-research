@@ -45,7 +45,7 @@ Hintergrund `#08080a`, Text `#f4f5f1`, Akzent Lime `#c8f531`, Schrift Inter, min
 - HeyGen: REST-Aufrufe an `api.heygen.com` laufen über den Proxy der Sitzung (Schlüssel wird dort eingesetzt). HeyGen-Guthaben wird vom Owner aufgeladen, Auto-Reload ist aus.
 - Musik: Dropbox des Owners (MCP-Verbindung), eigener Track, siehe STIMME_UND_SOUND.md.
 - Recherche: Apify (MCP). Pro Lauf Kosten im Voraus nennen.
-- Veröffentlichung: Workflow `Social Reel vorbereiten` (`social-reel.yml`) legt nur die Karte an. Freigeben und Senden macht der Owner im Approval Center.
+- Veröffentlichung: Workflow `Social Reel vorbereiten` (`social.yml, Teil reel (vormals social-reel.yml)`) legt nur die Karte an. Freigeben und Senden macht der Owner im Approval Center.
 - Meta-Insights (nur lesend): Workflow `Social Instagram Check`, siehe `docs/operations/INSTAGRAM_CLAUDE_CODE.md` und `INSTAGRAM_REELS.md`.
 
 ## Fachbelege und weiterführende Dokumentation
