@@ -64,6 +64,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Datenzweig (Plan Neustart §3): Daten, die nur noch dort wachsen, wie ausgeliefert lesen (commit-sicher).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Minutenquelle fuer Kauf-Stop-Tage (IEX, nur Zaehlwerte im Log, Datei ausserhalb des Repositorys)
         if: env.MODE == 'build'
         env:
