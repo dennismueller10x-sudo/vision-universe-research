@@ -256,7 +256,12 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     const gate={read:()=>driver.get(prefixFor(approval.namespace)+'gate.json'),approvalId:approval.approvalId,generation:approval.consumerGeneration};
     const production=await productionObservation(good,observed,fetch,gate);
     const status=evaluateHealth(good,observed,production,Date.now(),await goodPointerState(driver,ns));
+    // Restlaufzeit des 46er-Rollback-Freeze: Warnung ab 48 h vor Verfall, aendert den Exit-Code nicht.
+    const {freezeStatus,freezeWarning}=await import('./freeze-expiry.mjs');
+    status.rollbackFreeze=await goodState(driver,universeConfig.rollbackNamespace).then(g=>freezeStatus(g),e=>({state:'UNREADABLE',warn:true,error:String(e?.message||e).slice(0,80)}));
+    const freezeNote=status.rollbackFreeze.state==='UNREADABLE'?'::warning::Company Intelligence Rollback-Freeze nicht lesbar ('+status.rollbackFreeze.error+')':freezeWarning(status.rollbackFreeze);
     if(args.includes('--out'))save(arg('--out'),status);console.log(JSON.stringify(status));
+    if(freezeNote)console.log(freezeNote);
     if(process.env.GITHUB_STEP_SUMMARY)writeFileSync(process.env.GITHUB_STEP_SUMMARY,JSON.stringify(status,null,2)+'\n');
     process.exitCode=status.exitCode;
     if(status.status==='CRITICAL')console.log(`::error::Company Intelligence SLO CRITICAL (refresh ${status.refreshSLO}, build ${status.buildSLO}, publication ${status.publicationSLO}, production ${status.productionState}${status.productionReason?'/'+status.productionReason:''}${status.goodState&&status.goodState!=='GOOD'?', goodState '+status.goodState:''})`);

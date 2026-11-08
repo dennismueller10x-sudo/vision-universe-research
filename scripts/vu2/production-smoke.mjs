@@ -184,6 +184,12 @@ async function bereit(page,view){
  await page.waitForFunction(()=>{const c=document.querySelector('section.qc-chart');return !c||!!c.dataset.range||!/Chart wird geladen/.test(c.textContent);},null,{timeout:10000}).catch(()=>{});
  await page.waitForTimeout(150);
 }
+async function befund(page,offen){
+ const m=await page.evaluate(()=>{const m=document.querySelector('main#qx-main');return m?{view:m.dataset.view||'',ready:m.dataset.ready||'',busy:m.getAttribute('aria-busy'),loading:m.querySelectorAll('.qx-loading').length}:null;}).catch(e=>({fehler:String(e).slice(0,80)}));
+ const jetzt=Date.now();
+ const haengt=[...offen].filter(([,t])=>jetzt-t>5000).map(([r,t])=>r.url().replace(origin,'')+' '+Math.round((jetzt-t)/1000)+'s').slice(0,8);
+ return JSON.stringify({main:m,offen:haengt});
+}
 async function allesAufklappen(page){
  /* Nach jedem Oeffnen neu suchen: ein geoeffneter Aufklapper legt
     verschachtelte Aufklapper nach. Die Schranke verhindert eine
@@ -216,15 +222,34 @@ for(const width of [1440,390]){
     in einer abgeschotteten Umgebung scheitern. Eine gescheiterte Anfrage an
     das Release selbst ist ein Fehler. 404 bleibt ausgenommen: der
     Produktdienst probiert fuer duenne Titel bewusst mehrere Quellen. */
- page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremdFehlgeschlagen=true;else if(LEGACY[currentView]&&/ERR_ABORTED/.test((r.failure()||{}).errorText||''))return;else errors.push('requestfailed: '+r.url().replace(origin,''));});
+ /* Offene Anfragen an das Release, fuer den Befund bei NICHT_BEREIT. */
+ const offen=new Map();
+ page.on('request',r=>offen.set(r,Date.now()));
+ page.on('requestfinished',r=>offen.delete(r));
+ page.on('requestfailed',r=>offen.delete(r));
+ page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremdFehlgeschlagen=true;else if(LEGACY[currentView]&&/ERR_ABORTED/.test((r.failure()||{}).errorText||''))return;else errors.push('requestfailed: '+r.url().replace(origin,'')+' ('+((r.failure()||{}).errorText||'?')+')');});
  page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('favicon')||t.includes('404'))return;if(fremdFehlgeschlagen&&/^Failed to load resource: net::ERR_/.test(t))return;if(fremdeLiveAbsage(t))return;errors.push('console: '+t.split('\n')[0]);});
- for(const view of VIEWS.filter(v=>!ONLY||v.includes(ONLY))){
+ const ansichten=VIEWS.filter(v=>!ONLY||v.includes(ONLY));
+ for(let i=0,wiederholt=null;i<ansichten.length;i++){
+  const view=ansichten[i];
   currentView=view;
   await page.goto('about:blank');
   await page.goto(origin+view);
   const app=!view.startsWith('/quant/methodology/');
   const bad=[];
-  if(app){await bereit(page).catch(()=>bad.push('NICHT_BEREIT'));}
+  if(app){
+   /* Ein einzelner Seitenaufbau, der binnen 45 s nicht fertig meldet, hat
+      zweimal ganze Releases blockiert (07.11.2026: /quant/#/aktie/ACAA@390,
+      /vu2/@1440), jedes Mal eine andere Seite. Deshalb: Befund ausgeben,
+      einmal neu laden. Bleibt die Seite auch dann unfertig, ist es ein Fehler. */
+   const ok=await bereit(page).then(()=>true,()=>false);
+   if(!ok){
+    console.log('     Befund NICHT_BEREIT '+view+'@'+width+': '+await befund(page,offen));
+    await page.goto('about:blank');await page.goto(origin+view);
+    if(await bereit(page).then(()=>true,()=>false))console.log('     bereit nach einer Wiederholung: '+view+'@'+width);
+    else{bad.push('NICHT_BEREIT');console.log('     Befund nach Wiederholung: '+await befund(page,offen));}
+   }
+  }
   else await page.waitForLoadState('load').then(()=>page.waitForTimeout(1200));
   const ort=await page.evaluate(()=>location.pathname+location.search+location.hash);
   const route=app?await page.evaluate(()=>(document.querySelector('main#qx-main')||{dataset:{}}).dataset.view||''):'';
@@ -604,6 +629,14 @@ for(const width of [1440,390]){
      if(z.range!==id||z.pressed.join('|')!==id)bad.push('ZEITRAUM_KLICK_'+label+':'+z.range);
     }
    }
+  }
+  /* Einzelne gescheiterte Anfrage an das Release, sonst alles in Ordnung
+     (08.11.2026: /quant/config/market-calendar.json auf einer Screener-Seite,
+     die im selben Lauf bei 1440 px bestand): die Ansicht wird genau einmal
+     neu geprueft. Scheitert sie wieder, zaehlt der Fehler. */
+  if(errors.length&&!bad.length&&wiederholt!==view&&errors.every(e=>e.startsWith('requestfailed: '))){
+   console.log('     fluechtig '+view+'@'+width+': '+errors.slice(0,3).join(' / ')+' -> einmal neu');
+   wiederholt=view;errors.length=0;fremdFehlgeschlagen=false;i--;continue;
   }
   if(errors.length)bad.push('ERRORS:'+errors.slice(0,2).join(' / '));
   console.log((bad.length?'FAIL ':'ok   ')+view+'@'+width+(bad.length?'  '+bad.join('  '):''));

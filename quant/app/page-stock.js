@@ -615,7 +615,7 @@
 
   /* ------------------------------------------------ 07 Unternehmenszahlen */
   function figuresSection(s, ticker) {
-    if (!s.quant || s.quant.state !== "AVAILABLE") return [X.notice("Keine Unternehmenszahlen", "Für diesen Titel liegen keine auswertbaren Geschäftszahlen aus SEC-Meldungen vor.")];
+    if (!s.quant || s.quant.state !== "AVAILABLE") return [X.notice("Keine Unternehmenszahlen", "Für diesen Titel liegen keine auswertbaren Geschäftszahlen aus Pflichtmeldungen vor.")];
     var wanted = { quality: ["operatingMargin", "fcfMargin", "netMargin"], growth: ["revenueGrowth", "epsGrowth"], value: ["priceEarnings", "priceSales", "earningsYield", "priceToFcf", "fcfYield"], risk: ["volatility", "maxDrawdown"] };
     var stats = [], withheld = {};
     s.quant.families.forEach(function (fam) {
@@ -853,7 +853,7 @@
         el("p", { class: "qx-sub", text: ticker + (inst.exchange ? " · " + inst.exchange : "") }),
         el("span", { class: "dx-index-badge qx-tag", text: art })]));
       bodyHost.replaceChildren(X.notice("„" + ticker + "“ ist ein " + art + ", keine Aktie",
-        "Vision Universe analysiert in Quant US-Aktien mit belegten Kurs- und SEC-Daten. " + (inst.name || ticker) + " ist laut Wertpapierstamm ein " + art +
+        "Vision Universe analysiert in Quant US-Aktien mit belegten Kurs- und Geschäftszahlen. " + (inst.name || ticker) + " ist laut Wertpapierstamm ein " + art +
         " und gehört deshalb nicht zum Analyseuniversum: keine Faktoren, keine Kennzahlen und keine Aktienaussage. Das Papier bleibt in der Suche auffindbar, damit klar ist, warum es hier fehlt."),
         X.actions([X.btn("Aktie suchen", X.routes.stocks())]));
       return function () {};
@@ -861,7 +861,7 @@
     if (s.identityState === "UNAVAILABLE" || (s.state !== "AVAILABLE" && s.reason === "INVALID_IDENTITY")) {
       heroHost.replaceChildren(); heroHost.setAttribute("aria-busy", "false");
       heroHost.append(el("section", { class: "v2-message" }, [el("h1", { class: "qx-h1", text: "Aktie nicht gefunden" })]));
-      bodyHost.replaceChildren(X.notice("„" + ticker + "“ ist nicht im Analyseuniversum", "Quant analysiert US-Aktien mit belegten Kurs- und SEC-Daten. Fonds und ETFs wie SPY oder QQQ gehören nicht dazu – ihre Kurse findest du in Discover. Prüfe sonst das Kürzel oder suche nach dem Namen."),
+      bodyHost.replaceChildren(X.notice("„" + ticker + "“ ist nicht im Analyseuniversum", "Quant analysiert US-Aktien mit belegten Kurs- und Geschäftszahlen. Fonds und ETFs wie SPY oder QQQ gehören nicht dazu – ihre Kurse findest du in Discover. Prüfe sonst das Kürzel oder suche nach dem Namen."),
         X.actions([X.btn("Aktie suchen", X.routes.stocks())]));
       return function () {};
     }
@@ -1265,17 +1265,17 @@
     if (entry.v === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") gapNodes.push(el("li", { class: "nein" }, [el("b", { text: "Börsenwert" }), el("span", { text: " – " + VM.reasonText("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") + (entry.il > 1 ? " Das Unternehmen hat " + entry.il + " börsennotierte Aktiengattungen." : "") })]));
     var creditHost = el("div", { class: "qx-logo-credit" });
     var dm = el("details", { class: "vu-dm qv-dm" }, [
-      el("summary", {}, [document.createTextNode("Daten & Methodik"), el("small", { text: "Tiingo · SEC EDGAR" + (last ? " · Kurs bis " + X.dateDe(last[0]) : "") })]),
+      el("summary", {}, [document.createTextNode("Daten & Methodik"), el("small", { text: last ? "Kurs bis " + X.dateDe(last[0]) : "" })]),
       el("dl", {}, [
-        el("dt", { text: "Kurs" }), el("dd", { text: last ? "Tiingo, Tagesschluss bis " + X.dateDe(last[0]) + "; Tagesverlauf aus veröffentlichten 5-Minuten-Kursen" : "keine veröffentlichte Tagesreihe" }),
-        el("dt", { text: "Geschäftszahlen" }), el("dd", { text: vm.asOf && vm.asOf.fundamentals ? "SEC EDGAR, bis " + X.dateDe(vm.asOf.fundamentals) + (vm.asOf.fundamentalsKnown ? " (bekannt seit " + X.dateDe(vm.asOf.fundamentalsKnown) + ")" : "") : "keine" }),
+        el("dt", { text: "Kurs" }), el("dd", { text: last ? "Tagesschluss bis " + X.dateDe(last[0]) + "; Tagesverlauf aus veröffentlichten 5-Minuten-Kursen" : "keine veröffentlichte Tagesreihe" }),
+        el("dt", { text: "Geschäftszahlen" }), el("dd", { text: vm.asOf && vm.asOf.fundamentals ? "Geschäftsberichte bis " + X.dateDe(vm.asOf.fundamentals) + (vm.asOf.fundamentalsKnown ? " (bekannt seit " + X.dateDe(vm.asOf.fundamentalsKnown) + ")" : "") : "keine" }),
         el("dt", { text: "Kennzahlen" }), el("dd", { text: s.quant && s.quant.asOf ? "marktbezogen bis " + X.dateDe(s.quant.asOf) : "–" }),
         el("dt", { text: "Faktoren" }), el("dd", { text: vm.asOf ? "Stand " + X.dateDe(vm.asOf.factors) : "keine" }),
         el("dt", { text: "Setup" }), el("dd", { text: vm.setup.asOf ? "Stand " + X.dateDe(vm.setup.asOf) + " (technische Auswertung, nicht der tägliche Kursstand)" : "keins" }),
         el("dt", { text: "Nachrichten" }), el("dd", {}, [el("span", { text: "in Quant nicht angebunden – " }), X.link("Vision Universe News", "/news/")])
       ]),
       el("p", { text: vm.isNot }),
-      el("p", { class: "qv-dm-links" }, [X.link("Methodik", X.routes.method()), el("span", { text: " · " }), X.link("SEC-Daten prüfen", "/quant/data-inspector/"), el("span", { text: " · " }),
+      el("p", { class: "qv-dm-links" }, [X.link("Methodik", X.routes.method()), el("span", { text: " · " }), X.link("Daten prüfen", "/quant/data-inspector/"), el("span", { text: " · " }),
         X.link("Vergleichen", X.routes.compare([ticker])), el("span", { text: " · " }), X.link("In Discover ansehen", "/discover/#/s/US_REAL/" + encodeURIComponent(ticker))]),
       creditHost]);
     bodyHost.append(limitsSection([

@@ -1,0 +1,18 @@
+/* Rechtliches & Infos (Owner-Entscheidung 07.11.2026): eine schlichte Textseite. Bodenabstand für die Leiste kommt aus
+   site-navigation.css (body padding-bottom: --vu-dock-space), hier nur ein kleiner Rest. */
+.in-body{margin:0;background:var(--vu-bg,#fff);color:var(--vu-text,#111);font:400 15px/1.55 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.in-main{max-width:760px;margin:0 auto;padding:88px var(--vu-gutter,16px) 16px}
+.in-main h1{font-size:30px;line-height:1.1;letter-spacing:-.03em;margin:4px 0 20px}
+.in-main h2{font-size:19px;margin:28px 0 10px;scroll-margin-top:84px}
+.in-main h3{font-size:15px;margin:22px 0 8px}
+.in-links{list-style:none;margin:0;padding:0;border-top:1px solid var(--vu-line,#e9e9e9)}
+.in-links li{border-bottom:1px solid var(--vu-line,#e9e9e9)}
+.in-links a{display:flex;align-items:center;min-height:48px;color:inherit;font-weight:700;text-decoration:none}
+.in-links a::after{content:"›";margin-left:auto;color:var(--vu-text-secondary,#6e6e6e);font-size:20px}
+.in-note,.in-lead{color:var(--vu-text-secondary,#6e6e6e);font-size:13px;margin:12px 0 0}
+.in-src{margin:12px 0 0}
+.in-src dt{font-weight:700;margin-top:14px}
+.in-src dd{margin:2px 0 0;color:var(--vu-text-secondary,#555);font-size:14px}
+.in-src a{color:inherit;font-weight:700}
+html[data-theme=dark] .in-body{background:#08080a;color:#f2f2f2}
+html[data-theme=dark] .in-src dd{color:#b5b5b5}

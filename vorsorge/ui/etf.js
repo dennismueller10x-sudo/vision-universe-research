@@ -87,7 +87,7 @@
     var root = VS.render(VS.intro("Die ETF-Welt", "") +
       '<form class="vs-termsearch" id="vs-es-form" role="search">' + U.glyph("search", 18) + '<input id="vs-es-q" type="search" placeholder="ETF, ISIN, Index oder Thema" aria-label="ETFs durchsuchen" autocomplete="off"><button type="button" class="vu-round" id="vs-es-filter" aria-label="Filter">' + U.glyph("filter", 17) + '</button></form>' +
       '<div class="vs-count" id="vs-es-count"></div>' + etfTabs(tab) + '<div id="vs-es-body"><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></div>',
-      { dm: [["Was gezeigt wird", "US-gelistete ETFs als Marktabbild: echte Kurshistorie, Schwankung, größter Rückgang; Kosten und Bestände aus SEC-Daten, wo vorhanden. „Einfach“ und „Themen“ sind Ausschnitte, keine Empfehlung."]] });
+      { dm: [["Was gezeigt wird", "US-gelistete ETFs als Marktabbild: echte Kurshistorie, Schwankung, größter Rückgang; Kosten und Bestände aus den Fondsmeldungen, wo vorhanden. „Einfach“ und „Themen“ sind Ausschnitte, keine Empfehlung."]] });
     root.querySelector("#vs-es-form").addEventListener("submit", function (ev) {
       ev.preventDefault(); var v = root.querySelector("#vs-es-q").value.trim(); if (!v) return;
       VS.go(/^[A-Za-z]{2}[A-Za-z0-9]{9}\d$/.test(v) ? "#/europa/" + v.toUpperCase() : "#/etfs?tab=alle&q=" + encodeURIComponent(v));
@@ -139,8 +139,8 @@
     var root = VS.render('<section class="vs-etf-alle">' + VS.intro("Die ETF-Welt", "") + etfTabs("alle") +
       '<form id="vs-search-form" class="vs-search" role="search"><span aria-hidden="true">⌕</span><input id="vs-q" autocomplete="off" value="' + esc(st.q) + '" placeholder="Ticker, ISIN, Name, Index, Thema, Anbieter …" aria-label="ETFs durchsuchen"><button type="submit">Suchen</button></form><div class="vs-suggest" id="vs-suggest"></div></section>' +
       '<section class="vs-section vs-section--first" id="vs-screener"><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></section><section class="vu-sec" id="vs-rows"></section>', { dm: [
-        ["Was gezeigt wird", "US-gelistete ETFs mit echter Kurshistorie, Schwankung und größtem Rückgang – und, wo die SEC-Daten reichen, mit Holdings, X-Ray und Kosten laut Prospekt. Hebel-, Short-, Options- und Krypto-Produkte sind getrennt und markiert. Europäische UCITS-Anteilklassen: <a href=\"#/europa\">eigener Bereich</a> (Suche über ISIN)."],
-        ["Kennzahlen", "Rendite = Kursentwicklung ohne Ausschüttungen. Kosten (Expense Ratio) und Fondsvermögen aus SEC-Daten, Holdings aus SEC N-PORT – nur für US-registrierte Fonds. Fehlende Werte zählen bei Filtern nicht als null."],
+        ["Was gezeigt wird", "US-gelistete ETFs mit echter Kurshistorie, Schwankung und größtem Rückgang – und, wo die Fondsmeldungen reichen, mit Holdings, X-Ray und Kosten laut Prospekt. Hebel-, Short-, Options- und Krypto-Produkte sind getrennt und markiert. Europäische UCITS-Anteilklassen: <a href=\"#/europa\">eigener Bereich</a> (Suche über ISIN)."],
+        ["Kennzahlen", "Rendite = Kursentwicklung ohne Ausschüttungen. Kosten (Expense Ratio) und Fondsvermögen aus Prospekt und Fondsmeldungen, Holdings aus den Quartalsmeldungen – nur für US-registrierte Fonds. Fehlende Werte zählen bei Filtern nicht als null."],
         ["ETF-Welten", "Nur Standard-Bauart, sortiert nach Länge der Kurshistorie, nicht nach Rendite. Kategorien aus dem Fondsnamen abgeleitet."]] });
     (q.inactive === "1" ? VS.masterAll() : VS.master()).then(function (m) {
       var t0 = (global.performance && performance.now()) || 0;
@@ -303,7 +303,7 @@
         var more = host.querySelector("#vs-more"); if (more) more.onclick = function () { st.limit += PAGE; draw(); };
       }
       draw();
-      VS.dm([["Quelle", "Kurse Tiingo · Kosten, Fondsvermögen und Holdings SEC (N-PORT, Prospekt) · <a href=\"#/daten\">Datenabdeckung</a>"]], m.asOf);
+      VS.dm([["Herkunft", "Kosten, Fondsvermögen und Holdings aus Prospekt und Pflichtmeldungen · <a href=\"#/daten\">Datenabdeckung</a>"]], m.asOf);
       VS.lastRenderMs = ((global.performance && performance.now()) || 0) - t0;
     }).catch(function (e) { root.querySelector("#vs-screener").innerHTML = VS.pending("ETF-Verzeichnis nicht erreichbar", String(e.message || e)); });
   };
@@ -397,20 +397,20 @@
       root.innerHTML = '<div class="vs-etfhead">' + head + (e.complex ? '<div style="margin-top:8px">' + VS.verdict("weak", VS.RETIRE[e.retirementClass] || "Komplexes Produkt") + '</div>' : "") + '</div>' +
         '<div class="vs-etf-sticky"><div class="vu-seg" role="tablist" aria-label="Bereiche">' + mainTabs.map(function (t) { return '<button type="button" role="tab" data-tab="' + t[0] + '" aria-pressed="' + (t[0] === tab) + '">' + MAIN[t[0]] + '</button>'; }).join("") + '</div>' +
         (moreTabs.length ? '<div class="vs-moretabs"><span class="vu-xs vu-mu">Mehr:</span>' + moreTabs.map(function (t) { return '<button type="button" class="vu-chip" data-tab="' + t[0] + '" aria-pressed="' + (t[0] === tab) + '">' + t[1] + '</button>'; }).join("") + '</div>' : "") + '</div>' +
-        (missingTab ? '<p class="vs-note" style="margin-top:12px">Für ' + esc(e.symbol) + ' gibt es diesen Bereich nicht: ' + esc({ performance: "keine Kursreihe", risiko: "keine Kursreihe", bestandteile: "keine Holdings (SEC N-PORT)", xray: "keine Holdings (SEC N-PORT)", aenderungen: "keine Holdings- oder Kostenhistorie", kosten: "keine Kostenquote aus dem Prospekt" }[missingTab] || "keine Daten") + '. Du siehst die Übersicht.</p>' : "") +
-        '<div id="vs-etf-body"></div>' + VS.footer({ asOf: mt && mt.asOf, dm: [["Quelle", "Kurse Tiingo · Kosten, Fondsvermögen und Holdings SEC (Prospekt, N-PORT) · Region, Index und Thema aus dem Fondsnamen abgeleitet"]] });
+        (missingTab ? '<p class="vs-note" style="margin-top:12px">Für ' + esc(e.symbol) + ' gibt es diesen Bereich nicht: ' + esc({ performance: "keine Kursreihe", risiko: "keine Kursreihe", bestandteile: "keine Holdings (Quartalsmeldung)", xray: "keine Holdings (Quartalsmeldung)", aenderungen: "keine Holdings- oder Kostenhistorie", kosten: "keine Kostenquote aus dem Prospekt" }[missingTab] || "keine Daten") + '. Du siehst die Übersicht.</p>' : "") +
+        '<div id="vs-etf-body"></div>' + VS.footer({ asOf: mt && mt.asOf, dm: [["Herkunft", "Kosten, Fondsvermögen und Holdings aus Prospekt und Pflichtmeldungen · Region, Index und Thema aus dem Fondsnamen abgeleitet"]] });
       root.querySelector("[data-vu-watch]").onclick = function () { var on = watchToggle(sym); this.setAttribute("aria-pressed", String(on)); };
       root.querySelectorAll("[data-tab]").forEach(function (b) { b.onclick = function () { tab = b.dataset.tab; root.querySelectorAll("[data-tab]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); body(); }; });
       function body() {
         var host = root.querySelector("#vs-etf-body");
         var px = d.holdings && d.holdings.proxy && /^(bestandteile|xray|aenderungen)$/.test(tab) ? d.holdings.proxy : null;
-        host.innerHTML = (px ? '<div class="vs-note" style="margin-top:16px"><b>Referenzbestand:</b> ' + esc(e.symbol) + ' meldet keinen eigenen Bestand an die SEC (N-PORT). Gezeigt wird der Bestand von <a href="#/etf/' + encodeURIComponent(px.slug) + '?tab=' + tab + '">' + esc(px.symbol) + '</a> (' + esc(px.name) + '), der denselben Index (' + esc(px.index) + ') abbildet. Die Zusammensetzung ist praktisch gleich; Gewichte können leicht abweichen.</div>' : "") + '<div id="vs-tab-c"></div>';
+        host.innerHTML = (px ? '<div class="vs-note" style="margin-top:16px"><b>Referenzbestand:</b> ' + esc(e.symbol) + ' meldet keinen eigenen Bestand (Quartalsmeldung). Gezeigt wird der Bestand von <a href="#/etf/' + encodeURIComponent(px.slug) + '?tab=' + tab + '">' + esc(px.symbol) + '</a> (' + esc(px.name) + '), der denselben Index (' + esc(px.index) + ') abbildet. Die Zusammensetzung ist praktisch gleich; Gewichte können leicht abweichen.</div>' : "") + '<div id="vs-tab-c"></div>';
         (TAB_VIEWS[tab] || TAB_VIEWS.uebersicht)(host.querySelector("#vs-tab-c"), e, d, m);
         if (r.query.play === "1" && tab === "uebersicht" && VS.openPlanspiel) VS.openPlanspiel();
       }
       body();
     }).catch(function () {
-      VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF Intelligence</p><h1>' + esc(sym) + ' nicht gefunden.</h1><p class="vs-lead">Dieser Ticker ist nicht im ETF-Verzeichnis. Vielleicht ist er bei Tiingo als Aktie geführt oder (noch) nicht im aufgenommenen Universum.</p><div class="vs-tabs"><a class="vs-pill primary" href="#/etfs?q=' + encodeURIComponent(sym) + '">Im Screener suchen</a></div></section>');
+      VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF Intelligence</p><h1>' + esc(sym) + ' nicht gefunden.</h1><p class="vs-lead">Dieser Ticker ist nicht im ETF-Verzeichnis. Vielleicht ist er als Aktie geführt oder (noch) nicht im aufgenommenen Universum.</p><div class="vs-tabs"><a class="vs-pill primary" href="#/etfs?q=' + encodeURIComponent(sym) + '">Im Screener suchen</a></div></section>');
     });
   };
 
@@ -446,7 +446,7 @@
         VS.tile(useM && useM.from ? "Pro Jahr seit " + useM.from.slice(0, 4) : "Pro Jahr", useM && Number.isFinite(useM.annualized) ? F.spct(useM.annualized) : "–", useM === trM ? "mit Ausschüttungen" : "nur Kurs", "Durchschnittliche Entwicklung pro Jahr seit Beginn der Kurshistorie.") +
         VS.tile("Schwankung", mt && mt.volatility && Number.isFinite(mt.volatility.value) ? F.pct(mt.volatility.value, 0) : "–", "pro Jahr", "Wie stark der Kurs typisch hoch und runter geht.") +
         VS.tile("Kosten", cost !== null ? VS.costPct(cost) : "k. A.", cost !== null ? "pro Jahr laut Prospekt" : "keine amtliche Quelle", "Laufende Kosten, automatisch vom Fondsvermögen abgezogen.") +
-        VS.tile("Firmen", hasH && d.holdings.positions ? Number(d.holdings.positions).toLocaleString("de-DE") : "–", hasH ? (d.holdings.proxy ? "über " + d.holdings.proxy.symbol + " (gleicher Index)" : "SEC N-PORT " + F.date(d.holdings.asOf)) : "keine Bestandsdaten", "Anzahl der Positionen laut letztem Bestandsbericht.") + '</div>' +
+        VS.tile("Firmen", hasH && d.holdings.positions ? Number(d.holdings.positions).toLocaleString("de-DE") : "–", hasH ? (d.holdings.proxy ? "über " + d.holdings.proxy.symbol + " (gleicher Index)" : "Meldung " + F.date(d.holdings.asOf)) : "keine Bestandsdaten", "Anzahl der Positionen laut letztem Bestandsbericht.") + '</div>' +
         '<div class="vu-stack" style="margin-top:10px">' + (cost !== null ? VS.help("Kosten " + VS.costPct(cost) + ": Bei 1.000 € im ETF zahlst du rund " + (1000 * cost).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " € im Jahr. Sie werden automatisch abgezogen.") : "") + VS.help("Vergangene Entwicklung ist kein Versprechen für die Zukunft.") + '</div>' +
         VS.sect("Einordnung") + einordnungBilanz(ein) + '<div class="vu-box vs-kvbox">' + ein.map(function (x) { var k = VKIND[x[0]] || VKIND.info; return '<div class="vs-kv"><span class="vu-sm"><b>' + esc(x[1]) + '</b></span>' + VS.verdict(k[0], k[1]) + '</div>'; }).join("") + '</div>' +
         '<p class="vu-xs vu-mu" style="margin-top:6px">Einordnung aus Daten, keine Empfehlung.</p>' +
@@ -458,7 +458,7 @@
         '<div class="vs-row"><span>Index / Strategie</span><span>' + esc(e.index || (d.structure === "ACTIVE" ? "Aktiv gemanagt" : "nicht im Namen genannt")) + '</span></div>' +
         '<div class="vs-row"><span>Assetklasse</span><span>' + esc(VS.ASSET[e.assetClass] || "nicht zugeordnet") + '</span></div><div class="vs-row"><span>Region</span><span>' + esc(VS.REGION[e.region] || "nicht im Namen genannt") + '</span></div>' +
         '<div class="vs-row"><span>Thema</span><span>' + esc(e.theme || "–") + '</span></div><div class="vs-row"><span>Listings dieses Fonds</span><span>' + (d.listingsOfFund || 1) + '</span></div>' +
-        (d.description ? '<p class="vu-ltag" style="margin-top:12px">Beschreibung des Anbieters (Tiingo, Originalsprache)</p><p class="vs-fine" style="margin-top:6px">' + esc(d.description) + '</p>' : "") + '</div></details>' +
+        (d.description ? '<p class="vu-ltag" style="margin-top:12px">Beschreibung des Datenanbieters (Originalsprache)</p><p class="vs-fine" style="margin-top:6px">' + esc(d.description) + '</p>' : "") + '</div></details>' +
         '<details class="vu-more"><summary>ETF-DNA</summary><div class="vu-more-body">' + Object.keys(dna).map(function (k) {
           var x = dna[k];
           return x.value === null ? '<div class="vs-kv"><span class="vu-sm"><b>' + esc(x.label) + '</b></span><span class="vu-xs vu-mu">' + esc(VS.STATUS_TEXT[x.status] || "Noch nicht verfügbar") + '</span></div>' : VS.wbar(x.label, x.value + "/100", x.value);
@@ -467,7 +467,7 @@
       /* Planspiel als Sheet (C16), klar als Beispielrechnung markiert. */
       var playCtx = { symbol: e.symbol, slug: e.slug, name: d.name, complex: e.complex, us: isUS,
         cagr: useM ? useM.annualized : null, vol: mt && mt.volatility ? mt.volatility.value : null, since: useM && useM.from ? useM.from.slice(0, 4) : "", years: mt ? mt.historyYears : 0,
-        basis: useM === trM ? "Tiingo, Gesamtrendite mit Ausschüttungen" : "Tiingo, nur Kurs – Ausschüttungen nicht enthalten" };
+        basis: useM === trM ? "Gesamtrendite mit Ausschüttungen" : "nur Kurs – Ausschüttungen nicht enthalten" };
       VS.openPlanspiel = function () {
         var sh = VS.sheet("vs-play-s", "Planspiel", '<div class="vs-row-sb">' + VS.bsp() + '</div><p class="vu-sm vu-mu" style="margin-top:6px">Was wäre, wenn sich ' + esc(e.index || e.symbol) + ' so entwickelt wie bisher?</p><div id="vs-play" style="margin-top:10px"></div>');
         if (sh) VS.renderPlanspiel(sh.querySelector("#vs-play"), playCtx);
@@ -662,7 +662,7 @@
         if (a.seriesId === b.seriesId) return '<div class="vs-row"><span>' + esc(A_ + " ↔ " + B_) + '</span><span>derselbe Fonds (Anteilklassen einer Serie)</span></div>';
         var o = X.overlap(VS.xrayFile(a), VS.xrayFile(b));
         return '<div class="vs-row"><span><b>' + esc(A_ + " ↔ " + B_) + '</b><span class="t-name">gemeinsam: ' + esc(o.top.slice(0, 5).map(function (c) { return c.name; }).join(", ") || "–") + '</span></span><span class="num" style="text-align:right">' + F.pct(o.weightedOverlap) + ' gewichtet<br><span class="vs-fine">' + o.commonCount + ' gemeinsame Positionen</span></span></div>';
-      }).join("") + '<p class="vs-fine" style="margin-top:8px">Gewichtete Überschneidung = Summe der jeweils kleineren Gewichte gemeinsamer Positionen. Basis: die bis zu 100 größten Positionen je ETF (SEC N-PORT); Stichtage können sich unterscheiden.</p>';
+      }).join("") + '<p class="vs-fine" style="margin-top:8px">Gewichtete Überschneidung = Summe der jeweils kleineren Gewichte gemeinsamer Positionen. Basis: die bis zu 100 größten Positionen je ETF (Quartalsmeldungen); Stichtage können sich unterscheiden.</p>';
     });
   }
 
@@ -684,7 +684,7 @@
       if (!list.length) { host.innerHTML = '<div class="vs-card soft vs-empty">Noch keine ETFs beobachtet. Öffne einen ETF und tippe auf „♡ Beobachten“.<div class="vs-tabs" style="justify-content:center"><a class="vs-pill primary" href="#/etfs">ETFs entdecken</a></div></div>'; return; }
       var changed = list.filter(function (e) { return e.holdingsChanges > 0; });
       host.innerHTML = '<div class="vs-card app"><p class="vs-label">Seit dem letzten Holdings-Update</p><p style="margin-top:6px;color:var(--app-ink);font-size:17px">' +
-        (changed.length ? changed.length + " von " + list.length + " beobachteten ETFs mit relevanten Änderungen im Bestand." : "Keine relevanten Bestandsänderungen bei deinen beobachteten ETFs.") + '</p><p class="vs-fine" style="color:var(--app-muted)">Quelle: SEC N-PORT (quartalsweise, rund 60 Tage verzögert). Für Fonds ohne N-PORT-Meldung gibt es keine Bestandsänderungen.</p></div>' +
+        (changed.length ? changed.length + " von " + list.length + " beobachteten ETFs mit relevanten Änderungen im Bestand." : "Keine relevanten Bestandsänderungen bei deinen beobachteten ETFs.") + '</p><p class="vs-fine" style="color:var(--app-muted)">Bestände aus Quartalsmeldungen (quartalsweise, rund 60 Tage verzögert). Für Fonds ohne Quartalsmeldung gibt es keine Bestandsänderungen.</p></div>' +
         '<div class="vs-table-wrap" style="margin-top:14px"><table class="vs-table"><thead><tr><th>ETF</th><th>Kurs</th><th>1 Tag</th><th>1J</th><th>Schwankung</th><th>Status</th><th>Kostenquote</th><th>Fondsvermögen (Fonds)</th><th>Bestand</th></tr></thead><tbody>' + list.map(function (e) {
         var evs = ch.events.filter(function (x) { return x.symbol === e.symbol; });
         var hc = e.holdingsAsOf ? (e.holdingsChanges > 0 ? '<a href="' + VS.etfHref(e) + '?tab=aenderungen">' + e.holdingsChanges + ' relevante Änderung' + (e.holdingsChanges === 1 ? "" : "en") + '</a>' : '<span class="vs-fine">keine relevanten Änderungen</span>') + '<span class="t-name">Stand ' + F.date(e.holdingsAsOf) + '</span>' : '<span class="vs-fine">keine Bestandsdaten</span>';

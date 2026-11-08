@@ -358,7 +358,7 @@
       U().navcard({ glyph: "line", title: "Technische Lagen", sub: "Charts mit klarer Lage, nach Regel", href: X.routes.chartlagen() }) +
       U().navcard({ glyph: "grid", title: "Musterdepots", sub: "Fünf Profile nach Regel, Rechenmodell", href: "/quant/musterdepots/" }) + "</div>" +
       '<a class="vu-box vu-box--lime qv3-trust" href="' + U().esc(X.routes.method()) + '"><span class="qv3-trust-i">' + U().glyph("book", 18) + '</span><span><b>Warum kann ich dem vertrauen?</b><span class="vu-xs">Methodik, Daten und Grenzen offen erklärt</span></span>' + U().glyph("next", 18) + "</a>" +
-      '<div class="vu-box vu-box--line qv3-note"><b class="vu-sm">Keine Anlageempfehlung</b><p class="vu-xs vu-mu">Quant ordnet ein und vergleicht. Keine Prognose, kein Kursziel. Einstieg, Ungültig-Marke und Ziele sind Szenarien der technischen Analyse. Daten: SEC EDGAR, Tiingo.</p></div>'));
+      '<div class="vu-box vu-box--line qv3-note"><b class="vu-sm">Keine Anlageempfehlung</b><p class="vu-xs vu-mu">Quant ordnet ein und vergleicht. Keine Prognose, kein Kursziel. Einstieg, Ungültig-Marke und Ziele sind Szenarien der technischen Analyse.</p></div>'));
 
     var watched = X.watch.list();
     var TI = global.VUTechnicalIntelligence;
@@ -1183,7 +1183,7 @@
       return '<a class="vu-box vu-box--line qv3-scard" href="' + U.esc(X.routes.strategy(p.profileId)) + '" data-profile="' + U.esc(p.profileId) + '"><span class="qv3-scard-h"><span><span class="vu-ltag">' + U.esc(p.label.split(" · ")[0]) + '</span><b class="qv3-scard-t">' + U.esc(STRAT_SHORT[p.profileId] || p.plain) + "</b></span>" + U.verdict("none", "Nicht prüfbar") + '</span><span class="vu-xs vu-mu" style="display:block;margin-top:8px">' + U.esc(VM.reasonText(ix && ix.availability && ix.availability.reason, "Eine benötigte Eigenschaft hat für keine Aktie Werte.")) + " Quant zeigt deshalb keine Treffer.</span></a>";
     }).join("");
     h += '</div><div class="vu-box qv3-bt" style="margin-top:12px"><b class="vu-sm">Wie gut war ein Stil früher?</b><p class="vu-xs vu-mu">Bewusst keine Trefferquote: Der Backtest bleibt geschlossen, bis Universum, Kapitalmaßnahmen und Ausführung zertifiziert sind.</p>' + U.verdict("none", "Backtest noch gesperrt") + "</div>" +
-      '<div class="vu-box vu-box--line qv3-note"><b class="vu-sm">Keine Anlageempfehlung</b><p class="vu-xs vu-mu">Quant ordnet ein und vergleicht. Keine Prognose, kein Kursziel. Daten: SEC EDGAR, Tiingo. Stand ' + U.esc(X.dateDe(index && index.asOf)) + '.</p></div><p class="qx-small"><a href="' + U.esc(X.routes.method("strategien")) + '">Wie Strategien geprüft werden</a></p>';
+      '<div class="vu-box vu-box--line qv3-note"><b class="vu-sm">Keine Anlageempfehlung</b><p class="vu-xs vu-mu">Quant ordnet ein und vergleicht. Keine Prognose, kein Kursziel. Stand ' + U.esc(X.dateDe(index && index.asOf)) + '.</p></div><p class="qx-small"><a href="' + U.esc(X.routes.method("strategien")) + '">Wie Strategien geprüft werden</a></p>';
     var box = el("div", { class: "vu-ui qv3" }); box.innerHTML = h; main.append(box);
   }
   /* Visual First (VU3): je Bedingung ein Balken 0-100 mit der Schwelle als Strich und dem Wert als Zahl -

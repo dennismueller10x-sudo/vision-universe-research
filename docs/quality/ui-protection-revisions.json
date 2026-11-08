@@ -1175,6 +1175,136 @@
       "from": "5656d3553fa7ba7f10d1f3e4d5ea19d01a4821ea9e4e89855016b40481fd9388",
       "to": "d7ad7992aceee3c9f3a16c82d280afe0108b05ac549c06f5bc65412a5f1b8f2c",
       "scope": "E5 Paket 4: zugänglicher Name enthält die unveränderte sichtbare Beschriftung"
+    },
+    {
+      "id": "UIP-R118",
+      "date": "2026-11-07",
+      "pr": 1601,
+      "ownerApproval": "Owner 07.11.2026 nach erstem iPhone-Test: „App-Feeling wie Trade Republic … Hin- und herwischen, vor und zurück ist sehr schwerfällig“; Auftrag Strang K (K2)",
+      "file": "assets/site-navigation.js",
+      "from": "8f2a112024e397d5a1c28214d35547663e4d895784e1e0c4c7b82055304004e0",
+      "to": "cdbc436199df7e1a3b158fa6ebe9b5b0cefa2e45371427b369641bb7ff22cace",
+      "scope": "K2: Dokument-Übergänge nur vorwärts (pageswap überspringt Zurück/Neuladen, auch nach nativer App-Geste) und begrenztes Vorladen von höchstens 4 Produktzielen nach Ruhe (Speculation Rules bzw. HTTP-Cache); Menü, Leiste, Links und Texte unverändert"
+    },
+    {
+      "id": "UIP-R119",
+      "date": "2026-11-07",
+      "pr": 1601,
+      "ownerApproval": "Owner 07.11.2026 nach erstem iPhone-Test: „App-Feeling wie Trade Republic … Hin- und herwischen, vor und zurück ist sehr schwerfällig“; Auftrag Strang K (K2)",
+      "file": "assets/site-navigation.css",
+      "from": "fe6dd67f69d4e4b5f09d89c94e00c72aceabc06797260360290f6622bc3c8c24",
+      "to": "744db0487d1b57df489f23dcd5fc7efeaf7be084ac5d61f5f0e7c8bb4805e679",
+      "scope": "K2: View Transitions zwischen Dokumenten nur ohne reduzierte Bewegung, neue Seite gleitet in 240 ms von rechts herein, Leiste und Kopf stehen; alle bestehenden Regeln unverändert"
+    },
+    {
+      "id": "UIP-R120",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "assets/site-navigation.css",
+      "from": "744db0487d1b57df489f23dcd5fc7efeaf7be084ac5d61f5f0e7c8bb4805e679",
+      "to": "279ed5daee47405657a8e664336250f537ca4b3f5f44799265b90b29412fe4e5",
+      "scope": "L1: Rechts-Seitenfuß ohne zweiten Dock-Abstand (Body trägt ihn schon)"
+    },
+    {
+      "id": "UIP-R121",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "assets/site-navigation.js",
+      "from": "cdbc436199df7e1a3b158fa6ebe9b5b0cefa2e45371427b369641bb7ff22cace",
+      "to": "27b871e501434b297226f07e6fc814a6252e4e0c4102a98ed52b75c9f64e9fea",
+      "scope": "L1: Menü „Rechtliches & Infos“ (Pflicht-Links, Kontakt, Software-/Risikosatz, Datenquellen & Methodik); Rechts-Seitenfuß entfällt nur in der App (VUApp/1, Capacitor); erzeugter Block VU-LEGAL vu-hinweise-2026-11-07-1; Fundamental-Kachel „Zahlen aus Geschäftsberichten“"
+    },
+    {
+      "id": "UIP-R122",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/app.js",
+      "from": "22ebd677b4c3414201a315a7607e9d1d7b3f12170475726a0743f2252d3fb0c2",
+      "to": "b4c850b3a78ecec8ec504d9888fbe5cd9ae40bffd394637cef4ca0f3ab666a4b",
+      "scope": "L1: Anbieternamen aus dem Quant-Fuß entfernt („Daten: SEC EDGAR, Tiingo“, „SEC-Dateninspektor“ → „Dateninspektor“)"
+    },
+    {
+      "id": "UIP-R123",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/page-method.js",
+      "from": "d8bc62832084d02419bec699f4d039f4cf7575d2c29e2a43afd6d339953f8b74",
+      "to": "fa0d082af375ca5009e9ab8ee99597c30112d69a89d52dba0e8d9521fff18a4d",
+      "scope": "L1: Knopf „SEC-Dateninspektor“ → „Dateninspektor“"
+    },
+    {
+      "id": "UIP-R124",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/page-stock.js",
+      "from": "ccfda213da39b4b03ac1e0033ef5a1fad56a76f025f5abd06136cd2066147aaa",
+      "to": "7ee0453824e620022dc393a878df2618536173bf41ae875587752c22f64797ee",
+      "scope": "L1: „Daten & Methodik“ der Aktie ohne Anbieternamen (Tiingo, SEC EDGAR); Daten unverändert"
+    },
+    {
+      "id": "UIP-R125",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/pages.js",
+      "from": "3fd3347de494bfa02d2457537860c6b05e98060e38dc759d19b56064a1ff9da2",
+      "to": "36fe10b72251c1a17fac56116349820ce4425bc8cfc0e4d5ab852e80427dfea1",
+      "scope": "L1: Hinweisboxen ohne „Daten: SEC EDGAR, Tiingo.“"
+    },
+    {
+      "id": "UIP-R126",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "f0c82a227475a4f3122f4c16bfbb0f021e8944526fad0a4a4ba0aba3d0959e0d",
+      "to": "76f33785aae4f73834798a84f0ba9b8fdf1e0c6ee005e20dbb8c97ef15275ed4",
+      "scope": "L1: Quant-Browser-QA prüft Fuß und „Daten & Methodik“ ohne Anbieternamen (Tiingo, SEC EDGAR); „Keine Anlageempfehlung“ und Stand bleiben Pflicht"
+    },
+    {
+      "id": "UIP-R127",
+      "date": "2026-11-07",
+      "pr": 1612,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L, Folgeauftrag): Quellangaben zentral statt in den Seiten (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/page-stock.js",
+      "from": "7ee0453824e620022dc393a878df2618536173bf41ae875587752c22f64797ee",
+      "to": "cb7f686ce448444c19e7dffbbff42dc30f9d97dca8ff7178458e9489db288ab7",
+      "scope": "L2: Hinweistexte ohne „SEC“ (Geschäftszahlen aus Pflichtmeldungen); Daten unverändert"
+    },
+    {
+      "id": "UIP-R128",
+      "date": "2026-11-07",
+      "pr": 1612,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L, Folgeauftrag): Quellangaben zentral statt in den Seiten (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/page-tools.js",
+      "from": "818d9b23114971f6df5f05a6f280626540acb8ccdc69ee56755b52244b771847",
+      "to": "3297e3534433955be2b332ae2870a3bede82aa3dbaf44f7633d45a886268f97b",
+      "scope": "L2: Ansicht „Zahlen“ ohne „SEC EDGAR“ (Hinweis, Kachel, Fußzeile), Knopf „Daten im Dateninspektor“; Stand bleibt"
+    },
+    {
+      "id": "UIP-R129",
+      "date": "2026-11-07",
+      "pr": 1612,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L, Folgeauftrag): Quellangaben zentral statt in den Seiten (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/view-model.js",
+      "from": "3989cc957a0c83941c79b065617590bacf52d85ec4224b4d3449f4107aab8504",
+      "to": "4eeed3e98f1f0aab77ff119d3e6f8feae16cfd6f92e4f89cd12d60450fc6fbc0",
+      "scope": "L2: Lückentexte „Geschäftszahlen aus Pflichtmeldungen“ statt „SEC-Meldungen“"
+    },
+    {
+      "id": "UIP-R130",
+      "date": "2026-11-07",
+      "pr": 1612,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L, Folgeauftrag): Quellangaben zentral statt in den Seiten (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "76f33785aae4f73834798a84f0ba9b8fdf1e0c6ee005e20dbb8c97ef15275ed4",
+      "to": "011eccec37dde14a35afbd0d6e89b917cec5fdc86cbd1be9b4e8a1eb4c4f3cda",
+      "scope": "L2: QA der Ansicht „Zahlen“ prüft Stand/Herkunft ohne Anbieternamen"
     }
   ]
 }

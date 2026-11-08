@@ -22,7 +22,7 @@
       '<section class="vs-section vs-section--first vs-pf"' + (sub === "modelle" ? " hidden" : "") + '><div class="vu-box vs-pf-list" id="vs-editor"></div><div id="vs-pf-out"><div class="vs-loading">Berechne …</div></div>' +
       (sub === "szenarien" ? '<a class="vu-chip vs-pf-back" href="#/portfolio">‹ Zurück zum X-Ray</a>' : "") + '</section>' +
       '<section class="vs-section vs-section--first vs-mods"' + (sub === "modelle" ? "" : " hidden") + '><div class="vu-stack" id="vs-models"><div class="vs-loading">…</div></div><a class="vu-chip vs-pf-back" href="#/portfolio">‹ Zurück zu deinem Portfolio</a></section>', { dm: [
-        ["Portfolio-Kennzahlen", "Kurse Tiingo (Wochenwerte, gemeinsame Historie), Bestände SEC N-PORT, Kostenquoten laut US-Prospekt (SEC). Vergangene Entwicklung, keine Prognose."]] });
+        ["Portfolio-Kennzahlen", "Kurse als Wochenwerte (gemeinsame Historie), Bestände aus den Pflichtmeldungen der Fonds, Kostenquoten laut US-Prospekt. Vergangene Entwicklung, keine Prognose."]] });
     Promise.all([VS.master(), VS.getJSON("/vorsorge/data/model-portfolios.json")]).then(function (res) {
       var m = res[0], models = res[1];
       function modelCost(p) {
@@ -218,10 +218,10 @@
       VS.sect("Länder · effektiv") + cl.map(function (c, k) { return VS.wbar(c.label, F.pct(c.weight, 0), c.weight / cmx * 100, k === 0); }).join("") +
       VS.sect("Auf einen Blick") + glance + cta +
       more(basics +
-        '<p class="vs-label" style="margin-top:14px">Wirtschaftszweige (effektiv, SEC-SIC)</p>' + (effSectors.list.length ? VS.bars(withRest(effSectors, 11, VS.sectorName)) : '<p class="vu-xs vu-mu">Keine Zuordnung.</p>') +
+        '<p class="vs-label" style="margin-top:14px">Wirtschaftszweige (effektiv, SIC)</p>' + (effSectors.list.length ? VS.bars(withRest(effSectors, 11, VS.sectorName)) : '<p class="vu-xs vu-mu">Keine Zuordnung.</p>') +
         (moves.length ? '<p class="vs-label" style="margin-top:14px">Seit dem letzten Bestandsbericht je ETF</p><div class="vs-kvbox">' + moves.map(function (q) { return '<div class="vs-kv"><span class="vu-sm">' + esc(q.name) + ' <span class="vu-mu">' + (q.d > 0 ? "+" : "−") + (Math.abs(q.d) * 100).toLocaleString("de-DE", { maximumFractionDigits: 2 }) + ' PP</span></span>' + VS.verdict("mid", q.d > 0 ? "gestiegen" : "gesunken") + '</div>'; }).join("") +
-          '</div><p class="vu-xs vu-mu">Gewichtsänderung je ETF (SEC N-PORT, Quartalsvergleich) mal Portfolio-Gewicht. Enthält Kursbewegungen.</p>' : "") +
-        '<p class="vs-label" style="margin-top:14px">Wie wird durchgeschaut?</p><p class="vu-xs vu-mu">Durchschau über ' + F.pct(lt.coverage, 0) + ' des Portfolios (davon tatsächlich durchschaut: ' + F.pct(trueCov, 0) + ') mit Bestandsdaten aus SEC N-PORT. Je ETF die bis zu 100 größten Positionen (' + esc(shown) + '); Firmen und Überschneidung beruhen auf diesen Positionen, Länder und Wirtschaftszweige auf allen Positionen. Die Zahl der Firmen zählt alle Positionen je ETF abzüglich der gemeinsamen. Stichtage der Bestände können sich unterscheiden.' + (derivSkipped.length ? ' Nicht durchgeschaut (Hebel-/Derivatefonds): ' + esc(derivSkipped.join(", ")) + '.' : "") + '</p>');
+          '</div><p class="vu-xs vu-mu">Gewichtsänderung je ETF (Quartalsmeldungen im Vergleich) mal Portfolio-Gewicht. Enthält Kursbewegungen.</p>' : "") +
+        '<p class="vs-label" style="margin-top:14px">Wie wird durchgeschaut?</p><p class="vu-xs vu-mu">Durchschau über ' + F.pct(lt.coverage, 0) + ' des Portfolios (davon tatsächlich durchschaut: ' + F.pct(trueCov, 0) + ') mit Bestandsdaten aus den Quartalsmeldungen. Je ETF die bis zu 100 größten Positionen (' + esc(shown) + '); Firmen und Überschneidung beruhen auf diesen Positionen, Länder und Wirtschaftszweige auf allen Positionen. Die Zahl der Firmen zählt alle Positionen je ETF abzüglich der gemeinsamen. Stichtage der Bestände können sich unterscheiden.' + (derivSkipped.length ? ' Nicht durchgeschaut (Hebel-/Derivatefonds): ' + esc(derivSkipped.join(", ")) + '.' : "") + '</p>');
   }
 
   function drawScenarios(out, m) {

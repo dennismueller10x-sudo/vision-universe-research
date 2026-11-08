@@ -18,6 +18,8 @@
 <!-- Startseite und Screener brauchen den Screener-Datensatz; ein Chart-Deep-Link braucht ihn nur fuer den Namen. -->
 <link rel="preload" as="fetch" crossorigin="anonymous" href="/technical/data/index-v1.json">
 <link rel="stylesheet" href="/technical/academy/academy.css">
+<!-- K3: ein Chart-Deep-Link holt sein Instrument sofort, nicht erst nach den Seitenskripten (gleiche Adresse wie technical/engine/model.js technicalPaths()[0]). -->
+<script>(function(){var m=/^#\/?chart\/([^\/?]+)/.exec(location.hash),t=m?decodeURIComponent(m[1]).toUpperCase():"";if(!/^[A-Z0-9.-]{1,12}$/.test(t))return;var l=document.createElement("link");l.rel="preload";l.as="fetch";l.crossOrigin="anonymous";l.href="/quant/data/product/technical-signals-v1/by-ticker/"+t+".json.gz";document.head.appendChild(l);})();</script>
 </head>
 <body class="tc-body"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <a class="tc-skip" href="#tc-main">Zum Inhalt</a>
