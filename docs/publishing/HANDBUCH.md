@@ -1,112 +1,118 @@
 # Vision Universe Aktienmagazin – Produktionshandbuch
 
-Stand 08.11.2026. Grundlage für ein wöchentliches Heft (Muster: [`aktienmagazin-01/`](aktienmagazin-01/README.md), 30 Seiten A4).
-Ziel: jede Woche eine neue Ausgabe ohne Neugestaltung. Was je Ausgabe neu ist: Daten, Recherche, Texte, Bilder. Was gleich
-bleibt: Aufbau, Design-System, Bausteine, Regeln.
+Stand 08.11.2026, nach dem Umbau gemäß Codex-Prüfung ([Prüfbericht](ausgaben/2026-11-09-nr01/PRUEFBERICHT_CODEX.md)).
+Ziel: jede Woche eine neue Ausgabe, ohne Vorlagen, CSS oder Werkzeuge anzufassen. Je Ausgabe neu sind nur Daten,
+Texte, Quellen und Bilder.
 
-## 1. Was wo liegt
+## 1. Aufbau
 
-| Pfad | Inhalt |
+```text
+docs/publishing/
+  system/                    stabil, ändert sich nur in eigenen PRs
+    build.mjs                setzt die Ausgabe zusammen, nummeriert, prüft (Prüftor), rendert PDF/PNG/Vorschau
+    build-data.mjs           Datenschnappschuss einer Ausgabe (eingefroren, mit Daten-Commit und Stichtagen)
+    templates.mjs            Seitenvorlagen (heute: "aktie" für Titelthema-Aktien und Einzelanalysen)
+    lib.js  charts.js  mag.css   Bausteine, Charts, Design-System
+  ausgaben/<datum>-nr<NN>/   eine Ausgabe
+    ausgabe.json             Nummer, Datum, KW, Redaktionsschluss, Datenfenster, Aktienlisten, Seitenfolge, Quellen je Seite, Inhaltsverzeichnis
+    seiten/<id>.html         frei gestaltete Seiten (Platzhalter statt fester Daten)
+    seiten/_kennzahlen.html  kleine Kennzahl-Bausteine für Texte (VUM.k)
+    inhalt/<id>.json         Inhalte für Vorlagen (Text, Zitat, Bild, Kasten)
+    fakten.json              Quellenregister (ID, Medium, Titel, Datum, URL, Status) und Zitatregister (Original + Sprecher)
+    data.js                  eingefrorener Datenschnappschuss
+    RECHERCHE.md             Faktenblatt (Aussage → Quelle)
+    img/  pdf/  vorschau/
+```
+
+Bauen (Chromium/Playwright vorinstalliert):
+
+```bash
+node docs/publishing/system/build.mjs docs/publishing/ausgaben/2026-11-09-nr01 --scale 2 --vorschau --out /tmp/heft
+```
+
+Das **Prüftor** endet mit Exit-Code 1 bei: fehlenden Bildern, JS-Fehlern, Text über Seiten- oder Fußzeilenrand, unbekannten
+Seiten-IDs in `{{seite:…}}`, unbekannten Quellen-IDs, Seiten ohne Quellen (außer `"quellen": false` in `ausgabe.json`).
+Gewollter Anschnitt: Attribut `data-bleed`.
+
+## 2. Automatisch erzeugt
+
+- **Seitenzahlen** aus der Reihenfolge in `ausgabe.json`. In Texten `{{seite:chart}}` statt einer Zahl.
+- **Inhaltsverzeichnis** (S. 3) aus den `toc`-Einträgen (`bild` = Bildzeile, ohne Bild = „Außerdem“).
+- **Kopf- und Fußzeilen** mit Nummer und Datum; Fußzeile mit den **Quellennummern** der Seite.
+- **Quellenverzeichnis** (Impressum): einmal nummeriert, mit anklickbaren Links im PDF.
+- **Platzhalter:** `{{nr}} {{datum}} {{kw}} {{schluss}} {{datenstand}} {{datenstandKurz}} {{root}}`.
+- **PDF** mit Lesezeichen (Outline) und Tags; **Vorschau** mit `--vorschau`.
+
+## 3. Heftaufbau
+
+Standard **24 Seiten**, bis **28** bei starker Nachrichtenlage (Nr. 01: 28). Immer durch 4 teilbar (Druck).
+
+| Seite | Rubrik |
 |---|---|
-| `docs/publishing/aktienmagazin-01/` | Ausgabe Nr. 01 (Muster): Seiten, Daten, Bilder, PDF, Vorschau |
-| `…/pages/NN-*.html` | eine Datei je Seite, in Dateinamen-Reihenfolge zusammengesetzt |
-| `…/build-data.mjs` | zieht alle Kennzahlen aus den Repo-Artefakten nach `data.js` |
-| `…/lib.js` | Bausteine: `VUM.box(t)` Datenkasten je Aktie, `VUM.spark`, Kopf/Fuß, Quellenverzeichnis, `VUM.k(key, fn)` für Inhalte |
-| `…/charts.js` | Charts im VU-Stil: `line` (schwarze Linie, neongrüne Fläche), `hbars` (Werte in fester rechter Spalte), `vbars`, `meter` |
-| `…/mag.css` | Druck-Design A4: Farben, Typo, Karten, Handy-Rahmen |
-| `…/render.mjs` | setzt `magazin.html` zusammen, rendert PDF/PNG, meldet fehlende Bilder, JS-Fehler, Überlauf |
-| `…/RECHERCHE.md` | Faktenblatt der Ausgabe mit Quellen (Grundlage für die Faktenprüfung) |
-| `…/vorschau/index.html` | Blätter-Vorschau aller Seiten (auch als privates Artefakt veröffentlicht) |
-| `…/pdf/aktienmagazin-01.pdf` | fertiges Heft |
-| `brand-media/publishing/image-jobs/` | Higgsfield-Bildaufträge je Ausgabe |
-| `docs/publishing/konzept-2026-11/` | erstes Konzeptmuster (5 Seiten Magazin, 5 Seiten Aktienreport AMD) |
+| 1 | Cover |
+| 2 | App-Modul „Investieren mit Weitblick“: fünf iPhones mit Discover, Quant, Supertrader, Screener, Fundamental (fest) |
+| 3 | Editorial und Inhalt |
+| 4–5 | Das war die Woche, Zahlen der Woche |
+| 6–13 | Titelthema: Auftakt mit Story, Daten, 4–6 Aktienseiten (Vorlage `aktie`), Lesarten und Termine |
+| 14–15 | Zwei Einzelanalysen (Vorlage `aktie`) |
+| 16–17 | Berichtssaison: größte Anstiege und Rückgänge |
+| 18–19 | Hedgefonds-Radar |
+| 20–22 | Chart der Woche, Screening, Markt-Radar |
+| 23–25 | Konjunktur, Deutschland und Europa, Termine |
+| 26 | Quick-Check mit Newsletter-Kasten |
+| 27 | Impressum, Hinweise, Quellen |
+| 28 | Rückseite: App |
 
-## 2. Fester Heftaufbau (28–30 Seiten)
+Für 24 Seiten: Titelthema auf 4 Aktien kürzen, Szenarien-Seite und eine Einzelanalyse weglassen.
 
-| Seite | Rubrik | Quelle der Inhalte |
+## 4. Wöchentlicher Ablauf
+
+1. **Ausgabe anlegen:** Vorwochen-Ordner kopieren nach `ausgaben/<datum>-nr<NN>/`, `img/hf-*`, `pdf/`, `vorschau/`, `data.js` löschen. In `ausgabe.json` Nummer, Datum, KW, Redaktionsschluss, Datenstand, `daten.fenster` (letzter Freitag der Vorwoche bis letzter Handelstag; Feiertage beachten) und Aktienlisten setzen.
+2. **Daten einfrieren:** `node docs/publishing/system/build-data.mjs docs/publishing/ausgaben/<ordner>`. Schreibt `data.js` mit `snapshot` (Daten-Commit, Stichtage je Produkt). Ein vorhandener Schnappschuss wird nicht überschrieben (`--neu` nur bewusst).
+3. **Themen wählen** aus `data.js` (größte Bewegungen, Berichtssaison, Politik). Jede Geschichte braucht einen Anlass aus der Woche.
+4. **Recherche:** je Strang ein Rechercheauftrag. Jede verwendete Quelle als ID in `fakten.json` (Medium, Titel, Datum, URL; ohne URL `status: "offen"`), wörtliche Zitate zusätzlich im Zitatregister. Widersprüche als Spanne oder weglassen.
+5. **Bilder:** zuerst Vorrat und echte App-Screens nutzen; neue Motive nur für Cover, Titel und wenige Leitbilder. Bildregeln in Abschnitt 5.
+6. **Schreiben:** Aktienseiten als `inhalt/<id>.json` (3–5 Absätze, ca. 1.300–1.900 Zeichen), übrige Seiten in `seiten/`. Kennzahlen nur über `data-k`/`VUM.C(t)`. Quellen-IDs je Seite in `ausgabe.json`.
+7. **Bauen und prüfen:** Prüftor muss bestehen, dann jede Seite ansehen. Wortwahl prüfen (Abschnitt 6).
+8. **Ausgeben:** PDF nach `pdf/`, `--vorschau` für die Blätter-Vorschau, PR mit grüner CI.
+9. **Freigabe:** Veröffentlichung und Rechtstexte brauchen die Owner-Freigabe.
+
+## 5. Design und Bildsprache
+
+- Farben: Weiß, Schwarz, Neongrün `#c8f531`, Graustufen. Plus = neongrüne Pille, Minus = schwarze Pille (auf Schwarz weiß).
+- Schrift: Inter. Fließtext 9,6 pt, Unterzeile 11 pt, Kleintext mindestens 7 pt. Lieber kürzen als verkleinern.
+- **Bildsprache künftig heller (Owner 08.11.2026):** dunkle Seiten sind in Ordnung, Bilder aber nicht düster. Tageslicht
+  oder helles Studio, viel Weiß und Hellgrau, Neongrün als Akzent, freundlich und klar statt Gewitter und Low-Key. Stil-Satz
+  für Higgsfield-Aufträge (Qwen Image 3, 2k):
+
+  > Bright editorial photograph for a premium finance magazine, clean daylight or bright studio lighting, white and light
+  > grey surroundings, vivid lime-green accents, optimistic and clear, high detail, photorealistic, no text.
+
+  Negativ: `text, letters, numbers, logo, watermark, cartoon, dark, gloomy, low-key, night, storm, face, recognizable person`.
+- KI-Bilder tragen „KI-Bild“; keine echten Personen, keine fremden Logos im Bild. Charts nur aus Daten (`charts.js`).
+- App-Seiten nur mit echten Screens aus `docs/design/redesign-2027` (Aufnahme: siehe `img/app-*.jpg`), keine Screens mit persönlichen Daten oder Empfehlungswörtern.
+- Bildaufträge laufen über den Workflow „Brand Media · Higgsfield Bilder“ und müssen auf `main` liegen; je Gruppe ist nur ein wartender Lauf möglich.
+
+## 6. Regeln
+
+- **Wortwahl** nach `docs/legal/WORTWAHL.md`: beschreiben statt auffordern, kein Kursziel, „größte Anstiege/Rückgänge“, „Stärken/Schwächen laut Kennzahlen“, keine unbelegten Superlative (Vergleichsgruppe nennen), keine Kausalschlüsse aus Trefferlisten.
+- **Zahlen:** VU-Daten mit Stichtag (Datenkasten zeigt das Quartal der SEC-Daten); recherchierte Zahlen mit Quellen-ID; eigene Rechnungen benennen; Zeitfenster einheitlich (Woche = `daten.fenster`).
+- **Zitate:** nur wörtlich mit Anführungszeichen, sonst Paraphrase ohne Anführungszeichen; Sprecher und Medium am Zitat.
+- **Recht** (keine Rechtsberatung): Impressum (§ 8 LPresseG BW, § 18 Abs. 2 MStV), Zitatquelle (§ 63 UrhG), KI-Bild-Hinweis, „Keine Anlageberatung“ in jeder Fußzeile.
+- **Kanäle:** www.visionuniverse.de (Newsletter), Instagram und TikTok `@app.visionuniverse`, App „bald verfügbar“.
+
+## 7. Fahrplan (Rest aus der Codex-Prüfung)
+
+| Prio | Aufgabe | Stand |
 |---|---|---|
-| 01 | Cover: 1 Titelbild, Titelzeile, 4 Kurs-Pillen, Stempel mit Leitzahl, 4 Anrisse mit Bild | Titelthema + Daten |
-| 02 | Editorial + Inhalt mit Bildern | Redaktion |
-| 03 | Das war die Woche: 8 Meldungen mit Bild | Recherche |
-| 04 | Zahlen der Woche: 12 Kacheln, eigene Zahlen mit ● markiert | Recherche + VU-Daten |
-| 05–13 | Titelthema (9 Seiten): Opener, Was passiert ist, Was die Daten sagen, 5–6 Aktien im Stresstest, Einordnung/Stimmen/Termine | Recherche + VU-Daten |
-| 14 | App-Seite „Investieren mit Weitblick“ (echte App-Screens) | fest |
-| 15–16 | Zwei Einzelanalysen mit Anlass aus der Woche | Recherche + `VUM.box` |
-| 17–18 | Berichtssaison: Gewinner und Verlierer (je 4 Karten, „Das wussten die wenigsten“) | Recherche |
-| 19–20 | Hedgefonds-Radar: Fonds-Monat, Namen, Insider (Form 4), 13F | Recherche + VU-Eigentümerdaten |
-| 21 | Chart der Woche (Technical-Engine) | VU-Daten |
-| 22 | Screening der Woche (Regel + Tabelle) | VU-Daten |
-| 23 | Markt-Radar: Regime, Sektoren, Indizes | VU-Daten |
-| 24 | Konjunktur & Zinsen | Recherche |
-| 25 | Deutschland & Europa | Recherche |
-| 26 | Das wird die Woche (Termine Mo–Fr) | Recherche |
-| 27 | Aus der App (echte Screens) | fest, Seitenverweise anpassen |
-| 28 | Quick-Check 22 Aktien + Newsletter-Kasten | VU-Daten |
-| 29 | Impressum, Hinweise, Quellenverzeichnis (automatisch aus `data-foot`) | fest + automatisch |
-| 30 | Rückseite: App-Werbung | fest |
+| P0 | Ausgabe einfrieren (Snapshot mit Commit und Stichtagen) | erledigt (`build-data.mjs`, `data.js.snapshot`) |
+| P0 | Quellen- und Zitatregister | erledigt (`fakten.json`); offene Fundstellen im Register mit `status: "offen"` nachtragen |
+| P0 | Prüftor mit Exit-Code | erledigt (Überlauf, Fußzeile, Bilder, Seiten- und Quellen-IDs) |
+| P1 | `ausgabe.json`, automatische Seitenzahlen, Inhalt, Querverweise | erledigt |
+| P1 | Vorlagen statt HTML je Seite | begonnen: Vorlage `aktie` (7 Seiten); weitere Vorlagen für Kartenseiten (Das war, Anstiege/Rückgänge, Zahlen) |
+| P1 | Lesbarkeit | erledigt fürs PDF (größere Schrift, eine Spalte auf Aktienseiten); offen: einspaltige HTML-Leseansicht fürs Handy |
+| P1 | Markt-Radar mit Veränderung zur Vorwoche, Rubrik „Was wurde aus unserem Thema?“ | offen, ab Nr. 02 |
+| P2 | Bildaufträge vom Arbeitszweig statt nur von `main` | offen (Workflow-Änderung, eigener PR) |
+| P2 | Rechtstexte aus `assets/legal-notices.json` einbinden; Zitatrecht, KI-Kennzeichnung, Eigenwerbung anwaltlich bestätigen | offen, Owner-Freigabe |
 
-## 3. Design-System
-
-- Farben: Weiß, Schwarz, Neongrün `#c8f531`, Graustufen. Plus = neongrüne Pille, Minus = schwarze Pille (auf Schwarz: weiße Pille). Keine Rot/Grün-Kurse.
-- Schrift: Inter (`assets/fonts`). Logo: `docs/design/redesign-2027/img/vu-logo.png` (auf Dunkel invertiert).
-- Seiten: `.page` (hell) / `.page dark`; Bild oben: `.page imgtop` + `.img` (Kopfzeile wird weiß); Vollbild: `.bleed`.
-- Bausteine: `ressort`, `hx`/`mega`/`hm` (Überschriften), `sub`, `body cols2`, `card` (`ink`, `lime`, `line`), `fact`, `pill`, `stamp`, `ph` (Bild mit `cap`), `ki` (Vermerk „KI-Bild“), `phone` (Handy-Rahmen), `pi` (Produkt-Icon `<svg class="pi"><use href="#discover"/></svg>`).
-- Seitenvorlage Aktie: `14-applovin.html` (Bild oben, Headline, 2 Spalten Text, `VUM.box`, unten Zitat + Faktenkasten).
-- Charts nur über `charts.js`. Werte im Diagramm nie an den Balken, immer in der festen Spalte.
-
-## 4. Wöchentlicher Ablauf (Redaktionsschluss Sonntag)
-
-1. **Neue Ausgabe anlegen:** `aktienmagazin-01/` nach `aktienmagazin-NN/` kopieren, `img/hf-*`, `pdf/`, `vorschau/` leeren. Ausgabe-Nummer und Datum in `lib.js` (Kopf/Fuß), `render.mjs` (Titel), `01-cover.html`, `02-editorial.html`, `28-impressum.html` setzen.
-2. **Daten ziehen:** in `build-data.mjs` `W0`/`W1` auf Freitag der Vor- und der aktuellen Woche setzen, Aktienliste `STOCKS` an die Themen anpassen, dann `node docs/publishing/aktienmagazin-NN/build-data.mjs`.
-3. **Themen wählen:** größte Bewegungen (`data.js`: `sp500.top/flop`, `cards`), Berichtssaison, Politik. Jede Geschichte braucht einen Anlass aus der Woche.
-4. **Recherche:** je Strang ein Rechercheauftrag (Titelthema, Einzelaktien, Hedgefonds/Insider, Konjunktur/Deutschland/Termine). Nur Quellen mit Datum der Woche; Widersprüche als Spanne oder weglassen. Ergebnis in `RECHERCHE.md`.
-5. **Bilder:** Auftrag `brand-media/publishing/image-jobs/aktienmagazin-NN-*.json` (Qwen Image 3, 2k, ohne Text/Logos/Personen, Stil-Satz wie in Nr. 01). Muss auf `main` liegen; Workflow „Brand Media · Higgsfield Bilder“ mit `generate`, Budget und `APPROVE-HIGGSFIELD-IMAGE-JOB`. Je Gruppe ist nur ein wartender Lauf möglich, Aufträge nacheinander starten. Artefakt laden, als JPG (max. 1800 px, +20 % Helligkeit) nach `img/hf-<id>.jpg`. Fehlgeschlagene Bilder: Ersatz aus `bv-*` oder nachbestellen.
-6. **Seiten schreiben:** Texte je Seite ersetzen, Kennzahlen nur über `data-k`/`VUM.k` und `VUM.C(t)`. Quellen in `data-foot` (landen automatisch im Quellenverzeichnis). Zitate mit Sprecher und Medium direkt am Zitat.
-7. **Prüfen:** `node …/render.mjs --out /tmp/heft --scale 2` (0 Fehler, keine fehlenden Bilder), Seiten ansehen, Wortwahl-Suche (`grep -i -E 'kaufen|kursziel|chance|günstig|unterbewertet|signal|empfehl'`), Seitenverweise im Inhalt (S. 02) und in „Aus der App“ prüfen.
-8. **Ausgeben:** PDF nach `pdf/`, Vorschau-Bilder nach `vorschau/p/`, PR mit grüner CI.
-9. **Freigabe:** Veröffentlichung, Impressum und Rechtstexte brauchen die Owner-Freigabe (CLAUDE.md).
-
-## 5. Regeln
-
-- **Wortwahl** nach `docs/legal/WORTWAHL.md`: beschreiben statt auffordern, kein Kursziel, „Stärken/Schwächen laut Kennzahlen“, „größte Anstiege/Rückgänge“. Analystenziele nur als Angabe Dritter, besser weglassen.
-- **Zahlen:** VU-Daten mit Stand; recherchierte Zahlen mit Quelle; eigene Rechnungen als solche benennen.
-- **Recht** (keine Rechtsberatung): Impressum (§ 8 LPresseG BW, § 18 Abs. 2 MStV); Quelle bei wörtlichen Zitaten (§ 63 UrhG); KI-Bilder als „KI-Bild“ (Art. 50 KI-VO); Hinweis „Keine Anlageberatung“ in jeder Fußzeile; Eigenwerbung für die App ohne Anzeigen-Kennzeichnung, aber klar getrennt.
-- **Bilder:** keine echten Personen, keine fremden Logos im Bild; Firmenlogos nur aus `discover/logos/files/` zur Kennzeichnung; App-Seiten nur mit echten Screens aus `docs/design/redesign-2027` (keine Screens mit persönlichen Daten).
-- **Kanäle:** www.visionuniverse.de (Newsletter), Instagram und TikTok `@app.visionuniverse`. App: „bald verfügbar“.
-
-## 6. Prüfung durch Codex und Fahrplan
-
-Unabhängiger Prüfbericht: [`aktienmagazin-01/PRUEFBERICHT_CODEX.md`](aktienmagazin-01/PRUEFBERICHT_CODEX.md) (08.11.2026).
-
-**Umgesetzt (Nr. 01):** Median-Fehler in `build-data.mjs` behoben (gerade Anzahl: Mittel der beiden mittleren Werte) und
-`data.js` auf dem eingefrorenen Datenstand der Ausgabe neu gebaut (Commit `2d1d183`, nicht auf dem aktuellen `main`, damit
-Wochenwerte und Bewertungen nicht gemischt werden); falsche Superlative, Zeiträume und Kennzahlbegriffe korrigiert (Nvidia-KGV,
-Micron, Lumentum-Woche, CoreWeave −49,4 %, DraftKings bereinigtes EBITDA, Beta, Palantir „US“ und Vorjahresbasis, AppLovin
-Rückkauf-Summe); Titelthema zählt sieben Aktien; Wortwahl („Größte Anstiege/Rückgänge“, „Das Detail“, kein Kapitalstrom-Schluss
-im Screening, keine Paraphrase in Anführungszeichen); Sektorbild als Stichprobe mit Abdeckung; Quartals-Stichtag in jedem
-Datenkasten; Haushaltsfrist entfernt; App-Screens ohne Empfehlungsnähe („Was Profis kaufen“, „zu dir passen“ entfernt);
-Beispielhinweis auf der Rückseite; KI-Bild-Vermerk größer und auf dem Cover; Renderer bricht bei Fehlern mit Exit-Code 1 ab
-(gewollter Anschnitt nur mit `data-bleed`).
-
-**Fahrplan für die Wochenproduktion (aus dem Bericht, priorisiert):**
-
-| Prio | Aufgabe | Abnahme |
-|---|---|---|
-| P0 | Ausgabe einfrieren: Snapshot mit Daten-Commit, Stichtagen je Produkt (Kurse, `ttmThrough`, Eigentümer, Technik), Handelsfenster aus dem Börsenkalender | Neubau einer alten Ausgabe ergibt identische Zahlen |
-| P0 | Faktenregister `fakten.json` statt freiem Faktenblatt: ID, Wert, Periode, Quelle mit Titel/URL/Datum, Auszug, Status; Zitatregister mit Original und Übersetzung | Jede Kernzahl und jedes Zitat im Heft hat eine ID mit Beleg |
-| P0 | Renderer-Prüftor erweitern: Kollision mit Fußzeilen, fehlende Quellen, unaufgelöste Verweise | Exit-Code ≠ 0 bei jedem Befund |
-| P1 | `ausgabe.json` (Nummer, Datum, KW, Redaktionsschluss, Handelsfenster, Seitenfolge) | Kein Datum und keine Nummer mehr von Hand in Seiten |
-| P1 | Vorlagen und Inhalt trennen: `system/templates/*.html` plus `ausgaben/<datum>/inhalt/*.md`; Textverweise `{{metric:NVDA.pe}}`, `{{fact:…}}`, `{{page:…}}` | Eine neue Ausgabe ändert keine Vorlage und kein Inline-CSS |
-| P1 | Automatische Seitenzahlen, Inhaltsverzeichnis und Querverweise | Unbekannte Seiten-ID ist ein Build-Fehler |
-| P1 | Standardumfang 24 Seiten, 30 nur bei starker Nachrichtenlage; weniger Wiederholung im Titelthema; eine statt drei App-Seiten plus Rückseite | Kein Füllinhalt |
-| P1 | Lesbarkeit: größere Grundschrift, weniger Spalten; zusätzlich einspaltige HTML-Leseansicht fürs Handy; PDF mit Links und Lesezeichen | Grundschrift ≥ 9,5 pt, Lesbarkeit am Handy geprüft |
-| P1 | Markt-Radar mit Veränderung zur Vorwoche; Rubrik „Was wurde aus unserem Thema?“ | |
-| P2 | Bildaufträge auch vom Arbeitszweig; kuratierter Bildvorrat statt neuer Bilder für jede Kurzmeldung | Eine Ausgabe ohne Zwischen-PRs auf `main` |
-| P2 | Rechtstexte aus `assets/legal-notices.json` einbinden statt Handtext; Zitatrecht, KI-Kennzeichnung und Eigenwerbung anwaltlich bestätigen | Owner-Freigabe |
-
-Zeitziel nach P0/P1 laut Bericht: 4–6 Stunden für 24 Seiten; heute 8–14 Stunden.
-
-## 7. Weitere offene Punkte
-
-- Der Kerntest `core/tests/stock-availability.test.mjs` scheitert derzeit auch auf `main` (datenabhängig, nicht Publishing).
-- Fremdquellen ohne URL im Faktenblatt (Liste in Abschnitt 2 des Prüfberichts) vor einer Veröffentlichung belegen oder streichen.
+Bekannt: Der Kerntest `core/tests/stock-availability.test.mjs` scheitert derzeit auch auf `main` (datenabhängig, nicht Publishing).

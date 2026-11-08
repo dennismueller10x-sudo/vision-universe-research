@@ -1,0 +1,15 @@
+<script>
+const _i=t=>{const v=-VUM.D.ownership.insider[t].nbv90;return v>=1e9?VUM.de(v/1e9,2)+'&nbsp;Mrd.&nbsp;$':VUM.de(v/1e6,0)+'&nbsp;Mio.&nbsp;$'};
+VUM.k('nv-p',()=>VUM.usd(VUM.C('NVDA').price));VUM.k('nv-pe',()=>VUM.de(VUM.C('NVDA').pe,1));VUM.k('nv-ins',()=>_i('NVDA'));
+VUM.k('mu-w',()=>VUM.pc(VUM.C('MU').week));VUM.k('mu-hi',()=>VUM.de(-VUM.C('MU').hi*100,0)+'&nbsp;%');VUM.k('mu-pe',()=>VUM.de(VUM.C('MU').pe,1));
+VUM.k('mrvl-w',()=>VUM.pc(VUM.C('MRVL').week));VUM.k('lite-w',()=>VUM.pc(VUM.C('LITE').week));
+VUM.k('crwv-p',()=>VUM.usd(VUM.C('CRWV').price));VUM.k('crwv-w',()=>VUM.pc(VUM.C('CRWV').week));VUM.k('crwv-hi',()=>VUM.pc(VUM.C('CRWV').hi*100,0));
+VUM.k('amd-pe',()=>VUM.de(VUM.C('AMD').pe,0));VUM.k('amd-ins',()=>_i('AMD'));
+</script>
+<script>
+VUM.k('nv-amd',()=>'KGV '+VUM.de(VUM.C('AMD').pe,0));VUM.k('nv-avgo',()=>'KGV '+VUM.de(VUM.C('AVGO').pe,1));VUM.k('lite-w2',()=>VUM.pc(VUM.C('LITE').week));
+</script>
+<script>
+VUM.k('app-w',()=>VUM.pc(VUM.C('APP').week,0));VUM.k('app-hi',()=>VUM.de(-VUM.C('APP').hi*100,0)+'&nbsp;%');
+VUM.k('pltr-pe',()=>VUM.de(VUM.C('PLTR').pe,0));VUM.k('pltr-w',()=>VUM.pc(VUM.C('PLTR').week));VUM.k('pltr-ins',()=>VUM.de(-VUM.D.ownership.insider.PLTR.nbv90/1e6,0)+'&nbsp;Mio.&nbsp;$');
+</script>
