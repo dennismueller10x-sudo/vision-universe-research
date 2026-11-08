@@ -1305,6 +1305,26 @@
       "from": "76f33785aae4f73834798a84f0ba9b8fdf1e0c6ee005e20dbb8c97ef15275ed4",
       "to": "011eccec37dde14a35afbd0d6e89b917cec5fdc86cbd1be9b4e8a1eb4c4f3cda",
       "scope": "L2: QA der Ansicht „Zahlen“ prüft Stand/Herkunft ohne Anbieternamen"
+    },
+    {
+      "id": "UIP-R131",
+      "date": "2026-11-08",
+      "pr": 1629,
+      "ownerApproval": "Owner 08.11.2026 (App-Feedback über die Steuerung, Strang L): „Rechtliches & Infos“ in der App nicht antippbar",
+      "file": "assets/site-navigation.js",
+      "from": "27b871e501434b297226f07e6fc814a6252e4e0c4102a98ed52b75c9f64e9fea",
+      "to": "8092ee8b47b01ccd9e98a2fd95f8c4d0187d296c305408ec98d315e11b8de4c4",
+      "scope": "In der App öffnen Links auf eine andere Herkunft (Rechtstexte auf konto.visionuniverse.de) als neues Fenster, also im System-Browser; im Web unverändert"
+    },
+    {
+      "id": "UIP-R132",
+      "date": "2026-11-08",
+      "pr": 1628,
+      "ownerApproval": "Owner 08.11.2026 (über die Steuerung, Strang L): Themenbilder als kleinere Stufen, reines Tempo ohne Layout-Änderung",
+      "file": "assets/themen/README.md",
+      "from": "e50431d7c7e540997078093ba03831354bcd0bda1fa0106d705ca07a527798af",
+      "to": "f7e614687e02cb085f18b21a7036393253ee6cef2fab7ed5a5a6ab204d34ce43",
+      "scope": "Nachtrag zu #1628: Absatz zu den Stufen 480/720/1080 und ihrem Erzeuger (scripts/discover/build-theme-variants.py); die Revision fehlte, Quant CI lief auf #1628 nicht"
     }
   ]
 }

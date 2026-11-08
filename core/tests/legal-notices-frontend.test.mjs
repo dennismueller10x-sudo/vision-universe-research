@@ -95,3 +95,13 @@ test("Folgeauftrag 07.11.: Fundamental-Kapitel, Quant „Zahlen“, Vorsorge-ETF
   const st = readFileSync("supertrader/assets/st-redesign.js", "utf8");
   assert.doesNotMatch(st, /note\('Modellsignale einer regelbasierten Nachbildung/, "nur foot() trägt den Hinweissatz");
 });
+
+test("App 08.11.: Rechtstexte auf anderer Herkunft öffnen im System-Browser, weil die App-Hülle im Rahmen nur research zulässt", () => {
+  const nav = readFileSync("assets/site-navigation.js", "utf8"), shell = readFileSync("app/www/index.html", "utf8");
+  const frameSrc = (shell.match(/frame-src ([^;]+);/) || [])[1] || "";
+  assert.deepEqual(frameSrc.trim().split(/\s+/), ["https://research.visionuniverse.de"], "Ändert sich frame-src, diese Regel und scripts/quality/app-legal-menu-qa.mjs prüfen");
+  const foreign = (json.appLinks?.always || []).map((x) => json.links[x.key]).filter((h) => h && new URL(h, "https://research.visionuniverse.de").origin !== "https://research.visionuniverse.de");
+  assert.ok(foreign.length >= 5, "Impressum, Kontakt, Datenschutz, Nutzungsbedingungen, Risikohinweise liegen auf konto.visionuniverse.de");
+  assert.match(nav, /function appExternalLink\(a\) \{[\s\S]*?u\.origin === location\.origin\) return false;\s*a\.target = '_blank'; a\.rel = 'noopener';/);
+  assert.match(nav, /if \(typeof document !== 'undefined' && inApp\(\)\) \{\s*document\.addEventListener\('click'/, "nur in der App, im Web unverändert");
+});
