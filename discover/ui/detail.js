@@ -1131,6 +1131,14 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        (§41). */
     var nativeCurrency = state.detail.region === "EUROPE" ? state.detail.currency : null;
     var anzeige = inAnzeigewaehrung(sel.points, nativeCurrency);
+    /* Konzept „Reihe für Reihe“, Entscheidung 7 (ADR-002, eine Preiswahrheit): US-Aktien im Überblick in Dollar wie
+       an der Börse, alle Prozentwerte in Dollar; die Euro-Umrechnung des letzten Kurses steht nur klein daneben. */
+    var dollarKopf = state.detail.region !== "EUROPE" && !!D.Overview && D.Reihen;
+    var euroDaneben = null;
+    if (dollarKopf && anzeige.punkte.length >= 2 && anzeige.waehrung && anzeige.waehrung !== "USD") {
+      euroDaneben = (function (letzterEuro, waehrung) { return alsAngezeigt(letzterEuro, waehrung); })(anzeige.punkte[anzeige.punkte.length - 1][1], anzeige.waehrung);
+      anzeige = { punkte: [], waehrung: "USD" };
+    }
     var waehrung = anzeige.punkte.length >= 2 ? anzeige.waehrung : (nativeCurrency || "USD");
     if (anzeige.punkte.length >= 2) sel = { points: anzeige.punkte, from: anzeige.punkte[0][0],
                                             to: anzeige.punkte[anzeige.punkte.length - 1][0],
@@ -1153,7 +1161,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
           (state.detail.region === "EUROPE" ? state.detail.basisLabel : "split-bereinigt") +
           (state.displayWindow&&state.displayWindow.truncated?' · Sicheres Kursfenster ab '+C().dateShort(state.displayWindow.safeHistoryStart)+'; ältere Datenlücken ausgeblendet':state.displayWindow&&['MAJOR_GAPS','BROKEN'].includes(state.displayWindow.visualQualityStatus)?' · Datenlücken im Kursverlauf':'') }),
         frischeTages(state)
-      ])
+      ].concat(euroDaneben ? [el("span", { class: "dx-chart-hero-eur", text: "≈ " + euroDaneben })] : []))
     ]);
     chartBox.appendChild(kopf);
     /* V4.1 §5: der Chart ist die Hauptflaeche. Die viewBox ist pixelgenau

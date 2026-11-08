@@ -1,6 +1,7 @@
 # Discover · Konzept „Reihe für Reihe“ (Netflix der Aktienwelt)
 
 Konzept vom 08.11.2026 für Discover (Startseite und Aktienseite) im CI des Redesigns 2027. **Vom Owner freigegeben am 08.11.2026.** Bauplan und Master-Prompt für die Umsetzung: [HANDOVER.md](HANDOVER.md).
+**Umgesetzt am 08.11.2026** in fünf PRs (#1637 Startseite, #1647 Reihe/Vorschau/Alle Reihen, #1663 Persönliche Reihen, #1676 Fallen Angels, danach Aktienseite „Überblick“); Entscheidungen beim Bauen in HANDOVER.md, Abnahme-Bilder (Mockup neben echter Seite) in `abnahme/`.
 Präsentation online (privat): https://claude.ai/artifact/La3y9L68RsQBDoKCnuETgK
 
 | Datei | Zweck |
