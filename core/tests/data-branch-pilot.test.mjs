@@ -174,3 +174,23 @@ test("DB-11 · push-data-branch.sh spiegelt Verzeichnisse (auch Loeschungen) in 
   execFileSync("bash", [script, "data/live", SH.slice(0, -1)], { cwd: work, env, encoding: "utf8" });
   assert.deepEqual(git(remote, "ls-tree", "-r", "--name-only", "data/live").trim().split("\n").sort(), [NEWS, SH + "A.json", SH + "C.json"].sort());
 });
+
+test("DB-12 · eingespielte Datenzweig-Dateien sind fuer Git unsichtbar: git add -A committet sie nie nach main", async () => {
+  const { hide } = await import("../../scripts/ci/seed-hide.mjs");
+  const work = mkdtempSync(join(tmpdir(), "db-hide-")), data = mkdtempSync(join(tmpdir(), "db-hide-data-"));
+  const env = { ...process.env, GIT_AUTHOR_NAME: "t", GIT_AUTHOR_EMAIL: "t@t", GIT_COMMITTER_NAME: "t", GIT_COMMITTER_EMAIL: "t@t", GIT_CONFIG_NOSYSTEM: "1", HOME: work };
+  for (const k of Object.keys(env)) if (/^GIT_(DIR|WORK_TREE|INDEX_FILE)$/.test(k)) delete env[k];
+  const git = (...a) => execFileSync("git", a, { cwd: work, env, encoding: "utf8" });
+  git("init", "-q", "-b", "main"); put(work, NEWS, feed("2026-11-04T10:00:00Z")); put(work, SH + "A.json", "1"); put(work, "code.js", "x");
+  git("add", "."); git("commit", "-qm", "c");
+  put(data, NEWS, feed("2026-11-04T16:00:00Z")); put(data, SH + "A.json", "2"); put(data, SH + "NEU.json", "3");
+  const manifest = { branch: "data/live", domains: [{ id: "news", phase: "BRANCH_ONLY", paths: [NEWS], prefixes: [SH] }] };
+  const rep = overlay({ root: work, dataDir: data, siteDir: work, manifest, domains: DOMAINS, mirror: false });
+  assert.equal(rep.complete, true);
+  const r = hide(rep.rows, work, env);
+  assert.deepEqual(r, { hidden: 2, excluded: 1 });
+  assert.match(readFileSync(join(work, NEWS), "utf8"), /16:00/, "der Lauf sieht den Datenzweig");
+  put(work, "code.js", "y");
+  git("add", "-A");
+  assert.deepEqual(git("diff", "--cached", "--name-only").trim().split("\n"), ["code.js"], "nur die eigene Aenderung wird committet");
+});

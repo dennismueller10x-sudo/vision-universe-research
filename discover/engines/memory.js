@@ -14,6 +14,7 @@
      geöffnete Karten              → eine Karte, die man schon kennt,
                                      wird nicht als neu behandelt
      zuletzt besuchte Sammlungen   → später: "Mehr aus …"
+     Themen der angesehenen Aktien → die Reihe "Mehr aus {Thema}"
      gemerkte Reihen               → rücken auf der Startseite nach oben
      die Position auf der Startseite
 
@@ -70,7 +71,9 @@
       });
       zustand.recent.unshift({ symbol: symbol, universeId: info.universeId || "US_REAL",
                                companyName: info.companyName || null, world: info.world || null,
-                               sector: info.sector || null, at: Date.now() });
+                               sector: info.sector || null, at: Date.now(),
+                               /* Themenreihen der Aktie (thema-*) fuer „Mehr aus …“ (Konzept „Reihe für Reihe“, PR 3) */
+                               themes: Array.isArray(info.themes) ? info.themes.filter(function (t) { return typeof t === "string"; }).slice(0, 6) : [] });
       if (zustand.recent.length > MAX_RECENT) zustand.recent.length = MAX_RECENT;
       if (zustand.opened.indexOf(symbol) === -1) {
         zustand.opened.push(symbol);
