@@ -208,7 +208,7 @@
       "records": "indexes",
       "role": "S&P 500, NASDAQ-100, Dow Jones laut Bestand der abbildenden Fonds; Zuordnung zum Company Master.",
       "producer": "scripts/market/build-index-membership.mjs",
-      "workflow": "index-membership.yml",
+      "workflow": "pipeline-weekly.yml (Teil index)",
       "schedule": "Sa 07:20 UTC",
       "freshness": { "kind": "hours", "warnAfter": 192, "staleAfter": 384 },
       "consumers": ["Discover (Index-Badges, Reihen)", "Screener"]
@@ -225,7 +225,7 @@
       "expectedRecords": "coverage.productUniverse",
       "role": "Anzeigenamen mit Quelle und Datum (Tiingo-Stammdaten, SEC, kuratiert).",
       "producer": "scripts/market/build-company-names.mjs",
-      "workflow": "company-names.yml + security-master-weekly.yml + security-master-eligibility.yml (offline nach neuer Eignung)",
+      "workflow": "pipeline-weekly.yml (Teil namen) + security-master-weekly.yml + security-master-eligibility.yml (offline nach neuer Eignung)",
       "schedule": "manuell",
       "freshness": { "kind": "hours", "warnAfter": 720, "staleAfter": 2160 },
       "consumers": ["Discover", "Supertrader", "Screener"]
@@ -257,7 +257,7 @@
       "records": "depots",
       "role": "Fünf Quant-Profile als Rechenmodell vorwärts: Bestand mit Aufnahmedatum und -kurs, Protokoll rein/raus ab Live-Start. Kein echtes Geld, keine Empfehlung.",
       "producer": "scripts/quant/portfolio/model-depots.cjs",
-      "workflow": "quant-model-depots.yml",
+      "workflow": "pipeline-weekly.yml (Teil musterdepots)",
       "schedule": "samstags 07:23 UTC; Umschichtung im ersten Lauf eines Monats",
       "freshness": { "kind": "hours", "warnAfter": 240, "staleAfter": 504 },
       "consumers": ["Quant (/quant/musterdepots/)"]
@@ -552,7 +552,7 @@
       "records": "stats.issuers",
       "role": "SIC je Emittent (CIK) zum Einreichungszeitpunkt mit knownAt, aus FSDS sub.txt und Filing-Headern; keine heutige SIC rueckdatiert. Abfrage: core/industry-classification.js.",
       "producer": "scripts/quant/cli.py sic-history",
-      "workflow": "sec-sic-history.yml",
+      "workflow": "pipeline-weekly.yml (Teil sic-historie)",
       "schedule": "manuell (kein Zeitplan bis zur Owner-Entscheidung)",
       "freshness": {
         "kind": "none"

@@ -1,6 +1,6 @@
 # VU3 UI-System
 
-Verbindliche Gestaltungsregeln für alle Produktwelten (VU3 UI-Refresh, Oktober 2026). Grundlage: [Visuelle Bestandsaufnahme](../audits/VU3_VISUELLE_BESTANDSAUFNAHME_2026-10-21.md).
+Verbindliche Gestaltungsregeln für alle Produktwelten (VU3 UI-Refresh, Oktober 2026). Grundlage: [Visuelle Bestandsaufnahme](../archiv/audits/VU3_VISUELLE_BESTANDSAUFNAHME_2026-10-21.md).
 
 ## Prinzip
 

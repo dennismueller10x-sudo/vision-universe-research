@@ -182,13 +182,13 @@ Discover zeigt auf der ersten Ebene keine Scores mehr. Die Trennung:
 
 Die Übersetzung macht `discover/engines/klartext.js` im **Build**; jede
 ausgelieferte Karte trägt ihr `plain`-Objekt, und `verify-discover-data.mjs`
-rechnet jeden Satz nach. Details: `docs/VU_DISCOVER_CONSUMER_LAYER.md`.
+rechnet jeden Satz nach. Details: `docs/archiv/VU_DISCOVER_CONSUMER_LAYER.md`.
 
 Ebene 2 ergänzt `einordnung.js` (vier Einordnungen mit Schwelle, Chancen
 und Risiken) und `unternehmen.js` (Umsatz, Gewinn, Marge, KGV — nur wo
 Daten vorliegen: fünf reale Titel aus SEC-Einreichungen, das
 Modelluniversum vollständig, sonst `null` mit Begründung). Details:
-`docs/VU_DISCOVER_STOCK_EXPERIENCE.md`.
+`docs/archiv/VU_DISCOVER_STOCK_EXPERIENCE.md`.
 
 ## 5. Engines
 
@@ -292,43 +292,43 @@ gerechnet von `buildHome` mit `discover/engines/relevance.js`. Karten tragen
 `priceSeries` (Chart Truth Contract) sowie `was` und `recognitionTier` aus
 `discover/config/company-recognition.json`. Der rebasierte Renditepfad wird
 nicht mehr gezeichnet; ohne Kursreihe steht die Renditeleiter
-(`discover/ui/microchart.js`). Vollständig in `docs/VU_DISCOVER_V3.md`.
+(`discover/ui/microchart.js`). Vollständig in `docs/archiv/VU_DISCOVER_V3.md`.
 
 ## Fachbelege und weiterführende Dokumentation
 
 Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.
 
 - [COMPANY_INTELLIGENCE_DISCOVER_BETA.md](COMPANY_INTELLIGENCE_DISCOVER_BETA.md)
-- [DISCOVER_FRONTEND_REFACTOR_2026-09.md](DISCOVER_FRONTEND_REFACTOR_2026-09.md)
+- [DISCOVER_FRONTEND_REFACTOR_2026-09.md](archiv/DISCOVER_FRONTEND_REFACTOR_2026-09.md)
 - [DISCOVER_IM_BLICK.md](DISCOVER_IM_BLICK.md)
-- [VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md](VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md)
-- [VU_DISCOVER_CONSUMER_LAYER.md](VU_DISCOVER_CONSUMER_LAYER.md)
-- [VU_DISCOVER_EXPERIENCE_REDESIGN.md](VU_DISCOVER_EXPERIENCE_REDESIGN.md)
-- [VU_DISCOVER_FULL_UNIVERSE_LIVE.md](VU_DISCOVER_FULL_UNIVERSE_LIVE.md)
-- [VU_DISCOVER_MARGIN_UNIT_ROOTCAUSE.md](VU_DISCOVER_MARGIN_UNIT_ROOTCAUSE.md)
-- [VU_DISCOVER_NAMESPACE_CLEANUP.md](VU_DISCOVER_NAMESPACE_CLEANUP.md)
-- [VU_DISCOVER_PRICE_COVERAGE.md](VU_DISCOVER_PRICE_COVERAGE.md)
-- [VU_DISCOVER_PRICE_DATA_COMPLETION.md](VU_DISCOVER_PRICE_DATA_COMPLETION.md)
-- [VU_DISCOVER_STOCK_EXPERIENCE.md](VU_DISCOVER_STOCK_EXPERIENCE.md)
-- [VU_DISCOVER_V3.md](VU_DISCOVER_V3.md)
+- [VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md](archiv/VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md)
+- [VU_DISCOVER_CONSUMER_LAYER.md](archiv/VU_DISCOVER_CONSUMER_LAYER.md)
+- [VU_DISCOVER_EXPERIENCE_REDESIGN.md](archiv/VU_DISCOVER_EXPERIENCE_REDESIGN.md)
+- [VU_DISCOVER_FULL_UNIVERSE_LIVE.md](archiv/VU_DISCOVER_FULL_UNIVERSE_LIVE.md)
+- [VU_DISCOVER_MARGIN_UNIT_ROOTCAUSE.md](archiv/VU_DISCOVER_MARGIN_UNIT_ROOTCAUSE.md)
+- [VU_DISCOVER_NAMESPACE_CLEANUP.md](archiv/VU_DISCOVER_NAMESPACE_CLEANUP.md)
+- [VU_DISCOVER_PRICE_COVERAGE.md](archiv/VU_DISCOVER_PRICE_COVERAGE.md)
+- [VU_DISCOVER_PRICE_DATA_COMPLETION.md](archiv/VU_DISCOVER_PRICE_DATA_COMPLETION.md)
+- [VU_DISCOVER_STOCK_EXPERIENCE.md](archiv/VU_DISCOVER_STOCK_EXPERIENCE.md)
+- [VU_DISCOVER_V3.md](archiv/VU_DISCOVER_V3.md)
 - [VU_DISCOVER_V3_COLLECTION_AUDIT.md](VU_DISCOVER_V3_COLLECTION_AUDIT.md)
 - [VU_DISCOVER_V3_NETFLIX_BUILD.md](VU_DISCOVER_V3_NETFLIX_BUILD.md)
-- [VU_DISCOVER_V4_1_CONSUMER_MASTER.md](VU_DISCOVER_V4_1_CONSUMER_MASTER.md)
-- [VU_DISCOVER_V4_CONSUMER_EXPERIENCE.md](VU_DISCOVER_V4_CONSUMER_EXPERIENCE.md)
-- [VU_DISCOVER_VISUAL_IDENTITY.md](VU_DISCOVER_VISUAL_IDENTITY.md)
-- [discover-v2/audit-visual-generation.md](discover-v2/audit-visual-generation.md)
-- [discover-v2/orchestrator.md](discover-v2/orchestrator.md)
-- [discover-v2/premium-contract-audit.md](discover-v2/premium-contract-audit.md)
-- [discover-v2/premium-design-qa.md](discover-v2/premium-design-qa.md)
-- [discover-v2/premium-orchestration.md](discover-v2/premium-orchestration.md)
-- [discover-v2/visual-generation.md](discover-v2/visual-generation.md)
-- [discover20/IDENTITY_RECLASSIFICATION.md](discover20/IDENTITY_RECLASSIFICATION.md)
-- [discover20/INTEGRATION_REPORT.md](discover20/INTEGRATION_REPORT.md)
-- [discover20/PRODUCT_INTEGRATION.md](discover20/PRODUCT_INTEGRATION.md)
-- [discover20/PUBLIC_DISPLAY_RELEASE.md](discover20/PUBLIC_DISPLAY_RELEASE.md)
-- [europe-discover20/ESEF_FOLLOW_UP.md](europe-discover20/ESEF_FOLLOW_UP.md)
-- [europe-discover20/SCREENER_LOGOS.md](europe-discover20/SCREENER_LOGOS.md)
-- [europe-discover20/close-chart-quality.md](europe-discover20/close-chart-quality.md)
+- [VU_DISCOVER_V4_1_CONSUMER_MASTER.md](archiv/VU_DISCOVER_V4_1_CONSUMER_MASTER.md)
+- [VU_DISCOVER_V4_CONSUMER_EXPERIENCE.md](archiv/VU_DISCOVER_V4_CONSUMER_EXPERIENCE.md)
+- [VU_DISCOVER_VISUAL_IDENTITY.md](archiv/VU_DISCOVER_VISUAL_IDENTITY.md)
+- [discover-v2/audit-visual-generation.md](archiv/discover-v2/audit-visual-generation.md)
+- [discover-v2/orchestrator.md](archiv/discover-v2/orchestrator.md)
+- [discover-v2/premium-contract-audit.md](archiv/discover-v2/premium-contract-audit.md)
+- [discover-v2/premium-design-qa.md](archiv/discover-v2/premium-design-qa.md)
+- [discover-v2/premium-orchestration.md](archiv/discover-v2/premium-orchestration.md)
+- [discover-v2/visual-generation.md](archiv/discover-v2/visual-generation.md)
+- [discover20/IDENTITY_RECLASSIFICATION.md](archiv/discover20/IDENTITY_RECLASSIFICATION.md)
+- [discover20/INTEGRATION_REPORT.md](archiv/discover20/INTEGRATION_REPORT.md)
+- [discover20/PRODUCT_INTEGRATION.md](archiv/discover20/PRODUCT_INTEGRATION.md)
+- [discover20/PUBLIC_DISPLAY_RELEASE.md](archiv/discover20/PUBLIC_DISPLAY_RELEASE.md)
+- [europe-discover20/ESEF_FOLLOW_UP.md](archiv/europe-discover20/ESEF_FOLLOW_UP.md)
+- [europe-discover20/SCREENER_LOGOS.md](archiv/europe-discover20/SCREENER_LOGOS.md)
+- [europe-discover20/close-chart-quality.md](archiv/europe-discover20/close-chart-quality.md)
 
 ### Historische Arbeitsstände
 

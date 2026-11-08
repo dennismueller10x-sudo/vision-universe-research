@@ -285,3 +285,35 @@ test("Reihen: Wortwahl der Startseite (WORTWAHL.md, Folie U3)", () => {
   assert.match(src, /Top 10 heute/);
   assert.match(src, /Rang nach der Regel „Heute im Blick“/);
 });
+
+/* Konzept „Reihe für Reihe“, PR 2: Index Aktie -> Reihen (Vorschau-Sheet) und die Regel in Klartext (Reihen-Seite). */
+const MEMBERSHIP = join(DATA, "membership", "US_REAL.json");
+test("Reihen: Index Aktie -> Reihen stimmt mit jeder ausgelieferten Reihe (Platz = Position)", { skip: !vorhanden || !existsSync(MEMBERSHIP) }, () => {
+  const m = readJSON(MEMBERSHIP);
+  assert.equal(m.universeId, "US_REAL");
+  const metaRows = meta.rows.find((u) => u.universeId === "US_REAL").rows;
+  assert.deepEqual(m.rows.map((r) => r.id), metaRows.map((r) => r.rowId), "dieselben Reihen in derselben Reihenfolge");
+  m.rows.forEach((r, i) => assert.equal(r.matched, metaRows[i].matched, r.id));
+  m.rows.forEach((r, ri) => {
+    const row = readJSON(join(DATA, "rows", "US_REAL", r.id + ".json"));
+    (row.cards || []).forEach((c, i) => {
+      const hit = (m.members[c.symbol] || []).find((x) => x[0] === ri);
+      assert.ok(hit, r.id + ": " + c.symbol + " fehlt im Index");
+      assert.equal(hit[1], i + 1, r.id + ": Platz von " + c.symbol);
+    });
+    const count = Object.values(m.members).filter((xs) => xs.some((x) => x[0] === ri)).length;
+    assert.equal(count, r.matched, r.id + ": alle Treffer, nicht nur die Karten");
+  });
+});
+
+test("Reihen: jede Reihe erklaert ihre Regel in ein bis zwei Saetzen, ohne Empfehlung", { skip: !vorhanden }, () => {
+  const configs = meta.rowConfigs.filter((r) => !r.theme && !/^thema-/.test(r.id));
+  assert.ok(configs.length >= 20);
+  for (const r of configs) {
+    assert.ok(Array.isArray(r.explain) && r.explain.length >= 1 && r.explain.length <= 2, r.id);
+    for (const t of r.explain) {
+      assert.match(t, /[.?!]$/, r.id + ": ganzer Satz");
+      assert.doesNotMatch(t, /kaufen|verkaufen|empfehl|günstig|Chance|für dich/i, r.id + ": " + t);
+    }
+  }
+});

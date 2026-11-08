@@ -1,7 +1,7 @@
 # ADR-007: Capacitor als begrenzter iOS-Prototyp
 
 **Status:** vom Owner bestätigt (03.11.2026, Phase 2), begrenzter Prototyp. **ADR-004 bleibt gültig.** Diese Entscheidung ersetzt sie nicht und ändert die Reihenfolge PWA → `/v1/` → Expo nicht.
-Messwerte und Ergebnis: [docs/mobile/PHASE1_REPORT.md](../mobile/PHASE1_REPORT.md).
+Messwerte und Ergebnis: [docs/archiv/mobile/PHASE1_REPORT.md](../archiv/mobile/PHASE1_REPORT.md).
 
 ## Anlass
 
@@ -61,6 +61,6 @@ Owner-Entscheidungen: Capacitor bis zum privaten TestFlight-Gerätetest fortfüh
 
 Ergänzungen:
 - **Anmeldeschiene umschaltbar** (`authTransport`: `supabase` oder `worker`). Direkt-Supabase umgeht das Tempolimit des Workers und ist nur für den privaten Test vertretbar. Der Worker-Weg ist als Vorschlag spezifiziert ([SECURITY_LOGIN.md](../mobile/SECURITY_LOGIN.md)) und braucht einen eigenen PR.
-- **Rahmen sind Prototyp.** Das Zielbild ohne Verschachtelung steht in [UI_INTEGRATION.md](../mobile/UI_INTEGRATION.md) (Etappe B: App-Modus im Hauptfenster).
+- **Rahmen sind Prototyp.** Das Zielbild ohne Verschachtelung steht in [UI_INTEGRATION.md](../archiv/mobile/UI_INTEGRATION.md) (Etappe B: App-Modus im Hauptfenster).
 - **Messung korrigiert:** Phase 1 hat die Quant-Aktie überschätzt (Quelltext statt Release). Siehe [PERFORMANCE.md](../mobile/PERFORMANCE.md).
 - **Buildweg:** Empfehlung Xcode Cloud für den ersten privaten Upload, GitHub-Actions-Vorlage inaktiv bereitgestellt ([TESTFLIGHT_PLAN.md](../mobile/TESTFLIGHT_PLAN.md)).

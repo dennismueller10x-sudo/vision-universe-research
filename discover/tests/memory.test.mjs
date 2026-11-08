@@ -61,3 +61,14 @@ test("Bevorzugte Sammlungen und Position", () => {
   m.clear();
   assert.equal(m.position("US_REAL"), 0);
 });
+
+test("Reihe merken (Konzept „Reihe für Reihe“): auf dem Geraet, juengste zuerst, wieder abwaehlbar", () => {
+  const s = fakeStorage();
+  const m = M.create(s);
+  assert.deepEqual(m.followedRows(), []);
+  m.followRow("comeback"); m.followRow("langfristige-compounder");
+  assert.deepEqual(M.create(s).followedRows(), ["langfristige-compounder", "comeback"]);
+  assert.equal(m.follows("comeback"), true);
+  m.followRow("comeback", false);
+  assert.equal(M.create(s).follows("comeback"), false);
+});

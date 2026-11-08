@@ -27,11 +27,11 @@ Kennzeichnung: **[Sie]** nur Sie · **[Claude]** ich · **[gemeinsam]** Prüfpun
 **Vorbereitung am PC:** [Git for Windows](https://git-scm.com/download/win) installieren (Standardoptionen), dann „Git Bash“ öffnen. Ein Arbeitsstand dieses Repositorys wird nur für das Skript gebraucht (`git clone` oder ZIP von GitHub, Branch `main`). Den Schlüsselordner **nicht** in diesen Ordner legen (das Skript verhindert es).
 
 ## Phase 0: Entscheidungen [Sie]
-1. **Entschieden (04.11.2026):** App-Name und Name unter dem Icon **Vision Universe**; rechtlicher Betreiber und Apple-Entwickler **RAM Consulting UG (haftungsbeschränkt)**; Kontotyp **Organisation**. Ein abweichender Entwicklername wird nicht benötigt, **die frühere Sperre entfällt** ([APPLE_DEVELOPER_NAME.md](APPLE_DEVELOPER_NAME.md)). Einschreibung am 03.11.2026 eingereicht, D-U-N-S akzeptiert, **Organisationsprüfung bei Apple läuft** (keine erneute Registrierung).
+1. **Entschieden (04.11.2026):** App-Name und Name unter dem Icon **Vision Universe**; rechtlicher Betreiber und Apple-Entwickler **RAM Consulting UG (haftungsbeschränkt)**; Kontotyp **Organisation**. Ein abweichender Entwicklername wird nicht benötigt, **die frühere Sperre entfällt** ([APPLE_DEVELOPER_NAME.md](../archiv/mobile/APPLE_DEVELOPER_NAME.md)). Einschreibung am 03.11.2026 eingereicht, D-U-N-S akzeptiert, **Organisationsprüfung bei Apple läuft** (keine erneute Registrierung).
 2. **Bundle-ID** `de.visionuniverse.app`: Verfügbarkeit ist noch zu prüfen; das zeigt sich beim Anlegen in Phase 2 (ist sie vergeben, wählen wir gemeinsam eine andere und ändern sie im Projekt).
 
 ## Phase 1: Apple Developer Program [Sie, PC]
-Organisation: Einschreibung nur im Web. Vorab D-U-N-S, Firmen-E-Mail der eigenen Domain, Website, Vertretungsbefugnis bereitlegen (Liste in [APPLE_DEVELOPER_NAME.md](APPLE_DEVELOPER_NAME.md) §5).
+Organisation: Einschreibung nur im Web. Vorab D-U-N-S, Firmen-E-Mail der eigenen Domain, Website, Vertretungsbefugnis bereitlegen (Liste in [APPLE_DEVELOPER_NAME.md](../archiv/mobile/APPLE_DEVELOPER_NAME.md) §5).
 1. [Einschreiben](https://developer.apple.com/programs/enroll/) als Organisation (RAM Consulting UG), Apple-Kennung mit Zwei-Faktor, 99 USD pro Jahr.
 2. In App Store Connect die **Verträge** akzeptieren [prüfen].
 3. **Team-ID** notieren (Mitgliedschaft im Developer-Portal, 10 Zeichen). Das ist kein Geheimnis im engeren Sinn, kommt aber nur in GitHub Secrets.
