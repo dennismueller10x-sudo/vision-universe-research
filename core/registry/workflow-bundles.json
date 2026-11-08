@@ -91,9 +91,11 @@
    "purpose": "manuelle Forschungslaeufe und Studien",
    "workflow": "research.yml",
    "replaces": [
+    "elliott-prospective-registry.yml",
     "pattern-research-volume.yml",
     "quant-pattern-total-return-check.yml",
     "research-labor.yml",
+    "vorsorge-etf-sources.yml",
     "vorsorge-legal-sources.yml"
    ]
   },
@@ -217,9 +219,6 @@
   },
   "discover-im-blick-live.yml": {
    "bundle": "pipeline-intraday"
-  },
-  "elliott-prospective-registry.yml": {
-   "bundle": "research"
   },
   "emerging-leaders-study.yml": {
    "bundle": "research"
@@ -407,9 +406,6 @@
   },
   "update-sec-fundamentals.yml": {
    "bundle": "pipeline-weekly"
-  },
-  "vorsorge-etf-sources.yml": {
-   "bundle": "research"
   },
   "vorsorge-etf-universe.yml": {
    "bundle": "research"
