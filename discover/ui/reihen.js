@@ -502,8 +502,9 @@
       U().help(id === 'fallen-angels' ? 'Ein tiefer Kurs sagt nichts darüber, wie es weitergeht. Die Reihe zeigt nur, wo Zahlen und Kurs auseinanderlaufen.' : 'Die Regel beschreibt Kurs und Zahlen von gestern. Sie sagt nichts darüber, wie es weitergeht.') +
       (cov.note ? U().help(cov.note) : '');
     var sortKey = row.sort, SORTS = [['rang', SORT_LABEL[sortKey] || 'Rang']];
-    if (/^f_/.test(sortKey) || /^fund/.test(String(row.world || ''))) { if (sortKey !== 'f_revenueGrowth3y') SORTS.push(['umsatz', 'Umsatz']); } else if (sortKey !== 'return12M') SORTS.push(['r12', '12 Monate']);
-    if (pill === 'fromHigh' && SORTS.length < 2) SORTS.push(['umsatz', 'Umsatz']);
+    /* Reihen aus Geschäftszahlen (Regel nennt die SEC, z. B. Fallen Angels) sortieren zweitens nach Umsatz, Kurs-Reihen nach 12 Monaten. */
+    var sec = /^f_/.test(sortKey) || /SEC/.test(row.rule || '') || (cfg.explain || []).some(function (t) { return /SEC|Umsatz/.test(t); });
+    if (sec) { if (sortKey !== 'f_revenueGrowth3y') SORTS.push(['umsatz', 'Umsatz']); } else if (sortKey !== 'return12M') SORTS.push(['r12', '12 Monate']);
     SORTS.push(['name', 'Name']);
     var state = { sort: 'rang', all: false }, list = page.querySelector('.dr-rks'), more = page.querySelector('.dr-more');
     page.querySelector('.dr-sorts').innerHTML = U().seg(SORTS.map(function (x) { return { id: x[0], label: x[1] }; }), 'rang', { tabs: true, label: 'Sortierung' });

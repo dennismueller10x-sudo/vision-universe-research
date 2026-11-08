@@ -355,3 +355,29 @@ test("Reihen: jede Karte traegt firstSeen (null oder ein Handelstag, nie die Uhr
     assert.equal(r.neu, row.cards.filter((c) => c.firstSeen === row.asOf).length, r.rowId + ": neu");
   }
 });
+
+/* Konzept „Reihe für Reihe“, PR 4: neue Reihe Fallen Angels (Entscheidung 1). */
+test("Fallen Angels: Mitglied in Qualität + Wachstum, Profitables Wachstum oder Compounder UND ≥ 30 % unter dem Hoch, sortiert nach Zahl der Reihen, dann Abstand", { skip: !vorhanden || !existsSync(join(DATA, "rows", "US_REAL", "fallen-angels.json")) }, () => {
+  const row = readJSON(join(DATA, "rows", "US_REAL", "fallen-angels.json"));
+  const m = readJSON(MEMBERSHIP), ids = m.rows.map((r) => r.id);
+  const SRC = ["qualitaet-wachstum", "profitables-wachstum", "langfristige-compounder"];
+  const count = (sym) => (m.members[sym] || []).filter((x) => SRC.includes(ids[x[0]])).length;
+  assert.equal(row.title, "FALLEN ANGELS");
+  assert.equal(row.subtitle, "Starke Zahlen, aber der Kurs liegt weit unter seinem Hoch.");
+  assert.ok(row.coverage.matched > 0 && row.cards.length === Math.min(30, row.coverage.matched));
+  let prev = null;
+  for (const c of row.cards) {
+    assert.ok(count(c.symbol) >= 1, c.symbol + " steht in keiner der drei Reihen");
+    assert.ok(c.metrics.distanceTo52wHigh <= -0.30, c.symbol + " liegt nicht 30 % unter dem Hoch");
+    const k = [count(c.symbol), c.metrics.distanceTo52wHigh];
+    if (prev) assert.ok(prev[0] > k[0] || (prev[0] === k[0] && prev[1] <= k[1]), "Sortierung bei " + c.symbol);
+    prev = k;
+  }
+  /* Alle Treffer: genau die Mitglieder der drei Reihen mit Abstand ≤ −30 % (nach Firma bereinigt). */
+  const all = Object.keys(m.members).filter((s) => (m.members[s] || []).some((x) => ids[x[0]] === "fallen-angels"));
+  assert.equal(all.length, row.coverage.matched);
+  assert.ok(all.every((s) => count(s) >= 1));
+  const cfg = meta.rowConfigs.find((r) => r.id === "fallen-angels");
+  assert.equal(cfg.explain.length, 2);
+  assert.deepEqual(Reihen.genreOfRow("fallen-angels"), ["kursbewegung", "unternehmen"]);
+});
