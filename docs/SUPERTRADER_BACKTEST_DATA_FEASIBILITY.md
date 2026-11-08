@@ -27,7 +27,7 @@ bleiben alle Kennzahlen gesperrt.
   werden gefiltert (`scripts/market/select-gate-universe.mjs:68`, `active !== false`). Die 191
   inaktiven Stammaktien im committeten Security Master sind fast alle ältere Listings
   wiederverwendeter Ticker. Keine gespeicherte Reihe gehört zu einem wirklich delisteten Titel.
-  `docs/TIINGO_DATA_SEMANTICS.md` führt „Delistete Wertpapiere“ als `UNKNOWN`.
+  `docs/archiv/TIINGO_DATA_SEMANTICS.md` führt „Delistete Wertpapiere“ als `UNKNOWN`.
 - **Historische Universumszugehörigkeit** („was war am Tag X handelbar/im Index“).
 - **Historie vor 1990.**
 - **Einheitliche Dividendenbereinigung** für Total-Return-P&L (muss aus Rohschluss, Dividende und
@@ -39,7 +39,7 @@ Tiingo ist `OWNER_DECLARED_LICENSED` (13.09.2026). Der Vertragstext liegt dem Re
 (`quant/config/provider-profiles.json`). Ob **abgeleitete Backtest-Ergebnisse** veröffentlicht
 werden dürfen, ist für Tiingo nicht beantwortet (`docs/VU_PROVIDER_LICENSE_CHECKLIST.md`). Ob der
 aktuelle Plan Kurse delisteter Ticker liefert, ist ebenfalls offen. Die Alternative mit
-Delistings (Sharadar, `docs/VU_PROVIDER_DECISION_MATRIX.md`) hat Lizenz- und Preisstatus „offen“.
+Delistings (Sharadar, `docs/archiv/VU_PROVIDER_DECISION_MATRIX.md`) hat Lizenz- und Preisstatus „offen“.
 
 ## Fehlende Voraussetzungen je Strategie
 

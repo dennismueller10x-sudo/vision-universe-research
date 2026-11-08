@@ -1,6 +1,6 @@
 # Setup-OOS: Entscheidungsvorlage A1–A6 (Stand 30.10.2026)
 
-Diese Vorlage ergänzt [DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md](DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md), Abschnitt A, und [SETUP_OOS_EVALUATION.md](SETUP_OOS_EVALUATION.md). Sie zertifiziert nichts. **Die Empfehlungen sind seit dem 04.11.2026 entschieden und umgesetzt (Abschnitt 6).**
+Diese Vorlage ergänzt [DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md](../archiv/quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md), Abschnitt A, und [SETUP_OOS_EVALUATION.md](SETUP_OOS_EVALUATION.md). Sie zertifiziert nichts. **Die Empfehlungen sind seit dem 04.11.2026 entschieden und umgesetzt (Abschnitt 6).**
 
 Die Gates und ihre Schwellen bleiben unverändert (`quant/methodology/backtest-certification-v1.json`, `kinds.SETUP_BACKTEST.requirements`):
 - `historyDates` 120

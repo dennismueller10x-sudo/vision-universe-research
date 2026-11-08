@@ -294,7 +294,7 @@ Replay, Pattern und Signal haben keine zeitabhängigen Gates: Ihre Blocker sind 
 
 ## I. Research-Nachweise P2 (Master Completion 3.1, nicht zertifizierend)
 
-Erzeugt mit den Skripten unten, jeweils `--out` unter `docs/quant/research/`. Kein Bericht speist ein Gate, keine Zahl erscheint im Produkt (`gateInput: false`, `productionApproved: false`). Zustände in Abschnitt C kommen weiterhin aus dem Zertifizierungsartefakt. Ablauf der Freigabeläufe und Bewertung: [BACKTEST_P2_DEFIZITE.md](BACKTEST_P2_DEFIZITE.md).
+Erzeugt mit den Skripten unten, jeweils `--out` unter `docs/quant/research/`. Kein Bericht speist ein Gate, keine Zahl erscheint im Produkt (`gateInput: false`, `productionApproved: false`). Zustände in Abschnitt C kommen weiterhin aus dem Zertifizierungsartefakt. Ablauf der Freigabeläufe und Bewertung: [BACKTEST_P2_DEFIZITE.md](../archiv/quant/BACKTEST_P2_DEFIZITE.md).
 
 | Nachweis | Bericht | Erzeuger | Schema | Aussage (Research) | Hash |
 |---|---|---|---|---|---|

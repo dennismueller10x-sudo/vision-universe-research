@@ -237,4 +237,4 @@ Jeder Schritt: Vorher/Nachher-Bilder bei 390 und 1 280 px, hell und dunkel, Pari
 5. **Supertrader-Wochenkontext** (`engine/weekly.mjs`): Titel mit offenem DQ-PX-4-Befund aussetzen, bis repariert (seit #858 höchstens bis zum nächsten Reparaturlauf).
 6. **Je Produktwelt die UI-Umsetzung M1–M6.**
 
-Gate-Audit (Bestandsaufnahme, Empfehlungen): `docs/audits/GATE_AUDIT_2026-10-23.md`.
+Gate-Audit (Bestandsaufnahme, Empfehlungen): `docs/archiv/audits/GATE_AUDIT_2026-10-23.md`.

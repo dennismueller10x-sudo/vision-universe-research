@@ -245,7 +245,7 @@ Provider sinnvoll und ist als späterer Schritt im Report vermerkt.
 | 8 | Watchlist Intelligence: Events, Deltas, Seite | Änderungen statt Zustände |
 | 9 | Quality Pass: Tests, Responsive, Empty/Error States, Doku, CI | Alle Acceptance Tests (§76) grün |
 
-Nach jeder Phase: Tests + JSON-/HTML-Validierung ausführen, `docs/VU_BUILD_STATUS.md`
+Nach jeder Phase: Tests + JSON-/HTML-Validierung ausführen, `docs/archiv/VU_BUILD_STATUS.md`
 aktualisieren.
 
 ---

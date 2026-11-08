@@ -98,7 +98,7 @@ Unerklärte Abweichungen brechen den Lauf künftig **vor** dem Commit ab. Damit 
 
 ## 6. Core-Adoption und Parallelwelten (nach Merge aller PRs)
 
-Gemessen ist die Matrix in [CORE_ADOPTION.md](../../architecture/CORE_ADOPTION.md). Projiziert: [MISSION_STATUS](MISSION_STATUS_2026-10-03.md#core-adoption-nach-merge-aller-prs-projiziert).
+Gemessen ist die Matrix in [CORE_ADOPTION.md](../architecture/CORE_ADOPTION.md). Projiziert: [MISSION_STATUS](MISSION_STATUS_2026-10-03.md#core-adoption-nach-merge-aller-prs-projiziert).
 
 **Neu seit dem 03.10.:**
 - Die technische Deckung im Abgleich kommt aus der kanonischen R2-Messung (#428).
