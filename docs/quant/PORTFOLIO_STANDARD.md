@@ -73,7 +73,7 @@ python3 -I scripts/quant/verify-portfolio-construction.py --input cases.json   #
 
 ## 7. Läufe
 
-- **Workflow** `quant-portfolio-research.yml` (Marke `[quant-portfolio-research]` oder manuell): Tagesbalken aus R2, delistete Titel aus dem V13-Archiv, SEC ORIGINAL aus companyfacts.zip.
+- **Workflow** `research.yml`, Teil `portfolio` (vormals `quant-portfolio-research.yml`) (Marke `[quant-portfolio-research]` oder manuell): Tagesbalken aus R2, delistete Titel aus dem V13-Archiv, SEC ORIGINAL aus companyfacts.zip.
   Committet nur `docs/quant/research/portfolio-v1/model-portfolios.json` und den Bericht `MODEL_PORTFOLIOS.md` (Kennzahlen, Wertentwicklung, Gewichte; keine Kurse).
 - **Lokal:**
   ```bash

@@ -79,8 +79,12 @@ test('HO-5: Wochenabgleich Strategie/SPY: letzte Sitzung je ISO-Woche, nur gemei
 test('HO-6: Ausgaben nur außerhalb des Repositorys; öffentlicher Teil ohne Rendite; Workflows nach ADR-005', () => {
   const q = fs.readFileSync(path.join(__dirname, 'quant-holdout.cjs'), 'utf8');
   assert.match(q, /OUT_INSIDE_REPOSITORY/); assert.match(q, /startAttempt\(driver, 'quant'/); assert.match(q, /sealAttempt\(driver, 'quant'/);
-  const w = fs.readFileSync(path.join(ROOT, '.github/workflows/quant-portfolio-research.yml'), 'utf8');
-  assert.match(w, /options: \[portfolios, holdout-quant\]/);
+  // Seit dem Buendel research (Stufe 3) Teil `portfolio` in research.yml (vormals quant-portfolio-research.yml).
+  const all = fs.readFileSync(path.join(ROOT, '.github/workflows/research.yml'), 'utf8');
+  const start = all.indexOf('\n  portfolio:\n'); assert.ok(start > 0, 'Teil portfolio in research.yml');
+  const rest = all.slice(start + 1), end = rest.search(/\n  # --- |\n  [a-z][a-z0-9-]*:\n/);
+  const w = rest.slice(0, end < 0 ? undefined : end);
+  assert.match(all, /options: \[portfolios, holdout-quant\]/);
   assert.match(w, /IN_MODE: \$\{\{ inputs\.mode \}\}/); assert.doesNotMatch(w, /run: [^\n]*\$\{\{\s*inputs\./);
   assert.match(w, /name: Ergebnis auf den aktuellen Zweig committen\n\s+if: steps\.m\.outputs\.mode != 'holdout-quant'/);
   assert.match(w, /METRIC_IN_PUBLIC_PART/);
