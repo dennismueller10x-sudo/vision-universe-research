@@ -128,7 +128,7 @@
           root.classList.add('dx-detail');V.Detail.render(root,detail,ctx);
           watchButton(root,symbol);
           document.title=(detail.companyName||symbol)+' — Discover';
-          if(D.memory)D.memory.recordView(symbol,{universeId:ctx.universeId,companyName:detail.companyName,sector:detail.sector,world:detail.world});
+          if(D.memory)D.memory.recordView(symbol,{universeId:ctx.universeId,companyName:detail.companyName,sector:detail.sector,world:detail.world,themes:(detail.themes||[]).map(t=>t&&t.rowId).filter(Boolean)});
         }else await instrument(root,symbol,active);
       } else if(parts[0]==='settings'){
         settings(root);

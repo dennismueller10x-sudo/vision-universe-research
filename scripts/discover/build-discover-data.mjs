@@ -1952,6 +1952,38 @@ function compactSeries(bars) {
 /* =================================================================== Lauf */
 console.log("Vision Universe DISCOVER — Präkomputation\n");
 const started = Date.now();
+/* NEU-Etikett (Konzept „Reihe für Reihe“, PR 3): die zuletzt eingecheckte Fassung jeder Reihe
+   und des Index Aktie -> Reihen VOR dem Leeren lesen. Daraus entsteht je Karte firstSeen:
+   stand die Aktie schon in der Karte der Reihe, gilt deren firstSeen weiter; stand sie schon in
+   der Reihe (Index), aber ohne Datum, bleibt es null (nicht neu); ist sie neu, gilt asOf der
+   Daten - nie die Uhrzeit. Derselbe Eingabestand ergibt so dieselben Dateien. */
+const PREVIOUS = readPrevious();
+function readPrevious() {
+  const out = new Map();
+  if (!existsSync(join(OUT, "membership"))) return out;
+  for (const file of readdirSync(join(OUT, "membership"))) {
+    if (!file.endsWith(".json")) continue;
+    const U = file.replace(/\.json$/, "");
+    let m = null;
+    try { m = readJSON(join(OUT, "membership", file)); } catch { continue; }
+    const rows = new Map();
+    (m.rows || []).forEach((r, i) => rows.set(r.id, { members: new Set(), first: new Map(), index: i }));
+    for (const [sym, xs] of Object.entries(m.members || {})) for (const [ri] of xs) { const r = m.rows[ri]; if (r) rows.get(r.id).members.add(sym); }
+    for (const [id, r] of rows) {
+      const f = join(OUT, "rows", U, id + ".json");
+      if (!existsSync(f)) continue;
+      try { for (const c of readJSON(f).cards || []) if (c && c.symbol && "firstSeen" in c) r.first.set(c.symbol, c.firstSeen); } catch { /* kaputte Datei: wie ohne Datum */ }
+    }
+    out.set(U, rows);
+  }
+  return out;
+}
+function firstSeen(universe, rowId, symbol) {
+  const prev = PREVIOUS.get(universe.universeId), row = prev && prev.get(rowId);
+  if (!row) return null;                                   // ohne fruehere Fassung: unbekannt, nicht neu
+  if (row.first.has(symbol)) return row.first.get(symbol);
+  return row.members.has(symbol) ? null : universe.asOf;
+}
 if (existsSync(OUT)) {
   for (const entry of readdirSync(OUT, { withFileTypes: true })) {
     // The registered Marketstack publication producer owns this directory.
@@ -1996,6 +2028,7 @@ for (const universe of universes) {
   const memberRows = [], memberOf = new Map();
   for (const config of ROWS) {
     const row = buildRow(universe, config);
+    for (const c of row.cards) c.firstSeen = firstSeen(universe, config.id, c.symbol);
     write(`rows/${universe.universeId}/${config.id}.json`, row);
     const ri = memberRows.length;
     memberRows.push({ id: config.id, matched: row.coverage.matched });
@@ -2006,7 +2039,9 @@ for (const universe of universes) {
     rowsById.set(config.id, Object.assign({}, row, { config }));
     rows.push({ rowId: row.rowId, title: row.title, subtitle: row.subtitle,
                 returned: row.coverage.returned, matched: row.coverage.matched,
-                theme: config.theme || null });
+                theme: config.theme || null,
+                /* Karten, die mit dem letzten Handelstag neu in der Reihe stehen (Regel 3 der Startseite). */
+                neu: row.cards.filter((c) => c.firstSeen && c.firstSeen === universe.asOf).length });
   }
   const members = {};
   [...memberOf.keys()].sort().forEach((sym) => { members[sym] = memberOf.get(sym); });
