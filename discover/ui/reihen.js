@@ -239,6 +239,14 @@
     });
     return sec;
   }
+  /* Europa ohne Suche erreichbar (Owner 08.11.2026, Strang M). Reine Verweise: kein Europa-Katalog beim Start der Seite. */
+  function europeSection() {
+    var sec = h('section', 'dr-sec dr-sec--europa'); sec.setAttribute('data-europe-entry', '');
+    sec.innerHTML = railHead({ title: 'Aktien aus Europa', more: 'Alle', href: '#/c/EUROPE/all', label: 'Alle europäischen Aktien', sub: 'Tagesschlusskurse, unbereinigt. Fehlende Tage bleiben als Lücke offen.' }) + '<div class="vu-stack">' +
+      U().navcard({ href: '#/c/EUROPE/de', glyph: 'line', title: 'Deutsche Aktien', sub: 'DAX, MDAX, SDAX und weitere · Kurse in Euro' }) +
+      U().navcard({ href: '#/c/EUROPE/all', glyph: 'grid', title: 'Ganz Europa', sub: 'Zehn Börsen · Kurse in Landeswährung' }) + '</div>';
+    return sec;
+  }
   function endSection(ctx) {
     var sec = h('section', 'dr-sec dr-sec--end');
     sec.innerHTML = '<a class="dv3-swipecard" href="#/swipen">' + U().hud('discover', 46) + '<span><b>Aktien swipen, eine nach der anderen</b><span>Wische nach rechts zum Merken.</span></span>' + U().glyph('next', 22) + '</a>' +
@@ -302,6 +310,7 @@
       var bb = h('section', 'dr-sec dr-bb dr-bb--wait', '<p class="v2-load-state" role="status">Aktien werden geladen …</p>'); body.appendChild(bb);
       var ms = h('section', 'dr-sec dr-sec--markt'); body.appendChild(ms); marketStrip(ms, ctx);
       var topSlot = h('div', 'dr-slot'); body.appendChild(topSlot);
+      body.appendChild(europeSection());
       R().homePlan(avail, {}).forEach(function (slot) {
         var node = null;
         if (slot.kind === 'top10') return;
