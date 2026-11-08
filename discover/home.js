@@ -1,4 +1,4 @@
-/* Discover-Startseite (Redesign 2027, Folie D01): der Kopf (Datum, Frage, Suche, Schnellzugriffe) steht vorgerendert in
+/* Discover-Startseite (Konzept „Reihe für Reihe“, Screen n-home): der Kopf (Datum, Frage, Suche, Genre-Chips) steht vorgerendert in
    index.html und hier gleich; alle Abschnitte darunter zeichnet discover/ui/v3.js (ausserhalb des Budgets). */
 (function (global) {
   'use strict';
@@ -46,15 +46,27 @@
     path.setAttribute('d', d); path.setAttribute('fill', fill ? 'currentColor' : 'none'); path.setAttribute('stroke', fill ? 'none' : 'currentColor');
     path.setAttribute('stroke-width', '1.8'); path.setAttribute('stroke-linecap', 'round'); path.setAttribute('stroke-linejoin', 'round'); svg.appendChild(path); return svg;
   }
+  function grid() {
+    var svg = document.createElementNS(NS, 'svg'), g = document.createElementNS(NS, 'g');
+    svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('width', '16'); svg.setAttribute('height', '16'); svg.setAttribute('aria-hidden', 'true');
+    g.setAttribute('fill', 'none'); g.setAttribute('stroke', 'currentColor'); g.setAttribute('stroke-width', '1.8');
+    [[4, 4], [13, 4], [4, 13], [13, 13]].forEach(function (p) { var r = document.createElementNS(NS, 'rect'); r.setAttribute('x', p[0]); r.setAttribute('y', p[1]); r.setAttribute('width', '7'); r.setAttribute('height', '7'); r.setAttribute('rx', '1.8'); g.appendChild(r); });
+    svg.appendChild(g); return svg;
+  }
   function header(ctx) {
     var intro = el('header', { class: 'dv3-intro', 'data-product': 'discover' });
     var arrow = el('span', { class: 'v2-search-arrow' }, [glyph('M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z', true)]);
     var search = el('button', { class: 'v2-search-prompt', type: 'button', 'aria-label': 'Aktie, Thema oder Frage suchen' }, [glyph('M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14m9 16-4-4'), el('span', { text: 'Aktie, Thema oder Frage …' }), arrow]);
     search.addEventListener('click', ctx.openSearch);
-    var chips = el('nav', { class: 'dv3-quick vu-chips', 'aria-label': 'Schnellzugriffe' });
-    [['Welten', '#/welten'], ['Strategien', '#/strategien'], ['Swipen', '#/swipen'], ['Märkte', '#/maerkte']].forEach(function (x) { chips.appendChild(el('a', { class: 'vu-chip', href: x[1], text: x[0] })); });
-    intro.append(el('p', { class: 'vu-ltag dv3-asof', text: 'Discover' }), el('h1', { class: 'vu-lt', text: 'Was bewegt die Börse heute?' }),
-      el('p', { class: 'vu-lead', text: 'Aktien finden, verstehen, merken. Ohne Fachwissen.' }), search, chips);
+    // Genre-Chips (Konzept „Reihe für Reihe“, Entscheidung 5) ersetzen die Schnellzugriffe; ▦ fuehrt zu „Alle Reihen“.
+    var chips = el('nav', { class: 'dr-genres vu-chips', 'aria-label': 'Genres' });
+    [['alle', 'Alle'], ['kursbewegung', 'Kursbewegung'], ['unternehmen', 'Unternehmen'], ['themen', 'Themen'], ['indizes', 'Indizes']].forEach(function (x, i) {
+      chips.appendChild(el('button', { type: 'button', class: 'vu-chip', 'data-genre': x[0], 'aria-pressed': i ? 'false' : 'true', text: x[1] }));
+    });
+    var all = el('a', { class: 'vu-chip dr-genres__all', href: '#/reihen', 'aria-label': 'Alle Reihen' }, [grid()]); all.hidden = true; chips.appendChild(all);
+    var h1 = el('h1', { class: 'vu-lt' }); h1.append('Was bewegt ', document.createElement('br'), 'die Börse heute?');
+    var lead = el('p', { class: 'vu-lead dr-genre-lead' }); lead.hidden = true;
+    intro.append(el('p', { class: 'vu-ltag dv3-asof', text: 'Discover' }), h1, lead, search, chips);
     return intro;
   }
   async function render(root, ctx) {

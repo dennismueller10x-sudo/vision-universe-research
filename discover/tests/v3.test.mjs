@@ -206,3 +206,82 @@ test("Startseite skaliert: Abrufe haengen nicht von der Titelzahl ab", { skip: !
     assert.ok(h.chunks.length <= 4, u.universeId + ": " + h.chunks.length + " Stuecke");
   }
 });
+
+/* ---------------------------------------------------------------------------
+   Konzept „Reihe für Reihe“ (docs/design/discover-netflix-2026-11, PR 1):
+   Reihenfolge der Startseite, Schaufenster-Regel, Genre-Filter, leere Reihen. */
+const Reihen = require("../engines/reihen.js");
+const ALLE = Object.fromEntries(Reihen.HOME_PLAN.flatMap((s) => s.row ? [[s.row, 10]] : (s.rows || []).map((r) => [r, 10])));
+
+test("Reihen: Startseite in der Reihenfolge von n-home", () => {
+  const plan = Reihen.homePlan(Object.assign({}, ALLE), { personal: { recent: true, more: true } });
+  assert.deepEqual(plan.map((s) => s.row || s.kind), ["im-blick", "new-52-week-highs", "fallen-angels", "themes", "recent", "comeback", "more",
+    "langfristige-compounder", "ueberraschungen", "bekannte-namen", "strategies", "breakout-watch"]);
+  assert.ok(plan.length <= Reihen.MAX_HOME_ROWS, "hoechstens 14 Reihen");
+  assert.equal(Reihen.homeTitle("ueberraschungen"), "Kennt kaum jemand");
+  assert.equal(Reihen.homePlan(ALLE, { max: 5 }).length, 5);
+});
+
+test("Reihen: leere oder fehlende Reihen erscheinen nicht (Fallen Angels vor PR 4, persoenliche ohne Geraetewissen)", () => {
+  const ohne = Object.assign({}, ALLE); delete ohne["fallen-angels"]; ohne.comeback = 0;
+  const plan = Reihen.homePlan(ohne, {}).map((s) => s.row || s.kind);
+  for (const weg of ["fallen-angels", "comeback", "recent", "more"]) assert.ok(!plan.includes(weg), weg);
+  assert.equal(plan[0], "im-blick");
+  assert.deepEqual(Reihen.homePlan({}, {}).map((s) => s.kind), ["themes"], "ohne Reihen bleiben nur die Themen");
+  const meta = { rows: [{ universeId: "US_REAL", rows: [{ rowId: "a", matched: 3, returned: 3 }, { rowId: "b", matched: 0, returned: 0 }] }] };
+  assert.deepEqual(Reihen.available(meta, "US_REAL"), { a: 3 });
+});
+
+test("Reihen: Reihen mit neuen Treffern ruecken nach oben, nur zwischen den Reihen-Plaetzen", () => {
+  const plan = Reihen.homePlan(ALLE, { fresh: ["breakout-watch", "bekannte-namen"] }).map((s) => s.row || s.kind);
+  assert.deepEqual(plan, ["im-blick", "bekannte-namen", "breakout-watch", "themes", "new-52-week-highs", "fallen-angels",
+    "comeback", "langfristige-compounder", "strategies", "ueberraschungen"]);
+  assert.equal(plan[1], "bekannte-namen");
+  assert.equal(plan[2], "breakout-watch");
+  assert.equal(plan.indexOf("themes"), 3, "Themen behalten ihren Platz");
+  assert.equal(plan.indexOf("strategies"), Reihen.homePlan(ALLE, {}).map((s) => s.row || s.kind).indexOf("strategies"), "Strategien behalten ihren Platz");
+});
+
+test("Reihen: Schaufenster-Regel – nur mit Kursreihe und 12 Monaten ueber −60 %", () => {
+  const card = (r12, ps) => ({ symbol: "X", metrics: { return12M: r12 }, priceSeries: ps === undefined ? { status: "CALCULATED", path: "/x.json" } : ps });
+  assert.equal(Reihen.showcase(card(0.2)), true);
+  assert.equal(Reihen.showcase(card(-0.59)), true);
+  assert.equal(Reihen.showcase(card(-0.6)), false, "−60 % ist Totalverlust-Fall");
+  assert.equal(Reihen.showcase(card(null)), false, "ohne 12-Monats-Wert keine Schaufenster-Karte");
+  assert.equal(Reihen.showcase(card(0.2, null)), false, "ohne Kursreihe");
+  assert.equal(Reihen.showcase(card(0.2, { status: "MISSING", path: null })), false);
+  assert.equal(Reihen.showcase(card(0.2, { status: "CALCULATED", points: [[1, 1], [2, 2]] })), true);
+  assert.deepEqual(Reihen.showcaseCards([card(0.1), card(-0.9), card(0.3)], 1).length, 1);
+});
+
+test("Reihen: Schaufenster-Regel auf den ausgelieferten Reihen laesst keine Totalverlust-Faelle auf die Startseite", { skip: !vorhanden }, () => {
+  for (const id of ["cashflow-maschinen", "qualitaet-zum-preis", "umsatz-waechst-stark"]) {
+    const row = readJSON(join(DATA, "rows", "US_REAL", id + ".json"));
+    const shown = Reihen.showcaseCards(row.cards, 10);
+    assert.ok(shown.length > 0, id + " zeigt Karten");
+    assert.ok(shown.every((c) => c.metrics.return12M > -0.6 && Reihen.hasSeries(c)), id);
+  }
+});
+
+test("Reihen: Genre-Chips filtern ohne Seitenwechsel auf die Reihen ihres Genres", () => {
+  assert.deepEqual(Reihen.GENRES.map((g) => g.label), ["Kursbewegung", "Unternehmen", "Themen", "Indizes"]);
+  const avail = Object.fromEntries(Reihen.GENRES.flatMap((g) => g.rows).map((r) => [r, 5]));
+  delete avail["fallen-angels"];
+  const unternehmen = Reihen.genrePlan("unternehmen", avail).map((s) => s.row);
+  assert.deepEqual(unternehmen.slice(0, 4), ["umsatz-waechst-stark", "gewinne-beschleunigen", "fundamentale-turnarounds", "starke-bilanz-wachstum"]);
+  assert.ok(unternehmen.every((r) => Reihen.genreOfRow(r).includes("unternehmen")));
+  assert.deepEqual(Reihen.genrePlan("indizes", avail).map((s) => s.row), ["sp500-staerkste", "ndx-staerkste", "djia-staerkste"]);
+  assert.deepEqual(Reihen.genrePlan("themen", avail).map((s) => s.kind), ["themes"]);
+  assert.deepEqual(Reihen.genrePlan("gibtsnicht", avail), []);
+  assert.equal(Reihen.genreFromHash("#/?genre=unternehmen"), "unternehmen");
+  assert.equal(Reihen.genreFromHash("#/?genre=quatsch"), null);
+  assert.equal(Reihen.genreFromHash("#/"), null);
+  assert.deepEqual(Reihen.genreOfRow("fallen-angels"), ["kursbewegung", "unternehmen"], "Fallen Angels: Kursbewegung + Unternehmen");
+});
+
+test("Reihen: Wortwahl der Startseite (WORTWAHL.md, Folie U3)", () => {
+  const src = readFileSync(join(root, "discover", "ui", "reihen.js"), "utf8") + readFileSync(join(root, "discover", "engines", "reihen.js"), "utf8");
+  for (const nein of [/für dich/i, /Geheimtipp/i, /Gewinner/i, /jetzt günstig/i, /Kandidaten/i]) assert.doesNotMatch(src, nein);
+  assert.match(src, /Top 10 heute/);
+  assert.match(src, /Rang nach der Regel „Heute im Blick“/);
+});
