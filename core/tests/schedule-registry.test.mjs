@@ -26,7 +26,7 @@ test("SZ-1 · Register: eindeutige Eintraege, gueltige Crons, stimmt mit den Wor
     assert.ok(existsSync(join(ROOT, ".github/workflows", e.workflow)), e.id + " Workflow fehlt");
     assert.doesNotThrow(() => leseCron(e.cron), e.id);
   }
-  assert.deepEqual(drift(REG, inventory(ROOT)), [], "Register und Workflows weichen ab (node scripts/core/schedule-registry.mjs)");
+  assert.deepEqual(drift(REG, inventory(ROOT)), [], "Register und Workflows weichen ab: node scripts/core/schedule-registry.mjs --sync");
 });
 
 test("SZ-2 · Wecker-Eintraege: kein Cron im Workflow, Eingang zeitplan, Marke im run-name, Weiche wie beim Zeitplan", () => {

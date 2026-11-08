@@ -206,12 +206,6 @@
    "timer": "github"
   },
   {
-   "id": "ki-depots-daily",
-   "workflow": "ki-depots-daily.yml",
-   "cron": "41 23 * * 1-5",
-   "timer": "github"
-  },
-  {
    "id": "long-series",
    "workflow": "long-series.yml",
    "cron": "40 7 1-7 * 6",
@@ -420,6 +414,13 @@
    "workflow": "update-sec-fundamentals.yml",
    "cron": "0 6 * * 1",
    "timer": "github"
+  },
+  {
+   "id": "pipeline-daily-ki-depots",
+   "workflow": "pipeline-daily.yml",
+   "cron": "41 23 * * 1-5",
+   "timer": "github",
+   "note": "ki-depots"
   }
  ]
 }
