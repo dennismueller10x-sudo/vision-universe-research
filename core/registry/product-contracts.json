@@ -4,14 +4,14 @@
   "products": {
     "supertrader": {
       "paths": ["supertrader/**", "products/supertrader/**", "scripts/supertrader/**"],
-      "ci": "supertrader-ci.yml",
+      "ci": "ci.yml",
       "contractTests": ["scripts/supertrader/tests/*.test.mjs"],
       "consumes": ["technicalSignals", "securityMasterEligibility"],
       "replacesGate": "Supertrader Gate A (scripts/supertrader/guard-protected-paths.mjs, jetzt nur Bericht)"
     },
     "discover": {
       "paths": ["discover/**", "products/discover/**", "scripts/discover/**"],
-      "ci": "discover-ci.yml",
+      "ci": "ci.yml",
       "contractTests": ["discover/tests/*.test.mjs"],
       "consumes": ["discoverSeries", "marketCapability"],
       "replacesGate": "Discover 'veraendert keine bestehende Engine' (discover-ci.yml)"
@@ -31,7 +31,7 @@
     },
     "technical": {
       "paths": ["technical/**", "products/technical/**", "academy/**", "quant/engines/technical/**"],
-      "ci": "technical-ci.yml",
+      "ci": "ci.yml",
       "contractTests": ["technical/tests/*.test.mjs"],
       "consumes": ["technicalSignals"]
     },

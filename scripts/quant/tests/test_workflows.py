@@ -25,7 +25,8 @@ SEC_WORKFLOWS = ("update-sec-fundamentals.yml", "sec-fundamentals-ci.yml",
 
 
 # Gebuendelte Workflows (core/registry/workflow-bundles.json): Datei -> (Buendel, Teil).
-BUNDLED = {"update-sec-fundamentals.yml": ("pipeline-weekly.yml", "sec-fundamentals")}
+BUNDLED = {"update-sec-fundamentals.yml": ("pipeline-weekly.yml", "sec-fundamentals"),
+           "sec-fundamentals-ci.yml": ("ci.yml", "sec-fundamentals")}
 
 
 def workflow_part(bundle, teil):
