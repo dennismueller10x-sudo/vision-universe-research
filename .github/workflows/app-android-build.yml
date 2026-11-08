@@ -43,11 +43,19 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
+          # Gradle-Wrapper samt Distribution aus dem Actions-Cache statt jedes Mal von GitHub Releases
+          # (services.gradle.org leitet dorthin um; 08.11.2026: 504/Zeitueberlauf). Schluessel: Gradle-Dateien.
+          cache: gradle
+          cache-dependency-path: |
+            app/android/**/*.gradle*
+            app/android/gradle/wrapper/gradle-wrapper.properties
       - name: App-Tests und Web-Teil
         working-directory: app
         run: |
           set -euo pipefail
-          npm ci --no-audit --no-fund
+          # --ignore-scripts: einziges Install-Skript, das der Build sonst ausfuehrt, ist sharp (nur fuer @capacitor/assets, Icons);
+          # es laedt libvips von GitHub Releases und bricht bei dessen Ausfall den Build ab (08.11.2026: 504). esbuild braucht kein Skript.
+          npm ci --no-audit --no-fund --ignore-scripts
           npm test
           npm run build:www
           ./node_modules/.bin/cap sync android
@@ -57,6 +65,8 @@ jobs:
           set -euo pipefail
           [[ "$VERSION_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Version ungueltig"; exit 1; }
           chmod +x gradlew
+          # Wrapper vorab laden, bei einem Netzfehler bis zu dreimal (20 s, 40 s Pause); die Version bleibt die aus gradle-wrapper.properties.
+          for i in 1 2 3; do ./gradlew --no-daemon --version >/dev/null && break; [ "$i" = 3 ] && exit 1; sleep $((i * 20)); done
           ./gradlew --no-daemon bundleRelease -PvuVersionCode="$RUN_NUMBER" -PvuVersionName="$VERSION_NAME"
       - name: Ergebnis pruefen (keine Werte)
         working-directory: app/android

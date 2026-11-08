@@ -93,7 +93,9 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$MARKETING_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Version ungueltig"; exit 1; }
-          npm ci --no-audit --no-fund
+          # --ignore-scripts: einziges Install-Skript, das der Build sonst ausfuehrt, ist sharp (nur fuer @capacitor/assets, Icons);
+          # es laedt libvips von GitHub Releases und bricht bei dessen Ausfall den Build ab (08.11.2026: 504). esbuild braucht kein Skript.
+          npm ci --no-audit --no-fund --ignore-scripts
           npm test
           npm run build:www
           ./node_modules/.bin/cap sync ios   # Version aus package-lock.json (npm ci)
