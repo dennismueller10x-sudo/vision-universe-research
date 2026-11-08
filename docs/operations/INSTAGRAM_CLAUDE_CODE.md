@@ -19,13 +19,13 @@ Stars sind kein Sicherheitsmerkmal. Keiner löst das Token-Problem. Falls späte
 
 ## Was jetzt geht
 
-Client: `scripts/social/ig.mjs` (nur lesend, GET) gegen den Worker. Benötigt `VU_SOCIAL_ADMIN_KEY` in der Umgebung (nie in Datei/Argument). `VU_SOCIAL_WORKER_URL` optional (Standard `https://social.visionuniverse.de`).
+Client: `products/social/producer/ig.mjs` (nur lesend, GET) gegen den Worker. Benötigt `VU_SOCIAL_ADMIN_KEY` in der Umgebung (nie in Datei/Argument). `VU_SOCIAL_WORKER_URL` optional (Standard `https://social.visionuniverse.de`).
 
 ```bash
-node scripts/social/ig.mjs status                    # Verbindungs-/Rechtezustand
-node scripts/social/ig.mjs profile                   # Bio, Follower, Profilbild-URL, Anzahl Beiträge
-node scripts/social/ig.mjs media --limit 12          # eigene Beiträge und Reels (media_product_type)
-node scripts/social/ig.mjs media --reels --after <cursor>
+node products/social/producer/ig.mjs status                    # Verbindungs-/Rechtezustand
+node products/social/producer/ig.mjs profile                   # Bio, Follower, Profilbild-URL, Anzahl Beiträge
+node products/social/producer/ig.mjs media --limit 12          # eigene Beiträge und Reels (media_product_type)
+node products/social/producer/ig.mjs media --reels --after <cursor>
 ```
 
 Natürlich sagen: „Zeig mir mein Instagram-Profil", „Liste meine letzten 10 Reels". Claude führt die Befehle oben aus. Der Endpunkt `/social/meta/profile` (Admin-Schlüssel, 2 Graph-Aufrufe, prüft die Allowlist, gibt nie ein Token aus) muss dafür im Worker **deployt** sein: Workflow `Social Cloudflare` (`workflow_dispatch`), Preflight läuft automatisch zuerst.
@@ -37,13 +37,13 @@ Insights: `GET /social/meta/insights` (bestehend).
 Workflow `Social Instagram Check` (`workflow_dispatch`), nutzt nur das Repository-Secret `VU_SOCIAL_ADMIN_KEY`:
 
 - `backup=false`: liest `/social/meta/profile` live und bricht ab, wenn das Konto nicht `@app.visionuniverse` / `17841480148117405` ist. Ausgabe nur Konto, ID, Zähler.
-- `backup=true`: sichert zusätzlich alle Beiträge (ID, Datum, Caption, Typ, Permalink, Likes/Kommentare, Reichweite u. a.) als Artefakt `instagram-backup` (90 Tage) und auf einem neuen Branch `backup/instagram-<Zeitstempel>`. Lokal derselbe Ablauf: `node scripts/social/ig-check.mjs --expect-id … --expect-username … --out datei.json`.
+- `backup=true`: sichert zusätzlich alle Beiträge (ID, Datum, Caption, Typ, Permalink, Likes/Kommentare, Reichweite u. a.) als Artefakt `instagram-backup` (90 Tage) und auf einem neuen Branch `backup/instagram-<Zeitstempel>`. Lokal derselbe Ablauf: `node products/social/producer/ig-check.mjs --expect-id … --expect-username … --out datei.json`.
 
 Archivierte Beiträge liefert die Meta-API nicht mehr aus. Deshalb vor dem Archivieren sichern.
 
 ## Veröffentlichen (bestehende Freigabe bleibt)
 
-Bilder und Carousels laufen unverändert über die Pipeline: Kandidat (`scripts/social/make-publish-candidate.mjs`, `make-carousel-candidates.mjs`) → Freigabe im Approval Center → Worker `POST /social/meta/publish` (Idempotenz, JPEG-/Fingerabdruck-Prüfung, Allowlist). Es gibt bewusst keinen freien „poste das jetzt"-Befehl am Freigabeweg vorbei.
+Bilder und Carousels laufen unverändert über die Pipeline: Kandidat (`products/social/producer/make-publish-candidate.mjs`, `make-carousel-candidates.mjs`) → Freigabe im Approval Center → Worker `POST /social/meta/publish` (Idempotenz, JPEG-/Fingerabdruck-Prüfung, Allowlist). Es gibt bewusst keinen freien „poste das jetzt"-Befehl am Freigabeweg vorbei.
 
 **Reels:** siehe [INSTAGRAM_REELS.md](../archiv/operations/INSTAGRAM_REELS.md) (Recherche mit Apify, Vorbereiten, Freigabe im Approval Center, fortsetzbares Publishing).
 

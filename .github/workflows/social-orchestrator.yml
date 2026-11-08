@@ -132,7 +132,7 @@ jobs:
       - name: Creative-Ergebnisse von offenen Request-PRs holen
         # Kein GH_TOKEN noetig: `git fetch` nutzt die von actions/checkout
         # hinterlegten Zugangsdaten. Dieser Schritt ruft `gh` nicht auf.
-        run: node scripts/social/ingest-open-creative-jobs.mjs --write
+        run: node products/social/producer/ingest-open-creative-jobs.mjs --write
 
       # =====================================================================
       # DEN REGISTERZUSTAND AN DIE EVIDENZ HOLEN — VOR MAX_OPEN_CREATIVE_JOBS
@@ -180,7 +180,7 @@ jobs:
         # GitHub.
         env:
           GH_TOKEN: ${{ github.token }}
-        run: node scripts/social/reconcile-creative-jobs.mjs --write
+        run: node products/social/producer/reconcile-creative-jobs.mjs --write
 
       # =====================================================================
       # DIE ENTSCHEIDUNGEN DES OWNERS ZURUECK
@@ -218,7 +218,7 @@ jobs:
             echo "Kein Admin-Schluessel: es wird nichts abgeholt."
             exit 0
           fi
-          node scripts/social/ingest-owner-decisions.mjs --data social/data --write \
+          node products/social/producer/ingest-owner-decisions.mjs --data social/data --write \
             | tee /tmp/entscheidungen.txt || [ "$?" = "4" ]
 
 
@@ -240,7 +240,7 @@ jobs:
           VU_SOCIAL_THEMA: ${{ inputs.modus == 'MANUAL_TOPIC' && inputs.thema || '' }}
         run: |
           set -euo pipefail
-          node scripts/social/run-post-job.mjs --enqueue --trigger MANUAL \
+          node products/social/producer/run-post-job.mjs --enqueue --trigger MANUAL \
             --run-id "${{ github.run_id }}" \
             ${VU_SOCIAL_THEMA:+--topic "$VU_SOCIAL_THEMA"} --write
 
@@ -265,7 +265,7 @@ jobs:
       # ausgeliefert wurde.
       #
       # Hier standen zwei Schritte, die je einen STRING in $GITHUB_OUTPUT
-      # schrieben ("gruen=social/tests (Zeitpunkt)"), den der Reifebericht
+      # schrieben ("gruen=products/social/tests (Zeitpunkt)"), den der Reifebericht
       # dann als --suites-green bekam. Das war ehrlicher als in der CI -
       # der Schritt brach oben ab, wenn die Suite rot war - aber es blieb
       # eine Behauptung in Textform: keine Zahl, kein Stand, und 14
@@ -280,7 +280,7 @@ jobs:
       # Schreiben.
       # =====================================================================
       - name: Tests und Isolation, bevor irgendetwas geschieht
-        run: node scripts/social/verify-suites.mjs
+        run: node products/social/producer/verify-suites.mjs
 
       - name: Was ist jetzt dran?
         id: plan
@@ -294,7 +294,7 @@ jobs:
           VU_SOCIAL_THEMA: ${{ !inputs.zeitplan && inputs.thema || '' }}
         run: |
           set -euo pipefail
-          node scripts/social/run-orchestrator.mjs --github-output | tee /tmp/plan.txt
+          node products/social/producer/run-orchestrator.mjs --github-output | tee /tmp/plan.txt
 
       # =====================================================================
       # DIE LEASE — ZWEI AUSLOESER, EIN PRODUKTIVER ZYKLUS (§5)
@@ -316,7 +316,7 @@ jobs:
         if: inputs.nur_entscheiden != true
         run: |
           set -euo pipefail
-          node scripts/social/run-orchestrator.mjs \
+          node products/social/producer/run-orchestrator.mjs \
             --lease-claim "${{ github.run_id }}" \
             --von "${VU_EVENT}"
 
@@ -339,7 +339,7 @@ jobs:
         if: false
         run: |
           set -euo pipefail
-          node scripts/social/build-opportunity-slate.mjs \
+          node products/social/producer/build-opportunity-slate.mjs \
             --data social/data --out social/data | tail -25
 
       - name: MESSEN — Zahlen holen, lernen, anpassen
@@ -354,13 +354,13 @@ jobs:
           # Lesend. Holt die Insights des EIGENEN Kontos - kein fremdes
           # Konto, keine externe Quelle.
           if [ -n "${VU_SOCIAL_ADMIN_KEY:-}" ]; then
-            node scripts/social/ingest-performance.mjs --out social/data || \
+            node products/social/producer/ingest-performance.mjs --out social/data || \
               echo "::notice::Insights nicht abrufbar - der Lauf geht weiter."
           else
             echo "Kein Admin-Schluessel: es wird nicht abgerufen."
           fi
           # Lernen und Anpassen stecken im Zyklus und brauchen kein Netz.
-          node scripts/social/run-social-cycle.mjs \
+          node products/social/producer/run-social-cycle.mjs \
             --provider mock --data social/data --out social/data | tail -30
 
       # =====================================================================
@@ -395,16 +395,16 @@ jobs:
             return 0
           }
 
-          tor node scripts/social/request-creative.mjs \
+          tor node products/social/producer/request-creative.mjs \
                 --symbol "$SYMBOL" --write || exit 0
 
-          tor node scripts/social/dispatch-creative-job.mjs \
+          tor node products/social/producer/dispatch-creative-job.mjs \
                 --content-id "$CONTENT_ID" --write || exit 0
 
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"
 
-          tor node scripts/social/open-creative-request.mjs \
+          tor node products/social/producer/open-creative-request.mjs \
                 --content-id "$CONTENT_ID" --write \
                 --reason "Orchestrator: Kandidat faellig, kein Ergebnis und kein offener Job zu diesem Inhalt." \
             || exit 0
@@ -422,7 +422,7 @@ jobs:
           # einem Lauf, der stattfindet. Dasselbe Skript, dieselbe
           # Frage - nur an einem Ort, an dem sie gestellt wird.
           # -----------------------------------------------------------------
-          node scripts/social/verify-creative-dispatch.mjs \
+          node products/social/producer/verify-creative-dispatch.mjs \
             --branch "authoring/request/$CONTENT_ID"
 
       # =====================================================================
@@ -461,7 +461,7 @@ jobs:
           (inputs.modus == '' || inputs.modus == null || inputs.modus == 'JETZT_PRUEFEN')
         run: |
           set -euo pipefail
-          node scripts/social/run-post-job.mjs --auto-if-idle --run-id "${{ github.run_id }}" --write
+          node products/social/producer/run-post-job.mjs --auto-if-idle --run-id "${{ github.run_id }}" --write
 
       # Fertige Work-Ergebnisse (oben eingeholt) werden zu Kandidaten -
       # jeder VERIFIED Carousel-Job genau einmal, nie auf Kosten eines
@@ -472,7 +472,7 @@ jobs:
           steps.lease.outputs.produktiv_erlaubt == 'true'
         run: |
           set -euo pipefail
-          node scripts/social/make-carousel-candidates.mjs --data social/data --write
+          node products/social/producer/make-carousel-candidates.mjs --data social/data --write
 
       # Der aelteste wartende Auftrag wird zu genau einem Work-Job, sobald
       # keiner mehr offen ist (MAX_OPEN_CREATIVE_JOBS bleibt 1: eine
@@ -488,7 +488,7 @@ jobs:
           set -euo pipefail
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"
-          node scripts/social/run-post-job.mjs --write | tee /tmp/workjob.txt
+          node products/social/producer/run-post-job.mjs --write | tee /tmp/workjob.txt
           if grep -q "Work-Job gestartet:" /tmp/workjob.txt; then
             echo "gestartet=ja" >> "$GITHUB_OUTPUT"
           else
@@ -524,7 +524,7 @@ jobs:
           set -euo pipefail
           if [ -z "${VU_SOCIAL_ADMIN_KEY:-}" ]; then
             echo "Kein Admin-Schluessel: die Schlange bleibt, wo sie ist."
-            node scripts/social/publish-approval-queue.mjs --check-assets \
+            node products/social/producer/publish-approval-queue.mjs --check-assets \
               | tee /tmp/queue.txt
             exit 0
           fi
@@ -535,7 +535,7 @@ jobs:
           # bleibt jeder Eintrag UNGEPRUEFT, und UNGEPRUEFT ist gesperrt.
           #
           # Exit 4 heisst "kein Schluessel" und ist eine Antwort, kein Ausfall.
-          node scripts/social/publish-approval-queue.mjs --write --check-assets \
+          node products/social/producer/publish-approval-queue.mjs --write --check-assets \
             | tee /tmp/queue.txt || [ "$?" = "4" ]
 
       # Der Reifezustand nach dem Lauf, gegen den dann aktuellen
@@ -549,13 +549,13 @@ jobs:
           # Ohne Fahnen: der Suiten- und Isolationszustand kommt aus dem
           # gemessenen Befund des Schritts oben, an diesen Commit
           # gebunden.
-          node scripts/social/production-readiness.mjs | tee /tmp/reife.txt
+          node products/social/producer/production-readiness.mjs | tee /tmp/reife.txt
 
       - name: Der Stand, den der Owner sieht
         if: always()
         run: |
           set -euo pipefail
-          node scripts/social/rank-social-opportunities.mjs --top 3 \
+          node products/social/producer/rank-social-opportunities.mjs --top 3 \
             --out social/data > /tmp/rank.txt 2>&1 || true
           {
             echo "## Orchestrator"
@@ -593,10 +593,10 @@ jobs:
           if [ "${{ steps.plan.outputs.creative }}" = "ja" ] || \
              [ "${{ steps.plan.outputs.prepare }}" = "ja" ] || \
              [ "${{ steps.workjob.outputs.gestartet }}" = "ja" ]; then
-            node scripts/social/run-orchestrator.mjs \
+            node products/social/producer/run-orchestrator.mjs \
               --lease-release "${{ github.run_id }}" --produktiv
           else
-            node scripts/social/run-orchestrator.mjs \
+            node products/social/producer/run-orchestrator.mjs \
               --lease-release "${{ github.run_id }}"
           fi
 

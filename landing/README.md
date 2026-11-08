@@ -45,7 +45,7 @@ Die ursprünglichen Designregeln liegen in `assets/home/home.css`. Nur deren Fon
 node scripts/sync-research.mjs RESEARCH_COMMIT_MIT_40_ZEICHEN
 ```
 
-Das Skript liest fertiges `index.html`, Logo, Font, CSS und Hero-Animation aus Git. `module-preview.mjs` ersetzt dabei beide Geräteinhalte durch vorhandene Modul-Icons und Namen und entfernt Chart-Symbole; auch bei erneuter Übernahme gelangen keine Finanzwerte in die Veröffentlichung. Es verändert keine Research-Datei. Referenzcommit und CSS-Hash stehen in `reference/source.json`. `node scripts/social-preview.mjs` nimmt den tatsächlichen Coming-soon-Hero als Social-Bild auf.
+Das Skript liest fertiges `index.html`, Logo, Font, CSS und Hero-Animation aus Git. `module-preview.mjs` ersetzt dabei beide Geräteinhalte durch vorhandene Modul-Icons und Namen und entfernt Chart-Symbole; auch bei erneuter Übernahme gelangen keine Finanzwerte in die Veröffentlichung. Es verändert keine Research-Datei. Referenzcommit und CSS-Hash stehen in `reference/source.json`. `node products/social/producer-preview.mjs` nimmt den tatsächlichen Coming-soon-Hero als Social-Bild auf.
 
 ## Brevo: Newsletter mit eigener Oberfläche und offizieller DOI-API
 
