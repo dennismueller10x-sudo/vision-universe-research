@@ -4,8 +4,8 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-const M = require('../engine/model.js');
-const stock = (t) => JSON.parse(readFileSync(new URL('../../discover/data/stocks/US_REAL/' + t + '.json', import.meta.url)));
+const M = require('../../../fundamental/engine/model.js');
+const stock = (t) => JSON.parse(readFileSync(new URL('../../../discover/data/stocks/US_REAL/' + t + '.json', import.meta.url)));
 
 const p = (fy, v, extra = {}) => ({ fy, end: fy + '-12-31', v, filed: (fy + 1) + '-02-20', accn: '0000000000-' + String(fy).slice(2) + '-000001', ...extra });
 const synth = (over = {}) => ({
@@ -126,12 +126,12 @@ test('Echte Daten: Luecken bleiben sichtbar (Free Cashflow) und Banken ohne Brut
 });
 
 test('Nur bestehende, ausgelieferte Daten: Discover-Aktiendatei und Suchliste', () => {
-  const src = readFileSync(new URL('../engine/model.js', import.meta.url), 'utf8') + readFileSync(new URL('../app.js', import.meta.url), 'utf8');
+  const src = readFileSync(new URL('../../../fundamental/engine/model.js', import.meta.url), 'utf8') + readFileSync(new URL('../../../fundamental/app.js', import.meta.url), 'utf8');
   const paths = [...src.matchAll(/['"](\/[a-z0-9-]+\/data\/[^'"]*)['"]/g)].map((m) => m[1]);
   assert.deepEqual([...new Set(paths)].sort(), ['/discover/data/rows/US_REAL/', '/discover/data/search/US_REAL.json', '/discover/data/stocks/US_REAL/', '/quant/data/market/discover-series-long/'],
     'lange Wochenreihe (Kurs + Split-Beleg) wie die Discover-Aktiendatei sie verlinkt');
-  assert.ok(existsSync(new URL('../../discover/data/rows/US_REAL/thema-ki.json', import.meta.url)));
-  assert.ok(existsSync(new URL('../../discover/data/search/US_REAL.json', import.meta.url)));
+  assert.ok(existsSync(new URL('../../../discover/data/rows/US_REAL/thema-ki.json', import.meta.url)));
+  assert.ok(existsSync(new URL('../../../discover/data/search/US_REAL.json', import.meta.url)));
   assert.doesNotMatch(src, /quant\/data\/sec|quant\/data\/fundamentals/, 'keine nicht ausgelieferten SEC-Rohdaten');
 });
 
@@ -182,7 +182,7 @@ test('Bilanz rechnet Nettoschulden nur aus gemeldeten Werten', () => {
 });
 
 /* Fundamental 1.2: Im Vergleich – nur bestehende Discover-Auswahlen, dieselben Definitionen fuer alle. */
-const row = (t) => JSON.parse(readFileSync(new URL('../../discover/data/rows/US_REAL/' + t + '.json', import.meta.url)));
+const row = (t) => JSON.parse(readFileSync(new URL('../../../discover/data/rows/US_REAL/' + t + '.json', import.meta.url)));
 test('Vergleichsgruppen: kuratierter Sektor nur mit gleichem Sektor, sonst Discover-Themen; "similar" ohne Sektor wird nicht verwendet', () => {
   const ko = M.peerOptions(stock('KO'));
   assert.equal(ko[0].kind, 'sector');

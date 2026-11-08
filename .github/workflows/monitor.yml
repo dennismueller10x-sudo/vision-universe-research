@@ -1108,7 +1108,7 @@ jobs:
         id: fresh
         run: |
           set -euo pipefail
-          node scripts/fundamental/sec-freshness.mjs --out="$RUNNER_TEMP/freshness.json"
+          node products/fundamental/producer/sec-freshness.mjs --out="$RUNNER_TEMP/freshness.json"
           node -e 'const r=require(process.argv[1]); console.log("decision="+r.decision); console.log("pending="+r.pending)' "$RUNNER_TEMP/freshness.json" >> "$GITHUB_OUTPUT"
       - name: Erzeuger anstossen (nur wenn noetig und nicht schon unterwegs)
         if: steps.fresh.outputs.decision == 'REFRESH_CONSUMER'
@@ -1259,7 +1259,7 @@ jobs:
           set -euo pipefail
           # Pages-Auslieferung und CDN brauchen nach dem Deploy einige Minuten.
           for i in 1 2 3 4 5 6; do
-            if node scripts/fundamental/verify-publication.mjs --out="$RUNNER_TEMP/publication.json"; then exit 0; fi
+            if node products/fundamental/producer/verify-publication.mjs --out="$RUNNER_TEMP/publication.json"; then exit 0; fi
             sleep 120
           done
           echo "::error::Die veroeffentlichte Fundamental-Historie zeigt den neuen SEC-Stand nicht."

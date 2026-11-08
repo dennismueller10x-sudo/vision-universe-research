@@ -13,7 +13,7 @@
 // bestehenden Erzeuger an (workflow_dispatch) – kein neuer Datenweg, keine
 // fremde Datei wird geschrieben.
 //
-// Aufruf: node scripts/fundamental/sec-freshness.mjs [--root=.] --out=<datei.json>
+// Aufruf: node products/fundamental/producer/sec-freshness.mjs [--root=.] --out=<datei.json>
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve, join } from 'node:path';

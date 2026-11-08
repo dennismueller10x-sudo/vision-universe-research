@@ -18,7 +18,7 @@
 // und genauso geprueft; passt eine Historie nicht zur Verbraucherdatei (andere
 // Identitaet, anderer Lauf), bleibt es beim Fenster.
 //
-// Aufruf: node scripts/fundamental/build-history.mjs [--root=.] --out=<dir>
+// Aufruf: node products/fundamental/producer/build-history.mjs [--root=.] --out=<dir>
 import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve, join } from 'node:path';
@@ -26,9 +26,9 @@ import { gzipSync, gunzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-const Identity = require('../../core/identity.js');
-const Catalog = require('../../fundamental/engine/catalog.js');
-import { sectorFromSic } from '../screener/sic.mjs';
+const Identity = require('../../../core/identity.js');
+const Catalog = require('../../../fundamental/engine/catalog.js');
+import { sectorFromSic } from '../../../scripts/screener/sic.mjs';
 
 export const SCHEMA = 'vu-fundamental-history-1.0.0';
 export const SHARD_SCHEMA = 'vu-fundamental-history-shard-1.0.0';

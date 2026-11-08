@@ -7,13 +7,13 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { createRequire } from 'node:module';
-import { projectHistory, writeHistory, industryMedians, publicationDates, annualReportDates, pendingFiling, SCHEMA, INDUSTRY_MIN, PEERS_SCHEMA } from '../../scripts/fundamental/build-history.mjs';
-import { pendingIssuers, consumerLatest, classify } from '../../scripts/fundamental/sec-freshness.mjs';
-import { check as checkPublication } from '../../scripts/fundamental/verify-publication.mjs';
+import { projectHistory, writeHistory, industryMedians, publicationDates, annualReportDates, pendingFiling, SCHEMA, INDUSTRY_MIN, PEERS_SCHEMA } from '../producer/build-history.mjs';
+import { pendingIssuers, consumerLatest, classify } from '../producer/sec-freshness.mjs';
+import { check as checkPublication } from '../producer/verify-publication.mjs';
 const require = createRequire(import.meta.url);
-const C = require('../engine/catalog.js');
-const M = require('../engine/model.js');
-const root = new URL('../../', import.meta.url);
+const C = require('../../../fundamental/engine/catalog.js');
+const M = require('../../../fundamental/engine/model.js');
+const root = new URL('../../../', import.meta.url);
 const stock = (t) => JSON.parse(readFileSync(new URL('discover/data/stocks/US_REAL/' + t + '.json', root)));
 const consumer = (cik) => JSON.parse(readFileSync(new URL('quant/data/sec/consumer/CIK' + cik + '.json', root)));
 /* Wie im Release: Projektion plus Erstveroeffentlichung der Jahresberichte (SIC-Verlauf der SEC-Pipeline). */
@@ -154,14 +154,14 @@ test('Routen: Unteransichten im Query-Teil, Ranglisten und Branchen zweiteilig',
 });
 
 test('Datenquellen der Oberflaeche: nur ausgelieferte Pfade, keine SEC-Rohdaten', () => {
-  const src = readFileSync(new URL('../engine/catalog.js', import.meta.url), 'utf8');
+  const src = readFileSync(new URL('../../../fundamental/engine/catalog.js', import.meta.url), 'utf8');
   const paths = [...new Set([...src.matchAll(/['"](\/[a-z0-9-]+\/data\/[^'"]*)['"]/g)].map((m) => m[1]))].sort();
   // /dashboard/data/analysts/shards/: Analysten-Konsens je Titel fuer das Produktuniversum (06.11.2026, ausgeliefert wie analyst_ratings.json)
   assert.deepEqual(paths, ['/dashboard/data/analyst_ratings.json', '/dashboard/data/analysts/shards/', '/fundamental/data/history/', '/quant/data/market/discover-series/', '/screener/data/universe-US_REAL.json']);
   assert.ok(existsSync(new URL('dashboard/data/analyst_ratings.json', root)));
   assert.doesNotMatch(src, /quant\/data\/sec|quant\/data\/fundamentals/);
   const release = readFileSync(new URL('scripts/vu2/build-release.mjs', root), 'utf8');
-  assert.match(release, /fundamental\/build-history\.mjs/, 'Historie wird im Release gebaut');
+  assert.match(release, /products\/fundamental\/producer\/build-history\.mjs/, 'Historie wird im Release gebaut');
   assert.match(release, /screener\/build-universe\.mjs/, 'Universum wird im Release gebaut');
 });
 
@@ -444,7 +444,7 @@ function secWatcher(root) {
 
 test('Veroeffentlichung: Stand und frisch uebernommene Meldung muessen ausgeliefert sein', async () => {
   const { gzipSync } = await import('node:zlib');
-  const Identity = require('../../core/identity.js');
+  const Identity = require('../../../core/identity.js');
   const want = { consumerAsOf: '2026-10-26', adoptedRecently: 1, sample: [{ ticker: 'META', form: '10-Q', filed: '2026-10-22', accession: '0001628280-26-066773' }] };
   const site = (asOf, accn) => async (url) => {
     const path = url.replace(/^https?:\/\/[^/]+/, '').split('?')[0];

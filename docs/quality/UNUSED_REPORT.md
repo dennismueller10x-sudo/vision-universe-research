@@ -1551,9 +1551,9 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/discover/serve-https.mjs | .github/workflows/discover-ci.yml, .github/workflows/discover-frontend-ci.yml, .github/workflows/monitor.yml |
 | scripts/discover/verify-discover-data.mjs | .github/workflows/company-names.yml, .github/workflows/discover-ci.yml, .github/workflows/discover-frontend-ci.yml, .github/workflows/index-membership.yml, .github/workflows/long-series.yml, .github/workflows/market-data-refresh.yml, .github/workflows/sec-consumer-fundamentals.yml, .github/workflows/security-master-eligibility.yml |
 | scripts/discover/watchlist-coupling-qa.mjs | .github/workflows/account-ci.yml, .github/workflows/discover-ci.yml, .github/workflows/discover-frontend-ci.yml |
-| scripts/fundamental/build-history.mjs | .github/workflows/ci.yml, .github/workflows/shell-ci.yml |
-| scripts/fundamental/sec-freshness.mjs | .github/workflows/ci.yml, .github/workflows/fundamental-sec-freshness.yml, .github/workflows/shell-ci.yml |
-| scripts/fundamental/verify-publication.mjs | .github/workflows/ci.yml, .github/workflows/fundamental-sec-freshness.yml, .github/workflows/shell-ci.yml |
+| products/fundamental/producer/build-history.mjs | .github/workflows/ci.yml, .github/workflows/shell-ci.yml |
+| products/fundamental/producer/sec-freshness.mjs | .github/workflows/ci.yml, .github/workflows/fundamental-sec-freshness.yml, .github/workflows/shell-ci.yml |
+| products/fundamental/producer/verify-publication.mjs | .github/workflows/ci.yml, .github/workflows/fundamental-sec-freshness.yml, .github/workflows/shell-ci.yml |
 | scripts/hedgefonds/fetch_edgar_data.py | .github/workflows/ci.yml, .github/workflows/content.yml |
 | scripts/hedgefonds/fund_meta.py | .github/workflows/ci.yml |
 | scripts/hedgefonds/test_fetch_edgar_data.py | .github/workflows/ci.yml |

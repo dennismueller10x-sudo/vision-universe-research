@@ -3,7 +3,7 @@
 > **Einstieg Fundamental.** Aktuelle Arbeitsregeln: [CLAUDE.md](../CLAUDE.md); datierte Entscheidungen: [Neustart-Plan](PLAN_NEUSTART_2026-11.md). Bei Widersprüchen zu historischen Abschnitten gelten diese Quellen. Weitere Seiten sind Fachbelege, keine parallelen Einstiege. [Landkarte](README.md).
 
 
-Produktwelt `/fundamental/` (Hash-Routen, ohne Abhängigkeiten). Zahlen und Abdeckung: [FUNDAMENTAL_DATA_COVERAGE.md](FUNDAMENTAL_DATA_COVERAGE.md) (erzeugt mit `scripts/fundamental/coverage-report.mjs`).
+Produktwelt `/fundamental/` (Hash-Routen, ohne Abhängigkeiten). Zahlen und Abdeckung: [FUNDAMENTAL_DATA_COVERAGE.md](FUNDAMENTAL_DATA_COVERAGE.md) (erzeugt mit `products/fundamental/producer/coverage-report.mjs`).
 
 ## Ansichten
 
@@ -26,7 +26,7 @@ Unteransichten stehen im Query-Teil, damit `core/stock-context.js#parse` die Adr
 
 | Quelle | Pfad (ausgeliefert) | Erzeuger | Inhalt |
 |---|---|---|---|
-| SEC-Historie | `/fundamental/data/history/<shardKey>.json.gz` | `scripts/fundamental/build-history.mjs` im Release (`build-release.mjs`), nie committet | Geschäftsjahre, eigenständige Quartale, LTM aller Kennzahlen der SEC-Verbraucherdateien, Meldung je Wert; ältere Geschäftsjahre aus `quant/data/sec/consumer-history` (derselbe Erzeuger), siehe [FUNDAMENTAL_HISTORY_DEPTH.md](FUNDAMENTAL_HISTORY_DEPTH.md) |
+| SEC-Historie | `/fundamental/data/history/<shardKey>.json.gz` | `products/fundamental/producer/build-history.mjs` im Release (`build-release.mjs`), nie committet | Geschäftsjahre, eigenständige Quartale, LTM aller Kennzahlen der SEC-Verbraucherdateien, Meldung je Wert; ältere Geschäftsjahre aus `quant/data/sec/consumer-history` (derselbe Erzeuger), siehe [FUNDAMENTAL_HISTORY_DEPTH.md](FUNDAMENTAL_HISTORY_DEPTH.md) |
 | Discover-Aktiendatei | `/discover/data/stocks/US_REAL/<T>.json` | Discover | Kurs, Bewertung (KGV, KUV, Börsenwert, FCF-Rendite), Ersatz-Reihen |
 | Screener-Universum | `/screener/data/universe-US_REAL.json` | Screener im Release | Querschnitt: Branche, KBV, EV-Kennzahlen, ROIC … aller US-Aktien |
 | Branchenmediane | `/fundamental/data/history/industry/<sic4-NNNN\|sic-NN\|sec-ID>.json` | `build-history.mjs#industryMedians` im Release | Median je Geschäftsjahr und Anzahl Unternehmen (mind. 5) für Quoten, Renditen, Wachstum und geprüfte Bewertung |
@@ -76,11 +76,11 @@ Abdeckung: [FUNDAMENTAL_DATA_COVERAGE.md](FUNDAMENTAL_DATA_COVERAGE.md). **Nicht
 
 - Jede Aktienseite zeigt den neuesten Berichtszeitraum und das Datum der letzten verarbeiteten SEC-Meldung.
 - Liegt bei der SEC bereits ein neuerer 10-Q/10-K vor (`quant/data/fundamentals/daily/state.json` der täglichen SEC-Pipeline), steht dort sichtbar, dass er in den verarbeiteten Daten noch fehlt. Zahlen aus Ergebnismitteilungen (Pressemitteilung, 8-K) werden nicht übernommen; maßgeblich sind die eingereichten 10-Q/10-K.
-- **Ablauf:** tägliche SEC-Pipeline (`sec-fundamentals-daily.yml`, 06:15 UTC) erkennt neue Meldungen → Wächter `monitor.yml`, Teil `sec-frische` (vormals `fundamental-sec-freshness.yml`; `scripts/fundamental/sec-freshness.mjs`) vergleicht mit den Verbraucherdateien und stößt bei neuen periodischen Meldungen den bestehenden Erzeuger `sec-consumer-fundamentals.yml` an (höchstens einmal je 18 Stunden; sonst wöchentlich montags) → dieser committet Verbraucher- und Discover-Daten → das Release (`pages-release.yml`, ausgelöst durch den Erzeuger) baut die Fundamental-Historie neu. Kein Code-Merge nötig.
+- **Ablauf:** tägliche SEC-Pipeline (`sec-fundamentals-daily.yml`, 06:15 UTC) erkennt neue Meldungen → Wächter `monitor.yml`, Teil `sec-frische` (vormals `fundamental-sec-freshness.yml`; `products/fundamental/producer/sec-freshness.mjs`) vergleicht mit den Verbraucherdateien und stößt bei neuen periodischen Meldungen den bestehenden Erzeuger `sec-consumer-fundamentals.yml` an (höchstens einmal je 18 Stunden; sonst wöchentlich montags) → dieser committet Verbraucher- und Discover-Daten → das Release (`pages-release.yml`, ausgelöst durch den Erzeuger) baut die Fundamental-Historie neu. Kein Code-Merge nötig.
 - **Veröffentlichung prüfen:** Nach jedem Lauf des Erzeugers startet der Job `publish` desselben Wächters (Rückfall: täglich 19:50 UTC für den jüngsten Lauf der letzten 26 Stunden).
   - Lauf gescheitert (z. B. in der eigenen Regressionsprüfung des Erzeugers): nichts wurde committet → roter Lauf mit Hinweis, keine Wiederholung.
   - Lauf erfolgreich: wartet auf ein erfolgreiches `pages-release.yml` auf `main`, das danach entstanden ist (es startet per `workflow_run` und werktags ohnehin alle 5 Minuten). Kommt binnen 15 Minuten keines, wird es **einmal** per `workflow_dispatch` mit Standard-Eingaben angestoßen.
-  - Danach vergleicht `scripts/fundamental/verify-publication.mjs` die Auslieferung mit `main`: `status.json` mit demselben `consumerAsOf` wie die Verbraucherdateien, und für bis zu 8 frisch übernommene 10-Q/10-K (laut `state.json`) muss die ausgelieferte Scherbe genau diese Meldung (Accession) enthalten. Bis zu 6 Versuche im Abstand von 2 Minuten (CDN); sonst roter Lauf.
+  - Danach vergleicht `products/fundamental/producer/verify-publication.mjs` die Auslieferung mit `main`: `status.json` mit demselben `consumerAsOf` wie die Verbraucherdateien, und für bis zu 8 frisch übernommene 10-Q/10-K (laut `state.json`) muss die ausgelieferte Scherbe genau diese Meldung (Accession) enthalten. Bis zu 6 Versuche im Abstand von 2 Minuten (CDN); sonst roter Lauf.
   - Weder der Erzeuger noch `pages-release.yml` werden dafür verändert; der Wächter schreibt nichts ins Repository.
 - **Alarm:** Der tägliche Lauf des Wächters wird rot, wenn eine neue 10-Q/10-K seit mehr als 3 Tagen nicht in den Verbraucherdaten steht oder der Erzeuger seit 8 Tagen keinen erfolgreichen Lauf hatte; GitHub meldet gescheiterte Läufe dem Eigentümer. Ein gescheiterter Erzeugerlauf wird am Folgetag einmal neu angestoßen (18-Stunden-Sperre), nicht in einer Schleife.
 - **Täglich, auch am Wochenende:** `sec-fundamentals-daily.yml` (06:15 UTC) und der Wächter (nach dem täglichen Lauf, Rückfall 14:40 UTC) laufen jeden Tag; `pages-release.yml` startet nach jedem Erzeugerlauf per `workflow_run`, unabhängig vom Wochentag.
@@ -141,7 +141,7 @@ Der Katalog definiert 60 Kennzahlen; Gewinnrendite und Kurs/Free Cashflow sind a
 
 ## Tests
 
-`node --test "fundamental/tests/*.test.mjs"` (Modell, Katalog, Projektion, KGV, Quartalsregel, Routen, Datenpfade, Kennzahlenvergleich) · `scripts/quality/vu3-regression-qa.mjs` (Wege, Theme, Visual-Bausteine, Kontrast) · `scripts/quality/shell-browser-qa.mjs` · `scripts/quality/fundamental-compare-qa.mjs` (Kennzahlenvergleich, WebKit iPhone und Chromium).
+`node --test "products/fundamental/tests/*.test.mjs"` (Modell, Katalog, Projektion, KGV, Quartalsregel, Routen, Datenpfade, Kennzahlenvergleich) · `scripts/quality/vu3-regression-qa.mjs` (Wege, Theme, Visual-Bausteine, Kontrast) · `scripts/quality/shell-browser-qa.mjs` · `scripts/quality/fundamental-compare-qa.mjs` (Kennzahlenvergleich, WebKit iPhone und Chromium).
 
 ## Fachbelege und weiterführende Dokumentation
 

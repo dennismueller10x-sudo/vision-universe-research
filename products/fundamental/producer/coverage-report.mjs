@@ -1,11 +1,11 @@
 // FUNDAMENTAL – Datenabdeckung und Konsistenz (Pruefbericht, schreibt nur nach --out).
 //
-// Liest dieselben Quellen wie die Seite: die SEC-Historie (in memory aus scripts/fundamental/build-history.mjs),
+// Liest dieselben Quellen wie die Seite: die SEC-Historie (in memory aus products/fundamental/producer/build-history.mjs),
 // die Discover-Aktiendateien und die Wochenreihen mit Split-Beleg. Misst je Kennzahl des Katalogs
 // (fundamental/engine/catalog.js), wie viele Unternehmen einen aktuellen Wert und wie viele Jahre Historie haben,
 // ob vier eigenstaendige Quartale den Jahreswert ergeben und ob die LTM der Summe der letzten vier Quartale entspricht.
 //
-// Aufruf: node scripts/fundamental/coverage-report.mjs --out=<datei.md> [--json=<datei.json>]
+// Aufruf: node products/fundamental/producer/coverage-report.mjs --out=<datei.md> [--json=<datei.json>]
 import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve, join } from 'node:path';
@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { buildHistory } from './build-history.mjs';
 const require = createRequire(import.meta.url);
-const C = require('../../fundamental/engine/catalog.js');
+const C = require('../../../fundamental/engine/catalog.js');
 
 export const SAMPLE = ['AAPL', 'MSFT', 'NVDA', 'AMZN', 'GOOGL', 'META', 'TSLA', 'JPM', 'BRK-B', 'KO', 'XOM', 'JNJ', 'WMT', 'PLTR', 'AAL', 'CMG', 'O', 'SAP'];
 const FLOWS = ['revenue', 'gross_profit', 'operating_income', 'net_income', 'operating_cash_flow', 'free_cash_flow'];
@@ -102,7 +102,7 @@ const LABEL = Object.fromEntries(C.METRICS.map((m) => [m.id, m.label]));
 export function markdown(r) {
   const L = [];
   L.push('# Fundamental – Datenabdeckung und Konsistenz', '');
-  L.push('Erzeugt mit `node scripts/fundamental/coverage-report.mjs --universe=<screener/data/universe-US_REAL.json> --out=docs/FUNDAMENTAL_DATA_COVERAGE.md` am ' + r.generatedAt.slice(0, 10) + '. Quellen: SEC-Verbraucherdateien (Projektion wie im Release), Discover-Aktiendateien, Wochenreihen mit Split-Beleg. ' + (r.universe ? 'Bewertungskennzahlen aus dem Screener-Universum (KBV, EV-Kennzahlen, Kurs/FCF, PEG) sind mitgezählt (`--universe=`).' : 'Bewertungskennzahlen aus dem Screener-Universum (KBV, EV-Kennzahlen, Kurs/FCF, PEG) sind nicht gezählt (ohne `--universe=`).'), '');
+  L.push('Erzeugt mit `node products/fundamental/producer/coverage-report.mjs --universe=<screener/data/universe-US_REAL.json> --out=docs/FUNDAMENTAL_DATA_COVERAGE.md` am ' + r.generatedAt.slice(0, 10) + '. Quellen: SEC-Verbraucherdateien (Projektion wie im Release), Discover-Aktiendateien, Wochenreihen mit Split-Beleg. ' + (r.universe ? 'Bewertungskennzahlen aus dem Screener-Universum (KBV, EV-Kennzahlen, Kurs/FCF, PEG) sind mitgezählt (`--universe=`).' : 'Bewertungskennzahlen aus dem Screener-Universum (KBV, EV-Kennzahlen, Kurs/FCF, PEG) sind nicht gezählt (ohne `--universe=`).'), '');
   L.push('## Umfang', '');
   L.push('| | Anzahl |', '|---|---:|');
   L.push('| Discover-Aktiendateien | ' + r.stats.stocks + ' |', '| mit SEC-Historie (Projektion) | ' + r.stats.projected + ' |', '| ohne SEC-Geschäftszahlen | ' + r.stats.noFundamentals + ' |', '| SEC-Datei ohne Jahres-/Quartalsreihen | ' + r.stats.invalid + ' |');

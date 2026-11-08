@@ -10,7 +10,7 @@
 //     ausgelieferte Scherbe muss genau diese Meldung enthalten.
 // Kein Schreiben, keine Korrektur. Exit 1, wenn die Auslieferung den Repository-Stand nicht zeigt.
 //
-// Aufruf: node scripts/fundamental/verify-publication.mjs [--root=.] [--base=https://research.visionuniverse.de] [--out=<datei.json>] [--sample=8]
+// Aufruf: node products/fundamental/producer/verify-publication.mjs [--root=.] [--base=https://research.visionuniverse.de] [--out=<datei.json>] [--sample=8]
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve, join } from 'node:path';
@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { consumerLatest, PERIODIC } from './sec-freshness.mjs';
 const require = createRequire(import.meta.url);
-const Identity = require('../../core/identity.js');
+const Identity = require('../../../core/identity.js');
 
 export const SCHEMA = 'vu-fundamental-publication-check-1.0.0';
 export const DEFAULT_BASE = 'https://research.visionuniverse.de';

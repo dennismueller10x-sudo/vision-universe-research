@@ -4,9 +4,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { projectHistory, withConsumerHistory, publicationDates, CONSUMER_HISTORY_SCHEMA } from '../../scripts/fundamental/build-history.mjs';
+import { projectHistory, withConsumerHistory, publicationDates, CONSUMER_HISTORY_SCHEMA } from '../producer/build-history.mjs';
 const require = createRequire(import.meta.url);
-const C = require('../engine/catalog.js');
+const C = require('../../../fundamental/engine/catalog.js');
 
 const row = (fy, end, v, filed, accn = '0000000001-25-000001') => [fy, 'FY', end, v, filed, accn, 0];
 const source = () => ({
@@ -86,7 +86,7 @@ test('Historie aus gzip-Scherben, Einzeldateien nur solange keine Scherbe da ist
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
   const { gzipSync } = await import('node:zlib');
-  const { consumerHistories, CONSUMER_HISTORY_SHARD_SCHEMA } = await import('../../scripts/fundamental/build-history.mjs');
+  const { consumerHistories, CONSUMER_HISTORY_SHARD_SCHEMA } = await import('../producer/build-history.mjs');
   const dir = await mkdtemp(join(tmpdir(), 'fu-hist-'));
   await writeFile(join(dir, 'CIK0000000002.json'), JSON.stringify({ cik: '0000000002', legacy: true }));
   let got = await consumerHistories(dir);
@@ -105,7 +105,7 @@ test('Beschaedigte Historie-Scherbe bricht den Bau kontrolliert ab', async () =>
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
   const { gzipSync } = await import('node:zlib');
-  const { consumerHistories, buildHistory, CONSUMER_HISTORY_SHARD_SCHEMA } = await import('../../scripts/fundamental/build-history.mjs');
+  const { consumerHistories, buildHistory, CONSUMER_HISTORY_SHARD_SCHEMA } = await import('../producer/build-history.mjs');
   const shard = (key, issuers, schema = CONSUMER_HISTORY_SHARD_SCHEMA) => gzipSync(JSON.stringify({ schema, shard: key, issuers }));
   const cases = {
     'abgeschnittenes gzip': (b) => b.subarray(0, 12),

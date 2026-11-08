@@ -1,12 +1,12 @@
 # Fundamental – ältere SEC-Lücken (nicht übernommene Meldungen)
 
-Stand: 24.10.2026. Verbraucherdaten `quant/data/sec/consumer` vom 19.10.2026, Meldeverlauf `quant/data/fundamentals/daily/state.json` von `main`. Grundlage ist `scripts/fundamental/sec-freshness.mjs` (`notAdoptedItems`): Unternehmen, deren jüngste periodische Meldung (10-Q, 10-K, 20-F, 40-F, auch /A) **vor** dem letzten Verbraucherlauf eingereicht wurde und trotzdem nicht in ihrer Verbraucherdatei steht. Am 24.10. sind das **424** (am 23.10. 427; der Meldeverlauf hat sich seitdem weiterbewegt).
+Stand: 24.10.2026. Verbraucherdaten `quant/data/sec/consumer` vom 19.10.2026, Meldeverlauf `quant/data/fundamentals/daily/state.json` von `main`. Grundlage ist `products/fundamental/producer/sec-freshness.mjs` (`notAdoptedItems`): Unternehmen, deren jüngste periodische Meldung (10-Q, 10-K, 20-F, 40-F, auch /A) **vor** dem letzten Verbraucherlauf eingereicht wurde und trotzdem nicht in ihrer Verbraucherdatei steht. Am 24.10. sind das **424** (am 23.10. 427; der Meldeverlauf hat sich seitdem weiterbewegt).
 
 Die Analyse ändert keine Daten. Nichts wird pauschal übernommen oder korrigiert; die Verbraucherdaten erzeugt weiterhin allein `sec-consumer-fundamentals.yml` (Quant).
 
 ## Stand nach den Korrekturen (25.10.2026)
 
-Von den **424** Meldungen der Liste vom 24.10. sind **376 übernommen**. Nachgewiesen ist das mit `scripts/fundamental/sec-freshness.mjs` auf `main` 67a9af4: Verbraucherdaten vom 25.10.2026, `notAdopted` 54 = 48 aus der Liste + 6 neue.
+Von den **424** Meldungen der Liste vom 24.10. sind **376 übernommen**. Nachgewiesen ist das mit `products/fundamental/producer/sec-freshness.mjs` auf `main` 67a9af4: Verbraucherdaten vom 25.10.2026, `notAdopted` 54 = 48 aus der Liste + 6 neue.
 
 | Klasse | vorher | übernommen | offen | durch |
 |---|---:|---:|---:|---|

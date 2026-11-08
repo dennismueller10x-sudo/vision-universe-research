@@ -24,7 +24,13 @@
  "reads": [
   "fundamentalsConsumer"
  ],
+ "producers": [
+  "products/fundamental/producer/build-history.mjs",
+  "products/fundamental/producer/sec-freshness.mjs",
+  "products/fundamental/producer/verify-publication.mjs",
+  "products/fundamental/producer/coverage-report.mjs"
+ ],
  "tests": [
-  "fundamental/tests/*.test.mjs"
+  "products/fundamental/tests/*.test.mjs"
  ]
 }

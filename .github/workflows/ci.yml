@@ -46,7 +46,7 @@ on:
       - 'scripts/ci/**'
       - 'scripts/ci/ci-checks.json'
       - 'scripts/ci/select-checks.mjs'
-      - 'scripts/fundamental/**'
+      - 'products/fundamental/**'
       - 'products/hedgefonds/**'
       - 'scripts/screener/**'
       - 'scripts/screener/sic.mjs'
@@ -79,7 +79,7 @@ on:
       - 'scripts/ci/**'
       - 'scripts/ci/ci-checks.json'
       - 'scripts/ci/select-checks.mjs'
-      - 'scripts/fundamental/**'
+      - 'products/fundamental/**'
       - 'products/hedgefonds/**'
       - 'scripts/screener/**'
       - 'scripts/vorsorge/**'
@@ -289,11 +289,11 @@ jobs:
           node --check fundamental/engine/catalog.js
           node --check fundamental/engine/compare.js
           node --check fundamental/app.js
-          node --check scripts/fundamental/build-history.mjs
-          node --check scripts/fundamental/sec-freshness.mjs
-          node --check scripts/fundamental/verify-publication.mjs
+          node --check products/fundamental/producer/build-history.mjs
+          node --check products/fundamental/producer/sec-freshness.mjs
+          node --check products/fundamental/producer/verify-publication.mjs
       - name: Model and data tests
-        run: node --test "fundamental/tests/*.test.mjs"
+        run: node --test "products/fundamental/tests/*.test.mjs"
 
   # --- hedgefonds-dashboard: vormals hedgefonds-dashboard-ci.yml
   hedgefonds-dashboard:

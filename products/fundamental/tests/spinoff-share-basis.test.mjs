@@ -8,11 +8,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { projectHistory, publicationDates, annualReportDates } from '../../scripts/fundamental/build-history.mjs';
+import { projectHistory, publicationDates, annualReportDates } from '../producer/build-history.mjs';
 
 const require = createRequire(import.meta.url);
-const C = require('../engine/catalog.js');
-const root = new URL('../../', import.meta.url);
+const C = require('../../../fundamental/engine/catalog.js');
+const root = new URL('../../../', import.meta.url);
 const evidence = JSON.parse(readFileSync(new URL('quant/config/spinoff-evidence-1.0.0.json', root), 'utf8'));
 
 const row = (fy, v, filed) => [fy, 'FY', fy + '-12-31', v, filed, '0000000001-25-00000' + (fy - 2020), 0];
