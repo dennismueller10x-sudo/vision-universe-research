@@ -16,7 +16,7 @@
    Daten, die ohnehin ausgeliefert werden.
    ========================================================================= */
 import Fields from "../../../screener/engine/fields.js";
-import { SECTORS, MAJOR_GROUPS } from "../../../scripts/screener/sic.mjs";
+import { SECTORS, MAJOR_GROUPS } from "../../../products/screener/producer/sic.mjs";
 import TIAITools from "../../../quant/engines/technical/ti/ai-tools.js";
 
 export const STRATEGIES = ["MINERVINI_VCP", "MOMENTUM_BREAKOUT", "WEINSTEIN_STAGE", "DARVAS_BOX"];

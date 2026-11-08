@@ -1,0 +1,36 @@
+{
+ "schema": "vu-module-2",
+ "id": "fundamental",
+ "label": "Fundamental",
+ "status": "LIVE",
+ "route": "/fundamental/",
+ "access": "free",
+ "navigation": {
+  "group": "products",
+  "order": 4,
+  "label": "Fundamental",
+  "href": "/fundamental/#/",
+  "icon": "fundamental",
+  "claim": "Zahlen aus Geschäftsberichten",
+  "entries": [
+   ["Übersicht", "/fundamental/#/", "⌂"],
+   ["Ranglisten", "/fundamental/#/ranglisten", "◇"],
+   ["Branchen", "/fundamental/#/branchen", "◇"],
+   ["Suchen", "/fundamental/#/suche", "⌕"],
+   ["Methodik", "/fundamental/#/methodik", "▤"]
+  ]
+ },
+ "data": [],
+ "reads": [
+  "fundamentalsConsumer"
+ ],
+ "producers": [
+  "products/fundamental/producer/build-history.mjs",
+  "products/fundamental/producer/sec-freshness.mjs",
+  "products/fundamental/producer/verify-publication.mjs",
+  "products/fundamental/producer/coverage-report.mjs"
+ ],
+ "tests": [
+  "products/fundamental/tests/*.test.mjs"
+ ]
+}

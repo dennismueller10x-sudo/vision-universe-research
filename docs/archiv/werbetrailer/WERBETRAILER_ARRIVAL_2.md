@@ -45,7 +45,7 @@ Die sechs Hero-Aussagen im Handy: Quant „Jeden Tag sehen, was sich verändert.
 
 - **Beispielwerte im Mittelmodul** (NVDA, Quant-Score 94, „Setup bestätigt", Begründung) sind ausgedacht, keine echten Daten aus dem Quant-Modell. Im Werbespot als Beispiel kennzeichnen oder neutralisieren (kein konkreter Ticker).
 - Der Ton wurde nie am Stück angehört, nur Einzelbilder und Lautheit geprüft. Vor Veröffentlichung einmal komplett abspielen.
-- Die App-Screens stammen aus dem Repo-Stand vom 19./20.10.2026, ohne Live-Daten. Der Screener zeigte lokal zunächst „Daten nicht verfügbar". Die Daten wurden lokal mit `scripts/screener/build-universe.mjs` aus den Discover-Daten erzeugt. Der Ordner `screener/data/` steht in `.gitignore` und wird nicht eingecheckt.
+- Die App-Screens stammen aus dem Repo-Stand vom 19./20.10.2026, ohne Live-Daten. Der Screener zeigte lokal zunächst „Daten nicht verfügbar". Die Daten wurden lokal mit `products/screener/producer/build-universe.mjs` aus den Discover-Daten erzeugt. Der Ordner `screener/data/` steht in `.gitignore` und wird nicht eingecheckt.
 - Das fertige Video liegt nur in der alten Sitzung. Es wurde nicht in Dropbox abgelegt, weil das Dropbox-Plugin nur Textdateien anlegen kann. **Datei in der Sitzung herunterladen und sichern.**
 - Möglicher Zusatz: App-Store- und Google-Play-Hinweis („Bald im App Store & bei Google Play"), 16:9-Fassung, andere Stimme.
 - Der Trailer wurde nicht veröffentlicht (Stand der Sitzung). Veröffentlicht wird nur im Approval Center durch den Owner.
