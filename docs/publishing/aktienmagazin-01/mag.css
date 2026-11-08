@@ -104,3 +104,13 @@ table.t td.r,table.t th.r{text-align:right}
 .imgtop .run{color:#fff}
 .imgtop .body{font-size:9.25pt;line-height:1.5}
 table.qc td{padding:1.25mm 0}
+
+/* Handy-Rahmen für echte App-Screens */
+.phone{position:relative;background:#0a0a0a;border-radius:7mm;padding:1.6mm;box-shadow:0 0 0 .5mm #2a2a2a,0 8mm 18mm rgba(0,0,0,.55),0 0 26mm rgba(200,245,49,.18)}
+.phone img{display:block;width:100%;border-radius:5.6mm}
+.glow{background:radial-gradient(ellipse at 50% 55%,rgba(200,245,49,.28) 0%,rgba(200,245,49,0) 60%)}
+.pi{width:7mm;height:7mm;color:var(--lime)}
+.pillsoon{display:inline-flex;align-items:center;gap:2mm;border:1px dashed var(--lime);color:var(--lime);border-radius:999px;padding:1.4mm 3.5mm;font-weight:800;font-size:9pt}
+.pillsoon i{width:2.4mm;height:2.4mm;border-radius:50%;background:var(--lime);box-shadow:0 0 0 1mm rgba(200,245,49,.25)}
+/* Bilder insgesamt heller */
+.ph,.img,.bleed{filter:brightness(1.2) contrast(1.04) saturate(1.05)}

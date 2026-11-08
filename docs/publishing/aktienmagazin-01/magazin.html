@@ -4,43 +4,53 @@
 <link rel="stylesheet" href="mag.css">
 <script src="data.js"></script><script src="charts.js"></script><script src="lib.js"></script>
 </head><body>
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+<!-- Original HUD geometry: scripts/home/hud-symbols.html. Presentation attributes keep external use consistent across browsers. -->
+<symbol id="discover" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><circle class="dim" opacity=".45" cx="12" cy="12" r="6"/><circle class="dim" opacity=".45" cx="12" cy="12" r="2.5"/><path class="fill" fill="currentColor" stroke="none" d="M12 12 18.7 5.3A9.5 9.5 0 0 1 21.5 12z" opacity=".28"/><path d="M12 12 18.7 5.3"/><circle class="fill" fill="currentColor" stroke="none" cx="16.2" cy="9.6" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="7.6" cy="15.4" r="1"/><circle class="fill" fill="currentColor" stroke="none" cx="15.8" cy="16.2" r=".9"/></g></symbol>
+<symbol id="quant" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="5.5" width="13" height="13" rx="2.2"/><path class="dim" opacity=".45" d="M9 2v3.5M12 2v3.5M15 2v3.5M9 18.5V22M12 18.5V22M15 18.5V22M2 9h3.5M2 12h3.5M2 15h3.5M18.5 9H22M18.5 12H22M18.5 15H22"/><path d="M14.6 9H9.6l2.6 3-2.6 3h5"/></g></symbol>
+<symbol id="screener" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M6 10.5h12M9 16h6M12 16v5"/><circle class="fill" fill="currentColor" stroke="none" cx="3" cy="5" r="1.4"/><circle class="fill" fill="currentColor" stroke="none" cx="21" cy="5" r="1.4"/><circle class="fill" fill="currentColor" stroke="none" cx="6" cy="10.5" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="18" cy="10.5" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="9" cy="16" r="1.2"/><circle class="fill" fill="currentColor" stroke="none" cx="15" cy="16" r="1.2"/><circle class="fill" fill="currentColor" stroke="none" cx="12" cy="21" r="1.5"/></g></symbol>
+<symbol id="supertrader" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path class="dim" opacity=".45" d="M12 1.5v3.5M12 19v3.5M1.5 12H5M19 12h3.5"/><rect x="10.3" y="9" width="3.4" height="6" rx=".6"/><path d="M12 6.8V9M12 15v2.2"/></g></symbol>
+<symbol id="elliott" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path class="dim" opacity=".45" d="M2 21h20" stroke-dasharray="1.5 2"/><path d="M2 19 6 12l2.5 3L14 5l2.5 4L21 3"/><circle class="fill" fill="currentColor" stroke="none" cx="6" cy="12" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="8.5" cy="15" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="14" cy="5" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="16.5" cy="9" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="21" cy="3" r="1.5"/></g></symbol>
+<symbol id="chartbild" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 8v2M5.5 16v3M12 4v3M12 14v3M18.5 2.5v2M18.5 10v3"/><rect x="4" y="10" width="3" height="6" rx=".5"/><rect x="10.5" y="7" width="3" height="7" rx=".5"/><rect x="17" y="4.5" width="3" height="5.5" rx=".5"/><path class="dim" opacity=".45" d="M2 20c5-1.5 9-5 20-11"/></g></symbol><symbol id="technical" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5 20.5 12.5M2.5 20.5l18-8"/><path class="dim" opacity=".45" d="M7 8v9M11.5 10v5.5M15.5 11.3v3"/><rect x="6" y="10" width="2" height="5" rx=".4"/><rect x="10.5" y="11" width="2" height="3.5" rx=".4"/><circle class="fill" fill="currentColor" stroke="none" cx="20.5" cy="12.5" r="1.7"/><circle class="fill" fill="currentColor" stroke="none" cx="2.5" cy="4.5" r="1.1"/><circle class="fill" fill="currentColor" stroke="none" cx="2.5" cy="20.5" r="1.1"/></g></symbol>
+<symbol id="fundamental" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21h20"/><path d="M4.5 21v-6M8.5 21V10M12.5 21v-5"/><circle cx="16" cy="9" r="4.5"/><path d="m19.3 12.3 2.7 2.7"/><path class="dim" opacity=".45" d="M14.2 9.6 15.5 8l1.2 1.2 1.6-2"/></g></symbol>
+<symbol id="vorsorge" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5a9 9 0 0 1 18 0z"/><path d="M12 11.5v7a2.2 2.2 0 0 0 4.4 0"/><path class="dim" opacity=".45" d="M12 2.5V1M7.5 11.5c0-4 2-7 4.5-9M16.5 11.5c0-4-2-7-4.5-9"/><circle class="fill" fill="currentColor" stroke="none" cx="20" cy="20" r="1.3"/><path class="dim" opacity=".45" d="M18.5 16l1.5 4"/></g></symbol>
+<symbol id="layers" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2.5 9.5 5-9.5 5-9.5-5z"/><path class="dim" opacity=".45" d="m2.5 12 9.5 5 9.5-5"/><path d="m2.5 16.5 9.5 5 9.5-5"/></g></symbol>
+<!-- Hedgefonds extends the original HUD family: three investors, central lead, technical baseline. -->
+<symbol id="hedgefonds" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="2.4"/><circle class="dim" opacity=".45" cx="5" cy="8" r="1.8"/><circle class="dim" opacity=".45" cx="19" cy="8" r="1.8"/><path d="M8 19v-5a4 4 0 0 1 8 0v5"/><path class="dim" opacity=".45" d="M2 19v-4a3 3 0 0 1 5-2.2M22 19v-4a3 3 0 0 0-5-2.2M3 22h18"/><path d="M12 13v6"/><circle class="fill" fill="currentColor" stroke="none" cx="12" cy="22" r="1"/></g></symbol>
+<!-- Portfolios: Anteile eines Depots (Kreis mit hervorgehobenem Segment), gleiche HUD-Familie. -->
+<symbol id="portfolios" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.5a8.5 8.5 0 1 0 9.5 9.5H11z"/><path class="fill" fill="currentColor" stroke="none" opacity=".28" d="M14 2.5a8 8 0 0 1 7.5 7.5H14z"/><path d="M14 2.5a8 8 0 0 1 7.5 7.5H14z"/><path class="dim" opacity=".45" d="M5.5 13h3M5.5 16h5"/></g></symbol>
+</svg>
 <!-- 01-cover.html -->
-<section class="page dark cover">
-  <div class="bleed" id="cover-img" style="background-image:url(img/hf-cover-meteor.jpg);background-position:50% 45%"></div>
-  <div class="bleed" style="background:linear-gradient(180deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.35) 20%,rgba(0,0,0,0) 38%,rgba(0,0,0,.25) 52%,rgba(0,0,0,.88) 70%,#000 86%)"></div>
-  <span class="ki" style="top:44mm;right:11mm">KI-Bild</span>
-  <div class="pad" style="inset:8mm 11mm 9mm">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+<section class="page dark">
+  <div class="bleed" style="background-image:url(img/hf-cover-chip-capitol.jpg);background-position:50% 35%"></div>
+  <div class="bleed" style="background:linear-gradient(180deg,rgba(0,0,0,.85) 0%,rgba(0,0,0,.08) 24%,rgba(0,0,0,0) 46%,rgba(0,0,0,.55) 64%,rgba(0,0,0,.94) 86%)"></div>
+  <div class="pad" style="inset:9mm 11mm 10mm">
+    <div class="mast-row">
       <div>
-        <img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:6.6mm;filter:invert(1)" alt="Vision Universe">
-        <div style="font-size:52pt;font-weight:900;letter-spacing:-.06em;line-height:.82;margin-top:2mm">AKTIEN<span style="color:var(--lime)">MAGAZIN</span></div>
+        <img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:6.2mm;filter:invert(1)" alt="Vision Universe">
+        <div style="font-size:47pt;font-weight:900;letter-spacing:-.055em;line-height:.85;margin-top:2mm">AKTIEN<span style="color:var(--lime)">MAGAZIN</span></div>
       </div>
-      <div style="text-align:right">
-        <div style="display:inline-block;background:var(--lime);color:#000;font-weight:900;font-size:8pt;letter-spacing:.08em;padding:1.5mm 2.5mm;border-radius:3px">NR. 01 · NEU</div>
-        <div style="font-size:7.2pt;font-weight:800;letter-spacing:.1em;text-transform:uppercase;line-height:1.55;margin-top:2mm">KW 46 · 09.11.2026<br><span style="color:#9a9a9a">Daten bis 06.11.</span></div>
-      </div>
+      <div style="text-align:right;font-size:7.2pt;font-weight:800;letter-spacing:.1em;text-transform:uppercase;line-height:1.55">Nr. 01 · KW 46<br><span style="color:var(--lime)">09.11.2026</span><br><span style="color:#9a9a9a">Daten bis 06.11.</span></div>
     </div>
-    <!-- Kurs-Blasen -->
-    <div style="position:absolute;left:0;top:45mm;display:grid;gap:3mm" data-k="cover-bubbles"></div>
-    <!-- Riesenzahl -->
-    <div style="position:absolute;right:0;top:50mm;text-align:right;transform:rotate(-4deg)">
-      <div style="font-size:50pt;font-weight:900;letter-spacing:-.06em;line-height:.85;color:#fff;text-shadow:0 0 18px rgba(200,245,49,.55)">−3&nbsp;BIO.&nbsp;$</div>
-      <div style="display:inline-block;background:var(--lime);color:#000;font-weight:900;font-size:9pt;padding:1.2mm 2.5mm;margin-top:1.5mm;border-radius:2px">AN EINEM TAG</div>
+    <div style="position:absolute;left:0;top:38mm;display:flex;gap:2mm;flex-wrap:wrap;max-width:118mm">
+      <span class="pill dn" style="background:#fff">NVIDIA −8,8 %</span><span class="pill dn" style="background:#fff">MICRON −22 %</span><span class="pill dn" style="background:#fff">VERTIV −21 %</span><span class="pill up">APPLOVIN +71 %</span>
     </div>
-    <!-- Titel -->
-    <div style="position:absolute;left:0;right:0;top:134mm">
-      <div style="display:flex;gap:2mm;align-items:center"><span class="ressort" style="background:#fff;color:#000">Titelthema</span><span class="ressort" style="background:var(--lime);color:#000">9 Seiten</span><span class="ressort" style="background:#fff;color:#000">6 Aktien im Stresstest</span></div>
-      <div style="font-size:92pt;font-weight:900;letter-spacing:-.075em;line-height:.78;margin-top:3mm;text-shadow:0 4px 30px rgba(0,0,0,.6)">DIE KI-<br><span style="color:var(--lime)">BREMSE</span></div>
-      <div style="margin-top:4mm;max-width:155mm;font-size:13pt;font-weight:700;line-height:1.3;color:#f0f0f0">Washington wählt, die Chips stürzen ab. Was hinter dem schwersten Chip-Tag seit 2020 steckt, und wer jetzt noch steht.</div>
+    <div style="position:absolute;right:0;top:52mm;text-align:center">
+      <div class="stamp" style="font-size:9pt">3&nbsp;BIO.&nbsp;$<br><span style="font-size:7pt;font-weight:800">an einem Tag weg</span></div>
     </div>
-    <!-- Anrisse -->
-    <div class="grid" style="position:absolute;left:0;right:0;bottom:0;grid-template-columns:1fr 1fr 1fr 1fr;gap:3.5mm" data-k="cover-teaser"></div>
+    <div style="position:absolute;left:0;right:0;top:122mm">
+      <span class="ressort" style="background:var(--lime);color:#000">Titelthema · 9 Seiten</span>
+      <div style="font-size:66pt;font-weight:900;letter-spacing:-.065em;line-height:.82;margin-top:3mm">DIE KI-<br><span style="color:var(--lime)">BREMSE</span></div>
+      <div class="sub" style="margin-top:4mm;max-width:150mm;font-size:12pt;color:#e6e6e6">Washington wählt, die Chips stürzen ab. Was hinter dem schwersten Chip-Tag seit 2020 steckt und welche sechs KI-Aktien jetzt im Stresstest stehen.</div>
+    </div>
+    <div class="grid" style="position:absolute;left:0;right:0;bottom:6mm;grid-template-columns:1fr 1fr 1fr 1fr;gap:4mm">
+      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-schach-trading.jpg)"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">HEDGEFONDS</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">Burry wettet gegen Chips, Berkshire kauft eigene Aktien</div></div></div>
+      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-mobile-games-werbung.jpg)"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">ANALYSE</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">AppLovin: +71&nbsp;% in fünf Tagen. Was dahintersteckt</div></div></div>
+      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-gpu-rack.jpg);background-position:50% 30%"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">CHART DER WOCHE</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">Nvidia: Doppeltop im Wochenchart bestätigt</div></div></div>
+      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-lupe-tabellen.jpg)"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">SCREENING</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">19 Aktien, die im Ausverkauf stiegen</div></div></div>
+    </div>
   </div>
 </section>
-<script>
-VUM.k('cover-bubbles',()=>[['NVDA','Nvidia'],['MU','Micron'],['AMD','AMD'],['APP','AppLovin']].map(([t,n])=>{const c=VUM.C(t);return `<div style="display:flex;align-items:center;gap:2.5mm"><div style="width:13mm;height:13mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px ${c.week>=0?'#c8f531':'#fff'}">${c.logo?`<img src="${c.logo}" style="max-width:11mm;max-height:8mm;object-fit:contain">`:`<b style="color:#000;font-size:7pt">${t}</b>`}</div><div><div style="font-size:7pt;font-weight:900;letter-spacing:.06em;color:#fff">${n.toUpperCase()}</div><span class="pill ${c.week>=0?'up':'dn'}" style="${c.week>=0?'':'background:#fff;color:#000'};font-size:9.5pt;margin-top:.6mm">${VUM.sg(c.week,1)} %</span></div></div>`}).join(''));
-VUM.k('cover-teaser',()=>[['img/hf-schach-trading.jpg','Hedgefonds','Burry wettet gegen Chips, Berkshire kauft sich selbst'],['img/hf-mobile-games-werbung.jpg','Analyse','AppLovin: +71 % in fünf Tagen. Was dahintersteckt'],['img/bv-bildschirme-rot.jpg','Chart der Woche','Nvidia: Doppeltop im Wochenchart bestätigt'],['img/hf-lupe-tabellen.jpg','Screening','19 Aktien, die im Ausverkauf stiegen']].map(r=>`<div><div class="ph" style="height:21mm;border-radius:4px;margin-bottom:2mm;background-image:url(${r[0]})"></div><div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:6.8pt;font-weight:900;letter-spacing:.12em;color:var(--lime);text-transform:uppercase">${r[1]}</div><div style="font-size:9.8pt;font-weight:800;line-height:1.12;margin-top:.8mm">${r[2]}</div></div></div>`).join(''));
-</script>
 
 <!-- 02-editorial.html -->
 <section class="page">
@@ -399,28 +409,37 @@ VUM.k('amd-pe',()=>VUM.de(VUM.C('AMD').pe,0));VUM.k('amd-ins',()=>_i('AMD'));
 VUM.k('kal',()=>[['Di 10.11.','CoreWeave','Zahlen und Investitionspläne'],['Di 10.11.','US-Inflation','Oktober, 14:30 Uhr'],['Do 12.11.','Cisco, Applied Materials','Netzwerk und Chip-Maschinen'],['Mo 16.11.','13F-Frist','Was die Fonds im 3. Quartal hielten'],['Di 17.11.','Nvidia','Zahlen 3. Quartal'],['9.12.','Fed','Zinsentscheid']].map(r=>`<div style="background:#111;border:1px solid #262626;border-radius:6px;padding:3mm"><div style="font-size:7pt;font-weight:900;color:var(--lime)">${r[0]}</div><div style="font-size:9.5pt;font-weight:900;margin-top:1mm;line-height:1.1">${r[1]}</div><div class="xs" style="color:#9a9a9a;margin-top:1mm">${r[2]}</div></div>`).join(''));
 </script>
 
-<!-- 13a-anzeige-app.html -->
-<section class="page dark ad">
-  <div class="bleed" style="background-image:url(img/hf-app-phones.jpg);background-position:50% 50%"></div>
-  <div class="bleed" style="background:linear-gradient(180deg,rgba(0,0,0,.85) 0%,rgba(0,0,0,.2) 30%,rgba(0,0,0,.1) 55%,rgba(0,0,0,.92) 78%,#000 100%)"></div>
-  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
-  <div class="pad" style="inset:12mm 14mm 14mm">
-    <div style="display:flex;justify-content:space-between;align-items:center"><span class="tag" style="color:#9a9a9a">Anzeige</span><img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:4.5mm;filter:invert(1)" alt="Vision Universe"></div>
-    <div style="font-size:54pt;font-weight:900;letter-spacing:-.06em;line-height:.86;margin-top:10mm">Die Börse.<br><span style="color:var(--lime)">In deiner Tasche.</span></div>
+<!-- 13a-app.html -->
+<section class="page dark">
+  <div class="bleed glow" style="filter:none"></div>
+  <div class="pad" style="inset:12mm 14mm 13mm">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:5mm;filter:invert(1)" alt="Vision Universe">
+      <span class="pillsoon"><i></i>App bald verfügbar</span>
+    </div>
+    <div style="font-size:50pt;font-weight:900;letter-spacing:-.06em;line-height:.88;margin-top:9mm;text-align:center">Investieren mit<br><span style="color:var(--lime)">Weitblick.</span></div>
+    <div style="font-size:17pt;font-weight:800;text-align:center;margin-top:3mm">Alles in einer App.</div>
+    <div class="sub" style="text-align:center;color:#bdbdbd;max-width:150mm;margin:3mm auto 0;font-weight:500">Aktien finden, prüfen und verstehen, mit zehn Analysewerkzeugen auf einer gemeinsamen Datenbasis.</div>
+    <div style="position:relative;height:112mm;margin-top:6mm">
+      <div class="phone" style="position:absolute;left:14mm;top:12mm;width:46mm;transform:rotate(-7deg)"><img src="img/app-h01-a.jpg" alt="App: Hedgefonds"></div>
+      <div class="phone" style="position:absolute;right:14mm;top:12mm;width:46mm;transform:rotate(7deg)"><img src="img/app-st01-a.jpg" alt="App: Supertrader"></div>
+      <div class="phone" style="position:absolute;left:50%;top:0;width:52mm;transform:translateX(-50%);z-index:2"><img src="img/app-d01-a.jpg" alt="App: Discover"></div>
+    </div>
     <div style="position:absolute;left:0;right:0;bottom:0">
-      <span class="stamp" style="transform:rotate(-3deg);font-size:13pt">BALD VERFÜGBAR</span>
-      <div class="sub" style="margin-top:5mm;max-width:150mm;color:#e6e6e6;font-size:12.5pt">Über 5.600 US-Aktien, jeden Abend neu berechnet. Discover, Screener, Charttechnik, Hedgefonds, Fundamentaldaten. Alles, was in diesem Heft steht, in einer App.</div>
-      <div style="display:grid;grid-template-columns:30mm 1fr;gap:7mm;align-items:center;margin-top:7mm;border-top:1px solid #333;padding-top:6mm">
-        <img src="img/qr-web.svg" style="width:30mm;height:30mm;border-radius:4px" alt="QR-Code www.visionuniverse.de">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:2.5mm" data-k="tools"></div>
+      <div style="display:grid;grid-template-columns:26mm 1fr;gap:6mm;align-items:center;margin-top:6mm;border-top:1px solid #2a2a2a;padding-top:5mm">
+        <img src="img/qr-web.svg" style="width:26mm;height:26mm;border-radius:3px" alt="QR-Code www.visionuniverse.de">
         <div>
-          <div style="font-size:20pt;font-weight:900;letter-spacing:-.03em">www.visionuniverse.de</div>
-          <div class="sm" style="color:#bdbdbd;margin-top:1.5mm">Jetzt vormerken und den Newsletter eintragen. Wir melden uns, sobald die App startet.</div>
-          <div data-k="social1" style="margin-top:3mm"></div>
+          <div style="font-size:15pt;font-weight:900">App-Start nicht verpassen.</div>
+          <div class="sm" style="color:#bdbdbd;margin-top:1mm">Newsletter auf <b style="color:#fff">www.visionuniverse.de</b> abonnieren · Instagram und TikTok: <b style="color:#fff">@app.visionuniverse</b></div>
         </div>
       </div>
     </div>
   </div>
 </section>
+<script>
+VUM.k('tools',()=>[['discover','Discover'],['quant','Quant'],['screener','Screener'],['supertrader','Supertrader'],['elliott','Elliott Wave'],['technical','Technische Analyse'],['fundamental','Fundamental­daten'],['vorsorge','Vorsorge'],['hedgefonds','Hedgefonds'],['layers','AI Atlas']].map(r=>`<div style="background:#111;border:1px solid #262626;border-radius:3mm;padding:2.6mm 2mm;text-align:center"><svg class="pi"><use href="#${r[0]}"/></svg><div style="font-size:7.2pt;font-weight:800;margin-top:1mm;line-height:1.15">${r[1]}</div></div>`).join(''));
+</script>
 
 <!-- 14-applovin.html -->
 <section class="page imgtop">
@@ -776,14 +795,15 @@ VUM.k('woche',()=>[
 
 <!-- 26-app.html -->
 <section class="page dark">
-  <div class="bleed" style="background-image:url(img/hf-smartphone-chart.jpg);background-position:50% 50%;opacity:.55"></div>
-  <div class="bleed" style="background:linear-gradient(90deg,#000 0%,rgba(0,0,0,.85) 45%,rgba(0,0,0,.2) 100%)"></div>
+  <div class="bleed glow" style="filter:none;background:radial-gradient(ellipse at 80% 50%,rgba(200,245,49,.25) 0%,rgba(200,245,49,0) 55%)"></div>
+  <div class="phone" style="position:absolute;right:8mm;top:46mm;width:50mm;transform:rotate(5deg);z-index:1"><img src="img/app-s01-a.jpg" alt="App: Screener"></div>
+  <div class="phone" style="position:absolute;right:30mm;top:132mm;width:44mm;transform:rotate(-5deg);z-index:2"><img src="img/app-t01-a.jpg" alt="App: Technical"></div>
   <div data-run="Aus der App"></div>
   <div class="pad" style="top:15mm">
     <span class="ressort">Aus der App</span>
     <div class="mega" style="font-size:50pt;margin-top:4mm">Alles aus diesem Heft.<br><span style="color:var(--lime)">Täglich neu.</span></div>
     <div class="sub" style="margin-top:5mm;max-width:120mm;color:#d6d6d6;font-size:12pt">Jede Zahl in diesem Magazin stammt aus Vision Universe. In der App, die bald startet, siehst du sie für über 5.600 US-Aktien, jeden Abend aktualisiert.</div>
-    <div style="display:grid;gap:4mm;margin-top:8mm;max-width:118mm" data-k="app"></div>
+    <div style="display:grid;gap:4mm;margin-top:8mm;max-width:96mm" data-k="app"></div>
     <div style="position:absolute;left:0;bottom:0;max-width:120mm">
       <div style="display:flex;gap:4mm;align-items:center"><img src="img/qr-web.svg" style="width:20mm;height:20mm;border-radius:3px"><div><div style="font-size:12pt;font-weight:900;color:#fff">www.visionuniverse.de</div><div style="font-size:8pt;font-weight:800;color:var(--lime)">App bald verfügbar · Newsletter eintragen</div></div></div>
       <div style="font-size:20pt;font-weight:900;letter-spacing:-.03em;margin-top:1mm">Analyse-Software ohne Empfehlungen.</div>
@@ -815,7 +835,7 @@ VUM.k('app',()=>[
     <div class="xs mu" style="margin-top:3mm">KGV: Kurs geteilt durch den Gewinn je Aktie der letzten vier Quartale (SEC). „Über 200-T.“: Schlusskurs über dem Durchschnitt der letzten 200 Handelstage. Relative Stärke: Perzentil im Universum von <span data-k="qc-u"></span> US-Aktien, 100 = stärkste. Werte beschreiben die Vergangenheit, keine Empfehlung.</div>
     <div class="card ink" style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:24mm 1fr auto;gap:5mm;align-items:center">
       <img src="img/qr-web.svg" style="width:24mm;height:24mm;border-radius:3px" alt="QR-Code">
-      <div><div class="kick" style="color:var(--lime)">Anzeige · Newsletter</div><div style="font-size:14pt;font-weight:900;margin-top:1mm;line-height:1.1">Das Aktienmagazin direkt in dein Postfach.</div><div class="xs" style="color:#bdbdbd;margin-top:1mm">Kostenlos eintragen auf www.visionuniverse.de · Instagram und TikTok: @app.visionuniverse</div></div>
+      <div><div class="kick" style="color:var(--lime)">Newsletter</div><div style="font-size:14pt;font-weight:900;margin-top:1mm;line-height:1.1">App-Start nicht verpassen.</div><div class="xs" style="color:#bdbdbd;margin-top:1mm">Kostenlos abonnieren auf www.visionuniverse.de · Instagram und TikTok: @app.visionuniverse</div></div>
       <span class="stamp" style="font-size:9pt">GRATIS</span>
     </div>
   </div>
@@ -864,39 +884,40 @@ VUM.k('qc-u',()=>VUM.D.universe.toLocaleString('de-DE'));
 </section>
 
 <!-- 29-rueckseite.html -->
-<section class="page dark ad">
-  <div class="bleed" style="background-image:url(img/hf-app-zug.jpg);background-position:50% 50%"></div>
-  <div class="bleed" style="background:linear-gradient(180deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.25) 32%,rgba(0,0,0,.25) 52%,rgba(0,0,0,.92) 74%,#000 100%)"></div>
-  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+<section class="page dark">
+  <div class="bleed glow" style="filter:none;background:radial-gradient(ellipse at 70% 45%,rgba(200,245,49,.3) 0%,rgba(200,245,49,0) 55%)"></div>
   <div class="pad" style="inset:12mm 14mm 12mm">
-    <div style="display:flex;justify-content:space-between;align-items:center"><span class="tag" style="color:#9a9a9a">Anzeige</span><span class="tag" style="color:var(--lime)">Bald verfügbar</span></div>
-    <img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:8mm;filter:invert(1);margin-top:10mm" alt="Vision Universe">
-    <div style="font-size:38pt;font-weight:900;letter-spacing:-.05em;line-height:.9;margin-top:5mm">Analyse-Software<br>für Aktien. <span style="color:var(--lime)">Ohne Empfehlungen.</span></div>
-    <div style="position:absolute;left:0;right:0;bottom:0">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;margin-bottom:7mm">
-        <div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:16pt;font-weight:900">5.600+</div><div class="xs" style="color:#bdbdbd">US-Aktien, jeden Abend neu</div></div>
-        <div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:16pt;font-weight:900">119</div><div class="xs" style="color:#bdbdbd">Hedgefonds im Blick (13F)</div></div>
-        <div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:16pt;font-weight:900">10 Jahre</div><div class="xs" style="color:#bdbdbd">Geschäftszahlen aus der SEC</div></div>
-        <div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:16pt;font-weight:900">0 €</div><div class="xs" style="color:#bdbdbd">Newsletter, kostenlos</div></div>
-      </div>
-      <div style="display:grid;grid-template-columns:34mm 1fr 34mm;gap:6mm;align-items:center;background:#111;border:1px solid #262626;border-radius:10px;padding:5mm">
-        <div style="text-align:center"><img src="img/qr-web.svg" style="width:30mm;height:30mm;border-radius:4px" alt="QR-Code www.visionuniverse.de"><div class="xs" style="color:#9a9a9a;margin-top:1mm">Website</div></div>
-        <div>
-          <div style="font-size:19pt;font-weight:900;letter-spacing:-.03em">www.visionuniverse.de</div>
-          <div class="sm" style="color:#bdbdbd;margin-top:1.5mm;line-height:1.45">Newsletter eintragen und als Erste erfahren, wann die App startet. Das Aktienmagazin kommt jede Woche neu.</div>
-          <div data-k="social2" style="margin-top:3mm"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:6mm;filter:invert(1)" alt="Vision Universe">
+      <span class="pillsoon"><i></i>App bald verfügbar</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 80mm;gap:8mm;margin-top:12mm">
+      <div>
+        <div style="font-size:33pt;font-weight:900;letter-spacing:-.05em;line-height:.92">Alles aus diesem Heft.<br><span style="color:var(--lime)">Für jede Aktie.<br>Jeden Tag.</span></div>
+        <div class="sub" style="margin-top:5mm;color:#d6d6d6;font-weight:500">Kurse, Geschäftszahlen, Charttechnik, Hedgefonds und die Methoden der Profis für über 5.600 US-Aktien. Analyse-Software für Aktien, ohne Empfehlungen.</div>
+        <div style="margin-top:7mm;display:grid;gap:3mm">
+          <div style="display:flex;gap:3mm;align-items:center"><svg class="pi"><use href="#discover"/></svg><span class="sm" style="color:#fff;font-weight:700">Discover: Aktien finden, verstehen, merken</span></div>
+          <div style="display:flex;gap:3mm;align-items:center"><svg class="pi"><use href="#hedgefonds"/></svg><span class="sm" style="color:#fff;font-weight:700">Hedgefonds: was die Profis melden</span></div>
+          <div style="display:flex;gap:3mm;align-items:center"><svg class="pi"><use href="#technical"/></svg><span class="sm" style="color:#fff;font-weight:700">Technical: was der Chart zeigt</span></div>
+          <div style="display:flex;gap:3mm;align-items:center"><svg class="pi"><use href="#layers"/></svg><span class="sm" style="color:#fff;font-weight:700">AI Atlas: Fragen in eigenen Worten</span></div>
         </div>
-        <div style="text-align:center"><img src="img/qr-instagram.svg" style="width:30mm;height:30mm;border-radius:4px" alt="QR-Code Instagram"><div class="xs" style="color:#9a9a9a;margin-top:1mm">Instagram</div></div>
       </div>
+      <div style="position:relative;height:150mm">
+        <div class="phone" style="position:absolute;right:0;top:0;width:62mm;z-index:2"><img src="img/app-d09-a.jpg" alt="App: NVIDIA-Aktienseite"></div>
+        <div class="phone" style="position:absolute;left:4mm;top:40mm;width:44mm;transform:rotate(-6deg)"><img src="img/app-e10-a.jpg" alt="App: AI Atlas"></div>
+      </div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:30mm 1fr 30mm;gap:6mm;align-items:center;background:#111;border:1px solid #262626;border-radius:4mm;padding:5mm">
+      <div style="text-align:center"><img src="img/qr-web.svg" style="width:28mm;height:28mm;border-radius:3px" alt="QR-Code www.visionuniverse.de"><div class="xs" style="color:#9a9a9a;margin-top:1mm">Website und Newsletter</div></div>
+      <div>
+        <div style="font-size:18pt;font-weight:900;letter-spacing:-.02em">App-Start nicht verpassen.</div>
+        <div class="sm" style="color:#bdbdbd;margin-top:1.5mm;line-height:1.45">Newsletter abonnieren auf <b style="color:#fff">www.visionuniverse.de</b>. Wir melden uns, sobald die App startet.</div>
+        <div style="margin-top:2.5mm;font-size:10pt;font-weight:800">Instagram &amp; TikTok: <span style="color:var(--lime)">@app.visionuniverse</span></div>
+      </div>
+      <div style="text-align:center"><img src="img/qr-instagram.svg" style="width:28mm;height:28mm;border-radius:3px" alt="QR-Code Instagram"><div class="xs" style="color:#9a9a9a;margin-top:1mm">Instagram</div></div>
     </div>
   </div>
 </section>
-<script>
-(function(){const ig='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>';
-const tt='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.4 2.2 1.8 3.7 4 4v3.2c-1.5 0-2.9-.4-4-1.1V15a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.3a2.8 2.8 0 1 0 1.8 2.6V3h3.2z"/></svg>';
-const html=`<div style="display:flex;gap:5mm;flex-wrap:wrap;font-size:9.5pt;font-weight:800"><span style="display:inline-flex;gap:2mm;align-items:center;color:#fff"><span style="color:var(--lime);display:inline-flex">${ig}</span>@app.visionuniverse</span><span style="display:inline-flex;gap:2mm;align-items:center;color:#fff"><span style="color:var(--lime);display:inline-flex">${tt}</span>@app.visionuniverse</span></div>`;
-VUM.k('social1',html);VUM.k('social2',html);})();
-</script>
 
 <script>VUM.finish();</script>
 </body></html>

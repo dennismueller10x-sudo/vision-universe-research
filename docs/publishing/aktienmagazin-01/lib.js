@@ -45,7 +45,7 @@
       p.querySelectorAll('[data-foot]').forEach((el) => {
         el.className = 'foot';
         if (el.dataset.foot) SRC.push([n, p.dataset.title || '', el.dataset.foot]);
-        el.innerHTML = `<span><b>${String(n).padStart(2, '0')}</b> · Vision Universe Aktienmagazin · 09.11.2026</span><span>${p.classList.contains('ad') ? 'Anzeige' : 'Keine Anlageberatung · Quellen auf Seite ' + (document.querySelectorAll('.page').length - 1)}</span>`;
+        el.innerHTML = `<span><b>${String(n).padStart(2, '0')}</b> · Vision Universe Aktienmagazin · 09.11.2026</span><span>${'Keine Anlageberatung · Quellen auf Seite ' + (document.querySelectorAll('.page').length - 1)}</span>`;
       });
     });
     K.quellen = () => SRC.map(([n, t, f]) => `<div style="display:grid;grid-template-columns:7mm 1fr;gap:1.5mm;padding:.7mm 0"><b>${String(n).padStart(2, '0')}</b><span>${f.replace(/^Quellen?: /, '')}</span></div>`).join('');

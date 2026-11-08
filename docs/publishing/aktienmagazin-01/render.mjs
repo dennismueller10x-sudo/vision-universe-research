@@ -15,7 +15,8 @@ fs.mkdirSync(out, { recursive: true });
 
 // 1. Zusammensetzen
 const files = fs.readdirSync(path.join(here, 'pages')).filter((f) => /^\d\d.*\.html$/.test(f)).sort();
-const body = files.map((f) => `<!-- ${f} -->\n` + fs.readFileSync(path.join(here, 'pages', f), 'utf8')).join('\n');
+const icons = fs.readFileSync(path.join(here, '../../../assets/product-icons.svg'), 'utf8').replace(/<svg /, '<svg style="display:none" ');
+const body = icons + files.map((f) => `<!-- ${f} -->\n` + fs.readFileSync(path.join(here, 'pages', f), 'utf8')).join('\n');
 const html = `<!doctype html>
 <html lang="de"><head><meta charset="utf-8">
 <title>Vision Universe Aktienmagazin · Nr. 01 · 09.11.2026</title>

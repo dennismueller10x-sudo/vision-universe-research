@@ -47,4 +47,4 @@ node docs/publishing/aktienmagazin-01/render.mjs --out /tmp/heft --scale 2
 - **Quellen:** keine allgemeine Pflicht, jede Zahl zu belegen. Pflicht ist die Quellenangabe bei wörtlichen Zitaten (§ 63 UrhG): Sprecher und Medium stehen direkt am Zitat. Übrige Quellen gesammelt im Quellenverzeichnis auf Seite 29 statt in jeder Fußzeile.
 - **Keine Empfehlung:** Pflicht-Hinweis `editorial`/`footer` aus `assets/legal-notices.json` auf Seite 29, Fußzeile „Keine Anlageberatung“ auf jeder Seite.
 - **KI-Bilder** mit „KI-Bild“ gekennzeichnet (Transparenz, Art. 50 KI-Verordnung); Hinweis zur KI-unterstützten Entstehung im Impressum.
-- **Eigenwerbung** als „Anzeige“ gekennzeichnet, getrennt vom redaktionellen Teil.
+- **Eigenwerbung** für die eigene App braucht keine Kennzeichnung als Anzeige (Kennzeichnungspflicht gilt für bezahlte Fremdwerbung); sie ist gestalterisch klar vom redaktionellen Teil getrennt.
