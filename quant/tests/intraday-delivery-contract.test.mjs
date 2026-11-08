@@ -20,6 +20,7 @@ import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { workflowPart } from "../../scripts/ci/lib/workflow-part.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -144,8 +145,9 @@ test("ID-5 der belegte Nachweis wird nicht als Anbieterzusage ausgegeben", () =>
    Die Reparatur, die keinen Sturm ausloest.
    ==================================================================== */
 
-const waechter = readFileSync(
-  join(root, ".github", "workflows", "intraday-delivery-watchdog.yml"), "utf8");
+/* Seit dem Buendel pipeline-intraday (vormals intraday-delivery-watchdog.yml) ist der Waechter der Teil
+   `waechter`; seine Jobs heissen waechter-pruefen und waechter-nachholen. */
+const waechter = workflowPart(root, "pipeline-intraday.yml", "waechter");
 
 test("ID-6 die Reparatur springt nur bei Taktbefunden an", () => {
   /* Ein zu alter Stand, weil der Anbieter nichts liefert, ist mit einem
@@ -156,7 +158,7 @@ test("ID-6 die Reparatur springt nur bei Taktbefunden an", () => {
     assert.ok(waechter.includes("'" + code + "'"), code + " fehlt in der Reparaturbedingung");
   }
   for (const code of ["standZuAlt", "auslieferungZuWeitHinterher", "taktVerspaetet"]) {
-    assert.ok(!new RegExp("contains\\(needs\\.pruefen\\.outputs\\.codes, '" + code + "'\\)").test(waechter),
+    assert.ok(!new RegExp("contains\\(needs\\.waechter-pruefen\\.outputs\\.codes, '" + code + "'\\)").test(waechter),
               code + " darf keine Reparatur ausloesen");
   }
 });
@@ -165,7 +167,7 @@ test("ID-7 die Reparatur teilt die Concurrency-Gruppe des Taktgebers", () => {
   /* Zwei Schreiber auf denselben Dateien waeren ein Wettlauf um
      denselben Ref. Die gemeinsame Gruppe macht das unmoeglich: laeuft
      ein Block, wartet die Reparatur. */
-  const nachholen = waechter.slice(waechter.indexOf("  nachholen:"));
+  const nachholen = waechter.slice(waechter.indexOf("  waechter-nachholen:"));
   assert.match(nachholen, /group:\s*intraday-pacemaker/,
                "ohne gemeinsame Gruppe schreiben Reparatur und Taktgeber gleichzeitig");
   assert.match(nachholen, /cancel-in-progress:\s*false/);
@@ -175,7 +177,7 @@ test("ID-8 die Reparatur prueft die Lage erneut, bevor sie holt", () => {
   /* Zwischen Urteil und Reparatur liegt eine Warteschlange. Meist hat
      sich die Lage bis dahin erledigt - ein Abruf auf Verdacht waere
      genau der Trigger-Sturm, den §17 verbietet. */
-  const nachholen = waechter.slice(waechter.indexOf("  nachholen:"));
+  const nachholen = waechter.slice(waechter.indexOf("  waechter-nachholen:"));
   assert.match(nachholen, /Ist die Lage noch dieselbe\?/);
   assert.match(nachholen, /if:\s*steps\.nochmal\.outputs\.verdict == 'FAIL'/);
 });
@@ -239,11 +241,11 @@ test("ID-11 alle Schreiber des Intraday-Bestands teilen eine Concurrency-Gruppe"
   /* Die Reparatur setzt ihre Gruppe am Job, nicht am Workflow - sie
      besteht aus einem pruefenden Job (der laufen MUSS, auch waehrend ein
      Block laeuft) und einem holenden (der warten muss). */
-  const waechterText = wf("intraday-delivery-watchdog.yml");
-  const nachholen = waechterText.slice(waechterText.indexOf("  nachholen:"));
+  const waechterText = waechter;
+  const nachholen = waechterText.slice(waechterText.indexOf("  waechter-nachholen:"));
   assert.match(nachholen, /group:\s*intraday-pacemaker/);
-  const pruefen = waechterText.slice(waechterText.indexOf("  pruefen:"),
-                                     waechterText.indexOf("  nachholen:"));
+  const pruefen = waechterText.slice(waechterText.indexOf("  waechter-pruefen:"),
+                                     waechterText.indexOf("  waechter-nachholen:"));
   assert.ok(!/group:\s*intraday-pacemaker/.test(pruefen),
             "der pruefende Job darf NICHT warten - ein Waechter, der hinter dem " +
             "wartet, was er ueberwacht, meldet nie etwas");

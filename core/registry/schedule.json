@@ -75,53 +75,41 @@
    "id": "content-news",
    "workflow": "content.yml",
    "cron": "17 5,11,17 * * *",
-   "timer": "github",
+   "timer": "waker",
    "note": "news"
   },
   {
    "id": "content-ratings",
    "workflow": "content.yml",
    "cron": "0 8 * * 0",
-   "timer": "github",
+   "timer": "waker",
    "note": "ratings"
   },
   {
    "id": "content-analysten",
    "workflow": "content.yml",
    "cron": "41 5,13,21 * * *",
-   "timer": "github",
+   "timer": "waker",
    "note": "analysten (Konsens, Produktuniversum, rotierend: 3 x ~2200 Titel = ganzes Universum je Tag)"
   },
   {
    "id": "content-hedgefonds",
    "workflow": "content.yml",
    "cron": "17 6 * * 1",
-   "timer": "github",
+   "timer": "waker",
    "note": "hedgefonds"
   },
   {
    "id": "content-hedgefonds-2",
    "workflow": "content.yml",
    "cron": "17 7 10-20 2,5,8,11 *",
-   "timer": "github",
+   "timer": "waker",
    "note": "hedgefonds (13F-Fristen)"
   },
   {
    "id": "core-ci",
    "workflow": "core-ci.yml",
    "cron": "47 7 * * *",
-   "timer": "github"
-  },
-  {
-   "id": "currency-realtime-proof",
-   "workflow": "currency-realtime-proof.yml",
-   "cron": "0 15 * * 1-5",
-   "timer": "github"
-  },
-  {
-   "id": "currency-realtime-proof-2",
-   "workflow": "currency-realtime-proof.yml",
-   "cron": "0 18 * * 1-5",
    "timer": "github"
   },
   {
@@ -170,12 +158,6 @@
    "id": "freshness-monitor-6",
    "workflow": "freshness-monitor.yml",
    "cron": "55 22 * * 1-5",
-   "timer": "github"
-  },
-  {
-   "id": "intraday-delivery-watchdog",
-   "workflow": "intraday-delivery-watchdog.yml",
-   "cron": "*/15 13-21 * * 1-5",
    "timer": "github"
   },
   {
@@ -230,7 +212,7 @@
    "id": "multi-asset-data",
    "workflow": "multi-asset-data.yml",
    "cron": "20 */3 * * *",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "ownership-signals",
@@ -437,6 +419,27 @@
    "cron": "0 6 * * 1",
    "timer": "github",
    "note": "sec-fundamentals"
+  },
+  {
+   "id": "pipeline-intraday-realtime-eur",
+   "workflow": "pipeline-intraday.yml",
+   "cron": "0 15 * * 1-5",
+   "timer": "github",
+   "note": "realtime-eur"
+  },
+  {
+   "id": "pipeline-intraday-realtime-eur-2",
+   "workflow": "pipeline-intraday.yml",
+   "cron": "0 18 * * 1-5",
+   "timer": "github",
+   "note": "realtime-eur"
+  },
+  {
+   "id": "pipeline-intraday-waechter",
+   "workflow": "pipeline-intraday.yml",
+   "cron": "*/15 13-21 * * 1-5",
+   "timer": "github",
+   "note": "waechter"
   }
  ]
 }

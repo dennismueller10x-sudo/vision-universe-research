@@ -335,6 +335,13 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   await page.waitForFunction(()=>/^Steht heute in \d+ Reihen?$|keiner/.test(document.querySelector('.dr-pv__in')?.textContent||''));
   assert.equal(page.url(),pvUrl,'Preview keeps the page');await screenshot(page,key+'-preview');await page.keyboard.press('Escape');
   assert.equal(await page.locator('.dr-allrows[href="#/reihen"]').count(),1,'All rows entry on the home page');
+  /* K1 „Weiterschauen“: eine angesehene Aktie steht danach unter „Zuletzt angesehen“ (nur auf dem Gerät). */
+  const seen=await page.locator('.dr-sec--top10 .dr-poster').first().getAttribute('data-symbol');
+  await navigate(page,base+'/discover/#/s/US_REAL/'+seen,{waitUntil:'networkidle'});await page.locator('h1').first().waitFor();
+  await navigate(page,base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor();
+  const recent=page.locator('.dr-sec--recent');await recent.scrollIntoViewIfNeeded();
+  assert.equal(await recent.locator('.dr-cw[data-symbol="'+seen+'"]').count(),1,'Recently viewed stock on the home page: '+seen);
+  await screenshot(page,key+'-recent');
   for(const sel of ['.dr-bb','.dr-sec--themes','.dr-sec[data-row="new-52-week-highs"]','.dr-sec[data-row="bekannte-namen"]']){await page.locator(sel).first().scrollIntoViewIfNeeded();await screenshot(page,key+'-world'+sel.replace(/[^a-z0-9]+/g,'-'));}
   const before=page.url();await page.evaluate(()=>scrollTo(0,0));await page.locator('.dr-genres button[data-genre="unternehmen"]').click();
   await page.locator('.dr-sec[data-row="umsatz-waechst-stark"]').waitFor();assert.equal(await page.locator('.dr-bb').count(),0,'Genre view without billboard');

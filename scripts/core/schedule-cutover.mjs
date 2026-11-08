@@ -58,12 +58,25 @@ export function cutover(text) {
     .replace(/github\.event_name == 'schedule'(?! \|\| inputs\.zeitplan)/g, "(github.event_name == 'schedule' || inputs.zeitplan != '')")
     .replace(/github\.event_name == 'workflow_dispatch'(?! && !inputs\.zeitplan)/g, "(github.event_name == 'workflow_dispatch' && !inputs.zeitplan)")
     .replace(/\$\{\{\s*github\.event_name\s*\}\}/g, "${{ " + EVENT + " }}");
+  // ADR-005: Eingaben nie per ${{ }} in den Shell-Text. Wo der Zeitplan dort stand, kommt er ueber env VU_SCHEDULE.
+  out = out.split("\n").map((l) => (/\$\{\{[^}]*inputs\.zeitplan[^}]*\}\}/.test(l) && !/^\s*-?\s*[A-Za-z_][A-Za-z0-9_-]*:\s*\$\{\{/.test(l))
+    ? l.replace(/\$\{\{ github\.event\.schedule \|\| inputs\.zeitplan \}\}/g, "${VU_SCHEDULE}").replace(/\$\{\{ inputs\.zeitplan && 'schedule' \|\| github\.event_name \}\}/g, "${VU_EVENT}")
+    : l).join("\n");
+  for (const [name, expr] of [["VU_SCHEDULE", "github.event.schedule || inputs.zeitplan"], ["VU_EVENT", EVENT]]) {
+    if (!out.includes("${" + name + "}") || new RegExp("^  " + name + ":", "m").test(out)) continue;
+    const ls = out.split("\n");
+    const envIdx = ls.findIndex((l) => /^env:\s*$/.test(l));
+    if (envIdx >= 0) ls.splice(envIdx + 1, 0, "  " + name + ": ${{ " + expr + " }}");
+    else { const j = ls.findIndex((l) => /^jobs:\s*$/.test(l)); ls.splice(j, 0, "env:", "  # Wie vor der Umstellung: ein Takt des Weckers heisst schedule und traegt seinen Cron (ADR-005: ueber env, nicht im Shell-Text).", "  " + name + ": ${{ " + expr + " }}", ""); }
+    out = ls.join("\n");
+  }
   // Doppelte Klammern aus "(github.event_name == 'schedule')" vermeiden ist kosmetisch; YAML/Ausdruck bleiben gueltig.
   if (/GITHUB_EVENT_NAME/.test(out)) {
     out = out.replace(/\$\{GITHUB_EVENT_NAME\}|\$GITHUB_EVENT_NAME\b/g, "${VU_EVENT}");
     const ls = out.split("\n");
     const envIdx = ls.findIndex((l) => /^env:\s*$/.test(l));
-    if (envIdx >= 0) ls.splice(envIdx + 1, 0, "  VU_EVENT: ${{ " + EVENT + " }}");
+    if (/^  VU_EVENT:/m.test(out)) { /* schon da */ }
+    else if (envIdx >= 0) ls.splice(envIdx + 1, 0, "  VU_EVENT: ${{ " + EVENT + " }}");
     else { const j = ls.findIndex((l) => /^jobs:\s*$/.test(l)); ls.splice(j, 0, "env:", "  # Ereignis wie vor der Umstellung: ein Takt des Weckers heisst schedule.", "  VU_EVENT: ${{ " + EVENT + " }}", ""); }
     out = ls.join("\n");
     if (/GITHUB_EVENT_NAME/.test(out)) notes.push("GITHUB_EVENT_NAME noch vorhanden - von Hand pruefen");

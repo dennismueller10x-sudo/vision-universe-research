@@ -6,11 +6,16 @@
 # (scripts/ci/overlay-data-branch.mjs): nur gueltige und nicht aeltere Staende ersetzen main;
 # im Arbeitsbaum wird nie geloescht (--mirror false).
 #
+# Commit-sicher: eingespielte Dateien werden fuer Git unsichtbar (bekannte Dateien skip-worktree,
+# neue in .git/info/exclude). Ein Lauf, der danach mit `git add -A` nach main committet, nimmt
+# Datenzweig-Daten nie mit; main bleibt eingefroren (Phase BRANCH_ONLY).
+#
 # Aufruf: scripts/ci/seed-data-branch.sh <id>[,<id>...]   (Datenarten aus data-branch.json)
-#         scripts/ci/seed-data-branch.sh alle             (alle ausgelieferten Datenarten; Verbraucher wie DQ)
+#         scripts/ci/seed-data-branch.sh alle             (alle Datenarten in Phase BRANCH_ONLY; Verbraucher wie DQ.
+#                                                          DUAL_WRITE-Datenarten sind in main aktuell und bleiben, wie sie sind)
 set -euo pipefail
 ONLY="${1:?Datenarten fehlen (id, id1,id2 oder alle)}"
-if [ "$ONLY" = "alle" ]; then ONLY="$(node -e 'process.stdout.write(require("./core/registry/data-branch.json").domains.map((d) => d.id).join(","))')"; fi
+if [ "$ONLY" = "alle" ]; then ONLY="$(node -e 'process.stdout.write(require("./core/registry/data-branch.json").domains.filter((d) => d.phase === "BRANCH_ONLY").map((d) => d.id).join(","))')"; fi
 BRANCH="$(node -e 'process.stdout.write(require("./core/registry/data-branch.json").branch)')"
 D="$(mktemp -d)"
 trap 'rm -rf "$D"' EXIT
@@ -20,4 +25,6 @@ if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
 else
   echo "Datenzweig $BRANCH fehlt noch: Arbeitsbaum bleibt beim Stand aus main"
 fi
-node scripts/ci/overlay-data-branch.mjs --data "$D" --site . --root . --only "$ONLY" --mirror false
+node scripts/ci/overlay-data-branch.mjs --data "$D" --site . --root . --only "$ONLY" --mirror false --out "$D.bericht.json"
+node scripts/ci/seed-hide.mjs "$D.bericht.json"
+rm -f "$D.bericht.json"

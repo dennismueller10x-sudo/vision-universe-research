@@ -317,3 +317,41 @@ test("Reihen: jede Reihe erklaert ihre Regel in ein bis zwei Saetzen, ohne Empfe
     }
   }
 });
+
+/* Konzept „Reihe für Reihe“, PR 3: persoenliche Reihen und NEU-Etikett. */
+test("Reihen: „Mehr aus …“ nimmt das haeufigste Thema der zuletzt angesehenen Aktien, ohne „für dich“", () => {
+  const avail = { "thema-ki": 41, "thema-halbleiter-chips": 100 };
+  const recent = [{ symbol: "NVDA", companyName: "NVIDIA", themes: ["thema-ki", "thema-halbleiter-chips"] },
+    { symbol: "MU", companyName: "Micron", themes: ["thema-halbleiter-chips"] }, { symbol: "AAPL", companyName: "Apple", themes: [] }];
+  const m = Reihen.moreFrom(recent, avail);
+  assert.equal(m.row, "thema-halbleiter-chips");
+  assert.deepEqual(m.exclude, ["NVDA", "MU", "AAPL"], "schon angesehene Aktien fehlen in der Schiene");
+  assert.equal(Reihen.moreLine(m.names), "Du hast zuletzt NVIDIA und Micron angesehen.");
+  assert.equal(Reihen.moreLine(["NVIDIA"]), "Du hast zuletzt NVIDIA angesehen.");
+  assert.equal(Reihen.moreFrom(recent, {}), null, "Thema ohne Reihe: keine Schiene");
+  assert.equal(Reihen.moreFrom([], avail), null);
+  assert.equal(Reihen.moreFrom([{ symbol: "X", themes: ["thema-ki"] }, { symbol: "Y", themes: ["thema-halbleiter-chips"] }], avail).row, "thema-ki", "Gleichstand: das juengste");
+  const plan = Reihen.homePlan(ALLE, { personal: { recent: true, more: true } }).map((s) => s.kind);
+  assert.ok(plan.indexOf("recent") > plan.indexOf("themes") && plan.indexOf("more") > plan.indexOf("recent"), "Reihenfolge wie n-home");
+});
+
+test("Reihen: NEU-Etikett und Regel 3 aus firstSeen", () => {
+  assert.equal(Reihen.isNew({ firstSeen: "2026-11-06" }, "2026-11-06"), true);
+  assert.equal(Reihen.isNew({ firstSeen: "2026-11-05" }, "2026-11-06"), false);
+  assert.equal(Reihen.isNew({ firstSeen: null }, "2026-11-06"), false);
+  const meta = { rows: [{ universeId: "US_REAL", rows: [{ rowId: "a", matched: 5, neu: 2 }, { rowId: "b", matched: 5, neu: 0 }, { rowId: "c", matched: 0, neu: 1 }] }] };
+  assert.deepEqual(Reihen.freshRows(meta, "US_REAL"), ["a"]);
+});
+
+test("Reihen: jede Karte traegt firstSeen (null oder ein Handelstag, nie die Uhrzeit), meta zaehlt die neuen", { skip: !vorhanden }, () => {
+  const u = meta.rows.find((x) => x.universeId === "US_REAL");
+  for (const r of u.rows) {
+    const row = readJSON(join(DATA, "rows", "US_REAL", r.rowId + ".json"));
+    if (!row.cards) continue;
+    for (const c of row.cards) {
+      assert.ok("firstSeen" in c, r.rowId + "/" + c.symbol + " ohne firstSeen");
+      assert.ok(c.firstSeen === null || (/^\d{4}-\d{2}-\d{2}$/.test(c.firstSeen) && c.firstSeen <= row.asOf), r.rowId + "/" + c.symbol + ": " + c.firstSeen);
+    }
+    assert.equal(r.neu, row.cards.filter((c) => c.firstSeen === row.asOf).length, r.rowId + ": neu");
+  }
+});

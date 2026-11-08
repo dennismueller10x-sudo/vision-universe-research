@@ -40,7 +40,7 @@ test("Ohne Speicher funktioniert alles - nur ohne Gedaechtnis", () => {
   const kaputt = { getItem: () => { throw new Error("gesperrt"); }, setItem: () => { throw new Error("gesperrt"); }, removeItem: () => {} };
   const m = M.create(kaputt);
   assert.doesNotThrow(() => m.recordView("A", {}));
-  assert.deepEqual(m.recent(), [{ symbol: "A", universeId: "US_REAL", companyName: null, world: null, sector: null, at: m.recent()[0].at }]);
+  assert.deepEqual(m.recent(), [{ symbol: "A", universeId: "US_REAL", companyName: null, world: null, sector: null, at: m.recent()[0].at, themes: [] }]);
 });
 
 test("V4.1: der Sektor einer angesehenen Aktie wird gemerkt - fuer die lokale Neigung im Feed", () => {
@@ -71,4 +71,12 @@ test("Reihe merken (Konzept „Reihe für Reihe“): auf dem Geraet, juengste zu
   assert.equal(m.follows("comeback"), true);
   m.followRow("comeback", false);
   assert.equal(M.create(s).follows("comeback"), false);
+});
+
+test("Angesehene Aktien merken ihre Themenreihen fuer „Mehr aus …“ (hoechstens sechs, nur Text)", () => {
+  const m = M.create(fakeStorage());
+  m.recordView("NVDA", { universeId: "US_REAL", companyName: "NVIDIA", themes: ["thema-ki", 7, "thema-halbleiter-chips", "a", "b", "c", "d", "e"] });
+  assert.deepEqual(m.recent("US_REAL")[0].themes, ["thema-ki", "thema-halbleiter-chips", "a", "b", "c", "d"]);
+  m.recordView("MU", { universeId: "US_REAL" });
+  assert.deepEqual(m.recent("US_REAL")[0].themes, []);
 });

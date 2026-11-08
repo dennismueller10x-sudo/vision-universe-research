@@ -85,6 +85,12 @@ Weitere Lesarten, die beim Bauen auftauchen, entscheidet Claude nach der Präsen
 - „Ähnliche Reihen“: für Fallen Angels wie im Mockup, sonst die Reihen desselben Genres.
 - „Alle Reihen“ ist eine eigene Seite `#/reihen` in Schwarz, erreichbar über ▦ und die Karte über der Swipen-Karte.
 
+**PR 3 · Persönliche Reihen**
+- `firstSeen` steht auf jeder Karte jeder Reihe; der Erzeuger liest dafür die eingecheckte Fassung (Karten und Index Aktie → Reihen) vor dem Leeren des Datenordners. Ohne frühere Fassung oder beim ersten Lauf ist `firstSeen` `null` (nicht neu), damit am Umstellungstag nicht alles NEU heißt.
+- Regel 3 nutzt `meta.rows[].neu` (Karten mit `firstSeen` = Datenstand); gemerkte Reihen rücken zuerst nach oben, danach Reihen mit neuen Treffern, beide nur zwischen den Reihen-Plätzen.
+- „Mehr aus {Thema}“ wählt das Thema, das unter den zuletzt angesehenen Aktien am häufigsten vorkommt (bei Gleichstand das jüngste), und lässt schon angesehene Aktien aus.
+- „Zuletzt angesehen“ zeigt die Tagesbewegung aus der Aktiendatei (erst, wenn die Schiene in die Nähe kommt) und „Heute/Gestern/Di. angesehen“; einen Link „Alle“ gibt es nicht, weil es keine Seite dafür gibt.
+
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
 ```
