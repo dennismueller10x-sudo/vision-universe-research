@@ -113,7 +113,7 @@ jobs:
         run: |
           python3 - <<'PY'
           import fnmatch, json, os, re
-          SPEC = json.loads(r"""{"delisting-probe": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "elliott-register": {"crons": ["23 9 * * 6", "47 7 * * 0", "17 6 * * 1", "41 5 * * 3"], "dispatch": true, "required": []}, "emerging-leaders": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "etf-universum": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["scripts/vorsorge/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "europa-esef": {"crons": [], "dispatch": true, "required": []}, "hausstrategie-forschung": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "labor": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": ["phase"]}, "muster-gesamtrendite": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "mustervolumen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "portfolio": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "v13-archiv": {"crons": [], "dispatch": false, "push": {"branches": ["claude/**"]}, "required": []}, "vorsorge-etf": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["scripts/vorsorge/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "vorsorge-recht": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/research.yml", "scripts/vorsorge/fetch-legal-sources.sh"]}, "required": []}}""")
+          SPEC = json.loads(r"""{"delisting-probe": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "elliott-register": {"crons": ["23 9 * * 6", "47 7 * * 0", "17 6 * * 1", "41 5 * * 3"], "dispatch": true, "required": []}, "emerging-leaders": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "etf-universum": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "europa-esef": {"crons": [], "dispatch": true, "required": []}, "hausstrategie-forschung": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "labor": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": ["phase"]}, "muster-gesamtrendite": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "mustervolumen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "portfolio": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "v13-archiv": {"crons": [], "dispatch": false, "push": {"branches": ["claude/**"]}, "required": []}, "vorsorge-etf": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "vorsorge-recht": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/research.yml", "products/vorsorge/producer/fetch-legal-sources.sh"]}, "required": []}}""")
           ev, ref = os.environ.get("EVENT", ""), os.environ.get("REF", "")
           def glob_re(p):
               # GitHub-Filtermuster: ** beliebig, * ohne '/', ? ein Zeichen, [..] Klasse; Praefix '!' = Ausschluss
@@ -204,6 +204,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -465,6 +468,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Existing R2 credentials are available
         env:
@@ -569,6 +575,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -730,10 +739,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref_name }}
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Werkzeug
         run: sudo apt-get install -y -qq poppler-utils > /dev/null
       - name: Primaerquellen laden
-        run: bash scripts/vorsorge/fetch-legal-sources.sh
+        run: bash products/vorsorge/producer/fetch-legal-sources.sh
       - name: Veroeffentlichen
         run: |
           git config user.name "github-actions[bot]"
@@ -761,6 +773,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Existing R2 credentials are available
         env:
@@ -897,6 +912,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Register vor dem Lauf pruefen
         run: node scripts/technical/elliott-registry/verify.mjs --registry "$REG"
@@ -1009,10 +1027,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Quellen pruefen
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
-        run: node scripts/vorsorge/probe-etf-sources.mjs
+        run: node products/vorsorge/producer/probe-etf-sources.mjs
       - name: Veroeffentlichen
         run: |
           git config user.name "github-actions[bot]"
@@ -1039,8 +1060,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: EU-Quellen pruefen (Form, Kopfzeilen, Nutzungsbedingungen)
-        run: node scripts/vorsorge/probe-eu-etf-sources.mjs
+        run: node products/vorsorge/producer/probe-eu-etf-sources.mjs
       - name: Veroeffentlichen
         run: |
           git config user.name "github-actions[bot]"
@@ -1067,27 +1091,30 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: SEC N-PORT (vier Quartale) aufnehmen
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
           NODE_OPTIONS: --max-old-space-size=6144
-        run: node scripts/vorsorge/ingest-sec-nport.mjs --max-quarters 4
+        run: node products/vorsorge/producer/ingest-sec-nport.mjs --max-quarters 4
       - name: SEC SIC-Codes (Wirtschaftszweig der Emittenten)
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
-        run: node scripts/vorsorge/fetch-sec-sic.mjs
+        run: node products/vorsorge/producer/fetch-sec-sic.mjs
       - name: Holdings, Exposures, Change Events verdichten
         env:
           NODE_OPTIONS: --max-old-space-size=6144
         run: |
-          node scripts/vorsorge/build-etf-intelligence.mjs
+          node products/vorsorge/producer/build-etf-intelligence.mjs
           node -e 'const m=require("./.market-cache/vorsorge/nport/nport-manifest.json"); delete m.series; require("fs").writeFileSync("vorsorge/data/sources/nport-manifest.json", JSON.stringify(m,null,1)+"\n")'
       - name: ETF-Stamm mit den neuen Daten neu bauen
-        run: node scripts/vorsorge/build-etf-data.mjs --quiet
+        run: node products/vorsorge/producer/build-etf-data.mjs --quiet
       - name: Tests und Hygiene
         run: |
-          node --test "vorsorge/tests/*.test.mjs"
-          node scripts/vorsorge/assert-vorsorge-data.mjs
+          node --test "products/vorsorge/tests/*.test.mjs"
+          node products/vorsorge/producer/assert-vorsorge-data.mjs
           node scripts/market/assert-public-data-hygiene.mjs
       - name: Veroeffentlichen
         run: |
@@ -1115,23 +1142,26 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: SEC Risk/Return (Kostenquoten aus Prospekten)
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
           NODE_OPTIONS: --max-old-space-size=6144
-        run: node scripts/vorsorge/ingest-sec-rr.mjs --max-quarters 6
+        run: node products/vorsorge/producer/ingest-sec-rr.mjs --max-quarters 6
       - name: ESMA FIRDS + GLEIF (europaeische ETF-Anteilklassen und Listings)
         env:
           NODE_OPTIONS: --max-old-space-size=6144
-        run: node scripts/vorsorge/ingest-esma-firds.mjs
+        run: node products/vorsorge/producer/ingest-esma-firds.mjs
       - name: ESMA-Fondsregister (amtlicher UCITS-Status, Verwalter, Vertriebslaender)
-        run: node scripts/vorsorge/ingest-esma-funds.mjs
-      # Xetra-Referenzdaten (scripts/vorsorge/ingest-xetra-refdata.mjs): Nutzungsrechte nicht geklaert -> kein
+        run: node products/vorsorge/producer/ingest-esma-funds.mjs
+      # Xetra-Referenzdaten (products/vorsorge/producer/ingest-xetra-refdata.mjs): Nutzungsrechte nicht geklaert -> kein
       # automatischer Abruf, nichts im Repository. Das Skript bleibt fuer eine spaetere Freigabe vorbereitet.
       - name: ETF-Stamm mit den neuen Daten neu bauen, Gates, Hygiene
         run: |
-          node scripts/vorsorge/build-etf-data.mjs --quiet
-          node scripts/vorsorge/assert-vorsorge-data.mjs
+          node products/vorsorge/producer/build-etf-data.mjs --quiet
+          node products/vorsorge/producer/assert-vorsorge-data.mjs
           node scripts/market/assert-public-data-hygiene.mjs
       - name: Veroeffentlichen
         run: |
@@ -1160,6 +1190,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Engine and study contract tests (before any data is read)
         run: node --test quant/tests/emerging-leaders.test.mjs quant/tests/emerging-leaders-study.test.mjs
@@ -1265,6 +1298,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Modus aus der Commit-Nachricht
         id: m
         env:
@@ -1460,6 +1496,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Ist ein Zugang hinterlegt?
         env:
@@ -1499,7 +1538,7 @@ jobs:
         run: |
           extra=""
           if [ "$IN_NUR_ZUSATZ" = "true" ]; then extra="--only-extra"; fi
-          node scripts/vorsorge/ingest-tiingo-etfs.mjs --limit "${{ steps.params.outputs.limit }}" --per-hour "${{ steps.params.outputs.per_hour }}" --max-minutes 290 $extra
+          node products/vorsorge/producer/ingest-tiingo-etfs.mjs --limit "${{ steps.params.outputs.limit }}" --per-hour "${{ steps.params.outputs.per_hour }}" --max-minutes 290 $extra
 
       - name: Arbeitsablage sichern (auch bei Abbruch)
         if: always()
@@ -1520,12 +1559,12 @@ jobs:
           if-no-files-found: warn
 
       - name: Vorsorge-Stamm bauen
-        run: node scripts/vorsorge/build-etf-data.mjs
+        run: node products/vorsorge/producer/build-etf-data.mjs
 
       - name: Tests, Qualitaets-Gates, Hygiene
         run: |
-          node --test "vorsorge/tests/*.test.mjs"
-          node scripts/vorsorge/assert-vorsorge-data.mjs
+          node --test "products/vorsorge/tests/*.test.mjs"
+          node products/vorsorge/producer/assert-vorsorge-data.mjs
           # Hygiene ueber alle oeffentlichen Daten. Nach einer Universumsaenderung startet security-master-eligibility.yml
           # diesen Lauf und die Technical-Materialisierung gleichzeitig; bis die Materialisierung fertig ist, stehen dort
           # noch ausgeschiedene Titel (06.11.2026: 30 ETFs). Diese Datei gehoert nicht Vorsorge und wird hier nicht
@@ -1572,6 +1611,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Probeabruf (Anzahlen, keine Kurse)
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
@@ -1593,6 +1635,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Modus bestimmen
         id: mode
         env:

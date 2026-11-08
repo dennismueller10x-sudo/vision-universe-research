@@ -27,7 +27,7 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const F = require(join(root, "vorsorge/engines/etf-fundamentals.js"));
 const UA = "VisionUniverse-Research/1.0 (+https://research.visionuniverse.de)";
 const HOST = "https://www.cashmarket.deutsche-boerse.com";
@@ -105,7 +105,7 @@ if (process.argv[1] && process.argv[1].endsWith("ingest-xetra-refdata.mjs")) {
   const xlsPath = linkOf(p2, /\/resource\/blob\/[0-9]+\/[0-9a-f]+\/data\/[^"'\s]+\.xlsx?/i);
   if (!csvPath || !xlsPath) throw new Error("Download-Links nicht gefunden (Seitenaufbau geaendert?)");
   const inst = parseInstrumentsCsv(await get(HOST + csvPath));
-  const { readXlsx } = await import(join(root, "scripts/vorsorge/adapters/xlsx.mjs"));
+  const { readXlsx } = await import(join(root, "products/vorsorge/producer/adapters/xlsx.mjs"));
   const master = parseMasterRows(readXlsx(await get(HOST + xlsPath, true)).rows);
   const eu = JSON.parse(readFileSync(join(root, "vorsorge/data/eu/etf-eu-index.json"), "utf8"));
   const euIsins = new Set(eu.rows.map((r) => r[0]));

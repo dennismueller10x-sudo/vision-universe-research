@@ -7,7 +7,7 @@
 
    Zugangstor: Der Anmeldezustand wird aus RESEARCH_ACCESS_PASSWORD (GitHub
    Secret) abgeleitet und nur im Browser-Speicher der eigenen Domain gesetzt -
-   nie ausgegeben, nie geschrieben (wie scripts/vorsorge/live-smoke.mjs). Das
+   nie ausgegeben, nie geschrieben (wie products/vorsorge/producer/live-smoke.mjs). Das
    Tor selbst wird nicht veraendert; ohne Anmeldung muss es die App verdecken.
 
    Prueft je Vorlage (alle aus VUTechnical.Templates.list()):

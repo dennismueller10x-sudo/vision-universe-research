@@ -809,10 +809,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          if gh workflow run technical-world.yml --repo "$GITHUB_REPOSITORY" --ref main; then
-            echo "detail=technical-world.yml auf main angestossen" >> "$GITHUB_OUTPUT"
+          if gh workflow run pipeline-daily.yml --repo "$GITHUB_REPOSITORY" --ref main -f teil=technical-world; then
+            echo "detail=pipeline-daily.yml (Teil technical-world) auf main angestossen" >> "$GITHUB_OUTPUT"
           else
-            echo "detail=Anstoss von technical-world.yml abgewiesen" >> "$GITHUB_OUTPUT"
+            echo "detail=Anstoss von pipeline-daily.yml (Teil technical-world) abgewiesen" >> "$GITHUB_OUTPUT"
             exit 1
           fi
 

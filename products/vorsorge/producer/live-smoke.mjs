@@ -12,7 +12,7 @@
    Prueft je Route und Viewport: HTTP-Status der Seite, Konsolen- und
    Seitenfehler, fehlgeschlagene Anfragen (4xx/5xx), NaN/undefined im Text,
    horizontalen Ueberlauf, haengende Ladeanzeigen, leere Seiten.
-   Aufruf: node scripts/vorsorge/live-smoke.mjs <site> <screenshot-dir>
+   Aufruf: node products/vorsorge/producer/live-smoke.mjs <site> <screenshot-dir>
    ========================================================================= */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -26,7 +26,7 @@ mkdirSync(SHOTS, { recursive: true });
 
 let gate = null;
 if (process.env.RESEARCH_ACCESS_PASSWORD) {
-  const { accessStateFor, STORAGE_KEY } = await import(new URL("../access-gate/build.mjs", import.meta.url));
+  const { accessStateFor, STORAGE_KEY } = await import(new URL("../../../scripts/access-gate/build.mjs", import.meta.url));
   gate = { key: STORAGE_KEY, value: JSON.stringify(accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD)) };
 }
 

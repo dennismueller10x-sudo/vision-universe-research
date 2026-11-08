@@ -6,15 +6,15 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
-import { createIssuerAdapter, PARSERS, ISSUERS, parseCsv } from "../../scripts/vorsorge/adapters/issuers.mjs";
+import { createIssuerAdapter, PARSERS, ISSUERS, parseCsv } from "../producer/adapters/issuers.mjs";
 import { makeFixture } from "./fixtures/nport/make-fixture.mjs";
 
 const require = createRequire(import.meta.url);
-const F = require("../engines/etf-fundamentals.js");
-const H = require("../engines/etf-holdings.js");
-const C = require("../engines/etf-changes.js");
-const X = require("../engines/xray.js");
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const F = require("../../../vorsorge/engines/etf-fundamentals.js");
+const H = require("../../../vorsorge/engines/etf-holdings.js");
+const C = require("../../../vorsorge/engines/etf-changes.js");
+const X = require("../../../vorsorge/engines/xray.js");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 
 /* ------------------------------------------------------- Fundamentals */
 test("Bezeichner: ISIN/CUSIP/SEDOL-Prüfziffern, WKN-Format", () => {
@@ -273,9 +273,9 @@ test("Amundi (Dezimal), Invesco (Prozent), EMT (laufende Kosten je ISIN)", () =>
 test("SEC-N-PORT-Pipeline: Quartale -> Snapshots -> Holdings-Datei mit Exposures und Ereignissen", () => {
   const dir = mkdtempSync(join(tmpdir(), "vu-nport-"));
   const { zips, mf } = makeFixture(dir);
-  execFileSync("node", [join(root, "scripts/vorsorge/ingest-sec-nport.mjs"), "--work", join(dir, "work"), "--local", Object.entries(zips).map(([k, v]) => k + "=" + v).join(","), "--mf", mf], { stdio: "pipe" });
+  execFileSync("node", [join(root, "products/vorsorge/producer/ingest-sec-nport.mjs"), "--work", join(dir, "work"), "--local", Object.entries(zips).map(([k, v]) => k + "=" + v).join(","), "--mf", mf], { stdio: "pipe" });
   const out = join(dir, "out");
-  execFileSync("node", [join(root, "scripts/vorsorge/build-etf-intelligence.mjs"), "--work", join(dir, "work"), "--out", out], { stdio: "pipe" });
+  execFileSync("node", [join(root, "products/vorsorge/producer/build-etf-intelligence.mjs"), "--work", join(dir, "work"), "--out", out], { stdio: "pipe" });
   const f = JSON.parse(readFileSync(join(out, "S000004310.json"), "utf8"));
   assert.equal(f.source, "SEC_NPORT"); assert.equal(f.asOf, "2026-06-30"); assert.equal(f.publishedAt, "2026-08-27");
   assert.equal(f.netAssets, 1200000000); assert.equal(f.netAssetsLevel, "FUND");
@@ -292,7 +292,7 @@ test("SEC-N-PORT-Pipeline: Quartale -> Snapshots -> Holdings-Datei mit Exposures
   assert.deepEqual(feed.quarters, idx.quarters); assert.deepEqual(feed.feed, idx.feed); assert.equal(feed.bySymbol, undefined);
   // Deterministisch: zweiter Build byte-gleich
   const out2 = join(dir, "out2");
-  execFileSync("node", [join(root, "scripts/vorsorge/build-etf-intelligence.mjs"), "--work", join(dir, "work"), "--out", out2], { stdio: "pipe" });
+  execFileSync("node", [join(root, "products/vorsorge/producer/build-etf-intelligence.mjs"), "--work", join(dir, "work"), "--out", out2], { stdio: "pipe" });
   assert.equal(readFileSync(join(out2, "S000004310.json"), "utf8"), readFileSync(join(out, "S000004310.json"), "utf8"));
 });
 test("Kostenaenderung zwischen Prospektstaenden: nur gleich definierte Felder, fehlend ist keine Aenderung", () => {

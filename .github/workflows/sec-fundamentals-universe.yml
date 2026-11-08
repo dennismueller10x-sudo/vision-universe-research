@@ -221,7 +221,7 @@ jobs:
     #
     # workflow_dispatch verlangt bei GitHub, dass die Workflow-Datei auf dem
     # Default-Branch liegt. Vor einem Merge ist der Knopf also nicht da.
-    # Dieselbe Loesung wie in tiingo-scale.yml: die Marke [sec-backfill] in
+    # Dieselbe Loesung wie in tiingo-scale (maintenance.yml): die Marke [sec-backfill] in
     # der Commit-Nachricht. OHNE MARKE LAEUFT DER BACKFILL NICHT - ein
     # Workflow, der bei jedem Push 7.000 Anfragen an die SEC stellt, waere
     # ein Fehler mit Ansage.

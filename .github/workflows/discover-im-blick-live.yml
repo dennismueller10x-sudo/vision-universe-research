@@ -47,8 +47,9 @@ name: Discover Im Blick (stuendlich waehrend der Sitzung)
 # =============================================================================
 
 on:
-  schedule:
-    - cron: '27 15-21 * * 1-5'
+  # Kein GitHub-Cron mehr (Plan Neustart §3, ein Zeitgeber): der Cloudflare-Wecker stoesst diesen
+  # Workflow direkt an (worker-waker/src/index.mjs, Minute 5 und 35, 15-21 UTC, Mo-Fr, mit Laufsperre).
+  # Der fruehere Cron (27 15-21 * * 1-5) war seit dem 12.10.2026 nur noch Rueckfall.
   workflow_dispatch:
     inputs:
       source:
