@@ -1,6 +1,6 @@
 # Öffentlicher Export `quant/data/product/ki-depots-v1.json` (Schema `ki-depots-1.0.0`)
 
-Rechenmodell, kein echtes Geld. Erzeuger: `scripts/research/edge2/ki-export.cjs` (werktags `ki-depots-daily.yml` und nach jeder Entscheidung im Wochenlauf). Keine Backtest-Zahlen. Owner-Entscheidung 06.11.2026 (Plan §11).
+Rechenmodell, kein echtes Geld. Erzeuger: `scripts/research/edge2/ki-export.cjs` (werktags `pipeline-daily.yml`, Teil `ki-depots`, vormals `ki-depots-daily.yml`, und nach jeder Entscheidung im Wochenlauf). Keine Backtest-Zahlen. Owner-Entscheidung 06.11.2026 (Plan §11).
 
 ```text
 {
