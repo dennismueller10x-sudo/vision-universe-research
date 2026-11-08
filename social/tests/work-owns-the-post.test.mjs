@@ -6,6 +6,7 @@
    ein Rechner pruefen kann - das kreative Urteil bleibt bei Work und dem
    Owner.
    ========================================================================= */
+import { workflowPart } from "../../scripts/ci/lib/workflow-part.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
@@ -410,9 +411,8 @@ test("WOP21 · Orchestrator: Owner-Sync und Knopfdruck vor den Tests, Festschrei
     assert.ok(yml.includes(s), "fehlt: " + s);
   }
   assert.ok(!/node scripts\/social\/request-creative-web\.mjs/.test(yml), "alter Web-Pfad entfernt");
-  const lieferung = join(ROOT, ".github/workflows/social-work-delivery.yml");
-  assert.ok(existsSync(lieferung));
-  const l = readFileSync(lieferung, "utf8");
+  /* Seit dem Buendel social Teil `lieferung` in social.yml (vormals social-work-delivery.yml); die Ausloeser stehen im Kopf. */
+  const l = workflowPart(ROOT, "social.yml", "lieferung", { auswahl: true }) + readFileSync(join(ROOT, ".github/workflows/social.yml"), "utf8").split("\njobs:\n")[0];
   assert.match(l, /authoring\/request\/\*\*/);
   assert.match(l, /modus=EINHOLEN/);
 });

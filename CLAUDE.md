@@ -27,7 +27,8 @@ Geltende Vertragstests (alle in Core-CI, laufen auf jedem PR):
 | `core/tests/workflow-bundles.test.mjs` (WB) | jede Workflow-Datei hat ein Bündel in `core/registry/workflow-bundles.json`; ein Bündel ersetzt seine Quellen nachweisbar |
 | `core/tests/universe-follow-chain.test.mjs` (UF) | nur `security-master-eligibility.yml` ändert das Produktuniversum, und jede am Produktumfang geprüfte Datenart zieht im selben Lauf nach |
 | `core/tests/data-branch-pilot.test.mjs` (DB) | Datenarten auf dem Datenzweig (`core/registry/data-branch.json`) |
-| `core/tests/module-manifest.test.mjs` (MM) | Modul-Steckbrief `<produkt>/module.json` (Pilot: `analysten`): Route, Menüeintrag, Zugang, Status; Erzeuger, Workflow, Zeitplan und Frische gleich `domains.json` |
+| `core/tests/docs-registry.test.mjs` (DOC) | höchstens 25 lebende Seiten (`core/registry/docs.json`, alle in `docs/README.md` verlinkt); jede andere Seite unter `docs/` liegt in `docs/archiv/` oder ist ein Beleg am Ort (von Code genannt, eingefroren, gepinnt) |
+| `core/tests/module-manifest.test.mjs` (MM) | Modul-Steckbrief `products/<id>/module.json` für jedes Produkt (Web bleibt unter `/<id>/`) (jede oberste Seite ist Produkt oder begründete Seite): Route, Menü, Zugang free/pro/intern, Status, Datenarten (Erzeuger, Zeitplan, Frische nur in `domains.json`); Menü (`assets/site-navigation.js`, `groups`), `core/registry/modules.json`, `/status/` und `system-health` entstehen daraus (`node scripts/core/build-modules.mjs`) |
 | `core/tests/schedule-registry.test.mjs` (SZ) | ein Zeitgeber: jeder Zeitplan steht in `core/registry/schedule.json`; `timer: waker`-Einträge haben keinen Cron im Workflow, aber Eingang `zeitplan`, Marke im `run-name` und die Zeitplan-Weiche |
 
 Was von den Pfad-Gates bleibt:
@@ -52,7 +53,7 @@ Veraltete Daten lösen einen Alarm aus und blockieren keinen Code-PR.
 ## Tests
 
 ```bash
-node --test "core/tests/*.test.mjs"           # ~5 s
+node --test "core/tests/*.test.mjs" "products/*/tests/*.test.mjs"   # Core und Produkt-Tests unter products/
 node --test "quant/tests/*.test.mjs"
 node --test "discover/tests/*.test.mjs" "scripts/supertrader/tests/*.test.mjs" "screener/tests/*.test.mjs"
 node --test "technical/tests/*.test.mjs"

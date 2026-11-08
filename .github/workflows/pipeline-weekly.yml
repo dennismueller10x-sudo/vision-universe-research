@@ -1,0 +1,970 @@
+name: Pipeline woechentlich (Buendel pipeline-weekly)
+
+# Buendel `pipeline-weekly` (core/registry/workflow-bundles.json, Plan Neustart §3, A-Doc): Wochenlaeufe.
+# Nicht hier: long-series.yml (Technical-Ketten warten auf seinen Namen), security-master-weekly.yml und
+# security-master-eligibility.yml (Kette nach Namen, UF-Vertragstest), universe-master.yml (pull_request mit Pfaden),
+# ownership-signals.yml (Datenzweig, Strang O).
+# Teile (Schritte unveraendert; Job-Bedingungen der Quelle bleiben und werden mit der Auswahl verknuepft):
+#   logos                        vormals company-logos.yml
+#   namen                        vormals company-names.yml
+#   deckung                      vormals coverage-metrics.yml
+#   index                        vormals index-membership.yml
+#   musterdepots                 vormals quant-model-depots.yml
+#   sic-historie                 vormals sec-sic-history.yml
+#   tiingo2-universum            vormals tiingo2-universe-refresh.yml
+#   sec-fundamentals             vormals update-sec-fundamentals.yml
+# Der Job `auswahl` bildet die Ausloeser der Quellen nach (Dispatch `teil`, Zeitplan am Cron, Push nach
+# Zweig/Pfad, workflow_run nach Name/Typ/Zweig, repository_dispatch nach Typ). Generiert, siehe A-Doc.
+
+on:
+  workflow_dispatch:
+    inputs:
+      teil:
+        description: 'Welcher Teil'
+        type: choice
+        required: true
+        options:
+          - logos
+          - namen
+          - deckung
+          - index
+          - musterdepots
+          - sic-historie
+          - tiingo2-universum
+          - sec-fundamentals
+      only:
+        description: 'logos: Diagnose: nur diese Ticker (kommagetrennt), schreibt nichts'
+        type: string
+        default: ''
+      refresh:
+        description: 'logos: Website-Icons und -Adressen neu holen statt Zwischenspeicher'
+        type: boolean
+        default: false
+      candidates:
+        description: 'logos: Kandidaten-Bilder aus SEC-Einreichungen fuer diese Ticker auf den Branch claude/logo-candidates (schreibt sonst nichts)'
+        type: string
+        default: ''
+      max_requests:
+        description: 'namen: Obergrenze Tiingo-Anfragen je Lauf'
+        type: string
+        default: '7000'
+      action:
+        description: 'sic-historie: refresh = neue Quartale + Rebuild + Commit; verify = Rebuild pruefen'
+        type: choice
+        options:
+        - verify
+        - refresh
+        default: verify
+      sic_historie_max_requests:
+        description: 'sic-historie: Request-Obergrenze je Schritt'
+        type: string
+        default: '4000'
+      max_symbols:
+        description: 'tiingo2-universum: Maximum changed/rejected listings to validate (0-1000)'
+        default: '750'
+        required: false
+      force:
+        description: 'sec-fundamentals: Re-normalize even when no new filing was found'
+        type: boolean
+        default: false
+      as_of:
+        description: 'sec-fundamentals: as-of date for the gate report (YYYY-MM-DD, default: today)'
+        type: string
+        required: false
+  schedule:
+    - cron: '17 4 * * 1'   # logos
+    - cron: '47 3 * * 2-6'   # logos
+    - cron: '0 6 * * 0'   # deckung
+    - cron: '20 7 * * 6'   # index
+    - cron: '23 7 * * 6'   # musterdepots
+    - cron: '20 8 * * 1-5'   # tiingo2-universum
+    - cron: '0 6 * * 1'   # sec-fundamentals
+  push:
+    branches:
+      - 'claude/**'
+      - 'codex/tiingo2-universe-hardening'
+  workflow_run:
+    workflows:
+      - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  auswahl:
+    name: Auswahl des Teils
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      logos: ${{ steps.wahl.outputs.logos }}
+      namen: ${{ steps.wahl.outputs.namen }}
+      deckung: ${{ steps.wahl.outputs.deckung }}
+      index: ${{ steps.wahl.outputs.index }}
+      musterdepots: ${{ steps.wahl.outputs.musterdepots }}
+      sic_historie: ${{ steps.wahl.outputs.sic_historie }}
+      tiingo2_universum: ${{ steps.wahl.outputs.tiingo2_universum }}
+      sec_fundamentals: ${{ steps.wahl.outputs.sec_fundamentals }}
+    steps:
+      - name: Teil waehlen
+        id: wahl
+        env:
+          # Eingaben und Ereignisdaten nur ueber env: (ADR-005)
+          EVENT: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+          REF: ${{ github.ref }}
+          TEIL: ${{ inputs.teil }}
+          SCHEDULE: ${{ github.event.schedule }}
+          WR_NAME: ${{ github.event.workflow_run.name }}
+          WR_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          COMMITS: ${{ toJSON(github.event.commits) }}
+          INPUTS: ${{ toJSON(inputs) }}
+        run: |
+          python3 - <<'PY'
+          import fnmatch, json, os, re
+          SPEC = json.loads(r"""{"deckung": {"crons": ["0 6 * * 0"], "dispatch": true, "required": []}, "index": {"crons": ["20 7 * * 6"], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "logos": {"crons": ["17 4 * * 1", "47 3 * * 2-6"], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": [], "workflow_run": {"branches": ["main"], "branches-ignore": null, "types": ["completed"], "workflows": ["Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"]}}, "musterdepots": {"crons": ["23 7 * * 6"], "dispatch": true, "required": []}, "namen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "sec-fundamentals": {"crons": ["0 6 * * 1"], "dispatch": true, "required": []}, "sic-historie": {"crons": [], "dispatch": true, "required": []}, "tiingo2-universum": {"crons": ["20 8 * * 1-5"], "dispatch": true, "push": {"branches": ["codex/tiingo2-universe-hardening"]}, "required": ["max_symbols"]}}""")
+          ev, ref = os.environ.get("EVENT", ""), os.environ.get("REF", "")
+          def glob_re(p):
+              # GitHub-Filtermuster: ** beliebig, * ohne '/', ? ein Zeichen, [..] Klasse; Praefix '!' = Ausschluss
+              out, i = "", 0
+              while i < len(p):
+                  c = p[i]
+                  if p.startswith("**/", i): out += "(?:.*/)?"; i += 3; continue
+                  if p.startswith("**", i): out += ".*"; i += 2; continue
+                  if c == "*": out += "[^/]*"
+                  elif c == "?": out += "[^/]"
+                  elif c == "[":
+                      j = p.index("]", i); out += p[i:j + 1]; i = j + 1; continue
+                  else: out += re.escape(c)
+                  i += 1
+              return re.compile("^" + out + "$")
+          def match_list(pats, value):
+              ok = False
+              for p in pats:
+                  neg = p.startswith("!")
+                  if glob_re(p[1:] if neg else p).match(value): ok = not neg
+              return ok
+          def files():
+              try: commits = json.loads(os.environ.get("COMMITS") or "[]") or []
+              except Exception: commits = []
+              fs = set()
+              for c in commits:
+                  for k in ("added", "modified", "removed"): fs.update(c.get(k) or [])
+              return fs, len(commits)
+          def push_ok(r):
+              if ref.startswith("refs/heads/"):
+                  name = ref[11:]
+                  if "branches" in r and not match_list(r["branches"], name): return False
+                  if "branches-ignore" in r and match_list(r["branches-ignore"], name): return False
+                  if ("tags" in r) and "branches" not in r and "branches-ignore" not in r: return False
+              elif ref.startswith("refs/tags/"):
+                  name = ref[10:]
+                  if "tags" in r and not match_list(r["tags"], name): return False
+                  if "tags-ignore" in r and match_list(r["tags-ignore"], name): return False
+                  if ("branches" in r or "branches-ignore" in r) and "tags" not in r and "tags-ignore" not in r: return False
+              else: return False
+              if "paths" in r or "paths-ignore" in r:
+                  fs, n = files()
+                  if not fs:
+                      # Ereignis ohne Dateiliste (z. B. neuer Zweig): GitHub wertet Pfade dann gegen den Standardzweig aus; hier konservativ: ausloesen
+                      return n == 0
+                  if "paths" in r and not any(match_list(r["paths"], f) for f in fs): return False
+                  if "paths-ignore" in r and all(match_list(r["paths-ignore"], f) for f in fs): return False
+              return True
+          out = {}
+          for teil, r in SPEC.items():
+              v = False
+              if ev == "workflow_dispatch":
+                  v = bool(r.get("dispatch")) and os.environ.get("TEIL") == teil
+                  if v:
+                      # Pflichteingaben der Quelle gelten nur fuer ihren Teil (im Buendel optional)
+                      vals = json.loads(os.environ.get("INPUTS") or "{}") or {}
+                      fehlt = [n for n in (r.get("required") or []) if str(vals.get(n) if vals.get(n) is not None else "").strip() == ""]
+                      if fehlt: raise SystemExit("Pflichteingabe fehlt fuer Teil " + teil + ": " + ", ".join(fehlt))
+              elif ev == "schedule": v = os.environ.get("SCHEDULE") in (r.get("crons") or [])
+              elif ev == "push": v = "push" in r and push_ok(r["push"])
+              elif ev == "workflow_run" and "workflow_run" in r:
+                  w = r["workflow_run"]; b = os.environ.get("WR_BRANCH", "")
+                  v = os.environ.get("WR_NAME") in w["workflows"] and os.environ.get("ACTION") in w["types"]
+                  if v and w.get("branches") is not None: v = match_list(w["branches"], b)
+                  if v and w.get("branches-ignore") is not None: v = not match_list(w["branches-ignore"], b)
+              elif ev == "repository_dispatch" and "repository_dispatch" in r:
+                  t = r["repository_dispatch"]; v = t is None or os.environ.get("ACTION") in t
+              out[teil.replace("-", "_")] = "true" if v else "false"
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              for k, v in out.items(): fh.write(k + "=" + v + "\n"); print(k + "=" + v)
+          PY
+
+  # --- logos: vormals company-logos.yml
+  logos:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.logos == 'true' && ((github.event_name != 'push' || contains(github.event.head_commit.message, '[company-logos]')) && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'))
+    permissions:
+      contents: write
+    concurrency:
+      group: company-logos-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Bildbibliothek fuer die Website-Icons
+        run: npm install --no-save --no-package-lock --no-audit --no-fund sharp@0.34.5
+
+      - name: Kandidaten-Bilder (nur mit Eingabe candidates)
+        if: ${{ github.event.inputs.candidates }}
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+          CANDIDATES: ${{ github.event.inputs.candidates }}
+        run: |
+          if ! [[ "$CANDIDATES" =~ ^[A-Za-z0-9.,-]+$ ]]; then echo "Ungueltige Ticker-Liste"; exit 1; fi
+          node scripts/discover/logo-candidates.mjs --symbols="$CANDIDATES"
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git checkout -B claude/logo-candidates
+          git add -f .logo-candidates
+          git commit -m "Logo-Kandidaten: $CANDIDATES (nur zur Auswahl, nicht im Produkt)"
+          git push -f origin claude/logo-candidates
+
+      - name: Logos (Commons mit freier Lizenz, sonst Website-Icon)
+        if: ${{ !github.event.inputs.candidates }}
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+          ONLY: ${{ github.event.inputs.only }}
+          REFRESH: ${{ github.event.inputs.refresh }}
+        run: |
+          ARGS=""
+          if [ -n "$ONLY" ]; then
+            if ! [[ "$ONLY" =~ ^[A-Za-z0-9.,-]+$ ]]; then echo "Ungueltige Ticker-Liste"; exit 1; fi
+            ARGS="--only=$ONLY"
+          fi
+          if [ "$REFRESH" = "true" ]; then ARGS="$ARGS --refresh-web --refresh-sites"; fi
+          node scripts/discover/build-company-logos.mjs $ARGS
+
+      - name: Pruefung (Zuordnung, Lizenzen, jede Datei belegt)
+        if: ${{ !github.event.inputs.only && !github.event.inputs.candidates }}
+        run: node --test discover/tests/company-logos.test.mjs
+
+      - name: Commit und Push
+        if: ${{ !github.event.inputs.only && !github.event.inputs.candidates }}
+        env:
+          ZIEL: ${{ github.event_name == 'workflow_run' && 'main' || github.ref_name }}
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add -A discover/logos
+          if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
+          Z=$(node -e 'const s=require("./discover/logos/summary.json"); console.log(s.withLogo+"/"+s.universe+" ("+s.pct+" %)")')
+          git commit -m "Firmenlogos: $Z Titel mit Logo (Wikimedia Commons und Firmen-Websites)"
+          # Einheitlicher Push (ADR-005): neu aufsetzen und wiederholen. Lauf
+          # 40668818546 (28.10.2026) verlor sein Ergebnis, weil zwischen
+          # `pull --rebase` und `push` ein anderer Commit auf main landete.
+          scripts/ci/push-with-retry.sh "$ZIEL"
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Firmenlogos'
+            echo ''
+            if [ -f discover/logos/summary.json ]; then
+              node -e 'const s=require("./discover/logos/summary.json"); console.log("| Kennzahl | Wert |"); console.log("|---|---|"); console.log("| Universum | "+s.universe+" |"); console.log("| mit Logo | "+s.withLogo+" ("+s.pct+" %) |"); console.log("| neu geladen | "+s.downloaded+" |"); console.log("| nach Zuordnung | "+JSON.stringify(s.byVia)+" |"); console.log("| nach Quelle | "+JSON.stringify(s.bySource)+" |"); console.log("| nach Lizenz (Commons) | "+JSON.stringify(s.byLicense)+" |"); console.log("| ohne Logo | "+JSON.stringify(s.excluded)+" |"); console.log("| warten auf Sichtpruefung | "+(s.pending||[]).length+" "+(s.pending||[]).join(", ")+" |"); for (const [k,v] of Object.entries(s.indexCoverage||{})) console.log("| "+k+" | "+v.withLogo+"/"+v.members+" "+(v.missing.length?"fehlen: "+v.missing.join(", "):"")+" |");'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # --- namen: vormals company-names.yml
+  namen:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.namen == 'true' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[company-names]'))
+    permissions:
+      contents: write
+    concurrency:
+      group: market-data-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -z "$TIINGO_API_KEY" ]; then echo "TIINGO_API_KEY fehlt (Repository-Secret)."; exit 1; fi
+
+      - name: Universumsquelle
+        run: node scripts/market/universe-source.mjs
+
+      - name: Namensschicht (Anbieter-Stammdaten + SEC-Tickerverzeichnis + kuratierte Namen)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+          IN_MAX_REQUESTS: ${{ github.event.inputs.max_requests || '7000' }}
+        run: |
+          case "$IN_MAX_REQUESTS" in ''|*[!0-9]*) echo "::error::max_requests muss eine Zahl sein"; exit 1;; esac
+          node scripts/market/build-company-names.mjs --tiingo --sec --max-requests="$IN_MAX_REQUESTS" --concurrency=4
+
+      - name: Discover-Daten mit Namen neu bauen
+        run: |
+          node scripts/discover/build-discover-data.mjs
+          node scripts/discover/verify-discover-data.mjs
+
+      - name: Capability Matrix je Instrument
+        run: node scripts/market/build-capability-matrix.mjs
+
+      - name: Kein Schluessel in den Artefakten
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs
+
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Regressionssuite
+        run: |
+          node --test "quant/tests/*.test.mjs"
+          node --test "discover/tests/*.test.mjs"
+
+      - name: Commit und Push
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json \
+                  discover/data quant/data/market/capabilities
+          if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
+          Z=$(node -e 'const s=require("./quant/data/market/security-master/company-names-summary.json").coverage; console.log(s.withName+"/"+s.productUniverse+" ("+s.pct+" %), "+JSON.stringify(s.bySource))')
+          git commit -m "Company-Namen: $Z"
+          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Company-Namen'
+            echo ''
+            if [ -f quant/data/market/security-master/company-names-summary.json ]; then
+              node -e 'const s=require("./quant/data/market/security-master/company-names-summary.json"); const c=s.coverage; console.log("| Kennzahl | Wert |"); console.log("|---|---|"); console.log("| Produktuniversum | "+c.productUniverse+" |"); console.log("| mit Namen | "+c.withName+" ("+c.pct+" %) |"); console.log("| ohne Namen | "+c.withoutName+" |"); console.log("| nach Quelle | "+JSON.stringify(c.bySource)+" |"); console.log("| offen | "+JSON.stringify(c.unresolvedReasons)+" |"); console.log(""); for (const x of s.spotCheck) console.log("- "+x.ticker+": "+(x.companyName||"-")+" ("+(x.nameSource||x.reason||x.status)+")");'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # --- deckung: vormals coverage-metrics.yml
+  deckung:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.deckung == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: market-data-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Zugang zum Speicher vorhanden?
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "$v fehlt - ohne Speicherzugang keine Deckungskennzahl."; exit 1; fi
+          done
+          echo "Zugang vorhanden."
+
+      - name: Deckungskennzahlen gegen das aktuelle Produktuniversum (ein GET, keine Kurse)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/market/build-coverage-metrics.mjs
+
+      - name: Herkunft festhalten
+        run: |
+          node -e '
+            const fs = require("fs");
+            const p = "quant/data/market/history/CANONICAL_SOURCE.json";
+            const c = JSON.parse(fs.readFileSync(p, "utf8"));
+            const m = JSON.parse(fs.readFileSync("quant/data/market/history/coverage-metrics.json", "utf8"));
+            c.regenerated = {
+              workflow: "coverage-metrics.yml", runId: String(process.env.GITHUB_RUN_ID), commit: process.env.GITHUB_SHA,
+              generatedAt: m.generatedAt, today: m.today,
+              carries: "STORAGE_COVERAGE " + m.STORAGE_COVERAGE.stored + "/" + m.STORAGE_COVERAGE.denominator +
+                       ", CHART_AVAILABILITY " + m.CHART_AVAILABILITY.renderable + "/" + m.CHART_AVAILABILITY.denominator +
+                       ", TECHNICAL_HISTORY_ELIGIBILITY " + m.TECHNICAL_HISTORY_ELIGIBILITY.eligible + "/" + m.TECHNICAL_HISTORY_ELIGIBILITY.denominator,
+              note: "Neu gerechnet gegen das aktuelle Produktuniversum (Produkt-Datenhygiene 14./15.09.2026). Lesend: 0 Kursabfragen, 0 R2-Schreibvorgaenge."
+            };
+            fs.writeFileSync(p, JSON.stringify(c, null, 2) + "\n");
+            console.log(c.regenerated.carries);
+          '
+
+      - name: Company Master, Indizes, Abgleich
+        run: |
+          node scripts/universe/build-company-master.mjs
+          node scripts/universe/build-universe-indexes.mjs
+          node scripts/universe/verify-company-master.mjs
+          python3 scripts/quant/cli.py reconcile
+
+      # Eine neue Messung ersetzt den abgenommenen Stand nur, wenn jede
+      # Abweichung je Titel einen belegten Grund hat (DEBT, Listing-Kuerzung,
+      # junge Reihe ueber der Schwelle). Unerklaertes bricht VOR dem Commit ab.
+      - name: Abweichung je Titel erklaeren (lesend)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          # Bezug ist der Commit der committeten Messung (coverage-delta.mjs). Der Checkout ist flach: Commits und Baeume
+          # seit der Messung blob-frei nachholen; die zwei Dateien des Bezugs-Commits laedt git show bei Bedarf.
+          since="$(git show HEAD:quant/data/market/history/coverage-metrics.json | node -e 'const d=new Date(JSON.parse(require("fs").readFileSync(0,"utf8")).generatedAt);d.setUTCDate(d.getUTCDate()-2);console.log(d.toISOString().slice(0,10))')"
+          git fetch -q --filter=blob:none --shallow-since="$since" origin "${GITHUB_REF_NAME}"
+          node scripts/diagnose/coverage-delta.mjs
+
+      - name: Regressionssuite
+        run: |
+          python3 scripts/quant/cli.py test
+          node --test "quant/tests/*.test.mjs"
+
+      - name: Commit und Push
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add quant/data/market/history quant/data/universe quant/data/fundamentals
+          if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
+          Z=$(node -e 'const m=require("./quant/data/market/history/coverage-metrics.json"); console.log("Charts "+m.CHART_AVAILABILITY.renderable+"/"+m.CHART_AVAILABILITY.denominator+", Technik "+m.TECHNICAL_HISTORY_ELIGIBILITY.eligible)')
+          git commit -m "Deckungskennzahlen gegen das Produktuniversum neu gerechnet: $Z (Lauf ${{ github.run_id }})"
+          # Die Regressionssuite veraendert nebenbei committete Dateien
+          # ausserhalb der Kennzahlpfade (z. B. total-return-verification.json).
+          # Geschoben wird nur, was oben committet wurde; der Rest wird
+          # verworfen, sonst bricht das Rebase ab (Lauf 37181495758: alles
+          # gruen, Commit gebaut, "cannot pull with rebase: You have unstaged
+          # changes").
+          git checkout -- .
+          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # --- index: vormals index-membership.yml
+  index:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.index == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || contains(github.event.head_commit.message, '[index-membership]'))
+    permissions:
+      contents: write
+    concurrency:
+      group: index-membership-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Bestaende holen und zuordnen
+        run: node scripts/market/build-index-membership.mjs
+
+      - name: Discover-Daten neu bauen (Index-Reihen)
+        run: |
+          node scripts/discover/build-discover-data.mjs
+          node scripts/discover/verify-discover-data.mjs
+
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Tests
+        run: |
+          node --test "quant/tests/index-membership.test.mjs"
+          node --test "discover/tests/*.test.mjs"
+
+      - name: Commit und Push
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A quant/data/market/index-membership discover/data
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+          else
+            git commit -m "Index-Mitgliedschaft: $(node -e 'const i=require("./quant/data/market/index-membership/index.json");console.log(i.indexes.map(x=>x.indexId+" "+x.memberCount+" ("+x.asOf+")").join(", "))')"
+            # Ein anderer Daten-Workflow kann zwischen Rebase und Push auf
+            # main landen (03.10.2026: Supertrader-Signale, 25 s Abstand).
+            # Dasselbe Werkzeug wie der Marktdaten-Lauf: neu aufsetzen und
+            # mit Wartezeit erneut versuchen.
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Index-Mitgliedschaft'
+            echo ''
+            if [ -f quant/data/market/index-membership/index.json ]; then
+              node -e '
+                const i = require("./quant/data/market/index-membership/index.json");
+                console.log("| Index | Mitglieder | nicht zugeordnet | Stichtag | Fonds |"); console.log("|---|---|---|---|---|");
+                i.indexes.forEach((x) => console.log("| " + x.indexName + " | " + x.memberCount + " | " + x.unmatchedCount + " | " + x.asOf + (x.stale ? " (alter Stand: " + x.error + ")" : "") + " | " + x.proxy + " |"));
+              '
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # --- musterdepots: vormals quant-model-depots.yml
+  musterdepots:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.musterdepots == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: market-data-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # Datenzweig (Plan Neustart §3): die SPY-Reihe (Wochenkalender) waechst nur noch in data/live (marketPulse).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
+
+      - name: Musterdepots rechnen (Erzeuger)
+        run: |
+          set -euo pipefail
+          node scripts/quant/portfolio/model-depots.cjs --out quant/data/product/model-depots-v1.json
+
+      - name: Vertrag und Tests
+        run: |
+          set -euo pipefail
+          node --test quant/tests/model-depots.test.mjs
+
+      - name: Commit und Push (nur die eigene Datei)
+        env:
+          PUSH_OWNED_PATHS: quant/data/product/model-depots-v1.json
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add $PUSH_OWNED_PATHS
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          asof=$(node -e 'console.log(require("./quant/data/product/model-depots-v1.json").asOf)')
+          git commit -q -m "Quant-Musterdepots: Stand ${asof} (Lauf ${GITHUB_RUN_ID})"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # --- sic-historie: vormals sec-sic-history.yml
+  sic-historie:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.sic_historie == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: sec-sic-history-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    # runner.temp ist auf Job-Ebene nicht verfuegbar (nur in Steps); SEC_CACHE_DIR wird
+    # deshalb im ersten Step aus $RUNNER_TEMP gesetzt und ueber GITHUB_ENV weitergereicht.
+    env:
+      SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Eingaben pruefen
+        env:
+          IN_MAX: ${{ inputs.sic_historie_max_requests }}
+        run: |
+          set -euo pipefail
+          echo "SEC_CACHE_DIR=$RUNNER_TEMP/sec-cache" >> "$GITHUB_ENV"
+          case "$IN_MAX" in ''|*[!0-9]*) echo "::error::max_requests muss eine Zahl sein"; exit 1;; esac
+
+      - name: Rohdaten aus dem Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/sec-cache/sic-history/raw
+          key: sic-history-raw-${{ hashFiles('quant/data/sec/sic-history/manifest.json') }}
+          restore-keys: sic-history-raw-
+
+      - name: Offline-Tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/quant/tests -p 'test_sic_history.py'
+          node --test core/tests/industry-classification.test.mjs core/tests/industry-classification-sec.test.mjs
+
+      - name: Gepinnte Quellen nachladen (Hash-Pruefung)
+        env:
+          IN_MAX: ${{ inputs.sic_historie_max_requests }}
+        run: python3 scripts/quant/cli.py --log-level WARNING sic-history hydrate --max-requests "$IN_MAX"
+
+      - name: Neue Quartale
+        if: inputs.action == 'refresh'
+        env:
+          IN_MAX: ${{ inputs.sic_historie_max_requests }}
+        run: python3 scripts/quant/cli.py --log-level WARNING sic-history fetch-fsds --max-requests "$IN_MAX"
+
+      - name: Rebuild
+        env:
+          IN_ACTION: ${{ inputs.action }}
+        run: |
+          set -euo pipefail
+          if [ "$IN_ACTION" = "refresh" ]; then
+            python3 scripts/quant/cli.py sic-history build
+          fi
+          python3 scripts/quant/cli.py sic-history verify
+          node --test core/tests/industry-classification-sec.test.mjs
+
+      - name: Commit und Push
+        if: inputs.action == 'refresh'
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add quant/data/sec/sic-history
+          if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
+          git commit -m "SEC SIC-Historie: $(node -e 'const i=require("./quant/data/sec/sic-history/index.json");console.log(i.fsdsLastQuarter+", "+i.stats.issuers+" Emittenten, "+i.stats.observations+" Beobachtungen")')"
+          PUSH_OWNED_PATHS="quant/data/sec/sic-history/" scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # --- tiingo2-universum: vormals tiingo2-universe-refresh.yml
+  tiingo2-universum:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.tiingo2_universum == 'true' && (github.event_name != 'push' || contains(github.event.head_commit.message, '[tiingo2-stage]'))
+    permissions:
+      contents: read
+    concurrency:
+      group: tiingo2-universe-staging-${{ github.ref }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/cache/restore@v4
+        with:
+          path: .market-cache/tiingo2-cache.enc
+          key: tiingo2-encrypted-v1-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: tiingo2-encrypted-v1-${{ github.ref_name }}-
+      - name: Authenticate and restore encrypted provider cache
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/tiingo2-cache.mjs open --work-dir .market-cache/tiingo2 --file .market-cache/tiingo2-cache.enc --context "$GITHUB_REF_NAME"
+      - name: Focused staging regressions
+        run: node --test --test-reporter=dot quant/tests/tiingo2-*.test.mjs
+      - name: Incremental discovery, classification, evidence and preview
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          TIINGO2_BUDGET: ${{ inputs.max_symbols || '750' }}
+        run: |
+          node scripts/market/tiingo2-refresh.mjs --run-id "gh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" --probe --max-symbols "$TIINGO2_BUDGET"
+      - name: Protected outputs must remain unchanged
+        run: git diff --exit-code -- quant/data discover/data dashboard/config supertrader/data
+      - name: Credential boundary
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs --all
+      - name: Export only derived findings (never provider bars or factor price levels)
+        run: |
+          mkdir -p .verification/tiingo2
+          node scripts/market/tiingo2-export.mjs --run-dir ".market-cache/tiingo2/runs/gh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" --out .verification/tiingo2
+          cat .verification/tiingo2/tiingo2_final_universe_summary.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tiingo2-derived-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .verification/tiingo2
+          retention-days: 14
+      # Public repository Actions caches are not confidential. Persist only
+      # authenticated ciphertext; the existing provider credential derives a
+      # domain-separated encryption key and is never written into the cache.
+      - name: Seal provider cache before persistence
+        if: success()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/tiingo2-cache.mjs seal --work-dir .market-cache/tiingo2 --file .market-cache/tiingo2-cache.enc --context "$GITHUB_REF_NAME"
+      - uses: actions/cache/save@v4
+        if: success()
+        with:
+          path: .market-cache/tiingo2-cache.enc
+          key: tiingo2-encrypted-v1-${{ github.ref_name }}-${{ github.run_id }}
+      - name: Remove ephemeral plaintext provider cache
+        if: always()
+        run: rm -rf -- .market-cache/tiingo2
+
+  # --- sec-fundamentals: vormals update-sec-fundamentals.yml
+  sec-fundamentals:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.sec_fundamentals == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: update-sec-fundamentals
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+
+      - name: Ensure the SEC pipeline exists on this ref
+        shell: bash
+        run: |
+          # Der Workflow ist auf main registriert, damit workflow_dispatch ihn
+          # ueberhaupt anbietet. Wird er auf einem Ref gestartet, der die
+          # Pipeline nicht enthaelt, soll er das sagen statt undurchsichtig
+          # mitten im Lauf zu scheitern.
+          missing=0
+          for required in scripts/quant/cli.py providers/sec/adapter.js \
+                          quant/config/sec-universe.json scripts/quant/run-sec-gates.mjs; do
+            if [ ! -e "$required" ]; then echo "fehlt: $required"; missing=1; fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::Die SEC-Pipeline liegt auf diesem Ref (${{ github.ref_name }}) nicht vor."
+            exit 1
+          fi
+          echo "SEC-Pipeline auf ${{ github.ref_name }} vorhanden."
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Cache SEC responses between runs
+        uses: actions/cache@v4
+        with:
+          path: .sec-cache
+          key: sec-cache-${{ github.run_id }}
+          restore-keys: sec-cache-
+
+      - name: Restore ingestion state
+        uses: actions/cache@v4
+        with:
+          path: |
+            .quant-state
+            quant/data/sec/facts
+            quant/data/sec/raw
+          key: sec-state-${{ github.run_id }}
+          restore-keys: sec-state-
+
+      - name: Run both offline test suites first
+        run: |
+          python3 scripts/quant/cli.py test
+          node --test "quant/tests/*.test.mjs"
+
+      - name: Resolve the universe against the SEC ticker map
+        # Diagnostic, runs before the expensive ingest: it records which CIK each
+        # configured ticker actually resolves to, and what each candidate CIK
+        # contains. A mismatch here is what stopped the first live run — the
+        # config CIK is only a hint, the SEC is the authority.
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: python3 scripts/quant/cli.py resolve --universe quant/config/sec-universe.json
+
+      - name: Ingest the SEC universe
+        id: ingest
+        # A single company failing must not lose the whole run; that is what the
+        # retry queue is for. The completeness check two steps down decides.
+        continue-on-error: true
+        env:
+          # The SEC requires a declaring User-Agent with a contact address.
+          # This is a public contact address, not a credential.
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: |
+          python3 scripts/quant/cli.py ingest \
+            --universe quant/config/sec-universe.json \
+            ${{ inputs.force && '--force' || '' }}
+
+      - name: Retry anything that failed
+        if: steps.ingest.outcome == 'failure'
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: python3 scripts/quant/cli.py retry
+
+      - name: Verify every configured company was ingested
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          sys.path.insert(0, "scripts")
+          from quant.sec.provider import normalize_cik
+          from quant.sec.store import JsonFactStore
+
+          universe = json.load(open("quant/config/sec-universe.json"))["companies"]
+          stored = set(JsonFactStore(compress=True).list_companies())
+          missing = [c for c in universe if normalize_cik(c["cik"]) not in stored]
+          for c in universe:
+              mark = "ok " if normalize_cik(c["cik"]) in stored else "MISSING"
+              print(f"  {mark} {c['ticker']:6} CIK {normalize_cik(c['cik'])}")
+          if missing:
+              print(f"::error::{len(missing)} of {len(universe)} companies were not "
+                    f"ingested: {[c['ticker'] for c in missing]}")
+              sys.exit(1)
+          print(f"all {len(universe)} companies ingested")
+          PY
+
+      - name: Build the coverage matrix
+        run: python3 scripts/quant/cli.py coverage
+
+      - name: Write the canonical FundamentalFact/Filing layer
+        # This is what providers/sec/adapter.js serves to the quant engines.
+        run: python3 scripts/quant/cli.py canonical
+
+      - name: Run the ingestion integrity checks
+        env:
+          # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
+          IN_AS_OF: ${{ inputs.as_of }}
+        run: |
+          if [ -n "$IN_AS_OF" ]; then
+            [[ "$IN_AS_OF" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::as_of muss JJJJ-MM-TT sein"; exit 1; }
+            python3 scripts/quant/cli.py gates --as-of "$IN_AS_OF"
+          else
+            python3 scripts/quant/cli.py gates
+          fi
+
+      - name: Run the existing qualification gates against the SEC adapter
+        # Gate A/B/C come from quant/engines/gate-tests.js - the same stand every
+        # other provider is judged by. A gate that cannot be run is reported
+        # SKIPPED, never PASSED.
+        run: node scripts/quant/run-sec-gates.mjs
+
+      - name: Re-check the adapter against real ingested data
+        run: node --test "quant/tests/sec-adapter.test.mjs"
+
+      - name: Cross-check canonical values against SEC primary data
+        id: primary_source
+        # The only check that leaves the pipeline: it re-fetches companyfacts and
+        # compares raw SEC entries against the normalized and canonical values,
+        # recording concept, accession, filing date and period end for each one.
+        # continue-on-error so the evidence file still gets committed; the run is
+        # failed at the end if anything mismatched.
+        continue-on-error: true
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: python3 scripts/quant/audit_primary_source.py --per-company 8
+
+      - name: Export the data inspector views
+        run: python3 scripts/quant/cli.py export
+
+      - name: Report what was measured
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          cov = json.loads(pathlib.Path("quant/data/sec/coverage_matrix.json").read_text())
+          print("Coverage (probe years):")
+          for year in sorted(cov.get("grid", {}), reverse=True):
+              print(f"  {year}: {cov['grid'][year]}")
+          for company in cov.get("companies", []):
+              print(f"  {company['name']}: first usable fiscal year "
+                    f"{company['first_usable_year']}, first structured "
+                    f"{company['first_structured_year']}")
+          idx = json.loads(pathlib.Path("quant/data/sec/canonical_index.json").read_text())
+          print("\nCanonical bundles:")
+          for c in idx.get("companies", []):
+              print(f"  {c['ticker']:6} {c['factCount']:6} facts, "
+                    f"{len(c['metricIds'])} metrics: {','.join(c['metricIds'])}")
+          PY
+
+      - name: Verify generated-file-only scope
+        shell: bash
+        run: |
+          unexpected="$(git status --porcelain | awk '{print $2}' | grep -vE '^quant/data/' || true)"
+          if [ -n "$unexpected" ]; then
+            echo "::error::this workflow may only change quant/data/:"
+            echo "$unexpected"
+            exit 1
+          fi
+          for forbidden in quant/data/sec/raw quant/data/sec/facts; do
+            if git status --porcelain | grep -q "$forbidden"; then
+              echo "::error::$forbidden must stay untracked"
+              exit 1
+            fi
+          done
+          oversized="$(find quant/data -type f -size +2M -not -path 'quant/data/sec/raw/*' -not -path 'quant/data/sec/facts/*' || true)"
+          if [ -n "$oversized" ]; then
+            echo "::error::generated artifact over 2MB:"; echo "$oversized"; exit 1
+          fi
+
+      - name: Fail the run if any value disagrees with SEC primary data
+        shell: bash
+        run: |
+          report=quant/data/sec/primary_source_audit.json
+          if [ ! -f "$report" ]; then
+            echo "::error::the primary-source cross-check produced no report"
+            exit 1
+          fi
+          python3 - <<'PY'
+          import json, pathlib, sys
+          payload = json.loads(pathlib.Path("quant/data/sec/primary_source_audit.json").read_text())
+          print(json.dumps(payload["summary"], indent=2))
+          if payload["mismatchCount"]:
+              print(f"::error::{payload['mismatchCount']} canonical values disagree "
+                    f"with SEC primary data")
+              for check in payload["checks"]:
+                  if check["verdict"].startswith("MISMATCH"):
+                      print(f"  {check['ticker']} {check['metric']} "
+                            f"{check['fiscalYear']} {check['fiscalPeriod']}: "
+                            f"{check['verdict']}")
+              sys.exit(1)
+          PY
+
+      - name: Commit generated data
+        shell: bash
+        run: |
+          git add quant/data
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen an den SEC-Daten – nichts zu committen."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: update SEC fundamental data"
+          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

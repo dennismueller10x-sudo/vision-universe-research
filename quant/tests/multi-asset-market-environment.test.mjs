@@ -216,7 +216,10 @@ test("Artefakt: Marktumfeld, Bewertungszyklus, Messskalen - ohne Score, Zeitplan
   assert.ok(E.levels.some((l) => l.id === P.environment.state));
   assert.ok(P.environment.statement && P.environment.investor && P.environment.methodology);
   const wf = readFileSync(new URL(".github/workflows/multi-asset-data.yml", root), "utf8");
-  assert.match(wf, new RegExp("cron: '" + CFG.evaluation.cron.replace(/\*/g, "\\*") + "'"), "Zeitplan in der Konfiguration = Workflow-Cron");
+  /* Zeitplan steht seit Plan Neustart §3 im Register (core/registry/schedule.json, Takt ueber den Wecker). */
+  const reg = JSON.parse(readFileSync(new URL("core/registry/schedule.json", root), "utf8"));
+  const takte = reg.entries.filter((e) => e.workflow === "multi-asset-data.yml").map((e) => e.cron);
+  assert.ok(takte.includes(CFG.evaluation.cron), "Zeitplan in der Konfiguration = Takt im Register");
   assert.match(wf, /market-pulse-history\.json/, "Historie wird mit dem Lauf materialisiert");
   assert.equal(P.evaluation.schedule.cron, CFG.evaluation.cron);
   for (const [k, g] of Object.entries(P.gauges)) {

@@ -92,7 +92,7 @@ on:
       - 'scripts/discover/serve-https.mjs'
       - 'scripts/market/smoke-vu-live.mjs'
       - 'scripts/technical/world/live-qa.mjs'
-      - 'scripts/vorsorge/live-smoke.mjs'
+      - 'products/vorsorge/producer/live-smoke.mjs'
 
 permissions:
   contents: read
@@ -161,7 +161,7 @@ jobs:
                   cloudflare) claude && marke '[cf-proof]' && touched '.github/workflows/monitor.yml' 'scripts/market/smoke-vu-live.mjs' && v=true ;;
                   discover_realtime) claude && marke '[rt-qa]' && touched '.github/workflows/monitor.yml' 'scripts/discover/browser-qa-realtime.mjs' 'scripts/discover/serve-https.mjs' && v=true ;;
                   technical) claude && marke '[technical-live-qa]' && touched '.github/workflows/monitor.yml' 'scripts/technical/world/live-qa.mjs' && v=true ;;
-                  vorsorge) claude && marke '[vorsorge-live-smoke]' && touched '.github/workflows/monitor.yml' 'scripts/vorsorge/live-smoke.mjs' && v=true ;;
+                  vorsorge) claude && marke '[vorsorge-live-smoke]' && touched '.github/workflows/monitor.yml' 'products/vorsorge/producer/live-smoke.mjs' && v=true ;;
                 esac ;;
             esac
             setze "$k" "$v"
@@ -1108,7 +1108,7 @@ jobs:
         id: fresh
         run: |
           set -euo pipefail
-          node scripts/fundamental/sec-freshness.mjs --out="$RUNNER_TEMP/freshness.json"
+          node products/fundamental/producer/sec-freshness.mjs --out="$RUNNER_TEMP/freshness.json"
           node -e 'const r=require(process.argv[1]); console.log("decision="+r.decision); console.log("pending="+r.pending)' "$RUNNER_TEMP/freshness.json" >> "$GITHUB_OUTPUT"
       - name: Erzeuger anstossen (nur wenn noetig und nicht schon unterwegs)
         if: steps.fresh.outputs.decision == 'REFRESH_CONSUMER'
@@ -1259,7 +1259,7 @@ jobs:
           set -euo pipefail
           # Pages-Auslieferung und CDN brauchen nach dem Deploy einige Minuten.
           for i in 1 2 3 4 5 6; do
-            if node scripts/fundamental/verify-publication.mjs --out="$RUNNER_TEMP/publication.json"; then exit 0; fi
+            if node products/fundamental/producer/verify-publication.mjs --out="$RUNNER_TEMP/publication.json"; then exit 0; fi
             sleep 120
           done
           echo "::error::Die veroeffentlichte Fundamental-Historie zeigt den neuen SEC-Stand nicht."
@@ -1454,7 +1454,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            scripts/vorsorge/live-smoke.mjs
+            products/vorsorge/producer/live-smoke.mjs
             scripts/access-gate
       - uses: actions/setup-node@v4
         with:
@@ -1467,7 +1467,7 @@ jobs:
         env:
           PLAYWRIGHT_PATH: /tmp/pw/node_modules/playwright
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
-        run: node scripts/vorsorge/live-smoke.mjs "$IN_SITE" vorsorge-live-shots
+        run: node products/vorsorge/producer/live-smoke.mjs "$IN_SITE" vorsorge-live-shots
       - name: Bericht in die Zusammenfassung
         if: always()
         run: test -f vorsorge-live-shots/report.md && cat vorsorge-live-shots/report.md >> "$GITHUB_STEP_SUMMARY" || true

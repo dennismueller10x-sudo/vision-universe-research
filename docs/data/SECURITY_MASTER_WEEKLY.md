@@ -5,7 +5,7 @@ Stand 28.10.2026. Owner-Entscheidung vom selben Tag: regelmäßige, kontrolliert
 > **Stand 30.10.2026 (Owner-Entscheidung, Supertrader 9):**
 > - **Der einzige Freigabeweg im Gate ist #1143**, mit der quellengebundenen Liste `docs/data/security-master/v130-approved-changes-1.1.0.json`. Sie enthält die 138 Typ- und 138 Eignungswechsel aus 1.0.0 vollständig. ONEOK bekommt keine Ausnahme.
 > - Die Zählung unten (138 / 138 / 127, „133“ widerlegt) bleibt der Nachweis des Klassifiziererwechsels.
-> - Bau und Vergleich der neuen Backtest-Generation laufen nur mit der verpflichtenden Identitätssperre und `--prev-master` (#1159, `docs/data/SECURITY_MASTER_IDENTITY_BLOCKLIST.md`). Die Befehle für `build-post-switch` und `compare` in diesem Dokument sind dadurch überholt.
+> - Bau und Vergleich der neuen Backtest-Generation laufen nur mit der verpflichtenden Identitätssperre und `--prev-master` (#1159, `docs/archiv/data/SECURITY_MASTER_IDENTITY_BLOCKLIST.md`). Die Befehle für `build-post-switch` und `compare` in diesem Dokument sind dadurch überholt.
 
 
 Ergänzt am 29.10.2026 (Workstream D2):
@@ -33,7 +33,7 @@ Bisher gab es für den Master keinen Workflow; der letzte Lauf war 34611793308 a
 | `scripts/market/build-company-names.mjs` | unverändert; aufgerufen nur mit `--sec` (SEC und Repository-Quellen, keine Tiingo-Metadaten) |
 | `scripts/market/security-master-refresh-gate.mjs` | neu: Übernahme-Gate G1–G10, fail closed (Exit 4), Bericht als CI-Artefakt; `--approved-changes` für den einmaligen Wechsel (P3) |
 | `scripts/market/security-master-v130-evidence.mjs` | neu: Nachweis des Klassifiziererwechsels, schreibt nur nach `--out` |
-| `scripts/market/security-master-switch-preflight.mjs` | Prüfungen am Lauftag 1.1.0 → 1.3.0, nur lesend: Frist der SF8-Eingangsprüfung (`--deadline`), Bytegleichheit Probe/produktiv (`--compare`), Gate-Bedingungen (`--gate-report`). Ablauf: `docs/data/security-master/SECURITY_MASTER_1_3_0_FREIGABE.md` |
+| `scripts/market/security-master-switch-preflight.mjs` | Prüfungen am Lauftag 1.1.0 → 1.3.0, nur lesend: Frist der SF8-Eingangsprüfung (`--deadline`), Bytegleichheit Probe/produktiv (`--compare`), Gate-Bedingungen (`--gate-report`). Ablauf: `docs/archiv/data/security-master/SECURITY_MASTER_1_3_0_FREIGABE.md` |
 | `.github/workflows/security-master-weekly.yml` | neu: nur `workflow_dispatch`, `commit` standardmäßig `false`, Zeitplan nur als Kommentar, ADR-005, keine Secrets |
 | `core/registry/domains.json` | neue Datenart `usSecurityMaster`; `companyNames.workflow` ergänzt; `securityMaster` (Produkteignung) bleibt ohne Workflow |
 | `quant/tests/security-master-weekly.test.mjs` | Abschaltung, ADR-005, genaue Commit-Pfade, Gate-Fälle, Erzeuger fail closed und idempotent |
@@ -127,7 +127,7 @@ Reproduziert ohne Abruf und ohne kostenpflichtige Anfrage, nur aus committeten E
 node scripts/market/security-master-v130-evidence.mjs --out <tmp>
 # [v130-evidence] us-security-master-1.1.0 -> us-security-master-1.3.0: Typ 138, Eignung 138, canonical 0, backtestfähig 6397 -> 6270 (−127/+0, 110 mit Langreihe)
 cmp <tmp>/v130-switch-evidence.json docs/data/security-master/v130-switch-evidence.json     # bytegleich
-cmp <tmp>/v130-switch-lists.md docs/data/security-master/v130-switch-lists.md               # bytegleich
+cmp <tmp>/v130-switch-lists.md docs/archiv/data/security-master/v130-switch-lists.md               # bytegleich
 cmp <tmp>/v130-approved-changes.json docs/data/security-master/v130-approved-changes.json   # bytegleich
 ```
 
@@ -275,7 +275,7 @@ Der Wechsel selbst ist eine nicht rückgängig zu machende Datenveröffentlichun
 Security Master 1.3.0 – einmaliger Klassifiziererwechsel und wöchentliche Aktualisierung
 [ ] PR #1033 gemergt am 28.10.2026 (Workflow, Gate, Sonderfreigabe, Nachweis) – aktiviert nichts
 [ ] Nachweis-PR #1101 gemergt (Zählabgleich, SMW-11)   [ ] Freeze-PR #1100 gemergt (SMF-1…5)
-[ ] P1 Listen geprüft: docs/data/security-master/v130-switch-lists.md, v130-count-reconciliation.json
+[ ] P1 Listen geprüft: docs/archiv/data/security-master/v130-switch-lists.md, v130-count-reconciliation.json
        138 Typwechsel, 138 Eignungswechsel, 127 entfallende backtestfähige IDs, 133 als falsch bestätigt: ja / nein
 [ ] P2 verify-repo INTACT (241 Dateien, filesSha256 5e4c4424…): ____
 [ ] P2 privater freeze: Wurzel ____, Generation ____, filesSha256 ____, Archiv ____

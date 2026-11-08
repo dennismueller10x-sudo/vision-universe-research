@@ -2,9 +2,9 @@
  *
  * Quellen (alle bestehend, nichts wird geschaetzt oder aufgefuellt):
  *  1. SEC-Historie je Emittent: /fundamental/data/history/<shardKey>.json.gz – Auslieferungsansicht der SEC-Verbraucherdateien
- *     (scripts/fundamental/build-history.mjs): Geschaeftsjahre, eigenstaendige Quartale, letzte zwoelf Monate, Meldung je Wert.
+ *     (products/fundamental/producer/build-history.mjs): Geschaeftsjahre, eigenstaendige Quartale, letzte zwoelf Monate, Meldung je Wert.
  *  2. Ersatz ohne Historie: der Block `fundamentals` der Discover-Aktiendatei (Jahresreihen weniger Kennzahlen + letztes Jahr).
- *  3. Querschnitt aller US-Aktien: /screener/data/universe-US_REAL.json (Erzeuger scripts/screener/build-universe.mjs) –
+ *  3. Querschnitt aller US-Aktien: /screener/data/universe-US_REAL.json (Erzeuger products/screener/producer/build-universe.mjs) –
  *     Branche (SIC), Bewertung, Renditen; dieselben Werte wie im Screener.
  * Abgeleitete Kennzahlen folgen den Formeln in FORMULA (Renditen wie im Screener). Ein Wert fehlt, wenn eine Eingabe fehlt.
  * Bewertungskennzahlen: aktueller Wert zum Schlusskurs; der Verlauf zum Geschaeftsjahresende nur aus geprueften Stichtagswerten
@@ -15,7 +15,7 @@
   var HISTORY_BASE = '/fundamental/data/history/';
   var UNIVERSE_PATH = '/screener/data/universe-US_REAL.json';
   var ANALYST_PATH = '/dashboard/data/analyst_ratings.json';
-  /* Konsens je Titel fuer das Produktuniversum (scripts/analysts/fetch-consensus.mjs): shards/<shardKey>.json, Schluessel securityId. */
+  /* Konsens je Titel fuer das Produktuniversum (products/analysten/producer/fetch-consensus.mjs): shards/<shardKey>.json, Schluessel securityId. */
   var CONSENSUS_SHARD_PATH = '/dashboard/data/analysts/shards/';
   var SERIES_BASE = '/quant/data/market/discover-series/';
 
@@ -551,7 +551,7 @@
     }
     return changeOf(def, prev.v, now.v);
   }
-  /* Branchenmedian je Geschaeftsjahr (Release, scripts/fundamental/build-history.mjs#industryMedians). */
+  /* Branchenmedian je Geschaeftsjahr (Release, products/fundamental/producer/build-history.mjs#industryMedians). */
   var INDUSTRY_METRICS = ['revenue_growth', 'net_income_growth', 'gross_margin', 'operating_margin', 'ebitda_margin', 'net_margin', 'fcf_margin',
     'roe', 'roa', 'roic', 'tax_rate', 'rd_ratio', 'capex_ratio', 'equity_ratio', 'debt_to_equity', 'net_debt_ebitda', 'payout_ratio',
     'pe', 'ps', 'pb', 'ev_sales', 'ev_ebitda', 'fcf_yield', 'dividend_yield'];
@@ -680,7 +680,7 @@
   /* ------------------------------------------------------------------ Ranglisten der Startseite
    * Offene Regeln statt stiller Korrektur: Groessenuntergrenze und Plausibilitaetsgrenzen stehen an jeder Liste. */
   var RANKINGS = [
-    { id: 'bewertung', title: 'Interessante Bewertungen', sub: 'Niedrigstes KGV', col: 'pe', dir: 'asc', kind: 'multiple', rule: 'KGV zwischen 5 und 60, Nettomarge positiv, Free-Cashflow-Rendite bis 25 %', filter: function (r) { return r.pe >= 5 && r.pe <= 60 && r.netMargin > 0 && (r.fcfYield == null || r.fcfYield <= 0.25); }, also: ['netMargin', 'revCagr3'] },
+    { id: 'bewertung', title: 'Niedrigste Bewertung (KGV)', sub: 'KGV aufsteigend', col: 'pe', dir: 'asc', kind: 'multiple', rule: 'KGV zwischen 5 und 60, Nettomarge positiv, Free-Cashflow-Rendite bis 25 %', filter: function (r) { return r.pe >= 5 && r.pe <= 60 && r.netMargin > 0 && (r.fcfYield == null || r.fcfYield <= 0.25); }, also: ['netMargin', 'revCagr3'] },
     { id: 'profitabel', title: 'Profitable Unternehmen', sub: 'Höchste Kapitalrendite (ROIC)', col: 'roic', dir: 'desc', kind: 'ratio', rule: 'ROIC bis 200 % (darüber ist die Kapitalbasis zu klein für einen aussagekräftigen Wert), Nettomarge positiv', filter: function (r) { return r.roic <= 2 && r.netMargin > 0 && r.netMargin <= 1; }, also: ['netMargin', 'pe'] },
     { id: 'wachstum', title: 'Wachstumsführer', sub: 'Umsatz pro Jahr über 3 Jahre', col: 'revCagr3', dir: 'desc', kind: 'growth', rule: 'Umsatz mindestens 250 Mio. $, Wachstum bis 300 % pro Jahr', filter: function (r) { return r.revCagr3 <= 3 && r.revenue >= 2.5e8; }, also: ['revGrowth', 'netMargin'] },
     { id: 'cashflow', title: 'Cashflow-Stärke', sub: 'Höchste Free-Cashflow-Rendite', col: 'fcfYield', dir: 'desc', kind: 'ratio', rule: 'Free-Cashflow-Rendite bis 25 %, Free-Cashflow-Marge bis 100 %, KGV ab 5 (falls vorhanden)', filter: function (r) { return r.fcfYield > 0 && r.fcfYield <= 0.25 && (r.fcfMargin == null || r.fcfMargin <= 1) && (r.pe == null || r.pe >= 5); }, also: ['fcfMargin', 'pe'] },
@@ -729,7 +729,7 @@
     if (!entry || entry.ratingsState !== 'AVAILABLE') return null;
     var hist = (entry.history || []).filter(function (h) { return h && /^\d{4}-\d{2}/.test(h.period || ''); }).slice().sort(function (a, b) { return a.period < b.period ? -1 : 1; });
     var t = entry.targetState === 'AVAILABLE' && entry.target && isNum(entry.target.consensus) ? entry.target : null;
-    return { generatedAt: entry.fetchedAt || null, provider: t ? 'Finnhub · Kursziel ' + (t.source || 'FMP') : 'Finnhub', label: null, score: null,
+    return { generatedAt: entry.fetchedAt || null, provider: 'Finnhub', label: null, score: null,
       history: hist, last: hist[hist.length - 1] || null, total: entry.analysts || 0, targetState: entry.targetState || 'NOT_CHECKED',
       target: t ? { low: t.low, high: t.high, mean: t.consensus, median: t.median, provider: t.source || 'FMP' } : null };
   }

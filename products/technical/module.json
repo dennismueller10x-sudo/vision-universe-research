@@ -1,0 +1,33 @@
+{
+ "schema": "vu-module-2",
+ "id": "technical",
+ "label": "Technical",
+ "status": "LIVE",
+ "route": "/technical/",
+ "access": "free",
+ "navigation": {
+  "group": "products",
+  "order": 3,
+  "label": "Technical",
+  "href": "/technical/#/",
+  "icon": "technical",
+  "claim": "Charts und Muster",
+  "entries": [
+   ["Übersicht", "/technical/#/", "⌂"],
+   ["Screener", "/technical/#/screener", "⧩"],
+   ["Chart Studio", "/technical/#/chart", "⌁"],
+   ["Gespeichert", "/technical/#/screener/gespeichert", "▤"],
+   ["Muster", "/technical/#/muster", "▤"]
+  ]
+ },
+ "data": [
+  "technicalWorld"
+ ],
+ "reads": [
+  "eodPrices"
+ ],
+ "tests": [
+  "technical/tests/*.test.mjs",
+  "core/tests/technical-chain.test.mjs"
+ ]
+}

@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import vm from 'node:vm';
-import { universeMeta, SCHEMA } from '../../scripts/screener/build-universe.mjs';
+import { universeMeta, SCHEMA } from '../../products/screener/producer/build-universe.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const FULL_URL = '/screener/data/universe-US_REAL.json';
@@ -125,7 +125,7 @@ function startApp({ search = '', respond }) {
   };
   win.window = win; win.globalThis = win;
   vm.createContext(win);
-  for (const p of ['core/query-engine.js', 'screener/engine/fields.js', 'screener/engine/query.js', 'screener/engine/engine.js', 'core/identity.js', 'screener/engine/adapters.js', 'screener/engine/store.js', 'screener/app.js']) {
+  for (const p of ['core/query-engine.js', 'screener/engine/fields.js', 'screener/engine/query.js', 'screener/engine/engine.js', 'core/identity.js', 'screener/engine/adapters.js', 'screener/engine/store.js', 'screener/engine/vocab.js', 'screener/app.js']) {
     vm.runInContext(readFileSync(join(ROOT, p), 'utf8'), win, { filename: p });
   }
   return { win, document, root, body, requests };

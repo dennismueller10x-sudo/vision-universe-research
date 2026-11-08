@@ -237,7 +237,7 @@ Browser lädt **5 bis 9 Kilobyte** je Suchanfrage, nicht das Universum.
 | Kursverlauf beim Anbieter belegt | 498 | **5.690** |
 | Kursverlauf ausgeliefert | 5 | 5 (unverändert — Redistribution) |
 | Firmennamen | 498 (kuratiert) | 517 |
-| CIK | 5 (von Hand) | siehe `docs/VU_SEC_UNIVERSE_SCALE.md` |
+| CIK | 5 (von Hand) | siehe `docs/archiv/VU_SEC_UNIVERSE_SCALE.md` |
 
 Die genauen Zahlen stehen maschinenlesbar in
 `quant/data/universe/coverage-report.json`.

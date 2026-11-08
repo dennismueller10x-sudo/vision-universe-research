@@ -53,7 +53,7 @@ Wiederholen: Actions → Workflow → „Run workflow“ auf `main`. Für einen 
 ## 4. Intraday steht
 
 - `intraday/index.json`: `dataSession.asOf` und `regularComplete`.
-- Läuft `intraday-pacemaker.yml`? Schlägt der Wächter (`intraday-delivery-watchdog.yml`) an?
+- Läuft `intraday-pacemaker.yml`? Schlägt der Wächter (`pipeline-intraday.yml`, Teil `waechter`) an?
 - Nach Börsenschluss holt der Lauf um 21:35 UTC (`intraday-snapshots.yml`) den Schluss und das Universum.
 - Ist er gescheitert, holt ein manueller Lauf mit `scope=auto` nach. Das Siegel funktioniert seit 03.10. auch mit Bindestrich-Tickern.
 
@@ -107,3 +107,12 @@ Alle Zeitpläne stehen in `core/registry/schedule.json` (Plan Neustart §3: ein 
 - Wecker eingerichtet? `https://vu-intraday-waker.little-credit-15d3.workers.dev/status` (`schluesselHinterlegt: true`).
 - Wecker neu ausrollen: Workflow „Cloudflare — Intraday-Wecker ausrollen“ (`cloudflare-waker-deploy.yml`). Ein Registerwechsel braucht **kein** Ausrollen.
 - Umstellen eines Eintrags: Cron aus dem Workflow und `timer: "waker"` im selben Commit; der Workflow bekommt den Eingang `zeitplan`, `run-name` mit Marke und die Weiche `github.event.schedule || inputs.zeitplan` (SZ-2 prüft das).
+
+## 11. Daten kommen aus dem Datenzweig (`data/live`)
+
+Erzeugte Daten wandern Datenart für Datenart aus `main` in den Datenzweig `data/live` (Plan Neustart §3). Stand und Reihenfolge stehen in `core/registry/data-branch.json`: unter `domains` die umgestellten Datenarten (Phase `BRANCH_ONLY` = Erzeuger schreibt nur noch in den Zweig; die Kopie in `main` ist eingefroren), unter `plan` alle übrigen mit Status (`NEXT`, `LATER`, `LAST`, `EXEMPT`) und Grund. Vertragstest DB in `core/tests/data-branch-pilot.test.mjs`.
+
+- Pages legt den Zweig vor dem Bau in den Arbeitsbaum und nach dem Bau über die Auslieferung (`scripts/ci/overlay-data-branch.mjs`, Bericht in der Step Summary „Datenzweig“). Neuer gewinnt, kaputt oder zu klein ersetzt nie den guten Stand.
+- Ein Workflow, der solche Daten liest, ruft nach dem Checkout `scripts/ci/seed-data-branch.sh alle` auf (commit-sicher, auch bei `git add -A`).
+- Ein Erzeuger schreibt mit `scripts/ci/push-data-branch.sh data/live <pfad>…` (Verzeichnisse werden gespiegelt).
+- „Seite zeigt alten Stand“: Step Summary „Datenzweig“ des letzten Pages-Laufs lesen (`KEPT_MAIN` mit Grund), dann den letzten Lauf des Erzeugers.

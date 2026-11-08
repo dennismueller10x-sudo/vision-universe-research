@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:,">
+<title>Europa · Screener — Vision Universe®</title>
+<meta name="description" content="Europäische Aktien nach einfachen Kursspalten sortieren und filtern: Kursveränderung, Abstand zum 52-Wochen-Hoch und zur 50-Tage-Linie.">
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<!-- Farbschema vor dem ersten Bild: dieselbe Vision-Universe-Einstellung wie
+     Discover (discover/engines/theme.js). Hell ist Standard. -->
+<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/vu-ui.css">
+<link rel="stylesheet" href="/screener/screener.css">
+</head>
+<body class="sc"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<a class="sc-skip" href="#sc-main">Zum Inhalt</a>
+<div id="sc-root"><main id="sc-main" class="sc-app vu-ui" tabindex="-1" aria-busy="true"><p class="sc-note" role="status">Europäische Aktien werden geladen …</p></main></div>
+<noscript><p style="padding:24px">Der Screener benötigt JavaScript.</p></noscript>
+<script src="/discover/engines/theme.js"></script>
+<script src="/core/europe-exchange-calendar.js"></script>
+<script src="/screener/europa/europa.js"></script>
+</body>
+</html>

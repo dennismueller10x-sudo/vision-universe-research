@@ -929,7 +929,7 @@ Implementierung `trust-score.js`.
 **Wichtig:** Die letzten beiden Caps (`neverInvested`, `mostlyCash`) stammen aus dem
 HIGH-1-Befund in Phase 2 ([§6](#6-phase-2--production-audit)) und sind im Code
 first-class Hard Caps mit eigener `buildLimitations()`-Meldung — **das Prosadokument
-`docs/VU_BACKTEST_TRUST_SCORE.md` listet in seiner Tabelle nur die ersten drei; dies ist
+`docs/archiv/VU_BACKTEST_TRUST_SCORE.md` listet in seiner Tabelle nur die ersten drei; dies ist
 eine bekannte Doku-Lücke, kein Code-Fehler.** Wer diese Datei weiterpflegt, sollte die
 Tabelle ergänzen.
 
@@ -1298,7 +1298,7 @@ Schlüssels war — ein Backtest wäre um Faktor vier danebengelegen; (2) 252 Fa
 waren bis zu eine Handelssitzung zu früh sichtbar, weil `acceptanceDateTime` regulär am
 Vortag des offiziellen Filing-Datums liegt.
 
-### Bekannte Grenzen (wörtlich aus `docs/SEC_RELEASE_AUDIT.md`)
+### Bekannte Grenzen (wörtlich aus `docs/archiv/SEC_RELEASE_AUDIT.md`)
 
 1. **Survivorship-Bias — Gate B bleibt FAIL, 5/5** (siehe oben, unveränderlich ohne
    externe Indexhistorie).
@@ -1330,9 +1330,9 @@ europäische Fundamentaldaten, historisches Universum.
 
 Skalierung über 5 Unternehmen hinaus setzt zuerst eine Lösung für die
 Speicherskalierung voraus (Punkt 8 oben), nicht umgekehrt. Details:
-`docs/SEC_DATA_ARCHITECTURE.md`, `docs/SEC_NORMALIZATION.md`,
+`docs/archiv/SEC_DATA_ARCHITECTURE.md`, `docs/SEC_NORMALIZATION.md`,
 `docs/SEC_PIT_METHODOLOGY.md`, `docs/SEC_COVERAGE_REPORT.md`,
-`docs/SEC_LIVE_VALIDATION.md`, `docs/SEC_RELEASE_AUDIT.md`, `docs/SEC_PHASE4_REPORT.md`.
+`docs/archiv/SEC_LIVE_VALIDATION.md`, `docs/archiv/SEC_RELEASE_AUDIT.md`, `docs/archiv/SEC_PHASE4_REPORT.md`.
 
 Unberührt bleibt `scripts/hedgefonds/fetch_edgar_data.py`: ein 13F-Scraper für den
 eigenständigen `hedgefonds/`-Produktbereich — dieselbe Primärquelle (SEC EDGAR),
@@ -1366,7 +1366,7 @@ derselben Tagesreihe abgeleitet, kein separater Endpunkt). Dazu:
 | Intraday (IEX) | 78 Bars gemessen — technisch funktionsfähig, aber per Feature-Gate abgeschaltet (siehe unten) |
 | Rate-Limit-Verhalten | Stundengrenze real erreicht (5 Läufe/Stunde, 42 Anfragen, 6. Lauf erhielt 429) und korrekt behandelt |
 
-Free-Tier-Limits, aus dem Adapter (`FREE_LIMITS`) und `docs/TIINGO_FREE_LIMITS.md`:
+Free-Tier-Limits, aus dem Adapter (`FREE_LIMITS`) und `docs/archiv/TIINGO_FREE_LIMITS.md`:
 **20/Minute, 50/Stunde (die eigentliche Bindungsgrenze, nicht die Tagesgrenze),
 1.000/Tag, 2 GB/Monat, Concurrency 1.** Kommerzielle Tarifwerte (`COMMERCIAL_LIMITS`)
 sind ausdrücklich als **ungeprüfter Platzhalter** markiert (`verified: false`).
@@ -1410,9 +1410,9 @@ Adapterausgabe gegen das kanonische Schema.
 ### Nächster Schritt
 
 **Technisch ist alles fertig — was fehlt, ist keine Codeänderung, sondern die
-Lizenzfrage.** Details: `docs/TIINGO_PHASE4A_REPORT.md`, `docs/TIINGO_INTEGRATION.md`,
-`docs/TIINGO_DATA_SEMANTICS.md`, `docs/TIINGO_LIVE_ARCHITECTURE.md`,
-`docs/TIINGO_SCALING_PLAN.md`.
+Lizenzfrage.** Details: `docs/archiv/TIINGO_PHASE4A_REPORT.md`, `docs/archiv/TIINGO_INTEGRATION.md`,
+`docs/archiv/TIINGO_DATA_SEMANTICS.md`, `docs/TIINGO_LIVE_ARCHITECTURE.md`,
+`docs/archiv/TIINGO_SCALING_PLAN.md`.
 
 ---
 
@@ -1540,9 +1540,9 @@ Dieser Fund-und-Fix-Zyklus steht offen im Release-Audit, nicht verschwiegen.
   `/quant/ai/`-Seite angebunden**.
 
 Details: `docs/archiv/2026/VU_TECHNICAL_PHASE1_REPORT.md`, `docs/archiv/2026/VU_TECHNICAL_RELEASE_AUDIT.md`,
-`docs/VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md`, `docs/VU_TECHNICAL_OPPORTUNITY_SCORE.md`,
-`docs/VU_TECHNICAL_SNAPSHOT_SPEC.md`, `docs/VU_TECHNICAL_DATA_SEMANTICS.md`,
-`docs/VU_TECHNICAL_VALIDATION.md`.
+`docs/archiv/VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md`, `docs/archiv/VU_TECHNICAL_OPPORTUNITY_SCORE.md`,
+`docs/archiv/VU_TECHNICAL_SNAPSHOT_SPEC.md`, `docs/archiv/VU_TECHNICAL_DATA_SEMANTICS.md`,
+`docs/archiv/VU_TECHNICAL_VALIDATION.md`.
 
 ---
 
@@ -1667,7 +1667,7 @@ in [§4](#4-repository-architektur) beschriebenen späteren Migration.
 Development/früher Phase. Kosten sollen mit Usage, Kundenzahl und Umsatz skalieren.
 **Keine institutionellen Datenverträge ohne wirtschaftliche Begründung.**
 
-### Drei Kostenkategorien (`docs/VU_DATA_PROVIDER_COST_MODEL.md`, Recherchestand
+### Drei Kostenkategorien (`docs/archiv/VU_DATA_PROVIDER_COST_MODEL.md`, Recherchestand
 7. September 2026 — **keine dieser Zahlen ist eine Vertragsgrundlage**, alle vor jeder
 Entscheidung neu zu erheben)
 
@@ -1790,7 +1790,7 @@ Ehrliche Liste, Stand 8. September 2026 — nichts beschönigt:
   behoben — keine Falschaussage).
 - Regulatorische Prüfung (MiFID II, WpIG, WpHG, MAR, EU AI Act, Datenlizenzen) steht für
   das Gesamtprodukt weiterhin vollständig aus.
-- **Dokumentationslücke, weiterhin offen:** `docs/VU_BACKTEST_TRUST_SCORE.md` listet nur
+- **Dokumentationslücke, weiterhin offen:** `docs/archiv/VU_BACKTEST_TRUST_SCORE.md` listet nur
   3 der 5 Hard Caps ([§16](#16-backtest-trust-score)) — im Code korrekt, im Prosadokument
   unvollständig.
 
@@ -2047,8 +2047,8 @@ Nur strategisch relevante Änderungen an dieser Datei selbst — kein Commit-Tag
 |---|---|
 | 2026-09-07 | Erstfassung (PR #45): Quant-Phase-1–3 synchronisiert, PR #43 dokumentiert, Provider-Architektur, PIT/Trust-Score/AI/VUQL, Known Limitations, DO-NOT-BREAK-Regeln, Roadmap, Decision Gates. |
 | 2026-09-08 | **Vollständiger Audit gegen `origin/main @ 252dec5`** (dieser Durchgang): vier gemergte PRs (#46 Tiingo, #47 SEC-Workflow-Registrierung, #48 SEC Financial Data Core, #49 Technical Intelligence + Elliott Wave) nachgezogen, die die Datei zuvor nicht kannte oder — im Fall von §21 — nur teilweise und mit einem veralteten „noch nicht gemerged"-Stand beschrieb. Im Einzelnen: §21 (SEC) und §22 (Tiingo) vollständig neu geschrieben — beide waren als „nicht begonnen" dokumentiert, sind aber tatsächlich implementiert und laufzeitgeprüft; §23 (Technical Intelligence & Elliott Wave) von „kein Code" auf den tatsächlichen, umfangreichen Implementierungsstand korrigiert; Testinventar neu gemessen statt übernommen (Node 444, SEC-Python 249, Academy 8 — alle drei Runner selbst ausgeführt); §32-Statustabelle auf das neue neunteilige Statussystem umgestellt; §33 Roadmap konsolidiert (erledigte Punkte entfernt, neue BLOCKED/EXTERNAL-DEPENDENCY-Kategorie ergänzt); §34 Decision Gates aktualisiert (Gates 1–2 teilweise beantwortet, Gates 7–8 neu); §19 Provider Abstraction um SEC-/Tiingo-Adapter und das achte Provider-Profil ergänzt; §31 DO-NOT-BREAK-Regeln um fünf neue, aus dieser Phase gelernte Regeln erweitert (Feature-Gate ≠ Freigabe, Adapter-Interface-Ehrlichkeit, FAIL bleibt FAIL, Company-Agnostik erzwungen, Anti-Repainting-Tests sind Pflicht); neue Source-of-Truth-Regeln direkt nach dem Dateikopf ergänzt. Zwei dokumentierte, weiterhin ungelöste Diskrepanzen aus der Vorfassung (`VU_BACKTEST_TRUST_SCORE.md` Hard-Cap-Lücke) unverändert übernommen, da sie weiterhin zutreffen. |
-| 2026-09-08 (später) | **Diese Datei ist gegenüber PR #50–#54 veraltet — nicht in diesem Durchgang vollständig nachgezogen.** Zwischen dem obigen Audit (`252dec5`) und dem Start dieses Golden-Universe-Workstreams ist `origin/main` über #50 (Doku-Sync), #51 (Realtime Market Data & Live Chart Engine, Extended Hours), #52 und #54 (Development-Preview-Aktivierung samt Data-Hygiene-Bereinigung) auf `ebe180b` vorgerückt. Zwei aktuellere, vollständigere Prüfberichte decken diesen Zwischenstand ab und sind bis zu einer vollen Nachsynchronisation dieser Datei die genauere Quelle: `docs/PROTECTED_PREVIEW_REAL_DATA_AUDIT_2026-09-08.md` (Empfehlung: NOT READY — Hosting/Lizenz) und `docs/PROTECTED_HOSTING_MIGRATION_DATA_HYGIENE_PHASE0_2026-09-08.md`. Kernbefund beider Berichte, hier nur zusammengefasst, nicht ersetzt: `research.visionuniverse.de` ist eine vollständig öffentliche GitHub-Pages-Seite ohne Zugriffsschutz; deshalb wurden alle committeten echten Twelve-Data-Rohkursreihen (15 Referenztitel, inkl. AAPL/MSFT/NVDA/JPM/XOM) sowie die daraus abgeleiteten realen Technical-/Elliott-Bundles entfernt und durch explizite `UNAVAILABLE`/Mock-Artefakte ersetzt (Commit `25ae803`) — `quant/data/technical/instruments/` enthält seither ausschließlich die 13 synthetischen Modell-Instrumente, keinen einzigen realen Ticker mehr. Die PR#51-Realtime-/Fallback-Engine (`quant/engines/realtime/**`, `quant/ui/live-chart.js`) ist vollständig gebaut und getestet, aber an keine ausgelieferte Seite angebunden — es gäbe für keinen der fünf Golden-Universe-Titel echte Kurse zum Anzeigen. Diese Session (Branch `claude/golden-universe-e2e-rt3ztg`) hat daher **nur** die eine Verbindung geschlossen, die trotzdem lizenzrechtlich unbedenklich ist: SEC-Fundamentaldaten (öffentliche Behördenquelle, kein Lizenzblock) fließen jetzt über `quant/engines/sec-fact-panel.js` und die bestehende `factors.js#fundamentalMetrics`-Funktion (kein Duplikat) in ein neues, präkomputiertes Artefakt `quant/data/sec/quant-factor-inputs.json` (erzeugt von `scripts/quant/build-sec-quant-panel.mjs`) und werden auf `/quant/stock/?ticker={AAPL,MSFT,NVDA,JPM,XOM}` als reale Faktor-Komponenten mit Provenance angezeigt — ohne Score (Peer-Perzentilierung über fünf sektorfremde Titel wäre scheinpräzise) und ohne jede Kurs-, Chart-, Technical- oder Elliott-Behauptung, die auf dieser Preview weiterhin lizenzrechtlich nicht ausgeliefert werden darf. §20/§21/§30/§33 dieser Datei bleiben im Übrigen unverändert gültig und sind nicht Teil dieser Änderung. |
-| 2026-09-08 | **Protected Preview Phase 0**, begonnen gegen `origin/main @ 39335ad3`, final konfliktfrei auf `e737ace` (inkl. PR #51/#52 Realtime-/Preview-Integrationsstand) rebased: öffentlich committete Twelve-Data-Rohreihen und davon abgeleitete symbolbezogene Technical-/Backtest-Ausgaben aus dem auszuliefernden Baum entfernt; Provider-Fetcher auf `.market-cache/` begrenzt; automatische Daten-Commits deaktiviert; Public-Data-Hygiene-Guard und sichtbare Provenienz-/Unavailable-Zustände ergänzt. Realtime-Gates bleiben aus und der Live-Chart unangebunden. GitHub Pages und Repository bleiben bis zu einem Nutzer-Decision-Gate öffentlich. Vollbericht: `docs/PROTECTED_HOSTING_MIGRATION_DATA_HYGIENE_PHASE0_2026-09-08.md`. |
+| 2026-09-08 (später) | **Diese Datei ist gegenüber PR #50–#54 veraltet — nicht in diesem Durchgang vollständig nachgezogen.** Zwischen dem obigen Audit (`252dec5`) und dem Start dieses Golden-Universe-Workstreams ist `origin/main` über #50 (Doku-Sync), #51 (Realtime Market Data & Live Chart Engine, Extended Hours), #52 und #54 (Development-Preview-Aktivierung samt Data-Hygiene-Bereinigung) auf `ebe180b` vorgerückt. Zwei aktuellere, vollständigere Prüfberichte decken diesen Zwischenstand ab und sind bis zu einer vollen Nachsynchronisation dieser Datei die genauere Quelle: `docs/PROTECTED_PREVIEW_REAL_DATA_AUDIT_2026-09-08.md` (Empfehlung: NOT READY — Hosting/Lizenz) und `docs/archiv/PROTECTED_HOSTING_MIGRATION_DATA_HYGIENE_PHASE0_2026-09-08.md`. Kernbefund beider Berichte, hier nur zusammengefasst, nicht ersetzt: `research.visionuniverse.de` ist eine vollständig öffentliche GitHub-Pages-Seite ohne Zugriffsschutz; deshalb wurden alle committeten echten Twelve-Data-Rohkursreihen (15 Referenztitel, inkl. AAPL/MSFT/NVDA/JPM/XOM) sowie die daraus abgeleiteten realen Technical-/Elliott-Bundles entfernt und durch explizite `UNAVAILABLE`/Mock-Artefakte ersetzt (Commit `25ae803`) — `quant/data/technical/instruments/` enthält seither ausschließlich die 13 synthetischen Modell-Instrumente, keinen einzigen realen Ticker mehr. Die PR#51-Realtime-/Fallback-Engine (`quant/engines/realtime/**`, `quant/ui/live-chart.js`) ist vollständig gebaut und getestet, aber an keine ausgelieferte Seite angebunden — es gäbe für keinen der fünf Golden-Universe-Titel echte Kurse zum Anzeigen. Diese Session (Branch `claude/golden-universe-e2e-rt3ztg`) hat daher **nur** die eine Verbindung geschlossen, die trotzdem lizenzrechtlich unbedenklich ist: SEC-Fundamentaldaten (öffentliche Behördenquelle, kein Lizenzblock) fließen jetzt über `quant/engines/sec-fact-panel.js` und die bestehende `factors.js#fundamentalMetrics`-Funktion (kein Duplikat) in ein neues, präkomputiertes Artefakt `quant/data/sec/quant-factor-inputs.json` (erzeugt von `scripts/quant/build-sec-quant-panel.mjs`) und werden auf `/quant/stock/?ticker={AAPL,MSFT,NVDA,JPM,XOM}` als reale Faktor-Komponenten mit Provenance angezeigt — ohne Score (Peer-Perzentilierung über fünf sektorfremde Titel wäre scheinpräzise) und ohne jede Kurs-, Chart-, Technical- oder Elliott-Behauptung, die auf dieser Preview weiterhin lizenzrechtlich nicht ausgeliefert werden darf. §20/§21/§30/§33 dieser Datei bleiben im Übrigen unverändert gültig und sind nicht Teil dieser Änderung. |
+| 2026-09-08 | **Protected Preview Phase 0**, begonnen gegen `origin/main @ 39335ad3`, final konfliktfrei auf `e737ace` (inkl. PR #51/#52 Realtime-/Preview-Integrationsstand) rebased: öffentlich committete Twelve-Data-Rohreihen und davon abgeleitete symbolbezogene Technical-/Backtest-Ausgaben aus dem auszuliefernden Baum entfernt; Provider-Fetcher auf `.market-cache/` begrenzt; automatische Daten-Commits deaktiviert; Public-Data-Hygiene-Guard und sichtbare Provenienz-/Unavailable-Zustände ergänzt. Realtime-Gates bleiben aus und der Live-Chart unangebunden. GitHub Pages und Repository bleiben bis zu einem Nutzer-Decision-Gate öffentlich. Vollbericht: `docs/archiv/PROTECTED_HOSTING_MIGRATION_DATA_HYGIENE_PHASE0_2026-09-08.md`. |
 
 ---
 

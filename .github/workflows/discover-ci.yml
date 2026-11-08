@@ -9,14 +9,20 @@ name: Discover CI
 on:
   push:
     branches: [main]
-    paths: ['discover/**', 'scripts/discover/**', '.github/workflows/discover-ci.yml']
+    paths: ['discover/**', 'products/discover/**', 'scripts/discover/**', '.github/workflows/discover-ci.yml']
   pull_request:
-    paths: ['discover/**', 'scripts/discover/**', '.github/workflows/discover-ci.yml']
+    paths: ['discover/**', 'products/discover/**', 'scripts/discover/**', '.github/workflows/discover-ci.yml']
   workflow_dispatch:
 
 # Nur lesen: reine Pruef-Workflows brauchen kein Schreibrecht (Audit 03.10.2026).
 permissions:
   contents: read
+
+# PR-Laeufe: ueberholte Laeufe desselben PR werden abgebrochen (Runner-Warteschlange, Steuerung 08.11.2026).
+# Alle anderen Ereignisse bekommen eine eigene Gruppe je Lauf, also wie vorher keine Begrenzung.
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('discover-ci-pr-{0}', github.event.pull_request.number) || format('discover-ci-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:

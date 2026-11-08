@@ -1,0 +1,1901 @@
+name: Social (Buendel social)
+
+# Buendel `social` (core/registry/workflow-bundles.json, Plan Neustart §3, A-Doc): Social und Reels.
+# Nicht hier: social-orchestrator.yml (der Social-Worker stoesst ihn per Dateiname an, workers/vision-universe-social/src/approval.js).
+# Teile (Schritte unveraendert; Job-Bedingungen der Quelle bleiben und werden mit der Auswahl verknuepft):
+#   cloudflare                   vormals social-cloudflare.yml
+#   extern-recherche             vormals social-external-intelligence.yml
+#   extern-beobachten            vormals social-external-observe.yml
+#   hashtag-probe                vormals social-hashtag-capability.yml
+#   kandidat                     vormals social-publish-candidate.yml
+#   reel                         vormals social-reel.yml
+#   web-fortsetzen               vormals social-resume-verified-web.yml
+#   smoke-publish                vormals social-smoke-publish.yml
+#   lieferung                    vormals social-work-delivery.yml
+# Der Job `auswahl` bildet die Ausloeser der Quellen nach (Dispatch `teil`, Zeitplan am Cron, Push nach
+# Zweig/Pfad, workflow_run nach Name/Typ/Zweig, repository_dispatch nach Typ). Generiert, siehe A-Doc.
+
+on:
+  workflow_dispatch:
+    inputs:
+      teil:
+        description: 'Welcher Teil'
+        type: choice
+        required: true
+        options:
+          - cloudflare
+          - extern-recherche
+          - extern-beobachten
+          - hashtag-probe
+          - kandidat
+          - reel
+          - web-fortsetzen
+          - smoke-publish
+      action:
+        description: 'cloudflare: Was soll passieren?'
+        type: choice
+        required: false
+        default: preflight
+        options:
+        - preflight
+        - deploy
+        - verify
+      confirm_deploy:
+        description: 'cloudflare: Nur fuer action=deploy: "DEPLOY" eintippen. Schuetzt gegen einen Fehlklick.'
+        type: string
+        required: false
+        default: ''
+      searches:
+        description: 'extern-recherche: Wie viele Suchaufrufe (leer = Tagesplan entscheidet)'
+        type: string
+        default: ''
+      edge:
+        description: 'extern-beobachten: top (was Reichweite hatte) oder recent (was gerade passiert)'
+        type: choice
+        options:
+        - top
+        - recent
+        default: top
+      max_new:
+        description: 'extern-beobachten: Hoechstens so viele NEUE Hashtags oeffnen'
+        type: string
+        default: '8'
+      aktion:
+        description: 'kandidat: Was geschehen soll'
+        type: choice
+        required: false
+        default: vorbereiten
+        options:
+        - vorbereiten
+        - freigeben
+        - ablehnen
+      candidateId:
+        description: 'kandidat: Kennung des Kandidaten (bei freigeben/ablehnen)'
+        type: string
+        required: false
+        default: ''
+      grund:
+        description: 'kandidat: Grund der Ablehnung (Pflicht bei ablehnen)'
+        type: string
+        required: false
+        default: ''
+      bestaetigung:
+        description: 'kandidat: Zum Freigeben exakt FREIGEBEN eintippen'
+        type: string
+        required: false
+        default: ''
+      reel_action:
+        description: 'reel: prepare = Karte anlegen, status = Stand lesen'
+        type: choice
+        options:
+        - prepare
+        - status
+        default: prepare
+      content_id:
+        description: 'reel: Eindeutige Kennung, z. B. reel_2026_10_16_test (3-80 Zeichen: A-Z a-z 0-9 . _ : -)'
+        type: string
+        required: false
+      video_url:
+        description: 'reel: Direkte https-Adresse der MP4/MOV-Datei (nur bei prepare)'
+        type: string
+        required: false
+        default: ''
+      caption:
+        description: 'reel: Bildtext (nur bei prepare, max. 2200 Zeichen)'
+        type: string
+        required: false
+        default: ''
+      smoke_publish_bestaetigung:
+        description: 'smoke-publish: Zum Veroeffentlichen exakt VEROEFFENTLICHEN eintippen'
+        type: string
+        required: false
+        default: ''
+  push:
+    branches:
+      - 'authoring/request/**'
+      - 'claude/**'
+    paths:
+      - '.github/workflows/social.yml'
+      - 'authoring/requests/**/authoring-result.json'
+      - 'scripts/social/preflight-worker.mjs'
+      - 'scripts/social/provision-cloudflare.mjs'
+      - 'scripts/social/verify-worker.mjs'
+      - 'workers/vision-universe-social/**'
+
+permissions:
+  contents: read
+
+jobs:
+  auswahl:
+    name: Auswahl des Teils
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      cloudflare: ${{ steps.wahl.outputs.cloudflare }}
+      extern_recherche: ${{ steps.wahl.outputs.extern_recherche }}
+      extern_beobachten: ${{ steps.wahl.outputs.extern_beobachten }}
+      hashtag_probe: ${{ steps.wahl.outputs.hashtag_probe }}
+      kandidat: ${{ steps.wahl.outputs.kandidat }}
+      reel: ${{ steps.wahl.outputs.reel }}
+      web_fortsetzen: ${{ steps.wahl.outputs.web_fortsetzen }}
+      smoke_publish: ${{ steps.wahl.outputs.smoke_publish }}
+      lieferung: ${{ steps.wahl.outputs.lieferung }}
+    steps:
+      - name: Teil waehlen
+        id: wahl
+        env:
+          # Eingaben und Ereignisdaten nur ueber env: (ADR-005)
+          EVENT: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+          REF: ${{ github.ref }}
+          TEIL: ${{ inputs.teil }}
+          SCHEDULE: ${{ github.event.schedule }}
+          WR_NAME: ${{ github.event.workflow_run.name }}
+          WR_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          COMMITS: ${{ toJSON(github.event.commits) }}
+          INPUTS: ${{ toJSON(inputs) }}
+        run: |
+          python3 - <<'PY'
+          import fnmatch, json, os, re
+          SPEC = json.loads(r"""{"cloudflare": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/social.yml", "scripts/social/preflight-worker.mjs", "scripts/social/provision-cloudflare.mjs", "scripts/social/verify-worker.mjs", "workers/vision-universe-social/**"]}, "required": ["action"]}, "extern-beobachten": {"crons": [], "dispatch": true, "required": []}, "extern-recherche": {"crons": [], "dispatch": true, "required": []}, "hashtag-probe": {"crons": [], "dispatch": true, "required": []}, "kandidat": {"crons": [], "dispatch": true, "required": ["aktion"]}, "lieferung": {"crons": [], "dispatch": false, "push": {"branches": ["authoring/request/**"], "paths": ["authoring/requests/**/authoring-result.json"]}, "required": []}, "reel": {"crons": [], "dispatch": true, "required": ["content_id"]}, "smoke-publish": {"crons": [], "dispatch": true, "required": ["smoke_publish_bestaetigung"]}, "web-fortsetzen": {"crons": [], "dispatch": true, "required": []}}""")
+          ev, ref = os.environ.get("EVENT", ""), os.environ.get("REF", "")
+          def glob_re(p):
+              # GitHub-Filtermuster: ** beliebig, * ohne '/', ? ein Zeichen, [..] Klasse; Praefix '!' = Ausschluss
+              out, i = "", 0
+              while i < len(p):
+                  c = p[i]
+                  if p.startswith("**/", i): out += "(?:.*/)?"; i += 3; continue
+                  if p.startswith("**", i): out += ".*"; i += 2; continue
+                  if c == "*": out += "[^/]*"
+                  elif c == "?": out += "[^/]"
+                  elif c == "[":
+                      j = p.index("]", i); out += p[i:j + 1]; i = j + 1; continue
+                  else: out += re.escape(c)
+                  i += 1
+              return re.compile("^" + out + "$")
+          def match_list(pats, value):
+              ok = False
+              for p in pats:
+                  neg = p.startswith("!")
+                  if glob_re(p[1:] if neg else p).match(value): ok = not neg
+              return ok
+          def files():
+              try: commits = json.loads(os.environ.get("COMMITS") or "[]") or []
+              except Exception: commits = []
+              fs = set()
+              for c in commits:
+                  for k in ("added", "modified", "removed"): fs.update(c.get(k) or [])
+              return fs, len(commits)
+          def push_ok(r):
+              if ref.startswith("refs/heads/"):
+                  name = ref[11:]
+                  if "branches" in r and not match_list(r["branches"], name): return False
+                  if "branches-ignore" in r and match_list(r["branches-ignore"], name): return False
+                  if ("tags" in r) and "branches" not in r and "branches-ignore" not in r: return False
+              elif ref.startswith("refs/tags/"):
+                  name = ref[10:]
+                  if "tags" in r and not match_list(r["tags"], name): return False
+                  if "tags-ignore" in r and match_list(r["tags-ignore"], name): return False
+                  if ("branches" in r or "branches-ignore" in r) and "tags" not in r and "tags-ignore" not in r: return False
+              else: return False
+              if "paths" in r or "paths-ignore" in r:
+                  fs, n = files()
+                  if not fs:
+                      # Ereignis ohne Dateiliste (z. B. neuer Zweig): GitHub wertet Pfade dann gegen den Standardzweig aus; hier konservativ: ausloesen
+                      return n == 0
+                  if "paths" in r and not any(match_list(r["paths"], f) for f in fs): return False
+                  if "paths-ignore" in r and all(match_list(r["paths-ignore"], f) for f in fs): return False
+              return True
+          out = {}
+          for teil, r in SPEC.items():
+              v = False
+              if ev == "workflow_dispatch":
+                  v = bool(r.get("dispatch")) and os.environ.get("TEIL") == teil
+                  if v:
+                      # Pflichteingaben der Quelle gelten nur fuer ihren Teil (im Buendel optional)
+                      vals = json.loads(os.environ.get("INPUTS") or "{}") or {}
+                      fehlt = [n for n in (r.get("required") or []) if str(vals.get(n) if vals.get(n) is not None else "").strip() == ""]
+                      if fehlt: raise SystemExit("Pflichteingabe fehlt fuer Teil " + teil + ": " + ", ".join(fehlt))
+              elif ev == "schedule": v = os.environ.get("SCHEDULE") in (r.get("crons") or [])
+              elif ev == "push": v = "push" in r and push_ok(r["push"])
+              elif ev == "workflow_run" and "workflow_run" in r:
+                  w = r["workflow_run"]; b = os.environ.get("WR_BRANCH", "")
+                  v = os.environ.get("WR_NAME") in w["workflows"] and os.environ.get("ACTION") in w["types"]
+                  if v and w.get("branches") is not None: v = match_list(w["branches"], b)
+                  if v and w.get("branches-ignore") is not None: v = not match_list(w["branches-ignore"], b)
+              elif ev == "repository_dispatch" and "repository_dispatch" in r:
+                  t = r["repository_dispatch"]; v = t is None or os.environ.get("ACTION") in t
+              out[teil.replace("-", "_")] = "true" if v else "false"
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              for k, v in out.items(): fh.write(k + "=" + v + "\n"); print(k + "=" + v)
+          PY
+
+  # --- cloudflare: vormals social-cloudflare.yml
+  cloudflare:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.cloudflare == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: social-cloudflare
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      # Der eine reale Beitrag dieses Projekts. Er ist archiviert und
+      # damit nur noch ueber seine Kennung erreichbar.
+      SMOKE_MEDIA: "17992767560843861"
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Zugang ist konfiguriert
+        # Nur pruefen, DASS etwas gesetzt ist — niemals, WAS.
+        run: |
+          missing=""
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN(secret)"
+          [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID(variable)"
+          if [ -n "$missing" ]; then
+            echo "::error::Es fehlt:$missing"
+            exit 1
+          fi
+          echo "Zugangsdaten sind gesetzt (Namen geprueft, keine Werte gelesen)."
+
+      - name: Ist der Admin-Schluessel als GitHub-Secret hinterlegt?
+        env:
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        # Der Smoke-Publish-Workflow braucht diesen Schluessel. Ob er als
+        # Repository-Secret existiert, laesst sich von aussen nicht
+        # nachsehen — die GitHub-API gibt Secrets nicht heraus, und der
+        # Weg dorthin ist ohnehin gesperrt. HIER ist er da, also wird
+        # hier gemessen.
+        #
+        # Gemeldet wird: vorhanden ja/nein und ob er die Mindestlaenge
+        # erreicht, die der Worker verlangt. Nie der Wert, nie die
+        # genaue Laenge.
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "VU_SOCIAL_ADMIN_KEY (GitHub-Secret): FEHLT"
+            echo "github_admin_key=missing" >> "$GITHUB_OUTPUT"
+          elif [ ${#KEY} -lt 32 ]; then
+            echo "VU_SOCIAL_ADMIN_KEY (GitHub-Secret): vorhanden, aber KUERZER als 32 Zeichen"
+            echo "github_admin_key=tooShort" >> "$GITHUB_OUTPUT"
+          else
+            echo "VU_SOCIAL_ADMIN_KEY (GitHub-Secret): vorhanden, mindestens 32 Zeichen"
+            echo "github_admin_key=present" >> "$GITHUB_OUTPUT"
+          fi
+        id: ghkey
+        continue-on-error: true
+
+      - name: Betriebsart bestimmen
+        id: mode
+        # Ein Dispatch kann diesen Workflow nicht ausloesen, solange er
+        # nicht auf dem Default-Branch liegt (404) — deshalb laeuft er per
+        # Push. Ein Push traegt aber keine Eingabefelder, und ein
+        # Deployment, das einfach bei jedem Push mitlaeuft, waere genau die
+        # Art Automatik, die man spaeter nicht mehr erklaeren kann.
+        #
+        # Die Anforderung steht deshalb als Datei im Repository:
+        # workers/vision-universe-social/DEPLOY_REQUEST. Sie ist im Diff
+        # sichtbar, sie hat einen Autor und ein Datum, und sie laesst sich
+        # durch Loeschen zurueckziehen. Das ist mehr Nachweis als ein
+        # Auswahlfeld, nicht weniger.
+        env:
+          IN_ACTION: ${{ inputs.action }}
+          IN_CONFIRM_DEPLOY: ${{ inputs.confirm_deploy }}
+        run: |
+          request_file="workers/vision-universe-social/DEPLOY_REQUEST"
+          deploy=false
+          verify=false
+          reason=""
+
+          if [ -n "$IN_ACTION" ]; then
+            # Dispatch: die Eingabe entscheidet.
+            case "$IN_ACTION" in
+              deploy)
+                if [ "$IN_CONFIRM_DEPLOY" != "DEPLOY" ]; then
+                  echo "::error::Fuer action=deploy muss confirm_deploy auf DEPLOY stehen."
+                  exit 1
+                fi
+                deploy=true; verify=true; reason="Dispatch mit Bestaetigung" ;;
+              verify)  verify=true;  reason="Dispatch: nur pruefen" ;;
+              *)       reason="Dispatch: nur Preflight" ;;
+            esac
+          elif [ -f "$request_file" ]; then
+            marker=$(grep -v '^[[:space:]]*#' "$request_file" | grep -v '^[[:space:]]*$' | head -1 | tr -d '[:space:]')
+            if [ "$marker" = "DEPLOY" ]; then
+              deploy=true; verify=true; reason="DEPLOY_REQUEST liegt im Repository"
+            else
+              reason="DEPLOY_REQUEST vorhanden, aber ohne die Zeile DEPLOY"
+            fi
+          else
+            reason="Push ohne DEPLOY_REQUEST — nur Preflight"
+          fi
+
+          echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
+          echo "verify=$verify" >> "$GITHUB_OUTPUT"
+          echo "Betriebsart: deploy=$deploy verify=$verify ($reason)"
+          echo "Betriebsart: deploy=\`$deploy\` verify=\`$verify\` — $reason" >> "$GITHUB_STEP_SUMMARY"
+
+      # ----------------------------------------------------------------
+      # PREFLIGHT — laeuft IMMER, auch vor einem Deployment
+      # ----------------------------------------------------------------
+
+      - name: Preflight gegen die reale Infrastruktur
+        id: preflight
+        run: |
+          node scripts/social/preflight-worker.mjs \
+            --out /tmp/cf-preflight --backup tmp/cf-backup | tee /tmp/preflight.log
+          verdict=$(node -e '
+            const r = require("/tmp/cf-preflight/worker-preflight.json");
+            console.log(r.verdict);
+          ')
+          echo "verdict=$verdict" >> "$GITHUB_OUTPUT"
+          echo "## Preflight: $verdict" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat /tmp/preflight.log >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Zonen auf dem Konto — ist eine eigene Domain moeglich?
+        id: zones
+        # Meta lehnt die workers.dev-Adresse als App-Domain ab. Die
+        # Alternative ist eine eigene Subdomain, und die setzt voraus,
+        # dass die Zone auf DIESEM Cloudflare-Konto liegt. Das wird hier
+        # gefragt statt beim Deployen herausgefunden: eine Custom Domain
+        # ohne Zone laesst `wrangler deploy` fehlschlagen und reisst die
+        # ganze Strecke mit.
+        #
+        # Nur lesend. Zonennamen stehen im oeffentlichen DNS.
+        continue-on-error: true
+        run: node scripts/social/provision-cloudflare.mjs --list-zones social.visionuniverse.de
+
+      - name: Preflight-Bericht sichern
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-preflight
+          path: /tmp/cf-preflight/worker-preflight.json
+          retention-days: 30
+
+      - name: Gefahr einer Ueberschreibung fremder Logik
+        id: overwrite
+        # Beurteilt wird, was der vorhandene Code TUT — nicht, wie gross er
+        # ist. Eine Groesse sagt darueber nichts: Cloudflares eigene
+        # "Hello World"-Vorlage ist groesser als manches produktive Skript.
+        run: |
+          node -e '
+            const report = require("/tmp/cf-preflight/worker-preflight.json");
+            const existing = report.existing || {};
+            const exists = existing.exists === true;
+            /* Ein Worker, der nicht existiert, kann nichts ueberschreiben.
+               Sonst entscheidet ausschliesslich die Klassifikation — und
+               ein fehlendes Urteil gilt als NICHT sicher. */
+            const foreign = exists && existing.safeToReplace !== true;
+            console.log("Worker existiert:      " + exists);
+            console.log("Einordnung:            " + (existing.classification ?? "unbekannt"));
+            console.log("Ersetzen unbedenklich: " + String(existing.safeToReplace));
+            console.log("Groesse (Bytes):       " + (existing.scriptBytes ?? "unbekannt"));
+            console.log("sha256:                " + (existing.scriptSha256Prefix ?? "unbekannt"));
+            console.log("Gesichert:             " + String(existing.backupWritten ?? false));
+            if (existing.signals) {
+              console.log("Signale:               " + JSON.stringify(existing.signals));
+            }
+            console.log("HALT noetig:           " + foreign);
+            require("fs").appendFileSync(process.env.GITHUB_OUTPUT,
+              "foreign=" + foreign + "\nclassification=" + (existing.classification ?? "unbekannt") + "\n");
+          '
+
+      - name: Sicherung des vorhandenen Codes ablegen
+        # Sie entsteht VOR jedem Deployment und macht es umkehrbar.
+        # Der Preflight legt sie nur an, wenn im vorhandenen Code nichts
+        # in Zugangsdatenform steht — sonst waere die Sicherung eine
+        # Kopie des Geheimnisses an einen Ort mit anderem Leserkreis.
+        # hashFiles sieht nur den Arbeitsbereich — ein absoluter Pfad
+        # unter /tmp liefert immer den leeren Hash, und der Schritt wird
+        # stillschweigend uebersprungen. Genau das ist im ersten Lauf
+        # passiert: die Sicherung war geschrieben, das Artefakt fehlte.
+        # tmp/ steht bereits in .gitignore.
+        if: hashFiles('tmp/cf-backup/*') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-code-before-deploy
+          path: tmp/cf-backup/
+          retention-days: 90
+
+      - name: HALT — im Worker liegt fremde produktive Logik
+        if: steps.overwrite.outputs.foreign == 'true'
+        run: |
+          {
+            echo "## Deployment gesperrt"
+            echo ""
+            echo "Im Worker \`vision-universe-social\` liegt Code, den der Preflight als"
+            echo "\`${{ steps.overwrite.outputs.classification }}\` einordnet. Ein Deployment"
+            echo "wuerde ihn vollstaendig ersetzen."
+            echo ""
+            echo "Die Signale stehen im Schritt darueber und im Artefakt \`worker-preflight\`."
+            echo "Der Quelltext wird bewusst nirgends ausgegeben."
+            echo ""
+            echo "**Eine Sicherung liegt als Artefakt \`worker-code-before-deploy\` bei**,"
+            echo "sofern der Code nichts in Zugangsdatenform enthielt. Alternativ:"
+            echo '```bash'
+            echo "npx wrangler download vision-universe-social"
+            echo '```'
+            echo ""
+            echo "Danach entscheiden, ob der Inhalt uebernommen, migriert oder verworfen wird."
+            echo "Das ist eine Owner-Entscheidung und kein Schritt, den ein Workflow trifft."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error::Fremde produktive Logik im Worker — Deployment gesperrt."
+          exit 1
+
+      # ----------------------------------------------------------------
+      # PROVISION + DEPLOY — nur auf ausdrueckliche Anforderung
+      # ----------------------------------------------------------------
+
+      - name: Secrets VOR dem Deployment festhalten
+        if: steps.mode.outputs.deploy == 'true'
+        # §4: die vom Owner vorbereiteten Meta-Secrets duerfen nicht
+        # verschwinden. Wir halten den Vorher-Stand fest, um ihn danach
+        # zu vergleichen — "wrangler erhaelt Secrets normalerweise" ist
+        # keine Zusicherung, auf die man ein App-Secret setzt.
+        run: |
+          node scripts/social/provision-cloudflare.mjs \
+            --check-secrets vorher --out-json /tmp/secrets-before.json
+
+      - name: Minimale Infrastruktur sicherstellen (KV, oeffentliche URL)
+        if: steps.mode.outputs.deploy == 'true'
+        id: provision
+        run: node scripts/social/provision-cloudflare.mjs --ensure-kv --resolve-url
+
+      - name: Worker deployen
+        if: steps.mode.outputs.deploy == 'true'
+        id: deploy
+        working-directory: workers/vision-universe-social
+        run: |
+          # Die Build-Kennung reist als Variable mit. Sie ist keine
+          # Konfiguration, sondern eine Identitaet: damit ein spaeterer
+          # Schritt feststellen kann, OB er mit der Fassung spricht, die
+          # dieser Lauf gerade deployt hat.
+          npx --yes wrangler@4.147.0 deploy --var VU_SOCIAL_BUILD:"$GITHUB_SHA" 2>&1 | tee /tmp/deploy.log
+          # Die tatsaechliche Adresse aus der wrangler-Ausgabe lesen. Sie ist
+          # die Quelle der Wahrheit — nicht das, was wir vorher geraten haben.
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy.log | head -1 || true)
+          echo "deployed_url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployte Adresse: ${url:-nicht aus der Ausgabe lesbar}"
+
+      - name: Warten, bis die neue Fassung ueberall antwortet
+        if: steps.mode.outputs.deploy == 'true'
+        # DIE STELLE, DIE EINE GANZE FEHLERKLASSE BEENDET.
+        #
+        # Ein Deployment gilt nicht in derselben Sekunde ueberall. Drei
+        # Mal hat in diesem Projekt ein Schritt unmittelbar danach die
+        # ALTE Fassung erwischt und ihr Ergebnis fuer das neue gehalten:
+        # einmal fehlte ein Feld, einmal ein Endpunkt, einmal rechnete
+        # ein Budget mit einer veralteten Zahl. Jedes Mal antwortete die
+        # alte Fassung mit HTTP 200 - auf einen Statuscode zu warten
+        # half also nicht, und auf eine Zeitspanne zu warten waere
+        # geraten.
+        #
+        # Gewartet wird auf die IDENTITAET: /health nennt den Commit, aus
+        # dem die antwortende Fassung gebaut wurde. Steht dort unser
+        # eigener, sprechen alle folgenden Schritte mit dem, was sie
+        # meinen.
+        run: |
+          for versuch in $(seq 1 20); do
+            build=$(curl -sS "https://social.visionuniverse.de/health" \
+              | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{
+                  try { console.log(JSON.parse(s).build || ""); } catch (e) { console.log(""); }
+                })' || echo "")
+            if [ "$build" = "$GITHUB_SHA" ]; then
+              echo "Die neue Fassung antwortet (Versuch $versuch)."
+              exit 0
+            fi
+            echo "Versuch $versuch: es antwortet noch ${build:-eine Fassung ohne Kennung}."
+            sleep 3
+          done
+          echo "::warning::Die neue Fassung meldet sich nach 20 Versuchen nicht."
+          echo "Folgende Schritte koennten mit der alten sprechen — ihre Ergebnisse"
+          echo "sind dann Aussagen ueber die alte Fassung."
+
+      - name: Oeffentliche URL nachtragen, falls sie vorher unbekannt war
+        if: steps.mode.outputs.deploy == 'true' && steps.deploy.outputs.deployed_url != ''
+        id: fixurl
+        working-directory: ${{ github.workspace }}
+        run: |
+          before=$(node -e '
+            const fs = require("fs");
+            const s = fs.readFileSync("workers/vision-universe-social/wrangler.toml", "utf8");
+            const m = s.match(/^\s*PUBLIC_BASE_URL\s*=\s*"([^"]*)"/m);
+            console.log(m ? m[1] : "");
+          ')
+          node scripts/social/provision-cloudflare.mjs --url "${{ steps.deploy.outputs.deployed_url }}"
+          after=$(node -e '
+            const fs = require("fs");
+            const s = fs.readFileSync("workers/vision-universe-social/wrangler.toml", "utf8");
+            const m = s.match(/^\s*PUBLIC_BASE_URL\s*=\s*"([^"]*)"/m);
+            console.log(m ? m[1] : "");
+          ')
+          if [ "$before" != "$after" ]; then
+            echo "Die URL war vorher nicht bekannt — erneut deployen, damit der Worker sie kennt."
+            echo "redeploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "redeploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Erneut deployen, damit die Redirect-URI stimmt
+        if: steps.mode.outputs.deploy == 'true' && steps.fixurl.outputs.redeploy == 'true'
+        working-directory: workers/vision-universe-social
+        run: npx --yes wrangler@4.147.0 deploy
+
+      - name: Secrets NACH dem Deployment vergleichen
+        if: steps.mode.outputs.deploy == 'true'
+        run: node scripts/social/provision-cloudflare.mjs --compare-secrets /tmp/secrets-before.json
+
+      - name: Konfiguration committen
+        if: steps.mode.outputs.deploy == 'true'
+        # KV-ID und oeffentliche URL sind Kennungen, keine Geheimnisse.
+        # Sie gehoeren in die Konfiguration, damit ein spaeteres Deployment
+        # reproduzierbar dasselbe trifft.
+        run: |
+          if git diff --quiet -- workers/vision-universe-social/wrangler.toml; then
+            echo "Keine Aenderung an wrangler.toml."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add workers/vision-universe-social/wrangler.toml
+          git commit \
+            -m "Cloudflare: KV-Namespace und oeffentliche Worker-URL eingetragen" \
+            -m "Erzeugt vom Workflow social-cloudflare (action=deploy). Beides sind Kennungen und keine Geheimnisse: die Namespace-ID ist ohne API-Token wertlos, die URL ist ein oeffentlicher Hostname. In der Konfiguration stehen sie, damit ein spaeteres Deployment reproduzierbar dasselbe trifft."
+          git push
+
+      # ----------------------------------------------------------------
+      # VERIFY — was ist jetzt tatsaechlich da
+      # ----------------------------------------------------------------
+
+      - name: Zustand pruefen
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
+        run: |
+          node scripts/social/verify-worker.mjs --out /tmp/cf-verify | tee /tmp/verify.log
+          {
+            echo "## Worker-Zustand"
+            echo '```'
+            cat /tmp/verify.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # =====================================================================
+      # DER READ-ONLY SMOKE DES APPROVAL CENTERS (§20)
+      #
+      # Er meldet sich an und LIEST. Kein /approve, kein /publish, kein
+      # /reject - nicht als Option und nicht hinter einer Flagge. Die
+      # einzige Schreibhandlung ist die Anmeldung, und sie legt nichts
+      # ab: das Sitzungstoken ist selbst-verifizierbar.
+      #
+      # Steht ACTIVE_APPROVAL_QUEUE_COUNT auf null, ist der leere
+      # Zustand der VOLLSTAENDIGE Smoke und kein halber. Die Frage
+      # lautet "verhaelt sich die Oberflaeche richtig", nicht "gibt es
+      # gerade Arbeit" - und einen Kandidaten zu erfinden, damit der
+      # Smoke etwas zu zeigen hat, waere ein Beweis, der nichts beweist.
+      #
+      # KEIN SOCIAL POST IM RAHMEN DES DEPLOYMENT-TESTS.
+      # =====================================================================
+      - name: APPROVAL_CENTER_LIVE — read-only
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/social/verify-approval-center.mjs | tee /tmp/approval.log
+          {
+            echo "## Approval Center"
+            echo '```'
+            cat /tmp/approval.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # =====================================================================
+      # DIE ZWOELF BEDINGUNGEN — VON HIER AUS MESSBAR
+      #
+      # order-d-done.mjs beantwortet zehn der zwoelf Bedingungen ueberall.
+      # Zwei aber nicht: ob die neue Fassung wirklich deployt ist, und ob
+      # der Betriebs-Smoke stattgefunden hat. Beide brauchen eine Umgebung,
+      # die den Worker erreicht - und das ist diese hier.
+      #
+      # Der Bericht verlangt fuer beide einen NACHWEIS, dass die Antwort
+      # vom Worker kam (cf-ray, server: cloudflare). Eine 403 von einem
+      # Proxy dazwischen sieht genauso aus wie eine 403 vom Owner-Tor; in
+      # einer frueheren Fassung hat genau das zwei Bedingungen
+      # faelschlich auf ERFUELLT gesetzt.
+      #
+      # Lesend. Kein Publish, kein Approve, kein Dispatch.
+      # =====================================================================
+      - name: ORDER_D_DONE — die zwoelf Bedingungen
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
+        continue-on-error: true
+        run: |
+          set -uo pipefail
+          node scripts/social/verify-suites.mjs > /tmp/suites.log 2>&1 || true
+          node scripts/social/order-d-done.mjs | tee /tmp/order-d.log || true
+          {
+            echo "## ORDER_D_DONE"
+            echo '```'
+            cat /tmp/order-d.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # =====================================================================
+      # §25/§26/§27 — DER PRODUCTION SMOKE DES ASSET-/HASHTAG-AUFTRAGS
+      #
+      # Dieselbe Lage wie eine Stufe hoeher: der Bericht beantwortet fast
+      # alles ueberall, aber zwei Fragen brauchen eine Umgebung, die den
+      # Worker erreicht — ob das Approval Center lebt und ob der lesende
+      # Smoke stattgefunden hat. Das ist diese hier.
+      #
+      # Er verlangt fuer beide einen Nachweis, dass die Antwort vom
+      # Worker kam (cf-ray, server: cloudflare). Ohne den steht
+      # UNGEPRUEFT da, und UNGEPRUEFT ist nicht erfuellt.
+      #
+      # Lesend. Kein Publish, kein Approve, kein Dispatch.
+      # =====================================================================
+      - name: ASSET + HASHTAG — §26 Zustaende und §27 Definition of Done
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
+        continue-on-error: true
+        run: |
+          set -uo pipefail
+          # --out: die Messung wird FESTGEHALTEN, nicht nur gedruckt.
+          # Was diese Umgebung sieht, sieht sonst niemand — sie ist die
+          # einzige, die den Worker erreicht. Steht die Antwort nur im
+          # Protokoll, verfaellt sie mit dem Lauf.
+          node scripts/social/asset-hashtag-done.mjs \
+            --out social/data/asset-hashtag-status.json \
+            | tee /tmp/asset-hashtag.log || true
+          {
+            echo "## ASSET + HASHTAG — §26/§27"
+            echo '```'
+            cat /tmp/asset-hashtag.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # ERST hinzufuegen, DANN vergleichen: `git diff` sieht keine
+          # unverfolgte Datei und meldete fuer die erste Fassung
+          # "keine Aenderung" — derselbe Fehler, der die Leistungszahlen
+          # vier Laeufe lang verschwinden liess.
+          git add social/data/asset-hashtag-status.json
+          if git diff --cached --quiet -- social/data/asset-hashtag-status.json; then
+            echo "Keine Aenderung am gemessenen Stand."
+          else
+            git commit -m "Gemessener Asset-/Hashtag-Stand aus der Produktion" \
+              -m "Erzeugt vom Workflow social-cloudflare (§25/§26). Nur gelesene Zustaende: Approval Center, Bilderreichbarkeit, Tagbreite, Sendetext. Kein Publishing."
+            git push
+          fi
+
+      - name: Was der Testbeitrag zeigen wuerde — aus dem laufenden Worker
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
+        continue-on-error: true
+        env:
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        # Lesend. Beruehrt den Publishing-Endpunkt nicht.
+        #
+        # Dass ein Deployment auf einem bestimmten Commit lief, belegt noch
+        # nicht, was der Worker jetzt traegt. Diese zwei Werte kommen aus
+        # seiner Umgebung — es sind dieselben, die der Container bekaeme.
+        #
+        # WARTEN, WEIL EIN DEPLOYMENT NICHT SOFORT UEBERALL GILT
+        #
+        # Beim ersten Versuch antwortete eine Fassung von einer Sekunde
+        # zuvor, die das Feld smokePost noch nicht kannte — und ein
+        # fehlendes Feld sah im Bericht aus wie ein leerer Wert. Das sind
+        # zwei verschiedene Lagen: "der Worker traegt nichts" und "diese
+        # Fassung kennt die Frage nicht". Gewartet wird deshalb auf das
+        # FELD, nicht auf eine Zeitspanne, und fehlt es am Ende, sagt der
+        # Bericht das, statt eine Aussage ueber die Konfiguration zu
+        # erfinden.
+        #
+        # Der Schluessel kommt ueber env: herein und wird im Skripttext nur
+        # beim Namen genannt: Actions schreibt jedes run:-Skript ins
+        # Protokoll, BEVOR es laeuft.
+        #
+        # continue-on-error, weil dies ein Bericht ist und keine Pruefung:
+        # fehlt der Schluessel, soll der Lauf das sagen und nicht umfallen.
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "Kein Admin-Schluessel im Lauf — der Inhalt bleibt ungelesen."
+            echo "(Das ist keine Aussage darueber, was deployt ist.)"
+            exit 0
+          fi
+
+          mkdir -p tmp/social
+          feld=nein
+          for versuch in 1 2 3 4 5 6 7 8 9 10; do
+            code=$(curl -sS -o tmp/social/status.json -w '%{http_code}' \
+              -H "Authorization: Bearer $KEY" \
+              "https://social.visionuniverse.de/social/meta/status" || echo 000)
+
+            if [ "$code" = "200" ] && node -e '
+              const s = require(process.cwd() + "/tmp/social/status.json");
+              process.exit(Object.prototype.hasOwnProperty.call(s, "smokePost") ? 0 : 1);
+            '; then
+              feld=ja
+              echo "Fassung mit smokePost antwortet (Versuch $versuch)."
+              break
+            fi
+            echo "Versuch $versuch: HTTP $code, Feld noch nicht da — das Deployment gilt noch nicht ueberall."
+            sleep 3
+          done
+
+          if [ "$feld" != "ja" ]; then
+            echo ""
+            echo "Der Inhalt konnte NICHT gelesen werden: die antwortende Fassung"
+            echo "kennt das Feld smokePost nicht. Das ist eine Aussage ueber die"
+            echo "Fassung, NICHT ueber die Konfiguration — was deployt wurde, steht"
+            echo "im Protokoll des Deploy-Schritts unter den Bindings."
+            exit 0
+          fi
+
+          node -e '
+            const s = require(process.cwd() + "/tmp/social/status.json");
+            const p = s.smokePost || {};
+            const zeile = (k, v) => console.log(k.padEnd(10) +
+              (v === null || v === undefined ? "(im Worker nicht gesetzt)" : v));
+            console.log("=== INHALT DES TESTBEITRAGS, aus dem laufenden Worker ===");
+            zeile("Bild:", p.imageUrl);
+            zeile("Text:", p.caption);
+            console.log("");
+            const c = p.caption || "";
+            console.log("Zeichen:  " + c.length);
+            console.log("Hashtags: " + (c.match(/#/g) || []).length);
+            console.log("@:        " + (c.match(/@/g) || []).length);
+            console.log("Links:    " + (c.match(/https?:\/\//g) || []).length);
+            console.log("Umlaute:  " + ([...c].filter((z) => z.charCodeAt(0) > 127).join("") || "keine"));
+            console.log("");
+
+            /* Das Protokoll aus KV. Es ist die zweite, unabhaengige
+               Quelle neben der Antwort des Publishing-Aufrufs: die Antwort
+               sah nur der Lauf, der sie ausgeloest hat — dieses Protokoll
+               ueberdauert ihn. Beide muessen dieselbe Medien-ID nennen.
+
+               Oben liegen nur published, mediaId und permalink; was sonst
+               zum Beitrag gehoert, steht im Eintrag des Versuchs. Die
+               Felder werden deshalb dort geholt und nicht oben geraten —
+               sonst staende hier "undefined" und saehe aus wie ein
+               Befund. */
+            const log = s.smokePublish;
+            if (!log) {
+              console.log("Smoke-Protokoll: keines gespeichert — es wurde nie veroeffentlicht.");
+            } else if (!log.published) {
+              const v = (log.attempts || []).length;
+              console.log("Smoke-Protokoll: vorhanden, published=false — nur Fehlversuche (" + v + ").");
+            } else {
+              const versuche = log.attempts || [];
+              const treffer = versuche.filter((a) => a && a.mediaId);
+              const e = treffer.length ? treffer[treffer.length - 1] : {};
+              const w = (x) => (x === null || x === undefined ? "(nicht im Protokoll)" : x);
+              console.log("=== GESPEICHERTES PROTOKOLL (KV, ueberdauert den Lauf) ===");
+              console.log("published:   " + log.published);
+              console.log("mediaId:     " + w(log.mediaId));
+              console.log("permalink:   " + w(log.permalink));
+              console.log("mediaType:   " + w(e.mediaType));
+              console.log("timestamp:   " + w(e.timestamp));
+              console.log("Konto:       " + w(e.instagramUsername) + " (" + w(e.instagramAccountId) + ")");
+              console.log("Zurueckgelesen: " + (e.error ? "nein — " + e.error.reason : "ja"));
+              console.log("Versuche:    " + versuche.length + ", davon mit Medien-ID: " + treffer.length);
+              console.log("");
+              console.log(treffer.length === 1
+                ? "Genau EIN Beitrag ist entstanden."
+                : "ACHTUNG: " + treffer.length + " Versuche haben eine Medien-ID — das waeren " +
+                  treffer.length + " Beitraege.");
+            }
+          ' | tee tmp/social/inhalt.txt
+
+          {
+            echo "## Inhalt des Testbeitrags (aus dem laufenden Worker)"
+            echo '```'
+            cat tmp/social/inhalt.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Gemessene Leistung holen und einpflegen
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
+        continue-on-error: true
+        env:
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        # Lesend. Der Rueckweg des Kreislaufs braucht Zahlen, die
+        # tatsaechlich erhoben wurden — alles andere waere eine Meinung
+        # mit Nachkommastellen.
+        #
+        # Der eine reale Beitrag ist ARCHIVIERT. Er taucht in der
+        # Medienliste des Kontos nicht mehr auf, ueber seine Kennung ist
+        # er weiterhin abfragbar. Deshalb wird er ausdruecklich genannt
+        # und nicht gesucht.
+        #
+        # continue-on-error: ein Bericht, keine Pruefung. Fehlende
+        # Insights duerfen den Lauf nicht umwerfen — sie sind selbst ein
+        # Befund, und der Zyklus kommt mit fehlenden Daten zurecht.
+        run: |
+          # Nur die Laenge, nie der Wert. Zwei Laeufe endeten hier in
+          # unter einer Sekunde, und ohne diese Zeile liess sich nicht
+          # unterscheiden, ob der Schluessel fehlte oder der Abruf
+          # fehlschlug.
+          echo "Schluessel: ${#KEY} Zeichen"
+          echo "Ziel: https://social.visionuniverse.de/social/meta/insights?media=$SMOKE_MEDIA"
+
+          if [ -z "$KEY" ]; then
+            echo "Kein Admin-Schluessel — keine Messung. (Keine Aussage ueber die Zahlen.)"
+            exit 0
+          fi
+
+          mkdir -p tmp/social
+
+          # Warten, bis die Fassung mit diesem Endpunkt antwortet.
+          #
+          # Ein Deployment gilt nicht in derselben Sekunde ueberall. Beim
+          # ersten Versuch lief dieser Schritt eine Sekunde nach dem
+          # Deploy, und die antwortende Fassung kannte /insights noch gar
+          # nicht -- ein 404, der aussah wie "keine Zahlen".
+          #
+          # Dieselbe Lehre stand zu diesem Zeitpunkt schon zwei Schritte
+          # weiter oben im selben Workflow. Sie hier nicht angewandt zu
+          # haben, war der Fehler; deshalb steht sie jetzt an beiden
+          # Stellen.
+          # ZWEI Abfragen, weil es zwei Fragen sind.
+          #
+          # Ohne ?media= listet der Endpunkt die Medien des Kontos —
+          # alles, was dort sichtbar veroeffentlicht ist. Mit ?media=
+          # wird der eine bekannte Testbeitrag ausdruecklich gefragt; er
+          # ist archiviert und taucht in der Liste nicht mehr auf.
+          #
+          # Nur die zweite zu stellen hiesse anzunehmen, das Konto habe
+          # keine anderen Beitraege. Das ist eine Annahme, und sie ist
+          # pruefbar — also wird sie geprueft.
+          code=000
+          for versuch in 1 2 3 4 5 6 7 8 9 10; do
+            code=$(curl -sS -o tmp/social/insights-liste.json -w '%{http_code}' \
+              -H "Authorization: Bearer $KEY" \
+              "https://social.visionuniverse.de/social/meta/insights?limit=25" || echo 000)
+            if [ "$code" = "200" ]; then break; fi
+            echo "Versuch $versuch (Liste): HTTP $code — noch keine Antwort."
+            sleep 3
+          done
+
+          code=000
+          for versuch in 1 2 3 4 5 6 7 8 9 10; do
+            code=$(curl -sS -o tmp/social/insights.json -w '%{http_code}' \
+              -H "Authorization: Bearer $KEY" \
+              "https://social.visionuniverse.de/social/meta/insights?media=$SMOKE_MEDIA" || echo 000)
+            # KORREKTUR: hier stand einmal die Behauptung, `[ ... ] && break`
+            # toete den Schritt unter `bash -e`. Das ist FALSCH und wurde
+            # durch einen Test widerlegt (social/tests/shell-semantics.test.mjs,
+            # SE1/SE2): `set -e` greift nicht beim linken Operanden von &&.
+            #
+            # Die Ursache war eine einzige und stand weiter unten:
+            # `git diff --quiet` sieht keine unverfolgten Dateien.
+            #
+            # Die if-Form bleibt, weil sie klarer liest - nicht, weil die
+            # andere falsch waere.
+            if [ "$code" = "200" ]; then break; fi
+            echo "Versuch $versuch: HTTP $code — noch keine Antwort."
+            sleep 3
+          done
+
+          if [ "$code" != "200" ]; then
+            echo "Insights-Endpunkt antwortet mit HTTP $code — nichts eingepflegt."
+            echo "Das ist eine Aussage ueber den Endpunkt, NICHT ueber die Leistung des Beitrags."
+            head -c 400 tmp/social/insights.json || true
+            echo ""
+            {
+              echo "## Gemessene Leistung — NICHT eingepflegt"
+              echo ""
+              echo "Der Insights-Endpunkt antwortete mit HTTP \`$code\`."
+              echo ""
+              echo "Das ist eine Aussage ueber den Endpunkt, **nicht** ueber die"
+              echo "Leistung des Beitrags. Der Kreislauf laeuft ohne diese Zahlen"
+              echo "weiter, kommt aber nur bis zum Evidenzzustand zurueck."
+              echo ""
+              echo '```'
+              head -c 400 tmp/social/insights.json || true
+              echo ""
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            # Laut scheitern. Der Schluessel ist da, der Abruf nicht -
+            # das ist ein Befund und kein Rauschen. continue-on-error
+            # faengt es fuer den Lauf ab; sichtbar wird es trotzdem.
+            exit 1
+          fi
+
+          # Was das Subrequest-Budget des Workers vertagt hat, nachholen.
+          #
+          # Der Worker darf pro Anfrage nur begrenzt viele ausgehende
+          # Aufrufe machen. Er sagt jetzt, welche Beitraege deshalb offen
+          # blieben — und offen ist nicht gescheitert. Hier wird nachgefasst,
+          # bis nichts mehr offen ist oder der Vorrat an Runden aufgebraucht
+          # ist; auch dann steht der Rest als offen da und nicht als Fehler.
+          runde=0
+          while [ $runde -lt 4 ]; do
+            offen=$(node -e '
+              const fs = require("fs");
+              try {
+                const q = JSON.parse(fs.readFileSync("tmp/social/insights-liste.json", "utf8"));
+                console.log((q.deferred || []).join(","));
+              } catch (e) { console.log(""); }
+            ')
+            if [ -z "$offen" ]; then break; fi
+            runde=$((runde + 1))
+            echo "Runde $runde: $(echo "$offen" | tr ',' '\n' | wc -l) Beitrag/Beitraege offen — hole nach."
+            code=$(curl -sS -o "tmp/social/insights-nach-$runde.json" -w '%{http_code}' \
+              -H "Authorization: Bearer $KEY" \
+              "https://social.visionuniverse.de/social/meta/insights?media=$offen" || echo 000)
+            if [ "$code" != "200" ]; then
+              echo "Nachfassen antwortet mit HTTP $code — der Rest bleibt offen."
+              break
+            fi
+            cp "tmp/social/insights-nach-$runde.json" tmp/social/insights-liste-rest.json
+            node -e '
+              const fs = require("fs");
+              const a = JSON.parse(fs.readFileSync("tmp/social/insights-liste.json", "utf8"));
+              const b = JSON.parse(fs.readFileSync("tmp/social/insights-liste-rest.json", "utf8"));
+              a.posts = (a.posts || []).concat(b.posts || []);
+              a.deferred = b.deferred || [];
+              fs.writeFileSync("tmp/social/insights-liste.json", JSON.stringify(a));
+            '
+          done
+
+          # Beide Antworten zu einer zusammenfuehren. Dieselbe Kennung
+          # darf nicht zweimal auftauchen — sonst zaehlte ein Beitrag in
+          # der Vergleichsbasis doppelt, und die Basis waere still falsch.
+          node -e '
+            const fs = require("fs");
+            const lies = (p) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); }
+                                  catch (e) { return null; } };
+            const liste = lies("tmp/social/insights-liste.json");
+            const einzeln = lies("tmp/social/insights.json");
+            const basis = liste || einzeln || { posts: [] };
+            const gesehen = new Set();
+            const posts = [];
+            for (const q of [liste, einzeln]) {
+              for (const p of (q && q.posts) || []) {
+                if (gesehen.has(String(p.mediaId))) continue;
+                gesehen.add(String(p.mediaId));
+                posts.push(p);
+              }
+            }
+            fs.writeFileSync("tmp/social/insights-alle.json", JSON.stringify(
+              Object.assign({}, basis, { posts, requested: posts.length }), null, 2));
+            console.log("Zusammengefuehrt: " + posts.length + " Beitrag/Beitraege" +
+              " (Liste: " + (((liste || {}).posts || []).length) +
+              ", ausdruecklich: " + (((einzeln || {}).posts || []).length) + ")");
+          '
+
+          node scripts/social/ingest-performance.mjs \
+            --in tmp/social/insights-alle.json --out social/data | tee tmp/social/ingest.txt
+
+          {
+            echo "## Gemessene Leistung"
+            echo '```'
+            cat tmp/social/ingest.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # ERST hinzufuegen, DANN vergleichen.
+          #
+          # Vorher stand hier `git diff --quiet -- <datei>` vor dem `add`.
+          # git diff vergleicht aber nur VERFOLGTE Dateien: fuer eine, die
+          # es im Repository noch nie gab, meldet es "keine Aenderung" -
+          # und der Schritt warf die gerade geholten Zahlen weg und ging
+          # zufrieden nach Hause. Vier Laeufe lang sah das aus, als
+          # antworte der Endpunkt nicht.
+          git add social/data/performance.json
+          if git diff --cached --quiet -- social/data/performance.json; then
+            echo "Keine Aenderung an den Leistungsdaten."
+            exit 0
+          fi
+          git commit -m "Gemessene Social-Leistung eingepflegt" \
+            -m "Erzeugt vom Workflow social-cloudflare. Nur gelesene Plattformzahlen, keine Schaetzung. Sie sind die Evidenzgrundlage des Lernens - ohne sie laeuft der Kreislauf vorwaerts und kommt nicht zurueck."
+          git push
+
+      - name: Verifikationsbericht sichern
+        if: steps.mode.outputs.deploy == 'true' || steps.mode.outputs.verify == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-verify
+          path: /tmp/cf-verify/worker-verify.json
+          retention-days: 30
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo ""
+            echo "---"
+            echo "Aktion: \`${{ inputs.action || 'preflight (Push-Lauf)' }}\` · Preflight: \`${{ steps.preflight.outputs.verdict }}\`"
+            echo ""
+            echo "Dieser Lauf hat **keinen Beitrag veroeffentlicht** und **keinen Meta-Login**"
+            echo "ausgefuehrt."
+            echo ""
+            echo "Der Worker hat seit dem Smoke-Test einen Publishing-Endpunkt"
+            echo "(\`/social/meta/smoke-publish\`). Er veroeffentlicht nur per POST, nur mit"
+            echo "Admin-Schluessel, nur mit ausdruecklicher Bestaetigung und nur einmal."
+            echo "Die Verifikation prueft, dass er ohne Schluessel mit 401 antwortet."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Der Zonen-Befund noch einmal am Ende — im Protokoll steht er
+          # weit oben, und genau er entscheidet, ob eine eigene Domain
+          # ohne weitere Owner-Handlung moeglich ist.
+          echo ""
+          echo "=== ZONE fuer eine eigene Domain ==="
+          echo "Zonenliste lesbar: ${{ steps.zones.outputs.zone_readable || 'unbekannt' }}"
+          echo "visionuniverse.de auf dem Konto: ${{ steps.zones.outputs.zone_present || 'unbekannt' }}"
+          echo "Zone aktiv: ${{ steps.zones.outputs.zone_active || 'unbekannt' }}"
+          echo "Zonen auf dem Konto: ${{ steps.zones.outputs.zone_names || 'unbekannt' }}"
+          echo ""
+          echo "=== GITHUB-SECRET fuer den Smoke-Publish ==="
+          echo "VU_SOCIAL_ADMIN_KEY: ${{ steps.ghkey.outputs.github_admin_key || 'unbekannt' }}"
+
+  # --- extern-recherche: vormals social-external-intelligence.yml
+  extern-recherche:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.extern_recherche == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: social-external-intelligence
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    steps:
+      # Beim push- und schedule-Ausloeser checkt die Aktion sonst den
+      # Commit aus, nicht den Zweig - ein `git push` aus losgeloestem
+      # HEAD scheitert, nachdem die Arbeit schon getan ist.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist die Quelle ueberhaupt eingeschaltet?
+        id: quelle
+        run: |
+          set -euo pipefail
+          # Erst fragen, dann anfragen. Eine Anfrage gegen eine bewusst
+          # abgeschaltete Quelle ist nicht nur nutzlos - sie erzeugt
+          # Fehler, die danach jemand deutet.
+          node -e '
+            const R = require("./social/engines/source-registry.js");
+            const fs = require("fs");
+            const b = fs.existsSync("social/data/external-sources.json")
+              ? JSON.parse(fs.readFileSync("social/data/external-sources.json", "utf8"))
+              : null;
+            const d = R.darfAnfragen(b, "YOUTUBE_EXTERNAL_INTELLIGENCE");
+            console.log(d.explanation);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "aktiv=" + (d.allowed ? "ja" : "nein") + "\n");
+          '
+
+      - name: Stillgelegt — und das ist kein Fehler
+        if: steps.quelle.outputs.aktiv != 'ja'
+        run: |
+          # KEIN ::warning:: und kein exit 1. Eine Owner-Entscheidung
+          # ist kein Vorfall. Wer sie als Warnung meldet, erzieht zum
+          # Wegsehen - und irgendwann uebersieht jemand den echten.
+          echo "YOUTUBE_EXTERNAL_INTELLIGENCE steht auf NOT_ACTIVATED_BY_OWNER."
+          echo "Es wird nichts abgefragt. Der Lauf endet gruen."
+          {
+            echo "## Stillgelegt"
+            echo ""
+            echo "Die Quelle ist per Owner-Entscheidung nicht aktiviert"
+            echo "(\`social/data/external-sources.json\`). Der Pfad bleibt"
+            echo "vollstaendig erhalten und ist ohne Umbau wieder aktivierbar."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Liegt ein Schluessel vor?
+        if: steps.quelle.outputs.aktiv == 'ja'
+        id: key
+        env:
+          KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: |
+          set -euo pipefail
+          # Nur pruefen, DASS er da ist - nie, WAS er ist.
+          if [ -z "${KEY:-}" ]; then
+            echo "vorhanden=nein" >> "$GITHUB_OUTPUT"
+            echo "::notice::Kein YOUTUBE_API_KEY hinterlegt. Der Lauf plant und sucht nicht. Das ist der offene Owner-Schritt, kein Defekt."
+          else
+            echo "vorhanden=ja" >> "$GITHUB_OUTPUT"
+            echo "Schluessel vorhanden (${#KEY} Zeichen, Wert ungelesen)."
+          fi
+
+      - name: Query Portfolio — wer bekommt heute einen Aufruf?
+        if: steps.quelle.outputs.aktiv == 'ja'
+        env:
+          IN_SEARCHES: ${{ inputs.searches }}
+        run: |
+          set -euo pipefail
+          ARGS=""
+          if [ -n "$IN_SEARCHES" ]; then
+            ARGS="--searches ${IN_SEARCHES}"
+          fi
+          node scripts/social/discover-creators.mjs $ARGS | tee tmp-plan.txt
+
+      - name: Suchen und Watch Universe fortschreiben
+        if: steps.key.outputs.vorhanden == 'ja'
+        env:
+          IN_SEARCHES: ${{ inputs.searches }}
+          # Der Schluessel kommt als Variable herein; das Skript setzt ihn
+          # in die Kopfzeile X-goog-api-key und nie in eine Adresse.
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: |
+          set -euo pipefail
+          ARGS=""
+          if [ -n "$IN_SEARCHES" ]; then
+            ARGS="--searches ${IN_SEARCHES}"
+          fi
+          node scripts/social/discover-creators.mjs $ARGS --discover
+
+      - name: Oeffentliche Zahlen anreichern (kostet keinen Suchaufruf)
+        if: steps.key.outputs.vorhanden == 'ja'
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/social/enrich-youtube-metrics.mjs --run
+
+      - name: Opportunity Engine — extern als eigene Dimension
+        if: steps.quelle.outputs.aktiv == 'ja'
+        run: |
+          set -euo pipefail
+          # Laeuft IMMER, auch ohne Schluessel: dann steht dort null
+          # externe Beobachtungen, und das ist eine ehrliche Zahl.
+          node scripts/social/rank-social-opportunities.mjs --top 3 \
+            --out social/data | tee tmp-rank.txt
+
+      - name: Zusammenfassen
+        if: always()
+        run: |
+          {
+            echo "## External Social Intelligence"
+            echo ""
+            echo "### Query Portfolio"
+            echo '```'
+            head -40 tmp-plan.txt 2>/dev/null || echo "kein Plan"
+            echo '```'
+            echo ""
+            echo "### Evidenzklassen"
+            echo '```'
+            sed -n '/ZWEI EVIDENZKLASSEN/,/^$/p' tmp-rank.txt 2>/dev/null || echo "kein Lauf"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          rm -f tmp-plan.txt tmp-rank.txt
+
+      - name: Festschreiben
+        if: steps.quelle.outputs.aktiv == 'ja'
+        run: |
+          set -euo pipefail
+          # `git diff` sieht neue Dateien nicht - und beim ersten Lauf
+          # sind alle Ergebnisdateien neu. Derselbe Fehler hat im
+          # Hashtag-Pfad schon einmal eine Beobachtung verschluckt.
+          if [ -z "$(git status --porcelain -- social/data/)" ]; then
+            echo "Keine Aenderung."
+            exit 0
+          fi
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add social/data/
+          git commit -m "External Social Intelligence: taeglicher Lauf"
+          # Der Instagram-Beobachter schreibt in denselben Zweig. Ohne
+          # Rebase verliert der langsamere von beiden seinen Push.
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"
+
+  # --- extern-beobachten: vormals social-external-observe.yml
+  extern-beobachten:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.extern_beobachten == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: social-external-observe
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    steps:
+      # Bei einem push-Ausloeser checkt die Aktion sonst den Commit aus,
+      # nicht den Zweig - und ein `git push` aus einem losgeloesten HEAD
+      # scheitert. Der Zweig wird deshalb ausdruecklich genannt.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist die Quelle ueberhaupt eingeschaltet?
+        id: quelle
+        run: |
+          set -euo pipefail
+          node -e '
+            const R = require("./social/engines/source-registry.js");
+            const fs = require("fs");
+            const b = fs.existsSync("social/data/external-sources.json")
+              ? JSON.parse(fs.readFileSync("social/data/external-sources.json", "utf8"))
+              : null;
+            const d = R.darfAnfragen(b, "INSTAGRAM_PUBLIC_CONTENT");
+            console.log(d.explanation);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "aktiv=" + (d.allowed ? "ja" : "nein") + "\n");
+          '
+
+      - name: Stillgelegt — und das ist kein Fehler
+        if: steps.quelle.outputs.aktiv != 'ja'
+        run: |
+          # Kein ::warning::, kein exit 1. Eine Owner-Entscheidung ist
+          # kein Vorfall.
+          echo "INSTAGRAM_PUBLIC_CONTENT steht auf NOT_ACTIVATED_BY_OWNER."
+          echo "Es wird nichts abgefragt, und kein Hashtag-Platz verbraucht."
+          {
+            echo "## Stillgelegt"
+            echo ""
+            echo "Die Quelle ist per Owner-Entscheidung nicht aktiviert."
+            echo "Der Pfad bleibt erhalten und ist ohne Umbau aktivierbar."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Plan aus dem Content Universe ableiten
+        if: steps.quelle.outputs.aktiv == 'ja'
+        id: plan
+        run: |
+          set -euo pipefail
+          node scripts/social/plan-hashtag-observation.mjs \
+            --max-new "${{ inputs.max_new || '8' }}" --out tmp/observe
+          echo "tags=$(cat tmp/observe/tags.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Beobachten
+        if: steps.quelle.outputs.aktiv == 'ja' && steps.plan.outputs.tags != ''
+        env:
+          # -----------------------------------------------------------
+          # EINE ADRESSE IST KEIN GEHEIMNIS
+          #
+          # Gemessen im ersten Lauf: KEY war gesetzt, WORKER leer - und
+          # der Lauf brach ab, weil VU_SOCIAL_WORKER_URL als Secret
+          # nicht existiert. Es hat auch nie existiert: die Adresse des
+          # Workers ist oeffentlich, steht im DNS und in
+          # social-smoke-publish.yml woertlich im Klartext.
+          #
+          # Sie zum Geheimnis zu erklaeren, hat einen BEKANNTEN Wert in
+          # einen fehlenden verwandelt. Dieselbe Verwechslung wie
+          # ueberall hier, nur andersherum: nicht Unbekanntes als Null,
+          # sondern Bekanntes als Unbekanntes.
+          #
+          # Das Secret bleibt als Ueberschreibung moeglich - fuer eine
+          # abweichende Umgebung -, aber es ist keine Voraussetzung mehr.
+          WORKER: ${{ secrets.VU_SOCIAL_WORKER_URL || 'https://social.visionuniverse.de' }}
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${KEY:-}" ]; then
+            echo "::error::VU_SOCIAL_ADMIN_KEY fehlt. Ohne den Schluessel kann nichts beobachtet werden."
+            exit 1
+          fi
+          echo "Worker: $WORKER"
+          mkdir -p tmp/observe
+          # Der Schluessel reist in der Kopfzeile, nie in der Adresse:
+          # Adressen landen in Protokollen und bei Cloudflare.
+          code=$(curl -sS -o tmp/observe/raw.json -w '%{http_code}' \
+            -H "Authorization: Bearer $KEY" \
+            --get --data-urlencode "tags=${{ steps.plan.outputs.tags }}" \
+            --data-urlencode "edge=${{ inputs.edge || 'top' }}" \
+            "$WORKER/social/meta/hashtag-search" || echo 000)
+          echo "HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "::error::Der Hashtag-Endpunkt antwortet mit HTTP $code."
+            cat tmp/observe/raw.json || true
+            exit 1
+          fi
+
+      - name: Zu Mustern abstrahieren
+        if: steps.quelle.outputs.aktiv == 'ja' && steps.plan.outputs.tags != ''
+        run: |
+          set -euo pipefail
+          # Hier werden fremde Inhalte NICHT gespeichert. Die Rohantwort
+          # wird in Muster uebersetzt und danach verworfen.
+          node scripts/social/ingest-external-observation.mjs \
+            --raw tmp/observe/raw.json --write
+
+      - name: Beobachtung festschreiben
+        if: steps.quelle.outputs.aktiv == 'ja' && steps.plan.outputs.tags != ''
+        run: |
+          set -euo pipefail
+          # ---------------------------------------------------------
+          # `git diff` SIEHT NEUE DATEIEN NICHT
+          #
+          # Gemessen im zweiten Lauf: der Ingest meldete "Geschrieben:
+          # external-observations.json, hashtag-portfolio.json", und
+          # direkt darunter stand "Keine Aenderung." Beides stimmte.
+          # Die Dateien waren NEU, und `git diff` vergleicht nur, was
+          # schon verfolgt wird.
+          #
+          # Diesmal war nichts zu sichern. Bei der ersten erfolgreichen
+          # Beobachtung waere es die Beobachtung selbst gewesen - und
+          # der Lauf haette gruen gemeldet, dass es nichts zu tun gab.
+          # `git status --porcelain` sieht auch das Unverfolgte.
+          if [ -z "$(git status --porcelain -- social/data/)" ]; then
+            echo "Keine Aenderung."
+            exit 0
+          fi
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add social/data/external-observations.json social/data/hashtag-portfolio.json
+          git commit -m "External Social Intelligence: Beobachtung ${{ inputs.edge || 'top' }}"
+          # Der taegliche Intelligence-Lauf schreibt in denselben Zweig.
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"
+
+  # --- hashtag-probe: vormals social-hashtag-capability.yml
+  hashtag-probe:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.hashtag_probe == 'true'
+    permissions:
+      contents: read
+    concurrency:
+      group: social-hashtag-capability
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Genau eine Probe, nur lesend
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/social/verify-hashtag-access.mjs | tee /tmp/probe.txt
+
+      - name: Befund als Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo "## Hashtag Capability Probe"
+            echo ""
+            echo '```'
+            cat /tmp/probe.txt 2>/dev/null || echo "kein Ergebnis"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # --- kandidat: vormals social-publish-candidate.yml
+  kandidat:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.kandidat == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: social-publish-candidate
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    env:
+      WORKER: https://social.visionuniverse.de
+      BRANCH: ${{ github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Tests, bevor irgendetwas geschieht
+        run: |
+          # Ein Lauf, der einen oeffentlichen Beitrag vorbereiten oder
+          # ausloesen kann, laeuft nicht gegen ungepruefte Engines.
+          node --test "social/tests/*.test.mjs" 2>&1 | tail -8
+          node --test "workers/vision-universe-social/tests/*.test.mjs" 2>&1 | tail -8
+
+      # ------------------------------------------------------ VORBEREITEN
+      #
+      # STILLGELEGT — Owner-Direktive "VISION UNIVERSE SOCIAL OS —
+      # WEB-FIRST + FULL-POST-GENERATION" (24.09.), §2.1 (hard rule):
+      # Discovery/Quant/Opportunity Slate/Ranking-Platten duerfen nie
+      # wieder Content-Quelle sein, fuer JEDEN Modus — auch nicht ueber
+      # diesen separaten, manuell ausloesbaren Workflow. Dieser Schritt
+      # rief run-social-cycle.mjs (Quant-Zyklus) auf und war damit
+      # genau der Nebeneingang, den §2.1 verbietet. Der Ersatz ist der
+      # Web-First-Pfad in social-orchestrator.yml ("Jetzt pruefen" /
+      # Zeitplan). "freigeben"/"ablehnen" bleiben unveraendert — sie
+      # entscheiden nur ueber einen bereits bestehenden Kandidaten und
+      # sind keine Content-Quelle.
+      - name: Zyklus, Bild und Kandidat (stillgelegt)
+        if: inputs.aktion == 'vorbereiten'
+        run: |
+          echo "::error::'vorbereiten' ist stillgelegt (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, 24.09., §2.1). Dieser Weg erzeugte Kandidaten aus dem Quant-Zyklus (run-social-cycle.mjs) — genau die Content-Quelle, die fuer jeden Modus verboten ist. Neue Kandidaten entstehen jetzt ausschliesslich ueber social-orchestrator.yml (Button 'Jetzt pruefen' oder Zeitplan)."
+          exit 1
+
+      - name: Kandidat und Bild sichern
+        if: false
+        run: |
+          set -e
+          git config user.name "vision-universe-bot"
+          git config user.email "info@visionuniverse.de"
+
+          # `git add` zuerst: `git diff --quiet` vergleicht nur verfolgte
+          # Dateien und meldet "keine Aenderung" fuer eine gerade erst
+          # erzeugte Datei. Dieser Fehler hat hier schon einmal eine
+          # vollstaendige Messung verworfen.
+          git add assets/social social/data || true
+          if git diff --cached --quiet; then
+            echo "Nichts Neues zu sichern."
+          else
+            git commit -m "Publish Candidate vorbereitet
+
+          Erzeugt vom Zyklus. Veroeffentlicht wurde nichts.
+
+          Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+            git push origin "HEAD:$BRANCH"
+          fi
+
+          echo "----------------------------------------------------------"
+          cat tmp-kandidat.txt
+          echo "----------------------------------------------------------"
+          echo "Zum Freigeben diesen Workflow erneut starten:"
+          echo "  aktion = freigeben, candidateId = <Kennung oben>, bestaetigung = FREIGEBEN"
+
+      # --------------------------------------------------------- ABLEHNEN
+      - name: Ablehnen
+        if: inputs.aktion == 'ablehnen'
+        env:
+          IN_CANDIDATEID: ${{ inputs.candidateId }}
+          IN_GRUND: ${{ inputs.grund }}
+        run: |
+          set -e
+          if [ -z "$IN_CANDIDATEID" ]; then
+            echo "::error::Ohne candidateId gibt es nichts abzulehnen."
+            exit 1
+          fi
+          # candidateId wird Teil eines Dateipfads (social/data/publish-candidates/<id>.json):
+          # nur Buchstaben, Ziffern, Punkt, Unterstrich, Bindestrich - kein "..".
+          case "$IN_CANDIDATEID" in *[!A-Za-z0-9._-]*|*..*) echo "::error::Ungueltige candidateId."; exit 1;; esac
+          if [ -z "$IN_GRUND" ]; then
+            echo "::error::Eine Ablehnung ohne Grund ist als Rueckmeldung wertlos — und der Grund ist ihr einziger Ertrag."
+            exit 1
+          fi
+
+          node scripts/social/decide-candidate.mjs \
+            --candidate "$IN_CANDIDATEID" \
+            --reject --reason "$IN_GRUND" --by owner
+
+          git config user.name "vision-universe-bot"
+          git config user.email "info@visionuniverse.de"
+          git add social/data
+          git diff --cached --quiet || git commit -m "Kandidat abgelehnt: ${IN_CANDIDATEID}
+
+          Rueckmeldung zur AUSWAHL, nicht zur WIRKUNG. Dieser Beitrag wurde
+          nie veroeffentlicht und hat deshalb keine Leistung.
+
+          Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+          git push origin "HEAD:$BRANCH"
+
+      # -------------------------------------------------------- FREIGEBEN
+      - name: Bestaetigung pruefen
+        if: inputs.aktion == 'freigeben'
+        env:
+          IN_BESTAETIGUNG: ${{ inputs.bestaetigung }}
+          IN_CANDIDATEID: ${{ inputs.candidateId }}
+        run: |
+          if [ "$IN_BESTAETIGUNG" != "FREIGEBEN" ]; then
+            echo "::error::Dieser Lauf veroeffentlicht einen ECHTEN Beitrag. Er laeuft nur, wenn im Feld exakt FREIGEBEN steht."
+            exit 1
+          fi
+          if [ -z "$IN_CANDIDATEID" ]; then
+            echo "::error::Ohne candidateId gibt es nichts freizugeben."
+            exit 1
+          fi
+          # candidateId wird Teil eines Dateipfads (social/data/publish-candidates/<id>.json):
+          # nur Buchstaben, Ziffern, Punkt, Unterstrich, Bindestrich - kein "..".
+          case "$IN_CANDIDATEID" in *[!A-Za-z0-9._-]*|*..*) echo "::error::Ungueltige candidateId."; exit 1;; esac
+
+      - name: Ist das Bild oeffentlich erreichbar?
+        if: inputs.aktion == 'freigeben'
+        env:
+          IN_CANDIDATEID: ${{ inputs.candidateId }}
+        run: |
+          set -e
+          url=$(node -e '
+            const fs=require("fs");
+            const k=JSON.parse(fs.readFileSync("social/data/publish-candidates/"+process.argv[1]+".json","utf8"));
+            process.stdout.write(k.content.imageUrl);
+          ' "$IN_CANDIDATEID")
+          echo "Bild: $url"
+
+          # Ohne erreichbares Bild lehnt Meta den Container ab — und das
+          # faellt erst auf, NACHDEM der Anspruch angemeldet ist. Danach
+          # weiss niemand ohne nachzusehen, ob ein Beitrag entstand.
+          for versuch in $(seq 1 20); do
+            typ=$(curl -sSI -o /dev/null -w '%{content_type}' "$url" || echo "")
+            code=$(curl -sSI -o /dev/null -w '%{http_code}' "$url" || echo 000)
+            echo "  Versuch $versuch: HTTP $code, $typ"
+            case "$code:$typ" in
+              200:image/jpeg*) echo "Erreichbar."; exit 0 ;;
+            esac
+            sleep 15
+          done
+          echo "::error::Das Bild ist nach fuenf Minuten nicht als JPEG erreichbar. Wahrscheinlich hat GitHub Pages noch nicht ausgeliefert. Es wurde nichts veroeffentlicht."
+          exit 1
+
+      - name: Freigabe eintragen
+        if: inputs.aktion == 'freigeben'
+        env:
+          IN_CANDIDATEID: ${{ inputs.candidateId }}
+        run: |
+          set -e
+          node scripts/social/decide-candidate.mjs \
+            --candidate "$IN_CANDIDATEID" --approve --by owner
+
+      - name: Veroeffentlichen
+        if: inputs.aktion == 'freigeben'
+        env:
+          IN_CANDIDATEID: ${{ inputs.candidateId }}
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -e
+          if [ -z "$KEY" ]; then
+            echo "::error::Das Repository-Secret VU_SOCIAL_ADMIN_KEY fehlt."
+            exit 1
+          fi
+
+          req="social/data/publish-candidates/${IN_CANDIDATEID}.request.json"
+          body=$(node -e '
+            const fs=require("fs");
+            process.stdout.write(JSON.stringify(JSON.parse(fs.readFileSync(process.argv[1],"utf8")).body));
+          ' "$req")
+
+          mkdir -p tmp
+          code=$(curl -sS -o tmp/publish.json -w '%{http_code}' \
+            -X POST \
+            -H "Authorization: Bearer $KEY" \
+            -H "content-type: application/json" \
+            --data "$body" \
+            "$WORKER/social/meta/publish" || echo 000)
+
+          echo "HTTP $code"
+          node -e '
+            const fs=require("fs");
+            const a=JSON.parse(fs.readFileSync("tmp/publish.json","utf8"));
+            for (const k of ["published","idempotent","via","mediaId","permalink","verified","error","message"]) {
+              if (a[k] !== undefined) console.log("  " + k + ": " + JSON.stringify(a[k]));
+            }
+          '
+
+          if [ "$code" != "200" ] && [ "$code" != "207" ]; then
+            echo "::error::Der Publishing-Endpunkt antwortet mit HTTP $code. Details oben."
+            exit 1
+          fi
+
+      - name: Medien-ID in die Herkunftskette
+        if: inputs.aktion == 'freigeben'
+        env:
+          IN_CANDIDATEID: ${{ inputs.candidateId }}
+        run: |
+          set -e
+          node scripts/social/record-publication.mjs \
+            --candidate "$IN_CANDIDATEID" \
+            --response tmp/publish.json --data social/data --write
+
+          git config user.name "vision-universe-bot"
+          git config user.email "info@visionuniverse.de"
+          git add social/data
+          git diff --cached --quiet || git commit -m "Veroeffentlicht: ${IN_CANDIDATEID}
+
+          Freigegeben vom Owner, gesendet ueber den idempotenten Publishing-Pfad.
+          Die Herkunftskette traegt jetzt die Medien-ID.
+
+          Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+          git push origin "HEAD:$BRANCH"
+
+  # --- reel: vormals social-reel.yml
+  reel:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.reel == 'true'
+    permissions:
+      contents: read
+    concurrency:
+      group: social-reel-${{ github.ref_name }}
+      cancel-in-progress: false
+    env:
+      VU_SOCIAL_WORKER_URL: https://social.visionuniverse.de
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Reel ${{ inputs.reel_action }}
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+          ACTION: ${{ inputs.reel_action }}
+          CONTENT_ID: ${{ inputs.content_id }}
+          VIDEO_URL: ${{ inputs.video_url }}
+          CAPTION: ${{ inputs.caption }}
+        run: |
+          set -euo pipefail
+          if [ "$ACTION" = "prepare" ]; then
+            node scripts/social/ig-reel.mjs prepare --content-id "$CONTENT_ID" --video-url "$VIDEO_URL" --caption "$CAPTION"
+          else
+            node scripts/social/ig-reel.mjs status --content-id "$CONTENT_ID"
+          fi
+
+  # --- web-fortsetzen: vormals social-resume-verified-web.yml
+  web-fortsetzen:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.web_fortsetzen == 'true'
+    permissions:
+      contents: write
+      pull-requests: write
+    concurrency:
+      group: social-orchestrator
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Creative-Ergebnisse von offenen Request-PRs holen
+        run: node scripts/social/ingest-open-creative-jobs.mjs --write
+
+      - name: Creative Jobs gegen die Evidenz abgleichen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/social/reconcile-creative-jobs.mjs --write
+
+      - name: Tests und Isolation, bevor irgendetwas geschieht
+        run: node scripts/social/verify-suites.mjs
+
+      - name: Die Entscheidungen des Owners abholen
+        continue-on-error: true
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VU_SOCIAL_ADMIN_KEY:-}" ]; then
+            echo "Kein Admin-Schluessel: es wird nichts abgeholt."
+            exit 0
+          fi
+          node scripts/social/ingest-owner-decisions.mjs --data social/data --write \
+            | tee /tmp/entscheidungen.txt || [ "$?" = "4" ]
+
+      - name: Kandidat aus der bestehenden Web-Story-Auswahl
+        run: |
+          set -uo pipefail
+          rc=0
+          node scripts/social/manual-now-web-candidate.mjs --data social/data --write || rc=$?
+          if [ "$rc" -eq 4 ]; then
+            echo "::notice::Kein Kandidat (begruendete Verweigerung, z.B. noch nicht " \
+              "VERIFIED oder das Hard Final Creative Gate)."
+            exit 0
+          fi
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Unerwarteter Abbruch ($rc) in manual-now-web-candidate.mjs"
+            exit "$rc"
+          fi
+
+      - name: Die Warteschlange an das Approval Center
+        if: always()
+        continue-on-error: true
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VU_SOCIAL_ADMIN_KEY:-}" ]; then
+            echo "Kein Admin-Schluessel: die Schlange bleibt, wo sie ist."
+            node scripts/social/publish-approval-queue.mjs --check-assets | tee /tmp/queue.txt
+            exit 0
+          fi
+          node scripts/social/publish-approval-queue.mjs --write --check-assets \
+            | tee /tmp/queue.txt || [ "$?" = "4" ]
+
+      - name: Festschreiben
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- social/data/ assets/social/)" ]; then
+            echo "Keine Aenderung."
+            exit 0
+          fi
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add social/data/ assets/social/
+          git commit -m "Resume: Verified-Web-Candidate aus bestehender Auswahl"
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"
+
+  # --- smoke-publish: vormals social-smoke-publish.yml
+  smoke-publish:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.smoke_publish == 'true'
+    permissions:
+      contents: read
+    concurrency:
+      group: social-smoke-publish
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    env:
+      WORKER: https://social.visionuniverse.de
+
+    steps:
+      - name: Bestaetigung pruefen
+        env:
+          IN_BESTAETIGUNG: ${{ inputs.smoke_publish_bestaetigung }}
+        run: |
+          if [ "$IN_BESTAETIGUNG" != "VEROEFFENTLICHEN" ]; then
+            echo "::error::Dieser Lauf veroeffentlicht einen ECHTEN Beitrag. Er laeuft nur, wenn im Feld exakt VEROEFFENTLICHEN steht."
+            exit 1
+          fi
+          echo "Bestaetigung liegt vor."
+
+      - name: Schluessel ist hinterlegt
+        env:
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          # Nur pruefen, DASS er da ist — nie, WAS er ist.
+          if [ -z "$KEY" ]; then
+            echo "::error::Das Repository-Secret VU_SOCIAL_ADMIN_KEY fehlt. Settings -> Secrets and variables -> Actions -> New repository secret."
+            exit 1
+          fi
+          echo "Schluessel vorhanden (${#KEY} Zeichen, Wert ungelesen)."
+
+      - name: Wurde schon veroeffentlicht?
+        id: vorher
+        env:
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          # Lesend. Beruehrt den Publishing-Endpunkt nicht.
+          # tmp/ liegt im Arbeitsbereich (und in .gitignore): hashFiles
+          # sieht absolute Pfade ausserhalb davon nicht — derselbe Fehler
+          # ist in social-cloudflare.yml schon einmal aufgetreten.
+          mkdir -p tmp/smoke
+          code=$(curl -sS -o tmp/smoke/status.json -w '%{http_code}' \
+            -H "Authorization: Bearer $KEY" \
+            "$WORKER/social/meta/status" || echo 000)
+
+          if [ "$code" != "200" ]; then
+            echo "::error::Der Status-Endpunkt antwortet mit HTTP $code. Ohne ihn ist nicht feststellbar, ob schon veroeffentlicht wurde — es wird nichts versucht."
+            exit 1
+          fi
+
+          schon=$(node -e '
+            const s = require(process.cwd() + "/tmp/smoke/status.json");
+            const log = s.smokePublish;
+            console.log(log && log.published ? "ja" : "nein");
+          ')
+          konto=$(node -e '
+            const s = require(process.cwd() + "/tmp/smoke/status.json");
+            console.log((s.connection && s.connection.instagramUsername) || "unbekannt");
+          ')
+
+          echo "Verbundenes Konto: @$konto"
+          echo "Bereits veroeffentlicht: $schon"
+          echo "konto=$konto" >> "$GITHUB_OUTPUT"
+
+          if [ "$schon" = "ja" ]; then
+            node -e '
+              const s = require(process.cwd() + "/tmp/smoke/status.json");
+              console.log("Bestehender Beitrag: " + s.smokePublish.permalink);
+            '
+            echo "::error::Der Testbeitrag wurde bereits veroeffentlicht. Ein zweiter Lauf wuerde einen ZWEITEN Beitrag erzeugen — die Graph API kennt kein Idempotenz-Token. Abbruch, ohne den Endpunkt zu beruehren."
+            exit 1
+          fi
+
+      - name: Veroeffentlichen
+        id: publish
+        env:
+          KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          # Der Schluessel steht in der Kopfzeile, nicht in der Adresse:
+          # die Adresse landet in Protokollen und bei Cloudflare.
+          code=$(curl -sS -X POST -o tmp/smoke/publish.json -w '%{http_code}' \
+            -H "Authorization: Bearer $KEY" \
+            "$WORKER/social/meta/smoke-publish?confirm=PUBLISH-ONE-TEST-POST" || echo 000)
+
+          echo "HTTP $code"
+          echo "http_code=$code" >> "$GITHUB_OUTPUT"
+
+          # Die Antwort traegt kein Token — der Worker gibt keines heraus.
+          cat tmp/smoke/publish.json
+          echo ""
+
+          if [ "$code" != "200" ] && [ "$code" != "207" ]; then
+            echo "::error::Der Beitrag wurde nicht (vollstaendig) veroeffentlicht. Die Antwort oben nennt Stufe und Meta-Fehlerdaten."
+            exit 1
+          fi
+
+      - name: Ergebnis zusammenfassen
+        if: always()
+        run: |
+          {
+            echo "## Smoke Publish"
+            echo ""
+            echo "Konto: \`@${{ steps.vorher.outputs.konto }}\`"
+            echo "HTTP: \`${{ steps.publish.outputs.http_code || 'nicht erreicht' }}\`"
+            echo ""
+            if [ -f tmp/smoke/publish.json ]; then
+              echo '```json'
+              cat tmp/smoke/publish.json
+              echo ""
+              echo '```'
+            else
+              echo "Es wurde nichts veroeffentlicht — der Lauf endete vorher."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Antwort als Artefakt sichern
+        if: always() && hashFiles('tmp/smoke/publish.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-publish-antwort
+          path: tmp/smoke/publish.json
+          retention-days: 90
+
+  # --- lieferung: vormals social-work-delivery.yml
+  lieferung:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.lieferung == 'true'
+    permissions:
+      actions: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Orchestrator im Modus EINHOLEN anstossen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          echo "Lieferung auf ${GITHUB_REF_NAME} (${GITHUB_SHA})."
+          gh workflow run social-orchestrator.yml \
+            --repo "${GITHUB_REPOSITORY}" --ref main \
+            -f modus=EINHOLEN -f thema="" -f nur_entscheiden=false
+          echo "Orchestrator-Lauf EINHOLEN angestossen."

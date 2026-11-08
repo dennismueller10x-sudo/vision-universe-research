@@ -1,0 +1,48 @@
+{
+ "schema": "vu-module-2",
+ "id": "vorsorge",
+ "label": "Vorsorge",
+ "status": "LIVE",
+ "route": "/vorsorge/",
+ "access": "free",
+ "navigation": {
+  "group": "products",
+  "order": 9,
+  "label": "Vorsorge",
+  "href": "/vorsorge/#/",
+  "icon": "vorsorge",
+  "claim": "Sparplan und Rente",
+  "entries": [
+   ["Vorsorge Home", "/vorsorge/#/", "☂"],
+   ["Planer", "/vorsorge/#/plan", "◬"],
+   ["ETFs", "/vorsorge/#/etfs", "◫"],
+   ["Portfolio", "/vorsorge/#/portfolio", "◎"],
+   ["Vergleichen", "/vorsorge/#/vergleichen", "⧩"],
+   ["Förderung", "/vorsorge/#/foerderung", "✧"],
+   ["Veränderungen", "/vorsorge/#/monitor", "≋"],
+   ["Wissen", "/vorsorge/#/wissen", "▤"]
+  ]
+ },
+ "data": [],
+ "reads": [
+  "fxReference"
+ ],
+ "producers": [
+  "products/vorsorge/producer/assert-vorsorge-data.mjs",
+  "products/vorsorge/producer/build-etf-data.mjs",
+  "products/vorsorge/producer/build-etf-intelligence.mjs",
+  "products/vorsorge/producer/fetch-legal-sources.sh",
+  "products/vorsorge/producer/fetch-sec-sic.mjs",
+  "products/vorsorge/producer/ingest-esma-firds.mjs",
+  "products/vorsorge/producer/ingest-esma-funds.mjs",
+  "products/vorsorge/producer/ingest-sec-nport.mjs",
+  "products/vorsorge/producer/ingest-sec-rr.mjs",
+  "products/vorsorge/producer/ingest-tiingo-etfs.mjs",
+  "products/vorsorge/producer/ingest-xetra-refdata.mjs",
+  "products/vorsorge/producer/slim-index.mjs",
+  "products/vorsorge/producer/tiingo-catalog.mjs"
+ ],
+ "tests": [
+  "products/vorsorge/tests/*.test.mjs"
+ ]
+}

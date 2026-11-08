@@ -58,7 +58,7 @@ Entziehen: `delete from public.user_roles where role = 'pricing_admin' and user_
 
 ## Verhältnis zu den Workflows
 
-- `account-production-stripe.yml` (Stripe-Einrichtung, Owner-Freigabe) bleibt für Produkte, Portal, Webhook und
+- `account.yml` (Teil `stripe`) (Stripe-Einrichtung, Owner-Freigabe) bleibt für Produkte, Portal, Webhook und
   Zahlungsmethoden. Einen in der Tarifverwaltung gesetzten Preis (Stripe-Metadaten `vu_change_id`) setzt sie **nicht**
   auf den Katalogpreis zurück und schreibt keine Preiszeile.
 - `release-guard.mjs` betrifft Preise nicht: Preise sind Daten, keine Worker-Konfiguration.

@@ -43,6 +43,21 @@
     return el('div',{class:'v2-watch-row','data-withheld':w.reasonClass,'data-security-id':w.securityId},[
       el('a',{href:w.href,text:w.name+(w.ticker?' · '+w.ticker:'')}),el('span',{text:w.message+' '+w.reason})]);
   }
+  /* M5 (08.11.2026): Konzern-Kennzahlen aus dem ESEF-Jahresfinanzbericht des Emittenten (scripts/official-filings/de-esef-facts.mjs).
+     Nur Werte mit bestandener Plausibilitätsprüfung; geladen erst auf einer Europa-Aktienseite ohne Basiszahlen. */
+  let esefPromise=null;
+  function esefFacts(box,id,active){
+    esefPromise=esefPromise||fetch('/discover/data/europe-esef/facts.json',{credentials:'same-origin'}).then(r=>r.ok?r.json():null).catch(()=>null);
+    esefPromise.then(d=>{
+      const row=d&&d.schema==='vu-europe-esef-facts-1'&&(d.rows||[]).find(r=>r.securityId===id&&r.status==='PLAUSIBLE');
+      if(!row||!active()||!box.isConnected)return;
+      const labels={revenue:'Umsatz',netIncome:'Konzernergebnis',operatingCashFlow:'Operativer Cashflow'},fy=row.fiscalYearEnd;
+      const fmt=(v,c)=>new Intl.NumberFormat('de-DE',{style:'currency',currency:c,notation:'compact',maximumFractionDigits:1}).format(v);
+      const list=el('div',{'data-esef-facts':''},row.metrics.map(m=>el('p',{text:labels[m.metric]+' · Geschäftsjahr bis '+fy.slice(8,10)+'.'+fy.slice(5,7)+'.'+fy.slice(0,4)+' · '+fmt(m.value,m.currency)+' (Vorjahr '+fmt(m.priorValue,m.currency)+') · Konzern'})));
+      const src=el('p',{},[document.createTextNode('Quelle: '),el('a',{href:row.sourceDocument,text:'ESEF-Jahresfinanzbericht des Unternehmens',target:'_blank',rel:'noopener noreferrer'}),document.createTextNode('. Nur Kennzahlen, automatisch auf Plausibilität geprüft. Keine Bewertung, keine Quant-Freigabe.')]);
+      box.querySelectorAll('p').forEach(p=>p.remove());box.append(list,src);
+    });
+  }
   async function render(root,{parts,ctx,route,active,message}) {
     if(!D.europeProduct){await ensureLoader();if(D.europePublicLoader){try{await D.europePublicLoader.connect();}catch(_){}}}
     if(!active())return;
@@ -67,7 +82,7 @@
         const labels={revenue:'Umsatz',netIncome:'Gewinn',operatingCashFlow:'Operativer Cashflow'};
         facts.metrics.forEach(m=>{const row=el('p',{},[document.createTextNode(labels[m.metric]+' · Geschäftsjahr '+m.fiscalYear+' · '+new Intl.NumberFormat('de-DE',{style:'currency',currency:m.currency,notation:'compact',maximumFractionDigits:1}).format(m.value)+' · Konzernzahlen · '),el('a',{href:m.sourceDocument,text:m.source+'-Quelle',target:'_blank',rel:'noopener noreferrer'})]);basis.append(row);});
         basis.append(el('p',{text:'Basisinformationen zum Unternehmen. Keine Bewertung oder Quant-Freigabe.'}));
-      }else basis.append(el('p',{text:'Fundamentale Basisdaten für diese Aktie noch nicht verfügbar.'}));
+      }else{basis.append(el('p',{text:'Fundamentale Basisdaten für diese Aktie noch nicht verfügbar.'}));esefFacts(basis,id,active);}
       states.after(basis);
       watchButton(root,id,product,detail.symbol);document.title=(detail.companyName||detail.symbol)+' — Discover';
     }else if(parts[0]==='watchlist'){

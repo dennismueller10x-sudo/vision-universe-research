@@ -65,12 +65,38 @@
           cell("Befund", befund || "–")
         ]));
       });
+      await products(report).catch(function (e) {
+        var b = document.querySelector("#products tbody");
+        if (b) b.textContent = "Produktliste nicht ladbar (" + e.message + ").";
+      });
     } catch (e) {
       overall.textContent = "Systemzustand derzeit nicht messbar (" + e.message + "). ";
       var retry = el("button", { type: "button", text: "Erneut prüfen" });
       retry.addEventListener("click", health);
       overall.appendChild(retry);
     }
+  }
+
+  /* Produkte aus den Steckbriefen (products/<id>/module.json -> core/registry/modules.json, core/modules.js):
+     Zustand = schlechtester Zustand der erzeugten und gelesenen Datenarten. */
+  var ACCESS = { free: "Free", pro: "Pro", intern: "Intern" };
+  async function products(report) {
+    var body = document.querySelector("#products tbody");
+    if (!body || !Core.Modules) return;
+    body.textContent = "";
+    var idx = await load("/core/registry/modules.json");
+    Core.Modules.productHealth(idx.modules, report).forEach(function (p) {
+      var m = idx.modules.find(function (x) { return x.id === p.id; });
+      var link = p.access === "intern" ? el("strong", { text: p.label }) : el("a", { href: p.route }, [el("strong", { text: p.label })]);
+      body.appendChild(el("tr", {}, [
+        el("td", {}, [link, el("small", { text: p.route })]),
+        el("td", {}, [p.status === "NO_DATA" ? el("span", { class: "st-badge st-SKIPPED", text: "ohne Datenart" }) : badge(p.status)]),
+        el("td", { "data-label": "Zugang", text: ACCESS[p.access] || p.access }),
+        el("td", { "data-label": "Phase", text: p.lifecycle }),
+        el("td", { "data-label": "Datenarten", text: m.data.concat(m.reads).join(", ") || "–" }),
+        el("td", { "data-label": "Ursache", text: p.cause.join(", ") || "–" })
+      ]));
+    });
   }
 
   var qualityReport = null;

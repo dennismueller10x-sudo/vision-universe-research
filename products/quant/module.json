@@ -1,0 +1,36 @@
+{
+ "schema": "vu-module-2",
+ "id": "quant",
+ "label": "Quant",
+ "status": "LIVE",
+ "route": "/quant/",
+ "access": "free",
+ "navigation": {
+  "group": "products",
+  "order": 2,
+  "label": "Quant",
+  "href": "/quant/",
+  "icon": "quant",
+  "claim": "Faktoren je Aktie",
+  "entries": [
+   ["Übersicht", "/quant/", "⌂"],
+   ["Quant Screener", "/quant/#/screener", "⧩"],
+   ["Strategien", "/quant/#/strategien", "◬"],
+   ["Aktien", "/quant/#/aktien", "⌁"],
+   ["Methodik", "/quant/#/methodik", "▤"],
+   ["Technische Lagen", "/quant/#/chartlagen", "⌁"],
+   ["Fundamentaldaten", "/quant/#/aktie/NVDA/zahlen", "▧"]
+  ]
+ },
+ "data": ["quant", "modelDepots", "technical"],
+ "reads": [
+  "securityMaster",
+  "companyMaster",
+  "eodPrices",
+  "fundamentals",
+  "technicalIntelligenceV3"
+ ],
+ "tests": [
+  "quant/tests/*.test.mjs"
+ ]
+}

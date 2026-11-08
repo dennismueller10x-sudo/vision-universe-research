@@ -145,7 +145,7 @@
     { id: 'faktoren', label: 'Faktoren', sub: 'Qualität, Momentum, Risiko je 0–100', world: 'quant', groups: ['vu'] },
     { id: 'chart', label: 'Chart', sub: 'Trend, 200-Tage-Linie, RSI, Kursstärke', world: 'technical', groups: ['momentum', 'technical'] },
     { id: 'methoden', label: 'Methoden', pro: true, sub: 'Chartformationen, Chartbild, Wellen', world: 'supertrader', ids: METHOD_IDS },
-    { id: 'investoren', label: 'Investoren', pro: true, sub: 'Analysten, Kursziele, Profi-Käufe', world: 'hedgefonds', groups: ['analysts'],
+    { id: 'investoren', label: 'Investoren', pro: true, sub: 'Analysten-Einstufungen, Profi-Käufe', world: 'hedgefonds', groups: ['analysts'],
       soon: [['Profi-Käufe (13F)', 'Käufe großer Fonds laut Quartalsmeldung']] }
   ];
   function perspOf(f) {
@@ -167,24 +167,8 @@
       h('span', { class: 'sc-prow-n sc-num', text: String(n) }), icon('next')]);
   }
 
-  /* Eigenschaften in Alltagssprache (Satz-Bauer, S02 Einfach). Jede ist genau ein Filter. */
-  var PROPS = [
-    { id: 'growth', word: 'stark wachsen', sub: 'Umsatz +20 % in 12 Monaten', f: { field: 'revenueGrowth', op: 'gt', value: 0.2 } },
-    { id: 'profit', word: 'gut verdienen', sub: 'Gewinnmarge über 15 %', f: { field: 'netMargin', op: 'gt', value: 0.15 } },
-    { id: 'cheap', word: 'günstig sind', sub: 'KGV unter 20', f: { field: 'pe', op: 'lt', value: 20 } },
-    { id: 'trend', word: 'im Aufwärtstrend sind', sub: 'Kurs über der 200-Tage-Linie', f: { field: 'priceVsSma200', op: 'gt', value: 0 } },
-    { id: 'cash', word: 'mehr Geld als Schulden haben', sub: 'Netto-Cash über 0', f: { field: 'netCash', op: 'gt', value: 0 } },
-    { id: 'calm', word: 'ruhig schwanken', sub: 'Schwankung unter 25 % im Jahr', f: { field: 'volatility', op: 'lt', value: 0.25 } }
-  ];
-  /* Fertige Ideen (S01): echte Trefferzahl live aus der Engine, nie hart kodiert. */
-  var IDEAS = [
-    { title: 'Wachsen stark', sub: 'Umsatz +20 % in 12 Monaten', world: 'fundamental', fs: [{ field: 'revenueGrowth', op: 'gt', value: 0.2 }] },
-    { title: 'Verdienen Geld', sub: 'Gewinnmarge über 0 %', world: 'fundamental', fs: [{ field: 'netMargin', op: 'gt', value: 0 }] },
-    { title: 'Im Aufwärtstrend', sub: 'Kurs über 200-Tage-Linie', world: 'technical', fs: [{ field: 'priceVsSma200', op: 'gt', value: 0 }] },
-    { title: 'Wachsen und verdienen', sub: 'Umsatz +20 %, Marge 15 %', glyph: 'quality', lime: true, fs: [{ field: 'revenueGrowth', op: 'gt', value: 0.2 }, { field: 'netMargin', op: 'gt', value: 0.15 }] }
-  ];
-  function sameFilter(f, g) { return f.field === g.field && f.op === g.op && Number(f.value) === Number(g.value); }
-  function propOf(f) { return PROPS.filter(function (p) { return sameFilter(f, p.f); })[0] || null; }
+  /* Eigenschaften (Satz-Bauer) und fertige Ideen: eine Quelle, ein Wort = eine Regel (screener/engine/vocab.js). */
+  var V = window.VUScreenerVocab, PROPS = V.PROPS, IDEAS = V.IDEAS, sameFilter = V.sameFilter, propOf = V.propOf;
   function ruleText(f) { var p = propOf(f); return p ? p.word : F.describeFilter(f, ds() ? ds().meta.dict : null); }
   /** Satz-Bauer: „Zeig mir Aktien, die … und …“ mit neongruenen Luecken. */
   function sentence(q, opts) {
@@ -430,9 +414,11 @@
     if (state.invalidLink) main.append(invalidNotice());
     main.append(h('header', { class: 'sc-head' }, [
       h('div', { class: 'sc-head-row' }, [h('p', { class: 'vu-ltag', text: 'Screener' }), iconBtn('gear', 'Einstellungen', openSettings)]),
-      h('h1', { class: 'vu-lt', id: 'sc-product-title', text: pro ? 'Profi-Screener' : 'Finde Aktien, die zu dir passen.' }),
-      pro ? null : h('p', { class: 'vu-lead', text: 'Sag in einem Satz, was dir wichtig ist. Wir zeigen, welche der ' + nf(i.count) + ' US-Aktien passen.' })]));
+      h('h1', { class: 'vu-lt', id: 'sc-product-title', text: pro ? 'Profi-Screener' : 'Was suchst du?' }),
+      pro ? null : h('p', { class: 'vu-lead', text: 'Sag in einem Satz, was dir wichtig ist. Die Trefferzahl unter ' + nf(i.count) + ' US-Aktien siehst du sofort.' })]));
     main.append(modeSeg(true));
+    /* Europa (Strang M, 08.11.2026): eigene Seite mit einfachen Kursspalten, nicht Teil dieses US-Universums. */
+    main.append(h('p', { class: 'sc-sub', 'data-europe-link': '' }, [h('a', { href: '/screener/europa/', style: { display: 'inline-flex', alignItems: 'center', minHeight: '44px' }, text: 'Europäische Aktien: Kursveränderung, 52-Wochen-Hoch, 50-Tage-Linie →' })]));
     if (!pro) {
       main.append(sentenceCard());
       main.append(sectEl('Fertige Ideen'), ideasGrid(IDEAS), h('div', { class: 'sc-gap-s' }, helpLine('200-Tage-Linie: der Durchschnittskurs der letzten 200 Handelstage. Liegt der Kurs darüber, läuft der Trend eher nach oben.')));
@@ -719,7 +705,7 @@
       main.append(h('div', { class: 'vu-box vu-box--ink sc-sentcard is-sticky' }, sentence(q, { small: true })));
       main.append(counter(r));
       main.append(sectEl('Was ist dir noch wichtig?'), propsList(r));
-      main.append(h('div', { class: 'sc-helps' }, [helpLine('Gewinnmarge: wie viel von 100 $ Umsatz am Ende als Gewinn bleibt. 15 % heißt 15 $.'),
+      main.append(h('div', { class: 'sc-helps' }, [helpLine('Nettomarge: wie viel von 100 $ Umsatz am Ende als Gewinn bleibt. 15 % heißt 15 $.'),
         helpLine('KGV: wie viele Jahresgewinne du für die Aktie zahlst. Kleiner heißt günstiger.'),
         helpLine('„→ 80“ heißt: Mit dieser Eigenschaft blieben 80 Treffer übrig.')]));
       var other = Q.filters(q).filter(function (f) { return !propOf(f); });
@@ -824,12 +810,12 @@
     ['marketCap', 'pe', 'perf6m', 'revenueGrowth'].forEach(function (id) { if (out.indexOf(id) < 0 && out.length < (q.ranking.enabled ? 3 : 4)) out.push(id); });
     return out;
   }
-  /** „Warum passt …?“ – je Regel ein Urteil (C08) fuer den ersten Treffer. */
+  /** „Erfüllt deinen Filter“ – je Regel ein Urteil (C08) fuer den ersten Treffer. */
   function whyBox(i) {
     var d = ds(), items = [].concat.apply([], E.why(d, state.query, i).map(function (g) { return g.items; }));
-    return h('section', { class: 'vu-box sc-whybox', 'aria-label': 'Warum passt ' + d.name(i) + '?' }, [h('p', { class: 'vu-ltag', text: 'Warum passt ' + shortName(d.name(i)) + '?' })].concat(items.slice(0, 4).map(whyRow)).concat(items.length > 4 ? [h('button', { class: 'sc-sect-link', type: 'button', onclick: function () { openWhy(d.symbol(i)); } }, 'Alle ' + items.length + ' Regeln')] : []));
+    return h('section', { class: 'vu-box sc-whybox', 'aria-label': shortName(d.name(i)) + ' erfüllt deinen Filter' }, [h('p', { class: 'vu-ltag', text: 'Erfüllt deinen Filter · ' + shortName(d.name(i)) })].concat(items.slice(0, 4).map(whyRow)).concat(items.length > 4 ? [h('button', { class: 'sc-sect-link', type: 'button', onclick: function () { openWhy(d.symbol(i)); } }, 'Alle ' + items.length + ' Regeln')] : []));
   }
-  var SHORT = { revenueGrowth: 'Umsatz', netMargin: 'Marge', marketCap: 'Wert in $', pe: 'KGV', priceVsSma200: 'Kurs vs. SMA 200', volatility: 'Schwankung', netCash: 'Netto-Cash', perf6m: 'Kurs 6 M.' };
+  var SHORT = { revenueGrowth: 'Umsatz', netMargin: 'Nettomarge', marketCap: 'Wert in $', pe: 'KGV', priceVsSma200: 'Kurs vs. SMA 200', volatility: 'Schwankung', netCash: 'Netto-Cash', perf6m: 'Kurs 6 M.' };
   function shortField(id) { return SHORT[id] || fieldName(id); }
   /** Bedingung ohne Feldnamen: „über 20 %“, „unter 30“. */
   function condText(f) {
@@ -842,7 +828,7 @@
   }
   function whyRow(x) {
     return h('div', { class: 'sc-kvrow' }, [h('span', {}, [h('b', { text: shortField(x.field.id) + ' ' + x.shown }), h('span', { class: 'sc-muted', text: ' (gesucht: ' + condText(x.filter) + ')' })]),
-      x.pass === true ? verdictEl('strong', 'passt') : x.pass === false ? verdictEl('weak', 'passt nicht') : verdictEl('none', 'ohne Angabe')]);
+      x.pass === true ? verdictEl('strong', 'erfüllt') : x.pass === false ? verdictEl('weak', 'nicht erfüllt') : verdictEl('none', 'ohne Angabe')]);
   }
   function shortName(n) { return String(n || '').replace(/,? (Inc|Corp|Corporation|Ltd|Limited|Co|Holdings|plc|N\.V\.|S\.A\.|Incorporated)\.?$/i, '').replace(/\s+(Class [A-Z]|Cl [A-Z])$/i, ''); }
   function loadMore() {
@@ -1248,7 +1234,7 @@
       };
       var hintSlot = h('div', {});
       if (f.presets && f.presets.length) s.body.append(h('p', { class: 'sc-label', text: 'Schwelle' }), presets);
-      s.body.append(h('p', { class: 'sc-label', text: 'So verteilen sich die Aktien' }), h('p', { class: 'sc-note sc-note-tight', text: 'Neongrün: passt zur Regel' }), histSlot, hintSlot);
+      s.body.append(h('p', { class: 'sc-label', text: 'So verteilen sich die Aktien' }), h('p', { class: 'sc-note sc-note-tight', text: 'Neongrün: erfüllt die Regel' }), histSlot, hintSlot);
       if (isTech) s.body.append(h('p', { class: 'sc-label', text: 'So sieht das aus' }), vizSlot);
       s.body.append(h('p', { class: 'sc-label', text: 'Genau einstellen' }), ops, readout, sliderWrap, inputs);
       if (f.formula && info().formulas && info().formulas[f.formula]) s.body.append(h('div', { class: 'sc-formula', text: 'Berechnung: ' + info().formulas[f.formula] }));
@@ -1284,7 +1270,7 @@
   // ------------------------------------------------------------ WHY
   function openWhy(sym) {
     var d = ds(), i = d.indexOf(sym);
-    var s = openSheet({ title: 'Warum Treffer?', foot: true });
+    var s = openSheet({ title: 'Erfüllt deinen Filter', foot: true });
     if (i < 0) { s.body.append(h('p', { text: 'Diese Aktie ist nicht im Screener-Universum.' })); return; }
     s.body.append(h('div', { class: 'sc-qr-head' }, [logo(sym), h('div', {}, [h('b', { text: d.name(i) }), h('span', { text: sym + ' · ' + (d.value('sector', i) ? F.enumLabel('sector', d.value('sector', i), d.meta.dict) : 'ohne Sektor') })])]));
     whyList(s.body, sym, true);
@@ -1324,7 +1310,7 @@
       container.append(list);
     });
     var r = result(), inResult = r.order.indexOf(i) >= 0;
-    container.append(inResult ? h('div', { class: 'sc-allgood' }, [h('b', { text: 'Alle Kriterien erfüllt' }), h('span', { text: 'Diese Aktie passt zu deinem Screen. Das ist kein Anlageurteil.' })])
+    container.append(inResult ? h('div', { class: 'sc-allgood' }, [h('b', { text: 'Alle Kriterien erfüllt' }), h('span', { text: 'Diese Aktie erfüllt deinen Filter. Das ist kein Anlageurteil.' })])
       : h('div', { class: 'sc-allgood', style: { background: 'var(--sc-down-soft)' } }, [h('b', { style: { color: 'var(--sc-down)' }, text: 'Nicht im aktuellen Ergebnis' }), h('span', { text: 'Mindestens ein Kriterium ist nicht erfüllt oder es fehlen Daten.' })]));
   }
 
@@ -1349,7 +1335,7 @@
       var items = [].concat.apply([], E.why(d, state.query, i).map(function (g) { return g.items; }));
       s.body.append(h('section', { class: 'vu-box vu-box--ink sc-fromscreen' }, [h('p', { class: 'vu-ltag', text: 'Aus deinem Screen · Treffer ' + nf(pos + 1) + ' von ' + nf(r0.total) }),
         h('div', { class: 'sc-fromscreen-rows' }, items.map(function (x) {
-          return h('div', { class: 'sc-kvrow' }, [h('b', { text: shortField(x.field.id) + ' ' + x.shown }), x.pass === true ? verdictEl('strong', condText(x.filter)) : x.pass === false ? verdictEl('weak', 'passt nicht') : verdictEl('none', 'ohne Angabe')]);
+          return h('div', { class: 'sc-kvrow' }, [h('b', { text: shortField(x.field.id) + ' ' + x.shown }), x.pass === true ? verdictEl('strong', condText(x.filter)) : x.pass === false ? verdictEl('weak', 'nicht erfüllt') : verdictEl('none', 'ohne Angabe')]);
         }))]));
       var prev = pos > 0 ? d.symbol(r0.order[pos - 1]) : null, next = pos < r0.order.length - 1 ? d.symbol(r0.order[pos + 1]) : null;
       /* S03 (s03-b): Vor/Zurück durch die Treffer steht unter dem Inhalt der Perspektive. */
@@ -1390,7 +1376,7 @@
   function kv(pairs) { return h('div', { class: 'sc-kv' }, pairs.map(function (p) { return h('div', {}, [h('span', { text: p[0] }), h('b', { class: 'sc-num ' + (p[2] || ''), text: p[1] })]); })); }
   function overview(panel, sym, i, research, failed) {
     var d = ds(), q = state.query;
-    if (Q.count(q) && result().order.indexOf(i) < 0) { panel.append(h('p', { class: 'sc-label', text: 'Screener-Match' })); whyList(panel, sym, false); }
+    if (Q.count(q) && result().order.indexOf(i) < 0) { panel.append(h('p', { class: 'sc-label', text: 'Erfüllt deinen Filter?' })); whyList(panel, sym, false); }
     var metrics = E.cardMetrics(q, 4);
     var base = ['marketCap', 'pe', 'ps', 'evEbitda', 'revenueGrowth', 'grossMargin', 'roic', 'fcfYield', 'beta', 'distance52wHigh', 'perf1y', 'volatility'];
     var ids = metrics.concat(base.filter(function (b) { return metrics.indexOf(b) < 0; })).slice(0, 12);
@@ -1628,7 +1614,7 @@
   function notifyCard(s) {
     var n = s.notify || {};
     var card = h('div', { class: 'sc-card', style: { padding: '4px 16px 14px' } });
-    [['newMatches', 'Neue Aktien erfüllen den Screen'], ['removed', 'Aktien passen nicht mehr'], ['bigChanges', 'Größere Veränderungen', 'z. B. mehr als 10 % der Treffer ändern sich'], ['weekly', 'Wöchentliche Zusammenfassung']].forEach(function (x) {
+    [['newMatches', 'Neue Aktien erfüllen den Screen'], ['removed', 'Aktien erfüllen den Screen nicht mehr'], ['bigChanges', 'Größere Veränderungen', 'z. B. mehr als 10 % der Treffer ändern sich'], ['weekly', 'Wöchentliche Zusammenfassung']].forEach(function (x) {
       card.append(h('label', { class: 'sc-toggle' }, [h('span', {}, [x[1], x[2] ? h('small', { text: x[2] }) : null]), h('input', { type: 'checkbox', class: 'sc-switch', role: 'switch', checked: n[x[0]] ? true : null,
         onchange: function () { var p = {}; p[x[0]] = this.checked; store.setNotify(s.id, p); toast('Einstellung gespeichert'); } })]));
     });
@@ -1705,7 +1691,7 @@
       var n = inScreens(sym).length;
       return n === 0 ? 'in keinem Screen' : n === 1 ? 'in 1 Screen: ' + inScreens(sym)[0].s.name : 'in ' + n + ' Screens';
     }));
-    main.append(h('div', { class: 'sc-gap-s' }, helpLine('„In 1 Screen“: Die Aktie passt heute zu einem deiner gespeicherten Screens. Tippen öffnet die Aktie.')));
+    main.append(h('div', { class: 'sc-gap-s' }, helpLine('„In 1 Screen“: Die Aktie erfüllt heute einen deiner gespeicherten Screens. Tippen öffnet die Aktie.')));
     main.append(h('div', { class: 'sc-resact' }, [h('button', { class: 'vu-btn vu-btn--ink sc-soonbtn', type: 'button', disabled: true, 'aria-label': 'Als Screen filtern – bald' }, ['Als Screen filtern', h('small', { class: 'sc-soon', text: 'bald' })]),
       h('a', { class: 'vu-btn vu-btn--line', href: '/discover/#/watchlist' }, 'Bearbeiten')]));
   }

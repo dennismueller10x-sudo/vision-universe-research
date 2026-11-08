@@ -89,6 +89,13 @@ Ranglisten, Perzentile und Scores werden **ausschliesslich innerhalb eines
 Universums** gerechnet. Ein "Top 3 %" aus einem halb erfundenen Universum
 waere eine Falschaussage.
 
+## 3a. Europa (Stand 08.11.2026)
+
+449 europäische Aktien (319 aus Deutschland) aus `discover/data/europe/` (Erzeuger `scripts/marketstack/europe-discover-publication.mjs`, Tagesschlusskurse unbereinigt, Lücken bleiben offen). Quant, Technical und Supertrader bleiben für Europa gesperrt, bis die Kurse lückenlos sind.
+
+- **Discover:** Suche, Aktienseite (`#/s/EUROPE/<securityId>`) und Watchlist. Seit 08.11. auch ohne Suche erreichbar: Chip „Europa“ hinter „Indizes“ und Startseiten-Slot `kind: "europe"` (`discover/engines/reihen.js#HOME_PLAN`, reine Verweise ohne Datenladen) auf `#/c/EUROPE/de` (Emittentenland DE) und `#/c/EUROPE/all`. Karten zeigen Kürzel · Börse, Kurs in Landeswährung mit Stand und dezent „Kursreihe mit Lücken“ (mehrere Segmente; nie verbunden oder geschätzt). Reihenfolge der Liste: DAX, dann CAC 40/AEX/SMI/FTSE MIB, MDAX, TecDAX, SDAX, dann Katalog (nur Sortierung).
+- **Screener Europa** (`/screener/europa/`): eigene einfache Kursspalten neben dem US-Screener, kein Fachmodell. Daten bei der Veröffentlichung aus den Europa-Reihen (`products/screener/producer/build-europe.mjs`), Regel in `screener/europe-close-metrics.js`. **Regel:** Kursveränderung 1M/3M/6M/1J (21/63/126/252 Börsentage des exakten Handelsplatzes), Abstand zum 52-Wochen-Hoch und zur 50-Tage-Linie stehen nur, wenn mindestens 90 % der Börsentage im Fenster einen veröffentlichten Schluss haben (Kursveränderung zusätzlich am ersten und letzten Tag) und kein Sprung über 40 % zwischen zwei Schlüssen liegt (unbereinigt, möglicher Split); sonst bleibt das Feld leer. Abdeckung 06.11.: 435 Aktien, 1M 433, 3M 427, 6M 152, 1J 147, 52W 149, SMA50 429. Wie Discover blendet die Seite Aktien mit mehr als drei abgeschlossenen Börsentagen Rückstand aus.
+
 ## 4. Datenfluss
 
 ```
@@ -182,13 +189,13 @@ Discover zeigt auf der ersten Ebene keine Scores mehr. Die Trennung:
 
 Die Übersetzung macht `discover/engines/klartext.js` im **Build**; jede
 ausgelieferte Karte trägt ihr `plain`-Objekt, und `verify-discover-data.mjs`
-rechnet jeden Satz nach. Details: `docs/VU_DISCOVER_CONSUMER_LAYER.md`.
+rechnet jeden Satz nach. Details: `docs/archiv/VU_DISCOVER_CONSUMER_LAYER.md`.
 
 Ebene 2 ergänzt `einordnung.js` (vier Einordnungen mit Schwelle, Chancen
 und Risiken) und `unternehmen.js` (Umsatz, Gewinn, Marge, KGV — nur wo
 Daten vorliegen: fünf reale Titel aus SEC-Einreichungen, das
 Modelluniversum vollständig, sonst `null` mit Begründung). Details:
-`docs/VU_DISCOVER_STOCK_EXPERIENCE.md`.
+`docs/archiv/VU_DISCOVER_STOCK_EXPERIENCE.md`.
 
 ## 5. Engines
 
@@ -292,43 +299,43 @@ gerechnet von `buildHome` mit `discover/engines/relevance.js`. Karten tragen
 `priceSeries` (Chart Truth Contract) sowie `was` und `recognitionTier` aus
 `discover/config/company-recognition.json`. Der rebasierte Renditepfad wird
 nicht mehr gezeichnet; ohne Kursreihe steht die Renditeleiter
-(`discover/ui/microchart.js`). Vollständig in `docs/VU_DISCOVER_V3.md`.
+(`discover/ui/microchart.js`). Vollständig in `docs/archiv/VU_DISCOVER_V3.md`.
 
 ## Fachbelege und weiterführende Dokumentation
 
 Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.
 
 - [COMPANY_INTELLIGENCE_DISCOVER_BETA.md](COMPANY_INTELLIGENCE_DISCOVER_BETA.md)
-- [DISCOVER_FRONTEND_REFACTOR_2026-09.md](DISCOVER_FRONTEND_REFACTOR_2026-09.md)
+- [DISCOVER_FRONTEND_REFACTOR_2026-09.md](archiv/DISCOVER_FRONTEND_REFACTOR_2026-09.md)
 - [DISCOVER_IM_BLICK.md](DISCOVER_IM_BLICK.md)
-- [VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md](VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md)
-- [VU_DISCOVER_CONSUMER_LAYER.md](VU_DISCOVER_CONSUMER_LAYER.md)
-- [VU_DISCOVER_EXPERIENCE_REDESIGN.md](VU_DISCOVER_EXPERIENCE_REDESIGN.md)
-- [VU_DISCOVER_FULL_UNIVERSE_LIVE.md](VU_DISCOVER_FULL_UNIVERSE_LIVE.md)
-- [VU_DISCOVER_MARGIN_UNIT_ROOTCAUSE.md](VU_DISCOVER_MARGIN_UNIT_ROOTCAUSE.md)
-- [VU_DISCOVER_NAMESPACE_CLEANUP.md](VU_DISCOVER_NAMESPACE_CLEANUP.md)
-- [VU_DISCOVER_PRICE_COVERAGE.md](VU_DISCOVER_PRICE_COVERAGE.md)
-- [VU_DISCOVER_PRICE_DATA_COMPLETION.md](VU_DISCOVER_PRICE_DATA_COMPLETION.md)
-- [VU_DISCOVER_STOCK_EXPERIENCE.md](VU_DISCOVER_STOCK_EXPERIENCE.md)
-- [VU_DISCOVER_V3.md](VU_DISCOVER_V3.md)
+- [VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md](archiv/VU_DISCOVER_COMPANY_MASTER_INTEGRATION.md)
+- [VU_DISCOVER_CONSUMER_LAYER.md](archiv/VU_DISCOVER_CONSUMER_LAYER.md)
+- [VU_DISCOVER_EXPERIENCE_REDESIGN.md](archiv/VU_DISCOVER_EXPERIENCE_REDESIGN.md)
+- [VU_DISCOVER_FULL_UNIVERSE_LIVE.md](archiv/VU_DISCOVER_FULL_UNIVERSE_LIVE.md)
+- [VU_DISCOVER_MARGIN_UNIT_ROOTCAUSE.md](archiv/VU_DISCOVER_MARGIN_UNIT_ROOTCAUSE.md)
+- [VU_DISCOVER_NAMESPACE_CLEANUP.md](archiv/VU_DISCOVER_NAMESPACE_CLEANUP.md)
+- [VU_DISCOVER_PRICE_COVERAGE.md](archiv/VU_DISCOVER_PRICE_COVERAGE.md)
+- [VU_DISCOVER_PRICE_DATA_COMPLETION.md](archiv/VU_DISCOVER_PRICE_DATA_COMPLETION.md)
+- [VU_DISCOVER_STOCK_EXPERIENCE.md](archiv/VU_DISCOVER_STOCK_EXPERIENCE.md)
+- [VU_DISCOVER_V3.md](archiv/VU_DISCOVER_V3.md)
 - [VU_DISCOVER_V3_COLLECTION_AUDIT.md](VU_DISCOVER_V3_COLLECTION_AUDIT.md)
 - [VU_DISCOVER_V3_NETFLIX_BUILD.md](VU_DISCOVER_V3_NETFLIX_BUILD.md)
-- [VU_DISCOVER_V4_1_CONSUMER_MASTER.md](VU_DISCOVER_V4_1_CONSUMER_MASTER.md)
-- [VU_DISCOVER_V4_CONSUMER_EXPERIENCE.md](VU_DISCOVER_V4_CONSUMER_EXPERIENCE.md)
-- [VU_DISCOVER_VISUAL_IDENTITY.md](VU_DISCOVER_VISUAL_IDENTITY.md)
-- [discover-v2/audit-visual-generation.md](discover-v2/audit-visual-generation.md)
-- [discover-v2/orchestrator.md](discover-v2/orchestrator.md)
-- [discover-v2/premium-contract-audit.md](discover-v2/premium-contract-audit.md)
-- [discover-v2/premium-design-qa.md](discover-v2/premium-design-qa.md)
-- [discover-v2/premium-orchestration.md](discover-v2/premium-orchestration.md)
-- [discover-v2/visual-generation.md](discover-v2/visual-generation.md)
-- [discover20/IDENTITY_RECLASSIFICATION.md](discover20/IDENTITY_RECLASSIFICATION.md)
-- [discover20/INTEGRATION_REPORT.md](discover20/INTEGRATION_REPORT.md)
-- [discover20/PRODUCT_INTEGRATION.md](discover20/PRODUCT_INTEGRATION.md)
-- [discover20/PUBLIC_DISPLAY_RELEASE.md](discover20/PUBLIC_DISPLAY_RELEASE.md)
-- [europe-discover20/ESEF_FOLLOW_UP.md](europe-discover20/ESEF_FOLLOW_UP.md)
-- [europe-discover20/SCREENER_LOGOS.md](europe-discover20/SCREENER_LOGOS.md)
-- [europe-discover20/close-chart-quality.md](europe-discover20/close-chart-quality.md)
+- [VU_DISCOVER_V4_1_CONSUMER_MASTER.md](archiv/VU_DISCOVER_V4_1_CONSUMER_MASTER.md)
+- [VU_DISCOVER_V4_CONSUMER_EXPERIENCE.md](archiv/VU_DISCOVER_V4_CONSUMER_EXPERIENCE.md)
+- [VU_DISCOVER_VISUAL_IDENTITY.md](archiv/VU_DISCOVER_VISUAL_IDENTITY.md)
+- [discover-v2/audit-visual-generation.md](archiv/discover-v2/audit-visual-generation.md)
+- [discover-v2/orchestrator.md](archiv/discover-v2/orchestrator.md)
+- [discover-v2/premium-contract-audit.md](archiv/discover-v2/premium-contract-audit.md)
+- [discover-v2/premium-design-qa.md](archiv/discover-v2/premium-design-qa.md)
+- [discover-v2/premium-orchestration.md](archiv/discover-v2/premium-orchestration.md)
+- [discover-v2/visual-generation.md](archiv/discover-v2/visual-generation.md)
+- [discover20/IDENTITY_RECLASSIFICATION.md](archiv/discover20/IDENTITY_RECLASSIFICATION.md)
+- [discover20/INTEGRATION_REPORT.md](archiv/discover20/INTEGRATION_REPORT.md)
+- [discover20/PRODUCT_INTEGRATION.md](archiv/discover20/PRODUCT_INTEGRATION.md)
+- [discover20/PUBLIC_DISPLAY_RELEASE.md](archiv/discover20/PUBLIC_DISPLAY_RELEASE.md)
+- [europe-discover20/ESEF_FOLLOW_UP.md](archiv/europe-discover20/ESEF_FOLLOW_UP.md)
+- [europe-discover20/SCREENER_LOGOS.md](archiv/europe-discover20/SCREENER_LOGOS.md)
+- [europe-discover20/close-chart-quality.md](archiv/europe-discover20/close-chart-quality.md)
 
 ### Historische Arbeitsstände
 

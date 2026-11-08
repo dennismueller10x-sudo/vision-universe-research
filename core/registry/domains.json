@@ -106,7 +106,7 @@
       "records": "counts.weekly",
       "role": "Chartbild, Kursstruktur und Elliott (experimentell) fuer Wochen- und Tagestitel, gebaut aus den Langreihen und den Golden-Tagesreihen.",
       "producer": "scripts/technical/build-technical-intelligence.mjs",
-      "workflow": "technical-intelligence-build.yml",
+      "workflow": "pipeline-daily.yml",
       "schedule": "nach jedem Lauf der Langreihen (workflow_run, nur main) und taeglich 05:35 UTC (GitHub startet den Zeitplan oft 5-6 h spaet); ein Neubau dauert 70-100 Minuten",
       "freshness": { "kind": "follows", "artifact": "/quant/data/market/discover-series-long/index.json", "timestamp": ["generatedAt"], "warnAfterHours": 4, "staleAfterHours": 26 },
       "consumers": ["Chartbild (/elliott/)", "Quant (Technik)", "Elliott-Registry (Identitaetspruefung)"]
@@ -139,7 +139,7 @@
       "records": "entryCount",
       "role": "Tagesverlauf (Tiingo IEX, 5 Minuten) fuer den Discover-Umfang waehrend der Sitzung, Universum nach Schluss. previousClose aus discover-series.",
       "producer": "scripts/market/ingest-intraday.mjs (run-pacemaker.mjs)",
-      "workflow": "intraday-pacemaker.yml, intraday-snapshots.yml, intraday-delivery-watchdog.yml",
+      "workflow": "intraday-pacemaker.yml, intraday-snapshots.yml, pipeline-intraday.yml",
       "schedule": "Mo-Fr stuendlich 13-20 UTC (Takt 5 min), 21:35 UTC Universum",
       "freshness": { "kind": "intraday", "openStaleMinutes": 30, "closedRequireComplete": true },
       "consumers": ["Discover (Detail, Mikrochart)", "Markets (Pulse)", "Supertrader (Live-Kurs)", "api/intraday.js"]
@@ -208,7 +208,7 @@
       "records": "indexes",
       "role": "S&P 500, NASDAQ-100, Dow Jones laut Bestand der abbildenden Fonds; Zuordnung zum Company Master.",
       "producer": "scripts/market/build-index-membership.mjs",
-      "workflow": "index-membership.yml",
+      "workflow": "pipeline-weekly.yml (Teil index)",
       "schedule": "Sa 07:20 UTC",
       "freshness": { "kind": "hours", "warnAfter": 192, "staleAfter": 384 },
       "consumers": ["Discover (Index-Badges, Reihen)", "Screener"]
@@ -225,7 +225,7 @@
       "expectedRecords": "coverage.productUniverse",
       "role": "Anzeigenamen mit Quelle und Datum (Tiingo-Stammdaten, SEC, kuratiert).",
       "producer": "scripts/market/build-company-names.mjs",
-      "workflow": "company-names.yml + security-master-weekly.yml + security-master-eligibility.yml (offline nach neuer Eignung)",
+      "workflow": "pipeline-weekly.yml (Teil namen) + security-master-weekly.yml + security-master-eligibility.yml (offline nach neuer Eignung)",
       "schedule": "manuell",
       "freshness": { "kind": "hours", "warnAfter": 720, "staleAfter": 2160 },
       "consumers": ["Discover", "Supertrader", "Screener"]
@@ -257,7 +257,7 @@
       "records": "depots",
       "role": "Fünf Quant-Profile als Rechenmodell vorwärts: Bestand mit Aufnahmedatum und -kurs, Protokoll rein/raus ab Live-Start. Kein echtes Geld, keine Empfehlung.",
       "producer": "scripts/quant/portfolio/model-depots.cjs",
-      "workflow": "quant-model-depots.yml",
+      "workflow": "pipeline-weekly.yml (Teil musterdepots)",
       "schedule": "samstags 07:23 UTC; Umschichtung im ersten Lauf eines Monats",
       "freshness": { "kind": "hours", "warnAfter": 240, "staleAfter": 504 },
       "consumers": ["Quant (/quant/musterdepots/)"]
@@ -290,7 +290,7 @@
       "records": "counts.rows",
       "role": "Screener-Datensatz der Produktwelt Technical: Indikatorzustaende, Formationen (Erkannt/Bestaetigt/Invalidiert), Woche/Monat, relative Staerke; dazu technical/data/stock/<shardKey>.json, der Technical-Stand je Aktie in Kurzform fuer andere Welten (Supertrader-Aktienseite).",
       "producer": "scripts/technical/world/build-screener.mjs",
-      "workflow": "technical-world.yml",
+      "workflow": "pipeline-daily.yml",
       "schedule": "nach der Produkt-Materialisierung und den langen Reihen",
       "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 120 },
       "consumers": ["Technical (/technical/)", "Aktien-Navigator (Verfuegbarkeit)"]
@@ -427,7 +427,7 @@
       "records": "items",
       "minRecords": 3,
       "role": "Primaerquellen-Meldungen, redaktionell neu formuliert.",
-      "producer": "scripts/dashboard/update_news.mjs",
+      "producer": "products/news/producer/update_news.mjs",
       "workflow": "content.yml",
       "schedule": "taeglich 05:17, 11:17, 17:17 UTC",
       "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 168 },
@@ -443,7 +443,7 @@
       "timestamp": ["generated_at_utc"],
       "records": "symbols",
       "role": "Analystenurteile (Finnhub, FMP) fuer das Dashboard-Universum.",
-      "producer": "scripts/dashboard/fetch_analyst_ratings.py",
+      "producer": "products/analysten/producer/fetch_analyst_ratings.py",
       "workflow": "content.yml",
       "schedule": "So 08:00 UTC",
       "freshness": { "kind": "hours", "warnAfter": 192, "staleAfter": 384 },
@@ -459,7 +459,7 @@
       "timestamp": ["generatedAt"],
       "records": "shards",
       "role": "Einstufungs-Konsens (Finnhub, frei) fuer das Produktuniversum, Kursziele nur aus der freien FMP-Liste; Abdeckung je Titel. Shards nach core/identity.js#shardKey.",
-      "producer": "scripts/analysts/fetch-consensus.mjs",
+      "producer": "products/analysten/producer/fetch-consensus.mjs",
       "workflow": "content.yml",
       "schedule": "05:41, 13:41, 21:41 UTC, je ~2200 Titel rotierend (ganzes Universum taeglich, Finnhub Free 55/min)",
       "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 192 },
@@ -513,6 +513,34 @@
       ]
     },
     {
+      "id": "europeEsefFacts",
+      "activation": {"state": "ACTIVATING", "decision": "Strang M5 (08.11.2026): freigegeben durch Steuerung im Rahmen der Owner-Freigabe Strang M; erster Lauf research.yml Teil europa-esef nach dem Merge."},
+      "label": "Europe ESEF consolidated facts (DE)",
+      "layer": "CORE",
+      "group": "Securities",
+      "critical": false,
+      "artifact": "/discover/data/europe-esef/facts.json",
+      "timestamp": [
+        "generatedAt"
+      ],
+      "records": "counts.plausible",
+      "role": "Drei Konzern-Kennzahlen deutscher Emittenten aus ihren ESEF-Jahresfinanzberichten (Website des Emittenten); nur Kennzahlen, Pakete bleiben im Lauf.",
+      "producer": "scripts/official-filings/de-esef-facts.mjs",
+      "workflow": "research.yml",
+      "schedule": "manuell (research.yml, Teil europa-esef), jährlich nach den Jahresfinanzberichten",
+      "freshness": {
+        "kind": "none"
+      },
+      "consumers": [
+        "Discover Europe (Aktienseite, Fundamentale Basisinformationen)"
+      ],
+      "knownGaps": [
+        "Zuerst DAX; Quellenliste von Hand gepflegt (scripts/official-filings/de-esef-sources.json).",
+        "Banken und Versicherer ohne Umsatz.",
+        "Keine Quant-Eingabe."
+      ]
+    },
+    {
       "id": "globalDiscoverUniverse",
       "label": "Global Discover Universe",
       "layer": "CORE",
@@ -552,7 +580,7 @@
       "records": "stats.issuers",
       "role": "SIC je Emittent (CIK) zum Einreichungszeitpunkt mit knownAt, aus FSDS sub.txt und Filing-Headern; keine heutige SIC rueckdatiert. Abfrage: core/industry-classification.js.",
       "producer": "scripts/quant/cli.py sic-history",
-      "workflow": "sec-sic-history.yml",
+      "workflow": "pipeline-weekly.yml (Teil sic-historie)",
       "schedule": "manuell (kein Zeitplan bis zur Owner-Entscheidung)",
       "freshness": {
         "kind": "none"
