@@ -1,0 +1,426 @@
+{
+ "schema": "vu-schedule-1",
+ "purpose": "Einziges Zeitplan-Register (Plan Neustart §3: ein Zeitgeber). timer github = Cron steht noch im Workflow; timer waker = der Cloudflare-Wecker (worker-waker/src/zeitplan.mjs) liest diese Datei jede Minute von main und stoesst den Workflow per workflow_dispatch mit inputs.zeitplan=<cron> an. Umstellung je Eintrag: Cron aus dem Workflow und timer waker im selben Commit (kein Doppelstart). Vertragstest core/tests/schedule-registry.test.mjs.",
+ "cronSemantik": "wie GitHub: UTC, POSIX; sind Tag des Monats und Wochentag beide eingeschraenkt, genuegt eines",
+ "nachholenMinuten": [
+  0,
+  5,
+  10,
+  15
+ ],
+ "entries": [
+  {
+   "id": "account-backup",
+   "workflow": "account-backup.yml",
+   "cron": "17 2 * * *",
+   "timer": "github"
+  },
+  {
+   "id": "account-monitor",
+   "workflow": "account-monitor.yml",
+   "cron": "17 * * * *",
+   "timer": "github"
+  },
+  {
+   "id": "account-production-checks",
+   "workflow": "account-production-checks.yml",
+   "cron": "41 5 * * *",
+   "timer": "github"
+  },
+  {
+   "id": "company-intelligence-health",
+   "workflow": "company-intelligence-health.yml",
+   "cron": "57 */4 * * *",
+   "timer": "github",
+   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+  },
+  {
+   "id": "company-intelligence-profile-source",
+   "workflow": "company-intelligence-profile-source.yml",
+   "cron": "47 3 * * *",
+   "timer": "github",
+   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+  },
+  {
+   "id": "company-intelligence-refreeze-auto",
+   "workflow": "company-intelligence-refreeze-auto.yml",
+   "cron": "23 5 */2 * *",
+   "timer": "github",
+   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+  },
+  {
+   "id": "company-intelligence-refresh-watchdog",
+   "workflow": "company-intelligence-refresh-watchdog.yml",
+   "cron": "47 2-22/4 * * *",
+   "timer": "github",
+   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+  },
+  {
+   "id": "company-intelligence-refresh",
+   "workflow": "company-intelligence-refresh.yml",
+   "cron": "17 */4 * * *",
+   "timer": "github",
+   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+  },
+  {
+   "id": "company-logos",
+   "workflow": "company-logos.yml",
+   "cron": "17 4 * * 1",
+   "timer": "github"
+  },
+  {
+   "id": "company-logos-2",
+   "workflow": "company-logos.yml",
+   "cron": "47 3 * * 2-6",
+   "timer": "github"
+  },
+  {
+   "id": "content-news",
+   "workflow": "content.yml",
+   "cron": "17 5,11,17 * * *",
+   "timer": "github",
+   "note": "news"
+  },
+  {
+   "id": "content-ratings",
+   "workflow": "content.yml",
+   "cron": "0 8 * * 0",
+   "timer": "github",
+   "note": "ratings"
+  },
+  {
+   "id": "content-analysten",
+   "workflow": "content.yml",
+   "cron": "41 5,13,21 * * *",
+   "timer": "github",
+   "note": "analysten (Konsens, Produktuniversum, rotierend: 3 x ~2200 Titel = ganzes Universum je Tag)"
+  },
+  {
+   "id": "content-hedgefonds",
+   "workflow": "content.yml",
+   "cron": "17 6 * * 1",
+   "timer": "github",
+   "note": "hedgefonds"
+  },
+  {
+   "id": "content-hedgefonds-2",
+   "workflow": "content.yml",
+   "cron": "17 7 10-20 2,5,8,11 *",
+   "timer": "github",
+   "note": "hedgefonds (13F-Fristen)"
+  },
+  {
+   "id": "core-ci",
+   "workflow": "core-ci.yml",
+   "cron": "47 7 * * *",
+   "timer": "github"
+  },
+  {
+   "id": "coverage-metrics",
+   "workflow": "coverage-metrics.yml",
+   "cron": "0 6 * * 0",
+   "timer": "github"
+  },
+  {
+   "id": "currency-realtime-proof",
+   "workflow": "currency-realtime-proof.yml",
+   "cron": "0 15 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "currency-realtime-proof-2",
+   "workflow": "currency-realtime-proof.yml",
+   "cron": "0 18 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "discover-im-blick-live",
+   "workflow": "discover-im-blick-live.yml",
+   "cron": "27 15-21 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "europe-discover-refresh",
+   "workflow": "europe-discover-refresh.yml",
+   "cron": "47 17 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "freshness-monitor",
+   "workflow": "freshness-monitor.yml",
+   "cron": "30 6 * * 2-6",
+   "timer": "github"
+  },
+  {
+   "id": "freshness-monitor-2",
+   "workflow": "freshness-monitor.yml",
+   "cron": "5 14 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "freshness-monitor-3",
+   "workflow": "freshness-monitor.yml",
+   "cron": "15 15 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "freshness-monitor-4",
+   "workflow": "freshness-monitor.yml",
+   "cron": "15 23 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "freshness-monitor-5",
+   "workflow": "freshness-monitor.yml",
+   "cron": "45 16-19 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "freshness-monitor-6",
+   "workflow": "freshness-monitor.yml",
+   "cron": "55 22 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "index-membership",
+   "workflow": "index-membership.yml",
+   "cron": "20 7 * * 6",
+   "timer": "github"
+  },
+  {
+   "id": "intraday-delivery-watchdog",
+   "workflow": "intraday-delivery-watchdog.yml",
+   "cron": "*/15 13-21 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "intraday-pacemaker",
+   "workflow": "intraday-pacemaker.yml",
+   "cron": "2 13-20 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "intraday-snapshots",
+   "workflow": "intraday-snapshots.yml",
+   "cron": "35 21 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "long-series",
+   "workflow": "long-series.yml",
+   "cron": "40 7 1-7 * 6",
+   "timer": "github"
+  },
+  {
+   "id": "long-series-2",
+   "workflow": "long-series.yml",
+   "cron": "20 4 * * 2-6",
+   "timer": "github"
+  },
+  {
+   "id": "market-data-refresh",
+   "workflow": "market-data-refresh.yml",
+   "cron": "30 22 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "monitor",
+   "workflow": "monitor.yml",
+   "cron": "43 13 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "monitor-2",
+   "workflow": "monitor.yml",
+   "cron": "40 14 * * *",
+   "timer": "github"
+  },
+  {
+   "id": "monitor-3",
+   "workflow": "monitor.yml",
+   "cron": "50 19 * * *",
+   "timer": "github"
+  },
+  {
+   "id": "multi-asset-data",
+   "workflow": "multi-asset-data.yml",
+   "cron": "20 */3 * * *",
+   "timer": "github"
+  },
+  {
+   "id": "ownership-signals",
+   "workflow": "ownership-signals.yml",
+   "cron": "23 5 * * 2",
+   "timer": "github"
+  },
+  {
+   "id": "pages-release",
+   "workflow": "pages-release.yml",
+   "cron": "*/5 13-21 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "pipeline-daily-ezb",
+   "workflow": "pipeline-daily.yml",
+   "cron": "47 15 * * 1-5",
+   "timer": "github",
+   "note": "ezb"
+  },
+  {
+   "id": "pipeline-daily-vorsorge",
+   "workflow": "pipeline-daily.yml",
+   "cron": "23 3 * * 2-6",
+   "timer": "github",
+   "note": "vorsorge"
+  },
+  {
+   "id": "pipeline-daily-hausstrategie",
+   "workflow": "pipeline-daily.yml",
+   "cron": "30 1 * * 2-6",
+   "timer": "github",
+   "note": "hausstrategie"
+  },
+  {
+   "id": "pipeline-daily-hausstrategie-2",
+   "workflow": "pipeline-daily.yml",
+   "cron": "15 3 25 * *",
+   "timer": "github",
+   "note": "hausstrategie (SEC-Auffrischung am 25.)"
+  },
+  {
+   "id": "pipeline-daily-marktvalidierung",
+   "workflow": "pipeline-daily.yml",
+   "cron": "37 6 16 * *",
+   "timer": "github",
+   "note": "marktvalidierung"
+  },
+  {
+   "id": "pipeline-daily-datenqualitaet",
+   "workflow": "pipeline-daily.yml",
+   "cron": "13 7 * * 2-6",
+   "timer": "github",
+   "note": "datenqualitaet"
+  },
+  {
+   "id": "quant-model-depots",
+   "workflow": "quant-model-depots.yml",
+   "cron": "23 7 * * 6",
+   "timer": "github"
+  },
+  {
+   "id": "research-edge2-paper",
+   "workflow": "research-edge2-paper.yml",
+   "cron": "47 8 * * 6",
+   "timer": "github"
+  },
+  {
+   "id": "research",
+   "workflow": "research.yml",
+   "cron": "23 9 * * 6",
+   "timer": "github"
+  },
+  {
+   "id": "research-2",
+   "workflow": "research.yml",
+   "cron": "47 7 * * 0",
+   "timer": "github"
+  },
+  {
+   "id": "research-3",
+   "workflow": "research.yml",
+   "cron": "17 6 * * 1",
+   "timer": "github"
+  },
+  {
+   "id": "research-4",
+   "workflow": "research.yml",
+   "cron": "41 5 * * 3",
+   "timer": "github"
+  },
+  {
+   "id": "sec-consumer-fundamentals",
+   "workflow": "sec-consumer-fundamentals.yml",
+   "cron": "30 7 * * 1",
+   "timer": "github"
+  },
+  {
+   "id": "sec-fundamentals-daily",
+   "workflow": "sec-fundamentals-daily.yml",
+   "cron": "15 6 * * *",
+   "timer": "github"
+  },
+  {
+   "id": "security-master-weekly",
+   "workflow": "security-master-weekly.yml",
+   "cron": "41 9 * * 3",
+   "timer": "github"
+  },
+  {
+   "id": "social-orchestrator",
+   "workflow": "social-orchestrator.yml",
+   "cron": "35 6 * * *",
+   "timer": "github"
+  },
+  {
+   "id": "social-orchestrator-2",
+   "workflow": "social-orchestrator.yml",
+   "cron": "35 16 * * *",
+   "timer": "github"
+  },
+  {
+   "id": "supertrader-paper-2027",
+   "workflow": "supertrader-paper-2027.yml",
+   "cron": "37 2 * * 2-6",
+   "timer": "github"
+  },
+  {
+   "id": "supertrader-paper-2027-2",
+   "workflow": "supertrader-paper-2027.yml",
+   "cron": "41 9 * * 2-6",
+   "timer": "github"
+  },
+  {
+   "id": "supertrader-sf8-candidates",
+   "workflow": "supertrader-sf8-candidates.yml",
+   "cron": "43 11 * * 2-6",
+   "timer": "github"
+  },
+  {
+   "id": "supertrader-signals",
+   "workflow": "supertrader-signals.yml",
+   "cron": "17 6 * * 2-6",
+   "timer": "github"
+  },
+  {
+   "id": "technical-intelligence-build",
+   "workflow": "technical-intelligence-build.yml",
+   "cron": "35 5 * * *",
+   "timer": "github"
+  },
+  {
+   "id": "technical-world",
+   "workflow": "technical-world.yml",
+   "cron": "10 5 * * 2-6",
+   "timer": "github"
+  },
+  {
+   "id": "tiingo2-universe-refresh",
+   "workflow": "tiingo2-universe-refresh.yml",
+   "cron": "20 8 * * 1-5",
+   "timer": "github"
+  },
+  {
+   "id": "update-sec-fundamentals",
+   "workflow": "update-sec-fundamentals.yml",
+   "cron": "0 6 * * 1",
+   "timer": "github"
+  },
+  {
+   "id": "pipeline-daily-ki-depots",
+   "workflow": "pipeline-daily.yml",
+   "cron": "41 23 * * 1-5",
+   "timer": "github",
+   "note": "ki-depots"
+  }
+ ]
+}

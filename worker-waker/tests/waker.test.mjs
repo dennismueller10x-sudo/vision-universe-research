@@ -252,7 +252,9 @@ test("WK-9 der Cron des Weckers und der Takt des Taktgebers passen zusammen", ()
   const toml = readFileSync(join(root, "worker-waker", "wrangler.toml"), "utf8");
   const m = /crons\s*=\s*\[\s*"([^"]+)"/.exec(toml);
   assert.ok(m, "kein Cron gefunden");
-  assert.match(m[1], /^\*\/5 /, "der Wecker muss mindestens so oft nachsehen wie der Zieltakt");
+  assert.equal(m[1], "* * * * *", "ein Zeitgeber fuer alle Zeitplaene: jede Minute (Plan Neustart §3)");
+  const src = readFileSync(join(root, "worker-waker", "src", "index.mjs"), "utf8");
+  assert.match(src, /INTRADAY_CRON = "\*\/5 13-21 \* \* 1-5"/, "der Intraday-Takt behaelt sein Fenster");
 });
 
 /* --- Die GitHub App ------------------------------------------------------ */
