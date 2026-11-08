@@ -53,7 +53,7 @@ Wiederholen: Actions → Workflow → „Run workflow“ auf `main`. Für einen 
 ## 4. Intraday steht
 
 - `intraday/index.json`: `dataSession.asOf` und `regularComplete`.
-- Läuft `intraday-pacemaker.yml`? Schlägt der Wächter (`intraday-delivery-watchdog.yml`) an?
+- Läuft `intraday-pacemaker.yml`? Schlägt der Wächter (`pipeline-intraday.yml`, Teil `waechter`) an?
 - Nach Börsenschluss holt der Lauf um 21:35 UTC (`intraday-snapshots.yml`) den Schluss und das Universum.
 - Ist er gescheitert, holt ein manueller Lauf mit `scope=auto` nach. Das Siegel funktioniert seit 03.10. auch mit Bindestrich-Tickern.
 

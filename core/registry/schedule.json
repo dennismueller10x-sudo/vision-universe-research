@@ -104,18 +104,6 @@
    "timer": "github"
   },
   {
-   "id": "currency-realtime-proof",
-   "workflow": "currency-realtime-proof.yml",
-   "cron": "0 15 * * 1-5",
-   "timer": "github"
-  },
-  {
-   "id": "currency-realtime-proof-2",
-   "workflow": "currency-realtime-proof.yml",
-   "cron": "0 18 * * 1-5",
-   "timer": "github"
-  },
-  {
    "id": "discover-im-blick-live",
    "workflow": "discover-im-blick-live.yml",
    "cron": "27 15-21 * * 1-5",
@@ -161,12 +149,6 @@
    "id": "freshness-monitor-6",
    "workflow": "freshness-monitor.yml",
    "cron": "55 22 * * 1-5",
-   "timer": "github"
-  },
-  {
-   "id": "intraday-delivery-watchdog",
-   "workflow": "intraday-delivery-watchdog.yml",
-   "cron": "*/15 13-21 * * 1-5",
    "timer": "github"
   },
   {
@@ -428,6 +410,27 @@
    "cron": "0 6 * * 1",
    "timer": "github",
    "note": "sec-fundamentals"
+  },
+  {
+   "id": "pipeline-intraday-realtime-eur",
+   "workflow": "pipeline-intraday.yml",
+   "cron": "0 15 * * 1-5",
+   "timer": "github",
+   "note": "realtime-eur"
+  },
+  {
+   "id": "pipeline-intraday-realtime-eur-2",
+   "workflow": "pipeline-intraday.yml",
+   "cron": "0 18 * * 1-5",
+   "timer": "github",
+   "note": "realtime-eur"
+  },
+  {
+   "id": "pipeline-intraday-waechter",
+   "workflow": "pipeline-intraday.yml",
+   "cron": "*/15 13-21 * * 1-5",
+   "timer": "github",
+   "note": "waechter"
   }
  ]
 }
