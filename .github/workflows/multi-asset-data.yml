@@ -26,9 +26,15 @@ name: Multi-Asset Data Core — Faehigkeiten und Daten
 #
 # Ohne Marker laeuft nur der Vertrag (Tests, keine Anbieterabrufe).
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       run_probe:
         description: 'Faehigkeiten messen (~120 Tiingo-Anfragen)'
         type: boolean
@@ -95,8 +101,7 @@ on:
   # und Frankfurt - ein Takt, der beides abdeckt, ohne Kontingent zu
   # verbrennen (~20 Tiingo-Anfragen, ~10 offizielle Abrufe je Lauf).
   # Die Frische-Schwelle fuer Krypto (6 h) ist auf diesen Takt abgestimmt.
-  schedule:
-    - cron: '20 */3 * * *'
+  # Takt 20 */3 * * *: core/registry/schedule.json (Cloudflare-Wecker, RUNBOOK §10).
 
 permissions:
   contents: write
@@ -133,7 +138,7 @@ jobs:
         id: read
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-          EVENT_NAME: ${{ github.event_name }}
+          EVENT_NAME: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
           IN_PROBE: ${{ inputs.run_probe }}
           IN_INGEST: ${{ inputs.run_ingest }}
           IN_INDEX: ${{ inputs.run_index_probe }}
@@ -431,7 +436,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [contract]
-    if: github.event_name == 'workflow_dispatch' && inputs.proof_site != ''
+    if: (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.proof_site != ''
     steps:
       - uses: actions/checkout@v4
         with:
