@@ -63,7 +63,7 @@
     [['alle', 'Alle'], ['kursbewegung', 'Kursbewegung'], ['unternehmen', 'Unternehmen'], ['themen', 'Themen'], ['indizes', 'Indizes']].forEach(function (x, i) {
       chips.appendChild(el('button', { type: 'button', class: 'vu-chip', 'data-genre': x[0], 'aria-pressed': i ? 'false' : 'true', text: x[1] }));
     });
-    var all = el('a', { class: 'vu-chip dr-genres__all', href: '#/reihen', 'aria-label': 'Alle Reihen' }, [grid()]); all.hidden = true; chips.appendChild(all);
+    chips.appendChild(el('a', { class: 'vu-chip dr-genres__all', href: '#/reihen', 'aria-label': 'Alle Reihen' }, [grid()]));
     var h1 = el('h1', { class: 'vu-lt' }); h1.append(el('span', { class: 'dr-l', text: 'Was bewegt ' }), el('span', { class: 'dr-l', text: 'die Börse heute?' }));
     var lead = el('p', { class: 'vu-lead dr-genre-lead' }); lead.hidden = true;
     intro.append(el('p', { class: 'vu-ltag dv3-asof', text: 'Discover' }), h1, lead, search, chips);

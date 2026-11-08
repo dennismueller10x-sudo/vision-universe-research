@@ -239,7 +239,11 @@
       "world": "momentum",
       "microRange": "1M",
       "qualify": true,
-      "rule": "Ereigniswert (im-blick.js): 70 % Ereignisse des letzten Handelstags, 30 % Fuehrerschaft 12 Monate; nur qualifizierte Unternehmen (keine Fonds, SPACs, Trusts). Qualifikation zuerst (V4 §21)."
+      "rule": "Ereigniswert (im-blick.js): 70 % Ereignisse des letzten Handelstags, 30 % Fuehrerschaft 12 Monate; nur qualifizierte Unternehmen (keine Fonds, SPACs, Trusts). Qualifikation zuerst (V4 §21).",
+      "explain": [
+        "Am letzten Handelstag ist etwas Belegbares passiert: neues Jahreshoch, Ausbruch mit Volumen oder ein großer Schritt im Trend.",
+        "Gezählt werden zu 70 % die Ereignisse des Tages und zu 30 % die Stärke über 12 Monate."
+      ]
     },
     {
       "id": "new-52-week-highs",
@@ -257,7 +261,11 @@
       "world": "highs",
       "microRange": "1J",
       "qualify": true,
-      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+      "explain": [
+        "Der Schlusskurs liegt auf oder sehr nah an dem höchsten Stand der letzten 52 Wochen.",
+        "Nur gehandelte Aktien mit vollständiger Kurshistorie."
+      ]
     },
     {
       "id": "market-leaders",
@@ -272,7 +280,11 @@
       "world": "leadership",
       "microRange": "6M",
       "filter": "strongest",
-      "rule": "Qualifikation zuerst, Rang danach. Qualifiziert ist ein Titel, wenn (1) die Kursstaerke aus mindestens 80 % der Komponenten gerechnet werden konnte, (2) mindestens 250 Handelstage Kurshistorie vorliegen, (3) der Kurs ueber 5 $ liegt und (4) im Schnitt der letzten 20 Handelstage mindestens 5 Mio. $ am Tag gehandelt wurden. Unter den Qualifizierten entscheidet der Leadership-Score (Abstand zum Jahreshoch, Rendite ueber 3/6/12 Monate, relative Staerke zum Markt, Trendqualitaet, Volumen, Drawdown). Kein Blick in die Zukunft: alle Fenster enden am letzten Handelstag."
+      "rule": "Qualifikation zuerst, Rang danach. Qualifiziert ist ein Titel, wenn (1) die Kursstaerke aus mindestens 80 % der Komponenten gerechnet werden konnte, (2) mindestens 250 Handelstage Kurshistorie vorliegen, (3) der Kurs ueber 5 $ liegt und (4) im Schnitt der letzten 20 Handelstage mindestens 5 Mio. $ am Tag gehandelt wurden. Unter den Qualifizierten entscheidet der Leadership-Score (Abstand zum Jahreshoch, Rendite ueber 3/6/12 Monate, relative Staerke zum Markt, Trendqualitaet, Volumen, Drawdown). Kein Blick in die Zukunft: alle Fenster enden am letzten Handelstag.",
+      "explain": [
+        "Der Kurs lief über 3, 6 und 12 Monate besser als der Rest des Marktes, nah am Jahreshoch und im stabilen Trend.",
+        "Nur liquide Aktien über 5 $ mit mindestens einem Jahr Kurshistorie."
+      ]
     },
     {
       "id": "sp500-staerkste",
@@ -288,7 +300,11 @@
       ],
       "world": "leadership",
       "microRange": "6M",
-      "rule": "Mitglied laut veroeffentlichtem Tagesbestand des abbildenden Fonds (quant/data/market/index-membership, Stichtag in der Reihe), qualifiziert nach denselben Regeln wie DIE STAERKSTEN AKTIEN, sortiert nach Leadership-Score."
+      "rule": "Mitglied laut veroeffentlichtem Tagesbestand des abbildenden Fonds (quant/data/market/index-membership, Stichtag in der Reihe), qualifiziert nach denselben Regeln wie DIE STAERKSTEN AKTIEN, sortiert nach Leadership-Score.",
+      "explain": [
+        "Die Aktie steht im S&P 500 (laut Bestand des Indexfonds).",
+        "Reihenfolge nach Kursstärke wie bei „Die stärksten Aktien“."
+      ]
     },
     {
       "id": "ndx-staerkste",
@@ -304,7 +320,11 @@
       ],
       "world": "momentum",
       "microRange": "6M",
-      "rule": "Mitglied laut veroeffentlichtem Tagesbestand des abbildenden Fonds (quant/data/market/index-membership, Stichtag in der Reihe), qualifiziert nach denselben Regeln wie DIE STAERKSTEN AKTIEN, sortiert nach Leadership-Score."
+      "rule": "Mitglied laut veroeffentlichtem Tagesbestand des abbildenden Fonds (quant/data/market/index-membership, Stichtag in der Reihe), qualifiziert nach denselben Regeln wie DIE STAERKSTEN AKTIEN, sortiert nach Leadership-Score.",
+      "explain": [
+        "Die Aktie steht im Nasdaq-100 (laut Bestand des Indexfonds).",
+        "Reihenfolge nach Kursstärke wie bei „Die stärksten Aktien“."
+      ]
     },
     {
       "id": "djia-staerkste",
@@ -320,7 +340,11 @@
       ],
       "world": "compounder",
       "microRange": "6M",
-      "rule": "Mitglied laut veroeffentlichtem Tagesbestand des abbildenden Fonds (quant/data/market/index-membership, Stichtag in der Reihe), qualifiziert nach denselben Regeln wie DIE STAERKSTEN AKTIEN, sortiert nach Leadership-Score."
+      "rule": "Mitglied laut veroeffentlichtem Tagesbestand des abbildenden Fonds (quant/data/market/index-membership, Stichtag in der Reihe), qualifiziert nach denselben Regeln wie DIE STAERKSTEN AKTIEN, sortiert nach Leadership-Score.",
+      "explain": [
+        "Die Aktie steht im Dow Jones (laut Bestand des Indexfonds).",
+        "Reihenfolge nach Kursstärke wie bei „Die stärksten Aktien“."
+      ]
     },
     {
       "id": "momentum-leaders",
@@ -335,7 +359,11 @@
       "world": "momentum",
       "microRange": "6M",
       "qualify": true,
-      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+      "explain": [
+        "Der Kurs steigt seit Monaten und hat zuletzt eher an Tempo gewonnen.",
+        "Nur gehandelte Aktien mit vollständiger Kurshistorie."
+      ]
     },
     {
       "id": "breakout-watch",
@@ -352,7 +380,11 @@
       "world": "breakout",
       "microRange": "3M",
       "qualify": true,
-      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+      "explain": [
+        "Der Kurs ist über seine Durchschnittslinien gestiegen, bei deutlich mehr Handel als sonst.",
+        "Nur gehandelte Aktien mit vollständiger Kurshistorie."
+      ]
     },
     {
       "id": "relative-strength",
@@ -368,7 +400,11 @@
       "world": "strength",
       "microRange": "6M",
       "qualify": true,
-      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+      "explain": [
+        "Der Kurs lief über mehrere Zeiträume besser als der Gesamtmarkt.",
+        "Nur gehandelte Aktien mit vollständiger Kurshistorie."
+      ]
     },
     {
       "id": "trend-quality",
@@ -386,7 +422,11 @@
       "microRange": "6M",
       "secondarySort": "leadershipScore",
       "qualify": true,
-      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification)."
+      "rule": "Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
+      "explain": [
+        "Der Kurs steigt gleichmäßig: über den Durchschnittslinien und mit wenig Schwankung.",
+        "Nur gehandelte Aktien mit vollständiger Kurshistorie."
+      ]
     },
     {
       "id": "bekannte-namen",
@@ -402,7 +442,11 @@
       "secondarySort": "leadershipScore",
       "world": "strength",
       "microRange": "3M",
-      "rule": "Bekanntheitsstufe 1 (Alltagsmarke, redaktionelle Liste) UND (neues Jahreshoch ODER nahe am Hoch ODER Ausbruch ODER +5 % in drei Monaten)"
+      "rule": "Bekanntheitsstufe 1 (Alltagsmarke, redaktionelle Liste) UND (neues Jahreshoch ODER nahe am Hoch ODER Ausbruch ODER +5 % in drei Monaten)",
+      "explain": [
+        "Die Marke kennt man aus dem Alltag (redaktionelle Liste).",
+        "Und der Kurs tut gerade etwas: neues Jahreshoch, nah am Hoch, Ausbruch oder mindestens +5 % in drei Monaten."
+      ]
     },
     {
       "id": "comeback",
@@ -421,7 +465,11 @@
       "world": "comeback",
       "microRange": "6M",
       "rule": "maxDrawdown252d <= -25 % UND return3M >= +10 % UND noch mindestens 8 % unter dem Jahreshoch Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
-      "qualify": true
+      "qualify": true,
+      "explain": [
+        "Der Kurs ist im letzten Jahr um mindestens 25 % gefallen und seit drei Monaten wieder mindestens 10 % im Plus.",
+        "Er liegt noch mindestens 8 % unter dem Jahreshoch."
+      ]
     },
     {
       "id": "ueberraschungen",
@@ -437,7 +485,11 @@
       "world": "strength",
       "microRange": "6M",
       "rule": "KEIN Eintrag in der Bekanntheitsliste UND Leadership-Perzentil >= 85 Qualifikation zuerst (V4 §21): nur liquide, gehandelte Titel mit vollstaendiger Kurshistorie (siehe qualification).",
-      "qualify": true
+      "qualify": true,
+      "explain": [
+        "Der Kurs gehört über Monate zu den stärksten 15 % des Marktes.",
+        "Die Firma steht aber nicht auf der Liste der bekannten Marken."
+      ]
     },
     {
       "id": "umsatz-waechst-stark",
@@ -453,7 +505,11 @@
       "minMembers": 5,
       "world": "growth",
       "microRange": "1J",
-      "rule": "Umsatz-CAGR über 3 Geschäftsjahre ≥ 15 % (SEC-Jahresabschlüsse). Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+      "rule": "Umsatz-CAGR über 3 Geschäftsjahre ≥ 15 % (SEC-Jahresabschlüsse). Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+      "explain": [
+        "Der Umsatz ist drei Geschäftsjahre lang um mindestens 15 % pro Jahr gewachsen.",
+        "Zahlen aus den Jahresabschlüssen an die SEC, mindestens 100 Mio. $ Umsatz."
+      ]
     },
     {
       "id": "gewinne-beschleunigen",
@@ -469,7 +525,11 @@
       "minMembers": 5,
       "world": "growth",
       "microRange": "1J",
-      "rule": "Gewinnwachstum FY(t) minus FY(t−1) ≥ 5 Prozentpunkte, Nettomarge > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+      "rule": "Gewinnwachstum FY(t) minus FY(t−1) ≥ 5 Prozentpunkte, Nettomarge > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+      "explain": [
+        "Der Gewinn wuchs im letzten Geschäftsjahr um mindestens 5 Prozentpunkte schneller als im Jahr davor.",
+        "Die Firma verdient Geld (Nettomarge über null); Zahlen aus den SEC-Abschlüssen."
+      ]
     },
     {
       "id": "margen-werden-staerker",
@@ -485,7 +545,11 @@
       "minMembers": 5,
       "world": "cashflow",
       "microRange": "1J",
-      "rule": "Operative Marge FY(t) minus FY(t−3) ≥ 2 Prozentpunkte. Nettomarge ≥ −25 % (eine Marge von −400 % wird nicht „stärker\"). Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+      "rule": "Operative Marge FY(t) minus FY(t−3) ≥ 2 Prozentpunkte. Nettomarge ≥ −25 % (eine Marge von −400 % wird nicht „stärker\"). Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+      "explain": [
+        "Von jedem Dollar Umsatz bleibt heute mindestens 2 Cent mehr Betriebsgewinn als vor drei Jahren.",
+        "Zahlen aus den SEC-Abschlüssen, mindestens 100 Mio. $ Umsatz."
+      ]
     },
     {
       "id": "cashflow-maschinen",
@@ -501,7 +565,11 @@
       "minMembers": 5,
       "world": "cashflow",
       "microRange": "1J",
-      "rule": "Free-Cashflow-Marge FY ≥ 15 %, Nettomarge > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+      "rule": "Free-Cashflow-Marge FY ≥ 15 %, Nettomarge > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+      "explain": [
+        "Von jedem Dollar Umsatz bleiben mindestens 15 Cent freies Geld (Free Cashflow).",
+        "Die Firma verdient Geld; Zahlen aus den SEC-Abschlüssen."
+      ]
     },
     {
       "id": "qualitaet-wachstum",
@@ -518,7 +586,11 @@
       "minMembers": 5,
       "world": "cashflow",
       "microRange": "1J",
-      "rule": "Umsatz-CAGR 3J ≥ 10 % und Nettomarge FY ≥ 10 %. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+      "rule": "Umsatz-CAGR 3J ≥ 10 % und Nettomarge FY ≥ 10 %. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+      "explain": [
+        "Der Umsatz wächst seit drei Jahren um mindestens 10 % pro Jahr.",
+        "Und von jedem Dollar Umsatz bleiben mindestens 10 Cent Gewinn."
+      ]
     },
     {
       "id": "langfristige-compounder",
@@ -534,7 +606,11 @@
       "minMembers": 5,
       "world": "compounder",
       "microRange": "1J",
-      "rule": "Umsatz-CAGR 10J ≥ 10 % und Nettogewinn > 0 in jedem der elf Geschäftsjahre. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+      "rule": "Umsatz-CAGR 10J ≥ 10 % und Nettogewinn > 0 in jedem der elf Geschäftsjahre. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+      "explain": [
+        "Der Umsatz ist zehn Jahre lang um mindestens 10 % pro Jahr gewachsen.",
+        "Die Firma war in jedem der elf Geschäftsjahre profitabel."
+      ]
     },
     {
       "id": "profitables-wachstum",
@@ -552,7 +628,11 @@
       "minMembers": 5,
       "world": "growth",
       "microRange": "1J",
-      "rule": "Umsatz-CAGR 3J ≥ 10 %, Nettomarge ≥ 5 %, Free Cashflow > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+      "rule": "Umsatz-CAGR 3J ≥ 10 %, Nettomarge ≥ 5 %, Free Cashflow > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+      "explain": [
+        "Der Umsatz wächst seit drei Jahren um mindestens 10 % pro Jahr.",
+        "Die Firma verdient Geld (Nettomarge mindestens 5 %) und erwirtschaftet freies Geld."
+      ]
     },
     {
       "id": "fundamentale-turnarounds",
@@ -568,7 +648,11 @@
       "minMembers": 5,
       "world": "comeback",
       "microRange": "1J",
-      "rule": "Nettogewinn FY(t−2) < 0 und FY(t) > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+      "rule": "Nettogewinn FY(t−2) < 0 und FY(t) > 0. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+      "explain": [
+        "Vor zwei Geschäftsjahren hat die Firma Verlust gemacht, im letzten Geschäftsjahr Gewinn.",
+        "Zahlen aus den SEC-Abschlüssen, mindestens 100 Mio. $ Umsatz."
+      ]
     },
     {
       "id": "qualitaet-zum-preis",
@@ -585,7 +669,11 @@
       "minMembers": 5,
       "world": "cashflow",
       "microRange": "1J",
-      "rule": "Nettomarge FY ≥ 10 % und KGV (Kurs / Gewinn je Aktie) ≤ 20. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+      "rule": "Nettomarge FY ≥ 10 % und KGV (Kurs / Gewinn je Aktie) ≤ 20. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+      "explain": [
+        "Von jedem Dollar Umsatz bleiben mindestens 10 Cent Gewinn.",
+        "Und der Kurs ist höchstens das 20-Fache des Gewinns je Aktie (KGV ≤ 20)."
+      ]
     },
     {
       "id": "starke-bilanz-wachstum",
@@ -601,7 +689,11 @@
       "minMembers": 5,
       "world": "growth",
       "microRange": "1J",
-      "rule": "Nettoschulden ≤ 0 (Nettokasse) und Umsatz-CAGR 3J ≥ 10 %. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt)."
+      "rule": "Nettoschulden ≤ 0 (Nettokasse) und Umsatz-CAGR 3J ≥ 10 %. Basis: Umsatz ≥ 100 Mio. $ im letzten Geschäftsjahr, Umsatz-CAGR 3 J ≤ 300 % (kein Basiseffekt).",
+      "explain": [
+        "Die Firma hat mehr Geld in der Kasse als Schulden.",
+        "Und der Umsatz wächst seit drei Jahren um mindestens 10 % pro Jahr."
+      ]
     }
   ],
   "sectorRows": {

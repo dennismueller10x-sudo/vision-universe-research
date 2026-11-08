@@ -1,43 +1,22 @@
 {
- "schema": "vu-module-1",
- "purpose": "Steckbrief des Produkts (Plan Neustart §3): Route, Navigation, Zugang, Status, Erzeuger, Zeitplan und Frische-Grenze. Erzeuger, Zeitplan und Frische spiegeln core/registry/domains.json; core/tests/module-manifest.test.mjs prueft die Gleichheit.",
+ "schema": "vu-module-2",
  "id": "analysten",
  "label": "Analysten",
  "status": "LIVE",
  "route": "/analysten/",
+ "access": "free",
  "navigation": {
   "group": "more",
+  "order": 4,
   "label": "Analysten",
   "href": "/analysten/",
   "icon": "◇"
  },
- "access": "free",
  "data": [
-  {
-   "domain": "analystConsensus",
-   "artifact": "/dashboard/data/analysts/summary.json",
-   "producer": "scripts/analysts/fetch-consensus.mjs",
-   "workflow": "content.yml",
-   "schedule": "05:41, 13:41, 21:41 UTC, je ~2200 Titel rotierend (ganzes Universum taeglich, Finnhub Free 55/min)",
-   "freshness": {
-    "kind": "hours",
-    "warnAfter": 72,
-    "staleAfter": 192
-   }
-  },
-  {
-   "domain": "analystRatings",
-   "artifact": "/dashboard/data/analyst_ratings.json",
-   "producer": "scripts/dashboard/fetch_analyst_ratings.py",
-   "workflow": "content.yml",
-   "schedule": "So 08:00 UTC",
-   "freshness": {
-    "kind": "hours",
-    "warnAfter": 192,
-    "staleAfter": 384
-   }
-  }
+  "analystConsensus",
+  "analystRatings"
  ],
+ "reads": [],
  "tests": [
   "core/tests/analysten-summary.test.mjs"
  ]
