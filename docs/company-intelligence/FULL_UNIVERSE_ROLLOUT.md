@@ -224,3 +224,16 @@ Nicht verändert: Provider-, Quant-, Ranking- und Datenqualitäts-Gates, `refres
   3. `activate` erneut mit demselben `scaling_run`.
 - Produktionsschritte startet die Steuerung mit Owner-Auftrag.
 - **Abgelaufener Vorgänger (Entscheidung Steuerung 07.11., activate 42421918068 mit `CONSUMER_EXPIRED`).** `download-public.mjs` lässt ein abgelaufenes `previous.json` weg (`expiredPreviousOmitted`), statt den Download abzubrechen. Der Vorgänger ist nur Verlauf für Clients mitten im Wechsel und wird nie wiederhergestellt; ein abgelaufener aktueller Stand scheitert weiter mit `CONSUMER_EXPIRED`.
+
+## Stand 08.11.2026: Vollumfang live, Rollback-Freeze braucht einen neuen Erneuerungsweg
+
+- **Live seit 08.11. 03:20 UTC.** `activate` 42439254897 (main a04f7d6) grün, Pages-Release 42441619766 mit grüner Live-Abnahme: `delivery.json` PASS, Generation `579c2091ffdccc2040158266`, 4.934 Emittenten / 5.091 Titel. Die zwei roten Versuche davor (42425408351, 42432674142) scheiterten nur am Production-Smoke im Pages-Lauf (je eine zufällige Seite); #1616 und #1617 prüfen eine solche Seite einmal neu.
+- **Rollback-Freeze `c39a8135aeeb3a9286f321ef`.** Erzeugt vom Refresh 42383724014 am 07.11. gegen 15:00 UTC, verfällt sieben Tage nach `generatedAt`, also **am 14.11. gegen 15:00 UTC**. Dieselben Bytes sind seit dem Rollback vom 08.11. auch das Legacy-GOOD.
+- **Warum der Auto-Re-Freeze das nicht mehr abdeckt.** Bei aktivem Universum schreibt der Continuous Refresh nur in den Universe-Namensraum (`refresh-run.mjs`, `universeActive`). Das Legacy-GOOD rückt also nicht mehr vor, und es gibt nichts Neueres einzufrieren. `refreeze-auto-guard.mjs` meldet außerdem `UNIVERSE_ACTIVE` und blockiert. `refreeze` selbst verlangt den 46/45-Umfang (`assertLegacyScope`), ebenso `restore46` (`SAFE_LEGACY_SCOPE_REQUIRED`). Ein Freeze direkt auf das Universe-GOOD (4.934 Emittenten) ist deshalb kein gültiger Rollback.
+- **Folge ohne Erneuerung.** Ab 14.11. scheitern `restore46` und `rollback` mit `CONSUMER_EXPIRED`. Ein Universe-Fehler endet dann im fail-closed-Pfad mit geschlossenem Gate (Company Intelligence nicht sichtbar, Kill-Switch geprüft, #1611) statt im 46er-Stand. Das ist sicher, aber ein sichtbarer Ausfall des Kapitels.
+- **Empfehlung (Entscheidung Steuerung offen).** Erneuerung als 46er-Projektion des live ausgelieferten Universe-GOOD, automatisch im bestehenden Auto-Re-Freeze-Lauf (alle zwei Tage, Gruppe `company-intelligence-continuous-production`):
+  1. Vorbedingungen lesend: `activation.json` `AVAILABLE`, Live-`delivery.json` = Universe-GOOD, Live-Abnahme bestanden.
+  2. Aus dem Universe-GOOD die Dateien der 46 Kohortentitel / 45 Emittenten in einen Legacy-Kandidaten übernehmen. Jede Nutzdatei muss bytegleich zum Universe-GOOD sein; Manifest mit 46/45-Umfang und Freigabe der Kohorte.
+  3. Mit denselben Prüfungen wie heute einfrieren: `preflight`, Compare-and-Swap, Archiv, Schutzzustand vorher/nachher; Gate, Aktivierung und Universe-GOOD bleiben byte-gleich.
+  - **Warnung:** Bleibt die Erneuerung aus, warnt der Health-Lauf ab 48 h vor Verfall.
+  - **Verworfen:** Ein paralleler 46er-Refresh in den Legacy-Namensraum, weil er denselben privaten Zustand (`stateNamespace`) wie der Universe-Refresh beschreiben würde.
