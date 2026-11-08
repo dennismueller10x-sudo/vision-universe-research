@@ -18,8 +18,8 @@ Plan Neustart §3: `products/<id>/{module.json, producer/, tests/}`. Die **Seite
 | screener | ✓ | ✓ | – | `screener/tests`: Die Regressionsklassifikation der Company Intelligence führt `screener/` als geschützten Pfad |
 | company-intelligence | ✓ | – | – | Ein Umzug von `scripts/company_intelligence/` löst die Regressionsklassifikation der eigenen CI aus |
 | academy, budget, dashboard, elliott, etf, guide, macro, magazin, portfolios, reports, status | ✓ | – | – | reine Web-Produkte ohne eigenen Erzeuger (Status: `scripts/core/`, Elliott: technische Intelligenz) |
-| ask | ✓ | – | – | `ask/tests` stehen im Deploy-Bündel und in der Company-Intelligence-CI (Track A baut Deploy um) |
+| ask | ✓ | – | – | kein eigener Erzeuger; `ask/tests` ruft auch `company-intelligence.yml` auf, und die Company-Intelligence-Workflows bleiben unangetastet (Auftrag Steuerung) |
 | social | ✓ | – | – | Track A bündelt die Social-Workflows; `social/tests` und `scripts/social` folgen danach |
-| vorsorge | ✓ | – | – | Aufrufe stehen in `pipeline-daily.yml`, `research.yml` und `monitor.yml` (Track A); folgt nach deren Umbau |
+| vorsorge | ✓ | ✓ | ✓ | – (08.11.2026: `scripts/vorsorge` → `producer/`, `vorsorge/tests` → `tests/`; Engines und Daten bleiben unter `/vorsorge/`) |
 | technical | ✓ | – | – | `scripts/technical` und `quant/engines/technical` werden auch von Quant erzeugt und gelesen |
 | quant, supertrader, discover | ✓ | – | – | Erzeuger und Tests sind an Freeze-Listen, Fingerabdrücke und erzeugte Belege gebunden (`backtest-generation-freeze.cjs`, Supertrader-Fingerabdrücke, Discover-Reproduzierbarkeit); ein Umzug wäre eine Fachmodell-nahe Änderung mit eigenem Vorher/Nachher |

@@ -27,7 +27,7 @@ import { createRequire } from "node:module";
 import { holdingsFeed } from "./slim-index.mjs";
 
 const require = createRequire(import.meta.url);
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const H = require(join(root, "vorsorge/engines/etf-holdings.js"));
 const C = require(join(root, "vorsorge/engines/etf-changes.js"));
 const argv = process.argv.slice(2);

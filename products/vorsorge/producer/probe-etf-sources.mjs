@@ -22,7 +22,7 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const OUT = join(root, "vorsorge/data/sources/etf-source-probe.json");
 const SEC_UA = process.env.SEC_USER_AGENT || "VisionUniverseResearch info@visionuniverse.de";
 const VU_UA = "VisionUniverse-Research/1.0 (+https://research.visionuniverse.de)";

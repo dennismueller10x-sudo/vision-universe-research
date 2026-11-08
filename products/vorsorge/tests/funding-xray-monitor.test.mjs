@@ -3,11 +3,11 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
-const F = require("../engines/funding.js");
-const X = require("../engines/xray.js");
-const Mo = require("../engines/monitor.js");
-const M = require("../engines/vorsorge-math.js");
-const dir = new URL("../data/funding-rules/", import.meta.url);
+const F = require("../../../vorsorge/engines/funding.js");
+const X = require("../../../vorsorge/engines/xray.js");
+const Mo = require("../../../vorsorge/engines/monitor.js");
+const M = require("../../../vorsorge/engines/vorsorge-math.js");
+const dir = new URL("../../../vorsorge/data/funding-rules/", import.meta.url);
 const rules = readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(readFileSync(new URL(f, dir), "utf8")));
 const avd = rules.find((r) => r.ruleId === "DE-ALTERSVORSORGEDEPOT");
 const ri = rules.find((r) => r.ruleId === "DE-RIESTER");
@@ -170,7 +170,7 @@ test("Frühstart bleibt Entwurf: primaryVerified false, Status GESETZENTWURF", (
 });
 
 test("Holdings-Vertrag v2 und Provider-Mapping-Vertrag", () => {
-  const P = require("../engines/etf-provider.js");
+  const P = require("../../../vorsorge/engines/etf-provider.js");
   assert.deepEqual(X.validateHoldingsFile({ asOf: "2026-09-30", source: "issuer", holdings: [{ name: "NVIDIA", weight: 0.07, holdingIdentifier: "US67066G1040" }] }), []);
   assert.ok(X.validateHoldingsFile({ holdings: [{ weight: 2 }] }).length >= 3);
   assert.deepEqual(P.validateMapped({ isin: "IE00B4L5Y983", ter: 0.002, distributionPolicy: "ACCUMULATING" }), []);
