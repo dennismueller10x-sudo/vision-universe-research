@@ -60,6 +60,12 @@ Entscheidung 4: Definitionen als Screener-Vorlagen, Anzeige auf Fundamental-Akti
 - PR 2: Die Kopfzeile des Finanz-Charts nennt den Zeitraum ohne Anbieter („GJ 2015–2026“ statt „… · SEC“), weil Produktseiten keine Datenquellen nennen (`core/tests/legal-notices-frontend.test.mjs`); „Quellen“ heißt „Meldung je Wert, Daten als CSV“.
 - PR 2: Die Checklisten-Zeilen kommen mit PR 5 (keine Platzhalter vorher); die frühere Kachelwand, „12 Jahre Umsatz“, „Entwicklung pro Jahr“ und die Knopfwolke „Mehr“ entfallen auf der Aktie (Inhalte in Finanz-Chart, Kennzahl-Detail und Kapiteln).
 - PR 2: Branche im Kapitel = SIC-Hauptgruppe (wie die Branchen-Seiten), z. B. „Elektronik und Halbleiter“, mit KGV-Median dieser Gruppe.
+- PR 2: Der Link „Zahlen in Quant“ bleibt als leise Zeile unter den Kapiteln (Weg zur Quant-Perspektive, von `vu3-regression-qa` geprüft).
+- PR 3: „+ Firma“ schlägt die zwei größten Wettbewerber der Vergleichsgruppe vor (wie im Mockup „+ AMD“, „+ AVGO“), „+ Firma“ öffnet die Firmensuche; gewählte Firmen stehen in der Adresse (`&mit=AMD~AVGO`) und gelten für Jahreswerte, Quartale schalten sie ab.
+- PR 3: Die bisherige Feinsteuerung des Kennzahl-Details (Balken/Linie, Branchenmedian/Wettbewerber, „+ Kennzahl“ mit Achsen/Index/Getrennt) bleibt vollständig, zugeklappt unter dem Chart („Darstellung, Branchenmedian, weitere Kennzahlen“); mit `&plus=` in der Adresse ist sie offen.
+- PR 3: „Höchster/Tiefster Wert, Median“ stehen unter der Wertetabelle statt zwischen Chart und Wachstum; die Quelle je Wert ist ein kleines Symbol mit Datum als Beschriftung.
+- PR 3: Startseite ohne Checklisten-Schiene bis PR 5; Ranglisten-Schiene ab 10 Mrd. $ Börsenwert (wie im Mockup), Reihenfolge Wachstumsführer, Profitable Unternehmen, Cashflow-Stärke, Höchste Margen, Solide Bilanzen, Niedrigste Bewertung (KGV). Die Discover-Auswahlen bleiben unter Ranglisten → Auswahlen erreichbar.
+- PR 3: Der Kopf nennt „aus den Pflichtmeldungen an die US-Börsenaufsicht“ statt „an die SEC“ (keine Quellennamen auf Produktseiten).
 
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
