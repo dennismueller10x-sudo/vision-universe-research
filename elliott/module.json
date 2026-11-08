@@ -1,0 +1,29 @@
+{
+ "schema": "vu-module-2",
+ "id": "elliott",
+ "label": "Elliott",
+ "status": "LIVE",
+ "route": "/elliott/",
+ "access": "free",
+ "navigation": {
+  "group": "products",
+  "order": 7,
+  "label": "Elliott",
+  "href": "/elliott/",
+  "icon": "elliott",
+  "claim": "Wellenstruktur",
+  "entries": [
+   ["Übersicht", "/elliott/", "⌂"],
+   ["Welle 3", "/elliott/#/?welle=3", "◬"],
+   ["Aufwärts", "/elliott/#/?richtung=auf", "↗"],
+   ["Abwärts", "/elliott/#/?richtung=ab", "↘"],
+   ["Neu und verändert", "/elliott/#/?neu=1", "✧"],
+   ["Suchen", "/elliott/#/?suche=1", "⌕"]
+  ]
+ },
+ "data": [
+  "technicalIntelligenceV3"
+ ],
+ "reads": [],
+ "tests": []
+}

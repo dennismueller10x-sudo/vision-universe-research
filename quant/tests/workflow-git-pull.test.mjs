@@ -2,6 +2,7 @@
    Repositorys. Am 03.10.2026 dauerte das im Lauf der langen Kursreihen
    49 Minuten; der Job lief in seine Grenze, die gebauten Reihen kamen nie
    an. Jeder Workflow holt deshalb nur seinen eigenen Zweig. */
+import { workflowPart } from "../../scripts/ci/lib/workflow-part.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
@@ -22,8 +23,8 @@ test("WG1 · kein Workflow holt mit einem blanken git pull alle Zweige", () => {
 });
 
 test("WG2 · Daten-Workflows, die nach main schreiben, pushen mit Wiederholung", () => {
-  for (const f of ["long-series.yml", "index-membership.yml"]) {
-    const text = readFileSync(join(DIR, f), "utf8");
+  /* index-membership steht seit dem Buendel pipeline-weekly als Teil `index` in pipeline-weekly.yml. */
+  for (const [f, text] of [["long-series.yml", readFileSync(join(DIR, "long-series.yml"), "utf8")], ["pipeline-weekly.yml#index", workflowPart(join(DIR, "..", ".."), "pipeline-weekly.yml", "index")]]) {
     assert.match(text, /scripts\/ci\/push-with-retry\.sh "\$\{GITHUB_REF_NAME\}"/, f + ": Push ohne Wiederholung");
     assert.equal(/^\s*git push\b/m.test(text.replace(/#.*$/gm, "")), false, f + ": blanker git push");
   }
