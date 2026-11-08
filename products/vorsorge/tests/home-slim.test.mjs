@@ -6,9 +6,9 @@ import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
-import { homeIndex, holdingsFeed, HOME_SYMBOLS } from "../../scripts/vorsorge/slim-index.mjs";
+import { homeIndex, holdingsFeed, HOME_SYMBOLS } from "../producer/slim-index.mjs";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const read = (p) => JSON.parse(readFileSync(join(root, p), "utf8"));
 const FULL = read("vorsorge/data/etf-index.json");
 const plain = (x) => (x === undefined ? undefined : JSON.parse(JSON.stringify(x)));

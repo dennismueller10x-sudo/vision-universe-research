@@ -26,7 +26,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const UA = "VisionUniverse-Research/1.0 (+https://research.visionuniverse.de)";
 const BASE = "https://registers.esma.europa.eu/solr/esma_registers_funds_cbdif/select?wt=json";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

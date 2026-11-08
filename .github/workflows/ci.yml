@@ -51,7 +51,7 @@ on:
       - 'products/screener/producer/**'
       - 'products/screener/producer/sic.mjs'
       - 'scripts/supertrader/build.mjs'
-      - 'scripts/vorsorge/**'
+      - 'products/vorsorge/**'
       - 'scripts/vu2/build-release.mjs'
       - 'scripts/vu2/production-smoke.mjs'
       - 'studio/stories/**'
@@ -82,7 +82,7 @@ on:
       - 'products/fundamental/**'
       - 'products/hedgefonds/**'
       - 'products/screener/producer/**'
-      - 'scripts/vorsorge/**'
+      - 'products/vorsorge/**'
       - 'scripts/vu2/production-smoke.mjs'
       - 'studio/stories/**'
       - 'vorsorge/**'
@@ -488,10 +488,10 @@ jobs:
         with:
           node-version: '22'
       - name: Engine- und Contract-Tests
-        run: node --test "vorsorge/tests/*.test.mjs"
+        run: node --test "products/vorsorge/tests/*.test.mjs"
       - name: Daten-Build ist reproduzierbar
         run: |
-          node scripts/vorsorge/build-etf-data.mjs --quiet
+          node products/vorsorge/producer/build-etf-data.mjs --quiet
           if [ -n "$(git status --porcelain -- vorsorge)" ]; then
             git status --short -- vorsorge | head -20
             echo "Der Neubau ergibt andere Vorsorge-Daten als der eingecheckte Stand."
@@ -506,7 +506,7 @@ jobs:
           grep -q 'keine individuelle Anlage-, Steuer- oder Rechtsberatung' vorsorge/app.js
           for e in vorsorge-math series-codec etf-taxonomy etf-analytics etf-master etf-provider etf-fundamentals etf-holdings etf-changes xray funding monitor; do grep -q "engines/$e.js" "$page" || { echo "$e fehlt"; exit 1; }; done
       - name: Qualitaets- und Regressions-Gates der Vorsorge-Daten
-        run: node scripts/vorsorge/assert-vorsorge-data.mjs
+        run: node products/vorsorge/producer/assert-vorsorge-data.mjs
       - name: Foerderregeln - Pruefsumme und Primaerquellen
         run: |
           node -e "

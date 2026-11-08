@@ -2,8 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
-const M = require("../engines/etf-master.js");
-const P = require("../engines/etf-provider.js");
+const M = require("../../../vorsorge/engines/etf-master.js");
+const P = require("../../../vorsorge/engines/etf-provider.js");
 
 const row = (o) => ({ exchange: "NYSE", currency: "USD", country: "US", securityType: "ETF", source: "tiingo:test", ...o });
 
