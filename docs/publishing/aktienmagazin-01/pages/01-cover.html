@@ -1,30 +1,36 @@
-<section class="page dark">
-  <div class="bleed" style="background-image:url(img/hf-cover-chip-capitol.jpg);background-position:50% 35%"></div>
-  <div class="bleed" style="background:linear-gradient(180deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.15) 26%,rgba(0,0,0,0) 45%,rgba(0,0,0,.7) 66%,#000 88%)"></div>
-  <div class="pad" style="inset:9mm 11mm 10mm">
-    <div class="mast-row">
+<section class="page dark cover">
+  <div class="bleed" id="cover-img" style="background-image:url(img/hf-cover-meteor.jpg);background-position:50% 45%"></div>
+  <div class="bleed" style="background:linear-gradient(180deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.35) 20%,rgba(0,0,0,0) 38%,rgba(0,0,0,.25) 52%,rgba(0,0,0,.88) 70%,#000 86%)"></div>
+  <span class="ki" style="top:44mm;right:11mm">KI-Bild</span>
+  <div class="pad" style="inset:8mm 11mm 9mm">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
       <div>
-        <img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:6.2mm;filter:invert(1)" alt="Vision Universe">
-        <div style="font-size:47pt;font-weight:900;letter-spacing:-.055em;line-height:.85;margin-top:2mm">AKTIEN<span style="color:var(--lime)">MAGAZIN</span></div>
+        <img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:6.6mm;filter:invert(1)" alt="Vision Universe">
+        <div style="font-size:52pt;font-weight:900;letter-spacing:-.06em;line-height:.82;margin-top:2mm">AKTIEN<span style="color:var(--lime)">MAGAZIN</span></div>
       </div>
-      <div style="text-align:right;font-size:7.2pt;font-weight:800;letter-spacing:.1em;text-transform:uppercase;line-height:1.55">Nr. 01 · KW 46<br><span style="color:var(--lime)">09.11.2026</span><br><span style="color:#9a9a9a">Daten bis 06.11.</span></div>
+      <div style="text-align:right">
+        <div style="display:inline-block;background:var(--lime);color:#000;font-weight:900;font-size:8pt;letter-spacing:.08em;padding:1.5mm 2.5mm;border-radius:3px">NR. 01 · NEU</div>
+        <div style="font-size:7.2pt;font-weight:800;letter-spacing:.1em;text-transform:uppercase;line-height:1.55;margin-top:2mm">KW 46 · 09.11.2026<br><span style="color:#9a9a9a">Daten bis 06.11.</span></div>
+      </div>
     </div>
-    <div style="position:absolute;left:0;top:38mm;display:flex;gap:2mm;flex-wrap:wrap;max-width:118mm">
-      <span class="pill dn" style="background:#fff">NVIDIA −8,8 %</span><span class="pill dn" style="background:#fff">MICRON −22 %</span><span class="pill dn" style="background:#fff">VERTIV −21 %</span><span class="pill up">APPLOVIN +71 %</span>
+    <!-- Kurs-Blasen -->
+    <div style="position:absolute;left:0;top:45mm;display:grid;gap:3mm" data-k="cover-bubbles"></div>
+    <!-- Riesenzahl -->
+    <div style="position:absolute;right:0;top:50mm;text-align:right;transform:rotate(-4deg)">
+      <div style="font-size:50pt;font-weight:900;letter-spacing:-.06em;line-height:.85;color:#fff;text-shadow:0 0 18px rgba(200,245,49,.55)">−3&nbsp;BIO.&nbsp;$</div>
+      <div style="display:inline-block;background:var(--lime);color:#000;font-weight:900;font-size:9pt;padding:1.2mm 2.5mm;margin-top:1.5mm;border-radius:2px">AN EINEM TAG</div>
     </div>
-    <div style="position:absolute;right:0;top:52mm;text-align:center">
-      <div class="stamp" style="font-size:9pt">3&nbsp;BIO.&nbsp;$<br><span style="font-size:7pt;font-weight:800">an einem Tag weg</span></div>
+    <!-- Titel -->
+    <div style="position:absolute;left:0;right:0;top:134mm">
+      <div style="display:flex;gap:2mm;align-items:center"><span class="ressort" style="background:#fff;color:#000">Titelthema</span><span class="ressort" style="background:var(--lime);color:#000">9 Seiten</span><span class="ressort" style="background:#fff;color:#000">6 Aktien im Stresstest</span></div>
+      <div style="font-size:92pt;font-weight:900;letter-spacing:-.075em;line-height:.78;margin-top:3mm;text-shadow:0 4px 30px rgba(0,0,0,.6)">DIE KI-<br><span style="color:var(--lime)">BREMSE</span></div>
+      <div style="margin-top:4mm;max-width:155mm;font-size:13pt;font-weight:700;line-height:1.3;color:#f0f0f0">Washington wählt, die Chips stürzen ab. Was hinter dem schwersten Chip-Tag seit 2020 steckt, und wer jetzt noch steht.</div>
     </div>
-    <div style="position:absolute;left:0;right:0;top:122mm">
-      <span class="ressort" style="background:var(--lime);color:#000">Titelthema · 9 Seiten</span>
-      <div style="font-size:66pt;font-weight:900;letter-spacing:-.065em;line-height:.82;margin-top:3mm">DIE KI-<br><span style="color:var(--lime)">BREMSE</span></div>
-      <div class="sub" style="margin-top:4mm;max-width:150mm;font-size:12pt;color:#e6e6e6">Washington wählt, die Chips stürzen ab. Was hinter dem schwersten Chip-Tag seit 2020 steckt und welche sechs KI-Aktien jetzt im Stresstest stehen.</div>
-    </div>
-    <div class="grid" style="position:absolute;left:0;right:0;bottom:6mm;grid-template-columns:1fr 1fr 1fr 1fr;gap:4mm">
-      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-schach-trading.jpg)"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">HEDGEFONDS</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">Burry wettet gegen Chips, Berkshire kauft eigene Aktien</div></div></div>
-      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-mobile-games-werbung.jpg)"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">ANALYSE</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">AppLovin: +71&nbsp;% in fünf Tagen. Was dahintersteckt</div></div></div>
-      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-gpu-rack.jpg);background-position:50% 30%"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">CHART DER WOCHE</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">Nvidia: Doppeltop im Wochenchart bestätigt</div></div></div>
-      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-lupe-tabellen.jpg)"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">SCREENING</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">19 Aktien, die im Ausverkauf stiegen</div></div></div>
-    </div>
+    <!-- Anrisse -->
+    <div class="grid" style="position:absolute;left:0;right:0;bottom:0;grid-template-columns:1fr 1fr 1fr 1fr;gap:3.5mm" data-k="cover-teaser"></div>
   </div>
 </section>
+<script>
+VUM.k('cover-bubbles',()=>[['NVDA','Nvidia'],['MU','Micron'],['AMD','AMD'],['APP','AppLovin']].map(([t,n])=>{const c=VUM.C(t);return `<div style="display:flex;align-items:center;gap:2.5mm"><div style="width:13mm;height:13mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px ${c.week>=0?'#c8f531':'#fff'}">${c.logo?`<img src="${c.logo}" style="max-width:11mm;max-height:8mm;object-fit:contain">`:`<b style="color:#000;font-size:7pt">${t}</b>`}</div><div><div style="font-size:7pt;font-weight:900;letter-spacing:.06em;color:#fff">${n.toUpperCase()}</div><span class="pill ${c.week>=0?'up':'dn'}" style="${c.week>=0?'':'background:#fff;color:#000'};font-size:9.5pt;margin-top:.6mm">${VUM.sg(c.week,1)} %</span></div></div>`}).join(''));
+VUM.k('cover-teaser',()=>[['img/hf-schach-trading.jpg','Hedgefonds','Burry wettet gegen Chips, Berkshire kauft sich selbst'],['img/hf-mobile-games-werbung.jpg','Analyse','AppLovin: +71 % in fünf Tagen. Was dahintersteckt'],['img/bv-bildschirme-rot.jpg','Chart der Woche','Nvidia: Doppeltop im Wochenchart bestätigt'],['img/hf-lupe-tabellen.jpg','Screening','19 Aktien, die im Ausverkauf stiegen']].map(r=>`<div><div class="ph" style="height:21mm;border-radius:4px;margin-bottom:2mm;background-image:url(${r[0]})"></div><div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:6.8pt;font-weight:900;letter-spacing:.12em;color:var(--lime);text-transform:uppercase">${r[1]}</div><div style="font-size:9.8pt;font-weight:800;line-height:1.12;margin-top:.8mm">${r[2]}</div></div></div>`).join(''));
+</script>

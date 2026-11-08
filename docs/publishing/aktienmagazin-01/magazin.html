@@ -5,36 +5,42 @@
 <script src="data.js"></script><script src="charts.js"></script><script src="lib.js"></script>
 <link rel="stylesheet" href="/assets/site-navigation.css"></head><body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
 <!-- 01-cover.html -->
-<section class="page dark">
-  <div class="bleed" style="background-image:url(img/hf-cover-chip-capitol.jpg);background-position:50% 35%"></div>
-  <div class="bleed" style="background:linear-gradient(180deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.15) 26%,rgba(0,0,0,0) 45%,rgba(0,0,0,.7) 66%,#000 88%)"></div>
-  <div class="pad" style="inset:9mm 11mm 10mm">
-    <div class="mast-row">
+<section class="page dark cover">
+  <div class="bleed" id="cover-img" style="background-image:url(img/hf-cover-chip-capitol.jpg);background-position:50% 40%"></div>
+  <div class="bleed" style="background:linear-gradient(180deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.35) 20%,rgba(0,0,0,0) 38%,rgba(0,0,0,.25) 52%,rgba(0,0,0,.88) 70%,#000 86%)"></div>
+  <span class="ki" style="top:44mm;right:11mm">KI-Bild</span>
+  <div class="pad" style="inset:8mm 11mm 9mm">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
       <div>
-        <img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:6.2mm;filter:invert(1)" alt="Vision Universe">
-        <div style="font-size:47pt;font-weight:900;letter-spacing:-.055em;line-height:.85;margin-top:2mm">AKTIEN<span style="color:var(--lime)">MAGAZIN</span></div>
+        <img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:6.6mm;filter:invert(1)" alt="Vision Universe">
+        <div style="font-size:52pt;font-weight:900;letter-spacing:-.06em;line-height:.82;margin-top:2mm">AKTIEN<span style="color:var(--lime)">MAGAZIN</span></div>
       </div>
-      <div style="text-align:right;font-size:7.2pt;font-weight:800;letter-spacing:.1em;text-transform:uppercase;line-height:1.55">Nr. 01 · KW 46<br><span style="color:var(--lime)">09.11.2026</span><br><span style="color:#9a9a9a">Daten bis 06.11.</span></div>
+      <div style="text-align:right">
+        <div style="display:inline-block;background:var(--lime);color:#000;font-weight:900;font-size:8pt;letter-spacing:.08em;padding:1.5mm 2.5mm;border-radius:3px">NR. 01 · NEU</div>
+        <div style="font-size:7.2pt;font-weight:800;letter-spacing:.1em;text-transform:uppercase;line-height:1.55;margin-top:2mm">KW 46 · 09.11.2026<br><span style="color:#9a9a9a">Daten bis 06.11.</span></div>
+      </div>
     </div>
-    <div style="position:absolute;left:0;top:38mm;display:flex;gap:2mm;flex-wrap:wrap;max-width:118mm">
-      <span class="pill dn" style="background:#fff">NVIDIA −8,8 %</span><span class="pill dn" style="background:#fff">MICRON −22 %</span><span class="pill dn" style="background:#fff">VERTIV −21 %</span><span class="pill up">APPLOVIN +71 %</span>
+    <!-- Kurs-Blasen -->
+    <div style="position:absolute;left:0;top:45mm;display:grid;gap:3mm" data-k="cover-bubbles"></div>
+    <!-- Riesenzahl -->
+    <div style="position:absolute;right:0;top:50mm;text-align:right;transform:rotate(-4deg)">
+      <div style="font-size:50pt;font-weight:900;letter-spacing:-.06em;line-height:.85;color:#fff;text-shadow:0 0 18px rgba(200,245,49,.55)">−3&nbsp;BIO.&nbsp;$</div>
+      <div style="display:inline-block;background:var(--lime);color:#000;font-weight:900;font-size:9pt;padding:1.2mm 2.5mm;margin-top:1.5mm;border-radius:2px">AN EINEM TAG</div>
     </div>
-    <div style="position:absolute;right:0;top:52mm;text-align:center">
-      <div class="stamp" style="font-size:9pt">3&nbsp;BIO.&nbsp;$<br><span style="font-size:7pt;font-weight:800">an einem Tag weg</span></div>
+    <!-- Titel -->
+    <div style="position:absolute;left:0;right:0;top:134mm">
+      <div style="display:flex;gap:2mm;align-items:center"><span class="ressort" style="background:#fff;color:#000">Titelthema</span><span class="ressort" style="background:var(--lime);color:#000">9 Seiten</span><span class="ressort" style="background:#fff;color:#000">6 Aktien im Stresstest</span></div>
+      <div style="font-size:92pt;font-weight:900;letter-spacing:-.075em;line-height:.78;margin-top:3mm;text-shadow:0 4px 30px rgba(0,0,0,.6)">DIE KI-<br><span style="color:var(--lime)">BREMSE</span></div>
+      <div style="margin-top:4mm;max-width:155mm;font-size:13pt;font-weight:700;line-height:1.3;color:#f0f0f0">Washington wählt, die Chips stürzen ab. Was hinter dem schwersten Chip-Tag seit 2020 steckt, und wer jetzt noch steht.</div>
     </div>
-    <div style="position:absolute;left:0;right:0;top:122mm">
-      <span class="ressort" style="background:var(--lime);color:#000">Titelthema · 9 Seiten</span>
-      <div style="font-size:66pt;font-weight:900;letter-spacing:-.065em;line-height:.82;margin-top:3mm">DIE KI-<br><span style="color:var(--lime)">BREMSE</span></div>
-      <div class="sub" style="margin-top:4mm;max-width:150mm;font-size:12pt;color:#e6e6e6">Washington wählt, die Chips stürzen ab. Was hinter dem schwersten Chip-Tag seit 2020 steckt und welche sechs KI-Aktien jetzt im Stresstest stehen.</div>
-    </div>
-    <div class="grid" style="position:absolute;left:0;right:0;bottom:6mm;grid-template-columns:1fr 1fr 1fr 1fr;gap:4mm">
-      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-schach-trading.jpg)"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">HEDGEFONDS</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">Burry wettet gegen Chips, Berkshire kauft eigene Aktien</div></div></div>
-      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-mobile-games-werbung.jpg)"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">ANALYSE</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">AppLovin: +71&nbsp;% in fünf Tagen. Was dahintersteckt</div></div></div>
-      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-gpu-rack.jpg);background-position:50% 30%"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">CHART DER WOCHE</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">Nvidia: Doppeltop im Wochenchart bestätigt</div></div></div>
-      <div><div class="ph" style="height:22mm;border-radius:4px;margin-bottom:2.5mm;background-image:url(img/hf-lupe-tabellen.jpg)"></div><div style="border-top:2px solid var(--lime);padding-top:2.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;color:var(--lime)">SCREENING</div><div style="font-size:10.5pt;font-weight:800;line-height:1.12;margin-top:1mm">19 Aktien, die im Ausverkauf stiegen</div></div></div>
-    </div>
+    <!-- Anrisse -->
+    <div class="grid" style="position:absolute;left:0;right:0;bottom:0;grid-template-columns:1fr 1fr 1fr 1fr;gap:3.5mm" data-k="cover-teaser"></div>
   </div>
 </section>
+<script>
+VUM.k('cover-bubbles',()=>[['NVDA','Nvidia'],['MU','Micron'],['AMD','AMD'],['APP','AppLovin']].map(([t,n])=>{const c=VUM.C(t);return `<div style="display:flex;align-items:center;gap:2.5mm"><div style="width:13mm;height:13mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px ${c.week>=0?'#c8f531':'#fff'}">${c.logo?`<img src="${c.logo}" style="max-width:9mm;max-height:7mm;object-fit:contain">`:`<b style="color:#000;font-size:7pt">${t}</b>`}</div><div><div style="font-size:7pt;font-weight:900;letter-spacing:.06em;color:#fff">${n.toUpperCase()}</div><span class="pill ${c.week>=0?'up':'dn'}" style="${c.week>=0?'':'background:#fff;color:#000'};font-size:9.5pt;margin-top:.6mm">${VUM.sg(c.week,1)} %</span></div></div>`}).join(''));
+VUM.k('cover-teaser',()=>[['img/hf-schach-trading.jpg','Hedgefonds','Burry wettet gegen Chips, Berkshire kauft sich selbst'],['img/hf-mobile-games-werbung.jpg','Analyse','AppLovin: +71 % in fünf Tagen. Was dahintersteckt'],['img/bv-bildschirme-rot.jpg','Chart der Woche','Nvidia: Doppeltop im Wochenchart bestätigt'],['img/hf-lupe-tabellen.jpg','Screening','19 Aktien, die im Ausverkauf stiegen']].map(r=>`<div><div class="ph" style="height:21mm;border-radius:4px;margin-bottom:2mm;background-image:url(${r[0]})"></div><div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:6.8pt;font-weight:900;letter-spacing:.12em;color:var(--lime);text-transform:uppercase">${r[1]}</div><div style="font-size:9.8pt;font-weight:800;line-height:1.12;margin-top:.8mm">${r[2]}</div></div></div>`).join(''));
+</script>
 
 <!-- 02-editorial.html -->
 <section class="page">
@@ -65,15 +71,15 @@
 VUM.k('toc',()=>[
  ['05','Titel','Die KI-Bremse','img/hf-capitol-sturm.jpg'],
  ['08','Titel','Nvidia, Micron, Vertiv, Oracle, AMD im Stresstest','img/hf-gpu-rack.jpg'],
- ['14','Analyse','AppLovin: der Sieger der Woche','img/hf-mobile-games-werbung.jpg'],
- ['15','Analyse','Palantir: zu gut ist nicht gut genug','img/bv-serverraum-blau.jpg'],
- ['18','Hedgefonds','Der Oktober der Profis','img/hf-schach-trading.jpg'],
- ['20','Chart der Woche','Nvidias Doppeltop','img/bv-bildschirme-rot.jpg'],
- ['21','Screening','Standhaft im Ausverkauf','img/hf-lupe-tabellen.jpg'],
- ['23','Konjunktur','Jobs-Wunder und Zinsangst','img/hf-fed-gebaeude.jpg'],
- ['25','Termine','Das wird die Woche','img/hf-boersenglocke.jpg'],
+ ['15','Analyse','AppLovin: der Sieger der Woche','img/hf-mobile-games-werbung.jpg'],
+ ['16','Analyse','Palantir: zu gut ist nicht gut genug','img/bv-serverraum-blau.jpg'],
+ ['19','Hedgefonds','Der Oktober der Profis','img/hf-schach-trading.jpg'],
+ ['21','Chart der Woche','Nvidias Doppeltop','img/bv-bildschirme-rot.jpg'],
+ ['22','Screening','Standhaft im Ausverkauf','img/hf-lupe-tabellen.jpg'],
+ ['24','Konjunktur','Jobs-Wunder und Zinsangst','img/hf-fed-gebaeude.jpg'],
+ ['26','Termine','Das wird die Woche','img/hf-boersenglocke.jpg'],
 ].map(r=>`<div style="display:grid;grid-template-columns:22mm 1fr;gap:3mm;align-items:center"><div class="ph" style="height:15mm;border-radius:4px;background-image:url(${r[3]})"></div><div><div style="font-size:6.5pt;font-weight:900;letter-spacing:.12em;color:var(--lime);text-transform:uppercase">${r[0]} · ${r[1]}</div><div style="font-size:9pt;font-weight:800;line-height:1.15;margin-top:.6mm">${r[2]}</div></div></div>`).join('')+
- `<div style="margin-top:2mm;border-top:1px solid #262626;padding-top:3mm;font-size:7.5pt;color:#9a9a9a;line-height:1.5"><b style="color:#fff">Außerdem:</b> Das war die Woche 03 · Zahlen der Woche 04 · Gewinner und Verlierer der Berichtssaison 16 · Berkshire, Ackman, 13F 19 · Markt-Radar 22 · Deutschland 24 · Aus der App 26 · Quick-Check 27</div>`);
+ `<div style="margin-top:2mm;border-top:1px solid #262626;padding-top:3mm;font-size:7.5pt;color:#9a9a9a;line-height:1.5"><b style="color:#fff">Außerdem:</b> Das war die Woche 03 · Zahlen der Woche 04 · Gewinner und Verlierer der Berichtssaison 17 · Berkshire, Ackman, 13F 20 · Markt-Radar 23 · Deutschland 25 · Aus der App 27 · Quick-Check 28</div>`);
 </script>
 
 <!-- 03-das-war.html -->
@@ -105,9 +111,9 @@ VUM.k('war',()=>[
     <span class="ressort">Zahlen der Woche</span>
     <div class="hx" style="margin-top:3mm">Zwölf Zahlen, die diese Woche erklären</div>
     <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:6mm" data-k="zahlen"></div>
-    <div class="xs" style="color:#777;margin-top:4mm">Quellen: NBC News (SOX, 05.11.), Yahoo Finance (Börsenwert, Arbeitsmarkt, CME FedWatch), CNBC (Wählerumfrage, 05.11.), Berkshire Hathaway 10-Q, Marvell IR, Goldman Sachs Prime Brokerage via Hedgeweek. Mit <span style="color:var(--lime)">●</span> markiert: eigene Berechnung aus Vision-Universe-Daten.</div>
+    <div class="xs" style="color:#777;margin-top:4mm">Mit <span style="color:var(--lime)">●</span> markiert: eigene Berechnung aus Vision-Universe-Daten.</div>
   </div>
-  <div data-foot></div>
+  <div data-foot="NBC News 05.11. (SOX), Yahoo Finance 05./06.11. (Börsenwert, Arbeitsmarkt), Trading Economics (Inflation), CNBC 05.11. (Wählerumfrage), Berkshire Hathaway 10-Q via CNBC 07.11., Marvell IR 02.11., Goldman Sachs Prime Brokerage via Hedgeweek 02.11."></div>
 </section>
 <script>
 VUM.k('zahlen',()=>{const D=VUM.D,c=VUM.C;return [
@@ -177,7 +183,7 @@ VUM.k('opener',()=>['NVDA','MU','VRT','ORCL','CRWV','AMD'].map(t=>{const c=VUM.C
   <div data-foot="Zitate übersetzt. Quellen: CNBC 05.11., NBC 05.11., StockTitan 05./06.11., Hedgeweek 02.11."></div>
 </section>
 <script>
-VUM.k('capex',()=>VUC.hbars([{l:'Alphabet',v:51.3},{l:'Microsoft',v:45.2},{l:'Meta',v:34.9}],{w:200,rh:22,lw:62,vw:10,dark:1}).replace(/\+([\d,]+) %/g,'$1'));
+VUM.k('capex',()=>VUC.hbars([{l:'Alphabet',v:51.3},{l:'Microsoft',v:45.2},{l:'Meta',v:34.9}],{w:200,rh:22,lw:62,vw:30,dark:1,fmt:v=>VUM.de(v,1)}));
 </script>
 
 <!-- 07-titel-daten.html -->
@@ -232,7 +238,7 @@ VUM.k('neu13f',()=>`<div class="kick" style="color:var(--lime)">Neue 13F-Halter 
     <div class="sub" style="max-width:180mm">Am 17. November legt Nvidia Zahlen vor. Davor muss Jensen Huang Fragen aus Washington beantworten, und der Wochenchart zeigt ein Muster, das Techniker nervös macht.</div>
     <div style="display:grid;grid-template-columns:1fr 66mm;gap:6mm;margin-top:4mm">
       <div>
-        <div class="body cols2" style="column-gap:5mm"><p>Am Donnerstag fiel Nvidia um 9,3&nbsp;% auf 181,60&nbsp;$ und rutschte im Handel kurz unter den Schlusskurs vom Jahresende. Laut Forbes verlor Jensen Huang an einem Tag rund 12 Mrd.&nbsp;$ Vermögen. Am Freitag holte die Aktie 2,8&nbsp;% zurück und schloss bei <b data-k="nv-p"></b> wieder knapp über dem Stand vom Jahresanfang.</p><p>Neben der Wahl drückt ein Brief: Drei republikanische Ausschussvorsitzende im Repräsentantenhaus baten Huang zu einem vertraulichen Gespräch über Kontakte zu einem Manager der Firma Megaspeed. Antwort bis 11. November, Termin am 18. November. Einen Vorwurf erhebt der Brief nicht, Nvidia weist den zugrunde liegenden Zeitungsbericht zurück.</p><p>Was in den Schlagzeilen fehlt: Gemessen am Gewinn der letzten vier Quartale ist Nvidia mit einem KGV von <b data-k="nv-pe"></b> die am niedrigsten bewertete der großen KI-Aktien, weit unter AMD oder Broadcom. Zugleich haben Insider in 90 Tagen Aktien für <b data-k="nv-ins"></b> verkauft, Käufe gab es keine. Unsere Technik-Engine meldet im Wochenchart ein bestätigtes Doppeltop (Seite 20).</p><p>Die Zahlen am 17. November nach US-Börsenschluss sind der wichtigste Termin für die ganze KI-Kette. Das Quartal endete am 25. Oktober, also vor der Wahl. Wichtiger als die Zahlen dürfte deshalb der Ausblick sein: was Nvidia über die Bestellungen der Cloud-Konzerne sagt.</p></div>
+        <div class="body cols2" style="column-gap:5mm"><p>Am Donnerstag fiel Nvidia um 9,3&nbsp;% auf 181,60&nbsp;$ und rutschte im Handel kurz unter den Schlusskurs vom Jahresende. Laut Forbes verlor Jensen Huang an einem Tag rund 12 Mrd.&nbsp;$ Vermögen. Am Freitag holte die Aktie 2,8&nbsp;% zurück und schloss bei <b data-k="nv-p"></b> wieder knapp über dem Stand vom Jahresanfang.</p><p>Neben der Wahl drückt ein Brief: Drei republikanische Ausschussvorsitzende im Repräsentantenhaus baten Huang zu einem vertraulichen Gespräch über Kontakte zu einem Manager der Firma Megaspeed. Antwort bis 11. November, Termin am 18. November. Einen Vorwurf erhebt der Brief nicht, Nvidia weist den zugrunde liegenden Zeitungsbericht zurück.</p><p>Was in den Schlagzeilen fehlt: Gemessen am Gewinn der letzten vier Quartale ist Nvidia mit einem KGV von <b data-k="nv-pe"></b> die am niedrigsten bewertete der großen KI-Aktien, weit unter AMD oder Broadcom. Zugleich haben Insider in 90 Tagen Aktien für <b data-k="nv-ins"></b> verkauft, Käufe gab es keine. Unsere Technik-Engine meldet im Wochenchart ein bestätigtes Doppeltop (Seite 21).</p><p>Die Zahlen am 17. November nach US-Börsenschluss sind der wichtigste Termin für die ganze KI-Kette. Das Quartal endete am 25. Oktober, also vor der Wahl. Wichtiger als die Zahlen dürfte deshalb der Ausblick sein: was Nvidia über die Bestellungen der Cloud-Konzerne sagt.</p></div>
       </div>
       <div><div data-k="box-NVDA"></div></div>
     </div>
@@ -385,14 +391,36 @@ VUM.k('amd-pe',()=>VUM.de(VUM.C('AMD').pe,0));VUM.k('amd-ins',()=>_i('AMD'));
     <div style="position:absolute;left:0;right:0;bottom:0">
       <div class="kick" style="color:var(--lime)">Die Termine, die über die KI-Kette entscheiden</div>
       <div class="grid" style="grid-template-columns:repeat(6,1fr);gap:3mm;margin-top:3mm" data-k="kal"></div>
-      <div class="xs" style="color:#777;margin-top:3mm">Zitate übersetzt. Quellen: Burry-Substack-Notiz, 24/7 Wall St. 14.10., Forbes/TheStreet 04.11., Goldman Sachs via Hedgeweek, StockTitan 06.11., Microsoft Q1 FY27, Yahoo Finance 06.11., Nvidia IR, StockTitan Termine 06.11., CREFC (Haushalt).</div>
     </div>
   </div>
-  <div data-foot></div>
+  <div data-foot="Burry-Substack-Notiz, 24/7 Wall St. 14.10., Forbes 07.10. und TheStreet 04.11. (Dalio), Goldman Sachs via Hedgeweek, StockTitan 06.11. (Jefferies), Microsoft Q1 FY27 (Hood), Yahoo Finance 06.11. (Yardeni), Nvidia IR, StockTitan Termine 06.11., CREFC (Haushalt). Zitate übersetzt."></div>
 </section>
 <script>
 VUM.k('kal',()=>[['Di 10.11.','CoreWeave','Zahlen und Investitionspläne'],['Di 10.11.','US-Inflation','Oktober, 14:30 Uhr'],['Do 12.11.','Cisco, Applied Materials','Netzwerk und Chip-Maschinen'],['Mo 16.11.','13F-Frist','Was die Fonds im 3. Quartal hielten'],['Di 17.11.','Nvidia','Zahlen 3. Quartal'],['9.12.','Fed','Zinsentscheid']].map(r=>`<div style="background:#111;border:1px solid #262626;border-radius:6px;padding:3mm"><div style="font-size:7pt;font-weight:900;color:var(--lime)">${r[0]}</div><div style="font-size:9.5pt;font-weight:900;margin-top:1mm;line-height:1.1">${r[1]}</div><div class="xs" style="color:#9a9a9a;margin-top:1mm">${r[2]}</div></div>`).join(''));
 </script>
+
+<!-- 13a-anzeige-app.html -->
+<section class="page dark ad">
+  <div class="bleed" style="background-image:url(img/hf-app-phones.jpg);background-position:50% 50%"></div>
+  <div class="bleed" style="background:linear-gradient(180deg,rgba(0,0,0,.85) 0%,rgba(0,0,0,.2) 30%,rgba(0,0,0,.1) 55%,rgba(0,0,0,.92) 78%,#000 100%)"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div class="pad" style="inset:12mm 14mm 14mm">
+    <div style="display:flex;justify-content:space-between;align-items:center"><span class="tag" style="color:#9a9a9a">Anzeige</span><img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:4.5mm;filter:invert(1)" alt="Vision Universe"></div>
+    <div style="font-size:54pt;font-weight:900;letter-spacing:-.06em;line-height:.86;margin-top:10mm">Die Börse.<br><span style="color:var(--lime)">In deiner Tasche.</span></div>
+    <div style="position:absolute;left:0;right:0;bottom:0">
+      <span class="stamp" style="transform:rotate(-3deg);font-size:13pt">BALD VERFÜGBAR</span>
+      <div class="sub" style="margin-top:5mm;max-width:150mm;color:#e6e6e6;font-size:12.5pt">Über 5.600 US-Aktien, jeden Abend neu berechnet. Discover, Screener, Charttechnik, Hedgefonds, Fundamentaldaten. Alles, was in diesem Heft steht, in einer App.</div>
+      <div style="display:grid;grid-template-columns:30mm 1fr;gap:7mm;align-items:center;margin-top:7mm;border-top:1px solid #333;padding-top:6mm">
+        <img src="img/qr-web.svg" style="width:30mm;height:30mm;border-radius:4px" alt="QR-Code www.visionuniverse.de">
+        <div>
+          <div style="font-size:20pt;font-weight:900;letter-spacing:-.03em">www.visionuniverse.de</div>
+          <div class="sm" style="color:#bdbdbd;margin-top:1.5mm">Jetzt vormerken und den Newsletter eintragen. Wir melden uns, sobald die App startet.</div>
+          <div data-k="social1" style="margin-top:3mm"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- 14-applovin.html -->
 <section class="page imgtop">
@@ -539,12 +567,12 @@ VUM.k('hf-okt',()=>[['Quantedge',7.2],['Citadel Wellington',1.7],['Dymon',-1.8],
         <div class="h3" style="color:#fff">Was die Fonds im 2. Quartal hielten</div>
         <div class="sm" style="color:#9a9a9a;margin:1mm 0 3mm">Auszug aus unseren 13F-Daten (Stand 30.06.)</div>
         <div style="font-size:8pt;line-height:1.5">
-          <div class="fact"><span><b style="text-align:left">Berkshire</b> · 299 Mrd. $</span><b>Apple 22 % · Alphabet aufgestockt +45 %</b></div>
-          <div class="fact"><span><b>Bridgewater</b> · 24 Mrd. $</span><b>Nvidia −18 % · Broadcom −28 %</b></div>
-          <div class="fact"><span><b>Appaloosa</b> · 7,7 Mrd. $</span><b>Micron −41 % · TSMC +24 %</b></div>
-          <div class="fact"><span><b>ARK</b> · 15 Mrd. $</span><b>AMD −48 % · neu: SpaceX</b></div>
-          <div class="fact"><span><b>Situational Awareness</b> · 20 Mrd. $</span><b>Sandisk 28 % · Micron 27,5 %</b></div>
-          <div class="fact"><span><b>Pershing (Ackman)</b> · 30.09.</span><b>Microsoft 15 % · Uber 14 % · Meta 11 %</b></div>
+          <div style="padding:1.6mm 0;border-bottom:1px solid #262626"><div style="display:flex;justify-content:space-between;gap:3mm"><b>Berkshire</b><span style="color:#9a9a9a">299 Mrd. $</span></div><div style="margin-top:.6mm;color:#e6e6e6">Apple 22 % · Alphabet aufgestockt +45 %</div></div>
+          <div style="padding:1.6mm 0;border-bottom:1px solid #262626"><div style="display:flex;justify-content:space-between;gap:3mm"><b>Bridgewater</b><span style="color:#9a9a9a">24 Mrd. $</span></div><div style="margin-top:.6mm;color:#e6e6e6">Nvidia −18 % · Broadcom −28 %</div></div>
+          <div style="padding:1.6mm 0;border-bottom:1px solid #262626"><div style="display:flex;justify-content:space-between;gap:3mm"><b>Appaloosa</b><span style="color:#9a9a9a">7,7 Mrd. $</span></div><div style="margin-top:.6mm;color:#e6e6e6">Micron −41 % · TSMC +24 %</div></div>
+          <div style="padding:1.6mm 0;border-bottom:1px solid #262626"><div style="display:flex;justify-content:space-between;gap:3mm"><b>ARK</b><span style="color:#9a9a9a">15 Mrd. $</span></div><div style="margin-top:.6mm;color:#e6e6e6">AMD −48 % · neu: SpaceX</div></div>
+          <div style="padding:1.6mm 0;border-bottom:1px solid #262626"><div style="display:flex;justify-content:space-between;gap:3mm"><b>Situational Awareness</b><span style="color:#9a9a9a">20 Mrd. $</span></div><div style="margin-top:.6mm;color:#e6e6e6">Sandisk 28 % · Micron 27,5 %</div></div>
+          <div style="padding:1.6mm 0;border-bottom:1px solid #262626"><div style="display:flex;justify-content:space-between;gap:3mm"><b>Pershing (Ackman)</b><span style="color:#9a9a9a">30.09.</span></div><div style="margin-top:.6mm;color:#e6e6e6">Microsoft 15 % · Uber 14 % · Meta 11 %</div></div>
         </div>
         <div class="xs" style="color:#777;margin-top:2mm">Quellen: VU-Hedgefonds-Daten (SEC 13F), Pershing-Brief 02.11. In der App: alle 119 Fonds mit Käufen und Verkäufen.</div>
       </div>
@@ -553,7 +581,7 @@ VUM.k('hf-okt',()=>[['Quantedge',7.2],['Citadel Wellington',1.7],['Dymon',-1.8],
   <div data-foot="Quellen: CNBC und Stock Titan 07.11. (Berkshire), 24/7 Wall St. 14.10. (Burry), Stock Titan Form 4 04.11. (Intel)."></div>
 </section>
 <script>
-VUM.k('ins',()=>{const I=VUM.D.ownership.insider;const rows=['NVDA','AVGO','AMD','PLTR','META','MU','MSFT'].filter(t=>I[t]).map(t=>({l:t,s:I[t].is90+' Pers.',v:I[t].nbv90/1e6}));return VUC.hbars(rows,{w:320,rh:21,lw:90,vw:44,sx:38,dark:1}).replace(/−([\d.,]+) %/g,'−$1 Mio. $')});
+VUM.k('ins',()=>{const I=VUM.D.ownership.insider;const rows=['NVDA','AVGO','AMD','PLTR','META','MU','MSFT'].filter(t=>I[t]).map(t=>({l:t,s:I[t].is90+' Pers.',v:I[t].nbv90/1e6}));return VUC.hbars(rows,{w:320,rh:21,lw:90,vw:70,sx:38,dark:1,fmt:v=>VUM.sg(v,1)+' Mio. $'})});
 VUM.k('ins-asof',()=>VUM.D.ownership.asOf.split('-').reverse().join('.'));
 </script>
 
@@ -656,7 +684,7 @@ VUM.k('sc-rows',()=>VUM.D.screen.rows.slice(0,12).map(r=>`<tr><td style="width:1
 const SEK={'Real Estate':'Immobilien','Consumer Staples':'Basiskonsum','Consumer Discretionary':'Zykl. Konsum','Financials':'Finanzen','Industrials':'Industrie','Health Care':'Gesundheit','Technology':'Technologie','Energy':'Energie','Utilities':'Versorger','Materials':'Rohstoffe','Communication Services':'Kommunikation'};
 VUM.k('rg-n',()=>VUM.D.regime.measures[0].observed.toLocaleString('de-DE'));VUM.k('rg-plain',()=>VUM.D.regime.plain);VUM.k('rg-asof',()=>VUM.D.regime.asOf.split('-').reverse().join('.'));
 VUM.k('rg-meas',()=>VUM.D.regime.measures.map(m=>`<div style="display:grid;grid-template-columns:1fr 40mm 11mm;gap:3mm;align-items:center;padding:2mm 0;border-bottom:1px solid #222"><span class="sm b">${m.label}</span>${VUC.meter(m.share,{dark:1,c:m.id==='trendBearish'||m.id==='volatilityHigh'?'#fff':'#c8f531'})}<span class="b" style="text-align:right">${VUM.de(m.share*100,0)}&nbsp;%</span></div>`).join(''));
-VUM.k('rg-sek',()=>VUC.hbars(VUM.D.sp500.sectors.map(r=>({l:SEK[r.sector]||r.sector,s:r.n+' Titel',v:r.median})),{w:320,rh:21,lw:118,vw:44,sx:80,dark:1}));
+VUM.k('rg-sek',()=>VUC.hbars(VUM.D.sp500.sectors.map(r=>({l:SEK[r.sector]||r.sector,s:r.n+' Titel',v:r.median})),{w:320,rh:21,lw:128,vw:44,sx:84,dark:1}));
 VUM.k('rg-spy',()=>VUM.pc(VUM.D.etfs.find(e=>e.t==='SPY').week));
 </script>
 
@@ -731,10 +759,10 @@ VUM.k('dax',()=>[['Mo 02.11.',25981,0.63],['Di 03.11.',25864,-0.45],['Mi 04.11.'
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3mm;margin-top:6mm" data-k="woche"></div>
     <div class="grid" style="grid-template-columns:1.3fr 1fr;gap:5mm;position:absolute;left:0;right:0;bottom:0">
       <div class="ph" style="height:62mm;background-image:url(img/hf-boersenglocke.jpg)"><span class="ki">KI-Bild</span><div class="cap" style="font-size:8.5pt"><b style="color:var(--lime)">Ausblick:</b> Nvidia am 17.11., 13F-Meldungen bis 16.11. Und der Börsengang von Anthropic: laut Prognosemärkten nur noch etwa 50 % Wahrscheinlichkeit für einen Start vor dem 1. Dezember.</div></div>
-      <div class="card ink"><div class="kick" style="color:var(--lime)">Politik</div><div class="sm" style="margin-top:2mm;line-height:1.55;color:#d6d6d6">Der aktuelle US-Haushalt läuft bis <b style="color:#fff">11. Dezember</b>. Bis dahin muss der alte Kongress handeln, der neue beginnt im Januar 2027. Am 13.11. treffen sich die EU-Staats- und Regierungschefs informell in Irland.</div><div class="xs" style="color:#777;margin-top:3mm">Quellen: finanzen.net/dpa-AFX Wochenvorschau, StockTitan Termine 06.11., Trading Economics, Nvidia IR, Yahoo Finance 06.11. (Anthropic), CREFC (Haushalt). Termine ohne Gewähr.</div></div>
+      <div class="card ink"><div class="kick" style="color:var(--lime)">Politik</div><div class="sm" style="margin-top:2mm;line-height:1.55;color:#d6d6d6">Der aktuelle US-Haushalt läuft bis <b style="color:#fff">11. Dezember</b>. Bis dahin muss der alte Kongress handeln, der neue beginnt im Januar 2027. Am 13.11. treffen sich die EU-Staats- und Regierungschefs informell in Irland.</div></div>
     </div>
   </div>
-  <div data-foot></div>
+  <div data-foot="finanzen.net/dpa-AFX Wochenvorschau 03.11., StockTitan Termine 06.11., Trading Economics, Nvidia IR 28.10., Yahoo Finance 06.11. (Anthropic), CREFC (Haushalt). Termine ohne Gewähr."></div>
 </section>
 <script>
 VUM.k('woche',()=>[
@@ -754,10 +782,10 @@ VUM.k('woche',()=>[
   <div class="pad" style="top:15mm">
     <span class="ressort">Aus der App</span>
     <div class="mega" style="font-size:50pt;margin-top:4mm">Alles aus diesem Heft.<br><span style="color:var(--lime)">Täglich neu.</span></div>
-    <div class="sub" style="margin-top:5mm;max-width:120mm;color:#d6d6d6;font-size:12pt">Jede Zahl in diesem Magazin stammt aus Vision Universe. In der App siehst du sie für über 5.600 US-Aktien, jeden Abend aktualisiert.</div>
+    <div class="sub" style="margin-top:5mm;max-width:120mm;color:#d6d6d6;font-size:12pt">Jede Zahl in diesem Magazin stammt aus Vision Universe. In der App, die bald startet, siehst du sie für über 5.600 US-Aktien, jeden Abend aktualisiert.</div>
     <div style="display:grid;gap:4mm;margin-top:8mm;max-width:118mm" data-k="app"></div>
     <div style="position:absolute;left:0;bottom:0;max-width:120mm">
-      <div style="font-size:9pt;font-weight:800;color:#9a9a9a">research.visionuniverse.de</div>
+      <div style="display:flex;gap:4mm;align-items:center"><img src="img/qr-web.svg" style="width:20mm;height:20mm;border-radius:3px"><div><div style="font-size:12pt;font-weight:900;color:#fff">www.visionuniverse.de</div><div style="font-size:8pt;font-weight:800;color:var(--lime)">App bald verfügbar · Newsletter eintragen</div></div></div>
       <div style="font-size:20pt;font-weight:900;letter-spacing:-.03em;margin-top:1mm">Analyse-Software ohne Empfehlungen.</div>
     </div>
   </div>
@@ -766,9 +794,9 @@ VUM.k('woche',()=>[
 <script>
 VUM.k('app',()=>[
  ['Discover','Swipe dich durch Aktien und Themen, mit Klartext-Geschichte zu jedem Wert.','Seite 07: Wochenbilanz von 495 S&amp;P-Aktien'],
- ['Screener','Eigene Regeln bauen, wie unser Screening der Woche, und sofort Treffer sehen.','Seite 21: '+VUM.D.screen.hits+' Aktien, die im Ausverkauf stiegen'],
- ['Technical','Muster, Trends und Kurslücken, erkannt nach festen Regeln.','Seite 20: Nvidias Doppeltop'],
- ['Hedgefonds','Was 119 bekannte Fonds kaufen und verkaufen, aus den 13F-Meldungen.','Seiten 18–19: Burry, Berkshire, Ackman'],
+ ['Screener','Eigene Regeln bauen, wie unser Screening der Woche, und sofort Treffer sehen.','Seite 22: '+VUM.D.screen.hits+' Aktien, die im Ausverkauf stiegen'],
+ ['Technical','Muster, Trends und Kurslücken, erkannt nach festen Regeln.','Seite 21: Nvidias Doppeltop'],
+ ['Hedgefonds','Was 119 bekannte Fonds kaufen und verkaufen, aus den 13F-Meldungen.','Seiten 19–20: Burry, Berkshire, Ackman'],
  ['Supertrader','Die Methoden berühmter Trader als Regelwerk. Heute erfüllen '+VUM.D.supertrader.find(s=>s.id==='DARVAS_BOX').watch+' Aktien die Beobachtungsregel nach Darvas.','Forschung, nicht zertifiziert'],
 ].map(r=>`<div style="display:grid;grid-template-columns:30mm 1fr;gap:4mm;border-top:1px solid #333;padding-top:3mm"><div style="font-size:12pt;font-weight:900;color:var(--lime)">${r[0]}</div><div><div class="sm" style="color:#fff;font-weight:600;line-height:1.4">${r[1]}</div><div class="xs" style="color:#9a9a9a;margin-top:1mm">${r[2]}</div></div></div>`).join(''));
 </script>
@@ -780,11 +808,16 @@ VUM.k('app',()=>[
     <span class="ressort">Quick-Check</span>
     <div class="hx" style="margin-top:3mm">22 bekannte US-Aktien auf einen Blick</div>
     <div class="sub" style="margin-top:2mm;color:var(--g4)">Kurs, Woche, zwölf Monate, Bewertung, Trend: alles aus unseren Daten, Stand Freitag, 06.11.2026.</div>
-    <table class="t" style="margin-top:5mm;font-size:8.2pt">
+    <table class="t qc" style="margin-top:4mm;font-size:8pt">
       <thead><tr><th></th><th>Aktie</th><th class="r">Kurs $</th><th class="r">Woche</th><th class="r">12 Monate</th><th class="r">Abstand Hoch</th><th class="r">KGV</th><th class="r">Über 200-T.</th><th class="r">Rel. Stärke</th></tr></thead>
       <tbody data-k="qc"></tbody>
     </table>
     <div class="xs mu" style="margin-top:3mm">KGV: Kurs geteilt durch den Gewinn je Aktie der letzten vier Quartale (SEC). „Über 200-T.“: Schlusskurs über dem Durchschnitt der letzten 200 Handelstage. Relative Stärke: Perzentil im Universum von <span data-k="qc-u"></span> US-Aktien, 100 = stärkste. Werte beschreiben die Vergangenheit, keine Empfehlung.</div>
+    <div class="card ink" style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:24mm 1fr auto;gap:5mm;align-items:center">
+      <img src="img/qr-web.svg" style="width:24mm;height:24mm;border-radius:3px" alt="QR-Code">
+      <div><div class="kick" style="color:var(--lime)">Anzeige · Newsletter</div><div style="font-size:14pt;font-weight:900;margin-top:1mm;line-height:1.1">Das Aktienmagazin direkt in dein Postfach.</div><div class="xs" style="color:#bdbdbd;margin-top:1mm">Kostenlos eintragen auf www.visionuniverse.de · Instagram und TikTok: @app.visionuniverse</div></div>
+      <span class="stamp" style="font-size:9pt">GRATIS</span>
+    </div>
   </div>
   <div data-foot="Daten: Vision Universe (Tiingo, SEC EDGAR)."></div>
 </section>
@@ -793,20 +826,77 @@ VUM.k('qc',()=>VUM.D.quick.map(q=>`<tr><td style="width:10mm"><img src="../../..
 VUM.k('qc-u',()=>VUM.D.universe.toLocaleString('de-DE'));
 </script>
 
-<!-- 28-rueckseite.html -->
-<section class="page dark">
-  <div class="bleed" style="background-image:url(img/hf-wahlurne-rechenzentrum.jpg);background-position:50% 50%;opacity:.35"></div>
-  <div class="bleed" style="background:linear-gradient(180deg,#000 0%,rgba(0,0,0,.6) 40%,#000 100%)"></div>
-  <div class="pad" style="inset:14mm">
-    <img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:6mm;filter:invert(1)" alt="Vision Universe">
-    <div style="font-size:30pt;font-weight:900;letter-spacing:-.05em;margin-top:2mm">AKTIEN<span style="color:var(--lime)">MAGAZIN</span></div>
-    <div class="card" style="background:var(--lime);color:#000;margin-top:10mm;max-width:120mm"><div class="kick">Nächste Ausgabe · 16.11.2026</div><div style="font-size:16pt;font-weight:900;line-height:1.1;margin-top:2mm">Die 13F-Meldungen sind da: Was Berkshire, Burry und Co. im dritten Quartal gekauft haben. Plus: Nvidia vor den Zahlen.</div></div>
-    <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:8mm;font-size:6.6pt;line-height:1.5;color:#9a9a9a">
-      <div><b style="color:#fff">Wichtige Hinweise.</b> Redaktionelle Einordnung, keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung. Kein Kursziel. Vergangene Kursentwicklungen sagen nichts über künftige aus. Kennzahlen, Ränge, Screening und Muster sind Rechenmodelle von Vision Universe nach festen Regeln. Zitate Dritter sind übersetzt und als solche gekennzeichnet. Bilder mit dem Vermerk „KI-Bild“ sind mit künstlicher Intelligenz erzeugt (Higgsfield) und zeigen keine realen Szenen. Methodik und Interessen: research.visionuniverse.de/rechtliches/methodik</div>
-      <div><b style="color:#fff">Daten und Quellen.</b> Kurse: Tiingo (split-bereinigt, Schlusskurse). Fundamentaldaten, Insider und 13F: SEC EDGAR. Redaktionelle Fakten laut Pressemitteilungen und SEC-Meldungen der Unternehmen sowie CNBC, CBS News, NBC News, Yahoo Finance, Fox Business, StockTitan, Hedgeweek, Trading Economics, onvista/dpa-AFX und weiteren, jeweils auf der Seite genannt. Redaktionsschluss: 08.11.2026. <br><br><b style="color:#fff">Vision Universe</b> · research.visionuniverse.de · Muster-Ausgabe Nr. 01, nicht veröffentlicht.</div>
+<!-- 28-impressum.html -->
+<section class="page">
+  <div data-run="Impressum · Hinweise · Quellen"></div>
+  <div class="pad" style="top:15mm">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8mm">
+      <div>
+        <span class="ressort">Impressum</span>
+        <div class="sm" style="margin-top:3mm;line-height:1.55">
+          <b>Vision Universe Aktienmagazin</b><br>Nr. 01 · 09.11.2026 · geplant wöchentlich (Muster-Ausgabe, nicht veröffentlicht)<br><br>
+          <b>Herausgeber und Verlag</b><br>RAM Consulting UG (haftungsbeschränkt)<br>Bahnhofplatz 15, 74189 Weinsberg<br>vertreten durch den Geschäftsführer Ralf Andreas Müller<br>Amtsgericht Stuttgart, HRB 803400 · USt-IdNr. DE461100952<br><br>
+          <b>Verantwortlich für den Inhalt</b> (§ 18 Abs. 2 MStV, § 8 LPresseG BW)<br>Ralf Andreas Müller, Anschrift wie oben<br><br>
+          <b>Kontakt</b><br>info@visionuniverse.de · www.visionuniverse.de<br><br>
+          <b>Entstehung</b><br>Recherche, Texte und Layout entstehen mit Unterstützung von KI und werden redaktionell geprüft und verantwortet. Kennzahlen rechnet Vision Universe nach festen Regeln aus den genannten Datenquellen.<br><br>
+          <b>Bildnachweis</b><br>Mit „KI-Bild“ markierte Bilder sind mit künstlicher Intelligenz erzeugt (Higgsfield) und zeigen keine realen Ereignisse. Firmenlogos gehören ihren Inhabern und dienen nur der Kennzeichnung.<br><br>
+          © 2026 RAM Consulting UG (haftungsbeschränkt). Alle Rechte vorbehalten. Weitergabe des unveränderten PDF ist erlaubt.
+        </div>
+      </div>
+      <div>
+        <span class="ressort">Wichtige Hinweise</span>
+        <div class="sm" style="margin-top:3mm;line-height:1.55">
+          <b>Keine Anlageberatung.</b> Dieses Magazin ist eine redaktionelle Einordnung. Es enthält keine Anlageberatung, keine Anlageempfehlung und keine Kauf- oder Verkaufsempfehlung und nennt keine Kursziele. Es berücksichtigt nicht deine persönliche Situation.<br><br>
+          <b>Risiko.</b> Aktien können bis zum Totalverlust fallen. Frühere Kursentwicklungen und Kennzahlen sind kein verlässlicher Hinweis auf künftige Ergebnisse.<br><br>
+          <b>Rechenmodelle.</b> Ränge, Screenings, Muster, Marktregime und Regel-Ergebnisse sind Rechenmodelle von Vision Universe. Sie entstehen automatisch nach beschriebenen Regeln und sind für alle gleich.<br><br>
+          <b>Angaben Dritter.</b> Zitate, Unternehmenszahlen und Einschätzungen Dritter geben deren Sicht wieder; Zitate sind übersetzt und gekennzeichnet. Für die Richtigkeit fremder Angaben übernehmen wir keine Gewähr.<br><br>
+          <b>Interessen.</b> Methodik, Quellen und mögliche Interessenkonflikte: konto.visionuniverse.de/rechtliches/methodik · Risikohinweise: konto.visionuniverse.de/rechtliches/risikohinweise
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:7mm;border-top:2px solid #000;padding-top:3mm">
+      <span class="kick">Quellen nach Seiten</span>
+      <div class="xs mu" style="margin-top:1mm">Kurse: Tiingo (Schlusskurse, split-bereinigt). Fundamentaldaten, Insider-Meldungen und 13F: SEC EDGAR. Kennzahlen: Vision Universe. Redaktionelle Fakten:</div>
+      <div class="xs" style="margin-top:2mm;column-count:2;column-gap:6mm;color:#333" data-k="quellen"></div>
+    </div>
+  </div>
+  <div class="foot"><span><b>Vision Universe</b> Aktienmagazin · Nr. 01</span><span>Redaktionsschluss 08.11.2026</span></div>
+</section>
+
+<!-- 29-rueckseite.html -->
+<section class="page dark ad">
+  <div class="bleed" style="background-image:url(img/hf-app-zug.jpg);background-position:50% 50%"></div>
+  <div class="bleed" style="background:linear-gradient(180deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.25) 32%,rgba(0,0,0,.25) 52%,rgba(0,0,0,.92) 74%,#000 100%)"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div class="pad" style="inset:12mm 14mm 12mm">
+    <div style="display:flex;justify-content:space-between;align-items:center"><span class="tag" style="color:#9a9a9a">Anzeige</span><span class="tag" style="color:var(--lime)">Bald verfügbar</span></div>
+    <img src="../../../docs/design/redesign-2027/img/vu-logo.png" style="height:8mm;filter:invert(1);margin-top:10mm" alt="Vision Universe">
+    <div style="font-size:38pt;font-weight:900;letter-spacing:-.05em;line-height:.9;margin-top:5mm">Analyse-Software<br>für Aktien. <span style="color:var(--lime)">Ohne Empfehlungen.</span></div>
+    <div style="position:absolute;left:0;right:0;bottom:0">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;margin-bottom:7mm">
+        <div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:16pt;font-weight:900">5.600+</div><div class="xs" style="color:#bdbdbd">US-Aktien, jeden Abend neu</div></div>
+        <div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:16pt;font-weight:900">119</div><div class="xs" style="color:#bdbdbd">Hedgefonds im Blick (13F)</div></div>
+        <div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:16pt;font-weight:900">10 Jahre</div><div class="xs" style="color:#bdbdbd">Geschäftszahlen aus der SEC</div></div>
+        <div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:16pt;font-weight:900">0 €</div><div class="xs" style="color:#bdbdbd">Newsletter, kostenlos</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:34mm 1fr 34mm;gap:6mm;align-items:center;background:#111;border:1px solid #262626;border-radius:10px;padding:5mm">
+        <div style="text-align:center"><img src="img/qr-web.svg" style="width:30mm;height:30mm;border-radius:4px" alt="QR-Code www.visionuniverse.de"><div class="xs" style="color:#9a9a9a;margin-top:1mm">Website</div></div>
+        <div>
+          <div style="font-size:19pt;font-weight:900;letter-spacing:-.03em">www.visionuniverse.de</div>
+          <div class="sm" style="color:#bdbdbd;margin-top:1.5mm;line-height:1.45">Newsletter eintragen und als Erste erfahren, wann die App startet. Das Aktienmagazin kommt jede Woche neu.</div>
+          <div data-k="social2" style="margin-top:3mm"></div>
+        </div>
+        <div style="text-align:center"><img src="img/qr-instagram.svg" style="width:30mm;height:30mm;border-radius:4px" alt="QR-Code Instagram"><div class="xs" style="color:#9a9a9a;margin-top:1mm">Instagram</div></div>
+      </div>
     </div>
   </div>
 </section>
+<script>
+(function(){const ig='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>';
+const tt='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.4 2.2 1.8 3.7 4 4v3.2c-1.5 0-2.9-.4-4-1.1V15a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.3a2.8 2.8 0 1 0 1.8 2.6V3h3.2z"/></svg>';
+const html=`<div style="display:flex;gap:5mm;flex-wrap:wrap;font-size:9.5pt;font-weight:800"><span style="display:inline-flex;gap:2mm;align-items:center;color:#fff"><span style="color:var(--lime);display:inline-flex">${ig}</span>@app.visionuniverse</span><span style="display:inline-flex;gap:2mm;align-items:center;color:#fff"><span style="color:var(--lime);display:inline-flex">${tt}</span>@app.visionuniverse</span></div>`;
+VUM.k('social1',html);VUM.k('social2',html);})();
+</script>
 
 <script>VUM.finish();</script>
 </body></html>

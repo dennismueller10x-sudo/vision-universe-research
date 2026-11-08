@@ -25,10 +25,9 @@
     <div style="position:absolute;left:0;right:0;bottom:0">
       <div class="kick" style="color:var(--lime)">Die Termine, die über die KI-Kette entscheiden</div>
       <div class="grid" style="grid-template-columns:repeat(6,1fr);gap:3mm;margin-top:3mm" data-k="kal"></div>
-      <div class="xs" style="color:#777;margin-top:3mm">Zitate übersetzt. Quellen: Burry-Substack-Notiz, 24/7 Wall St. 14.10., Forbes/TheStreet 04.11., Goldman Sachs via Hedgeweek, StockTitan 06.11., Microsoft Q1 FY27, Yahoo Finance 06.11., Nvidia IR, StockTitan Termine 06.11., CREFC (Haushalt).</div>
     </div>
   </div>
-  <div data-foot></div>
+  <div data-foot="Burry-Substack-Notiz, 24/7 Wall St. 14.10., Forbes 07.10. und TheStreet 04.11. (Dalio), Goldman Sachs via Hedgeweek, StockTitan 06.11. (Jefferies), Microsoft Q1 FY27 (Hood), Yahoo Finance 06.11. (Yardeni), Nvidia IR, StockTitan Termine 06.11., CREFC (Haushalt). Zitate übersetzt."></div>
 </section>
 <script>
 VUM.k('kal',()=>[['Di 10.11.','CoreWeave','Zahlen und Investitionspläne'],['Di 10.11.','US-Inflation','Oktober, 14:30 Uhr'],['Do 12.11.','Cisco, Applied Materials','Netzwerk und Chip-Maschinen'],['Mo 16.11.','13F-Frist','Was die Fonds im 3. Quartal hielten'],['Di 17.11.','Nvidia','Zahlen 3. Quartal'],['9.12.','Fed','Zinsentscheid']].map(r=>`<div style="background:#111;border:1px solid #262626;border-radius:6px;padding:3mm"><div style="font-size:7pt;font-weight:900;color:var(--lime)">${r[0]}</div><div style="font-size:9.5pt;font-weight:900;margin-top:1mm;line-height:1.1">${r[1]}</div><div class="xs" style="color:#9a9a9a;margin-top:1mm">${r[2]}</div></div>`).join(''));

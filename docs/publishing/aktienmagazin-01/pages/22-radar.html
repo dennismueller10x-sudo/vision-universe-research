@@ -30,6 +30,6 @@
 const SEK={'Real Estate':'Immobilien','Consumer Staples':'Basiskonsum','Consumer Discretionary':'Zykl. Konsum','Financials':'Finanzen','Industrials':'Industrie','Health Care':'Gesundheit','Technology':'Technologie','Energy':'Energie','Utilities':'Versorger','Materials':'Rohstoffe','Communication Services':'Kommunikation'};
 VUM.k('rg-n',()=>VUM.D.regime.measures[0].observed.toLocaleString('de-DE'));VUM.k('rg-plain',()=>VUM.D.regime.plain);VUM.k('rg-asof',()=>VUM.D.regime.asOf.split('-').reverse().join('.'));
 VUM.k('rg-meas',()=>VUM.D.regime.measures.map(m=>`<div style="display:grid;grid-template-columns:1fr 40mm 11mm;gap:3mm;align-items:center;padding:2mm 0;border-bottom:1px solid #222"><span class="sm b">${m.label}</span>${VUC.meter(m.share,{dark:1,c:m.id==='trendBearish'||m.id==='volatilityHigh'?'#fff':'#c8f531'})}<span class="b" style="text-align:right">${VUM.de(m.share*100,0)}&nbsp;%</span></div>`).join(''));
-VUM.k('rg-sek',()=>VUC.hbars(VUM.D.sp500.sectors.map(r=>({l:SEK[r.sector]||r.sector,s:r.n+' Titel',v:r.median})),{w:320,rh:21,lw:118,vw:44,sx:80,dark:1}));
+VUM.k('rg-sek',()=>VUC.hbars(VUM.D.sp500.sectors.map(r=>({l:SEK[r.sector]||r.sector,s:r.n+' Titel',v:r.median})),{w:320,rh:21,lw:128,vw:44,sx:84,dark:1}));
 VUM.k('rg-spy',()=>VUM.pc(VUM.D.etfs.find(e=>e.t==='SPY').week));
 </script>
