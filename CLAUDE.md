@@ -28,6 +28,7 @@ Geltende Vertragstests (alle in Core-CI, laufen auf jedem PR):
 | `core/tests/universe-follow-chain.test.mjs` (UF) | nur `security-master-eligibility.yml` ändert das Produktuniversum, und jede am Produktumfang geprüfte Datenart zieht im selben Lauf nach |
 | `core/tests/data-branch-pilot.test.mjs` (DB) | Datenarten auf dem Datenzweig (`core/registry/data-branch.json`) |
 | `core/tests/module-manifest.test.mjs` (MM) | Modul-Steckbrief `products/<id>/module.json` für jedes Produkt (Web bleibt unter `/<id>/`) (jede oberste Seite ist Produkt oder begründete Seite): Route, Menü, Zugang free/pro/intern, Status, Datenarten (Erzeuger, Zeitplan, Frische nur in `domains.json`); Menü (`assets/site-navigation.js`, `groups`), `core/registry/modules.json`, `/status/` und `system-health` entstehen daraus (`node scripts/core/build-modules.mjs`) |
+| `core/tests/schedule-registry.test.mjs` (SZ) | ein Zeitgeber: jeder Zeitplan steht in `core/registry/schedule.json`; `timer: waker`-Einträge haben keinen Cron im Workflow, aber Eingang `zeitplan`, Marke im `run-name` und die Zeitplan-Weiche |
 
 Was von den Pfad-Gates bleibt:
 
@@ -71,6 +72,7 @@ Regeln für Workflows, die committen (ADR-005):
 - Concurrency-Gruppe mit `-${{ github.ref_name }}`.
 - Workflow-Eingaben nur über `env:` in `run`-Blöcke, nie `${{ inputs.* }}` im Shell-Text.
 - Prüf-Workflows bekommen `permissions: contents: read`.
+- Zeitpläne nur über `core/registry/schedule.json` (ein Zeitgeber: Cloudflare-Wecker, RUNBOOK §10). Kein neuer `schedule:`-Cron im Workflow; Vertragstest SZ.
 - Diff-Gates in flachen Checkouts dürfen bei einem Git-Fehler nicht still „0 Dateien“ melden: `set -euo pipefail` und eine erreichbare Basis.
 
 ## Diagnose
