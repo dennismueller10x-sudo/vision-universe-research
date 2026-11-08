@@ -1,0 +1,21 @@
+{
+ "schema": "vu-module-2",
+ "id": "company-intelligence",
+ "label": "Company Intelligence",
+ "status": "BETA",
+ "route": "/company-intelligence/",
+ "access": "intern",
+ "navigation": null,
+ "data": [
+  "companyIntelligence"
+ ],
+ "reads": [
+  "companyMaster"
+ ],
+ "producers": [
+  "scripts/company_intelligence/cli.py"
+ ],
+ "tests": [
+  "scripts/company_intelligence/tests/*.test.mjs"
+ ]
+}

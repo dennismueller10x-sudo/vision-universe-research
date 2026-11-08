@@ -29,7 +29,7 @@ const now = a.now ? new Date(a.now) : new Date();
 const artifacts = await loadArtifacts(E.registry, load);
 const report = E.Health.evaluate(E.registry, artifacts, { now, calendar: E.calendar, tradingSession: E.TradingSession, target: a.site ? "site" : "repository" });
 report.target = a.site || "repository";
-/* Produkte aus den Steckbriefen (<produkt>/module.json): schlechtester Zustand ihrer Datenarten. */
+/* Produkte aus den Steckbriefen (products/<id>/module.json): schlechtester Zustand ihrer Datenarten. */
 report.products = Modules.productHealth(loadModules().map((x) => x.m), report);
 
 if (a.json) console.log(JSON.stringify(report, null, 2));

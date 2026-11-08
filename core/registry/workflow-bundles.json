@@ -38,6 +38,8 @@
     "ki-depots-daily.yml",
     "market-validation-data.yml",
     "supertrader-house-live.yml",
+    "technical-intelligence-build.yml",
+    "technical-world.yml",
     "vorsorge-daily-rebuild.yml"
    ]
   },
@@ -92,8 +94,17 @@
   },
   "account": {
    "purpose": "Konten, Abos, Brevo",
-   "workflow": null,
-   "replaces": []
+   "workflow": "account.yml",
+   "replaces": [
+    "account-backup.yml",
+    "account-cancellations.yml",
+    "account-db-approved.yml",
+    "account-monitor.yml",
+    "account-production-auth.yml",
+    "account-production-checks.yml",
+    "account-production-deploy.yml",
+    "account-production-stripe.yml"
+   ]
   },
   "social": {
    "purpose": "Social und Reels",
@@ -144,34 +155,10 @@
   }
  },
  "workflows": {
-  "account-backup.yml": {
-   "bundle": "account"
-  },
-  "account-cancellations.yml": {
-   "bundle": "account"
-  },
   "account-ci.yml": {
    "bundle": "ci"
   },
-  "account-db-approved.yml": {
-   "bundle": "account"
-  },
-  "account-monitor.yml": {
-   "bundle": "account"
-  },
-  "account-production-auth.yml": {
-   "bundle": "account"
-  },
   "account-production-auto.yml": {
-   "bundle": "account"
-  },
-  "account-production-checks.yml": {
-   "bundle": "account"
-  },
-  "account-production-deploy.yml": {
-   "bundle": "account"
-  },
-  "account-production-stripe.yml": {
    "bundle": "account"
   },
   "app-android-build.yml": {
@@ -338,12 +325,6 @@
   },
   "technical-ci.yml": {
    "bundle": "ci"
-  },
-  "technical-intelligence-build.yml": {
-   "bundle": "pipeline-daily"
-  },
-  "technical-world.yml": {
-   "bundle": "pipeline-daily"
   },
   "universe-master.yml": {
    "bundle": "pipeline-weekly"

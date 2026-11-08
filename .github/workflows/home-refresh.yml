@@ -19,8 +19,9 @@ on:
       - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
       - "Quant 2.0 Product Intelligence Materialization"
       - "Supertrader Signale"
-      # Elliott auf der Startseite kommt aus dem Chartbild (v3) - nach dessen Neubau neu einsetzen.
-      - "Chartbild-Produktdaten (Technical Intelligence v3)"
+      # Elliott auf der Startseite kommt aus dem Chartbild (v3) - nach dessen Neubau neu einsetzen. Seit Stufe 7
+      # (08.11.2026) Teil technical-intelligence in pipeline-daily: nur Buendellaeufe mit dieser Marke im Lauftitel.
+      - "Pipeline taeglich (Buendel pipeline-daily)"
     types: [completed]
     branches: [main]
 
@@ -28,12 +29,15 @@ permissions:
   contents: write
 
 concurrency:
-  group: home-refresh-${{ github.ref_name }}
+  # Ein Buendellauf ohne Chartbild-Teil bekommt eine eigene Gruppe: er darf keinen wartenden gueltigen Lauf verdraengen.
+  group: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Pipeline taeglich (Buendel pipeline-daily)' && !contains(github.event.workflow_run.display_title, '· technical-intelligence') && format('home-refresh-ignoriert-{0}', github.run_id) || format('home-refresh-{0}', github.ref_name) }}
   cancel-in-progress: false
 
 jobs:
   build:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    if: >-
+      github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && !(
+      github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Pipeline taeglich (Buendel pipeline-daily)' && !contains(github.event.workflow_run.display_title, '· technical-intelligence')))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -48,7 +48,7 @@ Verwaist/tot (Aufräumen separat): `quant/markt` (Datenpfad `market/daily/` fehl
 | `technical-signals-v1` | Materialisierung im selben Lauf | nachts |
 | `discover-series-long` | `long-series.yml` | Volllauf samstags und 1.–7. des Monats; **Reparaturlauf Di–Sa 04:20 UTC** (#858) |
 | `intraday/` | `intraday-pacemaker.yml`, `intraday-snapshots.yml` | 5-Min-Takt in der Sitzung (Live-Umfang ~1 400), Gesamtuniversum nach Schluss (~5 000); **2 Sitzungen** vorgehalten |
-| `technical-intelligence/v3` | `technical-intelligence-build.yml` | täglich 05:35 UTC |
+| `technical-intelligence/v3` | `pipeline-daily.yml`, Teil `technical-intelligence` (vormals `technical-intelligence-build.yml`) | täglich 05:35 UTC |
 | Live | Worker `vu-live` | Echtzeit, nur auf Aktienseiten |
 
 ---

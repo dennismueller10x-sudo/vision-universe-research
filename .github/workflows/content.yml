@@ -22,7 +22,7 @@ on:
     branches: [main]
     paths:
       - 'content/morning/**'
-      - 'scripts/morning/**'
+      - 'products/morning/**'
       - 'morning/assets/**'
 
 permissions:
@@ -44,7 +44,7 @@ jobs:
         with:
           node-version: "22"
       - name: Fetch primary-source news
-        run: node scripts/dashboard/update_news.mjs
+        run: node products/news/producer/update_news.mjs
       - name: Commit fresh news data
         shell: bash
         run: |
@@ -83,7 +83,7 @@ jobs:
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
-        run: python scripts/dashboard/fetch_analyst_ratings.py
+        run: python products/analysten/producer/fetch_analyst_ratings.py
 
       - name: Verify generated-file-only scope
         shell: bash
@@ -128,7 +128,7 @@ jobs:
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
         run: |
           set -euo pipefail
-          node scripts/analysts/fetch-consensus.mjs --max-titles 2200 --per-minute 55 --fmp-max 200 --max-minutes 42 | tee "$RUNNER_TEMP/analysten.txt"
+          node products/analysten/producer/fetch-consensus.mjs --max-titles 2200 --per-minute 55 --fmp-max 200 --max-minutes 42 | tee "$RUNNER_TEMP/analysten.txt"
           { echo '### Analysten-Konsens'; echo '```'; cat "$RUNNER_TEMP/analysten.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Nur eigene Pfade geaendert
         run: |
@@ -161,7 +161,7 @@ jobs:
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
         run: |
           set -euo pipefail
-          node scripts/analysts/probe-consensus.mjs --size 120 --seed 20261106 --per-minute 50 --out "$RUNNER_TEMP/analyst-probe.json" | tee "$RUNNER_TEMP/probe.txt"
+          node products/analysten/producer/probe-consensus.mjs --size 120 --seed 20261106 --per-minute 50 --out "$RUNNER_TEMP/analyst-probe.json" | tee "$RUNNER_TEMP/probe.txt"
           { echo '### Analysten-Abdeckung (Stichprobe)'; echo '```'; cat "$RUNNER_TEMP/probe.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
@@ -193,7 +193,7 @@ jobs:
       - name: Fetch SEC EDGAR 13F data
         env:
           OPENFIGI_API_KEY: ${{ secrets.OPENFIGI_API_KEY }}
-        run: python scripts/hedgefonds/fetch_edgar_data.py
+        run: python products/hedgefonds/producer/fetch_edgar_data.py
 
       - name: Verify generated-file-only scope
         shell: bash
@@ -248,7 +248,7 @@ jobs:
         with:
           node-version: "22"
       - name: Generate Morning pages
-        run: node scripts/morning/build-morning.mjs
+        run: node products/morning/producer/build-morning.mjs
       - name: Commit generated pages
         shell: bash
         run: |

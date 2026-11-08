@@ -5,7 +5,7 @@
 # 10 ms CPU je Anfrage; der Worker wartet fast nur auf Supabase/Stripe).
 # Kein KV, kein D1, kein Durable Object: Zustand liegt in Supabase.
 #
-# AUSGEROLLT WIRD NUR VON HAND (Workflow "Konten — vu-account ausrollen",
+# AUSGEROLLT WIRD NUR VON HAND (Workflow "Konten (Buendel account)", Teil ausrollen,
 # workflow_dispatch) in die GitHub-Umgebung "account-dev". Kein Ausrollen bei
 # Merge. Produktion braucht die Freigabe aus docs/accounts/LIVE_RELEASE.md.
 #
@@ -94,7 +94,7 @@ VU_BACKTEST_REVIEW_ENABLED = "false"
 # PRODUKTION (eine einzige Infrastruktur, docs/accounts/PRODUCTION.md)
 #
 #   npx wrangler deploy --env production   (nur ueber den Workflow
-#   "Konten — vu-account ausrollen (Produktion)", mit Freigabe)
+#   "Konten (Buendel account)", Teil ausrollen, mit Freigabe)
 #
 # Worker "vu-account" unter https://konto.visionuniverse.de (Custom Domain;
 # Cloudflare legt DNS-Eintrag und Zertifikat an). NICHT account.visionuniverse.de:

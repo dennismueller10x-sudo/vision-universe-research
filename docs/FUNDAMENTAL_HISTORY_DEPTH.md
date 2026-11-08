@@ -10,7 +10,7 @@ Stand: 25.10.2026. Untersuchung, warum „Max“ bei Apple, NVIDIA und anderen U
 | Normalisierung (`scripts/quant/sec/normalize.py`, Faktenbuch) | alle Jahre der Quelle | keine; alle Jahre werden gleich geprüft |
 | **Verbraucherdateien** (`quant/data/sec/consumer/CIK*.json`) | **letzte 13 Geschäftsjahre** | **Technisch:** `consumer.py#DEFAULT_ANNUAL_YEARS = 13` schneidet bei der Ausgabe ab (gedacht für zehn Vergleiche). Quartale: letzte 8 (`DEFAULT_QUARTERS`). |
 | Kanonischer Faktenspeicher (`quant/data/sec/canonical`) | 12 Jahre, 5 Unternehmen | technisch (`--annual-years 12`); von Fundamental nicht gelesen |
-| Fundamental-Release (`scripts/fundamental/build-history.mjs`) | wie Verbraucherdatei | keine eigene Begrenzung |
+| Fundamental-Release (`products/fundamental/producer/build-history.mjs`) | wie Verbraucherdatei | keine eigene Begrenzung |
 | Frontend (`fundamental/app.js`, `engine/catalog.js`) | alle gelieferten Jahre | keine; „Max“ zeigt alles, „10J“ bleibt fest 10 Jahre |
 | Kursreihe (`discover-series-long`) | AAPL, MSFT, XOM ab 1990, NVDA ab 1999, TSLA ab 2010 | keine Begrenzung für die Bewertung |
 | Datum des Jahresberichts (SIC-Verlauf, SEC Financial Statement Data Sets) | ab 2009 | **Quelle:** die Data Sets beginnen mit 2009q1; ein 10-K ohne XBRL steht nicht darin |

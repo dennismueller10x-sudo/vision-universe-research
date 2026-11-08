@@ -380,7 +380,7 @@ Nur in TI (Chartbild), nicht im Katalog oder Screener: **Anchored VWAP** (typisc
 - **Browser (Chart Studio):** Indikatoren und Formationshistorie erneut auf 270 Bars. SMA 10/40 W aus der langen Reihe.
 
 **Duplikate:**
-- **EMA:** `feature-store.js` (Quelle), `discover/engines/indicators.js`, `scripts/screener/build-universe.mjs#emaSeries`, `scripts/supertrader/source-faithful/common/series.mjs`.
+- **EMA:** `feature-store.js` (Quelle), `discover/engines/indicators.js`, `products/screener/producer/build-universe.mjs#emaSeries`, `scripts/supertrader/source-faithful/common/series.mjs`.
 - **SMA:** 13 Dateien.
 - **RSI:** 3 Dateien.
 - Laut Fortschrittsbericht: SMA ~14×, EMA 5×, ATR 5×.

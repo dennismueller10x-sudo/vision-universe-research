@@ -1,0 +1,24 @@
+{
+ "schema": "vu-module-2",
+ "id": "analysten",
+ "label": "Analysten",
+ "status": "LIVE",
+ "route": "/analysten/",
+ "access": "free",
+ "navigation": {
+  "group": "more",
+  "order": 4,
+  "label": "Analysten",
+  "href": "/analysten/",
+  "icon": "◇"
+ },
+ "data": [
+  "analystConsensus",
+  "analystRatings"
+ ],
+ "reads": [],
+ "producers": ["products/analysten/producer/fetch-consensus.mjs", "products/analysten/producer/fetch_analyst_ratings.py", "products/analysten/producer/probe-consensus.mjs"],
+ "tests": [
+  "products/analysten/tests/*.test.mjs"
+ ]
+}

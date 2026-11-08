@@ -1,0 +1,37 @@
+{
+ "schema": "vu-module-2",
+ "id": "screener",
+ "label": "Screener",
+ "status": "LIVE",
+ "route": "/screener/",
+ "access": "free",
+ "navigation": {
+  "group": "products",
+  "order": 8,
+  "label": "Screener",
+  "href": "/screener/",
+  "icon": "screener",
+  "claim": "Eigene Filter",
+  "entries": [
+   ["Übersicht", "/screener/", "⌂"],
+   ["Filter hinzufügen", "/screener/?view=build", "⧩"],
+   ["Treffer", "/screener/?view=results", "⌕"],
+   ["Gespeichert", "/screener/?view=saved", "▤"],
+   ["Watchlist", "/screener/?view=watchlist", "♡"]
+  ]
+ },
+ "data": [],
+ "reads": [
+  "discover",
+  "eodPrices",
+  "fundamentalsConsumer",
+  "indexMembership",
+  "companyNames"
+ ],
+ "producers": [
+  "products/screener/producer/build-universe.mjs"
+ ],
+ "tests": [
+  "screener/tests/*.test.mjs"
+ ]
+}

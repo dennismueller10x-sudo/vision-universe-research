@@ -1517,12 +1517,12 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/dashboard/backtest_technicals.py | .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/calculate_scenarios.py | .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/calculate_technicals.py | .github/workflows/sec-fundamentals-ci.yml |
-| scripts/dashboard/fetch_analyst_ratings.py | .github/workflows/content.yml, .github/workflows/sec-fundamentals-ci.yml |
+| products/analysten/producer/fetch_analyst_ratings.py | .github/workflows/content.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/fetch_fundamentals.py | .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/fetch_market_data.py | .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/migrate_adjustment_semantics.py | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/price_semantics.py | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
-| scripts/dashboard/update_news.mjs | .github/workflows/content.yml, .github/workflows/sec-fundamentals-ci.yml |
+| products/news/producer/update_news.mjs | .github/workflows/content.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/dashboard/verify_adjustment_gate.py | .github/workflows/quant-ci.yml, .github/workflows/sec-fundamentals-ci.yml |
 | scripts/design/sync-product-hero.mjs | .github/workflows/technical-ci.yml |
 | scripts/diagnose/coverage-delta.mjs | .github/workflows/coverage-metrics.yml |
@@ -1551,9 +1551,9 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/discover/serve-https.mjs | .github/workflows/discover-ci.yml, .github/workflows/discover-frontend-ci.yml, .github/workflows/monitor.yml |
 | scripts/discover/verify-discover-data.mjs | .github/workflows/company-names.yml, .github/workflows/discover-ci.yml, .github/workflows/discover-frontend-ci.yml, .github/workflows/index-membership.yml, .github/workflows/long-series.yml, .github/workflows/market-data-refresh.yml, .github/workflows/sec-consumer-fundamentals.yml, .github/workflows/security-master-eligibility.yml |
 | scripts/discover/watchlist-coupling-qa.mjs | .github/workflows/account-ci.yml, .github/workflows/discover-ci.yml, .github/workflows/discover-frontend-ci.yml |
-| scripts/fundamental/build-history.mjs | .github/workflows/ci.yml, .github/workflows/shell-ci.yml |
-| scripts/fundamental/sec-freshness.mjs | .github/workflows/ci.yml, .github/workflows/fundamental-sec-freshness.yml, .github/workflows/shell-ci.yml |
-| scripts/fundamental/verify-publication.mjs | .github/workflows/ci.yml, .github/workflows/fundamental-sec-freshness.yml, .github/workflows/shell-ci.yml |
+| products/fundamental/producer/build-history.mjs | .github/workflows/ci.yml, .github/workflows/shell-ci.yml |
+| products/fundamental/producer/sec-freshness.mjs | .github/workflows/ci.yml, .github/workflows/fundamental-sec-freshness.yml, .github/workflows/shell-ci.yml |
+| products/fundamental/producer/verify-publication.mjs | .github/workflows/ci.yml, .github/workflows/fundamental-sec-freshness.yml, .github/workflows/shell-ci.yml |
 | scripts/hedgefonds/fetch_edgar_data.py | .github/workflows/ci.yml, .github/workflows/content.yml |
 | scripts/hedgefonds/fund_meta.py | .github/workflows/ci.yml |
 | scripts/hedgefonds/test_fetch_edgar_data.py | .github/workflows/ci.yml |
@@ -2109,9 +2109,9 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/research/signals/s2.mjs | .github/workflows/research-signals-s2.yml |
 | scripts/research/signals/s2.test.mjs | .github/workflows/research-signals-s2.yml |
 | scripts/research/signals/study.test.mjs | .github/workflows/research-signals-s2.yml |
-| scripts/screener/browser-qa.mjs | .github/workflows/ci.yml |
-| scripts/screener/build-universe.mjs | .github/workflows/ci.yml, .github/workflows/shell-ci.yml |
-| scripts/screener/sic.mjs | .github/workflows/ci.yml |
+| products/screener/producer/browser-qa.mjs | .github/workflows/ci.yml |
+| products/screener/producer/build-universe.mjs | .github/workflows/ci.yml, .github/workflows/shell-ci.yml |
+| products/screener/producer/sic.mjs | .github/workflows/ci.yml |
 | scripts/social/approval-center-readiness.mjs | .github/workflows/social-ci.yml |
 | scripts/social/assert-no-secrets.mjs | .github/workflows/currency-fx-verify.yml, .github/workflows/social-ci.yml |
 | scripts/social/asset-hashtag-done.mjs | .github/workflows/social-ci.yml, .github/workflows/social-cloudflare.yml |
@@ -3229,7 +3229,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/core/lib.mjs | ` require(join(root, "core", "identity.js")), ` |
 | scripts/core/lib.mjs | ` require(join(root, "quant", "engines", "realtime", "trading-session.js")), ` |
 | scripts/core/r2-audit.mjs | ` fetch("https://api.cloudflare.com/client/v4" + path, { ` |
-| scripts/dashboard/update_news.mjs | ` fetch(url, options) ` |
+| products/news/producer/update_news.mjs | ` fetch(url, options) ` |
 | scripts/diagnose/adjustment-steps.mjs | ` require(join(root, "quant", "engines", "history-store.js")) ` |
 | scripts/diagnose/adjustment-steps.mjs | ` require(join(root, "quant", "engines", "zero-cost-guard.js")) ` |
 | scripts/diagnose/adjustment-steps.mjs | ` require(join(root, "quant", "engines", "market-quality.js")) ` |
@@ -3921,7 +3921,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/research/labor/stock-engine.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) ` |
 | scripts/research/labor/stock-engine.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) ` |
 | scripts/research/labor/stock-engine.cjs | ` require(path.join(ROOT, 'scripts/research/edge/quant-e3.cjs')) ` |
-| scripts/screener/browser-qa.mjs | ` require(process.env.PLAYWRIGHT_PATH &#124;&#124; '/opt/node22/lib/node_modules/playwright') ` |
+| products/screener/producer/browser-qa.mjs | ` require(process.env.PLAYWRIGHT_PATH &#124;&#124; '/opt/node22/lib/node_modules/playwright') ` |
 | scripts/social/approval-center-readiness.mjs | ` require(join(ROOT, "social/engines/owner-decision.js")) ` |
 | scripts/social/assert-no-secrets.mjs | ` require(join(ROOT, "social/engines/provider.js")) ` |
 | scripts/social/assess-creative-quality.mjs | ` require(join(ROOT, "social/engines/story-selection.js")) ` |
