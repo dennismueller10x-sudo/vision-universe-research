@@ -9,15 +9,20 @@ name: Pipeline taeglich (Buendel pipeline-daily)
 #                 auf claude/** per Commit-Marke [house-live:dry|sec|start] wie vorher
 #   marktvalidierung vormals market-validation-data.yml (Quelldaten der Markt-Validierung), 37 6 16 * *;
 #                 auf claude/** bei beruehrten Pfaden UND Commit-Marke [mv-data] wie vorher
+#   ki-depots     vormals ki-depots-daily.yml (KI-Depots: taeglicher Kursstand, Rechenmodell, kein echtes Geld):
+#                 werktags 23:41 UTC; nach erfolgreichem 'Marktdaten-Refresh (...)' auf main; Push auf main bei
+#                 beruehrten Ledger-/Exportpfaden; Dispatch mit Eingabe today; nur auf main (wie vorher)
 #   datenqualitaet  neu (E8-Nachlauf, docs/data/DATA_QUALITY.md): Datenqualitaetsbericht fuer /status/,
 #                 nur in den Datenzweig data/live, 13 7 * * 2-6 (nach dem naechtlichen Kurslauf)
 # Der Job `auswahl` entscheidet, welcher Teil laeuft:
 #   schedule           der Teil, dem der ausloesende Zeitplan gehoert (github.event.schedule)
 #   workflow_dispatch  genau der gewaehlte Teil (`teil`)
+#   workflow_run       ki-depots nach erfolgreichem 'Marktdaten-Refresh (...)' auf main
+#   push main          ki-depots, wenn ein Pfad aus seiner frueheren paths-Liste beruehrt ist
 #   push claude/**     hausstrategie, wenn die Commit-Nachricht [house-live: enthaelt (wie vorher);
 #                      marktvalidierung, wenn ein Pfad aus ihrer frueheren paths-Liste beruehrt ist UND [mv-data] dasteht
-# Kein Teil hat hier einen workflow_run-Ausloeser; Ketten nach Workflow-Namen bleiben vorerst in
-# ihren Dateien (siehe A-Doc: Kette als Liste).
+# Ketten, die AUF einen Workflow-Namen warten, bleiben vorerst in ihren Dateien (siehe A-Doc: Kette als Liste);
+# ki-depots haengt nur selbst an einem fremden Namen, auf ihn wartet niemand.
 
 on:
   schedule:
@@ -27,6 +32,7 @@ on:
     - cron: '15 3 25 * *'   # hausstrategie (SEC-Auffrischung am 25.)
     - cron: '37 6 16 * *'   # marktvalidierung
     - cron: '13 7 * * 2-6'   # datenqualitaet
+    - cron: '41 23 * * 1-5'   # ki-depots
   workflow_dispatch:
     inputs:
       teil:
@@ -39,15 +45,28 @@ on:
           - hausstrategie
           - marktvalidierung
           - datenqualitaet
+          - ki-depots
       mode:
         description: 'hausstrategie: Modus (vormals supertrader-house-live.yml)'
         type: choice
         options: [decide, dry, sec, start]
         default: dry
+      today:
+        description: 'ki-depots: Stichtag YYYY-MM-DD (leer = heute; vormals ki-depots-daily.yml)'
+        type: string
+        default: ''
+  # ki-depots (vormals ki-depots-daily.yml): nach dem Kurslauf
+  workflow_run:
+    workflows:
+      - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
+    types: [completed]
+    branches: [main]
   # hausstrategie: Probelaeufe auf claude/** per Commit-Marke (vormals supertrader-house-live.yml)
   push:
     branches:
       - 'claude/**'
+      # ki-depots: Push auf main nur bei beruehrten Ledger-/Exportpfaden (Auswahl-Job)
+      - main
 
 permissions:
   contents: read
@@ -63,6 +82,7 @@ jobs:
       hausstrategie: ${{ steps.wahl.outputs.hausstrategie }}
       marktvalidierung: ${{ steps.wahl.outputs.marktvalidierung }}
       datenqualitaet: ${{ steps.wahl.outputs.datenqualitaet }}
+      ki_depots: ${{ steps.wahl.outputs.ki_depots }}
     steps:
       - name: Teil waehlen
         id: wahl
@@ -70,6 +90,8 @@ jobs:
           # Eingaben und Ereignisdaten nur ueber env: (ADR-005)
           EVENT: ${{ github.event_name }}
           SCHEDULE: ${{ github.event.schedule }}
+          WR_NAME: ${{ github.event.workflow_run.name }}
+          WR_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           TEIL: ${{ inputs.teil }}
           REF: ${{ github.ref }}
           MSG: ${{ github.event.head_commit.message }}
@@ -86,17 +108,22 @@ jobs:
               '30 1 * * 2-6'|'15 3 25 * *') echo hausstrategie ;;
               '37 6 16 * *') echo marktvalidierung ;;
               '13 7 * * 2-6') echo datenqualitaet ;;
+              '41 23 * * 1-5') echo ki-depots ;;
               *) echo '' ;;
             esac; }
           gewaehlt=''
           case "$EVENT" in
             schedule) gewaehlt="$(zeitplan_von "$SCHEDULE")"; [ -n "$gewaehlt" ] || { echo "::error::Unbekannter Zeitplan '$SCHEDULE'"; exit 1; } ;;
             workflow_dispatch) gewaehlt="$TEIL" ;;
+            workflow_run)
+              if [ "$WR_NAME" = 'Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)' ] && [ "$WR_CONCLUSION" = success ]; then gewaehlt=ki-depots; fi ;;
             push)
-              if [[ "$REF" == refs/heads/claude/* && "${MSG:-}" == *"[house-live:"* ]]; then gewaehlt=hausstrategie
+              if [ "$REF" = refs/heads/main ]; then
+                if touched 'docs/research/edge2/ki/ledger-A.jsonl' 'docs/research/edge2/ki/ledger-B.jsonl' 'scripts/research/edge2/ki-export.cjs'; then gewaehlt=ki-depots; fi
+              elif [[ "$REF" == refs/heads/claude/* && "${MSG:-}" == *"[house-live:"* ]]; then gewaehlt=hausstrategie
               elif [[ "$REF" == refs/heads/claude/* && "${MSG:-}" == *"[mv-data]"* ]] && touched '.github/workflows/pipeline-daily.yml' 'scripts/market/build-validation-sources.mjs' 'scripts/market/validate-market-pulse.mjs' 'scripts/market/lib/market-validation.mjs'; then gewaehlt=marktvalidierung; fi ;;
           esac
-          for k in ezb vorsorge hausstrategie marktvalidierung datenqualitaet; do v=false; [ "$k" = "$gewaehlt" ] && v=true; setze "$k" "$v"; done
+          for k in ezb vorsorge hausstrategie marktvalidierung datenqualitaet ki_depots; do v=false; [ "${k//_/-}" = "$gewaehlt" ] && v=true; setze "$k" "$v"; done
 
   # --- ezb: vormals fx-ecb-daily.yml (EZB-Referenzkurse taeglich (EUR-Anzeige))
     # Die EUR-Anzeige rechnet jeden historischen Kurs mit dem EZB-Referenzkurs
@@ -489,3 +516,45 @@ jobs:
         run: |
           set -euo pipefail
           scripts/ci/push-data-branch.sh data/live status/data-quality.json
+
+  # --- ki-depots: vormals ki-depots-daily.yml (KI-Depots - taeglicher Kursstand, Rechenmodell, kein echtes Geld)
+  # Schreibt quant/data/product/ki-depots-v1.json aus den Ledgern docs/research/edge2/ki/ledger-{A,B}.jsonl und den
+  # veroeffentlichten Schlusskursen (quant/engines/published-close.js). Erzeuger: scripts/research/edge2/ki-export.cjs.
+  # Owner-Entscheidung 06.11.2026 (Plan §11): Bestand, Gewichte, Begruendung, Wertentwicklung ab Live-Start, keine Backtest-Zahlen.
+  # Schritte bytegleich, gleiche Concurrency-Gruppe; nur auf main (wie vorher).
+  ki-depots:
+    needs: auswahl
+    if: needs.auswahl.outputs.ki_depots == 'true' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    concurrency:
+      group: ki-depots-daily-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Tests
+        run: node --test scripts/research/edge2/blind.test.cjs
+      - name: Export schreiben
+        env:
+          IN_TODAY: ${{ inputs.today }}
+        run: |
+          set -euo pipefail
+          extra=(); if [ -n "${IN_TODAY:-}" ]; then [[ "$IN_TODAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || exit 2; extra=(--today "$IN_TODAY"); fi
+          node scripts/research/edge2/ki-export.cjs "${extra[@]}"
+          node scripts/market/assert-public-data-hygiene.mjs > "$RUNNER_TEMP/hygiene.txt" 2>&1 || { if grep -q 'ki-depots-v1' "$RUNNER_TEMP/hygiene.txt"; then cat "$RUNNER_TEMP/hygiene.txt"; exit 1; fi; }
+      - name: Committen
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/product/ki-depots-v1.json
+          if git diff --cached --quiet; then echo "Unveraendert."; exit 0; fi
+          git commit -m "KI-Depots: Kursstand $(node -e 'console.log(require("./quant/data/product/ki-depots-v1.json").asOf || "ausstehend")') (automatischer Lauf)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

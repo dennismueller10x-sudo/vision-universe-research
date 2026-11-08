@@ -56,6 +56,13 @@
    ========================================================================= */
 
 import { holeZugang } from "./github-app.mjs";
+import { cronTrifft, leseRegister, takte, faellig } from "./zeitplan.mjs";
+
+/* Der Intraday-Takt behaelt sein bisheriges Fenster. Der Worker selbst
+   tickt seit Plan Neustart §3 jede Minute (ein Zeitgeber fuer alle
+   Zeitplaene, zeitplan.mjs); Taktgeber, Auslieferung und Im Blick laufen
+   nur zu den Minuten, zu denen sie schon immer liefen. */
+export const INTRADAY_CRON = "*/5 13-21 * * 1-5";
 
 const WORKFLOW = "intraday-pacemaker.yml";
 const PAGES = "pages-release.yml";
@@ -304,9 +311,33 @@ const HINWEISE = {
   keinZugangstoken: "Die Installation gab kein Token heraus - Berechtigungen pruefen."
 };
 
+/* Zeitplaene aus core/registry/schedule.json. Ohne faelligen Termin
+   kein Token, kein GitHub-Aufruf: nur das Register wird gelesen. */
+async function zeitgeber(env, tick, optionen) {
+  if (!env.GITHUB_REPO) return { ok: false, grund: "keinRepo" };
+  const reg = await leseRegister(env);
+  if (!reg.ok) { notiere("registerNichtLesbar", { grund: reg.grund }); return { ok: false, grund: reg.grund }; }
+  if (!faellig(reg.register, tick).length) return { ok: true, grund: "nichtsFaellig", takte: [] };
+  const zugang = await holeZugang(env, optionen);
+  if (!zugang.ok) {
+    notiere(zugang.grund, { hinweis: HINWEISE[zugang.grund] || "Der Wecker kann sich nicht ausweisen.", status: zugang.status });
+    return { ok: false, grund: zugang.grund };
+  }
+  const kopf = {
+    "authorization": "Bearer " + zugang.token,
+    "accept": "application/vnd.github+json",
+    "user-agent": "vu-intraday-waker",
+    "x-github-api-version": "2022-11-28"
+  };
+  return { ok: true, grund: "geprueft", takte: await takte(env, kopf, reg.register, tick, notiere) };
+}
+
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(wecke(env, undefined, event.scheduledTime));
+    const tick = event.scheduledTime;
+    if (cronTrifft(INTRADAY_CRON, tick)) ctx.waitUntil(wecke(env, undefined, tick));
+    ctx.waitUntil(zeitgeber(env, tick).catch((e) =>
+      notiere("zeitgeberAusnahme", { fehler: String(e && e.message || e).slice(0, 120) })));
   },
 
   /* Ein Zustandspunkt zum Nachsehen. Er weckt nicht und spricht mit
@@ -324,7 +355,7 @@ export default {
     }
     return Response.json({
       dienst: "vu-intraday-waker",
-      rolle: "Wecker fuer " + WORKFLOW + ", " + PAGES + " und " + IMBLICK + " - holt keine Daten",
+      rolle: "Wecker fuer " + WORKFLOW + ", " + PAGES + ", " + IMBLICK + " und die Zeitplaene aus core/registry/schedule.json - holt keine Daten",
       ausweis: "github-app",
       appIdHinterlegt: !!env.GITHUB_APP_ID,
       schluesselHinterlegt: !!env.GITHUB_APP_PRIVATE_KEY,
@@ -334,4 +365,4 @@ export default {
   }
 };
 
-export { wecke, laeuftSchon, sorgeFuerAuslieferung, sorgeFuerImBlick, imBlickTick };
+export { wecke, zeitgeber, laeuftSchon, sorgeFuerAuslieferung, sorgeFuerImBlick, imBlickTick };

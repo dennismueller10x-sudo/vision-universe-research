@@ -16,7 +16,7 @@ const home=read('discover/home.js');
 const app=read('discover/app.js');
 const legacyAlias=read('discover-v2/index.html');
 const sharedCards=read('discover/ui/cards.js');
-const views=read('discover/ui/v3.js');
+const views=read('discover/ui/v3.js')+'\n'+read('discover/ui/reihen.js');
 const sharedDetail=read('discover/ui/detail.js');
 const sourceState=read('quant/engines/realtime/source-state.js');
 const freshness=read('quant/engines/realtime/freshness.js');
@@ -38,11 +38,11 @@ check('B1 canonical freshness and source-state engines are loaded',()=>{
 });
 
 check('B1/B2 home and worlds read canonical cards, series and the intraday selection (Redesign 2027)',()=>{
-  // D01-D08 (discover/ui/v3.js): Karten aus den Startseiten-/Sammlungsdateien, Kurslinie aus der kanonischen Reihe (SeriesLoader),
+  // D01-D08 (discover/ui/v3.js, Startseite discover/ui/reihen.js): Karten aus den Startseiten-/Sammlungsdateien, Kurslinie aus der kanonischen Reihe (SeriesLoader),
   // „Heute im Blick“ ueber dieselbe Intraday-Auswahl (Featured.live). Discover rechnet nichts neu.
   assert.match(app,/V\.Home\.render/);
   assert.match(home,/D\.V3\.home\(page,\s*ctx\)/);
-  assert.match(views,/D\.Featured\.live\(hero,\s*ctx,\s*blickSection\)/);
+  assert.match(views,/D\.Featured\.live\(surface,\s*ctx,\s*billboard\)/);
   assert.match(views,/D\.SeriesLoader\.get\(ps\.path\)/);
   assert.match(views,/rows\/' \+ uid\(ctx\) \+ '\/'/);
   assert.match(sharedCards,/Hub\.subscribe\(card\.symbol,\s*zeigen\)/);
@@ -68,7 +68,7 @@ check('B2 stream remains stock-page-only and bounded',()=>{
 check('B3 visible captions use structured metadata, never accessibility prose',()=>{
   // Datumsangaben unter der Kurslinie kommen aus den Punkten der Reihe (onDates), nie aus einem aria-label.
   assert.match(views,/onDates\(points\[0\]\[0\],\s*points\[points\.length - 1\]\[0\]\)/);
-  for(const [name,src] of [['home.js',home],['ui/v3.js',views]]){
+  for(const [name,src] of [['home.js',home],['ui/v3.js + ui/reihen.js',views]]){
     assert.doesNotMatch(src,/getAttribute\(['"]aria-label['"]\)/,name);
     assert.doesNotMatch(src,/aria-label[^\n]*\.match\(/,name);
   }

@@ -196,15 +196,17 @@ test('Lazy.image setzt die Adresse erst nach settled', async () => {
 test('vorgerenderter Kopf stimmt mit home.js ueberein (Texte, Ziele, Klassen)', () => {
   const home = read('discover/home.js');
   const header = html.match(/<header class="dv3-intro[\s\S]*?<\/header>/)[0];
-  // Redesign D01: Datum, Frage-Ueberschrift, Suche mit Atlas, Schnellzugriffe (Welten, Strategien, Swipen, Maerkte).
-  for (const text of ['Was bewegt die Börse heute?', 'Aktien finden, verstehen, merken. Ohne Fachwissen.', 'Welten', 'Strategien', 'Swipen', 'Märkte', 'Aktie, Thema oder Frage …']) {
+  // Konzept „Reihe für Reihe“ (Screen n-home): Datum, Frage-Ueberschrift, Suche mit Atlas, Genre-Chips statt Schnellzugriffe (Entscheidung 5).
+  for (const text of ['Was bewegt ', 'die Börse heute?', 'Alle', 'Kursbewegung', 'Unternehmen', 'Themen', 'Indizes', 'Aktie, Thema oder Frage …']) {
     assert.ok(header.includes(text), 'statischer Kopf ohne: ' + text);
     assert.ok(home.includes(text), 'home.js ohne: ' + text);
   }
-  for (const href of ['#/welten', '#/strategien', '#/swipen', '#/maerkte']) {
-    assert.ok(header.includes(href) && home.includes(href), href);
+  for (const genre of ['alle', 'kursbewegung', 'unternehmen', 'themen', 'indizes']) {
+    assert.ok(header.includes('data-genre="' + genre + '"') && home.includes("'" + genre + "'"), genre);
   }
-  for (const cls of ['dv3-intro', 'vu-ltag dv3-asof', 'vu-lt', 'vu-lead', 'v2-search-prompt', 'v2-search-arrow', 'dv3-quick vu-chips', 'vu-chip']) {
+  assert.ok(header.includes('href="#/reihen"') && home.includes("'#/reihen'"), 'Chip ▦ fuehrt zu Alle Reihen');
+  assert.ok(!/Welten<\/a>|#\/welten|Schnellzugriffe/.test(header), 'Schnellzugriffe sind ersetzt');
+  for (const cls of ['dv3-intro', 'vu-ltag dv3-asof', 'vu-lt', 'vu-lead dr-genre-lead', 'v2-search-prompt', 'v2-search-arrow', 'dr-genres vu-chips', 'vu-chip', 'vu-chip dr-genres__all']) {
     assert.ok(header.includes('class="' + cls + '"') && home.includes("'" + cls + "'"), cls);
   }
   assert.match(header, /data-product="discover"/);
