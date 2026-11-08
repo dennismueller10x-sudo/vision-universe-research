@@ -8,7 +8,7 @@ Dieser Bericht hält das Ergebnis des Prüflaufs fest. **Er aktiviert nichts.** 
 
 | | |
 |---|---|
-| Workflow | `.github/workflows/quant-pattern-total-return-check.yml` (`permissions: contents: read`, kein Commit) |
+| Workflow | `.github/workflows/research.yml`, Teil `muster-gesamtrendite` (vormals `quant-pattern-total-return-check.yml`) (`permissions: contents: read`, kein Commit) |
 | Lauf | [41496424128](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/41496424128), Commit `1de37ef8b6`, 02.11.2026 18:00–18:22 UTC, Ergebnis `success` |
 | Tageshistorie | private Ablage, nur gelesen (`sync-history-store.mjs --pull --gate FULL_UNIVERSE`): 7.803 von 7.804 Reihen, 23,8 Mio. Tageskerzen, 0 Schreibzugriffe (Class A 0) |
 | Vorher | `build-pattern-research.mjs --work-dir … --return-basis price --out $RUNNER_TEMP/pattern-price` |

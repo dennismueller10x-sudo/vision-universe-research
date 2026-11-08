@@ -1,0 +1,504 @@
+name: Forschung (Buendel research)
+
+# Buendel `research` (core/registry/workflow-bundles.json, Plan Neustart §3, A-Doc): manuelle
+# Forschungslaeufe und Studien. Jeder Teil ist ein eigener Job mit unveraendertem Inhalt (Schritte
+# bytegleich, gleiche Concurrency-Gruppe wie vorher, jetzt auf Job-Ebene):
+#   mustervolumen         vormals pattern-research-volume.yml          Marke [pattern-research-volume]
+#   labor                 vormals research-labor.yml (Eingabe phase)  Marke [labor:
+#   vorsorge-recht        vormals vorsorge-legal-sources.yml           Marke [vorsorge-legal], nur bei beruehrten Pfaden
+#   muster-gesamtrendite  vormals quant-pattern-total-return-check.yml Marke [pattern-total-return-check]
+# Der Job `auswahl` bildet die alten Ausloeser nach:
+#   workflow_dispatch  genau der gewaehlte Teil (`teil`)
+#   push claude/**     jeder Teil, dessen Marke in der Commit-Nachricht steht (wie vorher die Job-Bedingung);
+#                      vorsorge-recht nur, wenn ausserdem einer seiner frueheren paths beruehrt ist.
+
+on:
+  workflow_dispatch:
+    inputs:
+      teil:
+        description: 'Welcher Teil'
+        type: choice
+        required: true
+        options:
+          - mustervolumen
+          - labor
+          - vorsorge-recht
+          - muster-gesamtrendite
+      phase:
+        description: 'labor: dev, test oder holdout (vormals research-labor.yml)'
+        required: false
+        default: dev
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: read
+
+jobs:
+  auswahl:
+    name: Auswahl des Teils
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      mustervolumen: ${{ steps.wahl.outputs.mustervolumen }}
+      labor: ${{ steps.wahl.outputs.labor }}
+      vorsorge_recht: ${{ steps.wahl.outputs.vorsorge_recht }}
+      muster_gesamtrendite: ${{ steps.wahl.outputs.muster_gesamtrendite }}
+    steps:
+      - name: Teil waehlen
+        id: wahl
+        env:
+          # Eingaben und Ereignisdaten nur ueber env: (ADR-005)
+          EVENT: ${{ github.event_name }}
+          TEIL: ${{ inputs.teil }}
+          MSG: ${{ github.event.head_commit.message }}
+          COMMITS: ${{ toJSON(github.event.commits) }}
+        run: |
+          set -euo pipefail
+          files="$(printf '%s' "${COMMITS:-[]}" | jq -r '(. // [])[] | (.added + .modified + .removed)[]' 2>/dev/null | sort -u || true)"
+          touched() { local q; for q in "$@"; do grep -qxF "$q" <<<"$files" && return 0; done; return 1; }
+          marke() { [[ "${MSG:-}" == *"$1"* ]]; }
+          setze() { echo "$1=$2" >> "$GITHUB_OUTPUT"; echo "$1=$2"; }
+          for k in mustervolumen labor vorsorge_recht muster_gesamtrendite; do
+            v=false
+            case "$EVENT" in
+              workflow_dispatch) [ "$TEIL" = "${k//_/-}" ] && v=true ;;
+              push)
+                case "$k" in
+                  mustervolumen) marke '[pattern-research-volume]' && v=true ;;
+                  labor) marke '[labor:' && v=true ;;
+                  vorsorge_recht) marke '[vorsorge-legal]' && touched '.github/workflows/research.yml' '.github/workflows/vorsorge-legal-sources.yml' 'scripts/vorsorge/fetch-legal-sources.sh' && v=true ;;
+                  muster_gesamtrendite) marke '[pattern-total-return-check]' && v=true ;;
+                esac ;;
+            esac
+            setze "$k" "$v"
+          done
+
+  # --- mustervolumen: vormals pattern-research-volume.yml (Musterstudie nach Volumen); Schritte bytegleich, gleiche Concurrency-Gruppe
+  mustervolumen:
+    needs: auswahl
+    if: needs.auswahl.outputs.mustervolumen == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: pattern-research-volume-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[pattern-research-volume]')) && github.run_id || 'run' }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026).
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Existing R2 credentials are available
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::$v fehlt"; exit 1; fi
+          done
+
+      - name: Measured read-only recovery preflight
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/pattern-volume-preflight.json"
+
+      - name: Restore existing canonical history to runner-private state
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/pattern-volume-preflight.json"
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --report "$RUNNER_TEMP/pattern-volume-sync.json"
+
+      - name: Pattern Research study with volume features (pattern-research-1.1.0)
+        run: >-
+          node --max-old-space-size=6144 scripts/quant/build-pattern-research.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+
+      - name: Pattern Research fundamental overlay (same engine version)
+        run: node --max-old-space-size=6144 scripts/quant/build-pattern-research-fundamentals.mjs
+
+      - name: VU Pattern Match (reads the studies just written)
+        run: node --max-old-space-size=6144 scripts/quant/build-pattern-match.mjs
+
+      - name: Contract and regression tests
+        run: node --test quant/tests/pattern-research.test.mjs quant/tests/pattern-research-volume.test.mjs quant/tests/pattern-unavailability.test.mjs
+
+      - name: Public data hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Volume findings (aggregates only)
+        run: |
+          node -e '
+            const s = require("./quant/data/product/pattern-research-v1/study.json");
+            const m = require("./quant/methodology/pattern-research-v1.json");
+            const vol = new Set(m.candidates.filter((c) => c.addedIn).map((c) => c.id));
+            console.log({ methodology: s.methodologyVersion, hypotheses: s.primary.hypotheses, baseRate: s.primary.baseRate, volumeCoverage: s.population.volumeCoverage });
+            console.log("1.0.0 allein:", JSON.stringify(s.primary.correctionV100Only));
+            for (const f of s.findings.filter((f) => f.patternId.split("+").some((id) => vol.has(id)))) {
+              console.log([f.verdict, "lift=" + f.lift, "oos=" + (f.outOfSample && f.outOfSample.lift), "n=" + f.support, "w=" + f.winners, "loss=" + f.lossLift, "p=" + f.pValue, f.patternId].join("  "));
+            }'
+
+      - name: Commit the study to the current branch
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1
+          if git diff --cached --quiet; then echo "Studie unveraendert."; exit 0; fi
+          git commit -m "Gewinnerstudie pattern-research-1.1.0 mit Volumenmerkmalen neu gerechnet (Lauf ${GITHUB_RUN_ID})"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+      - name: Retain metadata evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pattern-research-volume-evidence
+          path: |
+            ${{ runner.temp }}/pattern-volume-preflight.json
+            ${{ runner.temp }}/pattern-volume-sync.json
+            quant/data/product/pattern-research-v1/study.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  # --- labor: vormals research-labor.yml (Forschungslabor (dev/test/holdout)); Schritte bytegleich, gleiche Concurrency-Gruppe
+  labor:
+    needs: auswahl
+    if: needs.auswahl.outputs.labor == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: research-labor-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[labor:')) && github.run_id || 'run' }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Phase bestimmen
+        id: m
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+          INPUT_PHASE: ${{ inputs.phase }}
+        run: |
+          set -euo pipefail
+          p="${INPUT_PHASE:-}"
+          if [ -z "$p" ]; then p=$(printf '%s' "$MSG" | grep -oE '\[labor:(dev|test|holdout)\]' | head -1 | sed -E 's/\[labor:([a-z]+)\]/\1/' || true); fi
+          case "$p" in dev|test|holdout) ;; *) echo "::error::Phase unbekannt: '$p'"; exit 1;; esac
+          echo "phase=$p" >> "$GITHUB_OUTPUT"; echo "Phase: $p"
+
+      - name: Labor-Tests (synthetisch) und Protokoll-Hash
+        run: |
+          set -euo pipefail
+          node --test scripts/research/labor/labor.test.cjs scripts/research/labor/labor-stock.test.cjs scripts/research/labor/build-insider.test.mjs
+          python3 -m unittest discover -s scripts/research/labor/tests -p 'test_*.py'
+
+      - name: R2-Zugang vorhanden
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY V13_ARCHIVE_PRIVATE_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::$v fehlt"; exit 1; fi
+          done
+
+      - name: Lesender Vorabcheck (Nullkostengrenze)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/labor-preflight.json"
+
+      - name: Tagesbalken aus der Historienablage (nur Runner)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/labor-preflight.json"
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --report "$RUNNER_TEMP/labor-sync.json"
+
+      - name: Delistete Titel aus dem V13-Archiv (privater Schluessel nur in diesem Schritt)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/quant/v13/archive/r2-restore.mjs --mode extract --parts v13-derived,v13-raw \
+            --dest "$RUNNER_TEMP/priv" --manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json --prefix research-snapshots/quant-v13/archive-1.2.0/
+          first=$(python3 -I -c 'import json,sys;r=json.load(open(sys.argv[1]));f=r["columns"];rows=r["rows"];i=f.index("chainId");s=f.index("status");print(next(x[i] for x in rows if x[s]=="QUALIFIED"))' docs/quant-recovery/v13/delisted/register-1.0.0.json)
+          hit=$(find "$RUNNER_TEMP/priv/v13-derived" -name "$first.json" -print -quit); test -n "$hit"
+          echo "DELISTED_DIR=$(dirname "$hit")" >> "$GITHUB_ENV"
+          echo "DELISTED_RAW_DIR=$RUNNER_TEMP/priv/v13-raw" >> "$GITHUB_ENV"
+
+      - name: SEC companyfacts.zip (oeffentlich, einmal geladen)
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+        run: |
+          set -euo pipefail
+          curl -sSfL --retry 4 --retry-delay 10 -A "$SEC_USER_AGENT" -o "$RUNNER_TEMP/companyfacts.zip" \
+            https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip
+          ls -l "$RUNNER_TEMP/companyfacts.zip"
+
+      - name: SEC-Fundamentaldaten wie erstmals eingereicht (Lesart ORIGINAL)
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+        run: |
+          set -euo pipefail
+          python3 scripts/quant/portfolio/build_pit_fundamentals.py --out "$RUNNER_TEMP/pit-fundamentals" --archive "$RUNNER_TEMP/companyfacts.zip" --workers 4
+
+      - name: Gewinnueberraschung (SUE) aus companyfacts
+        run: |
+          set -euo pipefail
+          python3 scripts/research/labor/build_sue.py --companyfacts "$RUNNER_TEMP/companyfacts.zip" \
+            --fund-index "$RUNNER_TEMP/pit-fundamentals/index.json" --out "$RUNNER_TEMP/labor-events/sue.json"
+          rm -f "$RUNNER_TEMP/companyfacts.zip"
+
+      - name: SEC Insider Transactions Data Sets (Form 3/4/5, Quartale 2007q1 bis 2026q3)
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/form345"; mkdir -p "$d"
+          for y in $(seq 2007 2026); do for q in 1 2 3 4; do
+            n="${y}q${q}"; if [ "$n" \> "2026q3" ]; then continue; fi
+            code=$(curl -sSL --retry 3 --retry-delay 5 -A "$SEC_USER_AGENT" -o "$d/${n}_form345.zip" -w '%{http_code}' \
+              "https://www.sec.gov/files/structureddata/data/insider-transactions-data-sets/${n}_form345.zip" || true)
+            if [ "$code" != "200" ]; then echo "::warning::Insider-Datensatz $n: HTTP $code"; rm -f "$d/${n}_form345.zip"; fi
+            sleep 0.3
+          done; done
+          ls "$d" | wc -l
+          node scripts/research/labor/build-insider.mjs --datasets "$d" --fund-index "$RUNNER_TEMP/pit-fundamentals/index.json" \
+            --from 2007q1 --to 2026q3 --out "$RUNNER_TEMP/labor-events/insider.json"
+          rm -rf "$d"
+
+      - name: Labor-Phase rechnen (Protokoll eingefroren, Hash geprueft)
+        env:
+          PHASE: ${{ steps.m.outputs.phase }}
+        run: |
+          set -euo pipefail
+          node --max-old-space-size=12288 scripts/research/labor/run-labor.cjs --phase "$PHASE" \
+            --work-dir "$RUNNER_TEMP/canonical-history" --delisted-dir "$DELISTED_DIR" --delisted-raw-dir "$DELISTED_RAW_DIR" \
+            --fundamentals "$RUNNER_TEMP/pit-fundamentals" --insider "$RUNNER_TEMP/labor-events/insider.json" --sue "$RUNNER_TEMP/labor-events/sue.json"
+          rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history" "$RUNNER_TEMP/labor-events"
+
+      - name: Keine Zahlen im Klartext (nur versiegelt)
+        run: |
+          set -euo pipefail
+          for f in docs/research/labor/runs/*-public.json docs/research/labor/runs/selection.json; do
+            [ -f "$f" ] || continue
+            if grep -qE '"(cagr|totalReturn|sharpe|maxDrawdown|returns|equity)"' "$f"; then echo "::error::$f enthaelt Kennzahlen"; exit 1; fi
+          done
+
+      - name: Ergebnis auf den aktuellen Zweig committen
+        env:
+          PHASE: ${{ steps.m.outputs.phase }}
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/research/labor/runs
+          if git diff --cached --quiet; then echo "Ergebnis unveraendert."; exit 0; fi
+          git commit -m "Strategie-Labor Phase ${PHASE} (Lauf ${GITHUB_RUN_ID})"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # --- vorsorge-recht: vormals vorsorge-legal-sources.yml (Vorsorge: Rechtsquellen holen); Schritte bytegleich, gleiche Concurrency-Gruppe
+  vorsorge-recht:
+    needs: auswahl
+    if: needs.auswahl.outputs.vorsorge_recht == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: vorsorge-legal-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - name: Werkzeug
+        run: sudo apt-get install -y -qq poppler-utils > /dev/null
+      - name: Primaerquellen laden
+        run: bash scripts/vorsorge/fetch-legal-sources.sh
+      - name: Veroeffentlichen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add vorsorge/data/funding-rules/sources
+          git commit -q -m "Vorsorge: Primaerquellen der Foerderregeln geladen (Lauf ${{ github.run_id }})" || { echo "Keine Aenderung."; exit 0; }
+          bash scripts/ci/push-with-retry.sh "${{ github.ref_name }}"
+
+  # --- muster-gesamtrendite: vormals quant-pattern-total-return-check.yml (Musterstudie Kurs gegen Gesamtrendite (Pruefmodus)); Schritte bytegleich, gleiche Concurrency-Gruppe
+  muster-gesamtrendite:
+    needs: auswahl
+    if: needs.auswahl.outputs.muster_gesamtrendite == 'true'
+    permissions:
+      contents: read
+    concurrency:
+      group: quant-pattern-total-return-check-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[pattern-total-return-check]')) && github.run_id || 'run' }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Existing R2 credentials are available
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::$v fehlt"; exit 1; fi
+          done
+
+      - name: Measured read-only recovery preflight
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/pattern-check/preflight.json"
+
+      - name: Restore existing canonical history to runner-private state (read only)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/pattern-check/preflight.json"
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --report "$RUNNER_TEMP/pattern-check/sync.json"
+
+      # Vorher: genau der regulaere Schritt "Materialize Pattern Research
+      # study", nur mit --out statt des Produktpfads.
+      - name: Pattern Research - Kursrendite (vorher, wie der regulaere Schritt)
+        run: >-
+          node --max-old-space-size=6144 scripts/quant/build-pattern-research.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --return-basis price --out "$RUNNER_TEMP/pattern-price"
+
+      - name: Pattern Research - Gesamtrendite (nachher)
+        run: >-
+          node --max-old-space-size=6144 scripts/quant/build-pattern-research.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --return-basis total --out "$RUNNER_TEMP/pattern-tr"
+
+      # Gepaart: Kursrendite auf genau der Gesamtrendite-Population (reine
+      # Populationsauswahl, Forschungslauf, verlangt --out).
+      - name: Pattern Research - Kursrendite auf der Gesamtrendite-Population (gepaart)
+        run: >-
+          node --max-old-space-size=8192 scripts/quant/build-pattern-research.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --return-basis price --population total-return --out "$RUNNER_TEMP/pattern-price-trpop"
+
+      - name: Vergleich vorher/nachher und gepaart A/B/C (nur Aggregate)
+        run: >-
+          node scripts/quant/research/compare-pattern-return-basis.mjs
+          --price "$RUNNER_TEMP/pattern-price" --total "$RUNNER_TEMP/pattern-tr"
+          --price-population "$RUNNER_TEMP/pattern-price-trpop"
+          --out "$RUNNER_TEMP/pattern-check/pattern-total-return-comparison.json"
+          --summary-out "$RUNNER_TEMP/pattern-check/pattern-total-return-full-check.json"
+          --paired-out "$RUNNER_TEMP/pattern-check/pattern-total-return-paired-full.json"
+          --paired-summary-out "$RUNNER_TEMP/pattern-check/pattern-total-return-paired.json"
+
+      # Was die Zertifizierung mit dieser Studie saehe (vorbereitete
+      # Anbindung, nicht aktiv): --pattern-study liest die Gesamtrendite-
+      # Studie, --out schreibt ins RUNNER_TEMP. Das committete Zertifikat
+      # bleibt unberuehrt.
+      - name: Zertifizierungsanbindung mit der Gesamtrendite-Studie (nur Probe)
+        run: |
+          set -euo pipefail
+          node scripts/quant/build-backtest-certification.mjs \
+            --pattern-study "$RUNNER_TEMP/pattern-tr/study.json" \
+            --out "$RUNNER_TEMP/pattern-check/backtest-certification-with-tr.json"
+          node -e '
+            const d = require(process.env.RUNNER_TEMP + "/pattern-check/backtest-certification-with-tr.json");
+            const k = d.kinds.find((x) => x.id === "PATTERN_EVIDENCE");
+            console.log(JSON.stringify({ status: k.status, reason: k.reason, gates: k.gates.map((g) => [g.id, g.state, g.reason]) }));'
+
+      - name: Arbeitsbaum unveraendert (kein Produktartefakt geschrieben)
+        run: |
+          set -euo pipefail
+          git status --porcelain
+          test -z "$(git status --porcelain)"
+
+      - name: Retain comparison evidence only (no daily bars)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pattern-total-return-check
+          path: |
+            ${{ runner.temp }}/pattern-check/*.json
+            ${{ runner.temp }}/pattern-price/study.json
+            ${{ runner.temp }}/pattern-tr/study.json
+            ${{ runner.temp }}/pattern-price-trpop/study.json
+            ${{ runner.temp }}/pattern-price-trpop/paired-diagnostics.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      # Abbruch laut FV-5 erst NACH dem Hochladen, damit die Ausschluesse
+      # pruefbar bleiben.
+      - name: Abdeckung erreicht? (BELOW_MINIMUM_SHARE bricht ab)
+        run: |
+          set -euo pipefail
+          STATE=$(node -e 'console.log(require(process.env.RUNNER_TEMP + "/pattern-check/pattern-total-return-full-check.json").state)')
+          echo "Zustand: $STATE"
+          if [ "$STATE" != "PASS" ]; then echo "::error::BELOW_MINIMUM_SHARE - zuerst die Ausschluesse pruefen (Runbook R3)"; exit 1; fi

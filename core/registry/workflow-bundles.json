@@ -89,8 +89,13 @@
   },
   "research": {
    "purpose": "manuelle Forschungslaeufe und Studien",
-   "workflow": null,
-   "replaces": []
+   "workflow": "research.yml",
+   "replaces": [
+    "pattern-research-volume.yml",
+    "quant-pattern-total-return-check.yml",
+    "research-labor.yml",
+    "vorsorge-legal-sources.yml"
+   ]
   },
   "maintenance": {
    "purpose": "manuelle Betriebswerkzeuge, Diagnosen, Einmal-Laeufe",
@@ -264,9 +269,6 @@
   "pages-release.yml": {
    "bundle": "deploy"
   },
-  "pattern-research-volume.yml": {
-   "bundle": "research"
-  },
   "product-intelligence-materialization.yml": {
    "bundle": "pipeline-daily"
   },
@@ -279,9 +281,6 @@
   "quant-model-depots.yml": {
    "bundle": "pipeline-weekly"
   },
-  "quant-pattern-total-return-check.yml": {
-   "bundle": "research"
-  },
   "quant-portfolio-research.yml": {
    "bundle": "research"
   },
@@ -289,9 +288,6 @@
    "bundle": "research"
   },
   "research-edge2-paper.yml": {
-   "bundle": "research"
-  },
-  "research-labor.yml": {
    "bundle": "research"
   },
   "research-signals-s2.yml": {
@@ -416,9 +412,6 @@
    "bundle": "research"
   },
   "vorsorge-etf-universe.yml": {
-   "bundle": "research"
-  },
-  "vorsorge-legal-sources.yml": {
    "bundle": "research"
   },
   "vu2-browser-qa.yml": {

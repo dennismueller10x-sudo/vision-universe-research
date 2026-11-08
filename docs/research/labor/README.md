@@ -12,7 +12,7 @@ eingefroren (Commit `d1df7d9b09`, SHA-256 `ddf9e9df…`, im Runner geprüft).
 | test (Prüfung 2024-01-01 bis 2026-10-02) | `[labor:test]`, verlangt `selection.json` | `runs/test-public.json` (je Kandidat bestanden ja/nein), `runs/test.sealed.json` |
 | holdout (2008–2015, max. 2 Finalisten) | `[labor:holdout]`, verlangt `HOLDOUT_FREIGABE.md` der Steuerung | `runs/holdout-public.json`, `runs/holdout.sealed.json` |
 
-Workflow: `.github/workflows/research-labor.yml` (Bündel `research`). Eingaben nur im Runner: Tagesbalken (R2), delistete
+Workflow: `.github/workflows/research.yml`, Teil `labor` (vormals `research-labor.yml`; Dispatch `teil=labor`, Eingabe `phase`, oder Commit-Marke `[labor:` wie bisher). Eingaben nur im Runner: Tagesbalken (R2), delistete
 Titel (V13), SEC companyfacts (ORIGINAL), SEC Insider Transactions Data Sets. Renditezahlen stehen nur in den versiegelten
 Dateien (RSA-OAEP + AES-256-GCM an `empfaenger.pem`); der Owner erhält sie als privates Artifact.
 

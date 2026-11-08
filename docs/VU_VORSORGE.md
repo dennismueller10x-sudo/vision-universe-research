@@ -55,7 +55,7 @@ scripts/vorsorge/
 .github/workflows/
   vorsorge-ci.yml                     Tests, Reproduzierbarkeit, Gates, Regeln, Hygiene
   vorsorge-etf-universe.yml           Tiingo-Volllauf
-  vorsorge-legal-sources.yml          Rechtsquellen laden
+  research.yml (Teil vorsorge-recht)  Rechtsquellen laden (vormals vorsorge-legal-sources.yml)
 ```
 
 ## 2. Datenfluss
