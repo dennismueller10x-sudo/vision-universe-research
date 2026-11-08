@@ -1,0 +1,17 @@
+/* Vision Universe CI für Reels – dauerhaft (Owner 08.11.2026). Werte aus landing/partner/partner.css. */
+@font-face{font-family:Inter;src:url(assets/inter-latin.woff2) format("woff2");font-weight:100 900}
+:root{
+  --bg:#08080a;        /* Grund */
+  --bg-soft:#0e1013;   /* Flächen */
+  --card:#121519;      /* Karten */
+  --line:#23282f;      /* Linien */
+  --ink:#f4f5f1;       /* Text */
+  --ink-2:#c3c7cc;     /* Nebentext */
+  --muted:#8b919a;     /* Hinweise */
+  --lime:#c8f531;      /* Akzent: Hook-Wort, Plus, Häkchen, Marker */
+  --on-lime:#101318;   /* Text auf Lime */
+  --loss:#ff6b5e;      /* nur für Minus-Zahlen, sparsam */
+}
+html,body{background:var(--bg);color:var(--ink);font-family:Inter,sans-serif}
+.hl{background:var(--lime);color:var(--on-lime);padding:0 16px;border-radius:16px;display:inline-block;line-height:1.02}
+.card{background:var(--card);border:1px solid var(--line);border-radius:28px}
