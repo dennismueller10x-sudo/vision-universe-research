@@ -66,35 +66,35 @@
    "id": "content-analysten",
    "workflow": "content.yml",
    "cron": "41 5,13,21 * * *",
-   "timer": "github",
+   "timer": "waker",
    "note": "analysten (Konsens, Produktuniversum, rotierend: 3 x ~2200 Titel = ganzes Universum je Tag)"
   },
   {
    "id": "content-hedgefonds",
    "workflow": "content.yml",
    "cron": "17 6 * * 1",
-   "timer": "github",
+   "timer": "waker",
    "note": "hedgefonds"
   },
   {
    "id": "content-hedgefonds-2",
    "workflow": "content.yml",
    "cron": "17 7 10-20 2,5,8,11 *",
-   "timer": "github",
+   "timer": "waker",
    "note": "hedgefonds (13F-Fristen)"
   },
   {
    "id": "content-news",
    "workflow": "content.yml",
    "cron": "17 5,11,17 * * *",
-   "timer": "github",
+   "timer": "waker",
    "note": "news"
   },
   {
    "id": "content-ratings",
    "workflow": "content.yml",
    "cron": "0 8 * * 0",
-   "timer": "github",
+   "timer": "waker",
    "note": "ratings"
   },
   {
@@ -203,7 +203,7 @@
    "id": "multi-asset-data",
    "workflow": "multi-asset-data.yml",
    "cron": "20 */3 * * *",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "ownership-signals",

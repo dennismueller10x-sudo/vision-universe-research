@@ -82,6 +82,8 @@ test("DB-6 · Pages legt den Datenzweig nach dem Bau und vor dem Rauchtest darue
   const wf = readFileSync(join(ROOT, ".github/workflows/pages-release.yml"), "utf8");
   const build = wf.indexOf("scripts/vu2/build-release.mjs"), ov = wf.indexOf("scripts/ci/overlay-data-branch.mjs"), smoke = wf.indexOf("scripts/vu2/production-smoke.mjs");
   assert.ok(build > 0 && ov > build && ov < smoke, "Reihenfolge Bau → Datenzweig → Rauchtest");
+  const seed = wf.indexOf("scripts/ci/seed-data-branch.sh alle");
+  assert.ok(seed > 0 && seed < build, "Datenzweig liegt schon vor dem Bau im Arbeitsbaum (abgeleitete Auslieferung)");
   assert.match(wf, /DATA_BRANCH: data\/live/);
 });
 

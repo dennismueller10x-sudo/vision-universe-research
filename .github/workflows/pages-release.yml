@@ -196,6 +196,11 @@ jobs:
       # Fehlt sie, entstehen in diesem Release keine Ereignisse; die Auslieferung haengt nicht davon ab.
       - name: Veroeffentlichte Watchlist-Uebersicht als Vergleichsstand holen
         run: node scripts/watchlist/fetch-published.mjs --site=https://research.visionuniverse.de --out="$RUNNER_TEMP/watchlist-prev" || echo "ohne Vergleichsstand"
+      # Datenzweig vor dem Bau (Plan Neustart §3): der Release-Bau leitet aus Daten ab (Supertrader, Faktor-Shards,
+      # Universum, SEC). Liegen sie nur noch im Datenzweig (BRANCH_ONLY), muss der Bau sie sehen. Commit-sicher
+      # (skip-worktree/exclude); der Schritt nach dem Bau legt danach jede registrierte Datei aus dem Zweig darueber.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build static product delivery
         env:
           VU_WATCHLIST_PREVIOUS: ${{ runner.temp }}/watchlist-prev
