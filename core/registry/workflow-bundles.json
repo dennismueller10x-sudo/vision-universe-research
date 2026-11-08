@@ -106,8 +106,9 @@
    "purpose": "manuelle Betriebswerkzeuge, Diagnosen, Einmal-Laeufe",
    "workflow": "maintenance.yml",
    "replaces": [
+    "landing-cloudflare-audit.yml",
     "r2-audit.yml",
-    "landing-cloudflare-audit.yml"
+    "tiingo-scale.yml"
    ]
   }
  },
@@ -387,10 +388,6 @@
   },
   "technical-world.yml": {
    "bundle": "pipeline-daily"
-  },
-  "tiingo-scale.yml": {
-   "bundle": "maintenance",
-   "retireCandidate": true
   },
   "tiingo2-universe-refresh.yml": {
    "bundle": "pipeline-weekly"

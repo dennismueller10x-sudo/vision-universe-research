@@ -54,7 +54,7 @@ Systemzustand der Daten: `node scripts/core/system-health.mjs`.
 3. **Warteschlangen-Semantik:** Je Gruppe gibt es einen laufenden und einen wartenden Lauf. Ein neuer wartender verdrängt den älteren.
    Das ist für Datenläufe mit Wiederholung akzeptabel. Die Kommentare „wartet – kein Abbruch“ in `intraday-*.yml` gelten nur für den laufenden Lauf.
 4. **Nicht-atomare Schreibvorgänge:** Nur die `tiingo2-*`-Skripte nutzen Temp-und-Rename.
-   Kritisch ist das in Commit-Schritten mit `if: always()`: `tiingo-scale.yml` committet Berichte auch nach einem Teilabbruch.
+   Kritisch ist das in Commit-Schritten mit `if: always()`: `maintenance.yml` (Teil `tiingo-scale`) committet Berichte auch nach einem Teilabbruch.
 5. **`run-pacemaker.mjs`** behandelt einen fehlgeschlagenen Push als nicht fatal und committet weiter. Seit dem Fix in `push-with-retry.sh` ist das sicher, aber ein Block kann grün sein, ohne dass etwas ausgeliefert wurde.
 6. **Actions nicht auf SHA gepinnt** (241 `uses:`, alle first-party), `npx wrangler@4` ohne feste Version.
 7. **Universum ohne geplanten Erzeuger:** `eligibility.json` stand seit 15.09. Übernommene oder delistete Titel bleiben ACTIVE, Neuemissionen fehlen.
