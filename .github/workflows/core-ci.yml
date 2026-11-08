@@ -30,6 +30,7 @@ on:
       - 'status/**'
       - 'scripts/ci/state-gate.mjs'
       - '.github/workflows/core-ci.yml'
+      - 'worker-waker/**'
   schedule:
     # Taeglich nach dem naechtlichen Refresh und der Materialisierung.
     - cron: '47 7 * * *'
@@ -77,7 +78,7 @@ jobs:
           echo "$(wc -l < "$RUNNER_TEMP/changed.txt") geaenderte Dateien gegen die Basis $(git rev-parse --short HEAD^1)"
 
       - name: Core-Tests
-        run: node --test "core/tests/*.test.mjs" quant/tests/push-with-retry.test.mjs quant/tests/intraday-scope.test.mjs quant/tests/published-close-rounding.test.mjs
+        run: node --test "core/tests/*.test.mjs" "worker-waker/tests/*.test.mjs" quant/tests/push-with-retry.test.mjs quant/tests/intraday-scope.test.mjs quant/tests/published-close-rounding.test.mjs
 
       # Die Registry darf den Supertrader-8-Produktpfad nur im einen, festgeschriebenen
       # Eintrag nennen. Diese Schutztests liegen in der Supertrader-Welt (Gate A) und
