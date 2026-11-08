@@ -49,6 +49,7 @@ import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { takteVon } from "../core/schedule-registry.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -364,7 +365,8 @@ function manuellerLauf() {
   const m = app.match(/WORKFLOW_DATEI\s*=\s*["']([^"']+)["']/);
   const datei = m ? m[1] : null;
   const wf = datei ? quelle(".github/workflows/" + datei) : null;
-  const hatZeitplan = wf ? /^\s*schedule:/m.test(wf) : false;
+  /* Zeitplan steht im Workflow oder im Register (ein Zeitgeber: Cloudflare-Wecker, RUNBOOK §10). */
+  const hatZeitplan = wf ? takteVon(datei, ROOT).length > 0 : false;
   const ok = !!(datei && wf && hatZeitplan);
   return { wert: ok ? "true" : "false",
     zustand: ok ? ZUSTAND.ERFUELLT : ZUSTAND.NICHT_ERFUELLT,

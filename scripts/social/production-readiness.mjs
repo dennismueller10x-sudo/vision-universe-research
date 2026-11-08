@@ -23,6 +23,7 @@ import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { takteVon } from "../core/schedule-registry.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -452,12 +453,12 @@ function autonomieBefunde() {
   const quellen = bestand ? Registry.status(bestand) : null;
   const belege = {};
 
-  const cronImWorkflow = workflow ? /^\s*schedule:/m.test(workflow) : false;
+  /* Takt im Workflow oder im Register (ein Zeitgeber: Cloudflare-Wecker, RUNBOOK §10). */
+  const takte = workflow ? takteVon("social-orchestrator.yml", ROOT) : [];
   belege.NO_DAILY_OWNER_START = {
-    ok: cronImWorkflow,
+    ok: takte.length > 0,
     evidence: workflow
-      ? "cron im Workflow: " +
-        ([...workflow.matchAll(/cron:\s*'([^']+)'/g)].map((m) => m[1]).join(", ") || "keiner")
+      ? "Takt (Workflow oder core/registry/schedule.json): " + (takte.join(", ") || "keiner")
       : "Workflow nicht lesbar" };
 
   belege.NO_MANUAL_TOPIC_SELECTION = {

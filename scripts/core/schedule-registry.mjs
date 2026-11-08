@@ -36,6 +36,50 @@ export function workflowCrons(text) {
   return out;
 }
 
+/* Eingaenge von on.workflow_dispatch: Name -> { required, hasDefault, type, options }.
+   Liest Block-Form (name:\n  type: ...) und Fluss-Form (name: {description: ..., default: ...}). */
+export function dispatchInputs(text) {
+  const lines = String(text).split("\n");
+  const d = lines.findIndex((l) => /^ {2}workflow_dispatch:\s*$/.test(l));
+  if (d < 0) return null;
+  if (!/^ {4}inputs:\s*$/.test(lines[d + 1] || "")) return {};
+  const out = {};
+  let cur = null, inOpts = false;
+  for (let i = d + 2; i < lines.length; i++) {
+    const l = lines[i];
+    if (/^ {0,4}\S/.test(l)) break;
+    let m;
+    if ((m = /^ {6}([A-Za-z0-9_-]+):\s*(\{.*\})?\s*$/.exec(l))) {
+      cur = out[m[1]] = { required: false, hasDefault: false, type: "string", options: null }; inOpts = false;
+      if (m[2]) {
+        cur.required = /required:\s*true/.test(m[2]); cur.hasDefault = /default:/.test(m[2]);
+        const t = /type:\s*([a-z]+)/.exec(m[2]); if (t) cur.type = t[1];
+      }
+      continue;
+    }
+    if (!cur) continue;
+    if ((m = /^ {8}required:\s*(true|false)/.exec(l))) cur.required = m[1] === "true";
+    else if (/^ {8}default:/.test(l)) cur.hasDefault = true;
+    else if ((m = /^ {8}type:\s*([a-z]+)/.exec(l))) cur.type = m[1];
+    else if ((m = /^ {8}options:\s*(\[.*\])?\s*$/.exec(l))) {
+      cur.options = m[1] ? m[1].slice(1, -1).split(",").map((x) => x.trim().replace(/^['"]|['"]$/g, "")).filter(Boolean) : [];
+      inOpts = !m[1];
+    } else if (inOpts && (m = /^ {10}- (.+)$/.exec(l))) cur.options.push(m[1].trim().replace(/^['"]|['"]$/g, ""));
+    else if (/^ {8}\S/.test(l)) inOpts = false;
+  }
+  return out;
+}
+
+/* Alle Takte eines Workflows: Rest-Crons im Workflow plus Eintraege im Register (timer waker).
+   Fuer Tests, die aus den Zeitplaenen etwas herleiten (Pruefzeitpunkte, Laufzeitfenster). */
+export function takteVon(workflow, root = ROOT) {
+  const text = readFileSync(join(root, ".github/workflows", workflow), "utf8");
+  const reg = loadRegistry(root);
+  const aus = workflowCrons(text).map((c) => c.cron);
+  for (const e of reg.entries) if (e.workflow === workflow && !aus.includes(e.cron)) aus.push(e.cron);
+  return aus;
+}
+
 export function inventory(root = ROOT) {
   const dir = join(root, ".github/workflows");
   const rows = [];

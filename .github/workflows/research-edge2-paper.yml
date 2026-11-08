@@ -5,11 +5,15 @@ name: Edge 2 - Papierdepot EDGE2-PAPER (Forschung, vorwaerts)
 # Forschung, nicht zertifiziert; kein echtes Geld, keine Orders, keine Produktflaeche, keine Rendite im Ledger.
 # Eingaben wie im Backtest: R2-Tagesbalken (nur Runner) und SEC-Fundamentaldaten wie erstmals eingereicht.
 # ADR-005: Spitze des eigenen Zweigs, push-with-retry.sh, Concurrency je Zweig, Eingaben nur ueber env.
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '47 8 * * 6'
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       today:
         description: 'Stichtag YYYY-MM-DD (leer = heute)'
         type: string
