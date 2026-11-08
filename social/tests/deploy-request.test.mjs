@@ -35,6 +35,7 @@
    Die Regel ist bewusst schlicht gehalten, damit die Nachbildung hier
    und die Shell-Zeile dort dasselbe tun koennen.
    ========================================================================= */
+import { workflowPart } from "../../scripts/ci/lib/workflow-part.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
@@ -43,7 +44,8 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const REQUEST = join(ROOT, "workers", "vision-universe-social", "DEPLOY_REQUEST");
-const WORKFLOW = join(ROOT, ".github", "workflows", "social-cloudflare.yml");
+/* Seit dem Buendel social steht der Workflow als Teil `cloudflare` in social.yml (vormals social-cloudflare.yml). */
+const readWorkflow = () => workflowPart(ROOT, "social.yml", "cloudflare", { auswahl: true });
 
 /* Dieselbe Regel wie die Shell-Zeile im Workflow. */
 function readMarker(text) {
@@ -90,7 +92,7 @@ test("D5 · Der Workflow liest genau diesen Pfad", () => {
   /* Eine Anforderung, die woanders liegt als der Workflow sucht, ist
      eine Datei ohne Wirkung — und der gefaehrlichere Fall waere der
      umgekehrte: ein Pfad, der versehentlich immer existiert. */
-  const yaml = readFileSync(WORKFLOW, "utf8");
+  const yaml = readWorkflow();
   assert.match(yaml, /request_file="workers\/vision-universe-social\/DEPLOY_REQUEST"/);
   assert.match(yaml, /\[ "\$marker" = "DEPLOY" \]/);
 });
@@ -104,7 +106,7 @@ test("D6 · Kein Deploy-Schritt haengt noch an den Dispatch-Eingaben", () => {
      richtig, nur aus dem umgekehrten Grund: die Betriebsart wertet die
      Eingaben an EINER Stelle aus, und die Schritte haengen an ihrem
      Ergebnis. Zwei Stellen, die dieselbe Eingabe lesen, driften. */
-  const yaml = readFileSync(WORKFLOW, "utf8");
+  const yaml = readWorkflow();
   const conditions = yaml.split("\n").filter((line) => /^\s+if:/.test(line));
   const stale = conditions.filter((line) => /inputs\.action/.test(line));
   assert.deepEqual(stale, [],
@@ -117,7 +119,7 @@ test("D7 · Die Sicherung liegt im Arbeitsbereich, sonst sieht hashFiles sie nic
   /* Im ersten Lauf war die Sicherung geschrieben und das Artefakt fehlte:
      hashFiles auf einem absoluten Pfad unter /tmp liefert immer den
      leeren Hash, und der Schritt wurde stillschweigend uebersprungen. */
-  const yaml = readFileSync(WORKFLOW, "utf8");
+  const yaml = readWorkflow();
   assert.ok(!/hashFiles\('\/tmp/.test(yaml),
     "hashFiles sieht nur den Arbeitsbereich.");
   assert.match(yaml, /--backup tmp\/cf-backup/);

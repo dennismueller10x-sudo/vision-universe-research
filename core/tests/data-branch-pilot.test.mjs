@@ -36,6 +36,11 @@ test("DB-1 · Steckbrief: jede Datenart ist registriert, ihr Pfad gehoert genau 
       }
       // BRANCH_ONLY: die Daten liegen nur im Datenzweig. Fehlt der Pfad dort, bricht der Pages-Bau ab (MISSING, DB-5).
     }
+    for (const p of d.prefixes || []) {
+      assert.ok(p.endsWith("/") && !p.startsWith("/") && !p.includes(".."), d.id + " prefix " + p);
+      assert.ok(d.paths.length > 0, d.id + ": ein Verzeichnis braucht eine Schluesseldatei, der es folgt");
+      if (d.phase === "DUAL_WRITE") assert.ok(existsSync(join(ROOT, p)), p + " liegt als Rueckfall in main");
+    }
     assert.match(readFileSync(join(ROOT, ".github/workflows", d.workflow), "utf8"), /scripts\/ci\/push-data-branch\.sh/, d.workflow);
   }
 });
@@ -110,4 +115,62 @@ test("DB-8 · interne Datenzweig-Pfade: Erzeuger und Workflows existieren, kein 
     const wf = readFileSync(join(ROOT, ".github/workflows", d.workflow), "utf8");
     assert.match(wf, new RegExp("push-data-branch\\.sh data/live .*" + d.pathPrefix.replace(/\//g, "\\/")), d.id + " schreibt in den Datenzweig");
   }
+});
+
+const SH = "dashboard/data/analysts/shards/";
+function dirWorld({ main, branch, site, mainShards, branchShards }) {
+  const w = world({ main, branch, site });
+  for (const [k, v] of Object.entries(mainShards || {})) { put(w.root, SH + k, v); put(w.siteDir, SH + k, v); }
+  for (const [k, v] of Object.entries(branchShards || {})) put(w.dataDir, SH + k, v);
+  w.manifest.domains[0].prefixes = [SH];
+  return w;
+}
+const ls = (dir) => { try { return execFileSync("find", [".", "-type", "f"], { cwd: dir, encoding: "utf8" }).trim().split("\n").filter(Boolean).sort(); } catch { return []; } };
+
+test("DB-9 · Verzeichnisse folgen ihrer Schluesseldatei: gespiegelt aus dem Datenzweig oder ganz aus main, nie gemischt", () => {
+  let w = dirWorld({ main: feed("2026-11-04T10:00:00Z"), branch: feed("2026-11-04T16:00:00Z"), site: feed("2026-11-04T10:00:00Z"),
+    mainShards: { "A.json": "1", "ALT.json": "x" }, branchShards: { "A.json": "2", "B.json": "3" } });
+  let r = overlay(w); const pr = r.rows.find((x) => x.kind === "prefix");
+  assert.equal(pr.status, "OVERLAID"); assert.equal(r.complete, true);
+  assert.deepEqual(ls(join(w.siteDir, SH)), ["./A.json", "./B.json"], "veralteter Shard ist weg");
+  assert.equal(readFileSync(join(w.siteDir, SH, "A.json"), "utf8"), "2");
+  // Schluesseldatei kaputt -> Verzeichnis bleibt komplett beim Stand aus main
+  w = dirWorld({ main: feed("2026-11-04T10:00:00Z"), branch: "{kaputt", site: feed("2026-11-04T10:00:00Z"),
+    mainShards: { "A.json": "1" }, branchShards: { "A.json": "2" } });
+  r = overlay(w); assert.equal(r.rows.find((x) => x.kind === "prefix").status, "KEPT_MAIN");
+  assert.equal(readFileSync(join(w.siteDir, SH, "A.json"), "utf8"), "1");
+  // Gleichstand
+  w = dirWorld({ main: feed("2026-11-04T10:00:00Z"), branch: feed("2026-11-04T10:00:00Z"), site: feed("2026-11-04T10:00:00Z"),
+    mainShards: { "A.json": "1" }, branchShards: { "A.json": "1" } });
+  assert.equal(overlay(w).rows.find((x) => x.kind === "prefix").status, "IDENTICAL");
+  // Schluessel aus dem Zweig, Verzeichnis nirgends -> unvollstaendig
+  w = dirWorld({ main: null, branch: feed("2026-11-04T10:00:00Z"), site: null });
+  r = overlay(w); assert.equal(r.rows.find((x) => x.kind === "prefix").status, "MISSING"); assert.equal(r.complete, false);
+});
+
+test("DB-10 · Arbeitsbaum eines Laufs: --only waehlt Datenarten, --mirror false loescht nie", () => {
+  const w = dirWorld({ main: feed("2026-11-04T10:00:00Z"), branch: feed("2026-11-04T16:00:00Z"), site: null,
+    mainShards: { "A.json": "1", "ALT.json": "x" }, branchShards: { "A.json": "2" } });
+  assert.equal(overlay({ ...w, siteDir: w.root, only: ["anderes"], mirror: false }).rows.length, 0);
+  const r = overlay({ ...w, siteDir: w.root, only: ["news"], mirror: false });
+  assert.equal(r.complete, true);
+  assert.match(readFileSync(join(w.root, NEWS), "utf8"), /16:00/);
+  assert.equal(readFileSync(join(w.root, SH, "A.json"), "utf8"), "2");
+  assert.ok(existsSync(join(w.root, SH, "ALT.json")), "im Arbeitsbaum wird nichts geloescht");
+});
+
+test("DB-11 · push-data-branch.sh spiegelt Verzeichnisse (auch Loeschungen) in den Zweig", () => {
+  const remote = mkdtempSync(join(tmpdir(), "db-remote-")), work = mkdtempSync(join(tmpdir(), "db-work-"));
+  const env = { ...process.env, GIT_AUTHOR_NAME: "t", GIT_AUTHOR_EMAIL: "t@t", GIT_COMMITTER_NAME: "t", GIT_COMMITTER_EMAIL: "t@t", GIT_CONFIG_NOSYSTEM: "1", HOME: work };
+  for (const k of Object.keys(env)) if (/^GIT_(DIR|WORK_TREE|INDEX_FILE)$/.test(k)) delete env[k];
+  const git = (cwd, ...a) => execFileSync("git", a, { cwd, env, encoding: "utf8" });
+  git(remote, "init", "-q", "--bare");
+  git(work, "init", "-q", "-b", "main"); put(work, "code.js", "x"); put(work, SH + "A.json", "1"); put(work, SH + "B.json", "1"); put(work, NEWS, feed("2026-11-04T10:00:00Z"));
+  git(work, "add", "."); git(work, "commit", "-qm", "c"); git(work, "remote", "add", "origin", remote); git(work, "push", "-q", "origin", "main");
+  const script = join(ROOT, "scripts/ci/push-data-branch.sh");
+  execFileSync("bash", [script, "data/live", NEWS, SH], { cwd: work, env, encoding: "utf8" });
+  assert.deepEqual(git(remote, "ls-tree", "-r", "--name-only", "data/live").trim().split("\n").sort(), [NEWS, SH + "A.json", SH + "B.json"].sort());
+  execFileSync("rm", [join(work, SH, "B.json")]); put(work, SH + "C.json", "2");
+  execFileSync("bash", [script, "data/live", SH.slice(0, -1)], { cwd: work, env, encoding: "utf8" });
+  assert.deepEqual(git(remote, "ls-tree", "-r", "--name-only", "data/live").trim().split("\n").sort(), [NEWS, SH + "A.json", SH + "C.json"].sort());
 });

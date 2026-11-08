@@ -24,6 +24,7 @@
    Kodierung, Teilstrings). Ein Wert, der nie in den Skripttext gelangt,
    braucht das Netz nicht.
    ========================================================================= */
+import { workflowPart, workflowHead, partTriggers } from "../../scripts/ci/lib/workflow-part.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -31,8 +32,9 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const WF = join(ROOT, ".github", "workflows", "social-smoke-publish.yml");
-const yaml = readFileSync(WF, "utf8");
+/* Seit dem Buendel social Teil `smoke-publish` in social.yml (vormals social-smoke-publish.yml). */
+const yaml = workflowHead(ROOT, "social.yml") + workflowPart(ROOT, "social.yml", "smoke-publish", { auswahl: true });
+const ausloeser = partTriggers(ROOT, "social.yml", "smoke-publish");
 
 /* Die Zeilen der `run:`-Bloecke — also das, was ins Protokoll geschrieben
    wird. `env:`-Bloecke gehoeren nicht dazu. */
@@ -93,9 +95,12 @@ test("SW4 · Genau der bestehende Endpunkt, mit der bestehenden Bestaetigung", (
 test("SW5 · Er laeuft nicht von selbst", () => {
   /* Kein push, kein schedule. Ein Beitrag entsteht nur, wenn jemand ihn
      ausloest. */
-  assert.match(yaml, /^on:\s*\n\s+workflow_dispatch:/m);
-  assert.ok(!/^\s+(push|schedule|pull_request):/m.test(yaml),
-    "Nur workflow_dispatch — sonst koennte ein Commit einen Beitrag erzeugen");
+  /* Im Buendel social entscheidet der Auswahl-Job: der Teil hat nur den Dispatch, keinen Push, keinen Zeitplan,
+     kein workflow_run (vormals: die eigene Datei hatte nur workflow_dispatch). */
+  assert.equal(ausloeser.dispatch, true);
+  assert.deepEqual(ausloeser.crons, []);
+  for (const k of ["push", "workflow_run", "repository_dispatch"]) assert.ok(!(k in ausloeser),
+    "Nur workflow_dispatch — sonst koennte ein Commit einen Beitrag erzeugen (" + k + ")");
 });
 
 test("SW6 · Eine getippte Bestaetigung, kein blosser Knopf", () => {
