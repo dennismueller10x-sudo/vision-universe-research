@@ -50,6 +50,7 @@ import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { takteVon } from "../core/schedule-registry.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -156,8 +157,8 @@ function derselbeLauf() {
   const m = worker.match(/WORKFLOW_DATEI\s*=\s*["']([^"']+)["']/);
   const datei = m ? m[1] : null;
   const vorhanden = datei ? existsSync(join(ROOT, ".github/workflows", datei)) : false;
-  const hatZeitplan = vorhanden &&
-    /^\s*schedule:/m.test(text(".github/workflows/" + datei) || "");
+  /* Zeitplan steht im Workflow oder im Register (ein Zeitgeber: Cloudflare-Wecker, RUNBOOK §10). */
+  const hatZeitplan = vorhanden && takteVon(datei, ROOT).length > 0;
   const ok = !!(datei && vorhanden && hatZeitplan);
   return { zustand: ok ? ZUSTAND.ERFUELLT : ZUSTAND.NICHT_ERFUELLT,
     satz: ok
