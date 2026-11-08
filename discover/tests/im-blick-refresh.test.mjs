@@ -426,7 +426,9 @@ test("RF13 · Monitor: jedes verlangte Feld; Ueberwachung ohne Fehlalarm", () =>
 /* ---------------------------------------------------------------- RF14 */
 test("RF14 · Workflow und Wecker: ADR-005, Namen, Kosten, Isolation", () => {
   const wf = readFileSync(join(ROOT, ".github", "workflows", "discover-im-blick-live.yml"), "utf8");
-  assert.match(wf, /cron: '27 15-21 \* \* 1-5'/);
+  // Takt: der Cloudflare-Wecker stoesst direkt an (Minute 5/35, 15-21 UTC, WK-24); kein GitHub-Cron daneben (Plan Neustart §3, SZ-9).
+  assert.doesNotMatch(wf, /^\s*-\s*cron:/m);
+  assert.match(readFileSync(join(ROOT, "worker-waker", "src", "index.mjs"), "utf8"), /const IMBLICK = "discover-im-blick-live\.yml"/);
   assert.match(wf, /workflow_dispatch:/);
   assert.match(wf, /timeout-minutes: 10/, "kein Dauerlaeufer");
   assert.doesNotMatch(wf, /\bsleep\b|while true|seq 1/, "keine Endlosschleife, keine Wartezeit im Lauf");

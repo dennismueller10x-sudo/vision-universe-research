@@ -7,7 +7,7 @@
 
    QUELLEN
      vorsorge/data/ingest/universe.json + vorsorge/data/series/*.json
-         voller Tiingo-ETF-Ingest (scripts/vorsorge/ingest-tiingo-etfs.mjs)
+         voller Tiingo-ETF-Ingest (products/vorsorge/producer/ingest-tiingo-etfs.mjs)
      quant/data/universe/instruments/*.json, .../us-security-master.json,
      quant/data/market/multi-asset/*, discover-series(-long)
          bisheriger Repository-Auszug (164 Listings)
@@ -35,7 +35,7 @@ import { createRequire } from "node:module";
 import { homeIndex } from "./slim-index.mjs";
 
 const require = createRequire(import.meta.url);
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const Identity = require(join(root, "core/identity.js")); // eine Identitaetsregel (ADR-001)
 const Master = require(join(root, "vorsorge/engines/etf-master.js"));
 const Tax = require(join(root, "vorsorge/engines/etf-taxonomy.js"));

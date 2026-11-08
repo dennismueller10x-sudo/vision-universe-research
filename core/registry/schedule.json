@@ -113,12 +113,6 @@
    "timer": "waker"
   },
   {
-   "id": "discover-im-blick-live",
-   "workflow": "discover-im-blick-live.yml",
-   "cron": "27 15-21 * * 1-5",
-   "timer": "github"
-  },
-  {
    "id": "europe-discover-refresh",
    "workflow": "europe-discover-refresh.yml",
    "cron": "47 17 * * 1-5",
@@ -161,16 +155,10 @@
    "timer": "waker"
   },
   {
-   "id": "intraday-pacemaker",
-   "workflow": "intraday-pacemaker.yml",
-   "cron": "2 13-20 * * 1-5",
-   "timer": "github"
-  },
-  {
    "id": "intraday-snapshots",
    "workflow": "intraday-snapshots.yml",
    "cron": "35 21 * * 1-5",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "long-series",
@@ -521,6 +509,23 @@
    "workflow": "supertrader-signals.yml",
    "cron": "17 6 * * 2-6",
    "timer": "github"
+  }
+ ],
+ "direktImWecker": [
+  {
+   "workflow": "intraday-pacemaker.yml",
+   "takt": "*/5 13-21 * * 1-5",
+   "quelle": "worker-waker/src/index.mjs (WORKFLOW, INTRADAY_CRON)"
+  },
+  {
+   "workflow": "pages-release.yml",
+   "takt": "*/5 13-21 * * 1-5 (Auslieferung, wenn keiner laeuft)",
+   "quelle": "worker-waker/src/index.mjs (PAGES)"
+  },
+  {
+   "workflow": "discover-im-blick-live.yml",
+   "takt": "5,35 15-21 * * 1-5",
+   "quelle": "worker-waker/src/index.mjs (IMBLICK)"
   }
  ]
 }

@@ -238,7 +238,7 @@ jobs:
   # es nicht: ab dem Folgetag war das Gate auf main rot und jeder PR auf Vorsorge- oder Shell-Pfaden
   # erbte den Fehler (#782, #800, 19./20.10.2026).
   #
-  # KOSTEN: kein Anbieterabruf. Nur scripts/vorsorge/build-etf-data.mjs (deterministisch, ohne Uhr und
+  # KOSTEN: kein Anbieterabruf. Nur products/vorsorge/producer/build-etf-data.mjs (deterministisch, ohne Uhr und
   # ohne Netz). Der Tiingo-Ingest (research.yml, Teil etf-universum, vormals vorsorge-etf-universe.yml; rund zwei Anfragen je ETF) bleibt manuell.
   #
   # SCHUTZ: Vor dem Commit laufen dieselben Pruefungen wie im Ingest-Lauf (Tests, assert-vorsorge-data
@@ -269,7 +269,7 @@ jobs:
       - name: Datenzweig in den Arbeitsbaum
         run: scripts/ci/seed-data-branch.sh alle
       - name: Vorsorge-Stamm neu bauen (ohne Netz)
-        run: node scripts/vorsorge/build-etf-data.mjs --quiet
+        run: node products/vorsorge/producer/build-etf-data.mjs --quiet
       - name: Nur erwartete Pfade veraendert
         id: scope
         run: |
@@ -283,8 +283,8 @@ jobs:
       - name: Tests, Qualitaets- und Freigabe-Gates, Hygiene
         if: steps.scope.outputs.changed == 'true'
         run: |
-          node --test "vorsorge/tests/*.test.mjs"
-          node scripts/vorsorge/assert-vorsorge-data.mjs
+          node --test "products/vorsorge/tests/*.test.mjs"
+          node products/vorsorge/producer/assert-vorsorge-data.mjs
           node scripts/market/assert-public-data-hygiene.mjs
       - name: Veroeffentlichen
         if: steps.scope.outputs.changed == 'true'

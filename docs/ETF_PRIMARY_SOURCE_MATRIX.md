@@ -59,7 +59,7 @@ Vanguard US monatlich, SEC N-PORT quartalsweise mit 60 Tagen Verzögerung.
 
 ## Was das für die Umsetzung bedeutet
 
-- **Emittenten-Adapter** (`scripts/vorsorge/adapters/issuers.mjs`) erfüllen den Vertrag `ETFPrimarySourceAdapter`
+- **Emittenten-Adapter** (`products/vorsorge/producer/adapters/issuers.mjs`) erfüllen den Vertrag `ETFPrimarySourceAdapter`
   (discoverProducts, fetchProductMetadata, fetchShareClasses, fetchListings, fetchHoldings, fetchHistoricalHoldings,
   fetchFundCharacteristics, healthCheck, normalise, validate). Alle `fetch*` liefern `NOT_PERMITTED`. Die Parser für
   die dokumentierten Formate (iShares-CSV US/DE, SSGA-XLSX, Xtrackers-XLSX, Amundi-JSON, Invesco-JSON, generische

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-const A = createRequire(import.meta.url)("../engines/etf-analytics.js");
+const A = createRequire(import.meta.url)("../../../vorsorge/engines/etf-analytics.js");
 
 function dailySeries(start, days, f) {
   const out = []; let d = new Date(start + "T00:00:00Z"), i = 0;
