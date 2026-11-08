@@ -139,7 +139,7 @@
       "records": "entryCount",
       "role": "Tagesverlauf (Tiingo IEX, 5 Minuten) fuer den Discover-Umfang waehrend der Sitzung, Universum nach Schluss. previousClose aus discover-series.",
       "producer": "scripts/market/ingest-intraday.mjs (run-pacemaker.mjs)",
-      "workflow": "intraday-pacemaker.yml, intraday-snapshots.yml, intraday-delivery-watchdog.yml",
+      "workflow": "intraday-pacemaker.yml, intraday-snapshots.yml, pipeline-intraday.yml",
       "schedule": "Mo-Fr stuendlich 13-20 UTC (Takt 5 min), 21:35 UTC Universum",
       "freshness": { "kind": "intraday", "openStaleMinutes": 30, "closedRequireComplete": true },
       "consumers": ["Discover (Detail, Mikrochart)", "Markets (Pulse)", "Supertrader (Live-Kurs)", "api/intraday.js"]

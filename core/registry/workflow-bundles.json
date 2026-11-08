@@ -22,8 +22,13 @@
   },
   "deploy": {
    "purpose": "Auslieferung: Pages, Cloudflare-Worker",
-   "workflow": null,
-   "replaces": []
+   "workflow": "deploy.yml",
+   "replaces": [
+    "cloudflare-ask-deploy.yml",
+    "cloudflare-deploy.yml",
+    "landing-pages-publish.yml",
+    "sync-navigation.yml"
+   ]
   },
   "pipeline-daily": {
    "purpose": "Tageskette nach US-Schluss: Kurse, Faktoren, Discover, Technical, Supertrader, SEC-Tagesindex",
@@ -40,8 +45,11 @@
   },
   "pipeline-intraday": {
    "purpose": "Takt waehrend der Sitzung: Snapshots, Im Blick, Realtime",
-   "workflow": null,
-   "replaces": []
+   "workflow": "pipeline-intraday.yml",
+   "replaces": [
+    "currency-realtime-proof.yml",
+    "intraday-delivery-watchdog.yml"
+   ]
   },
   "pipeline-weekly": {
    "purpose": "Wochenlaeufe: Security Master, Universum, lange Reihen, Index, Eigentuemer-Signale",
@@ -187,12 +195,6 @@
   "brevo-newsletter.yml": {
    "bundle": "account"
   },
-  "cloudflare-ask-deploy.yml": {
-   "bundle": "deploy"
-  },
-  "cloudflare-deploy.yml": {
-   "bundle": "deploy"
-  },
   "cloudflare-waker-deploy.yml": {
    "bundle": "deploy"
   },
@@ -223,9 +225,6 @@
   "currency-fx-verify.yml": {
    "bundle": "ci"
   },
-  "currency-realtime-proof.yml": {
-   "bundle": "pipeline-intraday"
-  },
   "discover-ci.yml": {
    "bundle": "ci"
   },
@@ -247,9 +246,6 @@
   "home-refresh.yml": {
    "bundle": "pipeline-daily"
   },
-  "intraday-delivery-watchdog.yml": {
-   "bundle": "pipeline-intraday"
-  },
   "intraday-pacemaker.yml": {
    "bundle": "pipeline-intraday"
   },
@@ -258,9 +254,6 @@
   },
   "landing-cloudflare-prepare.yml": {
    "bundle": "maintenance"
-  },
-  "landing-pages-publish.yml": {
-   "bundle": "deploy"
   },
   "long-series.yml": {
    "bundle": "pipeline-weekly"
@@ -349,9 +342,6 @@
   },
   "supertrader-validation.yml": {
    "bundle": "research"
-  },
-  "sync-navigation.yml": {
-   "bundle": "deploy"
   },
   "technical-ci.yml": {
    "bundle": "ci"

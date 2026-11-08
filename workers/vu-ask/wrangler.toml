@@ -18,7 +18,7 @@
 #      kostenlose (Cache), gegen Dauerfeuer
 #
 # SECRETS (nie in diese Datei) setzt der Workflow
-# .github/workflows/cloudflare-ask-deploy.yml. Von Hand einzurichten ist nur
+# .github/workflows/deploy.yml (Teil frage-worker, vormals cloudflare-ask-deploy.yml). Von Hand einzurichten ist nur
 # das GitHub-Secret ANTHROPIC_API_KEY; der Admin-Key wird abgeleitet, das
 # Salz erzeugt der Worker selbst. Optional: TURNSTILE_SECRET.
 # =============================================================================

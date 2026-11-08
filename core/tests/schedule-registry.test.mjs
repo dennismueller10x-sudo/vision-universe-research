@@ -42,7 +42,8 @@ test("SZ-2 · Wecker-Eintraege: kein Cron im Workflow, Eingang zeitplan, Marke i
     for (const m of ohne.matchAll(/github\.event\.schedule(?! \|\| inputs\.zeitplan)/g)) assert.fail(f + ": github.event.schedule ohne inputs.zeitplan @" + m.index);
     for (const m of ohne.matchAll(/github\.event_name == 'schedule'(?! \|\| inputs\.zeitplan)/g)) assert.fail(f + ": Zeitplan-Weiche ohne inputs.zeitplan @" + m.index);
     for (const m of ohne.matchAll(/github\.event_name == 'workflow_dispatch'(?! && !inputs\.zeitplan)/g)) assert.fail(f + ": manuelle Weiche greift auch beim Takt @" + m.index);
-    for (const m of ohne.matchAll(/github\.event_name != /g)) assert.fail(f + ": != auf event_name ist beim Takt mehrdeutig @" + m.index);
+    for (const m of ohne.matchAll(/github\.event_name != '(schedule|workflow_dispatch)'/g)) assert.fail(f + ": != auf schedule/workflow_dispatch ist beim Takt mehrdeutig @" + m.index);
+    for (const m of ohne.matchAll(/GITHUB_EVENT_NAME/g)) assert.fail(f + ": GITHUB_EVENT_NAME heisst beim Takt workflow_dispatch, erwartet VU_EVENT @" + m.index);
     for (const m of ohne.matchAll(/\$\{\{\s*github\.event_name\s*\}\}/g)) assert.fail(f + ": nacktes github.event_name, erwartet inputs.zeitplan && 'schedule' || github.event_name @" + m.index);
   }
 });
