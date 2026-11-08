@@ -70,6 +70,16 @@ export function dispatchInputs(text) {
   return out;
 }
 
+/* Alle Takte eines Workflows: Rest-Crons im Workflow plus Eintraege im Register (timer waker).
+   Fuer Tests, die aus den Zeitplaenen etwas herleiten (Pruefzeitpunkte, Laufzeitfenster). */
+export function takteVon(workflow, root = ROOT) {
+  const text = readFileSync(join(root, ".github/workflows", workflow), "utf8");
+  const reg = loadRegistry(root);
+  const aus = workflowCrons(text).map((c) => c.cron);
+  for (const e of reg.entries) if (e.workflow === workflow && !aus.includes(e.cron)) aus.push(e.cron);
+  return aus;
+}
+
 export function inventory(root = ROOT) {
   const dir = join(root, ".github/workflows");
   const rows = [];

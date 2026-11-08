@@ -6,9 +6,15 @@ name: Pipeline intraday (Buendel pipeline-intraday)
 # Der Job `auswahl` bildet die Ausloeser der Quellen nach (Dispatch `teil`, Zeitplan am Cron, Push nach
 # Zweig/Pfad, workflow_run nach Name/Typ/Zweig, repository_dispatch nach Typ). Generiert, siehe A-Doc.
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       teil:
         description: 'Welcher Teil'
         type: choice
@@ -19,10 +25,6 @@ on:
       force: {description: 'realtime-eur: Auch bei geschlossenem Markt laufen (meldet dann NOT_PROVEN)', type: boolean, default: false}
       site: {description: 'waechter: Zu pruefende Domain', type: string, default: 'https://research.visionuniverse.de'}
       recover: {description: 'waechter: Bei FAIL einen Zyklus selbst nachholen', type: boolean, default: true}
-  schedule:
-    - cron: '0 15 * * 1-5'   # realtime-eur
-    - cron: '0 18 * * 1-5'   # realtime-eur
-    - cron: '*/15 13-21 * * 1-5'   # waechter
   push:
     branches:
       - 'claude/**'
@@ -46,11 +48,11 @@ jobs:
         id: wahl
         env:
           # Eingaben und Ereignisdaten nur ueber env: (ADR-005)
-          EVENT: ${{ github.event_name }}
+          EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
           ACTION: ${{ github.event.action }}
           REF: ${{ github.ref }}
           TEIL: ${{ inputs.teil }}
-          SCHEDULE: ${{ github.event.schedule }}
+          SCHEDULE: ${{ github.event.schedule || inputs.zeitplan }}
           WR_NAME: ${{ github.event.workflow_run.name }}
           WR_BRANCH: ${{ github.event.workflow_run.head_branch }}
           COMMITS: ${{ toJSON(github.event.commits) }}
@@ -149,7 +151,7 @@ jobs:
         id: read
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-          EVENT_NAME: ${{ github.event_name }}
+          EVENT_NAME: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
         run: |
           if [ "$EVENT_NAME" != "push" ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
@@ -287,9 +289,12 @@ jobs:
 
       - name: Urteil bilden
         id: wacht
+        env:
+          # Eingaben nur ueber env: (ADR-005); beim Takt gilt die Produktionsseite wie beim Zeitplan.
+          IN_SITE: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.site || 'https://research.visionuniverse.de' }}
         run: |
           node scripts/market/assert-intraday-delivery.mjs \
-            --site="${{ github.event_name == 'workflow_dispatch' && inputs.site || 'https://research.visionuniverse.de' }}" \
+            --site="$IN_SITE" \
             | tee /tmp/wacht.txt
           node -e '
             const w = require("./quant/data/market/commercial/intraday-delivery-watchdog.json");
@@ -319,7 +324,7 @@ jobs:
   waechter-nachholen:
     needs: [auswahl, waechter-pruefen]
     if: >-
-      needs.auswahl.outputs.waechter == 'true' && (always() && needs.waechter-pruefen.outputs.verdict == 'FAIL' && (contains(needs.waechter-pruefen.outputs.codes, 'keinZyklus') || contains(needs.waechter-pruefen.outputs.codes, 'taktAusgefallen') || contains(needs.waechter-pruefen.outputs.codes, 'falscheSitzung')) && (github.event_name != 'workflow_dispatch' || inputs.recover))
+      needs.auswahl.outputs.waechter == 'true' && (always() && needs.waechter-pruefen.outputs.verdict == 'FAIL' && (contains(needs.waechter-pruefen.outputs.codes, 'keinZyklus') || contains(needs.waechter-pruefen.outputs.codes, 'taktAusgefallen') || contains(needs.waechter-pruefen.outputs.codes, 'falscheSitzung')) && (!(github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || inputs.recover))
     permissions: {contents: write}
     name: Einen Zyklus nachholen
     # Nur bei den Befunden, die ein fehlender Takt erzeugt. Ein zu alter

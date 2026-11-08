@@ -7,6 +7,7 @@ import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { workflowPart, workflowHead } from "../../scripts/ci/lib/workflow-part.mjs";
+import { takteVon } from "../../scripts/core/schedule-registry.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const wf = (f) => readFileSync(join(root, ".github/workflows", f), "utf8");
@@ -24,7 +25,7 @@ test("technical-world: workflow_run nach dem Nachtlauf, Namen = name: der Vorlae
 });
 
 test("technical-world: Zeitplan bleibt als Rueckfall, manueller Start moeglich", () => {
-  assert.match(kopf, /\n\s*-\s*cron:\s*'10 5 \* \* 2-6'/);
+  assert.ok(takteVon("pipeline-daily.yml", root).includes("10 5 * * 2-6"), "Zeitplan-Rueckfall (Register/Wecker)");
   assert.match(workflowPart(root, "pipeline-daily.yml", "technical-world", { auswahl: true }), /'10 5 \* \* 2-6'\) echo technical-world/);
   assert.match(kopf, /\n  workflow_dispatch:/);
   assert.match(kopf, /\n {10}- technical-world\n/);

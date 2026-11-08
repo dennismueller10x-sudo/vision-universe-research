@@ -15,7 +15,7 @@ name: Pipeline taeglich (Buendel pipeline-daily)
 #   datenqualitaet  neu (E8-Nachlauf, docs/data/DATA_QUALITY.md): Datenqualitaetsbericht fuer /status/,
 #                 nur in den Datenzweig data/live, 13 7 * * 2-6 (nach dem naechtlichen Kurslauf)
 # Der Job `auswahl` entscheidet, welcher Teil laeuft:
-#   schedule           der Teil, dem der ausloesende Zeitplan gehoert (github.event.schedule)
+#   schedule           der Teil, dem der ausloesende Zeitplan gehoert ((github.event.schedule || inputs.zeitplan))
 #   workflow_dispatch  genau der gewaehlte Teil (`teil`)
 #   workflow_run       ki-depots nach erfolgreichem 'Marktdaten-Refresh (...)' auf main
 #   push main          ki-depots, wenn ein Pfad aus seiner frueheren paths-Liste beruehrt ist
@@ -27,28 +27,25 @@ name: Pipeline taeglich (Buendel pipeline-daily)
 # Teil-Marke im Lauftitel (display_title), vor Laufbeginn aus dem Ereignis abgeleitet. Wer auf diesen Workflow per
 # workflow_run hoert, filtert darauf: pages-release.yml nur bei [seite] (Teile, deren Quelle schon vorher einen Release
 # ausgeloest hat), home-refresh.yml nur bei technical-intelligence. So bleibt die Zahl der Releases wie vor dem Buendel.
+# Ein Takt des Cloudflare-Weckers endet auf " · Takt <cron>" (daran erkennt der Wecker seinen Lauf, SZ-2).
 run-name: >-
-  ${{ format('{0}{1}', github.workflow,
-  ((github.event_name == 'workflow_dispatch' && inputs.teil == 'technical-intelligence') ||
-   github.event.schedule == '35 5 * * *' ||
+  ${{ format('{0}{1}{2}', github.workflow,
+  (((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.teil == 'technical-intelligence') ||
+   (github.event.schedule || inputs.zeitplan) == '35 5 * * *' ||
    (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' &&
     github.event.workflow_run.name == 'Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)'))
   && ' · technical-intelligence [seite]'
-  || (github.event_name == 'workflow_dispatch' && format(' · {0}', inputs.teil) || '')) }}
+  || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && format(' · {0}', inputs.teil) || ''),
+  inputs.zeitplan && format(' · Takt {0}', inputs.zeitplan) || '') }}
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
 on:
-  schedule:
-    - cron: '47 15 * * 1-5'   # ezb
-    - cron: '23 3 * * 2-6'   # vorsorge
-    - cron: '30 1 * * 2-6'   # hausstrategie
-    - cron: '15 3 25 * *'   # hausstrategie (SEC-Auffrischung am 25.)
-    - cron: '37 6 16 * *'   # marktvalidierung
-    - cron: '13 7 * * 2-6'   # datenqualitaet
-    - cron: '41 23 * * 1-5'   # ki-depots
-    - cron: '35 5 * * *'   # technical-intelligence (Rueckfall)
-    - cron: '10 5 * * 2-6'   # technical-world (Rueckfall; Hauptausloeser ist der Anstoss aus dem Marktlauf)
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       teil:
         description: 'Welcher Teil'
         type: choice
@@ -113,8 +110,8 @@ jobs:
         id: wahl
         env:
           # Eingaben und Ereignisdaten nur ueber env: (ADR-005)
-          EVENT: ${{ github.event_name }}
-          SCHEDULE: ${{ github.event.schedule }}
+          EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
+          SCHEDULE: ${{ github.event.schedule || inputs.zeitplan }}
           WR_NAME: ${{ github.event.workflow_run.name }}
           WR_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           TEIL: ${{ inputs.teil }}
@@ -329,8 +326,8 @@ jobs:
         env:
           MSG: ${{ github.event.head_commit.message }}
           INPUT: ${{ inputs.mode }}
-          EVENT: ${{ github.event_name }}
-          CRON: ${{ github.event.schedule }}
+          EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
+          CRON: ${{ github.event.schedule || inputs.zeitplan }}
         run: |
           m="$INPUT"
           if [ "$EVENT" = "schedule" ]; then if [ "$CRON" = "15 3 25 * *" ]; then m=sec; else m=decide; fi; fi
@@ -490,7 +487,7 @@ jobs:
           done
       - name: Ergebnis in den Zweig
         env:
-          EVENT_NAME: ${{ github.event_name }}
+          EVENT_NAME: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
         run: |
           case "$EVENT_NAME" in
             schedule) art="monatlicher Lauf" ;;
@@ -700,7 +697,7 @@ jobs:
     timeout-minutes: 180
     env:
       V3: quant/data/technical-intelligence/v3
-      FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force == true }}
+      FORCE: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.force == true }}
     steps:
       # Spitze des Branches: ein Lauf nach long-series.yml sieht dessen Commit.
       - uses: actions/checkout@v4
