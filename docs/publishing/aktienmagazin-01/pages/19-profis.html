@@ -19,12 +19,12 @@
         <div class="h3" style="color:#fff">Was die Fonds im 2. Quartal hielten</div>
         <div class="sm" style="color:#9a9a9a;margin:1mm 0 3mm">Auszug aus unseren 13F-Daten (Stand 30.06.)</div>
         <div style="font-size:8pt;line-height:1.5">
-          <div class="fact"><span><b style="text-align:left">Berkshire</b> · 299 Mrd. $</span><b>Apple 22 % · Alphabet aufgestockt +45 %</b></div>
-          <div class="fact"><span><b>Bridgewater</b> · 24 Mrd. $</span><b>Nvidia −18 % · Broadcom −28 %</b></div>
-          <div class="fact"><span><b>Appaloosa</b> · 7,7 Mrd. $</span><b>Micron −41 % · TSMC +24 %</b></div>
-          <div class="fact"><span><b>ARK</b> · 15 Mrd. $</span><b>AMD −48 % · neu: SpaceX</b></div>
-          <div class="fact"><span><b>Situational Awareness</b> · 20 Mrd. $</span><b>Sandisk 28 % · Micron 27,5 %</b></div>
-          <div class="fact"><span><b>Pershing (Ackman)</b> · 30.09.</span><b>Microsoft 15 % · Uber 14 % · Meta 11 %</b></div>
+          <div style="padding:1.6mm 0;border-bottom:1px solid #262626"><div style="display:flex;justify-content:space-between;gap:3mm"><b>Berkshire</b><span style="color:#9a9a9a">299 Mrd. $</span></div><div style="margin-top:.6mm;color:#e6e6e6">Apple 22 % · Alphabet aufgestockt +45 %</div></div>
+          <div style="padding:1.6mm 0;border-bottom:1px solid #262626"><div style="display:flex;justify-content:space-between;gap:3mm"><b>Bridgewater</b><span style="color:#9a9a9a">24 Mrd. $</span></div><div style="margin-top:.6mm;color:#e6e6e6">Nvidia −18 % · Broadcom −28 %</div></div>
+          <div style="padding:1.6mm 0;border-bottom:1px solid #262626"><div style="display:flex;justify-content:space-between;gap:3mm"><b>Appaloosa</b><span style="color:#9a9a9a">7,7 Mrd. $</span></div><div style="margin-top:.6mm;color:#e6e6e6">Micron −41 % · TSMC +24 %</div></div>
+          <div style="padding:1.6mm 0;border-bottom:1px solid #262626"><div style="display:flex;justify-content:space-between;gap:3mm"><b>ARK</b><span style="color:#9a9a9a">15 Mrd. $</span></div><div style="margin-top:.6mm;color:#e6e6e6">AMD −48 % · neu: SpaceX</div></div>
+          <div style="padding:1.6mm 0;border-bottom:1px solid #262626"><div style="display:flex;justify-content:space-between;gap:3mm"><b>Situational Awareness</b><span style="color:#9a9a9a">20 Mrd. $</span></div><div style="margin-top:.6mm;color:#e6e6e6">Sandisk 28 % · Micron 27,5 %</div></div>
+          <div style="padding:1.6mm 0;border-bottom:1px solid #262626"><div style="display:flex;justify-content:space-between;gap:3mm"><b>Pershing (Ackman)</b><span style="color:#9a9a9a">30.09.</span></div><div style="margin-top:.6mm;color:#e6e6e6">Microsoft 15 % · Uber 14 % · Meta 11 %</div></div>
         </div>
         <div class="xs" style="color:#777;margin-top:2mm">Quellen: VU-Hedgefonds-Daten (SEC 13F), Pershing-Brief 02.11. In der App: alle 119 Fonds mit Käufen und Verkäufen.</div>
       </div>
@@ -33,6 +33,6 @@
   <div data-foot="Quellen: CNBC und Stock Titan 07.11. (Berkshire), 24/7 Wall St. 14.10. (Burry), Stock Titan Form 4 04.11. (Intel)."></div>
 </section>
 <script>
-VUM.k('ins',()=>{const I=VUM.D.ownership.insider;const rows=['NVDA','AVGO','AMD','PLTR','META','MU','MSFT'].filter(t=>I[t]).map(t=>({l:t,s:I[t].is90+' Pers.',v:I[t].nbv90/1e6}));return VUC.hbars(rows,{w:320,rh:21,lw:90,vw:44,sx:38,dark:1}).replace(/−([\d.,]+) %/g,'−$1 Mio. $')});
+VUM.k('ins',()=>{const I=VUM.D.ownership.insider;const rows=['NVDA','AVGO','AMD','PLTR','META','MU','MSFT'].filter(t=>I[t]).map(t=>({l:t,s:I[t].is90+' Pers.',v:I[t].nbv90/1e6}));return VUC.hbars(rows,{w:320,rh:21,lw:90,vw:70,sx:38,dark:1,fmt:v=>VUM.sg(v,1)+' Mio. $'})});
 VUM.k('ins-asof',()=>VUM.D.ownership.asOf.split('-').reverse().join('.'));
 </script>

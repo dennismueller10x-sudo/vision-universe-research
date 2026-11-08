@@ -20,16 +20,19 @@ function line(pts,o={}){
   const lx=X(pts.length-1),ly=Y(pts[pts.length-1][1]);s+=`<circle cx="${lx}" cy="${ly}" r="4" fill="#000"/>`;
   return s+'</svg>';
 }
-function hbars(rows,o={}){ // rows: [{l, v, s?}]
-  const w=o.w||600,rh=o.rh||22,lw=o.lw||120,vw=o.vw||52;const h=rows.length*rh;const max=o.max||Math.max(...rows.map(r=>Math.abs(r.v)));
-  const zero=o.zero??(lw+(w-lw-vw)*(rows.some(r=>r.v>0)&&rows.some(r=>r.v<0)?Math.max(...rows.map(r=>-r.v),0)/(max*2):(rows.every(r=>r.v<=0)?1:0)));
-  const allNeg=rows.every(r=>r.v<=0);const span=o.span||(w-lw-vw);const sc=v=>Math.abs(v)/max*(rows.some(r=>r.v>0)&&rows.some(r=>r.v<0)?span/2:span);
+function hbars(rows,o={}){ // rows: [{l, s?, v}] · Werte immer in fester rechter Spalte, nie am Balken
+  const w=o.w||600,rh=o.rh||22,lw=o.lw||120,vw=o.vw||64,gap=8,dark=o.dark;
+  const fmt=o.fmt||(v=>sg(v)+' %');
+  const neg=Math.max(0,...rows.map(r=>-r.v)),pos=Math.max(0,...rows.map(r=>r.v)),tot=(neg+pos)||1;
+  const x0=lw,x1=w-vw-gap,span=x1-x0,zero=x0+span*neg/tot;const h=rows.length*rh;
   let s=`<svg viewBox="0 0 ${w} ${h}" width="100%" style="display:block">`;
-  rows.forEach((r,i)=>{const y=i*rh;const bw=sc(r.v);const x=allNeg?lw:(r.v<0?zero-bw:zero);const dark=o.dark;
-    s+=`<text x="0" y="${y+rh/2+3.5}" font-size="10" font-weight="800" fill="${dark?'#fff':'#000'}">${r.l}</text>${r.s?`<text x="${o.sx||46}" y="${y+rh/2+3.5}" font-size="9" font-weight="500" fill="${dark?'#9a9a9a':'#5c5c5c'}">${r.s}</text>`:''}`;
+  rows.forEach((r,i)=>{const y=i*rh,cy=y+rh/2+3.5;const bw=Math.abs(r.v)/tot*span;const x=r.v<0?zero-bw:zero;
+    s+=`<text x="0" y="${cy}" font-size="10" font-weight="800" fill="${dark?'#fff':'#000'}">${r.l}</text>`;
+    if(r.s)s+=`<text x="${o.sx||46}" y="${cy}" font-size="8.5" font-weight="500" fill="${dark?'#9a9a9a':'#5c5c5c'}">${r.s}</text>`;
     s+=`<rect x="${x}" y="${y+4}" width="${Math.max(bw,1.5)}" height="${rh-8}" rx="3" fill="${r.v>=0?'#c8f531':(dark?'#fff':'#000')}"/>`;
-    const neg=r.v<0&&!allNeg;const tx=neg?x-5:x+bw+5;s+=`<text x="${tx}" y="${y+rh/2+3.5}" font-size="9.5" font-weight="800" text-anchor="${neg?'end':'start'}" fill="${dark?'#fff':'#000'}">${sg(r.v)} %</text>`;});
-  return s+(allNeg?'':`<line x1="${zero}" x2="${zero}" y1="0" y2="${h}" stroke="${o.dark?'#444':'#8c8c8c'}" stroke-width="1"/>`)+'</svg>';
+    s+=`<text x="${w}" y="${cy}" font-size="9.5" font-weight="800" text-anchor="end" fill="${dark?'#fff':'#000'}">${fmt(r.v)}</text>`;});
+  if(neg&&pos)s+=`<line x1="${zero}" x2="${zero}" y1="0" y2="${h}" stroke="${dark?'#444':'#8c8c8c'}" stroke-width="1"/>`;
+  return s+'</svg>';
 }
 function vbars(rows,o={}){ // rows [[label, v]]
   const w=o.w||600,h=o.h||160,pb=16,pt=16;const max=Math.max(...rows.map(r=>r[1]));const min=Math.min(0,...rows.map(r=>r[1]));
