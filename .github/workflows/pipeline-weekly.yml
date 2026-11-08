@@ -558,6 +558,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Datenzweig (Plan Neustart §3): die SPY-Reihe (Wochenkalender) waechst nur noch in data/live (marketPulse).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Musterdepots rechnen (Erzeuger)
         run: |
