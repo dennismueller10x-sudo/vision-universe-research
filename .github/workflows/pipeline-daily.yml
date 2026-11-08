@@ -9,6 +9,8 @@ name: Pipeline taeglich (Buendel pipeline-daily)
 #                 auf claude/** per Commit-Marke [house-live:dry|sec|start] wie vorher
 #   marktvalidierung vormals market-validation-data.yml (Quelldaten der Markt-Validierung), 37 6 16 * *;
 #                 auf claude/** bei beruehrten Pfaden UND Commit-Marke [mv-data] wie vorher
+#   datenqualitaet  neu (E8-Nachlauf, docs/data/DATA_QUALITY.md): Datenqualitaetsbericht fuer /status/,
+#                 nur in den Datenzweig data/live, 13 7 * * 2-6 (nach dem naechtlichen Kurslauf)
 # Der Job `auswahl` entscheidet, welcher Teil laeuft:
 #   schedule           der Teil, dem der ausloesende Zeitplan gehoert (github.event.schedule)
 #   workflow_dispatch  genau der gewaehlte Teil (`teil`)
@@ -24,6 +26,7 @@ on:
     - cron: '30 1 * * 2-6'   # hausstrategie
     - cron: '15 3 25 * *'   # hausstrategie (SEC-Auffrischung am 25.)
     - cron: '37 6 16 * *'   # marktvalidierung
+    - cron: '13 7 * * 2-6'   # datenqualitaet
   workflow_dispatch:
     inputs:
       teil:
@@ -35,6 +38,7 @@ on:
           - vorsorge
           - hausstrategie
           - marktvalidierung
+          - datenqualitaet
       mode:
         description: 'hausstrategie: Modus (vormals supertrader-house-live.yml)'
         type: choice
@@ -58,6 +62,7 @@ jobs:
       vorsorge: ${{ steps.wahl.outputs.vorsorge }}
       hausstrategie: ${{ steps.wahl.outputs.hausstrategie }}
       marktvalidierung: ${{ steps.wahl.outputs.marktvalidierung }}
+      datenqualitaet: ${{ steps.wahl.outputs.datenqualitaet }}
     steps:
       - name: Teil waehlen
         id: wahl
@@ -80,6 +85,7 @@ jobs:
               '23 3 * * 2-6') echo vorsorge ;;
               '30 1 * * 2-6'|'15 3 25 * *') echo hausstrategie ;;
               '37 6 16 * *') echo marktvalidierung ;;
+              '13 7 * * 2-6') echo datenqualitaet ;;
               *) echo '' ;;
             esac; }
           gewaehlt=''
@@ -90,7 +96,7 @@ jobs:
               if [[ "$REF" == refs/heads/claude/* && "${MSG:-}" == *"[house-live:"* ]]; then gewaehlt=hausstrategie
               elif [[ "$REF" == refs/heads/claude/* && "${MSG:-}" == *"[mv-data]"* ]] && touched '.github/workflows/pipeline-daily.yml' 'scripts/market/build-validation-sources.mjs' 'scripts/market/validate-market-pulse.mjs' 'scripts/market/lib/market-validation.mjs'; then gewaehlt=marktvalidierung; fi ;;
           esac
-          for k in ezb vorsorge hausstrategie marktvalidierung; do v=false; [ "$k" = "$gewaehlt" ] && v=true; setze "$k" "$v"; done
+          for k in ezb vorsorge hausstrategie marktvalidierung datenqualitaet; do v=false; [ "$k" = "$gewaehlt" ] && v=true; setze "$k" "$v"; done
 
   # --- ezb: vormals fx-ecb-daily.yml (EZB-Referenzkurse taeglich (EUR-Anzeige))
     # Die EUR-Anzeige rechnet jeden historischen Kurs mit dem EZB-Referenzkurs
@@ -426,3 +432,57 @@ jobs:
             "Markt-Validierung: Ergebnis aktualisiert ($art)" \
             docs/market-validation/market-pulse-validation.json \
             quant/data/market/validation/market-pulse-evidence.json
+
+  # --- datenqualitaet: Datenqualitaetsbericht fuer /status/ (E8, docs/data/DATA_QUALITY.md)
+  # Der DQ-Runner prueft die Artefakte von main (wie in core-ci.yml) und schreibt den vollstaendigen
+  # Bericht. Er geht NUR in den Datenzweig data/live (core/registry/data-branch.json, BRANCH_ONLY);
+  # Pages legt ihn beim Bau unter /status/data-quality.json ab. Kein Commit nach main.
+  # Vortagstrend: der Bericht im Datenzweig ist der Vortag (--previous); bei einer Wiederholung am
+  # selben Tag traegt er seine Vortagsbasis (trendBasis) weiter (core/equity-quality.js#withTrend).
+  # ERROR-Regeln blockieren die Veroeffentlichung nicht: der Bericht soll sie gerade zeigen.
+  datenqualitaet:
+    needs: auswahl
+    if: needs.auswahl.outputs.datenqualitaet == 'true'
+    name: Datenqualitaetsbericht fuer /status/ (nur Datenzweig)
+    permissions:
+      contents: write
+    concurrency:
+      group: data-quality-report-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Vorigen Bericht aus dem Datenzweig holen
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/dq"
+          if git ls-remote --exit-code --heads origin data/live >/dev/null \
+             && git fetch --quiet --depth=1 origin refs/heads/data/live \
+             && git cat-file -e FETCH_HEAD:status/data-quality.json 2>/dev/null; then
+            git show FETCH_HEAD:status/data-quality.json > "$RUNNER_TEMP/dq/previous.json"
+            echo "Voriger Bericht: $(node -e 'console.log(require(process.argv[1]).checkedAt)' "$RUNNER_TEMP/dq/previous.json")"
+          else
+            echo "Kein voriger Bericht im Datenzweig (erster Lauf)."
+          fi
+      - name: Bericht erzeugen
+        run: |
+          set -euo pipefail
+          args=(--out=status/data-quality.json)
+          if [ -f "$RUNNER_TEMP/dq/previous.json" ]; then args+=(--previous="$RUNNER_TEMP/dq/previous.json"); fi
+          node scripts/core/data-quality.mjs "${args[@]}"
+          node -e '
+            const r=require(process.argv[1]);
+            if(!Array.isArray(r.rules)||!r.rules.length||!Number.isFinite(Date.parse(r.checkedAt)))throw Error("DQ_REPORT_INVALID");
+            if(!r.rules.some(x=>String(x.id).startsWith("DQ-E8-")))throw Error("DQ_REPORT_WITHOUT_E8_RULES");
+            console.log("Bericht "+r.overall+", "+r.rules.length+" Regeln, Stand "+r.checkedAt+", Vortagsbasis "+(r.trendBasis?r.trendBasis.checkedAt:"keine"));' "$PWD/status/data-quality.json"
+      - name: In den Datenzweig schreiben (nicht nach main; nur Laeufe auf main)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          scripts/ci/push-data-branch.sh data/live status/data-quality.json

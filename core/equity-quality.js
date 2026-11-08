@@ -61,9 +61,16 @@
     return rule('DQ-E8-6', 'Supertrader-Position ohne Stopp', rows,
       r => positive(r.stop) ? [] : ['Stopp fehlt oder ist ungültig (' + r.owner + ')']);
   }
+  /* Vortagstrend. Laeuft der Bericht am selben UTC-Tag erneut (zweiter Lauf, Wiederholung), ist der
+     vorige Bericht von heute; dann gilt dessen `trendBasis` (die schlanke Vortagsbasis, die er selbst
+     verwendet hat). Jeder Bericht traegt seine Vortagsbasis weiter, damit der Vergleich bei
+     Wiederholungen am selben Tag erhalten bleibt. */
   function withTrend(report, previous) {
-    const yesterday = new Date(Date.parse(report.checkedAt.slice(0, 10)) - 86400000).toISOString().slice(0, 10);
+    const today = report.checkedAt.slice(0, 10);
+    const yesterday = new Date(Date.parse(today) - 86400000).toISOString().slice(0, 10);
+    if (previous?.checkedAt?.slice(0, 10) === today && previous.trendBasis) previous = previous.trendBasis;
     const comparable = previous?.checkedAt?.slice(0, 10) === yesterday;
+    report.trendBasis = comparable ? { checkedAt: previous.checkedAt, rules: (previous.rules || []).filter(p => String(p.id).startsWith('DQ-E8-')).map(p => ({ id: p.id, checked: p.checked, failed: p.failed })) } : null;
     report.rules.forEach(r => {
       if (!r.id.startsWith('DQ-E8-')) return;
       const old = comparable && previous.rules?.find(p => p.id === r.id);
