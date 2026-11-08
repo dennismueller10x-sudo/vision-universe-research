@@ -88,7 +88,7 @@
     var box = h('div', 'dr-poster'); box.dataset.symbol = c.symbol; box.setAttribute('role', 'listitem');
     box.__card = c; if (o.row) box.dataset.row = o.row;
     box.innerHTML = (o.badge ? '<span class="dr-badge">' + esc(o.badge) + '</span>' : '') +
-      '<a class="dr-poster__a" href="' + esc(K().stockHref(ctx, c.symbol)) + '" aria-label="' + esc(nm + ', ' + c.symbol) + '">' + U().logo(c.symbol) +
+      '<a class="dr-poster__a" href="' + esc(K().stockHref(ctx, c.symbol) + (o.row ? '?reihe=' + encodeURIComponent(o.row) : '')) + '" aria-label="' + esc(nm + ', ' + c.symbol) + '">' + U().logo(c.symbol) +
       '<b class="dr-poster__n">' + esc(nm) + '</b><span class="dr-poster__t">' + esc(c.symbol) + '</span><span class="dr-poster__ch"></span>' +
       '<span class="dr-poster__v">' + p[0](c) + '<small>' + esc(p[1]) + '</small></span></a>' +
       '<button type="button" class="dr-heart">' + U().glyph('heart', 15) + '</button>';

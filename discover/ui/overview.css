@@ -15,8 +15,8 @@ body.dv2 .dv2-stock .dx-art-node{fill:#c8f531;stroke:var(--vu-ink,#000);stroke-w
 body.dv2 .dv2-stock .dx-chart-hero-preis>b{font-weight:900;letter-spacing:-.045em}
 body.dv2 .dv2-stock .dx-chart-hero-preis>.up,body.dv2 .dv2-stock .dx-chart-hero-preis>.down{display:inline-flex;align-items:center;padding:5px 11px;border-radius:999px;font-size:15px;font-weight:800;align-self:center}
 body.dv2 .dv2-stock .dx-chart-hero-preis>.up{background:#c8f531;color:#000}
-/* Owner 06.11.2026: Minus rot, Plus VU-Grün (wie der Aktienkopf der übrigen Welten) */
-body.dv2 .dv2-stock .dx-chart-hero-preis>.down{background:#c4281c;color:#fff}
+/* Konzept „Reihe für Reihe“, Entscheidung 7 (Owner 08.11.2026, ersetzt 06.11.): keine rote Pille, Plus neongrün, Minus schwarz. */
+body.dv2 .dv2-stock .dx-chart-hero-preis>.down{background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
 body.dv2 .dv2-stock .dx-chart-hero-preis>.up::before{content:"▲\00a0" / "";font-size:.8em}body.dv2 .dv2-stock .dx-chart-hero-preis>.down::before{content:"▼\00a0" / "";font-size:.8em}
 /* Index-Etiketten: eine ruhige Zeile kleiner Pillen statt eines Stapels unter dem Namen. */
 body.dv2 .dv2-head .dx-index-badges{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0 0 50px}
@@ -83,3 +83,81 @@ body.dv2 .dv3-profi>summary:after{content:"";width:8px;height:8px;margin-left:au
 body.dv2 .dv3-profi[open]>summary:after{transform:rotate(225deg)}
 body.dv2 .dv3-zeit .vu-sm{white-space:nowrap}
 body.dv2 .dv2-stock:has(.dv3-overview) .dx-werkzeuge{display:none}
+
+/* =====================================================================
+   Konzept „Reihe für Reihe“, PR 5: Aktie als Titelseite (a-top, a-full, a-chapter, a-next).
+   Masse aus docs/design/discover-netflix-2026-11/index.html (.story, .ep, .rk2, .nextbar, .rowctx, .endcard).
+   ===================================================================== */
+.dv3-titel .dv3-sub{margin:2px 0 10px;font-size:12.5px;line-height:1.35;color:var(--vu-mute)}
+.dv3-titel .vu-sect{margin-top:24px}
+.dx-chart-hero-eur{display:block;font-size:11.5px;font-weight:700;color:var(--vu-mute)}
+/* Etiketten */
+.dv3-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.dv3-tags .vu-chip{min-height:30px;font-size:12.5px;text-decoration:none}
+/* Die Story: schwarz in beiden Modi */
+.dv3-story{margin-top:14px;padding:14px 14px 6px;border-radius:22px;background:#000;color:#fff;box-shadow:0 0 0 1px rgb(255 255 255/.12)}
+.dv3-story .vu-ltag{color:rgb(255 255 255/.62)}
+.dv3-story-r{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid rgb(255 255 255/.15)}
+.dv3-story>.vu-ltag+.dv3-story-r{border-top:0}
+.dv3-story-r p{margin:1px 0 0;font-size:14px;font-weight:700;line-height:1.3}
+.dv3-story .vu-verdict{font-size:11px;padding:4px 8px;white-space:nowrap}
+.dv3-story .vu-verdict--strong{background:#c8f531;color:#000}
+.dv3-story .vu-verdict--mid{background:rgb(255 255 255/.18);color:#fff}
+.dv3-story .vu-verdict--weak{background:#fff;color:#000}
+/* Kapitel wie Episoden */
+.dv3-eps{display:grid;gap:8px}
+.dv3-ep{border-radius:18px;background:var(--vu-card)}
+.dv3-ep>summary{display:grid;grid-template-columns:18px 76px 1fr 22px;gap:10px;align-items:center;padding:8px 10px 8px 12px;list-style:none;cursor:pointer;border-radius:18px}
+.dv3-ep>summary::-webkit-details-marker{display:none}
+.dv3-ep>summary:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
+.dv3-ep-n{font-size:15px;color:var(--vu-mute);font-variant-numeric:tabular-nums}
+.dv3-ep-t b{display:block;font-size:14px;letter-spacing:-.01em;line-height:1.2}
+.dv3-ep-t span{display:block;margin-top:2px;font-size:12px;line-height:1.3;color:var(--vu-mute)}
+.dv3-ep-c{color:var(--vu-mute);transition:transform .15s}
+.dv3-ep[open] .dv3-ep-c{transform:rotate(90deg)}
+.dv3-ep-body{padding:0 12px 14px}
+.dv3-ep-body>.dv3-sec{margin:0}
+.dv3-ep-body>.dv3-sec>.vu-sect:first-child{display:none}
+.dv3-ep-body .vu-box{background:var(--vu-bg,#fff)}
+.dv3-thumb{width:76px;height:52px;border-radius:12px;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#fff}
+.dv3-thumb--img img{width:100%;height:100%;object-fit:cover}
+.dv3-thumb-range{position:relative;width:64px;height:6px;border-radius:9px;background:rgb(255 255 255/.25)}
+.dv3-thumb-range i{position:absolute;left:0;top:0;bottom:0;border-radius:9px;background:#c8f531}
+.dv3-thumb-range b{position:absolute;top:-4px;width:14px;height:14px;border-radius:50%;background:#fff;transform:translateX(-50%)}
+.dv3-thumb--bars{align-items:flex-end;gap:3px;padding-bottom:12px}
+.dv3-thumb--bars i{width:6px;border-radius:2px;background:#fff}
+.dv3-thumb--dots{gap:5px}
+.dv3-thumb--dots i{width:12px;height:12px;border-radius:50%;background:rgb(255 255 255/.25)}
+.dv3-thumb--dots i.on{background:#c8f531}
+.dv3-thumb--pe,.dv3-thumb--idx{flex-direction:column;align-items:stretch;gap:6px;padding:0 10px}
+.dv3-thumb--pe i,.dv3-thumb--idx i{display:block;height:6px;border-radius:9px;background:#fff}
+.dv3-thumb--pe i+i{background:rgb(255 255 255/.45)}
+.dv3-thumb--marks{flex-direction:column;align-items:flex-start;gap:4px;padding-left:12px;font-size:13px}
+.dv3-thumb--marks b:first-child{color:#c8f531}
+/* Reihen der Aktie und Schienen */
+.dv3-titel .dv3-rail{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:-8px -16px 0;padding:8px 16px 2px;scroll-snap-type:x proximity;scroll-padding:0 16px}
+.dv3-titel .dv3-rail::-webkit-scrollbar{display:none}
+.dv3-rk2{flex:none;width:150px;display:grid;gap:4px;align-content:start;padding:12px;border-radius:18px;background:var(--vu-card);color:var(--vu-ink);text-decoration:none;scroll-snap-align:start}
+.dv3-rk2 .vu-num{font-size:30px;font-weight:900;letter-spacing:-.05em;line-height:1}
+.dv3-rk2 b{font-size:13.5px;line-height:1.2;letter-spacing:-.01em}
+.dv3-rk2:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
+/* Aus einer Reihe: Leiste oben, Endkarte, Weiter-Leiste */
+.dv3-rowctx{position:sticky;top:calc(var(--vu-navigation-height,64px) + 6px);z-index:7;display:grid;grid-template-columns:44px auto 1fr 44px;gap:8px;align-items:center;margin:6px 0 10px;padding:0;border-radius:999px;background:#000;color:#fff;font-size:13px}
+.dv3-rowctx>a:first-child,.dv3-rowctx>a:last-child,.dv3-rowctx>span[aria-hidden]{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff}
+.dv3-rowctx>a:first-child svg,.dv3-rowctx>a:last-child svg{width:28px;height:28px;padding:7px;border-radius:50%;background:rgb(255 255 255/.12)}
+.dv3-rowctx-t{color:#fff;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dv3-rowctx-p{color:rgb(255 255 255/.62);font-weight:700;white-space:nowrap}
+.dv3-endcard{margin-top:22px;padding:16px;border-radius:24px;background:#000;color:#fff;--vu-ink:#fff;--vu-inv:#000;--vu-card:rgb(255 255 255/.08);--vu-mute:rgb(255 255 255/.62);--vu-bg:#000}
+.dv3-endcard .vu-ltag{color:rgb(255 255 255/.62)}
+.dv3-endcard-b{display:flex;gap:14px;align-items:center;margin-top:12px}
+.dv3-endcard-t{flex:1;min-width:0}
+.dv3-endcard-t>b{display:block}
+.dv3-endcard-t>b{font-size:19px;letter-spacing:-.02em}
+.dv3-endcard-t>p{margin:6px 0 0;font-size:13px;color:rgb(255 255 255/.75)}
+.dv3-endcard-t>span{display:block;margin-top:8px;font-size:11.5px;font-weight:700;color:rgb(255 255 255/.62)}
+.dv3-endcard-a{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.dv3-endcard-a .vu-btn{min-height:46px;font-size:14.5px}
+.dv3-endcard-a .vu-btn:not(.vu-btn--line){background:#c8f531;color:#000}
+.dv3-endcard-a .vu-btn--line{border-color:rgb(255 255 255/.25);color:#fff}
+.dv3-endcard-h{margin:10px 0 0;text-align:center;font-size:11.5px;color:rgb(255 255 255/.62)}
+

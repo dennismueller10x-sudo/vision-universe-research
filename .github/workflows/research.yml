@@ -18,6 +18,7 @@ name: Forschung (Buendel research)
 #   etf-universum                vormals vorsorge-etf-universe.yml
 #   delisting-probe              vormals supertrader-delisting-probe.yml
 #   hausstrategie-forschung      vormals supertrader-house.yml
+#   europa-esef                  neu (Strang M5, 08.11.2026): Konzern-Kennzahlen deutscher Emittenten aus ESEF, nur manuell
 # Der Job `auswahl` bildet die Ausloeser der Quellen nach (Dispatch `teil`, Zeitplan am Cron, Push nach
 # Zweig/Pfad, workflow_run nach Name/Typ/Zweig, repository_dispatch nach Typ). Generiert, siehe A-Doc.
 
@@ -46,6 +47,7 @@ on:
           - etf-universum
           - delisting-probe
           - hausstrategie-forschung
+          - europa-esef
       mode:
         description: 'portfolio: portfolios (Musterportfolios) oder holdout-quant (Holdout 2008-2015, einmalig, nur versiegelt)'
         required: false
@@ -98,6 +100,7 @@ jobs:
       etf_universum: ${{ steps.wahl.outputs.etf_universum }}
       delisting_probe: ${{ steps.wahl.outputs.delisting_probe }}
       hausstrategie_forschung: ${{ steps.wahl.outputs.hausstrategie_forschung }}
+      europa_esef: ${{ steps.wahl.outputs.europa_esef }}
     steps:
       - name: Teil waehlen
         id: wahl
@@ -115,7 +118,7 @@ jobs:
         run: |
           python3 - <<'PY'
           import fnmatch, json, os, re
-          SPEC = json.loads(r"""{"delisting-probe": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "elliott-register": {"crons": ["23 9 * * 6", "47 7 * * 0", "17 6 * * 1", "41 5 * * 3"], "dispatch": true, "required": []}, "emerging-leaders": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "etf-universum": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "hausstrategie-forschung": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "labor": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": ["phase"]}, "muster-gesamtrendite": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "mustervolumen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "portfolio": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "v13-archiv": {"crons": [], "dispatch": false, "push": {"branches": ["claude/**"]}, "required": []}, "vorsorge-etf": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "vorsorge-recht": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/research.yml", "products/vorsorge/producer/fetch-legal-sources.sh"]}, "required": []}}""")
+          SPEC = json.loads(r"""{"delisting-probe": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "elliott-register": {"crons": ["23 9 * * 6", "47 7 * * 0", "17 6 * * 1", "41 5 * * 3"], "dispatch": true, "required": []}, "emerging-leaders": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "etf-universum": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "europa-esef": {"crons": [], "dispatch": true, "required": []}, "hausstrategie-forschung": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "labor": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": ["phase"]}, "muster-gesamtrendite": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "mustervolumen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "portfolio": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "v13-archiv": {"crons": [], "dispatch": false, "push": {"branches": ["claude/**"]}, "required": []}, "vorsorge-etf": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "vorsorge-recht": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/research.yml", "products/vorsorge/producer/fetch-legal-sources.sh"]}, "required": []}}""")
           ev, ref = os.environ.get("EVENT", ""), os.environ.get("REF", "")
           def glob_re(p):
               # GitHub-Filtermuster: ** beliebig, * ohne '/', ? ein Zeichen, [..] Klasse; Praefix '!' = Ausschluss
@@ -1703,3 +1706,40 @@ jobs:
           git add -A && git commit -q -m "Hausstrategie ${MODE} ${stamp} (verschluesselt, run ${GITHUB_RUN_ID})"
           for i in 1 2 3 4; do git push -q origin r:claude/vu-house-strategy-results && break; sleep $((i*5)); git fetch -q --depth 1 origin claude/vu-house-strategy-results && git rebase -q FETCH_HEAD || true; done
           echo "abgelegt: ${stamp}"
+
+  # --- europa-esef: Konzern-Kennzahlen (Umsatz, Konzernergebnis, operativer Cashflow) deutscher Emittenten aus ihren
+  # ESEF-Jahresfinanzberichten (Pflichtveroeffentlichung, Website des Emittenten). Nur die gelisteten Pakete mit
+  # passendem SHA-256; Pakete bleiben im Runner, veroeffentlicht werden nur Kennzahlen (Strang M5, 08.11.2026).
+  europa-esef:
+    needs: [auswahl]
+    if: needs.auswahl.outputs.europa_esef == 'true'
+    permissions: {contents: write}
+    concurrency:
+      group: europa-esef-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Regeln (synthetische Pakete)
+        run: node --test scripts/official-filings/tests/de-esef-facts.test.mjs
+      - name: Kennzahlen aus den gelisteten ESEF-Paketen
+        run: |
+          set -euo pipefail
+          node scripts/official-filings/de-esef-facts.mjs --out=discover/data/europe-esef | tee "$RUNNER_TEMP/esef.json"
+          { echo "### Europa ESEF"; cat "$RUNNER_TEMP/esef.json"; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Veroeffentlichen
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add discover/data/europe-esef
+          if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
+          git commit -q -m "Europa ESEF: Konzern-Kennzahlen deutscher Emittenten (Lauf ${GITHUB_RUN_ID})"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

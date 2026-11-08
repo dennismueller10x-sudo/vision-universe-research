@@ -1,0 +1,158 @@
+{
+ "schema": "vu-europe-esef-facts-1",
+ "generatedAt": "2026-11-08T21:18:19.786Z",
+ "scope": "CONSOLIDATED_ISSUER_FACTS_ONLY",
+ "source": "ESEF-Jahresfinanzbericht von der Website des Emittenten (gesetzliche Pflichtveröffentlichung); nur Kennzahlen, keine Dokumente",
+ "rule": {
+  "minDays": 350,
+  "maxDays": 380,
+  "minRatio": 0.25,
+  "maxRatio": 4
+ },
+ "concepts": {
+  "revenue": [
+   "Revenue",
+   "RevenueFromContractsWithCustomers"
+  ],
+  "netIncome": [
+   "ProfitLoss"
+  ],
+  "operatingCashFlow": [
+   "CashFlowsFromUsedInOperatingActivities"
+  ]
+ },
+ "quantInputReady": false,
+ "counts": {
+  "sources": 3,
+  "plausible": 3
+ },
+ "rows": [
+  {
+   "ticker": "BEI.DE",
+   "lei": "L47NHHI0Z9X22DV46U41",
+   "fiscalYearEnd": "2025-12-31",
+   "sourceDocument": "https://www.beiersdorf.de/~/media/Beiersdorf/investors/financial-publication/2026/annual-report/Beiersdorf_AG_KA-2025_ESEF.xbri",
+   "sourcePage": "https://www.beiersdorf.de/investor-relations/finanzberichte/finanzberichte-und-praesentationen",
+   "packageSha256": "0c17db45d08eb3cd0d199c4f0ace20a77338794ee25444f34f29d00aef0c8f7d",
+   "securityId": "ref_BEI_DE_XETR",
+   "name": "Beiersdorf Aktiengesellschaft",
+   "status": "PLAUSIBLE",
+   "metrics": [
+    {
+     "metric": "revenue",
+     "concept": "ifrs-full:Revenue",
+     "value": 9852000000,
+     "priorValue": 9850000000,
+     "currency": "EUR",
+     "periodStart": "2025-01-01",
+     "periodEnd": "2025-12-31",
+     "priorPeriodEnd": "2024-12-31"
+    },
+    {
+     "metric": "netIncome",
+     "concept": "ifrs-full:ProfitLoss",
+     "value": 955000000,
+     "priorValue": 928000000,
+     "currency": "EUR",
+     "periodStart": "2025-01-01",
+     "periodEnd": "2025-12-31",
+     "priorPeriodEnd": "2024-12-31"
+    },
+    {
+     "metric": "operatingCashFlow",
+     "concept": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+     "value": 785000000,
+     "priorValue": 1231000000,
+     "currency": "EUR",
+     "periodStart": "2025-01-01",
+     "periodEnd": "2025-12-31",
+     "priorPeriodEnd": "2024-12-31"
+    }
+   ],
+   "held": []
+  },
+  {
+   "ticker": "DBK.DE",
+   "lei": "7LTWFZYICNSX8D621K86",
+   "fiscalYearEnd": "2025-12-31",
+   "sourceDocument": "https://investor-relations.db.com/files/documents/annual-reports/2025/Deutsche-Bank-AG-KA-KLB-ESEF-2025-12-31.zip",
+   "sourcePage": "https://investor-relations.db.com/reports-and-events/annual-reports/index?language_id=3",
+   "packageSha256": "875510b4017ffb04d846cd6c9302ceaba36b3715a5367fabb72bdc362b4054c9",
+   "securityId": "ref_DBK_DE_XETR",
+   "name": "DEUTSCHE BANK AKTIENGESELLSCHAFT",
+   "status": "PLAUSIBLE",
+   "metrics": [
+    {
+     "metric": "netIncome",
+     "concept": "ifrs-full:ProfitLoss",
+     "value": 7139000000,
+     "priorValue": 3505000000,
+     "currency": "EUR",
+     "periodStart": "2025-01-01",
+     "periodEnd": "2025-12-31",
+     "priorPeriodEnd": "2024-12-31"
+    },
+    {
+     "metric": "operatingCashFlow",
+     "concept": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+     "value": 47064000000,
+     "priorValue": -28584000000,
+     "currency": "EUR",
+     "periodStart": "2025-01-01",
+     "periodEnd": "2025-12-31",
+     "priorPeriodEnd": "2024-12-31"
+    }
+   ],
+   "held": [
+    {
+     "metric": "revenue",
+     "reason": "NOT_REPORTED"
+    }
+   ]
+  },
+  {
+   "ticker": "VOW3.DE",
+   "lei": "529900NNUPAGGOMPXZ31",
+   "fiscalYearEnd": "2025-12-31",
+   "sourceDocument": "https://uploads.vw-mms.de/system/production/files/cws/041/941/file/00d8d2096bb900de99e1115b0bb6a000f60579c0/VWAG_JFB_Konzern-2025-12-31-DE.zip?1773119036",
+   "sourcePage": "https://www.volkswagen-group.com/en/financial-reports-18134",
+   "packageSha256": "c14269a137c3fd41d6909ec889535b41dc1ea7480ac640105c59f59f6544c17a",
+   "securityId": "ref_VOW3_DE_XETR",
+   "name": "VOLKSWAGEN AKTIENGESELLSCHAFT",
+   "status": "PLAUSIBLE",
+   "metrics": [
+    {
+     "metric": "revenue",
+     "concept": "ifrs-full:Revenue",
+     "value": 321913000000,
+     "priorValue": 324656000000,
+     "currency": "EUR",
+     "periodStart": "2025-01-01",
+     "periodEnd": "2025-12-31",
+     "priorPeriodEnd": "2024-12-31"
+    },
+    {
+     "metric": "netIncome",
+     "concept": "ifrs-full:ProfitLoss",
+     "value": 6904000000,
+     "priorValue": 12394000000,
+     "currency": "EUR",
+     "periodStart": "2025-01-01",
+     "periodEnd": "2025-12-31",
+     "priorPeriodEnd": "2024-12-31"
+    },
+    {
+     "metric": "operatingCashFlow",
+     "concept": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+     "value": 15009000000,
+     "priorValue": 17151000000,
+     "currency": "EUR",
+     "periodStart": "2025-01-01",
+     "periodEnd": "2025-12-31",
+     "priorPeriodEnd": "2024-12-31"
+    }
+   ],
+   "held": []
+  }
+ ]
+}

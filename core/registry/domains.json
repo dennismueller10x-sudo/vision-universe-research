@@ -513,6 +513,34 @@
       ]
     },
     {
+      "id": "europeEsefFacts",
+      "activation": {"state": "ACTIVATING", "decision": "Strang M5 (08.11.2026): freigegeben durch Steuerung im Rahmen der Owner-Freigabe Strang M; erster Lauf research.yml Teil europa-esef nach dem Merge."},
+      "label": "Europe ESEF consolidated facts (DE)",
+      "layer": "CORE",
+      "group": "Securities",
+      "critical": false,
+      "artifact": "/discover/data/europe-esef/facts.json",
+      "timestamp": [
+        "generatedAt"
+      ],
+      "records": "counts.plausible",
+      "role": "Drei Konzern-Kennzahlen deutscher Emittenten aus ihren ESEF-Jahresfinanzberichten (Website des Emittenten); nur Kennzahlen, Pakete bleiben im Lauf.",
+      "producer": "scripts/official-filings/de-esef-facts.mjs",
+      "workflow": "research.yml",
+      "schedule": "manuell (research.yml, Teil europa-esef), jährlich nach den Jahresfinanzberichten",
+      "freshness": {
+        "kind": "none"
+      },
+      "consumers": [
+        "Discover Europe (Aktienseite, Fundamentale Basisinformationen)"
+      ],
+      "knownGaps": [
+        "Zuerst DAX; Quellenliste von Hand gepflegt (scripts/official-filings/de-esef-sources.json).",
+        "Banken und Versicherer ohne Umsatz.",
+        "Keine Quant-Eingabe."
+      ]
+    },
+    {
       "id": "globalDiscoverUniverse",
       "label": "Global Discover Universe",
       "layer": "CORE",

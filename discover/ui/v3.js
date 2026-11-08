@@ -528,7 +528,7 @@
       showToast(c, added, st);
       step(1);
     }
-    function open() { if (current) location.hash = stockHref(ctx, current.o.s); }
+    function open() { if (current) location.hash = stockHref(ctx, current.o.s) + (current.o.rowId && /^[a-z0-9-]+$/.test(current.o.rowId) ? '?reihe=' + current.o.rowId : ''); }
     var toastTimer = 0;
     function showToast(c, added, st) {
       toast.innerHTML = '<span class="vu-hud" style="--vu-hud:32px">' + U().glyph('heart', 16) + '</span><span><b>' + esc(name(c)) + (added ? ' gemerkt' : ' ist schon gemerkt') + '</b><span>Auf deiner Watchlist</span></span>' + (added ? '<button type="button">Rückgängig</button>' : '');

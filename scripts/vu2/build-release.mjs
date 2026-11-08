@@ -376,7 +376,7 @@ export async function buildRelease({root,output}){
  try{const {writeUniverse}=await import('../../products/screener/producer/build-universe.mjs');screener=await writeUniverse({root,out:resolve(output,'screener/data'),log:()=>{}});}
  catch(e){screener={state:'UNAVAILABLE',reason:String(e&&e.message||e).slice(0,200)};await mkdir(resolve(output,'screener/data'),{recursive:true});await writeFile(resolve(output,'screener/data/status.json'),JSON.stringify(screener));}
  // Europa-Spalten des Screeners (Strang M, 08.11.2026): aus den Europa-Schlusskursen dieser Auslieferung, ebenfalls nicht blockierend.
- try{const {writeEurope}=await import('../screener/build-europe.mjs');screener={...screener,europe:await writeEurope({root,out:resolve(output,'screener/data'),log:()=>{}})};}
+ try{const {writeEurope}=await import('../../products/screener/producer/build-europe.mjs');screener={...screener,europe:await writeEurope({root,out:resolve(output,'screener/data'),log:()=>{}})};}
  catch(e){screener={...screener,europe:{state:'UNAVAILABLE',reason:String(e&&e.message||e).slice(0,200)}};}
  // Keep inert Discover templates and budgeted view files, concatenate only their dependency runs.
  if(paths.includes('discover/index.html')){const {bundleDiscover}=await import('../mobile/bundle-discover.mjs');await bundleDiscover({root,output});}
