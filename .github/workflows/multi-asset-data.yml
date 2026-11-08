@@ -107,8 +107,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: multi-asset-data-${{ github.ref_name }}
-  cancel-in-progress: false
+  # PR-Laeufe: eigene Gruppe je PR, ueberholte werden abgebrochen (Runner-Engpass 08.11.2026). Datenlaeufe bleiben seriell.
+  group: ${{ github.event_name == 'pull_request' && format('multi-asset-data-pr-{0}', github.event.pull_request.number) || format('multi-asset-data-{0}', github.ref_name) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   contract:
