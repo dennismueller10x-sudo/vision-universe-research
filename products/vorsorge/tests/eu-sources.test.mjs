@@ -1,8 +1,8 @@
 /* EU/UCITS-Quellen: Normalisierung und Zuordnung (synthetische Fixtures im Aufbau der echten Dateien). */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { ongoingCharges, chargesUnit, replication, useOfProfits, parseInstrumentsCsv, parseMasterRows } from "../../scripts/vorsorge/ingest-xetra-refdata.mjs";
-import { normName, matchFund, residualIsShareClass, consistentWithFund, keywordConflict } from "../../scripts/vorsorge/ingest-esma-funds.mjs";
+import { ongoingCharges, chargesUnit, replication, useOfProfits, parseInstrumentsCsv, parseMasterRows } from "../producer/ingest-xetra-refdata.mjs";
+import { normName, matchFund, residualIsShareClass, consistentWithFund, keywordConflict } from "../producer/ingest-esma-funds.mjs";
 
 test("Xetra: laufende Kosten in Prozent -> Dezimal; Unplausibles und Leeres bleibt null (Missing != 0)", () => {
   assert.equal(ongoingCharges("0,07%"), 0.0007);

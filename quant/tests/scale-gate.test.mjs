@@ -10,6 +10,7 @@
    ist ausschliesslich die Gegenstelle, und genau die kann ein Test nicht
    anfassen, ohne fremdes Kontingent zu verbrauchen.
    ========================================================================= */
+import { workflowPart } from "../../scripts/ci/lib/workflow-part.mjs";
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
@@ -1414,7 +1415,7 @@ test("SG29 — die Backfill-Marke im Workflow erreicht die Sicherung im Skript",
      sie eine Marke ohne Wirkung.
 
      Der Test haelt die Verbindung fest - nicht die Formulierung. */
-  const workflow = readFileSync(join(root, ".github/workflows/tiingo-scale.yml"), "utf8");
+  const workflow = workflowPart(root, "maintenance.yml", "tiingo-scale"); /* seit Buendel maintenance, vormals tiingo-scale.yml */
 
   assert.match(workflow, /--allow-full-backfill/,
     "der Workflow muss die Sicherung des Skripts ueberhaupt kennen");

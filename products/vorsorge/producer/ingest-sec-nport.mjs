@@ -30,7 +30,7 @@
    ausgelieferten Dateien.
 
    Aufruf (GitHub Actions, Marker [vorsorge-nport]):
-     node scripts/vorsorge/ingest-sec-nport.mjs [--quarters 2026q2,2026q1] [--max-quarters 4]
+     node products/vorsorge/producer/ingest-sec-nport.mjs [--quarters 2026q2,2026q1] [--max-quarters 4]
    ========================================================================= */
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, statSync, rmSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -42,7 +42,7 @@ import { Readable } from "node:stream";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const H = require(join(root, "vorsorge/engines/etf-holdings.js"));
 const F = require(join(root, "vorsorge/engines/etf-fundamentals.js"));
 const argv = process.argv.slice(2);

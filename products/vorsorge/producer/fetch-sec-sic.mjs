@@ -21,7 +21,7 @@ import { spawnSync } from "node:child_process";
 import { pipeline } from "node:stream/promises";
 import { Readable } from "node:stream";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const WORK = join(root, ".market-cache/vorsorge/sic");
 const UA = process.env.SEC_USER_AGENT || "VisionUniverseResearch info@visionuniverse.de";
 mkdirSync(WORK, { recursive: true });

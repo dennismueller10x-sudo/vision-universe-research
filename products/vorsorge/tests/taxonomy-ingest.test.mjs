@@ -1,11 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-import { catalog, latestSegment, seriesRecord, priceReturnSeries, retryable, extraEtfRows, mergeUniverse } from "../../scripts/vorsorge/ingest-tiingo-etfs.mjs";
+import { catalog, latestSegment, seriesRecord, priceReturnSeries, retryable, extraEtfRows, mergeUniverse } from "../producer/ingest-tiingo-etfs.mjs";
 const require = createRequire(import.meta.url);
-const T = require("../engines/etf-taxonomy.js");
-const Codec = require("../engines/series-codec.js");
-const M = require("../engines/etf-master.js");
+const T = require("../../../vorsorge/engines/etf-taxonomy.js");
+const Codec = require("../../../vorsorge/engines/series-codec.js");
+const M = require("../../../vorsorge/engines/etf-master.js");
 const cls = (name, extra) => T.classify(Object.assign({ name, securityType: "ETF" }, extra || {}));
 
 test("Produkttypen: ETF, ETN, ETC, ETP, CEF, Mutual Fund, Unknown", () => {
@@ -143,7 +143,7 @@ test("Fund -> Share Class -> Listing: ohne Anbieter kein Merge, Share-Class-ID",
 });
 
 test("Einzelaktie in 'Daily <TICKER> Bull/Bear'-Namen erkannt, Indexkürzel nicht", () => {
-  const T = require("../engines/etf-taxonomy.js");
+  const T = require("../../../vorsorge/engines/etf-taxonomy.js");
   assert.equal(T.classify({ name: "Direxion Daily TSLA Bull 2X Shares" }).singleStockUnderlying, "TSLA");
   assert.equal(T.classify({ name: "Direxion Daily FTSE China Bull 3X Shares" }).singleStockUnderlying, null);
   assert.equal(T.classify({ name: "Direxion Daily REIT Bull 3X Shares" }).singleStockUnderlying, null);
