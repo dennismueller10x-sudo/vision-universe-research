@@ -546,7 +546,10 @@
     var parsed = textQ && QT ? QT.parse(textQ) : null, table = p.ansicht === "tabelle";
     var head = pageHead(null, "Screener", "Sag in Worten, was du suchst. Wir übersetzen es in Regeln.");
     var body = el("div", { class: "tc-screener" }), results = el("section", { class: "tc-results-sec", id: "tc-treffer", "aria-live": "polite" });
-    put(main, [head, screenerTabs("build"), body, results]);
+    /* Ein Screener (Konzept „Verstehen. Finden.“, Entscheidung 1): /screener/ mit vorgewaehlter Perspektive „Chart“.
+       Dieser Einstieg leitet erst weiter, wenn /screener/ jedes Technical-Kriterium abdeckt (screener/tests/one-screener.test.mjs). */
+    var oneScreener = el("a", { class: "vu-navcard tc-onescreener", href: "/screener/?p=chart" }, [el("span", { class: "vu-navcard__text" }, [el("b", { text: "Im Screener mit Perspektive Chart" }), el("span", { text: "Chart-Kriterien zusammen mit Zahlen, Faktoren und Methoden filtern" })])]);
+    put(main, [head, screenerTabs("build"), oneScreener, body, results]);
     function go(next) { location.hash = "#/screener" + (next ? "?" + next : ""); }
     function withParam(k, v) { var q = (location.hash.split("?")[1] || "").split("&").filter(function (x) { return x && x.split("=")[0] !== k; }); if (v) q.push(k + "=" + v); return "#/screener" + (q.length ? "?" + q.join("&") : ""); }
     if (!dataset) put(results, el("div", { class: "tc-skel", style: "height:220px" }));

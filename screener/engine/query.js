@@ -15,7 +15,7 @@
      }],
      ranking: { enabled, weights: { momentum, growth, quality, value } },
      sort:   { field, dir: 'asc' | 'desc' },
-     view:   'cards' | 'compact' | 'table',
+     view:   'cards' | 'grid' | 'compact' | 'table',
      columns: [fieldId, ...]
    }
 
@@ -83,7 +83,8 @@
     var s = input.sort || {};
     if (s.field && SORTABLE.indexOf(s.field) < 0 && !(Fields.field(s.field) && Fields.field(s.field).available && Fields.field(s.field).kind === 'number')) throw Error('INVALID_QUERY:sort');
     q.sort = { field: s.field || (q.ranking.enabled ? 'match' : 'marketCap'), dir: s.dir === 'asc' ? 'asc' : 'desc' };
-    q.view = ['cards', 'compact', 'table'].indexOf(input.view) >= 0 ? input.view : 'cards';
+    /* 'cards' = Trefferliste (eine Zeile je Aktie, Konzept „Verstehen. Finden.“), 'grid' = Karten mit Kennzahlen. */
+    q.view = ['cards', 'grid', 'compact', 'table'].indexOf(input.view) >= 0 ? input.view : 'cards';
     q.focus = FOCI.indexOf(input.focus) >= 0 ? input.focus : 'auto';
     q.columns = Array.isArray(input.columns) ? input.columns.filter(function (c) { return Fields.field(c); }).slice(0, 12) : [];
     return q;

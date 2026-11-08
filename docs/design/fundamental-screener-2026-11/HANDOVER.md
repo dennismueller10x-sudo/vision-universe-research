@@ -66,6 +66,13 @@ Entscheidung 4: Definitionen als Screener-Vorlagen, Anzeige auf Fundamental-Akti
 - PR 3: „Höchster/Tiefster Wert, Median“ stehen unter der Wertetabelle statt zwischen Chart und Wachstum; die Quelle je Wert ist ein kleines Symbol mit Datum als Beschriftung.
 - PR 3: Startseite ohne Checklisten-Schiene bis PR 5; Ranglisten-Schiene ab 10 Mrd. $ Börsenwert (wie im Mockup), Reihenfolge Wachstumsführer, Profitable Unternehmen, Cashflow-Stärke, Höchste Margen, Solide Bilanzen, Niedrigste Bewertung (KGV). Die Discover-Auswahlen bleiben unter Ranglisten → Auswahlen erreichbar.
 - PR 3: Der Kopf nennt „aus den Pflichtmeldungen an die US-Börsenaufsicht“ statt „an die SEC“ (keine Quellennamen auf Produktseiten).
+- PR 4: Tipp auf eine Ergänzung im Satz öffnet das Filter-Sheet mit dieser Regel; der Hauptknopf „N Treffer zeigen“ führt direkt zu den Treffern. Aus der Kriterien-Bibliothek bleibt der Weg über den Satz-Bauer (Ansicht „Filter“).
+- PR 4: Fertige Ideen in diesem Schritt: Wachstum zum fairen Preis (PEG ≤ 1,5 + Umsatz 3 J ≥ 10 % p. a. + Nettomarge > 0), Niedrige Bewertung (KGV < 15 + Nettomarge > 0), Wachsen stark, Profitabel, Im Aufwärtstrend; die drei Checklisten kommen mit PR 5 dazu („Alle 8“).
+- PR 4: Bedingung, Eingabefeld, Zählung „ohne Angabe“, Formel und Datenherkunft eines Kriteriums stehen zugeklappt unter „Genau einstellen“; die Stufen-Chips zeigen die vorhandenen Stufen des Kriteriums (Umsatzwachstum: über 10/20/50 %), keine neuen.
+- PR 4: Trefferliste = Ansicht „Liste“ (eine Zeile je Aktie, gesuchte Zahl = erste Regel); der Umschalter daneben zeigt „Karten“ (bisherige Karten mit vier Kennzahlen und „Erfüllt deinen Filter“). Kompakt und Tabelle bleiben im Sheet „Sortieren“. Nachladen nur auf Knopfdruck, 25 je Schritt.
+- PR 4: „Aktie öffnen“ führt auf die eine Aktienadresse `/aktie/?t=<T>`; „Alle Zahlen und Kennzahlen im Überblick“ öffnet die bisherige Schnellansicht. „Treffer swipen“ öffnet die Vorschau des ersten Treffers, Wischen nach links/rechts blättert.
+- PR 4: Ein Screener: `/screener/?p=chart|faktoren|…` wählt die Perspektive vor. Weitergeleitet wird noch nicht, weil /screener/ nicht jedes Kriterium abdeckt (Technical 24 von 83, Quant-Profi 15 von 20; Liste in `screener/tests/one-screener.test.mjs`). Technical bekommt einen sichtbaren Einstieg „Im Screener mit Perspektive Chart“; `quant/app/pages.js` ist per UI-Sperre eingefroren, den Einstieg „Faktoren“ baut der Quant-Umbau (PR 4 dort). Menü und Leisten bleiben deshalb unverändert.
+- PR 4: Profi-Modus und Europa stehen als leise Zeilen unter „Deine Screens“ (statt Umschalter Einfach/Profi und Universum-Kachel oben); die Quant-Links der Startseite entfallen (Menü).
 
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
