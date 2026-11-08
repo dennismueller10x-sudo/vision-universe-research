@@ -290,7 +290,7 @@
       "records": "counts.rows",
       "role": "Screener-Datensatz der Produktwelt Technical: Indikatorzustaende, Formationen (Erkannt/Bestaetigt/Invalidiert), Woche/Monat, relative Staerke; dazu technical/data/stock/<shardKey>.json, der Technical-Stand je Aktie in Kurzform fuer andere Welten (Supertrader-Aktienseite).",
       "producer": "scripts/technical/world/build-screener.mjs",
-      "workflow": "technical-world.yml",
+      "workflow": "pipeline-daily.yml",
       "schedule": "nach der Produkt-Materialisierung und den langen Reihen",
       "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 120 },
       "consumers": ["Technical (/technical/)", "Aktien-Navigator (Verfuegbarkeit)"]

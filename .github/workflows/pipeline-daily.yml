@@ -33,6 +33,7 @@ on:
     - cron: '37 6 16 * *'   # marktvalidierung
     - cron: '13 7 * * 2-6'   # datenqualitaet
     - cron: '41 23 * * 1-5'   # ki-depots
+    - cron: '10 5 * * 2-6'   # technical-world (Rueckfall; Hauptausloeser ist der Anstoss aus dem Marktlauf)
   workflow_dispatch:
     inputs:
       teil:
@@ -46,6 +47,7 @@ on:
           - marktvalidierung
           - datenqualitaet
           - ki-depots
+          - technical-world
       mode:
         description: 'hausstrategie: Modus (vormals supertrader-house-live.yml)'
         type: choice
@@ -59,6 +61,9 @@ on:
   workflow_run:
     workflows:
       - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
+      # technical-world (vormals technical-world.yml): auch nach Materialisierung und langen Reihen
+      - "Quant 2.0 Product Intelligence Materialization"
+      - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"
     types: [completed]
     branches: [main]
   # hausstrategie: Probelaeufe auf claude/** per Commit-Marke (vormals supertrader-house-live.yml)
@@ -83,6 +88,7 @@ jobs:
       marktvalidierung: ${{ steps.wahl.outputs.marktvalidierung }}
       datenqualitaet: ${{ steps.wahl.outputs.datenqualitaet }}
       ki_depots: ${{ steps.wahl.outputs.ki_depots }}
+      technical_world: ${{ steps.wahl.outputs.technical_world }}
     steps:
       - name: Teil waehlen
         id: wahl
@@ -109,6 +115,7 @@ jobs:
               '37 6 16 * *') echo marktvalidierung ;;
               '13 7 * * 2-6') echo datenqualitaet ;;
               '41 23 * * 1-5') echo ki-depots ;;
+              '10 5 * * 2-6') echo technical-world ;;
               *) echo '' ;;
             esac; }
           gewaehlt=''
@@ -116,14 +123,22 @@ jobs:
             schedule) gewaehlt="$(zeitplan_von "$SCHEDULE")"; [ -n "$gewaehlt" ] || { echo "::error::Unbekannter Zeitplan '$SCHEDULE'"; exit 1; } ;;
             workflow_dispatch) gewaehlt="$TEIL" ;;
             workflow_run)
-              if [ "$WR_NAME" = 'Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)' ] && [ "$WR_CONCLUSION" = success ]; then gewaehlt=ki-depots; fi ;;
+              # Ein Ereignis kann mehrere Teile waehlen (Liste mit Leerzeichen): nach dem Marktlauf ki-depots und
+              # technical-world. Jeder Teil prueft seine eigene Job-Bedingung wie vorher in seiner eigenen Datei.
+              if [ "$WR_CONCLUSION" = success ]; then
+                case "$WR_NAME" in
+                  'Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)') gewaehlt='ki-depots technical-world' ;;
+                  'Quant 2.0 Product Intelligence Materialization'|'Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)') gewaehlt=technical-world ;;
+                esac
+              fi ;;
             push)
               if [ "$REF" = refs/heads/main ]; then
                 if touched 'docs/research/edge2/ki/ledger-A.jsonl' 'docs/research/edge2/ki/ledger-B.jsonl' 'scripts/research/edge2/ki-export.cjs'; then gewaehlt=ki-depots; fi
               elif [[ "$REF" == refs/heads/claude/* && "${MSG:-}" == *"[house-live:"* ]]; then gewaehlt=hausstrategie
               elif [[ "$REF" == refs/heads/claude/* && "${MSG:-}" == *"[mv-data]"* ]] && touched '.github/workflows/pipeline-daily.yml' 'scripts/market/build-validation-sources.mjs' 'scripts/market/validate-market-pulse.mjs' 'scripts/market/lib/market-validation.mjs'; then gewaehlt=marktvalidierung; fi ;;
           esac
-          for k in ezb vorsorge hausstrategie marktvalidierung datenqualitaet ki_depots; do v=false; [ "${k//_/-}" = "$gewaehlt" ] && v=true; setze "$k" "$v"; done
+          for k in ezb vorsorge hausstrategie marktvalidierung datenqualitaet ki_depots technical_world; do
+            v=false; case " $gewaehlt " in *" ${k//_/-} "*) v=true ;; esac; setze "$k" "$v"; done
 
   # --- ezb: vormals fx-ecb-daily.yml (EZB-Referenzkurse taeglich (EUR-Anzeige))
     # Die EUR-Anzeige rechnet jeden historischen Kurs mit dem EZB-Referenzkurs
@@ -558,3 +573,84 @@ jobs:
           if git diff --cached --quiet; then echo "Unveraendert."; exit 0; fi
           git commit -m "KI-Depots: Kursstand $(node -e 'console.log(require("./quant/data/product/ki-depots-v1.json").asOf || "ausstehend")') (automatischer Lauf)"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # --- technical-world: vormals technical-world.yml (Technical - Screener-Datensatz)
+  # Hauptausloeser ist der Anstoss aus market-data-refresh.yml (Job technical, jetzt mit -f teil=technical-world);
+  # workflow_run (Marktlauf, Materialisierung, lange Reihen; nur main) und 05:10 bleiben Rueckfall. Schritte
+  # unveraendert, Workflow-Concurrency technical-world-<ref> an beiden Jobs.
+  technical-world:
+    needs: auswahl
+    permissions:
+      contents: write
+    concurrency:
+      group: technical-world-${{ github.ref_name }}
+      cancel-in-progress: false
+    # workflow_run nur nach einem erfolgreichen Lauf auf main, der kein Push war (Push-Laeufe auf claude/** sind
+    # uebersprungen oder Probelaeufe und duerfen den Datensatz nicht ausloesen).
+    if: >-
+      needs.auswahl.outputs.technical_world == 'true' && (
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.event != 'push'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # Spitze des Branches: ein Lauf nach der Materialisierung sieht deren Commit (workflow_run laeuft auf main).
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Engine-Tests (rot = kein neuer Datensatz)
+        run: node --test quant/tests/technical-indicators.test.mjs quant/tests/technical-formations.test.mjs quant/tests/technical-query.test.mjs
+
+      - name: Screener-Datensatz bauen
+        run: node --max-old-space-size=4096 scripts/technical/world/build-screener.mjs
+
+      - name: Datensatzvertrag
+        run: node --test technical/tests/*.test.mjs
+
+      - name: Oeffentliche Datenhygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Commit (nur technical/data)
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add technical/data
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -m "Technical-Screener: $(node -e 'const m=require("./technical/data/meta.json");console.log(m.asOf+" · "+m.counts.rows+" Titel")') (automatischer Lauf)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # Ein gescheiterter Lauf bleibt nicht still (31.10.2026: der Erzeuger verweigerte wegen des Datenvertrags,
+  # bemerkt erst ueber DQ-TW-1 zwei Tage spaeter). Gleicher Bote wie im Marktlauf: Issue mit Label
+  # pipeline-alarm, ein gruener Lauf schliesst es. Uebersprungene workflow_run-Laeufe melden nichts.
+  technical-world-alarm:
+    needs: [auswahl, technical-world]
+    if: always() && needs.auswahl.outputs.technical_world == 'true' && github.ref == 'refs/heads/main' && needs.technical-world.result != 'skipped'
+    concurrency:
+      group: technical-world-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Alarm oeffnen, ergaenzen oder schliessen
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALARM_SOURCE: technical-world
+          RESULT_BUILD: ${{ needs.technical-world.result }}
+        run: node scripts/ci/pipeline-alarm.mjs

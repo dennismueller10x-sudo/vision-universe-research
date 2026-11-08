@@ -368,12 +368,6 @@
    "timer": "github"
   },
   {
-   "id": "technical-world",
-   "workflow": "technical-world.yml",
-   "cron": "10 5 * * 2-6",
-   "timer": "github"
-  },
-  {
    "id": "pipeline-daily-ki-depots",
    "workflow": "pipeline-daily.yml",
    "cron": "41 23 * * 1-5",
@@ -428,6 +422,13 @@
    "cron": "0 6 * * 1",
    "timer": "github",
    "note": "sec-fundamentals"
+  },
+  {
+   "id": "pipeline-daily-technical-world",
+   "workflow": "pipeline-daily.yml",
+   "cron": "10 5 * * 2-6",
+   "timer": "github",
+   "note": "technical-world (Rueckfall; Hauptausloeser ist der Anstoss aus dem Marktlauf)"
   }
  ]
 }
