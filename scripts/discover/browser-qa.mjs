@@ -58,16 +58,20 @@ async function premiumMobileAudit(page,key){
  assert(material.pureWhite,'Light neutral canvas/header must be pure white: '+JSON.stringify(material));
  assert.equal(material.dock.position,'fixed');assert(material.dock.left>=6&&material.dock.right>=6,'Dock must float inside viewport');assert(material.dock.bottom>=6&&material.dock.bottom<=16,'Dock must float just above the visible viewport edge: '+material.dock.bottom);assert(material.dock.borderRadius>=20,'Dock lacks capsule geometry');assert(material.dock.luminance!==null&&material.dock.luminance<40,'Dock must be the solid near-black Vision Universe surface');assert(!/^none$/.test(material.dock.boxShadow),'Dock needs depth');assert(material.active.luminance!==null&&material.active.luminance>80,'Active state must use the Discover signal lime');
 
- /* Redesign 2027 (D01): feste Reihenfolge statt Karussell-Rhythmus, nur Weiss, Schwarz, Neongruen und Graustufen (kein Rot, kein Gruen). */
- await page.waitForFunction(()=>document.querySelector('.dv3-sec--hochs .dv3-rank'),null,{timeout:15000}).catch(()=>{});
- const order=await page.locator('.v2-journey > section .vu-sect h2').allTextContents();
- const expected=['Der Markt heute','Heute im Blick','Themenwelten','Die stärksten Aktien','Neue Jahreshochs','Strategien','Bekannte Namen in Bewegung'];
- assert.deepEqual(order.filter(t=>expected.includes(t)),expected,'D01 section order: '+order.join(' | '));
+ /* Konzept „Reihe für Reihe“ (n-home): Billboard, Markt-Zeile, Top 10, dann die Schienen in fester Reihenfolge; nur Weiss, Schwarz, Neongruen und Graustufen (kein Rot, kein Gruen). */
+ await page.waitForFunction(()=>document.querySelector('.dr-sec--top10 .dr-poster'),null,{timeout:15000}).catch(()=>{});
+ const top=await page.evaluate(()=>Array.from(document.querySelectorAll('.v2-journey > section')).slice(0,3).map(n=>n.classList.contains('dr-bb')?'billboard':n.classList.contains('dr-sec--markt')?'markt':n.classList.contains('dr-sec--top10')?'top10':n.className));
+ assert.deepEqual(top,['billboard','markt','top10'],'n-home: oben fest Billboard, Markt, Top 10: '+top.join(' | '));
+ const order=await page.locator('.v2-journey > section .dr-head h2').allTextContents();
+ const expected=['Top 10 heute','Neue Jahreshochs','Themenwelten','Comeback?','Langfristige Compounder','Kennt kaum jemand','Bekannte Namen in Bewegung','Strategien','Gerade in Bewegung'];
+ assert.deepEqual(order.filter(t=>expected.includes(t)),expected.filter(t=>order.includes(t)),'n-home section order: '+order.join(' | '));
+ for(const must of ['Top 10 heute','Themenwelten','Strategien'])assert(order.includes(must),'n-home without '+must+': '+order.join(' | '));
+ assert(order.length<=14,'At most 14 rows on the home page: '+order.length);
  const palette=await page.evaluate(()=>{const rgb=v=>(v.match(/[\d.]+/g)||[]).slice(0,3).map(Number),hue=c=>{const [r,g,b]=c,mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx-mn;};
   const lime=c=>c[0]===200&&c[1]===245&&c[2]===49,grey=c=>hue(c)<=8;
   return Array.from(document.querySelectorAll('.v2-journey .vu-chg')).map(n=>rgb(getComputedStyle(n).backgroundColor)).filter(c=>!(lime(c)||grey(c)));});
  assert.deepEqual(palette,[],'Price pills must be lime or ink, never red/green: '+JSON.stringify(palette));
- for(const sel of ['.dv3-sec--markt','.dv3-sec--top','.dv3-sec--strat','.dv3-swipecard']){const n=page.locator(sel).first();if(await n.count()){await n.scrollIntoViewIfNeeded();await screenshot(page,key+'-home'+sel.replace(/[^a-z]+/g,'-'));}}
+ for(const sel of ['.dr-sec--markt','.dr-sec--top10','.dr-sec--strat','.dv3-swipecard']){const n=page.locator(sel).first();if(await n.count()){await n.scrollIntoViewIfNeeded();await screenshot(page,key+'-home'+sel.replace(/[^a-z]+/g,'-'));}}
  designEvidence.push({key,type:'d01-order',order});
 }
 // Bekannte, unveraenderte Datenfehler (known-defects.json): ausserhalb von try, weil der Bericht nach dem Lauf sie zusammenfasst.
@@ -82,7 +86,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  const bad=[];page.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400)bad.push({status:r.status(),url:r.url()});});
  const entryStarted=Date.now();await navigate(page,base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor({state:'visible'});
  // Measure the cold Home entry before unrelated settings, theme and reload checks.
- await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/entdeck|versteh/i.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();const targets=[['purpose',page.locator('h1')],['search',page.locator('.v2-search-prompt')],['quick links',page.locator('.dv3-quick a').first()]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=70&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
+ await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/Was bewegt\s+die Börse heute\?/.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();const targets=[['purpose',page.locator('h1')],['search',page.locator('.v2-search-prompt')],['genre chips',page.locator('.dr-genres button').first()]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=70&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
  await check(key+' fresh visit starts light regardless of device scheme',async()=>{
   assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
   assert.equal(await page.locator('html').getAttribute('data-theme-mode'),'light');
@@ -298,16 +302,23 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
    interactionEvidence.push({key,type:'deep-feed-resume',position,stockRequests:requests.length});await screenshot(deep,key+'-feed-deep-resume');}finally{await deep.close();}
  });
  if(engine==='chromium'&&width===390&&colorScheme==='dark')await check(key+' complete canonical home journey',async()=>{
-  /* Redesign D01: Markt, Heute im Blick (mit Sheet „Warum?“), Themen, Rangliste mit vier Reitern, Jahreshochs, Strategien, Bekannte Namen, Swipen. */
+  /* Konzept „Reihe für Reihe“ (n-home, n-genre): Billboard mit Sheet „Warum?“, Markt-Zeile, Top 10, Schienen, Strategien, Genre-Chips ohne Seitenwechsel, Swipen. */
   await navigate(page,base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor();
   assert(await page.locator('.v2-hero-track [data-symbol]').count()>=2,'Heute im Blick needs several stocks');
-  const tabs=page.locator('.dv3-sec--top [role=tab]');assert.equal(await tabs.count(),4,'Ranking tabs Alle / S&P 500 / Nasdaq 100 / Dow');
-  await tabs.nth(1).click();assert.equal(await tabs.nth(1).getAttribute('aria-selected'),'true');assert.equal(await page.locator('.dv3-top .dv3-rank').count(),4);
-  await page.locator('.dv3-why').first().click();await page.locator('#dv3-sheet:not([hidden])').waitFor();await screenshot(page,key+'-why-sheet');await page.keyboard.press('Escape');
-  assert(await page.locator('.dv3-sec--strat .vu-navcard').count()>=3,'Strategy teaser');assert(await page.locator('.dv3-sec--namen .vu-lrow').count()>=1,'Known names');
+  assert.equal(await page.locator('.dr-bb').evaluate(n=>getComputedStyle(n).backgroundColor),'rgb(0, 0, 0)','Billboard is black in both modes');
+  assert.equal(await page.locator('.dr-ms[href="#/maerkte"]').count(),1,'Market strip leads to Märkte');
+  await page.locator('.dr-sec--top10 .dr-t10').first().waitFor();assert(await page.locator('.dr-sec--top10 .dr-t10').count()>=5,'Top 10 heute');
+  await page.locator('.dr-bb__q').first().click();await page.locator('#dv3-sheet:not([hidden])').waitFor();await screenshot(page,key+'-why-sheet');await page.keyboard.press('Escape');
+  await page.locator('.dr-sec--strat').scrollIntoViewIfNeeded();assert(await page.locator('.dr-sec--strat .dr-sk').count()>=3,'Strategy cards');
+  await page.locator('.dr-sec[data-row="bekannte-namen"]').scrollIntoViewIfNeeded();await page.locator('.dr-sec[data-row="bekannte-namen"] .dr-poster').first().waitFor({timeout:15000});
   assert.equal(await page.locator('.dv3-swipecard[href="#/swipen"]').count(),1,'Swipe teaser');
-  await page.locator('.dv3-sec--hochs .dv3-rank').first().waitFor({timeout:15000});
-  for(const sel of ['.dv3-sec--blick','.dv3-sec--themen','.dv3-sec--hochs','.dv3-sec--namen']){await page.locator(sel).first().scrollIntoViewIfNeeded();await screenshot(page,key+'-world'+sel.replace(/[^a-z]+/g,'-'));}
+  for(const sel of ['.dr-bb','.dr-sec--themes','.dr-sec[data-row="new-52-week-highs"]','.dr-sec[data-row="bekannte-namen"]']){await page.locator(sel).first().scrollIntoViewIfNeeded();await screenshot(page,key+'-world'+sel.replace(/[^a-z0-9]+/g,'-'));}
+  const before=page.url();await page.evaluate(()=>scrollTo(0,0));await page.locator('.dr-genres button[data-genre="unternehmen"]').click();
+  await page.locator('.dr-sec[data-row="umsatz-waechst-stark"]').waitFor();assert.equal(await page.locator('.dr-bb').count(),0,'Genre view without billboard');
+  assert.equal(await page.locator('.dr-genres button[data-genre="unternehmen"]').getAttribute('aria-pressed'),'true');
+  assert(/genre=unternehmen/.test(page.url())&&page.url().split('#')[0]===before.split('#')[0],'Genre filter keeps the page: '+page.url());
+  await screenshot(page,key+'-genre-unternehmen');
+  await page.locator('.dr-genres button[data-genre="alle"]').click();await page.locator('.v2-hero-track [data-symbol]').first().waitFor();
  });
  await check(key+' no local HTTP errors',async()=>assert.deepEqual(bad,[]));
  await ctx.close();
