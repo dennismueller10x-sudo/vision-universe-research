@@ -267,7 +267,8 @@
     Array.prototype.forEach.call(page.querySelectorAll('.dr-genres button[data-genre]'), function (b) { b.setAttribute('aria-pressed', String(b.dataset.genre === (g || 'alle'))); });
     var intro = page.querySelector('.dv3-intro'), G = g && R().genre(g);
     var title = intro && intro.querySelector('.vu-lt'), lead = intro && intro.querySelector('.dr-genre-lead'), tag = intro && intro.querySelector('.dv3-asof');
-    if (title) title.innerHTML = G ? esc(G.title).replace('\n', '<br>') : 'Was bewegt<br>die Börse heute?';
+    /* Zwei Zeilen als Blöcke, das Leerzeichen in der ersten: der Text bleibt „Was bewegt die Börse heute?“, auch nach dem Verkleinern des HTML. */
+    if (title) title.innerHTML = (G ? G.title : 'Was bewegt\ndie Börse heute?').split('\n').map(function (l, i, a) { return '<span class="dr-l">' + esc(l + (i < a.length - 1 ? ' ' : '')) + '</span>'; }).join('');
     if (lead) { lead.hidden = !G; lead.textContent = G ? G.lead : ''; }
     if (tag) { if (!tag.dataset.base) tag.dataset.base = tag.textContent; tag.textContent = G ? 'Discover · ' + G.label : tag.dataset.base; }
     var search = intro && intro.querySelector('.v2-search-prompt'); if (search) search.hidden = !!G;
