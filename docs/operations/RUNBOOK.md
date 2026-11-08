@@ -98,3 +98,12 @@ Nach dem Datenlauf löst `workflow_run` das nächste Deployment aus.
 3. Ursache finden: Job `supertrader` im Nachtlauf ansehen (`SKIP/UP_TO_DATE`, `SKIP/ALREADY_QUEUED`, `REFUSE/DATA_NOT_VALIDATED` oder Dispatch abgewiesen: Issue `[market-data-refresh]` mit Fehlertext). Lief der Supertrader-Lauf und ist rot, bleiben die Signale unverändert (Integritätstests vor dem Commit): den Lauf in den Actions ansehen.
 4. Nachholen: `supertrader-signals.yml` von Hand starten. Vorher prüfen: Nachtlauf und Materialisierung fertig, der Lauf schreibt nur `supertrader/`, seine Integritätstests bleiben bindend. Ein Wiederholungslauf ist idempotent (keine neuen Handelstage, keine Minutenabrufe, kein Commit) und kostet nur Laufzeit (rund 2,5 Minuten).
 
+
+## 10. Ein Zeitplan-Lauf kam nicht (Zeitgeber)
+
+Alle Zeitpläne stehen in `core/registry/schedule.json` (Plan Neustart §3: ein Zeitgeber). `timer: "waker"` heißt: der Cloudflare-Wecker `vu-intraday-waker` liest das Register jede Minute von `main` und startet den Workflow per `workflow_dispatch` mit `zeitplan=<cron>`; der Lauf heißt dann `<Workflow> · Takt <cron>`. Kam nichts an, holt der Wecker nach 5, 10 und 15 Minuten nach. `timer: "github"` heißt: der Cron steht noch im Workflow (Altbestand oder begründete Ausnahme, Feld `ausnahme`).
+
+- Inventar und Abweichungen: `node scripts/core/schedule-registry.mjs` (Vertragstest SZ in `core/tests/schedule-registry.test.mjs`).
+- Wecker eingerichtet? `https://vu-intraday-waker.little-credit-15d3.workers.dev/status` (`schluesselHinterlegt: true`).
+- Wecker neu ausrollen: Workflow „Cloudflare — Intraday-Wecker ausrollen“ (`cloudflare-waker-deploy.yml`). Ein Registerwechsel braucht **kein** Ausrollen.
+- Umstellen eines Eintrags: Cron aus dem Workflow und `timer: "waker"` im selben Commit; der Workflow bekommt den Eingang `zeitplan`, `run-name` mit Marke und die Weiche `github.event.schedule || inputs.zeitplan` (SZ-2 prüft das).
