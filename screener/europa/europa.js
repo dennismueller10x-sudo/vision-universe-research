@@ -1,5 +1,5 @@
 /* Screener · Europa (Strang M, 08.11.2026): einfache Kursspalten aus veröffentlichten, unbereinigten
-   Tagesschlusskursen. Daten: /screener/data/universe-EUROPE.json (scripts/screener/build-europe.mjs,
+   Tagesschlusskursen. Daten: /screener/data/universe-EUROPE.json (products/screener/producer/build-europe.mjs,
    Regel in screener/europe-close-metrics.js). Kein Fachmodell, keine Schätzung: leere Zelle = „–“. */
 (function (global) {
   'use strict';

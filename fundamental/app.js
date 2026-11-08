@@ -1493,7 +1493,7 @@
   /* ------------------------------------------------------------ 6 Weitere Bereiche */
   var AREA_LIST = [
     ['dividende', 'dividend', 'Dividende', 'Rendite, Ausschüttungen, Ausschüttungsquote'],
-    ['analysten', 'analysts', 'Analysten', 'Einstufungen und Kursziele'],
+    ['analysten', 'analysts', 'Analysten', 'Einstufungen, Angabe Dritter'],
     ['bewertung', 'valuation', 'Bewertung', 'KGV, KUV, KBV, EV/EBITDA, FCF-Rendite'],
     ['aktie', 'share', 'Aktie & Kapital', 'Aktienanzahl, Rückkäufe, Aktienvergütung'],
     ['unternehmen', 'company', 'Unternehmensdaten', 'Branche, Börse, Geschäftsjahr, Indizes'],
@@ -1573,22 +1573,14 @@
       var a = r && r.a;
       if (!a) { put(box, notice('Für ' + co.t + ' liegen keine Analysten-Einstufungen vor.', r && r.e ? 'Die Quelle meldet für diesen Titel keine veröffentlichten Einstufungen.' : 'Der Titel ist noch nicht abgerufen (rotierend, voller Umlauf etwa eine Woche).'), el('a', { class: 'fu-sec-link', href: '/analysten/' }, ['Zur Analystenübersicht', glyph('chevron', 'fu-glyph-sm')])); return; }
       var L = a.last, keys = [['strongBuy', 'Starker Kauf'], ['buy', 'Kaufen'], ['hold', 'Halten'], ['sell', 'Verkaufen'], ['strongSell', 'Starker Verkauf']];
-      var price = co.quote && co.quote.value, tg = a.target;
-      var range = tg && isNum(tg.low) && isNum(tg.high) && tg.high > tg.low ? function (v) { return Math.max(0, Math.min(100, (v - tg.low) / (tg.high - tg.low) * 100)); } : null;
+      /* Entscheidung 3 (Konzept „Verstehen. Finden.“): nur Einstufungen als Angabe Dritter mit Quelle und Datum, keine Kursziele. */
       put(box, 
         el('div', { class: 'fu-kgrid' }, [
-          el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Analystenkonsens (Angabe Dritter)' }), el('b', { class: 'fu-k-v', text: a.label || (a.total ? a.total + ' Analysten' : '–') }), el('small', { class: 'fu-k-s', text: a.total ? (a.label ? a.total + ' Einstufungen · ' : 'Stand ') + monthDe(L.period) : '' })]),
-          tg ? el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Kursziel (Mittel)' }), el('b', { class: 'fu-k-v fu-num', text: C.fmt({ kind: 'perShare' }, tg.mean, 'USD') }),
-            el('small', { class: 'fu-k-s', text: isNum(price) ? (tg.mean >= price ? '+' : '−') + M.pct(Math.abs(tg.mean / price - 1)) + ' zum Kurs' : '' })])
-            : a.targetState ? el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Kursziel (Angabe Dritter)' }), el('b', { class: 'fu-k-v', text: '–' }), el('small', { class: 'fu-k-s', text: { NO_FREE_SOURCE: 'keine freie Quelle', NO_TARGET: 'nicht veröffentlicht' }[a.targetState] || 'noch nicht geprüft' })]) : null
+          el('div', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Analystenkonsens (Angabe Dritter)' }), el('b', { class: 'fu-k-v', text: a.label || (a.total ? a.total + ' Analysten' : '–') }), el('small', { class: 'fu-k-s', text: a.total ? (a.label ? a.total + ' Einstufungen · ' : 'Stand ') + monthDe(L.period) : '' })])
         ]),
         L ? el('div', { class: 'fu-card' }, [el('p', { class: 'fu-card-k' }, [el('b', { text: 'Verteilung' }), ' · ' + monthDe(L.period)]),
           el('div', { class: 'fu-dist', 'aria-hidden': 'true' }, keys.map(function (k, i) { return L[k[0]] ? el('i', { class: 'd' + i, style: 'flex:' + L[k[0]] }) : null; })),
           el('ul', { class: 'fu-legend' }, keys.map(function (k, i) { return el('li', {}, [el('i', { class: 'sw d' + i }), k[1] + ' ' + (L[k[0]] || 0)]); }))]) : null,
-        tg && range ? el('div', { class: 'fu-card' }, [el('p', { class: 'fu-card-k' }, [el('b', { text: 'Kursziele' }), ' · ' + (tg.provider || '')]),
-          el('div', { class: 'fu-range', 'aria-hidden': 'true' }, [el('i', { class: 'mk mk-median', style: 'left:' + range(tg.mean).toFixed(1) + '%' }), isNum(price) ? el('i', { class: 'mk mk-self', style: 'left:' + range(price).toFixed(1) + '%' }) : null]),
-          el('div', { class: 'fu-gauge-scale' }, [el('span', { text: 'Tief ' + C.fmt({ kind: 'perShare' }, tg.low, 'USD') }), el('span', { text: 'Hoch ' + C.fmt({ kind: 'perShare' }, tg.high, 'USD') })]),
-          el('p', { class: 'fu-note', text: 'Strich = mittleres Kursziel, Punkt = aktueller Kurs' + (isNum(price) ? ' (' + C.fmt({ kind: 'perShare' }, price, 'USD') + ')' : '') + '.' })]) : null,
         a.history.length > 1 ? el('div', { class: 'fu-table-wrap' }, el('table', { class: 'fu-table' }, [el('thead', {}, el('tr', {}, [el('th', { text: 'Monat' })].concat(keys.map(function (k) { return el('th', { class: 'r', text: k[1] }); })))),
           el('tbody', {}, a.history.slice().reverse().map(function (h) { return el('tr', {}, [el('th', { scope: 'row', text: monthDe(h.period) })].concat(keys.map(function (k) { return el('td', { class: 'r fu-num', text: String(h[k[0]] || 0) }); }))); }))])) : null,
         el('p', { class: 'fu-note', text: 'Quelle: ' + (a.provider || 'Finnhub + FMP') + ' · Stand ' + M.dateDe((a.generatedAt || '').slice(0, 10)) + '. Einschätzungen Dritter, keine Empfehlung von Vision Universe.' }));

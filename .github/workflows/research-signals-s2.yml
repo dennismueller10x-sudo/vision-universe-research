@@ -42,6 +42,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Datenzweig (Plan Neustart §3): die SPY-Reihe waechst nur noch in data/live (marketPulse).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Registrierung und Paritaetsbasis pruefen
         run: |
@@ -152,6 +155,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Datenzweig (Plan Neustart §3): die SPY-Reihe waechst nur noch in data/live (marketPulse).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - uses: actions/download-artifact@v4
         with:
           pattern: s2-shard-*

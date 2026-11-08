@@ -192,7 +192,7 @@ jobs:
       # Erzeuger und bleibt aussen vor.
       - name: Commit und Push
         env:
-          PUSH_REGENERATE_PATHS: "discover/data/ !discover/data/europe/"
+          PUSH_REGENERATE_PATHS: "discover/data/ !discover/data/europe/ !discover/data/europe-esef/"
           PUSH_REGENERATE: "node scripts/discover/build-discover-data.mjs && node scripts/discover/verify-discover-data.mjs"
         run: |
           git config user.name "vision-universe-bot"
