@@ -841,6 +841,8 @@
        kein Detail: die Launch-Messung muss sie LESEN und nicht abschreiben,
        sonst messen zwei Listen gegeneinander. */
     SCREENER_TYPES: SCREENER_TYPES,
+    /* Gattung des Wertpapierstamms -> Wertpapierart: eine Abbildung fuer Company Master und Produktuniversum. */
+    SECURITY_CLASS_TO_TYPE: SECURITY_CLASS_TO_TYPE,
     capabilityMatrix: capabilityMatrix,
     capabilityFlags: capabilityFlags,
     searchEntry: searchEntry,

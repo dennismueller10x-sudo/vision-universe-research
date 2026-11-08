@@ -68,6 +68,23 @@ async function http(url, opts = {}, versuch = 0) {
   return res;
 }
 
+/**
+ * MediaWiki-API mit maxlag: bei Last antwortet sie mit HTTP 200 und
+ * {error:{code:"maxlag"}} statt Daten. Lauf 42210753943 (06.11.2026)
+ * nahm das als "nichts gefunden" und verlor 27 freigegebene Commons-Logos
+ * aus der Namenszuordnung. Jetzt: warten und wiederholen, sonst abbrechen.
+ */
+async function mwApi(url, versuche = 6) {
+  for (let v = 0; ; v++) {
+    const data = await (await http(url)).json();
+    if (!data.error) return data;
+    if (v >= versuche) throw new Error(`MediaWiki-API ${data.error.code || "Fehler"}: ${String(data.error.info || "").slice(0, 120)}`);
+    const warte = 5000 * 2 ** v;
+    console.log(`     MediaWiki-API ${data.error.code || "Fehler"} - warte ${Math.round(warte / 1000)} s`);
+    await sleep(warte);
+  }
+}
+
 /** Arbeitet eine Liste mit n gleichzeitigen Aufgaben ab. */
 async function pool(list, n, fn) {
   let i = 0;
@@ -193,7 +210,7 @@ async function imageinfo(titles) {
       "&prop=imageinfo&iiprop=url|sha1|mime|extmetadata&iiurlwidth=" + THUMB_WIDTH +
       "&iiextmetadatafilter=License|LicenseShortName|LicenseUrl|Artist|Restrictions" +
       "&titles=" + encodeURIComponent(chunk.join("|"));
-    const data = await (await http(url)).json();
+    const data = await mwApi(url);
     const alias = new Map(((data.query && data.query.normalized) || []).map((n) => [n.to, n.from]));
     for (const p of (data.query && data.query.pages) || []) {
       const info = p.imageinfo && p.imageinfo[0];
@@ -307,7 +324,7 @@ if (!args["no-name-search"]) {
   const entities = new Map();
   for (let i = 0; i < ids.length; i += 50) {
     const url = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=claims|labels|aliases&languages=en&maxlag=5&ids=" + ids.slice(i, i + 50).join("|");
-    const data = await (await http(url)).json();
+    const data = await mwApi(url);
     for (const [id, ent] of Object.entries(data.entities || {})) entities.set(id, entityToItem(ent));
     await sleep(150);
   }

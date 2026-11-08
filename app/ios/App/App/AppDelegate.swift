@@ -1,13 +1,40 @@
 import UIKit
 import Capacitor
+import FirebaseCore
+import FirebaseMessaging
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
 
     var window: UIWindow?
+    private var pushRegistered = false
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        guard FirebaseApp.app() != nil else { return }
+        pushRegistered = true
+        Messaging.messaging().apnsToken = deviceToken
+        Messaging.messaging().token { token, error in
+            if let error = error {
+                NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+            } else if let token = token {
+                NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: token)
+            }
+        }
+    }
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+    }
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        if pushRegistered, let token = fcmToken {
+            NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: token)
+        }
+    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        if let path = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
+           let options = FirebaseOptions(contentsOfFile: path) {
+            FirebaseApp.configure(options: options)
+            Messaging.messaging().delegate = self
+        }
         return true
     }
 

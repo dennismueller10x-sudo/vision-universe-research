@@ -1,75 +1,32 @@
-# Apple-Konto der RAM Consulting UG und der Entwicklername „Vision Universe“
+# Apple-Konto der RAM Consulting UG: Namen und Entwickleridentität
 
-**Stand:** 03.11.2026 · Reine Dokumentation. Es wurde bei Apple nichts angelegt, nichts beantragt, kein Konto geprüft.
-Kennzeichnung: **[belegt]** steht auf einer Apple-Seite (Link) · **[offen]** weder in Apples Dokumentation gefunden noch von mir geprüft · **[Sie]** nur Sie können das tun.
+**Stand:** 04.11.2026 · Reine Dokumentation. Die frühere Entwicklernamen-Frage ist **entschieden und erledigt**; es gibt dafür keine Sperre mehr.
 
-## 0. Entscheidungen des Owners (Stand 03.11.2026)
+## Verbindliche Entscheidung des Owners (04.11.2026)
 
-1. Das Apple-Entwicklerkonto wird **als Organisation unter der RAM Consulting UG (haftungsbeschränkt)** registriert (entspricht Option A, Einschreibung).
-2. Gewünschter öffentlicher Entwicklername: **„Vision Universe“**.
-3. **Es wird kein App-Eintrag angelegt**, bis Apple die Namensfrage (3.1 und 3.2) geklärt hat. Das gilt auch für Probe-Einträge.
-4. Buildweg bleibt GitHub Actions mit macOS-Runner. **Keine aktive Pipeline und kein Upload ohne gesonderte Freigabe.**
-
-## 1. Ausgangslage und Wunsch
-
-- Juristische Person: **RAM Consulting UG (haftungsbeschränkt)**.
-- Wunsch: Im App Store soll **„Vision Universe“** als Entwickler erscheinen, nicht der Firmenname.
-- Folge für die Planung: Der **erste App-Eintrag wird erst angelegt, wenn diese Frage geklärt ist**, weil der Name dort einmalig und endgültig festgelegt wird (siehe 2.).
-
-## 2. Was Apple dokumentiert
-
-| Aussage | Quelle |
+| Punkt | Festlegung |
 |---|---|
-| Wer sich als **Organisation** einschreibt, kann einen **abweichenden Entwicklernamen** („developer name“) festlegen. Einzelpersonen nicht: Dort ist der Entwicklername der juristische Name. | [Apple: Set your developer name](https://developer.apple.com/help/app-store-connect/create-an-app-record/set-your-developer-name) [belegt] |
-| Der Name wird **nur beim allerersten Hinzufügen einer App** gesetzt: Apps, **+**, Feld **„Company Name“**. | dieselbe Seite [belegt] |
-| Zulässig ist laut Apple ein Name, wenn er **ein eingetragener Handelsname, eine DBA oder ein „fictitious business name“** ist. Beispiel von Apple: Rechtsname „Apps Company LLC“, Handelsname „Apps Company“. | dieselbe Seite [belegt] |
-| Der Name lässt sich **später nicht bearbeiten oder ändern**. | dieselbe Seite [belegt] |
-| Nach der Freigabe der App erscheint der Entwicklername **unter dem App-Namen** auf der Produktseite und bei der Installation. | dieselbe Seite [belegt] |
-| Für die **Einschreibung** muss die Organisation eine juristische Person sein. **DBAs, Fantasiebezeichnungen, Handelsnamen und Niederlassungen werden dafür nicht akzeptiert.** Als **Verkäufer** („seller“) wird der Name der Organisation geführt. | [Apple: Einschreibung](https://developer.apple.com/support/enrollment/) [belegt] |
-| Anforderungen der Organisation: **D-U-N-S-Nummer** (meist kostenlos), **Vertretungsbefugnis**, **Firmen-E-Mail der eigenen Domain**, **öffentlich erreichbare Website** der Organisation, gegebenenfalls beglaubigte Unterlagen. | dieselbe Seite [belegt] |
-| **Änderung des Rechtsnamens** (Mitgliedschaft): Antrag in den Mitgliedschaftsdetails mit Nachweisen, Apple prüft. **Änderung des Organisationsnamens ändert den „Vendor-Namen“ aller Apps und lässt sich nicht rückgängig machen** (setzt die IDFV zurück). | [Apple: Account-Angaben ändern](https://developer.apple.com/help/account/manage-your-team/update-your-account-information/) [belegt] |
-| **EU-Händlerangaben** (Digital Services Act): Organisationen deklarieren den „Trader“-Status. Die **Adresse kommt aus der D-U-N-S-Nummer**, Sie geben **Telefonnummer und E-Mail** an. Verifiziert, werden sie auf der Produktseite in den EU-Ländern **öffentlich angezeigt**. | [Apple: DSA-Informationen](https://developer.apple.com/help/app-store-connect/manage-compliance-information/manage-european-union-digital-services-act-compliance-information) [belegt, Einzelheiten zu Feldern prüfen] |
+| App-Name | **Vision Universe** |
+| Name unter dem App-Icon | **Vision Universe** |
+| Rechtlicher Betreiber und Apple-Entwickler | **RAM Consulting UG (haftungsbeschränkt)** |
+| Apple-Developer-Kontotyp | **Organisation** |
+| Bundle-ID | `de.visionuniverse.app` (Verfügbarkeit **noch zu prüfen**, geschieht beim Anlegen im Developer-Portal) |
+| Abweichender öffentlicher Entwicklername | **wird nicht benötigt** |
 
-## 3. Was offen ist [offen]
+Folge: Beim ersten App-Eintrag in App Store Connect bleibt das Feld **„Company Name“** (Entwicklername) beim Rechtsnamen der Organisation, keine Sonderregel, keine Anfrage an Apple, keine Markennachweise. Die frühere Bedingung „App-Eintrag erst nach geklärtem Entwicklernamen“ **entfällt**. Der Anzeigename der App auf dem Homescreen („Vision Universe“) ist davon unabhängig und wird im Projekt gesetzt (`app/capacitor.config.json`, `appName`; Info.plist `CFBundleDisplayName`).
 
-1. **Ob „Vision Universe“ für eine deutsche UG als „registered trade name / DBA“ anerkannt wird.** Apples Wortlaut kennt „DBA“, ein US-Konzept. Für die UG ist die Firma „RAM Consulting UG (haftungsbeschränkt)“. „Vision Universe“ wäre eine Marke oder Geschäftsbezeichnung. Auf der Wortmarke im Repository steht ein ®, es liegt also vermutlich eine eingetragene Marke vor (Eintragung **nicht geprüft**). Ob Apple eine Markeneintragung, eine Gewerbeanmeldung mit Geschäftsbezeichnung oder einen Handelsregistereintrag als Nachweis akzeptiert, steht in Apples Dokumentation nicht.
-2. **Ob zusätzlich der Rechtsname als „Seller“ auf der Produktseite sichtbar bleibt.** Apple nennt den Organisationsnamen als Verkäufer (Einschreibung), die Anzeige neben dem Entwicklernamen ist nicht beschrieben. **Rechnen Sie damit, dass der Firmenname und die Firmenadresse (DSA) im EU-Store trotzdem sichtbar sind.**
-3. **Ob Apple bei App Review den Entwicklernamen gegen Marken- oder Firmenangaben prüft.** Foren berichten von Ablehnungen nach Richtlinie 5.2.1, wenn Verkäufer- und Markenname nicht zusammenpassen (Drittquellen, nicht von Apple bestätigt).
+## Stand der Apple-Registrierung
 
-## 4. Optionen
+- Registrierung der RAM Consulting UG als Organisation **am 03.11.2026 eingereicht**.
+- D-U-N-S-Nummer ermittelt und von Apple **akzeptiert**.
+- **Organisationsprüfung durch Apple läuft.** Bis zur Freigabe: **keine erneute Registrierung, kein App-Eintrag, kein Upload, keine Zertifikate oder Schlüssel.**
 
-| Option | Ergebnis im Store | Aufwand und Risiko |
-|---|---|---|
-| **A: Organisationskonto der RAM Consulting UG, Entwicklername „Vision Universe“ beim ersten App-Eintrag** | Entwickler „Vision Universe“ unter dem App-Namen; Firmenname bleibt als Verkäufer/DSA-Angabe möglich | Nachweis des Handelsnamens gegenüber Apple nötig (offen, siehe 3.1). **Name danach unveränderlich.** |
-| **B: Firma umbenennen** (z. B. „Vision Universe UG“), dann Konto auf diesen Namen | Verkäufer und Entwickler gleich „Vision Universe …“ | Handelsregisteränderung, Notar/Gesellschafterbeschluss, Bank/Verträge; Apple-Namensänderung mit Nachweisen. Aufwendig und langsam. |
-| **C: Eigene juristische Person „Vision Universe …“** für Konto und Marke | wie B | Neue Gesellschaft, Rechte an Marke/App übertragen. Aufwendig. |
-| **D: Entwicklername = „RAM Consulting UG“** | Firmenname überall | Kein Nachweisproblem, widerspricht Ihrem Wunsch. |
-| **E: Einzelperson** | Ihr persönlicher Name | Nicht für die Firma geeignet, kein abweichender Entwicklername möglich. **Nicht empfohlen.** |
+## Was Apple zu Namen dokumentiert (für später)
 
-**Meine Empfehlung:** Weg **A**, aber **erst nach schriftlicher Auskunft von Apple** (siehe 5.). Fällt sie negativ aus, entscheiden Sie zwischen B und D. Keinen App-Eintrag „zur Probe“ anlegen, denn schon der erste Eintrag legt den Namen fest.
+- Als **Verkäufer** wird der Name der Organisation geführt; Organisationen deklarieren den EU-**Trader-Status** (Digital Services Act). Adresse aus der D-U-N-S-Nummer, Telefon und E-Mail geben Sie an. Verifiziert, werden sie in den EU-Ländern auf der Produktseite angezeigt ([Apple: DSA](https://developer.apple.com/help/app-store-connect/manage-compliance-information/manage-european-union-digital-services-act-compliance-information)). **Vor dem öffentlichen Release** mit dem Impressum abgleichen (nicht nötig für den privaten TestFlight-Test).
+- Eine spätere **Änderung des Organisationsnamens** ändert den Vendor-Namen aller Apps und ist nicht umkehrbar ([Apple](https://developer.apple.com/help/account/manage-your-team/update-your-account-information/)).
+- Ein abweichender Entwicklername ließe sich nur beim allerersten App-Eintrag setzen und wäre danach fix ([Apple](https://developer.apple.com/help/app-store-connect/create-an-app-record/set-your-developer-name)). Das ist hier nicht vorgesehen.
 
-## 5. Schritte, die vor dem ersten App-Eintrag nötig sind
+## Auswirkung auf TestFlight
 
-| # | Schritt | Wer |
-|---|---|---|
-| 1 | **D-U-N-S-Nummer** der RAM Consulting UG prüfen (Dun & Bradstreet, Abfrage meist kostenlos): Name und Anschrift müssen **exakt** zum Handelsregister passen, inklusive „UG (haftungsbeschränkt)“. Fehlt sie, beantragen (Dauer Tage bis Wochen). | **[Sie]** |
-| 2 | Voraussetzungen der Einschreibung bereitlegen: Firmen-E-Mail der eigenen Domain, öffentliche Website, Handelsregisterauszug, Nachweis der Vertretungsbefugnis (Geschäftsführer), Zwei-Faktor-Apple-Kennung der vertretungsberechtigten Person. | **[Sie]** |
-| 3 | **Apple Developer Program als Organisation** (RAM Consulting UG) einschreiben. Die Einschreibung selbst legt **keinen** Entwicklernamen fest. | **[Sie]** |
-| 4 | **Vor dem ersten App-Eintrag** [Apple Developer Support](https://developer.apple.com/contact/) (Mitgliedschaft und Konto) schriftlich fragen (Textvorlage unten). Auskunft **mit Fallnummer sichern**. | **[Sie]** |
-| 5 | **Händlerangaben (DSA)** erfassen: geschäftliche Telefonnummer und E-Mail, die öffentlich erscheinen dürfen; mit dem Impressum abgleichen. | **[Sie]** |
-| 6 | **Erst jetzt** den ersten App-Eintrag anlegen, im Feld **Company Name** genau „Vision Universe“ (Schreibweise festlegen: Groß-/Kleinschreibung, Leerzeichen). Keine Tippfehler, keine spätere Änderung möglich. | **[Sie]**, ich gebe die Schreibweise vor |
-
-Was **vor** der Klärung gefahrlos möglich ist (Apple legt den Entwicklernamen laut Dokumentation erst beim ersten App-Eintrag fest): Einschreibung, App-ID `de.visionuniverse.app` registrieren, Zertifikat und Profil erzeugen, API-Schlüssel anlegen, GitHub-Umgebung und Secrets einrichten. **[offen: Ich habe nicht geprüft, ob eine dieser Aktionen den Namen indirekt festlegt. Das Skript und die Anleitung legen daher nur die App-ID, nie einen App-Eintrag an.]**
-
-## 6. Textvorlage für die Anfrage an Apple (Englisch)
-
-> Subject: Developer name "Vision Universe" for organization RAM Consulting UG (haftungsbeschränkt), Germany
->
-> Our organization, RAM Consulting UG (haftungsbeschränkt), is enrolled in the Apple Developer Program (Team ID: …). We plan to add our first app to App Store Connect and would like to set the developer name to "Vision Universe", which is our brand and registered mark [attach: trademark registration / commercial register extract / business registration if applicable].
-> According to your help article "Set your developer name", organizations may use a registered trade name, DBA or fictitious business name. Please confirm in writing: (1) whether "Vision Universe" is acceptable as developer name for our legal entity, (2) which documentation you require for a German UG, (3) whether the legal entity name will additionally be displayed as seller on the product page, and (4) that the developer name is only fixed when the first app is added. We will not add an app record until we have your answer.
-
-Anhänge nur Nachweise zur Firma, **keine** Zugangsdaten, Schlüssel oder Passwörter.
-
-## 7. Auswirkung auf TestFlight
-
-TestFlight braucht einen App-Eintrag. **Bis zur Klärung ist TestFlight blockiert.** Alles andere bereiten wir vor (siehe [TESTFLIGHT_STEP_BY_STEP.md](TESTFLIGHT_STEP_BY_STEP.md)). Ein schneller Umweg über ein vorläufiges Einzelkonto ist nicht sinnvoll: Er würde den Entwicklernamen auf den Rechtsnamen festlegen oder zwei Konten erzeugen. Die Wartezeit hängt an Apples Antwort und an der D-U-N-S-Nummer (beide Dauern unbekannt).
+TestFlight braucht einen App-Eintrag, und der braucht die freigegebene Organisation. Es bleibt **eine** Blockade: die Organisationsprüfung bei Apple. Alles andere ist vorbereitet ([TESTFLIGHT_STEP_BY_STEP.md](TESTFLIGHT_STEP_BY_STEP.md)).

@@ -76,6 +76,24 @@
     return value;
   }
 
+  /* Setup-OOS je Ereignisart (Entscheidung A4, 04.11.2026): Das Gate besteht
+     nur, wenn jede freigegebene Ereignisart fuer sich besteht. Faellt eine Art,
+     traegt das Gate den Grund der Art, die im Ablauf des Auswerters
+     (quant/engines/setup-oos.cjs) am weitesten zurueck ist; bei Gleichstand die
+     erste Art in der Reihenfolge der Methodik. Ein unbekannter Grund gilt als
+     am weitesten zurueck. byEventType = { ART: Ergebnis von evaluateSetupOos }. */
+  var OOS_STAGES = ["OOS_MIN_PER_SEGMENT_INVALID", "OOS_NOT_MEASURABLE_YET", "OOS_SEGMENT_DEFINITION_MISSING", "OOS_SEGMENT_DEFINITION_INVALID",
+    "OOS_ROWS_NOT_EXPORTED", "OOS_SEGMENT_TOO_SMALL", "OOS_DIRECTION_NOT_REPLICATED"];
+  function combineSetupOos(byEventType) {
+    var types = Object.keys(byEventType || {});
+    if (!types.length) throw new Error("setup oos: no event type");
+    var failed = types.filter(function (t) { return byEventType[t].status !== "PASS"; });
+    if (!failed.length) return { status: "PASS", reasonCode: null, eventType: null, result: byEventType[types[0]] };
+    var stage = function (t) { return OOS_STAGES.indexOf(byEventType[t].reasonCode); };
+    var worst = failed.reduce(function (a, t) { return stage(t) < stage(a) ? t : a; });
+    return { status: "FAIL", reasonCode: byEventType[worst].reasonCode, eventType: worst, result: byEventType[worst] };
+  }
+
   /* Pruefung eines Zertifizierungs-Artefakts: jeder Status muss aus seinen
      Gates folgen; CERTIFIED nie mit offenem Gate. */
   function certificationViolations(doc) {
@@ -94,6 +112,6 @@
     return errors;
   }
 
-  var api = { VERSION: VERSION, STATUSES: STATUSES, CATEGORIES: CATEGORIES, TRUST_RANK: TRUST_RANK, gate: gate, classify: classify, eta: eta, requirement: requirement, certificationViolations: certificationViolations };
+  var api = { VERSION: VERSION, STATUSES: STATUSES, CATEGORIES: CATEGORIES, TRUST_RANK: TRUST_RANK, gate: gate, classify: classify, eta: eta, requirement: requirement, combineSetupOos: combineSetupOos, OOS_STAGES: OOS_STAGES, certificationViolations: certificationViolations };
   if (isNode) module.exports = api; else global.VUBacktestCertification = api;
 })(typeof window !== "undefined" ? window : globalThis);

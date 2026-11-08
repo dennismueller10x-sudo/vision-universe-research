@@ -162,24 +162,24 @@
     },
     {
       "cik": "0001591890",
-      "name": "FG Nexus Inc.",
+      "name": "FG Communities Holdings Inc.",
       "sic": "6199",
-      "rawFacts": 16478,
-      "mappedFacts": 4161,
-      "unmappedFacts": 12258,
+      "rawFacts": 16799,
+      "mappedFacts": 4250,
+      "unmappedFacts": 12566,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
-        "FGNX",
-        "FGNXP"
+        "FGC",
+        "FGCPP"
       ],
       "status": "INGESTED",
       "annualPeriods": 14,
-      "quarterlyPeriods": 55,
+      "quarterlyPeriods": 56,
       "firstPeriodEnd": "2012-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
@@ -191,7 +191,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 39,
+          "quarterlyPeriods": 40,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -218,42 +218,42 @@
         },
         "net_income": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "operating_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "revenue": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "short_term_debt": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "stockholders_equity": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -276,48 +276,49 @@
         }
       },
       "quality": {
-        "HIGH": 350,
-        "MEDIUM": 82
+        "HIGH": 356,
+        "MEDIUM": 83
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 432,
-        "resolvedValues": 432
+        "datableValues": 439,
+        "resolvedValues": 439
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 12940,
+        "rules_version": "1.1.0",
+        "total": 13187,
         "by_severity": {
-          "INFO": 12258,
-          "WARNING": 682
+          "INFO": 12566,
+          "WARNING": 621
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 427,
-          "EXTREME_VALUE": 13,
-          "NEGATIVE_WHERE_IMPOSSIBLE": 13,
+          "CONCEPT_DISAGREEMENT": 359,
+          "EXTREME_VALUE": 8,
+          "NEGATIVE_WHERE_IMPOSSIBLE": 8,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 228,
-          "UNKNOWN_CONCEPT": 12258
+          "RESTATEMENT_CONFLICT": 245,
+          "UNKNOWN_CONCEPT": 12566
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-037445",
-        "filing_date": "2026-08-12",
+        "accession": "0001493152-26-050524",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 54
+        "periodic_filings": 55,
+        "acceptance_datetime": "2026-11-06T22:16:28.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "d5b18ceb045e55c0cf986f3232e3aafd545fd17f316d75b8bff15fc2cfedbf12",
+      "sourceDigest": "7c042c0f1182dabf13f5408b458d70514beb24863f33ce3067149a87af792e59",
       "issuerId": "iss_cik_0001591890"
     }
   ]

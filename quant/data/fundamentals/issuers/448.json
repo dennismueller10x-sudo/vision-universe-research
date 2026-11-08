@@ -480,9 +480,9 @@
       "cik": "0001799448",
       "name": "Aligos Therapeutics, Inc.",
       "sic": "2836",
-      "rawFacts": 5540,
-      "mappedFacts": 1929,
-      "unmappedFacts": 3726,
+      "rawFacts": 5768,
+      "mappedFacts": 2021,
+      "unmappedFacts": 3915,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -492,9 +492,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 30,
+      "quarterlyPeriods": 31,
       "firstPeriodEnd": "2018-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
@@ -506,7 +506,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -533,21 +533,21 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "revenue": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -561,14 +561,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -591,44 +591,45 @@
         }
       },
       "quality": {
-        "HIGH": 205
+        "HIGH": 211
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 205,
-        "resolvedValues": 205
+        "datableValues": 211,
+        "resolvedValues": 211
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3781,
+        "rules_version": "1.1.0",
+        "total": 3972,
         "by_severity": {
-          "INFO": 3726,
-          "WARNING": 55
+          "INFO": 3915,
+          "WARNING": 57
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 28,
-          "RESTATEMENT_CONFLICT": 27,
-          "UNKNOWN_CONCEPT": 3726
+          "CONCEPT_DISAGREEMENT": 31,
+          "RESTATEMENT_CONFLICT": 26,
+          "UNKNOWN_CONCEPT": 3915
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-336851",
-        "filing_date": "2026-08-06",
+        "accession": "0001193125-26-450798",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 24
+        "periodic_filings": 25,
+        "acceptance_datetime": "2026-11-06T13:07:33.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "e9fd98f71e2c9b39e2d98e2e37f5e41c16e57b30288a9c934582b7561a0b026e",
+      "sourceDigest": "e8a98c8a3ae2c6ec10fd30ba0269b24c092bdf5099a0b1ae6959c3f3326cdba8",
       "issuerId": "iss_cik_0001799448"
     },
     {

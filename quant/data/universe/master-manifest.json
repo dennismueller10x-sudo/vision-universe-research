@@ -1,8 +1,8 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-11-01T13:25:48.309Z",
-  "asOf": "2026-11-01",
+  "generatedAt": "2026-11-07T13:08:27.578Z",
+  "asOf": "2026-11-07",
   "provider": "tiingo",
   "source": {
     "kind": "COMMITTED_GATE_UNIVERSES",
@@ -19,7 +19,7 @@
       {
         "file": "quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json",
         "gate": "ELIGIBLE_US_EQUITY",
-        "securities": 6686
+        "securities": 6308
       },
       {
         "file": "quant/data/market/scale/universe-FULL_UNIVERSE.json",
@@ -2692,13 +2692,13 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "41310395932",
-    "commit": "7e8ff1088928a1d10c15d1e9ae65f7c0388fd6e4",
-    "normalizeMs": 72,
-    "syncMs": 84,
+    "runId": "42374553018",
+    "commit": "375a1f7b4d070d27c6de349bba3be13341453051",
+    "normalizeMs": 106,
+    "syncMs": 112,
     "shardsWritten": 0,
     "shardsUnchanged": 646,
-    "publishedBytes": 10115483
+    "publishedBytes": 10096488
   },
   "identifiers": {
     "cikMap": {
@@ -2769,24 +2769,21 @@
       "inactive": 15,
       "noFirstTradeDate": 0,
       "symbolWithWhitespace": [],
-      "classificationDisagreement": 1492,
+      "classificationDisagreement": 1603,
       "classificationDisagreementByClass": {
-        "EQUITY_COMMON->ETF": 133,
         "RIGHT->COMMON_STOCK": 129,
         "UNIT->COMMON_STOCK": 290,
-        "WARRANT->COMMON_STOCK": 453,
-        "EQUITY_COMMON->ADR": 1,
-        "TRUST->COMMON_STOCK": 101,
-        "PREFERRED->COMMON_STOCK": 146,
-        "DEBT->COMMON_STOCK": 149,
+        "WARRANT->COMMON_STOCK": 452,
+        "ETF->COMMON_STOCK": 264,
+        "TRUST->COMMON_STOCK": 87,
+        "PREFERRED->COMMON_STOCK": 144,
+        "EQUITY_COMMON->ADR": 2,
+        "DEBT->COMMON_STOCK": 147,
         "WARRANT->ADR": 1,
         "ETN->COMMON_STOCK": 35,
         "TEST_SECURITY->COMMON_STOCK": 44,
-        "ETF->COMMON_STOCK": 2,
-        "PREFERRED->ETF": 1,
-        "ADR->PREFERRED": 1,
+        "EQUITY_COMMON->ETF": 4,
         "ADR->COMMON_STOCK": 3,
-        "TRUST->ETF": 2,
         "CEF->COMMON_STOCK": 1
       },
       "withoutProductDecision": 0

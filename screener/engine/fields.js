@@ -254,13 +254,22 @@
     n('tiElliottApplicable', { col: 'tiEw', group: 'technical', kind: 'enum', label: 'Elliott-Strukturklarheit', short: 'Elliott-Klarheit', en: 'Elliott Structure Clarity', source: 'technicalIntelligence', timeframe: '1W', pro: true,
       desc: 'Experimentell: Wie eindeutig sich der Kursverlauf als Elliott-Wellenstruktur lesen lässt. Für die meisten Titel gibt es keine belastbare Zählung („Niedrig“). Nicht von Experten validiert, fließt nicht in den Ausblick ein, keine Prognose.', keywords: ['elliott', 'wellen', 'wave', 'experimentell', 'chartbild'] }),
 
+    // Supertrader (Plan §7 Z5): Spalten aus dem veroeffentlichten Kandidatenstand (scripts/supertrader/source-faithful/product/screener-export.mjs).
+    // Research, keine Empfehlung; keine eigene Berechnung im Screener.
+    n('stMethods', { col: 'stMeth', group: 'technical', kind: 'enum', multi: true, label: 'Supertrader-Methode', short: 'Methode', en: 'Supertrader Method', source: 'supertrader', timeframe: '1D', pro: true,
+      desc: 'Methoden aus Supertrader, deren veröffentlichter Kandidatenstand die Aktie führt (alle 13 Methoden). Research, keine Empfehlung.', keywords: ['supertrader', 'methode', 'minervini', 'vcp', 'can slim', 'kandidat'] }),
+    n('stV1', { col: 'stV1', group: 'technical', kind: 'enum', multi: true, label: 'Supertrader V1-Methode', short: 'V1-Methode', en: 'Supertrader V1 Method', source: 'supertrader', timeframe: '1D', pro: true,
+      desc: 'Nur die fünf Methoden der ersten Version (V1), die die Aktie führen. Die übrigen Methoden sind in Forschung. Research, keine Empfehlung.', keywords: ['supertrader', 'v1', 'methode'] }),
+    n('stStage', { col: 'stStage', group: 'technical', kind: 'enum', label: 'Supertrader-Stufe', short: 'Stufe', en: 'Supertrader Stage', source: 'supertrader', timeframe: '1D', pro: true,
+      desc: 'Höchste Stufe, die eine Methode für die Aktie erreicht: Chart-Kandidat, bestätigtes Setup oder durchgerechneter Plan. Research, keine Empfehlung.', keywords: ['supertrader', 'stufe', 'setup', 'kandidat'] }),
+
     // ---------------- ANALYSTEN & ESTIMATES ----------------
     n('revenueEstimates', { group: 'analysts', unit: 'usd', label: 'Umsatzschätzungen', en: 'Revenue Estimates', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['revenue', 'estimates', 'schätzung'] }),
     n('epsEstimates', { group: 'analysts', unit: 'usd', label: 'EPS-Schätzungen', en: 'EPS Estimates', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['eps', 'estimates'] }),
     n('epsRevision30', { group: 'analysts', unit: 'pct', label: 'EPS-Revision 30 Tage', en: 'EPS Revision 30D', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['revision', 'eps'] }),
     n('epsRevision90', { group: 'analysts', unit: 'pct', label: 'EPS-Revision 90 Tage', en: 'EPS Revision 90D', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['revision', 'eps'] }),
     n('analystConsensus', { group: 'analysts', kind: 'enum', label: 'Analystenkonsens', en: 'Analyst Consensus', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['konsens', 'rating', 'analyst'] }),
-    n('priceTargetUpside', { group: 'analysts', unit: 'pct', label: 'Kursziel-Potenzial', en: 'Price Target Upside', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['kursziel', 'target', 'upside'] }),
+    n('priceTargetUpside', { group: 'analysts', unit: 'pct', label: 'Abstand zum mittleren Analysten-Kursziel', en: 'Price Target Upside', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['kursziel', 'target', 'upside'] }),
     n('estimateDispersion', { group: 'analysts', unit: 'pct', label: 'Streuung der Schätzungen', en: 'Estimate Dispersion', source: 'estimates', available: false, reason: NO_ESTIMATES, keywords: ['dispersion', 'streuung'] }),
 
     // ---------------- VISION UNIVERSE ----------------
@@ -310,7 +319,7 @@
     evEbitda: ['Wie teuer ist das operative Ergebnis?', 'EV / EBITDA'], pFcf: ['Wie teuer ist der freie Cashflow?', 'Kurs / Free Cashflow'], fcfYield: ['Welche Cashflow-Rendite bietet der Kurs?', 'Free Cashflow / Marktwert'],
     perf1d: ['Wie hat sich der Kurs heute entwickelt?', 'Letzter Handelstag'], perf1w: ['Wie war die letzte Woche?', 'Fünf Handelstage'], perf1m: ['Wie war der letzte Monat?', 'Kursveränderung'],
     perf3m: ['Wie waren die letzten drei Monate?', 'Kursveränderung'], perf6m: ['Wie waren die letzten sechs Monate?', 'Mittelfristiges Momentum'], perfYtd: ['Wie läuft das Jahr bisher?', 'Seit Jahresbeginn'],
-    perf1y: ['Wie war das letzte Jahr?', 'Zwölf Monate'], relativeStrength: ['Schlägt die Aktie den Markt?', 'Mehrrendite ggü. Markt, 6 Monate'],
+    perf1y: ['Wie war das letzte Jahr?', 'Zwölf Monate'], relativeStrength: ['Wie lief die Aktie gegenüber dem Markt?', 'Kursentwicklung gegenüber dem Markt, 6 Monate'],
     relativeStrengthPct: ['Wie stark ist die Aktie im Vergleich zu allen anderen?', 'Rang 0–100 im Universum'], momentumPct: ['Wie stark ist das Momentum im Vergleich?', 'Rang 0–100 im Universum'],
     priceVsSma20: ['Wie steht der Kurs zum kurzfristigen Trend?', 'Aktueller Kurs vs. 20-Tage-Durchschnitt'], priceVsSma50: ['Wie steht der Kurs zum mittelfristigen Trend?', 'Aktueller Kurs vs. 50-Tage-Durchschnitt'],
     priceVsSma100: ['Wie steht der Kurs zum 100-Tage-Trend?', 'Aktueller Kurs vs. 100-Tage-Durchschnitt'], priceVsSma200: ['Wie steht der aktuelle Kurs zum langfristigen Trend?', 'Aktueller Kurs vs. SMA 200'],
@@ -419,6 +428,8 @@
     if (D) {
       if ((id === 'chartPattern' || id === 'chartPatternConfirmed' || id === 'chartPatternOpen') && D.formations && D.formations[v]) return D.formations[v];
       if (id === 'sector' && D.sectors && D.sectors[v]) return D.sectors[v];
+      if ((id === 'stMethods' || id === 'stV1') && D.stMethods && D.stMethods[v]) return D.stMethods[v];
+      if (id === 'stStage' && D.stStages && D.stStages[v]) return D.stStages[v];
       if (id === 'industry' && D.majorGroups && D.majorGroups[v]) return D.majorGroups[v];
     }
     return String(v);

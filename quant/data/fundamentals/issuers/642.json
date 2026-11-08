@@ -364,9 +364,9 @@
       "cik": "0001433642",
       "name": "Hamilton Lane INC",
       "sic": "6282",
-      "rawFacts": 10242,
-      "mappedFacts": 2181,
-      "unmappedFacts": 7961,
+      "rawFacts": 10472,
+      "mappedFacts": 2239,
+      "unmappedFacts": 8131,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -376,14 +376,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 11,
-      "quarterlyPeriods": 41,
+      "quarterlyPeriods": 42,
       "firstPeriodEnd": "2016-03-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 41,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2016-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 10.0
@@ -397,7 +397,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 41,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2016-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 10.0,
@@ -410,28 +410,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2017-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 9.0
         },
         "net_income": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 41,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2016-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 10.0
         },
         "operating_cash_flow": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 41,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2016-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 10.0
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 37,
+          "quarterlyPeriods": 38,
           "firstAvailablePeriod": "2017-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 9.0
@@ -445,14 +445,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2017-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2017-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 9.0
@@ -475,46 +475,48 @@
         }
       },
       "quality": {
-        "HIGH": 290,
-        "MEDIUM": 61
+        "HIGH": 296,
+        "MEDIUM": 62
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 351,
-        "resolvedValues": 351
+        "datableValues": 358,
+        "resolvedValues": 358
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 8358,
+        "rules_version": "1.1.0",
+        "total": 8538,
         "by_severity": {
-          "INFO": 7961,
-          "WARNING": 397
+          "INFO": 8131,
+          "WARNING": 407
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 352,
-          "RESTATEMENT_CONFLICT": 43,
+          "CONCEPT_DISAGREEMENT": 359,
+          "RESTATEMENT_CONFLICT": 44,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 7961
+          "UNKNOWN_CONCEPT": 8131,
+          "UNPLACEABLE_PERIOD": 2
         }
       },
       "latestFiling": {
-        "accession": "0001433642-26-000042",
-        "filing_date": "2026-08-04",
+        "accession": "0001433642-26-000056",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 39
+        "periodic_filings": 40,
+        "acceptance_datetime": "2026-11-03T21:06:39.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "1b60c778b2de69dd04d369b939a4acaf4c831b0c4b0bbfbed50b83badc34a7f0",
+      "sourceDigest": "d3d75ec82715fdb26a64d015485e19b9081125da8089223ec95c35d982ca71d6",
       "issuerId": "iss_cik_0001433642"
     },
     {

@@ -1,10 +1,12 @@
 // Release packaging only. Canonical sources and R2 objects are never modified.
 import {readFile,writeFile,mkdir,copyFile,lstat} from 'node:fs/promises';
-import {resolve,dirname,sep} from 'node:path';
+import {resolve,dirname,sep,join} from 'node:path';
+import {existsSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {gzipSync,gunzipSync} from 'node:zlib';
+import {writeStockHeadViews} from './stock-head-view.mjs';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js'),FactorProjection=require('../../quant/engines/factor-product-projection.js');
 export const SEC_BUDGET=8*1024*1024;
@@ -112,6 +114,7 @@ export function goldenChartView(payload){
    Nachlade-Skript (Chartbild, Evidenz, Backtesting) und kein Gast (Elliott) braucht - quant/tests/release-packs.test.mjs.
    Nicht hier: assets/stock-navigator.js und quant/engines/technical/ti/explain.js (Chartbild), company-intelligence/**
    (die Auslieferung von Company Intelligence schreibt in das Buendel), Engines, die die Produkt-API beim Laden bindet. */
+export const QUANT_HEAD=Object.freeze(['core/identity.js','core/stock-context.js','assets/stock-navigator.js','quant/app/stock-boot.js']);
 export const QUANT_PACKS=Object.freeze({
  stock:Object.freeze(['quant/engines/series-sampling.js','quant/api/live-relay-client.js','quant/engines/journey-shape.js',
   'discover/ui/live-hub.js','discover/ui/microchart.js','assets/vu-chart.js','quant/app/chart.js','quant/app/page-stock.js']),
@@ -128,6 +131,97 @@ export function permitted(path){
  // Synthetisches Modelluniversum: Generator und Provider dienen nur den Engine-Tests, keine Seite laedt sie.
  if(/^quant\/engines\/mock-(generator|provider)\.js$/.test(path))return false;
  return !/^(README\.md|VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER\.md)$/.test(path);
+}
+// Rebuild only delivery code against an existing data snapshot (mobile comparisons).
+export async function writeQuantCode({root,output,paths,stockPreload=true}){
+ root=resolve(root);output=resolve(output);
+ if(output===root||output.startsWith(root+sep)||root.startsWith(output+sep))throw Error('OUTPUT_MUST_BE_OUTSIDE_SOURCE');
+ paths=paths||execFileSync('git',['ls-files','-z'],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024}).split('\0').filter(Boolean);
+ // Concatenate classic scripts in their existing document order. Original
+ // modules remain available to every other workspace, including Discover.
+ // The canonical Quant product lives at /quant/ (quant/index.html).
+ // packs: {Name: [Pfade]} - diese Skripte gehen nicht ins Buendel, sondern in quant/app/pack-<Name>.js (QUANT_PACKS);
+ // lead: was einem Paket vorangeht (FX-Paket der Aktienseite). Ein Paket ohne eines seiner Skripte in der Seite entfaellt.
+ async function bundlePage(page,bundlePath,tail='',packs={},lead={}){
+  const html=await readFile(resolve(root,page),'utf8');
+  const tags=[...html.matchAll(/<script src="([^"]+)"><\/script>/g)];
+  // Attributlose Inline-Skripte (Farbschema vor dem ersten Zeichnen setzen,
+  // Navigation synchronisieren) bleiben an ihrer Stelle; gebuendelt werden
+  // nur die externen klassischen Skripte. Alles andere bleibt unzulaessig.
+  const inline=(html.match(/<script>(?:(?!<\/script>)[\s\S])*<\/script>/g)||[]).length;
+  if(!tags.length||tags.length+inline!==(html.match(/<script\b/g)||[]).length)throw Error('UNSUPPORTED_SCRIPT_TAG');
+  const dir=page.slice(0,page.lastIndexOf('/')+1),chunks=[],linked=tags.map(t=>t[1].startsWith('/')?t[1].slice(1):dir+t[1]);
+  const packOf={};for(const [name,list] of Object.entries(packs))if(list.every(p=>linked.includes(p)))for(const p of list)packOf[p]=name;
+  const headEnabled=QUANT_HEAD.every(p=>linked.includes(p)),headChunks=[],packChunks={};
+  for(const p of linked){
+   if(!paths.includes(p)||!permitted(p))throw Error('INVALID_BUNDLE_INPUT');
+   const chunk='/* '+p+' */\n'+await readFile(resolve(root,p),'utf8');
+   if(headEnabled&&QUANT_HEAD.includes(p))headChunks.push(chunk);
+   else if(headEnabled&&p==='assets/site-navigation.js')continue;
+   else if(packOf[p])(packChunks[packOf[p]]||=(lead[packOf[p]]?[lead[packOf[p]]]:[])).push(chunk);else chunks.push(chunk);
+  }
+  let headSrc=null;
+  if(headEnabled){
+   headChunks.unshift('globalThis.VUQuantHeadDeliveryEnabled=true;');
+   const homeSource=await readFile(resolve(root,'quant/app/pages.js'),'utf8').catch(()=>''),intro=homeSource.match(/page\.append\(frag\('(<header class="qv3-intro">[^']+<\/header>)'\)\);/);
+   if(intro)headChunks.unshift('globalThis.VUQuantHomeIntro='+JSON.stringify(intro[1])+';');
+   const text=headChunks.join('\n;\n');headSrc='/quant/head-bundle.js';await writeFile(resolve(output,headSrc.slice(1)),text);chunks.push('/* early-head '+createHash('sha256').update(text).digest('hex')+' */');}
+  const packed={};
+  for(const [name,list] of Object.entries(packChunks)){
+   const text=list.join('\n;\n'),src='/quant/app/pack-'+name+'.js';
+   await writeFile(resolve(output,src.slice(1)),text);
+   packed[name]={src,v:createHash('sha256').update(text).digest('hex').slice(0,16)};
+  }
+  /* Die Marke jedes Pakets steht im Buendel: aendert sich ein Paket, aendert sich die Versionsmarke des Buendels mit. */
+  if(Object.keys(packed).length)chunks.push('globalThis.VUQuantPacks='+JSON.stringify(packed)+';');
+  if(tail)chunks.push(tail);
+  const bundle=chunks.join('\n;\n'),bundleVersion=createHash('sha256').update(bundle).digest('hex').slice(0,16);
+  await writeFile(resolve(output,bundlePath),bundle);
+  let bundled=html;for(const tag of tags)bundled=bundled.replace(tag[0],'');
+  if(packed.stock&&stockPreload){
+   // Preload the route's existing pack and CSS without executing dependencies
+   // out of order. Use precisely the cache key loadScript/the release guard use.
+   const warm='<link rel="preload" as="style" href="/quant/app/stock.css" media="not all" data-vu-stock-style><script>(function(){if(!/^#\\/aktie\\/[A-Z0-9.-]{1,12}(?:$|\\?)/i.test(location.hash))return;var m=document.querySelector(\'meta[name="vu-release"]\'),id=m&&m.getAttribute("content"),product=m&&m.getAttribute("data-product");if(!/^[0-9a-f]{8,64}$/.test(id||"")||!/^[a-z0-9-]{1,32}$/.test(product||""))id=null;var v=id||'+JSON.stringify(bundleVersion)+';var css=document.querySelector("link[data-vu-stock-style]");if(css)css.media="all";[["script",'+JSON.stringify(packed.stock.src)+'+"?v="+v]].forEach(function(x){var l=document.createElement("link");l.rel="preload";l.as=x[0];l.fetchPriority=x[0]==="script"?"low":"high";l.href=x[1];document.head.appendChild(l)})})();</script>';
+   bundled=bundled.replace('</head>',warm+'</head>');
+  }
+  if(headSrc){
+   // Critical C04/C05 styles and head code avoid additional blocking round trips.
+   // Preserve the existing style position/order and the exact classic scripts.
+   if(paths.includes('assets/stock-navigator.css'))bundled=bundled.replace('<link rel="stylesheet" href="/assets/stock-navigator.css">','<style data-vu-quant-head>'+await readFile(resolve(root,'assets/stock-navigator.css'),'utf8')+'</style>');
+   const escapeScript=text=>text.replace(/<\/script/gi,'<\\/script');
+   const nav=escapeScript(await readFile(resolve(root,'assets/site-navigation.js'),'utf8')),head=escapeScript(await readFile(resolve(output,headSrc.slice(1)),'utf8'));
+   bundled=bundled.replace('</head>','<link rel="preload" as="script" href="/'+bundlePath+'?v='+bundleVersion+'"><script>'+nav+'</script><script data-vu-quant-head>'+head+'</script></head>');
+  }
+  bundled=bundled.replace('</body>','<script src="/'+bundlePath+'?v='+bundleVersion+'"></script></body>');
+  await writeFile(resolve(output,page),bundled);
+  return bundleVersion;
+ }
+ /* FX-Paket der Quant-Aktienseite (Chartstandard, docs/charts/CHART_STANDARD.md): der
+    Chartstandard, die FX-Schicht, soweit sie nicht im Buendel steht, die Lizenzkonfiguration
+    und die EZB-Reihe EUR/USD in EINER Datei, nachgeladen nur auf der Aktienseite. Einzeln
+    waeren es elf Abrufe; die Startseite traegt nichts davon (ihr Byte-Budget). Alles aus
+    den unveraenderten Quelldateien dieses Commits, keine zweite Fassung im Repository. */
+ const quantHtml=await readFile(resolve(root,'quant/index.html'),'utf8');
+ const FX_PACK=['core/chart-standard.js'].concat(['fx-provider-registry','fx-rates','fx-freshness','currency-registry','currency-class',
+  'currency-engine','money-format','currency-preference','currency-contract','bootstrap','currency-switch'].map(n=>'quant/engines/fx/'+n+'.js'))
+  .filter(p=>!quantHtml.includes('src="/'+p+'"'));
+ const FX_DATA=['quant/config/fx-license.json','quant/data/market/fx/ecb/EURUSD.json'];
+ // Fehlt eine Quelle (z. B. ein Ausschnitt in Tests), kein Paket: die Seite laedt die Schicht dann einzeln.
+ const withPack=FX_PACK.concat(FX_DATA).every(p=>paths.includes(p)&&permitted(p));
+ const packChunks=[];
+ if(withPack)for(const p of FX_PACK)packChunks.push('/* '+p+' */\n'+await readFile(resolve(root,p),'utf8'));
+ const packData=!withPack?null:{license:JSON.parse(await readFile(resolve(root,'quant/config/fx-license.json'),'utf8')),
+  series:[JSON.parse(await readFile(resolve(root,'quant/data/market/fx/ecb/EURUSD.json'),'utf8'))]};
+ let packTail='',fxLead=null;
+ if(withPack){
+  packChunks.push('(function(g){var F=g.VUFx=g.VUFx||{};F.PACK='+JSON.stringify(packData)+';})(typeof globalThis!=="undefined"?globalThis:this);');
+  const pack=packChunks.join('\n;\n'),packVersion=createHash('sha256').update(pack).digest('hex').slice(0,16);
+  await writeFile(resolve(output,'quant/fx-pack.js'),pack);
+  packTail='globalThis.VUFxPack="/quant/fx-pack.js?v='+packVersion+'";';
+  fxLead=pack;
+ }
+ const quantBundle=await bundlePage('quant/index.html','quant/release-bundle.js',packTail,QUANT_PACKS,fxLead?{stock:fxLead}:{});
+ return quantBundle;
 }
 export async function buildRelease({root,output}){
  root=resolve(root);output=resolve(output);
@@ -207,6 +301,18 @@ export async function buildRelease({root,output}){
  try{
   const {writeSummary,SUMMARY_DIR}=await import('../watchlist/build-summary.mjs');
   writeSummary({root,out:resolve(output,SUMMARY_DIR)});
+  /* Watchlist-Ereignisse (Datenart watchlistEvents, ACTIVATING): Vergleich mit der zuletzt veroeffentlichten Uebersicht, die
+     pages-release.yml vorher von der Seite holt (scripts/watchlist/fetch-published.mjs -> VU_WATCHLIST_PREVIOUS). Fehlt sie,
+     entstehen keine Ereignisse (Erstbeobachtung); ein Fehler hier haelt die Auslieferung nicht an. */
+  const prev=process.env.VU_WATCHLIST_PREVIOUS;
+  if(prev&&existsSync(join(prev,'summary','meta.json'))){
+   try{
+    const {run:buildWatchlistEvents}=await import('../account/build-watchlist-events.mjs');
+    const r=buildWatchlistEvents({before:join(prev,'summary'),after:resolve(output,SUMMARY_DIR),out:resolve(output,'core/data/watchlist-events-v1.json'),
+     previousEvents:existsSync(join(prev,'events.json'))?join(prev,'events.json'):null});
+    console.log('WATCHLIST_EVENTS',JSON.stringify({total:r.total,byType:r.byType}));
+   }catch(e){console.warn('WATCHLIST_EVENTS_SKIPPED',String(e&&e.message||e).slice(0,200));}
+  }
  }catch(e){console.warn('WATCHLIST_SUMMARY_SKIPPED',String(e&&e.message||e).slice(0,200));}
  if(paths.includes('quant/data/product/universe-list-v1.json.gz')){
   const views=universeListViews(JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/universe-list-v1.json.gz')))));
@@ -250,68 +356,10 @@ export async function buildRelease({root,output}){
  for(const p of paths.filter(p=>/^quant\/data\/universe\/instruments\/[^/]+\.json$/.test(p))){
   await writeFile(resolve(output,p),JSON.stringify(await load(p)));
  }
- // Concatenate classic scripts in their existing document order. Original
- // modules remain available to every other workspace, including Discover.
- // The canonical Quant product lives at /quant/ (quant/index.html).
- // packs: {Name: [Pfade]} - diese Skripte gehen nicht ins Buendel, sondern in quant/app/pack-<Name>.js (QUANT_PACKS);
- // lead: was einem Paket vorangeht (FX-Paket der Aktienseite). Ein Paket ohne eines seiner Skripte in der Seite entfaellt.
- async function bundlePage(page,bundlePath,tail='',packs={},lead={}){
-  const html=await readFile(resolve(root,page),'utf8');
-  const tags=[...html.matchAll(/<script src="([^"]+)"><\/script>/g)];
-  // Attributlose Inline-Skripte (Farbschema vor dem ersten Zeichnen setzen,
-  // Navigation synchronisieren) bleiben an ihrer Stelle; gebuendelt werden
-  // nur die externen klassischen Skripte. Alles andere bleibt unzulaessig.
-  const inline=(html.match(/<script>(?:(?!<\/script>)[\s\S])*<\/script>/g)||[]).length;
-  if(!tags.length||tags.length+inline!==(html.match(/<script\b/g)||[]).length)throw Error('UNSUPPORTED_SCRIPT_TAG');
-  const dir=page.slice(0,page.lastIndexOf('/')+1),chunks=[],linked=tags.map(t=>t[1].startsWith('/')?t[1].slice(1):dir+t[1]);
-  const packOf={};for(const [name,list] of Object.entries(packs))if(list.every(p=>linked.includes(p)))for(const p of list)packOf[p]=name;
-  const packChunks={};
-  for(const p of linked){
-   if(!paths.includes(p)||!permitted(p))throw Error('INVALID_BUNDLE_INPUT');
-   const chunk='/* '+p+' */\n'+await readFile(resolve(root,p),'utf8');
-   if(packOf[p])(packChunks[packOf[p]]||=(lead[packOf[p]]?[lead[packOf[p]]]:[])).push(chunk);else chunks.push(chunk);
-  }
-  const packed={};
-  for(const [name,list] of Object.entries(packChunks)){
-   const text=list.join('\n;\n'),src='/quant/app/pack-'+name+'.js';
-   await writeFile(resolve(output,src.slice(1)),text);
-   packed[name]={src,v:createHash('sha256').update(text).digest('hex').slice(0,16)};
-  }
-  /* Die Marke jedes Pakets steht im Buendel: aendert sich ein Paket, aendert sich die Versionsmarke des Buendels mit. */
-  if(Object.keys(packed).length)chunks.push('globalThis.VUQuantPacks='+JSON.stringify(packed)+';');
-  if(tail)chunks.push(tail);
-  const bundle=chunks.join('\n;\n'),bundleVersion=createHash('sha256').update(bundle).digest('hex').slice(0,16);
-  await writeFile(resolve(output,bundlePath),bundle);
-  let bundled=html;for(const tag of tags)bundled=bundled.replace(tag[0],'');
-  bundled=bundled.replace('</body>','<script src="/'+bundlePath+'?v='+bundleVersion+'"></script></body>');
-  await writeFile(resolve(output,page),bundled);
-  return bundleVersion;
- }
- /* FX-Paket der Quant-Aktienseite (Chartstandard, docs/charts/CHART_STANDARD.md): der
-    Chartstandard, die FX-Schicht, soweit sie nicht im Buendel steht, die Lizenzkonfiguration
-    und die EZB-Reihe EUR/USD in EINER Datei, nachgeladen nur auf der Aktienseite. Einzeln
-    waeren es elf Abrufe; die Startseite traegt nichts davon (ihr Byte-Budget). Alles aus
-    den unveraenderten Quelldateien dieses Commits, keine zweite Fassung im Repository. */
- const quantHtml=await readFile(resolve(root,'quant/index.html'),'utf8');
- const FX_PACK=['core/chart-standard.js'].concat(['fx-provider-registry','fx-rates','fx-freshness','currency-registry','currency-class',
-  'currency-engine','money-format','currency-preference','currency-contract','bootstrap','currency-switch'].map(n=>'quant/engines/fx/'+n+'.js'))
-  .filter(p=>!quantHtml.includes('src="/'+p+'"'));
- const FX_DATA=['quant/config/fx-license.json','quant/data/market/fx/ecb/EURUSD.json'];
- // Fehlt eine Quelle (z. B. ein Ausschnitt in Tests), kein Paket: die Seite laedt die Schicht dann einzeln.
- const withPack=FX_PACK.concat(FX_DATA).every(p=>paths.includes(p)&&permitted(p));
- const packChunks=[];
- if(withPack)for(const p of FX_PACK)packChunks.push('/* '+p+' */\n'+await readFile(resolve(root,p),'utf8'));
- const packData=!withPack?null:{license:JSON.parse(await readFile(resolve(root,'quant/config/fx-license.json'),'utf8')),
-  series:[JSON.parse(await readFile(resolve(root,'quant/data/market/fx/ecb/EURUSD.json'),'utf8'))]};
- let packTail='',fxLead=null;
- if(withPack){
-  packChunks.push('(function(g){var F=g.VUFx=g.VUFx||{};F.PACK='+JSON.stringify(packData)+';})(typeof globalThis!=="undefined"?globalThis:this);');
-  const pack=packChunks.join('\n;\n'),packVersion=createHash('sha256').update(pack).digest('hex').slice(0,16);
-  await writeFile(resolve(output,'quant/fx-pack.js'),pack);
-  packTail='globalThis.VUFxPack="/quant/fx-pack.js?v='+packVersion+'";';
-  fxLead=pack;
- }
- const quantBundle=await bundlePage('quant/index.html','quant/release-bundle.js',packTail,QUANT_PACKS,fxLead?{stock:fxLead}:{});
+ // Standalone/QA releases need the same optional validated head as Pages.
+ // Pages refreshes it again after data/live and approved consumer overlays.
+ if(paths.includes('quant/app/stock-boot.js'))await writeStockHeadViews({source:root,site:output});
+ const quantBundle=await writeQuantCode({root,output,paths});
  // Former entries (/vu2/, /Quant/) are one hop to the canonical product.
  // The query string travels along; /quant/ maps ?view=... to its routes.
  const legacyEntry='<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><link rel="canonical" href="/quant/"><title>Vision Universe® Quant</title><script>location.replace("/quant/"+location.search+location.hash)</script></head><body><p><a href="/quant/">Vision Universe® Quant öffnen</a></p></body></html>';
@@ -327,6 +375,8 @@ export async function buildRelease({root,output}){
  let screener;
  try{const {writeUniverse}=await import('../screener/build-universe.mjs');screener=await writeUniverse({root,out:resolve(output,'screener/data'),log:()=>{}});}
  catch(e){screener={state:'UNAVAILABLE',reason:String(e&&e.message||e).slice(0,200)};await mkdir(resolve(output,'screener/data'),{recursive:true});await writeFile(resolve(output,'screener/data/status.json'),JSON.stringify(screener));}
+ // Keep inert Discover templates and budgeted view files, concatenate only their dependency runs.
+ if(paths.includes('discover/index.html')){const {bundleDiscover}=await import('../mobile/bundle-discover.mjs');await bundleDiscover({root,output});}
  const bytes=emitted.reduce((n,f)=>n+f.bytes,0);
  if(bytes>SEC_BUDGET||emitted.some(f=>f.bytes>2*1024*1024))throw Error('SEC_DELIVERY_BUDGET_EXCEEDED');
  const report={schemaVersion:1,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),storage:'EXISTING_R2_UNCHANGED',secBudget:SEC_BUDGET,secBytes:bytes,files:emitted,excluded:['quant/data/sec/consumer','quant/data/sec/canonical','quant/data/fundamentals'],screener,quantBundle,status:'PASS'};

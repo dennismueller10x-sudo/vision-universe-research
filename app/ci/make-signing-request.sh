@@ -7,6 +7,9 @@
 # Arbeitsordner: $VU_SIGNING_DIR oder ~/vu-signing (AUSSERHALB jedes Git-Repositorys und ausserhalb von Cloud-Ordnern wie OneDrive/iCloud/Dropbox).
 # Nie in ein Repository, in Chat oder PR legen: vu-dist.key, vu-dist.p12, das Passwort, die Base64-Werte.
 set -euo pipefail
+# Git Bash (Windows) wandelt Argumente wie "/CN=..." sonst in Dateipfade um ("C:/Program Files/Git/CN=...") und OpenSSL bricht ab.
+# Nur diese Betreff-Argumente ausnehmen; die Umwandlung echter Dateipfade (/c/Users/... -> C:\Users\...) muss an bleiben, sonst findet OpenSSL die Dateien nicht.
+export MSYS2_ARG_CONV_EXCL="/CN=;/emailAddress="
 mode="${1:-}"; dir="${VU_SIGNING_DIR:-$HOME/vu-signing}"; umask 077
 
 guard_dir() {
@@ -36,7 +39,7 @@ case "$mode" in
     read -r -s -p "Neues Passwort fuer die .p12-Datei (mindestens 16 Zeichen, im Passwortmanager speichern): " pw; echo
     [ "${#pw}" -ge 16 ] || { echo "Passwort zu kurz."; exit 1; }
     openssl x509 -inform DER -in "$cer" -out "$dir/vu-dist.pem"
-    openssl pkcs12 -export -inkey "$dir/vu-dist.key" -in "$dir/vu-dist.pem" -out "$dir/vu-dist.p12" -passout "pass:$pw"
+    openssl pkcs12 -export -inkey "$dir/vu-dist.key" -in "$dir/vu-dist.pem" -out "$dir/vu-dist.p12" -keypbe PBE-SHA1-3DES -certpbe PBE-SHA1-3DES -macalg sha1 -passout "pass:$pw"   # kompatibel mit macOS
     echo "Fertig: $dir/vu-dist.p12"
     echo "Pruefsumme des Zertifikats (SHA-1, zum Abgleich spaeter, kein Geheimnis):"
     openssl x509 -in "$dir/vu-dist.pem" -noout -fingerprint -sha1

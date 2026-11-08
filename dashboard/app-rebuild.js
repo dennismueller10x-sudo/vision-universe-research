@@ -193,8 +193,8 @@
           const zoneRect = (range, cls) => { const y1 = zoneY(range[1]), y2 = zoneY(range[0]); return `<rect class="zone-box ${cls}" x="${zoneX0.toFixed(1)}" y="${y1.toFixed(1)}" width="${Math.max(0, zoneX1 - zoneX0).toFixed(1)}" height="${Math.max(0, y2 - y1).toFixed(1)}"/>`; };
           const buildZones = (buyRange, targetRange, invalid, buyCls, targetCls, buyLabelCls, targetLabelCls, buyText, targetText) => `<line class="zone-now" x1="${zoneX0.toFixed(1)}" x2="${zoneX0.toFixed(1)}" y1="${T}" y2="${H - B}"/>${zoneRect(buyRange, buyCls)}${zoneRect(targetRange, targetCls)}<text class="zone-label ${buyLabelCls}" x="${(zoneX0 + 6).toFixed(1)}" y="${(zoneY(buyRange[1]) - 6).toFixed(1)}">${buyText}</text><text class="zone-label ${targetLabelCls}" x="${(zoneX0 + 6).toFixed(1)}" y="${(zoneY(targetRange[1]) - 6).toFixed(1)}">${targetText}</text><line class="zone-stop" x1="${L}" x2="${W - R}" y1="${zoneY(invalid).toFixed(1)}" y2="${zoneY(invalid).toFixed(1)}"/><text class="zone-stop-text" x="${L + 8}" y="${(zoneY(invalid) - 7).toFixed(1)}">Invalidierung · ${fmt2(invalid)} USD</text>`;
           const info = curSide === 'short'
-            ? { html: buildZones(shortSell, shortTarget, shortInvalid, 'zone-buy-short', 'zone-target-short', 'zone-label-buy-short', 'zone-label-target-short', 'Verkaufszone', 'Zielzone'), buy: shortSell, target: shortTarget, invalid: shortInvalid, buyLabel: 'Verkaufszone (Short)', targetLabel: 'Zielzone (Short)' }
-            : { html: buildZones(longBuy, longTarget, longInvalid, 'zone-buy', 'zone-target', 'zone-label-buy', 'zone-label-target', 'Kaufzone', 'Zielzone'), buy: longBuy, target: longTarget, invalid: longInvalid, buyLabel: 'Kaufzone (Long)', targetLabel: 'Zielzone (Long)' };
+            ? { html: buildZones(shortSell, shortTarget, shortInvalid, 'zone-buy-short', 'zone-target-short', 'zone-label-buy-short', 'zone-label-target-short', 'Zone der Methode', 'Zielzone'), buy: shortSell, target: shortTarget, invalid: shortInvalid, buyLabel: 'Zone der Methode (abwärts)', targetLabel: 'Zielzone (Short)' }
+            : { html: buildZones(longBuy, longTarget, longInvalid, 'zone-buy', 'zone-target', 'zone-label-buy', 'zone-label-target', 'Kaufzone', 'Zielzone'), buy: longBuy, target: longTarget, invalid: longInvalid, buyLabel: 'Zone der Methode (aufwärts)', targetLabel: 'Zielzone (Long)' };
           if (visible.zones) zonesHtml = info.html;
           zonesInfo = info;
         }
@@ -239,7 +239,7 @@
         const zonesActive = c.zonesInfo && visible.zones;
         noticeEl.innerHTML = zonesActive
           ? `<b>Elliott-Wellenzählung β · ${curSide === 'short' ? 'Short-Szenario' : 'Long-Szenario'}:</b> ${c.zonesInfo.buyLabel} ${fmt2(c.zonesInfo.buy[0])}–${fmt2(c.zonesInfo.buy[1])} USD · ${c.zonesInfo.targetLabel} ${fmt2(c.zonesInfo.target[0])}–${fmt2(c.zonesInfo.target[1])} USD · Invalidierung ${fmt2(c.zonesInfo.invalid)} USD. Die Zählung ist heuristisch, noch nicht backtest-validiert und keine Anlageempfehlung.`
-          : `<b>Elliott-Wellenzählung β:</b> Über den Button „Elliott-Zonen“ oben lassen sich Kauf-/Verkaufszone und Zielzone rechts vom aktuellen Kurs einblenden (nur in der aktuellen Ansicht verfügbar, nicht rückwirkend). Die Zählung ist heuristisch, noch nicht backtest-validiert und keine Anlageempfehlung.`;
+          : `<b>Elliott-Wellenzählung β:</b> Über den Button „Elliott-Zonen“ oben lassen sich Zonen der Methode und Zielzone rechts vom aktuellen Kurs einblenden (nur in der aktuellen Ansicht verfügbar, nicht rückwirkend). Die Zählung ist heuristisch, noch nicht backtest-validiert und keine Anlageempfehlung.`;
       };
 
       document.getElementById('indicatorToggle').onclick = (e) => {

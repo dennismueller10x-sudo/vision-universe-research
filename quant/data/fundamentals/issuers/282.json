@@ -864,9 +864,9 @@
       "cik": "0001636282",
       "name": "Spyre Therapeutics, Inc.",
       "sic": "2834",
-      "rawFacts": 11133,
-      "mappedFacts": 3420,
-      "unmappedFacts": 7931,
+      "rawFacts": 11348,
+      "mappedFacts": 3490,
+      "unmappedFacts": 8172,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -876,9 +876,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 13,
-      "quarterlyPeriods": 48,
+      "quarterlyPeriods": 49,
       "firstPeriodEnd": "2013-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 12.0,
       "metrics": {
         "capital_expenditures": {
@@ -890,7 +890,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2023-12-31",
           "historyYears": 3.0
@@ -917,14 +917,14 @@
         },
         "net_income": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 46,
+          "quarterlyPeriods": 47,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "operating_cash_flow": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 46,
+          "quarterlyPeriods": 47,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -945,14 +945,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 45,
+          "quarterlyPeriods": 46,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "total_assets": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 43,
+          "quarterlyPeriods": 44,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
@@ -975,45 +975,46 @@
         }
       },
       "quality": {
-        "HIGH": 330,
+        "HIGH": 335,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 331,
-        "resolvedValues": 331
+        "datableValues": 336,
+        "resolvedValues": 336
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 8019,
+        "rules_version": "1.1.0",
+        "total": 8260,
         "by_severity": {
-          "INFO": 7931,
+          "INFO": 8172,
           "WARNING": 88
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 37,
-          "RESTATEMENT_CONFLICT": 51,
-          "UNKNOWN_CONCEPT": 7931
+          "CONCEPT_DISAGREEMENT": 38,
+          "RESTATEMENT_CONFLICT": 50,
+          "UNKNOWN_CONCEPT": 8172
         }
       },
       "latestFiling": {
-        "accession": "0001636282-26-000096",
-        "filing_date": "2026-08-04",
+        "accession": "0001636282-26-000131",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 47
+        "periodic_filings": 48,
+        "acceptance_datetime": "2026-11-03T21:01:08.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "3aca1b74180e81b6e62a5fffe295d6c7479bc249aad2752d3e0482733984a586",
+      "sourceDigest": "7f0a5791bc333a9620f83dc47ad4d1225e7d945548785e8c93dc1604166db9fa",
       "issuerId": "iss_cik_0001636282"
     }
   ]

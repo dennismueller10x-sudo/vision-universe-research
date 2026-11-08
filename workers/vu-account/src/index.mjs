@@ -21,6 +21,8 @@ import * as billing from './billing.mjs';
 import * as pricing from './pricing.mjs';
 import * as backtests from './backtests.mjs';
 import * as watchlist from './watchlist.mjs';
+import * as push from './push.mjs';
+import * as searches from './searches.mjs';
 import {runScheduled, needsAttention} from './cancellation.mjs';
 import {createBrevo, runBrevo} from './brevo.mjs';
 import * as pages from './public-pages.mjs';
@@ -63,6 +65,9 @@ export const resetHealthCache = () => { cancellationState = {at: 0, value: 'unkn
 const ROUTES = [
   ['GET', '/v1/health', health, {db: false}],
   ['GET', '/v1/session', auth.session],
+  ['POST', '/v1/auth/app/login', auth.appLogin],
+  ['POST', '/v1/auth/app/refresh', auth.appRefresh],
+  ['POST', '/v1/auth/app/logout', auth.appLogout],
   ['POST', '/v1/auth/login', auth.login, {csrf: true}],
   ['POST', '/v1/auth/logout', auth.logout, {csrf: true}],
   ['POST', '/v1/auth/signup', auth.signup, {csrf: true}],
@@ -76,11 +81,17 @@ const ROUTES = [
   ['GET', '/v1/me/billing', account.billingOverview],
   ['GET', '/v1/me/export', account.exportData],
   ['POST', '/v1/me/delete', account.deleteAccount, {csrf: true}],
+  ['POST', '/v1/push/devices', push.register, {csrf: true}],
+  ['POST', '/v1/push/devices/remove', push.remove, {csrf: true}],
   ['GET', '/v1/watchlist', watchlist.list],
   ['POST', '/v1/watchlist/items', watchlist.add, {csrf: true}],
   ['PATCH', '/v1/watchlist/items', watchlist.update, {csrf: true}],
   ['POST', '/v1/watchlist/items/remove', watchlist.remove, {csrf: true}],
   ['POST', '/v1/watchlist/import', watchlist.importItems, {csrf: true}],
+  ['GET', '/v1/searches', searches.list],
+  ['POST', '/v1/searches', searches.create, {csrf: true}],
+  ['PATCH', '/v1/searches', searches.update, {csrf: true}],
+  ['POST', '/v1/searches/remove', searches.remove, {csrf: true}],
   ['GET', '/v1/plans', billing.plans],
   ['GET', '/v1/entitlements/check', billing.entitlementCheck],
   ['POST', '/v1/billing/checkout', billing.checkout, {csrf: true}],
@@ -94,19 +105,24 @@ const ROUTES = [
   // Interne Backtest-Vorschau: standardmaessig aus (404 PREVIEW_NOT_ACTIVATED), nur Rolle backtest_reviewer.
   ['GET', '/v1/admin/backtests', backtests.overview],
   ['GET', '/v1/admin/backtests/lookup', backtests.lookupGet],
+  ['GET', '/v1/admin/backtests/portfolios', backtests.portfolios],
   ['POST', '/v1/admin/backtests/lookup', backtests.lookupPost, {csrf: true}],
   ['POST', '/v1/billing/webhook/apple', billing.storeWebhookNotConfigured, {webhook: true, db: false}],
   ['POST', '/v1/billing/webhook/google', billing.storeWebhookNotConfigured, {webhook: true, db: false}],
 ];
 
-// Oeffentliche HTML-Seiten (ohne Anmeldung, ohne Passwortmaske): Rechtstexte, Kuendigen, Widerrufen.
+// Oeffentliche HTML-Seiten (ohne Anmeldung, ohne Passwortmaske): Rechtstexte, Kontakt, Kuendigen, Widerrufen.
 const PAGES = [
   ['GET', '/rechtliches/', pages.legalIndex, {db: false}],
   ['GET', '/rechtliches', pages.legalIndex, {db: false}],
-  ...['impressum', 'datenschutz', 'agb', 'widerrufsbelehrung', 'widerrufsformular', 'newsletter']
+  ...['impressum', 'datenschutz', 'agb', 'widerrufsbelehrung', 'widerrufsformular', 'newsletter', 'risikohinweise', 'methodik']
     .map(k => ['GET', `/rechtliches/${k}`, pages.legalPage(k), {db: false}]),
+  // Fassung 3 hiess die Seite „Hinweise nach MAR und WpHG“; alte Links fuehren auf die Nachfolgeseite.
+  ['GET', '/rechtliches/mar-hinweise', pages.legalPage('methodik'), {db: false}],
   ['GET', '/kuendigen', pages.cancelGet, {db: false}],
   ['POST', '/kuendigen', pages.cancelPost],
+  ['GET', '/kontakt', pages.contactGet, {db: false}],
+  ['POST', '/kontakt', pages.contactPost, {db: false}],
   ['GET', '/widerrufen', pages.withdrawGet, {db: false}],
   ['POST', '/widerrufen', pages.withdrawPost],
 ];
@@ -122,6 +138,7 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
   const sb = createSupabase({url: cfg.supabase.url, publishableKey: cfg.supabase.publishableKey,
     secretKey: cfg.supabase.secretKey, fetchImpl, forwardClientIp: cfg.supabase.forwardClientIp});
   const store = createBillingStore(sb.service);
+  const fcm = push.createFcm({secret: env.FCM_SERVICE_ACCOUNT, fetchImpl, now});
   const stripe = createStripeClient({secretKey: cfg.stripe.secretKey, apiBase: cfg.stripe.apiBase,
     apiVersion: cfg.stripe.apiVersion, fetchImpl});
   const limit = createLimiter({binding: env.VU_ACCOUNT_LIMITER, now});
@@ -136,7 +153,7 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
     const htmlRoute = PAGES.find(([m, p]) => p === url.pathname && m === (head ? 'GET' : request.method));
     if (htmlRoute) {
       const [, , handler, opts = {}] = htmlRoute;
-      const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, ip: clientIp(request),
+      const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, fcm, ip: clientIp(request),
         cookies: parseCookies(request), outCookies: []};
       try {
         if (opts.db !== false && !supabaseReady(cfg)) throw new Error('ACCOUNTS_NOT_CONFIGURED');
@@ -153,7 +170,7 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
       return json(request, cfg, known ? 405 : 404, {state: known ? 'METHOD_NOT_ALLOWED' : 'NOT_FOUND'});
     }
     const [, , handler, opts = {}] = route;
-    const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, ip: clientIp(request),
+    const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, fcm, ip: clientIp(request),
       cookies: parseCookies(request), outCookies: [], backtestBundle};
     try {
       if (opts.db !== false && !supabaseReady(cfg)) throw new HttpError(503, 'ACCOUNTS_NOT_CONFIGURED');
@@ -176,7 +193,10 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
     let brevoResult = null;
     try { brevoResult = await runBrevo({store, brevo, cfg, log, now}); }
     catch (e) { log('error', 'BREVO_RUN_FAILED', {code: String(e.code || e.message).slice(0, 120)}); }
-    return {...result, brevo: brevoResult};
+    let pushResult;
+    try { pushResult = await push.runPush({fcm, service: sb.service, fetchImpl, now}); }
+    catch { pushResult = {failed: true}; log('error', 'PUSH_RUN_FAILED', {}); }
+    return {...result, brevo: brevoResult, push: pushResult};
   }
   return {handle, scheduled, cfg, deps: {store, stripe, mailer, brevo, cfg, log, now}};
 }

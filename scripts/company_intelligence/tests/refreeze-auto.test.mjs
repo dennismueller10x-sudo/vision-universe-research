@@ -165,7 +165,7 @@ test('Mischstand der Generationen: index, rollout, refresh oder observed weichen
  }finally{w.done();}
 });
 
-test('Universum aktiv oder Archiv-Schluessel belegt -> BLOCKED; byte-identisches Archiv bleibt erlaubt (idempotent)',async()=>{
+test('Aktivierung ungueltig, Universum ohne gueltiges GOOD oder Archiv-Schluessel belegt -> BLOCKED; byte-identisches Archiv bleibt erlaubt (idempotent)',async()=>{
  const w=await world();try{
   const old=await goodState(w.d,ROLLBACK),oldBytes=w.d.objects.get(goodKey(ROLLBACK)),key=refreezeArchiveKey(old.generation);
   w.d.objects.set(key,Buffer.from('{"fremd":true}'));
@@ -174,8 +174,11 @@ test('Universum aktiv oder Archiv-Schluessel belegt -> BLOCKED; byte-identisches
   w.d.objects.set(key,refreezeArchiveBytes(old,oldBytes));
   v=await w.preflight();assert.equal(v.decision,'REFREEZE');
   w.d.objects.delete(key);
+  w.d.objects.set(activationKey(),Buffer.from(JSON.stringify({schema:1,state:'PAUSED',approvalId:universeConfig.approvalId,generation:w.gen})));
+  v=await w.preflight();assert.equal(v.source,'legacy');assert.deepEqual(failedIds(v),['rollback-archivable']);assert.match(byId(v,'rollback-archivable').detail,/ACTIVATION_STATE_INVALID:PAUSED/);
+  // Universum aktiv (Quelle universe), aber kein gueltiges Universe-GOOD: blockiert, kein Rueckgriff auf das Legacy-GOOD.
   w.d.objects.set(activationKey(),Buffer.from(JSON.stringify({schema:1,state:'AVAILABLE',approvalId:universeConfig.approvalId,generation:w.gen})));
-  v=await w.preflight();assert.deepEqual(failedIds(v),['rollback-archivable']);assert.match(byId(v,'rollback-archivable').detail,/UNIVERSE_ACTIVE/);
+  v=await w.preflight();assert.equal(v.source,'universe');assert.equal(v.decision,'BLOCKED');assert.match(byId(v,'refresh-fresh').detail,/UNIVERSE_GOOD_UNUSABLE/);
   w.d.objects.delete(goodKey(ROLLBACK));
   v=await w.preflight();assert.equal(v.decision,'BLOCKED');assert.match(byId(v,'rollback-archivable').detail,/ROLLBACK_NAMESPACE_UNREADABLE:ROLLBACK_POINTER_MISSING/);assert.equal(v.urgent,true,'unbekannte Restlaufzeit gilt als dringend');
  }finally{w.done();}
@@ -296,6 +299,10 @@ function assertWorkflow(doc,raw){
  assert.equal(refreeze.env.EXPECT_GENERATION,'${{ steps.guard.outputs.generation }}');
  assert.match(refreeze.run,/universe-release\.mjs refreeze --temporary "\$RUNNER_TEMP\/universe-release" --expect-generation "\$EXPECT_GENERATION"/);
  assert.match(refreeze.run,/\^\[0-9a-f\]\{24\}\$/);
+ // Quelle aus dem Preflight (ueber env:): legacy ohne Zusatz, universe nur mit --from-universe, alles andere bricht ab.
+ assert.equal(refreeze.env.SOURCE,'${{ steps.guard.outputs.source }}');
+ assert.match(refreeze.run,/case "\$SOURCE" in\n\s+legacy\) ;;\n\s+universe\) args\+=\(--from-universe\) ;;\n\s+\*\) echo "::error::unknown refreeze source '\$SOURCE'"; exit 1 ;;\n\s*esac/);
+ assert.match(refreeze.run,/--expect-generation "\$EXPECT_GENERATION" "\$\{args\[@\]\}"\n?$/);
  assert.match(post.if,/steps\.guard\.outputs\.decision == 'REFREEZE'/);
  assert.match(post.run,/refreeze-auto-guard\.mjs verify .*--expect-generation "\$EXPECT_GENERATION"/);
  const upload=job.steps.find(s=>s.uses==='actions/upload-artifact@v4');
@@ -359,17 +366,19 @@ test('Zeitplan (Tag-des-Monats-Raster, Monatswechsel): Minuten-Jitter nicht auf 
 test('Mutationstest Workflow: jede entfernte oder aufgeweichte Zusicherung macht den Vertragstest rot',()=>{
  const text=raw();assertWorkflow(loadText(text),text);
  const mutants={
-  'Gate-Bedingung des Re-Freeze entfernt':t=>t.replace("        if: steps.guard.outputs.decision == 'REFREEZE'\n        env:\n          EXPECT_GENERATION: ${{ steps.guard.outputs.generation }}\n        run: |\n          set -euo","        env:\n          EXPECT_GENERATION: ${{ steps.guard.outputs.generation }}\n        run: |\n          set -euo"),
-  '--expect-generation entfernt':t=>t.replace(' --expect-generation "$EXPECT_GENERATION"\n      - name: Postcheck','\n      - name: Postcheck'),
+  'Gate-Bedingung des Re-Freeze entfernt':t=>t.replace("        if: steps.guard.outputs.decision == 'REFREEZE'\n        env:\n          EXPECT_GENERATION: ${{ steps.guard.outputs.generation }}\n          SOURCE: ${{ steps.guard.outputs.source }}\n        run: |\n          set -euo","        env:\n          EXPECT_GENERATION: ${{ steps.guard.outputs.generation }}\n          SOURCE: ${{ steps.guard.outputs.source }}\n        run: |\n          set -euo"),
+  '--expect-generation entfernt':t=>t.replace(' --expect-generation "$EXPECT_GENERATION" "${args[@]}"\n      - name: Postcheck',' "${args[@]}"\n      - name: Postcheck'),
+  'unbekannte Quelle nicht abgelehnt':t=>t.replace(`            *) echo "::error::unknown refreeze source '$SOURCE'"; exit 1 ;;\n`,''),
+  'Projektion ohne Universumsquelle':t=>t.replace('universe) args+=(--from-universe) ;;','*) args+=(--from-universe) ;;'),
   'Preflight entfernt':t=>t.replace('refreeze-auto-guard.mjs preflight','echo preflight'),
   'Concurrency-Gruppe geaendert':t=>t.replace('group: company-intelligence-continuous-production','group: company-intelligence-refreeze-auto'),
   'Abbruch laufender Laeufe':t=>t.replace('cancel-in-progress: false','cancel-in-progress: true'),
   'actions: write':t=>t.replace('  contents: read\n','  contents: read\n  actions: write\n'),
-  'Pages-Dispatch':t=>t.replace('--expect-generation "$EXPECT_GENERATION"\n      - name: Postcheck','--expect-generation "$EXPECT_GENERATION"\n          gh workflow run pages-release.yml --ref main\n      - name: Postcheck'),
+  'Pages-Dispatch':t=>t.replace('--expect-generation "$EXPECT_GENERATION" "${args[@]}"\n      - name: Postcheck','--expect-generation "$EXPECT_GENERATION" "${args[@]}"\n          gh workflow run pages-release.yml --ref main\n      - name: Postcheck'),
   'zweiter Release-Modus':t=>t.replaceAll('universe-release.mjs refreeze','universe-release.mjs rollback'),
   'Checkout ohne ref':t=>t.replace('          ref: ${{ github.ref }}\n',''),
   'Nachpruefung entfernt':t=>t.replace('id: postcheck','id: nachher'),
-  'Eingabe im Shell-Text':t=>t.replace('"$EXPECT_GENERATION"\n      - name: Postcheck','"${{ inputs.expect }}"\n      - name: Postcheck'),
+  'Eingabe im Shell-Text':t=>t.replace('"$EXPECT_GENERATION" "${args[@]}"\n      - name: Postcheck','"${{ inputs.expect }}" "${args[@]}"\n      - name: Postcheck'),
   'kein Branch-Filter':t=>t.replace("    if: github.ref == 'refs/heads/main'\n",''),
   'Artefaktname':t=>t.replace('refreeze-auto-${{ github.run_id }}','refreeze-auto')
  };
@@ -388,7 +397,7 @@ test('Mutationstest Guard: wird eine Pruefung entfernt, entscheidet derselbe Feh
   checkHealth:{id:'health',arrange:w=>{w.d.objects.set(observedKey,Buffer.from(JSON.stringify({schema:1,generation:w.gen,lastSuccessfulProductionPublication:new Date(Date.now()-10*H).toISOString()})));}},
   checkGeneration:{id:'generation-unanimous',arrange:w=>{w.routes['/company-intelligence/data/index.json'].body.generation='1'.repeat(24);}},
   checkArtifacts:{id:'artifacts',arrange:w=>{w.routes['/company-intelligence-refresh.json'].body.manifest.assets={};}},
-  'checkArchivable(s)':{id:'rollback-archivable',arrange:w=>{w.d.objects.set(activationKey(),Buffer.from(JSON.stringify({schema:1,state:'AVAILABLE',approvalId:universeConfig.approvalId,generation:w.gen})));}}
+  'checkArchivable(s)':{id:'rollback-archivable',arrange:w=>{w.d.objects.set(activationKey(),Buffer.from(JSON.stringify({schema:1,state:'PAUSED',approvalId:universeConfig.approvalId,generation:w.gen})));}}
  };
  try{
   for(const [fn,sc] of Object.entries(scenarios)){

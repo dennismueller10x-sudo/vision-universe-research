@@ -125,3 +125,25 @@ test('Echtes Universum: Umfang, Trichter und Plausibilitaet', { skip: !existsSyn
   assert.equal(art.factorPublication.compositeAllowed, false);
   assert.equal(Fields.field('quantScore').available, false);
 });
+
+test("ST-1 · Supertrader-Methoden (Z5): Spalten aus dem veroeffentlichten Kandidatenstand, fail closed", async () => {
+  const { supertraderColumns } = await import('../../scripts/screener/build-universe.mjs');
+  const { screenerColumns } = await import('../../scripts/supertrader/source-faithful/product/screener-export.mjs');
+  const { readFileSync, existsSync } = await import('node:fs');
+  const { join, dirname } = await import('node:path');
+  const { fileURLToPath } = await import('node:url');
+  const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+  for (const c of ['stMeth', 'stV1', 'stStage']) assert.ok(COLUMNS.includes(c), c);
+  const file = join(ROOT, 'supertrader/data/sf-candidates/index.json');
+  if (existsSync(file)) {
+    const st = supertraderColumns(JSON.parse(readFileSync(file, 'utf8')), screenerColumns);
+    assert.ok(st.byTicker.size > 0);
+    for (const x of st.byTicker.values()) {
+      assert.ok(Array.isArray(x.stMeth) && x.stMeth.length > 0);
+      assert.ok(x.stV1 === null || x.stV1.every((m) => x.stMeth.includes(m)));
+      assert.ok(['CHART_CANDIDATE', 'CONFIRMED_RESEARCH_SETUP', 'MODELED_TRADE_PLAN'].includes(x.stStage));
+    }
+    assert.equal(st.meta.label, 'Research, keine Empfehlung');
+  }
+  assert.throws(() => supertraderColumns({ schema: 'falsch' }, screenerColumns), /SF_SCREENER_EXPORT_SCHEMA/);
+});

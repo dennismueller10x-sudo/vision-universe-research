@@ -15,6 +15,8 @@
   var HISTORY_BASE = '/fundamental/data/history/';
   var UNIVERSE_PATH = '/screener/data/universe-US_REAL.json';
   var ANALYST_PATH = '/dashboard/data/analyst_ratings.json';
+  /* Konsens je Titel fuer das Produktuniversum (scripts/analysts/fetch-consensus.mjs): shards/<shardKey>.json, Schluessel securityId. */
+  var CONSENSUS_SHARD_PATH = '/dashboard/data/analysts/shards/';
   var SERIES_BASE = '/quant/data/market/discover-series/';
 
   function isNum(v) { return typeof v === 'number' && isFinite(v); }
@@ -708,7 +710,8 @@
   }
 
   /* ------------------------------------------------------------------ Analysten (11 Titel, Finnhub + FMP, wie /analysten/) */
-  var CONSENSUS = { strong_buy: 'Starker Kauf', buy: 'Kaufen', hold: 'Halten', sell: 'Verkaufen', strong_sell: 'Starker Verkauf' };
+  /* Angabe Dritter (Strang F, WORTWAHL): Einstufung der Analysten, nicht von Vision Universe. */
+  var CONSENSUS = { strong_buy: 'Analysten: starkes Kaufen', buy: 'Analysten: Kaufen', hold: 'Analysten: Halten', sell: 'Analysten: Verkaufen', strong_sell: 'Analysten: starkes Verkaufen' };
   function analysts(doc, ticker) {
     var s = doc && doc.symbols && doc.symbols[ticker];
     if (!s) return null;
@@ -718,6 +721,17 @@
     return { generatedAt: doc.generated_at_utc || null, provider: doc.provider || null, label: CONSENSUS[s.consensus_label] || null, score: isNum(s.consensus_score) ? s.consensus_score : null,
       history: hist, last: last, total: total,
       target: pt && isNum(pt.targetMean) ? { low: pt.targetLow, high: pt.targetHigh, mean: pt.targetMean, median: pt.targetMedian, provider: s.price_target_provider || null } : null };
+  }
+
+  /* Konsens-Eintrag (Produktuniversum) -> dieselbe Form wie analysts(); ohne zusammengefasstes Wort (label null),
+     Kursziel nur aus freier Quelle (targetState), sonst ausdruecklich benannt. */
+  function consensus(entry) {
+    if (!entry || entry.ratingsState !== 'AVAILABLE') return null;
+    var hist = (entry.history || []).filter(function (h) { return h && /^\d{4}-\d{2}/.test(h.period || ''); }).slice().sort(function (a, b) { return a.period < b.period ? -1 : 1; });
+    var t = entry.targetState === 'AVAILABLE' && entry.target && isNum(entry.target.consensus) ? entry.target : null;
+    return { generatedAt: entry.fetchedAt || null, provider: t ? 'Finnhub · Kursziel ' + (t.source || 'FMP') : 'Finnhub', label: null, score: null,
+      history: hist, last: hist[hist.length - 1] || null, total: entry.analysts || 0, targetState: entry.targetState || 'NOT_CHECKED',
+      target: t ? { low: t.low, high: t.high, mean: t.consensus, median: t.median, provider: t.source || 'FMP' } : null };
   }
 
   /* ------------------------------------------------------------------ Formatierung */
@@ -776,7 +790,7 @@
   function seriesPath(securityId) { return /^ref_[A-Z0-9_]{1,24}$/.test(securityId || '') ? SERIES_BASE + securityId + '.json' : null; }
   function longSeriesPath(p) { return /^\/quant\/data\/market\/discover-series-long\/ref_[A-Z0-9_]{1,24}\.json$/.test(p || '') ? p : null; }
 
-  var api = { VERSION: VERSION, CATS: CATS, METRICS: M, BY_ID: BY_ID, FORMULA: FORMULA, RANKINGS: RANKINGS, SIZES: SIZES, HISTORY_BASE: HISTORY_BASE, UNIVERSE_PATH: UNIVERSE_PATH, ANALYST_PATH: ANALYST_PATH,
+  var api = { VERSION: VERSION, CATS: CATS, METRICS: M, BY_ID: BY_ID, FORMULA: FORMULA, RANKINGS: RANKINGS, SIZES: SIZES, HISTORY_BASE: HISTORY_BASE, UNIVERSE_PATH: UNIVERSE_PATH, ANALYST_PATH: ANALYST_PATH, CONSENSUS_SHARD_PATH: CONSENSUS_SHARD_PATH, consensus: consensus,
     fromHistory: fromHistory, historicalPe: historicalPe, historicalValuation: historicalValuation, attachValuation: attachValuation, stepChange: stepChange, changeOf: changeOf, positionText: positionText, PEER_MODES: PEER_MODES,
     INDUSTRY_METRICS: INDUSTRY_METRICS, INDUSTRY_SCHEMA: INDUSTRY_SCHEMA, industryPath: industryPath, industrySeries: industrySeries,
     PEERS_PATH: PEERS_PATH, PEERS_SCHEMA: PEERS_SCHEMA, PEER_MIN: PEER_MIN, peerIndex: peerIndex, defaultGroup: defaultGroup, closeAfter: closeAfter, HIST_VAL: HIST_VAL, SHARE_TOLERANCE: SHARE_TOLERANCE, catalogCounts: catalogCounts, QUARTER_SUM: QUARTER_SUM, QUARTER_TOL: QUARTER_TOL, PE_TOLERANCE: PE_TOLERANCE, fromDiscover: fromDiscover, seriesOf: seriesOf, current: current, cagr: cagr, catalogFor: catalogFor, rolling: rolling, snapshot: snapshot, splitJumps: splitJumps, SPINOFF_FACTORS: SPINOFF_FACTORS, SPINOFF_EVIDENCE_VERSION: SPINOFF_EVIDENCE_VERSION, splitBasis: splitBasis,

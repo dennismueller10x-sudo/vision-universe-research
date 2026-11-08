@@ -499,3 +499,142 @@ html.fu-locked,html.fu-locked body{overflow:hidden}
 .fu-full-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
 @media (min-width:720px){.fu-sheet{inset:0;margin:auto;max-width:600px;height:fit-content;border-radius:22px}.fu-sheet-in{max-height:82vh;padding:8px 20px 20px}.fu-sheet-full{max-width:min(1040px,94vw)}}
 @media (hover:hover){.fu-crow.fu-pick-row:not(:disabled):hover{background:var(--fu-soft)}}
+
+/* ===================================================================== Redesign 2027 (Folien F01–F06)
+   Nur Weiss, Schwarz, Neongruen #c8f531 und drei Graustufen (assets/vu-ui.css). Kein Rot/Gruen/Orange:
+   Plus = neongruen, Minus = schwarz (dunkel: weiss); Vergleichsfarben werden Graustufen. */
+:root{--fu-acc:var(--vu-lime,#c8f531);--fu-acc-ink:var(--vu-ink,#000);--fu-s1:var(--vu-hair,#e9e9e9);--fu-bar:var(--vu-ink,#000);--fu-soft:var(--vu-card,#f4f4f4);--fu-warn:var(--vu-ink);--fu-warn-bg:var(--vu-card);--fu-card:var(--vu-card,#f4f4f4)}
+html[data-theme=dark]{--fu-acc:#c8f531;--fu-acc-ink:#c8f531;--fu-s1:#3a3a3a;--fu-bar:#fff;--fu-warn:#fff;--fu-warn-bg:var(--vu-card)}
+.fu{--vu-down:var(--vu-ink);--vu-up:var(--vu-ink);--vu-bg:var(--vu-white)}
+html[data-theme=dark] .fu{--vu-bg:#000}
+.fu-body{background:#fff}html[data-theme=dark] .fu-body{background:#000}
+.t0,.t1,.t2,.t3{--fu-tone:var(--vu-mute)}
+.t1{--fu-tone:color-mix(in srgb,var(--vu-ink) 55%,transparent)}.t2{--fu-tone:color-mix(in srgb,var(--vu-ink) 35%,transparent)}.t3{--fu-tone:color-mix(in srgb,var(--vu-ink) 75%,transparent)}
+.fu-crow-ico,.fu-crow-ico[data-cat=bewertung],.fu-crow-ico[data-cat=aktie],html[data-theme=dark] .fu-crow-ico[data-cat=bewertung],html[data-theme=dark] .fu-crow-ico[data-cat=aktie]{background:#0e1013;color:var(--vu-lime)}
+.d0{background:var(--vu-lime)}.d1{background:color-mix(in srgb,var(--vu-lime) 55%,var(--vu-hair))}.d2{background:var(--vu-mute)}.d3{background:color-mix(in srgb,var(--vu-ink) 60%,transparent)}.d4{background:var(--vu-ink)}
+.fu-chg.is-up,.fu-chg.is-down{color:var(--vu-ink)}
+.fu-chg.is-up:before{content:"▲ ";font-size:.8em}.fu-chg.is-down:before{content:"▼ ";font-size:.8em}
+.fu-b,.fu-b.is-neg,.is-two .fu-b.is-neg,.fu-hb-bar i.is-neg,.fu-spark i.is-neg,.fu-meter-bar i.is-neg,.fu-minibar i.is-neg{background:var(--vu-ink)}
+.fu-b.is-neg,.fu-spark i.is-neg{opacity:.45}
+.fu-bc.is-last .fu-b,.fu-bc.is-self .fu-b{background:var(--vu-lime);opacity:1}
+.fu-stmt td.is-neg{color:inherit}
+.vu-alert{background:var(--vu-card)!important;color:var(--vu-ink)!important;border-color:var(--vu-hair)!important}
+.fu-k{background:var(--vu-card);border:0;border-radius:18px}
+.fu-card,.fu-notice,.fu-branch,.fu-rcard{background:var(--vu-card);border-color:transparent}
+.fu-seg-b[aria-pressed=true],.fu-seg-b[aria-current=page]{background:var(--vu-ink);border-color:var(--vu-ink);color:var(--vu-inv)}
+.fu-sec-link,.fu-branch-peers{color:var(--vu-ink)!important}
+
+/* Seitenaufbau */
+.fu-intro{padding-top:14px}.fu-intro .vu-ltag{margin:0 0 4px}
+.fu-intro .vu-lead{max-width:56ch}
+.fu-gap{margin-top:12px}.fu-gap-s{margin-top:8px}
+.fu-p{margin:0;line-height:1.45}
+.fu-back{margin-top:8px;color:var(--vu-mute);font-size:14px}
+.fu-foot{display:flex;gap:8px;align-items:center;margin:22px 0 0;font-size:11.5px;font-weight:700;color:var(--vu-mute)}
+.fu-wrapchips{display:flex;flex-wrap:wrap;gap:8px}
+.fu-searchwrap{margin-top:14px}.fu-searchwrap .fu-search{max-width:none}
+.fu-searchwrap .fu-input{border:0;background:var(--vu-card);min-height:50px}
+.fu-quick{margin-top:10px}
+.fu-hud-g{width:60%;height:60%}
+.vu-navcard{color:var(--vu-ink)!important}
+.fu-tilebox{display:flex;min-width:0}.fu-tilebox>.vu-tile{flex:1}
+.fu-tiles3{margin-top:16px}
+
+/* F01 Beispielkarte und Mini-Lektion */
+.fu-example{display:block;text-decoration:none;padding:16px}
+.fu-example-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.fu-example-head>div{flex:1;min-width:0}.fu-example-head b{display:block}.fu-example-head small{display:block;font-size:11.5px;color:var(--vu-mute)}
+.fu-example-nums{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.fu-example-nums dt{font-size:11.5px;font-weight:700;color:var(--vu-mute)}.fu-example-nums dd{margin:0;font-size:17px;font-weight:800}
+.fu-lesson{list-style:none;margin:0;padding:4px 14px}
+.fu-lesson li{display:flex;gap:10px;padding:10px 0}.fu-lesson li+li{border-top:1px solid var(--vu-hair)}
+.fu-lesson-n{--vu-hud:28px;border-radius:9px;font-weight:900;font-size:12px}
+.fu-lesson b{display:block;font-size:13.5px}.fu-lesson small{display:block;font-size:11.5px;color:var(--vu-mute)}
+.fu-rank-state:not(:empty){margin-top:12px}
+
+/* C18 Leerer Zustand */
+.fu-empty{padding:16px}
+.fu-empty-t{margin-top:10px;font-size:18px}
+.fu-empty p{margin:4px 0 0}
+.fu-empty-next{margin-top:12px!important}
+.fu-checks{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
+.fu-checks a{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:700;text-decoration:none;min-height:28px}
+.fu-empty-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.fu-empty-act>*{flex:1}
+
+/* F02 Auswahlen: Firmenkarte mit drei Balken */
+.fu-sel-what{margin:10px 0 0}.fu-sel{margin-top:12px}
+.fu-firm{display:block;text-decoration:none;padding:13px}
+.fu-firm-head{display:flex;align-items:center;gap:10px}
+.fu-firm-head>div{flex:1;min-width:0}.fu-firm-head b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fu-firm-head small{display:block;font-size:11.5px;color:var(--vu-mute)}
+.fu-fbar{margin-top:8px}.fu-fbar .vu-meter{height:6px;margin-top:3px}
+.fu-fbar-h{display:flex;justify-content:space-between;font-size:11.5px}.fu-fbar-h span{color:var(--vu-mute);font-weight:700}
+
+/* F03 Rangliste */
+.fu-rule p{margin:4px 0 0}
+.fu-rk-head{display:flex;align-items:baseline;gap:10px;margin:18px 0 8px}
+.fu-rk-t{margin:0;flex:1;font-size:17px;font-weight:800}
+.fu-rk-box{padding:2px 14px}
+.fu-rk{list-style:none;margin:0;padding:0}
+.fu-rk a{display:flex;align-items:center;gap:10px;padding:11px 0;text-decoration:none;color:var(--vu-ink)}
+.fu-rk li+li a,.fu-rk+.fu-rk li:first-child a{border-top:1px solid var(--vu-hair)}
+.fu-rk-n{width:22px;font-weight:900;font-size:16px;flex:none}
+.fu-rk-name{flex:1;min-width:0}.fu-rk-name b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fu-rk-name small{display:block;font-size:11.5px;color:var(--vu-mute)}
+.fu-rk-v{flex:none}
+
+/* F04 Suche */
+.fu-bigq{display:flex;align-items:center;gap:10px;height:52px;margin-top:14px;padding:0 16px;border-radius:999px;background:var(--vu-card);border:2px solid var(--vu-ink)}
+.fu-bigq-in{flex:1;min-width:0;border:0;background:transparent;color:var(--vu-ink);font:700 16px var(--vu-font);outline:none;-webkit-appearance:none;appearance:none}
+.fu-bigq-x{font-size:13px;font-weight:700;color:var(--vu-mute);text-decoration:none;min-height:44px;display:grid;place-items:center}
+.fu-sres .vu-ltag{margin:16px 0 6px}
+.fu-rows{padding:2px 14px}
+.fu-sres .fu-empty{margin-top:18px;text-align:center}.fu-sres .fu-empty .fu-empty-act{justify-content:center}.fu-sres .fu-empty .fu-empty-act>*{flex:none}
+
+/* F05 Methodik */
+.fu-src-t{margin:4px 0 0;font-weight:850;font-size:17px}.fu-src-s{margin:4px 0 0;opacity:.75}
+.fu-mlist{padding:2px 14px;margin-top:10px}
+.fu-mrow{display:block;width:100%;padding:10px 0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.fu-mrow+.fu-mrow{border-top:1px solid var(--vu-hair)}
+.fu-mrow-h{display:flex;gap:8px;align-items:baseline}.fu-mrow-h b{flex:1;font-size:13.5px}.fu-mrow-h small{font-size:11.5px;color:var(--vu-mute);text-align:right}
+.fu-mrow-d{display:block;margin-top:2px;font-size:12px;line-height:1.35}
+.fu-limit{display:flex;gap:10px;align-items:center;padding:12px}
+.fu-allformulas>summary{list-style:none;cursor:pointer}.fu-allformulas>summary::-webkit-details-marker{display:none}
+.fu-allformulas[open]>summary{margin-bottom:8px}
+.fu-formula{font-size:12.5px;line-height:1.5}
+.fu-sheet-val b{display:block;font-size:30px;font-weight:900}.fu-sheet-val p{margin:0;font-weight:700}
+
+/* F06 Aktie: Reiter, Urteil, Kennzahl-Kacheln, Entwicklung */
+.fu-tabs.vu-seg{position:static;margin:12px 0 0;padding:4px;border:0;background:var(--vu-card);backdrop-filter:none;-webkit-backdrop-filter:none;overflow-x:auto}
+.fu-tabs.vu-seg a{padding:0 8px;min-height:34px;font-size:13px;color:var(--vu-mute);flex:1 0 auto}
+.fu-tabs.vu-seg a[aria-current=page]{background:var(--vu-ink);color:var(--vu-inv)}
+.fu-verdict{display:flex;gap:12px;align-items:center;margin-top:12px;padding:16px}
+.fu-verdict>div:first-child{flex:1;min-width:0}
+.fu-verdict .vu-ltag{margin:0}
+.fu-verdict-t{margin:2px 0 0;font-size:18px;font-weight:850;line-height:1.2}
+.fu-verdict-s{margin:4px 0 0;opacity:.7}
+.fu-verdict-r{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.fu-verdict .vu-q{background:var(--vu-inv);color:var(--vu-ink)}
+.fu-ktiles{--vu-cols:2;gap:8px}
+.fu-ktile{display:flex;flex-direction:column;gap:2px;padding:12px}
+.fu-ktile-h{display:flex;align-items:center;gap:6px}.fu-ktile-h .fu-k-l{flex:1}
+.fu-ktile .fu-k-v{text-decoration:none;font-size:21px}
+.fu-ktile-why{margin:6px 0 0;padding-top:6px;border-top:1px solid var(--vu-hair);font-size:11.5px;line-height:1.35}
+.fu-dev{padding:2px 14px;border-top:0}
+.fu-dev a{grid-template-rows:auto;border-bottom:0;padding:10px 0}
+.fu-dev li+li a{border-top:1px solid var(--vu-hair)}
+.fu-dev a>.vu-chg{grid-column:2;grid-row:1;align-self:center}
+.fu-fallback{padding:10px 12px;border-radius:14px;background:var(--vu-card);color:var(--vu-ink)}
+.fu-catcard{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border:0;font:inherit;text-align:left;cursor:pointer}
+.fu-catcard>span{flex:1;min-width:0}.fu-catcard b{display:block;font-size:13.5px}.fu-catcard small{display:block;font-size:11.5px;color:var(--vu-mute)}
+.fu-catcard[aria-pressed=true]{outline:2px solid var(--vu-ink)}
+.fu-catfilter{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:18px}
+.fu-cat .fu-crow{grid-template-columns:minmax(0,1fr) 42px auto 14px}
+.fu-stmt td.is-cur{font-weight:800}
+.fu-ctrl-nw,.vu-seg>button{white-space:nowrap}
+.fu-tabs.vu-seg a,.vu-seg>button{font-size:12.5px}
+.fu .fu-bigq-in:focus-visible{outline:none}
+.fu-bigq:focus-within{box-shadow:0 0 0 3px var(--vu-lime)}
+.fu-bigq-in::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+/* Chips und Aussage-Karte: .fu a erbt die Textfarbe; Chip- und Kartenfarben haben Vorrang (Kontrast im Dunkelmodus) */
+.fu a.vu-chip--lime{color:#000}.fu a.vu-chip--on,.fu a.vu-chip[aria-current=page],.fu a.vu-chip[aria-pressed=true]{color:var(--vu-inv)}
+.fu-verdict .vu-ltag{color:inherit;opacity:.72}

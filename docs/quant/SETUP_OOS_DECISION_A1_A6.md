@@ -1,6 +1,6 @@
 # Setup-OOS: Entscheidungsvorlage A1–A6 (Stand 30.10.2026)
 
-Diese Vorlage ergänzt [DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md](DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md), Abschnitt A, und [SETUP_OOS_EVALUATION.md](SETUP_OOS_EVALUATION.md). Sie ändert nichts automatisch und zertifiziert nichts.
+Diese Vorlage ergänzt [DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md](DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md), Abschnitt A, und [SETUP_OOS_EVALUATION.md](SETUP_OOS_EVALUATION.md). Sie zertifiziert nichts. **Die Empfehlungen sind seit dem 04.11.2026 entschieden und umgesetzt (Abschnitt 6).**
 
 Die Gates und ihre Schwellen bleiben unverändert (`quant/methodology/backtest-certification-v1.json`, `kinds.SETUP_BACKTEST.requirements`):
 - `historyDates` 120
@@ -122,3 +122,16 @@ Frühestens um den 2028-01-08 kann SETUP_BACKTEST technisch alle Gates erfüllen
 ## 5. Zur Entscheidung vorgelegt
 
 A1 (b) Schnitt **2027-05-31** · A2 **183 Tage** · A3 **MEDIAN_EXCESS + SIGN_REPLICATES** · A4 **SETUP_NEW und SETUP_CONFIRMED getrennt, NEXT_CLOSE, M6** · A5 **effektiv, Cluster = Ereignistag** · A6 **getrennter Zeilenexport**.
+
+## 6. Entschieden 04.11.2026
+
+Freigabe: Owner, Neustart-Freigabe vom 04.11.2026 ([PLAN_NEUSTART_2026-11.md](../PLAN_NEUSTART_2026-11.md)); umgesetzt nach Abschnitt 5 in `kinds.SETUP_BACKTEST.oosSegmentation` von `quant/methodology/backtest-certification-v1.json` (`methodologyVersion` 1.0.0 → 1.1.0, `approval.approvedBy` „Owner (Neustart-Freigabe)“, `approval.approvedAt` 2026-11-04).
+
+- **A1:** Fester Kalenderschnitt `FIXED_CALENDAR_CUT` am `cutDate` 2027-05-31 (`id` `setup-oos-2027-05-31`), festgelegt vor dem ersten M6-Ergebnis.
+- **A2:** Embargo `embargoDays` 183 Kalendertage; Lernereignisse zählen nur bis einschließlich 2026-11-28.
+- **A3:** Kriterium `MEDIAN_EXCESS` mit `SIGN_REPLICATES`, Gate-Label `OOS_DIRECTIONAL_REPLICATION`: ein PASS heißt nur „Richtung repliziert“, ausdrücklich kein Vorteils- oder Alpha-Anspruch.
+- **A4:** SETUP_NEW und SETUP_CONFIRMED werden getrennt mit Einstieg NEXT_CLOSE und Horizont M6 ausgewertet (`population`, `aggregation` `ALL_EVENT_TYPES_PASS`); das Gate besteht nur, wenn jede Art besteht, sonst trägt es den Grund der am weitesten zurückliegenden Art (`backtest-certification.js#combineSetupOos`, Einzelergebnisse im Artefakt unter `kinds[SETUP_BACKTEST].oos.byEventType`).
+- **A5:** Die Mindestgröße `oosMinPerSegment` 30 zählt effektiv mit `countBy` `EVENT_DAY` (Cluster = Ereignistag); die Schwelle 30 bleibt, der Auswerter `setup-oos-1.0.0` und seine Python-Gegenrechnung sind unverändert.
+- **A6:** Die Ereigniszeilen kommen aus `build-setup-outcomes.mjs --oos-rows-out <datei>` (Schema `setup-oos-rows-1.0.0`, nur im Runner unter `$RUNNER_TEMP`, nie unter `quant/data`) und gehen mit `build-backtest-certification.mjs --oos-rows <datei>` in das Gate; `setup-outcomes-v1.json` bleibt byte-gleich (bis auf `generatedAt`, Test `setup-oos-rows-export.test.mjs`).
+
+Wirkung heute: Das Gate meldet weiter FAIL `OOS_NOT_MEASURABLE_YET` (0 abgeschlossene M6-Ergebnisse je Art), `setup-state-v1.json` bleibt `NOT_CERTIFIED`, keine Schwelle ist geändert. Messbar frühestens um den 2028-01-08.

@@ -59,6 +59,18 @@ function create(options){
   if(result.status!=='OK'||!i||i.symbol!==ticker||!Master.inProductUniverse(i)||!/^vu_[a-f0-9]+$/.test(i.instrumentId)||!i.masterMemberId||!(i.legacyIds||[]).includes(i.masterMemberId))return null;
   return i;
  }
+ /* Variante B (Steuerung 05.11.2026, Eignung aus Security Master 1.3.0): belegte Nicht-Aktien (ETF, Fonds,
+    Anleihen) gehoeren nicht zum Aktien-Produktuniversum, bleiben aber im Verzeichnis auffindbar. Fuer sie gibt es
+    statt INVALID_IDENTITY eine benannte Absage mit Name und Papierart - keine Kurse, keine Aktienaussage. */
+ async function outsideEquityUniverse(ticker){
+  try{const result=await directory.getInstrument(ticker),i=result.instrument;
+   if(result.status!=='OK'||!i||i.symbol!==ticker||Master.inProductUniverse(i)||i.productEligibility!=='EXCLUDED')return null;
+   if(!/^CONFIRMED_NON_EQUITY:/.test(String(i.productEligibilityReason||'')))return null;
+   return {state:'UNAVAILABLE',reason:'OUTSIDE_EQUITY_UNIVERSE',identityState:'OUTSIDE_PRODUCT',stocks:[],
+    instrument:{ticker:i.symbol,name:i.companyName||null,securityClass:i.securityClass||i.securityType||null,
+     eligibilityReason:i.productEligibilityReason,exchange:i.exchange||null}};
+  }catch{return null;}
+ }
  function canonicalIdentity(i){return !!i&&Master.inProductUniverse(i)&&/^vu_[a-f0-9]+$/.test(i.instrumentId)&&!!i.masterMemberId&&(i.legacyIds||[]).includes(i.masterMemberId);}
  function identityModel(i){return {securityId:i.instrumentId,instrumentId:i.instrumentId,masterMemberId:i.masterMemberId,issuerId:i.issuerId||null,ticker:i.symbol,name:i.companyName||i.symbol,productEligibility:i.productEligibility};}
  async function searchInstruments(query,{limit=12}={}){
@@ -289,7 +301,7 @@ function create(options){
     if(versionState!=='CURRENT')return {state:'UNAVAILABLE',reason:'INVALID_SCREENING_ARTIFACT',rows:[]};
     const rows=Object.entries(payload.rows).map(([ticker,values])=>FactorEvidence.screeningRow(ticker,values,payload.fields)).filter(Boolean);
     return {state:'AVAILABLE',namespace:payload.namespace,methodologyVersion:payload.methodologyVersion,
-     asOf:payload.asOf,fields:payload.fields,publication:payload.publication,rows};
+     asOf:payload.asOf,fields:payload.fields,publication:payload.publication,factorWeights:payload.factorWeights||null,rows};
    }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING',rows:[]};}
   })();
   return screeningPromise;
@@ -1099,7 +1111,7 @@ function create(options){
   /* Die Aktienseite laedt die Faktoren selbst. Vorher hatte sie sie nur, wenn
      vorher eine Liste geladen war: Direktaufruf ohne Volatilitaet und Drawdown,
      Stand der Marktkennzahlen veraltet (Audit 03.10.2026). */
-  try{const c=await factorsFor(await init(),ticker),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
+  try{const c=await factorsFor(await init(),ticker),canonical=await identity(ticker);if(!canonical)return (await outsideEquityUniverse(ticker))||unavailable('INVALID_IDENTITY');
    const member=await memberFor(c,ticker);if(!member)return identityOnlyStock(ticker);
    const panelCandidate=c.panel?.securities?.[ticker];if(panelCandidate&&panelCandidate.securityId!=='sec_'+ticker)return unavailable('INVALID_IDENTITY');
    let stock=await row(c,ticker)||broadRow(c,member);if(!stock)return identityOnlyStock(ticker);
@@ -1420,11 +1432,20 @@ function create(options){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return null;
   try{return (await universeEntry(ticker))||null;}catch{return null;}
  }
+ /* Concurrent head/brief consumers share work only while it is pending.
+    No settled value or permission decision survives the request. */
+ const pendingStocks=new Map();
+ function sharedStockIntelligence(ticker){
+  const key=String(ticker||'').toUpperCase();
+  if(pendingStocks.has(key))return pendingStocks.get(key);
+  const pending=getStockIntelligence(key).finally(()=>{if(pendingStocks.get(key)===pending)pendingStocks.delete(key);});
+  pendingStocks.set(key,pending);return pending;
+ }
  async function getIntelligenceBrief(ticker){
   ticker=String(ticker||'').toUpperCase();
   if(!IntelligenceBrief||!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
   const [stock,factors,setup,patterns,match,technical]=await Promise.all([
-   getStockIntelligence(ticker).catch(()=>null),
+   sharedStockIntelligence(ticker).catch(()=>null),
    getFactorEvidence(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
    getSetupObservation(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
    getPatternMatch(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
@@ -1433,7 +1454,7 @@ function create(options){
   return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
    sources:{stock,factors,setup,patterns,match,technical}};
  }
- return {getRealBacktest,searchInstruments,getUniverseEntry:universeEntryOrNull,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
+ return {getRealBacktest,searchInstruments,getUniverseEntry:universeEntryOrNull,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence:sharedStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

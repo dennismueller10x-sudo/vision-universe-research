@@ -949,9 +949,9 @@
       "cik": "0002081358",
       "name": "Crane Harbor Acquisition Corp. II",
       "sic": "6770",
-      "rawFacts": 166,
-      "mappedFacts": 78,
-      "unmappedFacts": 96,
+      "rawFacts": 248,
+      "mappedFacts": 119,
+      "unmappedFacts": 136,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -963,9 +963,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 4,
+      "quarterlyPeriods": 6,
       "firstPeriodEnd": "2025-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1004,14 +1004,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1032,14 +1032,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1062,43 +1062,46 @@
         }
       },
       "quality": {
-        "HIGH": 13
+        "MEDIUM": 1,
+        "HIGH": 19
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 13,
-        "resolvedValues": 13
+        "datableValues": 20,
+        "resolvedValues": 20
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 99,
+        "rules_version": "1.1.0",
+        "total": 143,
         "by_severity": {
-          "INFO": 96,
-          "WARNING": 3
+          "INFO": 136,
+          "WARNING": 7
         },
         "by_code": {
-          "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 96
+          "CONCEPT_DISAGREEMENT": 3,
+          "UNEXPECTED_DURATION": 4,
+          "UNKNOWN_CONCEPT": 136
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-088374",
-        "filing_date": "2026-08-12",
+        "accession": "0001213900-26-116963",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 3
+        "periodic_filings": 4,
+        "acceptance_datetime": "2026-11-06T22:00:28.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "b046f30c43b37786094e53f231e2e15e58ccdd5ad88c89c31ead887ae9b82ec8",
+      "sourceDigest": "0c9ca54b2ca6bae5b544a9a9722d1774eb370c5e0aecc7958aaf5b3913e740ee",
       "issuerId": "iss_cik_0002081358"
     }
   ]

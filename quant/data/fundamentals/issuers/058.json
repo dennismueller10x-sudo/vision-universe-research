@@ -798,9 +798,9 @@
       "cik": "0002039058",
       "name": "Jackson Acquisition Co II",
       "sic": "6770",
-      "rawFacts": 454,
-      "mappedFacts": 198,
-      "unmappedFacts": 260,
+      "rawFacts": 539,
+      "mappedFacts": 245,
+      "unmappedFacts": 302,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -812,9 +812,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 8,
+      "quarterlyPeriods": 9,
       "firstPeriodEnd": "2024-09-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
@@ -853,14 +853,14 @@
         },
         "net_income": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -881,14 +881,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -911,43 +911,44 @@
         }
       },
       "quality": {
-        "HIGH": 34
+        "HIGH": 38
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 34,
-        "resolvedValues": 34
+        "datableValues": 38,
+        "resolvedValues": 38
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 281,
+        "rules_version": "1.1.0",
+        "total": 323,
         "by_severity": {
-          "INFO": 260,
+          "INFO": 302,
           "WARNING": 21
         },
         "by_code": {
           "UNEXPECTED_DURATION": 21,
-          "UNKNOWN_CONCEPT": 260
+          "UNKNOWN_CONCEPT": 302
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-087786",
-        "filing_date": "2026-08-11",
+        "accession": "0001213900-26-116890",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 8
+        "periodic_filings": 9,
+        "acceptance_datetime": "2026-11-06T21:15:49.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "5b269d838a602c15ed34d1dbedbf8e779e70f1713b6a4bef91d02d92c81f8c4c",
+      "sourceDigest": "73cf62062b4008f960f652e0e2a315b7f2ea4b74d49f1dce966426eed329f734",
       "issuerId": "iss_cik_0002039058"
     }
   ]

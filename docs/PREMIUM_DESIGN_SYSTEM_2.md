@@ -112,3 +112,43 @@ gesperrter Body bei erforderlichem Dokument-Scrollen bleiben Fehler.
 Browser-, Navigations-, Theme- und Performance-Evidenz wird im Delivery-
 Bericht geführt; dieses Dokument behauptet keine abgeschlossene QA und
 keinen Live- oder Deployment-Status.
+
+## Redesign 11/2026 (Mockups „Vision Universe Redesign“)
+
+Drei Farben: Weiß, Schwarz, Neongrün `#c8f531`, dazu drei Graustufen
+(`--vu-card`, `--vu-hair`, `--vu-mute`). Schrift Inter, selbst gehostet.
+Die Shell (`assets/site-navigation.js`) liefert Kopfzeile (C01), Produkt-Leiste
+(C02) und Menü (C03). Die übrigen Bausteine sind eine eigene gemeinsame
+Komponente: Stil in `assets/vu-ui.css`, Markup-Helfer in `assets/vu-ui.js`
+(`globalThis.VUUI`, z. B. `VUUI.chg(-4.22)`, `VUUI.verdict("strong")`,
+`VUUI.stockHead(...)`). Der eine Chart (C06) ist `assets/vu-chart.js`
+(`VUChart.mount`, Kleinformat `VUChart.sparkline`, Zeitleiste `VUChart.RANGES`).
+Musterseite mit allen Bausteinen: `/status/bausteine/`. Fortschritt je Folie:
+`docs/design/redesign-2027/PROGRESS.md`.
+
+| Baustein | Klasse |
+| --- | --- |
+| C04 Aktienkopf | `vu-stockhead`, `vu-stockhead__top/__name/__price/__meta`, `vu-round`, `vu-logo-tile` |
+| C05 Perspektiven-Leiste | `vu-persp` (Links mit `aria-current=page`) |
+| C07 Kursbewegung | `vu-chg`, `vu-chg--down`, `vu-chg--flat`, `vu-chg--big` |
+| C08 Urteil | `vu-verdict--strong/--mid/--weak/--none` (Stark, Mittel, Schwach, Keine Aussage) |
+| C09 Erklärung | `vu-help`, kurz `vu-q` mit Sheet (`VUUI.q`, `VUUI.bindHelp`) |
+| C10 Aktienzeile | `vu-lrow`, `vu-lrow__name`, `vu-lrow__price` |
+| C11 Kachel | `vu-tile`, `vu-tile__label/__value/__sub` |
+| C12 Navigationskarte | `vu-navcard`, `vu-navcard__text`, `vu-hud` |
+| C13 Abschnittstitel | `vu-sect` |
+| C14 Reiter / Segment | `vu-seg`, `vu-chips`, `vu-chip` |
+| C15 Schalter | `vu-switch` (auf `<input type=checkbox>`) |
+| C16 Sheet | `vu-sheet-backdrop` + `vu-sheet-ui` (`VUUI.sheet/openSheet/closeSheet`) |
+| C17 Balken | `vu-meter` (`--v` in Prozent), Säulen `vu-bars` (`VUUI.bars`) |
+| C18 Leerer Zustand | `vu-blank` |
+| C19 PRO-Marke | `vu-pro`; Forschungsetikett `vu-research` |
+| C20 Suche | `vu-find` |
+
+Karten: `vu-box` (`--ink`, `--lime`, `--line`), Raster `vu-grid` (`--vu-cols`),
+Knöpfe `vu-btn` (`--ink`, `--line`, `--sm`). Kursrichtung zeigt Symbol und
+Fläche (▲ neongrün, ▼ schwarz), nie nur Farbe.
+
+Kurs-Tokens `--vu-up`, `--vu-down`, `--vu-warn`, `--vu-chart-up/-down` zeigen
+seit dem Redesign die Schriftfarbe (Regel 1: kein Rot/Grün). Richtung steht in
+Pfeil und Pille (C07), nie in einer Kursfarbe.

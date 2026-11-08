@@ -61,15 +61,18 @@ on:
       - "Company-Namen (kanonische Namensschicht zum Company Master)"
       - "Kanonische Deckungskennzahlen (R2-Index, Company Master, Abgleich)"
       - "Quant 2.0 Product Intelligence Materialization"
-      - "Update VISION UNIVERSE news"
-      - "Update VISION UNIVERSE analyst ratings"
-      - "Update Hedgefonds 13F data"
-      - "Build VISION UNIVERSE Morning"
+      - "Content (News, Analystenbewertungen, Hedgefonds 13F, Morning)"
       # Die Startseite setzt nach den Datenlaeufen ihre Abbildungswerte neu ein
       # und pusht mit dem GITHUB_TOKEN.
       - "Startseite: Werte der Produktabbildungen"
       # Chartbild (Technical Intelligence v3): neu gebaute Produktdaten, ebenfalls per GITHUB_TOKEN gepusht.
       - "Chartbild-Produktdaten (Technical Intelligence v3)"
+      # Europa-Schlusskurse (werktags nach Handelsschluss, pusht per
+      # GITHUB_TOKEN). Der erste Zeitplan-Lauf (04.11.2026, Lauf 41929023243)
+      # startete um 22:52 UTC, ausserhalb der Bruecke: ohne diesen Eintrag
+      # kam sein Commit erst mit dem naechsten fremden Release auf die Seite,
+      # und die Release-QA wartete vergeblich.
+      - "Europe Discover Close refresh"
     types: [completed]
     branches: [main]
 
@@ -172,8 +175,31 @@ jobs:
           echo "required=$required" >> "$GITHUB_OUTPUT"
       - name: Install pinned release compiler
         run: npm install --prefix /tmp/vu2-release esbuild@0.25.10
+      # Watchlist-Ereignisse: die zuletzt ausgelieferte Uebersicht ist der Vergleichsstand (nur lesend, ohne Schluessel).
+      # Fehlt sie, entstehen in diesem Release keine Ereignisse; die Auslieferung haengt nicht davon ab.
+      - name: Veroeffentlichte Watchlist-Uebersicht als Vergleichsstand holen
+        run: node scripts/watchlist/fetch-published.mjs --site=https://research.visionuniverse.de --out="$RUNNER_TEMP/watchlist-prev" || echo "ohne Vergleichsstand"
       - name: Build static product delivery
+        env:
+          VU_WATCHLIST_PREVIOUS: ${{ runner.temp }}/watchlist-prev
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/site"
+      # Datenzweig (Plan Neustart §3, core/registry/data-branch.json): erzeugte Daten ausserhalb von main.
+      # Fehlt der Zweig, bleibt die Kopie aus main; fehlt ein registrierter Pfad ganz, bricht der Bau ab.
+      - name: Daten aus dem Datenzweig ueber die Auslieferung legen
+        env:
+          DATA_BRANCH: data/live
+          SITE_ROOT: ${{ runner.temp }}/site
+        run: |
+          set -euo pipefail
+          D="$RUNNER_TEMP/data-branch"; mkdir -p "$D"
+          if git ls-remote --exit-code --heads origin "$DATA_BRANCH" >/dev/null; then
+            git fetch --quiet --depth=1 origin "refs/heads/$DATA_BRANCH"
+            git archive FETCH_HEAD | tar -x -C "$D"
+          else
+            echo "Datenzweig $DATA_BRANCH fehlt noch: Auslieferung aus main"
+          fi
+          node scripts/ci/overlay-data-branch.mjs --data "$D" --site "$SITE_ROOT" --out "$RUNNER_TEMP/data-branch-delivery.json"
+          { echo '### Datenzweig'; echo '```'; cat "$RUNNER_TEMP/data-branch-delivery.json"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Controlled Company Intelligence consumer projection
         if: vars.COMPANY_INTELLIGENCE_PUBLIC_PILOT_ENABLED == 'true'
         env:

@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-11-04T05:01:35.185Z",
+ "generatedAt": "2026-11-07T04:16:48.844Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,22 +35,22 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5666,
-    "covered": 5309,
-    "available": 4511,
+    "universe": 5632,
+    "covered": 5310,
+    "available": 4452,
     "sufficient": {
-     "m1": 2225,
-     "m3": 2168,
-     "m6": 2099,
-     "m12": 2011
+     "m1": 2184,
+     "m3": 2130,
+     "m6": 2065,
+     "m12": 1976
     },
     "broad": {
-     "m6": 847
+     "m6": 833
     },
     "reasons": {
-     "NOT_COVERED": 357,
-     "NO_PRICE_CONDITION_TODAY": 734,
-     "NO_COMPARABLE_CASE": 64
+     "NOT_COVERED": 322,
+     "NO_PRICE_CONDITION_TODAY": 726,
+     "NO_COMPARABLE_CASE": 132
     }
    }
   },
@@ -78,10 +78,10 @@
     }
    },
    "trust": {
-    "sample": 955539,
+    "sample": 955440,
     "period": [
      "1992-01-31",
-     "2026-11-02"
+     "2026-11-05"
     ],
     "costs": {
      "roundTripBps": 20,
@@ -116,7 +116,7 @@
      "id": "SURVIVORSHIP",
      "label": "Dekotierte Titel mit Kurshistorie, Überlebenden-Kontrolle",
      "required": "Kontrolle aktiv",
-     "measured": "193 Titel mit Historie, Kontrolle nicht aktiv",
+     "measured": "285 Titel mit Historie, Kontrolle nicht aktiv",
      "state": "FAIL"
     },
     {
@@ -130,7 +130,7 @@
      "id": "PIT_FUNDAMENTALS",
      "label": "Fundamentaldaten zeitpunktgenau",
      "required": "datierbar je Wert",
-     "measured": "4989 von 6686 Titeln",
+     "measured": "5026 von 6308 Titeln",
      "state": "PASS"
     },
     {
@@ -169,7 +169,7 @@
      "id": "PIT",
      "label": "Stände unverändert (contentHash)",
      "required": "bestanden",
-     "measured": "26 von 26 geprüft",
+     "measured": "29 von 29 geprüft",
      "state": "PASS"
     },
     {
@@ -183,14 +183,14 @@
      "id": "HISTORYDATES",
      "label": "veröffentlichte Stichtage",
      "required": "120",
-     "measured": "26",
+     "measured": "29",
      "state": "FAIL"
     },
     {
      "id": "HISTORYSPAN",
      "label": "Spanne der Historie",
      "required": "180 Tage",
-     "measured": "54 Tage",
+     "measured": "57 Tage",
      "state": "FAIL"
     },
     {
@@ -263,8 +263,8 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 89238,
-     "titles": 5080,
+     "n": 89235,
+     "titles": 5082,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -274,8 +274,8 @@
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 89083,
-     "titles": 5095,
+     "n": 89068,
+     "titles": 5094,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -287,7 +287,7 @@
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 86520,
+     "n": 86514,
      "titles": 5062,
      "displayAllowed": true,
      "failed": [
@@ -298,8 +298,8 @@
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 86086,
-     "titles": 5062,
+     "n": 86070,
+     "titles": 5058,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -312,8 +312,8 @@
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 56476,
-     "titles": 4844,
+     "n": 56464,
+     "titles": 4843,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -337,22 +337,22 @@
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5666,
-   "covered": 5309,
-   "available": 4511,
+   "universe": 5632,
+   "covered": 5310,
+   "available": 4452,
    "sufficient": {
-    "m1": 2225,
-    "m3": 2168,
-    "m6": 2099,
-    "m12": 2011
+    "m1": 2184,
+    "m3": 2130,
+    "m6": 2065,
+    "m12": 1976
    },
    "broad": {
-    "m6": 847
+    "m6": 833
    },
    "reasons": {
-    "NOT_COVERED": 357,
-    "NO_PRICE_CONDITION_TODAY": 734,
-    "NO_COMPARABLE_CASE": 64
+    "NOT_COVERED": 322,
+    "NO_PRICE_CONDITION_TODAY": 726,
+    "NO_COMPARABLE_CASE": 132
    }
   }
  }

@@ -225,6 +225,43 @@ test("S4 · Der Schluessel steht in keiner ausgelieferten JSON-Datei", () => {
 });
 
 /* ---------------------------------------------------------------------- */
+/* OEFFENTLICHE WERTE SIND KEINE SCHLUESSEL. Manche Variablen heissen
+   *_KEY, sind aber vom Anbieter fuer den Browser bestimmt (Supabase
+   „publishable key“, frueher „anon key“; er steht ohnehin in jeder
+   ausgelieferten Seite). Sie duerfen aus dem vars-Kontext kommen – aber
+   nur, wenn Variablenname UND vars-Name hier namentlich stehen und
+   uebereinstimmen. Alles andere bleibt so streng wie zuvor: secrets.*
+   oder github.token. Wer hier etwas ergaenzt, schreibt den Beleg dazu,
+   dass der Wert oeffentlich ist. */
+const PUBLIC_VARS = new Set([
+  "VU_SUPABASE_PUBLISHABLE_KEY"   // Supabase publishable key, im Browser sichtbar (docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md)
+]);
+
+function isAllowedCredentialSource(line) {
+  const m = line.match(/^\s*([A-Z0-9_]+)\s*:\s*(.+)$/);
+  if (!m) return false;
+  const [, name, rawValue] = m;
+  const value = rawValue.replace(/\s+#.*$/, "").trim();
+  if (/^\$\{\{\s*(secrets\.[A-Za-z0-9_]+|github\.token)\s*\}\}$/.test(value)) return true;
+  if (/\$\{\{\s*(secrets\.|github\.token)/.test(value) && !/vars\./.test(value)) return true;
+  const v = value.match(/^\$\{\{\s*vars\.([A-Z0-9_]+)\s*\}\}$/);
+  return Boolean(v && v[1] === name && PUBLIC_VARS.has(name));
+}
+
+test("S5b · Ausnahme fuer oeffentliche vars ist eng (Gegenprobe)", () => {
+  // erlaubt
+  assert.ok(isAllowedCredentialSource("      FOO_API_KEY: ${{ secrets.FOO_API_KEY }}"));
+  assert.ok(isAllowedCredentialSource("      GH_TOKEN: ${{ github.token }}"));
+  assert.ok(isAllowedCredentialSource("      VU_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VU_SUPABASE_PUBLISHABLE_KEY }} # oeffentlich"));
+  // verboten: Geheimnis aus vars, fremder Name, Umleitung, Literal, Mischform
+  assert.ok(!isAllowedCredentialSource("      TIINGO_API_KEY: ${{ vars.TIINGO_API_KEY }}"));
+  assert.ok(!isAllowedCredentialSource("      VU_SUPABASE_SERVICE_KEY: ${{ vars.VU_SUPABASE_PUBLISHABLE_KEY }}"));
+  assert.ok(!isAllowedCredentialSource("      VU_SUPABASE_PUBLISHABLE_KEY: ${{ vars.OTHER_KEY }}"));
+  assert.ok(!isAllowedCredentialSource("      VU_SUPABASE_PUBLISHABLE_KEY: sb_publishable_literal"));
+  assert.ok(!isAllowedCredentialSource("      STRIPE_SECRET_KEY: abc123"));
+  assert.ok(!isAllowedCredentialSource("      X_TOKEN: ${{ vars.X_TOKEN || secrets.X_TOKEN }}"));
+});
+
 test("S5 · Workflows reichen Schluessel nur ueber die secrets-Kontexte weiter", () => {
   const workflows = walk(join(ROOT, ".github", "workflows"), [".yml", ".yaml"]);
   assert.ok(workflows.length > 0, "keine Workflows gefunden");
@@ -236,9 +273,10 @@ test("S5 · Workflows reichen Schluessel nur ueber die secrets-Kontexte weiter",
     for (const line of assignments) {
       const value = line.split(":").slice(1).join(":").trim();
       if (!value || value === "|" || value === ">") continue;
-      // Erlaubt sind ausschliesslich der secrets-Kontext und das von GitHub
-      // je Lauf erzeugte, kurzlebige github.token.
-      assert.match(value, /\$\{\{\s*(secrets\.|github\.token)/,
+      // Erlaubt sind der secrets-Kontext, das von GitHub je Lauf erzeugte,
+      // kurzlebige github.token und – nur namentlich – ausdruecklich
+      // oeffentliche Werte aus dem vars-Kontext (PUBLIC_VARS).
+      assert.ok(isAllowedCredentialSource(line),
         `${rel(file)}: Zugangsdatum nicht aus dem secrets-Kontext: ${line.trim()}`);
     }
   }

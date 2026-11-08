@@ -1,0 +1,34 @@
+{
+  "schema": "vu-data-branch-1",
+  "branch": "data/live",
+  "purpose": "Erzeugte Daten ausserhalb von main (Plan Neustart §3). Pages holt sie beim Bau (scripts/ci/overlay-data-branch.mjs).",
+  "phases": {
+    "DUAL_WRITE": "Erzeuger schreibt nach main UND in den Datenzweig; Pages liefert den Datenzweig aus und weist Gleichheit mit main nach.",
+    "BRANCH_ONLY": "Erzeuger schreibt nur in den Datenzweig; eine Kopie in main ist, wenn vorhanden, eingefroren und dient nur als Rueckfall. pendingFirstRun: bis zum ersten Lauf darf der Pfad fehlen."
+  },
+  "domains": [
+    {
+      "id": "news",
+      "phase": "DUAL_WRITE",
+      "workflow": "content.yml",
+      "paths": ["dashboard/data/news_feed.json"]
+    },
+    {
+      "id": "insiderPurchases",
+      "phase": "BRANCH_ONLY",
+      "workflow": "sec-fundamentals-daily.yml",
+      "paths": ["insider/data/purchases.json"]
+    }
+  ],
+  "internal": [
+    {
+      "id": "insiderForm4Compact",
+      "workflow": "sec-fundamentals-daily.yml",
+      "pathPrefix": "insider/data/form4/",
+      "files": "<YYYY-MM>.json; geschrieben und gesaet werden die letzten 6 Monate",
+      "producer": "scripts/insider/form4-compact.mjs (aus derselben Abholung wie insider/data/purchases.json)",
+      "consumers": ["ownership-signals.yml (saet .ownership-cache/form4 vor dem Bau)"],
+      "note": "Nicht ausgeliefert (kein Pages-Overlay). Eine Form-4-Abholung fuer Insider-Kaeufe (E2) und Eigentuemer-Signale."
+    }
+  ]
+}

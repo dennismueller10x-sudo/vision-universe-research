@@ -11,6 +11,7 @@
 <!-- Farbschema vor dem ersten Bild: dieselbe Vision-Universe-Einstellung wie
      Discover (discover/engines/theme.js). Hell ist Standard. -->
 <script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/vu-ui.css">
 <link rel="stylesheet" href="/screener/screener.css">
 <!-- Vorladen: Startansicht ohne Link-Zustand braucht zuerst nur die Kopfdatei
      (wenige KB, app.js laedt das volle Universum sofort danach); jeder Link mit
@@ -29,6 +30,9 @@
 <script src="/core/identity.js"></script>
 <script src="/screener/engine/adapters.js"></script>
 <script src="/screener/engine/store.js"></script>
+<script src="/konto/saved-searches.js"></script>
+<script src="/assets/vu-ui.js"></script>
+<script src="/assets/vu-chart.js"></script>
 <script src="/screener/ui/charts.js"></script>
 <script src="/screener/app.js"></script>
 </body>

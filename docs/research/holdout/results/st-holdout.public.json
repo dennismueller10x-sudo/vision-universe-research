@@ -1,0 +1,171 @@
+{
+ "schema": "vu-holdout-st-public-1.0.0",
+ "evidenceKind": "HISTORICAL_RESEARCH_BACKTEST",
+ "label": "Forschung, nicht zertifiziert",
+ "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+ "productionApproved": false,
+ "performanceClaim": "NONE",
+ "publication": "OWNER_DECISION_REQUIRED",
+ "status": "COMPLETE",
+ "receipt": {
+  "version": "st-holdout-1.0.0",
+  "snapshotId": "sts1-85959e4bab0681baa6ed221bee94821e",
+  "datasetSha256": "28d41836527d47e90ea2b34bc7bb564bd98aef86448eaead3d66065648dc6693",
+  "datasetVerified": "EXACT",
+  "codeVersionChanged": true,
+  "engineCodeSha256": "5e6683d4ebf4f6c4257b0bfbc4a3fcb6608973ddb0876a0ef077bf9d4cccecec",
+  "runId": "42184335142",
+  "commit": "2cd12f637897f24b13ee0579e14c66f73cf2ec10",
+  "ledgerAttempt": 1,
+  "resultSha256": "089157134cf1d51f3161ab1d8d318b5de5133944e1f3354f487c259bac56bdcf"
+ },
+ "population": {
+  "A": {
+   "ACTIVE_AT_WINDOW_END": 4543,
+   "DATA_GAP": 11,
+   "LISTING_INACTIVE": 667
+  },
+  "B": {
+   "ACTIVE_AT_WINDOW_END": 4565,
+   "DATA_GAP": 11,
+   "LISTING_INACTIVE": 671
+  }
+ },
+ "methods": {
+  "TURTLE_S1": {
+   "candidateId": "C01",
+   "tradesRef": 701,
+   "tradesSha256Ref": "74f7d938a0a1a513f1ab7c317b9bc85dc096cfcbd1c410ebeee7712fb7b16788",
+   "auditPass": true,
+   "auditViolations": {},
+   "missedStopCheck": "TURTLE_INDEPENDENT_N_UNIT_STOPS"
+  },
+  "TURTLE_S2": {
+   "candidateId": "C02",
+   "tradesRef": 449,
+   "tradesSha256Ref": "5ebf92329ee4b225e4260260ae3bac24035fffb80dfc9ea521dbb281ab23946a",
+   "auditPass": true,
+   "auditViolations": {},
+   "missedStopCheck": "TURTLE_INDEPENDENT_N_UNIT_STOPS"
+  },
+  "DARVAS": {
+   "candidateId": "C03",
+   "tradesRef": 11958,
+   "tradesSha256Ref": "5f8cb5e24caf58981b2c568b53d690d6b9628fb482825b03009799ea0c10907a",
+   "auditPass": true,
+   "auditViolations": {},
+   "missedStopCheck": "SF5_CHECK_LIFECYCLE_RUN"
+  },
+  "WEINSTEIN_INVESTOR": {
+   "candidateId": "C04",
+   "tradesRef": 959,
+   "tradesSha256Ref": "82fb79144d1833a36493ec4cc892879d63860f9ce391e0ca5cab1d2cfcb9fb5b",
+   "auditPass": true,
+   "auditViolations": {},
+   "missedStopCheck": "SF5_CHECK_LIFECYCLE_RUN"
+  },
+  "WEINSTEIN_TRADER": {
+   "candidateId": "C05",
+   "tradesRef": 1322,
+   "tradesSha256Ref": "7de46973cdfd18f7cf03aa04974aadd245646dd3e93c9ec93886aaf9a2c5130b",
+   "auditPass": true,
+   "auditViolations": {},
+   "missedStopCheck": "SF5_CHECK_LIFECYCLE_RUN"
+  },
+  "MINERVINI_SEPA": {
+   "candidateId": "C06",
+   "tradesRef": 536,
+   "tradesSha256Ref": "78b12617936f894317dae2c265a039066a817f53338d4b4c173aa76925be5c69",
+   "auditPass": true,
+   "auditViolations": {},
+   "missedStopCheck": "MINERVINI_EVENT_PATH"
+  },
+  "MINERVINI_POWER_PLAY": {
+   "candidateId": "C07",
+   "tradesRef": 428,
+   "tradesSha256Ref": "fa09612ed96ef8534df5f52ed8c97ed3d22f1de524f3b008ba4306f014eb77df",
+   "auditPass": true,
+   "auditViolations": {},
+   "missedStopCheck": "MINERVINI_EVENT_PATH"
+  },
+  "KK_BREAKOUT": {
+   "candidateId": "C08",
+   "tradesRef": 5710,
+   "tradesSha256Ref": "e5a5642be6d7ce4a4dab009f2b2ff818d2512ea37cdb7b08223994f746f7ca2f",
+   "auditPass": true,
+   "auditViolations": {},
+   "missedStopCheck": "SF5_CHECK_LIFECYCLE_RUN"
+  },
+  "POCKET_PIVOT": {
+   "candidateId": "C11",
+   "tradesRef": 1389,
+   "tradesSha256Ref": "8b74a3dfb0050f89910c153b8c280504684597ae423095ff7eb1f352c8795d8a",
+   "auditPass": true,
+   "auditViolations": {},
+   "missedStopCheck": "SF5_CHECK_LIFECYCLE_RUN"
+  },
+  "BUYABLE_GAP_UP": {
+   "candidateId": "C12",
+   "tradesRef": 2212,
+   "tradesSha256Ref": "6bcf0d3d48b56d1412f6921653928692860df03e8cc05f6492dc654b4928b90a",
+   "auditPass": true,
+   "auditViolations": {},
+   "missedStopCheck": "SF5_CHECK_LIFECYCLE_RUN"
+  },
+  "HOLY_GRAIL_W_RAS97": {
+   "candidateId": "C13",
+   "tradesRef": 3262,
+   "tradesSha256Ref": "35b75d5e9ea79fc6ed01acc6e20ca5f1907c7c6a621a69c0cbb3bd3c5395f94b",
+   "auditPass": true,
+   "auditViolations": {},
+   "missedStopCheck": "SF5_CHECK_LIFECYCLE_RUN"
+  }
+ },
+ "quarantine": {
+  "policy": "DQ-K5-BOOK",
+  "k": 5,
+  "settle": "BOOK",
+  "version": "sf6-discontinuity-quarantine-1.1.0",
+  "claim": "SUPERSET_OF_SUSPICIOUS_SESSIONS_NOT_A_DEFECT_FINDING",
+  "correction": "NONE",
+  "certification": "DIAGNOSTIC_NOT_CERTIFIED",
+  "securities": 5221,
+  "securitiesFlagged": 200,
+  "flags": 934,
+  "piecesAfter": 5549,
+  "barsBefore": 8978138,
+  "barsDroppedShortPieces": 4076,
+  "byYear": {
+   "2007": 26,
+   "2008": 65,
+   "2009": 122,
+   "2010": 121,
+   "2011": 136,
+   "2012": 146,
+   "2013": 127,
+   "2014": 75,
+   "2015": 116
+  },
+  "byDirection": {
+   "DOWN": 463,
+   "UP": 471
+  },
+  "byKind": {
+   "NO_DECLARED_EVENT": 912,
+   "DECLARED_SPLIT_RESIDUAL": 22
+  },
+  "byPriorRawCloseBand": {
+   "1_TO_5": 132,
+   "LT_1": 755,
+   "GE_5": 47
+  },
+  "inResearchUniverseAtPriorSession": 16,
+  "volumeBelowPrior20Median": 111,
+  "exPostRevertsNextSession": 178,
+  "survivorSecuritiesFlagged": 0,
+  "barsDroppedShare": 0.00045399168513560385
+ },
+ "universeB": "COMPUTED",
+ "protocolSha256": "48afb49c350917f374b38ab589f406acb23b3afe7e3ae00d523dec459a8db5f4",
+ "ledgerAttempt": 1
+}

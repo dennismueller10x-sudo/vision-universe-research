@@ -617,6 +617,83 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     assert.equal(await env.pg.json(`select to_json(count(*)) from public.watchlist_items where instrument_id = :'id'`, {id: nvda}), 0);
   });
 
+  await t.test('Erster Start (Z1): Erfahrung Profi, Ziel, onboardedAt setzt der Server', async () => {
+    const a = await signedIn(env, 'z1-anna@example.test');
+    const before = (await a.get('/v1/me')).data.settings;
+    assert.deepEqual([before.experienceLevel, before.goal, before.onboardedAt], ['beginner', null, null]);
+    const r = await a.patch('/v1/me', {settings: {experienceLevel: 'pro', goal: 'strategien', onboardedAt: true}});
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    assert.deepEqual([r.data.settings.experienceLevel, r.data.settings.goal], ['pro', 'strategien']);
+    const first = r.data.settings.onboardedAt;
+    assert.ok(first && !Number.isNaN(Date.parse(first)), 'Zeitpunkt gesetzt');
+    const again = await a.patch('/v1/me', {settings: {onboardedAt: true, goal: null}});
+    assert.deepEqual([again.data.settings.onboardedAt, again.data.settings.goal], [first, null], 'erster Zeitpunkt bleibt, Ziel leerbar');
+    for (const settings of [{experienceLevel: 'expert'}, {goal: 'reich'}, {onboardedAt: '2000-01-01T00:00:00Z'}, {onboardedAt: null}]) {
+      const bad = await a.patch('/v1/me', {settings});
+      assert.deepEqual([bad.status, bad.data.state], [400, 'SETTING_INVALID'], JSON.stringify(settings));
+    }
+    assert.equal((await a.patch('/v1/me', {settings: {goal: 'aktie'}}, {headers: {'X-VU-Client': ''}})).status, 403, 'CSRF');
+    const exp = (await a.get('/v1/me/export')).data;
+    assert.deepEqual([exp.settings.experience_level, exp.settings.goal, exp.settings.onboarded_at], ['pro', null, first], 'Export enthaelt Z1');
+  });
+
+  await t.test('Gespeicherte Suchen (Z3): anlegen, filtern, aendern, entfernen, Isolation, Grenze 50, Export, Loeschung', async () => {
+    const anon = env.browser();
+    assert.equal((await anon.get('/v1/searches')).status, 401);
+    const a = await signedIn(env, 'z3-anna@example.test'), b = await signedIn(env, 'z3-ben@example.test');
+    assert.deepEqual((await a.get('/v1/searches')).data, {searches: [], limit: 50});
+
+    const c1 = await a.post('/v1/searches', {world: 'quant', name: ' Qualität über 80 ', query: {minScore: 80, sort: 'score'}});
+    assert.deepEqual([c1.status, c1.data.state, c1.data.search.world, c1.data.search.name], [201, 'CREATED', 'quant', 'Qualität über 80']);
+    assert.deepEqual(c1.data.search.query, {minScore: 80, sort: 'score'});
+    assert.ok(c1.data.search.id && c1.data.search.createdAt && c1.data.search.updatedAt);
+    const id = c1.data.search.id;
+    assert.equal((await a.post('/v1/searches', {world: 'screener', name: 'KGV < 15', query: {pe: {max: 15}}})).status, 201);
+    for (const [body, state] of [[{world: 'krypto', name: 'x', query: {}}, 'WORLD_INVALID'], [{world: 'quant', name: '', query: {}}, 'NAME_INVALID'],
+      [{world: 'quant', name: 'x', query: [1]}, 'QUERY_INVALID'], [{world: 'quant', name: 'x', query: {q: 'a'.repeat(4100)}}, 'QUERY_TOO_LARGE']]) {
+      const bad = await a.post('/v1/searches', body);
+      assert.deepEqual([bad.status, bad.data.state], [400, state]);
+    }
+    assert.equal((await a.post('/v1/searches', {world: 'quant', name: 'x', query: {}}, {headers: {'X-VU-Client': ''}})).status, 403, 'CSRF');
+
+    const all = (await a.get('/v1/searches')).data.searches;
+    assert.equal(all.length, 2);
+    const quant = await a.get('/v1/searches?world=quant');
+    assert.deepEqual(quant.data.searches.map(s => s.id), [id]);
+    assert.match(quant.headers.get('Cache-Control'), /private, no-store/);
+    assert.equal((await a.get('/v1/searches?world=krypto')).data.state, 'WORLD_INVALID');
+
+    const upd = await a.patch('/v1/searches', {id, name: 'Qualität über 85', query: {minScore: 85}});
+    assert.deepEqual([upd.status, upd.data.state, upd.data.search.name, upd.data.search.query], [200, 'UPDATED', 'Qualität über 85', {minScore: 85}]);
+    assert.equal((await a.patch('/v1/searches', {id})).data.state, 'NOTHING_TO_UPDATE');
+    assert.equal((await a.patch('/v1/searches', {id: 'nicht-uuid', name: 'x'})).data.state, 'SEARCH_ID_INVALID');
+
+    // Ben sieht und aendert nichts von Anna.
+    assert.deepEqual((await b.get('/v1/searches')).data.searches, []);
+    const foreign = await b.patch('/v1/searches', {id, name: 'fremd'});
+    assert.deepEqual([foreign.status, foreign.data.state], [404, 'SAVED_SEARCH_NOT_FOUND']);
+    assert.deepEqual((await b.post('/v1/searches/remove', {id})).data, {state: 'NOT_PRESENT', removed: 0});
+    assert.equal((await a.get('/v1/searches?world=quant')).data.searches[0].name, 'Qualität über 85', 'Annas Suche unberuehrt');
+
+    // Grenze 50 je Konto setzt die Datenbank durch (Anna hat 2; 48 direkt in der Datenbank, dann ueber die API).
+    await env.pg.json(`with x as (insert into public.saved_searches (user_id, world, name)
+      select u.id, 'technical', 'Suche ' || g from auth.users u, generate_series(1, 48) g where u.email = 'z3-anna@example.test' returning 1)
+      select to_json(count(*)) from x`);
+    const full = await a.post('/v1/searches', {world: 'quant', name: 'zu viel', query: {}});
+    assert.deepEqual([full.status, full.data.state], [409, 'SAVED_SEARCHES_LIMIT_REACHED']);
+    assert.equal((await a.get('/v1/searches')).data.searches.length, 50);
+    assert.deepEqual((await a.post('/v1/searches/remove', {id})).data, {state: 'REMOVED', removed: 1});
+    assert.equal((await a.post('/v1/searches', {world: 'quant', name: 'wieder Platz', query: {}})).status, 201);
+    assert.equal((await b.post('/v1/searches', {world: 'discover', name: 'Ben', query: {theme: 'ki'}})).status, 201, 'Grenze je Konto');
+
+    // Export enthaelt die Suchen, Loeschung entfernt sie.
+    const exp = await b.get('/v1/me/export');
+    assert.deepEqual(exp.data.savedSearches.map(s => [s.world, s.name, s.query]), [['discover', 'Ben', {theme: 'ki'}]]);
+    assert.equal((await b.post('/v1/me/delete', {confirm: 'LOESCHEN', currentPassword: PASSWORD})).status, 200);
+    assert.equal(await env.pg.json(`select to_json(count(*)) from public.saved_searches where name = 'Ben'`), 0, 'mit dem Konto geloescht');
+    assert.equal((await a.get('/v1/searches')).data.searches.length, 50, 'Annas Suchen bleiben');
+  });
+
   await t.test('Watchlist mit Pro-Tarif: 200 Titel laden, Antwortzeit', async () => {
     const c = await signedIn(env, 'wl-pro@example.test');
     await subscribe(env, c, 'pro_month');
@@ -869,7 +946,7 @@ test('Oeffentliche Seiten: Rechtstexte, Kuendigen und Widerrufen ohne Anmeldung'
 
   await t.test('Rechtstexte: oeffentlich, als Entwurf gekennzeichnet, ohne Skript, keine Shopify-Texte', async () => {
     for (const p of ['/rechtliches/', '/rechtliches/impressum', '/rechtliches/datenschutz', '/rechtliches/agb', '/rechtliches/widerrufsbelehrung',
-      '/rechtliches/widerrufsformular', '/rechtliches/newsletter', '/kuendigen', '/widerrufen']) {
+      '/rechtliches/widerrufsformular', '/rechtliches/newsletter', '/rechtliches/risikohinweise', '/rechtliches/methodik', '/rechtliches/mar-hinweise', '/kontakt', '/kuendigen', '/widerrufen']) {
       const res = await page(env, p);
       const html = await res.text();
       assert.equal(res.status, 200, p);
@@ -886,7 +963,8 @@ test('Oeffentliche Seiten: Rechtstexte, Kuendigen und Widerrufen ohne Anmeldung'
     assert.equal(await head.text(), '', 'HEAD ohne Inhalt');
     const impressum = await (await page(env, '/rechtliches/impressum')).text();
     assert.match(impressum, /HRB 803400/);
-    assert.match(impressum, /\[OFFEN: USt-IdNr\./, 'fehlende Angabe sichtbar markiert, nicht erfunden');
+    assert.match(impressum, /DE461100952/);
+    assert.ok(!/\[(OFFEN|PRÜFEN):/.test(impressum), 'keine offenen Stellen');
   });
 
   await t.test('Kuendigen ohne Anmeldung: Jetzt kuendigen -> gespeichert, Bestaetigung per E-Mail, fremde Herkunft abgewiesen', async () => {
@@ -1165,4 +1243,33 @@ test('Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich', {skip}, async t => 
       assert.equal((await b.get('/v1/me')).data.newsletter.available, false);
     } finally { await off.close(); }
   });
+});
+
+test('E4: native Anmeldung, Rotation und Push-RLS durch Worker und PostgreSQL', {skip}, async t => {
+  const env = await createEnvironment(); t.after(() => env.close());
+  await signedIn(env,'mobile-a@example.test'); await signedIn(env,'mobile-b@example.test');
+  const request = async(path,body,token) => {
+    const res = await env.app.handle(new Request(env.api+path,{method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body)}));
+    return {res,data:await res.json()};
+  };
+  const login=await request('/v1/auth/app/login',{email:'mobile-a@example.test',password:PASSWORD});
+  assert.equal(login.res.status,200);assert.match(login.res.headers.get('Cache-Control'),/no-store/);
+  assert.equal(login.res.headers.get('Set-Cookie'),null);
+  const refreshed=await request('/v1/auth/app/refresh',{refreshToken:login.data.refreshToken});
+  assert.equal(refreshed.res.status,200);assert.notEqual(refreshed.data.refreshToken,login.data.refreshToken);
+  const token=refreshed.data.accessToken,device='test_token_aaaaaaaaaaaaaaaaaaaaaaaa';
+  assert.equal((await request('/v1/push/devices',{token:device,platform:'ios'},token)).res.status,200);
+  // Z4: /v1/me nennt den Push-Stand (ohne FCM-Zugang nicht verfuegbar, ein Geraet); Arten werden im Konto gespeichert.
+  const call=async(method,path,body)=>{const res=await env.app.handle(new Request(env.api+path,{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:body===undefined?undefined:JSON.stringify(body)}));return {res,data:await res.json()};};
+  const meA=await call('GET','/v1/me');
+  assert.deepEqual(meA.data.push,{available:false,devices:1,maxPerDay:1,channel:'app'});
+  const patched=await call('PATCH','/v1/me',{settings:{notifications:{PRICE_EVENT:true,SUPERTRADER_SIGNAL:false}}});
+  assert.equal(patched.res.status,200);assert.deepEqual(patched.data.settings.notifications,{PRICE_EVENT:true,SUPERTRADER_SIGNAL:false});
+  assert.equal((await call('PATCH','/v1/me',{settings:{notifications:{EMAIL:true}}})).data.state,'SETTING_INVALID');
+  const other=await request('/v1/auth/app/login',{email:'mobile-b@example.test',password:PASSWORD});
+  assert.equal((await request('/v1/push/devices/remove',{token:device},other.data.accessToken)).res.status,200);
+  const count=await env.pg.json('select count(*)::int from public.push_devices');
+  assert.equal(count,1);
+  assert.equal((await request('/v1/push/devices/remove',{token:device},token)).res.status,200);
+  assert.equal((await request('/v1/auth/app/logout',{},token)).res.status,200);
 });

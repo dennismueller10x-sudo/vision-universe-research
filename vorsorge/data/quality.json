@@ -1,17 +1,21 @@
 {
  "schemaVersion": "vu-vorsorge-data-qa-2.0.0",
- "asOf": "2026-11-03",
+ "asOf": "2026-11-05",
  "scope": "TIINGO_ETF_INGEST",
  "ingest": {
   "status": "COMPLETE",
   "report": {
    "schemaVersion": "vu-vorsorge-ingest-report-1.0.0",
    "ingest": "vorsorge-ingest-2.0.0",
-   "activeTickers": 7273,
-   "processedOk": 7266,
+   "activeTickers": 398,
+   "extraEtfs": 388,
+   "onlyExtra": true,
+   "universeRows": 7732,
+   "keptFromPreviousRuns": 7345,
+   "processedOk": 387,
    "notFound": 0,
-   "noPrices": 7,
-   "failed": 7,
+   "noPrices": 11,
+   "failed": 11,
    "pending": 0,
    "complete": true,
    "stoppedBecause": null,
@@ -25,28 +29,28 @@
   "catalog": {
    "schemaVersion": "vu-vorsorge-catalog-stats-1.0.0",
    "source": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
-   "catalogRows": 108934,
-   "etfRows": 9777,
-   "malformedRows": 117,
-   "activeRows": 7280,
-   "inactiveRows": 2380,
+   "catalogRows": 109219,
+   "etfRows": 9906,
+   "malformedRows": 152,
+   "activeRows": 7356,
+   "inactiveRows": 2398,
    "rowsWithoutPriceDates": 0,
-   "uniqueTickers": 9451,
-   "tickersWithMultipleRows": 205,
-   "activeUniqueTickers": 7273,
+   "uniqueTickers": 9538,
+   "tickersWithMultipleRows": 212,
+   "activeUniqueTickers": 7355,
    "byExchange": {
-    "SHE": 403,
-    "SHG": 420,
-    "NYSE": 2996,
-    "BATS": 1785,
-    "NASDAQ": 1620,
+    "SHE": 425,
+    "SHG": 424,
+    "NYSE": 2946,
+    "BATS": 1811,
+    "NASDAQ": 1633,
     "NYSE MKT": 24,
-    "NYSE ARCA": 1526,
-    "PINK": 586,
+    "NYSE ARCA": 1595,
+    "PINK": 585,
     "AMEX": 50,
+    "OTCMKTS": 89,
     "OTCQB": 8,
     "OTCGREY": 112,
-    "OTCMKTS": 78,
     "NMFQS": 14,
     "OTCBB": 9,
     "EXPM": 23,
@@ -54,73 +58,73 @@
     "OTCCE": 1
    },
    "byCurrency": {
-    "USD": 8905,
-    "CNY": 753,
+    "USD": 8998,
+    "CNY": 754,
     "AUD": 2
    },
    "activeByExchange": {
-    "SHE": 377,
-    "SHG": 420,
-    "NYSE": 2699,
-    "BATS": 1532,
-    "NASDAQ": 1360,
-    "NYSE ARCA": 240,
-    "PINK": 523,
+    "SHE": 399,
+    "SHG": 424,
+    "NYSE": 2642,
+    "BATS": 1557,
+    "NASDAQ": 1370,
+    "NYSE ARCA": 302,
+    "PINK": 522,
     "AMEX": 31,
+    "OTCMKTS": 72,
     "OTCQB": 8,
-    "OTCMKTS": 62,
     "OTCD": 2,
-    "OTCGREY": 15,
+    "OTCGREY": 16,
     "EXPM": 9,
     "OTCBB": 1,
     "NMFQS": 1
    },
    "otherAssetTypes": {
-    "Stock": 49277,
+    "Stock": 49433,
     "Mutual Fund": 49880
    },
-   "staleBefore": "2026-09-02",
-   "maxEndDate": "2026-10-02"
+   "staleBefore": "2026-10-06",
+   "maxEndDate": "2026-11-05"
   },
-  "failedCount": 7
+  "failedCount": 11
  },
  "layers": {
-  "raw": 9777,
-  "canonical": 7397,
-  "listings": 7414,
-  "publicAnalysis": 4007,
-  "complex": 2065,
+  "raw": 9906,
+  "canonical": 7724,
+  "listings": 7742,
+  "publicAnalysis": 4065,
+  "complex": 2155,
   "archive": 8,
-  "review": 1334
+  "review": 1514
  },
  "counts": {
-  "rowsRead": 15091,
-  "listings": 7414,
-  "canonicalFunds": 7397,
-  "shareClasses": 7397,
-  "uniqueTickers": 7413,
-  "publicAnalysis": 4007,
-  "complex": 2065,
+  "rowsRead": 15567,
+  "listings": 7742,
+  "canonicalFunds": 7724,
+  "shareClasses": 7724,
+  "uniqueTickers": 7741,
+  "publicAnalysis": 4065,
+  "complex": 2155,
   "archive": 8,
-  "review": 1334,
-  "consumerVisible": 6072,
-  "withPriceHistory": 7405,
-  "withHistory1Y": 5191,
-  "withHistory3Y": 3522,
-  "withHistory5Y": 2759,
+  "review": 1514,
+  "consumerVisible": 6220,
+  "withPriceHistory": 7732,
+  "withHistory1Y": 5212,
+  "withHistory3Y": 3521,
+  "withHistory5Y": 2760,
   "withHistory10Y": 1620,
-  "withTotalReturn": 7010,
-  "leveragedOrInverse": 773,
+  "withTotalReturn": 7318,
+  "leveragedOrInverse": 845,
   "inactive": 8
  },
  "priceCoverage": {
-  "withAnyHistory": 7405,
-  "ratio": 0.9987860803884543,
-  "y1": 5191,
-  "y3": 3522,
-  "y5": 2759,
+  "withAnyHistory": 7732,
+  "ratio": 0.9987083440971325,
+  "y1": 5212,
+  "y3": 3521,
+  "y5": 2760,
   "y10": 1620,
-  "totalReturn": 7010
+  "totalReturn": 7318
  },
  "metadataCoverage": {
   "symbol": 1,
@@ -128,47 +132,47 @@
   "exchange": 1,
   "currency": 1,
   "country": 1,
-  "assetClass": 0.888,
-  "issuer": 0.576,
-  "index": 0.147,
+  "assetClass": 0.881,
+  "issuer": 0.569,
+  "index": 0.145,
   "category": 1,
-  "region": 0.445,
+  "region": 0.441,
   "sector": 0,
-  "theme": 0.206,
+  "theme": 0.205,
   "leverage": 1,
   "inverse": 1,
-  "distributionPolicy": 0.646,
+  "distributionPolicy": 0.644,
   "replicationMethod": 0,
   "ter": 0,
   "fundSize": 0,
   "inceptionDate": 0,
   "holdingsCount": 0,
-  "benchmark": 0.147,
+  "benchmark": 0.145,
   "isin": 0,
   "wkn": 0,
   "tiingoAvailable": 1,
   "priceHistoryAvailable": 1
  },
  "missingMetadata": {
-  "issuer": 3144,
-  "sector": 7414,
-  "theme": 5884,
-  "distributionPolicy": 2623,
-  "replicationMethod": 7414,
-  "ter": 7414,
-  "fundSize": 7414,
-  "inceptionDate": 7414,
-  "holdingsCount": 7414,
-  "isin": 7414,
-  "wkn": 7414,
-  "index": 6327,
-  "benchmark": 6327,
-  "assetClass": 833,
-  "region": 4112,
-  "name": 6
+  "issuer": 3335,
+  "sector": 7742,
+  "theme": 6158,
+  "distributionPolicy": 2754,
+  "replicationMethod": 7742,
+  "ter": 7742,
+  "fundSize": 7742,
+  "inceptionDate": 7742,
+  "holdingsCount": 7742,
+  "isin": 7742,
+  "wkn": 7742,
+  "index": 6620,
+  "benchmark": 6620,
+  "assetClass": 921,
+  "region": 4328,
+  "name": 11
  },
- "missingName": 6,
- "missingPrice": 9,
+ "missingName": 11,
+ "missingPrice": 10,
  "noSourceFields": [
   "distributionPolicy",
   "replicationMethod",
@@ -184,8 +188,8 @@
    {
     "symbol": "CHAI",
     "listings": [
-     "CHAI@NASDAQ",
-     "CHAI@NYSE ARCA"
+     "CHAI@NYSE ARCA",
+     "CHAI@NASDAQ"
     ]
    }
   ],
@@ -278,6 +282,13 @@
      "NMI",
      "NUMI"
     ]
+   },
+   {
+    "canonicalETFId": "vu-etf-2c563f7a",
+    "symbols": [
+     "RSHO",
+     "WELD"
+    ]
    }
   ]
  },
@@ -291,11 +302,51 @@
    ]
   },
   {
+   "symbol": "ACEI",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "AMERICAN CHAMPION ENTERTAINMENT INC"
+   ]
+  },
+  {
+   "symbol": "ACGO",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Hartford Alpha Capture Growth"
+   ]
+  },
+  {
    "symbol": "ACIBF",
    "exchange": "PINK",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "BBVA Gestion IBEX 35"
+   ]
+  },
+  {
+   "symbol": "ACII",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Atlas Crest Investment Corp II - Class A"
+   ]
+  },
+  {
+   "symbol": "ACLO",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "ACCELIO CORP"
+   ]
+  },
+  {
+   "symbol": "ACMM",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "ACCOM INC"
    ]
   },
   {
@@ -323,6 +374,14 @@
    ]
   },
   {
+   "symbol": "AFSC",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "ANCHOR FINANCIAL CORP"
+   ]
+  },
+  {
    "symbol": "AGFXF",
    "exchange": "PINK",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -339,6 +398,14 @@
    ]
   },
   {
+   "symbol": "ALDB",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Aptus Laddered Deep Buffer"
+   ]
+  },
+  {
    "symbol": "AMUB",
    "exchange": "NYSE",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -347,11 +414,27 @@
    ]
   },
   {
+   "symbol": "APDB",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Aptus April Deep Buffer"
+   ]
+  },
+  {
    "symbol": "ARDC",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Ares Dynamic Credit Allocation Fund Inc"
+   ]
+  },
+  {
+   "symbol": "ARLI",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "AllianzIM International Equity Buffer15 Uncapped Apr"
    ]
   },
   {
@@ -387,6 +470,38 @@
    ]
   },
   {
+   "symbol": "ATC",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Atotech Ltd"
+   ]
+  },
+  {
+   "symbol": "ATCL",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "REX Autocallable Income"
+   ]
+  },
+  {
+   "symbol": "AV",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Aviva plc"
+   ]
+  },
+  {
+   "symbol": "AVAZ",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "2x Avalanche"
+   ]
+  },
+  {
    "symbol": "AWF",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -411,6 +526,14 @@
    ]
   },
   {
+   "symbol": "BAY",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Bayrock Resources Limited"
+   ]
+  },
+  {
    "symbol": "BBAGF",
    "exchange": "PINK",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -424,6 +547,14 @@
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Barclays Bank PLC"
+   ]
+  },
+  {
+   "symbol": "BCPL",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "BNY Mellon Core Plus"
    ]
   },
   {
@@ -443,11 +574,43 @@
    ]
   },
   {
+   "symbol": "BEZ",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "BALDOR ELECTRIC CO"
+   ]
+  },
+  {
+   "symbol": "BKFI",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "BNY Mellon Active Core Bond"
+   ]
+  },
+  {
+   "symbol": "BKLG",
+   "exchange": "NYSE ARCA",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "BNY Mellon US Large Cap Equity Growth"
+   ]
+  },
+  {
    "symbol": "BKT",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "BlackRock Income Trust Inc"
+   ]
+  },
+  {
+   "symbol": "BLDX",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Impax Global Infrastructure"
    ]
   },
   {
@@ -516,6 +679,22 @@
    ]
   },
   {
+   "symbol": "BPRO",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Bitwise Proficio Currency Debasement"
+   ]
+  },
+  {
+   "symbol": "BTCK",
+   "exchange": "NYSE ARCA",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "7RCC Spot Bitcoin and Carbon Credit Futures"
+   ]
+  },
+  {
    "symbol": "BTO",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -537,6 +716,62 @@
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Morgan Stanley China A Share Fund Inc"
+   ]
+  },
+  {
+   "symbol": "CAGE",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Calamos Autocallable Growth"
+   ]
+  },
+  {
+   "symbol": "CAS",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Cascade Acquisition Corp - Class A"
+   ]
+  },
+  {
+   "symbol": "CATG",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Capstone Technologies Group Inc"
+   ]
+  },
+  {
+   "symbol": "CBIL",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi 312 Month TBill"
+   ]
+  },
+  {
+   "symbol": "CBOT",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi Robots & Humanoids"
+   ]
+  },
+  {
+   "symbol": "CBRG",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Chain Bridge I - Class A"
+   ]
+  },
+  {
+   "symbol": "CCOM",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "CCOM Group Inc"
    ]
   },
   {
@@ -572,6 +807,38 @@
    ]
   },
   {
+   "symbol": "CGOV",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi 03 Month TBill"
+   ]
+  },
+  {
+   "symbol": "CHNL",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "CHANNELL COMMERCIAL CORP"
+   ]
+  },
+  {
+   "symbol": "CHNU",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "2x Chainlink"
+   ]
+  },
+  {
+   "symbol": "CHYG",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi 05 Year High Yield Corporate Bond"
+   ]
+  },
+  {
    "symbol": "CII",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -588,11 +855,51 @@
    ]
   },
   {
+   "symbol": "CIVG",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi 15 Year Investment Grade Corporate Bond"
+   ]
+  },
+  {
+   "symbol": "CMAG",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "CASINO MAGIC CORP"
+   ]
+  },
+  {
    "symbol": "COWTF",
    "exchange": "PINK",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Barclays Bank PLC"
+   ]
+  },
+  {
+   "symbol": "CPRY",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corporate PPTY Assocs 18 Global Inc Class A"
+   ]
+  },
+  {
+   "symbol": "CPSR",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Gelesis Holdings Inc - Class A"
+   ]
+  },
+  {
+   "symbol": "CQTM",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi Quantum Computing"
    ]
   },
   {
@@ -604,11 +911,51 @@
    ]
   },
   {
+   "symbol": "CRCO",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Carolco Pictures Inc FL"
+   ]
+  },
+  {
+   "symbol": "CRDD",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Cardano"
+   ]
+  },
+  {
+   "symbol": "CRDX",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Credex Corp"
+   ]
+  },
+  {
    "symbol": "CTR",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "ClearBridge MLP and Midstream Total Return Fund Inc"
+   ]
+  },
+  {
+   "symbol": "CUST",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi 13 Year Treasury Bond"
+   ]
+  },
+  {
+   "symbol": "DACL",
+   "exchange": "NYSE ARCA",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "REX Defensive Autocallable Income"
    ]
   },
   {
@@ -625,6 +972,14 @@
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Deutsche Bank AG London"
+   ]
+  },
+  {
+   "symbol": "DFAL",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Dimensional US Large Cap Core Equity Market"
    ]
   },
   {
@@ -652,6 +1007,14 @@
    ]
   },
   {
+   "symbol": "DIPR",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi Space & Satellite Communications"
+   ]
+  },
+  {
    "symbol": "DMB",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -676,11 +1039,27 @@
    ]
   },
   {
+   "symbol": "DOCK",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi Ports Rail & Freight"
+   ]
+  },
+  {
    "symbol": "DPG",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Duff & Phelps Utility and Infrastructure Fund Inc"
+   ]
+  },
+  {
+   "symbol": "DPRE",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Virtus Duff & Phelps Real Estate Income"
    ]
   },
   {
@@ -716,6 +1095,14 @@
    ]
   },
   {
+   "symbol": "DVVY",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Invesco Diversified Dividend Opportunities"
+   ]
+  },
+  {
    "symbol": "DYYXF",
    "exchange": "PINK",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -729,6 +1116,14 @@
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Allspring Income Opportunities Fund"
+   ]
+  },
+  {
+   "symbol": "EASY",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "EASYLINK SERVICES CORP"
    ]
   },
   {
@@ -801,6 +1196,14 @@
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Western Asset Emerging Markets Debt Fund Inc"
+   ]
+  },
+  {
+   "symbol": "EMFI",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Pictet Emerging Markets Debt"
    ]
   },
   {
@@ -884,11 +1287,27 @@
    ]
   },
   {
+   "symbol": "EXEQ",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Wedbush ReturnOnLeadership U.S. LargeCap"
+   ]
+  },
+  {
    "symbol": "FAX",
    "exchange": "AMEX",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "abrdn Asia-Pacific Income Fund Inc"
+   ]
+  },
+  {
+   "symbol": "FEMD",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "First Eagle Mid Cap Equity"
    ]
   },
   {
@@ -924,6 +1343,14 @@
    ]
   },
   {
+   "symbol": "FLXI",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Flexiinternational Software Inc"
+   ]
+  },
+  {
    "symbol": "FNGD",
    "exchange": "NYSE",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -956,11 +1383,35 @@
    ]
   },
   {
+   "symbol": "FOTO",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "PHOTOWORKS INC"
+   ]
+  },
+  {
+   "symbol": "FPAA",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "FPA Global Allocation"
+   ]
+  },
+  {
    "symbol": "FRA",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Blackrock Floating Rate Income Strategies Fund Inc"
+   ]
+  },
+  {
+   "symbol": "FRIZ",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "FRISBY TECHNOLOGIES INC"
    ]
   },
   {
@@ -993,6 +1444,14 @@
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Barclays Bank PLC"
+   ]
+  },
+  {
+   "symbol": "GBND",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "GENERAL BINDING LLC"
    ]
   },
   {
@@ -1085,11 +1544,36 @@
    ]
   },
   {
+   "symbol": "GIGL",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Giggles N Hugs Inc"
+   ]
+  },
+  {
+   "symbol": "GLAM",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi Beauty Skincare & Aesthetics"
+   ]
+  },
+  {
    "symbol": "GLDI",
    "exchange": "NASDAQ",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Credit Suisse AG Nassau Branch"
+   ]
+  },
+  {
+   "symbol": "GLNK",
+   "exchange": "NYSE",
+   "conflict": "NAME_VARIANTS_DISAGREE",
+   "names": [
+    "Grayscale Chainlink Trust ETF",
+    "Grayscale Investments LLC"
    ]
   },
   {
@@ -1122,6 +1606,54 @@
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "GSK PLC ADRHEDGED "
+   ]
+  },
+  {
+   "symbol": "HALX",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "HALIFAX CORP OF VIRGINIA"
+   ]
+  },
+  {
+   "symbol": "HBMX",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Tuttle Capital Concentrated Memory Stack"
+   ]
+  },
+  {
+   "symbol": "HBR",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Canary Capital Group LLX"
+   ]
+  },
+  {
+   "symbol": "HBRD",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Invesco U.S. Hybrid Bond"
+   ]
+  },
+  {
+   "symbol": "HEFT",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Hedgeye Fourth Turning"
+   ]
+  },
+  {
+   "symbol": "HEMI",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Hartford Equity Premium Income"
    ]
   },
   {
@@ -1173,6 +1705,22 @@
    ]
   },
   {
+   "symbol": "HULL",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi Shipping & Global Logistics"
+   ]
+  },
+  {
+   "symbol": "HYGM",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Amplify HYG High Yield 10 Target Income"
+   ]
+  },
+  {
    "symbol": "HYI",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -1197,11 +1745,27 @@
    ]
   },
   {
+   "symbol": "IBFR",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Innovator International Developed Managed 10 Buffer"
+   ]
+  },
+  {
    "symbol": "ICITF",
    "exchange": "PINK",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Barclays Bank PLC"
+   ]
+  },
+  {
+   "symbol": "IDYN",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "INNERDYNE INC"
    ]
   },
   {
@@ -1237,6 +1801,30 @@
    ]
   },
   {
+   "symbol": "IMTG",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Invesco Agency MBS"
+   ]
+  },
+  {
+   "symbol": "INTM",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Intermedia Cloud Communications Inc"
+   ]
+  },
+  {
+   "symbol": "IPB",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Merrill Lynch Depositor Inc"
+   ]
+  },
+  {
    "symbol": "ISD",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -1250,6 +1838,38 @@
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Invesco US Treasury Bond UCITS ETFtribution"
+   ]
+  },
+  {
+   "symbol": "IVEP",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Dan IVES Wedbush AI Power & Infrastructure"
+   ]
+  },
+  {
+   "symbol": "JA",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Janus Henderson AAA CLO"
+   ]
+  },
+  {
+   "symbol": "JADB",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Aptus January Deep Buffer"
+   ]
+  },
+  {
+   "symbol": "JANI",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "AllianzIM International Equity Buffer15 Uncapped Jan"
    ]
   },
   {
@@ -1381,11 +2001,43 @@
    ]
   },
   {
+   "symbol": "JOUL",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi High Voltage Grid Equipment"
+   ]
+  },
+  {
    "symbol": "JPC",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Nuveen Preferred & Income Opportunities Fund"
+   ]
+  },
+  {
+   "symbol": "JUDB",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Aptus July Deep Buffer"
+   ]
+  },
+  {
+   "symbol": "KBFR",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Innovator U.S. Small Cap Managed 10 Buffer"
+   ]
+  },
+  {
+   "symbol": "KCOP",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Kurv Copper & Mining Enhanced Income"
    ]
   },
   {
@@ -1405,6 +2057,14 @@
    ]
   },
   {
+   "symbol": "KMCA",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "PLUS Korea Manufacturing Core Alliance Index"
+   ]
+  },
+  {
    "symbol": "KMET",
    "exchange": "NYSE ARCA",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -1421,11 +2081,27 @@
    ]
   },
   {
+   "symbol": "KYC",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi Digital Banking & Fintech Infrastructure"
+   ]
+  },
+  {
    "symbol": "KYN",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Kayne Anderson Energy Infrastructure Fund Inc"
+   ]
+  },
+  {
+   "symbol": "LATR",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi Buy Now Pay Later"
    ]
   },
   {
@@ -1461,6 +2137,46 @@
    ]
   },
   {
+   "symbol": "LOHA",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Loha Co Ltd - Class A"
+   ]
+  },
+  {
+   "symbol": "LQDM",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Amplify LQD Investment Grade 12 Target Income"
+   ]
+  },
+  {
+   "symbol": "LSCP",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "LASERSCOPE"
+   ]
+  },
+  {
+   "symbol": "LSTB",
+   "exchange": "NYSE ARCA",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Natixis Loomis Sayles Total Return Bond"
+   ]
+  },
+  {
+   "symbol": "LTCC",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Canary Capital Group LLC"
+   ]
+  },
+  {
    "symbol": "LYXRF",
    "exchange": "PINK",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -1477,6 +2193,22 @@
    ]
   },
   {
+   "symbol": "MCVT",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Mill City Ventures III Ltd"
+   ]
+  },
+  {
+   "symbol": "MEMY",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "MEMORY PHARMACEUTICALS CORP"
+   ]
+  },
+  {
    "symbol": "MHD",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -1490,6 +2222,22 @@
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Western Asset Municipal High Income Fund Inc"
+   ]
+  },
+  {
+   "symbol": "MHIG",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Milliman Healthcare Inflation Guard"
+   ]
+  },
+  {
+   "symbol": "MHIP",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Milliman Healthcare Inflation Plus"
    ]
   },
   {
@@ -1549,6 +2297,14 @@
    ]
   },
   {
+   "symbol": "MSR",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "MSR EXPLORATION LTD"
+   ]
+  },
+  {
    "symbol": "MUA",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -1605,6 +2361,14 @@
    ]
   },
   {
+   "symbol": "NBFR",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Innovator Nasdaq100 Managed 10 Buffer"
+   ]
+  },
+  {
    "symbol": "NBH",
    "exchange": "AMEX",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -1613,11 +2377,51 @@
    ]
   },
   {
+   "symbol": "NBIE",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Neuberger International Core Equity"
+   ]
+  },
+  {
+   "symbol": "NEMD",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "iNeedMD Holdings Inc"
+   ]
+  },
+  {
+   "symbol": "NETG",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "NETGRAVITY INC"
+   ]
+  },
+  {
+   "symbol": "NGHT",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "NightCulture Inc"
+   ]
+  },
+  {
    "symbol": "NML",
    "exchange": "AMEX",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Neuberger Berman Energy Infrastructure and Income Fund Inc"
+   ]
+  },
+  {
+   "symbol": "NPFE",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "NPF Core Equity"
    ]
   },
   {
@@ -1634,6 +2438,22 @@
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Nuveen Municipal Value Fund Inc"
+   ]
+  },
+  {
+   "symbol": "OCDB",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Aptus October Deep Buffer"
+   ]
+  },
+  {
+   "symbol": "ODDZ",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi Sports Betting & Gambling"
    ]
   },
   {
@@ -1669,6 +2489,14 @@
    ]
   },
   {
+   "symbol": "ONX",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "ONIX SYSTEMS INC"
+   ]
+  },
+  {
    "symbol": "OPP",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -1701,11 +2529,35 @@
    ]
   },
   {
+   "symbol": "PCEB",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Polen Euro High Yield Bond"
+   ]
+  },
+  {
+   "symbol": "PCLC",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Polen 5Perspectives Large Growth"
+   ]
+  },
+  {
    "symbol": "PCM",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "PCM Fund Inc"
+   ]
+  },
+  {
+   "symbol": "PCSG",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Polen 5Perspectives SmallMid Growth"
    ]
   },
   {
@@ -1773,19 +2625,27 @@
    ]
   },
   {
+   "symbol": "PLU",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "PLUMA INC"
+   ]
+  },
+  {
+   "symbol": "PRXI",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Premier Exhibitions Inc"
+   ]
+  },
+  {
    "symbol": "PSF",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Cohen & Steers Select Preferred and Income Fund Inc"
-   ]
-  },
-  {
-   "symbol": "PTNT",
-   "exchange": "BATS",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Corgi IP Licensing & Royalties"
    ]
   },
   {
@@ -1802,6 +2662,30 @@
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Pzena U.S. Large Cap Value"
+   ]
+  },
+  {
+   "symbol": "QBKF",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "AllianzIM U.S. Small Cap Buffer15"
+   ]
+  },
+  {
+   "symbol": "QBKV",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "AllianzIM U.S. Small Cap Buffer5"
+   ]
+  },
+  {
+   "symbol": "QUIZ",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "QUIZNOS CORP"
    ]
   },
   {
@@ -1877,6 +2761,14 @@
    ]
   },
   {
+   "symbol": "RSIT",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Return Stacked International Stocks & Managed Futures"
+   ]
+  },
+  {
    "symbol": "RVT",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -1909,11 +2801,51 @@
    ]
   },
   {
+   "symbol": "SCA",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Stellus Capital Investment Corp"
+   ]
+  },
+  {
    "symbol": "SCD",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "LMP Capital and Income Fund Inc"
+   ]
+  },
+  {
+   "symbol": "SCEP",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Sterling Capital Hedged Equity Premium Income"
+   ]
+  },
+  {
+   "symbol": "SCMC",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Sterling Capital MultiStrategy Income"
+   ]
+  },
+  {
+   "symbol": "SCNM",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Sterling Capital National Municipal Bond"
+   ]
+  },
+  {
+   "symbol": "SCOP",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Scopus Video Networks Ltd. Foreign"
    ]
   },
   {
@@ -1933,6 +2865,14 @@
    ]
   },
   {
+   "symbol": "SIOO",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "VistaShares Target 15 S&P 100 Distribution"
+   ]
+  },
+  {
    "symbol": "SLVO",
    "exchange": "NASDAQ",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -1949,6 +2889,22 @@
    ]
   },
   {
+   "symbol": "SMRF",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "ALPS Nautilus SMR Nuclear & Technology"
+   ]
+  },
+  {
+   "symbol": "SOEZ",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Fractional Undivided Beneficial Interest"
+   ]
+  },
+  {
    "symbol": "SOR",
    "exchange": "NYSE",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -1957,11 +2913,51 @@
    ]
   },
   {
+   "symbol": "SPCI",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Tuttle Capital Space Industry Income Blast"
+   ]
+  },
+  {
+   "symbol": "SPCT",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "SPECTRIAN CORP"
+   ]
+  },
+  {
    "symbol": "SPE",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Special Opportunities Fund Inc"
+   ]
+  },
+  {
+   "symbol": "SSMG",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Virtus Silvant SmallMid Growth"
+   ]
+  },
+  {
+   "symbol": "SSS",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Sovran Self Storage Inc"
+   ]
+  },
+  {
+   "symbol": "STEN",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "STEN CORP"
    ]
   },
   {
@@ -1989,6 +2985,30 @@
    ]
   },
   {
+   "symbol": "STLU",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "2x Stellar"
+   ]
+  },
+  {
+   "symbol": "STYL",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "STYLING TECHNOLOGY CORP"
+   ]
+  },
+  {
+   "symbol": "SUIL",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "2x Sui"
+   ]
+  },
+  {
    "symbol": "SWZ",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -2002,6 +3022,22 @@
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Deutsche Bank AG London"
+   ]
+  },
+  {
+   "symbol": "TABD",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Transamerica Bond Active"
+   ]
+  },
+  {
+   "symbol": "TALV",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Transamerica Large Value Active"
    ]
   },
   {
@@ -2029,11 +3065,27 @@
    ]
   },
   {
+   "symbol": "TEMD",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Templeton Emerging Markets Debt"
+   ]
+  },
+  {
    "symbol": "TEUUF",
    "exchange": "PINK",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "European Smaller Companies Trust Plc"
+   ]
+  },
+  {
+   "symbol": "THMR",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "THOR AdaptiveRisk Dynamic"
    ]
   },
   {
@@ -2053,11 +3105,67 @@
    ]
   },
   {
+   "symbol": "TOAO",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Twin Oak Active Opportunities III"
+   ]
+  },
+  {
+   "symbol": "TPFC",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Timothy Plan Free Cash Flow"
+   ]
+  },
+  {
+   "symbol": "TPFG",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Timothy Plan Free Cash Flow Growth"
+   ]
+  },
+  {
+   "symbol": "TPFI",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Timothy Plan Fixed Income"
+   ]
+  },
+  {
+   "symbol": "TPRY",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "VistaShares Target 15 TEPRTantrum Contrarian Distribution"
+   ]
+  },
+  {
+   "symbol": "TROT",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Invesco MSCI Treasury Duration Rotation"
+   ]
+  },
+  {
    "symbol": "TSI",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "TCW Strategic Income Fund Inc"
+   ]
+  },
+  {
+   "symbol": "TSIC",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "TROPICAL SPORTSWEAR INTERNATIONAL CORP"
    ]
   },
   {
@@ -2093,11 +3201,35 @@
    ]
   },
   {
+   "symbol": "USMD",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "USMD Holdings Inc"
+   ]
+  },
+  {
    "symbol": "UTF",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Cohen & Steers Infrastructure Fund Inc"
+   ]
+  },
+  {
+   "symbol": "VAIE",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "VegaShares US Equity Autocallable Income"
+   ]
+  },
+  {
+   "symbol": "VEM",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Virtus Emerging Markets Dividend"
    ]
   },
   {
@@ -2109,11 +3241,100 @@
    ]
   },
   {
+   "symbol": "WATS",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi Battery Energy Storage Systems"
+   ]
+  },
+  {
+   "symbol": "WCAP",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "WINFIELD CAPITAL CORP"
+   ]
+  },
+  {
+   "symbol": "WEBX",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "WEBEX COMMUNICATIONS INC"
+   ]
+  },
+  {
+   "symbol": "WELD",
+   "exchange": "NYSE ARCA",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Tema U.S. Manufacturing & Reshoring"
+   ]
+  },
+  {
+   "symbol": "WNDR",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi Travel & Leisure"
+   ]
+  },
+  {
+   "symbol": "XA",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi AI Cybersecurity"
+   ]
+  },
+  {
+   "symbol": "XBFR",
+   "exchange": "NYSE",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Innovator Equity Managed 10 Buffer"
+   ]
+  },
+  {
    "symbol": "XTNAF",
    "exchange": "PINK",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Xtrackers NrthAm High DivYield UCITSETF"
+   ]
+  },
+  {
+   "symbol": "YCLO",
+   "exchange": "NYSE ARCA",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Franklin BSP CLO"
+   ]
+  },
+  {
+   "symbol": "YUNG",
+   "exchange": "BATS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Corgi Longevity Consumer"
+   ]
+  },
+  {
+   "symbol": "ZCSH",
+   "exchange": "NYSE ARCA",
+   "conflict": "NAME_VARIANTS_DISAGREE",
+   "names": [
+    "Zcash ETF",
+    "Grayscale Investments LLC"
+   ]
+  },
+  {
+   "symbol": "ZINC",
+   "exchange": "NASDAQ",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "HORSEHEAD HOLDING CORP."
    ]
   },
   {
@@ -2136,6 +3357,7 @@
  "tickerReuseSuspected": [
   "AAAP",
   "ABI",
+  "ACII",
   "ADX",
   "AIRL",
   "AMDS",
@@ -2152,6 +3374,7 @@
   "ARMH",
   "ASA",
   "ASG",
+  "ATC",
   "AVGG",
   "AWYX",
   "AYTEF",
@@ -2184,7 +3407,13 @@
   "BSMO",
   "BTEC",
   "BVAL",
+  "CAM",
+  "CAS",
+  "CATG",
+  "CBRG",
+  "CCOM",
   "CEFZ",
+  "CEGX",
   "CEM",
   "CETHF",
   "CFCV",
@@ -2197,19 +3426,23 @@
   "CIK",
   "CIRC",
   "CIZ",
+  "CLUB",
   "CLYAF",
   "CNCR",
   "COOL",
   "COWTF",
   "CPAI",
   "CPSN",
+  "CPSR",
   "CPTFF",
+  "CRCO",
   "CRF",
   "CROC",
   "CRTC",
   "CSA",
   "CSETF",
   "CSML",
+  "CSRE",
   "CTR",
   "DAXXF",
   "DBXKF",
@@ -2256,6 +3489,7 @@
   "FINE",
   "FIXT",
   "FLRU",
+  "FLXI",
   "FLYT",
   "FSSTF",
   "GAB",
@@ -2265,6 +3499,7 @@
   "GGM",
   "GHEE",
   "GIGI",
+  "GIGL",
   "GLDN",
   "GLDW",
   "GOP",
@@ -2305,6 +3540,7 @@
   "IEDGF",
   "IERNF",
   "IEXXF",
+  "IG",
   "IGREF",
   "IHIIF",
   "IHRPF",
@@ -2314,6 +3550,7 @@
   "IMPRF",
   "IMVEF",
   "INAV",
+  "IND",
   "INVN",
   "IPDP",
   "IPPIF",
@@ -2334,6 +3571,7 @@
   "ISSSF",
   "ISTIF",
   "ISXAF",
+  "ISXOF",
   "ISXPF",
   "ISZZF",
   "ITRSF",
@@ -2385,6 +3623,7 @@
   "LYXRF",
   "LYYXF",
   "MCI",
+  "MCVT",
   "MDCP",
   "MFM",
   "MGF",
@@ -2395,12 +3634,14 @@
   "MOHR",
   "MOTE",
   "MRJOF",
-  "MSGR",
   "MSVX",
   "MVP",
   "MXF",
   "MXXEF",
+  "MYHA",
   "NCA",
+  "NEMD",
+  "NGHT",
   "NNY",
   "NTRL",
   "NTZG",
@@ -2453,6 +3694,7 @@
   "SABA",
   "SBM",
   "SBUG",
+  "SCA",
   "SEA",
   "SGACF",
   "SGGFF",
@@ -2463,6 +3705,7 @@
   "SMI",
   "SMRZF",
   "SOR",
+  "SPCL",
   "SPYB",
   "SSDVF",
   "SSGAF",
@@ -2485,6 +3728,7 @@
   "TEXX",
   "TIER",
   "TIPD",
+  "TMED",
   "TMH",
   "TRES",
   "TSI",
@@ -2494,6 +3738,7 @@
   "UBSVF",
   "USA",
   "USBF",
+  "USMD",
   "USUTF",
   "VGDSF",
   "VGDVF",
@@ -2506,6 +3751,7 @@
   "VNRDF",
   "VOLT",
   "VTA",
+  "VTG",
   "VUKEF",
   "WBAT",
   "WBND",
@@ -2539,12 +3785,20 @@
    "anomaly": "SPRUNG_2017-06-16"
   },
   {
+   "symbol": "CATG",
+   "anomaly": "SPRUNG_2026-05-15"
+  },
+  {
    "symbol": "CPLCF",
    "anomaly": "SPRUNG_2020-02-04"
   },
   {
    "symbol": "ESEFF",
    "anomaly": "SPRUNG_2023-04-06"
+  },
+  {
+   "symbol": "FLXI",
+   "anomaly": "SPRUNG_2026-02-27"
   },
   {
    "symbol": "GCEC",
@@ -2592,173 +3846,173 @@
   }
  ],
  "productTypes": {
-  "ETF": 7318,
+  "ETF": 7645,
   "ETN": 19,
   "CEF": 37,
-  "ETP": 32,
+  "ETP": 33,
   "ETC": 8
  },
  "strategies": {
-  "EQUITY": 3081,
-  "THEMATIC": 489,
-  "COMMODITY": 142,
-  "UNKNOWN": 710,
-  "BOND": 1141,
+  "EQUITY": 3155,
+  "THEMATIC": 521,
+  "COMMODITY": 145,
+  "UNKNOWN": 793,
+  "BOND": 1178,
   "ALTERNATIVE": 158,
-  "MULTI_ASSET": 72,
-  "LEVERAGED": 573,
-  "LEVERAGED_INVERSE": 153,
+  "MULTI_ASSET": 73,
+  "LEVERAGED": 642,
+  "LEVERAGED_INVERSE": 156,
   "INVERSE": 47,
-  "SINGLE_STOCK": 79,
-  "BUFFER": 340,
-  "DEFINED_OUTCOME": 72,
-  "CRYPTO": 133,
-  "OPTION_INCOME": 152,
+  "SINGLE_STOCK": 78,
+  "BUFFER": 354,
+  "DEFINED_OUTCOME": 74,
+  "CRYPTO": 140,
+  "OPTION_INCOME": 155,
   "COVERED_CALL": 45,
-  "MONEY_MARKET": 27
+  "MONEY_MARKET": 28
  },
  "retirementClasses": {
-  "STANDARD": 4600,
-  "KOMPLEX": 1333,
-  "NICHT_EINORDENBAR": 629,
-  "SEHR_KOMPLEX": 852
+  "STANDARD": 4717,
+  "KOMPLEX": 1392,
+  "NICHT_EINORDENBAR": 710,
+  "SEHR_KOMPLEX": 923
  },
- "leveragedInverse": 773,
- "singleStock": 438,
+ "leveragedInverse": 845,
+ "singleStock": 454,
  "currencies": {
-  "USD": 6685,
-  "CNY": 727,
+  "USD": 7012,
+  "CNY": 728,
   "AUD": 2
  },
  "exchanges": {
-  "SHE": 376,
-  "SHG": 416,
-  "NYSE": 2761,
-  "BATS": 1583,
-  "NYSE ARCA": 244,
-  "NASDAQ": 1382,
-  "PINK": 523,
+  "SHE": 398,
+  "SHG": 424,
+  "NYSE": 2834,
+  "BATS": 1747,
+  "NYSE ARCA": 264,
+  "NASDAQ": 1415,
+  "PINK": 524,
   "AMEX": 31,
+  "OTCMKTS": 68,
   "OTCQB": 8,
-  "OTCMKTS": 62,
   "OTCD": 2,
-  "OTCGREY": 15,
+  "OTCGREY": 16,
   "EXPM": 9,
   "OTCBB": 1,
   "NMFQS": 1
  },
  "countries": {
-  "CN": 792,
-  "US": 6622
+  "CN": 822,
+  "US": 6920
  },
  "assetClasses": {
-  "EQUITY": 4612,
-  "COMMODITY": 177,
-  "UNKNOWN": 833,
-  "BOND": 1192,
-  "MULTI_ASSET": 299,
-  "CRYPTO": 178,
-  "REAL_ESTATE": 71,
-  "MONEY_MARKET": 52
+  "EQUITY": 4797,
+  "COMMODITY": 180,
+  "UNKNOWN": 921,
+  "BOND": 1229,
+  "MULTI_ASSET": 300,
+  "CRYPTO": 188,
+  "REAL_ESTATE": 74,
+  "MONEY_MARKET": 53
  },
  "regions": {
-  "CHINA": 848,
+  "CHINA": 879,
   "GERMANY": 8,
-  "USA": 1434,
-  "UNKNOWN": 4112,
-  "GLOBAL": 418,
+  "USA": 1483,
+  "UNKNOWN": 4328,
+  "GLOBAL": 429,
   "JAPAN": 42,
-  "INTERNATIONAL": 213,
-  "EMERGING_MARKETS": 170,
-  "EUROPE": 74,
-  "INDIA": 21,
-  "DEVELOPED_EX_US": 72,
+  "INTERNATIONAL": 223,
+  "EMERGING_MARKETS": 174,
+  "EUROPE": 78,
+  "INDIA": 23,
+  "DEVELOPED_EX_US": 73,
   "VIETNAM": 2
  },
  "issuers": {
-  "UNKNOWN": 3144,
-  "Invesco": 316,
+  "UNKNOWN": 3335,
+  "Invesco": 323,
   "UBS": 16,
+  "Corgi": 205,
   "Columbia Threadneedle": 24,
   "PGIM": 70,
   "Pacer": 75,
   "Goldman Sachs": 51,
-  "Leverage Shares": 105,
-  "Tradr": 78,
+  "Leverage Shares": 116,
+  "Tradr": 83,
   "GraniteShares": 88,
   "Direxion": 142,
-  "Innovator": 191,
+  "Innovator": 195,
   "REX Shares (T-Rex)": 48,
-  "Tema": 16,
-  "BlackRock (iShares)": 747,
+  "Tema": 17,
+  "BlackRock (iShares)": 749,
   "VictoryShares": 33,
   "American Century": 21,
-  "Corgi": 128,
+  "Global X": 141,
   "ProShares": 174,
   "State Street (SPDR)": 228,
-  "First Trust": 334,
-  "Bitwise": 13,
-  "VanEck": 99,
-  "Simplify": 41,
-  "WisdomTree": 111,
+  "First Trust": 335,
+  "Bitwise": 14,
+  "VanEck": 100,
+  "Simplify": 42,
+  "WisdomTree": 115,
   "SoFi": 5,
   "KraneShares": 42,
-  "Global X": 140,
-  "Defiance": 94,
-  "Amundi": 9,
+  "Defiance": 103,
+  "Amundi": 10,
   "Alger": 5,
   "21Shares": 18,
   "ARK": 12,
-  "DWS (Xtrackers)": 72,
+  "DWS (Xtrackers)": 73,
   "Avantis": 31,
   "J.P. Morgan": 92,
   "Baron": 7,
   "Principal": 19,
-  "Grayscale": 17,
-  "Vanguard": 155,
+  "Grayscale": 16,
+  "Vanguard": 157,
   "MFS": 15,
   "AllianceBernstein": 22,
-  "Franklin Templeton": 67,
+  "Franklin Templeton": 71,
   "DoubleLine": 13,
-  "VegaShares": 6,
+  "VegaShares": 7,
   "Cohen & Steers": 13,
-  "Dimensional": 38,
+  "Dimensional": 39,
   "Touchstone": 10,
-  "Fidelity": 81,
-  "Schwab": 33,
+  "Fidelity": 82,
+  "Schwab": 34,
   "HSBC": 1,
   "Nuveen": 62,
-  "Amundi (Lyxor)": 6,
+  "Amundi (Lyxor)": 7,
   "T. Rowe Price": 36
  },
  "statuses": {
-  "ACTIVE": 7179,
-  "REVIEW": 227,
+  "ACTIVE": 7356,
+  "REVIEW": 378,
   "INACTIVE": 8
  },
- "unknownClassification": 833,
+ "unknownClassification": 921,
  "intelligence": {
-  "publicUniverse": 6072,
+  "publicUniverse": 6220,
   "coverage": {
    "costs": {
-    "count": 4002,
-    "ratio": 0.6591
+    "count": 3994,
+    "ratio": 0.6421
    },
    "aum": {
-    "count": 3836,
-    "ratio": 0.6318
+    "count": 3829,
+    "ratio": 0.6156
    },
    "holdings": {
-    "count": 3836,
-    "ratio": 0.6318
+    "count": 3829,
+    "ratio": 0.6156
    },
    "domicile": {
-    "count": 3836,
-    "ratio": 0.6318
+    "count": 3829,
+    "ratio": 0.6156
    },
    "ucitsStatus": {
-    "count": 3836,
-    "ratio": 0.6318
+    "count": 3829,
+    "ratio": 0.6156
    },
    "isin": {
     "count": 0,
@@ -2868,8 +4122,8 @@
     "id": "TIINGO",
     "type": "MARKET_DATA_PROVIDER",
     "status": "HEALTHY",
-    "lastSuccessfulFetch": "2026-10-02",
-    "items": 7405,
+    "lastSuccessfulFetch": "2026-11-05",
+    "items": 7732,
     "fields": "Kurse, Ausschüttungen, Splits, Namen"
    },
    {

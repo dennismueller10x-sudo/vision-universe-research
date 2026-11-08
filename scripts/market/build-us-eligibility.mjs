@@ -62,10 +62,12 @@ import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { loadTickerReuseQuarantine } from "./universe-source.mjs";
 
 const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Master = require(join(root, "quant", "engines", "us-security-master.js"));
+const CompanyMaster = require(join(root, "quant", "engines", "company-master.js"));
 const SCALE = JSON.parse(readFileSync(join(root, "quant", "config", "tiingo-scale.json"), "utf8"));
 
 const argv = process.argv.slice(2);
@@ -191,10 +193,18 @@ if (existsSync(NAMES_FILE)) {
   console.log("  Namensschicht: nicht vorhanden - Klassifikation ohne Firmennamen.");
 }
 const nameReclassified = {};
+/* Belegte Ticker-Wiederverwendung (quant/config/ticker-reuse-quarantine.json): Der Name in der Namensschicht gehoert
+   dem HEUTIGEN Wertpapier unter dem Kuerzel (z. B. ein ETF), die Stammzeile dieser securityId der alten Aktie. Ein
+   Umstufen ueber diesen Namen waere ein Ticker-Join (BREW, Craft Brew Alliance ab 1995, als ETF ausgeschlossen).
+   Diese Titel behalten die Einstufung aus ihrer eigenen Zeile und bleiben markiert (identityStatus). */
+const reuseQuarantine = loadTickerReuseQuarantine(root);
+const reuseIds = reuseQuarantine ? reuseQuarantine.records : new Map();
+let nameReclassSkippedReuse = 0;
 
 function withName(sec, j) {
   const name = layerNames.get(sec.securityId);
   if (!name) return j;
+  if (reuseIds.has(sec.securityId)) { nameReclassSkippedReuse++; return j; }
   const c = Master.classifySecurity({
     ticker: sec.ticker, exchange: sec.exchange, assetType: sec.assetType,
     name, currency: sec.currency, startDate: sec.startDate, endDate: sec.endDate || null,
@@ -463,11 +473,15 @@ const labelByTicker = new Map(decisions.map((d) => [d.ticker, d.product_eligibil
 /* Das Produktuniversum. Verdachtsfaelle sind DRIN - sie sind nicht
    widerlegt - aber sie tragen ihre Markierung mit. */
 const IN_PRODUCT = new Set(Master.IN_PRODUCT_UNIVERSE);
+/* instrumentType der Projektion folgt der Gattung der Entscheidung (Company-Master-Abbildung), nicht der Anbieterzeile
+   der Mitgliedsliste: eine Vorzugsaktie (WFC-P-Y) ist PREFERRED, keine COMMON_STOCK (05.11.2026, 308 Titel). */
+const classByTicker = new Map(decisions.map((d) => [d.ticker, d.instrument_type]));
 const productMembers = members.filter((s) =>
   IN_PRODUCT.has(labelByTicker.get(String(s.ticker || "").toUpperCase()))
-).map((s) => ({
-  ...s, productEligibility: labelByTicker.get(String(s.ticker || "").toUpperCase())
-}));
+).map((s) => {
+  const t = String(s.ticker || "").toUpperCase();
+  return { ...s, instrumentType: CompanyMaster.SECURITY_CLASS_TO_TYPE[classByTicker.get(t)] || s.instrumentType, productEligibility: labelByTicker.get(t) };
+});
 
 const eligibility = {
   generatedAt: stamp,
@@ -481,7 +495,7 @@ const eligibility = {
   rootEvidence,
   securityMasterRejected: masterRejected, securityMasterRejudged: masterRejudge,
   listedRootCount: Object.keys(listedRoots).length,
-  nameLayer: Object.assign({}, nameLayerInfo, { reclassified: nameReclassified }),
+  nameLayer: Object.assign({}, nameLayerInfo, { reclassified: nameReclassified, skippedTickerReuse: nameReclassSkippedReuse }),
   nonDestructive: {
     universeFile: UNIVERSE_FILE.replace(root + "/", ""),
     universeMembersBefore: members.length,

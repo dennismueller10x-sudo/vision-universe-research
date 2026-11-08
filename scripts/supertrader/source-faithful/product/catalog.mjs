@@ -6,7 +6,7 @@
  */
 export const CATALOG_VERSION = 'sf8-catalog-1.0.0';
 
-export const STRATEGY_CATALOG = Object.freeze([
+const STRATEGY_CATALOG_BASE = [
   { strategyId: 'SF_TURTLE_S1', candidateId: 'C01', name: 'Turtle System 1', author: 'Original Turtle Rules', family: 'Trendfolge', direction: 'LONG', timeframe: 'Tag', short: 'Ausbruch über das 20-Tage-Hoch, Filter nach dem letzten Ausbruch, 55-Tage-Failsafe.', recognises: 'Ausbruch am Stichtag', limits: ['Einstieg der Quelle intraday: kein modellierter Ablauf'], defaultSort: ['stage', 'dataQuality', 'volume', 'ticker'] },
   { strategyId: 'SF_TURTLE_S2', candidateId: 'C02', name: 'Turtle System 2', author: 'Original Turtle Rules', family: 'Trendfolge', direction: 'LONG', timeframe: 'Tag', short: 'Ausbruch über das 55-Tage-Hoch ohne Filter.', recognises: 'Ausbruch am Stichtag', limits: ['Einstieg der Quelle intraday: kein modellierter Ablauf'], defaultSort: ['stage', 'dataQuality', 'volume', 'ticker'] },
   { strategyId: 'SF_DARVAS_BOX', candidateId: 'C03', name: 'Darvas-Box', author: 'Nicolas Darvas', family: 'Ausbruch', direction: 'LONG', timeframe: 'Tag', short: 'Vollständige Box (Hoch und Tief je drei Tage bestätigt) am Hoch; Einstiegsmarke knapp über dem Box-Hoch.', recognises: 'stehende Box am Hoch am Stichtag', limits: ['Allzeithoch nur mit vollständiger Listing-Historie belegbar'], defaultSort: ['stage', 'dataQuality', 'pivot', 'ticker'] },
@@ -20,8 +20,21 @@ export const STRATEGY_CATALOG = Object.freeze([
   { strategyId: 'SF_MOKA_POCKET_PIVOT', candidateId: 'C11', name: 'Pocket Pivot', author: 'Gil Morales / Chris Kacher', family: 'Volumen', direction: 'LONG', timeframe: 'Tag', short: 'Aufwärtstag mit mehr Volumen als jeder Abwärtstag der letzten zehn Sitzungen. Kein Stop in der Quelle.', recognises: 'Volumensignatur am Stichtag', limits: ['Kein Stop in der Quelle'], defaultSort: ['stage', 'dataQuality', 'volume', 'ticker'] },
   { strategyId: 'SF_MOKA_BUYABLE_GAP_UP', candidateId: 'C12', name: 'Buyable Gap-Up', author: 'Gil Morales / Chris Kacher', family: 'Gap', direction: 'LONG', timeframe: 'Tag', short: 'Gap ≥ 0,75 × ATR(40) mit mindestens 1,5-fachem Volumen; das Gap-Tief ist Chartstruktur, kein bestätigter Stop.', recognises: 'Gap am Stichtag', limits: ['Volumenfenster als Modellkonvention'], defaultSort: ['stage', 'dataQuality', 'volume', 'ticker'] },
   { strategyId: 'SF_RASCHKE_HOLY_GRAIL', candidateId: 'C13', name: 'Holy Grail', author: 'Linda Raschke', family: 'Pullback', direction: 'LONG', timeframe: 'Tag', short: 'ADX(14) über 30, dann erster Rücksetzer an die 20-Tage-EMA. Kein Trailing in der Quelle.', recognises: 'Rücksetzer am Stichtag', limits: ['Einstieg nur aus Sekundärquelle', 'Kein Trailing in der Quelle'], defaultSort: ['stage', 'dataQuality', 'pivot', 'ticker'] },
-]);
+];
 
+/**
+ * Historischer Test je Methode (Strang B für die Top 5, Strang H für die übrigen acht). Nur der Status, keine Kennzahl und
+ * keine Renditeaussage: die Ergebnisse liegen versiegelt beim Owner. Forschung, nicht zertifiziert.
+ */
+const HT = (scope, runs) => Object.freeze({ status: 'TESTED', label: 'Forschung, nicht zertifiziert', window: 'DEV 2016-01-04 bis 2026-09-30', scope, runs: Object.freeze(runs), dqK5: true, costLevels: 4, spyComparison: scope === 'TRADE_STUDY_SHORT_WITHOUT_BORROW_DATA' ? 'NOT_COMPARABLE' : 'SPY_TOTAL_RETURN', results: 'SEALED_OWNER_ONLY', publicReturns: false });
+export const HISTORICAL_TEST = Object.freeze({
+  C01: HT('FULL_UNIVERSE', ['41984749745']), C02: HT('FULL_UNIVERSE', ['41984749745']), C03: HT('FULL_UNIVERSE', ['41984749745']),
+  C08: HT('FULL_UNIVERSE', ['41984749745']), C12: HT('FULL_UNIVERSE', ['41984749745']),
+  C04: HT('FULL_UNIVERSE', ['42170095105']), C05: HT('FULL_UNIVERSE', ['42170095105']), C06: HT('FULL_UNIVERSE', ['42170095105']),
+  C07: HT('FULL_UNIVERSE', ['42170095105']), C11: HT('FULL_UNIVERSE', ['42170095105']), C13: HT('FULL_UNIVERSE', ['42170095105']),
+  C09: HT('IEX_SAMPLE_FROM_2017', ['42170095105']), C10: HT('TRADE_STUDY_SHORT_WITHOUT_BORROW_DATA', ['42170095105']),
+});
+export const STRATEGY_CATALOG = Object.freeze(STRATEGY_CATALOG_BASE.map((c) => ({ ...c, historicalTest: HISTORICAL_TEST[c.candidateId] })));
 export const catalogOf = (strategyId) => STRATEGY_CATALOG.find((c) => c.strategyId === strategyId) || null;
 
 /** Deutsche Kurzbezeichnung je Regel-ID für die Oberfläche (interne Codes werden nie angezeigt). */

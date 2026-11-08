@@ -66,6 +66,13 @@
   /* Stufenzeichen: stark / Mittelfeld / schwach / nicht bewertbar. */
   var TONE_GLYPH = { good: "▲", neutral: "◆", bad: "▼", unknown: "–" };
   function glyphPill(pill, tone) { pill.prepend(el("i", { class: "qx-glyph", "aria-hidden": "true", text: TONE_GLYPH[tone] || "–" })); return pill; }
+  /* Redesign 2027 (Q07): jede Eigenschaft als Alltagsfrage, Fachname und Rang darunter. */
+  var ASK = { growth: "Wächst die Firma?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs?", momentum: "Läuft der Kurs gut?", value: "Ist sie günstig?", quality: "Sind die Zahlen solide?", revisions: "Heben Analysten Schätzungen an?" };
+  function rankText(f) {
+    if (f.state !== "AVAILABLE" || typeof f.position !== "number") return f.name;
+    var p = Math.round(f.position);
+    return f.name + " · " + (p >= 99 ? "unter den besten 1 %" : "besser als " + p + " % der Aktien");
+  }
   function factorCard(f, ticker) {
     var d = el("details", { class: "qx-factor dx-zahlen-karte tone-" + f.tone, id: "faktor-" + f.id, dataset: { factor: f.id } });
     var available = f.state === "AVAILABLE";
@@ -77,7 +84,7 @@
     /* UI-Konzept 23.10.2026: Symbol, Name mit Stufe, Balken 0-100 und Wert in einer Zeile; der Pfeil sagt "mehr". */
     d.append(el("summary", { class: "qx-frow" }, [
       factorIcon(f.id, available ? f.tone : "unknown"),
-      el("span", { class: "qx-fr-name" }, [el("span", { class: "qx-fr-label", text: f.name }),
+      el("span", { class: "qx-fr-name" }, [el("span", { class: "qx-fr-label", text: ASK[f.id] || f.name }), el("small", { class: "qx-fr-rank", text: rankText(f) }),
         glyphPill(X.pill(available ? (f.word || f.label) : "Nicht bewertbar", f.tone), available ? f.tone : "unknown")]),
       el("b", { class: "qx-fr-value num", text: available ? String(Math.round(f.score)) : "–" }),
       available ? el("span", { class: "vu-bar qv2-fbar", "aria-hidden": "true", style: "--v:" + Math.max(2, Math.min(100, f.score)).toFixed(0) }, [el("i")])
@@ -186,25 +193,43 @@
     if (third) pick.push(third);
     return vm.factors.filter(function (f) { return pick.indexOf(f) >= 0; });
   }
+  /* Redesign 2027 (Q07): Kacheln mit Alltagswort statt Fachname. */
+  var KEY_SHORT = { profitability: "Verdient gut", risk: "Kurs ruhig", quality: "Zahlen solide", growth: "Wächst", momentum: "Kurs läuft", value: "Günstig", revisions: "Schätzungen" };
+  function capitalWord(w) { return w ? w.charAt(0).toUpperCase() + w.slice(1) : w; }
+  /* Gesamturteil als schwarze Karte: Zahl starker Eigenschaften von allen bewerteten, Segmente, Satz (Mockup Q07). */
+  function overallInk(vm) {
+    var rated = vm.factors.filter(function (f) { return f.state === "AVAILABLE"; });
+    var n = function (t) { return rated.filter(function (f) { return f.tone === t; }).length; };
+    var good = n("good"), mid = n("neutral"), bad = n("bad");
+    return el("div", { class: "qv3-ink" }, [
+      el("div", { class: "qv3-ink-top" }, [el("b", { class: "qv3-ink-n num", text: good + "/" + rated.length }),
+        el("div", {}, [el("h2", { class: "qv3-ink-t", text: "So liegen die Faktoren" }), el("p", { class: "qv3-ink-s", text: good + " stark · " + mid + " Mittelfeld · " + bad + " schwach" })])]),
+      el("div", { class: "qv3-segs", "aria-hidden": "true" }, rated.map(function (f) { return el("i", { class: "is-" + f.tone }); }).concat(vm.factors.filter(function (f) { return f.state !== "AVAILABLE"; }).map(function () { return el("i", { class: "is-none" }); }))),
+      el("p", { class: "qv3-ink-note", text: "Im Vergleich zu allen bewerteten US-Aktien. Keine Empfehlung." })]);
+  }
   function keyTiles(vm) {
     var list = keyFactors(vm);
     return list.length ? el("ul", { class: "qv2-keys", "aria-label": "Wichtigste Kennzahlen, Wert 0 bis 100" }, list.map(function (f) {
-      return el("li", { class: "tone-" + f.tone }, [el("a", { href: "#faktor-" + f.id, "aria-label": f.name + ": " + Math.round(f.score) + " von 100, " + (f.word || STRIP_WORD[f.tone]) }, [
-        el("span", { class: "qv2-key-n", "aria-hidden": "true", text: f.name }),
-        el("b", { class: "qv2-key-v num", "aria-hidden": "true", text: String(Math.round(f.score)) }),
-        el("small", { class: "qv2-key-w", "aria-hidden": "true", text: TONE_GLYPH[f.tone] + " " + (f.word || STRIP_WORD[f.tone]) })])]);
+      var description = "qv2-key-description-" + f.id;
+      return el("li", { class: "tone-" + f.tone }, [el("a", { href: "#faktor-" + f.id, "aria-describedby": description }, [
+        el("span", { class: "qv2-key-n", text: KEY_SHORT[f.id] || f.name }),
+        el("b", { class: "qv2-key-v num", text: String(Math.round(f.score)) }),
+        el("small", { class: "qv2-key-w qx-pill " + (f.tone === "good" ? "up" : f.tone === "bad" ? "down" : "warm"), text: TONE_GLYPH[f.tone] + " " + capitalWord(f.word || STRIP_WORD[f.tone]) })]),
+        el("span", { class: "qx-sr", id: description, text: f.name + ". Skala von 0 bis 100." })]);
     })) : null;
   }
-  function verdictCard(vm, factorsReason, missingNote) {
+  function verdictCard(vm, factorsReason, missingNote, earlyQuestion) {
     var o = vm.overall;
     /* qx-verdict-card nur, wo es eine Aussage gibt - ein ETF oder ein Titel
        ohne Faktorzeile traegt keine. */
     var node = el("section", { class: "qx-glance qv-glance qv2-glance" + (vm.factorState === "AVAILABLE" ? " qx-verdict-card" : " qx-verdict-none"), id: "einordnung-kurz" });
-    if (vm.factorState === "AVAILABLE") {
+    if (vm.factorState === "AVAILABLE" && o.rated >= 3) {
+      node.append(el("p", { class: "qv3-step-k" }, [el("span", { text: "Überblick" })]), (earlyQuestion && earlyQuestion.className === "qv3-step-q" ? earlyQuestion : el("h2", { class: "qv3-step-q", text: "Was sagt Quant insgesamt?" })), overallInk(vm), keyTiles(vm) || el("span"));
+    } else if (vm.factorState === "AVAILABLE") {
       node.append(el("div", { class: "qx-verdict-top qv2-result", dataset: { tone: o.tone } }, [
         el("span", { class: "qv2-result-ico", "aria-hidden": "true" }, [ico(o.tone === "good" ? "up" : o.tone === "bad" ? "down" : "flat")]),
         el("div", {}, [el("h2", { class: "qv2-result-k", text: "Was sagt Quant insgesamt?" }),
-          el("p", { class: "vu-result qv-result" }, [el("span", { text: o.text })]),
+          el("p", { class: "vu-result qv-result" }, [el("span", { text: o.count })]),
           el("p", { class: "qv-sub", text: o.sub })])]), keyTiles(vm) || el("span"));
       if (o.rated < 3) node.append(el("ul", { class: "dx-kann qx-open" }, vm.gaps.map(function (g) {
         return el("li", { class: "nein" }, [el("b", { text: g.names.join(", ") }), el("span", { text: " – " + g.text })]);
@@ -216,7 +241,7 @@
           el("p", { class: "vu-result qv-result", text: factorsReason === "NOT_AN_EQUITY_LISTING" ? "Keine Unternehmensanalyse für diesen Titel" : "Noch keine Einordnung möglich" }),
           el("p", { class: "qv-sub", text: VM.reasonText(factorsReason, "Für diesen Titel ist keine Faktoranalyse veröffentlicht.") + " " + missingNote })])]));
     }
-    if (vm.factorState === "AVAILABLE" && o.rated > 0) node.append(el("a", { class: "qv2-cta", href: "#einordnung" }, [el("span", { text: "Zur Analyse" }), el("i", { class: "qv2-chev", "aria-hidden": "true" })]));
+    if (vm.factorState === "AVAILABLE" && o.rated > 0 && o.rated < 3) node.append(el("a", { class: "qv2-cta", href: "#einordnung" }, [el("span", { text: "Zur Analyse" }), el("i", { class: "qv2-chev", "aria-hidden": "true" })]));
     node.append(el("p", { class: "qv-limit", text: (vm.factorState === "AVAILABLE" ? "Einordnung im Vergleich zu allen bewerteten US-Aktien – " : "") + "keine Anlageempfehlung, keine Prognose." }));
     return node;
   }
@@ -292,6 +317,60 @@
       (s.previous && s.previous.label && s.previous.asOf && s.asOf && s.previous.asOf < s.asOf ? " · vorher: " + s.previous.label + " (" + X.dateDe(s.previous.asOf) + ")" : "") +
       ". Ein Setup beschreibt, was am Stichtag im Kursbild beobachtbar ist – kein Kursziel, keine Einstiegsregel und keine Aussage darüber, ob es eintritt."));
     return kids;
+  }
+
+  /* Redesign 2027 (Q07-b, Schritt 5/6): Setup als Karte mit Fortschritt, knapp verfehlte Stile mit Regel-Haken,
+     Rückblick als schwarze Karte. Die bisherigen Inhalte stehen vollständig darunter (eager, damit Nachladen greift). */
+  /* Nur für feste VUUI-Bausteine (Urteil, Glyphe) ohne Daten im Markup; el() setzt bewusst kein innerHTML. */
+  function vuHtml(tag, cls, markup) { var n = document.createElement(tag); if (cls) n.className = cls; n.innerHTML = markup; return n; }
+  function keepBelow(title, node) {
+    return el("details", { class: "qx-more qv3-more" }, [el("summary", {}, [el("span", { text: title })]), el("div", { class: "qx-more-body" }, [node])]);
+  }
+  function askOf(label) {
+    var F = VM.FACTORS || {}, id = Object.keys(F).filter(function (k) { return F[k] && F[k].name === label; })[0];
+    return id && ASK[id] ? ASK[id] : label;
+  }
+  function styleV3(vm) {
+    var U = global.VUUI, s = vm.setup, st = vm.strategy, kids = [];
+    if (s.state !== "UNAVAILABLE") {
+      var n = s.stages.length, at = Math.max(0, s.stageIndex + 1);
+      var since = (s.asOf ? "Seit " + X.dateDe(s.asOf).replace(/\.\d{4}$/, ".") : "") + (s.previous && s.previous.label ? " (vorher: " + s.previous.label + ")" : "") + (s.asOf ? ". " : "");
+      kids.push(el("div", { class: "vu-box qv3-setup" }, [
+        el("div", { class: "qv3-setup-h" }, [el("b", { text: "Setup im Chart" }), el("span", { class: "vu-chip qv3-chip-o", text: "○ " + (s.label || "Kein Setup") })]),
+        el("p", { class: "vu-xs vu-mu", text: since + (s.next && s.next.text ? s.next.text : "") }),
+        el("div", { class: "qv3-prog", role: "img", "aria-label": "Stufe " + at + " von " + n }, [el("i", { style: "width:" + Math.round(100 * at / n) + "%" })])]));
+    }
+    if (st.state === "AVAILABLE") {
+      var all = [{ id: st.best.id, label: st.best.label, conditions: st.best.met.concat(st.best.notMet, st.best.open), fits: st.best.fits }].concat(st.others.map(function (o) {
+        return { id: o.id, label: o.label, conditions: o.conditions, fits: o.conditions.every(function (c) { return c.state === "MET"; }) };
+      }));
+      all.slice(0, 2).forEach(function (p) {
+        kids.push(el("a", { class: "vu-box qv3-strat-card", href: X.routes.strategy(p.id) }, [
+          el("div", { class: "qv3-setup-h" }, [el("b", { text: p.label }), vuHtml("span", null, U.verdict(p.fits ? "strong" : "mid", p.fits ? "Passt" : "Knapp verfehlt"))]),
+          el("ul", { class: "qv3-rules" }, p.conditions.map(function (c) {
+            var k = c.state === "MET" ? "check" : c.state === "NOT_MET" ? "x" : null;
+            return el("li", { class: "is-" + (c.state === "MET" ? "met" : c.state === "NOT_MET" ? "miss" : "open") }, [
+              k ? vuHtml("i", null, U.glyph(k, 13)) : el("i", { text: "–" }),
+              el("span", { text: askOf(c.label) + (c.threshold != null ? " " + (c.operator === "lte" ? "≤ " : "≥ ") + c.threshold : "") }),
+              el("b", { class: "num", text: c.value != null ? String(c.value) : "–" })]);
+          }))]));
+      });
+      var fitN = all.filter(function (p) { return p.fits; }).length;
+      kids.push(el("p", { class: "vu-xs vu-mu", text: "Erfüllt heute " + fitN + " von " + all.length + " Strategien." }));
+    } else kids.push(el("p", { class: "qx-small", text: st.text }));
+    return kids;
+  }
+  function historyV3(vm) {
+    var r = vm.replay, same = (r && r.levels || []).filter(function (lv) { return lv.id === "SAME_STOCK"; })[0];
+    if (!same || same.state !== "AVAILABLE") return [el("p", { class: "qx-small", text: same ? same.text : "Für diese Aktie liegt kein Rückblick vor." })];
+    var main = (same.horizons || []).filter(function (h) { return h.id === "m6" && h.sufficient; })[0] || (same.horizons || []).filter(function (h) { return h.sufficient; }).slice(-1)[0] || null;
+    var nach = function (label) { return "nach " + String(label || "").replace(/Monate$/, "Monaten"); };
+    return [el("div", { class: "vu-box vu-box--ink qv3-replay" }, [
+      el("p", { class: "qv3-replay-k", text: "Rückblick seit " + String(same.from).slice(0, 4) + " · diese Aktie" }),
+      el("p", { class: "qv3-replay-big" }, [el("b", { class: "num", text: same.episodes + "×" }), el("span", { text: " ähnliche Situation" + (same.episodes === 1 ? "" : "en") })]),
+      main ? el("p", { class: "qv3-replay-s", text: (main.positivePct || "–") + " der Fälle lagen " + nach(main.label) + " höher · typisch " + (main.median || "–") }) : null]),
+      el("div", { class: "qv3-evid" }, [el("span", { class: "vu-chip qv3-chip-o", text: main ? "● Evidenz beobachtet" : "○ Evidenz dünn" }),
+        el("span", { class: "vu-xs vu-mu", text: main ? "Beobachtet, nicht getestet: nur die Vergangenheit dieser Aktie." : same.episodes + " vergleichbare Fälle. Zu wenig für eine belastbare Aussage." })])];
   }
 
   /* ------------------------------------------------ 04 Anlagestil */
@@ -530,13 +609,13 @@
         return X.stat(p[0], (p[1] && p[1].label) || "–");
       })),
       foot("Analyse bis " + X.dateDe(t.asOf) + ". " + (lag || "") + (t.fullWorkspace ? " Szenarien, Zonen und die experimentelle Elliott-Struktur stehen im Chartbild." : "")),
-      t.fullWorkspace ? X.actions([X.btn("Chartbild öffnen", X.routes.chartbild(ticker), "secondary")])
+      t.fullWorkspace ? X.actions([X.btn("Chartbild öffnen", X.routes.chart(ticker), "secondary")])
         : el("p", { class: "qx-small", text: (VM.technicalReasonText(t.unavailability) || "Eine vollständige technische Auswertung ist für diesen Titel noch nicht veröffentlicht.") })];
   }
 
   /* ------------------------------------------------ 07 Unternehmenszahlen */
   function figuresSection(s, ticker) {
-    if (!s.quant || s.quant.state !== "AVAILABLE") return [X.notice("Keine Unternehmenszahlen", "Für diesen Titel liegen keine auswertbaren Geschäftszahlen aus SEC-Meldungen vor.")];
+    if (!s.quant || s.quant.state !== "AVAILABLE") return [X.notice("Keine Unternehmenszahlen", "Für diesen Titel liegen keine auswertbaren Geschäftszahlen aus Pflichtmeldungen vor.")];
     var wanted = { quality: ["operatingMargin", "fcfMargin", "netMargin"], growth: ["revenueGrowth", "epsGrowth"], value: ["priceEarnings", "priceSales", "earningsYield", "priceToFcf", "fcfYield"], risk: ["volatility", "maxDrawdown"] };
     var stats = [], withheld = {};
     s.quant.families.forEach(function (fam) {
@@ -619,14 +698,14 @@
         el("span", { class: "qv2-status-ico", "aria-hidden": "true" }, [ico(on ? "check" : st.state === "UNAVAILABLE" ? "flat" : "clock")]),
         el("span", {}, [el("b", { text: status }), el("small", { text: statusSub })])]),
       el("div", { class: "q-levels qv2-levels", role: "group", "aria-label": "Szenario-Marken" }, [
-        cell("is-entry", "Interessant ab", sc && sc.entry ? zone(sc.entry) : null, sc && sc.entry ? ENTRY_WORDS[sc.entryStatus] || "Zone laut Szenario" : null),
+        cell("is-entry", "Einstiegsmarke der Methode", sc && sc.entry ? zone(sc.entry) : null, sc && sc.entry ? ENTRY_WORDS[sc.entryStatus] || "Zone laut Szenario" : null),
       ].concat(sc && sc.stop && sc.stop.price === invPrice
         /* Stop und Invalidation auf derselben Marke: eine Zeile statt zwei gleicher Zahlen. */
-        ? [cell("is-stop is-inv", "Stop / Ungültig unter", usd(invPrice), "Schluss darunter: Szenario ungültig")]
+        ? [cell("is-stop is-inv", "Stopp-Marke der Methode", usd(invPrice), "Schluss darunter: Szenario ungültig")]
         : [cell("is-stop", "Stop / Risiko", sc && sc.stop ? usd(sc.stop.price) : null, sc && sc.stop ? "technischer Stop" : null),
-          cell("is-inv", "Ungültig unter", typeof invPrice === "number" ? usd(invPrice) : null, typeof invPrice === "number" ? "Schluss darunter: Szenario ungültig" : null)]).concat(targets.length ? targets.map(function (t, i) { return cell("is-target", "Ziel " + (i + 1), zone(t), i ? null : "Zielzone (technisches Szenario)"); })
+          cell("is-inv", "Stopp-Marke der Methode", typeof invPrice === "number" ? usd(invPrice) : null, typeof invPrice === "number" ? "Schluss darunter: Szenario ungültig" : null)]).concat(targets.length ? targets.map(function (t, i) { return cell("is-target", "Zielzone " + (i + 1) + " der Methode", zone(t), i ? null : "technisches Szenario, keine Empfehlung"); })
         : [cell("is-target", "Zielzonen", null, null)]).concat(ts && ts.riskReward && typeof ts.riskReward.low === "number" ? [
-        el("div", { class: "is-rr q-rr" }, [el("span", { text: "Chance/Risiko" }),
+        el("div", { class: "is-rr q-rr" }, [el("span", { text: "Abstand Zielzone : Stopp-Marke (Methode)" }),
           el("b", { class: "num", text: "bis Ziel 1: " + ratio(ts.riskReward.low, ts.riskReward.high) }),
           typeof ts.riskReward.target2Low === "number" ? el("b", { class: "num", text: "bis Ziel 2: " + ratio(ts.riskReward.target2Low, ts.riskReward.target2High) }) : null])] : []))];
     var deep = [];
@@ -718,7 +797,8 @@
   function deck(grid, onSelect) {
     var mq = global.matchMedia ? global.matchMedia("(max-width: 759px)") : null, active = null, raf = 0;
     var ro = global.ResizeObserver ? new global.ResizeObserver(function () { fit(); }) : null;
-    function on() { return !!(mq && mq.matches); }
+    /* Redesign 2027 (Folie Q07): eine lange Seite mit Sprung-Chips statt seitlich wischbarer Karten. */
+    function on() { return false; }
     function cards() { return Array.prototype.filter.call(grid.children, function (n) { return n.tagName === "SECTION"; }); }
     function fit() { grid.style.height = on() && active ? active.offsetHeight + "px" : ""; }
     function pick() {
@@ -750,18 +830,38 @@
     var api = ctx.api, disposers = [];
     /* Stile der Aktienseite laden parallel zu den Daten (app.js#QXLoadStockCss); gezeichnet wird erst mit ihnen. */
     var cssReady = global.QXLoadStockCss ? global.QXLoadStockCss() : Promise.resolve(true);
-    var page = el("article", { class: "qx-stock q-stock qv-stock" });
-    main.append(page);
-    var heroHost = el("div", { class: "qx-hero-host" }), bodyHost = el("div", { class: "qx-body-host" }, [X.loading("Analyse wird geladen …")]);
-    page.append(heroHost, bodyHost);
+    var early = global.VUQuantBoot && global.VUQuantBoot.get(ticker, main);
+    var page = early ? early.article : el("article", { class: "qx-stock q-stock qv-stock" });
+    if (!early) main.append(page);
+    var heroHost = early ? early.heroHost : el("div", { class: "qx-hero-host" }), bodyHost = early ? early.bodyHost : el("div", { class: "qx-body-host" }, [X.loading("Analyse wird geladen …")]);
+    if (!early) { heroHost.setAttribute("aria-busy", "true"); if (global.VUUI && global.VUUI.skeleton) heroHost.innerHTML = global.VUUI.skeleton("head"); page.append(heroHost, bodyHost); }
 
-    var brief = await (ctx.takePrefetched && ctx.takePrefetched(ticker) || api.getIntelligenceBrief(ticker).catch(function () { return null; }));
-    var src = (brief && brief.sources) || {};
-    var s = src.stock || await api.getStockIntelligence(ticker).catch(function () { return null; });
-    if (!s) { X.recent.add(ticker); bodyHost.replaceChildren(X.notice("Daten derzeit nicht verfügbar", "Die Daten dieses Titels konnten gerade nicht geladen werden. Bitte versuche es später erneut.")); return function () {}; }
+    var entryP = api.getUniverseEntry(ticker).catch(function () { return null; });
+    var s = await Promise.resolve(ctx.takePrefetched && ctx.takePrefetched(ticker)).catch(function () { return null; });
+    if (!s) s = await api.getStockIntelligence(ticker).catch(function () { return null; });
+    if (early) early.authoritative = true;
+    if (!s) { heroHost.replaceChildren(); heroHost.setAttribute("aria-busy", "false"); X.recent.add(ticker); bodyHost.replaceChildren(X.notice("Daten derzeit nicht verfügbar", "Die Daten dieses Titels konnten gerade nicht geladen werden. Bitte versuche es später erneut.")); return function () {}; }
+    /* Variante B (05.11.2026): ein belegtes Nicht-Aktien-Papier (ETF, Fonds, Anleihe) ist im Verzeichnis, aber nicht
+       im Aktien-Produktuniversum. Absage mit Name und Papierart statt "nicht gefunden" - keine Kurse, keine Aktienaussage. */
+    if (s.reason === "OUTSIDE_EQUITY_UNIVERSE" && s.instrument) {
+      var inst = s.instrument, ART = { ETF: "ETF", ETN: "ETN", FUND: "Fonds", CEF: "geschlossener Fonds", DEBT: "Anleihe", WARRANT: "Optionsschein", RIGHT: "Bezugsrecht", UNIT: "Unit", PREFERRED: "Vorzugsaktie" };
+      var art = ART[inst.securityClass] || "keine Stammaktie";
+      document.title = (inst.name ? inst.name + " (" + ticker + ")" : ticker) + " – keine Aktie · Vision Universe®";
+      heroHost.replaceChildren(); heroHost.setAttribute("aria-busy", "false");
+      heroHost.append(el("section", { class: "v2-message" }, [
+        el("h1", { class: "qx-h1", text: inst.name || ticker }),
+        el("p", { class: "qx-sub", text: ticker + (inst.exchange ? " · " + inst.exchange : "") }),
+        el("span", { class: "dx-index-badge qx-tag", text: art })]));
+      bodyHost.replaceChildren(X.notice("„" + ticker + "“ ist ein " + art + ", keine Aktie",
+        "Vision Universe analysiert in Quant US-Aktien mit belegten Kurs- und Geschäftszahlen. " + (inst.name || ticker) + " ist laut Wertpapierstamm ein " + art +
+        " und gehört deshalb nicht zum Analyseuniversum: keine Faktoren, keine Kennzahlen und keine Aktienaussage. Das Papier bleibt in der Suche auffindbar, damit klar ist, warum es hier fehlt."),
+        X.actions([X.btn("Aktie suchen", X.routes.stocks())]));
+      return function () {};
+    }
     if (s.identityState === "UNAVAILABLE" || (s.state !== "AVAILABLE" && s.reason === "INVALID_IDENTITY")) {
+      heroHost.replaceChildren(); heroHost.setAttribute("aria-busy", "false");
       heroHost.append(el("section", { class: "v2-message" }, [el("h1", { class: "qx-h1", text: "Aktie nicht gefunden" })]));
-      bodyHost.replaceChildren(X.notice("„" + ticker + "“ ist nicht im Analyseuniversum", "Quant analysiert US-Aktien mit belegten Kurs- und SEC-Daten. Fonds und ETFs wie SPY oder QQQ gehören nicht dazu – ihre Kurse findest du in Discover. Prüfe sonst das Kürzel oder suche nach dem Namen."),
+      bodyHost.replaceChildren(X.notice("„" + ticker + "“ ist nicht im Analyseuniversum", "Quant analysiert US-Aktien mit belegten Kurs- und Geschäftszahlen. Fonds und ETFs wie SPY oder QQQ gehören nicht dazu – ihre Kurse findest du in Discover. Prüfe sonst das Kürzel oder suche nach dem Namen."),
         X.actions([X.btn("Aktie suchen", X.routes.stocks())]));
       return function () {};
     }
@@ -795,17 +895,19 @@
       el("small", { text: priceAllowed ? "Für diesen Titel liegt kein veröffentlichter Kurs vor." : VM.reasonText("DISPLAY_NOT_PERMITTED") })];
     /* Art und Gattungszahl aus dem Eintrag DIESES Titels (Ausschnitt der Liste, bereits fuer den Dienst geladen) -
        nicht aus der ganzen Liste (126 KB), die diese Seite sonst nur dafuer lud. */
-    var entry = (await api.getUniverseEntry(ticker)) || {};
+    var entry = (await entryP) || {};
+    await cssReady;
     var kind = s.securityType || entry.t || null;
     var KIND = { ETF: "ETF", PREFERRED: "Vorzugsaktie", ADR: "ADR (Hinterlegungsschein)" };
     var tags = [kind && kind !== "COMMON_STOCK" ? el("span", { class: "dx-index-badge qx-tag", text: KIND[kind] || "keine Stammaktie" }) : null,
       entry.il > 1 ? el("span", { class: "dx-index-badge qx-tag", text: "eine von " + entry.il + " Aktiengattungen" }) : null].filter(Boolean);
     var idLine = [el("b", { text: ticker }), s.industry ? el("span", { text: s.industry }) : null].concat(tags).filter(Boolean);
-    var hero = el("div", { class: "qx-stock-hero qv-head" });
-    heroHost.append(hero);
+    var hero = early ? early.hero : el("div", { class: "qx-stock-hero qv-head" });
+    if (!early) heroHost.replaceChildren(hero); heroHost.setAttribute("aria-busy", "false");
     var SN = global.VUStockNavigator, SCX = global.VUCore && global.VUCore.StockContext, headApi = null, quote = null;
     try {
-      if (SN && SN.head && SCX) headApi = SN.head(hero, { ctx: SCX.fromUs(ticker, { name: s.name }), current: "quant", name: displayName || "Aktienanalyse",
+      if (early && early.headApi) { headApi = early.headApi; headApi.setPrice(closePrice); headApi.el.querySelector(".vu-shead-actions").replaceChildren(watchBtn); }
+      else if (SN && SN.head && SCX) headApi = SN.head(hero, { ctx: SCX.fromUs(ticker, { name: s.name }), current: "quant", name: displayName || "Aktienanalyse",
         price: closePrice, back: { href: X.routes.stocks(), label: "Aktien" }, actions: watchBtn });
     } catch (e) { headApi = null; /* Kuerzel ausserhalb des Kontexts: Kopf ohne Navigator */ }
     if (headApi && headApi.el) {
@@ -848,6 +950,9 @@
     if (idn) heroHost.append(el("div", { class: "vu-alert qx-notice qv-alert", role: "note", dataset: { conflict: idn.kind || "" } }, [
       el("div", {}, [el("b", { text: idn.title }), el("p", { text: idn.shown }), el("p", { class: "qx-small", text: idn.why })])]));
 
+    /* Paint the already validated head while the independent evidence is loading. */
+    if (typeof global.requestAnimationFrame === "function") await new Promise(function (resolve) { global.requestAnimationFrame(function () { setTimeout(resolve, 0); }); });
+    var brief = await api.getIntelligenceBrief(ticker).catch(function () { return null; }), src = (brief && brief.sources) || {};
     /* ---------------------------------------------------------- Daten */
     var results = await Promise.all([
       src.factors || api.getFactorEvidence(ticker).catch(function () { return null; }),
@@ -908,13 +1013,15 @@
     tabs.onclick = function (e) { var a = e.target.closest("a"); if (a && !swipe.on()) { hold = e.timeStamp + 1500; setCurrent(a.dataset.target); } };
     if (global.IntersectionObserver) {
       var spy = new global.IntersectionObserver(function (entries) {
-        var id;
+        var id, top = -Infinity;
         entries.forEach(function (e) {
           if (!e.isIntersecting) return;
           /* Mobil liegen 2-6 nebeneinander: dort entscheidet das Wischen (deck), oben nur der Ueberblick. */
           if (swipe.on()) setCurrent(e.target.id === "ueberblick" ? "ueberblick" : swipe.current());
-          /* Kommen zwei Karten einer Zeile zugleich ins Band (Desktop-Raster), gilt die erste - die linke. */
-          else id = id || e.target.id;
+          /* Liegen zwei Abschnitte zugleich im Band (Ende des vorigen, Anfang des naechsten), gilt der, der im Band
+             beginnt - der mit dem tiefsten oberen Rand. Zwei Karten einer Zeile (Desktop-Raster) beginnen gleich hoch:
+             dann gilt die erste, die linke. */
+          else if (e.boundingClientRect.top > top + 1) { top = e.boundingClientRect.top; id = e.target.id; }
         });
         if (id && entries[0].time > hold) setCurrent(id);
       }, { rootMargin: "-30% 0px -60% 0px" });
@@ -925,19 +1032,25 @@
         if (t < hold) return;
         if (!layout.isConnected) return;
         if (layout.getBoundingClientRect().bottom > global.innerHeight * 0.45) setCurrent("ueberblick");
+        /* Am Seitenende erreicht der letzte Abschnitt das Band nicht mehr: dann gilt er. */
+        else if (!swipe.on() && global.innerHeight + global.scrollY >= document.documentElement.scrollHeight - 2) { var last = tabs.querySelector("a[data-target]:last-of-type"); if (last) setCurrent(last.dataset.target); }
         else if (swipe.on() && tabs.querySelector("a[aria-current=true][data-target=ueberblick]")) setCurrent(swipe.current());
       };
       var onScroll = function (e) { if (hold > e.timeStamp) hold = e.timeStamp + 150; if (!topRaf) topRaf = (global.requestAnimationFrame || setTimeout)(onTop); };
       global.addEventListener("scroll", onScroll, { passive: true });
       disposers.push(function () { global.removeEventListener("scroll", onScroll); });
-      setTimeout(function () { TABS.forEach(function (t) { var n = document.getElementById(t[0]); if (n) spy.observe(n); }); }, 0);
+      /* Abschnitte entstehen teils erst nach dem Laden (Schritt 6 wartet auf die Evidenz): neu angehaengte Ziele werden nachbeobachtet. */
+      var watched = {}, watch = function () { TABS.forEach(function (t) { var n = document.getElementById(t[0]); if (n && watched[t[0]] !== n) { watched[t[0]] = n; spy.observe(n); } }); };
+      setTimeout(watch, 0);
+      var moRoot = document.getElementById("qx-main");
+      if (global.MutationObserver && moRoot) { var mo = new global.MutationObserver(watch); mo.observe(moRoot, { childList: true, subtree: true }); disposers.push(function () { mo.disconnect(); }); }
     }
 
     /* 1: Chart und daneben das Quant-Ergebnis. */
     var layout = el("div", { class: "qx-stock-layout" });
     layout.id = "ueberblick"; layout.classList.add("qv2-overview");
     layout.append(chart.node);
-    layout.append(verdictCard(vm, factors && factors.reason, "Quant bildet keine Ersatzwerte. Was vorhanden ist, steht weiter unten; was fehlt, steht unter „Daten & Methodik“."));
+    layout.append(verdictCard(vm, factors && factors.reason, "Quant bildet keine Ersatzwerte. Was vorhanden ist, steht weiter unten; was fehlt, steht unter „Daten & Methodik“.", early && early.question));
     /* Die Pillen stehen ueber dem Chart und kleben beim Scrollen oben: die sechs Ansichten sind jederzeit sichtbar. */
     bodyHost.append(tabs, layout);
     var grid = el("div", { class: "qv2-grid" });
@@ -999,6 +1112,11 @@
         return b;
       }));
       applyFilter("all");
+      /* Redesign 2027 (Q07, Schritt 4): zwei Kacheln „Besser / Schlechter geworden … von …“ vor der Liste. */
+      var total = vm.change.items.length, names = function (t) { return vm.change.items.filter(function (i) { return i.tone === t; }).map(function (i) { return i.group; }).filter(function (g, k, a) { return g && a.indexOf(g) === k; }).slice(0, 3).join(", "); };
+      changeKids.push(el("div", { class: "qv3-tally" }, [
+        el("div", { class: "qv3-tally-c" }, [el("small", { text: "Besser geworden" }), el("b", { class: "num", text: nGood + " von " + total }), el("span", { text: names("good") })]),
+        el("div", { class: "qv3-tally-c" }, [el("small", { text: "Schlechter geworden" }), el("b", { class: "num", text: nBad + " von " + total }), el("span", { text: names("bad") })])]));
       changeKids.push(chips, list || el("p", { class: "qx-small", text: "Keine deutliche Veränderung." }));
       /* Alle Punkte (auch unveraenderte und nicht messbare) und die Messweise in EINEM Aufklapper. */
       changeKids.push(X.more("Alle Veränderungen und wie sie gemessen werden", function () {
@@ -1011,7 +1129,7 @@
       }));
     } else changeKids.push(el("p", { class: "qx-small", text: vm.change.text }));
     changeKids.push(el("div", { class: "qv-now qv2-now" }, [el("h3", { class: "qv-now-h", text: "Was ist jetzt wichtig?" }), nowHost]));
-    grid.append(card(X.section("Was verändert sich gerade?", null, changeKids, null, "Aktuelle Veränderungen", "veraenderung")));
+    grid.append(card(global.VUUI ? X.section("Was hat sich zuletzt bewegt?", null, changeKids, null, "Veränderungen", "veraenderung") : X.section("Was verändert sich gerade?", null, changeKids, null, "Aktuelle Veränderungen", "veraenderung")));
     var lifecycleBox = el("div", { class: "q-lifecycle-host" });
     var cardPromise = api.getRadarCard ? api.getRadarCard(ticker).catch(function () { return null; }) : Promise.resolve(null);
     Promise.all([cardPromise,
@@ -1039,8 +1157,9 @@
         el("span", { text: k && k.state !== "WITHHELD" ? " Setup-Ergebnisse siehe Backtesting." : " Zu wenige echte Setup-Fälle für eine Aussage. " + (k ? closedKindSentence(k) : "") + " Setup-Ergebnisse werden nicht mit den marktweiten Signal-Backtests vermischt." }));
     });
     var setupSec = card(X.section("Wie weit ist die Aktie im Setup?", null,
-      [setupCard].concat(vm.setup.state !== "UNAVAILABLE" ? [X.more("Die Setup-Stufen im Detail", function () { return [setupEvidence].concat(setupSection(vm)); })] : [setupEvidence]), null, "Setup & Strategie", "setup"));
-    grid.append(setupSec);
+      [setupCard].concat(vm.setup.state !== "UNAVAILABLE" ? [X.more("Die Setup-Stufen im Detail", function () { return [setupEvidence].concat(setupSection(vm)); })] : [setupEvidence]), null, global.VUUI ? null : "Setup & Strategie", global.VUUI ? null : "setup"));
+    if (global.VUUI) grid.append(card(X.section("Passt die Aktie gerade zu einem Stil?", null, styleV3(vm).concat([keepBelow("Einstieg, Stop, Ziele und alle Bedingungen", setupSec)]), null, "Setup & Strategie", "setup")));
+    else grid.append(setupSec);
     var setupKids = [sub(X.section("Welche Strategie passt?", null, strategySection(vm, assignment), { href: X.routes.strategies(), label: "Alle Strategien" }, null, "strategie"))];
     /* Absagen stehen EINMAL, gesammelt unter "Daten & Methodik" - nicht als
        Stapel von Hinweisen quer ueber die Seite. Der technische Ausblick
@@ -1059,7 +1178,9 @@
     var trackHost = el("div", { class: "q-track-host", "aria-live": "polite" }, [el("p", { class: "qx-small", text: "Radar-Status wird geladen …" })]);
     var alertHost = global.QXEvidence && global.QXEvidence.alertPanel ? global.QXEvidence.alertPanel(ticker) : null;
     var radarMore = el("details", { class: "vu-more qv-more", id: "radar-status" }, [el("summary", { text: "Radar-Status: was Quant für diese Aktie verfolgt" }), el("div", { class: "vu-more-body qv-more-body" }, [trackHost, alertHost].filter(Boolean))]);
-    grid.append(card(X.section("Was geschah früher in ähnlichen Situationen?", null, replaySection(vm, words, evidence, signalHost, evOverview).concat([radarMore]), { href: X.routes.method("historie"), label: "Methodik" }, "Historischer Vergleich", "historie")));
+    var histOld = card(X.section("Was geschah früher in ähnlichen Situationen?", null, replaySection(vm, words, evidence, signalHost, evOverview).concat([radarMore]), { href: X.routes.method("historie"), label: "Methodik" }, global.VUUI ? null : "Historischer Vergleich", global.VUUI ? null : "historie"));
+    if (global.VUUI) grid.append(card(X.section("Was geschah früher bei " + (displayName || ticker) + "?", null, historyV3(vm).concat([keepBelow("Alle Belege: diese Aktie, marktweit, Zertifizierung, Radar", histOld)]), { href: X.routes.method("historie"), label: "Methodik" }, "Historie", "historie")));
+    else grid.append(histOld);
     cardPromise.then(function (rc) {
       if (!signalHost.isConnected) return;
       var card = rc && rc.state === "AVAILABLE" ? rc.card : null;
@@ -1086,7 +1207,7 @@
         var a = r.analysis, Ex = global.VUTechnical && global.VUTechnical.TIExplain, p = a.scenarios[0];
         /* Datenstand-Richtlinie: zurueckgehaltene Titel zeigen statt des Ausblicks nur den Hinweis */
         if (a.withheld) {
-          cbHost.append(el("a", { class: "cb-teaser cb-tone-flat", href: X.routes.chartbild(ticker) }, [
+          cbHost.append(el("a", { class: "cb-teaser cb-tone-flat", href: X.routes.chart(ticker) }, [
             el("span", { class: "cb-teaser-k", text: "Technischer Ausblick" }),
             el("b", { class: "cb-teaser-o" }, [el("span", { text: (a.freshness && a.freshness.title) || "Analyse zurückgehalten" })]),
             el("span", { class: "cb-small cb-dim", text: (a.freshness && a.freshness.text) || "" })]));
@@ -1095,7 +1216,7 @@
         /* §55: kompakte Karte — Ausblick, Schluesselzone, Ungueltig-Linie, Strukturklarheit. */
         var tone = { BULLISH: "up", BEARISH: "down", MIXED: "mixed" }[a.outlook.label] || "flat";
         var cl = a.clarity ? { CLEAR: "klar", MODERATE: "mittel", AMBIGUOUS: "unklar" }[a.clarity.level] : null;
-        cbHost.append(el("a", { class: "cb-teaser cb-tone-" + tone, href: X.routes.chartbild(ticker) }, [
+        cbHost.append(el("a", { class: "cb-teaser cb-tone-" + tone, href: X.routes.chart(ticker) }, [
           el("span", { class: "cb-teaser-k", text: "Technischer Ausblick" }),
           el("b", { class: "cb-teaser-o" }, [el("span", { class: "cb-dot", "aria-hidden": "true" }), el("span", { text: (Ex && Ex.STRUCTURE[a.outlook.structure]) || ((Ex && Ex.OUTLOOK[a.outlook.label]) || a.outlook.label) })]),
           el("span", { class: "cb-teaser-grid" }, [
@@ -1144,17 +1265,17 @@
     if (entry.v === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") gapNodes.push(el("li", { class: "nein" }, [el("b", { text: "Börsenwert" }), el("span", { text: " – " + VM.reasonText("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") + (entry.il > 1 ? " Das Unternehmen hat " + entry.il + " börsennotierte Aktiengattungen." : "") })]));
     var creditHost = el("div", { class: "qx-logo-credit" });
     var dm = el("details", { class: "vu-dm qv-dm" }, [
-      el("summary", {}, [document.createTextNode("Daten & Methodik"), el("small", { text: "Tiingo · SEC EDGAR" + (last ? " · Kurs bis " + X.dateDe(last[0]) : "") })]),
+      el("summary", {}, [document.createTextNode("Daten & Methodik"), el("small", { text: last ? "Kurs bis " + X.dateDe(last[0]) : "" })]),
       el("dl", {}, [
-        el("dt", { text: "Kurs" }), el("dd", { text: last ? "Tiingo, Tagesschluss bis " + X.dateDe(last[0]) + "; Tagesverlauf aus veröffentlichten 5-Minuten-Kursen" : "keine veröffentlichte Tagesreihe" }),
-        el("dt", { text: "Geschäftszahlen" }), el("dd", { text: vm.asOf && vm.asOf.fundamentals ? "SEC EDGAR, bis " + X.dateDe(vm.asOf.fundamentals) + (vm.asOf.fundamentalsKnown ? " (bekannt seit " + X.dateDe(vm.asOf.fundamentalsKnown) + ")" : "") : "keine" }),
+        el("dt", { text: "Kurs" }), el("dd", { text: last ? "Tagesschluss bis " + X.dateDe(last[0]) + "; Tagesverlauf aus veröffentlichten 5-Minuten-Kursen" : "keine veröffentlichte Tagesreihe" }),
+        el("dt", { text: "Geschäftszahlen" }), el("dd", { text: vm.asOf && vm.asOf.fundamentals ? "Geschäftsberichte bis " + X.dateDe(vm.asOf.fundamentals) + (vm.asOf.fundamentalsKnown ? " (bekannt seit " + X.dateDe(vm.asOf.fundamentalsKnown) + ")" : "") : "keine" }),
         el("dt", { text: "Kennzahlen" }), el("dd", { text: s.quant && s.quant.asOf ? "marktbezogen bis " + X.dateDe(s.quant.asOf) : "–" }),
         el("dt", { text: "Faktoren" }), el("dd", { text: vm.asOf ? "Stand " + X.dateDe(vm.asOf.factors) : "keine" }),
         el("dt", { text: "Setup" }), el("dd", { text: vm.setup.asOf ? "Stand " + X.dateDe(vm.setup.asOf) + " (technische Auswertung, nicht der tägliche Kursstand)" : "keins" }),
         el("dt", { text: "Nachrichten" }), el("dd", {}, [el("span", { text: "in Quant nicht angebunden – " }), X.link("Vision Universe News", "/news/")])
       ]),
       el("p", { text: vm.isNot }),
-      el("p", { class: "qv-dm-links" }, [X.link("Methodik", X.routes.method()), el("span", { text: " · " }), X.link("SEC-Daten prüfen", "/quant/data-inspector/"), el("span", { text: " · " }),
+      el("p", { class: "qv-dm-links" }, [X.link("Methodik", X.routes.method()), el("span", { text: " · " }), X.link("Daten prüfen", "/quant/data-inspector/"), el("span", { text: " · " }),
         X.link("Vergleichen", X.routes.compare([ticker])), el("span", { text: " · " }), X.link("In Discover ansehen", "/discover/#/s/US_REAL/" + encodeURIComponent(ticker))]),
       creditHost]);
     bodyHost.append(limitsSection([

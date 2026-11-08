@@ -1,0 +1,2696 @@
+{
+ "schemaVersion": "model-depots-1.0.0",
+ "label": "Rechenmodell, kein echtes Geld",
+ "legalNotice": "modelPortfolio",
+ "certification": "NOT_CERTIFIED",
+ "recommendation": false,
+ "liveStart": "2026-11-05",
+ "asOf": "2026-11-06",
+ "universeAsOf": "2026-11-06",
+ "rules": {
+  "engine": "portfolio-backtest-1.1.0",
+  "construction": "portfolio-construction-1.0.0",
+  "standard": {
+   "id": "VU_PORTFOLIO_STANDARD_1",
+   "minPositions": 15,
+   "maxPositions": 30,
+   "targetPositions": 25,
+   "maxPositionWeight": 0.08,
+   "maxSectorWeight": 0.25,
+   "minDollarVolumeUsd": 2000000,
+   "maxParticipationOfAdv": 0.05,
+   "assumedPortfolioUsd": 10000000,
+   "minMarketCapUsd": 300000000,
+   "minPrice": 5,
+   "feeBps": 1,
+   "slippageBps": 5,
+   "weightings": [
+    "EQUAL",
+    "INVERSE_VOL",
+    "RISK_PARITY"
+   ]
+  },
+  "weighting": "RISK_PARITY",
+  "rebalance": "MONTHLY_FIRST_RUN_OF_MONTH",
+  "costsBpsPerSide": 6,
+  "population": "PRODUKTUNIVERSUM_ELIGIBLE_OHNE_TICKER_WIEDERVERWENDUNG",
+  "entryPrice": "PUBLISHED_CLOSE_AT_DECISION_RUN",
+  "fundamentals": "COMMITTED_SEC_CONSUMER_LATEST_FILING"
+ },
+ "performance": {
+  "state": "PUBLISHED",
+  "basis": "MODEL_NAV_SINCE_LIVE_START",
+  "note": "Wertentwicklung des Rechenmodells ab Live-Start, nach Kosten, ohne Steuern."
+ },
+ "benchmark": {
+  "file": "quant/data/market/multi-asset/series/SPY.json",
+  "sourceHash": "dc470fc46f04e3dd33d7ef17152bb22a4a9cfeb0dd9bac5a9b0879c6c722fcad"
+ },
+ "depots": [
+  {
+   "profileId": "quality-compounder",
+   "name": "Quality Compounder",
+   "rule": "Kauft Firmen mit hoher Qualität, guter Rendite auf das Kapital, ruhigem Kurs und Wachstum.",
+   "startCapital": 1000000,
+   "cash": 0,
+   "costs": 599.9999999999998,
+   "positions": [
+    {
+     "ticker": "WES",
+     "securityId": "ref_WES",
+     "weight": 0.057493,
+     "units": 1441.857428502624,
+     "since": "2026-11-05",
+     "entryPrice": 39.85,
+     "entryDate": "2026-11-05",
+     "lastPrice": 39.85,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "PEN",
+     "securityId": "ref_PEN",
+     "weight": 0.052475,
+     "units": 163.3191046566826,
+     "since": "2026-11-05",
+     "entryPrice": 321.11,
+     "entryDate": "2026-11-05",
+     "lastPrice": 319.21,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "MNST",
+     "securityId": "ref_MNST",
+     "weight": 0.050378,
+     "units": 1052.6416780945385,
+     "since": "2026-11-05",
+     "entryPrice": 47.83,
+     "entryDate": "2026-11-05",
+     "lastPrice": 45.72,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "WTM",
+     "securityId": "ref_WTM",
+     "weight": 0.050081,
+     "units": 21.816695581983154,
+     "since": "2026-11-05",
+     "entryPrice": 2294.16,
+     "entryDate": "2026-11-05",
+     "lastPrice": 2241.12,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "O",
+     "securityId": "ref_O",
+     "weight": 0.046179,
+     "units": 775.6508580238994,
+     "since": "2026-11-05",
+     "entryPrice": 59.5,
+     "entryDate": "2026-11-05",
+     "lastPrice": 59.04,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "DTM",
+     "securityId": "ref_DTM",
+     "weight": 0.045747,
+     "units": 405.02550161763406,
+     "since": "2026-11-05",
+     "entryPrice": 112.88,
+     "entryDate": "2026-11-05",
+     "lastPrice": 113.66,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "LTC",
+     "securityId": "ref_LTC",
+     "weight": 0.045485,
+     "units": 995.7964338234294,
+     "since": "2026-11-05",
+     "entryPrice": 45.65,
+     "entryDate": "2026-11-05",
+     "lastPrice": 44.77,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "INVA",
+     "securityId": "ref_INVA",
+     "weight": 0.04043,
+     "units": 2100.0887214394343,
+     "since": "2026-11-05",
+     "entryPrice": 19.24,
+     "entryDate": "2026-11-05",
+     "lastPrice": 19.1,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "IRMD",
+     "securityId": "ref_IRMD",
+     "weight": 0.039565,
+     "units": 462.25087815716495,
+     "since": "2026-11-05",
+     "entryPrice": 85.54,
+     "entryDate": "2026-11-05",
+     "lastPrice": 86.31,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "CNX",
+     "securityId": "ref_CNX",
+     "weight": 0.039417,
+     "units": 1115.964142217733,
+     "since": "2026-11-05",
+     "entryPrice": 35.3,
+     "entryDate": "2026-11-05",
+     "lastPrice": 34.92,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "EGP",
+     "securityId": "ref_EGP",
+     "weight": 0.039251,
+     "units": 202.3480400138697,
+     "since": "2026-11-05",
+     "entryPrice": 193.86,
+     "entryDate": "2026-11-05",
+     "lastPrice": 193.81,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "ATAT",
+     "securityId": "ref_ATAT",
+     "weight": 0.039134,
+     "units": 1113.9412824086637,
+     "since": "2026-11-05",
+     "entryPrice": 35.11,
+     "entryDate": "2026-11-05",
+     "lastPrice": 35.91,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "VTMX",
+     "securityId": "ref_VTMX",
+     "weight": 0.0378,
+     "units": 1025.441186916527,
+     "since": "2026-11-05",
+     "entryPrice": 36.84,
+     "entryDate": "2026-11-05",
+     "lastPrice": 37.62,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "INCY",
+     "securityId": "ref_INCY",
+     "weight": 0.036938,
+     "units": 312.8157917570721,
+     "since": "2026-11-05",
+     "entryPrice": 118.01,
+     "entryDate": "2026-11-05",
+     "lastPrice": 119.65,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "LGND",
+     "securityId": "ref_LGND",
+     "weight": 0.036721,
+     "units": 122.73821050432971,
+     "since": "2026-11-05",
+     "entryPrice": 299,
+     "entryDate": "2026-11-05",
+     "lastPrice": 306.2,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "GSL",
+     "securityId": "ref_GSL",
+     "weight": 0.036458,
+     "units": 942.2403883380631,
+     "since": "2026-11-05",
+     "entryPrice": 38.67,
+     "entryDate": "2026-11-05",
+     "lastPrice": 39.03,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "EQT",
+     "securityId": "ref_EQT",
+     "weight": 0.036063,
+     "units": 711.9905437654241,
+     "since": "2026-11-05",
+     "entryPrice": 50.62,
+     "entryDate": "2026-11-05",
+     "lastPrice": 49.4,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "UTHR",
+     "securityId": "ref_UTHR",
+     "weight": 0.035862,
+     "units": 63.35328389284783,
+     "since": "2026-11-05",
+     "entryPrice": 565.72,
+     "entryDate": "2026-11-05",
+     "lastPrice": 562.02,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "TCOM",
+     "securityId": "ref_TCOM",
+     "weight": 0.035575,
+     "units": 811.5491875649108,
+     "since": "2026-11-05",
+     "entryPrice": 43.81,
+     "entryDate": "2026-11-05",
+     "lastPrice": 44.37,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NVDA",
+     "securityId": "ref_NVDA",
+     "weight": 0.034752,
+     "units": 191.2504463599595,
+     "since": "2026-11-05",
+     "entryPrice": 181.6,
+     "entryDate": "2026-11-05",
+     "lastPrice": 186.64,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "GPOR",
+     "securityId": "ref_GPOR",
+     "weight": 0.034464,
+     "units": 222.0982634215339,
+     "since": "2026-11-05",
+     "entryPrice": 155.08,
+     "entryDate": "2026-11-05",
+     "lastPrice": 150,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "USLM",
+     "securityId": "ref_USLM",
+     "weight": 0.033866,
+     "units": 283.4412261999221,
+     "since": "2026-11-05",
+     "entryPrice": 119.41,
+     "entryDate": "2026-11-05",
+     "lastPrice": 118.1,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "FNV",
+     "securityId": "ref_FNV",
+     "weight": 0.033394,
+     "units": 133.1292594527458,
+     "since": "2026-11-05",
+     "entryPrice": 250.69,
+     "entryDate": "2026-11-05",
+     "lastPrice": 254.95,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "KRYS",
+     "securityId": "ref_KRYS",
+     "weight": 0.03127,
+     "units": 104.08366349909222,
+     "since": "2026-11-05",
+     "entryPrice": 300.25,
+     "entryDate": "2026-11-05",
+     "lastPrice": 300.88,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "TRNO",
+     "securityId": "ref_TRNO",
+     "weight": 0.031204,
+     "units": 464.82683028890017,
+     "since": "2026-11-05",
+     "entryPrice": 67.09,
+     "entryDate": "2026-11-05",
+     "lastPrice": 66.41,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    }
+   ],
+   "protocol": [
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "WES",
+     "securityId": "ref_WES",
+     "weight": 0.057493,
+     "price": 39.85
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "PEN",
+     "securityId": "ref_PEN",
+     "weight": 0.052475,
+     "price": 321.11
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "MNST",
+     "securityId": "ref_MNST",
+     "weight": 0.050378,
+     "price": 47.83
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "WTM",
+     "securityId": "ref_WTM",
+     "weight": 0.050081,
+     "price": 2294.16
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "O",
+     "securityId": "ref_O",
+     "weight": 0.046179,
+     "price": 59.5
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "DTM",
+     "securityId": "ref_DTM",
+     "weight": 0.045747,
+     "price": 112.88
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "LTC",
+     "securityId": "ref_LTC",
+     "weight": 0.045485,
+     "price": 45.65
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "INVA",
+     "securityId": "ref_INVA",
+     "weight": 0.04043,
+     "price": 19.24
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "IRMD",
+     "securityId": "ref_IRMD",
+     "weight": 0.039565,
+     "price": 85.54
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "CNX",
+     "securityId": "ref_CNX",
+     "weight": 0.039417,
+     "price": 35.3
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "EGP",
+     "securityId": "ref_EGP",
+     "weight": 0.039251,
+     "price": 193.86
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "ATAT",
+     "securityId": "ref_ATAT",
+     "weight": 0.039134,
+     "price": 35.11
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "VTMX",
+     "securityId": "ref_VTMX",
+     "weight": 0.0378,
+     "price": 36.84
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "INCY",
+     "securityId": "ref_INCY",
+     "weight": 0.036938,
+     "price": 118.01
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "LGND",
+     "securityId": "ref_LGND",
+     "weight": 0.036721,
+     "price": 299
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "GSL",
+     "securityId": "ref_GSL",
+     "weight": 0.036458,
+     "price": 38.67
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "EQT",
+     "securityId": "ref_EQT",
+     "weight": 0.036063,
+     "price": 50.62
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "UTHR",
+     "securityId": "ref_UTHR",
+     "weight": 0.035862,
+     "price": 565.72
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "TCOM",
+     "securityId": "ref_TCOM",
+     "weight": 0.035575,
+     "price": 43.81
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NVDA",
+     "securityId": "ref_NVDA",
+     "weight": 0.034752,
+     "price": 181.6
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "GPOR",
+     "securityId": "ref_GPOR",
+     "weight": 0.034464,
+     "price": 155.08
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "USLM",
+     "securityId": "ref_USLM",
+     "weight": 0.033866,
+     "price": 119.41
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "FNV",
+     "securityId": "ref_FNV",
+     "weight": 0.033394,
+     "price": 250.69
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "KRYS",
+     "securityId": "ref_KRYS",
+     "weight": 0.03127,
+     "price": 300.25
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "TRNO",
+     "securityId": "ref_TRNO",
+     "weight": 0.031204,
+     "price": 67.09
+    }
+   ],
+   "lastRebalance": "2026-11-05",
+   "decision": {
+    "due": false,
+    "state": "NOT_DUE"
+   },
+   "invested": 1,
+   "nextRebalance": "2026-12-01",
+   "nav": [
+    [
+     "2026-11-05",
+     0.9994
+    ],
+    [
+     "2026-11-06",
+     0.996981
+    ]
+   ]
+  },
+  {
+   "profileId": "momentum-leader",
+   "name": "Momentum Leader",
+   "rule": "Kauft Aktien mit dem stärksten Kurstrend, die zugleich wachsen und nicht zu stark schwanken.",
+   "startCapital": 1000000,
+   "cash": 0,
+   "costs": 599.9999999999999,
+   "positions": [
+    {
+     "ticker": "PEN",
+     "securityId": "ref_PEN",
+     "weight": 0.06064,
+     "units": 188.73026122580055,
+     "since": "2026-11-05",
+     "entryPrice": 321.11,
+     "entryDate": "2026-11-05",
+     "lastPrice": 319.21,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "TD",
+     "securityId": "ref_TD",
+     "weight": 0.060495,
+     "units": 491.1779303438619,
+     "since": "2026-11-05",
+     "entryPrice": 123.09,
+     "entryDate": "2026-11-05",
+     "lastPrice": 122.4,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "PSMT",
+     "securityId": "ref_PSMT",
+     "weight": 0.059567,
+     "units": 366.21335614168953,
+     "since": "2026-11-05",
+     "entryPrice": 162.56,
+     "entryDate": "2026-11-05",
+     "lastPrice": 162.46,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "RSVR",
+     "securityId": "ref_RSVR",
+     "weight": 0.059068,
+     "units": 5714.692164195856,
+     "since": "2026-11-05",
+     "entryPrice": 10.33,
+     "entryDate": "2026-11-05",
+     "lastPrice": 10.21,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "CON",
+     "securityId": "ref_CON",
+     "weight": 0.045476,
+     "units": 1078.2650676162111,
+     "since": "2026-11-05",
+     "entryPrice": 42.15,
+     "entryDate": "2026-11-05",
+     "lastPrice": 42.22,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NPK",
+     "securityId": "ref_NPK",
+     "weight": 0.044892,
+     "units": 319.03207881535775,
+     "since": "2026-11-05",
+     "entryPrice": 140.63,
+     "entryDate": "2026-11-05",
+     "lastPrice": 142.55,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "OKE",
+     "securityId": "ref_OKE",
+     "weight": 0.044826,
+     "units": 519.4076165885282,
+     "since": "2026-11-05",
+     "entryPrice": 86.25,
+     "entryDate": "2026-11-05",
+     "lastPrice": 85.19,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "ACNB",
+     "securityId": "ref_ACNB",
+     "weight": 0.044357,
+     "units": 676.9029481463222,
+     "since": "2026-11-05",
+     "entryPrice": 65.49,
+     "entryDate": "2026-11-05",
+     "lastPrice": 65.54,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "BWFG",
+     "securityId": "ref_BWFG",
+     "weight": 0.041021,
+     "units": 583.7425558879374,
+     "since": "2026-11-05",
+     "entryPrice": 70.23,
+     "entryDate": "2026-11-05",
+     "lastPrice": 70.11,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "BUSE",
+     "securityId": "ref_BUSE",
+     "weight": 0.040976,
+     "units": 1428.3876451692552,
+     "since": "2026-11-05",
+     "entryPrice": 28.67,
+     "entryDate": "2026-11-05",
+     "lastPrice": 28.63,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "PNTG",
+     "securityId": "ref_PNTG",
+     "weight": 0.037889,
+     "units": 946.6687130481148,
+     "since": "2026-11-05",
+     "entryPrice": 40,
+     "entryDate": "2026-11-05",
+     "lastPrice": 36.36,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "PRSU",
+     "securityId": "ref_PRSU",
+     "weight": 0.037284,
+     "units": 689.5182913169489,
+     "since": "2026-11-05",
+     "entryPrice": 54.04,
+     "entryDate": "2026-11-05",
+     "lastPrice": 54.56,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "KRYS",
+     "securityId": "ref_KRYS",
+     "weight": 0.037133,
+     "units": 123.59919581059496,
+     "since": "2026-11-05",
+     "entryPrice": 300.25,
+     "entryDate": "2026-11-05",
+     "lastPrice": 300.88,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "FTI",
+     "securityId": "ref_FTI",
+     "weight": 0.036919,
+     "units": 599.0660807102646,
+     "since": "2026-11-05",
+     "entryPrice": 61.59,
+     "entryDate": "2026-11-05",
+     "lastPrice": 63.52,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "LTH",
+     "securityId": "ref_LTH",
+     "weight": 0.036884,
+     "units": 771.9803451726232,
+     "since": "2026-11-05",
+     "entryPrice": 47.75,
+     "entryDate": "2026-11-05",
+     "lastPrice": 47.12,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "KSPI",
+     "securityId": "ref_KSPI",
+     "weight": 0.036058,
+     "units": 393.49507259248793,
+     "since": "2026-11-05",
+     "entryPrice": 91.58,
+     "entryDate": "2026-11-05",
+     "lastPrice": 91.68,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NVDA",
+     "securityId": "ref_NVDA",
+     "weight": 0.035875,
+     "units": 197.43354276360964,
+     "since": "2026-11-05",
+     "entryPrice": 181.6,
+     "entryDate": "2026-11-05",
+     "lastPrice": 186.64,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "ENLT",
+     "securityId": "ref_ENLT",
+     "weight": 0.033993,
+     "units": 525.8158647550844,
+     "since": "2026-11-05",
+     "entryPrice": 64.61,
+     "entryDate": "2026-11-05",
+     "lastPrice": 68.32,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "VCTR",
+     "securityId": "ref_VCTR",
+     "weight": 0.033967,
+     "units": 301.9867910027431,
+     "since": "2026-11-05",
+     "entryPrice": 112.41,
+     "entryDate": "2026-11-05",
+     "lastPrice": 119.24,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "INVX",
+     "securityId": "ref_INVX",
+     "weight": 0.031046,
+     "units": 1270.0658803923668,
+     "since": "2026-11-05",
+     "entryPrice": 24.43,
+     "entryDate": "2026-11-05",
+     "lastPrice": 25.13,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "BTSG",
+     "securityId": "ref_BTSG",
+     "weight": 0.030498,
+     "units": 462.8005138185543,
+     "since": "2026-11-05",
+     "entryPrice": 65.86,
+     "entryDate": "2026-11-05",
+     "lastPrice": 67.15,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "SN",
+     "securityId": "ref_SN",
+     "weight": 0.029437,
+     "units": 135.49056058583983,
+     "since": "2026-11-05",
+     "entryPrice": 217.13,
+     "entryDate": "2026-11-05",
+     "lastPrice": 222.95,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "ECPG",
+     "securityId": "ref_ECPG",
+     "weight": 0.029184,
+     "units": 231.16498229563808,
+     "since": "2026-11-05",
+     "entryPrice": 126.17,
+     "entryDate": "2026-11-05",
+     "lastPrice": 114.14,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "LQDT",
+     "securityId": "ref_LQDT",
+     "weight": 0.028422,
+     "units": 635.1792678163558,
+     "since": "2026-11-05",
+     "entryPrice": 44.72,
+     "entryDate": "2026-11-05",
+     "lastPrice": 43.64,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "DCTH",
+     "securityId": "ref_DCTH",
+     "weight": 0.024091,
+     "units": 1661.5892465392617,
+     "since": "2026-11-05",
+     "entryPrice": 14.49,
+     "entryDate": "2026-11-05",
+     "lastPrice": 14.93,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    }
+   ],
+   "protocol": [
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "PEN",
+     "securityId": "ref_PEN",
+     "weight": 0.06064,
+     "price": 321.11
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "TD",
+     "securityId": "ref_TD",
+     "weight": 0.060495,
+     "price": 123.09
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "PSMT",
+     "securityId": "ref_PSMT",
+     "weight": 0.059567,
+     "price": 162.56
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "RSVR",
+     "securityId": "ref_RSVR",
+     "weight": 0.059068,
+     "price": 10.33
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "CON",
+     "securityId": "ref_CON",
+     "weight": 0.045476,
+     "price": 42.15
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NPK",
+     "securityId": "ref_NPK",
+     "weight": 0.044892,
+     "price": 140.63
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "OKE",
+     "securityId": "ref_OKE",
+     "weight": 0.044826,
+     "price": 86.25
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "ACNB",
+     "securityId": "ref_ACNB",
+     "weight": 0.044357,
+     "price": 65.49
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "BWFG",
+     "securityId": "ref_BWFG",
+     "weight": 0.041021,
+     "price": 70.23
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "BUSE",
+     "securityId": "ref_BUSE",
+     "weight": 0.040976,
+     "price": 28.67
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "PNTG",
+     "securityId": "ref_PNTG",
+     "weight": 0.037889,
+     "price": 40
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "PRSU",
+     "securityId": "ref_PRSU",
+     "weight": 0.037284,
+     "price": 54.04
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "KRYS",
+     "securityId": "ref_KRYS",
+     "weight": 0.037133,
+     "price": 300.25
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "FTI",
+     "securityId": "ref_FTI",
+     "weight": 0.036919,
+     "price": 61.59
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "LTH",
+     "securityId": "ref_LTH",
+     "weight": 0.036884,
+     "price": 47.75
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "KSPI",
+     "securityId": "ref_KSPI",
+     "weight": 0.036058,
+     "price": 91.58
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NVDA",
+     "securityId": "ref_NVDA",
+     "weight": 0.035875,
+     "price": 181.6
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "ENLT",
+     "securityId": "ref_ENLT",
+     "weight": 0.033993,
+     "price": 64.61
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "VCTR",
+     "securityId": "ref_VCTR",
+     "weight": 0.033967,
+     "price": 112.41
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "INVX",
+     "securityId": "ref_INVX",
+     "weight": 0.031046,
+     "price": 24.43
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "BTSG",
+     "securityId": "ref_BTSG",
+     "weight": 0.030498,
+     "price": 65.86
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "SN",
+     "securityId": "ref_SN",
+     "weight": 0.029437,
+     "price": 217.13
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "ECPG",
+     "securityId": "ref_ECPG",
+     "weight": 0.029184,
+     "price": 126.17
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "LQDT",
+     "securityId": "ref_LQDT",
+     "weight": 0.028422,
+     "price": 44.72
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "DCTH",
+     "securityId": "ref_DCTH",
+     "weight": 0.024091,
+     "price": 14.49
+    }
+   ],
+   "lastRebalance": "2026-11-05",
+   "decision": {
+    "due": false,
+    "state": "NOT_DUE"
+   },
+   "invested": 1,
+   "nextRebalance": "2026-12-01",
+   "nav": [
+    [
+     "2026-11-05",
+     0.9994
+    ],
+    [
+     "2026-11-06",
+     1.000271
+    ]
+   ]
+  },
+  {
+   "profileId": "garp",
+   "name": "GARP",
+   "rule": "Kauft wachsende Firmen mit guter Qualität, die im Vergleich noch günstig bewertet sind.",
+   "startCapital": 1000000,
+   "cash": 1.0936673788819462e-10,
+   "costs": 599.9999999999998,
+   "positions": [
+    {
+     "ticker": "INVA",
+     "securityId": "ref_INVA",
+     "weight": 0.065899,
+     "units": 3423.056936934111,
+     "since": "2026-11-05",
+     "entryPrice": 19.24,
+     "entryDate": "2026-11-05",
+     "lastPrice": 19.1,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "CNX",
+     "securityId": "ref_CNX",
+     "weight": 0.062598,
+     "units": 1772.2377971284254,
+     "since": "2026-11-05",
+     "entryPrice": 35.3,
+     "entryDate": "2026-11-05",
+     "lastPrice": 34.92,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "WTM",
+     "securityId": "ref_WTM",
+     "weight": 0.05669,
+     "units": 24.69575359504937,
+     "since": "2026-11-05",
+     "entryPrice": 2294.16,
+     "entryDate": "2026-11-05",
+     "lastPrice": 2241.12,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "TCOM",
+     "securityId": "ref_TCOM",
+     "weight": 0.056174,
+     "units": 1281.451746232186,
+     "since": "2026-11-05",
+     "entryPrice": 43.81,
+     "entryDate": "2026-11-05",
+     "lastPrice": 44.37,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "EQT",
+     "securityId": "ref_EQT",
+     "weight": 0.053908,
+     "units": 1064.321824917351,
+     "since": "2026-11-05",
+     "entryPrice": 50.62,
+     "entryDate": "2026-11-05",
+     "lastPrice": 49.4,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "VICI",
+     "securityId": "ref_VICI",
+     "weight": 0.049884,
+     "units": 1977.5665910642185,
+     "since": "2026-11-05",
+     "entryPrice": 25.21,
+     "entryDate": "2026-11-05",
+     "lastPrice": 24.79,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "GPOR",
+     "securityId": "ref_GPOR",
+     "weight": 0.049761,
+     "units": 320.68231304350434,
+     "since": "2026-11-05",
+     "entryPrice": 155.08,
+     "entryDate": "2026-11-05",
+     "lastPrice": 150,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "FSLR",
+     "securityId": "ref_FSLR",
+     "weight": 0.044697,
+     "units": 228.18707947969915,
+     "since": "2026-11-05",
+     "entryPrice": 195.76,
+     "entryDate": "2026-11-05",
+     "lastPrice": 201.14,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "HRMY",
+     "securityId": "ref_HRMY",
+     "weight": 0.041749,
+     "units": 1284.997573762808,
+     "since": "2026-11-05",
+     "entryPrice": 32.47,
+     "entryDate": "2026-11-05",
+     "lastPrice": 33.11,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NMIH",
+     "securityId": "ref_NMIH",
+     "weight": 0.041517,
+     "units": 937.2477887006894,
+     "since": "2026-11-05",
+     "entryPrice": 44.27,
+     "entryDate": "2026-11-05",
+     "lastPrice": 39.03,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "TRNO",
+     "securityId": "ref_TRNO",
+     "weight": 0.040145,
+     "units": 598.0095162122906,
+     "since": "2026-11-05",
+     "entryPrice": 67.09,
+     "entryDate": "2026-11-05",
+     "lastPrice": 66.41,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "LPG",
+     "securityId": "ref_LPG",
+     "weight": 0.039789,
+     "units": 862.9548346039603,
+     "since": "2026-11-05",
+     "entryPrice": 46.08,
+     "entryDate": "2026-11-05",
+     "lastPrice": 46.55,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NOG",
+     "securityId": "ref_NOG",
+     "weight": 0.038916,
+     "units": 1756.6893248791873,
+     "since": "2026-11-05",
+     "entryPrice": 22.14,
+     "entryDate": "2026-11-05",
+     "lastPrice": 22.84,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "WLFC",
+     "securityId": "ref_WLFC",
+     "weight": 0.038368,
+     "units": 817.2433891500965,
+     "since": "2026-11-05",
+     "entryPrice": 46.92,
+     "entryDate": "2026-11-05",
+     "lastPrice": 46.86,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "OPRA",
+     "securityId": "ref_OPRA",
+     "weight": 0.036011,
+     "units": 2463.334588197049,
+     "since": "2026-11-05",
+     "entryPrice": 14.61,
+     "entryDate": "2026-11-05",
+     "lastPrice": 14.72,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "INSP",
+     "securityId": "ref_INSP",
+     "weight": 0.032085,
+     "units": 481.98033198472126,
+     "since": "2026-11-05",
+     "entryPrice": 66.53,
+     "entryDate": "2026-11-05",
+     "lastPrice": 63.98,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NRDS",
+     "securityId": "ref_NRDS",
+     "weight": 0.031916,
+     "units": 2790.623112461189,
+     "since": "2026-11-05",
+     "entryPrice": 11.43,
+     "entryDate": "2026-11-05",
+     "lastPrice": 7.89,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "HCI",
+     "securityId": "ref_HCI",
+     "weight": 0.031254,
+     "units": 162.65889112189132,
+     "since": "2026-11-05",
+     "entryPrice": 192.03,
+     "entryDate": "2026-11-05",
+     "lastPrice": 186.03,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NRIM",
+     "securityId": "ref_NRIM",
+     "weight": 0.03051,
+     "units": 1293.6670030145817,
+     "since": "2026-11-05",
+     "entryPrice": 23.57,
+     "entryDate": "2026-11-05",
+     "lastPrice": 23.49,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "KGC",
+     "securityId": "ref_KGC",
+     "weight": 0.030284,
+     "units": 1401.838273564478,
+     "since": "2026-11-05",
+     "entryPrice": 21.59,
+     "entryDate": "2026-11-05",
+     "lastPrice": 22.24,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "MU",
+     "securityId": "ref_MU",
+     "weight": 0.027584,
+     "units": 41.99796574470597,
+     "since": "2026-11-05",
+     "entryPrice": 656.39,
+     "entryDate": "2026-11-05",
+     "lastPrice": 690,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "PAAS",
+     "securityId": "ref_PAAS",
+     "weight": 0.026186,
+     "units": 644.9166330505734,
+     "since": "2026-11-05",
+     "entryPrice": 40.58,
+     "entryDate": "2026-11-05",
+     "lastPrice": 41.17,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "CRMD",
+     "securityId": "ref_CRMD",
+     "weight": 0.026014,
+     "units": 4970.953738935063,
+     "since": "2026-11-05",
+     "entryPrice": 5.23,
+     "entryDate": "2026-11-05",
+     "lastPrice": 5.32,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "HMY",
+     "securityId": "ref_HMY",
+     "weight": 0.024759,
+     "units": 1464.160636421803,
+     "since": "2026-11-05",
+     "entryPrice": 16.9,
+     "entryDate": "2026-11-05",
+     "lastPrice": 17.17,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "IAG",
+     "securityId": "ref_IAG",
+     "weight": 0.023302,
+     "units": 1330.7180812678369,
+     "since": "2026-11-05",
+     "entryPrice": 17.5,
+     "entryDate": "2026-11-05",
+     "lastPrice": 18.76,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    }
+   ],
+   "protocol": [
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "INVA",
+     "securityId": "ref_INVA",
+     "weight": 0.065899,
+     "price": 19.24
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "CNX",
+     "securityId": "ref_CNX",
+     "weight": 0.062598,
+     "price": 35.3
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "WTM",
+     "securityId": "ref_WTM",
+     "weight": 0.05669,
+     "price": 2294.16
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "TCOM",
+     "securityId": "ref_TCOM",
+     "weight": 0.056174,
+     "price": 43.81
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "EQT",
+     "securityId": "ref_EQT",
+     "weight": 0.053908,
+     "price": 50.62
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "VICI",
+     "securityId": "ref_VICI",
+     "weight": 0.049884,
+     "price": 25.21
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "GPOR",
+     "securityId": "ref_GPOR",
+     "weight": 0.049761,
+     "price": 155.08
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "FSLR",
+     "securityId": "ref_FSLR",
+     "weight": 0.044697,
+     "price": 195.76
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "HRMY",
+     "securityId": "ref_HRMY",
+     "weight": 0.041749,
+     "price": 32.47
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NMIH",
+     "securityId": "ref_NMIH",
+     "weight": 0.041517,
+     "price": 44.27
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "TRNO",
+     "securityId": "ref_TRNO",
+     "weight": 0.040145,
+     "price": 67.09
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "LPG",
+     "securityId": "ref_LPG",
+     "weight": 0.039789,
+     "price": 46.08
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NOG",
+     "securityId": "ref_NOG",
+     "weight": 0.038916,
+     "price": 22.14
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "WLFC",
+     "securityId": "ref_WLFC",
+     "weight": 0.038368,
+     "price": 46.92
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "OPRA",
+     "securityId": "ref_OPRA",
+     "weight": 0.036011,
+     "price": 14.61
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "INSP",
+     "securityId": "ref_INSP",
+     "weight": 0.032085,
+     "price": 66.53
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NRDS",
+     "securityId": "ref_NRDS",
+     "weight": 0.031916,
+     "price": 11.43
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "HCI",
+     "securityId": "ref_HCI",
+     "weight": 0.031254,
+     "price": 192.03
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NRIM",
+     "securityId": "ref_NRIM",
+     "weight": 0.03051,
+     "price": 23.57
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "KGC",
+     "securityId": "ref_KGC",
+     "weight": 0.030284,
+     "price": 21.59
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "MU",
+     "securityId": "ref_MU",
+     "weight": 0.027584,
+     "price": 656.39
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "PAAS",
+     "securityId": "ref_PAAS",
+     "weight": 0.026186,
+     "price": 40.58
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "CRMD",
+     "securityId": "ref_CRMD",
+     "weight": 0.026014,
+     "price": 5.23
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "HMY",
+     "securityId": "ref_HMY",
+     "weight": 0.024759,
+     "price": 16.9
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "IAG",
+     "securityId": "ref_IAG",
+     "weight": 0.023302,
+     "price": 17.5
+    }
+   ],
+   "lastRebalance": "2026-11-05",
+   "decision": {
+    "due": false,
+    "state": "NOT_DUE"
+   },
+   "invested": 1,
+   "nextRebalance": "2026-12-01",
+   "nav": [
+    [
+     "2026-11-05",
+     0.9994
+    ],
+    [
+     "2026-11-06",
+     0.985522
+    ]
+   ]
+  },
+  {
+   "profileId": "defensive-quality",
+   "name": "Defensive Quality",
+   "rule": "Kauft ruhige, solide und profitable Firmen mit stabilem Kurstrend.",
+   "startCapital": 1000000,
+   "cash": 1.2744294508593157e-10,
+   "costs": 599.9999999999999,
+   "positions": [
+    {
+     "ticker": "JNJ",
+     "securityId": "ref_JNJ",
+     "weight": 0.062786,
+     "units": 230.41969217886555,
+     "since": "2026-11-05",
+     "entryPrice": 272.32,
+     "entryDate": "2026-11-05",
+     "lastPrice": 276.22,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "MNST",
+     "securityId": "ref_MNST",
+     "weight": 0.055555,
+     "units": 1160.8075160967633,
+     "since": "2026-11-05",
+     "entryPrice": 47.83,
+     "entryDate": "2026-11-05",
+     "lastPrice": 45.72,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "WES",
+     "securityId": "ref_WES",
+     "weight": 0.054712,
+     "units": 1372.130379552553,
+     "since": "2026-11-05",
+     "entryPrice": 39.85,
+     "entryDate": "2026-11-05",
+     "lastPrice": 39.85,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "AME",
+     "securityId": "ref_AME",
+     "weight": 0.053668,
+     "units": 240.53030255103778,
+     "since": "2026-11-05",
+     "entryPrice": 222.99,
+     "entryDate": "2026-11-05",
+     "lastPrice": 228.67,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "LTC",
+     "securityId": "ref_LTC",
+     "weight": 0.052461,
+     "units": 1148.5032834942263,
+     "since": "2026-11-05",
+     "entryPrice": 45.65,
+     "entryDate": "2026-11-05",
+     "lastPrice": 44.77,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "IVT",
+     "securityId": "ref_IVT",
+     "weight": 0.049477,
+     "units": 1560.346122803038,
+     "since": "2026-11-05",
+     "entryPrice": 31.69,
+     "entryDate": "2026-11-05",
+     "lastPrice": 31.51,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "EOG",
+     "securityId": "ref_EOG",
+     "weight": 0.04592,
+     "units": 316.7415886890291,
+     "since": "2026-11-05",
+     "entryPrice": 144.89,
+     "entryDate": "2026-11-05",
+     "lastPrice": 147.13,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NTCT",
+     "securityId": "ref_NTCT",
+     "weight": 0.042928,
+     "units": 1347.8511453729961,
+     "since": "2026-11-05",
+     "entryPrice": 31.83,
+     "entryDate": "2026-11-05",
+     "lastPrice": 31.51,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "EGP",
+     "securityId": "ref_EGP",
+     "weight": 0.042016,
+     "units": 216.60608766472745,
+     "since": "2026-11-05",
+     "entryPrice": 193.86,
+     "entryDate": "2026-11-05",
+     "lastPrice": 193.81,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "IEX",
+     "securityId": "ref_IEX",
+     "weight": 0.041465,
+     "units": 186.16276725116234,
+     "since": "2026-11-05",
+     "entryPrice": 222.6,
+     "entryDate": "2026-11-05",
+     "lastPrice": 226.99,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "SEIC",
+     "securityId": "ref_SEIC",
+     "weight": 0.040973,
+     "units": 389.3188400871179,
+     "since": "2026-11-05",
+     "entryPrice": 105.18,
+     "entryDate": "2026-11-05",
+     "lastPrice": 105.3,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "VRTX",
+     "securityId": "ref_VRTX",
+     "weight": 0.039799,
+     "units": 73.31850156237606,
+     "since": "2026-11-05",
+     "entryPrice": 542.5,
+     "entryDate": "2026-11-05",
+     "lastPrice": 547.09,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "LGND",
+     "securityId": "ref_LGND",
+     "weight": 0.039157,
+     "units": 130.88260253224948,
+     "since": "2026-11-05",
+     "entryPrice": 299,
+     "entryDate": "2026-11-05",
+     "lastPrice": 306.2,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NDSN",
+     "securityId": "ref_NDSN",
+     "weight": 0.037107,
+     "units": 119.43924956879736,
+     "since": "2026-11-05",
+     "entryPrice": 310.49,
+     "entryDate": "2026-11-05",
+     "lastPrice": 309.86,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "GSL",
+     "securityId": "ref_GSL",
+     "weight": 0.034626,
+     "units": 894.887213912454,
+     "since": "2026-11-05",
+     "entryPrice": 38.67,
+     "entryDate": "2026-11-05",
+     "lastPrice": 39.03,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "TRNO",
+     "securityId": "ref_TRNO",
+     "weight": 0.034556,
+     "units": 514.7638974335437,
+     "since": "2026-11-05",
+     "entryPrice": 67.09,
+     "entryDate": "2026-11-05",
+     "lastPrice": 66.41,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NVDA",
+     "securityId": "ref_NVDA",
+     "weight": 0.033474,
+     "units": 184.21539391386457,
+     "since": "2026-11-05",
+     "entryPrice": 181.6,
+     "entryDate": "2026-11-05",
+     "lastPrice": 186.64,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "PR",
+     "securityId": "ref_PR",
+     "weight": 0.031845,
+     "units": 1491.3738789500287,
+     "since": "2026-11-05",
+     "entryPrice": 21.34,
+     "entryDate": "2026-11-05",
+     "lastPrice": 21.75,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "LNTH",
+     "securityId": "ref_LNTH",
+     "weight": 0.030638,
+     "units": 304.06906780316575,
+     "since": "2026-11-05",
+     "entryPrice": 100.7,
+     "entryDate": "2026-11-05",
+     "lastPrice": 100.61,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "VCTR",
+     "securityId": "ref_VCTR",
+     "weight": 0.030516,
+     "units": 271.31158120271067,
+     "since": "2026-11-05",
+     "entryPrice": 112.41,
+     "entryDate": "2026-11-05",
+     "lastPrice": 119.24,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "EXEL",
+     "securityId": "ref_EXEL",
+     "weight": 0.030409,
+     "units": 442.3027770518315,
+     "since": "2026-11-05",
+     "entryPrice": 68.71,
+     "entryDate": "2026-11-05",
+     "lastPrice": 69.57,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "KRYS",
+     "securityId": "ref_KRYS",
+     "weight": 0.030363,
+     "units": 101.06616562763948,
+     "since": "2026-11-05",
+     "entryPrice": 300.25,
+     "entryDate": "2026-11-05",
+     "lastPrice": 300.88,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "INSW",
+     "securityId": "ref_INSW",
+     "weight": 0.029112,
+     "units": 307.97447715702793,
+     "since": "2026-11-05",
+     "entryPrice": 94.47,
+     "entryDate": "2026-11-05",
+     "lastPrice": 98.02,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NMM",
+     "securityId": "ref_NMM",
+     "weight": 0.028835,
+     "units": 342.65463422443025,
+     "since": "2026-11-05",
+     "entryPrice": 84.1,
+     "entryDate": "2026-11-05",
+     "lastPrice": 85.33,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "ADI",
+     "securityId": "ref_ADI",
+     "weight": 0.027602,
+     "units": 76.41094738797229,
+     "since": "2026-11-05",
+     "entryPrice": 361.01,
+     "entryDate": "2026-11-05",
+     "lastPrice": 363.56,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    }
+   ],
+   "protocol": [
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "JNJ",
+     "securityId": "ref_JNJ",
+     "weight": 0.062786,
+     "price": 272.32
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "MNST",
+     "securityId": "ref_MNST",
+     "weight": 0.055555,
+     "price": 47.83
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "WES",
+     "securityId": "ref_WES",
+     "weight": 0.054712,
+     "price": 39.85
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "AME",
+     "securityId": "ref_AME",
+     "weight": 0.053668,
+     "price": 222.99
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "LTC",
+     "securityId": "ref_LTC",
+     "weight": 0.052461,
+     "price": 45.65
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "IVT",
+     "securityId": "ref_IVT",
+     "weight": 0.049477,
+     "price": 31.69
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "EOG",
+     "securityId": "ref_EOG",
+     "weight": 0.04592,
+     "price": 144.89
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NTCT",
+     "securityId": "ref_NTCT",
+     "weight": 0.042928,
+     "price": 31.83
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "EGP",
+     "securityId": "ref_EGP",
+     "weight": 0.042016,
+     "price": 193.86
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "IEX",
+     "securityId": "ref_IEX",
+     "weight": 0.041465,
+     "price": 222.6
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "SEIC",
+     "securityId": "ref_SEIC",
+     "weight": 0.040973,
+     "price": 105.18
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "VRTX",
+     "securityId": "ref_VRTX",
+     "weight": 0.039799,
+     "price": 542.5
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "LGND",
+     "securityId": "ref_LGND",
+     "weight": 0.039157,
+     "price": 299
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NDSN",
+     "securityId": "ref_NDSN",
+     "weight": 0.037107,
+     "price": 310.49
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "GSL",
+     "securityId": "ref_GSL",
+     "weight": 0.034626,
+     "price": 38.67
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "TRNO",
+     "securityId": "ref_TRNO",
+     "weight": 0.034556,
+     "price": 67.09
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NVDA",
+     "securityId": "ref_NVDA",
+     "weight": 0.033474,
+     "price": 181.6
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "PR",
+     "securityId": "ref_PR",
+     "weight": 0.031845,
+     "price": 21.34
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "LNTH",
+     "securityId": "ref_LNTH",
+     "weight": 0.030638,
+     "price": 100.7
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "VCTR",
+     "securityId": "ref_VCTR",
+     "weight": 0.030516,
+     "price": 112.41
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "EXEL",
+     "securityId": "ref_EXEL",
+     "weight": 0.030409,
+     "price": 68.71
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "KRYS",
+     "securityId": "ref_KRYS",
+     "weight": 0.030363,
+     "price": 300.25
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "INSW",
+     "securityId": "ref_INSW",
+     "weight": 0.029112,
+     "price": 94.47
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NMM",
+     "securityId": "ref_NMM",
+     "weight": 0.028835,
+     "price": 84.1
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "ADI",
+     "securityId": "ref_ADI",
+     "weight": 0.027602,
+     "price": 361.01
+    }
+   ],
+   "lastRebalance": "2026-11-05",
+   "decision": {
+    "due": false,
+    "state": "NOT_DUE"
+   },
+   "invested": 1,
+   "nextRebalance": "2026-12-01",
+   "nav": [
+    [
+     "2026-11-05",
+     0.9994
+    ],
+    [
+     "2026-11-06",
+     1.00575
+    ]
+   ]
+  },
+  {
+   "profileId": "value-momentum",
+   "name": "Value Momentum",
+   "rule": "Kauft günstig bewertete Aktien, deren Kurstrend schon dreht und deren Qualität stimmt.",
+   "startCapital": 1000000,
+   "cash": 6.17319528828375e-11,
+   "costs": 600.0000000000001,
+   "positions": [
+    {
+     "ticker": "IX",
+     "securityId": "ref_IX",
+     "weight": 0.064877,
+     "units": 1809.1026716867557,
+     "since": "2026-11-05",
+     "entryPrice": 35.84,
+     "entryDate": "2026-11-05",
+     "lastPrice": 34.85,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NTCT",
+     "securityId": "ref_NTCT",
+     "weight": 0.059454,
+     "units": 1866.7429544977872,
+     "since": "2026-11-05",
+     "entryPrice": 31.83,
+     "entryDate": "2026-11-05",
+     "lastPrice": 31.51,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "EOG",
+     "securityId": "ref_EOG",
+     "weight": 0.052132,
+     "units": 359.5847888360037,
+     "since": "2026-11-05",
+     "entryPrice": 144.89,
+     "entryDate": "2026-11-05",
+     "lastPrice": 147.13,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "COP",
+     "securityId": "ref_COP",
+     "weight": 0.046816,
+     "units": 345.3997640301249,
+     "since": "2026-11-05",
+     "entryPrice": 135.46,
+     "entryDate": "2026-11-05",
+     "lastPrice": 136.27,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "GSL",
+     "securityId": "ref_GSL",
+     "weight": 0.046489,
+     "units": 1201.477561996461,
+     "since": "2026-11-05",
+     "entryPrice": 38.67,
+     "entryDate": "2026-11-05",
+     "lastPrice": 39.03,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NEXN",
+     "securityId": "ref_NEXN",
+     "weight": 0.045909,
+     "units": 5114.964764054349,
+     "since": "2026-11-05",
+     "entryPrice": 8.97,
+     "entryDate": "2026-11-05",
+     "lastPrice": 8.84,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "OXY",
+     "securityId": "ref_OXY",
+     "weight": 0.045695,
+     "units": 810.2780762301011,
+     "since": "2026-11-05",
+     "entryPrice": 56.36,
+     "entryDate": "2026-11-05",
+     "lastPrice": 56.38,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "SBC",
+     "securityId": "ref_SBC",
+     "weight": 0.042779,
+     "units": 8516.648601763689,
+     "since": "2026-11-05",
+     "entryPrice": 5.02,
+     "entryDate": "2026-11-05",
+     "lastPrice": 5.04,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "HRMY",
+     "securityId": "ref_HRMY",
+     "weight": 0.041906,
+     "units": 1289.8477184399837,
+     "since": "2026-11-05",
+     "entryPrice": 32.47,
+     "entryDate": "2026-11-05",
+     "lastPrice": 33.11,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "OSPN",
+     "securityId": "ref_OSPN",
+     "weight": 0.040742,
+     "units": 1859.2685144547265,
+     "since": "2026-11-05",
+     "entryPrice": 21.9,
+     "entryDate": "2026-11-05",
+     "lastPrice": 21.59,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "GASS",
+     "securityId": "ref_GASS",
+     "weight": 0.039926,
+     "units": 5070.099047947261,
+     "since": "2026-11-05",
+     "entryPrice": 7.87,
+     "entryDate": "2026-11-05",
+     "lastPrice": 7.9,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "DV",
+     "securityId": "ref_DV",
+     "weight": 0.039498,
+     "units": 2915.419372040447,
+     "since": "2026-11-05",
+     "entryPrice": 13.54,
+     "entryDate": "2026-11-05",
+     "lastPrice": 13.56,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "OPRA",
+     "securityId": "ref_OPRA",
+     "weight": 0.038201,
+     "units": 2613.135716724871,
+     "since": "2026-11-05",
+     "entryPrice": 14.61,
+     "entryDate": "2026-11-05",
+     "lastPrice": 14.72,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "PR",
+     "securityId": "ref_PR",
+     "weight": 0.036861,
+     "units": 1726.2731266423214,
+     "since": "2026-11-05",
+     "entryPrice": 21.34,
+     "entryDate": "2026-11-05",
+     "lastPrice": 21.75,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "NMM",
+     "securityId": "ref_NMM",
+     "weight": 0.036627,
+     "units": 435.25390337253236,
+     "since": "2026-11-05",
+     "entryPrice": 84.1,
+     "entryDate": "2026-11-05",
+     "lastPrice": 85.33,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "OVV",
+     "securityId": "ref_OVV",
+     "weight": 0.036332,
+     "units": 596.1249965985545,
+     "since": "2026-11-05",
+     "entryPrice": 60.91,
+     "entryDate": "2026-11-05",
+     "lastPrice": 60.52,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "TK",
+     "securityId": "ref_TK",
+     "weight": 0.036234,
+     "units": 2901.598649547448,
+     "since": "2026-11-05",
+     "entryPrice": 12.48,
+     "entryDate": "2026-11-05",
+     "lastPrice": 12.65,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "INSW",
+     "securityId": "ref_INSW",
+     "weight": 0.035075,
+     "units": 371.05981629465896,
+     "since": "2026-11-05",
+     "entryPrice": 94.47,
+     "entryDate": "2026-11-05",
+     "lastPrice": 98.02,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "ZD",
+     "securityId": "ref_ZD",
+     "weight": 0.033796,
+     "units": 622.2412876641927,
+     "since": "2026-11-05",
+     "entryPrice": 54.28,
+     "entryDate": "2026-11-05",
+     "lastPrice": 49.61,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "PBYI",
+     "securityId": "ref_PBYI",
+     "weight": 0.032749,
+     "units": 3349.9532571732834,
+     "since": "2026-11-05",
+     "entryPrice": 9.77,
+     "entryDate": "2026-11-05",
+     "lastPrice": 8.25,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "SSRM",
+     "securityId": "ref_SSRM",
+     "weight": 0.032376,
+     "units": 1158.9173922487198,
+     "since": "2026-11-05",
+     "entryPrice": 27.92,
+     "entryDate": "2026-11-05",
+     "lastPrice": 28.38,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "ADEA",
+     "securityId": "ref_ADEA",
+     "weight": 0.03213,
+     "units": 2166.7029722930447,
+     "since": "2026-11-05",
+     "entryPrice": 14.82,
+     "entryDate": "2026-11-05",
+     "lastPrice": 15.5,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "PNRG",
+     "securityId": "ref_PNRG",
+     "weight": 0.030174,
+     "units": 166.75537257892145,
+     "since": "2026-11-05",
+     "entryPrice": 180.84,
+     "entryDate": "2026-11-05",
+     "lastPrice": 185.64,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "LPG",
+     "securityId": "ref_LPG",
+     "weight": 0.027028,
+     "units": 586.1833026532647,
+     "since": "2026-11-05",
+     "entryPrice": 46.08,
+     "entryDate": "2026-11-05",
+     "lastPrice": 46.55,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    },
+    {
+     "ticker": "MU",
+     "securityId": "ref_MU",
+     "weight": 0.026195,
+     "units": 39.884316091700676,
+     "since": "2026-11-05",
+     "entryPrice": 656.39,
+     "entryDate": "2026-11-05",
+     "lastPrice": 690,
+     "lastDate": "2026-11-06",
+     "priceStale": false
+    }
+   ],
+   "protocol": [
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "IX",
+     "securityId": "ref_IX",
+     "weight": 0.064877,
+     "price": 35.84
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NTCT",
+     "securityId": "ref_NTCT",
+     "weight": 0.059454,
+     "price": 31.83
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "EOG",
+     "securityId": "ref_EOG",
+     "weight": 0.052132,
+     "price": 144.89
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "COP",
+     "securityId": "ref_COP",
+     "weight": 0.046816,
+     "price": 135.46
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "GSL",
+     "securityId": "ref_GSL",
+     "weight": 0.046489,
+     "price": 38.67
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NEXN",
+     "securityId": "ref_NEXN",
+     "weight": 0.045909,
+     "price": 8.97
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "OXY",
+     "securityId": "ref_OXY",
+     "weight": 0.045695,
+     "price": 56.36
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "SBC",
+     "securityId": "ref_SBC",
+     "weight": 0.042779,
+     "price": 5.02
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "HRMY",
+     "securityId": "ref_HRMY",
+     "weight": 0.041906,
+     "price": 32.47
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "OSPN",
+     "securityId": "ref_OSPN",
+     "weight": 0.040742,
+     "price": 21.9
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "GASS",
+     "securityId": "ref_GASS",
+     "weight": 0.039926,
+     "price": 7.87
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "DV",
+     "securityId": "ref_DV",
+     "weight": 0.039498,
+     "price": 13.54
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "OPRA",
+     "securityId": "ref_OPRA",
+     "weight": 0.038201,
+     "price": 14.61
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "PR",
+     "securityId": "ref_PR",
+     "weight": 0.036861,
+     "price": 21.34
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "NMM",
+     "securityId": "ref_NMM",
+     "weight": 0.036627,
+     "price": 84.1
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "OVV",
+     "securityId": "ref_OVV",
+     "weight": 0.036332,
+     "price": 60.91
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "TK",
+     "securityId": "ref_TK",
+     "weight": 0.036234,
+     "price": 12.48
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "INSW",
+     "securityId": "ref_INSW",
+     "weight": 0.035075,
+     "price": 94.47
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "ZD",
+     "securityId": "ref_ZD",
+     "weight": 0.033796,
+     "price": 54.28
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "PBYI",
+     "securityId": "ref_PBYI",
+     "weight": 0.032749,
+     "price": 9.77
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "SSRM",
+     "securityId": "ref_SSRM",
+     "weight": 0.032376,
+     "price": 27.92
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "ADEA",
+     "securityId": "ref_ADEA",
+     "weight": 0.03213,
+     "price": 14.82
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "PNRG",
+     "securityId": "ref_PNRG",
+     "weight": 0.030174,
+     "price": 180.84
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "LPG",
+     "securityId": "ref_LPG",
+     "weight": 0.027028,
+     "price": 46.08
+    },
+    {
+     "date": "2026-11-05",
+     "action": "REIN",
+     "ticker": "MU",
+     "securityId": "ref_MU",
+     "weight": 0.026195,
+     "price": 656.39
+    }
+   ],
+   "lastRebalance": "2026-11-05",
+   "decision": {
+    "due": false,
+    "state": "NOT_DUE"
+   },
+   "invested": 1,
+   "nextRebalance": "2026-12-01",
+   "nav": [
+    [
+     "2026-11-05",
+     0.9994
+    ],
+    [
+     "2026-11-06",
+     0.998044
+    ]
+   ]
+  }
+ ]
+}

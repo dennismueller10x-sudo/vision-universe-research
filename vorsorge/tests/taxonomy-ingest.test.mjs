@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-import { catalog, latestSegment, seriesRecord, priceReturnSeries, retryable } from "../../scripts/vorsorge/ingest-tiingo-etfs.mjs";
+import { catalog, latestSegment, seriesRecord, priceReturnSeries, retryable, extraEtfRows, mergeUniverse } from "../../scripts/vorsorge/ingest-tiingo-etfs.mjs";
 const require = createRequire(import.meta.url);
 const T = require("../engines/etf-taxonomy.js");
 const Codec = require("../engines/series-codec.js");
@@ -164,4 +164,28 @@ test("YieldMax(R) <TICKER> Option Income: Einzelaktie trotz Markenzeichen", () =
   const c = T.classify({ name: "YIELDMAX(R) TSLA OPTION INCOME STRATEGY ETF" });
   assert.equal(c.singleStockUnderlying, "TSLA");
   assert.equal(c.retirement.class, "SEHR_KOMPLEX");
+});
+
+test("Zusatz-ETFs: nur aktive, belegte ETF-Ausscheider, die die Tickerliste nicht als ETF fuehrt", () => {
+  const inst = [
+    { symbol: "AAAC", active: true, productEligibility: "EXCLUDED", productEligibilityReason: "CONFIRMED_NON_EQUITY:ETF", exchange: "nyse", firstTradeDate: "2025-12-11" },
+    { symbol: "SPY", active: true, productEligibility: "EXCLUDED", productEligibilityReason: "CONFIRMED_NON_EQUITY:ETF", exchange: "NYSE ARCA" },
+    { symbol: "OLDX", active: false, productEligibility: "EXCLUDED", productEligibilityReason: "CONFIRMED_NON_EQUITY:ETF" },
+    { symbol: "ABCW", active: true, productEligibility: "EXCLUDED", productEligibilityReason: "CONFIRMED_NON_EQUITY:WARRANT" },
+    { symbol: "ETNX", active: true, productEligibility: "EXCLUDED", productEligibilityReason: "CONFIRMED_NON_EQUITY:ETN" },
+    { symbol: "NVDA", active: true, productEligibility: "ELIGIBLE", productEligibilityReason: "COMMON_STOCK" }
+  ];
+  const rows = extraEtfRows(inst, ["SPY"]);
+  assert.deepEqual(rows.map((r) => r.symbol), ["AAAC"]);
+  assert.equal(rows[0].exchange, "NYSE");
+  assert.equal(rows[0].providerStartDate, "2025-12-11");
+  assert.equal(rows[0].origin, "company-master:CONFIRMED_NON_EQUITY:ETF");
+});
+
+test("Universum schrumpft nicht: Zeilen frueherer Laeufe bleiben, solange der Ticker aktiv ist", () => {
+  const prev = [{ symbol: "SPY", name: "alt" }, { symbol: "GONE", name: "weg" }, { symbol: "QQQ", name: "Q" }];
+  const fresh = [{ symbol: "SPY", name: "neu" }, { symbol: "AAAC", name: "Columbia AAA CLO ETF" }];
+  const u = mergeUniverse(prev, fresh, ["SPY", "QQQ", "AAAC"]);
+  assert.deepEqual(u.map((r) => r.symbol), ["AAAC", "QQQ", "SPY"]);
+  assert.equal(u.find((r) => r.symbol === "SPY").name, "neu");
 });

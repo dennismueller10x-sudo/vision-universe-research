@@ -38,7 +38,7 @@ Vorbereitet ist: `app/ci/ios-testflight.workflow.yml.template`, `app/ci/fastlane
 | 1 | **Apple Developer Program** beitreten (99 €/Jahr). Als Organisation: D-U-N-S-Nummer, Prüfung kann Tage dauern | Owner | Team-ID, Rolle Account Holder |
 | 2 | **Zusätzliche Nutzer** nur mit nötiger Rolle anlegen (App Manager reicht für TestFlight) | Owner | optional |
 | 3 | **App-ID** (explizit) registrieren: Bundle-ID `de.visionuniverse.app` (Vorschlag, Verfügbarkeit prüfen). Capabilities: keine | Owner | App-ID |
-| 4 | **App-Eintrag in App Store Connect (erst nach Klärung des Entwicklernamens, siehe [APPLE_DEVELOPER_NAME.md](APPLE_DEVELOPER_NAME.md)):** Plattform iOS, Name „Vision Universe“ (Verfügbarkeit prüfen), Primärsprache Deutsch, Bundle-ID, SKU | Owner | App-Eintrag |
+| 4 | **App-Eintrag in App Store Connect (erst nach Freigabe der Organisation durch Apple, siehe [APPLE_DEVELOPER_NAME.md](APPLE_DEVELOPER_NAME.md)):** Plattform iOS, Name „Vision Universe“, Primärsprache Deutsch, Bundle-ID, SKU | Owner | App-Eintrag |
 | 5 | **Interne Tester:** Personen als App-Store-Connect-Nutzer anlegen (bis zu 100); sie installieren über die TestFlight-App. **Keine** Beta-App-Prüfung bei internen Testern [prüfen] | Owner | Testgruppe „Intern“ |
 | 6 | **Exportnachweis:** App nutzt nur HTTPS (Standardverschlüsselung). Der Owner beantwortet die Frage in App Store Connect; danach kann `ITSAppUsesNonExemptEncryption` in `Info.plist` gesetzt werden | Owner entscheidet, Claude setzt | keine Rückfrage bei jedem Build |
 | 7 | **Datenschutz (App Privacy)** in App Store Connect grob ausfüllen (Konto: E-Mail, Nutzer-ID; Diagnose: keine). Für intern genügt ein Minimum, für den Store Pflicht | Owner | Eintrag |

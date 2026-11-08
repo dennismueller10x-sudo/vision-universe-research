@@ -36,23 +36,109 @@ function rows(n, { start = "2025-01-02", stepDays = 2, netFn = () => 0.02, baseF
 }
 const seg = (over = {}) => ({ id: "test-median-cut", method: "CHRONOLOGICAL_MEDIAN_EVENT_DATE", embargoDays: 0, criterion: { metric: "MEDIAN_EXCESS", rule: "POSITIVE_IN_BOTH" }, ...over });
 
-test("Vertrag: Mindestgroesse 30 je Segment, aber keine Segmentdefinition im Methodikvertrag", () => {
+/* Entscheidung A1-A6 (04.11.2026, docs/quant/SETUP_OOS_DECISION_A1_A6.md): genau die
+   freigegebene Segmentierung, Schwelle unveraendert. */
+const APPROVED = { id: "setup-oos-2027-05-31", method: "FIXED_CALENDAR_CUT", cutDate: "2027-05-31", embargoDays: 183, countBy: "EVENT_DAY",
+  criterion: { metric: "MEDIAN_EXCESS", rule: "SIGN_REPLICATES" } };
+
+test("Vertrag: Mindestgroesse 30 je Segment, Segmentierung A1-A6 freigegeben und nur ueber approval gelesen", () => {
   assert.equal(MIN, 30);
-  assert.equal(M.kinds.SETUP_BACKTEST.oosSegmentation, undefined, "das Feld ist nur ein Vorschlag und darf nicht still im Vertrag auftauchen");
-  assert.equal(O.segmentationFromMethodology(M), null);
+  assert.equal(M.methodologyVersion, "backtest-certification-1.1.0", "Versionssprung mit der Segmentierung");
+  const s = M.kinds.SETUP_BACKTEST.oosSegmentation;
+  for (const [k, v] of Object.entries(APPROVED)) assert.deepEqual(s[k], v, k);
+  assert.deepEqual(s.population, { eventTypes: ["SETUP_NEW", "SETUP_CONFIRMED"], entryVariant: "NEXT_CLOSE", horizon: "m6", aggregation: "ALL_EVENT_TYPES_PASS" }, "A4: getrennt, SETUP_WEAKENED nicht dabei");
+  assert.equal(s.gateLabel, "OOS_DIRECTIONAL_REPLICATION", "A3: Richtung, kein Vorteilsanspruch");
+  assert.deepEqual([s.approval.approvedBy, s.approval.approvedAt], ["Owner (Neustart-Freigabe)", "2026-11-04"]);
+  assert.equal(O.segmentationFromMethodology(M), s);
+  /* Die freigegebene Definition ist fuer den Auswerter gueltig (kein OOS_SEGMENT_DEFINITION_INVALID). */
+  assert.equal(O.evaluateSetupOos({ rows: null, completedCount: 500, minPerSegment: MIN, segmentation: s }).reasonCode, "OOS_ROWS_NOT_EXPORTED");
+  /* Die uebrigen Schwellen bleiben unveraendert. */
+  assert.deepEqual(M.kinds.SETUP_BACKTEST.requirements, { historyDates: 120, historySpanDays: 180, completedOutcomesM6: 100, titles: 20, eventCalendarMonths: 20, oosMinPerSegment: 30 });
 });
 
-test("Heute: veroeffentlichter Stand ergibt OOS_NOT_MEASURABLE_YET, Gate FAIL", () => {
+/* Gate wie im Zertifizierungs-Builder: je Ereignisart, PASS nur wenn jede besteht. */
+function gateAsBuilder(outcomes, rowsDoc = null) {
+  const s = O.segmentationFromMethodology(M), pop = s.population;
+  const byType = Object.fromEntries(pop.eventTypes.map((t) => [t, run({ rows: rowsDoc ? rowsDoc.rows[t][pop.entryVariant][pop.horizon] : null,
+    completedCount: outcomes.study[t].variants[pop.entryVariant][pop.horizon].status.COMPLETED, minPerSegment: MIN, segmentation: s })]));
+  return C.combineSetupOos(byType);
+}
+
+test("Heute: veroeffentlichter Stand ergibt je Ereignisart OOS_NOT_MEASURABLE_YET, Gate FAIL", () => {
   const outcomes = json("quant/data/product/setup-outcomes-v1.json");
-  const completedM6 = Math.max(...["SETUP_CONFIRMED", "SETUP_NEW"].map((k) => outcomes.study[k].variants.NEXT_CLOSE.m6.status.COMPLETED));
-  const r = run({ rows: null, completedCount: completedM6, minPerSegment: MIN, segmentation: O.segmentationFromMethodology(M) });
-  if (completedM6 < 2 * MIN) assert.deepEqual([r.status, r.reasonCode], ["FAIL", "OOS_NOT_MEASURABLE_YET"]);
-  else assert.deepEqual([r.status, r.reasonCode], ["FAIL", "OOS_SEGMENT_DEFINITION_MISSING"]);
+  const combined = gateAsBuilder(outcomes);
+  for (const t of ["SETUP_NEW", "SETUP_CONFIRMED"]) {
+    const completed = outcomes.study[t].variants.NEXT_CLOSE.m6.status.COMPLETED;
+    if (completed < 2 * MIN) assert.equal(O.evaluateSetupOos({ rows: null, completedCount: completed, minPerSegment: MIN, segmentation: O.segmentationFromMethodology(M) }).reasonCode, "OOS_NOT_MEASURABLE_YET", t);
+  }
+  assert.equal(combined.status, "FAIL");
   const cert = json("quant/data/product/backtest-certification-v1.json");
   const gate = cert.kinds.find((k) => k.id === "SETUP_BACKTEST").gates.find((g) => g.id === "oos");
   assert.equal(gate.state, "FAIL");
-  assert.equal(gate.reason, r.reasonCode, "das Zertifizierungsartefakt traegt denselben Grund wie der Auswerter");
-  assert.equal(gate.value, O.gateValue(r));
+  /* Das veroeffentlichte Artefakt kann von einem Lauf ohne Zeilenexport stammen (rows: null). Vor 60 M6-Ergebnissen
+     je Art ist der Grund in beiden Faellen derselbe. */
+  if (combined.reasonCode === "OOS_NOT_MEASURABLE_YET") {
+    assert.equal(gate.reason, combined.reasonCode, "das Zertifizierungsartefakt traegt denselben Grund wie der Auswerter");
+    assert.equal(gate.value, O.gateValue(combined.result));
+  }
+});
+
+/* Datum + n Tage (UTC). */
+const addDays = (d, n) => new Date(Date.parse(d + "T00:00:00Z") + n * 86400000).toISOString().slice(0, 10);
+/* perDay Zeilen je Tag an days aufeinanderfolgenden Tagen ab start. */
+function dayRows(start, days, perDay, net, base = 0) {
+  const out = [];
+  for (let d = 0; d < days; d++) for (let j = 0; j < perDay; j++) out.push({ date: addDays(start, d), net: typeof net === "function" ? net(d, j) : net, b: base === null ? null : { median: base, positiveShare: 0.5, n: 100 } });
+  return out;
+}
+
+test("A1/A2/A5 freigegeben: Schnitt 2027-05-31, Embargo 183 Tage, 30 effektive Ereignistage je Segment", () => {
+  const s = O.segmentationFromMethodology(M);
+  /* Letzter Lerntag nach Embargo: date + 183 < 2027-05-31, also bis 2026-11-28 einschliesslich. */
+  assert.equal(addDays("2026-11-29", 183), "2027-05-31");
+  /* 90 Ereignisse je Tag (wie SETUP_NEW): Lernen 2026-10-30..2026-11-28 (30 Tage), dazu 2 Tage im Embargo, Test ab Schnitt 30 Tage. */
+  const train = dayRows("2026-10-30", 30, 90, 0.04, 0.01), embargo = dayRows("2026-11-29", 2, 90, 0.04, 0.01), testRows = dayRows("2027-05-31", 30, 90, 0.03, 0.01);
+  const ok = run({ rows: [...train, ...embargo, ...testRows], minPerSegment: MIN, segmentation: s });
+  assert.deepEqual([ok.status, ok.reasonCode, ok.segmentation], ["PASS", null, "setup-oos-2027-05-31"]);
+  assert.equal(ok.purged, 180, "zwei Embargo-Tage fallen weg");
+  assert.deepEqual([ok.segments.train.n, ok.segments.train.nRows, ok.segments.train.to], [30, 2700, "2026-11-28"]);
+  assert.deepEqual([ok.segments.test.n, ok.segments.test.from], [30, "2027-05-31"]);
+  /* 29 Testtage mit 2.610 Zeilen: roh weit ueber 30, effektiv darunter. */
+  const small = run({ rows: [...train, ...dayRows("2027-05-31", 29, 90, 0.03, 0.01)], minPerSegment: MIN, segmentation: s });
+  assert.deepEqual([small.status, small.reasonCode, small.segments.test.n, small.segments.test.nRows], ["FAIL", "OOS_SEGMENT_TOO_SMALL", 29, 2610]);
+  /* Ein Tag vor dem Schnitt zaehlt nicht zum Test, sondern faellt ins Embargo. */
+  const shifted = run({ rows: [...train, ...dayRows("2027-05-30", 30, 90, 0.03, 0.01)], minPerSegment: MIN, segmentation: s });
+  assert.equal(shifted.segments.test.n, 29);
+  /* A3 SIGN_REPLICATES: negativ in beiden Segmenten ist repliziert (kein Vorteilsanspruch), Kippen nicht. */
+  const neg = run({ rows: [...dayRows("2026-10-30", 30, 90, -0.02, 0.01), ...dayRows("2027-05-31", 30, 90, -0.01, 0.01)], minPerSegment: MIN, segmentation: s });
+  assert.equal(neg.status, "PASS");
+  assert.ok(neg.segments.train.metric < 0 && neg.segments.test.metric < 0);
+  const flip = run({ rows: [...train, ...dayRows("2027-05-31", 30, 90, -0.01, 0.01)], minPerSegment: MIN, segmentation: s });
+  assert.equal(flip.reasonCode, "OOS_DIRECTION_NOT_REPLICATED");
+  /* MEDIAN_EXCESS: ohne Marktbasis keine Kennzahl, Segment zu klein. */
+  assert.equal(run({ rows: [...dayRows("2026-10-30", 30, 90, 0.04, null), ...testRows], minPerSegment: MIN, segmentation: s }).reasonCode, "OOS_SEGMENT_TOO_SMALL");
+});
+
+test("A4: je Ereignisart getrennt, das Gate besteht nur, wenn jede Art besteht", () => {
+  const s = O.segmentationFromMethodology(M);
+  const pass = run({ rows: [...dayRows("2026-10-30", 30, 90, 0.04, 0.01), ...dayRows("2027-05-31", 30, 90, 0.03, 0.01)], minPerSegment: MIN, segmentation: s });
+  /* SETUP_CONFIRMED mit 8 Ereignissen je Tag: 240 Zeilen, aber nur 30 bzw. 20 Ereignistage. */
+  const confirmedSmall = run({ rows: [...dayRows("2026-10-30", 30, 8, 0.05, 0.01), ...dayRows("2027-05-31", 20, 8, 0.05, 0.01)], minPerSegment: MIN, segmentation: s });
+  const confirmedFlip = run({ rows: [...dayRows("2026-10-30", 30, 8, 0.05, 0.01), ...dayRows("2027-05-31", 30, 8, -0.05, 0.01)], minPerSegment: MIN, segmentation: s });
+  const notYet = run({ rows: null, completedCount: 10, minPerSegment: MIN, segmentation: s });
+  assert.deepEqual([pass.status, confirmedSmall.reasonCode, confirmedFlip.reasonCode, notYet.reasonCode], ["PASS", "OOS_SEGMENT_TOO_SMALL", "OOS_DIRECTION_NOT_REPLICATED", "OOS_NOT_MEASURABLE_YET"]);
+  const both = C.combineSetupOos({ SETUP_NEW: pass, SETUP_CONFIRMED: pass });
+  assert.deepEqual([both.status, both.reasonCode, both.eventType], ["PASS", null, null]);
+  assert.equal(O.gateValue(both.result), "im Testzeitraum bestätigt (setup-oos-2027-05-31)");
+  const one = C.combineSetupOos({ SETUP_NEW: pass, SETUP_CONFIRMED: confirmedSmall });
+  assert.deepEqual([one.status, one.reasonCode, one.eventType], ["FAIL", "OOS_SEGMENT_TOO_SMALL", "SETUP_CONFIRMED"]);
+  /* Die am weitesten zurueckliegende Art bestimmt den Grund, unabhaengig von der Reihenfolge. */
+  assert.deepEqual([C.combineSetupOos({ SETUP_NEW: confirmedFlip, SETUP_CONFIRMED: notYet }).reasonCode, C.combineSetupOos({ SETUP_NEW: notYet, SETUP_CONFIRMED: confirmedFlip }).reasonCode], ["OOS_NOT_MEASURABLE_YET", "OOS_NOT_MEASURABLE_YET"]);
+  /* Gleichstand: erste Art der Methodik. */
+  assert.equal(C.combineSetupOos({ SETUP_NEW: confirmedSmall, SETUP_CONFIRMED: confirmedSmall }).eventType, "SETUP_NEW");
+  assert.equal(C.combineSetupOos({ SETUP_NEW: pass, SETUP_CONFIRMED: { status: "FAIL", reasonCode: "UNBEKANNT" } }).status, "FAIL");
+  assert.throws(() => C.combineSetupOos({}), /no event type/);
+  assert.deepEqual(C.OOS_STAGES.slice().sort(), O.REASONS.slice().sort(), "jede Begruendung des Auswerters hat eine Stufe");
 });
 
 test("Nicht messbar: weniger als 2 x Mindestgroesse abgeschlossene Ergebnisse, auch mit Segmentierung", () => {

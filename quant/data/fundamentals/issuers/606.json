@@ -7,8 +7,8 @@
       "name": "REGENCY CENTERS CORP",
       "sic": "6798",
       "rawFacts": 16110,
-      "mappedFacts": 3600,
-      "unmappedFacts": 12802,
+      "mappedFacts": 3561,
+      "unmappedFacts": 12858,
       "calendarYears": 18,
       "industry": "REIT",
       "industryMetrics": {
@@ -171,39 +171,41 @@
         "resolvedValues": 427
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 13026,
+        "rules_version": "1.1.0",
+        "total": 13081,
         "by_severity": {
-          "INFO": 12802,
+          "INFO": 12858,
           "ERROR": 9,
-          "WARNING": 215
+          "WARNING": 214
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 198,
+          "CONCEPT_DISAGREEMENT": 197,
           "FISCAL_PERIOD_CONFLICT": 1,
           "FUTURE_DATA_LEAK": 9,
+          "FUTURE_PERIOD_END": 1,
           "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 12,
+          "RESTATEMENT_CONFLICT": 11,
           "UNEXPECTED_DURATION": 1,
           "UNIT_MISMATCH": 1,
-          "UNKNOWN_CONCEPT": 12802
+          "UNKNOWN_CONCEPT": 12858
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-330021",
-        "filing_date": "2026-08-03",
+        "accession": "0001193125-26-451423",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 130
+        "periodic_filings": 131,
+        "acceptance_datetime": "2026-11-06T18:39:59.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
       "sourceDigest": "6f4b8dddcbed73740a10355334c32f41d9ae4df9376c09b4c15388499a001bc4",

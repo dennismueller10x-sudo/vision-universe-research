@@ -21,10 +21,10 @@
 
   function laden() {
     if (!global.fetch) { files = {}; return; }
-    global.fetch(BASE + "index.json", { cache: "default", priority: "low" })
+    var pending = global.__vuLogoIndex || (global.__vuLogoIndex = global.fetch(BASE + "index.json", { cache: "default", priority: "low" })
       .then(function (r) { return r.ok ? r.json() : { files: {} }; })
-      .catch(function () { return { files: {} }; })
-      .then(function (data) {
+      .catch(function () { return { files: {} }; }));
+    pending.then(function (data) {
         files = (data && data.files) || {};
         ((data && data.dark) || []).forEach(function (s) { dunkel[s] = true; });
         breit = (data && data.wide) || {};
@@ -54,7 +54,7 @@
        "lazy" Bild ausserhalb des Dokuments womoeglich nie zu) und wird erst
        sichtbar, wenn es geladen ist - bis dahin bleibt der Buchstabe. */
     var img = global.document.createElement("img");
-    img.alt = "";
+    img.alt = ""; img.width = 56; img.height = 56;
     /* Ein ausgeblendetes Logo (onlyLogo) laedt der Browser "lazy" nie. */
     img.loading = sofort ? "eager" : "lazy";
     img.decoding = "async";

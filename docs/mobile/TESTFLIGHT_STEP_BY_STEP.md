@@ -27,8 +27,8 @@ Kennzeichnung: **[Sie]** nur Sie · **[Claude]** ich · **[gemeinsam]** Prüfpun
 **Vorbereitung am PC:** [Git for Windows](https://git-scm.com/download/win) installieren (Standardoptionen), dann „Git Bash“ öffnen. Ein Arbeitsstand dieses Repositorys wird nur für das Skript gebraucht (`git clone` oder ZIP von GitHub, Branch `main`). Den Schlüsselordner **nicht** in diesen Ordner legen (das Skript verhindert es).
 
 ## Phase 0: Entscheidungen [Sie]
-1. **Entschieden (03.11.2026): Organisation, juristische Person RAM Consulting UG.** Im Store soll „Vision Universe“ als Entwickler erscheinen. Voraussetzungen, Optionen und die Anfrage an Apple: [APPLE_DEVELOPER_NAME.md](APPLE_DEVELOPER_NAME.md). **Der erste App-Eintrag (Phase 2, Schritt 2) wird erst angelegt, wenn die Entwicklernamen-Frage geklärt ist**, denn der Name wird dort einmalig und endgültig gesetzt.
-2. **Name und Bundle-ID** `de.visionuniverse.app` (Verfügbarkeit ungeprüft). Die Bundle-ID legt den Entwicklernamen nicht fest.
+1. **Entschieden (04.11.2026):** App-Name und Name unter dem Icon **Vision Universe**; rechtlicher Betreiber und Apple-Entwickler **RAM Consulting UG (haftungsbeschränkt)**; Kontotyp **Organisation**. Ein abweichender Entwicklername wird nicht benötigt, **die frühere Sperre entfällt** ([APPLE_DEVELOPER_NAME.md](APPLE_DEVELOPER_NAME.md)). Einschreibung am 03.11.2026 eingereicht, D-U-N-S akzeptiert, **Organisationsprüfung bei Apple läuft** (keine erneute Registrierung).
+2. **Bundle-ID** `de.visionuniverse.app`: Verfügbarkeit ist noch zu prüfen; das zeigt sich beim Anlegen in Phase 2 (ist sie vergeben, wählen wir gemeinsam eine andere und ändern sie im Projekt).
 
 ## Phase 1: Apple Developer Program [Sie, PC]
 Organisation: Einschreibung nur im Web. Vorab D-U-N-S, Firmen-E-Mail der eigenen Domain, Website, Vertretungsbefugnis bereitlegen (Liste in [APPLE_DEVELOPER_NAME.md](APPLE_DEVELOPER_NAME.md) §5).
@@ -38,7 +38,7 @@ Organisation: Einschreibung nur im Web. Vorab D-U-N-S, Firmen-E-Mail der eigenen
 
 ## Phase 2: Bundle-ID und App-Eintrag [Sie, PC]
 1. Developer-Portal, **Identifiers**, **+**, **App IDs**, **App**, Explicit `de.visionuniverse.app`, keine Capabilities.
-2. **NICHT JETZT.** Erst nach Klärung des Entwicklernamens: App Store Connect, **Apps**, **+**, Neue App: iOS, Name, Deutsch, Bundle-ID, SKU frei (z. B. `vu-app-001`), im Feld **Company Name** genau den geklärten Entwicklernamen. Der Name ist danach nicht mehr änderbar. Kein „Probe-Eintrag“.
+2. App Store Connect, **Apps**, **+**, Neue App: Plattform iOS, Name **Vision Universe**, Primärsprache Deutsch, Bundle-ID `de.visionuniverse.app`, SKU frei (z. B. `vu-app-001`). Das Feld **Company Name** nicht abändern (bleibt der Rechtsname der Organisation). **Erst nach der Freigabe der Organisation durch Apple.**
 3. Nach dem App-Eintrag: **TestFlight**, **Interne Tests**, Gruppe „Intern“, sich selbst hinzufügen. Die Phasen 3 bis 5 brauchen den App-Eintrag nicht und können vorher laufen.
 
 ## Phase 3: Zertifikat und Profil [Sie, PC, Git Bash] (ohne App-Eintrag möglich)
@@ -79,7 +79,7 @@ Bevor ich die Pipeline aktiviere, gehen wir diese Punkte durch. Sie nennen mir n
 |---|---|---|
 | A1 | Mitgliedschaft aktiv, Verträge akzeptiert | Developer-Portal zeigt Mitgliedschaft, App Store Connect ohne Vertragsbanner |
 | A2 | App-ID `de.visionuniverse.app` explizit | Identifiers-Liste |
-| A3 | App-Eintrag vorhanden, **erst nach geklärtem Entwicklernamen angelegt** | Apps-Liste |
+| A3 | App-Eintrag „Vision Universe“ vorhanden (erst nach Organisationsfreigabe) | Apps-Liste |
 | A4 | Gruppe „Intern“ enthält Sie | TestFlight, Interne Tests |
 | A5 | Distribution-Zertifikat gültig, Ablaufdatum notiert | Certificates |
 | A6 | Profil „VU App Store“ Typ App Store, gehört zu A2 und A5 | Profiles |

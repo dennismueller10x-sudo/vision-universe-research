@@ -16,7 +16,7 @@ const home=read('discover/home.js');
 const app=read('discover/app.js');
 const legacyAlias=read('discover-v2/index.html');
 const sharedCards=read('discover/ui/cards.js');
-const sharedFeed=read('discover/ui/feed.js');
+const views=read('discover/ui/v3.js');
 const sharedDetail=read('discover/ui/detail.js');
 const sourceState=read('quant/engines/realtime/source-state.js');
 const freshness=read('quant/engines/realtime/freshness.js');
@@ -37,21 +37,24 @@ check('B1 canonical freshness and source-state engines are loaded',()=>{
   assert.match(sharedDetail,/SourceState/);
 });
 
-check('B1/B2 home and worlds use canonical visible-card snapshot adapter',()=>{
-  assert.match(home,/D\.Cards\.lazyArtwork/);
-  assert.match(home,/live:\s*options\.live\s*!==\s*false/);
-  assert.match(home,/data-freshness/);
-  assert.match(home,/data-session/);
+check('B1/B2 home and worlds read canonical cards, series and the intraday selection (Redesign 2027)',()=>{
+  // D01-D08 (discover/ui/v3.js): Karten aus den Startseiten-/Sammlungsdateien, Kurslinie aus der kanonischen Reihe (SeriesLoader),
+  // „Heute im Blick“ ueber dieselbe Intraday-Auswahl (Featured.live). Discover rechnet nichts neu.
   assert.match(app,/V\.Home\.render/);
-  assert.match(app,/D\.Cards\.grid/);
+  assert.match(home,/D\.V3\.home\(page,\s*ctx\)/);
+  assert.match(views,/D\.Featured\.live\(hero,\s*ctx,\s*blickSection\)/);
+  assert.match(views,/D\.SeriesLoader\.get\(ps\.path\)/);
+  assert.match(views,/rows\/' \+ uid\(ctx\) \+ '\/'/);
   assert.match(sharedCards,/Hub\.subscribe\(card\.symbol,\s*zeigen\)/);
   assert.doesNotMatch(sharedCards,/Hub\.live\(card\.symbol,\s*zeigen\)/);
 });
 
-check('B2 feed uses the same canonical card/snapshot renderer',()=>{
-  assert.match(app,/D\.Feed\.render/);
-  assert.match(sharedFeed,/lazyArtwork\(karte/);
-  assert.doesNotMatch(sharedFeed,/live:\s*false/);
+check('B2 swipe uses the canonical feed order and stock bundles',()=>{
+  assert.match(app,/D\.V3\.swipen\(root,ctx,active\)/);
+  assert.match(app,/parts\[0\]==='einzeln'\)\{location\.replace\('#\/swipen'\)/);
+  assert.match(views,/feed\/' \+ uid\(ctx\) \+ '\.json'/);
+  assert.match(views,/stocks\/' \+ uid\(ctx\) \+ '\/'/);
+  assert.match(views,/D\.memory\.setPosition\(feedKey/);
 });
 
 check('B2 stream remains stock-page-only and bounded',()=>{
@@ -63,12 +66,12 @@ check('B2 stream remains stock-page-only and bounded',()=>{
 });
 
 check('B3 visible captions use structured metadata, never accessibility prose',()=>{
-  assert.match(home,/rendered\.range/);
-  assert.match(home,/rendered\.asOf/);
-  assert.match(home,/media\.getAttribute\('data-freshness'\)/);
-  assert.match(home,/media\.getAttribute\('data-session'\)/);
-  assert.doesNotMatch(home,/getAttribute\(['"]aria-label['"]\)/);
-  assert.doesNotMatch(home,/aria-label[^\n]*\.match\(/);
+  // Datumsangaben unter der Kurslinie kommen aus den Punkten der Reihe (onDates), nie aus einem aria-label.
+  assert.match(views,/onDates\(points\[0\]\[0\],\s*points\[points\.length - 1\]\[0\]\)/);
+  for(const [name,src] of [['home.js',home],['ui/v3.js',views]]){
+    assert.doesNotMatch(src,/getAttribute\(['"]aria-label['"]\)/,name);
+    assert.doesNotMatch(src,/aria-label[^\n]*\.match\(/,name);
+  }
 });
 
 check('B4 realtime event semantics are variable and therefore stay tick-aligned',()=>{

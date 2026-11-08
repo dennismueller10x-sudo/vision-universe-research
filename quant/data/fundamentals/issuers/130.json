@@ -6,9 +6,9 @@
       "cik": "0000821130",
       "name": "ARRAY DIGITAL INFRASTRUCTURE, INC.",
       "sic": "4812",
-      "rawFacts": 22404,
-      "mappedFacts": 6340,
-      "unmappedFacts": 15804,
+      "rawFacts": 22742,
+      "mappedFacts": 6437,
+      "unmappedFacts": 16162,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -21,28 +21,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 71,
+      "quarterlyPeriods": 72,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 68,
-          "firstAvailablePeriod": "2008-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
-        },
-        "eps_diluted": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
+        "eps_diluted": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0,
@@ -62,21 +62,21 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -90,14 +90,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 71,
+          "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -120,45 +120,46 @@
         }
       },
       "quality": {
-        "HIGH": 434,
-        "MEDIUM": 172
+        "HIGH": 438,
+        "MEDIUM": 175
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 606,
-        "resolvedValues": 606
+        "datableValues": 613,
+        "resolvedValues": 613
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 16844,
+        "rules_version": "1.1.0",
+        "total": 16914,
         "by_severity": {
-          "INFO": 15804,
-          "WARNING": 1040
+          "INFO": 16162,
+          "WARNING": 752
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 956,
+          "CONCEPT_DISAGREEMENT": 668,
           "RESTATEMENT_CONFLICT": 84,
-          "UNKNOWN_CONCEPT": 15804
+          "UNKNOWN_CONCEPT": 16162
         }
       },
       "latestFiling": {
-        "accession": "0000821130-26-000046",
-        "filing_date": "2026-08-07",
+        "accession": "0000821130-26-000052",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 148
+        "periodic_filings": 149,
+        "acceptance_datetime": "2026-11-06T12:40:31.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "d1139656a6119ae3ffd14e6dcfd34bf0f3097543924bed636ec03c27a8424f42",
+      "sourceDigest": "966e5e1cb55d330080239630a16d8d9938f5ae9e26b8f4fd35b5844b1221bcf8",
       "issuerId": "iss_cik_0000821130"
     },
     {

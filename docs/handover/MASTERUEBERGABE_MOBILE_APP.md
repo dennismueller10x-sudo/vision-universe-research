@@ -25,16 +25,16 @@ Repo: `dennismueller10x-sudo/vision-universe-research`. Arbeitsregeln: `CLAUDE.m
 
 ## 4. Blockade und Reihenfolge
 **Blockiert durch Apple:** Die Organisationsregistrierung der **RAM Consulting UG** läuft. Bis zur Bestätigung gibt es kein Zertifikat, keinen API-Schlüssel, keinen App-Eintrag.
-Entwicklername „Vision Universe“: im Feld *Company Name* **nur beim ersten App-Eintrag**, danach unveränderbar (`APPLE_DEVELOPER_NAME.md`). Daher App-Eintrag erst nach Klärung.
+**Namensentscheidung (04.11.2026):** App-Name und Icon-Name „Vision Universe“; Betreiber und Apple-Entwickler RAM Consulting UG (haftungsbeschränkt); Kontotyp Organisation; kein abweichender Entwicklername. **Die frühere Namenssperre entfällt** (`APPLE_DEVELOPER_NAME.md`). Registrierung am 03.11.2026 eingereicht, D-U-N-S akzeptiert, Apple-Prüfung läuft; keine erneute Registrierung.
 
-Was **vor** der Apple-Bestätigung schon möglich ist (für den Owner, Windows-PC): Git for Windows installieren, Repo als ZIP/clone holen, Passwortmanager bereithalten, D-U-N-S/Firmen-Daten nach `APPLE_DEVELOPER_NAME.md` §5 prüfen, Supabase-URL und **publishable** Key heraussuchen.
+Was **vor** der Apple-Bestätigung schon möglich ist (für den Owner, Windows-PC): Git for Windows installieren, Repo als ZIP/clone holen, Passwortmanager bereithalten, Supabase-URL und **publishable** Key heraussuchen.
 
 ### Schritte nach Apple-Freigabe (Details: TESTFLIGHT_STEP_BY_STEP.md, Phasen 1–9)
 | # | Schritt | Wer / Gerät |
 |---|---|---|
 | 1 | Mitgliedschaft aktiv, Verträge akzeptieren, Team-ID notieren | Owner, PC-Browser |
 | 2 | Bundle-ID `de.visionuniverse.app` anlegen (explizit, keine Capabilities) | Owner, PC |
-| 3 | App-Eintrag in App Store Connect (Company Name = geklärter Name), Gruppe „Intern“ mit Owner | Owner, PC |
+| 3 | App-Eintrag „Vision Universe“ in App Store Connect (Company Name unverändert = Rechtsname), Gruppe „Intern“ mit Owner | Owner, PC |
 | 4 | `bash app/ci/make-signing-request.sh csr <apple-id>` → CSR hochladen → `.cer` laden → `… p12 <cer>` (Passwort ≥ 16 Zeichen) → Profil „VU App Store“ laden | Owner, Git Bash |
 | 5 | ASC-API-Schlüssel (Rolle App Manager), `.p8` einmal laden | Owner, PC |
 | 6 | GitHub-Umgebung `app-testflight` (Reviewer = Owner, Self-Review aus, nur `main`), **7 Secrets**: `APPLE_TEAM_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`, `IOS_DIST_P12_BASE64`, `IOS_DIST_P12_PASSWORD`, `IOS_PROFILE_BASE64`; **3 Variablen**: `IOS_PROFILE_NAME`, `VU_SUPABASE_URL`, `VU_SUPABASE_PUBLISHABLE_KEY` | Owner, PC |

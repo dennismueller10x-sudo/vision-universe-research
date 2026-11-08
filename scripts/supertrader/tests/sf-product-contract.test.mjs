@@ -12,7 +12,7 @@ import {
 } from '../source-faithful/product/candidate-contract.mjs';
 import { CONTRACTS } from '../source-faithful/registry.mjs';
 import { contractFingerprint } from '../source-faithful/contract.mjs';
-import { sf8RegistryViolations, SF8_DOMAIN_ID, SF8_DOMAIN_PINNED, SF8_ACTIVATION_STATE, SF8_ACTIVATION_STATES } from '../source-faithful/product/registry-guard.mjs';
+import { sf8RegistryViolations, SF8_DOMAIN_ID, SF8_DOMAIN_PINNED, SF8_ACTIVATION_STATE, SF8_ACTIVATION_STATES, SF8_PRODUCT_REF, PAPER2027_DOMAIN_ID, PAPER2027_DOMAIN_ENTRY, PAPER2027_DOMAIN_SHA256, PAPER2027_LOG_ARTIFACT, PAPER2027_PRODUCER, PAPER2027_WORKFLOW, paper2027EntrySha256 } from '../source-faithful/product/registry-guard.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..');
@@ -258,8 +258,9 @@ test('SF-PRODUCT-NO-RUN-INTEGRATION: kein Workflow, kein Frontend, keine Domain-
   for (const f of fs.readdirSync(wf)) if (f !== SF8_DAILY_WORKFLOW) assert.doesNotMatch(fs.readFileSync(path.join(wf, f), 'utf8'), /candidate-contract|source-faithful\/product/, f);
   const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? (e.name === 'data' ? [] : walk(path.join(d, e.name))) : /\.(m?js|html)$/.test(e.name) ? [path.join(d, e.name)] : []);
   for (const f of walk(path.join(ROOT, 'supertrader'))) assert.doesNotMatch(fs.readFileSync(f, 'utf8'), /candidate-contract|source-faithful\/product/, f);
-  // V2: die Registry darf den Produktpfad nur im einen, festgeschriebenen und abgeschalteten Eintrag nennen
-  // (registry-guard.mjs); Gegenproben in SF8-REGISTRY-GUARD
+  // V2: die Registry darf den Produktpfad nur im einen, festgeschriebenen und abgeschalteten Eintrag nennen, den
+  // Paper-Pfad nur im einen exakt gepinnten Paper-2027-Eintrag (registry-guard.mjs); Gegenproben in SF8-REGISTRY-GUARD
+  // und SF-PAPER2027-REGISTRY-ALLOWANCE
   assert.deepEqual(sf8RegistryViolations(fs.readFileSync(path.join(ROOT, 'core/registry/domains.json'), 'utf8')), []);
 });
 
@@ -295,6 +296,79 @@ test('SF8-REGISTRY-GUARD: genau ein Eintrag, Felder festgeschrieben, Aktivierung
   assert.equal(SF8_DOMAIN_ID, 'supertrader-sf8-candidates');
 });
 
+
+test('SF-PAPER2027-REGISTRY-ALLOWANCE: genau ein exakt gepinnter Eintrag fuer das Paper-Test-Protokoll 2027 (Owner-Freigabe Option A, Gegenproben)', () => {
+  const E = () => JSON.parse(JSON.stringify(PAPER2027_DOMAIN_ENTRY));
+  const sf8 = { ...SF8_DOMAIN_PINNED, label: 'x', activation: { state: SF8_ACTIVATION_STATE } };
+  const other = { id: 'supertrader', artifact: '/supertrader/data/signals.json', producer: 'scripts/supertrader/build.mjs' };
+  const txt = (domains, extra = {}) => JSON.stringify({ ...extra, domains });
+  const bad = (domains, code, msg) => assert.ok(sf8RegistryViolations(txt(domains)).includes(code), `${msg}: ${code} erwartet, ${JSON.stringify(sf8RegistryViolations(txt(domains)))}`);
+  // der Pin: Schluessel, Pfade, Erzeuger, Workflow und der Hash des ganzen Eintrags, doppelt festgeschrieben
+  assert.equal(PAPER2027_DOMAIN_ID, 'supertrader-paper-2027-log');
+  assert.equal(PAPER2027_LOG_ARTIFACT, '/scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl');
+  assert.equal(PAPER2027_PRODUCER, 'scripts/supertrader/source-faithful/paper/run-paper-2027.mjs record');
+  assert.equal(PAPER2027_WORKFLOW, 'supertrader-paper-2027.yml');
+  assert.equal(PAPER2027_DOMAIN_SHA256, '4039aa836a6de27e6589f8ed32db34f6845aaa8cef9ea207183918818dae753a');
+  assert.equal(paper2027EntrySha256(PAPER2027_DOMAIN_ENTRY), PAPER2027_DOMAIN_SHA256, 'Eintrag und Pin stimmen ueberein');
+  assert.ok(Object.isFrozen(PAPER2027_DOMAIN_ENTRY) && Object.isFrozen(PAPER2027_DOMAIN_ENTRY.activation) && Object.isFrozen(PAPER2027_DOMAIN_ENTRY.consumers));
+  assert.deepEqual([PAPER2027_DOMAIN_ENTRY.id, PAPER2027_DOMAIN_ENTRY.artifact, PAPER2027_DOMAIN_ENTRY.producer, PAPER2027_DOMAIN_ENTRY.workflow], [PAPER2027_DOMAIN_ID, PAPER2027_LOG_ARTIFACT, PAPER2027_PRODUCER, PAPER2027_WORKFLOW]);
+  assert.equal(PAPER2027_DOMAIN_ENTRY.activation.state, 'PREPARED_DISABLED');
+  assert.equal(PAPER2027_DOMAIN_ENTRY.critical, false);
+  // der gepinnte Inhalt nennt nur den Paper-Pfad: kein Produktpfad, kein Kandidatenvertrag, kein Completion- oder Signalmodul
+  for (const x of JSON.stringify(PAPER2027_DOMAIN_ENTRY).match(/source-faithful\/[\w./-]*/gi) ?? []) assert.match(x, /^source-faithful\/paper\//, x);
+  assert.doesNotMatch(JSON.stringify(PAPER2027_DOMAIN_ENTRY), /candidate-contract|supertraderCandidates|sf-candidates|research-signal\.mjs|completion\/|source-faithful\/product/i);
+  // zulaessig: der Eintrag allein, neben dem SF8-Eintrag, in beliebiger Reihenfolge und Schluesselreihenfolge
+  assert.deepEqual(sf8RegistryViolations(txt([other, E()])), [], 'der gepinnte Eintrag ist zulaessig');
+  assert.deepEqual(sf8RegistryViolations(txt([E(), sf8, other])), [], 'neben dem SF8-Eintrag zulaessig');
+  const reordered = Object.fromEntries(Object.entries(E()).reverse());
+  assert.deepEqual(sf8RegistryViolations(txt([other, sf8, reordered])), [], 'Schluesselreihenfolge ist kein Inhalt');
+  const real = JSON.parse(fs.readFileSync(path.join(ROOT, 'core/registry/domains.json'), 'utf8'));
+  if (!real.domains.some((d) => d.id === PAPER2027_DOMAIN_ID)) real.domains.push(E());
+  assert.deepEqual(sf8RegistryViolations(JSON.stringify(real, null, 2)), [], 'die echte Registry mit dem Eintrag');
+  // jede Aenderung eines Felds (Wert, Typ), jedes fehlende und jedes zusaetzliche Feld: nicht mehr gepinnt
+  for (const k of Object.keys(PAPER2027_DOMAIN_ENTRY).filter((k) => k !== 'id')) {
+    const v = PAPER2027_DOMAIN_ENTRY[k];
+    const changed = typeof v === 'string' ? v + ' ' : typeof v === 'boolean' ? !v : v === null ? 'counts' : Array.isArray(v) ? [...v, 'x'] : { ...v, extra: 1 };
+    bad([other, { ...E(), [k]: changed }], 'PAPER2027_DOMAIN_NOT_PINNED', `Feld ${k} geaendert`);
+    const { [k]: _drop, ...without } = E(); void _drop;
+    bad([other, without], 'PAPER2027_DOMAIN_NOT_PINNED', `Feld ${k} fehlt`);
+  }
+  bad([other, { ...E(), extra: 1 }], 'PAPER2027_DOMAIN_NOT_PINNED', 'zusaetzliches Feld');
+  bad([other, { ...E(), pendingWorkflow: 'PR #1268' }], 'PAPER2027_DOMAIN_NOT_PINNED', 'zusaetzliches Feld pendingWorkflow');
+  // gezielt: Pfad, Erzeuger, Workflow, Aktivierungszustand, Entscheidungstext, kritisch
+  for (const [k, v] of [['artifact', '/scripts/supertrader/source-faithful/paper/log/'], ['artifact', '/scripts/supertrader/source-faithful/product/x.jsonl'], ['producer', 'scripts/supertrader/source-faithful/paper/run-paper-2027.mjs'], ['producer', 'scripts/supertrader/source-faithful/paper/forward-log.mjs record'], ['workflow', 'supertrader-validation.yml']]) {
+    bad([other, { ...E(), [k]: v }], 'PAPER2027_DOMAIN_NOT_PINNED', `${k}=${v}`);
+    bad([other, { ...E(), [k]: v }], 'SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN', `${k}=${v}`);
+  }
+  for (const activation of [{ ...E().activation, state: 'ACTIVATING' }, { state: 'PREPARED_DISABLED' }, { ...E().activation, decision: E().activation.decision + '.' }, undefined]) {
+    const d = E(); if (activation === undefined) delete d.activation; else d.activation = activation;
+    bad([other, d], 'PAPER2027_DOMAIN_NOT_PINNED', `activation ${JSON.stringify(activation)}`);
+  }
+  bad([other, { ...E(), critical: true }], 'PAPER2027_DOMAIN_NOT_PINNED', 'critical');
+  // ein zweites Exemplar, ein zweiter Eintrag mit Bezug zu source-faithful/ unter anderem Schluessel, ein Verweis woanders
+  bad([other, E(), E()], 'PAPER2027_DOMAIN_DUPLICATE', 'zweites Exemplar');
+  bad([other, E(), E()], 'SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN', 'zweites Exemplar bleibt ein Verweis');
+  bad([other, E(), { ...E(), id: 'supertrader-paper-2027-log-2' }], 'SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN', 'gleicher Inhalt, anderer Schluessel');
+  bad([other, { ...E(), id: 'supertrader-paper-2028-log' }], 'SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN', 'anderer Schluessel allein');
+  bad([E(), { ...other, consumers: [PAPER2027_LOG_ARTIFACT] }], 'SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN', 'Paper-Pfad in einem anderen Eintrag');
+  bad([E(), { ...other, producer: 'scripts/supertrader/source-faithful/paper/run-paper-2027.mjs record' }], 'SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN', 'Paper-Erzeuger in einem anderen Eintrag');
+  assert.ok(sf8RegistryViolations(txt([E()], { note: 'source-faithful/paper/log' })).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'), 'auch der Kopf');
+  // die SF8-Ausnahme bleibt unveraendert streng, auch neben dem Paper-Eintrag
+  bad([E(), { ...sf8, producer: 'anders' }], 'SF8_DOMAIN_FIELD:producer', 'SF8 geaendert');
+  bad([E(), { ...sf8, extra: 1 }], 'SF8_DOMAIN_UNKNOWN_FIELD:extra', 'SF8 mit Zusatzfeld');
+  bad([E(), sf8, sf8], 'SF8_DOMAIN_DUPLICATE', 'SF8 doppelt');
+  bad([E(), { ...sf8, consumers: [PAPER2027_LOG_ARTIFACT] }], 'SF8_DOMAIN_REF_IN:consumers', 'Paper-Pfad im SF8-Eintrag');
+  // das SF8-Muster allein erkennt den Paper-Pfad weiterhin als Verweis (die Ausnahme steckt nur im exakten Pin)
+  assert.match(PAPER2027_LOG_ARTIFACT, SF8_PRODUCT_REF);
+  // Abgleich mit dem Erzeuger und dem Workflow, sobald sie im Stand liegen (PR #1268)
+  const wf = path.join(ROOT, '.github/workflows', PAPER2027_WORKFLOW);
+  if (fs.existsSync(wf)) {
+    const y = fs.readFileSync(wf, 'utf8');
+    assert.ok(y.includes(PAPER2027_LOG_ARTIFACT.slice(1)), 'Workflow schreibt genau das registrierte Protokoll');
+    for (const cron of ["cron: '37 2 * * 2-6'", "cron: '41 9 * * 2-6'"]) assert.ok(y.includes(cron), cron);
+    assert.ok(fs.existsSync(path.join(ROOT, PAPER2027_PRODUCER.split(' ')[0])), 'Erzeuger existiert');
+  }
+});
 
 test('SF8-DAILY-WORKFLOW: Tageslauf nur mit Variablen, automatischer Weg nur nach Vertrag, Eingangsprüfung und ADR-005', () => {
   const p = path.join(ROOT, '.github/workflows', SF8_DAILY_WORKFLOW);

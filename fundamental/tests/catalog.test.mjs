@@ -156,7 +156,8 @@ test('Routen: Unteransichten im Query-Teil, Ranglisten und Branchen zweiteilig',
 test('Datenquellen der Oberflaeche: nur ausgelieferte Pfade, keine SEC-Rohdaten', () => {
   const src = readFileSync(new URL('../engine/catalog.js', import.meta.url), 'utf8');
   const paths = [...new Set([...src.matchAll(/['"](\/[a-z0-9-]+\/data\/[^'"]*)['"]/g)].map((m) => m[1]))].sort();
-  assert.deepEqual(paths, ['/dashboard/data/analyst_ratings.json', '/fundamental/data/history/', '/quant/data/market/discover-series/', '/screener/data/universe-US_REAL.json']);
+  // /dashboard/data/analysts/shards/: Analysten-Konsens je Titel fuer das Produktuniversum (06.11.2026, ausgeliefert wie analyst_ratings.json)
+  assert.deepEqual(paths, ['/dashboard/data/analyst_ratings.json', '/dashboard/data/analysts/shards/', '/fundamental/data/history/', '/quant/data/market/discover-series/', '/screener/data/universe-US_REAL.json']);
   assert.ok(existsSync(new URL('dashboard/data/analyst_ratings.json', root)));
   assert.doesNotMatch(src, /quant\/data\/sec|quant\/data\/fundamentals/);
   const release = readFileSync(new URL('scripts/vu2/build-release.mjs', root), 'utf8');
@@ -455,4 +456,18 @@ test('Veroeffentlichung: Stand und frisch uebernommene Meldung muessen ausgelief
   assert.match(wf, /gh workflow run pages-release\.yml --ref main/);
   assert.match(wf, /SEC Consumer-Fundamentals \(Produktuniversum, Bulk companyfacts\)/);
   assert.doesNotMatch(wf, /\$\{\{ inputs\./, 'Eingaben nie im Shell-Text');
+});
+
+test('Analysten-Konsens: Eintrag ohne zusammengefasstes Wort, Kursziel nur aus freier Quelle', () => {
+  const e = { ratingsState: 'AVAILABLE', analysts: 69, fetchedAt: '2026-11-06', targetState: 'NO_FREE_SOURCE', target: null,
+    history: [{ period: '2026-10-01', strongBuy: 20, buy: 40, hold: 8, sell: 1, strongSell: 0 }, { period: '2026-11-01', strongBuy: 21, buy: 40, hold: 7, sell: 1, strongSell: 0 }] };
+  const a = C.consensus(e);
+  assert.equal(a.label, null);
+  assert.equal(a.total, 69);
+  assert.equal(a.last.period, '2026-11-01');
+  assert.equal(a.target, null);
+  assert.equal(a.targetState, 'NO_FREE_SOURCE');
+  const t = C.consensus({ ...e, targetState: 'AVAILABLE', target: { consensus: 250, low: 180, high: 320, median: 248, source: 'FMP' } });
+  assert.deepEqual(t.target, { low: 180, high: 320, mean: 250, median: 248, provider: 'FMP' });
+  assert.equal(C.consensus({ ratingsState: 'NO_COVERAGE' }), null);
 });

@@ -24,9 +24,22 @@ platform :ios do
     )
     install_provisioning_profile(path: ENV.fetch("IOS_PROFILE_PATH"))
 
+    # Das Zertifikat wird ueber seine eindeutige Kennung (SHA-1) gewaehlt, nicht ueber einen Namen: Xcode 26 sucht sonst unter
+    # "iOS Distribution" und findet das Apple-Distribution-Zertifikat nicht (Lauf 42369793289). Es werden nur Kennung und Name ausgegeben.
+    identities = sh("security find-identity -v -p codesigning", log: false)
+    puts identities.lines.select { |l| l =~ /Distribution/ }.map { |l| l.sub(/\([A-Z0-9]{10}\)/, "(<TEAM>)") }.join
+    identity = identities[/\b([0-9A-F]{40})\b\s+"(?:Apple|iPhone|iOS) Distribution:/, 1]
+    UI.user_error!("Kein Distribution-Zertifikat mit privatem Schluessel im Schluesselbund (siehe Liste oben)") if identity.nil?
+
+    # Diagnose (keine Werte): was das Profil erlaubt
+    profile_plist = File.join(ENV.fetch("RUNNER_TEMP"), "profile.plist")
+    sh("security cms -D -i '#{ENV.fetch("IOS_PROFILE_PATH")}' > '#{profile_plist}'", log: false)
+    puts "Profil-Berechtigungen (Schluessel):"
+    puts sh("/usr/bin/plutil -extract Entitlements xml1 -o - '#{profile_plist}' | grep '<key>' | sed 's/^[[:space:]]*//'", log: false)
+
     update_code_signing_settings(
       use_automatic_signing: false, path: project, team_id: team, targets: ["App"], profile_name: profile,
-      code_sign_identity: "Apple Distribution", bundle_identifier: bundle_id
+      code_sign_identity: identity, bundle_identifier: bundle_id
     )
     increment_build_number(build_number: ENV.fetch("GITHUB_RUN_NUMBER"), xcodeproj: project)
     increment_version_number(version_number: ENV.fetch("MARKETING_VERSION"), xcodeproj: project)

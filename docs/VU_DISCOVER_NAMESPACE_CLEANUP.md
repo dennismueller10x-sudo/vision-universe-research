@@ -24,7 +24,7 @@ neutral ist.
 | `discover/discover.css` | Discover-1-Klassen (`.dx-fnav*`, `.dx-hero*`, `.dx-positioning*` …) | vermutlich tot | E | **bleibt** — statisch nicht beweisbar: mehrere Klassen werden zur Laufzeit zusammengesetzt (`dx-live-label--`+Zustand, `dx-legend-ma-`+Periode); ohne Coverage-Messung kein Löschen |
 | `quant/engines/fx/currency-contract.js:6`, `money-format.js:9,79`, `quant/config/currency-formatting-baseline.json` (note) | Kommentare „Discover 1.0/2.1“, „discover-v2/home.js“ | aktiv (Kommentar) | F/Core | **bleiben** — Currency Core eingefroren |
 | `scripts/quality/currency-debt-patterns.mjs:18` | Suchwurzel `"discover-v2"` | aktiv | Core-Tooling | **bleibt** — Currency-Werkzeug; Wurzel enthält nur den Alias, harmlos |
-| `docs/discover-v2/**`, `docs/VU_DISCOVER_V*.md`, `docs/VU_DISCOVER_CONSOLIDATION.md`, `docs/screenshots/**` | Versionsnamen | historisch | F | **unverändert** |
+| `docs/discover-v2/**`, `docs/VU_DISCOVER_V*.md`, `docs/archiv/2026/VU_DISCOVER_CONSOLIDATION.md`, `docs/screenshots/**` | Versionsnamen | historisch | F | **unverändert** |
 | `discover-v2/index.html` | Weiterleitung | aktiv | G | **bleibt** — Compatibility Redirect, keine zweite Implementierung |
 | `.github/workflows/discover-frontend-ci.yml` (Kopfkommentar, Pfadfilter `discover-v2/**`) | Historie + Alias-Schutz | aktiv | F/G | **bleibt** — Pfadfilter schützt den Alias |
 | `scripts/discover/{consolidation-gate,contract-qa}.mjs`, `verify-currency-ui.mjs` UI8 | `/discover-v2/` | aktiv (Test) | G | **bleiben** — prüfen den Alias |

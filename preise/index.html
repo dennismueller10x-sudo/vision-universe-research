@@ -9,56 +9,69 @@
 <title>Preise · Vision Universe</title>
 <meta name="description" content="Vision Universe Free und Pro: derselbe Funktionsumfang, ein Konto für alle Welten.">
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/vu-ui.css">
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#000000":"#ffffff");})();</script>
 <link rel="stylesheet" href="/konto/konto.css">
 <link rel="stylesheet" href="/preise/preise.css">
+<!-- Eigene Kopfzeile nach der Vorlage 2027 (E03/E10/E11): keine gemeinsame Navigation (scripts/sync-navigation.mjs). -->
+<meta name="vu-navigation" content="none">
 </head>
-<body class="ka-body pr-body"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<body class="ka-body pr-body vu-ui">
+<!-- Preise (Mockup E03): eigene Kopfzeile wie die Startseite (Logo, Suche, Anmelden); angemeldet „Mein Bereich“. -->
+<header class="pr-hd">
+<a class="pr-hd-logo" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" width="150" height="50" alt="Vision Universe"></a>
+<a class="vu-round pr-hd-btn" href="/discover/#/suche" aria-label="Aktie suchen"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></a>
+<a class="pr-hd-login" id="pr-login" href="/konto/anmelden/">Anmelden</a>
+</header>
 <main class="ka pr" id="main">
 <header class="pr-head">
-<p class="ka-eyebrow">Preise</p>
-<h1 class="pr-title">Ein Konto für alle Welten.</h1>
-<p class="pr-lead">Free und Pro schalten derzeit genau dieselben Funktionen frei. Free ist kostenlos und braucht keine Zahlungsdaten. Mit Pro unterstützt du Vision Universe.</p>
+<p class="vu-ltag">Preise</p>
+<h1 class="vu-lt">Ein Konto für alle Welten.</h1>
+<p class="vu-lead" id="pr-lead">Free und Pro schalten heute dieselben Funktionen frei. Free braucht keine Zahlungsdaten.</p>
 </header>
 <div class="ka-notice" id="pr-status" role="status" aria-live="polite"></div>
-<p class="pr-signed-in" id="pr-signed-in" hidden>Du bist angemeldet<span data-plan-name></span>. Deinen Tarif verwaltest du im <a class="ka-link" href="/konto/tarife/">Konto</a>.</p>
 <div class="pr-plans" id="pr-plans">
-<article class="pr-plan" data-plan="free" data-current="false" aria-labelledby="pr-free-title">
-<div class="pr-plan-top"><h2 id="pr-free-title">Free</h2><span class="pr-tag" data-current-tag hidden>Dein Tarif</span></div>
+<article class="vu-box vu-box--line pr-plan" data-plan="free" data-current="false" aria-labelledby="pr-free-title">
+<div class="pr-plan-top"><h2 id="pr-free-title">Free</h2><span class="pr-tag pr-tag--line" data-current-tag>Für alle</span></div>
 <p class="pr-price"><span data-price="free">0 €</span></p>
 <p class="pr-terms">Kostenlos · ohne Zahlungsdaten · ohne Laufzeit</p>
-<a class="ka-btn ka-btn--block" id="pr-choose-free" href="/konto/registrieren/?plan=free">Kostenlos starten</a>
+<ul class="pr-ticks"><li>Ein Konto für alle Welten</li><li id="pr-free-watch">Watchlist für deine Aktien</li><li>Alle freigegebenen Analysen</li></ul>
+<a class="vu-btn vu-btn--ink vu-btn--block" id="pr-choose-free" href="/konto/registrieren/?plan=free">Kostenlos starten</a>
 </article>
-<article class="pr-plan pr-plan--pro" data-plan="pro" data-current="false" aria-labelledby="pr-pro-title">
-<div class="pr-plan-top"><h2 id="pr-pro-title">Pro</h2><span class="pr-tag pr-tag--test" id="pr-test-tag">Interner Testpreis</span><span class="pr-tag" data-current-tag hidden>Dein Tarif</span></div>
-<p class="pr-price"><span data-price="pro" aria-busy="true">–</span><small> / Monat</small></p>
-<p class="pr-terms">inkl. MwSt. · verlängert sich monatlich · jederzeit zum Ende des bezahlten Monats kündbar</p>
-<a class="ka-btn ka-btn--block ka-btn--secondary" id="pr-choose-pro" href="/konto/registrieren/?plan=pro">Pro wählen</a>
+<article class="vu-box vu-box--ink pr-plan pr-plan--pro" data-plan="pro" data-current="false" aria-labelledby="pr-pro-title">
+<div class="pr-plan-top"><h2 id="pr-pro-title">Pro <span class="vu-pro">PRO</span></h2><span class="pr-tag pr-tag--lime" id="pr-test-tag">Interner Testpreis</span><span class="pr-tag pr-tag--lime" data-current-tag hidden>Dein Tarif</span></div>
+<p class="pr-price"><span data-price="pro" aria-busy="true">–</span><small id="pr-per"> pro Monat</small></p>
+<p class="pr-terms" id="pr-pro-terms">inkl. MwSt. · monatlich kündbar zum Ende des bezahlten Monats</p>
+<p class="pr-off" id="pr-off" hidden></p>
+<ul class="pr-ticks"><li>Alles aus Free</li><li>Du unterstützt unabhängige Forschung</li></ul>
+<a class="vu-btn vu-btn--block pr-choose" id="pr-choose-pro" href="/konto/registrieren/?plan=pro">Pro wählen <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
 <p class="pr-note" id="pr-test-note">Der angezeigte Preis ist ein interner Testpreis. Pro kann derzeit nur von freigeschalteten Testkonten abgeschlossen werden; alle anderen nutzen Free mit vollem Umfang.</p>
 </article>
 </div>
 <section class="pr-compare" aria-labelledby="pr-compare-title">
-<h2 id="pr-compare-title">Was enthalten ist</h2>
-<p class="ka-muted" id="pr-same" hidden>In Free und Pro identisch.</p>
-<table class="pr-table" id="pr-table" hidden>
-<thead><tr><th scope="col">Funktion</th><th scope="col">Free</th><th scope="col">Pro</th></tr></thead>
+<h2 class="vu-sect" id="pr-compare-title">Was du bekommst</h2>
+<div class="vu-box pr-table-box">
+<table class="pr-table" id="pr-table">
+<thead><tr><th scope="col"><span class="pr-hidden">Funktion</span></th><th scope="col">Free</th><th scope="col">Pro</th></tr></thead>
 <tbody id="pr-rows"></tbody>
 </table>
-<ul class="pr-always">
-<li>Ein Konto für alle Vision-Universe-Welten</li>
-<li>Alle bereits freigegebenen Analysen und Seiten</li>
-</ul>
-<p class="ka-muted">Der Quant-Gesamtscore und unveröffentlichte Supertrader-Signale sind in keinem Tarif enthalten.</p>
+</div>
+<p class="vu-mu vu-xs pr-same" id="pr-same" hidden>Der Funktionsumfang ist in Free und Pro identisch; Pro unterscheidet nur die Zahlung.</p>
+<div class="vu-box vu-box--line pr-never">
+<b>In keinem Tarif enthalten</b>
+<ul><li>Quant-Gesamtscore</li><li>Unveröffentlichte Supertrader-Signale</li></ul>
+<div class="vu-help"><i aria-hidden="true">?</i><span>Diese Werte sind noch nicht freigegeben. Wir zeigen sie erst, wenn sie geprüft sind, auch nicht gegen Geld.</span></div>
+</div>
 </section>
 <section class="pr-faq" aria-labelledby="pr-faq-title">
-<h2 id="pr-faq-title">Gut zu wissen</h2>
-<details><summary>Brauche ich für Free Zahlungsdaten?</summary><p>Nein. Free ist kostenlos, ohne Laufzeit und ohne Zahlungsdaten.</p></details>
+<h2 class="vu-sect" id="pr-faq-title">Gut zu wissen</h2>
+<details open><summary>Brauche ich für Free Zahlungsdaten?</summary><p>Nein. Free ist kostenlos, ohne Zahlungsdaten und ohne Laufzeit.</p></details>
 <details><summary>Wie funktioniert die Anmeldung?</summary><p>Du wählst einen Tarif, erstellst dein Konto und bestätigst deine E-Mail-Adresse. Mit Pro geht es danach zur Bestätigung von Preis und Laufzeit und erst dann zur Zahlung bei Stripe.</p></details>
 <details><summary>Wie kündige ich Pro?</summary><p>Jederzeit zum Ende des bezahlten Monats im Konto unter „Abonnement“ oder über <a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a>. Danach gilt automatisch Free.</p></details>
 <details><summary>Wie kann ich bezahlen?</summary><p>Auf der Zahlungsseite von Stripe, je nach Gerät und Verfügbarkeit mit Karte, Apple Pay, Google Pay, PayPal oder SEPA-Lastschrift. Zahlungsdaten erreichen Vision Universe nie.</p></details>
 </section>
-<nav class="ka-links" aria-label="Weitere Möglichkeiten"><a class="ka-link" href="/konto/anmelden/">Ich habe schon ein Konto</a></nav>
-<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/agb">Bedingungen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></nav>
+<a class="vu-btn vu-btn--line vu-btn--block pr-have" id="pr-have" href="/konto/anmelden/">Ich habe schon ein Konto</a>
+<nav class="pr-legal" aria-label="Rechtliches"><a href="/konto/kuendigen/">Verträge hier kündigen</a><a href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a href="https://konto.visionuniverse.de/rechtliches/agb">Bedingungen</a><a href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a><a href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></nav>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>

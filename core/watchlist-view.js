@@ -40,7 +40,8 @@
 
   var VERSION = "watchlist-view-1.0.0";
   var SCHEMA = "vu-watchlist-summary-1.0.0";
-  var RULE_VERSION = "watchlist-events-1.1.0";
+  var RULE_VERSION = "watchlist-events-1.5.0";  /* 1.2.0: PRICE_MOVE (Tagesbewegung ab 5 %); 1.3.0: EARNINGS (neuer SEC-Bericht); 1.4.0: FUND_13F (neue Fondsposition); 1.5.0: ELLIOTT_CHANGE */
+  var MOVE_THRESHOLD = 0.05;       /* PRICE_MOVE: Tagesbewegung mindestens 5 % (Betrag), splitbereinigt */
   var NEAR_HIGH = -0.05;           /* Discover nearHigh/watch: hoechstens 5 % unter dem 52W-Hoch */
   var ACTIONABLE = ["SETUP", "ENTRY_READY", "TRIGGERED", "ACTIVE"];
   var FACTOR_LABEL = { quality: "Qualität", growth: "Wachstum", momentum: "Momentum", value: "Bewertung",
@@ -193,7 +194,25 @@
       var pf = freshness(doc, "price", r.cd, now);
       base.price = { state: pf.state === "STALE" ? "STALE" : "AVAILABLE", close: r.c, currency: r.pu || r.cu, date: r.cd, freshness: pf,
         basis: src.price.basis, kind: "EOD_CLOSE" };
+      /* Tagesveraenderung aus der Uebersicht (published-close.js#dayChange); fehlt sie, bleibt das Feld weg. */
+      if (typeof r.d1 === "number" && isFinite(r.d1) && typeof r.dp === "string") { base.price.change = r.d1; base.price.previousDate = r.dp; }
     }
+
+    // Letzter Bericht bei der SEC (Consumer-Schicht): Quartal oder Geschaeftsjahr mit Einreichungsdatum
+    if (!src.filings) base.filings = unavailable("SOURCE_MISSING");
+    else if (!isDate(r.rf)) base.filings = unavailable(why(r, "filings"));
+    else base.filings = { state: "AVAILABLE", filed: r.rf, kind: r.rk === "A" ? "ANNUAL" : "QUARTERLY", period: r.rp || null, periodEnd: r.re || null };
+
+    // 13F: neue Positionen grosser Fonds im juengsten gemeldeten Quartal
+    if (!src.funds13f) base.funds13f = unavailable("SOURCE_MISSING");
+    else if (!isDate(r.fp) || !Array.isArray(r.fn)) base.funds13f = unavailable(why(r, "funds13f"));
+    else base.funds13f = { state: "AVAILABLE", period: r.fp, holders: typeof r.fc === "number" ? r.fc : null, newPositions: r.fn.slice() };
+
+    // Elliott (experimentelles Strukturmodell): Hauptlesart des Chartbild-Produkts
+    if (!src.elliott) base.elliott = unavailable("SOURCE_MISSING");
+    else if (!Array.isArray(r.ew) || !r.ew[1]) base.elliott = unavailable(why(r, "elliott"));
+    else base.elliott = { state: "AVAILABLE", status: r.ew[0], pattern: r.ew[1], direction: r.ew[2], complete: r.ew[3] === 1,
+      wave: r.ew[4], waveStatus: r.ew[5], asOf: isDate(r.ewd) ? r.ewd : null, model: "EXPERIMENTAL" };
 
     // Quant: sieben Faktoren mit Stufe, Gesamtscore zurueckgehalten
     var qs = src.quant;
@@ -503,6 +522,42 @@
           severity: bs.state === "AVAILABLE" ? "INFO" : "NOTABLE" });
       });
 
+      // Kurs: Tagesbewegung ab 5 % (Betrag), einmal je neuem Schlusstag; nur mit verfuegbarem, nicht veraltetem Kurs
+      if (b.price.state === "AVAILABLE" && typeof b.price.change === "number" && Math.abs(b.price.change) >= MOVE_THRESHOLD
+          && a.price.state !== "UNAVAILABLE" && b.price.date && b.price.date !== a.price.date)
+        ev({ type: "PRICE_MOVE", subtype: b.price.change > 0 ? "DAILY_UP_5" : "DAILY_DOWN_5", v: b, sourceId: "price",
+          before: b.price.previousDate, after: b.price.date, asOf: b.price.date,
+          evidence: { change: b.price.change, close: b.price.close, currency: b.price.currency, previousDate: b.price.previousDate, date: b.price.date,
+            threshold: MOVE_THRESHOLD, basis: b.price.basis || null }, severity: "NOTABLE" });
+
+      // Bericht: ein neuer Quartals- oder Jahresbericht ist eingereicht (Einreichungsdatum neuer als vorher); Erstbeobachtung still
+      if (a.filings && b.filings && a.filings.state === "AVAILABLE" && b.filings.state === "AVAILABLE" && b.filings.filed > a.filings.filed)
+        ev({ type: "EARNINGS", subtype: b.filings.kind === "ANNUAL" ? "ANNUAL_REPORT" : "QUARTERLY_REPORT", v: b, sourceId: "filings",
+          before: a.filings.filed, after: b.filings.filed, asOf: b.filings.filed,
+          evidence: { filed: b.filings.filed, filedBefore: a.filings.filed, period: b.filings.period, periodEnd: b.filings.periodEnd, kind: b.filings.kind, source: "SEC" },
+          severity: "NOTABLE" });
+
+      // 13F: ein Fonds meldet eine NEUE Position, die in der vorigen Uebersicht nicht stand; Erstbeobachtung still
+      if (a.funds13f && b.funds13f && a.funds13f.state === "AVAILABLE" && b.funds13f.state === "AVAILABLE") {
+        var known = {}; a.funds13f.newPositions.forEach(function (x) { known[x] = true; });
+        var added = b.funds13f.newPositions.filter(function (x) { return !known[x]; });
+        if (added.length)
+          ev({ type: "FUND_13F", subtype: "NEW_POSITION", v: b, sourceId: "funds13f", subject: b.funds13f.period, before: a.funds13f.newPositions, after: b.funds13f.newPositions,
+            asOf: b.funds13f.period, evidence: { period: b.funds13f.period, funds: added.slice(0, 10), fundNames: added.slice(0, 10).map(function (x) { return (srcB.funds13f && srcB.funds13f.funds || {})[x] || x; }),
+              fundsCount: added.length, holders: b.funds13f.holders, source: "SEC 13F" } });
+      }
+
+      // Elliott: neue Hauptlesart (Muster oder Richtung) bzw. bestaetigte Welle/abgeschlossenes Muster bei gleicher Lesart
+      if (a.elliott && b.elliott && a.elliott.state === "AVAILABLE" && b.elliott.state === "AVAILABLE") {
+        var ea = a.elliott, eb = b.elliott, ekey = function (x) { return x.pattern + "/" + (x.direction || ""); };
+        if (ekey(ea) !== ekey(eb))
+          ev({ type: "ELLIOTT_CHANGE", subtype: "READING_CHANGED", v: b, sourceId: "elliott", before: ekey(ea), after: ekey(eb), asOf: eb.asOf,
+            evidence: { patternBefore: ea.pattern, pattern: eb.pattern, directionBefore: ea.direction, direction: eb.direction, status: eb.status, model: "EXPERIMENTAL" } });
+        else if ((ea.wave === eb.wave && ea.waveStatus !== "CONFIRMED" && eb.waveStatus === "CONFIRMED") || (!ea.complete && eb.complete))
+          ev({ type: "ELLIOTT_CHANGE", subtype: "WAVE_CONFIRMED", v: b, sourceId: "elliott", subject: eb.wave, before: [ea.waveStatus, ea.complete], after: [eb.waveStatus, eb.complete], asOf: eb.asOf,
+            evidence: { pattern: eb.pattern, wave: eb.wave, waveStatusBefore: ea.waveStatus, waveStatus: eb.waveStatus, complete: eb.complete, model: "EXPERIMENTAL" } });
+      }
+
       // Kurs und Technik
       if (b.high52.signal === "NEW_HIGH" && a.high52.state === "AVAILABLE" && a.high52.signal !== "NEW_HIGH")
         ev({ type: "PRICE_EVENT", subtype: "NEW_52W_HIGH", v: b, sourceId: "technical", before: a.high52.signal, after: b.high52.signal, asOf: b.high52.asOf,
@@ -561,7 +616,7 @@
     return out;
   }
 
-  return { VERSION: VERSION, SCHEMA: SCHEMA, RULE_VERSION: RULE_VERSION, NEAR_HIGH: NEAR_HIGH, FACTOR_LABEL: FACTOR_LABEL, REASON: REASON,
+  return { VERSION: VERSION, SCHEMA: SCHEMA, RULE_VERSION: RULE_VERSION, NEAR_HIGH: NEAR_HIGH, MOVE_THRESHOLD: MOVE_THRESHOLD, FACTOR_LABEL: FACTOR_LABEL, REASON: REASON,
     PATHS: PATHS, LEGACY_KEYS: LEGACY.map(function (l) { return l.key; }), legacyTickers: legacyTickers, planMerge: planMerge, inEuro: inEuro, load: load, merge: merge, index: index, freshness: freshness, view: view, aggregate: aggregate, sort: sort, filter: filter, group: group, events: events,
     EVENT_SOURCES: EVENT_SOURCES.slice(), eventId: eventIdFor,
     GROUPS: GROUPS.map(function (g) { return { id: g.id, label: g.label }; }) };

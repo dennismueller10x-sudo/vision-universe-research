@@ -7,6 +7,7 @@
     "sessions": "Stand (asOf, ein Handelstag) gegen die letzte abgeschlossene US-Sitzung (quant/config/market-calendar.json). warnAfter/staleAfter in Handelstagen Rueckstand.",
     "hours": "Alter des Zeitstempels in Stunden. warnAfter/staleAfter in Stunden.",
     "intraday": "Intraday-Verzeichnis: bei offener Boerse Alter des letzten Takts in Minuten, nach Schluss vollstaendiger Tagesverlauf der letzten Sitzung.",
+    "follows": "Abgeleitetes Produkt folgt einem Vorgaenger-Artefakt: nach jedem neuen Stand des Vorgaengers wird es neu gebaut. OK, solange das Produkt nicht aelter ist als der Vorgaenger oder der Abstand <= warnAfterHours (normales Verarbeitungsfenster); DEGRADED > warnAfterHours; STALE > staleAfterHours. artifact und timestamp nennen den Vorgaenger.",
     "none": "Kein Frischevertrag (Referenzdaten oder abgeschaltet)."
   },
   "domains": [
@@ -21,11 +22,11 @@
       "records": "decisions",
       "role": "Produktuniversum: je Ticker eine Eignungsentscheidung (securityId, Klasse, Boerse, aktiv). Kanonische Universumsquelle (scripts/market/universe-source.mjs).",
       "producer": "scripts/market/build-us-eligibility.mjs (aus us-security-master.json)",
-      "workflow": null,
-      "schedule": "manuell",
+      "workflow": "security-master-eligibility.yml",
+      "schedule": "nach dem Security-Master-Lauf (mittwochs), mit Gate (scripts/core/eligibility-gate.mjs); manuell per workflow_dispatch",
       "freshness": { "kind": "hours", "warnAfter": 336, "staleAfter": 840 },
       "consumers": ["market-data-refresh (Abrufumfang)", "build-market-factors", "build-discover-data", "build-capability-matrix", "screener", "supertrader (indirekt ueber Discover)"],
-      "knownGaps": ["Kein geplanter Erzeuger: Neuemissionen und Delistings kommen nur mit einem manuellen Lauf ins Universum.", "Identitaet ist tickerbasiert (ADR-001)."]
+      "knownGaps": ["Identitaet ist tickerbasiert (ADR-001)."]
     },
     {
       "id": "usSecurityMaster",
@@ -39,7 +40,7 @@
       "role": "Klassifikation, Aktivstatus und Listing-Identitaet (canonical_id) je Bestandstitel aus dem Tiingo-Tickerverzeichnis; Quelle fuer Instrumenttyp und Aktivstatus im Supertrader-8-Tageslauf und fuer die Quant-Backtest-Identitaet.",
       "producer": "scripts/market/build-us-security-master.mjs",
       "workflow": "security-master-weekly.yml",
-      "schedule": "Woechentlich vorbereitet, Zeitplan aus (Owner-Entscheidung 28.10.2026); manuell per workflow_dispatch, Uebernahme nur mit commit=true und bestandenem Gate (scripts/market/security-master-refresh-gate.mjs).",
+      "schedule": "Mittwoch 09:41 UTC (Neustart 04.11.2026); Uebernahme nur bei bestandenem Gate (scripts/market/security-master-refresh-gate.mjs), manuell zusaetzlich per workflow_dispatch mit commit=true.",
       "freshness": { "kind": "hours", "warnAfter": 240, "staleAfter": 1440 },
       "consumers": ["build-us-eligibility (Produkteignung, eigener Lauf)", "Quant-Backtests (canonical_id, masterHash)", "Supertrader-8-Tageslauf (Instrumenttyp, Aktivstatus, Hoechstalter 60 Tage)"],
       "knownGaps": ["Neue Listings werden gezaehlt, aber nicht ausgeliefert (Lizenz; Weg: Tiingo-2.0-Veroeffentlichung).", "Tickerwechsel werden je stabiler securityId ausgewiesen, nicht automatisch verknuepft (ADR-001)."]
@@ -95,6 +96,22 @@
       "consumers": ["Discover (5J/Max)", "Supertrader (Wochencharts)"]
     },
     {
+      "id": "technicalIntelligenceV3",
+      "label": "Chartbild / Elliott (Produktdaten v3)",
+      "layer": "INTELLIGENCE",
+      "group": "Intelligence",
+      "critical": false,
+      "artifact": "/quant/data/technical-intelligence/v3/meta.json",
+      "timestamp": ["generatedAt"],
+      "records": "counts.weekly",
+      "role": "Chartbild, Kursstruktur und Elliott (experimentell) fuer Wochen- und Tagestitel, gebaut aus den Langreihen und den Golden-Tagesreihen.",
+      "producer": "scripts/technical/build-technical-intelligence.mjs",
+      "workflow": "technical-intelligence-build.yml",
+      "schedule": "nach jedem Lauf der Langreihen (workflow_run, nur main) und taeglich 05:35 UTC (GitHub startet den Zeitplan oft 5-6 h spaet); ein Neubau dauert 70-100 Minuten",
+      "freshness": { "kind": "follows", "artifact": "/quant/data/market/discover-series-long/index.json", "timestamp": ["generatedAt"], "warnAfterHours": 4, "staleAfterHours": 26 },
+      "consumers": ["Chartbild (/elliott/)", "Quant (Technik)", "Elliott-Registry (Identitaetspruefung)"]
+    },
+    {
       "id": "fxReference",
       "label": "FX Reference Rates (ECB)",
       "layer": "CORE",
@@ -105,7 +122,7 @@
       "records": "daysParsed",
       "role": "EZB-Referenzkurse je Tag fuer die EUR-Anzeige (quant/engines/fx). Stand = letzter Beobachtungstag der EZB.",
       "producer": "scripts/market/build-fx-history-ecb.mjs --publish",
-      "workflow": "fx-ecb-daily.yml, currency-fx-verify.yml",
+      "workflow": "pipeline-daily.yml (Teil ezb), currency-fx-verify.yml",
       "schedule": "werktags 15:47 UTC",
       "freshness": { "kind": "hours", "warnAfter": 96, "staleAfter": 168 },
       "consumers": ["Discover (EUR-Charts, EUR-Kurse)", "Vorsorge", "jede EUR-Anzeige ueber VUFx"],
@@ -208,10 +225,42 @@
       "expectedRecords": "coverage.productUniverse",
       "role": "Anzeigenamen mit Quelle und Datum (Tiingo-Stammdaten, SEC, kuratiert).",
       "producer": "scripts/market/build-company-names.mjs",
-      "workflow": "company-names.yml + security-master-weekly.yml",
+      "workflow": "company-names.yml + security-master-weekly.yml + security-master-eligibility.yml (offline nach neuer Eignung)",
       "schedule": "manuell",
       "freshness": { "kind": "hours", "warnAfter": 720, "staleAfter": 2160 },
       "consumers": ["Discover", "Supertrader", "Screener"]
+    },
+    {
+      "id": "kiDepots",
+      "label": "KI-Depots A und B",
+      "layer": "PRODUCT",
+      "group": "Quant",
+      "critical": false,
+      "artifact": "/quant/data/product/ki-depots-v1.json",
+      "timestamp": ["asOf"],
+      "records": "depots",
+      "role": "Zwei KI-Depots als Rechenmodell vorwärts ab 06.11.2026: Bestand, Gewichte, Begründung je Titel, Aufnahmedatum und -kurs, Wertentwicklung ab Start. Kein echtes Geld, keine Empfehlung, keine Backtest-Zahlen.",
+      "producer": "scripts/research/edge2/ki-export.cjs",
+      "workflow": "ki-depots-daily.yml (Kursstand werktags) + Wochenlauf KI-Depots (Entscheidung monatlich)",
+      "schedule": "werktags 23:41 UTC",
+      "freshness": { "kind": "hours", "warnAfter": 96, "staleAfter": 240 },
+      "consumers": ["Frontend D3 (KI-Depots)"]
+    },
+    {
+      "id": "modelDepots",
+      "label": "Quant-Musterdepots",
+      "layer": "PRODUCT",
+      "group": "Quant",
+      "critical": false,
+      "artifact": "/quant/data/product/model-depots-v1.json",
+      "timestamp": ["asOf"],
+      "records": "depots",
+      "role": "Fünf Quant-Profile als Rechenmodell vorwärts: Bestand mit Aufnahmedatum und -kurs, Protokoll rein/raus ab Live-Start. Kein echtes Geld, keine Empfehlung.",
+      "producer": "scripts/quant/portfolio/model-depots.cjs",
+      "workflow": "quant-model-depots.yml",
+      "schedule": "samstags 07:23 UTC; Umschichtung im ersten Lauf eines Monats",
+      "freshness": { "kind": "hours", "warnAfter": 240, "staleAfter": 504 },
+      "consumers": ["Quant (/quant/musterdepots/)"]
     },
     {
       "id": "technical",
@@ -274,7 +323,7 @@
       "records": "universes.0.securities",
       "role": "Discover-Produktdaten: Startseite, Reihen, Aktienseiten (discover/data/stocks), Suche.",
       "producer": "scripts/discover/build-discover-data.mjs",
-      "workflow": "market-data-refresh.yml (+ index-membership, long-series, company-names, sec-consumer)",
+      "workflow": "market-data-refresh.yml (+ index-membership, long-series, company-names, sec-consumer, security-master-eligibility)",
       "schedule": "Mo-Fr 22:30 UTC",
       "freshness": { "kind": "sessions", "warnAfter": 1, "staleAfter": 2 },
       "consumers": ["/discover/", "/screener/ (Build-Projektion)", "Supertrader (Universum)"]
@@ -330,6 +379,28 @@
       "consumers": ["/supertrader/"]
     },
     {
+      "id": "supertrader-paper-2027-log",
+      "label": "Supertrader Paper-Test 2027 (Protokoll)",
+      "layer": "PRODUCT",
+      "group": "Products",
+      "critical": false,
+      "artifact": "/scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl",
+      "repositoryOnly": true,
+      "timestamp": [],
+      "records": null,
+      "role": "Prospektiver Paper-Test SF6-PAPER-2027: je XNYS-Sitzung ein hash-verketteter, nur angehaengter Eintrag (oeffentlich Zaehlungen und Hashes; Positions-IDs und Trade-Schluessel versiegelt fuer den Owner unter log/sealed). Keine Signale, keine Empfehlungen, keine Orders, kein Broker, keine Produktflaeche, LIVE_NOT_APPROVED.",
+      "producer": "scripts/supertrader/source-faithful/paper/run-paper-2027.mjs record",
+      "workflow": "supertrader-paper-2027.yml",
+      "schedule": "Di-Sa 02:37 UTC, Rueckfall 09:41 UTC, je fuer die letzte XNYS-Sitzung; Wirkung nur, wenn der Owner-Schalter (paper/activation-2027.mjs) ACTIVE meldet, und nur auf main. Vorher kein Commit.",
+      "freshness": { "kind": "none" },
+      "activation": {
+        "state": "PREPARED_DISABLED",
+        "decision": "Owner-Freigabe Option A: das Registry-Gate (registry-guard.mjs) erlaubt genau diesen gepinnten Eintrag. Aufzeichnung erst nach eigener Owner-Aktivierung des Paper-Tests (FP-ST-02); bis dahin darf das Protokoll nicht existieren."
+      },
+      "consumers": ["Owner (Auswertung des Paper-Tests, docs/SUPERTRADER_PAPER_2027_ACTIVATION.md)"],
+      "knownGaps": ["Das Protokoll ist JSONL (eine Zeile je Sitzung), der Systemzustand liest JSON. Vor dem Wechsel auf ACTIVATING (eigener Core-PR mit neuem Pin und Owner-Freigabe) braucht der Eintrag einen lesbaren Kopf oder einen JSONL-Leser; solange PREPARED_DISABLED gilt, wird nur das Fehlen geprueft."]
+    },
+    {
       "id": "marketPulse",
       "label": "Markets / Multi-Asset",
       "layer": "PRODUCT",
@@ -357,11 +428,10 @@
       "minRecords": 3,
       "role": "Primaerquellen-Meldungen, redaktionell neu formuliert.",
       "producer": "scripts/dashboard/update_news.mjs",
-      "workflow": "update-news.yml",
-      "schedule": "manuell (kein Zeitplan)",
+      "workflow": "content.yml",
+      "schedule": "taeglich 05:17, 11:17, 17:17 UTC",
       "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 168 },
-      "consumers": ["/news/"],
-      "knownGaps": ["Workflow ohne Zeitplan: der Feed altert, bis jemand ihn startet."]
+      "consumers": ["/news/"]
     },
     {
       "id": "analystRatings",
@@ -374,9 +444,25 @@
       "records": "symbols",
       "role": "Analystenurteile (Finnhub, FMP) fuer das Dashboard-Universum.",
       "producer": "scripts/dashboard/fetch_analyst_ratings.py",
-      "workflow": "update-analyst-ratings.yml",
+      "workflow": "content.yml",
       "schedule": "So 08:00 UTC",
       "freshness": { "kind": "hours", "warnAfter": 192, "staleAfter": 384 },
+      "consumers": ["/analysten/"]
+    },
+    {
+      "id": "analystConsensus",
+      "label": "Analysten-Konsens",
+      "layer": "CONTENT",
+      "group": "Content",
+      "critical": false,
+      "artifact": "/dashboard/data/analysts/summary.json",
+      "timestamp": ["generatedAt"],
+      "records": "shards",
+      "role": "Einstufungs-Konsens (Finnhub, frei) fuer das Produktuniversum, Kursziele nur aus der freien FMP-Liste; Abdeckung je Titel. Shards nach core/identity.js#shardKey.",
+      "producer": "scripts/analysts/fetch-consensus.mjs",
+      "workflow": "content.yml",
+      "schedule": "05:41, 13:41, 21:41 UTC, je ~2200 Titel rotierend (ganzes Universum taeglich, Finnhub Free 55/min)",
+      "freshness": { "kind": "hours", "warnAfter": 72, "staleAfter": 192 },
       "consumers": ["/analysten/"]
     },
     {
@@ -478,11 +564,12 @@
     },
     {
       "id": "watchlistEvents",
-      "label": "Watchlist-Ereignisse (vorbereitet, keine Zustellung)",
+      "label": "Watchlist-Ereignisse (Auslieferung, App-Push)",
       "layer": "PRODUCT",
       "group": "Products",
       "critical": false,
       "artifact": "/core/data/watchlist-events-v1.json",
+      "releaseOnly": true,
       "timestamp": [
         "generatedAt"
       ],
@@ -490,18 +577,42 @@
         "after.sources.price"
       ],
       "records": "counts.total",
-      "role": "Ereignisse je Instrument (nicht je Nutzer) aus dem Vergleich zweier veroeffentlichter Watchlist-Uebersichten ueber core/watchlist-view.js#events: Kurs (neues 52W-Hoch, Volumen), Technik (Trendstruktur, SMA200), Supertrader (gueltige Eignung, Zustandswechsel, Forschung gekennzeichnet), Quant (Faktorstufe um zwei Stufen, Datenqualitaet), Datenstand (Quelle aktualisiert, Frische, Abschnitt). Idempotente eventId, Format core/contracts/events.schema.json. Keine E-Mail, kein Push, keine Zustellung an Nutzer.",
+      "role": "Ereignisse je Instrument (nicht je Nutzer) aus dem Vergleich zweier veroeffentlichter Watchlist-Uebersichten ueber core/watchlist-view.js#events: Kurs (neues 52W-Hoch, Volumen), Technik (Trendstruktur, SMA200), Supertrader (gueltige Eignung, Zustandswechsel, Forschung gekennzeichnet), Quant (Faktorstufe um zwei Stufen, Datenqualitaet), Datenstand (Quelle aktualisiert, Frische, Abschnitt), Kursbewegung ab 5 %, Quartals-/Jahresbericht (SEC), neue 13F-Position kuratierter Fonds, Elliott-Lesart. Idempotente eventId, Format core/contracts/events.schema.json. Erzeugt im Release-Bau (48-Stunden-Fenster), nur in der Auslieferung, nie im Repository. Zustellung nur als App-Push (hoechstens eine gebuendelte Nachricht am Tag, nur mit eingeschalteter Art im Konto); keine E-Mail. Aktiv seit dem ersten Release mit Vorstand am 07.11.2026 (2.532 Ereignisse).",
       "producer": "scripts/account/build-watchlist-events.mjs --before=<Uebersicht> --after=<Uebersicht> --out=<Datei>",
-      "schedule": "keiner (kein Workflow, kein Zeitplan); nur von Hand nach --out",
+      "workflow": "pages-release.yml (Schritt des Release-Baus, scripts/vu2/build-release.mjs)",
+      "schedule": "mit jeder Auslieferung der Seite; Vergleich mit der zuletzt veroeffentlichten Uebersicht",
       "freshness": {
         "kind": "none"
       },
-      "activation": {
-        "state": "PREPARED_DISABLED",
-        "decision": "Vorbereitet, nicht freigegeben (docs/accounts/WATCHLIST.md §7 und §9). Das Artefakt darf nicht existieren; der Erzeuger verweigert den kanonischen Ort (Exit 3). Aktivierung nur in eigenen PRs mit Owner-Freigabe nach docs/accounts/FREIGABEN.md: erst Erzeugung als Schritt des Release-Baus (ACTIVATING), getrennt davon jede Zustellung (E-Mail, Push, Abmeldelinks, Ereignisse x watchlist_items.alerts x Tarif)."
-      },
       "consumers": [
-        "spaetere Benachrichtigungen (nicht aktiviert, docs/accounts/WATCHLIST.md §7)"
+        "workers/vu-account/src/push.mjs (App-Push, hoechstens einmal am Tag)"
+      ]
+    },
+    {
+      "id": "insiderPurchases",
+      "label": "Insider-Kaeufe (SEC Form 4)",
+      "layer": "PRODUCT",
+      "group": "Products",
+      "critical": false,
+      "artifact": "/insider/data/purchases.json",
+      "timestamp": ["generatedAt"],
+      "asOf": ["asOf"],
+      "records": "purchases",
+      "role": "Gemeldete, bepreiste nicht-derivative Erwerbe (Code P/A) aus SEC Form 4/4-A; Einreichungsdatum und PIT-Verfuegbarkeit je Transaktion. Keine Handelssignale.",
+      "producer": "scripts/insider/form4.py --from YYYY-MM-DD --as-of YYYY-MM-DD --out FILE",
+      "workflow": "sec-fundamentals-daily.yml",
+      "schedule": "taeglich 06:15 UTC (Job insider): zwei Einreichungstage, 90-Tage-Fenster (scripts/insider/merge.py), nur im Datenzweig data/live",
+      "freshness": { "kind": "hours", "warnAfter": 48, "staleAfter": 168 },
+      "activation": {
+        "state": "ACTIVATING",
+        "decision": "E2 beauftragt am 04.11.2026; im SEC-Tageslauf seit 05.11.2026 (#1378), erstes Artefakt im Datenzweig data/live (141 Kaeufe, 1.423 Einreichungen, 03.-05.11.). Bleibt ACTIVATING bis zum ersten Consumer."
+      },
+      "consumers": ["spaeter Discover/Hedgefonds (Z6; noch kein Consumer)"],
+      "knownGaps": [
+        "Begrenztes Einreichungsfenster, keine vollstaendige Historie; Code P umfasst auch private Kaeufe.",
+        "4/A bleibt ein eigenes Ereignis und darf nicht blind zum Original summiert werden.",
+        "Ticker wie eingereicht, keine historische Security-ID-Zuordnung; Waehrung im Formular nicht explizit.",
+        "Derivate und Transaktionen ohne positive numerische Preis-/Stueckangabe ausgeschlossen und gezaehlt."
       ]
     }
   ]

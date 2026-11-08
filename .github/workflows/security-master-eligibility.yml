@@ -1,0 +1,204 @@
+name: Produktuniversum (Eignung aus dem Security Master, mit Gate)
+
+# Erzeuger: scripts/market/build-us-eligibility.mjs (bestehend, keine Kursabfrage).
+# Gate: scripts/core/eligibility-gate.mjs mit den Grenzen aus core/registry/eligibility-gate.json.
+# Ablauf: neuer Stand nach $RUNNER_TEMP, Gate gegen den committeten Stand, Bericht als Artefakt,
+# Commit nur mit commit=true UND Gate COMMIT. Ein Nachholen ueber die Grenzen hinaus braucht einen
+# eigenen PR mit Vorher/Nachher (CLAUDE.md), nicht diesen Lauf.
+# Zeitplan: folgt dem woechentlichen Security-Master-Lauf (workflow_run, nur main). Ein solcher Lauf committet nur bei
+# Gate COMMIT unter den normalen Grenzen, ohne Freigabeliste; sonst rot und Alarm. Das Nachholen vom 05.11.2026
+# (eligibility-catchup-2026-11, 228 Wechsel) ist uebernommen (Commit c5357718cb).
+# Umfangsfolgen: aendert sich das Produktuniversum, entfernen die Erzeuger selbst, was nicht mehr im Umfang
+# steht (Discover-Reihen, lange Reihen, Intraday; --prune-only/--index-only), Company Master und Discover werden
+# neu gebaut, und die Materialisierung wird
+# mit force neu angestossen (Technical-Signale). Sonst scheitern alle Laeufe mit Public-Data-Hygiene, auch
+# der naechtliche Marktdatenlauf vor seiner Materialisierung (Befund 05.11.2026: 131 ETFs nach dem Nachholen).
+on:
+  workflow_run:
+    workflows: ['Security Master + Firmennamen (wöchentlich)']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: 'Ergebnis committen (nur bei Gate COMMIT)'
+        type: boolean
+        default: false
+      approved_catchup:
+        description: 'Freigabeliste anwenden (Nachholen/Bereinigung, PR mit Vorher/Nachher)'
+        type: boolean
+        default: false
+      freigabe:
+        description: 'Freigabeliste unter docs/data/security-master/ (Dateiname)'
+        default: 'eligibility-catchup-2026-11.json'
+      umfangsfolgen:
+        description: 'Nur die Umfangsfolgen nachziehen (Reihen ausserhalb des Umfangs entfernen, Materialisierung anstossen)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  # dieselbe Gruppe wie Security Master und Marktdaten: kein paralleler Lauf auf denselben Dateien
+  group: market-data-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  eligibility:
+    # nach dem Security-Master-Lauf nur, wenn dieser gruen war
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Neuer Stand (bestehender Erzeuger, nach RUNNER_TEMP)
+        run: |
+          set -euo pipefail
+          N=quant/data/market/security-master
+          mkdir -p "$RUNNER_TEMP/elig/out" "$RUNNER_TEMP/elig/scale"
+          node scripts/market/build-us-eligibility.mjs --master "$N/us-security-master.json" \
+            --previous "$N/eligibility.json" --names "$N/company-names.json" \
+            --out "$RUNNER_TEMP/elig/out" --scale-out "$RUNNER_TEMP/elig/scale"
+          # Vollstaendige Erzeugerkette (wie der committete Stand entstanden ist): ohne die beiden Schritte kaemen
+          # boersennotierte Anleihen und ETNs als Stammaktie ins Produkt (Probelauf 05.11.2026: 147).
+          E="$RUNNER_TEMP/elig"
+          node scripts/market/apply-name-layer-class.mjs --classes DEBT --eligibility "$E/out/eligibility.json" \
+            --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json" \
+            --names "$N/company-names.json"
+          mkdir -p "$E/exchange-directory"
+          # ETF seit 05.11.2026 (Bereinigung): belegte ETFs gehoeren nicht ins Aktien-Produktuniversum; SPY & Co. stehen
+          # nicht in der Eignung (Multi-Asset-Segment).
+          node scripts/market/apply-exchange-directory.mjs --classes DEBT,ETN,PREFERRED,WARRANT,RIGHT,UNIT,ETF \
+            --dir "$E/exchange-directory" --eligibility "$E/out/eligibility.json" \
+            --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json"
+
+      - name: Gate (fail closed)
+        id: gate
+        env:
+          IN_APPROVED: ${{ inputs.approved_catchup }}
+          IN_FREIGABE: ${{ inputs.freigabe }}
+        run: |
+          extra=()
+          if [ "$IN_APPROVED" = "true" ]; then
+            case "${IN_FREIGABE:-}" in ''|*/*|*..*) echo "::error::freigabe: nur ein Dateiname"; exit 2;; esac
+            extra=(--approved "docs/data/security-master/$IN_FREIGABE")
+          fi
+          set +e
+          node scripts/core/eligibility-gate.mjs "${extra[@]}" --prev quant/data/market/security-master/eligibility.json \
+            --next "$RUNNER_TEMP/elig/out/eligibility.json" \
+            --prev-universe quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json \
+            --next-universe "$RUNNER_TEMP/elig/scale/universe-ELIGIBLE_US_EQUITY.json" \
+            --out "$RUNNER_TEMP/elig/gate.json"
+          rc=$?
+          set -e
+          if [ "$rc" = 0 ]; then echo "decision=COMMIT" >> "$GITHUB_OUTPUT"; else echo "decision=BLOCKED" >> "$GITHUB_OUTPUT"; fi
+          { echo '### Produktuniversum'; echo '```'; cat "$RUNNER_TEMP/elig/gate.json"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          [ "$rc" = 0 ] || [ "$rc" = 4 ]
+
+      - name: Bericht als CI-Artefakt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eligibility-${{ github.run_id }}
+          path: ${{ runner.temp }}/elig
+          retention-days: 30
+
+      - name: Commit (nur mit commit=true und Gate COMMIT)
+        id: commit
+        if: (github.event_name == 'workflow_run' || inputs.commit == true) && steps.gate.outputs.decision == 'COMMIT'
+        env:
+          PUSH_OWNED_PATHS: quant/data/market/security-master/eligibility.json quant/data/market/security-master/eligibility-reconciliation.json quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json
+        run: |
+          set -euo pipefail
+          cp "$RUNNER_TEMP/elig/out/eligibility.json" "$RUNNER_TEMP/elig/out/eligibility-reconciliation.json" quant/data/market/security-master/
+          cp "$RUNNER_TEMP/elig/scale/universe-ELIGIBLE_US_EQUITY.json" quant/data/market/scale/
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add $PUSH_OWNED_PATHS
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -q -m "Produktuniversum: Eignung neu aus dem Security Master (Gate COMMIT)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Umfangsfolgen - Reihen ausserhalb des Umfangs entfernen (Erzeuger, kein Abruf)
+        id: folgen
+        if: steps.commit.outputs.changed == 'true' || inputs.umfangsfolgen == true
+        env:
+          PUSH_OWNED_PATHS: quant/data/market/discover-series/ quant/data/market/discover-series-long/ quant/data/market/intraday/ quant/data/universe/ quant/data/market/capabilities/ quant/data/product/capabilities-v1.json quant/data/product/capabilities-summary-v1.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
+        run: |
+          set -euo pipefail
+          git pull -q --rebase origin "${GITHUB_REF_NAME}" || true
+          # Namensschicht gehoert zu genau einem Master-Stand (company-names.json master.sha256, Test CN6): nach jeder neuen
+          # Eignung ohne Abruf aus den gespeicherten Kandidaten neu rechnen (derselbe Vorrang, kein Tiingo, kein SEC).
+          node scripts/market/build-company-names.mjs
+          # Company Master und Universums-Indizes: market-capability.json bestimmt, wofuer die Materialisierung
+          # Technical-Signale baut. Derselbe Weg wie sec-fundamentals-daily.yml (dort erst am naechsten Morgen).
+          node scripts/universe/build-company-master.mjs
+          node scripts/universe/build-universe-indexes.mjs
+          node scripts/universe/build-issuer-master.mjs
+          node scripts/universe/verify-company-master.mjs
+          # Faehigkeitsmatrix und Produkt-Projektion (Quelle von productUniverse fuer Strategie, Watchlist, Radar):
+          # dieselben Schritte wie im Marktdatenlauf, ohne Kursabruf.
+          node scripts/market/build-capability-matrix.mjs
+          node scripts/vu2/build-product-capabilities.mjs
+          node scripts/market/publish-discover-series.mjs --prune-only
+          node scripts/market/publish-long-series.mjs --prune-only
+          node scripts/market/ingest-intraday.mjs --index-only
+          # Discover-Daten (Startseite, Live-Umfang, Aktienseiten, Meta) aus dem neuen Universum: derselbe Erzeuger
+          # und dieselbe Nachpruefung wie im Marktdatenlauf und in long-series.yml (Registereintrag discover/data/meta.json).
+          node scripts/discover/build-discover-data.mjs
+          node scripts/discover/verify-discover-data.mjs
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A $PUSH_OWNED_PATHS discover/data
+          if git diff --cached --quiet; then echo "nichts ausserhalb des Umfangs"; else
+            git commit -q -m "Umfangsfolgen: Reihen ausserhalb des Produktuniversums entfernt, Discover neu gebaut (Erzeuger)"
+            # wie long-series.yml: nach dem Rebase Discover auf dem zusammengefuehrten Stand neu bauen und pruefen
+            git pull -q --rebase origin "${GITHUB_REF_NAME}"
+            node scripts/discover/build-discover-data.mjs
+            node scripts/discover/verify-discover-data.mjs
+            git add -A discover/data
+            if ! git diff --cached --quiet; then git commit -q --amend --no-edit; fi
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+          fi
+          # Uebrig bleiben darf hoechstens die Technical-Materialisierung, die der naechste Schritt neu anstoesst.
+          set +e
+          node scripts/market/assert-public-data-hygiene.mjs > "$RUNNER_TEMP/hygiene.txt" 2>&1
+          set -e
+          rest="$(grep -E '^ *- ' "$RUNNER_TEMP/hygiene.txt" | grep -v 'technical-signals-v1/' || true)"
+          if [ -n "$rest" ]; then echo "$rest" | head -20; echo "::error::Hygiene-Befunde ausserhalb der Materialisierung"; exit 1; fi
+
+      - name: Umfangsfolgen - Materialisierung neu anstossen (Technical-Signale)
+        if: steps.folgen.outcome == 'success' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # ein wartender oder laufender Lauf baut ohnehin auf dem neuen Stand - kein zweiter
+          offen="$(gh run list --workflow product-intelligence-materialization.yml --branch main --limit 10 --json status \
+            --jq '[.[] | select(.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="pending")] | length')"
+          if [ "$offen" != "0" ]; then echo "Materialisierung laeuft schon ($offen) - kein zweiter Anstoss"; exit 0; fi
+          gh workflow run product-intelligence-materialization.yml --ref main -f force=true
+
+      - name: Umfangsfolgen - Vorsorge-Ingest anstossen (ausgeschiedene ETFs)
+        # Vorsorge las Reihen ausgeschiedener ETFs aus den Discover-Reihen (05.11.2026, 121 ETFs). Der Ingest holt
+        # alles, was noch nicht im Vorsorge-Universum steht (Zusatz-ETFs aus dem Company Master), und baut neu.
+        if: steps.folgen.outcome == 'success' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run vorsorge-etf-universe.yml --ref main -f nur_zusatz=true
+
+      - name: Ergebnis
+        if: steps.gate.outputs.decision != 'COMMIT'
+        run: |
+          echo "::error::Gate BLOCKED: Produktuniversum nicht uebernommen (Bericht im Artefakt und in der Zusammenfassung)."
+          exit 1

@@ -104,8 +104,14 @@ jobs:
           mkdir -p "$RUNNER_TEMP/sign"
           printf '%s' "$IOS_DIST_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/sign/dist.p12"
           printf '%s' "$IOS_PROFILE_BASE64" | base64 --decode > "$RUNNER_TEMP/sign/app.mobileprovision"
+          # Eine mit OpenSSL 3 (z. B. Git Bash unter Windows) erzeugte .p12 nutzt moderne Verschluesselung, die macOS "security import" nicht liest
+          # ("MAC verification failed ... wrong password?", Lauf 42371326695). Hier ins kompatible Format umwandeln (keine Werte im Log).
+          printf '%s' "$IOS_DIST_P12_PASSWORD" > "$RUNNER_TEMP/sign/pw"
+          openssl pkcs12 -in "$RUNNER_TEMP/sign/dist.p12" -passin file:"$RUNNER_TEMP/sign/pw" -nodes -out "$RUNNER_TEMP/sign/all.pem" >/dev/null 2>&1 || { echo "::error::p12 laesst sich nicht lesen"; exit 1; }
+          openssl pkcs12 -export -in "$RUNNER_TEMP/sign/all.pem" -out "$RUNNER_TEMP/sign/dist-compat.p12" -keypbe PBE-SHA1-3DES -certpbe PBE-SHA1-3DES -macalg sha1 -passout file:"$RUNNER_TEMP/sign/pw" >/dev/null 2>&1 || { echo "::error::p12 laesst sich nicht umwandeln"; exit 1; }
+          rm -f "$RUNNER_TEMP/sign/all.pem" "$RUNNER_TEMP/sign/dist.p12"
           chmod 600 "$RUNNER_TEMP"/sign/*
-          echo "IOS_DIST_P12_PATH=$RUNNER_TEMP/sign/dist.p12" >> "$GITHUB_ENV"
+          echo "IOS_DIST_P12_PATH=$RUNNER_TEMP/sign/dist-compat.p12" >> "$GITHUB_ENV"
           echo "IOS_PROFILE_PATH=$RUNNER_TEMP/sign/app.mobileprovision" >> "$GITHUB_ENV"
       - name: Archiv, Signierung und Upload zu TestFlight (fastlane, vorinstalliert)
         if: ${{ !inputs.preflight_only }}

@@ -39,7 +39,7 @@
 - **Eignung:** 225 Wechsel, davon 138 aus der Sonderfreigabe 1.0.0 (Klassifiziererwechsel).
 - **Namen:** 573 Namen kommen neu aus der SEC, 18 Firmen haben umfirmiert. XRPN bleibt ausgeschlossen, weil dort die CIK wechselt.
 - **Vollständige Listen:**
-  - nicht freigabefähige Einträge vollständig: [V130_APPROVAL_LISTS_RUN_41117465706.md](V130_APPROVAL_LISTS_RUN_41117465706.md)
+  - nicht freigabefähige Einträge vollständig: V130_APPROVAL_LISTS_RUN_41117465706.md (`V130_APPROVAL_LISTS_RUN_41117465706.md`, historischer Beleg im Repository nicht vorhanden)
   - alle freigegebenen Einträge mit Beleg: `v130-approved-changes-1.1.0.json`
 
 ## Freigabeschritte (nach Owner-OK)

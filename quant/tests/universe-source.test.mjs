@@ -75,7 +75,9 @@ test("US5 · Das Repository loest heute auf eine echte Quelle auf - keine Zahl i
   assert.equal(r.handover.status, "INTEGRATED");
   const datei = JSON.parse(readFileSync(join(root, r.file), "utf8"));
   assert.equal(r.counts.productUniverse, datei.counts.productUniverse, "Zaehlung = Quelle");
-  assert.ok(r.counts.productUniverse > 6500, "Produktuniversum ist keine Vorfuehrliste");
+  // Keine Vorfuehrliste: mindestens drei Viertel der Mitgliedsliste (vorher feste Zahl 6500; die Bereinigung vom
+  // 05.11.2026 nahm belegte ETFs heraus, 6577 -> 6308 von 7803).
+  assert.ok(r.counts.productUniverse >= 0.75 * datei.counts.universeMembers, "Produktuniversum ist keine Vorfuehrliste");
   assert.ok(r.securities.every((s) => s.securityId && s.ticker));
   assert.equal(new Set(r.securities.map((s) => s.ticker)).size, r.securities.length, "kein Ticker doppelt");
   /* Der Uebergabepunkt ist entweder eingeloest oder exakt benannt. */

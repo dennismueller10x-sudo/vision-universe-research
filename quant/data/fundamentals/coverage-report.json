@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-11-01T13:25:53+00:00",
+  "generatedAtUtc": "2026-11-07T13:21:44+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.14.0",
@@ -13,9 +13,9 @@
   },
   "note": "Gezaehlt gegen das Produktuniversum, nicht gegen die ingestierten Emittenten. Ein Nenner aus dem eigenen Bestand wuerde jede Luecke wegdefinieren (\u00a719).",
   "universe": {
-    "PRODUCT_TITLES": 6686,
-    "PRODUCT_ISSUERS": 5421,
-    "PRODUCT_TITLES_WITHOUT_ISSUER": 1102,
+    "PRODUCT_TITLES": 6308,
+    "PRODUCT_ISSUERS": 5404,
+    "PRODUCT_TITLES_WITHOUT_ISSUER": 736,
     "MASTER_ISSUERS": 5481
   },
   "identity": {
@@ -24,61 +24,61 @@
     "CIK_AMBIGUOUS": 0
   },
   "fundamentals": {
-    "COMPANY_FACTS_AVAILABLE": 5421,
+    "COMPANY_FACTS_AVAILABLE": 5404,
     "COMPANY_FACTS_UNAVAILABLE": 0,
     "ISSUERS_INGESTED_TOTAL": 5479,
-    "ISSUERS_INGESTED_OUTSIDE_PRODUCT_UNIVERSE": 58,
+    "ISSUERS_INGESTED_OUTSIDE_PRODUCT_UNIVERSE": 75,
     "BY_SOURCE": {
       "INGESTED": 5479
     }
   },
   "metrics": {
     "revenue": {
-      "COUNT": 4395,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 65.7344
+      "COUNT": 4401,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 69.7685
     },
     "net_income": {
-      "COUNT": 5028,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 75.2019
+      "COUNT": 5022,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 79.6132
     },
     "eps_diluted": {
-      "COUNT": 4754,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 71.1038
+      "COUNT": 4759,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 75.4439
     },
     "operating_cash_flow": {
-      "COUNT": 5010,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 74.9327
+      "COUNT": 5009,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 79.4071
     },
     "capital_expenditures": {
-      "COUNT": 4517,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 67.5591
+      "COUNT": 4523,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 71.7026
     },
     "free_cash_flow": {
-      "COUNT": 4507,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 67.4095
+      "COUNT": 4513,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 71.5441
     },
     "total_assets": {
-      "COUNT": 5254,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 78.5821
+      "COUNT": 5242,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 83.1008
     },
     "total_debt": {
-      "COUNT": 2843,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 42.5217
+      "COUNT": 2848,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 45.149
     },
     "stockholders_equity": {
-      "COUNT": 5217,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 78.0287
+      "COUNT": 5212,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 82.6252
     }
   },
   "pointInTime": {
     "note": "Ein Wert ist zeitpunktgenau abfragbar, wenn er ein Veroeffentlichungsdatum UND eine Einreichung traegt. PIT_READY verlangt das fuer ALLE aufgeloesten Werte eines Emittenten - bei einem Prozent undatierbarer Werte ist ein Backtest nicht mehr vertrauenswuerdig, und man weiss nicht, welcher Wert es war.",
     "denominator": "PRODUCT_TITLES",
-    "PIT_READY_SECURITIES": 5443,
+    "PIT_READY_SECURITIES": 5434,
     "PIT_PARTIAL_SECURITIES": 0,
-    "PIT_UNAVAILABLE_SECURITIES": 1243,
+    "PIT_UNAVAILABLE_SECURITIES": 874,
     "BY_ISSUER": {
-      "PIT_READY": 5344,
-      "PIT_UNAVAILABLE": 135
+      "PIT_READY": 5345,
+      "PIT_UNAVAILABLE": 134
     },
     "SURVIVORSHIP_FREE_UNIVERSE": false,
     "survivorshipNote": "SEC/EDGAR fuehrt kein Wertpapierstamm- und kein Delisting-Ereignisfeed. Ein ueberlebensfreies Universum laesst sich daraus nicht bauen; ein PASS waere eine Falschaussage ueber die Quelle."

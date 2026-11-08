@@ -1,4 +1,6 @@
-:root{--vu-navigation-height:72px}
+@font-face{font-family:Inter;src:url(/assets/fonts/inter-latin.woff2) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Inter;src:url(/assets/fonts/inter-latin-ext.woff2) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+:root{--vu-navigation-height:64px}
 html{scroll-padding-top:calc(var(--vu-navigation-height) + 16px)}
 body{padding-top:var(--vu-navigation-height)!important}
 vu-navigation{display:block!important}
@@ -11,12 +13,12 @@ body.vu-magazine-one .mag{height:calc(100dvh - var(--nav) - var(--vu-navigation-
 body.vu-magazine-two .reader{height:calc(100dvh - var(--vu-navigation-height))}
 body.vu-magazine-two .page{height:100%}
 body.vu-magazine-two .progress{top:var(--vu-navigation-height)}
-@media(max-width:760px){:root{--vu-navigation-height:64px}}
+@media(max-width:760px){:root{--vu-navigation-height:56px}}
 body .q-tabs-wrap{top:var(--vu-navigation-height)}
 /* Produkt-Leiste (Dock) der gemeinsamen Shell: Abstand fuer den Inhalt als
    ein Token statt verstreuter Magic Numbers. Hoehe der Leiste + Safe Area +
    sichtbarer Abstand. Gesetzt nur, wenn die Seite eine Leiste traegt. */
-:root{--vu-dock-height:66px;--vu-dock-gap:10px;--vu-dock-space:calc(var(--vu-dock-height) + var(--vu-dock-gap) + 24px + env(safe-area-inset-bottom));--vu-accent:#c8f531;--vu-on-accent:#101318}
+:root{--vu-dock-height:68px;--vu-dock-gap:12px;--vu-dock-space:calc(var(--vu-dock-height) + var(--vu-dock-gap) + 24px + env(safe-area-inset-bottom));--vu-accent:#c8f531;--vu-on-accent:#101318}
 html[data-vu-dock]{scroll-padding-bottom:var(--vu-dock-space)}
 html[data-vu-dock] body{padding-bottom:var(--vu-dock-space)!important}
 html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
@@ -40,13 +42,13 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
   --vu-premium-ink:var(--vu-text);--vu-premium-muted:var(--vu-muted);
   --vu-premium-accent-text:var(--vu-accent-text);--vu-premium-accent:var(--vu-accent);
   /* VU3 UI-System: Richtung, Charts, Seitenrand. Ein Wert fuer alle Welten. */
-  --vu-up:#1a7330;--vu-down:#b8281f;--vu-warn:#875000;
-  --vu-chart-up:#5cc850;--vu-chart-down:#e4382f;--vu-chart-base:#9aa0a6;--vu-chart-axis:var(--vu-muted);
+  --vu-up:var(--vu-text);--vu-down:var(--vu-text);--vu-warn:var(--vu-text);
+  --vu-chart-up:var(--vu-text);--vu-chart-down:var(--vu-text);--vu-chart-base:#9aa0a6;--vu-chart-axis:var(--vu-muted);
   --vu-gutter:16px;--vu-section-gap:40px;
 }
 @media(min-width:761px){:root{--vu-gutter:24px;--vu-section-gap:56px}}
 :root[data-theme=dark]{
-  --vu-up:#5cc850;--vu-down:#ff6b5e;--vu-warn:#f0b43c;--vu-chart-base:#5d636b;
+  --vu-chart-base:#5d636b;
   --vu-bg:#000;--vu-surface:#0f0f10;--vu-elevated:#151516;
   --vu-text:#f4f5f1;--vu-text-secondary:#c3c7cc;--vu-muted:#a1a7af;
   --vu-line:rgba(255,255,255,.09);--vu-line-strong:rgba(255,255,255,.16);
@@ -137,7 +139,7 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 .vu-status[data-tone=accent]{color:var(--vu-accent-text);background:var(--vu-accent-soft)}
 /* Balken: Anteil 0..100 ueber --v (Prozent). */
 .vu-bar{position:relative;height:6px;border-radius:6px;background:var(--vu-line);overflow:hidden}
-.vu-bar>i{position:absolute;inset:0 auto 0 0;width:calc(var(--v,0) * 1%);border-radius:inherit;background:var(--vu-accent-text)}
+.vu-bar>i{position:absolute;inset:0 auto 0 0;width:calc(var(--v,0) * 1%);border-radius:inherit;background:var(--vu-text)}
 .vu-bar[data-tone=good]>i{background:var(--vu-up)}.vu-bar[data-tone=bad]>i{background:var(--vu-down)}
 /* Rangliste: Rang, Name, Wert - Zeilen statt Karten. */
 .vu-rank{list-style:none;margin:0;padding:0;counter-reset:vu-rank}
@@ -165,14 +167,16 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 .vu-empty b{display:block;margin-bottom:4px;font-size:16px;color:var(--vu-text)}
 /* Warnung: bleibt sichtbar (veraltete oder unvollstaendige Daten). */
 .vu-alert{display:flex;gap:10px;align-items:flex-start;margin:12px 0;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--vu-warn) 12%,transparent);color:var(--vu-text);font-size:13px;line-height:1.45}
-.vu-alert:before{content:"!";flex:none;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--vu-warn);color:#fff;font:900 12px/1 Inter,sans-serif}
+.vu-alert:before{content:"!";flex:none;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--vu-warn);color:var(--vu-bg);font:900 12px/1 Inter,sans-serif}
 /* Chart: volle Inhaltsbreite, kein Rahmen; mobil bis an den Seitenrand. */
 .vu-chart{position:relative;margin:8px 0 0;color:var(--vu-chart-base)}
-.vu-chart[data-direction=up]{color:var(--vu-chart-up)}.vu-chart[data-direction=down]{color:var(--vu-chart-down)}
+/* C06 Der eine Chart: Linie in Schrift-Farbe, neongrüne Fläche (vu-chart.js), Richtung nicht über Rot/Grün. */
+.vu-chart,.vu-chart[data-direction=up],.vu-chart[data-direction=down]{color:var(--vu-ink)}
 .vu-chart svg{display:block;width:100%;height:auto;overflow:visible}
-.vu-chart-line{fill:none;stroke:currentColor;stroke-width:2.65;stroke-linejoin:round;stroke-linecap:round}
+.vu-chart-line{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.vu-chart-area{stroke:none}
 .vu-chart-base{stroke:var(--vu-chart-base);stroke-width:1;stroke-dasharray:3 4;opacity:.8}
-.vu-chart-dot{fill:currentColor}
+.vu-chart-dot{fill:var(--vu-lime);stroke:currentColor;stroke-width:2.4}
 .vu-chart-axis{fill:var(--vu-chart-axis);font:600 11px/1 Inter,-apple-system,sans-serif;font-variant-numeric:tabular-nums}
 .vu-chart-cross{stroke:var(--vu-text);stroke-width:1;opacity:.35}
 .vu-chart-level line{stroke:var(--vu-text-secondary);stroke-width:1;stroke-dasharray:5 4;opacity:.7}
@@ -182,9 +186,9 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 .vu-chart-tip{position:absolute;top:0;transform:translateX(-50%);padding:4px 8px;border-radius:8px;background:var(--vu-text);color:var(--vu-bg);font:750 12px/1.3 Inter,sans-serif;white-space:nowrap;pointer-events:none;font-variant-numeric:tabular-nums}
 .vu-chart-tip[hidden]{display:none}
 .vu-chart-empty{display:grid;place-items:center;min-height:180px;font-size:13px;color:var(--vu-muted)}
-.vu-ranges{display:flex;gap:4px;margin:10px 0 0;padding:0;overflow-x:auto;scrollbar-width:none}
+.vu-ranges{display:flex;gap:2px;margin:10px 0 0;padding:4px;border-radius:999px;background:var(--vu-surface);overflow-x:auto;scrollbar-width:none}
 .vu-ranges::-webkit-scrollbar{display:none}
-.vu-ranges button,.vu-chart .vu-ranges button{flex:none;min-width:44px;min-height:36px;padding:0 12px;border:0;border-radius:999px;background:transparent;color:var(--vu-text-secondary);font:750 13px/1 Inter,-apple-system,sans-serif;cursor:pointer}
+.vu-ranges button,.vu-chart .vu-ranges button{flex:1 0 auto;min-width:44px;min-height:36px;padding:0 10px;border:0;border-radius:999px;background:transparent;color:var(--vu-text-secondary);font:750 13px/1 Inter,-apple-system,sans-serif;cursor:pointer}
 .vu-ranges button[aria-pressed=true],.vu-chart .vu-ranges button[aria-pressed=true]{background:var(--vu-text);color:var(--vu-bg)}
 .vu-ranges button:disabled,.vu-chart .vu-ranges button:disabled{opacity:.38;cursor:default}
 @media(max-width:760px){.vu-chart--bleed{margin-inline:calc(-1 * var(--vu-gutter) + 4px)}}
@@ -196,3 +200,44 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 [data-vu-href] a[data-vu-card-main]{color:inherit;text-decoration:none}
 [data-vu-href] a[data-vu-card-main]:focus-visible{outline:3px solid var(--vu-focus);outline-offset:3px;border-radius:6px}
 @media(hover:hover){[data-vu-href]:hover a[data-vu-card-main]{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}}
+
+/* Bausteine C04–C20 des Redesigns: assets/vu-ui.css (eigene Datei, nicht Teil der Navigation). */
+/* Einheitlicher Seitenfuß (Strang F): erscheint erst mit legalApproved */
+.vu-legal-foot{max-width:1100px;margin:24px auto 0;padding:16px;border-top:1px solid var(--vu-line,#e9e9e9);font:500 12px/1.5 Inter,-apple-system,sans-serif;color:var(--vu-text-secondary,#6e6e6e)}
+.vu-legal-foot p{margin:0}.vu-legal-foot-links{margin-top:6px!important}
+.vu-legal-foot a{color:inherit;font-weight:700}
+
+/* E5: disable double-tap zoom while retaining pan and pinch zoom. */
+html{touch-action:manipulation}
+/* Shared product controls, including Quant's qx-main which has no vu-ui root. */
+html body :is(.vu-ui,.qx-main,#fu-main,#tc-main,#st-main,#v2-main) :is(button,select,input:not([type=checkbox]):not([type=radio]),summary,a[role=button]){min-width:44px;min-height:44px;touch-action:manipulation}
+
+html body .qx-main .q-alert-list label{min-height:44px;box-sizing:border-box}
+
+/* Keep the final document height while app data loads. The footer follows
+   the product content from the first paint, without jumping through it. */
+html body :is(main.vu-ui,.qx-main,#fu-main,#tc-main,#st-main,#v2-main){min-height:calc(100vh - var(--vu-navigation-height));min-height:calc(100svh - var(--vu-navigation-height))}
+
+/* The comparison mode already has a 46px pseudo-element hit area. */
+html body #fu-main .fu-mc-mode button.fu-seg-b{min-height:38px}
+
+/* Preserve 44px chart ranges in a horizontal row on narrow phones. */
+html body #tc-main .tc-ranges{overflow-x:auto;scrollbar-width:none}
+html body #tc-main .tc-ranges::-webkit-scrollbar{display:none}
+
+/* K2 (Owner 07.11.2026, App-Gefuehl): Dokumentwechsel gleiten wie native Bildschirme; Leiste und Kopf bleiben stehen.
+   Vorwaerts: neue Seite gleitet von rechts herein; zurueck/neu laden ueberspringt site-navigation.js (pageswap). Reduzierte Bewegung: keine. */
+@media (prefers-reduced-motion:no-preference){
+  @view-transition{navigation:auto}
+  #vu-dock{view-transition-name:vu-dock}
+  vu-navigation{view-transition-name:vu-nav}
+  ::view-transition-group(vu-dock),::view-transition-group(vu-nav){animation:none}
+  ::view-transition-old(vu-dock),::view-transition-new(vu-dock),::view-transition-old(vu-nav),::view-transition-new(vu-nav){animation:none}
+  ::view-transition-new(vu-dock),::view-transition-new(vu-nav){mix-blend-mode:normal}
+  ::view-transition-old(vu-dock),::view-transition-old(vu-nav){display:none}
+  html::view-transition-old(root){animation:.24s cubic-bezier(.2,.8,.2,1) both vu-vt-out-left}
+  html::view-transition-new(root){animation:.24s cubic-bezier(.2,.8,.2,1) both vu-vt-in-right}
+}
+@keyframes vu-vt-out-left{to{transform:translateX(-30%);opacity:.6}}
+@keyframes vu-vt-in-right{from{transform:translateX(100%)}}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}

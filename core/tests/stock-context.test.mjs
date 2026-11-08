@@ -192,3 +192,8 @@ test("Fundamental · Adresse /fundamental/#/<T> und zurueck; #/methodik ist kein
   assert.equal(SC.parse("/fundamental/#/AAPL/x"), null);
   assert.equal(SC.href(SC.fromEurope({ securityId: "ref_SAP_DE_XETR" }), "fundamental"), null);
 });
+
+test("Fundamental-Ansichten (Ranglisten, Branchen, Suche, Entdecken, Methodik) sind keine Aktien", () => {
+  for (const v of ["ranglisten", "branchen", "suche", "entdecken", "methodik"]) assert.equal(SC.parse("/fundamental/#/" + v), null, v);
+  assert.equal(SC.parse("/fundamental/#/NVDA").ctx.ticker, "NVDA");
+});

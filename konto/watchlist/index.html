@@ -8,26 +8,22 @@
 <meta name="theme-color" content="#ffffff">
 <title>Watchlist · Vision Universe</title>
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/vu-ui.css">
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/konto/konto.css">
 </head>
-<body class="ka-body" data-view="watchlist"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<body class="ka-body vu-ui" data-view="watchlist"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <main class="ka ka--wide" id="main">
-<nav class="ka-crumbs" aria-label="Pfad"><a class="ka-link" href="/mein-dashboard/">Mein Dashboard</a><span aria-hidden="true">›</span><span aria-current="page">Watchlist</span></nav>
-<h1 class="ka-title">Watchlist</h1>
-<p class="ka-lead ka-lead--tight">Alle Kennzahlen deiner gespeicherten Aktien. Kurzansicht im <a class="ka-link" href="/mein-dashboard/">Dashboard</a>.</p>
+<!-- Watchlist-Detail (Mockup E09): Profi-Ansicht von Platz 1 der Leiste „Mein Bereich“; Zurück statt Brotkrumen. -->
+<nav class="ka-back" aria-label="Zurück"><a class="ka-back-link" href="/mein-dashboard/"><span class="vu-round" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></span><b>Watchlist</b></a></nav>
+<h1 class="ka-title">Alle Kennzahlen <span class="vu-pro">PRO</span></h1>
+<p class="ka-lead ka-lead--tight">Tiefe je Aktie: Faktoren, Signale, Chart, deine Notiz. Kurzansicht in <a class="ka-link" href="/mein-dashboard/">Mein Dashboard</a>.</p>
 
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
 <div class="ka-skeleton" id="wl-loading" aria-hidden="true"></div>
 <div id="wl-app" hidden>
-<section class="wl-kpis" id="wl-kpis" aria-label="Kennzahlen deiner Watchlist"></section>
-<div class="wl-sources" id="wl-sources" aria-label="Datenstand"></div>
 <div class="ka-card wl-legacy" id="wl-legacy" hidden><p id="wl-legacy-text"></p><div class="ka-actions"><button class="ka-btn" type="button" id="wl-legacy-btn">Übernehmen</button></div></div>
-<div class="wl-add">
-<label class="ka-legend" for="wl-add">Aktie hinzufügen</label>
-<input class="ka-input" id="wl-add" type="search" autocomplete="off" spellcheck="false" placeholder="Name oder Kürzel, z. B. NVDA" role="combobox" aria-expanded="false" aria-controls="wl-results" aria-autocomplete="list">
-<div class="wl-results" id="wl-results" role="listbox" aria-label="Treffer" hidden></div>
-</div>
+<div class="vu-chips wl-quick" id="wl-quick" role="group" aria-label="Schnellfilter"></div>
 <div class="wl-toolbar" role="group" aria-label="Ansicht">
 <input class="ka-input" id="wl-query" type="search" placeholder="In der Watchlist suchen" aria-label="In der Watchlist suchen">
 <select class="ka-select" id="wl-filter" aria-label="Filter">
@@ -44,6 +40,15 @@
 </div>
 <p class="wl-count ka-muted" id="wl-count"></p>
 <div id="wl-list"></div>
+<div class="wl-bottom">
+<div class="wl-add">
+<label class="ka-legend" for="wl-add">Aktie hinzufügen</label>
+<input class="ka-input" id="wl-add" type="search" autocomplete="off" spellcheck="false" placeholder="Name oder Kürzel, z. B. NVDA" role="combobox" aria-expanded="false" aria-controls="wl-results" aria-autocomplete="list">
+<div class="wl-results" id="wl-results" role="listbox" aria-label="Treffer" hidden></div>
+</div>
+<section class="wl-kpis" id="wl-kpis" aria-label="Kennzahlen deiner Watchlist"></section>
+<div class="wl-sources" id="wl-sources" aria-label="Datenstand"></div>
+</div>
 <div class="ka-card" id="wl-empty" hidden><h2>Noch keine Aktien</h2><p class="ka-muted">Füge oben eine Aktie hinzu oder tippe auf einer Aktienseite auf das Lesezeichen.</p></div>
 <details class="ka-card wl-explain"><summary>Quant-Faktorverteilung und Erklärungen</summary>
 <div class="wl-dist" id="wl-dist"></div>
@@ -65,6 +70,9 @@
 <script src="/core/identity.js"></script>
 <script src="/core/stock-context.js"></script>
 <script src="/core/watchlist-view.js"></script>
+<script src="/assets/vu-ui.js"></script>
+<script src="/assets/vu-chart.js"></script>
+<script src="/mein-dashboard/today.js"></script>
 <script src="/konto/watchlist.js"></script>
 <script src="/konto/konto.js"></script>
 </body>
