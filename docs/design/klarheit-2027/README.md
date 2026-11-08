@@ -1,5 +1,7 @@
 # Klarheit 2027: Usability-Prüfung und Umbauvorlage
 
+> **Abgelöst** durch [`../produkte-2027/`](../produkte-2027/README.md) (Owner-Rückmeldung 08.11.2026: Produkte bleiben). Weiter gültig: Sofort-Korrekturen, Erklär-Blatt, Formatfamilie.
+
 Stand 08.11.2026. Prüfung der ganzen App aus Kundensicht (390 × 844 und Desktop, lokaler Abzug von `main`) mit
 Mockup-Präsentation für den Umbau. Baut auf [`../redesign-2027/`](../redesign-2027/README.md) (Design, Bausteine) und
 [`../../publishing/konzept-2026-11/`](../../publishing/konzept-2026-11/README.md) (Druckformate) auf und ersetzt keine der beiden.

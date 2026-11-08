@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Vision Universe – Produkte 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<style>
+/* Klarheit 2027 – Usability-Prüfung und Umbauvorlage. Gleiche Tokens wie docs/design/redesign-2027: Weiß, Schwarz, Neongrün, drei Graustufen. */
+:root{--a-bg:#fff;--a-ink:#000;--a-card:#f4f4f4;--a-line:#e9e9e9;--a-mute:#6e6e6e;--a-inv:#fff;--white:#fff;--black:#000;--lime:#c8f531;--g1:#f4f4f4;--g2:#e6e6e6;--g3:#8c8c8c;--g4:#5c5c5c;
+  --f:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--white);color:var(--black);font-family:var(--f);-webkit-font-smoothing:antialiased;margin:0;line-height:1.45}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+.slide{padding:clamp(48px,7vw,96px) max(16px,env(safe-area-inset-right,0px)) clamp(48px,7vw,96px) max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--g2)}
+.slide.dark{background:var(--black);color:var(--white);border-color:#1a1a1a}
+.slide.soft{background:var(--g1)}
+.inner{max-width:1360px;margin:0 auto}
+.sh{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:clamp(24px,4vw,44px)}
+.sh .no{font-weight:800;font-size:14px;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:var(--g3)}
+.sh h2{font-size:clamp(28px,4.2vw,52px);font-weight:900;letter-spacing:-.045em;line-height:1}
+.sh .sub{width:100%;font-size:clamp(15px,1.4vw,18px);color:var(--g4);font-weight:500;max-width:72ch}
+.dark .sh .sub{color:#a6a6a6}
+.kicker{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--g3)}
+.lime-txt{color:var(--lime)}
+mark{background:var(--lime);color:#000;padding:0 .18em;border-radius:.18em}
+
+/* Cover */
+.cover{background:var(--black);color:var(--white);min-height:min(100vh,900px);display:flex;align-items:center}
+.cover .inner{width:100%;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:48px;align-items:center}
+.cover .brand{font-weight:900;letter-spacing:.14em;font-size:14px;margin-bottom:40px}
+.cover .brand sup{font-size:9px}
+.cover h1{font-size:clamp(52px,8vw,120px);font-weight:900;letter-spacing:-.065em;line-height:.88}
+.cover h1 span{color:var(--lime)}
+.cover p.lead{margin-top:28px;color:#b5b5b5;font-size:clamp(17px,1.6vw,21px);font-weight:500;max-width:40ch}
+.cover .meta{margin-top:28px;font-size:13px;color:#8c8c8c;font-weight:600}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:32px}
+.toc a{color:var(--white);text-decoration:none;border:1px solid #2a2a2a;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600}
+.toc a:hover,.toc a:focus-visible{background:var(--lime);color:#000;border-color:var(--lime)}
+.cover .phones{display:flex;gap:18px;justify-content:center;align-items:flex-start}
+.cover .phones .ph:nth-child(2){margin-top:60px}
+@media (max-width:900px){.cover .inner{grid-template-columns:1fr}.cover .phones .ph:nth-child(2){display:none}}
+
+/* Kapiteltrenner */
+.chapter{min-height:min(80vh,720px);display:flex;align-items:center}
+.chapter .inner{width:100%;display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,4vw,56px);align-items:center}
+.chapter .big{font-size:clamp(88px,16vw,220px);font-weight:900;letter-spacing:-.07em;line-height:.8;color:var(--lime);font-variant-numeric:tabular-nums}
+.chapter h2{font-size:clamp(40px,7vw,96px);font-weight:900;letter-spacing:-.055em;line-height:.95}
+.chapter .was{margin-top:16px;font-size:clamp(16px,1.6vw,21px);color:#a6a6a6;font-weight:500;max-width:56ch}
+.chapter .was b{color:var(--white)}
+@media (max-width:700px){.chapter .inner{grid-template-columns:1fr}}
+
+/* Raster und Karten */
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:1000px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:1fr 1fr}}
+.g5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+@media (max-width:1100px){.g5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:680px){.g2,.g3,.g4,.g5{grid-template-columns:1fr}}
+.box{border:1px solid var(--g2);border-radius:24px;padding:22px;min-width:0;background:var(--white)}
+.dark .box{background:#0d0d0d;border-color:#262626}
+.box.ink{background:#000;color:#fff;border-color:#000}
+.box.lime{background:var(--lime);border-color:var(--lime);color:#000}
+.box.gray{background:var(--g1);border-color:var(--g1)}
+.box h3{font-size:20px;font-weight:850;letter-spacing:-.025em;line-height:1.15;margin-bottom:8px}
+.box h4{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--g3);margin-bottom:10px}
+.box p{color:var(--g4);font-size:15px}
+.dark .box p,.box.ink p{color:#a6a6a6}
+.box.lime p{color:#1b1b1b}
+.box ul{margin:8px 0 0;padding-left:18px;font-size:15px;color:var(--g4)}
+.dark .box ul,.box.ink ul{color:#b5b5b5}
+.box li{margin:4px 0}
+.box li b{color:var(--black)}
+.dark .box li b,.box.ink li b{color:#fff}
+.big-num{font-size:clamp(48px,6vw,84px);font-weight:900;letter-spacing:-.06em;line-height:.9;font-variant-numeric:tabular-nums}
+.sev{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 10px;font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.sev.hi{background:#000;color:var(--lime)}
+.sev.mid{background:var(--g2);color:#000}
+.sev.lo{border:1.5px dashed var(--g3);color:var(--g4)}
+.sev.ok{background:var(--lime);color:#000}
+.dark .sev.mid{background:#262626;color:#fff}
+.tag{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:800;font-size:11px;letter-spacing:.08em}
+.tag.now{background:var(--g1);color:var(--g4);border:1px solid var(--g2)}
+.tag.neu{background:var(--lime);color:#000}
+.dark .tag.now{background:#141414;color:#a6a6a6;border-color:#262626}
+.quote{font-size:clamp(24px,3.2vw,44px);font-weight:900;letter-spacing:-.04em;line-height:1.08;max-width:24ch}
+.quote span{background:var(--lime);color:#000;padding:0 8px;border-radius:8px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.lead2{font-size:clamp(17px,1.6vw,20px);color:var(--g4);font-weight:500;max-width:62ch;margin-top:18px}
+.dark .lead2{color:#a6a6a6}
+
+/* Tabellen */
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.tbl th{text-align:left;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--g3);padding:10px 12px;border-bottom:2px solid #000}
+.dark .tbl th{border-color:#fff}
+.tbl td{padding:12px;border-bottom:1px solid var(--g2);vertical-align:top}
+.dark .tbl td{border-color:#262626}
+.tbl td b{font-weight:800}
+.tbl .num{font-variant-numeric:tabular-nums;font-weight:800}
+.tbl-wrap{overflow-x:auto;border-radius:20px;border:1px solid var(--g2);padding:6px 10px}
+.dark .tbl-wrap{border-color:#262626}
+.arrow{color:var(--g3);font-weight:800}
+
+/* Matrix Aufgaben × Produkte */
+.matrix{border-collapse:separate;border-spacing:4px;font-size:13px;min-width:860px}
+.matrix th{font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--g4);padding:6px;text-align:center;writing-mode:initial}
+.matrix th.rowh{text-align:left;font-size:13.5px;color:#000;letter-spacing:0;white-space:nowrap;padding-right:14px}
+.matrix td{width:62px;height:34px;border-radius:9px;background:var(--g1);text-align:center;font-weight:900}
+.matrix td.on{background:#000;color:var(--lime)}
+.matrix td.cnt{background:transparent;font-size:15px;font-weight:900;width:auto;padding-left:10px;text-align:left;white-space:nowrap}
+.matrix td.cnt span{background:var(--lime);border-radius:999px;padding:3px 10px}
+
+/* Geräte */
+.devs{display:flex;flex-wrap:wrap;gap:clamp(14px,2vw,30px);align-items:flex-start}
+.devs.center{justify-content:center}
+.dev{display:flex;flex-direction:column;gap:12px;width:var(--w,300px)}
+.dev figcaption{font-size:13.5px;font-weight:600;color:var(--g4);line-height:1.4}
+.dark .dev figcaption{color:#a6a6a6}
+.dev figcaption b{color:#000}
+.dark .dev figcaption b{color:#fff}
+figure{margin:0}
+.shot{border-radius:26px;overflow:hidden;border:6px solid var(--g2);aspect-ratio:390/844;background:#fff;position:relative}
+.dark .shot{border-color:#262626}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.pin{position:absolute;width:30px;height:30px;border-radius:50%;background:#000;color:var(--lime);font-weight:900;font-size:14px;display:grid;place-items:center;box-shadow:0 0 0 3px var(--lime)}
+.pins{counter-reset:p;margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.pins li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;font-size:14.5px;color:var(--g4)}
+.pins li i{font-style:normal;width:26px;height:26px;border-radius:50%;background:#000;color:var(--lime);display:grid;place-items:center;font-weight:900;font-size:12.5px}
+.pins li b{color:#000}
+.dark .pins li{color:#b5b5b5}.dark .pins li b{color:#fff}.dark .pins li i{background:var(--lime);color:#000}
+
+/* Telefon-Mockup 390 × 844, skaliert */
+.ph{--s:.74;width:calc(390px * var(--s) + 14px);flex:none}
+.ph .fr{width:calc(390px * var(--s) + 14px);height:calc(844px * var(--s) + 14px);border-radius:calc(54px * var(--s) + 7px);background:#000;padding:7px;box-shadow:0 30px 60px -30px rgba(0,0,0,.45),0 0 0 1px #2a2a2a}
+.dark .ph .fr{box-shadow:0 0 0 1px #333,0 30px 80px -30px rgba(200,245,49,.15)}
+.ph .vp{width:calc(390px * var(--s));height:calc(844px * var(--s));border-radius:calc(48px * var(--s));overflow:hidden;position:relative}
+.scr{width:390px;height:844px;transform:scale(var(--s));transform-origin:0 0;position:relative;overflow:hidden;font-size:15px;line-height:1.38;
+  --a-bg:#fff;--a-ink:#000;--a-card:#f4f4f4;--a-line:#e9e9e9;--a-mute:#6e6e6e;--a-inv:#fff;background:var(--a-bg);color:var(--a-ink);text-align:left}
+.scr.dk{--a-bg:#000;--a-ink:#fff;--a-card:#151515;--a-line:#262626;--a-mute:#9b9b9b;--a-inv:#000}
+.scr *{box-sizing:border-box}
+.sb{height:48px;display:flex;justify-content:space-between;align-items:flex-end;padding:0 30px 6px;font-weight:700;font-size:15px}
+.sb i{font-style:normal;font-size:11px;letter-spacing:1px}
+.bd{padding:4px 18px 120px}
+.hdr{display:flex;align-items:center;gap:8px;height:46px;margin-bottom:6px}
+.hdr .w{display:flex;align-items:center;gap:9px;font-weight:900;font-size:19px;letter-spacing:-.03em;flex:1;min-width:0}
+.hdr .w .hud{width:32px;height:32px;border-radius:10px;background:#000;color:var(--lime);display:grid;place-items:center}
+.scr.dk .hdr .w .hud{background:#1a1a1a}
+.hdr .w .hud svg{width:18px;height:18px}
+.hdr .ic{width:38px;height:38px;border-radius:50%;background:var(--a-card);display:grid;place-items:center}
+.hdr .ic svg{width:18px;height:18px}
+.hdr .at{height:38px;border-radius:999px;background:var(--a-ink);color:var(--a-inv);display:flex;align-items:center;gap:6px;padding:0 13px;font-weight:800;font-size:14px}
+.hdr .at svg{width:14px;height:14px;color:var(--lime)}
+.hdr .me{width:38px;height:38px;border-radius:50%;background:#000;color:var(--lime);display:grid;place-items:center}
+.hdr .me svg{width:18px;height:18px}
+.ey{font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--a-mute);margin:6px 0 6px}
+.lt{font-size:33px;font-weight:900;letter-spacing:-.05em;line-height:1.02}
+.mt{font-size:21px;font-weight:850;letter-spacing:-.03em;line-height:1.1}
+.st{font-size:17px;font-weight:850;letter-spacing:-.02em;display:flex;justify-content:space-between;align-items:baseline;margin:20px 0 10px}
+.st a{font-size:13.5px;font-weight:600;color:var(--a-mute);text-decoration:none}
+.mu{color:var(--a-mute)}
+.sm{font-size:13px}.xs{font-size:11.5px}.b{font-weight:700}.bb{font-weight:850}
+.num{font-variant-numeric:tabular-nums}
+.card{background:var(--a-card);border-radius:20px;padding:14px}
+.card.ink{background:var(--a-ink);color:var(--a-inv)}
+.card.lime{background:var(--lime);color:#000}
+.card.line{background:transparent;border:1.5px solid var(--a-line)}
+.scr .g2{gap:9px}.scr .g3{gap:8px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.scr .g2{grid-template-columns:1fr 1fr}
+.stk{display:grid;gap:9px}
+.chg{display:inline-flex;align-items:center;gap:3px;border-radius:999px;padding:3px 9px;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chg.up{background:var(--lime);color:#000}.chg.dn{background:var(--a-ink);color:var(--a-inv)}
+.vd{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 10px;font-weight:800;font-size:12px;white-space:nowrap}
+.vd.s{background:var(--lime);color:#000}.vd.m{background:var(--a-line);color:var(--a-ink)}.vd.w{background:var(--a-ink);color:var(--a-inv)}.vd.o{border:1.5px dashed var(--a-mute);color:var(--a-mute)}
+.lg{width:42px;height:42px;border-radius:12px;background:var(--a-ink);color:var(--a-inv);display:grid;place-items:center;font-weight:900;font-size:10.5px;flex:none}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;height:52px;border-radius:999px;background:#000;color:#fff;font-weight:800;font-size:16px}
+.btn.lime{background:var(--lime);color:#000}.btn.line{background:transparent;border:1.5px solid var(--a-line);color:var(--a-ink)}
+.scr.dk .btn{background:var(--lime);color:#000}
+.btn.sm2{height:40px;font-size:14px}
+.help{display:grid;grid-template-columns:22px 1fr;gap:9px;font-size:12.5px;color:var(--a-mute);margin-top:9px}
+.help i{font-style:normal;width:20px;height:20px;border-radius:50%;background:var(--a-ink);color:var(--a-inv);display:grid;place-items:center;font-weight:900;font-size:11px}
+.rowi{display:grid;grid-template-columns:40px 1fr auto;gap:11px;align-items:center;padding:10px 0;border-top:1px solid var(--a-line)}
+.rowi:first-child{border-top:0}
+.rowi .ico{width:40px;height:40px;border-radius:12px;background:#000;color:var(--lime);display:grid;place-items:center}
+.rowi .ico svg{width:20px;height:20px}
+.rowi b{display:block;font-size:15px;letter-spacing:-.01em}
+.rowi span.s{display:block;font-size:12.5px;color:var(--a-mute)}
+.chev{width:16px;height:16px;color:var(--a-mute)}
+.dock{position:absolute;left:12px;right:12px;bottom:18px;height:70px;border-radius:26px;background:#000;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.scr.dk .dock{background:#141414;box-shadow:0 0 0 1px #262626}
+.dock a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#9b9b9b;font-size:10.5px;font-weight:700;height:58px;border-radius:20px;text-decoration:none}
+.dock a svg{width:20px;height:20px}
+.dock a.on{background:var(--lime);color:#000;font-weight:850}
+.home-ind{position:absolute;left:50%;bottom:6px;width:134px;height:5px;border-radius:9px;background:#000;transform:translateX(-50%)}
+.scr.dk .home-ind{background:#fff}
+.bar{height:8px;border-radius:9px;background:var(--a-line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--lime);border-radius:9px}
+.card.ink .bar{background:#333}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 12px;font-weight:700;font-size:13px;background:var(--a-card);white-space:nowrap}
+.pill.on{background:#000;color:#fff}
+.scr.dk .pill.on{background:var(--lime);color:#000}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.check{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--a-line);font-size:14px}
+.check:first-child{border-top:0}
+.check .ck{width:22px;height:22px;border-radius:50%;background:var(--lime);display:grid;place-items:center;color:#000;font-weight:900;font-size:12px}
+.check .ck.no{background:transparent;border:1.5px solid var(--a-line);color:var(--a-mute)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--a-bg);border-radius:28px 28px 0 0;padding:12px 20px 34px;box-shadow:0 -20px 50px rgba(0,0,0,.25)}
+.sheet .grab{width:42px;height:5px;border-radius:9px;background:var(--a-line);margin:0 auto 14px}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.seg{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--a-card);border-radius:999px;padding:4px;gap:4px}
+.seg span{height:34px;border-radius:999px;display:grid;place-items:center;font-weight:800;font-size:13px;color:var(--a-mute)}
+.seg span.on{background:#000;color:#fff}
+.spark{display:block;width:100%}
+.cover-a4{aspect-ratio:210/297;border-radius:6px;overflow:hidden;position:relative;box-shadow:0 24px 50px -24px rgba(0,0,0,.5),0 0 0 1px var(--g2)}
+
+/* Desktop-Mockup */
+.desk{border-radius:18px;overflow-x:auto;overflow-y:hidden;box-shadow:0 30px 70px -30px rgba(0,0,0,.45),0 0 0 1px var(--g2);background:#fff}
+.desk .chrome{height:34px;background:var(--g1);display:flex;align-items:center;gap:7px;padding:0 14px;border-bottom:1px solid var(--g2)}
+.desk .chrome i{width:11px;height:11px;border-radius:50%;background:var(--g2)}
+.desk .chrome span{margin-left:14px;background:#fff;border-radius:7px;padding:3px 12px;font-size:11.5px;color:var(--g4);font-weight:600}
+
+/* Fluss-Diagramm */
+.flow{display:grid;grid-template-columns:1fr auto 1.6fr auto 1fr;gap:14px;align-items:stretch}
+.flow .node{border-radius:26px;padding:24px;display:flex;flex-direction:column;gap:8px;justify-content:center}
+.flow .arr{align-self:center;font-size:34px;font-weight:900;color:var(--lime)}
+@media (max-width:900px){.flow{grid-template-columns:1fr}.flow .arr{transform:rotate(90deg);justify-self:center}}
+
+.pager{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;gap:6px;align-items:center;background:#000;color:#fff;border-radius:999px;padding:5px;box-shadow:0 0 0 1px #2a2a2a}
+.pager button{all:unset;cursor:pointer;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:18px;font-weight:800}
+.pager button:hover,.pager button:focus-visible{background:var(--lime);color:#000}
+.pager span{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;min-width:58px;text-align:center}
+.fn{font-size:12.5px;color:var(--g3);margin-top:18px;max-width:100ch}
+.dark .fn{color:#7a7a7a}
+@media print{.pager{display:none}.slide{break-after:page}}
+/* Zusätze Produkte 2027 */
+.w12{width:12px;height:12px}.w14{width:14px;height:14px}.w16{width:16px;height:16px}
+.doing{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:800px){.doing{grid-template-columns:1fr}}
+.do{display:grid;grid-template-columns:44px 1fr auto;grid-template-rows:auto auto;column-gap:14px;align-items:center;border:1px solid var(--g2);border-radius:20px;padding:14px 16px}
+.do i{grid-row:1/3;font-style:normal;font-weight:900;font-size:22px;letter-spacing:-.04em;color:var(--g3);font-variant-numeric:tabular-nums}
+.do b{font-size:17px;letter-spacing:-.02em;line-height:1.2}
+.do span{grid-column:2;font-size:13.5px;color:var(--g4)}
+.do em{grid-row:1/3;grid-column:3;font-style:normal;display:inline-flex;align-items:center;gap:6px;background:#000;color:var(--lime);border-radius:999px;padding:6px 12px;font-weight:800;font-size:12.5px;white-space:nowrap}
+.do em svg{color:var(--lime)}
+@media (max-width:520px){.do{grid-template-columns:30px 1fr}.do em{grid-row:auto;grid-column:2;justify-self:start;margin-top:8px}}
+.phases{display:grid;grid-template-columns:1fr 1.25fr .85fr .7fr;gap:12px}
+@media (max-width:1000px){.phases{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.phases{grid-template-columns:1fr}}
+.phase{background:#000;color:#fff;border-radius:24px;padding:18px;display:grid;gap:8px;align-content:start}
+.phase.lime{background:var(--lime);color:#000}
+.ph-h{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;margin-bottom:6px}
+.ph-h span{grid-row:1/3;width:34px;height:34px;border-radius:50%;background:var(--lime);color:#000;display:grid;place-items:center;font-weight:900}
+.phase.lime .ph-h span{background:#000;color:var(--lime)}
+.ph-h b{font-size:24px;font-weight:900;letter-spacing:-.04em;line-height:1}
+.ph-h small{font-size:13px;color:#9b9b9b;font-weight:600}
+.phase.lime .ph-h small{color:#333}
+.pp{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:center;background:#151515;border-radius:16px;padding:10px}
+.phase.lime .pp{background:rgba(0,0,0,.08)}
+.pp-i{width:38px;height:38px;border-radius:11px;background:#000;color:var(--lime);display:grid;place-items:center;box-shadow:0 0 0 1px #2a2a2a}
+.pp-i svg{width:22px;height:22px}
+.pp b{display:block;font-size:15px}
+.pp small{display:block;font-size:12.5px;color:#a6a6a6;line-height:1.3}
+.phase.lime .pp small{color:#222}
+.own{display:inline-flex;align-items:center;background:#000;color:var(--lime);border-radius:999px;padding:3px 10px;font-weight:800;font-size:12px;white-space:nowrap;margin:1px 0}
+.phase-tag{display:inline-block;background:#000;color:var(--lime);border-radius:999px;padding:2px 10px;font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-right:6px;vertical-align:2px}
+.dark .phase-tag{background:var(--lime);color:#000}
+.hdr .w .hud svg{width:20px;height:20px}
+.dock a svg{width:20px;height:20px}
+.cases{display:grid;gap:12px}
+.case{border:1px solid var(--g2);border-radius:22px;padding:16px 18px;display:grid;grid-template-columns:minmax(220px,.9fr) 2.4fr;gap:16px;align-items:center}
+@media (max-width:900px){.case{grid-template-columns:1fr}}
+.case-q{font-size:18px;letter-spacing:-.02em;line-height:1.2}
+.case-steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.case-arr{color:var(--g3);font-weight:900}
+.step{display:inline-flex;align-items:center;gap:8px;background:#000;color:#fff;border-radius:14px;padding:8px 12px;font-size:13.5px;font-weight:700;line-height:1.2}
+.step svg{color:var(--lime);flex:none}
+.step small{display:block;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#9b9b9b;font-weight:800}
+.step.miss{background:var(--lime);color:#000}
+.step.miss svg{color:#000}.step.miss small{color:#333}
+.rowi span.vd{display:inline-flex}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5c.6 4.6 2.7 7.3 7.5 8-4.8.7-6.9 3.4-7.5 8-.6-4.6-2.7-7.3-7.5-8 4.8-.7 6.9-3.4 7.5-8z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-5 3 3 5-7"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></symbol>
+  <symbol id="i-umb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 18 0z"/><path d="M12 12v7a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4z"/><path d="M20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 20s-7-4.4-9-9a4.8 4.8 0 0 1 9-3 4.8 4.8 0 0 1 9 3c-2 4.6-9 9-9 9z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4h11l-2 4 2 4H5"/></symbol>
+  <symbol id="i-sigma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M15 8H9l3 4-3 4h6"/></symbol>
+  <symbol id="i-pie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/></symbol>
+  <symbol id="i-people" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c.8-3 3.2-5 6-5s5.2 2 6 5M15 14.5c2.6 0 4.6 1.6 5.4 4.5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="p-discover" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><circle class="dim" opacity=".45" cx="12" cy="12" r="6"/><circle class="dim" opacity=".45" cx="12" cy="12" r="2.5"/><path class="fill" fill="currentColor" stroke="none" d="M12 12 18.7 5.3A9.5 9.5 0 0 1 21.5 12z" opacity=".28"/><path d="M12 12 18.7 5.3"/><circle class="fill" fill="currentColor" stroke="none" cx="16.2" cy="9.6" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="7.6" cy="15.4" r="1"/><circle class="fill" fill="currentColor" stroke="none" cx="15.8" cy="16.2" r=".9"/></g></symbol><symbol id="p-quant" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="5.5" width="13" height="13" rx="2.2"/><path class="dim" opacity=".45" d="M9 2v3.5M12 2v3.5M15 2v3.5M9 18.5V22M12 18.5V22M15 18.5V22M2 9h3.5M2 12h3.5M2 15h3.5M18.5 9H22M18.5 12H22M18.5 15H22"/><path d="M14.6 9H9.6l2.6 3-2.6 3h5"/></g></symbol><symbol id="p-screener" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M6 10.5h12M9 16h6M12 16v5"/><circle class="fill" fill="currentColor" stroke="none" cx="3" cy="5" r="1.4"/><circle class="fill" fill="currentColor" stroke="none" cx="21" cy="5" r="1.4"/><circle class="fill" fill="currentColor" stroke="none" cx="6" cy="10.5" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="18" cy="10.5" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="9" cy="16" r="1.2"/><circle class="fill" fill="currentColor" stroke="none" cx="15" cy="16" r="1.2"/><circle class="fill" fill="currentColor" stroke="none" cx="12" cy="21" r="1.5"/></g></symbol><symbol id="p-supertrader" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path class="dim" opacity=".45" d="M12 1.5v3.5M12 19v3.5M1.5 12H5M19 12h3.5"/><rect x="10.3" y="9" width="3.4" height="6" rx=".6"/><path d="M12 6.8V9M12 15v2.2"/></g></symbol><symbol id="p-elliott" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path class="dim" opacity=".45" d="M2 21h20" stroke-dasharray="1.5 2"/><path d="M2 19 6 12l2.5 3L14 5l2.5 4L21 3"/><circle class="fill" fill="currentColor" stroke="none" cx="6" cy="12" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="8.5" cy="15" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="14" cy="5" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="16.5" cy="9" r="1.3"/><circle class="fill" fill="currentColor" stroke="none" cx="21" cy="3" r="1.5"/></g></symbol><symbol id="p-chartbild" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 8v2M5.5 16v3M12 4v3M12 14v3M18.5 2.5v2M18.5 10v3"/><rect x="4" y="10" width="3" height="6" rx=".5"/><rect x="10.5" y="7" width="3" height="7" rx=".5"/><rect x="17" y="4.5" width="3" height="5.5" rx=".5"/><path class="dim" opacity=".45" d="M2 20c5-1.5 9-5 20-11"/></g></symbol><symbol id="p-technical" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5 20.5 12.5M2.5 20.5l18-8"/><path class="dim" opacity=".45" d="M7 8v9M11.5 10v5.5M15.5 11.3v3"/><rect x="6" y="10" width="2" height="5" rx=".4"/><rect x="10.5" y="11" width="2" height="3.5" rx=".4"/><circle class="fill" fill="currentColor" stroke="none" cx="20.5" cy="12.5" r="1.7"/><circle class="fill" fill="currentColor" stroke="none" cx="2.5" cy="4.5" r="1.1"/><circle class="fill" fill="currentColor" stroke="none" cx="2.5" cy="20.5" r="1.1"/></g></symbol><symbol id="p-fundamental" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21h20"/><path d="M4.5 21v-6M8.5 21V10M12.5 21v-5"/><circle cx="16" cy="9" r="4.5"/><path d="m19.3 12.3 2.7 2.7"/><path class="dim" opacity=".45" d="M14.2 9.6 15.5 8l1.2 1.2 1.6-2"/></g></symbol><symbol id="p-vorsorge" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5a9 9 0 0 1 18 0z"/><path d="M12 11.5v7a2.2 2.2 0 0 0 4.4 0"/><path class="dim" opacity=".45" d="M12 2.5V1M7.5 11.5c0-4 2-7 4.5-9M16.5 11.5c0-4-2-7-4.5-9"/><circle class="fill" fill="currentColor" stroke="none" cx="20" cy="20" r="1.3"/><path class="dim" opacity=".45" d="M18.5 16l1.5 4"/></g></symbol><symbol id="p-layers" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2.5 9.5 5-9.5 5-9.5-5z"/><path class="dim" opacity=".45" d="m2.5 12 9.5 5 9.5-5"/><path d="m2.5 16.5 9.5 5 9.5-5"/></g></symbol><symbol id="p-hedgefonds" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="2.4"/><circle class="dim" opacity=".45" cx="5" cy="8" r="1.8"/><circle class="dim" opacity=".45" cx="19" cy="8" r="1.8"/><path d="M8 19v-5a4 4 0 0 1 8 0v5"/><path class="dim" opacity=".45" d="M2 19v-4a3 3 0 0 1 5-2.2M22 19v-4a3 3 0 0 0-5-2.2M3 22h18"/><path d="M12 13v6"/><circle class="fill" fill="currentColor" stroke="none" cx="12" cy="22" r="1"/></g></symbol><symbol id="p-portfolios" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.5a8.5 8.5 0 1 0 9.5 9.5H11z"/><path class="fill" fill="currentColor" stroke="none" opacity=".28" d="M14 2.5a8 8 0 0 1 7.5 7.5H14z"/><path d="M14 2.5a8 8 0 0 1 7.5 7.5H14z"/><path class="dim" opacity=".45" d="M5.5 13h3M5.5 16h5"/></g></symbol></svg>
+<!-- ================= COVER ================= -->
+<section class="cover slide" id="s-cover">
+  <div class="inner">
+    <div>
+      <div class="brand">VISION UNIVERSE<sup>®</sup></div>
+      <h1>Zehn Produkte.<br><span>Jedes mit einem Auftrag.</span></h1>
+      <p class="lead">Die Produkte bleiben. Jedes bekommt einen klaren Satz, drei Dinge, die man dort tun kann, und seine eigenen Inhalte zurück. Doppelungen bekommen einen Besitzer, und die Produkte reichen sich den Kunden gegenseitig weiter.</p>
+      <p class="meta">Stand 08.11.2026 · zweite Fassung nach Owner-Rückmeldung · Mockups mit echten Werten vom 06.11.2026, wo nicht anders vermerkt</p>
+      <nav class="toc" aria-label="Inhalt">
+        <a href="#s-was">Was kann ich mit der App machen?</a><a href="#k1">01 Die Landkarte</a><a href="#k2">02 Doppelungen</a><a href="#k3">03 Zehn Produkte geschärft</a><a href="#k4">04 Zusammenspiel</a><a href="#k5">05 Plan</a>
+      </nav>
+    </div>
+    <div class="phones" aria-hidden="true"><div data-phone="supertrader" style="--s:.62"></div><div data-phone="hedgefonds" style="--s:.62"></div></div>
+  </div>
+</section>
+
+<!-- ================= WAS KANN ICH ================= -->
+<section class="slide" id="s-was">
+  <div class="inner">
+    <div class="sh"><span class="no">A</span><h2>Was kann ich mit Vision Universe machen?</h2>
+      <p class="sub">Das ist die Frage, die heute keine Seite beantwortet. Die Antwort sind keine Produktnamen, sondern Tätigkeiten. Jede Zeile ist ein Satz, den du beim Erklären sagen kannst, und jeder Satz hat genau ein Produkt.</p></div>
+    <div class="doing">
+      <div class="do"><i>01</i><b>Prüfen, ob eine Firma wirklich Geld verdient.</b><span>12 Jahre Umsatz, Gewinn und Cashflow aus den Pflichtberichten.</span><em data-p="fundamental">Fundamental</em></div>
+      <div class="do"><i>02</i><b>Sehen, wo eine Aktie im Vergleich zu allen anderen steht.</b><span>Sieben Eigenschaften von 0 bis 100, jeden Tag neu.</span><em data-p="quant">Quant</em></div>
+      <div class="do"><i>03</i><b>Lesen, was der Chart gerade zeigt, in ganzen Sätzen.</b><span>Trend, Ausbruch, Muster, für 5.630 Aktien.</span><em data-p="technical">Technical</em></div>
+      <div class="do"><i>04</i><b>Verfolgen, welche Aktien die Regeln berühmter Trader erfüllen.</b><span>13 Methoden von Weinstein bis Minervini, mit Musterdepot.</span><em data-p="supertrader">Supertrader</em></div>
+      <div class="do"><i>05</i><b>Nachsehen, was Warren Buffett und andere große Fonds gemeldet haben.</b><span>788 Fonds, jedes Quartal aus den 13F-Meldungen.</span><em data-p="hedgefonds">Hedgefonds</em></div>
+      <div class="do"><i>06</i><b>Neue Aktien zu einem Thema entdecken, das dich interessiert.</b><span>54 Themen von KI bis Raumfahrt, oder einfach swipen.</span><em data-p="discover">Discover</em></div>
+      <div class="do"><i>07</i><b>Eigene Kriterien kombinieren und die Suche speichern.</b><span>Kennzahlen, Eigenschaften, Chart und Fonds in einem Filter.</span><em data-p="screener">Screener</em></div>
+      <div class="do"><i>08</i><b>Die Wellenstruktur einer Aktie lesen, mit klarer Grenze.</b><span>Jede Lesart nennt, ab welchem Kurs sie nicht mehr gilt.</span><em data-p="elliott">Elliott</em></div>
+      <div class="do"><i>09</i><b>Zusehen, wie eine Methode ein Depot führt, ohne echtes Geld.</b><span>14 Musterdepots mit jeder Aufnahme und Abgabe.</span><em data-p="portfolios">Portfolios</em></div>
+      <div class="do"><i>10</i><b>Ausrechnen, was dein Sparplan bis zur Rente bringt.</b><span>Ab 10 € im Monat, mit Förderung 2027 und ETFs.</span><em data-p="vorsorge">Vorsorge</em></div>
+    </div>
+    <div class="box lime" style="margin-top:20px"><h3>Der Erklär-Satz</h3><p style="font-size:17px">„Vision Universe ist ein Werkzeugkasten für Aktien und Vorsorge: zehn Werkzeuge, jedes beantwortet eine Frage, alle mit denselben echten Daten. Du nimmst das Werkzeug, das zu deiner Frage passt, und entscheidest dann bei deinem Broker.“</p></div>
+  </div>
+</section>
+
+<!-- ================= KAPITEL 01 ================= -->
+<section class="slide dark chapter" id="k1">
+  <div class="inner"><div class="big">01</div><div><h2>Die Landkarte</h2><p class="was">Zehn Produkte in <b>vier Schritten</b>, die jeder Anleger geht: <b>Finden · Prüfen · Verfolgen · Vorsorgen</b>. Die Schritte ordnen das Menü und erklären, warum es zehn Produkte gibt.</p></div></div>
+</section>
+
+<section class="slide" id="s-karte">
+  <div class="inner">
+    <div class="sh"><span class="no">1.1</span><h2>Vier Schritte, zehn Produkte</h2>
+      <p class="sub">Kein Produkt fällt weg. Jedes steht in genau einem Schritt und hat einen Satz, der sagt, was man dort tut.</p></div>
+    <div class="phases">
+      <div class="phase"><div class="ph-h"><span>1</span><b>Finden</b><small>Wo fange ich an?</small></div>
+        <div class="pp" data-pp="discover"></div><div class="pp" data-pp="screener"></div><div class="pp" data-pp="hedgefonds"></div></div>
+      <div class="phase"><div class="ph-h"><span>2</span><b>Prüfen</b><small>Ist diese Aktie gut?</small></div>
+        <div class="pp" data-pp="fundamental"></div><div class="pp" data-pp="quant"></div><div class="pp" data-pp="technical"></div><div class="pp" data-pp="elliott"></div></div>
+      <div class="phase"><div class="ph-h"><span>3</span><b>Verfolgen</b><small>Was tun Regeln damit?</small></div>
+        <div class="pp" data-pp="supertrader"></div><div class="pp" data-pp="portfolios"></div></div>
+      <div class="phase lime"><div class="ph-h"><span>4</span><b>Vorsorgen</b><small>Wie baue ich Vermögen auf?</small></div>
+        <div class="pp" data-pp="vorsorge"></div></div>
+    </div>
+    <div class="g3" style="margin-top:18px">
+      <div class="box"><h4>Rund um alle Schritte</h4><p><b style="color:#000">AI Atlas</b> (Frage in eigenen Worten) · <b style="color:#000">Suche</b> · <b style="color:#000">Mein Bereich</b> (Watchlist, Konto).</p></div>
+      <div class="box"><h4>Weitere, verkleinert von 11 auf 3</h4><p><b style="color:#000">News</b> (mit Morning) · <b style="color:#000">Bibliothek</b> (Magazin, Reports, Guides, Academy) · <b style="color:#000">Macro</b>.</p></div>
+      <div class="box"><h4>Wandert in ein Produkt</h4><p>ETF-Dashboard → Vorsorge · Analysten → Hedgefonds · Dashboard (alt), Guide → entfallen · Budget → ausgeblendet bis fertig.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide soft" id="s-menue">
+  <div class="inner">
+    <div class="sh"><span class="no">1.2</span><h2>Das Menü sagt, was man tun kann</h2>
+      <p class="sub">Heute steht unter jeder Kachel ein Etikett („Faktoren je Aktie“, „Wellenstruktur“). Neu: die Kacheln nach den vier Schritten gruppiert, darunter eine Tätigkeit. Gleiche zehn Produkte, gleiche Adressen.</p></div>
+    <div class="devs">
+      <figure class="dev" style="--w:240px"><span class="tag now" style="align-self:flex-start">HEUTE</span><div class="shot"><img src="now/menu.jpg" alt="Menü heute"></div><figcaption>Zehn Kacheln ohne Ordnung, Etiketten statt Tätigkeiten.</figcaption></figure>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr dk" id="menu-new"></div></div></div></div>
+      <div style="flex:1;min-width:260px">
+        <ol class="pins">
+          <li><i>1</i><span><b>Vier Überschriften</b> erklären die Reihenfolge: erst finden, dann prüfen, dann verfolgen, Vorsorge daneben.</span></li>
+          <li><i>2</i><span><b>Die Zeile unter dem Namen</b> ist eine Tätigkeit („Buffett & Co. ins Depot schauen“), kein Etikett. Sie steht gleich auf der Startseite des Produkts.</span></li>
+          <li><i>3</i><span><b>„In Quant“</b> darunter bleibt wie heute, nur ohne die Einträge, die anderen Produkten gehören (Fundamentaldaten, Technische Lagen).</span></li>
+        </ol>
+        <table class="tbl" style="margin-top:20px">
+          <thead><tr><th>Produkt</th><th>Heute im Menü</th><th>Neu im Menü</th></tr></thead>
+          <tbody>
+            <tr><td><b>Quant</b></td><td>Faktoren je Aktie</td><td>Aktien in 7 Eigenschaften vergleichen</td></tr>
+            <tr><td><b>Elliott</b></td><td>Wellenstruktur</td><td>Wellen lesen, mit klarer Grenze</td></tr>
+            <tr><td><b>Hedgefonds</b></td><td>Was Investoren halten</td><td>Buffett &amp; Co. ins Depot schauen</td></tr>
+            <tr><td><b>Supertrader</b></td><td>Methoden der Profis</td><td>Regeln berühmter Trader verfolgen</td></tr>
+            <tr><td><b>Screener</b></td><td>Eigene Filter</td><td>Eigene Kriterien kombinieren</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s-start">
+  <div class="inner">
+    <div class="sh"><span class="no">1.3</span><h2>Startseite: der Werkzeugkasten statt „Neun Welten“</h2>
+      <p class="sub">Die Startseite behält Hero, NVIDIA-Beispiel und Design. Der Abschnitt „Neun Welten. Ein Konto.“ (heute nur Name und Etikett) wird zur Landkarte mit Tätigkeiten, und das NVIDIA-Beispiel zeigt, wie die Produkte zusammen auf eine Aktie schauen.</p></div>
+    <div class="devs">
+      <figure class="dev" style="--w:240px"><span class="tag now" style="align-self:flex-start">HEUTE</span><div class="shot"><img src="now/home.jpg" alt="Startseite heute"></div><figcaption>Hero bleibt. Darunter heute: „9 Welten“, „Sieben Blickwinkel“, „Swipen“, „Neun Welten“.</figcaption></figure>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr" id="home-new"></div></div></div></div>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr" id="home-new2"></div></div></div></div>
+      <div style="flex:1;min-width:240px">
+        <ol class="pins">
+          <li><i>1</i><span><b>„Was du hier tun kannst“</b>: vier Schritte, je Schritt die Produkte mit ihrer Tätigkeit. Ersetzt „Neun Welten. Ein Konto.“</span></li>
+          <li><i>2</i><span><b>„Eine Aktie, alle Werkzeuge“</b>: NVIDIA mit je einem Satz aus jedem Produkt. Zeigt in zehn Sekunden, warum es zehn Produkte gibt und dass sie zusammenpassen.</span></li>
+        </ol>
+        <p class="fn">NVIDIA-Werte aus Fundamental, Quant, Technical, Hedgefonds vom 06.11.2026. „In 41 Fonds-Depots“ und „Erfüllt 2 Methoden“ zeigen die Form; die Zahl kommt aus den 13F- und Supertrader-Artefakten.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KAPITEL 02 ================= -->
+<section class="slide dark chapter" id="k2">
+  <div class="inner"><div class="big">02</div><div><h2>Doppelungen</h2><p class="was">Heute bieten mehrere Produkte dasselbe an, mit <b>unterschiedlichen Zahlen</b>. Regel neu: <b>Jede Sache hat genau einen Besitzer.</b> Die anderen zeigen dieselbe Zahl und verlinken dorthin.</p></div></div>
+</section>
+
+<section class="slide" id="s-doppel">
+  <div class="inner">
+    <div class="sh"><span class="no">2.1</span><h2>Wer besitzt was</h2>
+      <p class="sub">Alle Zahlen in der Spalte „Heute“ stammen aus der App vom 06.11.2026. Der Kunde sieht sie auf Seiten, die er nacheinander öffnet.</p></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Sache</th><th>Heute an</th><th>Heute gezählt</th><th>Besitzer</th><th>Die anderen</th></tr></thead>
+        <tbody>
+          <tr><td><b>Jahreshochs</b></td><td>Discover, Quant, Technical</td><td>245 · 123 · 59 (drei Definitionen)</td><td><span class="own" data-p="technical">Technical</span></td><td>eine Definition, gleiche Zahl, Link „Alle in Technical“</td></tr>
+          <tr><td><b>Marktbreite</b> (über 200-Tage-Linie)</td><td>Quant, Technical</td><td>35 % · 34 %</td><td><span class="own" data-p="technical">Technical</span></td><td>Quant und Discover zeigen denselben Wert</td></tr>
+          <tr><td><b>Chart-Setups</b> mit Zonen</td><td>Quant, Technical, Supertrader</td><td>28 bestätigt · 1.261 im Fokus · 34 Stufe 3</td><td><span class="own" data-p="technical">Technical</span> Muster · <span class="own" data-p="supertrader">Supertrader</span> Methoden</td><td>Quant zeigt keine Setups mehr, sondern „Chartlage in Technical“</td></tr>
+          <tr><td><b>Screener</b></td><td>Screener, Quant, Technical</td><td>drei Filter-Oberflächen</td><td><span class="own" data-p="screener">Screener</span></td><td>„Quant Screener“ und „Technical Screener“ öffnen den einen Screener mit ihren Filtern vorbelegt</td></tr>
+          <tr><td><b>Fertige Listen</b></td><td>Discover, Quant, Technical, Fundamental</td><td>23 Auswahlen · 4+ Strategien · 13 Suchen · 6 Ranglisten</td><td>nach Datenart: Kurs/Chart <span class="own" data-p="technical">Technical</span> · Zahlen <span class="own" data-p="fundamental">Fundamental</span> · Eigenschaften <span class="own" data-p="quant">Quant</span></td><td>Discover zeigt eine Auswahl als Schaufenster, jede Liste mit Herkunftssiegel</td></tr>
+          <tr><td><b>Musterdepots</b></td><td>Quant, Supertrader, Portfolios</td><td>5 · 7 · 14</td><td><span class="own" data-p="portfolios">Portfolios</span></td><td>Quant und Supertrader zeigen „ihre“ Depots als Ausschnitt aus Portfolios</td></tr>
+          <tr><td><b>Zahlen einer Firma</b></td><td>Quant („Fundamentaldaten“), Fundamental, Discover</td><td>Quant-Leiste verlinkt eigene Zahlenseite</td><td><span class="own" data-p="fundamental">Fundamental</span></td><td>Discover zeigt die Kurzfassung, Quant verlinkt</td></tr>
+          <tr><td><b>ETFs</b></td><td>Vorsorge, ETF-Dashboard, Startseite</td><td>4.065 · 91 · „7.000+“</td><td><span class="own" data-p="vorsorge">Vorsorge</span></td><td>ETF-Dashboard wird Ansicht in Vorsorge</td></tr>
+          <tr><td><b>Einschätzungen Dritter</b></td><td>Analysten (Weitere), Hedgefonds</td><td>zwei Orte für „was andere sagen“</td><td><span class="own" data-p="hedgefonds">Hedgefonds</span></td><td>Analysten als Reiter „Analysten (Angabe Dritter)“</td></tr>
+          <tr><td><b>Mein Überblick</b></td><td>Willkommen, Mein Dashboard, Dashboard (alt)</td><td>drei Startseiten nach dem Login</td><td>Mein Bereich</td><td>Dashboard (alt) entfällt</td></tr>
+          <tr><td><b>Lernen</b></td><td>Academy, Guide, Vorsorge-Wissen, Videos, Methodik je Produkt</td><td>fünf Orte</td><td>Bibliothek</td><td>Methodik bleibt je Produkt, Guide (alt) entfällt</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide soft" id="s-regel">
+  <div class="inner">
+    <div class="sh"><span class="no">2.2</span><h2>Die drei Regeln gegen neue Doppelungen</h2>
+      <p class="sub">Damit die Aufräumarbeit nicht in einem halben Jahr wieder nötig ist.</p></div>
+    <div class="g3">
+      <div class="box ink"><div class="big-num lime-txt">1</div><h3 style="margin-top:10px;color:#fff">Ein Besitzer je Zahl</h3><p>Jede Liste und jede Kennzahl hat ein Produkt, das sie rechnet. Andere Produkte lesen dasselbe Artefakt und zeigen ein Siegel „aus Technical“. Ergänzung in <code>core/registry/product-contracts.json</code> (Schnittstellen), damit der Vertragstest es prüft.</p></div>
+      <div class="box ink"><div class="big-num lime-txt">2</div><h3 style="margin-top:10px;color:#fff">Zeigen ja, nachbauen nein</h3><p>Discover darf die stärksten Listen aller Produkte zeigen (Schaufenster). Es rechnet sie nicht selbst. Ein Tipp öffnet die Liste beim Besitzer.</p></div>
+      <div class="box ink"><div class="big-num lime-txt">3</div><h3 style="margin-top:10px;color:#fff">Ein Name je Sache</h3><p>„Strategien“, „Auswahlen“, „Fertige Suchen“, „Ranglisten“ heißen künftig überall <b style="color:#fff">Listen</b>. „Setup“ heißt <b style="color:#fff">Chartlage</b> (Technical), „Treffer einer Methode“ heißt <b style="color:#fff">Regel erfüllt</b> (Supertrader).</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KAPITEL 03 ================= -->
+<section class="slide dark chapter" id="k3">
+  <div class="inner"><div class="big">03</div><div><h2>Zehn Produkte, geschärft</h2><p class="was">Jedes Produkt bekommt dasselbe Gerüst: <b>ein Satz</b> · <b>„Hier kannst du“ mit drei Tätigkeiten</b> · <b>sein Kernstück</b> · <b>„Weiter mit“</b> zum nächsten Produkt. Design, Adressen und Inhalte bleiben, die Reihenfolge ändert sich.</p></div></div>
+</section>
+
+<section class="slide" id="s-geruest">
+  <div class="inner">
+    <div class="sh"><span class="no">3.0</span><h2>Das Gerüst jeder Produkt-Startseite</h2>
+      <p class="sub">Vier Blöcke von oben nach unten. Was heute schon da ist, wandert nur an die richtige Stelle.</p></div>
+    <div class="g4">
+      <div class="box"><span class="tag neu">BLOCK 1</span><h3 style="margin-top:12px">Ein Satz</h3><p>Die Frage des Produkts als Überschrift, darunter ein Satz: was es für wie viele Aktien tut. Gibt es heute meist schon („Was zeigt der Chart?“).</p></div>
+      <div class="box lime"><span class="tag" style="background:#000;color:var(--lime)">BLOCK 2 · NEU</span><h3 style="margin-top:12px">Hier kannst du</h3><p>Drei Tätigkeiten als große Zeilen mit Verb: „Depot eines Investors ansehen“. Jede führt in eine Unterseite, die es schon gibt. <b>Das fehlt heute überall.</b></p></div>
+      <div class="box"><span class="tag neu">BLOCK 3</span><h3 style="margin-top:12px">Das Kernstück</h3><p>Das eine Element, für das man das Produkt öffnet, mit echten Daten: NVIDIA in 4 Zahlen, die 13 Methoden, die Star-Investoren.</p></div>
+      <div class="box"><span class="tag neu">BLOCK 4</span><h3 style="margin-top:12px">Weiter mit</h3><p>Eine Karte zum nächsten Produkt mit Anlass: „Diese 12 Aktien im Screener weiterfiltern“, „Zahlen dazu in Fundamental“.</p></div>
+    </div>
+    <p class="fn">Die Zählerkacheln von heute (Radar, „Heute erkannt“, „Aktien geprüft“) bleiben, aber unter dem Kernstück: Sie sind für Wiederkehrer, nicht für den ersten Besuch.</p>
+  </div>
+</section>
+
+<!-- Produkt-Folien werden aus PRODUCTS erzeugt -->
+<div id="product-slides"></div>
+
+<!-- ================= KAPITEL 04 ================= -->
+<section class="slide dark chapter" id="k4">
+  <div class="inner"><div class="big">04</div><div><h2>Zusammenspiel</h2><p class="was">Die Produkte bleiben eigenständig, aber sie <b>reichen den Kunden weiter</b>. Fünf echte Anwendungsfälle zeigen, wie ein Kunde durch mehrere Produkte geht, und welche Brücke heute fehlt.</p></div></div>
+</section>
+
+<section class="slide" id="s-faelle">
+  <div class="inner">
+    <div class="sh"><span class="no">4.1</span><h2>Fünf Anwendungsfälle</h2>
+      <p class="sub">So erklärt man die App am besten: nicht „wir haben zehn Produkte“, sondern „wenn du X willst, gehst du so“. Schwarz: gibt es heute. Neongrün: Brücke, die fehlt.</p></div>
+    <div class="cases" id="cases"></div>
+  </div>
+</section>
+
+<section class="slide soft" id="s-bruecken">
+  <div class="inner">
+    <div class="sh"><span class="no">4.2</span><h2>Die Brücken, die fehlen</h2>
+      <p class="sub">Die Aktienseite verbindet die Produkte heute schon über die Perspektiven-Leiste. Bei Listen, Investoren und Methoden endet der Weg. Diese Übergaben sind klein zu bauen und machen aus zehn Inseln ein System.</p></div>
+    <div class="devs">
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr" id="bridge1"></div></div></div></div>
+      <div class="ph"><div class="fr"><div class="vp"><div class="scr" id="bridge2"></div></div></div></div>
+      <div style="flex:1;min-width:280px">
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Von</th><th>Übergabe</th><th>Nach</th></tr></thead>
+          <tbody>
+            <tr><td><b>jede Liste</b> (Discover-Thema, Ranglisten, Investor-Depot)</td><td>„Diese Aktien im Screener weiterfiltern“</td><td>Screener</td></tr>
+            <tr><td><b>jede Liste</b></td><td>„Nach Eigenschaften sortieren“ (Spalte mit Quant-Werten)</td><td>Quant</td></tr>
+            <tr><td><b>Hedgefonds</b> Investor</td><td>„Wie stehen seine Aktien da?“ 7 Eigenschaften je Position</td><td>Quant</td></tr>
+            <tr><td><b>Supertrader</b> Regel erfüllt</td><td>„Chartlage in Worten“ und „Zahlen der Firma“</td><td>Technical, Fundamental</td></tr>
+            <tr><td><b>Technical</b> Chartlage</td><td>„Welche Methode passt zu dieser Lage?“</td><td>Supertrader</td></tr>
+            <tr><td><b>Fundamental</b> Rangliste</td><td>„Was halten die großen Fonds davon?“</td><td>Hedgefonds</td></tr>
+            <tr><td><b>Vorsorge</b> ETF</td><td>„Welche Aktien stecken drin?“ mit Link je Aktie</td><td>Discover</td></tr>
+            <tr><td><b>Supertrader, Quant</b></td><td>„Das Musterdepot dieser Methode“</td><td>Portfolios</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KAPITEL 05 ================= -->
+<section class="slide dark chapter" id="k5">
+  <div class="inner"><div class="big">05</div><div><h2>Plan</h2><p class="was">Ein PR je Produkt, keine neuen Produkte, keine Fachmodelle angefasst. Was aus der ersten Fassung bleibt: <b>Sofort-Korrekturen</b>, <b>Erklär-Blatt</b>, <b>Bibliothek mit PDF-Formaten</b>.</p></div></div>
+</section>
+
+<section class="slide" id="s-plan">
+  <div class="inner">
+    <div class="sh"><span class="no">5.1</span><h2>Reihenfolge</h2>
+      <p class="sub">Nach Wirkung auf das Verständnis. Alles hier ist Code, Doku und Design: grüne CI genügt, keine Owner-Freigabe.</p></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>#</th><th>PR</th><th>Inhalt</th><th>Berührt</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td><b>Sofort-Korrekturen</b></td><td>WORTWAHL (Einstiegs-/Stopp-Marke, Zielzone, „Was dafür spricht“, „Signale“, „Kurspotenzial“), „sechs“ → sieben Eigenschaften, rote Pille, Entwicklertexte, Zahlenformat</td><td>Quant, Discover, Supertrader, Analysten, Macro, Academy, ETF</td></tr>
+          <tr><td class="num">2</td><td><b>Menü und Startseite</b></td><td>vier Schritte, Tätigkeit je Produkt, „Weitere“ von 11 auf 3, Landkarte und „Eine Aktie, alle Werkzeuge“ auf der Startseite</td><td><code>assets/site-navigation.js</code>, <code>index.html</code></td></tr>
+          <tr><td class="num">3</td><td><b>Gerüst „Hier kannst du“</b></td><td>gemeinsamer Baustein in <code>assets/vu-ui</code>, dann je Produkt ein PR in der Reihenfolge Quant, Supertrader, Discover, Technical, Fundamental, Hedgefonds, Screener, Elliott, Portfolios, Vorsorge</td><td>je Produkt</td></tr>
+          <tr><td class="num">4</td><td><b>Besitzer festlegen</b></td><td>Jahreshochs, Marktbreite, Setups, Musterdepots, Listen: ein Artefakt je Sache, andere lesen es; Schnittstellen in <code>product-contracts.json</code></td><td>Discover, Quant, Technical, Portfolios</td></tr>
+          <tr><td class="num">5</td><td><b>Ein Screener</b></td><td>Quant- und Technical-Screener öffnen den Screener mit Vorbelegung; alte Adressen leiten weiter</td><td>Screener, Quant, Technical</td></tr>
+          <tr><td class="num">6</td><td><b>Brücken</b></td><td>„Im Screener weiterfiltern“, „Nach Eigenschaften sortieren“, Investor → Quant, Methode → Technical/Fundamental</td><td>alle Listen</td></tr>
+          <tr><td class="num">7</td><td><b>Weitere aufräumen</b></td><td>News + Morning, Bibliothek (Magazin, Reports, Guides, Academy), Analysten → Hedgefonds, ETF → Vorsorge, Dashboard (alt) und Guide entfernen</td><td>Weitere</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="g2" style="margin-top:16px">
+      <div class="box"><h3>Was bleibt unberührt</h3><p>Quant-Scores, Rankings, Supertrader-Regeln, Regime und Technical-Modelle (CLAUDE.md: nur mit eigenem PR und Vorher/Nachher). Generierte Daten werden nicht von Hand geändert. Supertrader-Änderungen nur mit Supertrader-Pfaden. Discover-Budget ≤ 180.000 Byte / ≤ 12 Requests.</p></div>
+      <div class="box ink"><h3 style="color:#fff">Braucht den Owner</h3><p>Nur, was Geld oder Recht berührt: welche Produkte oder Formate Pro werden (z. B. Elliott ist heute schon PRO), und Presseprivileg für Magazin und Reports. Alles andere entscheide ich nach dieser Vorlage.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide dark" id="s-demo">
+  <div class="inner">
+    <div class="sh"><span class="no">5.2</span><h2>Die App in 60 Sekunden zeigen</h2>
+      <p class="sub">Eine Aktie, vier Produkte, jedes mit einem Satz. Funktioniert heute schon über die Perspektiven-Leiste der Aktienseite.</p></div>
+    <div class="g5">
+      <div class="box"><div class="big-num lime-txt" style="font-size:52px">0:00</div><h3 style="margin-top:8px;color:#fff">Suche: NVIDIA</h3><p>„Eine Aktie, die jeder kennt.“</p></div>
+      <div class="box"><div class="big-num lime-txt" style="font-size:52px">0:10</div><h3 style="margin-top:8px;color:#fff">Fundamental</h3><p>„Umsatz 216 Mrd. $, 46 % Wachstum pro Jahr. Die Firma verdient wirklich.“</p></div>
+      <div class="box"><div class="big-num lime-txt" style="font-size:52px">0:25</div><h3 style="margin-top:8px;color:#fff">Quant</h3><p>„Profitabilität 99 von 100, aber Bilanzqualität nur 43. Hier siehst du, wo sie im Vergleich steht.“</p></div>
+      <div class="box"><div class="big-num lime-txt" style="font-size:52px">0:40</div><h3 style="margin-top:8px;color:#fff">Hedgefonds</h3><p>„Und hier, welche großen Fonds sie gemeldet haben.“</p></div>
+      <div class="box"><div class="big-num lime-txt" style="font-size:52px">0:50</div><h3 style="margin-top:8px;color:#fff">Supertrader</h3><p>„Und ob sie heute die Regeln eines berühmten Traders erfüllt.“</p></div>
+    </div>
+    <p class="quote" style="margin-top:44px;color:#fff">„Zehn Werkzeuge. <span>Du nimmst das, was zu deiner Frage passt.</span>“</p>
+    <p class="fn" style="margin-top:28px">Erste Fassung (Klarheit 2027) bleibt als Ablage in <code>docs/design/klarheit-2027/</code>. Übernommen daraus: Sofort-Korrekturen, Erklär-Blatt, Formatfamilie Weekly/Report/Guide/Quartalsreport. Nicht übernommen: fünf Bereiche statt Produkte.</p>
+  </div>
+</section>
+
+<script>/* Produkte 2027: Daten und Bausteine der Präsentation. Werte vom 06.11.2026 aus der App, wo nicht anders vermerkt. */
+(function () {
+  var NAMES = {discover:'Discover',quant:'Quant',technical:'Technical',fundamental:'Fundamental',supertrader:'Supertrader',hedgefonds:'Hedgefonds',elliott:'Elliott',screener:'Screener',vorsorge:'Vorsorge',portfolios:'Portfolios'};
+  var DOING = {discover:'Aktien zu einem Thema entdecken',screener:'Eigene Kriterien kombinieren',hedgefonds:'Buffett & Co. ins Depot schauen',fundamental:'Prüfen, ob die Firma Geld verdient',quant:'Aktien in 7 Eigenschaften vergleichen',technical:'Den Chart in Worten lesen',elliott:'Wellen lesen, mit klarer Grenze',supertrader:'Regeln berühmter Trader verfolgen',portfolios:'Musterdepots ohne echtes Geld ansehen',vorsorge:'Sparplan und Rente ausrechnen'};
+  function pi(id, cls) { return '<svg class="' + (cls || '') + '" viewBox="0 0 24 24" aria-hidden="true"><use href="#p-' + id + '"/></svg>'; }
+  function ui(id) { return '<svg aria-hidden="true"><use href="#i-' + id + '"/></svg>'; }
+  function e(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+  var sigs = {
+    discover: '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">' +
+      ['Künstliche Intelligenz', 'Raumfahrt', 'Robotik'].map(function (t, i) { return '<div style="aspect-ratio:3/4;border-radius:16px;padding:10px;display:flex;align-items:flex-end;font-weight:800;font-size:13px;' + (i === 0 ? 'background:linear-gradient(160deg,#222,#000);color:#fff' : i === 1 ? 'background:#c8f531' : 'background:#e9e9e9') + '">' + t + '</div>'; }).join('') + '</div>',
+    quant: '<div class="card" style="padding:10px 14px"><div style="display:flex;justify-content:space-between;align-items:center"><b>NVIDIA</b><span class="vd s">3 stark · 2 Mitte · 1 schwach</span></div>' +
+      [['Verdient sie gut?', 99, '#c8f531'], ['Wächst die Firma?', 86, '#c8f531'], ['Ist der Kurs ruhig?', 84, '#c8f531'], ['Läuft der Kurs gut?', 62, '#8c8c8c'], ['Ist sie günstig?', 59, '#8c8c8c'], ['Sind die Zahlen solide?', 43, '#000']].map(function (r) { return '<div style="display:grid;grid-template-columns:1fr 90px 26px;gap:8px;align-items:center;margin-top:7px;font-size:12.5px"><span>' + r[0] + '</span><span class="bar" style="height:7px"><i style="width:' + r[1] + '%;background:' + r[2] + '"></i></span><b class="num">' + r[1] + '</b></div>'; }).join('') + '</div>',
+    technical: '<div class="card ink"><div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:34px;font-weight:900;color:#c8f531" class="num">34 %</span><span class="sm">über der 200-Tage-Linie</span></div><div class="bar" style="margin-top:8px;background:#333"><i style="width:34%"></i></div><div class="xs" style="color:#9b9b9b;margin-top:5px">Schwacher Markt · Quelle für alle Produkte</div></div>' +
+      '<div class="card" style="margin-top:8px;padding:4px 14px">' + [['Steigt seit Monaten', '542'], ['Gerade ausgebrochen', '832'], ['Dreieck im Aufwärtstrend', '155']].map(function (r) { return '<div class="check" style="grid-template-columns:1fr auto"><span><b>' + r[0] + '</b></span><span class="num bb">' + r[1] + '</span></div>'; }).join('') + '</div>',
+    fundamental: '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><b>NVIDIA in 4 Zahlen</b><span class="vd s">Sehr stark</span></div><div class="g2" style="margin-top:8px">' +
+      [['Umsatz', '216 Mrd. $'], ['Gewinn', '120 Mrd. $'], ['Free Cashflow', '96,7 Mrd. $'], ['Wachstum p. a.', '+45,7 %']].map(function (r) { return '<div style="background:#fff;border-radius:12px;padding:8px 10px"><div class="xs mu b">' + r[0] + '</div><div class="bb num" style="font-size:16px">' + r[1] + '</div></div>'; }).join('') + '</div><div class="xs mu" style="margin-top:6px">Geschäftsjahr 2026 · SEC 10-K</div></div>',
+    supertrader: '<div class="card" style="padding:4px 14px">' + [['Weinstein Investor', 'Ausbruch aus langer Seitwärtsphase', '622'], ['Weinstein Trader', 'Neuer Anlauf im Aufwärtstrend', '583'], ['Minervini SEPA / VCP', 'Schwankung wird kleiner, dann Ausbruch', '564'], ['Pocket Pivot', 'Aufwärtstag mit hohem Volumen', '405']].map(function (r) { return '<div class="rowi" style="grid-template-columns:1fr auto"><span><b>' + r[0] + '</b><span class="s">' + r[1] + '</span></span><span class="num bb">' + r[2] + '</span></div>'; }).join('') + '</div>',
+    hedgefonds: '<div class="card" style="padding:4px 14px">' + [['Warren Buffett', 'Apple 22,0 % · American Express 17,1 %', '299,3 Mrd. $'], ['Cathie Wood', 'Tesla 7,5 % · AMD 5,3 %', '15,4 Mrd. $'], ['Bill Ackman', 'Brookfield 17,6 % · Amazon 17,4 %', '13,7 Mrd. $']].map(function (r) { return '<div class="rowi" style="grid-template-columns:1fr auto"><span><b>' + r[0] + '</b><span class="s">' + r[1] + '</span></span><span class="num bb sm">' + r[2] + '</span></div>'; }).join('') + '</div><div class="xs mu" style="margin-top:6px">Nächste Meldefrist 14.11. für Q3 2026</div>',
+    elliott: '<div class="card"><svg viewBox="0 0 320 120" style="width:100%;display:block"><path d="M10 100 L60 55 L85 75 L160 15 L190 45 L240 25 L300 95" fill="none" stroke="#000" stroke-width="3" stroke-linejoin="round"/><g font-size="13" font-weight="800" font-family="Inter,sans-serif"><text x="56" y="47">1</text><text x="82" y="92">2</text><text x="155" y="11">3</text><text x="186" y="62">4</text><text x="236" y="17">5</text></g><line x1="10" y1="88" x2="310" y2="88" stroke="#000" stroke-dasharray="5 5" stroke-width="1.5"/><text x="210" y="112" font-size="11" font-weight="700" fill="#6e6e6e" font-family="Inter,sans-serif">Ungültig-Marke laut Methode</text></svg></div>',
+    screener: '<div class="card"><div class="chips">' + ['Umsatz +10 % (Fundamental)', 'KGV unter Markt', 'Wachstum stark (Quant)', 'Über 200-Tage-Linie (Technical)', 'Von Fonds gemeldet (13F)'].map(function (c, i) { return '<span class="pill' + (i < 3 ? ' on' : '') + '" style="font-size:12px;padding:6px 10px">' + c + '</span>'; }).join('') + '</div><div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:12px"><span class="sm b">Treffer</span><span class="num" style="font-size:30px;font-weight:900">–</span></div></div>',
+    vorsorge: '<div class="card ink"><div class="xs bb" style="color:#c8f531;letter-spacing:.08em">BEISPIEL · 250 € IM MONAT · 35 → 67</div><div class="num" style="font-size:36px;font-weight:900;letter-spacing:-.05em;margin-top:4px">127 Tsd. €</div><div class="sm" style="color:#9b9b9b">heutige Kaufkraft, 5 % pro Jahr</div></div><div class="card lime" style="margin-top:8px"><b>+ bis 540 € Zulage pro Jahr</b><div class="sm">Altersvorsorgedepot ab 01.01.2027</div></div>',
+    portfolios: '<div class="card" style="padding:4px 14px">' + [['Weinstein Stages', 'nach Stan Weinstein · Phase 2', '10 Pos.'], ['Darvas Boxes', 'nach Nicolas Darvas · Ausbruch aus der Kiste', '5 Pos.'], ['Donchian Turtle', 'nach R. Donchian / Turtle Traders', '4 Pos.']].map(function (r) { return '<div class="rowi" style="grid-template-columns:1fr auto"><span><b>' + r[0] + '</b><span class="s">' + r[1] + '</span></span><span class="sm bb">' + r[2] + '</span></div>'; }).join('') + '</div><div class="xs mu" style="margin-top:6px">Rechenmodell, kein echtes Geld · Stand 06.11.2026</div>'
+  };
+
+  var P = {
+    discover: {no: '3.1', phase: 'Finden', title: 'Discover: der Einstieg und das Schaufenster',
+      q: 'Was bewegt die Börse heute?', sub: 'Themen, bekannte Namen und was sich heute bewegt, für über 6.000 US-Aktien.',
+      acts: [['Ein Thema durchstöbern', '54 Themen von KI bis Raumfahrt'], ['Aktien swipen und merken', 'Rechts merken, links weiter'], ['Sehen, was sich heute bewegt hat', '574 Aktien auffällig am 06.11.']],
+      sigT: 'Themen', next: ['Diese Aktien im Screener weiterfiltern', 'screener'],
+      owns: ['Themenwelten (54)', 'Swipen', '„Der Markt heute“', 'Überblick auf der Aktienseite', 'Suche'],
+      gives: ['23 „Strategien“ werden Schaufenster: Discover zeigt sie, Technical, Fundamental und Quant rechnen sie (Herkunftssiegel)', 'Jahreshochs (heute 245) → gleiche Zahl wie Technical'],
+      fix: ['„Strategien“ heißt in Discover künftig „Listen“, mit Siegel „aus Technical“ usw.', 'Kein „Hier kannst du“: der Start zeigt sofort sieben Abschnitte'] },
+    quant: {no: '3.2', phase: 'Prüfen', title: 'Quant: sieben Eigenschaften, nichts anderes', now: 'quant',
+      q: 'Wo steht die Aktie im Vergleich?', sub: 'Sieben Eigenschaften jeder US-Aktie, von 0 bis 100, im Vergleich zu allen anderen.',
+      acts: [['Eine Aktie einordnen', '7 Eigenschaften, jede mit Beleg'], ['Aktien nach Anlagestil finden', 'Value Momentum, GARP, Quality Momentum …'], ['Sehen, wer sich verbessert hat', '557 Aktien seit gestern']],
+      sigT: 'Beispiel NVIDIA', next: ['Musterdepot von Quality Momentum ansehen', 'portfolios'],
+      owns: ['Die sieben Eigenschaften', 'Faktor-Listen (Value Momentum, GARP …)', 'Radar „seit gestern verbessert“'],
+      gives: ['„Setup bestätigt“ mit Zonen → Technical (Chartlage)', '„Technische Lagen“, „Fundamentaldaten“ in der Leiste → Links zu Technical und Fundamental', 'Musterdepots (5) → Portfolios', 'Marktbreite (35 %) → Wert aus Technical'],
+      fix: ['Start sagt „sechs Eigenschaften“, nennt sie aber nicht', 'Erster Block ist ein Radar mit sechs Zählern, bevor klar ist, was Quant misst', 'Setup-Karte nutzt verbotene Wörter (Einstiegsmarke, Stopp-Marke, Zielzone)'] },
+    technical: {no: '3.3', phase: 'Prüfen', title: 'Technical: alles, was aus dem Chart kommt',
+      q: 'Was zeigt der Chart?', sub: 'Jeden Tag 5.630 US-Charts nach festen Regeln gelesen und in Worten beschrieben.',
+      acts: [['Den Chart einer Aktie in Worten lesen', 'Trend, Muster, Marken'], ['Fertige Chart-Suchen nutzen', '13 Suchen: Aufwärtstrend, Ausbruch …'], ['Im Chart Studio selbst analysieren', 'Kerzen, Linien, Muster']],
+      sigT: 'Markt und fertige Suchen', next: ['Welche Profi-Methode passt zu dieser Lage?', 'supertrader'],
+      owns: ['Chartlagen mit Zonen (übernimmt Quant-Setups)', 'Jahreshochs, Marktbreite: Quelle für alle', 'Chart Studio, Muster', 'Fertige Chart-Suchen'],
+      gives: ['Eigene Screener-Oberfläche → der Screener, mit Chart-Filtern vorbelegt'],
+      fix: ['„Setups? 1.261 im Fokus“ als zweite Kachel: Fragezeichen im Titel', 'Drei verschiedene Jahreshoch-Zahlen in der App (245, 123, 59)'] },
+    fundamental: {no: '3.4', phase: 'Prüfen', title: 'Fundamental: die Zahlen hinter der Firma',
+      q: 'Verdient die Firma wirklich Geld?', sub: 'Umsatz, Gewinn und Cashflow über 12 Jahre, direkt aus den Pflichtberichten an die US-Börsenaufsicht.',
+      acts: [['Die Zahlen einer Firma ansehen', '12 Geschäftsjahre, jede Zahl erklärt'], ['Ranglisten nutzen', 'Niedrigstes KGV, höchste Kapitalrendite …'], ['Branchen vergleichen', 'Nettomarge je Branche']],
+      sigT: 'Beispiel NVIDIA', next: ['Was halten die großen Fonds davon?', 'hedgefonds'],
+      owns: ['Zahlen aus SEC-Berichten', 'Ranglisten nach Kennzahlen', 'Branchen', 'die Discover-Listen „Das Geschäft wächst“'],
+      gives: ['—'],
+      fix: ['Gut aufgebaut („Zahlen lesen in 30 Sekunden“). Es fehlt nur „Hier kannst du“ und die Übergabe', '„Auswahlen aus Discover“ zeigt Listen, die Fundamental selbst besitzen sollte'] },
+    supertrader: {no: '3.5', phase: 'Verfolgen', title: 'Supertrader: die Methoden zuerst, die Zahl danach', now: 'supertrader',
+      q: 'Welche Aktien erfüllen die Regeln berühmter Trader?', sub: '13 Methoden von Stan Weinstein bis Mark Minervini, jeden Tag an allen US-Aktien geprüft.',
+      acts: [['Eine Methode kennenlernen', 'In einem Satz, mit Haltedauer'], ['Sehen, wer heute die Regeln erfüllt', '34 Aktien mit allen Regeln und Plan'], ['Musterdepot und Backtest ansehen', 'Forschung, nicht zertifiziert']],
+      sigT: 'Die 13 Methoden', next: ['Chartlage dazu in Technical', 'technical'],
+      owns: ['13 Methoden und ihre Regeln', 'Lebenslauf eines Regel-Ergebnisses', 'Backtests, Hausstrategie'],
+      gives: ['Musterdepot-Übersicht → Ausschnitt aus Portfolios'],
+      fix: ['Erste Zahl „3.312 Treffer“: zu groß, um etwas zu bedeuten', 'Zweite Botschaft „Nicht belegt“: gehört als Etikett an jede Methode', 'Leiste „Signale“ (WORTWAHL) → „Heute erfüllt“'] },
+    hedgefonds: {no: '3.6', phase: 'Finden', title: 'Hedgefonds: was andere halten und sagen',
+      q: 'Was haben große Fonds gemeldet?', sub: '788 Fonds melden ihre US-Aktien jedes Quartal (13F). Wir zeigen, was sie halten und was sich ändert.',
+      acts: [['Ins Depot eines Investors schauen', 'Buffett, Ackman, Burry, Wood …'], ['Sehen, wer eine Aktie hält', 'z. B. wer NVIDIA gemeldet hat'], ['Veränderungen im Quartal ansehen', 'aufgenommen, aufgestockt, abgegeben']],
+      sigT: 'Star-Investoren', next: ['Wie stehen seine Aktien da? (Eigenschaften)', 'quant'],
+      owns: ['13F-Meldungen von 788 Fonds', 'Star-Investoren, DACH-Melder', 'neu: Reiter „Analysten (Angabe Dritter)“'],
+      gives: ['—'],
+      fix: ['Klarer Start, gute 13F-Erklärung mit Frist', 'Untertitel „was sie kaufen und verkaufen“ → „was sie gemeldet haben“ (WORTWAHL: „Was Profis kaufen“ lädt zum Nachmachen ein)'] },
+    elliott: {no: '3.7', phase: 'Prüfen', title: 'Elliott: Wellen, mit klarer Grenze',
+      q: 'Welche Wellen laufen gerade?', sub: 'Wellen in US-Charts nach festen Regeln gezählt. Jede Lesart nennt, ab welchem Kurs sie nicht mehr gilt.',
+      acts: [['Die Wellen-Lesart einer Aktie ansehen', 'mit Ungültig-Marke laut Methode'], ['Aktien in Welle 3 finden', 'aufwärts, abwärts, neu und verändert'], ['Verstehen, wie Wellen gezählt werden', 'Lernpfad in der Bibliothek']],
+      sigT: 'Lesart (Skizze)', next: ['Chart in Worten dazu in Technical', 'technical'],
+      owns: ['Wellenzählung und Lesarten'],
+      gives: ['—'],
+      fix: ['Ganz PRO, aber die Seite sagt nicht, was man ohne PRO sieht', 'Im lokalen Abzug ohne Daten geladen; Skizze zeigt nur die Form'] },
+    screener: {no: '3.8', phase: 'Finden', title: 'Screener: einer für alle Kriterien',
+      q: 'Welche Aktien erfüllen deine Kriterien?', sub: 'Ein Filter für alles: Kennzahlen, Eigenschaften, Chartlage und Fondsdaten kombinieren.',
+      acts: [['Kriterien aus allen Produkten kombinieren', 'Fundamental, Quant, Technical, Hedgefonds'], ['Mit einer Vorlage starten', '„Günstig und profitabel“, „Im Aufwärtstrend“'], ['Suche speichern', 'und später wieder öffnen']],
+      sigT: 'Filter (Form)', next: ['Treffer nach Eigenschaften sortieren', 'quant'],
+      owns: ['Die einzige Filter-Oberfläche'],
+      gives: ['—', 'übernimmt „Quant Screener“ und „Technical Screener“ als Vorlagen mit Vorbelegung'],
+      fix: ['Drei Screener heute (Screener, Quant, Technical) mit drei Bedienungen', 'Im lokalen Abzug ohne Daten geladen; Trefferzahl zeigt nur die Form'] },
+    portfolios: {no: '3.9', phase: 'Verfolgen', title: 'Portfolios: das eine Zuhause aller Musterdepots',
+      q: 'Was macht eine Methode mit einem Depot?', sub: '14 Musterdepots führen Aktien streng nach Regel. Rechenmodell, kein echtes Geld.',
+      acts: [['Alle Musterdepots vergleichen', 'Supertrader 7, Quant 5, KI 2'], ['Positionen eines Depots ansehen', 'mit Regel für Aufnahme und Abgabe'], ['Den Lebenslauf verfolgen', 'jede Aufnahme und Abgabe mit Datum']],
+      sigT: 'Supertrader-Musterdepots', next: ['Die Methode dahinter in Supertrader', 'supertrader'],
+      owns: ['Alle 14 Musterdepots', 'Positionen, Aufnahmen, Abgaben'],
+      gives: ['—', 'Quant und Supertrader zeigen ihre Depots als Ausschnitt von hier'],
+      fix: ['„Depot-Wertentwicklung noch nicht veröffentlicht“ auf jeder Karte: einmal oben erklären, nicht 14-mal'] },
+    vorsorge: {no: '3.10', phase: 'Vorsorgen', title: 'Vorsorge: bleibt Vorbild, bekommt ETFs dazu', now: 'vorsorge',
+      q: 'Was wird aus deiner Rente?', sub: 'Rechnen, verstehen, anfangen. Ohne Produktverkauf, mit amtlichen Regeln.',
+      acts: [['Ersten Sparplan ab 10 € planen', '6 Schritte, 3 Minuten'], ['Rente und Förderung ausrechnen', 'bis 540 € Zulage pro Jahr ab 2027'], ['Eigene ETFs durchleuchten', 'Länder, Branchen, Überschneidungen']],
+      sigT: 'Beispielrechnung', next: ['Welche Aktien stecken im ETF?', 'discover'],
+      owns: ['Sparplan, Rente, Förderung', 'alle ETFs (übernimmt das ETF-Dashboard)'],
+      gives: ['—'],
+      fix: ['Hat „Wo stehst du?“ schon: das Vorbild für alle anderen', 'Kern-ETFs sind US-Fonds (SPY, URTH). Es fehlen UCITS-ETFs mit ISIN und ein Schritt „Beim Broker einrichten“'] }
+  };
+  var ORDER = ['discover', 'quant', 'technical', 'fundamental', 'supertrader', 'hedgefonds', 'elliott', 'screener', 'portfolios', 'vorsorge'];
+
+  function dock(id) {
+    var docks = {discover: ['Übersicht', 'Welten', 'Listen', 'Swipen'], quant: ['Übersicht', 'Eigenschaften', 'Listen', 'Aktien'], technical: ['Übersicht', 'Suchen', 'Chart Studio', 'Muster'], fundamental: ['Übersicht', 'Ranglisten', 'Branchen', 'Suchen'], supertrader: ['Übersicht', 'Methoden', 'Heute erfüllt', 'Backtests'], hedgefonds: ['Übersicht', 'Investoren', 'Aktien', 'Analysten'], elliott: ['Übersicht', 'Welle 3', 'Neu', 'Suchen'], screener: ['Übersicht', 'Filter', 'Treffer', 'Gespeichert'], portfolios: ['Übersicht', 'Supertrader', 'Quant', 'KI'], vorsorge: ['Vorsorge', 'Planer', 'ETFs', 'Portfolio']}[id];
+    return '<div class="dock"><a class="on">' + pi(id) + NAMES[id] + '</a>' + docks.slice(1).map(function (d) { return '<a>' + ui('chart') + e(d) + '</a>'; }).join('') + '<a>' + ui('menu') + 'Menü</a></div>';
+  }
+
+  function phoneScreen(id) {
+    var p = P[id];
+    return '<div class="sb"><span>9:41</span><i>●●● ▮</i></div><div class="bd">' +
+      '<div class="hdr"><div class="w"><span class="hud">' + pi(id) + '</span>' + NAMES[id] + '</div><span class="ic">' + ui('search') + '</span><span class="at">' + ui('spark') + 'Atlas</span></div>' +
+      '<div class="lt" style="font-size:28px">' + e(p.q) + '</div><p class="mu sm" style="margin-top:6px">' + e(p.sub) + '</p>' +
+      '<div class="xs bb mu" style="letter-spacing:.09em;margin:14px 0 6px">HIER KANNST DU</div>' +
+      '<div class="card" style="padding:2px 12px">' + p.acts.map(function (a, i) { return '<div class="rowi" style="grid-template-columns:28px 1fr 16px;padding:8px 0"><span style="width:26px;height:26px;border-radius:50%;background:#000;color:#c8f531;display:grid;place-items:center;font-weight:900;font-size:12px">' + (i + 1) + '</span><span><b style="font-size:14px">' + e(a[0]) + '</b><span class="s">' + e(a[1]) + '</span></span>' + '<svg class="chev"><use href="#i-chev"/></svg></div>'; }).join('') + '</div>' +
+      '<div class="xs bb mu" style="letter-spacing:.09em;margin:14px 0 6px">' + e(p.sigT).toUpperCase() + '</div>' + sigs[id] +
+      '<div class="card lime" style="margin-top:10px;display:grid;grid-template-columns:30px 1fr 16px;gap:10px;align-items:center;padding:10px 12px"><span style="width:30px;height:30px;border-radius:9px;background:#000;color:#c8f531;display:grid;place-items:center">' + pi(p.next[1], 'w16') + '</span><span><span class="xs bb" style="letter-spacing:.08em">WEITER MIT ' + NAMES[p.next[1]].toUpperCase() + '</span><br><b style="font-size:13.5px">' + e(p.next[0]) + '</b></span><svg class="chev" style="color:#000"><use href="#i-chev"/></svg></div>' +
+      '</div>' + dock(id) + '<div class="home-ind"></div>';
+  }
+  function phone(id, s) { return '<div class="ph" style="--s:' + (s || .74) + '"><div class="fr"><div class="vp"><div class="scr">' + phoneScreen(id) + '</div></div></div></div>'; }
+
+  function slide(id, i) {
+    var p = P[id];
+    var now = p.now ? '<figure class="dev" style="--w:230px"><span class="tag now" style="align-self:flex-start">HEUTE</span><div class="shot"><img src="now/' + p.now + '.jpg" alt="' + NAMES[id] + ' heute"></div></figure>' : '';
+    var li = function (a) { return '<ul>' + a.map(function (x) { return '<li>' + e(x) + '</li>'; }).join('') + '</ul>'; };
+    return '<section class="slide' + (i % 2 ? ' soft' : '') + '" id="prod-' + id + '"><div class="inner">' +
+      '<div class="sh"><span class="no">' + p.no + '</span><h2>' + e(p.title) + '</h2><p class="sub"><span class="phase-tag">' + p.phase + '</span> Auftrag: <b style="color:#000">' + e(DOING[id]) + '.</b> ' + e(p.sub) + '</p></div>' +
+      '<div class="devs">' + now + phone(id) +
+      '<div style="flex:1;min-width:300px;display:grid;gap:12px;align-content:start">' +
+      '<div class="box"><h4>Heute auffällig</h4>' + li(p.fix) + '</div>' +
+      '<div class="g2"><div class="box ink"><h4 style="color:#c8f531">Besitzt</h4>' + li(p.owns) + '</div><div class="box"><h4>Gibt ab</h4>' + li(p.gives) + '</div></div>' +
+      '<div class="box lime"><h4 style="color:#000">Weiter mit</h4><p style="color:#000;font-weight:700">' + e(p.next[0]) + ' → ' + NAMES[p.next[1]] + '</p></div>' +
+      '</div></div></div></section>';
+  }
+
+  document.getElementById('product-slides').outerHTML = ORDER.map(slide).join('');
+  document.querySelectorAll('[data-phone]').forEach(function (el) { el.outerHTML = phone(el.getAttribute('data-phone'), el.style.getPropertyValue('--s')); });
+  document.querySelectorAll('[data-pp]').forEach(function (el) { var id = el.getAttribute('data-pp'); el.innerHTML = '<span class="pp-i">' + pi(id) + '</span><span><b>' + NAMES[id] + '</b><small>' + e(DOING[id]) + '</small></span>'; });
+  document.querySelectorAll('[data-p]').forEach(function (el) { el.insertAdjacentHTML('afterbegin', pi(el.getAttribute('data-p'), 'w14')); });
+
+  var phases = [['Finden', ['discover', 'screener', 'hedgefonds']], ['Prüfen', ['fundamental', 'quant', 'technical', 'elliott']], ['Verfolgen', ['supertrader', 'portfolios']], ['Vorsorgen', ['vorsorge']]];
+  var menu = document.getElementById('menu-new');
+  if (menu) menu.innerHTML = '<div class="sb"><span>9:41</span><i>●●● ▮</i></div><div class="bd" style="padding-top:0">' +
+    '<div class="hdr"><div class="w" style="font-size:13px;letter-spacing:.12em">VISION UNIVERSE<sup style="font-size:8px">®</sup></div><span class="ic" style="box-shadow:0 0 0 2px #c8f531">✕</span></div>' +
+    '<div class="card" style="display:flex;align-items:center;gap:10px;height:42px;border-radius:999px;padding:0 14px"><svg width="16" height="16"><use href="#i-search"/></svg><span class="mu sm">Aktie, Produkt oder Frage …</span></div>' +
+    phases.map(function (ph, k) { return '<div class="xs bb" style="letter-spacing:.09em;color:' + (k === 3 ? '#c8f531' : '#9b9b9b') + ';margin:12px 0 5px">' + (k + 1) + ' · ' + ph[0].toUpperCase() + '</div>' + ph[1].map(function (id) { return '<div style="display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center;padding:5px 0;' + (id === 'quant' ? 'background:#c8f531;color:#000;border-radius:12px;margin:0 -8px;padding:5px 8px' : '') + '"><span style="width:32px;height:32px;border-radius:9px;background:#000;color:#c8f531;display:grid;place-items:center;box-shadow:0 0 0 1px #333">' + pi(id, 'w16') + '</span><span style="line-height:1.15"><b style="font-size:14px">' + NAMES[id] + '</b><br><span style="font-size:12px;' + (id === 'quant' ? '' : 'color:#9b9b9b') + '">' + e(DOING[id]) + '</span></span></div>'; }).join(''); }).join('') +
+    '</div><div class="home-ind"></div>';
+
+  var h1 = document.getElementById('home-new');
+  if (h1) h1.innerHTML = '<div class="sb"><span>9:41</span><i>●●● ▮</i></div><div class="bd">' +
+    '<div class="ey" style="margin-top:6px">Was du hier tun kannst</div><div class="lt" style="font-size:30px">Zehn Werkzeuge. Vier Schritte.</div>' +
+    phases.map(function (ph, k) { return '<div class="card' + (k === 3 ? ' lime' : '') + '" style="margin-top:9px;padding:10px 12px"><div class="xs bb" style="letter-spacing:.08em;' + (k === 3 ? '' : 'color:#6e6e6e') + '">' + (k + 1) + ' · ' + ph[0].toUpperCase() + '</div>' + ph[1].map(function (id) { return '<div style="display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:center;margin-top:6px"><span style="width:22px;height:22px;border-radius:7px;background:#000;color:#c8f531;display:grid;place-items:center">' + pi(id, 'w12') + '</span><span style="font-size:13px"><b>' + NAMES[id] + '</b> · ' + e(DOING[id]) + '</span></div>'; }).join('') + '</div>'; }).join('') +
+    '</div><div class="home-ind"></div>';
+
+  var h2 = document.getElementById('home-new2');
+  if (h2) h2.innerHTML = '<div class="sb"><span>9:41</span><i>●●● ▮</i></div><div class="bd">' +
+    '<div class="ey" style="margin-top:6px">Eine Aktie, alle Werkzeuge</div><div class="lt" style="font-size:30px">So sieht Vision Universe NVIDIA.</div>' +
+    '<div style="display:flex;gap:10px;align-items:center;margin-top:12px"><span class="lg">NVDA</span><span><b>NVIDIA</b><br><span class="sm mu">186,64 $ · Schluss 06.11.</span></span><span style="flex:1"></span><span class="chg up">▲ +2,78 %</span></div>' +
+    '<div class="card" style="margin-top:10px;padding:2px 12px">' +
+    [['fundamental', 'Umsatz 216 Mrd. $, +45,7 % pro Jahr', 'Sehr stark', 's'], ['quant', '3 Eigenschaften stark, 1 schwach', 'Mittel', 'm'], ['technical', '23 % unter dem Jahreshoch', 'Schwächer', 'w'], ['hedgefonds', 'In 41 Fonds-Depots gemeldet', 'Q2', 'm'], ['supertrader', 'Erfüllt 2 von 13 Methoden', 'Regeln', 'm'], ['elliott', 'Wellen-Lesart mit Grenze', 'PRO', 'o']].map(function (r) { return '<div class="rowi" style="grid-template-columns:30px 1fr auto;padding:8px 0"><span style="width:28px;height:28px;border-radius:8px;background:#000;color:#c8f531;display:grid;place-items:center">' + pi(r[0], 'w14') + '</span><span><b style="font-size:13px">' + NAMES[r[0]] + '</b><span class="s">' + r[1] + '</span></span><span class="vd ' + r[3] + '">' + r[2] + '</span></div>'; }).join('') +
+    '</div><div class="btn" style="margin-top:12px">NVIDIA öffnen</div></div><div class="home-ind"></div>';
+
+  var b1 = document.getElementById('bridge1');
+  if (b1) b1.innerHTML = '<div class="sb"><span>9:41</span><i>●●● ▮</i></div><div class="bd">' +
+    '<div class="hdr"><div class="w"><span class="hud">' + pi('hedgefonds') + '</span>Hedgefonds</div></div>' +
+    '<div class="ey">Investor · Berkshire Hathaway</div><div class="lt" style="font-size:30px">Warren Buffett</div><p class="sm mu" style="margin-top:4px">299,3 Mrd. $ gemeldet · Meldung Q2 2026</p>' +
+    '<div class="xs bb mu" style="letter-spacing:.09em;margin:14px 0 6px">GRÖSSTE POSITIONEN · MIT EIGENSCHAFTEN AUS QUANT</div>' +
+    '<div class="card" style="padding:2px 12px">' + [['AAPL', 'Apple', '22,0 %', '4 stark · 1 Mitte · 1 schwach'], ['AXP', 'American Express', '17,1 %', '4 stark · 1 Mitte · 1 schwach']].map(function (r) { return '<div class="rowi" style="grid-template-columns:42px 1fr auto"><span class="lg">' + r[0] + '</span><span><b>' + r[1] + '</b><span class="s" style="display:flex;gap:4px;align-items:center;margin-top:3px"><span class="vd s" style="font-size:10.5px;padding:2px 7px">' + pi('quant', 'w12') + ' ' + r[3] + '</span></span></span><span class="bb num">' + r[2] + '</span></div>'; }).join('') + '<div class="rowi" style="grid-template-columns:1fr"><span class="sm mu">… weitere Positionen</span></div></div>' +
+    '<div class="card lime" style="margin-top:10px;display:grid;grid-template-columns:30px 1fr 16px;gap:10px;align-items:center"><span style="width:30px;height:30px;border-radius:9px;background:#000;color:#c8f531;display:grid;place-items:center">' + pi('screener', 'w16') + '</span><span><span class="xs bb" style="letter-spacing:.08em">WEITER MIT SCREENER</span><br><b style="font-size:13.5px">Alle seine Aktien weiterfiltern</b></span><svg class="chev" style="color:#000"><use href="#i-chev"/></svg></div>' +
+    '<div class="card" style="margin-top:8px;display:grid;grid-template-columns:30px 1fr 16px;gap:10px;align-items:center"><span style="width:30px;height:30px;border-radius:9px;background:#000;color:#c8f531;display:grid;place-items:center">' + pi('fundamental', 'w16') + '</span><span><b style="font-size:13.5px">Zahlen der Firmen vergleichen</b><br><span class="xs mu">Fundamental</span></span><svg class="chev"><use href="#i-chev"/></svg></div>' +
+    '</div>' + dock('hedgefonds') + '<div class="home-ind"></div>';
+
+  var b2 = document.getElementById('bridge2');
+  if (b2) b2.innerHTML = '<div class="sb"><span>9:41</span><i>●●● ▮</i></div><div class="bd">' +
+    '<div class="hdr"><div class="w"><span class="hud">' + pi('discover') + '</span>Discover</div></div>' +
+    '<div class="ey">Thema</div><div class="lt" style="font-size:30px">Künstliche Intelligenz</div>' +
+    '<div class="seg" style="margin-top:12px;grid-template-columns:1fr 1fr"><span>Nach Kurs</span><span class="on">' + 'Nach Eigenschaften' + '</span></div>' +
+    '<div class="card" style="margin-top:10px;padding:2px 12px">' + [['MU', 'Micron', '4 stark · 2 schwach'], ['NVDA', 'NVIDIA', '3 stark · 1 schwach'], ['AVGO', 'Broadcom', '2 stark · 3 schwach']].map(function (r) { return '<div class="rowi" style="grid-template-columns:42px 1fr"><span class="lg">' + r[0] + '</span><span><b>' + r[1] + '</b><span class="s" style="margin-top:3px"><span class="vd ' + (r[0] === 'AVGO' ? 'm' : 's') + '" style="font-size:10.5px;padding:2px 7px">' + pi('quant', 'w12') + ' ' + r[2] + '</span></span></span></div>'; }).join('') + '</div>' +
+    '<p class="xs mu" style="margin-top:6px">Eigenschaften aus Quant, Stand 06.11.2026. Reihenfolge nach Regel, keine Empfehlung.</p>' +
+    '<div class="card lime" style="margin-top:10px;display:grid;grid-template-columns:30px 1fr 16px;gap:10px;align-items:center"><span style="width:30px;height:30px;border-radius:9px;background:#000;color:#c8f531;display:grid;place-items:center">' + pi('screener', 'w16') + '</span><span><span class="xs bb" style="letter-spacing:.08em">WEITER MIT SCREENER</span><br><b style="font-size:13.5px">Nur profitable KI-Aktien zeigen</b></span><svg class="chev" style="color:#000"><use href="#i-chev"/></svg></div>' +
+    '</div>' + dock('discover') + '<div class="home-ind"></div>';
+
+  var CASES = [
+    ['„Ich habe von Palantir gehört. Ist die Firma gut?“', [['discover', 'Suche → Überblick', 1], ['fundamental', 'Verdient sie Geld?', 1], ['quant', 'Wo steht sie im Vergleich?', 1], ['hedgefonds', 'Wer hat sie gemeldet?', 1], ['discover', 'Alarm bei Quartalszahlen', 0]]],
+    ['„Ich will in KI investieren, weiß aber nicht, in welche Firma.“', [['discover', 'Thema KI', 1], ['quant', 'Nach Eigenschaften sortieren', 0], ['screener', 'Nur profitable weiterfiltern', 0], ['fundamental', 'Zahlen der Favoriten', 1]]],
+    ['„Was hat Warren Buffett gerade im Depot?“', [['hedgefonds', 'Buffetts Depot', 1], ['quant', 'Wie stehen seine Aktien da?', 0], ['fundamental', 'Zahlen der größten Position', 1]]],
+    ['„Ich handle aktiv nach Charts.“', [['technical', 'Fertige Suche „Gerade ausgebrochen“', 1], ['supertrader', 'Welche Methode passt?', 0], ['portfolios', 'Wie führt das Musterdepot die Methode?', 1]]],
+    ['„Ich will jeden Monat 100 € sparen.“', [['vorsorge', 'Sparplan in 6 Schritten', 1], ['vorsorge', 'ETF wählen', 1], ['discover', 'Welche Aktien stecken drin?', 0], ['vorsorge', 'Beim Broker einrichten', 0]]]
+  ];
+  var cs = document.getElementById('cases');
+  if (cs) cs.innerHTML = CASES.map(function (c) {
+    return '<div class="case"><b class="case-q">' + c[0] + '</b><div class="case-steps">' + c[1].map(function (s, i) { return (i ? '<span class="case-arr">→</span>' : '') + '<span class="step' + (s[2] ? '' : ' miss') + '">' + pi(s[0], 'w16') + '<span><small>' + NAMES[s[0]] + (s[2] ? '' : ' · fehlt') + '</small>' + e(s[1]) + '</span></span>'; }).join('') + '</div></div>';
+  }).join('');
+})();
+</script>
+<div class="pager" role="navigation" aria-label="Folien"><button type="button" id="pp" aria-label="Vorige Folie">‹</button><span id="pc">1 / 1</span><button type="button" id="pn" aria-label="Nächste Folie">›</button></div>
+<script>
+(function(){
+  var s=[].slice.call(document.querySelectorAll('.slide')),pc=document.getElementById('pc');
+  function cur(){var y=window.scrollY+window.innerHeight*0.35,i=0;s.forEach(function(e,k){if(e.offsetTop<=y)i=k;});return i;}
+  function upd(){pc.textContent=(cur()+1)+' / '+s.length;}
+  function go(d){var i=Math.max(0,Math.min(s.length-1,cur()+d));s[i].scrollIntoView({behavior:'smooth'});}
+  document.getElementById('pp').onclick=function(){go(-1);};
+  document.getElementById('pn').onclick=function(){go(1);};
+  document.addEventListener('keydown',function(e){if(e.target.closest('input,textarea'))return;if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(1);}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(-1);}});
+  window.addEventListener('scroll',upd,{passive:true});upd();
+})();
+</script>
+</body>
+</html>

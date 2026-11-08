@@ -1,0 +1,46 @@
+/* Zusätze Produkte 2027 */
+.w12{width:12px;height:12px}.w14{width:14px;height:14px}.w16{width:16px;height:16px}
+.doing{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:800px){.doing{grid-template-columns:1fr}}
+.do{display:grid;grid-template-columns:44px 1fr auto;grid-template-rows:auto auto;column-gap:14px;align-items:center;border:1px solid var(--g2);border-radius:20px;padding:14px 16px}
+.do i{grid-row:1/3;font-style:normal;font-weight:900;font-size:22px;letter-spacing:-.04em;color:var(--g3);font-variant-numeric:tabular-nums}
+.do b{font-size:17px;letter-spacing:-.02em;line-height:1.2}
+.do span{grid-column:2;font-size:13.5px;color:var(--g4)}
+.do em{grid-row:1/3;grid-column:3;font-style:normal;display:inline-flex;align-items:center;gap:6px;background:#000;color:var(--lime);border-radius:999px;padding:6px 12px;font-weight:800;font-size:12.5px;white-space:nowrap}
+.do em svg{color:var(--lime)}
+@media (max-width:520px){.do{grid-template-columns:30px 1fr}.do em{grid-row:auto;grid-column:2;justify-self:start;margin-top:8px}}
+.phases{display:grid;grid-template-columns:1fr 1.25fr .85fr .7fr;gap:12px}
+@media (max-width:1000px){.phases{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.phases{grid-template-columns:1fr}}
+.phase{background:#000;color:#fff;border-radius:24px;padding:18px;display:grid;gap:8px;align-content:start}
+.phase.lime{background:var(--lime);color:#000}
+.ph-h{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;margin-bottom:6px}
+.ph-h span{grid-row:1/3;width:34px;height:34px;border-radius:50%;background:var(--lime);color:#000;display:grid;place-items:center;font-weight:900}
+.phase.lime .ph-h span{background:#000;color:var(--lime)}
+.ph-h b{font-size:24px;font-weight:900;letter-spacing:-.04em;line-height:1}
+.ph-h small{font-size:13px;color:#9b9b9b;font-weight:600}
+.phase.lime .ph-h small{color:#333}
+.pp{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:center;background:#151515;border-radius:16px;padding:10px}
+.phase.lime .pp{background:rgba(0,0,0,.08)}
+.pp-i{width:38px;height:38px;border-radius:11px;background:#000;color:var(--lime);display:grid;place-items:center;box-shadow:0 0 0 1px #2a2a2a}
+.pp-i svg{width:22px;height:22px}
+.pp b{display:block;font-size:15px}
+.pp small{display:block;font-size:12.5px;color:#a6a6a6;line-height:1.3}
+.phase.lime .pp small{color:#222}
+.own{display:inline-flex;align-items:center;background:#000;color:var(--lime);border-radius:999px;padding:3px 10px;font-weight:800;font-size:12px;white-space:nowrap;margin:1px 0}
+.phase-tag{display:inline-block;background:#000;color:var(--lime);border-radius:999px;padding:2px 10px;font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-right:6px;vertical-align:2px}
+.dark .phase-tag{background:var(--lime);color:#000}
+.hdr .w .hud svg{width:20px;height:20px}
+.dock a svg{width:20px;height:20px}
+.cases{display:grid;gap:12px}
+.case{border:1px solid var(--g2);border-radius:22px;padding:16px 18px;display:grid;grid-template-columns:minmax(220px,.9fr) 2.4fr;gap:16px;align-items:center}
+@media (max-width:900px){.case{grid-template-columns:1fr}}
+.case-q{font-size:18px;letter-spacing:-.02em;line-height:1.2}
+.case-steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.case-arr{color:var(--g3);font-weight:900}
+.step{display:inline-flex;align-items:center;gap:8px;background:#000;color:#fff;border-radius:14px;padding:8px 12px;font-size:13.5px;font-weight:700;line-height:1.2}
+.step svg{color:var(--lime);flex:none}
+.step small{display:block;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#9b9b9b;font-weight:800}
+.step.miss{background:var(--lime);color:#000}
+.step.miss svg{color:#000}.step.miss small{color:#333}
+.rowi span.vd{display:inline-flex}
