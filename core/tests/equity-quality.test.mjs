@@ -46,6 +46,17 @@ test('trend: only the preceding UTC calendar day; zero coverage is unknown', () 
   assert.equal(Q.withTrend(report(),{...prev,checkedAt:now}).rules[0].delta,null);
   assert.equal(Q.withTrend(report(),null).rules[0].delta,null);
 });
+test('trend: a same-day rerun keeps the yesterday basis it carried (trendBasis), never compares with itself', () => {
+  const report = () => ({checkedAt:now,rules:[Q.names([{ticker:'A'}])]});
+  const prev = {checkedAt:'2026-11-05T23:00:00Z',rules:[{id:'DQ-E8-3',checked:1,failed:0,findings:[{ticker:'X'}]},{id:'DQ-PX-1',checked:9,failed:0}]};
+  const first = Q.withTrend(report(),prev);
+  assert.deepEqual(first.trendBasis,{checkedAt:prev.checkedAt,rules:[{id:'DQ-E8-3',checked:1,failed:0}]},'schlank, nur E8-Regeln, keine Befunde');
+  const rerun = Q.withTrend(report(),JSON.parse(JSON.stringify(first)));
+  assert.equal(rerun.rules[0].delta,1);assert.deepEqual(rerun.trendBasis,first.trendBasis);
+  // Ohne Vortagsbasis (erster Bericht oder Luecke) bleibt der Trend unbekannt, auch bei Wiederholung.
+  const lonely = Q.withTrend(report(),null);assert.equal(lonely.trendBasis,null);
+  assert.equal(Q.withTrend(report(),lonely).rules[0].delta,null);
+});
 test('ticker findings are not truncated at the 25 sample limit', () => {
   const r = Q.names(Array.from({length:30},(_,i) => ({ticker:'X'+i})));
   assert.equal(r.samples.length,25); assert.equal(Q.forTicker([r],'X29').length,1);

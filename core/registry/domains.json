@@ -589,6 +589,33 @@
       ]
     },
     {
+      "id": "dataQualityReport",
+      "label": "Datenqualitaetsbericht (/status/)",
+      "layer": "CORE",
+      "group": "Quality",
+      "critical": false,
+      "artifact": "/status/data-quality.json",
+      "activation": {
+        "state": "ACTIVATING",
+        "decision": "E8-Nachlauf (Steuerung 08.11.2026): taeglicher Bericht nur im Datenzweig data/live, Pages legt ihn unter /status/ ab. ACTIVATING bis zum ersten Lauf von pipeline-daily (Teil datenqualitaet); danach releaseOnly (Artefakt nur in der Auslieferung)."
+      },
+      "timestamp": ["checkedAt"],
+      "records": "rules",
+      "minRecords": 1,
+      "role": "Taeglicher Bericht des DQ-Runners (Regeln DQ-*, je Aktie DQ-E8-*) mit Vortagstrend; /status/ zeigt ihn als Hinweise, keine Sperre.",
+      "producer": "scripts/core/data-quality.mjs --out=status/data-quality.json --previous=VORTAG.json",
+      "workflow": "pipeline-daily.yml",
+      "schedule": "Di-Sa 07:13 UTC (Teil datenqualitaet), nur im Datenzweig data/live",
+      "freshness": {
+        "kind": "hours",
+        "warnAfter": 48,
+        "staleAfter": 120
+      },
+      "consumers": [
+        "/status/ (Datenqualitaet heute)"
+      ]
+    },
+    {
       "id": "insiderPurchases",
       "label": "Insider-Kaeufe (SEC Form 4)",
       "layer": "PRODUCT",

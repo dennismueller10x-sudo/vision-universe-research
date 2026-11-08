@@ -107,13 +107,13 @@ Entwarnung; `missingEquityArtifacts` nennt nicht ladbare Quellen.
 
 ### Veröffentlichung durch Strang A
 
-Es gibt keinen neuen Workflow und keinen neuen Zeitplan. Der bestehende
-Core-Prüfworkflow ruft den DQ-Runner bereits auf; damit laufen auch diese Regeln.
-A entscheidet über die dauerhafte tägliche Veröffentlichung des Berichts:
+Seit dem E8-Nachlauf (08.11.2026) erzeugt `pipeline-daily.yml`, Teil `datenqualitaet`, den Bericht täglich (Di–Sa 07:13 UTC, nach dem nächtlichen Kurslauf; auch per Dispatch `teil=datenqualitaet`). Er geht nur in den Datenzweig `data/live` (`core/registry/data-branch.json`, `BRANCH_ONLY`); Pages legt ihn beim Bau unter `/status/data-quality.json` ab. Nach `main` wird nichts committet (rund 560 KB je Bericht). Der vorige Bericht im Datenzweig ist der Vortag:
 
 ```bash
-node scripts/core/data-quality.mjs --out="$RUNNER_TEMP/data-quality.json" --previous=/pfad/zum/gestrigen-bericht.json
+node scripts/core/data-quality.mjs --out=status/data-quality.json --previous=VORTAG.json
 ```
+
+Läuft der Bericht am selben UTC-Tag erneut, ist der vorige Bericht von heute. Dann gilt dessen `trendBasis`, die schlanke Vortagsbasis aus `id`, `checked` und `failed` der E8-Regeln. Jeder Bericht trägt sie weiter (`core/equity-quality.js#withTrend`). ERROR-Regeln blockieren die Veröffentlichung nicht.
 
 `--previous` ist optional. `delta` ist nur bei einem Bericht vom unmittelbar
 vorherigen UTC-Kalendertag und positiver Prüfmenge beider Tage eine Zahl;
