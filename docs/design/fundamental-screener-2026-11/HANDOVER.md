@@ -54,6 +54,12 @@ Entscheidung 4: Definitionen als Screener-Vorlagen, Anzeige auf Fundamental-Akti
 - PR 1: Satz-Bausteine und fertige Ideen stehen an einer Stelle (`screener/engine/vocab.js`, mit Wörterbuch Begriff → Regel); `core/tests/fundamental-screener-wording.test.mjs` prüft Wortwahl, Kursziel-Verbot und „ein Begriff, eine Regel“ (auch für die Fundamental-Rangliste „Profitable Unternehmen“).
 - PR 1: Das gesperrte Screener-Kriterium „Abstand zum mittleren Analysten-Kursziel“ (ohne Datenquelle) entfällt mit Entscheidung 3 nicht, weil es gesperrt ist (keine Datenquelle, nie ein Wert) und die Abfrage-Gleichheit der Query-Engine es festhält; die Fundamental-Analysten zeigen nur noch Einstufungen.
 - PR 1: Das Urteil je Regel heißt „erfüllt“ / „nicht erfüllt“ statt „passt“ / „passt nicht“, damit überall dasselbe Wort steht wie in „Erfüllt deinen Filter“.
+- PR 2: „Kapitel zugeklappt“ heißt: acht Zeilen auf der Aktie, jede öffnet ihren Bereich unter der bisherigen Adresse (`?ansicht=finanzen&t=bilanz|cashflow`, `bewertung`, `vergleich`, `analysten`, `dividende`, `kennzahlen`, `quellen`); „Alle“ führt zu „Weitere Bereiche“ (dort auch Finanzen, Branchenvergleich, Aktie & Kapital, Unternehmensdaten).
+- PR 2: Unteransichten tragen statt der zweiten Leiste einen kompakten Kopf mit „‹ Firma · Zahlen“; die Perspektiven-Leiste steht nur auf der Aktie selbst.
+- PR 2: Der Aktienkopf (gemeinsamer Baustein `assets/stock-navigator.*`) behält die rote Minus-Pille (Owner-Ausnahme 06.11.2026, Discover-Test); in Fundamental selbst gibt es kein Rot.
+- PR 2: Die Kopfzeile des Finanz-Charts nennt den Zeitraum ohne Anbieter („GJ 2015–2026“ statt „… · SEC“), weil Produktseiten keine Datenquellen nennen (`core/tests/legal-notices-frontend.test.mjs`); „Quellen“ heißt „Meldung je Wert, Daten als CSV“.
+- PR 2: Die Checklisten-Zeilen kommen mit PR 5 (keine Platzhalter vorher); die frühere Kachelwand, „12 Jahre Umsatz“, „Entwicklung pro Jahr“ und die Knopfwolke „Mehr“ entfallen auf der Aktie (Inhalte in Finanz-Chart, Kennzahl-Detail und Kapiteln).
+- PR 2: Branche im Kapitel = SIC-Hauptgruppe (wie die Branchen-Seiten), z. B. „Elektronik und Halbleiter“, mit KGV-Median dieser Gruppe.
 
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 

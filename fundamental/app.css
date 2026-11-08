@@ -153,7 +153,7 @@ a.fu-k:active{transform:scale(.99)}
 .fu-bars-unit{margin:0 0 4px;font-size:11.5px;font-weight:700;color:var(--vu-muted)}
 .fu-bars-plot{position:relative;display:flex;align-items:stretch;gap:clamp(4px,1.6vw,10px);margin-top:16px;padding:0 2px}
 .fu-bars-zero{position:absolute;left:0;right:0;height:1px;background:var(--vu-line-strong,var(--vu-line));pointer-events:none}
-.fu-bc{position:relative;flex:1;min-width:0;margin:0;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:6px}
+.fu-bc{position:relative;flex:1 1 0;min-width:0!important;margin:0;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:6px}
 .fu-bc:hover,.fu-bc.is-sel{background:var(--fu-soft)}
 .fu-b{position:absolute;left:14%;right:14%;border-radius:5px 5px 2px 2px;background:var(--fu-bar)}
 .fu-b.is-neg{border-radius:2px 2px 5px 5px;background:color-mix(in srgb,var(--vu-down) 55%,transparent)}
@@ -638,3 +638,53 @@ html[data-theme=dark] .fu{--vu-bg:#000}
 /* Chips und Aussage-Karte: .fu a erbt die Textfarbe; Chip- und Kartenfarben haben Vorrang (Kontrast im Dunkelmodus) */
 .fu a.vu-chip--lime{color:#000}.fu a.vu-chip--on,.fu a.vu-chip[aria-current=page],.fu a.vu-chip[aria-pressed=true]{color:var(--vu-inv)}
 .fu-verdict .vu-ltag{color:inherit;opacity:.72}
+
+/* ---------- Fundamental-Aktie (Konzept „Verstehen. Finden.“, Folie FX02): Satz, Streifen, Finanz-Chart, Kapitel.
+   Farben nach Redesign: Plus neongruen, Minus schwarz, kein Rot. */
+.fu{--fu-lime:#c8f531}
+.fu-story{margin:14px 0 0;padding:14px 14px 14px;border-radius:22px;background:#000;color:#fff}
+.fu-story-h{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.fu-story-h .vu-ltag{display:inline-flex;align-items:center;gap:6px;color:#9b9b9b;margin:0}
+/* „?“ klein am Rand: sichtbar ein 20-px-Kreis, die Tippflaeche bleibt 44 px (negativer Rand haelt die Zeile flach). */
+html body #fu-main .fu-story-h .vu-q{width:44px;height:44px;margin:-12px -10px -12px -8px;padding:0;border:0;border-radius:50%;background:radial-gradient(circle,#2a2a2a 0 10px,transparent 10.5px);color:#bdbdbd;font-size:11px;font-weight:800;box-shadow:none}
+.fu-story-t{margin:8px 0 0;font-size:20px;font-weight:900;letter-spacing:-.03em;line-height:1.15}
+.fu-story-s{margin:6px 0 0;font-size:13.5px;line-height:1.4;color:#bdbdbd}
+.fu-strip{display:flex;gap:8px;margin:12px calc(-1 * var(--fu-gutter)) 0 0;padding-right:var(--fu-gutter);overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.fu-strip::-webkit-scrollbar{display:none}
+.fu-k.fu-kt{flex:none;width:116px;display:block;padding:10px 12px;border-radius:16px;background:var(--fu-card);border:0;text-decoration:none;scroll-snap-align:start;min-height:0}
+.fu-kt-l{display:block;font-size:11px;font-weight:700;color:var(--vu-muted)}
+.fu-kt .fu-k-v{display:block;margin-top:2px;font-size:19px;font-weight:900;letter-spacing:-.03em;white-space:nowrap;color:var(--vu-text)}
+.fu-kt-s{display:block;font-size:10.5px;font-weight:600;color:var(--vu-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fu-fin{margin:12px 0 0;padding:14px;border-radius:20px;background:var(--fu-card)}
+.fu-fin-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.fu-fin-h h2{margin:0;font-size:17px;font-weight:800;letter-spacing:-.02em}
+.fu-fin-r{font-size:11.5px;font-weight:700;color:var(--vu-muted);white-space:nowrap}
+.fu-fin-seg{display:flex;gap:2px;margin-top:10px;padding:4px;border-radius:999px;background:var(--vu-bg)}
+.fu-fin-seg button{flex:1;min-height:36px;border:0;border-radius:999px;background:none;color:var(--vu-muted);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.fu-fin-seg button[aria-pressed=true]{background:var(--vu-text);color:var(--vu-bg)}
+.fu-fin-big{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;margin-top:12px;min-height:34px}
+.fu-fin-big>b{font-size:26px;font-weight:900;letter-spacing:-.04em;line-height:1}
+.fu-fin-when{font-size:13px;font-weight:700;color:var(--vu-muted)}
+.fu-fin-plot{position:relative;display:flex;align-items:stretch;gap:5px;height:110px;margin-top:10px}
+.fu-fin-c{position:relative;flex:1 1 0;min-width:0!important;min-height:0!important;width:auto;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.fu-fin-c i{position:absolute;left:0;right:0;border-radius:4px 4px 2px 2px;background:var(--vu-text)}
+.fu-fin-c i.is-neg{border-radius:2px 2px 4px 4px;opacity:.55}
+.fu-fin-c.is-last i{background:var(--fu-lime);box-shadow:inset 0 0 0 1.5px #000}
+.fu-fin-c.is-sel:not(.is-last) i{box-shadow:0 0 0 2px var(--fu-lime)}
+.fu-fin-x{display:flex;gap:5px;margin-top:4px}
+.fu-fin-x span{flex:1;min-width:0;text-align:center;font-size:10.5px;color:var(--vu-muted);overflow:visible;white-space:nowrap}
+.fu-fin-per{display:flex;gap:6px;margin-top:10px;align-items:center}
+.fu-pill{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:0 13px;border:0;border-radius:999px;background:var(--vu-bg);color:var(--vu-text);font:inherit;font-size:12.5px;font-weight:700;text-decoration:none;cursor:pointer}
+.fu-pill[aria-pressed=true]{background:var(--vu-text);color:var(--vu-bg)}
+.fu-fin-cmp{margin-left:auto}
+.fu-chap{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.fu-chap a{display:grid;grid-template-columns:18px 40px 1fr 18px;gap:10px;align-items:center;padding:8px 10px 8px 12px;border-radius:18px;background:var(--fu-card);text-decoration:none;min-height:56px}
+.fu-chap-n{font-size:15px;color:var(--vu-muted)}
+.fu-chap-i{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#0e1013;color:var(--fu-lime)}
+.fu-chap-i svg{width:20px;height:20px}
+.fu-chap-t b{display:block;font-size:14px;letter-spacing:-.01em;line-height:1.2}
+.fu-chap-t span{display:block;margin-top:2px;font-size:12px;line-height:1.3;color:var(--vu-muted)}
+.fu-chap a>svg{color:var(--vu-muted)}
+@media (min-width:720px){.fu-strip{flex-wrap:wrap;overflow:visible;margin-right:0}.fu-chap{grid-template-columns:1fr 1fr}}
+html[data-theme=dark] .fu-story{background:#151515;box-shadow:inset 0 0 0 1px #262626}
+.fu-quant-link{margin-top:6px}
