@@ -30,9 +30,10 @@
    "workflow": "pipeline-daily.yml",
    "replaces": [
     "fx-ecb-daily.yml",
-    "vorsorge-daily-rebuild.yml",
+    "ki-depots-daily.yml",
+    "market-validation-data.yml",
     "supertrader-house-live.yml",
-    "market-validation-data.yml"
+    "vorsorge-daily-rebuild.yml"
    ]
   },
   "pipeline-intraday": {
@@ -272,9 +273,6 @@
   },
   "quant-ci.yml": {
    "bundle": "ci"
-  },
-  "ki-depots-daily.yml": {
-   "bundle": "pipeline-daily"
   },
   "quant-model-depots.yml": {
    "bundle": "pipeline-weekly"
