@@ -127,6 +127,16 @@ Lage = „höher als x % der Gruppe“ (Anteil mit niedrigerem Wert). Ein höher
 
 Der Katalog definiert 60 Kennzahlen; Gewinnrendite und Kurs/Free Cashflow sind als Kehrwerte von KGV und Free-Cashflow-Rendite nicht enthalten. Je Aktie: „im Katalog“ (definiert), „mit Wert“ (aktueller Wert oder mindestens ein Jahreswert) und „mit Verlauf“ (mindestens zwei Jahreswerte). Gezählt wird erst, wenn Vergleichsdaten und Kursreihe geladen sind (vorher zeigte NVDA 56 statt 62, weil KBV, EV-Kennzahlen, Kurs/FCF und PEG aus dem Screener-Universum noch fehlten).
 
+## Europa: Konzern-Kennzahlen aus ESEF (Stand 08.11.2026)
+
+Fundamental selbst rechnet weiter nur mit SEC-Daten. Für europäische Aktien zeigt die Discover-Aktienseite unter „Fundamentale Basisinformationen“ höchstens drei Konzern-Kennzahlen mit Vorjahr: Umsatz, Konzernergebnis und operativen Cashflow. Sie stammen aus amtlichen ESEF-Jahresfinanzberichten; Quant bleibt für Europa gesperrt.
+
+- **Quellen:** 10 Titel aus der französischen OAM (bestehend). Neu: deutsche DAX-Emittenten, die das ESEF-Paket auf der eigenen Website veröffentlichen. Bei der Suche am 08.11. waren das nur 3 von 36: Beiersdorf, Deutsche Bank (Paket verschachtelt, kein Umsatz) und Volkswagen (gelesen wird nur der IFRS-Konzernabschluss). 30 bieten nur PDF/XLSX an, 3 sperren automatische Abrufe. Fundliste mit Gründen: `scripts/official-filings/de-esef-sources.json`.
+- **Erzeuger:** `scripts/official-filings/de-esef-facts.mjs` → `discover/data/europe-esef/facts.json`, Lauf `research.yml` Teil `europa-esef` (nur manuell, jährlich). Gelesen werden nur gelistete Pakete mit passendem SHA-256; die Pakete bleiben im Lauf.
+- **Plausibilität (Anzeige nur bei Bestehen):** Geschäftsjahr 350–380 Tage, Vorjahr im selben Paket, Veränderung zwischen ×0,25 und ×4, Umsatz positiv, keine widersprüchlichen Werte, Ergebnis höchstens das 1,5-fache des Umsatzes. Nur Kontexte ohne Dimension mit der LEI des Emittenten.
+- **Rechtslage in einem Satz:** Übernommen werden nur drei Kennzahlen als Fakten aus der gesetzlichen Pflichtveröffentlichung, keine Dokumente oder Texte; das Original ist verlinkt; Prüfpunkt N7 der Anwaltsmappe (`docs/legal/ANWALTSMAPPE.md`).
+- **Offen (Owner-Entscheidung):** Eine echte deutsche Abdeckung gibt es nur über das Unternehmensregister (Erlaubnis oder Lizenz nötig). Für ~110 nicht-deutsche Titel kommt `filings.xbrl.org` in Frage (Nutzungsbedingungen bei XBRL International klären).
+
 ## Grenzen
 
 - **Segmentdaten** stehen nicht in den SEC-Companyfacts; nicht enthalten.

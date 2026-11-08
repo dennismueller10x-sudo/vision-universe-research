@@ -190,8 +190,8 @@
       '<div class="vu-grid dv2-valuation-components" style="margin-top:10px">' + tiles.join("") + "</div></section>";
   }
   /** Was dafür spricht, was dagegen (Einordnung, 3 + 2) */
-  function waage(d) {
-    if (!D.Einordnung || !D.Einordnung.waage) return "";
+  function waageZeilen(d) {
+    if (!D.Einordnung || !D.Einordnung.waage) return null;
     var w = D.Einordnung.waage(d), DF = D.DetailFundamentals;
     if (DF && DF.waageZeilen) {
       var extra = DF.waageZeilen(d), ids = {};
@@ -199,10 +199,14 @@
       extra.dafuer.forEach(function (e) { if (!ids[e.id]) w.dafuer.push(e); });
       extra.beachten.forEach(function (e) { if (!ids[e.id]) w.beachten.push(e); });
     }
-    var rows = w.dafuer.slice(0, 3).map(function (e) { return ["+", e]; }).concat(w.beachten.slice(0, 2).map(function (e) { return ["−", e]; }));
-    if (!rows.length) return "";
-    return section("waage", "Was dafür spricht, was dagegen", '<div class="vu-box dv3-liste">' + rows.map(function (r) {
-      return '<div class="dv3-waage"><span class="dv3-mark' + (r[0] === "+" ? "" : " is-minus") + '" aria-label="' + (r[0] === "+" ? "dafür" : "dagegen") + '">' + r[0] + "</span><div><b class=\"vu-sm\">" + esc(r[1].text) + "</b>" + (r[1].beleg ? '<span class="vu-xs vu-mu">' + esc(r[1].beleg) + "</span>" : "") + "</div></div>";
+    return { w: w, rows: w.dafuer.slice(0, 3).map(function (e) { return ["+", e]; }).concat(w.beachten.slice(0, 2).map(function (e) { return ["−", e]; })) };
+  }
+  /** Stärken und Schwächen laut Kennzahlen (Einordnung, 3 + 2; Wortwahl nach docs/legal/WORTWAHL.md) */
+  function waage(d) {
+    var z = waageZeilen(d); if (!z || !z.rows.length) return "";
+    var w = z.w, rows = z.rows;
+    return section("waage", "Stärken und Schwächen laut Kennzahlen", '<div class="vu-box dv3-liste">' + rows.map(function (r) {
+      return '<div class="dv3-waage"><span class="dv3-mark' + (r[0] === "+" ? "" : " is-minus") + '" aria-label="' + (r[0] === "+" ? "Stärke" : "Schwäche") + '">' + r[0] + "</span><div><b class=\"vu-sm\">" + esc(r[1].text) + "</b>" + (r[1].beleg ? '<span class="vu-xs vu-mu">' + esc(r[1].beleg) + "</span>" : "") + "</div></div>";
     }).join("") + "</div>" + (w.hinweis ? '<p class="vu-xs vu-mu" style="margin:8px 0 0">' + esc(w.hinweis) + "</p>" : ""));
   }
   /** In welchen Indizes? Gewicht als Balken */
@@ -244,6 +248,195 @@
     }).join("") + "</div>");
   }
 
+
+  /* =====================================================================
+     Konzept „Reihe für Reihe“, PR 5 (Folien AX01–AX05, Screens a-top, a-full,
+     a-chapter, a-next): die Aktie als Titelseite. Unter Kopf und Chart:
+     Etiketten · Story in drei Sätzen · 7 Kapitel (zugeklappt, Inhalt der
+     bisherigen Abschnitte unverändert) · Reihen der Aktie · Mehr wie … ·
+     Gleiches Thema · Niedrigere Bewertung im Sektor. Kommt man aus einer Reihe
+     (#/s/U/T?reihe=…), oben die Reihen-Leiste und am Ende die nächste Aktie.
+     Nur für US-Aktien; Europa behält den bisherigen Überblick.
+     ===================================================================== */
+  var OPEN_KEY = "vu-discover-chapters-v1";
+  function openSet() { try { var a = JSON.parse(localStorage.getItem(OPEN_KEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function saveOpen(id, on) {
+    try { var a = openSet().filter(function (x) { return x !== id; }); if (on) a.push(id); localStorage.setItem(OPEN_KEY, JSON.stringify(a)); } catch (e) { /* kein Speicher */ }
+  }
+  function reiheAusAdresse() { var m = /[?&]reihe=([a-z0-9-]+)/.exec(String(global.location && global.location.hash || "")); return m ? m[1] : null; }
+  function R() { return D.Reihen; }
+  function rowName(id, fallback) { return R() ? R().title(id, fallback) : titleCase(fallback || id); }
+  function rowLink(universe, id) { var T = D.Views && D.Views.Themes, t = T && T.byRow(id); return t ? T.href(t) : "#/c/" + universe + "/" + id; }
+  function sortedMemberships(d) {
+    return (d.memberships || []).filter(function (x) { return isNum(x.rank) && isNum(x.of) && x.rowId !== "sector-leaders"; })
+      .sort(function (a, b) { return a.rank - b.rank || a.rank / a.of - b.rank / b.of; });
+  }
+  function themeOf(d) {
+    var th = (d.themes || [])[0], T = D.Views && D.Views.Themes;
+    if (!th) return null;
+    var t = T && T.byRow(th.rowId);
+    return { rowId: th.rowId, title: t ? t.title : titleCase(th.title), photo: t && t.photo, href: t ? T.href(t) : null };
+  }
+  /** Etiketten wie die Metazeile einer Serie: bester Platz, Thema, Index-Gewicht, „+N Reihen“. */
+  function etiketten(d, universe) {
+    var m = sortedMemberships(d), th = themeOf(d), ix = (d.indexMemberships || []).filter(function (x) { return isNum(x.weight); })[0], out = [];
+    if (m[0]) out.push('<a class="vu-chip vu-chip--lime" href="' + esc(rowLink(universe, m[0].rowId)) + '">Platz ' + m[0].rank + " · " + esc(rowName(m[0].rowId, m[0].title)) + "</a>");
+    if (th) out.push('<a class="vu-chip" href="' + esc(th.href || rowLink(universe, th.rowId)) + '">' + esc(th.title) + "</a>");
+    if (ix) out.push('<span class="vu-chip">' + esc((ix.shortLabel || ix.indexName) + " · " + num(ix.weight, 1) + " %") + "</span>");
+    if (m.length > 1) out.push('<a class="vu-chip" href="#dv3-reihen">+' + (m.length - 1) + " Reihen</a>");
+    return out.length ? '<div class="dv3-tags">' + out.join("") + "</div>" : "";
+  }
+  /** Kurs gegen das Jahreshoch: ab −20 % schwächer, bis −5 % nah am Hoch, dazwischen mittel. */
+  function hochUrteil(dist) {
+    if (!isNum(dist)) return null;
+    if (dist <= -0.20) return ["weak", "Schwächer"];
+    if (dist >= -0.05) return ["strong", "Nah am Hoch"];
+    return ["mid", "Dazwischen"];
+  }
+  /** Die Story in drei Sätzen: Geschäft, Kurs, Bewertung – je ein Satz und ein Urteil (ersetzt „In einem Satz“ und „Auf einen Blick“). */
+  function story(d) {
+    var f = d.fundamentals || {}, rows = [], m = d.metrics || {};
+    var st = f.story && f.story.available && (f.story.statements || [])[0];
+    var growth = f.health && (f.health.categories || []).filter(function (c) { return c.id === "growth"; })[0];
+    if (st && st.text) rows.push(["fundamental", "Geschäft", st.text, growth ? [gradeKind(growth.grade), growth.grade] : null]);
+    var j = d.jahresspanne, k = hochUrteil(m.distanceTo52wHigh);
+    if (j && j.zumHoch && k) rows.push(["technical", "Kurs", "Der Kurs liegt " + j.zumHoch.replace(/^[−-]/, "") + " unter dem Hoch der letzten 12 Monate.", k]);
+    else if (d.plain && d.plain.story) rows.push(["technical", "Kurs", d.plain.story + ".", kursUrteil(m.return1M)]);
+    var v = f.valuation, b = bewertungsUrteil(v);
+    if (b && v.pe && isNum(v.pe.value)) {
+      var med = v.relative.peMedian, txt = b[1] === "Wie der Markt" ? "etwa wie der Markt" : b[0] === "weak" ? "über dem Markt" : "unter dem Markt";
+      rows.push(["quant", "Bewertung", "KGV " + num(v.pe.value, 1) + ", " + txt + (isNum(med) ? " (" + num(med, 1) + ")." : "."), b]);
+    }
+    if (!rows.length) return "";
+    return '<section class="dv3-story" aria-label="Die Story in drei Sätzen"><p class="vu-ltag">Die Story in drei Sätzen</p>' + rows.map(function (r) {
+      return '<div class="dv3-story-r">' + U().hud(r[0], 34, 10) + '<div><span class="vu-ltag">' + esc(r[1]) + "</span><p>" + esc(r[2]) + "</p></div>" + (r[3] ? U().verdict(r[3][0], r[3][1]) : "") + "</div>";
+    }).join("") + "</section>";
+  }
+  /* Bildchen der Kapitel (schwarz, 76 × 52) */
+  function thumbSpanne(d) { var p = d.jahresspanne && isNum(d.jahresspanne.position) ? Math.round(Math.max(0, Math.min(1, d.jahresspanne.position)) * 100) : 50; return '<span class="dv3-thumb"><span class="dv3-thumb-range"><i style="width:' + p + '%"></i><b style="left:' + p + '%"></b></span></span>'; }
+  function thumbThema(d) { var th = themeOf(d); return th && th.photo ? '<span class="dv3-thumb dv3-thumb--img"><img src="' + esc(th.photo) + '" alt="" loading="lazy" decoding="async"></span>' : '<span class="dv3-thumb">' + U().hud("discover", 30, 8) + "</span>"; }
+  function revenue(d) { var j = d.fundamentals && d.fundamentals.journey; return j && j.tracks ? (j.tracks.revenue || []).filter(function (x) { return isNum(x.v); }) : []; }
+  function thumbBars(d) { var r = revenue(d).slice(-8), mx = Math.max.apply(null, r.map(function (x) { return x.v; }).concat([1])); return '<span class="dv3-thumb dv3-thumb--bars">' + r.map(function (x, i) { return '<i style="height:' + Math.max(2, Math.round(x.v / mx * 36)) + "px" + (i === r.length - 1 ? ";background:#c8f531" : "") + '"></i>'; }).join("") + "</span>"; }
+  function healthCount(d) { var c = (d.fundamentals && d.fundamentals.health && d.fundamentals.health.categories) || []; return [c.filter(function (x) { return /^Sehr/.test(x.grade); }).length, c.length]; }
+  function thumbDots(d) { var k = healthCount(d); return '<span class="dv3-thumb dv3-thumb--dots">' + Array.from({ length: k[1] }, function (_, i) { return "<i" + (i < k[0] ? ' class="on"' : "") + "></i>"; }).join("") + "</span>"; }
+  function thumbPe(d) { var v = d.fundamentals && d.fundamentals.valuation, pe = v && v.pe && v.pe.value, med = v && v.relative && v.relative.peMedian, mx = Math.max(pe || 0, med || 0) || 1; return '<span class="dv3-thumb dv3-thumb--pe"><i style="width:' + Math.round((pe || 0) / mx * 100) + '%"></i><i style="width:' + Math.round((med || 0) / mx * 100) + '%"></i></span>'; }
+  function thumbMarks(z) { var plus = z ? z.rows.filter(function (r) { return r[0] === "+"; }).length : 0, minus = z ? z.rows.length - plus : 0; return '<span class="dv3-thumb dv3-thumb--marks"><b>' + new Array(plus + 1).join("+ ").trim() + "</b><b>" + new Array(minus + 1).join("− ").trim() + "</b></span>"; }
+  function thumbIndex(d) { var ix = (d.indexMemberships || []).slice(0, 3), mx = Math.max.apply(null, ix.map(function (x) { return isNum(x.weight) ? x.weight : 0; }).concat([1])); return '<span class="dv3-thumb dv3-thumb--idx">' + ix.map(function (x, i) { return '<i style="width:' + (isNum(x.weight) ? Math.max(20, Math.round(x.weight / mx * 90)) : 60) + "%" + (i % 2 ? "" : ";background:#c8f531") + '"></i>'; }).join("") + "</span>"; }
+  function kapitelListe(d, universe) {
+    var name = d.companyName || d.symbol, z = d.zeitachse || [], y = z.filter(function (x) { return x.key === "return12M"; })[0], j = d.jahresspanne;
+    var r = revenue(d), last = r[r.length - 1], hc = healthCount(d), v = d.fundamentals && d.fundamentals.valuation, wz = waageZeilen(d);
+    var plus = wz ? wz.rows.filter(function (x) { return x[0] === "+"; }).length : 0, minus = wz ? wz.rows.length - plus : 0;
+    var ix = d.indexMemberships || [];
+    return [
+      ["kurs", "Kurs: Zeitachse und Jahresspanne", [y ? y.wert + " in 12 Monaten" : null, j && j.zumHoch ? j.zumHoch.replace(/^[−-]/, "") + " unter dem Hoch" : null].filter(Boolean).join(" · "), thumbSpanne(d), zeitachse(d) + spanne(d)],
+      ["firma", "Was macht " + name + "?", [d.was, (d.themes || []).length ? d.themes.length + " Themen" : null].filter(Boolean).join(" · "), thumbThema(d), firma(d, universe)],
+      ["geschaeft", "Wie sich das Geschäft entwickelt hat", last ? "Umsatz " + usd(last.v) + " im GJ " + last.fy : "", thumbBars(d), geschaeft(d)],
+      ["gesund", "Wie gesund ist die Firma?", hc[1] ? hc[0] + " von " + hc[1] + " sehr stark" : "", thumbDots(d), gesundheit(d)],
+      ["teuer", "Ist " + name + " teuer?", v && v.pe && isNum(v.pe.value) ? "KGV " + num(v.pe.value, 1) + (v.relative && isNum(v.relative.peMedian) ? " · Markt " + num(v.relative.peMedian, 1) : "") : "", thumbPe(d), teuer(d)],
+      ["waage", "Stärken und Schwächen laut Kennzahlen", wz && wz.rows.length ? plus + (plus === 1 ? " Stärke" : " Stärken") + " · " + minus + (minus === 1 ? " Schwäche" : " Schwächen") : "", thumbMarks(wz), waage(d)],
+      ["indizes", "In welchen Indizes?", ix.map(function (x) { return (x.shortLabel || x.indexName).replace("NASDAQ-100", "Nasdaq-100").replace("Dow Jones Industrial Average", "Dow") + (isNum(x.weight) ? " " + num(x.weight, 1) + " %" : ""); }).join(" · "), thumbIndex(d), indizes(d)]
+    ].filter(function (k) { return k[4]; });
+  }
+  function kapitel(d, universe) {
+    var ks = kapitelListe(d, universe), open = openSet();
+    if (!ks.length) return "";
+    return '<section class="dv3-sec dv3-kapitel" data-sec="kapitel">' + U().sect("Kapitel") + '<p class="dv3-sub">' + ks.length + " Kapitel, je eins aufklappen. Zusammen das, was die Seite bisher untereinander zeigte.</p>" +
+      '<div class="dv3-eps">' + ks.map(function (k, i) {
+        return '<details class="dv3-ep" data-ch="' + k[0] + '"' + (open.indexOf(k[0]) >= 0 ? " open" : "") + '><summary><b class="dv3-ep-n">' + (i + 1) + "</b>" + k[3] + '<span class="dv3-ep-t"><b>' + esc(k[1]) + "</b>" + (k[2] ? "<span>" + esc(k[2]) + "</span>" : "") + '</span><span class="dv3-ep-c" aria-hidden="true">' + U().glyph("next", 15) + '</span></summary><div class="dv3-ep-body">' + k[4] + "</div></details>";
+      }).join("") + "</div></section>";
+  }
+  /** „{Name} steht in N Reihen“: Platz groß, Tipp öffnet die Reihe. */
+  function reihen(d, universe) {
+    var m = sortedMemberships(d);
+    if (!m.length) return "";
+    return '<section class="dv3-sec" id="dv3-reihen" data-sec="reihen">' + U().sect((d.companyName || d.symbol) + " steht in " + m.length + (m.length === 1 ? " Reihe" : " Reihen")) + '<p class="dv3-sub">Platz nach der Regel der Reihe. Tipp öffnet die Reihe.</p><div class="dv3-rail" role="list">' + m.map(function (x) {
+      return '<a class="dv3-rk2" role="listitem" href="' + esc(rowLink(universe, x.rowId)) + '"><span class="vu-num">' + x.rank + ".</span><b>" + esc(rowName(x.rowId, x.title)) + '</b><span class="vu-xs vu-mu">von ' + num(x.of, 0) + "</span></a>";
+    }).join("") + "</div></section>";
+  }
+  /** Schienen „Mehr wie …“, „Gleiches Thema“, „Niedrigere Bewertung im Sektor“ (aus discoverNext), Poster wie auf der Startseite. */
+  var NEXT = [["similar", function (d) { return "Mehr wie " + (d.companyName || d.symbol); }, "Ähnlich in Kursverhalten, Wachstum, Marge und Bewertung."],
+    ["sameTheme", function (d) { var th = themeOf(d); return "Gleiches Thema" + (th ? ": " + th.title : ""); }, ""],
+    ["cheaperAlternatives", function () { return "Niedrigere Bewertung im Sektor"; }, null]];
+  function schienen(d, universe) {
+    return NEXT.map(function (x) {
+      var n = d.discoverNext && d.discoverNext[x[0]];
+      if (!n || !(n.cards || []).length) return "";
+      var sub = x[2] != null ? x[2] : "KGV unter 80 % von " + (d.companyName || d.symbol) + ", Nettomarge mindestens 5 %.";
+      return '<section class="dv3-sec dv3-next" data-next="' + x[0] + '">' + U().sect(x[1](d)) + (sub ? '<p class="dv3-sub">' + esc(sub) + "</p>" : "") + '<div class="dv3-rail dv3-posters" role="list"></div></section>';
+    }).join("");
+  }
+  function seriesFor(c) {
+    var I = global.VUCore && global.VUCore.Identity;
+    try { return I ? { status: "CALCULATED", path: "/quant/data/market/discover-series/" + I.securityIdForTicker(c.symbol) + ".json" } : null; } catch (e) { return null; }
+  }
+  function fillPosters(box, d, universe) {
+    var UI = D.ReihenUI; if (!UI) return;
+    box.querySelectorAll(".dv3-next").forEach(function (sec) {
+      var n = d.discoverNext[sec.getAttribute("data-next")], rail = sec.querySelector(".dv3-posters");
+      n.cards.slice(0, 8).forEach(function (c) { rail.appendChild(UI.poster(Object.assign({ priceSeries: seriesFor(c) }, c), { universeId: universe })); });
+    });
+  }
+  /* ------------------------------------------------ Aus einer Reihe gekommen (a-next) */
+  function herkunft(box, d, universe) {
+    var id = reiheAusAdresse(), UI = D.ReihenUI;
+    if (!id || !UI || !R()) return;
+    UI.loadRow({ universeId: universe }, id).then(function (row) {
+      if (!box.isConnected) return;
+      var cards = row.cards || [], i = cards.map(function (c) { return c.symbol; }).indexOf(d.symbol), total = (row.coverage && row.coverage.matched) || cards.length;
+      var prev = i > 0 ? cards[i - 1] : null, next = cards[i + 1] || (i < 0 ? cards[0] : null), title = R().title(id, row.title);
+      var href = function (c) { return "#/s/" + universe + "/" + encodeURIComponent(c.symbol) + "?reihe=" + id; };
+      var pos = i >= 0 ? (i + 1) + " von " + num(total, 0) : "";
+      var bar = document.createElement("nav"); bar.className = "dv3-rowctx"; bar.setAttribute("aria-label", "Reihe " + title);
+      bar.innerHTML = (prev ? '<a href="' + esc(href(prev)) + '" aria-label="Vorige Aktie: ' + esc(prev.companyName || prev.symbol) + '">' + U().glyph("back", 14) + "</a>" : '<span aria-hidden="true"></span>') +
+        '<a class="dv3-rowctx-t" href="' + esc(rowLink(universe, id)) + '"><b>' + esc(title) + "</b></a><span class=\"dv3-rowctx-p\">" + esc(pos) + "</span>" +
+        (next ? '<a href="' + esc(href(next)) + '" aria-label="Nächste Aktie: ' + esc(next.companyName || next.symbol) + '">' + U().glyph("next", 14) + "</a>" : '<span aria-hidden="true"></span>');
+      /* Wie a-next: die Leiste steht über dem Aktienkopf und klebt beim Scrollen oben. */
+      var page = box.closest(".dv2-stock") || box.parentNode, head = page && page.querySelector(".dv2-head");
+      if (head) head.parentNode.insertBefore(bar, head); else box.insertBefore(bar, box.firstChild);
+      if (!next) return;
+      var npos = (i >= 0 ? i + 2 : 1) + " von " + num(total, 0);
+      var end = document.createElement("section"); end.className = "dv3-endcard"; end.setAttribute("aria-label", "Nächste in der Reihe");
+      end.innerHTML = '<p class="vu-ltag">Ende der Seite · Nächste in der Reihe</p><div class="dv3-endcard-b"><div class="dv3-endcard-p"></div><div class="dv3-endcard-t"><b>' + esc(next.companyName || next.symbol) + "</b><p>" + esc((next.hook && next.hook.text) || (next.plain && next.plain.story) || "") + "</p><span>" + esc(title + " · " + npos) + "</span></div></div>" +
+        '<div class="dv3-endcard-a"><a class="vu-btn" href="' + esc(href(next)) + '">Nächste Aktie</a><a class="vu-btn vu-btn--line" href="' + esc(rowLink(universe, id)) + '">Zur Reihe</a></div><p class="dv3-endcard-h">Oder seitlich wischen: links zurück, rechts weiter.</p>';
+      end.querySelector(".dv3-endcard-p").appendChild(UI.poster(next, { universeId: universe }, { row: id }));
+      box.appendChild(end);
+      /* Seitlich wischen: links zurück, rechts weiter. Nicht im Chart und nicht in Schienen (dort wischt man anderes). */
+      var x0 = null, y0 = null;
+      document.addEventListener("touchstart", function (e) { var t = e.target; x0 = (t.closest && t.closest(".dx-chapter--chart,.dv3-rail,.dr-rail,.vu-seg,.dv3-gesch")) ? null : e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+      document.addEventListener("touchend", function (e) {
+        if (x0 == null || !box.isConnected) return;
+        var t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; x0 = null;
+        if (Math.abs(dx) < 90 || Math.abs(dy) > 50) return;
+        if (dx < 0 && next) global.location.hash = href(next); else if (dx > 0 && prev) global.location.hash = href(prev);
+      }, { passive: true });
+    }).catch(function () {});
+  }
+  function bindKapitel(box) {
+    box.querySelectorAll(".dv3-ep").forEach(function (det) {
+      det.addEventListener("toggle", function () { saveOpen(det.getAttribute("data-ch"), det.open); });
+    });
+  }
+  function renderTitel(d, universe) {
+    var html = [etiketten(d, universe), story(d), kapitel(d, universe), reihen(d, universe), schienen(d, universe)].join("");
+    var box = document.createElement("div");
+    box.className = "vu-ui dv3-overview dv3-titel";
+    box.appendChild(frag(html));
+    var g = box.querySelector(".dv3-gesch");
+    if (g) {
+      geschaeftZeichnen(g, d, g.getAttribute("data-track"));
+      g.addEventListener("click", function (e) {
+        var b = e.target.closest && e.target.closest(".vu-seg button");
+        if (!b) return;
+        g.querySelectorAll(".vu-seg button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+        geschaeftZeichnen(g, d, b.getAttribute("data-id"));
+      });
+    }
+    bindKapitel(box);
+    fillPosters(box, d, universe);
+    herkunft(box, d, universe);
+    U().bindHelp(box);
+    return box;
+  }
   /**
    * Abschnitte in root einsetzen (nach dem Chart). Gibt die Knoten zurück, damit detail.js sie einordnet.
    * Ohne VUUI (Skript nicht geladen) entfällt der Überblick; die bisherigen Kapitel bleiben dann sichtbar.
@@ -251,6 +444,7 @@
   function render(d, opts) {
     if (!U() || !d) return null;
     var universe = (opts && opts.universeId) || d.universeId || "US_REAL";
+    if (d.region !== "EUROPE" && D.Reihen && D.ReihenUI) return renderTitel(d, universe);
     var html = [satz(d), zeitachse(d), spanne(d), blick(d), firma(d, universe), geschaeft(d), gesundheit(d), teuer(d), waage(d), indizes(d), ranglisten(d, universe),
       liste(d, "similar", "Ähnliche Aktien", universe), liste(d, "sameTheme", "Gleiches Thema", universe), liste(d, "cheaperAlternatives", "Günstiger bewertet", universe), welten(d)].join("");
     var box = document.createElement("div");
@@ -270,6 +464,7 @@
     return box;
   }
 
-  D.Overview = Object.freeze({ render: render, kursUrteil: kursUrteil, bewertungsUrteil: bewertungsUrteil, gradeKind: gradeKind, titleCase: titleCase });
+  D.Overview = Object.freeze({ render: render, kursUrteil: kursUrteil, bewertungsUrteil: bewertungsUrteil, gradeKind: gradeKind, titleCase: titleCase,
+    hochUrteil: hochUrteil, story: story, kapitelListe: kapitelListe, etiketten: etiketten, reiheAusAdresse: reiheAusAdresse });
   if (typeof module === "object" && module.exports) module.exports = D.Overview;
 })(typeof globalThis !== "undefined" ? globalThis : this);

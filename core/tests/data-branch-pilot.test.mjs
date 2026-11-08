@@ -222,3 +222,37 @@ test("DB-14 · Inventar: jede Datenart ist im Datenzweig oder im Plan mit Status
   }
   for (const id of Object.keys(plan)) assert.ok(DOMAINS.domains.some((d) => d.id === id), "Plan nennt unbekannte Datenart " + id);
 });
+
+/* DB-15 · Wer Daten schreibt und eine BRANCH_ONLY-Datei liest, spielt vorher den Datenzweig ein.
+   Sonst rechnet der Lauf mit der eingefrorenen Kopie in main weiter (08.11.2026: Musterdepots lasen
+   die SPY-Reihe nach marketPulse BRANCH_ONLY aus main). Erkannt werden Skripte, die einen Pfad einer
+   BRANCH_ONLY-Datenart nennen, und Workflows, die ein solches Skript aufrufen und committen/pushen.
+   Pruef-Workflows ohne Schreiben pruefen den Code gegen die Kopie in main und sind ausgenommen. */
+const DB15_AUSNAHMEN = {
+  "scripts/market/assert-public-data-hygiene.mjs": "prueft Quellen-Freigaben im oeffentlichen Baum, nicht die Frische"
+};
+test("DB-15 · Schreibende Workflows, die BRANCH_ONLY-Daten lesen, saeen den Datenzweig", async () => {
+  const { readdirSync, statSync } = await import("node:fs");
+  const nadeln = [];
+  for (const d of MANIFEST.domains.filter((x) => x.phase === "BRANCH_ONLY")) for (const p of [...(d.paths || []), ...(d.prefixes || [])]) nadeln.push(p.replace(/\/$/, ""));
+  const walk = (dir, out = []) => {
+    for (const n of readdirSync(join(ROOT, dir))) {
+      if (n === "node_modules" || n.startsWith(".")) continue;
+      const rel = dir + "/" + n;
+      if (statSync(join(ROOT, rel)).isDirectory()) { if (n !== "tests" && n !== "data") walk(rel, out); }
+      else if (/\.(mjs|cjs|js|py|sh)$/.test(n)) out.push(rel);
+    }
+    return out;
+  };
+  const leser = ["scripts", "products", "quant/engines", "core"].filter((d) => existsSync(join(ROOT, d))).flatMap((d) => walk(d))
+    .filter((f) => !DB15_AUSNAHMEN[f] && nadeln.some((p) => readFileSync(join(ROOT, f), "utf8").includes(p)));
+  assert.ok(leser.includes("scripts/quant/portfolio/model-depots.cjs"), "Erkennung greift (Musterdepots lesen die SPY-Reihe)");
+  const fehlt = [];
+  for (const w of readdirSync(join(ROOT, ".github/workflows")).filter((f) => f.endsWith(".yml"))) {
+    const t = readFileSync(join(ROOT, ".github/workflows", w), "utf8");
+    if (t.includes("seed-data-branch.sh") || !/push-with-retry\.sh|commit-and-push\.sh|push-data-branch\.sh/.test(t)) continue;
+    const treffer = leser.filter((f) => t.includes(f));
+    if (treffer.length) fehlt.push(w + " ruft " + treffer.join(", "));
+  }
+  assert.deepEqual(fehlt, [], "scripts/ci/seed-data-branch.sh alle vor dem Lauf einbauen");
+});

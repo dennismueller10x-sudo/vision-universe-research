@@ -1,5 +1,5 @@
 // Europa-Spalten des Screeners: Regeln aus screener/europe-close-metrics.js an synthetischen Reihen
-// und der Erzeuger scripts/screener/build-europe.mjs an den veröffentlichten Europa-Daten (nur --out in tmp).
+// und der Erzeuger products/screener/producer/build-europe.mjs an den veröffentlichten Europa-Daten (nur --out in tmp).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
@@ -7,7 +7,7 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { writeEurope, SCHEMA } from '../../scripts/screener/build-europe.mjs';
+import { writeEurope, SCHEMA } from '../../products/screener/producer/build-europe.mjs';
 
 const require = createRequire(import.meta.url);
 const M = require('../europe-close-metrics.js');

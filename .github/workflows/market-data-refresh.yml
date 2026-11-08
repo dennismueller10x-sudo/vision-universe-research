@@ -395,7 +395,7 @@ jobs:
         # Erzeuger und bleibt ausgenommen. quant/tests/push-with-retry.test.mjs
         # (PR11) prueft die Liste gegen das Register.
         env:
-          PUSH_OWNED_PATHS: "discover/data/ !discover/data/europe/ quant/data/technical/ quant/data/market/factors/ quant/data/market/discover-series/ quant/data/market/golden-preview/ quant/data/market/listing-continuity-v1.json"
+          PUSH_OWNED_PATHS: "discover/data/ !discover/data/europe/ !discover/data/europe-esef/ quant/data/technical/ quant/data/market/factors/ quant/data/market/discover-series/ quant/data/market/golden-preview/ quant/data/market/listing-continuity-v1.json"
         # Der Push laeuft ueber scripts/ci/push-with-retry.sh: Autostash
         # gegen die ungestagten Zeitstempel der Regressionssuite (Lauf
         # 34987245529) UND Wiederholung gegen den verlorenen Wettlauf um

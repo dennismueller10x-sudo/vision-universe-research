@@ -16,9 +16,15 @@ name: Pipeline woechentlich (Buendel pipeline-weekly)
 # Der Job `auswahl` bildet die Ausloeser der Quellen nach (Dispatch `teil`, Zeitplan am Cron, Push nach
 # Zweig/Pfad, workflow_run nach Name/Typ/Zweig, repository_dispatch nach Typ). Generiert, siehe A-Doc.
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       teil:
         description: 'Welcher Teil'
         type: choice
@@ -71,14 +77,6 @@ on:
         description: 'sec-fundamentals: as-of date for the gate report (YYYY-MM-DD, default: today)'
         type: string
         required: false
-  schedule:
-    - cron: '17 4 * * 1'   # logos
-    - cron: '47 3 * * 2-6'   # logos
-    - cron: '0 6 * * 0'   # deckung
-    - cron: '20 7 * * 6'   # index
-    - cron: '23 7 * * 6'   # musterdepots
-    - cron: '20 8 * * 1-5'   # tiingo2-universum
-    - cron: '0 6 * * 1'   # sec-fundamentals
   push:
     branches:
       - 'claude/**'
@@ -110,11 +108,11 @@ jobs:
         id: wahl
         env:
           # Eingaben und Ereignisdaten nur ueber env: (ADR-005)
-          EVENT: ${{ github.event_name }}
+          EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
           ACTION: ${{ github.event.action }}
           REF: ${{ github.ref }}
           TEIL: ${{ inputs.teil }}
-          SCHEDULE: ${{ github.event.schedule }}
+          SCHEDULE: ${{ github.event.schedule || inputs.zeitplan }}
           WR_NAME: ${{ github.event.workflow_run.name }}
           WR_BRANCH: ${{ github.event.workflow_run.head_branch }}
           COMMITS: ${{ toJSON(github.event.commits) }}
@@ -283,7 +281,7 @@ jobs:
   namen:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.namen == 'true' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[company-names]'))
+      needs.auswahl.outputs.namen == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || contains(github.event.head_commit.message, '[company-names]'))
     permissions:
       contents: write
     concurrency:
@@ -475,7 +473,7 @@ jobs:
   index:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.index == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || contains(github.event.head_commit.message, '[index-membership]'))
+      needs.auswahl.outputs.index == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || (github.event_name == 'schedule' || inputs.zeitplan != '') || contains(github.event.head_commit.message, '[index-membership]'))
     permissions:
       contents: write
     concurrency:
@@ -558,6 +556,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Datenzweig (Plan Neustart §3): die SPY-Reihe (Wochenkalender) waechst nur noch in data/live (marketPulse).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Musterdepots rechnen (Erzeuger)
         run: |

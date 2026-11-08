@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { inventory, loadRegistry, drift, workflowCrons } from "../../scripts/core/schedule-registry.mjs";
+import { inventory, loadRegistry, drift, workflowCrons, dispatchInputs } from "../../scripts/core/schedule-registry.mjs";
 import { leseCron, cronTrifft, faellig, takte, marke } from "../../worker-waker/src/zeitplan.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -37,7 +37,9 @@ test("SZ-2 · Wecker-Eintraege: kein Cron im Workflow, Eingang zeitplan, Marke i
       assert.ok(!workflowCrons(text).some((c) => c.cron === e.cron), f + ": Cron " + e.cron + " steht noch im Workflow (Doppelstart)");
     }
     assert.match(text, /workflow_dispatch:\s*\n\s+inputs:[\s\S]*?\n\s{6}zeitplan:\s*\n/, f + ": Eingang zeitplan fehlt");
-    assert.match(text, /^run-name: \$\{\{ inputs\.zeitplan && format\('\{0\} · Takt \{1\}', github\.workflow, inputs\.zeitplan\) \|\| '' \}\}$/m, f + ": run-name mit Marke fehlt");
+    /* Der Wecker erkennt seinen Lauf am Ende des Titels: "… · Takt <cron>" (worker-waker/src/zeitplan.mjs#marke).
+       Davor darf ein Buendel eigene Marken setzen (z. B. den Teil); ohne zeitplan gilt sein eigener Titel. */
+    assert.match(text, /^run-name: \$\{\{ inputs\.zeitplan && format\('[^']*· Takt \{(\d)\}', [^)]*inputs\.zeitplan\) \|\| .+ \}\}$/m, f + ": run-name mit Marke '· Takt {n}' am Ende fehlt");
     const ohne = text.replace(/^\s*#.*$/gm, "");
     for (const m of ohne.matchAll(/github\.event\.schedule(?! \|\| inputs\.zeitplan)/g)) assert.fail(f + ": github.event.schedule ohne inputs.zeitplan @" + m.index);
     for (const m of ohne.matchAll(/github\.event_name == 'schedule'(?! \|\| inputs\.zeitplan)/g)) assert.fail(f + ": Zeitplan-Weiche ohne inputs.zeitplan @" + m.index);
@@ -154,4 +156,27 @@ test("SZ-9 · direkt im Wecker getaktete Workflows stehen im Wecker und haben ke
     assert.ok(src.includes('"' + d.workflow + '"'), d.workflow + " fehlt im Wecker");
     if (d.workflow !== "pages-release.yml") assert.deepEqual(workflowCrons(wf(d.workflow)), [], d.workflow + ": kein GitHub-Cron neben dem Wecker");
   }
+});
+
+test("SZ-10 · der Wecker-Dispatch passt zu den Eingaengen des Workflows (sonst lehnt GitHub mit 422 ab)", () => {
+  for (const e of REG.entries.filter((x) => x.timer === "waker")) {
+    const inp = dispatchInputs(wf(e.workflow));
+    assert.ok(inp && inp.zeitplan, e.id + ": Eingang zeitplan fehlt");
+    for (const [k, v] of Object.entries(e.inputs || {})) {
+      assert.ok(inp[k], e.id + ": Eingang " + k + " gibt es im Workflow nicht");
+      if (inp[k].options) assert.ok(inp[k].options.includes(String(v)), e.id + ": " + k + "=" + v + " ist keine Option (" + inp[k].options.join(", ") + ")");
+      if (inp[k].type === "boolean") assert.equal(typeof v, "boolean", e.id + ": " + k + " ist boolean");
+    }
+    for (const [k, v] of Object.entries(inp)) {
+      if (v.required && !v.hasDefault) assert.ok(e.inputs && k in e.inputs, e.id + ": Pflichteingang " + k + " ohne Standardwert muss im Register stehen");
+    }
+  }
+});
+
+test("SZ-11 · dispatchInputs liest Block- und Fluss-Form", () => {
+  const t = "on:\n  workflow_dispatch:\n    inputs:\n      teil:\n        type: choice\n        required: true\n        options:\n          - a-b\n          - c\n      zahl: {description: 'x', default: '2'}\n      zeitplan:\n        type: string\n        default: ''\n  push:\n";
+  assert.deepEqual(dispatchInputs(t), {
+    teil: { required: true, hasDefault: false, type: "choice", options: ["a-b", "c"] },
+    zahl: { required: false, hasDefault: true, type: "string", options: null },
+    zeitplan: { required: false, hasDefault: true, type: "string", options: null } });
 });
