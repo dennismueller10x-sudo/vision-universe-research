@@ -46,7 +46,7 @@ Ein einziger Freigabeweg: **#1143** (Gate-Schema 1.1.0), dazu **#1163** für die
 | Restore aus R2 (Sitzung) | 41069696417 (`get`) | 8/8 Teile, 11.616 Dateien hash-identisch |
 | **Restore auf dem Runner** | **41073334070 (`restore`)** | `keycheck: OK`, 8/8 Teile OK, 11.616 Dateien (Log selbst geprüft) |
 
-- Workflow `quant-v13-archive.yml`, `scripts/quant/v13/archive/{transfer.sh,restore-archive.sh}`, `manifest-1.2.0.json` und `archive-pub.pem` sind auf `main` **bytegleich** mit dem Stand des Runner-Restores (Commit `5ffe147`). Manifeste und Public Key sind eingefroren (Freeze #1159).
+- Workflow `research.yml (Teil v13-archiv, vormals quant-v13-archive.yml)`, `scripts/quant/v13/archive/{transfer.sh,restore-archive.sh}`, `manifest-1.2.0.json` und `archive-pub.pem` sind auf `main` **bytegleich** mit dem Stand des Runner-Restores (Commit `5ffe147`). Manifeste und Public Key sind eingefroren (Freeze #1159).
 - Ablage: privater R2-Eimer, Präfix `research-snapshots/quant-v13/archive-1.2.0/`, Zugang nur über die Actions-Secrets `VU_HISTORY_S3_*`.
 - **Kritischer Punkt: der private Schlüssel.** Ein GitHub-Secret lässt sich nicht auslesen, nur in Workflows verwenden. Geht das Secret `V13_ARCHIVE_PRIVATE_KEY` verloren oder wird überschrieben, ist das Archiv ohne Offline-Kopie nicht mehr zu entschlüsseln. Die Datei `archive-priv.pem` lag im Container der alten Quant-Sitzung, der mit der Archivierung entfällt. #1158 und das Archiv-README dort schreiben zwar, der Schlüssel liege „beim Owner offline“. Prüfen kann das nur der Owner.
 - **Kein neuer Schlüssel.** Ein neuer Schlüssel macht die vorhandenen Teile nicht lesbar. Das Secret nicht überschreiben.

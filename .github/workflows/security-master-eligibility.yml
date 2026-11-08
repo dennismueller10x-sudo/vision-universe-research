@@ -195,7 +195,7 @@ jobs:
         if: steps.folgen.outcome == 'success' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run vorsorge-etf-universe.yml --ref main -f nur_zusatz=true
+        run: gh workflow run research.yml --ref main -f teil=etf-universum -f nur_zusatz=true
 
       - name: Ergebnis
         if: steps.gate.outputs.decision != 'COMMIT'

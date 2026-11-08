@@ -206,7 +206,7 @@ jobs:
   # erbte den Fehler (#782, #800, 19./20.10.2026).
   #
   # KOSTEN: kein Anbieterabruf. Nur scripts/vorsorge/build-etf-data.mjs (deterministisch, ohne Uhr und
-  # ohne Netz). Der Tiingo-Ingest (vorsorge-etf-universe.yml, rund zwei Anfragen je ETF) bleibt manuell.
+  # ohne Netz). Der Tiingo-Ingest (research.yml, Teil etf-universum, vormals vorsorge-etf-universe.yml; rund zwei Anfragen je ETF) bleibt manuell.
   #
   # SCHUTZ: Vor dem Commit laufen dieselben Pruefungen wie im Ingest-Lauf (Tests, assert-vorsorge-data
   # mit den Freigaberegeln, z. B. Xetra-Referenzdaten ohne Freigabe nie im veroeffentlichten Verzeichnis,
