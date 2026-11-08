@@ -1,6 +1,6 @@
 # Discover · Konzept „Reihe für Reihe“ (Netflix der Aktienwelt)
 
-Konzeptvorschlag vom 08.11.2026 für den Umbau der Discover-Startseite im CI des Redesigns 2027. Noch nicht freigegeben, noch nicht umgesetzt.
+Konzept vom 08.11.2026 für Discover (Startseite und Aktienseite) im CI des Redesigns 2027. **Vom Owner freigegeben am 08.11.2026.** Bauplan und Master-Prompt für die Umsetzung: [HANDOVER.md](HANDOVER.md).
 Präsentation online (privat): https://claude.ai/artifact/La3y9L68RsQBDoKCnuETgK
 
 | Datei | Zweck |
