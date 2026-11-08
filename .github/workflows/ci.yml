@@ -24,7 +24,7 @@ on:
       - '.github/workflows/ci.yml'
       - '.github/workflows/monitor.yml'
       - '.github/workflows/deploy.yml'
-      - '.github/workflows/vorsorge-etf-universe.yml'
+      - '.github/workflows/research.yml'
       - 'ask/**'
       - 'assets/product-icons.svg'
       - 'assets/site-navigation.css'
@@ -38,6 +38,7 @@ on:
       - 'landing/**'
       - 'quant/engines/technical/ti/ai-tools.js'
       - 'quant/tests/workflow-npx-pinned.test.mjs'
+      - 'products/**'
       - 'screener/**'
       - 'screener/engine/**'
       - 'scripts/access-gate/**'
@@ -45,10 +46,10 @@ on:
       - 'scripts/ci/**'
       - 'scripts/ci/ci-checks.json'
       - 'scripts/ci/select-checks.mjs'
-      - 'scripts/fundamental/**'
-      - 'scripts/hedgefonds/**'
-      - 'scripts/screener/**'
-      - 'scripts/screener/sic.mjs'
+      - 'products/fundamental/**'
+      - 'products/hedgefonds/**'
+      - 'products/screener/producer/**'
+      - 'products/screener/producer/sic.mjs'
       - 'scripts/supertrader/build.mjs'
       - 'scripts/vorsorge/**'
       - 'scripts/vu2/build-release.mjs'
@@ -78,9 +79,9 @@ on:
       - 'scripts/ci/**'
       - 'scripts/ci/ci-checks.json'
       - 'scripts/ci/select-checks.mjs'
-      - 'scripts/fundamental/**'
-      - 'scripts/hedgefonds/**'
-      - 'scripts/screener/**'
+      - 'products/fundamental/**'
+      - 'products/hedgefonds/**'
+      - 'products/screener/producer/**'
       - 'scripts/vorsorge/**'
       - 'scripts/vu2/production-smoke.mjs'
       - 'studio/stories/**'
@@ -294,11 +295,11 @@ jobs:
           node --check fundamental/engine/catalog.js
           node --check fundamental/engine/compare.js
           node --check fundamental/app.js
-          node --check scripts/fundamental/build-history.mjs
-          node --check scripts/fundamental/sec-freshness.mjs
-          node --check scripts/fundamental/verify-publication.mjs
+          node --check products/fundamental/producer/build-history.mjs
+          node --check products/fundamental/producer/sec-freshness.mjs
+          node --check products/fundamental/producer/verify-publication.mjs
       - name: Model and data tests
-        run: node --test "fundamental/tests/*.test.mjs"
+        run: node --test "products/fundamental/tests/*.test.mjs"
 
   # --- hedgefonds-dashboard: vormals hedgefonds-dashboard-ci.yml
   hedgefonds-dashboard:
@@ -352,7 +353,7 @@ jobs:
           PY
 
       - name: Validate fetch script syntax
-        run: python3 -m py_compile scripts/hedgefonds/fetch_edgar_data.py scripts/hedgefonds/fund_meta.py
+        run: python3 -m py_compile products/hedgefonds/producer/fetch_edgar_data.py products/hedgefonds/producer/fund_meta.py
 
       - uses: actions/setup-python@v5
         with:
@@ -362,7 +363,7 @@ jobs:
         run: python -m pip install "Pillow==12.3.0"
 
       - name: Run fetch-script logic unit tests (no network)
-        run: python3 -m unittest scripts/hedgefonds/test_fetch_edgar_data.py -v
+        run: python3 -m unittest products/hedgefonds/tests/test_fetch_edgar_data.py -v
 
   # --- landing: vormals landing-ci.yml
   landing:
@@ -448,7 +449,7 @@ jobs:
         with:
           node-version: '22'
       - name: Build screener universe from committed product data
-        run: node scripts/screener/build-universe.mjs
+        run: node products/screener/producer/build-universe.mjs
       - name: Engine, registry and universe tests
         run: node --test "screener/tests/*.test.mjs" discover/tests/navigation-theme.test.mjs
       - name: Browser QA dependencies
@@ -467,7 +468,7 @@ jobs:
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/screener/ > /dev/null && break; sleep 1; done
-          PLAYWRIGHT_PATH=/tmp/screener-qa-deps/node_modules/playwright node scripts/screener/browser-qa.mjs --url http://127.0.0.1:8765 --out /tmp/screener-evidence
+          PLAYWRIGHT_PATH=/tmp/screener-qa-deps/node_modules/playwright node products/screener/producer/browser-qa.mjs --url http://127.0.0.1:8765 --out /tmp/screener-evidence
       - name: Preserve screenshots
         if: always()
         uses: actions/upload-artifact@v4

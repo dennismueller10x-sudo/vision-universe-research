@@ -1,6 +1,6 @@
 /* =========================================================================
    VISION UNIVERSE® HEDGEFONDS — app.js
-   Liest die serverseitig erzeugten 13F-Daten (scripts/hedgefonds/
+   Liest die serverseitig erzeugten 13F-Daten (products/hedgefonds/producer/
    fetch_edgar_data.py). Kein SEC-Abruf im Browser.
 
      #/                  Start

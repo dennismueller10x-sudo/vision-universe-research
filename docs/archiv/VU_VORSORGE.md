@@ -54,7 +54,7 @@ scripts/vorsorge/
   fetch-legal-sources.sh              Primärquellen der Förderregeln (nur CI)
 .github/workflows/
   vorsorge-ci.yml                     Tests, Reproduzierbarkeit, Gates, Regeln, Hygiene
-  vorsorge-etf-universe.yml           Tiingo-Volllauf
+  research.yml (Teil etf-universum, vormals vorsorge-etf-universe.yml)           Tiingo-Volllauf
   research.yml (Teil vorsorge-recht)  Rechtsquellen laden (vormals vorsorge-legal-sources.yml)
 ```
 
@@ -235,7 +235,7 @@ QQQ −82,7 % (erholt 09/2016); EEM −63,5 % (erholt 01/2021).
 
 Quellenmatrix und Nutzungsbedingungen: `docs/ETF_PRIMARY_SOURCE_MATRIX.md`.
 
-### Datenwege (alle in GitHub Actions, `research.yml`, Teile `vorsorge-etf-*`, vormals `vorsorge-etf-sources.yml`)
+### Datenwege (alle in GitHub Actions, `research.yml`, Teil `vorsorge-etf` mit Eingabe `job` (probe/euprobe/nport/fundamentals), vormals `vorsorge-etf-sources.yml`)
 | Marker | Skript | Quelle | Ausgabe (Git) |
 |---|---|---|---|
 | `[vorsorge-etf-probe]` | `probe-etf-sources.mjs` | Nutzungsbedingungen, robots.txt, Form offener Quellen | `data/sources/etf-source-probe.json` |

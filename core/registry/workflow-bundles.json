@@ -38,6 +38,8 @@
     "ki-depots-daily.yml",
     "market-validation-data.yml",
     "supertrader-house-live.yml",
+    "technical-intelligence-build.yml",
+    "technical-world.yml",
     "vorsorge-daily-rebuild.yml"
    ]
   },
@@ -92,8 +94,17 @@
   },
   "account": {
    "purpose": "Konten, Abos, Brevo",
-   "workflow": null,
-   "replaces": []
+   "workflow": "account.yml",
+   "replaces": [
+    "account-backup.yml",
+    "account-cancellations.yml",
+    "account-db-approved.yml",
+    "account-monitor.yml",
+    "account-production-auth.yml",
+    "account-production-checks.yml",
+    "account-production-deploy.yml",
+    "account-production-stripe.yml"
+   ]
   },
   "social": {
    "purpose": "Social und Reels",
@@ -124,8 +135,12 @@
     "pattern-research-volume.yml",
     "quant-pattern-total-return-check.yml",
     "quant-portfolio-research.yml",
+    "quant-v13-archive.yml",
     "research-labor.yml",
+    "supertrader-delisting-probe.yml",
+    "supertrader-house.yml",
     "vorsorge-etf-sources.yml",
+    "vorsorge-etf-universe.yml",
     "vorsorge-legal-sources.yml"
    ]
   },
@@ -139,34 +154,10 @@
   }
  },
  "workflows": {
-  "account-backup.yml": {
-   "bundle": "account"
-  },
-  "account-cancellations.yml": {
-   "bundle": "account"
-  },
   "account-ci.yml": {
    "bundle": "ci"
   },
-  "account-db-approved.yml": {
-   "bundle": "account"
-  },
-  "account-monitor.yml": {
-   "bundle": "account"
-  },
-  "account-production-auth.yml": {
-   "bundle": "account"
-  },
   "account-production-auto.yml": {
-   "bundle": "account"
-  },
-  "account-production-checks.yml": {
-   "bundle": "account"
-  },
-  "account-production-deploy.yml": {
-   "bundle": "account"
-  },
-  "account-production-stripe.yml": {
    "bundle": "account"
   },
   "app-android-build.yml": {
@@ -274,9 +265,6 @@
   "quant-ci.yml": {
    "bundle": "ci"
   },
-  "quant-v13-archive.yml": {
-   "bundle": "research"
-  },
   "research-edge2-paper.yml": {
    "bundle": "research"
   },
@@ -313,13 +301,6 @@
   "supertrader-ci.yml": {
    "bundle": "ci"
   },
-  "supertrader-delisting-probe.yml": {
-   "bundle": "research",
-   "retireCandidate": true
-  },
-  "supertrader-house.yml": {
-   "bundle": "research"
-  },
   "supertrader-paper-2027.yml": {
    "bundle": "pipeline-daily"
   },
@@ -344,21 +325,12 @@
   "technical-ci.yml": {
    "bundle": "ci"
   },
-  "technical-intelligence-build.yml": {
-   "bundle": "pipeline-daily"
-  },
-  "technical-world.yml": {
-   "bundle": "pipeline-daily"
-  },
   "tiingo-scale.yml": {
    "bundle": "maintenance",
    "retireCandidate": true
   },
   "universe-master.yml": {
    "bundle": "pipeline-weekly"
-  },
-  "vorsorge-etf-universe.yml": {
-   "bundle": "research"
   },
   "vu2-browser-qa.yml": {
    "bundle": "ci"

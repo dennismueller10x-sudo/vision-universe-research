@@ -694,6 +694,32 @@
         "Die Firma hat mehr Geld in der Kasse als Schulden.",
         "Und der Umsatz wächst seit drei Jahren um mindestens 10 % pro Jahr."
       ]
+    },
+    {
+      "id": "fallen-angels",
+      "title": "FALLEN ANGELS",
+      "subtitle": "Starke Zahlen, aber der Kurs liegt weit unter seinem Hoch.",
+      "sort": "distanceTo52wHigh",
+      "direction": "asc",
+      "limit": 30,
+      "filter": "fundFallenAngels",
+      "memberOf": [
+        "qualitaet-wachstum",
+        "profitables-wachstum",
+        "langfristige-compounder"
+      ],
+      "maxDistanceToHigh": -0.3,
+      "require": [
+        "distanceTo52wHigh"
+      ],
+      "minMembers": 5,
+      "world": "compounder",
+      "microRange": "1J",
+      "rule": "Mitglied in QUALITÄT + WACHSTUM, PROFITABLES WACHSTUM oder LANGFRISTIGE COMPOUNDER UND Schlusskurs ≤ −30 % unter dem 52-Wochen-Hoch. Sortierung: Zahl dieser drei Reihen absteigend, dann Abstand zum Hoch (größter zuerst). Basis wie die drei Reihen (SEC-Jahresabschlüsse, Umsatz ≥ 100 Mio. $).",
+      "explain": [
+        "Steht in Qualität + Wachstum, Profitables Wachstum oder Langfristige Compounder: Umsatz wächst, die Firma verdient Geld.",
+        "Der Schlusskurs liegt mindestens 30 % unter dem Hoch der letzten 52 Wochen."
+      ]
     }
   ],
   "sectorRows": {

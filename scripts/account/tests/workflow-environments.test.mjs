@@ -30,7 +30,8 @@ const workflows = readdirSync(DIR).filter(f => f.endsWith('.yml')).map(f => ({fi
 const all = workflows.flatMap(w => w.jobs.map(j => ({...j, file: w.file})));
 
 const AUTO_ALLOWED = new Set(['account-production-auto.yml:migrationen', 'account-production-auto.yml:worker',
-  'account-production-checks.yml:lesen', 'account-backup.yml:backup']);
+  // seit dem Buendel account (08.11.2026): vormals account-production-checks.yml:lesen und account-backup.yml:backup
+  'account.yml:pruefen-lesen', 'account.yml:sicherung-backup']);
 const AUTO_SECRETS = new Set(['VU_ACCOUNT_SUPABASE_DB_URL', 'VU_ACCOUNT_SUPABASE_PUBLISHABLE_KEY', 'VU_ACCOUNT_STRIPE_READ_KEY',
   'CLOUDFLARE_API_TOKEN', 'BREVO_API_KEY']);
 const PRIVILEGED = /^VU_ACCOUNT_(SUPABASE_DB_URL|SUPABASE_SECRET_KEY|SUPABASE_ACCESS_TOKEN|BREVO_SMTP_[A-Z]+|BREVO_API_KEY|STRIPE_[A-Z_]+|BACKUP_DB_URL)$/;
@@ -73,7 +74,7 @@ test('account-auto erst nach check-auto-env; Worker nur mit Zahlungsfreigabe bei
 });
 
 test('Stripe-Lesecheck ohne Probe-Sitzung, nur mit lesendem Schluessel', () => {
-  const lesen = all.find(j => j.file === 'account-production-checks.yml' && j.name === 'lesen');
+  const lesen = all.find(j => j.file === 'account.yml' && j.name === 'pruefen-lesen');
   assert.ok(!/probe-checkout/.test(lesen.body));
   assert.ok(!lesen.secrets.includes('VU_ACCOUNT_STRIPE_SECRET_KEY'));
 });

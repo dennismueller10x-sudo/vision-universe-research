@@ -1092,6 +1092,12 @@ function attachIndexMembership(universe) {
 }
 
 const ROW_FILTERS = {
+  /* Fallen Angels (Konzept „Reihe für Reihe“, PR 4, Entscheidung 1): Mitglied in mindestens einer
+     der Reihen config.memberOf (Qualität + Wachstum, Profitables Wachstum, Langfristige Compounder)
+     UND Schlusskurs mindestens 30 % unter dem 52-Wochen-Hoch. */
+  fundFallenAngels: (s, config, memberCount) => isNum(s.metrics.distanceTo52wHigh) &&
+    s.metrics.distanceTo52wHigh <= (isNum(config.maxDistanceToHigh) ? config.maxDistanceToHigh : -0.30) &&
+    memberCount(s.symbol) > 0,
   strongest: (s) => !!(s.qualification && s.qualification.strongest),
   indexMember: (s, config) => !!(s.qualification && s.qualification.strongest) &&
     Array.isArray(s.indexMemberships) && s.indexMemberships.indexOf(config.indexId) !== -1,
@@ -1174,14 +1180,28 @@ function rankingReason(s, config, rank, of, scoreKey) {
   };
 }
 
+/* Alle Treffer einer Reihe (Symbole), je Universum einmal gerechnet - fuer Reihen, deren Regel
+   die Mitgliedschaft in anderen Reihen liest (config.memberOf). */
+const MEMBER_CACHE = new Map();
+function rowMembers(universe, rowId) {
+  const key = universe.universeId + ":" + rowId;
+  if (!MEMBER_CACHE.has(key)) {
+    const cfg = ROWS.find((r) => r.id === rowId);
+    if (!cfg) throw new Error("memberOf: unbekannte Reihe " + rowId);
+    MEMBER_CACHE.set(key, new Set(buildRow(universe, Object.assign({}, cfg, { limit: 0 })).members));
+  }
+  return MEMBER_CACHE.get(key);
+}
 function buildRow(universe, config) {
+  const sets = (config.memberOf || []).map((id) => rowMembers(universe, id));
+  const memberCount = (sym) => sets.reduce((n, set) => n + (set.has(sym) ? 1 : 0), 0);
   const pool = universe.stocks.filter((s) => {
     if (s.discoveryEligible === false) return false;
     /* V4 §21: Qualifikation zuerst - Kurs-Reihen zeigen nur liquide,
        gehandelte Titel mit Historie; ein eingefrorener Kurs an einem
        "Jahreshoch" ist keine Entdeckung. */
     if (config.qualify === true && !(s.qualification && s.qualification.strongest)) return false;
-    if (config.filter && ROW_FILTERS[config.filter] && !ROW_FILTERS[config.filter](s, config)) return false;
+    if (config.filter && ROW_FILTERS[config.filter] && !ROW_FILTERS[config.filter](s, config, memberCount)) return false;
     return (config.require || []).every((f) => isNum(s.metrics[f]));
   });
   /* Zweitschluessel, damit eine Zeile nicht an Gleichstaenden haengt: bei
@@ -1192,6 +1212,11 @@ function buildRow(universe, config) {
     /* Eine Zeile, die "NEW 52-WEEK HIGHS" heisst, beginnt mit den Titeln,
        die tatsaechlich eines gemacht haben - nicht mit denen, die dem Hoch
        rechnerisch am naechsten sind. */
+    /* Fallen Angels: erst die Zahl der Quell-Reihen (absteigend), dann die Sortierung der Reihe. */
+    if (sets.length) {
+      const d = memberCount(b.symbol) - memberCount(a.symbol);
+      if (d) return d;
+    }
     if (config.signalFirst) {
       const asig = a.signals[config.signalFirst] === true;
       const bsig = b.signals[config.signalFirst] === true;

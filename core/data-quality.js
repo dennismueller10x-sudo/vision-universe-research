@@ -317,7 +317,7 @@
     if (!meta) fail.push("technical/data/meta.json fehlt");
     else {
       if (materializedAt && meta.generatedFrom && meta.generatedFrom < materializedAt)
-        fail.push("Datensatz aus der Materialisierung " + meta.generatedFrom + ", vorliegend ist " + materializedAt + " (Erzeuger technical-world.yml nicht gelaufen)");
+        fail.push("Datensatz aus der Materialisierung " + meta.generatedFrom + ", vorliegend ist " + materializedAt + " (Erzeuger pipeline-daily.yml, Teil technical-world, nicht gelaufen)");
       var lag = lagFn(meta.asOf, expectedSession);
       if (lag !== null && lag > maxLag) fail.push("Stichtag " + meta.asOf + " liegt " + lag + " Sitzungen hinter " + expectedSession);
     }

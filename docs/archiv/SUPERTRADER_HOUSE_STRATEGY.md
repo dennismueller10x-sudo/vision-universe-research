@@ -68,7 +68,7 @@ Festgelegt in `scripts/supertrader/house/PREREGISTRATION-HS1.json`, eingefroren 
 | `[house:dev]` | Entwicklungszeitraum, alle Reihen |
 | `[house:holdout]` | Holdout, nur eingefroren |
 
-Workflow: `.github/workflows/supertrader-house.yml`. Ergebnisse werden für zwei Schlüssel verschlüsselt:
+Workflow: `research.yml (Teil hausstrategie-forschung, vormals supertrader-house.yml)`. Ergebnisse werden für zwei Schlüssel verschlüsselt:
 - Eigentümer: `validation/results-public-key.pem`;
 - Arbeitssitzung: `house/session-public-key.pem`.
 

@@ -1,7 +1,7 @@
 {
  "schema": "vu-modules-index-1",
  "generatedBy": "scripts/core/build-modules.mjs",
- "note": "Erzeugt aus <produkt>/module.json; nicht von Hand aendern.",
+ "note": "Erzeugt aus products/<id>/module.json; nicht von Hand aendern.",
  "modules": [
   {
    "schema": "vu-module-2",
@@ -40,8 +40,13 @@
     "analystRatings"
    ],
    "reads": [],
+   "producers": [
+    "products/analysten/producer/fetch-consensus.mjs",
+    "products/analysten/producer/fetch_analyst_ratings.py",
+    "products/analysten/producer/probe-consensus.mjs"
+   ],
    "tests": [
-    "core/tests/analysten-summary.test.mjs"
+    "products/analysten/tests/*.test.mjs"
    ]
   },
   {
@@ -78,6 +83,27 @@
    "data": [],
    "reads": [],
    "tests": []
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "company-intelligence",
+   "label": "Company Intelligence",
+   "status": "BETA",
+   "route": "/company-intelligence/",
+   "access": "intern",
+   "navigation": null,
+   "data": [
+    "companyIntelligence"
+   ],
+   "reads": [
+    "companyMaster"
+   ],
+   "producers": [
+    "scripts/company_intelligence/cli.py"
+   ],
+   "tests": [
+    "scripts/company_intelligence/tests/*.test.mjs"
+   ]
   },
   {
    "schema": "vu-module-2",
@@ -288,8 +314,14 @@
    "reads": [
     "fundamentalsConsumer"
    ],
+   "producers": [
+    "products/fundamental/producer/build-history.mjs",
+    "products/fundamental/producer/sec-freshness.mjs",
+    "products/fundamental/producer/verify-publication.mjs",
+    "products/fundamental/producer/coverage-report.mjs"
+   ],
    "tests": [
-    "fundamental/tests/*.test.mjs"
+    "products/fundamental/tests/*.test.mjs"
    ]
   },
   {
@@ -354,7 +386,12 @@
    },
    "data": [],
    "reads": [],
-   "tests": []
+   "producers": [
+    "products/hedgefonds/producer/fetch_edgar_data.py"
+   ],
+   "tests": [
+    "products/hedgefonds/tests/test_fetch_edgar_data.py"
+   ]
   },
   {
    "schema": "vu-module-2",
@@ -408,6 +445,9 @@
    },
    "data": [],
    "reads": [],
+   "producers": [
+    "products/morning/producer/build-morning.mjs"
+   ],
    "tests": []
   },
   {
@@ -428,6 +468,9 @@
     "news"
    ],
    "reads": [],
+   "producers": [
+    "products/news/producer/update_news.mjs"
+   ],
    "tests": []
   },
   {
@@ -613,6 +656,9 @@
     "fundamentalsConsumer",
     "indexMembership",
     "companyNames"
+   ],
+   "producers": [
+    "products/screener/producer/build-universe.mjs"
    ],
    "tests": [
     "screener/tests/*.test.mjs"
@@ -862,10 +908,6 @@
   {
    "dir": "willkommen",
    "reason": "Willkommensseite der Nutzerfuehrung"
-  },
-  {
-   "dir": "company-intelligence",
-   "reason": "Steckbrief folgt im eigenen PR: die Company-Intelligence-CI klassifiziert Regressionen nur bei unveraenderten Quant/Discover/Supertrader-Pfaden"
   }
  ]
 }

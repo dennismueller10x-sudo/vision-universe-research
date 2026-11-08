@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { workflowPart } from '../../scripts/ci/lib/workflow-part.mjs';
 import { presignUrl } from '../../scripts/quant/v13/archive/presign.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -60,7 +61,7 @@ test('archive encryption uses a hex passphrase line only (no binary key file for
   const dir = path.join(ROOT, 'scripts/quant/v13/archive');
   const build = fs.readFileSync(path.join(dir, 'build-archive.sh'), 'utf8');
   const seal = fs.readFileSync(path.join(dir, 'seal-part.sh'), 'utf8');
-  const wf = fs.readFileSync(path.join(ROOT, '.github/workflows/quant-v13-archive.yml'), 'utf8');
+  const wf = workflowPart(ROOT, 'research.yml', 'v13-archiv'); /* seit Buendel research, vormals quant-v13-archive.yml */
   for (const t of [build, seal, wf]) assert.ok(!/openssl rand -out/.test(t));
   assert.match(seal, /openssl rand -hex 32 >/);
   assert.match(build, /seal-part\.sh/);
@@ -104,7 +105,7 @@ test('reader pin resolves both generations against their committed manifests; re
   assert.throws(() => resolveReader(pin, read, '1.1.0'), /GENERATION_UNKNOWN/);
   assert.throws(() => resolveReader({ ...pin, generations: { ...pin.generations, '2.0.0': { ...pin.generations['2.0.0'], prefix: a.prefix } } }, read, '2.0.0'), /PREFIX_MISMATCH/);
   assert.throws(() => resolveReader({ ...pin, generations: { ...pin.generations, '2.0.0': { ...pin.generations['2.0.0'], manifest: a.manifest } } }, read, '2.0.0'), /MANIFEST_VERSION_MISMATCH/);
-  const wf = fs.readFileSync(path.join(ROOT, '.github/workflows/quant-v13-archive.yml'), 'utf8');
+  const wf = workflowPart(ROOT, 'research.yml', 'v13-archiv'); /* seit Buendel research, vormals quant-v13-archive.yml */
   assert.match(wf, /reader-generation\.mjs >> "\$GITHUB_OUTPUT"/);
   assert.equal((wf.match(/r2-restore\.mjs[^\n]*\n?[^\n]*--manifest "\$READ_MANIFEST" --prefix "\$READ_PREFIX"/g) || []).length, 2);
   assert.ok(!/r2-restore\.mjs[^\n]*manifest-1\.2\.0/.test(wf.replace(/\\\n\s*/g, ' ')), 'kein Leser fest auf 1.2.0');

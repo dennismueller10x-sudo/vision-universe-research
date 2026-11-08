@@ -12,17 +12,17 @@ ist nötig – Begründung unten.
 | Website (research.visionuniverse.de) | GitHub Pages / Cloudflare Pages | Merge nach `main` | **keine** |
 | Konto-Worker ausrollen (Code, öffentliche Konfiguration) | `account-production-auto.yml` → `worker` | Merge nach `main` (Worker/Migrationen) | **keine** |
 | Nicht destruktive Migration | `account-production-auto.yml` → `migrationen` | Merge nach `main` | **keine** (automatische Prüfungen, s. u.) |
-| Stripe, Brevo, Worker lesend prüfen | `account-production-checks.yml` | täglich 05:41 UTC, von Hand | **keine** |
-| Datenbank-Sicherung (verschlüsselt) | `account-backup.yml` | täglich | **keine** |
+| Stripe, Brevo, Worker lesend prüfen | `account.yml` (Teil `pruefen`) | täglich 05:41 UTC, von Hand | **keine** |
+| Datenbank-Sicherung (verschlüsselt) | `account.yml` (Teil `sicherung`) | täglich | **keine** |
 | **Zahlungen öffnen oder Schutz entfernen**: Checkout erweitern (`off`→`testers`→`public`), Live-Abrechnung **ein**, Kündigungsautomatik **ein**, Stripe Tax **aus** | `account-production-auto.yml` → `zahlungsfreigabe` | nur bei genau so einer Änderung gegenüber dem laufenden Worker | **Owner** (`account-production`) |
 | Einschränken oder geprüften Schutz hinzufügen: Checkout zurück (`public`→`testers`→`off`), Live-Abrechnung aus, Kündigungsautomatik aus, **Stripe Tax ein**, Rechtsfassung bestätigen (allein ohne Zahlungswirkung) | `account-production-auto.yml` → `worker` | Merge nach `main` | **keine** |
 | **Preis ändern** (neue Abschlüsse; bestehende Abos behalten ihren Preis) | keiner – Tarifverwaltung `/konto/admin/tarife/` ([TARIFVERWALTUNG.md](TARIFVERWALTUNG.md)) | Betreiber mit Rolle `pricing_admin` | **ausdrückliche Bestätigung in der Oberfläche** (Vorschau, Passwort, Haken), keine GitHub-Freigabe |
 | **Interne Backtest-Vorschau einschalten** (`VU_BACKTEST_REVIEW_ENABLED` → `"true"`) | `account-production-auto.yml` → `worker` (nach Merge) | nur per eigenem PR | **Owner** (ausdrückliche Zustimmung im PR; standardmäßig `"false"`) |
 | **Rolle `backtest_reviewer` vergeben** | keiner – SQL über den Datenbankzugang des Betriebs | von Hand | **Owner** (ausdrückliche Zustimmung, wie `pricing_admin`) |
-| **Stripe-Produkte, Portal, Webhook, Zahlungsmethoden** (Ersteinrichtung) | `account-production-stripe.yml` | von Hand | **Owner** (`account-production`, `account-dev`) |
-| **Secrets** setzen/erneuern (Supabase, Stripe, Brevo) | `account-production-deploy.yml` | von Hand | **Owner** (`account-dev`, `account-production`) |
-| **Destruktive Migration** (DROP, TRUNCATE, Kundendaten ändern, RLS aus, Rollen, Preise) | `account-db-approved.yml` (Eingabe `DESTRUKTIV`) | von Hand | **Owner** (`account-dev`) |
-| **Kündigungen ausführen**, Supabase Auth | `account-cancellations.yml`, `account-production-auth.yml` | von Hand | **Owner** (`account-dev`) |
+| **Stripe-Produkte, Portal, Webhook, Zahlungsmethoden** (Ersteinrichtung) | `account.yml` (Teil `stripe`) | von Hand | **Owner** (`account-production`, `account-dev`) |
+| **Secrets** setzen/erneuern (Supabase, Stripe, Brevo) | `account.yml` (Teil `ausrollen`) | von Hand | **Owner** (`account-dev`, `account-production`) |
+| **Destruktive Migration** (DROP, TRUNCATE, Kundendaten ändern, RLS aus, Rollen, Preise) | `account.yml` (Teil `db-freigabe`) (Eingabe `DESTRUKTIV`) | von Hand | **Owner** (`account-dev`) |
+| **Kündigungen ausführen**, Supabase Auth | `account.yml` (Teil `kuendigungen`), `account.yml` (Teil `auth`) | von Hand | **Owner** (`account-dev`) |
 
 Code-Änderungen am Abrechnungscode sind **keine** Freigabesache: Sie laufen wie jeder Code über Tests und CI. Freigabepflichtig
 ist, was Geld bewegt oder freischaltet – und das steht in der Konfiguration, nicht im Code.
@@ -98,7 +98,7 @@ Bis Schritt 1–2 erledigt sind, rollt die Automatik nichts aus (Hinweis im Lauf
 ## Bewertung PR #1063
 
 Übernommen: Umgebung `account-auto` mit Branch-Beschränkung, `migrate-production.mjs` (Integritätsprobe),
-`account-db-approved.yml`, Wächter-Test, Stilllegung der Dev-Workflows, Freigabeprüfung in `account-cancellations.yml`.
+`account.yml` (Teil `db-freigabe`), Wächter-Test, Stilllegung der Dev-Workflows, Freigabeprüfung in `account.yml` (Teil `kuendigungen`).
 Nicht übernommen: die Erkennung „zahlungsrelevant“ über Dateinamen und Suchwörter seit dem letzten Lauf – sie hätte fast jede
 Worker-Änderung freigabepflichtig gemacht (das Problem bliebe); ersetzt durch den Vergleich der Schalter mit dem laufenden
 Worker. Ebenso nicht: das zusätzliche Stripe-Produktmerkmal `vu_public_checkout` – die Freigabe des öffentlichen Checkouts ist

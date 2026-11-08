@@ -103,7 +103,7 @@ test("UF-3 · der Folge-Schritt laeuft nach jeder uebernommenen Eignung, nutzt d
   assert.ok(DISPATCH && /steps\.folgen\.outcome == 'success'/.test(DISPATCH.body), "Materialisierung nur nach erfolgreicher Folge");
   /* Verbraucher ausserhalb der Hygienepruefung: Vorsorge las Reihen ausgeschiedener ETFs aus den Discover-Reihen (05.11.2026) */
   const vorsorge = steps(OWNER_SRC).find((s) => /^Umfangsfolgen - Vorsorge/.test(s.name));
-  assert.ok(vorsorge && /gh workflow run vorsorge-etf-universe\.yml[^\n]*nur_zusatz=true/.test(vorsorge.body), "Vorsorge-Ingest fehlt in der Folgekette");
+  assert.ok(vorsorge && /gh workflow run research\.yml[^\n]*-f teil=etf-universum[^\n]*nur_zusatz=true/.test(vorsorge.body), "Vorsorge-Ingest fehlt in der Folgekette");
   assert.match(vorsorge.body, /steps\.folgen\.outcome == 'success'/);
 });
 

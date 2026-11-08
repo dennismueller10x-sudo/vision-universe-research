@@ -1,6 +1,6 @@
 # Technical: Betriebszeit des Screener-Datensatzes
 
-Stand 30.10.2026. Betrifft `.github/workflows/technical-world.yml`. Der Erzeuger (`build-screener.mjs`) und die Daten bleiben unverändert.
+Stand 30.10.2026. Betrifft `.github/workflows/technical-world.yml` (seit 08.11.2026 Teil `technical-world` in `pipeline-daily.yml`; Ausloeser und Schritte unveraendert). Der Erzeuger (`build-screener.mjs`) und die Daten bleiben unverändert.
 
 ## 1. Befund
 

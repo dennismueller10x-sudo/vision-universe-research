@@ -13,7 +13,7 @@
 // Ohne erreichbaren Commit (flacher Checkout) wird mit Begruendung uebersprungen.
 //
 // Screener-Universum: VU_SCREENER_UNIVERSE=<pfad> oder screener/data/universe-US_REAL.json
-// (node scripts/screener/build-universe.mjs bzw. das veroeffentlichte Artefakt).
+// (node products/screener/producer/build-universe.mjs bzw. das veroeffentlichte Artefakt).
 import test from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
