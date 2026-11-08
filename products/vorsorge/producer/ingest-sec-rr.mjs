@@ -25,7 +25,7 @@ import { createInterface } from "node:readline";
 import { pipeline } from "node:stream/promises";
 import { Readable } from "node:stream";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const WORK = join(root, ".market-cache/vorsorge/rr");
 const UA = process.env.SEC_USER_AGENT || "VisionUniverseResearch info@visionuniverse.de";
 const argv = process.argv.slice(2);

@@ -32,7 +32,7 @@ import { Readable } from "node:stream";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const F = require(join(root, "vorsorge/engines/etf-fundamentals.js"));
 const WORK = join(root, ".market-cache/vorsorge/firds");
 const UA = "VisionUniverse-Research/1.0 (+https://research.visionuniverse.de)";

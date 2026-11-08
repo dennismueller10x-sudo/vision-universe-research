@@ -21,7 +21,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const D = join(root, "vorsorge/data");
 const errors = [], warnings = [];
 const read = (p) => { try { return JSON.parse(readFileSync(p, "utf8")); } catch (e) { errors.push("INVALID_JSON " + p.replace(root + "/", "") + ": " + e.message); return null; } };

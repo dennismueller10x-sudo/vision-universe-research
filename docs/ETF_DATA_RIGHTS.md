@@ -1,7 +1,7 @@
 # ETF-Daten: Nutzungsrechte je Quelle
 
 Stand: 05.10.2026. Grundlage: Prüfläufe in GitHub Actions
-(`scripts/vorsorge/probe-etf-sources.mjs`, `scripts/vorsorge/probe-eu-etf-sources.mjs`,
+(`products/vorsorge/producer/probe-etf-sources.mjs`, `products/vorsorge/producer/probe-eu-etf-sources.mjs`,
 Ergebnisse in `vorsorge/data/sources/etf-source-probe.json` und `etf-eu-source-probe.json`)
 sowie Recherche der Nutzungsbedingungen. Lokal sind die meisten Domains gesperrt; alle
 Abrufe liefen in GitHub Actions.

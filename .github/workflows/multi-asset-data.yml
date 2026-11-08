@@ -377,6 +377,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      # Datenzweig (core/registry/data-branch.json, marketPulse, BRANCH_ONLY): Reihen und Snapshot wachsen
+      # nur noch in data/live. Der Lauf baut auf dem Stand dort auf; Faktorzeilen und Intraday-Snapshots
+      # anderer Datenarten liest Market Pulse ebenfalls wie ausgeliefert.
+      - name: Bisheriger Stand aus dem Datenzweig
+        run: scripts/ci/seed-data-branch.sh alle
       - name: EIA-Primaertabellen lesbar machen (.xls -> CSV, Arbeitsstand)
         run: |
           pip install --quiet xlrd==2.0.1
@@ -412,21 +417,19 @@ jobs:
             }
             console.log("Auslieferungspfad sauber (" + walk(dir).length + " Dateien).");
           '
-      - name: Ergebnis in den Zweig
-        run: |
-          bash scripts/ci/commit-and-push.sh \
-            "Multi-Asset-Daten aktualisiert (automatischer Lauf)" \
-            quant/data/market/multi-asset
+      - name: Ergebnis in den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live quant/data/market/multi-asset
       # Market Pulse (Markets 2.0): deskriptiv, deterministisch, ohne Score.
       # Liest nur, was im Repository liegt (Multi-Asset-Reihen, Faktorzeilen,
       # Intraday-Snapshots) - kein Anbieterabruf. Nach dem Daten-Commit, damit
       # ein Fehler hier die Multi-Asset-Daten nicht aufhaelt.
       - name: Market Pulse aus kanonischen Daten
         run: node scripts/market/build-market-pulse.mjs
-      - name: Market Pulse in den Zweig
+      - name: Market Pulse in den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
         run: |
-          bash scripts/ci/commit-and-push.sh \
-            "Market Pulse aktualisiert (automatischer Lauf)" \
+          scripts/ci/push-data-branch.sh data/live \
             quant/data/market/intelligence/market-pulse.json \
             quant/data/market/intelligence/market-pulse-history.json
 
@@ -449,11 +452,9 @@ jobs:
         env:
           PROOF_SITE: ${{ inputs.proof_site }}
         run: node scripts/quality/verify-multi-asset.mjs --site="$PROOF_SITE" --publish
-      - name: Nachweis in den Zweig
-        if: always()
+      - name: Nachweis in den Datenzweig
+        if: always() && github.ref == 'refs/heads/main'
         run: |
           if [ -f quant/data/market/multi-asset/production-proof.json ]; then
-            bash scripts/ci/commit-and-push.sh \
-              "Multi-Asset Production Proof gegen die ausgelieferte Seite (automatischer Lauf)" \
-              quant/data/market/multi-asset/production-proof.json
+            scripts/ci/push-data-branch.sh data/live quant/data/market/multi-asset/production-proof.json
           fi
