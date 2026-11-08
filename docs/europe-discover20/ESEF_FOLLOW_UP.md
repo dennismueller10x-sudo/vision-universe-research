@@ -27,3 +27,32 @@ Independent review approved the nine new wrapper tests; the unchanged mapper's 1
 ## Independent identity review
 
 The separate identity producer's 18 tests passed independently. Its original CSV/GLEIF readers now require exact GLEIF ID/attributes agreement, complete cardinality and both ISIN-scoped pagination links. Explicit conflicting provider LEIs stay in review. The issuer-owned Nordea table projects its ordinary ISIN and country without its ADR identifier, ADR prices or a guessed LEI. Nokia and UPM issuer-notice bridges preserve the dated class relationship and independently captured current entity evidence; they assert no GLEIF ISIN-query relationship, currency transfer or fiscal readiness.
+
+## Plan: Fundamentaldaten für die 449 Discover-Titel (Strang M, 08.11.2026)
+
+Owner 08.11.: Europa zumindest in Discover, Screener und Fundamental zeigen. Entscheidung: **nur Plan, keine Umsetzung in Strang M**, weil keine Quelle mit geklärten Nutzungsrechten Deutschland abdeckt.
+
+**Ist-Stand.** 10 der 449 Titel haben Basiszahlen (`cardFundamentals` = `BASIC_ISSUER_FACTS`, 17 ESEF-Werte aus der französischen OAM). 0 von 319 deutschen Titeln. Alle 449 haben eine LEI. Die Aktienseite zeigt diese Zahlen schon unter „Fundamentale Basisinformationen“; die Fundamental-App (`/fundamental/`) liest nur SEC-Daten.
+
+**Stichprobe 08.11.2026** (je Emittent ein Aufruf `filings.xbrl.org/api/entities/<LEI>/filings`, 440 Emittenten, kostenlos, ohne Konto, keine Kurs- oder Lizenzdaten gespeichert):
+
+| Emittenten | mit ESEF-Bericht | ohne | Abruffehler | jüngstes Geschäftsjahr |
+|---|---:|---:|---:|---|
+| nicht deutsch (129) | 106 | 15 | 8 | 65 × 2025, 19 × 2026, 17 × 2024 |
+| deutsch (311) | 1 | 293 | 17 | 1 × 2023 |
+
+Deutsche ESEF-Berichte liegen im **Unternehmensregister** (amtliches OAM) und auf den Investor-Relations-Seiten der Emittenten, nicht in der XBRL-International-Sammlung.
+
+**Rechte.** Für keine der Quellen sind die Nutzungsbedingungen geklärt: `filings.xbrl.org/about` antwortet 404, eine Lizenz für Daten oder API ist nicht auffindbar. Das Unternehmensregister lehnt automatisierte Abrufe ab (HTTP 403) und muss von einer Person gelesen werden. Zahlen aus Pflichtveröffentlichungen sind Fakten. Die Pakete selbst bleiben ohne Klärung privat (keine Rohdaten committen).
+
+**Wege, Aufwand und Abdeckung**
+
+| Weg | Abdeckung (Titel) | davon DE | Aufwand | Voraussetzung |
+|---|---:|---:|---|---|
+| A. Französische OAM (vorhanden) | 10 | 0 | erledigt | – |
+| B. `filings.xbrl.org` xBRL-JSON: Umsatz, Ergebnis, operativer Cashflow je LEI, Konzern, letztes Geschäftsjahr; Prüfungen wie der vorhandene Mapper (LEI-Kontext, Periode, Einheit, Vorzeichen) | ~110 | ~1 | 2–3 PR-Tage: Erzeuger, Workflow monatlich, Tests, Anzeige auf der Aktienseite | Nutzungsbedingungen von XBRL International schriftlich geklärt |
+| C. Unternehmensregister | bis 319 | bis 319 | unklar: kein API, automatisierter Abruf gesperrt | Erlaubnis oder Datenlizenz des Bundesanzeiger Verlags: **Anfrage nötig** |
+| D. ESEF-ZIP von den IR-Seiten der Emittenten (offiziell von den Emittenten veröffentlicht) | DAX/MDAX/SDAX ~127, weitere nach Aufwand | ~127 | hoch: Link-Liste je Emittent pflegen (jährlich), 1–2 Wochen für 127 | keine; Links je Emittent manuell prüfen |
+| E. Fundamental-App für Europa öffnen | – | – | 1–2 PR-Tage | erst, wenn B oder D Zahlen liefert |
+
+**Empfehlung.** Zuerst B klären (eine E-Mail an XBRL International; bei Zustimmung ~110 Titel ohne neuen kostenpflichtigen Anbieter). Für Deutschland D für DAX, MDAX und SDAX (127 Titel), weil es ohne Anfrage und ohne Anbieter geht, aber Pflegeaufwand hat. C nur, wenn der Owner die Lizenzfrage stellt. Bis dahin bleibt die Aktienseite bei „Fundamentale Basisdaten für diese Aktie noch nicht verfügbar.“ Quant bleibt für Europa gesperrt (Plan §11, keine Modelländerung).
