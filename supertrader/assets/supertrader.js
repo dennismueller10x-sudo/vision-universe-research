@@ -1596,7 +1596,7 @@
   }
 
   /* ============================================================= BOOT */
-  var NEED = { home: ['registry', 'signals', 'market', 'pilot', 'replay', 'trend52'], strategies: ['registry', 'signals', 'market', 'pilot', 'trend52'], strategy: ['registry', 'signals', 'market', 'pilot', 'sources', 'backtests', 'portfolio', 'trend52'], signals: ['registry', 'signals', 'market'], stock: ['registry', 'signals', 'market', 'portfolio', 'trend52'], backtests: ['registry', 'signals', 'market', 'backtests', 'pilot'], replay: ['registry', 'signals', 'market', 'replay'], sources: ['registry', 'signals', 'market', 'sources'], house: ['registry', 'signals', 'market', 'house'] };
+  var NEED = { home: ['registry', 'signals', 'market', 'pilot', 'replay', 'trend52'], strategies: ['registry', 'signals', 'market', 'pilot', 'trend52'], strategy: ['registry', 'signals', 'market', 'pilot', 'sources', 'backtests', 'portfolio', 'trend52'], signals: ['registry', 'signals', 'market'], stock: ['registry', 'signals', 'market', 'trend52'], backtests: ['registry', 'signals', 'market', 'backtests', 'pilot'], replay: ['registry', 'signals', 'market', 'replay'], sources: ['registry', 'signals', 'market', 'sources'], house: ['registry', 'signals', 'market', 'house'] };
   var FILE = { registry: 'registry.json', signals: 'signals.json', market: 'market.json', backtests: 'backtests.json', pilot: 'pilot-backtest.json', replay: 'replay.json', sources: 'sources.json', portfolio: 'portfolio.json', trend52: 'trend52.json', house: 'ledger/VU_HOUSE_HS4_V03.json' };
   var need = NEED[page] || NEED.home;
   /* Signale nur so weit laden, wie die Seite sie braucht (vorher 3,3 MB auf
@@ -1674,9 +1674,15 @@
         R(D, redesignContext());
         return;
       }
-      chrome();
-      ({ home: renderHome, strategies: renderStrategies, strategy: renderStrategy, signals: renderSignals, stock: renderStock, backtests: renderBacktests, replay: renderReplay, sources: renderSources, house: renderHouse }[page] || renderHome)(D);
-      mountResearch();
+      /* Aktienseite: die neue Ansicht braucht portfolio.json nicht (194 KB, kostete den Kurs im Kopf Zeit); nur die
+         bisherige Ansicht (lensBlock/portfolioCell) liest es und laedt es deshalb erst hier nach. */
+      return (page === 'stock' && !('portfolio' in D) ? load('portfolio').catch(function () { return null; }).then(function (p) {
+        D.portfolio = p && window.VUUI && window.VUUI.neutralSources ? window.VUUI.neutralSources(p) : p;
+      }) : Promise.resolve()).then(function () {
+        chrome();
+        ({ home: renderHome, strategies: renderStrategies, strategy: renderStrategy, signals: renderSignals, stock: renderStock, backtests: renderBacktests, replay: renderReplay, sources: renderSources, house: renderHouse }[page] || renderHome)(D);
+        mountResearch();
+      });
     });
   }).catch(function (e) {
     main.innerHTML = '';
