@@ -44,11 +44,11 @@ Systemzustand der Daten: `node scripts/core/system-health.mjs`.
 ## Offene Risiken
 
 1. **Social-Workflows** (eigener Workstream) haben weiter nackte Pushes und interpolierte Eingaben:
-   - `social-cloudflare.yml` (3 Stellen)
-   - `social-publish-candidate.yml`
+   - `social.yml, Teil cloudflare (vormals social-cloudflare.yml)` (3 Stellen)
+   - `social.yml, Teil kandidat (vormals social-publish-candidate.yml)`
    - `social-external-*`
    - `social-orchestrator.yml`
-   - `social-resume-verified-web.yml`
+   - `social.yml, Teil web-fortsetzen (vormals social-resume-verified-web.yml)`
 2. **`discover/data/`** wird von sechs Workflows in fünf Gruppen geschrieben. `build-discover-data.mjs` löscht und baut das Verzeichnis neu.
    Konflikte enden laut, aber der Lauf ist dann verloren. Ziel: ein einziger Discover-Build am Ende jeder Kette.
 3. **Warteschlangen-Semantik:** Je Gruppe gibt es einen laufenden und einen wartenden Lauf. Ein neuer wartender verdrängt den älteren.

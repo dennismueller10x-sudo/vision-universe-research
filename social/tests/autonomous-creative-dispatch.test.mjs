@@ -11,6 +11,7 @@
    Der teure Teil ist nicht der Dispatch. Der teure Teil ist der
    Dispatch, den niemand beschlossen hat.
    ========================================================================= */
+import { workflowPart } from "../../scripts/ci/lib/workflow-part.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -359,7 +360,7 @@ test("AD24 · DEPLOY_REQUEST liegt nicht mehr im Repository", () => {
 test("AD25 · Ohne die Datei deployt ein Push nicht", () => {
   /* Die Entscheidung steht im Workflow und nicht in einer Erinnerung:
      ohne Anforderungsdatei faellt die Betriebsart auf Preflight. */
-  const cf = readFileSync(".github/workflows/social-cloudflare.yml", "utf8");
+  const cf = workflowPart(".", "social.yml", "cloudflare"); /* seit Buendel social (vormals social-cloudflare.yml) */
   assert.match(cf, /Push ohne DEPLOY_REQUEST — nur Preflight/);
   /* Und ein Deploy per Dispatch verlangt weiterhin die getippte
      Bestaetigung. Seit #421 ueber env statt Inline-Ausdruck: die Variable
