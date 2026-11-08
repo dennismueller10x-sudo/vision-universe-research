@@ -1,6 +1,6 @@
 # Ungenutzte Dateien – E7
 
-Analysierter Commit: `a5dd55cf86db673d132a16d3e85acfe2175d20e2`.
+Analysierter Commit: `3752fd8580d4047392de7efef3de1c01271a583a`.
 
 ## Methode und Grenzen
 
@@ -10,7 +10,7 @@ Alle versionierten Dateien sind Graphknoten. HTML (script/link/fetch und Navigat
 
 Die Einzelliste umfasst alle Dateien außerhalb der geschützten Bereiche, auch Konfiguration, Dokumentation und Evidence. Daten, Assets, App, Account-Worker, Forschung und Recht bleiben geschützt. Konfiguration und Dokumentation liefern zusätzliche Verweise. Dateninhalte und Binärdateien werden nicht als Quelltext gelesen. Dies ist eine Eingangsgrad-Analyse, keine Erreichbarkeitsanalyse: unbenutzte Zyklen werden nicht erkannt. Dynamische Pfade, Shell-Variablen, HTML-base, externe Aufrufe, Bookmarks und andere Deployments sind nicht vollständig beweisbar.
 
-Knoten: 86704; gelesene Textquellen: 10346; Dateien außerhalb Tabu: 17513 (davon 8106 Code/Seiten/Skripte); davon ohne eingehende Verweise: 1; nur breite Verzeichnis-/Glob-Verweise: 1295; geschützte Knoten ohne Verweise: 0 (keine Löschkandidaten).
+Knoten: 86712; gelesene Textquellen: 10354; Dateien außerhalb Tabu: 17521 (davon 8116 Code/Seiten/Skripte); davon ohne eingehende Verweise: 1; nur breite Verzeichnis-/Glob-Verweise: 1299; geschützte Knoten ohne Verweise: 0 (keine Löschkandidaten).
 
 **Keine automatische Löschfreigabe.** Fehlender Verweis, ein 404 oder Ausschluss vom Pages-Build allein beweist keine Nichtnutzung. Bei Zweifel bleibt die Datei.
 
@@ -24,11 +24,11 @@ Größenvergleich gegen `e3e43e723a59ad53507989f7c61e7b03177b24c3`; getrackte Da
 |---|---:|---:|---:|---|
 | vu2/ | 1 | 401 | 401 | Redirect wird im Release erzeugt; behalten. |
 | discover-v2/ | 1 | 837 | 837 | Legacy-Redirect nach /discover/; behalten. |
-| dashboard/ | 664 | 3878941 | 3878941 | Aktive Datenquellen laut domains.json, Seiten laden app-rebuild.js; behalten. |
+| dashboard/ | 664 | 3878941 | 3881040 | Aktive Datenquellen laut domains.json, Seiten laden app-rebuild.js; behalten. |
 | worker-waker/ | 4 | 60308 | 60308 | Eigenes Cloudflare-Deployment und Workflow-Tests; behalten. |
 | landing/review/ | 37 | 8361739 | 8361739 | CI erwähnt den Review-Pfad; Live-404 genügt nicht; behalten. |
 | evidence/ | 54 | 1026077 | 1026077 | Audit-/Auslieferungsbelege und grundsätzlich im Pages-Build; behalten. |
-| scripts/ | 1844 | 28285874 | 28307410 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
+| scripts/ | 1850 | 28285874 | 28364031 | Workflow-/Test-/Registry-Aufrufe schützen; übrige Einträge unten unsicher. |
 
 Live-Stichprobe: 2026-11-06T13:19:17.451215+00:00, https://research.visionuniverse.de. Keine vollständige Browser-Netzwerkaufzeichnung.
 
@@ -168,6 +168,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | core/tests/home-render-budget.test.mjs | 3990 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
 | core/tests/listing-staleness.test.mjs | 8550 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
 | core/tests/long-series-repair.test.mjs | 4780 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
+| core/tests/page-motion.test.mjs | 1972 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
 | core/tests/query-engine.test.mjs | 6996 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
 | core/tests/r2-audit.test.mjs | 1915 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
 | core/tests/sf8-data-quality.test.mjs | 34524 | Nur breite Kanten, z. B. .github/workflows/core-ci.yml; Nutzung unklar; behalten. |
@@ -953,6 +954,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/company_intelligence/tests/browser-delivery-proof.test.mjs | 1143 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/browser-diagnostics.test.mjs | 4345 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/browser-install.test.mjs | 1396 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
+| scripts/company_intelligence/tests/bundle-routes.test.mjs | 1823 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/candidate-qa-assumptions.test.mjs | 8446 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/classify-live-failure.test.mjs | 28799 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/consumer-batch-read.test.mjs | 7566 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
@@ -960,7 +962,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/company_intelligence/tests/consumer-view.test.mjs | 7941 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/contract.test.mjs | 10947 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/current-sync-errors.test.mjs | 766 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
-| scripts/company_intelligence/tests/delivery.test.mjs | 13742 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
+| scripts/company_intelligence/tests/delivery.test.mjs | 14841 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/deployment-mode.test.mjs | 1423 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/fixtures/AAPL-consumer.json | 12119 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/fixtures/MSFT-consumer.json | 12447 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
@@ -991,6 +993,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/company_intelligence/tests/refresh-dispatch-wait.test.mjs | 25059 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/refresh-live-verify.test.mjs | 16389 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/refresh-watchdog.test.mjs | 15813 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
+| scripts/company_intelligence/tests/release-bundle-ci.test.mjs | 2766 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/release-health.test.mjs | 5752 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/retry-live-qa.test.mjs | 12455 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/rollback-cas.test.mjs | 11891 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
@@ -1070,6 +1073,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/company_intelligence/tests/test_wordpress_news.py | 10931 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/test_wordpress_observed_collections.py | 3288 | Nur breite Kanten, z. B. .github/workflows/company-intelligence.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/universe-eligibility.test.mjs | 4491 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
+| scripts/company_intelligence/tests/universe-projection-freeze.test.mjs | 22148 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/universe-refreeze.test.mjs | 21405 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/version-consumer-assets.test.mjs | 2727 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
 | scripts/company_intelligence/tests/workflow-yaml.test.mjs | 4748 | Nur breite Kanten, z. B. .github/workflows/company-intelligence-universe-release.yml; Nutzung unklar; behalten. |
@@ -1504,7 +1508,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/core/lib.mjs | .github/workflows/core-ci.yml |
 | scripts/core/load-sic-history.mjs | .github/workflows/core-ci.yml |
 | scripts/core/query-universe-snapshot.mjs | .github/workflows/core-ci.yml |
-| scripts/core/r2-audit.mjs | .github/workflows/core-ci.yml, .github/workflows/r2-audit.yml |
+| scripts/core/r2-audit.mjs | .github/workflows/core-ci.yml, .github/workflows/maintenance.yml |
 | scripts/core/stale-tails/build_evidence.py | .github/workflows/core-ci.yml |
 | scripts/core/stale-tails/check_stale_tails.py | .github/workflows/core-ci.yml |
 | scripts/core/stale-tails/sec_sample.py | .github/workflows/core-ci.yml |
@@ -2151,7 +2155,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/social/verify-meta-capabilities.mjs | .github/workflows/social-ci.yml |
 | scripts/social/verify-suites.mjs | .github/workflows/social-ci.yml, .github/workflows/social-cloudflare.yml, .github/workflows/social-orchestrator.yml, .github/workflows/social-resume-verified-web.yml |
 | scripts/social/verify-worker.mjs | .github/workflows/social-ci.yml, .github/workflows/social-cloudflare.yml |
-| scripts/supertrader/browser-qa.mjs | .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-live-smoke.yml |
+| scripts/supertrader/browser-qa.mjs | .github/workflows/monitor.yml, .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/build.mjs | .github/workflows/ci.yml, .github/workflows/supertrader-ci.yml, .github/workflows/supertrader-signals.yml |
 | scripts/supertrader/discover-availability.mjs | .github/workflows/supertrader-ci.yml |
 | scripts/supertrader/engine/backtest.mjs | .github/workflows/supertrader-ci.yml |
@@ -2701,7 +2705,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 
 ## Dynamik und ungelesene Quellen
 
-2080 dynamische/zusammengesetzte import/require/fetch-Ausdrücke gefunden; diese verhindern einen vollständigen statischen Nichtnutzungsbeweis.
+2083 dynamische/zusammengesetzte import/require/fetch-Ausdrücke gefunden; diese verhindern einen vollständigen statischen Nichtnutzungsbeweis.
 
 | Quelle | Ausdruck |
 |---|---|
@@ -2753,6 +2757,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | ask/app.js | ` fetch(ENDPOINT + '/v1/quota?client=' + encodeURIComponent(clientId()), { headers: authHeaders() }) ` |
 | ask/app.js | ` fetch(ENDPOINT + '/v1/ask', { method: 'POST', headers: authHeaders({ 'content-type': 'application/json' }), ` |
 | ask/app.js | ` fetch(path, { cache: 'default' }).then(function (r) { if (!r.ok) throw Error('HTTP ' + r.status) ` |
+| assets/site-navigation.js | ` fetch(u, {credentials: 'same-origin', priority: 'low'}).then(r => r.ok && r.arrayBuffer()).catch(() => {})), Promise.resolve()) ` |
 | assets/vu-ui.js | ` fetch(LOGO_BASE + "index.json", { cache: "default", priority: "low" }).then(function (r) { return r.ok ? r.json() : {} ` |
 | core/tests/client.test.mjs | ` require(join(ROOT, "core", "client.js")) ` |
 | core/tests/europe-discover-known-invalid.test.mjs | ` import(join(root,'scripts/marketstack/europe-discover-refresh.mjs')) ` |
@@ -3178,6 +3183,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/company_intelligence/browser-qa.mjs | ` fetch(),body=await response.json() ` |
 | scripts/company_intelligence/browser-qa.mjs | ` fetch(),body=await response.json() ` |
 | scripts/company_intelligence/browser-qa.mjs | ` fetch(),body=await response.json() ` |
+| scripts/company_intelligence/bundle-routes.mjs | ` fetch() ` |
 | scripts/company_intelligence/discover-beta-qa.mjs | ` fetch(),body=await response.json() ` |
 | scripts/company_intelligence/discover-beta-qa.mjs | ` fetch(),body=await response.json() ` |
 | scripts/company_intelligence/numeric-band-review.mjs | ` fetch(url,init),limits:{requestsPerMinute:3,requestsPerHour:3,requestsPerDay:3,maxRetries:0,concurrency:1}}) ` |
@@ -4441,6 +4447,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | technical/app.js | ` fetch(path, { credentials: "same-origin" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status) ` |
 | technical/app.js | ` fetch(path, { credentials: "same-origin" }).then(function (r) { ` |
 | technical/engine/stock-summary.js | ` require(path) : name() ` |
+| technical/tests/early-instrument.test.mjs | ` fetch() liest, sonst laedt der Browser doppelt. ` |
 | technical/tests/technical-assistant.test.mjs | ` require(join(root, "quant/engines/technical/technical-query.js")) ` |
 | technical/tests/technical-assistant.test.mjs | ` require(join(root, "technical/engine/templates.js")) ` |
 | technical/tests/technical-assistant.test.mjs | ` require(join(root, "technical/engine/assistant.js")) ` |
