@@ -1,7 +1,7 @@
 /* =========================================================================
    VISION UNIVERSE CORE — modules.js
 
-   MODUL-STECKBRIEFE (Plan Neustart §3). Jedes Produkt traegt <produkt>/module.json:
+   MODUL-STECKBRIEFE (Plan Neustart §3). Jedes Produkt traegt products/<id>/module.json:
    Route, Navigation, Zugang (free/pro/intern), Status, Datenarten (data: erzeugt,
    reads: gelesen) und Vertragstests. Erzeuger, Workflow, Zeitplan und Frische-Grenze
    stehen genau einmal in core/registry/domains.json; der Steckbrief verweist per
@@ -109,7 +109,7 @@
 
   /* Index fuer Statusseite und Terminal: alle Steckbriefe, nach id sortiert. */
   function index(modules, pages) {
-    return { schema: "vu-modules-index-1", generatedBy: "scripts/core/build-modules.mjs", note: "Erzeugt aus <produkt>/module.json; nicht von Hand aendern.",
+    return { schema: "vu-modules-index-1", generatedBy: "scripts/core/build-modules.mjs", note: "Erzeugt aus products/<id>/module.json; nicht von Hand aendern.",
       modules: modules.slice().sort(function (a, b) { return a.id < b.id ? -1 : 1; }), pages: pages || [] };
   }
 

@@ -6,7 +6,7 @@ name: Supertrader Quality Gates
 # Pages-Auslieferungsartefakt. Keine Anbieterabrufe, keine Secrets.
 on:
   pull_request:
-    paths: ['supertrader/**', 'scripts/supertrader/**', 'docs/SUPERTRADER_*.md', '.github/workflows/supertrader-*.yml']
+    paths: ['supertrader/**', 'products/supertrader/**', 'scripts/supertrader/**', 'docs/SUPERTRADER_*.md', '.github/workflows/supertrader-*.yml']
   push:
     branches: [main]
     paths: ['scripts/supertrader/**', 'supertrader/assets/**', '.github/workflows/supertrader-ci.yml']

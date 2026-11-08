@@ -93,3 +93,9 @@ test("MM-8 · Gegenprobe: falscher Zugang, unbekannte Datenart und internes Prod
   assert.ok(Modules.validate({ ...m, access: "intern" }, REG).length);
   assert.ok(!Modules.navGroups([{ ...m, access: "intern" }]).includes("/analysten/"));
 });
+
+test("MM-9 · Ordnerstruktur: Steckbriefe nur unter products/<id>/, kein module.json mehr im Web-Ordner", () => {
+  const stray = readdirSync(ROOT).filter((d) => !d.startsWith(".") && d !== "products" && d !== "node_modules" && statSync(join(ROOT, d)).isDirectory() && existsSync(join(ROOT, d, "module.json")));
+  assert.deepEqual(stray, [], "module.json gehoert nach products/<id>/");
+  for (const { dir, file } of MODS) assert.equal(file, join("products", dir, "module.json"));
+});

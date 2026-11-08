@@ -3,14 +3,14 @@
   "purpose": "Vertragstests statt Pfad-Gates (Plan Neustart §3, Owner-Entscheidung 04.11.2026). Jedes Produkt nennt seine Pfade, die CI, die bei jeder Aenderung daran laeuft, und die Tests, die seinen Vertrag pruefen. Wer ein Produkt aendert - aus welchem PR auch immer -, loest dessen CI und Vertragstests aus. Verbraucher nennen die Schnittstellen (Artefakt + Schema), die sie lesen. Gepruefte Regeln: core/tests/product-contracts.test.mjs.",
   "products": {
     "supertrader": {
-      "paths": ["supertrader/**", "scripts/supertrader/**"],
+      "paths": ["supertrader/**", "products/supertrader/**", "scripts/supertrader/**"],
       "ci": "supertrader-ci.yml",
       "contractTests": ["scripts/supertrader/tests/*.test.mjs"],
       "consumes": ["technicalSignals", "securityMasterEligibility"],
       "replacesGate": "Supertrader Gate A (scripts/supertrader/guard-protected-paths.mjs, jetzt nur Bericht)"
     },
     "discover": {
-      "paths": ["discover/**", "scripts/discover/**"],
+      "paths": ["discover/**", "products/discover/**", "scripts/discover/**"],
       "ci": "discover-ci.yml",
       "contractTests": ["discover/tests/*.test.mjs"],
       "consumes": ["discoverSeries", "marketCapability"],
@@ -24,19 +24,19 @@
       "replacesGate": "Company Intelligence 'Reject changes to protected production paths' (company-intelligence.yml, validate)"
     },
     "quant": {
-      "paths": ["quant/**", "scripts/quant/**", "scripts/market/**", "scripts/technical/**"],
+      "paths": ["quant/**", "products/quant/**", "scripts/quant/**", "scripts/market/**", "scripts/technical/**"],
       "ci": "quant-ci.yml",
       "contractTests": ["quant/tests/*.test.mjs"],
       "consumes": []
     },
     "technical": {
-      "paths": ["technical/**", "academy/**", "quant/engines/technical/**"],
+      "paths": ["technical/**", "products/technical/**", "academy/**", "quant/engines/technical/**"],
       "ci": "technical-ci.yml",
       "contractTests": ["technical/tests/*.test.mjs"],
       "consumes": ["technicalSignals"]
     },
     "screener": {
-      "paths": ["screener/**", "scripts/screener/**"],
+      "paths": ["screener/**", "products/screener/**", "scripts/screener/**"],
       "ci": "ci.yml",
       "contractTests": ["screener/tests/*.test.mjs"],
       "consumes": ["technicalScreener"]

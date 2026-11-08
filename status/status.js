@@ -77,7 +77,7 @@
     }
   }
 
-  /* Produkte aus den Steckbriefen (<produkt>/module.json -> core/registry/modules.json, core/modules.js):
+  /* Produkte aus den Steckbriefen (products/<id>/module.json -> core/registry/modules.json, core/modules.js):
      Zustand = schlechtester Zustand der erzeugten und gelesenen Datenarten. */
   var ACCESS = { free: "Free", pro: "Pro", intern: "Intern" };
   async function products(report) {

@@ -9,9 +9,9 @@ name: Discover CI
 on:
   push:
     branches: [main]
-    paths: ['discover/**', 'scripts/discover/**', '.github/workflows/discover-ci.yml']
+    paths: ['discover/**', 'products/discover/**', 'scripts/discover/**', '.github/workflows/discover-ci.yml']
   pull_request:
-    paths: ['discover/**', 'scripts/discover/**', '.github/workflows/discover-ci.yml']
+    paths: ['discover/**', 'products/discover/**', 'scripts/discover/**', '.github/workflows/discover-ci.yml']
   workflow_dispatch:
 
 # Nur lesen: reine Pruef-Workflows brauchen kein Schreibrecht (Audit 03.10.2026).
