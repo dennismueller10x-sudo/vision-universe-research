@@ -26,9 +26,15 @@ name: Monitor (Live-Pruefungen gegen die veroeffentlichte Seite)
 #                      sind UND die Marke im Commit steht ([cf-proof], [rt-qa],
 #                      [technical-live-qa], [vorsorge-live-smoke]) - wie vorher.
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       pruefung:
         description: 'Welche Live-Pruefung'
         type: choice
@@ -69,14 +75,6 @@ on:
     # Kein branches-Filter auf Ereignisebene (der Pages-Teil hatte keinen); die SEC-Teile verlangen main im Auswahl-Job.
     workflows: ['Quant 2.0 Production Pages', 'SEC Fundamentals — Daily Incremental', 'SEC Consumer-Fundamentals (Produktuniversum, Bulk companyfacts)']
     types: [completed]
-  schedule:
-    # supertrader (vormals supertrader-live-smoke.yml)
-    - cron: '43 13 * * 1-5'
-    # sec-frische (vormals fundamental-sec-freshness.yml): Rueckfall, falls der taegliche Lauf kein Ereignis liefert.
-    - cron: '40 14 * * *'
-    # sec-veroeffentlichung: Rueckfall, falls nach einem (auch angestossenen) Lauf des Erzeugers kein workflow_run-Ereignis
-    # eintrifft. Prueft den juengsten Lauf der letzten 26 Stunden.
-    - cron: '50 19 * * *'
   push:
     branches:
       - main
@@ -96,6 +94,10 @@ on:
 
 permissions:
   contents: read
+
+env:
+  # Ereignis wie vor der Umstellung: ein Takt des Weckers heisst schedule.
+  VU_EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
 
 jobs:
   auswahl:
@@ -120,13 +122,13 @@ jobs:
         id: wahl
         env:
           # Eingaben und Ereignisdaten nur ueber env: (ADR-005)
-          EVENT: ${{ github.event_name }}
+          EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
           REF: ${{ github.ref }}
           PRUEFUNG: ${{ inputs.pruefung }}
           WR_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           WR_NAME: ${{ github.event.workflow_run.name }}
           WR_BRANCH: ${{ github.event.workflow_run.head_branch }}
-          SCHEDULE: ${{ github.event.schedule }}
+          SCHEDULE: ${{ github.event.schedule || inputs.zeitplan }}
           MSG: ${{ github.event.head_commit.message }}
           COMMITS: ${{ toJSON(github.event.commits) }}
         run: |
@@ -709,8 +711,8 @@ jobs:
         id: qa
         env:
           # Eingaben nur ueber env: (ADR-005); ohne Dispatch die bisherigen Vorgaben
-          IN_SYMBOLS: ${{ github.event_name == 'workflow_dispatch' && inputs.symbols || 'AAPL,NVDA,MSFT,VLO,PANW' }}
-          IN_WATCH_SECONDS: ${{ github.event_name == 'workflow_dispatch' && inputs.watchSeconds || '60' }}
+          IN_SYMBOLS: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.symbols || 'AAPL,NVDA,MSFT,VLO,PANW' }}
+          IN_WATCH_SECONDS: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.watchSeconds || '60' }}
         run: |
           node scripts/discover/browser-qa-realtime.mjs \
             --symbols "$IN_SYMBOLS" \
@@ -1188,7 +1190,7 @@ jobs:
           EV_URL: ${{ github.event.workflow_run.html_url }}
         run: |
           set -euo pipefail
-          if [ "$GITHUB_EVENT_NAME" = workflow_run ]; then
+          if [ "${VU_EVENT}" = workflow_run ]; then
             conclusion="$EV_CONCLUSION"; updated="$EV_UPDATED"; url="$EV_URL"
             if [ "$conclusion" = skipped ]; then
               echo "Lauf des Erzeugers uebersprungen ($url) - kein Datenlauf."; echo "relevant=false" >> "$GITHUB_OUTPUT"; exit 0
@@ -1406,7 +1408,7 @@ jobs:
       - name: Academy im veroeffentlichten Produktionsstand vorhanden
         id: academy_release
         if: >-
-          github.event_name == 'workflow_dispatch' ||
+          (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) ||
           (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.event != 'pull_request')
         env:
           IN_RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}

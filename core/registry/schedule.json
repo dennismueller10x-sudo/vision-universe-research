@@ -194,19 +194,29 @@
    "id": "monitor",
    "workflow": "monitor.yml",
    "cron": "43 13 * * 1-5",
-   "timer": "github"
+   "timer": "waker",
+   "inputs": {
+    "pruefung": "supertrader"
+   }
   },
   {
    "id": "monitor-2",
    "workflow": "monitor.yml",
    "cron": "40 14 * * *",
-   "timer": "github"
+   "timer": "waker",
+   "inputs": {
+    "pruefung": "sec-frische"
+   }
   },
   {
    "id": "monitor-3",
    "workflow": "monitor.yml",
    "cron": "50 19 * * *",
-   "timer": "github"
+   "timer": "waker",
+   "inputs": {
+    "pruefung": "sec-frische"
+   },
+   "note": "pruefung ist Pflicht-Auswahl ohne passende Option; beim Takt waehlt die Weiche nach dem Cron (sec_veroeffentlichung)"
   },
   {
    "id": "multi-asset-data",
@@ -314,80 +324,113 @@
    "id": "pipeline-weekly-deckung",
    "workflow": "pipeline-weekly.yml",
    "cron": "0 6 * * 0",
-   "timer": "github",
-   "note": "deckung"
+   "timer": "waker",
+   "note": "deckung",
+   "inputs": {
+    "teil": "deckung"
+   }
   },
   {
    "id": "pipeline-weekly-index",
    "workflow": "pipeline-weekly.yml",
    "cron": "20 7 * * 6",
-   "timer": "github",
-   "note": "index"
+   "timer": "waker",
+   "note": "index",
+   "inputs": {
+    "teil": "index"
+   }
   },
   {
    "id": "pipeline-weekly-logos",
    "workflow": "pipeline-weekly.yml",
    "cron": "17 4 * * 1",
-   "timer": "github",
-   "note": "logos"
+   "timer": "waker",
+   "note": "logos",
+   "inputs": {
+    "teil": "logos"
+   }
   },
   {
    "id": "pipeline-weekly-logos-2",
    "workflow": "pipeline-weekly.yml",
    "cron": "47 3 * * 2-6",
-   "timer": "github",
-   "note": "logos"
+   "timer": "waker",
+   "note": "logos",
+   "inputs": {
+    "teil": "logos"
+   }
   },
   {
    "id": "pipeline-weekly-musterdepots",
    "workflow": "pipeline-weekly.yml",
    "cron": "23 7 * * 6",
-   "timer": "github",
-   "note": "musterdepots"
+   "timer": "waker",
+   "note": "musterdepots",
+   "inputs": {
+    "teil": "musterdepots"
+   }
   },
   {
    "id": "pipeline-weekly-sec-fundamentals",
    "workflow": "pipeline-weekly.yml",
    "cron": "0 6 * * 1",
-   "timer": "github",
-   "note": "sec-fundamentals"
+   "timer": "waker",
+   "note": "sec-fundamentals",
+   "inputs": {
+    "teil": "sec-fundamentals"
+   }
   },
   {
    "id": "pipeline-weekly-tiingo2-universum",
    "workflow": "pipeline-weekly.yml",
    "cron": "20 8 * * 1-5",
-   "timer": "github",
-   "note": "tiingo2-universum"
+   "timer": "waker",
+   "note": "tiingo2-universum",
+   "inputs": {
+    "teil": "tiingo2-universum"
+   }
   },
   {
    "id": "research",
    "workflow": "research.yml",
    "cron": "23 9 * * 6",
-   "timer": "github"
+   "timer": "waker",
+   "inputs": {
+    "teil": "elliott-register"
+   }
   },
   {
    "id": "research-2",
    "workflow": "research.yml",
    "cron": "47 7 * * 0",
-   "timer": "github"
+   "timer": "waker",
+   "inputs": {
+    "teil": "elliott-register"
+   }
   },
   {
    "id": "research-3",
    "workflow": "research.yml",
    "cron": "17 6 * * 1",
-   "timer": "github"
+   "timer": "waker",
+   "inputs": {
+    "teil": "elliott-register"
+   }
   },
   {
    "id": "research-4",
    "workflow": "research.yml",
    "cron": "41 5 * * 3",
-   "timer": "github"
+   "timer": "waker",
+   "inputs": {
+    "teil": "elliott-register"
+   }
   },
   {
    "id": "research-edge2-paper",
    "workflow": "research-edge2-paper.yml",
    "cron": "47 8 * * 6",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "sec-consumer-fundamentals",
@@ -411,13 +454,13 @@
    "id": "social-orchestrator",
    "workflow": "social-orchestrator.yml",
    "cron": "35 6 * * *",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "social-orchestrator-2",
    "workflow": "social-orchestrator.yml",
    "cron": "35 16 * * *",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "supertrader-paper-2027",

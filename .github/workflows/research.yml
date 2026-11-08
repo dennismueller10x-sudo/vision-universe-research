@@ -21,9 +21,15 @@ name: Forschung (Buendel research)
 # Der Job `auswahl` bildet die Ausloeser der Quellen nach (Dispatch `teil`, Zeitplan am Cron, Push nach
 # Zweig/Pfad, workflow_run nach Name/Typ/Zweig, repository_dispatch nach Typ). Generiert, siehe A-Doc.
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       teil:
         description: 'Welcher Teil'
         type: choice
@@ -63,17 +69,16 @@ on:
         options: [dev-smoke, dev, holdout, hs2-dev-smoke, hs2-dev, hs2-holdout, sec-pit-r13, hs3-dev, hs3-holdout, hs3d1-dev, hs3d1-holdout, hs3d2-dev, hs3d2-holdout, hs3d3-dev, hs3d3-holdout, hs4-full, hs4oos]
         default: dev-smoke
         description: 'hausstrategie-forschung:'
-  schedule:
-    - cron: '23 9 * * 6'   # elliott-register
-    - cron: '47 7 * * 0'   # elliott-register
-    - cron: '17 6 * * 1'   # elliott-register
-    - cron: '41 5 * * 3'   # elliott-register
   push:
     branches:
       - 'claude/**'
 
 permissions:
   contents: read
+
+env:
+  # Wie vor der Umstellung: ein Takt des Weckers heisst schedule und traegt seinen Cron (ADR-005: ueber env, nicht im Shell-Text).
+  VU_EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
 
 jobs:
   auswahl:
@@ -98,11 +103,11 @@ jobs:
         id: wahl
         env:
           # Eingaben und Ereignisdaten nur ueber env: (ADR-005)
-          EVENT: ${{ github.event_name }}
+          EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
           ACTION: ${{ github.event.action }}
           REF: ${{ github.ref }}
           TEIL: ${{ inputs.teil }}
-          SCHEDULE: ${{ github.event.schedule }}
+          SCHEDULE: ${{ github.event.schedule || inputs.zeitplan }}
           WR_NAME: ${{ github.event.workflow_run.name }}
           WR_BRANCH: ${{ github.event.workflow_run.head_branch }}
           COMMITS: ${{ toJSON(github.event.commits) }}
@@ -187,7 +192,7 @@ jobs:
   portfolio:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.portfolio == 'true' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[quant-portfolio-research]') || contains(github.event.head_commit.message, '[edge-e3:') || contains(github.event.head_commit.message, '[edge2:'))
+      needs.auswahl.outputs.portfolio == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || contains(github.event.head_commit.message, '[quant-portfolio-research]') || contains(github.event.head_commit.message, '[edge-e3:') || contains(github.event.head_commit.message, '[edge2:'))
     permissions: {contents: write}
     concurrency:
       group: quant-portfolio-research-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[quant-portfolio-research]') && !contains(github.event.head_commit.message, '[edge-e3:') && !contains(github.event.head_commit.message, '[edge2:')) && github.run_id || 'run' }}
@@ -449,7 +454,7 @@ jobs:
   mustervolumen:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.mustervolumen == 'true' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[pattern-research-volume]'))
+      needs.auswahl.outputs.mustervolumen == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || contains(github.event.head_commit.message, '[pattern-research-volume]'))
     permissions: {contents: write}
     concurrency:
       group: pattern-research-volume-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[pattern-research-volume]')) && github.run_id || 'run' }}
@@ -558,7 +563,7 @@ jobs:
   labor:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.labor == 'true' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[labor:'))
+      needs.auswahl.outputs.labor == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || contains(github.event.head_commit.message, '[labor:'))
     permissions: {contents: write}
     concurrency:
       group: research-labor-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[labor:')) && github.run_id || 'run' }}
@@ -725,7 +730,7 @@ jobs:
   vorsorge-recht:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.vorsorge_recht == 'true' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[vorsorge-legal]'))
+      needs.auswahl.outputs.vorsorge_recht == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || contains(github.event.head_commit.message, '[vorsorge-legal]'))
     permissions: {contents: write}
     concurrency:
       group: vorsorge-legal-${{ github.ref_name }}
@@ -755,7 +760,7 @@ jobs:
   muster-gesamtrendite:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.muster_gesamtrendite == 'true' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[pattern-total-return-check]'))
+      needs.auswahl.outputs.muster_gesamtrendite == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || contains(github.event.head_commit.message, '[pattern-total-return-check]'))
     permissions: {contents: read}
     concurrency:
       group: quant-pattern-total-return-check-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[pattern-total-return-check]')) && github.run_id || 'run' }}
@@ -889,7 +894,7 @@ jobs:
   elliott-register:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.elliott_register == 'true' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+      needs.auswahl.outputs.elliott_register == 'true' && ((github.event_name == 'schedule' || inputs.zeitplan != '') || (github.event_name == 'workflow_dispatch' && !inputs.zeitplan))
     permissions: {contents: write, issues: write}
     concurrency:
       group: elliott-prospective-registry
@@ -1002,7 +1007,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TITLE="Elliott-Registry: Wochenlauf fehlgeschlagen"
-          BODY="Lauf ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} (${{ github.event_name }}, ${GITHUB_REF_NAME}) ist rot. Faellig war: ${{ steps.due.outputs.pending || 'unbekannt' }}. Der naechste Zeitplan holt fehlende Wochen nach; ohne Behebung bleibt die Woche offen."
+          BODY="Lauf ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} (${VU_EVENT}, ${GITHUB_REF_NAME}) ist rot. Faellig war: ${{ steps.due.outputs.pending || 'unbekannt' }}. Der naechste Zeitplan holt fehlende Wochen nach; ohne Behebung bleibt die Woche offen."
           N=$(gh issue list --repo "${{ github.repository }}" --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number' || true)
           if [ -n "$N" ]; then gh issue comment "$N" --repo "${{ github.repository }}" --body "$BODY"; else gh issue create --repo "${{ github.repository }}" --title "$TITLE" --body "$BODY"; fi
 
@@ -1010,7 +1015,7 @@ jobs:
   vorsorge-etf-probe:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.vorsorge_etf == 'true' && ((github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'probe') || contains(github.event.head_commit.message, '[vorsorge-etf-probe]'))
+      needs.auswahl.outputs.vorsorge_etf == 'true' && (((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && github.event.inputs.job == 'probe') || contains(github.event.head_commit.message, '[vorsorge-etf-probe]'))
     permissions: {contents: write}
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -1043,7 +1048,7 @@ jobs:
   vorsorge-etf-euprobe:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.vorsorge_etf == 'true' && ((github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'euprobe') || contains(github.event.head_commit.message, '[vorsorge-eu-probe]'))
+      needs.auswahl.outputs.vorsorge_etf == 'true' && (((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && github.event.inputs.job == 'euprobe') || contains(github.event.head_commit.message, '[vorsorge-eu-probe]'))
     permissions: {contents: write}
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -1074,7 +1079,7 @@ jobs:
   vorsorge-etf-nport:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.vorsorge_etf == 'true' && ((github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'nport') || contains(github.event.head_commit.message, '[vorsorge-nport]'))
+      needs.auswahl.outputs.vorsorge_etf == 'true' && (((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && github.event.inputs.job == 'nport') || contains(github.event.head_commit.message, '[vorsorge-nport]'))
     permissions: {contents: write}
     runs-on: ubuntu-latest
     timeout-minutes: 120
@@ -1125,7 +1130,7 @@ jobs:
   vorsorge-etf-fundamentals:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.vorsorge_etf == 'true' && ((github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'fundamentals') || contains(github.event.head_commit.message, '[vorsorge-fundamentals]'))
+      needs.auswahl.outputs.vorsorge_etf == 'true' && (((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && github.event.inputs.job == 'fundamentals') || contains(github.event.head_commit.message, '[vorsorge-fundamentals]'))
     permissions: {contents: write}
     runs-on: ubuntu-latest
     timeout-minutes: 90
@@ -1172,7 +1177,7 @@ jobs:
   emerging-leaders:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.emerging_leaders == 'true' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[emerging-leaders-study]'))
+      needs.auswahl.outputs.emerging_leaders == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || contains(github.event.head_commit.message, '[emerging-leaders-study]'))
     permissions: {contents: write}
     concurrency:
       group: emerging-leaders-study-${{ github.ref_name }}-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[emerging-leaders-study]')) && github.run_id || 'run' }}
@@ -1477,7 +1482,7 @@ jobs:
   etf-universum:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.etf_universum == 'true' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[vorsorge-ingest'))
+      needs.auswahl.outputs.etf_universum == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || contains(github.event.head_commit.message, '[vorsorge-ingest'))
     permissions: {contents: write}
     runs-on: ubuntu-latest
     timeout-minutes: 350
@@ -1596,7 +1601,7 @@ jobs:
   delisting-probe:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.delisting_probe == 'true' && (github.event_name == 'workflow_dispatch' || (contains(github.event.head_commit.message, '[supertrader-probe]') || contains(github.event.head_commit.message, '[supertrader-probe:list-stats]')))
+      needs.auswahl.outputs.delisting_probe == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || (contains(github.event.head_commit.message, '[supertrader-probe]') || contains(github.event.head_commit.message, '[supertrader-probe:list-stats]')))
     permissions: {contents: read}
     concurrency:
       group: supertrader-delisting-probe
@@ -1620,7 +1625,7 @@ jobs:
   hausstrategie-forschung:
     needs: [auswahl]
     if: >-
-      needs.auswahl.outputs.hausstrategie_forschung == 'true' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[house:'))
+      needs.auswahl.outputs.hausstrategie_forschung == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || contains(github.event.head_commit.message, '[house:'))
     permissions: {contents: write}
     concurrency:
       group: supertrader-house-${{ (github.event_name == 'push' && !contains(github.event.head_commit.message, '[house:')) && github.run_id || 'main' }}

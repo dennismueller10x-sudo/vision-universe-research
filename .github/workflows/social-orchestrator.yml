@@ -45,15 +45,15 @@
 # =========================================================================
 name: Social Orchestrator
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    # Zweimal taeglich. Messen ist billig und lesend; ein Kandidat
-    # entsteht trotzdem hoechstens alle 24 h - das entscheidet der
-    # Orchestrator, nicht der Zeitplan.
-    - cron: '35 6 * * *'
-    - cron: '35 16 * * *'
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       nur_entscheiden:
         description: 'Nur sagen, was dran waere (nichts ausfuehren)'
         type: boolean
@@ -85,6 +85,10 @@ permissions:
   # endet der Dispatch an der letzten Stelle, an der er frueher einen
   # Menschen brauchte.
   pull-requests: write
+
+env:
+  # Wie vor der Umstellung: ein Takt des Weckers heisst schedule und traegt seinen Cron (ADR-005: ueber env, nicht im Shell-Text).
+  VU_EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
 
 jobs:
   orchestrate:
@@ -285,8 +289,9 @@ jobs:
         # Text und wird NICHT in die Shell interpoliert, sondern nur ueber
         # die Umgebung gereicht; die Reinigung macht manual-mode.js.
         env:
-          VU_SOCIAL_MODUS: ${{ inputs.modus != 'EINHOLEN' && inputs.modus || '' }}
-          VU_SOCIAL_THEMA: ${{ inputs.thema || '' }}
+          # Ein Takt des Weckers (zeitplan) ist ein Scheduler-Lauf: kein Auftrag, wie bisher beim GitHub-Cron.
+          VU_SOCIAL_MODUS: ${{ !inputs.zeitplan && inputs.modus != 'EINHOLEN' && inputs.modus || '' }}
+          VU_SOCIAL_THEMA: ${{ !inputs.zeitplan && inputs.thema || '' }}
         run: |
           set -euo pipefail
           node scripts/social/run-orchestrator.mjs --github-output | tee /tmp/plan.txt
@@ -313,7 +318,7 @@ jobs:
           set -euo pipefail
           node scripts/social/run-orchestrator.mjs \
             --lease-claim "${{ github.run_id }}" \
-            --von "${{ github.event_name }}"
+            --von "${VU_EVENT}"
 
       # =====================================================================
       # WEB-FIRST FULL-POST GENERATION — STANDARDPFAD (Owner-Direktive
