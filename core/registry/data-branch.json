@@ -62,5 +62,39 @@
       "consumers": ["ownership-signals.yml (saet .ownership-cache/form4 vor dem Bau)"],
       "note": "Nicht ausgeliefert (kein Pages-Overlay). Eine Form-4-Abholung fuer Insider-Kaeufe (E2) und Eigentuemer-Signale."
     }
-  ]
+  ],
+  "plan": {
+    "purpose": "Jede Datenart aus core/registry/domains.json steht entweder unter domains (im Datenzweig) oder hier mit Status und Grund (DB-14). NEXT = als Naechstes, LATER = nach dem Buendel/der Kette, LAST = Quant/Supertrader/Discover zuletzt (Plan §3), EXEMPT = begruendet ausgenommen.",
+    "entries": {
+      "news": {"status": "NEXT", "grund": "Pilot DUAL_WRITE; BRANCH_ONLY nach der Abnahme am 11.11.2026"},
+      "companyNames": {"status": "LATER", "grund": "drei Erzeuger; mit Security Master"},
+      "discoverImBlickLive": {"status": "LATER", "grund": "zwei Erzeuger (discover-im-blick-live, market-data-refresh); mit Discover"},
+      "europeDiscoverDisplay": {"status": "LATER", "grund": "901 Dateien, Verbraucher Discover-Suche/Logos; mit Discover"},
+      "fxReference": {"status": "LATER", "grund": "pipeline-daily (ezb); Verbraucher Release-Bau (FX-Lizenz) und Discover"},
+      "indexMembership": {"status": "LATER", "grund": "pipeline-weekly; Verbraucher Discover-Bau"},
+      "industryClassificationHistory": {"status": "LATER", "grund": "pipeline-weekly; Verbraucher Fundamental/Supertrader-Adapter"},
+      "kiDepots": {"status": "LATER", "grund": "Erzeuger im Buendel pipeline-daily/research (Track A)"},
+      "modelDepots": {"status": "LATER", "grund": "Erzeuger im Buendel pipeline-weekly (Track A)"},
+      "technicalWorld": {"status": "LATER", "grund": "Erzeuger im Buendel pipeline-daily (Track A); nach dessen Stufe 7"},
+      "companyMaster": {"status": "LAST", "grund": "Produktuniversum"},
+      "corporateActions": {"status": "LAST", "grund": "Quant-Kette (market-data-refresh)"},
+      "discover": {"status": "LAST", "grund": "Discover-Kette (market-data-refresh)"},
+      "eodPrices": {"status": "LAST", "grund": "Quant-Kette (market-data-refresh)"},
+      "fundamentals": {"status": "LAST", "grund": "nur Repository (nicht ausgeliefert); SEC-Kette"},
+      "fundamentalsConsumer": {"status": "LAST", "grund": "nur Repository (nicht ausgeliefert); SEC-Kette"},
+      "intraday": {"status": "LAST", "grund": "Takt alle 5 Minuten, Rueckgabe an Pages ueber den Wecker; mit Quant"},
+      "longSeries": {"status": "LAST", "grund": "Quant-Kette (Plan: Quant/Supertrader/Discover zuletzt)"},
+      "quant": {"status": "LAST", "grund": "Quant-Kette (Materialisierung)"},
+      "securityMaster": {"status": "LAST", "grund": "Produktuniversum (UF-Vertrag: nur security-master-eligibility aendert es)"},
+      "supertrader": {"status": "LAST", "grund": "Supertrader-Kette"},
+      "supertrader-sf8-candidates": {"status": "LAST", "grund": "Supertrader-Kette"},
+      "technical": {"status": "LAST", "grund": "Quant-Kette (market-data-refresh)"},
+      "technicalIntelligenceV3": {"status": "LAST", "grund": "Quant-Kette"},
+      "usSecurityMaster": {"status": "LAST", "grund": "Produktuniversum"},
+      "companyIntelligence": {"status": "EXEMPT", "grund": "Company Intelligence liegt in R2 und wird vom Release aus R2 projiziert; Strang O fasst CI nicht an (Auftrag 08.11.2026)"},
+      "globalDiscoverUniverse": {"status": "EXEMPT", "grund": "Nebenprodukt des Discover-Baus; folgt der Datenart discover"},
+      "supertrader-paper-2027-log": {"status": "EXEMPT", "grund": "Papier-Handelsprotokoll (append-only); die Git-Historie in main ist sein Pruefpfad"},
+      "watchlistEvents": {"status": "EXEMPT", "grund": "entsteht im Release-Bau aus der zuletzt ausgelieferten Seite, liegt nie in main"}
+    }
+  }
 }

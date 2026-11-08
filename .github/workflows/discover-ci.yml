@@ -18,6 +18,12 @@ on:
 permissions:
   contents: read
 
+# PR-Laeufe: ueberholte Laeufe desselben PR werden abgebrochen (Runner-Warteschlange, Steuerung 08.11.2026).
+# Alle anderen Ereignisse bekommen eine eigene Gruppe je Lauf, also wie vorher keine Begrenzung.
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('discover-ci-pr-{0}', github.event.pull_request.number) || format('discover-ci-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
