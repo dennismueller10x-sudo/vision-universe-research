@@ -52,7 +52,7 @@ tools/finalize_audio.sh mixraw.wav mix.wav
 bash tools/compose.sh b frames mix.wav out.mp4 timing.json [clip1.mp4 ...]
 ```
 
-Hosting und Karte: HeyGen-Asset-Upload (`create_asset_upload`, PUT, `complete_asset_upload`) liefert eine stabile öffentliche Adresse mit Range-Unterstützung. Danach Workflow **Social Reel vorbereiten** (`social-reel.yml`, `action=prepare`) mit Content-ID, Video-Adresse und Caption.
+Hosting und Karte: HeyGen-Asset-Upload (`create_asset_upload`, PUT, `complete_asset_upload`) liefert eine stabile öffentliche Adresse mit Range-Unterstützung. Danach Workflow **Social Reel vorbereiten** (`social.yml, Teil reel (vormals social-reel.yml)`, `action=prepare`) mit Content-ID, Video-Adresse und Caption.
 
 ## Hinweise
 
