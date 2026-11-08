@@ -219,12 +219,6 @@
    "timer": "waker"
   },
   {
-   "id": "pages-release",
-   "workflow": "pages-release.yml",
-   "cron": "*/5 13-21 * * 1-5",
-   "timer": "github"
-  },
-  {
    "id": "pipeline-daily-datenqualitaet",
    "workflow": "pipeline-daily.yml",
    "cron": "13 7 * * 2-6",
