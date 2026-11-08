@@ -9,7 +9,8 @@
 # ============================================================================
 # DAILY SCHEDULE (owner approval of 04.11.2026, under conditions).
 # Two switches, both required:
-#   1. the `schedule:` block below (active in this file), and
+#   1. the entry europe-discover-refresh in core/registry/schedule.json (timer waker: the
+#      Cloudflare waker dispatches with zeitplan=<cron>; that run counts as scheduled), and
 #   2. the repository variable EUROPE_REFRESH_SCHEDULE_ENABLED=true
 #      (Settings > Secrets and variables > Actions > Variables; owner only).
 # Either one alone does nothing. Switching off: unset the variable (or set
@@ -47,9 +48,15 @@
 #     (more than 22 blocked of 449 abort the publication).
 # ============================================================================
 name: Europe Discover Close refresh
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       max_credits:
         description: 'Reserved credit cap for this run (1-1000)'
         type: string
@@ -69,9 +76,7 @@ on:
           - refresh
           - e9-symbol-probe
         default: refresh
-  # ACTIVATION SWITCH 1 of 2 (switch 2 is the repository variable, see header).
-  schedule:
-    - cron: '47 17 * * 1-5'
+  # ACTIVATION SWITCH 1 of 2: core/registry/schedule.json (switch 2 is the repository variable, see header).
 permissions:
   contents: write
   actions: write
@@ -85,16 +90,16 @@ jobs:
     # and only as the first attempt.
     if: >-
       github.repository == 'dennismueller10x-sudo/vision-universe-research' &&
-      ((github.event_name == 'workflow_dispatch' && inputs.mode != 'e9-symbol-probe') ||
-       (github.event_name == 'schedule' && vars.EUROPE_REFRESH_SCHEDULE_ENABLED == 'true' &&
+      (((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.mode != 'e9-symbol-probe') ||
+       ((github.event_name == 'schedule' || inputs.zeitplan != '') && vars.EUROPE_REFRESH_SCHEDULE_ENABLED == 'true' &&
         github.ref == 'refs/heads/main' && github.run_attempt == 1))
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      SCHEDULED: ${{ github.event_name == 'schedule' }}
+      SCHEDULED: ${{ (github.event_name == 'schedule' || inputs.zeitplan != '') }}
       MAX_CREDITS: ${{ inputs.max_credits || '600' }}
       DRY_RUN: ${{ inputs.dry_run == true }}
-      REPROBE_KNOWN_INVALID: ${{ github.event_name == 'workflow_dispatch' && inputs.reprobe_known_invalid == true }}
+      REPROBE_KNOWN_INVALID: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.reprobe_known_invalid == true }}
       MIN_QUOTA_REMAINING: '5000'
     steps:
       - uses: actions/checkout@v4
@@ -195,7 +200,7 @@ jobs:
   e9-symbol-probe:
     if: >-
       github.repository == 'dennismueller10x-sudo/vision-universe-research' &&
-      github.event_name == 'workflow_dispatch' && inputs.mode == 'e9-symbol-probe' &&
+      (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.mode == 'e9-symbol-probe' &&
       github.ref != 'refs/heads/main' && github.run_attempt == 1
     runs-on: ubuntu-latest
     timeout-minutes: 20
