@@ -69,6 +69,10 @@ Haptik: Tippen auf Leiste/Untertabs der Website meldet `vu:haptic`; iOS über de
 
 Nur in der App (`[data-vu-gestures]`, `assets/vu-gestures.css`): sofortiges Druck-Feedback (`:active` 62 % Deckkraft), `touch-action: manipulation` (kein Warten auf Doppeltipp), kein grauer Tipp-Schleier, Bedienelemente nicht markierbar (Fließtext und Eingaben bleiben es), kein seitliches Gummiband beim Wischen. Langes Drücken auf Bedienelemente meldet einen Haptik-Impuls. Pull-to-refresh nativ entfällt bewusst: die Seite scrollt im Iframe, nicht in der Scroll-Ansicht der WebView.
 
+## K5: zwischen Untertabs wischen
+
+In der App wechselt ein deutlicher, schneller, waagrechter Wisch (≥ 70 px, mindestens 2,2-mal so waagrecht wie senkrecht, < 0,7 s) auf dem Inhalt zum Nachbar-Tab: zuerst im ARIA-Tabsatz um den Startpunkt (z. B. Discover-Detail), sonst in der Produkt-Leiste (z. B. Supertrader Start → Methoden → Signale → Backtests). Links wischen = nächster Tab. Ausgenommen sind die äußersten 24 px (native Randgeste K1), waagrecht scrollbare Bereiche (Karussells), SVG/Canvas (Charts), Eingaben, Regler, offene Sheets, markierter Text und alles mit `data-vu-no-swipe`. Touch-Ereignisse, weil der Browser beim Wischen `pointercancel` meldet. Rückwärts gewischt überspringt die Vorwärts-Gleitanimation aus K2. Swipe-to-Watchlist auf Listenzeilen ist bewusst nicht gebaut: die Zeilen liegen oft in waagrecht scrollbaren Tabellen, und das kollidiert mit dieser Geste.
+
 ## E4: Biometrie und kostenlose Push-Zustellung einrichten
 
 `@capgo/capacitor-native-biometric` ist auf **7.5.1 (MIT)** festgesetzt. Es prüft die Biometrie; die Sitzung bleibt im vorhandenen nativen SecureStorage (Keychain/Keystore). Erst nach Passwortanmeldung wird einmal gefragt. Ohne Opt-in bleibt die Sitzung im Arbeitsspeicher. Einstellungen → Biometrie aus entfernt die persistierte Sitzung; Abmelden löscht sie ebenfalls. Beim nächsten Start werden Biometrie und ein Refresh abgewartet. Abbruch oder fehlgeschlagener Refresh zeigt die Passwortanmeldung.

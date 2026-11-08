@@ -199,3 +199,48 @@ Nicht verändert: Provider-, Quant-, Ranking- und Datenqualitäts-Gates, `refres
 - **Ursache 43/45.** AAPL (`iss_cik_0000320193`) und QCOM (`iss_cik_0000804328`) hatten Deutsch nur aus `profile-editorial-de.json` (`REVIEW_ONLY`, geprüft 06./07.10.). Der Eintrag ist an den Hash der alten 10-K-Beschreibung gebunden, und der neue 10-K änderte ihn. Belegt per Diagnose (#1586, #1590; Run 42352460935).
 - **Entscheidung Steuerung 07.11.: Weg B2 + (i).** `editorial.german_profile` behält bei einer Quelländerung die zuletzt geprüfte deutsche Fassung höchstens 120 Tage nach `reviewedAt` (Stichtag ist der Exportstand, nie die Uhr), markiert mit `reviewStatus: SOURCE_CHANGED_REVIEW_REQUIRED`; danach gilt Englisch. Ein Rückzug (`withheld`) geht immer vor. Danach (i): Gate kurz mit dem verifizierten Legacy-46-Stand öffnen, `refreeze`, dann `recover_full_scope`. Scheitert ein Schritt, gilt fail-closed: Gate zu, Meldung an die Steuerung.
 - **Redaktionelle Nachprüfung fällig:** AAPL und QCOM. Die deutsche Fassung ist gegen die neue 10-K-Beschreibung zu prüfen und die Hashes in `profile-editorial-de.json` sind nachzuziehen. Spätestens bis 03.02.2027 (AAPL) bzw. 04.02.2027 (QCOM), sonst fällt die Anzeige auf Englisch zurück.
+
+## Stand 07.11.2026 abends: 46er live, Vollumfang neu abnehmen
+
+- **Live.** Seit den Pages-Releases 42394398693 (17:03) und 42398238100 (17:50) ist der 46er-Umfang wieder öffentlich: Live-Abnahme bestanden, `delivery.json` PASS, 46 Titel / 45 Emittenten. Der eingefrorene Rollback ist erneuert (refreeze, Run 42406129215).
+- **`recover_full_scope` geht nicht mehr.** Run 42407808464 scheiterte in RESTORE mit `CONSUMER_EXPIRED` vor jeder Änderung (NO_ACTION). Das zuletzt abgenommene Vollumfang-GOOD `39cac68a6181e523290b093a` ist älter als 7 Tage, und eine abgelaufene Generation wird per Design nicht wiederhergestellt.
+- **Entscheidung Steuerung 07.11.:** Der Vollumfang hat Vorrang vor dem Workflow-Bündeln. Weg: neue Vollaktivierung statt Wiederherstellung.
+  1. **Isolierter Universe-Refresh, ohne Auslieferung.** `company-intelligence-refresh.yml` mit `verification=true`, `universe=true`, `financial=true`. Er läuft in frischen Namensräumen (`verify-universe-<runId>`, `verify-eligible-<runId>`), stellt den aktuellen privaten Produktionsstand wieder her und vergleicht mit dem aktiven GOOD (Legacy, frisch).
+     - Der nicht-universelle Prüf-Refresh nutzt den festen Namensraum `verify-continuous-discover-top46`; der ist abgelaufen (Run 42348599878) und für diesen Weg nicht nötig.
+     - Abnahme (`universe-release.mjs`, `FULL_UNIVERSE_SCALE_ACCEPTANCE_REQUIRED`): `verification`, `status SUCCESS`, `cohortIssuers > 45`, `freshRestoreVerified`, `published`, `candidateQA PASS`, `privateCompanies ≥ minimumPrivatePayloads`.
+  2. **Produktionsschritt `activate`.** `company-intelligence-universe-release.yml` mit `mode=activate`, `scaling_run=<Run-ID aus 1>`. Danach folgen Audit, Browser-Suite, Pages-Release, Wartezeit und Live-QA. Im Fehlerfall greift „Fail closed to immutable 46 scope“ (`restore46`).
+  3. **Nachlauf.** Health-Lauf und SLO prüfen. Ab dann sichert der Auto-Re-Freeze den Rollback.
+- Produktionsschritte (2) startet die Steuerung mit Owner-Auftrag.
+
+## Stand 07.11.2026 22:30: activate scheitert an der Vorbedingung „46er live“
+
+- **Isolierter Universe-Refresh** 42413619537: SUCCESS, `freshRestoreVerified`, `privateCompanies` 5.126, Kandidaten-QA bestanden. Vorher waren zwei QA-Fehler zu beheben, beide Folgen von E5: Service Worker (#1609) und gebündelte Consumer-Module (#1610).
+- **Live-Ausfall 19:55 und Behebung.** Seit E5 standen `rollout.js`, `contract.js`, `stock-section.js` und `detail.js` in den minifizierten Discover-Bündeln. `stageProduction` erreichte sie dort nicht. Die Folge war ein Generationsfehler im Live-Rollout („derzeit nicht verfügbar“, fail-closed schloss das Gate), danach ein wirkungsloser Kill-Switch. #1611 hält diese Module wieder als eigene Skripte. OFF-Release 42417705186 grün; live geprüft: `stage:0, productionOff`.
+- **`activate` (Run 42418672753):** Abbruch vor jeder Änderung (`activationWritten: false`, `privateStateModified: false`). Davor grün: Kandidat `1460f829…`, 4.934 geeignete Emittenten / 5.091 Titel, 5.560 Assets bytegleich, Browser-Abnahme PASS.
+- **Vorbedingung von `activate`** (`universe-release.mjs`, `known` und `delivery`): Live muss `company-intelligence-delivery.json` das aktuelle 46er-Legacy-GOOD ausliefern, mit derselben Generation, 46 Titeln und 45 Emittenten. Bei geschlossenem Gate kommt 404, und `activate` bricht ab.
+- **Reihenfolge, damit die Vorbedingung erfüllt ist:**
+  1. Gate mit dem aktiven Legacy-GOOD öffnen (`company-intelligence.yml`, `production_release=enable`, voller Hash-Readback).
+  2. Pages-Release mit grüner Live-Abnahme; `delivery.json` PASS, 46/45.
+  3. `activate` erneut mit demselben `scaling_run`.
+- Produktionsschritte startet die Steuerung mit Owner-Auftrag.
+- **Abgelaufener Vorgänger (Entscheidung Steuerung 07.11., activate 42421918068 mit `CONSUMER_EXPIRED`).** `download-public.mjs` lässt ein abgelaufenes `previous.json` weg (`expiredPreviousOmitted`), statt den Download abzubrechen. Der Vorgänger ist nur Verlauf für Clients mitten im Wechsel und wird nie wiederhergestellt; ein abgelaufener aktueller Stand scheitert weiter mit `CONSUMER_EXPIRED`.
+
+## Stand 08.11.2026: Vollumfang live, Rollback-Freeze braucht einen neuen Erneuerungsweg
+
+- **Live seit 08.11. 03:20 UTC.** `activate` 42439254897 (main a04f7d6) grün, Pages-Release 42441619766 mit grüner Live-Abnahme: `delivery.json` PASS, Generation `579c2091ffdccc2040158266`, 4.934 Emittenten / 5.091 Titel. Die zwei roten Versuche davor (42425408351, 42432674142) scheiterten nur am Production-Smoke im Pages-Lauf (je eine zufällige Seite); #1616 und #1617 prüfen eine solche Seite einmal neu.
+- **Rollback-Freeze `c39a8135aeeb3a9286f321ef`.** Erzeugt vom Refresh 42383724014 am 07.11. gegen 15:00 UTC, verfällt sieben Tage nach `generatedAt`, also **am 14.11. gegen 15:00 UTC**. Dieselben Bytes sind seit dem Rollback vom 08.11. auch das Legacy-GOOD.
+- **Warum der Auto-Re-Freeze das nicht mehr abdeckt.** Bei aktivem Universum schreibt der Continuous Refresh nur in den Universe-Namensraum (`refresh-run.mjs`, `universeActive`). Das Legacy-GOOD rückt also nicht mehr vor, und es gibt nichts Neueres einzufrieren. `refreeze-auto-guard.mjs` meldet außerdem `UNIVERSE_ACTIVE` und blockiert. `refreeze` selbst verlangt den 46/45-Umfang (`assertLegacyScope`), ebenso `restore46` (`SAFE_LEGACY_SCOPE_REQUIRED`). Ein Freeze direkt auf das Universe-GOOD (4.934 Emittenten) ist deshalb kein gültiger Rollback.
+- **Folge ohne Erneuerung.** Ab 14.11. scheitern `restore46` und `rollback` mit `CONSUMER_EXPIRED`. Ein Universe-Fehler endet dann im fail-closed-Pfad mit geschlossenem Gate (Company Intelligence nicht sichtbar, Kill-Switch geprüft, #1611) statt im 46er-Stand. Das ist sicher, aber ein sichtbarer Ausfall des Kapitels.
+- **Entscheidung Steuerung 08.11.: Weg (a), 46er-Projektion.** Ein sichtbarer Rückfall auf 46 ist besser als ein geschlossenes Kapitel; die Bytes stammen aus einem bereits live abgenommenen Stand.
+- **Umsetzung** (`universe-projection.mjs`, `frozen-refreeze.mjs#refreezeFromUniverse`, `universe-release.mjs refreeze --from-universe`):
+  1. Vorbedingungen: `activation.json` `AVAILABLE`, und die Live-`delivery.json` liefert genau das Universe-GOOD aus (Generation und Umfang).
+  2. Die 45 Emittenten-Dateien werden bytegleich aus dem Universe-GOOD übernommen, jede per SHA-256 gegen dessen Manifest gelesen. Nur `index.json` und die Lookup-Shards entstehen neu, eingeschränkt auf die 46 Kohortentitel; die Listings je Titel stammen unverändert aus den Universe-Shards.
+  3. Die eigene Generation ist ein Hash aus Herkunft, Kohorte und Datei-Hashes. `generatedAt` ist der Universe-Stand, der neue Freeze gilt also sieben Tage ab dem Universe-Stand. Das Manifest trägt die Kohortenfreigabe (`refreshApproved`) und die Herkunft (`projection`).
+  4. Fail-closed, ohne dass etwas gebaut wird: Kohortenemittent oder -titel fehlt im Universum, ein Hash weicht ab, weniger als 45 deutsche Profile (wie `GERMAN_PROFILE_REGRESSION`).
+  5. Einfrieren mit denselben Sicherungen wie `refreeze`: Archiv des alten Zeigers, Kandidat im inaktiven Slot, Compare-and-Swap, Readback aus leerem Verzeichnis, Schutzzustand vorher/nachher. Das Universe-GOOD darf sich während des Kopierens nicht bewegen. Geschrieben wird nur im Rollback-Namensraum; Legacy-GOOD, Universe-GOOD, Aktivierung und Gate bleiben byte-gleich. `restore46` übernimmt den Freeze wie bisher.
+- **Automatisch** im bestehenden Auto-Re-Freeze (`company-intelligence-refreeze-auto.yml`, alle zwei Tage):
+  - `refreeze-auto-guard.mjs` wählt die Quelle (`source`): `legacy` wie bisher, `universe` bei aktivem Universum. Alle Prüfungen laufen dann gegen das Universe-GOOD (Gate, Frische, Health, eine Generation, Artefakte).
+  - Neu eingefroren wird, sobald das Universe-GOOD neuer ist als der Freeze. Die Nachprüfung verlangt, dass die Projektion aus genau der geprüften Universe-Generation stammt.
+- **Warnung:** Der Health-Lauf (`refresh-run.mjs health`, `freeze-expiry.mjs`) meldet `rollbackFreeze` (Restlaufzeit) und warnt ab 48 h vor Verfall, ebenso bei abgelaufenem, fehlendem oder unlesbarem Freeze. Der Exit-Code bleibt unverändert.
+- **Verworfen:** ein paralleler 46er-Refresh in den Legacy-Namensraum, weil er denselben privaten Zustand (`stateNamespace`) wie der Universe-Refresh beschreiben würde.
+- **Zeitplan:** gemergt und einmal real gelaufen bis spätestens 11.11.; der Freeze `c39a8135` verfällt am 14.11. gegen 15:00 UTC.

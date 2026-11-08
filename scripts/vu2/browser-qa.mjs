@@ -190,7 +190,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    for(const ziel of ['#/aktien','#/screener','#/strategien'])if(!wege.includes(ziel))befund(view,width,'Weg nach '+ziel+' fehlt auf Home');
    await page.waitForFunction(()=>/Stand \d{2}\.\d{2}\.\d{4}|Gerade keine Veränderungen abrufbar/.test(document.querySelector('#qx-main').innerText),null,{timeout:30000}).catch(()=>befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall'));
    const fuss=await page.locator('footer.qx-foot').innerText();
-   for(const satz of ['Keine Anlageempfehlung','SEC EDGAR','Tiingo'])if(!fuss.includes(satz))befund(view,width,'Fusszeile ohne '+satz);
+   if(!fuss.includes('Keine Anlageempfehlung'))befund(view,width,'Fusszeile ohne Keine Anlageempfehlung');
+   /* Owner-Entscheidung 07.11.2026 (PLAN §11): Anbieter stehen zentral auf /infos/#quellen, nicht im Fuß. */
+   for(const name of ['SEC EDGAR','Tiingo'])if(fuss.includes(name))befund(view,width,'Fusszeile nennt Anbieter '+name);
    await page.route('**/quant/config/market-calendar.json',route=>{absichtlich++;return route.abort();});
    await page.reload();await bereit(page,'home');
    /* Fünf Einstiege unter „Selbst suchen“: Aktie, Screener, Anlagestil, Technische Lagen, Musterdepots (#1497). */
@@ -218,7 +220,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(!mitStand&&!heute.includes('Gerade keine Veränderungen abrufbar'))befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall');
    /* Quellen und die Absage an Empfehlung, Prognose, Kursziel. */
    const fuss=await page.locator('footer.qx-foot').innerText();
-   for(const satz of ['Keine Anlageempfehlung','SEC EDGAR','Tiingo'])if(!fuss.includes(satz))befund(view,width,'Fusszeile ohne '+satz);
+   if(!fuss.includes('Keine Anlageempfehlung'))befund(view,width,'Fusszeile ohne Keine Anlageempfehlung');
+   /* Owner-Entscheidung 07.11.2026 (PLAN §11): Anbieter stehen zentral auf /infos/#quellen, nicht im Fuß. */
+   for(const name of ['SEC EDGAR','Tiingo'])if(fuss.includes(name))befund(view,width,'Fusszeile nennt Anbieter '+name);
    if(!await page.locator('footer.qx-foot a[href="/quant/methodology/"]').count())befund(view,width,'Fusszeile ohne Methodik im Detail');
    /* FAELLT DER KALENDER AUS, DARF DIE SEITE IHRE EINSTIEGE NICHT VERLIEREN. */
    await page.route('**/quant/config/market-calendar.json',route=>{absichtlich++;return route.abort();});
@@ -425,7 +429,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const ist=abschnitte.filter(id=>soll.includes(id));
    if(ist.join('|')!==soll.filter(id=>ist.includes(id)).join('|'))befund(view,width,'Abschnitte in falscher Reihenfolge: '+ist.join('|'));
    const grenzen=await page.locator('#grenzen').innerText();
-   for(const q of ['Tiingo','SEC EDGAR'])if(!grenzen.includes(q))befund(view,width,'Daten und Grenzen ohne '+q);
+   /* Owner-Entscheidung 07.11.2026: Stand ja, Anbieternamen nein (zentral auf /infos/#quellen). */
+   if(!/Daten & Methodik/.test(grenzen))befund(view,width,'Daten und Grenzen ohne Daten & Methodik');
+   for(const q of ['Tiingo','SEC EDGAR'])if(grenzen.includes(q))befund(view,width,'Daten und Grenzen nennt Anbieter '+q);
    if(!/\d{2}\.\d{2}\.\d{4}/.test(await page.locator('.qx-quote').innerText()))befund(view,width,'Kurs ohne Datum');
    if(!/keine Prognose/i.test(await page.locator('#historie').innerText()))befund(view,width,'Historical Replay ohne Prognose-Absage');
    await page.locator('#technik').getByRole('link',{name:'Chartbild öffnen',exact:true}).waitFor();
@@ -553,7 +559,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.waitForFunction(k=>location.hash.includes('kennzahl='+k),kennzahl,{timeout:10000}).catch(()=>{});
    await page.reload();await bereit(page,'zahlen');await page.locator('#qx-main .qv3-mchips').waitFor();
    if(await page.locator('#qx-main .qv3-mchips button[aria-pressed="true"]').getAttribute('data-id')!==kennzahl)befund(view,width,'history link lost state');
-   if(!/SEC EDGAR/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Zahlen ohne Quelle');
+   {const z=await page.locator('#qx-main').innerText();/* Owner-Entscheidung 07.11.2026: Anbieter auf /infos/#quellen, hier Stand und Herkunft ohne Anbieternamen. */if(/SEC EDGAR/.test(z))befund(view,width,'Zahlen nennen Anbieter SEC EDGAR');if(!/Rückblickende Ansicht|Aufbereitung vom/.test(z))befund(view,width,'Zahlen ohne Stand/Herkunft');}
   }
   if(view==='zahlen'&&!v3){
    await page.locator('#qx-main svg').first().waitFor();
@@ -568,7 +574,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Die Auswahl steht in der Adresse und kommt nach einem Neuladen wieder. */
    await page.reload();await bereit(page,'zahlen');
    if(await page.getByRole('combobox',{name:'Kennzahl',exact:true}).inputValue()!==kennzahl)befund(view,width,'history link lost state');
-   if(!/SEC EDGAR/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Zahlen ohne Quelle');
+   {const z=await page.locator('#qx-main').innerText();/* Owner-Entscheidung 07.11.2026: Anbieter auf /infos/#quellen, hier Stand und Herkunft ohne Anbieternamen. */if(/SEC EDGAR/.test(z))befund(view,width,'Zahlen nennen Anbieter SEC EDGAR');if(!/Rückblickende Ansicht|Aufbereitung vom/.test(z))befund(view,width,'Zahlen ohne Stand/Herkunft');}
   }
   if(view==='vergleich'){
    if(await page.locator('#qx-main table thead th').count()!==3)befund(view,width,'Vergleich ohne zwei Spalten');

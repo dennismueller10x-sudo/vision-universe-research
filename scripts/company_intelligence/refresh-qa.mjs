@@ -12,6 +12,7 @@ import {frozenInventory,refreshConfig} from './refresh-approval.mjs';
 import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
 import {runtimeCandidate} from './runtime-candidate.mjs';
 import {candidateRollout} from './candidate-rollout.mjs';
+import {routeDeliveryBundles} from './bundle-routes.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],live=args.includes('--live');
 const origin='https://research.visionuniverse.de',out=arg('--out'),directory=arg('--consumer');mkdirSync(dirname(out),{recursive:true});
@@ -41,16 +42,17 @@ for(const [path,meta] of Object.entries(manifest.assets)){
 const browser=await chromium.launch({headless:true,args:['--no-sandbox'],executablePath:process.env.CHROMIUM_PATH||undefined}),cases=[];
 let active=null,activePage=null;
 try{
- const locked=await browser.newPage();let blockedRequests=0;locked.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))blockedRequests++;});
+ const locked=await browser.newPage({serviceWorkers:'block',serviceWorkers:'block'});let blockedRequests=0;locked.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))blockedRequests++;});
  await locked.goto(origin+'/discover/#/s/US_REAL/AAPL');await locked.waitForSelector('#research-access-gate');assert.equal(await locked.locator('.ci-company-intelligence').count(),0);assert.equal(blockedRequests,0);await locked.close();
  const state=accessStateFor(process.env.RESEARCH_ACCESS_PASSWORD);
  for(const ticker of ['TSLA','AAPL','NVDA','PLTR','XPEV','MSFT','ACU','VEON'])for(const width of [390,1440]){
   const cid=Object.keys(frozenInventory).find(c=>frozenInventory[c].tickers.includes(ticker));
   const expected=JSON.parse(payloads.get(`snapshots/${manifest.generation}/${cid}.json`));
-  const page=await browser.newPage({viewport:{width,height:860},colorScheme:'dark'}),errors=[],requests=[];
+  const page=await browser.newPage({serviceWorkers:'block',viewport:{width,height:860},colorScheme:'dark'}),errors=[],requests=[];
   active={ticker,cid,width,errors,requests};activePage=page;
   if(!live){
    await page.route('**/company-intelligence/data/**',route=>{const p=new URL(route.request().url()).pathname.split('/company-intelligence/data/')[1];if(!payloads.has(p)){active.unknownAssets=[...(active.unknownAssets||[]),p];return route.fulfill({status:404,body:'UNKNOWN_CANDIDATE_ASSET'});}return route.fulfill({status:200,contentType:'application/json',body:payloads.get(p)});});
+   await routeDeliveryBundles(page,{'company-intelligence/config/rollout.js':text=>candidateRollout(text,manifest.generation)},origin);
    await page.route('**/company-intelligence/config/rollout.js*',async route=>{const response=await route.fetch();const text=await response.text();await route.fulfill({response,body:candidateRollout(text,manifest.generation)});});
   }
   await page.addInitScript(({key,state})=>{localStorage.setItem(key,JSON.stringify(state));localStorage.setItem('vu-discover-theme-v1','dark');},{key:STORAGE_KEY,state});
@@ -69,7 +71,7 @@ try{
   const links=await chapter.locator('a').evaluateAll(as=>as.map(a=>({url:a.href,height:a.getBoundingClientRect().height})));assert(links.filter(a=>a.height>0).every(a=>a.height>=44&&a.url.startsWith('https:')));
   cases.push({ticker,cid,width,status:'PASS',news:expected.news.length,generation:manifest.generation});await page.close();
  }
- const outside=await browser.newPage();let requests=0;outside.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests++;});await outside.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});
+ const outside=await browser.newPage({serviceWorkers:'block',serviceWorkers:'block'});let requests=0;outside.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests++;});await outside.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});
  await outside.goto(origin+'/discover/#/s/US_REAL/ZZZZZ');await outside.waitForTimeout(2000);assert.equal(requests,0);await outside.close();
  const report={status:'PASS',mode:live?'ACTUAL_PRODUCTION':'REAL_UI_ROUTED_CANDIDATE',sourceCommit:release.sourceCommit,generation:manifest.generation,verifiedAssets:payloads.size,protectedAccess:true,cohortStocks:46,cohortIssuers:45,cases};writeFileSync(out,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({status:report.status,mode:report.mode,generation:report.generation,cases:cases.length}));
 }catch(error){

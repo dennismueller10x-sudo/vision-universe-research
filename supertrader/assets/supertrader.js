@@ -308,7 +308,7 @@
     var rows = [['Datenstand', 'Signale auf Tagesschlusskursen vom ' + dateDe(asOf) + (last && last !== asOf ? ' · letzter abgeschlossener Handelstag ' + dateDe(last) : '') + '.']]
       .concat(DM)
       .concat([
-        ['Kursdaten', 'Tageskurse aus der Discover-Dateninfrastruktur (Tiingo, split-adjustiert).'],
+        ['Kursdaten', 'Tagesschlusskurse, split-bereinigt (Anbieter: Datenquellen & Methodik im Menü).'],
         ['Modellpositionen', 'Simulationen nach festen Regeln – keine realen Orders.'],
         ['Methodik', h('a', { href: BASE + 'sources/', text: 'Quellen der Regeln' })],
       ]);
@@ -1663,6 +1663,8 @@
     if (D.registry) D.registry.strategies.forEach(function (x) { if (x.pending_semantics === 'WATCHLIST' && !isResearchS(x)) WATCH[x.strategy_id] = x.watchlist_label || 'Beobachtung'; if (isResearchS(x)) RESEARCH[x.strategy_id] = true; }); if (D.registry) HAS_CURRENT = D.registry.strategies.some(function (x) { return x.mode === 'LIVE' && !isResearchS(x); });
     APP = D;
     return UI.then(function () {
+      /* Owner-Entscheidung 07.11.2026: Anbieternamen (z. B. TraderFox) nur auf der Quellenseite; sonst neutral dargestellt. */
+      if (page !== 'sources' && window.VUUI && window.VUUI.neutralSources) { Object.keys(D).forEach(function (k) { D[k] = window.VUUI.neutralSources(D[k]); }); D.srcMap = D.sources ? byId(D.sources.sources, 'source_id') : {}; }
       main.innerHTML = '';
       /* Redesign 2027 (ST01–ST08): neue Oberflaeche, sofern ihr Modul geladen ist. Die Methodenansicht der quellentreuen
          Kandidaten (?sf=) und das historische Beispiel bleiben bei der bisherigen Oberflaeche. */

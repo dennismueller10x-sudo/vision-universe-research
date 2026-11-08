@@ -127,10 +127,10 @@
         '<div style="margin-top:12px">' + U.bars(known.slice(-12).map(function (x) { return [label(x), x.value]; }), { height: 150, label: r.metric.label + " je Periode" }) + "</div>";
       var top = el("div"); top.innerHTML = h;
       var after = el("div");
-      after.innerHTML = '<div style="margin-top:10px">' + U.help(r.metric.label + ": gemeldeter Wert aus den SEC-Berichten von " + (r.name || ticker) + ", je Periode, ohne Schätzung.") + "</div>" +
+      after.innerHTML = '<div style="margin-top:10px">' + U.help(r.metric.label + ": gemeldeter Wert aus den Geschäftsberichten von " + (r.name || ticker) + ", je Periode, ohne Schätzung.") + "</div>" +
         U.sect("In Zahlen") + '<div class="vu-box qv3-liste">' + last5.map(function (x) { return '<div class="qv3-li"><span class="vu-sm"><b>' + U.esc(label(x)) + '</b></span><b class="vu-num vu-sm">' + U.esc(money(x.value)) + "</b></div>"; }).join("") + "</div>" +
-        '<div class="vu-grid" style="margin-top:10px">' + U.tile("Perioden", known.length + " von " + r.rows.length, "mit Wert") + U.tile("Stand", X.dateDe(String(r.generatedAt).slice(0, 10)), "Aufbereitung SEC EDGAR") + "</div>" +
-        '<p class="vu-xs vu-mu" style="margin:10px 0 0">Quelle: SEC EDGAR. Rückblickende Ansicht, kein damaliger Informationsstand.</p>';
+        '<div class="vu-grid" style="margin-top:10px">' + U.tile("Perioden", known.length + " von " + r.rows.length, "mit Wert") + U.tile("Stand", X.dateDe(String(r.generatedAt).slice(0, 10)), "Aufbereitung") + "</div>" +
+        '<p class="vu-xs vu-mu" style="margin:10px 0 0">Rückblickende Ansicht, kein damaliger Informationsstand.</p>';
       var table = X.more("Alle Perioden als Tabelle", function () {
         return el("div", { class: "qx-table-wrap", tabindex: "0" }, [el("table", { class: "qx-table" }, [el("thead", {}, [el("tr", {}, ["Periode", r.metric.label, "Zeitraum", "Bekannt seit"].map(function (t) { return el("th", { text: t }); }))]),
           el("tbody", {}, r.rows.slice().reverse().map(function (x) {
@@ -141,7 +141,7 @@
       target.replaceChildren(top, seg, after, table);
     }
     await update();
-    var inspector = el("div", { style: "margin-top:14px" }); inspector.innerHTML = '<a class="vu-btn vu-btn--line vu-btn--block" href="/quant/data-inspector/">SEC-Daten im Dateninspektor ' + U.pro() + "</a>";
+    var inspector = el("div", { style: "margin-top:14px" }); inspector.innerHTML = '<a class="vu-btn vu-btn--line vu-btn--block" href="/quant/data-inspector/">Daten im Dateninspektor ' + U.pro() + "</a>";
     page.append(inspector);
   }
   async function fundamentals(main, ctx, ticker, params) {
@@ -150,7 +150,7 @@
     main.append(el("a", { class: "v2-back qx-back", href: X.routes.stock(ticker), text: "← Zur Aktienanalyse " + ticker }),
       el("span", { class: "v2-eyebrow", text: "Unternehmenszahlen · " + ticker }),
       el("h1", { class: "qx-h1", text: "Wie entwickelt sich das Geschäft?" }),
-      el("p", { class: "v2-lead qx-lead", text: "Geschäftszahlen über die Jahre – mit Berichtszeitraum, Meldedatum und Herkunft aus SEC-Meldungen." }));
+      el("p", { class: "v2-lead qx-lead", text: "Geschäftszahlen über die Jahre – mit Berichtszeitraum, Meldedatum und Herkunft aus den Pflichtmeldungen." }));
     var metricId = C.metrics.some(function (m) { return m.id === params.get("kennzahl"); }) ? params.get("kennzahl") : "revenue";
     var periodId = ["annual", "quarterly", "ttm"].indexOf(params.get("periode")) >= 0 ? params.get("periode") : "annual";
     var metric = select("Kennzahl", C.metrics.map(function (m) { return [m.id, m.label]; }), metricId);
@@ -180,7 +180,7 @@
           global.QuantCharts.barChart({ title: r.metric.label + " nach Berichtsperiode", description: "Gemeldete Werte je Periode.", width: Math.min(1100, main.clientWidth - (innerWidth < 760 ? 76 : 100)), maxLabels: innerWidth < 650 ? 4 : 10, height: 280,
             items: known.map(function (x) { return { label: period.value === "annual" ? String(x.fiscalYear) : x.fiscalPeriod + " " + String(x.fiscalYear).slice(-2), value: x.value / scale }; }),
             yFormat: function (v) { return v.toLocaleString("de-DE", { maximumFractionDigits: 1 }); } }),
-          el("p", { class: "qx-small", text: known.length + " Perioden mit Wert, " + r.missing + " ohne darstellbaren Wert. Quelle: SEC EDGAR, Aufbereitung vom " + X.dateDe(String(r.generatedAt).slice(0, 10)) + ". Rückblickende Ansicht, kein damaliger Informationsstand." })]),
+          el("p", { class: "qx-small", text: known.length + " Perioden mit Wert, " + r.missing + " ohne darstellbaren Wert. Aufbereitung vom " + X.dateDe(String(r.generatedAt).slice(0, 10)) + ". Rückblickende Ansicht, kein damaliger Informationsstand." })]),
         X.more("Alle Perioden als Tabelle", function () {
           return el("div", { class: "qx-table-wrap", tabindex: "0" }, [el("table", { class: "qx-table" }, [el("thead", {}, [el("tr", {}, ["Periode", r.metric.label, "Zeitraum", "Bekannt seit"].map(function (t) { return el("th", { text: t }); }))]),
             el("tbody", {}, r.rows.slice().reverse().map(function (x) {
@@ -191,7 +191,7 @@
     }
     metric.onchange = period.onchange = update;
     await update();
-    main.append(el("div", { class: "qx-actions" }, [X.btn("SEC-Daten im Dateninspektor", "/quant/data-inspector/", "secondary")]));
+    main.append(el("div", { class: "qx-actions" }, [X.btn("Daten im Dateninspektor", "/quant/data-inspector/", "secondary")]));
   }
 
   /* ============================================================= VERGLEICH */

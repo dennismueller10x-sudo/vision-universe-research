@@ -566,7 +566,7 @@
   function footer(extra) {
     var d = S.data, errs = (d.errors || []).length;
     return dmBlock("Stand " + dateDE(d.generatedAt), [
-      ["Quelle", "Form 13F-HR der US-Börsenaufsicht SEC (EDGAR, data.sec.gov)."],
+      ["Grundlage", "Quartalsmeldungen der Investoren (Form 13F-HR)."],
       ["Datenstand", esc(d.latestPeriodLabel || "") + (d.latestPeriodLabel ? " · " : "") + "zuletzt geprüft " + dateDE(d.generatedAt) + (errs ? " · " + errs + " Fonds derzeit nicht abrufbar" : "") + "."],
       ["Was 13F zeigt", "Nur US-Aktien, ETFs und börsennotierte Optionen zum Quartalsende, veröffentlicht bis zu 45 Tage später. Keine Short-Positionen, Anleihen oder ausländischen Aktien."],
       ["Käufe & Verkäufe", "Aus dem Vergleich zweier Quartale abgeleitet; Handelszeitpunkt und -preis sind nicht bekannt. Volumen = Stückzahländerung × Kurs zum Quartalsende, daher geschätzt. Put/Call-Positionen stehen mit dem Wert des Basiswerts."],

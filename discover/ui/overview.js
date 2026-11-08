@@ -145,7 +145,7 @@
     var html = '<div class="dv3-gesch" data-track="' + have[0][0] + '">' + U().seg(have.map(function (t) { return { id: t[0], label: t[1] }; }), have[0][0], { label: "Kennzahl" }) +
       '<div class="dv3-gesch-body"></div>' +
       (st[0] ? '<div class="vu-box vu-box--lime dv3-kern"><b>' + esc(st[0]) + "</b></div>" : "") +
-      '<div style="margin-top:10px">' + U().help("GJ = Geschäftsjahr. Es endet je Firma in einem anderen Monat; die Zahlen stammen aus den SEC-Berichten.") + "</div>" +
+      '<div style="margin-top:10px">' + U().help("GJ = Geschäftsjahr. Es endet je Firma in einem anderen Monat; die Zahlen stammen aus den Geschäftsberichten.") + "</div>" +
       (st.length > 1 ? '<ul class="dv3-checks">' + st.slice(1, 4).map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ul>" : "") + "</div>";
     return section("geschaeft", "Wie sich das Geschäft entwickelt hat", html);
   }
@@ -237,7 +237,7 @@
   }
   /** Mehr in anderen Welten (sechs Perspektiven) */
   function welten(d) {
-    var t = d.symbol, P = [["technical", "Chart", "Trend, Zonen"], ["fundamental", "Zahlen", "SEC-Berichte"], ["quant", "Faktoren", "6 Eigenschaften"], ["supertrader", "Methoden", "Regeln der Profis"], ["elliott", "Wellen", "Struktur"], ["hedgefonds", "Investoren", "13F-Daten"]];
+    var t = d.symbol, P = [["technical", "Chart", "Trend, Zonen"], ["fundamental", "Zahlen", "Geschäftsberichte"], ["quant", "Faktoren", "6 Eigenschaften"], ["supertrader", "Methoden", "Regeln der Profis"], ["elliott", "Wellen", "Struktur"], ["hedgefonds", "Investoren", "13F-Daten"]];
     if (d.region === "EUROPE") return "";
     return section("welten", "Mehr zu " + (d.companyName || t) + " in anderen Welten", '<div class="vu-grid dv3-welten" style="--vu-cols:3">' + P.map(function (p) {
       return '<a class="vu-box dv3-welt" href="' + esc(U().perspectiveHref(p[0], t)) + '">' + U().hud(p[0], 30, 9) + "<b>" + esc(p[1]) + '</b><span class="vu-xs vu-mu">' + esc(p[2]) + "</span></a>";
