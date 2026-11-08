@@ -65,6 +65,7 @@
     "discover-live-smoke.yml",
     "discover-realtime-qa.yml",
     "europe-discover-release-qa.yml",
+    "fundamental-sec-freshness.yml",
     "realtime-production-smoke.yml",
     "supertrader-live-smoke.yml",
     "technical-live-qa.yml",
@@ -224,9 +225,6 @@
   "freshness-monitor.yml": {
    "bundle": "monitor"
   },
-  "fundamental-sec-freshness.yml": {
-   "bundle": "monitor"
-  },
   "history-store-sync.yml": {
    "bundle": "maintenance"
   },
@@ -280,6 +278,9 @@
   },
   "quant-model-depots.yml": {
    "bundle": "pipeline-weekly"
+  },
+  "quant-pattern-total-return-check.yml": {
+   "bundle": "research"
   },
   "quant-portfolio-research.yml": {
    "bundle": "research"

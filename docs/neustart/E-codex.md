@@ -83,3 +83,13 @@ PR [#1542](https://github.com/dennismueller10x-sudo/vision-universe-research/pul
 **Keine Löschung, 0 eingesparte Bytes.** Statische Verweise, dynamische Aufrufe, direkte URLs und mögliche andere Deployments lassen keine belastbare Löschfreigabe zu. Die Analyse verändert keine Produktdateien, Daten, Workflows, Registries oder Bestands-Tests. Nur nachweislich sicher ungenutzte Dateien dürften später entfernt werden.
 
 Reproduzieren: `node scripts/quality/find-unused.mjs --live-evidence docs/quality/unused-live-evidence.json`. Sechs Analyzer-Vertragstests bestehen unter Node 22.23.4. Der aktuelle vollständige CI-Status und die Freigabe stehen im PR; Strang A prüft und mergt.
+
+## E8 – Datenqualität je Aktie (Abschluss 07.11.2026)
+
+PR [#1541](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/1541), Branch `codex/e8-data-quality`, auf `main` (`e3e43e723`) rebasiert. Sechs zusätzliche WARN-Regeln prüfen Tagesbewegungen ohne Splitbeleg, fehlende Logos großer Unternehmen, fehlende Firmennamen, alte Analysten-Einstufungen, Depotpositionen ohne aktuellen veröffentlichten Schluss und Supertrader-Positionen ohne positiven Stopp. Vorhandene ERROR-Regeln und Fachmodelle bleiben unverändert; WARN blockiert auch `--strict` nicht.
+
+`/status/` und `diagnose.mjs TICKER` lesen denselben Vertrag. Die Übersicht zeigt sechs Karten, den echten UTC-Vortagstrend und Beispiele mit Direktlink. Fehlende oder alte Berichte sowie nicht prüfbare Quellen werden ausdrücklich benannt. Keine Produktionsdatei wurde von Hand erzeugt oder angepasst.
+
+15 Regel-, Adapter-, CLI- und UI-Vertragstests bestehen nach dem Rebase unter Node 22.23.4. Der aktuelle vollständige CI-Status und die Freigabe stehen im PR; Strang A prüft und mergt. Datenstandsfehler alter Läufe werden nicht durch geänderte Daten oder Erwartungen übergangen.
+
+Die tägliche Veröffentlichung und das Vorhalten des echten Vortags bleiben Aufgabe von A: `node scripts/core/data-quality.mjs --out=PFAD --previous=GESTERN.json`. Kein neuer Workflow und kein neuer Zeitplan. Ohne veröffentlichten Bericht erscheint die Übersicht als nicht verfügbar. Vertrag: [DATA_QUALITY.md](../data/DATA_QUALITY.md).

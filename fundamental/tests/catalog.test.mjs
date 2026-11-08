@@ -427,11 +427,20 @@ test('SEC-Aktualitaet: neue Meldungen seit dem letzten Verbraucherlauf loesen ih
   assert.deepEqual(r.items.map((x) => x.cik), ['0000000001']);
   assert.equal(r.notAdopted, 1);
   assert.equal(classify([], { consumerAsOf: '2026-10-19', state, issuers: 3 }).decision, 'CURRENT');
-  const wf = readFileSync(new URL('.github/workflows/fundamental-sec-freshness.yml', root), 'utf8');
+  const { check: wf } = secWatcher(root);
   assert.match(wf, /gh workflow run sec-consumer-fundamentals\.yml/);
-  assert.match(wf, /contents: read/);
+  assert.match(wf, /permissions:\n      contents: read\n      actions: write\n/);
   assert.doesNotMatch(wf, /git (commit|push)/, 'der Waechter schreibt nichts ins Repository');
 });
+
+/* Die Waechter-Jobs stehen seit dem Buendel `monitor` in monitor.yml (vormals fundamental-sec-freshness.yml).
+   Geprueft werden genau diese beiden Jobs samt Auswahl-Regeln, nicht die uebrigen Pruefungen der Datei. */
+function secWatcher(root) {
+  const all = readFileSync(new URL('.github/workflows/monitor.yml', root), 'utf8');
+  const job = (name) => { const i = all.indexOf('\n  ' + name + ':\n'); assert.ok(i > 0, 'Job ' + name); const rest = all.slice(i + 1); const end = rest.search(/\n  # --- |\n  [a-z][a-z0-9-]*:\n/); return rest.slice(0, end < 0 ? undefined : end); };
+  const auswahl = job('auswahl');
+  return { all, auswahl, check: job('sec-frische'), publish: job('sec-veroeffentlichung') };
+}
 
 test('Veroeffentlichung: Stand und frisch uebernommene Meldung muessen ausgeliefert sein', async () => {
   const { gzipSync } = await import('node:zlib');
@@ -447,14 +456,17 @@ test('Veroeffentlichung: Stand und frisch uebernommene Meldung muessen ausgelief
   const stale = await checkPublication({ want, fetchImpl: site('2026-10-19', '0001628280-26-040000') });
   assert.equal(stale.ok, false);
   assert.deepEqual(stale.checks.map((c) => c.ok), [false, false]);
-  const wf = readFileSync(new URL('.github/workflows/fundamental-sec-freshness.yml', root), 'utf8');
-  assert.match(wf, /verify-publication\.mjs/);
-  assert.match(wf, /Alarm bei veralteten SEC-Daten/);
-  assert.match(wf, /branches: \[main\]/, 'nur Erzeugerlaeufe auf main');
-  assert.match(wf, /conclusion" = skipped/, 'uebersprungene Laeufe sind kein Alarm');
-  assert.match(wf, /259200/, 'Alarm nach 3 Tagen ohne Uebernahme');
-  assert.match(wf, /gh workflow run pages-release\.yml --ref main/);
-  assert.match(wf, /SEC Consumer-Fundamentals \(Produktuniversum, Bulk companyfacts\)/);
+  const { all, auswahl, check, publish } = secWatcher(root);
+  const wf = check + publish;
+  assert.match(publish, /verify-publication\.mjs/);
+  assert.match(check, /Alarm bei veralteten SEC-Daten/);
+  // Nur Erzeugerlaeufe auf main (vormals branches: [main] am workflow_run): im Auswahl-Job je SEC-Teil verlangt.
+  assert.match(auswahl, /sec_frische\) \[ "\$WR_NAME" = 'SEC Fundamentals — Daily Incremental' \] && \[ "\$WR_BRANCH" = main \] && \[ "\$WR_CONCLUSION" = success \]/, 'nur erfolgreiche Erzeugerlaeufe auf main');
+  assert.match(auswahl, /sec_veroeffentlichung\) \[ "\$WR_NAME" = 'SEC Consumer-Fundamentals \(Produktuniversum, Bulk companyfacts\)' \] && \[ "\$WR_BRANCH" = main \]/, 'nur Erzeugerlaeufe auf main');
+  assert.match(publish, /conclusion" = skipped/, 'uebersprungene Laeufe sind kein Alarm');
+  assert.match(check, /259200/, 'Alarm nach 3 Tagen ohne Uebernahme');
+  assert.match(publish, /gh workflow run pages-release\.yml --ref main/);
+  assert.match(all, /SEC Consumer-Fundamentals \(Produktuniversum, Bulk companyfacts\)/);
   assert.doesNotMatch(wf, /\$\{\{ inputs\./, 'Eingaben nie im Shell-Text');
 });
 

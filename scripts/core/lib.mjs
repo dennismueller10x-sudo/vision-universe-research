@@ -4,10 +4,15 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { gunzipSync } from "node:zlib";
 import { createRequire } from "node:module";
 
 export const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const require = createRequire(import.meta.url);
+// fetch kann Content-Encoding bereits entpackt haben; lokale .gz sind komprimiert.
+function compressedJson(bytes) {
+  return JSON.parse((bytes[0] === 0x1f && bytes[1] === 0x8b ? gunzipSync(bytes) : bytes).toString("utf8"));
+}
 
 export function args(argv = process.argv.slice(2)) {
   const out = { _: [] };
@@ -26,12 +31,12 @@ export function makeLoader({ root = REPO_ROOT, site = null } = {}) {
       const url = site.replace(/\/$/, "") + path;
       const r = await fetch(url, { headers: { "cache-control": "no-cache" } });
       if (!r.ok) throw new Error("HTTP " + r.status + " " + path);
-      return r.json();
+      return path.endsWith(".json.gz") ? compressedJson(Buffer.from(await r.arrayBuffer())) : r.json();
     }
     const file = resolve(root, path.replace(/^\//, ""));
     if (!file.startsWith(resolve(root) + sep)) throw new Error("ausserhalb des Repositorys: " + path);
     if (!existsSync(file)) throw new Error("fehlt: " + path);
-    return JSON.parse(readFileSync(file, "utf8"));
+    return path.endsWith(".json.gz") ? compressedJson(readFileSync(file)) : JSON.parse(readFileSync(file, "utf8"));
   };
 }
 

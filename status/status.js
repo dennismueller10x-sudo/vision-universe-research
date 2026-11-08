@@ -73,6 +73,41 @@
     }
   }
 
+  var qualityReport = null;
+  var qualityReady = null;
+  var qualityTitles = ["Kurssprung über 50 % ohne Split", "Logo fehlt bei Börsenwert über 10 Mrd.",
+    "Firmenname fehlt oder ist nur das Kürzel", "Analysten-Einstufung älter als 45 Tage",
+    "Musterdepot-Position ohne aktuellen Kurs", "Supertrader-Position ohne Stopp"];
+  async function quality() {
+    var grid = document.getElementById("dq-rules"), stand = document.getElementById("dq-stand");
+    try {
+      qualityReport = await load("/status/data-quality.json");
+      if (!Array.isArray(qualityReport.rules) || !Number.isFinite(Date.parse(qualityReport.checkedAt))) throw new Error("Bericht ungültig");
+      var current = qualityReport.checkedAt.slice(0, 10) === new Date().toISOString().slice(0, 10);
+      stand.textContent = (current ? "Stand: " : "Älterer Bericht – Stand: ") + qualityReport.checkedAt.slice(0, 16).replace("T", " ") +
+        " UTC · Nur Hinweise, keine Sperre." + (qualityReport.missingEquityArtifacts?.length ? " Einige Quelldaten fehlen; Prüfung unvollständig." : "");
+      qualityTitles.forEach(function (title, i) {
+        var r = qualityReport.rules.find(function (row) { return row.id === "DQ-E8-" + (i + 1); });
+        var checked = r && r.checked > 0;
+        var delta = checked && current && Number.isInteger(r.delta) ? r.delta : null;
+        var trend = delta === null ? "Kein Vergleich mit gestern" : delta === 0 ? "±0 gegenüber gestern" : (delta > 0 ? "+" : "") + delta + " gegenüber gestern";
+        var card = el("article", { class: "st-dq-card" }, [el("h3", { text: title }),
+          el("p", { class: "st-dq-count", text: checked ? String(r.failed) : "–" }),
+          el("p", { class: "st-dq-trend", text: trend }),
+          el("small", { text: checked ? "Befunde bei " + r.checked + " geprüften Einträgen" : "Keine prüfbaren Quelldaten" })]);
+        if (r?.note) card.appendChild(el("small", { text: r.note }));
+        var examples = el("ul", { class: "st-dq-examples" });
+        (r?.findings || []).slice(0, 3).forEach(function (f) {
+          examples.appendChild(el("li", {}, [el("a", { href: "/status/#/" + encodeURIComponent(f.ticker), text: f.ticker }), " · " + f.text]));
+        });
+        card.appendChild(examples); grid.appendChild(card);
+      });
+    } catch (e) {
+      qualityReport = null;
+      stand.textContent = "Datenqualitätsbericht nicht verfügbar. Anzahl und Vortagstrend können derzeit nicht angezeigt werden.";
+    }
+  }
+
   async function diagnose(ticker) {
     var out = document.getElementById("diag-out");
     out.textContent = "Prüfe " + ticker + " …";
@@ -87,6 +122,15 @@
       out.appendChild(el("ol", { class: "st-steps" }, d.steps.map(function (s) {
         return el("li", {}, [badge(s.status), " ", el("strong", { text: s.label }), s.detail ? el("small", { text: s.detail }) : null]);
       })));
+      await qualityReady;
+      out.appendChild(el("h3", { text: "Datenqualität · gespeicherter Bericht" }));
+      if (qualityReport) {
+        var findings = Core.EquityQuality.forTicker(qualityReport.rules, d.ticker);
+        out.appendChild(el("p", { text: "Stand: " + qualityReport.checkedAt.slice(0, 10) }));
+        out.appendChild(el("ul", {}, findings.map(function (f) { return el("li", { text: f.rule + ": " + f.text }); })));
+        if (!findings.length) out.appendChild(el("p", { text: "Keine Befunde in den prüfbaren Daten." }));
+        if (qualityReport.missingEquityArtifacts?.length) out.appendChild(el("p", { text: "Prüfung unvollständig: Quelldaten fehlen." }));
+      } else out.appendChild(el("p", { text: "Datenqualitätsbericht nicht verfügbar." }));
       if (d.likelyCause) out.appendChild(el("div", { class: "st-cause" }, [
         el("p", {}, [el("strong", { text: "Wahrscheinliche Ursache: " }), d.likelyCause]),
         d.suggestedRepair ? el("p", {}, [el("strong", { text: "Vorgeschlagene Reparatur: " }), d.suggestedRepair]) : null]));
@@ -110,6 +154,7 @@
     document.getElementById("overall").textContent = "Prüfmodule nicht geladen.";
     return;
   }
+  qualityReady = quality();
   health();
   fromHash();
 })();

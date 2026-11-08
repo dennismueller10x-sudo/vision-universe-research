@@ -9,7 +9,7 @@
 // Diese Pruefung vergleicht beides: Welche Unternehmen haben bei der SEC eine
 // neuere Quartals- oder Jahresmeldung, als ihre Verbraucherdatei enthaelt?
 // Sie rechnet nichts um und liest nur. Der Workflow
-// .github/workflows/fundamental-sec-freshness.yml stoesst bei Bedarf den
+// .github/workflows/monitor.yml (Teil sec-frische, vormals fundamental-sec-freshness.yml) stoesst bei Bedarf den
 // bestehenden Erzeuger an (workflow_dispatch) – kein neuer Datenweg, keine
 // fremde Datei wird geschrieben.
 //
