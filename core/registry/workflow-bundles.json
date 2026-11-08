@@ -124,8 +124,12 @@
     "pattern-research-volume.yml",
     "quant-pattern-total-return-check.yml",
     "quant-portfolio-research.yml",
+    "quant-v13-archive.yml",
     "research-labor.yml",
+    "supertrader-delisting-probe.yml",
+    "supertrader-house.yml",
     "vorsorge-etf-sources.yml",
+    "vorsorge-etf-universe.yml",
     "vorsorge-legal-sources.yml"
    ]
   },
@@ -274,9 +278,6 @@
   "quant-ci.yml": {
    "bundle": "ci"
   },
-  "quant-v13-archive.yml": {
-   "bundle": "research"
-  },
   "research-edge2-paper.yml": {
    "bundle": "research"
   },
@@ -312,13 +313,6 @@
   },
   "supertrader-ci.yml": {
    "bundle": "ci"
-  },
-  "supertrader-delisting-probe.yml": {
-   "bundle": "research",
-   "retireCandidate": true
-  },
-  "supertrader-house.yml": {
-   "bundle": "research"
   },
   "supertrader-paper-2027.yml": {
    "bundle": "pipeline-daily"
@@ -356,9 +350,6 @@
   },
   "universe-master.yml": {
    "bundle": "pipeline-weekly"
-  },
-  "vorsorge-etf-universe.yml": {
-   "bundle": "research"
   },
   "vu2-browser-qa.yml": {
    "bundle": "ci"

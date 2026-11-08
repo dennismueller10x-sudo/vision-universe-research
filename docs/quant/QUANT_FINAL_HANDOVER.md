@@ -202,7 +202,7 @@ Siehe **Abschnitt F**: Stand der Archivgeneration und Wiederherstellung.
 | Workflow | Auslöser | Zweck | Secrets |
 |---|---|---|---|
 | `quant-ci.yml` | Push/PR auf Quant-Pfade | Tests, Demo-Aktualität | `TIINGO_API_KEY`, `VU_HISTORY_S3_*` |
-| `quant-v13-archive.yml` | Commit-Marke `[v13-archive:<modus>]` | privates Archiv (put/get/verify/keycheck/restore/demos/catalog …) | `V13_ARCHIVE_PRIVATE_KEY`, `VU_HISTORY_S3_*` |
+| `research.yml (Teil v13-archiv, vormals quant-v13-archive.yml)` | Commit-Marke `[v13-archive:<modus>]` | privates Archiv (put/get/verify/keycheck/restore/demos/catalog …) | `V13_ARCHIVE_PRIVATE_KEY`, `VU_HISTORY_S3_*` |
 | `security-master-weekly.yml` | nur manuell | Stamm-Neubau, Gate, optional Commit | – |
 | `market-data-refresh.yml` | täglich 22:30 UTC, manuell | Kurse, Faktoren, Discover, Nachtkette (Technical, Supertrader, Im Blick) | `TIINGO_API_KEY`, `VU_HISTORY_S3_*` |
 | `long-series.yml` | Zeitplan, manuell | lange Wochenreihen | `VU_HISTORY_S3_*` |

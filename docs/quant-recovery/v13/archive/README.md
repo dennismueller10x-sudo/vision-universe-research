@@ -103,7 +103,7 @@ Nicht enthalten ist der private Transportschlüssel des Tiingo-Abrufs. Er wird n
    - Am 30.10.2026 mit Version 1.2.0 ausgeführt: alle 8 Teile und 11.616 Dateien identisch; das Faktorpanel ist bytegleich mit dem Original. (1.1.0 am 29.10.2026: 7 Teile, 11.615 Dateien.)
    - Zusätzlich lädt `research-delisted-series.cjs` alle 1.675 QUALIFIED- und 1.826 ladbaren Reihen hashgebunden aus der wiederhergestellten Kopie.
 3. **Upload:**
-   1. Commit mit Marke `[v13-archive:put]` auf einen `claude/**`-Branch. Der Workflow `quant-v13-archive.yml` legt verschlüsselte, 3 h gültige PUT-URLs als Artefakt ab.
+   1. Commit mit Marke `[v13-archive:put]` auf einen `claude/**`-Branch. Der Workflow `research.yml (Teil v13-archiv, vormals quant-v13-archive.yml)` legt verschlüsselte, 3 h gültige PUT-URLs als Artefakt ab.
    2. `transfer.sh put <artefakt> archive-priv.pem <out> manifest.json` lädt hoch und prüft die Hashes.
    3. Voraussetzung: Die Umgebung, die hochlädt, erreicht `*.r2.cloudflarestorage.com`.
 4. **Prüfung in R2:** Marke `[v13-archive:verify]`. Der Workflow liest jedes Objekt und vergleicht es mit dem Manifest.

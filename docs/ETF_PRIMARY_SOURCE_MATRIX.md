@@ -2,7 +2,7 @@
 
 Stand: 04.10.2026. Grundlage: Recherche (vier parallele Agenten, öffentliche Code-Repositories, die die
 Endpunkte zitieren, und Suchauszüge) und eine CI-Probe von GitHub Actions aus
-(`vorsorge/data/sources/etf-source-probe.json`, Workflow `research.yml`, Teil `vorsorge-etf-probe` (vormals `vorsorge-etf-sources.yml`), Marker `[vorsorge-etf-probe]`).
+(`vorsorge/data/sources/etf-source-probe.json`, Workflow `research.yml`, Teil `vorsorge-etf` mit Eingabe `job=probe` (vormals `vorsorge-etf-sources.yml`), Marker `[vorsorge-etf-probe]`).
 Die Probe hat **nur** Nutzungsbedingungen, robots.txt und die Form offener Quellen gelesen. Datenendpunkte
 der Emittenten wurden **nicht** abgerufen.
 

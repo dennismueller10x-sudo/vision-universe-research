@@ -195,7 +195,7 @@ Zustände aus `quant/data/product/backtest-certification-v1.json` (asOf 2026-10-
 **Wann:** nur nach einer Änderung an einer Datei in `CODE_FILES` des Runners oder am Archiv. Solange beides unverändert ist, bleibt `verify-report.json` gültig.
 
 **Lauf:**
-1. Leerer Commit auf einem `claude/**`-Branch mit der Marke `[v13-archive:catalog]` in der Nachricht. Der Workflow `quant-v13-archive.yml` stellt `v13-derived` und `v10-factor-panel` aus Archiv 1.2.0 wieder her (Secret `V13_ARCHIVE_PRIVATE_KEY`, `VU_HISTORY_S3_*`).
+1. Leerer Commit auf einem `claude/**`-Branch mit der Marke `[v13-archive:catalog]` in der Nachricht. Der Workflow `research.yml (Teil v13-archiv, vormals quant-v13-archive.yml)` stellt `v13-derived` und `v10-factor-panel` aus Archiv 1.2.0 wieder her (Secret `V13_ARCHIVE_PRIVATE_KEY`, `VU_HISTORY_S3_*`).
 2. Der Workflow rechnet alle 21 Fälle (`build-backtest-catalog.cjs`) und prüft sie mit Python (`verify-backtest-runner.py`) und `catalogViolations`. Ergebnis ist das Artefakt `v13-archive-catalog-<run_id>` mit `catalog/` und `verify-report.json`.
 3. Auswertung lokal:
 
@@ -252,7 +252,7 @@ Optional zusätzlich `--frame F1C` bzw. `--frame F1W` für die registrierten Sen
 
 **Voraussetzung für die Veröffentlichung abgeleiteter Zahlen:** P3.2 (Tiingo-Rechte für delistete Historie).
 
-**Workflow:** Für diesen Modus fehlt eine Marke in `quant-v13-archive.yml`. Das wäre eine Workflow-Änderung mit Secret und damit selbst Teil der Freigabe.
+**Workflow:** Für diesen Modus fehlt eine Marke in `research.yml (Teil v13-archiv, vormals quant-v13-archive.yml)`. Das wäre eine Workflow-Änderung mit Secret und damit selbst Teil der Freigabe.
 
 ### R3 · P4.1 auf der kanonischen Historie (FV-5, Schritt 2)
 
