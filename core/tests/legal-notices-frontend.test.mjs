@@ -105,3 +105,30 @@ test("App 08.11.: Rechtstexte auf anderer Herkunft öffnen im System-Browser, we
   assert.match(nav, /function appExternalLink\(a\) \{[\s\S]*?u\.origin === location\.origin\) return false;\s*a\.target = '_blank'; a\.rel = 'noopener';/);
   assert.match(nav, /if \(typeof document !== 'undefined' && inApp\(\)\) \{\s*document\.addEventListener\('click'/, "nur in der App, im Web unverändert");
 });
+
+/* Konzept Quant „Ein Profil je Aktie“ (docs/design/quant-2026-11, Entscheidung 5): die Quant-Oberfläche sagt „Zone laut Methode“
+   und „Ungültig-Marke laut Methode“, zeigt keine Ziele und keinen „dafür/dagegen“-Satz. Die Begriffe kommen aus wording[].avoid;
+   verneinte Hinweise („kein Kursziel“, „keine Kaufempfehlung“) bleiben erlaubt. Kommentare und die Übersetzungstabelle QX.say
+   (quant/app/ui.js, SAY) zählen nicht: dort steht, was übersetzt wird. */
+test("Quant-Oberfläche: keine Begriffe aus wording[].avoid (Einstieg, Stopp, Ziel) in quant/app und im Chart", () => {
+  const { readdirSync } = require("node:fs");
+  const avoid = json.wording.flatMap((w) => w.avoid.replace(/\(.*?\)/g, "").split(/,|\s\/\s/)).map((t) => t.replace(/[„“"]/g, "").trim()).filter(Boolean);
+  for (const must of ["Einstiegszone", "Einstiegsmarke", "Kaufzone", "Stop-Loss", "Stopp", "Ziel 1/2", "Chance/Risiko", "Kursziel", "Interessant ab"]) assert.ok(avoid.includes(must), must + " fehlt in wording[].avoid");
+  const terms = avoid.flatMap((t) => (t === "Ziel 1/2" ? ["Ziel 1", "Ziel 2"] : [t]))
+    .concat(["Stopp-Marke", "Zielzone", "Zielbereich", "Was spricht dafür"]) /* Entscheidung 5, Konzept Quant 2026-11 */
+    .filter((t) => !/^(kaufen|verkaufen|sicher|Signal|Empfehlung)$/i.test(t)); /* Alltagswörter: nur als Aufforderung verboten, nicht prüfbar per Wortliste */
+  const files = readdirSync("quant/app").filter((f) => /\.(js|css)$/.test(f)).map((f) => "quant/app/" + f).concat(["quant/ui/ti-chart.js"]);
+  const hits = [];
+  for (const f of files) {
+    const src = readFileSync(f, "utf8").replace(/var SAY = \[[\s\S]*?\]\];/, "").replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'\\])\/\/.*$/gm, "$1");
+    for (const t of terms) {
+      const re = new RegExp("(^|[^A-Za-zÄÖÜäöüß-])(" + t.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&") + ")(?![a-zäöüß])", "g");
+      let m; while ((m = re.exec(src))) {
+        const before = src.slice(Math.max(0, m.index - 14), m.index + m[1].length);
+        if (/\bkeine?[nrs]?\s*$|\bohne\s*$/i.test(before)) continue; /* „kein Kursziel“, „keine Kaufempfehlung“ */
+        hits.push(f + ": " + t + " … " + src.slice(m.index, m.index + 60).replace(/\s+/g, " "));
+      }
+    }
+  }
+  assert.deepEqual(hits, []);
+});

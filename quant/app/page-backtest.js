@@ -126,7 +126,7 @@
     var out = [], h = r.horizons, m6 = h.m6, unitDays = kind === "setup";
     var hz = ["m1", "m3", "m6", "m12"];
     if (kind === "signal") out.push(X.section("Auf einen Blick", "Wie oft lag das Signal nach 6 Monaten höher – und wie oft der Markt in denselben Wochen.", [evidenceFlags(r, study), global.QXEvidence.signalEvidence(ruleEvidence(r)), global.QXEvidence.certifiedLine(null)]));
-    out.push(X.section("Regel", null, [el("p", { class: "dx-bewertung-lesart", text: r.plain }),
+    out.push(X.section("Regel", null, [el("p", { class: "dx-bewertung-lesart", text: X.say(r.plain) }),
       el("dl", { class: "qx-kv" }, [].concat.apply([], [
         ["Version", (r.version ? r.id + " " + r.version : r.id) + " · " + (study.engineVersion || "")],
         r.dailyDefinition ? ["Tagessignal im Radar", r.dailyDefinition] : null,
@@ -195,7 +195,7 @@
         return el("li", { class: k.state === "PASS" ? "is-pass" : "is-fail" }, [el("span", { text: (k.state === "PASS" ? "✓ " : "✗ ") + c.label }),
           el("small", { text: typeof k.value === "string" ? k.value : k.reason ? reasonText(k.reason) : "" })]);
       })),
-      el("p", { class: "qx-small", text: study.trustRule.plain })]));
+      el("p", { class: "qx-small", text: X.say(study.trustRule.plain) })]));
 
     out.push(X.section("Methodik", null, [el("ul", { class: "q-trust" }, [
       el("li", { text: "Alle Regeln und Parameter stehen vor dem Lauf fest; es wird nichts auf die Daten optimiert." }),
@@ -246,7 +246,7 @@
         ["Genug Stichtage", kindCert.eta && kindCert.eta.historyDates && kindCert.eta.historyDates.date ? "etwa " + X.dateDe(kindCert.eta.historyDates.date) : "–"],
         ["Freigabe", kindCert.ownerApproval && kindCert.ownerApproval.required ? "Die Setup-Methodik verlangt nach bestandenen Gates eine ausdrückliche Owner-Freigabe." : "automatisch"]
       ].map(function (x) { return [el("dt", { text: x[0] }), el("dd", { text: x[1] })]; }))) : null,
-      el("p", { class: "qx-small", text: "Einstieg zum Schluss des Folgetags (Vergleich: Schluss des Stichtags); Ausstieg bei Schluss unter der Invalidierung, Schluss an der ersten Zielzone, veröffentlichtem Abstieg oder nach 126 Handelstagen. Kosten LOW/BASE/HIGH. Ergebniszahlen erscheinen erst nach der Zertifizierung." }),
+      el("p", { class: "qx-small", text: "Einstieg zum Schluss des Folgetags (Vergleich: Schluss des Stichtags); Ausstieg bei Schluss unter der Ungültig-Marke laut Methode, an der ersten Marke der Methode oberhalb, bei veröffentlichtem Abstieg oder nach 126 Handelstagen. Kosten LOW/BASE/HIGH. Ergebniszahlen erscheinen erst nach der Zertifizierung." }),
       kindCert.replay ? el("p", { class: "qx-small", text: "Nachgeprüft: " + kindCert.replay.parity + " veröffentlichte Setup-Stände wurden aus Kursen bis zum jeweiligen Tag exakt nachgerechnet. Die Rekonstruktion ist kein Ersatz für veröffentlichte Stände und liefert keine Ergebnisse." }) : null
     ]));
     return out;

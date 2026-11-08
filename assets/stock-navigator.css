@@ -43,6 +43,8 @@
 /* Owner 06.11.2026: Minus rot (weiße Schrift auf #c4281c ≥ 5:1, hell und dunkel), Plus VU-Grün. */
 .vu-shead-price[data-direction=down] .vu-shead-change{background:#c4281c;color:#fff}
 .vu-shead-when{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--vu-mute,var(--vu-muted));text-align:right}
+.vu-shead-when:has(.vu-shead-alt){flex-wrap:wrap;justify-content:flex-end;row-gap:0}.vu-shead-alt{flex-basis:100%;text-align:right;font-weight:700}
+@media(max-width:380px){.vu-shead-alt{text-align:left}}
 .vu-shead-live{width:7px;height:7px;border-radius:50%;background:var(--vu-lime,#c8f531);box-shadow:0 0 0 2px var(--vu-ink,#000)}
 .vu-shead-nav{margin-top:4px}
 .vu-shead-nav .vu-snav{margin:6px 0 0}

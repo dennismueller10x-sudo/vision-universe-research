@@ -208,7 +208,7 @@ if (only.has('visual')) await guard('visual', async () => {
       let sel = baseSel, label = baseLabel;
       if (variant === 'setupDirection') {
         /* Die Setup-Karte hat zwei Formen: Aufwaertsszenario mit Regelcheckliste, Abwaertsszenario (bzw. ohne Richtung)
-           mit "Ungueltig ueber" und Zielzonen abwaerts, ohne Einstieg und ohne Checkliste (quant/app/page-stock.js
+           mit "Ungueltig laut Methode", ohne Einstieg und ohne Checkliste (quant/app/page-stock.js
            renderSetupCard). Welche gilt, entscheidet das veroeffentlichte Basisszenario - hier unabhaengig von der
            Karte ueber die Produkt-API gelesen. Ohne Szenario bleibt die strenge Erwartung (Checkliste). */
         const dir = await page.evaluate(async () => {
@@ -222,7 +222,7 @@ if (only.has('visual')) await guard('visual', async () => {
         });
         if (dir && dir !== 'BULLISH') {
           if (await page.evaluate(() => document.querySelectorAll('#setup .q-check-count').length)) fail('visual ' + world, 'Abwaertsszenario (' + dir + '), aber Setup-Regelcheckliste in #setup auf ' + route);
-          sel = '#setup .q-levels.is-bear .is-inv'; label = 'Setup-Karte im Abwaertsszenario (' + dir + '): Marke "Ungültig über" statt Regelcheckliste';
+          sel = '#setup .q-levels.is-bear .is-inv'; label = 'Setup-Karte im Abwaertsszenario (' + dir + '): Marke "Ungültig laut Methode" statt Regelcheckliste';
         }
       }
       const state = await page.evaluate((s) => { const n = document.querySelector(s); if (!n) return 'missing'; const r = n.getBoundingClientRect(); return r.width > 0 && r.height > 0 ? 'visible' : 'hidden'; }, sel);
