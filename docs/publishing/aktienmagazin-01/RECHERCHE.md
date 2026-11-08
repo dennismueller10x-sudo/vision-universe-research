@@ -184,3 +184,17 @@ Quelle hat oder widersprüchlich ist. Kennzahlen aus Vision-Universe-Daten stehe
   - Diskutierte Bewertung 1,0–1,3 Bio. $ statt rund 2 Bio. $ (Bloomberg/WSJ via Yahoo 06.11.).
   - Prognosemärkte: rund 50 % für einen Start vor dem 1.12.
 - **US-Haushalt:** Übergangshaushalt bis 11.12. (CREFC), **Datum bestätigen**.
+
+## Nachträge nach der Codex-Prüfung (08.11.2026)
+
+- Trump stellt sich hinter den KI-Ausbau: StockTitan 06.11. (stocktitan.net/articles/stock-market-today-live-november-6-2026). Wortlaut nicht im Heft.
+- Fonds Oktober, ergänzend: Dymon −1,8 %, ExodusPoint −2,4 % (Seoul Economic Daily 05.11., nach Bloomberg 04.11.; en.sedaily.com/international/2026/11/05/hedge-funds-post-worst-losses-since-pandemic-in-october).
+- Micron am 06.11.2025: 238,33 $ (VU-Kursreihe `quant/data/market/discover-series/ref_MU.json`).
+- CoreWeave 06.10.–06.11.: 91,72 → 46,40 $ = −49,4 % (VU-Kursreihe). Die 24/7-Wall-St.-Angabe −49,9 % ist nicht mehr verwendet.
+- Lumentum: Wochenwert aus VU-Daten (30.10.–06.11.) −35,9 %; −44,6 % (Trefis) gilt für fünf Handelstage bis 05.11.
+- DraftKings: Prognosen beziehen sich auf das bereinigte EBITDA (DraftKings IR 05.11.).
+- AppLovin: 1,4 Mrd. $ umfassen Rückkäufe und für Steuern einbehaltene Mitarbeiteraktien (AppLovin IR, Fußnote 1).
+- Palantir: Vertragswert-Wachstum jeweils zum Vorjahresquartal (8-K 02.11.).
+- Berkshire Alphabet +45 %: Stückzahl Klasse A (GOOGL); Klasse C getrennt (`hedgefonds/data/funds/berkshire.json`).
+- US-Haushaltsfrist 11.12. nicht bestätigt; im Heft entfernt.
+- Sektor-Mediane nach Korrektur der Median-Funktion: Immobilien +2,1 %, Industrie −1,1 %, Technologie −7,3 %, Energie −11,5 %; Stichprobe 94 von 495 Titeln.

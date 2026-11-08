@@ -44,7 +44,7 @@ await page.waitForTimeout(300);
 const overflow = await page.evaluate(() => [...document.querySelectorAll('.page')].flatMap((p, i) => {
   const r = p.getBoundingClientRect();
   return [...p.querySelectorAll('.pad *')]
-    .filter((el) => { const b = el.getBoundingClientRect(); return b.height > 0 && b.width > 0 && (b.bottom > r.bottom - 13 || b.right > r.right - 8); })
+    .filter((el) => { if (el.closest('[data-bleed]')) return false; const b = el.getBoundingClientRect(); return b.height > 0 && b.width > 0 && (b.bottom > r.bottom - 13 || b.right > r.right - 8); })
     .slice(0, 2).map((el) => `S${i + 1}: ${(el.className || el.tagName).toString().slice(0, 20)} „${el.textContent.trim().slice(0, 30)}“`);
 }));
 const pages = await page.$$('.page');
@@ -54,3 +54,5 @@ for (let i = a - 1; i < Math.min(b, pages.length); i++) await pages[i].screensho
 if (!process.argv.includes('--no-pdf')) await page.pdf({ path: path.join(out, 'aktienmagazin-01.pdf'), format: 'A4', printBackground: true, preferCSSPageSize: true });
 console.log(pages.length, 'Seiten', errors.length ? 'FEHLER ' + [...new Set(errors)].join(' | ') : 'ok', overflow.length ? '\nÜBERLAUF ' + overflow.join(' | ') : '');
 await browser.close();
+// Prüftor: fehlende Bilder, JS-Fehler oder Überlauf brechen ab (gewollter Anschnitt: Attribut data-bleed)
+if (errors.length || overflow.length) process.exitCode = 1;

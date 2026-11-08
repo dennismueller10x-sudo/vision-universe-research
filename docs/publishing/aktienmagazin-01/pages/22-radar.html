@@ -11,10 +11,10 @@
         <div class="xs" style="color:#777;margin-top:2mm">Strich: 50 %. Regel „breite Schwäche“, Stand <span data-k="rg-asof"></span>.</div>
       </div>
       <div>
-        <div class="h3" style="color:#fff">Sektoren der Woche</div>
-        <div class="xs" style="color:#9a9a9a;margin:1mm 0 3mm">Median der Wochenveränderung, S&amp;P-500-Aktien mit Sektorzuordnung in Vision Universe</div>
+        <div class="h3" style="color:#fff">Sektoren der Woche (Stichprobe)</div>
+        <div class="xs" style="color:#9a9a9a;margin:1mm 0 3mm">Median der Wochenveränderung. Nur S&amp;P-500-Aktien mit Sektorzuordnung in Vision Universe: <b style="color:#fff" data-k="rg-cov"></b>, ab 8 Titeln je Sektor</div>
         <div data-k="rg-sek"></div>
-        <div class="sm" style="color:#cfcfcf;margin-top:4mm;line-height:1.5">Energie fiel noch stärker als Technologie: Der Ölpreis (Brent) verlor in der Woche über 12&nbsp;%, der stärkste Wochenrückgang seit März 2020, weil im Iran-Konflikt auf eine Verhandlungslösung gehofft wird.</div>
+        <div class="sm" style="color:#cfcfcf;margin-top:4mm;line-height:1.5">In dieser Stichprobe fiel Energie noch stärker als Technologie: Der Ölpreis (Brent) verlor in der Woche über 12&nbsp;%, der stärkste Wochenrückgang seit März 2020, weil im Iran-Konflikt auf eine Verhandlungslösung gehofft wird.</div>
       </div>
     </div>
     <div class="card" style="background:#111;border:1px solid #262626;position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4mm">
@@ -31,5 +31,6 @@ const SEK={'Real Estate':'Immobilien','Consumer Staples':'Basiskonsum','Consumer
 VUM.k('rg-n',()=>VUM.D.regime.measures[0].observed.toLocaleString('de-DE'));VUM.k('rg-plain',()=>VUM.D.regime.plain);VUM.k('rg-asof',()=>VUM.D.regime.asOf.split('-').reverse().join('.'));
 VUM.k('rg-meas',()=>VUM.D.regime.measures.map(m=>`<div style="display:grid;grid-template-columns:1fr 40mm 11mm;gap:3mm;align-items:center;padding:2mm 0;border-bottom:1px solid #222"><span class="sm b">${m.label}</span>${VUC.meter(m.share,{dark:1,c:m.id==='trendBearish'||m.id==='volatilityHigh'?'#fff':'#c8f531'})}<span class="b" style="text-align:right">${VUM.de(m.share*100,0)}&nbsp;%</span></div>`).join(''));
 VUM.k('rg-sek',()=>VUC.hbars(VUM.D.sp500.sectors.map(r=>({l:SEK[r.sector]||r.sector,s:r.n+' Titel',v:r.median})),{w:320,rh:21,lw:128,vw:44,sx:84,dark:1}));
+VUM.k('rg-cov',()=>VUM.D.sp500.sectorCovered+' von '+VUM.D.sp500.count+' Titeln');
 VUM.k('rg-spy',()=>VUM.pc(VUM.D.etfs.find(e=>e.t==='SPY').week));
 </script>

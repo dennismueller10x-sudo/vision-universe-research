@@ -3,14 +3,14 @@
   <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
   <div data-run="Titelthema"></div>
   <div style="position:absolute;left:14mm;right:14mm;top:55mm;color:#fff">
-    <span class="ressort" style="background:var(--lime);color:#000">Titelthema · Aktie 6 von 6</span>
-    <div class="hx" style="margin-top:2.5mm;font-size:30pt;max-width:175mm">AMD: Das beste Quartal, der schlechteste Tag</div>
+    <span class="ressort" style="background:var(--lime);color:#000">Titelthema · Aktie 7 von 7</span>
+    <div class="hx" style="margin-top:2.5mm;font-size:30pt;max-width:175mm">AMD: Rekordumsatz, dann −17&nbsp;% an einem Tag</div>
   </div>
   <div class="pad" style="top:92mm">
     <div class="sub" style="max-width:180mm">Am Dienstag meldet AMD Rekordzahlen. Am Donnerstag fällt die Aktie um 17&nbsp;%. Was dazwischen passiert ist, erklärt viel über diesen Markt.</div>
     <div style="display:grid;grid-template-columns:1fr 66mm;gap:6mm;margin-top:4mm">
       <div>
-        <div class="body cols2" style="column-gap:5mm"><p>Die Zahlen waren stark: 13,4&nbsp;Mrd.&nbsp;$ Umsatz, +45&nbsp;%, das Geschäft mit Rechenzentren fast verdoppelt auf 8,5&nbsp;Mrd.&nbsp;$. Für das vierte Quartal erwartet AMD rund 17&nbsp;Mrd.&nbsp;$, das wären etwa 66&nbsp;% mehr als vor einem Jahr. Treiber ist Helios, ein komplettes KI-Server-Gestell. Laut AMD laufen darauf schon Modelle von Anthropic, Meta, Microsoft, OpenAI und Oracle.</p><p>Trotzdem fiel die Aktie am Donnerstag um 17,3&nbsp;%, stärker als Nvidia. Ein Grund steht in unseren Daten: Mit einem KGV von <b data-k="amd-pe"></b> ist AMD unter den großen KI-Aktien die am höchsten bewertete. Und die Aktie schwankt etwa dreimal so stark wie der Markt. Am Freitag kam die Gegenbewegung: +11&nbsp;%.</p><p>Interessant für die Profis: Cathie Woods ARK hatte AMD schon im zweiten Quartal um 48&nbsp;% reduziert. Sechs Insider haben in 90 Tagen für <b data-k="amd-ins"></b> verkauft. Der freie Cashflow fiel im Quartal auf 554&nbsp;Mio.&nbsp;$, weil AMD viel Geld in Vorräte für den Hochlauf steckt.</p><p>Unseren ausführlichen Aktienreport zu AMD mit zehn Jahren Geschäftszahlen findest du in der App.</p></div>
+        <div class="body cols2" style="column-gap:5mm"><p>Die Zahlen waren stark: 13,4&nbsp;Mrd.&nbsp;$ Umsatz, +45&nbsp;%, das Geschäft mit Rechenzentren fast verdoppelt auf 8,5&nbsp;Mrd.&nbsp;$. Für das vierte Quartal erwartet AMD rund 17&nbsp;Mrd.&nbsp;$, das wären etwa 66&nbsp;% mehr als vor einem Jahr. Treiber ist Helios, ein komplettes KI-Server-Gestell. Laut AMD laufen darauf schon Modelle von Anthropic, Meta, Microsoft, OpenAI und Oracle.</p><p>Trotzdem fiel die Aktie am Donnerstag um 17,3&nbsp;%, stärker als Nvidia. Ein Grund steht in unseren Daten: Mit einem KGV von <b data-k="amd-pe"></b> ist AMD unter den großen KI-Aktien die am höchsten bewertete. Und sie reagiert stark auf den Markt: Ihr Beta (gemessen über 252 Handelstage) liegt bei rund 3,4, das heißt, sie bewegte sich im Schnitt etwa 3,4-mal so stark wie der Gesamtmarkt. Am Freitag kam die Gegenbewegung: +11&nbsp;%.</p><p>Interessant für die Profis: Cathie Woods ARK hatte AMD schon im zweiten Quartal um 48&nbsp;% reduziert. Sechs Insider haben in 90 Tagen für <b data-k="amd-ins"></b> verkauft. Der freie Cashflow fiel im Quartal auf 554&nbsp;Mio.&nbsp;$, weil AMD viel Geld in Vorräte für den Hochlauf steckt.</p><p>Unseren ausführlichen Aktienreport zu AMD mit zehn Jahren Geschäftszahlen findest du in der App.</p></div>
       </div>
       <div><div data-k="box-AMD"></div></div>
     </div>
@@ -29,4 +29,7 @@ VUM.k('mu-w',()=>VUM.pc(VUM.C('MU').week));VUM.k('mu-hi',()=>VUM.de(-VUM.C('MU')
 VUM.k('mrvl-w',()=>VUM.pc(VUM.C('MRVL').week));VUM.k('lite-w',()=>VUM.pc(VUM.C('LITE').week));
 VUM.k('crwv-p',()=>VUM.usd(VUM.C('CRWV').price));VUM.k('crwv-w',()=>VUM.pc(VUM.C('CRWV').week));VUM.k('crwv-hi',()=>VUM.pc(VUM.C('CRWV').hi*100,0));
 VUM.k('amd-pe',()=>VUM.de(VUM.C('AMD').pe,0));VUM.k('amd-ins',()=>_i('AMD'));
+</script>
+<script>
+VUM.k('nv-amd',()=>'KGV '+VUM.de(VUM.C('AMD').pe,0));VUM.k('nv-avgo',()=>'KGV '+VUM.de(VUM.C('AVGO').pe,1));VUM.k('lite-w2',()=>VUM.pc(VUM.C('LITE').week));
 </script>

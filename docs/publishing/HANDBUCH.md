@@ -74,11 +74,39 @@ bleibt: Aufbau, Design-System, Bausteine, Regeln.
 - **Bilder:** keine echten Personen, keine fremden Logos im Bild; Firmenlogos nur aus `discover/logos/files/` zur Kennzeichnung; App-Seiten nur mit echten Screens aus `docs/design/redesign-2027` (keine Screens mit persönlichen Daten).
 - **Kanäle:** www.visionuniverse.de (Newsletter), Instagram und TikTok `@app.visionuniverse`. App: „bald verfügbar“.
 
-## 6. Offene Punkte für die Automatisierung
+## 6. Prüfung durch Codex und Fahrplan
 
-- Ausgabe-Nummer, Datum und Seitenverweise stehen noch von Hand in mehreren Dateien (S. 01, 02, 08, 27, `lib.js`, `render.mjs`). Ziel: eine `ausgabe.json` und automatische Seitenzahlen.
-- Feste Texte in den Seiten (Recherche) und Kennzahlen (Daten) sind gemischt. Ziel: Inhalte je Ausgabe in eine Datei (`inhalt.json` oder Markdown je Seite), Vorlagen bleiben unverändert.
-- `build-data.mjs`: Wochendaten `W0`/`W1` und Aktienlisten von Hand; Sektorzuordnung deckt nur einen Teil des S&P 500 ab.
-- Screening-Kommentar „Was auffällt“ ist Handtext und muss je Ausgabe zur Trefferliste passen.
-- Der Überlauf-Check meldet auf S. 02 einen Fehlalarm (bewusst randabfallende Inhaltsspalte).
-- Bildaufträge laufen nur von `main`; ein Workflow mit Lauf vom Arbeitszweig würde einen PR je Bildrunde sparen.
+Unabhängiger Prüfbericht: [`aktienmagazin-01/PRUEFBERICHT_CODEX.md`](aktienmagazin-01/PRUEFBERICHT_CODEX.md) (08.11.2026).
+
+**Umgesetzt (Nr. 01):** Median-Fehler in `build-data.mjs` behoben (gerade Anzahl: Mittel der beiden mittleren Werte) und
+`data.js` auf dem eingefrorenen Datenstand der Ausgabe neu gebaut (Commit `2d1d183`, nicht auf dem aktuellen `main`, damit
+Wochenwerte und Bewertungen nicht gemischt werden); falsche Superlative, Zeiträume und Kennzahlbegriffe korrigiert (Nvidia-KGV,
+Micron, Lumentum-Woche, CoreWeave −49,4 %, DraftKings bereinigtes EBITDA, Beta, Palantir „US“ und Vorjahresbasis, AppLovin
+Rückkauf-Summe); Titelthema zählt sieben Aktien; Wortwahl („Größte Anstiege/Rückgänge“, „Das Detail“, kein Kapitalstrom-Schluss
+im Screening, keine Paraphrase in Anführungszeichen); Sektorbild als Stichprobe mit Abdeckung; Quartals-Stichtag in jedem
+Datenkasten; Haushaltsfrist entfernt; App-Screens ohne Empfehlungsnähe („Was Profis kaufen“, „zu dir passen“ entfernt);
+Beispielhinweis auf der Rückseite; KI-Bild-Vermerk größer und auf dem Cover; Renderer bricht bei Fehlern mit Exit-Code 1 ab
+(gewollter Anschnitt nur mit `data-bleed`).
+
+**Fahrplan für die Wochenproduktion (aus dem Bericht, priorisiert):**
+
+| Prio | Aufgabe | Abnahme |
+|---|---|---|
+| P0 | Ausgabe einfrieren: Snapshot mit Daten-Commit, Stichtagen je Produkt (Kurse, `ttmThrough`, Eigentümer, Technik), Handelsfenster aus dem Börsenkalender | Neubau einer alten Ausgabe ergibt identische Zahlen |
+| P0 | Faktenregister `fakten.json` statt freiem Faktenblatt: ID, Wert, Periode, Quelle mit Titel/URL/Datum, Auszug, Status; Zitatregister mit Original und Übersetzung | Jede Kernzahl und jedes Zitat im Heft hat eine ID mit Beleg |
+| P0 | Renderer-Prüftor erweitern: Kollision mit Fußzeilen, fehlende Quellen, unaufgelöste Verweise | Exit-Code ≠ 0 bei jedem Befund |
+| P1 | `ausgabe.json` (Nummer, Datum, KW, Redaktionsschluss, Handelsfenster, Seitenfolge) | Kein Datum und keine Nummer mehr von Hand in Seiten |
+| P1 | Vorlagen und Inhalt trennen: `system/templates/*.html` plus `ausgaben/<datum>/inhalt/*.md`; Textverweise `{{metric:NVDA.pe}}`, `{{fact:…}}`, `{{page:…}}` | Eine neue Ausgabe ändert keine Vorlage und kein Inline-CSS |
+| P1 | Automatische Seitenzahlen, Inhaltsverzeichnis und Querverweise | Unbekannte Seiten-ID ist ein Build-Fehler |
+| P1 | Standardumfang 24 Seiten, 30 nur bei starker Nachrichtenlage; weniger Wiederholung im Titelthema; eine statt drei App-Seiten plus Rückseite | Kein Füllinhalt |
+| P1 | Lesbarkeit: größere Grundschrift, weniger Spalten; zusätzlich einspaltige HTML-Leseansicht fürs Handy; PDF mit Links und Lesezeichen | Grundschrift ≥ 9,5 pt, Lesbarkeit am Handy geprüft |
+| P1 | Markt-Radar mit Veränderung zur Vorwoche; Rubrik „Was wurde aus unserem Thema?“ | |
+| P2 | Bildaufträge auch vom Arbeitszweig; kuratierter Bildvorrat statt neuer Bilder für jede Kurzmeldung | Eine Ausgabe ohne Zwischen-PRs auf `main` |
+| P2 | Rechtstexte aus `assets/legal-notices.json` einbinden statt Handtext; Zitatrecht, KI-Kennzeichnung und Eigenwerbung anwaltlich bestätigen | Owner-Freigabe |
+
+Zeitziel nach P0/P1 laut Bericht: 4–6 Stunden für 24 Seiten; heute 8–14 Stunden.
+
+## 7. Weitere offene Punkte
+
+- Der Kerntest `core/tests/stock-availability.test.mjs` scheitert derzeit auch auf `main` (datenabhängig, nicht Publishing).
+- Fremdquellen ohne URL im Faktenblatt (Liste in Abschnitt 2 des Prüfberichts) vor einer Veröffentlichung belegen oder streichen.

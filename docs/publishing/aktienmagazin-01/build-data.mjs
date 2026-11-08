@@ -14,7 +14,8 @@ const J = (p) => JSON.parse(fs.readFileSync(path.join(root, p), 'utf8'));
 const has = (p) => fs.existsSync(path.join(root, p));
 const W0 = '2026-10-30', W1 = '2026-11-06';
 const pct = (a, b) => (b / a - 1) * 100;
-const med = (a) => { const b = [...a].sort((x, y) => x - y); return b.length ? b[Math.floor(b.length / 2)] : null; };
+// Median: bei gerader Anzahl Mittelwert der beiden mittleren Werte (Befund Codex-Prüfung 08.11.2026)
+const med = (a) => { const b = [...a].sort((x, y) => x - y); const n = b.length; if (!n) return null; return n % 2 ? b[(n - 1) / 2] : (b[n / 2 - 1] + b[n / 2]) / 2; };
 
 const stockFile = (t) => `discover/data/stocks/US_REAL/${t}.json`;
 const seriesOf = (sid) => { const p = `quant/data/market/discover-series/${sid}.json`; return has(p) ? J(p).points : null; };
@@ -98,7 +99,7 @@ const charts = { NVDA: chartOf('NVDA') };
 
 const data = {
   generatedAt: new Date().toISOString(), asOf: W1, week: { from: W0, to: W1 },
-  cards, sp500: { count: sp.length, up: sp.filter((a) => a.week > 0).length, median: med(sp.map((a) => a.week)),
+  cards, sp500: { count: sp.length, up: sp.filter((a) => a.week > 0).length, median: med(sp.map((a) => a.week)), sectorCovered: sectors.reduce((n, x) => n + x.n, 0),
     top: spSorted.slice(-8).reverse().map((a) => ({ t: a.d.symbol, n: a.d.companyName, w: a.week })),
     flop: spSorted.slice(0, 8).map((a) => ({ t: a.d.symbol, n: a.d.companyName, w: a.week })), sectors },
   screen: { base: screenBase, hits: screen.length, rows: screen,

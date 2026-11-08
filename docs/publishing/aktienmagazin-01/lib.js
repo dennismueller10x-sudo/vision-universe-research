@@ -29,7 +29,7 @@
       <div style="display:flex;justify-content:space-between;align-items:center;gap:3mm"><div class="${o.ink ? 'inv' : ''}" style="${o.ink ? 'filter:invert(1) grayscale(1) brightness(1.6)' : ''}">${logo(t, 6)}</div><span class="app-badge"><i></i>VU-Daten</span></div>
       <div style="margin-top:2.5mm">${o.chart === false ? '' : spark(t, { w: 300, h: o.h || 80 })}</div>
       <div style="margin-top:2mm">${rows.map((r) => `<div class="fact"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}</div>
-      <div class="xs ${o.ink ? '' : 'mu'}" style="margin-top:2mm;${o.ink ? 'color:#9a9a9a' : ''}">${c.n} · ${t} · Daten: Tiingo, SEC, Vision Universe. KGV auf Basis der letzten vier Quartale.</div>
+      <div class="xs ${o.ink ? '' : 'mu'}" style="margin-top:2mm;${o.ink ? 'color:#9a9a9a' : ''}">${c.n} · ${t} · Daten: Tiingo, SEC, Vision Universe. KGV und Wachstum: letzte vier Quartale bis ${c.ttmThrough ? c.ttmThrough.replace(/FY(\d{4})Q(\d)/, 'Q$2 Geschäftsjahr $1') : 'k. A.'} (SEC-Daten, Stand 03.11.).</div>
     </div>`;
   }
 

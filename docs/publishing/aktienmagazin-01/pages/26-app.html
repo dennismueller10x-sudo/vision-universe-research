@@ -1,12 +1,12 @@
 <section class="page dark">
   <div class="bleed glow" style="filter:none;background:radial-gradient(ellipse at 80% 50%,rgba(200,245,49,.25) 0%,rgba(200,245,49,0) 55%)"></div>
-  <div class="phone" style="position:absolute;right:8mm;top:46mm;width:50mm;transform:rotate(5deg);z-index:1"><img src="img/app-s01-a.jpg" alt="App: Screener"></div>
+  <div class="phone" style="position:absolute;right:8mm;top:46mm;width:50mm;transform:rotate(5deg);z-index:1"><img src="img/app-st01-a.jpg" alt="App: Supertrader"></div>
   <div class="phone" style="position:absolute;right:30mm;top:132mm;width:44mm;transform:rotate(-5deg);z-index:2"><img src="img/app-t01-a.jpg" alt="App: Technical"></div>
   <div data-run="Aus der App"></div>
   <div class="pad" style="top:15mm">
     <span class="ressort">Aus der App</span>
     <div class="mega" style="font-size:50pt;margin-top:4mm">Alles aus diesem Heft.<br><span style="color:var(--lime)">Täglich neu.</span></div>
-    <div class="sub" style="margin-top:5mm;max-width:120mm;color:#d6d6d6;font-size:12pt">Jede Zahl in diesem Magazin stammt aus Vision Universe. In der App, die bald startet, siehst du sie für über 5.600 US-Aktien, jeden Abend aktualisiert.</div>
+    <div class="sub" style="margin-top:5mm;max-width:120mm;color:#d6d6d6;font-size:12pt">Alle Kennzahlen, Ränge und Charts in diesem Magazin rechnet Vision Universe. In der App, die bald startet, siehst du sie für über 5.600 US-Aktien, jeden Abend aktualisiert.</div>
     <div style="display:grid;gap:4mm;margin-top:8mm;max-width:96mm" data-k="app"></div>
     <div style="position:absolute;left:0;bottom:0;max-width:120mm">
       <div style="display:flex;gap:4mm;align-items:center"><img src="img/qr-web.svg" style="width:20mm;height:20mm;border-radius:3px"><div><div style="font-size:12pt;font-weight:900;color:#fff">www.visionuniverse.de</div><div style="font-size:8pt;font-weight:800;color:var(--lime)">App bald verfügbar · Newsletter eintragen</div></div></div>
@@ -20,7 +20,7 @@ VUM.k('app',()=>[
  ['Discover','Swipe dich durch Aktien und Themen, mit Klartext-Geschichte zu jedem Wert.','Seite 07: Wochenbilanz von 495 S&amp;P-Aktien'],
  ['Screener','Eigene Regeln bauen, wie unser Screening der Woche, und sofort Treffer sehen.','Seite 22: '+VUM.D.screen.hits+' Aktien, die im Ausverkauf stiegen'],
  ['Technical','Muster, Trends und Kurslücken, erkannt nach festen Regeln.','Seite 21: Nvidias Doppeltop'],
- ['Hedgefonds','Was 119 bekannte Fonds kaufen und verkaufen, aus den 13F-Meldungen.','Seiten 19–20: Burry, Berkshire, Ackman'],
+ ['Hedgefonds','Was 119 bekannte Fonds laut ihren 13F-Meldungen halten und verändert haben.','Seiten 19–20: Burry, Berkshire, Ackman'],
  ['Supertrader','Die Methoden berühmter Trader als Regelwerk. Heute erfüllen '+VUM.D.supertrader.find(s=>s.id==='DARVAS_BOX').watch+' Aktien die Beobachtungsregel nach Darvas.','Forschung, nicht zertifiziert'],
 ].map(r=>`<div style="display:grid;grid-template-columns:30mm 1fr;gap:4mm;border-top:1px solid #333;padding-top:3mm"><div style="font-size:12pt;font-weight:900;color:var(--lime)">${r[0]}</div><div><div class="sm" style="color:#fff;font-weight:600;line-height:1.4">${r[1]}</div><div class="xs" style="color:#9a9a9a;margin-top:1mm">${r[2]}</div></div></div>`).join(''));
 </script>
