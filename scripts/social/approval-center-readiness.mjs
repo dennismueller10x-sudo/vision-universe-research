@@ -174,10 +174,12 @@ export function pruefe(options = {}) {
       : "Eine der drei Linien fehlt."));
 
   /* 9. Bleibt der Weg ueber GitHub Actions als Notweg erhalten? */
-  const recovery = existsSync(join(ROOT, ".github/workflows/social-publish-candidate.yml"));
+  /* Seit dem Buendel social ist der Notweg der Teil `kandidat` in social.yml (vormals social-publish-candidate.yml). */
+  const buendel = join(ROOT, ".github/workflows/social.yml");
+  const recovery = existsSync(buendel) && /\n  kandidat:\n/.test(readFileSync(buendel, "utf8"));
   z.push(zustand("GITHUB_ACTIONS_RECOVERY_PATH_RETAINED", recovery ? ERFUELLT : NICHT,
     recovery
-      ? "social-publish-candidate.yml steht unveraendert. Sie ist der Notweg, " +
+      ? "social.yml, Teil kandidat (vormals social-publish-candidate.yml), steht unveraendert. Er ist der Notweg, " +
         "nicht die Produkt-Oberflaeche."
       : "Der Notweg wurde entfernt."));
 
