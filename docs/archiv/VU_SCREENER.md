@@ -129,3 +129,11 @@ Bewusste Abweichungen:
 - Im Filter-Detail für Technik-Filter ein beschriftetes **Schema**; der echte Kursverlauf mit SMA 50/200
   erscheint bei „Warum Treffer?“ und in Quick Research einer konkreten Aktie.
 - Keine Firmenlogos (Monogramme), keine Tab-Leiste „Analysen/Profil“ (dafür Screen · Treffer · Gespeichert · Watchlist).
+
+## Europa (Strang M, 08.11.2026)
+
+`/screener/europa/` zeigt die freigegebenen europäischen Aktien (Stand 06.11.2026: 435 von 449, 318 aus Deutschland) mit eigenen, einfachen Kursspalten. Sie stehen neben dem US-Screener und ändern kein Fachmodell (keine Quant-Scores, keine Technical-Modelle, keine Supertrader-Regeln). Daten: `screener/data/universe-EUROPE.json`, gebaut bei der Veröffentlichung von `scripts/screener/build-europe.mjs` aus `discover/data/europe` (nicht committet, wie `universe-US_REAL.json`). Rechenregel: `screener/europe-close-metrics.js`.
+
+**Regel in einem Satz:** Kursveränderung 1M/3M/6M/1J (21/63/126/252 Börsentage des exakten Handelsplatzes), Abstand zum 52-Wochen-Hoch (252 Börsentage) und Abstand zur 50-Tage-Linie stehen nur, wenn mindestens 90 % der Börsentage im Fenster einen veröffentlichten Schlusskurs haben (Kursveränderung zusätzlich am ersten und letzten Tag) und kein Sprung über 40 % zwischen zwei Schlüssen liegt (unbereinigte Kurse, möglicher Split); sonst bleibt das Feld leer, Lücken werden nie aufgefüllt.
+
+Abdeckung am 06.11.2026 (435 Aktien): Kurs 435, 1M 433, 3M 427, 6M 152, 1J 147, 52-W-Hoch 149, 50-Tage-Linie 429. 6M/1J/52-W-Hoch fehlen meist, weil die deutschen Xetra-Reihen im letzten Jahr nur etwa 80 % der Börsentage abdecken (docs/reports/europe-gap-solutions-20261107). Wie in Discover blendet die Seite Aktien aus, deren letzter Schluss mehr als drei abgeschlossene Börsentage zurückliegt. Der US-Screener verlinkt die Seite unter dem Modusschalter.
