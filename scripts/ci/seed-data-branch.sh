@@ -7,8 +7,10 @@
 # im Arbeitsbaum wird nie geloescht (--mirror false).
 #
 # Aufruf: scripts/ci/seed-data-branch.sh <id>[,<id>...]   (Datenarten aus data-branch.json)
+#         scripts/ci/seed-data-branch.sh alle             (alle ausgelieferten Datenarten; Verbraucher wie DQ)
 set -euo pipefail
-ONLY="${1:?Datenarten fehlen (id oder id1,id2)}"
+ONLY="${1:?Datenarten fehlen (id, id1,id2 oder alle)}"
+if [ "$ONLY" = "alle" ]; then ONLY="$(node -e 'process.stdout.write(require("./core/registry/data-branch.json").domains.map((d) => d.id).join(","))')"; fi
 BRANCH="$(node -e 'process.stdout.write(require("./core/registry/data-branch.json").branch)')"
 D="$(mktemp -d)"
 trap 'rm -rf "$D"' EXIT
