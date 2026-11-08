@@ -118,7 +118,7 @@ bestehende Abos (409) → Checkout. Antwortet der Worker trotz allem `CHECKOUT_N
   Seite erklärt das und bietet den Weg zur Willkommensseite, das Konto bleibt Free. **Neu im Worker:**
   `checkout.session.async_payment_failed` holt den Zustand frisch von Stripe (Abo endet, Konto bleibt Free); bisher wurde das
   Ereignis ignoriert und nur über `customer.subscription.*` nachgezogen. Das Ereignis steht in `WEBHOOK_EVENTS`; im Stripe-Webhook
-  wird es mit dem nächsten Lauf von „Konten — Stripe Live einrichten“ abonniert (bis dahin wirken weiter die Abo-Ereignisse).
+  wird es mit dem nächsten Lauf von „Konten (Buendel account)“, Teil `stripe` abonniert (bis dahin wirken weiter die Abo-Ereignisse).
 - Kündigung (Kundenportal, `/konto/kuendigen/`), Laufzeitende → automatisch Free: unverändert, in der Browser-QA geprüft.
 
 ## 5. Tests

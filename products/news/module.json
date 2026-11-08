@@ -1,0 +1,23 @@
+{
+ "schema": "vu-module-2",
+ "id": "news",
+ "label": "News",
+ "status": "LIVE",
+ "route": "/news/",
+ "access": "free",
+ "navigation": {
+  "group": "more",
+  "order": 5,
+  "label": "News",
+  "href": "/news/",
+  "icon": "▤"
+ },
+ "data": [
+  "news"
+ ],
+ "reads": [],
+ "producers": [
+  "products/news/producer/update_news.mjs"
+ ],
+ "tests": []
+}

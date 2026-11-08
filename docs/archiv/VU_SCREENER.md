@@ -16,7 +16,7 @@ Der Screener ist ein eigenständiges Vision-Universe-Produkt. Er ist **nicht** T
 
 ```
 discover/data/stocks/US_REAL/*.json ─┐
-quant/data/market/discover-series/*  ├─ scripts/screener/build-universe.mjs ──> screener/data/universe-US_REAL.json
+quant/data/market/discover-series/*  ├─ products/screener/producer/build-universe.mjs ──> screener/data/universe-US_REAL.json
 quant/data/universe/instruments/*    │   (Release-Projektion in build-release.mjs,       (spaltenbasiert, ~1 MB gzip)
 quant/data/product/sic-peer-taxonomy │    lokal per Skript; gitignored)
 quant/data/product/factor-evidence-v1┘
@@ -92,10 +92,10 @@ niedriger besser, FCF-Rendite höher besser). Bezeichnung „Übereinstimmung“
 ## Tests
 
 ```bash
-node scripts/screener/build-universe.mjs          # Artefakt lokal bauen
+node products/screener/producer/build-universe.mjs          # Artefakt lokal bauen
 node --test "screener/tests/*.test.mjs"           # Engine, Registry, echtes Universum
 python3 -m http.server 8765 &
-node scripts/screener/browser-qa.mjs --url http://127.0.0.1:8765 --out /tmp/screener-qa
+node products/screener/producer/browser-qa.mjs --url http://127.0.0.1:8765 --out /tmp/screener-qa
 ```
 
 CI: `.github/workflows/screener-ci.yml`.

@@ -1,4 +1,4 @@
-/* Baut aus den Modul-Steckbriefen (<produkt>/module.json, core/modules.js) den Index
+/* Baut aus den Modul-Steckbriefen (products/<id>/module.json, core/modules.js) den Index
    core/registry/modules.json und den Menueblock in assets/site-navigation.js.
 
      node scripts/core/build-modules.mjs           schreibt Index, Menueblock und Steckbrief-Schreibweise
@@ -24,14 +24,17 @@ export const PAGES = [
   { dir: "mein-dashboard", reason: "Mein Bereich (persoenliche Startseite), kein Produkt" },
   { dir: "landing", reason: "Kampagnenseiten" },
   { dir: "preise", reason: "Preisseite des Kontos" },
-  { dir: "willkommen", reason: "Willkommensseite der Nutzerfuehrung" },
-  { dir: "company-intelligence", reason: "Steckbrief folgt im eigenen PR: die Company-Intelligence-CI klassifiziert Regressionen nur bei unveraenderten Quant/Discover/Supertrader-Pfaden" }
+  { dir: "willkommen", reason: "Willkommensseite der Nutzerfuehrung" }
 ];
 
-const SKIP = new Set(["node_modules", ".git", "docs", "products"]);
+/* Steckbriefe liegen unter products/<id>/module.json (Plan Neustart §3: products/<id>/{module.json,web,engine,producer,tests}).
+   Die Seite selbst bleibt unter /<id>/ (Pages-Pfade aendern sich nicht). */
+export const PRODUCTS_DIR = "products";
 export function loadModules(root = ROOT) {
-  return readdirSync(root).filter((d) => !SKIP.has(d) && !d.startsWith(".") && statSync(join(root, d)).isDirectory() && existsSync(join(root, d, "module.json")))
-    .map((d) => ({ dir: d, file: join(d, "module.json"), text: readFileSync(join(root, d, "module.json"), "utf8") }))
+  const base = join(root, PRODUCTS_DIR);
+  if (!existsSync(base)) return [];
+  return readdirSync(base).filter((d) => statSync(join(base, d)).isDirectory() && existsSync(join(base, d, "module.json"))).sort()
+    .map((d) => ({ dir: d, file: join(PRODUCTS_DIR, d, "module.json"), text: readFileSync(join(base, d, "module.json"), "utf8") }))
     .map((x) => ({ ...x, m: JSON.parse(x.text) }));
 }
 

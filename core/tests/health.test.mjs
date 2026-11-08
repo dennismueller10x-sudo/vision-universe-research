@@ -309,6 +309,7 @@ test("Register · Chartbild/Elliott (v3) folgt den Langreihen, Schwellen tragen 
   assert.ok(d.freshness.warnAfterHours >= 2.5, "ueber dem gemessenen Neubau (bis ~100 Min) plus Warteschlange");
   assert.ok(d.freshness.staleAfterHours > d.freshness.warnAfterHours && d.freshness.staleAfterHours <= 48);
   assert.equal(d.critical, false, "kein Plattformausfall");
-  assert.match(d.workflow, /technical-intelligence-build\.yml/);
-  assert.ok(existsSync(join(ROOT, ".github/workflows/technical-intelligence-build.yml")));
+  /* seit Stufe 7 Teil technical-intelligence in pipeline-daily.yml (vormals technical-intelligence-build.yml) */
+  assert.match(d.workflow, /pipeline-daily\.yml/);
+  assert.ok(readFileSync(join(ROOT, ".github/workflows/pipeline-daily.yml"), "utf8").includes("\n  technical-intelligence:\n"));
 });

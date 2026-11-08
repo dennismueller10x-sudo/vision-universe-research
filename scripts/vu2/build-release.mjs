@@ -284,10 +284,10 @@ export async function buildRelease({root,output}){
    await writeFile(resolve(output,HOME_PATH),JSON.stringify(buildHomeFromDir(root)));
   }catch(e){console.warn('ELLIOTT_HOME_SKIPPED',String(e&&e.message||e).slice(0,200));}
  }
- /* Fundamental: SEC-Historie je shardKey (scripts/fundamental/build-history.mjs), nur in der Auslieferung, eigenes Budget.
+ /* Fundamental: SEC-Historie je shardKey (products/fundamental/producer/build-history.mjs), nur in der Auslieferung, eigenes Budget.
     Faellt sie aus, liest /fundamental/ wie bisher nur die Discover-Aktiendatei; die Website bleibt ausgeliefert. */
  try{
-  const {writeHistory,HISTORY_DIR}=await import('../fundamental/build-history.mjs');
+  const {writeHistory,HISTORY_DIR}=await import('../../products/fundamental/producer/build-history.mjs');
   await writeHistory({root,out:resolve(output,HISTORY_DIR),log:()=>{}});
  }catch(e){console.warn('FUNDAMENTAL_HISTORY_SKIPPED',String(e&&e.message||e).slice(0,200));}
  /* Verfuegbarkeits-Manifest des Aktien-Navigators (scripts/core/stock-availability.mjs, VU3): je shardKey ein kleiner Ausschnitt
@@ -373,8 +373,11 @@ export async function buildRelease({root,output}){
  // A failure must not block the whole site: the screener then shows its
  // "Daten nicht verfuegbar" state from the status file.
  let screener;
- try{const {writeUniverse}=await import('../screener/build-universe.mjs');screener=await writeUniverse({root,out:resolve(output,'screener/data'),log:()=>{}});}
+ try{const {writeUniverse}=await import('../../products/screener/producer/build-universe.mjs');screener=await writeUniverse({root,out:resolve(output,'screener/data'),log:()=>{}});}
  catch(e){screener={state:'UNAVAILABLE',reason:String(e&&e.message||e).slice(0,200)};await mkdir(resolve(output,'screener/data'),{recursive:true});await writeFile(resolve(output,'screener/data/status.json'),JSON.stringify(screener));}
+ // Europa-Spalten des Screeners (Strang M, 08.11.2026): aus den Europa-Schlusskursen dieser Auslieferung, ebenfalls nicht blockierend.
+ try{const {writeEurope}=await import('../screener/build-europe.mjs');screener={...screener,europe:await writeEurope({root,out:resolve(output,'screener/data'),log:()=>{}})};}
+ catch(e){screener={...screener,europe:{state:'UNAVAILABLE',reason:String(e&&e.message||e).slice(0,200)}};}
  // Keep inert Discover templates and budgeted view files, concatenate only their dependency runs.
  if(paths.includes('discover/index.html')){const {bundleDiscover}=await import('../mobile/bundle-discover.mjs');await bundleDiscover({root,output});}
  const bytes=emitted.reduce((n,f)=>n+f.bytes,0);

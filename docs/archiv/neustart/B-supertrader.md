@@ -14,7 +14,7 @@ Strang B ist abgeschlossen (Owner-Entscheidung 05.11.2026). Neue Forschung gibt 
 | `supertrader-paper-2027.yml` | Di–Sa 02:37 und 09:41 | Papierhandel SF6-PAPER-2027: Bis 31.12.2026 tut er nichts, ab 04.01.2027 zeichnet er auf. | roter Lauf |
 | `monitor.yml`, Prüfung `supertrader` (vormals `supertrader-live-smoke.yml`) | Mo–Fr 13:43 | Rauchtest der ausgelieferten Seiten | roter Lauf |
 
-Manuell, nur bei Bedarf: `supertrader-st-hist-top5.yml` (historische Forschung, nur versiegelt, Holdout gesperrt), `supertrader-house.yml`, `supertrader-validation.yml`, `supertrader-research-snapshot.yml`.
+Manuell, nur bei Bedarf: `supertrader-st-hist-top5.yml` (historische Forschung, nur versiegelt, Holdout gesperrt), `research.yml (Teil hausstrategie-forschung, vormals supertrader-house.yml)`, `supertrader-validation.yml`, `supertrader-research-snapshot.yml`.
 
 ## Was zu beobachten ist und welche Fristen gelten
 

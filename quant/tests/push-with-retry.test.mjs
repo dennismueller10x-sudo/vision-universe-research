@@ -14,6 +14,7 @@
         wird geschoben.
    Echt: ein lokales Remote, zwei Klone, derselbe Wettlauf.
    ========================================================================= */
+import { workflowPart, workflowHead } from "../../scripts/ci/lib/workflow-part.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from "node:fs";
@@ -526,10 +527,13 @@ test("PR16 · GEGENPROBE: ungueltige Werte verweigern den Start; Standardwerte s
   assert.deepEqual(roh, [], "jeder fetch/push laeuft ueber mit_zeitlimit");
 });
 
-test("PR17 · technical-intelligence-build: workflow_run nur auf main, Concurrency je Zweig, Nachlauf nur nach Erfolg", () => {
-  const y = readFileSync(join(dirname(SCRIPT), "..", "..", ".github", "workflows", "technical-intelligence-build.yml"), "utf8");
-  const wr = y.slice(y.indexOf("workflow_run:"), y.indexOf("workflow_dispatch:"));
-  assert.match(wr, /branches:\s*\n\s*- main/, "ohne Filter verdraengt ein uebersprungener Zweiglauf einen wartenden Neubau");
+test("PR17 · technical-intelligence (pipeline-daily, vormals technical-intelligence-build): workflow_run nur auf main, Concurrency je Zweig, Nachlauf nur nach Erfolg", () => {
+  const root = join(dirname(SCRIPT), "..", "..");
+  const kopf = workflowHead(root, "pipeline-daily.yml");
+  const y = workflowPart(root, "pipeline-daily.yml", "technical-intelligence");
+  const wr = kopf.slice(kopf.indexOf("\n  workflow_run:"), kopf.indexOf("\n  push:"));
+  assert.match(wr, /Lange Kursreihen/);
+  assert.match(wr, /branches: \[main\]/, "ohne Filter verdraengt ein uebersprungener Zweiglauf einen wartenden Neubau");
   assert.match(y, /group: technical-intelligence-build-\$\{\{ github\.ref_name \}\}/, "ADR-005");
   assert.match(y, /conclusion == 'success'/, "kein Neubau nach gescheitertem long-series-Lauf");
   assert.match(y, /push-with-retry\.sh/, "Push nur ueber das Skript");

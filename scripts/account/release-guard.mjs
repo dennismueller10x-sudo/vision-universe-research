@@ -13,8 +13,8 @@
 //                                              fail closed: Preis inclusive, Stripe Tax aktiv); ausschalten = Freigabe
 //   legalApproved                              allein ohne Zahlungswirkung (der Checkout-Zugang beruecksichtigt ihn schon)
 // Preise, Zahlungsmethoden, Webhook, Portal und Secrets aendern sich hier nie - nur ueber die freigabepflichtigen
-// Workflows (account-production-stripe.yml, account-production-deploy.yml); destruktive Migrationen ueber
-// account-db-approved.yml.
+// Workflows (account.yml (Teil stripe), account.yml (Teil ausrollen)); destruktive Migrationen ueber
+// account.yml (Teil db-freigabe).
 // Verglichen wird die gewuenschte Konfiguration (wrangler.toml, dieselbe Auswertung wie im Worker: config.mjs) mit
 // dem, was https://konto.visionuniverse.de/v1/health JETZT meldet - zustandslos, ohne Lauf-Historie. Code-Aenderungen
 // sind keine Freigabe-Sache: sie laufen ueber Tests und CI.

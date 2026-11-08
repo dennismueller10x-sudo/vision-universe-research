@@ -66,6 +66,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Datenzweig (Plan Neustart §3): Daten, die nur noch dort wachsen, wie ausgeliefert lesen (commit-sicher).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Weg bestimmen (automatisch nur auf main, nur mit SF8_AUTO_PUBLISH)
         id: mode

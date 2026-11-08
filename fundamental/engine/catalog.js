@@ -2,9 +2,9 @@
  *
  * Quellen (alle bestehend, nichts wird geschaetzt oder aufgefuellt):
  *  1. SEC-Historie je Emittent: /fundamental/data/history/<shardKey>.json.gz – Auslieferungsansicht der SEC-Verbraucherdateien
- *     (scripts/fundamental/build-history.mjs): Geschaeftsjahre, eigenstaendige Quartale, letzte zwoelf Monate, Meldung je Wert.
+ *     (products/fundamental/producer/build-history.mjs): Geschaeftsjahre, eigenstaendige Quartale, letzte zwoelf Monate, Meldung je Wert.
  *  2. Ersatz ohne Historie: der Block `fundamentals` der Discover-Aktiendatei (Jahresreihen weniger Kennzahlen + letztes Jahr).
- *  3. Querschnitt aller US-Aktien: /screener/data/universe-US_REAL.json (Erzeuger scripts/screener/build-universe.mjs) –
+ *  3. Querschnitt aller US-Aktien: /screener/data/universe-US_REAL.json (Erzeuger products/screener/producer/build-universe.mjs) –
  *     Branche (SIC), Bewertung, Renditen; dieselben Werte wie im Screener.
  * Abgeleitete Kennzahlen folgen den Formeln in FORMULA (Renditen wie im Screener). Ein Wert fehlt, wenn eine Eingabe fehlt.
  * Bewertungskennzahlen: aktueller Wert zum Schlusskurs; der Verlauf zum Geschaeftsjahresende nur aus geprueften Stichtagswerten
@@ -15,7 +15,7 @@
   var HISTORY_BASE = '/fundamental/data/history/';
   var UNIVERSE_PATH = '/screener/data/universe-US_REAL.json';
   var ANALYST_PATH = '/dashboard/data/analyst_ratings.json';
-  /* Konsens je Titel fuer das Produktuniversum (scripts/analysts/fetch-consensus.mjs): shards/<shardKey>.json, Schluessel securityId. */
+  /* Konsens je Titel fuer das Produktuniversum (products/analysten/producer/fetch-consensus.mjs): shards/<shardKey>.json, Schluessel securityId. */
   var CONSENSUS_SHARD_PATH = '/dashboard/data/analysts/shards/';
   var SERIES_BASE = '/quant/data/market/discover-series/';
 
@@ -551,7 +551,7 @@
     }
     return changeOf(def, prev.v, now.v);
   }
-  /* Branchenmedian je Geschaeftsjahr (Release, scripts/fundamental/build-history.mjs#industryMedians). */
+  /* Branchenmedian je Geschaeftsjahr (Release, products/fundamental/producer/build-history.mjs#industryMedians). */
   var INDUSTRY_METRICS = ['revenue_growth', 'net_income_growth', 'gross_margin', 'operating_margin', 'ebitda_margin', 'net_margin', 'fcf_margin',
     'roe', 'roa', 'roic', 'tax_rate', 'rd_ratio', 'capex_ratio', 'equity_ratio', 'debt_to_equity', 'net_debt_ebitda', 'payout_ratio',
     'pe', 'ps', 'pb', 'ev_sales', 'ev_ebitda', 'fcf_yield', 'dividend_yield'];

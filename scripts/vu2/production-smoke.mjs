@@ -679,7 +679,7 @@ for(const width of [1440,390]){
   if(bad.length)failures++;
  }
 
- /* FUNDAMENTAL: liest die SEC-Historie der Auslieferung (fundamental/data/history, scripts/fundamental/build-history.mjs)
+ /* FUNDAMENTAL: liest die SEC-Historie der Auslieferung (fundamental/data/history, products/fundamental/producer/build-history.mjs)
     und faellt NICHT still auf den Discover-Auszug zurueck. Geprueft: Quelle der Seite, Quartale, gepruefte Bewertung zum GJ-Ende
     (KGV, KUV), Branchenmediane je Geschaeftsjahr. */
  if(!ONLY||'/fundamental/'.includes(ONLY)||ONLY.includes('fundamental')){

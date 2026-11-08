@@ -82,6 +82,8 @@ test("DB-6 · Pages legt den Datenzweig nach dem Bau und vor dem Rauchtest darue
   const wf = readFileSync(join(ROOT, ".github/workflows/pages-release.yml"), "utf8");
   const build = wf.indexOf("scripts/vu2/build-release.mjs"), ov = wf.indexOf("scripts/ci/overlay-data-branch.mjs"), smoke = wf.indexOf("scripts/vu2/production-smoke.mjs");
   assert.ok(build > 0 && ov > build && ov < smoke, "Reihenfolge Bau → Datenzweig → Rauchtest");
+  const seed = wf.indexOf("scripts/ci/seed-data-branch.sh alle");
+  assert.ok(seed > 0 && seed < build, "Datenzweig liegt schon vor dem Bau im Arbeitsbaum (abgeleitete Auslieferung)");
   assert.match(wf, /DATA_BRANCH: data\/live/);
 });
 
@@ -193,4 +195,17 @@ test("DB-12 · eingespielte Datenzweig-Dateien sind fuer Git unsichtbar: git add
   put(work, "code.js", "y");
   git("add", "-A");
   assert.deepEqual(git("diff", "--cached", "--name-only").trim().split("\n"), ["code.js"], "nur die eigene Aenderung wird committet");
+});
+
+test("DB-14 · Inventar: jede Datenart ist im Datenzweig oder im Plan mit Status und Grund", () => {
+  const inBranch = new Set(MANIFEST.domains.filter((d) => d.phase === "BRANCH_ONLY").map((d) => d.id));
+  const plan = (MANIFEST.plan && MANIFEST.plan.entries) || {};
+  for (const d of DOMAINS.domains) {
+    if (inBranch.has(d.id)) { assert.ok(!(d.id in plan), d.id + " ist fertig (BRANCH_ONLY) und steht noch im Plan"); continue; }
+    const p = plan[d.id];
+    assert.ok(p, d.id + " fehlt im Plan (core/registry/data-branch.json#plan)");
+    assert.ok(["NEXT", "LATER", "LAST", "EXEMPT"].includes(p.status), d.id);
+    assert.ok(p.grund && p.grund.length > 10, d.id + " braucht einen Grund");
+  }
+  for (const id of Object.keys(plan)) assert.ok(DOMAINS.domains.some((d) => d.id === id), "Plan nennt unbekannte Datenart " + id);
 });

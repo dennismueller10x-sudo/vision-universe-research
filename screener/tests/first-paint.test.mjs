@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import vm from 'node:vm';
-import { universeMeta, SCHEMA } from '../../scripts/screener/build-universe.mjs';
+import { universeMeta, SCHEMA } from '../../products/screener/producer/build-universe.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const FULL_URL = '/screener/data/universe-US_REAL.json';

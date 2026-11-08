@@ -66,7 +66,10 @@ on:
       # und pusht mit dem GITHUB_TOKEN.
       - "Startseite: Werte der Produktabbildungen"
       # Chartbild (Technical Intelligence v3): neu gebaute Produktdaten, ebenfalls per GITHUB_TOKEN gepusht.
-      - "Chartbild-Produktdaten (Technical Intelligence v3)"
+      # Seit Stufe 7 (08.11.2026) laeuft das Chartbild (vormals technical-intelligence-build.yml) als Teil in
+      # pipeline-daily. Geliefert wird nur ein Buendellauf mit der Marke [seite] im Lauftitel (siehe dort run-name);
+      # alle anderen Buendellaeufe gehen in die Ignorier-Gruppe und ueberspringen den Release mit Hinweis.
+      - "Pipeline taeglich (Buendel pipeline-daily)"
       # Europa-Schlusskurse (werktags nach Handelsschluss, pusht per
       # GITHUB_TOKEN). Der erste Zeitplan-Lauf (04.11.2026, Lauf 41929023243)
       # startete um 22:52 UTC, ausserhalb der Bruecke: ohne diesen Eintrag
@@ -130,10 +133,24 @@ permissions:
 concurrency:
   # A skipped workflow_run must not evict a pending, valid consumer release.
   # Successful production triggers still share the existing serialized queue.
-  group: ${{ github.event_name == 'pull_request' && format('pages-production-pr-{0}', github.event.pull_request.number) || github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'success' && format('pages-production-ignored-{0}', github.run_id) || 'pages-production' }}
+  group: ${{ github.event_name == 'pull_request' && format('pages-production-pr-{0}', github.event.pull_request.number) || github.event_name == 'workflow_run' && !(github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.name != 'Pipeline taeglich (Buendel pipeline-daily)' || contains(github.event.workflow_run.display_title, '[seite]'))) && format('pages-production-ignored-{0}', github.run_id) || 'pages-production' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # Sichtbarer Hinweis, wenn ein Buendellauf von pipeline-daily keine Seitendaten hatte (keine Marke [seite]).
+  ohne-seitendaten:
+    if: >-
+      github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.name == 'Pipeline taeglich (Buendel pipeline-daily)' &&
+      !contains(github.event.workflow_run.display_title, '[seite]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Kein Release
+        env:
+          TITEL: ${{ github.event.workflow_run.display_title }}
+        run: echo "::notice::Kein Release - der Buendellauf '$TITEL' enthielt keinen Teil mit Seitendaten (Marke [seite] fehlt)."
+
   package:
     outputs:
       source_sha: ${{ steps.delivery_contract.outputs.source_sha }}
@@ -145,7 +162,7 @@ jobs:
     # scripts/ci/push-with-retry.sh). Dann gibt es auch nichts zu bauen.
     if: >-
       github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
+      (github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.name != 'Pipeline taeglich (Buendel pipeline-daily)' || contains(github.event.workflow_run.display_title, '[seite]')))
     steps:
       - uses: actions/checkout@v4
         with:
@@ -179,6 +196,11 @@ jobs:
       # Fehlt sie, entstehen in diesem Release keine Ereignisse; die Auslieferung haengt nicht davon ab.
       - name: Veroeffentlichte Watchlist-Uebersicht als Vergleichsstand holen
         run: node scripts/watchlist/fetch-published.mjs --site=https://research.visionuniverse.de --out="$RUNNER_TEMP/watchlist-prev" || echo "ohne Vergleichsstand"
+      # Datenzweig vor dem Bau (Plan Neustart §3): der Release-Bau leitet aus Daten ab (Supertrader, Faktor-Shards,
+      # Universum, SEC). Liegen sie nur noch im Datenzweig (BRANCH_ONLY), muss der Bau sie sehen. Commit-sicher
+      # (skip-worktree/exclude); der Schritt nach dem Bau legt danach jede registrierte Datei aus dem Zweig darueber.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build static product delivery
         env:
           VU_WATCHLIST_PREVIOUS: ${{ runner.temp }}/watchlist-prev
