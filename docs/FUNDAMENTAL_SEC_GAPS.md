@@ -118,5 +118,5 @@ Die Abschnitte unten beschreiben die Ausgangslage vom 24.10.2026.
 ## Folgen für Fundamental
 
 - **Keine Datenkorrektur in diesem PR.** Fundamental zeigt bei allen betroffenen Unternehmen den letzten verarbeiteten Zeitraum. Kennt die SEC bereits einen neueren 10-Q/10-K, steht zusätzlich der Hinweis auf den noch nicht verarbeiteten Bericht da.
-- **Kein zusätzlicher Lauf:** Der Wächter `fundamental-sec-freshness.yml` stößt für diese älteren Meldungen keinen Lauf an (`notAdopted`). Solange companyfacts sie nicht enthält, würde auch ein neuer Lauf sie nicht übernehmen.
+- **Kein zusätzlicher Lauf:** Der Wächter (`monitor.yml`, Teil `sec-frische`, vormals `fundamental-sec-freshness.yml`) stößt für diese älteren Meldungen keinen Lauf an (`notAdopted`). Solange companyfacts sie nicht enthält, würde auch ein neuer Lauf sie nicht übernehmen.
 - **Weiterzugeben an Quant:** Klasse 2 (Geschäftsjahr ohne 10-K, 83 operative Unternehmen) und die CIK-Nachfolge bei XOM.
