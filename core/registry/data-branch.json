@@ -31,6 +31,13 @@
       "phase": "BRANCH_ONLY",
       "workflow": "content.yml",
       "paths": ["dashboard/data/analyst_ratings.json"]
+    },
+    {
+      "id": "analystConsensus",
+      "phase": "BRANCH_ONLY",
+      "workflow": "content.yml",
+      "paths": ["dashboard/data/analysts/summary.json"],
+      "prefixes": ["dashboard/data/analysts/shards/"]
     }
   ],
   "internal": [
