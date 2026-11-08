@@ -1,7 +1,7 @@
 # Vision Universe Aktienmagazin · Nr. 01 (Muster, 09.11.2026)
 
 30 Seiten A4, Wochenmagazin zur KW 46. Muster mit echten Daten und tagesaktuellen Nachrichten, nicht veröffentlicht.
-Vorgänger und Konzept: [`../konzept-2026-11/`](../konzept-2026-11/README.md).
+Handbuch: [`../HANDBUCH.md`](../HANDBUCH.md). Faktenblatt: [`RECHERCHE.md`](RECHERCHE.md). Vorgänger und Konzept: [`../konzept-2026-11/`](../konzept-2026-11/README.md).
 
 ## Aufbau des Hefts
 

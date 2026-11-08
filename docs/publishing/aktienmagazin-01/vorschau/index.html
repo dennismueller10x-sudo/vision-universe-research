@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vision Universe Aktienmagazin Nr. 01</title>
+<link rel="preload" href="../../../../assets/fonts/inter-latin.woff2" as="font" crossorigin><style>@font-face{font-family:Inter;src:url(../../../../assets/fonts/inter-latin.woff2) format("woff2");font-weight:100 900}</style>
+<style>
+:root{--lime:#c8f531}*{box-sizing:border-box;margin:0}body{font-family:Inter,system-ui,sans-serif;background:#0b0b0b;color:#fff;-webkit-font-smoothing:antialiased}
+header{padding:48px 20px 20px;max-width:1240px;margin:auto}h1{font-size:clamp(38px,7vw,80px);font-weight:900;letter-spacing:-.05em;line-height:.9}h1 span{color:var(--lime)}
+.sub{color:#bdbdbd;font-size:clamp(15px,1.6vw,18px);max-width:70ch;margin-top:16px;line-height:1.5}
+.grid{max-width:1240px;margin:auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
+figure{background:#161616;border-radius:12px;padding:8px;cursor:zoom-in}figure img{width:100%;display:block;border-radius:3px}
+figcaption{font-size:13px;color:#9a9a9a;margin:8px 4px 2px;font-weight:600}figcaption b{color:var(--lime)}
+#z{position:fixed;inset:0;background:rgba(0,0,0,.94);display:none;overflow:auto;z-index:9}#z img{display:block;max-width:min(1000px,100%);margin:16px auto}
+#z .nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px}#z button{background:var(--lime);border:0;border-radius:999px;padding:10px 18px;font-weight:800;font-size:15px;cursor:pointer}
+</style></head><body>
+<header><h1>Aktien<span>magazin</span> Nr.&nbsp;01</h1>
+<p class="sub">Muster-Ausgabe vom 09.11.2026, 30 Seiten A4 (überarbeitete Fassung). Titelthema „Die KI-Bremse“, sechs KI-Aktien im Stresstest, Analysen, Hedgefonds-Radar, Chart der Woche, Screening, Konjunktur, Deutschland, Termine und Quick-Check. Alle Kennzahlen aus Vision Universe, Nachrichten recherchiert und mit Quelle, Bilder mit Higgsfield. Tippe auf eine Seite zum Lesen, dann mit den Pfeilen blättern.</p></header>
+<div class="grid" id="g"></div>
+<div id="z"><img alt=""><div class="nav"><button id="pv">‹</button><button id="cl">Schließen</button><button id="nx">›</button></div></div>
+<script>
+const T=['Cover','Editorial · Inhalt','Das war die Woche','Zahlen der Woche','Titel · Opener','Titel · Was passiert ist','Titel · Was die Daten sagen','Titel · Nvidia','Titel · Micron','Titel · Vertiv, Lumentum','Titel · Oracle, CoreWeave','Titel · AMD','Titel · Blase oder Delle?','Die App','Analyse · AppLovin','Analyse · Palantir','Berichtssaison · Gewinner','Berichtssaison · Verlierer','Hedgefonds · Oktober','Hedgefonds · Die Namen','Chart der Woche','Screening der Woche','Markt-Radar','Konjunktur & Zinsen','Deutschland','Das wird die Woche','Aus der App','Quick-Check','Impressum · Hinweise · Quellen','Rückseite · App'];
+const g=document.getElementById('g'),z=document.getElementById('z'),zi=z.querySelector('img');let cur=0;
+T.forEach((t,i)=>{const n=String(i+1).padStart(2,'0');g.insertAdjacentHTML('beforeend',`<figure data-i="${i}"><img loading="lazy" src="p/s${n}.jpg" alt="Seite ${n}"><figcaption><b>${n}</b> · ${t}</figcaption></figure>`)});
+const show=i=>{cur=(i+T.length)%T.length;zi.src='p/s'+String(cur+1).padStart(2,'0')+'.jpg';z.style.display='block';z.scrollTop=0};
+g.onclick=e=>{const f=e.target.closest('figure');if(f)show(+f.dataset.i)};
+document.getElementById('cl').onclick=()=>z.style.display='none';document.getElementById('nx').onclick=()=>show(cur+1);document.getElementById('pv').onclick=()=>show(cur-1);
+document.addEventListener('keydown',e=>{if(z.style.display!=='block')return;if(e.key==='ArrowRight')show(cur+1);if(e.key==='ArrowLeft')show(cur-1);if(e.key==='Escape')z.style.display='none'});
+</script></body></html>
