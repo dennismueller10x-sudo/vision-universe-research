@@ -13,19 +13,19 @@
    "id": "account-backup",
    "workflow": "account-backup.yml",
    "cron": "17 2 * * *",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "account-monitor",
    "workflow": "account-monitor.yml",
    "cron": "17 * * * *",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "account-production-checks",
    "workflow": "account-production-checks.yml",
    "cron": "41 5 * * *",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "company-intelligence-health",
@@ -125,7 +125,7 @@
    "id": "europe-discover-refresh",
    "workflow": "europe-discover-refresh.yml",
    "cron": "47 17 * * 1-5",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "freshness-monitor",
