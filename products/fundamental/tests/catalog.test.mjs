@@ -162,7 +162,7 @@ test('Datenquellen der Oberflaeche: nur ausgelieferte Pfade, keine SEC-Rohdaten'
   assert.doesNotMatch(src, /quant\/data\/sec|quant\/data\/fundamentals/);
   const release = readFileSync(new URL('scripts/vu2/build-release.mjs', root), 'utf8');
   assert.match(release, /products\/fundamental\/producer\/build-history\.mjs/, 'Historie wird im Release gebaut');
-  assert.match(release, /screener\/build-universe\.mjs/, 'Universum wird im Release gebaut');
+  assert.match(release, /products\/screener\/producer\/build-universe\.mjs/, 'Universum wird im Release gebaut');
 });
 
 test('Scherben: Budget, shardKey aus core/identity.js, Schreiben nur nach --out', async () => {

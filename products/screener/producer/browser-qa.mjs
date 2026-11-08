@@ -6,7 +6,7 @@
 // loeschen, Suche, Sortierung, Ansichten, Speichern, Wiedereroeffnen,
 // Browser-Zurueck, Why Match, Quick Research, Vergleich, leere Ergebnisse.
 //
-//   node scripts/screener/browser-qa.mjs --url http://127.0.0.1:8765 --out /tmp/screener-qa
+//   node products/screener/producer/browser-qa.mjs --url http://127.0.0.1:8765 --out /tmp/screener-qa
 import { mkdir, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);

@@ -28,7 +28,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const Identity = require('../../../core/identity.js');
 const Catalog = require('../../../fundamental/engine/catalog.js');
-import { sectorFromSic } from '../../../scripts/screener/sic.mjs';
+import { sectorFromSic } from '../../screener/producer/sic.mjs';
 
 export const SCHEMA = 'vu-fundamental-history-1.0.0';
 export const SHARD_SCHEMA = 'vu-fundamental-history-shard-1.0.0';

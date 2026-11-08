@@ -31,7 +31,7 @@ jobs:
       - name: Shell tests
         run: node --test "core/tests/shell-navigation.test.mjs" discover/tests/navigation-theme.test.mjs quant/tests/site-navigation.test.mjs
       - name: Build screener universe from committed product data
-        run: node scripts/screener/build-universe.mjs
+        run: node products/screener/producer/build-universe.mjs
       - name: Browser dependencies (Chromium und WebKit liegen im Image)
         run: |
           npm install --prefix /tmp/shell-qa-deps --no-audit --no-fund playwright@1.56.1
@@ -88,7 +88,7 @@ jobs:
       - name: Workspace fuer git freigeben (Container laeuft als root, build-release.mjs ruft git ls-files)
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Build screener universe from committed product data
-        run: node scripts/screener/build-universe.mjs
+        run: node products/screener/producer/build-universe.mjs
       - name: Browser dependencies (axe-core; Chromium und WebKit liegen im Image)
         run: |
           npm install --prefix /tmp/vu3-qa-deps --no-audit --no-fund playwright@1.56.1 axe-core@4.10.3
@@ -133,7 +133,7 @@ jobs:
       - name: Workspace fuer git freigeben (Container laeuft als root, build-release.mjs ruft git ls-files)
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Build screener universe from committed product data
-        run: node scripts/screener/build-universe.mjs
+        run: node products/screener/producer/build-universe.mjs
       - name: Browser dependencies (Chromium und WebKit liegen im Image)
         run: |
           npm install --prefix /tmp/fu-qa-deps --no-audit --no-fund playwright@1.56.1

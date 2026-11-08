@@ -2109,9 +2109,9 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/research/signals/s2.mjs | .github/workflows/research-signals-s2.yml |
 | scripts/research/signals/s2.test.mjs | .github/workflows/research-signals-s2.yml |
 | scripts/research/signals/study.test.mjs | .github/workflows/research-signals-s2.yml |
-| scripts/screener/browser-qa.mjs | .github/workflows/ci.yml |
-| scripts/screener/build-universe.mjs | .github/workflows/ci.yml, .github/workflows/shell-ci.yml |
-| scripts/screener/sic.mjs | .github/workflows/ci.yml |
+| products/screener/producer/browser-qa.mjs | .github/workflows/ci.yml |
+| products/screener/producer/build-universe.mjs | .github/workflows/ci.yml, .github/workflows/shell-ci.yml |
+| products/screener/producer/sic.mjs | .github/workflows/ci.yml |
 | scripts/social/approval-center-readiness.mjs | .github/workflows/social-ci.yml |
 | scripts/social/assert-no-secrets.mjs | .github/workflows/currency-fx-verify.yml, .github/workflows/social-ci.yml |
 | scripts/social/asset-hashtag-done.mjs | .github/workflows/social-ci.yml, .github/workflows/social-cloudflare.yml |
@@ -3921,7 +3921,7 @@ Ein Verzeichnisverweis oder CI-Pfadfilter beweist keinen ausgeführten Einzelauf
 | scripts/research/labor/stock-engine.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-construction.cjs')) ` |
 | scripts/research/labor/stock-engine.cjs | ` require(path.join(ROOT, 'quant/engines/portfolio-pit-factors.cjs')) ` |
 | scripts/research/labor/stock-engine.cjs | ` require(path.join(ROOT, 'scripts/research/edge/quant-e3.cjs')) ` |
-| scripts/screener/browser-qa.mjs | ` require(process.env.PLAYWRIGHT_PATH &#124;&#124; '/opt/node22/lib/node_modules/playwright') ` |
+| products/screener/producer/browser-qa.mjs | ` require(process.env.PLAYWRIGHT_PATH &#124;&#124; '/opt/node22/lib/node_modules/playwright') ` |
 | scripts/social/approval-center-readiness.mjs | ` require(join(ROOT, "social/engines/owner-decision.js")) ` |
 | scripts/social/assert-no-secrets.mjs | ` require(join(ROOT, "social/engines/provider.js")) ` |
 | scripts/social/assess-creative-quality.mjs | ` require(join(ROOT, "social/engines/story-selection.js")) ` |

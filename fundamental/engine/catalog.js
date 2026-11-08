@@ -4,7 +4,7 @@
  *  1. SEC-Historie je Emittent: /fundamental/data/history/<shardKey>.json.gz – Auslieferungsansicht der SEC-Verbraucherdateien
  *     (products/fundamental/producer/build-history.mjs): Geschaeftsjahre, eigenstaendige Quartale, letzte zwoelf Monate, Meldung je Wert.
  *  2. Ersatz ohne Historie: der Block `fundamentals` der Discover-Aktiendatei (Jahresreihen weniger Kennzahlen + letztes Jahr).
- *  3. Querschnitt aller US-Aktien: /screener/data/universe-US_REAL.json (Erzeuger scripts/screener/build-universe.mjs) –
+ *  3. Querschnitt aller US-Aktien: /screener/data/universe-US_REAL.json (Erzeuger products/screener/producer/build-universe.mjs) –
  *     Branche (SIC), Bewertung, Renditen; dieselben Werte wie im Screener.
  * Abgeleitete Kennzahlen folgen den Formeln in FORMULA (Renditen wie im Screener). Ein Wert fehlt, wenn eine Eingabe fehlt.
  * Bewertungskennzahlen: aktueller Wert zum Schlusskurs; der Verlauf zum Geschaeftsjahresende nur aus geprueften Stichtagswerten

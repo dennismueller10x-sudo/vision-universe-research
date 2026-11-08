@@ -373,7 +373,7 @@ export async function buildRelease({root,output}){
  // A failure must not block the whole site: the screener then shows its
  // "Daten nicht verfuegbar" state from the status file.
  let screener;
- try{const {writeUniverse}=await import('../screener/build-universe.mjs');screener=await writeUniverse({root,out:resolve(output,'screener/data'),log:()=>{}});}
+ try{const {writeUniverse}=await import('../../products/screener/producer/build-universe.mjs');screener=await writeUniverse({root,out:resolve(output,'screener/data'),log:()=>{}});}
  catch(e){screener={state:'UNAVAILABLE',reason:String(e&&e.message||e).slice(0,200)};await mkdir(resolve(output,'screener/data'),{recursive:true});await writeFile(resolve(output,'screener/data/status.json'),JSON.stringify(screener));}
  // Keep inert Discover templates and budgeted view files, concatenate only their dependency runs.
  if(paths.includes('discover/index.html')){const {bundleDiscover}=await import('../mobile/bundle-discover.mjs');await bundleDiscover({root,output});}

@@ -17,7 +17,7 @@
 // Abgeleitete Kennzahlen (ROIC, EV/EBITDA, RSI ...) folgen den Formeln in
 // FORMULAS; das Artefakt traegt sie mit, damit die Oberflaeche sie zeigt.
 //
-// Aufruf:  node scripts/screener/build-universe.mjs [--root=.] [--out=screener/data]
+// Aufruf:  node products/screener/producer/build-universe.mjs [--root=.] [--out=screener/data]
 import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { gunzipSync } from 'node:zlib';
@@ -25,7 +25,7 @@ import { fileURLToPath } from 'node:url';
 import { MAJOR_GROUPS, DIVISIONS, SECTORS, SIC_SECTOR_VERSION, sectorFromSic } from './sic.mjs';
 import { createRequire } from 'node:module';
 /* Formationsnamen aus dem Technical-Katalog (eine Quelle), ins Artefakt-Woerterbuch uebernommen. */
-const FORMATION_LABELS = createRequire(import.meta.url)('../../quant/engines/technical/technical-query.js').FORMATION_TYPES;
+const FORMATION_LABELS = createRequire(import.meta.url)('../../../quant/engines/technical/technical-query.js').FORMATION_TYPES;
 
 export const SCHEMA = 'vu-screener-universe-1.0.0';
 const UNIVERSE = 'US_REAL';
@@ -262,7 +262,7 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
   // Supertrader-Methoden
   let st = { byTicker: new Map(), meta: null, criteria: null };
   try {
-    const { screenerColumns } = await import('../supertrader/source-faithful/product/screener-export.mjs');
+    const { screenerColumns } = await import('../../../scripts/supertrader/source-faithful/product/screener-export.mjs');
     st = supertraderColumns(await loadJson(join(root, 'supertrader/data/sf-candidates/index.json')), screenerColumns);
   } catch (err) { log('Supertrader-Methoden fehlen: ' + err.message); }
   // Redaktionelle Einzeiler

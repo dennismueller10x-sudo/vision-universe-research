@@ -88,7 +88,7 @@ Abdeckung: [FUNDAMENTAL_DATA_COVERAGE.md](FUNDAMENTAL_DATA_COVERAGE.md). **Nicht
 
 ## Branchenmedian je Geschäftsjahr
 
-`build-history.mjs#industryMedians` rechnet beim Release-Bau mit derselben Logik wie die Seite (`catalog.js`) je SEC-Branche (SIC-Hauptgruppe, Quelle `quant/data/product/sic-peer-taxonomy-v1.json`) und je Sektor (`scripts/screener/sic.mjs#sectorFromSic`) den Median jeder Quote, Rendite, Wachstumsrate und geprüften Bewertung je Geschäftsjahr. Ein Median braucht mindestens 5 Unternehmen mit Wert; die Anzahl steht an jedem Wert. Keine Beträge (Median sagt nichts, Währungen mischen sich). Geschäftsjahre enden unterschiedlich; verglichen wird je Geschäftsjahr, wie gemeldet.
+`build-history.mjs#industryMedians` rechnet beim Release-Bau mit derselben Logik wie die Seite (`catalog.js`) je SEC-Branche (SIC-Hauptgruppe, Quelle `quant/data/product/sic-peer-taxonomy-v1.json`) und je Sektor (`products/screener/producer/sic.mjs#sectorFromSic`) den Median jeder Quote, Rendite, Wachstumsrate und geprüften Bewertung je Geschäftsjahr. Ein Median braucht mindestens 5 Unternehmen mit Wert; die Anzahl steht an jedem Wert. Keine Beträge (Median sagt nichts, Währungen mischen sich). Geschäftsjahre enden unterschiedlich; verglichen wird je Geschäftsjahr, wie gemeldet.
 
 ## Vergleichsgruppen
 

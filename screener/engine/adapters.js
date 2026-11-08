@@ -46,7 +46,7 @@
   function StaticUniverseAdapter(opts) {
     opts = opts || {};
     var url = opts.url || '/screener/data/universe-US_REAL.json';
-    /* Kopfdatei = dasselbe Artefakt ohne `cols` (scripts/screener/build-universe.mjs). */
+    /* Kopfdatei = dasselbe Artefakt ohne `cols` (products/screener/producer/build-universe.mjs). */
     var metaUrl = opts.metaUrl || url.replace(/\.json$/, '.meta.json');
     var researchBase = opts.researchBase || '/discover/data/stocks/US_REAL/';
     var ds = null, loading = null;

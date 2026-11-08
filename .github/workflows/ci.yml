@@ -48,8 +48,8 @@ on:
       - 'scripts/ci/select-checks.mjs'
       - 'products/fundamental/**'
       - 'products/hedgefonds/**'
-      - 'scripts/screener/**'
-      - 'scripts/screener/sic.mjs'
+      - 'products/screener/producer/**'
+      - 'products/screener/producer/sic.mjs'
       - 'scripts/supertrader/build.mjs'
       - 'scripts/vorsorge/**'
       - 'scripts/vu2/build-release.mjs'
@@ -81,7 +81,7 @@ on:
       - 'scripts/ci/select-checks.mjs'
       - 'products/fundamental/**'
       - 'products/hedgefonds/**'
-      - 'scripts/screener/**'
+      - 'products/screener/producer/**'
       - 'scripts/vorsorge/**'
       - 'scripts/vu2/production-smoke.mjs'
       - 'studio/stories/**'
@@ -443,7 +443,7 @@ jobs:
         with:
           node-version: '22'
       - name: Build screener universe from committed product data
-        run: node scripts/screener/build-universe.mjs
+        run: node products/screener/producer/build-universe.mjs
       - name: Engine, registry and universe tests
         run: node --test "screener/tests/*.test.mjs" discover/tests/navigation-theme.test.mjs
       - name: Browser QA dependencies
@@ -462,7 +462,7 @@ jobs:
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/screener/ > /dev/null && break; sleep 1; done
-          PLAYWRIGHT_PATH=/tmp/screener-qa-deps/node_modules/playwright node scripts/screener/browser-qa.mjs --url http://127.0.0.1:8765 --out /tmp/screener-evidence
+          PLAYWRIGHT_PATH=/tmp/screener-qa-deps/node_modules/playwright node products/screener/producer/browser-qa.mjs --url http://127.0.0.1:8765 --out /tmp/screener-evidence
       - name: Preserve screenshots
         if: always()
         uses: actions/upload-artifact@v4

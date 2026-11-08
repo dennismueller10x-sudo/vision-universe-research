@@ -36,7 +36,7 @@
       "consumes": ["technicalSignals"]
     },
     "screener": {
-      "paths": ["screener/**", "products/screener/**", "scripts/screener/**"],
+      "paths": ["screener/**", "products/screener/**", "products/screener/producer/**"],
       "ci": "ci.yml",
       "contractTests": ["screener/tests/*.test.mjs"],
       "consumes": ["technicalScreener"]
