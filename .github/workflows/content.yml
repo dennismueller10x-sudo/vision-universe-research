@@ -22,7 +22,7 @@ on:
     branches: [main]
     paths:
       - 'content/morning/**'
-      - 'scripts/morning/**'
+      - 'products/morning/**'
       - 'morning/assets/**'
 
 permissions:
@@ -258,7 +258,7 @@ jobs:
         with:
           node-version: "22"
       - name: Generate Morning pages
-        run: node scripts/morning/build-morning.mjs
+        run: node products/morning/producer/build-morning.mjs
       - name: Commit generated pages
         shell: bash
         run: |

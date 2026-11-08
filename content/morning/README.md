@@ -38,5 +38,5 @@ Das Titelbild muss 16:9 sein. Atlas wird immer aus dem unveränderten Originalas
 Lokale Vorschau neu erzeugen:
 
 ```bash
-node scripts/morning/build-morning.mjs
+node products/morning/producer/build-morning.mjs
 ```

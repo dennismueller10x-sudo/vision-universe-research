@@ -40,6 +40,10 @@
     "analystRatings"
    ],
    "reads": [],
+   "producers": [
+    "products/analysten/producer/fetch-consensus.mjs",
+    "products/analysten/producer/probe-consensus.mjs"
+   ],
    "tests": [
     "products/analysten/tests/*.test.mjs"
    ]
@@ -408,6 +412,9 @@
    },
    "data": [],
    "reads": [],
+   "producers": [
+    "products/morning/producer/build-morning.mjs"
+   ],
    "tests": []
   },
   {

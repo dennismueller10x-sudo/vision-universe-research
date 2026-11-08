@@ -72,8 +72,14 @@ test("MM-5 · Daten: jede Datenart ist in domains.json; jede Datenart hat hoechs
   }
 });
 
-test("MM-6 · Tests: jeder genannte Vertragstest existiert", () => {
-  for (const { dir, m } of MODS) for (const t of m.tests) assert.ok(globCount(t) > 0, `${dir}: Test ${t} fehlt`);
+test("MM-6 · Tests und Erzeuger: jeder genannte Vertragstest und Erzeuger existiert; Erzeuger unter products/<id>/ gehoeren dem Produkt", () => {
+  for (const { dir, m } of MODS) {
+    for (const t of m.tests) assert.ok(globCount(t) > 0, `${dir}: Test ${t} fehlt`);
+    for (const p of m.producers || []) {
+      assert.ok(existsSync(join(ROOT, p)), `${dir}: Erzeuger ${p} fehlt`);
+      if (p.startsWith("products/")) assert.ok(p.startsWith(`products/${dir}/`), `${dir}: Erzeuger ${p} liegt in einem fremden Produkt`);
+    }
+  }
 });
 
 test("MM-7 · Statusseite und system-health lesen die Steckbriefe", () => {
