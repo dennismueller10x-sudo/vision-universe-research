@@ -169,7 +169,7 @@ export async function pruefe(options) {
       explanation: "Der Worker draussen kennt /social/meta/hashtag-capability " +
         "noch nicht. Das ist kein Befund ueber Rechte - der Endpunkt ist " +
         "nur noch nicht ausgerollt. Der bestehende Deploy-Pfad " +
-        "(social-cloudflare.yml, Anforderung ueber die Datei " +
+        "(social.yml, Teil cloudflare, Anforderung ueber die Datei " +
         "workers/vision-universe-social/DEPLOY_REQUEST) bringt ihn " +
         "hinaus. Bis dahin ist die Ursache der abgewiesenen " +
         "Hashtag-Abfragen NICHT bestimmbar, und ein Owner-Schritt auf " +
