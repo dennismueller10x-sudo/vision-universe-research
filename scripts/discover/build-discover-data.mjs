@@ -1251,7 +1251,7 @@ function buildRow(universe, config) {
     (config.require || []).every((f) => isNum(s.metrics[f]))).length;
 
   const index = config.indexId ? (universe.indexes || []).find((x) => x.indexId === config.indexId) || null : null;
-  return {
+  const out = {
     rowId: config.id, title: config.title, subtitle: config.subtitle,
     world: config.world || "leadership",
     /* V4 §19: Herkunft der Index-Mitgliedschaft an der Reihe. */
@@ -1279,6 +1279,11 @@ function buildRow(universe, config) {
     filters: filterOptions(pool),
     cards
   };
+  /* Alle Treffer in Rangfolge (nicht nur die ausgelieferten Karten) fuer den
+     Index Aktie -> Reihen (membership/{U}.json). Nicht aufzaehlbar: steht nicht
+     in der Reihen-Datei. */
+  Object.defineProperty(out, "members", { value: bereinigt.map((s) => s.symbol), enumerable: false });
+  return out;
 }
 
 function filterOptions(stocks) {
@@ -1985,14 +1990,31 @@ console.log("3/5  Zeilen-Payloads …");
 for (const universe of universes) {
   const rows = [];
   const rowsById = new Map();
+  /* Index Aktie -> Reihen (Konzept „Reihe für Reihe“, Vorschau-Sheet und Aktienseite):
+     je Symbol die Reihen, in denen es heute steht, mit Platz. Ein Abruf statt einer
+     Anfrage je Reihe. Nur aus den gerechneten Reihen, ohne Uhrzeit: reproduzierbar. */
+  const memberRows = [], memberOf = new Map();
   for (const config of ROWS) {
     const row = buildRow(universe, config);
     write(`rows/${universe.universeId}/${config.id}.json`, row);
+    const ri = memberRows.length;
+    memberRows.push({ id: config.id, matched: row.coverage.matched });
+    row.members.forEach((sym, rank) => {
+      if (!memberOf.has(sym)) memberOf.set(sym, []);
+      memberOf.get(sym).push([ri, rank + 1]);
+    });
     rowsById.set(config.id, Object.assign({}, row, { config }));
     rows.push({ rowId: row.rowId, title: row.title, subtitle: row.subtitle,
                 returned: row.coverage.returned, matched: row.coverage.matched,
                 theme: config.theme || null });
   }
+  const members = {};
+  [...memberOf.keys()].sort().forEach((sym) => { members[sym] = memberOf.get(sym); });
+  write(`membership/${universe.universeId}.json`, {
+    schemaVersion: "discover-membership-1.0.0", universeId: universe.universeId, asOf: universe.asOf,
+    note: "Je Symbol [Reihe, Platz]: Index in rows, Platz 1 = Erster nach der Regel der Reihe. Alle Treffer, nicht nur die ausgelieferten Karten.",
+    rows: memberRows, members
+  });
 
   /* Sektorzeilen */
   const sectorPayload = [];
@@ -2364,7 +2386,8 @@ const meta = {
   })),
   rows: rowIndex,
   rowConfigs: ROWS.map((r) => ({ id: r.id, title: r.title, theme: r.theme || null,
-                                 microRange: r.microRange || "6M", rule: r.rule || null })),
+                                 microRange: r.microRange || "6M", rule: r.rule || null,
+                                 explain: r.explain || null })),
   sources: [
     real.sourceFile,
     real.universeSource.file,
