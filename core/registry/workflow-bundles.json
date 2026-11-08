@@ -85,8 +85,18 @@
   },
   "social": {
    "purpose": "Social und Reels",
-   "workflow": null,
-   "replaces": []
+   "workflow": "social.yml",
+   "replaces": [
+    "social-cloudflare.yml",
+    "social-external-intelligence.yml",
+    "social-external-observe.yml",
+    "social-hashtag-capability.yml",
+    "social-publish-candidate.yml",
+    "social-reel.yml",
+    "social-resume-verified-web.yml",
+    "social-smoke-publish.yml",
+    "social-work-delivery.yml"
+   ]
   },
   "app": {
    "purpose": "native App",
@@ -309,36 +319,7 @@
   "social-ci.yml": {
    "bundle": "ci"
   },
-  "social-cloudflare.yml": {
-   "bundle": "social"
-  },
-  "social-external-intelligence.yml": {
-   "bundle": "social"
-  },
-  "social-external-observe.yml": {
-   "bundle": "social"
-  },
-  "social-hashtag-capability.yml": {
-   "bundle": "social",
-   "note": "Reaktivierungspfad INSTAGRAM_PUBLIC_CONTENT (social/engines/source-registry.js) - bleibt bis zur Owner-Entscheidung"
-  },
   "social-orchestrator.yml": {
-   "bundle": "social"
-  },
-  "social-publish-candidate.yml": {
-   "bundle": "social"
-  },
-  "social-reel.yml": {
-   "bundle": "social"
-  },
-  "social-resume-verified-web.yml": {
-   "bundle": "social"
-  },
-  "social-smoke-publish.yml": {
-   "bundle": "social",
-   "retireCandidate": true
-  },
-  "social-work-delivery.yml": {
    "bundle": "social"
   },
   "supertrader-ci.yml": {
