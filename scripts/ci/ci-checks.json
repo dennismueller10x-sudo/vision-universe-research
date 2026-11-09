@@ -261,6 +261,220 @@
      "scripts/ci/select-checks.mjs"
     ]
    }
+  },
+  "discover": {
+   "vormals": "discover-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "discover/**",
+     "products/discover/**",
+     "scripts/discover/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "discover/**",
+     "products/discover/**",
+     "scripts/discover/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "discover-frontend": {
+   "vormals": "discover-frontend-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "discover/**",
+     "discover-v2/**",
+     "scripts/discover/**",
+     "assets/site-navigation.js",
+     "assets/site-navigation.css",
+     "assets/product-icons.svg",
+     "assets/product-hero.css",
+     "assets/hero-visuals/**",
+     "assets/themen/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "discover/**",
+     "discover-v2/**",
+     "scripts/discover/**",
+     "assets/site-navigation.js",
+     "assets/site-navigation.css",
+     "assets/product-icons.svg",
+     "assets/product-hero.css",
+     "assets/hero-visuals/**",
+     "assets/themen/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "sec-fundamentals": {
+   "vormals": "sec-fundamentals-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "quant/**",
+     "scripts/quant/**",
+     "scripts/vu2/build-release.mjs",
+     "docs/SEC_*.md",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "quant/**",
+     "scripts/quant/**",
+     "scripts/vu2/build-release.mjs",
+     "docs/SEC_*.md",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "social": {
+   "vormals": "social-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "social/**",
+     "products/social/producer/**",
+     "workers/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "social/**",
+     "products/social/producer/**",
+     "workers/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "supertrader": {
+   "vormals": "supertrader-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "supertrader/**",
+     "products/supertrader/**",
+     "scripts/supertrader/**",
+     "docs/SUPERTRADER_*.md",
+     ".github/workflows/supertrader-*.yml"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "scripts/supertrader/**",
+     "supertrader/assets/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "technical": {
+   "vormals": "technical-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "technical/**",
+     "products/technical/**",
+     "academy/**",
+     "quant/engines/technical/**",
+     "quant/tests/technical-*",
+     "quant/tests/fixtures/technical-reference-*",
+     "scripts/technical/world/**",
+     "assets/site-navigation.*",
+     "assets/stock-navigator.*",
+     "core/stock-context.js",
+     "scripts/vu2/release-id.mjs",
+     ".github/workflows/technical-*.yml"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "technical/**",
+     "academy/**",
+     "quant/engines/technical/**",
+     "scripts/technical/world/**",
+     ".github/workflows/technical-*.yml"
+    ]
+   }
+  },
+  "vu2-browser-qa": {
+   "vormals": "vu2-browser-qa.yml",
+   "pullRequest": {
+    "paths": [
+     "vu2/**",
+     "quant/index.html",
+     "quant/app/**",
+     "quant/engines/**",
+     "discover/ui/live-hub.js",
+     "discover/ui/microchart.js",
+     "quant/ui/charts.js",
+     "quant/ui/technical-chart.*",
+     "quant/ui/quant.css",
+     "quant/technical/index.html",
+     "quant/technical/app.js",
+     "quant/api/**",
+     "scripts/vu2/**",
+     "assets/site-navigation.*",
+     "assets/product-icons.svg",
+     "assets/product-hero.css",
+     "assets/hero-visuals/**",
+     "assets/vision-universe-logo*.png",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "dispatch": false
+  },
+  "vu2-lifecycle-handoff": {
+   "vormals": "vu2-lifecycle-handoff.yml",
+   "pullRequest": {
+    "paths": [
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs",
+     "scripts/vu2/verify-history-handoff.mjs",
+     "quant/tests/history-handoff-proof.test.mjs"
+    ]
+   }
   }
  }
 }

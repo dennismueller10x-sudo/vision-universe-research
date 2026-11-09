@@ -58,6 +58,14 @@
       "workflow": "pipeline-weekly.yml",
       "paths": ["quant/data/product/model-depots-v1.json"],
       "note": "Der Erzeuger rechnet vom bisherigen Stand weiter (Bestand, Protokoll); pipeline-weekly spielt den Zweig vor dem Lauf ein (seed-data-branch.sh alle). Bis zum ersten Lauf (Sa 07:23 UTC) liefert Pages die eingefrorene Kopie aus main."
+    },
+    {
+      "id": "kiDepots",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "pipeline-daily.yml",
+      "paths": ["quant/data/product/ki-depots-v1.json"],
+      "note": "pipeline-daily Teil ki-depots (werktags 23:41 UTC) spielt den Zweig vor dem Export ein und schreibt nur dorthin. Bis zum ersten Lauf liefert Pages die eingefrorene Kopie aus main."
     }
   ],
   "internal": [
@@ -82,7 +90,6 @@
       "fxReference": {"status": "LATER", "grund": "pipeline-daily (ezb); Verbraucher Release-Bau (FX-Lizenz) und Discover"},
       "indexMembership": {"status": "LATER", "grund": "pipeline-weekly; Verbraucher Discover-Bau"},
       "industryClassificationHistory": {"status": "LATER", "grund": "pipeline-weekly; Verbraucher Fundamental/Supertrader-Adapter"},
-      "kiDepots": {"status": "LATER", "grund": "Erzeuger im Buendel pipeline-daily/research (Track A)"},
       "technicalWorld": {"status": "LATER", "grund": "Erzeuger im Buendel pipeline-daily (Track A); nach dessen Stufe 7"},
       "companyMaster": {"status": "LAST", "grund": "Produktuniversum"},
       "corporateActions": {"status": "LAST", "grund": "Quant-Kette (market-data-refresh)"},

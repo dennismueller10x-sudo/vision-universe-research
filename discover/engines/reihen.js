@@ -66,7 +66,7 @@
   ];
 
   /* Startseite (Screen n-home), von oben nach unten unter Billboard und Markt.
-     kind: top10 | rail (eine Reihe) | themes | recent | more | strategies.
+     kind: top10 | rail (eine Reihe) | themes | europe (Verweise auf Europa, ohne Daten) | recent | more | strategies.
      movable: Reihen, die nach Regel 3 (neue Treffer seit dem Vortag) nach oben ruecken duerfen –
      sie tauschen nur untereinander die Plaetze, damit der Wechsel Kurs/Unternehmen/Themen/Persoenlich bleibt. */
   var HOME_PLAN = [
@@ -74,6 +74,7 @@
     { kind: "rail", row: "new-52-week-highs", movable: true },
     { kind: "rail", row: "fallen-angels", movable: true, tag: "NEU", pill: "fromHigh" },
     { kind: "themes" },
+    { kind: "europe" },
     { kind: "recent" },
     { kind: "rail", row: "comeback", movable: true },
     { kind: "more" },

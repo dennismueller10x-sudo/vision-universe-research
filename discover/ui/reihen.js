@@ -266,6 +266,14 @@
     return sec;
   }
 
+  /* Europa ohne Suche erreichbar (Owner 08.11.2026, Strang M). Reine Verweise: kein Europa-Katalog beim Start der Seite. */
+  function europeSection() {
+    var sec = h('section', 'dr-sec dr-sec--europa'); sec.setAttribute('data-europe-entry', '');
+    sec.innerHTML = railHead({ title: 'Aktien aus Europa', more: 'Alle', href: '#/c/EUROPE/all', label: 'Alle europäischen Aktien', sub: 'Tagesschlusskurse, unbereinigt. Fehlende Tage bleiben als Lücke offen.' }) + '<div class="vu-stack">' +
+      U().navcard({ href: '#/c/EUROPE/de', glyph: 'line', title: 'Deutsche Aktien', sub: 'DAX, MDAX, SDAX und weitere · Kurse in Euro' }) +
+      U().navcard({ href: '#/c/EUROPE/all', glyph: 'grid', title: 'Ganz Europa', sub: 'Zehn Börsen · Kurse in Landeswährung' }) + '</div>';
+    return sec;
+  }
   function endSection(ctx, avail) {
     var sec = h('section', 'dr-sec dr-sec--end');
     var n = R().ALL_GROUPS.reduce(function (k, g) { return k + g.rows.filter(function (r) { return avail && avail[r]; }).length; }, 0);
@@ -345,6 +353,7 @@
         }
         else if (slot.kind === 'themes') node = themesSection(ctx, false);
         else if (slot.kind === 'strategies') node = strategiesSection(slot, ctx, avail);
+        else if (slot.kind === 'europe') node = europeSection();
         if (node) body.appendChild(node);
       });
       body.appendChild(endSection(ctx, avail));

@@ -1159,7 +1159,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
         el("span", { class: "dx-chart-hero-span", text: C().dateShort(sel.from) + " – " + C().dateShort(sel.to) +
           (woechentlich ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · " +
           (state.detail.region === "EUROPE" ? state.detail.basisLabel : "split-bereinigt") +
-          (state.displayWindow&&state.displayWindow.truncated?' · Sicheres Kursfenster ab '+C().dateShort(state.displayWindow.safeHistoryStart)+'; ältere Datenlücken ausgeblendet':state.displayWindow&&['MAJOR_GAPS','BROKEN'].includes(state.displayWindow.visualQualityStatus)?' · Datenlücken im Kursverlauf':'') }),
+          (state.displayWindow&&state.displayWindow.truncated?' · Sicheres Kursfenster ab '+C().dateShort(state.displayWindow.safeHistoryStart)+'; ältere Datenlücken ausgeblendet':state.displayWindow&&['MAJOR_GAPS','BROKEN'].includes(state.displayWindow.visualQualityStatus)?' · Kursreihe mit Lücken':'') }),
         frischeTages(state)
       ].concat(euroDaneben ? [el("span", { class: "dx-chart-hero-eur", text: "≈ " + euroDaneben })] : []))
     ]);

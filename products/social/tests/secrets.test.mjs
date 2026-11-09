@@ -12,6 +12,7 @@
    verlieren: kein Browser-Code mit Tokenzugriff, keine Seite, die einen
    Adapter einbindet, kein Protokoll ohne Schwaerzung.
    ========================================================================= */
+import { workflowPart } from "../../../scripts/ci/lib/workflow-part.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
@@ -127,22 +128,20 @@ test("SS4 · Kein ausgeliefertes JSON traegt ein Tokenfeld", () => {
 });
 
 test("SS5 · Der Workflow reicht Schluessel nur ueber den secrets-Kontext weiter", () => {
-  const workflow = join(ROOT, ".github", "workflows", "social-ci.yml");
-  if (!existsSync(workflow)) return;   /* wird im selben Commit angelegt */
-  const source = readFileSync(workflow, "utf8");
+  /* seit CI Stufe 2 Teil social in ci.yml (vormals social-ci.yml) */
+  const source = workflowPart(ROOT, "ci.yml", "social");
   const assignments = source.match(/^\s*[A-Z0-9_]*(KEY|TOKEN|SECRET|PASSWORD)[A-Z0-9_]*\s*:\s*(.+)$/gm) || [];
   for (const line of assignments) {
     const value = line.split(":").slice(1).join(":").trim();
     if (!value || value === "|" || value === ">") continue;
     assert.match(value, /\$\{\{\s*(secrets\.|github\.token)/,
-      `social-ci.yml: Zugangsdatum nicht aus dem secrets-Kontext: ${line.trim()}`);
+      `ci.yml (Teil social): Zugangsdatum nicht aus dem secrets-Kontext: ${line.trim()}`);
   }
 });
 
 test("SS6 · Die CI laeuft OHNE Provider-Zugangsdaten durch", () => {
-  const workflow = join(ROOT, ".github", "workflows", "social-ci.yml");
-  if (!existsSync(workflow)) return;
-  const source = readFileSync(workflow, "utf8");
+  /* seit CI Stufe 2 Teil social in ci.yml (vormals social-ci.yml) */
+  const source = workflowPart(ROOT, "ci.yml", "social");
   /* Der entscheidende Punkt: der Test-Schritt selbst darf kein Secret
      brauchen. Eine CI, die ohne Meta-Zugang rot ist, prueft nicht den
      Code, sondern die Verfuegbarkeit von Meta (§43). */

@@ -62,6 +62,8 @@
     var chips = el('nav', { class: 'dr-genres vu-chips', 'aria-label': 'Genres' });
     [['alle', 'Alle'], ['kursbewegung', 'Kursbewegung'], ['unternehmen', 'Unternehmen'], ['themen', 'Themen'], ['indizes', 'Indizes']].forEach(function (x, i) {
       chips.appendChild(el('button', { type: 'button', class: 'vu-chip', 'data-genre': x[0], 'aria-pressed': i ? 'false' : 'true', text: x[1] }));
+      /* Europa als Verweis hinter „Indizes“ (Owner 08.11.2026; Platz nach dem Konzept „Reihe für Reihe“). */
+      if (x[0] === 'indizes') chips.appendChild(el('a', { class: 'vu-chip', href: '#/c/EUROPE/de', 'data-europe-chip': '', text: 'Europa' }));
     });
     chips.appendChild(el('a', { class: 'vu-chip dr-genres__all', href: '#/reihen', 'aria-label': 'Alle Reihen' }, [grid()]));
     var h1 = el('h1', { class: 'vu-lt' }); h1.append(el('span', { class: 'dr-l', text: 'Was bewegt ' }), el('span', { class: 'dr-l', text: 'die Börse heute?' }));

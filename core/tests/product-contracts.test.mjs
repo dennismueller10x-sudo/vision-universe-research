@@ -2,6 +2,7 @@
    Ein Pfad-Gate verbot Querschnitts-PRs. Ein Vertrag verlangt stattdessen: wer ein Produkt aendert,
    loest dessen CI und Vertragstests aus, und jede Schnittstelle zwischen Produkten hat ein
    geprueftes Schema. Registry: core/registry/product-contracts.json. */
+import { workflowPart } from "../../scripts/ci/lib/workflow-part.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync, readdirSync } from "node:fs";
@@ -69,7 +70,7 @@ test("PC-3 · Jede Schnittstelle zwischen Produkten hat ihr Schema (Daten-Vertra
 test("PC-4 · Kein Pfad-Gate blockiert mehr: die ersetzten Gates sind Bericht oder entfernt", () => {
   const guard = readFileSync(join(ROOT, "scripts/supertrader/guard-protected-paths.mjs"), "utf8");
   assert.doesNotMatch(guard, /process\.exit\(1\)/, "Gate A meldet nur noch");
-  const disc = readFileSync(join(WF, "discover-ci.yml"), "utf8");
+  const disc = workflowPart(ROOT, "ci.yml", "discover"); /* seit CI Stufe 2 Teil discover in ci.yml, vormals discover-ci.yml */
   assert.doesNotMatch(disc, /- name: Discover veraendert keine bestehende Engine/);
   const ci = readFileSync(join(WF, "company-intelligence.yml"), "utf8");
   assert.doesNotMatch(ci, /- name: Reject changes to protected production paths/);
