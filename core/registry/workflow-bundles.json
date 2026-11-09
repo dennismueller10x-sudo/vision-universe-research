@@ -6,6 +6,7 @@
    "purpose": "Pruef-Workflows (Tests, Gates) als eine Matrix je Produkt",
    "workflow": "ci.yml",
    "replaces": [
+    "account-ci.yml",
     "ask-ci.yml",
     "brevo-ci.yml",
     "ci-config.yml",
@@ -19,6 +20,7 @@
     "research-access-ci.yml",
     "screener-ci.yml",
     "sec-fundamentals-ci.yml",
+    "shell-ci.yml",
     "social-ci.yml",
     "supertrader-ci.yml",
     "technical-ci.yml",
@@ -164,10 +166,6 @@
   }
  },
  "workflows": {
-  "account-ci.yml": {
-   "bundle": "ci",
-   "geplant": true
-  },
   "account-production-auto.yml": {
    "bundle": "account",
    "ausnahme": "zahlungsfreigabe (Owner-Umgebung) und migrationen laufen parallel unter einer Workflow-Gruppe; als Job-Gruppe wuerden Migrationen auf die Freigabe warten."
@@ -238,11 +236,11 @@
   },
   "core-ci.yml": {
    "bundle": "ci",
-   "geplant": true
+   "ausnahme": "Heimat der Vertragstests (CLAUDE.md, Datenlauf-Warnung) mit eigenem taeglichen Live-Lauf auf dem Wecker-Takt; bleibt als eigener Pruef-Workflow sichtbar."
   },
   "currency-fx-verify.yml": {
    "bundle": "ci",
-   "geplant": true
+   "ausnahme": "Schreibt Messdaten (contents: write) unter einer globalen Serialisierungsgruppe und laeuft auf jedem PR; als Teil des Pruef-Buendels nicht gleichwertig."
   },
   "discover-im-blick-live.yml": {
    "bundle": "pipeline-intraday",
@@ -302,7 +300,7 @@
   },
   "quant-ci.yml": {
    "bundle": "ci",
-   "geplant": true
+   "ausnahme": "Die eingefrorene Quant-Evidenz (docs/quant-recovery/v8, v9) nennt die manuellen V8-Archiv-Jobs dieser Datei als Zugangsweg und fuehrt ihren Hash."
   },
   "research-signals-s2.yml": {
    "bundle": "research",
@@ -327,10 +325,6 @@
   "security-master-weekly.yml": {
    "bundle": "pipeline-weekly",
    "ausnahme": "Namenskette: security-master-eligibility hoert per workflow_run auf diesen Lauf (Vertrag UF)."
-  },
-  "shell-ci.yml": {
-   "bundle": "ci",
-   "geplant": true
   },
   "social-orchestrator.yml": {
    "bundle": "social",

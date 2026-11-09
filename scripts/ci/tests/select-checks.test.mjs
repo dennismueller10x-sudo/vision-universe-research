@@ -43,7 +43,15 @@ test("SC-5 · Unvollstaendige Dateiliste: alle in Frage kommenden laufen (fail o
 
 test("SC-6 · Jede Pruefung in ci-checks.json hat einen Job in ci.yml und umgekehrt", () => {
   const wf = readFileSync(join(ROOT, ".github/workflows/ci.yml"), "utf8");
-  const jobs = [...wf.matchAll(/^  ([a-z0-9-]+):\n    needs: auswahl/gm)].map((m) => m[1]).sort();
-  assert.deepEqual(jobs, Object.keys(CHECKS).sort());
+  /* Eine Pruefung ist ein Job <pruefung> oder, bei mehreren Jobs der Quelle (Stufe 3), Jobs <pruefung>-<job>
+     unter dem Kopfkommentar `# --- <pruefung>:`; jeder Job haengt an der eigenen Ausgabe der Auswahl. */
+  const jobs = [...wf.matchAll(/^  ([a-z0-9-]+):\n    needs: auswahl\n    if: (?:>-\n\s+)?needs\.auswahl\.outputs\.([a-z0-9_]+) == 'true'/gm)];
+  const teile = [...new Set(jobs.map((m) => m[2].replace(/_/g, "-")))].sort();
+  assert.deepEqual(teile, Object.keys(CHECKS).sort());
+  for (const [, id, out] of jobs) {
+    const teil = out.replace(/_/g, "-");
+    assert.ok(id === teil || id.startsWith(teil + "-"), `${id}: Job gehoert nicht zur Pruefung ${teil}`);
+    if (id !== teil) assert.match(wf, new RegExp(`\\n  # --- ${teil}:`), `${teil}: Kopfkommentar fuer Mehrjob-Pruefung fehlt`);
+  }
   for (const k of Object.keys(CHECKS)) assert.match(wf, new RegExp(`${k.replace(/-/g, "_")}: \\$\\{\\{ steps\\.wahl\\.outputs\\.${k.replace(/-/g, "_")} \\}\\}`));
 });
