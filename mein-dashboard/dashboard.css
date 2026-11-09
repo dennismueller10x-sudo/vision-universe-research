@@ -109,3 +109,13 @@ html[data-md-view=gespeichert] .md-only-watch,html[data-md-view=watchlist] .md-o
 .md-play svg{width:18px;height:18px}
 :root[data-theme=dark] .md-today{background:var(--vu-card);box-shadow:inset 0 0 0 1px var(--vu-hair)}
 .md-find+.md-empty{margin-top:10px}
+.md-eyerow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.md-eyerow .vu-ltag{margin:0}
+.md-plan{flex:none;padding:3px 9px;border-radius:999px;background:var(--vu-card);font-size:11.5px;font-weight:800;font-variant-numeric:tabular-nums}
+html[data-md-view=gespeichert] .md-plan{display:none}
+.md-strip>li{position:relative}
+.md-remove{position:absolute;top:4px;right:4px;width:36px;height:36px;min-width:36px!important;min-height:36px!important;border:0;border-radius:50%;background:var(--vu-ink);color:var(--vu-inv);font:900 15px/1 var(--vu-font);cursor:pointer;display:grid;place-items:center}
+.md-remove::after{content:"";position:absolute;inset:-4px}
+.md-remove[disabled]{opacity:.6;cursor:wait}
+.md-remove:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
+.md-wl--add small{font-size:11px;font-weight:600;color:var(--vu-mute)}

@@ -184,6 +184,10 @@
     $('md-eyebrow').textContent = DAYS[now.getDay()] + ', ' + now.getDate() + '. ' + MONTHS[now.getMonth()];
     h.textContent = greeting(now.getHours()) + (name ? ',' : '');
     if (name) { h.appendChild(el('br')); h.appendChild(document.createTextNode(name)); }
+    // Tarif-Marke „Free · 5 von 500“ klein neben dem Datum (Entscheidung beim Bauen, HANDOVER).
+    var plan = (me.entitlements && me.entitlements.plan_id) || 'free', limit = ctx.limits && ctx.limits.items;
+    $('md-plan').textContent = ({free: 'Free', plus: 'Plus', pro: 'Pro'}[plan] || plan) + ' · ' + ctx.items.length + (limit ? ' von ' + limit : '');
+    $('md-plan').hidden = false;
   }});
 
   function views() {
@@ -234,12 +238,22 @@
       } else {
         card.appendChild(el('span', {className: 'md-wl-x', text: v.identity && v.identity.reasonText ? v.identity.reasonText : 'kein Kurs'}));
       }
-      strip.appendChild(el('li', {}, [card]));
+      var li = el('li', {}, [card]);
+      // Bearbeiten (Suche offen): „×“ entfernt eine Aktie, mit „Rückgängig“ wie bisher.
+      if (!$('md-find').hidden) {
+        var remove = el('button', {className: 'md-remove', type: 'button', 'aria-label': (v.ticker || 'Aktie') + ' aus der Watchlist entfernen', text: '×'});
+        remove.addEventListener('click', function () { removeItem(v, remove); });
+        li.appendChild(remove);
+      }
+      strip.appendChild(li);
     });
-    var add = el('button', {className: 'md-wl md-wl--add', type: 'button', 'aria-controls': 'md-find', 'aria-expanded': String(!$('md-find').hidden)}, [el('i', {text: '+', 'aria-hidden': 'true'}), 'Aktie hinzufügen']);
+    var editing = !$('md-find').hidden;
+    var add = el('button', {className: 'md-wl md-wl--add', type: 'button', id: 'md-edit', 'aria-controls': 'md-find', 'aria-expanded': String(editing)},
+      [el('i', {text: editing ? '✓' : '+', 'aria-hidden': 'true'}), editing ? 'Fertig' : 'Aktie hinzufügen', el('small', {text: editing ? '' : 'oder entfernen'})]);
     add.addEventListener('click', function () {
-      var f = $('md-find'); f.hidden = !f.hidden; add.setAttribute('aria-expanded', String(!f.hidden));
-      if (!f.hidden) $('md-add').focus();
+      $('md-find').hidden = editing;
+      render(['watchlist']);
+      if (!editing) $('md-add').focus(); else $('md-edit').focus();
     });
     strip.appendChild(el('li', {}, [add]));
   }});
@@ -291,6 +305,17 @@
     card.appendChild(chev(18));
   }});
 
+  function removeItem(v, btn) {
+    btn.disabled = true;
+    return A.post('/v1/watchlist/items/remove', {instrumentId: v.instrumentId}).then(function (r) {
+      btn.disabled = false;
+      if (!r.ok) return notice(A.message(r.state), 'error');
+      ctx.items = ctx.items.filter(function (i) { return i.instrumentId !== v.instrumentId; });
+      forgetButtonCache();
+      notice((v.ticker || 'Aktie') + ' entfernt.', 'ok', {label: 'Rückgängig', run: function () { addItem({instrumentId: v.instrumentId, ticker: v.ticker}); }});
+      return refresh();
+    });
+  }
   function addItem(hit, input) {
     return A.post('/v1/watchlist/items', {instrumentId: hit.instrumentId, ticker: hit.ticker}).then(function (r) {
       if (!r.ok) return notice(A.message(r.state), 'error');
@@ -301,7 +326,7 @@
   }
   // Nach einer Änderung der Watchlist: Kurse, Bewegungen und Ereignisse neu, dann alle Bereiche neu zeichnen.
   function refresh() {
-    return loadItems().then(loadSummary).then(loadEvents).then(function () { render(['today', 'watchlist', 'events', 'local']); });
+    return loadItems().then(loadSummary).then(loadEvents).then(function () { render(['greeting', 'today', 'watchlist', 'events', 'local']); });
   }
 
   // Leerzustand: beliebte Kuerzel als Chips, ein Tipp nimmt sie auf (gleicher Weg wie die Suche).

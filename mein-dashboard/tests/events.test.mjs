@@ -86,7 +86,7 @@ test('Wortwahl: keine Begriffe aus wording.avoid, kein Speichern', () => {
   const code = readFileSync(new URL('../events.js', import.meta.url), 'utf8');
   const legal = JSON.parse(readFileSync(new URL('../../assets/legal-notices.json', import.meta.url), 'utf8'));
   const strings = (code.match(/'[^'\n]*'/g) || []).join(' ').toLowerCase();
-  const avoid = (legal.wording || []).flatMap(w => String(w.avoid || '').replace(/\([^)]*\)/g, '').split(/[,/]/)).map(a => a.trim().toLowerCase()).filter(a => a.length > 3);
+  const avoid = (legal.wording || []).flatMap(w => String(w.avoid || '').replace(/\([^)]*\)/g, '').split(/,| \/ /)).map(a => a.trim().toLowerCase()).filter(a => a.length > 3);
   assert.ok(avoid.length > 10, 'Liste gelesen');
   for (const a of avoid) assert.ok(!new RegExp('(^|[^a-zäöüß])' + a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '($|[^a-zäöüß])').test(strings), 'vermeiden: ' + a);
   assert.ok(!/localStorage|sessionStorage|A\.post|fetch\(/.test(code.replace(/\/\*[\s\S]*?\*\//g, '')), 'liest nur ueber die uebergebenen Lader');

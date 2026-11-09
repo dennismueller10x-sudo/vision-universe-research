@@ -27,9 +27,8 @@ test('nur nach Anmeldung, nur bestehende Schnittstellen, keine eigene Datenhaltu
   assert.match(code, /A\.get\('\/v1\/session'\)[^]*authenticated[^]*go\('\/konto\/anmelden\/\?next='/, 'ohne Sitzung zur Anmeldung');
   const calls = [...code.matchAll(/A\.(get|post|patch)\('([^']+)'/g)].map(m => m[2]).sort();
   // Abmelden liegt seit dem Redesign im Konto (E07, Platz 3 der Leiste), nicht mehr in einer Link-Zeile hier.
-  // Entfernen liegt seit dem Umbau (Konzept mein-bereich-2026-11, Screen m-home) in der Detailansicht /konto/watchlist/.
   assert.deepEqual([...new Set(calls)], ['/v1/me', '/v1/session', '/v1/watchlist', '/v1/watchlist/import',
-    '/v1/watchlist/items'], 'nur die vorhandenen Konto- und Watchlist-Aufrufe');
+    '/v1/watchlist/items', '/v1/watchlist/items/remove'], 'nur die vorhandenen Konto- und Watchlist-Aufrufe');
   assert.ok(!/localStorage\.setItem/.test(code), 'schreibt nichts in den Browser-Speicher (liest nur die lokalen Listen)');
   assert.match(code, /W\.legacyTickers/, 'lokale Listen ueber dieselbe Leseregel wie /konto/watchlist/');
   assert.ok(!/insertAdjacentHTML|document\.write|outerHTML/.test(code), 'kein freies HTML');

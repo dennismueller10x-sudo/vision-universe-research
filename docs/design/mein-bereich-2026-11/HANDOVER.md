@@ -133,7 +133,8 @@ Entscheidung 11.
 - Supertrader zeigt die quellentreuen Methoden, deren Regel am Stichtag neu erfüllt ist (`changes.added`, Umstufung auf „Regel erfüllt“/„Plan fertig“), ohne die Short-Methode; der Hinweis darunter sagt „Forschung, nicht zertifiziert“.
 - Hedgefonds (13F, Quartal) und Discover (Reihe heute) haben kein Tagesdatum: Sie stehen nur als Zusatzzeile auf einer Karte mit einem Ereignis von heute und zählen nicht bei „neue Ereignisse“ (sonst hätte fast jede große Aktie täglich eine Karte).
 - „Alle N“ bei „Was sich getan hat“ ist eine Zahl ohne Link, weil es keine eigene Ereignis-Seite gibt; „Alle“ bei der Watchlist führt zur Detailansicht `/konto/watchlist/`, bei „Weiter lernen“ zur Willkommensseite.
-- Hinzufügen bleibt als letzte Karte „+ Aktie hinzufügen“ im Streifen (öffnet die Suche); Entfernen liegt in der Detailansicht, der Leerzustand behält Suche und „Beliebt zum Start“.
+- Hinzufügen und Entfernen bleiben auf dem Dashboard: Die letzte Karte im Streifen „+ Aktie hinzufügen oder entfernen“ öffnet die Suche und zeigt auf jeder Karte ein „×“ (mit „Rückgängig“); der Leerzustand behält Suche und „Beliebt zum Start“.
+- Die Tarif-Marke („Free · 5 von 500“) bleibt klein rechts neben dem Datum, weil Konto-Reise und Nutzer den Tarif dort erwarten.
 - „Weiter lernen“ öffnet `/willkommen/`, weil die Willkommensseite unverändert bleibt und kein Video direkt verlinkt.
 
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
