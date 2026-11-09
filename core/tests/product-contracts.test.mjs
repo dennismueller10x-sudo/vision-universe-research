@@ -75,3 +75,36 @@ test("PC-4 · Kein Pfad-Gate blockiert mehr: die ersetzten Gates sind Bericht od
   const ci = readFileSync(join(WF, "company-intelligence.yml"), "utf8");
   assert.doesNotMatch(ci, /- name: Reject changes to protected production paths/);
 });
+
+/* PC-5 (Steuerung 09.11.2026): #1649 aenderte assets/site-navigation.js, Quant CI lief nicht, und
+   backtest-consolidation-boundary pinnt genau diesen Hash - main war danach rot. Jede Datei, deren Hash ein
+   Produkttest pinnt, muss deshalb die CI dieses Produkts ausloesen. Quellen der gepinnten Dateien stehen je Produkt
+   in product-contracts.json (pinnedFiles): "<modul>#<funktion>" liefert {files}, "<datei.json>#<pfad>" ein Objekt. */
+async function pinnedFiles(src) {
+  const [file, sel] = src.split("#");
+  if (file.endsWith(".mjs")) {
+    const mod = await import(join(ROOT, file));
+    return Object.keys(mod[sel](ROOT).files);
+  }
+  let v = JSON.parse(readFileSync(join(ROOT, file), "utf8"));
+  for (const k of sel.split(".")) v = v[k];
+  return Object.keys(v);
+}
+
+test("PC-5 · Jede Datei, deren Hash ein Produkttest pinnt, loest die Produkt-CI aus", async () => {
+  let n = 0;
+  for (const [id, p] of Object.entries(REG.products)) {
+    for (const pin of p.pinnedFiles || []) {
+      assert.ok(existsSync(join(ROOT, pin.test)), `${id}: Test ${pin.test} fehlt`);
+      const filters = prPaths(readFileSync(join(WF, p.ci), "utf8"));
+      const src = pin.source.split("#")[0];
+      assert.ok(covers(filters, src), `${id}: ${p.ci} laeuft nicht bei der Pin-Quelle ${src}`);
+      const files = await pinnedFiles(pin.source);
+      assert.ok(files.length > 0, `${id}: ${pin.source} liefert keine Dateien`);
+      const fehlt = files.filter((f) => !covers(filters, f));
+      assert.deepEqual(fehlt, [], `${id}: ${p.ci} laeuft nicht bei gepinnten Dateien (${pin.source})`);
+      n += files.length;
+    }
+  }
+  assert.ok(n > 700, "UI-Sperre und Quant-Freeze zusammen pinnen mehrere hundert Dateien");
+});
