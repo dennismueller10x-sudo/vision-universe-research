@@ -9,7 +9,7 @@
    -------------------------------------------------------------------------
 
    TEXT_ON_VISUAL_PRESENT, CANONICAL_LOGO_PRESENT und ATLAS_PRESENT sind
-   bereits HARTE Tore in scripts/social/render-asset.mjs::render(): ein
+   bereits HARTE Tore in products/social/producer/render-asset.mjs::render(): ein
    Bild, das SCROLL_STOP_QUALITY, den Logo-Vertrag oder den Atlas-Vertrag
    nicht besteht, wird nicht geschrieben (wirft), und die Entscheidung
    erreicht diese Stelle dann mit `rendered: false` gar nicht erst. Sie

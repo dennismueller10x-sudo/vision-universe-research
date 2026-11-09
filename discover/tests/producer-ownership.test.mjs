@@ -25,7 +25,7 @@ function snapshot(directory, prefix = "") {
 }
 function ownedSnapshot(directory) {
   const files = snapshot(directory);
-  for (const name of Object.keys(files)) if (name.startsWith("europe/")) delete files[name];
+  for (const name of Object.keys(files)) if (name.startsWith("europe/") || name.startsWith("europe-esef/")) delete files[name];
   // The producer's documented sole nondeterministic output field.
   const meta = JSON.parse(readFileSync(join(directory, "meta.json")));
   delete meta.generatedAt;
@@ -33,7 +33,7 @@ function ownedSnapshot(directory) {
   return files;
 }
 
-test("actual Discover rebuild preserves only foreign Europe directory bytes and regenerates its own outputs", { timeout: 650000 }, async () => {
+test("actual Discover rebuild preserves only foreign Europe and Europe-ESEF directory bytes and regenerates its own outputs", { timeout: 650000 }, async () => {
   const temporary = mkdtempSync(join(tmpdir(), "vu-discover-ownership-"));
   try {
     // Only inputs are linked. The real producer writes exclusively to private data.
@@ -54,6 +54,10 @@ test("actual Discover rebuild preserves only foreign Europe directory bytes and 
     writeFileSync(join(data, "europe/opaque-fixture.json"), "opaque foreign payload, not JSON\n");
     writeFileSync(join(data, "europe/nested/sentinel.bin"), Buffer.from([0, 255, 13, 10, 128]));
     const europe = snapshot(join(data, "europe"));
+    if (existsSync(join(root, "discover/data/europe-esef"))) cpSync(join(root, "discover/data/europe-esef"), join(data, "europe-esef"), { recursive: true });
+    mkdirSync(join(data, "europe-esef"), { recursive: true });
+    writeFileSync(join(data, "europe-esef/opaque-fixture.json"), "opaque foreign payload, not JSON\n");
+    const esef = snapshot(join(data, "europe-esef"));
     mkdirSync(join(data, "rows/obsolete"), { recursive: true });
     writeFileSync(join(data, "rows/obsolete/stale.json"), "remove me");
     writeFileSync(join(data, "unknown-producer-entry"), "remove me");
@@ -62,6 +66,7 @@ test("actual Discover rebuild preserves only foreign Europe directory bytes and 
     writeFileSync(join(data, "meta.json"), "replace me");
     await run(process.execPath, [join(temporary, "scripts/discover/build-discover-data.mjs")], { cwd: temporary, timeout: 600000, maxBuffer: 1024 * 1024 });
     assert.deepEqual(snapshot(join(data, "europe")), europe, "foreign bytes must never be parsed, rewritten or removed");
+    assert.deepEqual(snapshot(join(data, "europe-esef")), esef, "ESEF facts belong to their own producer");
     assert.equal(existsSync(join(data, "rows/obsolete")), false);
     assert.equal(existsSync(join(data, "unknown-producer-entry")), false);
     assert.equal(existsSync(join(data, "Europe")), false);

@@ -22,8 +22,8 @@ Alles andere ist vorbereitet:
 | Kontingentmodell (zwei Toepfe, siehe unten) | `social/engines/youtube-source.js` |
 | Query-Portfolio: Kern + Rotation + Ereignis | `social/engines/youtube-query-portfolio.js` |
 | Suchphrasen aus dem Content Universe | 50 abgeleitet, 0 kuratiert |
-| Entdeckungs- und Ernteschritt | `scripts/social/discover-creators.mjs` |
-| Anreicherung ohne Suchaufruf | `scripts/social/enrich-youtube-metrics.mjs` |
+| Entdeckungs- und Ernteschritt | `products/social/producer/discover-creators.mjs` |
+| Anreicherung ohne Suchaufruf | `products/social/producer/enrich-youtube-metrics.mjs` |
 | Watch Universe, versioniert und lernend | `social/engines/creator-universe.js` |
 | Taeglicher Lauf der ganzen Kette | `social.yml, Teil extern-recherche (vormals social-external-intelligence.yml)` |
 

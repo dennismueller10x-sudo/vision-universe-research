@@ -50,7 +50,7 @@ Danach: ein gemeinsamer Backtest-Kern (`core/backtest/`) für Quant, Supertrader
 | Umbau | Vorher | Nachher |
 |---|---|---|
 | Generierte Daten | in `main` | eigener Datenzweig, später R2; Pages-Build holt die Daten |
-| Workflows | 137 | ca. 12: `pipeline-daily`, `pipeline-intraday`, `ci`, `deploy`, `social`, `account`, `weekly-maintenance` … |
+| Workflows | 137 | 11 Bündel (`account`, `ci`, `content`, `deploy`, `maintenance`, `monitor`, `pipeline-daily`, `pipeline-intraday`, `pipeline-weekly`, `research`, `social`) + begründete Ausnahmen, Stand 08.11.2026; jede Ausnahme steht mit einem Satz in `core/registry/workflow-bundles.json` (Feld `ausnahme`, Vertragstest WB-5) |
 | Zeitgeber | 58 GitHub-Crons | ein Cloudflare-Takt (vorhandener Waker) |
 | Gates | Pfad-Isolation | Vertragstests + CODEOWNERS; Frische alarmiert, blockiert keinen Code |
 | Doku | 619 | ca. 20 lebende Seiten, Rest im Archiv |

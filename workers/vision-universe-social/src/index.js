@@ -1789,7 +1789,7 @@ async function handleHashtagCapability(request, url, env) {
 
 /**
  * Profil und Beitragsliste des verbundenen Kontos - fuer die Steuerung aus
- * Claude Code (scripts/social/ig.mjs). Rein lesend, hinter dem Admin-Schluessel,
+ * Claude Code (products/social/producer/ig.mjs). Rein lesend, hinter dem Admin-Schluessel,
  * 2 Graph-Aufrufe. Das Token verlaesst den Worker nicht; die Antwort enthaelt
  * nur Konto- und Beitragsdaten.
  */
