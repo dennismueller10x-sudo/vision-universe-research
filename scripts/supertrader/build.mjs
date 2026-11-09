@@ -27,6 +27,8 @@ import { createRequire } from 'node:module';
 // PBR-A und BF-B zeigten auf Dateien, die es nicht gibt (Plattform-Audit 03.10.2026).
 const CompanyMaster = createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const Identity = createRequire(import.meta.url)('../../core/identity.js');
+/* Ein Name je Methode (Konzept „Das Rezept eines Profis“, Folie K3): dieselbe Zuordnung wie die Oberfläche. */
+const STNames = createRequire(import.meta.url)('../../supertrader/assets/st-names.js');
 export const weeklySeriesId = (symbol) => CompanyMaster.legacySecurityId(symbol);
 import { computeIndicators, percentileRanks, isoWeekKey, sma } from './engine/indicators.mjs';
 import { buildWeekly } from './engine/weekly.mjs';
@@ -1013,7 +1015,7 @@ function writeStaticPages() {
 
 function writeStrategyPages(registry) {
   for (const s of registry.strategies) {
-    writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${LIVE_CLASSIFICATION[s.strategy_id]?.displayName || s.world_name} — Supertrader — Vision Universe®`, description: `${LIVE_CLASSIFICATION[s.strategy_id]?.displayName || s.world_name}: Regeln, Herkunft, Musterdepot und Stand der Forschung.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
+    writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${STNames.name(s.strategy_id, LIVE_CLASSIFICATION[s.strategy_id]?.displayName || s.world_name)} — Supertrader — Vision Universe®`, description: `${STNames.name(s.strategy_id, LIVE_CLASSIFICATION[s.strategy_id]?.displayName || s.world_name)}: Regeln, Herkunft, Musterdepot und Stand der Forschung.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
   }
 }
 

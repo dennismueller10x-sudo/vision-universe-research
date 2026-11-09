@@ -65,13 +65,13 @@
   // Phasen: strikt getrennt. „Nahe am Trigger“ ist Vorbereitung, kein Einstieg.
   var PHASE = {
     DISCOVERED: ['cand', 'Entdeckt'], WATCH: ['cand', 'Auf Beobachtung'],
-    SETUP: ['prep', 'Muster entsteht'], ENTRY_READY: ['prep', 'Plan fertig'],
+    SETUP: ['prep', 'Wartet'], ENTRY_READY: ['prep', 'Plan fertig'],
     TRIGGERED: ['conf', 'Aufgenommen'], ACTIVE: ['pos', 'Im Musterdepot'], WARNING: ['warn', 'Warnzeichen laut Methode'],
-    EXIT: ['exit', 'Musterdepot gibt ab'], CLOSED: ['closed', 'Abgegeben'], INVALIDATED: ['inv', 'Muster zerfallen'],
+    EXIT: ['exit', 'Abgegeben'], CLOSED: ['closed', 'Abgegeben'], INVALIDATED: ['inv', 'Muster zerfallen'],
     PARTIAL: ['partial', 'Teiltreffer'], RETIRED: ['inv', 'Durch neue Regel ersetzt'], REASSESSED: ['inv', 'Nach Regeländerung neu bewertet'],
   };
-  // Alltagsnamen nach Folie ST-Z (gleich STATE in st-redesign.js); der Code-Zustand bleibt.
-  var PHASE_FILTERS = [['', 'Alle aktuellen'], ['prep', 'Muster entsteht'], ['watch', 'Beobachtung'], ['conf', 'Aufgenommen'], ['pos', 'Im Musterdepot'], ['exit', 'Gibt ab'], ['obs', 'Forschung'], ['cand', 'Entdeckt'], ['partial', 'Teiltreffer'], ['closed', 'Abgegeben'], ['inv', 'Muster zerfallen']];
+  // Wörter der einen Ablauf-Leiste (Folie K1, st-flow.js; gleich STATE in st-redesign.js); der Code-Zustand bleibt.
+  var PHASE_FILTERS = [['', 'Alle aktuellen'], ['prep', 'Wartet'], ['watch', 'Beobachtung'], ['conf', 'Aufgenommen'], ['pos', 'Im Musterdepot'], ['exit', 'Abgegeben'], ['obs', 'Forschung'], ['cand', 'Entdeckt'], ['partial', 'Teiltreffer'], ['closed', 'Abgegeben'], ['inv', 'Muster zerfallen']];
   var PHASE_ORDER = ['conf', 'pos', 'warn', 'exit', 'prep', 'partial', 'watch', 'obs', 'cand', 'closed', 'inv'];
   function phaseOfState(st) { return (PHASE[st] || ['cand'])[0]; }
   function phaseBadge(st) { var p = PHASE[st] || [st, st]; return h('span', { class: 'st-phase', 'data-p': p[0], text: p[1] }); }
@@ -110,7 +110,10 @@
   var PROVLAB = {};
   var PRODUCT_TONE = { REPLICATION: 'good', VU_ADAPTATION: 'info', VU_NATIVE: 'info' };
   function prod(s) { return (s && s.product) || null; }
-  function niceName(s) { var p = prod(s); return p ? p.display_name : s.world_name; }
+  /* Ein Name je Methode (Folie K3, st-names.js); Modelle ohne quellentreue Methode behalten ihren Namen. */
+  function stName(s) { var N = window.STNames; return s ? (N ? N.ofStrategy(s) : s.world_name) : ''; }
+  function stNameId(S, id) { var N = window.STNames; return S[id] ? stName(S[id]) : (N ? N.name(id, id) : id); }
+  function niceName(s) { var p = prod(s), N = window.STNames; return N && N.methodOfDepot(s.strategy_id) ? N.ofStrategy(s) : p ? p.display_name : stName(s); }
   function productTag(s) { var p = prod(s); return p ? h('span', { class: 'st-tag', 'data-t': PRODUCT_TONE[p.product_class] || 'info', text: p.product_class_label }) : null; }
   // Evidenz je Strategieversion (registry.evidence): Stufe, Quellen- und
   // Datenqualitaet getrennt; presentation entscheidet ueber Hervorhebung.
@@ -214,7 +217,7 @@
     var res = st === 'CLOSED' && s.result ? h('div', { class: 'st-res' + (s.result.returnPct >= 0 ? ' up' : ' down') }, [h('strong', { text: pct(s.result.returnPct, 1, true) }), ' Modellergebnis · ' + (s.result.sessionsHeld || 0) + ' Sitzungen']) : null;
     return h('a', { class: 'st-card2', href: stockUrl(s.symbol), style: worldVars(strat) }, [
       h('div', { class: 'r1' }, [h('span', { class: 'sym', text: s.symbol }), badgeFor(s)]),
-      h('div', { class: 'r2' }, [h('span', { class: 'meth', text: strat.world_name }), isResearchS(strat) ? researchTag() : null, q, re, h('span', { class: 'nm', text: s.companyName && s.companyName !== s.symbol ? s.companyName : '' })]),
+      h('div', { class: 'r2' }, [h('span', { class: 'meth', text: stName(strat) }), isResearchS(strat) ? researchTag() : null, q, re, h('span', { class: 'nm', text: s.companyName && s.companyName !== s.symbol ? s.companyName : '' })]),
       res || setupBar(s),
       h('div', { class: 'why', text: shortWhy(s) }),
     ]);
@@ -230,7 +233,7 @@
       : 'Teil-Score ' + row.partialScore + ' von 8 · Buch/Markt ' + num(row.bookToMarket, 2) + ' · GJ bis ' + dateShort(row.fiscalYearEnd);
     return h('a', { class: 'st-card2 partial', href: stockUrl(row.symbol), style: worldVars(strat) }, [
       h('div', { class: 'r1' }, [h('span', { class: 'sym', text: row.symbol }), phaseBadge('PARTIAL')]),
-      h('div', { class: 'r2' }, [h('span', { class: 'meth', text: strat.world_name }), h('span', { class: 'nm', text: row.name || '' })]),
+      h('div', { class: 'r2' }, [h('span', { class: 'meth', text: stName(strat) }), h('span', { class: 'nm', text: row.name || '' })]),
       isCS ? critDots(row.criteria, ['C', 'A', 'N', 'S', 'L', 'I', 'M']) : critDots(row.signals, ['ROA', 'CFO', 'DROA', 'ACCRUAL', 'DLEVER', 'DLIQUID', 'EQ_OFFER', 'DMARGIN', 'DTURN']),
       h('div', { class: 'why', text: line }),
     ]);
@@ -392,20 +395,20 @@
     // Status auf einen Blick (nur Methoden mit aktuellen Setups)
     var prepList = open.filter(function (s) { return !s.entry && s.state !== 'TRIGGERED' && !isB(s) && !isWatch(s); });
     var byM = {}; prepList.forEach(function (s) { byM[s.strategyId] = (byM[s.strategyId] || 0) + 1; });
-    var prepSub = Object.keys(byM).sort(function (a, b) { return byM[b] - byM[a]; }).map(function (k) { return byM[k] + ' ' + (S[k] ? S[k].world_name : k); }).join(' · ');
+    var prepSub = Object.keys(byM).sort(function (a, b) { return byM[b] - byM[a]; }).map(function (k) { return byM[k] + ' ' + (stNameId(S, k)); }).join(' · ');
     var tiles = [
       [String(prepList.length), 'Wartet auf Aufnahme', 'prep', stale ? 'Kurse veraltet – nicht hervorgehoben' : (prepSub || 'keine')],
       [String(confirmed.length) + ' / ' + String(positions.length), 'Bestätigt / Positionen', 'conf', 'Aufnahmen per Schlusskurs'],
       [String(closed), 'Geschlossene Trades', 'closed'],
     ];
-    if (research.length) tiles.push([String(resOpen.filter(function (s) { return s.entry; }).length), 'Forschung · Modellpositionen', 'obs', research.map(function (s) { return s.world_name; }).join(' · ') + ' – weiter protokolliert']);
+    if (research.length) tiles.push([String(resOpen.filter(function (s) { return s.entry; }).length), 'Forschung · Modellpositionen', 'obs', research.map(function (s) { return stName(s); }).join(' · ') + ' – weiter protokolliert']);
     main.appendChild(h('div', { class: 'st-kpis' }, tiles.map(function (t) { return h('a', { class: 'st-kpi', 'data-p': t[2], href: t[2] === 'obs' ? stratUrl(research[0]) : BASE + 'signals/?phase=' + t[2] }, [h('strong', { text: t[0] }), h('span', { text: t[1] }), t[3] ? h('em', { text: t[3] }) : null]); })));
     if (D.replay) main.appendChild(replayTeaser(D.replay));
 
     // Methoden mit aktuellen Setups
     main.appendChild(sec('Methoden', [
       h('div', { class: 'st-rail' }, current.concat(reg.strategies.filter(function (x) { return x.mode === 'MODEL'; }), partial).map(function (s) { return methodTile(s, D); })),
-      pending.length ? h('p', { class: 'st-hint' }, ['In Vorbereitung (keine Treffer): ' + pending.map(function (s) { return s.world_name; }).join(' · ') + '. ', h('a', { href: BASE + 'strategies/#vorbereitung', text: 'Warum?' })]) : null,
+      pending.length ? h('p', { class: 'st-hint' }, ['In Vorbereitung (keine Treffer): ' + pending.map(function (s) { return stName(s); }).join(' · ') + '. ', h('a', { href: BASE + 'strategies/#vorbereitung', text: 'Warum?' })]) : null,
     ], { kicker: current.length + ' mit aktuellen Setups · ' + partial.length + ' Teilprüfung', more: more(BASE + 'strategies/', 'Vergleichen') }));
 
     // Nahe am Einstieg - nur Methoden mit aktuellen Setups, nie auf veralteten Kursen
@@ -431,7 +434,7 @@
       var st = sig.strategies[s.strategy_id] || { open: [], closed: [] };
       var pos = st.open.filter(function (x) { return x.entry; }).length, obs = st.open.filter(function (x) { return !x.entry; }).length;
       return h('a', { class: 'st-research', href: stratUrl(s), style: worldVars(s) }, [
-        h('div', { class: 'r1' }, [h('strong', { text: s.world_name }), evidenceTag(s)]),
+        h('div', { class: 'r1' }, [h('strong', { text: stName(s) }), evidenceTag(s)]),
         h('p', { text: pos + ' Modellpositionen · ' + obs + ' Setups in Beobachtung' }),
       ]);
     }), { kicker: 'Weiter protokolliert, nicht hervorgehoben' }));
@@ -469,14 +472,14 @@
     main.appendChild(sec('Je Methode', per.map(function (x) {
       var s = x.s;
       return h('a', { class: 'st-research st-mrow', href: stratUrl(s), style: worldVars(s) }, [
-        h('div', { class: 'r1' }, [h('strong', { text: s.world_name }), evidenceTag(s)]),
+        h('div', { class: 'r1' }, [h('strong', { text: stName(s) }), evidenceTag(s)]),
         h('div', { class: 'st-obsnums' }, [obsNum(x.prep, 'vorbereitet'), obsNum(x.conf, 'bestätigt'), obsNum(x.pos, 'Positionen'), obsNum(x.done, 'geschlossen')]),
       ]);
     }), { kicker: 'Regeln, Setups und Protokoll je Methode' }));
     var models = reg.strategies.filter(function (x) { return x.mode === 'MODEL'; });
     if (models.length) main.appendChild(sec('Modelldepots', [h('div', { class: 'st-rail' }, models.map(function (x) { return methodTile(x, D); }))], { kicker: 'Monatliche Umschichtung' }));
     if (partial.length) main.appendChild(sec('Teilprüfung', [h('div', { class: 'st-rail' }, partial.map(function (s) { return methodTile(s, D); })),
-      pending.length ? h('p', { class: 'st-hint' }, ['In Vorbereitung: ' + pending.map(function (s) { return s.world_name; }).join(' · ') + '. ', h('a', { href: BASE + 'strategies/#vorbereitung', text: 'Warum?' })]) : null], { kicker: 'Kandidaten ohne Musterdepot' }));
+      pending.length ? h('p', { class: 'st-hint' }, ['In Vorbereitung: ' + pending.map(function (s) { return stName(s); }).join(' · ') + '. ', h('a', { href: BASE + 'strategies/#vorbereitung', text: 'Warum?' })]) : null], { kicker: 'Kandidaten ohne Musterdepot' }));
     if (D.replay) main.appendChild(sec('Beispiel', [replayTeaser(D.replay)], { kicker: 'Historisch · kein aktueller Treffer' }));
     main.appendChild(sec('Wie belastbar ist welche Methode?', [evidenceList(reg.strategies.filter(function (s) { return s.mode !== 'RESEARCH'; }))], { kicker: 'Evidenz je Regelversion', more: more(BASE + 'backtests/', 'Details') }));
     main.appendChild(disclaimer(sig));
@@ -484,7 +487,7 @@
   function obsNum(n, label) { return h('span', null, [h('strong', { text: String(n) }), label]); }
   function evidenceList(list) {
     return h('div', { class: 'st-evlist' }, list.map(function (s) {
-      return h('a', { class: 'st-evrow', href: stratUrl(s), style: worldVars(s) }, [h('span', { class: 'n', text: s.world_name + ' v' + (ev(s).version || s.strategy_version) }), evidenceTag(s)]);
+      return h('a', { class: 'st-evrow', href: stratUrl(s), style: worldVars(s) }, [h('span', { class: 'n', text: stName(s) + ' v' + (ev(s).version || s.strategy_version) }), evidenceTag(s)]);
     }));
   }
   function firstLive(sig) { var d = null; Object.keys(sig.strategies).forEach(function (k) { var l = sig.strategies[k].liveSince; if (l && (!d || l < d)) d = l; }); return d; }
@@ -539,7 +542,7 @@
     ]);
   }
   function researchRow(s) {
-    return h('a', { class: 'st-rrow', href: stratUrl(s) }, [h('div', null, [h('strong', { text: s.world_name }), h('span', { text: s.tagline })]), icon(IC.arrow)]);
+    return h('a', { class: 'st-rrow', href: stratUrl(s) }, [h('div', null, [h('strong', { text: stName(s) }), h('span', { text: s.tagline })]), icon(IC.arrow)]);
   }
 
   /* =================================================== METHODE (Detail) */
@@ -939,7 +942,7 @@
       var base = filtered('method');
       [{ strategy_id: '', world_name: 'Alle Methoden' }].concat(methods).forEach(function (m) {
         var n = m.strategy_id ? (isResearchId(m.strategy_id) ? rows.filter(function (r) { return r.id === m.strategy_id && ['closed', 'inv', 'cand'].indexOf(r.phase) < 0; }).length : base.filter(function (r) { return r.id === m.strategy_id; }).length) : base.length;
-        methodRow.appendChild(h('button', { type: 'button', 'data-research': isResearchId(m.strategy_id) ? 'true' : null, 'aria-pressed': String(f.method === m.strategy_id), onclick: function () { f.method = m.strategy_id; update(); } }, [m.world_name + (isResearchId(m.strategy_id) ? ' · Forschung' : ''), h('span', { class: 'n', text: String(n) })]));
+        methodRow.appendChild(h('button', { type: 'button', 'data-research': isResearchId(m.strategy_id) ? 'true' : null, 'aria-pressed': String(f.method === m.strategy_id), onclick: function () { f.method = m.strategy_id; update(); } }, [stName(m) + (isResearchId(m.strategy_id) ? ' · Forschung' : ''), h('span', { class: 'n', text: String(n) })]));
       });
       phaseRow.innerHTML = '';
       var pbase = filtered('phase');
@@ -953,7 +956,7 @@
       var hiddenB = rows.filter(function (r) { return r.kind === 'sig' && isB(r.s); }).length;
       countLine.textContent = shown.length + ' Einträge' + (f.quality !== 'B' && f.method !== 'DARVAS_BOX' && hiddenB ? ' · ' + hiddenB + ' Darvas-B-Setups ausgeblendet' : '');
       var resIds = HAS_CURRENT ? Object.keys(RESEARCH).filter(function (id) { return f.method !== id && f.phase !== 'obs'; }) : [];
-      if (resIds.length) countLine.appendChild(h('span', null, [' · Forschung ausgeblendet (' + resIds.map(function (id) { return S[id] ? S[id].world_name : id; }).join(', ') + ') ', h('button', { type: 'button', class: 'st-linkbtn', onclick: function () { f.method = resIds[0]; f.phase = ''; update(); }, text: 'anzeigen' })]));
+      if (resIds.length) countLine.appendChild(h('span', null, [' · Forschung ausgeblendet (' + resIds.map(function (id) { return stNameId(S, id); }).join(', ') + ') ', h('button', { type: 'button', class: 'st-linkbtn', onclick: function () { f.method = resIds[0]; f.phase = ''; update(); }, text: 'anzeigen' })]));
       render();
       var q = new URLSearchParams(); Object.keys(f).forEach(function (k) { if (f[k]) q.set(k, f[k]); });
       history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
@@ -1156,7 +1159,7 @@
     var shard = function () { return chartRef ? chartRef.shard : window.VUCore && window.VUCore.Identity ? window.VUCore.Identity.shardKey(sym) : sym.slice(0, 2); };
 
     var t52 = trend52For(D, sym), t52s = (reg.strategies.filter(function (x) { return x.strategy_id === 'VU_TREND_52W'; })[0]);
-    var t52Node = t52 && t52s ? h('a', { class: 'st-research', href: stratUrl(t52s), style: worldVars(t52s) }, [h('div', { class: 'r1' }, [h('strong', { text: t52s.world_name }), h('span', { class: 'st-tag', 'data-t': t52[1], text: t52[0] })]), h('p', { text: t52[2] })]) : null;
+    var t52Node = t52 && t52s ? h('a', { class: 'st-research', href: stratUrl(t52s), style: worldVars(t52s) }, [h('div', { class: 'r1' }, [h('strong', { text: stName(t52s) }), h('span', { class: 'st-tag', 'data-t': t52[1], text: t52[0] })]), h('p', { text: t52[2] })]) : null;
     if (!sym || (!entries.length && !history.length && !t52)) {
       main.appendChild(emptyBox('Kein Supertrader-Modell erkennt ' + (sym || 'diesen Titel'), 'Heute sieht keine Methode ein Setup, einen Kandidaten oder einen Teiltreffer.'));
       if (sym) main.appendChild(discoverLink(sym, sig, 'In Discover öffnen'));
@@ -1192,7 +1195,7 @@
     methodMore.addEventListener('toggle', function () { if (methodMore.open && current && current.kind === 'sig' && !methodChart.firstChild) mountSignalChart(methodChart, current.s, S[current.id]); });
     entries.forEach(function (e) {
       var s = S[e.id];
-      var b = h('button', { type: 'button', role: 'tab', style: worldVars(s), onclick: function () { show(e); } }, [s.world_name]);
+      var b = h('button', { type: 'button', role: 'tab', style: worldVars(s), onclick: function () { show(e); } }, [stName(s)]);
       b._e = e; tabs.appendChild(b);
     });
     if (entries.length) { main.appendChild(tabs); main.appendChild(panel); }
@@ -1231,7 +1234,7 @@
       var rest = older.length > 1 ? moreBox('Ältere Einträge (' + older.length + ')', [h('ol', { class: 'st-tl' }, older)]) : null;
       main.appendChild(sec('Protokoll', [tl, rest], { kicker: 'Jeder Zustandswechsel mit Regel und Kurs' }));
     }
-    entries.forEach(function (e) { if (e.kind === 'partial') { var pc = sig.partialChecks[e.id]; dmAdd(S[e.id].world_name, 'Teilprüfung auf Basis von ' + pc.fundamentalsBasis + '. Kurse vom ' + dateDe(pc.asOf) + '.'); } });
+    entries.forEach(function (e) { if (e.kind === 'partial') { var pc = sig.partialChecks[e.id]; dmAdd(stName(S[e.id]), 'Teilprüfung auf Basis von ' + pc.fundamentalsBasis + '. Kurse vom ' + dateDe(pc.asOf) + '.'); } });
     dmAdd('Anzeigewährung', fxHost);
     dmAdd('Kurs im Kopf', 'Während der Handelszeit der letzte Kurs der Börse IEX (über Tiingo, verzögert), sonst der Tagesschluss. Er dient nur der Anzeige; Erkennung, Zonen und Ungültig-Marken rechnen auf Tagesschlusskursen.');
     mountTechnical(main, sym, kit, sig);
@@ -1353,7 +1356,7 @@
       var st = re ? 'REASSESSED' : e.t.state === 'INVALIDATED' && e.t.ruleId === 'LC-VERSION-RETIRED' ? 'RETIRED' : e.t.state;
       var txt = re ? 'Regel v' + re.previousVersion + ' → v' + e.s.version + ' · Setup auf Kursstand ' + dateShort(re.priceDataAsOf) + ' neu bewertet (' + (PHASE[e.t.state] || [0, e.t.state])[1] + ') — kein neues Marktereignis'
         : ruleText(e.t.ruleId) + (isFinite(e.t.price) ? ' · Kurs ' + num(e.t.price) : '');
-      return h('li', { 'data-kind': re ? 'reassessed' : null }, [h('span', { class: 'dt', text: dateShort(e.t.date) }), h('div', null, [h('div', { class: 'r1' }, [phaseBadge(st), h('span', { class: 'm', text: e.strat ? e.strat.world_name : '' })]), h('span', { class: 'rule', title: e.t.ruleId + ' · v' + (e.t.ruleVersion || e.s.version), text: txt })])]);
+      return h('li', { 'data-kind': re ? 'reassessed' : null }, [h('span', { class: 'dt', text: dateShort(e.t.date) }), h('div', null, [h('div', { class: 'r1' }, [phaseBadge(st), h('span', { class: 'm', text: e.strat ? stName(e.strat) : '' })]), h('span', { class: 'rule', title: e.t.ruleId + ' · v' + (e.t.ruleVersion || e.s.version), text: txt })])]);
     }));
   }
   /* ---------------------------------------------------- Signal-Chart */
@@ -1379,7 +1382,7 @@
       if (s.entry) levels.push({ id: 'entry', label: 'Aufnahme ' + dateShort(s.entry.date), value: s.entry.price, color: 'var(--chart-entry)', dash: '2 3' });
       if (isFinite(s.stop)) levels.push({ id: 'stop', label: 'Ungültig', value: s.stop, color: 'var(--chart-stop)' });
       else if (isFinite(lv.invalidation)) levels.push({ id: 'inv', label: 'Ungültig unter' + asOf, value: lv.invalidation, color: 'var(--chart-stop)' });
-      if (s.strategyId === 'DARVAS_BOX' && isFinite(lv.boxBottom)) boxes.push({ from: lv.boxTopDate, to: null, top: lv.boxTop, bottom: lv.boxBottom, color: 'var(--chart-box-darvas)', label: 'Darvas-Box (VU)' });
+      if (s.strategyId === 'DARVAS_BOX' && isFinite(lv.boxBottom)) boxes.push({ from: lv.boxTopDate, to: null, top: lv.boxTop, bottom: lv.boxBottom, color: 'var(--chart-box-darvas)', label: 'Box laut Methode' });
       if (s.strategyId === 'MOMENTUM_BREAKOUT' && lv.baseStartDate) boxes.push({ from: lv.baseStartDate, to: null, top: lv.baseHigh, bottom: lv.baseLow, color: 'var(--chart-box-base)', label: 'Basis (VU)' });
       if (s.confirmation) markers.push({ date: s.confirmation.date, price: s.confirmation.close, kind: 'confirm' });
       if (s.entry) markers.push({ date: s.entry.date, price: s.entry.price, kind: 'entry' });
@@ -1415,7 +1418,7 @@
     main.appendChild(sec('Je Strategieversion', [h('div', { class: 'st-list' }, core.map(function (s) {
       var e = ev(s);
       return h('div', { class: 'st-btrow', style: worldVars(s) }, [
-        h('div', { class: 'h' }, [h('a', { href: stratUrl(s), text: s.world_name + ' v' + (e.version || s.strategy_version) }), evidenceTag(s)]),
+        h('div', { class: 'h' }, [h('a', { href: stratUrl(s), text: stName(s) + ' v' + (e.version || s.strategy_version) }), evidenceTag(s)]),
         h('div', { class: 'st-three' }, [pill('Methodentreue', fidelityOf(s)), pill('Daten', dataOf(s)), pill('Darstellung', [e.presentationLabel || '–', e.presentation === 'RESEARCH' ? 'warn' : 'mute'])]),
         e.note ? moreBox('Was der Test zeigte', [h('p', { text: noRun(e.note) })]) : null,
       ]);
@@ -1532,7 +1535,7 @@
     var read = src.filter(function (x) { return x.content_retrieved_by_vu; }).length, withUrl = src.filter(function (x) { return x.url; }).length;
     main.appendChild(kpiList([[String(src.length), 'Quellen'], [String(withUrl), 'mit Adresse'], [String(read), 'von Vision Universe im Volltext gelesen']]));
     main.appendChild(sec('Je Methode', reg.strategies.filter(function (s) { return s.sources && s.sources.length; }).map(function (s) {
-      return details(s.world_name + ' (' + s.sources.length + ')', [h('ul', { class: 'st-ul' }, s.sources.map(function (sid) { var x = D.srcMap[sid]; if (!x) return h('li', { text: sid }); return h('li', null, [x.url ? h('a', { href: x.url, rel: 'noopener', target: '_blank', text: x.title }) : x.title, ' — ' + x.author + (x.url_verification === 'NO_URL_FOUND' ? ' (ohne Adresse)' : '') + (x.content_retrieved_by_vu ? '' : ' · Inhalt nicht von VU geprüft')]); }))]);
+      return details(stName(s) + ' (' + s.sources.length + ')', [h('ul', { class: 'st-ul' }, s.sources.map(function (sid) { var x = D.srcMap[sid]; if (!x) return h('li', { text: sid }); return h('li', null, [x.url ? h('a', { href: x.url, rel: 'noopener', target: '_blank', text: x.title }) : x.title, ' — ' + x.author + (x.url_verification === 'NO_URL_FOUND' ? ' (ohne Adresse)' : '') + (x.content_retrieved_by_vu ? '' : ' · Inhalt nicht von VU geprüft')]); }))]);
     })));
     var m = /(\d{4}-\d{2}-\d{2})/.exec(D.sources.retrievalNote || '');
     dmAdd('Abruf', (m ? 'Adressen am ' + dateDe(m[1]) + ' über Suchergebnisse mit exaktem Titel bestätigt. ' : '') + 'Ob Vision Universe den Inhalt selbst gelesen hat, steht je Quelle dabei.');
@@ -1642,7 +1645,8 @@
      Laedt parallel zu den Daten; ein Fehler laesst die bisherige Oberflaeche stehen. */
   var UI = page === 'replay' ? Promise.resolve() : Promise.all([loadCss('/assets/vu-ui.css?v=vu-ui-1.3.0'), loadCss(BASE + 'assets/st-redesign.css'), loadScript('/assets/vu-ui.js?v=vu-ui-1.3.0'), loadScript('/assets/vu-chart.js')]).then(function () {
     if (window.VUUI && window.VUUI.bindIntent) window.VUUI.bindIntent(function (url) { if (url.origin !== location.origin) return null; var m = /^\/supertrader\/stock\/([A-Z0-9.-]{1,12})\/$/.exec(url.pathname); return m && m[1]; }, function (ticker) { return build().then(function (b) { return b && b.slices && (b.slices.stock || []).indexOf(ticker) >= 0 ? getJSON('stock/' + ticker + '.json') : null; }); });
-    return loadScript(BASE + 'assets/st-redesign.js');
+    /* Ein Name je Methode und die eine Ablauf-Leiste (Konzept „Das Rezept eines Profis“, Folien K1/K3) vor dem Seitenmodul. */
+    return Promise.all([loadScript(BASE + 'assets/st-names.js'), loadScript(BASE + 'assets/st-flow.js')]).catch(function () {}).then(function () { return loadScript(BASE + 'assets/st-redesign.js'); });
   }).catch(function () { return null; });
   /* Helfer der bisherigen Oberflaeche fuer das Redesign-Modul. legacy(host, D) zeichnet die bisherige Ansicht der Seite in host. */
   function redesignContext() {
