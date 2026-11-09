@@ -68,3 +68,13 @@ test("TX04 / Entscheidung 11: Muster mit Bild, Zahl und Richtung; „Hilft das M
   for (const s of ["Heute im Markt", "Hilft das Muster?", "Forschung, nicht zertifiziert", "\"Belegt\"", "\"Kein Vorteil\"", "\"Gegen die Lesart\"", "mgCell("]) assert.ok(muster.includes(s), s);
   assert.match(app, /Was die Formen<br>im Chart bedeuten/);
 });
+
+test("TX06 / Entscheidung 9 mit Owner-Änderung 09.11.: Technical-Screener bleibt im neuen Design, keine Weiterleitung; Perspektiven führen in den Hauptscreener", () => {
+  const scr = app.slice(app.indexOf("  function viewScreener(main, route) {"), app.indexOf("  function valueText(field, v) {"));
+  for (const s of ["Screener · Perspektive Chart", "Was suchst du?", "\"/screener/?p=\" + x[0]", "Fertige Suchen · Chart", "Treffer zeigen", "tc-satz"]) assert.ok(scr.includes(s) || app.includes(s), s);
+  assert.doesNotMatch(app, /location\.(replace|assign)\(["']\/screener\//, "keine Weiterleitung in den Hauptscreener");
+  assert.match(app, /"In Worten suchen"/);
+  assert.match(app, /Regeln" \) \+ " erkannt\. "|" Regeln"\) \+ " erkannt\. "/);
+  assert.equal(M.parseRoute("#/screener?reiter=vorlagen").tab, "templates");
+  assert.equal(M.parseRoute("#/vorlagen/breakout").view, "templates");
+});

@@ -443,7 +443,7 @@
 
   /* ---------------------------------------------------------- Screener (T02) */
   /* Suchfeld "Suche in Worten": Vorschau beim Tippen (erkannt, nicht erkannt, Fehler), Ausfuehren ueber die Adresse #/screener?q=… */
-  var EXAMPLES = ["Dreieck über der SMA 200 mit steigendem Volumen", "Bestätigter Ausbruch mit Volumenspitze und RSI unter 75", "Doppelboden oder Keil über der 50-Tage-Linie", "Neues 52-Wochen-Hoch"];
+  var EXAMPLES = ["Dreieck über der 200-Tage-Linie mit steigendem Volumen", "Bestätigter Ausbruch mit Volumenspitze und RSI unter 75", "Doppelboden oder Keil über der 50-Tage-Linie", "Neues 52-Wochen-Hoch"];
   function textSearch(textQ, parsed) {
     if (!QT) return null;
     var input = el("textarea", { class: "tc-ts-input", rows: "2", maxlength: "300", placeholder: "z. B. " + EXAMPLES[0], "aria-label": "Suche in Worten beschreiben", "aria-describedby": "tc-ts-preview", autocomplete: "off", spellcheck: "false" });
@@ -453,10 +453,11 @@
       if (!r) { put(preview, el("p", { class: "tc-note", text: "Was wir nicht erkennen, zeigen wir an. Wir raten nicht." })); return; }
       var kids = [];
       if (r.recognized.length || r.unknown.length) kids.push(el("p", { class: "vu-ltag tc-ts-h", text: "So verstanden" }));
-      if (r.recognized.length || r.unknown.length) kids.push(el("div", { class: "tc-ts-row" }, r.recognized.map(function (t) { return el("span", { class: "tc-mini is-ok" }, [h(U.glyph("check", 14)), t]); })
+      if (r.recognized.length || r.unknown.length) kids.push(el("div", { class: "tc-ts-row" }, r.recognized.map(function (t) { return el("span", { class: "tc-mini is-ok" }, [h(U.glyph("check", 14)), M.plain(t)]); })
         .concat(r.unknown.map(function (t) { return el("span", { class: "tc-mini is-warn", title: "nicht erkannt", text: t + " ?" }); }))));
       r.errors.filter(function (e) { return e.code !== "EMPTY"; }).forEach(function (e) { kids.push(el("p", { class: "tc-note is-warn", text: ERROR_TEXT[e.code] ? ERROR_TEXT[e.code](e.text) : e.code + (e.text ? ": " + e.text : "") })); });
-      kids.push(el("p", { class: "tc-note", text: "Was wir nicht erkennen, zeigen wir an. Wir raten nicht." }));
+      var nRec = r.recognized.length;
+      kids.push(el("p", { class: "tc-note", text: (nRec ? (nRec === 1 ? "1 Regel" : nRec + " Regeln") + " erkannt. " : "") + "Was wir nicht erkennen, zeigen wir an." }));
       if (r.query.groups.length) kids.push(queryEditor(r.canonical || ""));
       put(preview, kids);
     }
@@ -479,8 +480,8 @@
     input.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { paint(input.value.trim() ? QT.parse(input.value) : null); }, 120); });
     input.addEventListener("keydown", function (ev) { if (ev.key === "Enter" && !ev.shiftKey) { ev.preventDefault(); form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event("submit", { cancelable: true })); } });
     paint(parsed);
-    var form = el("form", { class: "vu-box tc-textsearch", role: "search", onsubmit: function (ev) { ev.preventDefault(); var v = input.value.trim(); location.hash = "#/screener" + (v ? "?q=" + encodeURIComponent(v) : ""); } }, [
-      el("label", { class: "tc-ts-label", for: "tc-ts-input" }, [glyph("search"), el("b", { text: "Suche in Worten" }), el("em", { text: "regelbasiert" })]),
+    var form = el("form", { class: "vu-box tc-textsearch tc-satz", role: "search", onsubmit: function (ev) { ev.preventDefault(); var v = input.value.trim(); location.hash = "#/screener" + (v ? "?q=" + encodeURIComponent(v) : ""); } }, [
+      el("label", { class: "tc-ts-label vu-ltag", for: "tc-ts-input", text: "In Worten suchen" }),
       el("div", { class: "tc-ts-field" }, [Object.assign(input, { id: "tc-ts-input" }), el("button", { class: "tc-ts-go", type: "submit", "aria-label": "Suchen" }, h(U.glyph("spark", 18)))]),
       preview
     ]);
@@ -588,12 +589,18 @@
     var goalFrom = !preset && !textQ && !tplFrom && AS && p.z ? AS.fromParams(p) : null;
     if (goalFrom && goalFrom.template) tplFrom = TPL.toQuery(goalFrom.template); else goalFrom = null;
     var parsed = textQ && QT ? QT.parse(textQ) : null, table = p.ansicht === "tabelle";
-    var head = pageHead(null, "Screener", "Sag in Worten, was du suchst. Wir übersetzen es in Regeln.");
+    /* Konzept „Der Chart in drei Sätzen“, TX06: Kopf „Was suchst du?“, Perspektiven-Chips wie im Hauptscreener (Chart aktiv),
+       Suche in Worten als schwarze Satz-Karte, fertige Suchen als Schiene, Hauptknopf mit Trefferzahl. Der Technical-Screener
+       bleibt (Owner-Änderung 09.11.2026); die anderen Perspektiven öffnen den Hauptscreener. */
+    var head = el("header", { class: "tc-phead" }, [el("p", { class: "vu-ltag", text: "Screener · Perspektive Chart" }), el("h1", { class: "vu-lt", text: "Was suchst du?" })]);
+    var persp = el("nav", { class: "vu-chips tc-persp", "aria-label": "Perspektive" }, [["basis", "Basis", null], ["zahlen", "Zahlen", "fundamental"], ["faktoren", "Faktoren", "quant"], ["chart", "Chart", "technical"]].map(function (x) {
+      var kids = [x[2] ? h(U.worldIcon(x[2], 15)) : h(U.glyph("grid", 15)), x[1]];
+      return x[0] === "chart" ? el("span", { class: "vu-chip tc-on", "aria-current": "page" }, kids) : el("a", { class: "vu-chip", href: "/screener/?p=" + x[0] }, kids);
+    }));
     var body = el("div", { class: "tc-screener" }), results = el("section", { class: "tc-results-sec", id: "tc-treffer", "aria-live": "polite" });
     /* Ein Screener (Konzept „Verstehen. Finden.“, Entscheidung 1): /screener/ mit vorgewaehlter Perspektive „Chart“.
        Dieser Einstieg leitet erst weiter, wenn /screener/ jedes Technical-Kriterium abdeckt (screener/tests/one-screener.test.mjs). */
-    var oneScreener = el("a", { class: "vu-navcard tc-onescreener", href: "/screener/?p=chart" }, [el("span", { class: "vu-navcard__text" }, [el("b", { text: "Im Screener mit Perspektive Chart" }), el("span", { text: "Chart-Kriterien zusammen mit Zahlen, Faktoren und Methoden filtern" })])]);
-    put(main, [head, screenerTabs("build"), oneScreener, body, results]);
+    put(main, [head, persp, screenerTabs("build"), body, results]);
     function go(next) { location.hash = "#/screener" + (next ? "?" + next : ""); }
     function withParam(k, v) { var q = (location.hash.split("?")[1] || "").split("&").filter(function (x) { return x && x.split("=")[0] !== k; }); if (v) q.push(k + "=" + v); return "#/screener" + (q.length ? "?" + q.join("&") : ""); }
     if (!dataset) put(results, el("div", { class: "tc-skel", style: "height:220px" }));
@@ -624,13 +631,19 @@
         el("a", { class: "vu-chip" + (table ? " vu-chip--on" : ""), href: withParam("ansicht", table ? "" : "tabelle"), "aria-label": table ? "Liste zeigen" : "Profi-Tabelle zeigen", "aria-pressed": String(table) }, [h(U.glyph("list", 17)), table ? "Liste" : "Tabelle"])]);
       /* Trichter in einer Zeile: Zahl je Regel, Regelname gekuerzt (die volle Abfrage steht unter „Wie die Treffer entstehen“). */
       var funnelText = res.funnel.filter(function (f) { return !/universum/i.test(f.label); }).slice(0, 3).map(function (f) { var l = f.label.split(":")[0].split(" (")[0]; return f.count.toLocaleString("de-DE") + " " + (l.length > 30 ? l.slice(0, 29) + "…" : l); }).join(" · ");
-      var countCard = el("a", { class: "vu-box vu-box--ink tc-countcard tc-cta", href: "#tc-treffer", onclick: function (ev) { ev.preventDefault(); results.scrollIntoView({ behavior: "smooth", block: "start" }); } }, [
-        el("b", { class: "num", text: rules ? res.count.toLocaleString("de-DE") : "–" }),
-        el("span", {}, [el("span", { text: rules ? res.count.toLocaleString("de-DE") + " Treffer von " + ds.size.toLocaleString("de-DE") + " Aktien" : "Noch keine Regel gewählt" }), rules ? el("small", { text: funnelText }) : null])]);
+      var countCard = el("a", { class: "vu-btn vu-btn--block tc-countcard tc-cta tc-cta-lime" + (rules ? "" : " is-empty"), href: "#tc-treffer", title: funnelText || null, onclick: function (ev) { ev.preventDefault(); results.scrollIntoView({ behavior: "smooth", block: "start" }); } },
+        rules ? [el("b", { class: "num", text: res.count.toLocaleString("de-DE") }), " Treffer zeigen"] : [el("b", { text: "–" }), " Noch keine Regel gewählt"]);
+      var rail = el("div", { class: "tc-rail" }, HOME_SEARCHES.slice(0, 4).filter(function (x) { return TPL.get(x[0]); }).map(function (x) {
+        var t = TPL.get(x[0]), q = TPL.toQuery(TPL.compose(x[0], [])), n = q ? Q.evaluate(ds, Object.assign({}, q.query, { limit: 1 })) : null;
+        return el("a", { class: "tc-idc", href: "#/screener?vorlage=" + encodeURIComponent(x[0]) }, [hudGlyph(x[2], 34), el("b", { text: plainTitle(t) }), el("span", { text: x[1] }),
+          el("div", { class: "tc-idc-n" }, [el("b", { class: "num", text: n && !n.error ? de(n.count) : "–" }), el("small", { text: "Treffer" })])]);
+      }));
+      var mainLink = h(U.help("Dieselben Regeln, Vorlagen und die Suche in Worten gibt es auch im Hauptscreener, Perspektive „Chart“, zusammen mit Zahlen und Faktoren."));
+      mainLink.querySelector("span").append(" ", el("a", { class: "tc-link", href: "/screener/?p=chart", text: "Im Hauptscreener öffnen" }));
       if (built.dropped && built.dropped.length) origin = el("p", { class: "tc-note", text: "Nur im Tageschart verfügbar und deshalb nicht angewendet: " + built.dropped.join(", ") + "." });
       /* Aus Vorlage, Assistent oder Suche in Worten: die Regeln direkt anpassbar (Baukasten, zugeklappt). */
       var inlineBuilder = QT && (tplFrom || (parsed && parsed.query.groups.length)) ? builderCard(parsed && parsed.query.groups.length ? M.builderFromQuery(parsed.query) : M.builderFromQuery(tplFrom.query), false) : null;
-      put(body, [textSearch(textQ, parsed), origin, inlineBuilder, tools, countCard]);
+      put(body, [textSearch(textQ, parsed), origin, inlineBuilder, tools, rh("Fertige Suchen · Chart", "#/screener?reiter=vorlagen", "Alle 13"), rail, countCard, mainLink]);
       renderResults(D, res, built.query, rules);
     }).catch(function (e) {
       put(body, [textSearch(textQ, parsed), stateBox("Daten derzeit nicht verfügbar", "Der Screener-Datensatz konnte nicht geladen werden (" + String(e && e.message || e) + ").")]); put(results, []);
