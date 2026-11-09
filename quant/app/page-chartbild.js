@@ -32,7 +32,7 @@
   function writeView(v) { try { global.localStorage.setItem(VIEW_KEY, v); } catch (e) { /* privat */ } }
 
   var TONE = { BULLISH: "up", BEARISH: "down", NEUTRAL: "flat", MIXED: "mixed" };
-  var STATUS = { IN_ENTRY_ZONE: "Kurs in der Zone", APPROACHING: "Kurs nähert sich der Zone", EXTENDED: "Kurs weit über der Zone – Rücklauf abwarten", BEYOND_ENTRY: "Kurs jenseits der Zone",
+  var STATUS = { IN_ENTRY_ZONE: "Kurs in der Zone", APPROACHING: "Kurs nähert sich der Zone", EXTENDED: "Kurs weit über der Zone", BEYOND_ENTRY: "Kurs jenseits der Zone",
                  INVALIDATED: "Szenario ungültig", IN_RANGE: "Kurs innerhalb der Spanne", BREAKING: "Kurs verlässt die Spanne", WATCH: "Beobachten" };
   function statusText(s) {
     if (!s) return "";
@@ -528,6 +528,88 @@
     };
   }
 
+  /* ================================================================ Elliott auf der Aktie (Konzept EHV, EX03, Screens e-stock / e-none)
+     Zaehlbar heisst: die Engine stuft die Wellenzaehlung als anwendbar ein (applicability HIGH oder MODERATE, keine Enthaltung) –
+     dieselbe Einstufung wie „Heute anwendbar“ auf der Elliott-Startseite (elliottApplicable im Wellen-Index). */
+  var EW_RR = { LOW: "gering", MEDIUM: "mittel", HIGH: "hoch" };
+  function ewCountable(E) { var ap = E && E.applicability; return !!(E && E.primary && ap && !ap.abstain && (ap.level === "HIGH" || ap.level === "MODERATE")); }
+  function ewModel() { return global.VUElliottHome || null; }
+  function ewPattern(code, fallback) { var M = ewModel(); return M ? M.patternDe(code) : fallback || code; }
+  function ewName(ctx, ticker) { var n = (ctx && ctx.names && ctx.names[ticker]) || ticker, M = ewModel(); return M && M.shortName ? M.shortName(n, ticker) : n; }
+  function ewShare() { var A = global.VUElliottApp, M = ewModel(), ap = A && A.state && M && M.applicableOf(A.state.home); return ap && ap.n ? ap : null; }
+  /* Direktaufruf einer Aktie: die Startseite hat den Index nicht geladen – dann einmal die kleine Lieferansicht holen. */
+  var ewShareP = null;
+  function ewShareLoad() {
+    var have = ewShare(), M = ewModel();
+    if (have || !M) return Promise.resolve(have);
+    return ewShareP || (ewShareP = fetch(M.INDEX_PATH, { credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (h) { var ap = h && M.validate(h).ok ? M.applicableOf(h) : null; return ap && ap.n ? ap : null; }).catch(function () { ewShareP = null; return null; }));
+  }
+  function ewPrice(v) { return isNum(v) ? v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + UNIT : "–"; }
+  var EW_KIND = { FLAT: "c", ZIGZAG: "c", DOUBLE_ZIGZAG: "x", TRIPLE_ZIGZAG: "x", WXY: "x", TRIANGLE: "t", IMPULSE: "i", ENDING_DIAGONAL: "d", LEADING_DIAGONAL: "d" };
+  function ewStructSentence(c, structure) {
+    var k = EW_KIND[c.pattern] || "c";
+    var what = { c: "Eine Korrektur in drei Teilen", x: "Eine zusammengesetzte Korrektur", t: "Ein Dreieck in fünf Teilen", i: "Ein Impuls in fünf Wellen", d: "Eine Diagonale in fünf Wellen" }[k];
+    var st = { UPTREND_ADVANCING: "Der Aufwärtstrend läuft.", CORRECTION_IN_UPTREND: "Im Aufwärtstrend läuft ein Rücksetzer.", RALLY_IN_DOWNTREND: "Im Abwärtstrend läuft eine Erholung.", DOWNTREND_ADVANCING: "Der Abwärtstrend läuft.", NO_CLEAR_TREND: "Einen klaren Trend gibt es nicht.", SIDEWAYS_RANGE: "Der Kurs läuft seitwärts." }[structure] || "";
+    return what + (c.complete ? " ist abgeschlossen." : " läuft, gerade Welle " + ((c.currentWave && c.currentWave.label) || "–").replace(/^nach /, "") + ".") + (st ? " " + st : "");
+  }
+  function ewChapter(n, icon, title, sub, body) {
+    var d = el("details", { class: "cb-ep" }, [el("summary", {}, [el("b", { class: "cb-ep-n num", text: String(n) }), el("span", { class: "vu-hud cb-ep-ic", style: "--vu-hud:40px", "aria-hidden": "true" }, [icon]),
+      el("span", { class: "cb-ep-t" }, [el("b", { text: title }), el("span", { text: sub })]), el("span", { class: "cb-ep-go", "aria-hidden": "true", text: "›" })])]);
+    var filled = false;
+    d.addEventListener("toggle", function () { if (d.open && !filled) { filled = true; d.append(el("div", { class: "cb-ep-body" }, [].concat(body()).filter(Boolean))); } });
+    return d;
+  }
+  function ewIcon(path) { var n = document.createElementNS("http://www.w3.org/2000/svg", "svg"); n.setAttribute("viewBox", "0 0 24 24"); n.setAttribute("width", "19"); n.setAttribute("height", "19"); n.setAttribute("fill", "none"); n.setAttribute("stroke", "currentColor"); n.setAttribute("stroke-width", "2"); n.setAttribute("stroke-linecap", "round"); n.setAttribute("stroke-linejoin", "round"); n.innerHTML = path; return n; }
+  var EW_IC = { wave: '<path d="M3 17l4-6 3 3 5-8 3 4 3-3"/>', shapes: '<path d="M3 19l6-10 4 6 3-4 5 8z"/>', bars: '<path d="M6 20V12M12 20V6M18 20v-9"/>', target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>', book: '<path d="M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h9"/>', list: '<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>', chart: '<path d="M4 19h16M6 15l4-5 3 3 5-7"/>' };
+  function ewVerdict(kind, text) { var U = global.VUUI; if (U) { var t = document.createElement("template"); t.innerHTML = U.verdict(kind, text); return t.content.firstChild; } return el("span", { class: "vu-verdict vu-verdict--" + kind, text: text }); }
+  function wavesPage(o) {
+    var a = o.a, E = o.E, host = o.host, ticker = o.ticker, name = ewName(o.ctx, o.ticker), share = ewShare();
+    if (!ewCountable(E)) {
+      var noneP, listSub, shareText = function (sh) { return "Der Chart verläuft zu unruhig für eine belastbare Lesart. Das ist der Normalfall: " + (sh ? "nur " + sh.count.toLocaleString("de-DE") + " von " + sh.n.toLocaleString("de-DE") + " Aktien sind heute zählbar." : "nur wenige Aktien sind heute zählbar."); };
+      if (!share) ewShareLoad().then(function (sh) { if (sh && noneP) { noneP.textContent = shareText(sh); listSub.textContent = sh.count.toLocaleString("de-DE") + " heute"; } });
+      host.append(el("section", { class: "cb-ew-none", "aria-label": "Elliott " + name }, [
+        el("p", { class: "cb-ew-tags" }, [ewVerdict("none", "Keine Zählung"), el("span", { class: "vu-ltag", text: "Elliott · " + name })]),
+        el("h2", { class: "vu-mt", text: "Bei " + name + " lassen sich gerade keine Wellen sauber zählen." }),
+        noneP = el("p", { class: "cb-ew-none-p", text: shareText(share) })]),
+        el("a", { class: "vu-navcard cb-ew-link", href: "/technical/#/chart/" + encodeURIComponent(ticker) }, [el("span", { class: "vu-hud", style: "--vu-hud:42px", "aria-hidden": "true" }, [ewIcon(EW_IC.chart)]), el("span", { class: "vu-navcard__text" }, [el("b", { text: "Chart-Lage in Technical ansehen" }), el("span", { text: "Trend, Zonen, Befunde" })]), el("span", { class: "cb-ep-go", "aria-hidden": "true", text: "›" })]),
+        el("a", { class: "vu-navcard cb-ew-link", href: "/elliott/#/?zaehlbar=1" }, [el("span", { class: "vu-hud", style: "--vu-hud:42px", "aria-hidden": "true" }, [ewIcon(EW_IC.list)]), el("span", { class: "vu-navcard__text" }, [el("b", { text: "Aktien mit sauberer Zählung" }), listSub = el("span", { text: share ? share.count.toLocaleString("de-DE") + " heute" : "Liste der zählbaren Aktien" })]), el("span", { class: "cb-ep-go", "aria-hidden": "true", text: "›" })]));
+      return;
+    }
+    var c = E.primary, prim = (a.scenarios || []).filter(function (x) { return x.kind === "PRIMARY"; })[0] || null, inv = prim && prim.invalidation;
+    var up = prim && prim.direction === "BULLISH", down = prim && prim.direction === "BEARISH";
+    var weekly = a.timeframe === "1W", cl = E.clarityLevel || "MODERATE", ap = E.applicability.level, rr = o.T && o.T.relabeling ? o.T.relabeling.risk : null;
+    var title = ewPattern(c.pattern, c.patternName) + (c.complete ? " abgeschlossen" : " · Welle " + ((c.currentWave && c.currentWave.label) || "–"));
+    var CLV = { HIGH: ["strong", "Zählung klar"], MODERATE: ["mid", "Zählung mittel"] }[cl] || ["weak", "Zählung unklar"];
+    host.append(el("div", { class: "cb-ew-say" }, [el("div", {}, [el("p", { class: "vu-ltag", text: "Wellen · " + o.tfLabel }), el("h2", { class: "vu-mt", text: title })]), ewVerdict(CLV[0], CLV[1])]), o.chartCard);
+    var rows = [
+      ["wave", "Struktur", ewStructSentence(c, a.outlook && a.outlook.structure), up ? ewVerdict("strong", "nach oben") : down ? ewVerdict("weak", "nach unten") : ewVerdict("none", "Richtung offen")],
+      ["target", "Grenze", inv ? "Die Lesart gilt, solange " + (weekly ? "die Woche" : "der Tag") + " " + (inv.direction === "below" ? "über " : "unter ") + ewPrice(inv.price) + " schließt." : "Für diese Lesart gibt es keine Ungültig-Marke.", ewVerdict("mid", "Ungültig-Marke")],
+      ["book", "Sicherheit", "Zählung " + ({ HIGH: "klar", MODERATE: "mittel" }[cl] || "unklar") + (rr && EW_RR[rr] ? ", Gefahr einer Neuzählung " + EW_RR[rr] : "") + ". Anwendbarkeit: " + (ap === "HIGH" ? "gut" : "mittel") + ".", ewVerdict(ap === "HIGH" ? "strong" : "mid", ap === "HIGH" ? "Gut" : "Mittel")]
+    ];
+    host.append(el("section", { class: "cb-story", "aria-label": "Die Lesart in drei Sätzen" }, [el("p", { class: "vu-ltag", text: "Die Lesart in drei Sätzen" })].concat(rows.map(function (r) {
+      return el("div", { class: "cb-story-r" }, [el("span", { class: "vu-hud", style: "--vu-hud:34px", "aria-hidden": "true" }, [ewIcon(EW_IC[r[0]])]), el("div", {}, [el("span", { class: "vu-ltag", text: r[1] }), el("p", { text: r[2] })]), r[3]]);
+    }))));
+    var ov = a.overlays && a.overlays.waves, waves = (ov && ov.primary) || [];
+    var alts = (E.alternatives || []).slice(0, 3), others = (a.scenarios || []).filter(function (x) { return x.kind !== "PRIMARY"; });
+    host.append(el("div", { class: "cb-eps" }, [
+      ewChapter(1, ewIcon(EW_IC.wave), "Die Wellen im Chart", waves.length ? waves.map(function (w) { return w.label; }).join(" · ") + " mit Datum" : "Wellen der Lesart", function () {
+        return [el("ol", { class: "cb-list cb-ew-waves" }, waves.map(function (w) { return el("li", { class: "num" }, [el("b", { text: "Welle " + w.label }), " · " + X.dateDe(w.time) + " · " + ewPrice(w.price) + (w.status === "DEVELOPING" ? " · im Aufbau" : "")]); })),
+          ov && ov.alternative && ov.alternative.length ? segmented("Lesart im Chart", [["primary", "Hauptlesart"], ["alt", "Alternative"]], "primary", o.onWaves) : null,
+          el("p", { class: "cb-small cb-dim", text: "Eine Wellenmarke im Chart antippen erklärt die Welle." })];
+      }),
+      ewChapter(2, ewIcon(EW_IC.shapes), "Andere Lesarten", "Alternative und Randszenario", function () {
+        var li = alts.map(function (x, i) { return el("li", {}, [el("b", { text: (i ? "Weitere Lesart: " : "Alternative Zählung: ") + ewPattern(x.pattern, x.patternName) + (x.complete ? " abgeschlossen" : ", Welle " + ((x.currentWave && x.currentWave.label) || "–")) }),
+          x.invalidation ? " · ungültig bei Schluss " + (x.invalidation.direction === "below" ? "unter " : "über ") + ewPrice(x.invalidation.price) : null]); });
+        others.forEach(function (x) { li.push(el("li", {}, [el("b", { text: (x.kind === "TAIL" ? "Randszenario" : "Alternative") + ": " + (x.direction === "BULLISH" ? "nach oben" : x.direction === "BEARISH" ? "nach unten" : "seitwärts") }),
+          x.invalidation ? " · gilt, solange kein Schluss " + (x.invalidation.direction === "below" ? "unter " : "über ") + ewPrice(x.invalidation.price) + " liegt" : null])); });
+        return [li.length ? el("ul", { class: "cb-list" }, li) : el("p", { class: "cb-small", text: "Keine materiell andere Lesart." }),
+          el("p", { class: "cb-small cb-dim", text: "Hauptlesart = derzeit bevorzugte Interpretation, nicht „die richtige Zählung“." })];
+      }),
+      ewChapter(3, ewIcon(EW_IC.bars), "Was früher in ähnlichen Lagen geschah", "Forschung, nicht zertifiziert", function () { return [o.evidence, o.replay]; })
+    ]));
+    host.append(o.proOpen, o.proHost);
+  }
+
   async function chartbild(main, ctx, ticker, params, opts) {
     var inElliott = !!(opts && opts.product === "elliott");
     /* Im Elliott-Produkt bestimmt die Adresse die Ansicht: /elliott/#/<T> = Technik (Einfach), ?ansicht=profi = Elliott (Profi). */
@@ -642,7 +724,7 @@
 
     // ---------------------------------------------- Chart
     var chartHost = el("div", { class: "cb-chart", tabindex: "0", role: "region", "aria-label": "Chart mit Zonen und Szenario" });
-    var range = a.timeframe === "1W" ? "3J" : "6M", mode = "line", wavesOn = view === "pro" || (!abstain && E && E.primary);
+    var range = a.timeframe === "1W" ? (inElliott ? "1J" : "3J") : "6M", mode = "line", wavesOn = view === "pro" || (!abstain && E && E.primary);
     var ranges = a.timeframe === "1W" ? [["1J", "1 J", 52], ["3J", "3 J", 156], ["5J", "5 J", 260]] : [["3M", "3 M", 63], ["6M", "6 M", 126], ["1J", "1 J", 252]];
     var replayStep = null, waveSet = "primary";
     /* Elliott-Projektion als eigene Chart-Ebene (Szenario | Projektion), Preisachse logarithmisch bei großer Spanne */
@@ -679,11 +761,13 @@
       if (waveSeg) waveSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", (q === 1) === !!wavesOn ? "true" : "false"); }); var scLeg = chartCard && chartCard.querySelector(".cb-legend-sc"); if (scLeg) scLeg.hidden = pjOnChart;
       chartHost.dataset.direction = direction(); chartHost.dataset.mode = mode;
       /* W05: in Elliott ohne belastbare Lesart zeigt der Chart die Marktstruktur (Unterstützung neongrün, Widerstand grau) statt Szenario-Zonen. */
-      var ms = structureOnly() ? structureOverlay() : null;
-      if (scLeg0) scLeg0.hidden = !!ms; if (msLeg) msLeg.hidden = !ms;
-      chartHost.replaceChildren(Chart.render({ chart: a.chart, overlays: ms ? ms : replayStep ? overlaysFromStep(replayStep) : a.overlays, scenarioKind: ms ? "STRUCTURE" : replayStep ? "PRIMARY" : kind, scenario: ms ? null : scenarioOf(kind),
+      var ms = inElliott ? null : structureOnly() ? structureOverlay() : null;
+      /* Konzept EHV: im Elliott-Produkt zeigt der Chart nur die Ungueltig-Marke der Hauptlesart, keine Ziele. */
+      var io = inElliott && !replayStep && !pjOnChart && a.overlays ? { zones: [], invalidations: (a.overlays.invalidations || []).filter(function (x) { return x.scenario === "PRIMARY"; }), projectedPaths: [] } : null;
+      if (scLeg0) scLeg0.hidden = !!ms || inElliott; if (msLeg) msLeg.hidden = !ms;
+      chartHost.replaceChildren(Chart.render({ chart: a.chart, overlays: ms ? ms : io ? io : replayStep ? overlaysFromStep(replayStep) : a.overlays, scenarioKind: ms ? "STRUCTURE" : replayStep ? "PRIMARY" : kind, scenario: ms ? null : scenarioOf(kind),
         projection: pjOnChart ? pjChart(pjT, pjT.source === "ALTERNATIVE" || altSource(pjT) ? "alt" : null) : null, logScale: pjOnChart ? (pjLog === null ? pjAutoLog(pjT) : pjLog) : false,
-        cutoff: replayStep ? replayStep.d : null, showPath: !replayStep && !ms, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
+        cutoff: replayStep ? replayStep.d : null, showPath: !replayStep && !ms && !io, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
         waves: wavesOn ? waveMarks() : null, waveTone: !replayStep && (waveSet === "alt" || (pjOnChart && altSource(pjT))) ? "alt" : null, onWave: replayStep || waveSet === "alt" || (pjOnChart && (pjT.degree === "HIGHER" || altSource(pjT))) ? null : function (w) { waveInspector(a, w, rules, methodEv); },
         width: width, height: width < 520 ? 380 : 460, bars: barsFor(), mode: mode, title: ticker + " · Chartbild · " + tfLabel, labels: true }));
       if (replayStep) chartHost.prepend(el("p", { class: "cb-replay-flag", role: "status", text: "Zeitreise · Stand " + X.dateDe(replayStep.d) + " · nur damals verfügbare Daten" }));
@@ -752,14 +836,14 @@
     if (badge.level === "NOT_ESTABLISHED" || badge.level === "EXPERIMENTAL") {
       evKids.push(el("p", { class: "cb-evidence-verdict cb-edge-" + (badge.level === "EXPERIMENTAL" ? "slightly_better_uncertain" : "no_edge"), text: badge.text }));
       if (ev && ev.status === "OK") evKids.push(el("div", { class: "cb-stats vu-kpis" }, [
-        stat("Zielbereich erreicht", pct(ev.hitRate), "vor der Ungültig-Linie"),
+        stat("Zone laut Methode erreicht", pct(ev.hitRate), "vor der Ungültig-Linie"),
         stat("Zufall", pct(ev.baseline), "gleiche Abstände"),
         stat("Unterschied", isNum(ev.hitRate) && isNum(ev.baseline) ? ((ev.hitRate - ev.baseline) * 100 >= 0 ? "+" : "") + ((ev.hitRate - ev.baseline) * 100).toFixed(1).replace(".", ",") + " Pp." : "–", "Prozentpunkte"),
         stat("Ähnliche Lagen", ev.n.toLocaleString("de-DE"), a.timeframe === "1W" ? "Wochencharts" : "Tagescharts")
       ]));
     } else evKids.push(el("p", { class: "vu-empty", text: badge.text }));
     evKids.push(X.more("Wie wurde geprüft?", function () { return el("p", { class: "cb-small", text: "Vision Universe trennt, was der Chart zeigt, von dem, was frühere Fälle belegen. Prüfung nur mit Daten bis zum jeweiligen Tag, Einstieg erst danach, Kosten berücksichtigt. Nur heute gelistete Titel (Survivorship-Verzerrung möglich). Keine Gewähr für die Zukunft." }); }));
-    if (a.history && a.history.length) evKids.push(X.more("Frühere Fälle bei " + ticker + " (" + a.history.length + ")", function () { return el("ul", { class: "cb-list" }, a.history.map(function (h) { return el("li", { class: "num", text: X.dateDe(h.date) + " · " + ((Ex && Ex.TEMPLATE[h.template]) || h.template).split(" —")[0] + " · " + ({ TARGET1: "Zielbereich erreicht", INVALIDATED: "ungültig", TIMEOUT: "ohne Ergebnis abgelaufen", NO_ENTRY: "Zone nicht erreicht" }[h.outcome] || h.outcome) + (isNum(h.barsToT1) ? " nach " + h.barsToT1 + (a.timeframe === "1W" ? " Wochen" : " Tagen") : "") }); })); }));
+    if (a.history && a.history.length) evKids.push(X.more("Frühere Fälle bei " + ticker + " (" + a.history.length + ")", function () { return el("ul", { class: "cb-list" }, a.history.map(function (h) { return el("li", { class: "num", text: X.dateDe(h.date) + " · " + ((Ex && Ex.TEMPLATE[h.template]) || h.template).split(" —")[0] + " · " + ({ TARGET1: "Zone laut Methode erreicht", INVALIDATED: "ungültig", TIMEOUT: "ohne Ergebnis abgelaufen", NO_ENTRY: "Zone nicht erreicht" }[h.outcome] || h.outcome) + (isNum(h.barsToT1) ? " nach " + h.barsToT1 + (a.timeframe === "1W" ? " Wochen" : " Tagen") : "") }); })); }));
     var evidence = X.section("Was die Historie nahelegt", null, evKids, null, null, "evidenz", "vu-sec cb-sec");
 
     // ---------------------------------------------- Zeitreise (Replay)
@@ -841,13 +925,10 @@
     var ewSec = X.section("Elliott", null, ewKids, null, null, "elliott", "vu-sec cb-sec cb-elliott");
     if (staleAlert) host.append(staleAlert);
     if (inElliott) {
-      var CLV = { CLEAR: ["strong", "▲ Stark"], MODERATE: ["mid", "◆ Mittel"], AMBIGUOUS: ["weak", "▼ Schwach"] }[clarity.level];
-      var kick = hero.querySelector(".cb-kicker"); if (kick) kick.textContent = tfLabel;
-      if (CLV) hero.append(el("span", { class: "vu-verdict vu-verdict--" + CLV[0] + " cb-hero-verdict", "data-verdict": CLV[0], title: "Strukturklarheit: " + (clarity.text || ""), text: CLV[1] }));
-      var evHead = evidence.querySelector("h2"); if (evHead && badge.label) evHead.parentNode.after(el("p", { class: "cb-ev-verdict" }, [el("span", { class: "vu-verdict vu-verdict--none", "data-verdict": "none", text: "○ " + badge.label })]));
-      [ewSec, X.section("Technischer Ausblick", null, [hero, levels, tabsBlock, textBlock], null, null, "ausblick", "vu-sec cb-sec cb-outlook-sec"), why, evidence, proOpen, proHost].forEach(function (n) { if (n) host.append(n); });
-      host.append(el("div", { class: "cb-pro-extra" }, [replay, el("div", { class: "cb-more-end" }, [tfs])].filter(Boolean)),
-        el("p", { class: "cb-exp" }, [el("b", { text: "Experimentell. " }), "Eine Lesart beschreibt eine mögliche Struktur mit klarer Grenze. Keine Vorhersage, kein Kursziel, keine Empfehlung."]));
+      /* Konzept EHV (EX03): Zwei Faelle. Zaehlbar: Muster und Urteil, Chart mit Ungueltig-Marke, „Die Lesart in drei Saetzen“, Kapitel.
+         Nicht zaehlbar: eine Karte „Keine Zaehlung“ mit Anteil, Weg zur Chart-Lage in Technical und zur Zaehlbar-Liste.
+         Kein eigener „Technischer Ausblick“ mehr: die Chart-Aussage je Aktie gibt es nur in Technical. */
+      wavesPage({ a: a, E: E, T: T, ticker: ticker, ctx: ctx, host: host, tfLabel: tfLabel, chartCard: chartCard, evidence: evidence, replay: replay, proOpen: proOpen, proHost: proHost, onWaves: function (set) { waveSet = set; wavesOn = true; draw(); } });
     } else {
       order.forEach(function (n) { if (n) host.append(n); });
       [ewSec, why, evidence, replay].forEach(function (n) { if (n) host.append(n); });
