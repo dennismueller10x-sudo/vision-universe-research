@@ -50,7 +50,7 @@ concurrency:
 
 jobs:
   core:
-    if: !(github.event_name == 'schedule' || inputs.zeitplan != '')
+    if: ${{ !(github.event_name == 'schedule' || inputs.zeitplan != '') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
