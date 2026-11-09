@@ -10,7 +10,7 @@
 
 ## Quellen und Auswahl
 
-Basis ist `main` bei Commit `8ae76660b298c36b39a768d09918d8461105603d`. Gelesen: [CLAUDE.md](../../CLAUDE.md), [AGENTS.md](../../AGENTS.md), [Neustart-Plan](../PLAN_NEUSTART_2026-11.md), [FULL_UNIVERSE_ROLLOUT.md](../archiv/company-intelligence/FULL_UNIVERSE_ROLLOUT.md) und [WORTWAHL.md](../legal/WORTWAHL.md). `company-intelligence/README.md` und `company-intelligence/FULL_UNIVERSE_ROLLOUT.md` existieren an dieser Basis nicht; der Rollout-Plan liegt im Archiv. Dessen frühere Zahlen (45 geprüfte deutsche Profile im Oktober) sind keine aktuelle Bestandszählung.
+Basis ist `main` bei Commit `8ae76660b298c36b39a768d09918d8461105603d`. Gelesen: [CLAUDE.md](../../../CLAUDE.md), [AGENTS.md](../../../AGENTS.md), [Neustart-Plan](../../PLAN_NEUSTART_2026-11.md), [FULL_UNIVERSE_ROLLOUT.md](../company-intelligence/FULL_UNIVERSE_ROLLOUT.md) und [WORTWAHL.md](../../legal/WORTWAHL.md). `company-intelligence/README.md` und `company-intelligence/FULL_UNIVERSE_ROLLOUT.md` existieren an dieser Basis nicht; der Rollout-Plan liegt im Archiv. Dessen frühere Zahlen (45 geprüfte deutsche Profile im Oktober) sind keine aktuelle Bestandszählung.
 
 Die drei Textbestände sind `company-intelligence/config/profile-reviewed-de.json` (2.830 Einträge, alle `APPROVED`), `profile-editorial-de.json` (31) und `top46-content-review.json` (14). Ihre Vereinigungsmenge enthält **2.875 unterschiedliche Emittenten**, nicht 2.872. Das ist ein Textinventar, keine durch die privaten Zustands-, Quellen-, Rückzugs- und Veröffentlichungsgates bestätigte Consumer-Menge. Für die Lesefassung wird nach Emittenten-ID vereinigt; beim Überschneiden gewinnt die explizite Top46-Fassung, danach die redaktionelle Fassung. Die Prüfung behauptet damit keine private Import-Reihenfolge oder Consumer-Freigabe.
 
@@ -375,4 +375,4 @@ for cid in order:
 
 Die Auswertung hat Anzahl, eindeutige CIKs, vier Überschneidungen, sämtliche Quelltext-Pins der Zufallsgruppe, Mindestlängen und die Summen der Befundcodes maschinell gegengeprüft. Arbeitsdateien und Downloads liegen außerhalb des Repositories. Der PR enthält ausschließlich diesen Bericht; unter `company-intelligence/` und in sämtlichen Datenpfaden wurde nichts geändert.
 
-**Doku-Gate-Hinweis:** Der verlangte neue Berichtspfad ist im bestehenden Doku-Register weder als lebende Seite noch als eingefrorener Beleg eingetragen oder von einem bestehenden Beleg verlinkt. `DOC-3` verlangt für solche Dateien eine Registrierung/Verlinkung. Diese zusätzliche Dateiänderung wäre mit „PR nur mit dem Bericht“ unvereinbar und wird hier nicht mitgebracht. Der gezielte Lauf `node --test core/tests/docs-registry.test.mjs` ergibt 3 bestanden / 1 fehlgeschlagen (ausschließlich DOC-3 wegen genau dieses Berichtspfads). Kein Test oder Register wird abgeschwächt.
+**Ablage:** Der Bericht liegt als Beleg im Archiv (`docs/archiv/reports/`), damit der Doku-Vertrag DOC-3 (höchstens 25 lebende Seiten) erfüllt bleibt.
