@@ -452,7 +452,7 @@
     ["Sparplan bauen", "#/etfs", "Breit streuen, Kosten niedrig", [["etfs", "#/etfs", "ETFs"], ["portfolio", "#/portfolio", "Portfolio"], ["vergleichen", "#/vergleichen", "Vergleichen"]]],
     ["Auf Kurs bleiben", "#/monitor", "Wir melden, wenn sich etwas ändert", [["monitor", "#/monitor", "Veränderungen"], ["wissen", "#/wissen", "Wissen"]]]];
   VS.SECTION_OF = { home: "home", rechner: "plan", plan: "plan", luecke: "plan", kosten: "vergleichen", szenarien: "portfolio", etfs: "etfs", etf: "etfs",
-    vergleich: "vergleichen", vergleichen: "vergleichen", portfolio: "portfolio", xray: "portfolio", foerderung: "foerderung", riester: "vergleichen",
+    vergleich: "vergleichen", vergleichen: "vergleichen", index: "etfs", portfolio: "portfolio", xray: "portfolio", foerderung: "foerderung", riester: "vergleichen",
     fruehstart: "foerderung", anbieter: "vergleichen", monitor: "monitor", watchlist: "etfs", wissen: "wissen", daten: "wissen", start: "home" };
 
   function sections(active) {
@@ -486,7 +486,7 @@
     try { view(r); }
     catch (e) { VS.render('<section class="vs-section"><h2>Diese Ansicht konnte nicht geladen werden.</h2><p class="vs-sub">' + VS.esc(e.message) + '</p></section>'); if (global.console) console.error(e); }
     if (!r.query.keepScroll) global.scrollTo(0, 0);
-    var t = { home: "Vorsorge", rechner: "Altersvorsorge-Rechner", plan: "Vorsorgeplaner", etfs: "ETF Intelligence", etf: (r.args[0] || "") + " · ETF", portfolio: "Vorsorge-Portfolio",
+    var t = { home: "Vorsorge", rechner: "Altersvorsorge-Rechner", plan: "Vorsorgeplaner", etfs: "ETF Intelligence", etf: (r.args[0] || "") + " · ETF", index: "Index", portfolio: "Vorsorge-Portfolio",
       vergleichen: "Vergleichen", foerderung: "Förderung", monitor: "Bin ich auf Kurs?", wissen: "Wissen", europa: "Europäische ETFs", start: "Der 10-Euro-Sparplan" }[r.name] || "Vorsorge";
     document.title = t + " — Vision Universe®";
   }

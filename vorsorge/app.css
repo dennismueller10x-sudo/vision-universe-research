@@ -989,3 +989,24 @@ body.vs .vs-pl .vu-btn--ink{color:var(--vu-inv)}
 .vs-way-mini b .num{display:inline-grid;place-items:center;width:20px;height:20px;margin-right:4px;border-radius:50%;background:var(--vu-ink);color:var(--vu-inv);font-size:11px}
 .vs-more .vs-way-mini a{font-size:13.5px;font-weight:700;color:var(--vu-ink)}
 .vs-more .vs-way-mini a[aria-current=page]{text-decoration:underline;text-decoration-thickness:2px;text-decoration-color:var(--vu-lime)}
+/* Konzept EHV (VX03): Seite je Index */
+.vs-ixhead{display:flex;align-items:center;gap:10px}
+.vs-ixhead .vs-ixwatch{margin-left:auto}
+.vs-ixhead .vs-ixwatch[aria-pressed=true]{background:var(--vu-lime);color:#000}
+.vs-ixeu{margin-top:10px}
+.vs-ixeu .vs-kv:first-of-type{border-top:0}
+.vs-kt2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.vs-kt--q span{display:block;font-size:11px;font-weight:600;color:var(--vu-mute)}
+.vs-kt--q b{font-size:19px;margin-top:2px}
+.vs-kt--q small{display:flex;align-items:center;gap:2px}
+html body .vs-kt .vu-q{width:16px;height:16px;min-width:0!important;min-height:0!important;font-size:10px;background:var(--vu-hair);color:var(--vu-ink)}
+.vs-eps{display:grid;gap:8px;margin-top:12px}
+.vs-ep{background:var(--vu-card);border-radius:18px;color:var(--vu-ink)}
+.vs-ep>summary{display:grid;grid-template-columns:18px 40px 1fr 22px;gap:10px;align-items:center;min-height:56px;padding:8px 10px 8px 12px;cursor:pointer;list-style:none}
+.vs-ep>summary::-webkit-details-marker{display:none}
+.vs-ep-n{font-size:15px;color:var(--vu-mute)}
+.vs-ep-t b{display:block;font-size:14px;line-height:1.2}
+.vs-ep-t>span{display:block;margin-top:2px;font-size:12px;color:var(--vu-mute);line-height:1.3}
+.vs-ep-go{color:var(--vu-mute);transition:transform .15s}
+.vs-ep[open] .vs-ep-go{transform:rotate(90deg)}
+.vs-ep-body{padding:0 14px 14px}

@@ -125,3 +125,23 @@ test("Vorsorge: ein Weg in drei Schritten, Bereiche je Schritt, keine „Wo steh
 test("Vorsorge: große Indizes mit Hinweis Marktabbild/UCITS und Kursdatum (Entscheidung 13)", () => {
   assert.match(vPlan, /"Gemessen an US-Fonds als Marktabbild" \+ \(last \? ", Kurse bis " \+ F\.date\(last\) : ""\) \+ "\. Kaufbar in der EU sind UCITS-ETFs auf denselben Index\."/);
 });
+
+const vEtf = readFileSync("vorsorge/ui/etf.js", "utf8");
+test("Vorsorge: Seite je Index mit UCITS aus dem EU-Register, Beispiele mit ISIN und Beschriftung (Entscheidungen 12, 15)", () => {
+  const VS = {};
+  new Function("VS", vEtf.match(/VS\.INDEXES = \[[\s\S]*?\n  \];/)[0] + vEtf.match(/VS\.ucitsOnIndex = function[\s\S]*?\n  \};/)[0])(VS);
+  assert.deepEqual(VS.INDEXES.map((x) => x.us), ["URTH", "SPY", "EEM", "QQQ", "FEZ", "IWM"], "dieselben US-Fonds wie die großen Indizes");
+  const u = JSON.parse(readFileSync("vorsorge/data/eu/etf-eu-ucits.json", "utf8"));
+  const reg = { rows: u.rows.map((r) => Object.fromEntries(u.fields.map((f, i) => [f, r[i]]))) };
+  for (const ix of VS.INDEXES) {
+    assert.match(ix.id, /^[a-z0-9-]+$/);
+    for (const isin of ix.ex) assert.match(isin, /^[A-Z]{2}[A-Z0-9]{9}\d$/, ix.id + " " + isin);
+    const r = VS.ucitsOnIndex(reg, ix);
+    assert.ok(r.count > 0, ix.id + ": UCITS-ETFs im Register");
+    assert.equal(r.examples.length, 2, ix.id + ": beide Beispiele stehen im Register");
+  }
+  assert.match(vEtf, /VS\.UCITS_EXAMPLE_LABEL = "Beispiele, keine Empfehlung";/);
+  assert.match(vEtf, /ESMA-Register, Stand ' \+ F\.date\(reg\.runDate\) \+ '\. ' \+ VS\.UCITS_EXAMPLE_LABEL/);
+  assert.match(vEtf, /if \(ixr && r\.query\.fonds !== "1" && !r\.query\.tab && !r\.query\.play\) \{ global\.location\.replace\("#\/index\/" \+ ixr\.id\); return; \}/, "#/etf/URTH leitet auf die Index-Seite");
+  assert.match(readFileSync("docs/legal/EINORDNUNG.md", "utf8"), /UCITS-Beispiele auf der Index-Seite[\s\S]*Beispiele, keine Empfehlung/, "Absatz für die Anwaltsmappe");
+});

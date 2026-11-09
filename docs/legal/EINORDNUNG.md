@@ -384,6 +384,19 @@ Pflichten: Keine Produktauswahl aus persönlichen Daten; ETF-Beispiele ohne Bezu
 Zu vermeiden: „Für dein Profil passt ETF X“ oder „Wechsle deinen Riester-Vertrag“. Das berührt § 34f/§ 34d GewO und die
 Anlageberatung.
 
+**UCITS-Beispiele auf der Index-Seite (`/vorsorge/#/index/<id>`, seit 09.11.2026, Konzept Elliott/Hedgefonds/Vorsorge,
+Entscheidung 15; für die Anwaltsmappe):** Die Seite je Index nennt unter „In der EU kaufbar“ die Anzahl der UCITS-ETFs
+auf den Index im EU-Fondsregister und bis zu zwei konkrete Fonds mit ISIN. Wortlaut der Beschriftung: „ESMA-Register,
+Stand TT.MM.JJJJ. Beispiele, keine Empfehlung. Kurse und Kosten folgen, sobald EU-Kurse vorliegen.“ Quelle: ESMA
+Register „Cross-border distribution of funds“ (Verordnung (EU) 2019/1156), aufbereitet in
+`vorsorge/data/eu/etf-eu-ucits.json` (Zuordnung über den Fondsnamen). Die Beispiele stehen in einer offenen, festen
+Liste im Code (`VS.INDEXES` in `vorsorge/ui/etf.js`: je Index zwei große, bekannte Fonds), für alle Nutzer gleich,
+ohne Bezug zu persönlichen Eingaben, ohne Rangfolge, Bewertung oder Link zu einem Anbieter. Einordnung: Information
+über erhältliche Produkte, keine Empfehlung im Sinne der MAR und keine Anlageberatung; Restrisiko ist, dass die
+Nennung bestimmter Anbieter als Auswahl gelesen wird. Prüffrage an die Anwältin oder den Anwalt: Reicht die
+Beschriftung „Beispiele, keine Empfehlung“ mit Quelle, oder soll die Seite statt Beispielen nur die Anzahl und einen
+Link auf das Register zeigen?
+
 ### Erststart (`/willkommen/start/`: Ziel, Erfahrung) – unkritisch
 
 Was es ist:
