@@ -264,19 +264,25 @@ jobs:
           [ -n "$ADMIN" ] || ADMIN=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
           echo "::add-mask::$ADMIN"
           sleep 5
-          body='{"question":"äh zeig mir mal alle Aktien mit neuem Jahreshoch zwischen 300 Millionen und 2 Milliarden, die ins Minervini Raster passen, und den Quant Score","clientId":"livetest-deploy-01"}'
-          curl --silent -X POST "$URL/v1/ask" -H 'content-type: application/json' -H 'origin: https://research.visionuniverse.de' \
-               -H "x-vu-access: $ADMIN" --data "$body" > /tmp/answer.json
-          node -e '
-            const a = JSON.parse(require("fs").readFileSync("/tmp/answer.json", "utf8"));
-            if (!a.ok) { console.log("::error::Live-Test fehlgeschlagen:", a.reason, a.code || "", a.detail || "", a.message || ""); process.exit(1); }
-            const r = a.result;
-            console.log("Quelle:", a.source, "| Status:", a.status, "| Art:", r.kind);
-            console.log("Verstanden:", r.understood);
-            console.log("Filter:", JSON.stringify((r.query ? r.query.groups[0].filters : []).map((f) => [f.field, f.op, f.value, f.value2])));
-            console.log("Supertrader:", JSON.stringify(r.supertrader), "| Fehlend:", JSON.stringify(r.missing));
-            console.log("Kontingent heute noch:", a.quota && a.quota.remainingToday);
-          '
+          # Zwei Herkuenfte: die Website und die Capacitor-App (iOS).
+          check() {
+            curl --silent -X POST "$URL/v1/ask" -H 'content-type: application/json' -H "origin: $1" \
+                 -H "x-vu-access: $ADMIN" --data "$2" -D /tmp/head.txt > /tmp/answer.json
+            grep -qi "^access-control-allow-origin: $1" /tmp/head.txt || { echo "::error::Kein CORS-Kopf fuer $1"; exit 1; }
+            ORIGIN="$1" node -e '
+              const a = JSON.parse(require("fs").readFileSync("/tmp/answer.json", "utf8"));
+              console.log("Herkunft:", process.env.ORIGIN);
+              if (!a.ok) { console.log("::error::Live-Test fehlgeschlagen:", a.reason, a.code || "", a.detail || "", a.message || ""); process.exit(1); }
+              const r = a.result;
+              console.log("Quelle:", a.source, "| Status:", a.status, "| Art:", r.kind);
+              console.log("Verstanden:", r.understood);
+              console.log("Filter:", JSON.stringify((r.query ? r.query.groups[0].filters : []).map((f) => [f.field, f.op, f.value, f.value2])));
+              console.log("Supertrader:", JSON.stringify(r.supertrader), "| Fehlend:", JSON.stringify(r.missing));
+              console.log("Kontingent heute noch:", a.quota && a.quota.remainingToday);
+            '
+          }
+          check https://research.visionuniverse.de '{"question":"äh zeig mir mal alle Aktien mit neuem Jahreshoch zwischen 300 Millionen und 2 Milliarden, die ins Minervini Raster passen, und den Quant Score","clientId":"livetest-deploy-01"}'
+          check capacitor://localhost '{"question":"Welche Aktien mit über 10 Milliarden Börsenwert stehen im Weinstein Stage 2?","clientId":"livetest-app-0001"}'
 
       # Zustandsbericht aus /v1/admin/report. Ausgegeben werden nur Zaehler,
       # Grenzen und Fehlercodes - nie Fragetexte, nie Schluessel.
