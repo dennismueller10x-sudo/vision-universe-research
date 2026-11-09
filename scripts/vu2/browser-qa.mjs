@@ -397,7 +397,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
     return sc&&sc.direction?sc.direction:null;});
    if(setupDir&&setupDir!=='BULLISH'){
     if(!setupText.includes('Ungültig laut Methode'))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') ohne "Ungültig laut Methode"');
-    for(const w of ['Zone laut Methode','Ungültig-Marke laut Methode'])if(setupText.includes(w))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') mit "'+w+'"');
+    /* Nur die Marken-Zeile: der Aufklapper darunter nennt beide Begriffe als Titel (Konzept Quant 2026-11). */
+    const marken=await page.locator('#setup .q-levels').first().innerText().catch(()=>'');
+    for(const w of ['Zone laut Methode','Ungültig-Marke laut Methode'])if(marken.includes(w))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') mit "'+w+'"');
     if(await page.locator('#setup .q-check-count').count())befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') mit Regelcheckliste');
    } else for(const w of ['Zone laut Methode','Ungültig-Marke laut Methode'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
    /* Evidence Experience: Stufe C nennt den Zertifizierungsstand und je geschlossener Art den gemessenen Grund. */
