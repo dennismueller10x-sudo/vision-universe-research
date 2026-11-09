@@ -1,6 +1,6 @@
 # Supertrader · Konzept „Das Rezept eines Profis“
 
-Konzept vom 08.11.2026, damit Supertrader verständlicher und intuitiver wird; gleicher Ansatz wie [Discover](../discover-netflix-2026-11/README.md), [Quant](../quant-2026-11/README.md) und [Fundamental + Screener](../fundamental-screener-2026-11/README.md). Noch nicht freigegeben, noch nicht umgesetzt.
+Konzept vom 08.11.2026, damit Supertrader verständlicher und intuitiver wird; gleicher Ansatz wie [Discover](../discover-netflix-2026-11/README.md), [Quant](../quant-2026-11/README.md) und [Fundamental + Screener](../fundamental-screener-2026-11/README.md). **Vom Owner freigegeben am 09.11.2026.** Bauplan und Master-Prompt: [HANDOVER.md](HANDOVER.md).
 Präsentation online (privat): https://claude.ai/artifact/S8Tn3EDGAfAj2TeH3Ha9Mi
 
 | Datei | Zweck |
