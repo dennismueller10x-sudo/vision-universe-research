@@ -26,7 +26,8 @@ function strings(src, file) {
   return out;
 }
 /* Verneinungen sind die geforderte Einordnung („keine Anlageempfehlung“, „Beispiele, keine Empfehlung“). */
-const neg = (s) => s.replace(/\bkeine?\s+(Anlage|Kauf|Handlungs)?empfehlung(en)?/gi, "").replace(/\bkein(e|en)?\s+Kursziel(e)?/gi, "").replace(/\bkeine?\s+Kauf- oder Verkaufs(signale?|empfehlung)/gi, "");
+/* Fachlich zulässig: Garantien eines bestehenden Riester-/Bestandsvertrags sind eine Vertragseigenschaft, kein Versprechen von Vision Universe. */
+const neg = (s) => (/Bestandsvertrag|Riester|Beitragsgarantie/.test(s) ? s.replace(/garantiert\p{L}*/gu, "") : s).replace(/\bkeine?\s+[\p{L}]+-Empfehlung(en)?/giu, "").replace(/\bkeine?\s+(Anlage|Kauf|Handlungs)?empfehlung(en)?/gi, "").replace(/\bkein(e|en)?\s+Kursziel(e)?/gi, "").replace(/\bkeine?\s+Kauf- oder Verkaufs(signale?|empfehlung)/gi, "");
 const NOT_A_TERM = {
   "2": "Rest von „Ziel 1/2“", "Ziel 1": "eigener Test je Welt", Chance: "nur als „Chance/Risiko“ verboten", Risiko: "Fachwort; nur „Chance/Risiko“ ist verboten",
   Signal: "eigener Test je Welt", sicher: "steckt in „unsicher“, „Sicherheit“ (Zählung) ist Fachwort; geprüft wird „100 % sicher“",
@@ -103,4 +104,24 @@ test("Hedgefonds: Investor und Aktie mit Quartalsband, drei Sätzen und Kapiteln
   for (const t of ['story("Investoren in drei Sätzen · "', '"Fonds"', '"Bewegung"', '"Insider"', "starsByValue.slice(0, 4)", '"Insider-Käufe und -Verkäufe"', '"Alle 13F-Melder"', "inkl. Banken, Versicherer, ETF-Anbieter"]) assert.ok(stock.includes(t), "Aktie: " + t);
   assert.match(stock, / Hedgefonds halten /, "Hedgefonds und alle 13F-Melder nie mit demselben Wort");
   assert.doesNotMatch(stock, /"Fonds halten "/);
+});
+
+const VORSORGE = walk("vorsorge");
+const vPlan = readFileSync("vorsorge/ui/plan.js", "utf8"), vApp = readFileSync("vorsorge/app.js", "utf8");
+test("Vorsorge: kein wording[].avoid-Begriff im sichtbaren Text", () => {
+  assert.ok(VORSORGE.includes("vorsorge/ui/plan.js") && VORSORGE.includes("vorsorge/app.js"));
+  assert.deepEqual(avoidHits(VORSORGE), []);
+});
+test("Vorsorge: ein Weg in drei Schritten, Bereiche je Schritt, keine „Wo stehst du?“/„Mehr in Vorsorge“ (Entscheidung 11)", () => {
+  const home = vPlan.slice(vPlan.indexOf("VS.views.home = function"), vPlan.indexOf("/* ============================================================== PLANER */"));
+  assert.match(home, /Dein Weg in drei Schritten/);
+  assert.doesNotMatch(vPlan + vApp, /Wo stehst du\?|Mehr in Vorsorge/);
+  const way = new Function("var VS = {};" + vApp.match(/VS\.WAY = [\s\S]*?\]\]\]\];/)[0] + "return VS.WAY;")();
+  assert.deepEqual(way.map((w) => w[0]), ["Ziel rechnen", "Sparplan bauen", "Auf Kurs bleiben"]);
+  const areas = way.flatMap((w) => w[3].map((n) => n[0]));
+  for (const a of ["plan", "foerderung", "etfs", "portfolio", "vergleichen", "monitor", "wissen"]) assert.ok(areas.includes(a), a + " gehört zu einem Schritt");
+  for (const t of ["Mit 10&nbsp;€ im Monat anfangen", "Beispielrechnung", "Was der Staat ab 2027 dazulegt", "Die großen Indizes"]) assert.ok(home.includes(t), t);
+});
+test("Vorsorge: große Indizes mit Hinweis Marktabbild/UCITS und Kursdatum (Entscheidung 13)", () => {
+  assert.match(vPlan, /"Gemessen an US-Fonds als Marktabbild" \+ \(last \? ", Kurse bis " \+ F\.date\(last\) : ""\) \+ "\. Kaufbar in der EU sind UCITS-ETFs auf denselben Index\."/);
 });
