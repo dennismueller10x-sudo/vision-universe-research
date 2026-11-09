@@ -106,7 +106,6 @@ Die Tabellen nennen **Zeilen der Ausgangsfassung** (durch die Textkorrekturen bl
 | `quant/app/page-chartbild.js:69` | spricht dafür | Korrigiert: stützt die Struktur |
 | `quant/app/page-chartbild.js:69` | spricht dagegen | Korrigiert: widerspricht der Struktur |
 | `quant/app/page-chartbild.js:88` | "Einstiegszone" | Korrigiert: "Zone laut Methode" |
-| `quant/app/page-evidence.js:138` | Mehrfach auftretende Signale | Korrigiert: Mehrfach auftretende Regelereignisse |
 | `quant/app/page-evidence.js:208` | Mehrere Signale können | Korrigiert: Mehrere Regelereignisse können |
 | `quant/app/page-evidence.js:223` | "aria-label": "Signal " | Korrigiert: "aria-label": "Regelereignis " |
 | `quant/app/page-evidence.js:224` | bar("Signal", | Korrigiert: bar("Regelereignis", |
@@ -165,7 +164,7 @@ Die Tabellen nennen **Zeilen der Ausgangsfassung** (durch die Textkorrekturen bl
 | `screener/engine/fields.js:300` | SIC-Hauptgruppe der SEC | Korrigiert: SIC-Hauptgruppe der Meldestelle |
 | `supertrader/assets/sf-research.js:36` | SEC-Branchen | Korrigiert: SIC-Branchen |
 | `supertrader/assets/sf-research.js:66` |  (SEC) | Korrigiert:  (Pflichtmeldungen) |
-| `supertrader/assets/sf-research.js:138` | Tiingo, Inc. · split-adjustierte | Korrigiert: Kursdatenanbieter · split-adjustierte |
+| `supertrader/assets/sf-research.js:138` | Tiingo, Inc. · split-adjustierte | Korrigiert: Kursdatenanbieter (Quellen: /infos/#quellen) · split-adjustierte |
 | `supertrader/assets/st-redesign.js:272` | Alle Signale | Korrigiert: Alle Regel-Ergebnisse |
 | `supertrader/assets/st-redesign.js:321` | Kurse: Tiingo, split-adjustiert | Korrigiert: Kurse: split-adjustiert |
 | `supertrader/assets/st-redesign.js:334` | Sie kaufen und verkaufen streng nach Regel | Korrigiert: Sie nehmen Aktien streng nach Regel auf und geben sie ab |
@@ -235,7 +234,7 @@ Die Tabellen nennen **Zeilen der Ausgangsfassung** (durch die Textkorrekturen bl
 
 ### Weitere Textquellen und Templates
 
-Die Startseite ist generiert: dieselben Textkorrekturen stehen auch in ihrem Template und Generator, damit der nächste Build sie erhält. Im Navigationstest wurde nur die erwartete Beschriftung aktualisiert. Keine Prüfbedingung wurde entfernt.
+Die Startseite ist generiert: dieselben Textkorrekturen stehen auch in ihrem Template und Generator, damit der nächste Build sie erhält. In Navigation, Analysten-Summary, Screener-First-Paint, Supertrader-Research und den Quant-Wortlautprüfungen wurden nur die erwarteten Beschriftungen aktualisiert. Keine Prüfbedingung wurde entfernt.
 
 | Datei:Zeile | Fund | Vorschlag |
 |---|---|---|
@@ -255,6 +254,16 @@ Die Startseite ist generiert: dieselben Textkorrekturen stehen auch in ihrem Tem
 | `studio/stories/technical/scenes.js:30` | S | Korrigiert: Regel-Ergebn |
 | `studio/stories/technical/scenes.js:30` | gnal | Korrigiert: ss |
 | `studio/stories/technical/scenes.js:32` | Signal | Korrigiert: Regelereignis |
+
+### Nachscan
+
+| Datei:Zeile | Fund | Vorschlag |
+|---|---|---|
+| `fundamental/app.js:1865` | SEC-Branche | Korrigiert: SIC-Branche |
+| `fundamental/app.js:1892` | SEC-Branche | Korrigiert: SIC-Branche |
+| `fundamental/app.js:1804` | Quelle: SEC EDGAR Companyfacts | Korrigiert: Quelle: Unternehmensmeldungen (Companyfacts) |
+| `screener/engine/fields.js:64` | laut letztem SEC-Bericht | Korrigiert: laut letztem Unternehmensbericht |
+| `quant/data-inspector/app.js:236` | gegen den SEC-Adapter | Korrigiert: gegen den Meldedaten-Adapter |
 
 ## Offene Befunde – durch den Auftrag begrenzte Änderungen
 
@@ -280,6 +289,8 @@ Diese Stellen sind bewusst nicht als bereinigt ausgewiesen. Dynamische Quellenwe
 | `vorsorge/ui/intel.js:317` | Rückfall auf x.source bei unbekanntem SRC-Schlüssel | Bekannte feste Anzeigenamen korrigiert; Rückfall ist datenabhängig und bleibt unverändert. |
 | `quant/data-inspector/app.js:58` | Workflow-Name „Update SEC fundamentals“ und data.sec.gov | Tatsächlicher technischer Name/Endpunkt, keine pauschale Ersetzung; erklärenden UI-Text bei separater Überarbeitung vereinfachen. |
 | `quant/data-inspector/app.js:169` | gleicher technischer Workflow-Verweis | Wie oben. |
+
+| `quant/app/page-evidence.js:138` | Mehrfach auftretende Signale wurden zusammengefasst | Unverändert: exakter Spiegel der kanonischen Methodik quant/methodology/evidence-language-v1.json; diese Datendatei wird im reinen Textauftrag nicht geändert. Eine abweichende Kopie würde den Methodikvertrag brechen. |
 
 ## Geprüfte Ausnahmen und Abgrenzung
 
@@ -313,4 +324,40 @@ Diese Stellen sind bewusst nicht als bereinigt ausgewiesen. Dynamische Quellenwe
 
 Die UI-Schutzprüfung `quant/tests/backtest-consolidation-boundary.test.mjs` schlug erwartungsgemäß für geänderte, gepinnte Textdateien an. Die zugehörigen Einzelrevisionen stehen mit altem/neuem SHA-256 und diesem Beleg in `docs/quality/ui-protection-revisions.json`; die eingefrorene Basis bleibt unverändert.
 
-Testergebnisse werden nach Abschluss der Läufe ergänzt.
+Die zusätzliche Syntaxprüfung aller berührten JS-/MJS-Dateien ergibt keine neu eingeführten Syntaxfehler. `dashboard/v2.js:1` enthält bereits in der unveränderten Basis einen Syntaxfehler (`function money=x=>…`); dieser bleibt wegen des reinen Textauftrags unverändert.
+
+Zusätzlicher Suchlauf: „Ziel 1/2“, „Stärkste Gewinner/Verlierer“, „Jetzt einsteigen“, „empfohlen“, persönliche Depot-Ansprache. Treffer zu methodischen Zielen fallen unter die oben genannte Owner-Ausnahme; „empfohlener nächster Schritt“ in `academy/index.html:56` bezieht sich auf die Dokumentations-/Concept-Registry, nicht auf eine Aktie. `hedgefonds/app.js:661` beschreibt die Value-Methode eines fremden Fonds („für zu billig hält“), keine eigene Bewertung. Die Instagram-Landingpages verneinen ausdrücklich „empfohlen“.
+
+Bereits abgeschlossen:
+
+- `node --test "core/tests/*.test.mjs"`: 463 bestanden, 3 übersprungen, 0 Fehler (466 insgesamt).
+- `node --test "products/fundamental/tests/*.test.mjs" "products/analysten/tests/*.test.mjs" "screener/tests/*.test.mjs"`: 158 bestanden, 3 übersprungen, 0 Fehler.
+- `node --test core/tests/home-render-budget.test.mjs core/tests/shell-navigation.test.mjs`: 20 bestanden.
+- `node --test core/tests/docs-registry.test.mjs quant/tests/backtest-consolidation-boundary.test.mjs`: 8 bestanden; UI-Sperre nach Eintragen der PR-Nummer zusätzlich 4/4 bestanden.
+- `python3 -m unittest discover -s products/hedgefonds/tests -p 'test_*.py'`: 33 bestanden.
+
+Anfangs scheiterten Core-Generatorgleichheit und Navigationserwartung sowie zwei Analysten-Summary-Prüfungen und die Screener-First-Paint-Erwartung am alten Wortlaut. Template/Generator und die erwarteten Textliterale wurden angepasst; sämtliche dieser Gegenprüfungen bestehen danach, ohne Änderung ihrer fachlichen Bedingungen.
+
+- `python3 -m unittest discover -s scripts/quant/tests -p 'test_*.py'`: 591 bestanden.
+- `node scripts/quality/check-test-isolation.mjs`: bestanden; kein Schreiben in Produktionsdaten. Der darin gestartete Quant-Lauf begann noch vor den UI-Revisionen und meldete einen Testfehler; er ersetzt deshalb nicht den separat protokollierten abschließenden Quant-Gesamtlauf.
+- `node --test scripts/supertrader/tests/research-preview.test.mjs`: 8 bestanden nach Anpassung der erwarteten Quellenbeschriftung an die zentrale Nennung auf /infos/. Tiingo, Inc. bleibt dort in der Quellenliste enthalten.
+
+Der zunächst gestartete Gesamtaufruf mit `products/*/tests/*.test.mjs` umfasste zusätzlich nicht berührte Social-Tests. Vier Prüfungen in `products/social/tests/creative-reuse.test.mjs` scheiterten an der Wiedergewinnung eines historischen MSFT-Authoring-Jobs im frischen, auf main beschränkten Checkout. Dieser zusätzliche Lauf wurde während eines weiteren historischen Medien-/Git-Tests beendet, ohne Social-Code zu ändern. Für die Abnahme zählen die anschließend separat ausgeführten berührten Produktsuiten, nicht dieser unvollständige Zusatzlauf.
+
+### Abschließende Gesamtergebnisse
+
+Ausgeführt mit Node v24.22.1 und Python 3.12 in der bereitgestellten Umgebung:
+
+| Lauf | Ergebnis |
+|---|---|
+| `node --test "discover/tests/*.test.mjs"` | 630 bestanden, 7 übersprungen, 0 Fehler; einschließlich vollständigem Neubau im temporären Verzeichnis. |
+| `node --test "products/vorsorge/tests/*.test.mjs" "scripts/supertrader/tests/*.test.mjs" "technical/tests/*.test.mjs" "ask/tests/*.test.mjs" "konto/tests/*.test.mjs" "mein-dashboard/tests/*.test.mjs" "scripts/account/tests/*.test.mjs" workers/vu-account/tests/unit.test.mjs` | 1.601 bestanden, 16 übersprungen, 1 veraltete Text-Erwartung (Supertrader/Tiingo); nach Anpassung isoliert 8/8 bestanden, siehe oben. |
+| `node --test --test-concurrency=4 "quant/tests/*.test.mjs"` | 4.001 bestanden, 27 übersprungen, 7 Fehler: 6 Wortlaut-/Methodikspiegel-Erwartungen plus der unten genannte bestehende Golden-Test. |
+| Abschließende Wiederholung: evidence-experience, product-language, product-positioning, backtest-consolidation-boundary, ui-protection-revisions und docs-registry | **63/63 bestanden**. Die sechs wortlautbedingten Quant-Fehler sind damit behoben. Der exakte Methodikspiegel bleibt unverändert, weil seine kanonische Datendatei außerhalb der Textkorrekturen liegt. |
+
+**Ein offener, unabhängiger Quant-Test:** `quant/tests/research-portfolio-exit-rules.test.mjs:19`, „default behaviour is byte-identical to research-portfolio-1.2.0 (golden fixtures)“. Für den Fall `base` ergibt sich `f8f909521be9d7eac39104457b6608e427837bd5c3606e1df9bed1353465d77f` statt `827e2ae5b1c3463aa35c033efc10484642fdbe924a8f6f8b2afa30ecd39edbb2`.
+
+Gegenprobe: Basistest und Basisfixture aus dem oben genannten Ausgangscommit in ein temporäres Verzeichnis kopiert, mit den vollständig unveränderten Engines ausgeführt (`node --test --test-name-pattern="default behaviour is byte-identical" …`): derselbe Fehler und derselbe Ist-Hash. `git diff` gegenüber der Basis für `quant/engines`, `quant/tests/helpers` und diesen Test ist leer. Die Ursache wird hier nicht behauptet; insbesondere wurden weder Golden-Hashes noch Fachmodelle angepasst. Die Quant-Suite ist deshalb insgesamt **nicht vollständig grün**.
+
+`git diff --check` besteht. Abschließende Pfadprüfung: keine Änderungen an `.github/workflows`, `core/registry`, `schedule.json`, Dateien unter `*/data/`, Quant-Engines oder Company Intelligence. Die UI-Schutzrevisionen sind einzeln an PR #1717 gebunden; auch die zwei gepinnten Quant-Tests erhalten für ihre geänderten erwarteten Anzeigewörter eigene Revisionen. Keine Prüfbedingung wurde entfernt.
+

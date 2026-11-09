@@ -135,7 +135,7 @@
     var v = sum.versions || {}, dq = sum.dataQuality || {}, inp = sum.inputs || {};
     var rows = [
       ['Datenstand', dateDe(sum.asOf) + ' (Tagesschluss US) · nächste Sitzung ' + dateDe(sum.nextSession)],
-      ['Kurse', 'Kursdatenanbieter · split-adjustierte Tagesschlusskurse der Vision-Universe-Dateninfrastruktur (keine neuen Abrufe)'],
+      ['Kurse', 'Kursdatenanbieter (Quellen: /infos/#quellen) · split-adjustierte Tagesschlusskurse der Vision-Universe-Dateninfrastruktur (keine neuen Abrufe)'],
       ['Universum', num(dq.securities, 0) + ' Aktien mit Tagesreihe · ' + num(dq.FAIL, 0) + ' wegen Datenqualität nicht bewertet'],
       ['Regeln', 'Bestehende quellentreue Research-Engines, Referenzkonfiguration; Stufen nach dem Produktvertrag 7.0'],
       ['Prüfsumme der Eingaben', String(inp.inputsSha256 || '').slice(0, 12)],

@@ -233,7 +233,7 @@
     var results = (report && report.provider_level && report.provider_level.results) || [];
     if (!results.length) {
       return S.stateBox("Qualifikations-Gates", "Noch nicht gelaufen. Die Gates A/B/C aus "
-        + "quant/engines/gate-tests.js laufen gegen den SEC-Adapter, sobald echte Daten "
+        + "quant/engines/gate-tests.js laufen gegen den Meldedaten-Adapter, sobald echte Daten "
         + "vorliegen.", "warn");
     }
     return el("div", {}, results.map(function (gate) {

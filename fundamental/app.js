@@ -1801,7 +1801,7 @@
       if (!b.years.some(function (y) { return isNum(m[y]); })) return;
       lines.push(['"' + d.label + '"', d.kind === 'money' ? b.currency : d.kind === 'perShare' ? b.currency + '/Aktie' : d.kind === 'shares' ? 'Aktien' : d.kind === 'multiple' ? 'Faktor' : 'Anteil'].concat(b.years.map(function (y) { return isNum(m[y]) ? String(m[y]).replace('.', ',') : ''; })).join(';'));
     });
-    var blob = new Blob(['﻿' + lines.join('\n') + '\n# Quelle: SEC EDGAR Companyfacts, aufbereitet von Vision Universe · Stand ' + (b.asOf || '') + '\n'], { type: 'text/csv;charset=utf-8' });
+    var blob = new Blob(['﻿' + lines.join('\n') + '\n# Quelle: Unternehmensmeldungen (Companyfacts), aufbereitet von Vision Universe · Stand ' + (b.asOf || '') + '\n'], { type: 'text/csv;charset=utf-8' });
     var a = el('a', { href: URL.createObjectURL(blob), download: co.t + '-fundamental-' + (b.asOf || 'stand') + '.csv' });
     document.body.append(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
   }
@@ -1862,7 +1862,7 @@
       el('p', { class: 'vu-sm fu-p', text: 'Aktuell: KGV, KUV, Börsenwert zum letzten Schlusskurs. Verlauf: je Jahresbericht mit dem Kurs nach der Veröffentlichung, splitbereinigt und gegengeprüft.' }),
       el('div', { class: 'fu-gap-s' }, helpEl('Splitbereinigt: Teilt eine Firma ihre Aktien (z. B. 1 wird 10), rechnen wir alte Kurse um, damit nichts springt.')),
       sectEl('Vergleich mit der Branche'),
-      el('p', { class: 'vu-sm fu-p', text: 'Wettbewerber = Firmen derselben SEC-Branche (mindestens 5). Wir zeigen die Lage („höher als 80 % der Gruppe“), keine Wertung. Ranglisten sortieren eine Kennzahl mit sichtbarer Regel.' }),
+      el('p', { class: 'vu-sm fu-p', text: 'Wettbewerber = Firmen derselben SIC-Branche (mindestens 5). Wir zeigen die Lage („höher als 80 % der Gruppe“), keine Wertung. Ranglisten sortieren eine Kennzahl mit sichtbarer Regel.' }),
       sectEl('Checklisten'),
       el('p', { class: 'vu-sm fu-p', text: 'Eine Checkliste prüft mehrere Bedingungen auf einmal und zeigt, wie viele erfüllt sind („N von M Punkten erfüllt“). Es gibt keine Gesamtnote und kein Urteil über den künftigen Kurs. Fehlt ein Wert, gilt der Punkt als nicht erfüllt; Vielfache (KGV, Börsenwert/Free Cashflow, PEG, EV/EBITDA) zählen nur bei positivem Wert. Dieselben Regeln stehen im Screener als fertige Ideen.' }),
       CK ? el('div', { class: 'vu-stack fu-ckm' }, CK.CHECKLISTS.map(function (l) { return el('div', { class: 'vu-box' }, [el('b', { text: l.name + ' · ' + l.items.length + ' Punkte' }), el('ul', {}, l.items.map(function (i) { return el('li', { text: i.label }); }))]); })) : null,
@@ -1889,7 +1889,7 @@
       el('p', { text: 'Einschränkung: Die Zahlen stammen aus der jeweils neuesten Pflichtmeldung. Hat ein Unternehmen einen Jahreswert später korrigiert (Restatement, z. B. in einem 10-K/A oder in den Vorjahresspalten des nächsten Jahresberichts), steht im Verlauf der korrigierte Wert, nicht der am Meldetag veröffentlichte. Die ursprünglich gemeldeten Fassungen liegen nicht vor; ein Jahr mit Korrektur kann daher vom damals sichtbaren Wert abweichen.' }),
       el('p', { text: 'Nicht im Katalog: Gewinnrendite und Kurs/Free Cashflow – sie sind die Kehrwerte von KGV und Free-Cashflow-Rendite und sagen dasselbe.' }),
       el('h2', { text: 'Vergleich und Ranglisten' }),
-      el('p', { text: 'Wettbewerber = Unternehmen derselben SEC-Branche (SIC, vier Stellen), wenn es mindestens 5 sind; sonst die Branchen-Hauptgruppe. Branche = SIC-Branchen-Hauptgruppe (SIC, zwei Stellen), Sektor = Sektor des Verzeichnisses. Median und Lage beziehen sich auf alle Unternehmen der Gruppe mit gültigem Wert; der Median je Geschäftsjahr braucht mindestens 5 Unternehmen. Lage heißt „höher als x % der Gruppe“ – keine Wertung. Ranglisten sortieren eine Kennzahl mit sichtbarer Regel und Plausibilitätsgrenzen; sie sind keine Empfehlung.' }),
+      el('p', { text: 'Wettbewerber = Unternehmen derselben SIC-Branche (SIC, vier Stellen), wenn es mindestens 5 sind; sonst die Branchen-Hauptgruppe. Branche = SIC-Branchen-Hauptgruppe (SIC, zwei Stellen), Sektor = Sektor des Verzeichnisses. Median und Lage beziehen sich auf alle Unternehmen der Gruppe mit gültigem Wert; der Median je Geschäftsjahr braucht mindestens 5 Unternehmen. Lage heißt „höher als x % der Gruppe“ – keine Wertung. Ranglisten sortieren eine Kennzahl mit sichtbarer Regel und Plausibilitätsgrenzen; sie sind keine Empfehlung.' }),
       el('h2', { text: 'Das Geschäft in einem Satz' }),
       el('p', { text: BUSINESS_RULE + ' Stufen und Schwellen stammen aus den Discover-Fundamentaldaten (dieselben wie auf der Discover-Aktienseite).' }),
       el('h2', { text: 'Lücken und Grenzen' }),

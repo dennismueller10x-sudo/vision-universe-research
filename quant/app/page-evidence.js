@@ -135,7 +135,7 @@
     ["lookahead", "Kein Blick in die Zukunft: gekauft wird erst nach dem Signal.", "Ein Blick in die Zukunft ist nicht ausgeschlossen.", "Look-Ahead"],
     ["pit", "Nur Daten, die damals bekannt waren.", "Zeitpunktgenauigkeit nicht belegt.", "Point-in-Time"],
     ["benchmark", "Vergleich mit dem Markt in denselben Wochen.", "Kein Vergleich mit dem Markt.", "Base Rate"],
-    ["independence", "Mehrfach auftretende Regelereignisse wurden zusammengefasst.", "Die Fälle ballen sich in wenigen Zeiträumen.", "Unabhängigkeit"],
+    ["independence", "Mehrfach auftretende Signale wurden zusammengefasst.", "Die Fälle ballen sich in wenigen Zeiträumen.", "Unabhängigkeit"],
     ["sample", "Genug Fälle aus genug Aktien.", "Zu wenige Fälle.", "Stichprobe"],
     ["costs", "Handelskosten sind abgezogen.", "Handelskosten sind nicht abgezogen.", "Kosten"],
     ["survivorship", "Frühere verschwundene Unternehmen sind enthalten.", "Frühere verschwundene Unternehmen sind noch nicht vollständig enthalten.", "Survivorship"],

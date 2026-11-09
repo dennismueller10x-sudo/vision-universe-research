@@ -61,7 +61,7 @@
 
     // ---------------- GRÖSSE & MARKT ----------------
     n('marketCap', { col: 'mcap', group: 'size', unit: 'usd', label: 'Marktkapitalisierung', short: 'Market Cap', en: 'Market Cap', source: 'fundamentals', scale: 'log',
-      desc: 'Kurs × ausstehende Aktien laut letztem SEC-Bericht.', keywords: ['market cap', 'größe', 'small cap', 'large cap', 'mcap'],
+      desc: 'Kurs × ausstehende Aktien laut letztem Unternehmensbericht.', keywords: ['market cap', 'größe', 'small cap', 'large cap', 'mcap'],
       presets: [['Mega > 200 Mrd.', 'gt', 2e11], ['Large > 10 Mrd.', 'gt', 1e10], ['Mid 2–10 Mrd.', 'between', 2e9, 1e10], ['Small < 2 Mrd.', 'lt', 2e9], ['Micro < 300 Mio.', 'lt', 3e8]] }),
     n('enterpriseValue', { col: 'ev', group: 'size', unit: 'usd', label: 'Unternehmenswert (EV)', short: 'EV', en: 'Enterprise Value', source: 'fundamentals', scale: 'log', pro: true, formula: 'ev',
       desc: 'Marktkapitalisierung plus Finanzschulden minus Kasse. Nur wo die Verschuldung berichtet ist.', keywords: ['ev', 'enterprise'] }),
