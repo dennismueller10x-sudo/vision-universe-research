@@ -1002,15 +1002,46 @@ function writeIfChanged(file, content) {
 function writeStaticPages() {
   const pages = [
     ['index.html', 'home', 'Supertrader — Vision Universe®', '13 Methoden berühmter Trader als feste Regeln, jeden Tag auf alle US-Aktien angewendet. Musterdepots zeigen, was die Regel tun würde. Ohne echtes Geld.', 1],
-    ['signals/index.html', 'signals', 'Treffer — Supertrader — Vision Universe®', 'Wo steht welche Aktie im Ablauf einer Methode? Wartet, Aufgenommen, Im Musterdepot, Abgegeben — mit vollständigem Protokoll.', 2],
+    ['treffer/index.html', 'signals', 'Treffer — Supertrader — Vision Universe®', 'Wo steht welche Aktie im Ablauf einer Methode? Wartet, Aufgenommen, Im Musterdepot, Abgegeben — mit vollständigem Protokoll.', 2],
     ['strategies/index.html', 'strategies', 'Methoden — Supertrader — Vision Universe®', 'Was sucht welche Methode? Ein Name je Methode, fünf mit Musterdepot.', 2],
-    ['backtests/index.html', 'backtests', 'Forschung — Supertrader — Vision Universe®', 'Wie belastbar ist welche Methode? Prüfstand, Datenabdeckung und Stand je Methode. Forschung, nicht zertifiziert.', 2],
+    ['forschung/index.html', 'backtests', 'Forschung — Supertrader — Vision Universe®', 'Wie belastbar ist welche Methode? Prüfstand, Datenabdeckung und Stand je Methode. Forschung, nicht zertifiziert.', 2],
     ['stock/index.html', 'stock', 'Methoden — Supertrader — Vision Universe®', 'Welche der 13 Methoden eine Aktie erkennen.', 2],
     ['beispiel/index.html', 'replay', 'So läuft ein Durchgang — Supertrader — Vision Universe®', 'Historisches Beispiel an echten Kursen: wie Bestätigung, Aufnahme, Ungültig-Marke und Abgabe im Musterdepot ablaufen. Kein aktueller Treffer.', 2],
     ['sources/index.html', 'sources', 'Quellen — Supertrader — Vision Universe®', 'Woher die Regeln der Supertrader-Methoden stammen: Bücher, Interviews, eigene Websites der Trader.', 2],
     ['hausstrategie/index.html', 'house', 'VU Hausstrategie — Supertrader — Vision Universe®', 'Die eigene Vision-Universe-Strategie: eingefrorene Regeln, Beobachtungsdepot mit Zeitstempel und ehrliche Prüfgeschichte.', 2],
   ];
   for (const [file, page, title, description, depth] of pages) writeIfChanged(path.join(OUT, file), pageShell({ title, description, page, depth, ...(page === 'home' ? { head: HOME_HEAD, font: true } : {}) }));
+  /* Bis die Produkt-Leiste umgestellt ist (Konzept PR 5), bleiben die alten Adressen vollwertige Seiten; danach leiten sie weiter. */
+  for (const [from, to] of Object.entries(REDIRECTS)) {
+    const same = pages.find(([file]) => '/supertrader/' + file.replace(/index\.html$/, '') === to);
+    writeIfChanged(path.join(OUT, from, 'index.html'), REDIRECTS_ACTIVE ? redirectShell(to) : pageShell({ title: same[2], description: same[3], page: same[1], depth: 2 }));
+  }
+}
+export const REDIRECTS_ACTIVE = false;
+
+/* Neue Namen (Konzept „Das Rezept eines Profis“, Entscheidung 3): „Signale“ → Treffer, „Backtests“ → Forschung. Die alten
+   Adressen bleiben als Weiterleitung, mit Parametern und Sprungmarke (z. B. ?method=DONCHIAN_TURTLE). */
+export const REDIRECTS = { signals: '/supertrader/treffer/', backtests: '/supertrader/forschung/' };
+export function redirectShell(to) {
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Weiterleitung — Supertrader — Vision Universe®</title>
+<link rel="canonical" href="${to}">
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<script>location.replace(${JSON.stringify(to)} + location.search + location.hash);</script>
+<noscript><meta http-equiv="refresh" content="0; url=${to}"></noscript>
+</head>
+<body>
+<vu-navigation no-preview></vu-navigation>
+<script src="/assets/site-navigation.js"></script>
+<p>Diese Seite heißt jetzt <a href="${to}">${to === REDIRECTS.signals ? 'Treffer' : 'Forschung'}</a>.</p>
+</body>
+</html>
+`;
 }
 
 function writeStrategyPages(registry) {

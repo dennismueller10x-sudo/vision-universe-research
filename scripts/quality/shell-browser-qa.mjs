@@ -246,10 +246,10 @@ for (const [vpName, width, height] of VIEWPORTS) {
       });
       if (!firstMenu) firstMenu = m.groups.join('|') + '#' + m.links;
       else if (m.groups.join('|') + '#' + m.links !== firstMenu) fail(where, 'anderes Menue als auf Discover');
-      if(m.groups.join('|')!=='Discover|Quant|Technical|Fundamental|Supertrader|Hedgefonds|Elliott|Screener|Vorsorge|Portfolios') fail(where,'Produktraster falsch: '+m.groups.join('|'));
+      if(m.groups.join('|')!=='Discover|Quant|Technical|Fundamental|Supertrader|Hedgefonds|Elliott|Screener|Vorsorge|Portfolios|Insights') fail(where,'Produktraster falsch: '+m.groups.join('|'));
       if(m.moreOpen||!m.hereLinks||!m.search) fail(where,'Menüaufbau falsch: '+JSON.stringify({moreOpen:m.moreOpen,here:m.hereLinks,search:m.search}));
       if(m.panelBg!=='rgb(0, 0, 0)') fail(where,'Menü ist nicht schwarz: '+m.panelBg);
-      if(m.icons.length!==10||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
+      if(m.icons.length!==11||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
       await menuOpen(page, where);
       const menuSmall = await smallTargets(page);
       if(menuSmall.length) fail(where,smallText(menuSmall)+' Menüziele kleiner als 44 px');
