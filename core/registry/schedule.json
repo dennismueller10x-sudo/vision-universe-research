@@ -110,7 +110,7 @@
    "id": "core-ci",
    "workflow": "core-ci.yml",
    "cron": "47 7 * * *",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "europe-discover-refresh",
@@ -122,37 +122,37 @@
    "id": "freshness-monitor",
    "workflow": "freshness-monitor.yml",
    "cron": "30 6 * * 2-6",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "freshness-monitor-2",
    "workflow": "freshness-monitor.yml",
    "cron": "5 14 * * 1-5",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "freshness-monitor-3",
    "workflow": "freshness-monitor.yml",
    "cron": "15 15 * * 1-5",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "freshness-monitor-4",
    "workflow": "freshness-monitor.yml",
    "cron": "15 23 * * 1-5",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "freshness-monitor-5",
    "workflow": "freshness-monitor.yml",
    "cron": "45 16-19 * * 1-5",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "freshness-monitor-6",
    "workflow": "freshness-monitor.yml",
    "cron": "55 22 * * 1-5",
-   "timer": "github"
+   "timer": "waker"
   },
   {
    "id": "intraday-snapshots",
@@ -228,85 +228,121 @@
    "id": "pipeline-daily-datenqualitaet",
    "workflow": "pipeline-daily.yml",
    "cron": "13 7 * * 2-6",
-   "timer": "github",
-   "note": "datenqualitaet"
+   "timer": "waker",
+   "note": "datenqualitaet",
+   "inputs": {
+    "teil": "datenqualitaet"
+   }
   },
   {
    "id": "pipeline-daily-ezb",
    "workflow": "pipeline-daily.yml",
    "cron": "47 15 * * 1-5",
-   "timer": "github",
-   "note": "ezb"
+   "timer": "waker",
+   "note": "ezb",
+   "inputs": {
+    "teil": "ezb"
+   }
   },
   {
    "id": "pipeline-daily-hausstrategie",
    "workflow": "pipeline-daily.yml",
    "cron": "30 1 * * 2-6",
-   "timer": "github",
-   "note": "hausstrategie"
+   "timer": "waker",
+   "note": "hausstrategie",
+   "inputs": {
+    "teil": "hausstrategie"
+   }
   },
   {
    "id": "pipeline-daily-hausstrategie-2",
    "workflow": "pipeline-daily.yml",
    "cron": "15 3 25 * *",
-   "timer": "github",
-   "note": "hausstrategie (SEC-Auffrischung am 25.)"
+   "timer": "waker",
+   "note": "hausstrategie (SEC-Auffrischung am 25.)",
+   "inputs": {
+    "teil": "hausstrategie"
+   }
   },
   {
    "id": "pipeline-daily-ki-depots",
    "workflow": "pipeline-daily.yml",
    "cron": "41 23 * * 1-5",
-   "timer": "github",
-   "note": "ki-depots"
+   "timer": "waker",
+   "note": "ki-depots",
+   "inputs": {
+    "teil": "ki-depots"
+   }
   },
   {
    "id": "pipeline-daily-marktvalidierung",
    "workflow": "pipeline-daily.yml",
    "cron": "37 6 16 * *",
-   "timer": "github",
-   "note": "marktvalidierung"
+   "timer": "waker",
+   "note": "marktvalidierung",
+   "inputs": {
+    "teil": "marktvalidierung"
+   }
   },
   {
    "id": "pipeline-daily-technical-intelligence",
    "workflow": "pipeline-daily.yml",
    "cron": "35 5 * * *",
-   "timer": "github",
-   "note": "technical-intelligence (Rueckfall)"
+   "timer": "waker",
+   "note": "technical-intelligence (Rueckfall)",
+   "inputs": {
+    "teil": "technical-intelligence"
+   }
   },
   {
    "id": "pipeline-daily-technical-world",
    "workflow": "pipeline-daily.yml",
    "cron": "10 5 * * 2-6",
-   "timer": "github",
-   "note": "technical-world (Rueckfall; Hauptausloeser ist der Anstoss aus dem Marktlauf)"
+   "timer": "waker",
+   "note": "technical-world (Rueckfall; Hauptausloeser ist der Anstoss aus dem Marktlauf)",
+   "inputs": {
+    "teil": "technical-world"
+   }
   },
   {
    "id": "pipeline-daily-vorsorge",
    "workflow": "pipeline-daily.yml",
    "cron": "23 3 * * 2-6",
-   "timer": "github",
-   "note": "vorsorge"
+   "timer": "waker",
+   "note": "vorsorge",
+   "inputs": {
+    "teil": "vorsorge"
+   }
   },
   {
    "id": "pipeline-intraday-realtime-eur",
    "workflow": "pipeline-intraday.yml",
    "cron": "0 15 * * 1-5",
-   "timer": "github",
-   "note": "realtime-eur"
+   "timer": "waker",
+   "note": "realtime-eur",
+   "inputs": {
+    "teil": "realtime-eur"
+   }
   },
   {
    "id": "pipeline-intraday-realtime-eur-2",
    "workflow": "pipeline-intraday.yml",
    "cron": "0 18 * * 1-5",
-   "timer": "github",
-   "note": "realtime-eur"
+   "timer": "waker",
+   "note": "realtime-eur",
+   "inputs": {
+    "teil": "realtime-eur"
+   }
   },
   {
    "id": "pipeline-intraday-waechter",
    "workflow": "pipeline-intraday.yml",
    "cron": "*/15 13-21 * * 1-5",
-   "timer": "github",
-   "note": "waechter"
+   "timer": "waker",
+   "note": "waechter",
+   "inputs": {
+    "teil": "waechter"
+   }
   },
   {
    "id": "pipeline-weekly-deckung",

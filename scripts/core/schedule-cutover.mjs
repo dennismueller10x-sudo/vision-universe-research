@@ -46,9 +46,11 @@ export function cutover(text) {
     else lines.splice(dIdx + 1, 0, "    inputs:", ...zeitplan);
   }
   // run-name vor on:
-  if (lines.some((l) => /^run-name:/.test(l))) throw new Error("RUN_NAME_SCHON_DA");
   const on2 = lines.findIndex((l) => /^("?on"?|true):\s*$/.test(l));
-  lines.splice(on2, 0, "# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).", RUN_NAME);
+  if (lines.some((l) => /^run-name:/.test(l))) {
+    notes.push("run-name vorhanden: von Hand ergaenzen, beim Takt muss der Titel auf ' · Takt <cron>' enden (SZ-2)");
+    lines.splice(on2, 0, "# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).");
+  } else lines.splice(on2, 0, "# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).", RUN_NAME);
   let out = lines.join("\n");
   // 3. Weiche
   out = out.replace(/github\.event\.schedule(?! \|\| inputs\.zeitplan)/g, "(github.event.schedule || inputs.zeitplan)")

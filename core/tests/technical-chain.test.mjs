@@ -3,6 +3,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { takteVon } from "../../scripts/core/schedule-registry.mjs";
 
 import { workflowPart, workflowHead } from "../../scripts/ci/lib/workflow-part.mjs";
 const root = new URL("../../", import.meta.url).pathname;
@@ -36,7 +37,7 @@ test("TC2 · Teil technical-world (pipeline-daily.yml, vormals technical-world.y
   const wf = workflowPart(root, "pipeline-daily.yml", "technical-world", { auswahl: true });
   assert.match(kopf, /\n  workflow_dispatch:/);
   assert.match(kopf, /\n {10}- technical-world\n/);
-  assert.match(kopf, /cron: '10 5 \* \* 2-6'/);
+  assert.ok(takteVon("pipeline-daily.yml", root).includes("10 5 * * 2-6"), "Zeitplan-Rueckfall (Register/Wecker)");
   assert.match(wf, /'10 5 \* \* 2-6'\) echo technical-world/);
   /* workflow_run nur von main: sonst verdraengt ein uebersprungener Zweig-Lauf den wartenden Nachtlauf in der Gruppe */
   assert.match(kopf, /- "Lange Kursreihen[^"]*"\n\s+types: \[completed\]\n\s+branches: \[main\]/);
