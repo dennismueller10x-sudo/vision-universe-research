@@ -23,7 +23,7 @@ Geltende Vertragstests (alle in Core-CI, laufen auf jedem PR):
 
 | Test | Vertrag |
 |---|---|
-| `core/tests/product-contracts.test.mjs` (PC) | Produktpfade lösen die Produkt-CI aus; Schnittstellen-Schemata stimmen mit Registry und Verbrauchern |
+| `core/tests/product-contracts.test.mjs` (PC) | Produktpfade lösen die Produkt-CI aus; jede Datei, deren Hash ein Produkttest pinnt (`pinnedFiles`), ebenfalls (PC-5); Schnittstellen-Schemata stimmen mit Registry und Verbrauchern |
 | `core/tests/workflow-bundles.test.mjs` (WB) | jede Workflow-Datei hat ein Bündel in `core/registry/workflow-bundles.json`; ein Bündel ersetzt seine Quellen nachweisbar |
 | `core/tests/universe-follow-chain.test.mjs` (UF) | nur `security-master-eligibility.yml` ändert das Produktuniversum, und jede am Produktumfang geprüfte Datenart zieht im selben Lauf nach |
 | `core/tests/data-branch-pilot.test.mjs` (DB) | Datenarten auf dem Datenzweig (`core/registry/data-branch.json`) |

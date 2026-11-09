@@ -46,7 +46,7 @@ test("TC2 · Teil technical-world (pipeline-daily.yml, vormals technical-world.y
   /* workflow_dispatch passiert die Job-Bedingung (nur workflow_run wird gefiltert) */
   assert.match(wf, /if: >-\s*\n\s+needs\.auswahl\.outputs\.technical_world == 'true' && \(\s*\n\s+github\.event_name != 'workflow_run' \|\|/);
   const at = (n) => wf.indexOf("- name: " + n);
-  const build = at("Screener-Datensatz bauen"), vertrag = at("Datensatzvertrag"), commit = at("Commit");
+  const build = at("Screener-Datensatz bauen"), vertrag = at("Datensatzvertrag"), commit = at("In den Datenzweig");
   assert.ok(at("Engine-Tests") > 0 && at("Engine-Tests") < build && build < vertrag && vertrag < commit, "Tests und Vertrag vor dem Commit");
   const a = wf.slice(wf.indexOf("\n  technical-world-alarm:"));
   assert.match(a, /needs: \[auswahl, technical-world\]/);
