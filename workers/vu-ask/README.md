@@ -51,8 +51,12 @@ Claude lernt nicht von selbst. Das Lernen passiert über diesen Kreislauf:
 curl -s -H "Authorization: Bearer $VU_ASK_ADMIN_KEY" https://vu-ask.little-credit-15d3.workers.dev/v1/admin/report | jq
 ```
 
-   Der Admin-Key ist, wenn kein eigenes Secret gesetzt ist, `HMAC-SHA256(CLOUDFLARE_API_TOKEN, "vu-ask-admin-v1")` in Hex. Weil das Repository öffentlich ist, wird der Bericht bewusst nicht in einem Actions-Protokoll ausgegeben. Die wichtigsten Felder: `missingData` (die meistgewünschten fehlenden Daten), `notUnderstood` (Fragen, die nicht übersetzt werden konnten), `byStatus` und `spend`.
+   Der Admin-Key ist, wenn kein eigenes Secret gesetzt ist, `HMAC-SHA256(CLOUDFLARE_API_TOKEN, "vu-ask-admin-v1")` in Hex. Weil das Repository öffentlich ist, wird der Bericht bewusst nicht in einem Actions-Protokoll ausgegeben. Ausgenommen ist eine **Kurzfassung ohne Fragetexte**: Workflow „Auslieferung (Buendel deploy)“, Teil `frage-worker`, Eingabe `nurBericht` (oder nach jedem Ausrollen) gibt über `scripts/report-summary.mjs` nur Zähler, Grenzen, `apiKeyPresent` und die Fehlercodes der letzten Fragen aus (z. B. `UPSTREAM_authentication_error | 401 invalid x-api-key` = Anthropic-Schlüssel ungültig). Die wichtigsten Felder: `missingData` (die meistgewünschten fehlenden Daten), `notUnderstood` (Fragen, die nicht übersetzt werden konnten), `byStatus` und `spend`.
 4. Wird ein Feld im Screener freigeschaltet (`screener/engine/fields.js`), kennt die Fragefunktion es automatisch. Anweisung und Antwortschema werden aus dieser Datei erzeugt.
+
+## Herkunft und Fehlermeldungen
+
+Fragen dürfen von `VU_ASK_ALLOWED_ORIGINS` und immer von der App kommen (`capacitor://localhost` für iOS, `https://localhost` für Android; `src/index.mjs`, `APP_ORIGINS`). `/ask/` zeigt jede Ablehnung als Karte mit Titel und Satz (`ask/engine.js`, `failure`) und bricht nach 45 Sekunden ab; der Live-Test im Deploy fragt einmal als Website und einmal als App.
 
 ## Einrichtung (einmalig, etwa 5 Minuten)
 
