@@ -245,7 +245,7 @@ const mutants={
  'Re-Dispatch-Obergrenze entfernt':s=>s.replace('maxRedispatch:2','maxRedispatch:99'),
  'echter Fehler wird wiederholt statt sofort beendet':s=>s.replace("if(j.verdict==='FAILED'){","if(false){"),
  'Vor-Deploy-Ausnahme gilt fuer jeden Fehler (auch nach dem Deploy)':s=>s.replace("export function preDeployFailure(run,jobs){","export function preDeployFailure(run,jobs){return true;"),
- 'Re-Dispatch auch bei bereits ausgelieferter Generation':s=>s.replace("if(await served())return 'SERVED';\n","")
+ 'Re-Dispatch auch bei bereits ausgelieferter Generation':s=>s.replace("if(!requireOwnSuccess&&await served())return 'SERVED';\n","")
   ,
  'cancelled gilt nicht als verdraengt':s=>s.replace("const SUPERSEDED=new Set(['cancelled','skipped'])","const SUPERSEDED=new Set([])"),
  'Rollback schon vor Fristende (Frist ignoriert)':s=>s.replace('if(t>=deadlines.waitDeadlineMs){','if(t>=deadlines.waitDeadlineMs-3600000+0*1&&true){'),
@@ -351,4 +351,30 @@ test('UR-2 Universe-CLI: Frist aus --wait-minutes, fail-closed bei fehlender ode
  let t=T0;const ds=[];const gh={dispatch:async()=>{ds.push(t);},listRuns:async()=>[],cancel:async()=>{}};
  const r=await real.main(['--expected','a'.repeat(24),'--wait-minutes','40'],{},{gh,now:()=>t,sleep:async ms=>{t+=ms;},generation:async()=>'b'.repeat(24)});
  assert.equal(r.served,false);assert.equal(ds.length,3);assert.ok(t>=T0+40*MIN,'nicht vor Fristende aufgeben');
+});
+
+/* --- Pruefung Steuerung 09.11.2026 zu #1744, MAJOR 2: im Universe-Modus erst Erfolg, wenn der eigene Pages-Lauf success ist --- */
+test('UR-4 strenger Modus: sichtbare Generation bei noch laufendem eigenen Lauf ist KEIN Erfolg; erst nach success',async()=>{
+ let t=T0;const gen='c'.repeat(24);const runs=[];
+ const gh={dispatch:async()=>{runs.push({databaseId:7000,createdAt:new Date(t+2000).toISOString(),at:t});},
+  listRuns:async()=>runs.map(r=>t-r.at<20*MIN?{...r,status:'in_progress',conclusion:''}:{...r,status:'completed',conclusion:'success'}),cancel:async()=>{}};
+ // Generation ist ab Minute 3 sichtbar, der eigene Lauf aber erst ab Minute 20 abgeschlossen
+ const r=await real.main(['--expected',gen,'--wait-minutes','40'],{},{gh,now:()=>t,sleep:async ms=>{t+=ms;},
+  generation:async()=>t-T0>=3*MIN?gen:'d'.repeat(24)});
+ assert.equal(r.served,true);
+ assert.ok(t-T0>=20*MIN,'Erfolg erst nach Abschluss des eigenen Laufs, nicht bei erster Sichtbarkeit');
+});
+
+test('UR-5 strenger Modus: eigener Lauf rot trotz sichtbarer Generation -> kein Erfolg (echter Fehler)',async()=>{
+ let t=T0;const gen='e'.repeat(24);const runs=[];
+ const gh={dispatch:async()=>{runs.push({databaseId:7100,createdAt:new Date(t+2000).toISOString(),at:t});},
+  listRuns:async()=>runs.map(r=>t-r.at<8*MIN?{...r,status:'in_progress',conclusion:''}:{...r,status:'completed',conclusion:'failure'}),cancel:async()=>{},
+  jobs:async()=>[{name:'package',status:'completed',conclusion:'success'},{name:'deploy',status:'completed',conclusion:'success'},{name:'company-intelligence-live',status:'completed',conclusion:'failure'}]};
+ const r=await real.main(['--expected',gen,'--wait-minutes','40'],{},{gh,now:()=>t,sleep:async ms=>{t+=ms;},generation:async()=>gen});
+ assert.equal(r.served,false);assert.equal(r.reason,'PAGES_RUN_FAILED');
+});
+
+test('UR-6 Refresh-Modus (--health) bleibt: sichtbare Generation genuegt wie bisher',async()=>{
+ const s=sim(real,{plans:[runPlan([0,'queued'],[2,'in_progress'],[30,'completed','success'])],deliveredAtMin:3});
+ const r=await s.run();assert.equal(r.served,true);assert.ok(s.clock()-T0<10*MIN);
 });

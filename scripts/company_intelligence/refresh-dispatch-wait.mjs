@@ -112,7 +112,11 @@ export function preDeployFailure(run,jobs){
  *       jobs?(id):Promise<Array<{name,status,conclusion}>>}  (fehlt jobs oder wirft es: jeder Fehlschlag bleibt ein echter Fehler)
  *  generation(): Promise<string|null>  ausgelieferte Generation (null = unbekannt)
  */
-export async function waitForDelivery({expected,gh,generation,now=()=>Date.now(),sleep=async()=>{},limits=LIMITS,deadlines}){
+/* requireOwnSuccess (Universe-Release, --expected): sichtbare Generation allein genuegt NICHT. Erfolg erst, wenn ein eigener
+   Pages-Lauf abgeschlossen ist (conclusion success, also samt Live-Pruefung company-intelligence-live) UND die erwartete
+   Generation ausgeliefert wird. Sonst koennte der Handler eines noch laufenden Pages-Laufs das Gate danach noch schliessen
+   (Pruefung Steuerung 09.11.2026 zu #1744, MAJOR 2). Der Refresh (--health) behaelt sein bisheriges Verhalten. */
+export async function waitForDelivery({expected,gh,generation,now=()=>Date.now(),sleep=async()=>{},limits=LIMITS,deadlines,requireOwnSuccess=false}){
  const log=[],note=(event,extra={})=>log.push({at:now(),event,...extra});
  const served=async()=>{try{return (await generation())===expected;}catch{return false;}};
  const list=async()=>{try{return await gh.listRuns();}catch{return null;}};
@@ -131,7 +135,7 @@ export async function waitForDelivery({expected,gh,generation,now=()=>Date.now()
  const finish=(res)=>({...res,dispatches:redispatches+1,log});
  const own=runs=>ownRuns(runs,{known,sinceMs:firstAt,skewMs:limits.skewMs}).filter(r=>!handled.has(String(r.databaseId)));
  const supersede=async(reason,ownNow)=>{ // Re-Dispatch nur mit Rest-Budget und nur wenn die Generation noch nicht ausgeliefert ist
-  if(await served())return 'SERVED';
+  if(!requireOwnSuccess&&await served())return 'SERVED';
   if(redispatches>=limits.maxRedispatch)return 'LIMIT';
   redispatches++;note('redispatch',{reason,n:redispatches});
   for(const r of ownNow)if(r.status==='completed')handled.add(String(r.databaseId));
@@ -146,11 +150,12 @@ export async function waitForDelivery({expected,gh,generation,now=()=>Date.now()
 
  await dispatch();
  for(;;){
-  if(await served())return finish(result(true,'DELIVERED'));
+  if(!requireOwnSuccess&&await served())return finish(result(true,'DELIVERED'));
   const t=now();
   const runs=await list();
   const ownNow=runs?own(runs):[];
   const j=runs?judge(ownNow):{verdict:'UNKNOWN'};
+  if(requireOwnSuccess&&j.verdict==='SUCCESS'&&await served())return finish(result(true,'DELIVERED'));
   if(j.verdict==='SUCCESS')successSeenAt??=t;
   if(t>=deadlines.waitDeadlineMs){
    /* Frist abgelaufen. Rollback erst, wenn kein eigener Lauf mehr laeuft (und ein gerade erfolgreicher seine Auslieferung zeigen konnte). */
@@ -227,7 +232,7 @@ export async function main(argv=process.argv.slice(2),env=process.env,io={}){
  const started=Number(env.JOB_STARTED_AT),jobStartMs=Number.isFinite(started)&&started>0&&started*1000<=Date.now()?started*1000:null;
  const deadlines=given?fixedDeadlines({nowMs:(io.now||Date.now)(),minutes:waitMinutes}):planDeadlines({jobStartMs});
  const res=await waitForDelivery({expected,gh:io.gh||realGh(env),generation:io.generation||(()=>realGeneration()),
-  sleep:io.sleep||(ms=>new Promise(r=>setTimeout(r,ms))),deadlines,...(io.now?{now:io.now}:{})});
+  sleep:io.sleep||(ms=>new Promise(r=>setTimeout(r,ms))),deadlines,requireOwnSuccess:!!given,...(io.now?{now:io.now}:{})});
  const safe=v=>String(v??'').replace(/[^A-Za-z0-9_,.:()<>=\- ]/g,'?').slice(0,200);
  const line=`${given?'Universe-Auslieferung':'Refresh-Auslieferung'}: ${res.served?'OK':'FEHLER'} (${safe(res.reason)}), Dispatches: ${res.dispatches}`;
  console.log(line);
