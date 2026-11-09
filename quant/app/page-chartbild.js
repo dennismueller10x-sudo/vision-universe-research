@@ -66,7 +66,7 @@
   }
   function check(status, family, statement) {
     var mark = { SUPPORTS: "✓", CONTRADICTS: "✕", NEUTRAL: "○", UNAVAILABLE: "–" }[status] || "○";
-    var word = { SUPPORTS: "spricht dafür", CONTRADICTS: "spricht dagegen", NEUTRAL: "neutral", UNAVAILABLE: "nicht verfügbar" }[status];
+    var word = { SUPPORTS: "stützt die Struktur", CONTRADICTS: "widerspricht der Struktur", NEUTRAL: "neutral", UNAVAILABLE: "nicht verfügbar" }[status];
     return el("li", { class: "cb-check cb-check-" + String(status).toLowerCase() }, [
       el("span", { class: "cb-check-mark", "aria-hidden": "true", text: mark }),
       el("span", { class: "cb-check-body" }, [el("b", { text: (Ex ? Ex.FAMILY[family] : family) || family }), el("span", { text: " " + statement }), el("span", { class: "cb-sr", text: " (" + word + ")" })])
@@ -85,7 +85,7 @@
     ];
     var dl = el("dl", { class: "cb-sc-dl" });
     function row(k, v) { if (v) dl.append(el("dt", { text: k }), el("dd", { class: "num", text: v === "–" ? v : v + UNIT })); }
-    if (s.entryZone) row(s.kind === "TAIL" ? "Zone" : "Einstiegszone", zoneText(s.entryZone));
+    if (s.entryZone) row(s.kind === "TAIL" ? "Zone" : "Zone laut Methode", zoneText(s.entryZone));
     (s.targets || []).forEach(function (z, q) { row("Zielzone " + (q + 1), zoneText(z)); });
     if (s.invalidation) row(s.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über", fmt(s.invalidation.price));
     if (s.range) { row("Untergrenze", zoneText(s.range.support)); row("Obergrenze", zoneText(s.range.resistance)); }

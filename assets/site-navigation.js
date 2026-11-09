@@ -132,7 +132,7 @@
         return {start: 'screener', build: 'filter', results: 'treffer', compare: 'treffer', saved: 'gespeichert', changes: 'gespeichert', watchlist: 'gespeichert'}[view] || null;
       }},
     {id: 'supertrader', label: 'Supertrader', match: p => p.startsWith('/supertrader/'),
-      items: [['supertrader','Supertrader','/supertrader/','supertrader'],['methoden','Methoden','/supertrader/strategies/','grid'],['signale','Signale','/supertrader/signals/','signals'],['backtests','Backtests','/supertrader/backtests/','backtests']],
+      items: [['supertrader','Supertrader','/supertrader/','supertrader'],['methoden','Methoden','/supertrader/strategies/','grid'],['signale','Regel-Ergebnisse','/supertrader/signals/','signals'],['backtests','Backtests','/supertrader/backtests/','backtests']],
       active: loc => {
         const k = loc.pathname.split('/')[2] || '';
         return {'': 'supertrader', strategies: 'methoden', signals: 'signale', stock: 'signale', backtests: 'backtests'}[k] || null;

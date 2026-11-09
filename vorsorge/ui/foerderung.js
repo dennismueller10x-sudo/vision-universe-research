@@ -307,7 +307,7 @@
     var ST = { HEALTHY: ["ok", "aktiv"], DEGRADED: ["complex", "eingeschränkt"], FAILED: ["bad", "Fehler"], NOT_CONFIGURED: ["", "nicht eingerichtet"], NOT_PERMITTED: ["bad", "nicht erlaubt"] };
     return '<div class="vs-card" style="margin-top:14px"><p class="vs-label">ETF-Fundamentals & Holdings · öffentliches Universum (' + n(it.publicUniverse) + ' ETFs)</p><div class="vs-grid g3" style="margin-top:10px">' +
       tiles.map(function (t) { return '<div class="vs-card soft"><p class="vs-label">' + esc(t[0]) + '</p><p class="vs-kpi small">' + F.pct(t[1].ratio, 0) + '</p><p class="vs-fine">' + n(t[1].count) + ' ETFs</p></div>'; }).join("") + '</div>' +
-      '<div class="vs-row" style="margin-top:10px"><span>Holdings-Snapshots (SEC N-PORT, ' + esc((it.holdingsQuarters || []).join(", ")) + ')</span><span class="num">' + n(h.snapshots) + '</span></div>' +
+      '<div class="vs-row" style="margin-top:10px"><span>Holdings-Snapshots (Form N-PORT, ' + esc((it.holdingsQuarters || []).join(", ")) + ')</span><span class="num">' + n(h.snapshots) + '</span></div>' +
       '<div class="vs-row"><span>Fondsserien mit Beständen · aktuelle Positionszeilen</span><span class="num">' + n(h.series) + ' · ' + n(h.currentHoldingRows) + '</span></div>' +
       '<div class="vs-row"><span>Erkannte Bestandsänderungen (alle Quartalspaare)</span><span class="num">' + n(h.events) + '</span></div>' +
       '<div class="vs-row"><span>Aktiengewicht dem VU-Aktienstamm zugeordnet (Median)</span><span class="num">' + F.pct(h.medianMappedShareOfEquity, 0) + '</span></div>' +
@@ -342,8 +342,8 @@
       var glance = '<div class="vs-grid g2"><div class="vs-card"><p class="vs-label">USA · Listings an US-Börsen</p>' +
         row("Listings", n(L.listings)) + row("Analysierbar (Standard + komplex)", n(it.publicUniverse)) +
         row("Mit Kursanalyse", n(P.withAnyHistory) + " · " + F.pct(P.ratio, 0)) +
-        row("Mit Holdings & X-Ray (SEC N-PORT)", cv.holdings ? n(cv.holdings.count) + " · " + F.pct(cv.holdings.ratio, 0) : "–") +
-        row("Mit Kostenquote (SEC-Prospekt)", cv.costs ? n(cv.costs.count) + " · " + F.pct(cv.costs.ratio, 0) : "–") +
+        row("Mit Holdings & X-Ray (Form N-PORT)", cv.holdings ? n(cv.holdings.count) + " · " + F.pct(cv.holdings.ratio, 0) : "–") +
+        row("Mit Kostenquote (US-Prospekt)", cv.costs ? n(cv.costs.count) + " · " + F.pct(cv.costs.ratio, 0) : "–") +
         row("Holdings-Historie", n(hs.snapshots) + " Quartalsstände") +
         row("Kostenänderungen laut Prospekt", chg && Number.isFinite(chg.costEvents) ? n(chg.costEvents) + " Listings" : "–") +
         '<p class="vs-fine" style="margin-top:6px">Anteile bezogen auf das analysierbare Universum (Kursanalyse: alle Listings).</p></div>' +
@@ -355,8 +355,8 @@
         '<h2 style="margin-bottom:10px">Datenabdeckung auf einen Blick</h2>' + glance +
         '<div class="vs-grid g4" style="margin-top:14px">' +
         tile("Datenstand", F.date(q.asOf), "letzter Kurstag im Bestand") +
-        tile("Tiingo-Ingest", ing.status === "COMPLETE" ? "vollständig" : ing.status === "PARTIAL" ? "teilweise" : "nicht gelaufen", rep.activeTickers ? n(rep.processedOk) + " von " + n(rep.activeTickers) + " aktiven Tickern" : "nur Repository-Auszug") +
-        tile("Rohzeilen (ETF)", n(L.raw), cat.catalogRows ? "aus " + n(cat.catalogRows) + " Zeilen der Tiingo-Tickerliste" : "Tiingo-Tickerliste") +
+        tile("Kursdaten-Import", ing.status === "COMPLETE" ? "vollständig" : ing.status === "PARTIAL" ? "teilweise" : "nicht gelaufen", rep.activeTickers ? n(rep.processedOk) + " von " + n(rep.activeTickers) + " aktiven Tickern" : "nur Repository-Auszug") +
+        tile("Rohzeilen (ETF)", n(L.raw), cat.catalogRows ? "aus " + n(cat.catalogRows) + " Zeilen der Kursdaten-Tickerliste" : "Kursdaten-Tickerliste") +
         tile("Public Analysis", n(L.publicAnalysis), "Standard-Bauart, aktiv, mit Kursen") + '</div>' +
         '<div class="vs-grid g4" style="margin-top:14px">' +
         tile("Listings", n(L.listings), n(L.canonical) + " kanonische Fonds") +
@@ -375,7 +375,7 @@
         '<div class="vs-row"><span>Ticker an mehreren Börsen</span><span class="num">' + n(q.duplicates.duplicateTickers.length) + '</span></div><div class="vs-row"><span>Fonds mit mehreren Listings</span><span class="num">' + n(q.duplicates.multiListingFunds.length) + '</span></div>' +
         '<div class="vs-row"><span>Identitätskonflikte</span><span class="num">' + n(q.conflicts.length) + '</span></div><div class="vs-row"><span>Recycelte Ticker (Verdacht)</span><span class="num">' + n((q.tickerReuseSuspected || []).length) + '</span></div>' +
         '<div class="vs-row"><span>Auffällige Kursreihen</span><span class="num">' + n((q.priceAnomalies || []).length) + '</span></div><div class="vs-row"><span>Ohne Name / ohne Kurse</span><span class="num">' + n(q.missingName) + ' / ' + n(q.missingPrice) + '</span></div><div class="vs-row"><span>Klassifikation unbekannt</span><span class="num">' + n(q.unknownClassification) + '</span></div></div>' +
-        '<div class="vs-card"><p class="vs-label">UCITS im US-Kursdatenbestand (Tiingo)</p>' + (u ? '<div class="vs-row"><span>Tiingo-Zeilen an europäischen Börsen</span><span class="num">' + n(u.catalogEtfRowsOnEuropeanExchanges) + '</span></div><div class="vs-row"><span>davon im US-Datenbestand</span><span class="num">' + n(u.listingsOnEuropeanExchanges) + '</span></div><div class="vs-row"><span>„UCITS“ im Namen (nur US-Freiverkehr)</span><span class="num">' + n(u.listingsNamedUcits) + '</span></div><div class="vs-row"><span>Handel in EUR/GBP/CHF</span><span class="num">' + n(u.listingsInEurGbpChf) + '</span></div><div class="vs-row"><span>mit ISIN</span><span class="num">' + n(u.isinAvailable) + '</span></div><p class="vs-fine" style="margin-top:8px">' + esc(u.conclusion) + '</p>' : VS.pending("Kein UCITS-Bericht", "Noch nicht erzeugt.")) + '</div></div>' +
+        '<div class="vs-card"><p class="vs-label">UCITS im US-Kursdatenbestand (externer Anbieter)</p>' + (u ? '<div class="vs-row"><span>Kursdaten-Zeilen an europäischen Börsen</span><span class="num">' + n(u.catalogEtfRowsOnEuropeanExchanges) + '</span></div><div class="vs-row"><span>davon im US-Datenbestand</span><span class="num">' + n(u.listingsOnEuropeanExchanges) + '</span></div><div class="vs-row"><span>„UCITS“ im Namen (nur US-Freiverkehr)</span><span class="num">' + n(u.listingsNamedUcits) + '</span></div><div class="vs-row"><span>Handel in EUR/GBP/CHF</span><span class="num">' + n(u.listingsInEurGbpChf) + '</span></div><div class="vs-row"><span>mit ISIN</span><span class="num">' + n(u.isinAvailable) + '</span></div><p class="vs-fine" style="margin-top:8px">' + esc(u.conclusion) + '</p>' : VS.pending("Kein UCITS-Bericht", "Noch nicht erzeugt.")) + '</div></div>' +
         intelBlock(q.intelligence, n) +
         '<div class="vs-card" style="margin-top:14px"><p class="vs-label">Quellenstrategie je Feld</p>' + (g ? '<div class="vs-table-wrap" style="margin-top:10px"><table class="vs-table" style="min-width:640px"><thead><tr><th>Feld</th><th>Primärquelle</th><th>Abdeckung</th><th>Lücke / Bedarf</th></tr></thead><tbody>' +
           g.fields.map(function (f) { return '<tr><td>' + esc(f.field) + '</td><td style="text-align:left;white-space:normal">' + esc(f.primarySource || f.tiingo) + '</td><td class="num">' + (f.coverage === null ? "–" : F.pct(f.coverage, 0)) + '</td><td style="text-align:left;white-space:normal">' + esc(f.gap || f.secondProviderNeeded) + '</td></tr>'; }).join("") + '</tbody></table></div><p class="vs-fine" style="margin-top:8px">Abdeckung bezogen auf das öffentliche Universum (Standard + Komplex) bzw. das EU-Register.</p>' : "") + '</div>';

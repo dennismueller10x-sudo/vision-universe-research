@@ -1004,13 +1004,13 @@
   }
   function smFooter(asOf, extra) {
     return dmBlock(asOf ? "Stand " + dateDE(asOf) : "", [
-      ["Quelle", "Pflichtmeldungen an die US-Börsenaufsicht SEC (EDGAR): Form 4 (Insider-Geschäfte von Führungskräften, Board-Mitgliedern und Aktionären mit mehr als 10 %), Schedule 13D/13G (Beteiligungen über 5 %) und Form 13F aller meldepflichtigen Verwalter."],
+      ["Quelle", "Pflichtmeldungen an die US-Börsenaufsicht (Unternehmensmeldungen): Form 4 (Insider-Geschäfte von Führungskräften, Board-Mitgliedern und Aktionären mit mehr als 10 %), Schedule 13D/13G (Beteiligungen über 5 %) und Form 13F aller meldepflichtigen Verwalter."],
       ["Gezählt", "Nur Käufe und Verkäufe über die Börse (Codes P und S), keine Optionsausübungen, Schenkungen oder Vergütungsaktien. Werte nach Einreichungsdatum, nicht nach Handelstag. 13F-Meldungen erscheinen bis zu 45 Tage nach Quartalsende."],
       asOf ? ["Datenstand", "Eigentümer-Daten vom " + dateDE(asOf) + "."] : null
     ].concat(extra || []));
   }
   function smMissing() {
-    return U.blank("Die Insider- und Fondsdaten aus SEC EDGAR sind noch nicht veröffentlicht. Sie erscheinen nach dem nächsten wöchentlichen Datenlauf.");
+    return U.blank("Die Insider- und Fondsdaten aus Pflichtmeldungen sind noch nicht veröffentlicht. Sie erscheinen nach dem nächsten wöchentlichen Datenlauf.");
   }
   function insiderSheet() {
     openSheetHtml("hf-sheet-insider", "Wer ist ein Insider?", [["users", "Vorstand und Geschäftsführung", "Zum Beispiel CEO oder Finanzchef"], ["table", "Board-Mitglieder", "Der Aufsichtsrat der Firma"], ["pie", "Großaktionäre", "Wer mehr als 10 % der Aktien hält"]].map(function (r) {
@@ -1228,9 +1228,9 @@
         seg([{ id: "holdings", label: "Positionen " + nf0.format(d.positionCount) }, { id: "buys", label: "Käufe " + nBuys }, { id: "sells", label: "Verkäufe " + nSells }], S.tab, 'id="hf-ftabs" role="group" aria-label="Depot"') +
         '<div id="hf-tabbody"></div>' +
         (d.optionCount ? '<p class="hf-note-s">Optionen (Calls/Puts) sind in Positionen, Käufen und Verkäufen nicht mitgezählt; sie stehen mit dem Wert des Basiswerts in der Liste.</p>' : "") +
-        '<details class="hf-acc"><summary>13F-Meldung bei der SEC</summary><div class="hf-kvrow"><span><b>Gemeldet am</b></span><b>' + dateDE(d.filedDate) + '</b></div><div class="hf-kvrow"><span><b>Stichtag</b></span><b>' + dateDE(d.reportDate) +
-          '</b></div><div class="hf-kvrow"><span><b>Formular</b></span><b>' + esc(d.form || "13F-HR") + "</b></div>" + (d.secName ? '<div class="hf-kvrow"><span><b>SEC-Melder</b></span><b>' + esc(d.secName) + "</b></div>" : "") +
-          '<p class="hf-gap"><a class="vu-btn vu-btn--ink vu-btn--sm" href="' + secLink(d) + '" target="_blank" rel="noopener">13F bei der SEC öffnen ' + icon("ext") + "</a></p></details>" +
+        '<details class="hf-acc"><summary>13F-Pflichtmeldung</summary><div class="hf-kvrow"><span><b>Gemeldet am</b></span><b>' + dateDE(d.filedDate) + '</b></div><div class="hf-kvrow"><span><b>Stichtag</b></span><b>' + dateDE(d.reportDate) +
+          '</b></div><div class="hf-kvrow"><span><b>Formular</b></span><b>' + esc(d.form || "13F-HR") + "</b></div>" + (d.secName ? '<div class="hf-kvrow"><span><b>Meldender Fonds</b></span><b>' + esc(d.secName) + "</b></div>" : "") +
+          '<p class="hf-gap"><a class="vu-btn vu-btn--ink vu-btn--sm" href="' + secLink(d) + '" target="_blank" rel="noopener">13F-Originalmeldung öffnen ' + icon("ext") + "</a></p></details>" +
         (photo ? '<details class="hf-acc"><summary>Foto und Lizenz</summary><p class="vu-sm hf-gap-s">Foto: ' + esc(photo.artist) + ", " + (photo.licenseUrl ? '<a href="' + esc(photo.licenseUrl) + '" target="_blank" rel="noopener">' + esc(photo.license) + "</a>" : esc(photo.license)) +
           (photo.sourceUrl ? ' · <a href="' + esc(photo.sourceUrl) + '" target="_blank" rel="noopener">Wikimedia Commons</a>' : "") + "</p></details>" : "") +
         closeLine("Vergleich " + quarter(d.prevReportDate) + " → " + quarter(d.reportDate) + ".") +

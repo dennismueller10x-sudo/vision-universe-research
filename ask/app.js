@@ -409,7 +409,7 @@
 
     var understoodMount = h('div', {}), resultMount = h('div', {}), atlasMount = h('div', {});
     turn.appendChild(understoodMount);
-    if (r.kind === 'forecast') { understoodMount.appendChild(understood(r, answer.source)); return say('Keine Prognosen, keine Beratung', 'Vision Universe sagt keine Kurse voraus, gibt keine Kauf- oder Verkaufsempfehlungen und beantwortet keine Fragen zu deiner persönlichen Lage. Du kannst aber nach Kennzahlen, Trends und Strategiesignalen suchen – zum Beispiel „Welche Aktien stehen im Weinstein-Stage-2?“'); }
+    if (r.kind === 'forecast') { understoodMount.appendChild(understood(r, answer.source)); return say('Keine Prognosen, keine Beratung', 'Vision Universe sagt keine Kurse voraus, gibt keine Kauf- oder Verkaufsempfehlungen und beantwortet keine Fragen zu deiner persönlichen Lage. Du kannst aber nach Kennzahlen, Trends und Strategie-Ergebnissen suchen – zum Beispiel „Welche Aktien stehen im Weinstein-Stage-2?“'); }
     if (r.kind === 'off_topic') { understoodMount.appendChild(understood(r, answer.source)); return say('Keine Investmentfrage', 'Hier lassen sich Fragen zu Aktien, Kennzahlen und den Vision-Universe-Strategien beantworten.'); }
     if (r.kind === 'unclear') { understoodMount.appendChild(understood(r, answer.source)); return say('Nicht eindeutig', 'Die Frage ließ sich nicht sicher in Filter übersetzen. Versuch es mit einer konkreten Kennzahl, Größe oder Strategie.' + gapText); }
 
@@ -427,7 +427,7 @@
     var needSignals = !!r.supertrader;
     return Promise.all([needSignals ? signals() : null, r.kind === 'stock' && r.chartbild ? chartbildData() : null]).then(function (loaded) {
       var sig = loaded[0], ti = loaded[1];
-      if (needSignals && !sig) resultMount.appendChild(card('Supertrader-Signale nicht geladen', 'Der Strategiestatus kann gerade nicht angezeigt werden.', true));
+      if (needSignals && !sig) resultMount.appendChild(card('Supertrader-Ergebnisse nicht geladen', 'Der Strategiestatus kann gerade nicht angezeigt werden.', true));
       if (r.kind === 'stock') {
         understoodMount.appendChild(understood(r, answer.source));
         var st = Ask.runStock(ds, r, sig);

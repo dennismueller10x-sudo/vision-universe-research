@@ -339,7 +339,7 @@
         : { value: clamp(50 + mom * 125), status: "CALCULATED", label: "Momentum", raw: mom },
       volatility: vol === null || vol === undefined ? { value: null, status: "INSUFFICIENT_HISTORY", label: "Ruhe (niedrige Schwankung)" }
         : { value: clamp(100 - vol * 200), status: "CALCULATED", label: "Ruhe (niedrige Schwankung)", raw: vol },
-      cost: Number.isFinite(extra.cost) ? { value: clamp(100 - extra.cost * 10000 / 1.2), status: "CALCULATED", label: "Kosten (niedrig = hoch bewertet)", raw: extra.cost, basis: "Kostenquote laut Prospekt (SEC)" }
+      cost: Number.isFinite(extra.cost) ? { value: clamp(100 - extra.cost * 10000 / 1.2), status: "CALCULATED", label: "Kosten (niedrig = hoch bewertet)", raw: extra.cost, basis: "Kostenquote laut US-Prospekt" }
         : { value: null, status: "TER_SOURCE_PENDING", label: "Kosten" },
       stability: mdd === null || mdd === undefined || !histYears || histYears < 3 ? { value: null, status: "INSUFFICIENT_HISTORY", label: "Historische Stabilität" }
         : { value: clamp(100 + mdd * 150), status: "CALCULATED", label: "Historische Stabilität", raw: mdd },

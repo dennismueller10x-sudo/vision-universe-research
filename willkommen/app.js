@@ -14,7 +14,7 @@
     { id: 'discover', name: 'Discover', href: '/discover/#/', text: 'Aktien entdecken' },
     { id: 'quant', name: 'Quant', href: '/quant/', text: 'Faktoren je Aktie' },
     { id: 'technical', name: 'Technical', href: '/technical/#/', text: 'Charts und Muster' },
-    { id: 'fundamental', name: 'Fundamental', href: '/fundamental/#/', text: 'Zahlen aus SEC-Berichten' },
+    { id: 'fundamental', name: 'Fundamental', href: '/fundamental/#/', text: 'Zahlen aus Unternehmensberichten' },
     { id: 'supertrader', name: 'Supertrader', href: '/supertrader/', text: 'Methoden der Profis' },
     { id: 'hedgefonds', name: 'Hedgefonds', href: '/hedgefonds/', text: 'Was Investoren halten' },
     { id: 'elliott', name: 'Elliott', href: '/elliott/', text: 'Wellenstruktur' },

@@ -49,9 +49,9 @@
     n('exchange', { col: 'ex', group: 'company', kind: 'enum', label: 'Börse', en: 'Exchange', source: 'master',
       desc: 'Primärbörse, an der die Aktie gehandelt wird.', keywords: ['nasdaq', 'nyse', 'exchange'] }),
     n('sector', { col: 'sec', group: 'company', kind: 'enum', label: 'Sektor', en: 'Sector', source: 'classification',
-      desc: 'Sektor, abgeleitet aus dem SEC-SIC-Code des Emittenten (Vision-Universe-Zuordnung sic-sector-1.0.0). Kein GICS.', keywords: ['technologie', 'technology', 'branche', 'sector', 'tech'] }),
+      desc: 'Sektor, abgeleitet aus dem SIC-Code des Emittenten (Vision-Universe-Zuordnung sic-sector-1.0.0). Kein GICS.', keywords: ['technologie', 'technology', 'branche', 'sector', 'tech'] }),
     n('industry', { col: 'sic2', group: 'company', kind: 'enum', label: 'Branche', en: 'Industry', source: 'classification',
-      desc: 'SIC-Hauptgruppe (zweistellig) laut SEC, z. B. „Elektronik und Halbleiter“.', keywords: ['industry', 'halbleiter', 'software', 'sic'] }),
+      desc: 'SIC-Hauptgruppe (zweistellig) laut Meldung, z. B. „Elektronik und Halbleiter“.', keywords: ['industry', 'halbleiter', 'software', 'sic'] }),
     n('ipoYear', { col: 'ipo', group: 'company', kind: 'number', unit: 'year', label: 'Erster Handelstag (Jahr)', short: 'Börsengang', en: 'IPO Date', source: 'master', derive: 'year',
       desc: 'Jahr des ersten Handelstags laut Wertpapierstamm – ein Näherungswert für den Börsengang.', keywords: ['ipo', 'börsengang', 'listing'], domain: [1960, 2026, 1], presets: [['Seit 2020', 'gte', 2020], ['Seit 2015', 'gte', 2015], ['Vor 2000', 'lt', 2000]] }),
     n('companyType', { col: 'cls', group: 'company', kind: 'enum', label: 'Unternehmenstyp', en: 'Company Type', source: 'master',
@@ -76,7 +76,7 @@
 
     // ---------------- WACHSTUM ----------------
     n('revenueGrowth', { col: 'revGrowth', group: 'growth', unit: 'pct', label: 'Umsatzwachstum (TTM)', short: 'Umsatz­wachstum', en: 'Revenue Growth', source: 'fundamentals', timeframe: 'TTM', domain: [-0.5, 1, 0.01], better: 1,
-      desc: 'Umsatz der letzten zwölf Monate gegenüber dem Vorjahreszeitraum, laut SEC-Berichten.', keywords: ['revenue', 'umsatz', 'sales', 'growth'], presets: [['> 10 %', 'gt', 0.1], ['> 20 %', 'gt', 0.2], ['> 50 %', 'gt', 0.5]] }),
+      desc: 'Umsatz der letzten zwölf Monate gegenüber dem Vorjahreszeitraum, laut Unternehmensberichten.', keywords: ['revenue', 'umsatz', 'sales', 'growth'], presets: [['> 10 %', 'gt', 0.1], ['> 20 %', 'gt', 0.2], ['> 50 %', 'gt', 0.5]] }),
     n('revenueCagr3', { col: 'revCagr3', group: 'growth', unit: 'pct', label: 'Umsatzwachstum p. a. (3 J.)', short: 'Umsatz CAGR 3J', en: 'Revenue CAGR', source: 'fundamentals', timeframe: '3Y', domain: [-0.3, 0.8, 0.01], better: 1,
       desc: 'Durchschnittliches jährliches Umsatzwachstum über drei Geschäftsjahre (CAGR).', keywords: ['revenue cagr', 'umsatz', 'cagr'], presets: [['> 10 %', 'gt', 0.1], ['> 20 %', 'gt', 0.2]] }),
     n('revenueCagr10', { col: 'revCagr10', group: 'growth', unit: 'pct', label: 'Umsatzwachstum p. a. (10 J.)', short: 'Umsatz CAGR 10J', en: 'Revenue CAGR 10Y', source: 'fundamentals', timeframe: '10Y', domain: [-0.2, 0.5, 0.01], pro: true, better: 1,
@@ -112,7 +112,7 @@
       desc: 'Operatives Ergebnis nach Steuern im Verhältnis zum eingesetzten Kapital. Nur wo Schulden berichtet sind.', keywords: ['roic', 'return on invested capital', 'kapitalrendite'], presets: [['> 10 %', 'gt', 0.1], ['> 20 %', 'gt', 0.2]] }),
     n('cashConversion', { col: 'cashConversion', group: 'quality', unit: 'x', label: 'Cash Conversion', en: 'Cash Conversion', source: 'fundamentals', timeframe: 'FY', domain: [0, 3, 0.05], pro: true, better: 1, formula: 'cashConversion',
       desc: 'Operativer Cashflow je Dollar Gewinn. Über 1 heißt: der Gewinn kommt als Geld an.', keywords: ['cash conversion', 'cashflow'], presets: [['> 1', 'gt', 1]] }),
-    n('interestCoverage', { group: 'quality', unit: 'x', label: 'Zinsdeckung', en: 'Interest Coverage', source: 'fundamentals', available: false, reason: 'Der Zinsaufwand wird aus den SEC-Daten noch nicht normalisiert.', keywords: ['interest coverage', 'zins'] }),
+    n('interestCoverage', { group: 'quality', unit: 'x', label: 'Zinsdeckung', en: 'Interest Coverage', source: 'fundamentals', available: false, reason: 'Der Zinsaufwand wird aus den Meldedaten noch nicht normalisiert.', keywords: ['interest coverage', 'zins'] }),
 
     // ---------------- BILANZ ----------------
     n('debtToEquity', { col: 'debtToEquity', group: 'balance', unit: 'x', label: 'Verschuldungsgrad (D/E)', short: 'Debt/Equity', en: 'Debt / Equity', source: 'fundamentals', domain: [0, 3, 0.05], better: -1, formula: 'debtToEquity',
@@ -125,7 +125,7 @@
     n('netCash', { col: 'netCash', group: 'balance', unit: 'usd', label: 'Netto-Cash', en: 'Net Cash', source: 'fundamentals', scale: 'signedlog', better: 1,
       desc: 'Kasse minus Finanzschulden. Positiv heißt: mehr Geld als Schulden.', keywords: ['net cash', 'netto'], presets: [['Netto-Cash > 0', 'gt', 0]] }),
     n('revenue', { col: 'revenue', group: 'size', unit: 'usd', label: 'Umsatz (TTM)', short: 'Umsatz', en: 'Revenue', source: 'fundamentals', timeframe: 'TTM', scale: 'log', pro: true,
-      desc: 'Umsatz der letzten zwölf Monate laut SEC-Berichten.', keywords: ['revenue', 'umsatz', 'sales'] }),
+      desc: 'Umsatz der letzten zwölf Monate laut Unternehmensberichten.', keywords: ['revenue', 'umsatz', 'sales'] }),
     n('freeCashFlow', { col: 'fcf', group: 'quality', unit: 'usd', label: 'Free Cashflow (TTM)', short: 'Free Cashflow', en: 'Free Cash Flow', source: 'fundamentals', timeframe: 'TTM', scale: 'signedlog', pro: true, better: 1,
       desc: 'Operativer Cashflow minus Investitionen der letzten zwölf Monate.', keywords: ['fcf', 'free cash flow', 'cashflow'], presets: [['Positiv', 'gt', 0]] }),
     n('eps', { col: 'eps', group: 'quality', unit: 'usd', label: 'Gewinn je Aktie (TTM, verwässert)', short: 'EPS (verw.)', en: 'EPS', source: 'fundamentals', timeframe: 'TTM', domain: [-5, 20, 0.05], pro: true, better: 1,
@@ -297,7 +297,7 @@
   var COPY = {
     country: ['Wo ist die Aktie gelistet?', 'Land der Primärbörse'], region: ['In welcher Region wird gehandelt?', 'Region der Primärbörse'],
     exchange: ['An welcher Börse wird gehandelt?', 'NASDAQ, NYSE, AMEX …'], sector: ['In welchem Sektor ist das Unternehmen tätig?', 'Technologie, Gesundheit, Finanzen …'],
-    industry: ['In welcher Branche genau?', 'SIC-Hauptgruppe der SEC'], ipoYear: ['Seit wann ist die Aktie an der Börse?', 'Jahr des ersten Handelstags'],
+    industry: ['In welcher Branche genau?', 'SIC-Hauptgruppe der Meldestelle'], ipoYear: ['Seit wann ist die Aktie an der Börse?', 'Jahr des ersten Handelstags'],
     companyType: ['Um welche Wertpapierart handelt es sich?', 'Stammaktie, REIT, ADR …'], index: ['Ist die Aktie in einem großen Index?', 'S&P 500, Nasdaq-100, Dow Jones'],
     marketCap: ['Wie groß ist ein Unternehmen an der Börse?', 'Von Micro bis Mega Cap'], enterpriseValue: ['Was kostet das Unternehmen inklusive Schulden?', 'Marktwert + Schulden − Kasse'],
     price: ['Wie hoch ist der Aktienkurs?', 'Letzter Schlusskurs'], avgVolume: ['Wie viele Aktien werden täglich gehandelt?', 'Liquidität in Stück'],

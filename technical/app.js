@@ -239,7 +239,7 @@
     }));
   }
   function disclaimer(meta) {
-    return el("p", { class: "tc-disclaimer" }, ["Signale werden nach festen Regeln erkannt. Keine Handlungsempfehlung. ",
+    return el("p", { class: "tc-disclaimer" }, ["Regelereignisse werden nach festen Regeln erkannt. Keine Handlungsempfehlung. ",
       meta && meta.asOf ? "Kursstand " + M.dateDe(meta.asOf) + ". " : "", el("a", { href: "#/muster?reiter=regeln", text: "Regeln und Grenzen" })]);
   }
   function stateBox(title, text, action) {
@@ -343,7 +343,7 @@
     var foot = el("div", { class: "tc-foot-slot" });
     put(main, [head, searchSlot, chips, tiles, market, sect("Fertige Suchen", "#/screener?reiter=vorlagen", "Alle 13"), tpls, sect("Heute neu im Chart"), fresh,
       sect("Bestenlisten"), ranks, sect("Aktie im Chart ansehen"),
-      el("div", { class: "vu-stack" }, [el("div", { class: "tc-navslot" }, h(U.navcard({ href: M.chartHref(last), icon: "technical", title: last + " im Chart", sub: "Zonen, Trend und Signale erklärt" }))),
+      el("div", { class: "vu-stack" }, [el("div", { class: "tc-navslot" }, h(U.navcard({ href: M.chartHref(last), icon: "technical", title: last + " im Chart", sub: "Zonen, Trend und Regel-Ergebnisse erklärt" }))),
         el("a", { class: "vu-navcard tc-lime", href: "#/akademie" }, [el("span", { class: "tc-ico tc-ico--plain", "aria-hidden": "true" }, glyph("book")), el("span", { class: "vu-navcard__text" }, [el("b", { text: "Neu hier? Chart-Grundkurs" }), el("span", { text: "Trend, Unterstützung, Ausbruch" })]), glyph("chevron", "tc-chev")])]),
       more, foot]);
     loadIndex().then(function (X) {
@@ -351,7 +351,7 @@
       lead.textContent = "Wir lesen jeden Tag " + ix.count.toLocaleString("de-DE") + " US-Charts nach festen Regeln und sagen dir in Worten, was auffällt.";
       put(searchSlot, searchBox(X.entries, "Aktie oder z. B. „Dreieck über 200-Tage-Linie“", true));
       put(chips, ["NVDA", "AAPL", "TSLA", "MSFT"].filter(X.has).map(function (t) { return el("a", { class: "vu-chip", role: "listitem", href: M.chartHref(t), text: t }); }));
-      if (X.name(last)) { var nv = main.querySelector(".tc-navslot"); if (nv) put(nv, h(U.navcard({ href: M.chartHref(last), icon: "technical", title: shortName(X.name(last)) + " im Chart", sub: "Zonen, Trend und Signale erklärt" }))); }
+      if (X.name(last)) { var nv = main.querySelector(".tc-navslot"); if (nv) put(nv, h(U.navcard({ href: M.chartHref(last), icon: "technical", title: shortName(X.name(last)) + " im Chart", sub: "Zonen, Trend und Regel-Ergebnisse erklärt" }))); }
       var setupTile = h(U.tile("Setups", de(ix.focusUnion), "im Fokus"));
       setupTile.querySelector(".vu-tile__label").append(el("button", { type: "button", class: "vu-q", "aria-label": "Erklärung: Was ist ein Setup?", text: "?", onclick: setupSheet }));
       put(tiles, [h(U.tile("Aktien", de(ix.count), "täglich geprüft")), setupTile, h(U.tile("Stand", asOf ? dShort(asOf) : "–", "Schlusskurs"))]);
@@ -1101,7 +1101,7 @@
   var studio = { layers: { trend: true, muster: true, niveaus: true, sma: true, volumen: true }, range: "1J", full: false, mode: "candles" };
 
   function viewChartPicker(main) {
-    var head = pageHead(null, "Chart Studio", "Welche Aktie? Zonen, Trend und Signale erscheinen automatisch, in Worten erklärt.");
+    var head = pageHead(null, "Chart Studio", "Welche Aktie? Zonen, Trend und Regel-Ergebnisse erscheinen automatisch, in Worten erklärt.");
     var slot = el("div", { class: "tc-search-slot" });
     put(main, [head, slot]);
     var last = lastTicker();
@@ -1225,10 +1225,10 @@
     if (x && x.breakout) rows.push(["Ausbruch", (x.breakout.direction === "UP" ? "nach oben" : "nach unten") + " am " + M.dateDe(x.breakout.at)]);
     var evBox = ev && ev.published ? el("div", { class: "vu-box tc-evrow" }, [el("span", {}, [el("b", { text: "Was früher geschah" }), el("small", { text: M.num(ev.hitRate * 100, 1) + " % lagen nach " + (evidence.doc.method.horizonBars || 20) + " Tagen vorn · " + ev.n.toLocaleString("de-DE") + " Fälle" })]),
       h(ev.significant ? (ev.hitRate > 0.5 ? U.verdict("strong", "Belegt") : U.verdict("weak", "Gegen die Lesart")) : U.verdict("none", "Kein Vorteil"))]) : null;
-    var box = sheet("tc-signal-sheet", "Signal" + (x && x.detectedAt ? " · erkannt " + M.dateDe(x.detectedAt) : ""), f.title, [
+    var box = sheet("tc-signal-sheet", "Regelereignis" + (x && x.detectedAt ? " · erkannt " + M.dateDe(x.detectedAt) : ""), f.title, [
       dirPill(f, true), el("p", { class: "tc-sheet-lead", text: f.text }),
       rows.length ? el("dl", { class: "vu-box tc-kv" }, rows.reduce(function (a, r) { return a.concat([el("dt", { text: r[0] }), el("dd", { text: r[1] })]); }, [])) : null,
-      rules, evBox, evBox ? h(U.help("Kein Vorteil heißt: dieses Signal allein war früher so gut wie ein Münzwurf. Forschung, nicht zertifiziert.")) : null,
+      rules, evBox, evBox ? h(U.help("Kein Vorteil heißt: dieses Regelereignis allein war früher so gut wie ein Münzwurf. Forschung, nicht zertifiziert.")) : null,
       el("div", { class: "tc-actions2" }, [el("a", { class: "vu-btn", href: M.chartHref(X.T, "studio", x ? "f=" + encodeURIComponent(x.id) : null), onclick: closeSheets }, [h(U.glyph("line", 18)), "Im Chart Studio"]),
         el("a", { class: "vu-btn vu-btn--line", href: "#/muster?reiter=regeln", onclick: closeSheets, text: "Regeln" })])]);
     return box;
@@ -1274,10 +1274,10 @@
       el("div", { class: "vu-tile tc-ptile tc-tile-lime" }, [el("div", { class: "vu-tile__label", text: "Unterstützung ▼" }), el("div", { class: "vu-tile__value num", text: Su ? money$(Su.center) : "–" }), el("div", { class: "vu-tile__sub", text: Su ? "Zone " + de(Su.zoneLow) + "–" + de(Su.zoneHigh) + " $ · " + Su.touches + "-mal gehalten" : "Keine Unterstützung unter dem Kurs" })])]),
       h(U.help("Unterstützung: ein Preisbereich, an dem Käufer den Kurs bisher aufgefangen haben. Widerstand: wo er bisher gestoppt wurde."))];
     var all = X.st.frozenSince ? [] : M.findings(X.analysis, X.F, S.close[t]).filter(function (f) { return !(f.formation && f.formation.state === "INVALIDATED"); });
-    var sig = [sect("Signale", all.length > 3 ? M.chartHref(X.T, "signals") : null, "Alle " + all.length),
+    var sig = [sect("Regel-Ergebnisse", all.length > 3 ? M.chartHref(X.T, "signals") : null, "Alle " + all.length),
       all.length ? el("div", { class: "vu-box tc-siglist" }, all.slice(0, 3).map(function (f) {
         return el("button", { type: "button", class: "tc-sigrow", onclick: function () { signalSheet(f, X); } }, [ico(f.icon || "triangle"), el("span", { class: "tc-row-text" }, [el("b", { text: f.title }), el("span", { text: f.text })]), dirPill(f, true)]);
-      })) : h(U.blank(X.st.frozenSince ? "Der Kurs steht still; ohne Kursänderung gibt es keine Signale." : "Im Tageschart ist derzeit kein Signal erkannt."))];
+      })) : h(U.blank(X.st.frozenSince ? "Der Kurs steht still; ohne Kursänderung gibt es keine Regelereignisse." : "Im Tageschart ist derzeit kein Regelereignis erkannt."))];
     put(body, [seriesNote(X.st),
       el("div", { class: "vu-box tc-saycard" }, [el("p", { class: "vu-ltag", text: "Was der Chart sagt" }), el("div", { class: "tc-say" }, [el("h2", { class: "vu-mt", text: sum[0] }), h(U.verdict(sum[1]))])]),
       host, legend, rangeBar, el("div", { class: "vu-chips tc-togs" }, [tog("zones", "Zonen"), tog("trend", "Trendlinie"), tog("avg", "Durchschnitt")]),
@@ -1522,12 +1522,12 @@
 
   var ICON_OF = { formation: "triangle" };
   function renderSignalCards(host, analysis, F, close, compact, st) {
-    if (st && st.frozenSince) return put(host, [el("h2", { text: compact ? "Aktive Signale" : "Alle Befunde" }),
+    if (st && st.frozenSince) return put(host, [el("h2", { text: compact ? "Aktive Regel-Ergebnisse" : "Alle Befunde" }),
       stateBox("Keine Befunde", "Der Schlusskurs ist " + (st.frozenIndex === 0 ? "spätestens " : "") + "seit dem " + M.dateDe(st.frozenSince) + " unverändert. Ohne Kursänderung gibt es keinen Ausbruch, kein Momentum und keinen Trend.")]);
     var all = M.findings(analysis, F, close);
     var active = all.filter(function (f) { return !(f.formation && f.formation.state === "INVALIDATED"); });
     var shown = compact ? active.slice(0, 6) : all;
-    put(host, [el("h2", { text: compact ? "Aktive Signale" : "Alle Befunde" }),
+    put(host, [el("h2", { text: compact ? "Aktive Regel-Ergebnisse" : "Alle Befunde" }),
       shown.length ? el("div", { class: "tc-list" }, shown.map(signalCard)) : stateBox("Keine aktiven Befunde", "Im Tageschart ist derzeit keine Formation erkannt."),
       compact && all.length > shown.length ? el("a", { class: "tc-link", href: location.hash.replace(/\/signale$/, "") + "/signale", text: "Alle " + all.length + " Befunde mit Regeln und Historie" }) : null]);
   }
@@ -1636,7 +1636,7 @@
         return el("li", {}, [el("b", { text: c.name }), el("em", { class: "tc-badge tc-watch", text: c.stateLabel }),
           el("small", { text: [c.since ? "seit " + M.dateDe(c.since) : null, c.presentationLabel !== c.stateLabel ? c.presentationLabel : null, c.evidenceLabel].filter(Boolean).join(" · ") })]);
       })) : el("p", { class: "tc-note", text: "Kein laufendes Modellsignal." }));
-      if (s.history) kids.push(el("p", { class: "tc-note", text: s.history + (s.history === 1 ? " abgeschlossenes oder ungültiges Signal" : " abgeschlossene oder ungültige Signale") + " im Protokoll der Supertrader-Seite." }));
+      if (s.history) kids.push(el("p", { class: "tc-note", text: s.history + (s.history === 1 ? " abgeschlossenes oder ungültiges Regelereignis" : " abgeschlossene oder ungültige Regelereignisse") + " im Protokoll der Supertrader-Seite." }));
     } else {
       kids.push(el("p", { class: "tc-note", text: s && s.reason === "NOT_COVERED" ? "Keine Supertrader-Aktienseite für diesen Titel." : "Die Supertrader-Modellsignale konnten nicht geladen werden." }));
     }
@@ -1679,7 +1679,7 @@
   function dataQuality(inst, D, weekly) {
     var b = inst.bars, bundle = inst.bundle || {};
     return el("details", { class: "tc-dq" }, [el("summary", { text: "Datenqualität und Herkunft" }), el("dl", {}, [
-      el("dt", { text: "Kursreihe" }), el("dd", { text: "Tiingo EOD, split-bereinigt (" + (inst.priceSeriesType || "–") + "), " + b.close.length + " Tagesbars bis " + M.dateDe(b.timestamps[b.timestamps.length - 1]) }),
+      el("dt", { text: "Kursreihe" }), el("dd", { text: "Tagesschlusskurse, split-bereinigt (" + (inst.priceSeriesType || "–") + "), " + b.close.length + " Tagesbars bis " + M.dateDe(b.timestamps[b.timestamps.length - 1]) }),
       el("dt", { text: "Gleitende Durchschnitte" }), el("dd", { text: "SMA 50/200 und RSI auf der Vollhistorie (" + (bundle.analysisLookback ? bundle.analysisLookback.bars + " Bars seit " + M.dateDe(bundle.analysisLookback.from) : "Bundle") + "); " + (bundle.chartSeries && bundle.chartSeries.ema200 ? "EMA 20/50/200 ebenfalls auf der Vollhistorie, erst nach ihrer Aufwärmphase; " : "EMA, ") + "Bollinger, MACD, Stochastik auf dem Anzeigefenster nach der Aufwärmphase" }),
       (function () {
         var es = bundle.emaSettlement, p = es && es.periods && es.periods.filter(function (x) { return x.period === 200; })[0];
@@ -1828,7 +1828,7 @@
       }, [])))]);
     var data = el("details", { class: "tc-filter vu-box", open: true }, [el("summary", {}, [el("b", { text: "Daten, Zeitrahmen und Grenzen" }), glyph("chevron", "tc-chev tc-rot")]),
       el("div", { class: "tc-filter-body" }, [el("ul", { class: "tc-bullets" }, [
-        "Tageskurse: Tiingo EOD, split-bereinigt nach der einen Preiswahrheit der Plattform (ADR-002); 270 Tagesbars je Titel aus der Produkt-Materialisierung.",
+        "Tageskurse: Tagesschlusskurse, split-bereinigt nach der einen Preiswahrheit der Plattform (ADR-002); 270 Tagesbars je Titel aus der Produkt-Materialisierung.",
         "SMA 50/200, RSI 14, ADX, MACD, 52-Wochen-Hoch und -Tief und relatives Volumen im Screener stammen aus der Vollhistorie (feature-store.js, dieselbe Rechnung wie Quant). Das 52-Wochen-Hoch bzw. -Tief des Tages vergleicht Tageshoch bzw. Tagestief mit dem höchsten Hoch bzw. tiefsten Tief der letzten 252 Handelstage.",
         "EMA 20/50/200 werden auf der Vollhistorie gerechnet und an einem Tag nur gezeigt, wenn ihr möglicher Fehler gegenüber jeder anderen Startkonvention höchstens 0,1 % des Kurses beträgt (Schranke: Restgewicht des Startwerts × Spanne des Startfensters ÷ Schlusskurs) und der Startwert höchstens noch mit 5 % wirkt. Frühestens ab 500 Tagesbars (EMA 200), 125 (EMA 50) und 50 (EMA 20). Bei stark gefallenen Titeln kann die EMA 200 trotz langer Historie fehlen; der 200-Tage-Trend steht dann über die SMA 200.",
         "Woche und Monat: Kennzahlen am letzten abgeschlossenen Wochen- bzw. Monatsbar, gebildet in der Materialisierung aus der vollen Tageshistorie (Eröffnung, Hoch, Tief, Schluss, Volumen; Monatsschluss = Schluss des letzten Handelstags im Monat). Veröffentlicht werden nur die Kennzahlen, keine Wochen- oder Monatsbars. 52-Wochen- bzw. 12-Monats-Hoch und -Tief vergleichen dort Schlusskurse. Ereignisse je Woche/Monat zählen Bars seit dem Ereignis. Titel ohne Materialisierung nutzen Wochenschlüsse aus der langen Reihe.",

@@ -141,7 +141,7 @@
   function freshness(D) {
     var asOf = D.signals.asOf, last = D.market.session && D.market.session.lastCompletedSession;
     var lag = tradingDaysBetween(asOf, last);
-    var head = 'Signale auf Schlusskursen vom ' + dateShort(asOf);
+    var head = 'Regel-Ergebnisse auf Schlusskursen vom ' + dateShort(asOf);
     if (lag >= 2) return h('div', { class: 'st-fresh stale vu-alert', role: 'status' }, [h('span', null, [h('strong', { text: head + ' – ' + lag + ' Handelstage alt. ' }), 'Letzter abgeschlossener Handelstag: ' + dateDe(last) + '. Die Tageskurse sind noch nicht nachgezogen.'])]);
     return h('p', { class: 'st-fresh st-asof' + (lag ? ' stale' : '') }, [icon(IC.clock), head + (lag ? ' · 1 Handelstag alt' : '')]);
   }
@@ -305,7 +305,7 @@
   var APP = null;
   function disclaimer(sig) {
     var m = (APP && APP.market) || {}, asOf = sig && sig.asOf, last = m.session && m.session.lastCompletedSession;
-    var rows = [['Datenstand', 'Signale auf Tagesschlusskursen vom ' + dateDe(asOf) + (last && last !== asOf ? ' · letzter abgeschlossener Handelstag ' + dateDe(last) : '') + '.']]
+    var rows = [['Datenstand', 'Regel-Ergebnisse auf Tagesschlusskursen vom ' + dateDe(asOf) + (last && last !== asOf ? ' · letzter abgeschlossener Handelstag ' + dateDe(last) : '') + '.']]
       .concat(DM)
       .concat([
         ['Kursdaten', 'Tagesschlusskurse, split-bereinigt (Anbieter: Datenquellen & Methodik im Menü).'],
@@ -369,7 +369,7 @@
       h('p', { class: 'st-lead vu-product-lead vu-hero-description', text: 'Welche Aktien regelbasierte Methoden heute beobachten – und wie belastbar jede Methode ist.' }),
       h('div', { class: 'vu-product-hero__actions' }, [
         h('a', { class: 'vu-product-action', href: BASE + 'strategies/' }, ['Methoden entdecken', icon(IC.arrow)]),
-        h('a', { class: 'vu-product-action vu-product-action--secondary', href: BASE + 'signals/', text: 'Signale ansehen' }),
+        h('a', { class: 'vu-product-action vu-product-action--secondary', href: BASE + 'signals/', text: 'Regel-Ergebnisse ansehen' }),
       ]),
     ]));
     main.appendChild(freshness(D));
@@ -399,7 +399,7 @@
     var perMethod = {}, pick = [];
     near.forEach(function (s) { perMethod[s.strategyId] = (perMethod[s.strategyId] || 0) + 1; if (perMethod[s.strategyId] <= 2) pick.push(s); });
     main.appendChild(sec('Am nächsten am Einstieg', [
-      stale ? emptyBox('Kurse noch nicht aktuell', 'Die Tageskurse sind älter als ein Handelstag. Supertrader hebt auf veralteten Kursen keine Einstiege hervor; die Setups bleiben unter Signale einsehbar.')
+      stale ? emptyBox('Kurse noch nicht aktuell', 'Die Tageskurse sind älter als ein Handelstag. Supertrader hebt auf veralteten Kursen keine Einstiege hervor; die Setups bleiben unter Regel-Ergebnisse einsehbar.')
         : pick.length ? h('div', { class: 'st-list' }, pick.slice(0, 8).map(function (s) { return stockCard(s, S[s.strategyId]); })) : emptyBox('Kein Setup nahe am Trigger', 'Keine Methode mit aktuellen Setups sieht heute ein Setup innerhalb von 3 % vor dem Trigger.'),
     ], { kicker: 'Vorbereitet heißt: noch kein Einstieg', more: more(BASE + 'signals/?phase=prep', 'Alle') }));
 
@@ -444,7 +444,7 @@
     var sum = function (k) { return per.reduce(function (a, x) { return a + x[k]; }, 0); };
     // VU3: Ergebnis zuerst - was die Modelle heute protokollieren, dann der Status der Evidenz in einer Zeile.
     main.appendChild(h('section', { class: 'st-sec vu-sec st-today' }, [
-      h('div', { class: 'st-sec-h vu-sec-head' }, [h('div', null, [h('div', { class: 'st-kick vu-eyebrow', text: stale ? 'Kurse veraltet – Stand ' + dateDe(sig.asOf) : 'Modellbeobachtung · ' + research.length + ' Methoden' }), h('h2', { class: 'vu-sec-title', text: 'Heute im Protokoll' })]), more(BASE + 'signals/', 'Alle Signale')]),
+      h('div', { class: 'st-sec-h vu-sec-head' }, [h('div', null, [h('div', { class: 'st-kick vu-eyebrow', text: stale ? 'Kurse veraltet – Stand ' + dateDe(sig.asOf) : 'Modellbeobachtung · ' + research.length + ' Methoden' }), h('h2', { class: 'vu-sec-title', text: 'Heute im Protokoll' })]), more(BASE + 'signals/', 'Alle Regel-Ergebnisse')]),
       kpiList([[String(sum('prep')), 'In Vorbereitung'], [String(sum('conf')), 'Einstiegsregel erfüllt'], [String(sum('pos')), 'Modellpositionen'], [String(sum('done')), 'Geschlossen']]),
       h('div', { class: 'st-evline' }, [vstatus('Alle Methoden in Prüfung', 'warn'), h('span', { text: 'Kein belegter Vorteil – Beobachtung, keine Empfehlung.' })]),
       moreBox('Was heißt „in Prüfung“?', [
@@ -663,7 +663,7 @@
       var hold = p.holdChecks ? (p.holdChecks.perf && p.holdChecks.freshHigh ? 'Halteregeln erfüllt' : 'Abgabe aus dem Musterdepot am Monatsende droht: ' + (!p.holdChecks.perf ? 'unter 100 % seit Tief' : 'kein neues Hoch in 65 Tagen')) : '';
       return h('li', null, [h('a', { href: stockUrl(p.symbol) }, [
         h('div', { class: 'r1' }, [h('strong', { text: p.symbol }), h('span', { class: 'w', text: pct(p.weight, 1) })]),
-        h('div', { class: 'r2', text: 'Kauf ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' (Rang ' + (p.rankAtEntry || '–') + ') · ' + pct(p.perfSinceLow, 0) + ' über 52-W-Tief · ' + hold }),
+        h('div', { class: 'r2', text: 'Aufnahme (Musterdepot) ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' (Rang ' + (p.rankAtEntry || '–') + ') · ' + pct(p.perfSinceLow, 0) + ' über 52-W-Tief · ' + hold }),
       ])]);
     })));
     pk.push(h('p', { class: 'st-hint', text: t.publication }));
@@ -671,7 +671,7 @@
     // Ausgeloeste Modellorders
     if (t.orders && (t.orders.buys.length || t.orders.sells.length)) main.appendChild(sec('Ausgelöste Modellorders', [
       h('p', { class: 'st-p', text: 'Am ' + dateDe(t.orders.decidedOn) + ' beschlossen, Ausführung zur ' + t.orders.executesAt + '.' }),
-      h('ul', { class: 'st-ul' }, t.orders.sells.map(function (x) { return h('li', { text: 'Abgabe (Musterdepot) ' + x.symbol + (x.target ? ' auf ' + pct(x.target, 0) : '') + ' · ' + t52Rule(x.ruleId, x) }); }).concat(t.orders.buys.map(function (x) { return h('li', { text: 'Kauf ' + x.symbol + ' · Rang ' + x.rank + ' · 10 %' }); }))),
+      h('ul', { class: 'st-ul' }, t.orders.sells.map(function (x) { return h('li', { text: 'Abgabe (Musterdepot) ' + x.symbol + (x.target ? ' auf ' + pct(x.target, 0) : '') + ' · ' + t52Rule(x.ruleId, x) }); }).concat(t.orders.buys.map(function (x) { return h('li', { text: 'Aufnahme (Musterdepot) ' + x.symbol + ' · Rang ' + x.rank + ' · 10 %' }); }))),
     ], { kicker: 'Beschlossen, noch nicht ausgeführt' }));
     // Vorbereitete Einstiege
     var pr = t.prepared || { candidates: [] };
@@ -693,7 +693,7 @@
     var hist = [];
     if (t.closed && t.closed.length) hist.push(details('Geschlossene Trades (' + t.closed.length + ')', [h('ul', { class: 'st-ul' }, t.closed.map(function (x) { return h('li', { text: x.symbol + ' · ' + dateShort(x.entryDate) + ' → ' + dateShort(x.exitDate) + ' · ' + t52Rule(x.exitRuleId, { text: x.exitText }) + ' · ' + pct(x.returnPct, 1, true) }); }))]));
     if (t.notTaken && t.notTaken.length) hist.push(details('Nicht übernommen (' + t.notTaken.length + ')', [h('ul', { class: 'st-ul' }, t.notTaken.map(function (x) { return h('li', { text: dateShort(x.date) + ' · ' + x.symbol + ' · ' + t52Rule(x.reason, x) }); }))]));
-    if (t.executions && t.executions.length) hist.push(details('Ausführungen (' + t.executions.length + ')', [h('ul', { class: 'st-ul' }, t.executions.map(function (x) { return h('li', { text: dateShort(x.date) + ' · ' + (x.side === 'BUY' ? 'Kauf ' : 'Verkauf ') + x.symbol + ' zu ' + num(x.price) + (x.text ? ' · ' + x.text : '') }); }))]));
+    if (t.executions && t.executions.length) hist.push(details('Ausführungen (' + t.executions.length + ')', [h('ul', { class: 'st-ul' }, t.executions.map(function (x) { return h('li', { text: dateShort(x.date) + ' · ' + (x.side === 'BUY' ? 'Aufnahme (Musterdepot) ' : 'Abgabe (Musterdepot) ') + x.symbol + ' zu ' + num(x.price) + (x.text ? ' · ' + x.text : '') }); }))]));
     if (t.decisions && t.decisions.length) hist.push(details('Monatsentscheidungen (' + t.decisions.length + ')', [h('ul', { class: 'st-ul' }, t.decisions.map(function (d) { return h('li', { text: dateShort(d.date) + ' · Ampel ' + (d.green ? 'grün' : 'rot') + ' · ' + d.candidates + ' Kandidaten · Aufnahme: ' + (d.buys.join(', ') || '–') + ' · Abgabe: ' + (d.sells.map(function (x) { return x.symbol; }).join(', ') || '–') }); }))]));
     if (!hist.length) hist.push(h('p', { class: 'st-hint', text: 'Noch keine Monatsentscheidung im Protokoll — das Ledger beginnt am ' + dateDe(t.liveSince) + ' und rechnet nicht zurück.' }));
     main.appendChild(sec('Protokoll', hist, { kicker: 'Jede Entscheidung mit Regel' }));
@@ -701,7 +701,7 @@
   function trend52For(D, sym) {
     var t = D.trend52; if (!t) return null;
     var p = t.portfolio.positions.filter(function (x) { return x.symbol === sym; })[0];
-    if (p) return ['Im Modelldepot', 'good', 'Gewicht ' + pct(p.weight, 1) + ' · Kauf ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' · ' + pct(p.perfSinceLow, 0) + ' über 52-Wochen-Tief'];
+    if (p) return ['Im Modelldepot', 'good', 'Gewicht ' + pct(p.weight, 1) + ' · Aufnahme (Musterdepot) ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' · ' + pct(p.perfSinceLow, 0) + ' über 52-Wochen-Tief'];
     var c = (t.prepared.candidates || []).filter(function (x) { return x.symbol === sym; })[0];
     if (c) return ['Kandidat · Rang ' + c.rank, 'warn', c.wouldGetSlot ? 'Würde am Monatsende einen Platz bekommen (Entscheidung ' + dateDe(t.schedule.nextDecision) + ').' : 'Erfüllt alle Kaufregeln, aber kein freier Platz.'];
     var n = (t.nearMisses || []).filter(function (x) { return x.symbol === sym; })[0];
@@ -854,7 +854,7 @@
       ? 'Geprüft wurden ' + pc.counts.evaluated + ' handelbare US-Aktien. ' + pc.counts.partialMatch + ' erfüllen alle fünf prüfbaren Kriterien. Marktrichtung (M) heute: ' + (pc.market.status === 'PASS' ? 'steigend' : 'nicht bestätigt') + '.'
       : 'Geprüft wurden ' + pc.counts.evaluated + ' Aktien mit Jahresabschlüssen; ' + pc.counts.valueUniverse + ' gehören zum günstigsten Fünftel, ' + pc.counts.candidates + ' davon erreichen mindestens 7 von 8 prüfbaren Signalen.';
     dmAdd('Fundamentaldaten', pc.fundamentalsBasis + '. Kurse vom ' + dateDe(pc.asOf) + '.');
-    main.appendChild(sec(isCS ? 'Die sieben Kriterien' : 'Die neun Signale', [h('p', { class: 'st-hint', text: head }), moreBox(isCS ? 'Kriterien und Trefferquote' : 'Signale und Trefferquote', [grid])], { kicker: 'Was prüfbar ist' }));
+    main.appendChild(sec(isCS ? 'Die sieben Kriterien' : 'Die neun Kriterien', [h('p', { class: 'st-hint', text: head }), moreBox(isCS ? 'Kriterien und Trefferquote' : 'Kriterien und Trefferquote', [grid])], { kicker: 'Was prüfbar ist' }));
     var list = pc.candidates;
     main.appendChild(sec(isCS ? 'Teiltreffer' : 'Kandidaten der Teilprüfung', [
       h('div', { class: 'st-warnbox' }, [icon(IC.info), h('span', { text: isCS ? 'Teiltreffer erfüllen alle prüfbaren Kriterien. Weil „I“ fehlt und kein Basisausbruch gerechnet wird, gibt es keinen Ein- oder Ausstieg — und kein CAN-SLIM-Signal.' : 'Ein Teil-Score ist kein F-Score: das Liquiditätssignal fehlt. Piotroski bildete einmal jährlich ein Portfolio; daraus entstehen hier keine Ein- und Ausstiege.' })]),
@@ -879,7 +879,7 @@
     });
     ['CANSLIM', 'PIOTROSKI_F'].forEach(function (id) { var pc = sig.partialChecks && sig.partialChecks[id]; if (pc) pc.candidates.forEach(function (r) { rows.push({ kind: 'partial', s: r, id: id, phase: 'partial' }); }); });
 
-    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Signale' }), h('h1', { text: 'Setups finden' })]));
+    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Regel-Ergebnisse' }), h('h1', { text: 'Setups finden' })]));
     main.appendChild(freshness(D));
 
     var methods = reg.strategies.filter(function (s) { return s.mode === 'LIVE' || s.mode === 'PARTIAL_CHECK'; });
@@ -1219,7 +1219,7 @@
     }
     entries.forEach(function (e) { if (e.kind === 'partial') { var pc = sig.partialChecks[e.id]; dmAdd(S[e.id].world_name, 'Teilprüfung auf Basis von ' + pc.fundamentalsBasis + '. Kurse vom ' + dateDe(pc.asOf) + '.'); } });
     dmAdd('Anzeigewährung', fxHost);
-    dmAdd('Kurs im Kopf', 'Während der Handelszeit der letzte Kurs der Börse IEX (über Tiingo, verzögert), sonst der Tagesschluss. Er dient nur der Anzeige; Signale, Trigger und Stops rechnen auf Tagesschlusskursen.');
+    dmAdd('Kurs im Kopf', 'Während der Handelszeit der letzte Kurs der Börse IEX (verzögert), sonst der Tagesschluss. Er dient nur der Anzeige; Signale, Trigger und Stops rechnen auf Tagesschlusskursen.');
     mountTechnical(main, sym, kit, sig);
     main.appendChild(disclaimer(sig));
   }
@@ -1410,7 +1410,7 @@
       h('li', null, [h('b', { text: 'Vorab festgelegt' }), ' – Universum, Zeitraum, Regeln, Kosten, Vergleich und Erfolgskriterien werden vor dem Test eingefroren.']),
       h('li', null, [h('b', { text: 'Damaliges Universum' }), ' – alle an jedem Tag gelisteten US-Aktien, einschließlich später delisteter Titel; neu vergebene Kürzel werden getrennt.']),
       h('li', null, [h('b', { text: 'Delistings ohne Schönrechnen' }), ' – drei vorab festgelegte Annahmen für den letzten Kurs; ein Ergebnis, das an dieser Annahme hängt, gilt nicht als belegt.']),
-      h('li', null, [h('b', { text: 'Gleiche Regeln wie live' }), ' – derselbe Rechenkern erzeugt Live-Signale und historische Trades.']),
+      h('li', null, [h('b', { text: 'Gleiche Regeln wie live' }), ' – derselbe Rechenkern erzeugt laufende Regel-Ergebnisse und historische Trades.']),
       h('li', null, [h('b', { text: 'Keine Nachoptimierung' }), ' – eine neue Parametervariante ist eine neue Hypothese und braucht eine spätere, unabhängige Prüfung.']),
     ])]), (bt.nextSteps || []).length ? moreBox('Nächste Schritte', [h('ol', { class: 'st-plan2' }, (bt.nextSteps || []).map(function (x) { return h('li', null, [h('strong', { text: x[0] }), h('span', { text: x[1] })]); }))]) : null], { kicker: 'Methode' }));
     if (pl) {
@@ -1529,7 +1529,7 @@
   /* ================================================ VU HAUSSTRATEGIE */
   var HOUSE_HISTORY = [
     ['Breite Faktor-Depots (HS1)', '12 gleichgewichtete Varianten aus Momentum, Gewinnüberraschung, 52-Wochen-Hoch und niedriger Schwankung, 2016–2021 mit delisteten Titeln und Kosten. Ergebnis: kein Vorteil gegenüber dem S&P 500.'],
-    ['Indexnahe Faktorneigung (HS2, HS3)', 'Gewichtung nach Größe mit leichter Faktorneigung, zuletzt nach echter Marktkapitalisierung aus SEC-Meldungen. Eine Datenprüfung fand vorher drei Datenfehler. Ergebnis im versiegelten Testzeitraum 2022–2026: praktisch gleichauf mit dem Index.'],
+    ['Indexnahe Faktorneigung (HS2, HS3)', 'Gewichtung nach Größe mit leichter Faktorneigung, zuletzt nach echter Marktkapitalisierung aus Pflichtmeldungen. Eine Datenprüfung fand vorher drei Datenfehler. Ergebnis im versiegelten Testzeitraum 2022–2026: praktisch gleichauf mit dem Index.'],
     ['Volumenprofil, konzentriert (HS4)', '20 Titel aus den 500 größten US-Firmen mit Aufwärtstrend, Akkumulation im Volumen und starken Quartalszahlen. Das Volumen verbesserte die Auswahl gegenüber derselben Regel ohne Volumen. Der Vorsprung gegenüber dem Index entstand aber vor allem 2024–2026 und ist statistisch nicht belastbar.'],
     ['Gegenprobe 2008–2015', 'Die eingefrorene HS4-Regel lief einmal auf einem Zeitraum, den sie nie gesehen hatte. Ergebnis: nicht bestätigt. Ab dem ersten investierten Monat lag sie hinter dem Index, und dieselbe Regel ohne Volumen schnitt besser ab.'],
     ['Deshalb jetzt: Vorwärtslauf', 'Die Regeln von HS4 sind eingefroren. Ab dem Start wird jede Monatsentscheidung vor der Umsetzung mit Zeitstempel veröffentlicht. Erst dieser Verlauf zeigt, ob die Strategie den Markt schlägt.'],
@@ -1565,7 +1565,7 @@
       kids.push(h('p', { class: 'st-hint', text: 'Umsetzung zur Eröffnung am ' + (last.executeOn ? dateDe(last.executeOn) : 'nächsten Handelstag') + '. Live seit ' + dateDe(L.liveSince) + '. Veröffentlicht werden Titel und Zielgewichte, keine Kurse und keine Renditen.' }));
       main.appendChild(sec('Modelldepot', kids, { kicker: 'Aktuelle Zusammensetzung' }));
       main.appendChild(sec('Protokoll', [h('ul', { class: 'st-ul' }, L.decisions.slice().reverse().map(function (d) {
-        return h('li', { text: dateDe(d.date) + (d.kind === 'START' ? ' · Start' : ' · Monatsende') + ' · Kauf: ' + ((d.buys || []).join(', ') || '–') + ' · Verkauf: ' + ((d.sells || []).join(', ') || '–') + ' · festgeschrieben ' + dateDe(d.decidedAt) });
+        return h('li', { text: dateDe(d.date) + (d.kind === 'START' ? ' · Start' : ' · Monatsende') + ' · Aufnahme (Musterdepot): ' + ((d.buys || []).join(', ') || '–') + ' · Abgabe (Musterdepot): ' + ((d.sells || []).join(', ') || '–') + ' · festgeschrieben ' + dateDe(d.decidedAt) });
       }))], { kicker: 'Jede Entscheidung mit Zeitstempel' }));
     }
     main.appendChild(sec('Regeln', [h('ol', { class: 'st-chain' }, ((L && L.rules) || []).map(function (r) { return h('li', null, [h('p', { text: r })]); })),

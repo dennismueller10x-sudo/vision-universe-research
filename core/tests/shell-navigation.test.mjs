@@ -28,7 +28,7 @@ test('every product dock starts with the product name, never Home or Start, and 
     ['technical', ['Technical','Screener','Chart','Muster']],
     ['vorsorge', ['Vorsorge','Planer','ETFs','Portfolio']],
     ['screener', ['Screener','Filter','Treffer','Gespeichert']],
-    ['supertrader', ['Supertrader','Methoden','Signale','Backtests']],
+    ['supertrader', ['Supertrader','Methoden','Regel-Ergebnisse','Backtests']],
     ['hedgefonds', ['Hedgefonds','Investoren','Aktien','Smart Money']],
     ['portfolios', ['Portfolios','Supertrader','Quant','KI']],
     ['mein', ['Mein Bereich','Watchlist','Gespeichert','Konto']]

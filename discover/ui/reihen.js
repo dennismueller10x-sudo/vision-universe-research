@@ -230,7 +230,7 @@
     var ids = slot.rows.filter(function (id) { return avail[id]; });
     var total = Object.keys(avail).filter(function (id) { return !/^thema-/.test(id) && id !== 'sector-leaders'; }).length;
     var sec = h('section', 'dr-sec dr-sec--strat');
-    sec.innerHTML = railHead({ title: 'Strategien', more: 'Alle ' + total, href: '#/strategien', label: 'Alle ' + total + ' Strategien', sub: 'Feste Regeln aus den Geschäftszahlen (SEC).' });
+    sec.innerHTML = railHead({ title: 'Strategien', more: 'Alle ' + total, href: '#/strategien', label: 'Alle ' + total + ' Strategien', sub: 'Feste Regeln aus den Geschäftszahlen (Pflichtmeldungen).' });
     var track = rail('Strategien'); sec.appendChild(track);
     ids.forEach(function (id) {
       var cp = R().STRATEGY_COPY[id] || {}, a = h('a', 'dr-sk'); a.href = rowHref(id); a.setAttribute('role', 'listitem');
