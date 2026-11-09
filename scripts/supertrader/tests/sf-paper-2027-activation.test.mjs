@@ -149,6 +149,6 @@ test('PAPER-2027-WORKFLOW: vorhanden, bewacht, ADR-005, nur Supertrader-Pfade', 
   assert.match(wf, /run-paper-2027\.mjs verify/, 'nur anhaengen gegen den committeten Stand vor jedem Commit');
   assert.ok(wf.indexOf('run-paper-2027.mjs verify') < wf.indexOf('git commit'), 'Pruefung vor dem Commit');
   assert.ok(!/git push/.test(wf), 'Push nur ueber push-with-retry.sh');
-  for (const line of wf.split('\n').filter((l) => l.includes('${{ inputs.'))) assert.match(line, /^\s+[A-Z_]+: \$\{\{ inputs\.[a-z_]+ \}\}$/, 'Eingaben nur ueber env: ' + line);
+  for (const line of wf.split('\n').filter((l) => l.includes('${{ inputs.') && !l.startsWith('run-name: '))) assert.match(line, /^\s+[A-Z_]+: \$\{\{ inputs\.[a-z_]+ \}\}$/, 'Eingaben nur ueber env: ' + line);
   for (const m of wf.matchAll(/git add ([^\n]+)/g)) for (const p of m[1].trim().split(/\s+/)) assert.match(p, /^scripts\/supertrader\//, p);
 });

@@ -5,6 +5,7 @@
    Der Monitor prueft das Ergebnis. Hermetisch: Wegwerf-Verzeichnisse und ein
    lokaler HTTP-Server statt der GitHub-API. */
 import test from "node:test";
+import { takteVon } from "../../scripts/core/schedule-registry.mjs";
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from "node:fs";
@@ -230,7 +231,7 @@ test("SC5 · Verdrahtung: eigene Stufe nach allen Pruefungen, entkoppelt, Zeitpl
   assert.match(wf, /\n  alarm:\n    needs: \[refresh, materialize, freshness-contract, imblick, supertrader, supertrader-prune(, [a-z-]+)*\]/);
   /* Supertrader-Workflow unveraendert: Zeitplan-Rueckfall + manueller Start, Concurrency, Integritaetstests vor dem Commit */
   const st = lies(".github/workflows/supertrader-signals.yml");
-  assert.match(st, /cron: '17 6 \* \* 2-6'/);
+  assert.ok(takteVon("supertrader-signals.yml").includes("17 6 * * 2-6"), "Zeitplan-Rueckfall (Register)");
   assert.match(st, /workflow_dispatch:/);
   assert.match(st, /group: supertrader-signals\s*\n\s+cancel-in-progress: false/);
   assert.ok(st.indexOf('node --test "scripts/supertrader/tests/*.test.mjs"') < st.indexOf("commit-and-push.sh"), "Tests vor dem Commit");

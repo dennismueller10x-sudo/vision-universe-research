@@ -18,12 +18,15 @@ name: Supertrader Paper 2027 (SF6-PAPER-2027, Aufzeichnung)
 # Keine Orders, kein Broker, keine Produktflaeche, LIVE_NOT_APPROVED.
 #
 # Commit-Protokoll ADR-005: Spitze des eigenen Zweigs, push-with-retry.sh, Concurrency je Zweig, Eingaben nur ueber env.
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '37 2 * * 2-6'
-    - cron: '41 9 * * 2-6'
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       session:
         description: 'Sitzung YYYY-MM-DD (leer = letzte XNYS-Sitzung vor heute). Nur wirksam, wenn der Schalter ACTIVE meldet.'
         type: string

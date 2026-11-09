@@ -1,6 +1,7 @@
 // Wöchentliche Aktualisierung von US-Wertpapierstamm und Firmennamen (vorbereitet, Zeitplan aus):
 // Workflow-Abschaltung und ADR-005, Übernahme-Gate (fail closed), Erzeuger fail closed und idempotent.
 import test from "node:test";
+import { takteVon } from "../../scripts/core/schedule-registry.mjs";
 import assert from "node:assert/strict";
 import { readFileSync, mkdtempSync, rmSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -18,13 +19,14 @@ const code = () => readFileSync(WF, "utf8").split("\n").filter((l) => !/^\s*#/.t
 test("SMW-1 · Workflow: Zeitplan Mittwoch 09:41 UTC und workflow_dispatch, Commit manuell standardmaessig aus, geplant nur ohne Sonderrechte", () => {
   const c = code();
   // Neustart 04.11.2026 (Plan §6 Nr. 2): Zeitplan wieder an, damit der Stamm die 60-Tage-Grenze der SF8-Eingangspruefung nie erreicht.
-  assert.match(c, /^on:\n\s+schedule:\n\s+- cron: '41 9 \* \* 3'\n\s+workflow_dispatch:/m);
+  assert.deepEqual(takteVon("security-master-weekly.yml"), ["41 9 * * 3"], "Zeitplan im Register (Wecker)");
+  assert.match(c, /^on:\n\s+workflow_dispatch:/m);
   assert.doesNotMatch(c, /^\s*(push|pull_request|workflow_run)\s*:/m, "kein weiterer automatischer Ausloeser");
-  assert.equal((c.match(/^\s*- cron:/gm) || []).length, 1, "genau ein Zeitplan");
+  assert.equal((c.match(/^\s*- cron:/gm) || []).length, 0, "kein GitHub-Cron neben dem Wecker");
   assert.match(c, /commit:\n\s+description:[^\n]*\n\s+type: boolean\n\s+default: false/);
   assert.match(c, /allow_version_change:\n\s+description:[^\n]*\n\s+type: boolean\n\s+default: false/);
   // Ein geplanter Lauf hat keine Eingaben: weder Versionswechsel noch Sonderfreigabe, Commit nur bei Gate COMMIT.
-  assert.match(c, /if: \(github\.event_name == 'schedule' \|\| inputs\.commit == true\) && steps\.gate\.outputs\.decision == 'COMMIT'/);
+  assert.match(c, /if: \(\(github\.event_name == 'schedule' \|\| inputs\.zeitplan != ''\) \|\| inputs\.commit == true\) && steps\.gate\.outputs\.decision == 'COMMIT'/);
   assert.match(c, /IN_ALLOW_VERSION: \$\{\{ inputs\.allow_version_change \}\}/);
   assert.match(c, /if \[ "\$IN_ALLOW_VERSION" = "true" \]/);
 });

@@ -24,9 +24,9 @@ name: SEC Fundamentals — Daily Incremental
 # Ticker-Zuordnung. An einem normalen Tag sind das unter 300 Anfragen;
 # zum Quartalsende einige tausend - und nie 5.000 fuer nichts.
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '15 6 * * *'
   # Vor dem Merge auf main kennt die GitHub-API den Workflow fuer einen
   # Dispatch nicht (404). Ein Push, der den Lifecycle selbst aendert,
   # loest deshalb einen echten Lauf aus - das ist zugleich der Nachweis.
@@ -40,6 +40,10 @@ on:
       - 'scripts/insider/**'
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       since:
         description: 'Ersten Indextag erzwingen (YYYY-MM-DD, leer = seit dem letzten Lauf)'
         type: string
@@ -64,6 +68,10 @@ concurrency:
   # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
   group: sec-backfill-${{ github.ref_name }}
   cancel-in-progress: false
+
+env:
+  # Ereignis wie vor der Umstellung: ein Takt des Weckers heisst schedule.
+  VU_EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
 
 jobs:
   daily:
@@ -158,7 +166,7 @@ jobs:
           # erkennen, nichts holen, nichts schreiben, nichts committen. Sonst landen
           # Produktionsdaten im Feature-Zweig, und ein Merge rollt main zurueck
           # (#386, #413, #421 trugen solche Commits; Audit 05.10.2026).
-          if [ "$IN_DRY_RUN" = "true" ] || [ "$GITHUB_EVENT_NAME" = "push" ]; then args+=(--dry-run); fi
+          if [ "$IN_DRY_RUN" = "true" ] || [ "${VU_EVENT}" = "push" ]; then args+=(--dry-run); fi
           python3 scripts/quant/cli.py daily "${args[@]}"
 
       - name: Wie viele Emittenten wurden aktualisiert?
