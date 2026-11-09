@@ -28,7 +28,7 @@ test('every product dock starts with the product name, never Home or Start, and 
     ['technical', ['Technical','Screener','Chart','Muster']],
     ['vorsorge', ['Vorsorge','Planer','ETFs','Portfolio']],
     ['screener', ['Screener','Filter','Treffer','Gespeichert']],
-    ['supertrader', ['Supertrader','Methoden','Signale','Backtests']],
+    ['supertrader', ['Supertrader','Methoden','Treffer','Forschung']],
     ['hedgefonds', ['Hedgefonds','Investoren','Aktien','Gruppen-Käufe']],
     ['portfolios', ['Portfolios','Supertrader','Quant','KI']],
     ['mein', ['Mein Bereich','Watchlist','Gespeichert','Konto']]
@@ -46,8 +46,8 @@ test('every product dock starts with the product name, never Home or Start, and 
 
 test('dock targets are existing routes of their products', () => {
   const files = { '/elliott/': 'elliott/index.html', '/discover/': 'discover/index.html', '/quant/': 'quant/index.html', '/vorsorge/': 'vorsorge/index.html', '/screener/': 'screener/index.html',
-    '/supertrader/': 'supertrader/index.html', '/supertrader/strategies/': 'supertrader/strategies/index.html', '/supertrader/signals/': 'supertrader/signals/index.html',
-    '/supertrader/backtests/': 'supertrader/backtests/index.html', '/hedgefonds/': 'hedgefonds/index.html', '/fundamental/': 'fundamental/index.html', '/technical/': 'technical/index.html',
+    '/supertrader/': 'supertrader/index.html', '/supertrader/strategies/': 'supertrader/strategies/index.html', '/supertrader/treffer/': 'supertrader/treffer/index.html',
+    '/supertrader/forschung/': 'supertrader/forschung/index.html', '/hedgefonds/': 'hedgefonds/index.html', '/fundamental/': 'fundamental/index.html', '/technical/': 'technical/index.html',
     '/willkommen/': 'willkommen/index.html', '/mein-dashboard/': 'mein-dashboard/index.html', '/konto/': 'konto/index.html', '/portfolios/': 'portfolios/index.html' };
   for (const p of PRODUCTS) for (const [, , href] of p.items) {
     const path = new URL(href, 'https://x').pathname;
@@ -102,7 +102,9 @@ test('active dock state follows deep links after reload', () => {
   assert.equal(active('hedgefonds', '/hedgefonds/#/smart-money'), 'gruppen', 'alte Adresse markiert Gruppen-Käufe');
   assert.equal(active('hedgefonds', '/hedgefonds/#/datenbank'), 'investoren', 'Datenbank ist ein Reiter unter Investoren');
   assert.equal(active('screener', '/screener/?view=compare'), 'treffer');
-  assert.equal(active('supertrader', '/supertrader/stock/NVDA/'), 'signale');
+  assert.equal(active('supertrader', '/supertrader/stock/NVDA/'), 'treffer');
+  assert.equal(active('supertrader', '/supertrader/signals/'), 'treffer');
+  assert.equal(active('supertrader', '/supertrader/forschung/'), 'forschung');
   assert.equal(active('supertrader', '/supertrader/strategies/darvas-boxes/'), 'methoden');
   assert.equal(active('supertrader', '/supertrader/sources/'), null);
   assert.equal(active('hedgefonds', '/hedgefonds/#/aktie/037833100'), 'aktien');

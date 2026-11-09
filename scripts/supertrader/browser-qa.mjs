@@ -59,11 +59,11 @@ async function main() {
   const routes = [
     ['home', '/supertrader/', 'h1.st-x-lt'],
     ['signals', '/supertrader/treffer/', '.st-r-chips button'],
-    ['signals-old', '/supertrader/signals/?method=DONCHIAN_TURTLE', '.st-r-chips button[aria-pressed="true"][data-v="DONCHIAN_TURTLE"]'],
+    ['signals-redirect', '/supertrader/signals/?method=DONCHIAN_TURTLE', '.st-r-chips button[aria-pressed="true"][data-v="DONCHIAN_TURTLE"]'],
     ['signals-canslim', '/supertrader/treffer/?method=CANSLIM', '.st-r-row[data-partial], .st-r .vu-blank'],
     ['strategies', '/supertrader/strategies/', 'h1.st-x-lt'],
     ['backtests', '/supertrader/forschung/', '.st-btrow'],
-    ['backtests-old', '/supertrader/backtests/', '.st-btrow'],
+    ['backtests-redirect', '/supertrader/backtests/', '.st-btrow'],
     ['sources', '/supertrader/sources/', '.st-r-acc'],
     ...registry.strategies.map((s) => [`strategy-${s.slug}`, `/supertrader/strategies/${s.slug}/`, '.st-r h1.vu-lt, .st-r .st-x-hero h1']),
   ];
