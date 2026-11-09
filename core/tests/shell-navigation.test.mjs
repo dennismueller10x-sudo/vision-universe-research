@@ -150,11 +150,11 @@ test('the shell header loads the slim web logo, not the 129 KB master (stock pag
 
 
 test('compact menu preserves every old destination in nine products, Portfolios and one additional group', () => {
-  // Reihenfolge des 3 x 3-Rasters im Menue (Mockup N3), darunter die breiten Kacheln Portfolios (Owner 06.11.2026) und Insights (Owner 09.11.2026)
+  // Reihenfolge des 3 x 3-Rasters im Menue (Mockup N3), darunter die breiten Kacheln Portfolios (Owner 06.11.2026) und Insights (Owner 09.11.2026: Artikel, Aktienmagazin, Reports; altes Magazin und XPeng-Muster nicht mehr im Menü)
   assert.deepEqual(Array.from(groups,g=>g.id), ['discover','quant','technical','fundamental','supertrader','hedgefonds','elliott','screener','vorsorge','portfolios','insights','more']);
   for(const g of groups.filter(g=>g.id!=='more')) assert.ok(g.claim, g.id+': Kurzbeschreibung fuer die Kachel');
   const destinations = new Set(groups.flatMap(g=>[g.href,...g.entries.map(e=>e[1])]).filter(Boolean));
-  const previous = ['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist','/dashboard/','/macro/','/etf/','/vorsorge/#/','/vorsorge/#/plan','/vorsorge/#/etfs','/vorsorge/#/portfolio','/vorsorge/#/vergleichen','/vorsorge/#/foerderung','/vorsorge/#/monitor','/vorsorge/#/wissen','/screener/','/quant/','/supertrader/','/analysten/','/hedgefonds/','/news/','/morning/','/magazin/','/reports/xpeng/','/academy/','/guide/','/budget/'];
+  const previous = ['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist','/dashboard/','/macro/','/etf/','/vorsorge/#/','/vorsorge/#/plan','/vorsorge/#/etfs','/vorsorge/#/portfolio','/vorsorge/#/vergleichen','/vorsorge/#/foerderung','/vorsorge/#/monitor','/vorsorge/#/wissen','/screener/','/quant/','/supertrader/','/analysten/','/hedgefonds/','/news/','/morning/','/insights/magazin/','/academy/','/guide/','/budget/'];
   for(const href of previous) assert.ok(destinations.has(href),href+' remains reachable');
   for(const g of groups.filter(g=>g.id!=='more')) assert.equal(g.href, g.entries[0][1]);
   assert.equal(groups.find(g=>g.id==='quant').entries.find(([,href])=>href==='/quant/#/screener')[0],'Quant Screener');
@@ -180,7 +180,7 @@ test('menu routes distinguish home, query, hash segment boundaries and detail pa
     ['/hedgefonds/#/fonds/berkshire','hedgefonds','/hedgefonds/#/datenbank'],
     ['/discover/#/s/US_REAL/NVDA','discover','/discover/#/einzeln/US_REAL'],
     ['/news/','more','/news/'],
-    ['/reports/xpeng/research/','more','/reports/xpeng/']
+    ['/insights/reports/','insights','/insights/reports/']
   ];
   for(const [url,group,href] of examples){assert.equal(state(url).group,group,url);assert.equal(state(url).href,href,url);assert.equal(state(url).expanded,group,url);}
   assert.equal(state('/screener/?view=start&mode=pro').href,'/screener/');

@@ -3,8 +3,8 @@
 //   node products/insights/build.mjs --check   prüft nur, ob alles aktuell ist (Exit 1 sonst)
 //   node products/insights/build.mjs --out <ordner>   schreibt in einen anderen Ordner (Tests)
 //
-// Erzeugt: /insights/ (Übersicht mit Artikeln und Reports), /insights/<slug>/ (Artikel mit JSON-LD),
-// /insights/artikel.json (Liste für andere Seiten), /insights/feed.xml (RSS), /insights/sitemap.xml, /insights/reports/ (Reports; die Reports selbst liegen unter /reports/<id>/).
+// Erzeugt: /insights/ (Übersicht), /insights/<slug>/ (Artikel mit JSON-LD), /insights/magazin/ und /insights/magazin/nr-<NN>/
+// (Aktienmagazin, Inhalt aus products/insights/magazin.json), /insights/reports/, /insights/artikel.json, /insights/feed.xml, /insights/sitemap.xml.
 // Daten je Artikel sind eingefroren (products/insights/snapshot.mjs); dieser Build liest keine Produktdaten.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -24,6 +24,7 @@ export function loadArtikel(dir = path.join(here, 'artikel')) {
     .sort((a, b) => (a.datum < b.datum ? 1 : a.datum > b.datum ? -1 : a.slug < b.slug ? -1 : 1));
 }
 export const loadReports = () => JSON.parse(fs.readFileSync(path.join(here, 'reports.json'), 'utf8')).reports;
+export const loadMagazin = () => JSON.parse(fs.readFileSync(path.join(here, 'magazin.json'), 'utf8')).ausgaben;
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const de = (v, d = 0) => v.toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -41,37 +42,45 @@ const ICON = {
   next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 };
 
-// Kurslinie als statisches SVG (Fläche + Linie, Achsen-Stützwerte). Daten: eingefrorene Serie des Artikels.
-function chart(serie) {
-  const W = 640, H = 200, pl = 8, pr = 52, pt = 12, pb = 26;
-  const v = serie.map((p) => p[1]), lo = Math.min(...v), hi = Math.max(...v), span = hi - lo || 1;
-  const x = (i) => pl + (i / (serie.length - 1)) * (W - pl - pr), y = (val) => pt + (1 - (val - lo) / span) * (H - pt - pb);
-  const line = serie.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p[1]).toFixed(1)}`).join('');
-  const area = `${line}L${x(serie.length - 1).toFixed(1)},${H - pb}L${pl},${H - pb}Z`;
-  const ticks = [hi, (hi + lo) / 2, lo].map((t) => `<line x1="${pl}" x2="${W - pr}" y1="${y(t).toFixed(1)}" y2="${y(t).toFixed(1)}" class="g"/><text x="${W - pr + 6}" y="${(y(t) + 4).toFixed(1)}">${de(t, 0)}</text>`).join('');
-  const last = serie.at(-1);
-  return `<svg class="in-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Kursverlauf der letzten ${serie.length} Handelstage, zuletzt ${de(last[1], 2)} Dollar">${ticks}<path d="${area}" class="a"/><path d="${line}" class="l"/><circle cx="${x(serie.length - 1).toFixed(1)}" cy="${y(last[1]).toFixed(1)}" r="4.5" class="d"/><text x="${pl}" y="${H - 6}">${datumDE(serie[0][0])}</text><text x="${W - pr}" y="${H - 6}" text-anchor="end">${datumDE(last[0])}</text></svg>`;
+// Ton einer Note aus dem Gesundheitscheck: stark = Neongrün, schwach = Schwarz (Design-Regel: Plus grün, Minus schwarz)
+const TON = (v) => (/sehr stark|^stark|solide/i.test(v) ? 'plus' : /negativ|belastet|schwach/i.test(v) ? 'minus' : 'neutral');
+const pill = (v, txt) => `<span class="in-vpill ${v >= 0 ? 'plus' : 'minus'}">${txt}</span>`;
+const prozent = (v) => (v == null ? '–' : (v < 0 ? '−' : '') + de(Math.abs(v * 100), 0) + '&nbsp;%');
+
+// "So zeigt Vision Universe <Aktie>": Kennzahlen-Kacheln, echte App-Screens vom Erscheinungstag, Gesundheitscheck, 13F.
+function datenBox(t, a) {
+  const d = a.daten.aktien[t], f = d.fonds, kurz = esc(d.name.split(' ')[0].replace(/,$/, ''));
+  const kacheln = [
+    [`Schlusskurs ${datumDE(d.kursStand).slice(0, 6)}`, de(d.kurs, 2) + '&nbsp;$', d.r12m == null ? '' : pill(d.r12m, pct(d.r12m) + ' in 12&nbsp;Monaten'), 'gross'],
+    ['Abstand zum 52-Wochen-Hoch', pct(d.abstandHoch), ''],
+    ['Marktwert', usd(d.marktwert), ''],
+    ['Umsatz, letzte 4 Quartale', usd(d.umsatzTTM), d.wachstum == null ? '' : pill(d.wachstum, pct(d.wachstum))],
+    ['Nettomarge', prozent(d.nettomarge), ''],
+    [d.kgv == null ? 'KUV (Kurs-Umsatz)' : 'KGV', d.kgv == null ? de(d.kuv, 1) : de(d.kgv, 1), d.kgv == null ? '<em>KGV entfällt: Verlust</em>' : ''],
+    ['Trend laut Technik-Engine', TREND[d.trend] || '–', ''],
+  ];
+  const screens = (a.appScreens?.[t] || []).map((s) => `<a class="in-phone" href="${s.href}"><span class="in-phone-rahmen"><img src="${s.src}" alt="${esc(s.label)}-Ansicht von ${esc(d.name)} in der Vision-Universe-App" loading="eager" decoding="async" width="390" height="844"></span><b>${esc(s.label)}</b><span>${esc(s.text)}</span></a>`).join('');
+  const anteil = f ? Math.round((f.kaeufer / Math.max(1, f.kaeufer + f.verkaeufer)) * 100) : 0;
+  const fondsHtml = f ? `<div class="in-vu-fonds"><b class="in-vu-label">Große Fonds · 13F zum ${datumDE(f.stichtag)}</b>
+    <p><strong>${de(f.anzahl)}</strong> Fonds halten ${kurz}</p>
+    <div class="in-balken" role="img" aria-label="${de(f.kaeufer)} haben aufgestockt oder sind neu eingestiegen, ${de(f.verkaeufer)} haben reduziert oder verkauft"><i style="width:${anteil}%"></i></div>
+    <div class="in-balken-text"><span>${de(f.kaeufer)} mehr oder neu</span><span>${de(f.verkaeufer)} weniger oder raus</span></div>
+    <ul>${f.genannt.slice(0, 4).map((g) => `<li><span>${esc(g.name)}</span><em class="${g.art === 'verkauft' || g.art === 'reduced' ? 'minus' : 'plus'}">${ART[g.art] || esc(g.art)}</em></li>`).join('')}</ul></div>` : '';
+  return `<section class="in-vu" aria-label="So zeigt Vision Universe ${esc(d.name)}">
+  <header class="in-vu-kopf">${d.logo ? `<img src="${d.logo}" alt="" width="48" height="48">` : ''}<div><span class="in-kicker">Aus der App</span><b>So zeigt Vision Universe ${kurz}</b><span>${t} · Stand ${datumDE(d.kursStand)} · eingefroren am Erscheinungstag</span></div></header>
+  <div class="in-vu-kacheln">${kacheln.map(([k, v, z, g]) => `<div class="in-kachel${g ? ' in-kachel--gross' : ''}"><span>${k}</span><b>${v}</b>${z}</div>`).join('')}</div>
+  ${screens ? `<div class="in-phones">${screens}</div>` : ''}
+  <div class="in-vu-zeile">
+    <div class="in-vu-health"><b class="in-vu-label">Gesundheitscheck</b><div>${d.gesundheit.map(([k, v]) => `<span class="${TON(v)}"><i>${k}</i>${esc(v)}</span>`).join('')}</div></div>
+    ${fondsHtml}
+  </div>
+  <div class="in-vu-fuss"><a class="in-btn in-btn--lime" href="/aktie/${t}">${kurz} live in Vision Universe${ICON.next}</a><p class="in-klein">Kurse bis ${datumDE(d.kursStand)}, Geschäftszahlen aus SEC-Meldungen bis ${ttm(d.ttmBis)}. Fondsdaten: Pflichtmeldungen an die SEC (Angabe Dritter). Die App zeigt den aktuellen Stand.</p></div>
+</section>`;
 }
 
-function datenBox(t, a) {
-  const d = a.daten.aktien[t], f = d.fonds;
-  const rows = [
-    [`Schlusskurs ${datumDE(d.kursStand)}`, de(d.kurs, 2) + '&nbsp;$'], ['12 Monate', pct(d.r12m)], ['Abstand zum 52-Wochen-Hoch', pct(d.abstandHoch)],
-    ['Marktwert', usd(d.marktwert)], ['Umsatz (letzte 4 Quartale)', usd(d.umsatzTTM)], ['Umsatzwachstum', pct(d.wachstum)],
-    ['Nettomarge', d.nettomarge == null ? '–' : (d.nettomarge < 0 ? '−' : '') + de(Math.abs(d.nettomarge * 100), 0) + '&nbsp;%'], [d.kgv == null ? 'KUV' : 'KGV', d.kgv == null ? de(d.kuv, 1) : de(d.kgv, 1)],
-    ['Trend laut Technik-Engine', TREND[d.trend] || '–'],
-  ];
-  const fondsHtml = f ? `<div class="in-fonds"><b>Große Fonds (13F, Stand ${datumDE(f.stichtag)})</b><p>${de(f.anzahl)} Fonds halten die Aktie · ${de(f.kaeufer)} haben aufgestockt oder sind neu eingestiegen · ${de(f.verkaeufer)} haben reduziert oder verkauft</p><ul>${f.genannt.map((g) => `<li><span>${esc(g.name)}</span><em>${ART[g.art] || esc(g.art)}${g.d != null && g.art !== 'new' ? ' (' + pct(g.d / 100) + ')' : ''}</em></li>`).join('')}</ul></div>` : '';
-  return `<aside class="in-daten vu-box" aria-label="Vision-Universe-Daten zu ${esc(d.name)}">
-  <div class="in-daten-kopf">${d.logo ? `<img src="${d.logo}" alt="" width="40" height="40">` : ''}<div><b>${esc(d.name)}</b><span>${t} · Vision-Universe-Daten</span></div><span class="in-pill">VU-Daten</span></div>
-  ${chart(d.serie)}
-  <dl class="in-fakten">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
-  <div class="in-health"><b>Gesundheitscheck</b><div>${d.gesundheit.map(([k, v]) => `<span><i>${k}</i>${esc(v)}</span>`).join('')}</div></div>
-  ${fondsHtml}
-  <p class="in-klein">Kurse bis ${datumDE(d.kursStand)}, Geschäftszahlen aus SEC-Meldungen bis ${ttm(d.ttmBis)}. Fondsdaten: Pflichtmeldungen an die SEC (Angabe Dritter). Eingefroren am Erscheinungstag.</p>
-  <div class="in-links"><a class="in-btn in-btn--ink" href="/aktie/${t}">${esc(d.name.split(' ')[0])} live in Vision Universe${ICON.next}</a><a class="in-btn" href="/aktie/${t}?p=zahlen">Fundamentaldaten</a><a class="in-btn" href="/aktie/${t}?p=chart">Chart</a><a class="in-btn" href="/aktie/${t}?p=investoren">Fonds</a></div>
-</aside>`;
-}
+// Bild im Text: groß über die Spalte oder als Porträt neben dem Text; Bildnachweis immer sichtbar
+const figur = (b) => `<figure class="in-figur${b.stil === 'portrait' ? ' in-figur--portrait' : ''}"><img src="${b.src}" alt="${esc(b.alt)}" loading="lazy"><figcaption>${b.text ? esc(b.text) + ' · ' : ''}Bild: ${esc(b.quelle)}</figcaption></figure>`;
+const nachweis = (b) => (b.ki ? 'KI-Bild' : `Bild: ${esc(b.quelle)}`);
 
 const appBox = (a) => `<section class="in-app vu-box vu-box--lime" aria-label="Über Vision Universe">
   <span class="in-kicker">Vision Universe</span>
@@ -109,7 +118,8 @@ ${extra}</head>
 <body class="in-body vu-ui"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 `;
 }
-const tabs = (aktiv) => `<nav class="in-tabs" aria-label="Insights"><a href="/insights/"${aktiv === 'artikel' ? ' aria-current="page"' : ''}>Artikel</a><a href="/insights/reports/"${aktiv === 'reports' ? ' aria-current="page"' : ''}>Reports</a></nav>`;
+const TABS = [['artikel', 'Artikel', '/insights/'], ['magazin', 'Aktienmagazin', '/insights/magazin/'], ['reports', 'Reports', '/insights/reports/']];
+const tabs = (aktiv) => `<nav class="in-tabs" aria-label="Insights">${TABS.map(([id, label, href]) => `<a href="${href}"${aktiv === id ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</nav>`;
 const fuss = `<footer class="in-fuss"><p>${esc(LEGAL.notices.editorial.text)}</p><p><a href="${LEGAL.links.methodik}">Methodik, Quellen und Interessen</a> · <a href="${LEGAL.links.risikohinweise}">Risikohinweise</a> · <a href="${LEGAL.links.impressum}">Impressum</a> · <a href="/insights/feed.xml">RSS</a></p></footer>
 </body>
 </html>
@@ -127,8 +137,8 @@ function artikelSeite(a) {
   };
   const extra = `<meta property="article:published_time" content="${a.datum}T13:00:00+01:00">\n<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>\n`;
   const body = a.abschnitte.map((s, i) => {
-    let h = (s.h ? `<h2>${esc(s.h)}</h2>` : '') + s.html;
-    if (s.daten) h = (s.h ? `<h2>${esc(s.h)}</h2>` : '') + datenBox(s.daten, a) + s.html;
+    const kopf = s.h ? `<h2>${esc(s.h)}</h2>` : '';
+    let h = s.daten ? kopf + s.html + datenBox(s.daten, a) : kopf + (s.bild?.stil === 'portrait' ? figur(s.bild) : '') + s.html + (s.bild && s.bild.stil !== 'portrait' ? figur(s.bild) : '');
     if (i === 2 && a.zitat) h += `<blockquote class="in-zitat"><p>„${esc(a.zitat.text)}“</p><cite>${esc(a.zitat.von)}</cite></blockquote>`;
     return h;
   }).join('\n');
@@ -139,7 +149,7 @@ ${tabs('artikel')}
   <p class="in-meta"><span class="in-pill">${esc(a.rubrik)}</span><time datetime="${a.datum}">${datumLang(a.datum)}</time><span>·</span><span>${lesezeit(a)} Min. Lesezeit</span></p>
   <h1>${esc(a.titel)}</h1>
   <p class="in-lead">${esc(a.unterzeile)}</p>
-  <figure class="in-bild"><img src="${a.bild.src}" alt="${esc(a.bild.alt)}" width="1600" height="900" fetchpriority="high">${a.bild.ki ? '<figcaption>KI-Bild</figcaption>' : ''}</figure>
+  <figure class="in-bild"><img src="${a.bild.src}" alt="${esc(a.bild.alt)}" width="1600" height="900" fetchpriority="high"><figcaption>${nachweis(a.bild)}</figcaption></figure>
   <p class="in-autor">Redaktion Vision Universe · Stand ${esc(a.stand)}</p>
 </header>
 <div class="in-text">
@@ -162,12 +172,13 @@ const reportKarte = (r) => `<a class="in-report" href="${esc(r.href)}"><span cla
 
 function uebersicht(artikel, reports) {
   const [erst, ...rest] = artikel;
-  return head({ title: 'Insights · Tagesthemen und Reports · Vision Universe', description: 'Tagesthemen von der Börse, recherchiert und mit den Daten von Vision Universe eingeordnet: Kurse, Geschäftszahlen, Charttechnik und große Fonds. Dazu Aktienreports.', canonical: '/insights/', image: erst?.bild.src }) + `<main id="in-main" class="in-wrap">
+  return head({ title: 'Insights · Tagesthemen, Aktienmagazin und Reports · Vision Universe', description: 'Tagesthemen von der Börse, recherchiert und mit den Daten von Vision Universe eingeordnet: Kurse, Geschäftszahlen, Charttechnik und große Fonds. Dazu jede Woche das Aktienmagazin.', canonical: '/insights/', image: erst?.bild.src }) + `<main id="in-main" class="in-wrap">
 ${tabs('artikel')}
 <header class="in-hub"><span class="in-kicker">Insights</span><h1>Was die Börse heute bewegt. Und was die Daten dazu sagen.</h1><p class="in-lead">Jeden Tag ein bis zwei Themen: recherchiert, eingeordnet und mit Kursen, Geschäftszahlen und Fondsdaten aus Vision Universe unterlegt.</p></header>
 ${erst ? karte(erst, true) : '<p>Noch keine Artikel.</p>'}
 ${rest.length ? `<section><h2 class="in-h2">Neueste Artikel</h2><div class="in-raster">${rest.map((a) => karte(a)).join('')}</div></section>` : ''}
-<section id="reports"><div class="in-h2-zeile"><h2 class="in-h2">Reports</h2><a href="/insights/reports/">Alle Reports${ICON.next}</a></div><div class="in-raster">${reports.slice(0, 3).map(reportKarte).join('')}</div></section>
+${magazinTeaser(LOADED.magazin[0])}
+${reports.length ? `<section id="reports"><div class="in-h2-zeile"><h2 class="in-h2">Reports</h2><a href="/insights/reports/">Alle Reports${ICON.next}</a></div><div class="in-raster">${reports.slice(0, 3).map(reportKarte).join('')}</div></section>` : ''}
 </main>
 ` + fuss;
 }
@@ -175,8 +186,37 @@ ${rest.length ? `<section><h2 class="in-h2">Neueste Artikel</h2><div class="in-r
 function reportsSeite(reports) {
   return head({ title: 'Reports · Aktienreports von Vision Universe', description: 'Aktienreports von Vision Universe: einzelne Unternehmen ausführlich, mit Geschäftsmodell, Zahlen und Daten.', canonical: '/insights/reports/' }) + `<main id="in-main" class="in-wrap">
 ${tabs('reports')}
-<header class="in-hub"><span class="in-kicker">Reports</span><h1>Aktienreports</h1><p class="in-lead">Ein Unternehmen ausführlich: Geschäftsmodell, Zahlen, Bewertung im Vergleich und was die Daten von Vision Universe zeigen. Neue Reports erscheinen hier und unter Insights.</p></header>
-<div class="in-raster">${reports.map(reportKarte).join('')}</div>
+<header class="in-hub"><span class="in-kicker">Reports</span><h1>Aktienreports</h1><p class="in-lead">Ein Unternehmen ausführlich: Geschäftsmodell, Zahlen, Bewertung im Vergleich und was die Daten von Vision Universe zeigen. Neue Reports erscheinen hier.</p></header>
+${reports.length ? `<div class="in-raster">${reports.map(reportKarte).join('')}</div>` : `<div class="in-leer vu-box"><b>Der erste Aktienreport ist in Arbeit.</b><p>Bis dahin: jeden Tag neue Artikel unter Insights und jede Woche das Aktienmagazin.</p><div class="in-links"><a class="in-btn in-btn--ink" href="/insights/magazin/">Zum Aktienmagazin${ICON.next}</a><a class="in-btn" href="/insights/">Zu den Artikeln</a></div></div>`}
+</main>
+` + fuss;
+}
+
+// Aktienmagazin: Übersicht aller Ausgaben und je Ausgabe eine Leseseite (Seitenbilder untereinander, PDF zum Laden)
+let LOADED = { magazin: [] };
+const heftUrl = (h) => `/insights/magazin/nr-${h.nr}/`;
+const magazinTeaser = (h) => (h ? `<section class="in-heft-teaser"><a href="${heftUrl(h)}"><img src="${heftUrl(h)}cover.jpg" alt="Titelseite Aktienmagazin Nr. ${h.nr}" width="560" height="792" loading="lazy"></a><div><span class="in-kicker">Aktienmagazin · Nr. ${h.nr}</span><h2>${esc(h.titel)}</h2><p>${esc(h.unterzeile)}</p><p class="in-klein">${datumLang(h.datum)} · ${h.seiten} Seiten · KW ${h.kw}</p><div class="in-links"><a class="in-btn in-btn--ink" href="${heftUrl(h)}">Online lesen${ICON.next}</a><a class="in-btn" href="${heftUrl(h)}vision-universe-aktienmagazin-${h.nr}.pdf" download>PDF laden (${h.pdfMB} MB)</a></div></div></section>` : '');
+
+function magazinUebersicht(hefte) {
+  return head({ title: 'Aktienmagazin · Vision Universe', description: 'Das Vision Universe Aktienmagazin: jede Woche die wichtigsten Börsenthemen, eingeordnet mit Kursen, Geschäftszahlen und Fondsdaten. Online lesen oder als PDF laden.', canonical: '/insights/magazin/', image: hefte[0] ? heftUrl(hefte[0]) + 'cover.jpg' : null }) + `<main id="in-main" class="in-wrap">
+${tabs('magazin')}
+<header class="in-hub"><span class="in-kicker">Aktienmagazin</span><h1>Jede Woche das Heft zur Börse.</h1><p class="in-lead">Titelthema, Einzelanalysen, Berichtssaison, Hedgefonds, Charts und Termine: recherchiert und mit den Daten von Vision Universe unterlegt. Online lesen oder als PDF laden.</p></header>
+${magazinTeaser(hefte[0])}
+${hefte.length > 1 ? `<section><h2 class="in-h2">Frühere Ausgaben</h2><div class="in-hefte">${hefte.slice(1).map((h) => `<a href="${heftUrl(h)}"><img src="${heftUrl(h)}cover.jpg" alt="" loading="lazy" width="560" height="792"><b>Nr. ${h.nr} · ${esc(h.titel)}</b><span>${datumDE(h.datum)}</span></a>`).join('')}</div></section>` : ''}
+</main>
+` + fuss;
+}
+
+function heftSeite(h) {
+  const nr = (n) => String(n).padStart(2, '0');
+  const seiten = Array.from({ length: h.seiten }, (_, i) => `<img id="s${nr(i + 1)}" src="${heftUrl(h)}seiten/s${nr(i + 1)}.jpg" alt="Seite ${i + 1}" width="1100" height="1556" loading="${i < 2 ? 'eager' : 'lazy'}">`).join('\n');
+  return head({ title: `Aktienmagazin Nr. ${h.nr}: ${h.titel} · Vision Universe`, description: h.unterzeile, canonical: heftUrl(h), image: heftUrl(h) + 'cover.jpg' }) + `<main id="in-main" class="in-wrap">
+${tabs('magazin')}
+<header class="in-heft-kopf"><span class="in-kicker">Aktienmagazin · Nr. ${h.nr} · ${datumLang(h.datum)}</span><h1>${esc(h.titel)}</h1><p class="in-lead">${esc(h.unterzeile)}</p><div class="in-links"><a class="in-btn in-btn--ink" href="#s01">Lesen${ICON.next}</a><a class="in-btn" href="${heftUrl(h)}vision-universe-aktienmagazin-${h.nr}.pdf" download>PDF laden (${h.pdfMB} MB)</a></div></header>
+<nav class="in-heft-inhalt" aria-label="Inhalt"><b class="in-vu-label">Inhalt</b><ol>${h.inhalt.map(([s, rubrik, titel]) => `<li><a href="#s${nr(s)}"><span>${nr(s)}</span><em>${esc(rubrik)}</em>${esc(titel)}</a></li>`).join('')}</ol></nav>
+<div class="in-heft-seiten">
+${seiten}
+</div>
 </main>
 ` + fuss;
 }
@@ -197,8 +237,8 @@ ${artikel.map((a) => `<item><title>${xml(a.titel)}</title><link>${SITE}/insights
 </rss>
 `;
 }
-function sitemap(artikel) {
-  const urls = [['/insights/', artikel[0]?.datum], ['/insights/reports/', null], ...artikel.map((a) => [`/insights/${a.slug}/`, a.datum])];
+function sitemap(artikel, hefte) {
+  const urls = [['/insights/', artikel[0]?.datum], ['/insights/magazin/', hefte[0]?.datum], ...hefte.map((h) => [heftUrl(h), h.datum]), ['/insights/reports/', null], ...artikel.map((a) => [`/insights/${a.slug}/`, a.datum])];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map(([u, d]) => `<url><loc>${SITE}${u}</loc>${d ? `<lastmod>${d}</lastmod>` : ''}</url>`).join('\n')}
@@ -207,16 +247,18 @@ ${urls.map(([u, d]) => `<url><loc>${SITE}${u}</loc>${d ? `<lastmod>${d}</lastmod
 }
 
 export function build() {
-  const artikel = loadArtikel(), reports = loadReports();
-  ALLE = artikel;
+  const artikel = loadArtikel(), reports = loadReports(), hefte = loadMagazin();
+  ALLE = artikel; LOADED = { magazin: hefte };
   const files = {
     'insights/index.html': uebersicht(artikel, reports),
     'insights/reports/index.html': reportsSeite(reports),
     'insights/feed.xml': feed(artikel),
-    'insights/sitemap.xml': sitemap(artikel),
+    'insights/sitemap.xml': sitemap(artikel, hefte),
+    'insights/magazin/index.html': magazinUebersicht(hefte),
     'insights/artikel.json': JSON.stringify({ schema: 'vu-insights-1', note: 'Erzeugt von products/insights/build.mjs', artikel: artikel.map(({ slug, datum, rubrik, titel, teaser, ticker, bild }) => ({ slug, datum, rubrik, titel, teaser, ticker, bild: bild.src, href: `/insights/${slug}/` })) }, null, 1) + '\n',
   };
   for (const a of artikel) files[`insights/${a.slug}/index.html`] = artikelSeite(a);
+  for (const h of hefte) files[`insights/magazin/nr-${h.nr}/index.html`] = heftSeite(h);
   return files;
 }
 

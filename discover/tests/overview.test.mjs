@@ -125,3 +125,12 @@ test("OV12 Aktienkopf C04 wie Folie AX01 (a-top): Kurs, Tagesbewegung, Schluss u
   assert.match(css, /dx-chart-hero--c04 \.dx-chart-hero-preis>b\{font-size:34px/);
   assert.match(css, /vu-shead-watch\{display:none\}/, "ein Merken-Knopf im Kopf (Herz), kein zweites Lesezeichen");
 });
+
+test("OV13 Überblick startet mit 1J wie im Mockup (auch bei offener Börse); 1T trägt denselben Kopf C04 in Dollar", () => {
+  const detail = readFileSync(new URL("../ui/detail.js", import.meta.url), "utf8");
+  assert.match(detail, /if \(state\.intraday && !\(loaded && ueberblickUS\(state\)\)\) state\.range = "1D";/);
+  assert.match(detail, /ueberblickUS\(state\) && leiste\.some\(function \(r\) \{ return r\.id === "1Y" && r\.available; \}\)\) \{\s*state\.rangeStarted = true; state\.range = "1Y";/);
+  const intraday = detail.slice(detail.indexOf("function zeichneIntraday"), detail.indexOf("function staleSatzAusZustand") > 0 ? detail.indexOf("function staleSatzAusZustand") : undefined);
+  assert.match(intraday, /dx-chart-hero dx-chart-hero--c04", "data-range": "1D"/);
+  assert.match(intraday, /umgerechnet = \{ snap: snapNativ, waehrung: "USD" \}/, "1T im Überblick in Dollar");
+});
