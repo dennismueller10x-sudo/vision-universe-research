@@ -59,7 +59,8 @@ export const SPECS = {
   /* Redesign 2027 (Q04): Frage als Titel, Suche, bekannte Namen, ehrlicher Leerzustand „Beobachten“ - kurz und ohne Globus. */
   technical: {path: '/quant/technical/', h1: 'Welche Aktie', minText: 800, includes: ['Beobachten', 'Bekannte Aktien'], emptyOk: ['Zuletzt analysiert']},
   // Chartbild (Elliott/Kursstruktur): das Bild selbst muss gezeichnet sein; der Kopf (h1) nennt den Trend und ist datenabhaengig.
-  chartbild: {path: '/quant/#/elliott/NVDA', h1: '\\S', minText: 1500, includes: ['Warum dieses Bild'], chart: {scope: '.cb-chart-card', minW: 150, minH: 100, minGeom: 5}},
+  /* Konzept EHV (EX03): NVDA ist meist nicht zaehlbar – dann steht die ehrliche Absage mit den Wegen zu Technical und zur Zaehlbar-Liste, ohne Chart. */
+  chartbild: {path: '/quant/#/elliott/NVDA', h1: '\\S', minText: 400, includes: ['Elliott']},
   // Die beiden Nicht-gefunden-Seiten SIND die erwartete Auskunft; Datenabrufe, die ins Leere laufen, gehoeren dazu.
   notFoundStock: {path: '/quant/#/aktie/ZZZZQ', h1: 'Aktie nicht gefunden', minText: 100, allow404Data: true},
   notFoundRoute: {path: '/quant/#/unbekannt', h1: 'Diese Seite gibt es nicht', minText: 100, allow404Data: true}

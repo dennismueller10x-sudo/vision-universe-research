@@ -573,6 +573,7 @@
         noneP = el("p", { class: "cb-ew-none-p", text: shareText(share) })]),
         el("a", { class: "vu-navcard cb-ew-link", href: "/technical/#/chart/" + encodeURIComponent(ticker) }, [el("span", { class: "vu-hud", style: "--vu-hud:42px", "aria-hidden": "true" }, [ewIcon(EW_IC.chart)]), el("span", { class: "vu-navcard__text" }, [el("b", { text: "Chart-Lage in Technical ansehen" }), el("span", { text: "Trend, Zonen, Befunde" })]), el("span", { class: "cb-ep-go", "aria-hidden": "true", text: "›" })]),
         el("a", { class: "vu-navcard cb-ew-link", href: "/elliott/#/?zaehlbar=1" }, [el("span", { class: "vu-hud", style: "--vu-hud:42px", "aria-hidden": "true" }, [ewIcon(EW_IC.list)]), el("span", { class: "vu-navcard__text" }, [el("b", { text: "Aktien mit sauberer Zählung" }), listSub = el("span", { text: share ? share.count.toLocaleString("de-DE") + " heute" : "Liste der zählbaren Aktien" })]), el("span", { class: "cb-ep-go", "aria-hidden": "true", text: "›" })]));
+      if (o.isPro) host.append(o.proHost);   // ?ansicht=profi: Regeln und Niveaus auch ohne Zaehlung
       return;
     }
     var c = E.primary, prim = (a.scenarios || []).filter(function (x) { return x.kind === "PRIMARY"; })[0] || null, inv = prim && prim.invalidation;
@@ -928,7 +929,7 @@
       /* Konzept EHV (EX03): Zwei Faelle. Zaehlbar: Muster und Urteil, Chart mit Ungueltig-Marke, „Die Lesart in drei Saetzen“, Kapitel.
          Nicht zaehlbar: eine Karte „Keine Zaehlung“ mit Anteil, Weg zur Chart-Lage in Technical und zur Zaehlbar-Liste.
          Kein eigener „Technischer Ausblick“ mehr: die Chart-Aussage je Aktie gibt es nur in Technical. */
-      wavesPage({ a: a, E: E, T: T, ticker: ticker, ctx: ctx, host: host, tfLabel: tfLabel, chartCard: chartCard, evidence: evidence, replay: replay, proOpen: proOpen, proHost: proHost, onWaves: function (set) { waveSet = set; wavesOn = true; draw(); } });
+      wavesPage({ a: a, E: E, T: T, ticker: ticker, ctx: ctx, host: host, tfLabel: tfLabel, chartCard: chartCard, evidence: evidence, replay: replay, proOpen: proOpen, proHost: proHost, isPro: view === "pro", onWaves: function (set) { waveSet = set; wavesOn = true; draw(); } });
     } else {
       order.forEach(function (n) { if (n) host.append(n); });
       [ewSec, why, evidence, replay].forEach(function (n) { if (n) host.append(n); });
