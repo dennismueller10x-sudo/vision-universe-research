@@ -84,6 +84,14 @@
       "paths": ["technical/data/meta.json"],
       "prefixes": ["technical/data/"],
       "note": "Vertrag: meta.json; Screener, Spark, Index, Evidenz und die Kurzstaende je Aktie (stock/) folgen ihm. Der Erzeuger (pipeline-daily Teil technical-world) baut vollstaendig aus der Materialisierung neu und braucht keinen bisherigen Stand."
+    },
+    {
+      "id": "discoverImBlickLive",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "discover-im-blick-live.yml",
+      "paths": ["discover/live/im-blick-US_REAL.json", "discover/live/monitor-US_REAL.json"],
+      "note": "Zwei Erzeuger: discover-im-blick-live.yml (Wecker, Minute 5/35, 15-21 UTC) und market-data-refresh.yml (Job imblick, Nachtlauf). Beide saeen den Zweig vor dem Rechnen (der Baustein entscheidet am bisherigen Stand, ob der Slot offen ist) und schreiben nur nach data/live. Vertrag: im-blick-US_REAL.json; der Monitor ist Begleitdatei."
     }
   ],
   "internal": [
@@ -102,7 +110,6 @@
     "entries": {
       "news": {"status": "NEXT", "grund": "Pilot DUAL_WRITE; BRANCH_ONLY nach der Abnahme am 11.11.2026"},
       "companyNames": {"status": "LATER", "grund": "drei Erzeuger; mit Security Master"},
-      "discoverImBlickLive": {"status": "LATER", "grund": "zwei Erzeuger (discover-im-blick-live, market-data-refresh); mit Discover"},
       "europeDiscoverDisplay": {"status": "LATER", "grund": "901 Dateien, Verbraucher Discover-Suche/Logos; mit Discover"},
       "europeEsefFacts": {"status": "LATER", "grund": "eine kleine Datei, jährlicher manueller Lauf (research.yml europa-esef); mit Discover Europa"},
       "indexMembership": {"status": "LATER", "grund": "pipeline-weekly; Verbraucher Discover-Bau"},

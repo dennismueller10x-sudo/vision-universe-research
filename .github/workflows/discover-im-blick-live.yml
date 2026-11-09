@@ -82,6 +82,11 @@ jobs:
         with:
           node-version: '22'
 
+      # Datenzweig (core/registry/data-branch.json, discoverImBlickLive, BRANCH_ONLY): der bisherige Stand
+      # (Auswahl und Monitor) liegt in data/live; der Baustein entscheidet daran, ob der Slot noch offen ist.
+      - name: Bisheriger Stand aus dem Datenzweig
+        run: scripts/ci/seed-data-branch.sh discoverImBlickLive
+
       - name: Im Blick neu rechnen, wenn der faellige Slot noch offen ist
         env:
           SOURCE: ${{ github.event_name == 'schedule' && 'github-schedule' || inputs.source }}
@@ -92,19 +97,11 @@ jobs:
           if [ "${FORCE}" = "true" ]; then args+=(--force); fi
           node scripts/discover/build-im-blick-live.mjs "${args[@]}"
 
-      - name: Commit und Push (nur bei Aenderung)
-        run: |
-          set -euo pipefail
-          git config user.name "vision-universe-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add discover/live
-          if git diff --cached --quiet; then
-            echo "Keine Aenderung."
-            exit 0
-          fi
-          status=$(node -e 'const l=require("./discover/live/im-blick-US_REAL.json");console.log(l.status+" "+((l.slot&&l.slot.id)||"")+" "+(l.asOfLocal||"")+" "+l.stocks.map(s=>s.symbol).join(","))')
-          git commit -m "Discover Im Blick live: ${status}"
-          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+      # Nur noch in den Datenzweig (nur main); die Kopie in main ist eingefroren (Rueckfall), Pages liefert
+      # den Datenzweig aus. Unveraendert: push-data-branch.sh committet nichts.
+      - name: In den Datenzweig (nur bei Aenderung)
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live discover/live/im-blick-US_REAL.json discover/live/monitor-US_REAL.json
 
       # Selbstpruefung am Ende: stimmt das Ergebnis jetzt mit dem faelligen Slot
       # ueberein? Nur ein Hinweis (continue-on-error) - rot wird der Lauf nicht,

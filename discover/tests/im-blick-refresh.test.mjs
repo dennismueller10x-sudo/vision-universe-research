@@ -432,9 +432,10 @@ test("RF14 · Workflow und Wecker: ADR-005, Namen, Kosten, Isolation", () => {
   assert.match(wf, /workflow_dispatch:/);
   assert.match(wf, /timeout-minutes: 10/, "kein Dauerlaeufer");
   assert.doesNotMatch(wf, /\bsleep\b|while true|seq 1/, "keine Endlosschleife, keine Wartezeit im Lauf");
-  assert.match(wf, /scripts\/ci\/push-with-retry\.sh/);
+  assert.match(wf, /scripts\/ci\/seed-data-branch\.sh discoverImBlickLive/);
+  assert.match(wf, /scripts\/ci\/push-data-branch\.sh data\/live discover\/live\/im-blick-US_REAL\.json discover\/live\/monitor-US_REAL\.json/);
   assert.match(wf, /cancel-in-progress: false/);
-  assert.match(wf, /git add discover\/live\n/, "schreibt nur discover/live");
+  assert.doesNotMatch(wf, /git commit|push-with-retry/, "schreibt nur discover/live, und nur in den Datenzweig");
   assert.doesNotMatch(wf, /TIINGO|secrets\./);
   const pages = readFileSync(join(ROOT, ".github", "workflows", "pages-release.yml"), "utf8");
   assert.ok(pages.includes('- "' + wf.match(/^name:\s*(.+)$/m)[1] + '"'), "Name unveraendert: die Auslieferung haengt daran");
