@@ -1,3 +1,4 @@
+// Pruefbericht: docs/reports/security-master-1119-pruefung.md
 // Security Master: active_status aus SEC-Delisting-Beleg (V10-Befund: 168 Zeilen ACTIVE trotz Beleg).
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -22,7 +23,7 @@ const baselineRow = (ticker, startDate = "2021-03-01") =>
 
 const record = (over = {}) => ({
   ticker: "AACT", securityId: "ref_AACT", form: "FORM_25", accession: "0001193125-25-215636",
-  filingDate: "2025-09-24", effectiveDate: "2025-10-04", frozenSince: "2025-09-24", frozenRun: 180, ...over
+  filingDate: "2025-09-24", effectiveDate: "2025-10-04", frozenSince: "2025-09-24", frozenRun: 180, frozenThrough: "2025-10-03", ...over
 });
 const register = (records) => ({ schemaVersion: Master.DELISTING_EVIDENCE_SCHEMA, records });
 
@@ -69,7 +70,7 @@ test("Ticker-Wiederverwendung: Anbieterzeile beginnt nach dem Wirksamkeitstag ->
 });
 
 test("Wirksamkeitstag in der Zukunft oder fehlendes startDate -> kein Kippen (fail closed gegen Fehlzuordnung)", () => {
-  const future = build([providerRow("AACT")], [], register([record({ filingDate: "2026-10-27", effectiveDate: "2026-11-06", frozenSince: "2026-10-20" })]));
+  const future = build([providerRow("AACT")], [], register([record({ filingDate: "2026-10-27", effectiveDate: "2026-11-06", frozenSince: "2026-10-20", frozenThrough: "2026-10-27" })]));
   assert.equal(rowOf(future, "AACT")[0].active_status, "ACTIVE");
   const noStart = build([providerRow("AACT", "")], [], register([record()]));
   assert.equal(rowOf(noStart, "AACT")[0].active_status, "ACTIVE");
@@ -91,14 +92,14 @@ test("Register fail closed: Schema, Doppelung, Wirksamkeitstag, bewegte Reihe, z
   bad(register([record({ ticker: "aact" })]), /ticker/);
   bad(register([record({ filingDate: "2025-02-30" })]), /Datum/);
   // 8-K 2.01+3.01 ist am Einreichungstag wirksam.
-  assert.ok(Master.indexDelistingEvidence(register([record({ form: "8-K_2.01+3.01", effectiveDate: "2025-09-24" })])).AACT);
+  assert.ok(Master.indexDelistingEvidence(register([record({ form: "8-K_2.01+3.01", effectiveDate: "2025-09-24", frozenThrough: "2025-09-24" })])).AACT);
 });
 
 const kase = (over = {}) => ({
-  ticker: "AACT", securityId: "ref_AACT", cik: "0001853138", notes: [], secTickersNow: ["KDK"],
-  dailyTail: { run: 180, since: "2025-09-24", close: 9.49, to: "2026-10-26" },
+  ticker: "AACT", securityId: "ref_AACT", cik: "0001853138", notes: [], secTickersNow: [],
+  dailyTail: { run: 180, since: "2025-09-24", close: 9.49, to: "2025-10-03" },
   forms: { delisting: [{ form: "25", filingDate: "2025-09-24", accession: "0001193125-25-215636" }], k8_201_301: [] },
-  sources: [], ...over
+  sources: [{ accession: "0001193125-25-215636", securityId: "ref_AACT", ticker: "AACT", event: "TERMINAL_DELISTING", effectiveDate: "2025-10-04", successor: null, exchangeTransfer: false, classTitle: "Class A common stock", sha256: "a".repeat(64), url: "https://www.sec.gov/Archives/example" }], ...over
 });
 
 test("Registerauswahl: nur abgeschlossene Delistings mit eingefrorener Reihe", () => {
@@ -108,12 +109,8 @@ test("Registerauswahl: nur abgeschlossene Delistings mit eingefrorener Reihe", (
     k8_201_301: [{ filingDate: "2025-09-20", items: "3.01,9.01", accession: "0001193125-25-215638" }] } })).reason, "NO_COMPLETED_DELISTING_EVIDENCE");
   // Form 25, aber die SEC fuehrt den Ticker noch fuer den Emittenten (Boersenwechsel/Nebenklasse).
   assert.equal(selectCase(kase({ secTickersNow: ["AACT"] })).reason, "NO_COMPLETED_DELISTING_EVIDENCE");
-  // 8-K 2.01+3.01 gilt auch bei SEC-Tickerstand mit Verzoegerung.
-  const k8 = selectCase(kase({ secTickersNow: ["AACT"], forms: { delisting: [], k8_201_301: [{ filingDate: "2025-09-30", items: "2.01,3.01,9.01", accession: "0001193125-25-225299" }] },
-    dailyTail: { run: 50, since: "2025-09-30", to: "2026-10-26" } }));
-  assert.equal(k8.record.form, "8-K_2.01+3.01");
-  assert.equal(selectCase(kase({ dailyTail: { run: 4, since: "2025-09-24", to: "2026-10-26" } })).reason, "SERIES_NOT_FROZEN");
-  assert.equal(selectCase(kase({ dailyTail: { run: 9, since: "2026-10-14", to: "2026-10-26" } })).reason, "SERIES_MOVED_AFTER_EFFECTIVE_DATE");
+  assert.equal(selectCase(kase({ secTickersNow: [], sources: [] })).reason, "SECURITY_CLASS_AND_EFFECTIVE_DATE_UNVERIFIED");
+  assert.equal(selectCase(kase({ secTickersNow: [], dailyTail: {run: 4, since: "2025-09-24", to: "2025-10-03"} })).reason, "SERIES_NOT_FROZEN");
   assert.equal(selectCase(kase({ notes: ["LIFECYCLE_SOURCE_CONFLICT"] })).reason, "LIFECYCLE_SOURCE_CONFLICT");
   assert.equal(selectCase(kase({ securityId: "ref_AACT_X" })).reason, "IDENTITY_NOT_CANONICAL");
   const doc = buildRegister([kase(), kase({ ticker: "ZZZZ", securityId: "ref_ZZZZ", forms: { delisting: [], k8_201_301: [] } })], { file: "t" });
@@ -126,7 +123,8 @@ test("committetes Register ist gueltig, identitaetskonform und sortiert", () => 
   const doc = loaded.doc;
   assert.equal(doc.schemaVersion, Master.DELISTING_EVIDENCE_SCHEMA);
   assert.equal(doc.records.length, doc.counts.records);
-  assert.ok(doc.records.length > 0);
+  assert.equal(doc.records.length, 0);
+  assert.ok(doc.findings.length > 0);
   for (const r of doc.records) assert.ok(Identity.consistent(r.ticker, r.securityId), r.ticker);
   const tickers = doc.records.map((r) => r.ticker);
   assert.deepEqual(tickers, [...tickers].sort());
@@ -134,4 +132,41 @@ test("committetes Register ist gueltig, identitaetskonform und sortiert", () => 
   assert.equal(JSON.parse(readFileSync(join(ROOT, "quant/config/security-master-delisting-evidence.json"), "utf8")).records.length, doc.records.length);
   assert.throws(() => loadDelistingEvidence(join(ROOT, "quant/config/does-not-exist.json")), /fehlt/);
   assert.equal(loadDelistingEvidence("none").index, null);
+});
+
+// Real V10 snapshots, intentionally carrying only the fields that caused each
+// false positive. These are regressions, not a ticker denylist in production.
+for (const [ticker, date, through, current] of [
+  ["QRTEB", "2026-06-08", "2026-10-26", []],
+  ["TRINL", "2026-07-24", "2026-10-26", ["TRIN", "TRNI", "TRNZ"]],
+  ["FITBI", "2026-06-11", "2026-10-26", ["FITB", "FITB-PI"]],
+  ["SHLT", "2025-03-21", "2026-10-26", []]
+]) test(ticker + ": later prices block INACTIVE even when frozen", () => {
+  const c = kase({ticker, securityId: Identity.securityIdForTicker(ticker), secTickersNow: current,
+    forms: {delisting: [{form: "25", filingDate: date, accession: "0001193125-25-215636"}]},
+    dailyTail: {run: 180, since: date, to: through}});
+  const doc = buildRegister([c], {});
+  assert.equal(doc.records.length, 0);
+  assert.equal(doc.findings[0].reason, "PRICE_AFTER_DELISTING");
+  const r = rowOf(build([providerRow(ticker)], [], doc), ticker)[0];
+  assert.equal(r.active_status, "ACTIVE");
+  assert.ok(r.review_flags.includes("SEC_DELISTING_BLOCKED:PRICE_AFTER_DELISTING"));
+});
+for (const over of [
+  {secTickersNow: ["OSRH"]}, {terminal: {acquirerTicker: "NEW"}},
+  {terminal: {stockRatio: 0.5}},
+  {sources: []},
+  {sources: [ {accession: "0001193125-25-215636", ticker: "OTHER", securityId: "ref_OTHER"} ]}
+]) test("continuation, merger successor, or wrong class never deactivates: " + JSON.stringify(over), () => {
+  assert.equal(selectCase(kase(over)).record, undefined);
+});
+test("effective-date conflict is rejected rather than inferred from filing items", () => {
+  const c = kase(); c.sources[0].effectiveDate = "2025-10-02";
+  assert.equal(selectCase(c).reason, "SECURITY_CLASS_AND_EFFECTIVE_DATE_UNVERIFIED");
+});
+test("a later weekly price also blocks even if daily series ends before delisting", () => {
+  assert.equal(selectCase(kase({weeklyTail: {to: "2026-10-23"}})).reason, "PRICE_AFTER_DELISTING");
+});
+test("consumer rejects stale register with post-delisting prices", () => {
+  assert.throws(() => Master.indexDelistingEvidence(register([record({frozenThrough: "2026-10-26"})])), /PRICE_AFTER_DELISTING/);
 });

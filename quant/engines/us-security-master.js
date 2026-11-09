@@ -346,6 +346,7 @@
     var name = norm(row.name);
     var reasons = [];
     var flags = [];
+    if (delisted.finding) flags.push("SEC_DELISTING_BLOCKED:" + delisted.finding);
 
     var marker = tickerMarker(ticker);
     var fifth = nasdaqFifthLetter(ticker, opts.listedRoots);
@@ -636,8 +637,15 @@
       if (r.frozenSince > addDays(r.effectiveDate, FROZEN_GRACE_DAYS)) {
         bad("Reihe bewegt sich nach dem Wirksamkeitstag (frozenSince " + r.frozenSince + ")");
       }
+      if (!isIsoDate(r.frozenThrough) || r.frozenThrough > r.effectiveDate || r.frozenSince > r.frozenThrough) bad("PRICE_AFTER_DELISTING oder fehlendes Reihenende");
       by[r.ticker] = Object.freeze({ ticker: r.ticker, form: r.form, accession: r.accession,
         filingDate: r.filingDate, effectiveDate: r.effectiveDate, frozenSince: r.frozenSince });
+    });
+    (doc.findings || []).forEach(function (f) {
+      if (!f || typeof f.ticker !== "string" || typeof f.reason !== "string" || by[f.ticker]) {
+        throw new Error("DELISTING_EVIDENCE_INVALID: widerspruechlicher Befund");
+      }
+      by[f.ticker] = Object.freeze({ ticker: f.ticker, blockedReason: f.reason });
     });
     return by;
   }
@@ -647,6 +655,7 @@
   function applyDelistingEvidence(row, active, activeBasis, index, today) {
     if (!index || active === false) return { active: active, activeBasis: activeBasis };
     var ev = index[upper(row.ticker)];
+    if (ev && ev.blockedReason) return { active: active, activeBasis: "secDelistingBlocked:" + ev.blockedReason + " (vorher " + activeBasis + ")", finding: ev.blockedReason };
     if (!ev || ev.effectiveDate > today) return { active: active, activeBasis: activeBasis };
     var start = norm(row.startDate).slice(0, 10);
     if (!isIsoDate(start) || start > ev.effectiveDate) return { active: active, activeBasis: activeBasis };
