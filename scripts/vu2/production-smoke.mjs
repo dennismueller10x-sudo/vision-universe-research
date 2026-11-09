@@ -326,7 +326,7 @@ for(const width of [1440,390]){
       bleibt so pruefbar). Methodik ist sekundaer (Hero, Fuss). */
    /* Elliott ist ein eigenes Produkt: sein Aktienbild (/elliott/#/<T>, auch ueber die alten Technik-/Chartbild-Adressen) traegt die Elliott-Leiste, nicht die Quant-Leiste. */
    const elliottBild=/^\/elliott\/#\/|#\/elliott\/|#\/aktie\/[^/?]+\/(technik|chartbild)/.test(view);
-   const sollBereiche=elliottBild?['Elliott','Welle 3','Neu','Suche']:['Quant','Screener','Strategien','Aktien'];
+   const sollBereiche=elliottBild?['Elliott','Zählbar','Neu','Suche']:['Quant','Screener','Strategien','Aktien'];
    /* DISCOVER-ANGLEICHUNG (30.09.2026): Kopf- und Tab-Leiste sind EINE
       Leiste wie Discovers v2-dock - am Desktop oben mittig im Rahmen, am
       Handy unten am Bildschirmrand. Geprueft wird dieselbe Absicht wie

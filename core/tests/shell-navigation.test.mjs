@@ -22,7 +22,7 @@ const loc = (url) => { const u = new URL(url, 'https://research.visionuniverse.d
 test('every product dock starts with the product name, never Home or Start, and has four entries plus the global menu', () => {
   assert.deepEqual(JSON.parse(JSON.stringify(PRODUCTS.map(p => [p.id, p.items.map(([, label]) => label)]))), [
     ['discover', ['Discover','Welten','Strategien','Swipen']],
-    ['elliott', ['Elliott','Welle 3','Neu','Suche']],
+    ['elliott', ['Elliott','Zählbar','Neu','Suche']],
     ['quant', ['Quant','Screener','Strategien','Aktien']],
     ['fundamental', ['Fundamental','Ranglisten','Branchen','Methodik']],
     ['technical', ['Technical','Screener','Chart','Muster']],
@@ -56,7 +56,7 @@ test('dock targets are existing routes of their products', () => {
   }
   // Elliott-Dock-Ziele sind Hash-Zustaende der Startseite, die elliott/app.js (VUElliottHome.parseHash) wirklich liest
   const elliottModel = readFileSync(join(root, 'elliott/engine/home-model.js'), 'utf8');
-  for (const k of ['welle', 'neu', 'suche']) assert.ok(elliottModel.includes(`params.get("${k}")`), `Elliott liest ${k}`);
+  for (const k of ['zaehlbar', 'welle', 'neu', 'suche']) assert.ok(elliottModel.includes(`params.get("${k}")`), `Elliott liest ${k}`);
   const quantRoutes = readFileSync(join(root, 'quant/app/app.js'), 'utf8');
   for (const r of ['screener', 'strategien', 'aktien']) assert.match(quantRoutes, new RegExp(`case "${r}"`));
   const vorsorge = ['plan', 'etf', 'portfolio'].map(f => readFileSync(join(root, `vorsorge/ui/${f}.js`), 'utf8')).join('\n');
@@ -232,8 +232,9 @@ test('Elliott is a first-class product with its own menu group, dock and state',
   const state = url => menuState(loc(url));
   assert.equal(state('/elliott/').group, 'elliott');
   assert.equal(state('/elliott/').expanded, null, 'Startseite klappt das Menue nicht auf');
-  assert.equal(state('/elliott/#/?welle=3').href, '/elliott/#/?welle=3');
-  assert.equal(state('/elliott/#/?welle=3').expanded, 'elliott', 'Filterzustand oeffnet den Produktbereich');
+  assert.equal(state('/elliott/#/?zaehlbar=1').href, '/elliott/#/?zaehlbar=1');
+  assert.equal(state('/elliott/#/?zaehlbar=1').expanded, 'elliott', 'Listenzustand oeffnet den Produktbereich');
+  assert.equal(state('/elliott/#/?welle=3').expanded, 'elliott', 'alte Adresse (leitet auf Zaehlbar) bleibt im Produktbereich');
   assert.equal(state('/elliott/#/?richtung=ab').expanded, 'elliott');
   assert.equal(state('/elliott/#/?richtung=ab').href, '/elliott/#/?richtung=ab');
   // Aktienbild: Pfad /quant/, aber Produkt Elliott (kein doppelter aktiver Zustand)
@@ -253,7 +254,8 @@ test('Elliott is a first-class product with its own menu group, dock and state',
   for (const url of ['/elliott/', '/elliott/#/NVDA', '/quant/#/elliott/NVDA', '/quant/', '/discover/#/', '/screener/']) assert.equal(PRODUCTS.filter(p => p.match(loc(url).pathname, loc(url))).length, 1, url);
   const dock = PRODUCTS.find(p => p.id === 'elliott');
   assert.equal(dock.active(loc('/elliott/')), 'elliott');
-  assert.equal(dock.active(loc('/elliott/#/?welle=3')), 'welle3');
+  assert.equal(dock.active(loc('/elliott/#/?zaehlbar=1')), 'zaehlbar');
+  assert.equal(dock.active(loc('/elliott/#/?welle=3')), 'zaehlbar', 'alte Adresse markiert Zaehlbar');
   assert.equal(dock.active(loc('/elliott/#/?neu=1')), 'neu');
   assert.equal(dock.active(loc('/elliott/#/?suche=1')), 'suche');
   assert.equal(dock.active(loc('/elliott/#/?richtung=ab')), null, 'Filter ohne eigenen Eintrag markiert nur das Produkt');

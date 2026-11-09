@@ -1146,10 +1146,30 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     var erster = sel.points[0][1], letzter = sel.points[sel.points.length - 1][1];
     var vergleichbar = global.VUCore.ChartHistory.performanceComparable(state.europeSegments,sel.from,sel.to);
     var veraenderung = erster > 0 && vergleichbar ? (letzter / erster - 1) * 100 : null;
-    var mobil = global.innerWidth < 860;
+    var mobil = global.innerWidth < 860, kopf;
     /* Kopf: der Kurs, die Veraenderung im Zeitraum, das Datum - mit
        Frische-Zustand der Tagesreihe (Freshness-Vertrag, Tagesreihen). */
-    var kopf = el("div", { class: "dx-chart-hero" }, [
+    /* Konzept „Reihe für Reihe“ (Folie AX01, a-top; Baustein C04): im Überblick ist der Kopf eine Zeile wie im
+       Mockup - Kurs in Dollar, Tagesbewegung als Pille, rechts der Schluss und der Euro-Wert. Zeitraum, Kursart und
+       Bereinigung stehen für Bildschirmleser im Kopf und sichtbar an der Datumsachse des Charts. */
+    if (dollarKopf) {
+      var tage = (state.dailyPoints || []).filter(function (p) { return p && isNum(p[1]); });
+      var tag = tage.length >= 2 && tage[tage.length - 2][1] > 0 ? (tage[tage.length - 1][1] / tage[tage.length - 2][1] - 1) * 100 : null;
+      var spanText = C().dateShort(sel.from) + " – " + C().dateShort(sel.to) + (woechentlich ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · split-bereinigt";
+      kopf = el("div", { class: "dx-chart-hero dx-chart-hero--c04", "data-range": z.id }, [
+        el("div", { class: "dx-chart-hero-preis" }, [
+          el("b", { class: "num", text: alsAngezeigt(tage.length ? tage[tage.length - 1][1] : letzter, waehrung) }),
+          el("span", { class: "num " + C().toneClass(tag), title: "zum Vortagesschluss", text: isNum(tag) ? prozentGross(tag) : "" }),
+          el("span", { class: "dx-chart-hero-wort" })
+        ]),
+        el("div", { class: "dx-chart-hero-meta" }, [
+          frischeTages(state),
+          euroDaneben ? el("span", { class: "dx-chart-hero-eur", text: "≈ " + euroDaneben }) : null,
+          el("span", { class: "dx-chart-hero-span dv3-sr", text: "Kursverlauf " + z.wort + ": " + spanText })
+        ].filter(Boolean))
+      ]);
+    }
+    else kopf = el("div", { class: "dx-chart-hero" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
         el("b", { class: "num", text: alsAngezeigt(letzter, waehrung) }),
         el("span", { class: "num " + C().toneClass(veraenderung), text: isNum(veraenderung) ? prozentGross(veraenderung) : "" }),
@@ -1169,7 +1189,8 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        Schrift nicht mitskaliert und die Linie auf dem Telefon so hoch ist
        wie ein halber Bildschirm. */
     var mass = chartMass(chartBox, mobil);
-    var svgNode = MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol,
+    if (dollarKopf) mass.h = mobil ? 184 : 260;   /* Mockup ~170 px; die Browser-QA verlangt auf dem Telefon mindestens 180 px (Chart bleibt die Hauptfläche) */
+    var svgNode = MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol, compact: !!dollarKopf,
                                                  range: z.id, label: z.wort, grain: woechentlich ? "weekly" : "daily",
                                                  segments: state.detail.region === 'EUROPE' ? state.europeSegments || undefined : undefined });
     if (svgNode && svgNode.getAttribute("data-scale") === "log") {

@@ -327,3 +327,28 @@ scenarios.postDeployFailureImmediate=async mod=>{
  const s=sim(mod,{plans:[failedRun,okRun],jobs:[[PRE[0],{...PRE[1],conclusion:'success'},{...PRE[2],conclusion:'failure'}]],deliveredAtMin:12});const r=await s.run();
  assert.equal(r.reason,'PAGES_RUN_FAILED');assert.equal(s.log.dispatch.length,1);
 };
+
+/* --- Universe-Release (company-intelligence-universe-release.yml): --expected/--wait-minutes, Anlass activate 42633299211 --- */
+test('UR-1 Universe-CLI: verdraengter Dispatch wird neu dispatcht und die erwartete Generation abgewartet',async()=>{
+ let t=T0,n=0;const dispatched=[];const runs=[];
+ const gh={dispatch:async()=>{dispatched.push(t);runs.push({databaseId:5000+n,createdAt:new Date(t+2000).toISOString(),status:'queued',conclusion:'',at:t,first:n===0});n++;},
+  listRuns:async()=>runs.map(r=>r.first&&t-r.at>=MIN?{...r,status:'completed',conclusion:'cancelled'}:!r.first&&t-r.at>=5*MIN?{...r,status:'completed',conclusion:'success'}:r),
+  cancel:async()=>{},jobs:async()=>[]};
+ const gen='a'.repeat(24);
+ const r=await real.main(['--expected',gen,'--wait-minutes','40'],{},{gh,now:()=>t,sleep:async ms=>{t+=ms;},
+  generation:async()=>dispatched.length>=2&&t-dispatched[1]>=6*MIN?gen:'b'.repeat(24)});
+ assert.equal(r.served,true);assert.equal(r.reason,'DELIVERED');assert.equal(dispatched.length,2,'verdraengter erster Dispatch -> genau ein Neu-Dispatch');
+});
+
+test('UR-2 Universe-CLI: Frist aus --wait-minutes, fail-closed bei fehlender oder ungueltiger Eingabe (kein Dispatch)',async()=>{
+ const d=real.fixedDeadlines({nowMs:T0,minutes:40});
+ assert.equal(d.waitDeadlineMs,T0+40*MIN);assert.equal(d.hardDeadlineMs,T0+50*MIN);
+ const io={gh:{dispatch:async()=>{throw Error('darf nicht dispatchen');},listRuns:async()=>[],cancel:async()=>{}}};
+ assert.equal((await real.main(['--expected','zz','--wait-minutes','40'],{},io)).reason,'EXPECTED_GENERATION_UNKNOWN');
+ assert.equal((await real.main(['--expected','a'.repeat(24)],{},io)).reason,'WAIT_MINUTES_INVALID');
+ assert.equal((await real.main(['--expected','a'.repeat(24),'--wait-minutes','500'],{},io)).reason,'WAIT_MINUTES_INVALID');
+ // nie ausgeliefert: Ende erst nach der Wartefrist, hoechstens 3 Dispatches
+ let t=T0;const ds=[];const gh={dispatch:async()=>{ds.push(t);},listRuns:async()=>[],cancel:async()=>{}};
+ const r=await real.main(['--expected','a'.repeat(24),'--wait-minutes','40'],{},{gh,now:()=>t,sleep:async ms=>{t+=ms;},generation:async()=>'b'.repeat(24)});
+ assert.equal(r.served,false);assert.equal(ds.length,3);assert.ok(t>=T0+40*MIN,'nicht vor Fristende aufgeben');
+});

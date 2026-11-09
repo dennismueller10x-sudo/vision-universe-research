@@ -30,7 +30,7 @@ const ROUTES = [
   ['Quant', '/quant/#/', 'Quant'], ['Quant', '/quant/#/screener', 'Screener'], ['Quant', '/quant/#/strategien', 'Strategien'],
   ['Quant', '/quant/#/aktien', 'Aktien'], ['Quant', '/quant/#/aktie/NVDA', 'Aktien'], ['Quant', '/quant/#/methodik', 'Quant'],
   // Elliott: eigenes Produkt; das Aktienbild liegt unter /elliott/#/<T> (alt: /quant/#/elliott/<T>, leitet um), gehoert aber zu Elliott (nur Produktkontext)
-  ['Elliott', '/elliott/', 'Elliott'], ['Elliott', '/elliott/#/?welle=3', 'Welle 3'], ['Elliott', '/elliott/#/?neu=1', 'Neu'], ['Elliott', '/elliott/#/?suche=1', 'Suche'],
+  ['Elliott', '/elliott/', 'Elliott'], ['Elliott', '/elliott/#/?zaehlbar=1', 'Zählbar'], ['Elliott', '/elliott/#/?welle=3', 'Zählbar'], ['Elliott', '/elliott/#/?neu=1', 'Neu'], ['Elliott', '/elliott/#/?suche=1', 'Suche'],
   ['Elliott', '/elliott/#/?richtung=ab', null], ['Elliott', '/elliott/#/NVDA', null], ['Elliott', '/quant/#/elliott/NVDA', null],
   // Fundamental: eigenes Produkt; die Unternehmensseite /fundamental/#/<T> zeigt nur den Produktkontext
   ['Fundamental', '/fundamental/#/', 'Fundamental'], ['Fundamental', '/fundamental/#/ranglisten', 'Ranglisten'], ['Fundamental', '/fundamental/#/branchen', 'Branchen'],
@@ -246,10 +246,10 @@ for (const [vpName, width, height] of VIEWPORTS) {
       });
       if (!firstMenu) firstMenu = m.groups.join('|') + '#' + m.links;
       else if (m.groups.join('|') + '#' + m.links !== firstMenu) fail(where, 'anderes Menue als auf Discover');
-      if(m.groups.join('|')!=='Discover|Quant|Technical|Fundamental|Supertrader|Hedgefonds|Elliott|Screener|Vorsorge|Portfolios') fail(where,'Produktraster falsch: '+m.groups.join('|'));
+      if(m.groups.join('|')!=='Discover|Quant|Technical|Fundamental|Supertrader|Hedgefonds|Elliott|Screener|Vorsorge|Portfolios|Insights') fail(where,'Produktraster falsch: '+m.groups.join('|'));
       if(m.moreOpen||!m.hereLinks||!m.search) fail(where,'Menüaufbau falsch: '+JSON.stringify({moreOpen:m.moreOpen,here:m.hereLinks,search:m.search}));
       if(m.panelBg!=='rgb(0, 0, 0)') fail(where,'Menü ist nicht schwarz: '+m.panelBg);
-      if(m.icons.length!==10||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
+      if(m.icons.length!==11||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
       await menuOpen(page, where);
       const menuSmall = await smallTargets(page);
       if(menuSmall.length) fail(where,smallText(menuSmall)+' Menüziele kleiner als 44 px');

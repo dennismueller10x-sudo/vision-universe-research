@@ -947,3 +947,32 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 .tc-kvrow small{font-size:11.5px;color:var(--vu-mute)}
 .tc-mgrid+.vu-help{margin-top:8px}
 .vu-hud .tc-glyph{width:58%;height:58%;fill:none;stroke:var(--vu-lime);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Screener (Vorlage c-screener): Perspektiven-Chips, Satz-Karte, Hauptknopf */
+.tc-persp{margin-top:12px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.tc-persp .vu-chip{height:34px;font-size:13px;gap:6px;flex:none}
+.tc-persp .vu-chip svg{width:15px;height:15px}
+.tc-persp .tc-on{background:var(--vu-ink);color:var(--vu-inv)}
+.tc-persp+.vu-seg{margin-top:12px}
+.tc-textsearch.tc-satz{margin-top:14px;background:#000;color:#fff;border-radius:24px;padding:16px}
+.tc-satz .tc-ts-label{display:block;color:#9b9b9b}
+.tc-satz .tc-ts-field{background:transparent;border:0;padding:0;margin-top:4px}
+.tc-satz .tc-ts-input{background:transparent;color:#fff;border:0;font-size:20px;font-weight:900;letter-spacing:-.03em;line-height:1.2;padding:0;min-height:52px;resize:none}
+.tc-satz .tc-ts-input::placeholder{color:#6e6e6e}
+.tc-satz .tc-ts-go{background:var(--vu-lime);color:#000}
+.tc-satz .tc-ts-h{color:#9b9b9b}
+.tc-satz .tc-mini{background:#1a1a1a;color:#fff;border:0;border-radius:999px;padding:7px 12px;font-size:13.5px;font-weight:700}
+.tc-satz .tc-mini svg{color:var(--vu-lime)}
+.tc-satz .tc-mini.is-warn{border:1.5px dashed #555;background:transparent;color:#9b9b9b}
+.tc-satz .tc-note{color:#9b9b9b;font-size:12px;font-weight:600}
+.tc-satz .tc-ts-edit summary{color:#bdbdbd}
+.tc-cta.tc-cta-lime{margin-top:16px;height:52px;display:flex;align-items:center;justify-content:center;background:var(--vu-lime);color:#000;border-radius:999px;font-weight:800;font-size:16px;text-decoration:none}
+.tc-cta-lime+.vu-help{margin-top:10px}
+.tc-satz .tc-ts-row .tc-mini,.tc-satz .tc-ts-row .tc-mini.is-ok{background:#1a1a1a;color:#fff}
+.tc-satz .tc-ts-row .tc-mini.is-warn{background:transparent;color:#9b9b9b}
+.tc-screener .tc-tools{flex-wrap:wrap;overflow:visible}
+#tc-main{overflow-x:clip}
+.tc-cta-lime.is-empty{background:var(--vu-card);color:var(--vu-mute);pointer-events:none}
+.tc-cta-lime b{margin-right:5px;font-weight:900}.tc-cta-lime.is-empty b{display:none}
+.tc-cta.tc-cta-lime b{color:#000;font-size:inherit;line-height:inherit;letter-spacing:0}
+.tc-cta.tc-cta-lime{flex-direction:row;gap:0}.tc-cta.tc-cta-lime b{display:inline}
+.tc-ms-basis{display:block;margin-top:6px;font-size:11px;font-weight:600;color:var(--vu-mute)}

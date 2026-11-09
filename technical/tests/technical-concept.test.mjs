@@ -68,3 +68,28 @@ test("TX04 / Entscheidung 11: Muster mit Bild, Zahl und Richtung; „Hilft das M
   for (const s of ["Heute im Markt", "Hilft das Muster?", "Forschung, nicht zertifiziert", "\"Belegt\"", "\"Kein Vorteil\"", "\"Gegen die Lesart\"", "mgCell("]) assert.ok(muster.includes(s), s);
   assert.match(app, /Was die Formen<br>im Chart bedeuten/);
 });
+
+test("TX06 / Entscheidung 9 mit Owner-Änderung 09.11.: Technical-Screener bleibt im neuen Design, keine Weiterleitung; Perspektiven führen in den Hauptscreener", () => {
+  const scr = app.slice(app.indexOf("  function viewScreener(main, route) {"), app.indexOf("  function valueText(field, v) {"));
+  for (const s of ["Screener · Perspektive Chart", "Was suchst du?", "\"/screener/?p=\" + x[0]", "Fertige Suchen · Chart", "Treffer zeigen", "tc-satz"]) assert.ok(scr.includes(s) || app.includes(s), s);
+  assert.doesNotMatch(app, /location\.(replace|assign)\(["']\/screener\//, "keine Weiterleitung in den Hauptscreener");
+  assert.match(app, /"In Worten suchen"/);
+  assert.match(app, /Regeln" \) \+ " erkannt\. "|" Regeln"\) \+ " erkannt\. "/);
+  assert.equal(M.parseRoute("#/screener?reiter=vorlagen").tab, "templates");
+  assert.equal(M.parseRoute("#/vorlagen/breakout").view, "templates");
+});
+
+test("Entscheidung 10: Markt heute aus der gemeinsamen Quelle (market-pulse.json) mit Stand und Basis; eigene Zählung nur als Rückfall, ebenfalls mit Basis", () => {
+  const pulse = JSON.parse(readFileSync("quant/data/market/intelligence/market-pulse.json", "utf8"));
+  const b = M.marketBreadth(pulse);
+  assert.ok(b && b.source === "market-pulse" && b.base > 1000 && b.share > 0 && b.share < 100 && /^\d{4}-\d{2}-\d{2}$/.test(b.asOf));
+  assert.match(M.breadthSentence(b), /^\d+ % von [\d.]+ US-Aktien über der 200-Tage-Linie, Stand \d\d\.\d\d\.$/);
+  assert.equal(M.breadthSentence({ share: 34.2, base: 5630, asOf: "2026-11-06" }), "34 % von 5.630 US-Aktien über der 200-Tage-Linie, Stand 06.11.");
+  assert.equal(M.marketBreadth({ schemaVersion: "vu-market-pulse-1.1.0", dimensions: { BREADTH: { evidence: [{ key: "above200", value: 37, evaluated: 5000, current: false }] } } }), null, "nicht aktueller Beleg");
+  assert.equal(M.marketBreadth(null), null);
+  const home = app.slice(app.indexOf("  function viewHome(main) {"), app.indexOf("  /* Ausgeschlossen: Linien"));
+  assert.match(home, /M\.marketBreadth\(pulse\) \|\| own/);
+  assert.match(home, /M\.breadthSentence\(b\)/);
+  const reg = JSON.parse(readFileSync("core/registry/product-contracts.json", "utf8"));
+  assert.ok(reg.products.technical.consumes.includes("marketPulse") && reg.interfaces.marketPulse.artifact === "quant/data/market/intelligence/market-pulse.json");
+});

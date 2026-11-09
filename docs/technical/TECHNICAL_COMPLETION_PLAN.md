@@ -150,8 +150,8 @@ Nur Oberfläche und Text; keine Erkennungsregel, keine Musterzählung, keine Dat
 | M1 Wörter: „Befund“ statt Signal/Setup, Richtung in Worten, Alltagssprache im Fließtext, du | ✔ | PR 1; `technical/tests/technical-wording.test.mjs` | P1 |
 | M2 Start und Chart-Seite (drei Sätze, Zonen-Kacheln, Befunde heute, Befund-Sheet, Kapitel), ohne Quant-/Supertrader-Block | ✔ | PR 2; `technical/tests/technical-concept.test.mjs`, Browser-QA 72/72 | P1 |
 | M3 Muster mit Bildern, Lernen als ein Ort (`#/lernen`) | ✔ | PR 3; `technical-concept.test.mjs`, Browser-QA 72/72, Akademie-QA | P1 |
-| M4 Screener im neuen Design; Einstieg „Perspektive Chart“ im Hauptscreener | offen | PR 4 | P1 |
-| M5 Markt heute und Universumsgröße mit Stand und Basis bzw. aus einer Quelle | offen | PR 5 | P2 |
+| M4 Screener im neuen Design; Einstieg „Perspektive Chart“ im Hauptscreener | ✔ | PR 4; keine Weiterleitung (Owner-Änderung 09.11.), `one-screener.test.mjs` | P1 |
+| M5 Markt heute und Universumsgröße mit Stand und Basis bzw. aus einer Quelle | ✔ | PR 5; `market-pulse.json` (BREADTH above200), Schnittstelle `marketPulse`; Quant zieht im Quant-Umbau nach | P2 |
 
 ## 2. Arbeitspakete (Reihenfolge = Priorität)
 
