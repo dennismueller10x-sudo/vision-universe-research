@@ -1,5 +1,4 @@
-/* VISION UNIVERSE ELLIOTT — elliott.css. Redesign 2027 (W01–W05): Bausteine aus assets/vu-ui.css, hier nur das Elliott-Muster
-   (Lesart-Karte, Richtungsbalken, Sheets). Nur Weiß, Schwarz, Neongrün und drei Graustufen; Plus neongrün ▲, Minus schwarz ▼. */
+/* VISION UNIVERSE ELLIOTT — elliott.css: nur das Elliott-Muster, Bausteine aus assets/vu-ui.css. */
 .el-body{margin:0;background:#fff;color:var(--vu-ink);font:400 15px/1.4 var(--vu-font);-webkit-font-smoothing:antialiased}
 :root[data-theme=dark] .el-body{background:#000}
 .num{font-variant-numeric:tabular-nums}
@@ -36,24 +35,40 @@
 .el-hit-none{display:grid;gap:2px;padding:12px 14px}
 .el-hit-none span,.el-suche-hint{font-size:14px;color:var(--vu-mute)}
 .el-suche-hint a{color:var(--vu-ink);font-weight:700}
-/* Kacheln, Richtungsbalken, Chips */
+/* Kacheln „Neu und verändert“, Chips */
 .el-tiles{--vu-cols:3;margin-top:14px}
 .el-tiles2{--vu-cols:2}
 .el-tile{display:block;color:inherit;text-decoration:none;border-radius:20px}
 .el-tile .vu-tile{height:100%}
-.el-split{margin-top:10px}
-.el-split-n{display:flex;justify-content:space-between;font-size:12px;font-weight:800}
-.el-bar{height:10px;margin:6px 0;border-radius:9px;background:var(--vu-hair);overflow:hidden}
-.el-bar i{display:block;height:100%;background:var(--vu-lime);border-radius:9px}
-.el-split p{margin:0}
-.el-about{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;margin-top:6px;padding:0;border:0;background:none;color:var(--vu-ink);font:700 14px var(--vu-font);cursor:pointer}
-.el-about span{flex:1;text-align:left}
+/* Start „Wo lassen sich Wellen zählen?“ (Konzept EHV, EX02): Heute anwendbar, Zählbar-Liste */
+.el-lead{margin-top:8px}
+.el-today{margin-top:14px;padding:16px;border-radius:20px}
+.el-today-k{margin:0;color:#9b9b9b}
+.el-today-n{display:flex;align-items:baseline;gap:8px;margin:4px 0 0}
+.el-today-n b{font-size:44px;font-weight:900;letter-spacing:-.05em;line-height:1;color:var(--vu-lime)}
+.el-today-n span{color:#bdbdbd;font-weight:700}
+.el-ebar{height:8px;margin-top:12px;border-radius:9px;background:#2a2a2a;overflow:hidden}
+.el-ebar i{display:block;height:100%;background:var(--vu-lime);border-radius:9px}
+.el-today-s{margin:8px 0 0;color:#bdbdbd}
+.el-clist{margin:0;padding:2px 14px;list-style:none;border-radius:20px}
+.el-clist>li+li{border-top:1px solid var(--vu-hair)}
+.el-cr{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:center;min-height:56px;padding:12px 0;color:var(--vu-ink);text-decoration:none}
+.el-cr .vu-logo-tile{width:36px;height:36px;font-size:9px}
+.el-cr-t b{display:block;font-size:15px;line-height:1.25}
+.el-cr-t span{display:block;margin-top:1px;font-size:12.5px;color:var(--vu-mute);line-height:1.3}
+.el-cr-r{display:grid;justify-items:end;gap:3px}
+.el-cr-inv{font-size:12px;font-weight:700;color:var(--vu-mute);white-space:nowrap}
+.el-inv-help{margin-top:10px}
+.el-about{width:100%;margin-top:12px;border:0;font:inherit;text-align:left;cursor:pointer}
+.el-about .vu-navcard__text{flex:1}
+.el-exp{margin:14px 0 0}
+.el-load-fail{font-size:14px;line-height:1.45}
+.el-load-fail .el-link{min-height:44px;padding:0;color:var(--vu-ink);text-decoration:underline}
 .el-chips{margin-top:12px}
 .el-chips-sub{margin-top:8px}
 .el-chip.is-on{background:var(--vu-ink);color:var(--vu-inv)}
 .el-chip-n{opacity:.6;font-variant-numeric:tabular-nums}
 .el-content .vu-sect{margin-top:22px}
-.el-rule{margin:-4px 0 0}
 /* Lesart-Karte */
 .el-list{margin:12px 0 0;padding:0 14px;list-style:none;background:var(--vu-card);border-radius:20px}
 .el-list>li+li{border-top:1px solid var(--vu-hair)}
@@ -79,21 +94,14 @@
 .el-order{background:var(--vu-card);border:0;align-items:center}
 .el-content>.vu-help{margin-top:12px}
 .el-more{margin-top:12px}
-.el-nav{display:grid;gap:10px}
 .el-gap{margin:10px 0 0}
 .el-bell{display:flex;gap:10px;align-items:center;margin-top:12px}
 .el-bell span{flex:1}.el-bell small{display:block;font-size:12px}
 .el-empty{margin:18px 0;padding:20px;border-radius:20px;background:var(--vu-card)}
 .el-empty h2{margin:0 0 6px;font-size:19px}
 .el-empty p{margin:0 0 14px;color:var(--vu-mute)}
-.el-more-links{display:flex;flex-wrap:wrap;gap:0 20px;margin-top:14px}
-.el-more-links a{display:inline-flex;align-items:center;min-height:44px;color:var(--vu-ink);font-weight:700}
 .el-sheet-head{display:flex;justify-content:space-between;align-items:center}
 .el-link{min-height:44px;border:0;background:none;color:var(--vu-mute);font:700 14px var(--vu-font);cursor:pointer}
-.el-fl{margin:12px 0 6px}
-.el-fwrap{display:flex;gap:6px;flex-wrap:wrap}
-.el-fswitch{display:flex!important;justify-content:space-between;flex-direction:row-reverse;width:100%;margin:12px 0 4px}
-.el-fgo{margin-top:14px}
 .el-sheet-p{margin:8px 0 12px;font-size:14px}
 .el-schema{display:block;width:100%;height:auto;color:var(--vu-ink)}
 .el-schema-n{font:900 11px var(--vu-font);fill:var(--vu-inv)}

@@ -116,8 +116,8 @@ test("EH-7 · rows are derived from the data, small groups form no row, and no t
 test("EH-8 · build is deterministic and the index is compact", { skip: !HAVE_DATA && "v3-Daten fehlen" }, () => {
   const a = H.buildHomeFromDir(ROOT), b = H.buildHomeFromDir(ROOT);
   assert.equal(JSON.stringify(a), JSON.stringify(b));
-  assert.equal(a.schemaVersion, "vu-elliott-home-1.1.0");
-  assert.equal(a.version, "elliott-home-1.1.0");
+  assert.equal(a.schemaVersion, "vu-elliott-home-1.2.0");
+  assert.equal(a.version, "elliott-home-1.2.0");
   assert.equal(M.validate(a).ok, true);
   const bytes = gunzipSync ? Buffer.byteLength(JSON.stringify(a)) : 0;
   assert.ok(bytes < 400 * 1024, "kompakter Index: " + bytes + " B");
@@ -189,7 +189,8 @@ test("EH-10 · large projections render safely and stay descriptive", () => {
   const words = JSON.stringify([M.ROLE_LABEL, M.ROLE_NOTE, M.STATUS_LABEL, M.CHANGE_LABEL]);
   assert.doesNotMatch(words.replace(/keine Aussage über Wahrscheinlichkeit/, ""), /wahrscheinlich|erwartet|Rendite|Kursziel|Empfehlung|Chance|Potenzial/i);
   const ui = read("elliott/app.js");
-  assert.match(ui, /Projektionszone/, "die Zahl ist als Zone benannt");
+  /* Konzept EHV, Entscheidung 4: die Startseite nennt keine Projektionsspannen (kein Zielbereich), nur Muster und Ungueltig-Marke. */
+  assert.doesNotMatch(ui, /M\.TIER_LABEL|t\[k\]\[0\]|Projektionszone/, "keine Projektionsspanne auf den Karten");
   assert.doesNotMatch(ui.replace(/keine Wahrscheinlichkeit[^"]*"/g, ""), /Wahrscheinlichkeit|erwartete Rendite/);
 });
 
@@ -210,7 +211,7 @@ test("EH-11 · labels and price are correct", () => {
 /* ---------------------------------------------------------------- 3 Filter, Adresse, Suche */
 test("EH-12 · URL state round-trips, unknown values are dropped, a ticker is an alias to the detail", () => {
   const s = M.parseHash("#/?welle=3&richtung=ab&status=bestaetigt&rolle=highlight&neu=1");
-  assert.deepEqual(JSON.parse(JSON.stringify(s)), { welle: "3", richtung: "ab", status: "bestaetigt", rolle: "highlight", neu: true, reihe: null, suche: false, q: "", ticker: null, detailQuery: "" });
+  assert.deepEqual(JSON.parse(JSON.stringify(s)), { welle: "3", richtung: "ab", status: "bestaetigt", rolle: "highlight", neu: true, reihe: null, suche: false, zaehlbar: false, q: "", ticker: null, detailQuery: "" });
   assert.equal(M.buildHash(s), "#/?welle=3&richtung=ab&status=bestaetigt&rolle=highlight&neu=1");
   assert.equal(M.buildHash(M.parseHash("#/")), "#/");
   assert.equal(M.parseHash("#/?welle=9&richtung=x&rolle=nix").welle, null, "Tippfehler ergeben keine leere Liste");
@@ -454,4 +455,68 @@ test("EH-26 · behind the Research access gate the stack list comes from the gat
   const app = read("elliott/app.js"), html = read("elliott/index.html");
   assert.match(app, /querySelector\("script\[data-content\]"\)[^]*?fetchRes\(gate\.getAttribute\("data-content"\)\)/);
   assert.match(html, /querySelector\("script\[data-content\]"\)/, "auch das Vorladen folgt dem Zugangs-Original");
+});
+
+/* Konzept Elliott, Hedgefonds, Vorsorge (docs/design/elliott-hedgefonds-vorsorge-2026-11), PR 1: ehrlich nach Anwendbarkeit. */
+test("EHV-1 · Heute anwendbar: Anteil und genau diese Aktien aus elliottApplicable (HIGH, MODERATE)", () => {
+  const rows = [
+    { t: "BBB", asOf: "2026-11-06", elliott: "FLAT:done", structure: "UPTREND_ADVANCING", direction: "BULLISH", invalidation: 160.5, elliottApplicable: "MODERATE", elliottClarity: "HIGH", relabelRisk: "LOW" },
+    { t: "AAA", asOf: "2026-11-06", elliott: "ZIGZAG:done", structure: "RALLY_IN_DOWNTREND", direction: "BEARISH", invalidation: 13.3, elliottApplicable: "HIGH", elliottClarity: "MODERATE", relabelRisk: "LOW" },
+    { t: "CCC", asOf: "2026-11-05", elliott: "WXY:Y", elliottApplicable: "LOW" },
+    { t: "DDD", elliottApplicable: null }
+  ];
+  const names = new Map([["AAA", { n: "MINISO Group Holding Limited", u: "USD" }]]);
+  const a = H.applicableOf(rows, names);
+  assert.equal(a.n, 4);
+  assert.equal(a.count, 2);
+  assert.equal(a.high, 1);
+  assert.equal(a.asOf, "2026-11-06");
+  assert.deepEqual(a.rows.map((r) => r.t), ["AAA", "BBB"], "gut anwendbar zuerst");
+  assert.equal(a.rows[0].n, "MINISO Group Holding Limited", "Rohname bleibt im Datensatz");
+  assert.equal(M.shortName(a.rows[0].n, "AAA"), "Miniso");
+  assert.equal(M.countLine(a.rows[0]), "Zickzack abgeschlossen · Erholung im Abwärtstrend");
+  assert.equal(M.countLine(a.rows[1]), "Flache Korrektur abgeschlossen · Aufwärtstrend läuft");
+  assert.equal(M.invalidLine(a.rows[0]), "ungültig über 13,30 $");
+  assert.equal(M.invalidLine(a.rows[1]), "ungültig unter 160,50 $");
+  assert.equal(M.dirOf(a.rows[1]), "up");
+  assert.equal(M.invalidLine({ inv: null }), null, "ohne Marke keine Zeile");
+  const home = H.assembleHome({ cards: [], meta: {}, dataAsOf: "2026-11-06", applicable: a });
+  assert.equal(M.applicableOf(home).count, 2);
+  assert.equal(M.applicableOf({ cards: [], rows: [] }), null, "alter Vertrag ohne Block: Seite sagt es");
+  for (const code of ["ZIGZAG", "FLAT", "TRIPLE_ZIGZAG", "DOUBLE_ZIGZAG", "WXY", "TRIANGLE", "IMPULSE", "ENDING_DIAGONAL", "LEADING_DIAGONAL"]) assert.ok(M.PATTERN_DE[code], code + " hat einen deutschen Namen");
+});
+
+test("EHV-1 · echte Daten: Anteil passt zum Wellen-Index", { skip: !HAVE_DATA && "v3-Daten fehlen" }, () => {
+  const a = H.buildHomeFromDir(ROOT).applicable;
+  const ix = JSON.parse(gunzipSync(readFileSync(join(V3, "index.json.gz"))).toString("utf8")).rows;
+  assert.equal(a.n, ix.length);
+  assert.equal(a.count, ix.filter((r) => r.elliottApplicable === "HIGH" || r.elliottApplicable === "MODERATE").length);
+  assert.equal(a.rows.length, a.count);
+});
+
+test("EHV-2 · Leiste „Zählbar“ statt „Welle 3“, alte Adresse leitet weiter", () => {
+  assert.equal(M.redirectOf("#/?welle=3"), "#/?zaehlbar=1");
+  assert.equal(M.redirectOf("#/?welle=3&richtung=auf"), null, "kombinierter Filter bleibt");
+  assert.equal(M.redirectOf("#/NVDA"), null);
+  assert.equal(M.redirectOf("#/?zaehlbar=1"), null);
+  assert.equal(M.parseHash("#/?zaehlbar=1").zaehlbar, true);
+  assert.equal(M.buildHash({ zaehlbar: true }), "#/?zaehlbar=1");
+  const mod = JSON.parse(read("products/elliott/module.json"));
+  assert.ok(mod.navigation.entries.some(([l, h]) => l === "Zählbar" && h === "/elliott/#/?zaehlbar=1"));
+  assert.ok(!mod.navigation.entries.some(([l]) => l === "Welle 3"));
+  const nav = read("assets/site-navigation.js");
+  assert.match(nav, /\['zaehlbar','Zählbar','\/elliott\/#\/\?zaehlbar=1','wave'\]/);
+  assert.doesNotMatch(nav, /'Welle 3'/);
+  assert.match(read("elliott/app.js"), /M\.redirectOf\(global\.location\.hash\)/, "die Seite fuehrt die Weiterleitung aus");
+});
+
+test("EHV-5 · Leerzustand: ein Satz mit Grund und Stand statt eines grauen Kastens", () => {
+  const at = new Date(2026, 10, 9, 9, 5);
+  assert.equal(M.loadFailText({ status: 404, at }), "Die Übersicht der zählbaren Aktien lädt gerade nicht, weil die Datei mit dem Wellen-Index auf dem Server fehlt (Stand der Abfrage 09:05 Uhr). Die Suche oben öffnet jede Aktie direkt.");
+  assert.match(M.loadFailText({ status: 503, at }), /Fehler 503 antwortet .*09:05 Uhr/);
+  assert.match(M.loadFailText({ msg: "INDEX_VERSION", at }), /unbekanntes Format/);
+  assert.match(M.loadFailText(null), /Verbindung unterbrochen ist \(Stand der Abfrage eben\)/);
+  const app = read("elliott/app.js");
+  assert.match(app, /role: "alert" \}, \[failText\(\)/, "Fehler zeigt den Satz");
+  assert.doesNotMatch(app, /Die Elliott-Übersicht ist gerade nicht verfügbar/, "kein Kasten ohne Grund");
 });

@@ -24,8 +24,8 @@ import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { displayedTheses } from "../lib/ti-projection.mjs";
 
-export const HOME_VERSION = "elliott-home-1.1.0";
-export const HOME_SCHEMA = "vu-elliott-home-1.1.0";
+export const HOME_VERSION = "elliott-home-1.2.0";
+export const HOME_SCHEMA = "vu-elliott-home-1.2.0";
 export const HOME_PATH = "quant/data/technical-intelligence/v3/elliott-home.json";
 
 /** Rollen in Anzeigereihenfolge (klein = vorn). Rolle und Kennzeichnung bleiben im Kartenfeld role. */
@@ -186,8 +186,32 @@ export function cardsOfDocument(symbol, doc, names) {
   return out;
 }
 
+/** Anwendbarkeit der Wellenzaehlung (Feld elliottApplicable des Wellen-Index): wie viele Titel des Produktuniversums die Engine heute als
+    zaehlbar einstuft (HIGH, MODERATE) und genau diese Titel. Reine Auswahl aus dem Index, keine neue Einstufung. Reihenfolge: gut anwendbar
+    vor anwendbar, klare Zaehlung vor unklarer, geringe Gefahr einer Neuzaehlung vor hoher, dann Kuerzel (kein Kurs, keine Projektion). */
+export const APPLICABLE = new Set(["HIGH", "MODERATE"]);
+const LEVEL = { HIGH: 0, MODERATE: 1, MEDIUM: 1, LOW: 2 };
+const lvl = (x) => (x in LEVEL ? LEVEL[x] : 3);
+export function applicableOf(rows, names) {
+  const pick = (rows || []).filter((r) => r && APPLICABLE.has(r.elliottApplicable));
+  pick.sort((a, b) => lvl(a.elliottApplicable) - lvl(b.elliottApplicable) || lvl(a.elliottClarity) - lvl(b.elliottClarity)
+    || lvl(a.relabelRisk) - lvl(b.relabelRisk) || (a.t < b.t ? -1 : a.t > b.t ? 1 : 0));
+  return {
+    n: (rows || []).length,
+    count: pick.length,
+    high: pick.filter((r) => r.elliottApplicable === "HIGH").length,
+    asOf: pick.reduce((m, r) => (r.asOf && (!m || r.asOf > m) ? r.asOf : m), null),
+    rows: pick.map((r) => {
+      const e = names && names.get(r.t);
+      return { t: r.t, n: (e && e.n) || r.t, cur: (e && e.u) || null, tf: r.tf || null, asOf: r.asOf || null, close: num(r.close),
+        el: r.elliott || null, st: r.structure || null, dir: r.direction || null, inv: num(r.invalidation),
+        app: r.elliottApplicable, cl: r.elliottClarity || null, rr: r.relabelRisk || null };
+    })
+  };
+}
+
 /** Index aus Karten + Metadaten. Deterministisch: gleiche Eingabe, gleiche Bytes. */
-export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf }) {
+export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf, applicable }) {
   const sorted = cards.slice().sort(compareCards);
   const rows = [];
   const filters = { wave: {}, dir: {}, st: {}, role: {} };
@@ -219,6 +243,7 @@ export function assembleHome({ cards, meta, indexGeneratedAt, dataAsOf }) {
       highlights: sorted.filter((c) => c.role === "EXPLORE_HIGHLIGHT").length, newlyConfirmed: sorted.filter((c) => c.chg && c.chg.k === "CONFIRMED").length,
       delayed: sorted.filter((c) => c.fr === "DELAYED").length, recent: sorted.filter((c) => c.chg).length
     },
+    applicable: applicable || null,
     filters,
     rows,
     cards: sorted
@@ -253,5 +278,5 @@ export function buildHomeFromDir(root, dir = join(root, "quant/data/technical-in
       cards.push(...cardsOfDocument(symbol, doc, names));
     }
   }
-  return assembleHome({ cards, meta, indexGeneratedAt: index.generatedAt, dataAsOf });
+  return assembleHome({ cards, meta, indexGeneratedAt: index.generatedAt, dataAsOf, applicable: applicableOf(index.rows, names) });
 }
