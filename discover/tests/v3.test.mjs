@@ -215,7 +215,7 @@ const ALLE = Object.fromEntries(Reihen.HOME_PLAN.flatMap((s) => s.row ? [[s.row,
 
 test("Reihen: Startseite in der Reihenfolge von n-home", () => {
   const plan = Reihen.homePlan(Object.assign({}, ALLE), { personal: { recent: true, more: true } });
-  assert.deepEqual(plan.map((s) => s.row || s.kind), ["im-blick", "new-52-week-highs", "fallen-angels", "themes", "recent", "comeback", "more",
+  assert.deepEqual(plan.map((s) => s.row || s.kind), ["im-blick", "new-52-week-highs", "fallen-angels", "themes", "europe", "recent", "comeback", "more",
     "langfristige-compounder", "ueberraschungen", "bekannte-namen", "strategies", "breakout-watch"]);
   assert.ok(plan.length <= Reihen.MAX_HOME_ROWS, "hoechstens 14 Reihen");
   assert.equal(Reihen.homeTitle("ueberraschungen"), "Kennt kaum jemand");
@@ -227,14 +227,14 @@ test("Reihen: leere oder fehlende Reihen erscheinen nicht (Fallen Angels vor PR 
   const plan = Reihen.homePlan(ohne, {}).map((s) => s.row || s.kind);
   for (const weg of ["fallen-angels", "comeback", "recent", "more"]) assert.ok(!plan.includes(weg), weg);
   assert.equal(plan[0], "im-blick");
-  assert.deepEqual(Reihen.homePlan({}, {}).map((s) => s.kind), ["themes"], "ohne Reihen bleiben nur die Themen");
+  assert.deepEqual(Reihen.homePlan({}, {}).map((s) => s.kind), ["themes", "europe"], "ohne Reihen bleiben nur die Themen und der Europa-Einstieg");
   const meta = { rows: [{ universeId: "US_REAL", rows: [{ rowId: "a", matched: 3, returned: 3 }, { rowId: "b", matched: 0, returned: 0 }] }] };
   assert.deepEqual(Reihen.available(meta, "US_REAL"), { a: 3 });
 });
 
 test("Reihen: Reihen mit neuen Treffern ruecken nach oben, nur zwischen den Reihen-Plaetzen", () => {
   const plan = Reihen.homePlan(ALLE, { fresh: ["breakout-watch", "bekannte-namen"] }).map((s) => s.row || s.kind);
-  assert.deepEqual(plan, ["im-blick", "bekannte-namen", "breakout-watch", "themes", "new-52-week-highs", "fallen-angels",
+  assert.deepEqual(plan, ["im-blick", "bekannte-namen", "breakout-watch", "themes", "europe", "new-52-week-highs", "fallen-angels",
     "comeback", "langfristige-compounder", "strategies", "ueberraschungen"]);
   assert.equal(plan[1], "bekannte-namen");
   assert.equal(plan[2], "breakout-watch");
