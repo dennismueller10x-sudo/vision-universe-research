@@ -20,11 +20,11 @@ const normalized = JSON.parse(JSON.stringify(groups.map(({label, entries}) => [l
 // Discover shortcuts stay within Discover; the other groups link to platform products.
 test('the shared menu groups product routes and Discover destinations', () => {
   assert.deepEqual(normalized.map(([heading]) => heading),
-    ['Discover','Quant','Technical','Fundamental','Supertrader','Hedgefonds','Elliott','Screener','Vorsorge','Portfolios','Weitere Produkte']);
+    ['Discover','Quant','Technical','Fundamental','Supertrader','Hedgefonds','Elliott','Screener','Vorsorge','Portfolios','Insights','Weitere Produkte']);
   const routes = normalized.flatMap(([, entries]) => entries.map(([, href]) => href));
   assert.equal(new Set(routes).size, routes.length);
   for (const route of ['/screener/','/quant/','/elliott/','/supertrader/','/dashboard/','/macro/','/etf/','/analysten/',
-    '/hedgefonds/','/news/','/morning/','/magazin/','/reports/xpeng/','/academy/','/guide/','/budget/','/vorsorge/#/','/fundamental/#/','/portfolios/']) {
+    '/hedgefonds/','/news/','/morning/','/magazin/','/reports/xpeng/','/insights/','/insights/reports/','/academy/','/guide/','/budget/','/vorsorge/#/','/fundamental/#/','/portfolios/']) {
     assert.ok(routes.includes(route), `${route} fehlt`);
   }
   assert.deepEqual(normalized[0][1], [
