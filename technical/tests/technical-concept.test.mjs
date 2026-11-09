@@ -78,3 +78,18 @@ test("TX06 / Entscheidung 9 mit Owner-Änderung 09.11.: Technical-Screener bleib
   assert.equal(M.parseRoute("#/screener?reiter=vorlagen").tab, "templates");
   assert.equal(M.parseRoute("#/vorlagen/breakout").view, "templates");
 });
+
+test("Entscheidung 10: Markt heute aus der gemeinsamen Quelle (market-pulse.json) mit Stand und Basis; eigene Zählung nur als Rückfall, ebenfalls mit Basis", () => {
+  const pulse = JSON.parse(readFileSync("quant/data/market/intelligence/market-pulse.json", "utf8"));
+  const b = M.marketBreadth(pulse);
+  assert.ok(b && b.source === "market-pulse" && b.base > 1000 && b.share > 0 && b.share < 100 && /^\d{4}-\d{2}-\d{2}$/.test(b.asOf));
+  assert.match(M.breadthSentence(b), /^\d+ % von [\d.]+ US-Aktien über der 200-Tage-Linie, Stand \d\d\.\d\d\.$/);
+  assert.equal(M.breadthSentence({ share: 34.2, base: 5630, asOf: "2026-11-06" }), "34 % von 5.630 US-Aktien über der 200-Tage-Linie, Stand 06.11.");
+  assert.equal(M.marketBreadth({ schemaVersion: "vu-market-pulse-1.1.0", dimensions: { BREADTH: { evidence: [{ key: "above200", value: 37, evaluated: 5000, current: false }] } } }), null, "nicht aktueller Beleg");
+  assert.equal(M.marketBreadth(null), null);
+  const home = app.slice(app.indexOf("  function viewHome(main) {"), app.indexOf("  /* Ausgeschlossen: Linien"));
+  assert.match(home, /M\.marketBreadth\(pulse\) \|\| own/);
+  assert.match(home, /M\.breadthSentence\(b\)/);
+  const reg = JSON.parse(readFileSync("core/registry/product-contracts.json", "utf8"));
+  assert.ok(reg.products.technical.consumes.includes("marketPulse") && reg.interfaces.marketPulse.artifact === "quant/data/market/intelligence/market-pulse.json");
+});

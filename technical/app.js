@@ -386,12 +386,16 @@
       if (asOf) tag.textContent = "Technical · " + closeLabel(asOf);
       put(searchSlot, searchBox(X.entries, "Aktie oder „Dreieck über der 200-Tage-Linie“", true));
       put(chips, ["NVDA", "AAPL", "TSLA", "MSFT"].filter(X.has).map(function (t) { return el("a", { class: "vu-chip", role: "listitem", href: M.chartHref(t) }, [h(U.logo(t)), t]); }));
-      var above = ix.presets && ix.presets.aboveSma200, share = isNum(above) && ix.count ? above / ix.count * 100 : null;
-      if (isNum(share)) {
-        var v = breadthVerdict(share);
-        put(market, el("a", { class: "tc-ms", href: TPL.href("aboveSma200"), "aria-label": "Markt heute: " + v[1] + ", " + de(share) + " % über der 200-Tage-Linie" }, [el("div", {}, [el("span", { class: "vu-ltag", text: "Markt heute" }),
-          el("b", {}, [v[1], el("small", { text: de(share) + " % über der 200-Tage-Linie" })]), el("div", { class: "tc-ms-bar" }, el("i", { style: "width:" + Math.round(share) + "%" }))]), h(U.glyph("next", 14))]));
-      }
+      /* Entscheidung 10: Markt heute aus der gemeinsamen Quelle (market-pulse.json); ohne sie die eigene Zählung, beide mit Stand und Basis. */
+      var above = ix.presets && ix.presets.aboveSma200, own = isNum(above) && ix.count ? { share: above / ix.count * 100, matched: above, base: ix.count, asOf: asOf, source: "technical" } : null;
+      fetchJSON(M.MARKET_PULSE_PATH).catch(function () { return null; }).then(function (pulse) {
+        var b = M.marketBreadth(pulse) || own;
+        if (!b) return;
+        var v = breadthVerdict(b.share);
+        put(market, el("a", { class: "tc-ms", href: TPL.href("aboveSma200"), "data-source": b.source, "aria-label": "Markt heute: " + v[1] + ", " + M.breadthSentence(b) }, [el("div", {}, [el("span", { class: "vu-ltag", text: "Markt heute" }),
+          el("b", {}, [v[1], el("small", { text: Math.round(b.share) + " % über der 200-Tage-Linie" })]), el("div", { class: "tc-ms-bar" }, el("i", { style: "width:" + Math.round(b.share) + "%" })),
+          el("span", { class: "tc-ms-basis", text: (isNum(b.matched) ? Math.round(b.matched).toLocaleString("de-DE") + " von " : "Basis ") + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien" + (b.asOf ? " · Stand " + M.dateDe(b.asOf) : "") })]), h(U.glyph("next", 14))]));
+      });
       put(searches, HOME_SEARCHES.filter(function (x) { return TPL.get(x[0]); }).map(function (x) {
         var t = TPL.get(x[0]), tc = ix.templates && ix.templates[x[0]], count = tc ? tc[0] : ix.presets && ix.presets[x[0]];
         return el("a", { class: "tc-idc", href: "#/screener?vorlage=" + encodeURIComponent(x[0]) }, [hudGlyph(x[2], 34), el("b", { text: plainTitle(t) }), el("span", { text: x[1] }),
