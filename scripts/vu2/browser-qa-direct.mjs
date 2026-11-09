@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {documentRecorder} from '../quality/delivered-document.mjs';
 // Quant: Direktlinks mit AKTIVER Passwortsperre, langsamen Verbindungen und parallelen Ladevorgaengen.
 //
 // Hintergrund: PR #619 hatte einen WebKit-Race, der nur ueber die Zugangsmaske auftrat
@@ -110,10 +111,15 @@ function stampsOfPage(routePath) { // die Stempel der Seite, die diese Route aus
   if (!pageHtml.has(page)) pageHtml.set(page, pageStamps((readRelease(page) || '').toString()));
   return pageHtml.get(page);
 }
+const documents = documentRecorder();
 const server = createServer(async (req, res) => {
   try {
     let path = decodeURIComponent(new URL(req.url, 'http://local').pathname);
     if (path.endsWith('/')) path += 'index.html';
+    if (path.endsWith('.html')) {
+      const end=res.end.bind(res);
+      res.end=(body,...args)=>{documents.record(res,body ?? Buffer.alloc(0));return end(body,...args);};
+    }
     if (hangPaths.has(path)) return; // nie antworten; der Browser schliesst die Verbindung am Ende
     if (failPaths.has(path)) { res.statusCode = failPaths.get(path); res.end('fault'); return; }
     if (corruptPaths.has(path)) { res.setHeader('Content-Type', mime[extname(path)] || 'application/octet-stream'); const body = Buffer.from(path.endsWith('.gz') ? 'kein gzip' : '{"abgeschnitten": [1, 2'); checkReadable(path, body); res.end(body); return; }
@@ -206,7 +212,7 @@ async function loadThroughGate({device, spec, hash, throttle = null, delays = fa
   try {
     const url = base + (hash ?? spec.path);
     const response = await page.goto(url, {waitUntil: 'load', timeout: 60000});
-    const document = response ? await response.text() : '';
+    const document = documents.read(response);
     outcome.maskServed = document.includes('research-access-settings') && document.includes('research-access-form');
     if (gateOn && !outcome.maskServed) outcome.problems.push('Ausgeliefert wurde NICHT die Zugangsmaske (Test liefe ungesperrt)');
     outcome.gotoMs = Date.now() - started;

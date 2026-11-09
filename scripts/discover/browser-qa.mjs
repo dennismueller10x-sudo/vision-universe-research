@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {assertStockTitle} from './qa-stock-title.mjs';
 import {navigate} from '../quality/browser-navigation.mjs';
 // Real-browser checks; no fixture interception and no simulated market data.
 // Browser QA of the one canonical Discover (/discover/, formerly served as /discover-v2/).
@@ -260,28 +261,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   else assert(await page.locator('.dv2-stock-next a[href^="#/einzeln/"]').first().waitFor({state:'attached',timeout:10000}).then(()=>true,()=>false),'Next stock has no return to discovery');interactionEvidence.push({key,type:'stock-onward',from:'AAPL',to:href});
  });
  if(width===390)await check(key+' stock title page: story, closed chapters, rows, onward only from a row',async()=>{
-  /* Konzept „Reihe für Reihe“ (AX03/AX04): Story in drei Sätzen, 7 Kapitel zu, Reihen der Aktie, „Mehr wie …“; Leiste und Endkarte nur mit ?reihe=. */
-  /* Frühere Prüfungen öffnen Kapitel 5; die Seite merkt sich das auf dem Gerät. Für „standardmäßig zu“ ohne Gedächtnis laden. */
-  /* WebKit (09.11.): toggle-Ereignisse der vorigen Darstellung schreiben das Gedächtnis asynchron zurück, ein removeItem vor dem
-     Laden konnte so wieder ueberschrieben werden. Erst NVDA zeichnen und ausstehende Aufgaben abwarten, dann leeren und frisch laden. */
-  await navigate(page,base+'/discover/#/s/US_REAL/NVDA',{waitUntil:'networkidle'});await page.locator('.dv3-titel .dv3-ep').first().waitFor();
-  await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>setTimeout(r,50))));
-  await page.evaluate(()=>{try{localStorage.removeItem('vu-discover-chapters-v1');}catch(e){}});
-  await page.reload({waitUntil:'networkidle'});await page.locator('.dv3-titel .dv3-story').waitFor();
-  await page.waitForFunction(()=>document.querySelectorAll('.dv3-titel .dv3-ep').length===7);
-  assert.equal(await page.locator('.dv3-story .dv3-story-r').count(),3,'Story in three sentences');
-  const eps=page.locator('.dv3-titel .dv3-ep');assert.equal(await eps.count(),7,'Seven chapters');
-  assert.equal(await page.locator('.dv3-titel .dv3-ep[open]').count(),0,'Chapters closed by default');
-  assert.equal(await page.locator('.dv3-titel').getByText(/Was dafür spricht|was dagegen|In einem Satz|Auf einen Blick|anderen Welten/).count(),0,'Old blocks are gone');
-  assert(await page.locator('#dv3-reihen .dv3-rk2').count()>=1,'Rows of the stock');
-  assert.equal(await page.locator('.dv3-rowctx, .dv3-endcard').count(),0,'No onward bar without origin');
-  assert(/\$/.test(await page.locator('.dx-chart-hero-preis > b').first().innerText()),'Head price in dollars');
-  await eps.nth(2).locator('summary').click();assert.equal(await eps.nth(2).getAttribute('open'),'');await screenshot(page,key+'-stock-chapter');
-  await navigate(page,base+'/discover/#/s/US_REAL/NVDA?reihe=langfristige-compounder',{waitUntil:'networkidle'});await page.reload({waitUntil:'networkidle'});
-  await page.locator('.dv3-rowctx').waitFor();assert(/\d+ von \d/.test(await page.locator('.dv3-rowctx').innerText()),'Row position');
-  await page.locator('.dv3-endcard').scrollIntoViewIfNeeded();await screenshot(page,key+'-stock-from-row');
-  const nh=await page.locator('.dv3-endcard .dv3-endcard-a a').first().getAttribute('href');assert(/\?reihe=langfristige-compounder$/.test(nh),'Next keeps the row: '+nh);
-  await page.evaluate(()=>{try{localStorage.removeItem('vu-discover-chapters-v1');}catch(e){}});
+  await assertStockTitle({browser,base,width,colorScheme,key,screenshot});
  });
  if(engine==='chromium'&&width===390&&colorScheme==='light')await check(key+' CrowdStrike business copy and zero-line chart scale',async()=>{
   await navigate(page,base+'/discover/#/s/US_REAL/CRWD',{waitUntil:'networkidle'});/* a-chapter: Kapitel 2 „Was macht …?“ ist zugeklappt, der Text steht unverändert darin. */await page.locator('.dv3-overview').waitFor({timeout:8000}).catch(()=>{});await page.evaluate(()=>{const d=document.querySelector('.dv3-ep[data-ch="firma"]');if(d)d.open=true;});const bizSel=await page.locator('.dv3-overview [data-sec=firma]').waitFor({timeout:8000}).then(()=>'.dv3-overview [data-sec=firma]',()=>'.dv2-stock-business');await page.locator(bizSel).waitFor();

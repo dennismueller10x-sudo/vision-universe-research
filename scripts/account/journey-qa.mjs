@@ -34,6 +34,15 @@ const PASSWORD = 'Sicheres-Passwort-26';
 const stamp = Date.now();
 const mail = name => `${name}-${engine}-${stamp}@example.test`;
 const consoleErrors = [];
+// Let requests issued by the current screen finish before replacing/destroying
+// its document. WebKit otherwise reports teardown aborts as access-control
+// console errors. A hung request still fails at the existing browser timeout;
+// no errors are filtered out.
+async function closeContext(ctx) {
+  await Promise.all(ctx.pages().map(page=>page.waitForLoadState('networkidle')));
+  await ctx.close();
+}
+
 
 async function context(kind, theme = 'light') {
   const opts = kind === 'mobile'
@@ -86,7 +95,7 @@ const shot = (page, name) => page.screenshot({path: `${out}/${engine}-${name}.pn
 const NEWSLETTER_ON = Boolean((await (await fetch(base + '/v1/plans')).json()).newsletter);
 async function register(page, email, {from = 'preise', plan = 'free', newsletter = false} = {}) {
   if (from === 'preise') {
-    await page.goto(`${base}/preise/`);
+    await page.waitForLoadState('networkidle');await page.goto(`${base}/preise/`);
     await page.waitForFunction(() => !document.querySelector('[data-price=pro][aria-busy]'));
     await page.click(plan === 'pro' ? '#pr-choose-pro' : '#pr-choose-free');
     await page.waitForURL(new RegExp(`/konto/registrieren/\\?plan=${plan}`));
@@ -110,17 +119,17 @@ async function register(page, email, {from = 'preise', plan = 'free', newsletter
 }
 // Bestaetigungslink aus dem simulierten Postfach (je Adresse), im angegebenen Browser oeffnen.
 async function confirmLink(page, email) {
-  await page.goto(`${base}/__dev/mail`);
+  await page.waitForLoadState('networkidle');await page.goto(`${base}/__dev/mail`);
   await page.locator('.box', {hasText: email}).locator('a.btn').first().click();
 }
 async function login(page, email, next) {
-  await page.goto(`${base}/konto/anmelden/${next ? '?next=' + encodeURIComponent(next) : ''}`);
+  await page.waitForLoadState('networkidle');await page.goto(`${base}/konto/anmelden/${next ? '?next=' + encodeURIComponent(next) : ''}`);
   await page.fill('#email', email);
   await page.fill('#password', PASSWORD);
   await page.click('#ka-login button[type=submit]');
 }
 async function logout(page) {
-  await page.goto(`${base}/konto/`);
+  await page.waitForLoadState('networkidle');await page.goto(`${base}/konto/`);
   await page.waitForSelector('#ka-account:not([hidden])');
   await page.click('#ka-logout');
   await page.waitForURL(/\/konto\/anmelden\//);
@@ -206,11 +215,11 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await login(page, email);
   await page.waitForURL(/\/willkommen\/$/);
   check(true, 'Anmeldung ohne Ziel: Willkommensseite');
-  await page.goto(`${base}/mein-dashboard/`);
+  await page.waitForLoadState('networkidle');await page.goto(`${base}/mein-dashboard/`);
   await page.waitForSelector('#md-app:not([hidden])');
   check(await page.locator('#md-strip .md-wl:not(.md-wl--add)').count() === 1, 'gespeicherte Daten bleiben nach erneuter Anmeldung');
   // Kontoseite: Einstellungen statt Investment-Inhalten
-  await page.goto(`${base}/konto/`);
+  await page.waitForLoadState('networkidle');await page.goto(`${base}/konto/`);
   await page.waitForSelector('#ka-account:not([hidden])');
   // E07: keine Konto-Reiter mehr; Watchlist und Konto sind getrennte Plaetze der Leiste „Mein Bereich“.
   check(!(await page.$('main a[href="/konto/watchlist/"]')) && await page.isVisible('#vu-dock a[data-id=watchlist][href="/mein-dashboard/"]')
@@ -221,7 +230,7 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await shot(page, 'free-04-konto');
   // Deep Link ohne Sitzung -> Anmeldung -> zurueck zum Ziel
   await logout(page);
-  await page.goto(`${base}/mein-dashboard/`);
+  await page.waitForLoadState('networkidle');await page.goto(`${base}/mein-dashboard/`);
   await page.waitForURL(/\/konto\/anmelden\/\?next=%2Fmein-dashboard%2F/);
   check(true, 'Dashboard ohne Anmeldung: zur Anmeldung, keine persoenlichen Daten');
   await page.fill('#email', email);
@@ -229,7 +238,7 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await page.click('#ka-login button[type=submit]');
   await page.waitForURL(/\/mein-dashboard\/$/);
   check(true, 'Deep Link bleibt nach der Anmeldung erhalten');
-  await ctx.close();
+  await closeContext(ctx);
 
   // Trennung der Konten: ein zweites Konto sieht nichts vom ersten.
   const other = await context('desktop');
@@ -241,7 +250,7 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await other.page.goto(`${base}/mein-dashboard/`);
   await other.page.waitForSelector('#md-app:not([hidden])');
   check(await other.page.isVisible('#md-watch-empty') && !(await other.page.$('#md-strip .md-wl:not(.md-wl--add)')), 'zweites Konto: eigene, leere Watchlist');
-  await other.ctx.close();
+  await closeContext(other.ctx);
 }
 
 // ============================================================ Pro ohne Freigabe (anderes Geraet)
@@ -250,7 +259,7 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   const email = mail('pro-ohne-freigabe');
   const reg = await register(phone.page, email, {plan: 'pro'});
   check(reg.planHint, 'Pro: Hinweis bei der Registrierung');
-  await phone.ctx.close();
+  await closeContext(phone.ctx);
   // Bestaetigungslink auf einem anderen Geraet: Adresse bestaetigt, Anmeldung, dann direkt die Pro-Bestaetigung.
   const laptop = await context('desktop');
   await confirmLink(laptop.page, email);
@@ -274,7 +283,7 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await login(laptop.page, email);
   await laptop.page.waitForURL(/\/willkommen\/$/);
   check(true, 'danach normale Anmeldung zur Willkommensseite');
-  await laptop.ctx.close();
+  await closeContext(laptop.ctx);
 }
 
 // ============================================================ Pro als Tester (iPhone-Profil)
@@ -286,7 +295,7 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await a.page.waitForURL(/\/konto\/tarife\/\?plan=pro&status=verified/);
   await a.page.waitForSelector('#ka-confirm[data-state]:not([data-state=loading])');
   check(await a.page.getAttribute('#ka-confirm', 'data-state') === 'not-open', 'Tester vor der Freigabe: Hinweis');
-  await a.ctx.close();
+  await closeContext(a.ctx);
   await fetch(`${base}/__dev/tester?email=${encodeURIComponent(email)}`, {method: 'POST'});
 
   // Neues Geraet, kein lokaler Speicher, kein Link-Parameter: die Wahl kommt aus dem Konto.
@@ -329,7 +338,7 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
     await page.waitForURL(/\/willkommen\/$/);
     check(true, 'nach Abbruch: Anmeldung zur Willkommensseite');
     // Eindeutige Aktion "Pro auswaehlen"
-    await page.goto(`${base}/konto/tarife/`);
+    await page.waitForLoadState('networkidle');await page.goto(`${base}/konto/tarife/`);
     await page.waitForSelector('.ka-plan[data-plan=free][data-current=true]');
     await page.tap('#ka-choose-pro');
     await page.waitForSelector('#ka-confirm[data-state=ready]');
@@ -343,23 +352,23 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
     check(/Pro\b[\s\S]*\bist aktiv/.test(await page.textContent('#wk-flash')), 'Zahlung (Webhook) bestaetigt -> Willkommensseite');
     check((await me(page)).entitlements.plan_id === 'pro', 'Pro gilt laut Server');
     await shot(page, `pro-04-willkommen-${theme}`);
-    await page.goto(`${base}/mein-dashboard/`);
+    await page.waitForLoadState('networkidle');await page.goto(`${base}/mein-dashboard/`);
     await page.waitForSelector('#md-app:not([hidden])');
     check(/^Pro\b/.test(await page.textContent('#md-plan')), 'Dashboard: Pro');
     await audit(page, `Dashboard mobil ${theme}`);
     await shot(page, `pro-05-dashboard-${theme}`);
     // Kein zweites Abo
-    await page.goto(`${base}/konto/tarife/?plan=pro`);
+    await page.waitForLoadState('networkidle');await page.goto(`${base}/konto/tarife/?plan=pro`);
     // E06: im Bestellweg zeigt ein bestehendes Pro-Abo eine eigene Meldung statt der (ausgeblendeten) Tarifkarten.
     await page.waitForSelector('#ka-subscribed:not([hidden])');
     check(await page.getAttribute('.ka-plan[data-plan=pro]', 'data-current') === 'true' && await page.isHidden('#ka-confirm') && !(await page.$('#ka-choose-pro')),
       'kein Doppelabo');
     // Kuendigung und Rueckfall auf Free
-    await page.goto(`${base}/konto/kuendigen/`);
+    await page.waitForLoadState('networkidle');await page.goto(`${base}/konto/kuendigen/`);
     await page.waitForSelector('#ka-cancel-signed-in:not([hidden])');
     await page.tap('#ka-cancel-now');
     await page.waitForSelector('#ka-cancel-done:not([hidden])');
-    await page.goto(`${base}/konto/abo/`);
+    await page.waitForLoadState('networkidle');await page.goto(`${base}/konto/abo/`);
     await page.waitForSelector('#ka-sub .ka-kv');
     check((await page.textContent('#ka-sub')).includes('Endet am'), 'gekuendigt zum Laufzeitende, bis dahin Pro');
     await page.click('text=Zahlung, Rechnungen und Kündigung verwalten');
@@ -367,10 +376,10 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
     await page.click('text=Laufzeitende erreichen');
     await page.waitForURL(/\/__dev\/portal\//);
     check((await me(page)).entitlements.plan_id === 'free', 'nach Laufzeitende automatisch Free');
-    await page.goto(`${base}/mein-dashboard/`);
+    await page.waitForLoadState('networkidle');await page.goto(`${base}/mein-dashboard/`);
     await page.waitForSelector('#md-app:not([hidden])');
     check(/^Free\b/.test(await page.textContent('#md-plan')), 'Dashboard: wieder Free');
-    await ctx.close();
+    await closeContext(ctx);
   }
 }
 
@@ -378,12 +387,12 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
 {
   const email = mail('sepa');
   const {ctx, page} = await context('desktop');
-  await page.goto(`${base}/konto/registrieren/`);
+  await page.waitForLoadState('networkidle');await page.goto(`${base}/konto/registrieren/`);
   await register(page, email, {from: 'direct'});
   await confirmLink(page, email);
   await page.waitForURL(/\/willkommen\//);
   await fetch(`${base}/__dev/tester?email=${encodeURIComponent(email)}`, {method: 'POST'});
-  await page.goto(`${base}/konto/tarife/`);
+  await page.waitForLoadState('networkidle');await page.goto(`${base}/konto/tarife/`);
   await page.waitForSelector('.ka-plan[data-plan=free][data-current=true]');
   await page.click('#ka-choose-pro');
   await page.waitForSelector('#ka-confirm[data-state=ready]');
@@ -399,25 +408,25 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await shot(page, 'sepa-01-ausstehend');
   await fetch(`${base}/__dev/sepa/latest/paid`, {method: 'POST'});
   check((await me(page)).entitlements.plan_id === 'pro', 'SEPA bestaetigt: Pro');
-  await ctx.close();
+  await closeContext(ctx);
 }
 
 // ============================================================ Rechtliches, Kuendigen, Widerrufen (oeffentlich, ohne Anmeldung)
 {
   const {ctx, page} = await context('mobile', 'dark');
   for (const p of ['/rechtliches/', '/rechtliches/agb', '/rechtliches/widerrufsbelehrung', '/rechtliches/datenschutz', '/rechtliches/impressum']) {
-    await page.goto(base + p);
+    await page.waitForLoadState('networkidle');await page.goto(base + p);
     // Freigeschaltet am 06.11.2026 (vu-recht-2026-11-06-1): kein Entwurfsbanner, keine offenen Stellen mehr.
     check(await page.locator('.draft, mark.open').count() === 0, `${p}: freigegeben, ohne Entwurfsbanner und offene Stellen`);
     const r = await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1);
     check(r, `${p}: kein waagrechter Ueberlauf (mobil)`);
   }
-  await page.goto(base + '/kontakt');
+  await page.waitForLoadState('networkidle');await page.goto(base + '/kontakt');
   check((await page.textContent('h1')) === 'Kontakt' && await page.locator('textarea[name=message]').count() === 1, 'Kontaktformular erreichbar');
   check(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1), '/kontakt: kein waagrechter Ueberlauf (mobil)');
   check(await page.locator('input[name=website]').evaluate(e => e.getBoundingClientRect().right <= 0), '/kontakt: Honeypot ausserhalb des Bildschirms');
   await shot(page, 'recht-00-kontakt');
-  await page.goto(base + '/widerrufen');
+  await page.waitForLoadState('networkidle');await page.goto(base + '/widerrufen');
   check((await page.textContent('h1')) === 'Vertrag widerrufen', 'Widerrufsfunktion: Beschriftung „Vertrag widerrufen“');
   await page.fill('input[name=fullName]', 'QA Widerruf');
   await page.fill('input[name=email]', mail('widerruf'));
@@ -428,13 +437,13 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await page.waitForSelector('text=Dein Widerruf ist eingegangen');
   check((await page.textContent('dl')).includes('versendet'), 'Widerruf: Eingangsbestaetigung per E-Mail versendet');
   await shot(page, 'recht-02-widerruf-eingegangen');
-  await page.goto(base + '/kuendigen');
+  await page.waitForLoadState('networkidle');await page.goto(base + '/kuendigen');
   await page.fill('input[name=fullName]', 'QA Kuendigung');
   await page.fill('input[name=email]', mail('kuendigung'));
   await page.tap('button:has-text("Jetzt kündigen")');
   await page.waitForSelector('text=Deine Kündigung ist eingegangen');
   check(true, 'Kuendigungsfunktion ohne Anmeldung');
-  await ctx.close();
+  await closeContext(ctx);
 }
 
 // ============================================================ Newsletter (nur wenn der Testserver ihn anbietet: --newsletter)
@@ -444,7 +453,7 @@ if (NEWSLETTER_ON) {
   await login(page, email);
   await page.waitForURL(/\/willkommen\//);
   await fetch(`${base}/__dev/cron`, {method: 'POST'});
-  await page.goto(`${base}/konto/einstellungen/`);
+  await page.waitForLoadState('networkidle');await page.goto(`${base}/konto/einstellungen/`);
   await page.waitForSelector('#ka-settings-wrap:not([hidden])');
   check((await page.textContent('#ka-newsletter-status')).includes('bitte bestätige'), 'nach Registrierung mit Haken: Bestaetigung ausstehend (Double-Opt-in)');
   await fetch(`${base}/__dev/brevo/confirm?email=${encodeURIComponent(email)}`, {method: 'POST'});
@@ -460,19 +469,19 @@ if (NEWSLETTER_ON) {
   await page.click('#ka-newsletter-toggle');
   await page.waitForFunction(() => document.getElementById('ka-newsletter-status').textContent.includes('bitte bestätige'));
   check(true, 'erneute Bestellung: wieder Double-Opt-in');
-  await ctx.close();
+  await closeContext(ctx);
 }
 
 // ============================================================ Kleine Bildschirme, hell und dunkel
 for (const theme of ['light', 'dark']) {
   const {ctx, page} = await context('small', theme);
   for (const path of ['/preise/', '/konto/registrieren/?plan=pro', '/konto/anmelden/', '/willkommen/']) {
-    await page.goto(base + path);
+    await page.waitForLoadState('networkidle');await page.goto(base + path);
     await page.waitForLoadState('networkidle');
     await audit(page, `320px ${theme} ${path}`);
   }
   await page.screenshot({path: `${out}/${engine}-320-${theme}-willkommen.png`});
-  await ctx.close();
+  await closeContext(ctx);
 }
 
 check(!consoleErrors.length, `keine Konsolenfehler ${consoleErrors.slice(0, 3).join(' | ')}`);

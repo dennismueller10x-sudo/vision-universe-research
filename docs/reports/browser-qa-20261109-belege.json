@@ -1,0 +1,149 @@
+{
+  "windowUTC": [
+    "2026-11-02T18:08:00",
+    "2026-11-09T18:08:00"
+  ],
+  "anchorMain": "b9ee52c7d48eeb7d5e12ae886e77335355a1a6fb",
+  "workflowRunsInspected": 31921,
+  "confirmed": [
+    {
+      "path": ".github/workflows/discover-frontend-ci.yml",
+      "sha": "cb3b8fc613360af25a9fa9d549a4edd0e3a27e9a",
+      "name": "frontend",
+      "failedRun": 42573490656,
+      "failedAttempt": 1,
+      "failedJob": 129015936392,
+      "passedRun": 42573490656,
+      "passedAttempt": 2,
+      "passedJob": 129021079444
+    },
+    {
+      "path": ".github/workflows/discover-frontend-ci.yml",
+      "sha": "9a6bd34ef5902196fdb6639bb9a087ff52e2ce82",
+      "name": "frontend",
+      "failedRun": 42530363931,
+      "failedAttempt": 1,
+      "failedJob": 128883005023,
+      "passedRun": 42530363931,
+      "passedAttempt": 2,
+      "passedJob": 129011742851
+    },
+    {
+      "path": ".github/workflows/discover-frontend-ci.yml",
+      "sha": "9df72d9447db598e7a65bb27cc83d370e7486050",
+      "name": "frontend",
+      "failedRun": 42526485204,
+      "failedAttempt": 1,
+      "failedJob": 128871134441,
+      "passedRun": 42526485204,
+      "passedAttempt": 2,
+      "passedJob": 128876955037
+    },
+    {
+      "path": ".github/workflows/account-ci.yml",
+      "sha": "57b592f95a8e608ef5db80cc09ccd9c6eb457818",
+      "name": "Browser (Chromium und WebKit/iPhone)",
+      "failedRun": 42499124087,
+      "failedAttempt": 1,
+      "failedJob": 128787810497,
+      "passedRun": 42499124087,
+      "passedAttempt": 2,
+      "passedJob": 128799431303
+    },
+    {
+      "path": ".github/workflows/vu2-browser-qa.yml",
+      "sha": "6d7baa222b0c32413da030fc3ba43864097ee795",
+      "name": "experience",
+      "failedRun": 42305103271,
+      "failedAttempt": 2,
+      "failedJob": 128207092180,
+      "passedRun": 42305103271,
+      "passedAttempt": 3,
+      "passedJob": 128211980567
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha": "1d1b21aac0f65add0fa9265175b2194b886b1223",
+      "name": "discover-frontend",
+      "failedRun": 42609653389,
+      "failedAttempt": 1,
+      "failedJob": 129134703199,
+      "passedRun": 42609653389,
+      "passedAttempt": 2,
+      "passedJob": 129158712767
+    }
+  ],
+  "chapterRepeats": [
+    {
+      "engine": "chromium",
+      "attempt": 1,
+      "pass": true,
+      "ms": 4311.585406
+    },
+    {
+      "engine": "chromium",
+      "attempt": 2,
+      "pass": true,
+      "ms": 5750.474174000001
+    },
+    {
+      "engine": "chromium",
+      "attempt": 3,
+      "pass": true,
+      "ms": 6716.398798
+    },
+    {
+      "engine": "chromium",
+      "attempt": 4,
+      "pass": true,
+      "ms": 5610.155221000001
+    },
+    {
+      "engine": "chromium",
+      "attempt": 5,
+      "pass": true,
+      "ms": 5460.6928609999995
+    },
+    {
+      "engine": "webkit",
+      "attempt": 1,
+      "pass": true,
+      "ms": 13753.826099000002
+    },
+    {
+      "engine": "webkit",
+      "attempt": 2,
+      "pass": true,
+      "ms": 12351.358242999995
+    },
+    {
+      "engine": "webkit",
+      "attempt": 3,
+      "pass": true,
+      "ms": 11357.317219999997
+    },
+    {
+      "engine": "webkit",
+      "attempt": 4,
+      "pass": true,
+      "ms": 14209.456053000002
+    },
+    {
+      "engine": "webkit",
+      "attempt": 5,
+      "pass": true,
+      "ms": 12225.538910999996
+    }
+  ],
+  "documentReplacementRegression": {
+    "file": "scripts/quality/tests/delivered-document.browser.test.mjs",
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "roundsEach": 5,
+    "parallelContextsEach": 5,
+    "passed": true
+  },
+  "accountRepeats": "pending; report updated after final run"
+}
