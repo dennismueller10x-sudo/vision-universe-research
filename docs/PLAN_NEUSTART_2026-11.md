@@ -57,6 +57,8 @@ Danach: ein gemeinsamer Backtest-Kern (`core/backtest/`) für Quant, Supertrader
 | Offene PRs | 137 | unter 15 |
 | Struktur | 48 Top-Level-Ordner | `products/<id>/{module.json,web,engine,producer.mjs,tests}`, `core/`, `services/`, `pipelines/` |
 
+Datenzweig, Stand 09.11.2026 (Steuerung-Entscheidung A): Die Markt-Kette (Discover, Quant, Supertrader, SEC-Kette, Produktuniversum) bleibt als Konsistenzeinheit auf `main`, weil die Reproduzierbarkeits-Gates (ci.yml/discover baut `discover/data` aus den Quant-Eingängen neu), der UF-Vertrag und Company Intelligence (Sparse-Checkout `quant/data/sec`, `quant/data/universe`) von `main` lesen; alle übrigen Datenarten liegen im Datenzweig `data/live` (`core/registry/data-branch.json`).
+
 `module.json` (Steckbrief) trägt Route, Navigation, Zugang (free/pro/intern), Status, Erzeuger, Zeitplan und Frische-Grenze. Menü, Pipeline, Statusseite und Paywall lesen den Steckbrief.
 
 Voraussetzung: Die Arbeitsregeln in `CLAUDE.md` („Gates werden nicht abgeschwächt“) ändert nur der Owner.

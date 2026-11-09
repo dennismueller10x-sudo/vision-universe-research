@@ -115,9 +115,26 @@ jobs:
           SCHEDULE: ${{ github.event.schedule || inputs.zeitplan }}
           WR_NAME: ${{ github.event.workflow_run.name }}
           WR_BRANCH: ${{ github.event.workflow_run.head_branch }}
-          COMMITS: ${{ toJSON(github.event.commits) }}
+          # Dateiliste beim push: Compare-API zwischen before und sha (die Commit-Liste des push-Ereignisses traegt in Actions
+          # kein added/modified/removed; Lauf 42598972028 waehlte deshalb nichts). Vertragstest WB-7.
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
           INPUTS: ${{ toJSON(inputs) }}
         run: |
+          set -euo pipefail
+          # Geaenderte Dateien des Pushs. Neuer Zweig (Basis 000...), API-Fehler oder abgeschnittene Liste
+          # (300 Dateien): unbekannt - dann gilt jede Pfadbedingung als erfuellt (im Zweifel ausfuehren).
+          PUSH_FILES="$RUNNER_TEMP/push-files.txt"; : > "$PUSH_FILES"; PUSH_FILES_UNKNOWN=0
+          if [ "${EVENT:-}" = push ]; then
+            if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = 0000000000000000000000000000000000000000 ]; then PUSH_FILES_UNKNOWN=1
+            elif gh api "repos/$REPO/compare/$BEFORE...$AFTER" --jq '.files[].filename' > "$PUSH_FILES"; then
+              [ "$(wc -l < "$PUSH_FILES")" -lt 300 ] || PUSH_FILES_UNKNOWN=1
+            else echo "::warning::Compare-API ohne Ergebnis - Pfadbedingungen gelten als erfuellt"; : > "$PUSH_FILES"; PUSH_FILES_UNKNOWN=1; fi
+          fi
+          echo "Dateien im Push: $(wc -l < "$PUSH_FILES"), unbekannt=$PUSH_FILES_UNKNOWN"
+          export PUSH_FILES PUSH_FILES_UNKNOWN
           python3 - <<'PY'
           import fnmatch, json, os, re
           SPEC = json.loads(r"""{"deckung": {"crons": ["0 6 * * 0"], "dispatch": true, "required": []}, "index": {"crons": ["20 7 * * 6"], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "logos": {"crons": ["17 4 * * 1", "47 3 * * 2-6"], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": [], "workflow_run": {"branches": ["main"], "branches-ignore": null, "types": ["completed"], "workflows": ["Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"]}}, "musterdepots": {"crons": ["23 7 * * 6"], "dispatch": true, "required": []}, "namen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "sec-fundamentals": {"crons": ["0 6 * * 1"], "dispatch": true, "required": []}, "sic-historie": {"crons": [], "dispatch": true, "required": []}, "tiingo2-universum": {"crons": ["20 8 * * 1-5"], "dispatch": true, "push": {"branches": ["codex/tiingo2-universe-hardening"]}, "required": ["max_symbols"]}}""")
@@ -143,12 +160,9 @@ jobs:
                   if glob_re(p[1:] if neg else p).match(value): ok = not neg
               return ok
           def files():
-              try: commits = json.loads(os.environ.get("COMMITS") or "[]") or []
-              except Exception: commits = []
-              fs = set()
-              for c in commits:
-                  for k in ("added", "modified", "removed"): fs.update(c.get(k) or [])
-              return fs, len(commits)
+              # None = Liste unbekannt (siehe Schritt oben); sonst die geaenderten Pfade des Pushs
+              if os.environ.get("PUSH_FILES_UNKNOWN") == "1": return None
+              with open(os.environ["PUSH_FILES"]) as fh: return {l.strip() for l in fh if l.strip()}
           def push_ok(r):
               if ref.startswith("refs/heads/"):
                   name = ref[11:]
@@ -162,10 +176,8 @@ jobs:
                   if ("branches" in r or "branches-ignore" in r) and "tags" not in r and "tags-ignore" not in r: return False
               else: return False
               if "paths" in r or "paths-ignore" in r:
-                  fs, n = files()
-                  if not fs:
-                      # Ereignis ohne Dateiliste (z. B. neuer Zweig): GitHub wertet Pfade dann gegen den Standardzweig aus; hier konservativ: ausloesen
-                      return n == 0
+                  fs = files()
+                  if fs is None: return True  # Dateiliste unbekannt: im Zweifel ausfuehren, nie still 'keine Datei'
                   if "paths" in r and not any(match_list(r["paths"], f) for f in fs): return False
                   if "paths-ignore" in r and all(match_list(r["paths-ignore"], f) for f in fs): return False
               return True
