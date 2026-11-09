@@ -79,7 +79,7 @@ export async function run(){
       page.setDefaultTimeout(90000);page.on('pageerror',e=>report.pageErrors.push(safe(String(e))));page.on('request',r=>requests.push(new URL(r.url()).pathname));
       await page.route('**/*',route=>{const host=new URL(route.request().url()).hostname;if(/(^|\.)(marketstack|tiingo|stooq)\./i.test(host)){report.providerRequests.push(host);return route.abort();}return route.continue();});
       if(state){const res=await page.request.get(origin+'/__research/config.json');assert.ok(res.ok());const gate=await res.json();assert.equal(verifierForKey(state.key),gate.verifier);await page.addInitScript(({key,state,origin})=>{if(location.origin===origin)localStorage.setItem(key,JSON.stringify(state));},{key:gate.storageKey||STORAGE_KEY,state,origin});}
-      await page.goto(origin+'/discover/',{waitUntil:'domcontentloaded'});await page.waitForSelector('[data-surface="hero"] .v2-stock');await page.waitForSelector('#v2-main[aria-busy="false"]');
+      await page.goto(origin+'/discover/',{waitUntil:'domcontentloaded'});await page.waitForSelector('.v2-hero-track [data-symbol]');await page.waitForSelector('#v2-main[aria-busy="false"]');
       report.homeResources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,decodedBytes:r.decodedBodySize,durationMs:Math.round(r.duration)})));
       report.homeDecodedBytes=report.homeResources.reduce((n,r)=>n+r.decodedBytes,0);report.homeRequestCount=requests.length;report.homePaint=await page.evaluate(()=>performance.getEntriesByType('paint').map(p=>({name:p.name,timeMs:Math.round(p.startTime)})));
       report.homeLongSeriesRequests=requests.filter(p=>p.includes('/series-long/')).length;assert.equal(report.homeLongSeriesRequests,0,'HOME_HISTORY_MUST_STAY_LAZY');assert.equal(requests.includes('/discover/data/search/GLOBAL.json'),false);assert.equal(requests.includes('/discover/data/europe/catalog.json'),false);
@@ -121,7 +121,7 @@ export async function run(){
       for(const [mic,id]of representatives){
         await page.goto(origin+'/discover/#/s/EUROPE/'+id,{waitUntil:'domcontentloaded'});await page.waitForSelector('.dx-range-chart');await page.waitForSelector('#v2-main[aria-busy="false"]');await inject();
         const labels=await page.locator('.dx-tf button:not([disabled])').allTextContents(),row={securityId:id,mic,offered:labels,ranges:[]};
-        for(const [range,label]of Object.entries({'1M':'1M','3M':'3M','6M':'6M','1Y':'1J','3Y':'3J','5Y':'5J','MAX':'MAX'})){
+        for(const [range,label]of Object.entries({'1M':'1M','3M':'3M','6M':'6M','1Y':'1J','3Y':'3J','5Y':'5J','MAX':'Max'})){/* Knopf heißt seit dem Umbau „Max“ */
           if(!labels.includes(label)||mic!=='2G_GOLDEN'&&!['1M','1Y','5Y','MAX'].includes(range))continue;
           await page.locator('.dx-tf button').filter({hasText:new RegExp('^'+label+'$')}).click();await page.waitForFunction(range=>document.querySelector('.dx-range-chart')?.getAttribute('data-range')===range,range);
           const receipt=await page.evaluate(async({id,range})=>{const r=await VUDiscover.europeProduct.series({region:'EUROPE',securityId:id},{range:'MAX'}),d=await VUDiscover.europeProduct.detail(id),points=VUCore.ChartHistory.sliceRange(r.data.points,range).points;return __continuityValidate(__continuityCapture(document.querySelector('.dx-range-chart'),points,r.data.segments,{date:d.data.asOf,close:d.data.price.value},range));},{id,range});row.ranges.push(receipt);
