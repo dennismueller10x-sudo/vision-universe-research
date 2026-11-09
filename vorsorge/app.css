@@ -958,3 +958,34 @@ body.vs .vs-pl .vu-btn--ink{color:var(--vu-inv)}
 .vs-mod-k{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}.vs-mod-k>span>*{display:block}.vs-mod-k .vu-xs{opacity:.6}
 .vs-mods .vu-stack{gap:10px}
 .vs .vs-mod.vu-box--ink,.vs .vs-mod.vu-box--ink *{color:var(--vu-inv)}.vs .vs-mod.vu-box--ink .vu-ltag{color:var(--vu-lime,#c8f531)}.vs .vs-mod.vu-box--ink .vs-mod-mine{color:#000}
+/* Konzept EHV (VX02): Weg in drei Schritten, Beispielrechnung, Förderung, große Indizes */
+.vs-way{margin-top:16px;padding:14px 14px 4px;border-radius:22px;background:#000;color:#fff}
+.vs-way>.vu-ltag{color:#9b9b9b}
+.vs-way-r{display:grid;grid-template-columns:24px 1fr 18px;gap:12px;align-items:center;min-height:56px;padding:10px 0;border-top:1px solid #262626;color:#fff;text-decoration:none}
+.vs-way-r:first-of-type{border-top:0}
+.vs-way-n{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;color:#000;font-size:12px;font-weight:900}
+.vs-way-r.is-on .vs-way-n{background:var(--vu-lime);color:#000}
+.vs-way-r b{display:block;font-size:15px}
+.vs-way-r small{display:block;margin-top:2px;font-size:12px;color:#bdbdbd}
+.vs-way-r svg{color:#fff}
+.vs-start-card .vs-start-t{font-size:21px;letter-spacing:-.03em;line-height:1.15}
+.vs-calc-big{display:flex;align-items:baseline;gap:8px;margin:6px 0 0}
+.vs-calc-big>b{font-size:32px;font-weight:900;letter-spacing:-.04em}
+.vs-kt3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
+.vs-kt{padding:10px 12px;border-radius:16px;background:var(--vu-card)}
+.vs-calc .vs-kt{background:transparent}
+.vs-kt.is-lime{background:var(--vu-lime);color:#000}
+.vs-kt small{display:block;font-size:11px;font-weight:700;color:var(--vu-mute)}
+.vs-kt.is-lime small{color:#000;opacity:.6}
+.vs-kt b{display:block;font-size:16px;font-weight:900;letter-spacing:-.02em;white-space:nowrap}
+.vs-kt3--fd .vs-kt b{font-size:18px}
+.vs-kt3--fd .vs-kt small{margin-top:2px;line-height:1.25}
+.vs-bigidx{padding:2px 14px}
+.vs-bigidx .vs-kv:first-child{border-top:0}
+.vs-bigidx .vs-kv small{display:block;margin-top:1px}
+.vs-more div.vs-way-mini{display:grid;gap:8px;margin-top:0}
+.vs-more .vs-way-mini>div{display:flex;flex-wrap:wrap;align-items:center;gap:2px 12px;margin:0;padding:10px 14px;border-radius:16px;background:var(--vu-card)}
+.vs-way-mini b{flex:1 0 100%;font-size:14px;color:var(--vu-ink)}
+.vs-way-mini b .num{display:inline-grid;place-items:center;width:20px;height:20px;margin-right:4px;border-radius:50%;background:var(--vu-ink);color:var(--vu-inv);font-size:11px}
+.vs-more .vs-way-mini a{font-size:13.5px;font-weight:700;color:var(--vu-ink)}
+.vs-more .vs-way-mini a[aria-current=page]{text-decoration:underline;text-decoration-thickness:2px;text-decoration-color:var(--vu-lime)}

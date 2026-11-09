@@ -76,6 +76,7 @@ Entscheidungen 12, 15.
 - PR 3 · Fondsnamen: Rechtsform und SEC-Kürzel („/adv“, „/de/“) weg, „Capital Management“ weg, wenn danach noch zwei Wörter bleiben; der SEC-Name bleibt in der Meldung sichtbar. Stil „Value“ ohne „zu billig“ (WORTWAHL).
 - PR 4 · Investor: das Quartalsband steht auch hier (Entscheidung 6, im Mockup nicht gezeichnet) und zeigt das Meldequartal des Fonds; „Gekauft“/„Verkauft“ nennen die zwei größten Bewegungen nach geschätztem Wert (nicht nach Prozent); „Alle N“ führt auf `#/fonds/<slug>/positionen`. Biografie, SEC-Meldung und Foto-Lizenz bleiben unter den Kapiteln.
 - PR 4 · Aktie: „Viele/Einige/Wenige“ ab 100/20 Hedgefonds; Bewegung mit dem bisherigen Urteil (60/40-Regel); Insider-Satz aus Form 4 (90 Tage) wird nachgeladen; die Kapitel „Insider“ und „Alle 13F-Melder“ füllen sich beim Öffnen. Der Kasten „Größte Überzeugung“ und die Zeile „Komplett ausgestiegen“ entfallen (stehen im Kapitel „Alle Hedgefonds“).
+- PR 5 · Der Weg (`VS.WAY` in `vorsorge/app.js`) ordnet die Bereiche: 1 Ziel rechnen (Planer, Förderung), 2 Sparplan bauen (ETFs, Portfolio, Vergleichen), 3 Auf Kurs bleiben (Veränderungen, Wissen). Auf dem Start ist Schritt 1 markiert, nach gespeichertem Plan Schritt 2; jede andere Ansicht endet mit diesem Weg statt „Mehr in Vorsorge“. Die Lage-Abfrage beim ersten Besuch und „Was hat sich geändert?“ auf dem Start entfallen (Veränderungen = Schritt 3). Das Kursdatum der großen Indizes ist das jüngste `priceDate` der drei US-Fonds.
 
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
