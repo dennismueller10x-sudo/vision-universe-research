@@ -999,14 +999,14 @@
       var paths = el("div", { class: "tc-lpg" }, c.paths.map(function (p) {
         var pp = PATH_PLAIN[p.id] || [p.title, "", "book"], first = p.lessons.filter(function (k) { return done.indexOf(k) < 0; })[0] || p.lessons[0];
         var n = p.lessons.filter(function (k) { return done.indexOf(k) >= 0; }).length;
-        return el("a", { href: "#/akademie/" + first, "aria-label": pp[0] + ": " + n + " von " + p.lessons.length + " Lektionen" }, [hudGlyph(pp[2], 34), el("b", { text: pp[0] }), el("span", { text: pp[1] }),
+        return el("a", { href: "#/akademie/" + first, "data-path": p.id, "aria-label": pp[0] + ": " + n + " von " + p.lessons.length + " Lektionen" }, [hudGlyph(pp[2], 34), el("b", { text: pp[0] }), el("span", { text: pp[1] }),
           el("div", { class: "tc-lp-d", "aria-hidden": "true" }, p.lessons.map(function (k) { return el("i", { class: done.indexOf(k) >= 0 ? "is-done" : null }); }))]);
       }));
       var goals = AS ? AS.list().filter(function (g) { return GOAL_QUESTION[g.id]; }) : [];
       var reset = el("button", { type: "button", class: "tc-linkbtn", text: "Lokalen Fortschritt zurücksetzen", onclick: function () { if (!global.confirm("Alle lokalen Lektionsabschlüsse zurücksetzen?")) return; if (AM) AM.save(store(), c, []); viewLearn(main, true); } });
       put(slot, [today, el("div", { class: "tc-st", text: "Lernpfade" }), paths,
         AM && AM.outdated(store(), c) ? el("p", { class: "tc-note", role: "status", text: "Lerninhalte wurden überarbeitet. Abschlüsse geänderter Lektionen müssen erneut markiert werden." }) : null,
-        el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: "#/akademie/glossar", text: "Glossar" }), " · ", reset]),
+        el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: "/academy/", text: "← Vision Universe Academy" }), " · ", el("a", { class: "tc-link", href: "#/akademie/glossar", text: "Glossar" }), " · ", reset]),
         goals.length ? el("div", { class: "tc-st", text: "Eine Frage an den Chart" }) : null,
         goals.length ? el("div", { class: "vu-chips tc-asks" }, goals.map(function (g) { return el("a", { class: "vu-chip", href: "#/screener?z=" + encodeURIComponent(g.id), text: GOAL_QUESTION[g.id] }); })) : null,
         goals.length ? h(U.help("Jede Frage öffnet den Screener mit passenden Regeln. Wie die Regeln gewählt sind, steht beim Ziel im Screener. Beispiele in den Lektionen sind konstruiert; keine Anlageempfehlung.")) : null,
@@ -1905,7 +1905,7 @@
     main.classList.toggle("vu-ui", route.view !== "academy");
     main.classList.toggle("is-home", route.view === "home");
     /* Entscheidung 8: die Übersichten von Akademie und Assistent leiten auf „Lernen“; Lektionen und Fragen behalten ihre Adresse. */
-    if ((route.view === "academy" || route.view === "assistant") && !route.id) { location.replace("#/lernen"); return; }
+    if (redirectOf(location.hash)) { redirected = true; location.replace(redirectOf(location.hash)); return; }
     if (route.view === "home") { doc.title = "Technical · Vision Universe®"; viewHome(main); }
     else if (route.view === "learn") { doc.title = "Lernen · Technical · Vision Universe®"; viewLearn(main); }
     else if (route.view === "academy") { global.VUAcademy.render(main, route.id); }
@@ -1928,7 +1928,16 @@
     lastView = key;
   }
   if (global.VUUI.bindIntent) global.VUUI.bindIntent(function (url) { if (url.origin !== location.origin || url.pathname !== "/technical/") return null; var r = M.parseRoute(url.hash); return r.view === "chart" ? r.ticker : null; }, loadInstrument);
-  global.addEventListener("hashchange", function () { return global.VUUI.transition ? global.VUUI.transition(onHash) : onHash(); });
+  /* Weiterleitungen (Entscheidung 8) vor dem Seitenübergang: sonst bricht der laufende Übergang ab. */
+  function redirectOf(hash) { var r = M.parseRoute(hash); return (r.view === "academy" || r.view === "assistant") && !r.id ? "#/lernen" : null; }
+  var redirected = false;
+  global.addEventListener("hashchange", function () {
+    var to = redirectOf(location.hash);
+    if (to) { redirected = true; location.replace(to); return; }
+    /* Das Ziel einer Weiterleitung erscheint ohne Übergang (ein sofortiger Seitenwechsel bräche ihn sonst ab). */
+    if (redirected) { redirected = false; return onHash(); }
+    return global.VUUI.transition ? global.VUUI.transition(onHash) : onHash();
+  });
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", onHash); else onHash();
   global.VUTechnicalApp = { render: render };
 })(window);

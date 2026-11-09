@@ -51,7 +51,8 @@ test("TX03 Studio: darunter Befunde und Zonen wie auf der Chart-Seite", () => {
 
 test("Entscheidung 8: Lernen ist ein Ort; #/akademie und #/assistent leiten weiter, Lektionen und Fragen behalten ihre Adresse", () => {
   assert.equal(M.parseRoute("#/lernen").view, "learn");
-  assert.match(app, /\(route\.view === "academy" \|\| route\.view === "assistant"\) && !route\.id\) \{ location\.replace\("#\/lernen"\)/);
+  assert.match(app, /\(r\.view === "academy" \|\| r\.view === "assistant"\) && !r\.id \? "#\/lernen" : null/);
+  assert.match(app, /if \(to\) \{ redirected = true; location\.replace\(to\); return; \}/, "Weiterleitung vor dem Seitenübergang");
   assert.equal(M.parseRoute("#/akademie/struktur-1").view, "academy");
   const learn = app.slice(app.indexOf("  function viewLearn(main"), app.indexOf("  function viewAssistant(main, route) {"));
   for (const s of ["Charts lesen<br>lernen", "8 Lernpfade, 32 kurze Lektionen", "Weiter mit", "Lernpfade", "Eine Frage an den Chart", "#/screener?z="]) assert.ok(learn.includes(s), s);

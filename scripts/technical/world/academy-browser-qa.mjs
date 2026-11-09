@@ -54,7 +54,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
   await entry.focus();await page.keyboard.press('Enter');await page.waitForFunction(()=>/#\/lernen$/.test(location.hash));await page.locator('.tc-lpg > a').first().waitFor();
   await page.getByRole('link',{name:'← Vision Universe Academy',exact:true}).click();await entry.waitFor();
   await page.screenshot({path:out+'/'+prefix+'-central-academy.png',fullPage:true});
-  await page.locator('#questions-mount a',{hasText:'Wie lese ich einen Chart'}).click();await page.locator('.ta-paths section').first().waitFor();
+  await page.locator('#questions-mount a',{hasText:'Wie lese ich einen Chart'}).click();await page.locator('.tc-lpg > a').first().waitFor();
  });
  await check(prefix+' catalog/navigation',async()=>{await navigate(page,base+'#/akademie');await page.waitForFunction(()=>/#\/lernen$/.test(location.hash));await page.locator('.tc-lpg > a').first().waitFor();assert(await page.locator('.tc-lpg > a').count()===8,'8 paths');assert(await page.locator('.tc-lp-d i').count()===32,'32 lessons');await overflow();await page.screenshot({path:out+'/'+prefix+'-katalog.png',fullPage:true});});
  await check(prefix+' all 32 lessons',async()=>{
@@ -90,12 +90,12 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
    const mark=page.locator('.ta-pilot > button[aria-pressed]'),wasDone=await mark.getAttribute('aria-pressed')==='true';
    if(!wasDone)await mark.click();await page.reload();await page.locator('.ta-pilot').waitFor();
    assert(await page.locator('.ta-pilot > button[aria-pressed]').getAttribute('aria-pressed')==='true','progress persisted '+id);
-   await page.locator('a[data-practice]').click();await page.getByRole('navigation',{name:'Zur Akademie zurück',exact:true}).waitFor();await page.reload();
+   await page.locator('a[data-practice]').click();await page.getByRole('navigation',{name:'Zurück zum Lernen',exact:true}).waitFor();await page.reload();
    await page.getByRole('link',{name:'← Zur Lektion: '+l.title,exact:true}).click();await page.locator('.ta-pilot').waitFor();
    const secondary=await page.locator('.ta-practice-links a').evaluateAll(ns=>ns.map(n=>n.getAttribute('href')));
    for(const href of secondary){
     await page.locator('.ta-practice-links a[href="'+href+'"]').click();
-    await page.getByRole('navigation',{name:'Zur Akademie zurück',exact:true}).waitFor();assert(await page.evaluate(()=>location.hash)===href,'secondary route '+id);
+    await page.getByRole('navigation',{name:'Zurück zum Lernen',exact:true}).waitFor();assert(await page.evaluate(()=>location.hash)===href,'secondary route '+id);
     await page.getByRole('link',{name:'← Zur Lektion: '+l.title,exact:true}).click();await page.locator('.ta-pilot').waitFor();
    }
    if(!wasDone)await page.locator('.ta-pilot > button[aria-pressed]').click();
@@ -128,7 +128,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
   await page.waitForFunction(()=>scrollY>0,{},{timeout:5000});
   await page.locator('a[data-practice]').click();await page.reload();await page.getByRole('link',{name:'← Zur Lektion: Aufbau einer Kurskerze',exact:true}).click();await page.locator('fieldset').waitFor();assert(await page.locator('input[value=a]').isChecked(),'answer restored after practice reload');
   await navigate(page,base+'#/akademie/trend-4');await page.getByRole('link',{name:'Etablierte Trendvorlage öffnen'}).click();await page.getByRole('heading',{name:'Steigt seit Monaten',exact:true}).waitFor();/* Redesign T03: Alltagstitel als Ueberschrift, Fachname im Satz darunter */await page.getByText('Etablierter Aufwärtstrend.',{exact:false}).first().waitFor();
-  await navigate(page,base+'#/akademie/routine-1');await page.getByRole('link',{name:'Analyseziel im Assistenten wählen'}).click();await page.getByRole('heading',{name:'Analyse-Assistent',exact:true}).waitFor();
+  await navigate(page,base+'#/akademie/routine-1');await page.getByRole('link',{name:'Analyseziel im Assistenten wählen'}).click();/* Entscheidung 8: der Assistent ist Teil von „Lernen“ (Fragen an den Chart) */await page.waitForFunction(()=>/#\/lernen$/.test(location.hash));await page.locator('.tc-asks .vu-chip').first().waitFor();
  });
  await check(prefix+' 32 semantic practice routes and return',async()=>{
   for(const l of content.lessons){
@@ -139,8 +139,8 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
    assert(await page.locator('.ta-pilot .ta-basics > p, .ta:not(.ta-pilot) p').first().evaluate(n=>parseFloat(getComputedStyle(n).fontSize))>=16,'lesson text font size');
    const box=await page.locator('label').first().boundingBox();assert(box.height>=44,'touch label');
    const button=await page.getByRole('button',{name:'Antwort prüfen'}).boundingBox();assert(button.height>=44,'touch button');
-   await page.locator('a[data-practice]').click();await page.getByRole('navigation',{name:'Zur Akademie zurück',exact:true}).waitFor();
-   assert(await page.evaluate(()=>location.hash)===auditContract.targets[expected],'arrived '+l.id);
+   await page.locator('a[data-practice]').click();await page.getByRole('navigation',{name:'Zurück zum Lernen',exact:true}).waitFor();
+   /* Entscheidung 8: die Assistenten-Übersicht leitet nach #/lernen (Fragen an den Chart). */const arrived=auditContract.targets[expected]==='#/assistent'?'#/lernen':auditContract.targets[expected];assert(await page.evaluate(()=>location.hash)===arrived,'arrived '+l.id);
    assert(await page.locator('#tc-main h1').count()===1,'destination heading exists '+l.id);
    assert(!await page.getByText('Seite nicht gefunden',{exact:true}).count(),'not found '+l.id);
    await page.getByRole('link',{name:'← Zur Lektion: '+l.title,exact:true}).click();await page.getByRole('heading',{name:l.title,exact:true}).waitFor();
@@ -148,7 +148,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
   }
  });
  await check(prefix+' axe accessibility on shared lesson types',async()=>{
-  for(const id of ['', '/struktur-1', '/momentum-3', '/risiko-2', '/risiko-4']){
+  for(const id of ['/glossar', '/struktur-1', '/momentum-3', '/risiko-2', '/risiko-4']){
    await navigate(page,base+'#/akademie'+id);await page.locator('.ta h1').waitFor();
    await page.addScriptTag({path:require.resolve('axe-core/axe.min.js')});
    if(width===390 && ['/momentum-3','/risiko-2','/risiko-4'].includes(id))await page.screenshot({path:out+'/'+prefix+id.replace('/','-')+'.png',fullPage:true});
@@ -169,8 +169,8 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
  });
  for(const id of ['trend-1','momentum-1','zeitrahmen-1'])await check(prefix+' complete user journey '+id,async()=>{
   const l=content.lessons.find(x=>x.id===id),path=content.paths.find(p=>p.id===l.pathId);
-  await navigate(page,base.replace('/technical/','/academy/'));await page.locator('a.vu-a-world-card[href="/technical/#/akademie"]').click();
-  await page.locator('.ta-paths section').filter({has:page.getByRole('heading',{name:path.title,exact:true})}).getByRole('link',{name:l.title,exact:true}).click();
+  await navigate(page,base.replace('/technical/','/academy/'));await page.evaluate(()=>{localStorage.removeItem('vu-technical-academy-progress-v1');sessionStorage.removeItem('vu-technical-academy-session-v1');});await page.locator('a.vu-a-world-card[href="/technical/#/akademie"]').click();
+  await page.locator('.tc-lpg a[data-path="'+path.id+'"]').click();await page.waitForFunction((id)=>location.hash==='#/akademie/'+id,l.id);
   await page.locator('fieldset').waitFor();const expected=Object.entries(auditContract.answers).find(([key])=>key===id)[1];await page.getByLabel(expected,{exact:true}).check();await page.getByRole('button',{name:'Antwort prüfen'}).click();await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
   await page.locator('a[data-practice]').click();await page.locator('.tc-hit .tc-ticks').first().waitFor();
   const goal=await page.locator('#tc-main h1').innerText();
