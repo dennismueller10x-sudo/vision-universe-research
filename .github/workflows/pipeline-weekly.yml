@@ -570,18 +570,12 @@ jobs:
           set -euo pipefail
           node --test quant/tests/model-depots.test.mjs
 
-      - name: Commit und Push (nur die eigene Datei)
-        env:
-          PUSH_OWNED_PATHS: quant/data/product/model-depots-v1.json
-        run: |
-          set -euo pipefail
-          git config user.name "vision-universe-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add $PUSH_OWNED_PATHS
-          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
-          asof=$(node -e 'console.log(require("./quant/data/product/model-depots-v1.json").asOf)')
-          git commit -q -m "Quant-Musterdepots: Stand ${asof} (Lauf ${GITHUB_RUN_ID})"
-          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+      # Datenzweig (core/registry/data-branch.json, modelDepots, BRANCH_ONLY): nur noch data/live.
+      # Die Kopie in main ist eingefroren (Rueckfall); Pages liefert den Datenzweig aus. Der Erzeuger
+      # rechnet vom bisherigen Stand weiter, den der Schritt oben aus dem Datenzweig eingespielt hat.
+      - name: In den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live quant/data/product/model-depots-v1.json
 
   # --- sic-historie: vormals sec-sic-history.yml
   sic-historie:

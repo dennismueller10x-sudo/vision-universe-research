@@ -50,6 +50,14 @@
       ],
       "prefixes": ["quant/data/market/multi-asset/"],
       "note": "Vertrag: snapshot.json (domains.json marketPulse). Market Pulse ist ein Bericht desselben Laufs ohne eigenen Vertrag; das Verzeichnis folgt nur dem Snapshot. Verbraucher spielen den Zweig per seed-data-branch.sh alle ein (Pages vor dem Bau, Supertrader, Materialisierung, pipeline-daily, research)."
+    },
+    {
+      "id": "modelDepots",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "pipeline-weekly.yml",
+      "paths": ["quant/data/product/model-depots-v1.json"],
+      "note": "Der Erzeuger rechnet vom bisherigen Stand weiter (Bestand, Protokoll); pipeline-weekly spielt den Zweig vor dem Lauf ein (seed-data-branch.sh alle). Bis zum ersten Lauf (Sa 07:23 UTC) liefert Pages die eingefrorene Kopie aus main."
     }
   ],
   "internal": [
@@ -75,7 +83,6 @@
       "indexMembership": {"status": "LATER", "grund": "pipeline-weekly; Verbraucher Discover-Bau"},
       "industryClassificationHistory": {"status": "LATER", "grund": "pipeline-weekly; Verbraucher Fundamental/Supertrader-Adapter"},
       "kiDepots": {"status": "LATER", "grund": "Erzeuger im Buendel pipeline-daily/research (Track A)"},
-      "modelDepots": {"status": "LATER", "grund": "Erzeuger im Buendel pipeline-weekly (Track A)"},
       "technicalWorld": {"status": "LATER", "grund": "Erzeuger im Buendel pipeline-daily (Track A); nach dessen Stufe 7"},
       "companyMaster": {"status": "LAST", "grund": "Produktuniversum"},
       "corporateActions": {"status": "LAST", "grund": "Quant-Kette (market-data-refresh)"},
