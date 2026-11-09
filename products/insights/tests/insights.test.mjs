@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { build, loadArtikel, loadReports } from '../build.mjs';
+import { build, loadArtikel, loadReports, loadMagazin } from '../build.mjs';
 
 const read = (p) => fs.readFileSync(p, 'utf8');
 const artikel = loadArtikel();
@@ -19,6 +19,9 @@ test('IN-2 · jeder Artikel hat Pflichtfelder, Bild, Quellen mit Adresse und ein
     assert.match(a.datum, /^\d{4}-\d{2}-\d{2}$/);
     assert.ok(fs.existsSync('.' + a.bild.src), `${a.slug}: Bild ${a.bild.src} fehlt`);
     assert.ok(a.bild.alt.length > 10);
+    assert.ok(a.bild.ki || a.bild.quelle, `${a.slug}: Bild braucht Bildnachweis (quelle) oder ki: true`);
+    for (const s of a.abschnitte) if (s.bild) { assert.ok(s.bild.quelle && fs.existsSync('.' + s.bild.src), `${a.slug}: Bild im Text ohne Nachweis oder Datei`); }
+    for (const [t, list] of Object.entries(a.appScreens || {})) for (const sc of list) assert.ok(fs.existsSync('.' + sc.src), `${a.slug}: App-Screen ${sc.src} fehlt (${t})`);
     assert.ok(a.quellen.length >= 2, `${a.slug}: weniger als zwei Quellen`);
     for (const q of a.quellen) assert.match(q.url, /^https:\/\//, `${a.slug}: Quelle ohne Adresse`);
     assert.ok(a.daten?.commit, `${a.slug}: Daten nicht eingefroren (products/insights/snapshot.mjs)`);
@@ -43,7 +46,7 @@ test('IN-4 · Artikelseite: Kanonische Adresse, NewsArticle-JSON-LD, KI-Bild-Hin
     assert.match(html, new RegExp(`<link rel="canonical" href="https://research.visionuniverse.de/insights/${a.slug}/">`));
     const ld = JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/)[1]);
     assert.equal(ld['@type'], 'NewsArticle'); assert.equal(ld.datePublished.slice(0, 10), a.datum);
-    if (a.bild.ki) assert.match(html, /<figcaption>KI-Bild<\/figcaption>/);
+    assert.match(html, a.bild.ki ? /<figcaption>KI-Bild<\/figcaption>/ : new RegExp(`<figcaption>Bild: ${a.bild.quelle}</figcaption>`));
     assert.match(html, /keine Anlageberatung/);
     assert.match(html, /Mit KI-Unterstützung recherchiert und geschrieben/);
     assert.equal((html.match(/<li>[^<]*: <a href="https:/g) || []).length, a.quellen.length);
@@ -55,4 +58,16 @@ test('IN-5 · Übersicht, Reports, Feed und Sitemap nennen jeden Artikel und jed
   for (const a of artikel) for (const t of [hub, feed, map]) assert.ok(t.includes(`/insights/${a.slug}/`), a.slug);
   for (const r of loadReports()) { assert.ok(rep.includes(`href="${r.href}"`)); assert.ok(fs.existsSync('.' + r.href + 'index.html'), r.href); }
   assert.ok(map.includes('/insights/reports/'));
+});
+
+test('IN-6 · Aktienmagazin: jede Ausgabe hat PDF, Cover und alle Seitenbilder; Inhalt zeigt auf vorhandene Seiten', () => {
+  const hefte = loadMagazin();
+  assert.ok(hefte.length >= 1);
+  for (const h of hefte) {
+    const dir = `insights/magazin/nr-${h.nr}/`;
+    for (const f of ['cover.jpg', `vision-universe-aktienmagazin-${h.nr}.pdf`, 'index.html']) assert.ok(fs.existsSync(dir + f), dir + f);
+    for (let i = 1; i <= h.seiten; i++) assert.ok(fs.existsSync(`${dir}seiten/s${String(i).padStart(2, '0')}.jpg`), `${dir} Seite ${i}`);
+    for (const [s] of h.inhalt) assert.ok(s >= 1 && s <= h.seiten);
+    assert.ok(read('insights/magazin/index.html').includes(`/insights/magazin/nr-${h.nr}/`));
+  }
 });
