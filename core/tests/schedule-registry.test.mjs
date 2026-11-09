@@ -157,7 +157,7 @@ test("SZ-9 · direkt im Wecker getaktete Workflows stehen im Wecker und haben ke
   for (const d of REG.direktImWecker || []) {
     assert.ok(existsSync(join(ROOT, ".github/workflows", d.workflow)), d.workflow);
     assert.ok(src.includes('"' + d.workflow + '"'), d.workflow + " fehlt im Wecker");
-    if (d.workflow !== "pages-release.yml") assert.deepEqual(workflowCrons(wf(d.workflow)), [], d.workflow + ": kein GitHub-Cron neben dem Wecker");
+    assert.deepEqual(workflowCrons(wf(d.workflow)), [], d.workflow + ": kein GitHub-Cron neben dem Wecker");
   }
 });
 

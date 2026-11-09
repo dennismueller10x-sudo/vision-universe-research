@@ -623,10 +623,7 @@
       "group": "Quality",
       "critical": false,
       "artifact": "/status/data-quality.json",
-      "activation": {
-        "state": "ACTIVATING",
-        "decision": "E8-Nachlauf (Steuerung 08.11.2026): taeglicher Bericht nur im Datenzweig data/live, Pages legt ihn unter /status/ ab. ACTIVATING bis zum ersten Lauf von pipeline-daily (Teil datenqualitaet); danach releaseOnly (Artefakt nur in der Auslieferung)."
-      },
+      "releaseOnly": true,
       "timestamp": ["checkedAt"],
       "records": "rules",
       "minRecords": 1,

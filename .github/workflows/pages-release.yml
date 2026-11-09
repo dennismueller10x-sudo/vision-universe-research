@@ -107,8 +107,9 @@ on:
   # Belegt ist allein eine Untergrenze von 5.000 Anfragen je Stunde
   # ohne Ablehnung. Die 527 Titel brauchen damit 5:01, und §7 des
   # Auftrags verbietet, die Drossel ohne Beleg zu lockern.
-  schedule:
-    - cron: '*/5 13-21 * * 1-5'
+  # Kein eigener Zeitplan mehr: der Cloudflare-Wecker stoesst die Auslieferung
+  # werktags */5 13-21 UTC an, wenn keine laeuft (core/registry/schedule.json,
+  # direktImWecker; RUNBOOK §10).
 
   workflow_dispatch:
     inputs:
