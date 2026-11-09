@@ -75,6 +75,14 @@
       "paths": ["quant/data/market/fx/ecb-coverage.json"],
       "prefixes": ["quant/data/market/fx/ecb/"],
       "note": "Vertrag: ecb-coverage.json; die Reihen unter ecb/ folgen ihm. Die uebrigen Dateien unter quant/data/market/fx/ (Waehrungsschulden-Register, Paarbedarf, Abdeckung) gehoeren currency-fx-verify.yml und bleiben in main. Verbraucher (Release-Bau, Multi-Asset, Watchlist) saeen den Zweig."
+    },
+    {
+      "id": "modelDepots",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "pipeline-weekly.yml",
+      "paths": ["quant/data/product/model-depots-v1.json"],
+      "note": "Der Erzeuger rechnet vom bisherigen Stand weiter (Bestand, Protokoll); pipeline-weekly spielt den Zweig vor dem Lauf ein (seed-data-branch.sh alle). Bis zum ersten Lauf (Sa 07:23 UTC) liefert Pages die eingefrorene Kopie aus main."
     }
   ],
   "internal": [
