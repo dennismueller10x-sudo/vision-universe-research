@@ -52,7 +52,8 @@ jobs:
   core:
     if: ${{ !(github.event_name == 'schedule' || inputs.zeitplan != '') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Reserve: der volle Lauf braucht rund 5 Minuten; 25 deckt einen langsamen Runner ab.
+    timeout-minutes: 25
     steps:
       # Keine volle Historie: fetch-depth 0 holte alle Branches und Tags
       # (.git rund 18 GB) und lief regelmaessig ins 15-Minuten-Limit, bevor ein
@@ -82,6 +83,22 @@ jobs:
           git diff --name-only HEAD^1 HEAD > "$RUNNER_TEMP/changed.txt"
           echo "$(wc -l < "$RUNNER_TEMP/changed.txt") geaenderte Dateien gegen die Basis $(git rev-parse --short HEAD^1)"
 
+      # Die Social-Tests rufen order-d-done.mjs und asset-hashtag-done.mjs im
+      # echten Checkout auf; beide holen `git fetch origin main`. Im PR liegt
+      # die Spitze von main als erster Elternteil schon vor (Tiefe 2), der
+      # fetch ist leer. Beim push (Tiefe 1, nur die Zweigspitze) fehlt sie,
+      # und der fetch zog die ganze Historie von main: 12+ Minuten Stille,
+      # Abbruch an der Zeitgrenze (#1689, #1710). Die Spitze von main flach
+      # vorab holen macht den push-Lauf so schnell wie den PR-Lauf.
+      - name: Spitze von main flach holen (push)
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          echo "origin/main = $(git rev-parse --short origin/main)"
+
+      # node --test laeuft bereits dateiweise parallel (Prozess je Datei,
+      # Standard-Nebenlaeufigkeit = Kerne - 1); --test-concurrency braeuchte es nicht.
       - name: Core-Tests
         run: node --test "core/tests/*.test.mjs" "products/*/tests/*.test.mjs" "worker-waker/tests/*.test.mjs" quant/tests/push-with-retry.test.mjs quant/tests/intraday-scope.test.mjs quant/tests/published-close-rounding.test.mjs
 
