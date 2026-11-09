@@ -1429,11 +1429,31 @@
     {
       "id": "UIP-R143",
       "date": "2026-11-09",
+      "pr": 1748,
+      "ownerApproval": "Owner 09.11.2026: „Setze das freigegebene Konzept für Mein Dashboard, Portfolios und AI-Atlas vollständig und 1:1 um“ (docs/design/mein-bereich-2026-11/HANDOVER.md, Entscheidung 11). Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/site-navigation.js",
+      "from": "f1337199edc900d5ea51e98bf0e06806da0f86926654a63bc19c6b3286c6bcb7",
+      "to": "8b41ebd00f9a3fb5bdea6391234d74b40b76c02588bc0cf7f42302617e950095",
+      "scope": "Atlas auf jeder Aktie: Der Knopf „Atlas“ öffnet auf Seiten mit Aktienkopf (data-vu-stock) das Sheet aus assets/atlas-sheet.js, sonst bleibt er der Link nach /ask/; Aussehen unverändert"
+    },
+    {
+      "id": "UIP-R144",
+      "date": "2026-11-09",
+      "pr": 1748,
+      "ownerApproval": "Owner 09.11.2026: „Setze das freigegebene Konzept für Mein Dashboard, Portfolios und AI-Atlas vollständig und 1:1 um“ (docs/design/mein-bereich-2026-11/HANDOVER.md, Entscheidung 11). Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/stock-navigator.js",
+      "from": "76e0389d17cb0a2c19754dea03d0e8f43cdbc6a07c4c8fd7422d8e107908133c",
+      "to": "8e1d02130cc4d44e02f7430e6b046ea4006d801fa8246fe9e2d73ce34261a60d",
+      "scope": "Aktienkopf trägt data-vu-stock und data-vu-stock-name für den Atlas-Knopf; Aussehen und Navigator unverändert"
+    },
+    {
+      "id": "UIP-R145",
+      "date": "2026-11-09",
       "pr": 1756,
       "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidung 7)",
       "file": "assets/site-navigation.js",
-      "from": "f1337199edc900d5ea51e98bf0e06806da0f86926654a63bc19c6b3286c6bcb7",
-      "to": "a34f0bca298ae0405132ec3edb52801cf19a87784c6929cd4883c8de377c6cc4",
+      "from": "8b41ebd00f9a3fb5bdea6391234d74b40b76c02588bc0cf7f42302617e950095",
+      "to": "159f890551b37f777dd1801683de74b1028648e11011ff08b8c6652cbd0bacfa",
       "scope": "Hedgefonds: Leistenplatz und Menüeintrag „Smart Money“ → „Gruppen-Käufe“ (#/gruppen-kaeufe; #/smart-money markiert Gruppen-Käufe)"
     }
   ]
