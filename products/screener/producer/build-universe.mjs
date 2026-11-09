@@ -128,11 +128,13 @@ export const COLUMNS = [
   'fQuality', 'fGrowth', 'fMomentum', 'fValue', 'fProfitability', 'fRevisions', 'fRisk', 'vq',
   'tiOut', 'tiStr', 'tiEw',
   'twAtr', 'twAdx', 'twSt', 'twPsar', 'twCloud', 'twAroon', 'twWr', 'twCmf', 'twStoch', 'twCci', 'twMfi', 'twSqz', 'twSpike', 'twObv', 'twForm', 'twFormC', 'twEma200', 'twDistEma200', 'twFormO',
-  'stMeth', 'stV1', 'stStage'
+  'stMeth', 'stV1', 'stStage', 'fAvail',
+  /* Alle Technical-Kriterien (Tageschart) auch im Hauptscreener (Owner 09.11.2026), aus technical/data/screener-v1.json uebernommen */
+  'tqAboveSma150', 'tqSma150AboveSma200', 'tqSma50AboveSma150', 'tqDistSma150', 'tqSma200Rising', 'tqSma200Slope21', 'tqAboveEma20', 'tqAboveEma50', 'tqStructure', 'tqNewLow52w', 'tqNewHigh200w', 'tqDistHigh200w', 'tqRoc21', 'tqRoc63', 'tqRoc126', 'tqRoc252', 'tqConnorsRsi', 'tqZScore20', 'tqElderImpulse', 'tqVortexBull', 'tqHmaRising', 'tqDistChandelierLong', 'tqNewHigh20d', 'tqNewLow20d', 'tqChoppiness14', 'tqHistVol20', 'tqUlcer14', 'tqRs3m', 'tqRs6m', 'tqRsPositive', 'tqVolAboveAvg', 'tqInsideBar', 'tqNr7', 'tqCandleBullish', 'tqCandleBearish', 'tqCandleNeutral', 'tqFormationConfirmedUp', 'tqFormationConfirmedDown', 'tqGoldenCrossDays', 'tqDeathCrossDays', 'tqCrossAboveSma200Days', 'tqCrossBelowSma200Days', 'tqRsiExitOversoldDays', 'tqRsiExitOverboughtDays', 'tqNewHigh52wDays', 'tqFormationNewDays', 'tqCandleBullDays', 'tqCandleBearDays', 'tqHasVolume', 'tqFresh'
 ];
 // Listen-Spalten (je Titel ein Array oder null), wie idx.
 const LIST = new Set(['idx', 'stMeth', 'stV1']);
-const TEXT = new Set(['s', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'ipo', 'was', 'vq', 'tiOut', 'tiStr', 'tiEw', 'twForm', 'twFormC', 'twFormO', 'stStage']);
+const TEXT = new Set(['s', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'ipo', 'was', 'vq', 'tiOut', 'tiStr', 'tiEw', 'twForm', 'twFormC', 'twFormO', 'stStage', 'tqStructure', 'tqCandleBullish', 'tqCandleBearish', 'tqCandleNeutral', 'tqFormationConfirmedUp', 'tqFormationConfirmedDown']);
 
 // CHARTBILD (Technical Intelligence)
 // Nur Zustaende aus dem veroeffentlichten Index, keine eigene Berechnung. Ein
@@ -167,7 +169,9 @@ export function technicalIntelligenceColumns(index, opts = {}) {
    TW_MAX_AGE_DAYS ist, bleiben leer (Missing != Zero). */
 export const TW_MAX_AGE_DAYS = 7;
 const TW_MAP = { twAtr: 'atrPct', twAdx: 'adx', twSt: 'supertrendUp', twPsar: 'psarUp', twCloud: 'aboveCloud', twAroon: 'aroonOsc', twWr: 'williamsR',
-  twCmf: 'cmf20', twStoch: 'stochK', twCci: 'cci20', twMfi: 'mfi14', twSqz: 'bbSqueeze', twSpike: 'volSpike', twObv: 'obvRising', twForm: 'formationActive', twFormC: 'formationConfirmed', twFormO: 'formationOpen', twEma200: 'aboveEma200', twDistEma200: 'distEma200' };
+  twCmf: 'cmf20', twStoch: 'stochK', twCci: 'cci20', twMfi: 'mfi14', twSqz: 'bbSqueeze', twSpike: 'volSpike', twObv: 'obvRising', twForm: 'formationActive', twFormC: 'formationConfirmed', twFormO: 'formationOpen', twEma200: 'aboveEma200', twDistEma200: 'distEma200',
+  /* Owner 09.11.2026: alle uebrigen Technical-Kriterien des Tagescharts (Katalog quant/engines/technical/technical-query.js) */
+  tqAboveSma150: 'aboveSma150', tqSma150AboveSma200: 'sma150AboveSma200', tqSma50AboveSma150: 'sma50AboveSma150', tqDistSma150: 'distSma150', tqSma200Rising: 'sma200Rising', tqSma200Slope21: 'sma200Slope21', tqAboveEma20: 'aboveEma20', tqAboveEma50: 'aboveEma50', tqStructure: 'structure', tqNewLow52w: 'newLow52w', tqNewHigh200w: 'newHigh200w', tqDistHigh200w: 'distHigh200w', tqRoc21: 'roc21', tqRoc63: 'roc63', tqRoc126: 'roc126', tqRoc252: 'roc252', tqConnorsRsi: 'connorsRsi', tqZScore20: 'zScore20', tqElderImpulse: 'elderImpulse', tqVortexBull: 'vortexBull', tqHmaRising: 'hmaRising', tqDistChandelierLong: 'distChandelierLong', tqNewHigh20d: 'newHigh20d', tqNewLow20d: 'newLow20d', tqChoppiness14: 'choppiness14', tqHistVol20: 'histVol20', tqUlcer14: 'ulcer14', tqRs3m: 'rs3m', tqRs6m: 'rs6m', tqRsPositive: 'rsPositive', tqVolAboveAvg: 'volAboveAvg', tqInsideBar: 'insideBar', tqNr7: 'nr7', tqCandleBullish: 'candleBullish', tqCandleBearish: 'candleBearish', tqCandleNeutral: 'candleNeutral', tqFormationConfirmedUp: 'formationConfirmedUp', tqFormationConfirmedDown: 'formationConfirmedDown', tqGoldenCrossDays: 'goldenCrossDays', tqDeathCrossDays: 'deathCrossDays', tqCrossAboveSma200Days: 'crossAboveSma200Days', tqCrossBelowSma200Days: 'crossBelowSma200Days', tqRsiExitOversoldDays: 'rsiExitOversoldDays', tqRsiExitOverboughtDays: 'rsiExitOverboughtDays', tqNewHigh52wDays: 'newHigh52wDays', tqFormationNewDays: 'formationNewDays', tqCandleBullDays: 'candleBullDays', tqCandleBearDays: 'candleBearDays', tqHasVolume: 'hasVolume', tqFresh: 'fresh' };
 export function technicalWorldColumns(art, opts = {}) {
   const byTicker = new Map();
   const cols = art && art.cols, n = cols && Array.isArray(cols.s) ? cols.s.length : 0;
@@ -179,7 +183,7 @@ export function technicalWorldColumns(art, opts = {}) {
     const row = {};
     for (const [k, src] of Object.entries(TW_MAP)) {
       const v = cols[src] ? cols[src][i] : null;
-      row[k] = typeof v === 'boolean' ? (v ? 1 : 0) : Array.isArray(v) ? (v.length ? v.slice() : []) : (typeof v === 'number' && Number.isFinite(v) ? v : null);
+      row[k] = typeof v === 'boolean' ? (v ? 1 : 0) : Array.isArray(v) ? (v.length ? v.slice() : []) : typeof v === 'string' ? v : (typeof v === 'number' && Number.isFinite(v) ? v : null);
     }
     byTicker.set(cols.s[i], row);
   }
@@ -362,6 +366,8 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
       rsi14: ind.rsi14, macdHist: ind.macdHist, bollB: ind.bollB, vol252: num(m.volatility252d), maxDd: num(m.maxDrawdown252d),
       fQuality: fac('quality'), fGrowth: fac('growth'), fMomentum: fac('momentum'), fValue: fac('value'), fProfitability: fac('profitability'), fRevisions: fac('revisions'), fRisk: fac('risk')
     };
+    /* Wie im Quant-Screener (quantV2.factorEvidence.availableFactors): Anzahl der Faktoren mit Wert; ohne Faktorevidenz leer. */
+    { const fs7 = [row.fQuality, row.fGrowth, row.fMomentum, row.fValue, row.fProfitability, row.fRevisions, row.fRisk]; row.fAvail = factors.has(d.symbol) ? fs7.filter((v) => v !== null).length : null; }
     if (vq !== 'OK') for (const c of SHARE_BASIS_COLUMNS) row[c] = null;
     if (!currencyOk) for (const c of CURRENCY_COLUMNS) row[c] = null;
     row.vq = vq;
