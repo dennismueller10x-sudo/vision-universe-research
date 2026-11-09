@@ -200,7 +200,7 @@
     var opt = o || {}, st = s || {};
     var meta = [st.dateLabel ? esc(st.dateLabel) : "", st.eurLabel ? "≈ " + esc(st.eurLabel) : ""].filter(Boolean).join("<br>");
     var back = st.backHref ? '<a class="vu-round" href="' + esc(st.backHref) + '" aria-label="Zurück">' + glyph("back") + "</a>" : '<button type="button" class="vu-round" data-vu-back aria-label="Zurück">' + glyph("back") + "</button>";
-    return '<header class="vu-stockhead"><div class="vu-stockhead__top">' + back + logo(st.ticker, { src: st.logo }) +
+    return '<header class="vu-stockhead" data-vu-stock="' + esc(st.ticker) + '" data-vu-stock-name="' + esc(st.name || st.ticker) + '"><div class="vu-stockhead__top">' + back + logo(st.ticker, { src: st.logo }) +
       '<div class="vu-stockhead__name"><b>' + esc(st.name || st.ticker) + "</b><span>" + esc(st.ticker) + (st.what ? " · " + esc(st.what) : "") + "</span></div>" +
       '<button type="button" class="vu-round" data-vu-watch="' + esc(st.ticker) + '" aria-pressed="' + (st.saved ? "true" : "false") + '" aria-label="' + esc(st.ticker) + ' merken">' + glyph("heart") + "</button></div>" +
       (isNum(st.price) ? '<div class="vu-stockhead__price"><b>' + esc(money(st.price, st.currency)) + "</b>" + chg(st.changePct, { big: true }) + (meta ? '<span class="vu-stockhead__meta">' + meta + "</span>" : "") + "</div>" : "") +

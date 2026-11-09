@@ -553,6 +553,16 @@
       };
       syncActive();
       if(location.pathname.startsWith('/ask/'))root.querySelector('.atlas').setAttribute('aria-current','page');
+      /* Atlas auf jeder Aktie (Konzept mein-bereich-2026-11, Screen a-sheet): Zeigt die Seite einen Aktienkopf (data-vu-stock),
+         öffnet „Atlas“ ein Sheet mit Fragen zur Aktie (assets/atlas-sheet.js, beim ersten Tipp geladen); sonst gilt der Link. */
+      root.querySelector('.atlas').addEventListener('click',e=>{
+        if(e.defaultPrevented||e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;
+        if(!document.querySelector('[data-vu-stock]'))return;
+        e.preventDefault();
+        const a=e.currentTarget,go=()=>{if(!(window.VUAtlasSheet&&window.VUAtlasSheet.open(document,a)))location.assign('/ask/');};
+        if(window.VUAtlasSheet)return go();
+        const sc=document.createElement('script');sc.src='/assets/atlas-sheet.js';sc.onload=go;sc.onerror=()=>location.assign('/ask/');document.head.appendChild(sc);
+      });
       if(location.pathname.startsWith('/mein-dashboard/')||location.pathname.startsWith('/konto/'))root.querySelector('.profile').setAttribute('aria-current','page');
       const syncQuick=()=>root.querySelectorAll('.quick a').forEach(a=>{const h=a.getAttribute('href'),detail=isElliottDetail(location.pathname,location),on=h==='/elliott/'?(detail||location.pathname.startsWith(h)):h==='/quant/'?(!detail&&location.pathname.startsWith(h)):location.pathname.startsWith(h);if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
       syncQuick();
