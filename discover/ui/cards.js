@@ -497,13 +497,16 @@
           el("b", { class: "dx-poster-name",
                     text: card.companyName || card.symbol }),
           el("span", { class: "dx-poster-sub" }, [
-            el("span", { class: "dx-poster-sym", text: card.symbol }),
+            el("span", { class: "dx-poster-sym", text: card.symbol + (card.region === "EUROPE" && card.exchange ? " · " + card.exchange : "") }),
             isNum(preis) ? el("span", { class: "dx-poster-preis" }, [
               document.createTextNode(money(preis, card.asOf, card.region === "EUROPE" ? card.currency : null)),
               altStand ? el("small", { class: "dx-poster-stand", text: " · Stand " + altStand }) : null,
               isNum(change) ? el("i", { class: toneClass(change),
                                         text: pctPoints(change) }) : null
-            ]) : null
+            ]) : null,
+            /* Mehrere Segmente = offene Lücken (nie verbunden, nie geschätzt): dezent benennen, ohne Anbieter. */
+            card.region === "EUROPE" && card.priceSeries && card.priceSeries.segments && card.priceSeries.segments.length > 1 ?
+              el("small", { class: "dx-poster-gaps", "data-gaps": "", style: "display:block;color:inherit;opacity:.7", text: "Kursreihe mit Lücken" }) : null
           ])
         ])
       ]),

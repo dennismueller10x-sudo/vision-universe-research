@@ -81,6 +81,7 @@
       active: loc => {
         const k = hashPart(loc, 0);
         if (!k) return 'discover';
+        if (k === 'c' && hashPart(loc, 1) === 'EUROPE') return 'discover';
         if (k === 'c') { const themes = globalThis.VUDiscover?.Views?.Themes; return themes && themes.byRow(hashPart(loc, 2)) ? 'welten' : 'strategien'; }
         return {welten: 'welten', thema: 'welten', strategien: 'strategien', einzeln: 'entdecken', swipen: 'entdecken'}[k] || null;
       }},

@@ -2,6 +2,7 @@
    sonst nichts. Anlass BZH (27.10.2026): Universum ohne BZH committet,
    Materialisierung rot, Supertrader nicht angestossen -> toter Link.
    Hermetisch: jede Pruefung baut ein Wegwerf-Repository. */
+import { workflowPart } from "../../ci/lib/workflow-part.mjs";
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, rmSync } from 'node:fs';
@@ -245,7 +246,7 @@ test('Workflow: Bereinigung nur per Modus-Eingabe, ohne Anbieterabruf und ohne v
   assert.ok(wf.indexOf('node --test "scripts/supertrader/tests/*.test.mjs"') < wf.indexOf('commit-and-push.sh'), 'Tests vor dem Commit');
   /* Heap: Runner-Standard (4144 MB gemessen) - keine Absenkung im Produktivlauf. */
   assert.doesNotMatch(wf, /max-old-space-size|NODE_OPTIONS/);
-  const ci = readFileSync(join(ROOT, '.github', 'workflows', 'supertrader-ci.yml'), 'utf8');
+  const ci = workflowPart(ROOT, 'ci.yml', 'supertrader'); /* seit CI Stufe 2 Teil supertrader in ci.yml, vormals supertrader-ci.yml */
   assert.match(ci, /cp -r supertrader "\$RUNNER_TEMP\/supertrader-inkrementell"\n\s+node scripts\/supertrader\/build\.mjs --out="\$RUNNER_TEMP\/supertrader-inkrementell"/, 'Speicher-Fruehwarnung in der CI');
 });
 

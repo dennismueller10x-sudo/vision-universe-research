@@ -10,13 +10,21 @@
     "brevo-ci.yml",
     "ci-config.yml",
     "creative-job-guard.yml",
+    "discover-ci.yml",
+    "discover-frontend-ci.yml",
     "etf-dashboard-ci.yml",
     "fundamental-ci.yml",
     "hedgefonds-dashboard-ci.yml",
     "landing-ci.yml",
     "research-access-ci.yml",
     "screener-ci.yml",
+    "sec-fundamentals-ci.yml",
+    "social-ci.yml",
+    "supertrader-ci.yml",
+    "technical-ci.yml",
     "vorsorge-ci.yml",
+    "vu2-browser-qa.yml",
+    "vu2-lifecycle-handoff.yml",
     "willkommen-ci.yml"
    ]
   },
@@ -235,14 +243,6 @@
    "bundle": "ci",
    "geplant": true
   },
-  "discover-ci.yml": {
-   "bundle": "ci",
-   "geplant": true
-  },
-  "discover-frontend-ci.yml": {
-   "bundle": "ci",
-   "geplant": true
-  },
   "discover-im-blick-live.yml": {
    "bundle": "pipeline-intraday",
    "ausnahme": "Wecker-Ziel: der Cloudflare-Wecker startet ihn per Dateiname mit eigener Laufsperre."
@@ -315,10 +315,6 @@
    "bundle": "pipeline-daily",
    "geplant": true
   },
-  "sec-fundamentals-ci.yml": {
-   "bundle": "ci",
-   "geplant": true
-  },
   "sec-fundamentals-daily.yml": {
    "bundle": "pipeline-daily",
    "ausnahme": "Zwei parallele Jobs unter der Workflow-Gruppe sec-backfill-<ref>, die auch der Universum-Backfill nutzt."
@@ -339,17 +335,9 @@
    "bundle": "ci",
    "geplant": true
   },
-  "social-ci.yml": {
-   "bundle": "ci",
-   "geplant": true
-  },
   "social-orchestrator.yml": {
    "bundle": "social",
    "ausnahme": "Der ausgerollte Social-Worker stoesst ihn per Dateiname an (workers/vision-universe-social/src/approval.js)."
-  },
-  "supertrader-ci.yml": {
-   "bundle": "ci",
-   "geplant": true
   },
   "supertrader-paper-2027.yml": {
    "bundle": "pipeline-daily",
@@ -379,21 +367,9 @@
    "bundle": "research",
    "geplant": true
   },
-  "technical-ci.yml": {
-   "bundle": "ci",
-   "geplant": true
-  },
   "universe-master.yml": {
    "bundle": "pipeline-weekly",
    "ausnahme": "pull_request mit Pfadfiltern; der Generator buendelt keine pull_request-Ausloeser."
-  },
-  "vu2-browser-qa.yml": {
-   "bundle": "ci",
-   "geplant": true
-  },
-  "vu2-lifecycle-handoff.yml": {
-   "bundle": "ci",
-   "geplant": true
   }
  },
  "retired": {

@@ -1,6 +1,7 @@
 /* Public Europe reads only producer-owned canonical display artifacts. */
 (function(root,factory){
   'use strict';
+
   const api=factory(root);
   if(typeof module==='object'&&module.exports)module.exports=api;
   else {
@@ -76,7 +77,7 @@
           if(!cache.has(key))cache.set(key,read(binding).catch(error=>{cache.delete(key);throw error;}));
           return cache.get(key);
         }});
-        const product=root.VUDiscover.App.configureEurope({client,watchlist:Core.createWatchlist({catalog,storage:root.localStorage}),securityRefs:catalog.securities.map(s=>s.securityId),blocked:manifest.publication&&manifest.publication.blocked||[],audience:'public'});
+        const product=root.VUDiscover.App.configureEurope({client,watchlist:Core.createWatchlist({catalog,storage:root.localStorage}),securityRefs:(()=>{/* Reihenfolge der Europa-Liste: Leitindizes zuerst (DAX; CAC 40, AEX, SMI, FTSE MIB), dann MDAX, TecDAX, SDAX, dann Katalogreihenfolge. Nur Sortierung, keine Auswahl. */const rank={'DAX':0,'CAC 40':1,'AEX':1,'SMI':1,'FTSEMIB':1,'MDAX':2,'TecDAX':3,'SDAX':4};return catalog.securities.map((s,i)=>({id:s.securityId,i,r:Math.min(9,...(s.indexes||[]).map(x=>x.index in rank?rank[x.index]:9))})).sort((a,b)=>a.r-b.r||a.i-b.i).map(x=>x.id);})(),blocked:manifest.publication&&manifest.publication.blocked||[],audience:'public'});
         root.VUDiscover.publicEuropeManifest=manifest;return product;
       })().catch(error=>{ready=null;throw error;});
       return ready;
