@@ -480,11 +480,27 @@
     [/Bullischer Wimpel/g, "Wimpel steigend"], [/Bärischer Wimpel/g, "Wimpel fallend"],
     [/Bullisches Kerzenmuster/g, "Kerzenmuster nach oben"], [/Bärisches Kerzenmuster/g, "Kerzenmuster nach unten"],
     [/einem bullischen Kerzenmuster/g, "einem Kerzenmuster nach oben"], [/einem bärischen Kerzenmuster/g, "einem Kerzenmuster nach unten"],
+    [/(über|unter) SMA (50|200)\b/g, "$1 der $2-Tage-Linie"], [/\bSMA (50|200)\b/g, "$1-Tage-Linie"],
     [/\bbullisch(e[nrsm]?)?\b/g, "nach oben deutend"], [/\bbärisch(e[nrsm]?)?\b/g, "nach unten deutend"]
   ];
   function plain(text) { var t = String(text == null ? "" : text); PLAIN_NAMES.forEach(function (r) { t = t.replace(r[0], r[1]); }); return t; }
   /** Richtung in Worten (Entscheidung 2): +1 „deutet nach oben“, −1 „deutet nach unten“, sonst „Richtung offen“. */
   function directionWords(d) { return d > 0 ? "deutet nach oben" : d < 0 ? "deutet nach unten" : "Richtung offen"; }
+  /* Konzept „Der Chart in drei Sätzen“, Entscheidung 10: Markt heute aus der gemeinsamen Quelle aller Welten
+     (quant/data/market/intelligence/market-pulse.json, Dimension BREADTH, Beleg above200). Liefert Anteil, Basis und Stand
+     oder null, wenn der Beleg fehlt oder nicht aktuell ist; dann zeigt Technical die eigene Zählung mit Stand und Basis. */
+  var MARKET_PULSE_PATH = "/quant/data/market/intelligence/market-pulse.json";
+  function marketBreadth(pulse) {
+    var b = pulse && /^vu-market-pulse-1\./.test(pulse.schemaVersion || "") && pulse.dimensions && pulse.dimensions.BREADTH;
+    var e = b && (b.evidence || []).filter(function (x) { return x.key === "above200"; })[0];
+    if (!e || e.current === false || !isNum(e.value) || !isNum(e.evaluated) || !e.evaluated) return null;
+    return { share: e.value, matched: e.matched, base: e.evaluated, asOf: e.asOf || null, source: "market-pulse" };
+  }
+  /** Ein Satz mit Stand und Basis: „37 % von 5.051 US-Aktien über der 200-Tage-Linie, Stand 06.11.“ */
+  function breadthSentence(b) {
+    if (!b || !isNum(b.share)) return "";
+    return Math.round(b.share).toLocaleString("de-DE") + " % von " + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien über der 200-Tage-Linie" + (b.asOf ? ", Stand " + b.asOf.slice(8, 10) + "." + b.asOf.slice(5, 7) + "." : "");
+  }
   function findings(analysis, features, close) {
     var out = [];
     (analysis && analysis.formations || []).forEach(function (f) {
@@ -587,7 +603,7 @@
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
     loadScreens: loadScreens, saveScreen: saveScreen, migrateParams: migrateParams, QUERY_TEXT_SEMANTICS: QUERY_TEXT_SEMANTICS, deleteScreen: deleteScreen, updateScreen: updateScreen, linkScreen: linkScreen, addRemoteScreen: addRemoteScreen, exportScreens: exportScreens, importScreens: importScreens,
     builderFromQuery: builderFromQuery, queryFromBuilder: queryFromBuilder, parseFieldInput: parseFieldInput, formatFieldInput: formatFieldInput, defaultRow: defaultRow,
-    findings: findings, plain: plain, momentumWords: momentumWords, volumeWords: volumeWords, directionWords: directionWords, seriesState: seriesState, relativeStrength: relativeStrength, BENCHMARK_PATH: BENCHMARK_PATH, candleMarks: candleMarks, CHART_LAYERS: CHART_LAYERS, CHART_PANES: CHART_PANES, FIELD_CHART: FIELD_CHART, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
+    findings: findings, plain: plain, MARKET_PULSE_PATH: MARKET_PULSE_PATH, marketBreadth: marketBreadth, breadthSentence: breadthSentence, momentumWords: momentumWords, volumeWords: volumeWords, directionWords: directionWords, seriesState: seriesState, relativeStrength: relativeStrength, BENCHMARK_PATH: BENCHMARK_PATH, candleMarks: candleMarks, CHART_LAYERS: CHART_LAYERS, CHART_PANES: CHART_PANES, FIELD_CHART: FIELD_CHART, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
     search: search, dateDe: dateDe, price: price, pct: pct, num: num
   };
   if (isNode) module.exports = api;

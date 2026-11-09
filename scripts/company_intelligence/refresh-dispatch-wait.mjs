@@ -204,19 +204,32 @@ export const realGeneration=async(fetcher=fetch)=>{
  return (await r.json()).generation??null;
 };
 
+/* Feste Wartezeit ab jetzt (Universe-Release, --wait-minutes): Wartefrist nach `minutes`, harte Frist reserveMinutes spaeter
+   (ein noch laufender eigener Lauf darf bis dahin fertig ausliefern). Rein. */
+export function fixedDeadlines({nowMs=Date.now(),minutes,reserveMinutes=10}){
+ return {waitDeadlineMs:nowMs+minutes*60000,hardDeadlineMs:nowMs+(minutes+reserveMinutes)*60000,verifyDeadlineMs:nowMs+(minutes+reserveMinutes)*60000};
+}
+
+/* Aufruf:
+ *   --health <health.json>                Refresh: erwartete Generation = consumerGeneration, Fristen aus JOB_STARTED_AT
+ *   --expected <24 hex> --wait-minutes N  Universe-Release (company-intelligence-universe-release.yml): feste Wartezeit ab jetzt.
+ *     Anlass: activate 42633299211 (09.11.2026) dispatchte einmal; der Lauf 42638619534 wurde um 15:02 verdraengt, nach
+ *     20 min EXACT_PRODUCTION_GENERATION_NOT_SERVED und Rueckfall auf 46. Jetzt dieselbe Neu-Dispatch-Logik wie der Refresh. */
 export async function main(argv=process.argv.slice(2),env=process.env,io={}){
  const arg=n=>{const i=argv.indexOf(n);return i>=0?argv[i+1]:null;};
- const health=arg('--health'),out=arg('--out');
- if(!health){console.error('USAGE: refresh-dispatch-wait.mjs --health <health.json> [--out <file>]');return result(false,'HEALTH_MISSING');}
+ const health=arg('--health'),out=arg('--out'),given=arg('--expected'),waitMinutes=Number(arg('--wait-minutes'));
+ if(!health&&!given){console.error('USAGE: refresh-dispatch-wait.mjs (--health <health.json> | --expected <generation> --wait-minutes <n>) [--out <file>]');return result(false,'HEALTH_MISSING');}
  let expected;
- try{expected=JSON.parse(readFileSync(health,'utf8')).consumerGeneration;}catch{expected=null;}
+ if(given)expected=/^[a-f0-9]{24}$/.test(given)?given:null;
+ else{try{expected=JSON.parse(readFileSync(health,'utf8')).consumerGeneration;}catch{expected=null;}}
  if(typeof expected!=='string'||!expected)return result(false,'EXPECTED_GENERATION_UNKNOWN'); // fail-closed
+ if(given&&!(Number.isFinite(waitMinutes)&&waitMinutes>=5&&waitMinutes<=90))return result(false,'WAIT_MINUTES_INVALID'); // fail-closed
  const started=Number(env.JOB_STARTED_AT),jobStartMs=Number.isFinite(started)&&started>0&&started*1000<=Date.now()?started*1000:null;
- const deadlines=planDeadlines({jobStartMs});
+ const deadlines=given?fixedDeadlines({nowMs:(io.now||Date.now)(),minutes:waitMinutes}):planDeadlines({jobStartMs});
  const res=await waitForDelivery({expected,gh:io.gh||realGh(env),generation:io.generation||(()=>realGeneration()),
-  sleep:io.sleep||(ms=>new Promise(r=>setTimeout(r,ms))),deadlines});
+  sleep:io.sleep||(ms=>new Promise(r=>setTimeout(r,ms))),deadlines,...(io.now?{now:io.now}:{})});
  const safe=v=>String(v??'').replace(/[^A-Za-z0-9_,.:()<>=\- ]/g,'?').slice(0,200);
- const line=`Refresh-Auslieferung: ${res.served?'OK':'FEHLER'} (${safe(res.reason)}), Dispatches: ${res.dispatches}`;
+ const line=`${given?'Universe-Auslieferung':'Refresh-Auslieferung'}: ${res.served?'OK':'FEHLER'} (${safe(res.reason)}), Dispatches: ${res.dispatches}`;
  console.log(line);
  if(!res.served)console.error(safe(res.reason));
  if(env.GITHUB_STEP_SUMMARY){try{appendFileSync(env.GITHUB_STEP_SUMMARY,line+'\n');}catch{/* optional */}}
