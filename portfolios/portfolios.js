@@ -191,35 +191,6 @@
   function nameOf(p) { return cleanName(p.name || NAMES[p.ticker]) || p.ticker; }
   function pctW(w) { return isNum(w) ? U.num(w * 100, 1) + " %" : "–"; }
   function stockHref(t) { return "/aktie/" + encodeURIComponent(t); }
-  function label() { return '<p class="pf-label">' + U.glyph("check", 14) + "<span>" + LABEL + "</span></p>"; }
-  function perfLine(d) {
-    if (d.pending) return '<span class="pf-perf vu-xs vu-mu">startet am ' + dDe(d.liveSince) + ", erste Werte folgen</span>";
-    if (d.perf) return '<span class="pf-perf">' + U.chg(d.perf.pct, { digits: 1 }) + '<span class="vu-xs vu-mu">seit ' + dDe(d.perf.since) + "</span></span>";
-    return '<span class="pf-perf vu-xs vu-mu">Depot-Wertentwicklung noch nicht veröffentlicht</span>';
-  }
-  function card(d) {
-    var meta = d.pending ? "" : '<span><b class="vu-num">' + d.positions.length + "</b> Positionen</span><span>Stand " + dDe(d.asOf) + "</span>";
-    return '<a class="pf-card" href="' + esc(href(d)) + '"><span class="pf-card__top"><b class="pf-card__name">' + esc(d.name) + "</b>" + U.glyph("next", 16) + "</span>" +
-      (d.by ? '<span class="pf-card__by">' + esc(d.by) + "</span>" : "") +
-      '<span class="pf-card__method">' + esc(d.method) + "</span>" +
-      '<span class="pf-card__meta">' + meta + "</span>" + perfLine(d) + "</a>";
-  }
-  function overview(all, groupId) {
-    var groups = GROUPS.filter(function (g) { return !groupId || g.id === groupId; });
-    var tabs = '<nav class="vu-chips pf-tabs" aria-label="Depotgruppe">' + [{ id: "", label: "Alle " + all.length }].concat(GROUPS.map(function (g) { return { id: g.id, label: g.label + " " + all.filter(function (d) { return d.group === g.id; }).length }; })).map(function (t) {
-      var on = (groupId || "") === t.id;
-      return '<a class="vu-chip" href="#/' + t.id + '"' + (on ? ' aria-current="page"' : "") + ">" + esc(t.label) + "</a>";
-    }).join("") + "</nav>";
-    return '<header class="pf-intro"><p class="vu-ltag">Portfolios</p><h1 class="vu-lt">Alle Musterdepots</h1>' +
-      '<p class="vu-lead">Jedes Depot nimmt Aktien streng nach seiner Methode auf und gibt sie nach Regel wieder ab. So sieht man, was eine Methode tut, nicht, was du tun solltest.</p>' + label() + "</header>" + tabs +
-      groups.map(function (g) {
-        var list = all.filter(function (d) { return d.group === g.id; });
-        return '<section class="pf-sec" aria-labelledby="pf-g-' + g.id + '">' + '<div class="vu-sect"><h2 id="pf-g-' + g.id + '">' + esc(g.title) + "</h2></div>" +
-          '<p class="vu-sm vu-mu pf-glead">' + esc(g.lead) + "</p>" +
-          '<div class="pf-grid">' + (list.length ? list.map(card).join("") : U.blank("Diese Depots sind gerade nicht verfügbar.", { verdict: false })) + "</div></section>";
-      }).join("") +
-      U.help("Wertentwicklung zeigen wir nur ab dem Start des Depots (vorwärts) und nur, wenn der Erzeuger sie veröffentlicht. Ergebnisse aus Rückrechnungen (Backtests) zeigen wir hier nicht.") + foot(null);
-  }
   /* ---------------------------------------------------------------- Methodenbild (rein, festes Bild, kein Fachmodell)
      Konzept mein-bereich-2026-11, Entscheidung 5: Weinstein vier Phasen (Phase 2 hervorgehoben), Darvas Kisten,
      Turtle Kanal, Quant Profil; andere Methoden die schlichte Variante mit Name und Satz (artKind „plain“). */
@@ -238,7 +209,7 @@
     var x = o || {}, dark = !!x.dark, w = x.width || 330, ink = dark ? "#fff" : "#000", base = dark ? "#1a1a1a" : "#f0f0f0", mute = "#8c8c8c", lime = "#c8f531";
     var svg = function (h, body, label) { return '<svg class="pf-art" width="' + w + '" height="' + h + '" viewBox="0 0 330 ' + h + '" role="img" aria-label="' + esc(label) + '" style="display:block;max-width:100%;height:auto">' + body + "</svg>"; };
     var line = function (pts) { return '<path d="' + pts.map(function (p, i) { return (i ? "L" : "M") + p[0] + " " + p[1]; }).join(" ") + '" fill="none" stroke="' + ink + '" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>'; };
-    var text = function (xx, y, t, on) { return '<text x="' + xx + '" y="' + y + '" text-anchor="middle" font-size="11" font-weight="800" fill="' + (on ? lime : mute) + '" font-family="Inter,sans-serif">' + esc(t) + "</text>"; };
+    var text = function (xx, y, t, on) { return '<text x="' + xx + '" y="' + y + '" text-anchor="middle" font-size="11" font-weight="800" fill="' + (on ? (dark ? lime : ink) : mute) + '" font-family="Inter,sans-serif">' + esc(t) + "</text>"; };
     if (kind === "weinstein") {
       var zones = [[0, 110, "Basis", 1], [110, 205, "Aufwärts", 2], [205, 265, "Top", 3], [265, 330, "Abwärts", 4]];
       return svg(104, zones.map(function (z) {
@@ -397,9 +368,65 @@
       chapters(d) +
       U.help(d.stops ? "Ungültig-Marke laut Methode: Schließt der Kurs darunter, gibt das Musterdepot die Aktie nach Regel ab. Ein Rechenpunkt, kein Kursziel und keine Order." : "Ein Musterdepot ist ein Rechenmodell. Es zeigt, was die Regel tut, keine echten Orders.") + foot(d) + "</div>";
   }
+  /* ---------------------------------------------------------------- Übersicht (Screen p-home) */
+  /* Quant-Profil in Alltagssprache (Titel der Karte); der Profilname steht als Fachname darüber. */
+  var QUANT_TITLE = {
+    "quality-compounder": "Verlässlich und wächst lange",
+    "momentum-leader": "Die stärksten Kurstrends",
+    "garp": "Wachstum zum fairen Preis",
+    "defensive-quality": "Ruhig und solide",
+    "value-momentum": "Günstig, und der Trend dreht"
+  };
+  var NEW_DAYS = 2; /* „neu“: aufgenommen am Stichtag oder in den zwei Handelstagen davor */
+  function weekdaysBetween(a, b) {
+    var x = new Date(String(a).slice(0, 10) + "T12:00:00Z"), y = new Date(String(b).slice(0, 10) + "T12:00:00Z"), n = 0;
+    if (isNaN(x) || isNaN(y) || x > y) return -1;
+    for (var d = new Date(x); d < y; d.setUTCDate(d.getUTCDate() + 1)) { var w = d.getUTCDay(); if (w && w !== 6) n++; }
+    return n;
+  }
+  /** Zahl der Positionen, die am Stichtag oder in den zwei Handelstagen davor aufgenommen wurden. */
+  function newCount(d) {
+    if (!d.asOf) return 0;
+    return d.positions.filter(function (p) { var k = p.since ? weekdaysBetween(p.since, d.asOf) : -1; return k >= 0 && k <= NEW_DAYS; }).length;
+  }
+  function cardTitle(d) {
+    if (d.group === "quant") return { fach: d.name, name: QUANT_TITLE[d.id] || d.name };
+    if (d.group === "supertrader") return { fach: d.fach || d.by || "", name: d.name };
+    return { fach: "KI-Depot", name: d.name };
+  }
+  function card(d) {
+    var t = cardTitle(d), kind = artKind(d), n = newCount(d);
+    var logos = d.positions.slice().sort(function (a, b) { return (b.weight || 0) - (a.weight || 0); }).slice(0, 5).map(function (p) { return U.logo(p.ticker); }).join("");
+    var foot = d.pending ? '<span class="vu-xs vu-mu pf-dpc__start">startet am ' + dDe(d.liveSince) + ", erste Werte folgen</span>"
+      : (logos ? '<span class="pf-dpc__logos">' + logos + "</span>" : "") + '<span class="vu-xs pf-dpc__n"><b>' + d.positions.length + (d.positions.length === 1 ? " Aktie" : " Aktien") + "</b></span>" +
+        (d.perf ? '<span class="pf-dpc__perf">' + U.chg(d.perf.pct, { digits: 1 }) + '<span class="vu-xs vu-mu">seit ' + esc(dmy(d.perf.since)) + "</span></span>" : "") +
+        (n ? '<span class="pf-new">' + n + " neu</span>" : !d.positions.length ? '<span class="vu-xs vu-mu">Stand ' + esc(dmy(d.asOf)) + "</span>" : "");
+    return '<a class="pf-dpc" href="' + esc(href(d)) + '"><span class="pf-dpc__h"><span><span class="vu-ltag">' + esc(t.fach) + "</span><b>" + esc(t.name) + '</b><span class="vu-xs vu-mu">' + esc(neutralText(d.method)) + "</span></span>" + U.glyph("next", 16) + "</span>" +
+      (kind !== "plain" ? '<span class="pf-dpc__art">' + methodArt(kind, { dark: false, width: 300, profile: d.id }) + "</span>" : "") +
+      '<span class="pf-dpc__f">' + foot + "</span></a>";
+  }
+  function overview(all, groupId) {
+    var groups = GROUPS.filter(function (g) { return !groupId || g.id === groupId; });
+    var count = function (id) { return all.filter(function (d) { return d.group === id; }).length; };
+    var asOf = maxDate(all.map(function (d) { return d.asOf; }));
+    var tabs = '<nav class="vu-chips pf-tabs" aria-label="Depotgruppe">' + [{ id: "", label: "Alle " + all.length }].concat(GROUPS.map(function (g) { return { id: g.id, label: g.label + " " + count(g.id) }; })).map(function (t) {
+      var on = (groupId || "") === t.id;
+      return '<a class="vu-chip" href="#/' + t.id + '"' + (on ? ' aria-current="page"' : "") + ">" + esc(t.label) + "</a>";
+    }).join("") + "</nav>";
+    var today = '<div class="pf-today"><p class="vu-ltag">Musterdepots' + (asOf ? " · Stand " + esc(dmy(asOf)) : "") + '</p><ul class="pf-today__n">' +
+      GROUPS.map(function (g) { return '<li><b class="vu-num">' + count(g.id) + "</b><span>" + esc(g.label) + "</span></li>"; }).join("") +
+      '</ul><p class="vu-xs pf-today__note">Wertentwicklung seit Start: erscheint, sobald belastbar.</p></div>';
+    return '<header class="pf-intro"><p class="vu-ltag">Portfolios</p><h1 class="vu-lt">Was die Regeln<br>gerade halten</h1>' +
+      '<p class="vu-lead">' + all.length + " Musterdepots. Jedes nimmt Aktien streng nach seiner Methode auf und gibt sie ab, ohne echtes Geld.</p></header>" + tabs + today +
+      groups.map(function (g) {
+        var list = all.filter(function (d) { return d.group === g.id; });
+        return '<section class="pf-sec" aria-labelledby="pf-g-' + g.id + '">' + '<div class="vu-sect"><h2 id="pf-g-' + g.id + '">' + esc(g.label) + "</h2>" + (groupId ? "" : '<a href="#/' + g.id + '">Alle ' + list.length + "</a>") + "</div>" +
+          '<div class="pf-grid">' + (list.length ? list.map(card).join("") : U.blank("Diese Depots sind gerade nicht verfügbar.", { verdict: false })) + "</div></section>";
+      }).join("") + foot(null);
+  }
   function foot(d) {
     return (U.legal("modelPortfolio") || "") +
-      '<p class="pf-foot">' + (d ? LABEL + ". Datenstand " + dDe(d.asOf) + ". " : "") + "Kurse: veröffentlichte Schlusskurse, split-bereinigt. Musterdepots sind Rechenmodelle ohne echtes Geld. Keine Anlageberatung, keine Empfehlung.</p>";
+      '<p class="pf-foot">' + LABEL + ". " + (d ? "Datenstand " + dDe(d.asOf) + ". " : "") + "Kurse: veröffentlichte Schlusskurse, split-bereinigt. Musterdepots sind Rechenmodelle ohne echtes Geld. Keine Anlageberatung, keine Empfehlung.</p>";
   }
   function render(all, hash) {
     var r = parseRoute(hash);
@@ -466,6 +493,6 @@
   }
 
   return { LABEL: LABEL, SRC: SRC, GROUPS: GROUPS, KI_START: KI_START, collect: collect, fromSupertrader: fromSupertrader, fromTrend52: fromTrend52, fromHouse: fromHouse,
-    fromQuant: fromQuant, fromKi: fromKi, validKi: validKi, groupedLog: groupedLog, parseRoute: parseRoute, methodArt: function (k, o) { U = U || root.VUUI; return methodArt(k, o); }, artKind: artKind,
+    fromQuant: fromQuant, fromKi: fromKi, validKi: validKi, groupedLog: groupedLog, parseRoute: parseRoute, newCount: newCount, methodArt: function (k, o) { U = U || root.VUUI; return methodArt(k, o); }, artKind: artKind,
     allocation: allocation, posChart: posChart, render: function (all, hash) { U = U || root.VUUI; return render(all, hash); }, start: start, NAMES: NAMES };
 });

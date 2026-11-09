@@ -146,6 +146,12 @@ Entscheidung 11.
 - Die Wertentwicklung seit Start steht nur, wo der Export sie heute schon führt (Quant, KI), als Zeile unter den drei Zahlen; keine neue Depot-Rendite.
 - Quant-Profil als Bild: betont sind die Eigenschaften, die der Regelsatz des Profils nennt (fest, kein Modell).
 
+**PR 3 · Übersicht**
+- „N neu“ zählt Positionen, die am Stichtag oder in den zwei Handelstagen davor aufgenommen wurden (so ergibt sich im Mockup „3 neu“ bei Weinstein).
+- Quant-Karten tragen einen Titel in Alltagssprache („Verlässlich und wächst lange“) und den Profilnamen als Fachnamen; die vorhandene Wertentwicklung seit Start (Export `PUBLISHED`) bleibt als Pille, wie bisher auf der Karte.
+- Jede Karte mit eigenem Methodenbild zeigt es (auch Darvas und Turtle); hervorgehobene Beschriftungen stehen im hellen Modus in Schwarz statt Neongrün, damit sie lesbar bleiben.
+- Der Satz unter dem Namen ist der Methodensatz der Detailseite (nicht gekürzt), damit es je Depot genau einen Satz gibt.
+
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
 ```

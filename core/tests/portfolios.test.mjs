@@ -138,6 +138,7 @@ test("PF-7 · Methodenbild je Typ (Konzept mein-bereich-2026-11, Entscheidung 5)
   assert.match(w, /<svg[^>]+role="img"/);
   for (const p of ["1 · Basis", "2 · Aufwärts", "3 · Top", "4 · Abwärts"]) assert.ok(w.includes(p), p);
   assert.equal((w.match(/#c8f531/g) || []).length, 2, "nur Phase 2 hervorgehoben (Fläche und Beschriftung)");
+  assert.equal((P.methodArt("weinstein", { dark: false }).match(/#c8f531/g) || []).length, 1, "hell: Beschriftung schwarz (Kontrast), nur die Fläche neongrün");
   assert.match(P.methodArt("darvas"), /Ausbruch/);
   assert.match(P.methodArt("turtle"), /Kanal der letzten 20 Tage/);
   assert.match(P.methodArt("quant", { profile: "momentum-leader" }), /betont Trend, Wachstum, Ruhe/);
