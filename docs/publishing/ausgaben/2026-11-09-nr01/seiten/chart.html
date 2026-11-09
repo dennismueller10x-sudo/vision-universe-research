@@ -1,0 +1,39 @@
+<section class="page">
+  <div data-run="Chart der Woche"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Chart der Woche</span>
+    <div class="hx" style="margin-top:3mm">Nvidia: zwei Gipfel, ein Bruch</div>
+    <div class="sub" style="margin-top:2mm;color:var(--g4);max-width:175mm">Unsere Technik-Engine meldet im Wochenchart von Nvidia ein bestätigtes Doppeltop. Was das Muster bedeutet und was es nicht bedeutet.</div>
+    <div class="card" style="margin-top:5mm;padding:5mm 5mm 3mm">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="h3" style="font-size:11pt">NVIDIA · Wochenschlusskurse · 2 Jahre · US-Dollar</div><span class="app-badge"><i></i>VU Technical</span></div>
+      <div class="sm mu">gestrichelt: Tief zwischen den beiden Gipfeln (218,29 $, Woche zum 11.09.)</div>
+      <div style="margin-top:3mm" data-k="nv-chart"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 70mm;gap:6mm;margin-top:5mm">
+      <div class="body cols2" style="column-gap:5mm">
+        <p>Ein <b>Doppeltop</b> entsteht, wenn ein Kurs zweimal an fast dieselbe Höhe stößt und danach unter das Tief zwischen beiden Gipfeln fällt. Bei Nvidia lagen die Gipfel Anfang September (230,36&nbsp;$) und Anfang Oktober (233,95&nbsp;$, Wochenschluss). Das Tief dazwischen: 218,29&nbsp;$. Seit Mitte Oktober schließt die Aktie darunter, am Freitag bei <b data-k="nv-close"></b>.</p>
+        <p>Viele Chartanalysten lesen das als Zeichen, dass die Käufer müde werden. Unsere Engine zeigt zusätzlich: Im Tageschart bildete sich am 5. November eine <b>Kurslücke nach unten</b>, und der Kurs liegt <b data-k="nv-200"></b> unter der 200-Tage-Linie.</p>
+        <p>Was das Muster nicht ist: eine Prognose. Doppeltops scheitern regelmäßig, besonders vor großen Ereignissen. Und das nächste große Ereignis steht fest: die Quartalszahlen am 17. November. Die Bewertung ist mit einem KGV von <b data-k="nv-pe2"></b> zudem deutlich niedriger als bei AMD oder Broadcom.</p>
+      </div>
+      <div>
+        <div class="card ink">
+          <div class="kick" style="color:var(--lime)">Was die Engine meldet</div>
+          <div style="margin-top:2mm">
+            <div class="fact"><span>Struktur</span><b>abwärts</b></div>
+            <div class="fact"><span>Wochenchart</span><b>Doppeltop bestätigt</b></div>
+            <div class="fact"><span>Tageschart</span><b>Kurslücke 05.11.</b></div>
+            <div class="fact"><span>Rel. Stärke (Rang)</span><b data-k="nv-rs"></b></div>
+            <div class="fact"><span>Abstand 52W-Hoch</span><b data-k="nv-hi"></b></div>
+          </div>
+          <div class="xs" style="color:#9a9a9a;margin-top:2mm">Regelbasierte Mustererkennung, Stand 06.11. Keine Handlungsempfehlung, kein Kursziel.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('nv-chart',()=>{const w=VUM.D.charts.NVDA.weekly;const ix=d=>w.findIndex(p=>p[0]===d);return VUC.line(w,{w:640,h:215,pr:40,tick:50,mstep:3,lines:[{v:w.map(()=>218.29),name:'',c:'#000',dash:'4 3'}],marks:[{i:ix('2026-09-04'),t:'Gipfel 1',s:'230,36',anchor:'end',dx:-4},{i:ix('2026-10-02'),t:'Gipfel 2',s:'233,95',anchor:'start',dx:4},{i:w.length-1,t:'186,64',s:'06.11.',up:false,anchor:'end',dx:-6}]})});
+VUM.k('nv-close',()=>VUM.usd(VUM.C('NVDA').price));VUM.k('nv-200',()=>VUM.de(-VUM.C('NVDA').sma200*100,1)+'&nbsp;%');VUM.k('nv-pe2',()=>VUM.de(VUM.C('NVDA').pe,1));
+VUM.k('nv-rs',()=>VUM.de(VUM.C('NVDA').tech.rs,0)+' von 100');VUM.k('nv-hi',()=>VUM.pc(VUM.C('NVDA').hi*100,0));
+</script>

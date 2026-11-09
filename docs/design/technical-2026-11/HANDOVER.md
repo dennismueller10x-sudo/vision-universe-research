@@ -63,6 +63,10 @@ Entscheidung 10.
 - PR 2: Das Befund-Sheet zeigt im Forschungsfeld, wo vorhanden, die Evidenz des Mustertyps mit Urteil (Belegt · Kein Vorteil · Gegen die Lesart) statt nur „24 Muster mit Belegen“; Indikator-Befunde haben kein Forschungsfeld, „Ungültig laut Regel“ nur bei Formationen mit Ungültig-Marke und beim Befund zur 200-Tage-Linie (Schluss auf der anderen Seite der Linie).
 - PR 2: Kapitel 1 und 2 führen auf die bisherige Adresse `#/chart/<T>/signale` (Kapitel 2 mit `?teil=verlauf`), Kapitel 3 auf `#/chart/<T>/studio`; der Verlauf ist dort eine Zeitleiste. „Datenqualität und Herkunft“ bleibt zugeklappt unter den Kapiteln (Pflichtangabe zu Kurssprüngen und eingefrorenen Kursen), im Mockup nicht gezeigt.
 - PR 2: Die Lese-Engine `technical/engine/world-context.js` bleibt im Repository (Test), wird aber nicht mehr geladen (Entscheidung 6).
+- PR 3: `#/lernen` ist der eine Ort; `#/akademie` und `#/assistent` (Übersichten) leiten dorthin. Lektionen (`#/akademie/<id>`) und Fragen (`#/assistent/<ziel>`) behalten ihre Adresse, weil Akademie-Inhalte, die Erfahrungs-Registry und der Audit-Vertrag sie nennen; ihre Rückwege führen nach `#/lernen`.
+- PR 3: Die acht Lernpfade tragen die Anzeigenamen der Vorlage (Chart lesen, Trendfolge, Ausbrüche, Schwung, Schwankung und Risiko, Trendwechsel, Mehrere Zeitrahmen, Eigene Routine); `content.json` bleibt unverändert. Glossar und „Lokalen Fortschritt zurücksetzen“ stehen als leise Zeile unter den Lernpfaden.
+- PR 3: „Eine Frage an den Chart“ zeigt alle sieben Ziele des Assistenten als Fragen (Vorlage: vier Beispiele); „Kriterien kombinieren“ bleibt über den Screener-Baukasten erreichbar. Jede Frage öffnet den Technical-Screener mit den Kriterien des Ziels (`#/screener?z=…`).
+- PR 3: Die Musterseite zeigt die acht Muster der Vorlage im Raster; „Tasse mit Henkel“ und die übrigen Typen stehen unter „Regeln“ („Alle 24 Muster mit Belegen und Regeln“). „Hilft das Muster?“ zeigt vier Zeilen, belegte zuerst, dann nach Fallzahl; die große schwarze Einzelkarte und die Navigationskarten zu Indikatoren/Regeln entfallen (Reiter oben).
 
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 

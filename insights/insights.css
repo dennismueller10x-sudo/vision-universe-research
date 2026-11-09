@@ -1,0 +1,109 @@
+/* Insights und Reports (/insights/, /reports/). Farben und Schrift aus assets/vu-ui.css (Redesign 2027):
+   Weiß, Schwarz, Neongrün #c8f531, drei Graustufen; hell und dunkel über :root[data-theme=dark]. */
+.in-body{margin:0;background:var(--vu-inv);color:var(--vu-ink);font-family:var(--vu-font)}
+.in-wrap{max-width:1080px;margin:0 auto;padding:18px 18px calc(110px + env(safe-area-inset-bottom))}
+.in-artikel{max-width:760px}
+.in-tabs{display:flex;gap:6px;margin:4px 0 20px}
+.in-tabs a{padding:8px 15px;border-radius:999px;background:var(--vu-card);color:var(--vu-ink);text-decoration:none;font-weight:800;font-size:14px}
+.in-tabs a[aria-current=page]{background:var(--vu-ink);color:var(--vu-inv)}
+.in-kicker{display:inline-block;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;background:var(--vu-lime);color:#000;padding:4px 9px;border-radius:6px}
+.in-pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:var(--vu-lime);color:#000;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.in-hub h1{margin:12px 0 8px;font-size:clamp(30px,5vw,48px);font-weight:900;letter-spacing:-.045em;line-height:1.02;text-wrap:balance}
+.in-lead{margin:0;font-size:18px;line-height:1.45;color:var(--vu-mute);text-wrap:pretty}
+.in-hub{margin-bottom:22px}
+.in-h2{margin:34px 0 12px;font-size:22px;font-weight:900;letter-spacing:-.03em}
+.in-h2-zeile{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.in-h2-zeile a{display:inline-flex;align-items:center;gap:2px;color:var(--vu-ink);font-weight:800;font-size:14px;text-decoration:none}
+.in-h2-zeile svg,.in-btn svg,.in-report em svg{width:16px;height:16px}
+.in-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0;font-size:13px;color:var(--vu-mute)}
+
+/* Karten */
+.in-raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.in-karte{display:flex;flex-direction:column;background:var(--vu-card);border-radius:var(--vu-r-card);overflow:hidden;color:var(--vu-ink);text-decoration:none}
+.in-karte-bild{display:block;aspect-ratio:16/9;overflow:hidden;background:var(--vu-hair)}
+.in-karte-bild img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.in-karte:hover img{transform:scale(1.03)}
+.in-karte-text{display:grid;gap:8px;padding:14px 16px 18px}
+.in-karte b{font-size:19px;font-weight:900;letter-spacing:-.025em;line-height:1.15}
+.in-karte-teaser{font-size:14.5px;line-height:1.45;color:var(--vu-mute)}
+.in-karte--gross{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}
+.in-karte--gross .in-karte-bild{aspect-ratio:auto;min-height:280px}
+.in-karte--gross .in-karte-text{align-content:center;padding:24px}
+.in-karte--gross b{font-size:clamp(24px,3vw,32px)}
+.in-karte--gross .in-karte-teaser{font-size:16px}
+@media(max-width:760px){.in-karte--gross{grid-template-columns:1fr}.in-karte--gross .in-karte-bild{aspect-ratio:16/9;min-height:0}.in-karte--gross .in-karte-text{padding:16px 16px 20px}}
+.in-report{display:grid;gap:8px;align-content:start;padding:18px;border-radius:var(--vu-r-card);background:var(--vu-ink);color:var(--vu-inv);text-decoration:none;min-height:190px}
+.in-report-kopf{display:flex;gap:8px;align-items:center;font-size:13px;opacity:.8}
+.in-report b{font-size:21px;font-weight:900;letter-spacing:-.03em;line-height:1.12}
+.in-report span{font-size:14.5px;line-height:1.45;opacity:.85}
+.in-report em{display:inline-flex;align-items:center;gap:2px;margin-top:auto;font-style:normal;font-weight:800;color:var(--vu-lime)}
+:root[data-theme=dark] .in-report{background:var(--vu-card);color:var(--vu-ink)}
+
+/* Artikel */
+.in-kopf h1{margin:14px 0 10px;font-size:clamp(32px,6vw,50px);font-weight:900;letter-spacing:-.05em;line-height:1;text-wrap:balance}
+.in-bild{margin:20px 0 8px;position:relative;border-radius:var(--vu-r-card);overflow:hidden;aspect-ratio:16/9;background:var(--vu-hair)}
+.in-bild img{width:100%;height:100%;object-fit:cover;display:block}
+.in-bild figcaption{position:absolute;right:10px;bottom:10px;font-size:11px;font-weight:700;background:rgba(255,255,255,.85);color:#000;padding:3px 8px;border-radius:999px}
+.in-autor{margin:0 0 6px;font-size:13px;color:var(--vu-mute)}
+.in-text{font-size:17.5px;line-height:1.65}
+.in-text p{margin:0 0 18px;text-wrap:pretty}
+.in-text h2{margin:34px 0 12px;font-size:24px;font-weight:900;letter-spacing:-.035em;line-height:1.15}
+.in-text a{color:inherit}
+.in-zitat{margin:28px 0;padding:6px 0 6px 20px;border-left:5px solid var(--vu-lime)}
+.in-zitat p{margin:0 0 8px;font-size:23px;font-weight:800;letter-spacing:-.025em;line-height:1.3}
+.in-zitat cite{font-style:normal;font-size:13.5px;color:var(--vu-mute)}
+.in-klein{font-size:12.5px;line-height:1.5;color:var(--vu-mute);margin:12px 0 0}
+
+/* Datenkasten */
+.in-daten{margin:6px 0 22px;padding:18px;font-size:15px;line-height:1.4}
+.in-daten-kopf{display:flex;align-items:center;gap:12px}
+.in-daten-kopf img{width:40px;height:40px;border-radius:var(--vu-r-logo);background:#fff;object-fit:contain}
+.in-daten-kopf div{flex:1;min-width:0}
+.in-daten-kopf b{display:block;font-size:18px;font-weight:900;letter-spacing:-.02em}
+.in-daten-kopf span:not(.in-pill){font-size:12.5px;color:var(--vu-mute)}
+.in-chart{display:block;width:100%;height:auto;margin:12px 0 6px}
+.in-chart .g{stroke:var(--vu-hair);stroke-width:1}
+.in-chart text{font-size:12px;fill:var(--vu-mute);font-family:var(--vu-font)}
+.in-chart .a{fill:var(--vu-lime);opacity:.28}
+.in-chart .l{fill:none;stroke:var(--vu-ink);stroke-width:2.2;stroke-linejoin:round}
+.in-chart .d{fill:var(--vu-lime);stroke:var(--vu-ink);stroke-width:2}
+.in-fakten{margin:6px 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:18px}
+.in-fakten div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--vu-hair)}
+.in-fakten dt{color:var(--vu-mute);font-size:13.5px}
+.in-fakten dd{margin:0;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(max-width:560px){.in-fakten{grid-template-columns:1fr}}
+.in-health{margin-top:14px}
+.in-health b,.in-fonds b{display:block;font-size:13px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.in-health div{display:flex;flex-wrap:wrap;gap:6px}
+.in-health span{display:inline-flex;flex-direction:column;padding:7px 11px;border-radius:12px;background:var(--vu-inv);font-weight:800;font-size:14px}
+.in-health i{font-style:normal;font-weight:600;font-size:11.5px;color:var(--vu-mute)}
+.in-fonds{margin-top:16px}
+.in-fonds p{margin:0 0 8px;font-size:14px}
+.in-fonds ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.in-fonds li{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:6px 10px;border-radius:10px;background:var(--vu-inv)}
+.in-fonds em{font-style:normal;color:var(--vu-mute);white-space:nowrap}
+.in-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.in-btn{display:inline-flex;align-items:center;gap:4px;padding:10px 15px;border-radius:999px;background:var(--vu-inv);color:var(--vu-ink);font-weight:800;font-size:14px;text-decoration:none;border:1.5px solid var(--vu-hair)}
+.in-btn--ink{background:var(--vu-ink);color:var(--vu-inv);border-color:var(--vu-ink)}
+
+/* Termine, App, Quellen */
+.in-termine ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.in-termine li{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:12px 14px;border-radius:14px;background:var(--vu-card);font-size:15.5px;line-height:1.4}
+.in-app{margin:34px 0 10px;padding:22px}
+.in-app h2{margin:12px 0 8px;font-size:26px}
+.in-app p{font-size:16px;line-height:1.5;margin:0}
+.in-app .in-kicker{background:#000;color:var(--vu-lime)}
+.in-app .in-btn{background:#fff;color:#000;border-color:#000}
+.in-app .in-btn--ink{background:#000;color:#fff}
+.in-app .in-klein{color:#1d2200}
+.in-quellen ol{margin:0;padding-left:20px;font-size:14.5px;line-height:1.5}
+.in-quellen li{margin-bottom:6px}
+.in-weitere{margin-top:30px}
+.in-weitere h2{font-size:22px;font-weight:900;letter-spacing:-.03em}
+.in-fuss{max-width:1080px;margin:0 auto;padding:0 18px calc(120px + env(safe-area-inset-bottom));font-size:12.5px;line-height:1.5;color:var(--vu-mute)}
+.in-fuss a{color:inherit}
+.in-text .in-btn{color:var(--vu-ink);text-decoration:none}
+.in-text .in-btn--ink{color:var(--vu-inv)}
+.in-text .in-app .in-btn{color:#000}
+.in-text .in-app .in-btn--ink{color:#fff}
+@media(max-width:560px){.in-chart text{font-size:22px}}

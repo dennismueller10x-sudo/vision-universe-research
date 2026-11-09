@@ -58,6 +58,7 @@
     {id:'screener', label:'Screener', href:'/screener/', icon:'screener', claim:'Eigene Filter', entries:[['Übersicht','/screener/','⌂'],['Filter hinzufügen','/screener/?view=build','⧩'],['Treffer','/screener/?view=results','⌕'],['Gespeichert','/screener/?view=saved','▤'],['Watchlist','/screener/?view=watchlist','♡']]},
     {id:'vorsorge', label:'Vorsorge', href:'/vorsorge/#/', icon:'vorsorge', claim:'Sparplan und Rente', entries:[['Vorsorge Home','/vorsorge/#/','☂'],['Planer','/vorsorge/#/plan','◬'],['ETFs','/vorsorge/#/etfs','◫'],['Portfolio','/vorsorge/#/portfolio','◎'],['Vergleichen','/vorsorge/#/vergleichen','⧩'],['Förderung','/vorsorge/#/foerderung','✧'],['Veränderungen','/vorsorge/#/monitor','≋'],['Wissen','/vorsorge/#/wissen','▤']]},
     {id:'portfolios', label:'Portfolios', href:'/portfolios/', icon:'portfolios', claim:'Alle Musterdepots: Supertrader, Quant, KI', entries:[['Übersicht','/portfolios/','⌂'],['Supertrader','/portfolios/#/supertrader','⚑'],['Quant','/portfolios/#/quant','⧩'],['KI-Depots','/portfolios/#/ki','✧']]},
+    {id:'insights', label:'Insights', href:'/insights/', icon:'insights', claim:'Tagesthemen und Reports, eingeordnet mit unseren Daten', entries:[['Artikel','/insights/','▤'],['Reports','/insights/reports/','▥']]},
     {id:'more', label:'Weitere Produkte', href:null, icon:'layers', claim:'', entries:[['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫'],['Analysten','/analysten/','◇'],['News','/news/','▤'],['Morning','/morning/','☼'],['Magazin','/magazin/','▣'],['Reports','/reports/xpeng/','▥'],['Academy','/academy/','✧'],['Guide','/guide/','◈'],['Budget','/budget/','▦']]}
   ];
   /* Mein Bereich im Menue (Mockup N3). */
@@ -455,6 +456,7 @@
         .tile b{display:block;font-size:13.5px;font-weight:800;line-height:1.2}
         .tile small{display:block;margin-top:2px;font-size:10.5px;line-height:1.3;opacity:.7}
         .tile[data-group=portfolios]{grid-column:1/-1;grid-template-columns:38px minmax(0,1fr);align-items:center;min-height:64px}
+        .tile[data-group=insights]{grid-column:1/-1;grid-template-columns:38px minmax(0,1fr);align-items:center;min-height:64px}
         .tile[aria-current=page],.tile.is-current{background:#c8f531;color:#000}
         .links{display:grid;gap:2px}
         .links a,.mine a,.more summary{display:flex;align-items:center;gap:12px;min-height:48px;padding:0 4px;border-bottom:1px solid #222;color:#fff;font-size:15px;font-weight:700;text-decoration:none}

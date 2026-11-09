@@ -149,8 +149,8 @@ test('the shell header loads the slim web logo, not the 129 KB master (stock pag
 
 
 test('compact menu preserves every old destination in nine products, Portfolios and one additional group', () => {
-  // Reihenfolge des 3 x 3-Rasters im Menue (Mockup N3), darunter die breite Kachel Portfolios (Owner 06.11.2026)
-  assert.deepEqual(Array.from(groups,g=>g.id), ['discover','quant','technical','fundamental','supertrader','hedgefonds','elliott','screener','vorsorge','portfolios','more']);
+  // Reihenfolge des 3 x 3-Rasters im Menue (Mockup N3), darunter die breiten Kacheln Portfolios (Owner 06.11.2026) und Insights (Owner 09.11.2026)
+  assert.deepEqual(Array.from(groups,g=>g.id), ['discover','quant','technical','fundamental','supertrader','hedgefonds','elliott','screener','vorsorge','portfolios','insights','more']);
   for(const g of groups.filter(g=>g.id!=='more')) assert.ok(g.claim, g.id+': Kurzbeschreibung fuer die Kachel');
   const destinations = new Set(groups.flatMap(g=>[g.href,...g.entries.map(e=>e[1])]).filter(Boolean));
   const previous = ['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist','/dashboard/','/macro/','/etf/','/vorsorge/#/','/vorsorge/#/plan','/vorsorge/#/etfs','/vorsorge/#/portfolio','/vorsorge/#/vergleichen','/vorsorge/#/foerderung','/vorsorge/#/monitor','/vorsorge/#/wissen','/screener/','/quant/','/supertrader/','/analysten/','/hedgefonds/','/news/','/morning/','/magazin/','/reports/xpeng/','/academy/','/guide/','/budget/'];

@@ -45,6 +45,8 @@
     if (head === "screener") return { view: "screener", tab: path[1] === "gespeichert" || params.reiter === "gespeichert" ? "saved" : params.reiter === "vorlagen" ? "templates" : "build", params: params };
     /* T05: der Leistenplatz "Muster" (#/muster); #/methodik zeigt dieselbe Seite. Reiter ?reiter=indikatoren|regeln. */
     if (head === "methodik" || head === "muster") return { view: "method", params: params };
+    /* Konzept „Der Chart in drei Sätzen“, Entscheidung 8: Akademie und Assistent sind ein Ort „Lernen“. */
+    if (head === "lernen") return { view: "learn", params: params };
     if (head === "akademie") return { view: "academy", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
     if (head === "assistent") return { view: "assistant", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
     if (head === "vorlagen") return { view: "templates", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
