@@ -480,6 +480,7 @@
     [/Bullischer Wimpel/g, "Wimpel steigend"], [/Bärischer Wimpel/g, "Wimpel fallend"],
     [/Bullisches Kerzenmuster/g, "Kerzenmuster nach oben"], [/Bärisches Kerzenmuster/g, "Kerzenmuster nach unten"],
     [/einem bullischen Kerzenmuster/g, "einem Kerzenmuster nach oben"], [/einem bärischen Kerzenmuster/g, "einem Kerzenmuster nach unten"],
+    [/(über|unter) SMA (50|200)\b/g, "$1 der $2-Tage-Linie"], [/\bSMA (50|200)\b/g, "$1-Tage-Linie"],
     [/\bbullisch(e[nrsm]?)?\b/g, "nach oben deutend"], [/\bbärisch(e[nrsm]?)?\b/g, "nach unten deutend"]
   ];
   function plain(text) { var t = String(text == null ? "" : text); PLAIN_NAMES.forEach(function (r) { t = t.replace(r[0], r[1]); }); return t; }

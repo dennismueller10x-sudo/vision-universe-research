@@ -223,7 +223,7 @@ async function main() {
       await page.waitForFunction(() => /q=Dreieck/.test(location.hash));
       await page.waitForSelector(".tc-preset");
       const txt = await page.locator(".tc-preset p").textContent();
-      assert(/Dreieck/.test(txt) && /SMA 200/.test(txt), "Erkannt als: " + txt);
+      assert(/Dreieck/.test(txt) && /200-Tage-Linie|SMA 200/.test(txt), "Erkannt als: " + txt);
       assert(await page.locator(".tc-hit").count() >= 1, "keine Treffer fuer Dreieck ueber SMA 200");
       await clean("Suche in Worten");
     });
