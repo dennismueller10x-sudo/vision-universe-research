@@ -29,7 +29,7 @@ test('every product dock starts with the product name, never Home or Start, and 
     ['vorsorge', ['Vorsorge','Planer','ETFs','Portfolio']],
     ['screener', ['Screener','Filter','Treffer','Gespeichert']],
     ['supertrader', ['Supertrader','Methoden','Signale','Backtests']],
-    ['hedgefonds', ['Hedgefonds','Investoren','Aktien','Smart Money']],
+    ['hedgefonds', ['Hedgefonds','Investoren','Aktien','Gruppen-Käufe']],
     ['portfolios', ['Portfolios','Supertrader','Quant','KI']],
     ['mein', ['Mein Bereich','Watchlist','Gespeichert','Konto']]
   ]);
@@ -62,7 +62,7 @@ test('dock targets are existing routes of their products', () => {
   const vorsorge = ['plan', 'etf', 'portfolio'].map(f => readFileSync(join(root, `vorsorge/ui/${f}.js`), 'utf8')).join('\n');
   for (const r of ['plan', 'etfs', 'portfolio']) assert.match(vorsorge, new RegExp(`VS\\.views\\.${r} = function`), `Vorsorge-Ansicht ${r}`);
   const hedge = readFileSync(join(root, 'hedgefonds/app.js'), 'utf8');
-  for (const r of ['investoren', 'aktien', 'smart-money']) assert.ok(hedge.includes(`#/${r}`));
+  for (const r of ['investoren', 'aktien', 'gruppen-kaeufe']) assert.ok(hedge.includes(`#/${r}`));
   // Fundamental-Dock-Ziele sind Routen, die fundamental/engine/model.js (parseRoute) wirklich kennt
   const fundamentalModel = require(join(root, 'fundamental/engine/model.js'));
   assert.deepEqual(fundamentalModel.parseRoute('#/entdecken'), { view: 'home', focus: 'entdecken' });
@@ -98,7 +98,8 @@ test('active dock state follows deep links after reload', () => {
   assert.equal(active('screener', '/screener/?f=pe'), 'filter', 'Filter in der Adresse: der Filterbereich ist aktiv');
   assert.equal(active('screener', '/screener/'), 'screener');
   assert.equal(active('screener', '/screener/?view=watchlist'), 'gespeichert', 'Watchlist ist ein Reiter unter Gespeichert');
-  assert.equal(active('hedgefonds', '/hedgefonds/#/smart-money'), 'smart');
+  assert.equal(active('hedgefonds', '/hedgefonds/#/gruppen-kaeufe'), 'gruppen');
+  assert.equal(active('hedgefonds', '/hedgefonds/#/smart-money'), 'gruppen', 'alte Adresse markiert Gruppen-Käufe');
   assert.equal(active('hedgefonds', '/hedgefonds/#/datenbank'), 'investoren', 'Datenbank ist ein Reiter unter Investoren');
   assert.equal(active('screener', '/screener/?view=compare'), 'treffer');
   assert.equal(active('supertrader', '/supertrader/stock/NVDA/'), 'signale');

@@ -60,3 +60,37 @@ test("Elliott: kein wording[].avoid-Begriff im sichtbaren Text", () => {
 test("Elliott: keine Ziele, keine Handlungssätze, kein zweiter technischer Ausblick (Entscheidung 4)", () => {
   assert.deepEqual(hitsOf(ELLIOTT, /Zielbereich|Ziel\s*[12]\b|Zone\s*[12]\b|abwarten|Technischer Ausblick|Welche Wellen laufen gerade/iu), []);
 });
+
+const HEDGE = walk("hedgefonds");
+const hedgeSrc = readFileSync("hedgefonds/app.js", "utf8");
+test("Hedgefonds: kein wording[].avoid-Begriff, kein „Smart Money“ im sichtbaren Text (Entscheidung 7)", () => {
+  assert.ok(HEDGE.includes("hedgefonds/app.js"));
+  assert.deepEqual(avoidHits(HEDGE), []);
+  assert.deepEqual(hitsOf(HEDGE, /Smart Money|Smart-Money/u), []);
+  for (const f of ["products/hedgefonds/module.json", "assets/site-navigation.js", "core/registry/modules.json"]) assert.doesNotMatch(readFileSync(f, "utf8"), /Smart Money/, f);
+});
+test("Hedgefonds: Leiste „Gruppen-Käufe“, alte Adresse #/smart-money leitet weiter", () => {
+  assert.match(hedgeSrc, /if \(page === "smart-money"\) \{ location\.replace\(parts\[1\] === "einstiege" \? "#\/gruppen-kaeufe" : "#\/gruppen-kaeufe\/insider"\); return; \}/);
+  assert.match(hedgeSrc, /intro\("Gruppen-Käufe", "Viele Fonds, gleiche Aktie\. "/);
+  assert.match(readFileSync("assets/site-navigation.js", "utf8"), /\['gruppen','Gruppen-Käufe','\/hedgefonds\/#\/gruppen-kaeufe','signals'\]/);
+});
+test("Hedgefonds: Quartalsband auf dem Start (gezeigt · gemeldet bis · nächste Meldungen, Entscheidung 6)", () => {
+  const home = hedgeSrc.slice(hedgeSrc.indexOf("function renderHome() {"), hedgeSrc.indexOf("function mvRow("));
+  assert.match(home, /qband\(\)/);
+  for (const t of ['col("Gezeigt"', 'col("Gemeldet bis"', 'col("Nächste Meldungen"', '"Depots am "', '"45 Tage später"']) assert.ok(hedgeSrc.includes(t), t);
+  const pd = new Function(hedgeSrc.match(/function periodDeadline[\s\S]*?\n  \}\n/)[0] + "return periodDeadline;")();
+  const d = (x) => x.toISOString().slice(5, 10);
+  assert.equal(pd("2026-06-30").getMonth(), 7); assert.equal(pd("2026-06-30").getDate(), 14);
+  assert.equal(pd("2026-03-31").getMonth(), 4); assert.equal(pd("2026-12-31").getFullYear(), 2027);
+  assert.match(hedgeSrc, /function otherQ\(f\)/, "Karten mit anderem Quartal sagen es");
+  void d;
+});
+test("Hedgefonds: Fondsnamen aufbereitet, Rohname bleibt in Quellen (Entscheidung 10)", () => {
+  const fn = new Function(hedgeSrc.match(/function prettyIssuer[\s\S]*?\n  \}\n/)[0] + hedgeSrc.match(/function fundName[\s\S]*?\n  \}\n/)[0] + "return fundName;")();
+  assert.equal(fn("Builder Investment Group Inc /adv"), "Builder Investment Group");
+  assert.equal(fn("Pershing Square Capital Management"), "Pershing Square");
+  assert.equal(fn("Fisher Asset Management"), "Fisher Asset Management");
+  assert.equal(fn("Geode Capital Management, Llc"), "Geode Capital Management");
+  assert.equal(fn("BlackRock, Inc."), "BlackRock");
+  assert.match(hedgeSrc, /d\.secName/, "SEC-Name bleibt in der Meldung sichtbar");
+});
