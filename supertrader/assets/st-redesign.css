@@ -245,3 +245,18 @@
 /* Entwicklung Aufnahme → Schluss bzw. Abgabe: Plus neongrün, Minus schwarz (Konzept „Das Rezept eines Profis“, Entscheidung 5: kein Rot) */
 .st-r-res .vu-chg--down{background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
 .st-r-none{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+
+/* Die eine Ablauf-Leiste (Konzept „Das Rezept eines Profis“, Folie K1; Baustein supertrader/assets/st-flow.js) */
+.st-flow{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px}
+.st-flow>div{display:grid;gap:5px;min-width:0}
+.st-flow i{display:block;height:8px;border-radius:9px;background:var(--vu-hair)}
+.st-flow span{font-size:10px;font-weight:700;color:var(--vu-mute);line-height:1.15}
+.st-flow .is-done i{background:var(--vu-ink)}.st-flow .is-done span{color:var(--vu-ink)}
+.st-flow .is-on i{background:var(--vu-lime);box-shadow:0 0 0 1.5px var(--vu-ink)}.st-flow .is-on span{color:var(--vu-ink);font-weight:900}
+.st-flow--dk i{background:#2a2a2a}.st-flow--dk .is-done i{background:#fff}.st-flow--dk span{color:#8c8c8c}.st-flow--dk .is-done span,.st-flow--dk .is-on span{color:#fff}.st-flow--dk .is-on i{box-shadow:none}
+.st-flow-mini{display:inline-flex;gap:2px;vertical-align:middle}.st-flow-mini i{width:10px;height:6px;border-radius:4px;background:var(--vu-hair)}
+.st-flow-mini i.is-done{background:var(--vu-ink)}.st-flow-mini i.is-on{background:var(--vu-lime);box-shadow:0 0 0 1px var(--vu-ink)}
+.st-r-sstate{display:inline-flex;align-items:center;gap:6px;flex:none}
+.st-r-flowx{display:grid;gap:6px;padding:10px 0}.st-r-flowx+.st-r-flowx{border-top:1px solid var(--vu-hair)}.st-r-flowx .st-flow{margin:4px 0}
+.st-r-wrow .st-flow-mini{margin-left:auto;margin-right:6px}
+.sf-cards>.sf-r{min-width:0}
