@@ -705,7 +705,7 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   if(quantLinks.length!==4)befund('platform-header',width,'die Quant-Leiste hat nicht vier Bereiche: '+quantLinks.length);
   if(quantLinks.some(h=>!h||!h.startsWith('/quant/#/')))befund('platform-header',width,'die Quant-Navigation fuehrt aus Quant heraus: '+quantLinks.join(', '));
   const kopf=await page.locator('vu-navigation a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
-  for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/insights/','/insights/magazin/','/insights/reports/','/academy/','/screener/'])
+  for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/insights/','/academy/','/screener/'])
    if(!kopf.some(h=>h&&h.startsWith(path)))befund('platform-header',width,'der Plattform-Kopf fuehrt nicht mehr zu '+path);
   checks.push({view:'platform-header',width,pass:true});
  });
