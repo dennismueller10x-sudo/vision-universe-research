@@ -1,3 +1,4 @@
+// Vergleich: docs/reports/security-master-1119-vergleich.json
 // Pruefbericht: docs/reports/security-master-1119-pruefung.md
 // Security Master: active_status aus SEC-Delisting-Beleg (V10-Befund: 168 Zeilen ACTIVE trotz Beleg).
 import { test } from "node:test";

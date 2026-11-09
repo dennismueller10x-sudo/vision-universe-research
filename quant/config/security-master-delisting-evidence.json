@@ -4,7 +4,7 @@
   "consumer": "scripts/market/build-us-security-master.mjs -> quant/engines/us-security-master.js#indexDelistingEvidence",
   "effect": "Nur ACTIVE/UNKNOWN -> INACTIVE, nie umgekehrt; nur Zeilen desselben Tickers mit Anbieter-startDate <= effectiveDate; erst ab effectiveDate.",
   "rule": {
-    "evidence": "8-K mit Item 2.01 UND 3.01 (wirksam am Einreichungstag) oder Form 25/25-NSE (wirksam 10 Tage nach Einreichung, 17 CFR 240.12d2-2(d)(1)), Form 25 nur wenn die SEC den Ticker beim Abruf nicht mehr dem Emittenten zuordnet. Item 3.01 allein, Form 15 allein und Prospekte zaehlen nicht.",
+    "candidatesOnly": "8-K mit Item 2.01 UND 3.01 (wirksam am Einreichungstag) oder Form 25/25-NSE (wirksam 10 Tage nach Einreichung, 17 CFR 240.12d2-2(d)(1)), Form 25 nur wenn die SEC den Ticker beim Abruf nicht mehr dem Emittenten zuordnet. Item 3.01 allein, Form 15 allein und Prospekte zaehlen nicht.",
     "blocking": "Jeder Tages- oder Wochenkurs nach effectiveDate blockiert INACTIVE, auch bei konstantem Schluss. Klassenbezug, Datum und Ende ohne Nachfolger muessen im Beleg explizit bestaetigt sein; Boersen-/Tickerwechsel und Nachfolger bleiben ACTIVE mit Befund.",
     "series": "Tagesreihe endet mit >= 5 gleichen Schluessen; Endlauf beginnt spaetestens 7 Tage nach dem Wirksamkeitstag des fruehesten Belegs.",
     "excluded": "Faelle mit LIFECYCLE_SOURCE_CONFLICT; securityId nicht core/identity.js-konform."
