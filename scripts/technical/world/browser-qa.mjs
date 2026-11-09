@@ -297,7 +297,7 @@ async function main() {
       const m0 = await marks();
       await page.getByRole("button", { name: "Kerzenmuster", exact: true }).click();
       await page.waitForFunction((n) => document.querySelectorAll(".tc-chart circle.tc-marker").length > n, m0, { timeout: 15000 });
-      assert(await page.locator(".tc-legend", { hasText: "Kerzenmuster bullisch" }).count() === 1, "Legende Kerzenmuster fehlt");
+      assert(await page.locator(".tc-legend", { hasText: "Kerzenmuster nach oben" }).count() === 1, "Legende Kerzenmuster fehlt");
       await page.getByRole("button", { name: "Kerzenmuster", exact: true }).click();
       await page.waitForFunction((n) => document.querySelectorAll(".tc-chart circle.tc-marker").length === n, m0);
       /* AP5b: jedes Screener-Indikatorfeld hat eine Darstellung; neue Unterfenster und Schichten zeichnen. */
