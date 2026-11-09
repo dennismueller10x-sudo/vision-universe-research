@@ -23,6 +23,8 @@ name: CI (Pruefungen je Produkt)
 #   technical              vormals technical-ci.yml (Stufe 2)
 #   vu2-browser-qa         vormals vu2-browser-qa.yml (Stufe 2)
 #   vu2-lifecycle-handoff  vormals vu2-lifecycle-handoff.yml (Stufe 2)
+#   account                vormals account-ci.yml (Stufe 3)
+#   shell                  vormals shell-ci.yml (Stufe 3)
 
 on:
   pull_request:
@@ -117,6 +119,42 @@ on:
       - 'assets/vision-universe-logo*.png'
       - 'scripts/vu2/verify-history-handoff.mjs'
       - 'quant/tests/history-handoff-proof.test.mjs'
+      - 'supabase/**'
+      - 'workers/vu-account/**'
+      - 'scripts/account/**'
+      - 'konto/**'
+      - 'preise/**'
+      - 'mein-dashboard/**'
+      - 'willkommen/index.html'
+      - 'willkommen/app.js'
+      - 'willkommen/start/**'
+      - 'scripts/home/cancel-link.mjs'
+      - 'scripts/watchlist/**'
+      - 'core/watchlist-view.js'
+      - 'assets/watchlist-button.js'
+      - 'fundamental/index.html'
+      - 'hedgefonds/index.html'
+      - '.github/workflows/account-*.yml'
+      - '.github/workflows/account.yml'
+      - 'discover/app.js'
+      - 'discover/index.html'
+      - 'scripts/discover/watchlist-coupling-qa.mjs'
+      - 'discover/*.js'
+      - 'discover/*.css'
+      - 'discover/index.html'
+      - 'vorsorge/app.*'
+      - 'vorsorge/ui/**'
+      - 'screener/*.js'
+      - 'screener/*.css'
+      - 'supertrader/assets/**'
+      - 'hedgefonds/app.*'
+      - 'scripts/quality/shell-browser-qa.mjs'
+      - 'scripts/quality/app-legal-menu-qa.mjs'
+      - 'app/www/**'
+      - 'scripts/quality/vu3-regression-qa.mjs'
+      - 'scripts/quality/fundamental-compare-qa.mjs'
+      - 'elliott/**'
+      - 'products/fundamental/producer/**'
   push:
     paths:
       - '.github/workflows/**'
@@ -173,6 +211,32 @@ on:
       - 'quant/engines/technical/**'
       - 'scripts/technical/world/**'
       - '.github/workflows/technical-*.yml'
+      - 'supabase/**'
+      - 'workers/vu-account/**'
+      - 'scripts/account/**'
+      - 'konto/**'
+      - 'preise/**'
+      - 'mein-dashboard/**'
+      - 'scripts/watchlist/**'
+      - 'core/watchlist-view.js'
+      - 'assets/watchlist-button.js'
+      - 'discover/*.js'
+      - 'discover/*.css'
+      - 'discover/index.html'
+      - 'quant/app/**'
+      - 'quant/index.html'
+      - 'vorsorge/app.*'
+      - 'vorsorge/ui/**'
+      - 'screener/*.js'
+      - 'screener/*.css'
+      - 'hedgefonds/app.*'
+      - 'scripts/quality/shell-browser-qa.mjs'
+      - 'scripts/quality/app-legal-menu-qa.mjs'
+      - 'app/www/**'
+      - 'scripts/quality/vu3-regression-qa.mjs'
+      - 'scripts/quality/fundamental-compare-qa.mjs'
+      - 'elliott/**'
+      - 'products/fundamental/producer/**'
   workflow_dispatch:
     inputs:
       pruefung:
@@ -201,6 +265,8 @@ on:
           - technical
           - vu2-browser-qa
           - vu2-lifecycle-handoff
+          - account
+          - shell
       site:
         description: 'discover-frontend: Optional deployed origin for production smoke; empty uses local release'
         type: 'string'
@@ -244,6 +310,8 @@ jobs:
       technical: ${{ steps.wahl.outputs.technical }}
       vu2_browser_qa: ${{ steps.wahl.outputs.vu2_browser_qa }}
       vu2_lifecycle_handoff: ${{ steps.wahl.outputs.vu2_lifecycle_handoff }}
+      account: ${{ steps.wahl.outputs.account }}
+      shell: ${{ steps.wahl.outputs.shell }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -1603,3 +1671,311 @@ jobs:
           path: ${{ runner.temp }}/vu2-handoff/*.json
           if-no-files-found: warn
           retention-days: 14
+
+  # --- account: vormals account-ci.yml
+  account-test:
+    needs: auswahl
+    if: needs.auswahl.outputs.account == 'true'
+    # Workflow-Gruppe der Quelle je Job (parallele Jobs, gleiche Abbruch-Regel)
+    concurrency:
+      group: account-ci-${{ github.ref_name }}-test
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          # Wegwerf-Container nur fuer diesen Lauf, nur auf localhost: ohne Passwort.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PG_TEST_URL: postgresql://postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: SQL-Migrationen und RLS (PostgreSQL 17)
+        run: node scripts/account/sql-tests.mjs
+      - name: Worker, Ende-zu-Ende und Kontoseiten
+        run: node --test "workers/vu-account/tests/*.test.mjs" "konto/tests/*.test.mjs" "mein-dashboard/tests/*.test.mjs" "scripts/account/tests/*.test.mjs"
+      - name: Watchlist - Uebersicht und Ansicht (Core)
+        run: node --test core/tests/watchlist-view.test.mjs core/tests/watchlist-button.test.mjs
+      - name: Watchlist - Last und Speicher (1.000 Nutzer, Kurzlauf)
+        run: node scripts/account/watchlist-load.mjs --users=1000 --sizes=25,200
+      - name: Keine Schluessel im Repository
+        run: node scripts/account/assert-no-billing-secrets.mjs
+      - name: Worker laesst sich buendeln (ohne Ausrollen)
+        working-directory: workers/vu-account
+        run: npx --yes wrangler@4.147.0 deploy --dry-run --outdir /tmp/vu-account-bundle
+
+  account-browser:
+    needs: auswahl
+    if: needs.auswahl.outputs.account == 'true'
+    # Workflow-Gruppe der Quelle je Job (parallele Jobs, gleiche Abbruch-Regel)
+    concurrency:
+      group: account-ci-${{ github.ref_name }}-browser
+      cancel-in-progress: true
+    # Kontoseiten im echten Browser gegen die lokale Simulation (scripts/account/dev-server.mjs):
+    # Chromium (Desktop, mobil) und WebKit im iPhone-Profil (Safari-Engine). Browser aus dem
+    # Playwright-Image wie in shell-ci.yml, PostgreSQL 17 als Dienst.
+    name: Browser (Chromium und WebKit/iPhone)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          # Wegwerf-Container nur fuer diesen Lauf: ohne Passwort.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PG_TEST_URL: postgresql://postgres@postgres:5432/postgres
+    defaults:
+      run:
+        # Im Container ist die Standard-Shell sh (ohne pipefail).
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: PostgreSQL-Client
+        run: |
+          set -euo pipefail
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-client > /dev/null
+          psql --version
+      - name: Playwright (Chromium und WebKit liegen im Image)
+        run: |
+          npm install --prefix /tmp/account-qa-deps --no-audit --no-fund playwright@1.56.1
+          node -e "const pw=require('/tmp/account-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      - name: Browser-QA (Chromium 1280/390, WebKit iPhone 390)
+        env:
+          PLAYWRIGHT_PATH: /tmp/account-qa-deps/node_modules/playwright
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/account-evidence
+          node scripts/account/dev-server.mjs --port=8790 --backtest-review > /tmp/account-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do curl --fail --silent http://localhost:8790/v1/health > /dev/null && break; sleep 1; done
+          chromium_status=0
+          webkit_status=0
+          node scripts/account/browser-qa.mjs --url=http://localhost:8790 --out=/tmp/account-evidence || chromium_status=$?
+          node scripts/account/browser-qa.mjs --engine=webkit --url=http://localhost:8790 --out=/tmp/account-evidence || webkit_status=$?
+          # Persoenliche Watchlist und Lesezeichen im Aktienkopf (Desktop, iPhone, hell/dunkel).
+          node scripts/account/watchlist-qa.mjs --url=http://localhost:8790 --out=/tmp/account-evidence || chromium_status=$?
+          node scripts/account/watchlist-qa.mjs --engine=webkit --url=http://localhost:8790 --out=/tmp/account-evidence || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Nutzerreise Free/Pro wie in der Produktion (Checkout nur fuer Tester, eigener Testserver)
+        env:
+          PLAYWRIGHT_PATH: /tmp/account-qa-deps/node_modules/playwright
+        run: |
+          set -euo pipefail
+          # Je Engine ein frischer Testserver (signup 5/h je IP; die Simulation meldet immer 127.0.0.1).
+          status=0
+          port=8795
+          for engine in chromium webkit; do
+            port=$((port + 1))
+            node scripts/account/dev-server.mjs --port=$port --checkout-access=testers --newsletter > /tmp/account-evidence/server-journey-$engine.log 2>&1 &
+            server_pid=$!
+            for i in $(seq 1 30); do curl --fail --silent http://localhost:$port/v1/health > /dev/null && break; sleep 1; done
+            node scripts/account/journey-qa.mjs --engine=$engine --url=http://localhost:$port --out=/tmp/account-evidence || status=1
+            kill "$server_pid" 2>/dev/null || true
+          done
+          test "$status" -eq 0
+      - name: Kopplungs-QA (lokale Beobachten-Listen, eigener Testserver)
+        env:
+          PLAYWRIGHT_PATH: /tmp/account-qa-deps/node_modules/playwright
+        run: |
+          set -euo pipefail
+          # Eigener Testserver: frischer Zaehler fuer Registrierungen (signup 5/h je IP, die Simulation meldet immer
+          # 127.0.0.1). Die Grenze selbst bleibt unveraendert. Abgemeldet rein lokal, angemeldet lokal und Konto.
+          node scripts/account/dev-server.mjs --port=8791 > /tmp/account-evidence/server-coupling.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do curl --fail --silent http://localhost:8791/v1/health > /dev/null && break; sleep 1; done
+          status=0
+          for qa in scripts/discover/watchlist-coupling-qa.mjs scripts/account/quant-watch-coupling-qa.mjs; do
+            [ -f "$qa" ] || continue
+            node "$qa" --url=http://localhost:8791 || status=1
+            node "$qa" --engine=webkit --url=http://localhost:8791 || status=1
+          done
+          test "$status" -eq 0
+      - name: Screenshots sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: account-browser-evidence
+          path: /tmp/account-evidence
+
+  # --- shell: vormals shell-ci.yml
+  shell-shell:
+    needs: auswahl
+    if: needs.auswahl.outputs.shell == 'true'
+    # Workflow-Gruppe der Quelle je Job (parallele Jobs, gleiche Abbruch-Regel)
+    concurrency:
+      group: shell-qa-${{ github.ref }}-shell
+      cancel-in-progress: true
+    # Browser aus dem Playwright-Image statt apt-get bei jedem Lauf - Begruendung beim Job vu3-regression.
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root, build-release.mjs ruft git ls-files)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Shell tests
+        run: node --test "core/tests/shell-navigation.test.mjs" discover/tests/navigation-theme.test.mjs quant/tests/site-navigation.test.mjs
+      - name: Build screener universe from committed product data
+        run: node products/screener/producer/build-universe.mjs
+      - name: Browser dependencies (Chromium und WebKit liegen im Image)
+        run: |
+          npm install --prefix /tmp/shell-qa-deps --no-audit --no-fund playwright@1.56.1
+          node -e "const pw=require('/tmp/shell-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/shell-release"
+      - name: Browser QA (Chromium 390, 430, 768, 1024, 1440 · WebKit iPhone 390, 430 and 1024)
+        env:
+          PLAYWRIGHT_PATH: /tmp/shell-qa-deps/node_modules/playwright
+        run: |
+          mkdir -p /tmp/shell-evidence
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/shell-release" --port=8765 > /tmp/shell-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/quant/ > /dev/null && break; sleep 1; done
+          chromium_status=0
+          webkit_status=0
+          node scripts/quality/shell-browser-qa.mjs --url=http://127.0.0.1:8765 --out=/tmp/shell-evidence/chromium || chromium_status=$?
+          node scripts/quality/shell-browser-qa.mjs --engine=webkit --viewports=390x844,430x932,1024x768 --url=http://127.0.0.1:8765 --out=/tmp/shell-evidence/webkit || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: App-QA Rechtliches & Infos (App-Hülle mit CSP, App-UA, echter Tipp je Menüeintrag; Chromium und WebKit)
+        env:
+          PLAYWRIGHT_PATH: /tmp/shell-qa-deps/node_modules/playwright
+        run: |
+          mkdir -p /tmp/shell-evidence
+          chromium_status=0
+          webkit_status=0
+          node scripts/quality/app-legal-menu-qa.mjs --browser chromium --out /tmp/shell-evidence/app-legal-chromium.json || chromium_status=$?
+          node scripts/quality/app-legal-menu-qa.mjs --browser webkit --out /tmp/shell-evidence/app-legal-webkit.json || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Preserve screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shell-browser-evidence
+          path: /tmp/shell-evidence
+          if-no-files-found: warn
+
+  shell-vu3-regression:
+    needs: auswahl
+    if: needs.auswahl.outputs.shell == 'true'
+    # Workflow-Gruppe der Quelle je Job (parallele Jobs, gleiche Abbruch-Regel)
+    concurrency:
+      group: shell-qa-${{ github.ref }}-vu3-regression
+      cancel-in-progress: true
+    # VU3-Regression (scripts/quality/vu3-regression-qa.mjs): Wege zwischen den Welten (dieselbe Aktie bleibt dieselbe),
+    # Farbschema ueber die Welten, Visual-First-Bausteine je Welt und Kontrast (axe color-contrast) hell/dunkel, 390/1440 px.
+    # Eigener Job neben shell, damit dessen 40-Minuten-Budget unberuehrt bleibt. Europa-Routen bewusst ausgenommen.
+    # Browser und ihre Systembibliotheken kommen aus dem offiziellen Playwright-Image (Version = playwright@ unten).
+    # Vorher installierte `playwright install --with-deps` sie bei jedem Lauf per apt-get vom Ubuntu-Spiegel des
+    # Runners: rund 100 MB (WebKit: GStreamer, FFmpeg, Schriften) mit zeitweise unter 100 KB/s - die Installation
+    # allein lief in das 40-Minuten-Limit, bevor eine Pruefung startete. Node 22 und git bringt das Image mit;
+    # Python nicht, deshalb liefert scripts/ci/static-server.mjs die Seiten aus (Verhalten wie http.server).
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root, build-release.mjs ruft git ls-files)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Build screener universe from committed product data
+        run: node products/screener/producer/build-universe.mjs
+      - name: Browser dependencies (axe-core; Chromium und WebKit liegen im Image)
+        run: |
+          npm install --prefix /tmp/vu3-qa-deps --no-audit --no-fund playwright@1.56.1 axe-core@4.10.3
+          node -e "const pw=require('/tmp/vu3-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/vu3-release"
+      - name: VU3 regression (Chromium all sections · WebKit iPhone journeys, theme, Visual First)
+        env:
+          PLAYWRIGHT_PATH: /tmp/vu3-qa-deps/node_modules/playwright
+          AXE_PATH: /tmp/vu3-qa-deps/node_modules/axe-core/axe.min.js
+        run: |
+          mkdir -p /tmp/vu3-evidence
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/vu3-release" --port=8765 > /tmp/vu3-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/quant/ > /dev/null && break; sleep 1; done
+          chromium_status=0
+          webkit_status=0
+          node scripts/quality/vu3-regression-qa.mjs --url=http://127.0.0.1:8765 --out=/tmp/vu3-evidence/chromium || chromium_status=$?
+          node scripts/quality/vu3-regression-qa.mjs --engine=webkit --only=journeys,theme,visual --url=http://127.0.0.1:8765 --out=/tmp/vu3-evidence/webkit || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Preserve results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vu3-regression-evidence
+          path: /tmp/vu3-evidence
+          if-no-files-found: warn
+
+  shell-fundamental-compare:
+    needs: auswahl
+    if: needs.auswahl.outputs.shell == 'true'
+    # Workflow-Gruppe der Quelle je Job (parallele Jobs, gleiche Abbruch-Regel)
+    concurrency:
+      group: shell-qa-${{ github.ref }}-fundamental-compare
+      cancel-in-progress: true
+    # Fundamental: mehrere Kennzahlen in einem Verlauf (scripts/quality/fundamental-compare-qa.mjs) gezielt im
+    # iPhone-Profil von WebKit (390 und 430 px, hell und dunkel): "+ Kennzahl", Auswahl im mobilen Dialog,
+    # synchrones Ablesen per Antippen, Achsen und Legende, Touch-Flaechen, Vollbild, Entfernen bis zur
+    # Ausgangsansicht (Balken, Branchenvergleich). Dazu derselbe Lauf in Chromium (mobil, mit Touch).
+    # Eigener Job neben shell und vu3-regression, damit deren 40-Minuten-Budget unberuehrt bleibt.
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root, build-release.mjs ruft git ls-files)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Build screener universe from committed product data
+        run: node products/screener/producer/build-universe.mjs
+      - name: Browser dependencies (Chromium und WebKit liegen im Image)
+        run: |
+          npm install --prefix /tmp/fu-qa-deps --no-audit --no-fund playwright@1.56.1
+          node -e "const pw=require('/tmp/fu-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/fu-release"
+      - name: Fundamental compare (WebKit iPhone 390, 430 · Chromium 390, 430)
+        env:
+          PLAYWRIGHT_PATH: /tmp/fu-qa-deps/node_modules/playwright
+        run: |
+          mkdir -p /tmp/fu-evidence
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/fu-release" --port=8765 > /tmp/fu-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/fundamental/ > /dev/null && break; sleep 1; done
+          webkit_status=0
+          chromium_status=0
+          node scripts/quality/fundamental-compare-qa.mjs --engine=webkit --viewports=390x844,430x932 --url=http://127.0.0.1:8765 --out=/tmp/fu-evidence/webkit || webkit_status=$?
+          node scripts/quality/fundamental-compare-qa.mjs --engine=chromium --viewports=390x844,430x932 --url=http://127.0.0.1:8765 --out=/tmp/fu-evidence/chromium || chromium_status=$?
+          test "$webkit_status" -eq 0 && test "$chromium_status" -eq 0
+      - name: Preserve screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fundamental-compare-evidence
+          path: /tmp/fu-evidence
+          if-no-files-found: warn
