@@ -117,6 +117,8 @@
 .vu-sect{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:22px 0 10px;font-size:17px;font-weight:800;letter-spacing:-.02em;line-height:1.25}
 .vu-sect>h2,.vu-sect>h3{margin:0;font:inherit;letter-spacing:inherit}
 .vu-sect>a{font-size:14px;font-weight:600;color:var(--vu-mute);text-decoration:none;letter-spacing:0}
+/* Bedienprüfung 09.11.2026 (#1719): Trefferfläche mindestens 44×44 px über ::after, Aussehen und Abstände unverändert. */
+.vu-sect>a{position:relative}.vu-sect>a::after{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
 
 /* Chips und C14 Reiter/Segment */
 .vu-chips{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}
