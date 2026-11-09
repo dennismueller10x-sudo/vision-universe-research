@@ -7,7 +7,7 @@
 # neu. Vor dem ersten Deployment aus diesem Repository MUSS geprueft
 # werden, ob dabei vorhandene produktive Logik ueberschrieben wuerde:
 #
-#     node scripts/social/preflight-worker.mjs
+#     node products/social/producer/preflight-worker.mjs
 #
 # Das Skript liest den aktuell deployten Worker ueber die Cloudflare-API
 # und meldet Groesse, Fingerabdruck und Bindungen. Erst wenn klar ist,
@@ -170,7 +170,7 @@ META_IG_ACCOUNT_ID = "17841480148117405"   # Beleg: docs/VU_SOCIAL_E2E_NACHWEIS.
 # Instagram im Raster und im Feed unbeschnitten zeigt.
 #
 # Es ist ein eigenes Asset, erzeugt von
-# scripts/social/make-test-asset.mjs: dunkler Grund in der Palette der
+# products/social/producer/make-test-asset.mjs: dunkler Grund in der Palette der
 # Seite, darauf VISION UNIVERSE® und "Social Publishing Test". Vorher
 # stand hier ein Vorschaubild der Nachrichtenseite. Das war abstrakt,
 # seine Herkunft ist im Repository nicht dokumentiert, und es sagte

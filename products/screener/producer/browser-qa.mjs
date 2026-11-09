@@ -96,7 +96,10 @@ for (const theme of ['light', 'dark']) {
 
       // Redesign 2027 (S01): Satz-Bauer, fertige Ideen mit echter Trefferzahl, sechs Perspektiven
       const ideas = await page.$$eval('.sc-idea .sc-n', (n) => n.map((x) => x.textContent));
-      if (ideas.length !== 4 || ideas.some((t) => !/^\d/.test(t))) fail(vp, 'Fertige Ideen ohne echte Trefferzahl: ' + ideas.join(', ')); else ok('Fertige Ideen: ' + ideas.join(' · '));
+      if (ideas.length < 5 || ideas.some((t) => !/^\d/.test(t))) fail(vp, 'Fertige Ideen ohne echte Trefferzahl: ' + ideas.join(', ')); else ok('Fertige Ideen: ' + ideas.join(' · '));
+      /* Konzept „Verstehen. Finden.“ (FX04): fünf Ergänzungen im Satz, je mit Trefferzahl */
+      const opts = await page.$$eval('.sc-satz-o .sc-n', (n) => n.map((x) => x.textContent));
+      if (opts.length !== 5 || opts.some((t) => !/^\d/.test(t))) fail(vp, 'Satz-Ergänzungen ohne Trefferzahl: ' + opts.join(', ')); else ok('Satz-Ergänzungen: ' + opts.join(' · '));
       const persp = await page.$$eval('.sc-plist .sc-prow b', (b) => b.map((x) => x.textContent.replace('PRO', '').trim()));
       if (persp.join(',') !== 'Basis,Zahlen,Faktoren,Chart,Methoden,Investoren') fail(vp, 'Perspektiven: ' + persp.join(',')); else ok('Sechs Perspektiven');
 
@@ -165,7 +168,7 @@ for (const theme of ['light', 'dark']) {
       });
       const before = await filterState();
       await page.click('.sc-chip-body:has-text("Market Cap")');
-      await page.waitForSelector('.sc-sheet.is-open .sc-ops');
+      await page.waitForSelector('.sc-sheet.is-open .sc-preset');
       await page.click('.sc-sheet.is-open .sc-preset:has-text("Mid")');
       await settle(page, 300);
       await page.click('.sc-sheet.is-open .sc-sheet-foot .sc-btn-primary');
@@ -181,8 +184,8 @@ for (const theme of ['light', 'dark']) {
 
       // 5 Ergebnisse (Karten), Sortierung, Ansichten
       if (!desk) { await page.click('.sc-cta button'); await settle(page, 600); }
-      await page.waitForSelector('.sc-rc, .sc-empty');
-      const cards = await page.$$('.sc-rc');
+      await page.waitForSelector('.sc-hr, .sc-empty');
+      const cards = await page.$$('.sc-hr');
       ok('Ergebnis-Karten: ' + cards.length);
       await settle(page, 800);
       await checkLayout(page, vp, 'Ergebnisse Karten');
@@ -201,9 +204,20 @@ for (const theme of ['light', 'dark']) {
       await shot(page, vp, '06-results-table');
       await setView('Kompakt');
       await shot(page, vp, '07-results-compact');
+      /* FX05/FX06: Liste mit einer Zeile je Aktie, Tipp öffnet die Vorschau „Erfüllt deinen Filter“ */
+      await setView('Liste');
+      if (cards.length) {
+        await page.click('.sc-hr >> nth=0');
+        await page.waitForSelector('.sc-sheet.is-open .sc-peek-why');
+        const pv = await page.$$eval('.sc-sheet.is-open .sc-peek-why [data-verdict]', (x) => x.map((v) => v.dataset.verdict));
+        if (pv.length !== 4 || pv.some((v) => v !== 'strong')) fail(vp, 'Vorschau: Erfüllt deinen Filter unvollständig (' + pv.join(',') + ')'); else ok('Vorschau: Erfüllt deinen Filter, 4 Regeln');
+        await checkLayout(page, vp, 'Vorschau');
+        await shot(page, vp, '08-peek');
+        await page.goBack(); await settle(page, 500);
+      }
       await setView('Karten');
 
-      // 6 Why Match + Quick Research
+      // 6 Why Match + Quick Research (Ansicht Karten)
       if (cards.length) {
         /* „Erfüllt deinen Filter“ für den ersten Treffer: je Regel ein Urteil (C08). */
         await page.waitForSelector('.sc-whybox .sc-kvrow');
@@ -246,7 +260,7 @@ for (const theme of ['light', 'dark']) {
 
       // 8 Speichern + erneut oeffnen + Veraenderungen
       await page.goto(BASE + '/screener/' + (await page.url()).split('/screener/')[1].replace(/&?cmp=[^&]*/, '').replace('view=compare', 'view=results'), { waitUntil: 'networkidle' });
-      await page.waitForSelector('.sc-rc, .sc-state, .sc-cr, .sc-table');
+      await page.waitForSelector('.sc-hr, .sc-rc, .sc-state, .sc-cr, .sc-table');
       await page.click(desk ? '.sc-buildact button:has-text("Screen speichern")' : '.sc-resact .sc-save');
       await page.waitForSelector('.sc-sheet.is-open input');
       await page.fill('.sc-sheet.is-open input', 'Tech Small Caps');
@@ -296,17 +310,19 @@ for (const theme of ['light', 'dark']) {
       await shot(page, vp, '16-pro-groups', true);
       const many = '/screener/?view=results&' + ['marketCap:gt:1e8', 'price:gt:1', 'avgVolume:gt:1000', 'perf1y:gt:-0.99', 'perf1m:gt:-0.99', 'perf3m:gt:-0.99', 'priceVsSma20:gt:-0.9', 'priceVsSma50:gt:-0.9', 'rsi:lt:100', 'volatility:lt:5', 'beta:lt:10', 'dollarVolume:gt:1', 'distance52wHigh:gt:-1', 'distance52wLow:gt:-1', 'perf1d:gt:-1'].map((f) => 'f=' + f).join('&');
       await page.goto(BASE + many, { waitUntil: 'networkidle' });
-      await page.waitForSelector('.sc-rc');
+      await page.waitForSelector('.sc-hr');
       const fifteen = await page.$$eval('.sc-mini-chip', (b) => b.length - 1);
       if (fifteen !== 15) fail(vp, '15 Filter erwartet, ' + fifteen); else ok('15 Filter, ' + (await page.textContent('.sc-count')).trim());
       await checkLayout(page, vp, '15 Filter');
       // 500+ Ergebnisse: Nachladen
       await page.goto(BASE + '/screener/?view=results&f=marketCap:gt:1e8', { waitUntil: 'networkidle' });
-      await page.waitForSelector('.sc-rc');
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-      await settle(page, 900);
-      const more = await page.$$eval('.sc-rc', (x) => x.length);
-      if (more <= 30) fail(vp, 'Nachladen funktioniert nicht (' + more + ')'); else ok('Nachladen: ' + more + ' Karten');
+      await page.waitForSelector('.sc-hr');
+      /* 25 je Schritt auf Knopfdruck (FX05) */
+      const first = await page.$$eval('.sc-hr', (x) => x.length);
+      await page.click('.sc-more button');
+      await settle(page, 700);
+      const more = await page.$$eval('.sc-hr', (x) => x.length);
+      if (first !== 25 || more !== 50) fail(vp, 'Nachladen in 25er-Schritten funktioniert nicht (' + first + ' → ' + more + ')'); else ok('Nachladen: ' + first + ' → ' + more + ' Treffer');
     } catch (e) {
       fail(vp, 'Flow abgebrochen: ' + e.message.split('\n')[0]);
       await shot(page, vp, 'zz-error').catch(() => {});

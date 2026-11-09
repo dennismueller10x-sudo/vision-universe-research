@@ -72,7 +72,7 @@ test("Kein Produktskript bildet die securityId mehr roh aus dem Ticker", () => {
      Supertrader-Workstream erlaubt in seinen PRs nur Supertrader-Pfade
      (Gate A) und umgekehrt. */
   const dateien = ["scripts/market/preview-scope.mjs", "scripts/market/universe-source.mjs",
-    "scripts/market/build-capability-matrix.mjs", "scripts/market/check-freshness.mjs", "scripts/social/visual-data.mjs"];
+    "scripts/market/build-capability-matrix.mjs", "scripts/market/check-freshness.mjs", "products/social/producer/visual-data.mjs"];
   for (const f of dateien) {
     const src = readFileSync(join(ROOT, f), "utf8");
     assert.ok(!/["'`]ref_["'`]\s*\+|`ref_\$\{/.test(src), f + " bildet ref_ roh");

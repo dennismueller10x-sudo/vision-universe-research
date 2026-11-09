@@ -169,7 +169,7 @@ Das Betriebshandbuch mit konkreten Reparaturschritten steht in [docs/operations/
 | Supertrader-Kette | `node --test core/tests/supertrader-chain.test.mjs` | Anstoß nach dem Nachtlauf (nur bei validierten Daten, kein Doppellauf), Aktualitätsmonitor, tote Ticker-Verweise |
 | Quant und Plattform | `node --test "quant/tests/*.test.mjs"` | 2.315 Tests |
 | Discover, Supertrader, Screener | `node --test "discover/tests/*.test.mjs" "scripts/supertrader/tests/*.test.mjs" "screener/tests/*.test.mjs"` | 494 Tests |
-| Social | `node --test "social/tests/*.test.mjs" "workers/vision-universe-social/tests/*.test.mjs"` | 2.319 Tests |
+| Social | `node --test "products/social/tests/*.test.mjs" "workers/vision-universe-social/tests/*.test.mjs"` | 2.319 Tests |
 | SEC (Python) | `python3 -m unittest discover -s scripts/quant/tests -p 'test_*.py'` | 486 Tests |
 | Testisolation | `node scripts/quality/check-test-isolation.mjs` | Ändert ein Testlauf Produktionsdaten? |
 

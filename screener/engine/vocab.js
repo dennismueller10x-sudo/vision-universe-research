@@ -23,10 +23,11 @@
 
   /* Fertige Ideen: echte Trefferzahl live aus der Engine, nie hart kodiert. */
   var IDEAS = [
+    { id: 'fairer-preis', title: 'Wachstum zum fairen Preis', sub: 'PEG ≤ 1,5, Umsatz 3 J ≥ 10 % p. a., Gewinn', world: 'fundamental', fs: [{ field: 'peg', op: 'lte', value: 1.5 }, { field: 'revenueCagr3', op: 'gte', value: 0.1 }, { field: 'netMargin', op: 'gt', value: 0 }] },
+    { id: 'niedrige-bewertung', title: 'Niedrige Bewertung', sub: 'KGV unter 15, Gewinn', world: 'fundamental', fs: [{ field: 'pe', op: 'lt', value: 15 }, { field: 'netMargin', op: 'gt', value: 0 }] },
     { id: 'wachsen-stark', title: 'Wachsen stark', sub: 'Umsatz +20 % in 12 Monaten', world: 'fundamental', fs: [{ field: 'revenueGrowth', op: 'gt', value: 0.2 }] },
     { id: 'profitabel', title: 'Profitabel', sub: 'Nettomarge über 0 %', world: 'fundamental', fs: [{ field: 'netMargin', op: 'gt', value: 0 }] },
-    { id: 'aufwaertstrend', title: 'Im Aufwärtstrend', sub: 'Kurs über der 200-Tage-Linie', world: 'technical', fs: [{ field: 'priceVsSma200', op: 'gt', value: 0 }] },
-    { id: 'wachsen-und-verdienen', title: 'Wachsen stark und verdienen gut', sub: 'Umsatz +20 %, Nettomarge über 15 %', glyph: 'quality', lime: true, fs: [{ field: 'revenueGrowth', op: 'gt', value: 0.2 }, { field: 'netMargin', op: 'gt', value: 0.15 }] }
+    { id: 'aufwaertstrend', title: 'Im Aufwärtstrend', sub: 'Kurs über der 200-Tage-Linie', world: 'technical', fs: [{ field: 'priceVsSma200', op: 'gt', value: 0 }] }
   ];
 
   /* Woerterbuch: Begriff -> genau eine Regel. Jeder Titel/Satz, der den Begriff traegt, muss diese Regel enthalten. */

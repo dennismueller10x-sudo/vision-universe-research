@@ -239,7 +239,7 @@ jobs:
       - name: Jeder Request-PR gehoert zu genau einem beschlossenen Job
         env:
           PR_BRANCH: ${{ github.head_ref }}
-        run: node scripts/social/verify-creative-dispatch.mjs --branch "$PR_BRANCH"
+        run: node products/social/producer/verify-creative-dispatch.mjs --branch "$PR_BRANCH"
 
   # --- etf-dashboard: vormals etf-dashboard-ci.yml
   etf-dashboard:
