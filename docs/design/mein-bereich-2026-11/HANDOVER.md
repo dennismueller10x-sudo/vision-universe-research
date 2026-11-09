@@ -152,6 +152,15 @@ Entscheidung 11.
 - Jede Karte mit eigenem Methodenbild zeigt es (auch Darvas und Turtle); hervorgehobene Beschriftungen stehen im hellen Modus in Schwarz statt Neongrün, damit sie lesbar bleiben.
 - Der Satz unter dem Namen ist der Methodensatz der Detailseite (nicht gekürzt), damit es je Depot genau einen Satz gibt.
 
+**PR 4 · Atlas Start und Antworten**
+- Atlas behält seine eigene Kopfzeile (Zurück, Atlas, BETA, Schließen) aus dem Redesign E10; der dunkle Kopf des Konzepts beginnt darunter.
+- Der Status-Satz hat drei Lagen: „Neue Fragen noch gesperrt · Antworten aus dem Archiv kostenlos“, „Heute noch N neue Fragen · …“ und „Atlas antwortet gerade nicht …“.
+- „Oft gefragt“ ist eine feste Liste von Fragen, die heute vollständig beantwortet werden (der Worker hat keinen Endpunkt für das Archiv); ein Tipp stellt die Frage, bekannte Fragen kommen kostenlos aus dem Archiv.
+- Die Karten unter „Was Atlas kann“ stellen ihre Beispielfrage direkt; ist die Fragefunktion gesperrt, landet sie in der Eingabe.
+- Eine Antwort ersetzt den Start (Zurück führt zum Start); „Regel ändern“ und „Weiter fragen“ öffnen die Eingabe mit der Frage als Bezug.
+- Rechts in der Trefferliste steht die Kennzahl, nach der sortiert ist (z. B. KGV), sonst die erste Spalte; die übrigen Werte stehen in der Unterzeile.
+- „Erklären“ zeigt bei einer Aktie die Jahresreihe aus den SEC-Berichten der veröffentlichten Aktiendatei (`/discover/data/stocks/US_REAL/<T>.json`, dieselben Werte wie in Fundamental), wenn die Kennzahl der Frage eine hat (Free Cashflow, Umsatz, Gewinn); sonst Zahl und Kacheln. Atlas rechnet weiterhin nicht selbst, der Worker bleibt unverändert.
+
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
 ```
