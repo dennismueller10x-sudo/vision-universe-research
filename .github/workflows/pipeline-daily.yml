@@ -199,6 +199,14 @@ jobs:
         with:
           node-version: '22'
 
+      # Datenzweig (core/registry/data-branch.json, fxReference, BRANCH_ONLY): der bisherige Stand liegt in
+      # data/live, nicht in main. Er ist die Messlatte fuer die Plausibilitaet unten.
+      - name: Bisheriger Stand aus dem Datenzweig
+        run: |
+          set -euo pipefail
+          scripts/ci/seed-data-branch.sh fxReference
+          if [ -f quant/data/market/fx/ecb/EURUSD.json ]; then cp quant/data/market/fx/ecb/EURUSD.json "$RUNNER_TEMP/EURUSD.alt.json"; fi
+
       - name: EZB-Referenzkurse holen und in den ausgelieferten Pfad legen
         run: node scripts/market/build-fx-history-ecb.mjs --feed=FULL_HISTORY --publish
 
@@ -211,7 +219,7 @@ jobs:
             const f = "quant/data/market/fx/ecb/EURUSD.json";
             const neu = JSON.parse(fs.readFileSync(f, "utf8"));
             let alt = null;
-            try { alt = JSON.parse(execFileSync("git", ["show", "HEAD:" + f], { encoding: "utf8", maxBuffer: 64 << 20 })); } catch (e) {}
+            try { alt = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/EURUSD.alt.json", "utf8")); } catch (e) {}
             const pts = neu.points || [];
             for (let i = 1; i < pts.length; i++) if (!(pts[i][0] > pts[i - 1][0]) || !(pts[i][1] > 0)) { console.error("Reihe nicht sortiert/positiv bei " + pts[i][0]); process.exit(1); }
             if (alt && (pts.length < (alt.points || []).length || neu.asOf < alt.asOf)) { console.error("Neue Reihe kuerzer oder aelter als die vorhandene - nicht veroeffentlicht."); process.exit(1); }
@@ -219,18 +227,12 @@ jobs:
           '
           node scripts/quality/assert-no-local-fx.mjs
 
-      - name: Commit und Push
-        run: |
-          set -euo pipefail
-          git config user.name "vision-universe-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add quant/data/market/fx/ecb quant/data/market/fx/ecb-coverage.json
-          if git diff --cached --quiet; then
-            echo "EZB unveraendert."
-            exit 0
-          fi
-          git commit -m "EZB-Referenzkurse: Stand $(node -p 'require("./quant/data/market/fx/ecb/EURUSD.json").asOf') (automatischer Lauf)"
-          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+      # Datenzweig (fxReference, BRANCH_ONLY): nur noch data/live; die Kopie in main ist eingefroren (Rueckfall),
+      # Pages liefert den Datenzweig aus. Unveraenderte Quelle (Wochenende, Feiertag): push-data-branch.sh
+      # committet nichts.
+      - name: In den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live quant/data/market/fx/ecb quant/data/market/fx/ecb-coverage.json
 
   # --- vorsorge: vormals vorsorge-daily-rebuild.yml (Vorsorge Daily Rebuild)
   # Taeglicher Neubau des Vorsorge-ETF-Stamms aus den bereits eingecheckten Eingangsdaten
@@ -581,6 +583,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Datenzweig (Plan Neustart §3): bisheriger Stand und Reihen, die nur noch dort wachsen (commit-sicher).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Tests
         run: node --test scripts/research/edge2/blind.test.cjs
       - name: Export schreiben
@@ -591,15 +596,10 @@ jobs:
           extra=(); if [ -n "${IN_TODAY:-}" ]; then [[ "$IN_TODAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || exit 2; extra=(--today "$IN_TODAY"); fi
           node scripts/research/edge2/ki-export.cjs "${extra[@]}"
           node scripts/market/assert-public-data-hygiene.mjs > "$RUNNER_TEMP/hygiene.txt" 2>&1 || { if grep -q 'ki-depots-v1' "$RUNNER_TEMP/hygiene.txt"; then cat "$RUNNER_TEMP/hygiene.txt"; exit 1; fi; }
-      - name: Committen
-        run: |
-          set -euo pipefail
-          git config user.name "vision-universe-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add quant/data/product/ki-depots-v1.json
-          if git diff --cached --quiet; then echo "Unveraendert."; exit 0; fi
-          git commit -m "KI-Depots: Kursstand $(node -e 'console.log(require("./quant/data/product/ki-depots-v1.json").asOf || "ausstehend")') (automatischer Lauf)"
-          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+      # Datenzweig (core/registry/data-branch.json, kiDepots, BRANCH_ONLY): nur noch data/live; die Kopie in main
+      # ist eingefroren (Rueckfall), Pages liefert den Datenzweig aus. Der Job laeuft ohnehin nur auf main.
+      - name: In den Datenzweig
+        run: scripts/ci/push-data-branch.sh data/live quant/data/product/ki-depots-v1.json
 
   # --- technical-world: vormals technical-world.yml (Technical - Screener-Datensatz)
   # Hauptausloeser ist der Anstoss aus market-data-refresh.yml (Job technical, jetzt mit -f teil=technical-world);
