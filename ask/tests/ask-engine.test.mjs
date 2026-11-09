@@ -110,3 +110,28 @@ test("Chartbild-Werkzeug: strukturierte Lage, Elliott-Enthaltung, kein Freitext 
   assert.match(said, /ZZZ: Für diesen Titel liegt kein Chartbild vor\./);
   assert.doesNotMatch(said, /kaufen|verkaufen|Kaufsignal|Verkaufssignal|wird steigen|wird fallen|%/i);
 });
+
+/* ------------------------------------- Fehler sichtbar machen (Strang P) */
+
+test("Jede Ablehnung bekommt Titel und Satz, nie eine leere Meldung", () => {
+  const cases = [
+    [0, null, "NETWORK"], [-1, null, "TIMEOUT"], [403, { ok: false, reason: "ORIGIN_NOT_ALLOWED" }, "ORIGIN_NOT_ALLOWED"],
+    [429, { ok: false, reason: "CREDIT_EXHAUSTED", message: "Das Kontingent ist aufgebraucht." }, "CREDIT_EXHAUSTED"],
+    [502, { ok: false, reason: "UPSTREAM", code: "UPSTREAM_authentication_error" }, "UPSTREAM"],
+    [500, { ok: false, reason: "INTERNAL" }, "INTERNAL"], [530, null, "HTTP_530"],
+  ];
+  for (const [status, body, code] of cases) {
+    const f = Ask.failure(status, body);
+    assert.equal(f.code, code);
+    assert.ok(f.title.length > 3 && f.text.length > 10, code);
+  }
+  assert.equal(Ask.failure(429, { reason: "CREDIT_EXHAUSTED", message: "Das Kontingent ist aufgebraucht." }).text, "Das Kontingent ist aufgebraucht.");
+});
+
+test("/ask/ zeigt Fehler ueber VUAskEngine.failure und bricht nach einer Frist ab", async () => {
+  const fs = await import("node:fs");
+  const src = fs.readFileSync(new URL("../app.js", import.meta.url), "utf8");
+  assert.match(src, /Ask\.failure\(/);
+  assert.match(src, /AbortController/);
+  assert.doesNotMatch(src, /\.then\(function \(r\) \{ return r\.json\(\); \}\)/);
+});

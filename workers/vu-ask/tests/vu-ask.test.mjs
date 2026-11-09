@@ -435,3 +435,50 @@ test("the cache key carries a prompt fingerprint so a changed prompt never serve
   const { PROMPT_FINGERPRINT } = await import("../src/gate.mjs");
   assert.match(PROMPT_FINGERPRINT, /^[0-9a-f]{1,8}$/);
 });
+
+/* ------------------------------------------------- App-Herkunft (Strang P) */
+
+test("Eingang: die Capacitor-App (iOS und Android) darf fragen, auch wenn die Variable sie nicht nennt", async () => {
+  const env = fakeEnv({ ...ENV, VU_ASK_ALLOWED_ORIGINS: "https://research.visionuniverse.de" });
+  for (const origin of ["capacitor://localhost", "https://localhost"]) {
+    const pre = await worker.fetch(new Request("https://ask.example/v1/ask", { method: "OPTIONS", headers: { origin } }), env);
+    assert.equal(pre.status, 204, origin);
+    assert.equal(pre.headers.get("access-control-allow-origin"), origin);
+    const r = await worker.fetch(new Request("https://ask.example/v1/ask", {
+      method: "POST", headers: { origin, "cf-connecting-ip": "7.7.7.7" },
+      body: JSON.stringify({ question: "Welche Aktien stehen auf einem Jahreshoch?", clientId: "client-app00001" }),
+    }), env);
+    assert.equal(r.status, 200, origin);
+    assert.equal(r.headers.get("access-control-allow-origin"), origin);
+  }
+});
+
+test("Eingang: fremde Herkunft bekommt einen Klartext statt nur eines Codes", async () => {
+  const r = await worker.fetch(new Request("https://ask.example/v1/ask", { method: "POST", headers: { origin: "https://evil.example" }, body: "{}" }), fakeEnv());
+  const body = await r.json();
+  assert.equal(body.reason, "ORIGIN_NOT_ALLOWED");
+  assert.ok(body.message.length > 10);
+});
+
+test("wrangler.toml nennt die App-Herkuenfte", async () => {
+  const fs = await import("node:fs");
+  const toml = fs.readFileSync(new URL("../wrangler.toml", import.meta.url), "utf8");
+  const line = toml.split("\n").find((l) => l.startsWith("VU_ASK_ALLOWED_ORIGINS"));
+  for (const o of ["https://research.visionuniverse.de", "capacitor://localhost", "https://localhost"]) assert.ok(line.includes(o), o);
+});
+
+test("Zustandsbericht fuers Protokoll enthaelt nie Fragetexte", async () => {
+  const { summarize } = await import("../scripts/report-summary.mjs");
+  const report = {
+    generatedAt: "2026-11-09T00:00:00Z", spend: { totalUsd: 0.1, monthUsd: 0.1, todayQuestions: 1 },
+    limits: { enabled: true, model: "claude-haiku-4-5", apiKeyPresent: true, botCheck: false, perUserDaily: 10 },
+    logged: 2, byStatus: { error: 1, ok: 1 },
+    notUnderstood: [{ at: "t1", question: "GEHEIME-FRAGE Max Mustermann", status: "error", error: "UPSTREAM_authentication_error | 401 invalid x-api-key" }],
+    recent: [{ at: "t1", question: "GEHEIME-FRAGE Max Mustermann", status: "error", source: "claude", fields: ["marketCap"] }],
+    missingData: [{ wish: "x", examples: ["GEHEIME-FRAGE"] }],
+  };
+  const out = JSON.stringify(summarize(report));
+  assert.ok(!out.includes("GEHEIME-FRAGE"));
+  assert.match(out, /UPSTREAM_authentication_error/);
+  assert.match(out, /"apiKeyPresent":true/);
+});
