@@ -162,13 +162,13 @@ test("Research: \"nicht aktuell\" nach derselben Regel wie sf-research.js#stale,
     "Regel in Supertrader geaendert: world-context.js#stale nachziehen");
 });
 
-test("Seite: Modul eingebunden, Abschnitt im Chart Studio und in Signale, keine eigene Identitaet und keine Quant-Zahl", () => {
+/* Konzept „Der Chart in drei Sätzen“, Entscheidung 6 (Owner-Freigabe 09.11.2026): Der Block „Diese Aktie in Quant und Supertrader“
+   entfällt auf allen Chart-Ansichten; die Perspektiven-Leiste des Aktienkopfs führt dorthin. Die Lese-Engine bleibt für andere Leser. */
+test("Seite: kein Quant-/Supertrader-Block auf Chart, Befunden und Studio; Engine ohne eigene Identität", () => {
   const html = readFileSync(join(root, "technical/index.html"), "utf8"), app = readFileSync(join(root, "technical/app.js"), "utf8");
-  assert.ok(html.indexOf("/technical/engine/model.js") < html.indexOf("/technical/engine/world-context.js") && html.indexOf("/technical/engine/world-context.js") < html.indexOf("/technical/app.js"));
-  assert.match(app, /"\/quant\/engines\/factor-evidence\.js"/, "Quant-Stufen ueber die Quant-Engine");
-  assert.match(app, /worlds: worlds/);
-  assert.match(app, /renderSignals\(body, [^)]*worlds\)/);
-  assert.match(app, /SCX\.href\(SCX\.fromUs\(T\), product\)/, "Adressen ueber core/stock-context.js");
+  assert.ok(!html.includes("/technical/engine/world-context.js"), "Modul nicht mehr eingebunden");
+  assert.doesNotMatch(app, /worldsSection|loadWorlds|tc-worlds|Diese Aktie in Quant und Supertrader|factor-evidence\.js/);
+  assert.match(app, /Quant und Supertrader zur selben Aktie: oben in der Leiste/);
   const wc = readFileSync(join(root, "technical/engine/world-context.js"), "utf8");
   assert.doesNotMatch(wc, /"ref_"\s*\+/);
   assert.doesNotMatch(wc, /Math\.random|mock|demo/i);
