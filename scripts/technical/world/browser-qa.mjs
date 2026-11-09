@@ -161,12 +161,14 @@ async function main() {
     });
 
     await check(key + " Assistent", async () => {
+      /* Entscheidung 8: #/assistent leitet auf „Lernen“; dort stehen die Ziele als Fragen, die den Screener öffnen. */
       await navigate(page,base + "#/assistent");
-      await page.waitForSelector(".tc-goal", { timeout: 30000 });
-      assert(await page.locator(".tc-goals .tc-goal").count() === 8, "Analyseziele fehlen");
-      await clean("Assistent-Auswahl");
-      await page.locator(".tc-goals .tc-goal", { hasText: "Trendfolge" }).click();
-      await page.waitForFunction(() => /#\/assistent\/trendfolge$/.test(location.hash));
+      await page.waitForFunction(() => /#\/lernen$/.test(location.hash), null, { timeout: 15000 });
+      await page.waitForSelector(".tc-asks .vu-chip", { timeout: 30000 });
+      assert(await page.locator(".tc-asks .vu-chip").count() === 7, "Fragen an den Chart fehlen");
+      assert(/screener\?z=trendfolge/.test(await page.locator(".tc-asks .vu-chip").first().getAttribute("href")), "Frage öffnet nicht den Screener");
+      await clean("Lernen-Fragen");
+      await navigate(page,base + "#/assistent/trendfolge");
       await page.waitForSelector(".tc-hit .tc-ticks", { timeout: 30000 });
       assert(await page.locator(".tc-hit").first().locator(".tc-ticks li").count() === 4, "Checkliste ohne 4 Kriterien");
       assert((await page.locator(".tc-step-n").allTextContents()).join(",") === "1,2,3,4,5,6", "Schritte 1–6 nicht vollstaendig");
@@ -382,9 +384,10 @@ async function main() {
 
     await check(key + " Muster", async () => {
       await navigate(page,base + "#/muster");
-      await page.waitForSelector(".tc-plist .tc-prow", { timeout: 30000 });
-      assert(await page.locator(".tc-plist .tc-prow").count() === 9, "Heute im Markt: 9 Muster erwartet");
-      await page.waitForSelector(".tc-evbig, .tc-evrow", { timeout: 15000 });
+      await page.waitForSelector(".tc-mgrid .tc-mg", { timeout: 30000 });
+      assert(await page.locator(".tc-mgrid .tc-mg").count() === 8, "Heute im Markt: 8 Muster mit Bild erwartet");
+      assert(await page.locator(".tc-mgrid .tc-mg svg.tc-shape").count() === 8, "Musterbilder fehlen");
+      await page.waitForSelector(".tc-hilft .tc-kvrow [data-verdict]", { timeout: 15000 });
       await clean("Muster");
       await navigate(page,base + "#/methodik?reiter=regeln");
       await page.waitForSelector(".tc-defs dt", { timeout: 30000, state: "attached" });

@@ -920,3 +920,30 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 .tc-signal .tc-row-text span{font-size:11.5px}
 .tc-signal .vu-verdict{font-size:10.5px;padding:4px 7px}
 .tc-signal>.tc-detail{padding:0 14px 12px}
+/* Lernen (Vorlage c-lernen) */
+.tc-today{display:block;background:#000;color:#fff;border-radius:22px;padding:14px;margin-top:12px;text-decoration:none}
+.tc-today-h{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tc-today .tc-ltag{color:#9b9b9b}
+.tc-today b{display:block;font-size:18px;margin-top:2px}
+.tc-today-s{display:block;font-size:11.5px;color:#bdbdbd}
+.tc-go{width:44px;height:44px;border-radius:50%;background:var(--vu-lime);color:#000;display:grid;place-items:center;flex:none}
+.tc-prog{height:4px;border-radius:9px;background:#2a2a2a;margin:12px 0 4px}
+.tc-prog i{display:block;height:100%;border-radius:9px;background:var(--vu-lime)}
+.tc-lpg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tc-lpg>a{background:var(--vu-card);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:3px;color:var(--vu-ink);text-decoration:none}
+.tc-lpg b{font-size:14px;margin-top:6px}
+.tc-lpg>a>span{font-size:11.5px;color:var(--vu-mute);line-height:1.25}
+.tc-lp-d{display:flex;gap:3px;margin-top:auto;padding-top:8px}
+.tc-lp-d i{flex:1;height:5px;border-radius:9px;background:var(--vu-hair)}
+.tc-lp-d i.is-done{background:var(--vu-ink)}
+.tc-asks{flex-wrap:wrap;white-space:normal;gap:6px}
+.tc-asks .vu-chip{height:auto;min-height:34px;padding:7px 12px;font-size:13px;white-space:normal;text-align:left}
+/* Musterseite: „Hilft das Muster?“ als ruhige Liste mit Urteil */
+.tc-st a{font-size:14px;font-weight:600;color:var(--vu-mute);text-decoration:none;letter-spacing:0}
+.tc-hilft{padding:4px 14px}
+.tc-kvrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--vu-hair)}
+.tc-kvrow:first-child{border-top:0}
+.tc-kvrow b{display:block;font-size:13px}
+.tc-kvrow small{font-size:11.5px;color:var(--vu-mute)}
+.tc-mgrid+.vu-help{margin-top:8px}
+.vu-hud .tc-glyph{width:58%;height:58%;fill:none;stroke:var(--vu-lime);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
