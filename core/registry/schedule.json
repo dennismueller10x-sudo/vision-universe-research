@@ -452,9 +452,12 @@
   },
   {
    "id": "research-edge2-paper",
-   "workflow": "research-edge2-paper.yml",
+   "workflow": "research.yml",
    "cron": "47 8 * * 6",
-   "timer": "waker"
+   "timer": "waker",
+   "inputs": {
+    "teil": "edge2-paper"
+   }
   },
   {
    "id": "sec-consumer-fundamentals",

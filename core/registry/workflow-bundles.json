@@ -144,6 +144,7 @@
     "quant-pattern-total-return-check.yml",
     "quant-portfolio-research.yml",
     "quant-v13-archive.yml",
+    "research-edge2-paper.yml",
     "research-labor.yml",
     "supertrader-delisting-probe.yml",
     "supertrader-house.yml",
@@ -249,11 +250,11 @@
   },
   "europe-discover-refresh.yml": {
    "bundle": "pipeline-daily",
-   "geplant": true
+   "ausnahme": "Zwei parallele Jobs unter einer Workflow-Gruppe; als Job-Gruppen nicht gleichwertig."
   },
   "freshness-monitor.yml": {
    "bundle": "monitor",
-   "geplant": true
+   "ausnahme": "Waechter mit eigenem Wecker-Takt und sechs Jobs, deren Ereignisweichen sechs Vertragstests woertlich pruefen."
   },
   "history-store-sync.yml": {
    "bundle": "maintenance",
@@ -281,7 +282,7 @@
   },
   "market-data-refresh.yml": {
    "bundle": "pipeline-daily",
-   "geplant": true
+   "ausnahme": "Kettenkopf der Nacht: pipeline-daily, pipeline-weekly, home-refresh, pages-release und die Materialisierung hoeren per workflow_run auf seinen Namen."
   },
   "multi-asset-data.yml": {
    "bundle": "pipeline-daily",
@@ -297,14 +298,10 @@
   },
   "product-intelligence-materialization.yml": {
    "bundle": "pipeline-daily",
-   "geplant": true
+   "ausnahme": "Wird per workflow_call eingebunden und pipeline-daily selbst hoert auf seinen Namen; der Generator buendelt keinen workflow_call."
   },
   "quant-ci.yml": {
    "bundle": "ci",
-   "geplant": true
-  },
-  "research-edge2-paper.yml": {
-   "bundle": "research",
    "geplant": true
   },
   "research-signals-s2.yml": {
@@ -313,7 +310,7 @@
   },
   "sec-consumer-fundamentals.yml": {
    "bundle": "pipeline-daily",
-   "geplant": true
+   "ausnahme": "pages-release und monitor (Teil sec-veroeffentlichung) hoeren per workflow_run auf seinen Namen; Bulk-Abruf unter eigener Workflow-Gruppe."
   },
   "sec-fundamentals-daily.yml": {
    "bundle": "pipeline-daily",
@@ -357,15 +354,15 @@
   },
   "supertrader-st-hist-top5.yml": {
    "bundle": "research",
-   "geplant": true
+   "ausnahme": "Supertrader-Vertragstests (sf-st-hist-top5 ST-HIST-4/10/16, ST-HOLDOUT-3) lesen diese Datei, und SF2-LEGACY-ISOLATION erlaubt die Forschungsmodule nur in ihr."
   },
   "supertrader-st9-v13-study.yml": {
    "bundle": "research",
-   "geplant": true
+   "ausnahme": "Das Supertrader-Belegmodell prueft das Vorhandensein genau dieser Datei (sf-mc3-evidence-matrix, v13Workflow); Loeschen aendert ein Fachmodell."
   },
   "supertrader-validation.yml": {
    "bundle": "research",
-   "geplant": true
+   "ausnahme": "Versiegelte Supertrader-Validierung; Vertragstests (sf-paper-2027-forward) pruefen den Text dieser Datei."
   },
   "universe-master.yml": {
    "bundle": "pipeline-weekly",
