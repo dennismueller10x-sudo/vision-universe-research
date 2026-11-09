@@ -38,6 +38,8 @@ Die Zustände bedeuten:
 
 Ein roter Marktdaten-Refresh oder ein roter Freshness-Monitor öffnet automatisch ein Issue mit dem Label `pipeline-alarm` (`scripts/ci/pipeline-alarm.mjs`): Lauf, fehlgeschlagene Schritte, rote Tests. Der nächste grüne Lauf schließt es. Tests, die erst nach der Veröffentlichung rot werden (Gate C), stehen in einem eigenen Issue `[market-data-refresh · Beobachtung]`.
 
+Datenarten, die AN sein sollen (`expectLive: true` in `core/registry/domains.json`, derzeit Company Intelligence), prüft der Freshness-Monitor gegen die Seite (`node scripts/core/expect-live.mjs --site=https://research.visionuniverse.de`): steht eine davon live auf DISABLED, wird er rot und öffnet das Alarm-Issue; `/status/` zeigt `DISABLED_BUT_EXPECTED_LIVE`. Anlass: 08.11.2026 schloss ein Fail-closed-Rollback des Company-Intelligence-Refresh (Lauf 42493495646, Pages-Läufe im Runner-Stau) das Gate, und der eigene Health-Lauf wertete das als „bewusst aus“. Wer bewusst abschaltet, setzt `expectLive:false` im selben PR.
+
 1. Log des Schritts **„Commit und Push“** lesen.
    - Konflikte in den eigenen Erzeugerpfaden des Refresh (`discover/data` ohne `europe`, `quant/data/technical`, Faktoren, Kursreihen; `PUSH_OWNED_PATHS` im Workflow) löst das Skript seit 10/2026 nach eigenem Stand auf.
    - `Konflikt ausserhalb erzeugter Artefakte: <Datei>`: Ein anderer Commit hat dieselbe Datei geändert.
